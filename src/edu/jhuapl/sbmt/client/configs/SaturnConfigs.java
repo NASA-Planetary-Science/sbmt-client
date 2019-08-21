@@ -333,7 +333,7 @@ public class SaturnConfigs extends SmallBodyViewConfig
 
             c.databaseRunInfos = new DBRunInfo[]
             {
-            	new DBRunInfo(ImageSource.GASKELL, ShapeModelBody.ATLAS.toString(), "/project/sbmt2/data/atlas/gaskell/imaging/imagelist-fullpath.txt", "atlas"),
+            	new DBRunInfo(ImageSource.GASKELL, Instrument.IMAGING_DATA, ShapeModelBody.ATLAS.toString(), "/project/sbmt2/data/atlas/gaskell/imaging/imagelist-fullpath.txt", "atlas"),
             };
 
 

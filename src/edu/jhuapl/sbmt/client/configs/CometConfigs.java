@@ -147,7 +147,7 @@ public class CometConfigs extends SmallBodyViewConfig
 
             c.databaseRunInfos = new DBRunInfo[]
             {
-            	new DBRunInfo(ImageSource.GASKELL, ShapeModelBody._67P.toString(), "/project/nearsdc/data/GASKELL/67P/IMAGING/imagelist-fullpath.txt", "67p"),
+            	new DBRunInfo(ImageSource.GASKELL, Instrument.OSIRIS, ShapeModelBody._67P.toString(), "/project/nearsdc/data/GASKELL/67P/IMAGING/imagelist-fullpath.txt", "67p"),
             };
 
 
@@ -171,7 +171,7 @@ public class CometConfigs extends SmallBodyViewConfig
 
             c.databaseRunInfos = new DBRunInfo[]
             {
-            	new DBRunInfo(ImageSource.GASKELL, ShapeModelBody._67P.toString(), "/project/nearsdc/data/DLR/67P/IMAGING/imagelist-fullpath.txt", "67p_dlr"),
+            	new DBRunInfo(ImageSource.GASKELL, Instrument.OSIRIS, ShapeModelBody._67P.toString(), "/project/nearsdc/data/DLR/67P/IMAGING/imagelist-fullpath.txt", "67p_dlr"),
             };
 
 
@@ -229,7 +229,7 @@ public class CometConfigs extends SmallBodyViewConfig
 
             c.databaseRunInfos = new DBRunInfo[]
             {
-            	new DBRunInfo(ImageSource.GASKELL, ShapeModelBody._67P.toString(), "/project/nearsdc/data/GASKELL/67P_V2/IMAGING/imagelist-fullpath.txt", "67p_v2"),
+            	new DBRunInfo(ImageSource.GASKELL, Instrument.OSIRIS, ShapeModelBody._67P.toString(), "/project/nearsdc/data/GASKELL/67P_V2/IMAGING/imagelist-fullpath.txt", "67p_v2"),
             };
 
 
@@ -291,7 +291,7 @@ public class CometConfigs extends SmallBodyViewConfig
 
             c.databaseRunInfos = new DBRunInfo[]
             {
-            	new DBRunInfo(ImageSource.GASKELL, ShapeModelBody._67P.toString(), "/project/nearsdc/data/GASKELL/67P_V3/IMAGING/imagelist-fullpath.txt", "67p_v3"),
+            	new DBRunInfo(ImageSource.GASKELL, Instrument.OSIRIS, ShapeModelBody._67P.toString(), "/project/nearsdc/data/GASKELL/67P_V3/IMAGING/imagelist-fullpath.txt", "67p_v3"),
             };
 
 

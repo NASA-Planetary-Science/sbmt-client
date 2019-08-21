@@ -108,7 +108,7 @@ public class AsteroidConfigs extends SmallBodyViewConfig
 
         c.databaseRunInfos = new DBRunInfo[]
         {
-        	new DBRunInfo(ImageSource.GASKELL, ShapeModelBody.EROS.toString(), "/project/nearsdc/data/GASKELL/EROS/MSI/msiImageList.txt", "eros"),
+        	new DBRunInfo(ImageSource.GASKELL, Instrument.MSI, ShapeModelBody.EROS.toString(), "/project/nearsdc/data/GASKELL/EROS/MSI/msiImageList.txt", "eros"),
         };
 
 
@@ -219,7 +219,7 @@ public class AsteroidConfigs extends SmallBodyViewConfig
 
         c.databaseRunInfos = new DBRunInfo[]
         {
-        	new DBRunInfo(ImageSource.GASKELL, ShapeModelBody.ITOKAWA.toString(), "/project/nearsdc/data/GASKELL/ITOKAWA/AMICA/imagelist.txt", "amica"),
+        	new DBRunInfo(ImageSource.GASKELL, Instrument.AMICA, ShapeModelBody.ITOKAWA.toString(), "/project/nearsdc/data/GASKELL/ITOKAWA/AMICA/imagelist.txt", "amica"),
         };
 
 
@@ -292,7 +292,7 @@ public class AsteroidConfigs extends SmallBodyViewConfig
 
             c.databaseRunInfos = new DBRunInfo[]
             {
-            	new DBRunInfo(ImageSource.GASKELL, ShapeModelBody.CERES.toString(), "/project/nearsdc/data/GASKELL/CERES/FC/uniqFcFiles.txt", "ceres"),
+            	new DBRunInfo(ImageSource.GASKELL, Instrument.FC, ShapeModelBody.CERES.toString(), "/project/nearsdc/data/GASKELL/CERES/FC/uniqFcFiles.txt", "ceres"),
             };
 
             configArray.add(c);
@@ -338,7 +338,7 @@ public class AsteroidConfigs extends SmallBodyViewConfig
 
         c.databaseRunInfos = new DBRunInfo[]
         {
-        	new DBRunInfo(ImageSource.GASKELL, ShapeModelBody.DEIMOS.toString(), "/project/nearsdc/data/GASKELL/VESTA/FC/uniqFcFiles.txt", "fc"),
+        	new DBRunInfo(ImageSource.GASKELL, Instrument.FC, ShapeModelBody.DEIMOS.toString(), "/project/nearsdc/data/GASKELL/VESTA/FC/uniqFcFiles.txt", "fc"),
         };
 
 

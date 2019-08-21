@@ -301,7 +301,7 @@ public class NewHorizonsConfigs extends SmallBodyViewConfig
 
             c.databaseRunInfos = new DBRunInfo[]
             {
-            	new DBRunInfo(ImageSource.GASKELL, ShapeModelBody.PLUTO.toString(), "/project/nearsdc/data/NEWHORIZONS/PLUTO/IMAGING/imagelist-fullpath.txt", ShapeModelBody.PLUTO.toString().toLowerCase()),
+            	new DBRunInfo(ImageSource.GASKELL, Instrument.LORRI, ShapeModelBody.PLUTO.toString(), "/project/nearsdc/data/NEWHORIZONS/PLUTO/IMAGING/imagelist-fullpath.txt", ShapeModelBody.PLUTO.toString().toLowerCase()),
             };
 
 
@@ -349,8 +349,8 @@ public class NewHorizonsConfigs extends SmallBodyViewConfig
 
             c.databaseRunInfos = new DBRunInfo[]
             {
-            	new DBRunInfo(ImageSource.GASKELL, ShapeModelBody.CHARON.toString(), "/project/sbmt2/sbmt/data/bodies/charon/nimmo2017/lorri/imagelist-fullpath-sum.txt", "charon_nimmo2017_lorri"),
-            	new DBRunInfo(ImageSource.SPICE, ShapeModelBody.CHARON.toString(), "/project/sbmt2/sbmt/data/bodies/charon/nimmo2017/lorri/imagelist-fullpath-info.txt", "charon_nimmo2017_lorri"),
+            	new DBRunInfo(ImageSource.GASKELL, Instrument.LORRI, ShapeModelBody.CHARON.toString(), "/project/sbmt2/sbmt/data/bodies/charon/nimmo2017/lorri/imagelist-fullpath-sum.txt", "charon_nimmo2017_lorri"),
+            	new DBRunInfo(ImageSource.SPICE, Instrument.LORRI, ShapeModelBody.CHARON.toString(), "/project/sbmt2/sbmt/data/bodies/charon/nimmo2017/lorri/imagelist-fullpath-info.txt", "charon_nimmo2017_lorri"),
             };
 
 

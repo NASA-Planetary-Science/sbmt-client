@@ -1,6 +1,7 @@
 package edu.jhuapl.sbmt.tools;
 
 import edu.jhuapl.sbmt.model.image.ImageSource;
+import edu.jhuapl.sbmt.model.image.Instrument;
 
 import crucible.crust.metadata.api.Key;
 import crucible.crust.metadata.api.Metadata;
@@ -15,42 +16,48 @@ public class DBRunInfo implements MetadataManager
     public String remotePathToFileList;
     public String name;
     public ImageSource imageSource;
+    public Instrument instrument;
     private final Key<String> nameKey = Key.of("name");
     private final Key<String> pathToFileListKey = Key.of("pathToFileList");
     private final Key<String> databasePrefixKey = Key.of("databasePrefix");
     private final Key<String> remotePathToFileListKey = Key.of("remotePathToFileListConfig");
     private final Key<String> imageSourceKey = Key.of("imageSource");
+    private final Key<String> instrumentKey = Key.of("instrument");
+
 
     public DBRunInfo()
     {
 
     }
 
-    public DBRunInfo(ImageSource source, String name, String pathToFileList)
+    public DBRunInfo(ImageSource source, Instrument instrument, String name, String pathToFileList)
     {
     	this.name = name;
         this.pathToFileList = pathToFileList;
         this.databasePrefix = "";
         this.remotePathToFileList = null;
         this.imageSource = source;
+        this.instrument = instrument;
     }
 
-    public DBRunInfo(ImageSource source, String name, String pathToFileList, String databasePrefix)
+    public DBRunInfo(ImageSource source, Instrument instrument, String name, String pathToFileList, String databasePrefix)
     {
     	this.name = name;
         this.pathToFileList = pathToFileList;
         this.databasePrefix = databasePrefix;
         this.remotePathToFileList = null;
         this.imageSource = source;
+        this.instrument = instrument;
     }
 
-    public DBRunInfo(ImageSource source, String name, String pathToFileList, String databasePrefix, String remotePathToFileList)
+    public DBRunInfo(ImageSource source, Instrument instrument, String name, String pathToFileList, String databasePrefix, String remotePathToFileList)
     {
     	this.name = name;
         this.pathToFileList = pathToFileList;
         this.databasePrefix = databasePrefix;
         this.remotePathToFileList = remotePathToFileList;
         this.imageSource = source;
+        this.instrument = instrument;
     }
 
 	@Override
@@ -62,6 +69,7 @@ public class DBRunInfo implements MetadataManager
 		metadata.put(databasePrefixKey, databasePrefix);
 		metadata.put(remotePathToFileListKey, remotePathToFileList);
 		metadata.put(imageSourceKey, imageSource.toString());
+		metadata.put(instrumentKey, instrument.toString());
 		return metadata;
 	}
 
@@ -73,5 +81,6 @@ public class DBRunInfo implements MetadataManager
 		databasePrefix = source.get(databasePrefixKey);
 		remotePathToFileList = source.get(remotePathToFileListKey);
 		imageSource = ImageSource.valueFor(source.get(imageSourceKey));
+		instrument = Instrument.valueFor(source.get(instrumentKey));
 	}
 }

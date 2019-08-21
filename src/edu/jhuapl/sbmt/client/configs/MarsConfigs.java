@@ -101,7 +101,7 @@ public class MarsConfigs extends SmallBodyViewConfig
 
         c.databaseRunInfos = new DBRunInfo[]
         {
-        	new DBRunInfo(ImageSource.GASKELL, ShapeModelBody.PHOBOS.toString(), "/project/nearsdc/data/GASKELL/PHOBOS/IMAGING/pdsImageList.txt", ShapeModelBody.PHOBOS.toString().toLowerCase()),
+        	new DBRunInfo(ImageSource.GASKELL, Instrument.IMAGING_DATA, ShapeModelBody.PHOBOS.toString(), "/project/nearsdc/data/GASKELL/PHOBOS/IMAGING/pdsImageList.txt", ShapeModelBody.PHOBOS.toString().toLowerCase()),
         };
 
 
@@ -179,7 +179,7 @@ public class MarsConfigs extends SmallBodyViewConfig
 
             c.databaseRunInfos = new DBRunInfo[]
             {
-            	new DBRunInfo(ImageSource.GASKELL, ShapeModelBody.PHOBOS.toString(), "/project/nearsdc/data/GASKELL/PHOBOSEXPERIMENTAL/IMAGING/imagelist.txt", "phobosexp"),
+            	new DBRunInfo(ImageSource.GASKELL, Instrument.IMAGING_DATA, ShapeModelBody.PHOBOS.toString(), "/project/nearsdc/data/GASKELL/PHOBOSEXPERIMENTAL/IMAGING/imagelist.txt", "phobosexp"),
             };
 
 
@@ -265,7 +265,7 @@ public class MarsConfigs extends SmallBodyViewConfig
 
             c.databaseRunInfos = new DBRunInfo[]
             {
-            	new DBRunInfo(ImageSource.GASKELL, ShapeModelBody.PHOBOS.toString(), "/project/sbmt2/sbmt/data/bodies/phobos/ernst2018/imaging/imagelist-fullpath.txt", "phobos_ernst_2018"),
+            	new DBRunInfo(ImageSource.GASKELL, Instrument.IMAGING_DATA, ShapeModelBody.PHOBOS.toString(), "/project/sbmt2/sbmt/data/bodies/phobos/ernst2018/imaging/imagelist-fullpath.txt", "phobos_ernst_2018"),
             };
 
 
@@ -327,7 +327,7 @@ public class MarsConfigs extends SmallBodyViewConfig
 
             c.databaseRunInfos = new DBRunInfo[]
             {
-            	new DBRunInfo(ImageSource.GASKELL, ShapeModelBody.DEIMOS.toString(), "/project/nearsdc/data/THOMAS/DEIMOSEXPERIMENTAL/IMAGING/imagelist-fullpath.txt", "deimos"),
+            	new DBRunInfo(ImageSource.GASKELL, Instrument.IMAGING_DATA, ShapeModelBody.DEIMOS.toString(), "/project/nearsdc/data/THOMAS/DEIMOSEXPERIMENTAL/IMAGING/imagelist-fullpath.txt", "deimos"),
             };
 
 //            configArray.add(c);
@@ -377,7 +377,7 @@ public class MarsConfigs extends SmallBodyViewConfig
 
             c.databaseRunInfos = new DBRunInfo[]
             {
-            	new DBRunInfo(ImageSource.GASKELL, ShapeModelBody.DEIMOS.toString(), "/project/sbmt2/sbmt/data/bodies/deimos/ernst2018/imaging/imagelist-fullpath.txt", "deimos_ernst_2018"),
+            	new DBRunInfo(ImageSource.GASKELL, Instrument.IMAGING_DATA, ShapeModelBody.DEIMOS.toString(), "/project/sbmt2/sbmt/data/bodies/deimos/ernst2018/imaging/imagelist-fullpath.txt", "deimos_ernst_2018"),
             };
 
 

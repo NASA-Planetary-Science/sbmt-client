@@ -147,7 +147,7 @@ public abstract class SpectrumSearchModel implements ISpectrumSearchModel, Metad
     }
             catch (Exception e)
             {
-                e.printStackTrace();
+//                e.printStackTrace();
                 searchSpec = null;
             }
         }

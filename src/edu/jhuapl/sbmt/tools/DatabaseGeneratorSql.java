@@ -30,9 +30,9 @@ import edu.jhuapl.sbmt.client.SmallBodyViewConfig;
 import edu.jhuapl.sbmt.gui.image.model.ImageKey;
 import edu.jhuapl.sbmt.model.image.ImageKeyInterface;
 import edu.jhuapl.sbmt.model.image.ImageSource;
+import edu.jhuapl.sbmt.model.image.ImagingInstrument;
+import edu.jhuapl.sbmt.model.image.Instrument;
 import edu.jhuapl.sbmt.model.image.PerspectiveImage;
-
-import nom.tam.fits.FitsException;
 
 public class DatabaseGeneratorSql
 {
@@ -43,16 +43,16 @@ public class DatabaseGeneratorSql
     private String databaseSuffix = "";
     private boolean appendTables;
     private boolean modifyMain;
-    private int cameraIndex;
+//    private int cameraIndex;
+    private Instrument instrument;
 
-
-    public DatabaseGeneratorSql(SmallBodyViewConfig smallBodyConfig, String databasePrefix, boolean appendTables, boolean modifyMain, int cameraIndex)
+    public DatabaseGeneratorSql(SmallBodyViewConfig smallBodyConfig, String databasePrefix, boolean appendTables, boolean modifyMain, Instrument instrument)
     {
         this.smallBodyConfig = smallBodyConfig;
         this.databasePrefix = databasePrefix;
         this.appendTables = appendTables;
         this.modifyMain = modifyMain;
-        this.cameraIndex = cameraIndex;
+        this.instrument = instrument;
     }
 
     private void createTables(String tableName)
@@ -145,7 +145,7 @@ public class DatabaseGeneratorSql
             List<String> lines,
             String tableName,
             String cubesTableName,
-            ImageSource imageSource) throws IOException, SQLException, FitsException
+            ImageSource imageSource) throws Exception
     {
         smallBodyModel.setModelResolution(0);
         SmallBodyViewConfig config = (SmallBodyViewConfig)smallBodyModel.getSmallBodyConfig();
@@ -205,7 +205,18 @@ public class DatabaseGeneratorSql
             keyName = keyName.replace(".FIT", "");
             keyName = keyName.replace(".fit", "");
 
-            ImageKeyInterface key = new ImageKey(keyName, imageSource, config.imagingInstruments[cameraIndex]);
+            ImagingInstrument imager = null;
+            for (ImagingInstrument inst : config.imagingInstruments)
+            {
+            	if (inst.getInstrumentName() == instrument) imager = inst;
+            }
+            if (imager == null)
+            {
+            	throw new Exception("Instrument " + instrument + " not recognized as a valid imager for this configuration");
+            }
+            ImageKeyInterface key = new ImageKey(keyName, imageSource, imager);
+
+//            ImageKeyInterface key = new ImageKey(keyName, imageSource, config.imagingInstruments[cameraIndex]);
             PerspectiveImage image = null;
 
             try
@@ -433,7 +444,6 @@ public class DatabaseGeneratorSql
         		}
         	}
         	lines = truncatedLines;
-        	System.out.println("DatabaseGeneratorSql: run: truncated lines count is now " + lines.size());
         }
 
         String dburl = null;
@@ -479,7 +489,178 @@ public class DatabaseGeneratorSql
         }
     }
 
-    private enum RunInfo
+    private static void usage()
+    {
+        String o = "This program generates tables in the MySQL database for a given body.\n\n"
+                + "Usage: DatabaseGeneratorSql [options] <imagesource> <shapemodel>\n\n"
+                + "Where:\n"
+                + "  <imagesource>\n"
+                + "          Must be one of the allowed sources for pointing. The tables for this\n"
+                + "          pointing type will be generated. For example, if GASKELL is selected,\n"
+                + "          then only the Gaskell tables are generated; if SPICE is selected, then\n"
+                + "          only the SPICE (PDS) tables are generated. Allowed values are\n"
+                + ImageSource.printSources(16)
+                + "  <shapemodel>\n"
+                + "          shape model to process. Must be one of the values in the RunInfo enumeration\n"
+                + "          such as EROS or ITOKAWA. If ALL is specified then the entire database is\n"
+                + "          regenerated.\n"
+                + "Options:\n"
+                + "  --append-tables\n"
+                + "          If specified, will check to see if database tables of the shape+mode already\n"
+                + "          exist, create one if necessary, and append entries to that table as opposed\n"
+                + "          to deleting existing tables and creating a new one from scratch.\n"
+                + "  --modify-main\n"
+                + "          If specified, will modify main tables directly instead of those with the\n"
+                + "          _beta suffix.  Be very careful when enabling this option.\n"
+                + "  --root-url <url>\n"
+                + "          Root URL from which to get data from. Should begin with file:// to load\n"
+                + "          data directly from file system rather than web server. Default value\n"
+                + "          is file:///disks/d0180/htdocs-sbmt/internal/sbmt.\n\n";
+        System.out.println(o);
+        System.exit(1);
+    }
+
+    /**
+     * @param args
+     * @throws IOException
+     *
+     * To call, use arguments like this:
+     *
+     * --root-url $dbRootUrl --append-tables --body RQ36 --author ALTWG-SPC-v20190414 --instrument MAPCAM $pointingType
+     *
+     * The old body argument that came after pointing type is no longer needed - that was a lookup into the RunInfos, we which we now get from the configs and use the passed
+     * in arguments to filter out the one we want
+     *
+     * The camera index has also been deprecated, and has been replaced by specifying the actual Instrument to use from that enum, which is then used to find the
+     * imaging instrument to use
+     *
+     * The version argument is optional, since models may not have a version.  The SmallBodyViewConfig handles this automatically (it defaults to null)
+     *
+     */
+    public static void main(String[] args) throws IOException
+    {
+        final SafeURLPaths safeUrlPaths = SafeURLPaths.instance();
+        // default configuration parameters
+        boolean aplVersion = true;
+        String rootURL = safeUrlPaths.getUrl("/disks/d0180/htdocs-sbmt/internal/sbmt");
+
+        boolean appendTables = false;
+        boolean modifyMain = false;
+        boolean remote = false;
+        String bodyName="";
+        String authorName="";
+        String versionString = null;
+        String diffFileList = null;
+        String instrumentString = null;
+
+//        int cameraIndex = 0;
+
+        // modify configuration parameters with command line args
+        int i = 0;
+        for (; i < args.length; ++i)
+        {
+            if (args[i].equals("--root-url"))
+            {
+                rootURL = safeUrlPaths.getUrl(args[++i]);
+            }
+            else if (args[i].equals("--append-tables"))
+            {
+                appendTables = true;
+            }
+            else if (args[i].equals("--modify-main"))
+            {
+                modifyMain = true;
+            }
+            else if (args[i].equals("--debug"))
+            {
+                Debug.setEnabled(true);
+            }
+            else if (args[i].equals("--remote"))
+            {
+                remote = true;
+            }
+//            else if (args[i].equals("--cameraIndex"))
+//            {
+//                cameraIndex = Integer.parseInt(args[++i]);
+//            }
+            else if (args[i].equals("--body"))
+            {
+            	bodyName = args[++i];
+            }
+            else if (args[i].equals("--author"))
+            {
+            	authorName = args[++i];
+            }
+            else if (args[i].equals("--version"))
+            {
+            	versionString = args[++i];
+            }
+            else if (args[i].equals("--instrument"))
+            {
+            	instrumentString = args[++i];
+            }
+            else if (args[i].equals("--diffList"))
+            {
+            	diffFileList = args[++i];
+            }
+            else {
+                // We've encountered something that is not an option, must be at the args
+                break;
+            }
+        }
+
+        // There must be numRequiredArgs arguments remaining after the options.
+        // Otherwise abort.
+        int numberRequiredArgs = 2;
+        if (args.length - i < numberRequiredArgs)
+            usage();
+
+        // basic default configuration, most of these will be overwritten by the configureMission() method
+        Configuration.setAPLVersion(aplVersion);
+        Configuration.setRootURL(rootURL);
+
+        SbmtMultiMissionTool.configureMission();
+
+        // authentication
+        Authenticator.authenticate();
+
+        // initialize view config
+        SmallBodyViewConfig.initialize();
+
+        // VTK
+        System.setProperty("java.awt.headless", "true");
+        NativeLibraryLoader.loadVtkLibrariesHeadless();
+
+        ImageSource mode = ImageSource.valueOf(args[i++].toUpperCase());
+//        String body = args[i++];
+
+        SmallBodyViewConfig config = SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.valueOf(bodyName), ShapeModelType.valueOf(authorName), versionString);
+
+        DBRunInfo[] runInfos = config.databaseRunInfos;
+
+        Mission mission = SbmtMultiMissionTool.getMission();
+        System.out.println("Mission: " + mission);
+
+        for (DBRunInfo ri : runInfos)
+        {
+        	if (!ri.name.equals(bodyName) || (ri.imageSource != mode) || (!ri.instrument.toString().equals(instrumentString))) continue;
+            DatabaseGeneratorSql generator = new DatabaseGeneratorSql(config, ri.databasePrefix, appendTables, modifyMain, ri.instrument);
+
+            String pathToFileList = ri.pathToFileList;
+            if (remote)
+            {
+                if (ri.remotePathToFileList != null)
+                    pathToFileList = ri.remotePathToFileList;
+            }
+
+            System.out.println("Generating: " + pathToFileList + ", mode=" + mode);
+            generator.run(pathToFileList, mode, diffFileList);
+        }
+    }
+}
+
+/*
+ *     private enum RunInfo
     {
         EROS(SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.EROS, ShapeModelType.GASKELL),
                 "/project/nearsdc/data/GASKELL/EROS/MSI/msiImageList.txt", "eros"),
@@ -557,9 +738,9 @@ public class DatabaseGeneratorSql
 //                "/project/sbmt2/sbmt/data/bodies/ryugu/shared/onc", "ryugu_shared",
 //                "ryugu/shared/onc"),
 
-        /********************************
-         * Hayabusa 2 - ONC images at Aizu
-         ********************************/
+//        ********************************
+//         * Hayabusa 2 - ONC images at Aizu
+//         ********************************
 
 //        // Ryugu Model-specific Flight Images (on Aizu server) - ONC
 //        JAXA_SFM_V20180627(SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.RYUGU, ShapeModelType.JAXA_SFM_v20180627),
@@ -634,9 +815,9 @@ public class DatabaseGeneratorSql
 //                "/var/www/sbmt/sbmt/data/ryugu/jaxa-spc-v20180829/onc", "ryugu_jaxaspcv20180829",
 //                "ryugu/jaxa-spc-v20180829/onc"),
 
-        /********************************
-         * Hayabusa 2 - ONC images at APL
-         ********************************/
+//        ********************************
+//         * Hayabusa 2 - ONC images at APL
+//         ********************************
 
 
         // Ryugu Model-specific Flight Images (on APL server)
@@ -714,9 +895,9 @@ public class DatabaseGeneratorSql
 //                "ryugu/nasa-005/onc"),
 
 
-        /********************************
-         * Hayabusa 2 - TIR images at Aizu
-         ********************************/
+//        ********************************
+//         * Hayabusa 2 - TIR images at Aizu
+//         ********************************
 
 //        // Ryugu Model-specific Flight Images (on Aizu server) - TIR
 //        JAXA_SFM_V20180627_TIR(SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.RYUGU, ShapeModelType.JAXA_SFM_v20180627),
@@ -785,9 +966,9 @@ public class DatabaseGeneratorSql
 //                "ryugu/jaxa-spc-v20180829/tir"),
 
 
-        /********************************
-         * Hayabusa 2 - TIR images at APL
-         ********************************/
+//        ********************************
+//         * Hayabusa 2 - TIR images at APL
+//         ********************************
 //        // Ryugu Simulated SPC Model SUMFILE Images (on APL server)
 //        RYUGU_SIM_SPC_TIR_APL(SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.RYUGU, ShapeModelType.GASKELL),
 //                "/project/sbmt2/sbmt/data/bodies/ryugu/gaskell/tir", "ryugu_sim_tir",
@@ -881,10 +1062,10 @@ public class DatabaseGeneratorSql
                 "/project/sbmt2/sbmt/data/bodies/deimos/ernst2018/imaging/imagelist-fullpath.txt", "deimos_ernst_2018"),
 
 
-        /*
-         * Osiris REx flight models below here.
-         */
-        /**
+//
+//         Osiris REx flight models below here.
+//
+
          * Per redmine $1805, commenting out models dated prior to 2019-01-01.
         // 1109B SUMFILES
         BENNU_ALTWG_SPC_V20181109B_MAPCAM_APL(SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.RQ36, ShapeModelType.ALTWG_SPC_v20181109b),
@@ -979,7 +1160,7 @@ public class DatabaseGeneratorSql
                 "/project/sbmt2/sbmt/data/bodies/bennu/altwg-spc-v20181227/polycam/imagelist-fullpath-info.txt", "bennu_altwgspcv20181227_polycam"),
         BENNU_ALTWG_SPICE_V20181227_NAVCAM_APL(SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.RQ36, ShapeModelType.ALTWG_SPC_v20181227),
                 "/project/sbmt2/sbmt/data/bodies/bennu/altwg-spc-v20181227/navcam/imagelist-fullpath-info.txt", "bennu_altwgspcv20181227_navcam"),
-		*/
+
 
         // 20190105 SUMFILES
         BENNU_ALTWG_SPC_V20190105_MAPCAM_APL(SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.RQ36, ShapeModelType.ALTWG_SPC_v20190105),
@@ -1110,155 +1291,4 @@ public class DatabaseGeneratorSql
             this.remotePathToFileList = remotePathToFileList;
         }
     }
-
-    private static void usage()
-    {
-        String o = "This program generates tables in the MySQL database for a given body.\n\n"
-                + "Usage: DatabaseGeneratorSql [options] <imagesource> <shapemodel>\n\n"
-                + "Where:\n"
-                + "  <imagesource>\n"
-                + "          Must be one of the allowed sources for pointing. The tables for this\n"
-                + "          pointing type will be generated. For example, if GASKELL is selected,\n"
-                + "          then only the Gaskell tables are generated; if SPICE is selected, then\n"
-                + "          only the SPICE (PDS) tables are generated. Allowed values are\n"
-                + ImageSource.printSources(16)
-                + "  <shapemodel>\n"
-                + "          shape model to process. Must be one of the values in the RunInfo enumeration\n"
-                + "          such as EROS or ITOKAWA. If ALL is specified then the entire database is\n"
-                + "          regenerated.\n"
-                + "Options:\n"
-                + "  --append-tables\n"
-                + "          If specified, will check to see if database tables of the shape+mode already\n"
-                + "          exist, create one if necessary, and append entries to that table as opposed\n"
-                + "          to deleting existing tables and creating a new one from scratch.\n"
-                + "  --modify-main\n"
-                + "          If specified, will modify main tables directly instead of those with the\n"
-                + "          _beta suffix.  Be very careful when enabling this option.\n"
-                + "  --root-url <url>\n"
-                + "          Root URL from which to get data from. Should begin with file:// to load\n"
-                + "          data directly from file system rather than web server. Default value\n"
-                + "          is file:///disks/d0180/htdocs-sbmt/internal/sbmt.\n\n";
-        System.out.println(o);
-        System.exit(1);
-    }
-
-    /**
-     * @param args
-     * @throws IOException
-     */
-    public static void main(String[] args) throws IOException
-    {
-        final SafeURLPaths safeUrlPaths = SafeURLPaths.instance();
-        // default configuration parameters
-        boolean aplVersion = true;
-        String rootURL = safeUrlPaths.getUrl("/disks/d0180/htdocs-sbmt/internal/sbmt");
-
-        boolean appendTables = false;
-        boolean modifyMain = false;
-        boolean remote = false;
-        String bodyName="";
-        String authorName="";
-        String versionString = null;
-        String diffFileList = null;
-
-        int cameraIndex = 0;
-
-        // modify configuration parameters with command line args
-        int i = 0;
-        for (; i < args.length; ++i)
-        {
-            if (args[i].equals("--root-url"))
-            {
-                rootURL = safeUrlPaths.getUrl(args[++i]);
-            }
-            else if (args[i].equals("--append-tables"))
-            {
-                appendTables = true;
-            }
-            else if (args[i].equals("--modify-main"))
-            {
-                modifyMain = true;
-            }
-            else if (args[i].equals("--debug"))
-            {
-                Debug.setEnabled(true);
-            }
-            else if (args[i].equals("--remote"))
-            {
-                remote = true;
-            }
-            else if (args[i].equals("--cameraIndex"))
-            {
-                cameraIndex = Integer.parseInt(args[++i]);
-            }
-            else if (args[i].equals("--body"))
-            {
-            	bodyName = args[++i];
-            }
-            else if (args[i].equals("--author"))
-            {
-            	authorName = args[++i];
-            }
-            else if (args[i].equals("--version"))
-            {
-            	versionString = args[++i];
-            }
-            else if (args[i].equals("--diffList"))
-            {
-            	diffFileList = args[++i];
-            }
-            else {
-                // We've encountered something that is not an option, must be at the args
-                break;
-            }
-        }
-
-        // There must be numRequiredArgs arguments remaining after the options.
-        // Otherwise abort.
-        int numberRequiredArgs = 2;
-        if (args.length - i < numberRequiredArgs)
-            usage();
-
-        // basic default configuration, most of these will be overwritten by the configureMission() method
-        Configuration.setAPLVersion(aplVersion);
-        Configuration.setRootURL(rootURL);
-
-        SbmtMultiMissionTool.configureMission();
-
-        // authentication
-        Authenticator.authenticate();
-
-        // initialize view config
-        SmallBodyViewConfig.initialize();
-
-        // VTK
-        System.setProperty("java.awt.headless", "true");
-        NativeLibraryLoader.loadVtkLibrariesHeadless();
-
-        ImageSource mode = ImageSource.valueOf(args[i++].toUpperCase());
-        String body = args[i++];
-
-        SmallBodyViewConfig config = SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.valueOf(bodyName), ShapeModelType.valueOf(authorName), versionString);
-
-        DBRunInfo[] runInfos = config.databaseRunInfos;
-
-        Mission mission = SbmtMultiMissionTool.getMission();
-        System.out.println("Mission: " + mission);
-
-        for (DBRunInfo ri : runInfos)
-        {
-        	if (!ri.name.equals(body)) continue;
-            DatabaseGeneratorSql generator = new DatabaseGeneratorSql(config, ri.databasePrefix, appendTables, modifyMain, cameraIndex);
-
-            String pathToFileList = ri.pathToFileList;
-            if (remote)
-            {
-                if (ri.remotePathToFileList != null)
-                    pathToFileList = ri.remotePathToFileList;
-            }
-
-            System.out.println("Generating: " + pathToFileList + ", mode=" + mode);
-            generator.run(pathToFileList, mode, diffFileList);
-        }
-    }
-}
+    */
