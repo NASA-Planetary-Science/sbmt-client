@@ -61,7 +61,7 @@ public class SmallBodyViewConfig extends BodyViewConfig implements ISmallBodyVie
     {
     	ConfigArrayList configs = new ConfigArrayList();
         File allBodies = FileCache.getFileFromServer("allBodies.json");
-//        System.out.println("SmallBodyViewConfig: addRemoteEntries: reading " + allBodies.getAbsolutePath());
+        System.out.println("SmallBodyViewConfig: addRemoteEntries: reading " + allBodies.getAbsolutePath());
         try
         {
             FixedMetadata metadata = Serializers.deserialize(allBodies, "AllBodies");
@@ -90,8 +90,8 @@ public class SmallBodyViewConfig extends BodyViewConfig implements ISmallBodyVie
         SmallBodyViewConfigMetadataIO io = new SmallBodyViewConfigMetadataIO(ioConfigs);
         try
         {
+            System.out.println("SmallBodyViewConfig: fetchRemoteConfig: url is " + url);
             File configFile = FileCache.getFileFromServer(url);
-            System.out.println("SmallBodyViewConfig: fetchRemoteConfig: url is " + url + " and config is " + configFile);
             FixedMetadata metadata = Serializers.deserialize(configFile, name);
             io.retrieve(metadata);
             return io.getConfigs().get(0);
@@ -99,7 +99,7 @@ public class SmallBodyViewConfig extends BodyViewConfig implements ISmallBodyVie
         catch (IOException e)
         {
             // TODO Auto-generated catch block
-        	System.out.println("SmallBodyViewConfig: fetchRemoteConfig: IO exception");
+        	System.out.println("SmallBodyViewConfig: fetchRemoteConfig: IO exception ");
             e.printStackTrace();
             return null;
         }
@@ -110,7 +110,7 @@ public class SmallBodyViewConfig extends BodyViewConfig implements ISmallBodyVie
         }
         catch (RuntimeException re)
         {
-        	System.err.println("Can't access URL, skipping");
+        	System.err.println("Can't access URL " + url + ", skipping");
         	re.printStackTrace();
         	return null;
         }
