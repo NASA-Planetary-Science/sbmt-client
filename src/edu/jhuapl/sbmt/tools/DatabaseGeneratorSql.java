@@ -645,7 +645,7 @@ public class DatabaseGeneratorSql
         for (DBRunInfo ri : runInfos)
         {
         	System.out.println("DatabaseGeneratorSql: main: run info " + ri.toString());
-        	if (!ri.name.equals(bodyName) || (ri.imageSource != mode) || (!ri.instrument.toString().equals(instrumentString))) continue;
+        	if (!ri.name.equals(bodyName) || (ri.imageSource != mode) || (!ri.instrument.toString().toLowerCase().equals(instrumentString))) continue;
             DatabaseGeneratorSql generator = new DatabaseGeneratorSql(config, ri.databasePrefix, appendTables, modifyMain, ri.instrument);
 
             String pathToFileList = ri.pathToFileList;
