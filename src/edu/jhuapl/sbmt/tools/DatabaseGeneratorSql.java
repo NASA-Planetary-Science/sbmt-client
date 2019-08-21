@@ -597,7 +597,7 @@ public class DatabaseGeneratorSql
             }
             else if (args[i].equals("--instrument"))
             {
-            	instrumentString = args[++i];
+            	instrumentString = args[++i].toUpperCase();
             }
             else if (args[i].equals("--diffList"))
             {
