@@ -625,6 +625,8 @@ public class DatabaseGeneratorSql
         Authenticator.authenticate();
 
         // initialize view config
+        SmallBodyViewConfig.fromServer = true;
+
         SmallBodyViewConfig.initialize();
 
         // VTK
@@ -635,7 +637,6 @@ public class DatabaseGeneratorSql
 //        String body = args[i++];
 
         SmallBodyViewConfig config = SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.valueOf(bodyName), ShapeModelType.valueOf(authorName), versionString);
-        config.fromServer = true;
         DBRunInfo[] runInfos = config.databaseRunInfos;
 
         Mission mission = SbmtMultiMissionTool.getMission();
