@@ -91,6 +91,7 @@ public class SmallBodyViewConfig extends BodyViewConfig implements ISmallBodyVie
         try
         {
             File configFile = FileCache.getFileFromServer(url);
+            System.out.println("SmallBodyViewConfig: fetchRemoteConfig: url is " + url + " and config is " + configFile);
             FixedMetadata metadata = Serializers.deserialize(configFile, name);
             io.retrieve(metadata);
             return io.getConfigs().get(0);
