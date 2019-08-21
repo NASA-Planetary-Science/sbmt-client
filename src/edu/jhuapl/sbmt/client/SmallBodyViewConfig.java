@@ -47,6 +47,8 @@ import crucible.crust.metadata.impl.gson.Serializers;
 */
 public class SmallBodyViewConfig extends BodyViewConfig implements ISmallBodyViewConfig
 {
+	static public boolean fromServer = false;
+
     static public SmallBodyViewConfig getSmallBodyConfig(ShapeModelBody name, ShapeModelType author)
     {
         return (SmallBodyViewConfig) getConfig(name, author, null);
@@ -68,7 +70,7 @@ public class SmallBodyViewConfig extends BodyViewConfig implements ISmallBodyVie
             for (Key key : metadata.getKeys())
             {
                 String path = (String)metadata.get(key);
-                ViewConfig fetchedConfig = fetchRemoteConfig(key.toString(), path);
+                ViewConfig fetchedConfig = fetchRemoteConfig(key.toString(), path, fromServer);
                 if (fetchedConfig != null)
                 	configs.add(fetchedConfig);
             }
@@ -83,8 +85,11 @@ public class SmallBodyViewConfig extends BodyViewConfig implements ISmallBodyVie
 
     }
 
-    private static ViewConfig fetchRemoteConfig(String name, String url)
+    private static ViewConfig fetchRemoteConfig(String name, String url, boolean fromServer)
     {
+    	if (fromServer)
+    		url = url.replaceFirst("http://sbmt.jhuapl.edu", "file:///disks/d0180/htdocs-sbmt");
+
     	ConfigArrayList ioConfigs = new ConfigArrayList();
         ioConfigs.add(new SmallBodyViewConfig(ImmutableList.<String> copyOf(DEFAULT_GASKELL_LABELS_PER_RESOLUTION), ImmutableList.<Integer> copyOf(DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION)));
         SmallBodyViewConfigMetadataIO io = new SmallBodyViewConfigMetadataIO(ioConfigs);

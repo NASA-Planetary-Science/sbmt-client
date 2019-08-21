@@ -635,7 +635,7 @@ public class DatabaseGeneratorSql
 //        String body = args[i++];
 
         SmallBodyViewConfig config = SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.valueOf(bodyName), ShapeModelType.valueOf(authorName), versionString);
-
+        config.fromServer = true;
         DBRunInfo[] runInfos = config.databaseRunInfos;
 
         Mission mission = SbmtMultiMissionTool.getMission();
