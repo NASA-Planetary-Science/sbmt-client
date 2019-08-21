@@ -641,9 +641,10 @@ public class DatabaseGeneratorSql
 
         Mission mission = SbmtMultiMissionTool.getMission();
         System.out.println("Mission: " + mission);
-
+        System.out.println("DatabaseGeneratorSql: main: number of run infos " + runInfos.length);
         for (DBRunInfo ri : runInfos)
         {
+        	System.out.println("DatabaseGeneratorSql: main: run info " + ri.toString());
         	if (!ri.name.equals(bodyName) || (ri.imageSource != mode) || (!ri.instrument.toString().equals(instrumentString))) continue;
             DatabaseGeneratorSql generator = new DatabaseGeneratorSql(config, ri.databasePrefix, appendTables, modifyMain, ri.instrument);
 

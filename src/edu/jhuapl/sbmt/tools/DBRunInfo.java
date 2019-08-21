@@ -83,4 +83,12 @@ public class DBRunInfo implements MetadataManager
 		imageSource = ImageSource.valueFor(source.get(imageSourceKey));
 		instrument = Instrument.valueFor(source.get(instrumentKey));
 	}
+
+	@Override
+	public String toString()
+	{
+		return "DBRunInfo [pathToFileList=" + pathToFileList + ", databasePrefix=" + databasePrefix
+				+ ", remotePathToFileList=" + remotePathToFileList + ", name=" + name + ", imageSource=" + imageSource
+				+ ", instrument=" + instrument + "]";
+	}
 }
