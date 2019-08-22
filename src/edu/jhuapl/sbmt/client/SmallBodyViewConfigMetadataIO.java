@@ -55,9 +55,9 @@ public class SmallBodyViewConfigMetadataIO implements MetadataManager
 //            System.out.println("SmallBodyViewConfigMetadataIO: main: author " + config.author + " body " + config.body + " version " + version + " root " + ((SmallBodyViewConfig)config).rootDirOnServer);
             File file = new File("/Users/steelrj1/Desktop/configs4/" + ((SmallBodyViewConfig)config).rootDirOnServer + "/" + config.author +  "_" + config.body.toString().replaceAll(" ", "_") + version + ".json");
             if (version != null && (version.length() > 0))
-            	allBodiesMetadata.put(Key.of(config.author + "/" + config.body + " (" + version + ")"), "http://sbmt.jhuapl.edu/sbmt/prod/data" + ((SmallBodyViewConfig)config).rootDirOnServer + "/" + config.author +  "_" + config.body.toString().replaceAll(" ", "_") + version + ".json");
+            	allBodiesMetadata.put(Key.of(config.author + "/" + config.body + " (" + version + ")"), "http://sbmt.jhuapl.edu/sbmt/prod/data" + ((SmallBodyViewConfig)config).rootDirOnServer + "/" + config.author +  "_" + config.body.toString().replaceAll(" ", "_") + version.replaceAll(" ", "_") + ".json");
             else
-            	allBodiesMetadata.put(Key.of(config.author + "/" + config.body), "http://sbmt.jhuapl.edu/sbmt/prod/data" + ((SmallBodyViewConfig)config).rootDirOnServer + "/" + config.author +  "_" + config.body.toString().replaceAll(" ", "_") + version + ".json");
+            	allBodiesMetadata.put(Key.of(config.author + "/" + config.body), "http://sbmt.jhuapl.edu/sbmt/prod/data" + ((SmallBodyViewConfig)config).rootDirOnServer + "/" + config.author +  "_" + config.body.toString().replaceAll(" ", "_") + version.replaceAll(" ", "_") + ".json");
 
 //            System.out.println("SmallBodyViewConfigMetadataIO: main: file is " + file);
             if (!file.exists()) file.getParentFile().mkdirs();

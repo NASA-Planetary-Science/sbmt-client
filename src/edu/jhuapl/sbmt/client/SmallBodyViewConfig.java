@@ -3,7 +3,9 @@ package edu.jhuapl.sbmt.client;
 import java.io.File;
 import java.io.IOException;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import com.google.common.collect.ImmutableList;
 
@@ -48,15 +50,37 @@ import crucible.crust.metadata.impl.gson.Serializers;
 public class SmallBodyViewConfig extends BodyViewConfig implements ISmallBodyViewConfig
 {
 	static public boolean fromServer = false;
+    private static final Map<String, String> VIEWCONFIG_IDENTIFIERS = new HashMap<>();
+    private static final Map<String, ViewConfig> LOADED_VIEWCONFIGS = new HashMap<>();
 
     static public SmallBodyViewConfig getSmallBodyConfig(ShapeModelBody name, ShapeModelType author)
     {
-        return (SmallBodyViewConfig) getConfig(name, author, null);
+    	String configID = author.toString() + "/" + name.toString();
+    	if (!LOADED_VIEWCONFIGS.containsKey(configID))
+    	{
+    		ViewConfig fetchedConfig = fetchRemoteConfig(configID, VIEWCONFIG_IDENTIFIERS.get(configID), fromServer);
+    		LOADED_VIEWCONFIGS.put(configID, fetchedConfig);
+    		return (SmallBodyViewConfig)fetchedConfig;
+    	}
+    	else
+    		return (SmallBodyViewConfig)LOADED_VIEWCONFIGS.get(configID);
+
+//        return (SmallBodyViewConfig) getConfig(name, author, null);
     }
 
     static public SmallBodyViewConfig getSmallBodyConfig(ShapeModelBody name, ShapeModelType author, String version)
     {
-        return (SmallBodyViewConfig) getConfig(name, author, version);
+        String configID = author + "/" + name + " (" + version + ")";
+        if (!LOADED_VIEWCONFIGS.containsKey(configID))
+    	{
+    		ViewConfig fetchedConfig = fetchRemoteConfig(configID, VIEWCONFIG_IDENTIFIERS.get(configID), fromServer);
+    		LOADED_VIEWCONFIGS.put(configID, fetchedConfig);
+    		return (SmallBodyViewConfig)fetchedConfig;
+    	}
+    	else
+    		return (SmallBodyViewConfig)LOADED_VIEWCONFIGS.get(configID);
+
+//        return (SmallBodyViewConfig) getConfig(name, author, version);
     }
 
     private static List<ViewConfig> addRemoteEntries()
@@ -70,11 +94,15 @@ public class SmallBodyViewConfig extends BodyViewConfig implements ISmallBodyVie
             {
             	String modelType = key.toString().substring(0, key.toString().indexOf("/"));
             	if (ShapeModelType.contains(modelType) == false) ShapeModelType.create(modelType);
-
-                String path = (String)metadata.get(key);
-                ViewConfig fetchedConfig = fetchRemoteConfig(key.toString(), path, fromServer);
-                if (fetchedConfig != null)
-                	configs.add(fetchedConfig);
+            	VIEWCONFIG_IDENTIFIERS.put(key.toString(), (String)metadata.get(key));
+            	if (key.toString().equals("Gaskell/433 Eros"))
+            	{
+            		configs.add(getSmallBodyConfig(ShapeModelBody.EROS, ShapeModelType.GASKELL));
+            	}
+//                String path = (String)metadata.get(key);
+//                ViewConfig fetchedConfig = fetchRemoteConfig(key.toString(), path, fromServer);
+//                if (fetchedConfig != null)
+//                	configs.add(fetchedConfig);
             }
         }
         catch (IOException e)
