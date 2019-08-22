@@ -1526,7 +1526,7 @@ public class SmallBodyViewConfig extends BodyViewConfig implements ISmallBodyVie
 //            c.rotationRate = 0.00040613;
 //
 //            c.hasImageMap = true;
-//            c.imageMaps = new String[] { "basemap/bennu_arrival_obl_1201_cnorm_CCv0001.png" };
+////            c.imageMaps = new String[] { "basemap/bennu_arrival_obl_1201_cnorm_CCv0001.png" };
 //
 //            if(Configuration.isMac())
 //            {
