@@ -367,6 +367,7 @@ public class CustomImagesModel extends ImageSearchModel
     	  CustomImageKeyInterface oldImageInfo = customImages.get(selectedItem);
 
           CustomImageImporterDialog dialog = new CustomImageImporterDialog(null, true, getInstrument());
+          dialog.setCurrentImageNames(getCustomImageNames());
           dialog.setImageInfo(oldImageInfo, getModelManager().getPolyhedralModel().isEllipsoid());
           dialog.setLocationRelativeTo(null);
           dialog.setVisible(true);
@@ -623,6 +624,16 @@ public class CustomImagesModel extends ImageSearchModel
 
         initialized = true;
         fireResultsChanged();
+    }
+
+    public List<String> getCustomImageNames()
+    {
+    	ArrayList<String> list = new ArrayList<String>();
+    	for (CustomImageKeyInterface info : customImages)
+        {
+    		list.add(info.getName());
+        }
+    	return list;
     }
 
     public void propertyChange(PropertyChangeEvent evt)
