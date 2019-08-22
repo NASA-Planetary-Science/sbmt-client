@@ -8,7 +8,7 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.util.List;
+import java.util.Set;
 
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
@@ -18,12 +18,12 @@ import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JTextField;
 
-import edu.jhuapl.saavtk.gui.GuiUtil;
 import edu.jhuapl.saavtk.gui.dialog.DirectoryChooser;
 import edu.jhuapl.sbmt.model.lidar.LidarFileUtil;
 import edu.jhuapl.sbmt.model.lidar.LidarTrack;
 import edu.jhuapl.sbmt.model.lidar.LidarTrackManager;
 
+import glum.gui.GuiUtil;
 import glum.gui.component.GTextField;
 import glum.item.ItemEventListener;
 import glum.item.ItemEventType;
@@ -109,7 +109,7 @@ public class LidarSaveDialog extends JDialog implements ActionListener, ItemEven
 	 */
 	private void doActionAccept()
 	{
-		List<LidarTrack> trackL = refModel.getSelectedItems();
+		Set<LidarTrack> trackS = refModel.getSelectedItems();
 		File folder = new File(folderTF.getText());
 		String baseName = baseNameTF.getText();
 		boolean isRota = rotaCB.isSelected();
@@ -120,7 +120,7 @@ public class LidarSaveDialog extends JDialog implements ActionListener, ItemEven
 			File unifiedFile = getUnifiedFile();
 			try
 			{
-				LidarFileUtil.saveTracksToTextFile(refModel, unifiedFile, trackL, isRota);
+				LidarFileUtil.saveTracksToTextFile(refModel, unifiedFile, trackS, isRota);
 			}
 			catch (IOException aExp)
 			{
@@ -134,7 +134,7 @@ public class LidarSaveDialog extends JDialog implements ActionListener, ItemEven
 		{
 			try
 			{
-				LidarFileUtil.saveTracksToFolder(refModel, folder, trackL, baseName, isRota);
+				LidarFileUtil.saveTracksToFolder(refModel, folder, trackS, baseName, isRota);
 			}
 			catch (IOException aExp)
 			{
@@ -232,7 +232,7 @@ public class LidarSaveDialog extends JDialog implements ActionListener, ItemEven
 	 */
 	private void updateGui()
 	{
-		List<LidarTrack> trackL = refModel.getSelectedItems();
+		Set<LidarTrack> trackS = refModel.getSelectedItems();
 
 		boolean isValidFolder = folderTF.getText().length() > 0;
 		boolean isValidBaseName = baseNameTF.getText().trim().length() > 0;
@@ -246,7 +246,7 @@ public class LidarSaveDialog extends JDialog implements ActionListener, ItemEven
 			folder = new File(folderTF.getText());
 		String baseName = baseNameTF.getText();
 		int cntFilesOverwrite = 0;
-		for (int aIdx = 0; aIdx < trackL.size(); aIdx++)
+		for (int aIdx = 0; aIdx < trackS.size(); aIdx++)
 		{
 			File tmpFile = LidarFileUtil.getFileForIndex(folder, baseName, aIdx);
 			if (tmpFile != null && tmpFile.exists() == true)
@@ -254,11 +254,11 @@ public class LidarSaveDialog extends JDialog implements ActionListener, ItemEven
 		}
 
 		// Update the infoL / warnL
-		infoL.setText("Selected Tracks: " + trackL.size());
+		infoL.setText("Selected Tracks: " + trackS.size());
 
 		String regMsg = "";
 		String errMsg = null;
-		if (trackL.size() == 0)
+		if (trackS.size() == 0)
 			errMsg = "There are no selected tracks.";
 		else if (isValidFolder == false)
 			errMsg = "Please enter valid folder.";
@@ -277,7 +277,7 @@ public class LidarSaveDialog extends JDialog implements ActionListener, ItemEven
 		else if (modeBox.getSelectedItem() == ModeType.Multiple && cntFilesOverwrite > 0)
 			regMsg = "" + cntFilesOverwrite + " files will be overwritten in path: " + folder;
 		else if (modeBox.getSelectedItem() == ModeType.Multiple && cntFilesOverwrite == 0)
-			regMsg = "" + trackL.size() + " files will be saved to path: " + folder;
+			regMsg = "" + trackS.size() + " files will be saved to path: " + folder;
 
 		warnL.setText(regMsg);
 		if (errMsg != null)
