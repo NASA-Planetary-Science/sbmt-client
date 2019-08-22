@@ -68,6 +68,9 @@ public class SmallBodyViewConfig extends BodyViewConfig implements ISmallBodyVie
             FixedMetadata metadata = Serializers.deserialize(allBodies, "AllBodies");
             for (Key key : metadata.getKeys())
             {
+            	String modelType = key.toString().substring(0, key.toString().indexOf("/"));
+            	if (ShapeModelType.contains(modelType) == false) ShapeModelType.create(modelType);
+
                 String path = (String)metadata.get(key);
                 ViewConfig fetchedConfig = fetchRemoteConfig(key.toString(), path, fromServer);
                 if (fetchedConfig != null)
