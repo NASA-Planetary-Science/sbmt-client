@@ -72,7 +72,7 @@ public class CustomImageController
         });
 
         ImageCollection customImageCollection = customImageModel.getImageCollection();
-        this.imageResultsTableController = new CustomImageResultsTableController(instrument, customImageCollection, customImageModel, renderer, infoPanelManager, spectrumPanelManager);
+        this.imageResultsTableController = new CustomOfflimbImageResultsTableController(instrument, customImageCollection, customImageModel, renderer, infoPanelManager, spectrumPanelManager);
         this.imageResultsTableController.setImageResultsPanel();
 
         this.controlController = new CustomImagesControlController(customImageModel);
