@@ -472,6 +472,9 @@ public class ImageDefaultPicker extends DefaultPicker
     private void updateScaleBarValue()
     {
         double sizeOfPixel = computeSizeOfPixel();
+
+        if (sizeOfPixel == -1) return;	//if the body doesn't intercept all corners of the renderer, just go ahead and return, leaving the scale bar value untouched
+
         PolyhedralModel smallBodyModel = modelManager.getPolyhedralModel();
         smallBodyModel.updateScaleBarValue(sizeOfPixel, new Runnable()
 		{

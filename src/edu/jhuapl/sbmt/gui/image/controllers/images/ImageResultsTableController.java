@@ -545,6 +545,8 @@ public class ImageResultsTableController
     protected void prevButtonActionPerformed(ActionEvent evt)
     {
         IdPair resultIntervalCurrentlyShown = imageSearchModel.getResultIntervalCurrentlyShown();
+        IdPair originalInterval = resultIntervalCurrentlyShown;
+        removeImageBoundaries(originalInterval);
         if (resultIntervalCurrentlyShown != null)
         {
             // Only get the prev block if there's something left to show.
@@ -560,6 +562,8 @@ public class ImageResultsTableController
     protected void nextButtonActionPerformed(java.awt.event.ActionEvent evt)
     {
         IdPair resultIntervalCurrentlyShown = imageSearchModel.getResultIntervalCurrentlyShown();
+        IdPair originalInterval = resultIntervalCurrentlyShown;
+        removeImageBoundaries(originalInterval);
         if (resultIntervalCurrentlyShown != null)
         {
             // Only get the next block if there's something left to show.
@@ -662,7 +666,7 @@ public class ImageResultsTableController
                 tableModel.setValueAt(i + 1, i, idColumnIndex);
                 tableModel.setValueAt(str.get(0).substring(str.get(0).lastIndexOf("/") + 1), i, filenameColumnIndex);
                 tableModel.setValueAt(sdf.format(dt), i, dateColumnIndex);
-
+//                System.out.println("ImageResultsTableController: setImageResults: str is " + sdf.format(dt));
                 for (int j : columnsNeedingARenderer)
                 {
                     TableCellRenderer renderer = resultTable.getCellRenderer(i, j);
@@ -696,6 +700,34 @@ public class ImageResultsTableController
         // Enable or disable the image gallery button
         imageResultsTableView.getViewResultsGalleryButton().setEnabled(imageResultsTableView.isEnableGallery() && !results.isEmpty());
         modifiedTableRow = -1;
+    }
+
+    protected void removeImageBoundaries(IdPair idPair)
+    {
+    	int startId = idPair.id1;
+        int endId = idPair.id2;
+        for (int i = startId; i < endId; ++i)
+        {
+            if (i < 0)
+                continue;
+            else if (i >= imageRawResults.size())
+                break;
+
+            try
+            {
+                String currentImage = imageRawResults.get(i).get(0);
+                String boundaryName = FileUtil.removeExtension(currentImage);
+                ImageKeyInterface key = imageSearchModel.createImageKey(boundaryName, imageSearchModel.getImageSourceOfLastQuery(), imageSearchModel.getInstrument());
+                boundaries.removeBoundary(key);
+            }
+            catch (Exception e1)
+            {
+                JOptionPane.showMessageDialog(JOptionPane.getFrameForComponent(imageResultsTableView), "There was an error mapping the boundary.", "Error", JOptionPane.ERROR_MESSAGE);
+
+                e1.printStackTrace();
+                break;
+            }
+        }
     }
 
     protected void showImageBoundaries(IdPair idPair)
@@ -758,6 +790,7 @@ public class ImageResultsTableController
         @Override
         public Object getValueAt(int row, int column)
         {
+//        	System.out.println("ImageResultsTableController.ImagesTableModel: getValueAt: type is " + super.getValueAt(row, column).getClass() + " for col index " + column);
 //        	if (column == imageResultsTableView.getDateColumnIndex())
 //        	{
 //        		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS");
@@ -775,19 +808,34 @@ public class ImageResultsTableController
 //				}
 //        	}
 //        	else
+        	if (column == imageResultsTableView.getDateColumnIndex())
+        	{
+    			int actualRow = imageResultsTableView.getResultList().getRowSorter().convertRowIndexToModel(row);
+                String dtStr = imageRawResults.get(actualRow).get(1);
+                Date dt = new Date(Long.parseLong(dtStr));
+				return dt;
+        	}
+        	else
         		return super.getValueAt(row, column);
         }
 
         public Class<?> getColumnClass(int columnIndex)
         {
+//        	System.out.println("ImageResultsTableController.ImagesTableModel: getColumnClass: column index " + columnIndex + " and date col " + imageResultsTableView.getDateColumnIndex());
             if (columnIndex <= imageResultsTableView.getBndrColumnIndex())
                 return Boolean.class;
             else if (columnIndex == imageResultsTableView.getIdColumnIndex())
                 return Integer.class;
             else if (columnIndex == imageResultsTableView.getDateColumnIndex())
+            {
+//            	System.out.println("ImageResultsTableController.ImagesTableModel: getColumnClass: returning date");
             	return Date.class;
+            }
             else
+            {
+//            	System.out.println("ImageResultsTableController.ImagesTableModel: getColumnClass: returning string");
                 return String.class;
+            }
         }
 
     }

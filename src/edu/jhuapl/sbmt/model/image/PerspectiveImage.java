@@ -76,6 +76,7 @@ import edu.jhuapl.saavtk.util.MathUtil;
 import edu.jhuapl.saavtk.util.ObjUtil;
 import edu.jhuapl.saavtk.util.PolyDataUtil;
 import edu.jhuapl.saavtk.util.Properties;
+import edu.jhuapl.saavtk.util.SafeURLPaths;
 import edu.jhuapl.sbmt.client.SmallBodyModel;
 import edu.jhuapl.sbmt.gui.image.model.CustomImageKeyInterface;
 import edu.jhuapl.sbmt.util.BackPlanesPDS4XML;
@@ -99,6 +100,8 @@ import nom.tam.fits.FitsException;
  */
 abstract public class PerspectiveImage extends Image implements PropertyChangeListener, BackPlanesPDS4XML, BackplanesLabel
 {
+    private static final SafeURLPaths SAFE_URL_PATHS = SafeURLPaths.instance();
+
     public static final float PDS_NA = -ImageDataUtil.FILL_CUTOFF;
     public static final String FRUSTUM1 = "FRUSTUM1";
     public static final String FRUSTUM2 = "FRUSTUM2";
@@ -3419,30 +3422,42 @@ abstract public class PerspectiveImage extends Image implements PropertyChangeLi
             vtkPolyData footprint = smallBodyModel.computeFrustumIntersection(spacecraftPositionAdjusted[defaultSlice],
                     frustum1Adjusted[defaultSlice], frustum3Adjusted[defaultSlice], frustum4Adjusted[defaultSlice], frustum2Adjusted[defaultSlice]);
 //            System.out.println("PerspectiveImage: getFootprint: footprint creation " + sw.elapsedMillis());
-//            System.out.println("PerspectiveImage: getFootprint: footprint is " + footprint);
             return footprint;
         }
     }
 
     private vtkPolyData checkForExistingFootprint()
     {
-//      String intersectionFileName = new File(getFitFileFullPath()).getParent() + File.separator  + FilenameUtils.getBaseName(getFitFileFullPath()) + "_frustumIntersection.vtk";
-        String intersectionFileName = new File(new File(getFitFileFullPath()).getParent()).getParent() + File.separator + "support" + File.separator  + key.getSource().name() + File.separator + FilenameUtils.getBaseName(getFitFileFullPath()) + "_" + smallBodyModel.getModelResolution() + "_frustumIntersection.vtk.gz";
-//        System.out.println("PerspectiveImage: checkForExistingFootprint: checking for " + intersectionFileName);
-        if (FileCache.isFileGettable(intersectionFileName.substring(intersectionFileName.indexOf("2") + 2)))
-//      if (FileCache.isFileGettable(intersectionFileName))
+        String intersectionFileName = getPrerenderingFileNameBase() + "_frustumIntersection.vtk.gz";
+        if (FileCache.isFileGettable(intersectionFileName))
         {
 //            System.out.println(
 //                    "PerspectiveImage: checkForExistingFootprint: getting from server");
-            FileCache.getFileFromServer(intersectionFileName.substring(intersectionFileName.indexOf("2") + 2));
-//            System.out.println("PerspectiveImage: checkForExistingFootprint: exists locally ");
+            File file = FileCache.getFileFromServer(intersectionFileName);
+//            System.out.println("PerspectiveImage: checkForExistingFootprint: exists locally " + file.getAbsolutePath());
             vtkPolyDataReader reader = new vtkPolyDataReader();
-            reader.SetFileName(intersectionFileName.substring(0, intersectionFileName.length() - 3));
+//            reader.SetFileName(file.getPath().replaceFirst("\\.[^\\.]*$", ""));	//This is wrong.  The old code was stripping off .gz from the intersection name.  This now further removes .vtk which is bad.
+            reader.SetFileName(file.getAbsolutePath());	//now just reads in the file path as it should.
             reader.Update();
             vtkPolyData footprint =  reader.GetOutput();
             return footprint;
         }
         return null;
+    }
+
+    public String getPrerenderingFileNameBase()
+    {
+        String imageName = getKey().getName();
+
+        // TODO this needs work. The location will be in general different depending on whether the image is in the cache or a custom image.
+        // For now, check whether the instrument is defined. Cached images will have this, custom images will not. In the custom case, just
+        // look up one level.
+        IImagingInstrument instrument = getKey().getInstrument();
+        String topPath = instrument != null ? smallBodyModel.serverPath("", instrument.getInstrumentName()) : FileCache.instance().getFile(imageName).getParent();
+
+        String result = SAFE_URL_PATHS.getString(topPath, "support", key.getSource().name(), FilenameUtils.getBaseName(imageName) + "_" + smallBodyModel.getModelResolution());
+
+        return result;
     }
 
     public void loadFootprint()
@@ -3556,9 +3571,10 @@ abstract public class PerspectiveImage extends Image implements PropertyChangeLi
         vtkPolyDataWriter writer = new vtkPolyDataWriter();
         writer.SetInputData(footprint[0]);
 //        System.out.println("PerspectiveImage: loadFootprint: fit file full path " + getFitFileFullPath());
-        String intersectionFileName = new File(new File(getFitFileFullPath()).getParent()).getParent() + File.separator + "support" + key.getSource().name() + File.separator  + FilenameUtils.getBaseName(getFitFileFullPath()) + "_" + smallBodyModel.getModelResolution() + "_frustumIntersection.vtk";
-        System.out.println("PerspectiveImage: loadFootprint: saving to " + intersectionFileName);
-        writer.SetFileName(new File(intersectionFileName).toString());
+        String intersectionFileName = getPrerenderingFileNameBase() + "_frustumIntersection.vtk";
+        File file = FileCache.instance().getFile(intersectionFileName);
+//        System.out.println("PerspectiveImage: loadFootprint: saving to " + intersectionFileName);
+        writer.SetFileName(file.getPath());
         writer.SetFileTypeToBinary();
         writer.Write();
     }

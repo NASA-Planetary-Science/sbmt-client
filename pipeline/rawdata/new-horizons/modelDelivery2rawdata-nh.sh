@@ -7,24 +7,24 @@
 #-------------------------------------------------------------------------------
 
 missionShortName="nh"
-deliveredBodyName="2014_MU69"
-bodyName="mu69"
 
 pipelineTop="/project/sbmtpipeline"
 deliveriesTop="/project/sbmtpipeline/deliveries-$missionShortName"
 
 # Usage
-if [ "$#" -lt 4 ]
+if [ "$#" -lt 6 ]
 then
-  echo "Model data usage:  modelDelivered2rawdata-$missionShortName.sh <delivered-model-name> <delivered-version> <processed-model-name> <processing-version>"
+  echo "Model data usage:  modelDelivered2rawdata-$missionShortName.sh <delivered-body-name> <delivered-model-name> <delivered-version> <processed-body-name> <processed-model-name> <processing-version>"
   exit 1
 fi
 
 # Command line parameters
-deliveredModelName=$1
-deliveredVersion=$2
-processingModelName=$3
-processingVersion=$4
+deliveredBodyName=$1
+deliveredModelName=$2
+deliveredVersion=$3
+processingBodyName=$4
+processingModelName=$5
+processingVersion=$6
 
 echo "Delivered version: " $deliveredVersion
 echo "Delivered model name: " $deliveredModelName
@@ -39,7 +39,7 @@ importCmd="$scriptDir/import.sh"
 rsyncCmd='rsync -rlptgDH --copy-links'
 
 srcTop="$deliveriesTop/$deliveredBodyName/$deliveredVersion"
-destTop="$rawTop/$bodyName/$processingVersion"
+destTop="$rawTop/$processingBodyName/$processingVersion"
 
 releaseDir="$destTop"
 
@@ -105,9 +105,9 @@ createDirIfNecessary $destTop/$processingModelName/shape
 doRsync $srcTop/$deliveredModelName/aamanifest.txt $destTop/$processingModelName/aamanifest.txt
 
 # Define a series of directories to copy
-declare -a dirsToCopy=("coloring" "lorri/sumfiles")
+declare -a dirsToCopy=("coloring" "lorri/sumfiles" "lorri/infofiles" "leisa/sumfiles" "leisa/infofiles" "mvic/sumfiles" "mvic/infofiles")
 # Define a series of specific files to copy
-declare -a filesToCopy=("lorri/make_sumfiles.in")
+declare -a filesToCopy=("lorri/make_sumfiles.in" "lorri/imagelist-info.txt" "leisa/make_sumfiles.in" "leisa/imagelist-info.txt" "mvic/make_sumfiles.in" "mvic/imagelist-info.txt")
 
 # copy the shape model
 doRsyncDir $srcTop/$deliveredModelName/shape $destTop/$processingModelName/shape
@@ -141,4 +141,4 @@ echo removing unused files
 echo "End `date`" >> $log 2>&1
 echo "--------------------------------------------------------------------------------" >> $log 2>&1
 echo "" >> $log 2>&1
-echo "Finished modelDdelivery2rawdata-$missionShortName.sh script"
+echo "Finished modeldelivery2rawdata-$missionShortName.sh script"
