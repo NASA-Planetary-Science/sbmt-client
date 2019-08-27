@@ -24,4 +24,13 @@ public enum ShapeModelDataUsed
     {
         return str;
     }
+
+    public static ShapeModelDataUsed valueFor(String desc)
+    {
+    	for (ShapeModelDataUsed type : values())
+    	{
+    		if (type.toString().equals(desc)) return type;
+    	}
+    	return null;
+    }
 }
