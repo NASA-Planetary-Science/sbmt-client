@@ -5,7 +5,6 @@ import java.util.GregorianCalendar;
 import com.google.common.collect.ImmutableList;
 
 import edu.jhuapl.saavtk.config.ConfigArrayList;
-import edu.jhuapl.saavtk.config.ViewConfig;
 import edu.jhuapl.saavtk.model.ShapeModelBody;
 import edu.jhuapl.saavtk.model.ShapeModelType;
 import edu.jhuapl.saavtk.util.Configuration;
@@ -304,6 +303,9 @@ public class NewHorizonsConfigs extends SmallBodyViewConfig
             	new DBRunInfo(ImageSource.GASKELL, Instrument.LORRI, ShapeModelBody.PLUTO.toString(), "/project/nearsdc/data/NEWHORIZONS/PLUTO/IMAGING/imagelist-fullpath.txt", ShapeModelBody.PLUTO.toString().toLowerCase()),
             };
 
+            c.presentInMissions = new SbmtMultiMissionTool.Mission[] {SbmtMultiMissionTool.Mission.APL_INTERNAL, SbmtMultiMissionTool.Mission.TEST_APL_INTERNAL,
+            															SbmtMultiMissionTool.Mission.NH_DEPLOY};
+            c.defaultForMissions = new SbmtMultiMissionTool.Mission[] {};
 
             configArray.add(c);
 
@@ -353,6 +355,8 @@ public class NewHorizonsConfigs extends SmallBodyViewConfig
             	new DBRunInfo(ImageSource.SPICE, Instrument.LORRI, ShapeModelBody.CHARON.toString(), "/project/sbmt2/sbmt/data/bodies/charon/nimmo2017/lorri/imagelist-fullpath-info.txt", "charon_nimmo2017_lorri"),
             };
 
+            c.presentInMissions = new SbmtMultiMissionTool.Mission[] {SbmtMultiMissionTool.Mission.APL_INTERNAL, SbmtMultiMissionTool.Mission.TEST_APL_INTERNAL, SbmtMultiMissionTool.Mission.NH_DEPLOY};
+            c.defaultForMissions = new SbmtMultiMissionTool.Mission[] {};
 
             configArray.add(c);
 
@@ -396,6 +400,10 @@ public class NewHorizonsConfigs extends SmallBodyViewConfig
             };
             hydra = c.clone();
             c.setResolution(ImmutableList.of(128880));
+
+            c.presentInMissions = new SbmtMultiMissionTool.Mission[] {SbmtMultiMissionTool.Mission.APL_INTERNAL, SbmtMultiMissionTool.Mission.TEST_APL_INTERNAL, SbmtMultiMissionTool.Mission.NH_DEPLOY};
+            c.defaultForMissions = new SbmtMultiMissionTool.Mission[] {};
+
             configArray.add(c);
 
             c = new NewHorizonsConfigs();
@@ -409,6 +417,10 @@ public class NewHorizonsConfigs extends SmallBodyViewConfig
             c.shapeModelFileNames = prepend(c.rootDirOnServer, "shape_res0.vtk.gz");
             c.hasColoringData = false;
             c.setResolution(ImmutableList.of(128880));
+
+            c.presentInMissions = new SbmtMultiMissionTool.Mission[] {SbmtMultiMissionTool.Mission.APL_INTERNAL, SbmtMultiMissionTool.Mission.TEST_APL_INTERNAL, SbmtMultiMissionTool.Mission.NH_DEPLOY};
+            c.defaultForMissions = new SbmtMultiMissionTool.Mission[] {};
+
             configArray.add(c);
 
             c = hydra;
@@ -448,6 +460,11 @@ public class NewHorizonsConfigs extends SmallBodyViewConfig
                             ) //
             };
             c.setResolution(ImmutableList.of(128880));
+
+            c.presentInMissions = new SbmtMultiMissionTool.Mission[] {SbmtMultiMissionTool.Mission.APL_INTERNAL, SbmtMultiMissionTool.Mission.TEST_APL_INTERNAL, SbmtMultiMissionTool.Mission.NH_DEPLOY};
+            c.defaultForMissions = new SbmtMultiMissionTool.Mission[] {};
+
+
             configArray.add(c);
 
             c = new NewHorizonsConfigs();
@@ -461,6 +478,11 @@ public class NewHorizonsConfigs extends SmallBodyViewConfig
             c.shapeModelFileNames = prepend(c.rootDirOnServer, "shape_res0.vtk.gz");
             c.hasColoringData = false;
             c.setResolution(ImmutableList.of(128880));
+
+            c.presentInMissions = new SbmtMultiMissionTool.Mission[] {SbmtMultiMissionTool.Mission.APL_INTERNAL, SbmtMultiMissionTool.Mission.TEST_APL_INTERNAL, SbmtMultiMissionTool.Mission.NH_DEPLOY};
+            c.defaultForMissions = new SbmtMultiMissionTool.Mission[] {};
+
+
             configArray.add(c);
         }
 
@@ -514,10 +536,13 @@ public class NewHorizonsConfigs extends SmallBodyViewConfig
             c.hasLidarData = false;
             c.hasHypertreeBasedLidarSearch = false;
 
-            if (SbmtMultiMissionTool.getMission() == SbmtMultiMissionTool.Mission.NH_DEPLOY)
-            {
-                ViewConfig.setFirstTimeDefaultModelName(c.getUniqueName());
-            }
+//            if (SbmtMultiMissionTool.getMission() == SbmtMultiMissionTool.Mission.NH_DEPLOY)
+//            {
+//                ViewConfig.setFirstTimeDefaultModelName(c.getUniqueName());
+//            }
+
+            c.presentInMissions = new SbmtMultiMissionTool.Mission[] {SbmtMultiMissionTool.Mission.APL_INTERNAL, SbmtMultiMissionTool.Mission.TEST_APL_INTERNAL, SbmtMultiMissionTool.Mission.NH_DEPLOY};
+            c.defaultForMissions = new SbmtMultiMissionTool.Mission[] {SbmtMultiMissionTool.Mission.NH_DEPLOY};
 
             configArray.add(c);
         }
