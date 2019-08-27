@@ -88,7 +88,7 @@ public class LidarPanel extends JTabbedPane
 		}
 
 		// Form the 'list' panel
-		JPanel trackPanel = new LidarTrackPanel(aModelManager, tmpTrackManager, aPickManager, aRenderer);
+		JPanel trackPanel = new LidarTrackPanel(tmpTrackManager, aModelManager, aBodyViewConfig, aPickManager, aRenderer);
 
 		JPanel retPanel = new JPanel(new MigLayout("", "0[]0", "0[]0"));
 		retPanel.add(searchPanel, "growx,span,wrap");

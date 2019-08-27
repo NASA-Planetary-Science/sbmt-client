@@ -5,6 +5,7 @@ import java.awt.Component;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.List;
+import java.util.Set;
 
 import javax.swing.JButton;
 import javax.swing.JDialog;
@@ -13,11 +14,11 @@ import javax.swing.JOptionPane;
 
 import org.apache.commons.math3.geometry.euclidean.threed.Vector3D;
 
-import edu.jhuapl.saavtk.gui.GNumberField;
-import edu.jhuapl.saavtk.gui.GuiUtil;
 import edu.jhuapl.sbmt.model.lidar.LidarTrack;
 import edu.jhuapl.sbmt.model.lidar.LidarTrackManager;
 
+import glum.gui.GuiUtil;
+import glum.gui.component.GNumberField;
 import glum.item.ItemEventListener;
 import glum.item.ItemEventType;
 import net.miginfocom.swing.MigLayout;
@@ -41,7 +42,7 @@ public class LidarTrackTranslateDialog extends JDialog implements ActionListener
 	private final Color failColor = Color.RED.darker();
 
 	// Reference vars
-	private LidarTrackManager refModel;
+	private final LidarTrackManager refModel;
 
 	// GUI vars
 	private JLabel infoL, warnL;
@@ -120,10 +121,10 @@ public class LidarTrackTranslateDialog extends JDialog implements ActionListener
 	 */
 	private void doActionApply()
 	{
-		List<LidarTrack> trackL = refModel.getSelectedItems();
+		Set<LidarTrack> trackS = refModel.getSelectedItems();
 
 		Vector3D tmpVect = getTranslationVectorFromGui();
-		refModel.setTranslation(trackL, tmpVect);
+		refModel.setTranslation(trackS, tmpVect);
 	}
 
 	/**
@@ -131,11 +132,11 @@ public class LidarTrackTranslateDialog extends JDialog implements ActionListener
 	 */
 	private void doActionReset()
 	{
-		List<LidarTrack> trackL = refModel.getSelectedItems();
+		Set<LidarTrack> trackS = refModel.getSelectedItems();
 
 		Vector3D tmpVect = Vector3D.ZERO;
 		setInputVector(tmpVect);
-		refModel.setTranslation(trackL, tmpVect);
+		refModel.setTranslation(trackS, tmpVect);
 	}
 
 	/**
@@ -186,7 +187,7 @@ public class LidarTrackTranslateDialog extends JDialog implements ActionListener
 	private Vector3D getTranslationVectorFromSelectedTracks()
 	{
 		// Retrieve the list of selected Tracks
-		List<LidarTrack> trackL = refModel.getSelectedItems();
+		List<LidarTrack> trackL = refModel.getSelectedItems().asList();
 		if (trackL.size() == 0)
 			return Vector3D.NaN;
 
@@ -261,7 +262,7 @@ public class LidarTrackTranslateDialog extends JDialog implements ActionListener
 	 */
 	private void updateGui()
 	{
-		List<LidarTrack> trackL = refModel.getSelectedItems();
+		Set<LidarTrack> trackS = refModel.getSelectedItems();
 
 		// Update the applyB
 		boolean isValidInput = xTranslateNF.isValidInput();
@@ -269,19 +270,19 @@ public class LidarTrackTranslateDialog extends JDialog implements ActionListener
 		isValidInput &= zTranslateNF.isValidInput();
 
 		boolean tmpBool = isValidInput;
-		tmpBool &= trackL.size() > 0;
+		tmpBool &= trackS.size() > 0;
 		applyB.setEnabled(tmpBool);
 
 		// Update the resetB
-		tmpBool = trackL.size() > 0;
+		tmpBool = trackS.size() > 0;
 		resetB.setEnabled(tmpBool);
 
 		// Update the infoL / warnL
-		infoL.setText("Selected Tracks: " + trackL.size());
+		infoL.setText("Selected Tracks: " + trackS.size());
 
 		String regMsg = "";
 		String errMsg = null;
-		if (trackL.size() == 0)
+		if (trackS.size() == 0)
 			errMsg = "There are no selected tracks.";
 		else if (isValidInput == false)
 			errMsg = "Please enter valid input.";

@@ -28,7 +28,8 @@ public class PercentIntervalChanger extends JPanel implements ChangeListener
 	{
 		listenerL = new ArrayList<>();
 
-		setLayout(new BoxLayout(this, BoxLayout.LINE_AXIS));
+//		setLayout(new BoxLayout(this, BoxLayout.LINE_AXIS));
+		setLayout(new BoxLayout(this, BoxLayout.X_AXIS));
 
 		setBorder(BorderFactory.createTitledBorder("Displayed Lidar Data"));
 
