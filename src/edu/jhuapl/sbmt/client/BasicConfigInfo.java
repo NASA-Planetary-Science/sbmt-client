@@ -171,10 +171,8 @@ public class BasicConfigInfo implements MetadataManager
 			}
 			for (SbmtMultiMissionTool.Mission defaultMission : defaultFor)
 			{
-				System.out.println("BasicConfigInfo: retrieve: mission " + SbmtMultiMissionTool.getMission() + " and default for " + defaultMission + " for unique name " + uniqueName);
 				if (defaultMission == SbmtMultiMissionTool.getMission())
 				{
-					System.out.println("BasicConfigInfo: retrieve: setting unique name " + uniqueName);
 					ViewConfig.setFirstTimeDefaultModelName(uniqueName);
 					break;
 				}

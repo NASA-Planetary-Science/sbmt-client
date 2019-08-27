@@ -214,7 +214,7 @@ public class SbmtMultiMissionTool
             // Configuration.setDatabaseSuffix("_test");
 			break;
 		case HAYABUSA2_DEV:
-			// Configuration.setRootURL("http://sbmt.jhuapl.edu/internal/sbmt");
+//			 Configuration.setRootURL("http://sbmt.jhuapl.edu/internal/sbmt");
 			Configuration.setRootURL("http://sbmt.jhuapl.edu/internal/multi-mission/test");
 			Configuration.setAppName("sbmthyb2-dev");
 			Configuration.setCacheVersion("");
@@ -326,7 +326,6 @@ public class SbmtMultiMissionTool
             Configuration.runAndWaitOnEDT(() -> {
 
                 SbmtSplash splash = null;
-                System.out.println("SbmtMultiMissionTool: displaySplash: mission " + mission);
                 switch (mission)
                 {
                 case APL_INTERNAL:

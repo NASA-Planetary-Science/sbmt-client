@@ -126,7 +126,6 @@ public class SmallBodyViewConfig extends BodyViewConfig implements ISmallBodyVie
             FixedMetadata metadata = Serializers.deserialize(allBodies, "AllBodies");
             for (Key key : metadata.getKeys())
             {
-//            	String modelType = key.toString().substring(0, key.toString().indexOf("/"));
             	//Dynamically add a ShapeModelType if needed
             	SettableMetadata infoMetadata = (SettableMetadata)metadata.get(key);
             	BasicConfigInfo configInfo = new BasicConfigInfo();
@@ -140,10 +139,6 @@ public class SmallBodyViewConfig extends BodyViewConfig implements ISmallBodyVie
             	{
             		configs.add(getSmallBodyConfig(ShapeModelBody.EROS, ShapeModelType.GASKELL));
             	}
-//                String path = (String)metadata.get(key);
-//                ViewConfig fetchedConfig = fetchRemoteConfig(key.toString(), path, fromServer);
-//                if (fetchedConfig != null)
-//                	configs.add(fetchedConfig);
             }
         }
         catch (IOException e)
