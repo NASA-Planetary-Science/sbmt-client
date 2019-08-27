@@ -109,7 +109,9 @@ public abstract class BodyViewConfig extends ViewConfig
     public Date lidarSearchDefaultEndDate;
 
     //default configs
-    List<SbmtMultiMissionTool.Mission> missions = new ArrayList<SbmtMultiMissionTool.Mission>();
+    public SbmtMultiMissionTool.Mission[] presentInMissions;
+    public SbmtMultiMissionTool.Mission[] defaultForMissions;
+
 
     //DTMs
     public Map<String, String> dtmBrowseDataSourceMap = Maps.newHashMap();
