@@ -3,7 +3,6 @@ package edu.jhuapl.sbmt.client;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -43,28 +42,31 @@ public class SmallBodyViewConfigMetadataIO implements MetadataManager
         {
             each.enable(true);
         }
+
+        String rootDir = "/Users/steelrj1/Desktop/configs6/";
+
         List<ViewConfig> builtInConfigs = SmallBodyViewConfig.getBuiltInConfigs();
         for (ViewConfig config : builtInConfigs)
         {
 //            System.out.println("SmallBodyViewConfigMetadataIO: main: body is " + config.body);
             SmallBodyViewConfigMetadataIO io = new SmallBodyViewConfigMetadataIO(config);
             String version = config.version == null ? "" : config.version;
-//            File file = new File("/Users/steelrj1/Desktop/configs3/" + config.author + "/" + config.author + "_" + config.body.toString().replaceAll(" ", "_") + version + ".json");
-//            allBodiesMetadata.put(Key.of(config.author + "/" + config.body + version), file.getAbsolutePath());
 
-//            System.out.println("SmallBodyViewConfigMetadataIO: main: author " + config.author + " body " + config.body + " version " + version + " root " + ((SmallBodyViewConfig)config).rootDirOnServer);
-            File file = new File("/Users/steelrj1/Desktop/configs4/" + ((SmallBodyViewConfig)config).rootDirOnServer + "/" + config.author +  "_" + config.body.toString().replaceAll(" ", "_") + version + ".json");
-            if (version != null && (version.length() > 0))
-            	allBodiesMetadata.put(Key.of(config.author + "/" + config.body + " (" + version + ")"), "http://sbmt.jhuapl.edu/sbmt/prod/data" + ((SmallBodyViewConfig)config).rootDirOnServer + "/" + config.author +  "_" + config.body.toString().replaceAll(" ", "_") + version.replaceAll(" ", "_") + ".json");
-            else
-            	allBodiesMetadata.put(Key.of(config.author + "/" + config.body), "http://sbmt.jhuapl.edu/sbmt/prod/data" + ((SmallBodyViewConfig)config).rootDirOnServer + "/" + config.author +  "_" + config.body.toString().replaceAll(" ", "_") + version.replaceAll(" ", "_") + ".json");
+            File file = new File(rootDir + ((SmallBodyViewConfig)config).rootDirOnServer + "/" + config.author +  "_" + config.body.toString().replaceAll(" ", "_") + version.replaceAll(" ", "_") + ".json");
+//            if (version != null && (version.length() > 0))
+//            	allBodiesMetadata.put(Key.of(config.getUniqueName()), "http://sbmt.jhuapl.edu/sbmt/prod/data" + ((SmallBodyViewConfig)config).rootDirOnServer + "/" + config.author +  "_" + config.body.toString().replaceAll(" ", "_") + version.replaceAll(" ", "_") + ".json");
+//            else
+//            	allBodiesMetadata.put(Key.of(config.getUniqueName()), "http://sbmt.jhuapl.edu/sbmt/prod/data" + ((SmallBodyViewConfig)config).rootDirOnServer + "/" + config.author +  "_" + config.body.toString().replaceAll(" ", "_") + version.replaceAll(" ", "_") + ".json");
+
+            BasicConfigInfo configInfo = new BasicConfigInfo((BodyViewConfig)config);
+            allBodiesMetadata.put(Key.of(config.getUniqueName()), configInfo.store());
 
 //            System.out.println("SmallBodyViewConfigMetadataIO: main: file is " + file);
             if (!file.exists()) file.getParentFile().mkdirs();
             io.write(config.getUniqueName(), file, io.store());
         }
 
-        Serializers.serialize("AllBodies", allBodiesMetadata, new File("/Users/steelrj1/Desktop/configs4/allBodies.json"));
+        Serializers.serialize("AllBodies", allBodiesMetadata, new File(rootDir + "allBodies.json"));
 
 
     }
@@ -187,8 +189,24 @@ public class SmallBodyViewConfigMetadataIO implements MetadataManager
         write(lidarOffsetScale, c.lidarOffsetScale, configMetadata);
         writeEnum(lidarInstrumentName, c.lidarInstrumentName, configMetadata);
 
-        String[] missionsToSave = new String[c.missions.size()];
-        write(missions, c.missions.toArray(missionsToSave), configMetadata);
+        if (c.defaultForMissions != null)
+        {
+	        String[] defaultStrings = new String[c.defaultForMissions.length];
+	        int i=0;
+	        for (SbmtMultiMissionTool.Mission mission : c.defaultForMissions)
+	        {
+	        	defaultStrings[i++] = mission.getHashedName();
+	        }
+	        write(defaultForMissions, defaultStrings, configMetadata);
+        }
+
+        String[] presentStrings = new String[c.presentInMissions.length];
+        int i=0;
+        for (SbmtMultiMissionTool.Mission mission : c.presentInMissions)
+        {
+        	presentStrings[i++] = mission.getHashedName();
+        }
+        write(presentInMissions, presentStrings, configMetadata);
 
         writeMetadataArray(runInfos, c.databaseRunInfos, configMetadata);
 
@@ -379,19 +397,35 @@ public class SmallBodyViewConfigMetadataIO implements MetadataManager
 
         }
 
-        String[] missionsToAdd = read(missions, configMetadata);
-        c.missions = new ArrayList<>();
-        if (missionsToAdd != null)
+        String[] presentInMissionStrings = read(presentInMissions, configMetadata);
+        c.presentInMissions = new SbmtMultiMissionTool.Mission[presentInMissionStrings.length];
+        int m=0;
+        for (String defStr : presentInMissionStrings)
         {
-            for (String mission : missionsToAdd)
-            {
-                SbmtMultiMissionTool.Mission msn = SbmtMultiMissionTool.Mission.getMissionForName(mission);
-                c.missions.add(msn);
-                if (SbmtMultiMissionTool.getMission() == msn)
-                {
-                    ViewConfig.setFirstTimeDefaultModelName(c.getUniqueName());
-                }
-            }
+        	c.presentInMissions[m++] = SbmtMultiMissionTool.Mission.getMissionForName(defStr);
+        }
+
+        if (configMetadata.hasKey(defaultForMissions))
+        {
+	        String[] defaultsForMissionStrings = read(defaultForMissions, configMetadata);
+	        c.defaultForMissions = new SbmtMultiMissionTool.Mission[defaultsForMissionStrings.length];
+	        int k=0;
+	        for (String defStr : defaultsForMissionStrings)
+	        {
+	        	c.defaultForMissions[k++] = SbmtMultiMissionTool.Mission.getMissionForName(defStr);
+	        }
+//	        if (missionsToAdd != null)
+//	        {
+//	            for (String mission : missionsToAdd)
+//	            {
+//	                SbmtMultiMissionTool.Mission msn = SbmtMultiMissionTool.Mission.getMissionForName(mission);
+//	                c.missions.add(msn);
+//	                if (SbmtMultiMissionTool.getMission() == msn)
+//	                {
+//	                    ViewConfig.setFirstTimeDefaultModelName(c.getUniqueName());
+//	                }
+//	            }
+//	        }
         }
 
         Metadata[] runInfoMetadata = readMetadataArray(runInfos, configMetadata);
@@ -426,7 +460,8 @@ public class SmallBodyViewConfigMetadataIO implements MetadataManager
     final Key<String> timeHistoryFile = Key.of("timeHistoryFile");
     final Key<Boolean> hasImageMap = Key.of("hasImageMap");
     final Key<Boolean> hasStateHistory = Key.of("hasStateHistory");
-    final Key<String[]> missions = Key.of("missions");
+    final Key<String[]> presentInMissions = Key.of("presentInMissions");
+    final Key<String[]> defaultForMissions = Key.of("defaultForMissions");
 
     //capture imaging instruments here
     final Key<Metadata[]> imagingInstruments = Key.of("imagingInstruments");
