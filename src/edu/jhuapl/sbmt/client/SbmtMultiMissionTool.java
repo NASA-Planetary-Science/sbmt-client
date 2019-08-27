@@ -59,18 +59,19 @@ public class SbmtMultiMissionTool
 	{
 		APL_INTERNAL("b1bc7ed"),
 		PUBLIC_RELEASE("3ee38f0"),
+		TEST_APL_INTERNAL("fb404a7"),
+		TEST_PUBLIC_RELEASE("a1a32b4"),
 		HAYABUSA2_DEV("133314b"),
-		HAYABUSA2_STAGE("244425c"),
+//		HAYABUSA2_STAGE("244425c"),
 		HAYABUSA2_DEPLOY("355536d"),
 		OSIRIS_REX("7cd84586"),
-		OSIRIS_REX_STAGE("7cd84587"),
+//		OSIRIS_REX_STAGE("7cd84587"),
 		OSIRIS_REX_DEPLOY("7cd84588"),
 		OSIRIS_REX_MIRROR_DEPLOY("7cd84589"),
-		NH_DEPLOY("8ff86312"),
-		STAGE_APL_INTERNAL("f7e441b"),
-		STAGE_PUBLIC_RELEASE("8cc8e12"),
-		TEST_APL_INTERNAL("fb404a7"),
-		TEST_PUBLIC_RELEASE("a1a32b4");
+		NH_DEPLOY("8ff86312");
+//		STAGE_APL_INTERNAL("f7e441b"),
+//		STAGE_PUBLIC_RELEASE("8cc8e12"),
+
 		private final String hashedName;
 
 		Mission(String hashedName)
@@ -197,13 +198,13 @@ public class SbmtMultiMissionTool
 			Configuration.setCacheVersion("2");
 			Configuration.setAppTitle("SBMT");
 			break;
-		case STAGE_APL_INTERNAL:
-		case STAGE_PUBLIC_RELEASE:
-			Configuration.setRootURL("http://sbmt.jhuapl.edu/internal/multi-mission/stage");
-			Configuration.setAppName("sbmt");
-			Configuration.setCacheVersion("2");
-			Configuration.setAppTitle("SBMT");
-			break;
+//		case STAGE_APL_INTERNAL:
+//		case STAGE_PUBLIC_RELEASE:
+//			Configuration.setRootURL("http://sbmt.jhuapl.edu/internal/multi-mission/stage");
+//			Configuration.setAppName("sbmt");
+//			Configuration.setCacheVersion("2");
+//			Configuration.setAppTitle("SBMT");
+//			break;
 		case TEST_APL_INTERNAL:
 		case TEST_PUBLIC_RELEASE:
 			Configuration.setRootURL("http://sbmt.jhuapl.edu/internal/multi-mission/test");
@@ -220,12 +221,12 @@ public class SbmtMultiMissionTool
 			Configuration.setAppTitle("SBMT/Hayabusa2-Dev");
             // Configuration.setDatabaseSuffix("_test");
 			break;
-		case HAYABUSA2_STAGE:
-			Configuration.setRootURL("http://hyb2sbmt.jhuapl.edu/sbmt");
-			Configuration.setAppName("sbmthyb2-stage");
-			Configuration.setCacheVersion("");
-			Configuration.setAppTitle("SBMT/Hayabusa2-Stage");
-			break;
+//		case HAYABUSA2_STAGE:
+//			Configuration.setRootURL("http://hyb2sbmt.jhuapl.edu/sbmt");
+//			Configuration.setAppName("sbmthyb2-stage");
+//			Configuration.setCacheVersion("");
+//			Configuration.setAppTitle("SBMT/Hayabusa2-Stage");
+//			break;
 		case HAYABUSA2_DEPLOY:
 			Configuration.setRootURL("http://hyb2sbmt.u-aizu.ac.jp/sbmt");
 			Configuration.setAppName("sbmthyb2");
@@ -238,12 +239,12 @@ public class SbmtMultiMissionTool
 			Configuration.setCacheVersion("");
 			Configuration.setAppTitle("SBMT/OSIRIS REx-Dev");
 			break;
-		case OSIRIS_REX_STAGE:
-			Configuration.setRootURL("http://orexsbmt.jhuapl.edu/sbmt");
-			Configuration.setAppName("sbmt1orex-stage");
-			Configuration.setCacheVersion("");
-			Configuration.setAppTitle("SBMT/OSIRIS REx-Stage");
-			break;
+//		case OSIRIS_REX_STAGE:
+//			Configuration.setRootURL("http://orexsbmt.jhuapl.edu/sbmt");
+//			Configuration.setAppName("sbmt1orex-stage");
+//			Configuration.setCacheVersion("");
+//			Configuration.setAppTitle("SBMT/OSIRIS REx-Stage");
+//			break;
 		case OSIRIS_REX_MIRROR_DEPLOY:
 			//                Configuration.setRootURL("http://sbmt.jhuapl.edu/sbmt");
 			Configuration.setAppName("sbmt1orex-mirror");
@@ -325,12 +326,13 @@ public class SbmtMultiMissionTool
             Configuration.runAndWaitOnEDT(() -> {
 
                 SbmtSplash splash = null;
+                System.out.println("SbmtMultiMissionTool: displaySplash: mission " + mission);
                 switch (mission)
                 {
                 case APL_INTERNAL:
                 case PUBLIC_RELEASE:
-                case STAGE_APL_INTERNAL:
-                case STAGE_PUBLIC_RELEASE:
+//                case STAGE_APL_INTERNAL:
+//                case STAGE_PUBLIC_RELEASE:
                 case TEST_APL_INTERNAL:
                 case TEST_PUBLIC_RELEASE:
                 case NH_DEPLOY:
@@ -339,16 +341,16 @@ public class SbmtMultiMissionTool
                 case HAYABUSA2_DEV:
                     splash = new SbmtSplash("resources", "splashLogoHb2Dev.png");
                     break;
-                case HAYABUSA2_STAGE:
-                    splash = new SbmtSplash("resources", "splashLogoHb2Stage.png");
-                    break;
+//                case HAYABUSA2_STAGE:
+//                    splash = new SbmtSplash("resources", "splashLogoHb2Stage.png");
+//                    break;
                 case HAYABUSA2_DEPLOY:
                     splash = new SbmtSplash("resources", "splashLogoHb2.png");
                     break;
                 case OSIRIS_REX:
                 case OSIRIS_REX_DEPLOY:
                 case OSIRIS_REX_MIRROR_DEPLOY:
-                case OSIRIS_REX_STAGE:
+//                case OSIRIS_REX_STAGE:
                     splash = new SbmtSplash("resources", "splashLogoOrex.png");
                     break;
                 default:
