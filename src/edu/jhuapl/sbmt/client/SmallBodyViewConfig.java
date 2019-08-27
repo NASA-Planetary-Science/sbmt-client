@@ -38,6 +38,7 @@ import edu.jhuapl.sbmt.query.fixedlist.FixedListQuery;
 import crucible.crust.metadata.api.Key;
 import crucible.crust.metadata.api.Metadata;
 import crucible.crust.metadata.impl.FixedMetadata;
+import crucible.crust.metadata.impl.SettableMetadata;
 import crucible.crust.metadata.impl.gson.Serializers;
 
 /**
@@ -50,16 +51,48 @@ import crucible.crust.metadata.impl.gson.Serializers;
 public class SmallBodyViewConfig extends BodyViewConfig implements ISmallBodyViewConfig
 {
 	static public boolean fromServer = false;
-    private static final Map<String, String> VIEWCONFIG_IDENTIFIERS = new HashMap<>();
+    private static final Map<String, BasicConfigInfo> VIEWCONFIG_IDENTIFIERS = new HashMap<>();
     private static final Map<String, ViewConfig> LOADED_VIEWCONFIGS = new HashMap<>();
+
+    static public Map<String, BasicConfigInfo> getConfigIdentifiers() { return VIEWCONFIG_IDENTIFIERS; }
+
+    static public SmallBodyViewConfig getSmallBodyConfig(BasicConfigInfo configInfo)
+    {
+//    	String[] parts1 = configKey.split("/");
+//    	String author = parts1[0];
+//    	System.out.println("SmallBodyViewConfig: getSmallBodyConfig: author " + author);
+//    	ShapeModelType authorType = ShapeModelType.valueOf(author);
+//    	String[] parts2 = parts1[1].split(" ");
+//    	ShapeModelBody bodyType = ShapeModelBody.valueOf(parts2[0]);
+    	ShapeModelBody bodyType = configInfo.body;
+    	ShapeModelType authorType = configInfo.author;
+    	String version = configInfo.version;
+    	if (version != null)
+    	{
+    		return getSmallBodyConfig(bodyType, authorType, version);
+    	}
+    	else if (bodyType != null)
+    	{
+    		return getSmallBodyConfig(bodyType, authorType);
+    	}
+    	else
+    	{
+    		return SmallBodyViewConfig.ofCustom(configInfo.shapeModelName, false);
+    	}
+
+
+    }
 
     static public SmallBodyViewConfig getSmallBodyConfig(ShapeModelBody name, ShapeModelType author)
     {
     	String configID = author.toString() + "/" + name.toString();
+
     	if (!LOADED_VIEWCONFIGS.containsKey(configID))
     	{
-    		ViewConfig fetchedConfig = fetchRemoteConfig(configID, VIEWCONFIG_IDENTIFIERS.get(configID), fromServer);
+    		BasicConfigInfo info = VIEWCONFIG_IDENTIFIERS.get(configID);
+    		ViewConfig fetchedConfig = fetchRemoteConfig(configID, info.configURL, fromServer);
     		LOADED_VIEWCONFIGS.put(configID, fetchedConfig);
+
     		return (SmallBodyViewConfig)fetchedConfig;
     	}
     	else
@@ -70,10 +103,11 @@ public class SmallBodyViewConfig extends BodyViewConfig implements ISmallBodyVie
 
     static public SmallBodyViewConfig getSmallBodyConfig(ShapeModelBody name, ShapeModelType author, String version)
     {
-        String configID = author + "/" + name + " (" + version + ")";
+        String configID = author.toString() + "/" + name.toString() + " (" + version + ")";
+
         if (!LOADED_VIEWCONFIGS.containsKey(configID))
     	{
-    		ViewConfig fetchedConfig = fetchRemoteConfig(configID, VIEWCONFIG_IDENTIFIERS.get(configID), fromServer);
+    		ViewConfig fetchedConfig = fetchRemoteConfig(configID, VIEWCONFIG_IDENTIFIERS.get(configID).configURL, fromServer);
     		LOADED_VIEWCONFIGS.put(configID, fetchedConfig);
     		return (SmallBodyViewConfig)fetchedConfig;
     	}
@@ -92,10 +126,17 @@ public class SmallBodyViewConfig extends BodyViewConfig implements ISmallBodyVie
             FixedMetadata metadata = Serializers.deserialize(allBodies, "AllBodies");
             for (Key key : metadata.getKeys())
             {
-            	String modelType = key.toString().substring(0, key.toString().indexOf("/"));
-            	if (ShapeModelType.contains(modelType) == false) ShapeModelType.create(modelType);
-            	VIEWCONFIG_IDENTIFIERS.put(key.toString(), (String)metadata.get(key));
-            	if (key.toString().equals("Gaskell/433 Eros"))
+//            	String modelType = key.toString().substring(0, key.toString().indexOf("/"));
+            	//Dynamically add a ShapeModelType if needed
+            	SettableMetadata infoMetadata = (SettableMetadata)metadata.get(key);
+            	BasicConfigInfo configInfo = new BasicConfigInfo();
+            	configInfo.retrieve(infoMetadata);
+            	ShapeModelType configModelType = configInfo.author;
+            	if (ShapeModelType.contains(configModelType.toString()) == false) ShapeModelType.create(configModelType.toString());
+
+
+            	VIEWCONFIG_IDENTIFIERS.put(key.toString(), configInfo);
+            	if (configInfo.uniqueName.equals("Gaskell/433 Eros"))
             	{
             		configs.add(getSmallBodyConfig(ShapeModelBody.EROS, ShapeModelType.GASKELL));
             	}

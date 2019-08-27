@@ -3,6 +3,7 @@ package edu.jhuapl.sbmt.client;
 import java.awt.Frame;
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
@@ -71,9 +72,12 @@ public class SbmtViewManager extends ViewManager
     private final List<MenuEntry> menuEntries;
 
     // A map of config objects to their indices in the menuEntries list.
-    private final Map<ViewConfig, Integer> configMap;
+//    private final Map<ViewConfig, Integer> configMap;
+    private final Map<BasicConfigInfo, Integer> configMap;
 
     private final TrackedMetadataManager stateManager;
+
+    private List<String> registeredConfigURLs = new ArrayList<String>();
 
     public SbmtViewManager(StatusBar statusBar, Frame frame, String tempCustomShapeModelPath)
     {
@@ -120,13 +124,13 @@ public class SbmtViewManager extends ViewManager
         // Make sure this view/body/model can and should be added. To be added, it
         // must be enabled, and must not be added more than once.
         ViewConfig config = view.getConfig();
-        if (!config.isEnabled()) return;
+//        if (!config.isEnabled()) return;
         List<View> builtInViews = getBuiltInViews();
         if (builtInViews.contains(view)) return; // View was already added.
 
         // Ensure that this view's body has a canonical position in the master list of bodies.
         // This is important for the algorithm below, which requires all bodies to be named in SMALL_BODY_LIST.
-        String name = config.getShapeModelName();
+        String name = view.getShapeModelName();
         if (!SMALL_BODY_LIST.contains(name))
         {
             // Need to add the body in order to the content of SMALL_BODY_LIST below.
@@ -134,13 +138,11 @@ public class SbmtViewManager extends ViewManager
         }
 
         // At this point, should be OK to add the view/model.
-
         // Create a set in the correct order from the flat list of views
         // the base class uses. The order is established by ViewComparator.
-        SortedSet<View> viewSet = Sets.newTreeSet(new ViewComparator());
+        SortedSet<View> viewSet = Sets.newTreeSet(new ViewComparator2());
         viewSet.addAll(builtInViews);
         viewSet.add(view);
-
         // Next replace the base class's list with the sorted set's contents in its preferred order.
         builtInViews.clear();
         // NOTE: this is very important: all the collections basically have the same order for
@@ -159,9 +161,10 @@ public class SbmtViewManager extends ViewManager
         // Loop simultaneously over the list of all labels and the set of all Views.
         while (viewItor.hasNext())
         {
-            View nextView = viewItor.next();
-            ViewConfig nextConfig = nextView.getConfig();
-            configMap.put(nextConfig, menuEntries.size());
+            SbmtView nextView = (SbmtView)viewItor.next();
+
+//            ViewConfig nextConfig = nextView.getConfig();
+            configMap.put(nextView.getConfigInfo(), menuEntries.size());
             menuEntries.add(makeEntry(nextView));
         }
     }
@@ -169,13 +172,33 @@ public class SbmtViewManager extends ViewManager
     @Override
     protected void addBuiltInViews(StatusBar statusBar)
     {
-        for (ViewConfig config: SmallBodyViewConfig.getBuiltInConfigs())
+//        for (ViewConfig config: SmallBodyViewConfig.getBuiltInConfigs())
+//        {
+////            System.out.println(config.getUniqueName());
+//            //if (config.getUniqueName().equals("Gaskell/25143 Itokawa"))
+//                addBuiltInView(new SbmtView(statusBar, (SmallBodyViewConfig)config));
+//        }
+
+        for (String configKey: SmallBodyViewConfig.getConfigIdentifiers().keySet())
         {
-//            System.out.println(config.getUniqueName());
-            //if (config.getUniqueName().equals("Gaskell/25143 Itokawa"))
-                addBuiltInView(new SbmtView(statusBar, (SmallBodyViewConfig)config));
+        	BasicConfigInfo configInfo = SmallBodyViewConfig.getConfigIdentifiers().get(configKey);
+        	if (configInfo.isEnabled())
+        		addBuiltInView(new SbmtView(statusBar, configInfo));
         }
+//    	for (String configKey: SmallBodyViewConfig.getConfigIdentifiers().keySet())
+//    	{
+//    		System.out.println("SbmtViewManager: addBuiltInViews: config key " + configKey);
+//    		addBuiltInView(configKey);
+//    		MenuEntry entry = makeEntryFromConfigKey(configKey);
+//    		menuEntries.add(entry);
+//    	}
     }
+
+    protected void addBuiltInView(String configURL)
+    {
+    	registeredConfigURLs.add(configURL);
+    }
+
 
     @Override
     protected View createCustomView(StatusBar statusBar, String name, boolean temporary)
@@ -217,6 +240,41 @@ public class SbmtViewManager extends ViewManager
         }
         return new SbmtView(statusBar, customConfig);
     }
+
+    @Override
+    protected View getBuiltInView(String uniqueName)
+    {
+        for (View view : getBuiltInViews())
+        {
+            if (view.getUniqueName().equals(uniqueName) && view.isAccessible())
+            {
+                return view;
+            }
+        }
+
+        return null;
+    }
+
+//    @Override
+//    public String getDefaultBodyToLoad()
+//    {
+//    	defaultModelName = SmallBodyViewConfig.getConfigIdentifiers().keySet().
+//        if (defaultModelFile.toFile().exists())
+//        {
+//            try (Scanner scanner = new Scanner(ViewManager.defaultModelFile.toFile()))
+//            {
+//                if (scanner.hasNextLine())
+//                    defaultModelName = scanner.nextLine();
+//            }
+//            catch (IOException e)
+//            {
+//                // TODO Auto-generated catch block
+//                e.printStackTrace();
+//            }
+//        }
+//
+//        return defaultModelName;
+//    }
 
     @Override
     public void initializeStateManager() {
@@ -270,6 +328,23 @@ public class SbmtViewManager extends ViewManager
     }
 
     /**
+     * Return whether this body/model/view should be preceded by an informational label.
+     * @param config the body/model/view
+     * @param menuItem the current menu item at the level where the configuration is being added.
+     * @return true if the body/model should be preceded by a label.
+     */
+    public boolean isAddLabel(BasicConfigInfo config, String menuItem)
+    {
+        boolean result = false;
+        if (config.shapeModelName.equals(menuItem) && configMap.containsKey(config))
+        {
+            int index = configMap.get(config);
+            result = index > 0 && menuEntries.get(index - 1) instanceof LabelEntry;
+        }
+        return result;
+    }
+
+    /**
      * Get the label that should precede this body/model/view.
      * @param config the body/model/view
      * @return the label
@@ -277,6 +352,31 @@ public class SbmtViewManager extends ViewManager
      * body/models this manager manages.
      */
     public String getLabel(ViewConfig config)
+    {
+        String result = null;
+        if (configMap.containsKey(config))
+        {
+            int index = configMap.get(config);
+            if (index > 0 && menuEntries.get(index - 1) instanceof LabelEntry)
+            {
+                result = menuEntries.get(index - 1).toString();
+            }
+        }
+        else
+        {
+            throw new IllegalArgumentException();
+        }
+        return result;
+    }
+
+    /**
+     * Get the label that should precede this body/model/view.
+     * @param config the body/model/view
+     * @return the label
+     * @throws IllegalArgumentException if the supplied body/model/view is not one of the
+     * body/models this manager manages.
+     */
+    public String getLabel(BasicConfigInfo config)
     {
         String result = null;
         if (configMap.containsKey(config))
@@ -313,6 +413,24 @@ public class SbmtViewManager extends ViewManager
     }
 
     /**
+     * Return whether this body/model/view should be preceded by a separator in the menu.
+     * The menu item must match the name of the body associated with the supplied config (body/model/view).
+     * @param config the body/model/view
+     * @param menuItem the menu item
+     * @return true if the body/model/view should be preceded by a separator.
+     */
+    public boolean isAddSeparator(BasicConfigInfo config, String menuItem)
+    {
+        boolean result = false;
+        if (config.shapeModelName.equals(menuItem) && configMap.containsKey(config))
+        {
+            int index = configMap.get(config);
+            result = index > 0 && menuEntries.get(index - 1) instanceof SeparatorEntry;
+        }
+        return result;
+    }
+
+    /**
      * Marker interface for generic menu entries.
      *
      */
@@ -336,6 +454,25 @@ public class SbmtViewManager extends ViewManager
         public String toString()
         {
             return view.getConfig().getShapeModelName();
+        }
+    }
+
+    /**
+     * Menu entry that wraps a config key .
+     *
+     */
+    private static class ViewConfigEntry implements MenuEntry
+    {
+        private final String descriptor;
+        ViewConfigEntry(String descriptor)
+        {
+            this.descriptor = descriptor;
+        }
+
+        @Override
+        public String toString()
+        {
+            return descriptor;
         }
     }
 
@@ -474,6 +611,104 @@ public class SbmtViewManager extends ViewManager
             {
                 String name1 = config1.getUniqueName();
                 String name2 = config2.getUniqueName();
+                result = name1 == name2 ? 0 : name1 == null ? -1 : name2 == null ? 1 : name1.compareTo(name2);
+            }
+
+            if (result == 0)
+            {
+                throw new AssertionError("Two models have the same designation: " + config1.toString());
+            }
+            return result;
+        }
+    }
+
+    /**
+     * Comparator used to order Views
+     */
+    private static class ViewComparator2 implements Comparator<View>
+    {
+        private static final Map<ShapeModelBody, Comparator<BasicConfigInfo>> CUSTOM_COMPARATORS = Maps.newHashMap();
+
+        static {
+            CUSTOM_COMPARATORS.put(ShapeModelBody.EPIMETHEUS, THOMAS_STOOKE_GASKELL_COMPARATOR2);
+            CUSTOM_COMPARATORS.put(ShapeModelBody.JANUS, THOMAS_STOOKE_GASKELL_COMPARATOR2);
+            CUSTOM_COMPARATORS.put(ShapeModelBody.PANDORA, THOMAS_STOOKE_GASKELL_COMPARATOR2);
+            CUSTOM_COMPARATORS.put(ShapeModelBody.PROMETHEUS, THOMAS_STOOKE_GASKELL_COMPARATOR2);
+            CUSTOM_COMPARATORS.put(ShapeModelBody.TOUTATIS, TOUTATIS_COMPARATOR2);
+        }
+
+        @Override
+        public int compare(View view1, View view2) {
+            int result = 0;
+            if (view1 == view2) return result;
+
+            BasicConfigInfo config1 = ((SbmtView)view1).getConfigInfo();
+            BasicConfigInfo config2 = ((SbmtView)view2).getConfigInfo();
+            if (config1 == config2) return result;
+
+            // If we get to here, equality is not an option -- two ViewConfigs must differ
+            // in one of their significant fields. From here on down is a series of tie-breakers.
+//            if (result == 0 && config1 instanceof BodyViewConfig && config2 instanceof BodyViewConfig)
+//            {
+//                BodyViewConfig body1 = (BodyViewConfig) config1;
+//                BodyViewConfig body2 = (BodyViewConfig) config2;
+//                result = TYPE_COMPARATOR.compare(body1.type, body2.type);
+//
+//                if (result == 0)
+//                {
+//                    result = POPULATION_COMPARATOR.compare(body1.population, body2.population);
+//                }
+//            }
+
+            result = TYPE_COMPARATOR.compare(config1.type, config2.type);
+
+            if (result == 0)
+            {
+                result = POPULATION_COMPARATOR.compare(config1.population, config2.population);
+            }
+
+            if (result == 0)
+            {
+                result = MARK_VISITED_BY_SPACECRAFT_COMPARATOR.compare(config1.body, config2.body);
+            }
+
+
+            if (result == 0)
+            {
+                result = BODY_COMPARATOR.compare(config1.body, config2.body);
+            }
+
+            if (result == 0 && CUSTOM_COMPARATORS.containsKey(config1.body))
+            {
+                // Try the custom comparator.
+                Comparator<BasicConfigInfo> customComparator = CUSTOM_COMPARATORS.get(config1.body);
+                result = customComparator.compare(config1, config2);
+            }
+
+            if (result == 0) {
+//                if (config1 instanceof SmallBodyViewConfig && config2 instanceof SmallBodyViewConfig) {
+//                    SmallBodyViewConfig smallBodyConfig1 = (SmallBodyViewConfig) config1;
+//                    SmallBodyViewConfig smallBodyConfig2 = (SmallBodyViewConfig) config2;
+                    result = DATA_USED_COMPARATOR.compare(config1.dataUsed, config2.dataUsed);
+//                }
+            }
+
+            if (result == 0)
+            {
+                result = STANDARD_AUTHOR_COMPARATOR.compare(config1.author, config2.author);
+            }
+
+            if (result == 0)
+            {
+                String name1 = config1.shapeModelName;
+                String name2 = config2.shapeModelName;
+                result = name1 == name2 ? 0 : name1 == null ? -1 : name2 == null ? 1 : name1.compareTo(name2);
+            }
+
+            if (result == 0)
+            {
+                String name1 = config1.uniqueName;
+                String name2 = config2.uniqueName;
                 result = name1 == name2 ? 0 : name1 == null ? -1 : name2 == null ? 1 : name1.compareTo(name2);
             }
 
@@ -697,9 +932,36 @@ public class SbmtViewManager extends ViewManager
         }
     };
 
+    private static final Comparator<BasicConfigInfo> THOMAS_STOOKE_GASKELL_COMPARATOR2 = new Comparator<BasicConfigInfo>() {
+
+        @Override
+        public int compare(BasicConfigInfo o1, BasicConfigInfo o2)
+        {
+            int result = 0;
+            result = THOMAS_STOOKE_GASKELL_AUTHOR_COMPARATOR.compare(o1.author, o2.author);
+            return result;
+        }
+    };
+
     private static final Comparator<ViewConfig> TOUTATIS_COMPARATOR = new Comparator<ViewConfig>() {
         @Override
         public int compare(ViewConfig o1, ViewConfig o2)
+        {
+            if (o1.body == ShapeModelBody.TOUTATIS && o2.body == ShapeModelBody.TOUTATIS)
+            {
+                if (o1.version == o2.version) return 0;
+                if (o1.version == null || o2.version == null) throw new IllegalStateException();
+                if (o1.version.equals(o2.version)) return 0;
+                if (o1.version.contains("High") && o2.version.contains("Low")) return 1;
+                if (o1.version.contains("Low") && o2.version.contains("High")) return -1;
+            }
+            return 0;
+        }
+    };
+
+    private static final Comparator<BasicConfigInfo> TOUTATIS_COMPARATOR2 = new Comparator<BasicConfigInfo>() {
+        @Override
+        public int compare(BasicConfigInfo o1, BasicConfigInfo o2)
         {
             if (o1.body == ShapeModelBody.TOUTATIS && o2.body == ShapeModelBody.TOUTATIS)
             {
