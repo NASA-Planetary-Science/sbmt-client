@@ -227,6 +227,7 @@ public class SbmtMultiMissionTool
 			Configuration.setAppName("sbmt1orex-dev");
 			Configuration.setCacheVersion("");
 			Configuration.setAppTitle("SBMT/OSIRIS REx-Dev");
+            setDefaultColorMapName("Spectral_lowBlue");
 			break;
 		case OSIRIS_REX_STAGE:
 			Configuration.setRootURL("http://orexsbmt.jhuapl.edu/sbmt");
@@ -340,7 +341,6 @@ public class SbmtMultiMissionTool
                 case OSIRIS_REX_MIRROR_DEPLOY:
                 case OSIRIS_REX_STAGE:
                     splash = new SbmtSplash("resources", "splashLogoOrex.png");
-                    setDefaultColorMapName("Spectral_lowBlue");
                     break;
                 default:
                     throw new AssertionError();
