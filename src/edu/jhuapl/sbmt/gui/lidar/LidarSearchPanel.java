@@ -139,7 +139,6 @@ public class LidarSearchPanel extends JPanel
 			// cubes list. Therefore, if the selection region was created using a
 			// higher resolution model, we need to recompute the selection region
 			// using the low res model.
-			System.out.println("LidarSearchPanel: handleActionSubmit: making cubeList");
 			if (refSmallBodyModel.getModelResolution() > 0)
 			{
 				vtkPolyData interiorPoly = new vtkPolyData();
@@ -160,7 +159,6 @@ public class LidarSearchPanel extends JPanel
 
 			return;
 		}
-		System.out.println("LidarSearchPanel: handleActionSubmit: showing data");
 		showData(cubeList, aSelectionRegion);
 		setCursor(Cursor.getDefaultCursor());
 	}
@@ -317,7 +315,6 @@ public class LidarSearchPanel extends JPanel
 
 		AbstractEllipsePolygonModel selectionRegion = (AbstractEllipsePolygonModel) refModelManager
 				.getModel(ModelNames.CIRCLE_SELECTION);
-		System.out.println("LidarSearchPanel: doActionSubmit: handling action submit");
 		// Delegate actual query submission
 		handleActionSubmit(aDataSource, selectionRegion);
 	}
