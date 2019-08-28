@@ -26,8 +26,8 @@ import edu.jhuapl.sbmt.client.BodyViewConfig;
 import edu.jhuapl.sbmt.lidar.hyperoctree.FSHyperTreeSkeleton;
 import edu.jhuapl.sbmt.lidar.hyperoctree.hayabusa2.Hayabusa2LidarHypertreeSkeleton;
 import edu.jhuapl.sbmt.model.lidar.LidarQueryUtil;
-import edu.jhuapl.sbmt.model.lidar.LidarSearchParms;
 import edu.jhuapl.sbmt.model.lidar.LidarQueryUtil.DataType;
+import edu.jhuapl.sbmt.model.lidar.LidarSearchParms;
 import edu.jhuapl.sbmt.model.lidar.LidarTrackManager;
 
 public class LidarHyperTreeSearchPanel extends LidarSearchPanel
@@ -57,6 +57,7 @@ public class LidarHyperTreeSearchPanel extends LidarSearchPanel
 			PointInRegionChecker aPointInRegionChecker, double aTimeSeparationBetweenTracks, int aMinTrackLength)
 			throws IOException
 	{
+		System.out.println("LidarHyperTreeSearchPanel: executeQuery: executing query");
 		FSHyperTreeSkeleton tmpSkeleton = skeletonM.get(aSearchParms.getDataSource());
 
 		// Delegate
@@ -67,6 +68,7 @@ public class LidarHyperTreeSearchPanel extends LidarSearchPanel
 	@Override
 	protected void handleActionSubmit(LidarDataSource aDataSource, AbstractEllipsePolygonModel aSelectionRegion)
 	{
+		System.out.println("LidarHyperTreeSearchPanel: handleActionSubmit: ");
 		// Retrieve the appropriate skeleton
 		FSHyperTreeSkeleton tmpSkeleton = skeletonM.get(aDataSource);
 
@@ -125,7 +127,7 @@ public class LidarHyperTreeSearchPanel extends LidarSearchPanel
 //		System.out.println(cubeList);
 //		System.out.println("Search Time="+sw.elapsedMillis()+" ms");
 		sw.stop();
-
+		System.out.println("LidarHyperTreeSearchPanel: handleActionSubmit: showing data");
 		showData(cubeList, aSelectionRegion);
 	}
 

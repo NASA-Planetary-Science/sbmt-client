@@ -127,6 +127,7 @@ public class LidarSearchPanel extends JPanel
 	 */
 	protected void handleActionSubmit(LidarDataSource aDataSource, AbstractEllipsePolygonModel aSelectionRegion)
 	{
+		System.out.println("LidarSearchPanel: handleActionSubmit: ");
 		setCursor(new Cursor(Cursor.WAIT_CURSOR));
 		TreeSet<Integer> cubeList = null;
 
@@ -138,6 +139,7 @@ public class LidarSearchPanel extends JPanel
 			// cubes list. Therefore, if the selection region was created using a
 			// higher resolution model, we need to recompute the selection region
 			// using the low res model.
+			System.out.println("LidarSearchPanel: handleActionSubmit: making cubeList");
 			if (refSmallBodyModel.getModelResolution() > 0)
 			{
 				vtkPolyData interiorPoly = new vtkPolyData();
@@ -158,7 +160,7 @@ public class LidarSearchPanel extends JPanel
 
 			return;
 		}
-
+		System.out.println("LidarSearchPanel: handleActionSubmit: showing data");
 		showData(cubeList, aSelectionRegion);
 		setCursor(Cursor.getDefaultCursor());
 	}
@@ -315,7 +317,7 @@ public class LidarSearchPanel extends JPanel
 
 		AbstractEllipsePolygonModel selectionRegion = (AbstractEllipsePolygonModel) refModelManager
 				.getModel(ModelNames.CIRCLE_SELECTION);
-
+		System.out.println("LidarSearchPanel: doActionSubmit: handling action submit");
 		// Delegate actual query submission
 		handleActionSubmit(aDataSource, selectionRegion);
 	}
@@ -513,6 +515,7 @@ public class LidarSearchPanel extends JPanel
 			PointInRegionChecker aPointInRegionChecker, double aTimeSeparationBetweenTracks, int aMinTrackLength)
 			throws IOException
 	{
+		System.out.println("LidarSearchPanel: executeQuery: executing query");
 		// Bail if this query has already been executed
 		if (aSearchParms.equals(cSearchParms) == true)
 			return;
@@ -550,6 +553,7 @@ public class LidarSearchPanel extends JPanel
 	// TODO: Add comments
 	protected void showData(TreeSet<Integer> aCubeList, AbstractEllipsePolygonModel aSelectionRegion)
 	{
+		System.out.println("LidarSearchPanel: showData: showing data");
 		int minTrackLength = Integer.parseInt(minTrackSizeTF.getText());
 		if (minTrackLength < 1)
 		{
@@ -601,6 +605,7 @@ public class LidarSearchPanel extends JPanel
 		// Execute the query
 		try
 		{
+			System.out.println("LidarSearchPanel: showData: executing a query");
 			executeQuery(refTrackManager, tmpSearchParms, checker, timeSeparationBetweenTracks, minTrackLength);
 		}
 		catch (IOException aEvent)
