@@ -1,6 +1,5 @@
 package edu.jhuapl.sbmt.gui.lidar;
 
-import java.awt.Color;
 import java.util.List;
 
 import com.google.common.collect.ImmutableList;
@@ -16,7 +15,7 @@ import glum.gui.panel.itemList.query.QueryComposer;
  *
  * @author lopeznr1
  */
-class FileSpecItemHandler extends BasicItemHandler<LidarFileSpec>
+class FileSpecItemHandler extends BasicItemHandler<LidarFileSpec, LookUp>
 {
 	// Ref vars
 	private final LidarFileSpecManager refManager;
@@ -24,7 +23,7 @@ class FileSpecItemHandler extends BasicItemHandler<LidarFileSpec>
 	/**
 	 * Standard Constructor
 	 */
-	public FileSpecItemHandler(LidarFileSpecManager aManager, QueryComposer<?> aComposer)
+	public FileSpecItemHandler(LidarFileSpecManager aManager, QueryComposer<LookUp> aComposer)
 	{
 		super(aComposer);
 
@@ -32,39 +31,39 @@ class FileSpecItemHandler extends BasicItemHandler<LidarFileSpec>
 	}
 
 	@Override
-	public Object getColumnValue(LidarFileSpec aFileSpec, int aColIdx)
+	public Object getColumnValue(LidarFileSpec aFileSpec, LookUp aEnum)
 	{
-		switch (aColIdx)
+		switch (aEnum)
 		{
-			case 0:
+			case IsVisible:
 				return refManager.getIsVisible(aFileSpec);
-			case 1:
-				return refManager.getColor(aFileSpec);
-			case 2:
+			case Color:
+				if (refManager.isLoaded(aFileSpec) == false)
+					return null;
+				return refManager.getColorProviderTarget(aFileSpec);
+			case NumPoints:
 				return refManager.getNumberOfPoints(aFileSpec);
-			case 3:
+			case Name:
 				return aFileSpec.getName();
-			case 4:
+			case BegTime:
 				return aFileSpec.getTimeBeg();
-			case 5:
+			case EndTime:
 				return aFileSpec.getTimeEnd();
 			default:
 				break;
 		}
 
-		throw new UnsupportedOperationException("Column is not supported. Index: " + aColIdx);
+		throw new UnsupportedOperationException("Column is not supported. Enum: " + aEnum);
 	}
 
 	@Override
-	public void setColumnValue(LidarFileSpec aFileSpec, int aColIdx, Object aValue)
+	public void setColumnValue(LidarFileSpec aFileSpec, LookUp aEnum, Object aValue)
 	{
 		List<LidarFileSpec> tmpL = ImmutableList.of(aFileSpec);
-		if (aColIdx == 0)
+		if (aEnum == LookUp.IsVisible)
 			refManager.setIsVisible(tmpL, (boolean) aValue);
-		else if (aColIdx == 1)
-			refManager.setColor(tmpL, (Color) aValue);
 		else
-			throw new UnsupportedOperationException("Column is not supported. Index: " + aColIdx);
+			throw new UnsupportedOperationException("Column is not supported. Enum: " + aEnum);
 	}
 
 }
