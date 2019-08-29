@@ -3701,7 +3701,7 @@ public class SmallBodyViewConfig extends BodyViewConfig implements ISmallBodyVie
             c.author = ShapeModelType.EXPERIMENTAL;
             c.modelLabel = "Ernst et al. (in progress)";
             c.version = "with MEGANE";
-            c.rootDirOnServer = "/phobos/ernst2018";
+            c.rootDirOnServer = "/phobos/ernst2018-megane";
             c.shapeModelFileExtension = ".obj";
 
             c.imagingInstruments = new ImagingInstrument[] {
