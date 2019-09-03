@@ -192,13 +192,31 @@ public class SbmtView extends View implements PropertyChangeListener
 	@Override
 	public String getPathRepresentation()
 	{
-		SmallBodyViewConfig config = getPolyhedralModelConfig();
-		ShapeModelType author = config.author;
-		String modelLabel = config.modelLabel;
-		BodyType type = config.type;
-		ShapeModelPopulation population = config.population;
-		ShapeModelDataUsed dataUsed = config.dataUsed;
-		ShapeModelBody body = config.body;
+		ShapeModelType author;
+		String modelLabel;
+		BodyType type;
+		ShapeModelPopulation population;
+		ShapeModelDataUsed dataUsed;
+		ShapeModelBody body;
+		if (configInfo == null)
+		{
+			SmallBodyViewConfig config = getPolyhedralModelConfig();
+			author = config.author;
+			modelLabel = config.modelLabel;
+			type = config.type;
+			population = config.population;
+			dataUsed = config.dataUsed;
+			body = config.body;
+		}
+		else
+		{
+			author = configInfo.author;
+			modelLabel = configInfo.modelLabel;
+			type = configInfo.type;
+			population = configInfo.population;
+			dataUsed = configInfo.dataUsed;
+			body = configInfo.body;
+		}
 		if (ShapeModelType.CUSTOM == author)
 		{
 			return Configuration.getAppTitle() + " - " + ShapeModelType.CUSTOM + " > " + modelLabel;
