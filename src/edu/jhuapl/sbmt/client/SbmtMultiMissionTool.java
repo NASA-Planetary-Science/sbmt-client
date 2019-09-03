@@ -68,8 +68,8 @@ public class SbmtMultiMissionTool
 //		OSIRIS_REX_STAGE("7cd84587"),
 		OSIRIS_REX_DEPLOY("7cd84588"),
 		OSIRIS_REX_MIRROR_DEPLOY("7cd84589"),
-		NH_DEPLOY("8ff86312");
-//		STAGE_APL_INTERNAL("f7e441b"),
+		NH_DEPLOY("8ff86312"),
+		STAGE_APL_INTERNAL("f7e441b");
 //		STAGE_PUBLIC_RELEASE("8cc8e12"),
 
 		private final String hashedName;
@@ -198,17 +198,17 @@ public class SbmtMultiMissionTool
 			Configuration.setCacheVersion("2");
 			Configuration.setAppTitle("SBMT");
 			break;
-//		case STAGE_APL_INTERNAL:
+		case STAGE_APL_INTERNAL:
 //		case STAGE_PUBLIC_RELEASE:
-//			Configuration.setRootURL("http://sbmt.jhuapl.edu/internal/multi-mission/stage");
-//			Configuration.setAppName("sbmt");
-//			Configuration.setCacheVersion("2");
-//			Configuration.setAppTitle("SBMT");
-//			break;
+			Configuration.setRootURL("http://sbmt.jhuapl.edu/internal/multi-mission/stage");
+			Configuration.setAppName("sbmt-stage");
+			Configuration.setCacheVersion("2");
+			Configuration.setAppTitle("SBMT");
+			break;
 		case TEST_APL_INTERNAL:
 		case TEST_PUBLIC_RELEASE:
 			Configuration.setRootURL("http://sbmt.jhuapl.edu/internal/multi-mission/test");
-			Configuration.setAppName("sbmt");
+			Configuration.setAppName("sbmt-test");
 			Configuration.setCacheVersion("2");
 			Configuration.setAppTitle("SBMT");
             // Configuration.setDatabaseSuffix("_test");
@@ -330,7 +330,7 @@ public class SbmtMultiMissionTool
                 {
                 case APL_INTERNAL:
                 case PUBLIC_RELEASE:
-//                case STAGE_APL_INTERNAL:
+                case STAGE_APL_INTERNAL:
 //                case STAGE_PUBLIC_RELEASE:
                 case TEST_APL_INTERNAL:
                 case TEST_PUBLIC_RELEASE:

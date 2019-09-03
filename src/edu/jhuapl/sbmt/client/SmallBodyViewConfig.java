@@ -58,12 +58,6 @@ public class SmallBodyViewConfig extends BodyViewConfig implements ISmallBodyVie
 
     static public SmallBodyViewConfig getSmallBodyConfig(BasicConfigInfo configInfo)
     {
-//    	String[] parts1 = configKey.split("/");
-//    	String author = parts1[0];
-//    	System.out.println("SmallBodyViewConfig: getSmallBodyConfig: author " + author);
-//    	ShapeModelType authorType = ShapeModelType.valueOf(author);
-//    	String[] parts2 = parts1[1].split(" ");
-//    	ShapeModelBody bodyType = ShapeModelBody.valueOf(parts2[0]);
     	ShapeModelBody bodyType = configInfo.body;
     	ShapeModelType authorType = configInfo.author;
     	String version = configInfo.version;
@@ -132,7 +126,6 @@ public class SmallBodyViewConfig extends BodyViewConfig implements ISmallBodyVie
             	configInfo.retrieve(infoMetadata);
             	ShapeModelType configModelType = configInfo.author;
             	if (ShapeModelType.contains(configModelType.toString()) == false) ShapeModelType.create(configModelType.toString());
-
 
             	VIEWCONFIG_IDENTIFIERS.put(key.toString(), configInfo);
             	if (configInfo.uniqueName.equals("Gaskell/433 Eros"))
@@ -205,7 +198,7 @@ public class SmallBodyViewConfig extends BodyViewConfig implements ISmallBodyVie
     public static void initialize()
     {
     	ConfigArrayList configArray = getBuiltInConfigs();
-        configArray.addAll(addRemoteEntries()); 
+        configArray.addAll(addRemoteEntries());
 
 //        AsteroidConfigs.initialize(configArray);
 //        BennuConfigs.initialize(configArray);
