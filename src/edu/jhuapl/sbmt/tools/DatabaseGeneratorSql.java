@@ -636,7 +636,11 @@ public class DatabaseGeneratorSql
         ImageSource mode = ImageSource.valueOf(args[i++].toUpperCase());
 //        String body = args[i++];
 
-        SmallBodyViewConfig config = SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.valueOf(bodyName), ShapeModelType.valueOf(authorName), versionString);
+        SmallBodyViewConfig config = null;
+        if (versionString != null)
+        	config = SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.valueOf(bodyName), ShapeModelType.valueOf(authorName), versionString);
+        else
+        	config = SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.valueOf(bodyName), ShapeModelType.valueOf(authorName));
         DBRunInfo[] runInfos = config.databaseRunInfos;
 
         Mission mission = SbmtMultiMissionTool.getMission();
