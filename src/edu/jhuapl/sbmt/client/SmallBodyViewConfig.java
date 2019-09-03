@@ -205,7 +205,7 @@ public class SmallBodyViewConfig extends BodyViewConfig implements ISmallBodyVie
     public static void initialize()
     {
     	ConfigArrayList configArray = getBuiltInConfigs();
-        configArray.addAll(addRemoteEntries());
+        configArray.addAll(addRemoteEntries()); 
 
 //        AsteroidConfigs.initialize(configArray);
 //        BennuConfigs.initialize(configArray);
