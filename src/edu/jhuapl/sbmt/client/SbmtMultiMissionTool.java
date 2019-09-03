@@ -215,7 +215,7 @@ public class SbmtMultiMissionTool
 			break;
 		case HAYABUSA2_DEV:
 //			 Configuration.setRootURL("http://sbmt.jhuapl.edu/internal/sbmt");
-			Configuration.setRootURL("http://sbmt.jhuapl.edu/internal/multi-mission/test");
+//			Configuration.setRootURL("http://sbmt.jhuapl.edu/internal/multi-mission/test");
 			Configuration.setAppName("sbmthyb2-dev");
 			Configuration.setCacheVersion("");
 			Configuration.setAppTitle("SBMT/Hayabusa2-Dev");
