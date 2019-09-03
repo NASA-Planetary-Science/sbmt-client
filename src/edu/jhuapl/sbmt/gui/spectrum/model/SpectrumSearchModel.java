@@ -144,10 +144,10 @@ public abstract class SpectrumSearchModel implements ISpectrumSearchModel, Metad
             {
                 searchSpec.loadMetadata();
                 searchSpec = searchSpec.clone();
-            }
+    }
             catch (Exception e)
             {
-                e.printStackTrace();
+//                e.printStackTrace();
                 searchSpec = null;
             }
         }
@@ -161,7 +161,9 @@ public abstract class SpectrumSearchModel implements ISpectrumSearchModel, Metad
         try
         {
             if (spectraSpec != null)
+            {
                 spectraSpec.loadMetadata();
+            }
         }
         catch (FileNotFoundException e)
         {
@@ -296,6 +298,7 @@ public abstract class SpectrumSearchModel implements ISpectrumSearchModel, Metad
         // since we may be in an inconsistent state.
         if (isCurrentlyEditingUserDefinedFunction())
             return;
+
         SpectraCollection collection = (SpectraCollection)getModelManager().getModel(ModelNames.SPECTRA);
         if (isGreyScaleSelected())
         {
@@ -345,6 +348,7 @@ public abstract class SpectrumSearchModel implements ISpectrumSearchModel, Metad
     {
         File file = CustomFileChooser.showSaveDialog(view, "Select File", "spectralist.txt");
         String metadataFilename = getModelManager().getPolyhedralModel().getCustomDataFolder() + File.separator + file.getName() + ".metadata";
+
         if (file != null)
         {
             FileWriter fstream = new FileWriter(file);

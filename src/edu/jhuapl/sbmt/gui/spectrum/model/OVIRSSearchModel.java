@@ -1,5 +1,6 @@
 package edu.jhuapl.sbmt.gui.spectrum.model;
 
+import java.io.IOException;
 import java.util.List;
 
 import org.apache.commons.io.FilenameUtils;
@@ -14,6 +15,7 @@ import edu.jhuapl.sbmt.client.SbmtInfoWindowManager;
 import edu.jhuapl.sbmt.client.SmallBodyViewConfig;
 import edu.jhuapl.sbmt.model.bennu.SpectrumSearchSpec;
 import edu.jhuapl.sbmt.model.spectrum.ISpectralInstrument;
+import edu.jhuapl.sbmt.model.bennu.OREXSpectrumInstrumentMetadataIO;
 import edu.jhuapl.sbmt.model.spectrum.SpectraCollection;
 
 import crucible.crust.metadata.api.Metadata;
@@ -27,6 +29,26 @@ public class OVIRSSearchModel extends SpectrumSearchModel
             Renderer renderer, ISpectralInstrument instrument)
     {
         super(smallBodyConfig, modelManager, infoPanelManager, pickManager, renderer, instrument);
+
+        if (smallBodyConfig.hierarchicalSpectraSearchSpecification == null)
+        {
+            try
+            {
+                //TODO: eventually point this to a URL
+                OREXSpectrumInstrumentMetadataIO specIO = new OREXSpectrumInstrumentMetadataIO("OREX");
+                specIO.setPathString(smallBodyConfig.spectrumMetadataFile);
+                specIO.loadMetadata();
+                smallBodyConfig.hierarchicalSpectraSearchSpecification = specIO;
+
+
+            }
+            catch (IOException e)
+            {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
+        }
+        this.spectraSpec = getSmallBodyConfig().hierarchicalSpectraSearchSpecification;
 
         setRedMaxVal(0.00005);
         setGreenMaxVal(0.0001);
