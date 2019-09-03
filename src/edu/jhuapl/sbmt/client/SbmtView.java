@@ -65,10 +65,10 @@ import edu.jhuapl.sbmt.gui.image.ui.cubes.ImageCubePopupMenu;
 import edu.jhuapl.sbmt.gui.image.ui.images.ImagePickManager;
 import edu.jhuapl.sbmt.gui.image.ui.images.ImagePopupManager;
 import edu.jhuapl.sbmt.gui.image.ui.images.ImagePopupMenu;
-import edu.jhuapl.sbmt.gui.lidar.LidarTrackPanel;
 import edu.jhuapl.sbmt.gui.lidar.LidarLoadPanel;
 import edu.jhuapl.sbmt.gui.lidar.LidarPanel;
-import edu.jhuapl.sbmt.gui.lidar.LidarPopupMenu;
+import edu.jhuapl.sbmt.gui.lidar.LidarTrackPanel;
+import edu.jhuapl.sbmt.gui.lidar.popup.LidarGuiUtil;
 import edu.jhuapl.sbmt.gui.spectrum.SpectrumPanel;
 import edu.jhuapl.sbmt.gui.spectrum.SpectrumPopupMenu;
 import edu.jhuapl.sbmt.gui.spectrum.controllers.CustomSpectraSearchController;
@@ -349,7 +349,7 @@ public class SbmtView extends View implements PropertyChangeListener
 		if (getPolyhedralModelConfig().hasLidarData)
 		{
 			LidarTrackManager tmpTrackManager = (LidarTrackManager)getModel(ModelNames.LIDAR_SEARCH);
-			PopupMenu popupMenu = new LidarPopupMenu(tmpTrackManager, getRenderer());
+			PopupMenu popupMenu = LidarGuiUtil.formLidarTrackPopupMenu(tmpTrackManager, getRenderer());
 			registerPopup(tmpTrackManager, popupMenu);
 		}
 
@@ -513,7 +513,7 @@ public class SbmtView extends View implements PropertyChangeListener
 			ModelManager tmpModelManager = getModelManager();
 			LidarTrackManager tmpTrackManager = (LidarTrackManager)tmpModelManager.getModel(ModelNames.TRACKS);
 			LidarLoadPanel tmpLidarLoadPanel = new LidarLoadPanel(tmpTrackManager);
-			LidarTrackPanel tmpLidarListPanel = new LidarTrackPanel(tmpModelManager, tmpTrackManager, getPickManager(), getRenderer());
+			LidarTrackPanel tmpLidarListPanel = new LidarTrackPanel(tmpTrackManager, tmpModelManager, getPolyhedralModelConfig(), getPickManager(), getRenderer());
 			JPanel tmpPanel = new JPanel(new MigLayout("", "", "0[]0"));
 			tmpPanel.add(tmpLidarLoadPanel, "growx,wrap");
 			tmpPanel.add(tmpLidarListPanel, "growx,growy,pushx,pushy");
