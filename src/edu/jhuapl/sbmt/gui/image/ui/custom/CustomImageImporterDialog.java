@@ -86,6 +86,7 @@ public class CustomImageImporterDialog extends javax.swing.JDialog
             infofilePathTextField.setEnabled(false);
             sumfilePathTextField.setEnabled(false);
         }
+        updateEnabledItems();
     }
 
     public void setImageInfo(CustomImageKeyInterface info, boolean isEllipsoid)
@@ -380,8 +381,8 @@ public class CustomImageImporterDialog extends javax.swing.JDialog
         sumfilePathTextField.setEnabled(!cylindrical && !isEditMode && sumfilePathRB.isSelected());
 
         boolean generic = imageTypeComboBox.getSelectedItem() == ImageType.GENERIC_IMAGE;
-        imageFlipComboBox.setEnabled(generic && cylindrical);
-        imageRotateComboBox.setEnabled(generic && cylindrical);
+        imageFlipComboBox.setEnabled(!cylindrical);
+        imageRotateComboBox.setEnabled(!cylindrical);
     }
 
     /**
