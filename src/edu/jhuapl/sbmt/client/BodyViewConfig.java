@@ -18,6 +18,7 @@ import edu.jhuapl.sbmt.model.image.ImagingInstrument;
 import edu.jhuapl.sbmt.model.image.Instrument;
 import edu.jhuapl.sbmt.model.phobos.HierarchicalSearchSpecification;
 import edu.jhuapl.sbmt.model.spectrum.instruments.BasicSpectrumInstrument;
+import edu.jhuapl.sbmt.tools.DBRunInfo;
 
 
 /**
@@ -35,6 +36,9 @@ public abstract class BodyViewConfig extends ViewConfig
     public String timeHistoryFile;
     public double density = 0.0; // in units g/cm^3
     public double rotationRate = 0.0; // in units radians/sec
+
+	public boolean hasFlybyData; // for flyby path data
+	public boolean hasStateHistory; // for bodies with state history tabs
 
     public boolean hasColoringData = true;
     public boolean hasImageMap = false;
@@ -59,8 +63,8 @@ public abstract class BodyViewConfig extends ViewConfig
     public String[] imageSearchUserDefinedCheckBoxesNames = new String[] {};
     public double imageSearchDefaultMaxSpacecraftDistance;
     public double imageSearchDefaultMaxResolution;
-    public boolean hasHierarchicalImageSearch;
-    public boolean hasHierarchicalSpectraSearch;
+    public boolean hasHierarchicalImageSearch = false;
+    public boolean hasHierarchicalSpectraSearch = false;
     public HierarchicalSearchSpecification hierarchicalImageSearchSpecification;
     public SpectraHierarchicalSearchSpecification<?> hierarchicalSpectraSearchSpecification;
     public String spectrumMetadataFile;
@@ -104,6 +108,11 @@ public abstract class BodyViewConfig extends ViewConfig
     public Date lidarSearchDefaultStartDate;
     public Date lidarSearchDefaultEndDate;
 
+    //default configs
+    public SbmtMultiMissionTool.Mission[] presentInMissions;
+    public SbmtMultiMissionTool.Mission[] defaultForMissions;
+
+
     //DTMs
     public Map<String, String> dtmBrowseDataSourceMap = Maps.newHashMap();
     public Map<String, String> dtmSearchDataSourceMap = Maps.newHashMap();
@@ -140,6 +149,8 @@ public abstract class BodyViewConfig extends ViewConfig
     public Instrument lidarInstrumentName = Instrument.LIDAR;
 
     public BasicSpectrumInstrument[] spectralInstruments = {};
+
+    public DBRunInfo[] databaseRunInfos = {};
 
     protected BodyViewConfig(Iterable<String> resolutionLabels, Iterable<Integer> resolutionNumberElements)
     {
@@ -394,4 +405,5 @@ public abstract class BodyViewConfig extends ViewConfig
         System.out.println("serverPath(\"http://sbmt.jhuapl.edu/sbmt\", \"\", \"\") is \"" + serverPath("http://sbmt.jhuapl.edu/sbmt", "", "") + "\"");
         System.out.println("serverPath(\"file://sbmt.jhuapl.edu/sbmt\", \"\", \"filename.txt\") is \"" + serverPath("file://sbmt.jhuapl.edu/sbmt", "", "filename.txt") + "\"");
     }
+
 }
