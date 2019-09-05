@@ -7,6 +7,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
 
 import edu.jhuapl.saavtk.config.ConfigArrayList;
@@ -83,6 +84,8 @@ public class SmallBodyViewConfig extends BodyViewConfig implements ISmallBodyVie
 
     	if (!LOADED_VIEWCONFIGS.containsKey(configID))
     	{
+    	    Preconditions.checkArgument(VIEWCONFIG_IDENTIFIERS.containsKey(configID), "No configuration available for model " + configID);
+
     		BasicConfigInfo info = VIEWCONFIG_IDENTIFIERS.get(configID);
     		ViewConfig fetchedConfig = fetchRemoteConfig(configID, info.configURL, fromServer);
     		LOADED_VIEWCONFIGS.put(configID, fetchedConfig);
@@ -101,6 +104,8 @@ public class SmallBodyViewConfig extends BodyViewConfig implements ISmallBodyVie
 
         if (!LOADED_VIEWCONFIGS.containsKey(configID))
     	{
+            Preconditions.checkArgument(VIEWCONFIG_IDENTIFIERS.containsKey(configID), "No configuration available for model " + configID);
+
     		ViewConfig fetchedConfig = fetchRemoteConfig(configID, VIEWCONFIG_IDENTIFIERS.get(configID).configURL, fromServer);
     		LOADED_VIEWCONFIGS.put(configID, fetchedConfig);
     		return (SmallBodyViewConfig)fetchedConfig;
