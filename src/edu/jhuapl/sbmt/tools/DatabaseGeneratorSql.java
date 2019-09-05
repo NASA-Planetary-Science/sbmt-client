@@ -638,9 +638,9 @@ public class DatabaseGeneratorSql
 
         SmallBodyViewConfig config = null;
         if (versionString != null)
-        	config = SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.valueOf(bodyName), ShapeModelType.valueOf(authorName), versionString);
+        	config = SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.valueOf(bodyName), ShapeModelType.provide(authorName), versionString);
         else
-        	config = SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.valueOf(bodyName), ShapeModelType.valueOf(authorName));
+        	config = SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.valueOf(bodyName), ShapeModelType.provide(authorName));
         DBRunInfo[] runInfos = config.databaseRunInfos;
 
         Mission mission = SbmtMultiMissionTool.getMission();
