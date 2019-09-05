@@ -19,6 +19,13 @@ import edu.jhuapl.saavtk.util.Configuration;
 import edu.jhuapl.saavtk.util.FileCache;
 import edu.jhuapl.saavtk.util.FileCache.UnauthorizedAccessException;
 import edu.jhuapl.saavtk.util.SafeURLPaths;
+import edu.jhuapl.sbmt.client.configs.AsteroidConfigs;
+import edu.jhuapl.sbmt.client.configs.BennuConfigs;
+import edu.jhuapl.sbmt.client.configs.CometConfigs;
+import edu.jhuapl.sbmt.client.configs.MarsConfigs;
+import edu.jhuapl.sbmt.client.configs.NewHorizonsConfigs;
+import edu.jhuapl.sbmt.client.configs.RyuguConfigs;
+import edu.jhuapl.sbmt.client.configs.SaturnConfigs;
 import edu.jhuapl.sbmt.config.SBMTBodyConfiguration;
 import edu.jhuapl.sbmt.config.SBMTFileLocator;
 import edu.jhuapl.sbmt.config.SBMTFileLocators;
@@ -201,15 +208,15 @@ public class SmallBodyViewConfig extends BodyViewConfig implements ISmallBodyVie
     public static void initialize()
     {
     	ConfigArrayList configArray = getBuiltInConfigs();
-        configArray.addAll(addRemoteEntries());
+//        configArray.addAll(addRemoteEntries());
 
-//        AsteroidConfigs.initialize(configArray);
-//        BennuConfigs.initialize(configArray);
-//        CometConfigs.initialize(configArray);
-//        MarsConfigs.initialize(configArray);
-//        NewHorizonsConfigs.initialize(configArray);
-//        RyuguConfigs.initialize(configArray);
-//        SaturnConfigs.initialize(configArray);
+        AsteroidConfigs.initialize(configArray);
+        BennuConfigs.initialize(configArray);
+        CometConfigs.initialize(configArray);
+        MarsConfigs.initialize(configArray);
+        NewHorizonsConfigs.initialize(configArray);
+        RyuguConfigs.initialize(configArray);
+        SaturnConfigs.initialize(configArray);
     }
 
     // Imaging instrument helper methods.

@@ -177,6 +177,11 @@ public class SmallBodyViewConfigMetadataIO implements MetadataManager
             write(hierarchicalSpectraSearchSpecification, c.hierarchicalSpectraSearchSpecification.getMetadataManager().store(), configMetadata);
         }
 
+        //dtm
+        write(dtmBrowseDataSourceMap, c.dtmBrowseDataSourceMap, configMetadata);
+        write(dtmSearchDataSourceMap, c.dtmSearchDataSourceMap, configMetadata);
+
+        //lidar
         writeDate(lidarSearchDefaultStartDate, c.lidarSearchDefaultStartDate, configMetadata);
         writeDate(lidarSearchDefaultEndDate, c.lidarSearchDefaultEndDate, configMetadata);
         write(lidarSearchDataSourceMap, c.lidarSearchDataSourceMap, configMetadata);
@@ -377,6 +382,9 @@ public class SmallBodyViewConfigMetadataIO implements MetadataManager
 	        }
         }
 
+        c.dtmSearchDataSourceMap = read(dtmSearchDataSourceMap, configMetadata);
+        c.dtmBrowseDataSourceMap = read(dtmBrowseDataSourceMap, configMetadata);
+
         if (c.hasLidarData)
         {
 	        Long lidarSearchDefaultStart = read(lidarSearchDefaultStartDate, configMetadata);
@@ -477,6 +485,11 @@ public class SmallBodyViewConfigMetadataIO implements MetadataManager
 
     //capture spectral instruments here
     final Key<Metadata[]> spectralInstruments = Key.of("spectralInstruments");
+
+    //DTM
+    final Key<Map> dtmSearchDataSourceMap = Key.of("dtmSearchDataSourceMap");
+    final Key<Map> dtmBrowseDataSourceMap = Key.of("dtmBrowseDataSourceMap");
+
 
     final Key<Boolean> hasLidarData = Key.of("hasLidarData");
     final Key<Boolean> hasHypertreeBasedLidarSearch = Key.of("hasHypertreeBasedLidarSearch");
