@@ -22,6 +22,7 @@ import javax.swing.UnsupportedLookAndFeelException;
 import com.google.common.collect.ImmutableList;
 import com.jgoodies.looks.LookUtils;
 
+import edu.jhuapl.saavtk.colormap.Colormaps;
 import edu.jhuapl.saavtk.gui.Console;
 import edu.jhuapl.saavtk.gui.OSXAdapter;
 import edu.jhuapl.saavtk.model.structure.EllipsePolygon;
@@ -238,6 +239,7 @@ public class SbmtMultiMissionTool
 			Configuration.setAppName("sbmt1orex-dev");
 			Configuration.setCacheVersion("");
 			Configuration.setAppTitle("SBMT/OSIRIS REx-Dev");
+			Colormaps.setDefaultColormapName("Spectral_lowBlue");
 			break;
 //		case OSIRIS_REX_STAGE:
 //			Configuration.setRootURL("http://orexsbmt.jhuapl.edu/sbmt");
@@ -250,12 +252,14 @@ public class SbmtMultiMissionTool
 			Configuration.setAppName("sbmt1orex-mirror");
 			Configuration.setCacheVersion("");
 			Configuration.setAppTitle("SBMT/OSIRIS REx APL Mirror");
+            Colormaps.setDefaultColormapName("Spectral_lowBlue");
 			break;
 		case OSIRIS_REX_DEPLOY:
 			Configuration.setRootURL("https://uasbmt.lpl.arizona.edu/sbmt");
 			Configuration.setAppName("sbmt1orex");
 			Configuration.setCacheVersion("");
 			Configuration.setAppTitle("SBMT/OSIRIS REx");
+            Colormaps.setDefaultColormapName("Spectral_lowBlue");
 			break;
 		case NH_DEPLOY:
 			Configuration.setAppName("sbmtnh");
