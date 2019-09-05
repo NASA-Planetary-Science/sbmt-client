@@ -205,14 +205,48 @@ public class SbmtRunnable implements Runnable
 
 	protected void enableMissionBodies(Mission mission)
 	{
-		for (ViewConfig each: SmallBodyViewConfig.getBuiltInConfigs())
-		{
-			if (each instanceof SmallBodyViewConfig)
-			{
-				SmallBodyViewConfig config = (SmallBodyViewConfig) each;
-				setBodyEnableState(mission, config);
-			}
-		}
+//		for (BasicConfigInfo info : SmallBodyViewConfig.getConfigIdentifiers().values())
+//		{
+//			for (SbmtMultiMissionTool.Mission presentMission : info.getPresentInVersion())
+//			{
+//				if (presentMission == mission)
+//					info.enable(true);
+//			}
+//			for (SbmtMultiMissionTool.Mission defaultMission : info.getDefaultFor())
+//			{
+//				if (defaultMission == mission)
+//					ViewConfig.setFirstTimeDefaultModelName(info.getUniqueName());
+//			}
+//		}
+
+//		for (ViewConfig each: SmallBodyViewConfig.getBuiltInConfigs())
+//		{
+//			if (each instanceof SmallBodyViewConfig)
+//			{
+//				SmallBodyViewConfig config = (SmallBodyViewConfig) each;
+//				BasicConfigInfo info = new BasicConfigInfo(config);
+//				for (SbmtMultiMissionTool.Mission presentMission : info.getPresentInVersion())
+//				{
+//					if (presentMission == mission)
+//					{
+//						System.out.println("SbmtRunnable: enableMissionBodies: enabled " + config.getUniqueName());
+//						config.enable(true);
+//						break;
+//					}
+//					else
+//						config.enable(false);
+//				}
+//				for (SbmtMultiMissionTool.Mission defaultMission : info.getDefaultFor())
+//				{
+//					if (defaultMission == mission)
+//					{
+//						ViewConfig.setFirstTimeDefaultModelName(info.getUniqueName());
+//						break;
+//					}
+//				}
+////				setBodyEnableState(mission, config);
+//			}
+//		}
 
 	}
 
@@ -221,12 +255,12 @@ public class SbmtRunnable implements Runnable
 		switch (mission)
 		{
 		case APL_INTERNAL:
-		case STAGE_APL_INTERNAL:
+//		case STAGE_APL_INTERNAL:
 		case TEST_APL_INTERNAL:
 			config.enable(true);
 			break;
 		case PUBLIC_RELEASE:
-		case STAGE_PUBLIC_RELEASE:
+//		case STAGE_PUBLIC_RELEASE:
 		case TEST_PUBLIC_RELEASE:
 			if (!ShapeModelBody.EARTH.equals(config.body)
 					&& !ShapeModelBody.RQ36.equals(config.body)
@@ -250,7 +284,7 @@ public class SbmtRunnable implements Runnable
 				config.enable(true);
 			}
 			break;
-		case HAYABUSA2_STAGE:
+//		case HAYABUSA2_STAGE:
 		case HAYABUSA2_DEPLOY:
 			if (ShapeModelBody.RYUGU.equals(config.body))
 			{
@@ -261,7 +295,7 @@ public class SbmtRunnable implements Runnable
 		case OSIRIS_REX:
 		case OSIRIS_REX_DEPLOY:
 		case OSIRIS_REX_MIRROR_DEPLOY:
-		case OSIRIS_REX_STAGE:
+//		case OSIRIS_REX_STAGE:
 			if (ShapeModelBody.RQ36.equals(config.body)
 					|| ShapeModelBody.EROS.equals(config.body)
 					|| ShapeModelBody.ITOKAWA.equals(config.body)

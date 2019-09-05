@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.IOException;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.TreeSet;
 
@@ -27,10 +28,11 @@ import edu.jhuapl.sbmt.client.SbmtMultiMissionTool.Mission;
 import edu.jhuapl.sbmt.client.SmallBodyModel;
 import edu.jhuapl.sbmt.client.SmallBodyViewConfig;
 import edu.jhuapl.sbmt.gui.image.model.ImageKey;
+import edu.jhuapl.sbmt.model.image.ImageKeyInterface;
 import edu.jhuapl.sbmt.model.image.ImageSource;
+import edu.jhuapl.sbmt.model.image.ImagingInstrument;
+import edu.jhuapl.sbmt.model.image.Instrument;
 import edu.jhuapl.sbmt.model.image.PerspectiveImage;
-
-import nom.tam.fits.FitsException;
 
 public class DatabaseGeneratorSql
 {
@@ -41,16 +43,16 @@ public class DatabaseGeneratorSql
     private String databaseSuffix = "";
     private boolean appendTables;
     private boolean modifyMain;
-    private int cameraIndex;
+//    private int cameraIndex;
+    private Instrument instrument;
 
-
-    public DatabaseGeneratorSql(SmallBodyViewConfig smallBodyConfig, String databasePrefix, boolean appendTables, boolean modifyMain, int cameraIndex)
+    public DatabaseGeneratorSql(SmallBodyViewConfig smallBodyConfig, String databasePrefix, boolean appendTables, boolean modifyMain, Instrument instrument)
     {
         this.smallBodyConfig = smallBodyConfig;
         this.databasePrefix = databasePrefix;
         this.appendTables = appendTables;
         this.modifyMain = modifyMain;
-        this.cameraIndex = cameraIndex;
+        this.instrument = instrument;
     }
 
     private void createTables(String tableName)
@@ -143,7 +145,7 @@ public class DatabaseGeneratorSql
             List<String> lines,
             String tableName,
             String cubesTableName,
-            ImageSource imageSource) throws IOException, SQLException, FitsException
+            ImageSource imageSource) throws Exception
     {
         smallBodyModel.setModelResolution(0);
         SmallBodyViewConfig config = (SmallBodyViewConfig)smallBodyModel.getSmallBodyConfig();
@@ -202,7 +204,19 @@ public class DatabaseGeneratorSql
             keyName = keyName.replace(".fits", "");
             keyName = keyName.replace(".FIT", "");
             keyName = keyName.replace(".fit", "");
-            ImageKey key = new ImageKey(keyName, imageSource, config.imagingInstruments[cameraIndex]);
+
+            ImagingInstrument imager = null;
+            for (ImagingInstrument inst : config.imagingInstruments)
+            {
+            	if (inst.getInstrumentName() == instrument) imager = inst;
+            }
+            if (imager == null)
+            {
+            	throw new Exception("Instrument " + instrument + " not recognized as a valid imager for this configuration");
+            }
+            ImageKeyInterface key = new ImageKey(keyName, imageSource, imager);
+
+//            ImageKeyInterface key = new ImageKey(keyName, imageSource, config.imagingInstruments[cameraIndex]);
             PerspectiveImage image = null;
 
             try
@@ -330,9 +344,9 @@ public class DatabaseGeneratorSql
 
     boolean checkIfAllFilesExist(PerspectiveImage image, ImageSource source)
     {
-        File imageFile = new File(image.getImageFileFullPath());
-        System.out.println("Image file full path: " + imageFile.getAbsolutePath());
-        if (!imageFile.exists())
+        File fitfile = new File(image.getFitFileFullPath());
+        System.out.println("Fit file full path: " + fitfile.getAbsolutePath());
+        if (!fitfile.exists())
             return false;
 
         // Check for the sumfile if source is Gaskell
@@ -378,7 +392,7 @@ public class DatabaseGeneratorSql
         }
     }
 
-    public void run(String fileList, ImageSource source) throws IOException
+    public void run(String fileList, ImageSource source, String diffFileList) throws IOException
     {
         smallBodyModel = SbmtModelFactory.createSmallBodyModel(smallBodyConfig);
 
@@ -391,6 +405,15 @@ public class DatabaseGeneratorSql
             else
                 throw new IOException("Image Source is neither type GASKELL or type SPICE");
         }
+
+        //Grab the list of the image filenames from the diffFileList, if it exists.
+        List<String> diffFiles = new ArrayList<String>();
+        if (diffFileList != null)
+        {
+        	diffFiles = FileUtil.getFileLinesAsStringList(diffFileList);
+        	System.out.println("DatabaseGeneratorSql: run: diff files count " + diffFiles.size());
+        }
+
 
         List<String> lines = null;
         try {
@@ -405,14 +428,28 @@ public class DatabaseGeneratorSql
             return;
         }
 
-//        System.out.println("Generating database for the following image files:");
-//        for (String file : files)
-//            System.out.println(file);
+        //Reduce the lines to only include those that match in the diff list, if it exists
+        if (diffFileList != null)
+        {
+        	List<String> truncatedLines = new ArrayList<String>();
+        	for (String line : lines)
+        	{
+        		for (String diffFile : diffFiles)
+        		{
+        			if (line.endsWith(diffFile))
+        			{
+        				truncatedLines.add(line);
+        				break;
+        			}
+        		}
+        	}
+        	lines = truncatedLines;
+        }
 
         String dburl = null;
-        if (SbmtMultiMissionTool.getMission() == Mission.HAYABUSA2_STAGE)
+        /*if (SbmtMultiMissionTool.getMission() == Mission.HAYABUSA2_STAGE)
             dburl = "hyb2sbmt.jhuapl.edu";
-        else if (SbmtMultiMissionTool.getMission() == Mission.HAYABUSA2_DEPLOY)
+        else */if (SbmtMultiMissionTool.getMission() == Mission.HAYABUSA2_DEPLOY)
             dburl = "hyb2sbmt.u-aizu.ac.jp";
         else if (SbmtMultiMissionTool.getMission() == Mission.OSIRIS_REX_DEPLOY)
             throw new AssertionError("NEED TO SET UP THE LOCATION OF THE OREX DEPLOYED DATABASE");
@@ -452,7 +489,189 @@ public class DatabaseGeneratorSql
         }
     }
 
-    private enum RunInfo
+    private static void usage()
+    {
+        String o = "This program generates tables in the MySQL database for a given body.\n\n"
+                + "Usage: DatabaseGeneratorSql [options] <imagesource> <shapemodel>\n\n"
+                + "Where:\n"
+                + "  <imagesource>\n"
+                + "          Must be one of the allowed sources for pointing. The tables for this\n"
+                + "          pointing type will be generated. For example, if GASKELL is selected,\n"
+                + "          then only the Gaskell tables are generated; if SPICE is selected, then\n"
+                + "          only the SPICE (PDS) tables are generated. Allowed values are\n"
+                + ImageSource.printSources(16)
+                + "  <shapemodel>\n"
+                + "          shape model to process. Must be one of the values in the RunInfo enumeration\n"
+                + "          such as EROS or ITOKAWA. If ALL is specified then the entire database is\n"
+                + "          regenerated.\n"
+                + "Options:\n"
+                + "  --append-tables\n"
+                + "          If specified, will check to see if database tables of the shape+mode already\n"
+                + "          exist, create one if necessary, and append entries to that table as opposed\n"
+                + "          to deleting existing tables and creating a new one from scratch.\n"
+                + "  --modify-main\n"
+                + "          If specified, will modify main tables directly instead of those with the\n"
+                + "          _beta suffix.  Be very careful when enabling this option.\n"
+                + "  --root-url <url>\n"
+                + "          Root URL from which to get data from. Should begin with file:// to load\n"
+                + "          data directly from file system rather than web server. Default value\n"
+                + "          is file:///disks/d0180/htdocs-sbmt/internal/sbmt.\n\n";
+        System.out.println(o);
+        System.exit(1);
+    }
+
+    /**
+     * @param args
+     * @throws IOException
+     *
+     * To call, use arguments like this:
+     *
+     * --root-url $dbRootUrl --append-tables --body RQ36 --author ALTWG-SPC-v20190414 --instrument MAPCAM $pointingType
+     *
+     * The old body argument that came after pointing type is no longer needed - that was a lookup into the RunInfos, we which we now get from the configs and use the passed
+     * in arguments to filter out the one we want
+     *
+     * The camera index has also been deprecated, and has been replaced by specifying the actual Instrument to use from that enum, which is then used to find the
+     * imaging instrument to use
+     *
+     * The version argument is optional, since models may not have a version.  The SmallBodyViewConfig handles this automatically (it defaults to null)
+     *
+     */
+    public static void main(String[] args) throws IOException
+    {
+        final SafeURLPaths safeUrlPaths = SafeURLPaths.instance();
+        // default configuration parameters
+        boolean aplVersion = true;
+        String rootURL = safeUrlPaths.getUrl("/disks/d0180/htdocs-sbmt/internal/sbmt");
+
+        boolean appendTables = false;
+        boolean modifyMain = false;
+        boolean remote = false;
+        String bodyName="";
+        String authorName="";
+        String versionString = null;
+        String diffFileList = null;
+        String instrumentString = null;
+
+//        int cameraIndex = 0;
+
+        // modify configuration parameters with command line args
+        int i = 0;
+        for (; i < args.length; ++i)
+        {
+            if (args[i].equals("--root-url"))
+            {
+                rootURL = safeUrlPaths.getUrl(args[++i]);
+            }
+            else if (args[i].equals("--append-tables"))
+            {
+                appendTables = true;
+            }
+            else if (args[i].equals("--modify-main"))
+            {
+                modifyMain = true;
+            }
+            else if (args[i].equals("--debug"))
+            {
+                Debug.setEnabled(true);
+            }
+            else if (args[i].equals("--remote"))
+            {
+                remote = true;
+            }
+//            else if (args[i].equals("--cameraIndex"))
+//            {
+//                cameraIndex = Integer.parseInt(args[++i]);
+//            }
+            else if (args[i].equals("--body"))
+            {
+            	bodyName = args[++i];
+            }
+            else if (args[i].equals("--author"))
+            {
+            	authorName = args[++i];
+            }
+            else if (args[i].equals("--version"))
+            {
+            	versionString = args[++i];
+            }
+            else if (args[i].equals("--instrument"))
+            {
+            	instrumentString = args[++i].toUpperCase();
+            }
+            else if (args[i].equals("--diffList"))
+            {
+            	diffFileList = args[++i];
+            }
+            else {
+                // We've encountered something that is not an option, must be at the args
+                break;
+            }
+        }
+
+        // There must be numRequiredArgs arguments remaining after the options.
+        // Otherwise abort.
+        int numberRequiredArgs = 1;
+        if (args.length - i < numberRequiredArgs)
+            usage();
+
+        // basic default configuration, most of these will be overwritten by the configureMission() method
+        Configuration.setAPLVersion(aplVersion);
+        Configuration.setRootURL(rootURL);
+
+        SbmtMultiMissionTool.configureMission();
+
+        // authentication
+        Authenticator.authenticate();
+
+        // initialize view config
+        SmallBodyViewConfig.fromServer = true;
+
+        SmallBodyViewConfig.initialize();
+
+        // VTK
+        System.setProperty("java.awt.headless", "true");
+        NativeLibraryLoader.loadVtkLibrariesHeadless();
+
+        ImageSource mode = ImageSource.valueOf(args[i++].toUpperCase());
+//        String body = args[i++];
+
+        SmallBodyViewConfig config = null;
+        if (versionString != null)
+        	config = SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.valueOf(bodyName), ShapeModelType.valueOf(authorName), versionString);
+        else
+        	config = SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.valueOf(bodyName), ShapeModelType.valueOf(authorName));
+        DBRunInfo[] runInfos = config.databaseRunInfos;
+
+        Mission mission = SbmtMultiMissionTool.getMission();
+        System.out.println("Mission: " + mission);
+//        System.out.println("DatabaseGeneratorSql: main: number of run infos " + runInfos.length);
+        for (DBRunInfo ri : runInfos)
+        {
+//        	System.out.println("DatabaseGeneratorSql: main: body " + bodyName + " image source " + mode + " instrument " + instrumentString);
+//        	System.out.println("DatabaseGeneratorSql: main: run info " + ri.toString());
+//        	System.out.println("DatabaseGeneratorSql: main: " + !ri.name.equals(ShapeModelBody.valueOf(bodyName).toString()));
+//        	System.out.println("DatabaseGeneratorSql: main: " + (ri.imageSource != mode));
+//        	System.out.println("DatabaseGeneratorSql: main: " + (!ri.instrument.toString().equals(instrumentString)));
+        	if (!ri.name.equals(ShapeModelBody.valueOf(bodyName).toString()) || (ri.imageSource != mode) || (!ri.instrument.toString().equals(instrumentString))) continue;
+            System.out.println("DatabaseGeneratorSql: main: writing to " + ri.databasePrefix + " for " + ri.instrument + " with " + ri.imageSource);
+        	DatabaseGeneratorSql generator = new DatabaseGeneratorSql(config, ri.databasePrefix, appendTables, modifyMain, ri.instrument);
+
+            String pathToFileList = ri.pathToFileList;
+            if (remote)
+            {
+                if (ri.remotePathToFileList != null)
+                    pathToFileList = ri.remotePathToFileList;
+            }
+
+            System.out.println("Generating: " + pathToFileList + ", mode=" + mode);
+            generator.run(pathToFileList, mode, diffFileList);
+        }
+    }
+}
+
+/*
+ *     private enum RunInfo
     {
         EROS(SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.EROS, ShapeModelType.GASKELL),
                 "/project/nearsdc/data/GASKELL/EROS/MSI/msiImageList.txt", "eros"),
@@ -501,115 +720,115 @@ public class DatabaseGeneratorSql
         CHARON_NIMMO2017_LORRI_SPICE(SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.CHARON, ShapeModelType.NIMMO),
                 "/project/sbmt2/sbmt/data/bodies/charon/nimmo2017/lorri/imagelist-fullpath-info.txt", "charon_nimmo2017_lorri"),
 
-        //
-        // Ryugu
-        //
-		RYUGU_TIR_SIMULATED_SPICE(SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.RYUGU, ShapeModelType.GASKELL),
-                "/project/sbmt2/data/ryugu/truth/simulated/tir/imagelist-fullpath.txt", "ryugu"),
-
-        // Ryugu Simulated SPC Model (on staging and deployed servers)
-        RYUGU_SIM_SPC(SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.RYUGU, ShapeModelType.GASKELL),
-                "/var/www/sbmt/sbmt/data/ryugu/gaskell/onc", "ryugu_sim",
-                "data/ryugu/gaskell/onc"),
-        // Ryugu Simulated Truth Model (on staging and deployed servers)
-        RYUGU_SIM_TRUTH(SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.RYUGU, ShapeModelType.TRUTH),
-                "/var/www/sbmt/sbmt/data/ryugu/truth/onc/", "ryugu_sim",
-                "data/ryugu/truth/onc"),
-
-        // Ryugu Simulated SPC Model SUMFILE Images (on APL server)
-        RYUGU_SIM_SPC_APL(SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.RYUGU, ShapeModelType.GASKELL),
-                "/project/sbmt2/sbmt/data/bodies/ryugu/gaskell/onc", "ryugu_sim",
-                "data/ryugu/gaskell/onc"),
-        // Ryugu Simulated SPC Model INFOFILE Images (on APL server)
-        RYUGU_SIM_TRUTH_APL(SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.RYUGU, ShapeModelType.TRUTH),
-                "/project/sbmt2/sbmt/data/bodies/ryugu/truth/onc", "ryugu_sim",
-                "data/ryugu/truth/onc"),
+//        //
+//        // Ryugu
+//        //
+//		RYUGU_TIR_SIMULATED_SPICE(SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.RYUGU, ShapeModelType.GASKELL),
+//                "/project/sbmt2/data/ryugu/truth/simulated/tir/imagelist-fullpath.txt", "ryugu"),
+//
+//        // Ryugu Simulated SPC Model (on staging and deployed servers)
+//        RYUGU_SIM_SPC(SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.RYUGU, ShapeModelType.GASKELL),
+//                "/var/www/sbmt/sbmt/data/ryugu/gaskell/onc", "ryugu_sim",
+//                "data/ryugu/gaskell/onc"),
+//        // Ryugu Simulated Truth Model (on staging and deployed servers)
+//        RYUGU_SIM_TRUTH(SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.RYUGU, ShapeModelType.TRUTH),
+//                "/var/www/sbmt/sbmt/data/ryugu/truth/onc/", "ryugu_sim",
+//                "data/ryugu/truth/onc"),
+//
+//        // Ryugu Simulated SPC Model SUMFILE Images (on APL server)
+//        RYUGU_SIM_SPC_APL(SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.RYUGU, ShapeModelType.GASKELL),
+//                "/project/sbmt2/sbmt/data/bodies/ryugu/gaskell/onc", "ryugu_sim",
+//                "data/ryugu/gaskell/onc"),
+//        // Ryugu Simulated SPC Model INFOFILE Images (on APL server)
+//        RYUGU_SIM_TRUTH_APL(SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.RYUGU, ShapeModelType.TRUTH),
+//                "/project/sbmt2/sbmt/data/bodies/ryugu/truth/onc", "ryugu_sim",
+//                "data/ryugu/truth/onc"),
 
         // Ryugu Shared Flight INFOFILE Images (on APL server)
 //        RYUGU_SHARED_APL(SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.RYUGU, ShapeModelType.NASA_002),
 //                "/project/sbmt2/sbmt/data/bodies/ryugu/shared/onc", "ryugu_shared",
 //                "ryugu/shared/onc"),
 
-        /********************************
-         * Hayabusa 2 - ONC images at Aizu
-         ********************************/
+//        ********************************
+//         * Hayabusa 2 - ONC images at Aizu
+//         ********************************
 
-        // Ryugu Model-specific Flight Images (on Aizu server) - ONC
-        JAXA_SFM_V20180627(SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.RYUGU, ShapeModelType.JAXA_SFM_v20180627),
-                "/var/www/sbmt/sbmt/data/ryugu/jaxa-sfm-v20180627/onc", "ryugu_jaxasfmv20180627",
-                "ryugu/jaxa-sfm-v20180627/onc"),
+//        // Ryugu Model-specific Flight Images (on Aizu server) - ONC
+//        JAXA_SFM_V20180627(SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.RYUGU, ShapeModelType.JAXA_SFM_v20180627),
+//                "/var/www/sbmt/sbmt/data/ryugu/jaxa-sfm-v20180627/onc", "ryugu_jaxasfmv20180627",
+//                "ryugu/jaxa-sfm-v20180627/onc"),
+//
+//        JAXA_SPC_V20180705(SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.RYUGU, ShapeModelType.JAXA_SPC_v20180705),
+//                "/var/www/sbmt/sbmt/data/ryugu/jaxa-spc-v20180705/onc", "ryugu_jaxaspcv20180705",
+//                "ryugu/jaxa-spc-v20180705/onc"),
+//
+//        JAXA_SFM_V20180714(SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.RYUGU, ShapeModelType.JAXA_SFM_v20180714),
+//                "/var/www/sbmt/sbmt/data/ryugu/jaxa-sfm-v20180714/onc", "ryugu_jaxasfmv20180714",
+//                "ryugu/jaxa-sfm-v20180714/onc"),
+//
+//        JAXA_SPC_V20180717(SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.RYUGU, ShapeModelType.JAXA_SPC_v20180717),
+//                "/var/www/sbmt/sbmt/data/ryugu/jaxa-spc-v20180717/onc", "ryugu_jaxaspcv20180717",
+//                "ryugu/jaxa-spc-v20180717/onc"),
+//
+//        JAXA_SPC_V20180719_2(SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.RYUGU, ShapeModelType.JAXA_SPC_v20180719_2),
+//                "/var/www/sbmt/sbmt/data/ryugu/jaxa-spc-v20180719-2/onc", "ryugu_jaxaspcv201807192",
+//                "ryugu/jaxa-spc-v20180719-2/onc"),
+//
+//        JAXA_SFM_V20180725_2(SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.RYUGU, ShapeModelType.JAXA_SFM_v20180725_2),
+//                "/var/www/sbmt/sbmt/data/ryugu/jaxa-sfm-v20180725-2/onc", "ryugu_jaxasfmv201807252",
+//                "ryugu/jaxa-sfm-v20180725-2/onc"),
+//
+//        JAXA_SPC_V20180731(SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.RYUGU, ShapeModelType.JAXA_SPC_v20180731),
+//                "/var/www/sbmt/sbmt/data/ryugu/jaxa-spc-v20180731/onc", "ryugu_jaxaspcv20180731",
+//                "ryugu/jaxa-spc-v20180731/onc"),
+//
+//        JAXA_SPC_V20180810(SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.RYUGU, ShapeModelType.JAXA_SPC_v20180810),
+//                "/var/www/sbmt/sbmt/data/ryugu/jaxa-spc-v20180810/onc", "ryugu_jaxaspcv20180810",
+//                "ryugu/jaxa-spc-v20180810/onc"),
+//
+//        JAXA_SPC_V20180816(SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.RYUGU, ShapeModelType.JAXA_SPC_v20180816),
+//                "/var/www/sbmt/sbmt/data/ryugu/jaxa-spc-v20180816/onc", "ryugu_jaxaspcv20180816",
+//                "ryugu/jaxa-spc-v20180816/onc"),
+//
+//        JAXA_SPC_V20180829(SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.RYUGU, ShapeModelType.JAXA_SPC_v20180829),
+//                "/var/www/sbmt/sbmt/data/ryugu/jaxa-spc-v20180829/onc", "ryugu_jaxaspcv20180829",
+//                "ryugu/jaxa-spc-v20180829/onc"),
+//
+//        JAXA_SPC_V20181014(SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.RYUGU, ShapeModelType.JAXA_SPC_v20181014),
+//                "/var/www/sbmt/sbmt/data/ryugu/jaxa-spc-v20181014/onc", "ryugu_jaxaspcv20181014",
+//                "ryugu/jaxa-spc-v20181014/onc"),
+//
+//       JAXA_SFM_V20180804(SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.RYUGU, ShapeModelType.JAXA_SFM_v20180804),
+//                "/var/www/sbmt/sbmt/data/ryugu/jaxa-sfm-v20180804/onc", "ryugu_jaxasfmv20180804",
+//                "ryugu/jaxa-sfm-v20180804/onc"),
+//
+//
+//        RYUGU_NASA_001(SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.RYUGU, ShapeModelType.NASA_001),
+//                "/var/www/sbmt/sbmt/data/ryugu/nasa-001/onc", "ryugu_nasa001",
+//                "ryugu/nasa-001/onc"),
+//        RYUGU_NASA_002(SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.RYUGU, ShapeModelType.NASA_002),
+//                "/var/www/sbmt/sbmt/data/ryugu/nasa-002/onc", "ryugu_nasa002",
+//                "ryugu/nasa-002/onc"),
+//        RYUGU_NASA_003(SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.RYUGU, ShapeModelType.NASA_003),
+//                "/var/www/sbmt/sbmt/data/ryugu/nasa-003/onc", "ryugu_nasa003",
+//                "ryugu/nasa-002/onc"),
+//        RYUGU_NASA_004(SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.RYUGU, ShapeModelType.NASA_004),
+//                "/var/www/sbmt/sbmt/data/ryugu/nasa-004/onc", "ryugu_nasa004",
+//                "ryugu/nasa-004/onc"),
+//        RYUGU_NASA_005(SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.RYUGU, ShapeModelType.NASA_005),
+//                "/var/www/sbmt/sbmt/data/ryugu/nasa-005/onc", "ryugu_nasa005",
+//                "ryugu/nasa-005/onc"),
+//        RYUGU_NASA_006(SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.RYUGU, ShapeModelType.NASA_006),
+//                "/var/www/sbmt/sbmt/data/ryugu/nasa-006/onc", "ryugu_nasa006",
+//                "ryugu/nasa-006/onc"),
+//
+//        RYUGU_SHARED(SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.RYUGU, ShapeModelType.JAXA_SPC_v20180829),
+//                "/var/www/sbmt/sbmt/data/ryugu/jaxa-spc-v20180829/onc", "ryugu_jaxaspcv20180829",
+//                "ryugu/jaxa-spc-v20180829/onc"),
 
-        JAXA_SPC_V20180705(SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.RYUGU, ShapeModelType.JAXA_SPC_v20180705),
-                "/var/www/sbmt/sbmt/data/ryugu/jaxa-spc-v20180705/onc", "ryugu_jaxaspcv20180705",
-                "ryugu/jaxa-spc-v20180705/onc"),
-
-        JAXA_SFM_V20180714(SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.RYUGU, ShapeModelType.JAXA_SFM_v20180714),
-                "/var/www/sbmt/sbmt/data/ryugu/jaxa-sfm-v20180714/onc", "ryugu_jaxasfmv20180714",
-                "ryugu/jaxa-sfm-v20180714/onc"),
-
-        JAXA_SPC_V20180717(SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.RYUGU, ShapeModelType.JAXA_SPC_v20180717),
-                "/var/www/sbmt/sbmt/data/ryugu/jaxa-spc-v20180717/onc", "ryugu_jaxaspcv20180717",
-                "ryugu/jaxa-spc-v20180717/onc"),
-
-        JAXA_SPC_V20180719_2(SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.RYUGU, ShapeModelType.JAXA_SPC_v20180719_2),
-                "/var/www/sbmt/sbmt/data/ryugu/jaxa-spc-v20180719-2/onc", "ryugu_jaxaspcv201807192",
-                "ryugu/jaxa-spc-v20180719-2/onc"),
-
-        JAXA_SFM_V20180725_2(SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.RYUGU, ShapeModelType.JAXA_SFM_v20180725_2),
-                "/var/www/sbmt/sbmt/data/ryugu/jaxa-sfm-v20180725-2/onc", "ryugu_jaxasfmv201807252",
-                "ryugu/jaxa-sfm-v20180725-2/onc"),
-
-        JAXA_SPC_V20180731(SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.RYUGU, ShapeModelType.JAXA_SPC_v20180731),
-                "/var/www/sbmt/sbmt/data/ryugu/jaxa-spc-v20180731/onc", "ryugu_jaxaspcv20180731",
-                "ryugu/jaxa-spc-v20180731/onc"),
-
-        JAXA_SPC_V20180810(SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.RYUGU, ShapeModelType.JAXA_SPC_v20180810),
-                "/var/www/sbmt/sbmt/data/ryugu/jaxa-spc-v20180810/onc", "ryugu_jaxaspcv20180810",
-                "ryugu/jaxa-spc-v20180810/onc"),
-
-        JAXA_SPC_V20180816(SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.RYUGU, ShapeModelType.JAXA_SPC_v20180816),
-                "/var/www/sbmt/sbmt/data/ryugu/jaxa-spc-v20180816/onc", "ryugu_jaxaspcv20180816",
-                "ryugu/jaxa-spc-v20180816/onc"),
-
-        JAXA_SPC_V20180829(SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.RYUGU, ShapeModelType.JAXA_SPC_v20180829),
-                "/var/www/sbmt/sbmt/data/ryugu/jaxa-spc-v20180829/onc", "ryugu_jaxaspcv20180829",
-                "ryugu/jaxa-spc-v20180829/onc"),
-
-        JAXA_SPC_V20181014(SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.RYUGU, ShapeModelType.JAXA_SPC_v20181014),
-                "/var/www/sbmt/sbmt/data/ryugu/jaxa-spc-v20181014/onc", "ryugu_jaxaspcv20181014",
-                "ryugu/jaxa-spc-v20181014/onc"),
-
-       JAXA_SFM_V20180804(SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.RYUGU, ShapeModelType.JAXA_SFM_v20180804),
-                "/var/www/sbmt/sbmt/data/ryugu/jaxa-sfm-v20180804/onc", "ryugu_jaxasfmv20180804",
-                "ryugu/jaxa-sfm-v20180804/onc"),
-
-
-        RYUGU_NASA_001(SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.RYUGU, ShapeModelType.NASA_001),
-                "/var/www/sbmt/sbmt/data/ryugu/nasa-001/onc", "ryugu_nasa001",
-                "ryugu/nasa-001/onc"),
-        RYUGU_NASA_002(SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.RYUGU, ShapeModelType.NASA_002),
-                "/var/www/sbmt/sbmt/data/ryugu/nasa-002/onc", "ryugu_nasa002",
-                "ryugu/nasa-002/onc"),
-        RYUGU_NASA_003(SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.RYUGU, ShapeModelType.NASA_003),
-                "/var/www/sbmt/sbmt/data/ryugu/nasa-003/onc", "ryugu_nasa003",
-                "ryugu/nasa-002/onc"),
-        RYUGU_NASA_004(SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.RYUGU, ShapeModelType.NASA_004),
-                "/var/www/sbmt/sbmt/data/ryugu/nasa-004/onc", "ryugu_nasa004",
-                "ryugu/nasa-004/onc"),
-        RYUGU_NASA_005(SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.RYUGU, ShapeModelType.NASA_005),
-                "/var/www/sbmt/sbmt/data/ryugu/nasa-005/onc", "ryugu_nasa005",
-                "ryugu/nasa-005/onc"),
-        RYUGU_NASA_006(SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.RYUGU, ShapeModelType.NASA_006),
-                "/var/www/sbmt/sbmt/data/ryugu/nasa-006/onc", "ryugu_nasa006",
-                "ryugu/nasa-006/onc"),
-
-        RYUGU_SHARED(SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.RYUGU, ShapeModelType.JAXA_SPC_v20180829),
-                "/var/www/sbmt/sbmt/data/ryugu/jaxa-spc-v20180829/onc", "ryugu_jaxaspcv20180829",
-                "ryugu/jaxa-spc-v20180829/onc"),
-
-        /********************************
-         * Hayabusa 2 - ONC images at APL
-         ********************************/
+//        ********************************
+//         * Hayabusa 2 - ONC images at APL
+//         ********************************
 
 
         // Ryugu Model-specific Flight Images (on APL server)
@@ -682,14 +901,14 @@ public class DatabaseGeneratorSql
                 "/project/sbmt2/sbmt/data/bodies/ryugu/nasa-006/onc", "ryugu_nasa006",
                 "ryugu/nasa-006/onc"),
 
-        RYUGU_SHARED_APL(SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.RYUGU, ShapeModelType.NASA_005),
-                "/project/sbmt2/sbmt/data/bodies/ryugu/nasa-005/onc", "ryugu_nasa005",
-                "ryugu/nasa-005/onc"),
+//        RYUGU_SHARED_APL(SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.RYUGU, ShapeModelType.NASA_005),
+//                "/project/sbmt2/sbmt/data/bodies/ryugu/nasa-005/onc", "ryugu_nasa005",
+//                "ryugu/nasa-005/onc"),
 
 
-        /********************************
-         * Hayabusa 2 - TIR images at Aizu
-         ********************************/
+//        ********************************
+//         * Hayabusa 2 - TIR images at Aizu
+//         ********************************
 
 //        // Ryugu Model-specific Flight Images (on Aizu server) - TIR
 //        JAXA_SFM_V20180627_TIR(SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.RYUGU, ShapeModelType.JAXA_SFM_v20180627),
@@ -749,18 +968,18 @@ public class DatabaseGeneratorSql
 //        RYUGU_NASA_004_TIR(SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.RYUGU, ShapeModelType.NASA_004),
 //                "/var/www/sbmt/sbmt/data/ryugu/nasa-004/tir", "ryugu_nasa004_tir",
 //                "ryugu/nasa-004/tir"),
-        RYUGU_NASA_005_TIR(SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.RYUGU, ShapeModelType.NASA_005),
-                "/var/www/sbmt/sbmt/data/ryugu/nasa-005/tir", "ryugu_nasa005_tir",
-                "ryugu/nasa-005/tir"),
+//        RYUGU_NASA_005_TIR(SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.RYUGU, ShapeModelType.NASA_005),
+//                "/var/www/sbmt/sbmt/data/ryugu/nasa-005/tir", "ryugu_nasa005_tir",
+//                "ryugu/nasa-005/tir"),
+//
+//        RYUGU_SHARED_TIR(SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.RYUGU, ShapeModelType.JAXA_SPC_v20180829),
+//                "/var/www/sbmt/sbmt/data/ryugu/jaxa-spc-v20180829/tir", "ryugu_jaxaspcv20180829_tir",
+//                "ryugu/jaxa-spc-v20180829/tir"),
 
-        RYUGU_SHARED_TIR(SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.RYUGU, ShapeModelType.JAXA_SPC_v20180829),
-                "/var/www/sbmt/sbmt/data/ryugu/jaxa-spc-v20180829/tir", "ryugu_jaxaspcv20180829_tir",
-                "ryugu/jaxa-spc-v20180829/tir"),
 
-
-        /********************************
-         * Hayabusa 2 - TIR images at APL
-         ********************************/
+//        ********************************
+//         * Hayabusa 2 - TIR images at APL
+//         ********************************
 //        // Ryugu Simulated SPC Model SUMFILE Images (on APL server)
 //        RYUGU_SIM_SPC_TIR_APL(SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.RYUGU, ShapeModelType.GASKELL),
 //                "/project/sbmt2/sbmt/data/bodies/ryugu/gaskell/tir", "ryugu_sim_tir",
@@ -769,73 +988,80 @@ public class DatabaseGeneratorSql
 //        RYUGU_SIM_TRUTH_TIR_APL(SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.RYUGU, ShapeModelType.TRUTH),
 //                "/project/sbmt2/sbmt/data/bodies/ryugu/truth/tir", "ryugu_sim_tir",
 //                "ryugu/truth/tir"),
-//
-//
-//     // Ryugu Model-specific Flight Images (on APL server)
-//        JAXA_SFM_V20180627_TIR_APL(SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.RYUGU, ShapeModelType.JAXA_SFM_v20180627),
-//                "/project/sbmt2/sbmt/data/bodies/ryugu/jaxa-sfm-v20180627/tir", "ryugu_jaxasfmv20180627_tir",
-//                "ryugu/jaxa-sfm-v20180627/tir"),
-//
-//        JAXA_SPC_V20180705_TIR_APL(SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.RYUGU, ShapeModelType.JAXA_SPC_v20180705),
-//                "/project/sbmt2/sbmt/data/bodies/ryugu/jaxa-spc-v20180705/tir", "ryugu_jaxaspcv20180705_tir",
-//                "ryugu/jaxa-spc-v20180705/tir"),
-//
-//        JAXA_SFM_V20180714_TIR_APL(SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.RYUGU, ShapeModelType.JAXA_SFM_v20180714),
-//                "/project/sbmt2/sbmt/data/bodies/ryugu/jaxa-sfm-v20180714/tir", "ryugu_jaxasfmv20180714_tir",
-//                "ryugu/jaxa-sfm-v20180714/tir"),
-//
-//        JAXA_SPC_V20180717_TIR_APL(SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.RYUGU, ShapeModelType.JAXA_SPC_v20180717),
-//                "/project/sbmt2/sbmt/data/bodies/ryugu/jaxa-spc-v20180717/tir", "ryugu_jaxaspcv20180717_tir",
-//                "ryugu/jaxa-spc-v20180717/tir"),
-//
-//        JAXA_SPC_V20180719_2_TIR_APL(SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.RYUGU, ShapeModelType.JAXA_SPC_v20180719_2),
-//                "/project/sbmt2/sbmt/data/bodies/ryugu/jaxa-spc-v20180719-2/tir", "ryugu_jaxaspcv201807192_tir",
-//                "ryugu/jaxa-spc-v20180719-2/tir"),
-//
-//        JAXA_SFM_V20180725_2_TIR_APL(SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.RYUGU, ShapeModelType.JAXA_SFM_v20180725_2),
-//                "/project/sbmt2/sbmt/data/bodies/ryugu/jaxa-sfm-v20180725-2/tir", "ryugu_jaxasfmv201807252_tir",
-//                "ryugu/jaxa-sfm-v20180725-2/tir"),
-//
-//        JAXA_SPC_V20180731_TIR_APL(SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.RYUGU, ShapeModelType.JAXA_SPC_v20180731),
-//                "/project/sbmt2/sbmt/data/bodies/ryugu/jaxa-spc-v20180731/tir", "ryugu_jaxaspcv20180731_tir",
-//                "ryugu/jaxa-spc-v20180731/tir"),
-//
-//        JAXA_SPC_V20180810_TIR_APL(SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.RYUGU, ShapeModelType.JAXA_SPC_v20180810),
-//                "/project/sbmt2/sbmt/data/bodies/ryugu/jaxa-spc-v20180810/tir", "ryugu_jaxaspcv20180810_tir",
-//                "ryugu/jaxa-spc-v20180810/tir"),
-//
-//        JAXA_SPC_V20180816_TIR_APL(SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.RYUGU, ShapeModelType.JAXA_SPC_v20180816),
-//                "/project/sbmt2/sbmt/data/bodies/ryugu/jaxa-spc-v20180816/tir", "ryugu_jaxaspcv20180816_tir",
-//                "ryugu/jaxa-spc-v20180816/tir"),
-//
-//        JAXA_SPC_V20180829_TIR_APL(SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.RYUGU, ShapeModelType.JAXA_SPC_v20180829),
-//                "/project/sbmt2/sbmt/data/bodies/ryugu/jaxa-spc-v20180829/tir", "ryugu_jaxaspcv20180829_tir",
-//                "ryugu/jaxa-spc-v20180829/tir"),
-//
-//        JAXA_SFM_V20180804_TIR_APL(SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.RYUGU, ShapeModelType.JAXA_SFM_v20180804),
-//                "/project/sbmt2/sbmt/data/bodies/ryugu/jaxa-sfm-v20180804/tir", "ryugu_jaxasfmv20180804_tir",
-//                "ryugu/jaxa-sfm-v20180804/tir"),
-//
-//
-//        RYUGU_NASA_001_TIR_APL(SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.RYUGU, ShapeModelType.NASA_001),
-//                "/project/sbmt2/sbmt/data/bodies/ryugu/nasa-001/tir", "ryugu_nasa001_tir",
-//                "ryugu/nasa-001/tir"),
-//        RYUGU_NASA_002_TIR_APL(SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.RYUGU, ShapeModelType.NASA_002),
-//                "/project/sbmt2/sbmt/data/bodies/ryugu/nasa-002/tir", "ryugu_nasa002_tir",
-//                "ryugu/nasa-002/tir"),
-//        RYUGU_NASA_003_TIR_APL(SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.RYUGU, ShapeModelType.NASA_003),
-//                "/project/sbmt2/sbmt/data/bodies/ryugu/nasa-003/tir", "ryugu_nasa003_tir",
-//                "ryugu/nasa-002/tir"),
-//        RYUGU_NASA_004_TIR_APL(SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.RYUGU, ShapeModelType.NASA_004),
-//                "/project/sbmt2/sbmt/data/bodies/ryugu/nasa-004/tir", "ryugu_nasa004_tir",
-//                "ryugu/nasa-004/tir"),
-//        RYUGU_NASA_005_TIR_APL(SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.RYUGU, ShapeModelType.NASA_005),
-//                "/project/sbmt2/sbmt/data/bodies/ryugu/nasa-005/tir", "ryugu_nasa005_tir",
-//                "ryugu/nasa-005/tir"),
 
-        RYUGU_SHARED_TIR_APL(SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.RYUGU, ShapeModelType.NASA_005),
-                "/project/sbmt2/sbmt/data/bodies/ryugu/nasa-005/tir/imagelist-info.txt", "ryugu_nasa005_tir",
+
+     // Ryugu Model-specific Flight Images (on APL server)
+        JAXA_SFM_V20180627_TIR_APL(SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.RYUGU, ShapeModelType.JAXA_SFM_v20180627),
+                "/project/sbmt2/sbmt/data/bodies/ryugu/jaxa-sfm-v20180627/tir", "ryugu_jaxasfmv20180627_tir",
+                "ryugu/jaxa-sfm-v20180627/tir"),
+
+        JAXA_SPC_V20180705_TIR_APL(SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.RYUGU, ShapeModelType.JAXA_SPC_v20180705),
+                "/project/sbmt2/sbmt/data/bodies/ryugu/jaxa-spc-v20180705/tir", "ryugu_jaxaspcv20180705_tir",
+                "ryugu/jaxa-spc-v20180705/tir"),
+
+        JAXA_SFM_V20180714_TIR_APL(SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.RYUGU, ShapeModelType.JAXA_SFM_v20180714),
+                "/project/sbmt2/sbmt/data/bodies/ryugu/jaxa-sfm-v20180714/tir", "ryugu_jaxasfmv20180714_tir",
+                "ryugu/jaxa-sfm-v20180714/tir"),
+
+        JAXA_SPC_V20180717_TIR_APL(SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.RYUGU, ShapeModelType.JAXA_SPC_v20180717),
+                "/project/sbmt2/sbmt/data/bodies/ryugu/jaxa-spc-v20180717/tir", "ryugu_jaxaspcv20180717_tir",
+                "ryugu/jaxa-spc-v20180717/tir"),
+
+        JAXA_SPC_V20180719_2_TIR_APL(SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.RYUGU, ShapeModelType.JAXA_SPC_v20180719_2),
+                "/project/sbmt2/sbmt/data/bodies/ryugu/jaxa-spc-v20180719-2/tir", "ryugu_jaxaspcv201807192_tir",
+                "ryugu/jaxa-spc-v20180719-2/tir"),
+
+        JAXA_SFM_V20180725_2_TIR_APL(SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.RYUGU, ShapeModelType.JAXA_SFM_v20180725_2),
+                "/project/sbmt2/sbmt/data/bodies/ryugu/jaxa-sfm-v20180725-2/tir", "ryugu_jaxasfmv201807252_tir",
+                "ryugu/jaxa-sfm-v20180725-2/tir"),
+
+        JAXA_SPC_V20180731_TIR_APL(SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.RYUGU, ShapeModelType.JAXA_SPC_v20180731),
+                "/project/sbmt2/sbmt/data/bodies/ryugu/jaxa-spc-v20180731/tir", "ryugu_jaxaspcv20180731_tir",
+                "ryugu/jaxa-spc-v20180731/tir"),
+
+        JAXA_SPC_V20180810_TIR_APL(SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.RYUGU, ShapeModelType.JAXA_SPC_v20180810),
+                "/project/sbmt2/sbmt/data/bodies/ryugu/jaxa-spc-v20180810/tir", "ryugu_jaxaspcv20180810_tir",
+                "ryugu/jaxa-spc-v20180810/tir"),
+
+        JAXA_SPC_V20180816_TIR_APL(SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.RYUGU, ShapeModelType.JAXA_SPC_v20180816),
+                "/project/sbmt2/sbmt/data/bodies/ryugu/jaxa-spc-v20180816/tir", "ryugu_jaxaspcv20180816_tir",
+                "ryugu/jaxa-spc-v20180816/tir"),
+
+        JAXA_SPC_V20180829_TIR_APL(SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.RYUGU, ShapeModelType.JAXA_SPC_v20180829),
+                "/project/sbmt2/sbmt/data/bodies/ryugu/jaxa-spc-v20180829/tir", "ryugu_jaxaspcv20180829_tir",
+                "ryugu/jaxa-spc-v20180829/tir"),
+
+        JAXA_SFM_V20180804_TIR_APL(SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.RYUGU, ShapeModelType.JAXA_SFM_v20180804),
+                "/project/sbmt2/sbmt/data/bodies/ryugu/jaxa-sfm-v20180804/tir", "ryugu_jaxasfmv20180804_tir",
+                "ryugu/jaxa-sfm-v20180804/tir"),
+
+        JAXA_SFM_V20181014_TIR_APL(SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.RYUGU, ShapeModelType.JAXA_SPC_v20181014),
+                "/project/sbmt2/sbmt/data/bodies/ryugu/jaxa-sfm-v20181014/tir", "ryugu_jaxasfmv20181014_tir",
+                "ryugu/jaxa-sfm-v20181014/tir"),
+
+
+        RYUGU_NASA_001_TIR_APL(SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.RYUGU, ShapeModelType.NASA_001),
+                "/project/sbmt2/sbmt/data/bodies/ryugu/nasa-001/tir", "ryugu_nasa001_tir",
+                "ryugu/nasa-001/tir"),
+        RYUGU_NASA_002_TIR_APL(SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.RYUGU, ShapeModelType.NASA_002),
+                "/project/sbmt2/sbmt/data/bodies/ryugu/nasa-002/tir", "ryugu_nasa002_tir",
+                "ryugu/nasa-002/tir"),
+        RYUGU_NASA_003_TIR_APL(SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.RYUGU, ShapeModelType.NASA_003),
+                "/project/sbmt2/sbmt/data/bodies/ryugu/nasa-003/tir", "ryugu_nasa003_tir",
+                "ryugu/nasa-002/tir"),
+        RYUGU_NASA_004_TIR_APL(SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.RYUGU, ShapeModelType.NASA_004),
+                "/project/sbmt2/sbmt/data/bodies/ryugu/nasa-004/tir", "ryugu_nasa004_tir",
+                "ryugu/nasa-004/tir"),
+        RYUGU_NASA_005_TIR_APL(SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.RYUGU, ShapeModelType.NASA_005),
+                "/project/sbmt2/sbmt/data/bodies/ryugu/nasa-005/tir", "ryugu_nasa005_tir",
                 "ryugu/nasa-005/tir"),
+        RYUGU_NASA_006_TIR_APL(SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.RYUGU, ShapeModelType.NASA_006),
+                "/project/sbmt2/sbmt/data/bodies/ryugu/nasa-006/tir", "ryugu_nasa006_tir",
+                "ryugu/nasa-006/tir"),
+
+//        RYUGU_SHARED_TIR_APL(SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.RYUGU, ShapeModelType.NASA_005),
+//                "/project/sbmt2/sbmt/data/bodies/ryugu/nasa-005/tir/imagelist-info.txt", "ryugu_nasa005_tir",
+//                "ryugu/nasa-005/tir"),
 
 
 
@@ -847,10 +1073,10 @@ public class DatabaseGeneratorSql
                 "/project/sbmt2/sbmt/data/bodies/deimos/ernst2018/imaging/imagelist-fullpath.txt", "deimos_ernst_2018"),
 
 
-        /*
-         * Osiris REx flight models below here.
-         */
-        /**
+//
+//         Osiris REx flight models below here.
+//
+
          * Per redmine $1805, commenting out models dated prior to 2019-01-01.
         // 1109B SUMFILES
         BENNU_ALTWG_SPC_V20181109B_MAPCAM_APL(SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.RQ36, ShapeModelType.ALTWG_SPC_v20181109b),
@@ -945,7 +1171,7 @@ public class DatabaseGeneratorSql
                 "/project/sbmt2/sbmt/data/bodies/bennu/altwg-spc-v20181227/polycam/imagelist-fullpath-info.txt", "bennu_altwgspcv20181227_polycam"),
         BENNU_ALTWG_SPICE_V20181227_NAVCAM_APL(SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.RQ36, ShapeModelType.ALTWG_SPC_v20181227),
                 "/project/sbmt2/sbmt/data/bodies/bennu/altwg-spc-v20181227/navcam/imagelist-fullpath-info.txt", "bennu_altwgspcv20181227_navcam"),
-		*/
+
 
         // 20190105 SUMFILES
         BENNU_ALTWG_SPC_V20190105_MAPCAM_APL(SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.RQ36, ShapeModelType.ALTWG_SPC_v20190105),
@@ -1045,6 +1271,20 @@ public class DatabaseGeneratorSql
         BENNU_ALTWG_SPICE_V20190414_NAVCAM_APL(SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.RQ36, ShapeModelType.ALTWG_SPC_v20190414),
                 "/project/sbmt2/sbmt/data/bodies/bennu/altwg-spc-v20190414/navcam/imagelist-fullpath-info.txt", "bennu_altwgspcv20190414_navcam"),
 
+
+        // 0612 SUMFILES
+        BENNU_ALTWG_SPO_V20190612_MAPCAM_APL(SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.RQ36, ShapeModelType.ALTWG_SPO_v20190612),
+                "/project/sbmt2/sbmt/data/bodies/bennu/altwg-spo-v20190612/mapcam/imagelist-fullpath-sum.txt", "bennu_altwgspov20190612_mapcam"),
+        BENNU_ALTWG_SPO_V20190612_POLYCAM_APL(SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.RQ36, ShapeModelType.ALTWG_SPO_v20190612),
+                "/project/sbmt2/sbmt/data/bodies/bennu/altwg-spo-v20190612/polycam/imagelist-fullpath-sum.txt", "bennu_altwgspov20190612_polycam"),
+
+        // 0612 INFOFILES
+        BENNU_ALTWG_SPICE_V20190612_MAPCAM_APL(SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.RQ36, ShapeModelType.ALTWG_SPO_v20190612),
+                "/project/sbmt2/sbmt/data/bodies/bennu/altwg-spo-v20190612/mapcam/imagelist-fullpath-info.txt", "bennu_altwgspov20190612_mapcam"),
+        BENNU_ALTWG_SPICE_V20190612_POLYCAM_APL(SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.RQ36, ShapeModelType.ALTWG_SPO_v20190612),
+                "/project/sbmt2/sbmt/data/bodies/bennu/altwg-spo-v20190612/polycam/imagelist-fullpath-info.txt", "bennu_altwgspov20190612_polycam"),
+        BENNU_ALTWG_SPICE_V20190612_NAVCAM_APL(SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.RQ36, ShapeModelType.ALTWG_SPO_v20190612),
+                "/project/sbmt2/sbmt/data/bodies/bennu/altwg-spo-v20190612/navcam/imagelist-fullpath-info.txt", "bennu_altwgspov20190612_navcam"),
         ;
 
         public final SmallBodyViewConfig config;
@@ -1076,140 +1316,4 @@ public class DatabaseGeneratorSql
             this.remotePathToFileList = remotePathToFileList;
         }
     }
-
-    private static void usage()
-    {
-        String o = "This program generates tables in the MySQL database for a given body.\n\n"
-                + "Usage: DatabaseGeneratorSql [options] <imagesource> <shapemodel>\n\n"
-                + "Where:\n"
-                + "  <imagesource>\n"
-                + "          Must be one of the allowed sources for pointing. The tables for this\n"
-                + "          pointing type will be generated. For example, if GASKELL is selected,\n"
-                + "          then only the Gaskell tables are generated; if SPICE is selected, then\n"
-                + "          only the SPICE (PDS) tables are generated. Allowed values are\n"
-                + ImageSource.printSources(16)
-                + "  <shapemodel>\n"
-                + "          shape model to process. Must be one of the values in the RunInfo enumeration\n"
-                + "          such as EROS or ITOKAWA. If ALL is specified then the entire database is\n"
-                + "          regenerated.\n"
-                + "Options:\n"
-                + "  --append-tables\n"
-                + "          If specified, will check to see if database tables of the shape+mode already\n"
-                + "          exist, create one if necessary, and append entries to that table as opposed\n"
-                + "          to deleting existing tables and creating a new one from scratch.\n"
-                + "  --modify-main\n"
-                + "          If specified, will modify main tables directly instead of those with the\n"
-                + "          _beta suffix.  Be very careful when enabling this option.\n"
-                + "  --root-url <url>\n"
-                + "          Root URL from which to get data from. Should begin with file:// to load\n"
-                + "          data directly from file system rather than web server. Default value\n"
-                + "          is file:///disks/d0180/htdocs-sbmt/internal/sbmt.\n\n";
-        System.out.println(o);
-        System.exit(1);
-    }
-
-    /**
-     * @param args
-     * @throws IOException
-     */
-    public static void main(String[] args) throws IOException
-    {
-        final SafeURLPaths safeUrlPaths = SafeURLPaths.instance();
-        // default configuration parameters
-//        String appName = "neartool";
-//        String cacheVersion = "2";
-        boolean aplVersion = true;
-        String rootURL = safeUrlPaths.getUrl("/disks/d0180/htdocs-sbmt/internal/sbmt");
-
-        boolean appendTables = false;
-        boolean modifyMain = false;
-        boolean remote = false;
-
-        int cameraIndex = 0;
-
-        // modify configuration parameters with command line args
-        int i = 0;
-        for (; i < args.length; ++i)
-        {
-            if (args[i].equals("--root-url"))
-            {
-                rootURL = safeUrlPaths.getUrl(args[++i]);
-            }
-            else if (args[i].equals("--append-tables"))
-            {
-                appendTables = true;
-            }
-            else if (args[i].equals("--modify-main"))
-            {
-                modifyMain = true;
-            }
-            else if (args[i].equals("--debug"))
-            {
-                Debug.setEnabled(true);
-            }
-            else if (args[i].equals("--remote"))
-            {
-                remote = true;
-            }
-            else if (args[i].equals("--cameraIndex"))
-            {
-                cameraIndex = Integer.parseInt(args[++i]);
-            }
-            else {
-                // We've encountered something that is not an option, must be at the args
-                break;
-            }
-        }
-
-        // There must be numRequiredArgs arguments remaining after the options.
-        // Otherwise abort.
-        int numberRequiredArgs = 2;
-        if (args.length - i < numberRequiredArgs)
-            usage();
-
-        // basic default configuration, most of these will be overwritten by the configureMission() method
-//        Configuration.setAppName(appName);
-//        Configuration.setCacheVersion(cacheVersion);
-        Configuration.setAPLVersion(aplVersion);
-        Configuration.setRootURL(rootURL);
-
-        SbmtMultiMissionTool.configureMission();
-
-        // authentication
-        Authenticator.authenticate();
-
-        // initialize view config
-        SmallBodyViewConfig.initialize();
-
-        // VTK
-        System.setProperty("java.awt.headless", "true");
-        NativeLibraryLoader.loadVtkLibrariesHeadless();
-
-        ImageSource mode = ImageSource.valueOf(args[i++].toUpperCase());
-        String body = args[i++];
-
-        RunInfo[] runInfos = null;
-        if (body.toUpperCase().equals("ALL"))
-            runInfos = RunInfo.values();
-        else
-            runInfos = new RunInfo[]{RunInfo.valueOf(body.toUpperCase())};
-
-        Mission mission = SbmtMultiMissionTool.getMission();
-        System.out.println("Mission: " + mission);
-
-        for (RunInfo ri : runInfos)
-        {
-            DatabaseGeneratorSql generator = new DatabaseGeneratorSql(ri.config, ri.databasePrefix, appendTables, modifyMain, cameraIndex);
-
-            String pathToFileList = ri.pathToFileList;
-            if (remote)
-            {
-                if (ri.remotePathToFileList != null)
-                    pathToFileList = ri.remotePathToFileList;
-            }
-
-            System.out.println("Generating: " + pathToFileList + ", mode=" + mode);
-            generator.run(pathToFileList, mode);
-        }
-    }
-}
+    */
