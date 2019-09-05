@@ -22,7 +22,9 @@ import edu.jhuapl.sbmt.model.image.ImageSource;
 import edu.jhuapl.sbmt.model.image.ImageType;
 import edu.jhuapl.sbmt.model.image.ImagingInstrument;
 import edu.jhuapl.sbmt.model.image.Instrument;
+import edu.jhuapl.sbmt.model.phobos.MEGANE;
 import edu.jhuapl.sbmt.model.phobos.PhobosExperimentalSearchSpecification;
+import edu.jhuapl.sbmt.model.spectrum.instruments.BasicSpectrumInstrument;
 import edu.jhuapl.sbmt.query.database.GenericPhpQuery;
 import edu.jhuapl.sbmt.query.fixedlist.FixedListQuery;
 import edu.jhuapl.sbmt.tools.DBRunInfo;
@@ -105,7 +107,7 @@ public class MarsConfigs extends SmallBodyViewConfig
         	new DBRunInfo(ImageSource.GASKELL, Instrument.IMAGING_DATA, ShapeModelBody.PHOBOS.toString(), "/project/nearsdc/data/GASKELL/PHOBOS/IMAGING/pdsImageList.txt", ShapeModelBody.PHOBOS.toString().toLowerCase()),
         };
 
-        c.presentInMissions = new SbmtMultiMissionTool.Mission[] {SbmtMultiMissionTool.Mission.PUBLIC_RELEASE, SbmtMultiMissionTool.Mission.TEST_PUBLIC_RELEASE, SbmtMultiMissionTool.Mission.STAGE_APL_INTERNAL, SbmtMultiMissionTool.Mission.APL_INTERNAL, SbmtMultiMissionTool.Mission.TEST_APL_INTERNAL};
+        c.presentInMissions = new SbmtMultiMissionTool.Mission[] {SbmtMultiMissionTool.Mission.PUBLIC_RELEASE, SbmtMultiMissionTool.Mission.TEST_PUBLIC_RELEASE, SbmtMultiMissionTool.Mission.STAGE_PUBLIC_RELEASE, SbmtMultiMissionTool.Mission.STAGE_APL_INTERNAL, SbmtMultiMissionTool.Mission.APL_INTERNAL, SbmtMultiMissionTool.Mission.TEST_APL_INTERNAL};
         c.defaultForMissions = new SbmtMultiMissionTool.Mission[] {};
 
 
@@ -126,7 +128,7 @@ public class MarsConfigs extends SmallBodyViewConfig
 
         c.lidarSearchDataSourceMap = Maps.newHashMap(); // this must be instantiated, but can be empty
 
-        c.presentInMissions = new SbmtMultiMissionTool.Mission[] {SbmtMultiMissionTool.Mission.PUBLIC_RELEASE, SbmtMultiMissionTool.Mission.TEST_PUBLIC_RELEASE, SbmtMultiMissionTool.Mission.STAGE_APL_INTERNAL, SbmtMultiMissionTool.Mission.APL_INTERNAL, SbmtMultiMissionTool.Mission.TEST_APL_INTERNAL};
+        c.presentInMissions = new SbmtMultiMissionTool.Mission[] {SbmtMultiMissionTool.Mission.PUBLIC_RELEASE, SbmtMultiMissionTool.Mission.TEST_PUBLIC_RELEASE, SbmtMultiMissionTool.Mission.STAGE_PUBLIC_RELEASE, SbmtMultiMissionTool.Mission.STAGE_APL_INTERNAL, SbmtMultiMissionTool.Mission.APL_INTERNAL, SbmtMultiMissionTool.Mission.TEST_APL_INTERNAL};
         c.defaultForMissions = new SbmtMultiMissionTool.Mission[] {};
 
 
@@ -277,7 +279,7 @@ public class MarsConfigs extends SmallBodyViewConfig
             	new DBRunInfo(ImageSource.GASKELL, Instrument.IMAGING_DATA, ShapeModelBody.PHOBOS.toString(), "/project/sbmt2/sbmt/data/bodies/phobos/ernst2018/imaging/imagelist-fullpath.txt", "phobos_ernst_2018"),
             };
 
-            c.presentInMissions = new SbmtMultiMissionTool.Mission[] {SbmtMultiMissionTool.Mission.PUBLIC_RELEASE, SbmtMultiMissionTool.Mission.TEST_PUBLIC_RELEASE, SbmtMultiMissionTool.Mission.STAGE_APL_INTERNAL, SbmtMultiMissionTool.Mission.APL_INTERNAL, SbmtMultiMissionTool.Mission.TEST_APL_INTERNAL};
+            c.presentInMissions = new SbmtMultiMissionTool.Mission[] {SbmtMultiMissionTool.Mission.PUBLIC_RELEASE, SbmtMultiMissionTool.Mission.TEST_PUBLIC_RELEASE, SbmtMultiMissionTool.Mission.STAGE_PUBLIC_RELEASE, SbmtMultiMissionTool.Mission.STAGE_APL_INTERNAL, SbmtMultiMissionTool.Mission.APL_INTERNAL, SbmtMultiMissionTool.Mission.TEST_APL_INTERNAL};
             c.defaultForMissions = new SbmtMultiMissionTool.Mission[] {};
 
             configArray.add(c);
@@ -297,7 +299,7 @@ public class MarsConfigs extends SmallBodyViewConfig
 
         c.hasImageMap = true;
         c.setResolution(ImmutableList.of(49152));
-        c.presentInMissions = new SbmtMultiMissionTool.Mission[] {SbmtMultiMissionTool.Mission.PUBLIC_RELEASE, SbmtMultiMissionTool.Mission.TEST_PUBLIC_RELEASE, SbmtMultiMissionTool.Mission.STAGE_APL_INTERNAL, SbmtMultiMissionTool.Mission.APL_INTERNAL, SbmtMultiMissionTool.Mission.TEST_APL_INTERNAL};
+        c.presentInMissions = new SbmtMultiMissionTool.Mission[] {SbmtMultiMissionTool.Mission.PUBLIC_RELEASE, SbmtMultiMissionTool.Mission.TEST_PUBLIC_RELEASE, SbmtMultiMissionTool.Mission.STAGE_PUBLIC_RELEASE, SbmtMultiMissionTool.Mission.STAGE_APL_INTERNAL, SbmtMultiMissionTool.Mission.APL_INTERNAL, SbmtMultiMissionTool.Mission.TEST_APL_INTERNAL};
         c.defaultForMissions = new SbmtMultiMissionTool.Mission[] {};
 
         configArray.add(c);
@@ -394,70 +396,74 @@ public class MarsConfigs extends SmallBodyViewConfig
             	new DBRunInfo(ImageSource.GASKELL, Instrument.IMAGING_DATA, ShapeModelBody.DEIMOS.toString(), "/project/sbmt2/sbmt/data/bodies/deimos/ernst2018/imaging/imagelist-fullpath.txt", "deimos_ernst_2018"),
             };
 
-            c.presentInMissions = new SbmtMultiMissionTool.Mission[] {SbmtMultiMissionTool.Mission.PUBLIC_RELEASE, SbmtMultiMissionTool.Mission.TEST_PUBLIC_RELEASE, SbmtMultiMissionTool.Mission.STAGE_APL_INTERNAL, SbmtMultiMissionTool.Mission.APL_INTERNAL, SbmtMultiMissionTool.Mission.TEST_APL_INTERNAL};
+            c.presentInMissions = new SbmtMultiMissionTool.Mission[] {SbmtMultiMissionTool.Mission.PUBLIC_RELEASE, SbmtMultiMissionTool.Mission.TEST_PUBLIC_RELEASE, SbmtMultiMissionTool.Mission.STAGE_PUBLIC_RELEASE, SbmtMultiMissionTool.Mission.STAGE_APL_INTERNAL, SbmtMultiMissionTool.Mission.APL_INTERNAL, SbmtMultiMissionTool.Mission.TEST_APL_INTERNAL};
             c.defaultForMissions = new SbmtMultiMissionTool.Mission[] {};
 
             configArray.add(c);
 
 
-//            c = new MarsConfigs();
-//            c.body = ShapeModelBody.PHOBOS;
-//            c.type = BodyType.PLANETS_AND_SATELLITES;
-//            c.population = ShapeModelPopulation.MARS;
-//            c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
-//            c.author = ShapeModelType.EXPERIMENTAL;
-//            c.modelLabel = "Ernst et al. (in progress)";
-//            c.version = "with MEGANE";
-//            c.rootDirOnServer = "/phobos/ernst2018-megane";
-//            c.shapeModelFileExtension = ".obj";
-//
-//            c.imagingInstruments = new ImagingInstrument[] {
-//                    new ImagingInstrument(
-//                            SpectralMode.MONO,
-//                            new FixedListQuery("/phobos/ernst2018/imaging", "/phobos/ernst2018/imaging/gallery"),
-//                            ImageType.PHOBOS_IMAGE,
-//                            new ImageSource[]{ ImageSource.GASKELL },
-//                            Instrument.IMAGING_DATA,
-//                            0.,
-//                            "Y" // Note: this means "flip along Y axis". Don't know why, but this flip is needed as of this delivery.
-//                            )
-//            };
-//
-//            c.hasSpectralData=true;
-//            c.spectralInstruments=new BasicSpectrumInstrument[] {
-//                    new MEGANE()
-//            };
-//
-//            c.hasMapmaker = true;
-//            c.imageSearchDefaultStartDate = new GregorianCalendar(1976, 6, 24, 0, 0, 0).getTime();
-//            c.imageSearchDefaultEndDate = new GregorianCalendar(2016, 8, 1, 0, 0, 0).getTime();
-//
-//            c.imageSearchDefaultMaxSpacecraftDistance = 12000.0;
-//            c.imageSearchDefaultMaxResolution = 300.0;
-//
-//            c.hasLidarData = true;
-//            c.lidarSearchDefaultStartDate = new GregorianCalendar(1998, 8, 1, 0, 0, 0).getTime();
-//            c.lidarSearchDefaultEndDate = new GregorianCalendar(1998, 8, 30, 0, 0, 0).getTime();
-//            c.lidarBrowseXYZIndices = new int[] { 0, 1, 2 };
-//            c.lidarBrowseIsLidarInSphericalCoordinates = true;
-//            c.lidarBrowseSpacecraftIndices = new int[] { -1, -1, -1 };
-//            c.lidarBrowseIsTimeInET = true;
-//            c.lidarBrowseTimeIndex = 5;
-//            c.lidarBrowseNoiseIndex = -1;
-//            c.lidarBrowseIsRangeExplicitInData = true;
-//            c.lidarBrowseRangeIndex = 3;
-//            c.lidarBrowseFileListResourcePath = "/GASKELL/PHOBOS/MOLA/allMolaFiles.txt";
-//            c.lidarBrowseNumberHeaderLines = 1;
-//            c.lidarBrowseIsInMeters = true;
-//            c.lidarOffsetScale = 0.025;
-//            c.lidarInstrumentName = Instrument.MOLA;
-//
-//            // MOLA search is disabled for now. See LidarPanel class.
-//            c.hasHypertreeBasedLidarSearch = true;
-//            c.lidarSearchDataSourceMap = new LinkedHashMap<>();
-//            c.lidarSearchDataSourceMap.put("Default", "/GASKELL/PHOBOS/MOLA/tree/dataSource.lidar");
-//
-//            configArray.add(c);
+            c = new MarsConfigs();
+            c.body = ShapeModelBody.PHOBOS;
+            c.type = BodyType.PLANETS_AND_SATELLITES;
+            c.population = ShapeModelPopulation.MARS;
+            c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
+            c.author = ShapeModelType.EXPERIMENTAL;
+            c.modelLabel = "Ernst et al. (in progress)";
+            c.version = "with MEGANE";
+            c.rootDirOnServer = "/phobos/ernst2018-megane";
+            c.shapeModelFileExtension = ".obj";
+
+            c.imagingInstruments = new ImagingInstrument[] {
+                    new ImagingInstrument(
+                            SpectralMode.MONO,
+                            new FixedListQuery("/phobos/ernst2018-megane/imaging", "/phobos/ernst2018-megane/imaging/gallery"),
+                            ImageType.PHOBOS_IMAGE,
+                            new ImageSource[]{ ImageSource.GASKELL },
+                            Instrument.IMAGING_DATA,
+                            0.,
+                            "Y" // Note: this means "flip along Y axis". Don't know why, but this flip is needed as of this delivery.
+                            )
+            };
+
+            c.hasSpectralData=true;
+            c.spectralInstruments=new BasicSpectrumInstrument[] {
+                    new MEGANE()
+            };
+
+            c.hasMapmaker = true;
+            c.imageSearchDefaultStartDate = new GregorianCalendar(1976, 6, 24, 0, 0, 0).getTime();
+            c.imageSearchDefaultEndDate = new GregorianCalendar(2016, 8, 1, 0, 0, 0).getTime();
+
+            c.imageSearchDefaultMaxSpacecraftDistance = 12000.0;
+            c.imageSearchDefaultMaxResolution = 300.0;
+
+            c.hasLidarData = true;
+            c.lidarSearchDefaultStartDate = new GregorianCalendar(1998, 8, 1, 0, 0, 0).getTime();
+            c.lidarSearchDefaultEndDate = new GregorianCalendar(1998, 8, 30, 0, 0, 0).getTime();
+            c.lidarBrowseXYZIndices = new int[] { 0, 1, 2 };
+            c.lidarBrowseIsLidarInSphericalCoordinates = true;
+            c.lidarBrowseSpacecraftIndices = new int[] { -1, -1, -1 };
+            c.lidarBrowseIsTimeInET = true;
+            c.lidarBrowseTimeIndex = 5;
+            c.lidarBrowseNoiseIndex = -1;
+            c.lidarBrowseIsRangeExplicitInData = true;
+            c.lidarBrowseRangeIndex = 3;
+            c.lidarBrowseFileListResourcePath = "/GASKELL/PHOBOS/MOLA/allMolaFiles.txt";
+            c.lidarBrowseNumberHeaderLines = 1;
+            c.lidarBrowseIsInMeters = true;
+            c.lidarOffsetScale = 0.025;
+            c.lidarInstrumentName = Instrument.MOLA;
+
+            // MOLA search is disabled for now. See LidarPanel class.
+            c.hasHypertreeBasedLidarSearch = true;
+            c.lidarSearchDataSourceMap = new LinkedHashMap<>();
+            c.lidarSearchDataSourceMap.put("Default", "/GASKELL/PHOBOS/MOLA/tree/dataSource.lidar");
+
+            c.presentInMissions = new SbmtMultiMissionTool.Mission[] {SbmtMultiMissionTool.Mission.STAGE_APL_INTERNAL, SbmtMultiMissionTool.Mission.APL_INTERNAL, SbmtMultiMissionTool.Mission.TEST_APL_INTERNAL};
+            c.defaultForMissions = new SbmtMultiMissionTool.Mission[] {};
+
+
+            configArray.add(c);
 
 
         }

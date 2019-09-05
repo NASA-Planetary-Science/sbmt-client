@@ -265,7 +265,8 @@ public class SbmtRunnable implements Runnable
 			if (!ShapeModelBody.EARTH.equals(config.body)
 					&& !ShapeModelBody.RQ36.equals(config.body)
 					&& !ShapeModelBody.RYUGU.equals(config.body)
-					&& !ShapeModelPopulation.PLUTO.equals(config.population))
+					&& !ShapeModelPopulation.PLUTO.equals(config.population)
+					&& (!config.getUniqueName().contains("MEGANE")))
             {
                 config.enable(true);
             }

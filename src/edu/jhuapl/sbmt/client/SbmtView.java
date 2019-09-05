@@ -557,6 +557,10 @@ public class SbmtView extends View implements PropertyChangeListener
 //				JComponent component = new SpectrumSearchController(getPolyhedralModelConfig(), getModelManager(), (SbmtInfoWindowManager) getInfoPanelManager(), getPickManager(), getRenderer(), instrument, model).getPanel();
 //				addTab(instrument.getDisplayName(), component);
 			}
+			else if (displayName.equals("MEGANE"))
+			{
+				addTab(instrument.getDisplayName(), new JPanel());
+			}
 
 		}
 

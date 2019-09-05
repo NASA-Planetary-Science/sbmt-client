@@ -43,7 +43,7 @@ public class SmallBodyViewConfigMetadataIO implements MetadataManager
             each.enable(true);
         }
 
-        String rootDir = "/Users/steelrj1/Desktop/configs7/";
+        String rootDir = "/Users/steelrj1/Desktop/configs9/";
 
         List<ViewConfig> builtInConfigs = SmallBodyViewConfig.getBuiltInConfigs();
         for (ViewConfig config : builtInConfigs)
