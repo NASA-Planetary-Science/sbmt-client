@@ -1818,6 +1818,9 @@ public class BennuConfigs extends SmallBodyViewConfig
             specIO.setPathString(c.spectrumMetadataFile);
             c.hierarchicalSpectraSearchSpecification = specIO;
 
+            c.dtmBrowseDataSourceMap.put("Default", "bennu/altwg-spc-v20190105/dtm/browse/fileList.txt");
+
+
             c.hasLidarData = true;
             c.hasHypertreeBasedLidarSearch = true; // enable tree-based lidar searching
             c.lidarInstrumentName = Instrument.OLA;

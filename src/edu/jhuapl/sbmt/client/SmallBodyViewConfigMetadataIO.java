@@ -178,8 +178,10 @@ public class SmallBodyViewConfigMetadataIO implements MetadataManager
         }
 
         //dtm
-        write(dtmBrowseDataSourceMap, c.dtmBrowseDataSourceMap, configMetadata);
-        write(dtmSearchDataSourceMap, c.dtmSearchDataSourceMap, configMetadata);
+        if (c.dtmBrowseDataSourceMap.size() > 0 )
+        	write(dtmBrowseDataSourceMap, c.dtmBrowseDataSourceMap, configMetadata);
+        if (c.dtmSearchDataSourceMap.size() > 0 )
+        	write(dtmSearchDataSourceMap, c.dtmSearchDataSourceMap, configMetadata);
 
         //lidar
         writeDate(lidarSearchDefaultStartDate, c.lidarSearchDefaultStartDate, configMetadata);
@@ -382,8 +384,10 @@ public class SmallBodyViewConfigMetadataIO implements MetadataManager
 	        }
         }
 
-        c.dtmSearchDataSourceMap = read(dtmSearchDataSourceMap, configMetadata);
-        c.dtmBrowseDataSourceMap = read(dtmBrowseDataSourceMap, configMetadata);
+        if (configMetadata.hasKey(dtmSearchDataSourceMap))
+        	c.dtmSearchDataSourceMap = read(dtmSearchDataSourceMap, configMetadata);
+        if (configMetadata.hasKey(dtmBrowseDataSourceMap))
+        	c.dtmBrowseDataSourceMap = read(dtmBrowseDataSourceMap, configMetadata);
 
         if (c.hasLidarData)
         {
