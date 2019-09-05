@@ -615,11 +615,13 @@ public class DatabaseGeneratorSql
         if (args.length - i < numberRequiredArgs)
             usage();
 
+        // Important: set the mission before changing things in the Configuration. Otherwise,
+        // setting the mission will undo those changes.
+        SbmtMultiMissionTool.configureMission();
+
         // basic default configuration, most of these will be overwritten by the configureMission() method
         Configuration.setAPLVersion(aplVersion);
         Configuration.setRootURL(rootURL);
-
-        SbmtMultiMissionTool.configureMission();
 
         // authentication
         Authenticator.authenticate();
