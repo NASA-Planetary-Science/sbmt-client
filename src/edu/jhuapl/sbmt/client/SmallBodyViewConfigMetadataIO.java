@@ -48,22 +48,30 @@ public class SmallBodyViewConfigMetadataIO implements MetadataManager
         List<ViewConfig> builtInConfigs = SmallBodyViewConfig.getBuiltInConfigs();
         for (ViewConfig config : builtInConfigs)
         {
+            try
+            {
 //            System.out.println("SmallBodyViewConfigMetadataIO: main: body is " + config.body);
-            SmallBodyViewConfigMetadataIO io = new SmallBodyViewConfigMetadataIO(config);
-            String version = config.version == null ? "" : config.version;
+                SmallBodyViewConfigMetadataIO io = new SmallBodyViewConfigMetadataIO(config);
+                String version = config.version == null ? "" : config.version;
 
-            File file = new File(rootDir + ((SmallBodyViewConfig)config).rootDirOnServer + "/" + config.author +  "_" + config.body.toString().replaceAll(" ", "_") + version.replaceAll(" ", "_") + ".json");
+                File file = new File(rootDir + ((SmallBodyViewConfig)config).rootDirOnServer + "/" + config.author +  "_" + config.body.toString().replaceAll(" ", "_") + version.replaceAll(" ", "_") + ".json");
 //            if (version != null && (version.length() > 0))
 //            	allBodiesMetadata.put(Key.of(config.getUniqueName()), "http://sbmt.jhuapl.edu/sbmt/prod/data" + ((SmallBodyViewConfig)config).rootDirOnServer + "/" + config.author +  "_" + config.body.toString().replaceAll(" ", "_") + version.replaceAll(" ", "_") + ".json");
 //            else
 //            	allBodiesMetadata.put(Key.of(config.getUniqueName()), "http://sbmt.jhuapl.edu/sbmt/prod/data" + ((SmallBodyViewConfig)config).rootDirOnServer + "/" + config.author +  "_" + config.body.toString().replaceAll(" ", "_") + version.replaceAll(" ", "_") + ".json");
 
-            BasicConfigInfo configInfo = new BasicConfigInfo((BodyViewConfig)config);
-            allBodiesMetadata.put(Key.of(config.getUniqueName()), configInfo.store());
+                BasicConfigInfo configInfo = new BasicConfigInfo((BodyViewConfig)config);
+                allBodiesMetadata.put(Key.of(config.getUniqueName()), configInfo.store());
 
 //            System.out.println("SmallBodyViewConfigMetadataIO: main: file is " + file);
-            if (!file.exists()) file.getParentFile().mkdirs();
-            io.write(config.getUniqueName(), file, io.store());
+                if (!file.exists()) file.getParentFile().mkdirs();
+                io.write(config.getUniqueName(), file, io.store());
+            }
+            catch (Exception e)
+            {
+                System.err.println("WARNING: EXCEPTION! SKIPPING CONFIG " + config.getUniqueName());
+                e.printStackTrace();
+            }
         }
 
         Serializers.serialize("AllBodies", allBodiesMetadata, new File(rootDir + "allBodies.json"));
