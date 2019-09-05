@@ -48,6 +48,8 @@ public class BennuConfigs extends SmallBodyViewConfig
 	public BennuConfigs()
 	{
 		super(ImmutableList.<String>copyOf(DEFAULT_GASKELL_LABELS_PER_RESOLUTION), ImmutableList.<Integer>copyOf(DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION));
+
+		this.defaultForMissions = new SbmtMultiMissionTool.Mission[] {};
 	}
 
 
@@ -316,7 +318,6 @@ public class BennuConfigs extends SmallBodyViewConfig
             c.presentInMissions = new SbmtMultiMissionTool.Mission[] {SbmtMultiMissionTool.Mission.APL_INTERNAL, SbmtMultiMissionTool.Mission.TEST_APL_INTERNAL,SbmtMultiMissionTool.Mission.STAGE_APL_INTERNAL,
             														  SbmtMultiMissionTool.Mission.OSIRIS_REX, SbmtMultiMissionTool.Mission.OSIRIS_REX_DEPLOY,
             														  SbmtMultiMissionTool.Mission.OSIRIS_REX_MIRROR_DEPLOY};
-            c.defaultForMissions = new SbmtMultiMissionTool.Mission[] {};
 
             configArray.add(c);
         }
@@ -341,7 +342,6 @@ public class BennuConfigs extends SmallBodyViewConfig
         c.rotationRate = 0.00040613;
 
         c.presentInMissions = new SbmtMultiMissionTool.Mission[] {SbmtMultiMissionTool.Mission.PUBLIC_RELEASE, SbmtMultiMissionTool.Mission.TEST_PUBLIC_RELEASE, SbmtMultiMissionTool.Mission.STAGE_APL_INTERNAL, SbmtMultiMissionTool.Mission.OSIRIS_REX, SbmtMultiMissionTool.Mission.OSIRIS_REX_DEPLOY, SbmtMultiMissionTool.Mission.OSIRIS_REX_MIRROR_DEPLOY};
-        c.defaultForMissions = new SbmtMultiMissionTool.Mission[] {};
 
         configArray.add(c);
 
@@ -458,7 +458,6 @@ public class BennuConfigs extends SmallBodyViewConfig
             c.presentInMissions = new SbmtMultiMissionTool.Mission[] {SbmtMultiMissionTool.Mission.APL_INTERNAL, SbmtMultiMissionTool.Mission.TEST_APL_INTERNAL,SbmtMultiMissionTool.Mission.STAGE_APL_INTERNAL,
             															SbmtMultiMissionTool.Mission.OSIRIS_REX, SbmtMultiMissionTool.Mission.OSIRIS_REX_DEPLOY,
             															SbmtMultiMissionTool.Mission.OSIRIS_REX_MIRROR_DEPLOY};
-            c.defaultForMissions = new SbmtMultiMissionTool.Mission[] {};
 
             configArray.add(c);
 
@@ -573,7 +572,6 @@ public class BennuConfigs extends SmallBodyViewConfig
             c.presentInMissions = new SbmtMultiMissionTool.Mission[] {SbmtMultiMissionTool.Mission.APL_INTERNAL, SbmtMultiMissionTool.Mission.TEST_APL_INTERNAL,SbmtMultiMissionTool.Mission.STAGE_APL_INTERNAL,
             															SbmtMultiMissionTool.Mission.OSIRIS_REX, SbmtMultiMissionTool.Mission.OSIRIS_REX_DEPLOY,
             															SbmtMultiMissionTool.Mission.OSIRIS_REX_MIRROR_DEPLOY};
-            c.defaultForMissions = new SbmtMultiMissionTool.Mission[] {};
 
             c.databaseRunInfos = new DBRunInfo[]
             {
@@ -1896,8 +1894,6 @@ public class BennuConfigs extends SmallBodyViewConfig
             															SbmtMultiMissionTool.Mission.OSIRIS_REX, SbmtMultiMissionTool.Mission.OSIRIS_REX_DEPLOY,
             															SbmtMultiMissionTool.Mission.OSIRIS_REX_MIRROR_DEPLOY};
 
-            c.defaultForMissions = new SbmtMultiMissionTool.Mission[] {};
-
             if ((SbmtMultiMissionTool.getMission() == SbmtMultiMissionTool.Mission.OSIRIS_REX) || (SbmtMultiMissionTool.getMission() == SbmtMultiMissionTool.Mission.OSIRIS_REX_DEPLOY) ||
                      (SbmtMultiMissionTool.getMission() == SbmtMultiMissionTool.Mission.OSIRIS_REX_MIRROR_DEPLOY))
             {
@@ -2061,8 +2057,6 @@ public class BennuConfigs extends SmallBodyViewConfig
             c.presentInMissions = new SbmtMultiMissionTool.Mission[] {SbmtMultiMissionTool.Mission.APL_INTERNAL, SbmtMultiMissionTool.Mission.TEST_APL_INTERNAL,SbmtMultiMissionTool.Mission.STAGE_APL_INTERNAL,
             															SbmtMultiMissionTool.Mission.OSIRIS_REX, SbmtMultiMissionTool.Mission.OSIRIS_REX_DEPLOY,
             															SbmtMultiMissionTool.Mission.OSIRIS_REX_MIRROR_DEPLOY};
-
-            c.defaultForMissions = new SbmtMultiMissionTool.Mission[] {};
 
             if ((SbmtMultiMissionTool.getMission() == SbmtMultiMissionTool.Mission.OSIRIS_REX) || (SbmtMultiMissionTool.getMission() == SbmtMultiMissionTool.Mission.OSIRIS_REX_DEPLOY) ||
                     (SbmtMultiMissionTool.getMission() == SbmtMultiMissionTool.Mission.OSIRIS_REX_MIRROR_DEPLOY))
@@ -2229,8 +2223,6 @@ public class BennuConfigs extends SmallBodyViewConfig
             															SbmtMultiMissionTool.Mission.OSIRIS_REX, SbmtMultiMissionTool.Mission.OSIRIS_REX_DEPLOY,
             															SbmtMultiMissionTool.Mission.OSIRIS_REX_MIRROR_DEPLOY};
 
-            c.defaultForMissions = new SbmtMultiMissionTool.Mission[] {};
-
             if ((SbmtMultiMissionTool.getMission() == SbmtMultiMissionTool.Mission.OSIRIS_REX) || (SbmtMultiMissionTool.getMission() == SbmtMultiMissionTool.Mission.OSIRIS_REX_DEPLOY) ||
                     (SbmtMultiMissionTool.getMission() == SbmtMultiMissionTool.Mission.OSIRIS_REX_MIRROR_DEPLOY))
             {
@@ -2393,8 +2385,8 @@ public class BennuConfigs extends SmallBodyViewConfig
             c.presentInMissions = new SbmtMultiMissionTool.Mission[] {SbmtMultiMissionTool.Mission.APL_INTERNAL, SbmtMultiMissionTool.Mission.TEST_APL_INTERNAL,SbmtMultiMissionTool.Mission.STAGE_APL_INTERNAL,
             															SbmtMultiMissionTool.Mission.OSIRIS_REX, SbmtMultiMissionTool.Mission.OSIRIS_REX_DEPLOY,
             															SbmtMultiMissionTool.Mission.OSIRIS_REX_MIRROR_DEPLOY};
-            c.defaultForMissions = new SbmtMultiMissionTool.Mission[] {SbmtMultiMissionTool.Mission.OSIRIS_REX, SbmtMultiMissionTool.Mission.OSIRIS_REX_DEPLOY, SbmtMultiMissionTool.Mission.OSIRIS_REX_MIRROR_DEPLOY};
 
+            c.defaultForMissions = new SbmtMultiMissionTool.Mission[] {SbmtMultiMissionTool.Mission.OSIRIS_REX, SbmtMultiMissionTool.Mission.OSIRIS_REX_DEPLOY, SbmtMultiMissionTool.Mission.OSIRIS_REX_MIRROR_DEPLOY};
 
 //            if ((SbmtMultiMissionTool.getMission() == SbmtMultiMissionTool.Mission.OSIRIS_REX) || (SbmtMultiMissionTool.getMission() == SbmtMultiMissionTool.Mission.OSIRIS_REX_DEPLOY) ||
 //                    (SbmtMultiMissionTool.getMission() == SbmtMultiMissionTool.Mission.OSIRIS_REX_MIRROR_DEPLOY))
@@ -2560,8 +2552,6 @@ public class BennuConfigs extends SmallBodyViewConfig
             															SbmtMultiMissionTool.Mission.OSIRIS_REX, SbmtMultiMissionTool.Mission.OSIRIS_REX_DEPLOY,
             															SbmtMultiMissionTool.Mission.OSIRIS_REX_MIRROR_DEPLOY};
 
-            c.defaultForMissions = new SbmtMultiMissionTool.Mission[] {};
-
             if ((SbmtMultiMissionTool.getMission() == SbmtMultiMissionTool.Mission.OSIRIS_REX) || (SbmtMultiMissionTool.getMission() == SbmtMultiMissionTool.Mission.OSIRIS_REX_DEPLOY) ||
                     (SbmtMultiMissionTool.getMission() == SbmtMultiMissionTool.Mission.OSIRIS_REX_MIRROR_DEPLOY))
             {
@@ -2726,8 +2716,6 @@ public class BennuConfigs extends SmallBodyViewConfig
             															SbmtMultiMissionTool.Mission.OSIRIS_REX, SbmtMultiMissionTool.Mission.OSIRIS_REX_DEPLOY,
             															SbmtMultiMissionTool.Mission.OSIRIS_REX_MIRROR_DEPLOY};
 
-            c.defaultForMissions = new SbmtMultiMissionTool.Mission[] {};
-
             if ((SbmtMultiMissionTool.getMission() == SbmtMultiMissionTool.Mission.OSIRIS_REX) || (SbmtMultiMissionTool.getMission() == SbmtMultiMissionTool.Mission.OSIRIS_REX_DEPLOY) ||
                     (SbmtMultiMissionTool.getMission() == SbmtMultiMissionTool.Mission.OSIRIS_REX_MIRROR_DEPLOY))
             {
@@ -2891,7 +2879,6 @@ public class BennuConfigs extends SmallBodyViewConfig
             c.presentInMissions = new SbmtMultiMissionTool.Mission[] {SbmtMultiMissionTool.Mission.APL_INTERNAL, SbmtMultiMissionTool.Mission.TEST_APL_INTERNAL,SbmtMultiMissionTool.Mission.STAGE_APL_INTERNAL,
             															SbmtMultiMissionTool.Mission.OSIRIS_REX, SbmtMultiMissionTool.Mission.OSIRIS_REX_DEPLOY,
             															SbmtMultiMissionTool.Mission.OSIRIS_REX_MIRROR_DEPLOY};
-            c.defaultForMissions = new SbmtMultiMissionTool.Mission[] {};
 
             if ((SbmtMultiMissionTool.getMission() == SbmtMultiMissionTool.Mission.OSIRIS_REX) || (SbmtMultiMissionTool.getMission() == SbmtMultiMissionTool.Mission.OSIRIS_REX_DEPLOY) ||
                     (SbmtMultiMissionTool.getMission() == SbmtMultiMissionTool.Mission.OSIRIS_REX_MIRROR_DEPLOY))
@@ -2901,7 +2888,335 @@ public class BennuConfigs extends SmallBodyViewConfig
             configArray.add(c);
         }
 
-    }
+        if (Configuration.isAPLVersion())
+        {
+            c = new BennuConfigs();
+            c.body = ShapeModelBody.RQ36;
+            c.type = BodyType.ASTEROID;
+            c.population = ShapeModelPopulation.NEO;
+            c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
+            c.author = ShapeModelType.ALTWG_SPO_v20190612;
+            c.modelLabel = "ALTWG-SPO-v20190612";
+            c.rootDirOnServer = "/bennu/altwg-spo-v20190612";
+            c.shapeModelFileExtension = ".obj";
+            c.setResolution(ImmutableList.of(
+                    "Very Low (12288 plates)", DEFAULT_GASKELL_LABELS_PER_RESOLUTION[0], DEFAULT_GASKELL_LABELS_PER_RESOLUTION[1], DEFAULT_GASKELL_LABELS_PER_RESOLUTION[2], DEFAULT_GASKELL_LABELS_PER_RESOLUTION[3]),
+                    ImmutableList.of(12288, DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[0], DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[1], DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[2], DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[3]));
+            c.imageSearchDefaultStartDate = new GregorianCalendar(2000, 0, 1, 0, 0, 0).getTime();
+            c.imageSearchDefaultEndDate = new GregorianCalendar(2050, 0, 1, 0, 0, 0).getTime();
+            c.imageSearchDefaultMaxSpacecraftDistance = 1.0e3;
+            c.imageSearchDefaultMaxResolution = 1.0e3;
+            c.density = 1186.0;
+            c.useMinimumReferencePotential = true;
+            c.rotationRate = 4.0626E-4;
+
+            c.hasImageMap = true;
+
+            if (Configuration.isMac())
+            {
+                // Right now bigmap only works on Macs
+                c.hasBigmap = true;
+            }
+
+            c.imagingInstruments = new ImagingInstrument[] {
+                    new ImagingInstrument(
+                            SpectralMode.MONO,
+                            new GenericPhpQuery(c.rootDirOnServer + "/polycam", "bennu_altwgspov20190612_polycam", "bennu_altwgspov20190612_polycam", c.rootDirOnServer + "/polycam/gallery"),
+//                            new GenericPhpQuery(c.rootDirOnServer + "/polycam", "bennu_altwgspov20190612_polycam", c.rootDirOnServer + "/polycam/gallery"),
+                            ImageType.POLYCAM_FLIGHT_IMAGE,
+                            new ImageSource[]{ImageSource.GASKELL,ImageSource.SPICE},
+                            Instrument.POLYCAM
+                            ),
+                    new ImagingInstrument(
+                            SpectralMode.MONO,
+                            new GenericPhpQuery(c.rootDirOnServer + "/mapcam", "bennu_altwgspov20190612_mapcam", "bennu_altwgspov20190612_mapcam", c.rootDirOnServer + "/mapcam/gallery"),
+                            ImageType.MAPCAM_FLIGHT_IMAGE,
+                            new ImageSource[]{ImageSource.GASKELL,ImageSource.SPICE},
+                            Instrument.MAPCAM
+                            ),
+                    new ImagingInstrument(
+                            SpectralMode.MONO,
+                            new GenericPhpQuery(c.rootDirOnServer + "/navcam", "bennu_altwgspov20190612_navcam", "bennu_altwgspov20190612_navcam", c.rootDirOnServer + "/navcam/gallery"),
+                            ImageType.NAVCAM_FLIGHT_IMAGE,
+                            new ImageSource[]{ImageSource.SPICE},
+                            Instrument.NAVCAM
+                            )
+            };
+
+            c.hasSpectralData = true;
+            c.spectralInstruments = new BasicSpectrumInstrument[] {
+                    new OTES(),
+                    new OVIRS()
+            };
+
+            c.hasStateHistory = true;
+            c.timeHistoryFile = c.rootDirOnServer + "/history/timeHistory.bth";
+
+            c.hasMapmaker = false;
+            c.hasHierarchicalSpectraSearch = true;
+            c.hasHypertreeBasedSpectraSearch = false;
+            c.spectraSearchDataSourceMap = new LinkedHashMap<>();
+            c.spectraSearchDataSourceMap.put("OTES_L2", c.rootDirOnServer + "/otes/l2/hypertree/dataSource.spectra");
+            c.spectraSearchDataSourceMap.put("OTES_L3", c.rootDirOnServer + "/otes/l3/hypertree/dataSource.spectra");
+            c.spectraSearchDataSourceMap.put("OVIRS_IF", c.rootDirOnServer + "/ovirs/l3/if/hypertree/dataSource.spectra");
+            c.spectraSearchDataSourceMap.put("OVIRS_REF", c.rootDirOnServer + "ovirs/l3/reff/hypertree/dataSource.spectra");
+            c.spectrumMetadataFile = c.rootDirOnServer + "/spectraMetadata.json";
+
+            OREXSpectrumInstrumentMetadataIO specIO = new OREXSpectrumInstrumentMetadataIO("OREX");
+            specIO.setPathString(c.spectrumMetadataFile);
+            c.hierarchicalSpectraSearchSpecification = specIO;
+
+            c.hasLidarData = true;
+            c.hasHypertreeBasedLidarSearch = true; // enable tree-based lidar searching
+            c.lidarInstrumentName = Instrument.OLA;
+            c.lidarSearchDefaultStartDate = new GregorianCalendar(2000, 0, 1, 0, 0, 0).getTime();
+            c.lidarSearchDefaultEndDate = new GregorianCalendar(2050, 0, 1, 0, 0, 0).getTime();
+            c.lidarSearchDataSourceMap = new LinkedHashMap<>();
+            c.lidarBrowseDataSourceMap = new LinkedHashMap<>();
+//            c.lidarSearchDataSourceMap.put("Default", c.rootDirOnServer + "/ola/Phase07_OB/tree/dataSource.lidar");
+            c.lidarBrowseDataSourceMap.put("Default", c.rootDirOnServer + "/ola/browse/fileList.txt");
+            c.lidarBrowseFileListResourcePath = c.rootDirOnServer + "/ola/browse/fileList.txt";
+
+            /*
+             * New hypertrees split into phases
+             */
+            ArrayList<Date> startStop = new ArrayList<Date>();
+            startStop.add(c.lidarSearchDefaultStartDate);
+            startStop.add(c.lidarSearchDefaultEndDate);
+            c.lidarSearchDataSourceMap.put("Default", c.rootDirOnServer + "/ola/search/default/dataSource.lidar");
+            c.lidarSearchDataSourceTimeMap.put("Default", startStop);
+
+            startStop = new ArrayList<Date>();
+            startStop.add(c.lidarSearchDefaultStartDate);
+            startStop.add(new GregorianCalendar(2019, 0, 1, 0, 0, 0).getTime());
+            c.lidarSearchDataSourceMap.put("Preliminary", c.rootDirOnServer + "/ola/search/preliminary/dataSource.lidar");
+            c.lidarSearchDataSourceTimeMap.put("Preliminary", startStop);
+
+            startStop = new ArrayList<Date>();
+            startStop.add(new GregorianCalendar(2019, 0, 1, 0, 0, 0).getTime());
+            startStop.add(new GregorianCalendar(2019, 5, 9, 0, 0, 0).getTime());
+            c.lidarSearchDataSourceMap.put("Detailed", c.rootDirOnServer + "/ola/search/detailed/dataSource.lidar");
+            c.lidarSearchDataSourceTimeMap.put("Detailed", startStop);
+
+            startStop = new ArrayList<Date>();
+            startStop.add(new GregorianCalendar(2019, 5, 9, 0, 0, 0).getTime());
+            startStop.add(new GregorianCalendar(2019, 8, 10, 0, 0, 0).getTime());
+            c.lidarSearchDataSourceMap.put("OrbB", c.rootDirOnServer + "/ola/search/orbB/dataSource.lidar");
+            c.lidarSearchDataSourceTimeMap.put("OrbB", startStop);
+
+            startStop = new ArrayList<Date>();
+            startStop.add(new GregorianCalendar(2019, 8, 10, 0, 0, 0).getTime());
+            startStop.add(c.lidarSearchDefaultEndDate);
+            c.lidarSearchDataSourceMap.put("Recon", c.rootDirOnServer + "/ola/search/recon/dataSource.lidar");
+            c.lidarSearchDataSourceTimeMap.put("Recon", startStop);
+
+            /*
+             *
+             */
+
+            c.lidarBrowseXYZIndices = OlaCubesGenerator.xyzIndices;
+            c.lidarBrowseSpacecraftIndices = OlaCubesGenerator.scIndices;
+            c.lidarBrowseIsSpacecraftInSphericalCoordinates = false;
+            c.lidarBrowseTimeIndex = 26;
+            c.lidarBrowseNoiseIndex = 62;
+            c.lidarBrowseOutgoingIntensityIndex = 98;
+            c.lidarBrowseReceivedIntensityIndex = 106;
+            c.lidarBrowseIntensityEnabled = true;
+            c.lidarBrowseNumberHeaderLines = 0;
+            c.lidarBrowseIsInMeters = true;
+            c.lidarBrowseIsBinary = true;
+            c.lidarBrowseBinaryRecordSize = 186;
+            c.lidarOffsetScale = 0.0005;
+
+            c.dtmBrowseDataSourceMap.put("Default", "bennu/altwg-spo-v20190612/dtm/browse/fileList.txt");
+
+            c.databaseRunInfos = new DBRunInfo[]
+            {
+                new DBRunInfo(ImageSource.GASKELL, Instrument.MAPCAM, ShapeModelBody.RQ36.toString(), "/project/sbmt2/sbmt/data/bodies/bennu/altwg-spo-v20190612/mapcam/imagelist-fullpath-sum.txt", "bennu_altwgspov20190612_mapcam"),
+                new DBRunInfo(ImageSource.GASKELL, Instrument.POLYCAM, ShapeModelBody.RQ36.toString(), "/project/sbmt2/sbmt/data/bodies/bennu/altwg-spo-v20190612/polycam/imagelist-fullpath-sum.txt", "bennu_altwgspov20190612_polycam"),
+
+                new DBRunInfo(ImageSource.SPICE, Instrument.MAPCAM, ShapeModelBody.RQ36.toString(), "/project/sbmt2/sbmt/data/bodies/bennu/altwg-spo-v20190612/mapcam/imagelist-fullpath-info.txt", "bennu_altwgspov20190612_mapcam"),
+                new DBRunInfo(ImageSource.SPICE, Instrument.POLYCAM, ShapeModelBody.RQ36.toString(), "/project/sbmt2/sbmt/data/bodies/bennu/altwg-spo-v20190612/polycam/imagelist-fullpath-info.txt", "bennu_altwgspov20190612_polycam"),
+                new DBRunInfo(ImageSource.SPICE, Instrument.NAVCAM, ShapeModelBody.RQ36.toString(), "/project/sbmt2/sbmt/data/bodies/bennu/altwg-spo-v20190612/navcam/imagelist-fullpath-info.txt", "bennu_altwgspov20190612_navcam")
+            };
+
+            c.presentInMissions = new SbmtMultiMissionTool.Mission[] {SbmtMultiMissionTool.Mission.APL_INTERNAL, SbmtMultiMissionTool.Mission.TEST_APL_INTERNAL,SbmtMultiMissionTool.Mission.STAGE_APL_INTERNAL,
+                                                                        SbmtMultiMissionTool.Mission.OSIRIS_REX, SbmtMultiMissionTool.Mission.OSIRIS_REX_DEPLOY,
+                                                                        SbmtMultiMissionTool.Mission.OSIRIS_REX_MIRROR_DEPLOY};
+
+            if ((SbmtMultiMissionTool.getMission() == SbmtMultiMissionTool.Mission.OSIRIS_REX) || (SbmtMultiMissionTool.getMission() == SbmtMultiMissionTool.Mission.OSIRIS_REX_DEPLOY) ||
+                    (SbmtMultiMissionTool.getMission() == SbmtMultiMissionTool.Mission.OSIRIS_REX_MIRROR_DEPLOY))
+            {
+//                ViewConfig.setFirstTimeDefaultModelName(c.getUniqueName());
+            }
+            configArray.add(c);
+        }
+
+        if (Configuration.isAPLVersion())
+        {
+            c = new BennuConfigs();
+            c.body = ShapeModelBody.RQ36;
+            c.type = BodyType.ASTEROID;
+            c.population = ShapeModelPopulation.NEO;
+            c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
+            c.author = ShapeModelType.provide("ALTWG-SPC-v20190828");
+            c.modelLabel = c.author.name();
+            c.rootDirOnServer = "/bennu/altwg-spc-v20190828";
+            c.shapeModelFileExtension = ".obj";
+            c.setResolution(ImmutableList.of(
+                    "Very Low (12288 plates)", DEFAULT_GASKELL_LABELS_PER_RESOLUTION[0], DEFAULT_GASKELL_LABELS_PER_RESOLUTION[1], DEFAULT_GASKELL_LABELS_PER_RESOLUTION[2], DEFAULT_GASKELL_LABELS_PER_RESOLUTION[3]),
+                    ImmutableList.of(12288, DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[0], DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[1], DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[2], DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[3]));
+            c.imageSearchDefaultStartDate = new GregorianCalendar(2000, 0, 1, 0, 0, 0).getTime();
+            c.imageSearchDefaultEndDate = new GregorianCalendar(2050, 0, 1, 0, 0, 0).getTime();
+            c.imageSearchDefaultMaxSpacecraftDistance = 1.0e3;
+            c.imageSearchDefaultMaxResolution = 1.0e3;
+            c.density = 1186.0;
+            c.useMinimumReferencePotential = true;
+            c.rotationRate = 4.0626E-4;
+
+            c.hasImageMap = true;
+
+            if (Configuration.isMac())
+            {
+                // Right now bigmap only works on Macs
+                c.hasBigmap = true;
+            }
+
+            c.imagingInstruments = new ImagingInstrument[] {
+                    new ImagingInstrument(
+                            SpectralMode.MONO,
+                            new GenericPhpQuery(c.rootDirOnServer + "/polycam", "bennu_altwgspcv20190828_polycam", "bennu_altwgspcv20190828_polycam", c.rootDirOnServer + "/polycam/gallery"),
+//                            new GenericPhpQuery(c.rootDirOnServer + "/polycam", "bennu_altwgspcv20190828_polycam", c.rootDirOnServer + "/polycam/gallery"),
+                            ImageType.POLYCAM_FLIGHT_IMAGE,
+                            new ImageSource[]{ImageSource.GASKELL,ImageSource.SPICE},
+                            Instrument.POLYCAM
+                            ),
+                    new ImagingInstrument(
+                            SpectralMode.MONO,
+                            new GenericPhpQuery(c.rootDirOnServer + "/mapcam", "bennu_altwgspcv20190828_mapcam", "bennu_altwgspcv20190828_mapcam", c.rootDirOnServer + "/mapcam/gallery"),
+                            ImageType.MAPCAM_FLIGHT_IMAGE,
+                            new ImageSource[]{ImageSource.GASKELL,ImageSource.SPICE},
+                            Instrument.MAPCAM
+                            ),
+                    new ImagingInstrument(
+                            SpectralMode.MONO,
+                            new GenericPhpQuery(c.rootDirOnServer + "/navcam", "bennu_altwgspcv20190828_navcam", "bennu_altwgspcv20190828_navcam", c.rootDirOnServer + "/navcam/gallery"),
+                            ImageType.NAVCAM_FLIGHT_IMAGE,
+                            new ImageSource[]{ImageSource.SPICE},
+                            Instrument.NAVCAM
+                            )
+            };
+
+            c.hasSpectralData = true;
+            c.spectralInstruments = new BasicSpectrumInstrument[] {
+                    new OTES(),
+                    new OVIRS()
+            };
+
+            c.hasStateHistory = true;
+            c.timeHistoryFile = c.rootDirOnServer + "/history/timeHistory.bth";
+
+            c.hasMapmaker = false;
+            c.hasHierarchicalSpectraSearch = true;
+            c.hasHypertreeBasedSpectraSearch = false;
+            c.spectraSearchDataSourceMap = new LinkedHashMap<>();
+            c.spectraSearchDataSourceMap.put("OTES_L2", c.rootDirOnServer + "/otes/l2/hypertree/dataSource.spectra");
+            c.spectraSearchDataSourceMap.put("OTES_L3", c.rootDirOnServer + "/otes/l3/hypertree/dataSource.spectra");
+            c.spectraSearchDataSourceMap.put("OVIRS_IF", c.rootDirOnServer + "/ovirs/l3/if/hypertree/dataSource.spectra");
+            c.spectraSearchDataSourceMap.put("OVIRS_REF", c.rootDirOnServer + "ovirs/l3/reff/hypertree/dataSource.spectra");
+            c.spectrumMetadataFile = c.rootDirOnServer + "/spectraMetadata.json";
+
+            OREXSpectrumInstrumentMetadataIO specIO = new OREXSpectrumInstrumentMetadataIO("OREX");
+            specIO.setPathString(c.spectrumMetadataFile);
+            c.hierarchicalSpectraSearchSpecification = specIO;
+
+            c.hasLidarData = true;
+            c.hasHypertreeBasedLidarSearch = true; // enable tree-based lidar searching
+            c.lidarInstrumentName = Instrument.OLA;
+            c.lidarSearchDefaultStartDate = new GregorianCalendar(2000, 0, 1, 0, 0, 0).getTime();
+            c.lidarSearchDefaultEndDate = new GregorianCalendar(2050, 0, 1, 0, 0, 0).getTime();
+            c.lidarSearchDataSourceMap = new LinkedHashMap<>();
+            c.lidarBrowseDataSourceMap = new LinkedHashMap<>();
+//            c.lidarSearchDataSourceMap.put("Default", c.rootDirOnServer + "/ola/Phase07_OB/tree/dataSource.lidar");
+            c.lidarBrowseDataSourceMap.put("Default", c.rootDirOnServer + "/ola/browse/fileList.txt");
+            c.lidarBrowseFileListResourcePath = c.rootDirOnServer + "/ola/browse/fileList.txt";
+
+            /*
+             * New hypertrees split into phases
+             */
+            ArrayList<Date> startStop = new ArrayList<Date>();
+            startStop.add(c.lidarSearchDefaultStartDate);
+            startStop.add(c.lidarSearchDefaultEndDate);
+            c.lidarSearchDataSourceMap.put("Default", c.rootDirOnServer + "/ola/search/default/dataSource.lidar");
+            c.lidarSearchDataSourceTimeMap.put("Default", startStop);
+
+            startStop = new ArrayList<Date>();
+            startStop.add(c.lidarSearchDefaultStartDate);
+            startStop.add(new GregorianCalendar(2019, 0, 1, 0, 0, 0).getTime());
+            c.lidarSearchDataSourceMap.put("Preliminary", c.rootDirOnServer + "/ola/search/preliminary/dataSource.lidar");
+            c.lidarSearchDataSourceTimeMap.put("Preliminary", startStop);
+
+            startStop = new ArrayList<Date>();
+            startStop.add(new GregorianCalendar(2019, 0, 1, 0, 0, 0).getTime());
+            startStop.add(new GregorianCalendar(2019, 5, 9, 0, 0, 0).getTime());
+            c.lidarSearchDataSourceMap.put("Detailed", c.rootDirOnServer + "/ola/search/detailed/dataSource.lidar");
+            c.lidarSearchDataSourceTimeMap.put("Detailed", startStop);
+
+            startStop = new ArrayList<Date>();
+            startStop.add(new GregorianCalendar(2019, 5, 9, 0, 0, 0).getTime());
+            startStop.add(new GregorianCalendar(2019, 8, 10, 0, 0, 0).getTime());
+            c.lidarSearchDataSourceMap.put("OrbB", c.rootDirOnServer + "/ola/search/orbB/dataSource.lidar");
+            c.lidarSearchDataSourceTimeMap.put("OrbB", startStop);
+
+            startStop = new ArrayList<Date>();
+            startStop.add(new GregorianCalendar(2019, 8, 10, 0, 0, 0).getTime());
+            startStop.add(c.lidarSearchDefaultEndDate);
+            c.lidarSearchDataSourceMap.put("Recon", c.rootDirOnServer + "/ola/search/recon/dataSource.lidar");
+            c.lidarSearchDataSourceTimeMap.put("Recon", startStop);
+
+            /*
+             *
+             */
+
+            c.lidarBrowseXYZIndices = OlaCubesGenerator.xyzIndices;
+            c.lidarBrowseSpacecraftIndices = OlaCubesGenerator.scIndices;
+            c.lidarBrowseIsSpacecraftInSphericalCoordinates = false;
+            c.lidarBrowseTimeIndex = 26;
+            c.lidarBrowseNoiseIndex = 62;
+            c.lidarBrowseOutgoingIntensityIndex = 98;
+            c.lidarBrowseReceivedIntensityIndex = 106;
+            c.lidarBrowseIntensityEnabled = true;
+            c.lidarBrowseNumberHeaderLines = 0;
+            c.lidarBrowseIsInMeters = true;
+            c.lidarBrowseIsBinary = true;
+            c.lidarBrowseBinaryRecordSize = 186;
+            c.lidarOffsetScale = 0.0005;
+
+            c.dtmBrowseDataSourceMap.put("Default", "bennu/altwg-spc-v20190828/dtm/browse/fileList.txt");
+
+            c.databaseRunInfos = new DBRunInfo[]
+            {
+                new DBRunInfo(ImageSource.GASKELL, Instrument.MAPCAM, ShapeModelBody.RQ36.toString(), "/project/sbmt2/sbmt/data/bodies/bennu/altwg-spc-v20190828/mapcam/imagelist-fullpath-sum.txt", "bennu_altwgspcv20190828_mapcam"),
+                new DBRunInfo(ImageSource.GASKELL, Instrument.POLYCAM, ShapeModelBody.RQ36.toString(), "/project/sbmt2/sbmt/data/bodies/bennu/altwg-spc-v20190828/polycam/imagelist-fullpath-sum.txt", "bennu_altwgspcv20190828_polycam"),
+
+                new DBRunInfo(ImageSource.SPICE, Instrument.MAPCAM, ShapeModelBody.RQ36.toString(), "/project/sbmt2/sbmt/data/bodies/bennu/altwg-spc-v20190828/mapcam/imagelist-fullpath-info.txt", "bennu_altwgspcv20190828_mapcam"),
+                new DBRunInfo(ImageSource.SPICE, Instrument.POLYCAM, ShapeModelBody.RQ36.toString(), "/project/sbmt2/sbmt/data/bodies/bennu/altwg-spc-v20190828/polycam/imagelist-fullpath-info.txt", "bennu_altwgspcv20190828_polycam"),
+                new DBRunInfo(ImageSource.SPICE, Instrument.NAVCAM, ShapeModelBody.RQ36.toString(), "/project/sbmt2/sbmt/data/bodies/bennu/altwg-spc-v20190828/navcam/imagelist-fullpath-info.txt", "bennu_altwgspcv20190828_navcam")
+            };
+
+            c.presentInMissions = new SbmtMultiMissionTool.Mission[] {SbmtMultiMissionTool.Mission.APL_INTERNAL, SbmtMultiMissionTool.Mission.TEST_APL_INTERNAL,SbmtMultiMissionTool.Mission.STAGE_APL_INTERNAL,
+                                                                        SbmtMultiMissionTool.Mission.OSIRIS_REX, SbmtMultiMissionTool.Mission.OSIRIS_REX_DEPLOY,
+                                                                        SbmtMultiMissionTool.Mission.OSIRIS_REX_MIRROR_DEPLOY};
+
+            if ((SbmtMultiMissionTool.getMission() == SbmtMultiMissionTool.Mission.OSIRIS_REX) || (SbmtMultiMissionTool.getMission() == SbmtMultiMissionTool.Mission.OSIRIS_REX_DEPLOY) ||
+                    (SbmtMultiMissionTool.getMission() == SbmtMultiMissionTool.Mission.OSIRIS_REX_MIRROR_DEPLOY))
+            {
+//                ViewConfig.setFirstTimeDefaultModelName(c.getUniqueName());
+            }
+            configArray.add(c);
+        }
+
+   }
 
 	@Override
     public boolean isAccessible()
