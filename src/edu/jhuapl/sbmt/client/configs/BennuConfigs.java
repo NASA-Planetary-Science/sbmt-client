@@ -341,7 +341,7 @@ public class BennuConfigs extends SmallBodyViewConfig
         c.useMinimumReferencePotential = true;
         c.rotationRate = 0.00040613;
 
-        c.presentInMissions = new SbmtMultiMissionTool.Mission[] {SbmtMultiMissionTool.Mission.PUBLIC_RELEASE, SbmtMultiMissionTool.Mission.TEST_PUBLIC_RELEASE, SbmtMultiMissionTool.Mission.STAGE_APL_INTERNAL, SbmtMultiMissionTool.Mission.OSIRIS_REX, SbmtMultiMissionTool.Mission.OSIRIS_REX_DEPLOY, SbmtMultiMissionTool.Mission.OSIRIS_REX_MIRROR_DEPLOY};
+        c.presentInMissions = new SbmtMultiMissionTool.Mission[] {SbmtMultiMissionTool.Mission.PUBLIC_RELEASE, SbmtMultiMissionTool.Mission.TEST_PUBLIC_RELEASE, SbmtMultiMissionTool.Mission.STAGE_PUBLIC_RELEASE, SbmtMultiMissionTool.Mission.STAGE_APL_INTERNAL, SbmtMultiMissionTool.Mission.OSIRIS_REX, SbmtMultiMissionTool.Mission.OSIRIS_REX_DEPLOY, SbmtMultiMissionTool.Mission.OSIRIS_REX_MIRROR_DEPLOY};
 
         configArray.add(c);
 
