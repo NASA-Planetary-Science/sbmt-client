@@ -5,6 +5,7 @@ import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.io.File;
 import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -42,6 +43,7 @@ import edu.jhuapl.saavtk.model.structure.PointModel;
 import edu.jhuapl.saavtk.model.structure.PolygonModel;
 import edu.jhuapl.saavtk.popup.PopupMenu;
 import edu.jhuapl.saavtk.util.Configuration;
+import edu.jhuapl.saavtk.util.FileCache;
 import edu.jhuapl.saavtk.util.Properties;
 import edu.jhuapl.sbmt.dtm.controller.DEMPopupMenuActionListener;
 import edu.jhuapl.sbmt.dtm.controller.ExperimentalDEMController;
@@ -73,7 +75,6 @@ import edu.jhuapl.sbmt.gui.spectrum.SpectrumPanel;
 import edu.jhuapl.sbmt.gui.spectrum.SpectrumPopupMenu;
 import edu.jhuapl.sbmt.gui.spectrum.controllers.CustomSpectraSearchController;
 import edu.jhuapl.sbmt.gui.spectrum.controllers.SpectrumSearchController;
-import edu.jhuapl.sbmt.gui.spectrum.model.NIRS3SearchModel;
 import edu.jhuapl.sbmt.gui.spectrum.model.NISSearchModel;
 import edu.jhuapl.sbmt.gui.time.version2.StateHistoryController;
 import edu.jhuapl.sbmt.model.image.ColorImageCollection;
@@ -111,6 +112,19 @@ public class SbmtView extends View implements PropertyChangeListener
 	private final TrackedMetadataManager stateManager;
 	private final Map<String, MetadataManager> metadataManagers;
 	private Colorbar smallBodyColorbar;
+	private BasicConfigInfo configInfo;
+
+	public SbmtView(StatusBar statusBar, BasicConfigInfo configInfo)
+	{
+		super(statusBar, null);
+		this.configInfo = configInfo;
+		uniqueName = configInfo.uniqueName;
+		shapeModelName = configInfo.shapeModelName;
+    	this.stateManager = TrackedMetadataManager.of("View " + configInfo.uniqueName);
+		this.metadataManagers = new HashMap<>();
+		this.configURL = configInfo.configURL;
+		initializeStateManager();
+	}
 
 	/**
 	 * By default a view should be created empty. Only when the user requests to
@@ -121,9 +135,53 @@ public class SbmtView extends View implements PropertyChangeListener
 	public SbmtView(StatusBar statusBar, SmallBodyViewConfig smallBodyConfig)
 	{
 		super(statusBar, smallBodyConfig);
+		this.configInfo = new BasicConfigInfo(smallBodyConfig);
+		uniqueName = configInfo.uniqueName;
+		shapeModelName = configInfo.shapeModelName;
 		this.stateManager = TrackedMetadataManager.of("View " + getUniqueName());
 		this.metadataManagers = new HashMap<>();
+		this.configURL = configInfo.configURL;
 		initializeStateManager();
+	}
+
+	@Override
+	protected void initialize() throws InvocationTargetException, InterruptedException
+	{
+		if (configInfo != null)
+		{
+			setConfig(SmallBodyViewConfig.getSmallBodyConfig(configInfo));
+		}
+
+		// TODO Auto-generated method stub
+		super.initialize();
+	}
+
+	@Override
+	public String getUniqueName()
+	{
+		if (uniqueName != null) return uniqueName;
+		return super.getUniqueName();
+	}
+
+	@Override
+	public boolean isAccessible()
+	{
+		if (configURL != null)
+		{
+			return FileCache.instance().isAccessible(configURL);
+		}
+		return super.isAccessible();
+	}
+
+	@Override
+	public String getShapeModelName()
+	{
+		if (configURL != null)
+		{
+			String[] parts = uniqueName.split("/");
+			return parts[1];
+		}
+		return super.getShapeModelName();
 	}
 
 	public SmallBodyViewConfig getPolyhedralModelConfig()
@@ -134,13 +192,31 @@ public class SbmtView extends View implements PropertyChangeListener
 	@Override
 	public String getPathRepresentation()
 	{
-		SmallBodyViewConfig config = getPolyhedralModelConfig();
-		ShapeModelType author = config.author;
-		String modelLabel = config.modelLabel;
-		BodyType type = config.type;
-		ShapeModelPopulation population = config.population;
-		ShapeModelDataUsed dataUsed = config.dataUsed;
-		ShapeModelBody body = config.body;
+		ShapeModelType author;
+		String modelLabel;
+		BodyType type;
+		ShapeModelPopulation population;
+		ShapeModelDataUsed dataUsed;
+		ShapeModelBody body;
+		if (configInfo == null)
+		{
+			SmallBodyViewConfig config = getPolyhedralModelConfig();
+			author = config.author;
+			modelLabel = config.modelLabel;
+			type = config.type;
+			population = config.population;
+			dataUsed = config.dataUsed;
+			body = config.body;
+		}
+		else
+		{
+			author = configInfo.author;
+			modelLabel = configInfo.modelLabel;
+			type = configInfo.type;
+			population = configInfo.population;
+			dataUsed = configInfo.dataUsed;
+			body = configInfo.body;
+		}
 		if (ShapeModelType.CUSTOM == author)
 		{
 			return Configuration.getAppTitle() + " - " + ShapeModelType.CUSTOM + " > " + modelLabel;
@@ -162,16 +238,34 @@ public class SbmtView extends View implements PropertyChangeListener
 	public String getDisplayName()
 	{
 		String result = "";
-		SmallBodyViewConfig config = getPolyhedralModelConfig();
-		if (config.modelLabel != null)
-			result = config.modelLabel;
-		else if (config.author == null)
-			result = config.body.toString();
-		else
-			result = config.author.toString();
+		if (configInfo == null)
+		{
+			SmallBodyViewConfig config = getPolyhedralModelConfig();
 
-		if (config.version != null)
-			result = result + " (" + config.version + ")";
+			if (config.modelLabel != null)
+				result = config.modelLabel;
+			else if (config.author == null)
+				result = config.body.toString();
+			else
+				result = config.author.toString();
+
+			if (config.version != null)
+				result = result + " (" + config.version + ")";
+
+		}
+		else
+		{
+			if (configInfo.modelLabel != null)
+				result = configInfo.modelLabel;
+			else if (configInfo.author == null)
+				result = configInfo.body.toString();
+			else
+				result = configInfo.author.toString();
+
+			if (configInfo.version != null)
+				result = result + " (" + configInfo.version + ")";
+		}
+
 
 		return result;
 	}
@@ -179,7 +273,8 @@ public class SbmtView extends View implements PropertyChangeListener
 	@Override
 	public String getModelDisplayName()
 	{
-		ShapeModelBody body = getConfig().body;
+		ShapeModelBody body = null;
+		body = configInfo == null ?  getConfig().body : configInfo.body;
 		return body != null ? body + " / " + getDisplayName() : getDisplayName();
 	}
 
@@ -371,7 +466,7 @@ public class SbmtView extends View implements PropertyChangeListener
 	{
 		addTab(getPolyhedralModelConfig().getShapeModelName(), new SmallBodyControlPanel(getModelManager(), getPolyhedralModelConfig().getShapeModelName()));
 
-		if (getConfig().hasFlybyData)
+		if (getPolyhedralModelConfig().hasFlybyData)
 		{
 			//            addTab("Runs", new SimulationRunsPanel(getModelManager(), (SbmtInfoWindowManager)getInfoPanelManager(), getPickManager(), getRenderer()));
 		}
@@ -458,9 +553,9 @@ public class SbmtView extends View implements PropertyChangeListener
 			}
 			else if (displayName.equals(SpectraType.NIRS3_SPECTRA.getDisplayName()))
 			{
-				NIRS3SearchModel model = new NIRS3SearchModel(getPolyhedralModelConfig(), getModelManager(), (SbmtInfoWindowManager) getInfoPanelManager(), getPickManager(), getRenderer(), instrument);
-				JComponent component = new SpectrumSearchController(getPolyhedralModelConfig(), getModelManager(), (SbmtInfoWindowManager) getInfoPanelManager(), getPickManager(), getRenderer(), instrument, model).getPanel();
-				addTab(instrument.getDisplayName(), component);
+//				NIRS3SearchModel model = new NIRS3SearchModel(getPolyhedralModelConfig(), getModelManager(), (SbmtInfoWindowManager) getInfoPanelManager(), getPickManager(), getRenderer(), instrument);
+//				JComponent component = new SpectrumSearchController(getPolyhedralModelConfig(), getModelManager(), (SbmtInfoWindowManager) getInfoPanelManager(), getPickManager(), getRenderer(), instrument, model).getPanel();
+//				addTab(instrument.getDisplayName(), component);
 			}
 
 		}
@@ -560,7 +655,7 @@ public class SbmtView extends View implements PropertyChangeListener
 //                    getPolyhedralModelConfig().hasMapmaker, getPolyhedralModelConfig().hasBigmap, renderer, getPolyhedralModelConfig());
 //            	addTab("Regional DTMs", component);
 ////			}
-            if (getConfig().hasStateHistory)
+            if (getPolyhedralModelConfig().hasStateHistory)
             {
                 StateHistoryController controller = null;
                 if (getConfig().body == ShapeModelBody.EARTH)
@@ -825,6 +920,11 @@ public class SbmtView extends View implements PropertyChangeListener
 
 			});
 		}
+	}
+
+	public BasicConfigInfo getConfigInfo()
+	{
+		return configInfo;
 	}
 
 }

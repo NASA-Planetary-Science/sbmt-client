@@ -97,7 +97,7 @@ public class SqlManager
        else
        {
            String dbname = "near";
-           if (SbmtMultiMissionTool.getMission() == Mission.HAYABUSA2_STAGE || SbmtMultiMissionTool.getMission() == Mission.HAYABUSA2_DEPLOY)
+           if (SbmtMultiMissionTool.getMission() == Mission.HAYABUSA2_DEPLOY)
                dbname = "sbmt";
            String dbpath = "jdbc:mysql://" + dbFileNamePrefix + ":3306/" + dbname + "?" + "user=" + username + "&password=" + password;
            System.out.println("Connecting to dbpath: " + dbpath);
