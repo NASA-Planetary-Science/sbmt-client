@@ -70,8 +70,8 @@ public class SbmtMultiMissionTool
 		OSIRIS_REX_DEPLOY("7cd84588"),
 		OSIRIS_REX_MIRROR_DEPLOY("7cd84589"),
 		NH_DEPLOY("8ff86312"),
-		STAGE_APL_INTERNAL("f7e441b");
-//		STAGE_PUBLIC_RELEASE("8cc8e12"),
+		STAGE_APL_INTERNAL("f7e441b"),
+		STAGE_PUBLIC_RELEASE("8cc8e12");
 
 		private final String hashedName;
 
@@ -200,7 +200,7 @@ public class SbmtMultiMissionTool
 			Configuration.setAppTitle("SBMT");
 			break;
 		case STAGE_APL_INTERNAL:
-//		case STAGE_PUBLIC_RELEASE:
+		case STAGE_PUBLIC_RELEASE:
 			Configuration.setRootURL("http://sbmt.jhuapl.edu/internal/multi-mission/stage");
 			Configuration.setAppName("sbmt-stage");
 			Configuration.setCacheVersion("2");
@@ -335,7 +335,7 @@ public class SbmtMultiMissionTool
                 case APL_INTERNAL:
                 case PUBLIC_RELEASE:
                 case STAGE_APL_INTERNAL:
-//                case STAGE_PUBLIC_RELEASE:
+                case STAGE_PUBLIC_RELEASE:
                 case TEST_APL_INTERNAL:
                 case TEST_PUBLIC_RELEASE:
                 case NH_DEPLOY:
