@@ -53,6 +53,7 @@ echo "Begin `date`" >> $log 2>&1
 
 if test -d $srcTop/$processingVersion/$processingModelDirectory/$instrumentName; then
   echo "nice $swCheckoutTop/sbmt/bin/DatabaseGeneratorSql.sh --root-url $dbRootUrl --body $bodyId --author $processingModelName --instrument $instrumentName $pointingType $dbTableBaseName > $logDir/DatabaseGeneratorSql.log 2>&1" >> $log 2>&1
+  nice $swCheckoutTop/sbmt/bin/DatabaseGeneratorSql.sh --root-url $dbRootUrl --body $bodyId --author $processingModelName --instrument $instrumentName $pointingType $dbTableBaseName > $logDir/DatabaseGeneratorSql.log 2>&1
   if test $? -ne 0; then
     echo "Error while updating database." >> $log 2>&1
     exit 1
