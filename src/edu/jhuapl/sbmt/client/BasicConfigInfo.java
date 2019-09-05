@@ -129,9 +129,7 @@ public class BasicConfigInfo implements MetadataManager
 		population = ShapeModelPopulation.valueFor(source.get(populationKey));
 		body = ShapeModelBody.valueFor(source.get(bodyKey));
 		dataUsed = ShapeModelDataUsed.valueFor(source.get(dataUsedKey));
-		String fetchedAuthor = source.get(authorKey);
-		if (ShapeModelType.contains(fetchedAuthor) == false) ShapeModelType.create(fetchedAuthor);
-		author = ShapeModelType.valueOf(source.get(authorKey));
+		author = ShapeModelType.provide(source.get(authorKey)); // creates if necessary.
 		shapeModelName = source.get(shapeModelNameKey);
 		uniqueName = source.get(uniqueNameKey);
 		configURL = source.get(configURLKey);

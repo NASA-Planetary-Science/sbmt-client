@@ -129,8 +129,6 @@ public class SmallBodyViewConfig extends BodyViewConfig implements ISmallBodyVie
             	SettableMetadata infoMetadata = (SettableMetadata)metadata.get(key);
             	BasicConfigInfo configInfo = new BasicConfigInfo();
             	configInfo.retrieve(infoMetadata);
-            	ShapeModelType configModelType = configInfo.author;
-            	if (ShapeModelType.contains(configModelType.toString()) == false) ShapeModelType.create(configModelType.toString());
 
             	VIEWCONFIG_IDENTIFIERS.put(key.toString(), configInfo);
             	if (configInfo.uniqueName.equals("Gaskell/433 Eros"))
