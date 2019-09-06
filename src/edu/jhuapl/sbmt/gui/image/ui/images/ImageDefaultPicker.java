@@ -6,7 +6,6 @@ import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseWheelEvent;
 import java.beans.PropertyChangeEvent;
-import java.text.DecimalFormat;
 import java.util.List;
 
 import vtk.vtkActor;
@@ -15,7 +14,6 @@ import vtk.vtkCellPicker;
 import vtk.vtkProp;
 import vtk.vtkPropCollection;
 import vtk.vtkRenderer;
-import vtk.rendering.jogl.vtkJoglPanelComponent;
 
 import edu.jhuapl.saavtk.gui.StatusBar;
 import edu.jhuapl.saavtk.gui.render.Renderer;
@@ -40,18 +38,18 @@ import edu.jhuapl.sbmt.model.image.PerspectiveImage;
  */
 public class ImageDefaultPicker extends DefaultPicker
 {
-    private Renderer renderer;
-    private vtkJoglPanelComponent renWin;
-    private StatusBar statusBar;
-    private ModelManager modelManager;
-    private PopupManager popupManager;
-    private vtkCellPicker mousePressNonSmallBodyCellPicker; // includes all props EXCEPT the small body
-    private vtkCellPicker smallBodyCellPicker; // only includes small body prop
-    private vtkCellPicker allPropsCellPicker; // includes all props including the small body
-    private DecimalFormat decimalFormatter = new DecimalFormat("##0.000");
-    private DecimalFormat decimalFormatter2 = new DecimalFormat("#0.000");
-    private boolean suppressPopups = false;
-    private String distanceStr;
+//    private Renderer renderer;
+//    private vtkJoglPanelComponent renWin;
+//    private StatusBar statusBar;
+//    private ModelManager modelManager;
+//    private PopupManager popupManager;
+//    private vtkCellPicker mousePressNonSmallBodyCellPicker; // includes all props EXCEPT the small body
+//    private vtkCellPicker smallBodyCellPicker; // only includes small body prop
+//    private vtkCellPicker allPropsCellPicker; // includes all props including the small body
+//    private DecimalFormat decimalFormatter = new DecimalFormat("##0.000");
+//    private DecimalFormat decimalFormatter2 = new DecimalFormat("#0.000");
+//    private boolean suppressPopups = false;
+//    private String distanceStr;
 
     public ImageDefaultPicker(
             Renderer renderer,
