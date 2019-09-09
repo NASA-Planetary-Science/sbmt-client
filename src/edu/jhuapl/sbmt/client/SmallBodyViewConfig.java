@@ -62,17 +62,18 @@ public class SmallBodyViewConfig extends BodyViewConfig implements ISmallBodyVie
     	ShapeModelBody bodyType = configInfo.body;
     	ShapeModelType authorType = configInfo.author;
     	String version = configInfo.version;
+
+    	if (authorType == ShapeModelType.CUSTOM)
+    	{
+    		return SmallBodyViewConfig.ofCustom(configInfo.shapeModelName, false);
+    	}
     	if (version != null)
     	{
     		return getSmallBodyConfig(bodyType, authorType, version);
     	}
-    	else if (bodyType != null)
-    	{
-    		return getSmallBodyConfig(bodyType, authorType);
-    	}
     	else
     	{
-    		return SmallBodyViewConfig.ofCustom(configInfo.shapeModelName, false);
+    		return getSmallBodyConfig(bodyType, authorType);
     	}
 
 

@@ -80,6 +80,7 @@ public class SmallBodyViewConfigMetadataIO implements MetadataManager
     }
 
     private List<ViewConfig> configs;
+    private String metadataID;
 
     public SmallBodyViewConfigMetadataIO()
     {
@@ -110,6 +111,7 @@ public class SmallBodyViewConfigMetadataIO implements MetadataManager
     public void read(File file, String metadataID, SmallBodyViewConfig config) throws IOException
     {
         FixedMetadata metadata = Serializers.deserialize(file, metadataID);
+        this.metadataID = metadataID;
         configs.add(config);
         retrieve(metadata);
     }
@@ -325,7 +327,8 @@ public class SmallBodyViewConfigMetadataIO implements MetadataManager
         String[] resolutionsToAdd = read(resolutions, configMetadata);
         c.shapeModelFileNames = read(shapeModelFileNamesKey, configMetadata);
         Integer[] platesPerResToAdd = read(platesPerRes, configMetadata);
-        c.setResolution(ImmutableList.copyOf(resolutionsToAdd), ImmutableList.copyOf(platesPerResToAdd));
+        if (resolutionsToAdd != null && platesPerResToAdd != null)
+        	c.setResolution(ImmutableList.copyOf(resolutionsToAdd), ImmutableList.copyOf(platesPerResToAdd));
         c.timeHistoryFile = read(timeHistoryFile, configMetadata);
         c.hasImageMap = read(hasImageMap, configMetadata);
         c.hasStateHistory = read(hasStateHistory, configMetadata);
@@ -367,7 +370,8 @@ public class SmallBodyViewConfigMetadataIO implements MetadataManager
 	        c.imageSearchUserDefinedCheckBoxesNames = read(imageSearchUserDefinedCheckBoxesNames, configMetadata);
 	        c.imageSearchDefaultMaxSpacecraftDistance = read(imageSearchDefaultMaxSpacecraftDistance, configMetadata);
 	        c.imageSearchDefaultMaxResolution = read(imageSearchDefaultMaxResolution, configMetadata);
-	        c.hasHierarchicalImageSearch = read(hasHierarchicalImageSearch, configMetadata);
+	        if (configMetadata.hasKey(hasHierarchicalImageSearch))
+	        	c.hasHierarchicalImageSearch = read(hasHierarchicalImageSearch, configMetadata);
 
 //        	c.hierarchicalImageSearchSpecification.getMetadataManager().retrieve(read(hierarchicalImageSearchSpecification, configMetadata));
 
@@ -376,8 +380,10 @@ public class SmallBodyViewConfigMetadataIO implements MetadataManager
 
         if (c.hasSpectralData && c.spectralInstruments.length > 0)
         {
-	        c.hasHierarchicalSpectraSearch = read(hasHierarchicalSpectraSearch, configMetadata);
-	        c.hasHypertreeBasedSpectraSearch = read(hasHypertreeBasedSpectraSearch, configMetadata);
+        	if (configMetadata.hasKey(hasHierarchicalSpectraSearch))
+        		c.hasHierarchicalSpectraSearch = read(hasHierarchicalSpectraSearch, configMetadata);
+        	if (configMetadata.hasKey(hasHypertreeBasedSpectraSearch))
+        		c.hasHypertreeBasedSpectraSearch = read(hasHypertreeBasedSpectraSearch, configMetadata);
 	        c.spectraSearchDataSourceMap = read(spectraSearchDataSourceMap, configMetadata);
 	        c.spectrumMetadataFile = read(spectrumMetadataFile, configMetadata);
 
@@ -404,7 +410,6 @@ public class SmallBodyViewConfigMetadataIO implements MetadataManager
 	        c.lidarBrowseDataSourceMap = read(lidarBrowseDataSourceMap, configMetadata);
 
 	        c.lidarSearchDataSourceTimeMap = read(lidarSearchDataSourceTimeMap, configMetadata);
-	        System.out.println("SmallBodyViewConfigMetadataIO: retrieve: lidar search data source time map " + c.lidarSearchDataSourceTimeMap);
 	        c.orexSearchTimeMap = read(orexSearchTimeMap, configMetadata);
 
 	        c.lidarBrowseXYZIndices = read(lidarBrowseXYZIndices, configMetadata);
@@ -425,6 +430,13 @@ public class SmallBodyViewConfigMetadataIO implements MetadataManager
         }
 
         String[] presentInMissionStrings = read(presentInMissions, configMetadata);
+        if (presentInMissionStrings == null)
+        {
+        	presentInMissionStrings = new String[SbmtMultiMissionTool.Mission.values().length];
+        	int ii=0;
+        	for (SbmtMultiMissionTool.Mission mission : SbmtMultiMissionTool.Mission.values())
+        		presentInMissionStrings[ii++] = mission.getHashedName();
+        }
         c.presentInMissions = new SbmtMultiMissionTool.Mission[presentInMissionStrings.length];
         int m=0;
         for (String defStr : presentInMissionStrings)
@@ -455,14 +467,22 @@ public class SmallBodyViewConfigMetadataIO implements MetadataManager
 //	        }
         }
 
-        Metadata[] runInfoMetadata = readMetadataArray(runInfos, configMetadata);
-        c.databaseRunInfos = new DBRunInfo[runInfoMetadata.length];
-        i=0;
-        for (Metadata data : runInfoMetadata)
+        if (configMetadata.hasKey(runInfos))
         {
-        	DBRunInfo info = new DBRunInfo();
-        	info.retrieve(data);
-        	c.databaseRunInfos[i++] = info;
+	        Metadata[] runInfoMetadata = readMetadataArray(runInfos, configMetadata);
+	        c.databaseRunInfos = new DBRunInfo[runInfoMetadata.length];
+	        i=0;
+	        for (Metadata data : runInfoMetadata)
+	        {
+	        	DBRunInfo info = new DBRunInfo();
+	        	info.retrieve(data);
+	        	c.databaseRunInfos[i++] = info;
+	        }
+        }
+
+        if (c.author == ShapeModelType.CUSTOM)
+        {
+        	c.modelLabel = metadataID;
         }
     }
 
