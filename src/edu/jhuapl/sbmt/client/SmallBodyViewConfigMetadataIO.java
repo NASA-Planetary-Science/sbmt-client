@@ -189,6 +189,9 @@ public class SmallBodyViewConfigMetadataIO implements MetadataManager
         write(lidarSearchDataSourceMap, c.lidarSearchDataSourceMap, configMetadata);
         write(lidarBrowseDataSourceMap, c.lidarBrowseDataSourceMap, configMetadata);
 
+        write(lidarSearchDataSourceTimeMap, c.lidarSearchDataSourceTimeMap, configMetadata);
+        write(orexSearchTimeMap, c.orexSearchTimeMap, configMetadata);
+
         write(lidarBrowseXYZIndices, c.lidarBrowseXYZIndices, configMetadata);
         write(lidarBrowseSpacecraftIndices, c.lidarBrowseSpacecraftIndices, configMetadata);
         write(lidarBrowseIsSpacecraftInSphericalCoordinates, c.lidarBrowseIsSpacecraftInSphericalCoordinates, configMetadata);
@@ -400,6 +403,10 @@ public class SmallBodyViewConfigMetadataIO implements MetadataManager
 	        c.lidarSearchDataSourceMap = read(lidarSearchDataSourceMap, configMetadata);
 	        c.lidarBrowseDataSourceMap = read(lidarBrowseDataSourceMap, configMetadata);
 
+	        c.lidarSearchDataSourceTimeMap = read(lidarSearchDataSourceTimeMap, configMetadata);
+	        System.out.println("SmallBodyViewConfigMetadataIO: retrieve: lidar search data source time map " + c.lidarSearchDataSourceTimeMap);
+	        c.orexSearchTimeMap = read(orexSearchTimeMap, configMetadata);
+
 	        c.lidarBrowseXYZIndices = read(lidarBrowseXYZIndices, configMetadata);
 	        c.lidarBrowseSpacecraftIndices = read(lidarBrowseSpacecraftIndices, configMetadata);
 	        c.lidarBrowseIsSpacecraftInSphericalCoordinates = read(lidarBrowseIsSpacecraftInSphericalCoordinates, configMetadata);
@@ -523,6 +530,9 @@ public class SmallBodyViewConfigMetadataIO implements MetadataManager
 
     final Key<Map> lidarSearchDataSourceMap = Key.of("lidarSearchDataSourceMap");
     final Key<Map> lidarBrowseDataSourceMap = Key.of("lidarBrowseDataSourceMap");
+
+    final Key<Map> lidarSearchDataSourceTimeMap = Key.of("lidarSearchDataSourceTimeMap");
+    final Key<Map> orexSearchTimeMap = Key.of("orexSearchTimeMap");
 
     final Key<int[]> lidarBrowseXYZIndices = Key.of("lidarBrowseXYZIndices");
     final Key<int[]> lidarBrowseSpacecraftIndices = Key.of("lidarBrowseSpacecraftIndices");

@@ -133,7 +133,6 @@ public class SmallBodyViewConfig extends BodyViewConfig implements ISmallBodyVie
             	VIEWCONFIG_IDENTIFIERS.put(key.toString(), configInfo);
             	if (configInfo.uniqueName.equals("Gaskell/433 Eros"))
             	{
-            		System.out.println("SmallBodyViewConfig: addRemoteEntries: adding eros gaskell");
             		configs.add(getSmallBodyConfig(ShapeModelBody.EROS, ShapeModelType.GASKELL));
             	}
             }
