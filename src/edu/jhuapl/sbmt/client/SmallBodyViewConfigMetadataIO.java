@@ -110,10 +110,12 @@ public class SmallBodyViewConfigMetadataIO implements MetadataManager
 
     public void read(File file, String metadataID, SmallBodyViewConfig config) throws IOException
     {
+    	String[] modelFileNames = config.getShapeModelFileNames();
         FixedMetadata metadata = Serializers.deserialize(file, metadataID);
         this.metadataID = metadataID;
         configs.add(config);
         retrieve(metadata);
+        config.shapeModelFileNames = modelFileNames;
     }
 
     private SettableMetadata storeConfig(ViewConfig config)
