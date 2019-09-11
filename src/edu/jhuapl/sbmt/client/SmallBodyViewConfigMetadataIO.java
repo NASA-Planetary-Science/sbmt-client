@@ -404,7 +404,6 @@ public class SmallBodyViewConfigMetadataIO implements MetadataManager
 	        c.lidarBrowseDataSourceMap = read(lidarBrowseDataSourceMap, configMetadata);
 
 	        c.lidarSearchDataSourceTimeMap = read(lidarSearchDataSourceTimeMap, configMetadata);
-	        System.out.println("SmallBodyViewConfigMetadataIO: retrieve: lidar search data source time map " + c.lidarSearchDataSourceTimeMap);
 	        c.orexSearchTimeMap = read(orexSearchTimeMap, configMetadata);
 
 	        c.lidarBrowseXYZIndices = read(lidarBrowseXYZIndices, configMetadata);
