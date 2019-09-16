@@ -29,7 +29,7 @@ import edu.jhuapl.sbmt.config.SessionConfiguration;
 import edu.jhuapl.sbmt.config.ShapeModelConfiguration;
 import edu.jhuapl.sbmt.gui.image.model.custom.CustomCylindricalImageKey;
 import edu.jhuapl.sbmt.imaging.instruments.ImagingInstrumentConfiguration;
-import edu.jhuapl.sbmt.lidar.old.OlaCubesGenerator;
+import edu.jhuapl.sbmt.model.bennu.lidar.old.OlaCubesGenerator;
 import edu.jhuapl.sbmt.model.bennu.spectra.otes.OTES;
 import edu.jhuapl.sbmt.model.bennu.spectra.ovirs.OVIRS;
 import edu.jhuapl.sbmt.model.eros.NIS;
@@ -39,6 +39,7 @@ import edu.jhuapl.sbmt.model.image.ImageSource;
 import edu.jhuapl.sbmt.model.image.ImageType;
 import edu.jhuapl.sbmt.model.image.ImagingInstrument;
 import edu.jhuapl.sbmt.model.image.Instrument;
+import edu.jhuapl.sbmt.model.image.SpectralImageMode;
 import edu.jhuapl.sbmt.model.phobos.HierarchicalSearchSpecification;
 import edu.jhuapl.sbmt.model.phobos.PhobosExperimentalSearchSpecification;
 import edu.jhuapl.sbmt.model.ryugu.nirs3.NIRS3;
@@ -48,7 +49,6 @@ import edu.jhuapl.sbmt.query.fixedlist.FixedListQuery;
 import edu.jhuapl.sbmt.spectrum.model.core.BasicSpectrumInstrument;
 import edu.jhuapl.sbmt.spectrum.model.core.search.SpectraHierarchicalSearchSpecification;
 import edu.jhuapl.sbmt.spectrum.model.io.SpectrumInstrumentMetadataIO;
-import edu.jhuapl.sbmt.spectrum.model.sbmtCore.spectra.SpectralMode;
 
 import crucible.crust.metadata.api.Key;
 import crucible.crust.metadata.api.Metadata;
@@ -108,7 +108,7 @@ public class SmallBodyViewConfigTest extends BodyViewConfig implements ISmallBod
 
         c.imagingInstruments = new ImagingInstrument[] {
                 new ImagingInstrument(
-                        SpectralMode.MONO,
+                        SpectralImageMode.MONO,
                         new GenericPhpQuery("/GASKELL/EROS/MSI", "EROS", "/GASKELL/EROS/MSI/gallery"),
                         ImageType.MSI_IMAGE,
                         new ImageSource[]{ImageSource.GASKELL_UPDATED, ImageSource.SPICE},
@@ -217,7 +217,7 @@ public class SmallBodyViewConfigTest extends BodyViewConfig implements ISmallBod
 
         c.imagingInstruments = new ImagingInstrument[] {
                 new ImagingInstrument(
-                        SpectralMode.MONO,
+                        SpectralImageMode.MONO,
                         new GenericPhpQuery("/GASKELL/ITOKAWA/AMICA", "AMICA", "/GASKELL/ITOKAWA/AMICA/gallery"),
                         ImageType.AMICA_IMAGE,
                         new ImageSource[]{ImageSource.GASKELL, ImageSource.SPICE, ImageSource.CORRECTED},
@@ -351,7 +351,7 @@ public class SmallBodyViewConfigTest extends BodyViewConfig implements ISmallBod
             }
             c.imagingInstruments = new ImagingInstrument[] {
                     new ImagingInstrument(
-                            SpectralMode.MONO,
+                            SpectralImageMode.MONO,
                             new GenericPhpQuery("/GASKELL/RQ36_V3/POLYCAM", "RQ36_POLY"),
                             //new FixedListQuery("/GASKELL/RQ36_V3/POLYCAM", true),
                             ImageType.POLYCAM_V3_IMAGE,
@@ -359,7 +359,7 @@ public class SmallBodyViewConfigTest extends BodyViewConfig implements ISmallBod
                             Instrument.POLYCAM
                             ),
                     new ImagingInstrument(
-                            SpectralMode.MONO,
+                            SpectralImageMode.MONO,
                             new GenericPhpQuery("/GASKELL/RQ36_V3/MAPCAM", "RQ36_MAP"),
                             //new FixedListQuery("/GASKELL/RQ36_V3/MAPCAM"),
                             ImageType.MAPCAM_V3_IMAGE,
@@ -442,14 +442,14 @@ public class SmallBodyViewConfigTest extends BodyViewConfig implements ISmallBod
 
             c.imagingInstruments = new ImagingInstrument[] {
                     new ImagingInstrument(
-                            SpectralMode.MONO,
+                            SpectralImageMode.MONO,
                             new GenericPhpQuery(c.rootDirOnServer + "/polycam", "RQ36V4_POLY", c.rootDirOnServer + "/polycam/gallery"),
                             ImageType.POLYCAM_V4_IMAGE,
                             new ImageSource[]{ImageSource.GASKELL},
                             Instrument.POLYCAM
                             ),
                     new ImagingInstrument(
-                            SpectralMode.MONO,
+                            SpectralImageMode.MONO,
                             new GenericPhpQuery(c.rootDirOnServer + "/mapcam", "RQ36V4_MAP", c.rootDirOnServer + "/mapcam/gallery"),
                             ImageType.MAPCAM_V4_IMAGE,
                             new ImageSource[]{ImageSource.GASKELL},
@@ -538,7 +538,7 @@ public class SmallBodyViewConfigTest extends BodyViewConfig implements ISmallBod
 
             c.imagingInstruments = new ImagingInstrument[] {
                     new ImagingInstrument(
-                            SpectralMode.MONO,
+                            SpectralImageMode.MONO,
                             new GenericPhpQuery(c.rootDirOnServer + "/polycam", "bennu_altwgspcv20190105_polycam", "bennu_altwgspcv20190105_polycam", c.rootDirOnServer + "/polycam/gallery"),
 //                            new GenericPhpQuery(c.rootDirOnServer + "/polycam", "bennu_altwgspcv20190105_polycam", c.rootDirOnServer + "/polycam/gallery"),
                             ImageType.POLYCAM_FLIGHT_IMAGE,
@@ -546,14 +546,14 @@ public class SmallBodyViewConfigTest extends BodyViewConfig implements ISmallBod
                             Instrument.POLYCAM
                             ),
                     new ImagingInstrument(
-                            SpectralMode.MONO,
+                            SpectralImageMode.MONO,
                             new GenericPhpQuery(c.rootDirOnServer + "/mapcam", "bennu_altwgspcv20190105_mapcam", "bennu_altwgspcv20190105_mapcam", c.rootDirOnServer + "/mapcam/gallery"),
                             ImageType.MAPCAM_FLIGHT_IMAGE,
                             new ImageSource[]{ImageSource.GASKELL,ImageSource.SPICE},
                             Instrument.MAPCAM
                             ),
                     new ImagingInstrument(
-                            SpectralMode.MONO,
+                            SpectralImageMode.MONO,
                             new GenericPhpQuery(c.rootDirOnServer + "/navcam", "bennu_altwgspcv20190105_navcam", "bennu_altwgspcv20190105_navcam", c.rootDirOnServer + "/navcam/gallery"),
                             ImageType.NAVCAM_FLIGHT_IMAGE,
                             new ImageSource[]{ImageSource.SPICE},
@@ -686,7 +686,7 @@ public class SmallBodyViewConfigTest extends BodyViewConfig implements ISmallBod
 
             c.imagingInstruments = new ImagingInstrument[] {
                     new ImagingInstrument(
-                            SpectralMode.MONO,
+                            SpectralImageMode.MONO,
                             new GenericPhpQuery(c.rootDirOnServer + "/polycam", "bennu_altwgspcv20190114_polycam", "bennu_altwgspcv20190114_polycam", c.rootDirOnServer + "/polycam/gallery"),
 //                            new GenericPhpQuery(c.rootDirOnServer + "/polycam", "bennu_altwgspcv20190114_polycam", c.rootDirOnServer + "/polycam/gallery"),
                             ImageType.POLYCAM_FLIGHT_IMAGE,
@@ -694,14 +694,14 @@ public class SmallBodyViewConfigTest extends BodyViewConfig implements ISmallBod
                             Instrument.POLYCAM
                             ),
                     new ImagingInstrument(
-                            SpectralMode.MONO,
+                            SpectralImageMode.MONO,
                             new GenericPhpQuery(c.rootDirOnServer + "/mapcam", "bennu_altwgspcv20190114_mapcam", "bennu_altwgspcv20190114_mapcam", c.rootDirOnServer + "/mapcam/gallery"),
                             ImageType.MAPCAM_FLIGHT_IMAGE,
                             new ImageSource[]{ImageSource.GASKELL,ImageSource.SPICE},
                             Instrument.MAPCAM
                             ),
                     new ImagingInstrument(
-                            SpectralMode.MONO,
+                            SpectralImageMode.MONO,
                             new GenericPhpQuery(c.rootDirOnServer + "/navcam", "bennu_altwgspcv20190114_navcam", "bennu_altwgspcv20190114_navcam", c.rootDirOnServer + "/navcam/gallery"),
                             ImageType.NAVCAM_FLIGHT_IMAGE,
                             new ImageSource[]{ImageSource.SPICE},
@@ -836,7 +836,7 @@ public class SmallBodyViewConfigTest extends BodyViewConfig implements ISmallBod
 
             c.imagingInstruments = new ImagingInstrument[] {
                     new ImagingInstrument(
-                            SpectralMode.MONO,
+                            SpectralImageMode.MONO,
                             new GenericPhpQuery(c.rootDirOnServer + "/polycam", "bennu_altwgspcv20190117_polycam", "bennu_altwgspcv20190117_polycam", c.rootDirOnServer + "/polycam/gallery"),
 //                            new GenericPhpQuery(c.rootDirOnServer + "/polycam", "bennu_altwgspcv20190117_polycam", c.rootDirOnServer + "/polycam/gallery"),
                             ImageType.POLYCAM_FLIGHT_IMAGE,
@@ -844,14 +844,14 @@ public class SmallBodyViewConfigTest extends BodyViewConfig implements ISmallBod
                             Instrument.POLYCAM
                             ),
                     new ImagingInstrument(
-                            SpectralMode.MONO,
+                            SpectralImageMode.MONO,
                             new GenericPhpQuery(c.rootDirOnServer + "/mapcam", "bennu_altwgspcv20190117_mapcam", "bennu_altwgspcv20190117_mapcam", c.rootDirOnServer + "/mapcam/gallery"),
                             ImageType.MAPCAM_FLIGHT_IMAGE,
                             new ImageSource[]{ImageSource.GASKELL,ImageSource.SPICE},
                             Instrument.MAPCAM
                             ),
                     new ImagingInstrument(
-                            SpectralMode.MONO,
+                            SpectralImageMode.MONO,
                             new GenericPhpQuery(c.rootDirOnServer + "/navcam", "bennu_altwgspcv20190117_navcam", "bennu_altwgspcv20190117_navcam", c.rootDirOnServer + "/navcam/gallery"),
                             ImageType.NAVCAM_FLIGHT_IMAGE,
                             new ImageSource[]{ImageSource.SPICE},
@@ -986,21 +986,21 @@ public class SmallBodyViewConfigTest extends BodyViewConfig implements ISmallBod
 
             c.imagingInstruments = new ImagingInstrument[] {
                     new ImagingInstrument(
-                            SpectralMode.MONO,
+                            SpectralImageMode.MONO,
                             new GenericPhpQuery(c.rootDirOnServer + "/polycam", "bennu_altwgspcv20190121_polycam", "bennu_altwgspcv20190121_polycam", c.rootDirOnServer + "/polycam/gallery"),
                             ImageType.POLYCAM_FLIGHT_IMAGE,
                             new ImageSource[]{ImageSource.GASKELL,ImageSource.SPICE},
                             Instrument.POLYCAM
                             ),
                     new ImagingInstrument(
-                            SpectralMode.MONO,
+                            SpectralImageMode.MONO,
                             new GenericPhpQuery(c.rootDirOnServer + "/mapcam", "bennu_altwgspcv20190121_mapcam", "bennu_altwgspcv20190121_mapcam", c.rootDirOnServer + "/mapcam/gallery"),
                             ImageType.MAPCAM_FLIGHT_IMAGE,
                             new ImageSource[]{ImageSource.GASKELL,ImageSource.SPICE},
                             Instrument.MAPCAM
                             ),
                     new ImagingInstrument(
-                            SpectralMode.MONO,
+                            SpectralImageMode.MONO,
                             new GenericPhpQuery(c.rootDirOnServer + "/navcam", "bennu_altwgspcv20190121_navcam", "bennu_altwgspcv20190121_navcam", c.rootDirOnServer + "/navcam/gallery"),
                             ImageType.NAVCAM_FLIGHT_IMAGE,
                             new ImageSource[]{ImageSource.SPICE},
@@ -1135,7 +1135,7 @@ public class SmallBodyViewConfigTest extends BodyViewConfig implements ISmallBod
 
             c.imagingInstruments = new ImagingInstrument[] {
                     new ImagingInstrument(
-                            SpectralMode.MONO,
+                            SpectralImageMode.MONO,
                             new GenericPhpQuery(c.rootDirOnServer + "/polycam", "bennu_altwgspcv20190207a_polycam", "bennu_altwgspcv20190207a_polycam", c.rootDirOnServer + "/polycam/gallery"),
 //                            new GenericPhpQuery(c.rootDirOnServer + "/polycam", "bennu_altwgspcv20190207a_polycam", c.rootDirOnServer + "/polycam/gallery"),
                             ImageType.POLYCAM_FLIGHT_IMAGE,
@@ -1143,14 +1143,14 @@ public class SmallBodyViewConfigTest extends BodyViewConfig implements ISmallBod
                             Instrument.POLYCAM
                             ),
                     new ImagingInstrument(
-                            SpectralMode.MONO,
+                            SpectralImageMode.MONO,
                             new GenericPhpQuery(c.rootDirOnServer + "/mapcam", "bennu_altwgspcv20190207a_mapcam", "bennu_altwgspcv20190207a_mapcam", c.rootDirOnServer + "/mapcam/gallery"),
                             ImageType.MAPCAM_FLIGHT_IMAGE,
                             new ImageSource[]{ImageSource.GASKELL,ImageSource.SPICE},
                             Instrument.MAPCAM
                             ),
                     new ImagingInstrument(
-                            SpectralMode.MONO,
+                            SpectralImageMode.MONO,
                             new GenericPhpQuery(c.rootDirOnServer + "/navcam", "bennu_altwgspcv20190207a_navcam", "bennu_altwgspcv20190207a_navcam", c.rootDirOnServer + "/navcam/gallery"),
                             ImageType.NAVCAM_FLIGHT_IMAGE,
                             new ImageSource[]{ImageSource.SPICE},
@@ -1285,7 +1285,7 @@ public class SmallBodyViewConfigTest extends BodyViewConfig implements ISmallBod
 
             c.imagingInstruments = new ImagingInstrument[] {
                     new ImagingInstrument(
-                            SpectralMode.MONO,
+                            SpectralImageMode.MONO,
                             new GenericPhpQuery(c.rootDirOnServer + "/polycam", "bennu_altwgspcv20190207b_polycam", "bennu_altwgspcv20190207b_polycam", c.rootDirOnServer + "/polycam/gallery"),
 //                            new GenericPhpQuery(c.rootDirOnServer + "/polycam", "bennu_altwgspcv20190207b_polycam", c.rootDirOnServer + "/polycam/gallery"),
                             ImageType.POLYCAM_FLIGHT_IMAGE,
@@ -1293,14 +1293,14 @@ public class SmallBodyViewConfigTest extends BodyViewConfig implements ISmallBod
                             Instrument.POLYCAM
                             ),
                     new ImagingInstrument(
-                            SpectralMode.MONO,
+                            SpectralImageMode.MONO,
                             new GenericPhpQuery(c.rootDirOnServer + "/mapcam", "bennu_altwgspcv20190207b_mapcam", "bennu_altwgspcv20190207b_mapcam", c.rootDirOnServer + "/mapcam/gallery"),
                             ImageType.MAPCAM_FLIGHT_IMAGE,
                             new ImageSource[]{ImageSource.GASKELL,ImageSource.SPICE},
                             Instrument.MAPCAM
                             ),
                     new ImagingInstrument(
-                            SpectralMode.MONO,
+                            SpectralImageMode.MONO,
                             new GenericPhpQuery(c.rootDirOnServer + "/navcam", "bennu_altwgspcv20190207b_navcam", "bennu_altwgspcv20190207b_navcam", c.rootDirOnServer + "/navcam/gallery"),
                             ImageType.NAVCAM_FLIGHT_IMAGE,
                             new ImageSource[]{ImageSource.SPICE},
@@ -1435,7 +1435,7 @@ public class SmallBodyViewConfigTest extends BodyViewConfig implements ISmallBod
 
             c.imagingInstruments = new ImagingInstrument[] {
                     new ImagingInstrument(
-                            SpectralMode.MONO,
+                            SpectralImageMode.MONO,
                             new GenericPhpQuery(c.rootDirOnServer + "/polycam", "bennu_altwgspcv20190414_polycam", "bennu_altwgspcv20190414_polycam", c.rootDirOnServer + "/polycam/gallery"),
 //                            new GenericPhpQuery(c.rootDirOnServer + "/polycam", "bennu_altwgspcv20190414_polycam", c.rootDirOnServer + "/polycam/gallery"),
                             ImageType.POLYCAM_FLIGHT_IMAGE,
@@ -1443,14 +1443,14 @@ public class SmallBodyViewConfigTest extends BodyViewConfig implements ISmallBod
                             Instrument.POLYCAM
                             ),
                     new ImagingInstrument(
-                            SpectralMode.MONO,
+                            SpectralImageMode.MONO,
                             new GenericPhpQuery(c.rootDirOnServer + "/mapcam", "bennu_altwgspcv20190414_mapcam", "bennu_altwgspcv20190414_mapcam", c.rootDirOnServer + "/mapcam/gallery"),
                             ImageType.MAPCAM_FLIGHT_IMAGE,
                             new ImageSource[]{ImageSource.GASKELL,ImageSource.SPICE},
                             Instrument.MAPCAM
                             ),
                     new ImagingInstrument(
-                            SpectralMode.MONO,
+                            SpectralImageMode.MONO,
                             new GenericPhpQuery(c.rootDirOnServer + "/navcam", "bennu_altwgspcv20190414_navcam", "bennu_altwgspcv20190414_navcam", c.rootDirOnServer + "/navcam/gallery"),
                             ImageType.NAVCAM_FLIGHT_IMAGE,
                             new ImageSource[]{ImageSource.SPICE},
@@ -1841,7 +1841,7 @@ public class SmallBodyViewConfigTest extends BodyViewConfig implements ISmallBod
 
             c.imagingInstruments = new ImagingInstrument[] {
                     new ImagingInstrument(
-                            SpectralMode.MONO,
+                            SpectralImageMode.MONO,
                             new GenericPhpQuery("/GASKELL/CERES/FC", "Ceres", "/GASKELL/CERES/FC/gallery"),
                             ImageType.FCCERES_IMAGE,
                             new ImageSource[]{ImageSource.GASKELL, ImageSource.SPICE},
@@ -1890,7 +1890,7 @@ public class SmallBodyViewConfigTest extends BodyViewConfig implements ISmallBod
 
         c.imagingInstruments = new ImagingInstrument[] {
                 new ImagingInstrument(
-                        SpectralMode.MONO,
+                        SpectralImageMode.MONO,
                         new GenericPhpQuery("/GASKELL/VESTA/FC", "FC", "/GASKELL/VESTA/FC/gallery"),
                         ImageType.FC_IMAGE,
                         new ImageSource[]{ImageSource.GASKELL, ImageSource.SPICE},
@@ -1940,7 +1940,7 @@ public class SmallBodyViewConfigTest extends BodyViewConfig implements ISmallBod
 
             c.imagingInstruments = new ImagingInstrument[] {
                     new ImagingInstrument(
-                            SpectralMode.MONO,
+                            SpectralImageMode.MONO,
                             new FixedListQuery("/GASKELL/LUTETIA/IMAGING", "/GASKELL/LUTETIA/IMAGING/gallery"),
                             ImageType.OSIRIS_IMAGE,
                             new ImageSource[]{ImageSource.GASKELL},
@@ -2036,7 +2036,7 @@ public class SmallBodyViewConfigTest extends BodyViewConfig implements ISmallBod
 
         c.imagingInstruments = new ImagingInstrument[] {
                 new ImagingInstrument(
-                        SpectralMode.MONO,
+                        SpectralImageMode.MONO,
                         new FixedListQuery("/THOMAS/IDA/SSI", "/THOMAS/IDA/SSI/images/gallery"),
                         ImageType.SSI_IDA_IMAGE,
                         new ImageSource[]{ImageSource.CORRECTED},
@@ -2082,7 +2082,7 @@ public class SmallBodyViewConfigTest extends BodyViewConfig implements ISmallBod
 
         c.imagingInstruments = new ImagingInstrument[] {
                 new ImagingInstrument(
-                        SpectralMode.MONO,
+                        SpectralImageMode.MONO,
                         new FixedListQuery("/THOMAS/MATHILDE/MSI", "/THOMAS/MATHILDE/MSI/images/gallery"),
                         ImageType.MSI_MATHILDE_IMAGE,
                         new ImageSource[]{ImageSource.CORRECTED},
@@ -2136,7 +2136,7 @@ public class SmallBodyViewConfigTest extends BodyViewConfig implements ISmallBod
 
         c.imagingInstruments = new ImagingInstrument[] {
                 new ImagingInstrument(
-                        SpectralMode.MONO,
+                        SpectralImageMode.MONO,
                         new FixedListQuery("/THOMAS/GASPRA/SSI", "/THOMAS/GASPRA/SSI/images/gallery"),
                         ImageType.SSI_GASPRA_IMAGE,
                         new ImageSource[]{ImageSource.CORRECTED},
@@ -2225,7 +2225,7 @@ public class SmallBodyViewConfigTest extends BodyViewConfig implements ISmallBod
 
             c.imagingInstruments = new ImagingInstrument[] {
                     new ImagingInstrument(
-                            SpectralMode.MONO,
+                            SpectralImageMode.MONO,
                             new GenericPhpQuery("/THOMAS/DEIMOSEXPERIMENTAL/IMAGING", "DEIMOS", "/THOMAS/DEIMOSEXPERIMENTAL/IMAGING/viking/gallery"),
                             ImageType.DEIMOS_IMAGE,
                             new ImageSource[]{ImageSource.SPICE, ImageSource.CORRECTED},
@@ -2266,7 +2266,7 @@ public class SmallBodyViewConfigTest extends BodyViewConfig implements ISmallBod
 
             c.imagingInstruments = new ImagingInstrument[] {
                     new ImagingInstrument(
-                            SpectralMode.MONO,
+                            SpectralImageMode.MONO,
 //                            new GenericPhpQuery("/deimos/ernst2018/imaging", "DEIMOS_ERNST_2018", "/deimos/ernst2018/imaging/gallery"),
                             new FixedListQuery("/deimos/ernst2018/imaging", "/deimos/ernst2018/imaging/gallery"),
                             ImageType.DEIMOS_IMAGE,
@@ -2308,7 +2308,7 @@ public class SmallBodyViewConfigTest extends BodyViewConfig implements ISmallBod
 
         c.imagingInstruments = new ImagingInstrument[] {
                 new ImagingInstrument(
-                        SpectralMode.MONO,
+                        SpectralImageMode.MONO,
                         new GenericPhpQuery("/GASKELL/PHOBOS/IMAGING", "PHOBOS", "/GASKELL/PHOBOS/IMAGING/images/gallery"),
                         ImageType.PHOBOS_IMAGE,
                         new ImageSource[]{ImageSource.GASKELL, ImageSource.SPICE},
@@ -2385,7 +2385,7 @@ public class SmallBodyViewConfigTest extends BodyViewConfig implements ISmallBod
 
             c.imagingInstruments = new ImagingInstrument[] {
                     new ImagingInstrument(
-                            SpectralMode.MONO,
+                            SpectralImageMode.MONO,
                             new GenericPhpQuery("/GASKELL/PHOBOSEXPERIMENTAL/IMAGING", "PHOBOSEXP", "/GASKELL/PHOBOS/IMAGING/images/gallery"),
                             ImageType.PHOBOS_IMAGE,
                             new ImageSource[]{ImageSource.GASKELL},
@@ -2443,7 +2443,7 @@ public class SmallBodyViewConfigTest extends BodyViewConfig implements ISmallBod
 
             c.imagingInstruments = new ImagingInstrument[] {
                     new ImagingInstrument(
-                            SpectralMode.MONO,
+                            SpectralImageMode.MONO,
 //                            new GenericPhpQuery("/phobos/ernst2018/imaging", "PHOBOS_ERNST_2018", "/phobos/ernst2018/imaging/gallery"),
                             new FixedListQuery("/phobos/ernst2018/imaging", "/phobos/ernst2018/imaging/gallery"),
                             ImageType.PHOBOS_IMAGE,
@@ -2522,10 +2522,10 @@ public class SmallBodyViewConfigTest extends BodyViewConfig implements ISmallBod
 
             // imaging instruments
             c.imagingInstruments = new ImagingInstrument[] {
-                    new ImagingInstrument(SpectralMode.MONO, new GenericPhpQuery("/NEWHORIZONS/JUPITER/IMAGING", "JUPITER", "/NEWHORIZONS/JUPITER/IMAGING/images/gallery"), ImageType.LORRI_IMAGE, new ImageSource[] { ImageSource.SPICE }, Instrument.LORRI),
+                    new ImagingInstrument(SpectralImageMode.MONO, new GenericPhpQuery("/NEWHORIZONS/JUPITER/IMAGING", "JUPITER", "/NEWHORIZONS/JUPITER/IMAGING/images/gallery"), ImageType.LORRI_IMAGE, new ImageSource[] { ImageSource.SPICE }, Instrument.LORRI),
 
                     new ImagingInstrument(
-                            SpectralMode.MULTI,
+                            SpectralImageMode.MULTI,
                             new FixedListQuery("/NEWHORIZONS/JUPITER/MVIC"),
                             ImageType.MVIC_JUPITER_IMAGE,
                             new ImageSource[]{ImageSource.SPICE},
@@ -2533,7 +2533,7 @@ public class SmallBodyViewConfigTest extends BodyViewConfig implements ISmallBod
                             ),
 
                     new ImagingInstrument(
-                            SpectralMode.HYPER,
+                            SpectralImageMode.HYPER,
                             new FixedListQuery("/NEWHORIZONS/JUPITER/LEISA"),
                             ImageType.LEISA_JUPITER_IMAGE,
                             new ImageSource[]{ImageSource.SPICE},
@@ -2578,7 +2578,7 @@ public class SmallBodyViewConfigTest extends BodyViewConfig implements ISmallBod
             // imaging instruments
             c.imagingInstruments = new ImagingInstrument[] {
                     new ImagingInstrument(
-                            SpectralMode.MONO,
+                            SpectralImageMode.MONO,
                             new GenericPhpQuery("/NEWHORIZONS/CALLISTO/IMAGING", "CALLISTO", "/NEWHORIZONS/CALLISTO/IMAGING/images/gallery"),
                             ImageType.LORRI_IMAGE,
                             new ImageSource[]{ImageSource.SPICE},
@@ -2603,7 +2603,7 @@ public class SmallBodyViewConfigTest extends BodyViewConfig implements ISmallBod
             // imaging instruments
             c.imagingInstruments = new ImagingInstrument[] {
                     new ImagingInstrument(
-                            SpectralMode.MONO,
+                            SpectralImageMode.MONO,
                             new GenericPhpQuery("/NEWHORIZONS/EUROPA/IMAGING", "EUROPA", "/NEWHORIZONS/EUROPA/IMAGING/images/gallery"),
                             ImageType.LORRI_IMAGE,
                             new ImageSource[]{ImageSource.SPICE},
@@ -2611,7 +2611,7 @@ public class SmallBodyViewConfigTest extends BodyViewConfig implements ISmallBod
                             ),
 
                     new ImagingInstrument(
-                            SpectralMode.MULTI,
+                            SpectralImageMode.MULTI,
                             new FixedListQuery("/NEWHORIZONS/EUROPA/MVIC"),
                             ImageType.MVIC_JUPITER_IMAGE,
                             new ImageSource[]{ImageSource.SPICE},
@@ -2643,7 +2643,7 @@ public class SmallBodyViewConfigTest extends BodyViewConfig implements ISmallBod
             // imaging instruments
             c.imagingInstruments = new ImagingInstrument[] {
                     new ImagingInstrument(
-                            SpectralMode.MONO,
+                            SpectralImageMode.MONO,
                             new GenericPhpQuery("/NEWHORIZONS/GANYMEDE/IMAGING", "GANYMEDE", "/NEWHORIZONS/GANYMEDE/IMAGING/images/gallery"),
                             ImageType.LORRI_IMAGE,
                             new ImageSource[]{ImageSource.SPICE},
@@ -2651,7 +2651,7 @@ public class SmallBodyViewConfigTest extends BodyViewConfig implements ISmallBod
                             ),
 
                     new ImagingInstrument(
-                            SpectralMode.MULTI,
+                            SpectralImageMode.MULTI,
                             new FixedListQuery("/NEWHORIZONS/GANYMEDE/MVIC"),
                             ImageType.MVIC_JUPITER_IMAGE,
                             new ImageSource[]{ImageSource.SPICE},
@@ -2681,7 +2681,7 @@ public class SmallBodyViewConfigTest extends BodyViewConfig implements ISmallBod
             // imaging instruments
             c.imagingInstruments = new ImagingInstrument[] {
                     new ImagingInstrument(
-                            SpectralMode.MONO,
+                            SpectralImageMode.MONO,
                             new GenericPhpQuery("/NEWHORIZONS/IO/IMAGING", "IO", "/NEWHORIZONS/IO/IMAGING/images/gallery"),
                             ImageType.LORRI_IMAGE,
                             new ImageSource[]{ImageSource.SPICE},
@@ -2689,7 +2689,7 @@ public class SmallBodyViewConfigTest extends BodyViewConfig implements ISmallBod
                             ),
 
                     new ImagingInstrument(
-                            SpectralMode.MULTI,
+                            SpectralImageMode.MULTI,
                             new FixedListQuery("/NEWHORIZONS/IO/MVIC"),
                             ImageType.MVIC_JUPITER_IMAGE,
                             new ImageSource[]{ImageSource.SPICE},
@@ -2717,7 +2717,7 @@ public class SmallBodyViewConfigTest extends BodyViewConfig implements ISmallBod
 
         c.imagingInstruments = new ImagingInstrument[] {
                 new ImagingInstrument(
-                        SpectralMode.MONO,
+                        SpectralImageMode.MONO,
                         new FixedListQuery("/GASKELL/DIONE/IMAGING", "/GASKELL/DIONE/IMAGING/gallery"),
                         ImageType.SATURN_MOON_IMAGE,
                         new ImageSource[]{ImageSource.GASKELL},
@@ -2823,7 +2823,7 @@ public class SmallBodyViewConfigTest extends BodyViewConfig implements ISmallBod
 
         c.imagingInstruments = new ImagingInstrument[] {
                 new ImagingInstrument(
-                        SpectralMode.MONO,
+                        SpectralImageMode.MONO,
                         new FixedListQuery("/GASKELL/MIMAS/IMAGING", "/GASKELL/MIMAS/IMAGING/gallery"),
                         ImageType.SATURN_MOON_IMAGE,
                         new ImageSource[]{ImageSource.GASKELL},
@@ -2866,7 +2866,7 @@ public class SmallBodyViewConfigTest extends BodyViewConfig implements ISmallBod
 
         c.imagingInstruments = new ImagingInstrument[] {
                 new ImagingInstrument(
-                        SpectralMode.MONO,
+                        SpectralImageMode.MONO,
                         new FixedListQuery("/GASKELL/PHOEBE/IMAGING", "/GASKELL/PHOEBE/IMAGING/gallery"),
                         ImageType.SATURN_MOON_IMAGE,
                         new ImageSource[]{ImageSource.GASKELL},
@@ -3004,7 +3004,7 @@ public class SmallBodyViewConfigTest extends BodyViewConfig implements ISmallBod
 
             c.imagingInstruments = new ImagingInstrument[] {
                     new ImagingInstrument(
-                            SpectralMode.MONO,
+                            SpectralImageMode.MONO,
                             new GenericPhpQuery("/GASKELL/67P/IMAGING", "67P", "/GASKELL/67P/IMAGING/images/gallery"),
                             ImageType.OSIRIS_IMAGE,
                             new ImageSource[]{ImageSource.GASKELL},
@@ -3062,7 +3062,7 @@ public class SmallBodyViewConfigTest extends BodyViewConfig implements ISmallBod
 
             c.imagingInstruments = new ImagingInstrument[] {
                     new ImagingInstrument(
-                            SpectralMode.MONO,
+                            SpectralImageMode.MONO,
                             new GenericPhpQuery("/GASKELL/67P_V2/IMAGING", "67P_V2", "/GASKELL/67P_V3/IMAGING/gallery"), // V2 has no gallery but images are in V3 gallery
                             //new FixedListQuery("/GASKELL/67P_V2/IMAGING"),
                             ImageType.OSIRIS_IMAGE,
@@ -3116,7 +3116,7 @@ public class SmallBodyViewConfigTest extends BodyViewConfig implements ISmallBod
 
             c.imagingInstruments = new ImagingInstrument[] {
                     new ImagingInstrument(
-                            SpectralMode.MONO,
+                            SpectralImageMode.MONO,
                             new GenericPhpQuery("/GASKELL/67P_V3/IMAGING", "67P_V3", "/GASKELL/67P_V3/IMAGING/gallery"),
                             //new FixedListQuery("/GASKELL/67P_V3/IMAGING"),
                             ImageType.OSIRIS_IMAGE,
@@ -3183,7 +3183,7 @@ public class SmallBodyViewConfigTest extends BodyViewConfig implements ISmallBod
 
             c.imagingInstruments = new ImagingInstrument[] {
                     new ImagingInstrument(
-                            SpectralMode.MONO,
+                            SpectralImageMode.MONO,
 //                            new GenericPhpQuery("/NEWHORIZONS/PLUTO/IMAGING", "PLUTO"),
                             new FixedListQuery("/NEWHORIZONS/PLUTO/IMAGING", true),
                             ImageType.LORRI_IMAGE,
@@ -3192,7 +3192,7 @@ public class SmallBodyViewConfigTest extends BodyViewConfig implements ISmallBod
                             ),
 
                     new ImagingInstrument(
-                            SpectralMode.MULTI,
+                            SpectralImageMode.MULTI,
                             new FixedListQuery("/NEWHORIZONS/PLUTO/MVIC"),
                             ImageType.MVIC_JUPITER_IMAGE,
                             new ImageSource[]{ImageSource.SPICE},
@@ -3200,7 +3200,7 @@ public class SmallBodyViewConfigTest extends BodyViewConfig implements ISmallBod
                             ),
 
                     new ImagingInstrument(
-                            SpectralMode.HYPER,
+                            SpectralImageMode.HYPER,
                             new FixedListQuery("/NEWHORIZONS/PLUTO/LEISA"),
                             ImageType.LEISA_JUPITER_IMAGE,
                             new ImageSource[]{ImageSource.SPICE},
@@ -3230,7 +3230,7 @@ public class SmallBodyViewConfigTest extends BodyViewConfig implements ISmallBod
 
             c.imagingInstruments = new ImagingInstrument[] {
                     new ImagingInstrument(
-                            SpectralMode.MONO,
+                            SpectralImageMode.MONO,
                             new FixedListQuery("/NEWHORIZONS/CHARON/IMAGING", true),
                             ImageType.LORRI_IMAGE,
                             new ImageSource[]{ImageSource.SPICE, ImageSource.CORRECTED_SPICE},
@@ -3238,7 +3238,7 @@ public class SmallBodyViewConfigTest extends BodyViewConfig implements ISmallBod
                             ),
 
                     new ImagingInstrument(
-                            SpectralMode.MULTI,
+                            SpectralImageMode.MULTI,
                             new FixedListQuery("/NEWHORIZONS/CHARON/MVIC"),
                             ImageType.MVIC_JUPITER_IMAGE,
                             new ImageSource[]{ImageSource.SPICE},
@@ -3246,7 +3246,7 @@ public class SmallBodyViewConfigTest extends BodyViewConfig implements ISmallBod
                             ),
 
                     new ImagingInstrument(
-                            SpectralMode.HYPER,
+                            SpectralImageMode.HYPER,
                             new FixedListQuery("/NEWHORIZONS/CHARON/LEISA"),
                             ImageType.LEISA_JUPITER_IMAGE,
                             new ImageSource[]{ImageSource.SPICE},
@@ -3271,7 +3271,7 @@ public class SmallBodyViewConfigTest extends BodyViewConfig implements ISmallBod
             c.hasColoringData = false;
             c.imagingInstruments = new ImagingInstrument[] {
                     new ImagingInstrument(
-                            SpectralMode.MONO,
+                            SpectralImageMode.MONO,
                             new FixedListQuery("/NEWHORIZONS/HYDRA/IMAGING", true),
                             ImageType.LORRI_IMAGE,
                             new ImageSource[]{ImageSource.SPICE, ImageSource.CORRECTED_SPICE},
@@ -3279,7 +3279,7 @@ public class SmallBodyViewConfigTest extends BodyViewConfig implements ISmallBod
                             ),
 
                     new ImagingInstrument(
-                            SpectralMode.MULTI,
+                            SpectralImageMode.MULTI,
                             new FixedListQuery("/NEWHORIZONS/HYDRA/MVIC"),
                             ImageType.MVIC_JUPITER_IMAGE,
                             new ImageSource[]{ImageSource.SPICE},
@@ -3287,7 +3287,7 @@ public class SmallBodyViewConfigTest extends BodyViewConfig implements ISmallBod
                             ),
 
                     new ImagingInstrument(
-                            SpectralMode.HYPER,
+                            SpectralImageMode.HYPER,
                             new FixedListQuery("/NEWHORIZONS/HYDRA/LEISA"),
                             ImageType.LEISA_JUPITER_IMAGE,
                             new ImageSource[]{ImageSource.SPICE},
@@ -3322,7 +3322,7 @@ public class SmallBodyViewConfigTest extends BodyViewConfig implements ISmallBod
             c.hasColoringData = false;
             c.imagingInstruments = new ImagingInstrument[] {
                     new ImagingInstrument(
-                            SpectralMode.MONO,
+                            SpectralImageMode.MONO,
                             new FixedListQuery("/NEWHORIZONS/NIX/IMAGING", true),
                             ImageType.LORRI_IMAGE,
                             new ImageSource[]{ImageSource.SPICE, ImageSource.CORRECTED_SPICE},
@@ -3330,7 +3330,7 @@ public class SmallBodyViewConfigTest extends BodyViewConfig implements ISmallBod
                             ),
 
                     new ImagingInstrument(
-                            SpectralMode.MULTI,
+                            SpectralImageMode.MULTI,
                             new FixedListQuery("/NEWHORIZONS/NIX/MVIC"),
                             ImageType.MVIC_JUPITER_IMAGE,
                             new ImageSource[]{ImageSource.SPICE},
@@ -3338,7 +3338,7 @@ public class SmallBodyViewConfigTest extends BodyViewConfig implements ISmallBod
                             ),
 
                     new ImagingInstrument(
-                            SpectralMode.HYPER,
+                            SpectralImageMode.HYPER,
                             new FixedListQuery("/NEWHORIZONS/NIX/LEISA"),
                             ImageType.LEISA_JUPITER_IMAGE,
                             new ImageSource[]{ImageSource.SPICE},
@@ -3372,7 +3372,7 @@ public class SmallBodyViewConfigTest extends BodyViewConfig implements ISmallBod
 
         c.imagingInstruments = new ImagingInstrument[] {
                 new ImagingInstrument(
-                        SpectralMode.MONO,
+                        SpectralImageMode.MONO,
                         new FixedListQuery("/GASKELL/TELESTO/IMAGING", "/GASKELL/TELESTO/IMAGING/gallery"),
                         ImageType.SATURN_MOON_IMAGE,
                         new ImageSource[]{ImageSource.GASKELL},
@@ -3410,7 +3410,7 @@ public class SmallBodyViewConfigTest extends BodyViewConfig implements ISmallBod
                 QueryBase queryBase = new FixedListQuery(fileLocator.get(SBMTFileLocator.TOP_PATH).getLocation(""), fileLocator.get(SBMTFileLocator.GALLERY_FILE).getLocation(""));
                 Builder<ImagingInstrumentConfiguration> imagingInstBuilder = ImagingInstrumentConfiguration.builder(
                         Instrument.MAPCAM,
-                        SpectralMode.MONO,
+                        SpectralImageMode.MONO,
                         queryBase,
                         new ImageSource[] { ImageSource.SPICE },
                         fileLocator,
@@ -3428,7 +3428,7 @@ public class SmallBodyViewConfigTest extends BodyViewConfig implements ISmallBod
                 QueryBase queryBase = new FixedListQuery(fileLocator.get(SBMTFileLocator.TOP_PATH).getLocation(""), fileLocator.get(SBMTFileLocator.GALLERY_FILE).getLocation(""));
                 Builder<ImagingInstrumentConfiguration> imagingInstBuilder = ImagingInstrumentConfiguration.builder(
                         Instrument.POLYCAM,
-                        SpectralMode.MONO,
+                        SpectralImageMode.MONO,
                         queryBase,
                         new ImageSource[] { ImageSource.SPICE },
                         fileLocator,
@@ -3446,7 +3446,7 @@ public class SmallBodyViewConfigTest extends BodyViewConfig implements ISmallBod
                 QueryBase queryBase = new FixedListQuery(fileLocator.get(SBMTFileLocator.TOP_PATH).getLocation(""), fileLocator.get(SBMTFileLocator.GALLERY_FILE).getLocation(""));
                 Builder<ImagingInstrumentConfiguration> imagingInstBuilder = ImagingInstrumentConfiguration.builder(
                         Instrument.SAMCAM,
-                        SpectralMode.MONO,
+                        SpectralImageMode.MONO,
                         queryBase,
                         new ImageSource[] { ImageSource.SPICE },
                         fileLocator,
@@ -3535,7 +3535,7 @@ public class SmallBodyViewConfigTest extends BodyViewConfig implements ISmallBod
                 QueryBase queryBase = new FixedListQuery(fileLocator.get(SBMTFileLocator.TOP_PATH).getLocation(""), fileLocator.get(SBMTFileLocator.GALLERY_FILE).getLocation(""));
                 Builder<ImagingInstrumentConfiguration> imagingInstBuilder = ImagingInstrumentConfiguration.builder(
                         Instrument.MAPCAM,
-                        SpectralMode.MONO,
+                        SpectralImageMode.MONO,
                         queryBase,
                         new ImageSource[] { ImageSource.SPICE },
                         fileLocator,
@@ -3553,7 +3553,7 @@ public class SmallBodyViewConfigTest extends BodyViewConfig implements ISmallBod
                 QueryBase queryBase = new FixedListQuery(fileLocator.get(SBMTFileLocator.TOP_PATH).getLocation(""), fileLocator.get(SBMTFileLocator.GALLERY_FILE).getLocation(""));
                 Builder<ImagingInstrumentConfiguration> imagingInstBuilder = ImagingInstrumentConfiguration.builder(
                         Instrument.POLYCAM,
-                        SpectralMode.MONO,
+                        SpectralImageMode.MONO,
                         queryBase,
                         new ImageSource[] { ImageSource.SPICE },
                         fileLocator,
@@ -3571,7 +3571,7 @@ public class SmallBodyViewConfigTest extends BodyViewConfig implements ISmallBod
                 QueryBase queryBase = new FixedListQuery(fileLocator.get(SBMTFileLocator.TOP_PATH).getLocation(""), fileLocator.get(SBMTFileLocator.GALLERY_FILE).getLocation(""));
                 Builder<ImagingInstrumentConfiguration> imagingInstBuilder = ImagingInstrumentConfiguration.builder(
                         Instrument.SAMCAM,
-                        SpectralMode.MONO,
+                        SpectralImageMode.MONO,
                         queryBase,
                         new ImageSource[] { ImageSource.SPICE },
                         fileLocator,
@@ -3727,7 +3727,7 @@ public class SmallBodyViewConfigTest extends BodyViewConfig implements ISmallBod
               QueryBase queryBase = new FixedListQuery(fileLocator.get(SBMTFileLocator.TOP_PATH).getLocation(""), fileLocator.get(SBMTFileLocator.GALLERY_FILE).getLocation(""));
               Builder<ImagingInstrumentConfiguration> imagingInstBuilder = ImagingInstrumentConfiguration.builder(
                       Instrument.TIR,
-                      SpectralMode.MONO,
+                      SpectralImageMode.MONO,
                       queryBase,
                       new ImageSource[] { ImageSource.SPICE },
                       fileLocator,
@@ -5808,7 +5808,7 @@ public class SmallBodyViewConfigTest extends BodyViewConfig implements ISmallBod
 
             c.imagingInstruments = new ImagingInstrument[] {
                     new ImagingInstrument(
-                            SpectralMode.MONO,
+                            SpectralImageMode.MONO,
                             new FixedListQuery(c.rootDirOnServer + "/lorri", c.rootDirOnServer + "/lorri/gallery"),
                             ImageType.LORRI_IMAGE,
                             new ImageSource[]{ImageSource.SPICE, ImageSource.GASKELL},
@@ -5854,7 +5854,7 @@ public class SmallBodyViewConfigTest extends BodyViewConfig implements ISmallBod
 
     private static ImagingInstrument setupImagingInstrument(SBMTFileLocator fileLocator, SBMTBodyConfiguration bodyConfig, ShapeModelConfiguration modelConfig, Instrument instrument, QueryBase queryBase, ImageSource[] imageSources, ImageType imageType)
     {
-        Builder<ImagingInstrumentConfiguration> imagingInstBuilder = ImagingInstrumentConfiguration.builder(instrument, SpectralMode.MONO, queryBase, imageSources, fileLocator, imageType);
+        Builder<ImagingInstrumentConfiguration> imagingInstBuilder = ImagingInstrumentConfiguration.builder(instrument, SpectralImageMode.MONO, queryBase, imageSources, fileLocator, imageType);
 
         // Put it all together in a session.
         Builder<SessionConfiguration> builder = SessionConfiguration.builder(bodyConfig, modelConfig, fileLocator);

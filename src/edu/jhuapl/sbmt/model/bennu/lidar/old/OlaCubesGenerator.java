@@ -1,4 +1,4 @@
-package edu.jhuapl.sbmt.lidar.old;
+package edu.jhuapl.sbmt.model.bennu.lidar.old;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedWriter;

@@ -10,8 +10,8 @@ import edu.jhuapl.sbmt.client.BodyType;
 import edu.jhuapl.sbmt.client.ShapeModelDataUsed;
 import edu.jhuapl.sbmt.client.ShapeModelPopulation;
 import edu.jhuapl.sbmt.client.SmallBodyViewConfig;
-import edu.jhuapl.sbmt.model.bennu.otes.SpectraHierarchicalSearchSpecification;
 import edu.jhuapl.sbmt.model.image.Instrument;
+import edu.jhuapl.sbmt.spectrum.model.core.search.SpectraHierarchicalSearchSpecification;
 
 public class DisabledConfigs extends SmallBodyViewConfig
 {

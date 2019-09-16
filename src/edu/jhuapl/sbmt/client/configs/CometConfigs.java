@@ -14,13 +14,13 @@ import edu.jhuapl.sbmt.client.SbmtMultiMissionTool;
 import edu.jhuapl.sbmt.client.ShapeModelDataUsed;
 import edu.jhuapl.sbmt.client.ShapeModelPopulation;
 import edu.jhuapl.sbmt.client.SmallBodyViewConfig;
-import edu.jhuapl.sbmt.client.SpectralMode;
-import edu.jhuapl.sbmt.model.bennu.otes.SpectraHierarchicalSearchSpecification;
 import edu.jhuapl.sbmt.model.image.ImageSource;
 import edu.jhuapl.sbmt.model.image.ImageType;
 import edu.jhuapl.sbmt.model.image.ImagingInstrument;
 import edu.jhuapl.sbmt.model.image.Instrument;
+import edu.jhuapl.sbmt.model.image.SpectralImageMode;
 import edu.jhuapl.sbmt.query.database.GenericPhpQuery;
+import edu.jhuapl.sbmt.spectrum.model.core.search.SpectraHierarchicalSearchSpecification;
 import edu.jhuapl.sbmt.tools.DBRunInfo;
 
 public class CometConfigs extends SmallBodyViewConfig
@@ -132,7 +132,7 @@ public class CometConfigs extends SmallBodyViewConfig
 
             c.imagingInstruments = new ImagingInstrument[] {
                     new ImagingInstrument( //
-                            SpectralMode.MONO, //
+                            SpectralImageMode.MONO, //
                             new GenericPhpQuery("/GASKELL/67P/IMAGING", "67P", "/GASKELL/67P/IMAGING/images/gallery"), //
                             ImageType.OSIRIS_IMAGE, //
                             new ImageSource[]{ImageSource.GASKELL}, //
@@ -208,7 +208,7 @@ public class CometConfigs extends SmallBodyViewConfig
 
             c.imagingInstruments = new ImagingInstrument[] {
                     new ImagingInstrument( //
-                            SpectralMode.MONO, //
+                            SpectralImageMode.MONO, //
                             new GenericPhpQuery("/GASKELL/67P_V2/IMAGING", "67P_V2", "/GASKELL/67P_V3/IMAGING/gallery"), // V2 has no gallery but images are in V3 gallery //
                             //new FixedListQuery("/GASKELL/67P_V2/IMAGING"), //
                             ImageType.OSIRIS_IMAGE, //
@@ -271,7 +271,7 @@ public class CometConfigs extends SmallBodyViewConfig
 
             c.imagingInstruments = new ImagingInstrument[] {
                     new ImagingInstrument( //
-                            SpectralMode.MONO, //
+                            SpectralImageMode.MONO, //
                             new GenericPhpQuery("/GASKELL/67P_V3/IMAGING", "67P_V3", "/GASKELL/67P_V3/IMAGING/gallery"), //
                             //new FixedListQuery("/GASKELL/67P_V3/IMAGING"), //
                             ImageType.OSIRIS_IMAGE, //

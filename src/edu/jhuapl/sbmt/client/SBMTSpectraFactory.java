@@ -22,6 +22,9 @@ import edu.jhuapl.sbmt.model.eros.NISSearchModel;
 import edu.jhuapl.sbmt.model.eros.NISSpectrum;
 import edu.jhuapl.sbmt.model.eros.NISSpectrumMath;
 import edu.jhuapl.sbmt.model.eros.NisQuery;
+import edu.jhuapl.sbmt.model.phobos.MEGANE;
+import edu.jhuapl.sbmt.model.phobos.MEGANEQuery;
+import edu.jhuapl.sbmt.model.phobos.MEGANESpectrumMath;
 import edu.jhuapl.sbmt.model.ryugu.nirs3.NIRS3;
 import edu.jhuapl.sbmt.model.ryugu.nirs3.NIRS3Query;
 import edu.jhuapl.sbmt.model.ryugu.nirs3.NIRS3SpectrumMath;
@@ -44,6 +47,8 @@ public class SBMTSpectraFactory
 		SpectraTypeFactory.registerSpectraType("OVIRS", OVIRSQuery.getInstance(), OVIRSSpectrumMath.getInstance(), "um", new OVIRS().getBandCenters());
 		SpectraTypeFactory.registerSpectraType("NIS", NisQuery.getInstance(), NISSpectrumMath.getSpectrumMath(), "cm^-1", new NIS().getBandCenters());
 		SpectraTypeFactory.registerSpectraType("NIRS3", NIRS3Query.getInstance(), NIRS3SpectrumMath.getInstance(), "cm^-1", new NIRS3().getBandCenters());
+		SpectraTypeFactory.registerSpectraType("MEGANE", MEGANEQuery.getInstance(), MEGANESpectrumMath.getInstance(), "cm^-1", new MEGANE().getBandCenters());
+
 
 		SpectrumBuilder<String, ISmallBodyModel, BasicSpectrumInstrument> nisSpectra = new SpectrumBuilder<String, ISmallBodyModel, BasicSpectrumInstrument>()
 		{

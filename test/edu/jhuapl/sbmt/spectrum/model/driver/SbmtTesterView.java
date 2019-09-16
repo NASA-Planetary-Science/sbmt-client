@@ -70,6 +70,7 @@ import edu.jhuapl.sbmt.model.image.IImagingInstrument;
 import edu.jhuapl.sbmt.model.image.ImageCollection;
 import edu.jhuapl.sbmt.model.image.ImageCubeCollection;
 import edu.jhuapl.sbmt.model.image.PerspectiveImageBoundaryCollection;
+import edu.jhuapl.sbmt.model.image.SpectralImageMode;
 import edu.jhuapl.sbmt.model.lidar.LidarFileSpecManager;
 import edu.jhuapl.sbmt.model.lidar.LidarTrackManager;
 import edu.jhuapl.sbmt.model.ryugu.nirs3.NIRS3SearchModel;
@@ -77,7 +78,6 @@ import edu.jhuapl.sbmt.model.time.StateHistoryCollection;
 import edu.jhuapl.sbmt.spectrum.controllers.custom.CustomSpectraSearchController;
 import edu.jhuapl.sbmt.spectrum.model.core.BasicSpectrumInstrument;
 import edu.jhuapl.sbmt.spectrum.model.hypertree.SpectraSearchDataCollection;
-import edu.jhuapl.sbmt.spectrum.model.sbmtCore.spectra.SpectralMode;
 import edu.jhuapl.sbmt.spectrum.model.statistics.SpectrumStatisticsCollection;
 import edu.jhuapl.sbmt.spectrum.rendering.SpectraCollection;
 import edu.jhuapl.sbmt.spectrum.rendering.SpectrumBoundaryCollection;
@@ -294,7 +294,7 @@ public class SbmtTesterView extends View implements PropertyChangeListener
 
 		for (IImagingInstrument instrument : getPolyhedralModelConfig().imagingInstruments)
 		{
-			if (instrument.getSpectralMode() == SpectralMode.MONO)
+			if (instrument.getSpectralMode() == SpectralImageMode.MONO)
 			{
 				ImageCollection images = (ImageCollection) getModelManager().getModel(ModelNames.IMAGES);
 				PerspectiveImageBoundaryCollection boundaries = (PerspectiveImageBoundaryCollection) getModelManager().getModel(ModelNames.PERSPECTIVE_IMAGE_BOUNDARIES);
@@ -311,7 +311,7 @@ public class SbmtTesterView extends View implements PropertyChangeListener
 				registerPopup(getModel(ModelNames.CUBE_IMAGES), popupMenu);
 			}
 
-			else if (instrument.getSpectralMode() == SpectralMode.MULTI)
+			else if (instrument.getSpectralMode() == SpectralImageMode.MULTI)
 			{
 				ImageCollection images = (ImageCollection) getModel(ModelNames.IMAGES);
 				PerspectiveImageBoundaryCollection boundaries = (PerspectiveImageBoundaryCollection) getModel(ModelNames.PERSPECTIVE_IMAGE_BOUNDARIES);
@@ -323,7 +323,7 @@ public class SbmtTesterView extends View implements PropertyChangeListener
 				popupMenu = new ColorImagePopupMenu(colorImages, (SbmtInfoWindowManager) getInfoPanelManager(), getModelManager(), getRenderer());
 				registerPopup(getModel(ModelNames.COLOR_IMAGES), popupMenu);
 			}
-			else if (instrument.getSpectralMode() == SpectralMode.HYPER)
+			else if (instrument.getSpectralMode() == SpectralImageMode.HYPER)
 			{
 				ImageCollection images = (ImageCollection) getModel(ModelNames.IMAGES);
 				PerspectiveImageBoundaryCollection boundaries = (PerspectiveImageBoundaryCollection) getModel(ModelNames.PERSPECTIVE_IMAGE_BOUNDARIES);

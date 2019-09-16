@@ -16,8 +16,9 @@ import edu.jhuapl.saavtk.model.ShapeModelType;
 import edu.jhuapl.saavtk.util.Configuration;
 import edu.jhuapl.sbmt.model.image.ImagingInstrument;
 import edu.jhuapl.sbmt.model.image.Instrument;
-import edu.jhuapl.sbmt.model.spectrum.SpectrumInstrumentFactory;
-import edu.jhuapl.sbmt.model.spectrum.instruments.BasicSpectrumInstrument;
+import edu.jhuapl.sbmt.spectrum.model.core.BasicSpectrumInstrument;
+import edu.jhuapl.sbmt.spectrum.model.core.SpectrumInstrumentFactory;
+import edu.jhuapl.sbmt.spectrum.model.core.search.SpectraHierarchicalSearchSpecification;
 import edu.jhuapl.sbmt.tools.Authenticator;
 import edu.jhuapl.sbmt.tools.DBRunInfo;
 
@@ -26,6 +27,7 @@ import crucible.crust.metadata.api.Metadata;
 import crucible.crust.metadata.api.MetadataManager;
 import crucible.crust.metadata.api.Version;
 import crucible.crust.metadata.impl.FixedMetadata;
+import crucible.crust.metadata.impl.InstanceGetter;
 import crucible.crust.metadata.impl.SettableMetadata;
 import crucible.crust.metadata.impl.gson.Serializers;
 
@@ -143,7 +145,13 @@ public class SmallBodyViewConfigMetadataIO implements MetadataManager
 
         writeMetadataArray(imagingInstruments, c.imagingInstruments, configMetadata);
 
-        writeMetadataArray(spectralInstruments, c.spectralInstruments, configMetadata);
+        Metadata[] spectrumInstrumentMetadata = new Metadata[c.spectralInstruments.length];
+        int i=0;
+        for (BasicSpectrumInstrument inst : c.spectralInstruments)
+    	{
+        	spectrumInstrumentMetadata[i++] = InstanceGetter.defaultInstanceGetter().providesMetadataFromGenericObject(BasicSpectrumInstrument.class).provide(inst);
+    	}
+        write(spectralInstruments, spectrumInstrumentMetadata, configMetadata);
 
         write(hasLidarData, c.hasLidarData, configMetadata);
         write(hasHypertreeBasedLidarSearch, c.hasHypertreeBasedLidarSearch, configMetadata);
@@ -178,7 +186,8 @@ public class SmallBodyViewConfigMetadataIO implements MetadataManager
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
-            write(hierarchicalSpectraSearchSpecification, c.hierarchicalSpectraSearchSpecification.getMetadataManager().store(), configMetadata);
+            Metadata spectralMetadata = InstanceGetter.defaultInstanceGetter().providesMetadataFromGenericObject(SpectraHierarchicalSearchSpecification.class).provide(c.hierarchicalSpectraSearchSpecification);
+            write(hierarchicalSpectraSearchSpecification, spectralMetadata, configMetadata);
         }
 
         //dtm
@@ -214,7 +223,7 @@ public class SmallBodyViewConfigMetadataIO implements MetadataManager
         if (c.defaultForMissions != null)
         {
 	        String[] defaultStrings = new String[c.defaultForMissions.length];
-	        int i=0;
+	        i=0;
 	        for (SbmtMultiMissionTool.Mission mission : c.defaultForMissions)
 	        {
 	        	defaultStrings[i++] = mission.getHashedName();
@@ -223,7 +232,7 @@ public class SmallBodyViewConfigMetadataIO implements MetadataManager
         }
 
         String[] presentStrings = new String[c.presentInMissions.length];
-        int i=0;
+        i=0;
         for (SbmtMultiMissionTool.Mission mission : c.presentInMissions)
         {
         	presentStrings[i++] = mission.getHashedName();
@@ -345,14 +354,18 @@ public class SmallBodyViewConfigMetadataIO implements MetadataManager
             c.imagingInstruments[i++] = inst;
         }
 
-        Metadata[] spectralMetadata = readMetadataArray(spectralInstruments, configMetadata);
+        Metadata[] spectralMetadata = InstanceGetter.defaultInstanceGetter().providesGenericObjectFromMetadata(spectralInstruments).provide(configMetadata);
+//        Metadata spectralMetadata = readMetadataArray(spectralInstruments, configMetadata);
         c.spectralInstruments = new BasicSpectrumInstrument[spectralMetadata.length];
+        Key<BasicSpectrumInstrument> BASIC_SPECTRUM_INSTRUMENT_KEY = Key.of("basicSpectrumInstrument");
+
         i=0;
         for (Metadata data : spectralMetadata)
         {
             String instrumentName = (String)data.get(Key.of("displayName"));
             BasicSpectrumInstrument inst = SpectrumInstrumentFactory.getInstrumentForName(instrumentName);
-            inst.retrieve(data);
+            inst = InstanceGetter.defaultInstanceGetter().providesGenericObjectFromMetadata(BASIC_SPECTRUM_INSTRUMENT_KEY).provide(data);
+//            inst.retrieve(data);
             c.spectralInstruments[i++] = inst;
         }
 

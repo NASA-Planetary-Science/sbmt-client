@@ -15,16 +15,16 @@ import edu.jhuapl.sbmt.client.SbmtMultiMissionTool;
 import edu.jhuapl.sbmt.client.ShapeModelDataUsed;
 import edu.jhuapl.sbmt.client.ShapeModelPopulation;
 import edu.jhuapl.sbmt.client.SmallBodyViewConfig;
-import edu.jhuapl.sbmt.client.SpectralMode;
-import edu.jhuapl.sbmt.model.bennu.otes.SpectraHierarchicalSearchSpecification;
 import edu.jhuapl.sbmt.model.eros.NIS;
 import edu.jhuapl.sbmt.model.image.ImageSource;
 import edu.jhuapl.sbmt.model.image.ImageType;
 import edu.jhuapl.sbmt.model.image.ImagingInstrument;
 import edu.jhuapl.sbmt.model.image.Instrument;
-import edu.jhuapl.sbmt.model.spectrum.instruments.BasicSpectrumInstrument;
+import edu.jhuapl.sbmt.model.image.SpectralImageMode;
 import edu.jhuapl.sbmt.query.database.GenericPhpQuery;
 import edu.jhuapl.sbmt.query.fixedlist.FixedListQuery;
+import edu.jhuapl.sbmt.spectrum.model.core.BasicSpectrumInstrument;
+import edu.jhuapl.sbmt.spectrum.model.core.search.SpectraHierarchicalSearchSpecification;
 import edu.jhuapl.sbmt.tools.DBRunInfo;
 
 public class AsteroidConfigs extends SmallBodyViewConfig
@@ -55,7 +55,7 @@ public class AsteroidConfigs extends SmallBodyViewConfig
 
         c.imagingInstruments = new ImagingInstrument[] {
                 new ImagingInstrument( //
-                        SpectralMode.MONO, //
+                        SpectralImageMode.MONO, //
                         new GenericPhpQuery("/GASKELL/EROS/MSI", "EROS", "/GASKELL/EROS/MSI/gallery"), //
                         ImageType.MSI_IMAGE, //
                         new ImageSource[]{ImageSource.GASKELL_UPDATED, ImageSource.SPICE}, //
@@ -200,7 +200,7 @@ public class AsteroidConfigs extends SmallBodyViewConfig
 
         c.imagingInstruments = new ImagingInstrument[] {
                 new ImagingInstrument( //
-                        SpectralMode.MONO, //
+                        SpectralImageMode.MONO, //
                         new GenericPhpQuery("/GASKELL/ITOKAWA/AMICA", "AMICA", "/GASKELL/ITOKAWA/AMICA/gallery"), //
                         ImageType.AMICA_IMAGE, //
                         new ImageSource[]{ImageSource.GASKELL, ImageSource.SPICE, ImageSource.CORRECTED}, //
@@ -308,7 +308,7 @@ public class AsteroidConfigs extends SmallBodyViewConfig
 
             c.imagingInstruments = new ImagingInstrument[] {
                     new ImagingInstrument( //
-                            SpectralMode.MONO, //
+                            SpectralImageMode.MONO, //
                             new GenericPhpQuery("/GASKELL/CERES/FC", "Ceres", "/GASKELL/CERES/FC/gallery"), //
                             ImageType.FCCERES_IMAGE, //
                             new ImageSource[]{ImageSource.GASKELL, ImageSource.SPICE}, //
@@ -357,7 +357,7 @@ public class AsteroidConfigs extends SmallBodyViewConfig
 
         c.imagingInstruments = new ImagingInstrument[] {
                 new ImagingInstrument( //
-                        SpectralMode.MONO, //
+                        SpectralImageMode.MONO, //
                         new GenericPhpQuery("/GASKELL/VESTA/FC", "FC", "/GASKELL/VESTA/FC/gallery"), //
                         ImageType.FC_IMAGE, //
                         new ImageSource[]{ImageSource.GASKELL, ImageSource.SPICE}, //
@@ -419,7 +419,7 @@ public class AsteroidConfigs extends SmallBodyViewConfig
 
             c.imagingInstruments = new ImagingInstrument[] {
                     new ImagingInstrument( //
-                            SpectralMode.MONO, //
+                            SpectralImageMode.MONO, //
                             new FixedListQuery("/GASKELL/LUTETIA/IMAGING", "/GASKELL/LUTETIA/IMAGING/gallery"), //
                             ImageType.OSIRIS_IMAGE, //
                             new ImageSource[]{ImageSource.GASKELL}, //
@@ -488,7 +488,7 @@ public class AsteroidConfigs extends SmallBodyViewConfig
 
         c.imagingInstruments = new ImagingInstrument[] {
                 new ImagingInstrument( //
-                        SpectralMode.MONO, //
+                        SpectralImageMode.MONO, //
                         new FixedListQuery("/THOMAS/IDA/SSI", "/THOMAS/IDA/SSI/images/gallery"), //
                         ImageType.SSI_IDA_IMAGE, //
                         new ImageSource[]{ImageSource.CORRECTED}, //
@@ -542,7 +542,7 @@ public class AsteroidConfigs extends SmallBodyViewConfig
 
         c.imagingInstruments = new ImagingInstrument[] {
                 new ImagingInstrument( //
-                        SpectralMode.MONO, //
+                        SpectralImageMode.MONO, //
                         new FixedListQuery("/THOMAS/MATHILDE/MSI", "/THOMAS/MATHILDE/MSI/images/gallery"), //
                         ImageType.MSI_MATHILDE_IMAGE, //
                         new ImageSource[]{ImageSource.CORRECTED}, //
@@ -604,7 +604,7 @@ public class AsteroidConfigs extends SmallBodyViewConfig
 
         c.imagingInstruments = new ImagingInstrument[] {
                 new ImagingInstrument( //
-                        SpectralMode.MONO, //
+                        SpectralImageMode.MONO, //
                         new FixedListQuery("/THOMAS/GASPRA/SSI", "/THOMAS/GASPRA/SSI/images/gallery"), //
                         ImageType.SSI_GASPRA_IMAGE, //
                         new ImageSource[]{ImageSource.CORRECTED}, //

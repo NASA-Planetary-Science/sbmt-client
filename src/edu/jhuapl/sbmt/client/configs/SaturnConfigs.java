@@ -15,22 +15,22 @@ import edu.jhuapl.sbmt.client.SbmtMultiMissionTool;
 import edu.jhuapl.sbmt.client.ShapeModelDataUsed;
 import edu.jhuapl.sbmt.client.ShapeModelPopulation;
 import edu.jhuapl.sbmt.client.SmallBodyViewConfig;
-import edu.jhuapl.sbmt.client.SpectralMode;
 import edu.jhuapl.sbmt.config.SBMTBodyConfiguration;
 import edu.jhuapl.sbmt.config.SBMTFileLocator;
 import edu.jhuapl.sbmt.config.SBMTFileLocators;
 import edu.jhuapl.sbmt.config.SessionConfiguration;
 import edu.jhuapl.sbmt.config.ShapeModelConfiguration;
 import edu.jhuapl.sbmt.imaging.instruments.ImagingInstrumentConfiguration;
-import edu.jhuapl.sbmt.model.bennu.otes.SpectraHierarchicalSearchSpecification;
 import edu.jhuapl.sbmt.model.image.BasicImagingInstrument;
 import edu.jhuapl.sbmt.model.image.ImageSource;
 import edu.jhuapl.sbmt.model.image.ImageType;
 import edu.jhuapl.sbmt.model.image.ImagingInstrument;
 import edu.jhuapl.sbmt.model.image.Instrument;
+import edu.jhuapl.sbmt.model.image.SpectralImageMode;
 import edu.jhuapl.sbmt.query.QueryBase;
 import edu.jhuapl.sbmt.query.database.GenericPhpQuery;
 import edu.jhuapl.sbmt.query.fixedlist.FixedListQuery;
+import edu.jhuapl.sbmt.spectrum.model.core.search.SpectraHierarchicalSearchSpecification;
 import edu.jhuapl.sbmt.tools.DBRunInfo;
 
 public class SaturnConfigs extends SmallBodyViewConfig
@@ -57,7 +57,7 @@ public class SaturnConfigs extends SmallBodyViewConfig
 
         c.imagingInstruments = new ImagingInstrument[] {
                 new ImagingInstrument( //
-                        SpectralMode.MONO, //
+                        SpectralImageMode.MONO, //
                         new FixedListQuery("/GASKELL/DIONE/IMAGING", "/GASKELL/DIONE/IMAGING/gallery"), //
                         ImageType.SATURN_MOON_IMAGE, //
                         new ImageSource[]{ImageSource.GASKELL}, //
@@ -187,7 +187,7 @@ public class SaturnConfigs extends SmallBodyViewConfig
 
         c.imagingInstruments = new ImagingInstrument[] {
                 new ImagingInstrument( //
-                        SpectralMode.MONO, //
+                        SpectralImageMode.MONO, //
                         new FixedListQuery("/GASKELL/MIMAS/IMAGING", "/GASKELL/MIMAS/IMAGING/gallery"), //
                         ImageType.SATURN_MOON_IMAGE, //
                         new ImageSource[]{ImageSource.GASKELL}, //
@@ -236,7 +236,7 @@ public class SaturnConfigs extends SmallBodyViewConfig
 
         c.imagingInstruments = new ImagingInstrument[] {
                 new ImagingInstrument( //
-                        SpectralMode.MONO, //
+                        SpectralImageMode.MONO, //
                         new FixedListQuery("/GASKELL/PHOEBE/IMAGING", "/GASKELL/PHOEBE/IMAGING/gallery"), //
                         ImageType.SATURN_MOON_IMAGE, //
                         new ImageSource[]{ImageSource.GASKELL}, //
@@ -317,7 +317,7 @@ public class SaturnConfigs extends SmallBodyViewConfig
 
         c.imagingInstruments = new ImagingInstrument[] {
                 new ImagingInstrument( //
-                        SpectralMode.MONO, //
+                        SpectralImageMode.MONO, //
                         new FixedListQuery("/GASKELL/TELESTO/IMAGING", "/GASKELL/TELESTO/IMAGING/gallery"), //
                         ImageType.SATURN_MOON_IMAGE, //
                         new ImageSource[]{ImageSource.GASKELL}, //
@@ -637,7 +637,7 @@ public class SaturnConfigs extends SmallBodyViewConfig
 
     private static ImagingInstrument setupImagingInstrument(SBMTFileLocator fileLocator, SBMTBodyConfiguration bodyConfig, ShapeModelConfiguration modelConfig, Instrument instrument, QueryBase queryBase, ImageSource[] imageSources, ImageType imageType)
     {
-        Builder<ImagingInstrumentConfiguration> imagingInstBuilder = ImagingInstrumentConfiguration.builder(instrument, SpectralMode.MONO, queryBase, imageSources, fileLocator, imageType);
+        Builder<ImagingInstrumentConfiguration> imagingInstBuilder = ImagingInstrumentConfiguration.builder(instrument, SpectralImageMode.MONO, queryBase, imageSources, fileLocator, imageType);
 
         // Put it all together in a session.
         Builder<SessionConfiguration> builder = SessionConfiguration.builder(bodyConfig, modelConfig, fileLocator);

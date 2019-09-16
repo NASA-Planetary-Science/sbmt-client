@@ -1,6 +1,6 @@
-package edu.jhuapl.sbmt.spectrum.model.sbmtCore.spectra;
+package edu.jhuapl.sbmt.model.image;
 
-public enum SpectralMode
+public enum SpectralImageMode
 {
     MONO {
         public String toString()

@@ -1,10 +1,11 @@
-package edu.jhuapl.sbmt.lidar.old;
+package edu.jhuapl.sbmt.model.bennu.lidar.old;
 
 import edu.jhuapl.saavtk.model.ShapeModelType;
 import edu.jhuapl.saavtk.model.ShapeModelBody;
 import edu.jhuapl.saavtk.util.Configuration;
 import edu.jhuapl.sbmt.client.SmallBodyModel;
 import edu.jhuapl.sbmt.client.SmallBodyViewConfig;
+import edu.jhuapl.sbmt.lidar.old.LidarCubesGenerator;
 import edu.jhuapl.sbmt.lidar.old.LidarCubesGenerator.LidarDataType;
 import edu.jhuapl.sbmt.model.bennu.shapeModel.Bennu;
 import edu.jhuapl.sbmt.model.lidar.TrackFileType;

@@ -16,26 +16,26 @@ import edu.jhuapl.sbmt.client.SbmtMultiMissionTool;
 import edu.jhuapl.sbmt.client.ShapeModelDataUsed;
 import edu.jhuapl.sbmt.client.ShapeModelPopulation;
 import edu.jhuapl.sbmt.client.SmallBodyViewConfig;
-import edu.jhuapl.sbmt.client.SpectralMode;
 import edu.jhuapl.sbmt.config.SBMTBodyConfiguration;
 import edu.jhuapl.sbmt.config.SBMTFileLocator;
 import edu.jhuapl.sbmt.config.SBMTFileLocators;
 import edu.jhuapl.sbmt.config.SessionConfiguration;
 import edu.jhuapl.sbmt.config.ShapeModelConfiguration;
 import edu.jhuapl.sbmt.imaging.instruments.ImagingInstrumentConfiguration;
-import edu.jhuapl.sbmt.lidar.old.OlaCubesGenerator;
-import edu.jhuapl.sbmt.model.bennu.otes.SpectraHierarchicalSearchSpecification;
+import edu.jhuapl.sbmt.model.bennu.lidar.old.OlaCubesGenerator;
 import edu.jhuapl.sbmt.model.image.BasicImagingInstrument;
 import edu.jhuapl.sbmt.model.image.ImageSource;
 import edu.jhuapl.sbmt.model.image.ImageType;
 import edu.jhuapl.sbmt.model.image.ImagingInstrument;
 import edu.jhuapl.sbmt.model.image.Instrument;
+import edu.jhuapl.sbmt.model.image.SpectralImageMode;
 import edu.jhuapl.sbmt.model.ryugu.nirs3.NIRS3;
-import edu.jhuapl.sbmt.model.ryugu.nirs3.atRyugu.Hayabusa2SpectrumInstrumentMetadataIO;
-import edu.jhuapl.sbmt.model.spectrum.instruments.BasicSpectrumInstrument;
 import edu.jhuapl.sbmt.query.QueryBase;
 import edu.jhuapl.sbmt.query.database.GenericPhpQuery;
 import edu.jhuapl.sbmt.query.fixedlist.FixedListQuery;
+import edu.jhuapl.sbmt.spectrum.model.core.BasicSpectrumInstrument;
+import edu.jhuapl.sbmt.spectrum.model.core.search.SpectraHierarchicalSearchSpecification;
+import edu.jhuapl.sbmt.spectrum.model.io.SpectrumInstrumentMetadataIO;
 import edu.jhuapl.sbmt.tools.DBRunInfo;
 
 public class RyuguConfigs extends SmallBodyViewConfig
@@ -130,7 +130,7 @@ public class RyuguConfigs extends SmallBodyViewConfig
               QueryBase queryBase = new FixedListQuery(fileLocator.get(SBMTFileLocator.TOP_PATH).getLocation(""), fileLocator.get(SBMTFileLocator.GALLERY_FILE).getLocation(""));
               Builder<ImagingInstrumentConfiguration> imagingInstBuilder = ImagingInstrumentConfiguration.builder(
                       Instrument.TIR,
-                      SpectralMode.MONO,
+                      SpectralImageMode.MONO,
                       queryBase,
                       new ImageSource[] { ImageSource.SPICE },
                       fileLocator,
@@ -1529,7 +1529,7 @@ public class RyuguConfigs extends SmallBodyViewConfig
             c.spectraSearchDataSourceMap.put("NIRS3", c.rootDirOnServer + "/nirs3/l2c/hypertree/dataSource.spectra");
             c.spectrumMetadataFile = c.rootDirOnServer + "/spectraMetadata.json";
 
-            Hayabusa2SpectrumInstrumentMetadataIO specIO = new Hayabusa2SpectrumInstrumentMetadataIO("HAYABUSA2");
+            SpectrumInstrumentMetadataIO specIO = new SpectrumInstrumentMetadataIO("HAYABUSA2");
             specIO.setPathString(c.spectrumMetadataFile);
             c.hierarchicalSpectraSearchSpecification = specIO;
 
@@ -2132,7 +2132,7 @@ public class RyuguConfigs extends SmallBodyViewConfig
 
     private static ImagingInstrument setupImagingInstrument(SBMTFileLocator fileLocator, SBMTBodyConfiguration bodyConfig, ShapeModelConfiguration modelConfig, Instrument instrument, QueryBase queryBase, ImageSource[] imageSources, ImageType imageType)
     {
-        Builder<ImagingInstrumentConfiguration> imagingInstBuilder = ImagingInstrumentConfiguration.builder(instrument, SpectralMode.MONO, queryBase, imageSources, fileLocator, imageType);
+        Builder<ImagingInstrumentConfiguration> imagingInstBuilder = ImagingInstrumentConfiguration.builder(instrument, SpectralImageMode.MONO, queryBase, imageSources, fileLocator, imageType);
 
         // Put it all together in a session.
         Builder<SessionConfiguration> builder = SessionConfiguration.builder(bodyConfig, modelConfig, fileLocator);

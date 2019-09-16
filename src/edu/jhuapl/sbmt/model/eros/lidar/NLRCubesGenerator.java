@@ -1,12 +1,12 @@
-package edu.jhuapl.sbmt.lidar.old;
-
-import java.io.IOException;
+package edu.jhuapl.sbmt.model.eros.lidar;
 
 import edu.jhuapl.saavtk.model.ShapeModelType;
 import edu.jhuapl.saavtk.model.ShapeModelBody;
 import edu.jhuapl.sbmt.client.SmallBodyModel;
 import edu.jhuapl.sbmt.client.SmallBodyViewConfig;
-import edu.jhuapl.sbmt.model.itokawa.Itokawa;
+import edu.jhuapl.sbmt.lidar.old.LidarCubesGenerator;
+import edu.jhuapl.sbmt.lidar.old.LidarCubesGenerator.LidarDataType;
+import edu.jhuapl.sbmt.model.eros.Eros;
 
 /**
  * This program goes through all the NLR data and divides all the data
@@ -15,102 +15,84 @@ import edu.jhuapl.sbmt.model.itokawa.Itokawa;
  * This program also can generate a single vtk file containing all
  * the NLR data (see comments in code).
  */
-public class HayLidarCubesGenerator extends LidarCubesGenerator
+public class NLRCubesGenerator extends LidarCubesGenerator
 {
-    private static String fileListPath = null;
-    private static String outputFolder = null;
-    private static Itokawa itokawa;
-
+    private static Eros eros = null;
 
     public static void main(String[] args)
     {
-        fileListPath = "/project/nearsdc/data/ITOKAWA/LIDAR/HayLidarFiles.txt";
-        outputFolder = "/project/nearsdc/data/ITOKAWA/LIDAR/cubes-optimized";
-        new HayLidarCubesGenerator().run();
-
-        fileListPath = "/project/nearsdc/data/ITOKAWA/LIDAR/HayLidarFilesUnfiltered.txt";
-        outputFolder = "/project/nearsdc/data/ITOKAWA/LIDAR/cubes-unfiltered";
-        new HayLidarCubesGenerator().run();
+        new NLRCubesGenerator().run();
     }
 
     @Override
     protected SmallBodyModel getSmallBodyModel()
     {
-        if (itokawa == null)
+        if (eros == null)
         {
-            itokawa = new Itokawa(SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.ITOKAWA, ShapeModelType.GASKELL));
-
-            try
-            {
-                itokawa.setModelResolution(3);
-            }
-            catch (IOException e)
-            {
-                e.printStackTrace();
-            }
+            eros = new Eros(SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.EROS, ShapeModelType.GASKELL));
         }
 
-        return itokawa;
+        return eros;
     }
 
     @Override
     protected int[] getXYZIndices()
     {
-        return new int[]{6, 7, 8};
+        return new int[]{14, 15, 16};
     }
 
     @Override
     protected int[] getSpacecraftIndices()
     {
-        return new int[]{3, 4, 5};
+        return new int[]{8, 9, 10};
     }
 
     @Override
     protected String getFileListPath()
     {
-        return fileListPath;
+        return "/project/nearsdc/data/NLR/NlrFiles.txt";
     }
 
     @Override
     protected String getOutputFolderPath()
     {
-        return outputFolder;
+        return "/project/nearsdc/data/NLR/cubes";
     }
 
     @Override
     protected int getNumberHeaderLines()
     {
-        return 0;
+        return 2;
     }
 
     @Override
     protected boolean isInMeters()
     {
-        return false;
+        return true;
     }
 
     @Override
     protected boolean isSpacecraftInSphericalCoordinates()
     {
-        return false;
+        return true;
     }
 
     @Override
     protected int getTimeIndex()
     {
-        return 1;
+        return 4;
     }
 
     @Override
     protected int getNoiseIndex()
     {
-        return -1;
+        return 7;
     }
 
     @Override
     protected int getPotentialIndex()
     {
-        return -1;
+        return 18;
     }
 
     @Override
@@ -118,5 +100,4 @@ public class HayLidarCubesGenerator extends LidarCubesGenerator
     {
         return LidarDataType.OTHER;
     }
-
 }

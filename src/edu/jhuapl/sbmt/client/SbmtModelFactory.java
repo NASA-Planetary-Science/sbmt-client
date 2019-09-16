@@ -40,6 +40,7 @@ import edu.jhuapl.sbmt.model.image.Image;
 import edu.jhuapl.sbmt.model.image.ImageKeyInterface;
 import edu.jhuapl.sbmt.model.image.ImageSource;
 import edu.jhuapl.sbmt.model.image.ImageType;
+import edu.jhuapl.sbmt.model.image.SpectralImageMode;
 import edu.jhuapl.sbmt.model.itokawa.AmicaImage;
 import edu.jhuapl.sbmt.model.itokawa.Itokawa;
 import edu.jhuapl.sbmt.model.leisa.LEISAJupiterImage;
@@ -62,7 +63,6 @@ import edu.jhuapl.sbmt.model.time.StateHistoryModel;
 import edu.jhuapl.sbmt.model.time.StateHistoryModel.StateHistoryKey;
 import edu.jhuapl.sbmt.model.vesta.FcImage;
 import edu.jhuapl.sbmt.model.vesta_old.VestaOld;
-import edu.jhuapl.sbmt.spectrum.model.sbmtCore.spectra.SpectralMode;
 
 import nom.tam.fits.FitsException;
 
@@ -103,14 +103,14 @@ public class SbmtModelFactory
                 ImageSource.CORRECTED_SPICE.equals(key.getSource()) ||
                 ImageSource.CORRECTED.equals(key.getSource()))
         {
-            if (key.getInstrument() != null && key.getInstrument().getSpectralMode() == SpectralMode.MULTI)
+            if (key.getInstrument() != null && key.getInstrument().getSpectralMode() == SpectralImageMode.MULTI)
             {
                 if (key.getInstrument().getType() == ImageType.MVIC_JUPITER_IMAGE)
                     return new MVICQuadJupiterImage(key, smallBodyModel, loadPointingOnly);
                 else
                     return null;
             }
-            else if (key.getInstrument() != null && key.getInstrument().getSpectralMode() == SpectralMode.HYPER)
+            else if (key.getInstrument() != null && key.getInstrument().getSpectralMode() == SpectralImageMode.HYPER)
             {
                 if (key.getInstrument().getType() == ImageType.LEISA_JUPITER_IMAGE)
                     return new LEISAJupiterImage(key, smallBodyModel, loadPointingOnly);

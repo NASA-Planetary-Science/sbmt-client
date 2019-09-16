@@ -26,15 +26,17 @@ import edu.jhuapl.sbmt.config.SessionConfiguration;
 import edu.jhuapl.sbmt.config.ShapeModelConfiguration;
 import edu.jhuapl.sbmt.gui.image.model.custom.CustomCylindricalImageKey;
 import edu.jhuapl.sbmt.imaging.instruments.ImagingInstrumentConfiguration;
-import edu.jhuapl.sbmt.model.bennu.otes.SpectraHierarchicalSearchSpecification;
 import edu.jhuapl.sbmt.model.image.BasicImagingInstrument;
 import edu.jhuapl.sbmt.model.image.ImageKeyInterface;
 import edu.jhuapl.sbmt.model.image.ImageSource;
 import edu.jhuapl.sbmt.model.image.ImageType;
 import edu.jhuapl.sbmt.model.image.ImagingInstrument;
 import edu.jhuapl.sbmt.model.image.Instrument;
+import edu.jhuapl.sbmt.model.image.SpectralImageMode;
+import edu.jhuapl.sbmt.model.phobos.HierarchicalSearchSpecification;
 import edu.jhuapl.sbmt.query.QueryBase;
 import edu.jhuapl.sbmt.query.fixedlist.FixedListQuery;
+import edu.jhuapl.sbmt.spectrum.model.core.search.SpectraHierarchicalSearchSpecification;
 
 import crucible.crust.metadata.api.Key;
 import crucible.crust.metadata.api.Metadata;
@@ -229,7 +231,7 @@ public class SmallBodyViewConfig extends BodyViewConfig implements ISmallBodyVie
 
     private static ImagingInstrument setupImagingInstrument(SBMTFileLocator fileLocator, SBMTBodyConfiguration bodyConfig, ShapeModelConfiguration modelConfig, Instrument instrument, QueryBase queryBase, ImageSource[] imageSources, ImageType imageType)
     {
-        Builder<ImagingInstrumentConfiguration> imagingInstBuilder = ImagingInstrumentConfiguration.builder(instrument, SpectralMode.MONO, queryBase, imageSources, fileLocator, imageType);
+        Builder<ImagingInstrumentConfiguration> imagingInstBuilder = ImagingInstrumentConfiguration.builder(instrument, SpectralImageMode.MONO, queryBase, imageSources, fileLocator, imageType);
 
         // Put it all together in a session.
         Builder<SessionConfiguration> builder = SessionConfiguration.builder(bodyConfig, modelConfig, fileLocator);
@@ -372,4 +374,58 @@ public class SmallBodyViewConfig extends BodyViewConfig implements ISmallBodyVie
 
         return builder.build();
     }
+
+	@Override
+	public boolean hasHypertreeBasedSpectraSearch()
+	{
+		return hasHypertreeBasedSpectraSearch;
+	}
+
+	@Override
+	public boolean hasHierarchicalSpectraSearch()
+	{
+		return hasHierarchicalSpectraSearch;
+	}
+
+	@Override
+	public Date getDefaultImageSearchStartDate()
+	{
+		return imageSearchDefaultStartDate;
+	}
+
+	@Override
+	public Date getDefaultImageSearchEndDate()
+	{
+		return imageSearchDefaultEndDate;
+	}
+
+	@Override
+	public HierarchicalSearchSpecification getHierarchicalImageSearchSpecification()
+	{
+		return hierarchicalImageSearchSpecification;
+	}
+
+	@Override
+	public String getTimeHistoryFile()
+	{
+		return timeHistoryFile;
+	}
+
+	@Override
+	public ShapeModelType getAuthor()
+	{
+		return author;
+	}
+
+	@Override
+	public String getRootDirOnServer()
+	{
+		return rootDirOnServer;
+	}
+
+	@Override
+	public boolean isCustomTemporary()
+	{
+		return isCustomTemporary();
+	}
 }

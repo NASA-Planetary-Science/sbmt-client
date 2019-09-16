@@ -1,4 +1,4 @@
-package edu.jhuapl.sbmt.lidar;
+package edu.jhuapl.sbmt.model.bennu.lidar;
 
 import java.io.File;
 import java.io.FileWriter;
@@ -29,6 +29,8 @@ import edu.jhuapl.saavtk.util.BoundingBox;
 import edu.jhuapl.saavtk.util.Configuration;
 import edu.jhuapl.saavtk.util.NativeLibraryLoader;
 import edu.jhuapl.sbmt.client.SmallBodyViewConfig;
+import edu.jhuapl.sbmt.lidar.DataOutputStreamPool;
+import edu.jhuapl.sbmt.lidar.FileSystemOctreeNode;
 import edu.jhuapl.sbmt.lidar.hyperoctree.ola.OlaPointList;
 import edu.jhuapl.sbmt.model.bennu.shapeModel.Bennu;
 
@@ -85,12 +87,12 @@ public class FileSystemOctreeGenerator
 	public void expandNode(FileSystemOctreeNode node) throws IOException
 	{ // depth-first recursion, so we limit the number of open output files to 8
 		System.out.println(node.getSelfPath() + " " + convertBytesToMB(node.getDataFilePath().toFile().length()) + " MB");
-		if (node.numPoints > maxNumberOfPointsPerLeaf)
+		if (node.getNumPoints() > maxNumberOfPointsPerLeaf)
 		{
 			node.split();
 			for (int i = 0; i < 8; i++)
-				if (node.children[i] != null)
-					expandNode(node.children[i]);
+				if (node.getChildren()[i] != null)
+					expandNode(node.getChildren()[i]);
 		}
 	}
 
@@ -146,8 +148,8 @@ public class FileSystemOctreeGenerator
 	{
 		nodeList.add(node);
 		for (int i = 0; i < 8; i++)
-			if (node.children[i] != null)
-				nodeList.add(node.children[i]);
+			if (node.getChildren()[i] != null)
+				nodeList.add(node.getChildren()[i]);
 	}
 
 	public vtkUnstructuredGrid getAllNonEmptyLeavesAsUnstructuredGrid()
@@ -166,7 +168,7 @@ public class FileSystemOctreeGenerator
 				hex.GetPointIds().SetId(i, id);
 			}
 			cells.InsertNextCell(hex);
-			String relativePath = "/" + node.selfPath.toString().replace(nearsdcRootDirectory.toString(), "");
+			String relativePath = "/" + node.getSelfPath().toString().replace(nearsdcRootDirectory.toString(), "");
 			System.out.println(relativePath);
 			paths.InsertNextValue(relativePath);
 		}
@@ -187,10 +189,10 @@ public class FileSystemOctreeGenerator
 
 	void getAllNonEmptyLeafNodes(FileSystemOctreeNode node, List<FileSystemOctreeNode> nodeList)
 	{
-		if (!node.isLeaf)
+		if (!node.isLeaf())
 			for (int i = 0; i < 8; i++)
-				getAllNonEmptyLeafNodes(node.children[i], nodeList);
-		else if (node.numPoints > 0)
+				getAllNonEmptyLeafNodes(node.getChildren()[i], nodeList);
+		else if (node.getNumPoints() > 0)
 			nodeList.add(node);
 	}
 
@@ -202,9 +204,9 @@ public class FileSystemOctreeGenerator
 
 	void finalCommit(FileSystemOctreeNode node) throws IOException
 	{
-		if (!node.isLeaf)
+		if (!node.isLeaf())
 			for (int i = 0; i < 8; i++)
-				finalCommit(node.children[i]);
+				finalCommit(node.getChildren()[i]);
 		else
 		{
 			File dataFile = node.getDataFilePath().toFile(); // clean up any data
