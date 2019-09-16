@@ -6,7 +6,6 @@ import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseWheelEvent;
 import java.beans.PropertyChangeEvent;
-import java.text.DecimalFormat;
 import java.util.List;
 
 import vtk.vtkActor;
@@ -15,7 +14,6 @@ import vtk.vtkCellPicker;
 import vtk.vtkProp;
 import vtk.vtkPropCollection;
 import vtk.vtkRenderer;
-import vtk.rendering.jogl.vtkJoglPanelComponent;
 
 import edu.jhuapl.saavtk.gui.StatusBar;
 import edu.jhuapl.saavtk.gui.render.Renderer;
@@ -29,7 +27,6 @@ import edu.jhuapl.saavtk.pick.DefaultPicker;
 import edu.jhuapl.saavtk.pick.PickEvent;
 import edu.jhuapl.saavtk.pick.PickUtil;
 import edu.jhuapl.saavtk.popup.PopupManager;
-import edu.jhuapl.saavtk.util.LatLon;
 import edu.jhuapl.saavtk.util.MathUtil;
 import edu.jhuapl.saavtk.util.Properties;
 import edu.jhuapl.sbmt.model.image.Image;
@@ -41,18 +38,18 @@ import edu.jhuapl.sbmt.model.image.PerspectiveImage;
  */
 public class ImageDefaultPicker extends DefaultPicker
 {
-    private Renderer renderer;
-    private vtkJoglPanelComponent renWin;
-    private StatusBar statusBar;
-    private ModelManager modelManager;
-    private PopupManager popupManager;
-    private vtkCellPicker mousePressNonSmallBodyCellPicker; // includes all props EXCEPT the small body
-    private vtkCellPicker smallBodyCellPicker; // only includes small body prop
-    private vtkCellPicker allPropsCellPicker; // includes all props including the small body
-    private DecimalFormat decimalFormatter = new DecimalFormat("##0.000");
-    private DecimalFormat decimalFormatter2 = new DecimalFormat("#0.000");
-    private boolean suppressPopups = false;
-    private String distanceStr;
+//    private Renderer renderer;
+//    private vtkJoglPanelComponent renWin;
+//    private StatusBar statusBar;
+//    private ModelManager modelManager;
+//    private PopupManager popupManager;
+//    private vtkCellPicker mousePressNonSmallBodyCellPicker; // includes all props EXCEPT the small body
+//    private vtkCellPicker smallBodyCellPicker; // only includes small body prop
+//    private vtkCellPicker allPropsCellPicker; // includes all props including the small body
+//    private DecimalFormat decimalFormatter = new DecimalFormat("##0.000");
+//    private DecimalFormat decimalFormatter2 = new DecimalFormat("#0.000");
+//    private boolean suppressPopups = false;
+//    private String distanceStr;
 
     public ImageDefaultPicker(
             Renderer renderer,
@@ -308,95 +305,6 @@ public class ImageDefaultPicker extends DefaultPicker
 
         int pickSucceeded = doPick(e, smallBodyCellPicker, renWin);
         updateStatusBar(pickSucceeded, modelManager.getPolyhedralModel().getScaleBarWidthInKm());
-    }
-
-    private void updateStatusBar(double scaleBarWidthInKm)
-    {
-    	updateStatusBar(1, scaleBarWidthInKm);
-    }
-
-    private void updateStatusBar(int pickSucceeded, double scaleBarWidthInKm)
-    {
-    	if (distanceStr == null)
-    	{
-    		vtkCamera activeCamera = renWin.getRenderer().GetActiveCamera();
-            double[] cameraPos = activeCamera.GetPosition();
-            double distance = Math.sqrt(
-                    cameraPos[0]*cameraPos[0] +
-                    cameraPos[1]*cameraPos[1] +
-                    cameraPos[2]*cameraPos[2]);
-            distanceStr = decimalFormatter.format(distance);
-            if (distanceStr.length() == 5)
-                distanceStr = "  " + distanceStr;
-            else if (distanceStr.length() == 6)
-                distanceStr = " " + distanceStr;
-            distanceStr += " km";
-    	}
-
-    	String pixelResolutionString = "";
-        if (modelManager.getPolyhedralModel().getScaleBarWidthInKm() > 0)
-        {
-	        if (modelManager.getPolyhedralModel().getScaleBarWidthInKm() < 1.0)
-	        	pixelResolutionString = String.format("%.2f m", 1000.0 * modelManager.getPolyhedralModel().getScaleBarWidthInKm());
-			else
-				pixelResolutionString = String.format("%.2f km", modelManager.getPolyhedralModel().getScaleBarWidthInKm());
-        }
-        if (pickSucceeded == 1)
-        {
-            double[] pos = smallBodyCellPicker.GetPickPosition();
-            LatLon llr = MathUtil.reclat(pos);
-
-            // Note \u00B0 is the unicode degree symbol
-
-            //double sign = 1.0;
-            double lat = llr.lat*180/Math.PI;
-            //if (lat < 0.0)
-            //    sign = -1.0;
-            String latStr = decimalFormatter.format(lat);
-            if (latStr.length() == 5)
-                latStr = "  " + latStr;
-            else if (latStr.length() == 6)
-                latStr = " " + latStr;
-            //if (lat >= 0.0)
-            //    latStr += "\u00B0N";
-            //else
-            //    latStr += "\u00B0S";
-            latStr += "\u00B0";
-
-            // Note that the convention seems to be that longitude
-            // is never negative and is shown as E. longitude.
-            double lon = llr.lon*180/Math.PI;
-            if (lon < 0.0)
-                lon += 360.0;
-            String lonStr = decimalFormatter.format(lon);
-            if (lonStr.length() == 5)
-                lonStr = "  " + lonStr;
-            else if (lonStr.length() == 6)
-                lonStr = " " + lonStr;
-            //if (lon >= 0.0)
-            //    lonStr += "\u00B0E";
-            //else
-            //    lonStr += "\u00B0W";
-            lonStr += "\u00B0";
-
-            double rad = llr.rad;
-            String radStr = decimalFormatter2.format(rad);
-            if (radStr.length() == 5)
-                radStr = " " + radStr;
-            radStr += " km";
-
-            if (pixelResolutionString.equals(""))
-            	statusBar.setRightText("Lat: " + latStr + "  Lon: " + lonStr + "  Radius: " + radStr + "  Range: " + distanceStr + " ");
-            else
-            	statusBar.setRightText("Lat: " + latStr + "  Lon: " + lonStr + "  Radius: " + radStr + "  Range: " + distanceStr + " " + " " + "Scalebar " + pixelResolutionString);
-        }
-        else
-        {
-        	if (pixelResolutionString.equals(""))
-        		statusBar.setRightText("Range: " + distanceStr + " ");
-        	else
-        		statusBar.setRightText("Range: " + distanceStr + " " + "Scalebar: " + pixelResolutionString);
-        }
     }
 
     private void setPositionInfoOnPerspectiveImage(MouseEvent e, PerspectiveImage pi)

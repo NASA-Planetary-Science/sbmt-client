@@ -327,7 +327,7 @@ public class DEMView extends JFrame implements ActionListener, PropertyChangeLis
         {
             Colormap cmap = Colormaps.getNewInstanceOfBuiltInColormap(aStr);
             colormapBox.addItem(cmap);
-            if (cmap.getName().equals(Colormaps.getDefaultColormapName()))
+            if (cmap.getName().equals(Colormaps.getCurrentColormapName()))
                 colormapBox.setSelectedItem(cmap);
         }
         colormapBox.addActionListener(this);

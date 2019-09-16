@@ -135,6 +135,33 @@ public class CustomImagesModel extends ImageSearchModel
         images.addImage(key);
     }
 
+    @Override
+    public void loadImage(String name)
+    {
+    	CustomImageKeyInterface key = (CustomImageKeyInterface)createImageKey(name, imageSourceOfLastQuery, instrument);
+//        for (ImageKeyInterface key : keys)
+//        {
+            try
+            {
+                ImageCollection images = (ImageCollection)modelManager.getModel(getImageCollectionModelName());
+                if (!images.containsImage(key))
+                {
+                	key.setImagefilename(getCustomDataFolder() + File.separator + key.getImageFilename());
+                    loadImage(key, images);
+                }
+            }
+            catch (Exception e1) {
+                JOptionPane.showMessageDialog(JOptionPane.getFrameForComponent(null),
+                        "There was an error mapping the image.",
+                        "Error",
+                        JOptionPane.ERROR_MESSAGE);
+
+                e1.printStackTrace();
+            }
+
+//        }
+   }
+
     public CustomImageKeyInterface getRevisedKey(CustomImageKeyInterface info)
     {
     	CustomImageKeyInterface revisedKey = null;
@@ -173,6 +200,18 @@ public class CustomImagesModel extends ImageSearchModel
     {
         images.removeImage(key);
     }
+
+    @Override
+    public void unloadImage(String name)
+    {
+
+    	ImageKeyInterface key = createImageKey(name, imageSourceOfLastQuery, instrument);
+//        for (ImageKeyInterface key : keys)
+        {
+            ImageCollection images = (ImageCollection)modelManager.getModel(getImageCollectionModelName());
+            unloadImage(key, images);
+        }
+   }
 
     public void unloadImages(String name, CustomImageKeyInterface key)
     {
@@ -328,6 +367,7 @@ public class CustomImagesModel extends ImageSearchModel
     	  CustomImageKeyInterface oldImageInfo = customImages.get(selectedItem);
 
           CustomImageImporterDialog dialog = new CustomImageImporterDialog(null, true, getInstrument());
+          dialog.setCurrentImageNames(getCustomImageNames());
           dialog.setImageInfo(oldImageInfo, getModelManager().getPolyhedralModel().isEllipsoid());
           dialog.setLocationRelativeTo(null);
           dialog.setVisible(true);
@@ -577,7 +617,6 @@ public class CustomImagesModel extends ImageSearchModel
             FixedMetadata metadata = Serializers.deserialize(new File(getConfigFilename()), "CustomImages");
             retrieve(metadata);
         }
-
         for (CustomImageKeyInterface info : customImages)
         {
             fireInfoChangedListeners(info);
@@ -585,6 +624,16 @@ public class CustomImagesModel extends ImageSearchModel
 
         initialized = true;
         fireResultsChanged();
+    }
+
+    public List<String> getCustomImageNames()
+    {
+    	ArrayList<String> list = new ArrayList<String>();
+    	for (CustomImageKeyInterface info : customImages)
+        {
+    		list.add(info.getName());
+        }
+    	return list;
     }
 
     public void propertyChange(PropertyChangeEvent evt)
@@ -752,7 +801,6 @@ public class CustomImagesModel extends ImageSearchModel
             for (Metadata meta : metadataArray)
             {
             	CustomImageKeyInterface info = CustomImageKeyInterface.retrieve(meta);
-
                 customImages.add(info);
             }
             updateConfigFile();

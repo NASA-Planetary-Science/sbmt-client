@@ -175,7 +175,7 @@ public class ImageSearchModel implements Controller.Model, MetadataManager
         images.addImage(key);
     }
 
-    public void loadImages(String name)
+    public void loadImage(String name)
     {
 
         List<ImageKeyInterface> keys = createImageKeys(name, imageSourceOfLastQuery, instrument);
@@ -206,7 +206,7 @@ public class ImageSearchModel implements Controller.Model, MetadataManager
         images.removeImage(key);
     }
 
-    public void unloadImages(String name)
+    public void unloadImage(String name)
     {
 
         List<ImageKeyInterface> keys = createImageKeys(name, imageSourceOfLastQuery, instrument);
@@ -1533,7 +1533,7 @@ public class ImageSearchModel implements Controller.Model, MetadataManager
         for (String name : showing.keySet())
         {
             String fullName = instrument.getSearchQuery().getDataPath() + "/" + name;
-            loadImages(fullName);
+            loadImage(fullName);
         }
 
         for (Image image : imageCollection.getImages())

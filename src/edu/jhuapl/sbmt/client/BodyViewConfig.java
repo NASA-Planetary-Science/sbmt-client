@@ -18,6 +18,7 @@ import edu.jhuapl.sbmt.model.image.Instrument;
 import edu.jhuapl.sbmt.model.phobos.HierarchicalSearchSpecification;
 import edu.jhuapl.sbmt.spectrum.model.core.BasicSpectrumInstrument;
 import edu.jhuapl.sbmt.spectrum.model.core.search.SpectraHierarchicalSearchSpecification;
+import edu.jhuapl.sbmt.tools.DBRunInfo;
 
 
 /**
@@ -35,6 +36,9 @@ public abstract class BodyViewConfig extends ViewConfig
     public String timeHistoryFile;
     public double density = 0.0; // in units g/cm^3
     public double rotationRate = 0.0; // in units radians/sec
+
+	public boolean hasFlybyData; // for flyby path data
+	public boolean hasStateHistory; // for bodies with state history tabs
 
     public boolean hasColoringData = true;
     public boolean hasImageMap = false;
@@ -59,8 +63,8 @@ public abstract class BodyViewConfig extends ViewConfig
     public String[] imageSearchUserDefinedCheckBoxesNames = new String[] {};
     public double imageSearchDefaultMaxSpacecraftDistance;
     public double imageSearchDefaultMaxResolution;
-    public boolean hasHierarchicalImageSearch;
-    public boolean hasHierarchicalSpectraSearch;
+    public boolean hasHierarchicalImageSearch = false;
+    public boolean hasHierarchicalSpectraSearch = false;
     public HierarchicalSearchSpecification hierarchicalImageSearchSpecification;
     public SpectraHierarchicalSearchSpecification<?> hierarchicalSpectraSearchSpecification;
     public String spectrumMetadataFile;
@@ -73,6 +77,8 @@ public abstract class BodyViewConfig extends ViewConfig
     public Map<String, String> lidarSearchDataSourceMap=Maps.newHashMap();
     public Map<String, String> lidarBrowseDataSourceMap=Maps.newHashMap();    // overrides lidarBrowseFileListResourcePath for OLA
     public Map<String, ArrayList<Date>> lidarSearchDataSourceTimeMap = Maps.newHashMap();
+	public Map<String, ArrayList<Date>> orexSearchTimeMap = Maps.newHashMap();
+
 
     // Required if hasLidarData is true:
     public String lidarBrowseOrigPathRegex; // regular expression to match path prefix from database, which may not be current path. May be null to skip regex.
@@ -103,6 +109,11 @@ public abstract class BodyViewConfig extends ViewConfig
     public boolean hasLidarData = false;
     public Date lidarSearchDefaultStartDate;
     public Date lidarSearchDefaultEndDate;
+
+    //default configs
+    public SbmtMultiMissionTool.Mission[] presentInMissions;
+    public SbmtMultiMissionTool.Mission[] defaultForMissions;
+
 
     //DTMs
     public Map<String, String> dtmBrowseDataSourceMap = Maps.newHashMap();
@@ -140,6 +151,8 @@ public abstract class BodyViewConfig extends ViewConfig
     public Instrument lidarInstrumentName = Instrument.LIDAR;
 
     public BasicSpectrumInstrument[] spectralInstruments = {};
+
+    public DBRunInfo[] databaseRunInfos = {};
 
     protected BodyViewConfig(Iterable<String> resolutionLabels, Iterable<Integer> resolutionNumberElements)
     {

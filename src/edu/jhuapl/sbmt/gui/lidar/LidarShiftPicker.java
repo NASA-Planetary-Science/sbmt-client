@@ -63,7 +63,7 @@ public class LidarShiftPicker extends Picker implements ItemEventListener
 		origPt = null;
 
 		// Register for events of interest
-		refTrackManager.addItemEventListener(this);
+		refTrackManager.addListener(this);
 	}
 
 	@Override

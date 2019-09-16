@@ -29,6 +29,7 @@ public class LidarColorBarPanel<G1> extends ColorBarPanel<FeatureType>
 	public LidarColorBarPanel(ActionListener aListener, LidarManager<G1> aManager)
 	{
 		addFeatureType(FeatureType.Intensity, "Intensity");
+		addFeatureType(FeatureType.Radius, "Radius");
 		addFeatureType(FeatureType.Range, "Spacecraft Range");
 		addFeatureType(FeatureType.Time, "Time");
 		setFeatureType(FeatureType.Range);
