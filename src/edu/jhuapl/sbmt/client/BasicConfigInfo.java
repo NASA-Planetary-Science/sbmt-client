@@ -200,6 +200,31 @@ public class BasicConfigInfo implements MetadataManager
 		return enabled;
 	}
 
+	public String getConfigURL()
+	{
+		return configURL;
+	}
+
+	public ShapeModelType getAuthor()
+	{
+		return author;
+	}
+
+	public ShapeModelBody getBody()
+	{
+		return body;
+	}
+
+	public String getVersion()
+	{
+		return version;
+	}
+
+	public String getShapeModelName()
+	{
+		return shapeModelName;
+	}
+
 	@Override
 	public String toString()
 	{

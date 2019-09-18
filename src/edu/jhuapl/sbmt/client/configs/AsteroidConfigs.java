@@ -1,5 +1,6 @@
 package edu.jhuapl.sbmt.client.configs;
 
+import java.util.ArrayList;
 import java.util.GregorianCalendar;
 import java.util.LinkedHashMap;
 
@@ -15,7 +16,7 @@ import edu.jhuapl.sbmt.client.SbmtMultiMissionTool;
 import edu.jhuapl.sbmt.client.ShapeModelDataUsed;
 import edu.jhuapl.sbmt.client.ShapeModelPopulation;
 import edu.jhuapl.sbmt.client.SmallBodyViewConfig;
-import edu.jhuapl.sbmt.model.eros.NIS;
+import edu.jhuapl.sbmt.model.eros.nis.NIS;
 import edu.jhuapl.sbmt.model.image.ImageSource;
 import edu.jhuapl.sbmt.model.image.ImageType;
 import edu.jhuapl.sbmt.model.image.ImagingInstrument;
@@ -72,9 +73,11 @@ public class AsteroidConfigs extends SmallBodyViewConfig
         c.bodyLowestResModelName = "EROS/shape/shape0.obj";
 
         c.hasSpectralData = true;
-        c.spectralInstruments = new BasicSpectrumInstrument[] {
-                new NIS()
-        };
+        c.spectralInstruments = new ArrayList<BasicSpectrumInstrument>();
+        c.spectralInstruments.add(new NIS());
+//        c.spectralInstruments = new ArrayList<BasicSpectrumInstrument>() {
+//                new NIS()
+//        };
 
         c.hasLineamentData = true;
         c.imageSearchDefaultStartDate = new GregorianCalendar(2000, 0, 12, 0, 0, 0).getTime();
@@ -243,7 +246,7 @@ public class AsteroidConfigs extends SmallBodyViewConfig
         c.lidarOffsetScale = 0.00044228259621279913;
         c.lidarInstrumentName = Instrument.LIDAR;
 
-        c.spectralInstruments = new BasicSpectrumInstrument[] {};
+        c.spectralInstruments = new ArrayList<BasicSpectrumInstrument>();
 
         c.databaseRunInfos = new DBRunInfo[]
         {

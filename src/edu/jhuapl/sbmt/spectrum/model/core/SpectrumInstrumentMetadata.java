@@ -3,8 +3,14 @@ package edu.jhuapl.sbmt.spectrum.model.core;
 import java.util.ArrayList;
 import java.util.List;
 
-import edu.jhuapl.sbmt.core.InstrumentMetadata;
+import edu.jhuapl.sbmt.spectrum.model.core.interfaces.InstrumentMetadata;
 import edu.jhuapl.sbmt.spectrum.model.core.interfaces.SearchSpec;
+import edu.jhuapl.sbmt.spectrum.model.core.search.SpectrumSearchSpec;
+
+import crucible.crust.metadata.api.Key;
+import crucible.crust.metadata.api.Version;
+import crucible.crust.metadata.impl.InstanceGetter;
+import crucible.crust.metadata.impl.SettableMetadata;
 
 public class SpectrumInstrumentMetadata<S extends SearchSpec> implements InstrumentMetadata<S>
 {
@@ -22,7 +28,7 @@ public class SpectrumInstrumentMetadata<S extends SearchSpec> implements Instrum
         this.instrumentName = instName;
     }
 
-    public SpectrumInstrumentMetadata(String instName, ArrayList<S> specs)
+    public SpectrumInstrumentMetadata(String instName, List<S> specs)
     {
         this.instrumentName = instName;
         this.searchMetadata = specs;
@@ -109,4 +115,27 @@ public class SpectrumInstrumentMetadata<S extends SearchSpec> implements Instrum
         return "SpectrumInstrumentMetadata [instrumentName="
                 + instrumentName + ", specs=" + searchMetadata + "]";
     }
+
+    private static final Key<SpectrumInstrumentMetadata> SPECTRUMINSTRUMENTMETADATA_KEY = Key.of("spectrumInstrumentMetadata");
+	private static final Key<String> INSTNAME_KEY = Key.of("instrumentName");
+	private static final Key<List<SpectrumSearchSpec>> SEARCHMETADATA_KEY = Key.of("searchMetadata");
+
+    public static void initializeSerializationProxy()
+	{
+    	InstanceGetter.defaultInstanceGetter().register(SPECTRUMINSTRUMENTMETADATA_KEY, (metadata) -> {
+    		String instrumentName = metadata.get(INSTNAME_KEY);
+    		List<SpectrumSearchSpec> searchMetadata = metadata.get(SEARCHMETADATA_KEY);
+    		SpectrumInstrumentMetadata<SpectrumSearchSpec> spec = new SpectrumInstrumentMetadata<>(instrumentName, searchMetadata);
+    		return spec;
+
+    	}, SpectrumInstrumentMetadata.class, spec -> {
+
+    		SettableMetadata result = SettableMetadata.of(Version.of(1, 0));
+    		result.put(INSTNAME_KEY, spec.getInstrumentName());
+    		result.put(SEARCHMETADATA_KEY, spec.getSpecs());
+
+    		return result;
+    	});
+
+	}
 }

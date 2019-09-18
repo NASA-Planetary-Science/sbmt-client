@@ -7,7 +7,7 @@ public class SBMTModelBootstrap
 	{
 //		SBMTBodyModelFactory.initializeModels();
 //		SBMTImageFactory.initializeModels();
-		SBMTSpectraFactory.initializeModels(smallBodyModel);
+//		SBMTSpectraFactory.initializeModels(smallBodyModel);
 	}
 
 }

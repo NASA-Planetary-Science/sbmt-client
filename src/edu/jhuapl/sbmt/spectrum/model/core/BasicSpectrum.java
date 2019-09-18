@@ -130,12 +130,12 @@ public abstract class BasicSpectrum extends Spectrum
         return dateTime;
     }
 
-    @Override
-    public double[] getChannelColor()
-    {
-        double[] color = new double[] { 1, 1, 1 };
-        return color;
-    }
+//    @Override
+//    public double[] getChannelColor()
+//    {
+//        double[] color = new double[] { 1, 1, 1 };
+//        return color;
+//    }
 
     @Override
     public String getFullPath()

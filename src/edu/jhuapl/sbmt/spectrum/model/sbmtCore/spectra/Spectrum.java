@@ -49,7 +49,7 @@ public abstract class Spectrum //extends AbstractModel implements PropertyChange
     public abstract void setChannelColoring(int[] channels, double[] mins, double[] maxs);
 //    public abstract void updateChannelColoring();
     public abstract double evaluateDerivedParameters(int channel);
-    public abstract double[] getChannelColor();
+//    public abstract double[] getChannelColor();
 
 //    public abstract void setSelected();
 //    public abstract void setUnselected();

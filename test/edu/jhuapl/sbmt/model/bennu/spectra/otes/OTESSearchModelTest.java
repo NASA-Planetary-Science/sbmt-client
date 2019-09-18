@@ -161,7 +161,7 @@ class OTESSearchModelTest
 	{
 		HierarchicalSearchLeafNode otesL2Node = new HierarchicalSearchLeafNode("OTES L2 Calibrated Radiance", 0, -1);
 		TreePath[] treePath = new TreePath[] {new TreePath(new DefaultMutableTreeNode[] {orexNode, new DefaultMutableTreeNode(otesL2Node)})};
-		otesSearchModel.performSearch(searchParameters, null, true, smallBodyConfig.hierarchicalSpectraSearchSpecification, treePath);
+		otesSearchModel.performSearch(searchParameters, null, true, smallBodyConfig.hierarchicalSpectraSearchSpecification, treePath, null);
 		List<BasicSpectrum> results = otesSearchModel.getSpectrumRawResults();
 		Metadata metadata = otesSearchModel.store();
 //		try

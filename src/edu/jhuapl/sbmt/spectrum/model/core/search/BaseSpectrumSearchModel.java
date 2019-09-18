@@ -16,6 +16,7 @@ import edu.jhuapl.saavtk.util.IdPair;
 import edu.jhuapl.sbmt.lidar.hyperoctree.HyperBox;
 import edu.jhuapl.sbmt.lidar.hyperoctree.HyperException.HyperDimensionMismatchException;
 import edu.jhuapl.sbmt.model.boundedobject.hyperoctree.BoundedObjectHyperTreeSkeleton;
+import edu.jhuapl.sbmt.spectrum.controllers.standard.SearchProgressListener;
 import edu.jhuapl.sbmt.spectrum.model.core.BasicSpectrum;
 import edu.jhuapl.sbmt.spectrum.model.core.BasicSpectrumInstrument;
 import edu.jhuapl.sbmt.spectrum.model.core.color.SpectrumColoringModel;
@@ -73,7 +74,6 @@ public class BaseSpectrumSearchModel implements ISpectrumSearchModel, MetadataMa
     public void setSpectrumRawResults(List<BasicSpectrum> spectrumRawResults)
     {
         this.results = spectrumRawResults;
-        System.out.println("BaseSpectrumSearchModel: setSpectrumRawResults: number of results " + results.size());
         this.resultIntervalCurrentlyShown = new IdPair(0, numberOfBoundariesToShow);
         showFootprints(resultIntervalCurrentlyShown);
         fireResultsChanged();
@@ -142,7 +142,6 @@ public class BaseSpectrumSearchModel implements ISpectrumSearchModel, MetadataMa
                 break;
             fireFootprintVisibilityChanged(results.get(i), true);
         }
-        System.out.println("BaseSpectrumSearchModel: showFootprints: updating coloring");
         updateColoring();
     }
 
@@ -177,7 +176,7 @@ public class BaseSpectrumSearchModel implements ISpectrumSearchModel, MetadataMa
 
     public void performSearch(SpectrumSearchParametersModel searchParameters, TreeSet<Integer> cubeList,
     							boolean hasHierarchicalSpectraSearch, SpectraHierarchicalSearchSpecification<?> hierarchicalSpectraSearchSpecification,
-    							TreePath[] selectedPath)
+    							TreePath[] selectedPath, SearchProgressListener progressListener)
     {
         results.clear();
         SpectraHierarchicalSearchSpecification spectraSpec = null;
@@ -186,7 +185,7 @@ public class BaseSpectrumSearchModel implements ISpectrumSearchModel, MetadataMa
         	spectraSpec = hierarchicalSpectraSearchSpecification;
             try
             {
-                spectraSpec.loadMetadata();
+//                spectraSpec.loadMetadata();
                 spectraSpec = spectraSpec.clone();
             }
             catch (Exception e)
@@ -196,13 +195,13 @@ public class BaseSpectrumSearchModel implements ISpectrumSearchModel, MetadataMa
             }
         }
 
-        setSpectrumRawResults(new SpectrumStandardSearch(searchParameters, hasHierarchicalSpectraSearch, spectraSpec).search(instrument, cubeList, selectedPath));
+        setSpectrumRawResults(new SpectrumStandardSearch(searchParameters, hasHierarchicalSpectraSearch, spectraSpec).search(instrument, cubeList, selectedPath, progressListener));
     }
 
     public void performHypertreeSearch(SpectrumSearchParametersModel searchParameters, TreeSet<Integer> cubeList,
     									BoundedObjectHyperTreeSkeleton skeleton, HyperBox hbb,
     									String spectraHypertreeDataSpecName, boolean hasHypertreeBasedSpectraSearch, boolean hasHierarchicalSpectraSearch,
-    									SpectraHierarchicalSearchSpecification<?> hierarchicalSpectraSearchSpecification) throws HyperDimensionMismatchException
+    									SpectraHierarchicalSearchSpecification<?> hierarchicalSpectraSearchSpecification, SearchProgressListener progressListener) throws HyperDimensionMismatchException
     {
 		results.clear();
 		SpectraHierarchicalSearchSpecification spectraSpec = null;
@@ -211,7 +210,7 @@ public class BaseSpectrumSearchModel implements ISpectrumSearchModel, MetadataMa
 			spectraSpec = hierarchicalSpectraSearchSpecification;
 			try
 			{
-				spectraSpec.loadMetadata();
+//				spectraSpec.loadMetadata();
 				spectraSpec = spectraSpec.clone();
 			} catch (Exception e)
 			{
@@ -219,7 +218,7 @@ public class BaseSpectrumSearchModel implements ISpectrumSearchModel, MetadataMa
 				spectraSpec = null;
 			}
 		}
-		setSpectrumRawResults(new SpectrumHypertreeSearch(searchParameters, spectraHypertreeDataSpecName, hasHypertreeBasedSpectraSearch, spectraSpec).search(cubeList, skeleton, hbb, instrument));
+		setSpectrumRawResults(new SpectrumHypertreeSearch(searchParameters, spectraHypertreeDataSpecName, hasHypertreeBasedSpectraSearch, spectraSpec).search(cubeList, skeleton, hbb, instrument, progressListener));
 
     }
 

@@ -346,7 +346,6 @@ public class SbmtModelFactory
                 result = new SimpleSmallBody(config);
             }
         }
-
         return result;
     }
 

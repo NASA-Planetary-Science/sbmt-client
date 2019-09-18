@@ -117,6 +117,8 @@ public class SpectrumColoringController
             @Override
             public void coloringChanged()
             {
+            	System.out.println(
+						"SpectrumColoringController.init().new SpectrumColoringChangedListener() {...}: coloringChanged: ");
             	if (!model.getColoringModel().getSpectrumColoringStyleName().equals(panel.getColoringComboBox().getSelectedItem().toString()))
             		panel.getColoringComboBox().setSelectedItem(SpectrumColoringStyle.getStyleForName(model.getColoringModel().getSpectrumColoringStyleName()));
                 collection.setChannelColoring(model.getColoringModel().getChannels(), model.getColoringModel().getMins(), model.getColoringModel().getMaxs(), model.getInstrument());
@@ -179,6 +181,7 @@ public class SpectrumColoringController
 
     private void coloringComboBoxActionPerformed(ActionEvent evt)
     {
+    	System.out.println("SpectrumColoringController: coloringComboBoxActionPerformed: triggering coloring combo box");
         JComboBox<SpectrumColoringStyle> box = (JComboBox<SpectrumColoringStyle>)evt.getSource();
         String coloringName = box.getSelectedItem().toString();
         SpectrumColoringStyle style = SpectrumColoringStyle.getStyleForName(coloringName);

@@ -647,7 +647,7 @@ public abstract class AbstractSpectrumSearchPanel extends JPanel implements Mous
                 setForeground(Color.black);
             else
             {
-                double[] color=spectrum.getSpectrum().getChannelColor();
+                double[] color=spectrum.getChannelColor();
                 for (int i=0; i<3; i++)
                 {
                     if (color[i]>1)

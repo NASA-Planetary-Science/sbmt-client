@@ -1,9 +1,7 @@
-package edu.jhuapl.sbmt.core;
+package edu.jhuapl.sbmt.spectrum.model.core.interfaces;
 
 import java.util.ArrayList;
 import java.util.List;
-
-import edu.jhuapl.sbmt.spectrum.model.core.interfaces.SearchSpec;
 
 
 public interface InstrumentMetadata<S extends SearchSpec>

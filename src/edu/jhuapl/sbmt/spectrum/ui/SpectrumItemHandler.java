@@ -1,5 +1,9 @@
 package edu.jhuapl.sbmt.spectrum.ui;
 
+import org.joda.time.DateTimeZone;
+import org.joda.time.format.DateTimeFormat;
+import org.joda.time.format.DateTimeFormatter;
+
 import edu.jhuapl.sbmt.gui.lidar.LookUp;
 import edu.jhuapl.sbmt.spectrum.model.core.BasicSpectrum;
 import edu.jhuapl.sbmt.spectrum.rendering.SpectraCollection;
@@ -37,9 +41,11 @@ public class SpectrumItemHandler extends BasicItemHandler<BasicSpectrum, LookUp>
 			case Id:
 				return spectrumCollection.getAllItems().indexOf(spec);
 			case Filename:
-				return spec.getDataName();
+				return spec.getSpectrumName();
 			case Date:
-				return spec.getDateTime();
+				DateTimeFormatter fmt = DateTimeFormat.forPattern("yyyy-MM-dd'T'HH:mm:ss");
+				fmt.withZone(DateTimeZone.UTC);
+				return fmt.print(spec.getDateTime());
 			default:
 				break;
 		}

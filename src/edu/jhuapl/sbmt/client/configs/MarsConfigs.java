@@ -1,5 +1,6 @@
 package edu.jhuapl.sbmt.client.configs;
 
+import java.util.ArrayList;
 import java.util.GregorianCalendar;
 import java.util.LinkedHashMap;
 
@@ -426,9 +427,8 @@ public class MarsConfigs extends SmallBodyViewConfig
             };
 
             c.hasSpectralData=true;
-            c.spectralInstruments=new BasicSpectrumInstrument[] {
-                    new MEGANE()
-            };
+            c.spectralInstruments = new ArrayList<BasicSpectrumInstrument>();
+            c.spectralInstruments.add(new MEGANE());
 
             c.hasMapmaker = true;
             c.imageSearchDefaultStartDate = new GregorianCalendar(1976, 6, 24, 0, 0, 0).getTime();

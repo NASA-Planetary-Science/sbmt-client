@@ -7,6 +7,11 @@ import java.util.Hashtable;
 import edu.jhuapl.sbmt.model.image.ImageSource;
 import edu.jhuapl.sbmt.spectrum.model.core.interfaces.SearchSpec;
 
+import crucible.crust.metadata.api.Key;
+import crucible.crust.metadata.api.Version;
+import crucible.crust.metadata.impl.InstanceGetter;
+import crucible.crust.metadata.impl.SettableMetadata;
+
 public class SpectrumSearchSpec extends Hashtable<String, String> implements SearchSpec
 {
     String dataName;
@@ -130,4 +135,45 @@ public class SpectrumSearchSpec extends Hashtable<String, String> implements Sea
     {
         return get("dataDescription");
     }
+
+    private static final Key<SpectrumSearchSpec> SPECTRUMSEARCHSPEC_KEY = Key.of("SpectrumSearchSpec");
+	private static final Key<String> DATANAME_KEY = Key.of("dataName");
+	private static final Key<String> DATAROOTLOCATION_KEY = Key.of("dataRootLocation");
+	private static final Key<String> DATAPATH_KEY = Key.of("dataPath");
+	private static final Key<String> DATALISTFILENAME_KEY = Key.of("dataListFilename");
+	private static final Key<String> SOURCE_KEY = Key.of("source");
+	private static final Key<String> XAXISUNITS_KEY = Key.of("xAxisUnits");
+	private static final Key<String> YAXISUNITS_KEY = Key.of("yAxisUnits");
+	private static final Key<String> DATADESCRIPTION_KEY = Key.of("dataDescription");
+
+    public static void initializeSerializationProxy()
+	{
+    	InstanceGetter.defaultInstanceGetter().register(SPECTRUMSEARCHSPEC_KEY, (metadata) -> {
+    		String dataName = metadata.get(DATANAME_KEY);
+    		String dataRootLocation = metadata.get(DATAROOTLOCATION_KEY);
+    		String dataPath = metadata.get(DATAPATH_KEY);
+    		String dataListFilename = metadata.get(DATALISTFILENAME_KEY);
+    		String source = metadata.get(SOURCE_KEY);
+    		String xAxisUnits = metadata.get(XAXISUNITS_KEY);
+    		String yAxisUnits = metadata.get(YAXISUNITS_KEY);
+    		String dataDescription = metadata.get(DATADESCRIPTION_KEY);
+
+    		SpectrumSearchSpec spec = new SpectrumSearchSpec(dataName, dataRootLocation, dataPath, dataListFilename, ImageSource.valueFor(source), xAxisUnits, yAxisUnits, dataDescription);
+    		return spec;
+
+    	}, SpectrumSearchSpec.class, spec -> {
+
+    		SettableMetadata result = SettableMetadata.of(Version.of(1, 0));
+    		result.put(DATANAME_KEY, spec.dataName);
+    		result.put(DATAROOTLOCATION_KEY, spec.dataRootLocation);
+    		result.put(DATAPATH_KEY, spec.dataPath);
+    		result.put(DATALISTFILENAME_KEY, spec.dataListFilename);
+    		result.put(SOURCE_KEY, spec.source);
+    		result.put(XAXISUNITS_KEY, spec.xAxisUnits);
+    		result.put(YAXISUNITS_KEY, spec.yAxisUnits);
+    		result.put(DATADESCRIPTION_KEY, spec.dataDescription);
+    		return result;
+    	});
+
+	}
 }

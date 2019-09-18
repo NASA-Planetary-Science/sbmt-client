@@ -17,7 +17,7 @@ import edu.jhuapl.sbmt.model.image.ImagingInstrument;
 import edu.jhuapl.sbmt.model.image.Instrument;
 import edu.jhuapl.sbmt.model.phobos.HierarchicalSearchSpecification;
 import edu.jhuapl.sbmt.spectrum.model.core.BasicSpectrumInstrument;
-import edu.jhuapl.sbmt.spectrum.model.core.search.SpectraHierarchicalSearchSpecification;
+import edu.jhuapl.sbmt.spectrum.model.io.SpectrumInstrumentMetadataIO;
 import edu.jhuapl.sbmt.tools.DBRunInfo;
 
 
@@ -66,7 +66,7 @@ public abstract class BodyViewConfig extends ViewConfig
     public boolean hasHierarchicalImageSearch = false;
     public boolean hasHierarchicalSpectraSearch = false;
     public HierarchicalSearchSpecification hierarchicalImageSearchSpecification;
-    public SpectraHierarchicalSearchSpecification<?> hierarchicalSpectraSearchSpecification;
+    public SpectrumInstrumentMetadataIO hierarchicalSpectraSearchSpecification;
     public String spectrumMetadataFile;
 
     public boolean hasHypertreeBasedSpectraSearch=false;
@@ -150,7 +150,7 @@ public abstract class BodyViewConfig extends ViewConfig
     public ImagingInstrument[] imagingInstruments = {};
     public Instrument lidarInstrumentName = Instrument.LIDAR;
 
-    public BasicSpectrumInstrument[] spectralInstruments = {};
+    public List<BasicSpectrumInstrument> spectralInstruments = new ArrayList<BasicSpectrumInstrument>();
 
     public DBRunInfo[] databaseRunInfos = {};
 
@@ -428,5 +428,10 @@ public abstract class BodyViewConfig extends ViewConfig
 	public boolean hasHierarchicalImageSearch()
 	{
 		return hasHierarchicalImageSearch;
+	}
+
+	public void setShapeModelFileNames(String[] shapeModelFileNames)
+	{
+		this.shapeModelFileNames = shapeModelFileNames;
 	}
 }

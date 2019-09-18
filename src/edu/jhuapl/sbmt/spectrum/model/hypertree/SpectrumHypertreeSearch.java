@@ -20,15 +20,16 @@ import org.joda.time.DateTimeZone;
 
 import edu.jhuapl.saavtk.util.FileCache;
 import edu.jhuapl.sbmt.client.SbmtSpectrumModelFactory;
-import edu.jhuapl.sbmt.core.InstrumentMetadata;
 import edu.jhuapl.sbmt.lidar.hyperoctree.FSHyperTreeSkeleton.Node;
 import edu.jhuapl.sbmt.lidar.hyperoctree.HyperBox;
 import edu.jhuapl.sbmt.lidar.hyperoctree.HyperException;
 import edu.jhuapl.sbmt.model.boundedobject.hyperoctree.BoundedObjectHyperTreeNode;
 import edu.jhuapl.sbmt.model.boundedobject.hyperoctree.BoundedObjectHyperTreeSkeleton;
 import edu.jhuapl.sbmt.model.boundedobject.hyperoctree.HyperBoundedObject;
+import edu.jhuapl.sbmt.spectrum.controllers.standard.SearchProgressListener;
 import edu.jhuapl.sbmt.spectrum.model.core.BasicSpectrum;
 import edu.jhuapl.sbmt.spectrum.model.core.BasicSpectrumInstrument;
+import edu.jhuapl.sbmt.spectrum.model.core.interfaces.InstrumentMetadata;
 import edu.jhuapl.sbmt.spectrum.model.core.interfaces.SearchSpec;
 import edu.jhuapl.sbmt.spectrum.model.core.search.SpectraHierarchicalSearchSpecification;
 import edu.jhuapl.sbmt.spectrum.model.core.search.SpectrumSearchParametersModel;
@@ -53,7 +54,7 @@ public class SpectrumHypertreeSearch
 		this.spectraSpec = searchSpec;
 	}
 
-	public List<BasicSpectrum> search(TreeSet<Integer> cubeList, BoundedObjectHyperTreeSkeleton skeleton, HyperBox hbb, BasicSpectrumInstrument instrument)
+	public List<BasicSpectrum> search(TreeSet<Integer> cubeList, BoundedObjectHyperTreeSkeleton skeleton, HyperBox hbb, BasicSpectrumInstrument instrument, SearchProgressListener progressListener)
 	{
 		List<Integer> productsSelected;
         List<BasicSpectrum> results = new ArrayList<BasicSpectrum>();

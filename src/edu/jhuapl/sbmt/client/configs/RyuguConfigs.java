@@ -1,7 +1,9 @@
 package edu.jhuapl.sbmt.client.configs;
 
+import java.util.ArrayList;
 import java.util.GregorianCalendar;
 import java.util.LinkedHashMap;
+import java.util.List;
 
 import com.google.common.collect.ImmutableList;
 
@@ -34,16 +36,37 @@ import edu.jhuapl.sbmt.query.QueryBase;
 import edu.jhuapl.sbmt.query.database.GenericPhpQuery;
 import edu.jhuapl.sbmt.query.fixedlist.FixedListQuery;
 import edu.jhuapl.sbmt.spectrum.model.core.BasicSpectrumInstrument;
+import edu.jhuapl.sbmt.spectrum.model.core.SpectrumInstrumentMetadata;
 import edu.jhuapl.sbmt.spectrum.model.core.search.SpectraHierarchicalSearchSpecification;
+import edu.jhuapl.sbmt.spectrum.model.core.search.SpectrumSearchSpec;
 import edu.jhuapl.sbmt.spectrum.model.io.SpectrumInstrumentMetadataIO;
 import edu.jhuapl.sbmt.tools.DBRunInfo;
 
 public class RyuguConfigs extends SmallBodyViewConfig
 {
+	List<SpectrumInstrumentMetadata<SpectrumSearchSpec>> instrumentSearchSpecs = new ArrayList<SpectrumInstrumentMetadata<SpectrumSearchSpec>>();
+
 
 	public RyuguConfigs()
 	{
 		super(ImmutableList.<String>copyOf(DEFAULT_GASKELL_LABELS_PER_RESOLUTION), ImmutableList.<Integer>copyOf(DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION));
+
+//		SpectrumSearchSpec otesL2 = new SpectrumSearchSpec("OTES L2 Calibrated Radiance", "/bennu/shared/otes/l2", "spectra", "spectrumlist.txt", ImageSource.valueFor("Corrected SPICE Derived"), "Wave Number (1/cm)", "Radiance", "OTES L2 Calibrated Radiance");
+//		SpectrumSearchSpec otesL3 = new SpectrumSearchSpec("OTES L3 Spot Emissivity", "/bennu/shared/otes/l3", "spectra", "spectrumlist.txt", ImageSource.valueFor("Corrected SPICE Derived"), "Wave Number (1/cm)", "Emissivity", "OTES L3 Spot Emissivity");
+//		List<SpectrumSearchSpec> otesSpecs = new ArrayList<SpectrumSearchSpec>();
+//		otesSpecs.add(otesL2);
+//		otesSpecs.add(otesL3);
+//
+//		SpectrumSearchSpec ovirsSA16 = new SpectrumSearchSpec("OVIRS SA-16 Photometrically Corrected SPOT Reflectance Factor (REFF)", "/bennu/shared/ovirs/l3/SA16l3escireff", "spectra", "spectrumlist.txt", ImageSource.valueFor("Corrected SPICE Derived"), "Wavelength (microns)", "REFF", "OVIRS L3 SA-16 Photometrically Corrected SPOT Reflectance Factor (REFF)");
+//		SpectrumSearchSpec ovirsSA27 = new SpectrumSearchSpec("OVIRS SA-27 SPOT I/F", "/bennu/shared/ovirs/l3/SA27l3csci", "spectra", "spectrumlist.txt", ImageSource.valueFor("Corrected SPICE Derived"), "Wavelength (microns)", "I/F", "OVIRS L3 SA-27 SPOT I/F");
+//		SpectrumSearchSpec ovirsSA29 = new SpectrumSearchSpec("OVIRS SA-29 Photometrically corrected SPOT I/F, aka RADF", "/bennu/shared/ovirs/l3/SA29l3esciradf", "spectra", "spectrumlist.txt", ImageSource.valueFor("Corrected SPICE Derived"), "Wavelength (microns)", "RADF", "OVIRS L3 SA-29 Photometrically corrected SPOT I/F, aka RADF");
+//		List<SpectrumSearchSpec> ovirsSpecs = new ArrayList<SpectrumSearchSpec>();
+//		ovirsSpecs.add(ovirsSA16);
+//		ovirsSpecs.add(ovirsSA27);
+//		ovirsSpecs.add(ovirsSA29);
+//
+//		instrumentSearchSpecs.add(new SpectrumInstrumentMetadata<SpectrumSearchSpec>("OTES", otesSpecs));
+//		instrumentSearchSpecs.add(new SpectrumInstrumentMetadata<SpectrumSearchSpec>("OVIRS", ovirsSpecs));
 	}
 
 
@@ -197,9 +220,8 @@ public class RyuguConfigs extends SmallBodyViewConfig
             c.imageSearchDefaultMaxResolution = 300.0;
 
             c.hasSpectralData = true;
-            c.spectralInstruments = new BasicSpectrumInstrument[] {
-                    new NIRS3()
-            };
+            c.spectralInstruments = new ArrayList<BasicSpectrumInstrument>();
+            c.spectralInstruments.add(new NIRS3());
 
             c.presentInMissions = new SbmtMultiMissionTool.Mission[] {SbmtMultiMissionTool.Mission.APL_INTERNAL, SbmtMultiMissionTool.Mission.TEST_APL_INTERNAL,SbmtMultiMissionTool.Mission.STAGE_APL_INTERNAL,
 					SbmtMultiMissionTool.Mission.HAYABUSA2_DEPLOY, SbmtMultiMissionTool.Mission.HAYABUSA2_DEV};
@@ -1516,9 +1538,9 @@ public class RyuguConfigs extends SmallBodyViewConfig
             c.imageSearchDefaultMaxResolution = 300.0;
 
             c.hasSpectralData = true;
-            c.spectralInstruments = new BasicSpectrumInstrument[] {
-                    new NIRS3()
-            };
+            c.spectralInstruments = new ArrayList<BasicSpectrumInstrument>();
+            c.spectralInstruments.add(new NIRS3());
+
 
             c.density = 1200.; // (kg/m^3)
             c.rotationRate = 0.00022871; // (rad/sec)
@@ -1529,8 +1551,8 @@ public class RyuguConfigs extends SmallBodyViewConfig
             c.spectraSearchDataSourceMap.put("NIRS3", c.rootDirOnServer + "/nirs3/l2c/hypertree/dataSource.spectra");
             c.spectrumMetadataFile = c.rootDirOnServer + "/spectraMetadata.json";
 
-            SpectrumInstrumentMetadataIO specIO = new SpectrumInstrumentMetadataIO("HAYABUSA2");
-            specIO.setPathString(c.spectrumMetadataFile);
+            SpectrumInstrumentMetadataIO specIO = new SpectrumInstrumentMetadataIO("HAYABUSA2", c.instrumentSearchSpecs);
+//            specIO.setPathString(c.spectrumMetadataFile);
             c.hierarchicalSpectraSearchSpecification = specIO;
 
             c.hasLidarData = true;

@@ -1,22 +1,10 @@
 package edu.jhuapl.sbmt.spectrum.model.io;
 
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
-import java.io.File;
 import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.lang.reflect.Type;
 import java.util.List;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.google.gson.reflect.TypeToken;
-
-import edu.jhuapl.saavtk.util.FileCache;
-import edu.jhuapl.sbmt.core.InstrumentMetadata;
 import edu.jhuapl.sbmt.spectrum.model.core.SpectrumInstrumentMetadata;
+import edu.jhuapl.sbmt.spectrum.model.core.interfaces.InstrumentMetadata;
 import edu.jhuapl.sbmt.spectrum.model.core.search.SpectraHierarchicalSearchSpecification;
 import edu.jhuapl.sbmt.spectrum.model.core.search.SpectrumSearchSpec;
 
@@ -27,60 +15,24 @@ import crucible.crust.metadata.impl.SettableMetadata;
 
 public class SpectrumInstrumentMetadataIO extends SpectraHierarchicalSearchSpecification<SpectrumSearchSpec>
 {
-    private static Gson gson = null;
     List<SpectrumInstrumentMetadata<SpectrumSearchSpec>> info = null;
-    private File path;
-    private String pathString;
 
-    public SpectrumInstrumentMetadataIO(String instrumentName)
+    public SpectrumInstrumentMetadataIO(String scName)
     {
-        super(instrumentName);
-        GsonBuilder builder = new GsonBuilder();
-        builder.setPrettyPrinting();
-        gson = builder.create();
-
+        super(scName);
     }
+
+    public SpectrumInstrumentMetadataIO(String scName, List<SpectrumInstrumentMetadata<SpectrumSearchSpec>> info)
+	{
+		super(scName);
+		this.info = info;
+	}
 
     @Override
     public SpectraHierarchicalSearchSpecification<SpectrumSearchSpec> clone()
     {
-		SpectrumInstrumentMetadataIO specIO = new SpectrumInstrumentMetadataIO(rootName);
-		specIO.setPathString(pathString);
+		SpectrumInstrumentMetadataIO specIO = new SpectrumInstrumentMetadataIO(rootName, info);
 		return specIO;
-    }
-
-    @Override
-    public void loadMetadata() throws FileNotFoundException
-    {
-        this.path = FileCache.getFileFromServer(pathString);
-        readMetadata(path);
-    }
-
-    public void setPathString(String path)
-    {
-        this.pathString = path;
-    }
-
-    public void writeJSON(File file, String json) throws IOException
-    {
-        BufferedWriter writer = new BufferedWriter(new FileWriter(file));
-        writer.write(json);
-        writer.close();
-    }
-
-    public void readMetadata(File file) throws FileNotFoundException
-    {
-        BufferedReader bufferedReader = new BufferedReader(new FileReader(file));
-        Type collectionType = new TypeToken<List<SpectrumInstrumentMetadata<SpectrumSearchSpec>>>(){}.getType();
-        info = gson.fromJson(bufferedReader, collectionType);
-    }
-
-    public InstrumentMetadata<SpectrumSearchSpec> readMetadataFromFileForInstrument(File file, String instrumentName) throws FileNotFoundException
-    {
-        BufferedReader bufferedReader = new BufferedReader(new FileReader(file));
-        Type collectionType = new TypeToken<List<SpectrumInstrumentMetadata<SpectrumSearchSpec>>>(){}.getType();
-        info = gson.fromJson(bufferedReader, collectionType);
-        return getInstrumentMetadata(instrumentName);
     }
 
     /* (non-Javadoc)
@@ -112,28 +64,25 @@ public class SpectrumInstrumentMetadataIO extends SpectraHierarchicalSearchSpeci
         }
     }
 
-    private static final Key<SpectrumInstrumentMetadataIO> SPECTRUMINSTRUMENTMETADATAIO_KEY = Key.of("SpectrumInstrumentMetadataIO");
-	private static final Key<String> INSTRUMENTNAME_KEY = Key.of("instrumentName");
-	private static final Key<List<Integer>> SELECTEDDATASETS_KEY = Key.of("selectedDatasets");
-	private static final Key<String> PATHSTRING_KEY = Key.of("pathString");
+    private static final Key<SpectrumInstrumentMetadataIO> SPECTRUMINSTRUMENTMETADATAIO_KEY = Key.of("spectrumInstrumentMetadataIO");
+	private static final Key<String> SCNAME_KEY = Key.of("scName");
+	private static final Key<List<SpectrumInstrumentMetadata<SpectrumSearchSpec>>> INSTRUMENTMETADATA_KEY = Key.of("instrumentMetadata");
 
     public static void initializeSerializationProxy()
 	{
     	InstanceGetter.defaultInstanceGetter().register(SPECTRUMINSTRUMENTMETADATAIO_KEY, (source) -> {
-    		String instrumentName = source.get(INSTRUMENTNAME_KEY);
-    		List<Integer> selectedDatasets = source.get(SELECTEDDATASETS_KEY);
-    		String pathString = source.get(PATHSTRING_KEY);
-
-    		SpectrumInstrumentMetadataIO specIO = new SpectrumInstrumentMetadataIO(instrumentName);
-    		specIO.setPathString(pathString);
+    		String instrumentName = source.get(SCNAME_KEY);
+    		List<SpectrumInstrumentMetadata<SpectrumSearchSpec>> info = source.get(INSTRUMENTMETADATA_KEY);
+    		SpectrumInstrumentMetadataIO specIO = new SpectrumInstrumentMetadataIO(instrumentName, info);
     		return specIO;
 
     	}, SpectrumInstrumentMetadataIO.class, spec -> {
 
     		SettableMetadata result = SettableMetadata.of(Version.of(1, 0));
-    		result.put(INSTRUMENTNAME_KEY, spec.rootName);
-    		result.put(PATHSTRING_KEY, spec.pathString);
-    		result.put(SELECTEDDATASETS_KEY, spec.selectedDatasets);
+    		result.put(SCNAME_KEY, spec.rootName);
+    		SpectrumInstrumentMetadata<SpectrumSearchSpec>[] infos = new SpectrumInstrumentMetadata[spec.info.size()];
+    		spec.info.toArray(infos);
+    		result.put(INSTRUMENTMETADATA_KEY, spec.info);
     		return result;
     	});
 

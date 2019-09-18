@@ -1,8 +1,4 @@
-package edu.jhuapl.sbmt.core;
-
-import java.io.FileNotFoundException;
-
-import edu.jhuapl.sbmt.spectrum.model.core.interfaces.SearchSpec;
+package edu.jhuapl.sbmt.spectrum.model.core.interfaces;
 
 public interface InstrumentMetadataIO<S extends SearchSpec>
 {
@@ -12,6 +8,6 @@ public interface InstrumentMetadataIO<S extends SearchSpec>
 
     void readHierarchyForInstrument(String instrumentName);
 
-    void loadMetadata() throws FileNotFoundException;
+//    void loadMetadata() throws FileNotFoundException;
 
 }

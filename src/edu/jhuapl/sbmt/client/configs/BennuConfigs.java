@@ -38,18 +38,39 @@ import edu.jhuapl.sbmt.query.QueryBase;
 import edu.jhuapl.sbmt.query.database.GenericPhpQuery;
 import edu.jhuapl.sbmt.query.fixedlist.FixedListQuery;
 import edu.jhuapl.sbmt.spectrum.model.core.BasicSpectrumInstrument;
+import edu.jhuapl.sbmt.spectrum.model.core.SpectrumInstrumentMetadata;
 import edu.jhuapl.sbmt.spectrum.model.core.search.SpectraHierarchicalSearchSpecification;
+import edu.jhuapl.sbmt.spectrum.model.core.search.SpectrumSearchSpec;
 import edu.jhuapl.sbmt.spectrum.model.io.SpectrumInstrumentMetadataIO;
 import edu.jhuapl.sbmt.tools.DBRunInfo;
 
 public class BennuConfigs extends SmallBodyViewConfig
 {
+	List<SpectrumInstrumentMetadata<SpectrumSearchSpec>> instrumentSearchSpecs = new ArrayList<SpectrumInstrumentMetadata<SpectrumSearchSpec>>();
 
 	public BennuConfigs()
 	{
 		super(ImmutableList.<String>copyOf(DEFAULT_GASKELL_LABELS_PER_RESOLUTION), ImmutableList.<Integer>copyOf(DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION));
 
 		this.defaultForMissions = new SbmtMultiMissionTool.Mission[] {};
+
+		SpectrumSearchSpec otesL2 = new SpectrumSearchSpec("OTES L2 Calibrated Radiance", "/bennu/shared/otes/l2", "spectra", "spectrumlist.txt", ImageSource.valueFor("Corrected SPICE Derived"), "Wave Number (1/cm)", "Radiance", "OTES L2 Calibrated Radiance");
+		SpectrumSearchSpec otesL3 = new SpectrumSearchSpec("OTES L3 Spot Emissivity", "/bennu/shared/otes/l3", "spectra", "spectrumlist.txt", ImageSource.valueFor("Corrected SPICE Derived"), "Wave Number (1/cm)", "Emissivity", "OTES L3 Spot Emissivity");
+		List<SpectrumSearchSpec> otesSpecs = new ArrayList<SpectrumSearchSpec>();
+		otesSpecs.add(otesL2);
+		otesSpecs.add(otesL3);
+
+		SpectrumSearchSpec ovirsSA16 = new SpectrumSearchSpec("OVIRS SA-16 Photometrically Corrected SPOT Reflectance Factor (REFF)", "/bennu/shared/ovirs/l3/SA16l3escireff", "spectra", "spectrumlist.txt", ImageSource.valueFor("Corrected SPICE Derived"), "Wavelength (microns)", "REFF", "OVIRS L3 SA-16 Photometrically Corrected SPOT Reflectance Factor (REFF)");
+		SpectrumSearchSpec ovirsSA27 = new SpectrumSearchSpec("OVIRS SA-27 SPOT I/F", "/bennu/shared/ovirs/l3/SA27l3csci", "spectra", "spectrumlist.txt", ImageSource.valueFor("Corrected SPICE Derived"), "Wavelength (microns)", "I/F", "OVIRS L3 SA-27 SPOT I/F");
+		SpectrumSearchSpec ovirsSA29 = new SpectrumSearchSpec("OVIRS SA-29 Photometrically corrected SPOT I/F, aka RADF", "/bennu/shared/ovirs/l3/SA29l3esciradf", "spectra", "spectrumlist.txt", ImageSource.valueFor("Corrected SPICE Derived"), "Wavelength (microns)", "RADF", "OVIRS L3 SA-29 Photometrically corrected SPOT I/F, aka RADF");
+		List<SpectrumSearchSpec> ovirsSpecs = new ArrayList<SpectrumSearchSpec>();
+		ovirsSpecs.add(ovirsSA16);
+		ovirsSpecs.add(ovirsSA27);
+		ovirsSpecs.add(ovirsSA29);
+
+		instrumentSearchSpecs.add(new SpectrumInstrumentMetadata<SpectrumSearchSpec>("OTES", otesSpecs));
+		instrumentSearchSpecs.add(new SpectrumInstrumentMetadata<SpectrumSearchSpec>("OVIRS", ovirsSpecs));
+
 	}
 
 
@@ -156,11 +177,14 @@ public class BennuConfigs extends SmallBodyViewConfig
             };
 
             c.hasSpectralData = true;
-            c.spectralInstruments = new BasicSpectrumInstrument[] {
-
-                    new OTES(),
-                    new OVIRS()
-            };
+            c.spectralInstruments = new ArrayList<BasicSpectrumInstrument>();
+            c.spectralInstruments.add(new OTES());
+            c.spectralInstruments.add(new OVIRS());
+//            c.spectralInstruments = new BasicSpectrumInstrument[] {
+//
+//                    new OTES(),
+//                    new OVIRS()
+//            };
 
             c.hasMapmaker = false;
             c.imageSearchDefaultStartDate = new GregorianCalendar(2017, 6, 1, 0, 0, 0).getTime();
@@ -280,10 +304,9 @@ public class BennuConfigs extends SmallBodyViewConfig
             };
 
             c.hasSpectralData = true;
-            c.spectralInstruments = new BasicSpectrumInstrument[] {
-                    new OTES(),
-                    new OVIRS()
-            };
+            c.spectralInstruments = new ArrayList<BasicSpectrumInstrument>();
+            c.spectralInstruments.add(new OTES());
+            c.spectralInstruments.add(new OVIRS());
 
             c.hasStateHistory = true;
             c.timeHistoryFile = "/earth/osirisrex/history/timeHistory.bth";
@@ -306,10 +329,10 @@ public class BennuConfigs extends SmallBodyViewConfig
             c.spectraSearchDataSourceMap.put("OTES_L3", "/earth/osirisrex/otes/l3/hypertree/dataSource.spectra");
             c.spectraSearchDataSourceMap.put("OVIRS_IF", "/earth/osirisrex/ovirs/l3/if/hypertree/dataSource.spectra");
             c.spectraSearchDataSourceMap.put("OVIRS_REF", "/earth/osirisrex/ovirs/l3/reff/hypertree/dataSource.spectra");
-            c.spectrumMetadataFile = "/earth/osirisrex/spectraMetadata.json";
+//            c.spectrumMetadataFile = "/earth/osirisrex/spectraMetadata.json";
 
-            SpectrumInstrumentMetadataIO specIO = new SpectrumInstrumentMetadataIO("OREX");
-            specIO.setPathString(c.spectrumMetadataFile);
+            SpectrumInstrumentMetadataIO specIO = new SpectrumInstrumentMetadataIO("OREX", c.instrumentSearchSpecs);
+//            specIO.setPathString(c.spectrumMetadataFile);
             c.hierarchicalSpectraSearchSpecification = specIO;
 
             c.imageSearchDefaultMaxSpacecraftDistance = 120000.0;
@@ -1796,10 +1819,9 @@ public class BennuConfigs extends SmallBodyViewConfig
             };
 
             c.hasSpectralData = true;
-            c.spectralInstruments = new BasicSpectrumInstrument[] {
-                    new OTES(),
-                    new OVIRS()
-            };
+            c.spectralInstruments = new ArrayList<BasicSpectrumInstrument>();
+            c.spectralInstruments.add(new OTES());
+            c.spectralInstruments.add(new OVIRS());
 
             c.hasStateHistory = true;
             c.timeHistoryFile = c.rootDirOnServer + "/history/timeHistory.bth";
@@ -1814,8 +1836,8 @@ public class BennuConfigs extends SmallBodyViewConfig
             c.spectraSearchDataSourceMap.put("OVIRS_REF", c.rootDirOnServer + "ovirs/l3/reff/hypertree/dataSource.spectra");
             c.spectrumMetadataFile = c.rootDirOnServer + "/spectraMetadata.json";
 
-            SpectrumInstrumentMetadataIO specIO = new SpectrumInstrumentMetadataIO("OREX");
-            specIO.setPathString(c.spectrumMetadataFile);
+            SpectrumInstrumentMetadataIO specIO = new SpectrumInstrumentMetadataIO("OREX", c.instrumentSearchSpecs);
+//            specIO.setPathString(c.spectrumMetadataFile);
             c.hierarchicalSpectraSearchSpecification = specIO;
 
             c.dtmBrowseDataSourceMap.put("Default", "bennu/altwg-spc-v20190105/dtm/browse/fileList.txt");
@@ -1961,10 +1983,9 @@ public class BennuConfigs extends SmallBodyViewConfig
             };
 
             c.hasSpectralData = true;
-            c.spectralInstruments = new BasicSpectrumInstrument[] {
-                    new OTES(),
-                    new OVIRS()
-            };
+            c.spectralInstruments = new ArrayList<BasicSpectrumInstrument>();
+            c.spectralInstruments.add(new OTES());
+            c.spectralInstruments.add(new OVIRS());
 
             c.hasStateHistory = true;
             c.timeHistoryFile = c.rootDirOnServer + "/history/timeHistory.bth";
@@ -1977,10 +1998,10 @@ public class BennuConfigs extends SmallBodyViewConfig
             c.spectraSearchDataSourceMap.put("OTES_L3", c.rootDirOnServer + "/otes/l3/hypertree/dataSource.spectra");
             c.spectraSearchDataSourceMap.put("OVIRS_IF", c.rootDirOnServer + "/ovirs/l3/if/hypertree/dataSource.spectra");
             c.spectraSearchDataSourceMap.put("OVIRS_REF", c.rootDirOnServer + "ovirs/l3/reff/hypertree/dataSource.spectra");
-            c.spectrumMetadataFile = c.rootDirOnServer + "/spectraMetadata.json";
+//            c.spectrumMetadataFile = c.rootDirOnServer + "/spectraMetadata.json";
 
-            SpectrumInstrumentMetadataIO specIO = new SpectrumInstrumentMetadataIO("OREX");
-            specIO.setPathString(c.spectrumMetadataFile);
+            SpectrumInstrumentMetadataIO specIO = new SpectrumInstrumentMetadataIO("OREX", c.instrumentSearchSpecs);
+//            specIO.setPathString(c.spectrumMetadataFile);
             c.hierarchicalSpectraSearchSpecification = specIO;
 
             c.hasLidarData = true;
@@ -2125,10 +2146,9 @@ public class BennuConfigs extends SmallBodyViewConfig
             };
 
             c.hasSpectralData = true;
-            c.spectralInstruments = new BasicSpectrumInstrument[] {
-                    new OTES(),
-                    new OVIRS()
-            };
+            c.spectralInstruments = new ArrayList<BasicSpectrumInstrument>();
+            c.spectralInstruments.add(new OTES());
+            c.spectralInstruments.add(new OVIRS());
 
             c.hasStateHistory = true;
             c.timeHistoryFile = c.rootDirOnServer + "/history/timeHistory.bth";
@@ -2141,10 +2161,10 @@ public class BennuConfigs extends SmallBodyViewConfig
             c.spectraSearchDataSourceMap.put("OTES_L3", c.rootDirOnServer + "/otes/l3/hypertree/dataSource.spectra");
             c.spectraSearchDataSourceMap.put("OVIRS_IF", c.rootDirOnServer + "/ovirs/l3/if/hypertree/dataSource.spectra");
             c.spectraSearchDataSourceMap.put("OVIRS_REF", c.rootDirOnServer + "ovirs/l3/reff/hypertree/dataSource.spectra");
-            c.spectrumMetadataFile = c.rootDirOnServer + "/spectraMetadata.json";
+//            c.spectrumMetadataFile = c.rootDirOnServer + "/spectraMetadata.json";
 
-            SpectrumInstrumentMetadataIO specIO = new SpectrumInstrumentMetadataIO("OREX");
-            specIO.setPathString(c.spectrumMetadataFile);
+            SpectrumInstrumentMetadataIO specIO = new SpectrumInstrumentMetadataIO("OREX", c.instrumentSearchSpecs);
+//            specIO.setPathString(c.spectrumMetadataFile);
             c.hierarchicalSpectraSearchSpecification = specIO;
 
             c.hasLidarData = true;
@@ -2289,10 +2309,9 @@ public class BennuConfigs extends SmallBodyViewConfig
             };
 
             c.hasSpectralData = true;
-            c.spectralInstruments = new BasicSpectrumInstrument[] {
-                    new OTES(),
-                    new OVIRS()
-            };
+            c.spectralInstruments = new ArrayList<BasicSpectrumInstrument>();
+            c.spectralInstruments.add(new OTES());
+            c.spectralInstruments.add(new OVIRS());
 
             c.hasStateHistory = true;
             c.timeHistoryFile = c.rootDirOnServer + "/history/timeHistory.bth";
@@ -2305,10 +2324,10 @@ public class BennuConfigs extends SmallBodyViewConfig
             c.spectraSearchDataSourceMap.put("OTES_L3", c.rootDirOnServer + "/otes/l3/hypertree/dataSource.spectra");
             c.spectraSearchDataSourceMap.put("OVIRS_IF", c.rootDirOnServer + "/ovirs/l3/if/hypertree/dataSource.spectra");
             c.spectraSearchDataSourceMap.put("OVIRS_REF", c.rootDirOnServer + "ovirs/l3/reff/hypertree/dataSource.spectra");
-            c.spectrumMetadataFile = c.rootDirOnServer + "/spectraMetadata.json";
+//            c.spectrumMetadataFile = c.rootDirOnServer + "/spectraMetadata.json";
 
-            SpectrumInstrumentMetadataIO specIO = new SpectrumInstrumentMetadataIO("OREX");
-            specIO.setPathString(c.spectrumMetadataFile);
+            SpectrumInstrumentMetadataIO specIO = new SpectrumInstrumentMetadataIO("OREX", c.instrumentSearchSpecs);
+//            specIO.setPathString(c.spectrumMetadataFile);
             c.hierarchicalSpectraSearchSpecification = specIO;
 
             c.hasLidarData = true;
@@ -2453,10 +2472,9 @@ public class BennuConfigs extends SmallBodyViewConfig
             };
 
             c.hasSpectralData = true;
-            c.spectralInstruments = new BasicSpectrumInstrument[] {
-                    new OTES(),
-                    new OVIRS()
-            };
+            c.spectralInstruments = new ArrayList<BasicSpectrumInstrument>();
+            c.spectralInstruments.add(new OTES());
+            c.spectralInstruments.add(new OVIRS());
 
             c.hasStateHistory = true;
             c.timeHistoryFile = c.rootDirOnServer + "/history/timeHistory.bth";
@@ -2469,10 +2487,10 @@ public class BennuConfigs extends SmallBodyViewConfig
             c.spectraSearchDataSourceMap.put("OTES_L3", c.rootDirOnServer + "/otes/l3/hypertree/dataSource.spectra");
             c.spectraSearchDataSourceMap.put("OVIRS_IF", c.rootDirOnServer + "/ovirs/l3/if/hypertree/dataSource.spectra");
             c.spectraSearchDataSourceMap.put("OVIRS_REF", c.rootDirOnServer + "ovirs/l3/reff/hypertree/dataSource.spectra");
-            c.spectrumMetadataFile = c.rootDirOnServer + "/spectraMetadata.json";
+//            c.spectrumMetadataFile = c.rootDirOnServer + "/spectraMetadata.json";
 
-            SpectrumInstrumentMetadataIO specIO = new SpectrumInstrumentMetadataIO("OREX");
-            specIO.setPathString(c.spectrumMetadataFile);
+            SpectrumInstrumentMetadataIO specIO = new SpectrumInstrumentMetadataIO("OREX", c.instrumentSearchSpecs);
+//            specIO.setPathString(c.spectrumMetadataFile);
             c.hierarchicalSpectraSearchSpecification = specIO;
 
             c.hasLidarData = true;
@@ -2617,10 +2635,9 @@ public class BennuConfigs extends SmallBodyViewConfig
             };
 
             c.hasSpectralData = true;
-            c.spectralInstruments = new BasicSpectrumInstrument[] {
-                    new OTES(),
-                    new OVIRS()
-            };
+            c.spectralInstruments = new ArrayList<BasicSpectrumInstrument>();
+            c.spectralInstruments.add(new OTES());
+            c.spectralInstruments.add(new OVIRS());
 
             c.hasStateHistory = true;
             c.timeHistoryFile = c.rootDirOnServer + "/history/timeHistory.bth";
@@ -2633,10 +2650,10 @@ public class BennuConfigs extends SmallBodyViewConfig
             c.spectraSearchDataSourceMap.put("OTES_L3", c.rootDirOnServer + "/otes/l3/hypertree/dataSource.spectra");
             c.spectraSearchDataSourceMap.put("OVIRS_IF", c.rootDirOnServer + "/ovirs/l3/if/hypertree/dataSource.spectra");
             c.spectraSearchDataSourceMap.put("OVIRS_REF", c.rootDirOnServer + "ovirs/l3/reff/hypertree/dataSource.spectra");
-            c.spectrumMetadataFile = c.rootDirOnServer + "/spectraMetadata.json";
+//            c.spectrumMetadataFile = c.rootDirOnServer + "/spectraMetadata.json";
 
-            SpectrumInstrumentMetadataIO specIO = new SpectrumInstrumentMetadataIO("OREX");
-            specIO.setPathString(c.spectrumMetadataFile);
+            SpectrumInstrumentMetadataIO specIO = new SpectrumInstrumentMetadataIO("OREX", c.instrumentSearchSpecs);
+//            specIO.setPathString(c.spectrumMetadataFile);
             c.hierarchicalSpectraSearchSpecification = specIO;
 
             c.hasLidarData = true;
@@ -2781,10 +2798,9 @@ public class BennuConfigs extends SmallBodyViewConfig
             };
 
             c.hasSpectralData = true;
-            c.spectralInstruments = new BasicSpectrumInstrument[] {
-                    new OTES(),
-                    new OVIRS()
-            };
+            c.spectralInstruments = new ArrayList<BasicSpectrumInstrument>();
+            c.spectralInstruments.add(new OTES());
+            c.spectralInstruments.add(new OVIRS());
 
             c.hasStateHistory = true;
             c.timeHistoryFile = c.rootDirOnServer + "/history/timeHistory.bth";
@@ -2797,10 +2813,10 @@ public class BennuConfigs extends SmallBodyViewConfig
             c.spectraSearchDataSourceMap.put("OTES_L3", c.rootDirOnServer + "/otes/l3/hypertree/dataSource.spectra");
             c.spectraSearchDataSourceMap.put("OVIRS_IF", c.rootDirOnServer + "/ovirs/l3/if/hypertree/dataSource.spectra");
             c.spectraSearchDataSourceMap.put("OVIRS_REF", c.rootDirOnServer + "ovirs/l3/reff/hypertree/dataSource.spectra");
-            c.spectrumMetadataFile = c.rootDirOnServer + "/spectraMetadata.json";
+//            c.spectrumMetadataFile = c.rootDirOnServer + "/spectraMetadata.json";
 
-            SpectrumInstrumentMetadataIO specIO = new SpectrumInstrumentMetadataIO("OREX");
-            specIO.setPathString(c.spectrumMetadataFile);
+            SpectrumInstrumentMetadataIO specIO = new SpectrumInstrumentMetadataIO("OREX", c.instrumentSearchSpecs);
+//            specIO.setPathString(c.spectrumMetadataFile);
             c.hierarchicalSpectraSearchSpecification = specIO;
 
             c.hasLidarData = true;
@@ -2945,10 +2961,9 @@ public class BennuConfigs extends SmallBodyViewConfig
             };
 
             c.hasSpectralData = true;
-            c.spectralInstruments = new BasicSpectrumInstrument[] {
-                    new OTES(),
-                    new OVIRS()
-            };
+            c.spectralInstruments = new ArrayList<BasicSpectrumInstrument>();
+            c.spectralInstruments.add(new OTES());
+            c.spectralInstruments.add(new OVIRS());
 
             c.hasStateHistory = true;
             c.timeHistoryFile = c.rootDirOnServer + "/history/timeHistory.bth";
@@ -2961,10 +2976,10 @@ public class BennuConfigs extends SmallBodyViewConfig
             c.spectraSearchDataSourceMap.put("OTES_L3", c.rootDirOnServer + "/otes/l3/hypertree/dataSource.spectra");
             c.spectraSearchDataSourceMap.put("OVIRS_IF", c.rootDirOnServer + "/ovirs/l3/if/hypertree/dataSource.spectra");
             c.spectraSearchDataSourceMap.put("OVIRS_REF", c.rootDirOnServer + "ovirs/l3/reff/hypertree/dataSource.spectra");
-            c.spectrumMetadataFile = c.rootDirOnServer + "/spectraMetadata.json";
+//            c.spectrumMetadataFile = c.rootDirOnServer + "/spectraMetadata.json";
 
-            SpectrumInstrumentMetadataIO specIO = new SpectrumInstrumentMetadataIO("OREX");
-            specIO.setPathString(c.spectrumMetadataFile);
+            SpectrumInstrumentMetadataIO specIO = new SpectrumInstrumentMetadataIO("OREX", c.instrumentSearchSpecs);
+//            specIO.setPathString(c.spectrumMetadataFile);
             c.hierarchicalSpectraSearchSpecification = specIO;
 
             c.hasLidarData = true;
@@ -3109,10 +3124,9 @@ public class BennuConfigs extends SmallBodyViewConfig
             };
 
             c.hasSpectralData = true;
-            c.spectralInstruments = new BasicSpectrumInstrument[] {
-                    new OTES(),
-                    new OVIRS()
-            };
+            c.spectralInstruments = new ArrayList<BasicSpectrumInstrument>();
+            c.spectralInstruments.add(new OTES());
+            c.spectralInstruments.add(new OVIRS());
 
             c.hasStateHistory = true;
             c.timeHistoryFile = c.rootDirOnServer + "/history/timeHistory.bth";
@@ -3125,10 +3139,10 @@ public class BennuConfigs extends SmallBodyViewConfig
             c.spectraSearchDataSourceMap.put("OTES_L3", c.rootDirOnServer + "/otes/l3/hypertree/dataSource.spectra");
             c.spectraSearchDataSourceMap.put("OVIRS_IF", c.rootDirOnServer + "/ovirs/l3/if/hypertree/dataSource.spectra");
             c.spectraSearchDataSourceMap.put("OVIRS_REF", c.rootDirOnServer + "ovirs/l3/reff/hypertree/dataSource.spectra");
-            c.spectrumMetadataFile = c.rootDirOnServer + "/spectraMetadata.json";
+//            c.spectrumMetadataFile = c.rootDirOnServer + "/spectraMetadata.json";
 
-            SpectrumInstrumentMetadataIO specIO = new SpectrumInstrumentMetadataIO("OREX");
-            specIO.setPathString(c.spectrumMetadataFile);
+            SpectrumInstrumentMetadataIO specIO = new SpectrumInstrumentMetadataIO("OREX", c.instrumentSearchSpecs);
+//            specIO.setPathString(c.spectrumMetadataFile);
             c.hierarchicalSpectraSearchSpecification = specIO;
 
             c.hasLidarData = true;

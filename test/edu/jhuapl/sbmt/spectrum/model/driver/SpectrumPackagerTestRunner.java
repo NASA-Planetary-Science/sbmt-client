@@ -1,6 +1,7 @@
 package edu.jhuapl.sbmt.spectrum.model.driver;
 
 import edu.jhuapl.saavtk.util.Configuration;
+import edu.jhuapl.sbmt.client.SbmtMultiMissionTool;
 
 /**
  * This class contains the "main" function called at the start of the program
@@ -23,9 +24,9 @@ public class SpectrumPackagerTestRunner
 
 		Configuration.setAPLVersion(true);
 
-		SbmtTesterMultiMissionTool.setEnableAuthentication(true);
+		SbmtMultiMissionTool.setEnableAuthentication(true);
 
 		// Call the standard client main function
-		SbmtTesterMultiMissionTool.main(args);
+		SbmtMultiMissionTool.main(args);
 	}
 }

@@ -77,4 +77,6 @@ public interface IBasicSpectrumRenderer extends PropertyChangeListener, Model
 
 	public vtkActor getOutlineActor();
 
+	public double[] getChannelColor();
+
 }

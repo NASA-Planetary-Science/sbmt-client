@@ -20,8 +20,8 @@ import edu.jhuapl.saavtk.util.NativeLibraryLoader;
 import edu.jhuapl.sbmt.client.ISmallBodyModel;
 import edu.jhuapl.sbmt.client.SmallBodyViewConfig;
 import edu.jhuapl.sbmt.model.eros.Eros;
-import edu.jhuapl.sbmt.model.eros.NIS;
-import edu.jhuapl.sbmt.model.eros.NISSpectrum;
+import edu.jhuapl.sbmt.model.eros.nis.NIS;
+import edu.jhuapl.sbmt.model.eros.nis.NISSpectrum;
 import edu.jhuapl.sbmt.spectrum.rendering.BasicSpectrumRenderer;
 
 public class NisDatabaseGeneratorSql

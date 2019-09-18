@@ -1,5 +1,6 @@
 package edu.jhuapl.sbmt.client.configs;
 
+import java.util.ArrayList;
 import java.util.GregorianCalendar;
 
 import com.google.common.collect.ImmutableList;
@@ -524,8 +525,8 @@ public class NewHorizonsConfigs extends SmallBodyViewConfig
             };
 
             c.hasSpectralData = false;
-            c.spectralInstruments = new BasicSpectrumInstrument[] {
-            };
+            c.spectralInstruments = new ArrayList<BasicSpectrumInstrument>();
+
 
             c.hasStateHistory = false;
 

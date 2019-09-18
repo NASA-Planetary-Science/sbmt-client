@@ -2,17 +2,21 @@ package edu.jhuapl.sbmt.spectrum.controllers.standard;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.util.Date;
 import java.util.TreeSet;
 
 import javax.swing.JFormattedTextField;
 import javax.swing.JPanel;
 import javax.swing.JSpinner;
+import javax.swing.ProgressMonitor;
 import javax.swing.SpinnerDateModel;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 
 import com.jidesoft.swing.CheckBoxTree;
+import com.jidesoft.utils.SwingWorker;
 
 import vtk.vtkPolyData;
 
@@ -41,6 +45,8 @@ public class SpectrumSearchParametersController
     private Date imageSearchDefaultEndDate;
     private ModelManager modelManager;
     private SpectrumSearchParametersModel searchParameters;
+    private ProgressMonitor searchProgressMonitor;
+    private TreeSet<Integer> cubeList = null;
 
     public SpectrumSearchParametersController(Date imageSearchDefaultStartDate, Date imageSearchDefaultEndDate, boolean hasHierarchicalSpectraSearch, double imageSearchDefaultMaxSpacecraftDistance, SpectraHierarchicalSearchSpecification spectraSpec, BaseSpectrumSearchModel model, PickManager pickManager, ModelManager modelManager)
     {
@@ -323,7 +329,7 @@ public class SpectrumSearchParametersController
                 panel.getSelectRegionButton().setSelected(false);
                 model.clearSpectraFromDisplay();
                 pickManager.setPickMode(PickMode.DEFAULT);
-                TreeSet<Integer> cubeList = null;
+
 
                 AbstractEllipsePolygonModel selectionModel = (AbstractEllipsePolygonModel)modelManager.getModel(ModelNames.CIRCLE_SELECTION);
                 SmallBodyModel bodyModel = (SmallBodyModel)modelManager.getModel(ModelNames.SMALL_BODY);
@@ -345,7 +351,80 @@ public class SpectrumSearchParametersController
                         cubeList = bodyModel.getIntersectingCubes(region.interiorPolyData);
                     }
                 }
-                model.performSearch(searchParameters, cubeList, hasHierarchicalSpectraSearch, spectraSpec, model.getSelectedPath());
+
+                SwingWorker<Void, Void> searchTask = new SwingWorker<Void, Void>()
+				{
+
+					@Override
+					protected Void doInBackground() throws Exception
+					{
+						model.performSearch(searchParameters, cubeList, hasHierarchicalSpectraSearch, spectraSpec, model.getSelectedPath(), new SearchProgressListener()
+						{
+							@Override
+							public void searchStarted()
+							{
+								 searchProgressMonitor = new ProgressMonitor(null, "Performing Spectra Search...", "", 0, 100);
+							     searchProgressMonitor.setProgress(0);
+							}
+
+							@Override
+							public void searchProgressChanged(int percentComplete)
+							{
+								searchProgressMonitor.setProgress(percentComplete);
+							}
+
+							@Override
+							public void searchEnded()
+							{
+								searchProgressMonitor.setProgress(100);
+							}
+
+							@Override
+							public void searchIndeterminate()
+							{
+								searchProgressMonitor = new ProgressMonitor(null, "Performing Spectra Search...", "", 0, 100);
+								searchProgressMonitor.setMillisToPopup(0);
+								searchProgressMonitor.setProgress(99);
+								searchProgressMonitor.setNote("Waiting for results");
+							}
+						});
+						return null;
+					}
+				};
+				searchTask.addPropertyChangeListener(new PropertyChangeListener()
+				{
+
+					@Override
+					public void propertyChange(PropertyChangeEvent evt)
+					{
+						// TODO Auto-generated method stub
+
+					}
+				});
+				searchTask.execute();
+
+//                model.performSearch(searchParameters, cubeList, hasHierarchicalSpectraSearch, spectraSpec, model.getSelectedPath(), new SearchProgressListener()
+//				{
+//
+//					@Override
+//					public void searchStarted()
+//					{
+//						 searchProgressMonitor = new ProgressMonitor(null, "Performing Spectra Search...", "", 0, 100);
+//					     searchProgressMonitor.setProgress(0);
+//					}
+//
+//					@Override
+//					public void searchProgressChanged(int percentComplete)
+//					{
+//						searchProgressMonitor.setProgress(percentComplete);
+//					}
+//
+//					@Override
+//					public void searchEnded()
+//					{
+//						searchProgressMonitor.setProgress(100);
+//					}
+//				});
             }
         });
 

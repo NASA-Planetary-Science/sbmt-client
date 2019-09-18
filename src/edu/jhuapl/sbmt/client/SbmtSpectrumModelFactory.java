@@ -32,6 +32,15 @@ public class SbmtSpectrumModelFactory
 
     }
 
+	static public BasicSpectrum createSpectrum(
+			String path,
+			BasicSpectrumInstrument instrument, String timeString) throws IOException
+    {
+		SpectrumBuilder<String, ISmallBodyModel, BasicSpectrumInstrument> builder = registeredModels.get(instrument.getDisplayName());
+    	return builder.buildSpectrum(path, registeredSmallBodyModels.get(instrument.getDisplayName()), instrument, timeString);
+
+    }
+
 	static public IBasicSpectrumRenderer createSpectrumRenderer(
 			String path,
 			BasicSpectrumInstrument instrument) throws IOException

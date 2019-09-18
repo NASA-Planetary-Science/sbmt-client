@@ -1,16 +1,26 @@
 package edu.jhuapl.sbmt.spectrum.rendering;
 
+import java.util.List;
+
 import org.apache.commons.math3.geometry.euclidean.threed.Rotation;
 import org.apache.commons.math3.geometry.euclidean.threed.Vector3D;
 
+import vtk.vtkActor;
+import vtk.vtkCellArray;
 import vtk.vtkDoubleArray;
+import vtk.vtkIdList;
 import vtk.vtkIdTypeArray;
 import vtk.vtkPointLocator;
+import vtk.vtkPoints;
 import vtk.vtkPolyData;
+import vtk.vtkPolyDataMapper;
+import vtk.vtkProp;
+import vtk.vtkProperty;
 import vtk.vtkTriangle;
 import vtk.vtksbCellLocator;
 
 import edu.jhuapl.saavtk.model.GenericPolyhedralModel;
+import edu.jhuapl.saavtk.util.MathUtil;
 import edu.jhuapl.saavtk.util.PolyDataUtil;
 import edu.jhuapl.sbmt.client.ISmallBodyModel;
 import edu.jhuapl.sbmt.spectrum.model.core.BasicSpectrum;
@@ -25,12 +35,108 @@ public class AdvancedSpectrumRenderer extends BasicSpectrumRenderer
 	}
 
 	@Override
+    public List<vtkProp> getProps()
+    {
+        if (footprintActor == null)
+        {
+            generateFootprint();
+
+            vtkPolyDataMapper footprintMapper = new vtkPolyDataMapper();
+            footprintMapper.SetInputData(shiftedFootprint);
+            footprintMapper.Update();
+
+            footprintActor = new vtkActor();
+            footprintActor.SetMapper(footprintMapper);
+            vtkProperty footprintProperty = footprintActor.GetProperty();
+            double[] color = getChannelColor();
+            footprintProperty.SetColor(color[0], color[1], color[2]);
+            footprintProperty.SetLineWidth(2.0);
+            footprintProperty.LightingOff();
+
+            footprintActors.add(footprintActor);
+        }
+
+        if (frustumActor == null)
+        {
+            vtkPolyData frus = new vtkPolyData();
+
+            vtkPoints points = new vtkPoints();
+            vtkCellArray lines = new vtkCellArray();
+
+            vtkIdList idList = new vtkIdList();
+            idList.SetNumberOfIds(2);
+
+            double dx = MathUtil.vnorm(spacecraftPosition)
+                    + smallBodyModel.getBoundingBoxDiagonalLength();
+            double[] origin = spacecraftPosition;
+            double[] UL = { origin[0] + frustum1[0] * dx,
+                    origin[1] + frustum1[1] * dx,
+                    origin[2] + frustum1[2] * dx };
+            double[] UR = { origin[0] + frustum2[0] * dx,
+                    origin[1] + frustum2[1] * dx,
+                    origin[2] + frustum2[2] * dx };
+            double[] LL = { origin[0] + frustum3[0] * dx,
+                    origin[1] + frustum3[1] * dx,
+                    origin[2] + frustum3[2] * dx };
+            double[] LR = { origin[0] + frustum4[0] * dx,
+                    origin[1] + frustum4[1] * dx,
+                    origin[2] + frustum4[2] * dx };
+
+            points.InsertNextPoint(spacecraftPosition);
+            points.InsertNextPoint(UL);
+            points.InsertNextPoint(UR);
+            points.InsertNextPoint(LL);
+            points.InsertNextPoint(LR);
+
+            idList.SetId(0, 0);
+            idList.SetId(1, 1);
+            lines.InsertNextCell(idList);
+            idList.SetId(0, 0);
+            idList.SetId(1, 2);
+            lines.InsertNextCell(idList);
+            idList.SetId(0, 0);
+            idList.SetId(1, 3);
+            lines.InsertNextCell(idList);
+            idList.SetId(0, 0);
+            idList.SetId(1, 4);
+            lines.InsertNextCell(idList);
+
+            frus.SetPoints(points);
+            frus.SetLines(lines);
+
+            vtkPolyDataMapper frusMapper = new vtkPolyDataMapper();
+            frusMapper.SetInputData(frus);
+
+            frustumActor = new vtkActor();
+            frustumActor.SetMapper(frusMapper);
+            vtkProperty frustumProperty = frustumActor.GetProperty();
+            frustumProperty.SetColor(0.0, 1.0, 0.0);
+            frustumProperty.SetLineWidth(2.0);
+            frustumActor.VisibilityOff();
+
+            footprintActors.add(frustumActor);
+        }
+
+        footprintActors.add(selectionActor);
+        footprintActors.add(toSunVectorActor);
+        footprintActors.add(outlineActor);
+
+        return footprintActors;
+    }
+
+	@Override
 	public void generateFootprint()
 	{
 		if (!footprintGenerated)
 		{
 			spectrum.readPointingFromInfoFile();
 			spectrum.readSpectrumFromFile();
+
+			frustum1 = spectrum.getFrustum1();
+	        frustum2 = spectrum.getFrustum2();
+	        frustum3 = spectrum.getFrustum3();
+	        frustum4 = spectrum.getFrustum4();
+	        spacecraftPosition = spectrum.getSpacecraftPosition();
 
 			vtkPolyData tmp = smallBodyModel.computeFrustumIntersection(spacecraftPosition, frustum1, frustum2,
 					frustum3, frustum4);
@@ -42,6 +148,7 @@ public class AdvancedSpectrumRenderer extends BasicSpectrumRenderer
 			Vector3D f2 = new Vector3D(frustum2);
 			Vector3D f3 = new Vector3D(frustum3);
 			Vector3D f4 = new Vector3D(frustum4);
+
 			Vector3D lookUnit = new Vector3D(1, f1, 1, f2, 1, f3, 1, f4);
 
 			double[] angles = new double[]

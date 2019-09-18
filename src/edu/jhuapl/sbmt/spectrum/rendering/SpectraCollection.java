@@ -130,28 +130,6 @@ public class SpectraCollection extends SaavtkItemManager<BasicSpectrum> implemen
         return null;
     }
 
-//    public IBasicSpectrumRenderer addSpectrum(SpectrumKeyInterface key) throws IOException
-//    {
-//        return addSpectrum(key.getName(), key.getInstrument(), false);
-//    }
-
-//    public IBasicSpectrumRenderer addSpectrum(SpectrumKeyInterface key, boolean isCustom) throws IOException
-//    {
-//        return addSpectrum(key.getName(), key.getInstrument(), isCustom);
-//    }
-
-//    public IBasicSpectrumRenderer addSpectrum(String path, BasicSpectrumInstrument instrument, SpectrumColoringStyle coloringStyle) throws IOException
-//    {
-//        return addSpectrum(path, instrument, coloringStyle, false);
-//    }
-
-//    public IBasicSpectrumRenderer addSpectrum(String path, BasicSpectrumInstrument instrument, SpectrumColoringStyle coloringStyle, boolean isCustom) throws IOException
-//    {
-//    	IBasicSpectrumRenderer spec = addSpectrum(path, instrument, isCustom);
-//        spec.getSpectrum().setColoringStyle(coloringStyle);
-//        return spec;
-//    }
-
     public IBasicSpectrumRenderer addSpectrum(BasicSpectrum spectrum, SpectrumColoringStyle coloringStyle) //throws IOException
     {
         spectrum.setColoringStyle(coloringStyle);
@@ -164,7 +142,6 @@ public class SpectraCollection extends SaavtkItemManager<BasicSpectrum> implemen
     }
 
 
-//    public IBasicSpectrumRenderer addSpectrum(String path, BasicSpectrumInstrument instrument, boolean isCustom) throws IOException
     public IBasicSpectrumRenderer addSpectrum(BasicSpectrum spectrum, boolean isCustom) //throws IOException
     {
         if (spectrumToRendererMap.get(spectrum) != null)
@@ -210,20 +187,6 @@ public class SpectraCollection extends SaavtkItemManager<BasicSpectrum> implemen
         return spectrumRenderer;
     }
 
-//    public void removeSpectrum(BasicSpectrum spectrum)
-//    {
-//    	spectrumToRendererMap.put(spectrum, null);
-//    }
-//
-//    public void removeSpectrum(SpectrumKeyInterface key)
-//    {
-//        if (!containsKey(key))
-//            return;
-//
-//        removeSpectrum(key.getName());
-//    }
-
-//    public void removeSpectrum(String path)
     public void removeSpectrum(BasicSpectrum spectrum)
     {
     	IBasicSpectrumRenderer spectrumRenderer = spectrumToRendererMap.get(spectrum);
@@ -454,9 +417,10 @@ public class SpectraCollection extends SaavtkItemManager<BasicSpectrum> implemen
         	if (spectrumRenderer == null) continue;
         	if (spectrumRenderer.getSpectrum().getInstrument().getClass() == instrument.getClass() )
             {
+        		System.out.println("SpectraCollection: setColoringStyleForInstrument: updating coloring style");
                 spectrumRenderer.getSpectrum().setColoringStyle(style);
                 spectrumRenderer.updateChannelColoring();
-//                this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, spectrumRenderer);
+                this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, spectrumRenderer);
             }
         }
 
@@ -467,13 +431,15 @@ public class SpectraCollection extends SaavtkItemManager<BasicSpectrum> implemen
     {
         for (BasicSpectrum spec : this.spectrumToRendererMap.keySet())
         {
+//        	System.out.println("SpectraCollection: setChannelColoring: updating spec color");
         	IBasicSpectrumRenderer spectrumRenderer = this.spectrumToRendererMap.get(spec);
         	if (spectrumRenderer == null) continue;
             if (spectrumRenderer.getSpectrum().getInstrument().getClass() == instrument.getClass() )
             {
+            	System.out.println("SpectraCollection: setChannelColoring: updating color of renderer");
                 spectrumRenderer.getSpectrum().setChannelColoring(channels, mins, maxs);
                 spectrumRenderer.updateChannelColoring();
-//                this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, spectrumRenderer);
+                this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, spectrumRenderer);
             }
         }
 

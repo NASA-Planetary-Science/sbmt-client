@@ -72,11 +72,13 @@ import edu.jhuapl.sbmt.gui.lidar.LidarPanel;
 import edu.jhuapl.sbmt.gui.lidar.LidarTrackPanel;
 import edu.jhuapl.sbmt.gui.lidar.popup.LidarGuiUtil;
 import edu.jhuapl.sbmt.gui.time.version2.StateHistoryController;
+import edu.jhuapl.sbmt.model.bennu.spectra.OREXSpectraFactory;
 import edu.jhuapl.sbmt.model.bennu.spectra.OREXSpectrumSearchController;
 import edu.jhuapl.sbmt.model.bennu.spectra.OREXSpectrumTabbedPane;
 import edu.jhuapl.sbmt.model.custom.CustomGraticule;
 import edu.jhuapl.sbmt.model.eros.LineamentModel;
-import edu.jhuapl.sbmt.model.eros.NISSearchModel;
+import edu.jhuapl.sbmt.model.eros.nis.NEARSpectraFactory;
+import edu.jhuapl.sbmt.model.eros.nis.NISSearchModel;
 import edu.jhuapl.sbmt.model.image.ColorImageCollection;
 import edu.jhuapl.sbmt.model.image.ImageCollection;
 import edu.jhuapl.sbmt.model.image.ImageCubeCollection;
@@ -85,6 +87,7 @@ import edu.jhuapl.sbmt.model.image.PerspectiveImageBoundaryCollection;
 import edu.jhuapl.sbmt.model.image.SpectralImageMode;
 import edu.jhuapl.sbmt.model.lidar.LidarFileSpecManager;
 import edu.jhuapl.sbmt.model.lidar.LidarTrackManager;
+import edu.jhuapl.sbmt.model.ryugu.nirs3.H2SpectraFactory;
 import edu.jhuapl.sbmt.model.ryugu.nirs3.NIRS3SearchModel;
 import edu.jhuapl.sbmt.model.time.StateHistoryCollection;
 import edu.jhuapl.sbmt.spectrum.controllers.custom.CustomSpectraSearchController;
@@ -118,6 +121,7 @@ public class SbmtView extends View implements PropertyChangeListener
 	private final Map<String, MetadataManager> metadataManagers;
 	private Colorbar smallBodyColorbar;
 	private BasicConfigInfo configInfo;
+	private SmallBodyModel smallBodyModel;
 
 	public SbmtView(StatusBar statusBar, BasicConfigInfo configInfo)
 	{
@@ -146,6 +150,7 @@ public class SbmtView extends View implements PropertyChangeListener
 		this.stateManager = TrackedMetadataManager.of("View " + getUniqueName());
 		this.metadataManagers = new HashMap<>();
 		this.configURL = configInfo.configURL;
+
 		initializeStateManager();
 	}
 
@@ -286,9 +291,9 @@ public class SbmtView extends View implements PropertyChangeListener
 	@Override
 	protected void setupModelManager()
 	{
-		SmallBodyModel smallBodyModel = SbmtModelFactory.createSmallBodyModel(getPolyhedralModelConfig());
+		smallBodyModel = SbmtModelFactory.createSmallBodyModel(getPolyhedralModelConfig());
 		SBMTModelBootstrap.initialize(smallBodyModel);
-
+//		BasicSpectrumInstrument.initializeSerializationProxy();
 		Graticule graticule = createGraticule(smallBodyModel);
 
 		HashMap<ModelNames, Model> allModels = new HashMap<>();
@@ -446,7 +451,7 @@ public class SbmtView extends View implements PropertyChangeListener
 				SpectraCollection spectrumCollection = (SpectraCollection)getModel(ModelNames.SPECTRA);
 				SpectrumBoundaryCollection spectrumBoundaryCollection = (SpectrumBoundaryCollection)getModel(ModelNames.SPECTRA_BOUNDARIES);
 				PopupMenu popupMenu = new SpectrumPopupMenu(spectrumCollection, spectrumBoundaryCollection, getModelManager(), (SbmtInfoWindowManager) getInfoPanelManager(), getRenderer());
-				((SpectrumPopupMenu) popupMenu).setInstrument(getPolyhedralModelConfig().spectralInstruments[0]);
+				((SpectrumPopupMenu) popupMenu).setInstrument(getPolyhedralModelConfig().spectralInstruments.get(0));
 				registerPopup(getModel(ModelNames.SPECTRA), popupMenu);
 			}
 		}
@@ -550,6 +555,7 @@ public class SbmtView extends View implements PropertyChangeListener
 //			if (displayName.equals(SpectraType.NIS_SPECTRA.getDisplayName()))
 			if (displayName.equals("NIS"))
 			{
+				NEARSpectraFactory.initializeModels(smallBodyModel);
 				NISSearchModel model = new NISSearchModel(getModelManager(), instrument);
 				JComponent component = new OREXSpectrumSearchController(getPolyhedralModelConfig().imageSearchDefaultStartDate, getPolyhedralModelConfig().imageSearchDefaultEndDate,
 						getPolyhedralModelConfig().hasHierarchicalSpectraSearch, getPolyhedralModelConfig().imageSearchDefaultMaxSpacecraftDistance, getPolyhedralModelConfig().hierarchicalSpectraSearchSpecification,
@@ -558,6 +564,7 @@ public class SbmtView extends View implements PropertyChangeListener
 			}
 			else if (displayName.equals("OTES"))
 			{
+				OREXSpectraFactory.initializeModels(smallBodyModel);
 				JComponent component = new OREXSpectrumTabbedPane(getPolyhedralModelConfig(), getModelManager(), (SbmtInfoWindowManager) getInfoPanelManager(), getPickManager(), getRenderer(), instrument, spectrumCollection);
 				addTab(instrument.getDisplayName(), component);
 			}
@@ -566,7 +573,9 @@ public class SbmtView extends View implements PropertyChangeListener
 				JComponent component = new OREXSpectrumTabbedPane(getPolyhedralModelConfig(), getModelManager(), (SbmtInfoWindowManager) getInfoPanelManager(), getPickManager(), getRenderer(), instrument, spectrumCollection);
 				addTab(instrument.getDisplayName(), component);
 			}
-			else if (displayName.equals("NIRS3"))			{
+			else if (displayName.equals("NIRS3"))
+			{
+				H2SpectraFactory.initializeModels(smallBodyModel);
 				NIRS3SearchModel model = new NIRS3SearchModel(getModelManager(), instrument);
 				JComponent component = new OREXSpectrumSearchController(getPolyhedralModelConfig().imageSearchDefaultStartDate, getPolyhedralModelConfig().imageSearchDefaultEndDate,
 						getPolyhedralModelConfig().hasHierarchicalSpectraSearch, getPolyhedralModelConfig().imageSearchDefaultMaxSpacecraftDistance, getPolyhedralModelConfig().hierarchicalSpectraSearchSpecification,

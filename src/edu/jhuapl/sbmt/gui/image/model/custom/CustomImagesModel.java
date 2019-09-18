@@ -37,6 +37,7 @@ import edu.jhuapl.saavtk.util.MapUtil;
 import edu.jhuapl.saavtk.util.Properties;
 import edu.jhuapl.saavtk.util.SafeURLPaths;
 import edu.jhuapl.sbmt.client.SmallBodyViewConfig;
+import edu.jhuapl.sbmt.config.Strings;
 import edu.jhuapl.sbmt.gui.image.model.CustomImageKeyInterface;
 import edu.jhuapl.sbmt.gui.image.model.CustomImageResultsListener;
 import edu.jhuapl.sbmt.gui.image.model.images.ImageSearchModel;
@@ -51,7 +52,6 @@ import edu.jhuapl.sbmt.model.image.ImageKeyInterface;
 import edu.jhuapl.sbmt.model.image.ImageSource;
 import edu.jhuapl.sbmt.model.image.ImageType;
 import edu.jhuapl.sbmt.model.image.PerspectiveImageBoundaryCollection;
-import edu.jhuapl.sbmt.spectrum.model.sbmtCore.spectra.Spectrum;
 import edu.jhuapl.sbmt.util.VtkENVIReader;
 
 import crucible.crust.metadata.api.Key;
@@ -573,7 +573,7 @@ public class CustomImagesModel extends ImageSearchModel
             updateConfigFile();
             return true;
         }
-        else if (configMap.getAsArray(Spectrum.SPECTRUM_NAMES) != null)
+        else if (configMap.getAsArray(Strings.SPECTRUM_NAMES.getName()) != null)
         {
             //backup the old config file
         	String dir = new File(getConfigFilename()).getParent();
