@@ -19,6 +19,7 @@ import edu.jhuapl.sbmt.client.ISmallBodyModel;
 import edu.jhuapl.sbmt.client.SbmtSpectrumModelFactory;
 import edu.jhuapl.sbmt.model.lidar.SaavtkItemManager;
 import edu.jhuapl.sbmt.spectrum.model.core.BasicSpectrum;
+import edu.jhuapl.sbmt.spectrum.model.core.color.SpectraColoringProgressListener;
 import edu.jhuapl.sbmt.spectrum.model.core.interfaces.SearchSpec;
 import edu.jhuapl.sbmt.spectrum.model.sbmtCore.spectra.ISpectralInstrument;
 import edu.jhuapl.sbmt.spectrum.model.sbmtCore.spectra.SpectrumColoringStyle;
@@ -35,6 +36,7 @@ public class SpectraCollection extends SaavtkItemManager<BasicSpectrum> implemen
     private HashMap<IBasicSpectrumRenderer, List<vtkProp>> spectrumToActorsMap = new HashMap<IBasicSpectrumRenderer, List<vtkProp>>();
     private HashMap<vtkProp, IBasicSpectrumRenderer> actorToSpectrumMap = new HashMap<vtkProp, IBasicSpectrumRenderer>();
     private ISmallBodyModel shapeModel;
+    private SpectrumColoringStyle coloringStyle;
 
     boolean selectAll=false;
     final double minFootprintSeparation=0.001;
@@ -132,13 +134,14 @@ public class SpectraCollection extends SaavtkItemManager<BasicSpectrum> implemen
 
     public IBasicSpectrumRenderer addSpectrum(BasicSpectrum spectrum, SpectrumColoringStyle coloringStyle) //throws IOException
     {
+//    	System.out.println("SpectraCollection: addSpectrum: 1");
         spectrum.setColoringStyle(coloringStyle);
         return spectrumToRendererMap.get(spectrum);
     }
 
     public void addSpectrum(BasicSpectrum spec) //throws IOException
     {
-    	spectrumToRendererMap.put(spec, null);
+    	addSpectrum(spec, coloringStyle);
     }
 
 
@@ -148,6 +151,7 @@ public class SpectraCollection extends SaavtkItemManager<BasicSpectrum> implemen
         {
         	IBasicSpectrumRenderer spec = spectrumToRendererMap.get(spectrum);
             select(spec);
+            spec.getSpectrum().setColoringStyle(coloringStyle);
             spec.setVisible(true);
             return spec;
         }
@@ -161,6 +165,7 @@ public class SpectraCollection extends SaavtkItemManager<BasicSpectrum> implemen
         catch (Exception e) {
             e.printStackTrace();
         }
+        spectrumRenderer.getSpectrum().setColoringStyle(coloringStyle);
         spectrumRenderer.getSpectrum().isCustomSpectra = isCustom;
         shapeModel.addPropertyChangeListener(spectrumRenderer);
         spectrumRenderer.addPropertyChangeListener(this);
@@ -252,6 +257,7 @@ public class SpectraCollection extends SaavtkItemManager<BasicSpectrum> implemen
 
     public boolean getVisibility(BasicSpectrum spec)
     {
+    	if (isSpectrumMapped(spec) == false ) return false;
     	IBasicSpectrumRenderer spectrumRenderer = spectrumToRendererMap.get(spec);
     	if (spectrumRenderer == null) return false;
         return spectrumRenderer.isVisible();
@@ -395,17 +401,23 @@ public class SpectraCollection extends SaavtkItemManager<BasicSpectrum> implemen
         }
     }
 
-    public void setColoringStyle(SpectrumColoringStyle style)
+    public void setColoringStyle(SpectrumColoringStyle style, SpectraColoringProgressListener progressListener)
     {
+    	this.coloringStyle = style;
+    	progressListener.coloringUpdateStarted();
+    	int i=0;
+    	int numToRender = this.spectrumToRendererMap.size();
         for (BasicSpectrum spec : this.spectrumToRendererMap.keySet())
         {
         	IBasicSpectrumRenderer spectrumRenderer=this.spectrumToRendererMap.get(spec);
         	if (spectrumRenderer == null) continue;
             spectrumRenderer.getSpectrum().setColoringStyle(style);
             spectrumRenderer.updateChannelColoring();
+            progressListener.coloringUpdateProgressChanged((int)(100*(double)i/(double)numToRender));
             this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, spectrumRenderer);
+            i++;
         }
-
+        progressListener.coloringUpdateEnded();
 
     }
 
@@ -417,10 +429,9 @@ public class SpectraCollection extends SaavtkItemManager<BasicSpectrum> implemen
         	if (spectrumRenderer == null) continue;
         	if (spectrumRenderer.getSpectrum().getInstrument().getClass() == instrument.getClass() )
             {
-        		System.out.println("SpectraCollection: setColoringStyleForInstrument: updating coloring style");
                 spectrumRenderer.getSpectrum().setColoringStyle(style);
                 spectrumRenderer.updateChannelColoring();
-                this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, spectrumRenderer);
+//                this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, spectrumRenderer);
             }
         }
 
@@ -431,15 +442,13 @@ public class SpectraCollection extends SaavtkItemManager<BasicSpectrum> implemen
     {
         for (BasicSpectrum spec : this.spectrumToRendererMap.keySet())
         {
-//        	System.out.println("SpectraCollection: setChannelColoring: updating spec color");
         	IBasicSpectrumRenderer spectrumRenderer = this.spectrumToRendererMap.get(spec);
         	if (spectrumRenderer == null) continue;
             if (spectrumRenderer.getSpectrum().getInstrument().getClass() == instrument.getClass() )
             {
-            	System.out.println("SpectraCollection: setChannelColoring: updating color of renderer");
                 spectrumRenderer.getSpectrum().setChannelColoring(channels, mins, maxs);
                 spectrumRenderer.updateChannelColoring();
-                this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, spectrumRenderer);
+//                this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, spectrumRenderer);
             }
         }
 

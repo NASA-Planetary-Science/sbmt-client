@@ -11,10 +11,12 @@ import java.util.List;
 
 import javax.swing.JOptionPane;
 import javax.swing.JTable;
+import javax.swing.ProgressMonitor;
 import javax.swing.event.TableModelListener;
 import javax.swing.table.DefaultTableModel;
 
 import com.google.common.collect.ImmutableSet;
+import com.jidesoft.utils.SwingWorker;
 
 import edu.jhuapl.saavtk.gui.dialog.CustomFileChooser;
 import edu.jhuapl.saavtk.gui.render.Renderer;
@@ -62,7 +64,7 @@ public class SpectrumResultsTableController
     };
     int modifiedTableRow = -1;
     protected List<SpectrumKeyInterface> spectrumKeys;
-
+    private ProgressMonitor progressMonitor;
 
 
 
@@ -424,24 +426,54 @@ public class SpectrumResultsTableController
 
     private void showSpectraButtonActionPerformed(ActionEvent evt)
     {
-    	ImmutableSet<BasicSpectrum> selectedItems = spectrumCollection.getSelectedItems();
-    	for (BasicSpectrum spectrum: selectedItems)
-    	{
-    		spectrumCollection.addSpectrum(spectrum, false);
-            boundaries.addBoundary(spectrum);
-        }
-        model.setResultIntervalCurrentlyShown(null);
+    	progressMonitor = new ProgressMonitor(null, "Showing Footprints...", "", 0, 100);
+		progressMonitor.setProgress(0);
+    	SwingWorker<Void, Void> task = new SwingWorker<Void, Void>()
+		{
+			@Override
+			protected Void doInBackground() throws Exception
+			{
+		    	ImmutableSet<BasicSpectrum> selectedItems = spectrumCollection.getSelectedItems();
+		    	int i=0;
+		    	for (BasicSpectrum spectrum: selectedItems)
+		    	{
+		    		spectrumCollection.addSpectrum(spectrum, false);
+		            boundaries.addBoundary(spectrum);
+		            progressMonitor.setProgress((int)(100*(double)i/(double)selectedItems.size()));
+		            i++;
+		        }
+		    	progressMonitor.setProgress(100);
+		        model.setResultIntervalCurrentlyShown(null);
+		        return null;
+			}
+		};
+		task.execute();
     }
 
     private void showBoundariesButtonActionPerformed(ActionEvent evt)
     {
-    	ImmutableSet<BasicSpectrum> selectedItems = spectrumCollection.getSelectedItems();
-    	for (BasicSpectrum spectrum: selectedItems)
-    	{
-    		System.out.println("SpectrumResultsTableController: showBoundariesButtonActionPerformed: adding boundary");
-            boundaries.addBoundary(spectrum);
-        }
-        model.setResultIntervalCurrentlyShown(null);
+    	progressMonitor = new ProgressMonitor(null, "Showing Boundaries...", "", 0, 100);
+		progressMonitor.setProgress(0);
+    	SwingWorker<Void, Void> task = new SwingWorker<Void, Void>()
+		{
+			@Override
+			protected Void doInBackground() throws Exception
+			{
+				ImmutableSet<BasicSpectrum> selectedItems = spectrumCollection.getSelectedItems();
+				int i=0;
+		    	for (BasicSpectrum spectrum: selectedItems)
+		    	{
+		            boundaries.addBoundary(spectrum);
+		            progressMonitor.setProgress((int)(100*(double)i/(double)selectedItems.size()));
+		            i++;
+		        }
+		    	progressMonitor.setProgress(100);
+		        model.setResultIntervalCurrentlyShown(null);
+		        return null;
+			}
+		};
+		task.execute();
+
     }
 
     private void removeFootprintsButtonActionPerformed(ActionEvent evt)

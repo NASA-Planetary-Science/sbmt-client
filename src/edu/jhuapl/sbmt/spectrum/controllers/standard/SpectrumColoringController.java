@@ -6,11 +6,15 @@ import java.awt.event.ActionListener;
 import javax.swing.JComboBox;
 import javax.swing.JOptionPane;
 import javax.swing.JSpinner;
+import javax.swing.ProgressMonitor;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
+import com.jidesoft.utils.SwingWorker;
+
 import vtk.vtkFunctionParser;
 
+import edu.jhuapl.sbmt.spectrum.model.core.color.SpectraColoringProgressListener;
 import edu.jhuapl.sbmt.spectrum.model.core.color.SpectrumColoringChangedListener;
 import edu.jhuapl.sbmt.spectrum.model.core.search.BaseSpectrumSearchModel;
 import edu.jhuapl.sbmt.spectrum.model.sbmtCore.spectra.ISpectralInstrument;
@@ -24,6 +28,7 @@ public class SpectrumColoringController
     SpectrumColoringPanel panel;
     BaseSpectrumSearchModel model;
     SpectraCollection collection;
+    ProgressMonitor progressMonitor;
 
     public SpectrumColoringController(BaseSpectrumSearchModel model, SpectraCollection collection)
     {
@@ -117,8 +122,6 @@ public class SpectrumColoringController
             @Override
             public void coloringChanged()
             {
-            	System.out.println(
-						"SpectrumColoringController.init().new SpectrumColoringChangedListener() {...}: coloringChanged: ");
             	if (!model.getColoringModel().getSpectrumColoringStyleName().equals(panel.getColoringComboBox().getSelectedItem().toString()))
             		panel.getColoringComboBox().setSelectedItem(SpectrumColoringStyle.getStyleForName(model.getColoringModel().getSpectrumColoringStyleName()));
                 collection.setChannelColoring(model.getColoringModel().getChannels(), model.getColoringModel().getMins(), model.getColoringModel().getMaxs(), model.getInstrument());
@@ -181,17 +184,48 @@ public class SpectrumColoringController
 
     private void coloringComboBoxActionPerformed(ActionEvent evt)
     {
-    	System.out.println("SpectrumColoringController: coloringComboBoxActionPerformed: triggering coloring combo box");
-        JComboBox<SpectrumColoringStyle> box = (JComboBox<SpectrumColoringStyle>)evt.getSource();
-        String coloringName = box.getSelectedItem().toString();
-        SpectrumColoringStyle style = SpectrumColoringStyle.getStyleForName(coloringName);
-        collection.setColoringStyleForInstrument(style, model.getInstrument());
+    	SwingWorker<Void, Void> task = new SwingWorker<Void, Void>()
+		{
+			@Override
+			protected Void doInBackground() throws Exception
+			{
+		        JComboBox<SpectrumColoringStyle> box = (JComboBox<SpectrumColoringStyle>)evt.getSource();
+		        String coloringName = box.getSelectedItem().toString();
+		        SpectrumColoringStyle style = SpectrumColoringStyle.getStyleForName(coloringName);
+		        collection.setColoringStyleForInstrument(style, model.getInstrument());
+		        collection.setColoringStyle(style, new SpectraColoringProgressListener()
+				{
 
-        boolean isEmissionSelected = (style == SpectrumColoringStyle.EMISSION_ANGLE);
-        panel.getRgbColoringPanel().setVisible(!isEmissionSelected);
-        panel.getEmissionAngleColoringPanel().setVisible(isEmissionSelected);
-        model.getColoringModel().setSpectrumColoringStyleName(coloringName);
-        model.coloringOptionChanged();
+					@Override
+					public void coloringUpdateStarted()
+					{
+						progressMonitor = new ProgressMonitor(null, "Updating coloring...", "", 0, 100);
+						progressMonitor.setProgress(0);
+					}
+
+					@Override
+					public void coloringUpdateProgressChanged(int percentComplete)
+					{
+						progressMonitor.setProgress(percentComplete);
+					}
+
+					@Override
+					public void coloringUpdateEnded()
+					{
+						progressMonitor.setProgress(100);
+					}
+				});
+
+
+		        boolean isEmissionSelected = (style == SpectrumColoringStyle.EMISSION_ANGLE);
+		        panel.getRgbColoringPanel().setVisible(!isEmissionSelected);
+		        panel.getEmissionAngleColoringPanel().setVisible(isEmissionSelected);
+		        model.getColoringModel().setSpectrumColoringStyleName(coloringName);
+
+		        return null;
+			}
+		};
+		task.execute();
     }
 
     private void redComboBoxActionPerformed(ActionEvent evt) {
