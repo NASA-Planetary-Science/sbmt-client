@@ -294,7 +294,6 @@ public class BaseSpectrumSearchModel implements ISpectrumSearchModel, MetadataMa
 
     public void coloringOptionChanged()
     {
-    	System.out.println("BaseSpectrumSearchModel: coloringOptionChanged: ");
         coloringModel.fireColoringChanged();
     }
 

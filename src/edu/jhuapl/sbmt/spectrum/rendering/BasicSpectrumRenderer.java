@@ -496,7 +496,6 @@ public class BasicSpectrumRenderer extends AbstractModel implements IBasicSpectr
     	if (footprintActor == null) return;
         vtkProperty footprintProperty = footprintActor.GetProperty();
         double[] color = getChannelColor();
-        System.out.println("BasicSpectrumRenderer: updateChannelColoring: color is " + color[0] + " " + color[1] + " " + color[2]);
         footprintProperty.SetColor(color[0], color[1], color[2]);
         this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, this);
     }
