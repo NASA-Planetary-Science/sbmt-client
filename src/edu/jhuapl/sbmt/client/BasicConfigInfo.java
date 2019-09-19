@@ -195,6 +195,11 @@ public class BasicConfigInfo implements MetadataManager
 		return uniqueName;
 	}
 
+	public String getConfigURL()
+	{
+	    return configURL;
+	}
+
 	public boolean isEnabled()
 	{
 		return enabled;
