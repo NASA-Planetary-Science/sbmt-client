@@ -26,8 +26,8 @@ import edu.jhuapl.sbmt.client.BodyViewConfig;
 import edu.jhuapl.sbmt.lidar.hyperoctree.FSHyperTreeSkeleton;
 import edu.jhuapl.sbmt.lidar.hyperoctree.hayabusa2.Hayabusa2LidarHypertreeSkeleton;
 import edu.jhuapl.sbmt.model.lidar.LidarQueryUtil;
-import edu.jhuapl.sbmt.model.lidar.LidarSearchParms;
 import edu.jhuapl.sbmt.model.lidar.LidarQueryUtil.DataType;
+import edu.jhuapl.sbmt.model.lidar.LidarSearchParms;
 import edu.jhuapl.sbmt.model.lidar.LidarTrackManager;
 
 public class LidarHyperTreeSearchPanel extends LidarSearchPanel
@@ -89,19 +89,20 @@ public class LidarHyperTreeSearchPanel extends LidarSearchPanel
 		}
 
 		vtkPolyData interiorPoly = new vtkPolyData();
-		if (aSelectionRegion.getNumberOfStructures() > 0)
+		if (aSelectionRegion.getNumItems() > 0)
 		{
-			EllipsePolygon region = (EllipsePolygon) aSelectionRegion.getStructure(0);
+			EllipsePolygon region = aSelectionRegion.getStructure(0);
 
 			// Always use the lowest resolution model for getting the intersection
 			// cubes list. Therefore, if the selection region was created using a
 			// higher resolution model, we need to recompute the selection region
 			// using the low res model.
 			if (refSmallBodyModel.getModelResolution() > 0)
-				refSmallBodyModel.drawRegularPolygonLowRes(region.getCenter(), region.radius, region.numberOfSides,
-						interiorPoly, null); // this sets interiorPoly
+				refSmallBodyModel.drawRegularPolygonLowRes(region.getCenter(), region.getRadius(),
+						region.getNumberOfSides(), interiorPoly, null); // this sets
+																						// interiorPoly
 			else
-				interiorPoly = region.interiorPolyData;
+				interiorPoly = region.getVtkInteriorPolyData();
 		}
 		else
 		{

@@ -1803,7 +1803,7 @@ public abstract class SpectrumSearchPanel extends JPanel implements MouseListene
                 cubeList.clear();
             AbstractEllipsePolygonModel selectionModel = (AbstractEllipsePolygonModel)modelManager.getModel(ModelNames.CIRCLE_SELECTION);
             SmallBodyModel erosModel = (SmallBodyModel)modelManager.getModel(ModelNames.SMALL_BODY);
-            if (selectionModel.getNumberOfStructures() > 0)
+            if (selectionModel.getNumItems() > 0)
             {
                 EllipsePolygon region = (EllipsePolygon)selectionModel.getStructure(0);
 
@@ -1813,12 +1813,12 @@ public abstract class SpectrumSearchPanel extends JPanel implements MouseListene
                 if (erosModel.getModelResolution() > 0)
                 {
                     vtkPolyData interiorPoly = new vtkPolyData();
-                    erosModel.drawRegularPolygonLowRes(region.getCenter(), region.radius, region.numberOfSides, interiorPoly, null);
+                    erosModel.drawRegularPolygonLowRes(region.getCenter(), region.getRadius(), region.getNumberOfSides(), interiorPoly, null);
                     cubeList = erosModel.getIntersectingCubes(interiorPoly);
                 }
                 else
                 {
-                    cubeList = erosModel.getIntersectingCubes(region.interiorPolyData);
+                    cubeList = erosModel.getIntersectingCubes(region.getVtkInteriorPolyData());
                 }
             }
 

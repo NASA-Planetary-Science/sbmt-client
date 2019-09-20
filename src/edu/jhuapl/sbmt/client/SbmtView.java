@@ -24,7 +24,6 @@ import vtk.vtkCamera;
 import edu.jhuapl.saavtk.colormap.Colorbar;
 import edu.jhuapl.saavtk.gui.StatusBar;
 import edu.jhuapl.saavtk.gui.View;
-import edu.jhuapl.saavtk.gui.panel.StructuresControlPanel;
 import edu.jhuapl.saavtk.gui.render.RenderPanel;
 import edu.jhuapl.saavtk.gui.render.Renderer;
 import edu.jhuapl.saavtk.model.Controller;
@@ -42,6 +41,7 @@ import edu.jhuapl.saavtk.model.structure.LineModel;
 import edu.jhuapl.saavtk.model.structure.PointModel;
 import edu.jhuapl.saavtk.model.structure.PolygonModel;
 import edu.jhuapl.saavtk.popup.PopupMenu;
+import edu.jhuapl.saavtk.structure.gui.StructureTabbedPane;
 import edu.jhuapl.saavtk.util.Configuration;
 import edu.jhuapl.saavtk.util.FileCache;
 import edu.jhuapl.saavtk.util.Properties;
@@ -578,7 +578,7 @@ public class SbmtView extends View implements PropertyChangeListener
 				addTab("Lineament", component);
 			}
 
-			addTab("Structures", new StructuresControlPanel(getModelManager(), getPickManager(), getStatusBar()));
+			addTab("Structures", new StructureTabbedPane(getModelManager(), getPickManager(), getRenderer(), getStatusBar()));
 
 			JTabbedPane customDataPane = new JTabbedPane();
 			customDataPane.setBorder(BorderFactory.createEmptyBorder());

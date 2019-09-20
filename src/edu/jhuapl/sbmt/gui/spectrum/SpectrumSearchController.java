@@ -533,20 +533,20 @@ public abstract class SpectrumSearchController implements PropertyChangeListener
                     SmallBodyModel smallBodyModel = (SmallBodyModel)modelManager.getModel(ModelNames.SMALL_BODY);
                     EllipsePolygon region=null;
                     vtkPolyData interiorPoly=new vtkPolyData();
-            		if (selectionModel.getNumberOfStructures() > 0)
+            		if (selectionModel.getNumItems() > 0)
             		{
                         region=(EllipsePolygon)selectionModel.getStructure(0);
                         selectionRegionCenter = region.getCenter();
-                        selectionRegionRadius = region.radius;
+                        selectionRegionRadius = region.getRadius();
 
 
                 // Always use the lowest resolution model for getting the intersection cubes list.
                 // Therefore, if the selection region was created using a higher resolution model,
                 // we need to recompute the selection region using the low res model.
                         if (smallBodyModel.getModelResolution() > 0)
-                            smallBodyModel.drawRegularPolygonLowRes(selectionRegionCenter, region.radius, region.numberOfSides, interiorPoly, null);    // this sets interiorPoly
+                            smallBodyModel.drawRegularPolygonLowRes(selectionRegionCenter, region.getRadius(), region.getNumberOfSides(), interiorPoly, null);    // this sets interiorPoly
                         else
-                            interiorPoly=region.interiorPolyData;
+                            interiorPoly=region.getVtkInteriorPolyData();
 
                     }
                     else

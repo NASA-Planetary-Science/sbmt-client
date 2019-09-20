@@ -493,9 +493,9 @@ public abstract class SpectrumSearchModel implements ISpectrumSearchModel, Metad
                 cubeList.clear();
             AbstractEllipsePolygonModel selectionModel = (AbstractEllipsePolygonModel)getModelManager().getModel(ModelNames.CIRCLE_SELECTION);
             SmallBodyModel bodyModel = (SmallBodyModel)getModelManager().getModel(ModelNames.SMALL_BODY);
-            if (selectionModel.getNumberOfStructures() > 0)
+            if (selectionModel.getNumItems() > 0)
             {
-                EllipsePolygon region = (EllipsePolygon)selectionModel.getStructure(0);
+                EllipsePolygon region = selectionModel.getStructure(0);
 
                 // Always use the lowest resolution model for getting the intersection cubes list.
                 // Therefore, if the selection region was created using a higher resolution model,
@@ -503,12 +503,12 @@ public abstract class SpectrumSearchModel implements ISpectrumSearchModel, Metad
                 if (bodyModel.getModelResolution() > 0)
                 {
                     vtkPolyData interiorPoly = new vtkPolyData();
-                    bodyModel.drawRegularPolygonLowRes(region.getCenter(), region.radius, region.numberOfSides, interiorPoly, null);
+                    bodyModel.drawRegularPolygonLowRes(region.getCenter(), region.getRadius(), region.getNumberOfSides(), interiorPoly, null);
                     cubeList = bodyModel.getIntersectingCubes(interiorPoly);
                 }
                 else
                 {
-                    cubeList = bodyModel.getIntersectingCubes(region.interiorPolyData);
+                    cubeList = bodyModel.getIntersectingCubes(region.getVtkInteriorPolyData());
                 }
             }
 
@@ -651,12 +651,12 @@ public abstract class SpectrumSearchModel implements ISpectrumSearchModel, Metad
                         .getModel(ModelNames.SMALL_BODY);
                 EllipsePolygon region = null;
                 vtkPolyData interiorPoly = new vtkPolyData();
-                if (selectionModel.getNumberOfStructures() > 0)
+                if (selectionModel.getNumItems() > 0)
                 {
                     region = (EllipsePolygon) selectionModel
                             .getStructure(0);
                     selectionRegionCenter = region.getCenter();
-                    selectionRegionRadius = region.radius;
+                    selectionRegionRadius = region.getRadius();
 
                     // Always use the lowest resolution model for getting the
                     // intersection cubes list.
@@ -666,10 +666,10 @@ public abstract class SpectrumSearchModel implements ISpectrumSearchModel, Metad
                     // res model.
                     if (smallBodyModel.getModelResolution() > 0)
                         smallBodyModel.drawRegularPolygonLowRes(selectionRegionCenter,
-                                region.radius, region.numberOfSides,
+                                region.getRadius(), region.getNumberOfSides(),
                                 interiorPoly, null); // this sets interiorPoly
                     else
-                        interiorPoly = region.interiorPolyData;
+                        interiorPoly = region.getVtkInteriorPolyData();
 
                 }
                 else
