@@ -4,6 +4,7 @@ import java.util.List;
 
 import com.google.common.collect.ImmutableList;
 
+import edu.jhuapl.sbmt.gui.lidar.color.ColorProvider;
 import edu.jhuapl.sbmt.model.lidar.LidarTrack;
 import edu.jhuapl.sbmt.model.lidar.LidarTrackManager;
 
@@ -59,10 +60,15 @@ class TrackItemHandler extends BasicItemHandler<LidarTrack, LookUp>
 	@Override
 	public void setColumnValue(LidarTrack aTrack, LookUp aEnum, Object aValue)
 	{
-		List<LidarTrack> trackL = ImmutableList.of(aTrack);
+		List<LidarTrack> tmpL = ImmutableList.of(aTrack);
 
 		if (aEnum == LookUp.IsVisible)
-			refManager.setIsVisible(trackL, (boolean) aValue);
+			refManager.setIsVisible(tmpL, (boolean) aValue);
+		else if (aEnum == LookUp.Color)
+		{
+			ColorProvider tmpCP = (ColorProvider) aValue;
+			refManager.installCustomColorProviders(tmpL, tmpCP, tmpCP);
+		}
 		else
 			throw new UnsupportedOperationException("Column is not supported. Enum: " + aEnum);
 	}
