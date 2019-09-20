@@ -25,6 +25,7 @@ import javax.swing.table.TableCellRenderer;
 
 import edu.jhuapl.saavtk.colormap.SigFigNumberFormat;
 import edu.jhuapl.saavtk.gui.render.Renderer;
+import edu.jhuapl.saavtk.gui.table.TablePopupHandler;
 import edu.jhuapl.saavtk.gui.util.IconUtil;
 import edu.jhuapl.saavtk.gui.util.ToolTipUtil;
 import edu.jhuapl.saavtk.model.ModelManager;
@@ -40,7 +41,7 @@ import edu.jhuapl.sbmt.gui.lidar.color.ConstColorProvider;
 import edu.jhuapl.sbmt.gui.lidar.color.GroupColorProvider;
 import edu.jhuapl.sbmt.gui.lidar.popup.LidarGuiUtil;
 import edu.jhuapl.sbmt.gui.lidar.popup.LidarPopupMenu;
-import edu.jhuapl.sbmt.gui.lidar.popup.LidarTablePopupListener;
+import edu.jhuapl.sbmt.gui.table.ColorProviderCellEditor;
 import edu.jhuapl.sbmt.gui.table.ColorProviderCellRenderer;
 import edu.jhuapl.sbmt.gui.table.EphemerisTimeRenderer;
 import edu.jhuapl.sbmt.model.lidar.LidarGeoUtil;
@@ -76,7 +77,7 @@ import net.miginfocom.swing.MigLayout;
  * @author lopeznr1
  */
 public class LidarTrackPanel extends JPanel
-		implements ActionListener, ChangeListener, PickManagerListener, ItemEventListener
+		implements ActionListener, ChangeListener, ItemEventListener, PickManagerListener
 {
 	// Ref vars
 	private final LidarTrackManager refTrackManager;
@@ -148,6 +149,7 @@ public class LidarTrackPanel extends JPanel
 		EphemerisTimeRenderer tmpTimeRenderer = new EphemerisTimeRenderer(false);
 		tmpComposer.setEditor(LookUp.IsVisible, new BooleanCellEditor());
 		tmpComposer.setRenderer(LookUp.IsVisible, new BooleanCellRenderer());
+		tmpComposer.setEditor(LookUp.Color, new ColorProviderCellEditor<>());
 		tmpComposer.setRenderer(LookUp.Color, new ColorProviderCellRenderer(false));
 		tmpComposer.setRenderer(LookUp.Name, new PrePendRenderer("Trk "));
 		tmpComposer.setRenderer(LookUp.NumPoints, new NumberRenderer("###,###,###", "---"));
@@ -161,7 +163,7 @@ public class LidarTrackPanel extends JPanel
 
 		JTable lidarTable = lidarILP.getTable();
 		lidarTable.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
-		lidarTable.addMouseListener(new LidarTablePopupListener<>(refTrackManager, lidarPopupMenu, lidarTable));
+		lidarTable.addMouseListener(new TablePopupHandler(refTrackManager, lidarPopupMenu));
 		add(new JScrollPane(lidarTable), "growx,growy,pushx,pushy,span,wrap");
 
 		// Action buttons: hide / show
