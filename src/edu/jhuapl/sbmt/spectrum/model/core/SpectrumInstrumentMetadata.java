@@ -12,6 +12,12 @@ import crucible.crust.metadata.api.Version;
 import crucible.crust.metadata.impl.InstanceGetter;
 import crucible.crust.metadata.impl.SettableMetadata;
 
+/**
+ * Class to associate instruments with search metadata found in a SearchSpec based object
+ * @author steelrj1
+ *
+ * @param <S>
+ */
 public class SpectrumInstrumentMetadata<S extends SearchSpec> implements InstrumentMetadata<S>
 {
     String instrumentName;

@@ -25,6 +25,11 @@ import com.jidesoft.swing.CheckBoxTree;
 
 import edu.jhuapl.sbmt.spectrum.model.core.BasicSpectrum;
 
+/**
+ * Panel to display and change spectrum search parameters
+ * @author steelrj1
+ *
+ */
 public class SpectrumSearchParametersPanel  extends JPanel
 {
     protected CheckBoxTree checkBoxTree;

@@ -25,6 +25,11 @@ import edu.jhuapl.saavtk.util.PolyDataUtil;
 import edu.jhuapl.sbmt.client.ISmallBodyModel;
 import edu.jhuapl.sbmt.spectrum.model.core.BasicSpectrum;
 
+/**
+ * Renderer for spectra like OTES, OVIRS, etc that are circular
+ * @author steelrj1
+ *
+ */
 public class AdvancedSpectrumRenderer extends BasicSpectrumRenderer
 {
 

@@ -9,6 +9,11 @@ import vtk.vtkFunctionParser;
 
 import edu.jhuapl.saavtk.util.Preferences;
 
+/**
+ * Base class to deal with the formulation of custom coloring math equations
+ * @author steelrj1
+ *
+ */
 public abstract class SpectrumMath
 {
 

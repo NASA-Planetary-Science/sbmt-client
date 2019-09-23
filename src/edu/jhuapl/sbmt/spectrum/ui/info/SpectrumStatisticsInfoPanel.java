@@ -46,6 +46,11 @@ import edu.jhuapl.sbmt.spectrum.model.statistics.SpectrumStatistics.Sample;
 import edu.jhuapl.sbmt.spectrum.rendering.IBasicSpectrumRenderer;
 import edu.jhuapl.sbmt.spectrum.rendering.SpectraCollection;
 
+/**
+ * Info panel for displayed spectrum statistics based on the spectrum's footprint on the surface.
+ * @author steelrj1
+ *
+ */
 public class SpectrumStatisticsInfoPanel extends ModelInfoWindow implements PropertyChangeListener
 {
 
@@ -88,6 +93,13 @@ public class SpectrumStatisticsInfoPanel extends ModelInfoWindow implements Prop
 
     }
 
+    /**
+     * Sets up histogram panel to show statistics
+     * @param samples
+     * @param xlabel
+     * @param ylabel
+     * @return
+     */
     private JPanel setupHistogramPanel(List<Sample> samples, String xlabel, String ylabel)
     {
         HistogramDataset dataset=new HistogramDataset();

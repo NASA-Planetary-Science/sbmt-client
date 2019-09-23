@@ -22,11 +22,9 @@ import edu.jhuapl.sbmt.spectrum.model.core.BasicSpectrumInstrument;
 import edu.jhuapl.sbmt.spectrum.model.core.SpectrumInstrumentFactory;
 import edu.jhuapl.sbmt.spectrum.model.core.interfaces.CustomSpectraResultsListener;
 import edu.jhuapl.sbmt.spectrum.model.key.CustomSpectrumKey;
-import edu.jhuapl.sbmt.spectrum.model.key.SpectrumKey;
 import edu.jhuapl.sbmt.spectrum.model.sbmtCore.spectra.CustomSpectrumKeyInterface;
 import edu.jhuapl.sbmt.spectrum.model.sbmtCore.spectra.Spectrum;
 import edu.jhuapl.sbmt.spectrum.model.sbmtCore.spectra.SpectrumColoringStyle;
-import edu.jhuapl.sbmt.spectrum.model.sbmtCore.spectra.SpectrumKeyInterface;
 import edu.jhuapl.sbmt.spectrum.rendering.IBasicSpectrumRenderer;
 
 import crucible.crust.metadata.api.Key;
@@ -36,20 +34,19 @@ import crucible.crust.metadata.impl.FixedMetadata;
 import crucible.crust.metadata.impl.SettableMetadata;
 import crucible.crust.metadata.impl.gson.Serializers;
 
-public class CustomSpectraSearchModel extends BaseSpectrumSearchModel
+public class CustomSpectraSearchModel<S extends BasicSpectrum> extends BaseSpectrumSearchModel<S>
 {
     String fileExtension = "";
-    private List<CustomSpectrumKeyInterface> customSpectra;
+    private List<BasicSpectrum> customSpectra;
     private Vector<CustomSpectraResultsListener> customSpectraListeners;
     private boolean initialized = false;
-    final Key<List<CustomSpectrumKeyInterface>> customSpectraKey = Key.of("customSpectra");
+    final Key<List<S>> customSpectraKey = Key.of("customSpectra");
 
-    public CustomSpectraSearchModel(boolean hasHierarchicalSpectraSearch, boolean hasHypertreeBasedSpectraSearch,
-    		SpectraHierarchicalSearchSpecification<?> hierarchicalSpectraSearchSpecification, ModelManager modelManager,
+    public CustomSpectraSearchModel(ModelManager modelManager,
     		BasicSpectrumInstrument instrument)
     {
         super(modelManager, instrument);
-        this.customSpectra = new Vector<CustomSpectrumKeyInterface>();
+        this.customSpectra = new Vector<BasicSpectrum>();
         this.customSpectraListeners = new Vector<CustomSpectraResultsListener>();
 
         getColoringModel().setRedMaxVal(instrument.getRGBMaxVals()[0]);
@@ -63,12 +60,12 @@ public class CustomSpectraSearchModel extends BaseSpectrumSearchModel
         updateColoring();
     }
 
-    public List<CustomSpectrumKeyInterface> getCustomSpectra()
+    public List<S> getCustomSpectra()
     {
         return customSpectra;
     }
 
-    public void setCustomSpectra(List<CustomSpectrumKeyInterface> customSpectra)
+    public void setCustomSpectra(List<S> customSpectra)
     {
         this.customSpectra = customSpectra;
     }
@@ -125,18 +122,19 @@ public class CustomSpectraSearchModel extends BaseSpectrumSearchModel
 //    	unloadSpectrum(key, spectrumCollection);
 //   }
 
-    public List<SpectrumKeyInterface> createSpectrumKeys(String boundaryName, BasicSpectrumInstrument instrument)
-    {
-        List<SpectrumKeyInterface> result = new ArrayList<SpectrumKeyInterface>();
-        result.add(createSpectrumKey(boundaryName, instrument));
-        return result;
-    }
-
-    public SpectrumKeyInterface createSpectrumKey(String imagePathName, BasicSpectrumInstrument instrument)
-    {
-        SpectrumKeyInterface key = new SpectrumKey(customDataFolder + File.separator + imagePathName, null, null, instrument, "");
-        return key;
-    }
+//    public List<SpectrumKeyInterface> createSpectrumKeys(String boundaryName, BasicSpectrumInstrument instrument)
+//    {
+//        List<SpectrumKeyInterface> result = new ArrayList<SpectrumKeyInterface>();
+//        result.add(createSpectrumKey(boundaryName, instrument));
+//        return result;
+//    }
+//
+//    public SpectrumKeyInterface createSpectrumKey(String imagePathName, BasicSpectrumInstrument instrument)
+//    {
+//    	return null;
+////        SpectrumKeyInterface key = new SpectrumKey(customDataFolder + File.separator + imagePathName, null, null, instrument, "");
+////        return key;
+//    }
 
     //TODO: UPDATE THIS TO SAVE SPECTRA
     public void saveSpectrum(int index, CustomSpectrumKeyInterface oldSpectrumInfo, CustomSpectrumKeyInterface newSpectrumInfo) throws IOException
@@ -172,7 +170,7 @@ public class CustomSpectraSearchModel extends BaseSpectrumSearchModel
         }
 
         List<BasicSpectrum> tempResults = new ArrayList<BasicSpectrum>();
-        for (CustomSpectrumKeyInterface info : customSpectra)
+        for (BasicSpectrum info : customSpectra)
         {
         	IBasicSpectrumRenderer renderer = null;
 			try
@@ -219,11 +217,11 @@ public class CustomSpectraSearchModel extends BaseSpectrumSearchModel
 //        }
 //    }
 
-    public CustomSpectrumKeyInterface getSpectrumKeyForIndex(int index)
-    {
-        CustomSpectrumKeyInterface spectrumKey = customSpectra.get(index);
-        return spectrumKey;
-    }
+//    public CustomSpectrumKeyInterface getSpectrumKeyForIndex(int index)
+//    {
+//        CustomSpectrumKeyInterface spectrumKey = customSpectra.get(index);
+//        return spectrumKey;
+//    }
 
     private boolean migrateConfigFileIfNeeded() throws IOException
     {
@@ -318,12 +316,12 @@ public class CustomSpectraSearchModel extends BaseSpectrumSearchModel
         }
 
         List<BasicSpectrum> tempResults = new ArrayList<BasicSpectrum>();
-        for (CustomSpectrumKeyInterface info : customSpectra)
+        for (BasicSpectrum info : customSpectra)
         {
         	IBasicSpectrumRenderer renderer = null;
 			try
 			{
-				renderer = SbmtSpectrumModelFactory.createSpectrumRenderer(customDataFolder + File.separator + info.getSpectrumFilename(), SpectrumInstrumentFactory.getInstrumentForName(instrument.getDisplayName()));
+				renderer = SbmtSpectrumModelFactory.createSpectrumRenderer(customDataFolder + File.separator + info.getSpectrumName(), SpectrumInstrumentFactory.getInstrumentForName(instrument.getDisplayName()));
 			}
 			catch (IOException e)
 			{
@@ -341,31 +339,6 @@ public class CustomSpectraSearchModel extends BaseSpectrumSearchModel
     public void setSpectrumVisibility(BasicSpectrum spectrum, boolean visible)
     {
     	fireFootprintVisibilityChanged(spectrum, visible);
-//        if (spectrumCollection.containsKey(key))
-//        {
-//            IBasicSpectrumRenderer spectrum = spectrumCollection.getSpectrumFromKey(key);
-//            spectrum.setVisible(visible);
-//        }
-    }
-
-    @Override
-    public CustomSpectrumKeyInterface[] getSelectedSpectrumKeys()
-    {
-        int[] indices = selectedImageIndices;
-        CustomSpectrumKeyInterface[] selectedKeys = new CustomSpectrumKeyInterface[indices.length];
-        if (indices.length > 0)
-        {
-            int i=0;
-            for (int index : indices)
-            {
-                String spectrum = getSpectrumRawResults().get(index).getDataName();
-                String name = new File(spectrum).getName();
-                spectrum = spectrum.substring(0, spectrum.length()-4);
-                CustomSpectrumKeyInterface selectedKey = getSpectrumKeyForIndex(index);
-                selectedKeys[i++] = selectedKey;
-            }
-        }
-        return selectedKeys;
     }
 
     private String getConfigFilename()
@@ -378,7 +351,7 @@ public class CustomSpectraSearchModel extends BaseSpectrumSearchModel
         int startId = idPair.id1;
         int endId = idPair.id2;
 
-        SpectrumColoringStyle style = SpectrumColoringStyle.getStyleForName(getColoringModel().getSpectrumColoringStyleName());
+        SpectrumColoringStyle style = getColoringModel().getSpectrumColoringStyle();
         for (int i=startId; i<endId; ++i)
         {
             if (i < 0)
@@ -386,16 +359,6 @@ public class CustomSpectraSearchModel extends BaseSpectrumSearchModel
             else if(i >= getSpectrumRawResults().size())
                 break;
             fireFootprintVisibilityChanged(results.get(i), true);
-
-//            try
-//            {
-//            	String spectrum = getSpectrumRawResults().get(i).getDataName();
-//                spectrumCollection.addSpectrum(SafeURLPaths.instance().getUrl(spectrum), instrument, style,true);
-//
-//            }
-//            catch (IOException e1) {
-//                e1.printStackTrace();
-//            }
         }
         updateColoring();
     }
@@ -430,11 +393,11 @@ public class CustomSpectraSearchModel extends BaseSpectrumSearchModel
     	}
     }
 
-    public void saveSpectra(List<CustomSpectrumKeyInterface> customImages, String filename)
+    public void saveSpectra(List<BasicSpectrum> customImages, String filename)
     {
         SettableMetadata configMetadata = SettableMetadata.of(Version.of(1, 0));
 
-        final Key<List<CustomSpectrumKeyInterface>> customSpectraKey = Key.of("SavedSpectra");
+        final Key<List<BasicSpectrum>> customSpectraKey = Key.of("SavedSpectra");
 
         configMetadata.put(customSpectraKey, customImages);
         try
@@ -458,7 +421,7 @@ public class CustomSpectraSearchModel extends BaseSpectrumSearchModel
             Metadata[] metadataArray = read(customSpectraKey, metadata);
             for (Metadata meta : metadataArray)
             {
-                CustomSpectrumKeyInterface info = CustomSpectrumKeyInterface.retrieve(meta);
+                BasicSpectrum info = BasicSpectrum.retrieve(meta);
                 customSpectra.add(info);
             }
             System.out.println("CustomSpectrumModel: loadSpectra: number of spectra now " + customSpectra.size());
@@ -490,14 +453,14 @@ public class CustomSpectraSearchModel extends BaseSpectrumSearchModel
         return null;
     }
 
-    public String getSpectrumColoringStyleName()
+    public SpectrumColoringStyle getSpectrumColoringStyle()
     {
-        return getColoringModel().getSpectrumColoringStyleName();
+        return getColoringModel().getSpectrumColoringStyle();
     }
 
 
-    public void setSpectrumColoringStyleName(String spectrumColoringStyleName)
+    public void setSpectrumColoringStyleName(SpectrumColoringStyle spectrumColoringStyle)
     {
-        this.getColoringModel().setSpectrumColoringStyleName(spectrumColoringStyleName);
+        this.getColoringModel().setSpectrumColoringStyle(spectrumColoringStyle);
     }
 }

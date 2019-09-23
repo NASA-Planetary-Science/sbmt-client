@@ -4,6 +4,11 @@ import edu.jhuapl.sbmt.query.QueryBase;
 import edu.jhuapl.sbmt.spectrum.model.sbmtCore.spectra.ISpectraType;
 import edu.jhuapl.sbmt.spectrum.model.sbmtCore.spectra.math.SpectrumMath;
 
+/**
+ * Represents a set of information related to a given spectrum instrument defined by <pre>displayName</pre>
+ * @author steelrj1
+ *
+ */
 public class SpectraType implements ISpectraType
 {
     private QueryBase queryBase;

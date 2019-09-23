@@ -8,18 +8,14 @@ import javax.swing.JTable;
 import javax.swing.table.DefaultTableCellRenderer;
 
 import edu.jhuapl.sbmt.spectrum.model.core.BasicSpectrum;
-import edu.jhuapl.sbmt.spectrum.model.core.search.BaseSpectrumSearchModel;
-import edu.jhuapl.sbmt.spectrum.model.sbmtCore.spectra.SpectrumKeyInterface;
 
 public class SpectrumStringRenderer extends DefaultTableCellRenderer
 {
     public SpectrumBoundaryCollection model;
-    private BaseSpectrumSearchModel spectrumSearchModel;
     private List<BasicSpectrum> spectrumRawResults;
 
-    public SpectrumStringRenderer(BaseSpectrumSearchModel spectrumSearchModel, List<BasicSpectrum> spectrumRawResults, SpectrumBoundaryCollection boundaries)
+    public SpectrumStringRenderer(List<BasicSpectrum> spectrumRawResults, SpectrumBoundaryCollection boundaries)
     {
-        this.spectrumSearchModel = spectrumSearchModel;
         this.spectrumRawResults = spectrumRawResults;
         this.model = boundaries;
     }
@@ -32,11 +28,9 @@ public class SpectrumStringRenderer extends DefaultTableCellRenderer
     	int actualRow = table.getRowSorter().convertRowIndexToModel(row);
         Component co = super.getTableCellRendererComponent(table, value, isSelected, hasFocus, actualRow, column);
         if (spectrumRawResults.size() == 0) return co;
-        String name = spectrumRawResults.get(actualRow).getSpectrumName();
-        SpectrumKeyInterface key = spectrumSearchModel.createSpectrumKey(name, spectrumSearchModel.getInstrument());
-        if (model.containsBoundary(key))
+        if (model.containsBoundary(spectrumRawResults.get(actualRow)))
         {
-            int[] c = model.getBoundary(key).getBoundaryColor();
+            int[] c = model.getBoundary(spectrumRawResults.get(actualRow)).getBoundaryColor();
             if (isSelected)
             {
                 co.setForeground(new Color(c[0], c[1], c[2]));

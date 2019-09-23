@@ -40,7 +40,6 @@ import edu.jhuapl.sbmt.client.SbmtInfoWindowManager;
 import edu.jhuapl.sbmt.client.SmallBodyModel;
 import edu.jhuapl.sbmt.spectrum.model.core.BasicSpectrum;
 import edu.jhuapl.sbmt.spectrum.model.core.BasicSpectrumInstrument;
-import edu.jhuapl.sbmt.spectrum.model.sbmtCore.spectra.SpectrumKeyInterface;
 import edu.jhuapl.sbmt.spectrum.model.statistics.SpectrumStatistics;
 import edu.jhuapl.sbmt.spectrum.model.statistics.SpectrumStatistics.Sample;
 import edu.jhuapl.sbmt.spectrum.model.statistics.SpectrumStatisticsCollection;
@@ -62,7 +61,8 @@ public class SpectrumPopupMenu extends PopupMenu implements PropertyChangeListen
     private JMenuItem showToSunVectorMenuItem;
     private JMenuItem setIlluminationMenuItem;
     private JMenuItem showOutlineMenuItem;
-    private List<SpectrumKeyInterface> spectrumKeys = new ArrayList<SpectrumKeyInterface>();
+//    private List<SpectrumKeyInterface> spectrumKeys = new ArrayList<SpectrumKeyInterface>();
+    private List<BasicSpectrum> spectrum = new ArrayList<BasicSpectrum>();
     private JMenuItem showStatisticsMenuItem;
     private Renderer renderer;
 
@@ -193,21 +193,37 @@ public class SpectrumPopupMenu extends PopupMenu implements PropertyChangeListen
 
     BasicSpectrumInstrument instrument;
 
-    public void setCurrentSpectrum(SpectrumKeyInterface key)
+    public void setCurrentSpectrum(BasicSpectrum spec)
     {
-        spectrumKeys.clear();
-        spectrumKeys.add(key);
-        currentSpectrum = key.getName();
+        spectrum.clear();
+        spectrum.add(spec);
+        currentSpectrum = spec.getSpectrumName();
         updateMenuItems();
     }
 
-    public void setCurrentSpectra(List<SpectrumKeyInterface> keys)
+    public void setCurrentSpectra(List<BasicSpectrum> keys)
     {
-        spectrumKeys.clear();
-        spectrumKeys.addAll(keys);
-        currentSpectrum = keys.get(0).getName().substring(keys.get(0).getName().lastIndexOf("/")+1);
+        spectrum.clear();
+        spectrum.addAll(keys);
+        currentSpectrum = keys.get(0).getSpectrumName().substring(keys.get(0).getSpectrumName().lastIndexOf("/")+1);
         updateMenuItems();
     }
+
+//    public void setCurrentSpectrum(SpectrumKeyInterface key)
+//    {
+//        spectrumKeys.clear();
+//        spectrumKeys.add(key);
+//        currentSpectrum = key.getName();
+//        updateMenuItems();
+//    }
+//
+//    public void setCurrentSpectra(List<SpectrumKeyInterface> keys)
+//    {
+//        spectrumKeys.clear();
+//        spectrumKeys.addAll(keys);
+//        currentSpectrum = keys.get(0).getName().substring(keys.get(0).getName().lastIndexOf("/")+1);
+//        updateMenuItems();
+//    }
 
     public void setInstrument(BasicSpectrumInstrument instrument)
     {

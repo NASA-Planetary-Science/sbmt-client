@@ -4,6 +4,11 @@ import javax.swing.BoxLayout;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 
+/**
+ * Top level container panel for spectrum search elements
+ * @author steelrj1
+ *
+ */
 public class SpectrumSearchPanel extends JPanel
 {
     JScrollPane scrollPane;

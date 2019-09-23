@@ -26,7 +26,6 @@ import edu.jhuapl.sbmt.gui.table.EphemerisTimeRenderer;
 import edu.jhuapl.sbmt.spectrum.model.core.BasicSpectrum;
 import edu.jhuapl.sbmt.spectrum.rendering.SpectraCollection;
 import edu.jhuapl.sbmt.spectrum.rendering.SpectrumBoundaryCollection;
-import edu.jhuapl.sbmt.spectrum.ui.SpectrumItemHandler;
 import edu.jhuapl.sbmt.spectrum.ui.SpectrumPopupMenu;
 import edu.jhuapl.sbmt.spectrum.ui.SpectrumTablePopupListener;
 
@@ -39,6 +38,11 @@ import glum.gui.panel.itemList.ItemProcessor;
 import glum.gui.panel.itemList.query.QueryComposer;
 import glum.item.ItemManagerUtil;
 
+/**
+ * Panel that holds the Spectrum Results table, and associated controls
+ * @author steelrj1
+ *
+ */
 public class SpectrumResultsTableView extends JPanel
 {
     private JButton loadSpectraListButton;
@@ -53,7 +57,6 @@ public class SpectrumResultsTableView extends JPanel
     private JButton saveSpectraListButton;
     private JButton saveSelectedSpectraListButton;
     private SpectrumPopupMenu spectrumPopupMenu;
-//    protected SpectrumResultsTable resultList;
     protected JTable resultList;
     private JLabel resultsLabel;
     private JLabel lblNumberBoundaries;
@@ -80,7 +83,6 @@ public class SpectrumResultsTableView extends JPanel
     protected void init()
     {
         resultsLabel = new JLabel("0 Results");
-//        resultList = new SpectrumResultsTable();
         resultList = buildTable();
         lblNumberBoundaries = new JLabel("Number Boundaries:");
         numberOfBoundariesComboBox = new JComboBox<Integer>();
@@ -228,8 +230,6 @@ public class SpectrumResultsTableView extends JPanel
 		spectrumTable.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
 		spectrumTable.addMouseListener(new SpectrumTablePopupListener<>(spectrumCollection, boundaryCollection, spectrumPopupMenu, spectrumTable));
 		return spectrumTable;
-//		lidarTable.addMouseListener(new LidarTablePopupListener<>(spectrumCollection, lidarPopupMenu, lidarTable));
-//		add(new JScrollPane(lidarTable), "growx,growy,pushx,pushy,span,wrap");
     }
 
     public JTable getResultList()

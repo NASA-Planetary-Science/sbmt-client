@@ -8,7 +8,12 @@ import org.joda.time.DateTime;
 import edu.jhuapl.sbmt.spectrum.model.core.BasicSpectrumInstrument;
 import edu.jhuapl.sbmt.spectrum.model.core.interfaces.SearchSpec;
 
-public abstract class Spectrum //extends AbstractModel implements PropertyChangeListener
+/**
+ * Abstract spectrum class that contains only required information to describe the spectrum, not how to render it (that is found in the AbstractSpectrumRenderer based classes)
+ * @author steelrj1
+ *
+ */
+public abstract class Spectrum
 {
     public static final String SPECTRUM_NAMES = "SpectrumNames"; // What name to give this image for display
     public static final String SPECTRUM_FILENAMES = "SpectrumFilenames"; // Filename of image on disk
@@ -22,23 +27,7 @@ public abstract class Spectrum //extends AbstractModel implements PropertyChange
     public abstract double[] getSpectrum();
     public abstract String getFullPath();
     public abstract String getSpectrumPathOnServer();
-
-//    public abstract void addPropertyChangeListener(PropertyChangeListener l);
-//    public abstract void removePropertyChangeListener(PropertyChangeListener l);
-//
-//    public abstract void shiftFootprintToHeight(double d);
-//    public abstract vtkPolyData getUnshiftedFootprint();
-//    public abstract vtkPolyData getShiftedFootprint();
-//    public abstract vtkPolyData getSelectionPolyData();
-//    protected vtkActor outlineActor = new vtkActor();
-
-//    public abstract void setShowFrustum(boolean show);
-//    public abstract void setShowOutline(boolean show);
-//    public abstract void setShowToSunVector(boolean show);
-
-//    public abstract boolean isFrustumShowing();
-//    public abstract boolean isOutlineShowing();
-//    public abstract boolean isToSunVectorShowing();
+    public String spectrumName;
 
     public abstract double[] getSpacecraftPosition();
     public abstract double[] getFrustumCenter();
@@ -47,13 +36,7 @@ public abstract class Spectrum //extends AbstractModel implements PropertyChange
     public abstract double[] getToSunUnitVector();
 
     public abstract void setChannelColoring(int[] channels, double[] mins, double[] maxs);
-//    public abstract void updateChannelColoring();
     public abstract double evaluateDerivedParameters(int channel);
-//    public abstract double[] getChannelColor();
-
-//    public abstract void setSelected();
-//    public abstract void setUnselected();
-//    public abstract boolean isSelected();
 
     public abstract void saveSpectrum(File file) throws IOException;
 
@@ -61,30 +44,12 @@ public abstract class Spectrum //extends AbstractModel implements PropertyChange
     public abstract void setMetadata(SearchSpec spec);
     public abstract SearchSpec getMetadata();
 
-    protected SpectrumKeyInterface key;
-
     public Spectrum()
     {
-        this.key = null;
-    }
-
-    public Spectrum(SpectrumKeyInterface key)
-    {
-        this.key = key;
-    }
-
-    public SpectrumKeyInterface getKey()
-    {
-        return key;
-    }
-
-    public void setKey(SpectrumKeyInterface key)
-    {
-        this.key = key;
     }
 
     public String getSpectrumName()
     {
-        return new File(key.getName()).getName();
+    	return spectrumName.substring(spectrumName.lastIndexOf("/")+1);
     }
 }

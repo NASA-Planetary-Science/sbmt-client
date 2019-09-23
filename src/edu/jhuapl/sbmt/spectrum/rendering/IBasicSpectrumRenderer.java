@@ -11,7 +11,12 @@ import vtk.vtkProp;
 import edu.jhuapl.saavtk.model.Model;
 import edu.jhuapl.sbmt.spectrum.model.core.BasicSpectrum;
 
-public interface IBasicSpectrumRenderer extends PropertyChangeListener, Model
+/**
+ * Interface for spectra renderer
+ * @author steelrj1
+ *
+ */
+public interface IBasicSpectrumRenderer<S extends BasicSpectrum> extends PropertyChangeListener, Model
 {
 
 	void generateFootprint();
@@ -71,7 +76,7 @@ public interface IBasicSpectrumRenderer extends PropertyChangeListener, Model
 
 	boolean isOutlineShowing();
 
-	public BasicSpectrum getSpectrum();
+	public S getSpectrum();
 
 	public boolean isFrustumShowing();
 

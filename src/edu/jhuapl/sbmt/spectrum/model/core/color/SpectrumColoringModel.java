@@ -2,8 +2,17 @@ package edu.jhuapl.sbmt.spectrum.model.core.color;
 
 import java.util.Vector;
 
-import edu.jhuapl.sbmt.spectrum.model.sbmtCore.spectra.ISpectralInstrument;
+import edu.jhuapl.sbmt.spectrum.model.core.interfaces.SpectrumColoringChangedListener;
+import edu.jhuapl.sbmt.spectrum.model.sbmtCore.spectra.SpectrumColoringStyle;
 
+/**
+ * Model to capture the current coloring state for the spectra on screen.  This manages both the RGB coloring mode values as well as whether
+ * the display is in that mode or 1 or more other modes defined by the enum <pre>spectrumColoringStyle</pre>.  Listeners are included to
+ * broadcast changes out to interested parties via a <pre>SpectrumColoringChangedListener</pre>
+ *
+ * @author steelrj1
+ *
+ */
 public class SpectrumColoringModel
 {
     private Vector<SpectrumColoringChangedListener> colorChangedListeners;
@@ -17,7 +26,7 @@ public class SpectrumColoringModel
     private int redIndex;
     private int greenIndex;
     private int blueIndex;
-    protected String spectrumColoringStyleName = "RGB";
+    private SpectrumColoringStyle spectrumColoringStyle = SpectrumColoringStyle.RGB;
     private int[] channels;
     private double[] mins;
     private double[] maxs;
@@ -27,7 +36,7 @@ public class SpectrumColoringModel
         this.colorChangedListeners = new Vector<SpectrumColoringChangedListener>();
 	}
 
-	public void updateColoring(ISpectralInstrument instrument)
+	public void updateColoring()
 	{
 		// If we are currently editing user defined functions
         // (i.e. the dialog is open), do not update the coloring
@@ -149,14 +158,14 @@ public class SpectrumColoringModel
         this.blueIndex = blueIndex;
     }
 
-    public String getSpectrumColoringStyleName()
+    public SpectrumColoringStyle getSpectrumColoringStyle()
     {
-        return spectrumColoringStyleName;
+        return spectrumColoringStyle;
     }
 
-    public void setSpectrumColoringStyleName(String spectrumColoringStyleName)
+    public void setSpectrumColoringStyle(SpectrumColoringStyle spectrumColoringStyle)
     {
-        this.spectrumColoringStyleName = spectrumColoringStyleName;
+        this.spectrumColoringStyle = spectrumColoringStyle;
     }
 
     public void fireColoringChanged()

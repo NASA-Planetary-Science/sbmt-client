@@ -1,6 +1,7 @@
 package edu.jhuapl.sbmt.spectrum.ui.color;
 
 import java.awt.Component;
+import java.awt.Dimension;
 import java.text.DecimalFormat;
 import java.util.List;
 
@@ -20,6 +21,11 @@ import com.google.common.collect.Lists;
 
 import edu.jhuapl.sbmt.spectrum.model.sbmtCore.spectra.SpectrumColoringStyle;
 
+/**
+ * Panel that shows the coloring controls for a spectrum
+ * @author steelrj1
+ *
+ */
 public class SpectrumColoringPanel extends JPanel
 {
     private JCheckBox grayscaleCheckBox;
@@ -101,21 +107,26 @@ public class SpectrumColoringPanel extends JPanel
         JLabel lblMin = new JLabel("Min");
         panel_11.add(lblMin);
 
+        SpinnerNumberModel spinnerNumberModel = new SpinnerNumberModel(Double.valueOf(0.05d), null, null, Double.valueOf(0.01d));
+        Dimension preferredSpinnerSize = new Dimension(100, 28);
+        Dimension minSpinnerSize = new Dimension(36, 22);
+        Dimension maxSpinnerSize = new Dimension(100, 22);
+
         redMinSpinner = new JSpinner();
-        redMinSpinner.setModel(new javax.swing.SpinnerNumberModel(Double.valueOf(0.05d), null, null, Double.valueOf(0.01d)));
-        redMinSpinner.setPreferredSize(new java.awt.Dimension(100, 28));
-        redMinSpinner.setMinimumSize(new java.awt.Dimension(36, 22));
-        redMinSpinner.setMaximumSize(new java.awt.Dimension(100, 22));
+        redMinSpinner.setModel(spinnerNumberModel);
+        redMinSpinner.setPreferredSize(preferredSpinnerSize);
+        redMinSpinner.setMinimumSize(minSpinnerSize);
+        redMinSpinner.setMaximumSize(maxSpinnerSize);
         panel_11.add(redMinSpinner);
 
         JLabel lblMax = new JLabel("Max");
         panel_11.add(lblMax);
 
         redMaxSpinner = new JSpinner();
-        redMaxSpinner.setModel(new javax.swing.SpinnerNumberModel(Double.valueOf(0.05d), null, null, Double.valueOf(0.01d)));
-        redMaxSpinner.setPreferredSize(new java.awt.Dimension(100, 28));
-        redMaxSpinner.setMinimumSize(new java.awt.Dimension(36, 22));
-        redMaxSpinner.setMaximumSize(new java.awt.Dimension(100, 22));
+        redMaxSpinner.setModel(spinnerNumberModel);
+        redMaxSpinner.setPreferredSize(preferredSpinnerSize);
+        redMaxSpinner.setMinimumSize(minSpinnerSize);
+        redMaxSpinner.setMaximumSize(maxSpinnerSize);
         panel_11.add(redMaxSpinner);
 
         JPanel panel_12 = new JPanel();
@@ -132,20 +143,20 @@ public class SpectrumColoringPanel extends JPanel
         panel_12.add(greenMinLabel);
 
         greenMinSpinner = new JSpinner();
-        greenMinSpinner.setModel(new javax.swing.SpinnerNumberModel(Double.valueOf(0.05d), null, null, Double.valueOf(0.01d)));
-        greenMinSpinner.setPreferredSize(new java.awt.Dimension(100, 28));
-        greenMinSpinner.setMinimumSize(new java.awt.Dimension(36, 22));
-        greenMinSpinner.setMaximumSize(new java.awt.Dimension(100, 22));
+        greenMinSpinner.setModel(spinnerNumberModel);
+        greenMinSpinner.setPreferredSize(preferredSpinnerSize);
+        greenMinSpinner.setMinimumSize(minSpinnerSize);
+        greenMinSpinner.setMaximumSize(maxSpinnerSize);
         panel_12.add(greenMinSpinner);
 
         greenMaxLabel = new JLabel("Max");
         panel_12.add(greenMaxLabel);
 
         greenMaxSpinner = new JSpinner();
-        greenMaxSpinner.setModel(new javax.swing.SpinnerNumberModel(Double.valueOf(0.05d), null, null, Double.valueOf(0.01d)));
-        greenMaxSpinner.setPreferredSize(new java.awt.Dimension(100, 28));
-        greenMaxSpinner.setMinimumSize(new java.awt.Dimension(36, 22));
-        greenMaxSpinner.setMaximumSize(new java.awt.Dimension(100, 22));
+        greenMaxSpinner.setModel(spinnerNumberModel);
+        greenMaxSpinner.setPreferredSize(preferredSpinnerSize);
+        greenMaxSpinner.setMinimumSize(minSpinnerSize);
+        greenMaxSpinner.setMaximumSize(maxSpinnerSize);
         panel_12.add(greenMaxSpinner);
 
         JPanel panel_13 = new JPanel();
@@ -162,20 +173,20 @@ public class SpectrumColoringPanel extends JPanel
         panel_13.add(blueMinLabel);
 
         blueMinSpinner = new JSpinner();
-        blueMinSpinner.setModel(new javax.swing.SpinnerNumberModel(Double.valueOf(0.05d), null, null, Double.valueOf(0.01d)));
-        blueMinSpinner.setPreferredSize(new java.awt.Dimension(100, 28));
-        blueMinSpinner.setMinimumSize(new java.awt.Dimension(36, 22));
-        blueMinSpinner.setMaximumSize(new java.awt.Dimension(100, 22));
+        blueMinSpinner.setModel(spinnerNumberModel);
+        blueMinSpinner.setPreferredSize(preferredSpinnerSize);
+        blueMinSpinner.setMinimumSize(minSpinnerSize);
+        blueMinSpinner.setMaximumSize(maxSpinnerSize);
         panel_13.add(blueMinSpinner);
 
         blueMaxLabel = new JLabel("Max");
         panel_13.add(blueMaxLabel);
 
         blueMaxSpinner = new JSpinner();
-        blueMaxSpinner.setModel(new javax.swing.SpinnerNumberModel(Double.valueOf(0.05d), null, null, Double.valueOf(0.01d)));
-        blueMaxSpinner.setPreferredSize(new java.awt.Dimension(100, 28));
-        blueMaxSpinner.setMinimumSize(new java.awt.Dimension(36, 22));
-        blueMaxSpinner.setMaximumSize(new java.awt.Dimension(100, 22));
+        blueMaxSpinner.setModel(spinnerNumberModel);
+        blueMaxSpinner.setPreferredSize(preferredSpinnerSize);
+        blueMaxSpinner.setMinimumSize(minSpinnerSize);
+        blueMaxSpinner.setMaximumSize(maxSpinnerSize);
         panel_13.add(blueMaxSpinner);
 
         List<JSpinner> spinners=Lists.newArrayList(blueMaxSpinner, blueMinSpinner, redMaxSpinner, redMinSpinner,

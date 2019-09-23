@@ -10,18 +10,13 @@ import org.joda.time.DateTime;
 
 import edu.jhuapl.saavtk.util.FileCache;
 import edu.jhuapl.saavtk.util.LatLon;
-import edu.jhuapl.saavtk.util.MapUtil;
-import edu.jhuapl.sbmt.model.image.PerspectiveImage;
 import edu.jhuapl.sbmt.spectrum.model.core.interfaces.SearchSpec;
-import edu.jhuapl.sbmt.spectrum.model.key.SpectrumKey;
 import edu.jhuapl.sbmt.spectrum.model.sbmtCore.spectra.Spectrum;
 import edu.jhuapl.sbmt.spectrum.model.sbmtCore.spectra.SpectrumColoringStyle;
 
 
 public abstract class BasicSpectrum extends Spectrum
 {
-
-//    protected ISmallBodyModel smallBodyModel;
     protected BasicSpectrumInstrument instrument;
 
     protected String fullpath; // The actual path of the spectrum stored on the
@@ -85,12 +80,75 @@ public abstract class BasicSpectrum extends Spectrum
 
         spectrum=new double[getNumberOfBands()];
         this.isCustomSpectra = isCustom;
-        key = new SpectrumKey(filename, instrument);
+        spectrumName = filename;
+//        key = new SpectrumKey(filename, instrument);
     }
 
     public abstract int getNumberOfBands();
     public abstract void readPointingFromInfoFile();
     public abstract void readSpectrumFromFile();
+
+//    /**
+//     * @return
+//     */
+//    protected String initLocalInfoFileFullPath()
+//    {
+//        String configFilename = new File(getKey().getName()).getParent() + File.separator + "config.txt";
+//        MapUtil configMap = new MapUtil(configFilename);
+//        String[] spectrumFilenames = configMap.getAsArray(SPECTRUM_FILENAMES);
+//        for (int i=0; i<spectrumFilenames.length; ++i)
+//        {
+//            String filename = new File(getKey().getName()).getName();
+//            if (filename.equals(spectrumFilenames[i]))
+//            {
+//                return new File(getKey().getName()).getParent() + File.separator + configMap.getAsArray(PerspectiveImage.INFOFILENAMES)[i];
+//            }
+//        }
+//
+//        return null;
+//    }
+//
+//    /**
+//     *
+//     * @return
+//     */
+//    protected String initLocalSpectrumFileFullPath()
+//    {
+//        String configFilename = new File(getKey().getName()).getParent() + File.separator + "config.txt";
+//        MapUtil configMap = new MapUtil(configFilename);
+//        String[] spectrumFilenames = configMap.getAsArray(SPECTRUM_FILENAMES);
+//        for (int i=0; i<spectrumFilenames.length; ++i)
+//        {
+//            String filename = new File(getKey().getName()).getName();
+//            if (filename.equals(spectrumFilenames[i]))
+//            {
+//                return new File(getKey().getName()).getParent() + File.separator + configMap.getAsArray(SPECTRUM_NAMES)[i];
+//            }
+//        }
+//
+//        return null;
+//    }
+
+    /**
+     * Evaluates the derived parameters for a given channel (custom color definition)
+     */
+    @Override
+    public double evaluateDerivedParameters(int channel)
+    {
+        switch (channel)
+        {
+        case 0:
+             return spectrum[35] - spectrum[4];
+        case 1:
+             return spectrum[0] - spectrum[4];
+        case 2:
+             return spectrum[51] - spectrum[35];
+        default:
+            return 0.0;
+        }
+    }
+
+    //GETTERS/SETTERS
 
     public double[] getSpectrum()
     {
@@ -130,13 +188,6 @@ public abstract class BasicSpectrum extends Spectrum
         return dateTime;
     }
 
-//    @Override
-//    public double[] getChannelColor()
-//    {
-//        double[] color = new double[] { 1, 1, 1 };
-//        return color;
-//    }
-
     @Override
     public String getFullPath()
     {
@@ -144,24 +195,6 @@ public abstract class BasicSpectrum extends Spectrum
     	this.fullpath = file.getAbsolutePath();
         return fullpath;
     }
-
-    @Override
-    public double evaluateDerivedParameters(int channel)
-    {
-        switch (channel)
-        {
-        case 0:
-             return spectrum[35] - spectrum[4];
-        case 1:
-             return spectrum[0] - spectrum[4];
-        case 2:
-             return spectrum[51] - spectrum[35];
-        default:
-            return 0.0;
-        }
-    }
-
-
 
 	public double[] getSpacecraftPosition()
     {
@@ -253,40 +286,6 @@ public abstract class BasicSpectrum extends Spectrum
     public SearchSpec getMetadata()
     {
         return this.spec;
-    }
-
-    protected String initLocalInfoFileFullPath()
-    {
-        String configFilename = new File(getKey().getName()).getParent() + File.separator + "config.txt";
-        MapUtil configMap = new MapUtil(configFilename);
-        String[] spectrumFilenames = configMap.getAsArray(SPECTRUM_FILENAMES);
-        for (int i=0; i<spectrumFilenames.length; ++i)
-        {
-            String filename = new File(getKey().getName()).getName();
-            if (filename.equals(spectrumFilenames[i]))
-            {
-                return new File(getKey().getName()).getParent() + File.separator + configMap.getAsArray(PerspectiveImage.INFOFILENAMES)[i];
-            }
-        }
-
-        return null;
-    }
-
-    protected String initLocalSpectrumFileFullPath()
-    {
-        String configFilename = new File(getKey().getName()).getParent() + File.separator + "config.txt";
-        MapUtil configMap = new MapUtil(configFilename);
-        String[] spectrumFilenames = configMap.getAsArray(SPECTRUM_FILENAMES);
-        for (int i=0; i<spectrumFilenames.length; ++i)
-        {
-            String filename = new File(getKey().getName()).getName();
-            if (filename.equals(spectrumFilenames[i]))
-            {
-                return new File(getKey().getName()).getParent() + File.separator + configMap.getAsArray(SPECTRUM_NAMES)[i];
-            }
-        }
-
-        return null;
     }
 
 	public double getToSunVectorLength()

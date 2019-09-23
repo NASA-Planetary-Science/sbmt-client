@@ -12,6 +12,12 @@ import javax.swing.tree.TreePath;
 import edu.jhuapl.sbmt.spectrum.model.core.interfaces.InstrumentMetadataIO;
 import edu.jhuapl.sbmt.spectrum.model.core.interfaces.SearchSpec;
 
+/**
+ * Abstract class for hierarchical search specifications, which represents structure and metadata for related instruments
+ * @author steelrj1
+ *
+ * @param <S>
+ */
 public abstract class SpectraHierarchicalSearchSpecification<S extends SearchSpec> implements InstrumentMetadataIO<S>
 {
     private TreeModel treeModel;

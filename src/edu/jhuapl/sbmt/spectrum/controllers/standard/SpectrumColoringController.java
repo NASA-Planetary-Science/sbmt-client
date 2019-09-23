@@ -1,21 +1,18 @@
 package edu.jhuapl.sbmt.spectrum.controllers.standard;
 
 import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 
 import javax.swing.JComboBox;
 import javax.swing.JOptionPane;
 import javax.swing.JSpinner;
 import javax.swing.ProgressMonitor;
-import javax.swing.event.ChangeEvent;
-import javax.swing.event.ChangeListener;
 
 import com.jidesoft.utils.SwingWorker;
 
 import vtk.vtkFunctionParser;
 
-import edu.jhuapl.sbmt.spectrum.model.core.color.SpectraColoringProgressListener;
-import edu.jhuapl.sbmt.spectrum.model.core.color.SpectrumColoringChangedListener;
+import edu.jhuapl.sbmt.spectrum.model.core.interfaces.SpectraColoringProgressListener;
+import edu.jhuapl.sbmt.spectrum.model.core.interfaces.SpectrumColoringChangedListener;
 import edu.jhuapl.sbmt.spectrum.model.core.search.BaseSpectrumSearchModel;
 import edu.jhuapl.sbmt.spectrum.model.sbmtCore.spectra.ISpectralInstrument;
 import edu.jhuapl.sbmt.spectrum.model.sbmtCore.spectra.SpectrumColoringStyle;
@@ -23,12 +20,17 @@ import edu.jhuapl.sbmt.spectrum.rendering.SpectraCollection;
 import edu.jhuapl.sbmt.spectrum.ui.color.SpectrumColoringPanel;
 import edu.jhuapl.sbmt.spectrum.ui.math.SpectrumMathPanel;
 
+/**
+ * Controller for handling the Spectrum Coloring UI.  Brings in the spectrum model, collection, and sets up connections with the panel elements and the model actions
+ * @author steelrj1
+ *
+ */
 public class SpectrumColoringController
 {
-    SpectrumColoringPanel panel;
-    BaseSpectrumSearchModel model;
-    SpectraCollection collection;
-    ProgressMonitor progressMonitor;
+    private SpectrumColoringPanel panel;
+    private BaseSpectrumSearchModel model;
+    private SpectraCollection collection;
+    private ProgressMonitor progressMonitor;
 
     public SpectrumColoringController(BaseSpectrumSearchModel model, SpectraCollection collection)
     {
@@ -36,101 +38,46 @@ public class SpectrumColoringController
         this.model = model;
         this.collection = collection;
         init();
-
     }
 
+    /**
+     * Sets up the combo boxes, including adding action listeners, and also adds a listenter to coloring model so this can respond to changes
+     */
     private void init()
     {
         setupComboBoxes();
         setColoringComboBox();
 
-        panel.getColoringComboBox().addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent evt) {
-                coloringComboBoxActionPerformed(evt);
-            }
-        });
-
-        panel.getRedComboBox().addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent evt) {
-                redComboBoxActionPerformed(evt);
-            }
-        });
-
-        panel.getRedMaxSpinner().addChangeListener(new ChangeListener() {
-            public void stateChanged(ChangeEvent evt) {
-                redMaxSpinnerStateChanged(evt);
-            }
-        });
-
-        panel.getRedMinSpinner().addChangeListener(new ChangeListener() {
-            public void stateChanged(ChangeEvent evt) {
-                redMinSpinnerStateChanged(evt);
-            }
-        });
-
-        panel.getGreenComboBox().addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent evt) {
-                greenComboBoxActionPerformed(evt);
-            }
-        });
-
-        panel.getGreenMaxSpinner().addChangeListener(new ChangeListener() {
-            public void stateChanged(ChangeEvent evt) {
-                greenMaxSpinnerStateChanged(evt);
-            }
-        });
-
-        panel.getGreenMinSpinner().addChangeListener(new ChangeListener() {
-            public void stateChanged(ChangeEvent evt) {
-                greenMinSpinnerStateChanged(evt);
-            }
-        });
-
-        panel.getBlueComboBox().addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent evt) {
-                blueComboBoxActionPerformed(evt);
-            }
-        });
-
-        panel.getBlueMaxSpinner().addChangeListener(new ChangeListener() {
-            public void stateChanged(ChangeEvent evt) {
-                blueMaxSpinnerStateChanged(evt);
-            }
-        });
-
-        panel.getBlueMinSpinner().addChangeListener(new ChangeListener() {
-            public void stateChanged(ChangeEvent evt) {
-                blueMinSpinnerStateChanged(evt);
-            }
-        });
-
-        panel.getGrayscaleCheckBox().addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent evt) {
-                grayscaleCheckBoxActionPerformed(evt);
-            }
-        });
-
-        panel.getCustomFunctionsButton().addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent evt) {
-                customFunctionsButtonActionPerformed(evt);
-            }
-        });
+        panel.getColoringComboBox().addActionListener(evt -> coloringComboBoxActionPerformed(evt));
+        panel.getRedComboBox().addActionListener(evt -> redComboBoxActionPerformed(evt));
+        panel.getRedMaxSpinner().addChangeListener(evt -> redMaxSpinnerStateChanged());
+        panel.getRedMinSpinner().addChangeListener(evt -> redMinSpinnerStateChanged());
+        panel.getGreenComboBox().addActionListener(evt -> greenComboBoxActionPerformed(evt));
+        panel.getGreenMaxSpinner().addChangeListener(evt -> greenMaxSpinnerStateChanged());
+        panel.getGreenMinSpinner().addChangeListener(evt -> greenMinSpinnerStateChanged());
+        panel.getBlueComboBox().addActionListener(evt -> blueComboBoxActionPerformed(evt));
+        panel.getBlueMaxSpinner().addChangeListener(evt -> blueMaxSpinnerStateChanged());
+        panel.getBlueMinSpinner().addChangeListener(evt -> blueMinSpinnerStateChanged());
+        panel.getGrayscaleCheckBox().addActionListener(evt -> grayscaleCheckBoxActionPerformed());
+        panel.getCustomFunctionsButton().addActionListener(evt -> customFunctionsButtonActionPerformed());
 
         model.getColoringModel().addColoringChangedListener(new SpectrumColoringChangedListener()
         {
-
             @Override
             public void coloringChanged()
             {
-            	if (!model.getColoringModel().getSpectrumColoringStyleName().equals(panel.getColoringComboBox().getSelectedItem().toString()))
-            		panel.getColoringComboBox().setSelectedItem(SpectrumColoringStyle.getStyleForName(model.getColoringModel().getSpectrumColoringStyleName()));
+            	if (!model.getColoringModel().getSpectrumColoringStyle().equals(panel.getColoringComboBox().getSelectedItem()))
+            		panel.getColoringComboBox().setSelectedItem(model.getColoringModel().getSpectrumColoringStyle());
                 collection.setChannelColoring(model.getColoringModel().getChannels(), model.getColoringModel().getMins(), model.getColoringModel().getMaxs(), model.getInstrument());
             }
         });
 
     }
 
-    private void customFunctionsButtonActionPerformed(ActionEvent evt) {
+    /**
+     * Generates and displays the custom function panel, and updates the coloring as requested by that panel's input.
+     */
+    private void customFunctionsButtonActionPerformed() {
         SpectrumMathPanel customFunctionsPanel = new SpectrumMathPanel(
                 JOptionPane.getFrameForComponent(panel),
                 new JComboBox[]{panel.getRedComboBox(), panel.getGreenComboBox(), panel.getBlueComboBox()}, model.getInstrument());
@@ -140,6 +87,9 @@ public class SpectrumColoringController
         model.updateColoring();
     }
 
+    /**
+     * Sets up the coloring style combo box with the available styles
+     */
     protected void setColoringComboBox()
     {
         for (SpectrumColoringStyle style : SpectrumColoringStyle.values())
@@ -148,6 +98,9 @@ public class SpectrumColoringController
         }
     }
 
+    /**
+     * Sets up the RGB coloring combo boxes
+     */
     protected void setupComboBoxes()
     {
         ISpectralInstrument instrument = model.getInstrument();
@@ -182,6 +135,11 @@ public class SpectrumColoringController
         panel.getBlueMaxSpinner().setValue(model.getColoringModel().getBlueMaxVal());
     }
 
+    /**
+     * On an update of the coloring combo box, kicks off a background process to update the spectrum coloring currently on screen.  This not only keeps the UI responsive, but also
+     * updates the spectrum as they get updated, which makes for a nice UX animation
+     * @param evt
+     */
     private void coloringComboBoxActionPerformed(ActionEvent evt)
     {
     	SwingWorker<Void, Void> task = new SwingWorker<Void, Void>()
@@ -190,10 +148,9 @@ public class SpectrumColoringController
 			protected Void doInBackground() throws Exception
 			{
 		        JComboBox<SpectrumColoringStyle> box = (JComboBox<SpectrumColoringStyle>)evt.getSource();
-		        String coloringName = box.getSelectedItem().toString();
-		        SpectrumColoringStyle style = SpectrumColoringStyle.getStyleForName(coloringName);
-		        collection.setColoringStyleForInstrument(style, model.getInstrument());
-		        collection.setColoringStyle(style, new SpectraColoringProgressListener()
+		        SpectrumColoringStyle coloringStyle = (SpectrumColoringStyle)box.getSelectedItem();
+		        collection.setColoringStyleForInstrument(coloringStyle, model.getInstrument());
+		        collection.setColoringStyle(coloringStyle, new SpectraColoringProgressListener()
 				{
 
 					@Override
@@ -217,16 +174,18 @@ public class SpectrumColoringController
 				});
 
 
-		        boolean isEmissionSelected = (style == SpectrumColoringStyle.EMISSION_ANGLE);
+		        boolean isEmissionSelected = (coloringStyle == SpectrumColoringStyle.EMISSION_ANGLE);
 		        panel.getRgbColoringPanel().setVisible(!isEmissionSelected);
 		        panel.getEmissionAngleColoringPanel().setVisible(isEmissionSelected);
-		        model.getColoringModel().setSpectrumColoringStyleName(coloringName);
+		        model.getColoringModel().setSpectrumColoringStyle(coloringStyle);
 
 		        return null;
 			}
 		};
 		task.execute();
     }
+
+    //Helper methods related to actions for the various spinners and combo boxes
 
     private void redComboBoxActionPerformed(ActionEvent evt) {
     	model.getColoringModel().setRedIndex(panel.getRedComboBox().getSelectedIndex());
@@ -243,37 +202,31 @@ public class SpectrumColoringController
         model.updateColoring();
     }
 
-    private void redMinSpinnerStateChanged(ChangeEvent evt) {
+    private void redMinSpinnerStateChanged() {
         checkValidMinMax(0, true);
-        model.updateColoring();
     }
 
-    private void greenMinSpinnerStateChanged(ChangeEvent evt) {
+    private void greenMinSpinnerStateChanged() {
         checkValidMinMax(1, true);
-        model.updateColoring();
     }
 
-    private void blueMinSpinnerStateChanged(ChangeEvent evt) {
+    private void blueMinSpinnerStateChanged() {
         checkValidMinMax(2, true);
-        model.updateColoring();
     }
 
-    private void redMaxSpinnerStateChanged(ChangeEvent evt) {
+    private void redMaxSpinnerStateChanged() {
         checkValidMinMax(0, false);
-        model.updateColoring();
     }
 
-    private void greenMaxSpinnerStateChanged(ChangeEvent evt) {
+    private void greenMaxSpinnerStateChanged() {
         checkValidMinMax(1, false);
-        model.updateColoring();
     }
 
-    private void blueMaxSpinnerStateChanged(ChangeEvent evt) {
+    private void blueMaxSpinnerStateChanged() {
         checkValidMinMax(2, false);
-        model.updateColoring();
     }
 
-    private void grayscaleCheckBoxActionPerformed(ActionEvent evt) {
+    private void grayscaleCheckBoxActionPerformed() {
         boolean enableColor = !panel.getGrayscaleCheckBox().isSelected();
 
         panel.getRedLabel().setVisible(enableColor);
@@ -338,8 +291,13 @@ public class SpectrumColoringController
             else
                 maxSpinner.setValue(minSpinner.getValue());
         }
+        model.updateColoring();
     }
 
+    /**
+     * Returns the panel components so it can be embedded in a container view
+     * @return
+     */
     public SpectrumColoringPanel getPanel()
     {
         return panel;

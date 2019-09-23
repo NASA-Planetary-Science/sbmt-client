@@ -38,7 +38,12 @@ import edu.jhuapl.sbmt.spectrum.model.sbmtCore.spectra.SpectrumColoringStyle;
 import edu.jhuapl.sbmt.spectrum.model.statistics.SpectrumStatistics;
 import edu.jhuapl.sbmt.spectrum.model.statistics.SpectrumStatistics.Sample;
 
-public class BasicSpectrumRenderer extends AbstractModel implements IBasicSpectrumRenderer
+/**
+ * Base renderer for spectra
+ * @author steelrj1
+ *
+ */
+public class BasicSpectrumRenderer<S extends BasicSpectrum> extends AbstractModel implements IBasicSpectrumRenderer<S>
 {
 	PropertyChangeSupport pcs = new PropertyChangeSupport(this);
     protected boolean footprintGenerated = false;
@@ -64,7 +69,7 @@ public class BasicSpectrumRenderer extends AbstractModel implements IBasicSpectr
 
     protected vtkActor outlineActor = new vtkActor();
     protected ISmallBodyModel smallBodyModel;
-    protected BasicSpectrum spectrum;
+    protected S spectrum;
     public static final String faceAreaFractionArrayName="faceAreaFraction";
 
 	protected double[] spacecraftPosition;
@@ -75,7 +80,7 @@ public class BasicSpectrumRenderer extends AbstractModel implements IBasicSpectr
     protected boolean showFrustum = false;
 
 
-	public BasicSpectrumRenderer(BasicSpectrum spectrum, ISmallBodyModel smallBodyModel, boolean headless)
+	public BasicSpectrumRenderer(S spectrum, ISmallBodyModel smallBodyModel, boolean headless)
 	{
 		this.spectrum = spectrum;
 		spacecraftPosition = spectrum.getSpacecraftPosition();
@@ -552,7 +557,7 @@ public class BasicSpectrumRenderer extends AbstractModel implements IBasicSpectr
         return isOutlineShowing;
     }
 
-	public BasicSpectrum getSpectrum()
+	public S getSpectrum()
 	{
 		return spectrum;
 	}

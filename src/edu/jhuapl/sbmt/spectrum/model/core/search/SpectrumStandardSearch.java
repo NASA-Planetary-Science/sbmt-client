@@ -14,19 +14,24 @@ import org.joda.time.DateTimeZone;
 import com.google.common.collect.Ranges;
 
 import edu.jhuapl.sbmt.client.SbmtSpectrumModelFactory;
+import edu.jhuapl.sbmt.core.listeners.SearchProgressListener;
 import edu.jhuapl.sbmt.model.image.ImageSource;
 import edu.jhuapl.sbmt.query.IQueryBase;
 import edu.jhuapl.sbmt.query.database.DatabaseQueryBase;
 import edu.jhuapl.sbmt.query.database.SpectraDatabaseSearchMetadata;
 import edu.jhuapl.sbmt.query.fixedlist.FixedListQuery;
 import edu.jhuapl.sbmt.query.fixedlist.FixedListSearchMetadata;
-import edu.jhuapl.sbmt.spectrum.controllers.standard.SearchProgressListener;
 import edu.jhuapl.sbmt.spectrum.model.core.BasicSpectrum;
 import edu.jhuapl.sbmt.spectrum.model.core.BasicSpectrumInstrument;
 import edu.jhuapl.sbmt.spectrum.model.core.interfaces.InstrumentMetadata;
 import edu.jhuapl.sbmt.spectrum.model.core.interfaces.SearchSpec;
 
-public class SpectrumStandardSearch
+/**
+ * Standard spectrum search class.  May be hierarchical, fixed list, or database driven.  Can also accept cube list defining the region being searched
+ * @author steelrj1
+ *
+ */
+public class SpectrumStandardSearch<S extends BasicSpectrum>
 {
 	SpectrumSearchParametersModel searchParameters;
     private boolean hasHierarchicalSpectraSearch;
@@ -39,9 +44,9 @@ public class SpectrumStandardSearch
 		this.spectraSpec = searchSpec;
 	}
 
-	public List<BasicSpectrum> search(BasicSpectrumInstrument instrument, TreeSet<Integer> cubeList, TreePath[] selectedPaths, SearchProgressListener progressListener)
+	public List<S> search(BasicSpectrumInstrument instrument, TreeSet<Integer> cubeList, TreePath[] selectedPaths, SearchProgressListener progressListener)
 	{
-		List<BasicSpectrum> tempResults = new ArrayList<BasicSpectrum>();
+		List<S> tempResults = new ArrayList<S>();
         try
         {
             GregorianCalendar startDateGreg = new GregorianCalendar();
@@ -70,15 +75,10 @@ public class SpectrumStandardSearch
             List<Integer> productsSelected;
             if(hasHierarchicalSpectraSearch)
             {
-//            	spectraSpec.loadMetadata();
             	spectraSpec.readHierarchyForInstrument(instrument.getDisplayName());
-                // Sum of products (hierarchical) search: (CAMERA 1 AND FILTER 1) OR ... OR (CAMERA N AND FILTER N)
-//                sumOfProductsSearch = true;
 //                SpectraCollection collection = (SpectraCollection)getModelManager().getModel(ModelNames.SPECTRA);
                 // Process the user's selections
                 spectraSpec.processTreeSelections(selectedPaths);
-
-                // Get the selected (camera,filter) pairs
 
                 productsSelected = spectraSpec.getSelectedDatasets();
                 InstrumentMetadata<SearchSpec> instrumentMetadata = spectraSpec.getInstrumentMetadata(instrument.getDisplayName());
@@ -102,7 +102,7 @@ public class SpectrumStandardSearch
                          {
                          	BasicSpectrum spectrum = SbmtSpectrumModelFactory.createSpectrum(str.get(0), instrument, str.get(1));
                          	spectrum.setMetadata(spec);
-                         	tempResults.add(spectrum);
+                         	tempResults.add((S)spectrum);
                          	i++;
                          	double complete = ((double)i/(double)thisResult.size());
                          	progressListener.searchProgressChanged((int)((complete*100)));
@@ -120,13 +120,11 @@ public class SpectrumStandardSearch
                 IQueryBase queryType = instrument.getQueryBase();
                 if (queryType instanceof FixedListQuery)
                 {
-                	System.out.println("SpectrumStandardSearch: search: fixed list");
                     FixedListQuery query = (FixedListQuery)queryType;
                     tempResults = instrument.getQueryBase().runQuery(FixedListSearchMetadata.of("Spectrum Search", "spectrumlist", "spectra", query.getRootPath(), ImageSource.CORRECTED_SPICE)).getResultlist();
                 }
                 else
                 {
-                	System.out.println("SpectrumStandardSearch: search: database query");
                     SpectraDatabaseSearchMetadata searchMetadata = SpectraDatabaseSearchMetadata.of("", startDateJoda, endDateJoda,
                             Ranges.closed(searchParameters.getMinDistanceQuery(), searchParameters.getMaxDistanceQuery()),
                             "", searchParameters.getPolygonTypesChecked(),

@@ -12,13 +12,18 @@ package edu.jhuapl.sbmt.spectrum.ui.math;
 
 import edu.jhuapl.sbmt.spectrum.model.sbmtCore.spectra.math.SpectrumMath;
 
+/**
+ * Dialog to allow user to enter mathematical function for defining spectra colorings
+ * @author steelrj1
+ *
+ */
 public class SpectrumMathNewFunctionDialog extends javax.swing.JDialog {
 
     private boolean success = false;
 
     SpectrumMath spectrumMath;
 
-    /** Creates new form NISNewFunctionDialog */
+    /** Creates new form SpectrumMathNewFunctionDialog */
     public SpectrumMathNewFunctionDialog(java.awt.Frame parent, boolean modal, String function, SpectrumMath spectrumMath) {
         super(parent, modal);
 

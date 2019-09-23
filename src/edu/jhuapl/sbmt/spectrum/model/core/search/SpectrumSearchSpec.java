@@ -1,7 +1,5 @@
 package edu.jhuapl.sbmt.spectrum.model.core.search;
 
-import java.io.BufferedWriter;
-import java.io.IOException;
 import java.util.Hashtable;
 
 import edu.jhuapl.sbmt.model.image.ImageSource;
@@ -12,6 +10,11 @@ import crucible.crust.metadata.api.Version;
 import crucible.crust.metadata.impl.InstanceGetter;
 import crucible.crust.metadata.impl.SettableMetadata;
 
+/**
+ * Container for spectrum search metadata, describing where data can be found on the server, as well as providing some metadata about the data itself
+ * @author steelrj1
+ *
+ */
 public class SpectrumSearchSpec extends Hashtable<String, String> implements SearchSpec
 {
     String dataName;
@@ -38,25 +41,6 @@ public class SpectrumSearchSpec extends Hashtable<String, String> implements Sea
         put("xAxisUnits", this.xAxisUnits = xAxisUnits);
         put("yAxisUnits", this.yAxisUnits = yAxisUnits);
         put("dataDescription", this.dataDescription = dataDescription);
-    }
-
-    public void fromFile(String csvLine)
-    {
-        String[] parts = csvLine.split(",");
-        put("dataName", dataName = parts[0]);
-        put("dataRootLocation", dataRootLocation = parts[1]);
-        put("dataPath", this.dataPath = parts[2]);
-        put("dataListFilename", this.dataListFilename = parts[3]);
-        put("source", this.source = parts[4]);
-        put("xAxisUnits", this.xAxisUnits = parts[5]);
-        put("yAxisUnits", this.yAxisUnits = parts[6]);
-        put("dataDescription", this.dataDescription = parts[7]);
-    }
-
-    public void toFile(BufferedWriter writer) throws IOException
-    {
-        writer.write(getDataName() + "," + getDataRootLocation() + "," + getDataPath() + "," + getDataListFilename() + "," + getSource() + "," + getxAxisUnits() + "," + getyAxisUnits() + "," + getDataDescription());
-        writer.newLine();
     }
 
     public SpectrumSearchSpec(Hashtable<String, String> copy)
@@ -136,6 +120,7 @@ public class SpectrumSearchSpec extends Hashtable<String, String> implements Sea
         return get("dataDescription");
     }
 
+    //Metadata
     private static final Key<SpectrumSearchSpec> SPECTRUMSEARCHSPEC_KEY = Key.of("SpectrumSearchSpec");
 	private static final Key<String> DATANAME_KEY = Key.of("dataName");
 	private static final Key<String> DATAROOTLOCATION_KEY = Key.of("dataRootLocation");

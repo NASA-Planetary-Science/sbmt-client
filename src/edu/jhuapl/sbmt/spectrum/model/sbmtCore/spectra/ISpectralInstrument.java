@@ -6,6 +6,11 @@ import edu.jhuapl.sbmt.client.ISmallBodyModel;
 import edu.jhuapl.sbmt.query.IQueryBase;
 import edu.jhuapl.sbmt.spectrum.model.sbmtCore.spectra.math.SpectrumMath;
 
+/**
+ * Interface for spectral instruments
+ * @author steelrj1
+ *
+ */
 public interface ISpectralInstrument
 {
     public Double[] getBandCenters();

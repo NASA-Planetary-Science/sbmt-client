@@ -10,6 +10,11 @@ import vtk.vtkProp;
 
 import edu.jhuapl.saavtk.model.AbstractModel;
 
+/**
+ * Generates a series of spectrum statistics for display in a popup
+ * @author steelrj1
+ *
+ */
 public class SpectrumStatisticsCollection extends AbstractModel implements PropertyChangeListener
 {
     List<vtkProp> props=Lists.newArrayList();

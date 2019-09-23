@@ -1,6 +1,5 @@
 package edu.jhuapl.sbmt.spectrum.model.io;
 
-import java.io.FileNotFoundException;
 import java.util.List;
 
 import edu.jhuapl.sbmt.spectrum.model.core.SpectrumInstrumentMetadata;
@@ -13,6 +12,11 @@ import crucible.crust.metadata.api.Version;
 import crucible.crust.metadata.impl.InstanceGetter;
 import crucible.crust.metadata.impl.SettableMetadata;
 
+/**
+ * Class to handle spectrum instrument metadata IO, allowing you to read the associated metadata
+ * @author steelrj1
+ *
+ */
 public class SpectrumInstrumentMetadataIO extends SpectraHierarchicalSearchSpecification<SpectrumSearchSpec>
 {
     List<SpectrumInstrumentMetadata<SpectrumSearchSpec>> info = null;
@@ -87,65 +91,4 @@ public class SpectrumInstrumentMetadataIO extends SpectraHierarchicalSearchSpeci
     	});
 
 	}
-
-    public static void main(String[] args) throws FileNotFoundException
-    {
-//        OREXSpectrumInstrumentMetadataIO test2 = new OREXSpectrumInstrumentMetadataIO("OTES");
-//        List<OREXSpectrumInstrumentMetadata> metadata = test2.readMetadata(new File("/Users/steelrj1/Desktop/metadata.json"));
-//        for (OREXSpectrumInstrumentMetadata data : metadata)
-//        {
-//            System.out.println("MetadataTest2: test: data is " + data);
-//            List<OREXSearchSpec> searchSpecs = data.getSpecs();
-//            for (OREXSearchSpec spec : searchSpecs)
-//            {
-//                System.out.println("MetadataTest2: test: " + spec);
-//            }
-//        }
-
-//        ArrayList<OREXSearchSpec> specs = new ArrayList<OREXSearchSpec>();
-//        ArrayList<OREXSpectrumInstrumentMetadata<OREXSearchSpec>> infos = new ArrayList<OREXSpectrumInstrumentMetadata<OREXSearchSpec>>();
-//        OREXSpectrumInstrumentMetadata<OREXSearchSpec> otesInfo = new OREXSpectrumInstrumentMetadata<OREXSearchSpec>("OTES");
-//        otesInfo.setQueryType("file");
-//        specs.add(new OREXSearchSpec("OTES L2 Calibrated Radiance", "/earth/osirisrex/otes/spectra/l2", "spectra", "spectrumlist.txt", ImageSource.CORRECTED_SPICE,
-//                                  "Wavenumber (1/cm)", "Radiance", "OTES L2 Calibrated Radiance"));
-//        specs.add(new OREXSearchSpec("OTES L3 Spot Emissivity", "/earth/osirisrex/otes/spectra/l3", "spectra", "spectrumlist.txt", ImageSource.CORRECTED_SPICE,
-//              "Wavenumber (1/cm)", "Emissivity", "OTES L3 Spot Emissivity"));
-//        otesInfo.addSearchSpecs(specs);
-//        infos.add(otesInfo);
-//
-//
-//        OREXSpectrumInstrumentMetadata<OREXSearchSpec> ovirsInfo = new OREXSpectrumInstrumentMetadata<OREXSearchSpec>("OVIRS");
-//        ovirsInfo.setQueryType("file");
-//        specs = new ArrayList<OREXSearchSpec>();
-//        specs.add(new OREXSearchSpec("OVIRS L3 I/F Spectra", "/earth/osirisrex/ovirs/spectra/l3/if", "spectra", "spectrumlist.txt", ImageSource.CORRECTED_SPICE,
-//              "Wavenumber (1/cm)", "I/F", "OVIRS L3 I/F Spectra"));
-//        specs.add(new OREXSearchSpec("OVIRS L3 REFF", "/earth/osirisrex/ovirs/spectra/l3/reff", "spectra", "spectrumlist.txt", ImageSource.CORRECTED_SPICE,
-//                "Wavenumber (1/cm)", "REFF", "OVIRS L3 REFF"));
-//        ovirsInfo.addSearchSpecs(specs);
-//        infos.add(ovirsInfo);
-//
-//        String je = gson.toJson(infos);
-//        System.out.println("MetadataTest2: test: je " + je);
-//        Type collectionType = new TypeToken<List<OREXSpectrumInstrumentMetadata<OREXSearchSpec>>>(){}.getType();
-//        List<OREXSpectrumInstrumentMetadata<OREXSearchSpec>> info2 = gson.fromJson(je, collectionType);
-//        for (InstrumentMetadata<OREXSearchSpec> data : info2)
-//        {
-//            System.out.println("MetadataTest2: test: data is " + data);
-//            List<OREXSearchSpec> searchSpecs = data.getSpecs();
-//            for (SearchSpec spec : searchSpecs)
-//            {
-//                System.out.println("MetadataTest2: test: " + spec);
-//            }
-//        }
-//        try
-//        {
-//            test2.writeJSON(new File("/Users/steelrj1/Desktop/metadata.json"), je);
-//        }
-//        catch (IOException e)
-//        {
-//            // TODO Auto-generated catch block
-//            e.printStackTrace();
-//        }
-    }
-
 }

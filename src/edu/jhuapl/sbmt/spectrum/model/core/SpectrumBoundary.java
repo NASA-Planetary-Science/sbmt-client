@@ -13,9 +13,13 @@ import edu.jhuapl.saavtk.model.AbstractModel;
 import edu.jhuapl.saavtk.util.Properties;
 import edu.jhuapl.sbmt.client.SmallBodyModel;
 import edu.jhuapl.sbmt.spectrum.model.sbmtCore.spectra.Spectrum;
-import edu.jhuapl.sbmt.spectrum.model.sbmtCore.spectra.SpectrumKeyInterface;
 import edu.jhuapl.sbmt.spectrum.rendering.IBasicSpectrumRenderer;
 
+/**
+ * Model that represents the Spectrum boundaries.
+ * @author steelrj1
+ *
+ */
 public class SpectrumBoundary extends AbstractModel implements PropertyChangeListener
 {
     private vtkActor actor;
@@ -40,10 +44,10 @@ public class SpectrumBoundary extends AbstractModel implements PropertyChangeLis
         return props;
     }
 
-    public SpectrumKeyInterface getKey()
-    {
-        return spectrumRenderer.getSpectrum().getKey();
-    }
+//    public SpectrumKeyInterface getKey()
+//    {
+//        return spectrumRenderer.getSpectrum().getKey();
+//    }
 
     public Spectrum getSpectrum()
     {

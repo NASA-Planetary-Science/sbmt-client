@@ -75,7 +75,6 @@ import edu.jhuapl.sbmt.model.lidar.LidarFileSpecManager;
 import edu.jhuapl.sbmt.model.lidar.LidarTrackManager;
 import edu.jhuapl.sbmt.model.ryugu.nirs3.NIRS3SearchModel;
 import edu.jhuapl.sbmt.model.time.StateHistoryCollection;
-import edu.jhuapl.sbmt.spectrum.controllers.custom.CustomSpectraSearchController;
 import edu.jhuapl.sbmt.spectrum.model.core.BasicSpectrumInstrument;
 import edu.jhuapl.sbmt.spectrum.model.hypertree.SpectraSearchDataCollection;
 import edu.jhuapl.sbmt.spectrum.model.statistics.SpectrumStatisticsCollection;
@@ -426,10 +425,10 @@ public class SbmtTesterView extends View implements PropertyChangeListener
 		{
 			if (i.getDisplayName().equals("NIS"))
 				continue; //we can't properly handle NIS custom data for now without info files, which we don't have.
-			customDataPane.addTab(i.getDisplayName() + " Spectra", new CustomSpectraSearchController(getPolyhedralModelConfig().hasHierarchicalSpectraSearch,
-		    		getPolyhedralModelConfig().hasHypertreeBasedSpectraSearch,
-		    		getPolyhedralModelConfig().hierarchicalSpectraSearchSpecification,
-		    		getModelManager(), (SbmtInfoWindowManager) getInfoPanelManager(), getPickManager(), getRenderer(), i).getPanel());
+//			customDataPane.addTab(i.getDisplayName() + " Spectra", new CustomSpectraSearchController(getPolyhedralModelConfig().hasHierarchicalSpectraSearch,
+//		    		getPolyhedralModelConfig().hasHypertreeBasedSpectraSearch,
+//		    		getPolyhedralModelConfig().hierarchicalSpectraSearchSpecification,
+//		    		getModelManager(), (SbmtInfoWindowManager) getInfoPanelManager(), getPickManager(), getRenderer(), i).getPanel());
 			break;
 		}
 

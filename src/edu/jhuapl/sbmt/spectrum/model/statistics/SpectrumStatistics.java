@@ -21,6 +21,11 @@ import edu.jhuapl.sbmt.spectrum.model.sbmtCore.spectra.Spectrum;
 import edu.jhuapl.sbmt.spectrum.rendering.BasicSpectrumRenderer;
 import edu.jhuapl.sbmt.spectrum.rendering.IBasicSpectrumRenderer;
 
+/**
+ * Helper class to generate statistics on spectra data
+ * @author steelrj1
+ *
+ */
 public class SpectrumStatistics extends AbstractModel
 {
     int nFaces;

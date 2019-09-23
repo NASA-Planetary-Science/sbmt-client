@@ -9,6 +9,11 @@ import edu.jhuapl.sbmt.spectrum.model.sbmtCore.spectra.math.SpectrumMath;
 
 import crucible.crust.metadata.api.MetadataManager;
 
+/**
+ * Spectral Instrument interface
+ * @author steelrj1
+ *
+ */
 public interface SpectralInstrument extends MetadataManager
 {
     public double[] getBandCenters();

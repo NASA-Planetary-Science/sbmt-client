@@ -20,13 +20,13 @@ import org.joda.time.DateTimeZone;
 
 import edu.jhuapl.saavtk.util.FileCache;
 import edu.jhuapl.sbmt.client.SbmtSpectrumModelFactory;
+import edu.jhuapl.sbmt.core.listeners.SearchProgressListener;
 import edu.jhuapl.sbmt.lidar.hyperoctree.FSHyperTreeSkeleton.Node;
 import edu.jhuapl.sbmt.lidar.hyperoctree.HyperBox;
 import edu.jhuapl.sbmt.lidar.hyperoctree.HyperException;
 import edu.jhuapl.sbmt.model.boundedobject.hyperoctree.BoundedObjectHyperTreeNode;
 import edu.jhuapl.sbmt.model.boundedobject.hyperoctree.BoundedObjectHyperTreeSkeleton;
 import edu.jhuapl.sbmt.model.boundedobject.hyperoctree.HyperBoundedObject;
-import edu.jhuapl.sbmt.spectrum.controllers.standard.SearchProgressListener;
 import edu.jhuapl.sbmt.spectrum.model.core.BasicSpectrum;
 import edu.jhuapl.sbmt.spectrum.model.core.BasicSpectrumInstrument;
 import edu.jhuapl.sbmt.spectrum.model.core.interfaces.InstrumentMetadata;
@@ -35,7 +35,7 @@ import edu.jhuapl.sbmt.spectrum.model.core.search.SpectraHierarchicalSearchSpeci
 import edu.jhuapl.sbmt.spectrum.model.core.search.SpectrumSearchParametersModel;
 import edu.jhuapl.sbmt.spectrum.rendering.IBasicSpectrumRenderer;
 
-public class SpectrumHypertreeSearch
+public class SpectrumHypertreeSearch<S extends BasicSpectrum>
 {
 	SpectrumSearchParametersModel searchParameters;
 	private SpectraSearchDataCollection spectraModel;
@@ -54,10 +54,10 @@ public class SpectrumHypertreeSearch
 		this.spectraSpec = searchSpec;
 	}
 
-	public List<BasicSpectrum> search(TreeSet<Integer> cubeList, BoundedObjectHyperTreeSkeleton skeleton, HyperBox hbb, BasicSpectrumInstrument instrument, SearchProgressListener progressListener)
+	public List<S> search(TreeSet<Integer> cubeList, BoundedObjectHyperTreeSkeleton skeleton, HyperBox hbb, BasicSpectrumInstrument instrument, SearchProgressListener progressListener)
 	{
 		List<Integer> productsSelected;
-        List<BasicSpectrum> results = new ArrayList<BasicSpectrum>();
+        List<S> results = new ArrayList<S>();
         Map<String, Double> fileDateMap = new HashMap<String, Double>();
 
         try
@@ -230,7 +230,7 @@ public class SpectrumHypertreeSearch
 
             // final list of spectra that intersect region
             // create a list of lists for the results
-            List<BasicSpectrum> listoflist = new ArrayList<BasicSpectrum>(
+            List<S> listoflist = new ArrayList<S>(
                     finalFiles.size());
 
             finalFiles.sort(new Comparator<String>()
@@ -244,7 +244,7 @@ public class SpectrumHypertreeSearch
             });
             for (String file : finalFiles)
             {
-            	IBasicSpectrumRenderer spectrumRenderer = null;
+            	IBasicSpectrumRenderer<S> spectrumRenderer = null;
                 try
                 {
                 	spectrumRenderer = SbmtSpectrumModelFactory.createSpectrumRenderer(file, instrument);

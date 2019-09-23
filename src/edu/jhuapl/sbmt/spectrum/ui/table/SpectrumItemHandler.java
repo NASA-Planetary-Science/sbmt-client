@@ -1,4 +1,4 @@
-package edu.jhuapl.sbmt.spectrum.ui;
+package edu.jhuapl.sbmt.spectrum.ui.table;
 
 import org.joda.time.DateTimeZone;
 import org.joda.time.format.DateTimeFormat;
@@ -12,6 +12,11 @@ import edu.jhuapl.sbmt.spectrum.rendering.SpectrumBoundaryCollection;
 import glum.gui.panel.itemList.BasicItemHandler;
 import glum.gui.panel.itemList.query.QueryComposer;
 
+/**
+ * Item handler for displaying spectra in a table
+ * @author steelrj1
+ *
+ */
 public class SpectrumItemHandler extends BasicItemHandler<BasicSpectrum, LookUp>
 {
 	private final SpectraCollection spectrumCollection;

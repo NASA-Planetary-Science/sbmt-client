@@ -46,8 +46,6 @@ import edu.jhuapl.sbmt.model.eros.nis.NIS;
 import edu.jhuapl.sbmt.spectrum.model.core.SpectrumInstrumentMetadata;
 import edu.jhuapl.sbmt.spectrum.model.core.search.SpectrumSearchSpec;
 import edu.jhuapl.sbmt.spectrum.model.io.SpectrumInstrumentMetadataIO;
-import edu.jhuapl.sbmt.spectrum.model.key.CustomSpectrumKey;
-import edu.jhuapl.sbmt.spectrum.model.key.SpectrumKey;
 
 /**
  * This class contains the "main" function called at the start of the program.
@@ -128,8 +126,8 @@ public class SbmtTesterMultiMissionTool
 		// Images.
 		CustomCylindricalImageKey.initializeSerializationProxy();
 		CustomPerspectiveImageKey.initializeSerializationProxy();
-		SpectrumKey.initializeSerializationProxy();
-		CustomSpectrumKey.initializeSerializationProxy();
+//		SpectrumKey.initializeSerializationProxy();
+//		CustomSpectrumKey.initializeSerializationProxy();
 		DEMKey.initializeSerializationProxy();
 //		BasicSpectrumInstrument.initializeSerializationProxy();
 //		OTESSpectrum.initializeSerializationProxy();

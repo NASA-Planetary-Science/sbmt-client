@@ -2,6 +2,11 @@ package edu.jhuapl.sbmt.spectrum.model.core;
 
 import java.util.Hashtable;
 
+/**
+ * Factory to register and get spectrum instruments.  This is used by code that uses the Spectra Library (e.g. SBMT)
+ * @author steelrj1
+ *
+ */
 public class SpectrumInstrumentFactory
 {
     static Hashtable<String, BasicSpectrumInstrument> spectralInstruments = new Hashtable<String, BasicSpectrumInstrument>();
@@ -15,11 +20,4 @@ public class SpectrumInstrumentFactory
     {
         return spectralInstruments.get(name);
     }
-
-//    static public Spectrum getSpectrumForName(String instrumentName, String filename,
-//            ISmallBodyModel smallBodyModel) throws IOException
-//    {
-//        ISpectralInstrument instrument = getInstrumentForName(instrumentName);
-//        return instrument.getSpectrumInstance(filename, smallBodyModel);
-//    }
 }

@@ -20,6 +20,7 @@ import edu.jhuapl.sbmt.model.rosetta.OsirisImage;
 import edu.jhuapl.sbmt.model.rosetta.OsirisImageInfoPanel;
 import edu.jhuapl.sbmt.model.ryugu.nirs3.atRyugu.NIRS3Spectrum;
 import edu.jhuapl.sbmt.spectrum.model.statistics.SpectrumStatistics;
+import edu.jhuapl.sbmt.spectrum.rendering.AdvancedSpectrumRenderer;
 import edu.jhuapl.sbmt.spectrum.rendering.BasicSpectrumRenderer;
 import edu.jhuapl.sbmt.spectrum.ui.info.SpectrumInfoPanel;
 import edu.jhuapl.sbmt.spectrum.ui.info.SpectrumStatisticsInfoPanel;
@@ -42,6 +43,7 @@ public class SBMTInfoWindowManagerFactory
             return new ImageInfoPanel((Image)m, images, boundaries, statusBar);
 		});
 		SbmtInfoWindowManager.registerInfoWindowManager(BasicSpectrumRenderer.class, m -> new SpectrumInfoPanel(((BasicSpectrumRenderer)m).getSpectrum(), modelManager));
+		SbmtInfoWindowManager.registerInfoWindowManager(AdvancedSpectrumRenderer.class, m -> new SpectrumInfoPanel(((AdvancedSpectrumRenderer)m).getSpectrum(), modelManager));
 		SbmtInfoWindowManager.registerInfoWindowManager(NIS.class, m -> new SpectrumInfoPanel((NISSpectrum)m, modelManager));
 		SbmtInfoWindowManager.registerInfoWindowManager(OTES.class, m -> new SpectrumInfoPanel((OTESSpectrum)m, modelManager));
 		SbmtInfoWindowManager.registerInfoWindowManager(OVIRS.class, m -> new SpectrumInfoPanel((OVIRSSpectrum)m, modelManager));

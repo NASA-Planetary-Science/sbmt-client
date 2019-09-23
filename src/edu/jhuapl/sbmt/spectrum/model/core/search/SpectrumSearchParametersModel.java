@@ -5,6 +5,11 @@ import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.List;
 
+/**
+ * Model for search parameters for spectra searches
+ * @author steelrj1
+ *
+ */
 public class SpectrumSearchParametersModel
 {
 	private double minDistanceQuery;

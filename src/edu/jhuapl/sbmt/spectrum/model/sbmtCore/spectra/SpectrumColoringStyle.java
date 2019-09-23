@@ -1,5 +1,10 @@
 package edu.jhuapl.sbmt.spectrum.model.sbmtCore.spectra;
 
+/**
+ * Enum to describe possible coloring stayles
+ * @author steelrj1
+ *
+ */
 public enum SpectrumColoringStyle
 {
     RGB("RGB"),

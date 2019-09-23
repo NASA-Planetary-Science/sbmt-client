@@ -14,10 +14,15 @@ import edu.jhuapl.sbmt.spectrum.model.core.BasicSpectrumInstrument;
 import edu.jhuapl.sbmt.spectrum.model.core.interfaces.SearchSpec;
 import edu.jhuapl.sbmt.spectrum.rendering.IBasicSpectrumRenderer;
 
+/**
+ * Helper class for saving and loading spectra to file
+ * @author steelrj1
+ *
+ */
 public class SpectrumListIO
 {
 
-	public static void saveSelectedSpectrumListButtonActionPerformed(String customDir, File file, List<BasicSpectrum> results, int[] selectedIndices) throws Exception
+	public static <S extends BasicSpectrum> void saveSelectedSpectrumListButtonActionPerformed(String customDir, File file, List<S> results, int[] selectedIndices) throws Exception
     {
         String metadataFilename = customDir + File.separator + file.getName() + ".metadata";
         if (file != null)
@@ -34,9 +39,6 @@ public class SpectrumListIO
 
             SearchSpec spectrumSpec = results.get(0).getSpec();
 
-            if (spectrumSpec != null)
-                spectrumSpec.toFile(out);
-
             out.write("#Spectrum_Name Spectrum_Time_UTC"  + nl);
             for (int selectedIndex : selectedIndices)
             {
@@ -49,14 +51,14 @@ public class SpectrumListIO
         }
     }
 
-    public static void saveSpectrumListButtonActionPerformed(String customDir, File file, List<BasicSpectrum> results) throws Exception
+    public static <S extends BasicSpectrum> void saveSpectrumListButtonActionPerformed(String customDir, File file, List<S> results) throws Exception
     {
     	int[] selectedIndices = new int[results.size()];
     	for (int i=0; i<results.size(); i++) selectedIndices[i] = i;
     	saveSelectedSpectrumListButtonActionPerformed(customDir, file, results, selectedIndices);
     }
 
-    public static void loadSpectrumListButtonActionPerformed(File file, List<BasicSpectrum> results, BasicSpectrumInstrument instrument, Runnable completionBlock) throws Exception
+    public static <S extends BasicSpectrum> void loadSpectrumListButtonActionPerformed(File file, List<S> results, BasicSpectrumInstrument instrument, Runnable completionBlock) throws Exception
     {
     	if (file != null)
         {
@@ -67,7 +69,7 @@ public class SpectrumListIO
             for (int i=0; i<lines.size(); ++i)
             {
                 if (lines.get(i).startsWith("#")) continue;
-                IBasicSpectrumRenderer spectrumRenderer = null;
+                IBasicSpectrumRenderer<S> spectrumRenderer = null;
                 try
                 {
                 	spectrumRenderer = SbmtSpectrumModelFactory.createSpectrumRenderer(file.getAbsolutePath(), instrument);
