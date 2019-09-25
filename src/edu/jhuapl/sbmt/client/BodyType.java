@@ -20,4 +20,13 @@ public enum BodyType
     {
         return str;
     }
+
+    public static BodyType valueFor(String desc)
+    {
+    	for (BodyType type : values())
+    	{
+    		if (type.toString().equals(desc)) return type;
+    	}
+    	return null;
+    }
 }

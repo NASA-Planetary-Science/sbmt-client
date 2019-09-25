@@ -243,8 +243,8 @@ public class LidarSearchPanel extends JPanel
 			Date endTime = refBodyViewConfig.lidarSearchDefaultStartDate;
 			try
 			{
-				begTime = refBodyViewConfig.lidarSearchDataSourceTimeMap.get(sourceName).get(0);
-				endTime = refBodyViewConfig.lidarSearchDataSourceTimeMap.get(sourceName).get(1);
+				begTime = refBodyViewConfig.orexSearchTimeMap.get(sourceName).get(0);
+				endTime = refBodyViewConfig.orexSearchTimeMap.get(sourceName).get(1);
 			}
 			catch (Exception aExp)
 			{

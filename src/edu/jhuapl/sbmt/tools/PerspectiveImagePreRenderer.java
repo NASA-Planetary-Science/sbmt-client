@@ -135,7 +135,7 @@ public class PerspectiveImagePreRenderer
         String inputDirectory = args[0];
         final ImageSource source = ImageSource.valueOf(args[1]);
         ShapeModelBody body = ShapeModelBody.valueOf(args[2]);
-        ShapeModelType type = ShapeModelType.valueOf(args[3]);
+        ShapeModelType type = ShapeModelType.provide(args[3]);
         int imagerIndex = Integer.parseInt(args[4]);
         String outputDirectory = args[5];
         boolean reprocess = Boolean.parseBoolean(args[6]);
