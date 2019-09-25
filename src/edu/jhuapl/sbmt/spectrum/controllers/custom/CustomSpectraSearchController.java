@@ -1,5 +1,8 @@
 package edu.jhuapl.sbmt.spectrum.controllers.custom;
 
+import java.io.File;
+import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.swing.JPanel;
@@ -10,11 +13,14 @@ import edu.jhuapl.saavtk.gui.render.Renderer;
 import edu.jhuapl.saavtk.model.ModelManager;
 import edu.jhuapl.saavtk.pick.PickManager;
 import edu.jhuapl.sbmt.client.SbmtInfoWindowManager;
+import edu.jhuapl.sbmt.client.SbmtSpectrumModelFactory;
 import edu.jhuapl.sbmt.spectrum.controllers.standard.SpectrumColoringController;
 import edu.jhuapl.sbmt.spectrum.model.core.BasicSpectrum;
 import edu.jhuapl.sbmt.spectrum.model.core.BasicSpectrumInstrument;
+import edu.jhuapl.sbmt.spectrum.model.core.SpectrumInstrumentFactory;
 import edu.jhuapl.sbmt.spectrum.model.core.interfaces.CustomSpectraResultsListener;
 import edu.jhuapl.sbmt.spectrum.model.core.search.CustomSpectraSearchModel;
+import edu.jhuapl.sbmt.spectrum.model.sbmtCore.spectra.CustomSpectrumKeyInterface;
 import edu.jhuapl.sbmt.spectrum.rendering.SpectraCollection;
 import edu.jhuapl.sbmt.spectrum.rendering.SpectrumBoundaryCollection;
 import edu.jhuapl.sbmt.spectrum.ui.search.SpectrumSearchPanel;
@@ -24,34 +30,51 @@ import edu.jhuapl.sbmt.spectrum.ui.search.SpectrumSearchPanel;
  * @author steelrj1
  *
  */
-public class CustomSpectraSearchController
+public class CustomSpectraSearchController<S extends BasicSpectrum>
 {
     private SpectrumSearchPanel panel;
-    private CustomSpectrumResultsTableController spectrumResultsTableController;
+    private CustomSpectrumResultsTableController<S> spectrumResultsTableController;
     private CustomSpectraControlController searchParametersController;
     private SpectrumColoringController coloringController;
-    private CustomSpectraSearchModel spectrumSearchModel;
+    private CustomSpectraSearchModel<S> spectrumSearchModel;
 
 
     public CustomSpectraSearchController(ModelManager modelManager,
             SbmtInfoWindowManager infoPanelManager,
             PickManager pickManager, Renderer renderer, BasicSpectrumInstrument instrument)
     {
-        this.spectrumSearchModel =  new CustomSpectraSearchModel(modelManager, instrument);
+        this.spectrumSearchModel =  new CustomSpectraSearchModel<S>(modelManager, instrument);
         this.spectrumSearchModel.setCustomDataFolder(modelManager.getPolyhedralModel().getCustomDataFolder());
 
-        SpectraCollection spectrumCollection = (SpectraCollection)modelManager.getModel(spectrumSearchModel.getSpectrumCollectionModelName());
+        SpectraCollection<S> spectrumCollection = (SpectraCollection<S>)modelManager.getModel(spectrumSearchModel.getSpectrumCollectionModelName());
         SpectrumBoundaryCollection boundaries = (SpectrumBoundaryCollection)modelManager.getModel(spectrumSearchModel.getSpectrumBoundaryCollectionModelName());
 
-        this.spectrumResultsTableController = new CustomSpectrumResultsTableController(instrument, spectrumCollection, modelManager, boundaries, spectrumSearchModel, renderer, infoPanelManager);
+        this.spectrumResultsTableController = new CustomSpectrumResultsTableController<S>(instrument, spectrumCollection, modelManager, boundaries, spectrumSearchModel, renderer, infoPanelManager);
         this.spectrumSearchModel.removeAllResultsChangedListeners();
         this.spectrumSearchModel.addResultsChangedListener(new CustomSpectraResultsListener()
         {
 
             @Override
-            public void resultsChanged(List<BasicSpectrum> results)
+            public void resultsChanged(List<CustomSpectrumKeyInterface> results)
             {
-                spectrumResultsTableController.setSpectrumResults(results);
+            	List<S> spectra = new ArrayList<S>();
+            	for (CustomSpectrumKeyInterface info : results)
+            	{
+    				try
+					{
+    					S spectrum = (S)SbmtSpectrumModelFactory.createSpectrum(modelManager.getPolyhedralModel().getCustomDataFolder() + File.separator + info.getSpectrumFilename(), SpectrumInstrumentFactory.getInstrumentForName(instrument.getDisplayName()));
+
+    					spectrum.isCustomSpectra = true;
+    					spectra.add(spectrum);
+					}
+    				catch (IOException e)
+					{
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+            	}
+
+                spectrumResultsTableController.setSpectrumResults(spectra);
                 spectrumSearchModel.updateColoring();
             }
 

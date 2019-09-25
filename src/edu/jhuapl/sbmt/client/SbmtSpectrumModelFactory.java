@@ -17,7 +17,7 @@ public class SbmtSpectrumModelFactory
 	= new HashMap<String, ISmallBodyModel>();
 
 
-	static public void registerModel(String uniqueName, SpectrumBuilder<String, ISmallBodyModel, BasicSpectrumInstrument> builder, ISmallBodyModel smallBodyModel)
+	static public <S extends BasicSpectrum> void registerModel(String uniqueName, SpectrumBuilder<String, ISmallBodyModel, BasicSpectrumInstrument> builder, ISmallBodyModel smallBodyModel)
 	{
 		registeredModels.put(uniqueName, builder);
 		registeredSmallBodyModels.put(uniqueName, smallBodyModel);

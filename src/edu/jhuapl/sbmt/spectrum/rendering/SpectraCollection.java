@@ -26,13 +26,13 @@ import edu.jhuapl.sbmt.spectrum.model.sbmtCore.spectra.SpectrumColoringStyle;
 
 import glum.item.ItemEventType;
 
-public class SpectraCollection extends SaavtkItemManager<BasicSpectrum> implements PropertyChangeListener //, ItemProcessor<BasicSpectrum>, ItemManager<BasicSpectrum>
+public class SpectraCollection<S extends BasicSpectrum> extends SaavtkItemManager<S> implements PropertyChangeListener //, ItemProcessor<BasicSpectrum>, ItemManager<BasicSpectrum>
 {
-    private HashMap<IBasicSpectrumRenderer, List<vtkProp>> spectraActors = new HashMap<IBasicSpectrumRenderer, List<vtkProp>>();
-    private HashMap<BasicSpectrum, IBasicSpectrumRenderer> spectrumToRendererMap = new HashMap<BasicSpectrum, IBasicSpectrumRenderer>();
+    private HashMap<IBasicSpectrumRenderer<S>, List<vtkProp>> spectraActors = new HashMap<IBasicSpectrumRenderer<S>, List<vtkProp>>();
+    private HashMap<BasicSpectrum, IBasicSpectrumRenderer<S>> spectrumToRendererMap = new HashMap<BasicSpectrum, IBasicSpectrumRenderer<S>>();
     private HashMap<vtkProp, String> actorToFileMap = new HashMap<vtkProp, String>();
-    private HashMap<IBasicSpectrumRenderer, List<vtkProp>> spectrumToActorsMap = new HashMap<IBasicSpectrumRenderer, List<vtkProp>>();
-    private HashMap<vtkProp, IBasicSpectrumRenderer> actorToSpectrumMap = new HashMap<vtkProp, IBasicSpectrumRenderer>();
+    private HashMap<IBasicSpectrumRenderer<S>, List<vtkProp>> spectrumToActorsMap = new HashMap<IBasicSpectrumRenderer<S>, List<vtkProp>>();
+    private HashMap<vtkProp, IBasicSpectrumRenderer<S>> actorToSpectrumMap = new HashMap<vtkProp, IBasicSpectrumRenderer<S>>();
     private ISmallBodyModel shapeModel;
     private SpectrumColoringStyle coloringStyle;
 
@@ -40,7 +40,7 @@ public class SpectraCollection extends SaavtkItemManager<BasicSpectrum> implemen
     final double minFootprintSeparation=0.001;
     double footprintSeparation=0.001;
 
-    Map<IBasicSpectrumRenderer,Integer> ordinals=Maps.newHashMap();
+    Map<IBasicSpectrumRenderer<S>,Integer> ordinals=Maps.newHashMap();
     final static int defaultOrdinal=0;
 
     public SpectraCollection(ISmallBodyModel eros)
@@ -50,14 +50,14 @@ public class SpectraCollection extends SaavtkItemManager<BasicSpectrum> implemen
 
     public void reshiftFootprints()
     {
-        for (IBasicSpectrumRenderer spectrum : ordinals.keySet())
+        for (IBasicSpectrumRenderer<S> spectrum : ordinals.keySet())
         {
             spectrum.shiftFootprintToHeight(footprintSeparation*(1+ordinals.get(spectrum)));
         }
         this.pcs.firePropertyChange(Properties.MODEL_CHANGED,null,null);
     }
 
-    public void setOrdinal(IBasicSpectrumRenderer spectrum, int ordinal)
+    public void setOrdinal(IBasicSpectrumRenderer<S> spectrum, int ordinal)
     {
         if (ordinals.containsKey(spectrum))
             ordinals.remove(spectrum);
@@ -99,34 +99,34 @@ public class SpectraCollection extends SaavtkItemManager<BasicSpectrum> implemen
         return minFootprintSeparation;
     }
 
-    public Set<IBasicSpectrumRenderer> getSpectra()
+    public Set<IBasicSpectrumRenderer<S>> getSpectra()
     {
         return spectrumToActorsMap.keySet();
     }
 
-    public IBasicSpectrumRenderer addSpectrum(BasicSpectrum spectrum, SpectrumColoringStyle coloringStyle) //throws IOException
+    public IBasicSpectrumRenderer<S> addSpectrum(BasicSpectrum spectrum, SpectrumColoringStyle coloringStyle) //throws IOException
     {
         spectrum.setColoringStyle(coloringStyle);
         return spectrumToRendererMap.get(spectrum);
     }
 
-    public void addSpectrum(BasicSpectrum spec) //throws IOException
+    public void addSpectrum(S spec) //throws IOException
     {
     	addSpectrum(spec, coloringStyle);
     }
 
-    public IBasicSpectrumRenderer addSpectrum(BasicSpectrum spectrum, boolean isCustom) //throws IOException
+    public IBasicSpectrumRenderer<S> addSpectrum(S spectrum, boolean isCustom) //throws IOException
     {
         if (spectrumToRendererMap.get(spectrum) != null)
         {
-        	IBasicSpectrumRenderer spec = spectrumToRendererMap.get(spectrum);
+        	IBasicSpectrumRenderer<S> spec = spectrumToRendererMap.get(spectrum);
             select(spec);
             spec.getSpectrum().setColoringStyle(coloringStyle);
             spec.setVisible(true);
             return spec;
         }
 
-        IBasicSpectrumRenderer spectrumRenderer = null;
+        IBasicSpectrumRenderer<S> spectrumRenderer = null;
         try
         {
         	spectrumRenderer = SbmtSpectrumModelFactory.createSpectrumRenderer(spectrum, spectrum.getInstrument());
@@ -164,7 +164,7 @@ public class SpectraCollection extends SaavtkItemManager<BasicSpectrum> implemen
 
     public void removeSpectrum(BasicSpectrum spectrum)
     {
-    	IBasicSpectrumRenderer spectrumRenderer = spectrumToRendererMap.get(spectrum);
+    	IBasicSpectrumRenderer<S> spectrumRenderer = spectrumToRendererMap.get(spectrum);
     	if (spectrumRenderer == null) return;
         spectrumRenderer.setUnselected();
 
@@ -212,7 +212,7 @@ public class SpectraCollection extends SaavtkItemManager<BasicSpectrum> implemen
     	return spectrumToRendererMap.get(spec) != null;
     }
 
-    public void setVisibility(IBasicSpectrumRenderer spectrumRenderer, boolean visibility)
+    public void setVisibility(IBasicSpectrumRenderer<S> spectrumRenderer, boolean visibility)
     {
         spectrumRenderer.setVisible(visibility);
         this.pcs.firePropertyChange(Properties.MODEL_CHANGED,null,spectrumRenderer);
@@ -220,7 +220,7 @@ public class SpectraCollection extends SaavtkItemManager<BasicSpectrum> implemen
 
     public void setVisibility(BasicSpectrum spec, boolean visibility)
     {
-    	IBasicSpectrumRenderer spectrumRenderer = spectrumToRendererMap.get(spec);
+    	IBasicSpectrumRenderer<S> spectrumRenderer = spectrumToRendererMap.get(spec);
         spectrumRenderer.setVisible(visibility);
         this.pcs.firePropertyChange(Properties.MODEL_CHANGED,null,spectrumRenderer);
     }
@@ -228,7 +228,7 @@ public class SpectraCollection extends SaavtkItemManager<BasicSpectrum> implemen
     public boolean getVisibility(BasicSpectrum spec)
     {
     	if (isSpectrumMapped(spec) == false ) return false;
-    	IBasicSpectrumRenderer spectrumRenderer = spectrumToRendererMap.get(spec);
+    	IBasicSpectrumRenderer<S> spectrumRenderer = spectrumToRendererMap.get(spec);
     	if (spectrumRenderer == null) return false;
         return spectrumRenderer.isVisible();
     }
@@ -241,24 +241,24 @@ public class SpectraCollection extends SaavtkItemManager<BasicSpectrum> implemen
 
     public boolean getFrustumVisibility(BasicSpectrum spec)
     {
-    	IBasicSpectrumRenderer spectrumRenderer = spectrumToRendererMap.get(spec);
+    	IBasicSpectrumRenderer<S> spectrumRenderer = spectrumToRendererMap.get(spec);
     	if (spectrumRenderer == null) return false;
         return spectrumRenderer.isFrustumShowing();
     }
 
     public boolean getBoundaryVisibility(BasicSpectrum spec)
     {
-    	IBasicSpectrumRenderer spectrumRenderer = spectrumToRendererMap.get(spec);
+    	IBasicSpectrumRenderer<S> spectrumRenderer = spectrumToRendererMap.get(spec);
     	if (spectrumRenderer == null) return false;
         return spectrumRenderer.isOutlineShowing();
     }
 
-    public IBasicSpectrumRenderer getRendererForSpectrum(BasicSpectrum spec)
+    public IBasicSpectrumRenderer<S> getRendererForSpectrum(BasicSpectrum spec)
     {
     	return spectrumToRendererMap.get(spec);
     }
 
-    public void toggleSelect(IBasicSpectrumRenderer spectrumRenderer)
+    public void toggleSelect(IBasicSpectrumRenderer<S> spectrumRenderer)
     {
         if (spectrumRenderer.isSelected())
             spectrumRenderer.setUnselected();
@@ -268,14 +268,14 @@ public class SpectraCollection extends SaavtkItemManager<BasicSpectrum> implemen
         selectAll=false;
     }
 
-    public void select(IBasicSpectrumRenderer spectrumRenderer)
+    public void select(IBasicSpectrumRenderer<S> spectrumRenderer)
     {
         spectrumRenderer.setSelected();
         this.pcs.firePropertyChange(Properties.MODEL_CHANGED,null,spectrumRenderer);
         selectAll=false;
     }
 
-    public void deselect(IBasicSpectrumRenderer spectrumRenderer)
+    public void deselect(IBasicSpectrumRenderer<S> spectrumRenderer)
     {
         spectrumRenderer.setUnselected();
         this.pcs.firePropertyChange(Properties.MODEL_CHANGED,null,spectrumRenderer);
@@ -286,7 +286,7 @@ public class SpectraCollection extends SaavtkItemManager<BasicSpectrum> implemen
     {
         if (!selectAll) // we're not in "select all" mode so go ahead and select all actors
         {
-            for (IBasicSpectrumRenderer spectrumRenderer : spectrumToRendererMap.values())
+            for (IBasicSpectrumRenderer<S> spectrumRenderer : spectrumToRendererMap.values())
             {
                 spectrumRenderer.setSelected();
                 this.pcs.firePropertyChange(Properties.MODEL_CHANGED,null,spectrumRenderer);
@@ -295,7 +295,7 @@ public class SpectraCollection extends SaavtkItemManager<BasicSpectrum> implemen
         }
         else
         {
-            for (IBasicSpectrumRenderer spectrumRenderer : spectrumToRendererMap.values())
+            for (IBasicSpectrumRenderer<S> spectrumRenderer : spectrumToRendererMap.values())
             {
                 spectrumRenderer.setUnselected();
                 this.pcs.firePropertyChange(Properties.MODEL_CHANGED,null,spectrumRenderer);
@@ -307,7 +307,7 @@ public class SpectraCollection extends SaavtkItemManager<BasicSpectrum> implemen
 
     public void deselectAll()
     {
-        for (IBasicSpectrumRenderer spectrumRenderer : spectrumToRendererMap.values())
+        for (IBasicSpectrumRenderer<S> spectrumRenderer : spectrumToRendererMap.values())
         {
         	if (spectrumRenderer == null) continue;
             spectrumRenderer.setUnselected();
@@ -317,10 +317,10 @@ public class SpectraCollection extends SaavtkItemManager<BasicSpectrum> implemen
 
     }
 
-    public List<IBasicSpectrumRenderer> getSelectedSpectra()
+    public List<IBasicSpectrumRenderer<S>> getSelectedSpectra()
     {
-        List<IBasicSpectrumRenderer> spectra=Lists.newArrayList();
-        for (IBasicSpectrumRenderer s : spectrumToRendererMap.values())
+        List<IBasicSpectrumRenderer<S>> spectra=Lists.newArrayList();
+        for (IBasicSpectrumRenderer<S> s : spectrumToRendererMap.values())
             if ((s != null) && s.isSelected())
                 spectra.add(s);
         return spectra;
@@ -334,7 +334,7 @@ public class SpectraCollection extends SaavtkItemManager<BasicSpectrum> implemen
     public String getClickStatusBarText(vtkProp prop, int cellId, double[] pickPosition)
     {
         String filename = actorToFileMap.get(prop);
-        IBasicSpectrumRenderer spectrum = this.spectrumToRendererMap.get(filename);
+        IBasicSpectrumRenderer<S> spectrum = this.spectrumToRendererMap.get(filename);
         if (spectrum==null)
             return "";
         return spectrum.getSpectrum().getInstrument().getDisplayName() + " spectrum " + filename.substring(16, 25) + " acquired at " + spectrum.getSpectrum().getDateTime().toString() /*+ "(SCLK: " + ((OTESSpectrum)spectrum).getTime() + ")"*/;
@@ -345,24 +345,24 @@ public class SpectraCollection extends SaavtkItemManager<BasicSpectrum> implemen
         return actorToFileMap.get(actor);
     }
 
-    public IBasicSpectrumRenderer getSpectrum(String file)
-    {
-        return spectrumToRendererMap.get(file);
-    }
+//    public IBasicSpectrumRenderer<S> getSpectrum(String file)
+//    {
+//        return spectrumToRendererMap.get(file);
+//    }
+//
+//    public boolean containsSpectrum(String file)
+//    {
+//        return spectrumToRendererMap.containsKey(file);
+//    }
 
-    public boolean containsSpectrum(String file)
-    {
-        return spectrumToRendererMap.containsKey(file);
-    }
-
-    public void tagSpectraWithMetadata(BasicSpectrum spectrum, SearchSpec spec)
+    public void tagSpectraWithMetadata(S spectrum, SearchSpec spec)
     {
         if (spectrum != null) spectrum.setMetadata(spec);
     }
 
-    public void tagSpectraWithMetadata(List<BasicSpectrum> filenames, SearchSpec spec)
+    public void tagSpectraWithMetadata(List<S> filenames, SearchSpec spec)
     {
-        for (BasicSpectrum list : filenames)
+        for (S list : filenames)
         {
         	tagSpectraWithMetadata(list, spec);
         }
@@ -376,7 +376,7 @@ public class SpectraCollection extends SaavtkItemManager<BasicSpectrum> implemen
     	int numToRender = this.spectrumToRendererMap.size();
         for (BasicSpectrum spec : this.spectrumToRendererMap.keySet())
         {
-        	IBasicSpectrumRenderer spectrumRenderer=this.spectrumToRendererMap.get(spec);
+        	IBasicSpectrumRenderer<S> spectrumRenderer=this.spectrumToRendererMap.get(spec);
         	if (spectrumRenderer == null) continue;
             spectrumRenderer.getSpectrum().setColoringStyle(style);
             spectrumRenderer.updateChannelColoring();
@@ -392,7 +392,7 @@ public class SpectraCollection extends SaavtkItemManager<BasicSpectrum> implemen
     {
         for (BasicSpectrum spec : this.spectrumToRendererMap.keySet())
         {
-        	IBasicSpectrumRenderer spectrumRenderer = this.spectrumToRendererMap.get(spec);
+        	IBasicSpectrumRenderer<S> spectrumRenderer = this.spectrumToRendererMap.get(spec);
         	if (spectrumRenderer == null) continue;
         	if (spectrumRenderer.getSpectrum().getInstrument().getClass() == instrument.getClass() )
             {
@@ -406,7 +406,7 @@ public class SpectraCollection extends SaavtkItemManager<BasicSpectrum> implemen
     {
         for (BasicSpectrum spec : this.spectrumToRendererMap.keySet())
         {
-        	IBasicSpectrumRenderer spectrumRenderer = this.spectrumToRendererMap.get(spec);
+        	IBasicSpectrumRenderer<S> spectrumRenderer = this.spectrumToRendererMap.get(spec);
         	if (spectrumRenderer == null) continue;
             if (spectrumRenderer.getSpectrum().getInstrument().getClass() == instrument.getClass() )
             {
@@ -416,7 +416,7 @@ public class SpectraCollection extends SaavtkItemManager<BasicSpectrum> implemen
         }
     }
 
-    public IBasicSpectrumRenderer getSpectrum(vtkActor actor)
+    public IBasicSpectrumRenderer<S> getSpectrum(vtkActor actor)
     {
         return actorToSpectrumMap.get(actor);
     }
@@ -433,16 +433,16 @@ public class SpectraCollection extends SaavtkItemManager<BasicSpectrum> implemen
 
     public boolean containsSpectrumName(String name)
     {
-        for (IBasicSpectrumRenderer spec : actorToSpectrumMap.values())
+        for (IBasicSpectrumRenderer<S> spec : actorToSpectrumMap.values())
         {
             if (spec.getSpectrum().getSpectrumName().equals(name)) return true;
         }
         return false;
     }
 
-    public IBasicSpectrumRenderer getSpectrumForName(String name)
+    public IBasicSpectrumRenderer<S> getSpectrumForName(String name)
     {
-        for (IBasicSpectrumRenderer spec : actorToSpectrumMap.values())
+        for (IBasicSpectrumRenderer<S> spec : actorToSpectrumMap.values())
         {
             if (spec.getSpectrum().getSpectrumName().equals(name)) return spec;
         }
@@ -453,7 +453,7 @@ public class SpectraCollection extends SaavtkItemManager<BasicSpectrum> implemen
     public List<vtkProp> getProps()
     {
         List<vtkProp> allProps=Lists.newArrayList();
-        for (IBasicSpectrumRenderer s : spectraActors.keySet())
+        for (IBasicSpectrumRenderer<S> s : spectraActors.keySet())
             allProps.addAll(spectraActors.get(s));
         return allProps;
     }
@@ -469,7 +469,7 @@ public class SpectraCollection extends SaavtkItemManager<BasicSpectrum> implemen
 	}
 
 	@Override
-	public void removeItems(List<BasicSpectrum> specs)
+	public void removeItems(List<S> specs)
 	{
 		// Remove relevant state and VTK mappings
 		for (BasicSpectrum spec : specs)
@@ -485,9 +485,9 @@ public class SpectraCollection extends SaavtkItemManager<BasicSpectrum> implemen
 	}
 
 	@Override
-	public void setAllItems(List<BasicSpectrum> specs)
+	public void setAllItems(List<S> specs)
 	{
-		for (BasicSpectrum spec : specs)
+		for (S spec : specs)
 		{
 			addSpectrum(spec);
 		}
@@ -498,7 +498,7 @@ public class SpectraCollection extends SaavtkItemManager<BasicSpectrum> implemen
 	}
 
 	@Override
-	public void setSelectedItems(List<BasicSpectrum> specs)
+	public void setSelectedItems(List<S> specs)
 	{
 		super.setSelectedItems(specs);
 	}

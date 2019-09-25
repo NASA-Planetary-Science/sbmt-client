@@ -37,16 +37,16 @@ import crucible.crust.metadata.impl.gson.Serializers;
 public class CustomSpectraSearchModel<S extends BasicSpectrum> extends BaseSpectrumSearchModel<S>
 {
     String fileExtension = "";
-    private List<BasicSpectrum> customSpectra;
+    private List<CustomSpectrumKeyInterface> customSpectraKeys;
     private Vector<CustomSpectraResultsListener> customSpectraListeners;
     private boolean initialized = false;
-    final Key<List<S>> customSpectraKey = Key.of("customSpectra");
+    final Key<List<CustomSpectrumKeyInterface>> customSpectraKey = Key.of("customSpectra");
 
     public CustomSpectraSearchModel(ModelManager modelManager,
     		BasicSpectrumInstrument instrument)
     {
         super(modelManager, instrument);
-        this.customSpectra = new Vector<BasicSpectrum>();
+        this.customSpectraKeys = new Vector<CustomSpectrumKeyInterface>();
         this.customSpectraListeners = new Vector<CustomSpectraResultsListener>();
 
         getColoringModel().setRedMaxVal(instrument.getRGBMaxVals()[0]);
@@ -60,14 +60,14 @@ public class CustomSpectraSearchModel<S extends BasicSpectrum> extends BaseSpect
         updateColoring();
     }
 
-    public List<S> getCustomSpectra()
+    public List<CustomSpectrumKeyInterface> getCustomSpectra()
     {
-        return customSpectra;
+        return customSpectraKeys;
     }
 
-    public void setCustomSpectra(List<S> customSpectra)
+    public void setCustomSpectra(List<CustomSpectrumKeyInterface> customSpectra)
     {
-        this.customSpectra = customSpectra;
+        this.customSpectraKeys = customSpectra;
     }
 
     public void addResultsChangedListener(CustomSpectraResultsListener listener)
@@ -84,7 +84,7 @@ public class CustomSpectraSearchModel<S extends BasicSpectrum> extends BaseSpect
     {
         for (CustomSpectraResultsListener listener : customSpectraListeners)
         {
-            listener.resultsChanged(customSpectra);
+            listener.resultsChanged(customSpectraKeys);
         }
     }
 
@@ -160,19 +160,19 @@ public class CustomSpectraSearchModel<S extends BasicSpectrum> extends BaseSpect
             newSpectrumInfo.setPointingFilename(newFileInfoname);
         }
 
-        if (index >= customSpectra.size())
+        if (index >= customSpectraKeys.size())
         {
-            customSpectra.add(newSpectrumInfo);
+            customSpectraKeys.add(newSpectrumInfo);
         }
         else
         {
-            customSpectra.set(index, newSpectrumInfo);
+            customSpectraKeys.set(index, newSpectrumInfo);
         }
 
-        List<BasicSpectrum> tempResults = new ArrayList<BasicSpectrum>();
-        for (BasicSpectrum info : customSpectra)
+        List<S> tempResults = new ArrayList<S>();
+        for (CustomSpectrumKeyInterface info : customSpectraKeys)
         {
-        	IBasicSpectrumRenderer renderer = null;
+        	IBasicSpectrumRenderer<S> renderer = null;
 			try
 			{
 				renderer = SbmtSpectrumModelFactory.createSpectrumRenderer(customDataFolder + File.separator + info.getSpectrumFilename(), SpectrumInstrumentFactory.getInstrumentForName(instrument.getDisplayName()));
@@ -279,7 +279,7 @@ public class CustomSpectraSearchModel<S extends BasicSpectrum> extends BaseSpect
 
                 CustomSpectrumKeyInterface spectrumInfo = new CustomSpectrumKey(name, fileType, getInstrument(), null, spectrumFilename, pointingFilename);
 
-                customSpectra.add(spectrumInfo);
+                customSpectraKeys.add(spectrumInfo);
             }
 
             updateConfigFile();
@@ -315,13 +315,13 @@ public class CustomSpectraSearchModel<S extends BasicSpectrum> extends BaseSpect
             retrieve(metadata);
         }
 
-        List<BasicSpectrum> tempResults = new ArrayList<BasicSpectrum>();
-        for (BasicSpectrum info : customSpectra)
+        List<S> tempResults = new ArrayList<S>();
+        for (CustomSpectrumKeyInterface info : customSpectraKeys)
         {
-        	IBasicSpectrumRenderer renderer = null;
+        	IBasicSpectrumRenderer<S> renderer = null;
 			try
 			{
-				renderer = SbmtSpectrumModelFactory.createSpectrumRenderer(customDataFolder + File.separator + info.getSpectrumName(), SpectrumInstrumentFactory.getInstrumentForName(instrument.getDisplayName()));
+				renderer = SbmtSpectrumModelFactory.createSpectrumRenderer(customDataFolder + File.separator + info.getName(), SpectrumInstrumentFactory.getInstrumentForName(instrument.getDisplayName()));
 			}
 			catch (IOException e)
 			{
@@ -333,10 +333,10 @@ public class CustomSpectraSearchModel<S extends BasicSpectrum> extends BaseSpect
         setSpectrumRawResults(tempResults);
 
         fireResultsChanged();
-        fireResultsCountChanged(customSpectra.size());
+        fireResultsCountChanged(customSpectraKeys.size());
     }
 
-    public void setSpectrumVisibility(BasicSpectrum spectrum, boolean visible)
+    public void setSpectrumVisibility(S spectrum, boolean visible)
     {
     	fireFootprintVisibilityChanged(spectrum, visible);
     }
@@ -367,7 +367,7 @@ public class CustomSpectraSearchModel<S extends BasicSpectrum> extends BaseSpect
     public Metadata store()
     {
     	SettableMetadata result = SettableMetadata.of(Version.of(1, 0));
-    	result.put(customSpectraKey, customSpectra);
+    	result.put(customSpectraKey, customSpectraKeys);
     	return result;
     }
 
@@ -376,7 +376,7 @@ public class CustomSpectraSearchModel<S extends BasicSpectrum> extends BaseSpect
     {
     	try
     	{
-    		customSpectra = source.get(customSpectraKey);
+    		customSpectraKeys = source.get(customSpectraKey);
     	}
     	catch (ClassCastException cce)
     	{
@@ -393,13 +393,13 @@ public class CustomSpectraSearchModel<S extends BasicSpectrum> extends BaseSpect
     	}
     }
 
-    public void saveSpectra(List<BasicSpectrum> customImages, String filename)
+    public void saveSpectra(List<CustomSpectrumKeyInterface> customSpectra, String filename)
     {
         SettableMetadata configMetadata = SettableMetadata.of(Version.of(1, 0));
 
-        final Key<List<BasicSpectrum>> customSpectraKey = Key.of("SavedSpectra");
+        final Key<List<CustomSpectrumKeyInterface>> customSpectraKey = Key.of("SavedSpectra");
 
-        configMetadata.put(customSpectraKey, customImages);
+        configMetadata.put(customSpectraKey, customSpectra);
         try
         {
             Serializers.serialize("SavedSpectra", configMetadata, new File(filename));
@@ -416,15 +416,10 @@ public class CustomSpectraSearchModel<S extends BasicSpectrum> extends BaseSpect
         FixedMetadata metadata;
         try
         {
-            final Key<Metadata[]> customSpectraKey = Key.of("SavedSpectra");
+            final Key<List<CustomSpectrumKeyInterface>> customSpectraKey = Key.of("SavedSpectra");
             metadata = Serializers.deserialize(new File(file), "SavedSpectra");
-            Metadata[] metadataArray = read(customSpectraKey, metadata);
-            for (Metadata meta : metadataArray)
-            {
-                BasicSpectrum info = BasicSpectrum.retrieve(meta);
-                customSpectra.add(info);
-            }
-            System.out.println("CustomSpectrumModel: loadSpectra: number of spectra now " + customSpectra.size());
+            List<CustomSpectrumKeyInterface> customSpectraList = metadata.get(customSpectraKey);
+            customSpectraKeys.addAll(customSpectraList);
             updateConfigFile();
             fireResultsChanged();
 

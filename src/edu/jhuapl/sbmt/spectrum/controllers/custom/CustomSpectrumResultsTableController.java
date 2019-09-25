@@ -10,6 +10,7 @@ import edu.jhuapl.sbmt.spectrum.controllers.standard.SpectrumResultsTableControl
 import edu.jhuapl.sbmt.spectrum.model.core.BasicSpectrum;
 import edu.jhuapl.sbmt.spectrum.model.core.BasicSpectrumInstrument;
 import edu.jhuapl.sbmt.spectrum.model.core.search.CustomSpectraSearchModel;
+import edu.jhuapl.sbmt.spectrum.model.sbmtCore.spectra.CustomSpectrumKeyInterface;
 import edu.jhuapl.sbmt.spectrum.rendering.SpectraCollection;
 import edu.jhuapl.sbmt.spectrum.rendering.SpectrumBoundaryCollection;
 
@@ -18,15 +19,15 @@ import edu.jhuapl.sbmt.spectrum.rendering.SpectrumBoundaryCollection;
  * @author steelrj1
  *
  */
-public class CustomSpectrumResultsTableController
-        extends SpectrumResultsTableController
+public class CustomSpectrumResultsTableController<S extends BasicSpectrum>
+        extends SpectrumResultsTableController<S>
 {
-    private List<BasicSpectrum> results;
-    private CustomSpectraSearchModel model;
+    private List<CustomSpectrumKeyInterface> results;
+    private CustomSpectraSearchModel<S> model;
     private String customDataFolder;
 
     public CustomSpectrumResultsTableController(BasicSpectrumInstrument instrument,
-            SpectraCollection spectrumCollection, ModelManager modelManager, SpectrumBoundaryCollection boundaries, CustomSpectraSearchModel model,
+            SpectraCollection<S> spectrumCollection, ModelManager modelManager, SpectrumBoundaryCollection boundaries, CustomSpectraSearchModel<S> model,
             Renderer renderer, SbmtInfoWindowManager infoPanelManager)
     {
         super(instrument, spectrumCollection, modelManager, boundaries, model, renderer,
@@ -41,12 +42,12 @@ public class CustomSpectrumResultsTableController
     {
         super.setSpectrumResultsPanel();
 
-        super.setSpectrumResultsPanel();
+//        super.setSpectrumResultsPanel();
 //        panel.getResultList().getModel().removeTableModelListener(tableModelListener);
 //        panel.getResultList().getModel().addTableModelListener(tableModelListener);
 
-        panel.getRemoveSpectraButton().removeActionListener(panel.getRemoveSpectraButton().getActionListeners()[0]);
-        panel.getRemoveSpectraButton().addActionListener(e -> removeFootprintsForAllInstrumentsButtonActionPerformed());
+//        panel.getRemoveSpectraButton().removeActionListener(panel.getRemoveSpectraButton().getActionListeners()[0]);
+//        panel.getRemoveSpectraButton().addActionListener(e -> removeFootprintsForAllInstrumentsButtonActionPerformed());
 
         try
         {

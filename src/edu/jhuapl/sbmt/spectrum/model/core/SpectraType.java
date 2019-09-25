@@ -54,4 +54,10 @@ public class SpectraType implements ISpectraType
     {
         return bandCenterUnit;
     }
+
+    @Override
+	public String toString()
+	{
+		return displayName;
+	}
 }

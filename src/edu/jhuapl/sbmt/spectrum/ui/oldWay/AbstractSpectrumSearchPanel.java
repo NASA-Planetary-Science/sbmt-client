@@ -46,7 +46,6 @@ import javax.swing.SpinnerDateModel;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
-import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.math3.geometry.euclidean.threed.Vector3D;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
@@ -54,7 +53,6 @@ import org.joda.time.DateTimeZone;
 import com.google.common.collect.Ranges;
 import com.jidesoft.swing.CheckBoxTree;
 
-import vtk.vtkActor;
 import vtk.vtkFunctionParser;
 import vtk.vtkPolyData;
 import vtk.vtkPolyDataNormals;
@@ -153,17 +151,19 @@ public abstract class AbstractSpectrumSearchPanel extends JPanel implements Mous
             {
                 if (e.getValueIsAdjusting())
                     return;
-                SpectraCollection model = (SpectraCollection)modelManager.getModel(ModelNames.SPECTRA);
-                for (int i=0; i<resultList.getModel().getSize(); i++)
-                {
-                    IBasicSpectrumRenderer spectrum=model.getSpectrum(createSpectrumName((String)resultList.getModel().getElementAt(i)));
-                    if (spectrum == null)
-                        continue;
-                    if (resultList.isSelectedIndex(i))
-                        model.select(spectrum);
-                    else
-                        model.deselect(spectrum);
-                }
+                //TODO update when converting this to the new panel UI
+//                SpectraCollection model = (SpectraCollection)modelManager.getModel(ModelNames.SPECTRA);
+//                for (int i=0; i<resultList.getModel().getSize(); i++)
+//                {
+//                	r
+//                    IBasicSpectrumRenderer spectrum = model.getSpectrum(createSpectrumName((String)resultList.getModel().getElementAt(i)));
+//                    if (spectrum == null)
+//                        continue;
+//                    if (resultList.isSelectedIndex(i))
+//                        model.select(spectrum);
+//                    else
+//                        model.deselect(spectrum);
+//                }
             }
         });
     }
@@ -586,33 +586,34 @@ public abstract class AbstractSpectrumSearchPanel extends JPanel implements Mous
             Model model = modelManager.getModel(e.getPickedProp());
             if (model instanceof SpectraCollection)
             {
-                SpectraCollection coll=(SpectraCollection)model;
-                String name = coll.getSpectrumName((vtkActor)e.getPickedProp());
-                IBasicSpectrumRenderer spectrum=coll.getSpectrum(name);
-                if (spectrum==null)
-                    return;
-
-                resultList.getSelectionModel().clearSelection();
-                for (int i=0; i<resultList.getModel().getSize(); i++)
-                {
-                    if (FilenameUtils.getBaseName(name).equals(resultList.getModel().getElementAt(i)))
-                    {
-                        resultList.getSelectionModel().setSelectionInterval(i, i);
-                        resultList.ensureIndexIsVisible(i);
-                        coll.select(coll.getSpectrum(name));//.setShowOutline(true);
-                    }
-                }
-
-                for (int i=0; i<resultList.getModel().getSize(); i++)
-                {
-                    if (!resultList.getSelectionModel().isSelectedIndex(i))
-                    {
-                        IBasicSpectrumRenderer spectrum_=coll.getSpectrum(createSpectrumName((String)resultList.getModel().getElementAt(i)));
-                        if (spectrum_ != null)
-                            coll.deselect(spectrum_);
-                    }
-                }
-                resultList.repaint();
+            	//TODO fix this when going to the new way of doing the UI
+//                SpectraCollection coll=(SpectraCollection)model;
+//                String name = coll.getSpectrumName((vtkActor)e.getPickedProp());
+//                IBasicSpectrumRenderer spectrum=coll.getSpectrum(name);
+//                if (spectrum==null)
+//                    return;
+//
+//                resultList.getSelectionModel().clearSelection();
+//                for (int i=0; i<resultList.getModel().getSize(); i++)
+//                {
+//                    if (FilenameUtils.getBaseName(name).equals(resultList.getModel().getElementAt(i)))
+//                    {
+//                        resultList.getSelectionModel().setSelectionInterval(i, i);
+//                        resultList.ensureIndexIsVisible(i);
+//                        coll.select(coll.getSpectrum(name));//.setShowOutline(true);
+//                    }
+//                }
+//
+//                for (int i=0; i<resultList.getModel().getSize(); i++)
+//                {
+//                    if (!resultList.getSelectionModel().isSelectedIndex(i))
+//                    {
+//                        IBasicSpectrumRenderer spectrum_=coll.getSpectrum(createSpectrumName((String)resultList.getModel().getElementAt(i)));
+//                        if (spectrum_ != null)
+//                            coll.deselect(spectrum_);
+//                    }
+//                }
+//                resultList.repaint();
             }
        }
         else
@@ -639,26 +640,27 @@ public abstract class AbstractSpectrumSearchPanel extends JPanel implements Mous
             }
             else
             {
-            String spectrumFile=createSpectrumName(value.toString());
-            SpectraCollection model = (SpectraCollection)modelManager.getModel(ModelNames.SPECTRA);
-            IBasicSpectrumRenderer spectrum=model.getSpectrum(spectrumFile);
-            setBackground(Color.LIGHT_GRAY);
-            if (spectrum==null)
-                setForeground(Color.black);
-            else
-            {
-                double[] color=spectrum.getChannelColor();
-                for (int i=0; i<3; i++)
-                {
-                    if (color[i]>1)
-                        color[i]=1;
-                    if (color[i]<0)
-                        color[i]=0;
-                }
-                setForeground(new Color((float)color[0],(float)color[1],(float)color[2]));
-
-//                setBackground(paramlist.getBackground());
-            }
+            	//TODO fix when updating to the new UI way
+//	            String spectrumFile=createSpectrumName(value.toString());
+//	            SpectraCollection model = (SpectraCollection)modelManager.getModel(ModelNames.SPECTRA);
+//	            IBasicSpectrumRenderer spectrum=model.getSpectrum(spectrumFile);
+//	            setBackground(Color.LIGHT_GRAY);
+//	            if (spectrum==null)
+//	                setForeground(Color.black);
+//	            else
+//	            {
+//	                double[] color=spectrum.getChannelColor();
+//	                for (int i=0; i<3; i++)
+//	                {
+//	                    if (color[i]>1)
+//	                        color[i]=1;
+//	                    if (color[i]<0)
+//	                        color[i]=0;
+//	                }
+//	                setForeground(new Color((float)color[0],(float)color[1],(float)color[2]));
+//
+//	//                setBackground(paramlist.getBackground());
+//	            }
             }
 
             return label;

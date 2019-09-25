@@ -30,22 +30,22 @@ import edu.jhuapl.sbmt.spectrum.ui.table.SpectrumResultsTableView;
  * @author steelrj1
  *
  */
-public class SpectrumResultsTableController
+public class SpectrumResultsTableController<S extends BasicSpectrum>
 {
     protected SpectrumResultsTableView panel;
-    protected BaseSpectrumSearchModel model;
-    protected List<BasicSpectrum> spectrumRawResults;
+    protected BaseSpectrumSearchModel<S> model;
+    protected List<S> spectrumRawResults;
     protected BasicSpectrumInstrument instrument;
     protected SpectrumStringRenderer stringRenderer;
-    protected SpectraCollection spectrumCollection;
+    protected SpectraCollection<S> spectrumCollection;
     protected SpectrumPopupMenu spectrumPopupMenu;
     protected DefaultTableModel tableModel;
     protected SpectrumBoundaryCollection boundaries;
-    private SpectrumSearchResultsListener tableResultsChangedListener;
+    private SpectrumSearchResultsListener<S> tableResultsChangedListener;
     private ProgressMonitor progressMonitor;
 
 
-    public SpectrumResultsTableController(BasicSpectrumInstrument instrument, SpectraCollection spectrumCollection, ModelManager modelManager, SpectrumBoundaryCollection boundaries, BaseSpectrumSearchModel model, Renderer renderer, SbmtInfoWindowManager infoPanelManager)
+    public SpectrumResultsTableController(BasicSpectrumInstrument instrument, SpectraCollection<S> spectrumCollection, ModelManager modelManager, SpectrumBoundaryCollection boundaries, BaseSpectrumSearchModel<S> model, Renderer renderer, SbmtInfoWindowManager infoPanelManager)
     {
         spectrumPopupMenu = new SpectrumPopupMenu(spectrumCollection, boundaries, modelManager,infoPanelManager, renderer);
         spectrumPopupMenu.setInstrument(instrument);
@@ -58,11 +58,11 @@ public class SpectrumResultsTableController
         this.instrument = instrument;
 	    model.setCustomDataFolder(spectrumCollection.getShapeModel().getCustomDataFolder());
 
-        this.tableResultsChangedListener = new SpectrumSearchResultsListener()
+        this.tableResultsChangedListener = new SpectrumSearchResultsListener<S>()
         {
 
             @Override
-            public void resultsChanged(List<BasicSpectrum> results)
+            public void resultsChanged(List<S> results)
             {
                 setSpectrumResults(results);
             }
@@ -305,9 +305,9 @@ public class SpectrumResultsTableController
 			@Override
 			protected Void doInBackground() throws Exception
 			{
-		    	ImmutableSet<BasicSpectrum> selectedItems = spectrumCollection.getSelectedItems();
+		    	ImmutableSet<S> selectedItems = spectrumCollection.getSelectedItems();
 		    	int i=0;
-		    	for (BasicSpectrum spectrum: selectedItems)
+		    	for (S spectrum: selectedItems)
 		    	{
 		    		spectrumCollection.addSpectrum(spectrum, false);
 		            boundaries.addBoundary(spectrum);
@@ -335,7 +335,7 @@ public class SpectrumResultsTableController
 			@Override
 			protected Void doInBackground() throws Exception
 			{
-				ImmutableSet<BasicSpectrum> selectedItems = spectrumCollection.getSelectedItems();
+				ImmutableSet<S> selectedItems = spectrumCollection.getSelectedItems();
 				int i=0;
 		    	for (BasicSpectrum spectrum: selectedItems)
 		    	{
@@ -474,8 +474,9 @@ public class SpectrumResultsTableController
 
             try
             {
-                BasicSpectrum currentSpectrum = spectrumRawResults.get(i);
-                spectrumCollection.addSpectrum(currentSpectrum, false);
+                S currentSpectrum = spectrumRawResults.get(i);
+                System.out.println("SpectrumResultsTableController: showSpectrumBoundaries: spectrum custom " + currentSpectrum.isCustomSpectra);
+                spectrumCollection.addSpectrum(currentSpectrum, currentSpectrum.isCustomSpectra);
                 boundaries.addBoundary(currentSpectrum);
             }
             catch (Exception e1) {
@@ -494,11 +495,11 @@ public class SpectrumResultsTableController
      * Sets the list of spectra to display on the table
      * @param results
      */
-    public void setSpectrumResults(List<BasicSpectrum> results)
+    public void setSpectrumResults(List<S> results)
     {
         panel.getResultsLabel().setText(results.size() + " spectra found");
         //clear out the old spectrum and boundaries from the spectrum and boundary collection
-        for (BasicSpectrum spec : results)
+        for (S spec : results)
         {
             spectrumCollection.removeSpectrum(spec);
             boundaries.removeBoundary(spec);
