@@ -260,7 +260,7 @@ public class SpectrumSearchParametersController
 
                 AbstractEllipsePolygonModel selectionModel = (AbstractEllipsePolygonModel)modelManager.getModel(ModelNames.CIRCLE_SELECTION);
                 SmallBodyModel bodyModel = (SmallBodyModel)modelManager.getModel(ModelNames.SMALL_BODY);
-                if (selectionModel.getNumberOfStructures() > 0)
+                if (selectionModel.getAllItems().size() > 0)
                 {
                     EllipsePolygon region = (EllipsePolygon)selectionModel.getStructure(0);
 
@@ -270,12 +270,12 @@ public class SpectrumSearchParametersController
                     if (bodyModel.getModelResolution() > 0)
                     {
                         vtkPolyData interiorPoly = new vtkPolyData();
-                        bodyModel.drawRegularPolygonLowRes(region.getCenter(), region.radius, region.numberOfSides, interiorPoly, null);
+                        bodyModel.drawRegularPolygonLowRes(region.getCenter(), region.getRadius(), region.getNumberOfSides(), interiorPoly, null);
                         cubeList = bodyModel.getIntersectingCubes(interiorPoly);
                     }
                     else
                     {
-                        cubeList = bodyModel.getIntersectingCubes(region.interiorPolyData);
+                        cubeList = bodyModel.getIntersectingCubes(region.getVtkInteriorPolyData());
                     }
                 }
 

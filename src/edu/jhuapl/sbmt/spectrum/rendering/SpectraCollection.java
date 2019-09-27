@@ -14,10 +14,10 @@ import com.google.common.collect.Maps;
 import vtk.vtkActor;
 import vtk.vtkProp;
 
+import edu.jhuapl.saavtk.model.SaavtkItemManager;
 import edu.jhuapl.saavtk.util.Properties;
 import edu.jhuapl.sbmt.client.ISmallBodyModel;
 import edu.jhuapl.sbmt.client.SbmtSpectrumModelFactory;
-import edu.jhuapl.sbmt.model.lidar.SaavtkItemManager;
 import edu.jhuapl.sbmt.spectrum.model.core.BasicSpectrum;
 import edu.jhuapl.sbmt.spectrum.model.core.interfaces.SearchSpec;
 import edu.jhuapl.sbmt.spectrum.model.core.interfaces.SpectraColoringProgressListener;

@@ -127,10 +127,11 @@ public class LidarSearchPanel extends JPanel
 	 */
 	protected void handleActionSubmit(LidarDataSource aDataSource, AbstractEllipsePolygonModel aSelectionRegion)
 	{
+		System.out.println("LidarSearchPanel: handleActionSubmit: ");
 		setCursor(new Cursor(Cursor.WAIT_CURSOR));
 		TreeSet<Integer> cubeList = null;
 
-		if (aSelectionRegion.getNumberOfStructures() > 0)
+		if (aSelectionRegion.getNumItems() > 0)
 		{
 			EllipsePolygon region = (EllipsePolygon) aSelectionRegion.getStructure(0);
 
@@ -141,13 +142,13 @@ public class LidarSearchPanel extends JPanel
 			if (refSmallBodyModel.getModelResolution() > 0)
 			{
 				vtkPolyData interiorPoly = new vtkPolyData();
-				refSmallBodyModel.drawRegularPolygonLowRes(region.getCenter(), region.radius, region.numberOfSides,
-						interiorPoly, null);
+				refSmallBodyModel.drawRegularPolygonLowRes(region.getCenter(), region.getRadius(),
+						region.getNumberOfSides(), interiorPoly, null);
 				cubeList = refSmallBodyModel.getIntersectingCubes(new BoundingBox(interiorPoly.GetBounds()));
 			}
 			else
 			{
-				cubeList = refSmallBodyModel.getIntersectingCubes(new BoundingBox(region.interiorPolyData.GetBounds()));
+				cubeList = refSmallBodyModel.getIntersectingCubes(new BoundingBox(region.getVtkInteriorPolyData().GetBounds()));
 			}
 		}
 		else
@@ -158,7 +159,6 @@ public class LidarSearchPanel extends JPanel
 
 			return;
 		}
-
 		showData(cubeList, aSelectionRegion);
 		setCursor(Cursor.getDefaultCursor());
 	}
@@ -315,7 +315,6 @@ public class LidarSearchPanel extends JPanel
 
 		AbstractEllipsePolygonModel selectionRegion = (AbstractEllipsePolygonModel) refModelManager
 				.getModel(ModelNames.CIRCLE_SELECTION);
-
 		// Delegate actual query submission
 		handleActionSubmit(aDataSource, selectionRegion);
 	}
@@ -513,6 +512,7 @@ public class LidarSearchPanel extends JPanel
 			PointInRegionChecker aPointInRegionChecker, double aTimeSeparationBetweenTracks, int aMinTrackLength)
 			throws IOException
 	{
+		System.out.println("LidarSearchPanel: executeQuery: executing query");
 		// Bail if this query has already been executed
 		if (aSearchParms.equals(cSearchParms) == true)
 			return;
@@ -550,6 +550,7 @@ public class LidarSearchPanel extends JPanel
 	// TODO: Add comments
 	protected void showData(TreeSet<Integer> aCubeList, AbstractEllipsePolygonModel aSelectionRegion)
 	{
+		System.out.println("LidarSearchPanel: showData: showing data");
 		int minTrackLength = Integer.parseInt(minTrackSizeTF.getText());
 		if (minTrackLength < 1)
 		{
@@ -583,12 +584,12 @@ public class LidarSearchPanel extends JPanel
 
 		// Region constraints
 		PointInCylinderChecker checker = null;
-		if (aSelectionRegion.getNumberOfStructures() > 0)
+		if (aSelectionRegion.getNumItems() > 0)
 		{
 			EllipsePolygon region = (EllipsePolygon) aSelectionRegion.getStructure(0);
-			if (region.radius > 0.0)
+			if (region.getRadius() > 0.0)
 				checker = new PointInCylinderChecker(refModelManager.getPolyhedralModel(), region.getCenter(),
-						region.radius);
+						region.getRadius());
 		}
 
 		// Search parameters
@@ -601,6 +602,7 @@ public class LidarSearchPanel extends JPanel
 		// Execute the query
 		try
 		{
+			System.out.println("LidarSearchPanel: showData: executing a query");
 			executeQuery(refTrackManager, tmpSearchParms, checker, timeSeparationBetweenTracks, minTrackLength);
 		}
 		catch (IOException aEvent)

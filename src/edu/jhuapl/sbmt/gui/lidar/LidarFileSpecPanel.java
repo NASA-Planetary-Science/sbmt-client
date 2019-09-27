@@ -18,6 +18,7 @@ import javax.swing.JScrollPane;
 import javax.swing.JTable;
 
 import edu.jhuapl.saavtk.gui.dialog.DirectoryChooser;
+import edu.jhuapl.saavtk.gui.table.TablePopupHandler;
 import edu.jhuapl.saavtk.gui.util.IconUtil;
 import edu.jhuapl.saavtk.gui.util.ToolTipUtil;
 import edu.jhuapl.saavtk.util.FileCache;
@@ -30,7 +31,7 @@ import edu.jhuapl.sbmt.gui.lidar.color.ColorProvider;
 import edu.jhuapl.sbmt.gui.lidar.color.GroupColorProvider;
 import edu.jhuapl.sbmt.gui.lidar.popup.LidarGuiUtil;
 import edu.jhuapl.sbmt.gui.lidar.popup.LidarPopupMenu;
-import edu.jhuapl.sbmt.gui.lidar.popup.LidarTablePopupListener;
+import edu.jhuapl.sbmt.gui.table.ColorProviderCellEditor;
 import edu.jhuapl.sbmt.gui.table.ColorProviderCellRenderer;
 import edu.jhuapl.sbmt.gui.table.EphemerisTimeRenderer;
 import edu.jhuapl.sbmt.model.lidar.LidarBrowseUtil;
@@ -141,6 +142,7 @@ public class LidarFileSpecPanel extends JPanel implements ActionListener, ItemEv
 		EphemerisTimeRenderer tmpTimeRenderer = new EphemerisTimeRenderer(isShortMode);
 		tmpComposer.setEditor(LookUp.IsVisible, new BooleanCellEditor());
 		tmpComposer.setRenderer(LookUp.IsVisible, new BooleanCellRenderer());
+		tmpComposer.setEditor(LookUp.Color, new ColorProviderCellEditor<>());
 		tmpComposer.setRenderer(LookUp.Color, new ColorProviderCellRenderer(false));
 		tmpComposer.setRenderer(LookUp.NumPoints, new NumberRenderer("###,###,###", "---"));
 		tmpComposer.setRenderer(LookUp.BegTime, tmpTimeRenderer);
@@ -153,7 +155,7 @@ public class LidarFileSpecPanel extends JPanel implements ActionListener, ItemEv
 
 		JTable lidarTable = lidarILP.getTable();
 		lidarTable.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
-		lidarTable.addMouseListener(new LidarTablePopupListener<>(refManager, lidarPopupMenu, lidarTable));
+		lidarTable.addMouseListener(new TablePopupHandler(refManager, lidarPopupMenu));
 		add(new JScrollPane(lidarTable), "growx,growy,pushy,span,wrap");
 
 		// Action buttons: hide / save / show

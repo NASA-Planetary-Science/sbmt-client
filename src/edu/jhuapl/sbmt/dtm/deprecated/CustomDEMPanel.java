@@ -882,12 +882,12 @@ public class CustomDEMPanel extends JPanel implements PropertyChangeListener, Ac
         if (!setSpecifyRegionManuallyCheckbox.isSelected())
         {
             AbstractEllipsePolygonModel selectionModel = (AbstractEllipsePolygonModel)modelManager.getModel(ModelNames.CIRCLE_SELECTION);
-            if (selectionModel.getNumberOfStructures() > 0)
+            if (selectionModel.getNumItems() > 0)
             {
                 EllipsePolygon region = (EllipsePolygon)selectionModel.getStructure(0);
 
                 centerPoint = region.getCenter();
-                radius = region.radius;
+                radius = region.getRadius();
             }
             else
             {
