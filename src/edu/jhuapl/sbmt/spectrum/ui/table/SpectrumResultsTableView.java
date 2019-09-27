@@ -43,7 +43,7 @@ import glum.item.ItemManagerUtil;
  * @author steelrj1
  *
  */
-public class SpectrumResultsTableView extends JPanel
+public class SpectrumResultsTableView<S extends BasicSpectrum> extends JPanel
 {
     private JButton loadSpectraListButton;
     private JPanel monochromePanel;
@@ -64,15 +64,15 @@ public class SpectrumResultsTableView extends JPanel
     //for table
     private JLabel titleL;
     private JButton selectAllB, selectInvertB, selectNoneB;
-    private SpectraCollection spectrumCollection;
+    private SpectraCollection<S> spectrumCollection;
     private SpectrumBoundaryCollection boundaryCollection;
-    private ItemListPanel<BasicSpectrum> spectrumILP;
-    private ItemHandler<BasicSpectrum> spectrumTableHandler;
+    private ItemListPanel<S> spectrumILP;
+    private ItemHandler<S> spectrumTableHandler;
 
     /**
      * @wbp.parser.constructor
      */
-    public SpectrumResultsTableView(SpectraCollection spectrumCollection, SpectrumBoundaryCollection boundaryCollection, SpectrumPopupMenu spectrumPopupMenu)
+    public SpectrumResultsTableView(SpectraCollection<S> spectrumCollection, SpectrumBoundaryCollection boundaryCollection, SpectrumPopupMenu spectrumPopupMenu)
     {
         this.spectrumPopupMenu = spectrumPopupMenu;
         this.spectrumCollection = spectrumCollection;
@@ -163,7 +163,7 @@ public class SpectrumResultsTableView extends JPanel
 			{
 				Object source = e.getSource();
 
-				List<BasicSpectrum> tmpL = spectrumCollection.getSelectedItems().asList();
+				List<S> tmpL = spectrumCollection.getSelectedItems().asList();
 				if (source == selectAllB)
 					ItemManagerUtil.selectAll(spectrumCollection);
 				else if (source == selectNoneB)
@@ -221,8 +221,8 @@ public class SpectrumResultsTableView extends JPanel
 //    	    			tmpComposer.setRenderer(SpectrumColumnLookup.BegTime, tmpTimeRenderer);
 //    	    			tmpComposer.setRenderer(SpectrumColumnLookup.Date, tmpTimeRenderer);
 
-		spectrumTableHandler = new SpectrumItemHandler(spectrumCollection, boundaryCollection, tmpComposer);
-		ItemProcessor<BasicSpectrum> tmpIP = spectrumCollection;
+		spectrumTableHandler = new SpectrumItemHandler<S>(spectrumCollection, boundaryCollection, tmpComposer);
+		ItemProcessor<S> tmpIP = spectrumCollection;
 		spectrumILP = new ItemListPanel<>(spectrumTableHandler, tmpIP, true);
 		spectrumILP.setSortingEnabled(true);
 		configureColumnWidths();
@@ -317,7 +317,7 @@ public class SpectrumResultsTableView extends JPanel
         this.spectrumPopupMenu = spectrumPopupMenu;
     }
 
-	public ItemHandler<BasicSpectrum> getSpectrumTableHandler()
+	public ItemHandler<S> getSpectrumTableHandler()
 	{
 		return spectrumTableHandler;
 	}

@@ -6,6 +6,12 @@ import edu.jhuapl.sbmt.spectrum.model.sbmtCore.spectra.CustomSpectrumKeyInterfac
 
 public interface CustomSpectraResultsListener
 {
+	/**
+	 * Signifies an initial load of results to display
+	 * @param results
+	 */
+	public void resultsLoaded(List<CustomSpectrumKeyInterface> results);
+
     /**
      * Signifies a change in results to display in the custom spectra table
      * @param results

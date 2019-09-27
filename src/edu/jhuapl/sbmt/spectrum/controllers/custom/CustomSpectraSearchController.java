@@ -83,6 +83,15 @@ public class CustomSpectraSearchController<S extends BasicSpectrum>
             {
                 spectrumResultsTableController.getPanel().getResultsLabel().setText(spectrumSearchModel.getSpectrumRawResults().size() + " Spectra Found");
             }
+
+			@Override
+			public void resultsLoaded(List<CustomSpectrumKeyInterface> results)
+			{
+				resultsChanged(results);
+				spectrumCollection.removeAllSpectra();
+				boundaries.removeAllBoundaries();
+
+			}
         });
         this.spectrumResultsTableController.setSpectrumResultsPanel();
 

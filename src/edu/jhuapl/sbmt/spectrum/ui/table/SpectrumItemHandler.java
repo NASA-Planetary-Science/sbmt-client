@@ -17,12 +17,12 @@ import glum.gui.panel.itemList.query.QueryComposer;
  * @author steelrj1
  *
  */
-public class SpectrumItemHandler extends BasicItemHandler<BasicSpectrum, LookUp>
+public class SpectrumItemHandler<S extends BasicSpectrum> extends BasicItemHandler<S, LookUp>
 {
-	private final SpectraCollection spectrumCollection;
+	private final SpectraCollection<S> spectrumCollection;
 	private final SpectrumBoundaryCollection boundaryCollection;
 
-	public SpectrumItemHandler(SpectraCollection aManager, SpectrumBoundaryCollection boundaryCollection, QueryComposer<LookUp> aComposer)
+	public SpectrumItemHandler(SpectraCollection<S> aManager, SpectrumBoundaryCollection boundaryCollection, QueryComposer<LookUp> aComposer)
 	{
 		super(aComposer);
 
@@ -59,12 +59,12 @@ public class SpectrumItemHandler extends BasicItemHandler<BasicSpectrum, LookUp>
 	}
 
 	@Override
-	public void setColumnValue(BasicSpectrum spec, LookUp aEnum, Object aValue)
+	public void setColumnValue(S spec, LookUp aEnum, Object aValue)
 	{
 		if (aEnum == LookUp.Map)
 		{
 			if (!spectrumCollection.isSpectrumMapped(spec))
-				spectrumCollection.addSpectrum(spec, false);
+				spectrumCollection.addSpectrum(spec, spec.isCustomSpectra);
 			else
 				spectrumCollection.removeSpectrum(spec);
 		}

@@ -341,6 +341,9 @@ public class SbmtView extends View implements PropertyChangeListener
 			allModels.put(ModelNames.SPECTRA_BOUNDARIES, new SpectrumBoundaryCollection(smallBodyModel, (SpectraCollection)allModels.get(ModelNames.SPECTRA)));
 			//if (getPolyhedralModelConfig().body == ShapeModelBody.EROS)
 			allModels.put(ModelNames.STATISTICS, new SpectrumStatisticsCollection());
+
+			allModels.put(ModelNames.CUSTOM_SPECTRA, new SpectraCollection(smallBodyModel));
+			allModels.put(ModelNames.CUSTOM_SPECTRA_BOUNDARIES, new SpectrumBoundaryCollection(smallBodyModel, (SpectraCollection)allModels.get(ModelNames.CUSTOM_SPECTRA)));
 		}
 
 		if (getPolyhedralModelConfig().hasLidarData)

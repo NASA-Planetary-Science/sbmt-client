@@ -49,7 +49,7 @@ public class SpectrumResultsTableController<S extends BasicSpectrum>
     {
         spectrumPopupMenu = new SpectrumPopupMenu(spectrumCollection, boundaries, modelManager,infoPanelManager, renderer);
         spectrumPopupMenu.setInstrument(instrument);
-        panel = new SpectrumResultsTableView(spectrumCollection, boundaries, spectrumPopupMenu);
+        panel = new SpectrumResultsTableView<S>(spectrumCollection, boundaries, spectrumPopupMenu);
         panel.setup();
         this.boundaries = boundaries;
         spectrumRawResults = model.getSpectrumRawResults();
@@ -82,7 +82,7 @@ public class SpectrumResultsTableController<S extends BasicSpectrum>
         };
 
         this.spectrumCollection.addPropertyChangeListener(evt -> panel.repaint());
-        this.spectrumCollection.addPropertyChangeListener(evt -> panel.repaint());
+        this.boundaries.addPropertyChangeListener(evt -> panel.repaint());
     }
 
 

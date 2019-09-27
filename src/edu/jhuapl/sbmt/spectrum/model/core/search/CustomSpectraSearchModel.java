@@ -11,6 +11,7 @@ import org.apache.commons.io.FileUtils;
 
 import edu.jhuapl.saavtk.model.FileType;
 import edu.jhuapl.saavtk.model.ModelManager;
+import edu.jhuapl.saavtk.model.ModelNames;
 import edu.jhuapl.saavtk.util.FileUtil;
 import edu.jhuapl.saavtk.util.IdPair;
 import edu.jhuapl.saavtk.util.MapUtil;
@@ -85,6 +86,14 @@ public class CustomSpectraSearchModel<S extends BasicSpectrum> extends BaseSpect
         for (CustomSpectraResultsListener listener : customSpectraListeners)
         {
             listener.resultsChanged(customSpectraKeys);
+        }
+    }
+
+    protected void fireResultsLoaded()
+    {
+        for (CustomSpectraResultsListener listener : customSpectraListeners)
+        {
+            listener.resultsLoaded(customSpectraKeys);
         }
     }
 
@@ -328,11 +337,17 @@ public class CustomSpectraSearchModel<S extends BasicSpectrum> extends BaseSpect
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
+
+
         	tempResults.add(renderer.getSpectrum());
         }
-        setSpectrumRawResults(tempResults);
 
-        fireResultsChanged();
+
+//        setSpectrumRawResults(tempResults);
+        this.results = tempResults;
+        fireResultsLoaded();
+
+//        fireResultsChanged();
         fireResultsCountChanged(customSpectraKeys.size());
     }
 
@@ -457,5 +472,25 @@ public class CustomSpectraSearchModel<S extends BasicSpectrum> extends BaseSpect
     public void setSpectrumColoringStyleName(SpectrumColoringStyle spectrumColoringStyle)
     {
         this.getColoringModel().setSpectrumColoringStyle(spectrumColoringStyle);
+    }
+
+    /**
+     * Returns the model name
+     * @return
+     */
+    @Override
+    public ModelNames getSpectrumCollectionModelName()
+    {
+        return ModelNames.CUSTOM_SPECTRA;
+    }
+
+    /**
+     * Returns the boundary model name
+     * @return
+     */
+    @Override
+    public ModelNames getSpectrumBoundaryCollectionModelName()
+    {
+        return ModelNames.CUSTOM_SPECTRA_BOUNDARIES;
     }
 }

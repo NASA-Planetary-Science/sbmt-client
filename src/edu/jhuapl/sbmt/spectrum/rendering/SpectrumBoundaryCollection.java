@@ -17,7 +17,7 @@ import edu.jhuapl.sbmt.client.SmallBodyModel;
 import edu.jhuapl.sbmt.spectrum.model.core.BasicSpectrum;
 import edu.jhuapl.sbmt.spectrum.model.core.SpectrumBoundary;
 
-public class SpectrumBoundaryCollection extends AbstractModel implements PropertyChangeListener
+public class SpectrumBoundaryCollection<S extends BasicSpectrum> extends AbstractModel implements PropertyChangeListener
 {
     private HashMap<SpectrumBoundary, List<vtkProp>> boundaryToActorsMap = new HashMap<SpectrumBoundary, List<vtkProp>>();
     private HashMap<vtkProp, SpectrumBoundary> actorToBoundaryMap = new HashMap<vtkProp, SpectrumBoundary>();
@@ -28,9 +28,9 @@ public class SpectrumBoundaryCollection extends AbstractModel implements Propert
             Color.GREEN.darker(), Color.MAGENTA, Color.CYAN.darker(), Color.BLUE,
             Color.GRAY, Color.DARK_GRAY, Color.BLACK};
     private int initialColorIndex = 0;
-    private SpectraCollection spectrumCollection;
+    private SpectraCollection<S> spectrumCollection;
 
-    public SpectrumBoundaryCollection(SmallBodyModel smallBodyModel, SpectraCollection spectrumCollection)
+    public SpectrumBoundaryCollection(SmallBodyModel smallBodyModel, SpectraCollection<S> spectrumCollection)
     {
         this.smallBodyModel = smallBodyModel;
         this.spectrumToBoundaryMap = new HashMap<BasicSpectrum, SpectrumBoundary>();
@@ -41,7 +41,8 @@ public class SpectrumBoundaryCollection extends AbstractModel implements Propert
             BasicSpectrum spec,
             SmallBodyModel smallBodyModel) //throws IOException, FitsException
     {
-        IBasicSpectrumRenderer spectrum = spectrumCollection.getRendererForSpectrum(spec);
+        IBasicSpectrumRenderer<S> spectrum = spectrumCollection.getRendererForSpectrum(spec);
+        System.out.println("SpectrumBoundaryCollection: createBoundary: spectrum " + spectrum);
         SpectrumBoundary boundary = new SpectrumBoundary(spectrum, smallBodyModel);
         boundary.setBoundaryColor(initialColors[initialColorIndex++]);
         if (initialColorIndex >= initialColors.length)
