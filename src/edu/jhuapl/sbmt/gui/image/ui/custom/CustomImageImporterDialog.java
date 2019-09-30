@@ -40,6 +40,8 @@ import javax.swing.event.DocumentListener;
 import javax.swing.text.Document;
 import javax.swing.text.JTextComponent;
 
+import org.apache.commons.io.FilenameUtils;
+
 import vtk.vtkImageReader2;
 import vtk.vtkImageReader2Factory;
 
@@ -839,13 +841,14 @@ public class CustomImageImporterDialog extends javax.swing.JDialog
         imageNameTextField.setText(imageFileName);
 
         // set default info file name
-        String tokens[] = imageFileName.split("\\.");
-        int ntokens = tokens.length;
-        String suffix = tokens[ntokens-1];
-        int suffixLength = suffix.length();
-        String imageFileNamePrefix = imageFileName.substring(0, imageFileName.length() - suffixLength);
-        String defaultInfoFileName = file.getParent() + System.getProperty("file.separator") + imageFileNamePrefix + "INFO";
-        String defaultSumFileName = file.getParent() + System.getProperty("file.separator") + imageFileNamePrefix + "SUM";
+//        String tokens[] = imageFileName.split("\\.");
+//        int ntokens = tokens.length;
+//        String suffix = tokens[ntokens-1];
+//        int suffixLength = suffix.length();
+//        String imageFileNamePrefix = imageFileName.substring(0, imageFileName.length() - suffixLength);
+        String imageFileNamePrefix = FilenameUtils.getBaseName(imageFileName);
+        String defaultInfoFileName = file.getParent() + System.getProperty("file.separator") + imageFileNamePrefix + ".INFO";
+        String defaultSumFileName = file.getParent() + System.getProperty("file.separator") + imageFileNamePrefix + ".SUM";
         infofilePathTextField.setText(defaultInfoFileName);
         sumfilePathTextField.setText(defaultSumFileName);
 
