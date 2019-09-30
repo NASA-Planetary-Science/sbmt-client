@@ -39,7 +39,7 @@ public class SpectrumBoundaryCollection<S extends BasicSpectrum> extends Abstrac
 
     protected SpectrumBoundary createBoundary(
             BasicSpectrum spec,
-            SmallBodyModel smallBodyModel) //throws IOException, FitsException
+            SmallBodyModel smallBodyModel)
     {
         IBasicSpectrumRenderer<S> spectrum = spectrumCollection.getRendererForSpectrum(spec);
         System.out.println("SpectrumBoundaryCollection: createBoundary: spectrum " + spectrum);
@@ -51,10 +51,10 @@ public class SpectrumBoundaryCollection<S extends BasicSpectrum> extends Abstrac
         return boundary;
     }
 
-    public SpectrumBoundary addBoundary(BasicSpectrum spec) //throws FitsException, IOException
+    public SpectrumBoundary addBoundary(BasicSpectrum spec)
     {
     	SpectrumBoundary boundary = null;
-        if (spectrumToBoundaryMap.containsKey(spec))
+        if (spectrumToBoundaryMap.get(spec) != null)
             boundary = spectrumToBoundaryMap.get(spec);
         else
         	boundary = createBoundary(spec, smallBodyModel);
@@ -88,6 +88,7 @@ public class SpectrumBoundaryCollection<S extends BasicSpectrum> extends Abstrac
                     actorToBoundaryMap.remove(act);
             }
 
+            spectrumToBoundaryMap.put(spectrum, null);
             boundaryToActorsMap.remove(boundary);
             boundary.setVisibility(false);
             boundary.removePropertyChangeListener(this);
@@ -144,7 +145,6 @@ public class SpectrumBoundaryCollection<S extends BasicSpectrum> extends Abstrac
     	SpectrumBoundary boundary = spectrumToBoundaryMap.get(spec);
     	if (boundary == null)
     		boundary = addBoundary(spec);
-
     	boundary.setVisibility(visible);
     	this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, boundary);
     }

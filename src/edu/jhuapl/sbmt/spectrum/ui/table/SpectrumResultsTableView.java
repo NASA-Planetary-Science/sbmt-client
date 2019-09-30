@@ -65,14 +65,14 @@ public class SpectrumResultsTableView<S extends BasicSpectrum> extends JPanel
     private JLabel titleL;
     private JButton selectAllB, selectInvertB, selectNoneB;
     private SpectraCollection<S> spectrumCollection;
-    private SpectrumBoundaryCollection boundaryCollection;
+    private SpectrumBoundaryCollection<S> boundaryCollection;
     private ItemListPanel<S> spectrumILP;
     private ItemHandler<S> spectrumTableHandler;
 
     /**
      * @wbp.parser.constructor
      */
-    public SpectrumResultsTableView(SpectraCollection<S> spectrumCollection, SpectrumBoundaryCollection boundaryCollection, SpectrumPopupMenu spectrumPopupMenu)
+    public SpectrumResultsTableView(SpectraCollection<S> spectrumCollection, SpectrumBoundaryCollection<S> boundaryCollection, SpectrumPopupMenu spectrumPopupMenu)
     {
         this.spectrumPopupMenu = spectrumPopupMenu;
         this.spectrumCollection = spectrumCollection;
@@ -229,6 +229,40 @@ public class SpectrumResultsTableView<S extends BasicSpectrum> extends JPanel
 		JTable spectrumTable = spectrumILP.getTable();
 		spectrumTable.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
 		spectrumTable.addMouseListener(new SpectrumTablePopupListener<>(spectrumCollection, boundaryCollection, spectrumPopupMenu, spectrumTable));
+
+//		spectrumCollection.addListener(new ItemEventListener()
+//		{
+//
+//			@Override
+//			public void handleItemEvent(Object aSource, ItemEventType aEventType)
+//			{
+//				// TODO Auto-generated method stub
+//
+//			}
+//		});
+
+//		 spectrumTable.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
+//	            @Override
+//	            public void valueChanged(ListSelectionEvent e)
+//	            {
+//	                if (!e.getValueIsAdjusting())
+//	                {
+////	                	int[] selectedRows = spectrumTable.getSelectedRows();
+////	                	List<S> selectedSpectra = new ArrayList<S>();
+////	                	for (int index : selectedRows)
+////	                	{
+////	                		selectedSpectra.add(spectrumCollection.getAllItems().get(index));
+////	                	}
+////	                	System.out.println(
+////								"SpectrumResultsTableView.buildTable().new ListSelectionListener() {...}: valueChanged: setting selected spectra size " + selectedSpectra.size());
+////	                	spectrumCollection.setSelectedItems(spectrumTableHandler.get);
+////	                    imageSearchModel.setSelectedImageIndex(imageResultsTableView.getResultList().getSelectedRows());
+////	                    imageResultsTableView.getViewResultsGalleryButton().setEnabled(imageResultsTableView.isEnableGallery() && imageResultsTableView.getResultList().getSelectedRowCount() > 0);
+//	                }
+//	            }
+//	        });
+
+
 		return spectrumTable;
     }
 

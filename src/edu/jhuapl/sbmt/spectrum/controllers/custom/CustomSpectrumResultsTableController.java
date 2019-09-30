@@ -1,8 +1,12 @@
 package edu.jhuapl.sbmt.spectrum.controllers.custom;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.List;
 
+import javax.swing.JOptionPane;
+
+import edu.jhuapl.saavtk.gui.dialog.CustomFileChooser;
 import edu.jhuapl.saavtk.gui.render.Renderer;
 import edu.jhuapl.saavtk.model.ModelManager;
 import edu.jhuapl.sbmt.client.SbmtInfoWindowManager;
@@ -27,7 +31,7 @@ public class CustomSpectrumResultsTableController<S extends BasicSpectrum>
     private String customDataFolder;
 
     public CustomSpectrumResultsTableController(BasicSpectrumInstrument instrument,
-            SpectraCollection<S> spectrumCollection, ModelManager modelManager, SpectrumBoundaryCollection boundaries, CustomSpectraSearchModel<S> model,
+            SpectraCollection<S> spectrumCollection, ModelManager modelManager, SpectrumBoundaryCollection<S> boundaries, CustomSpectraSearchModel<S> model,
             Renderer renderer, SbmtInfoWindowManager infoPanelManager)
     {
         super(instrument, spectrumCollection, modelManager, boundaries, model, renderer,
@@ -42,13 +46,6 @@ public class CustomSpectrumResultsTableController<S extends BasicSpectrum>
     {
         super.setSpectrumResultsPanel();
 
-//        super.setSpectrumResultsPanel();
-//        panel.getResultList().getModel().removeTableModelListener(tableModelListener);
-//        panel.getResultList().getModel().addTableModelListener(tableModelListener);
-
-//        panel.getRemoveSpectraButton().removeActionListener(panel.getRemoveSpectraButton().getActionListeners()[0]);
-//        panel.getRemoveSpectraButton().addActionListener(e -> removeFootprintsForAllInstrumentsButtonActionPerformed());
-
         try
         {
             model.initializeSpecList();
@@ -60,17 +57,79 @@ public class CustomSpectrumResultsTableController<S extends BasicSpectrum>
         }
     }
 
-//    private CustomSpectrumKeyInterface getConvertedKey(CustomSpectrumKeyInterface key)
-//    {
-//        CustomSpectrumKeyInterface info;
-//		String expandedNameString = SafeURLPaths.instance().getString(getCustomDataFolder() + File.separator + key.getSpectrumFilename());
-//        info = new CustomSpectrumKey(expandedNameString, key.getFileType(), instrument, key.getSpectrumType(), SafeURLPaths.instance().getUrl(getCustomDataFolder() + File.separator + key.getSpectrumFilename()), key.getPointingFilename());
-//        return info;
-//    }
-
     public String getCustomDataFolder()
     {
         return customDataFolder;
     }
+
+
+    //Handles the load and saving of custom spectra.  This is different from the normal model since custom spectra are tracked via an underlying metadata file
+    /**
+     * Handles action for Load Spectrum button. On an exception, displays an error dialog to the user
+     */
+    @Override
+    protected void loadSpectrumListButtonActionPerformed()
+    {
+    	 try
+         {
+    		 File file = CustomFileChooser.showOpenDialog(null, "Select File");
+    	     if (file == null) return;
+             model.loadSpectrumListFromFile(file);
+         }
+         catch (Exception e)
+         {
+             JOptionPane.showMessageDialog(JOptionPane.getFrameForComponent(panel),
+                     "There was an error reading the file.",
+                     "Error",
+                     JOptionPane.ERROR_MESSAGE);
+
+             e.printStackTrace();
+         }
+    }
+
+    /**
+     * Handles action for Save Spectrum button. On an exception, displays an error dialog to the user
+     */
+    @Override
+    protected void saveSpectrumListButtonActionPerformed()
+    {
+        try
+        {
+        	File file = CustomFileChooser.showSaveDialog(panel, "Select File", "spectrumlist.txt");
+            model.saveSpectrumListToFile(file);
+        }
+        catch (Exception e)
+        {
+            JOptionPane.showMessageDialog(JOptionPane.getFrameForComponent(panel),
+                    "There was an error saving the file.",
+                    "Error",
+                    JOptionPane.ERROR_MESSAGE);
+
+            e.printStackTrace();
+        }
+    }
+
+    /**
+     * Handles action for Save Selected Spectrum button. On an exception, displays an error dialog to the user
+     */
+    @Override
+    protected void saveSelectedSpectrumListButtonActionPerformed()
+    {
+        try
+        {
+        	File file = CustomFileChooser.showSaveDialog(panel, "Select File", "spectrumlist.txt");
+            model.saveSelectedSpectrumListToFile(file, panel.getResultList().getSelectedRows());
+        }
+        catch (Exception e)
+        {
+            JOptionPane.showMessageDialog(JOptionPane.getFrameForComponent(panel),
+                    "There was an error saving the file.",
+                    "Error",
+                    JOptionPane.ERROR_MESSAGE);
+
+            e.printStackTrace();
+        }
+    }
+
 
 }

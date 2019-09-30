@@ -5,7 +5,6 @@ import java.util.List;
 
 import javax.swing.JOptionPane;
 import javax.swing.ProgressMonitor;
-import javax.swing.table.DefaultTableModel;
 
 import com.google.common.collect.ImmutableSet;
 import com.jidesoft.utils.SwingWorker;
@@ -32,20 +31,20 @@ import edu.jhuapl.sbmt.spectrum.ui.table.SpectrumResultsTableView;
  */
 public class SpectrumResultsTableController<S extends BasicSpectrum>
 {
-    protected SpectrumResultsTableView panel;
+    protected SpectrumResultsTableView<S> panel;
     protected BaseSpectrumSearchModel<S> model;
     protected List<S> spectrumRawResults;
     protected BasicSpectrumInstrument instrument;
     protected SpectrumStringRenderer stringRenderer;
     protected SpectraCollection<S> spectrumCollection;
     protected SpectrumPopupMenu spectrumPopupMenu;
-    protected DefaultTableModel tableModel;
-    protected SpectrumBoundaryCollection boundaries;
+//    protected DefaultTableModel tableModel;
+    protected SpectrumBoundaryCollection<S> boundaries;
     private SpectrumSearchResultsListener<S> tableResultsChangedListener;
     private ProgressMonitor progressMonitor;
 
 
-    public SpectrumResultsTableController(BasicSpectrumInstrument instrument, SpectraCollection<S> spectrumCollection, ModelManager modelManager, SpectrumBoundaryCollection boundaries, BaseSpectrumSearchModel<S> model, Renderer renderer, SbmtInfoWindowManager infoPanelManager)
+    public SpectrumResultsTableController(BasicSpectrumInstrument instrument, SpectraCollection<S> spectrumCollection, ModelManager modelManager, SpectrumBoundaryCollection<S> boundaries, BaseSpectrumSearchModel<S> model, Renderer renderer, SbmtInfoWindowManager infoPanelManager)
     {
         spectrumPopupMenu = new SpectrumPopupMenu(spectrumCollection, boundaries, modelManager,infoPanelManager, renderer);
         spectrumPopupMenu.setInstrument(instrument);
@@ -80,6 +79,7 @@ public class SpectrumResultsTableController<S extends BasicSpectrum>
 		        spectrumCollection.deselectAll();
 			}
         };
+
 
         this.spectrumCollection.addPropertyChangeListener(evt -> panel.repaint());
         this.boundaries.addPropertyChangeListener(evt -> panel.repaint());
@@ -152,7 +152,7 @@ public class SpectrumResultsTableController<S extends BasicSpectrum>
     /**
      * Handles action for Load Spectrum button. On an exception, displays an error dialog to the user
      */
-    private void loadSpectrumListButtonActionPerformed()
+    protected void loadSpectrumListButtonActionPerformed()
     {
     	 try
          {
@@ -174,7 +174,7 @@ public class SpectrumResultsTableController<S extends BasicSpectrum>
     /**
      * Handles action for Save Spectrum button. On an exception, displays an error dialog to the user
      */
-    private void saveSpectrumListButtonActionPerformed()
+    protected void saveSpectrumListButtonActionPerformed()
     {
         try
         {
@@ -195,7 +195,7 @@ public class SpectrumResultsTableController<S extends BasicSpectrum>
     /**
      * Handles action for Save Selected Spectrum button. On an exception, displays an error dialog to the user
      */
-    private void saveSelectedSpectrumListButtonActionPerformed()
+    protected void saveSelectedSpectrumListButtonActionPerformed()
     {
         try
         {
@@ -217,7 +217,7 @@ public class SpectrumResultsTableController<S extends BasicSpectrum>
      * Returns the panel component so it can be displayed in a container view
      * @return
      */
-    public SpectrumResultsTableView getPanel()
+    public SpectrumResultsTableView<S> getPanel()
     {
         return panel;
     }
@@ -475,7 +475,6 @@ public class SpectrumResultsTableController<S extends BasicSpectrum>
             try
             {
                 S currentSpectrum = spectrumRawResults.get(i);
-                System.out.println("SpectrumResultsTableController: showSpectrumBoundaries: spectrum custom " + currentSpectrum.isCustomSpectra);
                 spectrumCollection.addSpectrum(currentSpectrum, currentSpectrum.isCustomSpectra);
                 boundaries.addBoundary(currentSpectrum);
             }

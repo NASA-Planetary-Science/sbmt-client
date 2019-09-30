@@ -8,6 +8,7 @@ public class CustomSpectraControlPanel extends JPanel
 {
     JButton newButton;
     JButton editButton;
+    JButton deleteButton;
 
     public CustomSpectraControlPanel()
     {
@@ -18,6 +19,9 @@ public class CustomSpectraControlPanel extends JPanel
 
         editButton = new JButton("Edit...");
         add(editButton);
+
+        deleteButton = new JButton("Delete...");
+        add(deleteButton);
     }
 
     public JButton getNewButton()
@@ -28,5 +32,10 @@ public class CustomSpectraControlPanel extends JPanel
     public JButton getEditButton()
     {
         return editButton;
+    }
+
+    public JButton getDeleteButton()
+    {
+        return deleteButton;
     }
 }

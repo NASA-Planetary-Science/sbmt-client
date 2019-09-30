@@ -167,7 +167,7 @@ public class SpectrumInfoPanel extends ModelInfoWindow implements PropertyChange
                 menu.add(item);
         }
 
-        menuBar.add(menu);
+//        menuBar.add(menu);
 
         setJMenuBar(menuBar);
     }

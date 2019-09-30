@@ -20,9 +20,9 @@ import glum.gui.panel.itemList.query.QueryComposer;
 public class SpectrumItemHandler<S extends BasicSpectrum> extends BasicItemHandler<S, LookUp>
 {
 	private final SpectraCollection<S> spectrumCollection;
-	private final SpectrumBoundaryCollection boundaryCollection;
+	private final SpectrumBoundaryCollection<S> boundaryCollection;
 
-	public SpectrumItemHandler(SpectraCollection<S> aManager, SpectrumBoundaryCollection boundaryCollection, QueryComposer<LookUp> aComposer)
+	public SpectrumItemHandler(SpectraCollection<S> aManager, SpectrumBoundaryCollection<S> boundaryCollection, QueryComposer<LookUp> aComposer)
 	{
 		super(aComposer);
 

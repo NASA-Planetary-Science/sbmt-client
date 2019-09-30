@@ -9,6 +9,7 @@ import java.util.Vector;
 import javax.swing.tree.TreePath;
 
 import com.google.common.base.Preconditions;
+import com.google.common.collect.ImmutableSet;
 
 import edu.jhuapl.saavtk.model.ModelManager;
 import edu.jhuapl.saavtk.model.ModelNames;
@@ -43,9 +44,10 @@ public class BaseSpectrumSearchModel<S extends BasicSpectrum> implements ISpectr
     protected BasicSpectrumInstrument instrument;
     protected List<S> results = new ArrayList<S>();
     protected IdPair resultIntervalCurrentlyShown = null;
-    private Vector<SpectrumSearchResultsListener> resultsListeners;
+    private Vector<SpectrumSearchResultsListener<S>> resultsListeners;
     private Vector<SpectrumAppearanceListener> appearanceListeners;
-    protected int[] selectedImageIndices;
+    protected ImmutableSet<S> selectedSpectra;
+    protected int[] selectedSpectraIndices;
 
     protected boolean currentlyEditingUserDefinedFunction = false;
     private TreePath[] selectedPaths;
@@ -59,7 +61,7 @@ public class BaseSpectrumSearchModel<S extends BasicSpectrum> implements ISpectr
     		BasicSpectrumInstrument instrument)
     {
         this.instrument = instrument;
-        this.resultsListeners = new Vector<SpectrumSearchResultsListener>();
+        this.resultsListeners = new Vector<SpectrumSearchResultsListener<S>>();
         this.appearanceListeners = new Vector<SpectrumAppearanceListener>();
         coloringModel = new SpectrumColoringModel();
     }
@@ -428,21 +430,39 @@ public class BaseSpectrumSearchModel<S extends BasicSpectrum> implements ISpectr
 
 
     /**
+     * Sets which spectra are currently selected
+     * @param selectedImageIndex
+     */
+    public void setSelectedSpectra(ImmutableSet<S> selectedSpectra)
+    {
+        this.selectedSpectra = selectedSpectra;
+    }
+
+    /**
+     * Gets the array of currently selected spectra
+     * @return
+     */
+    public ImmutableSet<S> getSelectedSpectra()
+    {
+        return selectedSpectra;
+    }
+
+    /**
      * Sets which indices are currently selected
      * @param selectedImageIndex
      */
-    public void setSelectedImageIndex(int[] selectedImageIndex)
+    public void setSelectedSpectraIndices(int[] selectedSpectraIndices)
     {
-        this.selectedImageIndices = selectedImageIndex;
+        this.selectedSpectraIndices = selectedSpectraIndices;
     }
 
     /**
      * Gets the array of currently selected indices
      * @return
      */
-    public int[] getSelectedImageIndex()
+    public int[] getSelectedSpectraIndices()
     {
-        return selectedImageIndices;
+        return selectedSpectraIndices;
     }
 
 //    /**

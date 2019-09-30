@@ -3,6 +3,9 @@ package edu.jhuapl.sbmt.spectrum.controllers.custom;
 import java.io.IOException;
 import java.util.List;
 
+import javax.swing.JOptionPane;
+
+import edu.jhuapl.sbmt.spectrum.model.core.BasicSpectrum;
 import edu.jhuapl.sbmt.spectrum.model.core.search.CustomSpectraSearchModel;
 import edu.jhuapl.sbmt.spectrum.model.sbmtCore.spectra.CustomSpectrumKeyInterface;
 import edu.jhuapl.sbmt.spectrum.ui.custom.CustomSpectraControlPanel;
@@ -14,13 +17,13 @@ import edu.jhuapl.sbmt.spectrum.ui.custom.CustomSpectrumImporterDialog;
  * @author steelrj1
  *
  */
-public class CustomSpectraControlController
+public class CustomSpectraControlController<S extends BasicSpectrum>
 {
     private CustomSpectraControlPanel panel;
-    private CustomSpectraSearchModel model;
+    private CustomSpectraSearchModel<S> model;
     private List<CustomSpectrumKeyInterface> customSpectra;
 
-    public CustomSpectraControlController(CustomSpectraSearchModel model)
+    public CustomSpectraControlController(CustomSpectraSearchModel<S> model)
     {
         panel = new CustomSpectraControlPanel();
         this.model = model;
@@ -44,6 +47,7 @@ public class CustomSpectraControlController
     {
         panel.getNewButton().addActionListener(e -> newButtonActionPerformed());
         panel.getEditButton().addActionListener(e -> editButtonActionPerformed());
+        panel.getDeleteButton().addActionListener(e -> deleteButtonActionPerformed());
     }
 
     /**
@@ -81,7 +85,7 @@ public class CustomSpectraControlController
      */
     private void editButtonActionPerformed()
     {
-    	int selectedItem = model.getSelectedImageIndex()[0];
+    	int selectedItem = model.getSelectedSpectraIndices()[0];
     	if (selectedItem < 0) return;
 
         CustomSpectrumKeyInterface oldSpectrumInfo = customSpectra.get(selectedItem);
@@ -107,6 +111,24 @@ public class CustomSpectraControlController
             }
         }
 
+    }
+
+    /**
+     * Handles the press of the "Delete" button in the dialog.  Prompts to confirm, and deletes the spectrum from the model if the user says yes.
+     * @param evt
+     */
+    private void deleteButtonActionPerformed()
+    {
+    	int[] selectedSpectra = model.getSelectedSpectraIndices();
+    	if (selectedSpectra == null) return;
+
+		String infoMsg = "Are you sure you want to delete this spectra?";
+		int result = JOptionPane.showConfirmDialog(JOptionPane.getFrameForComponent(panel), infoMsg, "Confirm Deletion",
+				JOptionPane.YES_NO_OPTION);
+		if (result == JOptionPane.NO_OPTION)
+			return;
+
+    	model.deleteSpectrum(selectedSpectra);
     }
 
     /**

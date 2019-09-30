@@ -104,7 +104,7 @@ public class SpectrumPopupMenu extends PopupMenu implements PropertyChangeListen
         if (this.infoPanelManager != null)
         {
             showSpectrumInfoMenuItem = new JMenuItem(new ShowSpectrumAction());
-            showSpectrumInfoMenuItem.setText("Spectrum...");
+            showSpectrumInfoMenuItem.setText("Graph Spectrum...");
             this.add(showSpectrumInfoMenuItem);
         }
 
@@ -132,7 +132,7 @@ public class SpectrumPopupMenu extends PopupMenu implements PropertyChangeListen
         this.add(showToSunVectorMenuItem);
 
         setIlluminationMenuItem = new JCheckBoxMenuItem(new SetIlluminationAction());
-        setIlluminationMenuItem.setText("Set Illumination");
+        setIlluminationMenuItem.setText("Simulate Lighting");
         if (renderer!=null)
             this.add(setIlluminationMenuItem);
 
@@ -433,8 +433,6 @@ public class SpectrumPopupMenu extends PopupMenu implements PropertyChangeListen
                     renderer.setLighting(LightingType.FIXEDLIGHT);
                 }
 
-                Path fullPath=Paths.get(spectrumRenderer.getSpectrum().getFullPath());
-                Path relativePath=fullPath.subpath(fullPath.getNameCount()-2, fullPath.getNameCount());
                 Vector3D toSunVector=new Vector3D(spectrumRenderer.getSpectrum().getToSunUnitVector());
                 renderer.setFixedLightDirection(toSunVector.toArray()); // the fixed light direction points to the light
 

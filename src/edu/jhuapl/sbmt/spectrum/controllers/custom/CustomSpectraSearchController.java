@@ -9,6 +9,8 @@ import javax.swing.JPanel;
 import javax.swing.event.AncestorEvent;
 import javax.swing.event.AncestorListener;
 
+import com.google.common.collect.ImmutableSet;
+
 import edu.jhuapl.saavtk.gui.render.Renderer;
 import edu.jhuapl.saavtk.model.ModelManager;
 import edu.jhuapl.saavtk.pick.PickManager;
@@ -24,6 +26,9 @@ import edu.jhuapl.sbmt.spectrum.model.sbmtCore.spectra.CustomSpectrumKeyInterfac
 import edu.jhuapl.sbmt.spectrum.rendering.SpectraCollection;
 import edu.jhuapl.sbmt.spectrum.rendering.SpectrumBoundaryCollection;
 import edu.jhuapl.sbmt.spectrum.ui.search.SpectrumSearchPanel;
+
+import glum.item.ItemEventListener;
+import glum.item.ItemEventType;
 
 /**
  * Controller class for the Custom Search UI.  In charge of starting up the appropriate models and sub panels required for the UI.
@@ -47,7 +52,7 @@ public class CustomSpectraSearchController<S extends BasicSpectrum>
         this.spectrumSearchModel.setCustomDataFolder(modelManager.getPolyhedralModel().getCustomDataFolder());
 
         SpectraCollection<S> spectrumCollection = (SpectraCollection<S>)modelManager.getModel(spectrumSearchModel.getSpectrumCollectionModelName());
-        SpectrumBoundaryCollection boundaries = (SpectrumBoundaryCollection)modelManager.getModel(spectrumSearchModel.getSpectrumBoundaryCollectionModelName());
+        SpectrumBoundaryCollection<S> boundaries = (SpectrumBoundaryCollection<S>)modelManager.getModel(spectrumSearchModel.getSpectrumBoundaryCollectionModelName());
 
         this.spectrumResultsTableController = new CustomSpectrumResultsTableController<S>(instrument, spectrumCollection, modelManager, boundaries, spectrumSearchModel, renderer, infoPanelManager);
         this.spectrumSearchModel.removeAllResultsChangedListeners();
@@ -95,9 +100,25 @@ public class CustomSpectraSearchController<S extends BasicSpectrum>
         });
         this.spectrumResultsTableController.setSpectrumResultsPanel();
 
-        this.searchParametersController = new CustomSpectraControlController(spectrumSearchModel);
+        this.searchParametersController = new CustomSpectraControlController<S>(spectrumSearchModel);
 
         this.coloringController = new SpectrumColoringController(spectrumSearchModel, spectrumCollection);
+
+        spectrumCollection.addListener(new ItemEventListener()
+		{
+
+			@Override
+			public void handleItemEvent(Object aSource, ItemEventType aEventType)
+			{
+				if (aEventType == ItemEventType.ItemsSelected)
+				{
+					ImmutableSet<S> selectedItems = spectrumCollection.getSelectedItems();
+					spectrumSearchModel.setSelectedSpectra(selectedItems);
+				}
+
+			}
+		});
+
         init();
     }
 

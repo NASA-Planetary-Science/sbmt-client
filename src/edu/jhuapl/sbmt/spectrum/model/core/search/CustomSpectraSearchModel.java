@@ -201,6 +201,13 @@ public class CustomSpectraSearchModel<S extends BasicSpectrum> extends BaseSpect
 
     }
 
+    public void deleteSpectrum(int[] indices)
+    {
+    	customSpectraKeys.remove(indices);
+    	fireResultsChanged();
+    	fireResultsCountChanged(customSpectraKeys.size());
+    }
+
     //TODO is this really needed?
 //    /**
 //     * This function unmaps the image from the renderer and maps it again,
@@ -328,26 +335,12 @@ public class CustomSpectraSearchModel<S extends BasicSpectrum> extends BaseSpect
         for (CustomSpectrumKeyInterface info : customSpectraKeys)
         {
         	IBasicSpectrumRenderer<S> renderer = null;
-			try
-			{
-				renderer = SbmtSpectrumModelFactory.createSpectrumRenderer(customDataFolder + File.separator + info.getName(), SpectrumInstrumentFactory.getInstrumentForName(instrument.getDisplayName()));
-			}
-			catch (IOException e)
-			{
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-
-
+			renderer = SbmtSpectrumModelFactory.createSpectrumRenderer(customDataFolder + File.separator + info.getName(), SpectrumInstrumentFactory.getInstrumentForName(instrument.getDisplayName()));
         	tempResults.add(renderer.getSpectrum());
         }
 
-
-//        setSpectrumRawResults(tempResults);
         this.results = tempResults;
         fireResultsLoaded();
-
-//        fireResultsChanged();
         fireResultsCountChanged(customSpectraKeys.size());
     }
 

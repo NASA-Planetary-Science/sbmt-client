@@ -387,7 +387,8 @@ public class SmallBodyViewConfigMetadataIO implements MetadataManager
 
 //        Metadata[] spectralMetadata = InstanceGetter.defaultInstanceGetter().providesGenericObjectFromMetadata(spectralInstruments).provide(configMetadata);
 //        Metadata spectralMetadata = readMetadataArray(spectralInstruments, configMetadata);
-        c.spectralInstruments = configMetadata.get(spectralInstruments);
+        if (configMetadata.get(hasSpectralData) == true)
+        	c.spectralInstruments = configMetadata.get(spectralInstruments);
 //        Metadata[] spectralMetadata = configMetadata.get(spectralInstruments);
 //        c.spectralInstruments = new BasicSpectrumInstrument[spectralMetadata.length];
 //        Key<BasicSpectrumInstrument> BASIC_SPECTRUM_INSTRUMENT_KEY = Key.of("basicSpectrumInstrument");
