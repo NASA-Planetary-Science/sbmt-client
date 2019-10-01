@@ -50,6 +50,7 @@ public class BennuConfigs extends SmallBodyViewConfig
 		super(ImmutableList.<String>copyOf(DEFAULT_GASKELL_LABELS_PER_RESOLUTION), ImmutableList.<Integer>copyOf(DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION));
 
 		this.defaultForMissions = new SbmtMultiMissionTool.Mission[] {};
+
 	}
 
 
@@ -1833,37 +1834,37 @@ public class BennuConfigs extends SmallBodyViewConfig
             c.lidarBrowseFileListResourcePath = c.rootDirOnServer + "/ola/browse/fileList.txt";
 
             /*
-             * New hypertrees split into phases
+             * search times split into phases
              */
             ArrayList<Date> startStop = new ArrayList<Date>();
             startStop.add(c.lidarSearchDefaultStartDate);
             startStop.add(c.lidarSearchDefaultEndDate);
-            c.lidarSearchDataSourceMap.put("Default", c.rootDirOnServer + "/ola/search/default/dataSource.lidar");
-            c.lidarSearchDataSourceTimeMap.put("Default", startStop);
+            c.orexSearchTimeMap.put("Default", startStop);
 
             startStop = new ArrayList<Date>();
             startStop.add(c.lidarSearchDefaultStartDate);
             startStop.add(new GregorianCalendar(2019, 0, 1, 0, 0, 0).getTime());
-            c.lidarSearchDataSourceMap.put("Preliminary", c.rootDirOnServer + "/ola/search/preliminary/dataSource.lidar");
-            c.lidarSearchDataSourceTimeMap.put("Preliminary", startStop);
+            c.orexSearchTimeMap.put("Preliminary", startStop);
 
             startStop = new ArrayList<Date>();
             startStop.add(new GregorianCalendar(2019, 0, 1, 0, 0, 0).getTime());
             startStop.add(new GregorianCalendar(2019, 5, 9, 0, 0, 0).getTime());
-            c.lidarSearchDataSourceMap.put("Detailed", c.rootDirOnServer + "/ola/search/detailed/dataSource.lidar");
-            c.lidarSearchDataSourceTimeMap.put("Detailed", startStop);
+            c.orexSearchTimeMap.put("Detailed", startStop);
 
             startStop = new ArrayList<Date>();
             startStop.add(new GregorianCalendar(2019, 5, 9, 0, 0, 0).getTime());
             startStop.add(new GregorianCalendar(2019, 8, 10, 0, 0, 0).getTime());
-            c.lidarSearchDataSourceMap.put("OrbB", c.rootDirOnServer + "/ola/search/orbB/dataSource.lidar");
-            c.lidarSearchDataSourceTimeMap.put("OrbB", startStop);
+            c.orexSearchTimeMap.put("OrbB", startStop);
 
             startStop = new ArrayList<Date>();
             startStop.add(new GregorianCalendar(2019, 8, 10, 0, 0, 0).getTime());
             startStop.add(c.lidarSearchDefaultEndDate);
+            c.orexSearchTimeMap.put("Recon", startStop);
+
+            c.lidarSearchDataSourceMap.put("Preliminary", c.rootDirOnServer + "/ola/search/preliminary/dataSource.lidar");
+            c.lidarSearchDataSourceMap.put("Detailed", c.rootDirOnServer + "/ola/search/detailed/dataSource.lidar");
+            c.lidarSearchDataSourceMap.put("OrbB", c.rootDirOnServer + "/ola/search/orbB/dataSource.lidar");
             c.lidarSearchDataSourceMap.put("Recon", c.rootDirOnServer + "/ola/search/recon/dataSource.lidar");
-            c.lidarSearchDataSourceTimeMap.put("Recon", startStop);
 
             /*
              *
@@ -1994,38 +1995,47 @@ public class BennuConfigs extends SmallBodyViewConfig
             c.lidarBrowseDataSourceMap.put("Default", c.rootDirOnServer + "/ola/browse/fileList.txt");
             c.lidarBrowseFileListResourcePath = c.rootDirOnServer + "/ola/browse/fileList.txt";
 
+
             /*
-             * New hypertrees split into phases
+             * search times split into phases
              */
             ArrayList<Date> startStop = new ArrayList<Date>();
             startStop.add(c.lidarSearchDefaultStartDate);
             startStop.add(c.lidarSearchDefaultEndDate);
-            c.lidarSearchDataSourceMap.put("Default", c.rootDirOnServer + "/ola/search/default/dataSource.lidar");
-            c.lidarSearchDataSourceTimeMap.put("Default", startStop);
+            c.orexSearchTimeMap.put("Default", startStop);
 
             startStop = new ArrayList<Date>();
             startStop.add(c.lidarSearchDefaultStartDate);
             startStop.add(new GregorianCalendar(2019, 0, 1, 0, 0, 0).getTime());
-            c.lidarSearchDataSourceMap.put("Preliminary", c.rootDirOnServer + "/ola/search/preliminary/dataSource.lidar");
-            c.lidarSearchDataSourceTimeMap.put("Preliminary", startStop);
+            c.orexSearchTimeMap.put("Preliminary", startStop);
 
             startStop = new ArrayList<Date>();
             startStop.add(new GregorianCalendar(2019, 0, 1, 0, 0, 0).getTime());
             startStop.add(new GregorianCalendar(2019, 5, 9, 0, 0, 0).getTime());
-            c.lidarSearchDataSourceMap.put("Detailed", c.rootDirOnServer + "/ola/search/detailed/dataSource.lidar");
-            c.lidarSearchDataSourceTimeMap.put("Detailed", startStop);
+            c.orexSearchTimeMap.put("Detailed", startStop);
 
             startStop = new ArrayList<Date>();
             startStop.add(new GregorianCalendar(2019, 5, 9, 0, 0, 0).getTime());
             startStop.add(new GregorianCalendar(2019, 8, 10, 0, 0, 0).getTime());
-            c.lidarSearchDataSourceMap.put("OrbB", c.rootDirOnServer + "/ola/search/orbB/dataSource.lidar");
-            c.lidarSearchDataSourceTimeMap.put("OrbB", startStop);
+            c.orexSearchTimeMap.put("OrbB", startStop);
 
             startStop = new ArrayList<Date>();
             startStop.add(new GregorianCalendar(2019, 8, 10, 0, 0, 0).getTime());
             startStop.add(c.lidarSearchDefaultEndDate);
+            c.orexSearchTimeMap.put("Recon", startStop);
+
+            c.lidarSearchDataSourceMap.put("Preliminary", c.rootDirOnServer + "/ola/search/preliminary/dataSource.lidar");
+            c.lidarSearchDataSourceMap.put("Detailed", c.rootDirOnServer + "/ola/search/detailed/dataSource.lidar");
+            c.lidarSearchDataSourceMap.put("OrbB", c.rootDirOnServer + "/ola/search/orbB/dataSource.lidar");
             c.lidarSearchDataSourceMap.put("Recon", c.rootDirOnServer + "/ola/search/recon/dataSource.lidar");
-            c.lidarSearchDataSourceTimeMap.put("Recon", startStop);
+
+//            /*
+//             * Directories where the databases are stored for each phase.
+//             */
+//            c.lidarSearchDataSourceMap.put("Preliminary",c.rootDirOnServer +  "/ola/search/preliminary.txt");
+//            c.lidarSearchDataSourceMap.put("Detailed", c.rootDirOnServer + "/ola/search/detailed.txt");
+//            c.lidarSearchDataSourceMap.put("OrbB", c.rootDirOnServer + "/ola/search/orbB.txt");
+//            c.lidarSearchDataSourceMap.put("Recon", c.rootDirOnServer + "/ola/search/recon.txt");
 
             /*
              *
@@ -2158,39 +2168,39 @@ public class BennuConfigs extends SmallBodyViewConfig
             c.lidarBrowseDataSourceMap.put("Default", c.rootDirOnServer + "/ola/browse/fileList.txt");
             c.lidarBrowseFileListResourcePath = c.rootDirOnServer + "/ola/browse/fileList.txt";
 
+
             /*
-             * New hypertrees split into phases
+             * search times split into phases
              */
             ArrayList<Date> startStop = new ArrayList<Date>();
             startStop.add(c.lidarSearchDefaultStartDate);
             startStop.add(c.lidarSearchDefaultEndDate);
-            c.lidarSearchDataSourceMap.put("Default", c.rootDirOnServer + "/ola/search/default/dataSource.lidar");
-            c.lidarSearchDataSourceTimeMap.put("Default", startStop);
+            c.orexSearchTimeMap.put("Default", startStop);
 
             startStop = new ArrayList<Date>();
             startStop.add(c.lidarSearchDefaultStartDate);
             startStop.add(new GregorianCalendar(2019, 0, 1, 0, 0, 0).getTime());
-            c.lidarSearchDataSourceMap.put("Preliminary", c.rootDirOnServer + "/ola/search/preliminary/dataSource.lidar");
-            c.lidarSearchDataSourceTimeMap.put("Preliminary", startStop);
+            c.orexSearchTimeMap.put("Preliminary", startStop);
 
             startStop = new ArrayList<Date>();
             startStop.add(new GregorianCalendar(2019, 0, 1, 0, 0, 0).getTime());
             startStop.add(new GregorianCalendar(2019, 5, 9, 0, 0, 0).getTime());
-            c.lidarSearchDataSourceMap.put("Detailed", c.rootDirOnServer + "/ola/search/detailed/dataSource.lidar");
-            c.lidarSearchDataSourceTimeMap.put("Detailed", startStop);
+            c.orexSearchTimeMap.put("Detailed", startStop);
 
             startStop = new ArrayList<Date>();
             startStop.add(new GregorianCalendar(2019, 5, 9, 0, 0, 0).getTime());
             startStop.add(new GregorianCalendar(2019, 8, 10, 0, 0, 0).getTime());
-            c.lidarSearchDataSourceMap.put("OrbB", c.rootDirOnServer + "/ola/search/orbB/dataSource.lidar");
-            c.lidarSearchDataSourceTimeMap.put("OrbB", startStop);
+            c.orexSearchTimeMap.put("OrbB", startStop);
 
             startStop = new ArrayList<Date>();
             startStop.add(new GregorianCalendar(2019, 8, 10, 0, 0, 0).getTime());
             startStop.add(c.lidarSearchDefaultEndDate);
-            c.lidarSearchDataSourceMap.put("Recon", c.rootDirOnServer + "/ola/search/recon/dataSource.lidar");
-            c.lidarSearchDataSourceTimeMap.put("Recon", startStop);
+            c.orexSearchTimeMap.put("Recon", startStop);
 
+            c.lidarSearchDataSourceMap.put("Preliminary", c.rootDirOnServer + "/ola/search/preliminary/dataSource.lidar");
+            c.lidarSearchDataSourceMap.put("Detailed", c.rootDirOnServer + "/ola/search/detailed/dataSource.lidar");
+            c.lidarSearchDataSourceMap.put("OrbB", c.rootDirOnServer + "/ola/search/orbB/dataSource.lidar");
+            c.lidarSearchDataSourceMap.put("Recon", c.rootDirOnServer + "/ola/search/recon/dataSource.lidar");
             /*
              *
              */
@@ -2323,37 +2333,38 @@ public class BennuConfigs extends SmallBodyViewConfig
             c.lidarBrowseFileListResourcePath = c.rootDirOnServer + "/ola/browse/fileList.txt";
 
             /*
-             * New hypertrees split into phases
+             * search times split into phases
              */
             ArrayList<Date> startStop = new ArrayList<Date>();
             startStop.add(c.lidarSearchDefaultStartDate);
             startStop.add(c.lidarSearchDefaultEndDate);
-            c.lidarSearchDataSourceMap.put("Default", c.rootDirOnServer + "/ola/search/default/dataSource.lidar");
-            c.lidarSearchDataSourceTimeMap.put("Default", startStop);
+            c.orexSearchTimeMap.put("Default", startStop);
 
             startStop = new ArrayList<Date>();
             startStop.add(c.lidarSearchDefaultStartDate);
             startStop.add(new GregorianCalendar(2019, 0, 1, 0, 0, 0).getTime());
-            c.lidarSearchDataSourceMap.put("Preliminary", c.rootDirOnServer + "/ola/search/preliminary/dataSource.lidar");
-            c.lidarSearchDataSourceTimeMap.put("Preliminary", startStop);
+            c.orexSearchTimeMap.put("Preliminary", startStop);
 
             startStop = new ArrayList<Date>();
             startStop.add(new GregorianCalendar(2019, 0, 1, 0, 0, 0).getTime());
             startStop.add(new GregorianCalendar(2019, 5, 9, 0, 0, 0).getTime());
-            c.lidarSearchDataSourceMap.put("Detailed", c.rootDirOnServer + "/ola/search/detailed/dataSource.lidar");
-            c.lidarSearchDataSourceTimeMap.put("Detailed", startStop);
+            c.orexSearchTimeMap.put("Detailed", startStop);
 
             startStop = new ArrayList<Date>();
             startStop.add(new GregorianCalendar(2019, 5, 9, 0, 0, 0).getTime());
             startStop.add(new GregorianCalendar(2019, 8, 10, 0, 0, 0).getTime());
-            c.lidarSearchDataSourceMap.put("OrbB", c.rootDirOnServer + "/ola/search/orbB/dataSource.lidar");
-            c.lidarSearchDataSourceTimeMap.put("OrbB", startStop);
+            c.orexSearchTimeMap.put("OrbB", startStop);
 
             startStop = new ArrayList<Date>();
             startStop.add(new GregorianCalendar(2019, 8, 10, 0, 0, 0).getTime());
             startStop.add(c.lidarSearchDefaultEndDate);
+            c.orexSearchTimeMap.put("Recon", startStop);
+
+            c.lidarSearchDataSourceMap.put("Preliminary", c.rootDirOnServer + "/ola/search/preliminary/dataSource.lidar");
+            c.lidarSearchDataSourceMap.put("Detailed", c.rootDirOnServer + "/ola/search/detailed/dataSource.lidar");
+            c.lidarSearchDataSourceMap.put("OrbB", c.rootDirOnServer + "/ola/search/orbB/dataSource.lidar");
             c.lidarSearchDataSourceMap.put("Recon", c.rootDirOnServer + "/ola/search/recon/dataSource.lidar");
-            c.lidarSearchDataSourceTimeMap.put("Recon", startStop);
+
 
             /*
              *
@@ -2486,39 +2497,39 @@ public class BennuConfigs extends SmallBodyViewConfig
             c.lidarBrowseDataSourceMap.put("Default", c.rootDirOnServer + "/ola/browse/fileList.txt");
             c.lidarBrowseFileListResourcePath = c.rootDirOnServer + "/ola/browse/fileList.txt";
 
+
             /*
-             * New hypertrees split into phases
+             * search times split into phases
              */
             ArrayList<Date> startStop = new ArrayList<Date>();
             startStop.add(c.lidarSearchDefaultStartDate);
             startStop.add(c.lidarSearchDefaultEndDate);
-            c.lidarSearchDataSourceMap.put("Default", c.rootDirOnServer + "/ola/search/default/dataSource.lidar");
-            c.lidarSearchDataSourceTimeMap.put("Default", startStop);
+            c.orexSearchTimeMap.put("Default", startStop);
 
             startStop = new ArrayList<Date>();
             startStop.add(c.lidarSearchDefaultStartDate);
             startStop.add(new GregorianCalendar(2019, 0, 1, 0, 0, 0).getTime());
-            c.lidarSearchDataSourceMap.put("Preliminary", c.rootDirOnServer + "/ola/search/preliminary/dataSource.lidar");
-            c.lidarSearchDataSourceTimeMap.put("Preliminary", startStop);
+            c.orexSearchTimeMap.put("Preliminary", startStop);
 
             startStop = new ArrayList<Date>();
             startStop.add(new GregorianCalendar(2019, 0, 1, 0, 0, 0).getTime());
             startStop.add(new GregorianCalendar(2019, 5, 9, 0, 0, 0).getTime());
-            c.lidarSearchDataSourceMap.put("Detailed", c.rootDirOnServer + "/ola/search/detailed/dataSource.lidar");
-            c.lidarSearchDataSourceTimeMap.put("Detailed", startStop);
+            c.orexSearchTimeMap.put("Detailed", startStop);
 
             startStop = new ArrayList<Date>();
             startStop.add(new GregorianCalendar(2019, 5, 9, 0, 0, 0).getTime());
             startStop.add(new GregorianCalendar(2019, 8, 10, 0, 0, 0).getTime());
-            c.lidarSearchDataSourceMap.put("OrbB", c.rootDirOnServer + "/ola/search/orbB/dataSource.lidar");
-            c.lidarSearchDataSourceTimeMap.put("OrbB", startStop);
+            c.orexSearchTimeMap.put("OrbB", startStop);
 
             startStop = new ArrayList<Date>();
             startStop.add(new GregorianCalendar(2019, 8, 10, 0, 0, 0).getTime());
             startStop.add(c.lidarSearchDefaultEndDate);
-            c.lidarSearchDataSourceMap.put("Recon", c.rootDirOnServer + "/ola/search/recon/dataSource.lidar");
-            c.lidarSearchDataSourceTimeMap.put("Recon", startStop);
+            c.orexSearchTimeMap.put("Recon", startStop);
 
+            c.lidarSearchDataSourceMap.put("Preliminary", c.rootDirOnServer + "/ola/search/preliminary/dataSource.lidar");
+            c.lidarSearchDataSourceMap.put("Detailed", c.rootDirOnServer + "/ola/search/detailed/dataSource.lidar");
+            c.lidarSearchDataSourceMap.put("OrbB", c.rootDirOnServer + "/ola/search/orbB/dataSource.lidar");
+            c.lidarSearchDataSourceMap.put("Recon", c.rootDirOnServer + "/ola/search/recon/dataSource.lidar");
             /*
              *
              */
@@ -2651,37 +2662,37 @@ public class BennuConfigs extends SmallBodyViewConfig
             c.lidarBrowseFileListResourcePath = c.rootDirOnServer + "/ola/browse/fileList.txt";
 
             /*
-             * New hypertrees split into phases
+             * search times split into phases
              */
             ArrayList<Date> startStop = new ArrayList<Date>();
             startStop.add(c.lidarSearchDefaultStartDate);
             startStop.add(c.lidarSearchDefaultEndDate);
-            c.lidarSearchDataSourceMap.put("Default", c.rootDirOnServer + "/ola/search/default/dataSource.lidar");
-            c.lidarSearchDataSourceTimeMap.put("Default", startStop);
+            c.orexSearchTimeMap.put("Default", startStop);
 
             startStop = new ArrayList<Date>();
             startStop.add(c.lidarSearchDefaultStartDate);
             startStop.add(new GregorianCalendar(2019, 0, 1, 0, 0, 0).getTime());
-            c.lidarSearchDataSourceMap.put("Preliminary", c.rootDirOnServer + "/ola/search/preliminary/dataSource.lidar");
-            c.lidarSearchDataSourceTimeMap.put("Preliminary", startStop);
+            c.orexSearchTimeMap.put("Preliminary", startStop);
 
             startStop = new ArrayList<Date>();
             startStop.add(new GregorianCalendar(2019, 0, 1, 0, 0, 0).getTime());
             startStop.add(new GregorianCalendar(2019, 5, 9, 0, 0, 0).getTime());
-            c.lidarSearchDataSourceMap.put("Detailed", c.rootDirOnServer + "/ola/search/detailed/dataSource.lidar");
-            c.lidarSearchDataSourceTimeMap.put("Detailed", startStop);
+            c.orexSearchTimeMap.put("Detailed", startStop);
 
             startStop = new ArrayList<Date>();
             startStop.add(new GregorianCalendar(2019, 5, 9, 0, 0, 0).getTime());
             startStop.add(new GregorianCalendar(2019, 8, 10, 0, 0, 0).getTime());
-            c.lidarSearchDataSourceMap.put("OrbB", c.rootDirOnServer + "/ola/search/orbB/dataSource.lidar");
-            c.lidarSearchDataSourceTimeMap.put("OrbB", startStop);
+            c.orexSearchTimeMap.put("OrbB", startStop);
 
             startStop = new ArrayList<Date>();
             startStop.add(new GregorianCalendar(2019, 8, 10, 0, 0, 0).getTime());
             startStop.add(c.lidarSearchDefaultEndDate);
+            c.orexSearchTimeMap.put("Recon", startStop);
+
+            c.lidarSearchDataSourceMap.put("Preliminary", c.rootDirOnServer + "/ola/search/preliminary/dataSource.lidar");
+            c.lidarSearchDataSourceMap.put("Detailed", c.rootDirOnServer + "/ola/search/detailed/dataSource.lidar");
+            c.lidarSearchDataSourceMap.put("OrbB", c.rootDirOnServer + "/ola/search/orbB/dataSource.lidar");
             c.lidarSearchDataSourceMap.put("Recon", c.rootDirOnServer + "/ola/search/recon/dataSource.lidar");
-            c.lidarSearchDataSourceTimeMap.put("Recon", startStop);
 
             /*
              *
@@ -2815,37 +2826,37 @@ public class BennuConfigs extends SmallBodyViewConfig
             c.lidarBrowseFileListResourcePath = c.rootDirOnServer + "/ola/browse/fileList.txt";
 
             /*
-             * New hypertrees split into phases
+             * search times split into phases
              */
             ArrayList<Date> startStop = new ArrayList<Date>();
             startStop.add(c.lidarSearchDefaultStartDate);
             startStop.add(c.lidarSearchDefaultEndDate);
-            c.lidarSearchDataSourceMap.put("Default", c.rootDirOnServer + "/ola/search/default/dataSource.lidar");
-            c.lidarSearchDataSourceTimeMap.put("Default", startStop);
+            c.orexSearchTimeMap.put("Default", startStop);
 
             startStop = new ArrayList<Date>();
             startStop.add(c.lidarSearchDefaultStartDate);
             startStop.add(new GregorianCalendar(2019, 0, 1, 0, 0, 0).getTime());
-            c.lidarSearchDataSourceMap.put("Preliminary", c.rootDirOnServer + "/ola/search/preliminary/dataSource.lidar");
-            c.lidarSearchDataSourceTimeMap.put("Preliminary", startStop);
+            c.orexSearchTimeMap.put("Preliminary", startStop);
 
             startStop = new ArrayList<Date>();
             startStop.add(new GregorianCalendar(2019, 0, 1, 0, 0, 0).getTime());
             startStop.add(new GregorianCalendar(2019, 5, 9, 0, 0, 0).getTime());
-            c.lidarSearchDataSourceMap.put("Detailed", c.rootDirOnServer + "/ola/search/detailed/dataSource.lidar");
-            c.lidarSearchDataSourceTimeMap.put("Detailed", startStop);
+            c.orexSearchTimeMap.put("Detailed", startStop);
 
             startStop = new ArrayList<Date>();
             startStop.add(new GregorianCalendar(2019, 5, 9, 0, 0, 0).getTime());
             startStop.add(new GregorianCalendar(2019, 8, 10, 0, 0, 0).getTime());
-            c.lidarSearchDataSourceMap.put("OrbB", c.rootDirOnServer + "/ola/search/orbB/dataSource.lidar");
-            c.lidarSearchDataSourceTimeMap.put("OrbB", startStop);
+            c.orexSearchTimeMap.put("OrbB", startStop);
 
             startStop = new ArrayList<Date>();
             startStop.add(new GregorianCalendar(2019, 8, 10, 0, 0, 0).getTime());
             startStop.add(c.lidarSearchDefaultEndDate);
+            c.orexSearchTimeMap.put("Recon", startStop);
+
+            c.lidarSearchDataSourceMap.put("Preliminary", c.rootDirOnServer + "/ola/search/preliminary/dataSource.lidar");
+            c.lidarSearchDataSourceMap.put("Detailed", c.rootDirOnServer + "/ola/search/detailed/dataSource.lidar");
+            c.lidarSearchDataSourceMap.put("OrbB", c.rootDirOnServer + "/ola/search/orbB/dataSource.lidar");
             c.lidarSearchDataSourceMap.put("Recon", c.rootDirOnServer + "/ola/search/recon/dataSource.lidar");
-            c.lidarSearchDataSourceTimeMap.put("Recon", startStop);
 
             /*
              *
@@ -2978,39 +2989,39 @@ public class BennuConfigs extends SmallBodyViewConfig
             c.lidarBrowseDataSourceMap.put("Default", c.rootDirOnServer + "/ola/browse/fileList.txt");
             c.lidarBrowseFileListResourcePath = c.rootDirOnServer + "/ola/browse/fileList.txt";
 
+
             /*
-             * New hypertrees split into phases
+             * search times split into phases
              */
             ArrayList<Date> startStop = new ArrayList<Date>();
             startStop.add(c.lidarSearchDefaultStartDate);
             startStop.add(c.lidarSearchDefaultEndDate);
-            c.lidarSearchDataSourceMap.put("Default", c.rootDirOnServer + "/ola/search/default/dataSource.lidar");
-            c.lidarSearchDataSourceTimeMap.put("Default", startStop);
+            c.orexSearchTimeMap.put("Default", startStop);
 
             startStop = new ArrayList<Date>();
             startStop.add(c.lidarSearchDefaultStartDate);
             startStop.add(new GregorianCalendar(2019, 0, 1, 0, 0, 0).getTime());
-            c.lidarSearchDataSourceMap.put("Preliminary", c.rootDirOnServer + "/ola/search/preliminary/dataSource.lidar");
-            c.lidarSearchDataSourceTimeMap.put("Preliminary", startStop);
+            c.orexSearchTimeMap.put("Preliminary", startStop);
 
             startStop = new ArrayList<Date>();
             startStop.add(new GregorianCalendar(2019, 0, 1, 0, 0, 0).getTime());
             startStop.add(new GregorianCalendar(2019, 5, 9, 0, 0, 0).getTime());
-            c.lidarSearchDataSourceMap.put("Detailed", c.rootDirOnServer + "/ola/search/detailed/dataSource.lidar");
-            c.lidarSearchDataSourceTimeMap.put("Detailed", startStop);
+            c.orexSearchTimeMap.put("Detailed", startStop);
 
             startStop = new ArrayList<Date>();
             startStop.add(new GregorianCalendar(2019, 5, 9, 0, 0, 0).getTime());
             startStop.add(new GregorianCalendar(2019, 8, 10, 0, 0, 0).getTime());
-            c.lidarSearchDataSourceMap.put("OrbB", c.rootDirOnServer + "/ola/search/orbB/dataSource.lidar");
-            c.lidarSearchDataSourceTimeMap.put("OrbB", startStop);
+            c.orexSearchTimeMap.put("OrbB", startStop);
 
             startStop = new ArrayList<Date>();
             startStop.add(new GregorianCalendar(2019, 8, 10, 0, 0, 0).getTime());
             startStop.add(c.lidarSearchDefaultEndDate);
-            c.lidarSearchDataSourceMap.put("Recon", c.rootDirOnServer + "/ola/search/recon/dataSource.lidar");
-            c.lidarSearchDataSourceTimeMap.put("Recon", startStop);
+            c.orexSearchTimeMap.put("Recon", startStop);
 
+            c.lidarSearchDataSourceMap.put("Preliminary", c.rootDirOnServer + "/ola/search/preliminary/dataSource.lidar");
+            c.lidarSearchDataSourceMap.put("Detailed", c.rootDirOnServer + "/ola/search/detailed/dataSource.lidar");
+            c.lidarSearchDataSourceMap.put("OrbB", c.rootDirOnServer + "/ola/search/orbB/dataSource.lidar");
+            c.lidarSearchDataSourceMap.put("Recon", c.rootDirOnServer + "/ola/search/recon/dataSource.lidar");
             /*
              *
              */
@@ -3142,39 +3153,39 @@ public class BennuConfigs extends SmallBodyViewConfig
             c.lidarBrowseDataSourceMap.put("Default", c.rootDirOnServer + "/ola/browse/fileList.txt");
             c.lidarBrowseFileListResourcePath = c.rootDirOnServer + "/ola/browse/fileList.txt";
 
+
             /*
-             * New hypertrees split into phases
+             * search times split into phases
              */
             ArrayList<Date> startStop = new ArrayList<Date>();
             startStop.add(c.lidarSearchDefaultStartDate);
             startStop.add(c.lidarSearchDefaultEndDate);
-            c.lidarSearchDataSourceMap.put("Default", c.rootDirOnServer + "/ola/search/default/dataSource.lidar");
-            c.lidarSearchDataSourceTimeMap.put("Default", startStop);
+            c.orexSearchTimeMap.put("Default", startStop);
 
             startStop = new ArrayList<Date>();
             startStop.add(c.lidarSearchDefaultStartDate);
             startStop.add(new GregorianCalendar(2019, 0, 1, 0, 0, 0).getTime());
-            c.lidarSearchDataSourceMap.put("Preliminary", c.rootDirOnServer + "/ola/search/preliminary/dataSource.lidar");
-            c.lidarSearchDataSourceTimeMap.put("Preliminary", startStop);
+            c.orexSearchTimeMap.put("Preliminary", startStop);
 
             startStop = new ArrayList<Date>();
             startStop.add(new GregorianCalendar(2019, 0, 1, 0, 0, 0).getTime());
             startStop.add(new GregorianCalendar(2019, 5, 9, 0, 0, 0).getTime());
-            c.lidarSearchDataSourceMap.put("Detailed", c.rootDirOnServer + "/ola/search/detailed/dataSource.lidar");
-            c.lidarSearchDataSourceTimeMap.put("Detailed", startStop);
+            c.orexSearchTimeMap.put("Detailed", startStop);
 
             startStop = new ArrayList<Date>();
             startStop.add(new GregorianCalendar(2019, 5, 9, 0, 0, 0).getTime());
             startStop.add(new GregorianCalendar(2019, 8, 10, 0, 0, 0).getTime());
-            c.lidarSearchDataSourceMap.put("OrbB", c.rootDirOnServer + "/ola/search/orbB/dataSource.lidar");
-            c.lidarSearchDataSourceTimeMap.put("OrbB", startStop);
+            c.orexSearchTimeMap.put("OrbB", startStop);
 
             startStop = new ArrayList<Date>();
             startStop.add(new GregorianCalendar(2019, 8, 10, 0, 0, 0).getTime());
             startStop.add(c.lidarSearchDefaultEndDate);
-            c.lidarSearchDataSourceMap.put("Recon", c.rootDirOnServer + "/ola/search/recon/dataSource.lidar");
-            c.lidarSearchDataSourceTimeMap.put("Recon", startStop);
+            c.orexSearchTimeMap.put("Recon", startStop);
 
+            c.lidarSearchDataSourceMap.put("Preliminary", c.rootDirOnServer + "/ola/search/preliminary/dataSource.lidar");
+            c.lidarSearchDataSourceMap.put("Detailed", c.rootDirOnServer + "/ola/search/detailed/dataSource.lidar");
+            c.lidarSearchDataSourceMap.put("OrbB", c.rootDirOnServer + "/ola/search/orbB/dataSource.lidar");
+            c.lidarSearchDataSourceMap.put("Recon", c.rootDirOnServer + "/ola/search/recon/dataSource.lidar");
             /*
              *
              */
