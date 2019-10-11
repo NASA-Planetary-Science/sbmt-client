@@ -17,7 +17,9 @@ To install the SBMT, download the file appropriate for your operating system, na
    -  Linux: [VERSIONXXXXXX-linux-x64.zip](releases/VERSIONXXXXXX-linux-x64.zip)
    -  Windows: [VERSIONXXXXXX-windows-x64.zip](releases/VERSIONXXXXXX-windows-x64.zip)
 
-NOTE: On a Mac, built in Apple security measures may cause you to see an error message the first time you try to run a downloaded version of the SBMT: "runsbmt can't be opened because the identity of the developer cannot be confirmed." Rest assured that the SBMT is safe to run. To open the SBMT for the first time, right-click on the "runsbmt" icon, select "open", and then click the "open" button. The SBMT should then open without further problems, and this additional step will not be necessary until you download a new version of the tool.
+NOTE: Starting with the 0.7.7 release Mac OS Catalina is supported. The install process for the software for all mac users has changed to accommodate this support: 1) Open the downloaded .pkg and follow instructions in the install wizard. 2) SBMT will now appear as an application in the /Applications/SBMT folder. The functionality of the tool should be unchanged. Please contact sbmt@jhuapl.edu if you encounter installation issues.
+
+NOTE: On a Mac, built in Apple security measures may cause you to see an error message the first time you try to run a downloaded version of the SBMT: "runsbmt can't be opened because the identity of the developer cannot be confirmed." Rest assured that the SBMT is safe to run. To open the SBMT for the first time, right-click on the "SBMT" icon in your /Applications/SBMT folder, select "open". The SBMT should then open without further problems, and this additional step will not be necessary until you download a new version of the tool.
 
 ## System requirements
 * Java 8 1.8.0_101 or above
