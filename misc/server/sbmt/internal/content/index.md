@@ -11,7 +11,7 @@ The SBMT is currently available for Mac, Windows, and Linux systems. It is distr
 To install the SBMT, download the file appropriate for your operating system, navigate to the sbmt folder, and run the "runsbmt" program.
 
 
-   -  macOS (10.15 Catalina or later): [VERSIONXXXXXX.app.pkg](releases/VERSIONXXXXXX.pkg)
+   -  macOS (10.15 Catalina or later): [VERSIONXXXXXX.pkg](releases/VERSIONXXXXXX.pkg)
    -  macOS (10.14 Mojave or Earlier): [VERSIONXXXXXX-mac-x64.zip](releases/VERSIONXXXXXX-mac-x64.zip)
    -  Linux: [VERSIONXXXXXX-linux-x64.zip](releases/VERSIONXXXXXX-linux-x64.zip)
    -  Windows: [VERSIONXXXXXX-windows-x64.zip](releases/VERSIONXXXXXX-windows-x64.zip)
