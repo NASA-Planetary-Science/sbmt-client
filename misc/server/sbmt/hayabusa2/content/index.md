@@ -14,7 +14,7 @@ To install the SBMT, download the file appropriate for your operating system, na
 
 
    -  macOS (10.15 Catalina or later): [VERSIONXXXXXX.pkg](releases/VERSIONXXXXXX.pkg)
-   -  macOS (10.14 Mojave or Earlier): [VERSIONXXXXXX-mac-x64.zip](releases/VERSIONXXXXXX-mac-x64.zip)
+   -  macOS (10.14 Mojave or Earlier): [VERSIONXXXXXX-macosx-x64.zip](releases/VERSIONXXXXXX-macosx-x64.zip)
    -  Linux: [VERSIONXXXXXX-linux-x64.zip](releases/VERSIONXXXXXX-linux-x64.zip)
    -  Windows: [VERSIONXXXXXX-windows-x64.zip](releases/VERSIONXXXXXX-windows-x64.zip)
 
