@@ -143,6 +143,8 @@ public class CustomPerspectiveImageKey implements StorableAsMetadata<CustomPersp
 	        result.imagefilename = imagefilename;
 
 			return result;
+		}, CustomPerspectiveImageKey.class, key -> {
+		    return key.store();
 		});
 	}
 
