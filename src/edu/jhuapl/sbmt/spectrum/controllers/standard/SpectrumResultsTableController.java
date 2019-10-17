@@ -5,6 +5,8 @@ import java.util.List;
 
 import javax.swing.JOptionPane;
 import javax.swing.ProgressMonitor;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
 
 import com.google.common.collect.ImmutableSet;
 import com.jidesoft.utils.SwingWorker;
@@ -147,6 +149,18 @@ public class SpectrumResultsTableController<S extends BasicSpectrum>
 
         panel.getLoadSpectraListButton().setText("Load List...");
         panel.getLoadSpectraListButton().addActionListener(evt -> loadSpectrumListButtonActionPerformed());
+
+		panel.getResultList().getSelectionModel().addListSelectionListener(new ListSelectionListener()
+        {
+            @Override
+            public void valueChanged(ListSelectionEvent e)
+            {
+                if (!e.getValueIsAdjusting())
+                {
+                    model.setSelectedSpectraIndices(panel.getResultList().getSelectedRows());
+                }
+            }
+        });
     }
 
     /**

@@ -35,6 +35,7 @@ public class SpectraCollection<S extends BasicSpectrum> extends SaavtkItemManage
     private HashMap<vtkProp, IBasicSpectrumRenderer<S>> actorToSpectrumMap = new HashMap<vtkProp, IBasicSpectrumRenderer<S>>();
     private ISmallBodyModel shapeModel;
     private SpectrumColoringStyle coloringStyle;
+    int[] selectedIndices;
 
     boolean selectAll=false;
     final double minFootprintSeparation=0.001;
@@ -501,5 +502,15 @@ public class SpectraCollection<S extends BasicSpectrum> extends SaavtkItemManage
 	public void setSelectedItems(List<S> specs)
 	{
 		super.setSelectedItems(specs);
+	}
+
+	public void setSelectedIndices(int[] indices)
+	{
+		this.selectedIndices = indices;
+	}
+
+	public int[] getSelectedIndices()
+	{
+		return selectedIndices;
 	}
 }

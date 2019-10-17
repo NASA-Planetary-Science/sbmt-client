@@ -11,13 +11,27 @@
 package edu.jhuapl.sbmt.spectrum.ui.custom;
 
 import java.awt.Dialog;
+import java.awt.Dimension;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
+import java.awt.Insets;
 import java.awt.Window;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.io.File;
 
+import javax.swing.DefaultComboBoxModel;
+import javax.swing.JButton;
+import javax.swing.JComboBox;
+import javax.swing.JDialog;
+import javax.swing.JLabel;
 import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.JTextField;
+import javax.swing.SwingConstants;
+import javax.swing.WindowConstants;
 
 import edu.jhuapl.saavtk.gui.dialog.CustomFileChooser;
-import edu.jhuapl.saavtk.gui.render.Renderer.ProjectionType;
 import edu.jhuapl.saavtk.model.FileType;
 import edu.jhuapl.sbmt.spectrum.model.core.BasicSpectrumInstrument;
 import edu.jhuapl.sbmt.spectrum.model.core.SpectraType;
@@ -27,20 +41,24 @@ import edu.jhuapl.sbmt.spectrum.model.sbmtCore.spectra.CustomSpectrumKeyInterfac
 import edu.jhuapl.sbmt.spectrum.model.sbmtCore.spectra.ISpectraType;
 
 
-public class CustomSpectrumImporterDialog extends javax.swing.JDialog
+public class CustomSpectrumImporterDialog extends JDialog
 {
     private boolean okayPressed = false;
     private boolean isEditMode;
     private BasicSpectrumInstrument instrument;
     private static final String LEAVE_UNMODIFIED = "<cannot be changed>";
+    private static final String MAKE_SELECTION = "<Choose Spectrum Type>";
+    private String customDir;
 
     /** Creates new form ShapeModelImporterDialog */
-    public CustomSpectrumImporterDialog(Window parent, boolean isEditMode, BasicSpectrumInstrument instrument)
+    public CustomSpectrumImporterDialog(Window parent, boolean isEditMode, BasicSpectrumInstrument instrument, String customDir)
     {
         super(parent, isEditMode ? "Edit Spectrum" : "Import New Spectrum", Dialog.ModalityType.APPLICATION_MODAL);
+        this.instrument = instrument;
         initComponents();
         this.isEditMode = isEditMode;
-        this.instrument = instrument;
+        System.out.println("CustomSpectrumImporterDialog: CustomSpectrumImporterDialog: instrument " + instrument);
+        this.customDir = customDir;
 
         if (isEditMode)
         {
@@ -60,7 +78,13 @@ public class CustomSpectrumImporterDialog extends javax.swing.JDialog
     	ISpectraType currentSpectrumType = info == null ? SpectraTypeFactory.findSpectraTypeForDisplayName("NIS") : info.getSpectrumType();
 
         if (isEditMode)
+        {
             spectrumPathTextField.setText(LEAVE_UNMODIFIED);
+            if (info.getFileType() == FileType.SUM)
+            	sumfilePathTextField.setText(info.getPointingFilename());
+            else
+            	infofilePathTextField.setText(info.getPointingFilename());
+        }
         else
             spectrumPathTextField.setText(keySpectrumFilename);
 
@@ -69,10 +93,10 @@ public class CustomSpectrumImporterDialog extends javax.swing.JDialog
         updateEnabledItems();
     }
 
-    public ProjectionType getSelectedProjectionType()
-    {
-            return ProjectionType.PERSPECTIVE;
-    }
+//    public ProjectionType getSelectedProjectionType()
+//    {
+//            return ProjectionType.PERSPECTIVE;
+//    }
 
     public CustomSpectrumKeyInterface getSpectrumInfo()
     {
@@ -129,6 +153,7 @@ public class CustomSpectrumImporterDialog extends javax.swing.JDialog
         }
 
         String imageName = spectrumNameTextField.getText();
+        System.out.println("CustomSpectrumImporterDialog: validateInput: image name " + imageName);
         if (imageName == null)
             imageName = "";
         if (imageName.trim().isEmpty())
@@ -155,7 +180,7 @@ public class CustomSpectrumImporterDialog extends javax.swing.JDialog
 
                 if (!sumfilePath.isEmpty())
                 {
-                    File file = new File(sumfilePath);
+                    File file = new File(customDir, sumfilePath);
                     if (!file.exists() || !file.canRead() || !file.isFile())
                         return sumfilePath + " does not exist or is not readable.";
 
@@ -164,7 +189,7 @@ public class CustomSpectrumImporterDialog extends javax.swing.JDialog
                 }
                 else if (!infofilePath.isEmpty())
                 {
-                    File file = new File(infofilePath);
+                    File file = new File(customDir, infofilePath);
                     if (!file.exists() || !file.canRead() || !file.isFile())
                         return infofilePath + " does not exist or is not readable.";
 
@@ -200,212 +225,208 @@ public class CustomSpectrumImporterDialog extends javax.swing.JDialog
     @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
-        java.awt.GridBagConstraints gridBagConstraints;
+        GridBagConstraints gridBagConstraints;
 
-        projectionButtonGroup = new javax.swing.ButtonGroup();
-        spectrumPathLabel = new javax.swing.JLabel();
-        spectrumPathTextField = new javax.swing.JTextField();
-        browseSpectrumButton = new javax.swing.JButton();
+        spectrumPathLabel = new JLabel();
+        spectrumPathTextField = new JTextField();
+        browseSpectrumButton = new JButton();
 
-        jPanel1 = new javax.swing.JPanel();
-        cancelButton = new javax.swing.JButton();
-        okButton = new javax.swing.JButton();
+        jPanel1 = new JPanel();
+        cancelButton = new JButton();
+        okButton = new JButton();
 
-        perspectiveProjectionRadioButton = new javax.swing.JRadioButton();
-        infofilePathLabel = new javax.swing.JLabel();
-        browseInfofileButton = new javax.swing.JButton();
-        spectrumLabel = new javax.swing.JLabel();
-        spectrumNameTextField = new javax.swing.JTextField();
-        sumfilePathLabel = new javax.swing.JLabel();
-        infofilePathTextField = new javax.swing.JTextField();
-        sumfilePathTextField = new javax.swing.JTextField();
-        browseSumfileButton = new javax.swing.JButton();
-        spectrumTypeLabel = new javax.swing.JLabel();
-        spectrumTypeComboBox = new javax.swing.JComboBox();
+        infofilePathLabel = new JLabel();
+        browseInfofileButton = new JButton();
+        spectrumLabel = new JLabel();
+        spectrumNameTextField = new JTextField();
+        sumfilePathLabel = new JLabel();
+        infofilePathTextField = new JTextField();
+        sumfilePathTextField = new JTextField();
+        browseSumfileButton = new JButton();
+        spectrumTypeLabel = new JLabel();
+        spectrumTypeComboBox = new JComboBox();
 
-        setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
-        setMinimumSize(new java.awt.Dimension(600, 167));
-        getContentPane().setLayout(new java.awt.GridBagLayout());
+        setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
+        setMinimumSize(new Dimension(600, 167));
+        getContentPane().setLayout(new GridBagLayout());
 
         spectrumPathLabel.setText("Spectrum Path");
-        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints = new GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 0;
-        gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_START;
-        gridBagConstraints.insets = new java.awt.Insets(6, 6, 0, 0);
+        gridBagConstraints.anchor = GridBagConstraints.LINE_START;
+        gridBagConstraints.insets = new Insets(6, 6, 0, 0);
         getContentPane().add(spectrumPathLabel, gridBagConstraints);
-        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints = new GridBagConstraints();
         gridBagConstraints.gridx = 1;
         gridBagConstraints.gridy = 0;
-        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        gridBagConstraints.fill = GridBagConstraints.HORIZONTAL;
         gridBagConstraints.ipadx = 400;
         gridBagConstraints.weightx = 1.0;
-        gridBagConstraints.insets = new java.awt.Insets(6, 5, 4, 0);
+        gridBagConstraints.insets = new Insets(6, 5, 4, 0);
         getContentPane().add(spectrumPathTextField, gridBagConstraints);
 
         browseSpectrumButton.setText("Browse...");
-        browseSpectrumButton.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
+        browseSpectrumButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent evt) {
                 browseImageButtonActionPerformed(evt);
             }
         });
-        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints = new GridBagConstraints();
         gridBagConstraints.gridx = 2;
         gridBagConstraints.gridy = 0;
-        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
-        gridBagConstraints.insets = new java.awt.Insets(6, 5, 4, 5);
+        gridBagConstraints.fill = GridBagConstraints.HORIZONTAL;
+        gridBagConstraints.insets = new Insets(6, 5, 4, 5);
         getContentPane().add(browseSpectrumButton, gridBagConstraints);
 
-        jPanel1.setLayout(new java.awt.GridBagLayout());
+        jPanel1.setLayout(new GridBagLayout());
 
         cancelButton.setText("Cancel");
-        cancelButton.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
+        cancelButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent evt) {
                 cancelButtonActionPerformed(evt);
             }
         });
-        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints = new GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 0;
-        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
-        gridBagConstraints.insets = new java.awt.Insets(0, 0, 0, 4);
+        gridBagConstraints.fill = GridBagConstraints.HORIZONTAL;
+        gridBagConstraints.insets = new Insets(0, 0, 0, 4);
         jPanel1.add(cancelButton, gridBagConstraints);
 
         okButton.setText("OK");
-        okButton.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
+        okButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent evt) {
                 okButtonActionPerformed(evt);
             }
         });
-        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints = new GridBagConstraints();
         gridBagConstraints.gridx = 1;
         gridBagConstraints.gridy = 0;
-        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        gridBagConstraints.fill = GridBagConstraints.HORIZONTAL;
         jPanel1.add(okButton, gridBagConstraints);
 
-        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints = new GridBagConstraints();
         gridBagConstraints.gridx = 1;
         gridBagConstraints.gridy = 13;
         gridBagConstraints.gridwidth = 2;
-        gridBagConstraints.anchor = java.awt.GridBagConstraints.PAGE_END;
+        gridBagConstraints.anchor = GridBagConstraints.PAGE_END;
         gridBagConstraints.weighty = 1.0;
-        gridBagConstraints.insets = new java.awt.Insets(10, 0, 5, 0);
+        gridBagConstraints.insets = new Insets(10, 0, 5, 0);
         getContentPane().add(jPanel1, gridBagConstraints);
 
-        projectionButtonGroup.add(perspectiveProjectionRadioButton);
-        perspectiveProjectionRadioButton.setText("Perspective Projection");
-        perspectiveProjectionRadioButton.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                perspectiveProjectionRadioButtonActionPerformed(evt);
-            }
-        });
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 10;
-        gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_START;
-        gridBagConstraints.insets = new java.awt.Insets(10, 0, 4, 0);
-        getContentPane().add(perspectiveProjectionRadioButton, gridBagConstraints);
-
         infofilePathLabel.setText("Infofile Path");
-        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints = new GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 12;
-        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
-        gridBagConstraints.insets = new java.awt.Insets(0, 25, 0, 0);
+        gridBagConstraints.anchor = GridBagConstraints.WEST;
+        gridBagConstraints.insets = new Insets(0, 25, 0, 0);
         getContentPane().add(infofilePathLabel, gridBagConstraints);
 
         browseInfofileButton.setText("Browse...");
-        browseInfofileButton.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
+        browseInfofileButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent evt) {
                 browseInfofileButtonActionPerformed(evt);
             }
         });
-        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints = new GridBagConstraints();
         gridBagConstraints.gridx = 2;
         gridBagConstraints.gridy = 12;
-        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
-        gridBagConstraints.insets = new java.awt.Insets(0, 5, 4, 5);
+        gridBagConstraints.fill = GridBagConstraints.HORIZONTAL;
+        gridBagConstraints.insets = new Insets(0, 5, 4, 5);
         getContentPane().add(browseInfofileButton, gridBagConstraints);
 
         spectrumLabel.setText("Name");
         spectrumLabel.setToolTipText("A name describing the spectrum that will be displayed in the spectrum list.");
-        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints = new GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 1;
-        gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_START;
-        gridBagConstraints.insets = new java.awt.Insets(0, 6, 0, 0);
+        gridBagConstraints.anchor = GridBagConstraints.LINE_START;
+        gridBagConstraints.insets = new Insets(0, 6, 0, 0);
         getContentPane().add(spectrumLabel, gridBagConstraints);
 
         spectrumNameTextField.setToolTipText("A name describing the spectrum that will be displayed in the spectrum list.");
-        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints = new GridBagConstraints();
         gridBagConstraints.gridx = 1;
         gridBagConstraints.gridy = 1;
-        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        gridBagConstraints.fill = GridBagConstraints.HORIZONTAL;
         gridBagConstraints.ipadx = 400;
         gridBagConstraints.weightx = 1.0;
-        gridBagConstraints.insets = new java.awt.Insets(6, 5, 4, 0);
+        gridBagConstraints.insets = new Insets(6, 5, 4, 0);
         getContentPane().add(spectrumNameTextField, gridBagConstraints);
 
         sumfilePathLabel.setText("Sumfile Path");
-        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints = new GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 11;
-        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
-        gridBagConstraints.insets = new java.awt.Insets(0, 25, 0, 0);
+        gridBagConstraints.anchor = GridBagConstraints.WEST;
+        gridBagConstraints.insets = new Insets(0, 25, 0, 0);
         getContentPane().add(sumfilePathLabel, gridBagConstraints);
-        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints = new GridBagConstraints();
         gridBagConstraints.gridx = 1;
         gridBagConstraints.gridy = 12;
-        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
-        gridBagConstraints.insets = new java.awt.Insets(0, 5, 4, 0);
+        gridBagConstraints.fill = GridBagConstraints.HORIZONTAL;
+        gridBagConstraints.insets = new Insets(0, 5, 4, 0);
         getContentPane().add(infofilePathTextField, gridBagConstraints);
-        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints = new GridBagConstraints();
         gridBagConstraints.gridx = 1;
         gridBagConstraints.gridy = 11;
-        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
-        gridBagConstraints.insets = new java.awt.Insets(0, 5, 4, 0);
+        gridBagConstraints.fill = GridBagConstraints.HORIZONTAL;
+        gridBagConstraints.insets = new Insets(0, 5, 4, 0);
         getContentPane().add(sumfilePathTextField, gridBagConstraints);
 
         browseSumfileButton.setText("Browse...");
-        browseSumfileButton.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
+        browseSumfileButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent evt) {
                 browseSumfileButtonActionPerformed(evt);
             }
         });
-        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints = new GridBagConstraints();
         gridBagConstraints.gridx = 2;
         gridBagConstraints.gridy = 11;
-        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
-        gridBagConstraints.insets = new java.awt.Insets(0, 5, 4, 5);
+        gridBagConstraints.fill = GridBagConstraints.HORIZONTAL;
+        gridBagConstraints.insets = new Insets(0, 5, 4, 5);
         getContentPane().add(browseSumfileButton, gridBagConstraints);
 
-        spectrumTypeLabel.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
+        spectrumTypeLabel.setHorizontalAlignment(SwingConstants.LEFT);
         spectrumTypeLabel.setText("Spectrum Type");
-        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints = new GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 2;
         gridBagConstraints.ipadx = 2;
-        gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_START;
-        gridBagConstraints.insets = new java.awt.Insets(0, 6, 0, 0);
+        gridBagConstraints.anchor = GridBagConstraints.LINE_START;
+        gridBagConstraints.insets = new Insets(0, 6, 0, 0);
         getContentPane().add(spectrumTypeLabel, gridBagConstraints);
 
-        spectrumTypeComboBox.setModel(new javax.swing.DefaultComboBoxModel(SpectraTypeFactory.values()));
-        spectrumTypeComboBox.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
+        SpectraType[] spectraTypes = SpectraTypeFactory.values();
+        DefaultComboBoxModel<SpectraType> comboBoxModel = new DefaultComboBoxModel<SpectraType>();
+        for (SpectraType type : spectraTypes)
+        {
+        	if (type.getDisplayName().equals(instrument.getDisplayName()))
+        		comboBoxModel.addElement(type);
+        }
+
+//        comboBoxModel.insertElementAt(MAKE_SELECTION, 0);
+
+        spectrumTypeComboBox.setModel(comboBoxModel);
+        spectrumTypeComboBox.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent evt) {
                 imageTypeComboBoxActionPerformed(evt);
             }
         });
-        gridBagConstraints = new java.awt.GridBagConstraints();
+        spectrumTypeComboBox.setSelectedIndex(0);
+
+        gridBagConstraints = new GridBagConstraints();
         gridBagConstraints.gridx = 1;
         gridBagConstraints.gridy = 2;
-        gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_START;
-        gridBagConstraints.insets = new java.awt.Insets(0, 6, 0, 0);
+        gridBagConstraints.anchor = GridBagConstraints.LINE_START;
+        gridBagConstraints.insets = new Insets(0, 6, 0, 0);
         getContentPane().add(spectrumTypeComboBox, gridBagConstraints);
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-    private void browseImageButtonActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_browseImageButtonActionPerformed
+    private void browseImageButtonActionPerformed(ActionEvent evt)//GEN-FIRST:event_browseImageButtonActionPerformed
     {//GEN-HEADEREND:event_browseImageButtonActionPerformed
         File file = CustomFileChooser.showOpenDialog(this, "Select Spectrum");
         if (file == null)
@@ -432,12 +453,12 @@ public class CustomSpectrumImporterDialog extends javax.swing.JDialog
         updateEnabledItems();
     }//GEN-LAST:event_browseImageButtonActionPerformed
 
-    private void cancelButtonActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_cancelButtonActionPerformed
+    private void cancelButtonActionPerformed(ActionEvent evt)//GEN-FIRST:event_cancelButtonActionPerformed
     {//GEN-HEADEREND:event_cancelButtonActionPerformed
         setVisible(false);
     }//GEN-LAST:event_cancelButtonActionPerformed
 
-    private void okButtonActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_okButtonActionPerformed
+    private void okButtonActionPerformed(ActionEvent evt)//GEN-FIRST:event_okButtonActionPerformed
     {//GEN-HEADEREND:event_okButtonActionPerformed
         String errorString = validateInput();
         if (errorString != null)
@@ -453,15 +474,15 @@ public class CustomSpectrumImporterDialog extends javax.swing.JDialog
         setVisible(false);
     }//GEN-LAST:event_okButtonActionPerformed
 
-    private void cylindricalProjectionRadioButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cylindricalProjectionRadioButtonActionPerformed
+    private void cylindricalProjectionRadioButtonActionPerformed(ActionEvent evt) {//GEN-FIRST:event_cylindricalProjectionRadioButtonActionPerformed
         updateEnabledItems();
     }//GEN-LAST:event_cylindricalProjectionRadioButtonActionPerformed
 
-    private void perspectiveProjectionRadioButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_perspectiveProjectionRadioButtonActionPerformed
+    private void perspectiveProjectionRadioButtonActionPerformed(ActionEvent evt) {//GEN-FIRST:event_perspectiveProjectionRadioButtonActionPerformed
         updateEnabledItems();
     }//GEN-LAST:event_perspectiveProjectionRadioButtonActionPerformed
 
-    private void browseInfofileButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_browseInfofileButtonActionPerformed
+    private void browseInfofileButtonActionPerformed(ActionEvent evt) {//GEN-FIRST:event_browseInfofileButtonActionPerformed
         File file = CustomFileChooser.showOpenDialog(this, "Select Infofile");
         if (file == null)
         {
@@ -472,7 +493,7 @@ public class CustomSpectrumImporterDialog extends javax.swing.JDialog
         infofilePathTextField.setText(filename);
     }//GEN-LAST:event_browseInfofileButtonActionPerformed
 
-    private void browseSumfileButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_browseSumfileButtonActionPerformed
+    private void browseSumfileButtonActionPerformed(ActionEvent evt) {//GEN-FIRST:event_browseSumfileButtonActionPerformed
         File file = CustomFileChooser.showOpenDialog(this, "Select Sumfile");
         if (file == null)
         {
@@ -483,28 +504,28 @@ public class CustomSpectrumImporterDialog extends javax.swing.JDialog
         sumfilePathTextField.setText(filename);
     }//GEN-LAST:event_browseSumfileButtonActionPerformed
 
-    private void imageTypeComboBoxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_imageTypeComboBoxActionPerformed
+    private void imageTypeComboBoxActionPerformed(ActionEvent evt) {//GEN-FIRST:event_imageTypeComboBoxActionPerformed
         updateEnabledItems();
     }//GEN-LAST:event_imageTypeComboBoxActionPerformed
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JButton browseSpectrumButton;
-    private javax.swing.JButton browseInfofileButton;
-    private javax.swing.JButton browseSumfileButton;
-    private javax.swing.JButton cancelButton;
-    private javax.swing.JLabel spectrumLabel;
-    private javax.swing.JTextField spectrumNameTextField;
-    private javax.swing.JLabel spectrumPathLabel;
-    private javax.swing.JTextField spectrumPathTextField;
-    private javax.swing.JComboBox spectrumTypeComboBox;
-    private javax.swing.JLabel spectrumTypeLabel;
-    private javax.swing.JLabel infofilePathLabel;
-    private javax.swing.JTextField infofilePathTextField;
-    private javax.swing.JPanel jPanel1;
-    private javax.swing.JButton okButton;
-    private javax.swing.JRadioButton perspectiveProjectionRadioButton;
-    private javax.swing.ButtonGroup projectionButtonGroup;
-    private javax.swing.JLabel sumfilePathLabel;
-    private javax.swing.JTextField sumfilePathTextField;
+    private JButton browseSpectrumButton;
+    private JButton browseInfofileButton;
+    private JButton browseSumfileButton;
+    private JButton cancelButton;
+    private JLabel spectrumLabel;
+    private JTextField spectrumNameTextField;
+    private JLabel spectrumPathLabel;
+    private JTextField spectrumPathTextField;
+    private JComboBox spectrumTypeComboBox;
+    private JLabel spectrumTypeLabel;
+    private JLabel infofilePathLabel;
+    private JTextField infofilePathTextField;
+    private JPanel jPanel1;
+    private JButton okButton;
+//    private JRadioButton perspectiveProjectionRadioButton;
+//    private ButtonGroup projectionButtonGroup;
+    private JLabel sumfilePathLabel;
+    private JTextField sumfilePathTextField;
     // End of variables declaration//GEN-END:variables
 }

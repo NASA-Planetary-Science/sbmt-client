@@ -8,7 +8,8 @@ package edu.jhuapl.sbmt.spectrum.model.sbmtCore.spectra;
 public enum SpectrumColoringStyle
 {
     RGB("RGB"),
-    EMISSION_ANGLE("Emission Angle");
+    EMISSION_ANGLE("Emission Angle"),
+    GREYSCALE("Greyscale");
 
     private String name;
 

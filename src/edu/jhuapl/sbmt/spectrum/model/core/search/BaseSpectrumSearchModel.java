@@ -97,7 +97,12 @@ public class BaseSpectrumSearchModel<S extends BasicSpectrum> implements ISpectr
     	this.customDataFolder = customFolderName;
     }
 
-    /**
+    public String getCustomDataFolder()
+	{
+		return customDataFolder;
+	}
+
+	/**
      * Returns the currently displayed interval of spectra shown
      * @return
      */

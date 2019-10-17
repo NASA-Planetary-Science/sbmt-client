@@ -58,7 +58,7 @@ public class CustomSpectraControlController<S extends BasicSpectrum>
     private void newButtonActionPerformed()
     {
         CustomSpectrumImporterDialog dialog = new CustomSpectrumImporterDialog(
-                null, false, model.getInstrument());
+                null, false, model.getInstrument(), model.getCustomDataFolder());
         dialog.setSpectrumInfo(null);
         dialog.setLocationRelativeTo(getPanel());
         dialog.setVisible(true);
@@ -85,12 +85,14 @@ public class CustomSpectraControlController<S extends BasicSpectrum>
      */
     private void editButtonActionPerformed()
     {
+    	if (model.getSelectedSpectraIndices() == null) return;
     	int selectedItem = model.getSelectedSpectraIndices()[0];
+//    	int selectedItem = model.gets
     	if (selectedItem < 0) return;
 
         CustomSpectrumKeyInterface oldSpectrumInfo = customSpectra.get(selectedItem);
 
-        CustomSpectrumImporterDialog dialog = new CustomSpectrumImporterDialog(null, true, model.getInstrument());
+        CustomSpectrumImporterDialog dialog = new CustomSpectrumImporterDialog(null, true, model.getInstrument(), model.getCustomDataFolder());
         dialog.setSpectrumInfo(oldSpectrumInfo);
         dialog.setLocationRelativeTo(null);
         dialog.setVisible(true);

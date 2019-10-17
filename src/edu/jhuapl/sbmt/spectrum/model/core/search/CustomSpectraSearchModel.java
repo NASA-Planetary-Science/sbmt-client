@@ -326,6 +326,7 @@ public class CustomSpectraSearchModel<S extends BasicSpectrum> extends BaseSpect
         boolean updated = migrateConfigFileIfNeeded();
         if (!updated)
         {
+        	System.out.println("CustomSpectraSearchModel: initializeSpecList: config name " + getConfigFilename());
             if (!(new File(getConfigFilename()).exists())) return;
             FixedMetadata metadata = Serializers.deserialize(new File(getConfigFilename()), "CustomSpectra");
             retrieve(metadata);
