@@ -40,7 +40,6 @@ public class SpectrumResultsTableController<S extends BasicSpectrum>
     protected SpectrumStringRenderer stringRenderer;
     protected SpectraCollection<S> spectrumCollection;
     protected SpectrumPopupMenu spectrumPopupMenu;
-//    protected DefaultTableModel tableModel;
     protected SpectrumBoundaryCollection<S> boundaries;
     private SpectrumSearchResultsListener<S> tableResultsChangedListener;
     private ProgressMonitor progressMonitor;
@@ -81,7 +80,6 @@ public class SpectrumResultsTableController<S extends BasicSpectrum>
 		        spectrumCollection.deselectAll();
 			}
         };
-
 
         this.spectrumCollection.addPropertyChangeListener(evt -> panel.repaint());
         this.boundaries.addPropertyChangeListener(evt -> panel.repaint());
@@ -478,7 +476,6 @@ public class SpectrumResultsTableController<S extends BasicSpectrum>
         int startId = idPair.id1;
         int endId = idPair.id2;
         boundaries.removeAllBoundaries();
-        System.out.println("SpectrumResultsTableController: showSpectrumBoundaries: start id " + startId + " endID " + endId);
         for (int i=startId; i<endId; ++i)
         {
             if (i < 0)
@@ -512,11 +509,11 @@ public class SpectrumResultsTableController<S extends BasicSpectrum>
     {
         panel.getResultsLabel().setText(results.size() + " spectra found");
         //clear out the old spectrum and boundaries from the spectrum and boundary collection
-        for (S spec : results)
-        {
-            spectrumCollection.removeSpectrum(spec);
-            boundaries.removeBoundary(spec);
-        }
+//        for (S spec : results)
+//        {
+//            spectrumCollection.removeSpectrum(spec);
+//            boundaries.removeBoundary(spec);
+//        }
         spectrumRawResults = results;
         spectrumCollection.setAllItems(results);
         showSpectrumBoundaries(new IdPair(0, Integer.parseInt((String)panel.getNumberOfBoundariesComboBox().getSelectedItem())));

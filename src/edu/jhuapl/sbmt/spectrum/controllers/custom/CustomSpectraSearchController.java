@@ -39,8 +39,8 @@ public class CustomSpectraSearchController<S extends BasicSpectrum>
 {
     private SpectrumSearchPanel panel;
     private CustomSpectrumResultsTableController<S> spectrumResultsTableController;
-    private CustomSpectraControlController searchParametersController;
-    private SpectrumColoringController coloringController;
+    private CustomSpectraControlController<S> searchParametersController;
+    private SpectrumColoringController<S> coloringController;
     private CustomSpectraSearchModel<S> spectrumSearchModel;
 
 
@@ -80,7 +80,6 @@ public class CustomSpectraSearchController<S extends BasicSpectrum>
             	}
 
                 spectrumResultsTableController.setSpectrumResults(spectra);
-                spectrumSearchModel.updateColoring();
             }
 
             @Override
@@ -102,7 +101,7 @@ public class CustomSpectraSearchController<S extends BasicSpectrum>
 
         this.searchParametersController = new CustomSpectraControlController<S>(spectrumSearchModel);
 
-        this.coloringController = new SpectrumColoringController(spectrumSearchModel, spectrumCollection);
+        this.coloringController = new SpectrumColoringController(spectrumSearchModel, spectrumCollection, instrument.getRGBMaxVals(), instrument.getRGBDefaultIndices());
 
         spectrumCollection.addListener(new ItemEventListener()
 		{

@@ -5,7 +5,9 @@ import javax.swing.JComboBox;
 import javax.swing.JPanel;
 import javax.swing.border.TitledBorder;
 
-import edu.jhuapl.sbmt.spectrum.model.core.search.BaseSpectrumSearchModel;
+import edu.jhuapl.sbmt.spectrum.model.core.BasicSpectrum;
+import edu.jhuapl.sbmt.spectrum.model.core.color.SpectrumColoringModel;
+import edu.jhuapl.sbmt.spectrum.model.sbmtCore.spectra.ISpectralInstrument;
 import edu.jhuapl.sbmt.spectrum.model.sbmtCore.spectra.SpectrumColoringStyle;
 
 /**
@@ -13,18 +15,16 @@ import edu.jhuapl.sbmt.spectrum.model.sbmtCore.spectra.SpectrumColoringStyle;
  * @author steelrj1
  *
  */
-public class SpectrumColoringPanel extends JPanel
+public class SpectrumColoringPanel<S extends BasicSpectrum> extends JPanel
 {
     private JPanel coloringDetailPanel;
     private JComboBox<SpectrumColoringStyle> coloringComboBox;
-    private EmissionAngleColoringPanel emissionAngleColoringPanel;
-    private RGBColoringPanel rgbColoringPanel;
-    private GreyscaleColoringPanel greyScaleColoringPanel;
-    private BaseSpectrumSearchModel model;
 
-    public SpectrumColoringPanel(BaseSpectrumSearchModel model)
+    public SpectrumColoringPanel(SpectrumColoringModel<S> coloringModel, ISpectralInstrument instrument)
     {
-    	this.model = model;
+    	SpectrumColoringFactory.registerColoringPanel(SpectrumColoringStyle.EMISSION_ANGLE, new EmissionAngleColoringPanel<S>(coloringModel));
+    	SpectrumColoringFactory.registerColoringPanel(SpectrumColoringStyle.GREYSCALE, new GreyscaleColoringPanel<S>(coloringModel, instrument));
+    	SpectrumColoringFactory.registerColoringPanel(SpectrumColoringStyle.RGB, new RGBColoringPanel<S>(coloringModel, instrument));
         initialize();
     }
 
@@ -40,27 +40,14 @@ public class SpectrumColoringPanel extends JPanel
         coloringDetailPanel = new JPanel();
         add(coloringDetailPanel);
         coloringDetailPanel.setLayout(new BoxLayout(coloringDetailPanel, BoxLayout.Y_AXIS));
-        //emission panel was here
-        emissionAngleColoringPanel = new EmissionAngleColoringPanel();
-        coloringDetailPanel.add(emissionAngleColoringPanel);
+    }
 
-
-        rgbColoringPanel = new RGBColoringPanel(model);
-        coloringDetailPanel.add(rgbColoringPanel);
-
-        greyScaleColoringPanel = new GreyscaleColoringPanel(model);
-        coloringDetailPanel.add(greyScaleColoringPanel);
-
-//        rgbColoringPanel.setLayout(new BoxLayout(rgbColoringPanel, BoxLayout.Y_AXIS));
-
-        JPanel panel_10 = new JPanel();
-        rgbColoringPanel.add(panel_10);
-        panel_10.setLayout(new BoxLayout(panel_10, BoxLayout.X_AXIS));
-
-        getEmissionAngleColoringPanel().setVisible(false);
-        getGreyscaleColoringPanel().setVisible(false);
-        getRgbColoringPanel().setVisible(true);
-
+    public void switchToPanelForColoringStyle(SpectrumColoringStyle style)
+    {
+    	coloringDetailPanel.removeAll();
+    	JPanel panel = SpectrumColoringFactory.getColoringPanelForStyle(style).getJPanel();
+    	coloringDetailPanel.add(panel);
+    	revalidate();
     }
 
     public JPanel getColoringDetailPanel()
@@ -72,21 +59,5 @@ public class SpectrumColoringPanel extends JPanel
     {
         return coloringComboBox;
     }
-
-    public JPanel getEmissionAngleColoringPanel()
-    {
-        return emissionAngleColoringPanel;
-    }
-
-    public JPanel getGreyscaleColoringPanel()
-    {
-        return greyScaleColoringPanel;
-    }
-
-    public JPanel getRgbColoringPanel()
-    {
-        return rgbColoringPanel;
-    }
-
 
 }

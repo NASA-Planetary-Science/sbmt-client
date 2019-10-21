@@ -1,6 +1,5 @@
 package edu.jhuapl.sbmt.spectrum.rendering;
 
-import java.awt.Color;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
@@ -23,8 +22,6 @@ import vtk.vtkProp;
 import vtk.vtkProperty;
 import vtk.vtkTriangle;
 
-import edu.jhuapl.saavtk.colormap.Colormap;
-import edu.jhuapl.saavtk.colormap.Colormaps;
 import edu.jhuapl.saavtk.model.AbstractModel;
 import edu.jhuapl.saavtk.model.GenericPolyhedralModel;
 import edu.jhuapl.saavtk.util.Frustum;
@@ -33,10 +30,6 @@ import edu.jhuapl.saavtk.util.PolyDataUtil;
 import edu.jhuapl.saavtk.util.Properties;
 import edu.jhuapl.sbmt.client.ISmallBodyModel;
 import edu.jhuapl.sbmt.spectrum.model.core.BasicSpectrum;
-import edu.jhuapl.sbmt.spectrum.model.core.BasicSpectrumInstrument;
-import edu.jhuapl.sbmt.spectrum.model.sbmtCore.spectra.SpectrumColoringStyle;
-import edu.jhuapl.sbmt.spectrum.model.statistics.SpectrumStatistics;
-import edu.jhuapl.sbmt.spectrum.model.statistics.SpectrumStatistics.Sample;
 
 /**
  * Base renderer for spectra
@@ -78,6 +71,7 @@ public class BasicSpectrumRenderer<S extends BasicSpectrum> extends AbstractMode
 	protected double[] frustum3;
 	protected double[] frustum4;
     protected boolean showFrustum = false;
+    protected double[] color;
 
 
 	public BasicSpectrumRenderer(S spectrum, ISmallBodyModel smallBodyModel, boolean headless)
@@ -173,7 +167,7 @@ public class BasicSpectrumRenderer<S extends BasicSpectrum> extends AbstractMode
             footprintActor = new vtkActor();
             footprintActor.SetMapper(footprintMapper);
             vtkProperty footprintProperty = footprintActor.GetProperty();
-            double[] color = getChannelColor();
+//            double[] color = getChannelColor();
             footprintProperty.SetColor(color[0], color[1], color[2]);
             footprintProperty.SetLineWidth(2.0);
             footprintProperty.LightingOff();
@@ -500,7 +494,7 @@ public class BasicSpectrumRenderer<S extends BasicSpectrum> extends AbstractMode
     {
     	if (footprintActor == null) return;
         vtkProperty footprintProperty = footprintActor.GetProperty();
-        double[] color = getChannelColor();
+//        double[] color = getChannelColor();
         footprintProperty.SetColor(color[0], color[1], color[2]);
         this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, this);
     }
@@ -572,56 +566,71 @@ public class BasicSpectrumRenderer<S extends BasicSpectrum> extends AbstractMode
 		return outlineActor;
 	}
 
-	@Override
-    public double[] getChannelColor()
-    {
-        if (spectrum.getColoringStyle() == SpectrumColoringStyle.EMISSION_ANGLE)
-        {
-            //This calculation is using the average emission angle over the spectrum, which doesn't exacty match the emission angle of the
-            //boresight - no good way to calculate this data at the moment.  Olivier said this is fine.  Need to present a way to either have this option or the old one via RGB for coloring
-//        	AdvancedSpectrumRenderer renderer = new AdvancedSpectrumRenderer(this, smallBodyModel, false);
-            List<Sample> sampleEmergenceAngle = SpectrumStatistics.sampleEmergenceAngle(this, new Vector3D(spacecraftPosition));
-            Colormap colormap = Colormaps.getNewInstanceOfBuiltInColormap("OREX Scalar Ramp");
-            colormap.setRangeMin(0.0);  //was 5.4
-            colormap.setRangeMax(90.00); //was 81.7
+//	@Override
+//    public double[] getChannelColor()
+//    {
+//        if (spectrum.getColoringStyle() == SpectrumColoringStyle.EMISSION_ANGLE)
+//        {
+//            //This calculation is using the average emission angle over the spectrum, which doesn't exacty match the emission angle of the
+//            //boresight - no good way to calculate this data at the moment.  Olivier said this is fine.  Need to present a way to either have this option or the old one via RGB for coloring
+////        	AdvancedSpectrumRenderer renderer = new AdvancedSpectrumRenderer(this, smallBodyModel, false);
+//            List<Sample> sampleEmergenceAngle = SpectrumStatistics.sampleEmergenceAngle(this, new Vector3D(spacecraftPosition));
+//            Colormap colormap = Colormaps.getNewInstanceOfBuiltInColormap("OREX Scalar Ramp");
+//            colormap.setRangeMin(0.0);  //was 5.4
+//            colormap.setRangeMax(90.00); //was 81.7
+//
+//            Color color2 = colormap.getColor(SpectrumStatistics.getWeightedMean(sampleEmergenceAngle));
+//            double[] color = new double[3];
+//            color[0] = color2.getRed()/255.0;
+//            color[1] = color2.getGreen()/255.0;
+//            color[2] = color2.getBlue()/255.0;
+//            return color;
+//        }
+//        else
+//        {
+//            //TODO: What do we do for L3 data here?  It has less XAxis points than the L2 data, so is the coloring scheme different?
+//            double[] color = new double[3];
+//            BasicSpectrumInstrument instrument = spectrum.getInstrument();
+//            int[] channelsToColorBy = spectrum.getChannelsToColorBy();
+//            double[] channelsColoringMinValue = spectrum.getChannelsColoringMinValue();
+//            double[] channelsColoringMaxValue = spectrum.getChannelsColoringMaxValue();
+//
+//            for (int i=0; i<3; ++i)
+//            {
+//                double val = 0.0;
+//                if (spectrum.getChannelsToColorBy()[i] < instrument.getBandCenters().length)
+//                {
+//                    val = spectrum.getSpectrum()[channelsToColorBy[i]];
+//                }
+//                else if (channelsToColorBy[i] < instrument.getBandCenters().length + instrument.getSpectrumMath().getDerivedParameters().length)
+//                    val = spectrum.evaluateDerivedParameters(channelsToColorBy[i]-instrument.getBandCenters().length);
+//                else
+//                    val = instrument.getSpectrumMath().evaluateUserDefinedDerivedParameters(channelsToColorBy[i]-instrument.getBandCenters().length-instrument.getSpectrumMath().getDerivedParameters().length, spectrum.getSpectrum());
+//
+//                if (val < 0.0)
+//                    val = 0.0;
+//                else if (val > 1.0)
+//                    val = 1.0;
+//
+//                double slope = 1.0 / (channelsColoringMaxValue[i] - channelsColoringMinValue[i]);
+//                color[i] = slope * (val - channelsColoringMinValue[i]);
+//            }
+//            return color;
+//        }
+//    }
 
-            Color color2 = colormap.getColor(SpectrumStatistics.getWeightedMean(sampleEmergenceAngle));
-            double[] color = new double[3];
-            color[0] = color2.getRed()/255.0;
-            color[1] = color2.getGreen()/255.0;
-            color[2] = color2.getBlue()/255.0;
-            return color;
-        }
-        else
-        {
-            //TODO: What do we do for L3 data here?  It has less XAxis points than the L2 data, so is the coloring scheme different?
-            double[] color = new double[3];
-            BasicSpectrumInstrument instrument = spectrum.getInstrument();
-            int[] channelsToColorBy = spectrum.getChannelsToColorBy();
-            double[] channelsColoringMinValue = spectrum.getChannelsColoringMinValue();
-            double[] channelsColoringMaxValue = spectrum.getChannelsColoringMaxValue();
+	public double[] getSpacecraftPosition()
+	{
+		return spacecraftPosition;
+	}
 
-            for (int i=0; i<3; ++i)
-            {
-                double val = 0.0;
-                if (spectrum.getChannelsToColorBy()[i] < instrument.getBandCenters().length)
-                {
-                    val = spectrum.getSpectrum()[channelsToColorBy[i]];
-                }
-                else if (channelsToColorBy[i] < instrument.getBandCenters().length + instrument.getSpectrumMath().getDerivedParameters().length)
-                    val = spectrum.evaluateDerivedParameters(channelsToColorBy[i]-instrument.getBandCenters().length);
-                else
-                    val = instrument.getSpectrumMath().evaluateUserDefinedDerivedParameters(channelsToColorBy[i]-instrument.getBandCenters().length-instrument.getSpectrumMath().getDerivedParameters().length, spectrum.getSpectrum());
+	public double[] getColor()
+	{
+		return color;
+	}
 
-                if (val < 0.0)
-                    val = 0.0;
-                else if (val > 1.0)
-                    val = 1.0;
-
-                double slope = 1.0 / (channelsColoringMaxValue[i] - channelsColoringMinValue[i]);
-                color[i] = slope * (val - channelsColoringMinValue[i]);
-            }
-            return color;
-        }
-    }
+	public void setColor(double[] color)
+	{
+		this.color = color;
+	}
 }

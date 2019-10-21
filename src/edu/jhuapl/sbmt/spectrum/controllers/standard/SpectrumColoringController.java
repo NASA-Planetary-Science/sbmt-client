@@ -1,16 +1,21 @@
 package edu.jhuapl.sbmt.spectrum.controllers.standard;
 
 import java.awt.event.ActionEvent;
+import java.util.Iterator;
+import java.util.Set;
 
 import javax.swing.JComboBox;
 import javax.swing.ProgressMonitor;
 
 import com.jidesoft.utils.SwingWorker;
 
-import edu.jhuapl.sbmt.spectrum.model.core.interfaces.SpectraColoringProgressListener;
+import edu.jhuapl.sbmt.spectrum.model.core.BasicSpectrum;
+import edu.jhuapl.sbmt.spectrum.model.core.color.SpectrumColoringModel;
+import edu.jhuapl.sbmt.spectrum.model.core.interfaces.SpectrumCollectionChangedListener;
 import edu.jhuapl.sbmt.spectrum.model.core.interfaces.SpectrumColoringChangedListener;
 import edu.jhuapl.sbmt.spectrum.model.core.search.BaseSpectrumSearchModel;
 import edu.jhuapl.sbmt.spectrum.model.sbmtCore.spectra.SpectrumColoringStyle;
+import edu.jhuapl.sbmt.spectrum.rendering.IBasicSpectrumRenderer;
 import edu.jhuapl.sbmt.spectrum.rendering.SpectraCollection;
 import edu.jhuapl.sbmt.spectrum.ui.color.SpectrumColoringPanel;
 
@@ -19,16 +24,24 @@ import edu.jhuapl.sbmt.spectrum.ui.color.SpectrumColoringPanel;
  * @author steelrj1
  *
  */
-public class SpectrumColoringController
+public class SpectrumColoringController<S extends BasicSpectrum>
 {
-    private SpectrumColoringPanel panel;
-    private BaseSpectrumSearchModel model;
-    private SpectraCollection collection;
+    private SpectrumColoringPanel<S> panel;
+    private BaseSpectrumSearchModel<S> model;
+    private SpectraCollection<S> collection;
     private ProgressMonitor progressMonitor;
+    private SpectrumColoringModel<S> coloringModel;
 
-    public SpectrumColoringController(BaseSpectrumSearchModel model, SpectraCollection collection)
+    public SpectrumColoringController(BaseSpectrumSearchModel<S> model, SpectraCollection<S> collection, double[] rgbMaxvals, int[] rgbIndices)
     {
-        this.panel = new SpectrumColoringPanel(model);
+        this.coloringModel = new SpectrumColoringModel<>();
+        coloringModel.setRedMaxVal(rgbMaxvals[0]);
+        coloringModel.setGreenMaxVal(rgbMaxvals[1]);
+        coloringModel.setBlueMaxVal(rgbMaxvals[2]);
+        coloringModel.setRedIndex(rgbIndices[0]);
+        coloringModel.setGreenIndex(rgbIndices[1]);
+        coloringModel.setBlueIndex(rgbIndices[2]);
+        this.panel = new SpectrumColoringPanel<S>(coloringModel, model.getInstrument());
         this.model = model;
         this.collection = collection;
         init();
@@ -43,16 +56,57 @@ public class SpectrumColoringController
 
         panel.getColoringComboBox().addActionListener(evt -> coloringComboBoxActionPerformed(evt));
 
-        model.getColoringModel().addColoringChangedListener(new SpectrumColoringChangedListener()
+        coloringModel.addColoringChangedListener(new SpectrumColoringChangedListener()
         {
             @Override
             public void coloringChanged()
             {
-            	if (!model.getColoringModel().getSpectrumColoringStyle().equals(panel.getColoringComboBox().getSelectedItem()))
-            		panel.getColoringComboBox().setSelectedItem(model.getColoringModel().getSpectrumColoringStyle());
-                collection.setChannelColoring(model.getColoringModel().getChannels(), model.getColoringModel().getMins(), model.getColoringModel().getMaxs(), model.getInstrument());
+            	SwingWorker<Void, Void> task = new SwingWorker<Void, Void>()
+        		{
+        			@Override
+        			protected Void doInBackground() throws Exception
+        			{
+		            	if (!coloringModel.getSpectrumColoringStyle().equals(panel.getColoringComboBox().getSelectedItem()))
+		            		panel.getColoringComboBox().setSelectedItem(coloringModel.getSpectrumColoringStyle());
+		            	 Set<IBasicSpectrumRenderer<S>> renderers = collection.getSpectra();
+		            	 Iterator<IBasicSpectrumRenderer<S>> iterator = renderers.iterator();
+		            	 progressMonitor = new ProgressMonitor(null, "Updating coloring...", "", 0, 100);
+						 progressMonitor.setProgress(0);
+						 int i=0;
+						 int numToRender = renderers.size();
+		            	 while (iterator.hasNext())
+		                 {
+		                 	IBasicSpectrumRenderer<S> spectrumRenderer = iterator.next();
+		                 	if (spectrumRenderer == null) continue;
+		                 	if (spectrumRenderer.getSpectrum().getInstrument() != model.getInstrument()) continue;
+		                 	double[] color = coloringModel.getSpectrumColoringForCurrentStyle(spectrumRenderer);
+		                 	spectrumRenderer.setColor(color);
+		                 	spectrumRenderer.updateChannelColoring();
+		                 	progressMonitor.setProgress(((int)(100*(double)i/(double)numToRender)));
+		                 	i++;
+		                 }
+		            	progressMonitor.setProgress(100);
+		            	return null;
+        			}
+	     		};
+	     		task.execute();
             }
         });
+
+        collection.addSpectrumCollectionChangedListener(new SpectrumCollectionChangedListener<S>()
+		{
+
+			@Override
+			public void spectraRendered(IBasicSpectrumRenderer<S> renderer)
+			{
+				if (renderer.getSpectrum().getInstrument() != model.getInstrument()) return;
+				renderer.setColor(coloringModel.getSpectrumColoringForCurrentStyle(renderer));
+				renderer.updateChannelColoring();
+			}
+		});
+
+        panel.getColoringComboBox().setSelectedItem(SpectrumColoringStyle.RGB);
+
 
     }
 
@@ -74,58 +128,19 @@ public class SpectrumColoringController
      */
     private void coloringComboBoxActionPerformed(ActionEvent evt)
     {
-    	SwingWorker<Void, Void> task = new SwingWorker<Void, Void>()
-		{
-			@Override
-			protected Void doInBackground() throws Exception
-			{
-		        JComboBox<SpectrumColoringStyle> box = (JComboBox<SpectrumColoringStyle>)evt.getSource();
-		        SpectrumColoringStyle coloringStyle = (SpectrumColoringStyle)box.getSelectedItem();
-		        collection.setColoringStyleForInstrument(coloringStyle, model.getInstrument());
-		        collection.setColoringStyle(coloringStyle, new SpectraColoringProgressListener()
-				{
-
-					@Override
-					public void coloringUpdateStarted()
-					{
-						progressMonitor = new ProgressMonitor(null, "Updating coloring...", "", 0, 100);
-						progressMonitor.setProgress(0);
-					}
-
-					@Override
-					public void coloringUpdateProgressChanged(int percentComplete)
-					{
-						progressMonitor.setProgress(percentComplete);
-					}
-
-					@Override
-					public void coloringUpdateEnded()
-					{
-						progressMonitor.setProgress(100);
-					}
-				});
-
-
-		        boolean isEmissionSelected = (coloringStyle == SpectrumColoringStyle.EMISSION_ANGLE);
-		        boolean isGreyscaleSelected = (coloringStyle == SpectrumColoringStyle.GREYSCALE);
-		        boolean isRGBSelected = (coloringStyle == SpectrumColoringStyle.RGB);
-		        panel.getRgbColoringPanel().setVisible(isRGBSelected);
-		        panel.getEmissionAngleColoringPanel().setVisible(isEmissionSelected);
-		        panel.getGreyscaleColoringPanel().setVisible(isGreyscaleSelected);
-		        model.getColoringModel().setSpectrumColoringStyle(coloringStyle);
-
-		        return null;
-			}
-		};
-		task.execute();
+    	JComboBox<SpectrumColoringStyle> box = (JComboBox<SpectrumColoringStyle>)evt.getSource();
+        SpectrumColoringStyle coloringStyle = (SpectrumColoringStyle)box.getSelectedItem();
+        panel.switchToPanelForColoringStyle(coloringStyle);
+    	coloringModel.setSpectrumColoringStyle(coloringStyle);
     }
 
     /**
      * Returns the panel components so it can be embedded in a container view
      * @return
      */
-    public SpectrumColoringPanel getPanel()
+    public SpectrumColoringPanel<S> getPanel()
     {
         return panel;
     }
+
 }

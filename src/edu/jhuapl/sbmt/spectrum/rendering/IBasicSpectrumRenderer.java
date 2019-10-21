@@ -31,6 +31,8 @@ public interface IBasicSpectrumRenderer<S extends BasicSpectrum> extends Propert
 
 	void shiftFootprintToHeight(double h);
 
+	public double[] getSpacecraftPosition();
+
 	/**
 	 * The shifted footprint is the original footprint shifted slightly in the
 	 * normal direction so that it will be rendered correctly and not obscured
@@ -82,6 +84,12 @@ public interface IBasicSpectrumRenderer<S extends BasicSpectrum> extends Propert
 
 	public vtkActor getOutlineActor();
 
-	public double[] getChannelColor();
+//	public double[] getChannelColor();
+
+	public double[] getColor();
+
+	public void setColor(double[] color);
+
+
 
 }

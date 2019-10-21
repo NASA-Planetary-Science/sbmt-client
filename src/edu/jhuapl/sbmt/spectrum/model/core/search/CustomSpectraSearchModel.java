@@ -25,7 +25,6 @@ import edu.jhuapl.sbmt.spectrum.model.core.interfaces.CustomSpectraResultsListen
 import edu.jhuapl.sbmt.spectrum.model.key.CustomSpectrumKey;
 import edu.jhuapl.sbmt.spectrum.model.sbmtCore.spectra.CustomSpectrumKeyInterface;
 import edu.jhuapl.sbmt.spectrum.model.sbmtCore.spectra.Spectrum;
-import edu.jhuapl.sbmt.spectrum.model.sbmtCore.spectra.SpectrumColoringStyle;
 import edu.jhuapl.sbmt.spectrum.rendering.IBasicSpectrumRenderer;
 
 import crucible.crust.metadata.api.Key;
@@ -49,16 +48,6 @@ public class CustomSpectraSearchModel<S extends BasicSpectrum> extends BaseSpect
         super(modelManager, instrument);
         this.customSpectraKeys = new Vector<CustomSpectrumKeyInterface>();
         this.customSpectraListeners = new Vector<CustomSpectraResultsListener>();
-
-        getColoringModel().setRedMaxVal(instrument.getRGBMaxVals()[0]);
-        getColoringModel().setGreenMaxVal(instrument.getRGBMaxVals()[1]);
-        getColoringModel().setBlueMaxVal(instrument.getRGBMaxVals()[2]);
-
-        getColoringModel().setRedIndex(instrument.getRGBDefaultIndices()[0]);
-        getColoringModel().setGreenIndex(instrument.getRGBDefaultIndices()[1]);
-        getColoringModel().setBlueIndex(instrument.getRGBDefaultIndices()[2]);
-
-        updateColoring();
     }
 
     public List<CustomSpectrumKeyInterface> getCustomSpectra()
@@ -97,55 +86,6 @@ public class CustomSpectraSearchModel<S extends BasicSpectrum> extends BaseSpect
         }
     }
 
-//    public void loadSpectrum(SpectrumKeyInterface key, SpectraCollection images) throws FitsException, IOException
-//    {
-//        images.addSpectrum(key, true);
-//    }
-//
-//    public void loadSpectra(String name, CustomSpectrumKeyInterface info)
-//    {
-//    	try
-//        {
-//            if (!spectrumCollection.containsKey(info))
-//            {
-//                loadSpectrum(info, spectrumCollection);
-//            }
-//        }
-//        catch (Exception e1) {
-//            JOptionPane.showMessageDialog(JOptionPane.getFrameForComponent(null),
-//                    "There was an error mapping the spectra.",
-//                    "Error",
-//                    JOptionPane.ERROR_MESSAGE);
-//
-//            e1.printStackTrace();
-//        }
-//   }
-//
-//    public void unloadSpectrum(SpectrumKeyInterface key, SpectraCollection spectra)
-//    {
-//        spectra.removeSpectrum(key);
-//    }
-//
-//    public void unloadSpectrum(String name, CustomSpectrumKeyInterface key)
-//    {
-//    	unloadSpectrum(key, spectrumCollection);
-//   }
-
-//    public List<SpectrumKeyInterface> createSpectrumKeys(String boundaryName, BasicSpectrumInstrument instrument)
-//    {
-//        List<SpectrumKeyInterface> result = new ArrayList<SpectrumKeyInterface>();
-//        result.add(createSpectrumKey(boundaryName, instrument));
-//        return result;
-//    }
-//
-//    public SpectrumKeyInterface createSpectrumKey(String imagePathName, BasicSpectrumInstrument instrument)
-//    {
-//    	return null;
-////        SpectrumKeyInterface key = new SpectrumKey(customDataFolder + File.separator + imagePathName, null, null, instrument, "");
-////        return key;
-//    }
-
-    //TODO: UPDATE THIS TO SAVE SPECTRA
     public void saveSpectrum(int index, CustomSpectrumKeyInterface oldSpectrumInfo, CustomSpectrumKeyInterface newSpectrumInfo) throws IOException
     {
         String uuid = UUID.randomUUID().toString();
@@ -326,7 +266,6 @@ public class CustomSpectraSearchModel<S extends BasicSpectrum> extends BaseSpect
         boolean updated = migrateConfigFileIfNeeded();
         if (!updated)
         {
-        	System.out.println("CustomSpectraSearchModel: initializeSpecList: config name " + getConfigFilename());
             if (!(new File(getConfigFilename()).exists())) return;
             FixedMetadata metadata = Serializers.deserialize(new File(getConfigFilename()), "CustomSpectra");
             retrieve(metadata);
@@ -360,7 +299,6 @@ public class CustomSpectraSearchModel<S extends BasicSpectrum> extends BaseSpect
         int startId = idPair.id1;
         int endId = idPair.id2;
 
-        SpectrumColoringStyle style = getColoringModel().getSpectrumColoringStyle();
         for (int i=startId; i<endId; ++i)
         {
             if (i < 0)
@@ -369,7 +307,7 @@ public class CustomSpectraSearchModel<S extends BasicSpectrum> extends BaseSpect
                 break;
             fireFootprintVisibilityChanged(results.get(i), true);
         }
-        updateColoring();
+//        updateColoring();
     }
 
     @Override
@@ -455,17 +393,6 @@ public class CustomSpectraSearchModel<S extends BasicSpectrum> extends BaseSpect
         if (value != null)
             return value;
         return null;
-    }
-
-    public SpectrumColoringStyle getSpectrumColoringStyle()
-    {
-        return getColoringModel().getSpectrumColoringStyle();
-    }
-
-
-    public void setSpectrumColoringStyleName(SpectrumColoringStyle spectrumColoringStyle)
-    {
-        this.getColoringModel().setSpectrumColoringStyle(spectrumColoringStyle);
     }
 
     /**

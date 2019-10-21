@@ -7,19 +7,19 @@ import edu.jhuapl.sbmt.spectrum.model.core.BasicSpectrum;
  * @author steelrj1
  *
  */
-public interface SpectrumAppearanceListener
+public interface SpectrumAppearanceListener<S extends BasicSpectrum>
 {
 	/**
 	 * Signifies whether spectrum visibility has changed
 	 * @param renderer
 	 * @param isVisible
 	 */
-	public void spectrumFootprintVisbilityChanged(BasicSpectrum renderer, boolean isVisible);
+	public void spectrumFootprintVisibilityChanged(S renderer, boolean isVisible);
 
 	/**
 	 * Signifies whether spectrum boundary visibility has changed
 	 * @param renderer
 	 * @param isVisible
 	 */
-	public void spectrumBoundaryVisibilityChanged(BasicSpectrum renderer, boolean isVisible);
+	public void spectrumBoundaryVisibilityChanged(S renderer, boolean isVisible);
 }

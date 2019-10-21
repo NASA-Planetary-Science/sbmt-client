@@ -19,11 +19,12 @@ import com.google.common.collect.Lists;
 
 import vtk.vtkFunctionParser;
 
-import edu.jhuapl.sbmt.spectrum.model.core.search.BaseSpectrumSearchModel;
+import edu.jhuapl.sbmt.spectrum.model.core.BasicSpectrum;
+import edu.jhuapl.sbmt.spectrum.model.core.color.SpectrumColoringModel;
 import edu.jhuapl.sbmt.spectrum.model.sbmtCore.spectra.ISpectralInstrument;
 import edu.jhuapl.sbmt.spectrum.ui.math.SpectrumMathPanel;
 
-public class RGBColoringPanel extends JPanel
+public class RGBColoringPanel<S extends BasicSpectrum> extends JPanel implements ISpectrumColoringPanel
 {
 	private JButton customFunctionsButton;
 	private JComboBox<String> redComboBox;
@@ -42,21 +43,19 @@ public class RGBColoringPanel extends JPanel
     private JLabel blueLabel;
     private JLabel blueMinLabel;
     private JLabel blueMaxLabel;
-    private BaseSpectrumSearchModel model;
+    private SpectrumColoringModel<S> model;
+    private ISpectralInstrument instrument;
 
-	public RGBColoringPanel(BaseSpectrumSearchModel model)
+	public RGBColoringPanel(SpectrumColoringModel<S> model, ISpectralInstrument instrument)
 	{
 		this.model = model;
+		this.instrument = instrument;
 		initialize();
 	}
 
 	private void initialize()
     {
-//        setBorder(new TitledBorder(null, "Coloring", TitledBorder.LEADING, TitledBorder.TOP, null, null));
         setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
-
-//        Component horizontalGlue_2 = Box.createHorizontalGlue();
-//        add(horizontalGlue_2);
 
         customFunctionsButton = new JButton("Custom Formulas");
         add(customFunctionsButton);
@@ -184,7 +183,6 @@ public class RGBColoringPanel extends JPanel
      */
     protected void setupComboBoxes()
     {
-        ISpectralInstrument instrument = model.getInstrument();
         for (int i=1; i<=instrument.getBandCenters().length; ++i)
         {
             String channel = new String("(" + i + ") " + instrument.getBandCenters()[i-1] + " " + instrument.getBandCenterUnit());
@@ -192,9 +190,9 @@ public class RGBColoringPanel extends JPanel
             getGreenComboBox().addItem(channel);
             getBlueComboBox().addItem(channel);
         }
-        getRedComboBox().setSelectedIndex(model.getColoringModel().getRedIndex());
-        getGreenComboBox().setSelectedIndex(model.getColoringModel().getGreenIndex());
-        getBlueComboBox().setSelectedIndex(model.getColoringModel().getBlueIndex());
+        getRedComboBox().setSelectedIndex(model.getRedIndex());
+        getGreenComboBox().setSelectedIndex(model.getGreenIndex());
+        getBlueComboBox().setSelectedIndex(model.getBlueIndex());
 
         String[] derivedParameters = instrument.getSpectrumMath().getDerivedParameters();
         for (int i=0; i<derivedParameters.length; ++i)
@@ -211,9 +209,9 @@ public class RGBColoringPanel extends JPanel
             getBlueComboBox().addItem(fp.GetFunction());
         }
 
-        getRedMaxSpinner().setValue(model.getColoringModel().getRedMaxVal());
-        getGreenMaxSpinner().setValue(model.getColoringModel().getGreenMaxVal());
-        getBlueMaxSpinner().setValue(model.getColoringModel().getBlueMaxVal());
+        getRedMaxSpinner().setValue(model.getRedMaxVal());
+        getGreenMaxSpinner().setValue(model.getGreenMaxVal());
+        getBlueMaxSpinner().setValue(model.getBlueMaxVal());
     }
 
     /**
@@ -222,7 +220,7 @@ public class RGBColoringPanel extends JPanel
     private void customFunctionsButtonActionPerformed() {
         SpectrumMathPanel customFunctionsPanel = new SpectrumMathPanel(
                 JOptionPane.getFrameForComponent(this),
-                new JComboBox[]{getRedComboBox(), getGreenComboBox(), getBlueComboBox()}, model.getInstrument());
+                new JComboBox[]{getRedComboBox(), getGreenComboBox(), getBlueComboBox()}, instrument);
         model.setCurrentlyEditingUserDefinedFunction(true);
         customFunctionsPanel.setVisible(true);
         model.setCurrentlyEditingUserDefinedFunction(false);
@@ -232,17 +230,17 @@ public class RGBColoringPanel extends JPanel
   //Helper methods related to actions for the various spinners and combo boxes
 
     private void redComboBoxActionPerformed(ActionEvent evt) {
-    	model.getColoringModel().setRedIndex(getRedComboBox().getSelectedIndex());
+    	model.setRedIndex(getRedComboBox().getSelectedIndex());
         model.updateColoring();
     }
 
     private void greenComboBoxActionPerformed(ActionEvent evt) {
-    	model.getColoringModel().setGreenIndex(getGreenComboBox().getSelectedIndex());
+    	model.setGreenIndex(getGreenComboBox().getSelectedIndex());
         model.updateColoring();
     }
 
     private void blueComboBoxActionPerformed(ActionEvent evt) {
-    	model.getColoringModel().setBlueIndex(getBlueComboBox().getSelectedIndex());
+    	model.setBlueIndex(getBlueComboBox().getSelectedIndex());
         model.updateColoring();
     }
 
@@ -295,18 +293,18 @@ public class RGBColoringPanel extends JPanel
         Double maxVal = (Double)maxSpinner.getValue();
         if (channel == 0)
         {
-            model.getColoringModel().setRedMinVal(minVal);
-            model.getColoringModel().setRedMaxVal(maxVal);
+            model.setRedMinVal(minVal);
+            model.setRedMaxVal(maxVal);
         }
         else if (channel == 1)
         {
-            model.getColoringModel().setGreenMinVal(minVal);
-            model.getColoringModel().setGreenMaxVal(maxVal);
+            model.setGreenMinVal(minVal);
+            model.setGreenMaxVal(maxVal);
         }
         else if (channel == 2)
         {
-            model.getColoringModel().setBlueMinVal(minVal);
-            model.getColoringModel().setBlueMaxVal(maxVal);
+            model.setBlueMinVal(minVal);
+            model.setBlueMaxVal(maxVal);
         }
         if (minVal > maxVal)
         {
@@ -405,4 +403,9 @@ public class RGBColoringPanel extends JPanel
     {
         return blueMaxLabel;
     }
+
+	public JPanel getJPanel()
+	{
+		return this;
+	}
 }

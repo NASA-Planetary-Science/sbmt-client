@@ -42,7 +42,6 @@ public class SpectrumBoundaryCollection<S extends BasicSpectrum> extends Abstrac
             SmallBodyModel smallBodyModel)
     {
         IBasicSpectrumRenderer<S> spectrum = spectrumCollection.getRendererForSpectrum(spec);
-        System.out.println("SpectrumBoundaryCollection: createBoundary: spectrum " + spectrum);
         SpectrumBoundary boundary = new SpectrumBoundary(spectrum, smallBodyModel);
         boundary.setBoundaryColor(initialColors[initialColorIndex++]);
         if (initialColorIndex >= initialColors.length)

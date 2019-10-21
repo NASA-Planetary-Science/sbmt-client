@@ -81,53 +81,11 @@ public abstract class BasicSpectrum extends Spectrum
         spectrum=new double[getNumberOfBands()];
         this.isCustomSpectra = isCustom;
         spectrumName = filename;
-//        key = new SpectrumKey(filename, instrument);
     }
 
     public abstract int getNumberOfBands();
     public abstract void readPointingFromInfoFile();
     public abstract void readSpectrumFromFile();
-
-//    /**
-//     * @return
-//     */
-//    protected String initLocalInfoFileFullPath()
-//    {
-//        String configFilename = new File(getKey().getName()).getParent() + File.separator + "config.txt";
-//        MapUtil configMap = new MapUtil(configFilename);
-//        String[] spectrumFilenames = configMap.getAsArray(SPECTRUM_FILENAMES);
-//        for (int i=0; i<spectrumFilenames.length; ++i)
-//        {
-//            String filename = new File(getKey().getName()).getName();
-//            if (filename.equals(spectrumFilenames[i]))
-//            {
-//                return new File(getKey().getName()).getParent() + File.separator + configMap.getAsArray(PerspectiveImage.INFOFILENAMES)[i];
-//            }
-//        }
-//
-//        return null;
-//    }
-//
-//    /**
-//     *
-//     * @return
-//     */
-//    protected String initLocalSpectrumFileFullPath()
-//    {
-//        String configFilename = new File(getKey().getName()).getParent() + File.separator + "config.txt";
-//        MapUtil configMap = new MapUtil(configFilename);
-//        String[] spectrumFilenames = configMap.getAsArray(SPECTRUM_FILENAMES);
-//        for (int i=0; i<spectrumFilenames.length; ++i)
-//        {
-//            String filename = new File(getKey().getName()).getName();
-//            if (filename.equals(spectrumFilenames[i]))
-//            {
-//                return new File(getKey().getName()).getParent() + File.separator + configMap.getAsArray(SPECTRUM_NAMES)[i];
-//            }
-//        }
-//
-//        return null;
-//    }
 
     /**
      * Evaluates the derived parameters for a given channel (custom color definition)

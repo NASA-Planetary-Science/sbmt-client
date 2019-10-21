@@ -1,118 +1,74 @@
 package edu.jhuapl.sbmt.spectrum.ui.color;
 
-import java.awt.Cursor;
-import java.awt.event.ItemEvent;
-import java.awt.event.ItemListener;
-import java.util.HashMap;
-import java.util.Map;
+import java.awt.Component;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 
 import javax.swing.BoxLayout;
+import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.ListCellRenderer;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 
-import edu.jhuapl.saavtk.gui.panel.JComboBoxWithItemState;
-import edu.jhuapl.saavtk.model.ColoringDataManager;
-import edu.jhuapl.saavtk.util.DownloadableFileManager.StateListener;
-import edu.jhuapl.saavtk.util.FileCache;
-import edu.jhuapl.saavtk.util.FileStateListenerTracker;
+import edu.jhuapl.saavtk.colormap.Colormap;
+import edu.jhuapl.saavtk.colormap.ColormapUtil;
+import edu.jhuapl.saavtk.colormap.Colormaps;
+import edu.jhuapl.sbmt.spectrum.model.core.BasicSpectrum;
+import edu.jhuapl.sbmt.spectrum.model.core.color.SpectrumColoringModel;
 
-public class EmissionAngleColoringPanel extends JPanel
+public class EmissionAngleColoringPanel<S extends BasicSpectrum> extends JPanel implements ISpectrumColoringPanel, ChangeListener, ActionListener
 {
-	JComboBoxWithItemState<String> coloringComboBox;
+	private final JComboBox<Colormap> colormapComboBox;
+	private SpectrumColoringModel<S> model;
 
-	public EmissionAngleColoringPanel()
+	public EmissionAngleColoringPanel(SpectrumColoringModel<S> model)
 	{
-		setVisible(false);
 		setLayout(new BoxLayout(this, BoxLayout.X_AXIS));
+		this.model = model;
 		JLabel lblNewLabel_15 = new JLabel("Coloring by Avg Emission Angle (OREX Scalar Ramp, 0 to 90)");
 		add(lblNewLabel_15);
-		coloringComboBox = new JComboBoxWithItemState<>();
-        ItemListener listener = (e) -> {
-            if (e.getStateChange() != ItemEvent.DESELECTED)
-            {
-                setColoring(e.getSource());
-            }
-        };
-		coloringComboBox.addItemListener(listener);
-		add(coloringComboBox);
-	}
-
-	protected void setColoring(Object source)
-    {
-//        try
-//        {
-            setCursor(new Cursor(Cursor.WAIT_CURSOR));
-            int selectedIndex = coloringComboBox.getSelectedIndex() - 1;
-            if (selectedIndex < 0)
-            {
-//                showColoringProperties.setEnabled(false);
-//                smallBodyModel.setColoringIndex(-1);
-//                return;
-            }
-
-//        }
-    }
-
-	protected final Map<JComboBoxWithItemState<?>, FileStateListenerTracker> listenerTrackers = new HashMap<>();
-
-	protected void updateColoringComboBox(JComboBoxWithItemState<String> box, ColoringDataManager coloringDataManager,
-			int numberElements)
-	{
-		// Store the current selection and number of items in the combo box.
-		int previousSelection = box.getSelectedIndex();
-
-		// Clear the current content.
-		box.setSelectedIndex(-1);
-		box.removeAllItems();
-
-		synchronized (this.listenerTrackers)
+		colormapComboBox = new JComboBox<>();
+		ListCellRenderer<Colormap> tmpRenderer = ColormapUtil.getFancyColormapRender();
+		((Component) tmpRenderer).setEnabled(true);
+		colormapComboBox.setRenderer(tmpRenderer);
+		for (String aStr : Colormaps.getAllBuiltInColormapNames())
 		{
-			// Get rid of current file access state listeners.
-			FileStateListenerTracker boxListeners = listenerTrackers.get(box);
-			if (boxListeners == null)
-			{
-				boxListeners = FileStateListenerTracker.of(FileCache.instance());
-				listenerTrackers.put(box, boxListeners);
-			} else
-			{
-				boxListeners.removeAllStateChangeListeners();
-			}
-
-			// Add one item for blank (no coloring).
-			box.addItem("");
-			for (String name : coloringDataManager.getNames())
-			{
-				// Re-add the current colorings.
-				box.addItem(name);
-				if (!coloringDataManager.has(name, numberElements))
-				{
-					// This coloring is not available at this resolution. List
-					// it but grey it out.
-					box.setEnabled(name, false);
-				} else
-				{
-					String urlString = coloringDataManager.get(name, numberElements).getFileName();
-					if (urlString == null)
-						continue;
-					box.setEnabled(name, FileCache.instance().isAccessible(urlString));
-					StateListener listener = e ->
-					{
-						box.setEnabled(name, e.isAccessible());
-					};
-					boxListeners.addStateChangeListener(urlString, listener);
-				}
-			}
-
-			int numberColorings = box.getItemCount();
-			int selection = 0;
-			if (previousSelection < numberColorings)
-			{
-				// A coloring was replaced/edited. Re-select the current
-				// selection.
-				selection = previousSelection;
-			}
-
-			box.setSelectedIndex(selection);
+			Colormap cmap = Colormaps.getNewInstanceOfBuiltInColormap(aStr);
+			colormapComboBox.addItem(cmap);
+			if (cmap.getName().equals(Colormaps.getCurrentColormapName()))
+				colormapComboBox.setSelectedItem(cmap);
 		}
+		colormapComboBox.addActionListener(this);
+		colormapComboBox.setEnabled(true);
+//		colormapComboBox.setSelectedItem(Colormaps.getDefaultColormapName());
+		add(colormapComboBox);
 	}
+
+	public JPanel getJPanel()
+	{
+		return this;
+	}
+
+	@Override
+	public void actionPerformed(ActionEvent aEvent)
+	{
+		model.setCurrentColormap((Colormap)colormapComboBox.getSelectedItem());
+	}
+
+	@Override
+	public void stateChanged(ChangeEvent aEvent)
+	{
+		Object source = aEvent.getSource();
+
+//		// NumTicks UI
+//		if (source == numTicksSpinner)
+//		{
+//			cColormap.setNumberOfLabels((Integer) numTicksSpinner.getValue());
+//			firePropertyChange(EVT_ColormapChanged, null, null);
+//		}
+	}
+
+
 }

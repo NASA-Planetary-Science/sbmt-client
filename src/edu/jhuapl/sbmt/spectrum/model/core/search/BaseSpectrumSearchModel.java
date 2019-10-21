@@ -20,7 +20,6 @@ import edu.jhuapl.sbmt.lidar.hyperoctree.HyperException.HyperDimensionMismatchEx
 import edu.jhuapl.sbmt.model.boundedobject.hyperoctree.BoundedObjectHyperTreeSkeleton;
 import edu.jhuapl.sbmt.spectrum.model.core.BasicSpectrum;
 import edu.jhuapl.sbmt.spectrum.model.core.BasicSpectrumInstrument;
-import edu.jhuapl.sbmt.spectrum.model.core.color.SpectrumColoringModel;
 import edu.jhuapl.sbmt.spectrum.model.core.interfaces.ISpectrumSearchModel;
 import edu.jhuapl.sbmt.spectrum.model.core.interfaces.SpectrumAppearanceListener;
 import edu.jhuapl.sbmt.spectrum.model.core.interfaces.SpectrumSearchResultsListener;
@@ -40,16 +39,14 @@ import crucible.crust.metadata.impl.SettableMetadata;
  */
 public class BaseSpectrumSearchModel<S extends BasicSpectrum> implements ISpectrumSearchModel<S>, MetadataManager
 {
-	protected SpectrumColoringModel coloringModel;
     protected BasicSpectrumInstrument instrument;
     protected List<S> results = new ArrayList<S>();
     protected IdPair resultIntervalCurrentlyShown = null;
     private Vector<SpectrumSearchResultsListener<S>> resultsListeners;
-    private Vector<SpectrumAppearanceListener> appearanceListeners;
+    private Vector<SpectrumAppearanceListener<S>> appearanceListeners;
     protected ImmutableSet<S> selectedSpectra;
     protected int[] selectedSpectraIndices;
 
-    protected boolean currentlyEditingUserDefinedFunction = false;
     private TreePath[] selectedPaths;
 
     private int numberOfBoundariesToShow;
@@ -62,8 +59,7 @@ public class BaseSpectrumSearchModel<S extends BasicSpectrum> implements ISpectr
     {
         this.instrument = instrument;
         this.resultsListeners = new Vector<SpectrumSearchResultsListener<S>>();
-        this.appearanceListeners = new Vector<SpectrumAppearanceListener>();
-        coloringModel = new SpectrumColoringModel();
+        this.appearanceListeners = new Vector<SpectrumAppearanceListener<S>>();
     }
 
     /**
@@ -120,24 +116,7 @@ public class BaseSpectrumSearchModel<S extends BasicSpectrum> implements ISpectr
         this.resultIntervalCurrentlyShown = resultIntervalCurrentlyShown;
     }
 
-    /**
-     * Returns state describing whether the user defined color function is being edited
-     * @return
-     */
-    public boolean isCurrentlyEditingUserDefinedFunction()
-    {
-        return currentlyEditingUserDefinedFunction;
-    }
 
-    /**
-     * Updates the state describing whether the user defined color function is being edited
-     * @param currentlyEditingUserDefinedFunction
-     */
-    public void setCurrentlyEditingUserDefinedFunction(
-            boolean currentlyEditingUserDefinedFunction)
-    {
-        this.currentlyEditingUserDefinedFunction = currentlyEditingUserDefinedFunction;
-    }
 
     /**
      * Returns the instrument for this search
@@ -166,15 +145,7 @@ public class BaseSpectrumSearchModel<S extends BasicSpectrum> implements ISpectr
         return ModelNames.SPECTRA_BOUNDARIES;
     }
 
-    /**
-     * As long as the user defined coloring is not being edit, issues the call to the coloring model to update the coloring
-     */
-    public void updateColoring()
-    {
-        if (isCurrentlyEditingUserDefinedFunction())
-            return;
-        coloringModel.updateColoring();
-    }
+
 
     /**
      * Notifies listeners to update the currently shown footprints to those specified by the indices in <pre>idPair</pre>
@@ -193,7 +164,7 @@ public class BaseSpectrumSearchModel<S extends BasicSpectrum> implements ISpectr
                 break;
             fireFootprintVisibilityChanged(results.get(i), true);
         }
-        updateColoring();
+//        updateColoring();
     }
 
     /**
@@ -227,7 +198,7 @@ public class BaseSpectrumSearchModel<S extends BasicSpectrum> implements ISpectr
     public void loadSpectrumListFromFile(File file) throws Exception
     {
     	Preconditions.checkNotNull(customDataFolder);
-    	File metadataFile = new File(customDataFolder + File.separator + file.getName() + ".metadata");
+//    	File metadataFile = new File(customDataFolder + File.separator + file.getName() + ".metadata");
     	SpectrumListIO.loadSpectrumListButtonActionPerformed(file, new ArrayList<S>(), instrument, new Runnable()
 		{
 
@@ -351,9 +322,9 @@ public class BaseSpectrumSearchModel<S extends BasicSpectrum> implements ISpectr
      */
     public void fireFootprintVisibilityChanged(S spectrum, boolean isVisible)
     {
-        for (SpectrumAppearanceListener listener : appearanceListeners)
+        for (SpectrumAppearanceListener<S> listener : appearanceListeners)
         {
-            listener.spectrumFootprintVisbilityChanged(spectrum, isVisible);
+            listener.spectrumFootprintVisibilityChanged(spectrum, isVisible);
         }
     }
 
@@ -364,7 +335,7 @@ public class BaseSpectrumSearchModel<S extends BasicSpectrum> implements ISpectr
      */
     public void fireBoundaryVisibilityCountChanged(S spectrum, boolean isVisible)
     {
-        for (SpectrumAppearanceListener listener : appearanceListeners)
+        for (SpectrumAppearanceListener<S> listener : appearanceListeners)
         {
             listener.spectrumBoundaryVisibilityChanged(spectrum, isVisible);
         }
@@ -374,7 +345,7 @@ public class BaseSpectrumSearchModel<S extends BasicSpectrum> implements ISpectr
      * Adds an appearance changed listener
      * @param listener
      */
-    public void addAppearanceChangedListener(SpectrumAppearanceListener listener)
+    public void addAppearanceChangedListener(SpectrumAppearanceListener<S> listener)
     {
         appearanceListeners.add(listener);
     }
@@ -383,7 +354,7 @@ public class BaseSpectrumSearchModel<S extends BasicSpectrum> implements ISpectr
      * Removes an appearance changed listener
      * @param listener
      */
-    public void removeAppearanceChangedListener(SpectrumAppearanceListener listener)
+    public void removeAppearanceChangedListener(SpectrumAppearanceListener<S> listener)
     {
         appearanceListeners.remove(listener);
     }
@@ -396,13 +367,7 @@ public class BaseSpectrumSearchModel<S extends BasicSpectrum> implements ISpectr
         appearanceListeners.removeAllElements();
     }
 
-    /**
-     * Fires the coloring changed listener on the coloring model
-     */
-    public void coloringOptionChanged()
-    {
-        coloringModel.fireColoringChanged();
-    }
+
 
 //    /**
 //     * @return
@@ -528,15 +493,6 @@ public class BaseSpectrumSearchModel<S extends BasicSpectrum> implements ISpectr
     {
         this.numberOfBoundariesToShow = numberOfBoundariesToShow;
     }
-
-	/**
-	 * Returns the coloring model
-	 * @return
-	 */
-	public SpectrumColoringModel getColoringModel()
-	{
-		return coloringModel;
-	}
 
 	/**
 	 * Stores the model to metadata

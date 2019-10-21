@@ -342,7 +342,8 @@ public class SbmtView extends View implements PropertyChangeListener
 			//if (getPolyhedralModelConfig().body == ShapeModelBody.EROS)
 			allModels.put(ModelNames.STATISTICS, new SpectrumStatisticsCollection());
 
-			allModels.put(ModelNames.CUSTOM_SPECTRA, new SpectraCollection(smallBodyModel));
+			SpectraCollection customCollection = new SpectraCollection(smallBodyModel, true);
+			allModels.put(ModelNames.CUSTOM_SPECTRA, customCollection);
 			allModels.put(ModelNames.CUSTOM_SPECTRA_BOUNDARIES, new SpectrumBoundaryCollection(smallBodyModel, (SpectraCollection)allModels.get(ModelNames.CUSTOM_SPECTRA)));
 		}
 
@@ -560,6 +561,8 @@ public class SbmtView extends View implements PropertyChangeListener
 			{
 				NEARSpectraFactory.initializeModels(smallBodyModel);
 				NISSearchModel model = new NISSearchModel(getModelManager(), instrument);
+//				double[] rgbMaxVals = new double[] {0.05, 0.05, 0.05};
+//	            int[] rgbIndices = new int[] { 1, 25, 50 };
 				JComponent component = new OREXSpectrumSearchController(getPolyhedralModelConfig().imageSearchDefaultStartDate, getPolyhedralModelConfig().imageSearchDefaultEndDate,
 						getPolyhedralModelConfig().hasHierarchicalSpectraSearch, getPolyhedralModelConfig().imageSearchDefaultMaxSpacecraftDistance, getPolyhedralModelConfig().hierarchicalSpectraSearchSpecification,
 						getModelManager(), (SbmtInfoWindowManager) getInfoPanelManager(), getPickManager(), getRenderer(), instrument, model).getPanel();
@@ -580,6 +583,8 @@ public class SbmtView extends View implements PropertyChangeListener
 			{
 				H2SpectraFactory.initializeModels(smallBodyModel);
 				NIRS3SearchModel model = new NIRS3SearchModel(getModelManager(), instrument);
+//				double[] rgbMaxVals = new double[] {0.00005, 0.0001, 0.002};
+//	            int[] rgbIndices = new int[] { 100, 70, 40 };
 				JComponent component = new OREXSpectrumSearchController(getPolyhedralModelConfig().imageSearchDefaultStartDate, getPolyhedralModelConfig().imageSearchDefaultEndDate,
 						getPolyhedralModelConfig().hasHierarchicalSpectraSearch, getPolyhedralModelConfig().imageSearchDefaultMaxSpacecraftDistance, getPolyhedralModelConfig().hierarchicalSpectraSearchSpecification,
 						getModelManager(), (SbmtInfoWindowManager) getInfoPanelManager(), getPickManager(), getRenderer(), instrument, model).getPanel();

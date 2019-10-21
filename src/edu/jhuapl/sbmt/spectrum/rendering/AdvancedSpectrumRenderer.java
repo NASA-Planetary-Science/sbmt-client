@@ -30,10 +30,10 @@ import edu.jhuapl.sbmt.spectrum.model.core.BasicSpectrum;
  * @author steelrj1
  *
  */
-public class AdvancedSpectrumRenderer extends BasicSpectrumRenderer
+public class AdvancedSpectrumRenderer<S extends BasicSpectrum> extends BasicSpectrumRenderer<S>
 {
 
-	public AdvancedSpectrumRenderer(BasicSpectrum spectrum, ISmallBodyModel smallBodyModel, boolean headless)
+	public AdvancedSpectrumRenderer(S spectrum, ISmallBodyModel smallBodyModel, boolean headless)
 	{
 		super(spectrum, smallBodyModel, headless);
 		// TODO Auto-generated constructor stub
@@ -53,8 +53,9 @@ public class AdvancedSpectrumRenderer extends BasicSpectrumRenderer
             footprintActor = new vtkActor();
             footprintActor.SetMapper(footprintMapper);
             vtkProperty footprintProperty = footprintActor.GetProperty();
-            double[] color = getChannelColor();
-            footprintProperty.SetColor(color[0], color[1], color[2]);
+//            double[] color = getChannelColor();
+            if (color != null)
+            	footprintProperty.SetColor(color[0], color[1], color[2]);
             footprintProperty.SetLineWidth(2.0);
             footprintProperty.LightingOff();
 

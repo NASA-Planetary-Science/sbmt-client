@@ -553,22 +553,22 @@ public abstract class AbstractSpectrumSearchPanel extends JPanel implements Mous
         Double blueMaxVal = (Double)blueMaxSpinner.getValue();
 
         SpectraCollection model = (SpectraCollection)modelManager.getModel(ModelNames.SPECTRA);
-        if (grayscaleCheckBox.isSelected())
-        {
-            model.setChannelColoring(
-                    new int[]{redComboBox.getSelectedIndex(), redComboBox.getSelectedIndex(), redComboBox.getSelectedIndex()},
-                    new double[]{redMinVal, redMinVal, redMinVal},
-                    new double[]{redMaxVal, redMaxVal, redMaxVal},
-                    instrument);
-        }
-        else
-        {
-            model.setChannelColoring(
-                    new int[]{redComboBox.getSelectedIndex(), greenComboBox.getSelectedIndex(), blueComboBox.getSelectedIndex()},
-                    new double[]{redMinVal, greenMinVal, blueMinVal},
-                    new double[]{redMaxVal, greenMaxVal, blueMaxVal},
-                    instrument);
-        }
+//        if (grayscaleCheckBox.isSelected())
+//        {
+//            model.setChannelColoring(
+//                    new int[]{redComboBox.getSelectedIndex(), redComboBox.getSelectedIndex(), redComboBox.getSelectedIndex()},
+//                    new double[]{redMinVal, redMinVal, redMinVal},
+//                    new double[]{redMaxVal, redMaxVal, redMaxVal},
+//                    instrument);
+//        }
+//        else
+//        {
+//            model.setChannelColoring(
+//                    new int[]{redComboBox.getSelectedIndex(), greenComboBox.getSelectedIndex(), blueComboBox.getSelectedIndex()},
+//                    new double[]{redMinVal, greenMinVal, blueMinVal},
+//                    new double[]{redMaxVal, greenMaxVal, blueMaxVal},
+//                    instrument);
+//        }
 
 
 

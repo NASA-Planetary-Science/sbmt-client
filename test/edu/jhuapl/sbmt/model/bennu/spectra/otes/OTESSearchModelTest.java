@@ -36,7 +36,6 @@ import edu.jhuapl.sbmt.client.SbmtModelManager;
 import edu.jhuapl.sbmt.client.SbmtMultiMissionTool;
 import edu.jhuapl.sbmt.client.SmallBodyModel;
 import edu.jhuapl.sbmt.client.SmallBodyViewConfig;
-import edu.jhuapl.sbmt.spectrum.model.core.BasicSpectrum;
 import edu.jhuapl.sbmt.spectrum.model.core.SpectrumInstrumentFactory;
 import edu.jhuapl.sbmt.spectrum.model.core.search.HierarchicalSearchLeafNode;
 import edu.jhuapl.sbmt.spectrum.model.core.search.SpectrumSearchParametersModel;
@@ -162,7 +161,7 @@ class OTESSearchModelTest
 		HierarchicalSearchLeafNode otesL2Node = new HierarchicalSearchLeafNode("OTES L2 Calibrated Radiance", 0, -1);
 		TreePath[] treePath = new TreePath[] {new TreePath(new DefaultMutableTreeNode[] {orexNode, new DefaultMutableTreeNode(otesL2Node)})};
 		otesSearchModel.performSearch(searchParameters, null, true, smallBodyConfig.hierarchicalSpectraSearchSpecification, treePath, null);
-		List<BasicSpectrum> results = otesSearchModel.getSpectrumRawResults();
+		List<OTESSpectrum> results = otesSearchModel.getSpectrumRawResults();
 		Metadata metadata = otesSearchModel.store();
 //		try
 //		{
