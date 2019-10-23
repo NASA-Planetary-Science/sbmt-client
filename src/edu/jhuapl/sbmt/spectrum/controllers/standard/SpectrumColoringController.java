@@ -35,12 +35,8 @@ public class SpectrumColoringController<S extends BasicSpectrum>
     public SpectrumColoringController(BaseSpectrumSearchModel<S> model, SpectraCollection<S> collection, double[] rgbMaxvals, int[] rgbIndices)
     {
         this.coloringModel = new SpectrumColoringModel<>();
-        coloringModel.setRedMaxVal(rgbMaxvals[0]);
-        coloringModel.setGreenMaxVal(rgbMaxvals[1]);
-        coloringModel.setBlueMaxVal(rgbMaxvals[2]);
-        coloringModel.setRedIndex(rgbIndices[0]);
-        coloringModel.setGreenIndex(rgbIndices[1]);
-        coloringModel.setBlueIndex(rgbIndices[2]);
+        coloringModel.setRgbIndices(rgbIndices);
+        coloringModel.setRgbMaxvals(rgbMaxvals);
         this.panel = new SpectrumColoringPanel<S>(coloringModel, model.getInstrument());
         this.model = model;
         this.collection = collection;

@@ -16,14 +16,15 @@ import edu.jhuapl.saavtk.colormap.Colormap;
 import edu.jhuapl.saavtk.colormap.ColormapUtil;
 import edu.jhuapl.saavtk.colormap.Colormaps;
 import edu.jhuapl.sbmt.spectrum.model.core.BasicSpectrum;
-import edu.jhuapl.sbmt.spectrum.model.core.color.SpectrumColoringModel;
+import edu.jhuapl.sbmt.spectrum.model.core.color.EmissionSpectrumColorer;
 
 public class EmissionAngleColoringPanel<S extends BasicSpectrum> extends JPanel implements ISpectrumColoringPanel, ChangeListener, ActionListener
 {
 	private final JComboBox<Colormap> colormapComboBox;
-	private SpectrumColoringModel<S> model;
+//	private SpectrumColoringModel<S> model;
+	private EmissionSpectrumColorer<S> model;
 
-	public EmissionAngleColoringPanel(SpectrumColoringModel<S> model)
+	public EmissionAngleColoringPanel(EmissionSpectrumColorer<S> model)
 	{
 		setLayout(new BoxLayout(this, BoxLayout.X_AXIS));
 		this.model = model;

@@ -1,5 +1,7 @@
 package edu.jhuapl.sbmt.spectrum.ui.color;
 
+import java.util.Hashtable;
+
 import javax.swing.BoxLayout;
 import javax.swing.JComboBox;
 import javax.swing.JPanel;
@@ -19,12 +21,13 @@ public class SpectrumColoringPanel<S extends BasicSpectrum> extends JPanel
 {
     private JPanel coloringDetailPanel;
     private JComboBox<SpectrumColoringStyle> coloringComboBox;
+    private Hashtable<SpectrumColoringStyle, ISpectrumColoringPanel> coloringPanels = new Hashtable<SpectrumColoringStyle, ISpectrumColoringPanel>();
 
     public SpectrumColoringPanel(SpectrumColoringModel<S> coloringModel, ISpectralInstrument instrument)
     {
-    	SpectrumColoringFactory.registerColoringPanel(SpectrumColoringStyle.EMISSION_ANGLE, new EmissionAngleColoringPanel<S>(coloringModel));
-    	SpectrumColoringFactory.registerColoringPanel(SpectrumColoringStyle.GREYSCALE, new GreyscaleColoringPanel<S>(coloringModel, instrument));
-    	SpectrumColoringFactory.registerColoringPanel(SpectrumColoringStyle.RGB, new RGBColoringPanel<S>(coloringModel, instrument));
+    	registerColoringPanel(SpectrumColoringStyle.EMISSION_ANGLE, new EmissionAngleColoringPanel<S>(coloringModel.getEmissionColorer()));
+    	registerColoringPanel(SpectrumColoringStyle.GREYSCALE, new GreyscaleColoringPanel<S>(coloringModel.getGreyScaleColorer(), instrument));
+    	registerColoringPanel(SpectrumColoringStyle.RGB, new RGBColoringPanel<S>(coloringModel.getRgbColorer(), instrument));
         initialize();
     }
 
@@ -45,7 +48,7 @@ public class SpectrumColoringPanel<S extends BasicSpectrum> extends JPanel
     public void switchToPanelForColoringStyle(SpectrumColoringStyle style)
     {
     	coloringDetailPanel.removeAll();
-    	JPanel panel = SpectrumColoringFactory.getColoringPanelForStyle(style).getJPanel();
+    	JPanel panel = coloringPanels.get(style).getJPanel();
     	coloringDetailPanel.add(panel);
     	revalidate();
     }
@@ -59,5 +62,10 @@ public class SpectrumColoringPanel<S extends BasicSpectrum> extends JPanel
     {
         return coloringComboBox;
     }
+
+    public void registerColoringPanel(SpectrumColoringStyle style, ISpectrumColoringPanel panel)
+	{
+		coloringPanels.put(style, panel);
+	}
 
 }

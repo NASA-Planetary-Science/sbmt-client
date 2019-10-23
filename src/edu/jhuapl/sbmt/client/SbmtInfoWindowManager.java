@@ -87,7 +87,6 @@ public class SbmtInfoWindowManager implements WindowManager, PropertyChangeListe
 
     public ModelInfoWindow createModelInfoWindow(Model model, ModelManager modelManager)
     {
-    	System.out.println("SbmtInfoWindowManager: createModelInfoWindow: model class " + model.getClass());
     	if (model instanceof ColorImage)
     		return registeredPanels.get(ColorImage.class).buildModelInfoWindow(model);
     	else if (model instanceof Image)

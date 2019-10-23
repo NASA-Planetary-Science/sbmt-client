@@ -138,7 +138,6 @@ public class SpectrumStandardSearch<S extends BasicSpectrum>
                     progressListener.searchEnded();
                 }
             }
-
             return tempResults;
         }
         catch (Exception e)

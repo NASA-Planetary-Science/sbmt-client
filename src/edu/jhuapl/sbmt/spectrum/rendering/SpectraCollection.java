@@ -23,6 +23,8 @@ import edu.jhuapl.sbmt.spectrum.model.core.interfaces.SearchSpec;
 import edu.jhuapl.sbmt.spectrum.model.core.interfaces.SpectrumCollectionChangedListener;
 import edu.jhuapl.sbmt.spectrum.model.sbmtCore.spectra.ISpectralInstrument;
 
+import glum.item.ItemEventType;
+
 public class SpectraCollection<S extends BasicSpectrum> extends SaavtkItemManager<S> implements PropertyChangeListener //, ItemProcessor<BasicSpectrum>, ItemManager<BasicSpectrum>
 {
     private HashMap<IBasicSpectrumRenderer<S>, List<vtkProp>> spectraActors = new HashMap<IBasicSpectrumRenderer<S>, List<vtkProp>>();
@@ -431,6 +433,13 @@ public class SpectraCollection<S extends BasicSpectrum> extends SaavtkItemManage
 
 //		List<LidarTrack> tmpL = ImmutableList.of();
 //		updateVtkVars(tmpL);
+	}
+
+	public void setAllItems(List<S> specs)
+	{
+		super.setAllItems(specs);
+		// Send out the appropriate notifications
+		notifyListeners(this, ItemEventType.ItemsSelected);
 	}
 
 	@Override

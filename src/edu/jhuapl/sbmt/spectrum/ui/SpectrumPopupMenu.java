@@ -483,7 +483,6 @@ public class SpectrumPopupMenu extends PopupMenu implements PropertyChangeListen
 			List<BasicSpectrum> tmpS = collection.getSelectedItems().asList();
 			if (tmpS.size() == 0)
 				return;
-			System.out.println("SpectrumPopupMenu: showPopup: server path " + tmpS.get(0).getSpectrumName());
 			setCurrentSpectrum(tmpS.get(0).getSpectrumName());
 			show(e.getComponent(), e.getX(), e.getY());
     	}

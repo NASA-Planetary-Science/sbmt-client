@@ -1,19 +1,12 @@
 package edu.jhuapl.sbmt.spectrum.model.core.color;
 
-import java.awt.Color;
-import java.util.List;
+import java.util.HashMap;
 import java.util.Vector;
 
-import org.apache.commons.math3.geometry.euclidean.threed.Vector3D;
-
-import edu.jhuapl.saavtk.colormap.Colormap;
-import edu.jhuapl.saavtk.colormap.Colormaps;
 import edu.jhuapl.sbmt.spectrum.model.core.BasicSpectrum;
-import edu.jhuapl.sbmt.spectrum.model.core.BasicSpectrumInstrument;
+import edu.jhuapl.sbmt.spectrum.model.core.interfaces.ISpectrumColorer;
 import edu.jhuapl.sbmt.spectrum.model.core.interfaces.SpectrumColoringChangedListener;
 import edu.jhuapl.sbmt.spectrum.model.sbmtCore.spectra.SpectrumColoringStyle;
-import edu.jhuapl.sbmt.spectrum.model.statistics.SpectrumStatistics;
-import edu.jhuapl.sbmt.spectrum.model.statistics.SpectrumStatistics.Sample;
 import edu.jhuapl.sbmt.spectrum.rendering.IBasicSpectrumRenderer;
 
 /**
@@ -27,207 +20,74 @@ import edu.jhuapl.sbmt.spectrum.rendering.IBasicSpectrumRenderer;
 public class SpectrumColoringModel<S extends BasicSpectrum>
 {
     private Vector<SpectrumColoringChangedListener> colorChangedListeners;
-    private Double redMinVal = 0.0;
-    private Double redMaxVal;
-    private Double greenMinVal = 0.0;
-    private Double greenMaxVal;
-    private Double blueMinVal = 0.0;
-    private Double blueMaxVal;
-    private boolean greyScaleSelected;
-    private int redIndex;
-    private int greenIndex;
-    private int blueIndex;
     private SpectrumColoringStyle spectrumColoringStyle = SpectrumColoringStyle.RGB;
-    private int[] channels;
-    private double[] mins;
-    private double[] maxs;
-    private Colormap currentColormap;
-    protected boolean currentlyEditingUserDefinedFunction = false;
-
+    private ISpectrumColorer<S> currentColorer;
+    private HashMap<SpectrumColoringStyle, ISpectrumColorer<S>> colorers;
+    private double[] rgbMaxvals;
+    private int[] rgbIndices;
+    private GreyscaleSpectrumColorer<S> greyScaleColorer;
+    private RGBSpectrumColorer<S> rgbColorer;
+    private EmissionSpectrumColorer<S> emissionColorer;
+    private SpectrumColoringChangedListener colorerListener;
 
 	public SpectrumColoringModel()
 	{
         this.colorChangedListeners = new Vector<SpectrumColoringChangedListener>();
+        this.colorers = new HashMap<SpectrumColoringStyle, ISpectrumColorer<S>>();
+        colorerListener = new SpectrumColoringChangedListener()
+		{
+
+			@Override
+			public void coloringChanged()
+			{
+				fireColoringChanged();
+			}
+		};
+
+		greyScaleColorer = new GreyscaleSpectrumColorer<S>();
+		greyScaleColorer.addSpectrumColoringChangedListener(colorerListener);
+
+		rgbColorer = new RGBSpectrumColorer<S>();
+		rgbColorer.addSpectrumColoringChangedListener(colorerListener);
+
+		emissionColorer = new EmissionSpectrumColorer<S>();
+		emissionColorer.addSpectrumColoringChangedListener(colorerListener);
+
+		colorers.put(SpectrumColoringStyle.GREYSCALE, greyScaleColorer);
+		colorers.put(SpectrumColoringStyle.RGB, rgbColorer);
+		colorers.put(SpectrumColoringStyle.EMISSION_ANGLE, emissionColorer);
+
+		this.currentColorer = rgbColorer;
+
 	}
 
 	public void updateColoring()
 	{
-        if (isCurrentlyEditingUserDefinedFunction())
-            return;
+//        if (isCurrentlyEditingUserDefinedFunction())
+//            return;
 		// If we are currently editing user defined functions
         // (i.e. the dialog is open), do not update the coloring
         // since we may be in an inconsistent state.
 
-        if (isGreyScaleSelected())
-        {
-        	this.channels = new int[]{redIndex, redIndex, redIndex};
-        	this.mins = new double[]{redMinVal, redMinVal, redMinVal};
-        	this.maxs = new double[]{redMaxVal, redMaxVal, redMaxVal};
-        }
-        else
-        {
-        	this.channels = new int[]{redIndex, greenIndex, blueIndex};
-        	this.mins = new double[]{redMinVal, greenMinVal, blueMinVal};
-        	this.maxs = new double[]{redMaxVal, greenMaxVal, blueMaxVal};
-        }
+//        if (isGreyScaleSelected())
+//        {
+//        	this.channels = new int[]{redIndex, redIndex, redIndex};
+//        	this.mins = new double[]{redMinVal, redMinVal, redMinVal};
+//        	this.maxs = new double[]{redMaxVal, redMaxVal, redMaxVal};
+//        }
+//        else
+//        {
+//        	this.channels = new int[]{redIndex, greenIndex, blueIndex};
+//        	this.mins = new double[]{redMinVal, greenMinVal, blueMinVal};
+//        	this.maxs = new double[]{redMaxVal, greenMaxVal, blueMaxVal};
+//        }
         fireColoringChanged();
 	}
 
 	public double[] getSpectrumColoringForCurrentStyle(IBasicSpectrumRenderer<S> spectrumRenderer)
 	{
-		if (spectrumColoringStyle == SpectrumColoringStyle.EMISSION_ANGLE)
-			return getEmissionAngleColorForSpectrum(spectrumRenderer);
-		else
-			return getRGBColorforSpectrum(spectrumRenderer);
+		return currentColorer.getColorForSpectrum(spectrumRenderer);
 	}
-
-	private double[] getEmissionAngleColorForSpectrum(IBasicSpectrumRenderer<S> spectrumRenderer)
-	{
-		  List<Sample> sampleEmergenceAngle = SpectrumStatistics.sampleEmergenceAngle(spectrumRenderer, new Vector3D(spectrumRenderer.getSpacecraftPosition()));
-          Colormap colormap = Colormaps.getNewInstanceOfBuiltInColormap("OREX Scalar Ramp");
-          colormap.setRangeMin(0.0);  //was 5.4
-          colormap.setRangeMax(90.00); //was 81.7
-
-          Color color2 = colormap.getColor(SpectrumStatistics.getWeightedMean(sampleEmergenceAngle));
-          double[] color = new double[3];
-          color[0] = color2.getRed()/255.0;
-          color[1] = color2.getGreen()/255.0;
-          color[2] = color2.getBlue()/255.0;
-          return color;
-	}
-
-	private double[] getRGBColorforSpectrum(IBasicSpectrumRenderer<S> spectrumRenderer)
-	{
-		//TODO: What do we do for L3 data here?  It has less XAxis points than the L2 data, so is the coloring scheme different?
-        double[] color = new double[3];
-        BasicSpectrumInstrument instrument = spectrumRenderer.getSpectrum().getInstrument();
-        int[] channelsToColorBy = spectrumRenderer.getSpectrum().getChannelsToColorBy();
-        double[] channelsColoringMinValue = spectrumRenderer.getSpectrum().getChannelsColoringMinValue();
-        double[] channelsColoringMaxValue = spectrumRenderer.getSpectrum().getChannelsColoringMaxValue();
-
-        for (int i=0; i<3; ++i)
-        {
-            double val = 0.0;
-            if (spectrumRenderer.getSpectrum().getChannelsToColorBy()[i] < instrument.getBandCenters().length)
-            {
-                val = spectrumRenderer.getSpectrum().getSpectrum()[channelsToColorBy[i]];
-            }
-            else if (channelsToColorBy[i] < instrument.getBandCenters().length + instrument.getSpectrumMath().getDerivedParameters().length)
-                val = spectrumRenderer.getSpectrum().evaluateDerivedParameters(channelsToColorBy[i]-instrument.getBandCenters().length);
-            else
-                val = instrument.getSpectrumMath().evaluateUserDefinedDerivedParameters(channelsToColorBy[i]-instrument.getBandCenters().length-instrument.getSpectrumMath().getDerivedParameters().length, spectrumRenderer.getSpectrum().getSpectrum());
-
-            if (val < 0.0)
-                val = 0.0;
-            else if (val > 1.0)
-                val = 1.0;
-
-            double slope = 1.0 / (channelsColoringMaxValue[i] - channelsColoringMinValue[i]);
-            color[i] = slope * (val - channelsColoringMinValue[i]);
-        }
-        return color;
-	}
-
-
-	public Double getRedMinVal()
-    {
-        return redMinVal;
-    }
-
-    public void setRedMinVal(Double redMinVal)
-    {
-        this.redMinVal = redMinVal;
-    }
-
-    public Double getRedMaxVal()
-    {
-        return redMaxVal;
-    }
-
-    public void setRedMaxVal(Double redMaxVal)
-    {
-        this.redMaxVal = redMaxVal;
-    }
-
-    public Double getGreenMinVal()
-    {
-        return greenMinVal;
-    }
-
-    public void setGreenMinVal(Double greenMinVal)
-    {
-        this.greenMinVal = greenMinVal;
-    }
-
-    public Double getGreenMaxVal()
-    {
-        return greenMaxVal;
-    }
-
-    public void setGreenMaxVal(Double greenMaxVal)
-    {
-        this.greenMaxVal = greenMaxVal;
-    }
-
-    public Double getBlueMinVal()
-    {
-        return blueMinVal;
-    }
-
-    public void setBlueMinVal(Double blueMinVal)
-    {
-        this.blueMinVal = blueMinVal;
-    }
-
-    public Double getBlueMaxVal()
-    {
-        return blueMaxVal;
-    }
-
-    public void setBlueMaxVal(Double blueMaxVal)
-    {
-        this.blueMaxVal = blueMaxVal;
-    }
-
-    public boolean isGreyScaleSelected()
-    {
-        return greyScaleSelected;
-    }
-
-    public void setGreyScaleSelected(boolean greyScaleSelected)
-    {
-        this.greyScaleSelected = greyScaleSelected;
-    }
-
-    public int getRedIndex()
-    {
-        return redIndex;
-    }
-
-    public void setRedIndex(int redIndex)
-    {
-        this.redIndex = redIndex;
-    }
-
-    public int getGreenIndex()
-    {
-        return greenIndex;
-    }
-
-    public void setGreenIndex(int greenIndex)
-    {
-        this.greenIndex = greenIndex;
-    }
-
-    public int getBlueIndex()
-    {
-        return blueIndex;
-    }
-
-    public void setBlueIndex(int blueIndex)
-    {
-        this.blueIndex = blueIndex;
-    }
 
     public SpectrumColoringStyle getSpectrumColoringStyle()
     {
@@ -237,6 +97,7 @@ public class SpectrumColoringModel<S extends BasicSpectrum>
     public void setSpectrumColoringStyle(SpectrumColoringStyle spectrumColoringStyle)
     {
         this.spectrumColoringStyle = spectrumColoringStyle;
+        currentColorer = colorers.get(spectrumColoringStyle);
         fireColoringChanged();
     }
 
@@ -268,43 +129,47 @@ public class SpectrumColoringModel<S extends BasicSpectrum>
 		return colorChangedListeners;
 	}
 
-	public int[] getChannels()
+	public ISpectrumColorer<S> getCurrentColorer()
 	{
-		return channels;
+		return currentColorer;
 	}
 
-	public double[] getMins()
+	public void setCurrentColorer(ISpectrumColorer<S> currentColorer)
 	{
-		return mins;
-	}
-
-	public double[] getMaxs()
-	{
-		return maxs;
-	}
-
-	public void setCurrentColormap(Colormap currentColormap)
-	{
-		this.currentColormap = currentColormap;
+		this.currentColorer = currentColorer;
 		fireColoringChanged();
 	}
 
-    /**
-     * Returns state describing whether the user defined color function is being edited
-     * @return
-     */
-    public boolean isCurrentlyEditingUserDefinedFunction()
-    {
-        return currentlyEditingUserDefinedFunction;
-    }
+	public void setRgbMaxvals(double[] rgbMaxvals)
+	{
+		this.rgbMaxvals = rgbMaxvals;
+		rgbColorer.setRedMaxVal(rgbMaxvals[0]);
+		rgbColorer.setGreenMaxVal(rgbMaxvals[1]);
+		rgbColorer.setBlueMaxVal(rgbMaxvals[2]);
+		greyScaleColorer.setMaxs(rgbMaxvals);
+	}
 
-    /**
-     * Updates the state describing whether the user defined color function is being edited
-     * @param currentlyEditingUserDefinedFunction
-     */
-    public void setCurrentlyEditingUserDefinedFunction(
-            boolean currentlyEditingUserDefinedFunction)
-    {
-        this.currentlyEditingUserDefinedFunction = currentlyEditingUserDefinedFunction;
-    }
+	public void setRgbIndices(int[] rgbIndices)
+	{
+		this.rgbIndices = rgbIndices;
+		rgbColorer.setRedIndex(rgbIndices[0]);
+		rgbColorer.setGreenIndex(rgbIndices[1]);
+		rgbColorer.setBlueIndex(rgbIndices[2]);
+		greyScaleColorer.setChannels(rgbIndices);
+	}
+
+	public GreyscaleSpectrumColorer<S> getGreyScaleColorer()
+	{
+		return greyScaleColorer;
+	}
+
+	public RGBSpectrumColorer<S> getRgbColorer()
+	{
+		return rgbColorer;
+	}
+
+	public EmissionSpectrumColorer<S> getEmissionColorer()
+	{
+		return emissionColorer;
+	}
 }

@@ -1,7 +1,6 @@
 package edu.jhuapl.sbmt.spectrum.ui.color;
 
 import java.awt.Dimension;
-import java.awt.LayoutManager;
 
 import javax.swing.BoxLayout;
 import javax.swing.JComboBox;
@@ -13,7 +12,7 @@ import javax.swing.SpinnerNumberModel;
 import vtk.vtkFunctionParser;
 
 import edu.jhuapl.sbmt.spectrum.model.core.BasicSpectrum;
-import edu.jhuapl.sbmt.spectrum.model.core.color.SpectrumColoringModel;
+import edu.jhuapl.sbmt.spectrum.model.core.color.GreyscaleSpectrumColorer;
 import edu.jhuapl.sbmt.spectrum.model.sbmtCore.spectra.ISpectralInstrument;
 
 public class GreyscaleColoringPanel<S extends BasicSpectrum> extends JPanel implements ISpectrumColoringPanel
@@ -24,13 +23,15 @@ public class GreyscaleColoringPanel<S extends BasicSpectrum> extends JPanel impl
 	private JLabel greyLabel;
     private JLabel greyMinLabel;
     private JLabel greyMaxLabel;
-    private SpectrumColoringModel<S> model;
     private ISpectralInstrument instrument;
+    private GreyscaleSpectrumColorer<S> model;
 
-	public GreyscaleColoringPanel(SpectrumColoringModel<S> model, ISpectralInstrument instrument)
+
+	public GreyscaleColoringPanel(GreyscaleSpectrumColorer<S> model, ISpectralInstrument instrument)
 	{
 		this.model = model;
 		this.instrument = instrument;
+
 		initialize();
 	}
 
@@ -72,8 +73,6 @@ public class GreyscaleColoringPanel<S extends BasicSpectrum> extends JPanel impl
         panel_12.add(greyMaxSpinner);
 
         setupComboBoxes();
-
-        model.setGreyScaleSelected(true);
         model.updateColoring();
 	}
 
@@ -84,7 +83,7 @@ public class GreyscaleColoringPanel<S extends BasicSpectrum> extends JPanel impl
             String channel = new String("(" + i + ") " + instrument.getBandCenters()[i-1] + " " + instrument.getBandCenterUnit());
             greyComboBox.addItem(channel);
         }
-        greyComboBox.setSelectedIndex(model.getRedIndex());
+        greyComboBox.setSelectedIndex(model.getGreyScaleIndex());
 
         String[] derivedParameters = instrument.getSpectrumMath().getDerivedParameters();
         for (int i=0; i<derivedParameters.length; ++i)
@@ -97,30 +96,11 @@ public class GreyscaleColoringPanel<S extends BasicSpectrum> extends JPanel impl
             greyComboBox.addItem(fp.GetFunction());
         }
 
-        greyMaxSpinner.setValue(model.getRedMaxVal());
+        greyMaxSpinner.setValue(model.getGreyMaxVal());
     }
-
-	public GreyscaleColoringPanel(LayoutManager layout)
-	{
-		super(layout);
-		// TODO Auto-generated constructor stub
-	}
-
-	public GreyscaleColoringPanel(boolean isDoubleBuffered)
-	{
-		super(isDoubleBuffered);
-		// TODO Auto-generated constructor stub
-	}
-
-	public GreyscaleColoringPanel(LayoutManager layout, boolean isDoubleBuffered)
-	{
-		super(layout, isDoubleBuffered);
-		// TODO Auto-generated constructor stub
-	}
 
 	public JPanel getJPanel()
 	{
 		return this;
 	}
-
 }

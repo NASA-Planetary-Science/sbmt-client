@@ -20,7 +20,7 @@ import com.google.common.collect.Lists;
 import vtk.vtkFunctionParser;
 
 import edu.jhuapl.sbmt.spectrum.model.core.BasicSpectrum;
-import edu.jhuapl.sbmt.spectrum.model.core.color.SpectrumColoringModel;
+import edu.jhuapl.sbmt.spectrum.model.core.color.RGBSpectrumColorer;
 import edu.jhuapl.sbmt.spectrum.model.sbmtCore.spectra.ISpectralInstrument;
 import edu.jhuapl.sbmt.spectrum.ui.math.SpectrumMathPanel;
 
@@ -43,13 +43,16 @@ public class RGBColoringPanel<S extends BasicSpectrum> extends JPanel implements
     private JLabel blueLabel;
     private JLabel blueMinLabel;
     private JLabel blueMaxLabel;
-    private SpectrumColoringModel<S> model;
+//    private SpectrumColoringModel<S> model;
     private ISpectralInstrument instrument;
+    private RGBSpectrumColorer<S> model;
 
-	public RGBColoringPanel(SpectrumColoringModel<S> model, ISpectralInstrument instrument)
+
+	public RGBColoringPanel(RGBSpectrumColorer<S> model, ISpectralInstrument instrument)
 	{
 		this.model = model;
 		this.instrument = instrument;
+
 		initialize();
 	}
 
@@ -231,17 +234,17 @@ public class RGBColoringPanel<S extends BasicSpectrum> extends JPanel implements
 
     private void redComboBoxActionPerformed(ActionEvent evt) {
     	model.setRedIndex(getRedComboBox().getSelectedIndex());
-        model.updateColoring();
+    	model.updateColoring();
     }
 
     private void greenComboBoxActionPerformed(ActionEvent evt) {
     	model.setGreenIndex(getGreenComboBox().getSelectedIndex());
-        model.updateColoring();
+    	model.updateColoring();
     }
 
     private void blueComboBoxActionPerformed(ActionEvent evt) {
     	model.setBlueIndex(getBlueComboBox().getSelectedIndex());
-        model.updateColoring();
+    	model.updateColoring();
     }
 
     private void redMinSpinnerStateChanged() {
@@ -408,4 +411,6 @@ public class RGBColoringPanel<S extends BasicSpectrum> extends JPanel implements
 	{
 		return this;
 	}
+
+
 }
