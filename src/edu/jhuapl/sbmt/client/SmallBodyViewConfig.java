@@ -239,7 +239,7 @@ public class SmallBodyViewConfig extends BodyViewConfig implements ISmallBodyVie
         super(resolutionLabels, resolutionNumberElements);
     }
 
-    public SmallBodyViewConfig()
+    private SmallBodyViewConfig()
     {
         super(ImmutableList.<String>copyOf(DEFAULT_GASKELL_LABELS_PER_RESOLUTION), ImmutableList.<Integer>copyOf(DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION));
     }

@@ -63,17 +63,14 @@ public class SmallBodyViewConfigMetadataIO implements MetadataManager
                 io.write(config.getUniqueName(), file, outgoingMetadata);
 
                 //read in data from file to do sanity check
-                SmallBodyViewConfig cfg = new SmallBodyViewConfig();
-                SmallBodyViewConfigMetadataIO io2 = new SmallBodyViewConfigMetadataIO(cfg);
-                FixedMetadata metadata = Serializers.deserialize(file, config.getUniqueName());
-                io2.metadataID = config.getUniqueName();
-                io2.retrieve(metadata);
-
-//                System.out.println("SmallBodyViewConfigMetadataIO: main: config " + config);
-//                System.out.println("SmallBodyViewConfigMetadataIO: main: cfg is " + cfg);
-
-                if (!cfg.equals(config))
-                	System.err.println("SmallBodyViewConfigMetadataIO: main: cfg equals config is " + (cfg.equals(config) + " for " + config.getUniqueName()));
+//                SmallBodyViewConfig cfg = new SmallBodyViewConfig();
+//                SmallBodyViewConfigMetadataIO io2 = new SmallBodyViewConfigMetadataIO(cfg);
+//                FixedMetadata metadata = Serializers.deserialize(file, config.getUniqueName());
+//                io2.metadataID = config.getUniqueName();
+//                io2.retrieve(metadata);
+//
+//                if (!cfg.equals(config))
+//                	System.err.println("SmallBodyViewConfigMetadataIO: main: cfg equals config is " + (cfg.equals(config) + " for " + config.getUniqueName()));
 
             }
             catch (Exception e)
@@ -84,28 +81,6 @@ public class SmallBodyViewConfigMetadataIO implements MetadataManager
         }
 
         Serializers.serialize("AllBodies", allBodiesMetadata, new File(rootDir + "allBodies.json"));
-
-//        System.out.println("SmallBodyViewConfigMetadataIO: main: number of configs in SMVC " + SmallBodyViewConfig.getBuiltInConfigs().size());
-//        //perform checks for each file and model within to make sure all values are getting saved/retreived properly
-//        ConfigArrayList configList = new ConfigArrayList();
-//        MarsConfigs.initialize(configList);
-//        for (ViewConfig config : configList)
-//        {
-//        	System.out.println("SmallBodyViewConfigMetadataIO: main: config is " + config.getUniqueName());
-//        	//get the one built from code for comparison
-//        	MarsConfigs marsConfig = (MarsConfigs)config;
-//
-////        	SmallBodyViewConfig cfg = SmallBodyViewConfig.getSmallBodyConfig(new BasicConfigInfo((BodyViewConfig)config));
-//        	SmallBodyViewConfig cfg = new SmallBodyViewConfig();
-//        	SmallBodyViewConfigMetadataIO io = new SmallBodyViewConfigMetadataIO(cfg);
-//        	String version = config.version == null ? "" : config.version;
-//        	File file = new File(rootDir + ((SmallBodyViewConfig)config).rootDirOnServer + "/" + config.author +  "_" + config.body.toString().replaceAll(" ", "_") + version.replaceAll(" ", "_") + ".json");
-//        	io.read(file, config.getUniqueName(), cfg);
-//        }
-
-
-
-
     }
 
     private List<ViewConfig> configs;
