@@ -1762,6 +1762,7 @@ public class BennuConfigs extends SmallBodyViewConfig
             c.density = 1260;
             c.useMinimumReferencePotential = true;
             c.rotationRate = 0.00040613;
+            c.bodyReferencePotential = -0.02654811544296466;
 
             c.hasImageMap = true;
 
@@ -1927,6 +1928,7 @@ public class BennuConfigs extends SmallBodyViewConfig
             c.density = 1260;
             c.useMinimumReferencePotential = true;
             c.rotationRate = 0.00040613;
+            c.bodyReferencePotential = -0.02637307554771602;
 
             c.hasImageMap = true;
 
@@ -2100,6 +2102,7 @@ public class BennuConfigs extends SmallBodyViewConfig
             c.density = 1186.;
             c.useMinimumReferencePotential = true;
             c.rotationRate = 4.0626E-4;
+            c.bodyReferencePotential = -0.02530442113463265;
 
             c.hasImageMap = true;
 
@@ -2265,6 +2268,7 @@ public class BennuConfigs extends SmallBodyViewConfig
             c.density = 1186;
             c.useMinimumReferencePotential = true;
             c.rotationRate = 4.0626E-4;
+            c.bodyReferencePotential = -0.02513575424405747;
 
             c.hasImageMap = true;
 
@@ -2429,6 +2433,7 @@ public class BennuConfigs extends SmallBodyViewConfig
             c.density = 1186.0;
             c.useMinimumReferencePotential = true;
             c.rotationRate = 4.0626E-4;
+            c.bodyReferencePotential = -0.0253033332766406;
 
             c.hasImageMap = true;
 
@@ -2593,6 +2598,7 @@ public class BennuConfigs extends SmallBodyViewConfig
             c.density = 1186.0;
             c.useMinimumReferencePotential = true;
             c.rotationRate = 4.0626E-4;
+            c.bodyReferencePotential = -0.02528907231151947;
 
             c.hasImageMap = true;
 
@@ -2757,6 +2763,7 @@ public class BennuConfigs extends SmallBodyViewConfig
             c.density = 1186.0;
             c.useMinimumReferencePotential = true;
             c.rotationRate = 4.0626E-4;
+            c.bodyReferencePotential = -0.02520767997203304;
 
             c.hasImageMap = true;
 
@@ -2921,6 +2928,7 @@ public class BennuConfigs extends SmallBodyViewConfig
             c.density = 1186.0;
             c.useMinimumReferencePotential = true;
             c.rotationRate = 4.0626E-4;
+            c.bodyReferencePotential = -0.02517871436774813;
 
             c.hasImageMap = true;
 
@@ -3085,6 +3093,7 @@ public class BennuConfigs extends SmallBodyViewConfig
             c.density = 1186.0;
             c.useMinimumReferencePotential = true;
             c.rotationRate = 4.0626E-4;
+            c.bodyReferencePotential = -0.02517940647257273;
 
             c.hasImageMap = true;
 
