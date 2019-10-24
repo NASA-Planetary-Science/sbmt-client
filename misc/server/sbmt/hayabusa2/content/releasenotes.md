@@ -4,9 +4,14 @@
 
 # Release Notes
 
+## October 17, 2019 (SBMT-0.7.7.1)
+
+### Bug Fixes:
+- Fixed bug related to the View Search Results as Image Gallery not being enabled for certain bodies
+
 ## October 11, 2019 (SBMT-0.7.7)
 
-## New:
+### New:
 - Added support for MacOS Catalina 
 - The install process for the software for all Mac users has changed to accommodate this support: 1) Open the downloaded .pkg and follow instructions in the install wizard. 2) SBMT will now appear as an application in the /Applications/SBMT folder. The functionality of the tool should be unchanged. Please contact sbmt@jhuapl.edu if you encounter installation issues.  
 - Added ability for client to add new models to SBMT without requiring a new release.
@@ -21,7 +26,7 @@
 - Improved logic for selecting multiple structures.
 - Improved performance when hiding/showing many circles/ellipse/points structures.
 
-## Bug fixes:
+### Bug fixes:
 - Fixed bug that allowed duplicate custom image names to be created.
 - Fixed a bug causing strange behavior when user went on and offline repeatedly.
 - Fixed a bug that prevented structures from being deleted.
