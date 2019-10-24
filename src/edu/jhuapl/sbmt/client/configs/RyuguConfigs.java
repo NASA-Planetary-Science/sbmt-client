@@ -123,7 +123,7 @@ public class RyuguConfigs extends SmallBodyViewConfig
     //            samCam = BasicImagingInstrument.of(builder.build());
     //        }
 
-          BasicImagingInstrument tir;
+          ImagingInstrument tir;
           {
               // Set up images.
               SBMTFileLocator fileLocator = SBMTFileLocators.of(bodyConfig, modelConfig, Instrument.TIR, ".fit", ".INFO", null, ".jpeg");
@@ -208,29 +208,29 @@ public class RyuguConfigs extends SmallBodyViewConfig
             configArray.add(c);
 
             c.hasLidarData = false;
-            c.hasHypertreeBasedLidarSearch = true; // enable tree-based lidar searching
-            c.lidarInstrumentName = Instrument.LASER;
-            c.lidarSearchDefaultStartDate = new GregorianCalendar(2000, 0, 1, 0, 0, 0).getTime();
-            c.lidarSearchDefaultEndDate = new GregorianCalendar(2050, 0, 1, 0, 0, 0).getTime();
-            c.lidarSearchDataSourceMap = new LinkedHashMap<>();
-            c.lidarBrowseDataSourceMap = new LinkedHashMap<>();
-//          c.lidarSearchDataSourceMap.put("Hayabusa2","/ryugu/shared/lidar/tree/dataSource.lidar");
-            c.lidarBrowseDataSourceMap.put("Hayabusa2", "/earth/hayabusa2/laser/browse/fileList.txt");
-            c.lidarBrowseFileListResourcePath = "/earth/hayabusa2/laser/browse/fileList.txt";
-
-            c.lidarBrowseXYZIndices = OlaCubesGenerator.xyzIndices;
-            c.lidarBrowseSpacecraftIndices = OlaCubesGenerator.scIndices;
-            c.lidarBrowseIsSpacecraftInSphericalCoordinates = false;
-            c.lidarBrowseTimeIndex = 26;
-            c.lidarBrowseNoiseIndex = 62;
-            c.lidarBrowseOutgoingIntensityIndex = 98;
-            c.lidarBrowseReceivedIntensityIndex = 106;
-            c.lidarBrowseIntensityEnabled = true;
-            c.lidarBrowseNumberHeaderLines = 0;
-            c.lidarBrowseIsInMeters = true;
-            c.lidarBrowseIsBinary = true;
-            c.lidarBrowseBinaryRecordSize = 186;
-            c.lidarOffsetScale = 0.0005;
+//            c.hasHypertreeBasedLidarSearch = true; // enable tree-based lidar searching
+//            c.lidarInstrumentName = Instrument.LASER;
+//            c.lidarSearchDefaultStartDate = new GregorianCalendar(2000, 0, 1, 0, 0, 0).getTime();
+//            c.lidarSearchDefaultEndDate = new GregorianCalendar(2050, 0, 1, 0, 0, 0).getTime();
+//            c.lidarSearchDataSourceMap = new LinkedHashMap<>();
+//            c.lidarBrowseDataSourceMap = new LinkedHashMap<>();
+////          c.lidarSearchDataSourceMap.put("Hayabusa2","/ryugu/shared/lidar/tree/dataSource.lidar");
+//            c.lidarBrowseDataSourceMap.put("Hayabusa2", "/earth/hayabusa2/laser/browse/fileList.txt");
+//            c.lidarBrowseFileListResourcePath = "/earth/hayabusa2/laser/browse/fileList.txt";
+//
+//            c.lidarBrowseXYZIndices = OlaCubesGenerator.xyzIndices;
+//            c.lidarBrowseSpacecraftIndices = OlaCubesGenerator.scIndices;
+//            c.lidarBrowseIsSpacecraftInSphericalCoordinates = false;
+//            c.lidarBrowseTimeIndex = 26;
+//            c.lidarBrowseNoiseIndex = 62;
+//            c.lidarBrowseOutgoingIntensityIndex = 98;
+//            c.lidarBrowseReceivedIntensityIndex = 106;
+//            c.lidarBrowseIntensityEnabled = true;
+//            c.lidarBrowseNumberHeaderLines = 0;
+//            c.lidarBrowseIsInMeters = true;
+//            c.lidarBrowseIsBinary = true;
+//            c.lidarBrowseBinaryRecordSize = 186;
+//            c.lidarOffsetScale = 0.0005;
         }
 
         if (Configuration.isAPLVersion())

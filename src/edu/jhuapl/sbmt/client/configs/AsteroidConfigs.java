@@ -66,8 +66,8 @@ public class AsteroidConfigs extends SmallBodyViewConfig
         c.hasLidarData = true;
         c.hasMapmaker = true;
         c.hasRemoteMapmaker = false;
-        c.bodyDensity = 2.67;
-        c.bodyRotationRate = 0.000331165761670640;
+        c.density = 2.67;
+        c.rotationRate = 0.000331165761670640;
         c.bodyReferencePotential = -53.765039959572114;
         c.bodyLowestResModelName = "EROS/shape/shape0.obj";
 
