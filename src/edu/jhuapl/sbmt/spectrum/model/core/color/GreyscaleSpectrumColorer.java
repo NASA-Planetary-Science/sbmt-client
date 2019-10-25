@@ -12,7 +12,7 @@ public class GreyscaleSpectrumColorer<S extends BasicSpectrum> implements ISpect
 {
 	private int greyScaleIndex;
 	private Double greyMinVal = 0.0;
-    private Double greyMaxVal;
+    private Double greyMaxVal = 0.0;
     private List<SpectrumColoringChangedListener> colorChangedListeners;
     private int[] channels;
     private double[] mins;

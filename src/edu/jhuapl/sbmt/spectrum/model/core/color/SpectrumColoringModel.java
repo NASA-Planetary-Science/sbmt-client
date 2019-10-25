@@ -146,7 +146,10 @@ public class SpectrumColoringModel<S extends BasicSpectrum>
 		rgbColorer.setRedMaxVal(rgbMaxvals[0]);
 		rgbColorer.setGreenMaxVal(rgbMaxvals[1]);
 		rgbColorer.setBlueMaxVal(rgbMaxvals[2]);
+		rgbColorer.updateColoring();
 		greyScaleColorer.setMaxs(rgbMaxvals);
+		greyScaleColorer.updateColoring();
+		updateColoring();
 	}
 
 	public void setRgbIndices(int[] rgbIndices)
@@ -155,7 +158,10 @@ public class SpectrumColoringModel<S extends BasicSpectrum>
 		rgbColorer.setRedIndex(rgbIndices[0]);
 		rgbColorer.setGreenIndex(rgbIndices[1]);
 		rgbColorer.setBlueIndex(rgbIndices[2]);
+		rgbColorer.updateColoring();
 		greyScaleColorer.setChannels(rgbIndices);
+		greyScaleColorer.updateColoring();
+		updateColoring();
 	}
 
 	public GreyscaleSpectrumColorer<S> getGreyScaleColorer()

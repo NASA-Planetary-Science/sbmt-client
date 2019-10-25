@@ -5,6 +5,7 @@ import java.awt.event.ActionEvent;
 import java.text.DecimalFormat;
 import java.util.List;
 
+import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
@@ -43,7 +44,6 @@ public class RGBColoringPanel<S extends BasicSpectrum> extends JPanel implements
     private JLabel blueLabel;
     private JLabel blueMinLabel;
     private JLabel blueMaxLabel;
-//    private SpectrumColoringModel<S> model;
     private ISpectralInstrument instrument;
     private RGBSpectrumColorer<S> model;
 
@@ -60,8 +60,12 @@ public class RGBColoringPanel<S extends BasicSpectrum> extends JPanel implements
     {
         setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
 
+        JPanel panel_10 = new JPanel();
+        add(panel_10);
+        panel_10.setLayout(new BoxLayout(panel_10, BoxLayout.X_AXIS));
         customFunctionsButton = new JButton("Custom Formulas");
-        add(customFunctionsButton);
+        panel_10.add(customFunctionsButton);
+        panel_10.add(Box.createHorizontalGlue());
 
         JPanel panel_11 = new JPanel();
         add(panel_11);

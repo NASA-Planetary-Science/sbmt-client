@@ -12,11 +12,11 @@ import edu.jhuapl.sbmt.spectrum.rendering.IBasicSpectrumRenderer;
 public class RGBSpectrumColorer<S extends BasicSpectrum> implements ISpectrumColorer<S>
 {
     private Double redMinVal = 0.0;
-    private Double redMaxVal;
+    private Double redMaxVal = 0.0;
     private Double greenMinVal = 0.0;
-    private Double greenMaxVal;
+    private Double greenMaxVal = 0.0;
     private Double blueMinVal = 0.0;
-    private Double blueMaxVal;
+    private Double blueMaxVal = 0.0;
     private int redIndex;
     private int greenIndex;
     private int blueIndex;
@@ -37,22 +37,24 @@ public class RGBSpectrumColorer<S extends BasicSpectrum> implements ISpectrumCol
 		//TODO: What do we do for L3 data here?  It has less XAxis points than the L2 data, so is the coloring scheme different?
         double[] color = new double[3];
         BasicSpectrumInstrument instrument = spectrumRenderer.getSpectrum().getInstrument();
-        int[] channelsToColorBy = spectrumRenderer.getSpectrum().getChannelsToColorBy();
-        double[] channelsColoringMinValue = spectrumRenderer.getSpectrum().getChannelsColoringMinValue();
-        double[] channelsColoringMaxValue = spectrumRenderer.getSpectrum().getChannelsColoringMaxValue();
-
+        int[] channelsToColorBy = channels;
+        double[] channelsColoringMinValue = mins;
+        double[] channelsColoringMaxValue = maxs;
         for (int i=0; i<3; ++i)
         {
             double val = 0.0;
-            if (spectrumRenderer.getSpectrum().getChannelsToColorBy()[i] < instrument.getBandCenters().length)
+            if (channelsToColorBy[i] < instrument.getBandCenters().length)
             {
                 val = spectrumRenderer.getSpectrum().getSpectrum()[channelsToColorBy[i]];
             }
             else if (channelsToColorBy[i] < instrument.getBandCenters().length + instrument.getSpectrumMath().getDerivedParameters().length)
+            {
                 val = spectrumRenderer.getSpectrum().evaluateDerivedParameters(channelsToColorBy[i]-instrument.getBandCenters().length);
+            }
             else
+            {
                 val = instrument.getSpectrumMath().evaluateUserDefinedDerivedParameters(channelsToColorBy[i]-instrument.getBandCenters().length-instrument.getSpectrumMath().getDerivedParameters().length, spectrumRenderer.getSpectrum().getSpectrum());
-
+            }
             if (val < 0.0)
                 val = 0.0;
             else if (val > 1.0)
