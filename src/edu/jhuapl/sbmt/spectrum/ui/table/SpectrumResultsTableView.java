@@ -4,9 +4,7 @@ import java.awt.Color;
 import java.awt.Component;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.util.LinkedHashSet;
 import java.util.List;
-import java.util.Set;
 
 import javax.swing.Box;
 import javax.swing.BoxLayout;
@@ -18,9 +16,6 @@ import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.border.TitledBorder;
 import javax.swing.table.TableCellRenderer;
-
-import com.google.common.collect.ImmutableList;
-import com.google.common.collect.Sets;
 
 import edu.jhuapl.saavtk.gui.util.IconUtil;
 import edu.jhuapl.saavtk.gui.util.ToolTipUtil;
@@ -175,20 +170,7 @@ public class SpectrumResultsTableView<S extends BasicSpectrum> extends JPanel
 					ItemManagerUtil.selectNone(spectrumCollection);
 				else if (source == selectInvertB)
 				{
-					Set<S> tmpS = new LinkedHashSet<>(spectrumCollection.getAllItems());
-					Set<S> tmpS2 = new LinkedHashSet<>(spectrumCollection.getSelectedItems());
-					Set<S> diff = Sets.difference(tmpS, tmpS2);
-					System.out.println(
-							"SpectrumResultsTableView.buildTable().new ActionListener() {...}: actionPerformed: setting selected of size " + diff.size());
-					ImmutableList<S> list = ImmutableList.copyOf(diff);
-					System.out.println(
-							"SpectrumResultsTableView.buildTable().new ActionListener() {...}: actionPerformed: made diff list");
-					spectrumCollection.setSelectedItems(list);
-					System.out.println(
-							"SpectrumResultsTableView.buildTable().new ActionListener() {...}: actionPerformed: done");
-//					Set<S> tmpS = Sets.difference(ImmutableSet.copyOf(spectrumCollection.getAllItems()), ImmutableSet.copyOf(spectrumCollection.getSelectedItems()));
-//					spectrumCollection.setSelectedItems(ImmutableList.copyOf(tmpS));
-//					ItemManagerUtil.selectInvert(spectrumCollection);
+					ItemManagerUtil.selectInvert(spectrumCollection);
 				}
 			}
 		};

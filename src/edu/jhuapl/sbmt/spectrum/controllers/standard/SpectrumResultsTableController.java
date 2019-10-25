@@ -515,9 +515,7 @@ public class SpectrumResultsTableController<S extends BasicSpectrum>
 //            boundaries.removeBoundary(spec);
 //        }
         spectrumRawResults = results;
-        System.out.println("SpectrumResultsTableController: setSpectrumResults: setting all items " + results.size());
         spectrumCollection.setAllItems(results);
-        System.out.println("SpectrumResultsTableController: setSpectrumResults: ");
         showSpectrumBoundaries(new IdPair(0, Integer.parseInt((String)panel.getNumberOfBoundariesComboBox().getSelectedItem())));
     }
 }
