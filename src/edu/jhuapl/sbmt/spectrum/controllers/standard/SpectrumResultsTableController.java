@@ -133,10 +133,10 @@ public class SpectrumResultsTableController<S extends BasicSpectrum>
         panel.getShowBoundariesButton().setText("Show Boundaries");
         panel.getShowBoundariesButton().addActionListener(evt -> showBoundariesButtonActionPerformed());
 
-        panel.getRemoveBoundariesButton().setText("Remove Boundaries");
+        panel.getRemoveBoundariesButton().setText("Hide Boundaries");
         panel.getRemoveBoundariesButton().addActionListener(evt -> removeBoundariesButtonActionPerformed());
 
-        panel.getRemoveSpectraButton().setText("Remove Spectra");
+        panel.getRemoveSpectraButton().setText("Hide Spectra");
         panel.getRemoveSpectraButton().addActionListener(evt -> removeFootprintsButtonActionPerformed());
 
         panel.getSaveSpectraListButton().setText("Save List...");

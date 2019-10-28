@@ -143,7 +143,13 @@ public class CustomSpectraSearchModel<S extends BasicSpectrum> extends BaseSpect
 
     public void deleteSpectrum(int[] indices)
     {
-    	customSpectraKeys.remove(indices);
+    	List<CustomSpectrumKeyInterface> keysToRemove = new ArrayList<CustomSpectrumKeyInterface>();
+    	for (int i = indices.length-1; i > -1; i--)
+    	{
+    		customSpectraKeys.remove(indices[i]);
+    	}
+//    	customSpectraKeys.remove(indices);
+    	updateConfigFile();
     	fireResultsChanged();
     	fireResultsCountChanged(customSpectraKeys.size());
     }
