@@ -4,6 +4,11 @@
 
 # Release Notes
 
+## October 25, 2019 (SBMT-0.7.7.2)
+
+### Bug Fixes:
+- Restored a set of missing parameters from the body configuration metadata that broke some functionality
+
 ## October 17, 2019 (SBMT-0.7.7.1)
 
 ### Bug Fixes:

@@ -434,4 +434,25 @@ public class SmallBodyViewConfigTest extends BodyViewConfig implements ISmallBod
 	{
 		return isCustomTemporary();
 	}
+
+	@Override
+	public String[] getImageSearchFilterNames()
+	{
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public String[] getImageSearchUserDefinedCheckBoxesNames()
+	{
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public boolean hasHierarchicalImageSearch()
+	{
+		// TODO Auto-generated method stub
+		return false;
+	}
 }

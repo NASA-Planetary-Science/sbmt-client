@@ -106,9 +106,9 @@ public class MapmakerRemoteDEMCreator implements DEMCreator
 			public void run()
 			{
 		        final MapmakerRemoteSwingWorker mapmakerWorker = new MapmakerRemoteSwingWorker(null, "Running Mapmaker", "");
-		        mapmakerWorker.setRotationRate(smallBodyConfig.bodyRotationRate);
+		        mapmakerWorker.setRotationRate(smallBodyConfig.rotationRate);
 		        mapmakerWorker.setReferencePotential(smallBodyConfig.bodyReferencePotential);
-		        mapmakerWorker.setDensity(smallBodyConfig.bodyDensity);
+		        mapmakerWorker.setDensity(smallBodyConfig.density);
 		        mapmakerWorker.setBodyLowestResModelName(smallBodyConfig.bodyLowestResModelName);
 
 		        mapmakerWorker.setLatitude(latDeg);
@@ -148,9 +148,9 @@ public class MapmakerRemoteDEMCreator implements DEMCreator
 			public void run()
 			{
 				final MapmakerRemoteSwingWorker mapmakerWorker = new MapmakerRemoteSwingWorker(null, "Running Mapmaker", "");
-		        mapmakerWorker.setRotationRate(smallBodyConfig.bodyRotationRate);
+		        mapmakerWorker.setRotationRate(smallBodyConfig.rotationRate);
 		        mapmakerWorker.setReferencePotential(smallBodyConfig.bodyReferencePotential);
-		        mapmakerWorker.setDensity(smallBodyConfig.bodyDensity);
+		        mapmakerWorker.setDensity(smallBodyConfig.density);
 		        mapmakerWorker.setBodyLowestResModelName(smallBodyConfig.bodyLowestResModelName);
 
 		        mapmakerWorker.setRegionSpecifiedWithLatLonScale(false);

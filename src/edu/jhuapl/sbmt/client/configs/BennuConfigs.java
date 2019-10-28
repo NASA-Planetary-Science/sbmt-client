@@ -92,7 +92,7 @@ public class BennuConfigs extends SmallBodyViewConfig
 
             // Set up shape model -- one will suffice.
             ShapeModelConfiguration modelConfig = ShapeModelConfiguration.builder("osirisrex", ShapeModelDataUsed.IMAGE_BASED).build();
-            BasicImagingInstrument mapCam;
+            ImagingInstrument mapCam;
             {
                 // Set up images.
                 SBMTFileLocator fileLocator = SBMTFileLocators.of(bodyConfig, modelConfig, Instrument.MAPCAM, ".fit", ".INFO", null, ".jpeg");
@@ -110,7 +110,7 @@ public class BennuConfigs extends SmallBodyViewConfig
                 builder.put(SessionConfiguration.IMAGING_INSTRUMENT_CONFIG, imagingInstBuilder.build());
                 mapCam = BasicImagingInstrument.of(builder.build());
             }
-            BasicImagingInstrument polyCam;
+            ImagingInstrument polyCam;
             {
                 // Set up images.
                 SBMTFileLocator fileLocator = SBMTFileLocators.of(bodyConfig, modelConfig, Instrument.POLYCAM, ".fit", ".INFO", null, ".jpeg");
@@ -128,7 +128,7 @@ public class BennuConfigs extends SmallBodyViewConfig
                 builder.put(SessionConfiguration.IMAGING_INSTRUMENT_CONFIG, imagingInstBuilder.build());
                 polyCam = BasicImagingInstrument.of(builder.build());
             }
-            BasicImagingInstrument samCam;
+            ImagingInstrument samCam;
             {
                 // Set up images.
                 SBMTFileLocator fileLocator = SBMTFileLocators.of(bodyConfig, modelConfig, Instrument.SAMCAM, ".fits", ".INFO", null, ".jpeg");
@@ -217,63 +217,63 @@ public class BennuConfigs extends SmallBodyViewConfig
                     BodyType.PLANETS_AND_SATELLITES.name(),
                     ShapeModelPopulation.EARTH.name()).build();
 
-            // Set up shape model -- one will suffice. Note the "orex" here must be kept
-            // exactly as it is; that is what the directory is named in the data area.
+//            // Set up shape model -- one will suffice. Note the "orex" here must be kept
+//            // exactly as it is; that is what the directory is named in the data area.
             ShapeModelConfiguration modelConfig = ShapeModelConfiguration.builder("orex", ShapeModelDataUsed.WGS84).build();
-            BasicImagingInstrument mapCam;
-            {
-                // Set up images.
-                SBMTFileLocator fileLocator = SBMTFileLocators.of(bodyConfig, modelConfig, Instrument.MAPCAM, ".fit", ".INFO", null, ".jpeg");
-                QueryBase queryBase = new FixedListQuery(fileLocator.get(SBMTFileLocator.TOP_PATH).getLocation(""), fileLocator.get(SBMTFileLocator.GALLERY_FILE).getLocation(""));
-                Builder<ImagingInstrumentConfiguration> imagingInstBuilder = ImagingInstrumentConfiguration.builder(
-                        Instrument.MAPCAM,
-                        SpectralImageMode.MONO,
-                        queryBase,
-                        new ImageSource[] { ImageSource.SPICE },
-                        fileLocator,
-                        ImageType.MAPCAM_EARTH_IMAGE);
-
-                // Put it all together in a session.
-                Builder<SessionConfiguration> builder = SessionConfiguration.builder(bodyConfig, modelConfig, fileLocator);
-                builder.put(SessionConfiguration.IMAGING_INSTRUMENT_CONFIG, imagingInstBuilder.build());
-                mapCam = BasicImagingInstrument.of(builder.build());
-            }
-            BasicImagingInstrument polyCam;
-            {
-                // Set up images.
-                SBMTFileLocator fileLocator = SBMTFileLocators.of(bodyConfig, modelConfig, Instrument.POLYCAM, ".fit", ".INFO", null, ".jpeg");
-                QueryBase queryBase = new FixedListQuery(fileLocator.get(SBMTFileLocator.TOP_PATH).getLocation(""), fileLocator.get(SBMTFileLocator.GALLERY_FILE).getLocation(""));
-                Builder<ImagingInstrumentConfiguration> imagingInstBuilder = ImagingInstrumentConfiguration.builder(
-                        Instrument.POLYCAM,
-                        SpectralImageMode.MONO,
-                        queryBase,
-                        new ImageSource[] { ImageSource.SPICE },
-                        fileLocator,
-                        ImageType.POLYCAM_EARTH_IMAGE);
-
-                // Put it all together in a session.
-                Builder<SessionConfiguration> builder = SessionConfiguration.builder(bodyConfig, modelConfig, fileLocator);
-                builder.put(SessionConfiguration.IMAGING_INSTRUMENT_CONFIG, imagingInstBuilder.build());
-                polyCam = BasicImagingInstrument.of(builder.build());
-            }
-            BasicImagingInstrument samCam;
-            {
-                // Set up images.
-                SBMTFileLocator fileLocator = SBMTFileLocators.of(bodyConfig, modelConfig, Instrument.SAMCAM, ".fits", ".INFO", null, ".jpeg");
-                QueryBase queryBase = new FixedListQuery(fileLocator.get(SBMTFileLocator.TOP_PATH).getLocation(""), fileLocator.get(SBMTFileLocator.GALLERY_FILE).getLocation(""));
-                Builder<ImagingInstrumentConfiguration> imagingInstBuilder = ImagingInstrumentConfiguration.builder(
-                        Instrument.SAMCAM,
-                        SpectralImageMode.MONO,
-                        queryBase,
-                        new ImageSource[] { ImageSource.SPICE },
-                        fileLocator,
-                        ImageType.SAMCAM_EARTH_IMAGE);
-
-                // Put it all together in a session.
-                Builder<SessionConfiguration> builder = SessionConfiguration.builder(bodyConfig, modelConfig, fileLocator);
-                builder.put(SessionConfiguration.IMAGING_INSTRUMENT_CONFIG, imagingInstBuilder.build());
-                samCam = BasicImagingInstrument.of(builder.build());
-            }
+//            BasicImagingInstrument mapCam;
+//            {
+//                // Set up images.
+//                SBMTFileLocator fileLocator = SBMTFileLocators.of(bodyConfig, modelConfig, Instrument.MAPCAM, ".fit", ".INFO", null, ".jpeg");
+//                QueryBase queryBase = new FixedListQuery(fileLocator.get(SBMTFileLocator.TOP_PATH).getLocation(""), fileLocator.get(SBMTFileLocator.GALLERY_FILE).getLocation(""));
+//                Builder<ImagingInstrumentConfiguration> imagingInstBuilder = ImagingInstrumentConfiguration.builder(
+//                        Instrument.MAPCAM,
+//                        SpectralImageMode.MONO,
+//                        queryBase,
+//                        new ImageSource[] { ImageSource.SPICE },
+//                        fileLocator,
+//                        ImageType.MAPCAM_EARTH_IMAGE);
+//
+//                // Put it all together in a session.
+//                Builder<SessionConfiguration> builder = SessionConfiguration.builder(bodyConfig, modelConfig, fileLocator);
+//                builder.put(SessionConfiguration.IMAGING_INSTRUMENT_CONFIG, imagingInstBuilder.build());
+//                mapCam = BasicImagingInstrument.of(builder.build());
+//            }
+//            BasicImagingInstrument polyCam;
+//            {
+//                // Set up images.
+//                SBMTFileLocator fileLocator = SBMTFileLocators.of(bodyConfig, modelConfig, Instrument.POLYCAM, ".fit", ".INFO", null, ".jpeg");
+//                QueryBase queryBase = new FixedListQuery(fileLocator.get(SBMTFileLocator.TOP_PATH).getLocation(""), fileLocator.get(SBMTFileLocator.GALLERY_FILE).getLocation(""));
+//                Builder<ImagingInstrumentConfiguration> imagingInstBuilder = ImagingInstrumentConfiguration.builder(
+//                        Instrument.POLYCAM,
+//                        SpectralImageMode.MONO,
+//                        queryBase,
+//                        new ImageSource[] { ImageSource.SPICE },
+//                        fileLocator,
+//                        ImageType.POLYCAM_EARTH_IMAGE);
+//
+//                // Put it all together in a session.
+//                Builder<SessionConfiguration> builder = SessionConfiguration.builder(bodyConfig, modelConfig, fileLocator);
+//                builder.put(SessionConfiguration.IMAGING_INSTRUMENT_CONFIG, imagingInstBuilder.build());
+//                polyCam = BasicImagingInstrument.of(builder.build());
+//            }
+//            BasicImagingInstrument samCam;
+//            {
+//                // Set up images.
+//                SBMTFileLocator fileLocator = SBMTFileLocators.of(bodyConfig, modelConfig, Instrument.SAMCAM, ".fits", ".INFO", null, ".jpeg");
+//                QueryBase queryBase = new FixedListQuery(fileLocator.get(SBMTFileLocator.TOP_PATH).getLocation(""), fileLocator.get(SBMTFileLocator.GALLERY_FILE).getLocation(""));
+//                Builder<ImagingInstrumentConfiguration> imagingInstBuilder = ImagingInstrumentConfiguration.builder(
+//                        Instrument.SAMCAM,
+//                        SpectralImageMode.MONO,
+//                        queryBase,
+//                        new ImageSource[] { ImageSource.SPICE },
+//                        fileLocator,
+//                        ImageType.SAMCAM_EARTH_IMAGE);
+//
+//                // Put it all together in a session.
+//                Builder<SessionConfiguration> builder = SessionConfiguration.builder(bodyConfig, modelConfig, fileLocator);
+//                builder.put(SessionConfiguration.IMAGING_INSTRUMENT_CONFIG, imagingInstBuilder.build());
+//                samCam = BasicImagingInstrument.of(builder.build());
+//            }
 
             c = new BennuConfigs();
             c.body = ShapeModelBody.EARTH;
@@ -287,21 +287,59 @@ public class BennuConfigs extends SmallBodyViewConfig
             c.hasColoringData = false;
             c.hasImageMap = true;
 
+            SBMTFileLocator polyCamFileLocator = SBMTFileLocators.of(bodyConfig, modelConfig, Instrument.POLYCAM, ".fits", ".INFO", null, ".jpeg");
+            QueryBase polyCamQueryBase = new FixedListQuery(polyCamFileLocator.get(SBMTFileLocator.TOP_PATH).getLocation(""), polyCamFileLocator.get(SBMTFileLocator.GALLERY_FILE).getLocation(""));
+            SBMTFileLocator mapCamFileLocator = SBMTFileLocators.of(bodyConfig, modelConfig, Instrument.MAPCAM, ".fits", ".INFO", null, ".jpeg");
+            QueryBase mapCamQueryBase = new FixedListQuery(mapCamFileLocator.get(SBMTFileLocator.TOP_PATH).getLocation(""), mapCamFileLocator.get(SBMTFileLocator.GALLERY_FILE).getLocation(""));
+            SBMTFileLocator samCamFileLocator = SBMTFileLocators.of(bodyConfig, modelConfig, Instrument.SAMCAM, ".fits", ".INFO", null, ".jpeg");
+            QueryBase samCamQueryBase = new FixedListQuery(samCamFileLocator.get(SBMTFileLocator.TOP_PATH).getLocation(""), samCamFileLocator.get(SBMTFileLocator.GALLERY_FILE).getLocation(""));
+
             c.imagingInstruments = new ImagingInstrument[] {
-                    // new Vis(ShapeModelBody.PHOBOS)
-                    mapCam,
-                    polyCam,
-                    samCam,
-                    // TODO when samCam is handled for sbmt1dev (see above), uncomment the next line
-                    // to add it to the panel.
-                    // samCam
-                    /*
-                     * new ImagingInstrument( SpectralMode.MONO, new
-                     * GenericPhpQuery("/GASKELL/PHOBOSEXPERIMENTAL/IMAGING", "PHOBOSEXP",
-                     * "/GASKELL/PHOBOS/IMAGING/images/gallery"), ImageType.PHOBOS_IMAGE, new
-                     * ImageSource[]{ImageSource.GASKELL}, Instrument.IMAGING_DATA )
-                     */
+            		new ImagingInstrument(
+                            SpectralImageMode.MONO,
+//                            new GenericPhpQuery(c.rootDirOnServer + "/polycam", "bennu_altwgspcv20190105_polycam", "bennu_altwgspcv20190105_polycam", c.rootDirOnServer + "/polycam/gallery"),
+//                            new FixedListQuery("/GASKELL/RQ36_V3/POLYCAM", true),
+                            polyCamQueryBase,
+                            ImageType.POLYCAM_EARTH_IMAGE,
+                            new ImageSource[]{ImageSource.GASKELL,ImageSource.SPICE},
+                            Instrument.POLYCAM
+                            ),
+                    new ImagingInstrument(
+                            SpectralImageMode.MONO,
+//                            new GenericPhpQuery(c.rootDirOnServer + "/mapcam", "bennu_altwgspcv20190105_mapcam", "bennu_altwgspcv20190105_mapcam", c.rootDirOnServer + "/mapcam/gallery"),
+//                            new FixedListQuery("/GASKELL/RQ36_V3/POLYCAM", true),
+                            mapCamQueryBase,
+                            ImageType.MAPCAM_EARTH_IMAGE,
+                            new ImageSource[]{ImageSource.GASKELL,ImageSource.SPICE},
+                            Instrument.MAPCAM
+                            ),
+                    new ImagingInstrument(
+                            SpectralImageMode.MONO,
+//                            new GenericPhpQuery(c.rootDirOnServer + "/samcam", "bennu_altwgspcv20190105_navcam", "bennu_altwgspcv20190105_navcam", c.rootDirOnServer + "/samcam/gallery"),
+                            samCamQueryBase,
+                            ImageType.SAMCAM_EARTH_IMAGE,
+                            new ImageSource[]{ImageSource.SPICE},
+                            Instrument.SAMCAM
+                            )
+
+
             };
+
+//            c.imagingInstruments = new ImagingInstrument[] {
+//                    // new Vis(ShapeModelBody.PHOBOS)
+//                    mapCam,
+//                    polyCam,
+//                    samCam,
+//                    // TODO when samCam is handled for sbmt1dev (see above), uncomment the next line
+//                    // to add it to the panel.
+//                    // samCam
+//                    /*
+//                     * new ImagingInstrument( SpectralMode.MONO, new
+//                     * GenericPhpQuery("/GASKELL/PHOBOSEXPERIMENTAL/IMAGING", "PHOBOSEXP",
+//                     * "/GASKELL/PHOBOS/IMAGING/images/gallery"), ImageType.PHOBOS_IMAGE, new
+//                     * ImageSource[]{ImageSource.GASKELL}, Instrument.IMAGING_DATA )
+//                     */
+//            };
 
             c.hasSpectralData = true;
             c.spectralInstruments = new ArrayList<BasicSpectrumInstrument>();
@@ -1784,6 +1822,7 @@ public class BennuConfigs extends SmallBodyViewConfig
             c.density = 1260;
             c.useMinimumReferencePotential = true;
             c.rotationRate = 0.00040613;
+            c.bodyReferencePotential = -0.02654811544296466;
 
             c.hasImageMap = true;
 
@@ -1948,6 +1987,7 @@ public class BennuConfigs extends SmallBodyViewConfig
             c.density = 1260;
             c.useMinimumReferencePotential = true;
             c.rotationRate = 0.00040613;
+            c.bodyReferencePotential = -0.02637307554771602;
 
             c.hasImageMap = true;
 
@@ -2119,6 +2159,7 @@ public class BennuConfigs extends SmallBodyViewConfig
             c.density = 1186.;
             c.useMinimumReferencePotential = true;
             c.rotationRate = 4.0626E-4;
+            c.bodyReferencePotential = -0.02530442113463265;
 
             c.hasImageMap = true;
 
@@ -2282,6 +2323,7 @@ public class BennuConfigs extends SmallBodyViewConfig
             c.density = 1186;
             c.useMinimumReferencePotential = true;
             c.rotationRate = 4.0626E-4;
+            c.bodyReferencePotential = -0.02513575424405747;
 
             c.hasImageMap = true;
 
@@ -2444,6 +2486,7 @@ public class BennuConfigs extends SmallBodyViewConfig
             c.density = 1186.0;
             c.useMinimumReferencePotential = true;
             c.rotationRate = 4.0626E-4;
+            c.bodyReferencePotential = -0.0253033332766406;
 
             c.hasImageMap = true;
 
@@ -2606,6 +2649,7 @@ public class BennuConfigs extends SmallBodyViewConfig
             c.density = 1186.0;
             c.useMinimumReferencePotential = true;
             c.rotationRate = 4.0626E-4;
+            c.bodyReferencePotential = -0.02528907231151947;
 
             c.hasImageMap = true;
 
@@ -2769,6 +2813,7 @@ public class BennuConfigs extends SmallBodyViewConfig
             c.density = 1186.0;
             c.useMinimumReferencePotential = true;
             c.rotationRate = 4.0626E-4;
+            c.bodyReferencePotential = -0.02520767997203304;
 
             c.hasImageMap = true;
 
@@ -2932,6 +2977,7 @@ public class BennuConfigs extends SmallBodyViewConfig
             c.density = 1186.0;
             c.useMinimumReferencePotential = true;
             c.rotationRate = 4.0626E-4;
+            c.bodyReferencePotential = -0.02517871436774813;
 
             c.hasImageMap = true;
 
@@ -3094,6 +3140,7 @@ public class BennuConfigs extends SmallBodyViewConfig
             c.density = 1186.0;
             c.useMinimumReferencePotential = true;
             c.rotationRate = 4.0626E-4;
+            c.bodyReferencePotential = -0.02517940647257273;
 
             c.hasImageMap = true;
 
