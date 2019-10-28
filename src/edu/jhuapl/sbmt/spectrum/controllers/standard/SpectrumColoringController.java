@@ -73,9 +73,16 @@ public class SpectrumColoringController<S extends BasicSpectrum>
 		            	 while (iterator.hasNext())
 		                 {
 		                 	IBasicSpectrumRenderer<S> spectrumRenderer = iterator.next();
+		                 	System.out.println(
+									"SpectrumColoringController.init().new SpectrumColoringChangedListener() {...}.coloringChanged().new SwingWorker() {...}: doInBackground: renderer is " + spectrumRenderer);
 		                 	if (spectrumRenderer == null) continue;
-		                 	if (spectrumRenderer.getSpectrum().getInstrument() != model.getInstrument()) continue;
+		                 	System.out.println(
+									"SpectrumColoringController.init().new SpectrumColoringChangedListener() {...}.coloringChanged().new SwingWorker() {...}: doInBackground: inst " + spectrumRenderer.getSpectrum().getInstrument());
+		                 	if (!spectrumRenderer.getSpectrum().getInstrument().getDisplayName().equals(model.getInstrument().getDisplayName())) continue;
+
 		                 	double[] color = coloringModel.getSpectrumColoringForCurrentStyle(spectrumRenderer);
+		                 	System.out.println(
+									"SpectrumColoringController.init().new SpectrumColoringChangedListener() {...}.coloringChanged().new SwingWorker() {...}: doInBackground: color is " + color);
 		                 	spectrumRenderer.setColor(color);
 		                 	spectrumRenderer.updateChannelColoring();
 		                 	progressMonitor.setProgress(((int)(100*(double)i/(double)numToRender)));
@@ -95,7 +102,13 @@ public class SpectrumColoringController<S extends BasicSpectrum>
 			@Override
 			public void spectraRendered(IBasicSpectrumRenderer<S> renderer)
 			{
-				if (renderer.getSpectrum().getInstrument() != model.getInstrument()) return;
+				System.out.println(
+						"SpectrumColoringController.init().new SpectrumCollectionChangedListener() {...}: spectraRendered: rendering spectra");
+				System.out.println(
+						"SpectrumColoringController.init().new SpectrumCollectionChangedListener() {...}: spectraRendered: spectra inst " + renderer.getSpectrum().getInstrument() + " and model " + model.getInstrument());
+				if (!renderer.getSpectrum().getInstrument().getDisplayName().equals(model.getInstrument().getDisplayName())) return;
+				System.out.println(
+						"SpectrumColoringController.init().new SpectrumCollectionChangedListener() {...}: spectraRendered: setting color");
 				renderer.setColor(coloringModel.getSpectrumColoringForCurrentStyle(renderer));
 				renderer.updateChannelColoring();
 			}

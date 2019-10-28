@@ -142,8 +142,8 @@ public class BasicSpectrumRenderer<S extends BasicSpectrum> extends AbstractMode
 
                 createSelectionPolyData();
                 createSelectionActor();
-                createToSunVectorPolyData();
-                createToSunVectorActor();
+//                createToSunVectorPolyData();
+//                createToSunVectorActor();
                 createOutlinePolyData();
                 createOutlineActor();
             }
@@ -168,7 +168,8 @@ public class BasicSpectrumRenderer<S extends BasicSpectrum> extends AbstractMode
             footprintActor.SetMapper(footprintMapper);
             vtkProperty footprintProperty = footprintActor.GetProperty();
 //            double[] color = getChannelColor();
-            footprintProperty.SetColor(color[0], color[1], color[2]);
+            if (color != null)
+            	footprintProperty.SetColor(color[0], color[1], color[2]);
             footprintProperty.SetLineWidth(2.0);
             footprintProperty.LightingOff();
 
@@ -631,6 +632,7 @@ public class BasicSpectrumRenderer<S extends BasicSpectrum> extends AbstractMode
 
 	public void setColor(double[] color)
 	{
+		System.out.println("BasicSpectrumRenderer: setColor: setting color to " + color);
 		this.color = color;
 	}
 }

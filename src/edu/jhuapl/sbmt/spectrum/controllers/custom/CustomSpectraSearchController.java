@@ -68,7 +68,8 @@ public class CustomSpectraSearchController<S extends BasicSpectrum>
     				try
 					{
     					S spectrum = (S)SbmtSpectrumModelFactory.createSpectrum(modelManager.getPolyhedralModel().getCustomDataFolder() + File.separator + info.getSpectrumFilename(), SpectrumInstrumentFactory.getInstrumentForName(instrument.getDisplayName()));
-
+    					System.out.println(
+								"CustomSpectraSearchController.CustomSpectraSearchController(...).new CustomSpectraResultsListener() {...}: resultsChanged: setting is custom to true");
     					spectrum.isCustomSpectra = true;
     					spectra.add(spectrum);
 					}

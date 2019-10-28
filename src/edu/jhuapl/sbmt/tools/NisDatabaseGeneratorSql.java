@@ -22,6 +22,7 @@ import edu.jhuapl.sbmt.client.SmallBodyViewConfig;
 import edu.jhuapl.sbmt.model.eros.Eros;
 import edu.jhuapl.sbmt.model.eros.nis.NIS;
 import edu.jhuapl.sbmt.model.eros.nis.NISSpectrum;
+import edu.jhuapl.sbmt.spectrum.model.io.SpectrumInstrumentMetadataIO;
 import edu.jhuapl.sbmt.spectrum.rendering.BasicSpectrumRenderer;
 
 public class NisDatabaseGeneratorSql
@@ -133,7 +134,7 @@ public class NisDatabaseGeneratorSql
             yearStr = f.getName();
 
 
-            NISSpectrum nisSpectrum = new NISSpectrum(origFile.getAbsolutePath(), erosModel, nis);
+            NISSpectrum nisSpectrum = new NISSpectrum(origFile.getAbsolutePath(), (SpectrumInstrumentMetadataIO)erosModel.getSmallBodyConfig().getHierarchicalSpectraSearchSpecification(), erosModel, nis);
 
             if (nisInsert == null)
             {
@@ -201,7 +202,7 @@ public class NisDatabaseGeneratorSql
 //            f = f.getParentFile();
 //            yearStr = f.getName();
 
-            NISSpectrum nisSpectrum = new NISSpectrum(origFile.getAbsolutePath(), erosModel, nis);
+            NISSpectrum nisSpectrum = new NISSpectrum(origFile.getAbsolutePath(), (SpectrumInstrumentMetadataIO)erosModel.getSmallBodyConfig().getHierarchicalSpectraSearchSpecification(), erosModel, nis);
             BasicSpectrumRenderer nisSpectrumRenderer = new BasicSpectrumRenderer(nisSpectrum, erosModel, true);
             nisSpectrumRenderer.generateFootprint();
 

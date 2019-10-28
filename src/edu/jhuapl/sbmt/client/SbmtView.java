@@ -554,6 +554,7 @@ public class SbmtView extends View implements PropertyChangeListener
 		for (BasicSpectrumInstrument instrument : getPolyhedralModelConfig().spectralInstruments)
 		{
 	        SpectraCollection spectrumCollection = (SpectraCollection)getModel(ModelNames.SPECTRA);
+			System.out.println("SbmtView: setupTabs: instrument is " + instrument);
 
 			String displayName = instrument.getDisplayName();
 //			if (displayName.equals(SpectraType.NIS_SPECTRA.getDisplayName()))
@@ -635,8 +636,8 @@ public class SbmtView extends View implements PropertyChangeListener
 
 			for (BasicSpectrumInstrument i : getPolyhedralModelConfig().spectralInstruments)
 			{
-				if (i.getDisplayName().equals("NIS"))
-					continue; //we can't properly handle NIS custom data for now without info files, which we don't have.
+//				if (i.getDisplayName().equals("NIS"))
+//					continue; //we can't properly handle NIS custom data for now without info files, which we don't have.
 				customDataPane.addTab(i.getDisplayName() + " Spectra", new CustomSpectraSearchController(getModelManager(), (SbmtInfoWindowManager) getInfoPanelManager(), getPickManager(), getRenderer(), i).getPanel());
 				break;
 			}

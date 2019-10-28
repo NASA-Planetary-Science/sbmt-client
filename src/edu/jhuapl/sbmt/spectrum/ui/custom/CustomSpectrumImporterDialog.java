@@ -189,7 +189,9 @@ public class CustomSpectrumImporterDialog extends JDialog
                 }
                 else if (!infofilePath.isEmpty())
                 {
-                    File file = new File(customDir, infofilePath);
+                	System.out.println("CustomSpectrumImporterDialog: validateInput: info file path " + infofilePath);
+//                    File file = new File(customDir, infofilePath);
+                    File file = new File(infofilePath);
                     if (!file.exists() || !file.canRead() || !file.isFile())
                         return infofilePath + " does not exist or is not readable.";
 
