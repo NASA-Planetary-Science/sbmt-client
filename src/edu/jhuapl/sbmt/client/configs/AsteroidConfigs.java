@@ -3,6 +3,7 @@ package edu.jhuapl.sbmt.client.configs;
 import java.util.ArrayList;
 import java.util.GregorianCalendar;
 import java.util.LinkedHashMap;
+import java.util.List;
 
 import com.google.common.collect.ImmutableList;
 
@@ -25,11 +26,15 @@ import edu.jhuapl.sbmt.model.image.SpectralImageMode;
 import edu.jhuapl.sbmt.query.database.GenericPhpQuery;
 import edu.jhuapl.sbmt.query.fixedlist.FixedListQuery;
 import edu.jhuapl.sbmt.spectrum.model.core.BasicSpectrumInstrument;
+import edu.jhuapl.sbmt.spectrum.model.core.SpectrumInstrumentMetadata;
 import edu.jhuapl.sbmt.spectrum.model.core.search.SpectraHierarchicalSearchSpecification;
+import edu.jhuapl.sbmt.spectrum.model.core.search.SpectrumSearchSpec;
+import edu.jhuapl.sbmt.spectrum.model.io.SpectrumInstrumentMetadataIO;
 import edu.jhuapl.sbmt.tools.DBRunInfo;
 
 public class AsteroidConfigs extends SmallBodyViewConfig
 {
+
 
 	public AsteroidConfigs()
 	{
@@ -78,6 +83,16 @@ public class AsteroidConfigs extends SmallBodyViewConfig
 //        c.spectralInstruments = new ArrayList<BasicSpectrumInstrument>() {
 //                new NIS()
 //        };
+
+//        c.hasHierarchicalSpectraSearch = true;
+    	List<SpectrumInstrumentMetadata<SpectrumSearchSpec>> instrumentSearchSpecs = new ArrayList<SpectrumInstrumentMetadata<SpectrumSearchSpec>>();
+        SpectrumSearchSpec nisSpec = new SpectrumSearchSpec("NIS Calibrated Spectrum", "/GASKELL/EROS/shared/nis", "spectra", "spectrumlist.txt", ImageSource.valueFor("Corrected SPICE Derived"), "Wavelength (nm)", "Reflectance", "NIS");
+		List<SpectrumSearchSpec> nisSpecs = new ArrayList<SpectrumSearchSpec>();
+		nisSpecs.add(nisSpec);
+
+		instrumentSearchSpecs.add(new SpectrumInstrumentMetadata<SpectrumSearchSpec>("NIS", nisSpecs));
+        c.hierarchicalSpectraSearchSpecification = new SpectrumInstrumentMetadataIO("NEAR", instrumentSearchSpecs);
+
 
         c.hasLineamentData = true;
         c.imageSearchDefaultStartDate = new GregorianCalendar(2000, 0, 12, 0, 0, 0).getTime();

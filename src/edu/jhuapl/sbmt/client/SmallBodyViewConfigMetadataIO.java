@@ -221,7 +221,8 @@ public class SmallBodyViewConfigMetadataIO implements MetadataManager
         write(spectraSearchDataSourceMap, c.spectraSearchDataSourceMap, configMetadata);
         write(spectrumMetadataFile, c.spectrumMetadataFile, configMetadata);
 
-        if (c.hasHierarchicalSpectraSearch && c.hierarchicalSpectraSearchSpecification != null)
+//        if (c.hasHierarchicalSpectraSearch && c.hierarchicalSpectraSearchSpecification != null)
+      	if (c.hierarchicalSpectraSearchSpecification != null)
         {
 //        	try
 //			{
@@ -472,7 +473,7 @@ public class SmallBodyViewConfigMetadataIO implements MetadataManager
 	        c.spectraSearchDataSourceMap = read(spectraSearchDataSourceMap, configMetadata);
 	        c.spectrumMetadataFile = read(spectrumMetadataFile, configMetadata);
 
-	        if (c.hasHierarchicalSpectraSearch)
+//	        if (c.hasHierarchicalSpectraSearch)
 	        {
 	        	c.hierarchicalSpectraSearchSpecification = configMetadata.get(hierarchicalSpectraSearchSpecification);
 //	        	c.hierarchicalSpectraSearchSpecification = InstanceGetter.defaultInstanceGetter().providesGenericObjectFromMetadata(hierarchicalSpectraSearchSpecification).provide(configMetadata);

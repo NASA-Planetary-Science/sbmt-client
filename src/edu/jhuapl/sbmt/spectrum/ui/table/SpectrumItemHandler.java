@@ -27,7 +27,6 @@ public class SpectrumItemHandler<S extends BasicSpectrum> extends BasicItemHandl
 		super(aComposer);
 
 		spectrumCollection = aManager;
-		System.out.println("SpectrumItemHandler: SpectrumItemHandler: collection is " + spectrumCollection);
 		this.boundaryCollection = boundaryCollection;
 	}
 
@@ -49,7 +48,6 @@ public class SpectrumItemHandler<S extends BasicSpectrum> extends BasicItemHandl
 			case Filename:
 				return spec.getSpectrumName();
 			case Date:
-				System.out.println("SpectrumItemHandler: getColumnValue: spec is " + spec);
 				DateTimeFormatter fmt = DateTimeFormat.forPattern("yyyy-MM-dd'T'HH:mm:ss");
 				fmt.withZone(DateTimeZone.UTC);
 				return fmt.print(spec.getDateTime());
