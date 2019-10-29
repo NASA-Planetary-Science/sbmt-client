@@ -378,6 +378,7 @@ public class SpectrumResultsTableController<S extends BasicSpectrum>
 //			@Override
 //			protected Void doInBackground() throws Exception
 //			{
+    		System.out.println("SpectrumResultsTableController: removeFootprintsButtonActionPerformed: number available to remove " + spectrumCollection.getCount());
 		    	spectrumCollection.getSelectedItems().forEach(spectrum ->
 		    	{
 		    		spectrumCollection.removeSpectrum(spectrum);

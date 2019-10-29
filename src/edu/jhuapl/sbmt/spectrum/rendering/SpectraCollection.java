@@ -126,6 +126,7 @@ public class SpectraCollection<S extends BasicSpectrum> extends SaavtkItemManage
 
     public IBasicSpectrumRenderer<S> addSpectrum(S spectrum, boolean isCustom) //throws IOException
     {
+    	System.out.println("SpectraCollection: addSpectrum: !!!!!!!!!!!!! ADDING " + spectrum);
         if (spectrumToRendererMap.get(spectrum) != null)
         {
         	IBasicSpectrumRenderer<S> spec = spectrumToRendererMap.get(spectrum);

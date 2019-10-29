@@ -37,6 +37,7 @@ public class SpectrumListIO
             out.write("#Spectrum_Name Spectrum_Time_UTC"  + nl);
             for (int selectedIndex : selectedIndices)
             {
+            	System.out.println("SpectrumListIO: saveSelectedSpectrumListButtonActionPerformed: result " + results.get(selectedIndex));
             	System.out.println("SpectrumListIO: saveSelectedSpectrumListButtonActionPerformed: result is " + results.get(selectedIndex).getDateTime());
                 String dtStr = sdf.format(results.get(selectedIndex).getDateTime().toDate());
                 out.write(results.get(selectedIndex).getFullPath() + "," + dtStr + nl);

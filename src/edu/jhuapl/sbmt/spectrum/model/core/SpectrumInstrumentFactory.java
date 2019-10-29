@@ -13,7 +13,6 @@ public class SpectrumInstrumentFactory
 
     static public void registerType(String name, BasicSpectrumInstrument spectralInstrument)
     {
-    	System.out.println("SpectrumInstrumentFactory: registerType: registering " + spectralInstrument);
         spectralInstruments.put(name, spectralInstrument);
     }
 

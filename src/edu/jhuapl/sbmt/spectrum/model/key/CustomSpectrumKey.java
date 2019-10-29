@@ -87,6 +87,7 @@ public class CustomSpectrumKey implements CustomSpectrumKeyInterface
 			},
 			CustomSpectrumKey.class,
 			(key) -> {
+				System.out.println("CustomSpectrumKey: initializeSerializationProxy: key is " + key);
 				SettableMetadata result = SettableMetadata.of(Version.of(1, 0));
 		        result.put(nameKey, key.getName());
 		        result.put(spectrumFileNameKey, key.getSpectrumFilename());

@@ -9,6 +9,8 @@ import java.util.Vector;
 
 import org.apache.commons.io.FileUtils;
 
+import com.google.common.base.Preconditions;
+
 import edu.jhuapl.saavtk.model.FileType;
 import edu.jhuapl.saavtk.model.ModelManager;
 import edu.jhuapl.saavtk.model.ModelNames;
@@ -22,6 +24,7 @@ import edu.jhuapl.sbmt.spectrum.model.core.BasicSpectrum;
 import edu.jhuapl.sbmt.spectrum.model.core.BasicSpectrumInstrument;
 import edu.jhuapl.sbmt.spectrum.model.core.SpectrumInstrumentFactory;
 import edu.jhuapl.sbmt.spectrum.model.core.interfaces.CustomSpectraResultsListener;
+import edu.jhuapl.sbmt.spectrum.model.io.SpectrumListIO;
 import edu.jhuapl.sbmt.spectrum.model.key.CustomSpectrumKey;
 import edu.jhuapl.sbmt.spectrum.model.sbmtCore.spectra.CustomSpectrumKeyInterface;
 import edu.jhuapl.sbmt.spectrum.model.sbmtCore.spectra.Spectrum;
@@ -72,8 +75,10 @@ public class CustomSpectraSearchModel<S extends BasicSpectrum> extends BaseSpect
 
     protected void fireResultsChanged()
     {
+    	System.out.println("CustomSpectraSearchModel: fireResultsChanged: number of listeners " + customSpectraListeners.size());
         for (CustomSpectraResultsListener listener : customSpectraListeners)
         {
+        	System.out.println("CustomSpectraSearchModel: fireResultsChanged: firing listener");
             listener.resultsChanged(customSpectraKeys);
         }
     }
@@ -134,10 +139,10 @@ public class CustomSpectraSearchModel<S extends BasicSpectrum> extends BaseSpect
 			tempResults.add(renderer.getSpectrum());
         }
         updateConfigFile();
-
+        System.out.println("CustomSpectraSearchModel: saveSpectrum: setting temp results " + tempResults.size());
         setSpectrumRawResults(tempResults);
-        fireResultsChanged();
-        fireResultsCountChanged(this.results.size());
+//        fireResultsChanged();
+//        fireResultsCountChanged(this.results.size());
 
     }
 
@@ -280,12 +285,17 @@ public class CustomSpectraSearchModel<S extends BasicSpectrum> extends BaseSpect
         List<S> tempResults = new ArrayList<S>();
         for (CustomSpectrumKeyInterface info : customSpectraKeys)
         {
-        	IBasicSpectrumRenderer<S> renderer = null;
-			renderer = SbmtSpectrumModelFactory.createSpectrumRenderer(customDataFolder + File.separator + info.getName(), SpectrumInstrumentFactory.getInstrumentForName(instrument.getDisplayName()));
-        	tempResults.add(renderer.getSpectrum());
+        	S spectrum = (S)SbmtSpectrumModelFactory.createSpectrum(customDataFolder + File.separator + info.getSpectrumFilename(), SpectrumInstrumentFactory.getInstrumentForName(instrument.getDisplayName()));
+			spectrum.isCustomSpectra = true;
+			tempResults.add(spectrum);
+
+//        	IBasicSpectrumRenderer<S> renderer = null;
+//			renderer = SbmtSpectrumModelFactory.createSpectrumRenderer(customDataFolder + File.separator + info.getName(), SpectrumInstrumentFactory.getInstrumentForName(instrument.getDisplayName()));
+//        	tempResults.add(renderer.getSpectrum());
         }
 
         this.results = tempResults;
+        System.out.println("CustomSpectraSearchModel: initializeSpecList: first result " + results.get(0));
         fireResultsLoaded();
         fireResultsCountChanged(customSpectraKeys.size());
     }
@@ -419,5 +429,54 @@ public class CustomSpectraSearchModel<S extends BasicSpectrum> extends BaseSpect
     public ModelNames getSpectrumBoundaryCollectionModelName()
     {
         return ModelNames.CUSTOM_SPECTRA_BOUNDARIES;
+    }
+
+    /**
+     * Saves the selected spectra to a file
+     * @param file
+     * @param selectedIndices
+     * @throws Exception
+     */
+    @Override
+    public void saveSelectedSpectrumListToFile(File file, int[] selectedIndices) throws Exception
+    {
+    	Preconditions.checkNotNull(customDataFolder);
+    	System.out.println("BaseSpectrumSearchModel: saveSelectedSpectrumListToFile: results size " + results.size());
+    	SpectrumListIO.saveSelectedSpectrumListButtonActionPerformed(customDataFolder, file, results, selectedIndices);
+    }
+
+    /**
+     * Saves the entire list of spectra to a file
+     * @param file
+     * @throws Exception
+     */
+    @Override
+    public void saveSpectrumListToFile(File file) throws Exception
+    {
+    	Preconditions.checkNotNull(customDataFolder);
+    	System.out.println("BaseSpectrumSearchModel: saveSpectrumListToFile: first result "+ results.get(0));
+    	SpectrumListIO.saveSpectrumListButtonActionPerformed(customDataFolder, file, results);
+    }
+
+    /**
+     * Loads spectra from the given file.  Calls a completion block upon successful load to update the displays
+     * @param file
+     * @throws Exception
+     */
+    @Override
+    public void loadSpectrumListFromFile(File file) throws Exception
+    {
+    	Preconditions.checkNotNull(customDataFolder);
+    	SpectrumListIO.loadSpectrumListButtonActionPerformed(file, new ArrayList<S>(), instrument, new Runnable()
+		{
+
+			@Override
+			public void run()
+			{
+				fireResultsChanged();
+				setResultIntervalCurrentlyShown(new IdPair(0, getNumberOfBoundariesToShow()));
+		        showFootprints(getResultIntervalCurrentlyShown());
+			}
+		});
     }
 }

@@ -554,7 +554,6 @@ public class SbmtView extends View implements PropertyChangeListener
 		for (BasicSpectrumInstrument instrument : getPolyhedralModelConfig().spectralInstruments)
 		{
 	        SpectraCollection spectrumCollection = (SpectraCollection)getModel(ModelNames.SPECTRA);
-			System.out.println("SbmtView: setupTabs: instrument is " + instrument);
 
 			String displayName = instrument.getDisplayName();
 //			if (displayName.equals(SpectraType.NIS_SPECTRA.getDisplayName()))

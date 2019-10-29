@@ -42,6 +42,7 @@ import edu.jhuapl.sbmt.gui.image.model.custom.CustomPerspectiveImageKey;
 import edu.jhuapl.sbmt.model.bennu.spectra.otes.OTES;
 import edu.jhuapl.sbmt.model.bennu.spectra.ovirs.OVIRS;
 import edu.jhuapl.sbmt.model.eros.nis.NIS;
+import edu.jhuapl.sbmt.model.ryugu.nirs3.NIRS3;
 import edu.jhuapl.sbmt.spectrum.model.core.SpectrumInstrumentMetadata;
 import edu.jhuapl.sbmt.spectrum.model.core.search.SpectrumSearchSpec;
 import edu.jhuapl.sbmt.spectrum.model.io.SpectrumInstrumentMetadataIO;
@@ -151,6 +152,7 @@ public class SbmtMultiMissionTool
 		OTES.initializeSerializationProxy();
 		OVIRS.initializeSerializationProxy();
 		NIS.initializeSerializationProxy();
+		NIRS3.initializeSerializationProxy();
 
 	}
 

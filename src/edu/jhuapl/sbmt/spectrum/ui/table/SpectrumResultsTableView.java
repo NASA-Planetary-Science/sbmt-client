@@ -75,6 +75,7 @@ public class SpectrumResultsTableView<S extends BasicSpectrum> extends JPanel
     public SpectrumResultsTableView(SpectraCollection<S> spectrumCollection, SpectrumBoundaryCollection<S> boundaryCollection, SpectrumPopupMenu spectrumPopupMenu)
     {
         this.spectrumPopupMenu = spectrumPopupMenu;
+        System.out.println("SpectrumResultsTableView: SpectrumResultsTableView: collection is " + spectrumCollection);
         this.spectrumCollection = spectrumCollection;
         this.boundaryCollection = boundaryCollection;
         init();

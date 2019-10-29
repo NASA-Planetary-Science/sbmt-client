@@ -78,6 +78,7 @@ public class BaseSpectrumSearchModel<S extends BasicSpectrum> implements ISpectr
     public void setSpectrumRawResults(List<S> spectrumRawResults)
     {
         this.results = spectrumRawResults;
+        System.out.println("BaseSpectrumSearchModel: setSpectrumRawResults: first result " + results.get(0));
         this.resultIntervalCurrentlyShown = new IdPair(0, numberOfBoundariesToShow);
         showFootprints(resultIntervalCurrentlyShown);
         fireResultsChanged();
@@ -176,6 +177,7 @@ public class BaseSpectrumSearchModel<S extends BasicSpectrum> implements ISpectr
     public void saveSelectedSpectrumListToFile(File file, int[] selectedIndices) throws Exception
     {
     	Preconditions.checkNotNull(customDataFolder);
+    	System.out.println("BaseSpectrumSearchModel: saveSelectedSpectrumListToFile: results size " + results.size());
     	SpectrumListIO.saveSelectedSpectrumListButtonActionPerformed(customDataFolder, file, results, selectedIndices);
     }
 
@@ -187,6 +189,7 @@ public class BaseSpectrumSearchModel<S extends BasicSpectrum> implements ISpectr
     public void saveSpectrumListToFile(File file) throws Exception
     {
     	Preconditions.checkNotNull(customDataFolder);
+    	System.out.println("BaseSpectrumSearchModel: saveSpectrumListToFile: first result "+ results.get(0));
     	SpectrumListIO.saveSpectrumListButtonActionPerformed(customDataFolder, file, results);
     }
 
@@ -512,5 +515,6 @@ public class BaseSpectrumSearchModel<S extends BasicSpectrum> implements ISpectr
 	public void retrieve(Metadata source)
 	{
 		results = source.get(spectraKey);
+		System.out.println("BaseSpectrumSearchModel: retrieve: first result " + results.get(0));
 	}
 }
