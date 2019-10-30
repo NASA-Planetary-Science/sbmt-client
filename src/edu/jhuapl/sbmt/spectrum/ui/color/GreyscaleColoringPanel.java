@@ -1,22 +1,33 @@
 package edu.jhuapl.sbmt.spectrum.ui.color;
 
 import java.awt.Dimension;
+import java.awt.event.ActionEvent;
+import java.text.DecimalFormat;
+import java.util.List;
 
+import javax.swing.Box;
 import javax.swing.BoxLayout;
+import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JSpinner;
+import javax.swing.JSpinner.NumberEditor;
 import javax.swing.SpinnerNumberModel;
+
+import com.google.common.collect.Lists;
 
 import vtk.vtkFunctionParser;
 
 import edu.jhuapl.sbmt.spectrum.model.core.BasicSpectrum;
 import edu.jhuapl.sbmt.spectrum.model.core.color.GreyscaleSpectrumColorer;
 import edu.jhuapl.sbmt.spectrum.model.sbmtCore.spectra.ISpectralInstrument;
+import edu.jhuapl.sbmt.spectrum.ui.math.SpectrumMathPanel;
 
 public class GreyscaleColoringPanel<S extends BasicSpectrum> extends JPanel implements ISpectrumColoringPanel
 {
+	private JButton customFunctionsButton;
 	private JComboBox<String> greyComboBox;
 	private JSpinner greyMinSpinner;
 	private JSpinner greyMaxSpinner;
@@ -37,10 +48,19 @@ public class GreyscaleColoringPanel<S extends BasicSpectrum> extends JPanel impl
 
 	private void initialize()
 	{
-		SpinnerNumberModel spinnerNumberModel = new SpinnerNumberModel(Double.valueOf(0.05d), null, null, Double.valueOf(0.01d));
+		setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
+
+//		SpinnerNumberModel spinnerNumberModel = new SpinnerNumberModel(Double.valueOf(0.05d), null, null, Double.valueOf(0.01d));
         Dimension preferredSpinnerSize = new Dimension(100, 28);
         Dimension minSpinnerSize = new Dimension(36, 22);
         Dimension maxSpinnerSize = new Dimension(100, 22);
+
+        JPanel panel_10 = new JPanel();
+        add(panel_10);
+        panel_10.setLayout(new BoxLayout(panel_10, BoxLayout.X_AXIS));
+        customFunctionsButton = new JButton("Custom Formulas");
+        panel_10.add(customFunctionsButton);
+        panel_10.add(Box.createHorizontalGlue());
 
 		JPanel panel_12 = new JPanel();
         add(panel_12);
@@ -56,7 +76,7 @@ public class GreyscaleColoringPanel<S extends BasicSpectrum> extends JPanel impl
         panel_12.add(greyMinLabel);
 
         greyMinSpinner = new JSpinner();
-        greyMinSpinner.setModel(spinnerNumberModel);
+//        greyMinSpinner.setModel(new SpinnerNumberModel(Double.valueOf(0.0d), null, null, Double.valueOf(0.0000001d)));
         greyMinSpinner.setPreferredSize(preferredSpinnerSize);
         greyMinSpinner.setMinimumSize(minSpinnerSize);
         greyMinSpinner.setMaximumSize(maxSpinnerSize);
@@ -66,14 +86,30 @@ public class GreyscaleColoringPanel<S extends BasicSpectrum> extends JPanel impl
         panel_12.add(greyMaxLabel);
 
         greyMaxSpinner = new JSpinner();
-        greyMaxSpinner.setModel(spinnerNumberModel);
+//        greyMaxSpinner.setModel(new SpinnerNumberModel(Double.valueOf(0.0d), null, null, Double.valueOf(0.0000001d)));
         greyMaxSpinner.setPreferredSize(preferredSpinnerSize);
         greyMaxSpinner.setMinimumSize(minSpinnerSize);
         greyMaxSpinner.setMaximumSize(maxSpinnerSize);
         panel_12.add(greyMaxSpinner);
 
+        List<JSpinner> spinners=Lists.newArrayList(greyMaxSpinner, greyMinSpinner);
+
+        for (JSpinner spinner : spinners)
+        {
+            spinner.setModel(new SpinnerNumberModel(Double.valueOf(0.0d), null, null, Double.valueOf(0.0000001d)));
+            NumberEditor editor = (NumberEditor)spinner.getEditor();
+            DecimalFormat format = editor.getFormat();
+            format.setMinimumFractionDigits(8);
+        }
+
         setupComboBoxes();
-        model.updateColoring();
+
+        greyComboBox.addActionListener(evt -> greyComboBoxActionPerformed(evt));
+        greyMaxSpinner.addChangeListener(evt -> greyMaxSpinnerStateChanged());
+        greyMinSpinner.addChangeListener(evt -> greyMinSpinnerStateChanged());
+        getCustomFunctionsButton().addActionListener(evt -> customFunctionsButtonActionPerformed());
+
+//        model.updateColoring();
 	}
 
 	protected void setupComboBoxes()
@@ -96,11 +132,68 @@ public class GreyscaleColoringPanel<S extends BasicSpectrum> extends JPanel impl
             greyComboBox.addItem(fp.GetFunction());
         }
 
+        System.out.println("GreyscaleColoringPanel: setupComboBoxes: setting to " + model.getGreyMaxVal());
         greyMaxSpinner.setValue(model.getGreyMaxVal());
+    }
+
+	private void greyComboBoxActionPerformed(ActionEvent evt) {
+    	model.setGreyScaleIndex(greyComboBox.getSelectedIndex());
+    	model.updateColoring();
+    }
+
+	private void greyMinSpinnerStateChanged() {
+        checkValidMinMax(0, true);
+    }
+
+	private void greyMaxSpinnerStateChanged() {
+        checkValidMinMax(0, false);
+
+    }
+
+	private void checkValidMinMax(int channel, boolean minimumStateChange)
+    {
+        Double minVal = (Double)greyMinSpinner.getValue();
+        Double maxVal = (Double)greyMaxSpinner.getValue();
+        System.out.println("GreyscaleColoringPanel: checkValidMinMax: min val " + minVal + " and max val " + maxVal);
+
+        model.setGreyMinVal(minVal);
+        model.setGreyMaxVal(maxVal);
+
+        if (minVal > maxVal)
+        {
+            if (minimumStateChange)
+                greyMinSpinner.setValue(greyMaxSpinner.getValue());
+            else
+                greyMaxSpinner.setValue(greyMinSpinner.getValue());
+        }
+        model.updateColoring();
     }
 
 	public JPanel getJPanel()
 	{
 		return this;
 	}
+
+	public JButton getCustomFunctionsButton()
+    {
+        return customFunctionsButton;
+    }
+
+    public JComboBox<String> getGreyComboBox()
+    {
+        return greyComboBox;
+    }
+
+    /**
+     * Generates and displays the custom function panel, and updates the coloring as requested by that panel's input.
+     */
+    private void customFunctionsButtonActionPerformed() {
+        SpectrumMathPanel customFunctionsPanel = new SpectrumMathPanel(
+                JOptionPane.getFrameForComponent(this),
+                new JComboBox[]{getGreyComboBox(), getGreyComboBox(), getGreyComboBox()}, instrument);
+        model.setCurrentlyEditingUserDefinedFunction(true);
+        customFunctionsPanel.setVisible(true);
+        model.setCurrentlyEditingUserDefinedFunction(false);
+        model.updateColoring();
+    }
 }

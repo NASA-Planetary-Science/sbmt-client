@@ -172,7 +172,9 @@ public class RGBColoringPanel<S extends BasicSpectrum> extends JPanel implements
             DecimalFormat format = editor.getFormat();
             format.setMinimumFractionDigits(8);
         }
+
         setupComboBoxes();
+
         getRedComboBox().addActionListener(evt -> redComboBoxActionPerformed(evt));
         getRedMaxSpinner().addChangeListener(evt -> redMaxSpinnerStateChanged());
         getRedMinSpinner().addChangeListener(evt -> redMinSpinnerStateChanged());
@@ -324,7 +326,7 @@ public class RGBColoringPanel<S extends BasicSpectrum> extends JPanel implements
     }
 
 
-    //Geters
+    //Getters
 
 	public JButton getCustomFunctionsButton()
     {

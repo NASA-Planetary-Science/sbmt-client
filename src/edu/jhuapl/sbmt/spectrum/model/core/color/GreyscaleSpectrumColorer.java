@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import edu.jhuapl.sbmt.spectrum.model.core.BasicSpectrum;
+import edu.jhuapl.sbmt.spectrum.model.core.BasicSpectrumInstrument;
 import edu.jhuapl.sbmt.spectrum.model.core.interfaces.ISpectrumColorer;
 import edu.jhuapl.sbmt.spectrum.model.core.interfaces.SpectrumColoringChangedListener;
 import edu.jhuapl.sbmt.spectrum.rendering.IBasicSpectrumRenderer;
@@ -17,6 +18,8 @@ public class GreyscaleSpectrumColorer<S extends BasicSpectrum> implements ISpect
     private int[] channels;
     private double[] mins;
     private double[] maxs;
+    protected boolean currentlyEditingUserDefinedFunction = false;
+
 
 	public GreyscaleSpectrumColorer()
 	{
@@ -26,8 +29,34 @@ public class GreyscaleSpectrumColorer<S extends BasicSpectrum> implements ISpect
 	@Override
 	public double[] getColorForSpectrum(IBasicSpectrumRenderer<S> spectrumRenderer)
 	{
-		// TODO Auto-generated method stub
-		return null;
+		double[] color = new double[3];
+        BasicSpectrumInstrument instrument = spectrumRenderer.getSpectrum().getInstrument();
+        int[] channelsToColorBy = channels;
+        double[] channelsColoringMinValue = mins;
+        double[] channelsColoringMaxValue = maxs;
+
+        double val = 0.0;
+        if (channelsToColorBy[0] < instrument.getBandCenters().length)
+        {
+            val = spectrumRenderer.getSpectrum().getSpectrum()[channelsToColorBy[0]];
+        }
+        else if (channelsToColorBy[0] < instrument.getBandCenters().length + instrument.getSpectrumMath().getDerivedParameters().length)
+        {
+            val = spectrumRenderer.getSpectrum().evaluateDerivedParameters(channelsToColorBy[0]-instrument.getBandCenters().length);
+        }
+        else
+        {
+            val = instrument.getSpectrumMath().evaluateUserDefinedDerivedParameters(channelsToColorBy[0]-instrument.getBandCenters().length-instrument.getSpectrumMath().getDerivedParameters().length, spectrumRenderer.getSpectrum().getSpectrum());
+        }
+        if (val < 0.0)
+            val = 0.0;
+        else if (val > 1.0)
+            val = 1.0;
+
+        double slope = 1.0 / (channelsColoringMaxValue[0] - channelsColoringMinValue[0]);
+        color[0] = color[1] = color[2] = slope * (val - channelsColoringMinValue[0]);
+
+        return color;
 	}
 
 	public int getGreyScaleIndex()
@@ -78,6 +107,7 @@ public class GreyscaleSpectrumColorer<S extends BasicSpectrum> implements ISpect
 
 	public void setMins(double[] mins)
 	{
+		System.out.println("GreyscaleSpectrumColorer: setMins: min " + mins[0]);
 		this.mins = mins;
 	}
 
@@ -88,6 +118,7 @@ public class GreyscaleSpectrumColorer<S extends BasicSpectrum> implements ISpect
 
 	public void setMaxs(double[] maxs)
 	{
+		System.out.println("GreyscaleSpectrumColorer: setMaxs: setting max to "+ maxs[0]);
 		this.greyMaxVal = maxs[0];
 		this.maxs = maxs;
 	}
@@ -109,5 +140,24 @@ public class GreyscaleSpectrumColorer<S extends BasicSpectrum> implements ISpect
     	this.maxs = new double[]{greyMaxVal, greyMaxVal, greyMaxVal};
 		fireColoringChanged();
 	}
+
+    /**
+     * Updates the state describing whether the user defined color function is being edited
+     * @param currentlyEditingUserDefinedFunction
+     */
+    public void setCurrentlyEditingUserDefinedFunction(
+            boolean currentlyEditingUserDefinedFunction)
+    {
+        this.currentlyEditingUserDefinedFunction = currentlyEditingUserDefinedFunction;
+    }
+
+	/**
+     * Returns state describing whether the user defined color function is being edited
+     * @return
+     */
+    public boolean isCurrentlyEditingUserDefinedFunction()
+    {
+        return currentlyEditingUserDefinedFunction;
+    }
 
 }
