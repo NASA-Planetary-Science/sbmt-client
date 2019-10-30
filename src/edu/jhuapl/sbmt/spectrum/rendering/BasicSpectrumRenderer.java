@@ -82,7 +82,13 @@ public class BasicSpectrumRenderer<S extends BasicSpectrum> extends AbstractMode
         frustum2 = spectrum.getFrustum2();
         frustum3 = spectrum.getFrustum3();
         frustum4 = spectrum.getFrustum4();
-		this.smallBodyModel = smallBodyModel;
+        System.out.println("BasicSpectrumRenderer: BasicSpectrumRenderer: scpos " + spacecraftPosition[0] + " " + spacecraftPosition[1] + " " + spacecraftPosition[2]);
+        System.out.println("BasicSpectrumRenderer: BasicSpectrumRenderer: frustum 1 " + frustum1[0] + " " + frustum1[1] + " " + frustum1[2]);
+        System.out.println("BasicSpectrumRenderer: BasicSpectrumRenderer: frustum 2 " + frustum2[0] + " " + frustum2[1] + " " + frustum2[2]);
+        System.out.println("BasicSpectrumRenderer: BasicSpectrumRenderer: frustum 3 " + frustum3[0] + " " + frustum3[1] + " " + frustum3[2]);
+        System.out.println("BasicSpectrumRenderer: BasicSpectrumRenderer: frustum 4 " + frustum4[0] + " " + frustum4[1] + " " + frustum4[2]);
+
+        this.smallBodyModel = smallBodyModel;
 		footprintHeight = smallBodyModel.getMinShiftAmount();
         this.headless = headless;
         if (headless == false)
@@ -98,6 +104,9 @@ public class BasicSpectrumRenderer<S extends BasicSpectrum> extends AbstractMode
     {
         if (!spectrum.getLatLons().isEmpty())
         {
+        	spectrum.readPointingFromInfoFile();
+			spectrum.readSpectrumFromFile();
+
             vtkPolyData tmp = smallBodyModel.computeFrustumIntersection(
                     spacecraftPosition, frustum1, frustum2, frustum3, frustum4);
             if (tmp == null)
@@ -109,6 +118,7 @@ public class BasicSpectrumRenderer<S extends BasicSpectrum> extends AbstractMode
             Frustum frustum = new Frustum(spectrum.getFrustumOrigin(),
             		spectrum.getFrustumCorner(0), spectrum.getFrustumCorner(1),
                     spectrum.getFrustumCorner(2), spectrum.getFrustumCorner(3));
+            System.out.println("BasicSpectrumRenderer: generateFootprint: frustum " + frustum);
             for (int c = 0; c < tmp.GetNumberOfCells(); c++)
             {
                 vtkIdTypeArray originalIds = (vtkIdTypeArray) tmp.GetCellData()
