@@ -56,23 +56,18 @@ public class CustomSpectraSearchController<S extends BasicSpectrum>
 
         this.spectrumResultsTableController = new CustomSpectrumResultsTableController<S>(instrument, spectrumCollection, modelManager, boundaries, spectrumSearchModel, renderer, infoPanelManager);
         this.spectrumSearchModel.removeAllResultsChangedListeners();
-        System.out.println("CustomSpectraSearchController: CustomSpectraSearchController: adding results listener");
         this.spectrumSearchModel.addResultsChangedListener(new CustomSpectraResultsListener()
         {
 
             @Override
             public void resultsChanged(List<CustomSpectrumKeyInterface> results)
             {
-            	System.out.println(
-						"CustomSpectraSearchController.CustomSpectraSearchController(...).new CustomSpectraResultsListener() {...}: resultsChanged: results size " + results.size());
             	List<S> spectra = new ArrayList<S>();
             	for (CustomSpectrumKeyInterface info : results)
             	{
     				try
 					{
     					S spectrum = (S)SbmtSpectrumModelFactory.createSpectrum(modelManager.getPolyhedralModel().getCustomDataFolder() + File.separator + info.getSpectrumFilename(), SpectrumInstrumentFactory.getInstrumentForName(instrument.getDisplayName()));
-    					System.out.println(
-								"CustomSpectraSearchController.CustomSpectraSearchController(...).new CustomSpectraResultsListener() {...}: resultsChanged: setting is custom to true");
     					spectrum.isCustomSpectra = true;
     					spectra.add(spectrum);
 					}
@@ -82,8 +77,6 @@ public class CustomSpectraSearchController<S extends BasicSpectrum>
 						e.printStackTrace();
 					}
             	}
-            	System.out.println(
-						"CustomSpectraSearchController.CustomSpectraSearchController(...).new CustomSpectraResultsListener() {...}: resultsChanged: spectra count " + spectra.size());
                 spectrumResultsTableController.setSpectrumResults(spectra);
             }
 
@@ -96,7 +89,6 @@ public class CustomSpectraSearchController<S extends BasicSpectrum>
 			@Override
 			public void resultsLoaded(List<CustomSpectrumKeyInterface> results)
 			{
-//				resultsChanged(results);
 				spectrumResultsTableController.setSpectrumResults(spectrumSearchModel.getSpectrumRawResults());
 				spectrumCollection.removeAllSpectra();
 				boundaries.removeAllBoundaries();

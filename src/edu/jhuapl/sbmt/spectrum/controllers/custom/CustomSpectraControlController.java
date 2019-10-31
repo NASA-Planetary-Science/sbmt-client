@@ -62,7 +62,6 @@ public class CustomSpectraControlController<S extends BasicSpectrum>
         dialog.setSpectrumInfo(null);
         dialog.setLocationRelativeTo(getPanel());
         dialog.setVisible(true);
-        System.out.println("CustomSpectraControlController: newButtonActionPerformed: new button pressed");
         // If user clicks okay add to list
         if (dialog.getOkayPressed())
         {
@@ -87,7 +86,6 @@ public class CustomSpectraControlController<S extends BasicSpectrum>
     {
     	if (model.getSelectedSpectraIndices() == null) return;
     	int selectedItem = model.getSelectedSpectraIndices()[0];
-//    	int selectedItem = model.gets
     	if (selectedItem < 0) return;
 
         CustomSpectrumKeyInterface oldSpectrumInfo = customSpectra.get(selectedItem);
@@ -143,7 +141,6 @@ public class CustomSpectraControlController<S extends BasicSpectrum>
     private void saveSpectrum(int index, CustomSpectrumKeyInterface oldImageInfo,
             CustomSpectrumKeyInterface newImageInfo) throws IOException
     {
-    	System.out.println("CustomSpectraControlController: saveSpectrum: ");
         model.saveSpectrum(index, oldImageInfo, newImageInfo);
     }
 }

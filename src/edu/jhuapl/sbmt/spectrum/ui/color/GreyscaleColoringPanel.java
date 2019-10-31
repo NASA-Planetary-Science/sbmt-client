@@ -50,7 +50,6 @@ public class GreyscaleColoringPanel<S extends BasicSpectrum> extends JPanel impl
 	{
 		setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
 
-//		SpinnerNumberModel spinnerNumberModel = new SpinnerNumberModel(Double.valueOf(0.05d), null, null, Double.valueOf(0.01d));
         Dimension preferredSpinnerSize = new Dimension(100, 28);
         Dimension minSpinnerSize = new Dimension(36, 22);
         Dimension maxSpinnerSize = new Dimension(100, 22);
@@ -76,7 +75,6 @@ public class GreyscaleColoringPanel<S extends BasicSpectrum> extends JPanel impl
         panel_12.add(greyMinLabel);
 
         greyMinSpinner = new JSpinner();
-//        greyMinSpinner.setModel(new SpinnerNumberModel(Double.valueOf(0.0d), null, null, Double.valueOf(0.0000001d)));
         greyMinSpinner.setPreferredSize(preferredSpinnerSize);
         greyMinSpinner.setMinimumSize(minSpinnerSize);
         greyMinSpinner.setMaximumSize(maxSpinnerSize);
@@ -86,7 +84,6 @@ public class GreyscaleColoringPanel<S extends BasicSpectrum> extends JPanel impl
         panel_12.add(greyMaxLabel);
 
         greyMaxSpinner = new JSpinner();
-//        greyMaxSpinner.setModel(new SpinnerNumberModel(Double.valueOf(0.0d), null, null, Double.valueOf(0.0000001d)));
         greyMaxSpinner.setPreferredSize(preferredSpinnerSize);
         greyMaxSpinner.setMinimumSize(minSpinnerSize);
         greyMaxSpinner.setMaximumSize(maxSpinnerSize);
@@ -108,8 +105,6 @@ public class GreyscaleColoringPanel<S extends BasicSpectrum> extends JPanel impl
         greyMaxSpinner.addChangeListener(evt -> greyMaxSpinnerStateChanged());
         greyMinSpinner.addChangeListener(evt -> greyMinSpinnerStateChanged());
         getCustomFunctionsButton().addActionListener(evt -> customFunctionsButtonActionPerformed());
-
-//        model.updateColoring();
 	}
 
 	protected void setupComboBoxes()
@@ -132,7 +127,6 @@ public class GreyscaleColoringPanel<S extends BasicSpectrum> extends JPanel impl
             greyComboBox.addItem(fp.GetFunction());
         }
 
-        System.out.println("GreyscaleColoringPanel: setupComboBoxes: setting to " + model.getGreyMaxVal());
         greyMaxSpinner.setValue(model.getGreyMaxVal());
     }
 
@@ -154,7 +148,6 @@ public class GreyscaleColoringPanel<S extends BasicSpectrum> extends JPanel impl
     {
         Double minVal = (Double)greyMinSpinner.getValue();
         Double maxVal = (Double)greyMaxSpinner.getValue();
-        System.out.println("GreyscaleColoringPanel: checkValidMinMax: min val " + minVal + " and max val " + maxVal);
 
         model.setGreyMinVal(minVal);
         model.setGreyMaxVal(maxVal);

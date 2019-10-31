@@ -107,7 +107,6 @@ public class GreyscaleSpectrumColorer<S extends BasicSpectrum> implements ISpect
 
 	public void setMins(double[] mins)
 	{
-		System.out.println("GreyscaleSpectrumColorer: setMins: min " + mins[0]);
 		this.mins = mins;
 	}
 
@@ -118,7 +117,6 @@ public class GreyscaleSpectrumColorer<S extends BasicSpectrum> implements ISpect
 
 	public void setMaxs(double[] maxs)
 	{
-		System.out.println("GreyscaleSpectrumColorer: setMaxs: setting max to "+ maxs[0]);
 		this.greyMaxVal = maxs[0];
 		this.maxs = maxs;
 	}

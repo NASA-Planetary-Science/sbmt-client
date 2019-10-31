@@ -30,7 +30,6 @@ public class EmissionSpectrumColorer<S extends BasicSpectrum> implements ISpectr
 	public double[] getColorForSpectrum(IBasicSpectrumRenderer<S> spectrumRenderer)
 	{
 		List<Sample> sampleEmergenceAngle = SpectrumStatistics.sampleEmergenceAngle(spectrumRenderer, new Vector3D(spectrumRenderer.getSpacecraftPosition()));
-//        Colormap colormap = Colormaps.getNewInstanceOfBuiltInColormap("OREX Scalar Ramp");
 		currentColormap.setRangeMin(0.0);  //was 5.4
 		currentColormap.setRangeMax(90.00); //was 81.7
 
