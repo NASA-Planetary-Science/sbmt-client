@@ -127,7 +127,7 @@ public class SpectrumBoundsCalculator
                     spectrumRenderer = new AdvancedSpectrumRenderer(spectrum, body, false);
                 }
                 else  { // only 2 options right now, but may change in the future
-                    OVIRSSpectrum spectrum = new OVIRSSpectrum(thisFileName, body.getSmallBodyConfig().getHierarchicalSpectraSearchSpecification(), body.getBoundingBoxDiagonalLength(), instrument, true, false);
+                    OVIRSSpectrum spectrum = new OVIRSSpectrum(thisFileName, (SpectrumInstrumentMetadataIO)body.getSmallBodyConfig().getHierarchicalSpectraSearchSpecification(), body.getBoundingBoxDiagonalLength(), instrument, true, false);
                     spectrumRenderer = new AdvancedSpectrumRenderer(spectrum, body, false);
                 }
 
