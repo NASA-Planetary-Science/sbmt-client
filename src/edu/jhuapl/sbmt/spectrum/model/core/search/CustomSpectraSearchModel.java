@@ -75,10 +75,8 @@ public class CustomSpectraSearchModel<S extends BasicSpectrum> extends BaseSpect
 
     protected void fireResultsChanged()
     {
-    	System.out.println("CustomSpectraSearchModel: fireResultsChanged: number of listeners " + customSpectraListeners.size());
         for (CustomSpectraResultsListener listener : customSpectraListeners)
         {
-        	System.out.println("CustomSpectraSearchModel: fireResultsChanged: firing listener");
             listener.resultsChanged(customSpectraKeys);
         }
     }
@@ -139,11 +137,7 @@ public class CustomSpectraSearchModel<S extends BasicSpectrum> extends BaseSpect
 			tempResults.add(renderer.getSpectrum());
         }
         updateConfigFile();
-        System.out.println("CustomSpectraSearchModel: saveSpectrum: setting temp results " + tempResults.size());
         setSpectrumRawResults(tempResults);
-//        fireResultsChanged();
-//        fireResultsCountChanged(this.results.size());
-
     }
 
     public void deleteSpectrum(int[] indices)
@@ -153,7 +147,6 @@ public class CustomSpectraSearchModel<S extends BasicSpectrum> extends BaseSpect
     	{
     		customSpectraKeys.remove(indices[i]);
     	}
-//    	customSpectraKeys.remove(indices);
     	updateConfigFile();
     	fireResultsChanged();
     	fireResultsCountChanged(customSpectraKeys.size());
@@ -182,12 +175,6 @@ public class CustomSpectraSearchModel<S extends BasicSpectrum> extends BaseSpect
 //            if (visible)
 //                spectrum.setVisible(true);
 //        }
-//    }
-
-//    public CustomSpectrumKeyInterface getSpectrumKeyForIndex(int index)
-//    {
-//        CustomSpectrumKeyInterface spectrumKey = customSpectra.get(index);
-//        return spectrumKey;
 //    }
 
     private boolean migrateConfigFileIfNeeded() throws IOException
@@ -288,14 +275,9 @@ public class CustomSpectraSearchModel<S extends BasicSpectrum> extends BaseSpect
         	S spectrum = (S)SbmtSpectrumModelFactory.createSpectrum(customDataFolder + File.separator + info.getSpectrumFilename(), SpectrumInstrumentFactory.getInstrumentForName(instrument.getDisplayName()));
 			spectrum.isCustomSpectra = true;
 			tempResults.add(spectrum);
-
-//        	IBasicSpectrumRenderer<S> renderer = null;
-//			renderer = SbmtSpectrumModelFactory.createSpectrumRenderer(customDataFolder + File.separator + info.getName(), SpectrumInstrumentFactory.getInstrumentForName(instrument.getDisplayName()));
-//        	tempResults.add(renderer.getSpectrum());
         }
 
         this.results = tempResults;
-        System.out.println("CustomSpectraSearchModel: initializeSpecList: first result " + results.get(0));
         fireResultsLoaded();
         fireResultsCountChanged(customSpectraKeys.size());
     }
@@ -323,7 +305,6 @@ public class CustomSpectraSearchModel<S extends BasicSpectrum> extends BaseSpect
                 break;
             fireFootprintVisibilityChanged(results.get(i), true);
         }
-//        updateColoring();
     }
 
     @Override
@@ -441,8 +422,12 @@ public class CustomSpectraSearchModel<S extends BasicSpectrum> extends BaseSpect
     public void saveSelectedSpectrumListToFile(File file, int[] selectedIndices) throws Exception
     {
     	Preconditions.checkNotNull(customDataFolder);
-    	System.out.println("BaseSpectrumSearchModel: saveSelectedSpectrumListToFile: results size " + results.size());
-    	SpectrumListIO.saveSelectedSpectrumListButtonActionPerformed(customDataFolder, file, results, selectedIndices);
+    	List<CustomSpectrumKeyInterface> selectedKeys = new ArrayList<CustomSpectrumKeyInterface>();
+    	for (int i : selectedIndices)
+    	{
+    		selectedKeys.add(customSpectraKeys.get(i));
+    	}
+    	SpectrumListIO.saveCustomSelectedSpectrumListButtonActionPerformed(customDataFolder, file, selectedKeys, selectedIndices);
     }
 
     /**
@@ -454,8 +439,7 @@ public class CustomSpectraSearchModel<S extends BasicSpectrum> extends BaseSpect
     public void saveSpectrumListToFile(File file) throws Exception
     {
     	Preconditions.checkNotNull(customDataFolder);
-    	System.out.println("BaseSpectrumSearchModel: saveSpectrumListToFile: first result "+ results.get(0));
-    	SpectrumListIO.saveSpectrumListButtonActionPerformed(customDataFolder, file, results);
+    	SpectrumListIO.saveCustomSpectrumListButtonActionPerformed(customDataFolder, file, customSpectraKeys);
     }
 
     /**
@@ -467,12 +451,13 @@ public class CustomSpectraSearchModel<S extends BasicSpectrum> extends BaseSpect
     public void loadSpectrumListFromFile(File file) throws Exception
     {
     	Preconditions.checkNotNull(customDataFolder);
-    	SpectrumListIO.loadSpectrumListButtonActionPerformed(file, new ArrayList<S>(), instrument, new Runnable()
+    	SpectrumListIO.loadCustomSpectrumListButtonActionPerformed(file, customSpectraKeys, instrument, new Runnable()
 		{
 
 			@Override
 			public void run()
 			{
+				updateConfigFile();
 				fireResultsChanged();
 				setResultIntervalCurrentlyShown(new IdPair(0, getNumberOfBoundariesToShow()));
 		        showFootprints(getResultIntervalCurrentlyShown());

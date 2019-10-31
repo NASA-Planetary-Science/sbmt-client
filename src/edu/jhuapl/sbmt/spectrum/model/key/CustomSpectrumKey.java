@@ -79,7 +79,7 @@ public class CustomSpectrumKey implements CustomSpectrumKeyInterface
 		        String spectrumFilename = metadata.get(spectrumFileNameKey);
 		        ISpectraType spectrumType = SpectraTypeFactory.findSpectraTypeForDisplayName(metadata.get(spectraTypeKey));
 		        FileType fileType = FileType.valueOf(metadata.get(pointingFileTypeKey));
-		        BasicSpectrumInstrument instrument = SpectrumInstrumentFactory.getInstrumentForName(name);
+		        BasicSpectrumInstrument instrument = SpectrumInstrumentFactory.getInstrumentForName(spectrumType.getDisplayName());
 		        String pointingFilename = metadata.get(pointingFilenameKey);
 		        CustomSpectrumKey result = new CustomSpectrumKey(name, fileType, instrument, spectrumType, spectrumFilename, pointingFilename);
 				return result;
@@ -87,7 +87,6 @@ public class CustomSpectrumKey implements CustomSpectrumKeyInterface
 			},
 			CustomSpectrumKey.class,
 			(key) -> {
-				System.out.println("CustomSpectrumKey: initializeSerializationProxy: key is " + key);
 				SettableMetadata result = SettableMetadata.of(Version.of(1, 0));
 		        result.put(nameKey, key.getName());
 		        result.put(spectrumFileNameKey, key.getSpectrumFilename());

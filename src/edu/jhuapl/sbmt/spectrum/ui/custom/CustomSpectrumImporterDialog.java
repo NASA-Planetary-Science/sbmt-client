@@ -57,7 +57,6 @@ public class CustomSpectrumImporterDialog extends JDialog
         this.instrument = instrument;
         initComponents();
         this.isEditMode = isEditMode;
-        System.out.println("CustomSpectrumImporterDialog: CustomSpectrumImporterDialog: instrument " + instrument);
         this.customDir = customDir;
 
         if (isEditMode)
@@ -92,11 +91,6 @@ public class CustomSpectrumImporterDialog extends JDialog
 
         updateEnabledItems();
     }
-
-//    public ProjectionType getSelectedProjectionType()
-//    {
-//            return ProjectionType.PERSPECTIVE;
-//    }
 
     public CustomSpectrumKeyInterface getSpectrumInfo()
     {

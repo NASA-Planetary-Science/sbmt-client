@@ -78,7 +78,6 @@ public class BaseSpectrumSearchModel<S extends BasicSpectrum> implements ISpectr
     public void setSpectrumRawResults(List<S> spectrumRawResults)
     {
         this.results = spectrumRawResults;
-        System.out.println("BaseSpectrumSearchModel: setSpectrumRawResults: first result " + results.get(0));
         this.resultIntervalCurrentlyShown = new IdPair(0, numberOfBoundariesToShow);
         showFootprints(resultIntervalCurrentlyShown);
         fireResultsChanged();
