@@ -77,15 +77,17 @@ public abstract class BasicSpectrum extends Spectrum
                                     // repository root (e.g. relative to
                                     // /project/nearsdc/data/)
         this.instrument = instrument; //
-
-        spectrum=new double[getNumberOfBands()];
         this.isCustomSpectra = isCustom;
         spectrumName = filename;
     }
 
     public abstract int getNumberOfBands();
     public abstract void readPointingFromInfoFile();
-    public abstract void readSpectrumFromFile();
+
+    public void readSpectrumFromFile()
+    {
+    	spectrum=new double[getNumberOfBands()];
+    }
 
     /**
      * Evaluates the derived parameters for a given channel (custom color definition)
