@@ -82,11 +82,6 @@ public class BasicSpectrumRenderer<S extends BasicSpectrum> extends AbstractMode
         frustum2 = spectrum.getFrustum2();
         frustum3 = spectrum.getFrustum3();
         frustum4 = spectrum.getFrustum4();
-        System.out.println("BasicSpectrumRenderer: BasicSpectrumRenderer: scpos " + spacecraftPosition[0] + " " + spacecraftPosition[1] + " " + spacecraftPosition[2]);
-        System.out.println("BasicSpectrumRenderer: BasicSpectrumRenderer: frustum 1 " + frustum1[0] + " " + frustum1[1] + " " + frustum1[2]);
-        System.out.println("BasicSpectrumRenderer: BasicSpectrumRenderer: frustum 2 " + frustum2[0] + " " + frustum2[1] + " " + frustum2[2]);
-        System.out.println("BasicSpectrumRenderer: BasicSpectrumRenderer: frustum 3 " + frustum3[0] + " " + frustum3[1] + " " + frustum3[2]);
-        System.out.println("BasicSpectrumRenderer: BasicSpectrumRenderer: frustum 4 " + frustum4[0] + " " + frustum4[1] + " " + frustum4[2]);
 
         this.smallBodyModel = smallBodyModel;
 		footprintHeight = smallBodyModel.getMinShiftAmount();
@@ -107,8 +102,16 @@ public class BasicSpectrumRenderer<S extends BasicSpectrum> extends AbstractMode
         	spectrum.readPointingFromInfoFile();
 			spectrum.readSpectrumFromFile();
 
+			spacecraftPosition = spectrum.getSpacecraftPosition();
+	        frustum1 = spectrum.getFrustum1();
+	        frustum2 = spectrum.getFrustum2();
+	        frustum3 = spectrum.getFrustum3();
+	        frustum4 = spectrum.getFrustum4();
+
             vtkPolyData tmp = smallBodyModel.computeFrustumIntersection(
-                    spacecraftPosition, frustum1, frustum2, frustum3, frustum4);
+            		spectrum.getFrustumOrigin(),
+            		spectrum.getFrustumCorner(0), spectrum.getFrustumCorner(1),
+                    spectrum.getFrustumCorner(2), spectrum.getFrustumCorner(3));
             if (tmp == null)
 				return;
             footprint = new vtkPolyData();
@@ -118,7 +121,6 @@ public class BasicSpectrumRenderer<S extends BasicSpectrum> extends AbstractMode
             Frustum frustum = new Frustum(spectrum.getFrustumOrigin(),
             		spectrum.getFrustumCorner(0), spectrum.getFrustumCorner(1),
                     spectrum.getFrustumCorner(2), spectrum.getFrustumCorner(3));
-            System.out.println("BasicSpectrumRenderer: generateFootprint: frustum " + frustum);
             for (int c = 0; c < tmp.GetNumberOfCells(); c++)
             {
                 vtkIdTypeArray originalIds = (vtkIdTypeArray) tmp.GetCellData()
@@ -152,8 +154,8 @@ public class BasicSpectrumRenderer<S extends BasicSpectrum> extends AbstractMode
 
                 createSelectionPolyData();
                 createSelectionActor();
-//                createToSunVectorPolyData();
-//                createToSunVectorActor();
+                createToSunVectorPolyData();
+                createToSunVectorActor();
                 createOutlinePolyData();
                 createOutlineActor();
             }
@@ -177,7 +179,6 @@ public class BasicSpectrumRenderer<S extends BasicSpectrum> extends AbstractMode
             footprintActor = new vtkActor();
             footprintActor.SetMapper(footprintMapper);
             vtkProperty footprintProperty = footprintActor.GetProperty();
-//            double[] color = getChannelColor();
             if (color != null)
             	footprintProperty.SetColor(color[0], color[1], color[2]);
             footprintProperty.SetLineWidth(2.0);
@@ -384,7 +385,7 @@ public class BasicSpectrumRenderer<S extends BasicSpectrum> extends AbstractMode
 
     protected void createToSunVectorPolyData()
     {
-        vtkPoints points = new vtkPoints();
+    	vtkPoints points = new vtkPoints();
         vtkCellArray cells = new vtkCellArray();
         Vector3D footprintCenter = new Vector3D(
                 getUnshiftedFootprint().GetCenter());
@@ -505,7 +506,6 @@ public class BasicSpectrumRenderer<S extends BasicSpectrum> extends AbstractMode
     {
     	if (footprintActor == null) return;
         vtkProperty footprintProperty = footprintActor.GetProperty();
-//        double[] color = getChannelColor();
         footprintProperty.SetColor(color[0], color[1], color[2]);
         this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, this);
     }
@@ -577,59 +577,6 @@ public class BasicSpectrumRenderer<S extends BasicSpectrum> extends AbstractMode
 		return outlineActor;
 	}
 
-//	@Override
-//    public double[] getChannelColor()
-//    {
-//        if (spectrum.getColoringStyle() == SpectrumColoringStyle.EMISSION_ANGLE)
-//        {
-//            //This calculation is using the average emission angle over the spectrum, which doesn't exacty match the emission angle of the
-//            //boresight - no good way to calculate this data at the moment.  Olivier said this is fine.  Need to present a way to either have this option or the old one via RGB for coloring
-////        	AdvancedSpectrumRenderer renderer = new AdvancedSpectrumRenderer(this, smallBodyModel, false);
-//            List<Sample> sampleEmergenceAngle = SpectrumStatistics.sampleEmergenceAngle(this, new Vector3D(spacecraftPosition));
-//            Colormap colormap = Colormaps.getNewInstanceOfBuiltInColormap("OREX Scalar Ramp");
-//            colormap.setRangeMin(0.0);  //was 5.4
-//            colormap.setRangeMax(90.00); //was 81.7
-//
-//            Color color2 = colormap.getColor(SpectrumStatistics.getWeightedMean(sampleEmergenceAngle));
-//            double[] color = new double[3];
-//            color[0] = color2.getRed()/255.0;
-//            color[1] = color2.getGreen()/255.0;
-//            color[2] = color2.getBlue()/255.0;
-//            return color;
-//        }
-//        else
-//        {
-//            //TODO: What do we do for L3 data here?  It has less XAxis points than the L2 data, so is the coloring scheme different?
-//            double[] color = new double[3];
-//            BasicSpectrumInstrument instrument = spectrum.getInstrument();
-//            int[] channelsToColorBy = spectrum.getChannelsToColorBy();
-//            double[] channelsColoringMinValue = spectrum.getChannelsColoringMinValue();
-//            double[] channelsColoringMaxValue = spectrum.getChannelsColoringMaxValue();
-//
-//            for (int i=0; i<3; ++i)
-//            {
-//                double val = 0.0;
-//                if (spectrum.getChannelsToColorBy()[i] < instrument.getBandCenters().length)
-//                {
-//                    val = spectrum.getSpectrum()[channelsToColorBy[i]];
-//                }
-//                else if (channelsToColorBy[i] < instrument.getBandCenters().length + instrument.getSpectrumMath().getDerivedParameters().length)
-//                    val = spectrum.evaluateDerivedParameters(channelsToColorBy[i]-instrument.getBandCenters().length);
-//                else
-//                    val = instrument.getSpectrumMath().evaluateUserDefinedDerivedParameters(channelsToColorBy[i]-instrument.getBandCenters().length-instrument.getSpectrumMath().getDerivedParameters().length, spectrum.getSpectrum());
-//
-//                if (val < 0.0)
-//                    val = 0.0;
-//                else if (val > 1.0)
-//                    val = 1.0;
-//
-//                double slope = 1.0 / (channelsColoringMaxValue[i] - channelsColoringMinValue[i]);
-//                color[i] = slope * (val - channelsColoringMinValue[i]);
-//            }
-//            return color;
-//        }
-//    }
-
 	public double[] getSpacecraftPosition()
 	{
 		return spacecraftPosition;
@@ -642,7 +589,6 @@ public class BasicSpectrumRenderer<S extends BasicSpectrum> extends AbstractMode
 
 	public void setColor(double[] color)
 	{
-		System.out.println("BasicSpectrumRenderer: setColor: setting color to " + color);
 		this.color = color;
 	}
 }
