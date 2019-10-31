@@ -46,7 +46,7 @@ public class SpectrumStandardSearch<S extends BasicSpectrum>
 
 	public List<S> search(BasicSpectrumInstrument instrument, TreeSet<Integer> cubeList, TreePath[] selectedPaths, SearchProgressListener progressListener)
 	{
-		List<S> tempResults = new ArrayList<S>();
+		List<S> tempResults = null;
         try
         {
             GregorianCalendar startDateGreg = new GregorianCalendar();
@@ -92,20 +92,24 @@ public class SpectrumStandardSearch<S extends BasicSpectrum>
                                                                                         spec.getDataPath(),
                                                                                         spec.getDataRootLocation(),
                                                                                         spec.getSource());
-
+//                    progressListener.searchStarted();
+                    progressListener.searchIndeterminate();
+                    progressListener.searchNoteUpdated("Getting results from server....");
                     List<List<String>> thisResult = instrument.getQueryBase().runQuery(searchMetadata).getResultlist();
                     int i=0;
-                    progressListener.searchStarted();
+
+                    BasicSpectrum spectrum = null;
+                    tempResults = new ArrayList<S>(thisResult.size());
+                    progressListener.searchNoteUpdated("Processing results....");
                     for (List<String> str : thisResult)
                     {
                     	 try
                          {
-                         	BasicSpectrum spectrum = SbmtSpectrumModelFactory.createSpectrum(str.get(0), instrument, str.get(1));
+                         	spectrum = SbmtSpectrumModelFactory.createSpectrum(str.get(0), instrument, str.get(1));
                          	spectrum.setMetadata(spec);
                          	tempResults.add((S)spectrum);
                          	i++;
-                         	double complete = ((double)i/(double)thisResult.size());
-                         	progressListener.searchProgressChanged((int)((complete*100)));
+                         	progressListener.searchProgressChanged((int)((((double)i/(double)thisResult.size())*100)));
                          }
                          catch (Exception e) {
                         	 System.out.println("SpectrumStandardSearch: search error when building spectrum: " + e.getLocalizedMessage());

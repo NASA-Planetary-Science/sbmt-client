@@ -257,7 +257,6 @@ public class SpectrumSearchParametersController
                 model.clearSpectraFromDisplay();
                 pickManager.setActivePicker(pickManager.getPickerForPickMode(PickMode.DEFAULT));
 
-
                 AbstractEllipsePolygonModel selectionModel = (AbstractEllipsePolygonModel)modelManager.getModel(ModelNames.CIRCLE_SELECTION);
                 SmallBodyModel bodyModel = (SmallBodyModel)modelManager.getModel(ModelNames.SMALL_BODY);
                 if (selectionModel.getAllItems().size() > 0)
@@ -291,7 +290,14 @@ public class SpectrumSearchParametersController
 							public void searchStarted()
 							{
 								 searchProgressMonitor = new ProgressMonitor(null, "Performing Spectra Search...", "", 0, 100);
+								 searchProgressMonitor.setMillisToDecideToPopup(0);
+								 searchProgressMonitor.setMillisToPopup(0);
 							     searchProgressMonitor.setProgress(0);
+							}
+
+							public void searchNoteUpdated(String note)
+							{
+								searchProgressMonitor.setNote(note);
 							}
 
 							@Override
@@ -310,6 +316,7 @@ public class SpectrumSearchParametersController
 							public void searchIndeterminate()
 							{
 								searchProgressMonitor = new ProgressMonitor(null, "Performing Spectra Search...", "", 0, 100);
+								searchProgressMonitor.setMillisToDecideToPopup(0);
 								searchProgressMonitor.setMillisToPopup(0);
 								searchProgressMonitor.setProgress(99);
 								searchProgressMonitor.setNote("Waiting for results");

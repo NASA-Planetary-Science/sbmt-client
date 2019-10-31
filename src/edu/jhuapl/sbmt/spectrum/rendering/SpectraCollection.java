@@ -33,7 +33,6 @@ public class SpectraCollection<S extends BasicSpectrum> extends SaavtkItemManage
     private HashMap<IBasicSpectrumRenderer<S>, List<vtkProp>> spectrumToActorsMap = new HashMap<IBasicSpectrumRenderer<S>, List<vtkProp>>();
     private HashMap<vtkProp, IBasicSpectrumRenderer<S>> actorToSpectrumMap = new HashMap<vtkProp, IBasicSpectrumRenderer<S>>();
     private ISmallBodyModel shapeModel;
-//    private SpectrumColoringStyle coloringStyle = SpectrumColoringStyle.EMISSION_ANGLE;
     int[] selectedIndices;
     private List<SpectrumCollectionChangedListener<S>> listeners;
 
@@ -126,7 +125,6 @@ public class SpectraCollection<S extends BasicSpectrum> extends SaavtkItemManage
 
     public IBasicSpectrumRenderer<S> addSpectrum(S spectrum, boolean isCustom) //throws IOException
     {
-    	System.out.println("SpectraCollection: addSpectrum: !!!!!!!!!!!!! ADDING " + spectrum);
         if (spectrumToRendererMap.get(spectrum) != null)
         {
         	IBasicSpectrumRenderer<S> spec = spectrumToRendererMap.get(spectrum);

@@ -27,4 +27,10 @@ public interface SearchProgressListener
 	 * This search is indeterminate; setup something like a progress bar with an indeterminate state to show this.
 	 */
 	public void searchIndeterminate();
+
+	/**
+	 * Updates the note displayed in the progress dialog
+	 * @param note
+	 */
+	public void searchNoteUpdated(String note);
 }

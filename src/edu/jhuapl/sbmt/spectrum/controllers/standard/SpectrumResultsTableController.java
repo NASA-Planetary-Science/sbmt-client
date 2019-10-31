@@ -3,6 +3,7 @@ package edu.jhuapl.sbmt.spectrum.controllers.standard;
 import java.io.File;
 import java.util.List;
 
+import javax.swing.DefaultComboBoxModel;
 import javax.swing.JOptionPane;
 import javax.swing.ProgressMonitor;
 import javax.swing.event.ListSelectionEvent;
@@ -117,7 +118,7 @@ public class SpectrumResultsTableController<S extends BasicSpectrum>
     protected void setupWidgets()
     {
         // setup Image Results Table view components
-        panel.getNumberOfBoundariesComboBox().setModel(new javax.swing.DefaultComboBoxModel(new String[] { "10", "20", "30", "40", "50", "60", "70", "80", "90", "100", "110", "120", "130", "140", "150", "160", "170", "180", "190", "200", "210", "220", "230", "240", "250", " " }));
+        panel.getNumberOfBoundariesComboBox().setModel(new DefaultComboBoxModel(new String[] { "10", "20", "30", "40", "50", "60", "70", "80", "90", "100", "110", "120", "130", "140", "150", "160", "170", "180", "190", "200", "210", "220", "230", "240", "250", " " }));
         panel.getNumberOfBoundariesComboBox().addActionListener(evt -> numberOfBoundariesComboBoxActionPerformed());
         model.setNumberOfBoundariesToShow(10);
 
@@ -477,29 +478,44 @@ public class SpectrumResultsTableController<S extends BasicSpectrum>
         int startId = idPair.id1;
         int endId = idPair.id2;
         boundaries.removeAllBoundaries();
-        for (int i=startId; i<endId; ++i)
-        {
-            if (i < 0)
-                continue;
-            else if(i >= spectrumRawResults.size())
-                break;
+        progressMonitor = new ProgressMonitor(null, "Showing Footprints...", "", 0, 100);
+		progressMonitor.setProgress(0);
+		progressMonitor.setMillisToDecideToPopup(0);
+		progressMonitor.setMillisToPopup(0);
+		SwingWorker<Void, Void> task = new SwingWorker<Void, Void>()
+		{
+			@Override
+			protected Void doInBackground() throws Exception
+			{
+		        for (int i=startId; i<endId; ++i)
+		        {
+		            if (i < 0)
+		                continue;
+		            else if(i >= spectrumRawResults.size())
+		                break;
 
-            try
-            {
-                S currentSpectrum = spectrumRawResults.get(i);
-                spectrumCollection.addSpectrum(currentSpectrum, currentSpectrum.isCustomSpectra);
-                boundaries.addBoundary(currentSpectrum);
-            }
-            catch (Exception e1) {
-                JOptionPane.showMessageDialog(JOptionPane.getFrameForComponent(panel),
-                        "There was an error mapping the boundary.",
-                        "Error",
-                        JOptionPane.ERROR_MESSAGE);
+		            try
+		            {
+		                S currentSpectrum = spectrumRawResults.get(i);
+		                progressMonitor.setProgress((int)(100*(double)i/(double)(endId - startId)));
+		                spectrumCollection.addSpectrum(currentSpectrum, currentSpectrum.isCustomSpectra);
+		                boundaries.addBoundary(currentSpectrum);
+		            }
+		            catch (Exception e1) {
+		                JOptionPane.showMessageDialog(JOptionPane.getFrameForComponent(panel),
+		                        "There was an error mapping the boundary.",
+		                        "Error",
+		                        JOptionPane.ERROR_MESSAGE);
 
-                e1.printStackTrace();
-                break;
-            }
-        }
+		                e1.printStackTrace();
+		                break;
+		            }
+		        }
+		        progressMonitor.setProgress(100);
+		        return null;
+			}
+		};
+		task.execute();
     }
 
     /**
@@ -515,8 +531,8 @@ public class SpectrumResultsTableController<S extends BasicSpectrum>
 //            spectrumCollection.removeSpectrum(spec);
 //            boundaries.removeBoundary(spec);
 //        }
-        spectrumRawResults = results;
-        spectrumCollection.setAllItems(results);
+        spectrumRawResults = results; //.parallelStream().filter(spec -> spec.getInstrument() == instrument).collect(Collectors.toList());
+        spectrumCollection.setAllItems(spectrumRawResults);
         showSpectrumBoundaries(new IdPair(0, Integer.parseInt((String)panel.getNumberOfBoundariesComboBox().getSelectedItem())));
     }
 }
