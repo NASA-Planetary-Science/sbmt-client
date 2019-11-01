@@ -50,11 +50,13 @@ public class SpectrumResultsTableController<S extends BasicSpectrum>
     {
         spectrumPopupMenu = new SpectrumPopupMenu(spectrumCollection, boundaries, modelManager,infoPanelManager, renderer);
         spectrumPopupMenu.setInstrument(instrument);
+        this.spectrumCollection = spectrumCollection;
+
+        this.spectrumCollection.setActiveInstrument(instrument);
         panel = new SpectrumResultsTableView<S>(spectrumCollection, boundaries, spectrumPopupMenu);
         panel.setup();
         this.boundaries = boundaries;
         spectrumRawResults = model.getSpectrumRawResults();
-        this.spectrumCollection = spectrumCollection;
         this.model = model;
         this.instrument = instrument;
 	    model.setCustomDataFolder(spectrumCollection.getShapeModel().getCustomDataFolder());

@@ -238,7 +238,12 @@ public class SpectrumResultsTableView<S extends BasicSpectrum> extends JPanel
 //			@Override
 //			public void handleItemEvent(Object aSource, ItemEventType aEventType)
 //			{
-//				// TODO Auto-generated method stub
+//				if (aEventType == ItemEventType.ItemsMutated)
+//				{
+//					spectrumTableHandler = new SpectrumItemHandler<S>(spectrumCollection, boundaryCollection, tmpComposer);
+//					ItemProcessor<S> tmpIP = spectrumCollection;
+////					spectrumILP = new ItemListPanel<>(spectrumTableHandler, tmpIP, true);
+//				}
 //
 //			}
 //		});

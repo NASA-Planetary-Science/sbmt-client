@@ -27,12 +27,14 @@ public class SpectrumItemHandler<S extends BasicSpectrum> extends BasicItemHandl
 		super(aComposer);
 
 		spectrumCollection = aManager;
+		System.out.println("SpectrumItemHandler: SpectrumItemHandler: making " + this + " for instrument " + aManager.getActiveInstrument());
 		this.boundaryCollection = boundaryCollection;
 	}
 
 	@Override
 	public Object getColumnValue(BasicSpectrum spec, LookUp aEnum)
 	{
+//		System.out.println("SpectrumItemHandler: getColumnValue: " + spectrumCollection.getActiveInstrument().getDisplayName() + " and size " + spectrumCollection.getNumItems());
 		switch (aEnum)
 		{
 			case Map:

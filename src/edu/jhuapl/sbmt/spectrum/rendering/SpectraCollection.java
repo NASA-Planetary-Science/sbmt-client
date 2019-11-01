@@ -8,6 +8,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 
@@ -35,10 +37,12 @@ public class SpectraCollection<S extends BasicSpectrum> extends SaavtkItemManage
     private ISmallBodyModel shapeModel;
     int[] selectedIndices;
     private List<SpectrumCollectionChangedListener<S>> listeners;
-
+    private ISpectralInstrument activeInstrument;
     boolean selectAll=false;
     final double minFootprintSeparation=0.001;
     double footprintSeparation=0.001;
+    HashMap<String, List<S>> collections = new HashMap<String, List<S>>();
+//    private List<S> previousList;
 
     Map<IBasicSpectrumRenderer<S>,Integer> ordinals=Maps.newHashMap();
     final static int defaultOrdinal=0;
@@ -217,6 +221,7 @@ public class SpectraCollection<S extends BasicSpectrum> extends SaavtkItemManage
 
     public boolean isSpectrumMapped(BasicSpectrum spec)
     {
+    	if (activeInstrument.getDisplayName() != spec.getInstrument().getDisplayName()) return false;
     	return spectrumToRendererMap.get(spec) != null;
     }
 
@@ -235,6 +240,7 @@ public class SpectraCollection<S extends BasicSpectrum> extends SaavtkItemManage
 
     public boolean getVisibility(BasicSpectrum spec)
     {
+    	if (activeInstrument.getDisplayName() != spec.getInstrument().getDisplayName()) return false;
     	if (isSpectrumMapped(spec) == false ) return false;
     	IBasicSpectrumRenderer<S> spectrumRenderer = spectrumToRendererMap.get(spec);
     	if (spectrumRenderer == null) return false;
@@ -249,6 +255,7 @@ public class SpectraCollection<S extends BasicSpectrum> extends SaavtkItemManage
 
     public boolean getFrustumVisibility(BasicSpectrum spec)
     {
+    	if (activeInstrument.getDisplayName() != spec.getInstrument().getDisplayName()) return false;
     	IBasicSpectrumRenderer<S> spectrumRenderer = spectrumToRendererMap.get(spec);
     	if (spectrumRenderer == null) return false;
         return spectrumRenderer.isFrustumShowing();
@@ -436,9 +443,42 @@ public class SpectraCollection<S extends BasicSpectrum> extends SaavtkItemManage
 
 	public void setAllItems(List<S> specs)
 	{
-		super.setAllItems(specs);
+		List<S> instrumentList = new ArrayList<S>();
+		for (S spec : specs)
+		{
+			if (spec.getInstrument().getDisplayName().equals(activeInstrument.getDisplayName()))
+				instrumentList.add(spec);
+		}
+		collections.put(activeInstrument.getDisplayName(), instrumentList);
+		super.setAllItems(instrumentList);
 		// Send out the appropriate notifications
 		notifyListeners(this, ItemEventType.ItemsSelected);
+	}
+
+	@Override
+	public ImmutableList<S> getAllItems()
+	{
+		List<S> instrumentList = new ArrayList<S>();
+		ImmutableList<S> allItems = super.getAllItems();
+		for (S spec : allItems)
+		{
+			if (spec.getInstrument().getDisplayName().equals(activeInstrument.getDisplayName()))
+				instrumentList.add(spec);
+		}
+		return ImmutableList.copyOf(instrumentList);
+	}
+
+	@Override
+	public ImmutableSet<S> getSelectedItems()
+	{
+		List<S> instrumentList = new ArrayList<S>();
+		ImmutableSet<S> allItems = super.getSelectedItems();
+		for (S spec : allItems)
+		{
+			if (spec.getInstrument().getDisplayName().equals(activeInstrument.getDisplayName()))
+				instrumentList.add(spec);
+		}
+		return ImmutableSet.copyOf(instrumentList);
 	}
 
 	@Override
@@ -455,5 +495,19 @@ public class SpectraCollection<S extends BasicSpectrum> extends SaavtkItemManage
 	public int[] getSelectedIndices()
 	{
 		return selectedIndices;
+	}
+
+	public void setActiveInstrument(ISpectralInstrument activeInstrument)
+	{
+		this.activeInstrument = activeInstrument;
+		if (collections.get(activeInstrument.getDisplayName()) != null)
+			setAllItems(collections.get(activeInstrument.getDisplayName()));
+		else
+			collections.put(activeInstrument.getDisplayName(), getAllItems());
+	}
+
+	public ISpectralInstrument getActiveInstrument()
+	{
+		return activeInstrument;
 	}
 }
