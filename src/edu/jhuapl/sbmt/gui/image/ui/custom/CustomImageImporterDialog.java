@@ -141,7 +141,9 @@ public class CustomImageImporterDialog extends javax.swing.JDialog
 
         if (keyImageFilename.toUpperCase().endsWith(".FITS") || keyImageFilename.toUpperCase().endsWith(".FIT"))
         {
-            imageTypeComboBox.setModel(new DefaultComboBoxModel(ImageType.values()));
+        	DefaultComboBoxModel model = new DefaultComboBoxModel(ImageType.values());
+        	model.insertElementAt("<CHOOSE IMAGE TYPE>", 0);
+            imageTypeComboBox.setModel(model);
             imageTypeComboBox.setSelectedItem(currentImageType);
         }
         else
@@ -243,6 +245,12 @@ public class CustomImageImporterDialog extends javax.swing.JDialog
         {
         	return "Name for custom image already exists.";
         }
+
+        if (imageTypeComboBox.getSelectedItem().toString().equals("<CHOOSE IMAGE TYPE>"))
+        {
+        	return "Select an image type.";
+        }
+
 
         if (cylindricalProjectionRadioButton.isSelected())
         {
@@ -364,6 +372,13 @@ public class CustomImageImporterDialog extends javax.swing.JDialog
     	}
     }
 
+    private void checkImageType()
+    {
+    	boolean typeSet = !(imageTypeComboBox.getSelectedItem().toString().equals("<CHOOSE IMAGE TYPE>"));
+    	nameExistsLabel.setVisible(!typeSet);
+		okButton.setEnabled(typeSet);
+    }
+
     private void updateEnabledItems()
     {
         boolean cylindrical = cylindricalProjectionRadioButton.isSelected();
@@ -385,6 +400,8 @@ public class CustomImageImporterDialog extends javax.swing.JDialog
         boolean generic = imageTypeComboBox.getSelectedItem() == ImageType.GENERIC_IMAGE;
         imageFlipComboBox.setEnabled(!cylindrical);
         imageRotateComboBox.setEnabled(!cylindrical);
+
+        selectImageTypeLabel.setVisible(imageTypeComboBox.getSelectedItem().toString().equals("<CHOOSE IMAGE TYPE>"));
     }
 
     /**
@@ -471,6 +488,7 @@ public class CustomImageImporterDialog extends javax.swing.JDialog
         imageLabel = new JLabel();
         imageNameTextField = new JTextField();
         nameExistsLabel = new JLabel();
+        selectImageTypeLabel = new JLabel();
         sumfilePathRB = new JRadioButton();
         infofilePathTextField = new JTextField();
         sumfilePathTextField = new JTextField();
@@ -485,7 +503,9 @@ public class CustomImageImporterDialog extends javax.swing.JDialog
         tmpBG.add(infofilePathRB);
         tmpBG.add(sumfilePathRB);
 
-        addChangeListener(imageNameTextField, e -> { checkCurrentNames(); });
+        addChangeListener(imageNameTextField, e -> { checkCurrentNames(); checkImageType(); });
+
+        imageTypeComboBox.addActionListener(e -> { checkImageType(); checkCurrentNames(); } );
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         setMinimumSize(new java.awt.Dimension(600, 167));
@@ -774,6 +794,16 @@ public class CustomImageImporterDialog extends javax.swing.JDialog
         gridBagConstraints.insets = new java.awt.Insets(0, 6, 0, 0);
         getContentPane().add(imageTypeComboBox, gridBagConstraints);
 
+        selectImageTypeLabel.setText("Select an Image Type");
+        selectImageTypeLabel.setForeground(Color.red);
+        selectImageTypeLabel.setVisible(false);
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 2;
+        gridBagConstraints.gridy = 2;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_END;
+        gridBagConstraints.insets = new java.awt.Insets(0, 0, 0, 8);
+        getContentPane().add(selectImageTypeLabel, gridBagConstraints);
+
         imageRotateLabel.setText("Image Rotate");
         gridBagConstraints = new GridBagConstraints();
         gridBagConstraints.gridx = 0;
@@ -825,8 +855,11 @@ public class CustomImageImporterDialog extends javax.swing.JDialog
         {
             ImageType[] allImageTypes = ImageType.values();
             ImageType currentImageType = instrument != null ? instrument.getType() : ImageType.GENERIC_IMAGE;
-            imageTypeComboBox.setModel(new DefaultComboBoxModel(allImageTypes));
-            imageTypeComboBox.setSelectedItem(currentImageType);
+            DefaultComboBoxModel model = new DefaultComboBoxModel(allImageTypes);
+            model.insertElementAt("<CHOOSE IMAGE TYPE>", 0);
+            imageTypeComboBox.setModel(model);
+            imageTypeComboBox.setSelectedIndex(0);
+//            imageTypeComboBox.setSelectedItem(currentImageType);
 
             boolean cylindrical = cylindricalProjectionRadioButton.isSelected();
             boolean generic = imageTypeComboBox.getSelectedItem() == ImageType.GENERIC_IMAGE;
@@ -943,5 +976,6 @@ public class CustomImageImporterDialog extends javax.swing.JDialog
     private JFormattedTextField urlonFormattedTextField;
     private JLabel urlonLabel;
     private JLabel nameExistsLabel;
+    private JLabel selectImageTypeLabel;
     // End of variables declaration//GEN-END:variables
 }
