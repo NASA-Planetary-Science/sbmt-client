@@ -2,6 +2,7 @@ package edu.jhuapl.sbmt.client;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
@@ -53,10 +54,11 @@ import crucible.crust.metadata.impl.gson.Serializers;
 public class SmallBodyViewConfig extends BodyViewConfig implements ISmallBodyViewConfig
 {
 	static public boolean fromServer = false;
+	private static final List<BasicConfigInfo> CONFIG_INFO = new ArrayList<>();
     private static final Map<String, BasicConfigInfo> VIEWCONFIG_IDENTIFIERS = new HashMap<>();
     private static final Map<String, ViewConfig> LOADED_VIEWCONFIGS = new HashMap<>();
 
-    static public Map<String, BasicConfigInfo> getConfigIdentifiers() { return VIEWCONFIG_IDENTIFIERS; }
+    static public List<BasicConfigInfo> getConfigIdentifiers() { return CONFIG_INFO; }
 
     static public SmallBodyViewConfig getSmallBodyConfig(BasicConfigInfo configInfo)
     {
@@ -126,6 +128,7 @@ public class SmallBodyViewConfig extends BodyViewConfig implements ISmallBodyVie
             	BasicConfigInfo configInfo = new BasicConfigInfo();
             	configInfo.retrieve(infoMetadata);
 
+            	CONFIG_INFO.add(configInfo);
             	VIEWCONFIG_IDENTIFIERS.put(key.toString(), configInfo);
             	if (configInfo.uniqueName.equals("Gaskell/433 Eros"))
             	{
