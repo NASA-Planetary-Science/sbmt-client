@@ -9,6 +9,11 @@ import javax.swing.table.DefaultTableCellRenderer;
 
 import edu.jhuapl.sbmt.spectrum.model.core.BasicSpectrum;
 
+/**
+ * Renders the table cells and their strings with a given color
+ * @author steelrj1
+ *
+ */
 public class SpectrumStringRenderer extends DefaultTableCellRenderer
 {
     public SpectrumBoundaryCollection model;

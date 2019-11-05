@@ -8,6 +8,11 @@ import edu.jhuapl.sbmt.spectrum.model.sbmtCore.spectra.ISpectralInstrument;
 import edu.jhuapl.sbmt.spectrum.model.sbmtCore.spectra.Spectrum;
 import edu.jhuapl.sbmt.spectrum.model.sbmtCore.spectra.math.SpectrumMath;
 
+/**
+ * Basic Spectrum Instrument type.  Contains information about display name, units, query type, spectrum math
+ * @author steelrj1
+ *
+ */
 public class BasicSpectrumInstrument implements ISpectralInstrument
 {
 	protected String bandCenterUnit;
@@ -67,18 +72,21 @@ public class BasicSpectrumInstrument implements ISpectralInstrument
 		// TODO Auto-generated method stub
 		return null;
 	}
+
 	@Override
 	public double[] getRGBMaxVals()
 	{
 		// TODO Auto-generated method stub
 		return null;
 	}
+
 	@Override
 	public int[] getRGBDefaultIndices()
 	{
 		// TODO Auto-generated method stub
 		return null;
 	}
+
 	@Override
 	public String[] getDataTypeNames()
 	{

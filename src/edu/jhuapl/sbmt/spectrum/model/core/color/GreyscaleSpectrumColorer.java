@@ -5,10 +5,16 @@ import java.util.List;
 
 import edu.jhuapl.sbmt.spectrum.model.core.BasicSpectrum;
 import edu.jhuapl.sbmt.spectrum.model.core.BasicSpectrumInstrument;
+import edu.jhuapl.sbmt.spectrum.model.core.interfaces.IBasicSpectrumRenderer;
 import edu.jhuapl.sbmt.spectrum.model.core.interfaces.ISpectrumColorer;
 import edu.jhuapl.sbmt.spectrum.model.core.interfaces.SpectrumColoringChangedListener;
-import edu.jhuapl.sbmt.spectrum.rendering.IBasicSpectrumRenderer;
 
+/**
+ * Coloring model that colors renderers based on mapping R, G and B to the same stretched value over the min/max ranges, resulting in a greyscale color
+ * @author steelrj1
+ *
+ * @param <S>
+ */
 public class GreyscaleSpectrumColorer<S extends BasicSpectrum> implements ISpectrumColorer<S>
 {
 	private int greyScaleIndex;
@@ -26,6 +32,9 @@ public class GreyscaleSpectrumColorer<S extends BasicSpectrum> implements ISpect
 		colorChangedListeners = new ArrayList<SpectrumColoringChangedListener>();
 	}
 
+	/**
+	 * Returns the color for the passed in spectrumRenderer.  Can be done with built in or user defined values
+	 */
 	@Override
 	public double[] getColorForSpectrum(IBasicSpectrumRenderer<S> spectrumRenderer)
 	{
@@ -121,16 +130,26 @@ public class GreyscaleSpectrumColorer<S extends BasicSpectrum> implements ISpect
 		this.maxs = maxs;
 	}
 
+	/**
+	 * Adds a spectrum coloring changed listener to the list
+	 * @param sccl
+	 */
 	public void addSpectrumColoringChangedListener(SpectrumColoringChangedListener sccl)
 	{
 		colorChangedListeners.add(sccl);
 	}
 
+	/**
+	 * Fires the coloring changed listeners
+	 */
 	private void fireColoringChanged()
 	{
 		for (SpectrumColoringChangedListener sccl : colorChangedListeners) sccl.coloringChanged();
 	}
 
+	/**
+	 * Updates the coloring based on the current min/max/index values
+	 */
 	public void updateColoring()
 	{
 		this.channels = new int[]{greyScaleIndex, greyScaleIndex, greyScaleIndex};
@@ -157,5 +176,4 @@ public class GreyscaleSpectrumColorer<S extends BasicSpectrum> implements ISpect
     {
         return currentlyEditingUserDefinedFunction;
     }
-
 }

@@ -17,16 +17,17 @@ import vtk.vtkProp;
 import vtk.vtkTriangle;
 
 import edu.jhuapl.saavtk.model.AbstractModel;
+import edu.jhuapl.sbmt.spectrum.model.core.BasicSpectrum;
+import edu.jhuapl.sbmt.spectrum.model.core.interfaces.IBasicSpectrumRenderer;
 import edu.jhuapl.sbmt.spectrum.model.sbmtCore.spectra.Spectrum;
 import edu.jhuapl.sbmt.spectrum.rendering.BasicSpectrumRenderer;
-import edu.jhuapl.sbmt.spectrum.rendering.IBasicSpectrumRenderer;
 
 /**
  * Helper class to generate statistics on spectra data
  * @author steelrj1
  *
  */
-public class SpectrumStatistics extends AbstractModel
+public class SpectrumStatistics<S extends BasicSpectrum> extends AbstractModel
 {
     int nFaces;
     List<Sample> emergenceAngle;
@@ -34,9 +35,17 @@ public class SpectrumStatistics extends AbstractModel
     List<Sample> phaseAngle;
     List<Sample> irradiance;
 
-    List<IBasicSpectrumRenderer> spectra=Lists.newArrayList();
+    List<IBasicSpectrumRenderer<S>> spectra=Lists.newArrayList();
 
-    public SpectrumStatistics(List<Sample> emergenceAngle, List<Sample> incidenceAngle, List<Sample> phaseAngle, List<Sample> irradiance, List<IBasicSpectrumRenderer> spectra)
+    /**
+     * Takes in data samples from the spectra footprint
+     * @param emergenceAngle
+     * @param incidenceAngle
+     * @param phaseAngle
+     * @param irradiance
+     * @param spectra
+     */
+    public SpectrumStatistics(List<Sample> emergenceAngle, List<Sample> incidenceAngle, List<Sample> phaseAngle, List<Sample> irradiance, List<IBasicSpectrumRenderer<S>> spectra)
     {
         this.emergenceAngle=emergenceAngle;
         this.incidenceAngle=incidenceAngle;
@@ -55,11 +64,6 @@ public class SpectrumStatistics extends AbstractModel
     public int getNumberOfFaces()
     {
         return nFaces;
-    }
-
-    public List<IBasicSpectrumRenderer> getOriginalSpectra()
-    {
-        return spectra;
     }
 
     public List<Sample> getEmergenceAngleSamples()
@@ -82,7 +86,7 @@ public class SpectrumStatistics extends AbstractModel
         return phaseAngle;
     }
 
-    public Map<IBasicSpectrumRenderer, Integer> orderSpectraByMeanEmergenceAngle()
+    public Map<IBasicSpectrumRenderer<S>, Integer> orderSpectraByMeanEmergenceAngle()
     {
         final List<Double> means=Lists.newArrayList();
         for (int i=0; i<spectra.size(); i++)
@@ -107,7 +111,7 @@ public class SpectrumStatistics extends AbstractModel
             }
         });
 
-        Map<IBasicSpectrumRenderer, Integer> stackingMap=Maps.newHashMap();
+        Map<IBasicSpectrumRenderer<S>, Integer> stackingMap=Maps.newHashMap();
         for (int i=0; i<indices.size(); i++)
             stackingMap.put(spectra.get(i), indices.get(i));
         return stackingMap;

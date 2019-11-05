@@ -11,11 +11,11 @@ import com.jidesoft.utils.SwingWorker;
 
 import edu.jhuapl.sbmt.spectrum.model.core.BasicSpectrum;
 import edu.jhuapl.sbmt.spectrum.model.core.color.SpectrumColoringModel;
+import edu.jhuapl.sbmt.spectrum.model.core.interfaces.IBasicSpectrumRenderer;
 import edu.jhuapl.sbmt.spectrum.model.core.interfaces.SpectrumCollectionChangedListener;
 import edu.jhuapl.sbmt.spectrum.model.core.interfaces.SpectrumColoringChangedListener;
 import edu.jhuapl.sbmt.spectrum.model.core.search.BaseSpectrumSearchModel;
 import edu.jhuapl.sbmt.spectrum.model.sbmtCore.spectra.SpectrumColoringStyle;
-import edu.jhuapl.sbmt.spectrum.rendering.IBasicSpectrumRenderer;
 import edu.jhuapl.sbmt.spectrum.rendering.SpectraCollection;
 import edu.jhuapl.sbmt.spectrum.ui.color.SpectrumColoringPanel;
 
@@ -62,28 +62,31 @@ public class SpectrumColoringController<S extends BasicSpectrum>
         			@Override
         			protected Void doInBackground() throws Exception
         			{
-		            	if (!coloringModel.getSpectrumColoringStyle().equals(panel.getColoringComboBox().getSelectedItem()))
-		            		panel.getColoringComboBox().setSelectedItem(coloringModel.getSpectrumColoringStyle());
-		            	 Set<IBasicSpectrumRenderer<S>> renderers = collection.getSpectra();
-		            	 Iterator<IBasicSpectrumRenderer<S>> iterator = renderers.iterator();
-		            	 progressMonitor = new ProgressMonitor(null, "Updating coloring...", "", 0, 100);
-						 progressMonitor.setProgress(0);
-						 int i=0;
-						 int numToRender = renderers.size();
-		            	 while (iterator.hasNext())
-		                 {
-		                 	IBasicSpectrumRenderer<S> spectrumRenderer = iterator.next();
-		                 	if (spectrumRenderer == null) continue;
-		                 	if (!spectrumRenderer.getSpectrum().getInstrument().getDisplayName().equals(model.getInstrument().getDisplayName())) continue;
+						if (!coloringModel.getSpectrumColoringStyle().equals(panel.getColoringComboBox().getSelectedItem()))
+							panel.getColoringComboBox().setSelectedItem(coloringModel.getSpectrumColoringStyle());
+						Set<IBasicSpectrumRenderer<S>> renderers = collection.getSpectra();
+						Iterator<IBasicSpectrumRenderer<S>> iterator = renderers.iterator();
+						progressMonitor = new ProgressMonitor(null, "Updating coloring...", "", 0, 100);
+						progressMonitor.setProgress(0);
+						int i = 0;
+						int numToRender = renderers.size();
+						while (iterator.hasNext())
+						{
+							IBasicSpectrumRenderer<S> spectrumRenderer = iterator.next();
+							if (spectrumRenderer == null)
+								continue;
+							if (!spectrumRenderer.getSpectrum().getInstrument().getDisplayName()
+									.equals(model.getInstrument().getDisplayName()))
+								continue;
 
-		                 	double[] color = coloringModel.getSpectrumColoringForCurrentStyle(spectrumRenderer);
-		                 	spectrumRenderer.setColor(color);
-		                 	spectrumRenderer.updateChannelColoring();
-		                 	progressMonitor.setProgress(((int)(100*(double)i/(double)numToRender)));
-		                 	i++;
-		                 }
-		            	progressMonitor.setProgress(100);
-		            	return null;
+							double[] color = coloringModel.getSpectrumColoringForCurrentStyle(spectrumRenderer);
+							spectrumRenderer.setColor(color);
+							spectrumRenderer.updateChannelColoring();
+							progressMonitor.setProgress(((int) (100 * (double) i / (double) numToRender)));
+							i++;
+						}
+						progressMonitor.setProgress(100);
+						return null;
         			}
 	     		};
 	     		task.execute();
@@ -92,9 +95,8 @@ public class SpectrumColoringController<S extends BasicSpectrum>
 
         collection.addSpectrumCollectionChangedListener(new SpectrumCollectionChangedListener<S>()
 		{
-
 			@Override
-			public void spectraRendered(IBasicSpectrumRenderer<S> renderer)
+			public void spectumRendered(IBasicSpectrumRenderer<S> renderer)
 			{
 				if (!renderer.getSpectrum().getInstrument().getDisplayName().equals(model.getInstrument().getDisplayName())) return;
 				renderer.setColor(coloringModel.getSpectrumColoringForCurrentStyle(renderer));
@@ -103,8 +105,6 @@ public class SpectrumColoringController<S extends BasicSpectrum>
 		});
 
         panel.getColoringComboBox().setSelectedItem(SpectrumColoringStyle.RGB);
-
-
     }
 
     /**
@@ -139,5 +139,4 @@ public class SpectrumColoringController<S extends BasicSpectrum>
     {
         return panel;
     }
-
 }

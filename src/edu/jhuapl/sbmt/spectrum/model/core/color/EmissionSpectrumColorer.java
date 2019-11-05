@@ -9,12 +9,18 @@ import org.apache.commons.math3.geometry.euclidean.threed.Vector3D;
 import edu.jhuapl.saavtk.colormap.Colormap;
 import edu.jhuapl.saavtk.colormap.Colormaps;
 import edu.jhuapl.sbmt.spectrum.model.core.BasicSpectrum;
+import edu.jhuapl.sbmt.spectrum.model.core.interfaces.IBasicSpectrumRenderer;
 import edu.jhuapl.sbmt.spectrum.model.core.interfaces.ISpectrumColorer;
 import edu.jhuapl.sbmt.spectrum.model.core.interfaces.SpectrumColoringChangedListener;
 import edu.jhuapl.sbmt.spectrum.model.statistics.SpectrumStatistics;
 import edu.jhuapl.sbmt.spectrum.model.statistics.SpectrumStatistics.Sample;
-import edu.jhuapl.sbmt.spectrum.rendering.IBasicSpectrumRenderer;
 
+/**
+ * Coloring model that colors renderers based on average emission angle across the spectrum footprint
+ * @author steelrj1
+ *
+ * @param <S>
+ */
 public class EmissionSpectrumColorer<S extends BasicSpectrum> implements ISpectrumColorer<S>
 {
     private Colormap currentColormap;
@@ -26,6 +32,9 @@ public class EmissionSpectrumColorer<S extends BasicSpectrum> implements ISpectr
 		currentColormap = Colormaps.getNewInstanceOfBuiltInColormap("OREX Scalar Ramp");
 	}
 
+	/**
+	 *	Returns the color for the passed in spectrumRenderer
+	 */
 	@Override
 	public double[] getColorForSpectrum(IBasicSpectrumRenderer<S> spectrumRenderer)
 	{
@@ -41,17 +50,28 @@ public class EmissionSpectrumColorer<S extends BasicSpectrum> implements ISpectr
         return color;
 	}
 
+	/**
+	 * Sets the current colormap (e.g. color ramp model selected)
+	 * @param currentColormap
+	 */
 	public void setCurrentColormap(Colormap currentColormap)
 	{
 		this.currentColormap = currentColormap;
 		fireColoringChanged();
 	}
 
+	/**
+	 * Adds a spectrum coloring change listener to the list
+	 * @param sccl
+	 */
 	public void addSpectrumColoringChangedListener(SpectrumColoringChangedListener sccl)
 	{
 		colorChangedListeners.add(sccl);
 	}
 
+	/**
+	 * Fires the coloring changed listeners
+	 */
 	private void fireColoringChanged()
 	{
 		for (SpectrumColoringChangedListener sccl : colorChangedListeners) sccl.coloringChanged();

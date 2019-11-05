@@ -10,13 +10,33 @@ import edu.jhuapl.sbmt.spectrum.model.sbmtCore.spectra.math.SpectrumMath;
  */
 public interface ISpectraType
 {
+    /**
+     * Returns the QueryBase object for this spectrum type
+     * @return
+     */
     public QueryBase getQueryBase();
 
+    /**
+     * Returns the SpectrumMatch object for this spectrum type
+     * @return
+     */
     public SpectrumMath getSpectrumMath();
 
+    /**
+     * Returns the display name for this spectrum type
+     * @return
+     */
     public String getDisplayName();
 
+    /**
+     * Returns the band centers for this spectrum type
+     * @return
+     */
     public Double[] getBandCenters();
 
+    /**
+     * Returns the band center unit of this spectrum type
+     * @return
+     */
     public String getBandCenterUnit();
 }

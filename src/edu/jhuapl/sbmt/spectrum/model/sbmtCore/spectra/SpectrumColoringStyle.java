@@ -11,7 +11,6 @@ public enum SpectrumColoringStyle
     GREYSCALE("Greyscale"),
     EMISSION_ANGLE("Emission Angle");
 
-
     private String name;
 
     public String toString()
@@ -24,6 +23,11 @@ public enum SpectrumColoringStyle
         this.name = name;
     }
 
+    /**
+     * Returns the style for given name
+     * @param name
+     * @return
+     */
     public static SpectrumColoringStyle getStyleForName(String name)
     {
         for (SpectrumColoringStyle style : values())
@@ -34,5 +38,4 @@ public enum SpectrumColoringStyle
 
         return null;
     }
-
 }

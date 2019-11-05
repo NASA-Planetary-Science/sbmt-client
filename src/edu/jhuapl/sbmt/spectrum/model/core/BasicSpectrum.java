@@ -15,6 +15,11 @@ import edu.jhuapl.sbmt.spectrum.model.sbmtCore.spectra.Spectrum;
 import edu.jhuapl.sbmt.spectrum.model.sbmtCore.spectra.SpectrumColoringStyle;
 
 
+/**
+ * Abstract basic spectrum class that builds upon the abstract Spectrum class
+ * @author steelrj1
+ *
+ */
 public abstract class BasicSpectrum extends Spectrum
 {
     protected BasicSpectrumInstrument instrument;
@@ -38,10 +43,6 @@ public abstract class BasicSpectrum extends Spectrum
     protected double[] frustum3 = new double[3];
     protected double[] frustum4 = new double[3];
 
-    protected int[] channelsToColorBy = { 0, 0, 0 };
-    protected double[] channelsColoringMinValue = { 0.0, 0.0, 0.0 };
-    protected double[] channelsColoringMaxValue = { 0.05, 0.05, 0.05 };
-
     protected DateTime dateTime;
     protected double duration;
     protected short polygon_type_flag;
@@ -56,9 +57,6 @@ public abstract class BasicSpectrum extends Spectrum
     protected double minPhase;
     protected double maxPhase;
 
-    protected String dataName;
-    protected String xAxisUnits;
-    protected String yAxisUnits;
     protected SearchSpec spec;
 
 
@@ -81,9 +79,21 @@ public abstract class BasicSpectrum extends Spectrum
         spectrumName = filename;
     }
 
+    /**
+     * Returns the number of bands available in this spectrum
+     * @return
+     */
     public abstract int getNumberOfBands();
+
+
+    /**
+     * Reads pointing from an INFO file or some other file
+     */
     public abstract void readPointingFromInfoFile();
 
+    /**
+     *	Initializes the structure needed for reading in spectra.
+     */
     public void readSpectrumFromFile()
     {
     	spectrum=new double[getNumberOfBands()];
@@ -130,16 +140,6 @@ public abstract class BasicSpectrum extends Spectrum
     public double[] getToSunUnitVector()
     {
         return toSunUnitVector.toArray();
-    }
-
-    public void setChannelColoring(int[] channels, double[] mins, double[] maxs)
-    {
-        for (int i = 0; i < 3; ++i)
-        {
-            channelsToColorBy[i] = channels[i];
-            channelsColoringMinValue[i] = mins[i];
-            channelsColoringMaxValue[i] = maxs[i];
-        }
     }
 
     @Override
@@ -193,36 +193,6 @@ public abstract class BasicSpectrum extends Spectrum
         return serverpath;
     }
 
-    public String getDataName()
-    {
-        return dataName;
-    }
-
-    public void setDataName(String dataName)
-    {
-        this.dataName = dataName;
-    }
-
-    public String getxAxisUnits()
-    {
-        return xAxisUnits;
-    }
-
-    public void setxAxisUnits(String xAxisUnits)
-    {
-        this.xAxisUnits = xAxisUnits;
-    }
-
-    public String getyAxisUnits()
-    {
-        return yAxisUnits;
-    }
-
-    public void setyAxisUnits(String yAxisUnits)
-    {
-        this.yAxisUnits = yAxisUnits;
-    }
-
     public Double[] getxData()
     {
         return xData;
@@ -231,11 +201,6 @@ public abstract class BasicSpectrum extends Spectrum
     public SpectrumColoringStyle getColoringStyle()
     {
         return coloringStyle;
-    }
-
-    public void setColoringStyle(SpectrumColoringStyle coloringStyle)
-    {
-        this.coloringStyle = coloringStyle;
     }
 
     public void setMetadata(SearchSpec spec)
@@ -281,21 +246,6 @@ public abstract class BasicSpectrum extends Spectrum
 	public double[] getFrustum4()
 	{
 		return frustum4;
-	}
-
-	public int[] getChannelsToColorBy()
-	{
-		return channelsToColorBy;
-	}
-
-	public double[] getChannelsColoringMinValue()
-	{
-		return channelsColoringMinValue;
-	}
-
-	public double[] getChannelsColoringMaxValue()
-	{
-		return channelsColoringMaxValue;
 	}
 
 	public double getDuration()
@@ -357,4 +307,19 @@ public abstract class BasicSpectrum extends Spectrum
 	{
 		this.dateTime = dateTime;
 	}
+
+    public String getxAxisUnits()
+    {
+        return spec.getxAxisUnits();
+    }
+
+    public String getyAxisUnits()
+    {
+        return spec.getyAxisUnits();
+    }
+
+    public String getDataName()
+    {
+    	return spec.getDataName();
+    }
 }

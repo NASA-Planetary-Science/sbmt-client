@@ -8,7 +8,7 @@
  *
  * Created on May 5, 2011, 3:15:17 PM
  */
-package edu.jhuapl.sbmt.spectrum.ui.oldWay;
+package edu.jhuapl.sbmt.spectrum.deprecated;
 
 import java.awt.Color;
 import java.awt.Component;
@@ -81,9 +81,9 @@ import edu.jhuapl.sbmt.query.fixedlist.FixedListQuery;
 import edu.jhuapl.sbmt.query.fixedlist.FixedListSearchMetadata;
 import edu.jhuapl.sbmt.spectrum.model.core.BasicSpectrum;
 import edu.jhuapl.sbmt.spectrum.model.core.BasicSpectrumInstrument;
+import edu.jhuapl.sbmt.spectrum.model.core.interfaces.IBasicSpectrumRenderer;
 import edu.jhuapl.sbmt.spectrum.model.core.search.SpectraHierarchicalSearchSpecification;
 import edu.jhuapl.sbmt.spectrum.model.io.SpectrumListIO;
-import edu.jhuapl.sbmt.spectrum.rendering.IBasicSpectrumRenderer;
 import edu.jhuapl.sbmt.spectrum.rendering.SpectraCollection;
 import edu.jhuapl.sbmt.spectrum.rendering.SpectrumBoundaryCollection;
 import edu.jhuapl.sbmt.spectrum.ui.SpectrumPopupMenu;

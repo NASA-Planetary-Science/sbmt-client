@@ -18,6 +18,12 @@ public interface CustomSpectraResultsListener
      */
     public void resultsChanged(List<CustomSpectrumKeyInterface> results);
 
+//    /**
+//     * Signifies a change in results to display in the custom spectra table
+//     * @param results
+//     */
+//    public void resultsDeleted(List<CustomSpectrumKeyInterface> results);
+
     /**
      * Signfies a change in the count of results to display in the custom spectra table
      * @param count

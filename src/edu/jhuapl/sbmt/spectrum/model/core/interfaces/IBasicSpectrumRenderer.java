@@ -1,4 +1,4 @@
-package edu.jhuapl.sbmt.spectrum.rendering;
+package edu.jhuapl.sbmt.spectrum.model.core.interfaces;
 
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
@@ -18,7 +18,6 @@ import edu.jhuapl.sbmt.spectrum.model.core.BasicSpectrum;
  */
 public interface IBasicSpectrumRenderer<S extends BasicSpectrum> extends PropertyChangeListener, Model
 {
-
 	void generateFootprint();
 
 	List<vtkProp> getProps();
@@ -84,12 +83,8 @@ public interface IBasicSpectrumRenderer<S extends BasicSpectrum> extends Propert
 
 	public vtkActor getOutlineActor();
 
-//	public double[] getChannelColor();
-
 	public double[] getColor();
 
 	public void setColor(double[] color);
-
-
 
 }

@@ -1,5 +1,10 @@
 package edu.jhuapl.sbmt.spectrum.model.core.interfaces;
 
+/**
+ * Listeners that reports if the active coloring has changed
+ * @author steelrj1
+ *
+ */
 public interface SpectrumColoringChangedListener
 {
     /**

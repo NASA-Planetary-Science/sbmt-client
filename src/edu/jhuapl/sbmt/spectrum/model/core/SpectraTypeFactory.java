@@ -6,7 +6,7 @@ import edu.jhuapl.sbmt.query.QueryBase;
 import edu.jhuapl.sbmt.spectrum.model.sbmtCore.spectra.math.SpectrumMath;
 
 /**
- * Factory to register and retreive spectra types.  This is done by code that uses the Spectra library (e.g. SBMT) that has different spectra types it may want to handle.
+ * Factory to register and retreive spectra types.  This is done by code that uses the Spectra library (e.g. SBMT's model layer) that has different spectra types it may want to handle.
  * @author steelrj1
  *
  */

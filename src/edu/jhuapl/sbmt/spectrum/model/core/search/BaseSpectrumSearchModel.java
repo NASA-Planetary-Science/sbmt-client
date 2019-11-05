@@ -21,7 +21,6 @@ import edu.jhuapl.sbmt.model.boundedobject.hyperoctree.BoundedObjectHyperTreeSke
 import edu.jhuapl.sbmt.spectrum.model.core.BasicSpectrum;
 import edu.jhuapl.sbmt.spectrum.model.core.BasicSpectrumInstrument;
 import edu.jhuapl.sbmt.spectrum.model.core.interfaces.ISpectrumSearchModel;
-import edu.jhuapl.sbmt.spectrum.model.core.interfaces.SpectrumAppearanceListener;
 import edu.jhuapl.sbmt.spectrum.model.core.interfaces.SpectrumSearchResultsListener;
 import edu.jhuapl.sbmt.spectrum.model.hypertree.SpectrumHypertreeSearch;
 import edu.jhuapl.sbmt.spectrum.model.io.SpectrumListIO;
@@ -43,7 +42,6 @@ public class BaseSpectrumSearchModel<S extends BasicSpectrum> implements ISpectr
     protected List<S> results = new ArrayList<S>();
     protected IdPair resultIntervalCurrentlyShown = null;
     private Vector<SpectrumSearchResultsListener<S>> resultsListeners;
-    private Vector<SpectrumAppearanceListener<S>> appearanceListeners;
     protected ImmutableSet<S> selectedSpectra;
     protected int[] selectedSpectraIndices;
 
@@ -59,7 +57,6 @@ public class BaseSpectrumSearchModel<S extends BasicSpectrum> implements ISpectr
     {
         this.instrument = instrument;
         this.resultsListeners = new Vector<SpectrumSearchResultsListener<S>>();
-        this.appearanceListeners = new Vector<SpectrumAppearanceListener<S>>();
     }
 
     /**
@@ -79,7 +76,6 @@ public class BaseSpectrumSearchModel<S extends BasicSpectrum> implements ISpectr
     {
         this.results = spectrumRawResults;
         this.resultIntervalCurrentlyShown = new IdPair(0, numberOfBoundariesToShow);
-        showFootprints(resultIntervalCurrentlyShown);
         fireResultsChanged();
         fireResultsCountChanged(this.results.size());
     }
@@ -116,8 +112,6 @@ public class BaseSpectrumSearchModel<S extends BasicSpectrum> implements ISpectr
         this.resultIntervalCurrentlyShown = resultIntervalCurrentlyShown;
     }
 
-
-
     /**
      * Returns the instrument for this search
      * @return
@@ -145,28 +139,6 @@ public class BaseSpectrumSearchModel<S extends BasicSpectrum> implements ISpectr
         return ModelNames.SPECTRA_BOUNDARIES;
     }
 
-
-
-    /**
-     * Notifies listeners to update the currently shown footprints to those specified by the indices in <pre>idPair</pre>
-     * @param idPair
-     */
-    public void showFootprints(IdPair idPair)
-    {
-        int startId = idPair.id1;
-        int endId = idPair.id2;
-
-        for (int i=startId; i<endId; ++i)
-        {
-            if (i < 0)
-                continue;
-            else if(i >= getSpectrumRawResults().size())
-                break;
-            fireFootprintVisibilityChanged(results.get(i), true);
-        }
-//        updateColoring();
-    }
-
     /**
      * Saves the selected spectra to a file
      * @param file
@@ -176,7 +148,6 @@ public class BaseSpectrumSearchModel<S extends BasicSpectrum> implements ISpectr
     public void saveSelectedSpectrumListToFile(File file, int[] selectedIndices) throws Exception
     {
     	Preconditions.checkNotNull(customDataFolder);
-    	System.out.println("BaseSpectrumSearchModel: saveSelectedSpectrumListToFile: results size " + results.size());
     	SpectrumListIO.saveSelectedSpectrumListButtonActionPerformed(customDataFolder, file, results, selectedIndices);
     }
 
@@ -188,7 +159,6 @@ public class BaseSpectrumSearchModel<S extends BasicSpectrum> implements ISpectr
     public void saveSpectrumListToFile(File file) throws Exception
     {
     	Preconditions.checkNotNull(customDataFolder);
-    	System.out.println("BaseSpectrumSearchModel: saveSpectrumListToFile: first result "+ results.get(0));
     	SpectrumListIO.saveSpectrumListButtonActionPerformed(customDataFolder, file, results);
     }
 
@@ -200,16 +170,13 @@ public class BaseSpectrumSearchModel<S extends BasicSpectrum> implements ISpectr
     public void loadSpectrumListFromFile(File file) throws Exception
     {
     	Preconditions.checkNotNull(customDataFolder);
-//    	File metadataFile = new File(customDataFolder + File.separator + file.getName() + ".metadata");
     	SpectrumListIO.loadSpectrumListButtonActionPerformed(file, new ArrayList<S>(), instrument, new Runnable()
 		{
-
 			@Override
 			public void run()
 			{
 				fireResultsChanged();
 				setResultIntervalCurrentlyShown(new IdPair(0, getNumberOfBoundariesToShow()));
-		        showFootprints(getResultIntervalCurrentlyShown());
 			}
 		});
     }
@@ -318,80 +285,6 @@ public class BaseSpectrumSearchModel<S extends BasicSpectrum> implements ISpectr
     }
 
     /**
-     * Fires the footprint visibility changed listener
-     * @param spectrum
-     * @param isVisible
-     */
-    public void fireFootprintVisibilityChanged(S spectrum, boolean isVisible)
-    {
-        for (SpectrumAppearanceListener<S> listener : appearanceListeners)
-        {
-            listener.spectrumFootprintVisibilityChanged(spectrum, isVisible);
-        }
-    }
-
-    /**
-     * Fires the boundary visibility changed listener
-     * @param spectrum
-     * @param isVisible
-     */
-    public void fireBoundaryVisibilityCountChanged(S spectrum, boolean isVisible)
-    {
-        for (SpectrumAppearanceListener<S> listener : appearanceListeners)
-        {
-            listener.spectrumBoundaryVisibilityChanged(spectrum, isVisible);
-        }
-    }
-
-    /**
-     * Adds an appearance changed listener
-     * @param listener
-     */
-    public void addAppearanceChangedListener(SpectrumAppearanceListener<S> listener)
-    {
-        appearanceListeners.add(listener);
-    }
-
-    /**
-     * Removes an appearance changed listener
-     * @param listener
-     */
-    public void removeAppearanceChangedListener(SpectrumAppearanceListener<S> listener)
-    {
-        appearanceListeners.remove(listener);
-    }
-
-    /**
-     * Removes all appearance changed listener
-     */
-    public void removeAllAppearanceChangedListeners()
-    {
-        appearanceListeners.removeAllElements();
-    }
-
-
-
-//    /**
-//     * @return
-//     */
-//    public SpectrumKeyInterface[] getSelectedSpectrumKeys()
-//    {
-//        int[] indices = selectedImageIndices;
-//        SpectrumKeyInterface[] selectedKeys = new SpectrumKeyInterface[indices.length];
-//        if (indices.length > 0)
-//        {
-//            int i=0;
-//            for (int index : indices)
-//            {
-//                String image = results.get(index).getSpectrumName();
-//                SpectrumKeyInterface selectedKey = createSpectrumKey(image, instrument);
-//                selectedKeys[i++] = selectedKey;
-//            }
-//        }
-//        return selectedKeys;
-//    }
-
-    /**
      * Helper method to clear the list of spectra
      */
     public void clearSpectraFromDisplay()
@@ -436,29 +329,6 @@ public class BaseSpectrumSearchModel<S extends BasicSpectrum> implements ISpectr
     {
         return selectedSpectraIndices;
     }
-
-//    /**
-//     * @param boundaryName
-//     * @param instrument
-//     * @return
-//     */
-//    public List<SpectrumKeyInterface> createSpectrumKeys(String boundaryName, BasicSpectrumInstrument instrument)
-//    {
-//        List<SpectrumKeyInterface> result = new ArrayList<SpectrumKeyInterface>();
-//        result.add(createSpectrumKey(boundaryName, instrument));
-//        return result;
-//    }
-//
-//    /**
-//     * @param imagePathName
-//     * @param instrument
-//     * @return
-//     */
-//    public SpectrumKeyInterface createSpectrumKey(String imagePathName, BasicSpectrumInstrument instrument)
-//    {
-//        SpectrumKeyInterface key = new SpectrumKey(imagePathName, null, null, instrument, "");
-//        return key;
-//    }
 
     /**
      * Returns the selection path in a hierarchical display
@@ -514,6 +384,5 @@ public class BaseSpectrumSearchModel<S extends BasicSpectrum> implements ISpectr
 	public void retrieve(Metadata source)
 	{
 		results = source.get(spectraKey);
-		System.out.println("BaseSpectrumSearchModel: retrieve: first result " + results.get(0));
 	}
 }

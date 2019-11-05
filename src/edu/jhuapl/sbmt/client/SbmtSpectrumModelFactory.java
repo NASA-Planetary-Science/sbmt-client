@@ -5,8 +5,8 @@ import java.util.HashMap;
 
 import edu.jhuapl.sbmt.spectrum.model.core.BasicSpectrum;
 import edu.jhuapl.sbmt.spectrum.model.core.BasicSpectrumInstrument;
+import edu.jhuapl.sbmt.spectrum.model.core.interfaces.IBasicSpectrumRenderer;
 import edu.jhuapl.sbmt.spectrum.model.core.interfaces.SpectrumBuilder;
-import edu.jhuapl.sbmt.spectrum.rendering.IBasicSpectrumRenderer;
 
 public class SbmtSpectrumModelFactory
 {

@@ -32,20 +32,21 @@ import edu.jhuapl.saavtk.pick.PickManager;
 import edu.jhuapl.saavtk.pick.PickManager.PickMode;
 import edu.jhuapl.sbmt.client.SmallBodyModel;
 import edu.jhuapl.sbmt.core.listeners.SearchProgressListener;
+import edu.jhuapl.sbmt.spectrum.model.core.BasicSpectrum;
 import edu.jhuapl.sbmt.spectrum.model.core.search.BaseSpectrumSearchModel;
 import edu.jhuapl.sbmt.spectrum.model.core.search.SpectraHierarchicalSearchSpecification;
 import edu.jhuapl.sbmt.spectrum.model.core.search.SpectrumSearchParametersModel;
 import edu.jhuapl.sbmt.spectrum.ui.search.SpectrumSearchParametersPanel;
 
 /**
- * Controller to handle the Spectrum Search Parameters controller
+ * Controller to handle the Spectrum Search Parameters panel
  * @author steelrj1
  *
  */
-public class SpectrumSearchParametersController
+public class SpectrumSearchParametersController<S extends BasicSpectrum>
 {
     protected SpectrumSearchParametersPanel panel;
-    protected BaseSpectrumSearchModel model;
+    protected BaseSpectrumSearchModel<S> model;
     protected PickManager pickManager;
     protected SpectraHierarchicalSearchSpecification spectraSpec;
     private boolean hasHierarchicalSpectraSearch;
@@ -57,7 +58,17 @@ public class SpectrumSearchParametersController
     private ProgressMonitor searchProgressMonitor;
     private TreeSet<Integer> cubeList = null;
 
-    public SpectrumSearchParametersController(Date imageSearchDefaultStartDate, Date imageSearchDefaultEndDate, boolean hasHierarchicalSpectraSearch, double imageSearchDefaultMaxSpacecraftDistance, SpectraHierarchicalSearchSpecification spectraSpec, BaseSpectrumSearchModel model, PickManager pickManager, ModelManager modelManager)
+    /**
+     * @param imageSearchDefaultStartDate				The search start date
+     * @param imageSearchDefaultEndDate					The search end date
+     * @param hasHierarchicalSpectraSearch				Boolean describing if hierarchical search is enabled
+     * @param imageSearchDefaultMaxSpacecraftDistance	The default max spacecraft distance
+     * @param spectraSpec								The spectrum metadata
+     * @param model										The spectrum search model
+     * @param pickManager								The System pick manager
+     * @param modelManager								The system model manager
+     */
+    public SpectrumSearchParametersController(Date imageSearchDefaultStartDate, Date imageSearchDefaultEndDate, boolean hasHierarchicalSpectraSearch, double imageSearchDefaultMaxSpacecraftDistance, SpectraHierarchicalSearchSpecification spectraSpec, BaseSpectrumSearchModel<S> model, PickManager pickManager, ModelManager modelManager)
     {
         this.model = model;
         searchParameters = new SpectrumSearchParametersModel();

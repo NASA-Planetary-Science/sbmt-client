@@ -9,18 +9,19 @@ import com.google.common.collect.Lists;
 import vtk.vtkProp;
 
 import edu.jhuapl.saavtk.model.AbstractModel;
+import edu.jhuapl.sbmt.spectrum.model.core.BasicSpectrum;
 
 /**
  * Generates a series of spectrum statistics for display in a popup
  * @author steelrj1
  *
  */
-public class SpectrumStatisticsCollection extends AbstractModel implements PropertyChangeListener
+public class SpectrumStatisticsCollection<S extends BasicSpectrum> extends AbstractModel implements PropertyChangeListener
 {
     List<vtkProp> props=Lists.newArrayList();
-    List<SpectrumStatistics> stats=Lists.newArrayList();
+    List<SpectrumStatistics<S>> stats=Lists.newArrayList();
 
-    public void addStatistics(SpectrumStatistics stats)
+    public void addStatistics(SpectrumStatistics<S> stats)
     {
         this.stats.add(stats);
     }
@@ -41,5 +42,4 @@ public class SpectrumStatisticsCollection extends AbstractModel implements Prope
     {
         return props;
     }
-
 }

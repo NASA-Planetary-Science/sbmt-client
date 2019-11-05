@@ -23,6 +23,9 @@ public class CustomSpectraControlController<S extends BasicSpectrum>
     private CustomSpectraSearchModel<S> model;
     private List<CustomSpectrumKeyInterface> customSpectra;
 
+    /**
+     * @param model	The custom spectra model
+     */
     public CustomSpectraControlController(CustomSpectraSearchModel<S> model)
     {
         panel = new CustomSpectraControlPanel();
@@ -62,19 +65,22 @@ public class CustomSpectraControlController<S extends BasicSpectrum>
         dialog.setSpectrumInfo(null);
         dialog.setLocationRelativeTo(getPanel());
         dialog.setVisible(true);
+        if (!dialog.getOkayPressed()) return;
         // If user clicks okay add to list
-        if (dialog.getOkayPressed())
+        CustomSpectrumKeyInterface spectrumKey = dialog.getSpectrumInfo();
+        try
         {
-            CustomSpectrumKeyInterface spectrumKey = dialog.getSpectrumInfo();
-            try
-            {
-                saveSpectrum(model.getSpectrumRawResults().size(), null, spectrumKey);
-            }
-            catch (IOException e)
-            {
-                e.printStackTrace();
-            }
+            saveSpectrum(model.getSpectrumRawResults().size(), null, spectrumKey);
         }
+        catch (IOException e)
+        {
+        	JOptionPane.showMessageDialog(JOptionPane.getFrameForComponent(panel),
+                    "There was an error importing the spectrum.  See the console for details.",
+                    "Error",
+                    JOptionPane.ERROR_MESSAGE);
+            e.printStackTrace();
+        }
+
     }
 
     /**
@@ -95,22 +101,21 @@ public class CustomSpectraControlController<S extends BasicSpectrum>
         dialog.setLocationRelativeTo(null);
         dialog.setVisible(true);
 
+        if (!dialog.getOkayPressed()) return;
         // If user clicks okay replace item in list
-        if (dialog.getOkayPressed())
+        CustomSpectrumKeyInterface newSpectrumInfo = dialog.getSpectrumInfo();
+        try
         {
-            CustomSpectrumKeyInterface newSpectrumInfo = dialog.getSpectrumInfo();
-            try
-            {
-                saveSpectrum(selectedItem, oldSpectrumInfo, newSpectrumInfo);
-                //TODO is this needed?
-//                    model.remapSpectrumToRenderer(selectedItem);
-            }
-            catch (IOException e)
-            {
-                e.printStackTrace();
-            }
+            saveSpectrum(selectedItem, oldSpectrumInfo, newSpectrumInfo);
         }
-
+        catch (IOException e)
+        {
+        	JOptionPane.showMessageDialog(JOptionPane.getFrameForComponent(panel),
+                    "There was an error editingthe spectrum.  See the console for details.",
+                    "Error",
+                    JOptionPane.ERROR_MESSAGE);
+            e.printStackTrace();
+        }
     }
 
     /**

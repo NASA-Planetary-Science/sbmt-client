@@ -35,12 +35,10 @@ public abstract class Spectrum
     public abstract double[] getFrustumOrigin();
     public abstract double[] getToSunUnitVector();
 
-    public abstract void setChannelColoring(int[] channels, double[] mins, double[] maxs);
     public abstract double evaluateDerivedParameters(int channel);
 
     public abstract void saveSpectrum(File file) throws IOException;
 
-    public abstract void setColoringStyle(SpectrumColoringStyle coloringStyle);
     public abstract void setMetadata(SearchSpec spec);
     public abstract SearchSpec getMetadata();
 

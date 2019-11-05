@@ -92,7 +92,6 @@ public class SpectrumStandardSearch<S extends BasicSpectrum>
                                                                                         spec.getDataPath(),
                                                                                         spec.getDataRootLocation(),
                                                                                         spec.getSource());
-//                    progressListener.searchStarted();
                     progressListener.searchIndeterminate();
                     progressListener.searchNoteUpdated("Getting results from server....");
                     List<List<String>> thisResult = instrument.getQueryBase().runQuery(searchMetadata).getResultlist();

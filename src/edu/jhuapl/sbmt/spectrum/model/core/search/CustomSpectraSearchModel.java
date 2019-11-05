@@ -24,11 +24,11 @@ import edu.jhuapl.sbmt.spectrum.model.core.BasicSpectrum;
 import edu.jhuapl.sbmt.spectrum.model.core.BasicSpectrumInstrument;
 import edu.jhuapl.sbmt.spectrum.model.core.SpectrumInstrumentFactory;
 import edu.jhuapl.sbmt.spectrum.model.core.interfaces.CustomSpectraResultsListener;
+import edu.jhuapl.sbmt.spectrum.model.core.interfaces.IBasicSpectrumRenderer;
 import edu.jhuapl.sbmt.spectrum.model.io.SpectrumListIO;
 import edu.jhuapl.sbmt.spectrum.model.key.CustomSpectrumKey;
 import edu.jhuapl.sbmt.spectrum.model.sbmtCore.spectra.CustomSpectrumKeyInterface;
 import edu.jhuapl.sbmt.spectrum.model.sbmtCore.spectra.Spectrum;
-import edu.jhuapl.sbmt.spectrum.rendering.IBasicSpectrumRenderer;
 
 import crucible.crust.metadata.api.Key;
 import crucible.crust.metadata.api.Metadata;
@@ -37,6 +37,12 @@ import crucible.crust.metadata.impl.FixedMetadata;
 import crucible.crust.metadata.impl.SettableMetadata;
 import crucible.crust.metadata.impl.gson.Serializers;
 
+/**
+ * Model that holds custom spectra
+ * @author steelrj1
+ *
+ * @param <S>
+ */
 public class CustomSpectraSearchModel<S extends BasicSpectrum> extends BaseSpectrumSearchModel<S>
 {
     String fileExtension = "";
@@ -53,26 +59,45 @@ public class CustomSpectraSearchModel<S extends BasicSpectrum> extends BaseSpect
         this.customSpectraListeners = new Vector<CustomSpectraResultsListener>();
     }
 
+    /**
+     * Returns the list of keys that are stored in this model
+     * @return
+     */
     public List<CustomSpectrumKeyInterface> getCustomSpectra()
     {
         return customSpectraKeys;
     }
 
+    /**
+     * Sets the custom spectra list
+     * @param customSpectra
+     */
     public void setCustomSpectra(List<CustomSpectrumKeyInterface> customSpectra)
     {
         this.customSpectraKeys = customSpectra;
     }
 
+    /**
+     * Adds a results changed listener
+     * @param listener
+     */
     public void addResultsChangedListener(CustomSpectraResultsListener listener)
     {
         customSpectraListeners.add(listener);
     }
 
+    /**
+     * Removed a results changed listener
+     * @param listener
+     */
     public void removeResultsChangedListener(CustomSpectraResultsListener listener)
     {
         customSpectraListeners.remove(listener);
     }
 
+    /**
+     * Fires the results changed listeners
+     */
     protected void fireResultsChanged()
     {
         for (CustomSpectraResultsListener listener : customSpectraListeners)
@@ -81,6 +106,9 @@ public class CustomSpectraSearchModel<S extends BasicSpectrum> extends BaseSpect
         }
     }
 
+    /**
+     * Fires the results loaded listeners
+     */
     protected void fireResultsLoaded()
     {
         for (CustomSpectraResultsListener listener : customSpectraListeners)
@@ -89,6 +117,13 @@ public class CustomSpectraSearchModel<S extends BasicSpectrum> extends BaseSpect
         }
     }
 
+    /**
+     * Saves the spectrum the users loads into the local custom-data folder in the cache
+     * @param index
+     * @param oldSpectrumInfo
+     * @param newSpectrumInfo
+     * @throws IOException
+     */
     public void saveSpectrum(int index, CustomSpectrumKeyInterface oldSpectrumInfo, CustomSpectrumKeyInterface newSpectrumInfo) throws IOException
     {
         String uuid = UUID.randomUUID().toString();
@@ -140,6 +175,10 @@ public class CustomSpectraSearchModel<S extends BasicSpectrum> extends BaseSpect
         setSpectrumRawResults(tempResults);
     }
 
+    /**
+     * Deletes the keys specified by the indices from the custom list
+     * @param indices
+     */
     public void deleteSpectrum(int[] indices)
     {
     	List<CustomSpectrumKeyInterface> keysToRemove = new ArrayList<CustomSpectrumKeyInterface>();
@@ -152,31 +191,11 @@ public class CustomSpectraSearchModel<S extends BasicSpectrum> extends BaseSpect
     	fireResultsCountChanged(customSpectraKeys.size());
     }
 
-    //TODO is this really needed?
-//    /**
-//     * This function unmaps the image from the renderer and maps it again,
-//     * if it is currently shown.
-//     * @throws IOException
-//     * @throws FitsException
-//     */
-//    public void remapSpectrumToRenderer(int index) throws FitsException, IOException
-//    {
-//        CustomSpectrumKeyInterface spectrumKey = customSpectra.get(index);
-//        // Remove the image from the renderer
-//
-//        if (spectrumCollection.containsKey(spectrumKey))
-//        {
-//            IBasicSpectrumRenderer spectrum = spectrumCollection.getSpectrumFromKey(spectrumKey);
-//            boolean visible = spectrum.isVisible();
-//            if (visible)
-//                spectrum.setVisible(false);
-//            spectrumCollection.removeSpectrum(spectrumKey);
-//            spectrumCollection.addSpectrum(spectrumKey);
-//            if (visible)
-//                spectrum.setVisible(true);
-//        }
-//    }
-
+    /**
+     * Internal method to migrate the spectrum config file from the old to the new format
+     * @return
+     * @throws IOException
+     */
     private boolean migrateConfigFileIfNeeded() throws IOException
     {
         MapUtil configMap = new MapUtil(getConfigFilename());
@@ -186,7 +205,6 @@ public class CustomSpectraSearchModel<S extends BasicSpectrum> extends BaseSpect
             FileUtils.copyFile(new File(getConfigFilename()), new File(getConfigFilename() + ".orig"));
 
             //migrate it to the new format
-            boolean needToUpgradeConfigFile = false;
             String[] spectrumNames = configMap.getAsArray(Spectrum.SPECTRUM_NAMES);
             if (spectrumNames == null || (spectrumNames.length == 0)) return false;
             String[] spectrumFilenames = configMap.getAsArray(Spectrum.SPECTRUM_FILENAMES);
@@ -203,10 +221,6 @@ public class CustomSpectraSearchModel<S extends BasicSpectrum> extends BaseSpect
                     spectrumFilenames[i] = "image" + i + ".png";
                     imageTypes[i] = ImageType.GENERIC_IMAGE.toString();
                 }
-
-                // Mark that we need to upgrade config file to latest version
-                // which we'll do at end of function.
-                needToUpgradeConfigFile = true;
             }
             String[] sumfileNames = configMap.getAsArray(Strings.SUMFILENAMES.getName());
             String[] infofileNames = configMap.getAsArray(Strings.INFOFILENAMES.getName());
@@ -244,6 +258,9 @@ public class CustomSpectraSearchModel<S extends BasicSpectrum> extends BaseSpect
 
     }
 
+    /**
+     * Flushes the keys out the config file in the custom-data folder
+     */
     public void updateConfigFile()
     {
         try
@@ -256,6 +273,10 @@ public class CustomSpectraSearchModel<S extends BasicSpectrum> extends BaseSpect
         }
     }
 
+    /**
+     * Initializes the spectrum table with the information in the custom spectra metadata file, if available
+     * @throws IOException
+     */
     public void initializeSpecList() throws IOException
     {
         if (initialized)
@@ -282,29 +303,13 @@ public class CustomSpectraSearchModel<S extends BasicSpectrum> extends BaseSpect
         fireResultsCountChanged(customSpectraKeys.size());
     }
 
-    public void setSpectrumVisibility(S spectrum, boolean visible)
-    {
-    	fireFootprintVisibilityChanged(spectrum, visible);
-    }
-
+    /**
+     * Returns the name of the customspectrum config metadata file
+     * @return
+     */
     private String getConfigFilename()
     {
         return customDataFolder + File.separator + "specConfig.txt";
-    }
-
-    public void showFootprints(IdPair idPair)
-    {
-        int startId = idPair.id1;
-        int endId = idPair.id2;
-
-        for (int i=startId; i<endId; ++i)
-        {
-            if (i < 0)
-                continue;
-            else if(i >= getSpectrumRawResults().size())
-                break;
-            fireFootprintVisibilityChanged(results.get(i), true);
-        }
     }
 
     @Override
@@ -335,61 +340,6 @@ public class CustomSpectraSearchModel<S extends BasicSpectrum> extends BaseSpect
 //    		customSpectra = migratedSpectra;
 //    		updateConfigFile();
     	}
-    }
-
-    public void saveSpectra(List<CustomSpectrumKeyInterface> customSpectra, String filename)
-    {
-        SettableMetadata configMetadata = SettableMetadata.of(Version.of(1, 0));
-
-        final Key<List<CustomSpectrumKeyInterface>> customSpectraKey = Key.of("SavedSpectra");
-
-        configMetadata.put(customSpectraKey, customSpectra);
-        try
-        {
-            Serializers.serialize("SavedSpectra", configMetadata, new File(filename));
-        }
-        catch (IOException e)
-        {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
-    }
-
-    public void loadSpectra(String file)
-    {
-        FixedMetadata metadata;
-        try
-        {
-            final Key<List<CustomSpectrumKeyInterface>> customSpectraKey = Key.of("SavedSpectra");
-            metadata = Serializers.deserialize(new File(file), "SavedSpectra");
-            List<CustomSpectrumKeyInterface> customSpectraList = metadata.get(customSpectraKey);
-            customSpectraKeys.addAll(customSpectraList);
-            updateConfigFile();
-            fireResultsChanged();
-
-        }
-        catch (IOException e)
-        {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
-
-    }
-
-    protected <T> void write(Key<T> key, T value, SettableMetadata configMetadata)
-    {
-        if (value != null)
-        {
-            configMetadata.put(key, value);
-        }
-    }
-
-    protected <T> T read(Key<T> key, Metadata configMetadata)
-    {
-        T value = configMetadata.get(key);
-        if (value != null)
-            return value;
-        return null;
     }
 
     /**
@@ -453,14 +403,12 @@ public class CustomSpectraSearchModel<S extends BasicSpectrum> extends BaseSpect
     	Preconditions.checkNotNull(customDataFolder);
     	SpectrumListIO.loadCustomSpectrumListButtonActionPerformed(file, customSpectraKeys, instrument, new Runnable()
 		{
-
 			@Override
 			public void run()
 			{
 				updateConfigFile();
 				fireResultsChanged();
 				setResultIntervalCurrentlyShown(new IdPair(0, getNumberOfBoundariesToShow()));
-		        showFootprints(getResultIntervalCurrentlyShown());
 			}
 		});
     }

@@ -21,6 +21,7 @@ import edu.jhuapl.saavtk.util.Properties;
 import edu.jhuapl.sbmt.client.ISmallBodyModel;
 import edu.jhuapl.sbmt.client.SbmtSpectrumModelFactory;
 import edu.jhuapl.sbmt.spectrum.model.core.BasicSpectrum;
+import edu.jhuapl.sbmt.spectrum.model.core.interfaces.IBasicSpectrumRenderer;
 import edu.jhuapl.sbmt.spectrum.model.core.interfaces.SearchSpec;
 import edu.jhuapl.sbmt.spectrum.model.core.interfaces.SpectrumCollectionChangedListener;
 import edu.jhuapl.sbmt.spectrum.model.sbmtCore.spectra.ISpectralInstrument;
@@ -42,23 +43,14 @@ public class SpectraCollection<S extends BasicSpectrum> extends SaavtkItemManage
     final double minFootprintSeparation=0.001;
     double footprintSeparation=0.001;
     HashMap<String, List<S>> collections = new HashMap<String, List<S>>();
-//    private List<S> previousList;
 
     Map<IBasicSpectrumRenderer<S>,Integer> ordinals=Maps.newHashMap();
     final static int defaultOrdinal=0;
-
-    private boolean isCustom = false;
 
     public SpectraCollection(ISmallBodyModel smallBody)
     {
         this.shapeModel = smallBody;
         this.listeners = new ArrayList<SpectrumCollectionChangedListener<S>>();
-    }
-
-    public SpectraCollection(ISmallBodyModel smallBody, boolean isCustom)
-    {
-        this(smallBody);
-        this.isCustom = isCustom;
     }
 
     public void addSpectrumCollectionChangedListener(SpectrumCollectionChangedListener<S> sccl)
@@ -68,7 +60,7 @@ public class SpectraCollection<S extends BasicSpectrum> extends SaavtkItemManage
 
     public void fireSpectrumRenderedListeners(IBasicSpectrumRenderer<S> renderer)
     {
-    	for (SpectrumCollectionChangedListener<S> sccl : listeners) sccl.spectraRendered(renderer);
+    	for (SpectrumCollectionChangedListener<S> sccl : listeners) sccl.spectumRendered(renderer);
     }
 
     public void reshiftFootprints()
@@ -221,7 +213,7 @@ public class SpectraCollection<S extends BasicSpectrum> extends SaavtkItemManage
 
     public boolean isSpectrumMapped(BasicSpectrum spec)
     {
-    	if (activeInstrument.getDisplayName() != spec.getInstrument().getDisplayName()) return false;
+    	if (!activeInstrument.getDisplayName().equals(spec.getInstrument().getDisplayName())) return false;
     	return spectrumToRendererMap.get(spec) != null;
     }
 
@@ -240,7 +232,7 @@ public class SpectraCollection<S extends BasicSpectrum> extends SaavtkItemManage
 
     public boolean getVisibility(BasicSpectrum spec)
     {
-    	if (activeInstrument.getDisplayName() != spec.getInstrument().getDisplayName()) return false;
+    	if (!activeInstrument.getDisplayName().equals(spec.getInstrument().getDisplayName())) return false;
     	if (isSpectrumMapped(spec) == false ) return false;
     	IBasicSpectrumRenderer<S> spectrumRenderer = spectrumToRendererMap.get(spec);
     	if (spectrumRenderer == null) return false;
@@ -255,7 +247,7 @@ public class SpectraCollection<S extends BasicSpectrum> extends SaavtkItemManage
 
     public boolean getFrustumVisibility(BasicSpectrum spec)
     {
-    	if (activeInstrument.getDisplayName() != spec.getInstrument().getDisplayName()) return false;
+    	if (!activeInstrument.getDisplayName().equals(spec.getInstrument().getDisplayName())) return false;
     	IBasicSpectrumRenderer<S> spectrumRenderer = spectrumToRendererMap.get(spec);
     	if (spectrumRenderer == null) return false;
         return spectrumRenderer.isFrustumShowing();
@@ -497,6 +489,10 @@ public class SpectraCollection<S extends BasicSpectrum> extends SaavtkItemManage
 		return selectedIndices;
 	}
 
+	/**
+	 * Sets the active instrument for this collection - this allows it to support
+	 * @param activeInstrument
+	 */
 	public void setActiveInstrument(ISpectralInstrument activeInstrument)
 	{
 		this.activeInstrument = activeInstrument;

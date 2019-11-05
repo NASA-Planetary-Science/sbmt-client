@@ -46,6 +46,15 @@ public class SpectrumResultsTableController<S extends BasicSpectrum>
     private ProgressMonitor progressMonitor;
 
 
+    /**
+     * @param instrument			The spectrum instrument
+     * @param spectrumCollection	The spectrum collection
+     * @param modelManager			The system model manager
+     * @param boundaries			The spectrum boundary collection
+     * @param model					The spectrum model
+     * @param renderer				The system renderer
+     * @param infoPanelManager		The system info panel manager
+     */
     public SpectrumResultsTableController(BasicSpectrumInstrument instrument, SpectraCollection<S> spectrumCollection, ModelManager modelManager, SpectrumBoundaryCollection<S> boundaries, BaseSpectrumSearchModel<S> model, Renderer renderer, SbmtInfoWindowManager infoPanelManager)
     {
         spectrumPopupMenu = new SpectrumPopupMenu(spectrumCollection, boundaries, modelManager,infoPanelManager, renderer);
@@ -63,7 +72,6 @@ public class SpectrumResultsTableController<S extends BasicSpectrum>
 
         this.tableResultsChangedListener = new SpectrumSearchResultsListener<S>()
         {
-
             @Override
             public void resultsChanged(List<S> results)
             {
@@ -104,7 +112,6 @@ public class SpectrumResultsTableController<S extends BasicSpectrum>
     {
     	model.removeResultsChangedListener(tableResultsChangedListener);
     }
-
 
     /**
      * Does on demand setup of the widgets for the UI
@@ -178,7 +185,7 @@ public class SpectrumResultsTableController<S extends BasicSpectrum>
          catch (Exception e)
          {
              JOptionPane.showMessageDialog(JOptionPane.getFrameForComponent(panel),
-                     "There was an error reading the file.",
+                     "There was an error reading the file.  See the console for details",
                      "Error",
                      JOptionPane.ERROR_MESSAGE);
 
@@ -194,12 +201,13 @@ public class SpectrumResultsTableController<S extends BasicSpectrum>
         try
         {
         	File file = CustomFileChooser.showSaveDialog(panel, "Select File", "spectrumlist.txt");
+        	if (file == null) return;
             model.saveSpectrumListToFile(file);
         }
         catch (Exception e)
         {
             JOptionPane.showMessageDialog(JOptionPane.getFrameForComponent(panel),
-                    "There was an error saving the file.",
+                    "There was an error saving the file.  See the console for details",
                     "Error",
                     JOptionPane.ERROR_MESSAGE);
 
@@ -215,12 +223,13 @@ public class SpectrumResultsTableController<S extends BasicSpectrum>
         try
         {
         	File file = CustomFileChooser.showSaveDialog(panel, "Select File", "spectrumlist.txt");
+        	if (file == null) return;
             model.saveSelectedSpectrumListToFile(file, panel.getResultList().getSelectedRows());
         }
         catch (Exception e)
         {
             JOptionPane.showMessageDialog(JOptionPane.getFrameForComponent(panel),
-                    "There was an error saving the file.",
+                    "There was an error saving the file.  See the console for details",
                     "Error",
                     JOptionPane.ERROR_MESSAGE);
 
@@ -251,24 +260,18 @@ public class SpectrumResultsTableController<S extends BasicSpectrum>
             if (resultIntervalCurrentlyShown.id1 > 0)
             {
                 resultIntervalCurrentlyShown.prevBlock(model.getNumberOfBoundariesToShow());
-                model.showFootprints(resultIntervalCurrentlyShown);
-                showSpectrumBoundaries(resultIntervalCurrentlyShown);
             }
             else
             {
                 resultIntervalCurrentlyShown = new IdPair(panel.getResultList().getModel().getRowCount() - model.getNumberOfBoundariesToShow(), panel.getResultList().getModel().getRowCount());
-                model.showFootprints(resultIntervalCurrentlyShown);
-                showSpectrumBoundaries(resultIntervalCurrentlyShown);
-                model.setResultIntervalCurrentlyShown(resultIntervalCurrentlyShown);
             }
         }
         else
         {
             resultIntervalCurrentlyShown = new IdPair(panel.getResultList().getModel().getRowCount() - model.getNumberOfBoundariesToShow(), panel.getResultList().getModel().getRowCount());
-            model.showFootprints(resultIntervalCurrentlyShown);
-            showSpectrumBoundaries(resultIntervalCurrentlyShown);
-            model.setResultIntervalCurrentlyShown(resultIntervalCurrentlyShown);
         }
+        showSpectrumBoundaries(resultIntervalCurrentlyShown);
+        model.setResultIntervalCurrentlyShown(resultIntervalCurrentlyShown);
     }
 
     /**
@@ -277,7 +280,6 @@ public class SpectrumResultsTableController<S extends BasicSpectrum>
     private void nextButtonActionPerformed()
     {
     	boundaries.removeAllBoundaries();
-
         IdPair resultIntervalCurrentlyShown = model.getResultIntervalCurrentlyShown();
         spectrumCollection.deselectAll();
         if (resultIntervalCurrentlyShown != null)
@@ -286,25 +288,18 @@ public class SpectrumResultsTableController<S extends BasicSpectrum>
             if (resultIntervalCurrentlyShown.id2 < panel.getResultList().getModel().getRowCount())
             {
                 resultIntervalCurrentlyShown.nextBlock(model.getNumberOfBoundariesToShow());
-                model.showFootprints(resultIntervalCurrentlyShown);
-                showSpectrumBoundaries(resultIntervalCurrentlyShown);
-                model.setResultIntervalCurrentlyShown(resultIntervalCurrentlyShown);
             }
             else
             {
                 resultIntervalCurrentlyShown = new IdPair(0, model.getNumberOfBoundariesToShow());
-                model.showFootprints(resultIntervalCurrentlyShown);
-                showSpectrumBoundaries(resultIntervalCurrentlyShown);
-                model.setResultIntervalCurrentlyShown(resultIntervalCurrentlyShown);
             }
         }
         else
         {
             resultIntervalCurrentlyShown = new IdPair(0, model.getNumberOfBoundariesToShow());
-            model.showFootprints(resultIntervalCurrentlyShown);
-            showSpectrumBoundaries(resultIntervalCurrentlyShown);
-            model.setResultIntervalCurrentlyShown(resultIntervalCurrentlyShown);
         }
+        showSpectrumBoundaries(resultIntervalCurrentlyShown);
+        model.setResultIntervalCurrentlyShown(resultIntervalCurrentlyShown);
     }
 
     /**
@@ -322,15 +317,18 @@ public class SpectrumResultsTableController<S extends BasicSpectrum>
 			{
 		    	ImmutableSet<S> selectedItems = spectrumCollection.getSelectedItems();
 		    	int i=0;
+		    	int firstIndex = -1, lastIndex = -1;
 		    	for (S spectrum: selectedItems)
 		    	{
+		    		if (firstIndex == -1) firstIndex = spectrumCollection.getAllItems().asList().indexOf(spectrum);
 		    		spectrumCollection.addSpectrum(spectrum, false);
 		            boundaries.addBoundary(spectrum);
 		            progressMonitor.setProgress((int)(100*(double)i/(double)selectedItems.size()));
+		            lastIndex = spectrumCollection.getAllItems().asList().indexOf(spectrum);
 		            i++;
 		        }
 		    	progressMonitor.setProgress(100);
-		        model.setResultIntervalCurrentlyShown(null);
+		        model.setResultIntervalCurrentlyShown(new IdPair(firstIndex, lastIndex));
 		        return null;
 			}
 		};
@@ -373,26 +371,12 @@ public class SpectrumResultsTableController<S extends BasicSpectrum>
      */
     private void removeFootprintsButtonActionPerformed()
     {
-//    	progressMonitor = new ProgressMonitor(null, "Removing Boundaries...", "", 0, 100);
-//		progressMonitor.setProgress(0);
-//    	SwingWorker<Void, Void> task = new SwingWorker<Void, Void>()
-//		{
-//    		int i=0;
-//			@Override
-//			protected Void doInBackground() throws Exception
-//			{
-    		System.out.println("SpectrumResultsTableController: removeFootprintsButtonActionPerformed: number available to remove " + spectrumCollection.getCount());
-		    	spectrumCollection.getSelectedItems().forEach(spectrum ->
-		    	{
-		    		spectrumCollection.removeSpectrum(spectrum);
-		            boundaries.removeBoundary(spectrum);
-//		            i++;
-		    	});
-		        model.setResultIntervalCurrentlyShown(null);
-//		        return null;
-//			}
-//		};
-//		task.execute();
+    	spectrumCollection.getSelectedItems().forEach(spectrum ->
+    	{
+    		spectrumCollection.removeSpectrum(spectrum);
+            boundaries.removeBoundary(spectrum);
+    	});
+        model.setResultIntervalCurrentlyShown(null);
     }
 
     /**
@@ -401,27 +385,13 @@ public class SpectrumResultsTableController<S extends BasicSpectrum>
      */
     protected void removeFootprintsForAllInstrumentsButtonActionPerformed()
     {
-//    	progressMonitor = new ProgressMonitor(null, "Removing Boundaries...", "", 0, 100);
-//		progressMonitor.setProgress(0);
-//    	SwingWorker<Void, Void> task = new SwingWorker<Void, Void>()
-//		{
-//    		int i=0;
-//
-//			@Override
-//			protected Void doInBackground() throws Exception
-//			{
-		    	spectrumCollection.getSelectedItems().forEach(spectrum ->
-		    	{
-		    		spectrumCollection.removeSpectrum(spectrum);
-		            boundaries.removeBoundary(spectrum);
-//		            i++;
-		    	});
+    	spectrumCollection.getSelectedItems().forEach(spectrum ->
+    	{
+    		spectrumCollection.removeSpectrum(spectrum);
+            boundaries.removeBoundary(spectrum);
+    	});
 
-		        model.setResultIntervalCurrentlyShown(null);
-//		        return null;
-//			}
-//		};
-//		task.execute();
+        model.setResultIntervalCurrentlyShown(null);
     }
 
     /**
@@ -430,25 +400,8 @@ public class SpectrumResultsTableController<S extends BasicSpectrum>
      */
     private void removeBoundariesButtonActionPerformed()
     {
-//    	progressMonitor = new ProgressMonitor(null, "Removing Boundaries...", "", 0, 100);
-//		progressMonitor.setProgress(0);
-//    	SwingWorker<Void, Void> task = new SwingWorker<Void, Void>()
-//		{
-//    		int i=0;
-//
-//			@Override
-//			protected Void doInBackground() throws Exception
-//			{
-		    	spectrumCollection.getSelectedItems().forEach(spectrum ->
-		    	{
-		            boundaries.removeBoundary(spectrum);
-//		            i++;
-		    	});
-		        model.setResultIntervalCurrentlyShown(null);
-//		        return null;
-//			}
-//		};
-//		task.execute();
+		spectrumCollection.getSelectedItems().forEach(spectrum -> boundaries.removeBoundary(spectrum));
+	    model.setResultIntervalCurrentlyShown(null);
     }
 
     /**
@@ -460,12 +413,9 @@ public class SpectrumResultsTableController<S extends BasicSpectrum>
         model.setNumberOfBoundariesToShow(Integer.parseInt((String)panel.getNumberOfBoundariesComboBox().getSelectedItem()));
         // Only update if there's been a change in what is selected
         int newMaxId = shown.id1 + model.getNumberOfBoundariesToShow();
-        if (newMaxId != shown.id2)
-        {
-            shown.id2 = newMaxId;
-            model.showFootprints(shown);
-            showSpectrumBoundaries(shown);
-        }
+        if (newMaxId == shown.id2) return;
+        shown.id2 = newMaxId;
+        showSpectrumBoundaries(shown);
     }
 
     /**
@@ -489,8 +439,9 @@ public class SpectrumResultsTableController<S extends BasicSpectrum>
 			@Override
 			protected Void doInBackground() throws Exception
 			{
-		        for (int i=startId; i<endId; ++i)
+				for (int i=startId; i<endId; ++i)
 		        {
+		        	if (progressMonitor.isCanceled()) break;
 		            if (i < 0)
 		                continue;
 		            else if(i >= spectrumRawResults.size())
@@ -499,7 +450,7 @@ public class SpectrumResultsTableController<S extends BasicSpectrum>
 		            try
 		            {
 		                S currentSpectrum = spectrumRawResults.get(i);
-		                progressMonitor.setProgress((int)(100*(double)i/(double)(endId - startId)));
+		                progressMonitor.setProgress((int)(100*(double)(i-startId)/(double)(endId - startId)));
 		                spectrumCollection.addSpectrum(currentSpectrum, currentSpectrum.isCustomSpectra);
 		                boundaries.addBoundary(currentSpectrum);
 		            }
@@ -527,12 +478,6 @@ public class SpectrumResultsTableController<S extends BasicSpectrum>
     public void setSpectrumResults(List<S> results)
     {
         panel.getResultsLabel().setText(results.size() + " spectra found");
-        //clear out the old spectrum and boundaries from the spectrum and boundary collection
-//        for (S spec : results)
-//        {
-//            spectrumCollection.removeSpectrum(spec);
-//            boundaries.removeBoundary(spec);
-//        }
         spectrumRawResults = results; //.parallelStream().filter(spec -> spec.getInstrument() == instrument).collect(Collectors.toList());
         spectrumCollection.setAllItems(spectrumRawResults);
         showSpectrumBoundaries(new IdPair(0, Integer.parseInt((String)panel.getNumberOfBoundariesComboBox().getSelectedItem())));

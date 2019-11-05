@@ -16,12 +16,19 @@ import edu.jhuapl.saavtk.util.Properties;
 import edu.jhuapl.sbmt.client.SmallBodyModel;
 import edu.jhuapl.sbmt.spectrum.model.core.BasicSpectrum;
 import edu.jhuapl.sbmt.spectrum.model.core.SpectrumBoundary;
+import edu.jhuapl.sbmt.spectrum.model.core.interfaces.IBasicSpectrumRenderer;
 
+/**
+ * Collection that holds the spectrum boundary objects
+ * @author steelrj1
+ *
+ * @param <S>
+ */
 public class SpectrumBoundaryCollection<S extends BasicSpectrum> extends AbstractModel implements PropertyChangeListener
 {
-    private HashMap<SpectrumBoundary, List<vtkProp>> boundaryToActorsMap = new HashMap<SpectrumBoundary, List<vtkProp>>();
-    private HashMap<vtkProp, SpectrumBoundary> actorToBoundaryMap = new HashMap<vtkProp, SpectrumBoundary>();
-    private HashMap<BasicSpectrum, SpectrumBoundary> spectrumToBoundaryMap = new HashMap<BasicSpectrum, SpectrumBoundary>();
+    private HashMap<SpectrumBoundary<S>, List<vtkProp>> boundaryToActorsMap = new HashMap<SpectrumBoundary<S>, List<vtkProp>>();
+    private HashMap<vtkProp, SpectrumBoundary<S>> actorToBoundaryMap = new HashMap<vtkProp, SpectrumBoundary<S>>();
+    private HashMap<BasicSpectrum, SpectrumBoundary<S>> spectrumToBoundaryMap = new HashMap<BasicSpectrum, SpectrumBoundary<S>>();
     private SmallBodyModel smallBodyModel;
     // Create a buffer of initial boundary colors to use. We cycle through these colors when creating new boundaries
     private Color[] initialColors = {Color.RED, Color.PINK.darker(), Color.ORANGE.darker(),
@@ -29,21 +36,31 @@ public class SpectrumBoundaryCollection<S extends BasicSpectrum> extends Abstrac
             Color.GRAY, Color.DARK_GRAY, Color.BLACK};
     private int initialColorIndex = 0;
     private SpectraCollection<S> spectrumCollection;
-    HashMap<String, List<SpectrumBoundary>> collections = new HashMap<String, List<SpectrumBoundary>>();
+    HashMap<String, List<SpectrumBoundary<S>>> collections = new HashMap<String, List<SpectrumBoundary<S>>>();
 
+    /**
+     * @param smallBodyModel
+     * @param spectrumCollection
+     */
     public SpectrumBoundaryCollection(SmallBodyModel smallBodyModel, SpectraCollection<S> spectrumCollection)
     {
         this.smallBodyModel = smallBodyModel;
-        this.spectrumToBoundaryMap = new HashMap<BasicSpectrum, SpectrumBoundary>();
+        this.spectrumToBoundaryMap = new HashMap<BasicSpectrum, SpectrumBoundary<S>>();
         this.spectrumCollection = spectrumCollection;
     }
 
-    protected SpectrumBoundary createBoundary(
+    /**
+     * Creates a bondary for the given spectrum and small body model
+     * @param spec
+     * @param smallBodyModel
+     * @return
+     */
+    protected SpectrumBoundary<S> createBoundary(
             BasicSpectrum spec,
             SmallBodyModel smallBodyModel)
     {
         IBasicSpectrumRenderer<S> spectrum = spectrumCollection.getRendererForSpectrum(spec);
-        SpectrumBoundary boundary = new SpectrumBoundary(spectrum, smallBodyModel);
+        SpectrumBoundary<S> boundary = new SpectrumBoundary<S>(spectrum, smallBodyModel);
         boundary.setBoundaryColor(initialColors[initialColorIndex++]);
         if (initialColorIndex >= initialColors.length)
             initialColorIndex = 0;
@@ -51,9 +68,14 @@ public class SpectrumBoundaryCollection<S extends BasicSpectrum> extends Abstrac
         return boundary;
     }
 
-    public SpectrumBoundary addBoundary(BasicSpectrum spec)
+    /**
+     * Adds a boundary for the given spectrum tot he collection, and sets up what's required to render it on screen
+     * @param spec
+     * @return
+     */
+    public SpectrumBoundary<S> addBoundary(BasicSpectrum spec)
     {
-    	SpectrumBoundary boundary = null;
+    	SpectrumBoundary<S> boundary = null;
         if (spectrumToBoundaryMap.get(spec) != null)
             boundary = spectrumToBoundaryMap.get(spec);
         else
@@ -74,85 +96,122 @@ public class SpectrumBoundaryCollection<S extends BasicSpectrum> extends Abstrac
         return boundary;
     }
 
+    /**
+     * Removes the boundary for the given spectrum from the collection, taking it out of the renderer
+     * @param spectrum
+     */
     public void removeBoundary(BasicSpectrum spectrum)
     {
     	if (spectrumCollection.getActiveInstrument().getDisplayName() != spectrum.getInstrument().getDisplayName()) return;
-        SpectrumBoundary boundary = spectrumToBoundaryMap.get(spectrum);
+        SpectrumBoundary<S> boundary = spectrumToBoundaryMap.get(spectrum);
+        if (boundary == null) return;
 
-        if(boundary != null)
+        List<vtkProp> actors = boundaryToActorsMap.get(boundary);
+        if(actors != null)
         {
-            List<vtkProp> actors = boundaryToActorsMap.get(boundary);
-
-            if(actors != null)
-            {
-                for (vtkProp act : actors)
-                    actorToBoundaryMap.remove(act);
-            }
-
-            spectrumToBoundaryMap.put(spectrum, null);
-            boundaryToActorsMap.remove(boundary);
-            boundary.setVisibility(false);
-            boundary.removePropertyChangeListener(this);
-            smallBodyModel.removePropertyChangeListener(boundary);
-
-            this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, boundary);
+            for (vtkProp act : actors)
+                actorToBoundaryMap.remove(act);
         }
+
+        spectrumToBoundaryMap.put(spectrum, null);
+        boundaryToActorsMap.remove(boundary);
+        boundary.setVisibility(false);
+        boundary.removePropertyChangeListener(this);
+        smallBodyModel.removePropertyChangeListener(boundary);
+
+        this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, boundary);
     }
 
+    /**
+     * Removes all of the boundaries
+     */
     public void removeAllBoundaries()
     {
         for (BasicSpectrum spectrum : spectrumToBoundaryMap.keySet())
             removeBoundary(spectrum);
     }
 
+    /**
+     *	Gets the vtkProps for rendering on screen
+     */
     public List<vtkProp> getProps()
     {
         return new ArrayList<vtkProp>(actorToBoundaryMap.keySet());
     }
 
+    /**
+     *	Returns the information for a given boundary so it can be rendered on the status bar
+     */
     public String getClickStatusBarText(vtkProp prop, int cellId, double[] pickPosition)
     {
-        SpectrumBoundary boundary = actorToBoundaryMap.get(prop);
-        if(boundary == null)
-        {
-            return "";
-        }
+        SpectrumBoundary<S> boundary = actorToBoundaryMap.get(prop);
+        if(boundary == null) return "";
         File file = new File(boundary.getSpectrum().getSpectrumName());
         return "Boundary of image " + file.getName();
     }
 
+    /**
+     * Returns the boundary name for the <pre>actor</pre>
+     * @param actor
+     * @return
+     */
     public String getBoundaryName(vtkActor actor)
     {
         return actorToBoundaryMap.get(actor).getSpectrum().getSpectrumName();
     }
 
-    public SpectrumBoundary getBoundary(vtkActor actor)
+    /**
+     * Returns the boundary for the <pre>actor</pre>
+     * @param actor
+     * @return
+     */
+    public SpectrumBoundary<S> getBoundary(vtkActor actor)
     {
         return actorToBoundaryMap.get(actor);
     }
 
-    public SpectrumBoundary getBoundary(BasicSpectrum spectrum)
+    /**
+     * Returns the boundary for the given <pre>spectrum</pre>
+     * @param spectrum
+     * @return
+     */
+    public SpectrumBoundary<S> getBoundary(BasicSpectrum spectrum)
     {
         return spectrumToBoundaryMap.get(spectrum);
     }
 
+    /**
+     * Checks to see if the collection contains a boundary for the given <pre>spectrum</pre>
+     * @param spectrum
+     * @return
+     */
     public boolean containsBoundary(BasicSpectrum spectrum)
     {
     	return spectrumToBoundaryMap.containsKey(spectrum);
     }
 
+    /**
+     * Sets the visibility for the given <pre>spec</pre> to <pre>visible</pre>
+     * @param spec
+     * @param visible
+     */
     public void setVisibility(BasicSpectrum spec, boolean visible)
     {
-    	SpectrumBoundary boundary = spectrumToBoundaryMap.get(spec);
+    	SpectrumBoundary<S> boundary = spectrumToBoundaryMap.get(spec);
     	if (boundary == null)
     		boundary = addBoundary(spec);
     	boundary.setVisibility(visible);
     	this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, boundary);
     }
 
+    /**
+     * Returns the visiblity for the given <pre>spec</pre>
+     * @param spec
+     * @return
+     */
     public boolean getVisibility(BasicSpectrum spec)
     {
-    	if (spectrumCollection.getActiveInstrument().getDisplayName() != spec.getInstrument().getDisplayName()) return false;
+    	if (!spectrumCollection.getActiveInstrument().getDisplayName().equals(spec.getInstrument().getDisplayName())) return false;
     	if (spectrumToBoundaryMap.get(spec) == null) return false;
     	return spectrumToBoundaryMap.get(spec).getVisibility();
     }

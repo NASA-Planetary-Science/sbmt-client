@@ -4,10 +4,10 @@ import java.util.HashMap;
 import java.util.Vector;
 
 import edu.jhuapl.sbmt.spectrum.model.core.BasicSpectrum;
+import edu.jhuapl.sbmt.spectrum.model.core.interfaces.IBasicSpectrumRenderer;
 import edu.jhuapl.sbmt.spectrum.model.core.interfaces.ISpectrumColorer;
 import edu.jhuapl.sbmt.spectrum.model.core.interfaces.SpectrumColoringChangedListener;
 import edu.jhuapl.sbmt.spectrum.model.sbmtCore.spectra.SpectrumColoringStyle;
-import edu.jhuapl.sbmt.spectrum.rendering.IBasicSpectrumRenderer;
 
 /**
  * Model to capture the current coloring state for the spectra on screen.  This manages both the RGB coloring mode values as well as whether
@@ -61,39 +61,29 @@ public class SpectrumColoringModel<S extends BasicSpectrum>
 
 	}
 
-	public void updateColoring()
-	{
-//        if (isCurrentlyEditingUserDefinedFunction())
-//            return;
-		// If we are currently editing user defined functions
-        // (i.e. the dialog is open), do not update the coloring
-        // since we may be in an inconsistent state.
-
-//        if (isGreyScaleSelected())
-//        {
-//        	this.channels = new int[]{redIndex, redIndex, redIndex};
-//        	this.mins = new double[]{redMinVal, redMinVal, redMinVal};
-//        	this.maxs = new double[]{redMaxVal, redMaxVal, redMaxVal};
-//        }
-//        else
-//        {
-//        	this.channels = new int[]{redIndex, greenIndex, blueIndex};
-//        	this.mins = new double[]{redMinVal, greenMinVal, blueMinVal};
-//        	this.maxs = new double[]{redMaxVal, greenMaxVal, blueMaxVal};
-//        }
-        fireColoringChanged();
-	}
-
+	/**
+	 * Returnst he coloring for the provided renderer
+	 * @param spectrumRenderer
+	 * @return
+	 */
 	public double[] getSpectrumColoringForCurrentStyle(IBasicSpectrumRenderer<S> spectrumRenderer)
 	{
 		return currentColorer.getColorForSpectrum(spectrumRenderer);
 	}
 
+    /**
+     * Returns the active coloring style
+     * @return
+     */
     public SpectrumColoringStyle getSpectrumColoringStyle()
     {
         return spectrumColoringStyle;
     }
 
+    /**
+     * Sets the spectrum coloring style, and fires the coloring changed listeners
+     * @param spectrumColoringStyle
+     */
     public void setSpectrumColoringStyle(SpectrumColoringStyle spectrumColoringStyle)
     {
         this.spectrumColoringStyle = spectrumColoringStyle;
@@ -101,7 +91,10 @@ public class SpectrumColoringModel<S extends BasicSpectrum>
         fireColoringChanged();
     }
 
-    public void fireColoringChanged()
+    /**
+     * Fires the coloring changed listeners
+     */
+    private void fireColoringChanged()
     {
         for (SpectrumColoringChangedListener listener : colorChangedListeners)
         {
@@ -109,37 +102,36 @@ public class SpectrumColoringModel<S extends BasicSpectrum>
         }
     }
 
+    /**
+     * Adds a coloring changed listener to the list
+     * @param listener
+     */
     public void addColoringChangedListener(SpectrumColoringChangedListener listener)
     {
         colorChangedListeners.add(listener);
     }
 
+    /**
+     * Removed a coloring changed listener from the list
+     * @param listener
+     */
     public void removeColoringChangedListener(SpectrumColoringChangedListener listener)
     {
         colorChangedListeners.remove(listener);
     }
 
+    /**
+     * Removes all coloring changed listeners
+     */
     public void removeAllColoringChangedListeners()
     {
         colorChangedListeners.removeAllElements();
     }
 
-	public Vector<SpectrumColoringChangedListener> getColorChangedListeners()
-	{
-		return colorChangedListeners;
-	}
-
-	public ISpectrumColorer<S> getCurrentColorer()
-	{
-		return currentColorer;
-	}
-
-	public void setCurrentColorer(ISpectrumColorer<S> currentColorer)
-	{
-		this.currentColorer = currentColorer;
-		fireColoringChanged();
-	}
-
+	/**
+	 * Sets the RGB max values for colorers that need them
+	 * @param rgbMaxvals
+	 */
 	public void setRgbMaxvals(double[] rgbMaxvals)
 	{
 		this.rgbMaxvals = rgbMaxvals;
@@ -149,9 +141,13 @@ public class SpectrumColoringModel<S extends BasicSpectrum>
 		rgbColorer.updateColoring();
 		greyScaleColorer.setMaxs(rgbMaxvals);
 		greyScaleColorer.updateColoring();
-		updateColoring();
+		fireColoringChanged();
 	}
 
+	/**
+	 * Sets the RGB indices for colorerers that need them
+	 * @param rgbIndices
+	 */
 	public void setRgbIndices(int[] rgbIndices)
 	{
 		this.rgbIndices = rgbIndices;
@@ -161,19 +157,31 @@ public class SpectrumColoringModel<S extends BasicSpectrum>
 		rgbColorer.updateColoring();
 		greyScaleColorer.setChannels(rgbIndices);
 		greyScaleColorer.updateColoring();
-		updateColoring();
+		fireColoringChanged();
 	}
 
+	/**
+	 * Returns the greyscale colorer
+	 * @return
+	 */
 	public GreyscaleSpectrumColorer<S> getGreyScaleColorer()
 	{
 		return greyScaleColorer;
 	}
 
+	/**
+	 * Returns the RGB colorerer
+	 * @return
+	 */
 	public RGBSpectrumColorer<S> getRgbColorer()
 	{
 		return rgbColorer;
 	}
 
+	/**
+	 * Returnst he emission colorer
+	 * @return
+	 */
 	public EmissionSpectrumColorer<S> getEmissionColorer()
 	{
 		return emissionColorer;

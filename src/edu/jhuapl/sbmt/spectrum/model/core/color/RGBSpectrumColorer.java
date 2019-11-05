@@ -5,10 +5,16 @@ import java.util.List;
 
 import edu.jhuapl.sbmt.spectrum.model.core.BasicSpectrum;
 import edu.jhuapl.sbmt.spectrum.model.core.BasicSpectrumInstrument;
+import edu.jhuapl.sbmt.spectrum.model.core.interfaces.IBasicSpectrumRenderer;
 import edu.jhuapl.sbmt.spectrum.model.core.interfaces.ISpectrumColorer;
 import edu.jhuapl.sbmt.spectrum.model.core.interfaces.SpectrumColoringChangedListener;
-import edu.jhuapl.sbmt.spectrum.rendering.IBasicSpectrumRenderer;
 
+/**
+ * Coloring model that colors renderers based on mapping R, G and B to the  stretched value over the min/max ranges for each color
+ * @author steelrj1
+ *
+ * @param <S>
+ */
 public class RGBSpectrumColorer<S extends BasicSpectrum> implements ISpectrumColorer<S>
 {
     private Double redMinVal = 0.0;
@@ -31,6 +37,9 @@ public class RGBSpectrumColorer<S extends BasicSpectrum> implements ISpectrumCol
 		colorChangedListeners = new ArrayList<SpectrumColoringChangedListener>();
 	}
 
+	/**
+	 * Returns the color for the passed in spectrumRenderer.  Can be done with built in or user defined values
+	 */
 	@Override
 	public double[] getColorForSpectrum(IBasicSpectrumRenderer<S> spectrumRenderer)
 	{
@@ -190,16 +199,26 @@ public class RGBSpectrumColorer<S extends BasicSpectrum> implements ISpectrumCol
         this.currentlyEditingUserDefinedFunction = currentlyEditingUserDefinedFunction;
     }
 
+	/**
+	 * Adds a spectrum coloring changed listener to the list
+	 * @param sccl
+	 */
     public void addSpectrumColoringChangedListener(SpectrumColoringChangedListener sccl)
 	{
 		colorChangedListeners.add(sccl);
 	}
 
+	/**
+	 * Fires the coloring changed listeners
+	 */
 	private void fireColoringChanged()
 	{
 		for (SpectrumColoringChangedListener sccl : colorChangedListeners) sccl.coloringChanged();
 	}
 
+	/**
+	 * Updates the coloring based on the current min/max/index values
+	 */
 	public void updateColoring()
 	{
 		this.channels = new int[]{redIndex, greenIndex, blueIndex};

@@ -12,20 +12,20 @@ import vtk.vtkProp;
 import edu.jhuapl.saavtk.model.AbstractModel;
 import edu.jhuapl.saavtk.util.Properties;
 import edu.jhuapl.sbmt.client.SmallBodyModel;
+import edu.jhuapl.sbmt.spectrum.model.core.interfaces.IBasicSpectrumRenderer;
 import edu.jhuapl.sbmt.spectrum.model.sbmtCore.spectra.Spectrum;
-import edu.jhuapl.sbmt.spectrum.rendering.IBasicSpectrumRenderer;
 
 /**
  * Model that represents the Spectrum boundaries.
  * @author steelrj1
  *
  */
-public class SpectrumBoundary extends AbstractModel implements PropertyChangeListener
+public class SpectrumBoundary<S extends BasicSpectrum> extends AbstractModel implements PropertyChangeListener
 {
     private vtkActor actor;
-    private IBasicSpectrumRenderer spectrumRenderer;
+    private IBasicSpectrumRenderer<S> spectrumRenderer;
 
-    public SpectrumBoundary(IBasicSpectrumRenderer spectrum, SmallBodyModel smallBodyModel) //throws IOException
+    public SpectrumBoundary(IBasicSpectrumRenderer<S> spectrum, SmallBodyModel smallBodyModel) //throws IOException
     {
         this.spectrumRenderer = spectrum;
         this.actor = spectrum.getOutlineActor();
@@ -44,26 +44,37 @@ public class SpectrumBoundary extends AbstractModel implements PropertyChangeLis
         return props;
     }
 
-//    public SpectrumKeyInterface getKey()
-//    {
-//        return spectrumRenderer.getSpectrum().getKey();
-//    }
-
+    /**
+     * Returns the spectrum associated with this
+     * @return
+     */
     public Spectrum getSpectrum()
     {
         return spectrumRenderer.getSpectrum();
     }
 
+    /**
+     * Sets whether the boundary is visible or not
+     * @param visible
+     */
     public void setVisibility(boolean visible)
     {
         if (visible == true)  { actor.VisibilityOn(); } else actor.VisibilityOff();
     }
 
+    /**
+     * Returns boolean describing if the boundary is visible
+     * @return
+     */
     public boolean getVisibility()
     {
     	return (actor.GetVisibility() == 0) ? false : true;
     }
 
+    /**
+     * Sets the boundary color
+     * @param color
+     */
     public void setBoundaryColor(Color color)
     {
         double r = color.getRed();
@@ -74,6 +85,10 @@ public class SpectrumBoundary extends AbstractModel implements PropertyChangeLis
         this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
     }
 
+    /**
+     * Gets the boundary color
+     * @return
+     */
     public int[] getBoundaryColor()
     {
         double[] c = new double[3];

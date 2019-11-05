@@ -3,7 +3,6 @@ package edu.jhuapl.sbmt.spectrum.model.core.interfaces;
 import java.io.IOException;
 
 import edu.jhuapl.sbmt.spectrum.model.core.BasicSpectrum;
-import edu.jhuapl.sbmt.spectrum.rendering.IBasicSpectrumRenderer;
 
 /**
  * Interface for objects that can build spectra and their renders

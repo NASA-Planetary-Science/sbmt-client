@@ -22,5 +22,4 @@ public interface SpectralInstrument extends MetadataManager
     public QueryBase getQueryBase();
     public SpectrumMath getSpectrumMath();
     public Spectrum getSpectrumInstance(String filename, SmallBodyModel smallBodyModel) throws IOException;
-
 }

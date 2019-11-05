@@ -1,3 +1,4 @@
+package edu.jhuapl.sbmt.spectrum.deprecated;
 //package edu.jhuapl.sbmt.spectrum.model.key;
 //
 //import edu.jhuapl.saavtk.model.FileType;

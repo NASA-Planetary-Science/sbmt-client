@@ -94,6 +94,7 @@ import edu.jhuapl.sbmt.model.ryugu.nirs3.H2SpectraFactory;
 import edu.jhuapl.sbmt.model.ryugu.nirs3.NIRS3SearchModel;
 import edu.jhuapl.sbmt.model.ryugu.nirs3.atRyugu.NIRS3Spectrum;
 import edu.jhuapl.sbmt.model.time.StateHistoryCollection;
+import edu.jhuapl.sbmt.spectrum.controllers.custom.CustomSpectraSearchController;
 import edu.jhuapl.sbmt.spectrum.model.core.BasicSpectrumInstrument;
 import edu.jhuapl.sbmt.spectrum.model.hypertree.SpectraSearchDataCollection;
 import edu.jhuapl.sbmt.spectrum.model.statistics.SpectrumStatisticsCollection;
@@ -345,7 +346,7 @@ public class SbmtView extends View implements PropertyChangeListener
 			//if (getPolyhedralModelConfig().body == ShapeModelBody.EROS)
 			allModels.put(ModelNames.STATISTICS, new SpectrumStatisticsCollection());
 
-			SpectraCollection customCollection = new SpectraCollection(smallBodyModel, true);
+			SpectraCollection customCollection = new SpectraCollection(smallBodyModel);
 			allModels.put(ModelNames.CUSTOM_SPECTRA, customCollection);
 			allModels.put(ModelNames.CUSTOM_SPECTRA_BOUNDARIES, new SpectrumBoundaryCollection(smallBodyModel, (SpectraCollection)allModels.get(ModelNames.CUSTOM_SPECTRA)));
 		}
@@ -662,13 +663,13 @@ public class SbmtView extends View implements PropertyChangeListener
 				customDataPane.addTab("Images", new CustomImageController(getPolyhedralModelConfig(), getModelManager(), (SbmtInfoWindowManager) getInfoPanelManager(), (SbmtSpectrumWindowManager) getSpectrumPanelManager(), getPickManager(), getRenderer(), instrument).getPanel());
 			}
 
-//			for (BasicSpectrumInstrument i : getPolyhedralModelConfig().spectralInstruments)
-//			{
-////				if (i.getDisplayName().equals("NIS"))
-////					continue; //we can't properly handle NIS custom data for now without info files, which we don't have.
-//				customDataPane.addTab(i.getDisplayName() + " Spectra", new CustomSpectraSearchController(getModelManager(), (SbmtInfoWindowManager) getInfoPanelManager(), getPickManager(), getRenderer(), i).getPanel());
-//				break;
-//			}
+			for (BasicSpectrumInstrument i : getPolyhedralModelConfig().spectralInstruments)
+			{
+//				if (i.getDisplayName().equals("NIS"))
+//					continue; //we can't properly handle NIS custom data for now without info files, which we don't have.
+				customDataPane.addTab(i.getDisplayName() + " Spectra", new CustomSpectraSearchController(getModelManager(), (SbmtInfoWindowManager) getInfoPanelManager(), getPickManager(), getRenderer(), i).getPanel());
+				break;
+			}
 
 			// Add the "lidar tracks" tab
 			ModelManager tmpModelManager = getModelManager();

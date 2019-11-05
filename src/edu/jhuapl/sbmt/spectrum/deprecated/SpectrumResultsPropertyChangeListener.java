@@ -1,3 +1,4 @@
+package edu.jhuapl.sbmt.spectrum.deprecated;
 //package edu.jhuapl.sbmt.spectrum.controllers.standard;
 //
 //import java.beans.PropertyChangeEvent;
