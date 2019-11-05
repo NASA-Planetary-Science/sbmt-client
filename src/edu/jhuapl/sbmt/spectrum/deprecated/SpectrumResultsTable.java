@@ -1,3 +1,4 @@
+package edu.jhuapl.sbmt.spectrum.deprecated;
 //package edu.jhuapl.sbmt.spectrum.ui.table;
 //
 //import javax.swing.JTable;

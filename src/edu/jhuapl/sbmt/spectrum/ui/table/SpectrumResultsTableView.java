@@ -248,28 +248,6 @@ public class SpectrumResultsTableView<S extends BasicSpectrum> extends JPanel
 //			}
 //		});
 
-//		 spectrumTable.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
-//	            @Override
-//	            public void valueChanged(ListSelectionEvent e)
-//	            {
-//	                if (!e.getValueIsAdjusting())
-//	                {
-////	                	int[] selectedRows = spectrumTable.getSelectedRows();
-////	                	List<S> selectedSpectra = new ArrayList<S>();
-////	                	for (int index : selectedRows)
-////	                	{
-////	                		selectedSpectra.add(spectrumCollection.getAllItems().get(index));
-////	                	}
-////	                	System.out.println(
-////								"SpectrumResultsTableView.buildTable().new ListSelectionListener() {...}: valueChanged: setting selected spectra size " + selectedSpectra.size());
-////	                	spectrumCollection.setSelectedItems(spectrumTableHandler.get);
-////	                    imageSearchModel.setSelectedImageIndex(imageResultsTableView.getResultList().getSelectedRows());
-////	                    imageResultsTableView.getViewResultsGalleryButton().setEnabled(imageResultsTableView.isEnableGallery() && imageResultsTableView.getResultList().getSelectedRowCount() > 0);
-//	                }
-//	            }
-//	        });
-
-
 		return spectrumTable;
     }
 
