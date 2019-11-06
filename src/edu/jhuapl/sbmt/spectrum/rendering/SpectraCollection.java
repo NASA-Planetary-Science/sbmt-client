@@ -489,6 +489,11 @@ public class SpectraCollection<S extends BasicSpectrum> extends SaavtkItemManage
 		return selectedIndices;
 	}
 
+	public List<S> getCurrentList()
+	{
+		return collections.get(activeInstrument.getDisplayName());
+	}
+
 	/**
 	 * Sets the active instrument for this collection - this allows it to support
 	 * @param activeInstrument

@@ -31,8 +31,9 @@ public class SpectrumItemHandler<S extends BasicSpectrum> extends BasicItemHandl
 	}
 
 	@Override
-	public Object getColumnValue(BasicSpectrum spec, LookUp aEnum)
+	public Object getColumnValue(S spec, LookUp aEnum)
 	{
+		//TODO: Switch to using an index so the get all items doesn't take so long to look up
 		switch (aEnum)
 		{
 			case Map:
@@ -44,7 +45,7 @@ public class SpectrumItemHandler<S extends BasicSpectrum> extends BasicItemHandl
 			case Bndr:
 				return boundaryCollection.getVisibility(spec);
 			case Id:
-				return spectrumCollection.getAllItems().indexOf(spec);
+				return spectrumCollection.getCurrentList().indexOf(spec);
 			case Filename:
 				return spec.getSpectrumName();
 			case Date:
