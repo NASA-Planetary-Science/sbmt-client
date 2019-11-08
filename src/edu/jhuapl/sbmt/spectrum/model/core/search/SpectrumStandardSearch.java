@@ -84,6 +84,7 @@ public class SpectrumStandardSearch<S extends BasicSpectrum>
                 InstrumentMetadata<SearchSpec> instrumentMetadata = spectraSpec.getInstrumentMetadata(instrument.getDisplayName());
                 TreeModel tree = spectraSpec.getTreeModel();
                 List<SearchSpec> specs = instrumentMetadata.getSpecs();
+                tempResults = new ArrayList<S>();
                 for (Integer selected : productsSelected)
                 {
                     SearchSpec spec = specs.get(selected);
@@ -98,7 +99,7 @@ public class SpectrumStandardSearch<S extends BasicSpectrum>
                     int i=0;
 
                     BasicSpectrum spectrum = null;
-                    tempResults = new ArrayList<S>(thisResult.size());
+                    List<S> choiceResults = new ArrayList<S>(thisResult.size());
                     progressListener.searchNoteUpdated("Processing results....");
                     for (List<String> str : thisResult)
                     {
@@ -106,7 +107,7 @@ public class SpectrumStandardSearch<S extends BasicSpectrum>
                          {
                          	spectrum = SbmtSpectrumModelFactory.createSpectrum(str.get(0), instrument, str.get(1));
                          	spectrum.setMetadata(spec);
-                         	tempResults.add((S)spectrum);
+                         	choiceResults.add((S)spectrum);
                          	i++;
                          	progressListener.searchProgressChanged((int)((((double)i/(double)thisResult.size())*100)));
                          }
@@ -115,6 +116,7 @@ public class SpectrumStandardSearch<S extends BasicSpectrum>
                         	 e.printStackTrace();
                          }
                     }
+                    tempResults.addAll(choiceResults);
                     progressListener.searchEnded();
                 }
             }
@@ -130,7 +132,7 @@ public class SpectrumStandardSearch<S extends BasicSpectrum>
                 {
                     SpectraDatabaseSearchMetadata searchMetadata = SpectraDatabaseSearchMetadata.of("", startDateJoda, endDateJoda,
                             Ranges.closed(searchParameters.getMinDistanceQuery(), searchParameters.getMaxDistanceQuery()),
-                            "", searchParameters.getPolygonTypesChecked(),
+                            searchParameters.getSearchByFilename(), searchParameters.getPolygonTypesChecked(),
                             Ranges.closed(searchParameters.getMinIncidenceQuery(), searchParameters.getMaxIncidenceQuery()),
                             Ranges.closed(searchParameters.getMinEmissionQuery(), searchParameters.getMaxEmissionQuery()),
                             Ranges.closed(searchParameters.getMinPhaseQuery(), searchParameters.getMaxPhaseQuery()),

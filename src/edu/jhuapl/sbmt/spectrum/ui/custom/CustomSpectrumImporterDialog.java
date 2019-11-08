@@ -165,33 +165,34 @@ public class CustomSpectrumImporterDialog extends JDialog
             infofilePath = "";
 
         System.out.println("CustomSpectrumImporterDialog: validateInput: spectra is " + spectrumTypeComboBox.getSelectedItem());
-        if (!spectrumTypeComboBox.getSelectedItem().toString().equals("NIS_SPECTRA"))
+
+        if (!isEditMode || (!sumfilePath.isEmpty() && !sumfilePath.equals(LEAVE_UNMODIFIED) || (!infofilePath.isEmpty() && !infofilePath.equals(LEAVE_UNMODIFIED))))
         {
-            if (!isEditMode || (!sumfilePath.isEmpty() && !sumfilePath.equals(LEAVE_UNMODIFIED) || (!infofilePath.isEmpty() && !infofilePath.equals(LEAVE_UNMODIFIED))))
+            if (sumfilePath.isEmpty() && infofilePath.isEmpty())
+                return "Please enter the path to a sumfile or infofile.";
+
+            if (!sumfilePath.isEmpty())
             {
-                if (sumfilePath.isEmpty() && infofilePath.isEmpty())
-                    return "Please enter the path to a sumfile or infofile.";
+                File file = new File(customDir, sumfilePath);
+                if (!file.exists() || !file.canRead() || !file.isFile())
+                    return sumfilePath + " does not exist or is not readable.";
 
-                if (!sumfilePath.isEmpty())
-                {
-                    File file = new File(customDir, sumfilePath);
-                    if (!file.exists() || !file.canRead() || !file.isFile())
-                        return sumfilePath + " does not exist or is not readable.";
+                if (sumfilePath.contains(","))
+                    return "Path may not contain commas.";
+            }
+            else if (!infofilePath.isEmpty())
+            {
+            	System.out.println("CustomSpectrumImporterDialog: validateInput: info file path " + infofilePath);
+            	File file = null;
+            	if (isEditMode)
+            		file = new File(customDir, infofilePath);
+            	else
+                    file = new File(infofilePath);
+                if (!file.exists() || !file.canRead() || !file.isFile())
+                    return infofilePath + " does not exist or is not readable.";
 
-                    if (sumfilePath.contains(","))
-                        return "Path may not contain commas.";
-                }
-                else if (!infofilePath.isEmpty())
-                {
-                	System.out.println("CustomSpectrumImporterDialog: validateInput: info file path " + infofilePath);
-//                    File file = new File(customDir, infofilePath);
-                    File file = new File(infofilePath);
-                    if (!file.exists() || !file.canRead() || !file.isFile())
-                        return infofilePath + " does not exist or is not readable.";
-
-                    if (infofilePath.contains(","))
-                        return "Path may not contain commas.";
-                }
+                if (infofilePath.contains(","))
+                    return "Path may not contain commas.";
             }
         }
 

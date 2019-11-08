@@ -243,16 +243,7 @@ public class SpectrumSearchParametersController<S extends BasicSpectrum>
 
             toDistanceTextField.setValue(imageSearchDefaultMaxSpacecraftDistance);
 
-            searchParameters.setStartDate((Date)panel.getStartSpinner().getValue());
-            searchParameters.setEndDate((Date)panel.getEndSpinner().getValue());
-            searchParameters.setMinDistanceQuery(Integer.parseInt(panel.getFromDistanceTextField().getText()));
-            searchParameters.setMaxDistanceQuery(Integer.parseInt(panel.getToDistanceTextField().getText()));
-            searchParameters.setMinIncidenceQuery(Integer.parseInt(panel.getFromIncidenceTextField().getText()));
-            searchParameters.setMaxIncidenceQuery(Integer.parseInt(panel.getToIncidenceTextField().getText()));
-            searchParameters.setMinEmissionQuery(Integer.parseInt(panel.getFromEmissionTextField().getText()));
-            searchParameters.setMaxEmissionQuery(Integer.parseInt(panel.getToEmissionTextField().getText()));
-            searchParameters.setMinPhaseQuery(Integer.parseInt(panel.getFromPhaseTextField().getText()));
-            searchParameters.setMaxPhaseQuery(Integer.parseInt(panel.getToPhaseTextField().getText()));
+        	setSearchParameters();
 
         }
 
@@ -262,6 +253,7 @@ public class SpectrumSearchParametersController<S extends BasicSpectrum>
         panel.getSubmitButton().setText("Search");
         panel.getSubmitButton().addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent evt) {
+            	setSearchParameters();
                 if (hasHierarchicalSpectraSearch)
                     model.setSelectedPath(panel.getCheckBoxTree().getCheckBoxTreeSelectionModel().getSelectionPaths());
                 panel.getSelectRegionButton().setSelected(false);
@@ -353,6 +345,26 @@ public class SpectrumSearchParametersController<S extends BasicSpectrum>
 
         panel.getSelectRegionButton().setText("Select Region");
         panel.getSelectRegionButton().addActionListener(evt -> selectRegionButtonActionPerformed());
+    }
+
+    private void setSearchParameters()
+    {
+
+        if (panel.getFilenameRadioButton().isSelected())
+        {
+        	searchParameters.setSearchByFilename(panel.getSearchByNumberTextField().getText());
+        }
+
+        searchParameters.setStartDate((Date)panel.getStartSpinner().getValue());
+        searchParameters.setEndDate((Date)panel.getEndSpinner().getValue());
+        searchParameters.setMinDistanceQuery(Integer.parseInt(panel.getFromDistanceTextField().getText()));
+        searchParameters.setMaxDistanceQuery(Integer.parseInt(panel.getToDistanceTextField().getText()));
+        searchParameters.setMinIncidenceQuery(Integer.parseInt(panel.getFromIncidenceTextField().getText()));
+        searchParameters.setMaxIncidenceQuery(Integer.parseInt(panel.getToIncidenceTextField().getText()));
+        searchParameters.setMinEmissionQuery(Integer.parseInt(panel.getFromEmissionTextField().getText()));
+        searchParameters.setMaxEmissionQuery(Integer.parseInt(panel.getToEmissionTextField().getText()));
+        searchParameters.setMinPhaseQuery(Integer.parseInt(panel.getFromPhaseTextField().getText()));
+        searchParameters.setMaxPhaseQuery(Integer.parseInt(panel.getToPhaseTextField().getText()));
     }
 
     /**

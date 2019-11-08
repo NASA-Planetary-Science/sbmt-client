@@ -36,7 +36,7 @@ public class SpectrumBoundaryCollection<S extends BasicSpectrum> extends Abstrac
             Color.GRAY, Color.DARK_GRAY, Color.BLACK};
     private int initialColorIndex = 0;
     private SpectraCollection<S> spectrumCollection;
-    HashMap<String, List<SpectrumBoundary<S>>> collections = new HashMap<String, List<SpectrumBoundary<S>>>();
+//    HashMap<String, List<SpectrumBoundary<S>>> collections = new HashMap<String, List<SpectrumBoundary<S>>>();
 
     /**
      * @param smallBodyModel
@@ -102,7 +102,7 @@ public class SpectrumBoundaryCollection<S extends BasicSpectrum> extends Abstrac
      */
     public void removeBoundary(BasicSpectrum spectrum)
     {
-    	if (spectrumCollection.getActiveInstrument().getDisplayName() != spectrum.getInstrument().getDisplayName()) return;
+    	if (!spectrumCollection.getActiveInstrument().getDisplayName().equals(spectrum.getInstrument().getDisplayName())) return;
         SpectrumBoundary<S> boundary = spectrumToBoundaryMap.get(spectrum);
         if (boundary == null) return;
 

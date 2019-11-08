@@ -23,6 +23,7 @@ public class SpectrumSearchParametersModel
     protected Date startDate = new GregorianCalendar(2000, 0, 11, 0, 0, 0).getTime();
     protected Date endDate = new GregorianCalendar(2000, 4, 14, 0, 0, 0).getTime();
     private List<Integer> polygonTypesChecked = new ArrayList<Integer>();
+    private String searchByFilename;
 
 
 	public SpectrumSearchParametersModel()
@@ -154,5 +155,15 @@ public class SpectrumSearchParametersModel
 	public List<Integer> getPolygonTypesChecked()
 	{
 		return polygonTypesChecked;
+	}
+
+    public void setSearchByFilename(String searchByFilename)
+    {
+        this.searchByFilename = searchByFilename;
+    }
+
+	public String getSearchByFilename()
+	{
+		return searchByFilename;
 	}
 }
