@@ -20,7 +20,6 @@ import org.jfree.chart.plot.PlotOrientation;
 import org.jfree.chart.plot.XYPlot;
 import org.jfree.chart.renderer.xy.XYItemRenderer;
 import org.jfree.chart.renderer.xy.XYLineAndShapeRenderer;
-import org.jfree.data.xy.XYDataset;
 import org.jfree.data.xy.XYSeries;
 import org.jfree.data.xy.XYSeriesCollection;
 
@@ -32,21 +31,25 @@ import edu.jhuapl.sbmt.dtm.model.DEM;
 
 public class DEMPlot implements ChartMouseListener, PropertyChangeListener
 {
-    private XYDataset valueDistanceDataset;
-    private LineModel lineModel;
-    private DEM demModel;
+	// Ref vars
+   private LineModel<Line> refLineModel;
+   private DEM refDemModel;
+
+   // State vars
+    private XYSeriesCollection valueDistanceDataset;
     private ChartPanel chartPanel;
     private int coloringIndex;
 
     private int numberOfProfilesCreated = 0;
 
-    public DEMPlot(LineModel lineModel, DEM demModel, int coloringIndex)
+    public DEMPlot(LineModel<Line> aLineModel, DEM aDemModel, int aColoringIndex)
     {
-        this.lineModel = lineModel;
-        this.demModel = demModel;
-        this.coloringIndex = coloringIndex;
+        refLineModel = aLineModel;
+        refDemModel = aDemModel;
 
-        lineModel.addPropertyChangeListener(this);
+        coloringIndex = aColoringIndex;
+
+        aLineModel.addPropertyChangeListener(this);
 
         valueDistanceDataset = new XYSeriesCollection();
 
@@ -78,17 +81,20 @@ public class DEMPlot implements ChartMouseListener, PropertyChangeListener
 
     private void setSeriesColor(int lineId)
     {
-        Line line = (Line)lineModel.getStructure(lineId);
-        int[] c = line.getColor();
+   	 if (lineId == -1 || lineId >= valueDistanceDataset.getSeriesCount())
+   		 return;
+
+        Line line = refLineModel.getStructure(lineId);
+        Color color = line.getColor();
         ((XYPlot)chartPanel.getChart().getPlot()).getRenderer().setSeriesPaint(
-                lineId, new Color(c[0], c[1], c[2], c[3]));
+                lineId, color);
     }
 
     private void addProfile()
     {
-        int lineId = lineModel.getNumberOfStructures()-1;
+        int lineId = refLineModel.getNumItems()-1;
         XYSeries series = new XYSeries("Profile " + numberOfProfilesCreated++);
-        ((XYSeriesCollection)valueDistanceDataset).addSeries(series);
+        valueDistanceDataset.addSeries(series);
         setSeriesColor(lineId);
         ((XYPlot)chartPanel.getChart().getPlot()).getRenderer().setSeriesStroke(
                 lineId, new BasicStroke(2.0f)); // set line thickness
@@ -97,15 +103,15 @@ public class DEMPlot implements ChartMouseListener, PropertyChangeListener
 
     private void updateProfile(int lineId)
     {
-        if (lineId >= ((XYSeriesCollection)valueDistanceDataset).getSeriesCount())
+        if (lineId == -1 || lineId >= valueDistanceDataset.getSeriesCount())
             return;
 
-        Line line = (Line)lineModel.getStructure(lineId);
+        Line line = refLineModel.getStructure(lineId);
         List<Double> value= new ArrayList<Double>();
         List<Double> distance = new ArrayList<Double>();
-        demModel.generateProfile(line.xyzPointList, value, distance, coloringIndex);
+        refDemModel.generateProfile(line.xyzPointList, value, distance, coloringIndex);
 
-        XYSeries series = ((XYSeriesCollection)valueDistanceDataset).getSeries(lineId);
+        XYSeries series = valueDistanceDataset.getSeries(lineId);
         series.clear();
         int N = value.size();
         for (int i=0; i<N; ++i)
@@ -116,8 +122,8 @@ public class DEMPlot implements ChartMouseListener, PropertyChangeListener
     private void updateChartLabels(){
         // Figure out labels to use
         String title, domainLabel, rangeLabel;
-        String[] coloringNames = demModel.getColoringNames();
-        String[] coloringUnits = demModel.getColoringUnits();
+        String[] coloringNames = refDemModel.getColoringNames();
+        String[] coloringUnits = refDemModel.getColoringUnits();
         int numColors = coloringNames.length;
 
         if(coloringIndex < 0 || coloringIndex >= numColors)
@@ -148,15 +154,17 @@ public class DEMPlot implements ChartMouseListener, PropertyChangeListener
 
     private void removeProfile(int lineId)
     {
-        if (lineId < ((XYSeriesCollection)valueDistanceDataset).getSeriesCount())
-            ((XYSeriesCollection)valueDistanceDataset).removeSeries(lineId);
+        if (lineId == -1 || lineId >= valueDistanceDataset.getSeriesCount())
+      	  return;
+
+        valueDistanceDataset.removeSeries(lineId);
     }
 
     public String getProfileAsString(int lineId)
     {
         // Figure out what to label the range
         String rangeLabel;
-        String[] coloringNames = demModel.getColoringNames();
+        String[] coloringNames = refDemModel.getColoringNames();
         int numColors = coloringNames.length;
 
         if(coloringIndex < 0 || coloringIndex >= numColors)
@@ -170,7 +178,7 @@ public class DEMPlot implements ChartMouseListener, PropertyChangeListener
 
         StringBuilder buffer = new StringBuilder();
 
-        XYSeries series = ((XYSeriesCollection)valueDistanceDataset).getSeries(lineId);
+        XYSeries series = valueDistanceDataset.getSeries(lineId);
 
         String eol = System.getProperty("line.separator");
 
@@ -199,7 +207,7 @@ public class DEMPlot implements ChartMouseListener, PropertyChangeListener
         updateChartLabels();
 
         // Update all profiles
-        int numLines = ((XYSeriesCollection)valueDistanceDataset).getSeriesCount();
+        int numLines = valueDistanceDataset.getSeriesCount();
         for(int i=0; i<numLines; i++){
             updateProfile(i);
         }
@@ -221,31 +229,30 @@ public class DEMPlot implements ChartMouseListener, PropertyChangeListener
 
     public void propertyChange(PropertyChangeEvent evt)
     {
+   	 Line line = null;
+   	 if (evt.getNewValue() instanceof Line)
+   		 line = (Line)evt.getNewValue();
+		 int lineId = refLineModel.getAllItems().indexOf(evt.getNewValue());
+
         if (Properties.VERTEX_INSERTED_INTO_LINE.equals(evt.getPropertyName()))
         {
-            int lineId = (Integer)evt.getNewValue();
-            Line line = (Line)lineModel.getStructure(lineId);
-
-            if (line.controlPointIds.size() == 2)
+            if (line != null && line.controlPointIds.size() == 2)
                 addProfile();
         }
         else if (Properties.VERTEX_POSITION_CHANGED.equals(evt.getPropertyName()))
         {
-            int lineId = (Integer)evt.getNewValue();
             updateProfile(lineId);
         }
         else if (Properties.STRUCTURE_REMOVED.equals(evt.getPropertyName()))
         {
-            int lineId = (Integer)evt.getNewValue();
             removeProfile(lineId);
         }
         else if (Properties.ALL_STRUCTURES_REMOVED.equals(evt.getPropertyName()))
         {
-            ((XYSeriesCollection)valueDistanceDataset).removeAllSeries();
+            valueDistanceDataset.removeAllSeries();
         }
         else if (Properties.COLOR_CHANGED.equals(evt.getPropertyName()))
         {
-            int lineId = (Integer)evt.getNewValue();
             setSeriesColor(lineId);
         }
     }

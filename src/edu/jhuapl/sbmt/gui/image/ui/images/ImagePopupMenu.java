@@ -746,7 +746,7 @@ public class ImagePopupMenu<K extends ImageKeyInterface> extends PopupMenu
 
                         String filename = file.getAbsolutePath();
 
-                        System.out.println("Exporting INFO file for " + image.getImageName() + " to " + filename);
+//                        System.out.println("Exporting INFO file for " + image.getImageName() + " to " + filename);
 
                         image.saveImageInfo(filename);
                     }
