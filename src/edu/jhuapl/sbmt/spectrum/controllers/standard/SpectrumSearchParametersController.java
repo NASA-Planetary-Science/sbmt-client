@@ -350,7 +350,7 @@ public class SpectrumSearchParametersController<S extends BasicSpectrum>
     private void setSearchParameters()
     {
 
-        if (panel.getFilenameRadioButton().isSelected())
+        if ((panel.getFilenameRadioButton() != null) && panel.getFilenameRadioButton().isSelected())
         {
         	searchParameters.setSearchByFilename(panel.getSearchByNumberTextField().getText());
         }
