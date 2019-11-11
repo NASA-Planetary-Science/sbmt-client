@@ -169,8 +169,10 @@ public class BaseSpectrumSearchModel<S extends BasicSpectrum> implements ISpectr
      */
     public void loadSpectrumListFromFile(File file) throws Exception
     {
+    	results.clear();
+
     	Preconditions.checkNotNull(customDataFolder);
-    	SpectrumListIO.loadSpectrumListButtonActionPerformed(file, new ArrayList<S>(), instrument, new Runnable()
+    	SpectrumListIO.loadSpectrumListButtonActionPerformed(file, results, instrument, new Runnable()
 		{
 			@Override
 			public void run()

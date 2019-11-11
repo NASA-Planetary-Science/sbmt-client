@@ -180,6 +180,7 @@ public class SpectrumResultsTableController<S extends BasicSpectrum>
          {
     		 File file = CustomFileChooser.showOpenDialog(null, "Select File");
     	     if (file == null) return;
+    	     model.clearSpectraFromDisplay();
              model.loadSpectrumListFromFile(file);
          }
          catch (Exception e)

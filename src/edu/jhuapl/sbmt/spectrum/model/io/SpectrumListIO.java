@@ -55,7 +55,7 @@ public class SpectrumListIO
         for (int selectedIndex : selectedIndices)
         {
             String dtStr = sdf.format(results.get(selectedIndex).getDateTime().toDate());
-            out.write(results.get(selectedIndex).getFullPath() + "," + dtStr + nl);
+            out.write(results.get(selectedIndex).getServerpath() + "," + dtStr + nl);
         }
 
         out.close();
@@ -102,7 +102,8 @@ public class SpectrumListIO
             IBasicSpectrumRenderer<S> spectrumRenderer = null;
             try
             {
-            	spectrumRenderer = SbmtSpectrumModelFactory.createSpectrumRenderer(file.getAbsolutePath(), instrument);
+            	String filename = lines.get(i).split(",")[0];
+            	spectrumRenderer = SbmtSpectrumModelFactory.createSpectrumRenderer(filename, instrument);
             }
             catch (Exception e) {
                 e.printStackTrace();

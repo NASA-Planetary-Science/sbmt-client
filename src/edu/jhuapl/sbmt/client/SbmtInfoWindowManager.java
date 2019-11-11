@@ -39,6 +39,7 @@ public class SbmtInfoWindowManager implements WindowManager, PropertyChangeListe
     {
         if (activatedInfoPanels.containsKey(model))
         {
+        	activatedInfoPanels.get(model).setVisible(true);
         	activatedInfoPanels.get(model).toFront();
         }
         else
