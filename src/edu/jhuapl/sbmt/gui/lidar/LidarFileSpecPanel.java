@@ -18,6 +18,7 @@ import javax.swing.JScrollPane;
 import javax.swing.JTable;
 
 import edu.jhuapl.saavtk.gui.dialog.DirectoryChooser;
+import edu.jhuapl.saavtk.gui.render.Renderer;
 import edu.jhuapl.saavtk.gui.table.TablePopupHandler;
 import edu.jhuapl.saavtk.gui.util.IconUtil;
 import edu.jhuapl.saavtk.gui.util.ToolTipUtil;
@@ -89,8 +90,11 @@ public class LidarFileSpecPanel extends JPanel implements ActionListener, ItemEv
 	private JButton radialResetB;
 	private JCheckBox showSpacecraftCB;
 
+	/**
+	 * Standard Constructor
+	 */
 	public LidarFileSpecPanel(LidarFileSpecManager aLidarManager, SmallBodyViewConfig aBodyViewConfig,
-			String aDataSourceName)
+			Renderer aRenderer, String aDataSourceName)
 	{
 		refManager = aLidarManager;
 
@@ -185,7 +189,7 @@ public class LidarFileSpecPanel extends JPanel implements ActionListener, ItemEv
 
 		add(GuiUtil.createDivider(), "growy,w 4!");
 
-		colorConfigPanel = new ColorConfigPanel<>(this, refManager);
+		colorConfigPanel = new ColorConfigPanel<>(this, refManager, aRenderer);
 		colorConfigPanel.setActiveMode(ColorMode.Simple);
 		add(colorConfigPanel, "ax right,ay top,growx,wrap");
 
@@ -204,47 +208,28 @@ public class LidarFileSpecPanel extends JPanel implements ActionListener, ItemEv
 	}
 
 	/**
-	 * Helper method that forms the configuration options that are placed on the
-	 * left side.
-	 */
-	private JPanel formLeftPanel()
-	{
-		JPanel retPanel = new JPanel(new MigLayout("", "[]", "0[][]"));
-
-		// Row 1: hideB, showSpacecraftCB
-		retPanel.add(hideB, "sg g1");
-		retPanel.add(showSpacecraftCB, "gapleft 10,growx,pushx,wrap");
-
-		// Row 2: showB, saveB
-		retPanel.add(showB, "sg g1");
-		retPanel.add(saveB, "gapleft 10,sg g2,wrap");
-
-		// Radial offset section
-		retPanel.add(GuiUtil.createDivider(), "growx,h 4!,span,wrap");
-		retPanel.add(new JLabel("Radial Offset", JLabel.LEFT), "growx,span,wrap 2");
-		retPanel.add(radialS, "growx,pushx,span,split");
-		retPanel.add(radialResetB, "wrap");
-
-		return retPanel;
-	}
-
-	/**
 	 * Method that will populate the table with LidarFileSpecs relative to the
 	 * specified data source.
 	 */
 	public void populate(SmallBodyViewConfig aBodyViewConfig, String aDataSourceName)
 	{
-		String browseFileList = aBodyViewConfig.lidarBrowseDataSourceMap.get(aDataSourceName);
+		String browseFileList = null;
+		if (aBodyViewConfig.lidarBrowseWithPointsDataSourceMap.get(aDataSourceName) != null)
+		{
+			browseFileList = aBodyViewConfig.lidarBrowseWithPointsDataSourceMap.get(aDataSourceName);
+		}
+		else
+			browseFileList = aBodyViewConfig.lidarBrowseDataSourceMap.get(aDataSourceName);
 
 		try
 		{
-			FileCache.isFileGettable(aBodyViewConfig.lidarBrowseFileListResourcePath);
+//			FileCache.isFileGettable(aBodyViewConfig.lidarBrowseFileListResourcePath);
 
 			List<LidarFileSpec> tmpL;
 			if (aDataSourceName == null)
 				tmpL = LidarBrowseUtil.loadLidarFileSpecListFor(aBodyViewConfig);
 			else
-				tmpL = LidarBrowseUtil.loadLidarFileSpecList(browseFileList);
+				tmpL = LidarBrowseUtil.loadCatalog(browseFileList);
 
 			refManager.setAllItems(tmpL);
 
@@ -365,6 +350,33 @@ public class LidarFileSpecPanel extends JPanel implements ActionListener, ItemEv
 			JOptionPane.showMessageDialog(rootComp, errMsg, "Error Saving Lidar Files", JOptionPane.ERROR_MESSAGE);
 			aExp.printStackTrace();
 		}
+	}
+
+	/**
+	 * Helper method that forms the configuration options that are placed on the
+	 * left side.
+	 */
+	private JPanel formLeftPanel()
+	{
+		JPanel retPanel = new JPanel(new MigLayout("", "[]", "0[][]"));
+
+		// Row 1: hideB
+		retPanel.add(hideB, "sg g1,wrap");
+
+		// Row 2: showB, saveB
+		retPanel.add(showB, "sg g1,span,split");
+		retPanel.add(saveB, "gapleft 10,sg g2,wrap");
+
+		// Row 3: showSpacecraftCB
+		retPanel.add(showSpacecraftCB, "span,wrap");
+
+		// Radial offset section
+		retPanel.add(GuiUtil.createDivider(), "growx,h 4!,span,wrap");
+		retPanel.add(new JLabel("Radial Offset", JLabel.LEFT), "growx,span,wrap 2");
+		retPanel.add(radialS, "growx,pushx,span,split");
+		retPanel.add(radialResetB, "wrap");
+
+		return retPanel;
 	}
 
 	/**

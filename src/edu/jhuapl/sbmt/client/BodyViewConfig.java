@@ -76,6 +76,7 @@ public abstract class BodyViewConfig extends ViewConfig
     // if hasLidarData is true, the following must be filled in
     public Map<String, String> lidarSearchDataSourceMap=Maps.newHashMap();
     public Map<String, String> lidarBrowseDataSourceMap=Maps.newHashMap();    // overrides lidarBrowseFileListResourcePath for OLA
+    public Map<String, String> lidarBrowseWithPointsDataSourceMap=Maps.newHashMap();
     public Map<String, ArrayList<Date>> lidarSearchDataSourceTimeMap = Maps.newHashMap();
 	public Map<String, ArrayList<Date>> orexSearchTimeMap = Maps.newHashMap();
 
@@ -292,6 +293,7 @@ public abstract class BodyViewConfig extends ViewConfig
             c.lidarSearchDefaultEndDate = (Date)this.lidarSearchDefaultEndDate.clone();
             c.lidarSearchDataSourceMap = new LinkedHashMap<>(this.lidarSearchDataSourceMap);
             c.lidarBrowseDataSourceMap = new LinkedHashMap<>(this.lidarBrowseDataSourceMap);
+            c.lidarBrowseWithPointsDataSourceMap = new LinkedHashMap<>(this.lidarBrowseWithPointsDataSourceMap);
             c.lidarBrowseXYZIndices = this.lidarBrowseXYZIndices.clone();
             c.lidarBrowseSpacecraftIndices = this.lidarBrowseSpacecraftIndices.clone();
             c.lidarBrowseIsLidarInSphericalCoordinates = this.lidarBrowseIsLidarInSphericalCoordinates;
@@ -442,6 +444,7 @@ public abstract class BodyViewConfig extends ViewConfig
 		result = prime * result + Arrays.hashCode(imagingInstruments);
 		result = prime * result + lidarBrowseBinaryRecordSize;
 		result = prime * result + ((lidarBrowseDataSourceMap == null) ? 0 : lidarBrowseDataSourceMap.hashCode());
+		result = prime * result + ((lidarBrowseWithPointsDataSourceMap == null) ? 0 : lidarBrowseWithPointsDataSourceMap.hashCode());
 		result = prime * result
 				+ ((lidarBrowseFileListResourcePath == null) ? 0 : lidarBrowseFileListResourcePath.hashCode());
 		result = prime * result + (lidarBrowseIntensityEnabled ? 1231 : 1237);
@@ -673,6 +676,16 @@ public abstract class BodyViewConfig extends ViewConfig
 				return false;
 			}
 		} else if (!lidarBrowseDataSourceMap.equals(other.lidarBrowseDataSourceMap))
+		{
+			return false;
+		}
+		if (lidarBrowseWithPointsDataSourceMap == null)
+		{
+			if (other.lidarBrowseWithPointsDataSourceMap != null)
+			{
+				return false;
+			}
+		} else if (!lidarBrowseWithPointsDataSourceMap.equals(other.lidarBrowseWithPointsDataSourceMap))
 		{
 			return false;
 		}
