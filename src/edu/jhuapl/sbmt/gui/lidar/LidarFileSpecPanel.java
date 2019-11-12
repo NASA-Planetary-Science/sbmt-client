@@ -213,11 +213,17 @@ public class LidarFileSpecPanel extends JPanel implements ActionListener, ItemEv
 	 */
 	public void populate(SmallBodyViewConfig aBodyViewConfig, String aDataSourceName)
 	{
-		String browseFileList = aBodyViewConfig.lidarBrowseDataSourceMap.get(aDataSourceName);
+		String browseFileList = null;
+		if (aBodyViewConfig.lidarBrowseWithPointsDataSourceMap.get(aDataSourceName) != null)
+		{
+			browseFileList = aBodyViewConfig.lidarBrowseWithPointsDataSourceMap.get(aDataSourceName);
+		}
+		else
+			browseFileList = aBodyViewConfig.lidarBrowseDataSourceMap.get(aDataSourceName);
 
 		try
 		{
-			FileCache.isFileGettable(aBodyViewConfig.lidarBrowseFileListResourcePath);
+//			FileCache.isFileGettable(aBodyViewConfig.lidarBrowseFileListResourcePath);
 
 			List<LidarFileSpec> tmpL;
 			if (aDataSourceName == null)
