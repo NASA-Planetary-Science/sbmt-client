@@ -58,7 +58,7 @@ public class ColorBarPanel<G1> extends JPanel implements ActionListener
 		defaultMin = Double.NaN;
 		defaultMax = Double.NaN;
 
-		cColormap = Colormaps.getNewInstanceOfBuiltInColormap(Colormaps.getDefaultColormapName());
+		cColormap = Colormaps.getNewInstanceOfBuiltInColormap(Colormaps.getCurrentColormapName());
 
 		featureL = new JLabel("Property:");
 		featureLCR = new CustomListCellRenderer();
@@ -74,7 +74,7 @@ public class ColorBarPanel<G1> extends JPanel implements ActionListener
 		{
 			Colormap cmap = Colormaps.getNewInstanceOfBuiltInColormap(aStr);
 			colormapBox.addItem(cmap);
-			if (cmap.getName().equals(Colormaps.getDefaultColormapName()))
+			if (cmap.getName().equals(Colormaps.getCurrentColormapName()))
 				colormapBox.setSelectedItem(cmap);
 		}
 		colormapBox.addActionListener(this);

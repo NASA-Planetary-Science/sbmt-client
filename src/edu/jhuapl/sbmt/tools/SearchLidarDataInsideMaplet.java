@@ -116,7 +116,7 @@ public class SearchLidarDataInsideMaplet
 
         EllipsePolygon region = (EllipsePolygon)selectionModel.getStructure(0);
 
-        TreeSet<Integer> cubeList = smallBodyModel.getIntersectingCubes(new BoundingBox(region.interiorPolyData.GetBounds()));
+        TreeSet<Integer> cubeList = smallBodyModel.getIntersectingCubes(new BoundingBox(region.getVtkInteriorPolyData().GetBounds()));
 
         String name = (String)config.lidarSearchDataSourceMap.keySet().toArray()[0];
         String path = (String)config.lidarSearchDataSourceMap.values().toArray()[0];

@@ -4,6 +4,7 @@ import java.util.List;
 
 import com.google.common.collect.ImmutableList;
 
+import edu.jhuapl.sbmt.gui.lidar.color.ColorProvider;
 import edu.jhuapl.sbmt.model.lidar.LidarFileSpec;
 import edu.jhuapl.sbmt.model.lidar.LidarFileSpecManager;
 
@@ -62,6 +63,11 @@ class FileSpecItemHandler extends BasicItemHandler<LidarFileSpec, LookUp>
 		List<LidarFileSpec> tmpL = ImmutableList.of(aFileSpec);
 		if (aEnum == LookUp.IsVisible)
 			refManager.setIsVisible(tmpL, (boolean) aValue);
+		else if (aEnum == LookUp.Color)
+		{
+			ColorProvider tmpCP = (ColorProvider) aValue;
+			refManager.installCustomColorProviders(tmpL, tmpCP, tmpCP);
+		}
 		else
 			throw new UnsupportedOperationException("Column is not supported. Enum: " + aEnum);
 	}

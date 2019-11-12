@@ -162,12 +162,12 @@ public class DtmCreationControlController implements ActionListener, PropertyCha
         if (!panel.getSetSpecifyRegionManuallyCheckbox().isSelected())
         {
             AbstractEllipsePolygonModel selectionModel = (AbstractEllipsePolygonModel)model.getModelManager().getModel(ModelNames.CIRCLE_SELECTION);
-            if (selectionModel.getNumberOfStructures() > 0)
+            if (selectionModel.getNumItems() > 0)
             {
                 EllipsePolygon region = (EllipsePolygon)selectionModel.getStructure(0);
 
                 centerPoint = region.getCenter();
-                radius = region.radius;
+                radius = region.getRadius();
             }
             else
             {

@@ -614,8 +614,15 @@ public class CustomImagesModel extends ImageSearchModel
 				FileUtils.moveFile(new File(getConfigFilename()), new File(getModelManager().getPolyhedralModel().getPlateConfigFilename()));
 				return;
 			}
-            FixedMetadata metadata = Serializers.deserialize(new File(getConfigFilename()), "CustomImages");
-            retrieve(metadata);
+			try
+			{
+                FixedMetadata metadata = Serializers.deserialize(new File(getConfigFilename()), "CustomImages");
+                retrieve(metadata);
+			}
+			catch (Exception e)
+			{
+			    e.printStackTrace();
+			}
         }
         for (CustomImageKeyInterface info : customImages)
         {
