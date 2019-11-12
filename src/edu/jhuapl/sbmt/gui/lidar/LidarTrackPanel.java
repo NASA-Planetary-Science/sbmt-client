@@ -104,8 +104,12 @@ public class LidarTrackPanel extends JPanel
 	private JLabel errorModeL, errorValueL;
 	private GSlider radialS;
 	private JButton radialResetB;
+	private JCheckBox showSpacecraftCB;
 	private JSpinner pointSizeSpinner;
 
+	/**
+	 * Standard Constructor
+	 */
 	public LidarTrackPanel(LidarTrackManager aTrackManager, ModelManager aModelManager,
 			SmallBodyViewConfig aBodyViewConfig, PickManager aPickManager, Renderer aRenderer)
 	{
@@ -194,13 +198,18 @@ public class LidarTrackPanel extends JPanel
 		radialS.setModelValue(0.0);
 		radialResetB = GuiUtil.formButton(this, "Reset");
 
+		// Show spacecraft checkbox
+		showSpacecraftCB = new JCheckBox("Show spacecraft position");
+		showSpacecraftCB.setSelected(false);
+		showSpacecraftCB.addActionListener(this);
+
 		// Form the left and right sub panels
 		JPanel leftPanel = formLeftPanel();
 		add(leftPanel, "growx,growy,pushx");
 
 		add(GuiUtil.createDivider(), "growy,w 4!");
 
-		colorConfigPanel = new ColorConfigPanel<>(this, refTrackManager);
+		colorConfigPanel = new ColorConfigPanel<>(this, refTrackManager, aRenderer);
 		colorConfigPanel.setActiveMode(ColorMode.AutoHue);
 		add(colorConfigPanel, "ax right,ay top,growx,wrap");
 
@@ -242,33 +251,6 @@ public class LidarTrackPanel extends JPanel
 		refTrackManager.handleDefaultPickerManagement(refPickManager.getDefaultPicker(), aModelManager);
 	}
 
-	/**
-	 * Helper method that forms the configuration options that are placed on the
-	 * left side.
-	 */
-	private JPanel formLeftPanel()
-	{
-		JPanel retPanel = new JPanel(new MigLayout("", "[]", "0[][]"));
-
-		// Row 1: hideB, dragB, removeB
-		retPanel.add(hideB, "sg g1,span,split");
-		retPanel.add(dragB, "gapleft 10,sg g2");
-		retPanel.add(removeB, "gapleft 10,sg g3,wrap");
-
-		// Row 2: showB, translateB, saveB
-		retPanel.add(showB, "sg g1,span,split");
-		retPanel.add(translateB, "gapleft 10,sg g2");
-		retPanel.add(saveB, "gapleft 10,sg g3,wrap");
-
-		// Radial offset section
-		retPanel.add(GuiUtil.createDivider(), "growx,h 4!,span,wrap");
-		retPanel.add(new JLabel("Radial Offset", JLabel.LEFT), "growx,span,wrap 2");
-		retPanel.add(radialS, "growx,pushx,span,split");
-		retPanel.add(radialResetB, "wrap");
-
-		return retPanel;
-	}
-
 	@Override
 	public void actionPerformed(ActionEvent aEvent)
 	{
@@ -299,6 +281,8 @@ public class LidarTrackPanel extends JPanel
 			doActionRadialOffset();
 		else if (source == radialResetB)
 			doActionRadialReset();
+		else if (source == showSpacecraftCB)
+			refTrackManager.setShowSourcePoints(showSpacecraftCB.isSelected());
 		else if (source == errorModeBox)
 			updateErrorUI();
 		else if (source == showErrorCB)
@@ -454,6 +438,36 @@ public class LidarTrackPanel extends JPanel
 			translateDialog = new LidarTrackTranslateDialog(this, refTrackManager);
 
 		translateDialog.setVisible(true);
+	}
+
+	/**
+	 * Helper method that forms the configuration options that are placed on the
+	 * left side.
+	 */
+	private JPanel formLeftPanel()
+	{
+		JPanel retPanel = new JPanel(new MigLayout("", "[]", "0[][]"));
+
+		// Row 1: hideB, dragB, removeB
+		retPanel.add(hideB, "sg g1,span,split");
+		retPanel.add(dragB, "gapleft 10,sg g2");
+		retPanel.add(removeB, "gapleft 10,sg g3,wrap");
+
+		// Row 2: showB, translateB, saveB
+		retPanel.add(showB, "sg g1,span,split");
+		retPanel.add(translateB, "gapleft 10,sg g2");
+		retPanel.add(saveB, "gapleft 10,sg g3,wrap");
+
+		// Row 3: showSpacecraftCB
+		retPanel.add(showSpacecraftCB, "span,wrap");
+
+		// Radial offset section
+		retPanel.add(GuiUtil.createDivider(), "growx,h 4!,span,wrap");
+		retPanel.add(new JLabel("Radial Offset", JLabel.LEFT), "growx,span,wrap 2");
+		retPanel.add(radialS, "growx,pushx,span,split");
+		retPanel.add(radialResetB, "wrap");
+
+		return retPanel;
 	}
 
 	/**
