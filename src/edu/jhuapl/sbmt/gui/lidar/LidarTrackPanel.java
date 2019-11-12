@@ -248,7 +248,7 @@ public class LidarTrackPanel extends JPanel
 		refPickManager.addListener(this);
 
 		// TODO: This registration should be done by the refTrackManager
-		refTrackManager.handleDefaultPickerManagement(refPickManager.getDefaultPicker(), aModelManager);
+		refTrackManager.registerDefaultPickerHandler(refPickManager.getDefaultPicker());
 	}
 
 	@Override
