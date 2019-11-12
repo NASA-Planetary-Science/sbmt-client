@@ -62,4 +62,12 @@ public class CustomListCellRenderer extends DefaultListCellRenderer
 		labelM.remove(aItem);
 	}
 
+	/**
+	 * Returns the label associated with the specified mapping.
+	 */
+	public String getLabel(Object aItem)
+	{
+		return labelM.get(aItem);
+	}
+
 }

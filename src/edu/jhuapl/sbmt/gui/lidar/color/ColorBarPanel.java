@@ -33,9 +33,6 @@ public class ColorBarPanel<G1> extends JPanel implements ActionListener
 	private List<ActionListener> listenerL;
 	private double defaultMin, defaultMax;
 
-	// Cache vars
-	private Colormap cColormap;
-
 	// Gui vars
 	private final JLabel featureL;
 	private final CustomListCellRenderer featureLCR;
@@ -45,6 +42,7 @@ public class ColorBarPanel<G1> extends JPanel implements ActionListener
 	private final JLabel minValueL, maxValueL, numLevelsL;
 	private final GNumberField minValueNF, maxValueNF, numLevelsNF;
 	private final JCheckBox logScaleCB;
+	private final JCheckBox showColorBarCB;
 	private final JButton resetB;
 	private final JButton applyB;
 	private final JToggleButton syncB;
@@ -57,8 +55,6 @@ public class ColorBarPanel<G1> extends JPanel implements ActionListener
 		listenerL = new ArrayList<>();
 		defaultMin = Double.NaN;
 		defaultMax = Double.NaN;
-
-		cColormap = Colormaps.getNewInstanceOfBuiltInColormap(Colormaps.getCurrentColormapName());
 
 		featureL = new JLabel("Property:");
 		featureLCR = new CustomListCellRenderer();
@@ -91,6 +87,8 @@ public class ColorBarPanel<G1> extends JPanel implements ActionListener
 		// Action buttons
 		logScaleCB = new JCheckBox("Log scale");
 		logScaleCB.addActionListener(this);
+		showColorBarCB = new JCheckBox("Show Color Bar");
+		showColorBarCB.addActionListener(this);
 		resetB = new JButton("Range Reset");
 		resetB.addActionListener(this);
 		syncB = new JToggleButton("Sync", true);
@@ -130,15 +128,29 @@ public class ColorBarPanel<G1> extends JPanel implements ActionListener
 	}
 
 	/**
-	 * Returns the current Colormap associated with this panel.
+	 * Returns the user configured {@link ColorMapAttr} .
 	 */
-	public Colormap getColormap()
+	public ColorMapAttr getColorMapAttr()
 	{
-		return cColormap;
+		String name = colormapBox.getChosenItem().getName();
+		double minVal = minValueNF.getValue();
+		double maxVal = maxValueNF.getValue();
+		int numLevels = numLevelsNF.getValueAsInt(-1);
+		boolean isLogScale = logScaleCB.isSelected();
+
+		return new ColorMapAttr(name, minVal, maxVal, numLevels, isLogScale);
 	}
 
 	/**
-	 * Returns the current FeatureType associated with this panel.
+	 * Returns the Colormap name associated with this panel.
+	 */
+	public String getColormapName()
+	{
+		return colormapBox.getChosenItem().getName();
+	}
+
+	/**
+	 * Returns the FeatureType associated with this panel.
 	 * <P>
 	 * The FeatureType is the physical quality attribute that coloring will be
 	 * based off of.
@@ -228,7 +240,6 @@ public class ColorBarPanel<G1> extends JPanel implements ActionListener
 		// Apply the settings
 		else if (source == applyB)
 		{
-			syncColorMapToGui();
 			notifyListeners();
 		}
 
@@ -242,7 +253,6 @@ public class ColorBarPanel<G1> extends JPanel implements ActionListener
 		// LogScale UI
 		else if (source == logScaleCB)
 		{
-			syncColorMapToGui();
 			notifyListeners();
 		}
 
@@ -274,6 +284,12 @@ public class ColorBarPanel<G1> extends JPanel implements ActionListener
 
 			doAutoSync();
 		}
+
+		// Color Bar display UI
+		else if (source == showColorBarCB)
+		{
+			notifyListeners();
+		}
 	}
 
 	/**
@@ -295,9 +311,6 @@ public class ColorBarPanel<G1> extends JPanel implements ActionListener
 
 		String name = colormapBox.getChosenItem().getName();
 		Colormap tmpColormap = Colormaps.getNewInstanceOfBuiltInColormap(name);
-//		Colormap tmpColormap = colormapBox.getChosenItem();
-//		tmpColormap.setRangeMin(minValueNF.getValue());
-//		tmpColormap.setRangeMax(maxValueNF.getValue());
 		tmpColormap.setNumberOfLevels(numLevels);
 		colormapL.setIcon(ColormapUtil.createIcon(tmpColormap, iconW, iconH));
 	}
@@ -339,6 +352,8 @@ public class ColorBarPanel<G1> extends JPanel implements ActionListener
 		add(numLevelsL, "");
 		add(numLevelsNF, "");
 		add(applyB, "sg g1,wrap 0");
+//
+//		add(showColorBarCB, "skip 2,sg g1,wrap 0");
 	}
 
 	/**
@@ -354,9 +369,6 @@ public class ColorBarPanel<G1> extends JPanel implements ActionListener
 		// Bail if action GUI is not in a valid state
 		if (isColorMapConfigValid() == false)
 			return;
-
-		// Synchronize our cached ColorMap
-		syncColorMapToGui();
 
 		// Send out notification of the changes
 		notifyListeners();
@@ -383,25 +395,6 @@ public class ColorBarPanel<G1> extends JPanel implements ActionListener
 	{
 		for (ActionListener aListener : listenerL)
 			aListener.actionPerformed(new ActionEvent(this, 0, ""));
-	}
-
-	/**
-	 * Helper method that will synchronize relevant ColorMap properties to the
-	 * corresponding GUI elements.
-	 */
-	private void syncColorMapToGui()
-	{
-		// Bail on invalid configuration
-		if (isColorMapConfigValid() == false)
-			return;
-
-		String name = colormapBox.getChosenItem().getName();
-
-		cColormap = Colormaps.getNewInstanceOfBuiltInColormap(name);
-		cColormap.setRangeMin(minValueNF.getValue());
-		cColormap.setRangeMax(maxValueNF.getValue());
-		cColormap.setNumberOfLevels(numLevelsNF.getValueAsInt(-1));
-		cColormap.setLogScale(logScaleCB.isSelected());
 	}
 
 	/**

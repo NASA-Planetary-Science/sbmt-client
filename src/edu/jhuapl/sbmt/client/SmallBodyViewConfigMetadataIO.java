@@ -251,6 +251,8 @@ public class SmallBodyViewConfigMetadataIO implements MetadataManager
         writeDate(lidarSearchDefaultEndDate, c.lidarSearchDefaultEndDate, configMetadata);
         write(lidarSearchDataSourceMap, c.lidarSearchDataSourceMap, configMetadata);
         write(lidarBrowseDataSourceMap, c.lidarBrowseDataSourceMap, configMetadata);
+        if (lidarBrowseWithPointsDataSourceMap != null)
+        	write(lidarBrowseWithPointsDataSourceMap, c.lidarBrowseWithPointsDataSourceMap, configMetadata);
 
         write(lidarSearchDataSourceTimeMap, c.lidarSearchDataSourceTimeMap, configMetadata);
         write(orexSearchTimeMap, c.orexSearchTimeMap, configMetadata);
@@ -498,6 +500,8 @@ public class SmallBodyViewConfigMetadataIO implements MetadataManager
 	        c.lidarSearchDefaultEndDate = new Date(lidarSearchDefaultEnd);
 	        c.lidarSearchDataSourceMap = read(lidarSearchDataSourceMap, configMetadata);
 	        c.lidarBrowseDataSourceMap = read(lidarBrowseDataSourceMap, configMetadata);
+	        if (configMetadata.hasKey(lidarBrowseWithPointsDataSourceMap))
+	        	c.lidarBrowseWithPointsDataSourceMap = read(lidarBrowseWithPointsDataSourceMap, configMetadata);
 
 	        c.lidarSearchDataSourceTimeMap = read(lidarSearchDataSourceTimeMap, configMetadata);
 	        c.orexSearchTimeMap = read(orexSearchTimeMap, configMetadata);
@@ -657,6 +661,7 @@ public class SmallBodyViewConfigMetadataIO implements MetadataManager
 
     final Key<Map> lidarSearchDataSourceMap = Key.of("lidarSearchDataSourceMap");
     final Key<Map> lidarBrowseDataSourceMap = Key.of("lidarBrowseDataSourceMap");
+    final Key<Map> lidarBrowseWithPointsDataSourceMap = Key.of("lidarBrowseWithPointsDataSourceMap");
 
     final Key<Map> lidarSearchDataSourceTimeMap = Key.of("lidarSearchDataSourceTimeMap");
     final Key<Map> orexSearchTimeMap = Key.of("orexSearchTimeMap");

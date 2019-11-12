@@ -40,6 +40,8 @@ import edu.jhuapl.saavtk.model.structure.EllipseModel;
 import edu.jhuapl.saavtk.model.structure.LineModel;
 import edu.jhuapl.saavtk.model.structure.PointModel;
 import edu.jhuapl.saavtk.model.structure.PolygonModel;
+import edu.jhuapl.saavtk.pick.PickManager;
+import edu.jhuapl.saavtk.pick.PickUtil;
 import edu.jhuapl.saavtk.popup.PopupMenu;
 import edu.jhuapl.saavtk.structure.gui.StructureTabbedPane;
 import edu.jhuapl.saavtk.util.Configuration;
@@ -64,7 +66,7 @@ import edu.jhuapl.sbmt.gui.image.controllers.spectral.SpectralImagingSearchContr
 import edu.jhuapl.sbmt.gui.image.model.images.ImageSearchModel;
 import edu.jhuapl.sbmt.gui.image.ui.color.ColorImagePopupMenu;
 import edu.jhuapl.sbmt.gui.image.ui.cubes.ImageCubePopupMenu;
-import edu.jhuapl.sbmt.gui.image.ui.images.ImagePickManager;
+import edu.jhuapl.sbmt.gui.image.ui.images.ImageDefaultPickHandler;
 import edu.jhuapl.sbmt.gui.image.ui.images.ImagePopupManager;
 import edu.jhuapl.sbmt.gui.image.ui.images.ImagePopupMenu;
 import edu.jhuapl.sbmt.gui.lidar.LidarLoadPanel;
@@ -738,7 +740,12 @@ public class SbmtView extends View implements PropertyChangeListener
 	@Override
 	protected void setupPickManager()
 	{
-		setPickManager(new ImagePickManager(getRenderer(), getStatusBar(), getModelManager(), getPopupManager()));
+		PickManager tmpPickManager = new PickManager(getRenderer(), getModelManager(), getPopupManager());
+		PickUtil.installDefaultPickHandler(tmpPickManager, getStatusBar(), getRenderer(), getModelManager());
+		setPickManager(tmpPickManager);
+
+		// TODO: This should be moved out of here to a logical relevant location
+		tmpPickManager.getDefaultPicker().addListener(new ImageDefaultPickHandler());
 	}
 
 	@Override
