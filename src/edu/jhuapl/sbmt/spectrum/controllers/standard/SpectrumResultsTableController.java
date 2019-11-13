@@ -331,7 +331,7 @@ public class SpectrumResultsTableController<S extends BasicSpectrum>
 		    	for (S spectrum: selectedItems)
 		    	{
 		    		if (firstIndex == -1) firstIndex = spectrumCollection.getAllItems().asList().indexOf(spectrum);
-		    		spectrumCollection.addSpectrum(spectrum, false);
+		    		spectrumCollection.addSpectrum(spectrum, spectrum.isCustomSpectra);
 		            boundaries.addBoundary(spectrum);
 		            progressMonitor.setProgress((int)(100*(double)i/(double)selectedItems.size()));
 		            lastIndex = spectrumCollection.getAllItems().asList().indexOf(spectrum);

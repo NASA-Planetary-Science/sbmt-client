@@ -211,7 +211,7 @@ public class SpectrumPopupMenu<S extends BasicSpectrum> extends PopupMenu implem
         {
             if (showRemoveSpectrumIn3DMenuItem.isSelected())
             {
-            	collection.addSpectrum(spectrum.get(0), false);
+            	collection.addSpectrum(spectrum.get(0), spectrum.get(0).isCustomSpectra);
             }
             else
                 collection.removeSpectrum(spectrum.get(0));
