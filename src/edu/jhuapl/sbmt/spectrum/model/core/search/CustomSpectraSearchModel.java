@@ -22,6 +22,7 @@ import edu.jhuapl.sbmt.config.Strings;
 import edu.jhuapl.sbmt.model.image.ImageType;
 import edu.jhuapl.sbmt.spectrum.model.core.BasicSpectrum;
 import edu.jhuapl.sbmt.spectrum.model.core.BasicSpectrumInstrument;
+import edu.jhuapl.sbmt.spectrum.model.core.SpectrumIOException;
 import edu.jhuapl.sbmt.spectrum.model.core.SpectrumInstrumentFactory;
 import edu.jhuapl.sbmt.spectrum.model.core.interfaces.CustomSpectraResultsListener;
 import edu.jhuapl.sbmt.spectrum.model.core.interfaces.IBasicSpectrumRenderer;
@@ -398,7 +399,7 @@ public class CustomSpectraSearchModel<S extends BasicSpectrum> extends BaseSpect
      * @throws Exception
      */
     @Override
-    public void loadSpectrumListFromFile(File file) throws Exception
+    public void loadSpectrumListFromFile(File file) throws SpectrumIOException
     {
     	Preconditions.checkNotNull(customDataFolder);
     	SpectrumListIO.loadCustomSpectrumListButtonActionPerformed(file, customSpectraKeys, instrument, new Runnable()

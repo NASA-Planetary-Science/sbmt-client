@@ -12,6 +12,7 @@ import edu.jhuapl.saavtk.util.FileUtil;
 import edu.jhuapl.sbmt.client.SbmtSpectrumModelFactory;
 import edu.jhuapl.sbmt.spectrum.model.core.BasicSpectrum;
 import edu.jhuapl.sbmt.spectrum.model.core.BasicSpectrumInstrument;
+import edu.jhuapl.sbmt.spectrum.model.core.SpectrumIOException;
 import edu.jhuapl.sbmt.spectrum.model.core.interfaces.IBasicSpectrumRenderer;
 import edu.jhuapl.sbmt.spectrum.model.sbmtCore.spectra.CustomSpectrumKeyInterface;
 
@@ -88,7 +89,7 @@ public class SpectrumListIO
      * @param completionBlock
      * @throws Exception
      */
-    public static <S extends BasicSpectrum> void loadSpectrumListButtonActionPerformed(File file, List<S> results, BasicSpectrumInstrument instrument, Runnable completionBlock) throws Exception
+    public static <S extends BasicSpectrum> void loadSpectrumListButtonActionPerformed(File file, List<S> results, BasicSpectrumInstrument instrument, Runnable completionBlock) throws SpectrumIOException, Exception
     {
     	if (file == null) return;
 
@@ -96,6 +97,8 @@ public class SpectrumListIO
         sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
 
         List<String> lines = FileUtil.getFileLinesAsStringList(file.getAbsolutePath());
+        if (!lines.get(0).startsWith("#")) throw new SpectrumIOException("Improper file format; please ensure you're not loading a custom spectrum saved list");
+
         for (int i=0; i<lines.size(); ++i)
         {
             if (lines.get(i).startsWith("#")) continue;
@@ -108,7 +111,8 @@ public class SpectrumListIO
             catch (Exception e) {
                 e.printStackTrace();
             }
-            results.add(spectrumRenderer.getSpectrum());
+            if (spectrumRenderer != null)
+            	results.add(spectrumRenderer.getSpectrum());
         }
         completionBlock.run();
 
@@ -129,7 +133,7 @@ public class SpectrumListIO
 	 */
 	public static <S extends BasicSpectrum> void loadCustomSpectrumListButtonActionPerformed(File file,
 			List<CustomSpectrumKeyInterface> results, BasicSpectrumInstrument instrument, Runnable completionBlock)
-			throws Exception
+			throws SpectrumIOException
 	{
 		if (file == null) return;
 
@@ -146,8 +150,7 @@ public class SpectrumListIO
 		}
 		catch (IOException e)
 		{
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			throw new SpectrumIOException("There was a problem reading the custom spectrum list.  Please make sure it is the right format, and not the one for the main spectrum panel", e);
 		}
 	}
 

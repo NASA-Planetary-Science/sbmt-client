@@ -19,6 +19,7 @@ import edu.jhuapl.saavtk.util.IdPair;
 import edu.jhuapl.sbmt.client.SbmtInfoWindowManager;
 import edu.jhuapl.sbmt.spectrum.model.core.BasicSpectrum;
 import edu.jhuapl.sbmt.spectrum.model.core.BasicSpectrumInstrument;
+import edu.jhuapl.sbmt.spectrum.model.core.SpectrumIOException;
 import edu.jhuapl.sbmt.spectrum.model.core.interfaces.SpectrumSearchResultsListener;
 import edu.jhuapl.sbmt.spectrum.model.core.search.BaseSpectrumSearchModel;
 import edu.jhuapl.sbmt.spectrum.rendering.SpectraCollection;
@@ -183,15 +184,23 @@ public class SpectrumResultsTableController<S extends BasicSpectrum>
     	     model.clearSpectraFromDisplay();
              model.loadSpectrumListFromFile(file);
          }
-         catch (Exception e)
+         catch (SpectrumIOException e)
          {
              JOptionPane.showMessageDialog(JOptionPane.getFrameForComponent(panel),
-                     "There was an error reading the file.  See the console for details",
+                     e.getMessage(),
                      "Error",
                      JOptionPane.ERROR_MESSAGE);
 
-             e.printStackTrace();
+//             e.printStackTrace();
          }
+    	 catch (Exception e)
+    	 {
+    		 JOptionPane.showMessageDialog(JOptionPane.getFrameForComponent(panel),
+                     "There was an error loading the spectrum from the list; Please see the console for details",
+                     "Error",
+                     JOptionPane.ERROR_MESSAGE);
+    		 e.printStackTrace();
+    	 }
     }
 
     /**

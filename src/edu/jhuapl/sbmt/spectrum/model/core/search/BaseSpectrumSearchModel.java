@@ -20,6 +20,7 @@ import edu.jhuapl.sbmt.lidar.hyperoctree.HyperException.HyperDimensionMismatchEx
 import edu.jhuapl.sbmt.model.boundedobject.hyperoctree.BoundedObjectHyperTreeSkeleton;
 import edu.jhuapl.sbmt.spectrum.model.core.BasicSpectrum;
 import edu.jhuapl.sbmt.spectrum.model.core.BasicSpectrumInstrument;
+import edu.jhuapl.sbmt.spectrum.model.core.SpectrumIOException;
 import edu.jhuapl.sbmt.spectrum.model.core.interfaces.ISpectrumSearchModel;
 import edu.jhuapl.sbmt.spectrum.model.core.interfaces.SpectrumSearchResultsListener;
 import edu.jhuapl.sbmt.spectrum.model.hypertree.SpectrumHypertreeSearch;
@@ -167,7 +168,7 @@ public class BaseSpectrumSearchModel<S extends BasicSpectrum> implements ISpectr
      * @param file
      * @throws Exception
      */
-    public void loadSpectrumListFromFile(File file) throws Exception
+    public void loadSpectrumListFromFile(File file) throws SpectrumIOException, Exception
     {
     	results.clear();
 
