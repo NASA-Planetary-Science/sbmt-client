@@ -5,6 +5,7 @@ import java.awt.Component;
 import java.awt.Dimension;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
+import java.io.IOException;
 import java.util.HashMap;
 
 import javax.swing.BorderFactory;
@@ -96,6 +97,29 @@ public class SpectrumInfoPanel extends ModelInfoWindow implements PropertyChange
 
         HashMap<String, String> properties = null;
         Object[][] data = {    {"", ""} };
+
+
+
+        try
+        {
+
+            properties = this.spectrum.getProperties();
+            int size = properties.size();
+            data = new Object[size][2];
+
+            int i=0;
+            for (String key : properties.keySet())
+            {
+                data[i][0] = key;
+                data[i][1] = properties.get(key);
+
+                ++i;
+            }
+        }
+        catch (IOException e)
+        {
+            e.printStackTrace();
+        }
 
         JTable table = new JTable(data, columnNames)
         {
