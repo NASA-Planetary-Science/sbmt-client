@@ -7,6 +7,7 @@ import java.awt.event.ActionListener;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 
+import edu.jhuapl.saavtk.gui.render.Renderer;
 import edu.jhuapl.sbmt.model.lidar.LidarManager;
 
 import glum.gui.GuiExeUtil;
@@ -33,7 +34,7 @@ public class ColorConfigPanel<G1> extends JPanel implements ActionListener
 	/**
 	 * Standard Constructor
 	 */
-	public ColorConfigPanel(ActionListener aListener, LidarManager<G1> aManager)
+	public ColorConfigPanel(ActionListener aListener, LidarManager<G1> aManager, Renderer aRenderer)
 	{
 		refListener = aListener;
 
@@ -44,7 +45,7 @@ public class ColorConfigPanel<G1> extends JPanel implements ActionListener
 		add(tmpL);
 		add(colorModeBox, "growx,wrap 2");
 
-		colorMapPanel = new LidarColorBarPanel<>(this, aManager);
+		colorMapPanel = new LidarColorBarPanel<>(this, aManager, aRenderer);
 		colorPanel = new CardPanel<>();
 		colorPanel.addCard(ColorMode.AutoHue, new AutoColorPanel(this));
 		colorPanel.addCard(ColorMode.ColorMap, colorMapPanel);
@@ -55,7 +56,7 @@ public class ColorConfigPanel<G1> extends JPanel implements ActionListener
 
 		// Custom initialization code
 		Runnable tmpRunnable = () -> {
-			colorPanel.getActiveCard().activate();
+			colorPanel.getActiveCard().activate(true);
 		};
 		GuiExeUtil.executeOnceWhenShowing(this, tmpRunnable);
 	}
@@ -66,7 +67,7 @@ public class ColorConfigPanel<G1> extends JPanel implements ActionListener
 	 */
 	public GroupColorProvider getSourceGroupColorProvider()
 	{
-		return (GroupColorProvider) colorPanel.getActiveCard().getSourceGroupColorProvider();
+		return colorPanel.getActiveCard().getSourceGroupColorProvider();
 	}
 
 	/**
@@ -75,7 +76,7 @@ public class ColorConfigPanel<G1> extends JPanel implements ActionListener
 	 */
 	public GroupColorProvider getTargetGroupColorProvider()
 	{
-		return (GroupColorProvider) colorPanel.getActiveCard().getTargetGroupColorProvider();
+		return colorPanel.getActiveCard().getTargetGroupColorProvider();
 	}
 
 	/**
@@ -83,9 +84,11 @@ public class ColorConfigPanel<G1> extends JPanel implements ActionListener
 	 */
 	public void setActiveMode(ColorMode aMode)
 	{
+		colorPanel.getActiveCard().activate(false);
+
 		colorModeBox.setChosenItem(aMode);
 		colorPanel.switchToCard(aMode);
-		colorPanel.getActiveCard().activate();
+		colorPanel.getActiveCard().activate(true);
 	}
 
 	@Override
@@ -99,14 +102,15 @@ public class ColorConfigPanel<G1> extends JPanel implements ActionListener
 	}
 
 	/**
-	 * Helper method tho properly update the colorPanel.
+	 * Helper method to properly update the colorPanel.
 	 */
 	private void doUpdateColorPanel()
 	{
-		ColorMode tmpCM = colorModeBox.getChosenItem();
+		colorPanel.getActiveCard().activate(false);
 
+		ColorMode tmpCM = colorModeBox.getChosenItem();
 		colorPanel.switchToCard(tmpCM);
-		colorPanel.getActiveCard().activate();
+		colorPanel.getActiveCard().activate(true);
 	}
 
 }

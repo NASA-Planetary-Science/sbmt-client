@@ -58,6 +58,7 @@ import edu.jhuapl.saavtk.model.structure.Line;
 import edu.jhuapl.saavtk.model.structure.LineModel;
 import edu.jhuapl.saavtk.pick.PickManager;
 import edu.jhuapl.saavtk.pick.PickManager.PickMode;
+import edu.jhuapl.saavtk.pick.PickUtil;
 import edu.jhuapl.saavtk.popup.PopupManager;
 import edu.jhuapl.saavtk.popup.PopupMenu;
 import edu.jhuapl.saavtk.util.LatLon;
@@ -126,7 +127,7 @@ public class DEMView extends JFrame implements ActionListener, PropertyChangeLis
 
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 
-        StatusBar statusBar = new StatusBar();
+        StatusBar statusBar = new StatusBar(true);
         add(statusBar, BorderLayout.PAGE_END);
 
         // Look up dem object in main view
@@ -159,7 +160,8 @@ public class DEMView extends JFrame implements ActionListener, PropertyChangeLis
         PopupMenu popupMenu = new MapmakerLinesPopupMenu(modelManager, parentPolyhedralModel, renderer);
         popupManager.registerPopup(lineModel, popupMenu);
 
-        pickManager = new PickManager(renderer, statusBar, modelManager, popupManager);
+        pickManager = new PickManager(renderer, modelManager, popupManager);
+        PickUtil.installDefaultPickHandler(pickManager, statusBar, renderer, modelManager);
 
         refColorbar = new Colorbar(renderer);
 
