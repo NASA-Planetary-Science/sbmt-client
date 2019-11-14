@@ -16,6 +16,8 @@ import java.io.File;
 
 import javax.swing.JOptionPane;
 
+import org.apache.commons.io.FilenameUtils;
+
 import edu.jhuapl.saavtk.gui.dialog.CustomFileChooser;
 import edu.jhuapl.saavtk.gui.render.Renderer.ProjectionType;
 import edu.jhuapl.saavtk.model.FileType;
@@ -683,12 +685,13 @@ public class CustomSpectrumImporterDialog extends javax.swing.JDialog
         spectrumNameTextField.setText(imageFileName);
 
         // set default info file name
-        String tokens[] = imageFileName.split("\\.");
-        int ntokens = tokens.length;
-        String suffix = tokens[ntokens-1];
-        int suffixLength = suffix.length();
-        String imageFileNamePrefix = imageFileName.substring(0, imageFileName.length() - suffixLength);
-        String defaultInfoFileName = file.getParent() + System.getProperty("file.separator") + imageFileNamePrefix + "INFO";
+//        String tokens[] = imageFileName.split("\\.");
+//        int ntokens = tokens.length;
+//        String suffix = tokens[ntokens-1];
+//        int suffixLength = suffix.length();
+//        String imageFileNamePrefix = imageFileName.substring(0, imageFileName.length() - suffixLength);
+        String imageFileNamePrefix = FilenameUtils.getBaseName(imageFileName);
+        String defaultInfoFileName = file.getParent() + System.getProperty("file.separator") + imageFileNamePrefix + ".INFO";
         infofilePathTextField.setText(defaultInfoFileName);
 
         updateEnabledItems();

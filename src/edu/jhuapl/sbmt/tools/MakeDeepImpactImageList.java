@@ -8,6 +8,7 @@ import java.util.StringTokenizer;
 import java.util.Vector;
 
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.FilenameUtils;
 
 public class MakeDeepImpactImageList
 {
@@ -140,10 +141,12 @@ public class MakeDeepImpactImageList
 				//Is it a sumfile?
 				String name = sumfile.getName();
 				int end = name.length();
-				String ext = name.substring(end-3, end);
+//				String ext = name.substring(end-3, end);
+				String ext = FilenameUtils.getExtension(name);
 				if (ext.toUpperCase().equals("SUM"))
 				{
-					String metStr = name.substring(0, end-4);
+//					String metStr = name.substring(0, end-4);
+					String metStr = FilenameUtils.getBaseName(name);
 					sumfileMets.add(metStr);
 				}
 			}
