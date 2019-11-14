@@ -27,7 +27,6 @@ import edu.jhuapl.sbmt.model.bennu.SamCamEarthImage;
 import edu.jhuapl.sbmt.model.ceres.FcCeresImage;
 import edu.jhuapl.sbmt.model.custom.CustomGraticule;
 import edu.jhuapl.sbmt.model.custom.CustomShapeModel;
-import edu.jhuapl.sbmt.model.deimos.DeimosImage;
 import edu.jhuapl.sbmt.model.eros.Eros;
 import edu.jhuapl.sbmt.model.eros.ErosThomas;
 import edu.jhuapl.sbmt.model.eros.LineamentModel;
@@ -40,6 +39,7 @@ import edu.jhuapl.sbmt.model.image.Image;
 import edu.jhuapl.sbmt.model.image.ImageKeyInterface;
 import edu.jhuapl.sbmt.model.image.ImageSource;
 import edu.jhuapl.sbmt.model.image.ImageType;
+import edu.jhuapl.sbmt.model.image.marsmissions.MarsMissionImage;
 import edu.jhuapl.sbmt.model.itokawa.AmicaImage;
 import edu.jhuapl.sbmt.model.itokawa.Itokawa;
 import edu.jhuapl.sbmt.model.leisa.LEISAJupiterImage;
@@ -48,7 +48,6 @@ import edu.jhuapl.sbmt.model.lidar.LidarTrackManager;
 import edu.jhuapl.sbmt.model.lorri.LorriImage;
 import edu.jhuapl.sbmt.model.mathilde.MSIMathildeImage;
 import edu.jhuapl.sbmt.model.mvic.MVICQuadJupiterImage;
-import edu.jhuapl.sbmt.model.phobos.PhobosImage;
 import edu.jhuapl.sbmt.model.rosetta.CG;
 import edu.jhuapl.sbmt.model.rosetta.Lutetia;
 import edu.jhuapl.sbmt.model.rosetta.OsirisImage;
@@ -129,9 +128,9 @@ public class SbmtModelFactory
                 else if (key.getInstrument().getType() == ImageType.FCCERES_IMAGE)
                     return new FcCeresImage(key, smallBodyModel, loadPointingOnly);
                 else if (key.getInstrument().getType() == ImageType.PHOBOS_IMAGE)
-                    return new PhobosImage(key, smallBodyModel, loadPointingOnly);
+                    return MarsMissionImage.of(key, smallBodyModel, loadPointingOnly);
                 else if (key.getInstrument().getType() == ImageType.DEIMOS_IMAGE)
-                    return new DeimosImage(key, smallBodyModel, loadPointingOnly);
+                    return MarsMissionImage.of(key, smallBodyModel, loadPointingOnly);
                 else if (key.getInstrument().getType() == ImageType.OSIRIS_IMAGE)
                     return new OsirisImage(key, smallBodyModel, loadPointingOnly);
                 else if (key.getInstrument().getType() == ImageType.SATURN_MOON_IMAGE)
@@ -189,9 +188,9 @@ public class SbmtModelFactory
             else if (key.getImageType() == ImageType.FCCERES_IMAGE)
                 return new FcCeresImage(key, smallBodyModel, loadPointingOnly);
             else if (key.getImageType() == ImageType.PHOBOS_IMAGE)
-                return new PhobosImage(key, smallBodyModel, loadPointingOnly);
+                return MarsMissionImage.of(key, smallBodyModel, loadPointingOnly);
             else if (key.getImageType() == ImageType.DEIMOS_IMAGE)
-                return new DeimosImage(key, smallBodyModel, loadPointingOnly);
+                return MarsMissionImage.of(key, smallBodyModel, loadPointingOnly);
             else if (key.getImageType() == ImageType.OSIRIS_IMAGE)
                 return new OsirisImage(key, smallBodyModel, loadPointingOnly);
             else if (key.getImageType() == ImageType.SATURN_MOON_IMAGE)
