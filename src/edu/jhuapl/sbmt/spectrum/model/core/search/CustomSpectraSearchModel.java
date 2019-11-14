@@ -8,6 +8,7 @@ import java.util.UUID;
 import java.util.Vector;
 
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.FilenameUtils;
 
 import com.google.common.base.Preconditions;
 
@@ -25,7 +26,6 @@ import edu.jhuapl.sbmt.spectrum.model.core.BasicSpectrumInstrument;
 import edu.jhuapl.sbmt.spectrum.model.core.SpectrumIOException;
 import edu.jhuapl.sbmt.spectrum.model.core.SpectrumInstrumentFactory;
 import edu.jhuapl.sbmt.spectrum.model.core.interfaces.CustomSpectraResultsListener;
-import edu.jhuapl.sbmt.spectrum.model.core.interfaces.IBasicSpectrumRenderer;
 import edu.jhuapl.sbmt.spectrum.model.io.SpectrumListIO;
 import edu.jhuapl.sbmt.spectrum.model.key.CustomSpectrumKey;
 import edu.jhuapl.sbmt.spectrum.model.sbmtCore.spectra.CustomSpectrumKeyInterface;
@@ -121,6 +121,17 @@ public class CustomSpectraSearchModel<S extends BasicSpectrum> extends BaseSpect
     /**
      * Fires the results changed listeners
      */
+    protected void fireResultChanged(CustomSpectrumKeyInterface result)
+    {
+        for (CustomSpectraResultsListener listener : customSpectraListeners)
+        {
+            listener.resultChanged(result);
+        }
+    }
+
+    /**
+     * Fires the results changed listeners
+     */
     protected void fireResultsChanged()
     {
         for (CustomSpectraResultsListener listener : customSpectraListeners)
@@ -159,10 +170,10 @@ public class CustomSpectraSearchModel<S extends BasicSpectrum> extends BaseSpect
         }
         else
         {
-            String newFilename = newSpectrumInfo.getName() + "-" + uuid + ".spect";
+            String newFilename = FilenameUtils.getBaseName(newSpectrumInfo.getSpectrumFilename()) + "-" + uuid + ".spect";
             String newFilepath = customDataFolder + File.separator + newFilename;
             FileUtil.copyFile(newSpectrumInfo.getSpectrumFilename(),  newFilepath);
-            String newFileInfoname = newSpectrumInfo.getName() + "-" + uuid + ".INFO";
+            String newFileInfoname = FilenameUtils.getBaseName(newSpectrumInfo.getSpectrumFilename()) + "-" + uuid + ".INFO";
             String newFileInfopath = customDataFolder + File.separator + newFileInfoname;
             FileUtil.copyFile(newSpectrumInfo.getPointingFilename(),  newFileInfopath);
             // Change newImageInfo.imagefilename to the new location of the file
@@ -173,14 +184,16 @@ public class CustomSpectraSearchModel<S extends BasicSpectrum> extends BaseSpect
         if (index >= customSpectraKeys.size())
         {
             customSpectraKeys.add(newSpectrumInfo);
+            fireResultAdded(newSpectrumInfo);
         }
         else
         {
             customSpectraKeys.set(index, newSpectrumInfo);
+            fireResultChanged(newSpectrumInfo);
         }
 
         updateConfigFile();
-        fireResultAdded(newSpectrumInfo);
+
     }
 
     /**
@@ -303,6 +316,7 @@ public class CustomSpectraSearchModel<S extends BasicSpectrum> extends BaseSpect
         {
         	S spectrum = (S)SbmtSpectrumModelFactory.createSpectrum(customDataFolder + File.separator + info.getSpectrumFilename(), SpectrumInstrumentFactory.getInstrumentForName(instrument.getDisplayName()));
 			spectrum.isCustomSpectra = true;
+			spectrum.spectrumName = info.getName();
 			tempResults.add(spectrum);
         }
 

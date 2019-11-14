@@ -153,7 +153,7 @@ public abstract class BasicSpectrum extends Spectrum
     @Override
     public String getFullPath()
     {
-    	File file = FileCache.getFileFromServer(serverpath);
+    	File file = FileCache.getFileFromServer(getSpectrumPathOnServer());
     	this.fullpath = file.getAbsolutePath();
         return fullpath;
     }

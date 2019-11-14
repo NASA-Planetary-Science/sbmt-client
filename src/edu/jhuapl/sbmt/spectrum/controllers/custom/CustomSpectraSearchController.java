@@ -10,6 +10,8 @@ import javax.swing.JPanel;
 import javax.swing.event.AncestorEvent;
 import javax.swing.event.AncestorListener;
 
+import org.apache.commons.io.FilenameUtils;
+
 import edu.jhuapl.saavtk.gui.render.Renderer;
 import edu.jhuapl.saavtk.model.ModelManager;
 import edu.jhuapl.saavtk.pick.PickManager;
@@ -77,6 +79,20 @@ public class CustomSpectraSearchController<S extends BasicSpectrum>
             }
 
             @Override
+            public void resultChanged(CustomSpectrumKeyInterface result)
+            {
+            	List<S> spectra = spectrumResultsTableController.getCurrentResults();
+            	for (S spec : spectra)
+            	{
+            		if (FilenameUtils.getBaseName(spec.getServerpath()).equals(FilenameUtils.getBaseName(result.getSpectrumFilename())))
+            		{
+            			spec.spectrumName = result.getName();
+            		}
+            	}
+            	spectrumResultsTableController.setSpectrumResults(spectra);
+            }
+
+            @Override
             public void resultAdded(CustomSpectrumKeyInterface info)
             {
             	List<S> spectra = spectrumResultsTableController.getCurrentResults();
@@ -84,6 +100,7 @@ public class CustomSpectraSearchController<S extends BasicSpectrum>
 				{
 					S spectrum = (S)SbmtSpectrumModelFactory.createSpectrum(modelManager.getPolyhedralModel().getCustomDataFolder() + File.separator + info.getSpectrumFilename(), SpectrumInstrumentFactory.getInstrumentForName(instrument.getDisplayName()));
 					spectrum.isCustomSpectra = true;
+					spectrum.spectrumName = info.getName();
 					spectra.add(spectrum);
 				}
 				catch (IOException e)
@@ -101,7 +118,21 @@ public class CustomSpectraSearchController<S extends BasicSpectrum>
             public void resultDeleted(CustomSpectrumKeyInterface result)
             {
             	List<S> spectra = spectrumResultsTableController.getCurrentResults();
-            	spectra.removeIf(spec -> spec.getSpectrumName().contains(result.getName()));
+            	S specToDelete = null;
+            	for (S spec : spectra)
+            	{
+            		if (spec.getSpectrumName().contains(result.getName()))
+            		{
+            			specToDelete = spec;
+            			break;
+            		}
+
+            	}
+            	if (specToDelete == null) return;
+            	spectrumCollection.removeSpectrum(specToDelete);
+            	boundaries.removeBoundary(specToDelete);
+            	spectra.remove(specToDelete);
+
             	spectrumResultsTableController.setSpectrumResults(spectra);
 
             }
