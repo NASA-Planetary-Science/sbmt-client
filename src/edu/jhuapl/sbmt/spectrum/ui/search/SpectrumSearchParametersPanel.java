@@ -146,6 +146,8 @@ public class SpectrumSearchParametersPanel  extends JPanel
         searchByNumberTextField.setColumns(30);
         searchByNumberTextField.setPreferredSize(
                 new Dimension(200, 20));
+        searchByNumberTextField.setMaximumSize(
+                new Dimension(200, 20));
 
         Component horizontalGlue = Box.createHorizontalGlue();
         filenamePanel.add(horizontalGlue);
