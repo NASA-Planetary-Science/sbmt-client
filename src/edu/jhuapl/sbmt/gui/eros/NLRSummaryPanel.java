@@ -14,6 +14,8 @@ import javax.swing.JList;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 
+import org.apache.commons.io.FilenameUtils;
+
 import edu.jhuapl.saavtk.gui.dialog.CustomFileChooser;
 import edu.jhuapl.saavtk.model.ModelManager;
 import edu.jhuapl.saavtk.model.ModelNames;
@@ -66,7 +68,8 @@ public class NLRSummaryPanel extends JPanel
                     File file = CustomFileChooser.showSaveDialog(
                             saveButton.getParent(),
                             "Save NLR data",
-                            tmp.getName().substring(0, tmp.getName().length()-3));
+                            FilenameUtils.getBaseName(tmp.getName()));
+//                            tmp.getName().substring(0, tmp.getName().length()-3));
 
                     try
                     {

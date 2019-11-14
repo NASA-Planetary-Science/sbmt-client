@@ -609,6 +609,14 @@ public class CustomImagesModel extends ImageSearchModel
             if (!(new File(getConfigFilename()).exists())) return;
             //check to make sure the old plate coloring config file isn't here
             MapUtil configMap = new MapUtil(getConfigFilename());
+            //check here if the model uses the very old format, and rename if so
+            if (configMap.containsKey("CustomShapeModelFormat"))
+            {
+            	File configDir = new File(getModelManager().getPolyhedralModel().getPlateConfigFilename()).getParentFile();
+            	FileUtils.moveFile(new File(getConfigFilename()), new File(configDir, "shapeConfig.txt"));
+				return;
+            }
+
 			if (configMap.containsKey(GenericPolyhedralModel.CELL_DATA_FILENAMES))
 			{
 				FileUtils.moveFile(new File(getConfigFilename()), new File(getModelManager().getPolyhedralModel().getPlateConfigFilename()));

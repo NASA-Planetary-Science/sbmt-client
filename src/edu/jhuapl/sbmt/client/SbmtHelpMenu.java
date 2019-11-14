@@ -115,7 +115,7 @@ public class SbmtHelpMenu extends HelpMenu
         String helpRootUrl = Configuration.getHelpRootURL();
         try
         {
-           java.awt.Desktop.getDesktop().browse(java.net.URI.create("http://sbmt.jhuapl.edu/How-To-Tutorials.php"));
+           java.awt.Desktop.getDesktop().browse(java.net.URI.create("http://sbmt.jhuapl.edu/Tutorials.php"));
         }
         catch (IOException e)
         {
