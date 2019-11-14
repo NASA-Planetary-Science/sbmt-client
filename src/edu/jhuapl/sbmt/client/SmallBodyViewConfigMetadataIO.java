@@ -43,29 +43,35 @@ public class SmallBodyViewConfigMetadataIO implements MetadataManager
             each.enable(true);
         }
 
-        String rootDir = "/Users/steelrj1/Desktop/configs9/";
+        String rootDir = "/Users/steelrj1/Desktop/configs12/";
 
         List<ViewConfig> builtInConfigs = SmallBodyViewConfig.getBuiltInConfigs();
+        System.out.println("SmallBodyViewConfigMetadataIO: main: walking through Configs");
         for (ViewConfig config : builtInConfigs)
         {
             try
             {
-//            System.out.println("SmallBodyViewConfigMetadataIO: main: body is " + config.body);
                 SmallBodyViewConfigMetadataIO io = new SmallBodyViewConfigMetadataIO(config);
                 String version = config.version == null ? "" : config.version;
 
                 File file = new File(rootDir + ((SmallBodyViewConfig)config).rootDirOnServer + "/" + config.author +  "_" + config.body.toString().replaceAll(" ", "_") + version.replaceAll(" ", "_") + ".json");
-//            if (version != null && (version.length() > 0))
-//            	allBodiesMetadata.put(Key.of(config.getUniqueName()), "http://sbmt.jhuapl.edu/sbmt/prod/data" + ((SmallBodyViewConfig)config).rootDirOnServer + "/" + config.author +  "_" + config.body.toString().replaceAll(" ", "_") + version.replaceAll(" ", "_") + ".json");
-//            else
-//            	allBodiesMetadata.put(Key.of(config.getUniqueName()), "http://sbmt.jhuapl.edu/sbmt/prod/data" + ((SmallBodyViewConfig)config).rootDirOnServer + "/" + config.author +  "_" + config.body.toString().replaceAll(" ", "_") + version.replaceAll(" ", "_") + ".json");
-
                 BasicConfigInfo configInfo = new BasicConfigInfo((BodyViewConfig)config);
                 allBodiesMetadata.put(Key.of(config.getUniqueName()), configInfo.store());
 
-//            System.out.println("SmallBodyViewConfigMetadataIO: main: file is " + file);
                 if (!file.exists()) file.getParentFile().mkdirs();
-                io.write(config.getUniqueName(), file, io.store());
+                Metadata outgoingMetadata = io.store();
+                io.write(config.getUniqueName(), file, outgoingMetadata);
+
+                //read in data from file to do sanity check
+//                SmallBodyViewConfig cfg = new SmallBodyViewConfig();
+//                SmallBodyViewConfigMetadataIO io2 = new SmallBodyViewConfigMetadataIO(cfg);
+//                FixedMetadata metadata = Serializers.deserialize(file, config.getUniqueName());
+//                io2.metadataID = config.getUniqueName();
+//                io2.retrieve(metadata);
+//
+//                if (!cfg.equals(config))
+//                	System.err.println("SmallBodyViewConfigMetadataIO: main: cfg equals config is " + (cfg.equals(config) + " for " + config.getUniqueName()));
+
             }
             catch (Exception e)
             {
@@ -75,8 +81,6 @@ public class SmallBodyViewConfigMetadataIO implements MetadataManager
         }
 
         Serializers.serialize("AllBodies", allBodiesMetadata, new File(rootDir + "allBodies.json"));
-
-
     }
 
     private List<ViewConfig> configs;
@@ -129,6 +133,7 @@ public class SmallBodyViewConfigMetadataIO implements MetadataManager
         writeEnum(dataUsed, c.dataUsed, configMetadata);
         write(author, c.author.name(), configMetadata);
         write(modelLabel, c.modelLabel, configMetadata);
+        write(bodyLowestResModelName, c.bodyLowestResModelName, configMetadata);
         write(rootDirOnServer, c.rootDirOnServer, configMetadata);
         write(shapeModelFileExtension, c.shapeModelFileExtension, configMetadata);
         write(shapeModelFileBaseName, c.shapeModelFileBaseName, configMetadata);
@@ -140,6 +145,16 @@ public class SmallBodyViewConfigMetadataIO implements MetadataManager
         write(timeHistoryFile, c.timeHistoryFile, configMetadata);
         write(hasImageMap, c.hasImageMap, configMetadata);
         write(hasStateHistory, c.hasStateHistory, configMetadata);
+
+        write(density, c.density, configMetadata);
+        write(rotationRate, c.rotationRate, configMetadata);
+        write(bodyReferencePotential, c.bodyReferencePotential, configMetadata);
+        write(useMinimumReferencePotential, c.useMinimumReferencePotential, configMetadata);
+
+        write(customBodyCubeSize, c.customBodyCubeSize, configMetadata);
+        write(hasCustomBodyCubeSize, c.hasCustomBodyCubeSize, configMetadata);
+        write(hasColoringData, c.hasColoringData, configMetadata);
+
 
         writeMetadataArray(imagingInstruments, c.imagingInstruments, configMetadata);
 
@@ -186,19 +201,28 @@ public class SmallBodyViewConfigMetadataIO implements MetadataManager
         	write(dtmBrowseDataSourceMap, c.dtmBrowseDataSourceMap, configMetadata);
         if (c.dtmSearchDataSourceMap.size() > 0 )
         	write(dtmSearchDataSourceMap, c.dtmSearchDataSourceMap, configMetadata);
+        write(hasBigmap, c.hasBigmap, configMetadata);
 
         //lidar
+        write(lidarBrowseIntensityEnabled, c.lidarBrowseIntensityEnabled, configMetadata);
         writeDate(lidarSearchDefaultStartDate, c.lidarSearchDefaultStartDate, configMetadata);
         writeDate(lidarSearchDefaultEndDate, c.lidarSearchDefaultEndDate, configMetadata);
         write(lidarSearchDataSourceMap, c.lidarSearchDataSourceMap, configMetadata);
         write(lidarBrowseDataSourceMap, c.lidarBrowseDataSourceMap, configMetadata);
+        if (lidarBrowseWithPointsDataSourceMap != null)
+        	write(lidarBrowseWithPointsDataSourceMap, c.lidarBrowseWithPointsDataSourceMap, configMetadata);
 
         write(lidarSearchDataSourceTimeMap, c.lidarSearchDataSourceTimeMap, configMetadata);
         write(orexSearchTimeMap, c.orexSearchTimeMap, configMetadata);
 
         write(lidarBrowseXYZIndices, c.lidarBrowseXYZIndices, configMetadata);
         write(lidarBrowseSpacecraftIndices, c.lidarBrowseSpacecraftIndices, configMetadata);
+        write(lidarBrowseIsLidarInSphericalCoordinates, c.lidarBrowseIsLidarInSphericalCoordinates, configMetadata);
         write(lidarBrowseIsSpacecraftInSphericalCoordinates, c.lidarBrowseIsSpacecraftInSphericalCoordinates, configMetadata);
+        write(lidarBrowseIsRangeExplicitInData, c.lidarBrowseIsRangeExplicitInData, configMetadata);
+        write(lidarBrowseRangeIndex, c.lidarBrowseRangeIndex, configMetadata);
+
+        write(lidarBrowseIsTimeInET, c.lidarBrowseIsTimeInET, configMetadata);
         write(lidarBrowseTimeIndex, c.lidarBrowseTimeIndex, configMetadata);
         write(lidarBrowseNoiseIndex, c.lidarBrowseNoiseIndex, configMetadata);
         write(lidarBrowseOutgoingIntensityIndex, c.lidarBrowseOutgoingIntensityIndex, configMetadata);
@@ -323,6 +347,7 @@ public class SmallBodyViewConfigMetadataIO implements MetadataManager
         c.dataUsed =ShapeModelDataUsed.valueOf(read(dataUsed, configMetadata));
         c.author = ShapeModelType.provide(read(author, configMetadata));
         c.modelLabel = read(modelLabel, configMetadata);
+        c.bodyLowestResModelName = read(bodyLowestResModelName, configMetadata);
         c.rootDirOnServer = read(rootDirOnServer, configMetadata);
         c.shapeModelFileExtension = read(shapeModelFileExtension, configMetadata);
         c.shapeModelFileBaseName = read(shapeModelFileBaseName, configMetadata);
@@ -334,6 +359,15 @@ public class SmallBodyViewConfigMetadataIO implements MetadataManager
         c.timeHistoryFile = read(timeHistoryFile, configMetadata);
         c.hasImageMap = read(hasImageMap, configMetadata);
         c.hasStateHistory = read(hasStateHistory, configMetadata);
+
+        c.density = read(density, configMetadata);
+        c.rotationRate = read(rotationRate, configMetadata);
+        c.bodyReferencePotential = read(bodyReferencePotential, configMetadata);
+        c.useMinimumReferencePotential = read(useMinimumReferencePotential, configMetadata);
+
+        c.customBodyCubeSize = read(customBodyCubeSize, configMetadata);
+        c.hasCustomBodyCubeSize = read(hasCustomBodyCubeSize, configMetadata);
+        c.hasColoringData = read(hasColoringData, configMetadata);
 
         Metadata[] imagingMetadata = readMetadataArray(imagingInstruments, configMetadata);
         c.imagingInstruments = new ImagingInstrument[imagingMetadata.length];
@@ -399,9 +433,11 @@ public class SmallBodyViewConfigMetadataIO implements MetadataManager
         	c.dtmSearchDataSourceMap = read(dtmSearchDataSourceMap, configMetadata);
         if (configMetadata.hasKey(dtmBrowseDataSourceMap))
         	c.dtmBrowseDataSourceMap = read(dtmBrowseDataSourceMap, configMetadata);
+        c.hasBigmap = read(hasBigmap, configMetadata);
 
         if (c.hasLidarData)
         {
+        	c.lidarBrowseIntensityEnabled = read(lidarBrowseIntensityEnabled, configMetadata);
 	        Long lidarSearchDefaultStart = read(lidarSearchDefaultStartDate, configMetadata);
 	        if (lidarSearchDefaultStart == null) lidarSearchDefaultStart = 0L;
 	        c.lidarSearchDefaultStartDate = new Date(lidarSearchDefaultStart);
@@ -410,13 +446,20 @@ public class SmallBodyViewConfigMetadataIO implements MetadataManager
 	        c.lidarSearchDefaultEndDate = new Date(lidarSearchDefaultEnd);
 	        c.lidarSearchDataSourceMap = read(lidarSearchDataSourceMap, configMetadata);
 	        c.lidarBrowseDataSourceMap = read(lidarBrowseDataSourceMap, configMetadata);
+	        if (configMetadata.hasKey(lidarBrowseWithPointsDataSourceMap))
+	        	c.lidarBrowseWithPointsDataSourceMap = read(lidarBrowseWithPointsDataSourceMap, configMetadata);
 
 	        c.lidarSearchDataSourceTimeMap = read(lidarSearchDataSourceTimeMap, configMetadata);
 	        c.orexSearchTimeMap = read(orexSearchTimeMap, configMetadata);
 
 	        c.lidarBrowseXYZIndices = read(lidarBrowseXYZIndices, configMetadata);
 	        c.lidarBrowseSpacecraftIndices = read(lidarBrowseSpacecraftIndices, configMetadata);
+	        c.lidarBrowseIsLidarInSphericalCoordinates = read(lidarBrowseIsLidarInSphericalCoordinates, configMetadata);
 	        c.lidarBrowseIsSpacecraftInSphericalCoordinates = read(lidarBrowseIsSpacecraftInSphericalCoordinates, configMetadata);
+	        c.lidarBrowseIsRangeExplicitInData = read(lidarBrowseIsRangeExplicitInData, configMetadata);
+	        c.lidarBrowseRangeIndex = read(lidarBrowseRangeIndex, configMetadata);
+
+	        c.lidarBrowseIsTimeInET = read(lidarBrowseIsTimeInET, configMetadata);
 	        c.lidarBrowseTimeIndex = read(lidarBrowseTimeIndex, configMetadata);
 	        c.lidarBrowseNoiseIndex = read(lidarBrowseNoiseIndex, configMetadata);
 	        c.lidarBrowseOutgoingIntensityIndex = read(lidarBrowseOutgoingIntensityIndex, configMetadata);
@@ -501,6 +544,7 @@ public class SmallBodyViewConfigMetadataIO implements MetadataManager
     final Key<String> author = Key.of("author");
     final Key<String> modelLabel = Key.of("modelLabel");
     final Key<String> rootDirOnServer = Key.of("rootDirOnServer");
+    final Key<String> bodyLowestResModelName = Key.of("bodyLowestResModelName");
     final Key<String> shapeModelFileExtension = Key.of("shapeModelFileExtension");
     final Key<String> shapeModelFileBaseName = Key.of("shapeModelFileBaseName");
     final Key<String[]> shapeModelFileNamesKey = Key.of("shapeModelFileNames");
@@ -512,6 +556,16 @@ public class SmallBodyViewConfigMetadataIO implements MetadataManager
     final Key<String[]> presentInMissions = Key.of("presentInMissions");
     final Key<String[]> defaultForMissions = Key.of("defaultForMissions");
 
+    final Key<Double> density = Key.of("density");
+    final Key<Double> rotationRate = Key.of("rotationRate");
+    final Key<Double> bodyReferencePotential = Key.of("bodyReferencePotential");
+    final Key<Boolean> useMinimumReferencePotential = Key.of("useMinimumReferencePotential");
+
+    final Key<Boolean> hasCustomBodyCubeSize = Key.of("hasCustomBodyCubeSize");
+    final Key<Double> customBodyCubeSize = Key.of("customBodyCubeSize");
+
+    final Key<Boolean> hasColoringData = Key.of("hasColoringData");
+
     //capture imaging instruments here
     final Key<Metadata[]> imagingInstruments = Key.of("imagingInstruments");
 
@@ -522,6 +576,7 @@ public class SmallBodyViewConfigMetadataIO implements MetadataManager
     //DTM
     final Key<Map> dtmSearchDataSourceMap = Key.of("dtmSearchDataSourceMap");
     final Key<Map> dtmBrowseDataSourceMap = Key.of("dtmBrowseDataSourceMap");
+    final Key<Boolean> hasBigmap = Key.of("hasBigmap");
 
 
     final Key<Boolean> hasLidarData = Key.of("hasLidarData");
@@ -546,12 +601,13 @@ public class SmallBodyViewConfigMetadataIO implements MetadataManager
     final Key<String> spectrumMetadataFile = Key.of("spectrumMetadataFile");
     final Key<Metadata> hierarchicalSpectraSearchSpecification = Key.of("hierarchicalSpectraSearchSpecification");
 
-
+    final Key<Boolean> lidarBrowseIntensityEnabled = Key.of("lidarBrowseIntensityEnabled");
     final Key<Long> lidarSearchDefaultStartDate = Key.of("lidarSearchDefaultStartDate");
     final Key<Long> lidarSearchDefaultEndDate = Key.of("lidarSearchDefaultEndDate");
 
     final Key<Map> lidarSearchDataSourceMap = Key.of("lidarSearchDataSourceMap");
     final Key<Map> lidarBrowseDataSourceMap = Key.of("lidarBrowseDataSourceMap");
+    final Key<Map> lidarBrowseWithPointsDataSourceMap = Key.of("lidarBrowseWithPointsDataSourceMap");
 
     final Key<Map> lidarSearchDataSourceTimeMap = Key.of("lidarSearchDataSourceTimeMap");
     final Key<Map> orexSearchTimeMap = Key.of("orexSearchTimeMap");
@@ -560,6 +616,10 @@ public class SmallBodyViewConfigMetadataIO implements MetadataManager
     final Key<int[]> lidarBrowseSpacecraftIndices = Key.of("lidarBrowseSpacecraftIndices");
 
     final Key<Boolean> lidarBrowseIsSpacecraftInSphericalCoordinates = Key.of("lidarBrowseIsSpacecraftInSphericalCoordinates");
+    final Key<Boolean> lidarBrowseIsLidarInSphericalCoordinates = Key.of("lidarBrowseIsLidarInSphericalCoordinates");
+    final Key<Boolean> lidarBrowseIsRangeExplicitInData = Key.of("lidarBrowseIsRangeExplicitInData");
+    final Key<Boolean> lidarBrowseIsTimeInET = Key.of("lidarBrowseIsTimeInET");
+    final Key<Integer> lidarBrowseRangeIndex = Key.of("lidarBrowseRangeIndex");
 
     final Key<Integer> lidarBrowseTimeIndex = Key.of("lidarBrowseTimeIndex");
     final Key<Integer> lidarBrowseNoiseIndex = Key.of("lidarBrowseNoiseIndex");
