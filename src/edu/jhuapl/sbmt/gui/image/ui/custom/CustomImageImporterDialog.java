@@ -375,7 +375,7 @@ public class CustomImageImporterDialog extends javax.swing.JDialog
     private void checkImageType()
     {
     	boolean typeSet = !(imageTypeComboBox.getSelectedItem().toString().equals("<CHOOSE IMAGE TYPE>"));
-    	nameExistsLabel.setVisible(!typeSet);
+    	selectImageTypeLabel.setVisible(!typeSet);
 		okButton.setEnabled(typeSet);
     }
 
