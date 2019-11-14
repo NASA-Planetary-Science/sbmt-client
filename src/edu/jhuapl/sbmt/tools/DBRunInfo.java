@@ -1,5 +1,7 @@
 package edu.jhuapl.sbmt.tools;
 
+import java.util.Objects;
+
 import edu.jhuapl.sbmt.model.image.ImageSource;
 import edu.jhuapl.sbmt.model.image.Instrument;
 
@@ -90,5 +92,27 @@ public class DBRunInfo implements MetadataManager
 		return "DBRunInfo [pathToFileList=" + pathToFileList + ", databasePrefix=" + databasePrefix
 				+ ", remotePathToFileList=" + remotePathToFileList + ", name=" + name + ", imageSource=" + imageSource
 				+ ", instrument=" + instrument + "]";
+	}
+
+	@Override
+	public int hashCode()
+	{
+		return Objects.hash(databasePrefix, imageSource, instrument, name, pathToFileList, remotePathToFileList);
+	}
+
+	@Override
+	public boolean equals(Object obj)
+	{
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		DBRunInfo other = (DBRunInfo) obj;
+		return Objects.equals(databasePrefix, other.databasePrefix) && imageSource == other.imageSource
+				&& instrument == other.instrument && Objects.equals(name, other.name)
+				&& Objects.equals(pathToFileList, other.pathToFileList)
+				&& Objects.equals(remotePathToFileList, other.remotePathToFileList);
 	}
 }

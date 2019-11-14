@@ -4,6 +4,44 @@
 
 # Release Notes
 
+## October 25, 2019 (SBMT-0.7.7.2)
+
+### Bug Fixes:
+- Restored a set of missing parameters from the body configuration metadata that broke some functionality
+
+## October 17, 2019 (SBMT-0.7.7.1)
+
+### Bug Fixes:
+- Fixed bug related to the View Search Results as Image Gallery not being enabled for certain bodies
+
+## October 11, 2019 (SBMT-0.7.7)
+
+### New:
+- Added support for MacOS Catalina 
+- The install process for the software for all Mac users has changed to accommodate this support: 1) Open the downloaded .pkg and follow instructions in the install wizard. 2) SBMT will now appear as an application in the /Applications/SBMT folder. The functionality of the tool should be unchanged. Please contact sbmt@jhuapl.edu if you encounter installation issues.  
+- Added ability for client to add new models to SBMT without requiring a new release.
+- Added offlimb image visualization capability for custom images.
+- Added ability to define default color scheme for visualizing plate colorings.
+- Added functionality for colorizing lidar tracks.
+- Added visual indicators to show which column(s) is being used for sorting.
+- Added scalebar value to DTM properties panel.
+- Improved performance of lidar track processing.
+- Improved indication on body of which lidar tracks are selected.
+- Improved tables implemented for lidar tab.
+- Improved logic for selecting multiple structures.
+- Improved performance when hiding/showing many circles/ellipse/points structures.
+
+### Bug fixes:
+- Fixed bug that allowed duplicate custom image names to be created.
+- Fixed a bug causing strange behavior when user went on and offline repeatedly.
+- Fixed a bug that prevented structures from being deleted.
+- Fixed a bug that caused a model error when a custom perspective image was imported after a custom cylindrical image (or vice versa).
+
+### OREx only:
+- Changed default color scheme for Bennu models to Spectral_Low Blue.
+- Delivery of 20190612 model.
+- Delivery of 20190828 model.
+
 ## July 10, 2019 (SBMT-0.7.6)
  
 ### New 

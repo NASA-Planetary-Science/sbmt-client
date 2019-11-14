@@ -28,7 +28,7 @@ public class AutoColorPanel extends JPanel implements LidarColorConfigPanel
 	}
 
 	@Override
-	public void activate()
+	public void activate(boolean aIsActive)
 	{
 		; // Nothing to do
 	}

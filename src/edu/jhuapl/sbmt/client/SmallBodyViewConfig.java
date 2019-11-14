@@ -2,6 +2,8 @@ package edu.jhuapl.sbmt.client;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -52,10 +54,11 @@ import crucible.crust.metadata.impl.gson.Serializers;
 public class SmallBodyViewConfig extends BodyViewConfig implements ISmallBodyViewConfig
 {
 	static public boolean fromServer = false;
+	private static final List<BasicConfigInfo> CONFIG_INFO = new ArrayList<>();
     private static final Map<String, BasicConfigInfo> VIEWCONFIG_IDENTIFIERS = new HashMap<>();
     private static final Map<String, ViewConfig> LOADED_VIEWCONFIGS = new HashMap<>();
 
-    static public Map<String, BasicConfigInfo> getConfigIdentifiers() { return VIEWCONFIG_IDENTIFIERS; }
+    static public List<BasicConfigInfo> getConfigIdentifiers() { return CONFIG_INFO; }
 
     static public SmallBodyViewConfig getSmallBodyConfig(BasicConfigInfo configInfo)
     {
@@ -75,8 +78,6 @@ public class SmallBodyViewConfig extends BodyViewConfig implements ISmallBodyVie
     	{
     		return getSmallBodyConfig(bodyType, authorType);
     	}
-
-
     }
 
     static public SmallBodyViewConfig getSmallBodyConfig(ShapeModelBody name, ShapeModelType author)
@@ -95,8 +96,6 @@ public class SmallBodyViewConfig extends BodyViewConfig implements ISmallBodyVie
     	}
     	else
     		return (SmallBodyViewConfig)LOADED_VIEWCONFIGS.get(configID);
-
-//        return (SmallBodyViewConfig) getConfig(name, author, null);
     }
 
     static public SmallBodyViewConfig getSmallBodyConfig(ShapeModelBody name, ShapeModelType author, String version)
@@ -113,8 +112,6 @@ public class SmallBodyViewConfig extends BodyViewConfig implements ISmallBodyVie
     	}
     	else
     		return (SmallBodyViewConfig)LOADED_VIEWCONFIGS.get(configID);
-
-//        return (SmallBodyViewConfig) getConfig(name, author, version);
     }
 
     private static List<ViewConfig> addRemoteEntries()
@@ -131,6 +128,7 @@ public class SmallBodyViewConfig extends BodyViewConfig implements ISmallBodyVie
             	BasicConfigInfo configInfo = new BasicConfigInfo();
             	configInfo.retrieve(infoMetadata);
 
+            	CONFIG_INFO.add(configInfo);
             	VIEWCONFIG_IDENTIFIERS.put(key.toString(), configInfo);
             	if (configInfo.uniqueName.equals("Gaskell/433 Eros"))
             	{
@@ -372,4 +370,98 @@ public class SmallBodyViewConfig extends BodyViewConfig implements ISmallBodyVie
 
         return builder.build();
     }
+
+	@Override
+	public int hashCode()
+	{
+		final int prime = 31;
+		int result = super.hashCode();
+		result = prime * result + ((imageMapKeys == null) ? 0 : imageMapKeys.hashCode());
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj)
+	{
+		if (this == obj)
+		{
+			return true;
+		}
+		if (!super.equals(obj))
+		{
+//			System.out.println("SmallBodyViewConfig: equals: body view config parent doesn't equal");
+			return false;
+		}
+//		if (getClass() != obj.getClass())
+//		{
+//			System.out.println("SmallBodyViewConfig: equals: classes are wrong");
+//			return false;
+//		}
+		SmallBodyViewConfig other = (SmallBodyViewConfig) obj;
+		if (imageMapKeys == null)
+		{
+			if (other.imageMapKeys != null)
+				return false;
+		} else if (!imageMapKeys.equals(other.imageMapKeys))
+			return false;
+
+//		System.out.println("SmallBodyViewConfig: equals: match, returning true!!!!");
+		return true;
+	}
+
+	@Override
+	public String toString()
+	{
+		return "SmallBodyViewConfig [imageMapKeys=" + imageMapKeys + ", rootDirOnServer=" + rootDirOnServer
+				+ ", shapeModelFileBaseName=" + shapeModelFileBaseName + ", shapeModelFileExtension="
+				+ shapeModelFileExtension + ", shapeModelFileNames=" + Arrays.toString(shapeModelFileNames)
+				+ ", timeHistoryFile=" + timeHistoryFile + ", density=" + density + ", rotationRate=" + rotationRate
+				+ ", hasFlybyData=" + hasFlybyData + ", hasStateHistory=" + hasStateHistory + ", hasColoringData="
+				+ hasColoringData + ", hasImageMap=" + hasImageMap + ", hasMapmaker=" + hasMapmaker
+				+ ", hasRemoteMapmaker=" + hasRemoteMapmaker + ", bodyReferencePotential=" + bodyReferencePotential + ", bodyLowestResModelName="
+				+ bodyLowestResModelName + ", hasBigmap=" + hasBigmap + ", hasSpectralData=" + hasSpectralData
+				+ ", hasLineamentData=" + hasLineamentData + ", imageSearchDefaultStartDate="
+				+ imageSearchDefaultStartDate + ", imageSearchDefaultEndDate=" + imageSearchDefaultEndDate
+				+ ", imageSearchFilterNames=" + Arrays.toString(imageSearchFilterNames)
+				+ ", imageSearchUserDefinedCheckBoxesNames=" + Arrays.toString(imageSearchUserDefinedCheckBoxesNames)
+				+ ", imageSearchDefaultMaxSpacecraftDistance=" + imageSearchDefaultMaxSpacecraftDistance
+				+ ", imageSearchDefaultMaxResolution=" + imageSearchDefaultMaxResolution
+				+ ", hasHierarchicalImageSearch=" + hasHierarchicalImageSearch + ", hasHierarchicalSpectraSearch="
+				+ hasHierarchicalSpectraSearch + ", hierarchicalImageSearchSpecification="
+				+ hierarchicalImageSearchSpecification + ", hierarchicalSpectraSearchSpecification="
+				+ hierarchicalSpectraSearchSpecification + ", spectrumMetadataFile=" + spectrumMetadataFile
+				+ ", hasHypertreeBasedSpectraSearch=" + hasHypertreeBasedSpectraSearch + ", spectraSearchDataSourceMap="
+				+ spectraSearchDataSourceMap + ", hasHypertreeBasedLidarSearch=" + hasHypertreeBasedLidarSearch
+				+ ", lidarSearchDataSourceMap=" + lidarSearchDataSourceMap + ", lidarBrowseDataSourceMap="
+				+ lidarBrowseDataSourceMap + ", lidarSearchDataSourceTimeMap=" + lidarSearchDataSourceTimeMap
+				+ ", orexSearchTimeMap=" + orexSearchTimeMap + ", lidarBrowseOrigPathRegex=" + lidarBrowseOrigPathRegex
+				+ ", lidarBrowsePathTop=" + lidarBrowsePathTop + ", lidarBrowseXYZIndices="
+				+ Arrays.toString(lidarBrowseXYZIndices) + ", lidarBrowseSpacecraftIndices="
+				+ Arrays.toString(lidarBrowseSpacecraftIndices) + ", lidarBrowseOutgoingIntensityIndex="
+				+ lidarBrowseOutgoingIntensityIndex + ", lidarBrowseReceivedIntensityIndex="
+				+ lidarBrowseReceivedIntensityIndex + ", lidarBrowseRangeIndex=" + lidarBrowseRangeIndex
+				+ ", lidarBrowseIsRangeExplicitInData=" + lidarBrowseIsRangeExplicitInData
+				+ ", lidarBrowseIntensityEnabled=" + lidarBrowseIntensityEnabled
+				+ ", lidarBrowseIsLidarInSphericalCoordinates=" + lidarBrowseIsLidarInSphericalCoordinates
+				+ ", lidarBrowseIsSpacecraftInSphericalCoordinates=" + lidarBrowseIsSpacecraftInSphericalCoordinates
+				+ ", lidarBrowseIsTimeInET=" + lidarBrowseIsTimeInET + ", lidarBrowseTimeIndex=" + lidarBrowseTimeIndex
+				+ ", lidarBrowseNoiseIndex=" + lidarBrowseNoiseIndex + ", lidarBrowseFileListResourcePath="
+				+ lidarBrowseFileListResourcePath + ", lidarBrowseNumberHeaderLines=" + lidarBrowseNumberHeaderLines
+				+ ", lidarBrowseIsBinary=" + lidarBrowseIsBinary + ", lidarBrowseBinaryRecordSize="
+				+ lidarBrowseBinaryRecordSize + ", lidarBrowseIsInMeters=" + lidarBrowseIsInMeters
+				+ ", lidarOffsetScale=" + lidarOffsetScale + ", hasLidarData=" + hasLidarData
+				+ ", lidarSearchDefaultStartDate=" + lidarSearchDefaultStartDate + ", lidarSearchDefaultEndDate="
+				+ lidarSearchDefaultEndDate + ", presentInMissions=" + Arrays.toString(presentInMissions)
+				+ ", defaultForMissions=" + Arrays.toString(defaultForMissions) + ", dtmBrowseDataSourceMap="
+				+ dtmBrowseDataSourceMap + ", dtmSearchDataSourceMap=" + dtmSearchDataSourceMap + ", type=" + type
+				+ ", population=" + population + ", dataUsed=" + dataUsed + ", imagingInstruments="
+				+ Arrays.toString(imagingInstruments) + ", lidarInstrumentName=" + lidarInstrumentName
+				+ ", spectralInstruments=" + Arrays.toString(spectralInstruments) + ", databaseRunInfos="
+				+ Arrays.toString(databaseRunInfos) + ", modelLabel=" + modelLabel + ", customTemporary="
+				+ customTemporary + ", author=" + author + ", version=" + version + ", body=" + body
+				+ ", useMinimumReferencePotential=" + useMinimumReferencePotential + ", hasCustomBodyCubeSize="
+				+ hasCustomBodyCubeSize + ", customBodyCubeSize=" + customBodyCubeSize + "]";
+	}
+
+
 }

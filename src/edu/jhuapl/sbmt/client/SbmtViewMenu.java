@@ -8,10 +8,8 @@ import java.util.List;
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
 
-import edu.jhuapl.saavtk.config.ViewConfig;
 import edu.jhuapl.saavtk.gui.RecentlyViewed;
 import edu.jhuapl.saavtk.gui.View;
-import edu.jhuapl.saavtk.gui.ViewManager;
 import edu.jhuapl.saavtk.gui.ViewMenu;
 import edu.jhuapl.saavtk.gui.dialog.ShapeModelImporterDialog;
 import edu.jhuapl.saavtk.util.Configuration;
@@ -77,16 +75,6 @@ public class SbmtViewMenu extends ViewMenu
         // Note the base class constructor calls this method. For this reason
         // cannot move the following code block to the constructor and store
         // the SbmtViewManager as a field, as would be more natural.
-        ViewManager manager = getRootPanel();
-        SbmtViewManager viewManager = null;
-        if (manager instanceof SbmtViewManager)
-        {
-            viewManager = (SbmtViewManager) manager;
-        }
-        else
-        {
-            throw new AssertionError();
-        }
 
         // Set up a hierarchy like "Body" -> Asteroids -> Near Earth -> Eros -> Image-based -> Gaskell.
         // Encode this as a list of strings.
@@ -109,16 +97,21 @@ public class SbmtViewMenu extends ViewMenu
             if (childMenu == null)
             {
                 childMenu = new JMenu(subMenu);
-                if (viewManager.isAddSeparator(config, subMenu))
-                {
-                    parentMenu.addSeparator();
-                }
-                if (viewManager.isAddLabel(config, subMenu))
-                {
-                    String label = viewManager.getLabel(config);
-                    parentMenu.add(label);
-                    parentMenu.getItem(parentMenu.getItemCount() - 1).setEnabled(false);
-                }
+                // Removed separator and label facilities (which were broken anyway)
+                // while working on Redmine issue #1916. Should separators and/or labels
+                // become necessary, probably best to augment the config body metadata
+                // and the BasicConfigInfo class to flag these two options. Leaving the
+                // original code just to provide the way it used to be as a model.
+//                if (viewManager.isAddSeparator(config, subMenu))
+//                {
+//                    parentMenu.addSeparator();
+//                }
+//                if (viewManager.isAddLabel(config, subMenu))
+//                {
+//                    String label = viewManager.getLabel(config);
+//                    parentMenu.add(label);
+//                    parentMenu.getItem(parentMenu.getItemCount() - 1).setEnabled(false);
+//                }
                 parentMenu.add(childMenu);
             }
             parentMenu = childMenu;
@@ -126,80 +119,6 @@ public class SbmtViewMenu extends ViewMenu
         parentMenu.add(mi);
 
         String urlString = config.configURL;
-        FileCache.instance().addStateListener(urlString, state -> {
-            try
-            {
-                Configuration.runAndWaitOnEDT(() -> {
-                    mi.setEnabled(state.isAccessible());
-                    setSubMenuEnabledState(SbmtViewMenu.this);
-                    // This very top menu should always be enabled.
-                    SbmtViewMenu.this.setEnabled(true);
-                });
-            }
-            catch (Exception e)
-            {
-                // Don't clutter up the log with this exception.
-            }
-       });
-    }
-
-
-    @Override
-    protected void addMenuItem(JMenuItem mi, ViewConfig config)
-    {
-        // Note the base class constructor calls this method. For this reason
-        // cannot move the following code block to the constructor and store
-        // the SbmtViewManager as a field, as would be more natural.
-        ViewManager manager = getRootPanel();
-        SbmtViewManager viewManager = null;
-        if (manager instanceof SbmtViewManager)
-        {
-            viewManager = (SbmtViewManager) manager;
-        }
-        else
-        {
-            throw new AssertionError();
-        }
-
-        // Set up a hierarchy like "Body" -> Asteroids -> Near Earth -> Eros -> Image-based -> Gaskell.
-        // Encode this as a list of strings.
-
-        SmallBodyViewConfig smallBodyConfig = (SmallBodyViewConfig)config;
-        List<String> tree = new ArrayList<>();
-        if (smallBodyConfig.type != null)
-            tree.add(smallBodyConfig.type.toString());
-        if (smallBodyConfig.population != null && smallBodyConfig.population != ShapeModelPopulation.NA)
-            tree.add(smallBodyConfig.population.toString());
-        if (smallBodyConfig.body != null)
-            tree.add(smallBodyConfig.body.toString());
-        if (smallBodyConfig.dataUsed != null && smallBodyConfig.dataUsed != ShapeModelDataUsed.NA)
-            tree.add(smallBodyConfig.dataUsed.toString());
-
-        // Go through the list of strings and generate a hierarchical menu tree.
-        JMenu parentMenu = this;
-        for (String subMenu : tree)
-        {
-            JMenu childMenu = getChildMenu(parentMenu, subMenu);
-            if (childMenu == null)
-            {
-                childMenu = new JMenu(subMenu);
-                if (viewManager.isAddSeparator(config, subMenu))
-                {
-                    parentMenu.addSeparator();
-                }
-                if (viewManager.isAddLabel(config, subMenu))
-                {
-                    String label = viewManager.getLabel(config);
-                    parentMenu.add(label);
-                    parentMenu.getItem(parentMenu.getItemCount() - 1).setEnabled(false);
-                }
-                parentMenu.add(childMenu);
-            }
-            parentMenu = childMenu;
-        }
-        parentMenu.add(mi);
-
-        String urlString = config.getShapeModelFileNames()[0];
         FileCache.instance().addStateListener(urlString, state -> {
             try
             {

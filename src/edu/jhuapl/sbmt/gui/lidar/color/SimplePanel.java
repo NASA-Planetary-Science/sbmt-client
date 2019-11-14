@@ -81,7 +81,7 @@ public class SimplePanel extends JPanel implements ActionListener, LidarColorCon
 	}
 
 	@Override
-	public void activate()
+	public void activate(boolean aIsActive)
 	{
 		updateGui();
 	}
