@@ -66,27 +66,44 @@ public class CustomSpectraSearchController<S extends BasicSpectrum>
             @Override
             public void resultsChanged(List<CustomSpectrumKeyInterface> results)
             {
-            	spectrumCollection.removeAllSpectra();
-				boundaries.removeAllBoundaries();
+//            	spectrumCollection.removeAllSpectra();
+//				boundaries.removeAllBoundaries();
             	List<S> spectra = new ArrayList<S>();
             	for (CustomSpectrumKeyInterface info : results)
             	{
-    				try
-					{
-    					S spectrum = (S)SbmtSpectrumModelFactory.createSpectrum(modelManager.getPolyhedralModel().getCustomDataFolder() + File.separator + info.getSpectrumFilename(), SpectrumInstrumentFactory.getInstrumentForName(instrument.getDisplayName()));
-    					spectrum.isCustomSpectra = true;
-    					spectra.add(spectrum);
-					}
-    				catch (IOException e)
-					{
-    					JOptionPane.showMessageDialog(JOptionPane.getFrameForComponent(panel),
-    		                    "There was an error adding a spectrum.  See the console for details.",
-    		                    "Error",
-    		                    JOptionPane.ERROR_MESSAGE);
-						e.printStackTrace();
-					}
+            		resultAdded(info);
             	}
-                spectrumResultsTableController.setSpectrumResults(spectra);
+//                spectrumResultsTableController.setSpectrumResults(spectra);
+            }
+
+            @Override
+            public void resultAdded(CustomSpectrumKeyInterface info)
+            {
+            	List<S> spectra = spectrumResultsTableController.getCurrentResults();
+				try
+				{
+					S spectrum = (S)SbmtSpectrumModelFactory.createSpectrum(modelManager.getPolyhedralModel().getCustomDataFolder() + File.separator + info.getSpectrumFilename(), SpectrumInstrumentFactory.getInstrumentForName(instrument.getDisplayName()));
+					spectrum.isCustomSpectra = true;
+					spectra.add(spectrum);
+				}
+				catch (IOException e)
+				{
+					JOptionPane.showMessageDialog(JOptionPane.getFrameForComponent(panel),
+		                    "There was an error adding a spectrum.  See the console for details.",
+		                    "Error",
+		                    JOptionPane.ERROR_MESSAGE);
+					e.printStackTrace();
+				}
+				spectrumResultsTableController.setSpectrumResults(spectra);
+            }
+
+            @Override
+            public void resultDeleted(CustomSpectrumKeyInterface result)
+            {
+            	List<S> spectra = spectrumResultsTableController.getCurrentResults();
+            	spectra.removeIf(spec -> spec.getSpectrumName().contains(result.getName()));
+            	spectrumResultsTableController.setSpectrumResults(spectra);
+
             }
 
             @Override

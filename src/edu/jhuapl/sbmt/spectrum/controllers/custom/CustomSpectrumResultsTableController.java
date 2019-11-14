@@ -89,4 +89,9 @@ public class CustomSpectrumResultsTableController<S extends BasicSpectrum>
         spectrumRawResults = results;
         spectrumCollection.setAllItems(spectrumRawResults);
     }
+
+    public List<S> getCurrentResults()
+    {
+    	return spectrumRawResults;
+    }
 }

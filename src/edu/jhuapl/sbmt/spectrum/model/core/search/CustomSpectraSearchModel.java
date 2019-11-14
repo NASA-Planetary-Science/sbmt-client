@@ -99,6 +99,28 @@ public class CustomSpectraSearchModel<S extends BasicSpectrum> extends BaseSpect
     /**
      * Fires the results changed listeners
      */
+    protected void fireResultAdded(CustomSpectrumKeyInterface result)
+    {
+        for (CustomSpectraResultsListener listener : customSpectraListeners)
+        {
+            listener.resultAdded(result);
+        }
+    }
+
+    /**
+     * Fires the results deleted listeners
+     */
+    protected void fireResultDeleted(CustomSpectrumKeyInterface result)
+    {
+        for (CustomSpectraResultsListener listener : customSpectraListeners)
+        {
+            listener.resultDeleted(result);
+        }
+    }
+
+    /**
+     * Fires the results changed listeners
+     */
     protected void fireResultsChanged()
     {
         for (CustomSpectraResultsListener listener : customSpectraListeners)
@@ -157,23 +179,8 @@ public class CustomSpectraSearchModel<S extends BasicSpectrum> extends BaseSpect
             customSpectraKeys.set(index, newSpectrumInfo);
         }
 
-        List<S> tempResults = new ArrayList<S>();
-        for (CustomSpectrumKeyInterface info : customSpectraKeys)
-        {
-        	IBasicSpectrumRenderer<S> renderer = null;
-			try
-			{
-				renderer = SbmtSpectrumModelFactory.createSpectrumRenderer(customDataFolder + File.separator + info.getSpectrumFilename(), SpectrumInstrumentFactory.getInstrumentForName(instrument.getDisplayName()));
-			}
-			catch (IOException e)
-			{
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-			tempResults.add(renderer.getSpectrum());
-        }
         updateConfigFile();
-        setSpectrumRawResults(tempResults);
+        fireResultAdded(newSpectrumInfo);
     }
 
     /**
@@ -185,10 +192,10 @@ public class CustomSpectraSearchModel<S extends BasicSpectrum> extends BaseSpect
     	List<CustomSpectrumKeyInterface> keysToRemove = new ArrayList<CustomSpectrumKeyInterface>();
     	for (int i = indices.length-1; i > -1; i--)
     	{
+    		fireResultDeleted(customSpectraKeys.get(indices[i]));
     		customSpectraKeys.remove(indices[i]);
     	}
     	updateConfigFile();
-    	fireResultsChanged();
     	fireResultsCountChanged(customSpectraKeys.size());
     }
 

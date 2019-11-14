@@ -59,7 +59,6 @@ public class SpectrumInfoPanel extends ModelInfoWindow implements PropertyChange
 
 
         // add the jfreechart graph
-        System.out.println("SpectrumInfoPanel: SpectrumInfoPanel: spectrum data name " + spectrum.getDataName());
         XYSeries series = new XYSeries(spectrum.getDataName());
         Double[] wavelengths = spectrum.getxData();
         double[] spect = spectrum.getSpectrum();

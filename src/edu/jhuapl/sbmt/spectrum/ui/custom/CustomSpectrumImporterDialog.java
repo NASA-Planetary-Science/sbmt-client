@@ -147,7 +147,6 @@ public class CustomSpectrumImporterDialog extends JDialog
         }
 
         String imageName = spectrumNameTextField.getText();
-        System.out.println("CustomSpectrumImporterDialog: validateInput: image name " + imageName);
         if (imageName == null)
             imageName = "";
         if (imageName.trim().isEmpty())
@@ -164,7 +163,6 @@ public class CustomSpectrumImporterDialog extends JDialog
         if (infofilePath == null)
             infofilePath = "";
 
-        System.out.println("CustomSpectrumImporterDialog: validateInput: spectra is " + spectrumTypeComboBox.getSelectedItem());
 
         if (!isEditMode || (!sumfilePath.isEmpty() && !sumfilePath.equals(LEAVE_UNMODIFIED) || (!infofilePath.isEmpty() && !infofilePath.equals(LEAVE_UNMODIFIED))))
         {
@@ -182,7 +180,6 @@ public class CustomSpectrumImporterDialog extends JDialog
             }
             else if (!infofilePath.isEmpty())
             {
-            	System.out.println("CustomSpectrumImporterDialog: validateInput: info file path " + infofilePath);
             	File file = null;
             	if (isEditMode)
             		file = new File(customDir, infofilePath);
