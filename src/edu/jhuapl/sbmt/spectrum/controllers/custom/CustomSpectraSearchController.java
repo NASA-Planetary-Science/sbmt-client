@@ -23,6 +23,7 @@ import edu.jhuapl.sbmt.spectrum.model.core.BasicSpectrumInstrument;
 import edu.jhuapl.sbmt.spectrum.model.core.SpectrumInstrumentFactory;
 import edu.jhuapl.sbmt.spectrum.model.core.interfaces.CustomSpectraResultsListener;
 import edu.jhuapl.sbmt.spectrum.model.core.search.CustomSpectraSearchModel;
+import edu.jhuapl.sbmt.spectrum.model.core.search.SpectraHierarchicalSearchSpecification;
 import edu.jhuapl.sbmt.spectrum.model.sbmtCore.spectra.CustomSpectrumKeyInterface;
 import edu.jhuapl.sbmt.spectrum.rendering.SpectraCollection;
 import edu.jhuapl.sbmt.spectrum.rendering.SpectrumBoundaryCollection;
@@ -43,6 +44,7 @@ public class CustomSpectraSearchController<S extends BasicSpectrum>
     private SpectraCollection<S> spectrumCollection;
     private BasicSpectrumInstrument instrument;
 
+
     /**
      * @param modelManager		The system model manager
      * @param infoPanelManager	The system info panel manager
@@ -52,7 +54,8 @@ public class CustomSpectraSearchController<S extends BasicSpectrum>
      */
     public CustomSpectraSearchController(ModelManager modelManager,
             SbmtInfoWindowManager infoPanelManager,
-            PickManager pickManager, Renderer renderer, BasicSpectrumInstrument instrument)
+            PickManager pickManager, Renderer renderer,
+            SpectraHierarchicalSearchSpecification spectraSpec, BasicSpectrumInstrument instrument)
     {
     	this.instrument = instrument;
         this.spectrumSearchModel =  new CustomSpectraSearchModel<S>(modelManager, instrument);
@@ -101,6 +104,8 @@ public class CustomSpectraSearchController<S extends BasicSpectrum>
 					S spectrum = (S)SbmtSpectrumModelFactory.createSpectrum(modelManager.getPolyhedralModel().getCustomDataFolder() + File.separator + info.getSpectrumFilename(), SpectrumInstrumentFactory.getInstrumentForName(instrument.getDisplayName()));
 					spectrum.isCustomSpectra = true;
 					spectrum.spectrumName = info.getName();
+					if (info.getSpectraSpec() != null)
+						spectrum.setMetadata(info.getSpectraSpec());
 					spectra.add(spectrum);
 				}
 				catch (IOException e)
@@ -155,7 +160,7 @@ public class CustomSpectraSearchController<S extends BasicSpectrum>
         });
         this.spectrumResultsTableController.setSpectrumResultsPanel();
 
-        this.searchParametersController = new CustomSpectraControlController<S>(spectrumSearchModel);
+        this.searchParametersController = new CustomSpectraControlController<S>(spectrumSearchModel, spectraSpec);
 
         this.coloringController = new SpectrumColoringController<S>(spectrumSearchModel, spectrumCollection, instrument.getRGBMaxVals(), instrument.getRGBDefaultIndices());
 

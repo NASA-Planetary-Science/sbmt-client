@@ -19,6 +19,7 @@ import java.awt.Window;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
+import java.util.List;
 
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JButton;
@@ -36,6 +37,9 @@ import edu.jhuapl.saavtk.model.FileType;
 import edu.jhuapl.sbmt.spectrum.model.core.BasicSpectrumInstrument;
 import edu.jhuapl.sbmt.spectrum.model.core.SpectraType;
 import edu.jhuapl.sbmt.spectrum.model.core.SpectraTypeFactory;
+import edu.jhuapl.sbmt.spectrum.model.core.interfaces.InstrumentMetadata;
+import edu.jhuapl.sbmt.spectrum.model.core.search.SpectraHierarchicalSearchSpecification;
+import edu.jhuapl.sbmt.spectrum.model.core.search.SpectrumSearchSpec;
 import edu.jhuapl.sbmt.spectrum.model.key.CustomSpectrumKey;
 import edu.jhuapl.sbmt.spectrum.model.sbmtCore.spectra.CustomSpectrumKeyInterface;
 import edu.jhuapl.sbmt.spectrum.model.sbmtCore.spectra.ISpectraType;
@@ -49,12 +53,14 @@ public class CustomSpectrumImporterDialog extends JDialog
     private static final String LEAVE_UNMODIFIED = "<cannot be changed>";
     private static final String MAKE_SELECTION = "<Choose Spectrum Type>";
     private String customDir;
+    private SpectraHierarchicalSearchSpecification spectraSpec;
 
     /** Creates new form ShapeModelImporterDialog */
-    public CustomSpectrumImporterDialog(Window parent, boolean isEditMode, BasicSpectrumInstrument instrument, String customDir)
+    public CustomSpectrumImporterDialog(Window parent, boolean isEditMode, BasicSpectrumInstrument instrument, String customDir, SpectraHierarchicalSearchSpecification spectraSpec)
     {
         super(parent, isEditMode ? "Edit Spectrum" : "Import New Spectrum", Dialog.ModalityType.APPLICATION_MODAL);
         this.instrument = instrument;
+        this.spectraSpec = spectraSpec;
         initComponents();
         this.isEditMode = isEditMode;
         this.customDir = customDir;
@@ -121,8 +127,8 @@ public class CustomSpectrumImporterDialog extends JDialog
 
 
         SpectraType spectrumType = (SpectraType)spectrumTypeComboBox.getSelectedItem();
-
-        CustomSpectrumKey info = new CustomSpectrumKey(name, fileType, instrument, spectrumType, filename, pointingFilename);
+        SpectrumSearchSpec searchSpec = (SpectrumSearchSpec)spectrumSubTypeComboBox.getSelectedItem();
+        CustomSpectrumKey info = new CustomSpectrumKey(name, fileType, instrument, spectrumType, filename, pointingFilename, searchSpec);
 
         return info;
     }
@@ -239,6 +245,7 @@ public class CustomSpectrumImporterDialog extends JDialog
         browseSumfileButton = new JButton();
         spectrumTypeLabel = new JLabel();
         spectrumTypeComboBox = new JComboBox();
+        spectrumSubTypeComboBox = new JComboBox<SpectrumSearchSpec>();
 
         setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
         setMinimumSize(new Dimension(600, 167));
@@ -405,7 +412,7 @@ public class CustomSpectrumImporterDialog extends JDialog
         spectrumTypeComboBox.setModel(comboBoxModel);
         spectrumTypeComboBox.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent evt) {
-                imageTypeComboBoxActionPerformed(evt);
+                spectrumTypeComboBoxActionPerformed(evt);
             }
         });
         spectrumTypeComboBox.setSelectedIndex(0);
@@ -416,6 +423,29 @@ public class CustomSpectrumImporterDialog extends JDialog
         gridBagConstraints.anchor = GridBagConstraints.LINE_START;
         gridBagConstraints.insets = new Insets(0, 6, 0, 0);
         getContentPane().add(spectrumTypeComboBox, gridBagConstraints);
+
+
+        InstrumentMetadata instrumentMetadata = spectraSpec.getInstrumentMetadata(instrument.getDisplayName());
+        List<SpectrumSearchSpec> specs = instrumentMetadata.getSpecs();
+        DefaultComboBoxModel<SpectrumSearchSpec> comboBoxModel2 = new DefaultComboBoxModel<SpectrumSearchSpec>();
+        for (SpectrumSearchSpec subSpec : specs)
+        {
+        	comboBoxModel2.addElement(subSpec);
+        }
+        spectrumSubTypeComboBox.setModel(comboBoxModel2);
+        spectrumSubTypeComboBox.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent evt) {
+                spectrumSubTypeComboBoxActionPerformed(evt);
+            }
+        });
+        spectrumSubTypeComboBox.setSelectedIndex(0);
+
+        gridBagConstraints = new GridBagConstraints();
+        gridBagConstraints.gridx = 1;
+        gridBagConstraints.gridy = 2;
+        gridBagConstraints.anchor = GridBagConstraints.LINE_START;
+        gridBagConstraints.insets = new Insets(0, 110, 0, 0);
+        getContentPane().add(spectrumSubTypeComboBox, gridBagConstraints);
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
@@ -498,9 +528,15 @@ public class CustomSpectrumImporterDialog extends JDialog
         sumfilePathTextField.setText(filename);
     }//GEN-LAST:event_browseSumfileButtonActionPerformed
 
-    private void imageTypeComboBoxActionPerformed(ActionEvent evt) {//GEN-FIRST:event_imageTypeComboBoxActionPerformed
+    private void spectrumTypeComboBoxActionPerformed(ActionEvent evt) {//GEN-FIRST:event_imageTypeComboBoxActionPerformed
+
         updateEnabledItems();
     }//GEN-LAST:event_imageTypeComboBoxActionPerformed
+
+    private void spectrumSubTypeComboBoxActionPerformed(ActionEvent evt)
+    {
+        updateEnabledItems();
+    }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private JButton browseSpectrumButton;
@@ -512,6 +548,7 @@ public class CustomSpectrumImporterDialog extends JDialog
     private JLabel spectrumPathLabel;
     private JTextField spectrumPathTextField;
     private JComboBox spectrumTypeComboBox;
+    private JComboBox<SpectrumSearchSpec> spectrumSubTypeComboBox;
     private JLabel spectrumTypeLabel;
     private JLabel infofilePathLabel;
     private JTextField infofilePathTextField;

@@ -4,6 +4,7 @@ import edu.jhuapl.saavtk.model.FileType;
 import edu.jhuapl.sbmt.spectrum.model.core.BasicSpectrumInstrument;
 import edu.jhuapl.sbmt.spectrum.model.core.SpectraTypeFactory;
 import edu.jhuapl.sbmt.spectrum.model.core.SpectrumInstrumentFactory;
+import edu.jhuapl.sbmt.spectrum.model.core.search.SpectrumSearchSpec;
 import edu.jhuapl.sbmt.spectrum.model.sbmtCore.spectra.CustomSpectrumKeyInterface;
 import edu.jhuapl.sbmt.spectrum.model.sbmtCore.spectra.ISpectraType;
 
@@ -31,6 +32,8 @@ public class CustomSpectrumKey implements CustomSpectrumKeyInterface
 
     public String pointingFilename;
 
+    public SpectrumSearchSpec searchSpec;
+
 
 	/**
 	 * @param name
@@ -40,7 +43,7 @@ public class CustomSpectrumKey implements CustomSpectrumKeyInterface
 	 * @param spectrumFilename
 	 * @param pointingFilename
 	 */
-	public CustomSpectrumKey(String name, FileType fileType, BasicSpectrumInstrument instrument, ISpectraType spectrumType, String spectrumFilename, String pointingFilename)
+	public CustomSpectrumKey(String name, FileType fileType, BasicSpectrumInstrument instrument, ISpectraType spectrumType, String spectrumFilename, String pointingFilename, SpectrumSearchSpec searchSpec)
 	{
 		this.name = name;
 		this.fileType = fileType;
@@ -48,6 +51,7 @@ public class CustomSpectrumKey implements CustomSpectrumKeyInterface
 		this.spectrumType = spectrumType;
 		this.spectrumFilename = spectrumFilename;
 		this.pointingFilename = pointingFilename;
+		this.searchSpec = searchSpec;
 	}
 
 	@Override
@@ -104,6 +108,12 @@ public class CustomSpectrumKey implements CustomSpectrumKeyInterface
 	}
 
 	@Override
+	public SpectrumSearchSpec getSpectraSpec()
+	{
+		return searchSpec;
+	}
+
+	@Override
     public String toString()
     {
         return "CustomSpectrumKey [name=" + name
@@ -117,6 +127,7 @@ public class CustomSpectrumKey implements CustomSpectrumKeyInterface
 	    final static Key<String> spectraTypeKey = Key.of("spectratype");
 	    final static Key<String> pointingFilenameKey = Key.of("pointingFilename");
 	    final static Key<String> instrumentKey = Key.of("instrument");
+	    final static Key<SpectrumSearchSpec> searchSpecKey = Key.of("searchSpec");
 
 	    private static final Key<CustomSpectrumKey> CUSTOM_SPECTRUM_KEY = Key.of("customSpectrum");
 
@@ -127,11 +138,16 @@ public class CustomSpectrumKey implements CustomSpectrumKeyInterface
 
 					String name = metadata.get(nameKey);
 			        String spectrumFilename = metadata.get(spectrumFileNameKey);
-			        ISpectraType spectrumType = SpectraTypeFactory.findSpectraTypeForDisplayName(metadata.get(spectraTypeKey));
+			        String displayName = metadata.get(spectraTypeKey);
+			        if (displayName.contains("_")) displayName = displayName.split("_")[0];
+			        ISpectraType spectrumType = SpectraTypeFactory.findSpectraTypeForDisplayName(displayName);
 			        FileType fileType = FileType.valueOf(metadata.get(pointingFileTypeKey));
 			        BasicSpectrumInstrument instrument = SpectrumInstrumentFactory.getInstrumentForName(spectrumType.getDisplayName());
 			        String pointingFilename = metadata.get(pointingFilenameKey);
-			        CustomSpectrumKey result = new CustomSpectrumKey(name, fileType, instrument, spectrumType, spectrumFilename, pointingFilename);
+			        SpectrumSearchSpec searchSpec = null;
+			        if (metadata.hasKey(searchSpecKey))
+			        	searchSpec = metadata.get(searchSpecKey);
+			        CustomSpectrumKey result = new CustomSpectrumKey(name, fileType, instrument, spectrumType, spectrumFilename, pointingFilename, searchSpec);
 					return result;
 
 				},
@@ -144,6 +160,7 @@ public class CustomSpectrumKey implements CustomSpectrumKeyInterface
 			        result.put(spectraTypeKey, key.getSpectrumType().toString());
 			        result.put(pointingFileTypeKey, key.getFileType().toString());
 			        result.put(pointingFilenameKey, key.getPointingFilename());
+			        result.put(searchSpecKey, key.getSpectraSpec());
 			        return result;
 				}
 			);

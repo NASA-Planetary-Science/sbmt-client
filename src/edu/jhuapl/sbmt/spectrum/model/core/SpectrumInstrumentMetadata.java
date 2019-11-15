@@ -8,6 +8,7 @@ import edu.jhuapl.sbmt.spectrum.model.core.interfaces.SearchSpec;
 import edu.jhuapl.sbmt.spectrum.model.core.search.SpectrumSearchSpec;
 
 import crucible.crust.metadata.api.Key;
+import crucible.crust.metadata.api.Metadata;
 import crucible.crust.metadata.api.Version;
 import crucible.crust.metadata.impl.InstanceGetter;
 import crucible.crust.metadata.impl.SettableMetadata;
@@ -144,4 +145,28 @@ public class SpectrumInstrumentMetadata<S extends SearchSpec> implements Instrum
     	});
 
 	}
+
+    Key<Metadata[]> searchMetadataKey = Key.of("searchMetadata");
+
+    public void retrieveOldFormat(Metadata source)
+    {
+        Metadata[] metadata = readMetadataArray(searchMetadataKey, source);
+        for (Metadata meta : metadata)
+        {
+            SpectrumSearchSpec spec = new SpectrumSearchSpec();
+            spec.retrieveOldFormat(meta);
+            instrumentName = spec.getDataName().split(" ")[0];
+            addSearchSpec((S)spec);
+        }
+    }
+
+    private Metadata[] readMetadataArray(Key<Metadata[]> key, Metadata configMetadata)
+    {
+        Metadata[] values = configMetadata.get(key);
+        if (values != null)
+        {
+            return values;
+        }
+        return null;
+    }
 }

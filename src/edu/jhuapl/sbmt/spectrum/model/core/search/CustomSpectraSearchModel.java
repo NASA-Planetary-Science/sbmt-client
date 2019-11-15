@@ -266,7 +266,7 @@ public class CustomSpectraSearchModel<S extends BasicSpectrum> extends BaseSpect
             		fileType = FileType.INFO;
             	}
 
-                CustomSpectrumKeyInterface spectrumInfo = new CustomSpectrumKey(name, fileType, getInstrument(), null, spectrumFilename, pointingFilename);
+                CustomSpectrumKeyInterface spectrumInfo = new CustomSpectrumKey(name, fileType, getInstrument(), null, spectrumFilename, pointingFilename, null);
 
                 customSpectraKeys.add(spectrumInfo);
             }

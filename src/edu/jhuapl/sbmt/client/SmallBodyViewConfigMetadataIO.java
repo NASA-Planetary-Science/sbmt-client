@@ -422,25 +422,27 @@ public class SmallBodyViewConfigMetadataIO implements MetadataManager
             c.imagingInstruments[i++] = inst;
         }
 
-//        Metadata[] spectralMetadata = InstanceGetter.defaultInstanceGetter().providesGenericObjectFromMetadata(spectralInstruments).provide(configMetadata);
-//        Metadata spectralMetadata = readMetadataArray(spectralInstruments, configMetadata);
         if (configMetadata.get(hasSpectralData) == true)
-        	c.spectralInstruments = configMetadata.get(spectralInstruments);
-//        Metadata[] spectralMetadata = configMetadata.get(spectralInstruments);
-//        c.spectralInstruments = new BasicSpectrumInstrument[spectralMetadata.length];
-//        Key<BasicSpectrumInstrument> BASIC_SPECTRUM_INSTRUMENT_KEY = Key.of("basicSpectrumInstrument");
-//
-//        i=0;
-//        for (Metadata data : spectralMetadata)
-//        {
-//            String instrumentName = (String)data.get(Key.of("displayName"));
-//            System.out.println("SmallBodyViewConfigMetadataIO: retrieve: inst name " + instrumentName);
-//            BasicSpectrumInstrument inst = SpectrumInstrumentFactory.getInstrumentForName(instrumentName);
-//            System.out.println("SmallBodyViewConfigMetadataIO: retrieve: inst is " + inst);
-////            inst = InstanceGetter.defaultInstanceGetter().providesGenericObjectFromMetadata(BASIC_SPECTRUM_INSTRUMENT_KEY).provide(data);
-////            inst.retrieve(data);
-//            c.spectralInstruments[i++] = inst;
-//        }
+        {
+        	try
+        	{
+        		c.spectralInstruments = configMetadata.get(spectralInstruments);
+        	}
+        	catch (ClassCastException cce)	//fall back to the old method
+        	{
+        		final Key<Metadata[]> spectralInstrumentsOldFormat = Key.of("spectralInstruments");
+        		Metadata[] spectralMetadata = readMetadataArray(spectralInstrumentsOldFormat, configMetadata);
+                i=0;
+                for (Metadata data : spectralMetadata)
+                {
+                    String instrumentName = (String)data.get(Key.of("displayName"));
+                    BasicSpectrumInstrument inst = SpectrumInstrumentFactory.getInstrumentForName(instrumentName);
+                    inst.retrieveOldFormat(data);
+                    c.spectralInstruments.add(inst);
+                }
+        	}
+        }
+
 
         c.hasLidarData = read(hasLidarData, configMetadata);
         c.hasHypertreeBasedLidarSearch = read(hasHypertreeBasedLidarSearch, configMetadata);
@@ -475,11 +477,20 @@ public class SmallBodyViewConfigMetadataIO implements MetadataManager
 	        c.spectraSearchDataSourceMap = read(spectraSearchDataSourceMap, configMetadata);
 	        c.spectrumMetadataFile = read(spectrumMetadataFile, configMetadata);
 
-//	        if (c.hasHierarchicalSpectraSearch)
+	        if (configMetadata.hasKey(hierarchicalSpectraSearchSpecification))
 	        {
-	        	c.hierarchicalSpectraSearchSpecification = configMetadata.get(hierarchicalSpectraSearchSpecification);
-//	        	c.hierarchicalSpectraSearchSpecification = InstanceGetter.defaultInstanceGetter().providesGenericObjectFromMetadata(hierarchicalSpectraSearchSpecification).provide(configMetadata);
-//	        	c.hierarchicalSpectraSearchSpecification.getMetadataManager().retrieve(read(hierarchicalSpectraSearchSpecification, configMetadata));
+	        	try
+	        	{
+	        		c.hierarchicalSpectraSearchSpecification = configMetadata.get(hierarchicalSpectraSearchSpecification);
+	        	}
+	        	catch (ClassCastException cce)	//fall back to the old method
+	        	{
+	        	    Key<Metadata> hierarchicalSpectraSearchSpecificationOldFormat = Key.of("hierarchicalSpectraSearchSpecification");
+
+	        		c.hierarchicalSpectraSearchSpecification = new SpectrumInstrumentMetadataIO("");
+	        		c.hierarchicalSpectraSearchSpecification.retrieveOldFormat(configMetadata.get(hierarchicalSpectraSearchSpecificationOldFormat));
+	        		c.hierarchicalSpectraSearchSpecification.getSelectedDatasets();
+	        	}
 	        }
         }
 

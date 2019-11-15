@@ -1,5 +1,6 @@
 package edu.jhuapl.sbmt.spectrum.model.io;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import edu.jhuapl.sbmt.spectrum.model.core.SpectrumInstrumentMetadata;
@@ -8,6 +9,7 @@ import edu.jhuapl.sbmt.spectrum.model.core.search.SpectraHierarchicalSearchSpeci
 import edu.jhuapl.sbmt.spectrum.model.core.search.SpectrumSearchSpec;
 
 import crucible.crust.metadata.api.Key;
+import crucible.crust.metadata.api.Metadata;
 import crucible.crust.metadata.api.Version;
 import crucible.crust.metadata.impl.InstanceGetter;
 import crucible.crust.metadata.impl.SettableMetadata;
@@ -91,4 +93,28 @@ public class SpectrumInstrumentMetadataIO extends SpectraHierarchicalSearchSpeci
     	});
 
 	}
+
+    public void retrieveOldFormat(Metadata source)
+    {
+    	Key<Metadata[]> infoKey = Key.of("spectraInfo");
+        Metadata[] specs = readMetadataArray(infoKey, source);
+        info = new ArrayList<SpectrumInstrumentMetadata<SpectrumSearchSpec>>();
+        for (Metadata meta : specs)
+        {
+            SpectrumInstrumentMetadata<SpectrumSearchSpec> inf = new SpectrumInstrumentMetadata<SpectrumSearchSpec>();
+            inf.retrieveOldFormat(meta);
+            info.add(inf);
+        }
+
+    }
+
+    private Metadata[] readMetadataArray(Key<Metadata[]> key, Metadata configMetadata)
+    {
+        Metadata[] values = configMetadata.get(key);
+        if (values != null)
+        {
+            return values;
+        }
+        return null;
+    }
 }

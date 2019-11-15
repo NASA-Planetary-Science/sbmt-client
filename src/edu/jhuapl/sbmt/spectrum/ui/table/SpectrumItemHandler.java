@@ -67,14 +67,32 @@ public class SpectrumItemHandler<S extends BasicSpectrum> extends BasicItemHandl
 			if (!spectrumCollection.isSpectrumMapped(spec))
 				spectrumCollection.addSpectrum(spec, spec.isCustomSpectra);
 			else
+			{
+				boundaryCollection.removeBoundary(spec);
 				spectrumCollection.removeSpectrum(spec);
+			}
 		}
 		else if (aEnum == LookUp.Show)
-			spectrumCollection.setVisibility(spec, (boolean) aValue);
+		{
+			if (spectrumCollection.isSpectrumMapped(spec))
+			{
+				spectrumCollection.setVisibility(spec, (boolean) aValue);
+			}
+		}
 		else if (aEnum == LookUp.Frus)
-			spectrumCollection.setFrustumVisibility(spec, (boolean) aValue);
+		{
+			if (spectrumCollection.isSpectrumMapped(spec))
+			{
+				spectrumCollection.setFrustumVisibility(spec, (boolean) aValue);
+			}
+		}
 		else if (aEnum == LookUp.Bndr)
-			boundaryCollection.setVisibility(spec, (boolean) aValue);
+		{
+			if (spectrumCollection.isSpectrumMapped(spec))
+			{
+				boundaryCollection.setVisibility(spec, (boolean) aValue);
+			}
+		}
 		else
 			throw new UnsupportedOperationException("Column is not supported. Enum: " + aEnum);
 	}

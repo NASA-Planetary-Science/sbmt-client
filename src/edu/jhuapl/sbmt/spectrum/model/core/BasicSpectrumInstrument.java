@@ -8,6 +8,9 @@ import edu.jhuapl.sbmt.spectrum.model.sbmtCore.spectra.ISpectralInstrument;
 import edu.jhuapl.sbmt.spectrum.model.sbmtCore.spectra.Spectrum;
 import edu.jhuapl.sbmt.spectrum.model.sbmtCore.spectra.math.SpectrumMath;
 
+import crucible.crust.metadata.api.Key;
+import crucible.crust.metadata.api.Metadata;
+
 /**
  * Basic Spectrum Instrument type.  Contains information about display name, units, query type, spectrum math
  * @author steelrj1
@@ -121,5 +124,24 @@ public class BasicSpectrumInstrument implements ISpectralInstrument
 			return false;
 		return true;
 	}
+
+    public void retrieveOldFormat(Metadata source)
+    {
+    	Key<String> spectraNameKey = Key.of("displayName");
+        displayName = read(spectraNameKey, source);
+        SpectraType spectraType = SpectraTypeFactory.findSpectraTypeForDisplayName(displayName);
+        this.queryBase = spectraType.getQueryBase();
+        this.spectrumMath = spectraType.getSpectrumMath();
+        this.bandCenters = spectraType.getBandCenters();
+        this.bandCenterUnit = spectraType.getBandCenterUnit();
+    }
+
+    private <T> T read(Key<T> key, Metadata configMetadata)
+    {
+        T value = configMetadata.get(key);
+        if (value != null)
+            return value;
+        return null;
+    }
 
 }

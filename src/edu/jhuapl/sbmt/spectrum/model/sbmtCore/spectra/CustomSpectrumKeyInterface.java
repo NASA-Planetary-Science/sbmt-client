@@ -1,5 +1,7 @@
 package edu.jhuapl.sbmt.spectrum.model.sbmtCore.spectra;
 
+import edu.jhuapl.sbmt.spectrum.model.core.search.SpectrumSearchSpec;
+
 import crucible.crust.metadata.api.Key;
 import crucible.crust.metadata.api.Metadata;
 import crucible.crust.metadata.api.ProvidesGenericObjectFromMetadata;
@@ -41,6 +43,11 @@ public interface CustomSpectrumKeyInterface extends SpectrumKeyInterface
 	 * @param type
 	 */
 	public void setSpectraType(ISpectraType type);
+
+	/**
+	 * Returns the low level metadata for this spectra
+	 */
+	public SpectrumSearchSpec getSpectraSpec();
 
 	/**
 	 * Method to retreive the custom spectrum key from a saved metadata file

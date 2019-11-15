@@ -7,6 +7,7 @@ import javax.swing.JOptionPane;
 
 import edu.jhuapl.sbmt.spectrum.model.core.BasicSpectrum;
 import edu.jhuapl.sbmt.spectrum.model.core.search.CustomSpectraSearchModel;
+import edu.jhuapl.sbmt.spectrum.model.core.search.SpectraHierarchicalSearchSpecification;
 import edu.jhuapl.sbmt.spectrum.model.sbmtCore.spectra.CustomSpectrumKeyInterface;
 import edu.jhuapl.sbmt.spectrum.ui.custom.CustomSpectraControlPanel;
 import edu.jhuapl.sbmt.spectrum.ui.custom.CustomSpectrumImporterDialog;
@@ -22,15 +23,17 @@ public class CustomSpectraControlController<S extends BasicSpectrum>
     private CustomSpectraControlPanel panel;
     private CustomSpectraSearchModel<S> model;
     private List<CustomSpectrumKeyInterface> customSpectra;
+    private SpectraHierarchicalSearchSpecification spectraSpec;
 
     /**
      * @param model	The custom spectra model
      */
-    public CustomSpectraControlController(CustomSpectraSearchModel<S> model)
+    public CustomSpectraControlController(CustomSpectraSearchModel<S> model, SpectraHierarchicalSearchSpecification spectraSpec)
     {
         panel = new CustomSpectraControlPanel();
         this.model = model;
         this.customSpectra = model.getCustomSpectra();
+        this.spectraSpec = spectraSpec;
         init();
     }
 
@@ -61,7 +64,7 @@ public class CustomSpectraControlController<S extends BasicSpectrum>
     private void newButtonActionPerformed()
     {
         CustomSpectrumImporterDialog dialog = new CustomSpectrumImporterDialog(
-                null, false, model.getInstrument(), model.getCustomDataFolder());
+                null, false, model.getInstrument(), model.getCustomDataFolder(), spectraSpec);
         dialog.setSpectrumInfo(null);
         dialog.setLocationRelativeTo(getPanel());
         dialog.setVisible(true);
@@ -96,7 +99,7 @@ public class CustomSpectraControlController<S extends BasicSpectrum>
 
         CustomSpectrumKeyInterface oldSpectrumInfo = customSpectra.get(selectedItem);
 
-        CustomSpectrumImporterDialog dialog = new CustomSpectrumImporterDialog(null, true, model.getInstrument(), model.getCustomDataFolder());
+        CustomSpectrumImporterDialog dialog = new CustomSpectrumImporterDialog(null, true, model.getInstrument(), model.getCustomDataFolder(), spectraSpec);
         dialog.setSpectrumInfo(oldSpectrumInfo);
         dialog.setLocationRelativeTo(null);
         dialog.setVisible(true);
