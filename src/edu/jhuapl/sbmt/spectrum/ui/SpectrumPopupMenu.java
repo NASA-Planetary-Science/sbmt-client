@@ -13,10 +13,12 @@ import java.util.List;
 
 import javax.swing.AbstractAction;
 import javax.swing.JCheckBoxMenuItem;
+import javax.swing.JMenu;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JProgressBar;
 
+import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.math3.geometry.euclidean.threed.Vector3D;
 
 import com.google.common.collect.Lists;
@@ -36,6 +38,7 @@ import edu.jhuapl.saavtk.model.GenericPolyhedralModel;
 import edu.jhuapl.saavtk.model.ModelManager;
 import edu.jhuapl.saavtk.model.ModelNames;
 import edu.jhuapl.saavtk.popup.PopupMenu;
+import edu.jhuapl.saavtk.util.FileUtil;
 import edu.jhuapl.sbmt.client.SbmtInfoWindowManager;
 import edu.jhuapl.sbmt.client.SmallBodyModel;
 import edu.jhuapl.sbmt.spectrum.model.core.BasicSpectrum;
@@ -56,7 +59,9 @@ public class SpectrumPopupMenu<S extends BasicSpectrum> extends PopupMenu implem
     private JMenuItem showSpectrumInfoMenuItem;
     private JMenuItem centerSpectrumMenuItem;
     private JMenuItem showFrustumMenuItem;
-    private JMenuItem saveSpectrumMenuItem;
+    private JMenu saveSpectrumMenuItem;
+    private JMenuItem saveOriginalSpectrumMenuItem;
+    private JMenuItem saveHumanReadableSpectrumMenuItem;
     private SbmtInfoWindowManager infoPanelManager;
     private JMenuItem showToSunVectorMenuItem;
     private JMenuItem setIlluminationMenuItem;
@@ -128,8 +133,17 @@ public class SpectrumPopupMenu<S extends BasicSpectrum> extends PopupMenu implem
         if (renderer!=null)
             this.add(setIlluminationMenuItem);
 
-        saveSpectrumMenuItem = new JMenuItem(new SaveSpectrumAction());
-        saveSpectrumMenuItem.setText("Save Spectrum...");
+        saveSpectrumMenuItem = new JMenu("Save Spectrum");
+
+
+        saveOriginalSpectrumMenuItem = new JMenuItem(new SaveOriginalSpectrumAction());
+        saveOriginalSpectrumMenuItem.setText("Save Original Spectrum...");
+        saveHumanReadableSpectrumMenuItem = new JMenuItem(new SaveSpectrumAction());
+        saveHumanReadableSpectrumMenuItem.setText("Save Human Readable Spectrum...");
+
+        saveSpectrumMenuItem.add(saveOriginalSpectrumMenuItem);
+        saveSpectrumMenuItem.add(saveHumanReadableSpectrumMenuItem);
+
         this.add(saveSpectrumMenuItem);
     }
 
@@ -405,6 +419,34 @@ public class SpectrumPopupMenu<S extends BasicSpectrum> extends PopupMenu implem
         }
     }
 
+    private class SaveOriginalSpectrumAction extends AbstractAction
+    {
+    	 public void actionPerformed(ActionEvent e)
+         {
+             try
+             {
+                 String name = new File(spectrumRenderer.getSpectrum().getFullPath()).getName();
+                 File file = CustomFileChooser.showSaveDialog(saveSpectrumMenuItem, "Select File", name);
+                 if (file != null)
+                 {
+                	 File cachedFile = new File(spectrumRenderer.getSpectrum().getFullPath());
+                	 FileUtil.copyFile(cachedFile, file);
+                	 File toInfoFilename = new File(file.getParentFile(), FilenameUtils.getBaseName(file.getAbsolutePath()) + ".INFO");
+                	 spectrumRenderer.getSpectrum().saveInfofile(toInfoFilename);
+                 }
+             }
+             catch (IOException e1)
+             {
+                 JOptionPane.showMessageDialog(JOptionPane.getFrameForComponent(saveSpectrumMenuItem),
+                         "There was an error saving the file.",
+                         "Error",
+                         JOptionPane.ERROR_MESSAGE);
+
+                 e1.printStackTrace();
+             }
+         }
+    }
+
     private class SaveSpectrumAction extends AbstractAction
     {
         public void actionPerformed(ActionEvent e)
@@ -412,7 +454,7 @@ public class SpectrumPopupMenu<S extends BasicSpectrum> extends PopupMenu implem
             try
             {
                 String name = new File(spectrumRenderer.getSpectrum().getFullPath()).getName();
-                name = name.substring(0, name.length()-4) + ".txt";
+                name = FilenameUtils.getBaseName(name) + "-humanReadable.txt";
                 File file = CustomFileChooser.showSaveDialog(saveSpectrumMenuItem, "Select File", name);
                 if (file != null)
                 {

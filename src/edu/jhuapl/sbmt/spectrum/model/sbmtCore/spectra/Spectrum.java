@@ -39,6 +39,8 @@ public abstract class Spectrum
 
     public abstract void saveSpectrum(File file) throws IOException;
 
+    public abstract void saveInfofile(File file) throws IOException;
+
     public abstract void setMetadata(SearchSpec spec);
     public abstract SearchSpec getMetadata();
 
