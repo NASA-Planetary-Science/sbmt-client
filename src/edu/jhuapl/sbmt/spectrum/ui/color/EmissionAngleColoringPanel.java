@@ -1,9 +1,12 @@
 package edu.jhuapl.sbmt.spectrum.ui.color;
 
+import java.awt.Color;
 import java.awt.Component;
+import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
+import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
@@ -26,10 +29,16 @@ public class EmissionAngleColoringPanel<S extends BasicSpectrum> extends JPanel 
 
 	public EmissionAngleColoringPanel(EmissionSpectrumColorer<S> model)
 	{
-		setLayout(new BoxLayout(this, BoxLayout.X_AXIS));
+		setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
 		this.model = model;
+
+		JPanel labelPanel = new JPanel();
+		labelPanel.setLayout(new BoxLayout(labelPanel, BoxLayout.X_AXIS));
 		JLabel lblNewLabel_15 = new JLabel("Coloring by Avg Emission Angle (OREX Scalar Ramp, 0 to 90)");
-		add(lblNewLabel_15);
+		lblNewLabel_15.setAlignmentX(JLabel.LEFT_ALIGNMENT);
+		labelPanel.add(lblNewLabel_15);
+		labelPanel.add(Box.createHorizontalGlue());
+		add(labelPanel);
 		colormapComboBox = new JComboBox<>();
 		ListCellRenderer<Colormap> tmpRenderer = ColormapUtil.getFancyColormapRender();
 		((Component) tmpRenderer).setEnabled(true);
@@ -43,8 +52,15 @@ public class EmissionAngleColoringPanel<S extends BasicSpectrum> extends JPanel 
 		}
 		colormapComboBox.addActionListener(this);
 		colormapComboBox.setEnabled(true);
-//		colormapComboBox.setSelectedItem(Colormaps.getDefaultColormapName());
-		add(colormapComboBox);
+
+		JPanel comboPanel = new JPanel();
+		comboPanel.setLayout(new BoxLayout(comboPanel, BoxLayout.X_AXIS));
+		comboPanel.add(colormapComboBox);
+		comboPanel.add(Box.createHorizontalGlue());
+		add(comboPanel);
+		setBackground(Color.red);
+		colormapComboBox.setPreferredSize(new Dimension(450, 30));
+		colormapComboBox.setMaximumSize(new Dimension(450, 30));
 	}
 
 	public JPanel getJPanel()
