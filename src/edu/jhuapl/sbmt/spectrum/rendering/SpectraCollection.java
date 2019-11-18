@@ -452,10 +452,14 @@ public class SpectraCollection<S extends BasicSpectrum> extends SaavtkItemManage
 	{
 		List<S> instrumentList = new ArrayList<S>();
 		ImmutableList<S> allItems = super.getAllItems();
+		int i=0;
 		for (S spec : allItems)
 		{
 			if (spec.getInstrument().getDisplayName().equals(activeInstrument.getDisplayName()))
+			{
+				spec.setId(i++);
 				instrumentList.add(spec);
+			}
 		}
 		return ImmutableList.copyOf(instrumentList);
 	}

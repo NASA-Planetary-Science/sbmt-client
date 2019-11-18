@@ -45,7 +45,7 @@ public class SpectrumItemHandler<S extends BasicSpectrum> extends BasicItemHandl
 			case Bndr:
 				return boundaryCollection.getVisibility(spec);
 			case Id:
-				return spectrumCollection.getCurrentList().indexOf(spec);
+				return spec.getId();
 			case Filename:
 				return spec.getSpectrumName();
 			case Date:

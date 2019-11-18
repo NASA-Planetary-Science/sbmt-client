@@ -24,6 +24,8 @@ import edu.jhuapl.sbmt.spectrum.model.sbmtCore.spectra.SpectrumColoringStyle;
  */
 public abstract class BasicSpectrum extends Spectrum
 {
+	protected int id;
+
     protected BasicSpectrumInstrument instrument;
 
     protected String fullpath; // The actual path of the spectrum stored on the
@@ -383,4 +385,14 @@ public abstract class BasicSpectrum extends Spectrum
 
         return properties;
     }
+
+	public int getId()
+	{
+		return id;
+	}
+
+	public void setId(int id)
+	{
+		this.id = id;
+	}
 }
