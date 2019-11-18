@@ -9,9 +9,9 @@ package edu.jhuapl.sbmt.gui.lidar.color;
 public interface LidarColorConfigPanel
 {
 	/**
-	 * Notifies the panel that it is active.
+	 * Notifies the panel of its active state.
 	 */
-	public abstract void activate();
+	public abstract void activate(boolean aIsActive);
 
 	/**
 	 * Returns the GroupColorProvider that should be used to color lidar data
