@@ -740,8 +740,7 @@ public class ImagePopupMenu<K extends ImageKeyInterface> extends PopupMenu
 
                         String defaultFileName = null;
                         if (imageFileName != null)
-                        	defaultFileName = FilenameUtils.getBaseName(imageFileName) + ".INFO";
-//                            defaultFileName = imageFileName.substring(0, imageFileName.length() - 3) + "INFO";
+                            defaultFileName = imageFileName.substring(0, imageFileName.length() - FilenameUtils.getExtension(imageFileName).length()) + "INFO";
 
                         File file = CustomFileChooser.showSaveDialog(invoker, "Save INFO file as...", defaultFileName);
                         if (file == null)
