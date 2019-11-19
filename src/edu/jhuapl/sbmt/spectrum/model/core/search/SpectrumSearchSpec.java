@@ -29,11 +29,12 @@ public class SpectrumSearchSpec extends Hashtable<String, String> implements Sea
 
     public SpectrumSearchSpec()
     {
-
+    	super();
     }
 
     public SpectrumSearchSpec(String name, String location, String dataPath, String filename, ImageSource source, String xAxisUnits, String yAxisUnits, String dataDescription)
     {
+    	super();
         put("dataName", dataName = name);
         put("dataRootLocation", dataRootLocation = location);
         put("dataPath", this.dataPath = dataPath);
@@ -166,7 +167,7 @@ public class SpectrumSearchSpec extends Hashtable<String, String> implements Sea
 	@Override
 	public String toString()
 	{
-		return dataName;
+		return getDataName();
 	}
 
 	final static Key<String> dataNameKey = Key.of("dataName");
@@ -180,14 +181,14 @@ public class SpectrumSearchSpec extends Hashtable<String, String> implements Sea
 
 	public void retrieveOldFormat(Metadata sourceMetadata)
 	{
-		put("dataName", sourceMetadata.get(dataNameKey));
-		put("dataRootLocation", sourceMetadata.get(dataRootLocationKey));
-		put("dataPath", sourceMetadata.get(dataPathKey));
-		put("dataListFilename", sourceMetadata.get(dataListFilenameKey));
-		put("source", sourceMetadata.get(sourceKey));
-		put("xAxisUnits", sourceMetadata.get(xAxisUnitsKey));
-		put("yAxisUnits", sourceMetadata.get(yAxisUnitsKey));
-		put("dataDescription", sourceMetadata.get(dataDescriptionKey));
+		put("dataName", dataName =  sourceMetadata.get(dataNameKey));
+		put("dataRootLocation", dataRootLocation = sourceMetadata.get(dataRootLocationKey));
+		put("dataPath", dataPath = sourceMetadata.get(dataPathKey));
+		put("dataListFilename", dataListFilename = sourceMetadata.get(dataListFilenameKey));
+		put("source", source = sourceMetadata.get(sourceKey));
+		put("xAxisUnits", xAxisUnits = sourceMetadata.get(xAxisUnitsKey));
+		put("yAxisUnits", yAxisUnits = sourceMetadata.get(yAxisUnitsKey));
+		put("dataDescription", dataDescription = sourceMetadata.get(dataDescriptionKey));
 
 	}
 }
