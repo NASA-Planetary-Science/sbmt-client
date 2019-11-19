@@ -154,13 +154,18 @@ public class CustomSpectrumKey implements CustomSpectrumKeyInterface
 				CustomSpectrumKey.class,
 				(key) -> {
 					SettableMetadata result = SettableMetadata.of(Version.of(1, 0));
+					if (key.getSpectraSpec() != null)
+					{
+						result = SettableMetadata.of(Version.of(1,1));
+						result.put(searchSpecKey, key.getSpectraSpec());
+					}
 			        result.put(nameKey, key.getName());
 			        result.put(spectrumFileNameKey, key.getSpectrumFilename());
 			        result.put(instrumentKey, key.getInstrument().toString());
 			        result.put(spectraTypeKey, key.getSpectrumType().toString());
 			        result.put(pointingFileTypeKey, key.getFileType().toString());
 			        result.put(pointingFilenameKey, key.getPointingFilename());
-			        result.put(searchSpecKey, key.getSpectraSpec());
+
 			        return result;
 				}
 			);
