@@ -68,8 +68,7 @@ public class NLRSummaryPanel extends JPanel
                     File file = CustomFileChooser.showSaveDialog(
                             saveButton.getParent(),
                             "Save NLR data",
-                            FilenameUtils.getBaseName(tmp.getName()));
-//                            tmp.getName().substring(0, tmp.getName().length()-3));
+                            tmp.getName().substring(0, tmp.getName().length()-FilenameUtils.getExtension(tmp.getName()).length()));
 
                     try
                     {
