@@ -10,6 +10,8 @@ import edu.jhuapl.sbmt.spectrum.model.sbmtCore.spectra.math.SpectrumMath;
 
 import crucible.crust.metadata.api.Key;
 import crucible.crust.metadata.api.Metadata;
+import crucible.crust.metadata.api.Version;
+import crucible.crust.metadata.impl.SettableMetadata;
 
 /**
  * Basic Spectrum Instrument type.  Contains information about display name, units, query type, spectrum math
@@ -142,6 +144,14 @@ public class BasicSpectrumInstrument implements ISpectralInstrument
         if (value != null)
             return value;
         return null;
+    }
+
+    public Metadata store()
+    {
+    	Key<String> spectraNameKey = Key.of("displayName");
+    	SettableMetadata configMetadata = SettableMetadata.of(Version.of(1, 0));
+    	configMetadata.put(spectraNameKey, displayName);
+        return configMetadata;
     }
 
 }
