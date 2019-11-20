@@ -128,7 +128,7 @@ public class SmallBodyViewConfig extends BodyViewConfig implements ISmallBodyVie
     private static List<ViewConfig> addRemoteEntries()
     {
     	ConfigArrayList configs = new ConfigArrayList();
-        File allBodies = FileCache.getFileFromServer("allBodies.json");
+        File allBodies = FileCache.getFileFromServer("allBodies_" + SmallBodyViewConfigMetadataIO.metadataVersion + ".json");
         try
         {
             FixedMetadata metadata = Serializers.deserialize(allBodies, "AllBodies");

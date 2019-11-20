@@ -47,6 +47,9 @@ import crucible.crust.metadata.impl.gson.Serializers;
 
 public class SmallBodyViewConfigMetadataIO implements MetadataManager
 {
+	static String metadataVersion = "7.8";
+
+
 	//TODO: This needs a new home
 	static {
 		SpectrumInstrumentFactory.registerType("NIS", new NIS());
@@ -63,7 +66,7 @@ public class SmallBodyViewConfigMetadataIO implements MetadataManager
 
     public static void main(String[] args) throws IOException
     {
-        SettableMetadata allBodiesMetadata = SettableMetadata.of(Version.of(1, 0));
+        SettableMetadata allBodiesMetadata = SettableMetadata.of(Version.of(metadataVersion));
         Configuration.setAPLVersion(true);
         SbmtMultiMissionTool.configureMission();
         Authenticator.authenticate();
@@ -73,7 +76,7 @@ public class SmallBodyViewConfigMetadataIO implements MetadataManager
             each.enable(true);
         }
 
-        String rootDir = "/Users/steelrj1/Desktop/configs1327Staged/";
+        String rootDir = "/Users/steelrj1/Desktop/configs" + metadataVersion + "/";
 
         List<ViewConfig> builtInConfigs = SmallBodyViewConfig.getBuiltInConfigs();
         System.out.println("SmallBodyViewConfigMetadataIO: main: walking through Configs");
@@ -84,7 +87,7 @@ public class SmallBodyViewConfigMetadataIO implements MetadataManager
                 SmallBodyViewConfigMetadataIO io = new SmallBodyViewConfigMetadataIO(config);
                 String version = config.version == null ? "" : config.version;
 
-                File file = new File(rootDir + ((SmallBodyViewConfig)config).rootDirOnServer + "/" + config.author +  "_" + config.body.toString().replaceAll(" ", "_") + version.replaceAll(" ", "_") + "_Staged.json");
+                File file = new File(rootDir + ((SmallBodyViewConfig)config).rootDirOnServer + "/" + config.author +  "_" + config.body.toString().replaceAll(" ", "_") + version.replaceAll(" ", "_") + "_" + metadataVersion + ".json");
                 BasicConfigInfo configInfo = new BasicConfigInfo((BodyViewConfig)config);
                 allBodiesMetadata.put(Key.of(config.getUniqueName()), configInfo.store());
 
@@ -110,7 +113,7 @@ public class SmallBodyViewConfigMetadataIO implements MetadataManager
             }
         }
 
-        Serializers.serialize("AllBodies", allBodiesMetadata, new File(rootDir + "allBodies.json"));
+        Serializers.serialize("AllBodies", allBodiesMetadata, new File(rootDir + "allBodies_" + metadataVersion + ".json"));
 
 
     }
@@ -157,7 +160,7 @@ public class SmallBodyViewConfigMetadataIO implements MetadataManager
     private SettableMetadata storeConfig(ViewConfig config)
     {
         SmallBodyViewConfig c = (SmallBodyViewConfig)config;
-        SettableMetadata configMetadata = SettableMetadata.of(Version.of(1, 0));
+        SettableMetadata configMetadata = SettableMetadata.of(Version.of(metadataVersion));
         writeEnum(body, c.body, configMetadata);
         writeEnum(type, c.type, configMetadata);
         write(version, c.version, configMetadata);
@@ -316,7 +319,7 @@ public class SmallBodyViewConfigMetadataIO implements MetadataManager
         }
         else
         {
-            SettableMetadata result = SettableMetadata.of(Version.of(1, 0));
+            SettableMetadata result = SettableMetadata.of(Version.of(metadataVersion));
             for (ViewConfig config : builtInConfigs)
             {
                 SettableMetadata configMetadata = storeConfig(config);
