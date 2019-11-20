@@ -292,6 +292,7 @@ public class CustomSpectraSearchModel<S extends BasicSpectrum> extends BaseSpect
      */
     public void updateConfigFile()
     {
+    	//write out the current version
         try
         {
             Serializers.serialize("CustomSpectra", this, new File(getConfigFilename()));
@@ -300,6 +301,9 @@ public class CustomSpectraSearchModel<S extends BasicSpectrum> extends BaseSpect
             // TODO Auto-generated catch block
             e.printStackTrace();
         }
+
+        //write out the legacy version
+
     }
 
     public void initializeSpecList() throws IOException

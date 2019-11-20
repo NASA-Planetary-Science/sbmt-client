@@ -9,6 +9,7 @@ import edu.jhuapl.sbmt.spectrum.model.sbmtCore.spectra.CustomSpectrumKeyInterfac
 import edu.jhuapl.sbmt.spectrum.model.sbmtCore.spectra.ISpectraType;
 
 import crucible.crust.metadata.api.Key;
+import crucible.crust.metadata.api.Metadata;
 import crucible.crust.metadata.api.Version;
 import crucible.crust.metadata.impl.InstanceGetter;
 import crucible.crust.metadata.impl.SettableMetadata;
@@ -120,6 +121,18 @@ public class CustomSpectrumKey implements CustomSpectrumKeyInterface
 	{
 		return "CustomSpectrumKey [name=" + name + ", fileType=" + fileType + ", instrument=" + instrument
 				+ ", imageType=" + spectrumType + "]";
+	}
+
+	public Metadata storeOldFormat()
+	{
+		SettableMetadata result = SettableMetadata.of(Version.of(1, 0));
+        result.put(nameKey, name);
+        result.put(spectrumFileNameKey, spectrumFilename);
+        result.put(instrumentKey, instrument.toString());
+        result.put(spectraTypeKey, spectrumType.toString());
+        result.put(pointingFileTypeKey, fileType.toString());
+        result.put(pointingFilenameKey, pointingFilename);
+        return result;
 	}
 
 	final static Key<String> nameKey = Key.of("name");
