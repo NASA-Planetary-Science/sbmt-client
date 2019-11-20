@@ -303,7 +303,16 @@ public class CustomSpectraSearchModel<S extends BasicSpectrum> extends BaseSpect
         }
 
         //write out the legacy version
-
+        try
+        {
+        	SettableMetadata result = SettableMetadata.of(Version.of(1, 0));
+        	result.put(customSpectraKey, customSpectraKeys);
+        	Serializers.serialize("CustomSpectra", result, new File(getOriginalConfigFilename()));
+        }
+        catch (IOException ioe)
+        {
+        	ioe.printStackTrace();
+        }
     }
 
     public void initializeSpecList() throws IOException
