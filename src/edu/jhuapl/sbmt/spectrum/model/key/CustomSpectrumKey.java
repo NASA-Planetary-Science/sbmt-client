@@ -117,6 +117,12 @@ public class CustomSpectrumKey implements CustomSpectrumKeyInterface
 	}
 
 	@Override
+	public void setSpectraSearchSpec(SpectrumSearchSpec spec)
+	{
+		this.searchSpec = spec;
+	}
+
+	@Override
 	public String toString()
 	{
 		return "CustomSpectrumKey [name=" + name + ", fileType=" + fileType + ", instrument=" + instrument

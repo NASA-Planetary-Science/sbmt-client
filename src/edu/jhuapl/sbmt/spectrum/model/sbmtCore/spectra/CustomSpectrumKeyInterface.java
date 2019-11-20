@@ -49,6 +49,8 @@ public interface CustomSpectrumKeyInterface extends SpectrumKeyInterface
 	 */
 	public SpectrumSearchSpec getSpectraSpec();
 
+	public void setSpectraSearchSpec(SpectrumSearchSpec spec);
+
 	/**
 	 * Method to retreive the custom spectrum key from a saved metadata file
 	 * @param objectMetadata

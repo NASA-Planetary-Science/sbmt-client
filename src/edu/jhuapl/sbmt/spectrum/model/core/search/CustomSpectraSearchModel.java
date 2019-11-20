@@ -306,7 +306,12 @@ public class CustomSpectraSearchModel<S extends BasicSpectrum> extends BaseSpect
         try
         {
         	SettableMetadata result = SettableMetadata.of(Version.of(1, 0));
-        	result.put(customSpectraKey, customSpectraKeys);
+        	List<CustomSpectrumKeyInterface> legacyKeys = new ArrayList<CustomSpectrumKeyInterface>(customSpectraKeys);
+        	for (CustomSpectrumKeyInterface key : legacyKeys)
+        	{
+        		key.setSpectraSearchSpec(null);
+        	}
+        	result.put(customSpectraKey, legacyKeys);
         	Serializers.serialize("CustomSpectra", result, new File(getOriginalConfigFilename()));
         }
         catch (IOException ioe)
