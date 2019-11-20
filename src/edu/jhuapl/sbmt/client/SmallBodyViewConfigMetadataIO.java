@@ -67,13 +67,13 @@ public class SmallBodyViewConfigMetadataIO implements MetadataManager
         Configuration.setAPLVersion(true);
         SbmtMultiMissionTool.configureMission();
         Authenticator.authenticate();
-        SmallBodyViewConfig.initialize();
+        SmallBodyViewConfig.initializeWithStaticConfigs();
         for (ViewConfig each: SmallBodyViewConfig.getBuiltInConfigs())
         {
             each.enable(true);
         }
 
-        String rootDir = "/Users/steelrj1/Desktop/configsStaged2/";
+        String rootDir = "/Users/steelrj1/Desktop/configs1327/";
 
         List<ViewConfig> builtInConfigs = SmallBodyViewConfig.getBuiltInConfigs();
         System.out.println("SmallBodyViewConfigMetadataIO: main: walking through Configs");
@@ -84,7 +84,7 @@ public class SmallBodyViewConfigMetadataIO implements MetadataManager
                 SmallBodyViewConfigMetadataIO io = new SmallBodyViewConfigMetadataIO(config);
                 String version = config.version == null ? "" : config.version;
 
-                File file = new File(rootDir + ((SmallBodyViewConfig)config).rootDirOnServer + "/" + config.author +  "_" + config.body.toString().replaceAll(" ", "_") + version.replaceAll(" ", "_") + "_Staged.json");
+                File file = new File(rootDir + ((SmallBodyViewConfig)config).rootDirOnServer + "/" + config.author +  "_" + config.body.toString().replaceAll(" ", "_") + version.replaceAll(" ", "_") + ".json");
                 BasicConfigInfo configInfo = new BasicConfigInfo((BodyViewConfig)config);
                 allBodiesMetadata.put(Key.of(config.getUniqueName()), configInfo.store());
 
@@ -93,14 +93,14 @@ public class SmallBodyViewConfigMetadataIO implements MetadataManager
                 io.write(config.getUniqueName(), file, outgoingMetadata);
 
                 //read in data from file to do sanity check
-//                SmallBodyViewConfig cfg = new SmallBodyViewConfig();
-//                SmallBodyViewConfigMetadataIO io2 = new SmallBodyViewConfigMetadataIO(cfg);
-//                FixedMetadata metadata = Serializers.deserialize(file, config.getUniqueName());
-//                io2.metadataID = config.getUniqueName();
-//                io2.retrieve(metadata);
-//
-//                if (!cfg.equals(config))
-//                	System.err.println("SmallBodyViewConfigMetadataIO: main: cfg equals config is " + (cfg.equals(config) + " for " + config.getUniqueName()));
+                SmallBodyViewConfig cfg = new SmallBodyViewConfig();
+                SmallBodyViewConfigMetadataIO io2 = new SmallBodyViewConfigMetadataIO(cfg);
+                FixedMetadata metadata = Serializers.deserialize(file, config.getUniqueName());
+                io2.metadataID = config.getUniqueName();
+                io2.retrieve(metadata);
+
+                if (!cfg.equals(config))
+                	System.err.println("SmallBodyViewConfigMetadataIO: main: cfg equals config is " + (cfg.equals(config) + " for " + config.getUniqueName()));
 
             }
             catch (Exception e)
