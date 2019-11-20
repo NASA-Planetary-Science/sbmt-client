@@ -28,6 +28,8 @@ public interface ISpectraType
      */
     public String getDisplayName();
 
+    public void setDisplayName(String displayName);
+
     /**
      * Returns the band centers for this spectrum type
      * @return

@@ -31,6 +31,11 @@ public class SpectraType implements ISpectraType
         return displayName;
     }
 
+    public void setDisplayName(String displayName)
+    {
+    	this.displayName = displayName;
+    }
+
     @Override
     public QueryBase getQueryBase()
     {

@@ -403,11 +403,11 @@ public class CustomSpectrumImporterDialog extends JDialog
         DefaultComboBoxModel<SpectraType> comboBoxModel = new DefaultComboBoxModel<SpectraType>();
         for (SpectraType type : spectraTypes)
         {
-        	if (type.getDisplayName().equals(instrument.getDisplayName()))
+        	String typeName = type.getDisplayName();
+        	if (typeName.contains("_")) typeName = typeName.substring(0, typeName.indexOf("_"));
+        	if (instrument.getDisplayName().equals(typeName))
         		comboBoxModel.addElement(type);
         }
-
-//        comboBoxModel.insertElementAt(MAKE_SELECTION, 0);
 
         spectrumTypeComboBox.setModel(comboBoxModel);
         spectrumTypeComboBox.addActionListener(new ActionListener() {
@@ -450,8 +450,8 @@ public class CustomSpectrumImporterDialog extends JDialog
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-    private void browseImageButtonActionPerformed(ActionEvent evt)//GEN-FIRST:event_browseImageButtonActionPerformed
-    {//GEN-HEADEREND:event_browseImageButtonActionPerformed
+    private void browseImageButtonActionPerformed(ActionEvent evt)
+    {
         File file = CustomFileChooser.showOpenDialog(this, "Select Spectrum");
         if (file == null)
         {
@@ -475,15 +475,15 @@ public class CustomSpectrumImporterDialog extends JDialog
         infofilePathTextField.setText(defaultInfoFileName);
 
         updateEnabledItems();
-    }//GEN-LAST:event_browseImageButtonActionPerformed
+    }
 
-    private void cancelButtonActionPerformed(ActionEvent evt)//GEN-FIRST:event_cancelButtonActionPerformed
-    {//GEN-HEADEREND:event_cancelButtonActionPerformed
+    private void cancelButtonActionPerformed(ActionEvent evt)
+    {
         setVisible(false);
-    }//GEN-LAST:event_cancelButtonActionPerformed
+    }
 
     private void okButtonActionPerformed(ActionEvent evt)//GEN-FIRST:event_okButtonActionPerformed
-    {//GEN-HEADEREND:event_okButtonActionPerformed
+    {
         String errorString = validateInput();
         if (errorString != null)
         {
@@ -496,15 +496,15 @@ public class CustomSpectrumImporterDialog extends JDialog
 
         okayPressed = true;
         setVisible(false);
-    }//GEN-LAST:event_okButtonActionPerformed
+    }
 
-    private void cylindricalProjectionRadioButtonActionPerformed(ActionEvent evt) {//GEN-FIRST:event_cylindricalProjectionRadioButtonActionPerformed
+    private void cylindricalProjectionRadioButtonActionPerformed(ActionEvent evt) {
         updateEnabledItems();
-    }//GEN-LAST:event_cylindricalProjectionRadioButtonActionPerformed
+    }
 
-    private void perspectiveProjectionRadioButtonActionPerformed(ActionEvent evt) {//GEN-FIRST:event_perspectiveProjectionRadioButtonActionPerformed
+    private void perspectiveProjectionRadioButtonActionPerformed(ActionEvent evt) {
         updateEnabledItems();
-    }//GEN-LAST:event_perspectiveProjectionRadioButtonActionPerformed
+    }
 
     private void browseInfofileButtonActionPerformed(ActionEvent evt) {//GEN-FIRST:event_browseInfofileButtonActionPerformed
         File file = CustomFileChooser.showOpenDialog(this, "Select Infofile");
@@ -515,9 +515,9 @@ public class CustomSpectrumImporterDialog extends JDialog
 
         String filename = file.getAbsolutePath();
         infofilePathTextField.setText(filename);
-    }//GEN-LAST:event_browseInfofileButtonActionPerformed
+    }
 
-    private void browseSumfileButtonActionPerformed(ActionEvent evt) {//GEN-FIRST:event_browseSumfileButtonActionPerformed
+    private void browseSumfileButtonActionPerformed(ActionEvent evt) {
         File file = CustomFileChooser.showOpenDialog(this, "Select Sumfile");
         if (file == null)
         {
@@ -526,19 +526,18 @@ public class CustomSpectrumImporterDialog extends JDialog
 
         String filename = file.getAbsolutePath();
         sumfilePathTextField.setText(filename);
-    }//GEN-LAST:event_browseSumfileButtonActionPerformed
+    }
 
-    private void spectrumTypeComboBoxActionPerformed(ActionEvent evt) {//GEN-FIRST:event_imageTypeComboBoxActionPerformed
+    private void spectrumTypeComboBoxActionPerformed(ActionEvent evt) {
 
         updateEnabledItems();
-    }//GEN-LAST:event_imageTypeComboBoxActionPerformed
+    }
 
     private void spectrumSubTypeComboBoxActionPerformed(ActionEvent evt)
     {
         updateEnabledItems();
     }
 
-    // Variables declaration - do not modify//GEN-BEGIN:variables
     private JButton browseSpectrumButton;
     private JButton browseInfofileButton;
     private JButton browseSumfileButton;
@@ -554,9 +553,6 @@ public class CustomSpectrumImporterDialog extends JDialog
     private JTextField infofilePathTextField;
     private JPanel jPanel1;
     private JButton okButton;
-//    private JRadioButton perspectiveProjectionRadioButton;
-//    private ButtonGroup projectionButtonGroup;
     private JLabel sumfilePathLabel;
     private JTextField sumfilePathTextField;
-    // End of variables declaration//GEN-END:variables
 }

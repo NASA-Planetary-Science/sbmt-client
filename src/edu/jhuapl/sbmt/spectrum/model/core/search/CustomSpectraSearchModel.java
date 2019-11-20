@@ -310,6 +310,8 @@ public class CustomSpectraSearchModel<S extends BasicSpectrum> extends BaseSpect
         	for (CustomSpectrumKeyInterface key : legacyKeys)
         	{
         		key.setSpectraSearchSpec(null);
+        		if (!key.getSpectrumType().getDisplayName().endsWith("_SPECTRA"))
+        				key.getSpectrumType().setDisplayName(key.getSpectrumType().getDisplayName() + "_SPECTRA");
         	}
         	result.put(customSpectraKey, legacyKeys);
         	Serializers.serialize("CustomSpectra", result, new File(getOriginalConfigFilename()));
