@@ -217,8 +217,10 @@ public class CustomSpectraSearchModel<S extends BasicSpectrum> extends BaseSpect
      * @return
      * @throws IOException
      */
-    private boolean migrateConfigFileIfNeeded() throws IOException
+    private Boolean migrateConfigFileIfNeeded() throws IOException
     {
+    	File version1File = new File(getOriginalConfigFilename());
+    	File version1_1File = new File(getConfigFilename());
         MapUtil configMap = new MapUtil(getConfigFilename());
         if (configMap.getAsArray(Spectrum.SPECTRUM_NAMES) != null)
         {
@@ -274,6 +276,12 @@ public class CustomSpectraSearchModel<S extends BasicSpectrum> extends BaseSpect
             updateConfigFile();
             return true;
         }
+        else if (!version1_1File.exists())
+        {
+        	initializeSpecList(version1File.getAbsolutePath(), false);
+        	updateConfigFile();
+        	return null;
+        }
         else
             return false;
 
@@ -294,20 +302,27 @@ public class CustomSpectraSearchModel<S extends BasicSpectrum> extends BaseSpect
         }
     }
 
+    public void initializeSpecList() throws IOException
+    {
+    	initializeSpecList(getConfigFilename(), true);
+    }
+
     /**
      * Initializes the spectrum table with the information in the custom spectra metadata file, if available
      * @throws IOException
      */
-    public void initializeSpecList() throws IOException
+    private void initializeSpecList(String filename, boolean attemptToMigrate) throws IOException
     {
         if (initialized)
             return;
-
-        boolean updated = migrateConfigFileIfNeeded();
+        Boolean updated = false;
+        if (attemptToMigrate == true)
+        	updated = migrateConfigFileIfNeeded();
+        if (updated == null) return;
         if (!updated)
         {
-            if (!(new File(getConfigFilename()).exists())) return;
-            FixedMetadata metadata = Serializers.deserialize(new File(getConfigFilename()), "CustomSpectra");
+            if (!(new File(filename).exists())) return;
+            FixedMetadata metadata = Serializers.deserialize(new File(filename), "CustomSpectra");
             retrieve(metadata);
         }
 
@@ -319,7 +334,6 @@ public class CustomSpectraSearchModel<S extends BasicSpectrum> extends BaseSpect
 			spectrum.spectrumName = info.getName();
 			tempResults.add(spectrum);
         }
-
         this.results = tempResults;
         fireResultsLoaded();
         fireResultsCountChanged(customSpectraKeys.size());
@@ -331,13 +345,22 @@ public class CustomSpectraSearchModel<S extends BasicSpectrum> extends BaseSpect
      */
     private String getConfigFilename()
     {
+        return customDataFolder + File.separator + "specConfig_v1.1.txt";
+    }
+
+    /**
+     * Returns the name of the original customspectrum config metadata file
+     * @return
+     */
+    private String getOriginalConfigFilename()
+    {
         return customDataFolder + File.separator + "specConfig.txt";
     }
 
     @Override
     public Metadata store()
     {
-    	SettableMetadata result = SettableMetadata.of(Version.of(1, 0));
+    	SettableMetadata result = SettableMetadata.of(Version.of(1, 1));
     	result.put(customSpectraKey, customSpectraKeys);
     	return result;
     }
