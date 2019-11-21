@@ -1892,6 +1892,7 @@ public class BennuConfigs extends SmallBodyViewConfig
 //            c.lidarSearchDataSourceMap.put("Default", c.rootDirOnServer + "/ola/Phase07_OB/tree/dataSource.lidar");
             c.lidarBrowseDataSourceMap.put("Default", c.rootDirOnServer + "/ola/browse/fileList.txt");
             c.lidarBrowseFileListResourcePath = c.rootDirOnServer + "/ola/browse/fileList.txt";
+            c.lidarBrowseWithPointsDataSourceMap.put("Default", c.rootDirOnServer + "/ola/browse/fileListv2.txt");
 
             /*
              * search times split into phases
@@ -2054,6 +2055,7 @@ public class BennuConfigs extends SmallBodyViewConfig
 //            c.lidarSearchDataSourceMap.put("Default", c.rootDirOnServer + "/ola/Phase07_OB/tree/dataSource.lidar");
             c.lidarBrowseDataSourceMap.put("Default", c.rootDirOnServer + "/ola/browse/fileList.txt");
             c.lidarBrowseFileListResourcePath = c.rootDirOnServer + "/ola/browse/fileList.txt";
+            c.lidarBrowseWithPointsDataSourceMap.put("Default", c.rootDirOnServer + "/ola/browse/fileListv2.txt");
 
             /*
              * search times split into phases
@@ -2226,6 +2228,7 @@ public class BennuConfigs extends SmallBodyViewConfig
 //            c.lidarSearchDataSourceMap.put("Default", c.rootDirOnServer + "/ola/Phase07_OB/tree/dataSource.lidar");
             c.lidarBrowseDataSourceMap.put("Default", c.rootDirOnServer + "/ola/browse/fileList.txt");
             c.lidarBrowseFileListResourcePath = c.rootDirOnServer + "/ola/browse/fileList.txt";
+            c.lidarBrowseWithPointsDataSourceMap.put("Default", c.rootDirOnServer + "/ola/browse/fileListv2.txt");
 
             /*
              * search times split into phases
@@ -2389,6 +2392,7 @@ public class BennuConfigs extends SmallBodyViewConfig
 //            c.lidarSearchDataSourceMap.put("Default", c.rootDirOnServer + "/ola/Phase07_OB/tree/dataSource.lidar");
             c.lidarBrowseDataSourceMap.put("Default", c.rootDirOnServer + "/ola/browse/fileList.txt");
             c.lidarBrowseFileListResourcePath = c.rootDirOnServer + "/ola/browse/fileList.txt";
+            c.lidarBrowseWithPointsDataSourceMap.put("Default", c.rootDirOnServer + "/ola/browse/fileListv2.txt");
 
             /*
              * search times split into phases
@@ -2553,6 +2557,7 @@ public class BennuConfigs extends SmallBodyViewConfig
 //            c.lidarSearchDataSourceMap.put("Default", c.rootDirOnServer + "/ola/Phase07_OB/tree/dataSource.lidar");
             c.lidarBrowseDataSourceMap.put("Default", c.rootDirOnServer + "/ola/browse/fileList.txt");
             c.lidarBrowseFileListResourcePath = c.rootDirOnServer + "/ola/browse/fileList.txt";
+            c.lidarBrowseWithPointsDataSourceMap.put("Default", c.rootDirOnServer + "/ola/browse/fileListv2.txt");
 
             /*
              * search times split into phases
@@ -2716,6 +2721,7 @@ public class BennuConfigs extends SmallBodyViewConfig
 //            c.lidarSearchDataSourceMap.put("Default", c.rootDirOnServer + "/ola/Phase07_OB/tree/dataSource.lidar");
             c.lidarBrowseDataSourceMap.put("Default", c.rootDirOnServer + "/ola/browse/fileList.txt");
             c.lidarBrowseFileListResourcePath = c.rootDirOnServer + "/ola/browse/fileList.txt";
+            c.lidarBrowseWithPointsDataSourceMap.put("Default", c.rootDirOnServer + "/ola/browse/fileListv2.txt");
 
             /*
              * search times split into phases
@@ -2880,6 +2886,7 @@ public class BennuConfigs extends SmallBodyViewConfig
 //            c.lidarSearchDataSourceMap.put("Default", c.rootDirOnServer + "/ola/Phase07_OB/tree/dataSource.lidar");
             c.lidarBrowseDataSourceMap.put("Default", c.rootDirOnServer + "/ola/browse/fileList.txt");
             c.lidarBrowseFileListResourcePath = c.rootDirOnServer + "/ola/browse/fileList.txt";
+            c.lidarBrowseWithPointsDataSourceMap.put("Default", c.rootDirOnServer + "/ola/browse/fileListv2.txt");
 
             /*
              * search times split into phases
@@ -3044,6 +3051,7 @@ public class BennuConfigs extends SmallBodyViewConfig
 //            c.lidarSearchDataSourceMap.put("Default", c.rootDirOnServer + "/ola/Phase07_OB/tree/dataSource.lidar");
             c.lidarBrowseDataSourceMap.put("Default", c.rootDirOnServer + "/ola/browse/fileList.txt");
             c.lidarBrowseFileListResourcePath = c.rootDirOnServer + "/ola/browse/fileList.txt";
+            c.lidarBrowseWithPointsDataSourceMap.put("Default", c.rootDirOnServer + "/ola/browse/fileListv2.txt");
 
             /*
              * search times split into phases
@@ -3207,6 +3215,7 @@ public class BennuConfigs extends SmallBodyViewConfig
 //            c.lidarSearchDataSourceMap.put("Default", c.rootDirOnServer + "/ola/Phase07_OB/tree/dataSource.lidar");
             c.lidarBrowseDataSourceMap.put("Default", c.rootDirOnServer + "/ola/browse/fileList.txt");
             c.lidarBrowseFileListResourcePath = c.rootDirOnServer + "/ola/browse/fileList.txt";
+            c.lidarBrowseWithPointsDataSourceMap.put("Default", c.rootDirOnServer + "/ola/browse/fileListv2.txt");
 
             /*
              * search times split into phases

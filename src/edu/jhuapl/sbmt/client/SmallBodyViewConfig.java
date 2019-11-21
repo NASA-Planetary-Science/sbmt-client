@@ -138,7 +138,6 @@ public class SmallBodyViewConfig extends BodyViewConfig implements ISmallBodyVie
             	SettableMetadata infoMetadata = (SettableMetadata)metadata.get(key);
             	BasicConfigInfo configInfo = new BasicConfigInfo();
             	configInfo.retrieve(infoMetadata);
-            	System.out.println("SmallBodyViewConfig: addRemoteEntries: config url " + configInfo.configURL);
             	CONFIG_INFO.add(configInfo);
             	VIEWCONFIG_IDENTIFIERS.put(key.toString(), configInfo);
             	if (configInfo.uniqueName.equals("Gaskell/433 Eros"))
@@ -167,7 +166,6 @@ public class SmallBodyViewConfig extends BodyViewConfig implements ISmallBodyVie
         SmallBodyViewConfigMetadataIO io = new SmallBodyViewConfigMetadataIO(ioConfigs);
         try
         {
-        	System.out.println("SmallBodyViewConfig: fetchRemoteConfig: url is " + url);
             File configFile = FileCache.getFileFromServer(url);
             FixedMetadata metadata = Serializers.deserialize(configFile, name);
             io.retrieve(metadata);
