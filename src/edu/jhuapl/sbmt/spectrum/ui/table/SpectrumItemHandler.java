@@ -4,7 +4,6 @@ import org.joda.time.DateTimeZone;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 
-import edu.jhuapl.sbmt.gui.lidar.LookUp;
 import edu.jhuapl.sbmt.spectrum.model.core.BasicSpectrum;
 import edu.jhuapl.sbmt.spectrum.rendering.SpectraCollection;
 import edu.jhuapl.sbmt.spectrum.rendering.SpectrumBoundaryCollection;
@@ -17,12 +16,12 @@ import glum.gui.panel.itemList.query.QueryComposer;
  * @author steelrj1
  *
  */
-public class SpectrumItemHandler<S extends BasicSpectrum> extends BasicItemHandler<S, LookUp>
+public class SpectrumItemHandler<S extends BasicSpectrum> extends BasicItemHandler<S, SpectrumColumnLookup>
 {
 	private final SpectraCollection<S> spectrumCollection;
 	private final SpectrumBoundaryCollection<S> boundaryCollection;
 
-	public SpectrumItemHandler(SpectraCollection<S> aManager, SpectrumBoundaryCollection<S> boundaryCollection, QueryComposer<LookUp> aComposer)
+	public SpectrumItemHandler(SpectraCollection<S> aManager, SpectrumBoundaryCollection<S> boundaryCollection, QueryComposer<SpectrumColumnLookup> aComposer)
 	{
 		super(aComposer);
 
@@ -31,7 +30,7 @@ public class SpectrumItemHandler<S extends BasicSpectrum> extends BasicItemHandl
 	}
 
 	@Override
-	public Object getColumnValue(S spec, LookUp aEnum)
+	public Object getColumnValue(S spec, SpectrumColumnLookup aEnum)
 	{
 		//TODO: Switch to using an index so the get all items doesn't take so long to look up
 		switch (aEnum)
@@ -60,9 +59,9 @@ public class SpectrumItemHandler<S extends BasicSpectrum> extends BasicItemHandl
 	}
 
 	@Override
-	public void setColumnValue(S spec, LookUp aEnum, Object aValue)
+	public void setColumnValue(S spec, SpectrumColumnLookup aEnum, Object aValue)
 	{
-		if (aEnum == LookUp.Map)
+		if (aEnum == SpectrumColumnLookup.Map)
 		{
 			if (!spectrumCollection.isSpectrumMapped(spec))
 				spectrumCollection.addSpectrum(spec, spec.isCustomSpectra);
@@ -72,21 +71,21 @@ public class SpectrumItemHandler<S extends BasicSpectrum> extends BasicItemHandl
 				spectrumCollection.removeSpectrum(spec);
 			}
 		}
-		else if (aEnum == LookUp.Show)
+		else if (aEnum == SpectrumColumnLookup.Show)
 		{
 			if (spectrumCollection.isSpectrumMapped(spec))
 			{
 				spectrumCollection.setVisibility(spec, (boolean) aValue);
 			}
 		}
-		else if (aEnum == LookUp.Frus)
+		else if (aEnum == SpectrumColumnLookup.Frus)
 		{
 			if (spectrumCollection.isSpectrumMapped(spec))
 			{
 				spectrumCollection.setFrustumVisibility(spec, (boolean) aValue);
 			}
 		}
-		else if (aEnum == LookUp.Bndr)
+		else if (aEnum == SpectrumColumnLookup.Bndr)
 		{
 			if (spectrumCollection.isSpectrumMapped(spec))
 			{

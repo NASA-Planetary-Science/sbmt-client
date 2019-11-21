@@ -34,8 +34,8 @@ import org.jfree.data.xy.XYSeriesCollection;
 
 import edu.jhuapl.saavtk.gui.dialog.CustomFileChooser;
 import edu.jhuapl.sbmt.lidar.LidarPoint;
-import edu.jhuapl.sbmt.model.lidar.LidarTrack;
 import edu.jhuapl.sbmt.model.lidar.LidarTrackManager;
+import edu.jhuapl.sbmt.model.lidar.LidarTrack;
 import edu.jhuapl.sbmt.util.TimeUtil;
 
 public class LidarPlot extends JFrame implements ChartMouseListener

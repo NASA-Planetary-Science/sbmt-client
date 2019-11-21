@@ -5,7 +5,7 @@ package edu.jhuapl.sbmt.gui.lidar;
  *
  * @author lopeznr1
  */
-public enum LookUp
+enum LookUp
 {
 	IsVisible,
 
@@ -19,20 +19,6 @@ public enum LookUp
 
 	EndTime,
 
-	Source,
-
-	Map,
-
-	Show,
-
-	Frus,
-
-	Bndr,
-
-	Id,
-
-	Filename,
-
-	Date
+	Source
 
 }

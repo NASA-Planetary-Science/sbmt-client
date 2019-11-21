@@ -5,7 +5,7 @@ package edu.jhuapl.sbmt.spectrum.ui.table;
  * @author steelrj1
  *
  */
-public enum SpectrumColumnLookup
+enum SpectrumColumnLookup
 {
 	Map,
 

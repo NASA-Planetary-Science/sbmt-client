@@ -19,7 +19,6 @@ import javax.swing.table.TableCellRenderer;
 
 import edu.jhuapl.saavtk.gui.util.IconUtil;
 import edu.jhuapl.saavtk.gui.util.ToolTipUtil;
-import edu.jhuapl.sbmt.gui.lidar.LookUp;
 import edu.jhuapl.sbmt.gui.lidar.color.ColorProvider;
 import edu.jhuapl.sbmt.gui.lidar.color.ConstColorProvider;
 import edu.jhuapl.sbmt.gui.table.EphemerisTimeRenderer;
@@ -196,26 +195,26 @@ public class SpectrumResultsTableView<S extends BasicSpectrum> extends JPanel
 		add(buttonPanel);
 
 		// Table Content
-		QueryComposer<LookUp> tmpComposer = new QueryComposer<>();
-		tmpComposer.addAttribute(LookUp.Map, Boolean.class, "Map", null);
-		tmpComposer.addAttribute(LookUp.Show, Boolean.class, "Show", null);
-		tmpComposer.addAttribute(LookUp.Frus, Boolean.class, "Frus", null);
-		tmpComposer.addAttribute(LookUp.Bndr, Boolean.class, "Bndr", null);
-		tmpComposer.addAttribute(LookUp.Id, Integer.class, "Id", null);
-		tmpComposer.addAttribute(LookUp.Filename, String.class, "Filename", null);
-		tmpComposer.addAttribute(LookUp.Date, Double.class, "Date", null);
+		QueryComposer<SpectrumColumnLookup> tmpComposer = new QueryComposer<>();
+		tmpComposer.addAttribute(SpectrumColumnLookup.Map, Boolean.class, "Map", null);
+		tmpComposer.addAttribute(SpectrumColumnLookup.Show, Boolean.class, "Show", null);
+		tmpComposer.addAttribute(SpectrumColumnLookup.Frus, Boolean.class, "Frus", null);
+		tmpComposer.addAttribute(SpectrumColumnLookup.Bndr, Boolean.class, "Bndr", null);
+		tmpComposer.addAttribute(SpectrumColumnLookup.Id, Integer.class, "Id", null);
+		tmpComposer.addAttribute(SpectrumColumnLookup.Filename, String.class, "Filename", null);
+		tmpComposer.addAttribute(SpectrumColumnLookup.Date, Double.class, "Date", null);
 
 		EphemerisTimeRenderer tmpTimeRenderer = new EphemerisTimeRenderer(false);
-		tmpComposer.setEditor(LookUp.Map, new BooleanCellEditor());
-		tmpComposer.setRenderer(LookUp.Map, new BooleanCellRenderer());
-		tmpComposer.setEditor(LookUp.Show, new BooleanCellEditor());
-		tmpComposer.setRenderer(LookUp.Show, new BooleanCellRenderer());
-		tmpComposer.setEditor(LookUp.Show, new BooleanCellEditor());
-		tmpComposer.setRenderer(LookUp.Show, new BooleanCellRenderer());
-		tmpComposer.setEditor(LookUp.Frus, new BooleanCellEditor());
-		tmpComposer.setRenderer(LookUp.Frus, new BooleanCellRenderer());
-		tmpComposer.setEditor(LookUp.Bndr, new BooleanCellEditor());
-		tmpComposer.setRenderer(LookUp.Bndr, new BooleanCellRenderer());
+		tmpComposer.setEditor(SpectrumColumnLookup.Map, new BooleanCellEditor());
+		tmpComposer.setRenderer(SpectrumColumnLookup.Map, new BooleanCellRenderer());
+		tmpComposer.setEditor(SpectrumColumnLookup.Show, new BooleanCellEditor());
+		tmpComposer.setRenderer(SpectrumColumnLookup.Show, new BooleanCellRenderer());
+		tmpComposer.setEditor(SpectrumColumnLookup.Show, new BooleanCellEditor());
+		tmpComposer.setRenderer(SpectrumColumnLookup.Show, new BooleanCellRenderer());
+		tmpComposer.setEditor(SpectrumColumnLookup.Frus, new BooleanCellEditor());
+		tmpComposer.setRenderer(SpectrumColumnLookup.Frus, new BooleanCellRenderer());
+		tmpComposer.setEditor(SpectrumColumnLookup.Bndr, new BooleanCellEditor());
+		tmpComposer.setRenderer(SpectrumColumnLookup.Bndr, new BooleanCellRenderer());
 
 //    	    			tmpComposer.setRenderer(SpectrumColumnLookup.Color, new ColorProviderCellRenderer(false));
 //    	    			tmpComposer.setRenderer(SpectrumColumnLookup.Name, new PrePendRenderer("Trk "));
