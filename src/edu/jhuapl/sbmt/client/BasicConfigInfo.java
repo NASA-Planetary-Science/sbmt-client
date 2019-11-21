@@ -68,9 +68,9 @@ public class BasicConfigInfo implements MetadataManager
 
 
 			if (config.version != null)
-				this.configURL = ((SmallBodyViewConfig)config).rootDirOnServer + "/" + config.author +  "_" + config.body.toString().replaceAll(" ", "_") + config.version.replaceAll(" ", "_") + "_" + SmallBodyViewConfigMetadataIO.metadataVersion + ".json";
+				this.configURL = ((SmallBodyViewConfig)config).rootDirOnServer + "/" + config.author +  "_" + config.body.toString().replaceAll(" ", "_") + config.version.replaceAll(" ", "_") + "_v" + SmallBodyViewConfigMetadataIO.metadataVersion + ".json";
 			else
-				this.configURL = ((SmallBodyViewConfig)config).rootDirOnServer + "/" + config.author +  "_" + config.body.toString().replaceAll(" ", "_") + "_" + SmallBodyViewConfigMetadataIO.metadataVersion + ".json";
+				this.configURL = ((SmallBodyViewConfig)config).rootDirOnServer + "/" + config.author +  "_" + config.body.toString().replaceAll(" ", "_") + "_v" + SmallBodyViewConfigMetadataIO.metadataVersion + ".json";
 		}
 	}
 
