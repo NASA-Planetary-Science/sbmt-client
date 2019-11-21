@@ -413,6 +413,8 @@ public class MarsConfigs extends SmallBodyViewConfig
             c.version = "with MEGANE";
             c.rootDirOnServer = "/phobos/ernst2018-megane";
             c.shapeModelFileExtension = ".obj";
+            c.hasStateHistory = true;
+            c.timeHistoryFile = c.rootDirOnServer + "/shared/history/timeHistory.bth";
 
             c.imagingInstruments = new ImagingInstrument[] {
                     new ImagingInstrument(
