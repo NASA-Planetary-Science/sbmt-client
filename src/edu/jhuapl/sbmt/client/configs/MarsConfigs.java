@@ -1,5 +1,6 @@
 package edu.jhuapl.sbmt.client.configs;
 
+import java.util.ArrayList;
 import java.util.GregorianCalendar;
 import java.util.LinkedHashMap;
 
@@ -16,17 +17,17 @@ import edu.jhuapl.sbmt.client.SbmtMultiMissionTool;
 import edu.jhuapl.sbmt.client.ShapeModelDataUsed;
 import edu.jhuapl.sbmt.client.ShapeModelPopulation;
 import edu.jhuapl.sbmt.client.SmallBodyViewConfig;
-import edu.jhuapl.sbmt.client.SpectralMode;
-import edu.jhuapl.sbmt.model.bennu.otes.SpectraHierarchicalSearchSpecification;
 import edu.jhuapl.sbmt.model.image.ImageSource;
 import edu.jhuapl.sbmt.model.image.ImageType;
 import edu.jhuapl.sbmt.model.image.ImagingInstrument;
 import edu.jhuapl.sbmt.model.image.Instrument;
+import edu.jhuapl.sbmt.model.image.SpectralImageMode;
 import edu.jhuapl.sbmt.model.phobos.MEGANE;
 import edu.jhuapl.sbmt.model.phobos.PhobosExperimentalSearchSpecification;
-import edu.jhuapl.sbmt.model.spectrum.instruments.BasicSpectrumInstrument;
 import edu.jhuapl.sbmt.query.database.GenericPhpQuery;
 import edu.jhuapl.sbmt.query.fixedlist.FixedListQuery;
+import edu.jhuapl.sbmt.spectrum.model.core.BasicSpectrumInstrument;
+import edu.jhuapl.sbmt.spectrum.model.core.search.SpectraHierarchicalSearchSpecification;
 import edu.jhuapl.sbmt.tools.DBRunInfo;
 
 public class MarsConfigs extends SmallBodyViewConfig
@@ -56,7 +57,7 @@ public class MarsConfigs extends SmallBodyViewConfig
 
         c.imagingInstruments = new ImagingInstrument[] {
                 new ImagingInstrument( //
-                        SpectralMode.MONO, //
+                        SpectralImageMode.MONO, //
                         new GenericPhpQuery("/GASKELL/PHOBOS/IMAGING", "PHOBOS", "/GASKELL/PHOBOS/IMAGING/images/gallery"), //
                         ImageType.PHOBOS_IMAGE, //
                         new ImageSource[]{ImageSource.GASKELL, ImageSource.SPICE}, //
@@ -148,7 +149,7 @@ public class MarsConfigs extends SmallBodyViewConfig
 
             c.imagingInstruments = new ImagingInstrument[] {
                     new ImagingInstrument( //
-                            SpectralMode.MONO, //
+                            SpectralImageMode.MONO, //
                             new GenericPhpQuery("/GASKELL/PHOBOSEXPERIMENTAL/IMAGING", "PHOBOSEXP", "/GASKELL/PHOBOS/IMAGING/images/gallery"), //
                             ImageType.PHOBOS_IMAGE, //
                             new ImageSource[]{ImageSource.GASKELL}, //
@@ -212,7 +213,7 @@ public class MarsConfigs extends SmallBodyViewConfig
 
             c.imagingInstruments = new ImagingInstrument[] {
                     new ImagingInstrument( //
-                            SpectralMode.MONO, //
+                            SpectralImageMode.MONO, //
 //                            new GenericPhpQuery("/phobos/ernst2018/imaging", "PHOBOS_ERNST_2018", "/phobos/ernst2018/imaging/gallery"), //
                             new FixedListQuery("/phobos/ernst2018/imaging", "/phobos/ernst2018/imaging/gallery"), //
                             ImageType.PHOBOS_IMAGE, //
@@ -319,7 +320,7 @@ public class MarsConfigs extends SmallBodyViewConfig
 
             c.imagingInstruments = new ImagingInstrument[] {
                     new ImagingInstrument( //
-                            SpectralMode.MONO, //
+                            SpectralImageMode.MONO, //
                             new GenericPhpQuery("/THOMAS/DEIMOSEXPERIMENTAL/IMAGING", "DEIMOS", "/THOMAS/DEIMOSEXPERIMENTAL/IMAGING/viking/gallery"), //
                             ImageType.DEIMOS_IMAGE, //
                             new ImageSource[]{ImageSource.SPICE, ImageSource.CORRECTED}, //
@@ -366,7 +367,7 @@ public class MarsConfigs extends SmallBodyViewConfig
 
             c.imagingInstruments = new ImagingInstrument[] {
                     new ImagingInstrument( //
-                            SpectralMode.MONO, //
+                            SpectralImageMode.MONO, //
 //                            new GenericPhpQuery("/deimos/ernst2018/imaging", "DEIMOS_ERNST_2018", "/deimos/ernst2018/imaging/gallery"), //
                             new FixedListQuery("/deimos/ernst2018/imaging", "/deimos/ernst2018/imaging/gallery"), //
                             ImageType.DEIMOS_IMAGE, //
@@ -415,7 +416,7 @@ public class MarsConfigs extends SmallBodyViewConfig
 
             c.imagingInstruments = new ImagingInstrument[] {
                     new ImagingInstrument(
-                            SpectralMode.MONO,
+                            SpectralImageMode.MONO,
                             new FixedListQuery("/phobos/ernst2018-megane/imaging", "/phobos/ernst2018-megane/imaging/gallery"),
                             ImageType.PHOBOS_IMAGE,
                             new ImageSource[]{ ImageSource.GASKELL },
@@ -426,9 +427,8 @@ public class MarsConfigs extends SmallBodyViewConfig
             };
 
             c.hasSpectralData=true;
-            c.spectralInstruments=new BasicSpectrumInstrument[] {
-                    new MEGANE()
-            };
+            c.spectralInstruments = new ArrayList<BasicSpectrumInstrument>();
+            c.spectralInstruments.add(new MEGANE());
 
             c.hasMapmaker = true;
             c.imageSearchDefaultStartDate = new GregorianCalendar(1976, 6, 24, 0, 0, 0).getTime();

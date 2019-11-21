@@ -1,7 +1,6 @@
 package edu.jhuapl.sbmt.client;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.Date;
 import java.util.List;
@@ -14,10 +13,27 @@ import edu.jhuapl.saavtk.config.ViewConfig;
 import edu.jhuapl.saavtk.model.ShapeModelBody;
 import edu.jhuapl.saavtk.model.ShapeModelType;
 import edu.jhuapl.saavtk.util.Configuration;
+import edu.jhuapl.sbmt.model.bennu.spectra.otes.OTES;
+import edu.jhuapl.sbmt.model.bennu.spectra.otes.OTESQuery;
+import edu.jhuapl.sbmt.model.bennu.spectra.otes.OTESSpectrumMath;
+import edu.jhuapl.sbmt.model.bennu.spectra.ovirs.OVIRS;
+import edu.jhuapl.sbmt.model.bennu.spectra.ovirs.OVIRSQuery;
+import edu.jhuapl.sbmt.model.bennu.spectra.ovirs.OVIRSSpectrumMath;
+import edu.jhuapl.sbmt.model.eros.nis.NIS;
+import edu.jhuapl.sbmt.model.eros.nis.NISSpectrumMath;
+import edu.jhuapl.sbmt.model.eros.nis.NisQuery;
 import edu.jhuapl.sbmt.model.image.ImagingInstrument;
 import edu.jhuapl.sbmt.model.image.Instrument;
-import edu.jhuapl.sbmt.model.spectrum.SpectrumInstrumentFactory;
-import edu.jhuapl.sbmt.model.spectrum.instruments.BasicSpectrumInstrument;
+import edu.jhuapl.sbmt.model.phobos.MEGANE;
+import edu.jhuapl.sbmt.model.phobos.MEGANEQuery;
+import edu.jhuapl.sbmt.model.phobos.MEGANESpectrumMath;
+import edu.jhuapl.sbmt.model.ryugu.nirs3.NIRS3;
+import edu.jhuapl.sbmt.model.ryugu.nirs3.NIRS3Query;
+import edu.jhuapl.sbmt.model.ryugu.nirs3.NIRS3SpectrumMath;
+import edu.jhuapl.sbmt.spectrum.model.core.BasicSpectrumInstrument;
+import edu.jhuapl.sbmt.spectrum.model.core.SpectraTypeFactory;
+import edu.jhuapl.sbmt.spectrum.model.core.SpectrumInstrumentFactory;
+import edu.jhuapl.sbmt.spectrum.model.io.SpectrumInstrumentMetadataIO;
 import edu.jhuapl.sbmt.tools.Authenticator;
 import edu.jhuapl.sbmt.tools.DBRunInfo;
 
@@ -31,19 +47,36 @@ import crucible.crust.metadata.impl.gson.Serializers;
 
 public class SmallBodyViewConfigMetadataIO implements MetadataManager
 {
+	static String metadataVersion = "7.8";
+
+
+	//TODO: This needs a new home
+	static {
+		SpectrumInstrumentFactory.registerType("NIS", new NIS());
+		SpectrumInstrumentFactory.registerType("OTES", new OTES());
+		SpectrumInstrumentFactory.registerType("OVIRS", new OVIRS());
+		SpectrumInstrumentFactory.registerType("NIRS3", new NIRS3());
+		SpectrumInstrumentFactory.registerType("MEGANE", new MEGANE());
+		SpectraTypeFactory.registerSpectraType("OTES", OTESQuery.getInstance(), OTESSpectrumMath.getInstance(), "cm^-1", new OTES().getBandCenters());
+		SpectraTypeFactory.registerSpectraType("OVIRS", OVIRSQuery.getInstance(), OVIRSSpectrumMath.getInstance(), "um", new OVIRS().getBandCenters());
+		SpectraTypeFactory.registerSpectraType("NIS", NisQuery.getInstance(), NISSpectrumMath.getSpectrumMath(), "nm", new NIS().getBandCenters());
+		SpectraTypeFactory.registerSpectraType("NIRS3", NIRS3Query.getInstance(), NIRS3SpectrumMath.getInstance(), "nm", new NIRS3().getBandCenters());
+		SpectraTypeFactory.registerSpectraType("MEGANE", MEGANEQuery.getInstance(), MEGANESpectrumMath.getInstance(), "cm^-1", new MEGANE().getBandCenters());
+	}
+
     public static void main(String[] args) throws IOException
     {
-        SettableMetadata allBodiesMetadata = SettableMetadata.of(Version.of(1, 0));
+        SettableMetadata allBodiesMetadata = SettableMetadata.of(Version.of(metadataVersion));
         Configuration.setAPLVersion(true);
         SbmtMultiMissionTool.configureMission();
         Authenticator.authenticate();
-        SmallBodyViewConfig.initialize();
+        SmallBodyViewConfig.initializeWithStaticConfigs();
         for (ViewConfig each: SmallBodyViewConfig.getBuiltInConfigs())
         {
             each.enable(true);
         }
 
-        String rootDir = "/Users/steelrj1/Desktop/configs12/";
+        String rootDir = "/Users/steelrj1/Desktop/configs" + metadataVersion + "/";
 
         List<ViewConfig> builtInConfigs = SmallBodyViewConfig.getBuiltInConfigs();
         System.out.println("SmallBodyViewConfigMetadataIO: main: walking through Configs");
@@ -54,7 +87,7 @@ public class SmallBodyViewConfigMetadataIO implements MetadataManager
                 SmallBodyViewConfigMetadataIO io = new SmallBodyViewConfigMetadataIO(config);
                 String version = config.version == null ? "" : config.version;
 
-                File file = new File(rootDir + ((SmallBodyViewConfig)config).rootDirOnServer + "/" + config.author +  "_" + config.body.toString().replaceAll(" ", "_") + version.replaceAll(" ", "_") + ".json");
+                File file = new File(rootDir + ((SmallBodyViewConfig)config).rootDirOnServer + "/" + config.author +  "_" + config.body.toString().replaceAll(" ", "_") + version.replaceAll(" ", "_") + "_v" + metadataVersion + ".json");
                 BasicConfigInfo configInfo = new BasicConfigInfo((BodyViewConfig)config);
                 allBodiesMetadata.put(Key.of(config.getUniqueName()), configInfo.store());
 
@@ -63,14 +96,14 @@ public class SmallBodyViewConfigMetadataIO implements MetadataManager
                 io.write(config.getUniqueName(), file, outgoingMetadata);
 
                 //read in data from file to do sanity check
-//                SmallBodyViewConfig cfg = new SmallBodyViewConfig();
-//                SmallBodyViewConfigMetadataIO io2 = new SmallBodyViewConfigMetadataIO(cfg);
-//                FixedMetadata metadata = Serializers.deserialize(file, config.getUniqueName());
-//                io2.metadataID = config.getUniqueName();
-//                io2.retrieve(metadata);
-//
-//                if (!cfg.equals(config))
-//                	System.err.println("SmallBodyViewConfigMetadataIO: main: cfg equals config is " + (cfg.equals(config) + " for " + config.getUniqueName()));
+                SmallBodyViewConfig cfg = new SmallBodyViewConfig();
+                SmallBodyViewConfigMetadataIO io2 = new SmallBodyViewConfigMetadataIO(cfg);
+                FixedMetadata metadata = Serializers.deserialize(file, config.getUniqueName());
+                io2.metadataID = config.getUniqueName();
+                io2.retrieve(metadata);
+
+                if (!cfg.equals(config))
+                	System.err.println("SmallBodyViewConfigMetadataIO: main: cfg equals config is " + (cfg.equals(config) + " for " + config.getUniqueName()));
 
             }
             catch (Exception e)
@@ -80,7 +113,9 @@ public class SmallBodyViewConfigMetadataIO implements MetadataManager
             }
         }
 
-        Serializers.serialize("AllBodies", allBodiesMetadata, new File(rootDir + "allBodies.json"));
+        Serializers.serialize("AllBodies", allBodiesMetadata, new File(rootDir + "allBodies_v" + metadataVersion + ".json"));
+
+
     }
 
     private List<ViewConfig> configs;
@@ -125,7 +160,7 @@ public class SmallBodyViewConfigMetadataIO implements MetadataManager
     private SettableMetadata storeConfig(ViewConfig config)
     {
         SmallBodyViewConfig c = (SmallBodyViewConfig)config;
-        SettableMetadata configMetadata = SettableMetadata.of(Version.of(1, 0));
+        SettableMetadata configMetadata = SettableMetadata.of(Version.of(metadataVersion));
         writeEnum(body, c.body, configMetadata);
         writeEnum(type, c.type, configMetadata);
         write(version, c.version, configMetadata);
@@ -158,7 +193,18 @@ public class SmallBodyViewConfigMetadataIO implements MetadataManager
 
         writeMetadataArray(imagingInstruments, c.imagingInstruments, configMetadata);
 
-        writeMetadataArray(spectralInstruments, c.spectralInstruments, configMetadata);
+//        Metadata[] spectrumInstrumentMetadata = new Metadata[c.spectralInstruments.size()];
+//        int i=0;
+//        for (BasicSpectrumInstrument inst : c.spectralInstruments)
+//    	{
+////        	spectrumInstrumentMetadata[i++] = InstanceGetter.defaultInstanceGetter().providesMetadataFromGenericObject(BasicSpectrumInstrument.class).provide(inst);
+//        	spectrumInstrumentMetadata[i++] = inst.store();
+//    	}
+//        Key<Metadata[]> spectralInstrumentsMetadataKey = Key.of("spectralInstruments");
+//        configMetadata.put(spectralInstrumentsMetadataKey, spectrumInstrumentMetadata);
+////        writeMetadataArray(spectralInstrumentsMetadataKey, spectrumInstrumentMetadata, configMetadata);
+////        writeMetadataArray(spectralInstruments, spectrumInstrumentMetadata, configMetadata);
+        write(spectralInstruments, c.spectralInstruments, configMetadata);
 
         write(hasLidarData, c.hasLidarData, configMetadata);
         write(hasHypertreeBasedLidarSearch, c.hasHypertreeBasedLidarSearch, configMetadata);
@@ -182,18 +228,21 @@ public class SmallBodyViewConfigMetadataIO implements MetadataManager
         write(spectraSearchDataSourceMap, c.spectraSearchDataSourceMap, configMetadata);
         write(spectrumMetadataFile, c.spectrumMetadataFile, configMetadata);
 
-        if (c.hasHierarchicalSpectraSearch && c.hierarchicalSpectraSearchSpecification != null)
+//        if (c.hasHierarchicalSpectraSearch && c.hierarchicalSpectraSearchSpecification != null)
+      	if (c.hierarchicalSpectraSearchSpecification != null)
         {
-        	try
-			{
-				c.hierarchicalSpectraSearchSpecification.loadMetadata();
-			}
-        	catch (FileNotFoundException e)
-			{
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-            write(hierarchicalSpectraSearchSpecification, c.hierarchicalSpectraSearchSpecification.getMetadataManager().store(), configMetadata);
+//        	try
+//			{
+//				c.hierarchicalSpectraSearchSpecification.loadMetadata();
+//			}
+//        	catch (FileNotFoundException e)
+//			{
+//				// TODO Auto-generated catch block
+//				e.printStackTrace();
+//			}
+//            Metadata spectralMetadata = InstanceGetter.defaultInstanceGetter().providesMetadataFromGenericObject(SpectrumInstrumentMetadataIO.class).provide(c.hierarchicalSpectraSearchSpecification);
+            configMetadata.put(hierarchicalSpectraSearchSpecification, c.hierarchicalSpectraSearchSpecification);
+//            write(hierarchicalSpectraSearchSpecification, spectralMetadata, configMetadata);
         }
 
         //dtm
@@ -235,10 +284,11 @@ public class SmallBodyViewConfigMetadataIO implements MetadataManager
         write(lidarOffsetScale, c.lidarOffsetScale, configMetadata);
         writeEnum(lidarInstrumentName, c.lidarInstrumentName, configMetadata);
 
+        int i;
         if (c.defaultForMissions != null)
         {
 	        String[] defaultStrings = new String[c.defaultForMissions.length];
-	        int i=0;
+	        i=0;
 	        for (SbmtMultiMissionTool.Mission mission : c.defaultForMissions)
 	        {
 	        	defaultStrings[i++] = mission.getHashedName();
@@ -247,7 +297,7 @@ public class SmallBodyViewConfigMetadataIO implements MetadataManager
         }
 
         String[] presentStrings = new String[c.presentInMissions.length];
-        int i=0;
+        i=0;
         for (SbmtMultiMissionTool.Mission mission : c.presentInMissions)
         {
         	presentStrings[i++] = mission.getHashedName();
@@ -270,7 +320,7 @@ public class SmallBodyViewConfigMetadataIO implements MetadataManager
         }
         else
         {
-            SettableMetadata result = SettableMetadata.of(Version.of(1, 0));
+            SettableMetadata result = SettableMetadata.of(Version.of(metadataVersion));
             for (ViewConfig config : builtInConfigs)
             {
                 SettableMetadata configMetadata = storeConfig(config);
@@ -379,16 +429,27 @@ public class SmallBodyViewConfigMetadataIO implements MetadataManager
             c.imagingInstruments[i++] = inst;
         }
 
-        Metadata[] spectralMetadata = readMetadataArray(spectralInstruments, configMetadata);
-        c.spectralInstruments = new BasicSpectrumInstrument[spectralMetadata.length];
-        i=0;
-        for (Metadata data : spectralMetadata)
+        if (configMetadata.get(hasSpectralData) == true)
         {
-            String instrumentName = (String)data.get(Key.of("displayName"));
-            BasicSpectrumInstrument inst = SpectrumInstrumentFactory.getInstrumentForName(instrumentName);
-            inst.retrieve(data);
-            c.spectralInstruments[i++] = inst;
+        	try
+        	{
+        		c.spectralInstruments = configMetadata.get(spectralInstruments);
+        	}
+        	catch (ClassCastException cce)	//fall back to the old method
+        	{
+        		final Key<Metadata[]> spectralInstrumentsOldFormat = Key.of("spectralInstruments");
+        		Metadata[] spectralMetadata = readMetadataArray(spectralInstrumentsOldFormat, configMetadata);
+                i=0;
+                for (Metadata data : spectralMetadata)
+                {
+                    String instrumentName = (String)data.get(Key.of("displayName"));
+                    BasicSpectrumInstrument inst = SpectrumInstrumentFactory.getInstrumentForName(instrumentName);
+                    inst.retrieveOldFormat(data);
+                    c.spectralInstruments.add(inst);
+                }
+        	}
         }
+
 
         c.hasLidarData = read(hasLidarData, configMetadata);
         c.hasHypertreeBasedLidarSearch = read(hasHypertreeBasedLidarSearch, configMetadata);
@@ -414,7 +475,7 @@ public class SmallBodyViewConfigMetadataIO implements MetadataManager
 
         }
 
-        if (c.hasSpectralData && c.spectralInstruments.length > 0)
+        if (c.hasSpectralData && c.spectralInstruments.size() > 0)
         {
         	if (configMetadata.hasKey(hasHierarchicalSpectraSearch))
         		c.hasHierarchicalSpectraSearch = read(hasHierarchicalSpectraSearch, configMetadata);
@@ -423,9 +484,20 @@ public class SmallBodyViewConfigMetadataIO implements MetadataManager
 	        c.spectraSearchDataSourceMap = read(spectraSearchDataSourceMap, configMetadata);
 	        c.spectrumMetadataFile = read(spectrumMetadataFile, configMetadata);
 
-	        if (c.hasHierarchicalSpectraSearch)
+	        if (configMetadata.hasKey(hierarchicalSpectraSearchSpecification))
 	        {
-//	        	c.hierarchicalSpectraSearchSpecification.getMetadataManager().retrieve(read(hierarchicalSpectraSearchSpecification, configMetadata));
+	        	try
+	        	{
+	        		c.hierarchicalSpectraSearchSpecification = configMetadata.get(hierarchicalSpectraSearchSpecification);
+	        	}
+	        	catch (ClassCastException cce)	//fall back to the old method
+	        	{
+	        	    Key<Metadata> hierarchicalSpectraSearchSpecificationOldFormat = Key.of("hierarchicalSpectraSearchSpecification");
+
+	        		c.hierarchicalSpectraSearchSpecification = new SpectrumInstrumentMetadataIO("");
+	        		c.hierarchicalSpectraSearchSpecification.retrieveOldFormat(configMetadata.get(hierarchicalSpectraSearchSpecificationOldFormat));
+	        		c.hierarchicalSpectraSearchSpecification.getSelectedDatasets();
+	        	}
 	        }
         }
 
@@ -571,7 +643,7 @@ public class SmallBodyViewConfigMetadataIO implements MetadataManager
 
 
     //capture spectral instruments here
-    final Key<Metadata[]> spectralInstruments = Key.of("spectralInstruments");
+    final Key<List<BasicSpectrumInstrument>> spectralInstruments = Key.of("spectralInstruments");
 
     //DTM
     final Key<Map> dtmSearchDataSourceMap = Key.of("dtmSearchDataSourceMap");
@@ -599,7 +671,7 @@ public class SmallBodyViewConfigMetadataIO implements MetadataManager
     final Key<Boolean> hasHypertreeBasedSpectraSearch = Key.of("hasHypertreeSpectraSearch");
     final Key<Map> spectraSearchDataSourceMap = Key.of("spectraSearchDataSourceMap");
     final Key<String> spectrumMetadataFile = Key.of("spectrumMetadataFile");
-    final Key<Metadata> hierarchicalSpectraSearchSpecification = Key.of("hierarchicalSpectraSearchSpecification");
+    final Key<SpectrumInstrumentMetadataIO> hierarchicalSpectraSearchSpecification = Key.of("hierarchicalSpectraSearchSpecification");
 
     final Key<Boolean> lidarBrowseIntensityEnabled = Key.of("lidarBrowseIntensityEnabled");
     final Key<Long> lidarSearchDefaultStartDate = Key.of("lidarSearchDefaultStartDate");

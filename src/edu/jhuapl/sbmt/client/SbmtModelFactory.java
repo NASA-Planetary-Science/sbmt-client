@@ -14,16 +14,16 @@ import edu.jhuapl.saavtk.model.ShapeModelType;
 import edu.jhuapl.sbmt.dtm.model.DEM;
 import edu.jhuapl.sbmt.dtm.model.DEMKey;
 import edu.jhuapl.sbmt.gui.image.model.custom.CustomCylindricalImageKey;
-import edu.jhuapl.sbmt.model.bennu.Bennu;
-import edu.jhuapl.sbmt.model.bennu.BennuV4;
-import edu.jhuapl.sbmt.model.bennu.MapCamEarthImage;
-import edu.jhuapl.sbmt.model.bennu.MapCamImage;
-import edu.jhuapl.sbmt.model.bennu.MapCamV4Image;
-import edu.jhuapl.sbmt.model.bennu.OcamsFlightImage;
-import edu.jhuapl.sbmt.model.bennu.PolyCamEarthImage;
-import edu.jhuapl.sbmt.model.bennu.PolyCamImage;
-import edu.jhuapl.sbmt.model.bennu.PolyCamV4Image;
-import edu.jhuapl.sbmt.model.bennu.SamCamEarthImage;
+import edu.jhuapl.sbmt.model.bennu.imaging.MapCamEarthImage;
+import edu.jhuapl.sbmt.model.bennu.imaging.MapCamImage;
+import edu.jhuapl.sbmt.model.bennu.imaging.MapCamV4Image;
+import edu.jhuapl.sbmt.model.bennu.imaging.OcamsFlightImage;
+import edu.jhuapl.sbmt.model.bennu.imaging.PolyCamEarthImage;
+import edu.jhuapl.sbmt.model.bennu.imaging.PolyCamImage;
+import edu.jhuapl.sbmt.model.bennu.imaging.PolyCamV4Image;
+import edu.jhuapl.sbmt.model.bennu.imaging.SamCamEarthImage;
+import edu.jhuapl.sbmt.model.bennu.shapeModel.Bennu;
+import edu.jhuapl.sbmt.model.bennu.shapeModel.BennuV4;
 import edu.jhuapl.sbmt.model.ceres.FcCeresImage;
 import edu.jhuapl.sbmt.model.custom.CustomGraticule;
 import edu.jhuapl.sbmt.model.custom.CustomShapeModel;
@@ -40,6 +40,7 @@ import edu.jhuapl.sbmt.model.image.ImageKeyInterface;
 import edu.jhuapl.sbmt.model.image.ImageSource;
 import edu.jhuapl.sbmt.model.image.ImageType;
 import edu.jhuapl.sbmt.model.image.marsmissions.MarsMissionImage;
+import edu.jhuapl.sbmt.model.image.SpectralImageMode;
 import edu.jhuapl.sbmt.model.itokawa.AmicaImage;
 import edu.jhuapl.sbmt.model.itokawa.Itokawa;
 import edu.jhuapl.sbmt.model.leisa.LEISAJupiterImage;
@@ -51,14 +52,12 @@ import edu.jhuapl.sbmt.model.mvic.MVICQuadJupiterImage;
 import edu.jhuapl.sbmt.model.rosetta.CG;
 import edu.jhuapl.sbmt.model.rosetta.Lutetia;
 import edu.jhuapl.sbmt.model.rosetta.OsirisImage;
-import edu.jhuapl.sbmt.model.ryugu.ONCImage;
-import edu.jhuapl.sbmt.model.ryugu.ONCTruthImage;
-import edu.jhuapl.sbmt.model.ryugu.TIRImage;
+import edu.jhuapl.sbmt.model.ryugu.onc.ONCImage;
+import edu.jhuapl.sbmt.model.ryugu.onc.ONCTruthImage;
+import edu.jhuapl.sbmt.model.ryugu.tir.TIRImage;
 import edu.jhuapl.sbmt.model.saturnmoon.SaturnMoonImage;
 import edu.jhuapl.sbmt.model.simple.Sbmt2SimpleSmallBody;
 import edu.jhuapl.sbmt.model.simple.SimpleSmallBody;
-import edu.jhuapl.sbmt.model.spectrum.SpectraCollection;
-import edu.jhuapl.sbmt.model.spectrum.SpectraSearchDataCollection;
 import edu.jhuapl.sbmt.model.time.StateHistoryModel;
 import edu.jhuapl.sbmt.model.time.StateHistoryModel.StateHistoryKey;
 import edu.jhuapl.sbmt.model.vesta.FcImage;
@@ -103,14 +102,14 @@ public class SbmtModelFactory
                 ImageSource.CORRECTED_SPICE.equals(key.getSource()) ||
                 ImageSource.CORRECTED.equals(key.getSource()))
         {
-            if (key.getInstrument() != null && key.getInstrument().getSpectralMode() == SpectralMode.MULTI)
+            if (key.getInstrument() != null && key.getInstrument().getSpectralMode() == SpectralImageMode.MULTI)
             {
                 if (key.getInstrument().getType() == ImageType.MVIC_JUPITER_IMAGE)
                     return new MVICQuadJupiterImage(key, smallBodyModel, loadPointingOnly);
                 else
                     return null;
             }
-            else if (key.getInstrument() != null && key.getInstrument().getSpectralMode() == SpectralMode.HYPER)
+            else if (key.getInstrument() != null && key.getInstrument().getSpectralMode() == SpectralImageMode.HYPER)
             {
                 if (key.getInstrument().getType() == ImageType.LEISA_JUPITER_IMAGE)
                     return new LEISAJupiterImage(key, smallBodyModel, loadPointingOnly);
@@ -346,7 +345,6 @@ public class SbmtModelFactory
                 result = new SimpleSmallBody(config);
             }
         }
-
         return result;
     }
 
@@ -379,19 +377,19 @@ public class SbmtModelFactory
         return new LineamentModel();
     }
 
-    static public HashMap<ModelNames, Model> createSpectralModels(SmallBodyModel smallBodyModel)
-    {
-        HashMap<ModelNames, Model> models = new HashMap<ModelNames, Model>();
-
-        ShapeModelBody body=((SmallBodyViewConfig)smallBodyModel.getConfig()).body;
-        ShapeModelType author=((SmallBodyViewConfig)smallBodyModel.getConfig()).author;
-        String version=((SmallBodyViewConfig)smallBodyModel.getConfig()).version;
-
-        models.put(ModelNames.SPECTRA_HYPERTREE_SEARCH, new SpectraSearchDataCollection(smallBodyModel));
-
-        models.put(ModelNames.SPECTRA, new SpectraCollection(smallBodyModel));
-        return models;
-    }
+//    static public HashMap<ModelNames, Model> createSpectralModels(SmallBodyModel smallBodyModel)
+//    {
+//        HashMap<ModelNames, Model> models = new HashMap<ModelNames, Model>();
+//
+//        ShapeModelBody body=((SmallBodyViewConfig)smallBodyModel.getConfig()).body;
+//        ShapeModelType author=((SmallBodyViewConfig)smallBodyModel.getConfig()).author;
+//        String version=((SmallBodyViewConfig)smallBodyModel.getConfig()).version;
+//
+//        models.put(ModelNames.SPECTRA_HYPERTREE_SEARCH, new SpectraSearchDataCollection(smallBodyModel));
+//
+//        models.put(ModelNames.SPECTRA, new SpectraCollection(smallBodyModel));
+//        return models;
+//    }
 
     static public HashMap<ModelNames, Model> createLidarModels(SmallBodyModel smallBodyModel)
     {
