@@ -1,15 +1,35 @@
 package edu.jhuapl.sbmt.stateHistory.rendering;
 
+import vtk.vtkActor;
 import vtk.vtkConeSource;
+import vtk.vtkPolyDataMapper;
 
 public class SpacecraftDirectionMarker extends vtkConeSource
 {
+	private vtkActor spacecraftMarkerHeadActor;
+    private double[] spacecraftMarkerColor = {0.0, 1.0, 0.0, 1.0};
+    private double markerRadius;
+	private double markerHeight;
+	private double centerX, centerY, centerZ;
+    private double[] white = {1.0, 1.0, 1.0, 1.0};
 
-	public SpacecraftDirectionMarker()
+
+	public SpacecraftDirectionMarker(double markerRadius, double markerHeight,
+			double centerX, double centerY, double centerZ)
 	{
-        SetRadius(markerRadius);
+		this.markerHeight = markerHeight;
+		this.markerRadius = markerRadius;
+		this.centerX = centerX;
+		this.centerY = centerY;
+		this.centerZ = centerZ;
+		updateSource();
+	}
+
+	private void updateSource()
+	{
+		SetRadius(markerRadius);
         SetHeight(markerHeight);
-        SetCenter(0, 0, 0);
+        SetCenter(centerX, centerY, centerZ);
         SetResolution(50);
         Update();
 	}
@@ -21,7 +41,20 @@ public class SpacecraftDirectionMarker extends vtkConeSource
 	}
 
 
-
+	public vtkActor getActor()
+	{
+		vtkPolyDataMapper spacecrafterMarkerHeadMapper = new vtkPolyDataMapper();
+        spacecrafterMarkerHeadMapper.SetInputData(GetOutput());
+        spacecraftMarkerHeadActor = new vtkActor();
+        spacecraftMarkerHeadActor.SetMapper(spacecrafterMarkerHeadMapper);
+        spacecraftMarkerHeadActor.GetProperty().SetDiffuseColor(spacecraftMarkerColor);
+        spacecraftMarkerHeadActor.GetProperty().SetSpecularColor(white);
+        spacecraftMarkerHeadActor.GetProperty().SetSpecular(0.1);
+        spacecraftMarkerHeadActor.GetProperty().SetSpecularPower(80.0);
+        spacecraftMarkerHeadActor.GetProperty().ShadingOn();
+        spacecraftMarkerHeadActor.GetProperty().SetInterpolationToPhong();
+        return spacecraftMarkerHeadActor;
+	}
 
 
     // set the spacecraft pointer size - Alex W
@@ -29,10 +62,10 @@ public class SpacecraftDirectionMarker extends vtkConeSource
     {
         double rad = markerRadius *(2.66e-4 * Math.pow((double)radius,2) + 1e-4*(double)radius + .33);
         double height = markerHeight * (2.66e-4 * Math.pow((double)radius,2) + 1e-4*(double)radius + .33);
-        spacecraftMarkerHead.SetRadius(rad);
-        spacecraftMarkerHead.SetHeight(height);
-        spacecraftMarkerHead.Update();
-        spacecraftMarkerHead.Modified();
-        updateActorVisibility();
+        SetRadius(rad);
+        SetHeight(height);
+        Update();
+        Modified();
+//        updateActorVisibility();
     }
 }

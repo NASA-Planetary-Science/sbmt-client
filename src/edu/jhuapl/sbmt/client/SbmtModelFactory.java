@@ -39,8 +39,8 @@ import edu.jhuapl.sbmt.model.image.Image;
 import edu.jhuapl.sbmt.model.image.ImageKeyInterface;
 import edu.jhuapl.sbmt.model.image.ImageSource;
 import edu.jhuapl.sbmt.model.image.ImageType;
-import edu.jhuapl.sbmt.model.image.marsmissions.MarsMissionImage;
 import edu.jhuapl.sbmt.model.image.SpectralImageMode;
+import edu.jhuapl.sbmt.model.image.marsmissions.MarsMissionImage;
 import edu.jhuapl.sbmt.model.itokawa.AmicaImage;
 import edu.jhuapl.sbmt.model.itokawa.Itokawa;
 import edu.jhuapl.sbmt.model.leisa.LEISAJupiterImage;
@@ -61,7 +61,7 @@ import edu.jhuapl.sbmt.model.simple.SimpleSmallBody;
 import edu.jhuapl.sbmt.model.vesta.FcImage;
 import edu.jhuapl.sbmt.model.vesta_old.VestaOld;
 import edu.jhuapl.sbmt.stateHistory.model.StateHistoryModel;
-import edu.jhuapl.sbmt.stateHistory.model.StateHistoryModel.StateHistoryKey;
+import edu.jhuapl.sbmt.stateHistory.model.stateHistory.StateHistoryKey;
 
 import nom.tam.fits.FitsException;
 
@@ -85,7 +85,7 @@ public class SbmtModelFactory
             boolean loadPointingOnly) throws FitsException, IOException
     {
         SmallBodyViewConfig config = (SmallBodyViewConfig)smallBodyModel.getSmallBodyConfig();
-        return new StateHistoryModel(key, start, end, smallBodyModel, renderer);
+        return new StateHistoryModel(start, end, smallBodyModel, renderer);
     }
 
     static public Image createImage(

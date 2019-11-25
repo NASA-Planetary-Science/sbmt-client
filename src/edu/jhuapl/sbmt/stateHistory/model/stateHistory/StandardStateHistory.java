@@ -1,13 +1,12 @@
 package edu.jhuapl.sbmt.stateHistory.model.stateHistory;
 
 import java.util.Map.Entry;
-
-import edu.jhuapl.sbmt.stateHistory.model.interfaces.State;
-import edu.jhuapl.sbmt.stateHistory.model.interfaces.StateHistory;
-
 import java.util.NavigableMap;
 import java.util.Set;
 import java.util.TreeMap;
+
+import edu.jhuapl.sbmt.stateHistory.model.interfaces.State;
+import edu.jhuapl.sbmt.stateHistory.model.interfaces.StateHistory;
 
 import altwg.util.MathUtil;
 
@@ -16,6 +15,16 @@ public class StandardStateHistory implements StateHistory
     private NavigableMap<Double, State> timeToFlybyState = new TreeMap<Double, State>();
 
     private Double time;
+    private StateHistoryKey key;
+    private double[] trajectoryColor;
+    private String trajectoryName;
+    private String trajectoryDescription;
+    private double trajectoryThickness;
+
+    public StateHistoryKey getKey()
+    {
+    	return key;
+    }
 
     public Double getTime()
     {
@@ -54,9 +63,9 @@ public class StandardStateHistory implements StateHistory
         setTime(time);
     }
 
-    public StandardStateHistory()
+    public StandardStateHistory(StateHistoryKey key)
     {
-
+    	this.key = key;
     }
 
     public void put(State flybyState)
@@ -165,5 +174,29 @@ public class StandardStateHistory implements StateHistory
         return timeToFlybyState.keySet();
 
     }
+
+	@Override
+	public String getTrajectoryName()
+	{
+		return trajectoryName;
+	}
+
+	@Override
+	public String getTrajectoryDescription()
+	{
+		return trajectoryDescription;
+	}
+
+	@Override
+	public double[] getTrajectoryColor()
+	{
+		return trajectoryColor;
+	}
+
+	@Override
+	public double getTrajectoryThickness()
+	{
+		return trajectoryThickness;
+	}
 
 }

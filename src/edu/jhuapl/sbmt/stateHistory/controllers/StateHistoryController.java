@@ -58,9 +58,10 @@ import edu.jhuapl.sbmt.client.SmallBodyModel;
 import edu.jhuapl.sbmt.client.SmallBodyViewConfig;
 import edu.jhuapl.sbmt.model.custom.CustomShapeModel;
 import edu.jhuapl.sbmt.stateHistory.model.StateHistoryModel;
-import edu.jhuapl.sbmt.stateHistory.model.StateHistoryModel.StateHistoryKey;
 import edu.jhuapl.sbmt.stateHistory.model.interfaces.HasTime;
+import edu.jhuapl.sbmt.stateHistory.model.interfaces.StateHistory;
 import edu.jhuapl.sbmt.stateHistory.model.stateHistory.StateHistoryCollection;
+import edu.jhuapl.sbmt.stateHistory.model.stateHistory.StateHistoryKey;
 import edu.jhuapl.sbmt.stateHistory.ui.TimeIntervalTable;
 import edu.jhuapl.sbmt.stateHistory.ui.TimeIntervalTable.TimeIntervalTableModel;
 import edu.jhuapl.sbmt.stateHistory.ui.TimeIntervalTable.columns;
@@ -155,7 +156,7 @@ public class StateHistoryController implements TableModelListener, ItemListener,
             {
                 updateTimeBarValue();
                 updateTimeBarPosition();
-                StateHistoryModel currentRun = stateHistoryCollection.getCurrentRun();
+                StateHistory currentRun = stateHistoryCollection.getCurrentRun();
                 if (currentRun != null)
                 {
                     currentRun.updateStatusBarPosition(e.getComponent().getWidth(), e.getComponent().getHeight());
@@ -201,7 +202,7 @@ public class StateHistoryController implements TableModelListener, ItemListener,
                 // TODO check key generation
                 // generate random stateHistoryKey to use for this interval
                 StateHistoryKey key = new StateHistoryKey(runs);
-                StateHistoryModel newInterval = new StateHistoryModel(key,
+                StateHistoryModel newInterval = new StateHistoryModel(
                         dtStart2, dtEnd2, bodyModel, renderer);
                 if (newInterval.createNewTimeInterval(
                         StateHistoryController.this, total, "") > 0)

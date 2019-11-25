@@ -23,8 +23,9 @@ import com.google.common.collect.Sets;
 import edu.jhuapl.saavtk.gui.render.Renderer;
 import edu.jhuapl.sbmt.client.SmallBodyModel;
 import edu.jhuapl.sbmt.stateHistory.model.StateHistoryModel;
-import edu.jhuapl.sbmt.stateHistory.model.StateHistoryModel.StateHistoryKey;
+import edu.jhuapl.sbmt.stateHistory.model.interfaces.StateHistory;
 import edu.jhuapl.sbmt.stateHistory.model.stateHistory.StateHistoryCollection;
+import edu.jhuapl.sbmt.stateHistory.model.stateHistory.StateHistoryKey;
 
 public class TimeIntervalTable extends JTable
 {
@@ -139,16 +140,17 @@ public class TimeIntervalTable extends JTable
         public void saveRowToFile(int selectedRow, File file)
         {
             StateHistoryKey key = intervals.getKeyFromRow(selectedRow);
-            StateHistoryModel thisRow = intervals.getRun(key);
-            thisRow.saveIntervalToFile(file.getAbsolutePath());
+            StateHistory thisRow = intervals.getRun(key);
+            StateHistoryModel shm = new StateHistoryModel(bodyModel, renderer);
+            shm.saveIntervalToFile(bodyModel.getConfig().getShapeModelName(), thisRow, file.getAbsolutePath());
 
         }
 
         public void loadIntervalFromFile(File runFile, SmallBodyModel bodyModel)
         {
             StateHistoryKey key = new StateHistoryKey(intervals);
-            StateHistoryModel shm = new StateHistoryModel(key, bodyModel, renderer);
-            StateHistoryModel newRow = shm.loadStateHistoryFromFile(runFile);
+            StateHistoryModel shm = new StateHistoryModel(bodyModel, renderer);
+            StateHistory newRow = shm.loadStateHistoryFromFile(runFile, bodyModel.getConfig().getShapeModelName());
             addInterval(newRow, renderer);
         }
 
@@ -213,7 +215,7 @@ public class TimeIntervalTable extends JTable
     }
 
     // Add an interval to the table.  Use ImageTable as an example
-    public void addInterval(StateHistoryModel interval, Renderer renderer)
+    public void addInterval(StateHistory interval, Renderer renderer)
     {
         StateHistoryKey key = interval.getKey();
         if (allKeys.contains(key))
@@ -228,16 +230,19 @@ public class TimeIntervalTable extends JTable
         int i=getModel().getRowCount();
         org.joda.time.format.DateTimeFormatter dtf = DateTimeFormat.forPattern("yyyy-MM-dd HH:mm:ss");
         double[] trajColor = interval.getTrajectoryColor();
+        DateTime startTime = new DateTime(interval.getMinTime());
+        DateTime endTime = new DateTime(interval.getMaxTime());
         Color intervalColor = new Color((int)trajColor[0], (int)trajColor[1], (int)trajColor[2], (int)trajColor[3]);
         ((DefaultTableModel)getModel()).addRow(new Object[]{
                 false,
                 false,
                 intervalColor,
-                interval.getTrajectoryLineThickness(), // TODO line thickness
+                interval.getTrajectoryThickness(), // TODO line thickness
                 interval.getTrajectoryName(),
-                interval.getDescription(),
-                interval.getStartTime().toString(dtf),
-                interval.getEndTime().toString(dtf)});
+                interval.getTrajectoryDescription(),
+                startTime.toString(dtf),
+                endTime.toString(dtf)
+                });
 
             setValueAt(true, i, columns.MAP.ordinal());
             setValueAt(true, i, columns.SHOW.ordinal());

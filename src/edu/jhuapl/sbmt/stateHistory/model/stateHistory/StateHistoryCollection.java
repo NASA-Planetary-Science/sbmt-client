@@ -12,8 +12,6 @@ import edu.jhuapl.saavtk.model.SaavtkItemManager;
 import edu.jhuapl.saavtk.util.Properties;
 //import edu.jhuapl.sbmt.client.ModelFactory;
 import edu.jhuapl.sbmt.client.SmallBodyModel;
-import edu.jhuapl.sbmt.stateHistory.model.StateHistoryModel;
-import edu.jhuapl.sbmt.stateHistory.model.StateHistoryModel.StateHistoryKey;
 import edu.jhuapl.sbmt.stateHistory.model.interfaces.HasTime;
 import edu.jhuapl.sbmt.stateHistory.model.interfaces.StateHistory;
 
@@ -21,8 +19,8 @@ public class StateHistoryCollection extends SaavtkItemManager<StateHistory> /*Ab
 {
     private SmallBodyModel smallBodyModel;
     private ArrayList<StateHistoryKey> keys = new ArrayList<StateHistoryKey>();
-    private List<StateHistoryModel> simRuns = new ArrayList<StateHistoryModel>();
-    private StateHistoryModel currentRun = null;
+    private List<StateHistory> simRuns = new ArrayList<StateHistory>();
+    private StateHistory currentRun = null;
 
     public StateHistoryCollection(SmallBodyModel smallBodyModel)
     {
@@ -31,7 +29,7 @@ public class StateHistoryCollection extends SaavtkItemManager<StateHistory> /*Ab
 
     private boolean containsKey(StateHistoryKey key)
     {
-        for (StateHistoryModel run : simRuns)
+        for (StateHistory run : simRuns)
         {
             if (run.getKey().equals(key))
                 return true;
@@ -40,9 +38,9 @@ public class StateHistoryCollection extends SaavtkItemManager<StateHistory> /*Ab
         return false;
     }
 
-    private StateHistoryModel getRunFromKey(StateHistoryKey key)
+    private StateHistory getRunFromKey(StateHistoryKey key)
     {
-        for (StateHistoryModel run : simRuns)
+        for (StateHistory run : simRuns)
         {
             if (run.getKey().equals(key))
                 return run;
@@ -59,19 +57,19 @@ public class StateHistoryCollection extends SaavtkItemManager<StateHistory> /*Ab
         return null;
     }
 
-    public StateHistoryModel getRunFromRow(int row)
+    public StateHistory getRunFromRow(int row)
     {
         return getRunFromKey(getKeyFromRow(row));
     }
 
-    public StateHistoryModel getCurrentRun()
+    public StateHistory getCurrentRun()
     {
         return currentRun;
     }
 
     public void setCurrentRun(StateHistoryKey key)
     {
-        StateHistoryModel run = getRunFromKey(key);
+        StateHistory run = getRunFromKey(key);
         if (run != null && run != currentRun)
         {
             currentRun = run;
@@ -79,7 +77,7 @@ public class StateHistoryCollection extends SaavtkItemManager<StateHistory> /*Ab
 
     }
 
-    public void addRun(StateHistoryModel run)//  throws FitsException, IOException
+    public void addRun(StateHistory run)//  throws FitsException, IOException
     {
         StateHistoryKey key = run.getKey();
         if (containsKey(key))
@@ -101,7 +99,7 @@ public class StateHistoryCollection extends SaavtkItemManager<StateHistory> /*Ab
         if (!containsKey(key))
             return;
 
-        StateHistoryModel run = getRunFromKey(key);
+        StateHistory run = getRunFromKey(key);
         simRuns.remove(run);
         keys.remove(key);
 
@@ -135,7 +133,7 @@ public class StateHistoryCollection extends SaavtkItemManager<StateHistory> /*Ab
 
     public void setShowTrajectories(boolean show)
     {
-        for (StateHistoryModel run : simRuns)
+        for (StateHistory run : simRuns)
             run.setShowSpacecraft(show);
     }
 
@@ -169,12 +167,12 @@ public class StateHistoryCollection extends SaavtkItemManager<StateHistory> /*Ab
 //            return "No simulation run selected";
 //    }
 
-    public StateHistoryModel getRun(vtkActor actor)
+    public StateHistory getRun(vtkActor actor)
     {
         return currentRun;
     }
 
-    public StateHistoryModel getRun(StateHistoryKey key)
+    public StateHistory getRun(StateHistoryKey key)
     {
         return getRunFromKey(key);
     }

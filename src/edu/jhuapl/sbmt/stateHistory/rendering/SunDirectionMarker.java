@@ -89,14 +89,15 @@ public class SunDirectionMarker extends vtkConeSource
     public void setSunPointerSize(int radius)
     {
         double scale = (2.66e-4 * Math.pow((double)radius,2) + 1e-4*(double)radius + .33);
-        sunAssembly.SetScale(scale);
-        sunDirectionMarker.Update();
-        sunDirectionMarker.Modified();
+//        sunAssembly.SetScale(scale);
+        sunMarkerActor.SetScale(scale);
+        Update();
+        Modified();
 //        sunMarker.Update();
 //        sunMarker.Modified();
 //        sunMarkerHead.Update();
 //        sunMarkerHead.Modified();
-        updateActorVisibility();
+//        updateActorVisibility();
     }
 
 }

@@ -3,6 +3,8 @@ package edu.jhuapl.sbmt.stateHistory.model.interfaces;
 import java.util.Map.Entry;
 import java.util.Set;
 
+import edu.jhuapl.sbmt.stateHistory.model.stateHistory.StateHistoryKey;
+
 public interface StateHistory extends HasTime
 {
     public static final double epsilon = 0.0000001;
@@ -37,4 +39,16 @@ public interface StateHistory extends HasTime
     public double[] getEarthPosition();
 
     public Set<Double> getAllKeys();
+
+    public StateHistoryKey getKey();
+
+    public String getTrajectoryName();
+
+    public String getTrajectoryDescription();
+
+    public double[] getTrajectoryColor();
+
+    public double getTrajectoryThickness();
+
+
 }

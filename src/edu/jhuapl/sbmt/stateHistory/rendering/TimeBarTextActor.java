@@ -2,7 +2,6 @@ package edu.jhuapl.sbmt.stateHistory.rendering;
 
 import vtk.vtkTextActor;
 
-import edu.jhuapl.saavtk.util.Properties;
 import edu.jhuapl.sbmt.util.TimeUtil;
 
 public class TimeBarTextActor extends vtkTextActor
@@ -36,16 +35,16 @@ public class TimeBarTextActor extends vtkTextActor
     {
         int newTimeBarWidthInPixels = (int)Math.min(0.75*windowWidth, 200.0);
 
-        timeBarWidthInPixels = newTimeBarWidthInPixels;
+        int timeBarWidthInPixels = newTimeBarWidthInPixels;
         int timeBarHeight = timeBarWidthInPixels/9;
         int buffer = timeBarWidthInPixels/20;
         int x = buffer + 20; // lower left corner x
         //        int x = windowWidth - timeBarWidthInPixels - buffer; // lower right corner x
         int y = buffer; // lower left corner y
 
-        timeBarTextActor.SetPosition(x+timeBarWidthInPixels/2, y+2);
-        timeBarTextActor.GetTextProperty().SetFontSize(timeBarHeight-4);
+        SetPosition(x+timeBarWidthInPixels/2, y+2);
+        GetTextProperty().SetFontSize(timeBarHeight-4);
 
-        this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
+//        this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
     }
 }
