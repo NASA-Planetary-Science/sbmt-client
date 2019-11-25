@@ -8,15 +8,16 @@ import java.util.List;
 import vtk.vtkActor;
 import vtk.vtkProp;
 
-import edu.jhuapl.saavtk.model.AbstractModel;
+import edu.jhuapl.saavtk.model.SaavtkItemManager;
 import edu.jhuapl.saavtk.util.Properties;
 //import edu.jhuapl.sbmt.client.ModelFactory;
 import edu.jhuapl.sbmt.client.SmallBodyModel;
 import edu.jhuapl.sbmt.stateHistory.model.StateHistoryModel;
 import edu.jhuapl.sbmt.stateHistory.model.StateHistoryModel.StateHistoryKey;
 import edu.jhuapl.sbmt.stateHistory.model.interfaces.HasTime;
+import edu.jhuapl.sbmt.stateHistory.model.interfaces.StateHistory;
 
-public class StateHistoryCollection extends AbstractModel implements PropertyChangeListener, HasTime
+public class StateHistoryCollection extends SaavtkItemManager<StateHistory> /*AbstractModel*/ implements PropertyChangeListener, HasTime
 {
     private SmallBodyModel smallBodyModel;
     private ArrayList<StateHistoryKey> keys = new ArrayList<StateHistoryKey>();
