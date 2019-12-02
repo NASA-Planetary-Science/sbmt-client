@@ -456,7 +456,7 @@ public class RyuguConfigs extends SmallBodyViewConfig
             c.imageSearchDefaultEndDate = new GregorianCalendar(2021, 0, 31, 0, 0, 0).getTime();
             c.imageSearchDefaultMaxSpacecraftDistance = 120000.0;
             c.imageSearchDefaultMaxResolution = 300.0;
-            c.density = 1500.; // (kg/m^3)
+            c.density = 1.500; // (g/cm^3)
             c.rotationRate = 0.00022871; // (rad/sec)
 
             c.hasLidarData = true;
@@ -553,7 +553,7 @@ public class RyuguConfigs extends SmallBodyViewConfig
             c.imageSearchDefaultEndDate = new GregorianCalendar(2021, 0, 31, 0, 0, 0).getTime();
             c.imageSearchDefaultMaxSpacecraftDistance = 120000.0;
             c.imageSearchDefaultMaxResolution = 300.0;
-            c.density = 1500.; // (kg/m^3)
+            c.density = 1.500; // (g/cm^3)
             c.rotationRate = 0.00022871; // (rad/sec)
 
             c.hasLidarData = true;
@@ -647,7 +647,7 @@ public class RyuguConfigs extends SmallBodyViewConfig
             c.imageSearchDefaultEndDate = new GregorianCalendar(2021, 0, 31, 0, 0, 0).getTime();
             c.imageSearchDefaultMaxSpacecraftDistance = 120000.0;
             c.imageSearchDefaultMaxResolution = 300.0;
-            c.density = 1500.; // (kg/m^3)
+            c.density = 1.500; // (g/cm^3)
             c.rotationRate = 0.00022871; // (rad/sec)
 
             c.hasLidarData = true;
@@ -743,7 +743,7 @@ public class RyuguConfigs extends SmallBodyViewConfig
             c.imageSearchDefaultEndDate = new GregorianCalendar(2021, 0, 31, 0, 0, 0).getTime();
             c.imageSearchDefaultMaxSpacecraftDistance = 120000.0;
             c.imageSearchDefaultMaxResolution = 300.0;
-            c.density = 1500.; // (kg/m^3)
+            c.density = 1.500; // (g/cm^3)
             c.rotationRate = 0.00022871; // (rad/sec)
 
             c.hasLidarData = true;
@@ -837,7 +837,7 @@ public class RyuguConfigs extends SmallBodyViewConfig
             c.imageSearchDefaultEndDate = new GregorianCalendar(2021, 0, 31, 0, 0, 0).getTime();
             c.imageSearchDefaultMaxSpacecraftDistance = 120000.0;
             c.imageSearchDefaultMaxResolution = 300.0;
-            c.density = 1500.; // (kg/m^3)
+            c.density = 1.500; // (g/cm^3)
             c.rotationRate = 0.00022871; // (rad/sec)
 
             c.hasLidarData = true;
@@ -935,7 +935,7 @@ public class RyuguConfigs extends SmallBodyViewConfig
             c.imageSearchDefaultEndDate = new GregorianCalendar(2021, 0, 31, 0, 0, 0).getTime();
             c.imageSearchDefaultMaxSpacecraftDistance = 120000.0;
             c.imageSearchDefaultMaxResolution = 300.0;
-            c.density = 1500.; // (kg/m^3)
+            c.density = 1.500; // (g/cm^3)
             c.rotationRate = 0.00022871; // (rad/sec)
 
             c.hasLidarData = true;
@@ -1031,7 +1031,7 @@ public class RyuguConfigs extends SmallBodyViewConfig
             c.imageSearchDefaultEndDate = new GregorianCalendar(2021, 0, 31, 0, 0, 0).getTime();
             c.imageSearchDefaultMaxSpacecraftDistance = 120000.0;
             c.imageSearchDefaultMaxResolution = 300.0;
-            c.density = 1500.; // (kg/m^3)
+            c.density = 1.500; // (g/cm^3)
             c.rotationRate = 0.00022871; // (rad/sec)
 
             c.hasLidarData = true;
@@ -1129,7 +1129,7 @@ public class RyuguConfigs extends SmallBodyViewConfig
             c.imageSearchDefaultEndDate = new GregorianCalendar(2021, 0, 31, 0, 0, 0).getTime();
             c.imageSearchDefaultMaxSpacecraftDistance = 120000.0;
             c.imageSearchDefaultMaxResolution = 300.0;
-            c.density = 1500.; // (kg/m^3)
+            c.density = 1.500; // (g/cm^3)
             c.rotationRate = 0.00022871; // (rad/sec)
 
             c.hasLidarData = true;
@@ -1227,7 +1227,7 @@ public class RyuguConfigs extends SmallBodyViewConfig
             c.imageSearchDefaultEndDate = new GregorianCalendar(2021, 0, 31, 0, 0, 0).getTime();
             c.imageSearchDefaultMaxSpacecraftDistance = 120000.0;
             c.imageSearchDefaultMaxResolution = 300.0;
-            c.density = 1200.; // (kg/m^3)
+            c.density = 1.200; // (g/cm^3)
             c.rotationRate = 0.00022871; // (rad/sec)
 
             c.hasLidarData = true;
@@ -1325,7 +1325,7 @@ public class RyuguConfigs extends SmallBodyViewConfig
             c.imageSearchDefaultEndDate = new GregorianCalendar(2021, 0, 31, 0, 0, 0).getTime();
             c.imageSearchDefaultMaxSpacecraftDistance = 120000.0;
             c.imageSearchDefaultMaxResolution = 300.0;
-            c.density = 1200.; // (kg/m^3)
+            c.density = 1.200; // (g/cm^3)
             c.rotationRate = 0.00022871; // (rad/sec)
 
             c.hasLidarData = true;
@@ -1425,7 +1425,7 @@ public class RyuguConfigs extends SmallBodyViewConfig
             c.imageSearchDefaultEndDate = new GregorianCalendar(2021, 0, 31, 0, 0, 0).getTime();
             c.imageSearchDefaultMaxSpacecraftDistance = 120000.0;
             c.imageSearchDefaultMaxResolution = 300.0;
-            c.density = 1200.; // (kg/m^3)
+            c.density = 1.200; // (g/cm^3)
             c.rotationRate = 0.00022871; // (rad/sec)
 
             c.hasLidarData = true;
@@ -1531,7 +1531,7 @@ public class RyuguConfigs extends SmallBodyViewConfig
             c.spectralInstruments.add(new NIRS3());
 
 
-            c.density = 1200.; // (kg/m^3)
+            c.density = 1.200; // (g/cm^3)
             c.rotationRate = 0.00022871; // (rad/sec)
 
             c.hasHierarchicalSpectraSearch = true;
@@ -1639,7 +1639,7 @@ public class RyuguConfigs extends SmallBodyViewConfig
             c.imageSearchDefaultEndDate = new GregorianCalendar(2021, 0, 31, 0, 0, 0).getTime();
             c.imageSearchDefaultMaxSpacecraftDistance = 120000.0;
             c.imageSearchDefaultMaxResolution = 300.0;
-            c.density = 1500.; // (kg/m^3)
+            c.density = 1.500; // (g/cm^3)
             c.rotationRate = 0.00022871; // (rad/sec)
 
             c.hasLidarData = true;
@@ -1727,7 +1727,7 @@ public class RyuguConfigs extends SmallBodyViewConfig
             c.imageSearchDefaultEndDate = new GregorianCalendar(2021, 0, 31, 0, 0, 0).getTime();
             c.imageSearchDefaultMaxSpacecraftDistance = 120000.0;
             c.imageSearchDefaultMaxResolution = 300.0;
-            c.density = 1500.; // (kg/m^3)
+            c.density = 1.500; // (g/cm^3)
             c.rotationRate = 0.00022871; // (rad/sec)
 
             c.hasLidarData = true;
@@ -1818,7 +1818,7 @@ public class RyuguConfigs extends SmallBodyViewConfig
             c.imageSearchDefaultEndDate = new GregorianCalendar(2021, 0, 31, 0, 0, 0).getTime();
             c.imageSearchDefaultMaxSpacecraftDistance = 120000.0;
             c.imageSearchDefaultMaxResolution = 300.0;
-            c.density = 1500.; // (kg/m^3)
+            c.density = 1.500; // (g/cm^3)
             c.rotationRate = 0.00022871; // (rad/sec)
 
             c.hasLidarData = true;
@@ -1908,7 +1908,7 @@ public class RyuguConfigs extends SmallBodyViewConfig
             c.imageSearchDefaultEndDate = new GregorianCalendar(2021, 0, 31, 0, 0, 0).getTime();
             c.imageSearchDefaultMaxSpacecraftDistance = 120000.0;
             c.imageSearchDefaultMaxResolution = 300.0;
-            c.density = 1200.; // (kg/m^3)
+            c.density = 1.200; // (g/cm^3)
             c.rotationRate = 0.00022871; // (rad/sec)
 
             c.hasLidarData = true;
@@ -1997,7 +1997,7 @@ public class RyuguConfigs extends SmallBodyViewConfig
             c.imageSearchDefaultEndDate = new GregorianCalendar(2021, 0, 31, 0, 0, 0).getTime();
             c.imageSearchDefaultMaxSpacecraftDistance = 120000.0;
             c.imageSearchDefaultMaxResolution = 300.0;
-            c.density = 1200.; // (kg/m^3)
+            c.density = 1.200; // (g/cm^3)
             c.rotationRate = 0.00022871; // (rad/sec)
 
             c.hasLidarData = true;
@@ -2086,7 +2086,7 @@ public class RyuguConfigs extends SmallBodyViewConfig
             c.imageSearchDefaultEndDate = new GregorianCalendar(2021, 0, 31, 0, 0, 0).getTime();
             c.imageSearchDefaultMaxSpacecraftDistance = 120000.0;
             c.imageSearchDefaultMaxResolution = 300.0;
-            c.density = 1200.; // (kg/m^3)
+            c.density = 1.200; // (g/cm^3)
             c.rotationRate = 0.00022867; // (rad/sec)
 
             c.hasLidarData = true;
