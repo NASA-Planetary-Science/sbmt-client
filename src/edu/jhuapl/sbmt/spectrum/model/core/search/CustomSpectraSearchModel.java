@@ -212,6 +212,17 @@ public class CustomSpectraSearchModel<S extends BasicSpectrum> extends BaseSpect
     	fireResultsCountChanged(customSpectraKeys.size());
     }
 
+    private void deleteSpectraFromList(List<CustomSpectrumKeyInterface> customSpectraKeys)
+    {
+    	for (int i = customSpectraKeys.size()-1; i > -1; i--)
+    	{
+    		fireResultDeleted(customSpectraKeys.get(i));
+    		customSpectraKeys.remove(i);
+    	}
+    	updateConfigFile();
+    	fireResultsCountChanged(customSpectraKeys.size());
+    }
+
     /**
      * Internal method to migrate the spectrum config file from the old to the new format
      * @return
@@ -466,11 +477,13 @@ public class CustomSpectraSearchModel<S extends BasicSpectrum> extends BaseSpect
     public void loadSpectrumListFromFile(File file) throws SpectrumIOException
     {
     	Preconditions.checkNotNull(customDataFolder);
+    	List<CustomSpectrumKeyInterface> oldKeys = new ArrayList<CustomSpectrumKeyInterface>(customSpectraKeys);
     	SpectrumListIO.loadCustomSpectrumListButtonActionPerformed(file, customSpectraKeys, instrument, new Runnable()
 		{
 			@Override
 			public void run()
 			{
+				deleteSpectraFromList(oldKeys);
 				updateConfigFile();
 				fireResultsChanged();
 				setResultIntervalCurrentlyShown(new IdPair(0, getNumberOfBoundariesToShow()));
