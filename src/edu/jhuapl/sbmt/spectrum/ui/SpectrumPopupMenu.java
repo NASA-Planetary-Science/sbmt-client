@@ -43,6 +43,7 @@ import edu.jhuapl.sbmt.client.SbmtInfoWindowManager;
 import edu.jhuapl.sbmt.client.SmallBodyModel;
 import edu.jhuapl.sbmt.spectrum.model.core.BasicSpectrum;
 import edu.jhuapl.sbmt.spectrum.model.core.BasicSpectrumInstrument;
+import edu.jhuapl.sbmt.spectrum.model.core.SpectrumIOException;
 import edu.jhuapl.sbmt.spectrum.model.core.interfaces.IBasicSpectrumRenderer;
 import edu.jhuapl.sbmt.spectrum.model.statistics.SpectrumStatistics;
 import edu.jhuapl.sbmt.spectrum.model.statistics.SpectrumStatistics.Sample;
@@ -225,7 +226,17 @@ public class SpectrumPopupMenu<S extends BasicSpectrum> extends PopupMenu implem
         {
             if (showRemoveSpectrumIn3DMenuItem.isSelected())
             {
-            	collection.addSpectrum(spectrum.get(0), spectrum.get(0).isCustomSpectra);
+            	try
+				{
+					collection.addSpectrum(spectrum.get(0), spectrum.get(0).isCustomSpectra);
+				}
+            	catch (SpectrumIOException e1)
+				{
+            		JOptionPane.showMessageDialog(JOptionPane.getFrameForComponent(null),
+		                     e1.getMessage(),
+		                     "Error",
+		                     JOptionPane.ERROR_MESSAGE);
+				}
             }
             else
                 collection.removeSpectrum(spectrum.get(0));

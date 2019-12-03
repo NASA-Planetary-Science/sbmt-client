@@ -97,8 +97,9 @@ public abstract class BasicSpectrum extends Spectrum
 
     /**
      *	Initializes the structure needed for reading in spectra.
+     * @throws SpectrumIOException
      */
-    public void readSpectrumFromFile()
+    public void readSpectrumFromFile() throws SpectrumIOException
     {
     	spectrum=new double[getNumberOfBands()];
     }
