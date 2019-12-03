@@ -183,7 +183,7 @@ public class CustomSpectrumKey implements CustomSpectrumKeyInterface
 			}
 			result.put(nameKey, key.getName());
 			result.put(spectrumFileNameKey, key.getSpectrumFilename());
-			result.put(instrumentKey, key.getInstrument().toString());
+//			result.put(instrumentKey, key.getInstrument().toString());
 			result.put(spectraTypeKey, key.getSpectrumType().toString());
 			result.put(pointingFileTypeKey, key.getFileType().toString());
 			result.put(pointingFilenameKey, key.getPointingFilename());
