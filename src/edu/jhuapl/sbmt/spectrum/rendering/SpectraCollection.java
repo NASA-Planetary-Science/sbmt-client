@@ -457,7 +457,7 @@ public class SpectraCollection<S extends BasicSpectrum> extends SaavtkItemManage
 		{
 			if (spec.getInstrument().getDisplayName().equals(activeInstrument.getDisplayName()))
 			{
-				spec.setId(i++);
+				spec.setId(i++ + 1);
 				instrumentList.add(spec);
 			}
 		}
