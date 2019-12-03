@@ -352,6 +352,8 @@ public class CustomSpectraSearchModel<S extends BasicSpectrum> extends BaseSpect
         	S spectrum = (S)SbmtSpectrumModelFactory.createSpectrum(customDataFolder + File.separator + info.getSpectrumFilename(), SpectrumInstrumentFactory.getInstrumentForName(instrument.getDisplayName()));
 			spectrum.isCustomSpectra = true;
 			spectrum.spectrumName = info.getName();
+			if (info.getSpectraSpec() != null)
+				spectrum.setMetadata(info.getSpectraSpec());
 			tempResults.add(spectrum);
         }
         this.results = tempResults;
