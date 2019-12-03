@@ -10,6 +10,7 @@ import edu.jhuapl.saavtk.gui.ModelInfoWindow;
 import edu.jhuapl.saavtk.gui.WindowManager;
 import edu.jhuapl.saavtk.model.Model;
 import edu.jhuapl.saavtk.model.ModelManager;
+import edu.jhuapl.saavtk.popup.PopupMenu;
 import edu.jhuapl.saavtk.util.Properties;
 import edu.jhuapl.sbmt.model.image.PerspectiveImage;
 
@@ -18,10 +19,12 @@ public class SbmtSpectrumWindowManager implements WindowManager, PropertyChangeL
     HashMap<Model, ModelInfoWindow> spectrumPanels = new HashMap<Model, ModelInfoWindow>();
 
     ModelManager modelManager;
+    PopupMenu spectralImagePopupMenu;
 
-    public SbmtSpectrumWindowManager(ModelManager modelManager)
+    public SbmtSpectrumWindowManager(ModelManager modelManager, PopupMenu spectralImagePopupMenu)
     {
         this.modelManager = modelManager;
+        this.spectralImagePopupMenu = spectralImagePopupMenu;
     }
 
     public int getNumberSpectrumModels()
@@ -37,7 +40,7 @@ public class SbmtSpectrumWindowManager implements WindowManager, PropertyChangeL
         }
         else
         {
-            final ModelInfoWindow spectrumPanel = createModelSpectrumWindow(model, modelManager);
+            final ModelInfoWindow spectrumPanel = createModelSpectrumWindow(model, modelManager, spectralImagePopupMenu);
 
             if (spectrumPanel == null)
             {
@@ -78,11 +81,12 @@ public class SbmtSpectrumWindowManager implements WindowManager, PropertyChangeL
         }
     }
 
-    public ModelInfoWindow createModelSpectrumWindow(Model model, ModelManager modelManager)
+    public ModelInfoWindow createModelSpectrumWindow(Model model, ModelManager modelManager, PopupMenu spectralImagesPopupMenu)
     {
         if (model instanceof PerspectiveImage && ((PerspectiveImage)model).getImageDepth() > 1)
         {
-            return new MultispectralSpectrumInfoPanel((PerspectiveImage)model, modelManager);
+
+            return new MultispectralSpectrumInfoPanel((PerspectiveImage)model, modelManager, spectralImagesPopupMenu);
         }
 //        else if (model instanceof ColorImage)
 //        {

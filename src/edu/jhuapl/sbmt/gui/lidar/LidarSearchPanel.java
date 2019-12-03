@@ -127,7 +127,6 @@ public class LidarSearchPanel extends JPanel
 	 */
 	protected void handleActionSubmit(LidarDataSource aDataSource, AbstractEllipsePolygonModel aSelectionRegion)
 	{
-		System.out.println("LidarSearchPanel: handleActionSubmit: ");
 		setCursor(new Cursor(Cursor.WAIT_CURSOR));
 		TreeSet<Integer> cubeList = null;
 
@@ -512,7 +511,6 @@ public class LidarSearchPanel extends JPanel
 			PointInRegionChecker aPointInRegionChecker, double aTimeSeparationBetweenTracks, int aMinTrackLength)
 			throws IOException
 	{
-		System.out.println("LidarSearchPanel: executeQuery: executing query");
 		// Bail if this query has already been executed
 		if (aSearchParms.equals(cSearchParms) == true)
 			return;
@@ -550,7 +548,6 @@ public class LidarSearchPanel extends JPanel
 	// TODO: Add comments
 	protected void showData(TreeSet<Integer> aCubeList, AbstractEllipsePolygonModel aSelectionRegion)
 	{
-		System.out.println("LidarSearchPanel: showData: showing data");
 		int minTrackLength = Integer.parseInt(minTrackSizeTF.getText());
 		if (minTrackLength < 1)
 		{
@@ -602,7 +599,6 @@ public class LidarSearchPanel extends JPanel
 		// Execute the query
 		try
 		{
-			System.out.println("LidarSearchPanel: showData: executing a query");
 			executeQuery(refTrackManager, tmpSearchParms, checker, timeSeparationBetweenTracks, minTrackLength);
 		}
 		catch (IOException aEvent)

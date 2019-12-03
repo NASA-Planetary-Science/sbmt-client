@@ -19,37 +19,57 @@ import edu.jhuapl.sbmt.client.SbmtMultiMissionTool;
 import edu.jhuapl.sbmt.client.ShapeModelDataUsed;
 import edu.jhuapl.sbmt.client.ShapeModelPopulation;
 import edu.jhuapl.sbmt.client.SmallBodyViewConfig;
-import edu.jhuapl.sbmt.client.SpectralMode;
 import edu.jhuapl.sbmt.config.SBMTBodyConfiguration;
 import edu.jhuapl.sbmt.config.SBMTFileLocator;
 import edu.jhuapl.sbmt.config.SBMTFileLocators;
 import edu.jhuapl.sbmt.config.SessionConfiguration;
 import edu.jhuapl.sbmt.config.ShapeModelConfiguration;
 import edu.jhuapl.sbmt.imaging.instruments.ImagingInstrumentConfiguration;
-import edu.jhuapl.sbmt.lidar.old.OlaCubesGenerator;
-import edu.jhuapl.sbmt.model.bennu.OREXSpectrumInstrumentMetadataIO;
-import edu.jhuapl.sbmt.model.bennu.otes.OTES;
-import edu.jhuapl.sbmt.model.bennu.otes.SpectraHierarchicalSearchSpecification;
-import edu.jhuapl.sbmt.model.bennu.ovirs.OVIRS;
+import edu.jhuapl.sbmt.model.bennu.lidar.old.OlaCubesGenerator;
+import edu.jhuapl.sbmt.model.bennu.spectra.otes.OTES;
+import edu.jhuapl.sbmt.model.bennu.spectra.ovirs.OVIRS;
 import edu.jhuapl.sbmt.model.image.BasicImagingInstrument;
 import edu.jhuapl.sbmt.model.image.ImageSource;
 import edu.jhuapl.sbmt.model.image.ImageType;
 import edu.jhuapl.sbmt.model.image.ImagingInstrument;
 import edu.jhuapl.sbmt.model.image.Instrument;
-import edu.jhuapl.sbmt.model.spectrum.instruments.BasicSpectrumInstrument;
+import edu.jhuapl.sbmt.model.image.SpectralImageMode;
 import edu.jhuapl.sbmt.query.QueryBase;
 import edu.jhuapl.sbmt.query.database.GenericPhpQuery;
 import edu.jhuapl.sbmt.query.fixedlist.FixedListQuery;
+import edu.jhuapl.sbmt.spectrum.model.core.BasicSpectrumInstrument;
+import edu.jhuapl.sbmt.spectrum.model.core.SpectrumInstrumentMetadata;
+import edu.jhuapl.sbmt.spectrum.model.core.search.SpectraHierarchicalSearchSpecification;
+import edu.jhuapl.sbmt.spectrum.model.core.search.SpectrumSearchSpec;
+import edu.jhuapl.sbmt.spectrum.model.io.SpectrumInstrumentMetadataIO;
 import edu.jhuapl.sbmt.tools.DBRunInfo;
 
 public class BennuConfigs extends SmallBodyViewConfig
 {
+	List<SpectrumInstrumentMetadata<SpectrumSearchSpec>> instrumentSearchSpecs = new ArrayList<SpectrumInstrumentMetadata<SpectrumSearchSpec>>();
 
 	public BennuConfigs()
 	{
 		super(ImmutableList.<String>copyOf(DEFAULT_GASKELL_LABELS_PER_RESOLUTION), ImmutableList.<Integer>copyOf(DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION));
 
 		this.defaultForMissions = new SbmtMultiMissionTool.Mission[] {};
+
+		SpectrumSearchSpec otesL2 = new SpectrumSearchSpec("OTES L2 Calibrated Radiance", "/bennu/shared/otes/l2", "spectra", "spectrumlist.txt", ImageSource.valueFor("Corrected SPICE Derived"), "Wave Number (1/cm)", "Radiance", "OTES L2 Calibrated Radiance");
+		SpectrumSearchSpec otesL3 = new SpectrumSearchSpec("OTES L3 Spot Emissivity", "/bennu/shared/otes/l3", "spectra", "spectrumlist.txt", ImageSource.valueFor("Corrected SPICE Derived"), "Wave Number (1/cm)", "Emissivity", "OTES L3 Spot Emissivity");
+		List<SpectrumSearchSpec> otesSpecs = new ArrayList<SpectrumSearchSpec>();
+		otesSpecs.add(otesL2);
+		otesSpecs.add(otesL3);
+
+		SpectrumSearchSpec ovirsSA16 = new SpectrumSearchSpec("OVIRS SA-16 Photometrically Corrected SPOT Reflectance Factor (REFF)", "/bennu/shared/ovirs/l3/SA16l3escireff", "spectra", "spectrumlist.txt", ImageSource.valueFor("Corrected SPICE Derived"), "Wavelength (microns)", "REFF", "OVIRS L3 SA-16 Photometrically Corrected SPOT Reflectance Factor (REFF)");
+		SpectrumSearchSpec ovirsSA27 = new SpectrumSearchSpec("OVIRS SA-27 SPOT I/F", "/bennu/shared/ovirs/l3/SA27l3csci", "spectra", "spectrumlist.txt", ImageSource.valueFor("Corrected SPICE Derived"), "Wavelength (microns)", "I/F", "OVIRS L3 SA-27 SPOT I/F");
+		SpectrumSearchSpec ovirsSA29 = new SpectrumSearchSpec("OVIRS SA-29 Photometrically corrected SPOT I/F, aka RADF", "/bennu/shared/ovirs/l3/SA29l3esciradf", "spectra", "spectrumlist.txt", ImageSource.valueFor("Corrected SPICE Derived"), "Wavelength (microns)", "RADF", "OVIRS L3 SA-29 Photometrically corrected SPOT I/F, aka RADF");
+		List<SpectrumSearchSpec> ovirsSpecs = new ArrayList<SpectrumSearchSpec>();
+		ovirsSpecs.add(ovirsSA16);
+		ovirsSpecs.add(ovirsSA27);
+		ovirsSpecs.add(ovirsSA29);
+
+		instrumentSearchSpecs.add(new SpectrumInstrumentMetadata<SpectrumSearchSpec>("OTES", otesSpecs));
+		instrumentSearchSpecs.add(new SpectrumInstrumentMetadata<SpectrumSearchSpec>("OVIRS", ovirsSpecs));
 
 	}
 
@@ -79,7 +99,7 @@ public class BennuConfigs extends SmallBodyViewConfig
                 QueryBase queryBase = new FixedListQuery(fileLocator.get(SBMTFileLocator.TOP_PATH).getLocation(""), fileLocator.get(SBMTFileLocator.GALLERY_FILE).getLocation(""));
                 Builder<ImagingInstrumentConfiguration> imagingInstBuilder = ImagingInstrumentConfiguration.builder(
                         Instrument.MAPCAM,
-                        SpectralMode.MONO,
+                        SpectralImageMode.MONO,
                         queryBase,
                         new ImageSource[] { ImageSource.SPICE },
                         fileLocator,
@@ -97,7 +117,7 @@ public class BennuConfigs extends SmallBodyViewConfig
                 QueryBase queryBase = new FixedListQuery(fileLocator.get(SBMTFileLocator.TOP_PATH).getLocation(""), fileLocator.get(SBMTFileLocator.GALLERY_FILE).getLocation(""));
                 Builder<ImagingInstrumentConfiguration> imagingInstBuilder = ImagingInstrumentConfiguration.builder(
                         Instrument.POLYCAM,
-                        SpectralMode.MONO,
+                        SpectralImageMode.MONO,
                         queryBase,
                         new ImageSource[] { ImageSource.SPICE },
                         fileLocator,
@@ -115,7 +135,7 @@ public class BennuConfigs extends SmallBodyViewConfig
                 QueryBase queryBase = new FixedListQuery(fileLocator.get(SBMTFileLocator.TOP_PATH).getLocation(""), fileLocator.get(SBMTFileLocator.GALLERY_FILE).getLocation(""));
                 Builder<ImagingInstrumentConfiguration> imagingInstBuilder = ImagingInstrumentConfiguration.builder(
                         Instrument.SAMCAM,
-                        SpectralMode.MONO,
+                        SpectralImageMode.MONO,
                         queryBase,
                         new ImageSource[] { ImageSource.SPICE },
                         fileLocator,
@@ -157,11 +177,14 @@ public class BennuConfigs extends SmallBodyViewConfig
             };
 
             c.hasSpectralData = true;
-            c.spectralInstruments = new BasicSpectrumInstrument[] {
-
-                    new OTES(),
-                    new OVIRS()
-            };
+            c.spectralInstruments = new ArrayList<BasicSpectrumInstrument>();
+            c.spectralInstruments.add(new OTES());
+            c.spectralInstruments.add(new OVIRS());
+//            c.spectralInstruments = new BasicSpectrumInstrument[] {
+//
+//                    new OTES(),
+//                    new OVIRS()
+//            };
 
             c.hasMapmaker = false;
             c.imageSearchDefaultStartDate = new GregorianCalendar(2017, 6, 1, 0, 0, 0).getTime();
@@ -204,7 +227,7 @@ public class BennuConfigs extends SmallBodyViewConfig
 //                QueryBase queryBase = new FixedListQuery(fileLocator.get(SBMTFileLocator.TOP_PATH).getLocation(""), fileLocator.get(SBMTFileLocator.GALLERY_FILE).getLocation(""));
 //                Builder<ImagingInstrumentConfiguration> imagingInstBuilder = ImagingInstrumentConfiguration.builder(
 //                        Instrument.MAPCAM,
-//                        SpectralMode.MONO,
+//                        SpectralImageMode.MONO,
 //                        queryBase,
 //                        new ImageSource[] { ImageSource.SPICE },
 //                        fileLocator,
@@ -222,7 +245,7 @@ public class BennuConfigs extends SmallBodyViewConfig
 //                QueryBase queryBase = new FixedListQuery(fileLocator.get(SBMTFileLocator.TOP_PATH).getLocation(""), fileLocator.get(SBMTFileLocator.GALLERY_FILE).getLocation(""));
 //                Builder<ImagingInstrumentConfiguration> imagingInstBuilder = ImagingInstrumentConfiguration.builder(
 //                        Instrument.POLYCAM,
-//                        SpectralMode.MONO,
+//                        SpectralImageMode.MONO,
 //                        queryBase,
 //                        new ImageSource[] { ImageSource.SPICE },
 //                        fileLocator,
@@ -240,7 +263,7 @@ public class BennuConfigs extends SmallBodyViewConfig
 //                QueryBase queryBase = new FixedListQuery(fileLocator.get(SBMTFileLocator.TOP_PATH).getLocation(""), fileLocator.get(SBMTFileLocator.GALLERY_FILE).getLocation(""));
 //                Builder<ImagingInstrumentConfiguration> imagingInstBuilder = ImagingInstrumentConfiguration.builder(
 //                        Instrument.SAMCAM,
-//                        SpectralMode.MONO,
+//                        SpectralImageMode.MONO,
 //                        queryBase,
 //                        new ImageSource[] { ImageSource.SPICE },
 //                        fileLocator,
@@ -273,7 +296,7 @@ public class BennuConfigs extends SmallBodyViewConfig
 
             c.imagingInstruments = new ImagingInstrument[] {
             		new ImagingInstrument(
-                            SpectralMode.MONO,
+                            SpectralImageMode.MONO,
 //                            new GenericPhpQuery(c.rootDirOnServer + "/polycam", "bennu_altwgspcv20190105_polycam", "bennu_altwgspcv20190105_polycam", c.rootDirOnServer + "/polycam/gallery"),
 //                            new FixedListQuery("/GASKELL/RQ36_V3/POLYCAM", true),
                             polyCamQueryBase,
@@ -282,7 +305,7 @@ public class BennuConfigs extends SmallBodyViewConfig
                             Instrument.POLYCAM
                             ),
                     new ImagingInstrument(
-                            SpectralMode.MONO,
+                            SpectralImageMode.MONO,
 //                            new GenericPhpQuery(c.rootDirOnServer + "/mapcam", "bennu_altwgspcv20190105_mapcam", "bennu_altwgspcv20190105_mapcam", c.rootDirOnServer + "/mapcam/gallery"),
 //                            new FixedListQuery("/GASKELL/RQ36_V3/POLYCAM", true),
                             mapCamQueryBase,
@@ -291,7 +314,7 @@ public class BennuConfigs extends SmallBodyViewConfig
                             Instrument.MAPCAM
                             ),
                     new ImagingInstrument(
-                            SpectralMode.MONO,
+                            SpectralImageMode.MONO,
 //                            new GenericPhpQuery(c.rootDirOnServer + "/samcam", "bennu_altwgspcv20190105_navcam", "bennu_altwgspcv20190105_navcam", c.rootDirOnServer + "/samcam/gallery"),
                             samCamQueryBase,
                             ImageType.SAMCAM_EARTH_IMAGE,
@@ -319,10 +342,9 @@ public class BennuConfigs extends SmallBodyViewConfig
 //            };
 
             c.hasSpectralData = true;
-            c.spectralInstruments = new BasicSpectrumInstrument[] {
-                    new OTES(),
-                    new OVIRS()
-            };
+            c.spectralInstruments = new ArrayList<BasicSpectrumInstrument>();
+            c.spectralInstruments.add(new OTES());
+            c.spectralInstruments.add(new OVIRS());
 
             c.hasStateHistory = true;
             c.timeHistoryFile = "/earth/osirisrex/history/timeHistory.bth";
@@ -345,10 +367,10 @@ public class BennuConfigs extends SmallBodyViewConfig
             c.spectraSearchDataSourceMap.put("OTES_L3", "/earth/osirisrex/otes/l3/hypertree/dataSource.spectra");
             c.spectraSearchDataSourceMap.put("OVIRS_IF", "/earth/osirisrex/ovirs/l3/if/hypertree/dataSource.spectra");
             c.spectraSearchDataSourceMap.put("OVIRS_REF", "/earth/osirisrex/ovirs/l3/reff/hypertree/dataSource.spectra");
-            c.spectrumMetadataFile = "/earth/osirisrex/spectraMetadata.json";
+//            c.spectrumMetadataFile = "/earth/osirisrex/spectraMetadata.json";
 
-            OREXSpectrumInstrumentMetadataIO specIO = new OREXSpectrumInstrumentMetadataIO("OREX");
-            specIO.setPathString(c.spectrumMetadataFile);
+            SpectrumInstrumentMetadataIO specIO = new SpectrumInstrumentMetadataIO("OREX", c.instrumentSearchSpecs);
+//            specIO.setPathString(c.spectrumMetadataFile);
             c.hierarchicalSpectraSearchSpecification = specIO;
 
             c.imageSearchDefaultMaxSpacecraftDistance = 120000.0;
@@ -442,7 +464,7 @@ public class BennuConfigs extends SmallBodyViewConfig
             }
             c.imagingInstruments = new ImagingInstrument[] {
                     new ImagingInstrument(
-                            SpectralMode.MONO,
+                            SpectralImageMode.MONO,
                             new GenericPhpQuery("/GASKELL/RQ36_V3/POLYCAM", "RQ36_POLY"),
                             //new FixedListQuery("/GASKELL/RQ36_V3/POLYCAM", true),
                             ImageType.POLYCAM_V3_IMAGE,
@@ -450,7 +472,7 @@ public class BennuConfigs extends SmallBodyViewConfig
                             Instrument.POLYCAM
                             ),
                     new ImagingInstrument(
-                            SpectralMode.MONO,
+                            SpectralImageMode.MONO,
                             new GenericPhpQuery("/GASKELL/RQ36_V3/MAPCAM", "RQ36_MAP"),
                             //new FixedListQuery("/GASKELL/RQ36_V3/MAPCAM"),
                             ImageType.MAPCAM_V3_IMAGE,
@@ -544,14 +566,14 @@ public class BennuConfigs extends SmallBodyViewConfig
 
             c.imagingInstruments = new ImagingInstrument[] {
                     new ImagingInstrument(
-                            SpectralMode.MONO,
+                            SpectralImageMode.MONO,
                             new GenericPhpQuery(c.rootDirOnServer + "/polycam", "RQ36V4_POLY", c.rootDirOnServer + "/polycam/gallery"),
                             ImageType.POLYCAM_V4_IMAGE,
                             new ImageSource[]{ImageSource.GASKELL},
                             Instrument.POLYCAM
                             ),
                     new ImagingInstrument(
-                            SpectralMode.MONO,
+                            SpectralImageMode.MONO,
                             new GenericPhpQuery(c.rootDirOnServer + "/mapcam", "RQ36V4_MAP", c.rootDirOnServer + "/mapcam/gallery"),
                             ImageType.MAPCAM_V4_IMAGE,
                             new ImageSource[]{ImageSource.GASKELL},
@@ -1812,7 +1834,7 @@ public class BennuConfigs extends SmallBodyViewConfig
 
             c.imagingInstruments = new ImagingInstrument[] {
                     new ImagingInstrument(
-                            SpectralMode.MONO,
+                            SpectralImageMode.MONO,
                             new GenericPhpQuery(c.rootDirOnServer + "/polycam", "bennu_altwgspcv20190105_polycam", "bennu_altwgspcv20190105_polycam", c.rootDirOnServer + "/polycam/gallery"),
 //                            new GenericPhpQuery(c.rootDirOnServer + "/polycam", "bennu_altwgspcv20190105_polycam", c.rootDirOnServer + "/polycam/gallery"),
                             ImageType.POLYCAM_FLIGHT_IMAGE,
@@ -1820,14 +1842,14 @@ public class BennuConfigs extends SmallBodyViewConfig
                             Instrument.POLYCAM
                             ),
                     new ImagingInstrument(
-                            SpectralMode.MONO,
+                            SpectralImageMode.MONO,
                             new GenericPhpQuery(c.rootDirOnServer + "/mapcam", "bennu_altwgspcv20190105_mapcam", "bennu_altwgspcv20190105_mapcam", c.rootDirOnServer + "/mapcam/gallery"),
                             ImageType.MAPCAM_FLIGHT_IMAGE,
                             new ImageSource[]{ImageSource.GASKELL,ImageSource.SPICE},
                             Instrument.MAPCAM
                             ),
                     new ImagingInstrument(
-                            SpectralMode.MONO,
+                            SpectralImageMode.MONO,
                             new GenericPhpQuery(c.rootDirOnServer + "/navcam", "bennu_altwgspcv20190105_navcam", "bennu_altwgspcv20190105_navcam", c.rootDirOnServer + "/navcam/gallery"),
                             ImageType.NAVCAM_FLIGHT_IMAGE,
                             new ImageSource[]{ImageSource.SPICE},
@@ -1836,10 +1858,9 @@ public class BennuConfigs extends SmallBodyViewConfig
             };
 
             c.hasSpectralData = true;
-            c.spectralInstruments = new BasicSpectrumInstrument[] {
-                    new OTES(),
-                    new OVIRS()
-            };
+            c.spectralInstruments = new ArrayList<BasicSpectrumInstrument>();
+            c.spectralInstruments.add(new OTES());
+            c.spectralInstruments.add(new OVIRS());
 
             c.hasStateHistory = true;
             c.timeHistoryFile = c.rootDirOnServer + "/history/timeHistory.bth";
@@ -1854,8 +1875,8 @@ public class BennuConfigs extends SmallBodyViewConfig
             c.spectraSearchDataSourceMap.put("OVIRS_REF", c.rootDirOnServer + "ovirs/l3/reff/hypertree/dataSource.spectra");
             c.spectrumMetadataFile = c.rootDirOnServer + "/spectraMetadata.json";
 
-            OREXSpectrumInstrumentMetadataIO specIO = new OREXSpectrumInstrumentMetadataIO("OREX");
-            specIO.setPathString(c.spectrumMetadataFile);
+            SpectrumInstrumentMetadataIO specIO = new SpectrumInstrumentMetadataIO("OREX", c.instrumentSearchSpecs);
+//            specIO.setPathString(c.spectrumMetadataFile);
             c.hierarchicalSpectraSearchSpecification = specIO;
 
             c.dtmBrowseDataSourceMap.put("Default", "bennu/altwg-spc-v20190105/dtm/browse/fileList.txt");
@@ -1871,6 +1892,7 @@ public class BennuConfigs extends SmallBodyViewConfig
 //            c.lidarSearchDataSourceMap.put("Default", c.rootDirOnServer + "/ola/Phase07_OB/tree/dataSource.lidar");
             c.lidarBrowseDataSourceMap.put("Default", c.rootDirOnServer + "/ola/browse/fileList.txt");
             c.lidarBrowseFileListResourcePath = c.rootDirOnServer + "/ola/browse/fileList.txt";
+            c.lidarBrowseWithPointsDataSourceMap.put("Default", c.rootDirOnServer + "/ola/browse/fileListv2.txt");
 
             /*
              * search times split into phases
@@ -1978,7 +2000,7 @@ public class BennuConfigs extends SmallBodyViewConfig
 
             c.imagingInstruments = new ImagingInstrument[] {
                     new ImagingInstrument(
-                            SpectralMode.MONO,
+                            SpectralImageMode.MONO,
                             new GenericPhpQuery(c.rootDirOnServer + "/polycam", "bennu_altwgspcv20190114_polycam", "bennu_altwgspcv20190114_polycam", c.rootDirOnServer + "/polycam/gallery"),
 //                            new GenericPhpQuery(c.rootDirOnServer + "/polycam", "bennu_altwgspcv20190114_polycam", c.rootDirOnServer + "/polycam/gallery"),
                             ImageType.POLYCAM_FLIGHT_IMAGE,
@@ -1986,14 +2008,14 @@ public class BennuConfigs extends SmallBodyViewConfig
                             Instrument.POLYCAM
                             ),
                     new ImagingInstrument(
-                            SpectralMode.MONO,
+                            SpectralImageMode.MONO,
                             new GenericPhpQuery(c.rootDirOnServer + "/mapcam", "bennu_altwgspcv20190114_mapcam", "bennu_altwgspcv20190114_mapcam", c.rootDirOnServer + "/mapcam/gallery"),
                             ImageType.MAPCAM_FLIGHT_IMAGE,
                             new ImageSource[]{ImageSource.GASKELL,ImageSource.SPICE},
                             Instrument.MAPCAM
                             ),
                     new ImagingInstrument(
-                            SpectralMode.MONO,
+                            SpectralImageMode.MONO,
                             new GenericPhpQuery(c.rootDirOnServer + "/navcam", "bennu_altwgspcv20190114_navcam", "bennu_altwgspcv20190114_navcam", c.rootDirOnServer + "/navcam/gallery"),
                             ImageType.NAVCAM_FLIGHT_IMAGE,
                             new ImageSource[]{ImageSource.SPICE},
@@ -2002,10 +2024,9 @@ public class BennuConfigs extends SmallBodyViewConfig
             };
 
             c.hasSpectralData = true;
-            c.spectralInstruments = new BasicSpectrumInstrument[] {
-                    new OTES(),
-                    new OVIRS()
-            };
+            c.spectralInstruments = new ArrayList<BasicSpectrumInstrument>();
+            c.spectralInstruments.add(new OTES());
+            c.spectralInstruments.add(new OVIRS());
 
             c.hasStateHistory = true;
             c.timeHistoryFile = c.rootDirOnServer + "/history/timeHistory.bth";
@@ -2018,10 +2039,10 @@ public class BennuConfigs extends SmallBodyViewConfig
             c.spectraSearchDataSourceMap.put("OTES_L3", c.rootDirOnServer + "/otes/l3/hypertree/dataSource.spectra");
             c.spectraSearchDataSourceMap.put("OVIRS_IF", c.rootDirOnServer + "/ovirs/l3/if/hypertree/dataSource.spectra");
             c.spectraSearchDataSourceMap.put("OVIRS_REF", c.rootDirOnServer + "ovirs/l3/reff/hypertree/dataSource.spectra");
-            c.spectrumMetadataFile = c.rootDirOnServer + "/spectraMetadata.json";
+//            c.spectrumMetadataFile = c.rootDirOnServer + "/spectraMetadata.json";
 
-            OREXSpectrumInstrumentMetadataIO specIO = new OREXSpectrumInstrumentMetadataIO("OREX");
-            specIO.setPathString(c.spectrumMetadataFile);
+            SpectrumInstrumentMetadataIO specIO = new SpectrumInstrumentMetadataIO("OREX", c.instrumentSearchSpecs);
+//            specIO.setPathString(c.spectrumMetadataFile);
             c.hierarchicalSpectraSearchSpecification = specIO;
 
             c.hasLidarData = true;
@@ -2034,7 +2055,7 @@ public class BennuConfigs extends SmallBodyViewConfig
 //            c.lidarSearchDataSourceMap.put("Default", c.rootDirOnServer + "/ola/Phase07_OB/tree/dataSource.lidar");
             c.lidarBrowseDataSourceMap.put("Default", c.rootDirOnServer + "/ola/browse/fileList.txt");
             c.lidarBrowseFileListResourcePath = c.rootDirOnServer + "/ola/browse/fileList.txt";
-
+            c.lidarBrowseWithPointsDataSourceMap.put("Default", c.rootDirOnServer + "/ola/browse/fileListv2.txt");
 
             /*
              * search times split into phases
@@ -2152,7 +2173,7 @@ public class BennuConfigs extends SmallBodyViewConfig
 
             c.imagingInstruments = new ImagingInstrument[] {
                     new ImagingInstrument(
-                            SpectralMode.MONO,
+                            SpectralImageMode.MONO,
                             new GenericPhpQuery(c.rootDirOnServer + "/polycam", "bennu_altwgspcv20190117_polycam", "bennu_altwgspcv20190117_polycam", c.rootDirOnServer + "/polycam/gallery"),
 //                            new GenericPhpQuery(c.rootDirOnServer + "/polycam", "bennu_altwgspcv20190117_polycam", c.rootDirOnServer + "/polycam/gallery"),
                             ImageType.POLYCAM_FLIGHT_IMAGE,
@@ -2160,14 +2181,14 @@ public class BennuConfigs extends SmallBodyViewConfig
                             Instrument.POLYCAM
                             ),
                     new ImagingInstrument(
-                            SpectralMode.MONO,
+                            SpectralImageMode.MONO,
                             new GenericPhpQuery(c.rootDirOnServer + "/mapcam", "bennu_altwgspcv20190117_mapcam", "bennu_altwgspcv20190117_mapcam", c.rootDirOnServer + "/mapcam/gallery"),
                             ImageType.MAPCAM_FLIGHT_IMAGE,
                             new ImageSource[]{ImageSource.GASKELL,ImageSource.SPICE},
                             Instrument.MAPCAM
                             ),
                     new ImagingInstrument(
-                            SpectralMode.MONO,
+                            SpectralImageMode.MONO,
                             new GenericPhpQuery(c.rootDirOnServer + "/navcam", "bennu_altwgspcv20190117_navcam", "bennu_altwgspcv20190117_navcam", c.rootDirOnServer + "/navcam/gallery"),
                             ImageType.NAVCAM_FLIGHT_IMAGE,
                             new ImageSource[]{ImageSource.SPICE},
@@ -2176,10 +2197,9 @@ public class BennuConfigs extends SmallBodyViewConfig
             };
 
             c.hasSpectralData = true;
-            c.spectralInstruments = new BasicSpectrumInstrument[] {
-                    new OTES(),
-                    new OVIRS()
-            };
+            c.spectralInstruments = new ArrayList<BasicSpectrumInstrument>();
+            c.spectralInstruments.add(new OTES());
+            c.spectralInstruments.add(new OVIRS());
 
             c.hasStateHistory = true;
             c.timeHistoryFile = c.rootDirOnServer + "/history/timeHistory.bth";
@@ -2192,10 +2212,10 @@ public class BennuConfigs extends SmallBodyViewConfig
             c.spectraSearchDataSourceMap.put("OTES_L3", c.rootDirOnServer + "/otes/l3/hypertree/dataSource.spectra");
             c.spectraSearchDataSourceMap.put("OVIRS_IF", c.rootDirOnServer + "/ovirs/l3/if/hypertree/dataSource.spectra");
             c.spectraSearchDataSourceMap.put("OVIRS_REF", c.rootDirOnServer + "ovirs/l3/reff/hypertree/dataSource.spectra");
-            c.spectrumMetadataFile = c.rootDirOnServer + "/spectraMetadata.json";
+//            c.spectrumMetadataFile = c.rootDirOnServer + "/spectraMetadata.json";
 
-            OREXSpectrumInstrumentMetadataIO specIO = new OREXSpectrumInstrumentMetadataIO("OREX");
-            specIO.setPathString(c.spectrumMetadataFile);
+            SpectrumInstrumentMetadataIO specIO = new SpectrumInstrumentMetadataIO("OREX", c.instrumentSearchSpecs);
+//            specIO.setPathString(c.spectrumMetadataFile);
             c.hierarchicalSpectraSearchSpecification = specIO;
 
             c.hasLidarData = true;
@@ -2208,7 +2228,7 @@ public class BennuConfigs extends SmallBodyViewConfig
 //            c.lidarSearchDataSourceMap.put("Default", c.rootDirOnServer + "/ola/Phase07_OB/tree/dataSource.lidar");
             c.lidarBrowseDataSourceMap.put("Default", c.rootDirOnServer + "/ola/browse/fileList.txt");
             c.lidarBrowseFileListResourcePath = c.rootDirOnServer + "/ola/browse/fileList.txt";
-
+            c.lidarBrowseWithPointsDataSourceMap.put("Default", c.rootDirOnServer + "/ola/browse/fileListv2.txt");
 
             /*
              * search times split into phases
@@ -2318,21 +2338,21 @@ public class BennuConfigs extends SmallBodyViewConfig
 
             c.imagingInstruments = new ImagingInstrument[] {
                     new ImagingInstrument(
-                            SpectralMode.MONO,
+                            SpectralImageMode.MONO,
                             new GenericPhpQuery(c.rootDirOnServer + "/polycam", "bennu_altwgspcv20190121_polycam", "bennu_altwgspcv20190121_polycam", c.rootDirOnServer + "/polycam/gallery"),
                             ImageType.POLYCAM_FLIGHT_IMAGE,
                             new ImageSource[]{ImageSource.GASKELL,ImageSource.SPICE},
                             Instrument.POLYCAM
                             ),
                     new ImagingInstrument(
-                            SpectralMode.MONO,
+                            SpectralImageMode.MONO,
                             new GenericPhpQuery(c.rootDirOnServer + "/mapcam", "bennu_altwgspcv20190121_mapcam", "bennu_altwgspcv20190121_mapcam", c.rootDirOnServer + "/mapcam/gallery"),
                             ImageType.MAPCAM_FLIGHT_IMAGE,
                             new ImageSource[]{ImageSource.GASKELL,ImageSource.SPICE},
                             Instrument.MAPCAM
                             ),
                     new ImagingInstrument(
-                            SpectralMode.MONO,
+                            SpectralImageMode.MONO,
                             new GenericPhpQuery(c.rootDirOnServer + "/navcam", "bennu_altwgspcv20190121_navcam", "bennu_altwgspcv20190121_navcam", c.rootDirOnServer + "/navcam/gallery"),
                             ImageType.NAVCAM_FLIGHT_IMAGE,
                             new ImageSource[]{ImageSource.SPICE},
@@ -2341,10 +2361,9 @@ public class BennuConfigs extends SmallBodyViewConfig
             };
 
             c.hasSpectralData = true;
-            c.spectralInstruments = new BasicSpectrumInstrument[] {
-                    new OTES(),
-                    new OVIRS()
-            };
+            c.spectralInstruments = new ArrayList<BasicSpectrumInstrument>();
+            c.spectralInstruments.add(new OTES());
+            c.spectralInstruments.add(new OVIRS());
 
             c.hasStateHistory = true;
             c.timeHistoryFile = c.rootDirOnServer + "/history/timeHistory.bth";
@@ -2357,10 +2376,10 @@ public class BennuConfigs extends SmallBodyViewConfig
             c.spectraSearchDataSourceMap.put("OTES_L3", c.rootDirOnServer + "/otes/l3/hypertree/dataSource.spectra");
             c.spectraSearchDataSourceMap.put("OVIRS_IF", c.rootDirOnServer + "/ovirs/l3/if/hypertree/dataSource.spectra");
             c.spectraSearchDataSourceMap.put("OVIRS_REF", c.rootDirOnServer + "ovirs/l3/reff/hypertree/dataSource.spectra");
-            c.spectrumMetadataFile = c.rootDirOnServer + "/spectraMetadata.json";
+//            c.spectrumMetadataFile = c.rootDirOnServer + "/spectraMetadata.json";
 
-            OREXSpectrumInstrumentMetadataIO specIO = new OREXSpectrumInstrumentMetadataIO("OREX");
-            specIO.setPathString(c.spectrumMetadataFile);
+            SpectrumInstrumentMetadataIO specIO = new SpectrumInstrumentMetadataIO("OREX", c.instrumentSearchSpecs);
+//            specIO.setPathString(c.spectrumMetadataFile);
             c.hierarchicalSpectraSearchSpecification = specIO;
 
             c.hasLidarData = true;
@@ -2373,6 +2392,7 @@ public class BennuConfigs extends SmallBodyViewConfig
 //            c.lidarSearchDataSourceMap.put("Default", c.rootDirOnServer + "/ola/Phase07_OB/tree/dataSource.lidar");
             c.lidarBrowseDataSourceMap.put("Default", c.rootDirOnServer + "/ola/browse/fileList.txt");
             c.lidarBrowseFileListResourcePath = c.rootDirOnServer + "/ola/browse/fileList.txt";
+            c.lidarBrowseWithPointsDataSourceMap.put("Default", c.rootDirOnServer + "/ola/browse/fileListv2.txt");
 
             /*
              * search times split into phases
@@ -2406,7 +2426,6 @@ public class BennuConfigs extends SmallBodyViewConfig
             c.lidarSearchDataSourceMap.put("Detailed", c.rootDirOnServer + "/ola/search/detailed/dataSource.lidar");
             c.lidarSearchDataSourceMap.put("OrbB", c.rootDirOnServer + "/ola/search/orbB/dataSource.lidar");
             c.lidarSearchDataSourceMap.put("Recon", c.rootDirOnServer + "/ola/search/recon/dataSource.lidar");
-
 
             /*
              *
@@ -2483,7 +2502,7 @@ public class BennuConfigs extends SmallBodyViewConfig
 
             c.imagingInstruments = new ImagingInstrument[] {
                     new ImagingInstrument(
-                            SpectralMode.MONO,
+                            SpectralImageMode.MONO,
                             new GenericPhpQuery(c.rootDirOnServer + "/polycam", "bennu_altwgspcv20190207a_polycam", "bennu_altwgspcv20190207a_polycam", c.rootDirOnServer + "/polycam/gallery"),
 //                            new GenericPhpQuery(c.rootDirOnServer + "/polycam", "bennu_altwgspcv20190207a_polycam", c.rootDirOnServer + "/polycam/gallery"),
                             ImageType.POLYCAM_FLIGHT_IMAGE,
@@ -2491,14 +2510,14 @@ public class BennuConfigs extends SmallBodyViewConfig
                             Instrument.POLYCAM
                             ),
                     new ImagingInstrument(
-                            SpectralMode.MONO,
+                            SpectralImageMode.MONO,
                             new GenericPhpQuery(c.rootDirOnServer + "/mapcam", "bennu_altwgspcv20190207a_mapcam", "bennu_altwgspcv20190207a_mapcam", c.rootDirOnServer + "/mapcam/gallery"),
                             ImageType.MAPCAM_FLIGHT_IMAGE,
                             new ImageSource[]{ImageSource.GASKELL,ImageSource.SPICE},
                             Instrument.MAPCAM
                             ),
                     new ImagingInstrument(
-                            SpectralMode.MONO,
+                            SpectralImageMode.MONO,
                             new GenericPhpQuery(c.rootDirOnServer + "/navcam", "bennu_altwgspcv20190207a_navcam", "bennu_altwgspcv20190207a_navcam", c.rootDirOnServer + "/navcam/gallery"),
                             ImageType.NAVCAM_FLIGHT_IMAGE,
                             new ImageSource[]{ImageSource.SPICE},
@@ -2507,10 +2526,9 @@ public class BennuConfigs extends SmallBodyViewConfig
             };
 
             c.hasSpectralData = true;
-            c.spectralInstruments = new BasicSpectrumInstrument[] {
-                    new OTES(),
-                    new OVIRS()
-            };
+            c.spectralInstruments = new ArrayList<BasicSpectrumInstrument>();
+            c.spectralInstruments.add(new OTES());
+            c.spectralInstruments.add(new OVIRS());
 
             c.hasStateHistory = true;
             c.timeHistoryFile = c.rootDirOnServer + "/history/timeHistory.bth";
@@ -2523,10 +2541,10 @@ public class BennuConfigs extends SmallBodyViewConfig
             c.spectraSearchDataSourceMap.put("OTES_L3", c.rootDirOnServer + "/otes/l3/hypertree/dataSource.spectra");
             c.spectraSearchDataSourceMap.put("OVIRS_IF", c.rootDirOnServer + "/ovirs/l3/if/hypertree/dataSource.spectra");
             c.spectraSearchDataSourceMap.put("OVIRS_REF", c.rootDirOnServer + "ovirs/l3/reff/hypertree/dataSource.spectra");
-            c.spectrumMetadataFile = c.rootDirOnServer + "/spectraMetadata.json";
+//            c.spectrumMetadataFile = c.rootDirOnServer + "/spectraMetadata.json";
 
-            OREXSpectrumInstrumentMetadataIO specIO = new OREXSpectrumInstrumentMetadataIO("OREX");
-            specIO.setPathString(c.spectrumMetadataFile);
+            SpectrumInstrumentMetadataIO specIO = new SpectrumInstrumentMetadataIO("OREX", c.instrumentSearchSpecs);
+//            specIO.setPathString(c.spectrumMetadataFile);
             c.hierarchicalSpectraSearchSpecification = specIO;
 
             c.hasLidarData = true;
@@ -2539,7 +2557,7 @@ public class BennuConfigs extends SmallBodyViewConfig
 //            c.lidarSearchDataSourceMap.put("Default", c.rootDirOnServer + "/ola/Phase07_OB/tree/dataSource.lidar");
             c.lidarBrowseDataSourceMap.put("Default", c.rootDirOnServer + "/ola/browse/fileList.txt");
             c.lidarBrowseFileListResourcePath = c.rootDirOnServer + "/ola/browse/fileList.txt";
-
+            c.lidarBrowseWithPointsDataSourceMap.put("Default", c.rootDirOnServer + "/ola/browse/fileListv2.txt");
 
             /*
              * search times split into phases
@@ -2648,7 +2666,7 @@ public class BennuConfigs extends SmallBodyViewConfig
 
             c.imagingInstruments = new ImagingInstrument[] {
                     new ImagingInstrument(
-                            SpectralMode.MONO,
+                            SpectralImageMode.MONO,
                             new GenericPhpQuery(c.rootDirOnServer + "/polycam", "bennu_altwgspcv20190207b_polycam", "bennu_altwgspcv20190207b_polycam", c.rootDirOnServer + "/polycam/gallery"),
 //                            new GenericPhpQuery(c.rootDirOnServer + "/polycam", "bennu_altwgspcv20190207b_polycam", c.rootDirOnServer + "/polycam/gallery"),
                             ImageType.POLYCAM_FLIGHT_IMAGE,
@@ -2656,14 +2674,14 @@ public class BennuConfigs extends SmallBodyViewConfig
                             Instrument.POLYCAM
                             ),
                     new ImagingInstrument(
-                            SpectralMode.MONO,
+                            SpectralImageMode.MONO,
                             new GenericPhpQuery(c.rootDirOnServer + "/mapcam", "bennu_altwgspcv20190207b_mapcam", "bennu_altwgspcv20190207b_mapcam", c.rootDirOnServer + "/mapcam/gallery"),
                             ImageType.MAPCAM_FLIGHT_IMAGE,
                             new ImageSource[]{ImageSource.GASKELL,ImageSource.SPICE},
                             Instrument.MAPCAM
                             ),
                     new ImagingInstrument(
-                            SpectralMode.MONO,
+                            SpectralImageMode.MONO,
                             new GenericPhpQuery(c.rootDirOnServer + "/navcam", "bennu_altwgspcv20190207b_navcam", "bennu_altwgspcv20190207b_navcam", c.rootDirOnServer + "/navcam/gallery"),
                             ImageType.NAVCAM_FLIGHT_IMAGE,
                             new ImageSource[]{ImageSource.SPICE},
@@ -2672,10 +2690,9 @@ public class BennuConfigs extends SmallBodyViewConfig
             };
 
             c.hasSpectralData = true;
-            c.spectralInstruments = new BasicSpectrumInstrument[] {
-                    new OTES(),
-                    new OVIRS()
-            };
+            c.spectralInstruments = new ArrayList<BasicSpectrumInstrument>();
+            c.spectralInstruments.add(new OTES());
+            c.spectralInstruments.add(new OVIRS());
 
             c.hasStateHistory = true;
             c.timeHistoryFile = c.rootDirOnServer + "/history/timeHistory.bth";
@@ -2688,10 +2705,10 @@ public class BennuConfigs extends SmallBodyViewConfig
             c.spectraSearchDataSourceMap.put("OTES_L3", c.rootDirOnServer + "/otes/l3/hypertree/dataSource.spectra");
             c.spectraSearchDataSourceMap.put("OVIRS_IF", c.rootDirOnServer + "/ovirs/l3/if/hypertree/dataSource.spectra");
             c.spectraSearchDataSourceMap.put("OVIRS_REF", c.rootDirOnServer + "ovirs/l3/reff/hypertree/dataSource.spectra");
-            c.spectrumMetadataFile = c.rootDirOnServer + "/spectraMetadata.json";
+//            c.spectrumMetadataFile = c.rootDirOnServer + "/spectraMetadata.json";
 
-            OREXSpectrumInstrumentMetadataIO specIO = new OREXSpectrumInstrumentMetadataIO("OREX");
-            specIO.setPathString(c.spectrumMetadataFile);
+            SpectrumInstrumentMetadataIO specIO = new SpectrumInstrumentMetadataIO("OREX", c.instrumentSearchSpecs);
+//            specIO.setPathString(c.spectrumMetadataFile);
             c.hierarchicalSpectraSearchSpecification = specIO;
 
             c.hasLidarData = true;
@@ -2704,6 +2721,7 @@ public class BennuConfigs extends SmallBodyViewConfig
 //            c.lidarSearchDataSourceMap.put("Default", c.rootDirOnServer + "/ola/Phase07_OB/tree/dataSource.lidar");
             c.lidarBrowseDataSourceMap.put("Default", c.rootDirOnServer + "/ola/browse/fileList.txt");
             c.lidarBrowseFileListResourcePath = c.rootDirOnServer + "/ola/browse/fileList.txt";
+            c.lidarBrowseWithPointsDataSourceMap.put("Default", c.rootDirOnServer + "/ola/browse/fileListv2.txt");
 
             /*
              * search times split into phases
@@ -2813,7 +2831,7 @@ public class BennuConfigs extends SmallBodyViewConfig
 
             c.imagingInstruments = new ImagingInstrument[] {
                     new ImagingInstrument(
-                            SpectralMode.MONO,
+                            SpectralImageMode.MONO,
                             new GenericPhpQuery(c.rootDirOnServer + "/polycam", "bennu_altwgspcv20190414_polycam", "bennu_altwgspcv20190414_polycam", c.rootDirOnServer + "/polycam/gallery"),
 //                            new GenericPhpQuery(c.rootDirOnServer + "/polycam", "bennu_altwgspcv20190414_polycam", c.rootDirOnServer + "/polycam/gallery"),
                             ImageType.POLYCAM_FLIGHT_IMAGE,
@@ -2821,14 +2839,14 @@ public class BennuConfigs extends SmallBodyViewConfig
                             Instrument.POLYCAM
                             ),
                     new ImagingInstrument(
-                            SpectralMode.MONO,
+                            SpectralImageMode.MONO,
                             new GenericPhpQuery(c.rootDirOnServer + "/mapcam", "bennu_altwgspcv20190414_mapcam", "bennu_altwgspcv20190414_mapcam", c.rootDirOnServer + "/mapcam/gallery"),
                             ImageType.MAPCAM_FLIGHT_IMAGE,
                             new ImageSource[]{ImageSource.GASKELL,ImageSource.SPICE},
                             Instrument.MAPCAM
                             ),
                     new ImagingInstrument(
-                            SpectralMode.MONO,
+                            SpectralImageMode.MONO,
                             new GenericPhpQuery(c.rootDirOnServer + "/navcam", "bennu_altwgspcv20190414_navcam", "bennu_altwgspcv20190414_navcam", c.rootDirOnServer + "/navcam/gallery"),
                             ImageType.NAVCAM_FLIGHT_IMAGE,
                             new ImageSource[]{ImageSource.SPICE},
@@ -2837,10 +2855,9 @@ public class BennuConfigs extends SmallBodyViewConfig
             };
 
             c.hasSpectralData = true;
-            c.spectralInstruments = new BasicSpectrumInstrument[] {
-                    new OTES(),
-                    new OVIRS()
-            };
+            c.spectralInstruments = new ArrayList<BasicSpectrumInstrument>();
+            c.spectralInstruments.add(new OTES());
+            c.spectralInstruments.add(new OVIRS());
 
             c.hasStateHistory = true;
             c.timeHistoryFile = c.rootDirOnServer + "/history/timeHistory.bth";
@@ -2853,10 +2870,10 @@ public class BennuConfigs extends SmallBodyViewConfig
             c.spectraSearchDataSourceMap.put("OTES_L3", c.rootDirOnServer + "/otes/l3/hypertree/dataSource.spectra");
             c.spectraSearchDataSourceMap.put("OVIRS_IF", c.rootDirOnServer + "/ovirs/l3/if/hypertree/dataSource.spectra");
             c.spectraSearchDataSourceMap.put("OVIRS_REF", c.rootDirOnServer + "ovirs/l3/reff/hypertree/dataSource.spectra");
-            c.spectrumMetadataFile = c.rootDirOnServer + "/spectraMetadata.json";
+//            c.spectrumMetadataFile = c.rootDirOnServer + "/spectraMetadata.json";
 
-            OREXSpectrumInstrumentMetadataIO specIO = new OREXSpectrumInstrumentMetadataIO("OREX");
-            specIO.setPathString(c.spectrumMetadataFile);
+            SpectrumInstrumentMetadataIO specIO = new SpectrumInstrumentMetadataIO("OREX", c.instrumentSearchSpecs);
+//            specIO.setPathString(c.spectrumMetadataFile);
             c.hierarchicalSpectraSearchSpecification = specIO;
 
             c.hasLidarData = true;
@@ -2869,6 +2886,7 @@ public class BennuConfigs extends SmallBodyViewConfig
 //            c.lidarSearchDataSourceMap.put("Default", c.rootDirOnServer + "/ola/Phase07_OB/tree/dataSource.lidar");
             c.lidarBrowseDataSourceMap.put("Default", c.rootDirOnServer + "/ola/browse/fileList.txt");
             c.lidarBrowseFileListResourcePath = c.rootDirOnServer + "/ola/browse/fileList.txt";
+            c.lidarBrowseWithPointsDataSourceMap.put("Default", c.rootDirOnServer + "/ola/browse/fileListv2.txt");
 
             /*
              * search times split into phases
@@ -2978,7 +2996,7 @@ public class BennuConfigs extends SmallBodyViewConfig
 
             c.imagingInstruments = new ImagingInstrument[] {
                     new ImagingInstrument(
-                            SpectralMode.MONO,
+                            SpectralImageMode.MONO,
                             new GenericPhpQuery(c.rootDirOnServer + "/polycam", "bennu_altwgspov20190612_polycam", "bennu_altwgspov20190612_polycam", c.rootDirOnServer + "/polycam/gallery"),
 //                            new GenericPhpQuery(c.rootDirOnServer + "/polycam", "bennu_altwgspov20190612_polycam", c.rootDirOnServer + "/polycam/gallery"),
                             ImageType.POLYCAM_FLIGHT_IMAGE,
@@ -2986,14 +3004,14 @@ public class BennuConfigs extends SmallBodyViewConfig
                             Instrument.POLYCAM
                             ),
                     new ImagingInstrument(
-                            SpectralMode.MONO,
+                            SpectralImageMode.MONO,
                             new GenericPhpQuery(c.rootDirOnServer + "/mapcam", "bennu_altwgspov20190612_mapcam", "bennu_altwgspov20190612_mapcam", c.rootDirOnServer + "/mapcam/gallery"),
                             ImageType.MAPCAM_FLIGHT_IMAGE,
                             new ImageSource[]{ImageSource.GASKELL,ImageSource.SPICE},
                             Instrument.MAPCAM
                             ),
                     new ImagingInstrument(
-                            SpectralMode.MONO,
+                            SpectralImageMode.MONO,
                             new GenericPhpQuery(c.rootDirOnServer + "/navcam", "bennu_altwgspov20190612_navcam", "bennu_altwgspov20190612_navcam", c.rootDirOnServer + "/navcam/gallery"),
                             ImageType.NAVCAM_FLIGHT_IMAGE,
                             new ImageSource[]{ImageSource.SPICE},
@@ -3002,10 +3020,9 @@ public class BennuConfigs extends SmallBodyViewConfig
             };
 
             c.hasSpectralData = true;
-            c.spectralInstruments = new BasicSpectrumInstrument[] {
-                    new OTES(),
-                    new OVIRS()
-            };
+            c.spectralInstruments = new ArrayList<BasicSpectrumInstrument>();
+            c.spectralInstruments.add(new OTES());
+            c.spectralInstruments.add(new OVIRS());
 
             c.hasStateHistory = true;
             c.timeHistoryFile = c.rootDirOnServer + "/history/timeHistory.bth";
@@ -3018,10 +3035,10 @@ public class BennuConfigs extends SmallBodyViewConfig
             c.spectraSearchDataSourceMap.put("OTES_L3", c.rootDirOnServer + "/otes/l3/hypertree/dataSource.spectra");
             c.spectraSearchDataSourceMap.put("OVIRS_IF", c.rootDirOnServer + "/ovirs/l3/if/hypertree/dataSource.spectra");
             c.spectraSearchDataSourceMap.put("OVIRS_REF", c.rootDirOnServer + "ovirs/l3/reff/hypertree/dataSource.spectra");
-            c.spectrumMetadataFile = c.rootDirOnServer + "/spectraMetadata.json";
+//            c.spectrumMetadataFile = c.rootDirOnServer + "/spectraMetadata.json";
 
-            OREXSpectrumInstrumentMetadataIO specIO = new OREXSpectrumInstrumentMetadataIO("OREX");
-            specIO.setPathString(c.spectrumMetadataFile);
+            SpectrumInstrumentMetadataIO specIO = new SpectrumInstrumentMetadataIO("OREX", c.instrumentSearchSpecs);
+//            specIO.setPathString(c.spectrumMetadataFile);
             c.hierarchicalSpectraSearchSpecification = specIO;
 
             c.hasLidarData = true;
@@ -3034,7 +3051,7 @@ public class BennuConfigs extends SmallBodyViewConfig
 //            c.lidarSearchDataSourceMap.put("Default", c.rootDirOnServer + "/ola/Phase07_OB/tree/dataSource.lidar");
             c.lidarBrowseDataSourceMap.put("Default", c.rootDirOnServer + "/ola/browse/fileList.txt");
             c.lidarBrowseFileListResourcePath = c.rootDirOnServer + "/ola/browse/fileList.txt";
-
+            c.lidarBrowseWithPointsDataSourceMap.put("Default", c.rootDirOnServer + "/ola/browse/fileListv2.txt");
 
             /*
              * search times split into phases
@@ -3143,7 +3160,7 @@ public class BennuConfigs extends SmallBodyViewConfig
 
             c.imagingInstruments = new ImagingInstrument[] {
                     new ImagingInstrument(
-                            SpectralMode.MONO,
+                            SpectralImageMode.MONO,
                             new GenericPhpQuery(c.rootDirOnServer + "/polycam", "bennu_altwgspcv20190828_polycam", "bennu_altwgspcv20190828_polycam", c.rootDirOnServer + "/polycam/gallery"),
 //                            new GenericPhpQuery(c.rootDirOnServer + "/polycam", "bennu_altwgspcv20190828_polycam", c.rootDirOnServer + "/polycam/gallery"),
                             ImageType.POLYCAM_FLIGHT_IMAGE,
@@ -3151,14 +3168,14 @@ public class BennuConfigs extends SmallBodyViewConfig
                             Instrument.POLYCAM
                             ),
                     new ImagingInstrument(
-                            SpectralMode.MONO,
+                            SpectralImageMode.MONO,
                             new GenericPhpQuery(c.rootDirOnServer + "/mapcam", "bennu_altwgspcv20190828_mapcam", "bennu_altwgspcv20190828_mapcam", c.rootDirOnServer + "/mapcam/gallery"),
                             ImageType.MAPCAM_FLIGHT_IMAGE,
                             new ImageSource[]{ImageSource.GASKELL,ImageSource.SPICE},
                             Instrument.MAPCAM
                             ),
                     new ImagingInstrument(
-                            SpectralMode.MONO,
+                            SpectralImageMode.MONO,
                             new GenericPhpQuery(c.rootDirOnServer + "/navcam", "bennu_altwgspcv20190828_navcam", "bennu_altwgspcv20190828_navcam", c.rootDirOnServer + "/navcam/gallery"),
                             ImageType.NAVCAM_FLIGHT_IMAGE,
                             new ImageSource[]{ImageSource.SPICE},
@@ -3167,10 +3184,9 @@ public class BennuConfigs extends SmallBodyViewConfig
             };
 
             c.hasSpectralData = true;
-            c.spectralInstruments = new BasicSpectrumInstrument[] {
-                    new OTES(),
-                    new OVIRS()
-            };
+            c.spectralInstruments = new ArrayList<BasicSpectrumInstrument>();
+            c.spectralInstruments.add(new OTES());
+            c.spectralInstruments.add(new OVIRS());
 
             c.hasStateHistory = true;
             c.timeHistoryFile = c.rootDirOnServer + "/history/timeHistory.bth";
@@ -3183,10 +3199,10 @@ public class BennuConfigs extends SmallBodyViewConfig
             c.spectraSearchDataSourceMap.put("OTES_L3", c.rootDirOnServer + "/otes/l3/hypertree/dataSource.spectra");
             c.spectraSearchDataSourceMap.put("OVIRS_IF", c.rootDirOnServer + "/ovirs/l3/if/hypertree/dataSource.spectra");
             c.spectraSearchDataSourceMap.put("OVIRS_REF", c.rootDirOnServer + "ovirs/l3/reff/hypertree/dataSource.spectra");
-            c.spectrumMetadataFile = c.rootDirOnServer + "/spectraMetadata.json";
+//            c.spectrumMetadataFile = c.rootDirOnServer + "/spectraMetadata.json";
 
-            OREXSpectrumInstrumentMetadataIO specIO = new OREXSpectrumInstrumentMetadataIO("OREX");
-            specIO.setPathString(c.spectrumMetadataFile);
+            SpectrumInstrumentMetadataIO specIO = new SpectrumInstrumentMetadataIO("OREX", c.instrumentSearchSpecs);
+//            specIO.setPathString(c.spectrumMetadataFile);
             c.hierarchicalSpectraSearchSpecification = specIO;
 
             c.hasLidarData = true;
@@ -3199,7 +3215,7 @@ public class BennuConfigs extends SmallBodyViewConfig
 //            c.lidarSearchDataSourceMap.put("Default", c.rootDirOnServer + "/ola/Phase07_OB/tree/dataSource.lidar");
             c.lidarBrowseDataSourceMap.put("Default", c.rootDirOnServer + "/ola/browse/fileList.txt");
             c.lidarBrowseFileListResourcePath = c.rootDirOnServer + "/ola/browse/fileList.txt";
-
+            c.lidarBrowseWithPointsDataSourceMap.put("Default", c.rootDirOnServer + "/ola/browse/fileListv2.txt");
 
             /*
              * search times split into phases

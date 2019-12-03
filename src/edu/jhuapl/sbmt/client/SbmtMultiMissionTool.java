@@ -39,8 +39,15 @@ import edu.jhuapl.saavtk.util.UrlInfo.UrlStatus;
 import edu.jhuapl.sbmt.dtm.model.DEMKey;
 import edu.jhuapl.sbmt.gui.image.model.custom.CustomCylindricalImageKey;
 import edu.jhuapl.sbmt.gui.image.model.custom.CustomPerspectiveImageKey;
-import edu.jhuapl.sbmt.gui.spectrum.model.SpectrumKey;
-import edu.jhuapl.sbmt.model.spectrum.CustomSpectrumKey;
+import edu.jhuapl.sbmt.model.bennu.spectra.otes.OTES;
+import edu.jhuapl.sbmt.model.bennu.spectra.ovirs.OVIRS;
+import edu.jhuapl.sbmt.model.eros.nis.NIS;
+import edu.jhuapl.sbmt.model.phobos.MEGANE;
+import edu.jhuapl.sbmt.model.ryugu.nirs3.NIRS3;
+import edu.jhuapl.sbmt.spectrum.model.core.SpectrumInstrumentMetadata;
+import edu.jhuapl.sbmt.spectrum.model.core.search.SpectrumSearchSpec;
+import edu.jhuapl.sbmt.spectrum.model.io.SpectrumInstrumentMetadataIO;
+import edu.jhuapl.sbmt.spectrum.model.key.CustomSpectrumKey;
 import edu.jhuapl.sbmt.tools.SbmtRunnable;
 
 /**
@@ -123,6 +130,7 @@ public class SbmtMultiMissionTool
 			}
 		}
 
+
 		// Initialize serialization proxies
 
 		// Structures.
@@ -134,9 +142,19 @@ public class SbmtMultiMissionTool
 		// Images.
 		CustomCylindricalImageKey.initializeSerializationProxy();
 		CustomPerspectiveImageKey.initializeSerializationProxy();
-		SpectrumKey.initializeSerializationProxy();
+//		SpectrumKey.initializeSerializationProxy();
 		CustomSpectrumKey.initializeSerializationProxy();
 		DEMKey.initializeSerializationProxy();
+//		BasicSpectrumInstrument.initializeSerializationProxy();
+//		OTESSpectrum.initializeSerializationProxy();
+		SpectrumInstrumentMetadataIO.initializeSerializationProxy();
+		SpectrumInstrumentMetadata.initializeSerializationProxy();
+		SpectrumSearchSpec.initializeSerializationProxy();
+		OTES.initializeSerializationProxy();
+		OVIRS.initializeSerializationProxy();
+		NIS.initializeSerializationProxy();
+		NIRS3.initializeSerializationProxy();
+		MEGANE.initializeSerializationProxy();
 	}
 
 	public static void setEnableAuthentication(boolean enableAuthentication)

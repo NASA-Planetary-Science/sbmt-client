@@ -1,0 +1,64 @@
+[
+  {
+    "instrumentName": "OTES",
+    "queryType": "file",
+    "searchMetadata": [
+      {
+        "dataListFilename": "spectrumlist.txt",
+        "dataName": "OTES L2 Calibrated Radiance",
+        "xAxisUnits": "Wave Number (1/cm)",
+        "dataDescription": "OTES L2 Calibrated Radiance",
+        "yAxisUnits": "Radiance",
+        "dataPath": "spectra",
+        "source": "Corrected SPICE Derived",
+        "dataRootLocation": "/bennu/shared/otes/l2"
+      },
+      {
+        "dataListFilename": "spectrumlist.txt",
+        "dataName": "OTES L3 Spot Emissivity",
+        "xAxisUnits": "Wave Number (1/cm)",
+        "dataDescription": "OTES L3 Spot Emissivity",
+        "yAxisUnits": "Emissivity",
+        "dataPath": "spectra",
+        "source": "Corrected SPICE Derived",
+        "dataRootLocation": "/bennu/shared/otes/l3"
+      }
+    ]
+  },
+  {
+    "instrumentName": "OVIRS",
+    "queryType": "file",
+    "searchMetadata": [
+      {
+        "dataListFilename": "spectrumlist.txt",
+        "dataName": "OVIRS SA-16 Photometrically Corrected SPOT Reflectance Factor (REFF)",
+        "xAxisUnits": "Wavelength (microns)",
+        "dataDescription": "OVIRS L3 SA-16 Photometrically Corrected SPOT Reflectance Factor (REFF)",
+        "yAxisUnits": "REFF",
+        "dataPath": "spectra",
+        "source": "Corrected SPICE Derived",
+        "dataRootLocation": "/bennu/shared/ovirs/l3/SA16l3escireff"
+      },
+      {
+        "dataListFilename": "spectrumlist.txt",
+        "dataName": "OVIRS SA-27 SPOT I/F",
+        "xAxisUnits": "Wavelength (microns)",
+        "dataDescription": "OVIRS L3 SA-27 SPOT I/F",
+        "yAxisUnits": "I/F",
+        "dataPath": "spectra",
+        "source": "Corrected SPICE Derived",
+        "dataRootLocation": "/bennu/shared/ovirs/l3/SA27l3csci"
+      },
+      {
+        "dataListFilename": "spectrumlist.txt",
+        "dataName": "OVIRS SA-29 Photometrically corrected SPOT I/F, aka RADF",
+        "xAxisUnits": "Wavelength (microns)",
+        "dataDescription": "OVIRS L3 SA-29 Photometrically corrected SPOT I/F, aka RADF",
+        "yAxisUnits": "RADF",
+        "dataPath": "spectra",
+        "source": "Corrected SPICE Derived",
+        "dataRootLocation": "/bennu/shared/ovirs/l3/SA29l3esciradf"
+      }
+    ]
+  }
+]

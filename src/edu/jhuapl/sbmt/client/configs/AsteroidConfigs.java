@@ -1,7 +1,9 @@
 package edu.jhuapl.sbmt.client.configs;
 
+import java.util.ArrayList;
 import java.util.GregorianCalendar;
 import java.util.LinkedHashMap;
+import java.util.List;
 
 import com.google.common.collect.ImmutableList;
 
@@ -15,20 +17,24 @@ import edu.jhuapl.sbmt.client.SbmtMultiMissionTool;
 import edu.jhuapl.sbmt.client.ShapeModelDataUsed;
 import edu.jhuapl.sbmt.client.ShapeModelPopulation;
 import edu.jhuapl.sbmt.client.SmallBodyViewConfig;
-import edu.jhuapl.sbmt.client.SpectralMode;
-import edu.jhuapl.sbmt.model.bennu.otes.SpectraHierarchicalSearchSpecification;
-import edu.jhuapl.sbmt.model.eros.NIS;
+import edu.jhuapl.sbmt.model.eros.nis.NIS;
 import edu.jhuapl.sbmt.model.image.ImageSource;
 import edu.jhuapl.sbmt.model.image.ImageType;
 import edu.jhuapl.sbmt.model.image.ImagingInstrument;
 import edu.jhuapl.sbmt.model.image.Instrument;
-import edu.jhuapl.sbmt.model.spectrum.instruments.BasicSpectrumInstrument;
+import edu.jhuapl.sbmt.model.image.SpectralImageMode;
 import edu.jhuapl.sbmt.query.database.GenericPhpQuery;
 import edu.jhuapl.sbmt.query.fixedlist.FixedListQuery;
+import edu.jhuapl.sbmt.spectrum.model.core.BasicSpectrumInstrument;
+import edu.jhuapl.sbmt.spectrum.model.core.SpectrumInstrumentMetadata;
+import edu.jhuapl.sbmt.spectrum.model.core.search.SpectraHierarchicalSearchSpecification;
+import edu.jhuapl.sbmt.spectrum.model.core.search.SpectrumSearchSpec;
+import edu.jhuapl.sbmt.spectrum.model.io.SpectrumInstrumentMetadataIO;
 import edu.jhuapl.sbmt.tools.DBRunInfo;
 
 public class AsteroidConfigs extends SmallBodyViewConfig
 {
+
 
 	public AsteroidConfigs()
 	{
@@ -55,7 +61,7 @@ public class AsteroidConfigs extends SmallBodyViewConfig
 
         c.imagingInstruments = new ImagingInstrument[] {
                 new ImagingInstrument( //
-                        SpectralMode.MONO, //
+                        SpectralImageMode.MONO, //
                         new GenericPhpQuery("/GASKELL/EROS/MSI", "EROS", "/GASKELL/EROS/MSI/gallery"), //
                         ImageType.MSI_IMAGE, //
                         new ImageSource[]{ImageSource.GASKELL_UPDATED, ImageSource.SPICE}, //
@@ -72,9 +78,21 @@ public class AsteroidConfigs extends SmallBodyViewConfig
         c.bodyLowestResModelName = "EROS/shape/shape0.obj";
 
         c.hasSpectralData = true;
-        c.spectralInstruments = new BasicSpectrumInstrument[] {
-                new NIS()
-        };
+        c.spectralInstruments = new ArrayList<BasicSpectrumInstrument>();
+        c.spectralInstruments.add(new NIS());
+//        c.spectralInstruments = new ArrayList<BasicSpectrumInstrument>() {
+//                new NIS()
+//        };
+
+//        c.hasHierarchicalSpectraSearch = true;
+    	List<SpectrumInstrumentMetadata<SpectrumSearchSpec>> instrumentSearchSpecs = new ArrayList<SpectrumInstrumentMetadata<SpectrumSearchSpec>>();
+        SpectrumSearchSpec nisSpec = new SpectrumSearchSpec("NIS Calibrated Spectrum", "/GASKELL/EROS/shared/nis", "spectra", "spectrumlist.txt", ImageSource.valueFor("Corrected SPICE Derived"), "Wavelength (nm)", "Reflectance", "NIS");
+		List<SpectrumSearchSpec> nisSpecs = new ArrayList<SpectrumSearchSpec>();
+		nisSpecs.add(nisSpec);
+
+		instrumentSearchSpecs.add(new SpectrumInstrumentMetadata<SpectrumSearchSpec>("NIS", nisSpecs));
+        c.hierarchicalSpectraSearchSpecification = new SpectrumInstrumentMetadataIO("NEAR", instrumentSearchSpecs);
+
 
         c.hasLineamentData = true;
         c.imageSearchDefaultStartDate = new GregorianCalendar(2000, 0, 12, 0, 0, 0).getTime();
@@ -200,7 +218,7 @@ public class AsteroidConfigs extends SmallBodyViewConfig
 
         c.imagingInstruments = new ImagingInstrument[] {
                 new ImagingInstrument( //
-                        SpectralMode.MONO, //
+                        SpectralImageMode.MONO, //
                         new GenericPhpQuery("/GASKELL/ITOKAWA/AMICA", "AMICA", "/GASKELL/ITOKAWA/AMICA/gallery"), //
                         ImageType.AMICA_IMAGE, //
                         new ImageSource[]{ImageSource.GASKELL, ImageSource.SPICE, ImageSource.CORRECTED}, //
@@ -243,7 +261,7 @@ public class AsteroidConfigs extends SmallBodyViewConfig
         c.lidarOffsetScale = 0.00044228259621279913;
         c.lidarInstrumentName = Instrument.LIDAR;
 
-        c.spectralInstruments = new BasicSpectrumInstrument[] {};
+        c.spectralInstruments = new ArrayList<BasicSpectrumInstrument>();
 
         c.databaseRunInfos = new DBRunInfo[]
         {
@@ -308,7 +326,7 @@ public class AsteroidConfigs extends SmallBodyViewConfig
 
             c.imagingInstruments = new ImagingInstrument[] {
                     new ImagingInstrument( //
-                            SpectralMode.MONO, //
+                            SpectralImageMode.MONO, //
                             new GenericPhpQuery("/GASKELL/CERES/FC", "Ceres", "/GASKELL/CERES/FC/gallery"), //
                             ImageType.FCCERES_IMAGE, //
                             new ImageSource[]{ImageSource.GASKELL, ImageSource.SPICE}, //
@@ -357,7 +375,7 @@ public class AsteroidConfigs extends SmallBodyViewConfig
 
         c.imagingInstruments = new ImagingInstrument[] {
                 new ImagingInstrument( //
-                        SpectralMode.MONO, //
+                        SpectralImageMode.MONO, //
                         new GenericPhpQuery("/GASKELL/VESTA/FC", "FC", "/GASKELL/VESTA/FC/gallery"), //
                         ImageType.FC_IMAGE, //
                         new ImageSource[]{ImageSource.GASKELL, ImageSource.SPICE}, //
@@ -419,7 +437,7 @@ public class AsteroidConfigs extends SmallBodyViewConfig
 
             c.imagingInstruments = new ImagingInstrument[] {
                     new ImagingInstrument( //
-                            SpectralMode.MONO, //
+                            SpectralImageMode.MONO, //
                             new FixedListQuery("/GASKELL/LUTETIA/IMAGING", "/GASKELL/LUTETIA/IMAGING/gallery"), //
                             ImageType.OSIRIS_IMAGE, //
                             new ImageSource[]{ImageSource.GASKELL}, //
@@ -488,7 +506,7 @@ public class AsteroidConfigs extends SmallBodyViewConfig
 
         c.imagingInstruments = new ImagingInstrument[] {
                 new ImagingInstrument( //
-                        SpectralMode.MONO, //
+                        SpectralImageMode.MONO, //
                         new FixedListQuery("/THOMAS/IDA/SSI", "/THOMAS/IDA/SSI/images/gallery"), //
                         ImageType.SSI_IDA_IMAGE, //
                         new ImageSource[]{ImageSource.CORRECTED}, //
@@ -542,7 +560,7 @@ public class AsteroidConfigs extends SmallBodyViewConfig
 
         c.imagingInstruments = new ImagingInstrument[] {
                 new ImagingInstrument( //
-                        SpectralMode.MONO, //
+                        SpectralImageMode.MONO, //
                         new FixedListQuery("/THOMAS/MATHILDE/MSI", "/THOMAS/MATHILDE/MSI/images/gallery"), //
                         ImageType.MSI_MATHILDE_IMAGE, //
                         new ImageSource[]{ImageSource.CORRECTED}, //
@@ -604,7 +622,7 @@ public class AsteroidConfigs extends SmallBodyViewConfig
 
         c.imagingInstruments = new ImagingInstrument[] {
                 new ImagingInstrument( //
-                        SpectralMode.MONO, //
+                        SpectralImageMode.MONO, //
                         new FixedListQuery("/THOMAS/GASPRA/SSI", "/THOMAS/GASPRA/SSI/images/gallery"), //
                         ImageType.SSI_GASPRA_IMAGE, //
                         new ImageSource[]{ImageSource.CORRECTED}, //

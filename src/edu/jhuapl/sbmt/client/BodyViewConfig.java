@@ -12,12 +12,12 @@ import com.google.common.collect.Maps;
 import edu.jhuapl.saavtk.config.ViewConfig;
 import edu.jhuapl.saavtk.model.ShapeModelType;
 import edu.jhuapl.saavtk.util.SafeURLPaths;
-import edu.jhuapl.sbmt.model.bennu.otes.SpectraHierarchicalSearchSpecification;
 import edu.jhuapl.sbmt.model.image.ImageKeyInterface;
 import edu.jhuapl.sbmt.model.image.ImagingInstrument;
 import edu.jhuapl.sbmt.model.image.Instrument;
 import edu.jhuapl.sbmt.model.phobos.HierarchicalSearchSpecification;
-import edu.jhuapl.sbmt.model.spectrum.instruments.BasicSpectrumInstrument;
+import edu.jhuapl.sbmt.spectrum.model.core.BasicSpectrumInstrument;
+import edu.jhuapl.sbmt.spectrum.model.io.SpectrumInstrumentMetadataIO;
 import edu.jhuapl.sbmt.tools.DBRunInfo;
 
 
@@ -66,7 +66,7 @@ public abstract class BodyViewConfig extends ViewConfig
     public boolean hasHierarchicalImageSearch = false;
     public boolean hasHierarchicalSpectraSearch = false;
     public HierarchicalSearchSpecification hierarchicalImageSearchSpecification;
-    public SpectraHierarchicalSearchSpecification<?> hierarchicalSpectraSearchSpecification;
+    public SpectrumInstrumentMetadataIO hierarchicalSpectraSearchSpecification;
     public String spectrumMetadataFile;
 
     public boolean hasHypertreeBasedSpectraSearch=false;
@@ -76,6 +76,7 @@ public abstract class BodyViewConfig extends ViewConfig
     // if hasLidarData is true, the following must be filled in
     public Map<String, String> lidarSearchDataSourceMap=Maps.newHashMap();
     public Map<String, String> lidarBrowseDataSourceMap=Maps.newHashMap();    // overrides lidarBrowseFileListResourcePath for OLA
+    public Map<String, String> lidarBrowseWithPointsDataSourceMap=Maps.newHashMap();
     public Map<String, ArrayList<Date>> lidarSearchDataSourceTimeMap = Maps.newHashMap();
 	public Map<String, ArrayList<Date>> orexSearchTimeMap = Maps.newHashMap();
 
@@ -150,7 +151,7 @@ public abstract class BodyViewConfig extends ViewConfig
     public ImagingInstrument[] imagingInstruments = {};
     public Instrument lidarInstrumentName = Instrument.LIDAR;
 
-    public BasicSpectrumInstrument[] spectralInstruments = {};
+    public List<BasicSpectrumInstrument> spectralInstruments = new ArrayList<BasicSpectrumInstrument>();
 
     public DBRunInfo[] databaseRunInfos = {};
 
@@ -292,6 +293,7 @@ public abstract class BodyViewConfig extends ViewConfig
             c.lidarSearchDefaultEndDate = (Date)this.lidarSearchDefaultEndDate.clone();
             c.lidarSearchDataSourceMap = new LinkedHashMap<>(this.lidarSearchDataSourceMap);
             c.lidarBrowseDataSourceMap = new LinkedHashMap<>(this.lidarBrowseDataSourceMap);
+            c.lidarBrowseWithPointsDataSourceMap = new LinkedHashMap<>(this.lidarBrowseWithPointsDataSourceMap);
             c.lidarBrowseXYZIndices = this.lidarBrowseXYZIndices.clone();
             c.lidarBrowseSpacecraftIndices = this.lidarBrowseSpacecraftIndices.clone();
             c.lidarBrowseIsLidarInSphericalCoordinates = this.lidarBrowseIsLidarInSphericalCoordinates;
@@ -401,7 +403,41 @@ public abstract class BodyViewConfig extends ViewConfig
         return SafeURLPaths.instance().getString(firstSegment, segments);
     }
 
-    @Override
+    public boolean hasColoringData()
+	{
+		return hasColoringData;
+	}
+
+    public static void main(String[] args)
+    {
+        System.out.println("serverPath(\"\", \"\") is \"" + serverPath("", "") + "\"");
+        System.out.println("serverPath(\"http://sbmt.jhuapl.edu/sbmt\", \"\", \"\") is \"" + serverPath("http://sbmt.jhuapl.edu/sbmt", "", "") + "\"");
+        System.out.println("serverPath(\"file://sbmt.jhuapl.edu/sbmt\", \"\", \"filename.txt\") is \"" + serverPath("file://sbmt.jhuapl.edu/sbmt", "", "filename.txt") + "\"");
+    }
+
+    public String[] getImageSearchFilterNames()
+	{
+		return imageSearchFilterNames;
+	}
+
+
+	public String[] getImageSearchUserDefinedCheckBoxesNames()
+	{
+		return imageSearchUserDefinedCheckBoxesNames;
+	}
+
+
+	public boolean hasHierarchicalImageSearch()
+	{
+		return hasHierarchicalImageSearch;
+	}
+
+	public void setShapeModelFileNames(String[] shapeModelFileNames)
+	{
+		this.shapeModelFileNames = shapeModelFileNames;
+	}
+
+	@Override
 	public int hashCode()
 	{
 		final int prime = 31;
@@ -442,6 +478,7 @@ public abstract class BodyViewConfig extends ViewConfig
 		result = prime * result + Arrays.hashCode(imagingInstruments);
 		result = prime * result + lidarBrowseBinaryRecordSize;
 		result = prime * result + ((lidarBrowseDataSourceMap == null) ? 0 : lidarBrowseDataSourceMap.hashCode());
+		result = prime * result + ((lidarBrowseWithPointsDataSourceMap == null) ? 0 : lidarBrowseWithPointsDataSourceMap.hashCode());
 		result = prime * result
 				+ ((lidarBrowseFileListResourcePath == null) ? 0 : lidarBrowseFileListResourcePath.hashCode());
 		result = prime * result + (lidarBrowseIntensityEnabled ? 1231 : 1237);
@@ -479,12 +516,13 @@ public abstract class BodyViewConfig extends ViewConfig
 		result = prime * result + ((shapeModelFileExtension == null) ? 0 : shapeModelFileExtension.hashCode());
 		result = prime * result + Arrays.hashCode(shapeModelFileNames);
 		result = prime * result + ((spectraSearchDataSourceMap == null) ? 0 : spectraSearchDataSourceMap.hashCode());
-		result = prime * result + Arrays.hashCode(spectralInstruments);
+		result = prime * result + ((spectralInstruments == null) ? 0 : spectralInstruments.hashCode());
 		result = prime * result + ((spectrumMetadataFile == null) ? 0 : spectrumMetadataFile.hashCode());
 		result = prime * result + ((timeHistoryFile == null) ? 0 : timeHistoryFile.hashCode());
 		result = prime * result + ((type == null) ? 0 : type.hashCode());
 		return result;
 	}
+
 
 	@Override
 	public boolean equals(Object obj)
@@ -676,6 +714,16 @@ public abstract class BodyViewConfig extends ViewConfig
 		{
 			return false;
 		}
+		if (lidarBrowseWithPointsDataSourceMap == null)
+		{
+			if (other.lidarBrowseWithPointsDataSourceMap != null)
+			{
+				return false;
+			}
+		} else if (!lidarBrowseWithPointsDataSourceMap.equals(other.lidarBrowseWithPointsDataSourceMap))
+		{
+			return false;
+		}
 		if (lidarBrowseFileListResourcePath == null)
 		{
 			if (other.lidarBrowseFileListResourcePath != null)
@@ -850,11 +898,12 @@ public abstract class BodyViewConfig extends ViewConfig
 //			System.err.println("BodyViewConfig: equals: spectra search data source map don't match");
 			return false;
 		}
-		if (!Arrays.equals(spectralInstruments, other.spectralInstruments))
+		if (spectralInstruments == null)
 		{
-//			System.err.println("BodyViewConfig: equals: spectral instruments don't match");
+			if (other.spectralInstruments != null)
+				return false;
+		} else if (!spectralInstruments.equals(other.spectralInstruments))
 			return false;
-		}
 		if (spectrumMetadataFile == null)
 		{
 			if (other.spectrumMetadataFile != null)
@@ -876,12 +925,4 @@ public abstract class BodyViewConfig extends ViewConfig
 //		System.out.println("BodyViewConfig: equals: match!!");
 		return true;
 	}
-
-	public static void main(String[] args)
-    {
-        System.out.println("serverPath(\"\", \"\") is \"" + serverPath("", "") + "\"");
-        System.out.println("serverPath(\"http://sbmt.jhuapl.edu/sbmt\", \"\", \"\") is \"" + serverPath("http://sbmt.jhuapl.edu/sbmt", "", "") + "\"");
-        System.out.println("serverPath(\"file://sbmt.jhuapl.edu/sbmt\", \"\", \"filename.txt\") is \"" + serverPath("file://sbmt.jhuapl.edu/sbmt", "", "filename.txt") + "\"");
-    }
-
 }

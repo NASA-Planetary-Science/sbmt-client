@@ -1,5 +1,6 @@
 package edu.jhuapl.sbmt.client.configs;
 
+import java.util.ArrayList;
 import java.util.GregorianCalendar;
 
 import com.google.common.collect.ImmutableList;
@@ -14,15 +15,15 @@ import edu.jhuapl.sbmt.client.SbmtMultiMissionTool;
 import edu.jhuapl.sbmt.client.ShapeModelDataUsed;
 import edu.jhuapl.sbmt.client.ShapeModelPopulation;
 import edu.jhuapl.sbmt.client.SmallBodyViewConfig;
-import edu.jhuapl.sbmt.client.SpectralMode;
-import edu.jhuapl.sbmt.model.bennu.otes.SpectraHierarchicalSearchSpecification;
 import edu.jhuapl.sbmt.model.image.ImageSource;
 import edu.jhuapl.sbmt.model.image.ImageType;
 import edu.jhuapl.sbmt.model.image.ImagingInstrument;
 import edu.jhuapl.sbmt.model.image.Instrument;
-import edu.jhuapl.sbmt.model.spectrum.instruments.BasicSpectrumInstrument;
+import edu.jhuapl.sbmt.model.image.SpectralImageMode;
 import edu.jhuapl.sbmt.query.database.GenericPhpQuery;
 import edu.jhuapl.sbmt.query.fixedlist.FixedListQuery;
+import edu.jhuapl.sbmt.spectrum.model.core.BasicSpectrumInstrument;
+import edu.jhuapl.sbmt.spectrum.model.core.search.SpectraHierarchicalSearchSpecification;
 import edu.jhuapl.sbmt.tools.DBRunInfo;
 
 public class NewHorizonsConfigs extends SmallBodyViewConfig
@@ -53,10 +54,10 @@ public class NewHorizonsConfigs extends SmallBodyViewConfig
 
             // imaging instruments
             c.imagingInstruments = new ImagingInstrument[] {
-                    new ImagingInstrument(SpectralMode.MONO, new GenericPhpQuery("/NEWHORIZONS/JUPITER/IMAGING", "JUPITER", "/NEWHORIZONS/JUPITER/IMAGING/images/gallery"), ImageType.LORRI_IMAGE, new ImageSource[] { ImageSource.SPICE }, Instrument.LORRI),
+                    new ImagingInstrument(SpectralImageMode.MONO, new GenericPhpQuery("/NEWHORIZONS/JUPITER/IMAGING", "JUPITER", "/NEWHORIZONS/JUPITER/IMAGING/images/gallery"), ImageType.LORRI_IMAGE, new ImageSource[] { ImageSource.SPICE }, Instrument.LORRI),
 
                     new ImagingInstrument( //
-                            SpectralMode.MULTI, //
+                            SpectralImageMode.MULTI, //
                             new FixedListQuery("/NEWHORIZONS/JUPITER/MVIC"), //
                             ImageType.MVIC_JUPITER_IMAGE, //
                             new ImageSource[]{ImageSource.SPICE}, //
@@ -114,7 +115,7 @@ public class NewHorizonsConfigs extends SmallBodyViewConfig
             // imaging instruments
             c.imagingInstruments = new ImagingInstrument[] {
                     new ImagingInstrument( //
-                            SpectralMode.MONO, //
+                            SpectralImageMode.MONO, //
                             new GenericPhpQuery("/NEWHORIZONS/CALLISTO/IMAGING", "CALLISTO", "/NEWHORIZONS/CALLISTO/IMAGING/images/gallery"), //
                             ImageType.LORRI_IMAGE, //
                             new ImageSource[]{ImageSource.SPICE}, //
@@ -141,7 +142,7 @@ public class NewHorizonsConfigs extends SmallBodyViewConfig
             // imaging instruments
             c.imagingInstruments = new ImagingInstrument[] {
                     new ImagingInstrument( //
-                            SpectralMode.MONO, //
+                            SpectralImageMode.MONO, //
                             new GenericPhpQuery("/NEWHORIZONS/EUROPA/IMAGING", "EUROPA", "/NEWHORIZONS/EUROPA/IMAGING/images/gallery"), //
                             ImageType.LORRI_IMAGE, //
                             new ImageSource[]{ImageSource.SPICE}, //
@@ -149,7 +150,7 @@ public class NewHorizonsConfigs extends SmallBodyViewConfig
                             ), //
 
                     new ImagingInstrument( //
-                            SpectralMode.MULTI, //
+                            SpectralImageMode.MULTI, //
                             new FixedListQuery("/NEWHORIZONS/EUROPA/MVIC"), //
                             ImageType.MVIC_JUPITER_IMAGE, //
                             new ImageSource[]{ImageSource.SPICE}, //
@@ -183,7 +184,7 @@ public class NewHorizonsConfigs extends SmallBodyViewConfig
             // imaging instruments
             c.imagingInstruments = new ImagingInstrument[] {
                     new ImagingInstrument( //
-                            SpectralMode.MONO, //
+                            SpectralImageMode.MONO, //
                             new GenericPhpQuery("/NEWHORIZONS/GANYMEDE/IMAGING", "GANYMEDE", "/NEWHORIZONS/GANYMEDE/IMAGING/images/gallery"), //
                             ImageType.LORRI_IMAGE, //
                             new ImageSource[]{ImageSource.SPICE}, //
@@ -191,7 +192,7 @@ public class NewHorizonsConfigs extends SmallBodyViewConfig
                             ), //
 
                     new ImagingInstrument( //
-                            SpectralMode.MULTI, //
+                            SpectralImageMode.MULTI, //
                             new FixedListQuery("/NEWHORIZONS/GANYMEDE/MVIC"), //
                             ImageType.MVIC_JUPITER_IMAGE, //
                             new ImageSource[]{ImageSource.SPICE}, //
@@ -223,7 +224,7 @@ public class NewHorizonsConfigs extends SmallBodyViewConfig
             // imaging instruments
             c.imagingInstruments = new ImagingInstrument[] {
                     new ImagingInstrument( //
-                            SpectralMode.MONO, //
+                            SpectralImageMode.MONO, //
                             new GenericPhpQuery("/NEWHORIZONS/IO/IMAGING", "IO", "/NEWHORIZONS/IO/IMAGING/images/gallery"), //
                             ImageType.LORRI_IMAGE, //
                             new ImageSource[]{ImageSource.SPICE}, //
@@ -231,7 +232,7 @@ public class NewHorizonsConfigs extends SmallBodyViewConfig
                             ), //
 
                     new ImagingInstrument( //
-                            SpectralMode.MULTI, //
+                            SpectralImageMode.MULTI, //
                             new FixedListQuery("/NEWHORIZONS/IO/MVIC"), //
                             ImageType.MVIC_JUPITER_IMAGE, //
                             new ImageSource[]{ImageSource.SPICE}, //
@@ -265,7 +266,7 @@ public class NewHorizonsConfigs extends SmallBodyViewConfig
 
             c.imagingInstruments = new ImagingInstrument[] {
                     new ImagingInstrument( //
-                            SpectralMode.MONO, //
+                            SpectralImageMode.MONO, //
 //                            new GenericPhpQuery("/NEWHORIZONS/PLUTO/IMAGING", "PLUTO"), //
                             new FixedListQuery("/NEWHORIZONS/PLUTO/IMAGING", true), //
                             ImageType.LORRI_IMAGE, //
@@ -274,7 +275,7 @@ public class NewHorizonsConfigs extends SmallBodyViewConfig
                             ), //
 
                     new ImagingInstrument( //
-                            SpectralMode.MULTI, //
+                            SpectralImageMode.MULTI, //
                             new FixedListQuery("/NEWHORIZONS/PLUTO/MVIC"), //
                             ImageType.MVIC_JUPITER_IMAGE, //
                             new ImageSource[]{ImageSource.SPICE}, //
@@ -323,7 +324,7 @@ public class NewHorizonsConfigs extends SmallBodyViewConfig
 
             c.imagingInstruments = new ImagingInstrument[] {
                     new ImagingInstrument( //
-                            SpectralMode.MONO, //
+                            SpectralImageMode.MONO, //
                             new FixedListQuery("/NEWHORIZONS/CHARON/IMAGING", true), //
                             ImageType.LORRI_IMAGE, //
                             new ImageSource[]{ImageSource.SPICE, ImageSource.CORRECTED_SPICE}, //
@@ -331,7 +332,7 @@ public class NewHorizonsConfigs extends SmallBodyViewConfig
                             ), //
 
                     new ImagingInstrument( //
-                            SpectralMode.MULTI, //
+                            SpectralImageMode.MULTI, //
                             new FixedListQuery("/NEWHORIZONS/CHARON/MVIC"), //
                             ImageType.MVIC_JUPITER_IMAGE, //
                             new ImageSource[]{ImageSource.SPICE}, //
@@ -375,7 +376,7 @@ public class NewHorizonsConfigs extends SmallBodyViewConfig
             c.hasColoringData = false;
             c.imagingInstruments = new ImagingInstrument[] {
                     new ImagingInstrument( //
-                            SpectralMode.MONO, //
+                            SpectralImageMode.MONO, //
                             new FixedListQuery("/NEWHORIZONS/HYDRA/IMAGING", true), //
                             ImageType.LORRI_IMAGE, //
                             new ImageSource[]{ImageSource.SPICE, ImageSource.CORRECTED_SPICE}, //
@@ -383,7 +384,7 @@ public class NewHorizonsConfigs extends SmallBodyViewConfig
                             ), //
 
                     new ImagingInstrument( //
-                            SpectralMode.MULTI, //
+                            SpectralImageMode.MULTI, //
                             new FixedListQuery("/NEWHORIZONS/HYDRA/MVIC"), //
                             ImageType.MVIC_JUPITER_IMAGE, //
                             new ImageSource[]{ImageSource.SPICE}, //
@@ -436,7 +437,7 @@ public class NewHorizonsConfigs extends SmallBodyViewConfig
             c.hasColoringData = false;
             c.imagingInstruments = new ImagingInstrument[] {
                     new ImagingInstrument( //
-                            SpectralMode.MONO, //
+                            SpectralImageMode.MONO, //
                             new FixedListQuery("/NEWHORIZONS/NIX/IMAGING", true), //
                             ImageType.LORRI_IMAGE, //
                             new ImageSource[]{ImageSource.SPICE, ImageSource.CORRECTED_SPICE}, //
@@ -444,7 +445,7 @@ public class NewHorizonsConfigs extends SmallBodyViewConfig
                             ), //
 
                     new ImagingInstrument( //
-                            SpectralMode.MULTI, //
+                            SpectralImageMode.MULTI, //
                             new FixedListQuery("/NEWHORIZONS/NIX/MVIC"), //
                             ImageType.MVIC_JUPITER_IMAGE, //
                             new ImageSource[]{ImageSource.SPICE}, //
@@ -515,7 +516,7 @@ public class NewHorizonsConfigs extends SmallBodyViewConfig
 
             c.imagingInstruments = new ImagingInstrument[] {
                     new ImagingInstrument( //
-                            SpectralMode.MONO, //
+                            SpectralImageMode.MONO, //
                             new FixedListQuery(c.rootDirOnServer + "/lorri", c.rootDirOnServer + "/lorri/gallery"), //
                             ImageType.LORRI_IMAGE, //
                             new ImageSource[]{ImageSource.SPICE, ImageSource.GASKELL}, //
@@ -524,8 +525,8 @@ public class NewHorizonsConfigs extends SmallBodyViewConfig
             };
 
             c.hasSpectralData = false;
-            c.spectralInstruments = new BasicSpectrumInstrument[] {
-            };
+            c.spectralInstruments = new ArrayList<BasicSpectrumInstrument>();
+
 
             c.hasStateHistory = false;
 

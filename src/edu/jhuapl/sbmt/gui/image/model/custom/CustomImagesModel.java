@@ -37,6 +37,7 @@ import edu.jhuapl.saavtk.util.MapUtil;
 import edu.jhuapl.saavtk.util.Properties;
 import edu.jhuapl.saavtk.util.SafeURLPaths;
 import edu.jhuapl.sbmt.client.SmallBodyViewConfig;
+import edu.jhuapl.sbmt.config.Strings;
 import edu.jhuapl.sbmt.gui.image.model.CustomImageKeyInterface;
 import edu.jhuapl.sbmt.gui.image.model.CustomImageResultsListener;
 import edu.jhuapl.sbmt.gui.image.model.images.ImageSearchModel;
@@ -51,7 +52,6 @@ import edu.jhuapl.sbmt.model.image.ImageKeyInterface;
 import edu.jhuapl.sbmt.model.image.ImageSource;
 import edu.jhuapl.sbmt.model.image.ImageType;
 import edu.jhuapl.sbmt.model.image.PerspectiveImageBoundaryCollection;
-import edu.jhuapl.sbmt.model.spectrum.Spectrum;
 import edu.jhuapl.sbmt.util.VtkENVIReader;
 
 import crucible.crust.metadata.api.Key;
@@ -573,7 +573,7 @@ public class CustomImagesModel extends ImageSearchModel
             updateConfigFile();
             return true;
         }
-        else if (configMap.getAsArray(Spectrum.SPECTRUM_NAMES) != null)
+        else if (configMap.getAsArray(Strings.SPECTRUM_NAMES.getName()) != null)
         {
             //backup the old config file
         	String dir = new File(getConfigFilename()).getParent();
@@ -609,6 +609,14 @@ public class CustomImagesModel extends ImageSearchModel
             if (!(new File(getConfigFilename()).exists())) return;
             //check to make sure the old plate coloring config file isn't here
             MapUtil configMap = new MapUtil(getConfigFilename());
+            //check here if the model uses the very old format, and rename if so
+            if (configMap.containsKey("CustomShapeModelFormat"))
+            {
+            	File configDir = new File(getModelManager().getPolyhedralModel().getPlateConfigFilename()).getParentFile();
+            	FileUtils.moveFile(new File(getConfigFilename()), new File(configDir, "shapeConfig.txt"));
+				return;
+            }
+
 			if (configMap.containsKey(GenericPolyhedralModel.CELL_DATA_FILENAMES))
 			{
 				FileUtils.moveFile(new File(getConfigFilename()), new File(getModelManager().getPolyhedralModel().getPlateConfigFilename()));
