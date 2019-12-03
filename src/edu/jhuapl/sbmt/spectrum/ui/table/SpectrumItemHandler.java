@@ -1,10 +1,13 @@
 package edu.jhuapl.sbmt.spectrum.ui.table;
 
+import javax.swing.JOptionPane;
+
 import org.joda.time.DateTimeZone;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 
 import edu.jhuapl.sbmt.spectrum.model.core.BasicSpectrum;
+import edu.jhuapl.sbmt.spectrum.model.core.SpectrumIOException;
 import edu.jhuapl.sbmt.spectrum.rendering.SpectraCollection;
 import edu.jhuapl.sbmt.spectrum.rendering.SpectrumBoundaryCollection;
 
@@ -64,7 +67,17 @@ public class SpectrumItemHandler<S extends BasicSpectrum> extends BasicItemHandl
 		if (aEnum == SpectrumColumnLookup.Map)
 		{
 			if (!spectrumCollection.isSpectrumMapped(spec))
-				spectrumCollection.addSpectrum(spec, spec.isCustomSpectra);
+				try
+				{
+					spectrumCollection.addSpectrum(spec, spec.isCustomSpectra);
+				}
+				catch (SpectrumIOException e)
+				{
+					JOptionPane.showMessageDialog(JOptionPane.getFrameForComponent(null),
+		                     e.getCause().getMessage(),
+		                     "Error",
+		                     JOptionPane.ERROR_MESSAGE);
+				}
 			else
 			{
 				boundaryCollection.removeBoundary(spec);

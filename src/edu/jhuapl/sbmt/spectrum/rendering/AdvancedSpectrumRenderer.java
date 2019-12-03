@@ -24,6 +24,7 @@ import edu.jhuapl.saavtk.util.MathUtil;
 import edu.jhuapl.saavtk.util.PolyDataUtil;
 import edu.jhuapl.sbmt.client.ISmallBodyModel;
 import edu.jhuapl.sbmt.spectrum.model.core.BasicSpectrum;
+import edu.jhuapl.sbmt.spectrum.model.core.SpectrumIOException;
 
 /**
  * Renderer for spectra like OTES, OVIRS, etc that are circular
@@ -136,7 +137,15 @@ public class AdvancedSpectrumRenderer<S extends BasicSpectrum> extends BasicSpec
 		if (!footprintGenerated)
 		{
 			spectrum.readPointingFromInfoFile();
-			spectrum.readSpectrumFromFile();
+			try
+			{
+				spectrum.readSpectrumFromFile();
+			}
+			catch (SpectrumIOException e1)
+			{
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
 
 			frustum1 = spectrum.getFrustum1();
 	        frustum2 = spectrum.getFrustum2();

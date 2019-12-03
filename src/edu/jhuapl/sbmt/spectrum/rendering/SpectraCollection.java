@@ -21,6 +21,7 @@ import edu.jhuapl.saavtk.util.Properties;
 import edu.jhuapl.sbmt.client.ISmallBodyModel;
 import edu.jhuapl.sbmt.client.SbmtSpectrumModelFactory;
 import edu.jhuapl.sbmt.spectrum.model.core.BasicSpectrum;
+import edu.jhuapl.sbmt.spectrum.model.core.SpectrumIOException;
 import edu.jhuapl.sbmt.spectrum.model.core.interfaces.IBasicSpectrumRenderer;
 import edu.jhuapl.sbmt.spectrum.model.core.interfaces.SearchSpec;
 import edu.jhuapl.sbmt.spectrum.model.core.interfaces.SpectrumCollectionChangedListener;
@@ -119,7 +120,7 @@ public class SpectraCollection<S extends BasicSpectrum> extends SaavtkItemManage
         return spectrumToActorsMap.keySet();
     }
 
-    public IBasicSpectrumRenderer<S> addSpectrum(S spectrum, boolean isCustom) //throws IOException
+    public IBasicSpectrumRenderer<S> addSpectrum(S spectrum, boolean isCustom) throws SpectrumIOException
     {
         if (spectrumToRendererMap.get(spectrum) != null)
         {
@@ -135,7 +136,12 @@ public class SpectraCollection<S extends BasicSpectrum> extends SaavtkItemManage
         	spectrumRenderer = SbmtSpectrumModelFactory.createSpectrumRenderer(spectrum, spectrum.getInstrument());
         	spectrumRenderer.getSpectrum().readSpectrumFromFile();
         }
-        catch (Exception e) {
+        catch (SpectrumIOException sioe)
+        {
+        	throw new SpectrumIOException(sioe);
+        }
+        catch (Exception e)
+        {
             e.printStackTrace();
         }
 

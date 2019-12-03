@@ -670,7 +670,7 @@ public class SbmtView extends View implements PropertyChangeListener
 //				if (i.getDisplayName().equals("NIS"))
 //					continue; //we can't properly handle NIS custom data for now without info files, which we don't have.
 				customDataPane.addTab(i.getDisplayName() + " Spectra", new CustomSpectraSearchController(getModelManager(), (SbmtInfoWindowManager) getInfoPanelManager(), getPickManager(), getRenderer(), getPolyhedralModelConfig().hierarchicalSpectraSearchSpecification, i).getPanel());
-				break;
+//				break;
 			}
 
 			// Add the "lidar tracks" tab
