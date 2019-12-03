@@ -81,6 +81,7 @@ import edu.jhuapl.sbmt.query.fixedlist.FixedListQuery;
 import edu.jhuapl.sbmt.query.fixedlist.FixedListSearchMetadata;
 import edu.jhuapl.sbmt.spectrum.model.core.BasicSpectrum;
 import edu.jhuapl.sbmt.spectrum.model.core.BasicSpectrumInstrument;
+import edu.jhuapl.sbmt.spectrum.model.core.SpectrumIOException;
 import edu.jhuapl.sbmt.spectrum.model.core.interfaces.IBasicSpectrumRenderer;
 import edu.jhuapl.sbmt.spectrum.model.core.search.SpectraHierarchicalSearchSpecification;
 import edu.jhuapl.sbmt.spectrum.model.io.SpectrumListIO;
@@ -486,7 +487,17 @@ public abstract class AbstractSpectrumSearchPanel extends JPanel implements Mous
 //            {
 //                String currentSpectrum = spectrumRawResults.get(i).getFullPath();
 //                model.addSpectrum(createSpectrumName(currentSpectrum), instrument, false);
-            	model.addSpectrum(spectrumRawResults.get(i), false);
+            	try
+				{
+					model.addSpectrum(spectrumRawResults.get(i), false);
+				}
+            	catch (SpectrumIOException e)
+				{
+					JOptionPane.showMessageDialog(JOptionPane.getFrameForComponent(null),
+		                     e.getMessage(),
+		                     "Error",
+		                     JOptionPane.ERROR_MESSAGE);
+				}
 //            }
 //            catch (IOException e1) {
 //                e1.printStackTrace();
