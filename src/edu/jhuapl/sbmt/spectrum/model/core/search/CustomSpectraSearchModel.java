@@ -365,7 +365,7 @@ public class CustomSpectraSearchModel<S extends BasicSpectrum> extends BaseSpect
      */
     private String getConfigFilename()
     {
-        return customDataFolder + File.separator + "specConfig_v1.1.txt";
+        return customDataFolder + File.separator + instrument.getDisplayName() + "_specConfig_v1.1.txt";
     }
 
     /**
@@ -374,7 +374,7 @@ public class CustomSpectraSearchModel<S extends BasicSpectrum> extends BaseSpect
      */
     private String getOriginalConfigFilename()
     {
-        return customDataFolder + File.separator + "specConfig.txt";
+        return customDataFolder + File.separator + instrument.getDisplayName() + "_specConfig.txt";
     }
 
     @Override
