@@ -22,6 +22,7 @@ import javax.swing.UnsupportedLookAndFeelException;
 import com.google.common.collect.ImmutableList;
 import com.jgoodies.looks.LookUtils;
 
+import edu.jhuapl.saavtk.colormap.Colormaps;
 import edu.jhuapl.saavtk.gui.Console;
 import edu.jhuapl.saavtk.gui.OSXAdapter;
 import edu.jhuapl.saavtk.model.structure.EllipsePolygon;
@@ -38,8 +39,15 @@ import edu.jhuapl.saavtk.util.UrlInfo.UrlStatus;
 import edu.jhuapl.sbmt.dtm.model.DEMKey;
 import edu.jhuapl.sbmt.gui.image.model.custom.CustomCylindricalImageKey;
 import edu.jhuapl.sbmt.gui.image.model.custom.CustomPerspectiveImageKey;
-import edu.jhuapl.sbmt.gui.spectrum.model.SpectrumKey;
-import edu.jhuapl.sbmt.model.spectrum.CustomSpectrumKey;
+import edu.jhuapl.sbmt.model.bennu.spectra.otes.OTES;
+import edu.jhuapl.sbmt.model.bennu.spectra.ovirs.OVIRS;
+import edu.jhuapl.sbmt.model.eros.nis.NIS;
+import edu.jhuapl.sbmt.model.phobos.MEGANE;
+import edu.jhuapl.sbmt.model.ryugu.nirs3.NIRS3;
+import edu.jhuapl.sbmt.spectrum.model.core.SpectrumInstrumentMetadata;
+import edu.jhuapl.sbmt.spectrum.model.core.search.SpectrumSearchSpec;
+import edu.jhuapl.sbmt.spectrum.model.io.SpectrumInstrumentMetadataIO;
+import edu.jhuapl.sbmt.spectrum.model.key.CustomSpectrumKey;
 import edu.jhuapl.sbmt.tools.SbmtRunnable;
 
 /**
@@ -59,18 +67,19 @@ public class SbmtMultiMissionTool
 	{
 		APL_INTERNAL("b1bc7ed"),
 		PUBLIC_RELEASE("3ee38f0"),
+		TEST_APL_INTERNAL("fb404a7"),
+		TEST_PUBLIC_RELEASE("a1a32b4"),
 		HAYABUSA2_DEV("133314b"),
-		HAYABUSA2_STAGE("244425c"),
+//		HAYABUSA2_STAGE("244425c"),
 		HAYABUSA2_DEPLOY("355536d"),
 		OSIRIS_REX("7cd84586"),
-		OSIRIS_REX_STAGE("7cd84587"),
+//		OSIRIS_REX_STAGE("7cd84587"),
 		OSIRIS_REX_DEPLOY("7cd84588"),
 		OSIRIS_REX_MIRROR_DEPLOY("7cd84589"),
 		NH_DEPLOY("8ff86312"),
 		STAGE_APL_INTERNAL("f7e441b"),
-		STAGE_PUBLIC_RELEASE("8cc8e12"),
-		TEST_APL_INTERNAL("fb404a7"),
-		TEST_PUBLIC_RELEASE("a1a32b4");
+		STAGE_PUBLIC_RELEASE("8cc8e12");
+
 		private final String hashedName;
 
 		Mission(String hashedName)
@@ -82,6 +91,16 @@ public class SbmtMultiMissionTool
 		{
 			return hashedName;
 		}
+
+		public static Mission getMissionForName(String name)
+		{
+		    for (Mission msn : values())
+		    {
+		        if (name.equals(msn.hashedName))
+		            return msn;
+		    }
+		    return null;
+		}
 	}
 
 	private static final String OUTPUT_FILE_NAME = "sbmtLogFile.txt";
@@ -91,7 +110,9 @@ public class SbmtMultiMissionTool
 
 	// DO NOT change anything about this without also confirming the script set-released-mission.sh still works correctly!
 	// This field is used during the build process to "hard-wire" a release to point to a specific server.
-	private static final Mission RELEASED_MISSION = null;
+//	private static final Mission RELEASED_MISSION = Mission.APL_INTERNAL;	//for generating the allBodies.json metadata file, for example
+	private static final Mission RELEASED_MISSION = null;	//normal ops
+
 	private static Mission mission = RELEASED_MISSION;
 	private static boolean missionConfigured = false;
 
@@ -109,6 +130,7 @@ public class SbmtMultiMissionTool
 			}
 		}
 
+
 		// Initialize serialization proxies
 
 		// Structures.
@@ -120,9 +142,19 @@ public class SbmtMultiMissionTool
 		// Images.
 		CustomCylindricalImageKey.initializeSerializationProxy();
 		CustomPerspectiveImageKey.initializeSerializationProxy();
-		SpectrumKey.initializeSerializationProxy();
+//		SpectrumKey.initializeSerializationProxy();
 		CustomSpectrumKey.initializeSerializationProxy();
 		DEMKey.initializeSerializationProxy();
+//		BasicSpectrumInstrument.initializeSerializationProxy();
+//		OTESSpectrum.initializeSerializationProxy();
+		SpectrumInstrumentMetadataIO.initializeSerializationProxy();
+		SpectrumInstrumentMetadata.initializeSerializationProxy();
+		SpectrumSearchSpec.initializeSerializationProxy();
+		OTES.initializeSerializationProxy();
+		OVIRS.initializeSerializationProxy();
+		NIS.initializeSerializationProxy();
+		NIRS3.initializeSerializationProxy();
+		MEGANE.initializeSerializationProxy();
 	}
 
 	public static void setEnableAuthentication(boolean enableAuthentication)
@@ -188,32 +220,32 @@ public class SbmtMultiMissionTool
 		case STAGE_APL_INTERNAL:
 		case STAGE_PUBLIC_RELEASE:
 			Configuration.setRootURL("http://sbmt.jhuapl.edu/internal/multi-mission/stage");
-			Configuration.setAppName("sbmt");
+			Configuration.setAppName("sbmt-stage");
 			Configuration.setCacheVersion("2");
 			Configuration.setAppTitle("SBMT");
 			break;
 		case TEST_APL_INTERNAL:
 		case TEST_PUBLIC_RELEASE:
 			Configuration.setRootURL("http://sbmt.jhuapl.edu/internal/multi-mission/test");
-			Configuration.setAppName("sbmt");
+			Configuration.setAppName("sbmt-test");
 			Configuration.setCacheVersion("2");
 			Configuration.setAppTitle("SBMT");
             // Configuration.setDatabaseSuffix("_test");
 			break;
 		case HAYABUSA2_DEV:
-			// Configuration.setRootURL("http://sbmt.jhuapl.edu/internal/sbmt");
-			Configuration.setRootURL("http://sbmt.jhuapl.edu/internal/multi-mission/test");
+//			 Configuration.setRootURL("http://sbmt.jhuapl.edu/internal/sbmt");
+//			Configuration.setRootURL("http://sbmt.jhuapl.edu/internal/multi-mission/test");
 			Configuration.setAppName("sbmthyb2-dev");
 			Configuration.setCacheVersion("");
 			Configuration.setAppTitle("SBMT/Hayabusa2-Dev");
             // Configuration.setDatabaseSuffix("_test");
 			break;
-		case HAYABUSA2_STAGE:
-			Configuration.setRootURL("http://hyb2sbmt.jhuapl.edu/sbmt");
-			Configuration.setAppName("sbmthyb2-stage");
-			Configuration.setCacheVersion("");
-			Configuration.setAppTitle("SBMT/Hayabusa2-Stage");
-			break;
+//		case HAYABUSA2_STAGE:
+//			Configuration.setRootURL("http://hyb2sbmt.jhuapl.edu/sbmt");
+//			Configuration.setAppName("sbmthyb2-stage");
+//			Configuration.setCacheVersion("");
+//			Configuration.setAppTitle("SBMT/Hayabusa2-Stage");
+//			break;
 		case HAYABUSA2_DEPLOY:
 			Configuration.setRootURL("http://hyb2sbmt.u-aizu.ac.jp/sbmt");
 			Configuration.setAppName("sbmthyb2");
@@ -225,24 +257,27 @@ public class SbmtMultiMissionTool
 			Configuration.setAppName("sbmt1orex-dev");
 			Configuration.setCacheVersion("");
 			Configuration.setAppTitle("SBMT/OSIRIS REx-Dev");
+			Colormaps.setDefaultColormapName("Spectral_lowBlue");
 			break;
-		case OSIRIS_REX_STAGE:
-			Configuration.setRootURL("http://orexsbmt.jhuapl.edu/sbmt");
-			Configuration.setAppName("sbmt1orex-stage");
-			Configuration.setCacheVersion("");
-			Configuration.setAppTitle("SBMT/OSIRIS REx-Stage");
-			break;
+//		case OSIRIS_REX_STAGE:
+//			Configuration.setRootURL("http://orexsbmt.jhuapl.edu/sbmt");
+//			Configuration.setAppName("sbmt1orex-stage");
+//			Configuration.setCacheVersion("");
+//			Configuration.setAppTitle("SBMT/OSIRIS REx-Stage");
+//			break;
 		case OSIRIS_REX_MIRROR_DEPLOY:
 			//                Configuration.setRootURL("http://sbmt.jhuapl.edu/sbmt");
 			Configuration.setAppName("sbmt1orex-mirror");
 			Configuration.setCacheVersion("");
 			Configuration.setAppTitle("SBMT/OSIRIS REx APL Mirror");
+            Colormaps.setDefaultColormapName("Spectral_lowBlue");
 			break;
 		case OSIRIS_REX_DEPLOY:
 			Configuration.setRootURL("https://uasbmt.lpl.arizona.edu/sbmt");
 			Configuration.setAppName("sbmt1orex");
 			Configuration.setCacheVersion("");
 			Configuration.setAppTitle("SBMT/OSIRIS REx");
+            Colormaps.setDefaultColormapName("Spectral_lowBlue");
 			break;
 		case NH_DEPLOY:
 			Configuration.setAppName("sbmtnh");
@@ -327,16 +362,16 @@ public class SbmtMultiMissionTool
                 case HAYABUSA2_DEV:
                     splash = new SbmtSplash("resources", "splashLogoHb2Dev.png");
                     break;
-                case HAYABUSA2_STAGE:
-                    splash = new SbmtSplash("resources", "splashLogoHb2Stage.png");
-                    break;
+//                case HAYABUSA2_STAGE:
+//                    splash = new SbmtSplash("resources", "splashLogoHb2Stage.png");
+//                    break;
                 case HAYABUSA2_DEPLOY:
                     splash = new SbmtSplash("resources", "splashLogoHb2.png");
                     break;
                 case OSIRIS_REX:
                 case OSIRIS_REX_DEPLOY:
                 case OSIRIS_REX_MIRROR_DEPLOY:
-                case OSIRIS_REX_STAGE:
+//                case OSIRIS_REX_STAGE:
                     splash = new SbmtSplash("resources", "splashLogoOrex.png");
                     break;
                 default:

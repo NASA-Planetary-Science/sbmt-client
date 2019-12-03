@@ -19,6 +19,8 @@ import javax.swing.JMenu;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 
+import org.apache.commons.io.FilenameUtils;
+
 import vtk.vtkActor;
 import vtk.vtkProp;
 
@@ -692,7 +694,7 @@ public class ImageCubePopupMenu extends PopupMenu
 
                     String defaultFileName = null;
                     if (imageFileName != null)
-                        defaultFileName = imageFileName.substring(0, imageFileName.length()-3) + "INFO";
+                        defaultFileName = imageFileName.substring(0, imageFileName.length() - FilenameUtils.getExtension(imageFileName).length()) + "INFO";
 
                     File file = CustomFileChooser.showSaveDialog(invoker, "Save INFO file as...", defaultFileName);
                     if (file == null)
@@ -702,7 +704,7 @@ public class ImageCubePopupMenu extends PopupMenu
 
                     String filename = file.getAbsolutePath();
 
-                    System.out.println("Exporting INFO file for " + image.getImageName() + " to " + filename);
+//                    System.out.println("Exporting INFO file for " + image.getImageName() + " to " + filename);
 
                     image.saveImageInfo(filename);
                 }

@@ -4,8 +4,6 @@ import java.awt.Color;
 import java.awt.Component;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
 import java.text.DecimalFormat;
 import java.util.HashSet;
 import java.util.List;
@@ -15,7 +13,6 @@ import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
-import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JSpinner;
@@ -27,22 +24,32 @@ import javax.swing.event.ChangeListener;
 import javax.swing.table.TableCellRenderer;
 
 import edu.jhuapl.saavtk.colormap.SigFigNumberFormat;
-import edu.jhuapl.saavtk.gui.ColorCellRenderer;
-import edu.jhuapl.saavtk.gui.GuiUtil;
-import edu.jhuapl.saavtk.gui.IconUtil;
-import edu.jhuapl.saavtk.gui.RadialOffsetChanger;
-import edu.jhuapl.saavtk.gui.dialog.ColorChooser;
 import edu.jhuapl.saavtk.gui.render.Renderer;
+import edu.jhuapl.saavtk.gui.table.TablePopupHandler;
+import edu.jhuapl.saavtk.gui.util.IconUtil;
+import edu.jhuapl.saavtk.gui.util.ToolTipUtil;
 import edu.jhuapl.saavtk.model.ModelManager;
 import edu.jhuapl.saavtk.pick.PickManager;
 import edu.jhuapl.saavtk.pick.PickManagerListener;
 import edu.jhuapl.saavtk.pick.PickUtil;
 import edu.jhuapl.saavtk.pick.Picker;
+import edu.jhuapl.sbmt.client.SmallBodyViewConfig;
+import edu.jhuapl.sbmt.gui.lidar.color.ColorConfigPanel;
+import edu.jhuapl.sbmt.gui.lidar.color.ColorMode;
+import edu.jhuapl.sbmt.gui.lidar.color.ColorProvider;
+import edu.jhuapl.sbmt.gui.lidar.color.ConstColorProvider;
+import edu.jhuapl.sbmt.gui.lidar.color.GroupColorProvider;
+import edu.jhuapl.sbmt.gui.lidar.popup.LidarGuiUtil;
+import edu.jhuapl.sbmt.gui.lidar.popup.LidarPopupMenu;
+import edu.jhuapl.sbmt.gui.table.ColorProviderCellEditor;
+import edu.jhuapl.sbmt.gui.table.ColorProviderCellRenderer;
 import edu.jhuapl.sbmt.gui.table.EphemerisTimeRenderer;
 import edu.jhuapl.sbmt.model.lidar.LidarGeoUtil;
-import edu.jhuapl.sbmt.model.lidar.LidarTrackManager;
 import edu.jhuapl.sbmt.model.lidar.LidarTrack;
+import edu.jhuapl.sbmt.model.lidar.LidarTrackManager;
 
+import glum.gui.GuiUtil;
+import glum.gui.component.GSlider;
 import glum.gui.misc.BooleanCellEditor;
 import glum.gui.misc.BooleanCellRenderer;
 import glum.gui.panel.itemList.ItemHandler;
@@ -70,7 +77,7 @@ import net.miginfocom.swing.MigLayout;
  * @author lopeznr1
  */
 public class LidarTrackPanel extends JPanel
-		implements ActionListener, ChangeListener, PickManagerListener, ItemEventListener
+		implements ActionListener, ChangeListener, ItemEventListener, PickManagerListener
 {
 	// Ref vars
 	private final LidarTrackManager refTrackManager;
@@ -78,50 +85,54 @@ public class LidarTrackPanel extends JPanel
 
 	// State vars
 	private LidarShiftPicker lidarPicker;
+	private double radialOffsetScale;
 
 	// GUI vars
 	private LidarTrackTranslateDialog translateDialog;
 	private LidarSaveDialog saveDialog;
-	private LidarPopupMenu lidarPopupMenu;
 	private ItemListPanel<LidarTrack> lidarILP;
 	private JLabel titleL;
 	private JButton selectAllB, selectInvertB, selectNoneB;
 	private JButton hideB, showB;
 	private JButton removeB, saveB;
+	private ColorConfigPanel<?> colorConfigPanel;
 	private JButton translateB;
 	private JToggleButton dragB;
 
 	private JCheckBox showErrorCB;
 	private JComboBox<ItemGroup> errorModeBox;
 	private JLabel errorModeL, errorValueL;
-
-	private RadialOffsetChanger radialOffsetChanger;
+	private GSlider radialS;
+	private JButton radialResetB;
+	private JCheckBox showSpacecraftCB;
 	private JSpinner pointSizeSpinner;
 
-	public LidarTrackPanel(ModelManager aModelManager, LidarTrackManager aTrackManager, PickManager aPickManager,
-			Renderer aRenderer)
+	/**
+	 * Standard Constructor
+	 */
+	public LidarTrackPanel(LidarTrackManager aTrackManager, ModelManager aModelManager,
+			SmallBodyViewConfig aBodyViewConfig, PickManager aPickManager, Renderer aRenderer)
 	{
 		refTrackManager = aTrackManager;
 		refPickManager = aPickManager;
 
-		lidarPicker = new LidarShiftPicker(aRenderer, aModelManager, refTrackManager);
-
-		lidarPopupMenu = new LidarPopupMenu(refTrackManager, aRenderer);
+		lidarPicker = new LidarShiftPicker(refTrackManager, aRenderer, aModelManager);
+		radialOffsetScale = LidarGeoUtil.getOffsetScale(refTrackManager);
 
 		setLayout(new MigLayout());
 
+		// Popup menu
+		LidarPopupMenu<?> lidarPopupMenu = LidarGuiUtil.formLidarTrackPopupMenu(refTrackManager, aRenderer);
+
 		// Table header
-		selectInvertB = new JButton(IconUtil.loadIcon("resources/icons/itemSelectInvert.png"));
-		selectInvertB.addActionListener(this);
-		selectInvertB.setToolTipText("Invert Selection");
+		selectInvertB = GuiUtil.formButton(this, IconUtil.getSelectInvert());
+		selectInvertB.setToolTipText(ToolTipUtil.getSelectInvert());
 
-		selectNoneB = new JButton(IconUtil.loadIcon("resources/icons/itemSelectNone.png"));
-		selectNoneB.addActionListener(this);
-		selectNoneB.setToolTipText("Clear Selection");
+		selectNoneB = GuiUtil.formButton(this, IconUtil.getSelectNone());
+		selectNoneB.setToolTipText(ToolTipUtil.getSelectNone());
 
-		selectAllB = new JButton(IconUtil.loadIcon("resources/icons/itemSelectAll.png"));
-		selectAllB.addActionListener(this);
-		selectAllB.setToolTipText("Select All");
+		selectAllB = GuiUtil.formButton(this, IconUtil.getSelectAll());
+		selectAllB.setToolTipText(ToolTipUtil.getSelectAll());
 
 		titleL = new JLabel("Tracks: ---");
 		add(titleL, "growx,span,split");
@@ -132,17 +143,18 @@ public class LidarTrackPanel extends JPanel
 		// Table Content
 		QueryComposer<LookUp> tmpComposer = new QueryComposer<>();
 		tmpComposer.addAttribute(LookUp.IsVisible, Boolean.class, "Show", null);
-		tmpComposer.addAttribute(LookUp.Color, Color.class, "Color", null);
+		tmpComposer.addAttribute(LookUp.Color, ColorProvider.class, "Color", null);
 		tmpComposer.addAttribute(LookUp.Name, String.class, "Track", null);
 		tmpComposer.addAttribute(LookUp.NumPoints, Integer.class, "# pts", null);
 		tmpComposer.addAttribute(LookUp.BegTime, Double.class, "Start Time", null);
 		tmpComposer.addAttribute(LookUp.EndTime, Double.class, "End Time", null);
-		tmpComposer.addAttribute(LookUp.Source, Double.class, "Source", null);
+		tmpComposer.addAttribute(LookUp.Source, String.class, "Source", null);
 
 		EphemerisTimeRenderer tmpTimeRenderer = new EphemerisTimeRenderer(false);
 		tmpComposer.setEditor(LookUp.IsVisible, new BooleanCellEditor());
 		tmpComposer.setRenderer(LookUp.IsVisible, new BooleanCellRenderer());
-		tmpComposer.setRenderer(LookUp.Color, new ColorCellRenderer(false));
+		tmpComposer.setEditor(LookUp.Color, new ColorProviderCellEditor<>());
+		tmpComposer.setRenderer(LookUp.Color, new ColorProviderCellRenderer(false));
 		tmpComposer.setRenderer(LookUp.Name, new PrePendRenderer("Trk "));
 		tmpComposer.setRenderer(LookUp.NumPoints, new NumberRenderer("###,###,###", "---"));
 		tmpComposer.setRenderer(LookUp.BegTime, tmpTimeRenderer);
@@ -155,8 +167,8 @@ public class LidarTrackPanel extends JPanel
 
 		JTable lidarTable = lidarILP.getTable();
 		lidarTable.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
+		lidarTable.addMouseListener(new TablePopupHandler(refTrackManager, lidarPopupMenu));
 		add(new JScrollPane(lidarTable), "growx,growy,pushx,pushy,span,wrap");
-		installTrackTableMouseListener(lidarTable);
 
 		// Action buttons: hide / show
 		hideB = GuiUtil.formButton(this, "Hide");
@@ -165,33 +177,41 @@ public class LidarTrackPanel extends JPanel
 		showB.setToolTipText("Show Tracks");
 
 		// Action buttons: drag / translate
-		dragB = new JToggleButton("Drag Tracks");
+		dragB = new JToggleButton("Drag");
 		dragB.addActionListener(this);
-		translateB = new JButton("Translate Tracks");
-		translateB.addActionListener(this);
+		dragB.setToolTipText("Drag Tracks");
+		translateB = GuiUtil.formButton(this, "Translate");
+		translateB.setToolTipText("Translate Tracks");
 
 		// Action buttons: remove / save
-		removeB = new JButton("Remove Tracks");
-		removeB.addActionListener(this);
-		saveB = new JButton("Save Tracks");
-		saveB.addActionListener(this);
-
-		// Row 1: hideB, dragB, removeB
-		add(hideB, "sg g1,span,split");
-		add(dragB, "gapleft 20,sg g2");
-		add(removeB, "gapleft 20,sg g3,wrap");
-
-		// Row 2: showB, translateB, saveB
-		add(showB, "sg g1,span,split");
-		add(translateB, "gapleft 20,sg g2");
-		add(saveB, "gapleft 20,sg g3,wrap");
+		removeB = GuiUtil.formButton(this, "Remove");
+		removeB.setToolTipText("Remove Tracks");
+		saveB = GuiUtil.formButton(this, "Save");
+		saveB.setToolTipText("Save Tracks");
 
 		// Radial offset section
-		radialOffsetChanger = new RadialOffsetChanger();
-		radialOffsetChanger.setModel(refTrackManager);
-		radialOffsetChanger.setOffsetScale(LidarGeoUtil.getOffsetScale(refTrackManager));
+		radialS = new GSlider(this, 30, -15, 15);
+		radialS.setMajorTickSpacing(5);
+		radialS.setMinorTickSpacing(1);
+		radialS.setPaintTicks(true);
+		radialS.setSnapToTicks(true);
+		radialS.setModelValue(0.0);
+		radialResetB = GuiUtil.formButton(this, "Reset");
 
-		add(radialOffsetChanger, "growx,span,wrap");
+		// Show spacecraft checkbox
+		showSpacecraftCB = new JCheckBox("Show spacecraft position");
+		showSpacecraftCB.setSelected(false);
+		showSpacecraftCB.addActionListener(this);
+
+		// Form the left and right sub panels
+		JPanel leftPanel = formLeftPanel();
+		add(leftPanel, "growx,growy,pushx");
+
+		add(GuiUtil.createDivider(), "growy,w 4!");
+
+		colorConfigPanel = new ColorConfigPanel<>(this, refTrackManager, aRenderer);
+		colorConfigPanel.setActiveMode(ColorMode.AutoHue);
+		add(colorConfigPanel, "ax right,ay top,growx,wrap");
 
 		// Point size section
 		JLabel tmpL = new JLabel("Point Size:");
@@ -219,6 +239,7 @@ public class LidarTrackPanel extends JPanel
 		add(errorModeBox, "");
 
 		updateGui();
+		updateErrorUI();
 		configureColumnWidths();
 
 		// Register for events of interest
@@ -226,8 +247,8 @@ public class LidarTrackPanel extends JPanel
 		refTrackManager.addListener(this);
 		refPickManager.addListener(this);
 
-		// TODO: This registration should be done by the refModel
-		refTrackManager.handleDefaultPickerManagement(refPickManager.getDefaultPicker(), aModelManager);
+		// TODO: This registration should be done by the refTrackManager
+		refTrackManager.registerDefaultPickerHandler(refPickManager.getDefaultPicker());
 	}
 
 	@Override
@@ -235,7 +256,7 @@ public class LidarTrackPanel extends JPanel
 	{
 		Object source = aEvent.getSource();
 
-		List<LidarTrack> tmpL = refTrackManager.getSelectedItems();
+		List<LidarTrack> tmpL = refTrackManager.getSelectedItems().asList();
 		if (source == selectAllB)
 			ItemManagerUtil.selectAll(refTrackManager);
 		else if (source == selectNoneB)
@@ -254,6 +275,14 @@ public class LidarTrackPanel extends JPanel
 			doActionDrag();
 		else if (source == saveB)
 			doActionSave();
+		else if (source == colorConfigPanel)
+			doActionColorConfig();
+		else if (source == radialS)
+			doActionRadialOffset();
+		else if (source == radialResetB)
+			doActionRadialReset();
+		else if (source == showSpacecraftCB)
+			refTrackManager.setShowSourcePoints(showSpacecraftCB.isSelected());
 		else if (source == errorModeBox)
 			updateErrorUI();
 		else if (source == showErrorCB)
@@ -268,18 +297,19 @@ public class LidarTrackPanel extends JPanel
 	{
 		if (aEventType == ItemEventType.ItemsChanged)
 		{
-			radialOffsetChanger.setOffset(refTrackManager.getOffset());
+			radialS.setModelValue(refTrackManager.getRadialOffset());
 			configureColumnWidths();
 		}
 		else if (aEventType == ItemEventType.ItemsSelected)
 		{
-			List<LidarTrack> pickL = refTrackManager.getSelectedItems();
+			List<LidarTrack> pickL = refTrackManager.getSelectedItems().asList();
 
 			LidarTrack tmpTrack = null;
 			if (pickL.size() > 0)
 				tmpTrack = pickL.get(pickL.size() - 1);
 
-			lidarILP.scrollToItem(tmpTrack);
+			if (aSource != refTrackManager)
+				lidarILP.scrollToItem(tmpTrack);
 		}
 
 		updateGui();
@@ -296,8 +326,9 @@ public class LidarTrackPanel extends JPanel
 	@Override
 	public void stateChanged(ChangeEvent aEvent)
 	{
-		Number val = (Number) pointSizeSpinner.getValue();
-		refTrackManager.setPointSize(val.intValue());
+		Object source = aEvent.getSource();
+		if (source == pointSizeSpinner)
+			doActionPointSize();
 	}
 
 	/**
@@ -322,7 +353,8 @@ public class LidarTrackPanel extends JPanel
 		String endTimeStr = "9999-88-88T00:00:00.000000";
 		int minW = 30;
 
-		Object[] nomArr = { true, Color.BLACK, trackStr, pointStr, begTimeStr, endTimeStr, sourceStr };
+		ColorProvider blackCP = new ConstColorProvider(Color.BLACK);
+		Object[] nomArr = { true, blackCP, trackStr, pointStr, begTimeStr, endTimeStr, sourceStr };
 		for (int aCol = 0; aCol < nomArr.length; aCol++)
 		{
 			TableCellRenderer tmpRenderer = tmpTable.getCellRenderer(0, aCol);
@@ -330,6 +362,16 @@ public class LidarTrackPanel extends JPanel
 			int tmpW = Math.max(minW, tmpComp.getPreferredSize().width + 1);
 			tmpTable.getColumnModel().getColumn(aCol).setPreferredWidth(tmpW + 10);
 		}
+	}
+
+	/**
+	 * Helper method that handles the color config action
+	 */
+	private void doActionColorConfig()
+	{
+		GroupColorProvider srcGCP = colorConfigPanel.getSourceGroupColorProvider();
+		GroupColorProvider tgtGCP = colorConfigPanel.getTargetGroupColorProvider();
+		refTrackManager.installGroupColorProviders(srcGCP, tgtGCP);
 	}
 
 	/**
@@ -344,6 +386,36 @@ public class LidarTrackPanel extends JPanel
 		refPickManager.setActivePicker(targPicker);
 		if (targPicker == null)
 			refTrackManager.setSelectedPoint(null, null);
+	}
+
+	/**
+	 * Helper method that handles the pointSize action
+	 */
+	private void doActionPointSize()
+	{
+		Number val = (Number) pointSizeSpinner.getValue();
+		refTrackManager.setPointSize(val.intValue());
+	}
+
+	/**
+	 * Helper method that handles the radialOffset action
+	 */
+	private void doActionRadialOffset()
+	{
+		if (radialS.getValueIsAdjusting() == true)
+			return;
+
+		double tmpVal = radialS.getModelValue() * radialOffsetScale;
+		refTrackManager.setRadialOffset(tmpVal);
+	}
+
+	/**
+	 * Helper method that handles the radial reset action
+	 */
+	private void doActionRadialReset()
+	{
+		radialS.setModelValue(0.0);
+		refTrackManager.setRadialOffset(0.0);
 	}
 
 	/**
@@ -369,61 +441,33 @@ public class LidarTrackPanel extends JPanel
 	}
 
 	/**
-	 * Helper method to install the custom listener on the table. This listener
-	 * will allow the user to change the Color associated with the lidar track
-	 * and provide a popup menu.
+	 * Helper method that forms the configuration options that are placed on the
+	 * left side.
 	 */
-	private void installTrackTableMouseListener(JTable aTable)
+	private JPanel formLeftPanel()
 	{
-		aTable.addMouseListener(new MouseAdapter() {
-			@Override
-			public void mouseClicked(MouseEvent aEvent)
-			{
-				// Handle the Color customization
-				int row = aTable.rowAtPoint(aEvent.getPoint());
-				int col = aTable.columnAtPoint(aEvent.getPoint());
-				if (aEvent.getClickCount() == 2 && row >= 0 && col == 1)
-				{
-					LidarTrack tmpTrack = refTrackManager.getTrack(row);
-					Color oldColor = refTrackManager.getColor(tmpTrack);
-					Color tmpColor = ColorChooser.showColorChooser(JOptionPane.getFrameForComponent(aTable), oldColor);
-					if (tmpColor != null)
-						refTrackManager.setColor(tmpTrack, tmpColor);
+		JPanel retPanel = new JPanel(new MigLayout("", "[]", "0[][]"));
 
-					return;
-				}
+		// Row 1: hideB, dragB, removeB
+		retPanel.add(hideB, "sg g1,span,split");
+		retPanel.add(dragB, "gapleft 10,sg g2");
+		retPanel.add(removeB, "gapleft 10,sg g3,wrap");
 
-				maybeShowPopup(aEvent);
-			}
+		// Row 2: showB, translateB, saveB
+		retPanel.add(showB, "sg g1,span,split");
+		retPanel.add(translateB, "gapleft 10,sg g2");
+		retPanel.add(saveB, "gapleft 10,sg g3,wrap");
 
-			@Override
-			public void mousePressed(MouseEvent aEvent)
-			{
-				maybeShowPopup(aEvent);
-			}
+		// Row 3: showSpacecraftCB
+		retPanel.add(showSpacecraftCB, "span,wrap");
 
-			@Override
-			public void mouseReleased(MouseEvent aEvent)
-			{
-				maybeShowPopup(aEvent);
-			}
-		});
-	}
+		// Radial offset section
+		retPanel.add(GuiUtil.createDivider(), "growx,h 4!,span,wrap");
+		retPanel.add(new JLabel("Radial Offset", JLabel.LEFT), "growx,span,wrap 2");
+		retPanel.add(radialS, "growx,pushx,span,split");
+		retPanel.add(radialResetB, "wrap");
 
-	/**
-	 * Helper method to handle the showing of the table popup menu.
-	 */
-	private void maybeShowPopup(MouseEvent aEvent)
-	{
-		// Bail if this is not a valid popup action
-		if (aEvent.isPopupTrigger() == false)
-			return;
-
-		// TODO: Is this necessary?
-		// Force the menu to be hidden by default
-		lidarPopupMenu.setVisible(false);
-
-		lidarPopupMenu.showPopup(aEvent, null, 0, null);
+		return retPanel;
 	}
 
 	/**
@@ -493,8 +537,8 @@ public class LidarTrackPanel extends JPanel
 		for (LidarTrack aTrack : refTrackManager.getAllItems())
 			cntFullPoints += aTrack.getNumberOfPoints();
 
-		List<LidarTrack> pickL = refTrackManager.getSelectedItems();
-		int cntPickItems = pickL.size();
+		Set<LidarTrack> pickS = refTrackManager.getSelectedItems();
+		int cntPickItems = pickS.size();
 		isEnabled = cntPickItems > 0;
 		selectNoneB.setEnabled(isEnabled);
 
@@ -508,7 +552,7 @@ public class LidarTrackPanel extends JPanel
 
 		int cntPickPoints = 0;
 		int cntShowItems = 0;
-		for (LidarTrack aTrack : pickL)
+		for (LidarTrack aTrack : pickS)
 		{
 			cntPickPoints += aTrack.getNumberOfPoints();
 			if (refTrackManager.getIsVisible(aTrack) == true)
@@ -520,6 +564,9 @@ public class LidarTrackPanel extends JPanel
 
 		isEnabled = cntPickItems > 0 && cntShowItems > 0;
 		hideB.setEnabled(isEnabled);
+
+		isEnabled = refTrackManager.getRadialOffset() != 0;
+		radialResetB.setEnabled(isEnabled);
 
 		// Table title
 		DecimalFormat cntFormat = new DecimalFormat("#,###");

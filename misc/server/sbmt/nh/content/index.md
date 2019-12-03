@@ -13,11 +13,14 @@ Users new to the SBMT or those wanting to learn more about its functionality can
 To install the SBMT, download the file appropriate for your operating system, navigate to the sbmt folder, and run the "runsbmt" program.
 
 
-   -  Mac: [VERSIONXXXXXX-macosx-x64.zip](releases/VERSIONXXXXXX-macosx-x64.zip)
+   -  macOS (10.15 Catalina or later): [VERSIONXXXXXX.pkg](releases/VERSIONXXXXXX.pkg)
+   -  macOS (10.14 Mojave or Earlier): [VERSIONXXXXXX-macosx-x64.zip](releases/VERSIONXXXXXX-macosx-x64.zip)   
    -  Linux: [VERSIONXXXXXX-linux-x64.zip](releases/VERSIONXXXXXX-linux-x64.zip)
    -  Windows: [VERSIONXXXXXX-windows-x64.zip](releases/VERSIONXXXXXX-windows-x64.zip)
 
-NOTE: On a Mac, built in Apple security measures may cause you to see an error message the first time you try to run a downloaded version of the SBMT: "runsbmt can't be opened because the identity of the developer cannot be confirmed." Rest assured that the SBMT is safe to run. To open the SBMT for the first time, right-click on the "runsbmt" icon, select "open", and then click the "open" button. The SBMT should then open without further problems, and this additional step will not be necessary until you download a new version of the tool.
+NOTE: Starting with the 0.7.7 release Mac OS Catalina (10.15) is supported. The install process for the software for all mac users has changed to accommodate this support: 1) Right click the downloaded .pkg and select "Open", select open again when it warns about not being able to scan for malicious software, and follow instructions in the install wizard. 2) SBMT will now appear as an application in the /Applications/SBMT folder. The functionality of the tool should be unchanged. Please contact sbmt@jhuapl.edu if you encounter installation issues.
+
+NOTE: On a Mac, built in Apple security measures may cause you to see an error message the first time you try to run a downloaded version of the SBMT: "SBMT.app can't be opened because the identity of the developer cannot be confirmed." Rest assured that the SBMT is safe to run. To open the SBMT for the first time, right-click on the "SBMT" icon in your /Applications/SBMT folder, select "open". The SBMT should then open without further problems, and this additional step will not be necessary until you download a new version of the tool.
 
 ## System requirements
 * Java 8 1.8.0_101 or above

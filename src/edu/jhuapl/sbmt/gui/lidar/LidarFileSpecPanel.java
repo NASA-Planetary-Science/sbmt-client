@@ -1,6 +1,5 @@
 package edu.jhuapl.sbmt.gui.lidar;
 
-import java.awt.Color;
 import java.awt.Component;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -8,6 +7,7 @@ import java.io.File;
 import java.io.IOException;
 import java.text.DecimalFormat;
 import java.util.List;
+import java.util.Set;
 
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
@@ -17,20 +17,31 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 
-import edu.jhuapl.saavtk.gui.ColorCellRenderer;
-import edu.jhuapl.saavtk.gui.GuiUtil;
-import edu.jhuapl.saavtk.gui.IconUtil;
-import edu.jhuapl.saavtk.gui.RadialOffsetChanger;
 import edu.jhuapl.saavtk.gui.dialog.DirectoryChooser;
+import edu.jhuapl.saavtk.gui.render.Renderer;
+import edu.jhuapl.saavtk.gui.table.TablePopupHandler;
+import edu.jhuapl.saavtk.gui.util.IconUtil;
+import edu.jhuapl.saavtk.gui.util.ToolTipUtil;
 import edu.jhuapl.saavtk.util.FileCache;
 import edu.jhuapl.saavtk.util.FileCache.UnauthorizedAccessException;
 import edu.jhuapl.saavtk.util.FileUtil;
 import edu.jhuapl.sbmt.client.SmallBodyViewConfig;
+import edu.jhuapl.sbmt.gui.lidar.color.ColorConfigPanel;
+import edu.jhuapl.sbmt.gui.lidar.color.ColorMode;
+import edu.jhuapl.sbmt.gui.lidar.color.ColorProvider;
+import edu.jhuapl.sbmt.gui.lidar.color.GroupColorProvider;
+import edu.jhuapl.sbmt.gui.lidar.popup.LidarGuiUtil;
+import edu.jhuapl.sbmt.gui.lidar.popup.LidarPopupMenu;
+import edu.jhuapl.sbmt.gui.table.ColorProviderCellEditor;
+import edu.jhuapl.sbmt.gui.table.ColorProviderCellRenderer;
 import edu.jhuapl.sbmt.gui.table.EphemerisTimeRenderer;
 import edu.jhuapl.sbmt.model.lidar.LidarBrowseUtil;
 import edu.jhuapl.sbmt.model.lidar.LidarFileSpec;
+import edu.jhuapl.sbmt.model.lidar.LidarFileSpecLoadUtil;
 import edu.jhuapl.sbmt.model.lidar.LidarFileSpecManager;
 
+import glum.gui.GuiUtil;
+import glum.gui.component.GSlider;
 import glum.gui.misc.BooleanCellEditor;
 import glum.gui.misc.BooleanCellRenderer;
 import glum.gui.panel.itemList.ItemHandler;
@@ -63,6 +74,7 @@ public class LidarFileSpecPanel extends JPanel implements ActionListener, ItemEv
 	private LidarFileSpecManager refManager;
 
 	// State vars
+	private double radialOffsetScale;
 	private String refDataSourceName;
 	private String failFetchMsg;
 
@@ -72,32 +84,42 @@ public class LidarFileSpecPanel extends JPanel implements ActionListener, ItemEv
 	private JButton selectAllB, selectInvertB, selectNoneB;
 	private JButton hideB, showB;
 	private JButton saveB;
+	private ColorConfigPanel<?> colorConfigPanel;
 	private PercentIntervalChanger timeIntervalChanger;
-	private RadialOffsetChanger radialOffsetChanger;
+	private GSlider radialS;
+	private JButton radialResetB;
 	private JCheckBox showSpacecraftCB;
 
-	public LidarFileSpecPanel(LidarFileSpecManager aLidarModel, SmallBodyViewConfig aBodyViewConfig,
-			String aDataSourceName)
+	/**
+	 * Standard Constructor
+	 */
+	public LidarFileSpecPanel(LidarFileSpecManager aLidarManager, SmallBodyViewConfig aBodyViewConfig,
+			Renderer aRenderer, String aDataSourceName)
 	{
-		refManager = aLidarModel;
+		refManager = aLidarManager;
+
+		// TODO: Note the custom radial offset logic for Hayabusa
+		radialOffsetScale = aBodyViewConfig.lidarOffsetScale;
+		if (LidarFileSpecLoadUtil.isHayabusaData(aBodyViewConfig) == true)
+			radialOffsetScale *= 10;
 
 		refDataSourceName = aDataSourceName;
 		failFetchMsg = null;
 
 		setLayout(new MigLayout());
 
+		// Popup menu
+		LidarPopupMenu<?> lidarPopupMenu = LidarGuiUtil.formLidarFileSpecPopupMenu(refManager, this);
+
 		// Table header
-		selectInvertB = new JButton(IconUtil.loadIcon("resources/icons/itemSelectInvert.png"));
-		selectInvertB.addActionListener(this);
-		selectInvertB.setToolTipText("Invert Selection");
+		selectInvertB = GuiUtil.formButton(this, IconUtil.getSelectInvert());
+		selectInvertB.setToolTipText(ToolTipUtil.getSelectInvert());
 
-		selectNoneB = new JButton(IconUtil.loadIcon("resources/icons/itemSelectNone.png"));
-		selectNoneB.addActionListener(this);
-		selectNoneB.setToolTipText("Clear Selection");
+		selectNoneB = GuiUtil.formButton(this, IconUtil.getSelectNone());
+		selectNoneB.setToolTipText(ToolTipUtil.getSelectNone());
 
-		selectAllB = new JButton(IconUtil.loadIcon("resources/icons/itemSelectAll.png"));
-		selectAllB.addActionListener(this);
-		selectAllB.setToolTipText("Select All");
+		selectAllB = GuiUtil.formButton(this, IconUtil.getSelectAll());
+		selectAllB.setToolTipText(ToolTipUtil.getSelectAll());
 
 		titleL = new JLabel("Tracks: ---");
 		add(titleL, "growx,span,split");
@@ -112,8 +134,8 @@ public class LidarFileSpecPanel extends JPanel implements ActionListener, ItemEv
 			timeMaxStr = "2019-08-08T08:08:08.080808";
 
 		QueryComposer<LookUp> tmpComposer = new QueryComposer<>();
-		tmpComposer.addAttribute(LookUp.IsVisible, Boolean.class, "Show", 30);
-		tmpComposer.addAttribute(LookUp.Color, Color.class, "Color", 30);
+		tmpComposer.addAttribute(LookUp.IsVisible, Boolean.class, "Show", 50);
+		tmpComposer.addAttribute(LookUp.Color, ColorProvider.class, "Color", 50);
 		tmpComposer.addAttribute(LookUp.NumPoints, Integer.class, "# pts", "987,");
 		tmpComposer.addAttribute(LookUp.Name, String.class, "Name", null);
 		tmpComposer.addAttribute(LookUp.BegTime, Double.class, "Start Time", timeMaxStr);
@@ -124,7 +146,8 @@ public class LidarFileSpecPanel extends JPanel implements ActionListener, ItemEv
 		EphemerisTimeRenderer tmpTimeRenderer = new EphemerisTimeRenderer(isShortMode);
 		tmpComposer.setEditor(LookUp.IsVisible, new BooleanCellEditor());
 		tmpComposer.setRenderer(LookUp.IsVisible, new BooleanCellRenderer());
-		tmpComposer.setRenderer(LookUp.Color, new ColorCellRenderer(false));
+		tmpComposer.setEditor(LookUp.Color, new ColorProviderCellEditor<>());
+		tmpComposer.setRenderer(LookUp.Color, new ColorProviderCellRenderer(false));
 		tmpComposer.setRenderer(LookUp.NumPoints, new NumberRenderer("###,###,###", "---"));
 		tmpComposer.setRenderer(LookUp.BegTime, tmpTimeRenderer);
 		tmpComposer.setRenderer(LookUp.EndTime, tmpTimeRenderer);
@@ -136,39 +159,44 @@ public class LidarFileSpecPanel extends JPanel implements ActionListener, ItemEv
 
 		JTable lidarTable = lidarILP.getTable();
 		lidarTable.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
-		add(new JScrollPane(lidarTable), "growx,growy,pushx,pushy,span,wrap");
+		lidarTable.addMouseListener(new TablePopupHandler(refManager, lidarPopupMenu));
+		add(new JScrollPane(lidarTable), "growx,growy,pushy,span,wrap");
 
 		// Action buttons: hide / save / show
 		hideB = GuiUtil.formButton(this, "Hide");
 		hideB.setToolTipText("Hide Items");
-		saveB = new JButton("Save Files");
-		saveB.addActionListener(this);
 		showB = GuiUtil.formButton(this, "Show");
 		showB.setToolTipText("Show Items");
+		saveB = GuiUtil.formButton(this, "Save Files");
+
+		// Radial offset section
+		radialS = new GSlider(this, 30, -15, 15);
+		radialS.setMajorTickSpacing(5);
+		radialS.setMinorTickSpacing(1);
+		radialS.setPaintTicks(true);
+		radialS.setSnapToTicks(true);
+		radialS.setModelValue(0.0);
+		radialResetB = GuiUtil.formButton(this, "Reset");
 
 		// Show spacecraft checkbox
 		showSpacecraftCB = new JCheckBox("Show spacecraft position");
 		showSpacecraftCB.setSelected(true);
 		showSpacecraftCB.addActionListener(this);
 
-		// Row 1: hideB, showSpacecraftCB
-		add(hideB, "sg g1,span,split");
-		add(showSpacecraftCB, "gapleft 20,wrap");
+		// Form the left, right and bottom sides
+		JPanel leftPanel = formLeftPanel();
+		add(leftPanel, "growx,growy,pushx");
 
-		// Row 2: showB, saveB
-		add(showB, "sg g1,span,split");
-		add(saveB, "gapleft 20,sg g2,wrap");
+		add(GuiUtil.createDivider(), "growy,w 4!");
+
+		colorConfigPanel = new ColorConfigPanel<>(this, refManager, aRenderer);
+		colorConfigPanel.setActiveMode(ColorMode.Simple);
+		add(colorConfigPanel, "ax right,ay top,growx,wrap");
 
 		// Displayed lidar time interval
 		timeIntervalChanger = new PercentIntervalChanger("Displayed Lidar Data");
 		timeIntervalChanger.addActionListener(this);
-		add(timeIntervalChanger, "growx,span,wrap 0");
-
-		// Radial offset section
-		radialOffsetChanger = new RadialOffsetChanger();
-		radialOffsetChanger.setModel(refManager);
-		radialOffsetChanger.setOffsetScale(aBodyViewConfig.lidarOffsetScale);
-		add(radialOffsetChanger, "growx,span,wrap 0");
+		add(timeIntervalChanger, "growx,spanx,wrap 0");
 
 		// Populate the table with the initialize data source
 		populate(aBodyViewConfig, aDataSourceName);
@@ -185,17 +213,23 @@ public class LidarFileSpecPanel extends JPanel implements ActionListener, ItemEv
 	 */
 	public void populate(SmallBodyViewConfig aBodyViewConfig, String aDataSourceName)
 	{
-		String browseFileList = aBodyViewConfig.lidarBrowseDataSourceMap.get(aDataSourceName);
+		String browseFileList = null;
+		if (aBodyViewConfig.lidarBrowseWithPointsDataSourceMap.get(aDataSourceName) != null)
+		{
+			browseFileList = aBodyViewConfig.lidarBrowseWithPointsDataSourceMap.get(aDataSourceName);
+		}
+		else
+			browseFileList = aBodyViewConfig.lidarBrowseDataSourceMap.get(aDataSourceName);
 
 		try
 		{
-			FileCache.isFileGettable(aBodyViewConfig.lidarBrowseFileListResourcePath);
+//			FileCache.isFileGettable(aBodyViewConfig.lidarBrowseFileListResourcePath);
 
 			List<LidarFileSpec> tmpL;
 			if (aDataSourceName == null)
 				tmpL = LidarBrowseUtil.loadLidarFileSpecListFor(aBodyViewConfig);
 			else
-				tmpL = LidarBrowseUtil.loadLidarFileSpecList(browseFileList);
+				tmpL = LidarBrowseUtil.loadCatalog(browseFileList);
 
 			refManager.setAllItems(tmpL);
 
@@ -217,7 +251,7 @@ public class LidarFileSpecPanel extends JPanel implements ActionListener, ItemEv
 	{
 		Object source = aEvent.getSource();
 
-		List<LidarFileSpec> tmpL = refManager.getSelectedItems();
+		List<LidarFileSpec> tmpL = refManager.getSelectedItems().asList();
 		if (source == selectAllB)
 			ItemManagerUtil.selectAll(refManager);
 		else if (source == selectNoneB)
@@ -230,10 +264,16 @@ public class LidarFileSpecPanel extends JPanel implements ActionListener, ItemEv
 			refManager.setIsVisible(tmpL, true);
 		else if (source == saveB)
 			doActionSave();
+		else if (source == colorConfigPanel)
+			doActionColorConfig();
+		else if (source == radialS)
+			doActionRadialOffset();
+		else if (source == radialResetB)
+			doActionRadialReset();
 		else if (source == timeIntervalChanger)
 			refManager.setPercentageShown(timeIntervalChanger.getLowValue(), timeIntervalChanger.getHighValue());
 		else if (source == showSpacecraftCB)
-			refManager.setShowSpacecraftPosition(showSpacecraftCB.isSelected());
+			refManager.setShowSourcePoints(showSpacecraftCB.isSelected());
 
 		updateGui();
 	}
@@ -245,15 +285,46 @@ public class LidarFileSpecPanel extends JPanel implements ActionListener, ItemEv
 	}
 
 	/**
+	 * Helper method that handles the color config action
+	 */
+	private void doActionColorConfig()
+	{
+		GroupColorProvider srcGCP = colorConfigPanel.getSourceGroupColorProvider();
+		GroupColorProvider tgtGCP = colorConfigPanel.getTargetGroupColorProvider();
+		refManager.installGroupColorProviders(srcGCP, tgtGCP);
+	}
+
+	/**
+	 * Helper method that handles the radialOffset action
+	 */
+	private void doActionRadialOffset()
+	{
+		if (radialS.getValueIsAdjusting() == true)
+			return;
+
+		double tmpVal = radialS.getModelValue() * radialOffsetScale;
+		refManager.setRadialOffset(tmpVal);
+	}
+
+	/**
+	 * Helper method that handles the radial reset action
+	 */
+	private void doActionRadialReset()
+	{
+		radialS.setModelValue(0.0);
+		refManager.setRadialOffset(0.0);
+	}
+
+	/**
 	 * Helper method that handles the save action.
 	 */
 	private void doActionSave()
 	{
 		Component rootComp = JOptionPane.getFrameForComponent(this);
-		List<LidarFileSpec> workL = refManager.getSelectedItems();
+		Set<LidarFileSpec> workS = refManager.getSelectedItems();
 
 		// Prompt the user for the save folder
-		String title = "Specify the folder to save " + workL.size() + " lidar files";
+		String title = "Specify the folder to save " + workS.size() + " lidar files";
 		File targPath = DirectoryChooser.showOpenDialog(rootComp, title);
 		if (targPath == null)
 			return;
@@ -263,7 +334,7 @@ public class LidarFileSpecPanel extends JPanel implements ActionListener, ItemEv
 		int passCnt = 0;
 		try
 		{
-			for (LidarFileSpec aFileSpec : workL)
+			for (LidarFileSpec aFileSpec : workS)
 			{
 				workFileSpec = aFileSpec;
 				File srcFile = FileCache.getFileFromServer(aFileSpec.getPath());
@@ -274,11 +345,38 @@ public class LidarFileSpecPanel extends JPanel implements ActionListener, ItemEv
 		}
 		catch (Exception aExp)
 		{
-			String errMsg = "Failed to save " + (workL.size() - passCnt) + "files. Failed on lidar file: ";
+			String errMsg = "Failed to save " + (workS.size() - passCnt) + "files. Failed on lidar file: ";
 			errMsg += workFileSpec.getName();
 			JOptionPane.showMessageDialog(rootComp, errMsg, "Error Saving Lidar Files", JOptionPane.ERROR_MESSAGE);
 			aExp.printStackTrace();
 		}
+	}
+
+	/**
+	 * Helper method that forms the configuration options that are placed on the
+	 * left side.
+	 */
+	private JPanel formLeftPanel()
+	{
+		JPanel retPanel = new JPanel(new MigLayout("", "[]", "0[][]"));
+
+		// Row 1: hideB
+		retPanel.add(hideB, "sg g1,wrap");
+
+		// Row 2: showB, saveB
+		retPanel.add(showB, "sg g1,span,split");
+		retPanel.add(saveB, "gapleft 10,sg g2,wrap");
+
+		// Row 3: showSpacecraftCB
+		retPanel.add(showSpacecraftCB, "span,wrap");
+
+		// Radial offset section
+		retPanel.add(GuiUtil.createDivider(), "growx,h 4!,span,wrap");
+		retPanel.add(new JLabel("Radial Offset", JLabel.LEFT), "growx,span,wrap 2");
+		retPanel.add(radialS, "growx,pushx,span,split");
+		retPanel.add(radialResetB, "wrap");
+
+		return retPanel;
 	}
 
 	/**
@@ -291,8 +389,8 @@ public class LidarFileSpecPanel extends JPanel implements ActionListener, ItemEv
 		boolean isEnabled = cntFullItems > 0;
 		selectInvertB.setEnabled(isEnabled);
 
-		List<LidarFileSpec> pickL = refManager.getSelectedItems();
-		int cntPickItems = pickL.size();
+		Set<LidarFileSpec> pickS = refManager.getSelectedItems();
+		int cntPickItems = pickS.size();
 		isEnabled = cntPickItems > 0;
 		selectNoneB.setEnabled(isEnabled);
 
@@ -308,7 +406,7 @@ public class LidarFileSpecPanel extends JPanel implements ActionListener, ItemEv
 
 		int cntShowItems = 0;
 		int cntPickPoints = 0;
-		for (LidarFileSpec aItem : pickL)
+		for (LidarFileSpec aItem : pickS)
 		{
 			if (refManager.getIsVisible(aItem) == true)
 				cntShowItems++;
@@ -321,6 +419,9 @@ public class LidarFileSpecPanel extends JPanel implements ActionListener, ItemEv
 
 		isEnabled = cntPickItems > 0 && cntShowItems > 0;
 		hideB.setEnabled(isEnabled);
+
+		isEnabled = refManager.getRadialOffset() != 0;
+		radialResetB.setEnabled(isEnabled);
 
 		String extraTag = ": ";
 		if (refDataSourceName != null)

@@ -175,7 +175,7 @@ public class ImageSearchModel implements Controller.Model, MetadataManager
         images.addImage(key);
     }
 
-    public void loadImages(String name)
+    public void loadImage(String name)
     {
 
         List<ImageKeyInterface> keys = createImageKeys(name, imageSourceOfLastQuery, instrument);
@@ -206,7 +206,7 @@ public class ImageSearchModel implements Controller.Model, MetadataManager
         images.removeImage(key);
     }
 
-    public void unloadImages(String name)
+    public void unloadImage(String name)
     {
 
         List<ImageKeyInterface> keys = createImageKeys(name, imageSourceOfLastQuery, instrument);
@@ -502,9 +502,9 @@ public class ImageSearchModel implements Controller.Model, MetadataManager
         TreeSet<Integer> cubeList = null;
         AbstractEllipsePolygonModel selectionModel = (AbstractEllipsePolygonModel)getModelManager().getModel(ModelNames.CIRCLE_SELECTION);
         SmallBodyModel smallBodyModel = (SmallBodyModel)getModelManager().getModel(ModelNames.SMALL_BODY);
-        if (selectionModel.getNumberOfStructures() > 0)
+        if (selectionModel.getNumItems() > 0)
         {
-            EllipsePolygon region = (EllipsePolygon)selectionModel.getStructure(0);
+            EllipsePolygon region = selectionModel.getStructure(0);
 
             // Always use the lowest resolution model for getting the intersection cubes list.
             // Therefore, if the selection region was created using a higher resolution model,
@@ -512,12 +512,12 @@ public class ImageSearchModel implements Controller.Model, MetadataManager
             if (smallBodyModel.getModelResolution() > 0)
             {
                 vtkPolyData interiorPoly = new vtkPolyData();
-                smallBodyModel.drawRegularPolygonLowRes(region.getCenter(), region.radius, region.numberOfSides, interiorPoly, null);
+                smallBodyModel.drawRegularPolygonLowRes(region.getCenter(), region.getRadius(), region.getNumberOfSides(), interiorPoly, null);
                 cubeList = smallBodyModel.getIntersectingCubes(interiorPoly);
             }
             else
             {
-                cubeList = smallBodyModel.getIntersectingCubes(region.interiorPolyData);
+                cubeList = smallBodyModel.getIntersectingCubes(region.getVtkInteriorPolyData());
             }
         }
 
@@ -1533,7 +1533,7 @@ public class ImageSearchModel implements Controller.Model, MetadataManager
         for (String name : showing.keySet())
         {
             String fullName = instrument.getSearchQuery().getDataPath() + "/" + name;
-            loadImages(fullName);
+            loadImage(fullName);
         }
 
         for (Image image : imageCollection.getImages())

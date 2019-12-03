@@ -24,4 +24,13 @@ public enum ShapeModelPopulation
     {
         return str;
     }
+
+    public static ShapeModelPopulation valueFor(String desc)
+    {
+    	for (ShapeModelPopulation type : values())
+    	{
+    		if (type.toString().equals(desc)) return type;
+    	}
+    	return null;
+    }
 }

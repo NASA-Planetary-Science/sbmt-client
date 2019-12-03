@@ -12,12 +12,13 @@ import com.google.common.collect.Maps;
 import edu.jhuapl.saavtk.config.ViewConfig;
 import edu.jhuapl.saavtk.model.ShapeModelType;
 import edu.jhuapl.saavtk.util.SafeURLPaths;
-import edu.jhuapl.sbmt.model.bennu.otes.SpectraHierarchicalSearchSpecification;
 import edu.jhuapl.sbmt.model.image.ImageKeyInterface;
 import edu.jhuapl.sbmt.model.image.ImagingInstrument;
 import edu.jhuapl.sbmt.model.image.Instrument;
 import edu.jhuapl.sbmt.model.phobos.HierarchicalSearchSpecification;
-import edu.jhuapl.sbmt.model.spectrum.instruments.BasicSpectrumInstrument;
+import edu.jhuapl.sbmt.spectrum.model.core.BasicSpectrumInstrument;
+import edu.jhuapl.sbmt.spectrum.model.io.SpectrumInstrumentMetadataIO;
+import edu.jhuapl.sbmt.tools.DBRunInfo;
 
 
 /**
@@ -36,13 +37,16 @@ public abstract class BodyViewConfig extends ViewConfig
     public double density = 0.0; // in units g/cm^3
     public double rotationRate = 0.0; // in units radians/sec
 
+	public boolean hasFlybyData; // for flyby path data
+	public boolean hasStateHistory; // for bodies with state history tabs
+
     public boolean hasColoringData = true;
     public boolean hasImageMap = false;
 
     public boolean hasMapmaker = false;
     public boolean hasRemoteMapmaker = false;
-    public double bodyDensity = 0.0;
-    public double bodyRotationRate = 0.0;
+//    public double bodyDensity = 0.0;
+//    public double bodyRotationRate = 0.0;
     public double bodyReferencePotential = 0.0;
     public String bodyLowestResModelName = "";
 
@@ -59,10 +63,10 @@ public abstract class BodyViewConfig extends ViewConfig
     public String[] imageSearchUserDefinedCheckBoxesNames = new String[] {};
     public double imageSearchDefaultMaxSpacecraftDistance;
     public double imageSearchDefaultMaxResolution;
-    public boolean hasHierarchicalImageSearch;
-    public boolean hasHierarchicalSpectraSearch;
+    public boolean hasHierarchicalImageSearch = false;
+    public boolean hasHierarchicalSpectraSearch = false;
     public HierarchicalSearchSpecification hierarchicalImageSearchSpecification;
-    public SpectraHierarchicalSearchSpecification<?> hierarchicalSpectraSearchSpecification;
+    public SpectrumInstrumentMetadataIO hierarchicalSpectraSearchSpecification;
     public String spectrumMetadataFile;
 
     public boolean hasHypertreeBasedSpectraSearch=false;
@@ -72,7 +76,10 @@ public abstract class BodyViewConfig extends ViewConfig
     // if hasLidarData is true, the following must be filled in
     public Map<String, String> lidarSearchDataSourceMap=Maps.newHashMap();
     public Map<String, String> lidarBrowseDataSourceMap=Maps.newHashMap();    // overrides lidarBrowseFileListResourcePath for OLA
+    public Map<String, String> lidarBrowseWithPointsDataSourceMap=Maps.newHashMap();
     public Map<String, ArrayList<Date>> lidarSearchDataSourceTimeMap = Maps.newHashMap();
+	public Map<String, ArrayList<Date>> orexSearchTimeMap = Maps.newHashMap();
+
 
     // Required if hasLidarData is true:
     public String lidarBrowseOrigPathRegex; // regular expression to match path prefix from database, which may not be current path. May be null to skip regex.
@@ -103,6 +110,11 @@ public abstract class BodyViewConfig extends ViewConfig
     public boolean hasLidarData = false;
     public Date lidarSearchDefaultStartDate;
     public Date lidarSearchDefaultEndDate;
+
+    //default configs
+    public SbmtMultiMissionTool.Mission[] presentInMissions;
+    public SbmtMultiMissionTool.Mission[] defaultForMissions;
+
 
     //DTMs
     public Map<String, String> dtmBrowseDataSourceMap = Maps.newHashMap();
@@ -139,7 +151,9 @@ public abstract class BodyViewConfig extends ViewConfig
     public ImagingInstrument[] imagingInstruments = {};
     public Instrument lidarInstrumentName = Instrument.LIDAR;
 
-    public BasicSpectrumInstrument[] spectralInstruments = {};
+    public List<BasicSpectrumInstrument> spectralInstruments = new ArrayList<BasicSpectrumInstrument>();
+
+    public DBRunInfo[] databaseRunInfos = {};
 
     protected BodyViewConfig(Iterable<String> resolutionLabels, Iterable<Integer> resolutionNumberElements)
     {
@@ -279,6 +293,7 @@ public abstract class BodyViewConfig extends ViewConfig
             c.lidarSearchDefaultEndDate = (Date)this.lidarSearchDefaultEndDate.clone();
             c.lidarSearchDataSourceMap = new LinkedHashMap<>(this.lidarSearchDataSourceMap);
             c.lidarBrowseDataSourceMap = new LinkedHashMap<>(this.lidarBrowseDataSourceMap);
+            c.lidarBrowseWithPointsDataSourceMap = new LinkedHashMap<>(this.lidarBrowseWithPointsDataSourceMap);
             c.lidarBrowseXYZIndices = this.lidarBrowseXYZIndices.clone();
             c.lidarBrowseSpacecraftIndices = this.lidarBrowseSpacecraftIndices.clone();
             c.lidarBrowseIsLidarInSphericalCoordinates = this.lidarBrowseIsLidarInSphericalCoordinates;
@@ -388,10 +403,526 @@ public abstract class BodyViewConfig extends ViewConfig
         return SafeURLPaths.instance().getString(firstSegment, segments);
     }
 
+    public boolean hasColoringData()
+	{
+		return hasColoringData;
+	}
+
     public static void main(String[] args)
     {
         System.out.println("serverPath(\"\", \"\") is \"" + serverPath("", "") + "\"");
         System.out.println("serverPath(\"http://sbmt.jhuapl.edu/sbmt\", \"\", \"\") is \"" + serverPath("http://sbmt.jhuapl.edu/sbmt", "", "") + "\"");
         System.out.println("serverPath(\"file://sbmt.jhuapl.edu/sbmt\", \"\", \"filename.txt\") is \"" + serverPath("file://sbmt.jhuapl.edu/sbmt", "", "filename.txt") + "\"");
     }
+
+    public String[] getImageSearchFilterNames()
+	{
+		return imageSearchFilterNames;
+	}
+
+
+	public String[] getImageSearchUserDefinedCheckBoxesNames()
+	{
+		return imageSearchUserDefinedCheckBoxesNames;
+	}
+
+
+	public boolean hasHierarchicalImageSearch()
+	{
+		return hasHierarchicalImageSearch;
+	}
+
+	public void setShapeModelFileNames(String[] shapeModelFileNames)
+	{
+		this.shapeModelFileNames = shapeModelFileNames;
+	}
+
+	@Override
+	public int hashCode()
+	{
+		final int prime = 31;
+		int result = super.hashCode();
+		long temp;
+		temp = Double.doubleToLongBits(density);
+		result = prime * result + (int) (temp ^ (temp >>> 32));
+		result = prime * result + ((bodyLowestResModelName == null) ? 0 : bodyLowestResModelName.hashCode());
+		temp = Double.doubleToLongBits(bodyReferencePotential);
+		result = prime * result + (int) (temp ^ (temp >>> 32));
+		result = prime * result + ((dataUsed == null) ? 0 : dataUsed.hashCode());
+		result = prime * result + Arrays.hashCode(databaseRunInfos);
+		result = prime * result + Arrays.hashCode(defaultForMissions);
+		result = prime * result + ((dtmBrowseDataSourceMap == null) ? 0 : dtmBrowseDataSourceMap.hashCode());
+		result = prime * result + ((dtmSearchDataSourceMap == null) ? 0 : dtmSearchDataSourceMap.hashCode());
+		result = prime * result + (hasBigmap ? 1231 : 1237);
+		result = prime * result + (hasColoringData ? 1231 : 1237);
+		result = prime * result + (hasFlybyData ? 1231 : 1237);
+		result = prime * result + (hasHierarchicalImageSearch ? 1231 : 1237);
+		result = prime * result + (hasHierarchicalSpectraSearch ? 1231 : 1237);
+		result = prime * result + (hasHypertreeBasedLidarSearch ? 1231 : 1237);
+		result = prime * result + (hasHypertreeBasedSpectraSearch ? 1231 : 1237);
+		result = prime * result + (hasImageMap ? 1231 : 1237);
+		result = prime * result + (hasLidarData ? 1231 : 1237);
+		result = prime * result + (hasLineamentData ? 1231 : 1237);
+		result = prime * result + (hasMapmaker ? 1231 : 1237);
+		result = prime * result + (hasRemoteMapmaker ? 1231 : 1237);
+		result = prime * result + (hasSpectralData ? 1231 : 1237);
+		result = prime * result + (hasStateHistory ? 1231 : 1237);
+		result = prime * result + ((imageSearchDefaultEndDate == null) ? 0 : imageSearchDefaultEndDate.hashCode());
+		temp = Double.doubleToLongBits(imageSearchDefaultMaxResolution);
+		result = prime * result + (int) (temp ^ (temp >>> 32));
+		temp = Double.doubleToLongBits(imageSearchDefaultMaxSpacecraftDistance);
+		result = prime * result + (int) (temp ^ (temp >>> 32));
+		result = prime * result + ((imageSearchDefaultStartDate == null) ? 0 : imageSearchDefaultStartDate.hashCode());
+		result = prime * result + Arrays.hashCode(imageSearchFilterNames);
+		result = prime * result + Arrays.hashCode(imageSearchUserDefinedCheckBoxesNames);
+		result = prime * result + Arrays.hashCode(imagingInstruments);
+		result = prime * result + lidarBrowseBinaryRecordSize;
+		result = prime * result + ((lidarBrowseDataSourceMap == null) ? 0 : lidarBrowseDataSourceMap.hashCode());
+		result = prime * result + ((lidarBrowseWithPointsDataSourceMap == null) ? 0 : lidarBrowseWithPointsDataSourceMap.hashCode());
+		result = prime * result
+				+ ((lidarBrowseFileListResourcePath == null) ? 0 : lidarBrowseFileListResourcePath.hashCode());
+		result = prime * result + (lidarBrowseIntensityEnabled ? 1231 : 1237);
+		result = prime * result + (lidarBrowseIsBinary ? 1231 : 1237);
+		result = prime * result + (lidarBrowseIsInMeters ? 1231 : 1237);
+		result = prime * result + (lidarBrowseIsLidarInSphericalCoordinates ? 1231 : 1237);
+		result = prime * result + (lidarBrowseIsRangeExplicitInData ? 1231 : 1237);
+		result = prime * result + (lidarBrowseIsSpacecraftInSphericalCoordinates ? 1231 : 1237);
+		result = prime * result + (lidarBrowseIsTimeInET ? 1231 : 1237);
+		result = prime * result + lidarBrowseNoiseIndex;
+		result = prime * result + lidarBrowseNumberHeaderLines;
+		result = prime * result + ((lidarBrowseOrigPathRegex == null) ? 0 : lidarBrowseOrigPathRegex.hashCode());
+		result = prime * result + lidarBrowseOutgoingIntensityIndex;
+		result = prime * result + ((lidarBrowsePathTop == null) ? 0 : lidarBrowsePathTop.hashCode());
+		result = prime * result + lidarBrowseRangeIndex;
+		result = prime * result + lidarBrowseReceivedIntensityIndex;
+		result = prime * result + Arrays.hashCode(lidarBrowseSpacecraftIndices);
+		result = prime * result + lidarBrowseTimeIndex;
+		result = prime * result + Arrays.hashCode(lidarBrowseXYZIndices);
+		result = prime * result + ((lidarInstrumentName == null) ? 0 : lidarInstrumentName.hashCode());
+		temp = Double.doubleToLongBits(lidarOffsetScale);
+		result = prime * result + (int) (temp ^ (temp >>> 32));
+		result = prime * result + ((lidarSearchDataSourceMap == null) ? 0 : lidarSearchDataSourceMap.hashCode());
+		result = prime * result
+				+ ((lidarSearchDataSourceTimeMap == null) ? 0 : lidarSearchDataSourceTimeMap.hashCode());
+		result = prime * result + ((lidarSearchDefaultEndDate == null) ? 0 : lidarSearchDefaultEndDate.hashCode());
+		result = prime * result + ((lidarSearchDefaultStartDate == null) ? 0 : lidarSearchDefaultStartDate.hashCode());
+		result = prime * result + ((orexSearchTimeMap == null) ? 0 : orexSearchTimeMap.hashCode());
+		result = prime * result + ((population == null) ? 0 : population.hashCode());
+		result = prime * result + Arrays.hashCode(presentInMissions);
+		result = prime * result + ((rootDirOnServer == null) ? 0 : rootDirOnServer.hashCode());
+		temp = Double.doubleToLongBits(rotationRate);
+		result = prime * result + (int) (temp ^ (temp >>> 32));
+		result = prime * result + ((shapeModelFileBaseName == null) ? 0 : shapeModelFileBaseName.hashCode());
+		result = prime * result + ((shapeModelFileExtension == null) ? 0 : shapeModelFileExtension.hashCode());
+		result = prime * result + Arrays.hashCode(shapeModelFileNames);
+		result = prime * result + ((spectraSearchDataSourceMap == null) ? 0 : spectraSearchDataSourceMap.hashCode());
+		result = prime * result + ((spectralInstruments == null) ? 0 : spectralInstruments.hashCode());
+		result = prime * result + ((spectrumMetadataFile == null) ? 0 : spectrumMetadataFile.hashCode());
+		result = prime * result + ((timeHistoryFile == null) ? 0 : timeHistoryFile.hashCode());
+		result = prime * result + ((type == null) ? 0 : type.hashCode());
+		return result;
+	}
+
+
+	@Override
+	public boolean equals(Object obj)
+	{
+		if (this == obj)
+			return true;
+		if (!super.equals(obj))
+		{
+//			System.out.println("BodyViewConfig: equals: view config parent doesn't equal");
+			return false;
+		}
+//		if (getClass() != obj.getClass())
+//		{
+//			System.out.println("BodyViewConfig: equals: classes differ");
+//			return false;
+//		}
+		BodyViewConfig other = (BodyViewConfig) obj;
+		if (bodyLowestResModelName == null)
+		{
+			if (other.bodyLowestResModelName != null)
+			{
+//				System.err.println("BodyViewConfig: equals: lowest res model name name; other isn't");
+				return false;
+			}
+		} else if (!bodyLowestResModelName.equals(other.bodyLowestResModelName))
+		{
+//			System.err.println("BodyViewConfig: equals: lowest res model names don't match " + bodyLowestResModelName + " " + other.bodyLowestResModelName);
+			return false;
+		}
+		if (Double.doubleToLongBits(bodyReferencePotential) != Double.doubleToLongBits(other.bodyReferencePotential))
+		{
+//			System.err.println("BodyViewConfig: equals: body reference potential doesn't match ");
+			return false;
+		}
+
+		if (dataUsed != other.dataUsed)
+		{
+			return false;
+		}
+		if (!Arrays.equals(databaseRunInfos, other.databaseRunInfos))
+		{
+			return false;
+		}
+		if (!Arrays.equals(defaultForMissions, other.defaultForMissions))
+		{
+			return false;
+		}
+		if (Double.doubleToLongBits(density) != Double.doubleToLongBits(other.density))
+		{
+//			System.err.println("BodyViewConfig: equals: density doesn't match");
+			return false;
+		}
+		if (dtmBrowseDataSourceMap == null)
+		{
+			if (other.dtmBrowseDataSourceMap != null)
+			{
+				return false;
+			}
+		} else if (!dtmBrowseDataSourceMap.equals(other.dtmBrowseDataSourceMap))
+		{
+			return false;
+		}
+		if (dtmSearchDataSourceMap == null)
+		{
+			if (other.dtmSearchDataSourceMap != null)
+				return false;
+		} else if (!dtmSearchDataSourceMap.equals(other.dtmSearchDataSourceMap))
+		{
+//			System.err.println("BodyViewConfig: equals: dtm search data source map " + dtmSearchDataSourceMap + " " + other.dtmSearchDataSourceMap);
+			return false;
+		}
+		if (hasBigmap != other.hasBigmap)
+		{
+//			System.err.println("BodyViewConfig: equals: has big map " + hasBigmap + " " + other.hasBigmap);
+			return false;
+		}
+		if (hasColoringData != other.hasColoringData)
+		{
+//			System.err.println("BodyViewConfig: equals: has coloring data " + hasColoringData + " " + other.hasColoringData);
+			return false;
+		}
+		if (hasFlybyData != other.hasFlybyData)
+		{
+			return false;
+		}
+		if (hasHierarchicalImageSearch != other.hasHierarchicalImageSearch)
+		{
+			return false;
+		}
+		if (hasHierarchicalSpectraSearch != other.hasHierarchicalSpectraSearch)
+		{
+			return false;
+		}
+		if (hasHypertreeBasedLidarSearch != other.hasHypertreeBasedLidarSearch)
+		{
+			return false;
+		}
+		if (hasHypertreeBasedSpectraSearch != other.hasHypertreeBasedSpectraSearch)
+		{
+			return false;
+		}
+		if (hasImageMap != other.hasImageMap)
+		{
+			return false;
+		}
+		if (hasLidarData != other.hasLidarData)
+		{
+			return false;
+		}
+		if (hasLineamentData != other.hasLineamentData)
+		{
+			return false;
+		}
+		if (hasMapmaker != other.hasMapmaker)
+		{
+			return false;
+		}
+		if (hasRemoteMapmaker != other.hasRemoteMapmaker)
+		{
+			return false;
+		}
+		if (hasSpectralData != other.hasSpectralData)
+		{
+			return false;
+		}
+		if (hasStateHistory != other.hasStateHistory)
+		{
+			return false;
+		}
+		if (imageSearchDefaultEndDate == null)
+		{
+			if (other.imageSearchDefaultEndDate != null)
+			{
+				return false;
+			}
+		}
+		else if (!imageSearchDefaultEndDate.equals(other.imageSearchDefaultEndDate))
+		{
+			return false;
+		}
+		if (Double.doubleToLongBits(imageSearchDefaultMaxResolution) != Double
+				.doubleToLongBits(other.imageSearchDefaultMaxResolution))
+		{
+			return false;
+		}
+		if (Double.doubleToLongBits(imageSearchDefaultMaxSpacecraftDistance) != Double
+				.doubleToLongBits(other.imageSearchDefaultMaxSpacecraftDistance))
+		{
+			return false;
+		}
+		if (imageSearchDefaultStartDate == null)
+		{
+			if (other.imageSearchDefaultStartDate != null)
+			{
+				return false;
+			}
+		}
+		else if (!imageSearchDefaultStartDate.equals(other.imageSearchDefaultStartDate))
+		{
+			return false;
+		}
+		if (!Arrays.equals(imageSearchFilterNames, other.imageSearchFilterNames))
+		{
+//			System.err.println("BodyViewConfig: equals: image search filter names don't match");
+			return false;
+		}
+		if (!Arrays.equals(imageSearchUserDefinedCheckBoxesNames, other.imageSearchUserDefinedCheckBoxesNames))
+		{
+//			System.err.println("BodyViewConfig: equals: image search user defined check box names don't match");
+			return false;
+		}
+		if (!Arrays.equals(imagingInstruments, other.imagingInstruments))
+		{
+//			System.err.println("BodyViewConfig: equals: imaging instruments don't match");
+			return false;
+		}
+		if (lidarBrowseBinaryRecordSize != other.lidarBrowseBinaryRecordSize)
+		{
+//			System.err.println("BodyViewConfig: equals: lidar browse binary record size doesn't match " + lidarBrowseBinaryRecordSize + " " + other.lidarBrowseBinaryRecordSize);
+			return false;
+		}
+		if (lidarBrowseDataSourceMap == null)
+		{
+			if (other.lidarBrowseDataSourceMap != null)
+			{
+				return false;
+			}
+		} else if (!lidarBrowseDataSourceMap.equals(other.lidarBrowseDataSourceMap))
+		{
+			return false;
+		}
+		if (lidarBrowseWithPointsDataSourceMap == null)
+		{
+			if (other.lidarBrowseWithPointsDataSourceMap != null)
+			{
+				return false;
+			}
+		} else if (!lidarBrowseWithPointsDataSourceMap.equals(other.lidarBrowseWithPointsDataSourceMap))
+		{
+			return false;
+		}
+		if (lidarBrowseFileListResourcePath == null)
+		{
+			if (other.lidarBrowseFileListResourcePath != null)
+			{
+				return false;
+			}
+		}
+		else if (!lidarBrowseFileListResourcePath.equals(other.lidarBrowseFileListResourcePath))
+		{
+			return false;
+		}
+		if (lidarBrowseIntensityEnabled != other.lidarBrowseIntensityEnabled)
+		{
+//			System.err.println("BodyViewConfig: equals: browse intensity enabled don't match ");
+			return false;
+		}
+		if (lidarBrowseIsBinary != other.lidarBrowseIsBinary)
+		{
+			return false;
+		}
+		if (lidarBrowseIsInMeters != other.lidarBrowseIsInMeters)
+		{
+			return false;
+		}
+		if (lidarBrowseIsLidarInSphericalCoordinates != other.lidarBrowseIsLidarInSphericalCoordinates)
+		{
+//			System.err.println("BodyViewConfig: equals: is lidar in sph coords unequal " + lidarBrowseIsLidarInSphericalCoordinates + " " + other.lidarBrowseIsLidarInSphericalCoordinates);
+			return false;
+		}
+		if (lidarBrowseIsRangeExplicitInData != other.lidarBrowseIsRangeExplicitInData)
+		{
+//			System.err.println("BodyViewConfig: equals: is lidar range explicit unequal");
+			return false;
+		}
+		if (lidarBrowseIsSpacecraftInSphericalCoordinates != other.lidarBrowseIsSpacecraftInSphericalCoordinates)
+		{
+//			System.err.println("BodyViewConfig: equals: lidar is sc in sph coords unequal");
+			return false;
+		}
+		if (lidarBrowseIsTimeInET != other.lidarBrowseIsTimeInET)
+		{
+//			System.err.println("BodyViewConfig: equals: lidar browse in ET Doesn't match");
+			return false;
+		}
+		if (lidarBrowseNoiseIndex != other.lidarBrowseNoiseIndex)
+		{
+			return false;
+		}
+		if (lidarBrowseNumberHeaderLines != other.lidarBrowseNumberHeaderLines)
+		{
+			return false;
+		}
+		if (lidarBrowseOrigPathRegex == null)
+		{
+			if (other.lidarBrowseOrigPathRegex != null)
+				return false;
+		} else if (!lidarBrowseOrigPathRegex.equals(other.lidarBrowseOrigPathRegex))
+		{
+			return false;
+		}
+		if (lidarBrowseOutgoingIntensityIndex != other.lidarBrowseOutgoingIntensityIndex)
+		{
+			return false;
+		}
+		if (lidarBrowsePathTop == null)
+		{
+			if (other.lidarBrowsePathTop != null)
+				return false;
+		} else if (!lidarBrowsePathTop.equals(other.lidarBrowsePathTop))
+		{
+			return false;
+		}
+		if (lidarBrowseRangeIndex != other.lidarBrowseRangeIndex)
+		{
+			return false;
+		}
+		if (lidarBrowseReceivedIntensityIndex != other.lidarBrowseReceivedIntensityIndex)
+		{
+			return false;
+		}
+		if (!Arrays.equals(lidarBrowseSpacecraftIndices, other.lidarBrowseSpacecraftIndices))
+		{
+			return false;
+		}
+		if (lidarBrowseTimeIndex != other.lidarBrowseTimeIndex)
+		{
+			return false;
+		}
+		if (!Arrays.equals(lidarBrowseXYZIndices, other.lidarBrowseXYZIndices))
+		{
+			return false;
+		}
+		if (lidarInstrumentName != other.lidarInstrumentName)
+		{
+			return false;
+		}
+		if (Double.doubleToLongBits(lidarOffsetScale) != Double.doubleToLongBits(other.lidarOffsetScale))
+		{
+			return false;
+		}
+		if (lidarSearchDataSourceMap == null)
+		{
+			if (other.lidarSearchDataSourceMap != null)
+				return false;
+		} else if (!lidarSearchDataSourceMap.equals(other.lidarSearchDataSourceMap))
+			return false;
+		if (lidarSearchDataSourceTimeMap == null)
+		{
+			if (other.lidarSearchDataSourceTimeMap != null)
+				return false;
+		} else if (!lidarSearchDataSourceTimeMap.equals(other.lidarSearchDataSourceTimeMap))
+			return false;
+		if (lidarSearchDefaultEndDate == null)
+		{
+			if (other.lidarSearchDefaultEndDate != null)
+				return false;
+		} else if (!lidarSearchDefaultEndDate.equals(other.lidarSearchDefaultEndDate))
+			return false;
+		if (lidarSearchDefaultStartDate == null)
+		{
+			if (other.lidarSearchDefaultStartDate != null)
+				return false;
+		} else if (!lidarSearchDefaultStartDate.equals(other.lidarSearchDefaultStartDate))
+			return false;
+		if (orexSearchTimeMap == null)
+		{
+			if (other.orexSearchTimeMap != null)
+				return false;
+		} else if (!orexSearchTimeMap.equals(other.orexSearchTimeMap))
+			return false;
+		if (population != other.population)
+			return false;
+		if (!Arrays.equals(presentInMissions, other.presentInMissions))
+			return false;
+		if (rootDirOnServer == null)
+		{
+			if (other.rootDirOnServer != null)
+				return false;
+		} else if (!rootDirOnServer.equals(other.rootDirOnServer))
+			return false;
+		if (Double.doubleToLongBits(rotationRate) != Double.doubleToLongBits(other.rotationRate))
+		{
+//			System.err.println("BodyViewConfig: equals: rotation rate doesn't match");
+			return false;
+		}
+		if (shapeModelFileBaseName == null)
+		{
+			if (other.shapeModelFileBaseName != null)
+				return false;
+		} else if (!shapeModelFileBaseName.equals(other.shapeModelFileBaseName))
+		{
+			return false;
+		}
+		if (shapeModelFileExtension == null)
+		{
+			if (other.shapeModelFileExtension != null)
+				return false;
+		} else if (!shapeModelFileExtension.equals(other.shapeModelFileExtension))
+		{
+			return false;
+		}
+		if (!Arrays.equals(shapeModelFileNames, other.shapeModelFileNames))
+		{
+			return false;
+		}
+		if (spectraSearchDataSourceMap == null)
+		{
+			if (other.spectraSearchDataSourceMap != null)
+				return false;
+		} else if (!spectraSearchDataSourceMap.equals(other.spectraSearchDataSourceMap))
+		{
+//			System.err.println("BodyViewConfig: equals: spectra search data source map don't match");
+			return false;
+		}
+		if (spectralInstruments == null)
+		{
+			if (other.spectralInstruments != null)
+				return false;
+		} else if (!spectralInstruments.equals(other.spectralInstruments))
+			return false;
+		if (spectrumMetadataFile == null)
+		{
+			if (other.spectrumMetadataFile != null)
+				return false;
+		} else if (!spectrumMetadataFile.equals(other.spectrumMetadataFile))
+		{
+//			System.err.println("BodyViewConfig: equals: spectrum metadata files don't match");
+			return false;
+		}
+		if (timeHistoryFile == null)
+		{
+			if (other.timeHistoryFile != null)
+				return false;
+		} else if (!timeHistoryFile.equals(other.timeHistoryFile))
+			return false;
+		if (type != other.type)
+			return false;
+
+//		System.out.println("BodyViewConfig: equals: match!!");
+		return true;
+	}
 }

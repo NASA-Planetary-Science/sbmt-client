@@ -1,10 +1,12 @@
 package edu.jhuapl.sbmt.gui.lidar;
 
-import java.awt.Color;
 import java.util.List;
 
-import edu.jhuapl.sbmt.model.lidar.LidarTrackManager;
+import com.google.common.collect.ImmutableList;
+
+import edu.jhuapl.sbmt.gui.lidar.color.ColorProvider;
 import edu.jhuapl.sbmt.model.lidar.LidarTrack;
+import edu.jhuapl.sbmt.model.lidar.LidarTrackManager;
 
 import glum.gui.panel.itemList.BasicItemHandler;
 import glum.gui.panel.itemList.query.QueryComposer;
@@ -14,7 +16,7 @@ import glum.gui.panel.itemList.query.QueryComposer;
  *
  * @author lopeznr1
  */
-class TrackItemHandler extends BasicItemHandler<LidarTrack>
+class TrackItemHandler extends BasicItemHandler<LidarTrack, LookUp>
 {
 	// Ref vars
 	private final LidarTrackManager refManager;
@@ -22,7 +24,7 @@ class TrackItemHandler extends BasicItemHandler<LidarTrack>
 	/**
 	 * Standard Constructor
 	 */
-	public TrackItemHandler(LidarTrackManager aManager, QueryComposer<?> aComposer)
+	public TrackItemHandler(LidarTrackManager aManager, QueryComposer<LookUp> aComposer)
 	{
 		super(aComposer);
 
@@ -30,40 +32,45 @@ class TrackItemHandler extends BasicItemHandler<LidarTrack>
 	}
 
 	@Override
-	public Object getColumnValue(LidarTrack aTrack, int aColIdx)
+	public Object getColumnValue(LidarTrack aTrack, LookUp aEnum)
 	{
-		switch (aColIdx)
+		switch (aEnum)
 		{
-			case 0:
+			case IsVisible:
 				return refManager.getIsVisible(aTrack);
-			case 1:
-				return refManager.getColor(aTrack);
-			case 2:
+			case Color:
+				return refManager.getColorProviderTarget(aTrack);
+			case Name:
 				return aTrack.getId();
-			case 3:
+			case NumPoints:
 				return aTrack.getNumberOfPoints();
-			case 4:
+			case BegTime:
 				return aTrack.getTimeBeg();
-			case 5:
+			case EndTime:
 				return aTrack.getTimeEnd();
-			case 6:
+			case Source:
 				return getSourceFileString(aTrack);
 			default:
 				break;
 		}
 
-		throw new UnsupportedOperationException("Column is not supported. Index: " + aColIdx);
+		throw new UnsupportedOperationException("Column is not supported. Enum: " + aEnum);
 	}
 
 	@Override
-	public void setColumnValue(LidarTrack aTrack, int aColIdx, Object aValue)
+	public void setColumnValue(LidarTrack aTrack, LookUp aEnum, Object aValue)
 	{
-		if (aColIdx == 0)
-			refManager.setIsVisible(aTrack, (boolean) aValue);
-		else if (aColIdx == 1)
-			refManager.setColor(aTrack, (Color) aValue);
+		List<LidarTrack> tmpL = ImmutableList.of(aTrack);
+
+		if (aEnum == LookUp.IsVisible)
+			refManager.setIsVisible(tmpL, (boolean) aValue);
+		else if (aEnum == LookUp.Color)
+		{
+			ColorProvider tmpCP = (ColorProvider) aValue;
+			refManager.installCustomColorProviders(tmpL, tmpCP, tmpCP);
+		}
 		else
-			throw new UnsupportedOperationException("Column is not supported. Index: " + aColIdx);
+			throw new UnsupportedOperationException("Column is not supported. Enum: " + aEnum);
 	}
 
 	/**

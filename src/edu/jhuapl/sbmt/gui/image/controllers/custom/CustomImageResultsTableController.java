@@ -48,7 +48,7 @@ import edu.jhuapl.sbmt.model.image.PerspectiveImageBoundaryCollection;
 public class CustomImageResultsTableController extends ImageResultsTableController
 {
     private List<CustomImageKeyInterface> results;
-    private CustomImagesModel model;
+    protected CustomImagesModel model;
     int modifiedTableRow = -1;
 
     public CustomImageResultsTableController(ImagingInstrument instrument, ImageCollection imageCollection, CustomImagesModel model, Renderer renderer, SbmtInfoWindowManager infoPanelManager, SbmtSpectrumWindowManager spectrumPanelManager)
@@ -393,8 +393,8 @@ public class CustomImageResultsTableController extends ImageResultsTableControll
             if (imageCollection.containsImage(info))
             {
                 resultList.setValueAt(true, i, imageResultsTableView.getMapColumnIndex());
-                        resultList.setValueAt(imageCollection.getImage(info).isVisible(), i, imageResultsTableView.getShowFootprintColumnIndex());
-                        if (imageCollection.getImage(info) instanceof PerspectiveImage)
+                resultList.setValueAt(true, i, imageResultsTableView.getShowFootprintColumnIndex());
+                if (imageCollection.getImage(info) instanceof PerspectiveImage)
                 {
                     PerspectiveImage image = (PerspectiveImage)imageCollection.getImage(model.getImageKeyForIndex(i));
                     resultList.setValueAt(image.isFrustumShowing(), i, imageResultsTableView.getFrusColumnIndex());
@@ -422,7 +422,7 @@ public class CustomImageResultsTableController extends ImageResultsTableControll
         modifiedTableRow = -1;
     }
 
-    private CustomImageKeyInterface getConvertedKey(CustomImageKeyInterface key)
+    protected CustomImageKeyInterface getConvertedKey(CustomImageKeyInterface key)
     {
         CustomImageKeyInterface info;
         if (key.getProjectionType() == ProjectionType.PERSPECTIVE)

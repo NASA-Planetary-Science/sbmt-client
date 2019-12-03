@@ -1,0 +1,18 @@
+[
+  {
+    "instrumentName": "NIRS3",
+    "queryType": "file",
+    "searchMetadata": [
+      {
+        "dataListFilename": "spectrumlist.txt",
+        "dataName": "NIRS3 L2C Data",
+        "xAxisUnits": "Wavelength (microns)",
+        "dataDescription": "NIRS3 L2C Data",
+        "yAxisUnits": "REFF",
+        "dataPath": "spectra",
+        "source": "Corrected SPICE Derived",
+        "dataRootLocation": "/ryugu/shared/nirs3/l2c/"
+      }
+    ]
+  }
+]

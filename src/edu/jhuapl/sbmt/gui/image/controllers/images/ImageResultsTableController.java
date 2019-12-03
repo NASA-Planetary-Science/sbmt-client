@@ -547,13 +547,19 @@ public class ImageResultsTableController
         IdPair resultIntervalCurrentlyShown = imageSearchModel.getResultIntervalCurrentlyShown();
         IdPair originalInterval = resultIntervalCurrentlyShown;
         removeImageBoundaries(originalInterval);
+        int step = Integer.parseInt((String) imageResultsTableView.getNumberOfBoundariesComboBox().getSelectedItem());
         if (resultIntervalCurrentlyShown != null)
         {
             // Only get the prev block if there's something left to show.
             if (resultIntervalCurrentlyShown.id1 > 0)
             {
-                resultIntervalCurrentlyShown.prevBlock(Integer.parseInt((String) imageResultsTableView.getNumberOfBoundariesComboBox().getSelectedItem()));
+                resultIntervalCurrentlyShown.prevBlock(step);
                 showImageBoundaries(resultIntervalCurrentlyShown);
+            }
+            else
+            {
+            	resultIntervalCurrentlyShown = new IdPair(imageRawResults.size()-step, imageRawResults.size());
+            	showImageBoundaries(resultIntervalCurrentlyShown);
             }
         }
 
@@ -564,12 +570,18 @@ public class ImageResultsTableController
         IdPair resultIntervalCurrentlyShown = imageSearchModel.getResultIntervalCurrentlyShown();
         IdPair originalInterval = resultIntervalCurrentlyShown;
         removeImageBoundaries(originalInterval);
+        int step = Integer.parseInt((String) imageResultsTableView.getNumberOfBoundariesComboBox().getSelectedItem());
         if (resultIntervalCurrentlyShown != null)
         {
             // Only get the next block if there's something left to show.
             if (resultIntervalCurrentlyShown.id2 < imageResultsTableView.getResultList().getModel().getRowCount())
             {
-                resultIntervalCurrentlyShown.nextBlock(Integer.parseInt((String) imageResultsTableView.getNumberOfBoundariesComboBox().getSelectedItem()));
+                resultIntervalCurrentlyShown.nextBlock(step);
+                showImageBoundaries(resultIntervalCurrentlyShown);
+            }
+            else
+            {
+            	resultIntervalCurrentlyShown = new IdPair(0, step);
                 showImageBoundaries(resultIntervalCurrentlyShown);
             }
         }
@@ -888,7 +900,7 @@ public class ImageResultsTableController
         return imageResultsTableView;
     }
 
-    class ImageResultsPropertyChangeListener implements PropertyChangeListener
+    public class ImageResultsPropertyChangeListener implements PropertyChangeListener
     {
         @Override
         public final void propertyChange(PropertyChangeEvent evt)
@@ -975,7 +987,7 @@ public class ImageResultsTableController
 
     }
 
-    class ImageResultsTableModeListener implements TableModelListener
+    public class ImageResultsTableModeListener implements TableModelListener
     {
         public void tableChanged(TableModelEvent e)
         {
@@ -994,10 +1006,10 @@ public class ImageResultsTableController
                 String name = imageRawResults.get(row).get(0);
                 String namePrefix = FileUtil.removeExtension(name);
                 if ((Boolean) imageResultsTableView.getResultList().getValueAt(actualRow, imageResultsTableView.getMapColumnIndex()))
-                    imageSearchModel.loadImages(namePrefix);
+                    imageSearchModel.loadImage(namePrefix);
                 else
                 {
-                    imageSearchModel.unloadImages(namePrefix);
+                    imageSearchModel.unloadImage(namePrefix);
                     //                    renderer.setLighting(LightingType.LIGHT_KIT);	//removed due to request in #1667
                 }
             }
@@ -1043,6 +1055,11 @@ public class ImageResultsTableController
 
         }
     }
+
+	public List<ImageKeyInterface> getImageKeys()
+	{
+		return imageKeys;
+	}
 
     //    class DragDropRowTableUI extends BasicTableUI {
     //

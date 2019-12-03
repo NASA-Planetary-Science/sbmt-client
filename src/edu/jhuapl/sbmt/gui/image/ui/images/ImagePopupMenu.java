@@ -519,13 +519,15 @@ public class ImagePopupMenu<K extends ImageKeyInterface> extends PopupMenu
                 imageCollection.addImage(imageKey);
                 PerspectiveImage image = (PerspectiveImage)imageCollection.getImage(imageKey);
                 String path = image.getFitFileFullPath();
-                String extension = path.substring(path.lastIndexOf("."));
-                String imageFileName = new File(path).getName();
+                String extension = FilenameUtils.getExtension(path);
+//                String extension = path.substring(path.lastIndexOf("."));
+//                String imageFileName = new File(path).getName();
+                String imageFileName = FilenameUtils.getBaseName(path);
 
-                file = CustomFileChooser.showSaveDialog(invoker, "Save FITS image", imageFileName, "fit");
+                file = CustomFileChooser.showSaveDialog(invoker, "Save FITS image", imageFileName, "fits");
                 if (file != null)
                 {
-                    File fitFile = FileCache.getFileFromServer(imageKey.getName() + extension);
+                    File fitFile = FileCache.getFileFromServer(imageKey.getName() + "." + extension);
 
                     FileUtil.copyFile(fitFile, file);
                 }
@@ -805,7 +807,7 @@ public class ImagePopupMenu<K extends ImageKeyInterface> extends PopupMenu
 
                         String defaultFileName = null;
                         if (imageFileName != null)
-                            defaultFileName = imageFileName.substring(0, imageFileName.length() - 3) + "INFO";
+                            defaultFileName = imageFileName.substring(0, imageFileName.length() - FilenameUtils.getExtension(imageFileName).length()) + "INFO";
 
                         File file = CustomFileChooser.showSaveDialog(invoker, "Save INFO file as...", defaultFileName);
                         if (file == null)
@@ -815,7 +817,7 @@ public class ImagePopupMenu<K extends ImageKeyInterface> extends PopupMenu
 
                         String filename = file.getAbsolutePath();
 
-                        System.out.println("Exporting INFO file for " + image.getImageName() + " to " + filename);
+//                        System.out.println("Exporting INFO file for " + image.getImageName() + " to " + filename);
 
                         image.saveImageInfo(filename);
                     }

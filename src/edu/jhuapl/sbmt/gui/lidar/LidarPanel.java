@@ -15,12 +15,24 @@ import edu.jhuapl.sbmt.model.lidar.LidarTrackManager;
 
 import net.miginfocom.swing.MigLayout;
 
+/**
+ * UI component that holds 2 sub panels:
+ * <UL>
+ * <LI>Browse panel: Provides UI to browse fixed list of lidar data products
+ * <LI>Search panel: Provides UI to allow user to query for list of lidar tracks
+ * </UL>
+ *
+ * @author lopeznr1
+ */
 public class LidarPanel extends JTabbedPane
 {
+	/**
+	 * Standard Constructor
+	 */
 	public LidarPanel(SmallBodyViewConfig aBodyViewConfig, ModelManager aModelManager, PickManager aPickManager,
 			Renderer aRenderer)
 	{
-		JPanel browsePanel = formBrowsePanel(aBodyViewConfig, aModelManager, aPickManager);
+		JPanel browsePanel = formBrowsePanel(aBodyViewConfig, aModelManager, aPickManager, aRenderer);
 		JPanel searchPanel = formSearchPanel(aBodyViewConfig, aModelManager, aPickManager, aRenderer);
 
 		addTab("Browse", browsePanel);
@@ -32,7 +44,7 @@ public class LidarPanel extends JTabbedPane
 	 * Helper utility method that forms the 'browse' tabbed panel.
 	 */
 	private static JPanel formBrowsePanel(SmallBodyViewConfig aBodyViewConfig, ModelManager aModelManager,
-			PickManager aPickManager)
+			PickManager aPickManager, Renderer aRenderer)
 	{
 		// Determine the proper data source name
 		Instrument tmpInstrument = aBodyViewConfig.lidarInstrumentName;
@@ -43,7 +55,8 @@ public class LidarPanel extends JTabbedPane
 			dataSourceName = "Default";
 
 		LidarFileSpecManager tmpFileSpecManager = (LidarFileSpecManager) aModelManager.getModel(ModelNames.LIDAR_BROWSE);
-		LidarFileSpecPanel retPanel = new LidarFileSpecPanel(tmpFileSpecManager, aBodyViewConfig, dataSourceName);
+		LidarFileSpecPanel retPanel = new LidarFileSpecPanel(tmpFileSpecManager, aBodyViewConfig, aRenderer,
+				dataSourceName);
 		return retPanel;
 	}
 
@@ -88,7 +101,7 @@ public class LidarPanel extends JTabbedPane
 		}
 
 		// Form the 'list' panel
-		JPanel trackPanel = new LidarTrackPanel(aModelManager, tmpTrackManager, aPickManager, aRenderer);
+		JPanel trackPanel = new LidarTrackPanel(tmpTrackManager, aModelManager, aBodyViewConfig, aPickManager, aRenderer);
 
 		JPanel retPanel = new JPanel(new MigLayout("", "0[]0", "0[]0"));
 		retPanel.add(searchPanel, "growx,span,wrap");
