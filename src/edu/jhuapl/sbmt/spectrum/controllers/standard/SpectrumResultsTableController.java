@@ -90,6 +90,7 @@ public class SpectrumResultsTableController<S extends BasicSpectrum>
 			{
 				spectrumCollection.removeAllSpectraForInstrument(instrument);
 		        spectrumCollection.deselectAll();
+		        boundaries.removeAllBoundaries();
 			}
         };
 
