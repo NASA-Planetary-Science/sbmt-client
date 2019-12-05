@@ -398,7 +398,7 @@ public class BennuConfigs extends SmallBodyViewConfig
         c.timeHistoryFile = "/bennu/nolan/history/timeHistory.bth";
 
         c.setResolution(ImmutableList.of(2692));
-        c.density = 1260;
+        c.density = 1.260;
         c.useMinimumReferencePotential = true;
         c.rotationRate = 0.00040613;
 
@@ -1819,7 +1819,7 @@ public class BennuConfigs extends SmallBodyViewConfig
             c.imageSearchDefaultEndDate = new GregorianCalendar(2050, 0, 1, 0, 0, 0).getTime();
             c.imageSearchDefaultMaxSpacecraftDistance = 1.0e3;
             c.imageSearchDefaultMaxResolution = 1.0e3;
-            c.density = 1260;
+            c.density = 1.260;
             c.useMinimumReferencePotential = true;
             c.rotationRate = 0.00040613;
             c.bodyReferencePotential = -0.02654811544296466;
@@ -1985,7 +1985,7 @@ public class BennuConfigs extends SmallBodyViewConfig
             c.imageSearchDefaultEndDate = new GregorianCalendar(2050, 0, 1, 0, 0, 0).getTime();
             c.imageSearchDefaultMaxSpacecraftDistance = 1.0e3;
             c.imageSearchDefaultMaxResolution = 1.0e3;
-            c.density = 1260;
+            c.density = 1.260;
             c.useMinimumReferencePotential = true;
             c.rotationRate = 0.00040613;
             c.bodyReferencePotential = -0.02637307554771602;
@@ -2158,7 +2158,7 @@ public class BennuConfigs extends SmallBodyViewConfig
             c.imageSearchDefaultEndDate = new GregorianCalendar(2050, 0, 1, 0, 0, 0).getTime();
             c.imageSearchDefaultMaxSpacecraftDistance = 1.0e3;
             c.imageSearchDefaultMaxResolution = 1.0e3;
-            c.density = 1186.;
+            c.density = 1.186;
             c.useMinimumReferencePotential = true;
             c.rotationRate = 4.0626E-4;
             c.bodyReferencePotential = -0.02530442113463265;
@@ -2323,7 +2323,7 @@ public class BennuConfigs extends SmallBodyViewConfig
             c.imageSearchDefaultEndDate = new GregorianCalendar(2050, 0, 1, 0, 0, 0).getTime();
             c.imageSearchDefaultMaxSpacecraftDistance = 1.0e3;
             c.imageSearchDefaultMaxResolution = 1.0e3;
-            c.density = 1186;
+            c.density = 1.186;
             c.useMinimumReferencePotential = true;
             c.rotationRate = 4.0626E-4;
             c.bodyReferencePotential = -0.02513575424405747;
@@ -2487,7 +2487,7 @@ public class BennuConfigs extends SmallBodyViewConfig
             c.imageSearchDefaultEndDate = new GregorianCalendar(2050, 0, 1, 0, 0, 0).getTime();
             c.imageSearchDefaultMaxSpacecraftDistance = 1.0e3;
             c.imageSearchDefaultMaxResolution = 1.0e3;
-            c.density = 1186.0;
+            c.density = 1.186;
             c.useMinimumReferencePotential = true;
             c.rotationRate = 4.0626E-4;
             c.bodyReferencePotential = -0.0253033332766406;
@@ -2651,7 +2651,7 @@ public class BennuConfigs extends SmallBodyViewConfig
             c.imageSearchDefaultEndDate = new GregorianCalendar(2050, 0, 1, 0, 0, 0).getTime();
             c.imageSearchDefaultMaxSpacecraftDistance = 1.0e3;
             c.imageSearchDefaultMaxResolution = 1.0e3;
-            c.density = 1186.0;
+            c.density = 1.186;
             c.useMinimumReferencePotential = true;
             c.rotationRate = 4.0626E-4;
             c.bodyReferencePotential = -0.02528907231151947;
@@ -2816,7 +2816,7 @@ public class BennuConfigs extends SmallBodyViewConfig
             c.imageSearchDefaultEndDate = new GregorianCalendar(2050, 0, 1, 0, 0, 0).getTime();
             c.imageSearchDefaultMaxSpacecraftDistance = 1.0e3;
             c.imageSearchDefaultMaxResolution = 1.0e3;
-            c.density = 1186.0;
+            c.density = 1.186;
             c.useMinimumReferencePotential = true;
             c.rotationRate = 4.0626E-4;
             c.bodyReferencePotential = -0.02520767997203304;
@@ -2981,7 +2981,7 @@ public class BennuConfigs extends SmallBodyViewConfig
             c.imageSearchDefaultEndDate = new GregorianCalendar(2050, 0, 1, 0, 0, 0).getTime();
             c.imageSearchDefaultMaxSpacecraftDistance = 1.0e3;
             c.imageSearchDefaultMaxResolution = 1.0e3;
-            c.density = 1186.0;
+            c.density = 1.186;
             c.useMinimumReferencePotential = true;
             c.rotationRate = 4.0626E-4;
             c.bodyReferencePotential = -0.02517871436774813;
@@ -3145,7 +3145,7 @@ public class BennuConfigs extends SmallBodyViewConfig
             c.imageSearchDefaultEndDate = new GregorianCalendar(2050, 0, 1, 0, 0, 0).getTime();
             c.imageSearchDefaultMaxSpacecraftDistance = 1.0e3;
             c.imageSearchDefaultMaxResolution = 1.0e3;
-            c.density = 1186.0;
+            c.density = 1.186;
             c.useMinimumReferencePotential = true;
             c.rotationRate = 4.0626E-4;
             c.bodyReferencePotential = -0.02517940647257273;

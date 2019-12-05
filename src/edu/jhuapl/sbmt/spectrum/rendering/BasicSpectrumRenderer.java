@@ -30,6 +30,7 @@ import edu.jhuapl.saavtk.util.PolyDataUtil;
 import edu.jhuapl.saavtk.util.Properties;
 import edu.jhuapl.sbmt.client.ISmallBodyModel;
 import edu.jhuapl.sbmt.spectrum.model.core.BasicSpectrum;
+import edu.jhuapl.sbmt.spectrum.model.core.SpectrumIOException;
 import edu.jhuapl.sbmt.spectrum.model.core.interfaces.IBasicSpectrumRenderer;
 
 /**
@@ -101,7 +102,15 @@ public class BasicSpectrumRenderer<S extends BasicSpectrum> extends AbstractMode
         if (!spectrum.getLatLons().isEmpty())
         {
         	spectrum.readPointingFromInfoFile();
-			spectrum.readSpectrumFromFile();
+			try
+			{
+				spectrum.readSpectrumFromFile();
+			}
+			catch (SpectrumIOException e)
+			{
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 
 			spacecraftPosition = spectrum.getSpacecraftPosition();
 	        frustum1 = spectrum.getFrustum1();
