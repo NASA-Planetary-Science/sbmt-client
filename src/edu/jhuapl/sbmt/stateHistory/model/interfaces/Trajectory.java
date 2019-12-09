@@ -30,4 +30,8 @@ public interface Trajectory
 
     public void setZ(ArrayList<Double> z);
 
+    public double[] getTrajectoryColor();
+
+    public double getTrajectoryThickness();
+
 }

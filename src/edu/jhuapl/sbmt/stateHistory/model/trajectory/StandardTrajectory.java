@@ -12,6 +12,8 @@ public class StandardTrajectory implements Trajectory
     private ArrayList<Double> x;
     private ArrayList<Double> y;
     private ArrayList<Double> z;
+    private double[] color;
+    private double thickness;
 
     public int getCellId()
     {
@@ -90,4 +92,34 @@ public class StandardTrajectory implements Trajectory
         this.y = new ArrayList<Double>();
         this.z = new ArrayList<Double>();
     }
+
+    public String toString()
+    {
+        return "Trajectory " + getId() + " = " + getName() + " contains " + getX().size() + " vertices";
+
+    }
+
+	@Override
+	public double[] getTrajectoryColor()
+	{
+		// TODO Auto-generated method stub
+		return color;
+	}
+
+	@Override
+	public double getTrajectoryThickness()
+	{
+		// TODO Auto-generated method stub
+		return thickness;
+	}
+
+	public void setColor(double[] color)
+	{
+		this.color = color;
+	}
+
+	public void setThickness(double thickness)
+	{
+		this.thickness = thickness;
+	}
 }

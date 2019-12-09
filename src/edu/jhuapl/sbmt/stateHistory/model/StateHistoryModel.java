@@ -1,70 +1,40 @@
 package edu.jhuapl.sbmt.stateHistory.model;
 
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
-import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileReader;
-import java.io.FileWriter;
 import java.io.IOException;
-import java.io.RandomAccessFile;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 
-import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
 
 import org.joda.time.DateTime;
 import org.joda.time.Interval;
-import org.joda.time.format.ISODateTimeFormat;
 
-import vtk.vtkActor;
-import vtk.vtkAssembly;
-import vtk.vtkConeSource;
-import vtk.vtkMatrix4x4;
 import vtk.vtkProp;
-import vtk.vtkScalarBarActor;
-import vtk.vtkTransform;
 
 import edu.jhuapl.saavtk.gui.render.Renderer;
-import edu.jhuapl.saavtk.gui.render.Renderer.LightingType;
-import edu.jhuapl.saavtk.model.AbstractModel;
 import edu.jhuapl.saavtk.util.BoundingBox;
-import edu.jhuapl.saavtk.util.Configuration;
-import edu.jhuapl.saavtk.util.ConvertResourceToFile;
 import edu.jhuapl.saavtk.util.FileCache;
-import edu.jhuapl.saavtk.util.MathUtil;
-import edu.jhuapl.saavtk.util.Preferences;
-import edu.jhuapl.saavtk.util.Properties;
 import edu.jhuapl.sbmt.client.SmallBodyModel;
 import edu.jhuapl.sbmt.client.SmallBodyViewConfig;
-import edu.jhuapl.sbmt.stateHistory.model.animator.AnimationFrame;
 import edu.jhuapl.sbmt.stateHistory.model.interfaces.HasTime;
 import edu.jhuapl.sbmt.stateHistory.model.interfaces.State;
 import edu.jhuapl.sbmt.stateHistory.model.interfaces.StateHistory;
 import edu.jhuapl.sbmt.stateHistory.model.interfaces.Trajectory;
 import edu.jhuapl.sbmt.stateHistory.model.scState.CsvState;
 import edu.jhuapl.sbmt.stateHistory.model.stateHistory.StandardStateHistory;
+import edu.jhuapl.sbmt.stateHistory.model.stateHistory.StateHistoryKey;
 import edu.jhuapl.sbmt.stateHistory.model.trajectory.StandardTrajectory;
-import edu.jhuapl.sbmt.stateHistory.rendering.EarthDirectionMarker;
-import edu.jhuapl.sbmt.stateHistory.rendering.SpacecraftBody;
-import edu.jhuapl.sbmt.stateHistory.rendering.SpacecraftDirectionMarker;
-import edu.jhuapl.sbmt.stateHistory.rendering.SpacecraftFieldOfView;
-import edu.jhuapl.sbmt.stateHistory.rendering.SpacecraftLabel;
-import edu.jhuapl.sbmt.stateHistory.rendering.StatusBarTextActor;
-import edu.jhuapl.sbmt.stateHistory.rendering.SunDirectionMarker;
-import edu.jhuapl.sbmt.stateHistory.rendering.TimeBarTextActor;
 import edu.jhuapl.sbmt.stateHistory.rendering.TrajectoryActor;
-import edu.jhuapl.sbmt.stateHistory.rendering.animator.Animator;
-import edu.jhuapl.sbmt.stateHistory.ui.AnimationFileDialog;
 import edu.jhuapl.sbmt.stateHistory.ui.version2.IStateHistoryPanel;
 
 
-public class StateHistoryModel extends AbstractModel implements PropertyChangeListener, /*TableModel,*/ HasTime//, ActionListener
+public class StateHistoryModel implements HasTime // extends AbstractModel implements PropertyChangeListener, /*TableModel,*/ HasTime//, ActionListener
 {
+	List<StateHistoryModelChangedListener> listeners = new ArrayList<StateHistoryModelChangedListener>();
+
     private Double time;
 
     //Use approximate radius of largest solar system body as scale for surface intercept vector.
@@ -79,28 +49,6 @@ public class StateHistoryModel extends AbstractModel implements PropertyChangeLi
 
     public static final String RUN_NAMES = "RunNames"; // What name to give this image for display
     public static final String RUN_FILENAMES = "RunFilenames"; // Filename of image on disk
-    private Trajectory trajectory;
-    private TrajectoryActor trajectoryActor;
-
-    //the 3D representation of the s/c
-    private SpacecraftBody spacecraftBody;
-
-    //the cone pointing to where the spacecraft current is
-    private SpacecraftDirectionMarker spacecraftMarkerHead;
-
-    private SpacecraftFieldOfView spacecraftFov;
-
-    private SpacecraftLabel spacecraftLabelActor;
-
-    private vtkConeSource earthMarkerHead;
-    private vtkActor earthMarkerHeadActor;
-
-    private SunDirectionMarker sunDirectionMarker;
-    private SpacecraftDirectionMarker scDirectionMarker;
-    private EarthDirectionMarker earthDirectionMarker;
-    private vtkAssembly sunAssembly;
-
-    private ArrayList<vtkProp> stateHistoryActors = new ArrayList<vtkProp>();
 
     private boolean showSpacecraft;
     private boolean showSpacecraftBody;
@@ -130,7 +78,6 @@ public class StateHistoryModel extends AbstractModel implements PropertyChangeLi
 
 //    protected final StateHistoryKey key;
     private SmallBodyModel smallBodyModel;
-    private Renderer renderer;
 
     private StateHistory currentFlybyStateHistory;
     private DateTime startTime;
@@ -138,17 +85,10 @@ public class StateHistoryModel extends AbstractModel implements PropertyChangeLi
 
     public static final double offsetHeight = 2.0;
 
-    // variables related to the scale bar (note the scale bar is different
-    // from the scalar bar)
-
-    private TimeBarTextActor timeBarTextActor;
-    private StatusBarTextActor statusBarTextActor;
-
     private boolean showTimeBar = true;
     private boolean showScalarBar = false;
 
     // variables related to the scalar bar
-    private vtkScalarBarActor scalarBarActor;
     private int coloringIndex = 1;
 
 
@@ -160,7 +100,6 @@ public class StateHistoryModel extends AbstractModel implements PropertyChangeLi
     public StateHistoryModel(DateTime start, DateTime end, SmallBodyModel smallBodyModel, Renderer renderer)
     {
         this.smallBodyModel = smallBodyModel;
-        this.renderer = renderer;
         this.startTime = start;
         this.endTime = end;
 
@@ -168,9 +107,8 @@ public class StateHistoryModel extends AbstractModel implements PropertyChangeLi
 
     }
 
-    public StateHistoryModel(SmallBodyModel smallBodyModel, Renderer renderer)
+    public StateHistoryModel(SmallBodyModel smallBodyModel)
     {
-        this.renderer = renderer;
         this.smallBodyModel = smallBodyModel;
     }
 
@@ -178,69 +116,15 @@ public class StateHistoryModel extends AbstractModel implements PropertyChangeLi
 
     private void initialize()
     {
-        initialized = true;
         BoundingBox bb = smallBodyModel.getBoundingBox();
         double width = Math.max((bb.xmax-bb.xmin), Math.max((bb.ymax-bb.ymin), (bb.zmax-bb.zmin)));
         scalingFactor = 30.62*width + -0.0002237;
-        if (trajectory == null) {
-            trajectory = new StandardTrajectory();
-        }
-        if (trajectoryActor == null)
-        {
-        	trajectoryActor = new TrajectoryActor(trajectory);
-        }
-
-        if (spacecraftBody == null)
-        {
-            try
-            {
-                createSpacecraftPolyData();
-                // spacecraft label
-                spacecraftLabelActor = new SpacecraftLabel();
-            } catch (NumberFormatException e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
-            }
-
-            showSpacecraftMarker = false;
-            showSpacecraft = false;
-            updateActorVisibility();
-        }
-        if (statusBarTextActor == null)
-        {
-            setupStatusBar();
-        }
-
-        statusBarTextActor.updateStatusBarPosition(renderer.getPanelWidth(), renderer.getPanelHeight());
-
-        if (timeBarTextActor == null)
-            setupTimeBar();
     }
 
+    public void setTimeFraction(Double timeFraction)
+	{
 
-
-    private void initializeSpacecraftBody(File modelFile)
-    {
-    	spacecraftBody = new SpacecraftBody(modelFile.getAbsolutePath());
-    }
-
-    private void createSpacecraftPolyData()
-    {
-        String spacecraftFileName = "/edu/jhuapl/sbmt/data/cassini-9k.stl";
-        initializeSpacecraftBody(ConvertResourceToFile.convertResourceToRealFile(this, spacecraftFileName, Configuration.getApplicationDataDir()));
-
-        spacecraftFov = new SpacecraftFieldOfView();
-
-        //Scale subsolar and subearth point markers to body size
-        BoundingBox bb = smallBodyModel.getBoundingBox();
-        double width = Math.max((bb.xmax-bb.xmin), Math.max((bb.ymax-bb.ymin), (bb.zmax-bb.zmin)));
-        markerRadius = 0.02 * width;
-        markerHeight = markerRadius * 3.0;
-
-        earthDirectionMarker = new EarthDirectionMarker(markerRadius/16.0, markerHeight, 0, 0, 0);
-        sunDirectionMarker = new SunDirectionMarker(markerRadius/16.0, markerHeight, 0, 0, 0);
-        scDirectionMarker = new SpacecraftDirectionMarker(markerRadius/16.0, markerHeight, 0, 0, 0);
-    }
+	}
 
     public Double getTime()
     {
@@ -270,281 +154,16 @@ public class StateHistoryModel extends AbstractModel implements PropertyChangeLi
             return 0.0;
     }
 
-    public void setTimeFraction(Double timeFraction)
-    {
-        if (currentFlybyStateHistory != null && spacecraftBody.getActor() != null)
-        {
-            // set the time
-            currentFlybyStateHistory.setTimeFraction(timeFraction);
-            setTime(currentFlybyStateHistory.getTime());
 
-            if (timeBarTextActor != null)
-            {
-                timeBarTextActor.updateTimeBarPosition(renderer.getPanelWidth(), renderer.getPanelHeight());
-                timeBarTextActor.updateTimeBarValue(getTime());
-            }
-
-            // get the current FlybyState
-            State state = currentFlybyStateHistory.getCurrentValue();
-            double[] spacecraftPosition = currentFlybyStateHistory.getSpacecraftPosition();
-
-
-            double[] sunPosition = currentFlybyStateHistory.getSunPosition();
-            double[] sunMarkerPosition = new double[3];
-            sunDirection = new double[3];
-            double[] sunViewpoint = new double[3];
-            double[] sunViewDirection = new double[3];
-            MathUtil.unorm(sunPosition, sunDirection);
-            MathUtil.vscl(JupiterScale, sunDirection, sunViewpoint);
-            MathUtil.vscl(-1.0, sunDirection, sunViewDirection);
-            int result = smallBodyModel.computeRayIntersection(sunViewpoint, sunViewDirection, sunMarkerPosition);
-
-
-            // toggle for lighting - Alex W
-            if (timeFraction >= 0.0 && showLighting)
-            {
-                renderer.setFixedLightDirection(sunDirection);
-                renderer.setLighting(LightingType.FIXEDLIGHT);
-                updateActorVisibility();
-            }
-            else
-                renderer.setLighting(LightingType.LIGHT_KIT);
-
-
-            double[] earthPosition = currentFlybyStateHistory.getEarthPosition();
-            double[] earthMarkerPosition = new double[3];
-            double[] earthDirection = new double[3];
-            double[] earthViewpoint = new double[3];
-            double[] earthViewDirection = new double[3];
-            MathUtil.unorm(earthPosition, earthDirection);
-            MathUtil.vscl(JupiterScale, earthDirection, earthViewpoint);
-            MathUtil.vscl(-1.0, earthDirection, earthViewDirection);
-            result = smallBodyModel.computeRayIntersection(earthViewpoint, earthViewDirection, earthMarkerPosition);
-
-            //double[] spacecraftPosition = currentFlybyStateHistory.getSpacecraftPosition();
-            double[] spacecraftMarkerPosition = new double[3];
-            double[] spacecraftDirection = new double[3];
-            double[] spacecraftViewpoint = new double[3];
-            double[] spacecraftViewDirection = new double[3];
-            MathUtil.unorm(spacecraftPosition, spacecraftDirection);
-            MathUtil.vscl(JupiterScale, spacecraftDirection, spacecraftViewpoint);
-            MathUtil.vscl(-1.0, spacecraftDirection, spacecraftViewDirection);
-            result = smallBodyModel.computeRayIntersection(spacecraftViewpoint, spacecraftViewDirection, spacecraftMarkerPosition);
-
-            //rotates sun pointer to point in direction of sun - Alex W
-            double[] zAxis = {1,0,0};
-            double[] sunPos = currentFlybyStateHistory.getSunPosition();
-            sunDirectionMarker.updateSunPosition(sunPos);
-//            double[] sunPosDirection = new double[3];
-//            MathUtil.unorm(sunPos, sunPosDirection);
-//            double[] rotationAxisSun = new double[3];
-//            MathUtil.vcrss(sunPosDirection, zAxis, rotationAxisSun);
-//            double rotationAngleSun = ((180.0/Math.PI)*MathUtil.vsep(zAxis, sunPosDirection));
-
-//            vtkTransform sunMarkerTransform = new vtkTransform();
-//            //sunMarkerTransform.PostMultiply();
-//            sunMarkerTransform.Translate(sunMarkerPosition);
-//            sunMarkerTransform.RotateWXYZ(-rotationAngleSun, rotationAxisSun[0], rotationAxisSun[1], rotationAxisSun[2]);
-//            sunAssembly.SetUserTransform(sunMarkerTransform);
-
-
-            //rotates earth pointer to point in direction of earth - Alex W
-            double[] earthPos = currentFlybyStateHistory.getEarthPosition();
-            double[] earthPosDirection = new double[3];
-            MathUtil.unorm(earthPos, earthPosDirection);
-            double[] rotationAxisEarth = new double[3];
-            MathUtil.vcrss(earthPosDirection, zAxis, rotationAxisEarth);
-
-            double rotationAngleEarth = ((180.0/Math.PI)*MathUtil.vsep(zAxis, earthPosDirection));
-
-            vtkTransform earthMarkerTransform = new vtkTransform();
-            earthMarkerTransform.Translate(earthMarkerPosition);
-            earthMarkerTransform.RotateWXYZ(-rotationAngleEarth, rotationAxisEarth[0], rotationAxisEarth[1], rotationAxisEarth[2]);
-            earthMarkerHeadActor.SetUserTransform(earthMarkerTransform);
-
-
-            //rotates spacecraft pointer to point in direction of spacecraft - Alex W
-            double[] spacecraftPos = spacecraftMarkerPosition;
-            double[] spacecraftPosDirection = new double[3];
-            MathUtil.unorm(spacecraftPos, spacecraftPosDirection);
-            double[] rotationAxisSpacecraft = new double[3];
-            MathUtil.vcrss(spacecraftPosDirection, zAxis, rotationAxisSpacecraft);
-
-            double rotationAngleSpacecraft = ((180.0/Math.PI)*MathUtil.vsep(zAxis, spacecraftPosDirection));
-
-            vtkTransform spacecraftMarkerTransform = new vtkTransform();
-            spacecraftMarkerTransform.Translate(spacecraftPos);
-            spacecraftMarkerTransform.RotateWXYZ(-rotationAngleSpacecraft, rotationAxisSpacecraft[0], rotationAxisSpacecraft[1], rotationAxisSpacecraft[2]);
-//            spacecraftMarkerHeadActor.SetUserTransform(spacecraftMarkerTransform);
-
-            // set camera to earth, spacecraft, or sun views - Alex W
-            if(earthView)
-            {
-                double[] focalpoint = {0,0,0};
-                double[] upVector = {0,1,0};
-                double[] newEarthPos = new double[3];
-                MathUtil.unorm(earthPos, newEarthPos);
-                MathUtil.vscl(scalingFactor, newEarthPos, newEarthPos);
-                renderer.setCameraOrientation(newEarthPos, renderer.getCameraFocalPoint(), upVector, renderer.getCameraViewAngle());
-            }
-            else if(move)
-            {
-                double[] focalpoint = {0,0,0};
-                double[] upVector = {0,1,0};
-                renderer.setCameraOrientation(currentFlybyStateHistory.getSpacecraftPosition(), renderer.getCameraFocalPoint(), upVector, renderer.getCameraViewAngle());
-            }
-            else if(sunView)
-            {
-                double[] focalpoint = {0,0,0};
-                double[] upVector = {0,1,0};
-                double[] newSunPos = new double[3];
-                MathUtil.unorm(sunPos, newSunPos);
-                MathUtil.vscl(scalingFactor, newSunPos, newSunPos);
-                renderer.setCameraOrientation(newSunPos, renderer.getCameraFocalPoint(), upVector, renderer.getCameraViewAngle());
-            }
-
-            double velocity[] = state.getSpacecraftVelocity();
-
-            double speed = Math.sqrt(velocity[0]*velocity[0] + velocity[1]*velocity[1] + velocity[2]*velocity[2]);
-
-            double radius = Math.sqrt(spacecraftPosition[0]*spacecraftPosition[0] + spacecraftPosition[1]*spacecraftPosition[1] + spacecraftPosition[2]*spacecraftPosition[2]);
-            result = smallBodyModel.computeRayIntersection(spacecraftViewpoint, spacecraftViewDirection, spacecraftMarkerPosition);
-            double smallBodyRadius = Math.sqrt(spacecraftMarkerPosition[0]*spacecraftMarkerPosition[0] + spacecraftMarkerPosition[1]*spacecraftMarkerPosition[1] + spacecraftMarkerPosition[2]*spacecraftMarkerPosition[2]);
-//            if(distanceOption==1)
-//            {
-//                radius = radius - smallBodyRadius;
-//            }
-
-            String speedText = String.format("%7.1f km %7.3f km/sec   .", radius, speed);
-
-            // set the current orientation
-            double[] xaxis = state.getSpacecraftXAxis();
-            double[] yaxis = state.getSpacecraftYAxis();
-            double[] zaxis = state.getSpacecraftZAxis();
-
-            // create spacecraft matrices
-            vtkMatrix4x4 spacecraftBodyMatrix = new vtkMatrix4x4();
-            vtkMatrix4x4 spacecraftIconMatrix = new vtkMatrix4x4();
-
-            vtkMatrix4x4 fovMatrix = new vtkMatrix4x4();
-            vtkMatrix4x4 fovRotateXMatrix = new vtkMatrix4x4();
-            vtkMatrix4x4 fovRotateYMatrix = new vtkMatrix4x4();
-            vtkMatrix4x4 fovRotateZMatrix = new vtkMatrix4x4();
-            vtkMatrix4x4 fovScaleMatrix = new vtkMatrix4x4();
-
-            vtkMatrix4x4 sunMarkerMatrix = new vtkMatrix4x4();
-            vtkMatrix4x4 earthMarkerMatrix = new vtkMatrix4x4();
-
-            vtkMatrix4x4 spacecraftInstrumentMatrix = new vtkMatrix4x4();
-
-            // set to identity
-            spacecraftBodyMatrix.Identity();
-            spacecraftIconMatrix.Identity();
-            fovMatrix.Identity();
-            fovRotateXMatrix.Identity();
-            fovRotateYMatrix.Identity();
-            fovRotateZMatrix.Identity();
-            sunMarkerMatrix.Identity();
-            earthMarkerMatrix.Identity();
-            //fovMatrix = new vtkMatrix4x4
-
-            // set body orientation matrix
-            for (int i=0; i<3; i++)
-            {
-                spacecraftBodyMatrix.SetElement(i, 0, xaxis[i]);
-                spacecraftBodyMatrix.SetElement(i, 1, yaxis[i]);
-                spacecraftBodyMatrix.SetElement(i, 2, zaxis[i]);
-            }
-
-            // create the icon matrix, which is just the body matrix scaled by a factor
-            for (int i=0; i<3; i++)
-                spacecraftIconMatrix.SetElement(i, i, iconScale);
-            spacecraftIconMatrix.Multiply4x4(spacecraftIconMatrix, spacecraftBodyMatrix, spacecraftIconMatrix);
-
-            // set translation
-            for (int i=0; i<3; i++)
-            {
-                spacecraftBodyMatrix.SetElement(i, 3, spacecraftPosition[i]);
-                spacecraftIconMatrix.SetElement(i, 3, spacecraftPosition[i]);
-                fovMatrix.SetElement(i, 3, spacecraftPosition[i]);
-
-                sunMarkerMatrix.SetElement(i, 3, sunMarkerPosition[i]);
-                earthMarkerMatrix.SetElement(i, 3, earthMarkerPosition[i]);
-            }
-
-//            spacecraftBodyActor.SetUserMatrix(spacecraftIconMatrix);
-
-            spacecraftLabelActor.SetAttachmentPoint(spacecraftPosition);
-            spacecraftLabelActor.SetCaption(speedText);
-
-//            spacecraftFovActor.SetUserMatrix(fovMatrix);
-
-//            spacecraftMarkerActor.SetUserMatrix(spacecraftBodyMatrix);
-//            earthMarkerActor.SetUserMatrix(earthMarkerMatrix);
-            spacecraftBody.Modified();
-            spacecraftFov.Modified();
-//            spacecraftMarkerBody.Modified();
-            earthMarkerHead.Modified();
-//            earthMarkerBody.Modified();
-//            sunAssembly.Modified();
-            sunDirectionMarker.Modified();
-
-            this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
-        }
-    }
 
     public void setShowSpacecraft(boolean show)
     {
         this.showSpacecraft = show;
         this.showSpacecraftFov = false;
         this.showSpacecraftLabel = show;
-        updateActorVisibility();
+        fireShowSpacecraftChangedListener(show);
+//        updateActorVisibility();
     }
-
-    //updated method so that it is togglable for pointers, trajectory etc. - Alex W
-    public void updateActorVisibility()
-    {
-        stateHistoryActors.clear();
-        initialize();
-
-        if (visible)
-        {
-            stateHistoryActors.add(trajectoryActor);
-        }
-
-        if (showSpacecraftBody)
-            stateHistoryActors.add(spacecraftBody.getActor());
-        if (showSpacecraftLabel)
-            stateHistoryActors.add(spacecraftLabelActor);
-        if (showSpacecraftFov)
-            stateHistoryActors.add(spacecraftFov.getActor());
-        if (showEarthMarker && !(time == 0.0))
-            stateHistoryActors.add(earthMarkerHeadActor);
-        if (showSunMarker && !(time == 0.0))
-        	stateHistoryActors.add(sunDirectionMarker.getActor());
-        if (showSpacecraftMarker)
-            stateHistoryActors.add(spacecraftMarkerHead.getActor());
-
-        if (showTimeBar)
-        {
-            stateHistoryActors.add(timeBarTextActor);
-        }
-
-        //displays extra messages at the bottom of the display
-        stateHistoryActors.add(statusBarTextActor);
-
-        this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
-    }
-
-    public ArrayList<vtkProp> getProps()
-    {
-        return stateHistoryActors;
-    }
-
-    //
-    // data display legends
-    //
-
 
 
     // sets the visibility of actors, called in StateHistoryPanel and gets the toggle info in it - Alex W
@@ -552,27 +171,17 @@ public class StateHistoryModel extends AbstractModel implements PropertyChangeLi
     {
         //maps the actors+data
         if(actorName.equalsIgnoreCase("Earth"))
-            showEarthMarker = visibility;
+            fireShowEarthChangedListener(visibility);
         if(actorName.equalsIgnoreCase("Sun"))
-            showSunMarker = visibility;
+            fireShowSunChangedListener(visibility);
         if(actorName.equalsIgnoreCase("SpacecraftMarker"))
-            showSpacecraftMarker = visibility;
+        	fireShowSpacecraftDirectionChangedListener(visibility);
         if(actorName.equalsIgnoreCase("Spacecraft"))
-        {
-            setShowSpacecraft(visibility);
-        }
+        	fireShowSpacecraftChangedListener(visibility);
         if(actorName.equalsIgnoreCase("Trajectory"))
-            if(visibility)
-            {
-                this.visible = true;
-            }
-            else
-            {
-                this.visible = false;
-            }
+        	fireShowTrajectoryChangedListener(visibility);
         if(actorName.equalsIgnoreCase("Lighting"))
-            showLighting = visibility;
-        updateActorVisibility();
+            fireShowLightingChangedListener(visibility);
     }
 
     public void setColoringIndex(int index) throws IOException
@@ -588,34 +197,14 @@ public class StateHistoryModel extends AbstractModel implements PropertyChangeLi
         return coloringIndex;
     }
 
-    private void setupStatusBar()
-    {
-        statusBarTextActor = new StatusBarTextActor();
-        stateHistoryActors.add(statusBarTextActor);
-
-        statusBarTextActor.GetTextProperty().SetColor(1.0, 1.0, 1.0);
-        statusBarTextActor.GetTextProperty().SetJustificationToCentered();
-        statusBarTextActor.GetTextProperty().BoldOn();
-
-        statusBarTextActor.VisibilityOn();
-    }
-
-
-
-    private void setupTimeBar()
-    {
-        timeBarTextActor = new TimeBarTextActor();
-        stateHistoryActors.add(timeBarTextActor);
-        showTimeBar = Preferences.getInstance().getAsBoolean(Preferences.SHOW_SCALE_BAR, true);
-    }
-
     public void setShowTimeBar(boolean enabled)
     {
         this.showTimeBar = enabled;
-        // The following forces the scale bar to be redrawn.
-        this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
-        // Note that we call firePropertyChange *twice*. Not really sure why.
-        this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
+        fireShowTimeBarChangedListener(enabled);
+//        // The following forces the scale bar to be redrawn.
+//        this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
+//        // Note that we call firePropertyChange *twice*. Not really sure why.
+//        this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
     }
 
     public boolean getShowTimeBar()
@@ -626,9 +215,10 @@ public class StateHistoryModel extends AbstractModel implements PropertyChangeLi
     public void setShowScalarBar(boolean enabled)
     {
         this.showScalarBar = enabled;
-        this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
-        // Note that we call firePropertyChange *twice*. Not really sure why.
-        this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
+        fireShowScalarBarChangedListener(enabled);
+//        this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
+//        // Note that we call firePropertyChange *twice*. Not really sure why.
+//        this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
     }
 
     public boolean getShowScalarBar()
@@ -638,14 +228,9 @@ public class StateHistoryModel extends AbstractModel implements PropertyChangeLi
 
     public String getClickStatusBarText(vtkProp prop, int cellId, double[] pickPosition)
     {
-        Trajectory traj = trajectory;
-        if (traj != null)
-        {
-            // putting selection code here until we get around to implementing a FlybyPicker -turnerj1
-            //            this.setCurrentTrajectoryId(traj.id);
-            return "Trajectory " + traj.getId() + " = " + traj.getName() + " contains " + traj.getX().size() + " vertices";
-        }
-        return "";
+        Trajectory traj = currentFlybyStateHistory.getTrajectory();
+        if (traj == null) return "";
+        return traj.toString();
     }
 
     public boolean getInitialized(){
@@ -654,7 +239,7 @@ public class StateHistoryModel extends AbstractModel implements PropertyChangeLi
 
     public String getTrajectoryName()
     {
-    	return trajectoryActor.getTrajectoryName();
+    	return currentFlybyStateHistory.getTrajectoryName();
     }
 
     public String defaultTrajectoryName() {
@@ -667,74 +252,11 @@ public class StateHistoryModel extends AbstractModel implements PropertyChangeLi
         return currentFlybyStateHistory.getSunPosition();
     }
 
-    // sets the renderer to move along the spacecraft trajectory - Alex W
-    public void setSpacecraftMovement(boolean move)
-    {
-        this.move = move;
-        if(move)
-        {
-            double[] focalpoint = {0,0,0};
-            double[] upVector = {0,1,0};
-            renderer.setCameraOrientation(currentFlybyStateHistory.getSpacecraftPosition(), renderer.getCameraFocalPoint(), upVector, 30);
-        }
-    }
-
-    // sets the renderer to the earth position and plays the animation with camera fixed to earth - Alex W
-    public void setEarthView(boolean move, boolean showSpacecraft)
-    {
-        this.earthView = move;
-        if(earthView)
-        {
-            double[] focalpoint = {0,0,0};
-            double[] upVector = {0,1,0};
-            double[] earthPos = currentFlybyStateHistory.getEarthPosition();
-            double[] newEarthPos = new double[3];
-            MathUtil.unorm(earthPos, newEarthPos);
-            MathUtil.vscl(scalingFactor, newEarthPos, newEarthPos);
-            renderer.setCameraOrientation(newEarthPos, renderer.getCameraFocalPoint(), upVector, 5);
-        }
-        if (showSpacecraft) {
-            this.setActorVisibility("Spacecraft", true);
-        }
-    }
-
-    // sets the renderer to the sun position and plays the animation with camera fixed to sun - Alex W
-    public void setSunView(boolean move, boolean showSpacecraft)
-    {
-        this.sunView = move;
-        if(sunView)
-        {
-            double[] focalpoint = {0,0,0};
-            double[] upVector = {0,1,0};
-            double[] sunPos = currentFlybyStateHistory.getSunPosition();
-            double[] newSunPos = new double[3];
-            MathUtil.unorm(sunPos, newSunPos);
-            MathUtil.vscl(scalingFactor, newSunPos, newSunPos);
-            renderer.setCameraOrientation(newSunPos, renderer.getCameraFocalPoint(), upVector, 5);
-        }
-        if (showSpacecraft) {
-            this.setActorVisibility("Spacecraft", true);
-        }
-    }
-
-    //returns renderer - Alex W
-    public Renderer getRenderer()
-    {
-        return renderer;
-    }
-
-    // sets view angle - Alex W
-    public void setViewAngle(double angle)
-    {
-        renderer.setCameraViewAngle(angle);
-    }
-
     // set time of animation - Alex W
     public boolean setInputTime(DateTime dt, IStateHistoryPanel panel)
     {
         try
         {
-
             String dtString = dt.toString().substring(0, 23);
             String start = timeArray.get(0)[0];
             String end = timeArray.get(0)[1];
@@ -768,6 +290,7 @@ public class StateHistoryModel extends AbstractModel implements PropertyChangeLi
     // toggle the visibility of trajectories - Alex W
     public void showTrajectory(boolean show)
     {
+    	fireShowTrajectoryChangedListener(show);
 //        if(show)
 //        {
 //            for(int i = 0; i<stateHistoryActors.size(); i++)
@@ -807,7 +330,7 @@ public class StateHistoryModel extends AbstractModel implements PropertyChangeLi
      * @return -1 if error thrown on creation, 1 if successfully created
      */
     // returns
-    public int createNewTimeInterval(/*IStateHistoryPanel panel,*/ double length, String name)
+    public int createNewTimeInterval(StateHistoryKey key, double length, String name)
     {
 
         // gets the history file from the server
@@ -819,8 +342,8 @@ public class StateHistoryModel extends AbstractModel implements PropertyChangeLi
         String endString = endTime.toString().substring(0,23);
 
         // searches the file for the specified times
-        String queryStart = readString(lineLength);
-        String queryEnd = readString((int)getBinaryFileLength()*lineLength-lineLength);
+        String queryStart = StateHistoryUtil.readString(lineLength, path);
+        String queryEnd = StateHistoryUtil.readString((int)StateHistoryUtil.getBinaryFileLength(path, lineLength)*lineLength-lineLength, path);
 
         // error checking
         if(startTime.compareTo(endTime) > 0)
@@ -837,11 +360,11 @@ public class StateHistoryModel extends AbstractModel implements PropertyChangeLi
         }
 
         // get start and stop positions in file
-        int positionStart = binarySearch(1, (int) getBinaryFileLength(), startString, false);
-        int positionEnd = binarySearch(1, (int) getBinaryFileLength(), endString, true);
+        int positionStart = StateHistoryUtil.binarySearch(1, (int) StateHistoryUtil.getBinaryFileLength(path, lineLength), startString, false, lineLength, path);
+        int positionEnd = StateHistoryUtil.binarySearch(1, (int) StateHistoryUtil.getBinaryFileLength(path, lineLength), endString, true, lineLength, path);
 
         // check length of time
-        if(readString(positionStart).compareTo(readString(positionEnd)) == 0)
+        if(StateHistoryUtil.readString(positionStart, path).compareTo(StateHistoryUtil.readString(positionEnd, path)) == 0)
         {
             JOptionPane.showMessageDialog(null, "The queried time interval is too small.", "Error",
                     JOptionPane.ERROR_MESSAGE);
@@ -851,7 +374,7 @@ public class StateHistoryModel extends AbstractModel implements PropertyChangeLi
         //sets the default name to "startTime_endTime"
         if(name.equals(""))
         {
-            name = readString(positionStart) + "_" + readString(positionEnd);
+            name = StateHistoryUtil.readString(positionStart, path) + "_" + StateHistoryUtil.readString(positionEnd, path);
         }
 
         // check length of interval
@@ -864,7 +387,7 @@ public class StateHistoryModel extends AbstractModel implements PropertyChangeLi
 
         // creates the trajectory
         Trajectory temp = new StandardTrajectory();
-        StateHistory history = new StandardStateHistory();
+        StateHistory history = new StandardStateHistory(key);
 
         this.currentFlybyStateHistory = history;
 
@@ -878,11 +401,11 @@ public class StateHistoryModel extends AbstractModel implements PropertyChangeLi
             {
                 position[j] = i + 25 + (j * 8);
             }
-            State flybyState = new CsvState(readString(i),
-                    readBinary(position[0]), readBinary(position[1]), readBinary(position[2]),
-                    readBinary(position[3]), readBinary(position[4]), readBinary(position[5]),
-                    readBinary(position[6]), readBinary(position[7]), readBinary(position[8]),
-                    readBinary(position[9]), readBinary(position[10]), readBinary(position[11]));
+            State flybyState = new CsvState(StateHistoryUtil.readString(i, path),
+            		StateHistoryUtil.readBinary(position[0], path), StateHistoryUtil.readBinary(position[1], path), StateHistoryUtil.readBinary(position[2], path),
+            		StateHistoryUtil.readBinary(position[3], path), StateHistoryUtil.readBinary(position[4], path), StateHistoryUtil.readBinary(position[5], path),
+            		StateHistoryUtil.readBinary(position[6], path), StateHistoryUtil.readBinary(position[7], path), StateHistoryUtil.readBinary(position[8], path),
+            		StateHistoryUtil.readBinary(position[9], path), StateHistoryUtil.readBinary(position[10], path), StateHistoryUtil.readBinary(position[11], path));
 
             // add to history
             history.put(flybyState);
@@ -901,7 +424,7 @@ public class StateHistoryModel extends AbstractModel implements PropertyChangeLi
 
         }
 
-        setCurrentTrajectory(temp);
+//        setCurrentTrajectory(temp);
 
         TrajectoryActor trajectoryActor = new TrajectoryActor(temp);
 
@@ -929,53 +452,10 @@ public class StateHistoryModel extends AbstractModel implements PropertyChangeLi
         return 1;
     }
 
-    private void setCurrentTrajectory(Trajectory temp)
-    {
-        trajectory = temp;
-    }
-
-
-
-
-    // starts the process for creating the movie frames
-    public void saveAnimation(IStateHistoryPanel panel, String start, String end)
-    {
-        AnimationFileDialog dialog = new AnimationFileDialog(start, end);
-        int result = dialog.showSaveDialog(panel.getView());
-
-        if(result == JFileChooser.CANCEL_OPTION || result == JFileChooser.ERROR_OPTION)
-        {
-            return;
-        }
-
-        File file = dialog.getSelectedFile();
-
-
-        int frameNum = (Integer) dialog.getNumFrames().getValue();
-        timeStep = 1.0/ (double) frameNum;
-
-        Animator animator = new Animator(renderer);
-        animator.saveAnimation(frameNum, file, new AnimatorFrameRunnable()
-		{
-        	@Override
-        	public void run(AnimationFrame frame)
-        	{
-        		// TODO Auto-generated method stub
-        		super.run(frame);
-        		run();
-        	}
-
-			@Override
-			public void run()
-			{
-				setTimeFraction(frame.timeFraction);
-		        frame.panel.setTimeSlider(frame.timeFraction);
-			}
-		});
-
-    }
-
-
+//    private void setCurrentTrajectory(Trajectory temp)
+//    {
+//        trajectory = temp;
+//    }
 
 //    // sets the renderer to the information in the animation frame
 //    private void setAnimationFrame(AnimationFrame frame)
@@ -984,94 +464,12 @@ public class StateHistoryModel extends AbstractModel implements PropertyChangeLi
 //        frame.panel.setTimeSlider(frame.timeFraction);
 //    }
 
-    // binary searches the binary file for a time for the new time interval feature - Alex W
-    private int binarySearch(int first, int last, String target, boolean pos)
-    {
-        if(first > last)
-        {
-            if(pos)
-            {
-                return (last + 1) * lineLength;
-            }
-            return (last) * lineLength;
-        }
-        else
-        {
-            int middle = (first+last)/2;
-            int compResult = target.compareTo(readString((middle) * lineLength));
-            if(compResult == 0)
-                return (middle) * lineLength;
-            else if(compResult < 0)
-                return binarySearch(first, middle - 1, target, pos);
-            else
-                return binarySearch(middle + 1, last, target, pos);
-        }
-    }
 
-    // gets the number of lines of a binary file, needed for the binary search - Alex W
-    private long getBinaryFileLength()
-    {
-        long length = 0;
-        try
-        {
-            RandomAccessFile fileStore = new RandomAccessFile(path, "r");
-            length = fileStore.length()/lineLength;
-            fileStore.close();
-        }
-        catch (Exception e)
-        {
-            return length;
-        }
-        return length;
-    }
-
-    // reads binary that represents a String - Alex W
-    private String readString(int postion)
-    {
-        String string = "";
-        try
-        {
-            RandomAccessFile fileStore = new RandomAccessFile(path, "r");
-            fileStore.seek(postion);
-            string = fileStore.readUTF();
-            fileStore.close();
-        }
-        catch (Exception e)
-        {
-            return "";
-        }
-        return string;
-    }
-
-    // reads binary that represents a double - Alex W
-    private double readBinary(int postion)
-    {
-        double num = 0;
-        try
-        {
-            RandomAccessFile fileStore = new RandomAccessFile(path, "r");
-            fileStore.seek(postion);
-            num = fileStore.readDouble();
-            fileStore.close();
-        }
-        catch (Exception e)
-        {
-            return 0;
-        }
-        return  num;
-    }
 
     // gets the start and end times of a trajectory - Alex W
     public String[] getIntervalTime()
     {
         return timeArray.get(0);
-    }
-
-    @Override
-    public void propertyChange(PropertyChangeEvent evt)
-    {
-        // TODO Auto-generated method stub
-
     }
 
     public DateTime getStartTime()
@@ -1091,242 +489,123 @@ public class StateHistoryModel extends AbstractModel implements PropertyChangeLi
         description = desc;
     }
 
-    public void setTrajectoryLineThickness(double value)
-    {
-    	trajectoryActor.setTrajectoryLineThickness(value);
-        this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null , null);
-    }
 
-    public void setTrajectoryColor(double[] color)
-    {
-        this.trajectoryActor.setTrajectoryColor(color);
-        // recreate poly data with new color
-//        if (showing) {
-            this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
-//        }
-    }
 
-    public void setTrajectoryName(String name)
-    {
-    	this.trajectory.setName(name);
-    }
+//    public void setTrajectoryName(String name)
+//    {
+//    	this.trajectory.setName(name);
+//    }
 
     public void setDistanceText(String distanceText)
     {
-    	//TODO fix
-//    	this.spacecraftLabelActor.setDistanceText(option, state, spacecraftPosition);
+    	fireDistanceTextChangedListener(distanceText);
     }
 
-    public void updateTimeBarPosition(int windowWidth, int windowHeight)
-    {
-    	this.timeBarTextActor.updateTimeBarPosition(windowWidth, windowHeight);
-    }
-
-    public void updateTimeBarValue(double time)
-    {
-    	this.timeBarTextActor.updateTimeBarValue(time);
-    }
-
-    public void updateStatusBarPosition(int windowWidth, int windowHeight)
-    {
-    	this.statusBarTextActor.updateStatusBarPosition(windowWidth, windowHeight);
-    }
-
-    public void updateStatusBarValue(String text)
-    {
-    	this.statusBarTextActor.updateStatusBarValue(text);
-    }
-
-    public void setSpacecraftPointerSize(int size)
-    {
-    	this.spacecraftMarkerHead.setSpacecraftPointerSize(size);
-    }
-
-    public void setSunPointerSize(int size)
-    {
-    	this.sunDirectionMarker.setSunPointerSize(size);
-    }
-
-    public void setEarthPointerSize(int size)
-    {
-    	this.earthDirectionMarker.setEarthPointerSize(size);
-    }
-
-    public void saveIntervalToFile(String shapeModelName, StateHistory interval, String fileName)
-    {
-//        SmallBodyViewConfig config = (SmallBodyViewConfig) smallBodyModel.getConfig();
-        // writes the header for the new history
-        try
-        {
-            FileWriter writer = new FileWriter(fileName);
-//            writer.append(config.getShapeModelName());
-            writer.append(',');
-            writer.append('\n');
-
-            // Create header of name, description, color
-            writer.append(interval.getTrajectoryName() + ',');
-            writer.append(interval.getTrajectoryDescription() + ',');
-            for (double colorElement : interval.getTrajectoryColor()) {
-                writer.append(Double.toString(colorElement));
-                writer.append(',');
-            }
-            writer.append(Double.toString(interval.getTrajectoryThickness()));
-            writer.append('\n');
-
-            // header of column names for each entry
-            writer.append("#UTC");
-            writer.append(',');
-            writer.append(" Sun x");
-            writer.append(',');
-            writer.append(" Sun y");
-            writer.append(',');
-            writer.append(" Sun z");
-            writer.append(',');
-            writer.append(" Earth x");
-            writer.append(',');
-            writer.append(" Earth y");
-            writer.append(',');
-            writer.append(" Earth z");
-            writer.append(',');
-            writer.append(" SC x");
-            writer.append(',');
-            writer.append(" SC y");
-            writer.append(',');
-            writer.append(" SC z");
-            writer.append(',');
-            writer.append(" SCV x");
-            writer.append(',');
-            writer.append(" SCV y");
-            writer.append(',');
-            writer.append(" SCV z");
-            writer.append('\n');
-            writer.flush();
-            writer.close();
-        }
-        catch (IOException e)
-        {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
-
-        // get each flyby state in currentFlybyStateHistory, and write to CSV
-        Set<Double> keySet = interval.getAllKeys();
-        for (Double key : keySet) {
-            CsvState history = (CsvState)interval.getValue(key);
-            history.writeToCSV(fileName);
-        }
-
-    }
-
-	public StateHistory loadStateHistoryFromFile(File runFile, String shapeModelName)
-    {
-        Integer firstIndex = null;
-        String runDirName = runFile.getAbsolutePath();
-        StandardTrajectory trajectory;
-
-        initialize();
-
-        try
-        {
-            String runName = runFile.getName();
-            if (runName.endsWith(".csv"))
-            {
-                BufferedReader in = new BufferedReader(new FileReader(runFile));
-                String beforeParse = in.readLine();
-                String input = beforeParse.substring(0, beforeParse.indexOf(','));
-                if(input.equals(shapeModelName)){
-                    passFileNames.add(runName);
-                }
-                in.close();
-            }
-        }
-        catch (Exception e1)
-        {
-            // TODO Auto-generated catch block
-            e1.printStackTrace();
-        }
-
-        StateHistory history = null;
-        try {
-            BufferedReader in = new BufferedReader(new FileReader(runDirName));
-
-            if (firstIndex == null)
-                firstIndex = 0;
-
-            trajectory = new StandardTrajectory();
-            // fill in the Trajectory parameters
-            trajectory.setId(0);
-
-            // create a new history instance and add it to the Map
-            history = new StandardStateHistory();
-
-            // discard first line of body name
-            in.readLine();
-
-            // get name, desc, color form second line
-            String info = in.readLine();
-            String[] data = info.split(",");
-            trajectory.setName(data[0]);
-            setTrajectoryName(data[0]);
-            setDescription(data[1]);
-            setTrajectoryColor(new double[]{Double.parseDouble(data[2]), Double.parseDouble(data[3]),
-                                            Double.parseDouble(data[4]),Double.parseDouble(data[5])});
-            setTrajectoryLineThickness(Double.parseDouble(data[6]));
 
 
-            // discard third line of headers
-            in.readLine();
+	private void fireTimeChangedListener(Double t)
+	{
+		for (StateHistoryModelChangedListener listener : listeners)
+		{
+			listener.timeChanged(t);
+		}
+	}
 
-            String line;
-            String[] timeSet = new String[2];
-            timeArray.add(timeSet);
-            while ((line = in.readLine()) != null)
-            {
-                // parse line of file
-                State flybyState = new CsvState(line);
+	private void fireShowSpacecraftChangedListener(boolean showSpacecraft)
+	{
+		for (StateHistoryModelChangedListener listener : listeners)
+		{
+			listener.showSpacecraftChanged(showSpacecraft);
+		}
+	}
 
-                // add to history
-                history.put(flybyState);
+	private void fireShowSpacecraftDirectionChangedListener(boolean showSpacecraftDirection)
+	{
+		for (StateHistoryModelChangedListener listener : listeners)
+		{
+			listener.showSpacecraftDirectionChanged(showSpacecraftDirection);
+		}
+	}
 
-                double[] spacecraftPosition = flybyState.getSpacecraftPosition();
+	private void fireShowSunChangedListener(boolean showSun)
+	{
+		for (StateHistoryModelChangedListener listener : listeners)
+		{
+			listener.showSunChanged(showSun);
+		}
+	}
 
-                trajectory.getX().add(spacecraftPosition[0]);
-                trajectory.getY().add(spacecraftPosition[1]);
-                trajectory.getZ().add(spacecraftPosition[2]);
+	private void fireShowEarthChangedListener(boolean showEarth)
+	{
+		for (StateHistoryModelChangedListener listener : listeners)
+		{
+			listener.showEarthChanged(showEarth);
+		}
+	}
 
-                if(com.mysql.jdbc.StringUtils.isNullOrEmpty(timeArray.get(0)[0])){
-                    timeArray.get(0)[0] = flybyState.getUtc();
-                }
-                timeArray.get(0)[1] = flybyState.getUtc();
-            }
-            in.close();
+	private void fireShowScalarBarChangedListener(boolean showScalarBar)
+	{
+		for (StateHistoryModelChangedListener listener : listeners)
+		{
+			listener.showScalarBarChanged(showScalarBar);
+		}
+	}
 
-            this.currentFlybyStateHistory = history;
+	private void fireShowTrajectoryChangedListener(boolean showTrajectory)
+	{
+		for (StateHistoryModelChangedListener listener : listeners)
+		{
+			listener.showTrajectoryChanged(showTrajectory);
+		}
+	}
 
+	private void fireTrajectoryColorChangedListener(double[] color)
+	{
+		for (StateHistoryModelChangedListener listener : listeners)
+		{
+			listener.trajectoryColorChanged(color);
+		}
+	}
 
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+	private void fireTrajectoryThicknessChangedListener(double thickness)
+	{
+		for (StateHistoryModelChangedListener listener : listeners)
+		{
+			listener.trajectoryThicknessChanged(thickness);
+		}
+	}
 
-        DateTime start = ISODateTimeFormat.dateTimeParser().parseDateTime(timeArray.get(0)[0]);
-        DateTime stop = ISODateTimeFormat.dateTimeParser().parseDateTime(timeArray.get(0)[1]);
-        this.startTime = start;
-        this.endTime = stop;
+	private void fireDistanceTextChangedListener(String distanceText)
+	{
+		for (StateHistoryModelChangedListener listener : listeners)
+		{
+			listener.distanceTextChanged(distanceText);
+		}
+	}
 
+	private void fireTrajectoryCreatedListener(Trajectory trajectory)
+	{
+		for (StateHistoryModelChangedListener listener : listeners)
+		{
+			listener.trajectoryCreated(trajectory);
+		}
+	}
 
-        // set up vtk stuff
-        createTrajectoryPolyData();
-        trajectoryMapper.SetInputData(trajectoryPolylines);
-        trajectoryActor.SetMapper(trajectoryMapper);
-        setTimeFraction(0.0);
+	private void fireShowLightingChangedListener(boolean showLighting)
+	{
+		for (StateHistoryModelChangedListener listener : listeners)
+		{
+			listener.showLightingChanged(showLighting);
+		}
+	}
 
-
-        initialize();
-        spacecraftBody.Modified();
-        trajectoryActor.Modified();
-        return history;
-
-    }
+	private void fireShowTimeBarChangedListener(boolean showTimeBar)
+	{
+		for (StateHistoryModelChangedListener listener : listeners)
+		{
+			listener.showTimeBarChanged(showTimeBar);
+		}
+	}
 }
 
 

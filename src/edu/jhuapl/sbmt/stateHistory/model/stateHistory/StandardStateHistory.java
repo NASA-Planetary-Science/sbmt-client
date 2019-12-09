@@ -7,6 +7,7 @@ import java.util.TreeMap;
 
 import edu.jhuapl.sbmt.stateHistory.model.interfaces.State;
 import edu.jhuapl.sbmt.stateHistory.model.interfaces.StateHistory;
+import edu.jhuapl.sbmt.stateHistory.model.interfaces.Trajectory;
 
 import altwg.util.MathUtil;
 
@@ -16,10 +17,11 @@ public class StandardStateHistory implements StateHistory
 
     private Double time;
     private StateHistoryKey key;
-    private double[] trajectoryColor;
-    private String trajectoryName;
-    private String trajectoryDescription;
-    private double trajectoryThickness;
+    private Trajectory trajectory;
+//    private double[] trajectoryColor;
+//    private String trajectoryName;
+//    private String trajectoryDescription;
+//    private double trajectoryThickness;
 
     public StateHistoryKey getKey()
     {
@@ -178,25 +180,31 @@ public class StandardStateHistory implements StateHistory
 	@Override
 	public String getTrajectoryName()
 	{
-		return trajectoryName;
+		return trajectory.getName();
 	}
 
 	@Override
 	public String getTrajectoryDescription()
 	{
-		return trajectoryDescription;
+		return trajectory.toString();
 	}
 
 	@Override
 	public double[] getTrajectoryColor()
 	{
-		return trajectoryColor;
+		return trajectory.getTrajectoryColor();
 	}
 
 	@Override
 	public double getTrajectoryThickness()
 	{
-		return trajectoryThickness;
+		return trajectory.getTrajectoryThickness();
+	}
+
+	@Override
+	public Trajectory getTrajectory()
+	{
+		return trajectory;
 	}
 
 }

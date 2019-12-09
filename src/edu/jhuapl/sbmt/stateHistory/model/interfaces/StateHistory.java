@@ -50,5 +50,6 @@ public interface StateHistory extends HasTime
 
     public double getTrajectoryThickness();
 
+    public Trajectory getTrajectory();
 
 }
