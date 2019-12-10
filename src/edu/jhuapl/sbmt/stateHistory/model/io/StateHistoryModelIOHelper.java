@@ -84,7 +84,7 @@ public class StateHistoryModelIOHelper
 
     }
 
-	public StateHistory loadStateHistoryFromFile(File runFile, String shapeModelName)
+	public static StateHistory loadStateHistoryFromFile(File runFile, String shapeModelName)
     {
         Integer firstIndex = null;
         String runDirName = runFile.getAbsolutePath();

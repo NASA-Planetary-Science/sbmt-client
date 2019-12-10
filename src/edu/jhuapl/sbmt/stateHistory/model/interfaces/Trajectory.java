@@ -34,4 +34,14 @@ public interface Trajectory
 
     public double getTrajectoryThickness();
 
+    public void setTrajectoryColor(double[] color);
+
+    public void setTrajectoryName(String name);
+
+    public void setTrajectoryDescription(String desc);
+
+    public String getTrajectoryDescription();
+
+    public void setTrajectoryLineThickness(double thickness);
+
 }

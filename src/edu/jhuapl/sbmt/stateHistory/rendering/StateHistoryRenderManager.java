@@ -20,11 +20,13 @@ import edu.jhuapl.saavtk.util.BoundingBox;
 import edu.jhuapl.saavtk.util.Configuration;
 import edu.jhuapl.saavtk.util.ConvertResourceToFile;
 import edu.jhuapl.saavtk.util.MathUtil;
-import edu.jhuapl.saavtk.util.Preferences;
 import edu.jhuapl.saavtk.util.Properties;
+import edu.jhuapl.sbmt.client.SmallBodyModel;
 import edu.jhuapl.sbmt.stateHistory.model.AnimatorFrameRunnable;
+import edu.jhuapl.sbmt.stateHistory.model.StateHistoryModel;
 import edu.jhuapl.sbmt.stateHistory.model.animator.AnimationFrame;
 import edu.jhuapl.sbmt.stateHistory.model.interfaces.State;
+import edu.jhuapl.sbmt.stateHistory.model.interfaces.StateHistory;
 import edu.jhuapl.sbmt.stateHistory.model.interfaces.Trajectory;
 import edu.jhuapl.sbmt.stateHistory.model.trajectory.StandardTrajectory;
 import edu.jhuapl.sbmt.stateHistory.rendering.animator.Animator;
@@ -34,6 +36,11 @@ import edu.jhuapl.sbmt.stateHistory.ui.version2.IStateHistoryPanel;
 public class StateHistoryRenderManager extends AbstractModel // implements
 																// HasTime
 {
+	StateHistoryRenderModel renderModel = new StateHistoryRenderModel();
+
+    //Use approximate radius of largest solar system body as scale for surface intercept vector.
+    private static final double JupiterScale = 75000;
+
 	private double timeStep;
 	private TimeBarTextActor timeBarTextActor;
 	private StatusBarTextActor statusBarTextActor;
@@ -62,15 +69,22 @@ public class StateHistoryRenderManager extends AbstractModel // implements
 	private vtkAssembly sunAssembly;
 
 	private ArrayList<vtkProp> stateHistoryActors = new ArrayList<vtkProp>();
+	private StateHistoryModel historyModel;
+	private SmallBodyModel smallBodyModel;
+	double scalingFactor;
 
-	public StateHistoryRenderManager(Renderer renderer)
+	private double[] sunDirection;
+
+	public StateHistoryRenderManager(Renderer renderer, StateHistoryModel historyModel)
 	{
 		this.renderer = renderer;
+		this.historyModel = historyModel;
+		this.smallBodyModel = historyModel.getSmallBodyModel();
 	}
 
 	private void initialize()
 	{
-		initialized = true;
+//		initialized = true;
 		BoundingBox bb = smallBodyModel.getBoundingBox();
 		double width = Math.max((bb.xmax - bb.xmin), Math.max((bb.ymax - bb.ymin), (bb.zmax - bb.zmin)));
 		scalingFactor = 30.62 * width + -0.0002237;
@@ -95,9 +109,8 @@ public class StateHistoryRenderManager extends AbstractModel // implements
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
-
-			showSpacecraftMarker = false;
-			showSpacecraft = false;
+			renderModel.setShowSpacecraftMarker(false);
+			renderModel.setShowSpacecraft(false);
 			updateActorVisibility();
 		}
 		if (statusBarTextActor == null)
@@ -132,26 +145,28 @@ public class StateHistoryRenderManager extends AbstractModel // implements
 		// Scale subsolar and subearth point markers to body size
 		BoundingBox bb = smallBodyModel.getBoundingBox();
 		double width = Math.max((bb.xmax - bb.xmin), Math.max((bb.ymax - bb.ymin), (bb.zmax - bb.zmin)));
-		markerRadius = 0.02 * width;
-		markerHeight = markerRadius * 3.0;
+		renderModel.setMarkerRadius(0.02 * width);
+		renderModel.setMarkerHeight(renderModel.getMarkerRadius() * 3.0);
 
-		earthDirectionMarker = new EarthDirectionMarker(markerRadius / 16.0, markerHeight, 0, 0, 0);
-		sunDirectionMarker = new SunDirectionMarker(markerRadius / 16.0, markerHeight, 0, 0, 0);
-		scDirectionMarker = new SpacecraftDirectionMarker(markerRadius / 16.0, markerHeight, 0, 0, 0);
+
+		earthDirectionMarker = new EarthDirectionMarker(renderModel.getMarkerRadius() / 16.0, renderModel.getMarkerHeight(), 0, 0, 0);
+		sunDirectionMarker = new SunDirectionMarker(renderModel.getMarkerRadius() / 16.0, renderModel.getMarkerHeight(), 0, 0, 0);
+		scDirectionMarker = new SpacecraftDirectionMarker(renderModel.getMarkerRadius() / 16.0, renderModel.getMarkerHeight(), 0, 0, 0);
 	}
 
 	public void setTimeFraction(Double timeFraction)
 	{
+		StateHistory currentFlybyStateHistory = historyModel.getCurrentFlybyStateHistory();
 		if (currentFlybyStateHistory != null && spacecraftBody.getActor() != null)
 		{
 			// set the time
 			currentFlybyStateHistory.setTimeFraction(timeFraction);
-			setTime(currentFlybyStateHistory.getTime());
+			historyModel.setTime(currentFlybyStateHistory.getTime());
 
 			if (timeBarTextActor != null)
 			{
 				timeBarTextActor.updateTimeBarPosition(renderer.getPanelWidth(), renderer.getPanelHeight());
-				timeBarTextActor.updateTimeBarValue(getTime());
+				timeBarTextActor.updateTimeBarValue(historyModel.getTime());
 			}
 
 			// get the current FlybyState
@@ -169,7 +184,7 @@ public class StateHistoryRenderManager extends AbstractModel // implements
 			int result = smallBodyModel.computeRayIntersection(sunViewpoint, sunViewDirection, sunMarkerPosition);
 
 			// toggle for lighting - Alex W
-			if (timeFraction >= 0.0 && showLighting)
+			if (timeFraction >= 0.0 && renderModel.isShowLighting())
 			{
 				renderer.setFixedLightDirection(sunDirection);
 				renderer.setLighting(LightingType.FIXEDLIGHT);
@@ -250,7 +265,7 @@ public class StateHistoryRenderManager extends AbstractModel // implements
 			// spacecraftMarkerHeadActor.SetUserTransform(spacecraftMarkerTransform);
 
 			// set camera to earth, spacecraft, or sun views - Alex W
-			if (earthView)
+			if (renderModel.isShowEarthView())
 			{
 				double[] focalpoint =
 				{ 0, 0, 0 };
@@ -261,7 +276,7 @@ public class StateHistoryRenderManager extends AbstractModel // implements
 				MathUtil.vscl(scalingFactor, newEarthPos, newEarthPos);
 				renderer.setCameraOrientation(newEarthPos, renderer.getCameraFocalPoint(), upVector,
 						renderer.getCameraViewAngle());
-			} else if (move)
+			} else if (renderModel.isMove())
 			{
 				double[] focalpoint =
 				{ 0, 0, 0 };
@@ -269,7 +284,7 @@ public class StateHistoryRenderManager extends AbstractModel // implements
 				{ 0, 1, 0 };
 				renderer.setCameraOrientation(currentFlybyStateHistory.getSpacecraftPosition(),
 						renderer.getCameraFocalPoint(), upVector, renderer.getCameraViewAngle());
-			} else if (sunView)
+			} else if (renderModel.isShowSunView())
 			{
 				double[] focalpoint =
 				{ 0, 0, 0 };
@@ -342,7 +357,7 @@ public class StateHistoryRenderManager extends AbstractModel // implements
 			// create the icon matrix, which is just the body matrix scaled by a
 			// factor
 			for (int i = 0; i < 3; i++)
-				spacecraftIconMatrix.SetElement(i, i, iconScale);
+				spacecraftIconMatrix.SetElement(i, i, renderModel.getIconScale());
 			spacecraftIconMatrix.Multiply4x4(spacecraftIconMatrix, spacecraftBodyMatrix, spacecraftIconMatrix);
 
 			// set translation
@@ -419,8 +434,8 @@ public class StateHistoryRenderManager extends AbstractModel // implements
 			@Override
 			public void run()
 			{
-				setTimeFraction(frame.timeFraction);
-				frame.panel.setTimeSlider(frame.timeFraction);
+				setTimeFraction(getFrame().timeFraction);
+				getFrame().panel.setTimeSlider(getFrame().timeFraction);
 			}
 		});
 
@@ -433,25 +448,25 @@ public class StateHistoryRenderManager extends AbstractModel // implements
 		stateHistoryActors.clear();
 		initialize();
 
-		if (visible)
+//		if (visible)
 		{
 			stateHistoryActors.add(trajectoryActor);
 		}
 
-		if (showSpacecraftBody)
+		if (renderModel.isShowSpacecraftBody())
 			stateHistoryActors.add(spacecraftBody.getActor());
-		if (showSpacecraftLabel)
+		if (renderModel.isShowSpacecraftLabel())
 			stateHistoryActors.add(spacecraftLabelActor);
-		if (showSpacecraftFov)
+		if (renderModel.isShowSpacecraftFov())
 			stateHistoryActors.add(spacecraftFov.getActor());
-		if (showEarthMarker && !(time == 0.0))
+		if (renderModel.isShowEarthMarker() && !(historyModel.getTime() == 0.0))
 			stateHistoryActors.add(earthMarkerHeadActor);
-		if (showSunMarker && !(time == 0.0))
+		if (renderModel.isShowSunMarker() && !(historyModel.getTime() == 0.0))
 			stateHistoryActors.add(sunDirectionMarker.getActor());
-		if (showSpacecraftMarker)
+		if (renderModel.isShowSpacecraftMarker())
 			stateHistoryActors.add(spacecraftMarkerHead.getActor());
 
-		if (showTimeBar)
+		if (renderModel.isShowTimeBar())
 		{
 			stateHistoryActors.add(timeBarTextActor);
 		}
@@ -526,59 +541,59 @@ public class StateHistoryRenderManager extends AbstractModel // implements
 
 	private void setupTimeBar()
 	{
-		timeBarTextActor = new TimeBarTextActor();
-		stateHistoryActors.add(timeBarTextActor);
-		showTimeBar = Preferences.getInstance().getAsBoolean(Preferences.SHOW_SCALE_BAR, true);
+//		timeBarTextActor = new TimeBarTextActor();
+//		stateHistoryActors.add(timeBarTextActor);
+//		showTimeBar = Preferences.getInstance().getAsBoolean(Preferences.SHOW_SCALE_BAR, true);
 	}
 
 	// sets the renderer to move along the spacecraft trajectory - Alex W
     public void setSpacecraftMovement(boolean move)
     {
-        this.move = move;
-        if(move)
-        {
-            double[] focalpoint = {0,0,0};
-            double[] upVector = {0,1,0};
-            renderer.setCameraOrientation(currentFlybyStateHistory.getSpacecraftPosition(), renderer.getCameraFocalPoint(), upVector, 30);
-        }
+//        renderModel.setMove(move);
+//        if(move)
+//        {
+//            double[] focalpoint = {0,0,0};
+//            double[] upVector = {0,1,0};
+//            renderer.setCameraOrientation(currentFlybyStateHistory.getSpacecraftPosition(), renderer.getCameraFocalPoint(), upVector, 30);
+//        }
     }
 
  // sets the renderer to the earth position and plays the animation with camera fixed to earth - Alex W
     public void setEarthView(boolean move, boolean showSpacecraft)
     {
-        this.earthView = move;
-        if(earthView)
-        {
-            double[] focalpoint = {0,0,0};
-            double[] upVector = {0,1,0};
-            double[] earthPos = currentFlybyStateHistory.getEarthPosition();
-            double[] newEarthPos = new double[3];
-            MathUtil.unorm(earthPos, newEarthPos);
-            MathUtil.vscl(scalingFactor, newEarthPos, newEarthPos);
-            renderer.setCameraOrientation(newEarthPos, renderer.getCameraFocalPoint(), upVector, 5);
-        }
-        if (showSpacecraft) {
-            this.setActorVisibility("Spacecraft", true);
-        }
+//        renderModel.setEarthView(move);
+//        if(renderModel.isEarthView())
+//        {
+//            double[] focalpoint = {0,0,0};
+//            double[] upVector = {0,1,0};
+//            double[] earthPos = currentFlybyStateHistory.getEarthPosition();
+//            double[] newEarthPos = new double[3];
+//            MathUtil.unorm(earthPos, newEarthPos);
+//            MathUtil.vscl(scalingFactor, newEarthPos, newEarthPos);
+//            renderer.setCameraOrientation(newEarthPos, renderer.getCameraFocalPoint(), upVector, 5);
+//        }
+//        if (showSpacecraft) {
+//            this.setActorVisibility("Spacecraft", true);
+//        }
     }
 
     // sets the renderer to the sun position and plays the animation with camera fixed to sun - Alex W
     public void setSunView(boolean move, boolean showSpacecraft)
     {
-        this.sunView = move;
-        if(sunView)
-        {
-            double[] focalpoint = {0,0,0};
-            double[] upVector = {0,1,0};
-            double[] sunPos = currentFlybyStateHistory.getSunPosition();
-            double[] newSunPos = new double[3];
-            MathUtil.unorm(sunPos, newSunPos);
-            MathUtil.vscl(scalingFactor, newSunPos, newSunPos);
-            renderer.setCameraOrientation(newSunPos, renderer.getCameraFocalPoint(), upVector, 5);
-        }
-        if (showSpacecraft) {
-            this.setActorVisibility("Spacecraft", true);
-        }
+//        renderModel.setSunView(move);
+//        if(renderModel.isSunView())
+//        {
+//            double[] focalpoint = {0,0,0};
+//            double[] upVector = {0,1,0};
+//            double[] sunPos = currentFlybyStateHistory.getSunPosition();
+//            double[] newSunPos = new double[3];
+//            MathUtil.unorm(sunPos, newSunPos);
+//            MathUtil.vscl(scalingFactor, newSunPos, newSunPos);
+//            renderer.setCameraOrientation(newSunPos, renderer.getCameraFocalPoint(), upVector, 5);
+//        }
+//        if (showSpacecraft) {
+//            this.setActorVisibility("Spacecraft", true);
+//        }
     }
 
 

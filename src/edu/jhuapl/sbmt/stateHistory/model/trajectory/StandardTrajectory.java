@@ -14,6 +14,7 @@ public class StandardTrajectory implements Trajectory
     private ArrayList<Double> z;
     private double[] color;
     private double thickness;
+    private String description;
 
     public int getCellId()
     {
@@ -119,6 +120,36 @@ public class StandardTrajectory implements Trajectory
 	}
 
 	public void setThickness(double thickness)
+	{
+		this.thickness = thickness;
+	}
+
+	@Override
+	public void setTrajectoryColor(double[] color)
+	{
+		this.color = color;
+	}
+
+	@Override
+	public void setTrajectoryName(String name)
+	{
+		this.name = name;
+	}
+
+	@Override
+	public void setTrajectoryDescription(String desc)
+	{
+		this.description = desc;
+	}
+
+	@Override
+	public String getTrajectoryDescription()
+	{
+		return description;
+	}
+
+	@Override
+	public void setTrajectoryLineThickness(double thickness)
 	{
 		this.thickness = thickness;
 	}

@@ -90,7 +90,7 @@ public class StateHistoryCollection extends SaavtkItemManager<StateHistory> /*Ab
         simRuns.add(run);
         keys.add(key);
 //        setCurrentRun(key);  TODO only do this when selected? this way loading a new interval doesn't override existing one
-        run.addPropertyChangeListener(this);
+//        run.addPropertyChangeListener(this);
         this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
     }
 
@@ -107,7 +107,7 @@ public class StateHistoryCollection extends SaavtkItemManager<StateHistory> /*Ab
 //        this.currentRun = simRuns.get(0);
         this.currentRun = null;
 
-        run.removePropertyChangeListener(this);
+//        run.removePropertyChangeListener(this);
 
         this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
         this.pcs.firePropertyChange(Properties.MODEL_REMOVED, null, run);
@@ -133,15 +133,17 @@ public class StateHistoryCollection extends SaavtkItemManager<StateHistory> /*Ab
 
     public void setShowTrajectories(boolean show)
     {
-        for (StateHistory run : simRuns)
-            run.setShowSpacecraft(show);
+    	//TODO fix
+//        for (StateHistory run : simRuns)
+//            run.setShowSpacecraft(show);
     }
 
     public ArrayList<vtkProp> getProps()
     {
-        if (currentRun != null)
-            return currentRun.getProps();
-        else
+    	//TODO fix
+//        if (currentRun != null)
+//            return currentRun.getProps();
+//        else
             return new ArrayList<vtkProp>();
     }
 
@@ -153,9 +155,10 @@ public class StateHistoryCollection extends SaavtkItemManager<StateHistory> /*Ab
 
     public String getClickStatusBarText(vtkProp prop, int cellId, double[] pickPosition)
     {
-        if (currentRun != null)
-            return currentRun.getClickStatusBarText(prop, cellId, pickPosition);
-        else
+    	//TODO fix
+//        if (currentRun != null)
+//            return currentRun.getClickStatusBarText(prop, cellId, pickPosition);
+//        else
             return "No simulation run selected";
     }
 
@@ -196,19 +199,19 @@ public class StateHistoryCollection extends SaavtkItemManager<StateHistory> /*Ab
             return null;
     }
 
-    public void setOffset(double offset)
-    {
-        if (currentRun != null)
-            currentRun.setOffset(offset);
-    }
-
-    public double getOffset()
-    {
-        if (currentRun!= null)
-            return currentRun.getOffset();
-        else
-            return 0.0;
-    }
+//    public void setOffset(double offset)
+//    {
+//        if (currentRun != null)
+//            currentRun.setOffset(offset);
+//    }
+//
+//    public double getOffset()
+//    {
+//        if (currentRun!= null)
+//            return currentRun.getOffset();
+//        else
+//            return 0.0;
+//    }
 
     public Double getPeriod()
     {

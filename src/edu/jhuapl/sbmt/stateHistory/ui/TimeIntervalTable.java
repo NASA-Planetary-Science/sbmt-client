@@ -2,7 +2,6 @@ package edu.jhuapl.sbmt.stateHistory.ui;
 
 import java.awt.Color;
 import java.awt.Component;
-import java.io.File;
 import java.util.Arrays;
 import java.util.Set;
 
@@ -22,7 +21,6 @@ import com.google.common.collect.Sets;
 
 import edu.jhuapl.saavtk.gui.render.Renderer;
 import edu.jhuapl.sbmt.client.SmallBodyModel;
-import edu.jhuapl.sbmt.stateHistory.model.StateHistoryModel;
 import edu.jhuapl.sbmt.stateHistory.model.interfaces.StateHistory;
 import edu.jhuapl.sbmt.stateHistory.model.stateHistory.StateHistoryCollection;
 import edu.jhuapl.sbmt.stateHistory.model.stateHistory.StateHistoryKey;
@@ -137,22 +135,28 @@ public class TimeIntervalTable extends JTable
             }
         }
 
-        public void saveRowToFile(int selectedRow, File file)
+        public StateHistory getStateHistoryAtRow(int selectedRow)
         {
-            StateHistoryKey key = intervals.getKeyFromRow(selectedRow);
-            StateHistory thisRow = intervals.getRun(key);
-            StateHistoryModel shm = new StateHistoryModel(bodyModel, renderer);
-            shm.saveIntervalToFile(bodyModel.getConfig().getShapeModelName(), thisRow, file.getAbsolutePath());
-
+        	StateHistoryKey key = intervals.getKeyFromRow(selectedRow);
+        	return intervals.getRun(key);
         }
 
-        public void loadIntervalFromFile(File runFile, SmallBodyModel bodyModel)
-        {
-            StateHistoryKey key = new StateHistoryKey(intervals);
-            StateHistoryModel shm = new StateHistoryModel(bodyModel, renderer);
-            StateHistory newRow = shm.loadStateHistoryFromFile(runFile, bodyModel.getConfig().getShapeModelName());
-            addInterval(newRow, renderer);
-        }
+//        public void saveRowToFile(int selectedRow, File file)
+//        {
+//            StateHistoryKey key = intervals.getKeyFromRow(selectedRow);
+//            StateHistory thisRow = intervals.getRun(key);
+//            StateHistoryModel shm = new StateHistoryModel(bodyModel, renderer);
+//            shm.saveIntervalToFile(bodyModel.getConfig().getShapeModelName(), thisRow, file.getAbsolutePath());
+//
+//        }
+//
+//        public void loadIntervalFromFile(File runFile, SmallBodyModel bodyModel)
+//        {
+//            StateHistoryKey key = new StateHistoryKey(intervals);
+//            StateHistoryModel shm = new StateHistoryModel(bodyModel, renderer);
+//            StateHistory newRow = shm.loadStateHistoryFromFile(runFile, bodyModel.getConfig().getShapeModelName());
+//            addInterval(newRow, renderer);
+//        }
 
     }
 

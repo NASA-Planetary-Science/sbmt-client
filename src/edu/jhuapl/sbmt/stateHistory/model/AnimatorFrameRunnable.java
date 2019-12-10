@@ -15,4 +15,9 @@ public abstract class AnimatorFrameRunnable implements Runnable
 	{
 		this.frame = frame;
 	}
+
+	public AnimationFrame getFrame()
+	{
+		return frame;
+	}
 }
