@@ -72,7 +72,7 @@ public class RandomizePanel extends JPanel implements ActionListener, LidarColor
 	}
 
 	@Override
-	public void activate()
+	public void activate(boolean aIsActive)
 	{
 		updateControlArea();
 	}

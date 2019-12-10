@@ -1,7 +1,9 @@
 package edu.jhuapl.sbmt.client.configs;
 
+import java.util.ArrayList;
 import java.util.GregorianCalendar;
 import java.util.LinkedHashMap;
+import java.util.List;
 
 import com.google.common.collect.ImmutableList;
 
@@ -16,34 +18,44 @@ import edu.jhuapl.sbmt.client.SbmtMultiMissionTool;
 import edu.jhuapl.sbmt.client.ShapeModelDataUsed;
 import edu.jhuapl.sbmt.client.ShapeModelPopulation;
 import edu.jhuapl.sbmt.client.SmallBodyViewConfig;
-import edu.jhuapl.sbmt.client.SpectralMode;
 import edu.jhuapl.sbmt.config.SBMTBodyConfiguration;
 import edu.jhuapl.sbmt.config.SBMTFileLocator;
 import edu.jhuapl.sbmt.config.SBMTFileLocators;
 import edu.jhuapl.sbmt.config.SessionConfiguration;
 import edu.jhuapl.sbmt.config.ShapeModelConfiguration;
 import edu.jhuapl.sbmt.imaging.instruments.ImagingInstrumentConfiguration;
-import edu.jhuapl.sbmt.lidar.old.OlaCubesGenerator;
-import edu.jhuapl.sbmt.model.bennu.otes.SpectraHierarchicalSearchSpecification;
+import edu.jhuapl.sbmt.model.bennu.lidar.old.OlaCubesGenerator;
 import edu.jhuapl.sbmt.model.image.BasicImagingInstrument;
 import edu.jhuapl.sbmt.model.image.ImageSource;
 import edu.jhuapl.sbmt.model.image.ImageType;
 import edu.jhuapl.sbmt.model.image.ImagingInstrument;
 import edu.jhuapl.sbmt.model.image.Instrument;
+import edu.jhuapl.sbmt.model.image.SpectralImageMode;
 import edu.jhuapl.sbmt.model.ryugu.nirs3.NIRS3;
-import edu.jhuapl.sbmt.model.ryugu.nirs3.atRyugu.Hayabusa2SpectrumInstrumentMetadataIO;
-import edu.jhuapl.sbmt.model.spectrum.instruments.BasicSpectrumInstrument;
 import edu.jhuapl.sbmt.query.QueryBase;
 import edu.jhuapl.sbmt.query.database.GenericPhpQuery;
 import edu.jhuapl.sbmt.query.fixedlist.FixedListQuery;
+import edu.jhuapl.sbmt.spectrum.model.core.BasicSpectrumInstrument;
+import edu.jhuapl.sbmt.spectrum.model.core.SpectrumInstrumentMetadata;
+import edu.jhuapl.sbmt.spectrum.model.core.search.SpectraHierarchicalSearchSpecification;
+import edu.jhuapl.sbmt.spectrum.model.core.search.SpectrumSearchSpec;
+import edu.jhuapl.sbmt.spectrum.model.io.SpectrumInstrumentMetadataIO;
 import edu.jhuapl.sbmt.tools.DBRunInfo;
 
 public class RyuguConfigs extends SmallBodyViewConfig
 {
+	List<SpectrumInstrumentMetadata<SpectrumSearchSpec>> instrumentSearchSpecs = new ArrayList<SpectrumInstrumentMetadata<SpectrumSearchSpec>>();
+
 
 	public RyuguConfigs()
 	{
 		super(ImmutableList.<String>copyOf(DEFAULT_GASKELL_LABELS_PER_RESOLUTION), ImmutableList.<Integer>copyOf(DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION));
+
+		SpectrumSearchSpec nirs3 = new SpectrumSearchSpec("NIRS3", "/ryugu/shared/nirs3", "spectra", "spectrumlist.txt", ImageSource.valueFor("Corrected SPICE Derived"), "nm", "Radiance", "NIRS3");
+		List<SpectrumSearchSpec> nirs3Specs = new ArrayList<SpectrumSearchSpec>();
+		nirs3Specs.add(nirs3);
+
+		instrumentSearchSpecs.add(new SpectrumInstrumentMetadata<SpectrumSearchSpec>("NIRS3", nirs3Specs));
 	}
 
 
@@ -123,14 +135,14 @@ public class RyuguConfigs extends SmallBodyViewConfig
     //            samCam = BasicImagingInstrument.of(builder.build());
     //        }
 
-          BasicImagingInstrument tir;
+          ImagingInstrument tir;
           {
               // Set up images.
               SBMTFileLocator fileLocator = SBMTFileLocators.of(bodyConfig, modelConfig, Instrument.TIR, ".fit", ".INFO", null, ".jpeg");
               QueryBase queryBase = new FixedListQuery(fileLocator.get(SBMTFileLocator.TOP_PATH).getLocation(""), fileLocator.get(SBMTFileLocator.GALLERY_FILE).getLocation(""));
               Builder<ImagingInstrumentConfiguration> imagingInstBuilder = ImagingInstrumentConfiguration.builder(
                       Instrument.TIR,
-                      SpectralMode.MONO,
+                      SpectralImageMode.MONO,
                       queryBase,
                       new ImageSource[] { ImageSource.SPICE },
                       fileLocator,
@@ -197,9 +209,8 @@ public class RyuguConfigs extends SmallBodyViewConfig
             c.imageSearchDefaultMaxResolution = 300.0;
 
             c.hasSpectralData = true;
-            c.spectralInstruments = new BasicSpectrumInstrument[] {
-                    new NIRS3()
-            };
+            c.spectralInstruments = new ArrayList<BasicSpectrumInstrument>();
+            c.spectralInstruments.add(new NIRS3());
 
             c.presentInMissions = new SbmtMultiMissionTool.Mission[] {SbmtMultiMissionTool.Mission.APL_INTERNAL, SbmtMultiMissionTool.Mission.TEST_APL_INTERNAL,SbmtMultiMissionTool.Mission.STAGE_APL_INTERNAL,
 					SbmtMultiMissionTool.Mission.HAYABUSA2_DEPLOY, SbmtMultiMissionTool.Mission.HAYABUSA2_DEV};
@@ -208,29 +219,29 @@ public class RyuguConfigs extends SmallBodyViewConfig
             configArray.add(c);
 
             c.hasLidarData = false;
-            c.hasHypertreeBasedLidarSearch = true; // enable tree-based lidar searching
-            c.lidarInstrumentName = Instrument.LASER;
-            c.lidarSearchDefaultStartDate = new GregorianCalendar(2000, 0, 1, 0, 0, 0).getTime();
-            c.lidarSearchDefaultEndDate = new GregorianCalendar(2050, 0, 1, 0, 0, 0).getTime();
-            c.lidarSearchDataSourceMap = new LinkedHashMap<>();
-            c.lidarBrowseDataSourceMap = new LinkedHashMap<>();
-//          c.lidarSearchDataSourceMap.put("Hayabusa2","/ryugu/shared/lidar/tree/dataSource.lidar");
-            c.lidarBrowseDataSourceMap.put("Hayabusa2", "/earth/hayabusa2/laser/browse/fileList.txt");
-            c.lidarBrowseFileListResourcePath = "/earth/hayabusa2/laser/browse/fileList.txt";
-
-            c.lidarBrowseXYZIndices = OlaCubesGenerator.xyzIndices;
-            c.lidarBrowseSpacecraftIndices = OlaCubesGenerator.scIndices;
-            c.lidarBrowseIsSpacecraftInSphericalCoordinates = false;
-            c.lidarBrowseTimeIndex = 26;
-            c.lidarBrowseNoiseIndex = 62;
-            c.lidarBrowseOutgoingIntensityIndex = 98;
-            c.lidarBrowseReceivedIntensityIndex = 106;
-            c.lidarBrowseIntensityEnabled = true;
-            c.lidarBrowseNumberHeaderLines = 0;
-            c.lidarBrowseIsInMeters = true;
-            c.lidarBrowseIsBinary = true;
-            c.lidarBrowseBinaryRecordSize = 186;
-            c.lidarOffsetScale = 0.0005;
+//            c.hasHypertreeBasedLidarSearch = true; // enable tree-based lidar searching
+//            c.lidarInstrumentName = Instrument.LASER;
+//            c.lidarSearchDefaultStartDate = new GregorianCalendar(2000, 0, 1, 0, 0, 0).getTime();
+//            c.lidarSearchDefaultEndDate = new GregorianCalendar(2050, 0, 1, 0, 0, 0).getTime();
+//            c.lidarSearchDataSourceMap = new LinkedHashMap<>();
+//            c.lidarBrowseDataSourceMap = new LinkedHashMap<>();
+////          c.lidarSearchDataSourceMap.put("Hayabusa2","/ryugu/shared/lidar/tree/dataSource.lidar");
+//            c.lidarBrowseDataSourceMap.put("Hayabusa2", "/earth/hayabusa2/laser/browse/fileList.txt");
+//            c.lidarBrowseFileListResourcePath = "/earth/hayabusa2/laser/browse/fileList.txt";
+//
+//            c.lidarBrowseXYZIndices = OlaCubesGenerator.xyzIndices;
+//            c.lidarBrowseSpacecraftIndices = OlaCubesGenerator.scIndices;
+//            c.lidarBrowseIsSpacecraftInSphericalCoordinates = false;
+//            c.lidarBrowseTimeIndex = 26;
+//            c.lidarBrowseNoiseIndex = 62;
+//            c.lidarBrowseOutgoingIntensityIndex = 98;
+//            c.lidarBrowseReceivedIntensityIndex = 106;
+//            c.lidarBrowseIntensityEnabled = true;
+//            c.lidarBrowseNumberHeaderLines = 0;
+//            c.lidarBrowseIsInMeters = true;
+//            c.lidarBrowseIsBinary = true;
+//            c.lidarBrowseBinaryRecordSize = 186;
+//            c.lidarOffsetScale = 0.0005;
         }
 
         if (Configuration.isAPLVersion())
@@ -445,7 +456,7 @@ public class RyuguConfigs extends SmallBodyViewConfig
             c.imageSearchDefaultEndDate = new GregorianCalendar(2021, 0, 31, 0, 0, 0).getTime();
             c.imageSearchDefaultMaxSpacecraftDistance = 120000.0;
             c.imageSearchDefaultMaxResolution = 300.0;
-            c.density = 1500.; // (kg/m^3)
+            c.density = 1.500; // (g/cm^3)
             c.rotationRate = 0.00022871; // (rad/sec)
 
             c.hasLidarData = true;
@@ -542,7 +553,7 @@ public class RyuguConfigs extends SmallBodyViewConfig
             c.imageSearchDefaultEndDate = new GregorianCalendar(2021, 0, 31, 0, 0, 0).getTime();
             c.imageSearchDefaultMaxSpacecraftDistance = 120000.0;
             c.imageSearchDefaultMaxResolution = 300.0;
-            c.density = 1500.; // (kg/m^3)
+            c.density = 1.500; // (g/cm^3)
             c.rotationRate = 0.00022871; // (rad/sec)
 
             c.hasLidarData = true;
@@ -636,7 +647,7 @@ public class RyuguConfigs extends SmallBodyViewConfig
             c.imageSearchDefaultEndDate = new GregorianCalendar(2021, 0, 31, 0, 0, 0).getTime();
             c.imageSearchDefaultMaxSpacecraftDistance = 120000.0;
             c.imageSearchDefaultMaxResolution = 300.0;
-            c.density = 1500.; // (kg/m^3)
+            c.density = 1.500; // (g/cm^3)
             c.rotationRate = 0.00022871; // (rad/sec)
 
             c.hasLidarData = true;
@@ -732,7 +743,7 @@ public class RyuguConfigs extends SmallBodyViewConfig
             c.imageSearchDefaultEndDate = new GregorianCalendar(2021, 0, 31, 0, 0, 0).getTime();
             c.imageSearchDefaultMaxSpacecraftDistance = 120000.0;
             c.imageSearchDefaultMaxResolution = 300.0;
-            c.density = 1500.; // (kg/m^3)
+            c.density = 1.500; // (g/cm^3)
             c.rotationRate = 0.00022871; // (rad/sec)
 
             c.hasLidarData = true;
@@ -826,7 +837,7 @@ public class RyuguConfigs extends SmallBodyViewConfig
             c.imageSearchDefaultEndDate = new GregorianCalendar(2021, 0, 31, 0, 0, 0).getTime();
             c.imageSearchDefaultMaxSpacecraftDistance = 120000.0;
             c.imageSearchDefaultMaxResolution = 300.0;
-            c.density = 1500.; // (kg/m^3)
+            c.density = 1.500; // (g/cm^3)
             c.rotationRate = 0.00022871; // (rad/sec)
 
             c.hasLidarData = true;
@@ -924,7 +935,7 @@ public class RyuguConfigs extends SmallBodyViewConfig
             c.imageSearchDefaultEndDate = new GregorianCalendar(2021, 0, 31, 0, 0, 0).getTime();
             c.imageSearchDefaultMaxSpacecraftDistance = 120000.0;
             c.imageSearchDefaultMaxResolution = 300.0;
-            c.density = 1500.; // (kg/m^3)
+            c.density = 1.500; // (g/cm^3)
             c.rotationRate = 0.00022871; // (rad/sec)
 
             c.hasLidarData = true;
@@ -1020,7 +1031,7 @@ public class RyuguConfigs extends SmallBodyViewConfig
             c.imageSearchDefaultEndDate = new GregorianCalendar(2021, 0, 31, 0, 0, 0).getTime();
             c.imageSearchDefaultMaxSpacecraftDistance = 120000.0;
             c.imageSearchDefaultMaxResolution = 300.0;
-            c.density = 1500.; // (kg/m^3)
+            c.density = 1.500; // (g/cm^3)
             c.rotationRate = 0.00022871; // (rad/sec)
 
             c.hasLidarData = true;
@@ -1118,7 +1129,7 @@ public class RyuguConfigs extends SmallBodyViewConfig
             c.imageSearchDefaultEndDate = new GregorianCalendar(2021, 0, 31, 0, 0, 0).getTime();
             c.imageSearchDefaultMaxSpacecraftDistance = 120000.0;
             c.imageSearchDefaultMaxResolution = 300.0;
-            c.density = 1500.; // (kg/m^3)
+            c.density = 1.500; // (g/cm^3)
             c.rotationRate = 0.00022871; // (rad/sec)
 
             c.hasLidarData = true;
@@ -1216,7 +1227,7 @@ public class RyuguConfigs extends SmallBodyViewConfig
             c.imageSearchDefaultEndDate = new GregorianCalendar(2021, 0, 31, 0, 0, 0).getTime();
             c.imageSearchDefaultMaxSpacecraftDistance = 120000.0;
             c.imageSearchDefaultMaxResolution = 300.0;
-            c.density = 1200.; // (kg/m^3)
+            c.density = 1.200; // (g/cm^3)
             c.rotationRate = 0.00022871; // (rad/sec)
 
             c.hasLidarData = true;
@@ -1314,7 +1325,7 @@ public class RyuguConfigs extends SmallBodyViewConfig
             c.imageSearchDefaultEndDate = new GregorianCalendar(2021, 0, 31, 0, 0, 0).getTime();
             c.imageSearchDefaultMaxSpacecraftDistance = 120000.0;
             c.imageSearchDefaultMaxResolution = 300.0;
-            c.density = 1200.; // (kg/m^3)
+            c.density = 1.200; // (g/cm^3)
             c.rotationRate = 0.00022871; // (rad/sec)
 
             c.hasLidarData = true;
@@ -1414,7 +1425,7 @@ public class RyuguConfigs extends SmallBodyViewConfig
             c.imageSearchDefaultEndDate = new GregorianCalendar(2021, 0, 31, 0, 0, 0).getTime();
             c.imageSearchDefaultMaxSpacecraftDistance = 120000.0;
             c.imageSearchDefaultMaxResolution = 300.0;
-            c.density = 1200.; // (kg/m^3)
+            c.density = 1.200; // (g/cm^3)
             c.rotationRate = 0.00022871; // (rad/sec)
 
             c.hasLidarData = true;
@@ -1516,11 +1527,11 @@ public class RyuguConfigs extends SmallBodyViewConfig
             c.imageSearchDefaultMaxResolution = 300.0;
 
             c.hasSpectralData = true;
-            c.spectralInstruments = new BasicSpectrumInstrument[] {
-                    new NIRS3()
-            };
+            c.spectralInstruments = new ArrayList<BasicSpectrumInstrument>();
+            c.spectralInstruments.add(new NIRS3());
 
-            c.density = 1200.; // (kg/m^3)
+
+            c.density = 1.200; // (g/cm^3)
             c.rotationRate = 0.00022871; // (rad/sec)
 
             c.hasHierarchicalSpectraSearch = true;
@@ -1529,8 +1540,8 @@ public class RyuguConfigs extends SmallBodyViewConfig
             c.spectraSearchDataSourceMap.put("NIRS3", c.rootDirOnServer + "/nirs3/l2c/hypertree/dataSource.spectra");
             c.spectrumMetadataFile = c.rootDirOnServer + "/spectraMetadata.json";
 
-            Hayabusa2SpectrumInstrumentMetadataIO specIO = new Hayabusa2SpectrumInstrumentMetadataIO("HAYABUSA2");
-            specIO.setPathString(c.spectrumMetadataFile);
+            SpectrumInstrumentMetadataIO specIO = new SpectrumInstrumentMetadataIO("HAYABUSA2", c.instrumentSearchSpecs);
+//            specIO.setPathString(c.spectrumMetadataFile);
             c.hierarchicalSpectraSearchSpecification = specIO;
 
             c.hasLidarData = true;
@@ -1628,7 +1639,7 @@ public class RyuguConfigs extends SmallBodyViewConfig
             c.imageSearchDefaultEndDate = new GregorianCalendar(2021, 0, 31, 0, 0, 0).getTime();
             c.imageSearchDefaultMaxSpacecraftDistance = 120000.0;
             c.imageSearchDefaultMaxResolution = 300.0;
-            c.density = 1500.; // (kg/m^3)
+            c.density = 1.500; // (g/cm^3)
             c.rotationRate = 0.00022871; // (rad/sec)
 
             c.hasLidarData = true;
@@ -1716,7 +1727,7 @@ public class RyuguConfigs extends SmallBodyViewConfig
             c.imageSearchDefaultEndDate = new GregorianCalendar(2021, 0, 31, 0, 0, 0).getTime();
             c.imageSearchDefaultMaxSpacecraftDistance = 120000.0;
             c.imageSearchDefaultMaxResolution = 300.0;
-            c.density = 1500.; // (kg/m^3)
+            c.density = 1.500; // (g/cm^3)
             c.rotationRate = 0.00022871; // (rad/sec)
 
             c.hasLidarData = true;
@@ -1807,7 +1818,7 @@ public class RyuguConfigs extends SmallBodyViewConfig
             c.imageSearchDefaultEndDate = new GregorianCalendar(2021, 0, 31, 0, 0, 0).getTime();
             c.imageSearchDefaultMaxSpacecraftDistance = 120000.0;
             c.imageSearchDefaultMaxResolution = 300.0;
-            c.density = 1500.; // (kg/m^3)
+            c.density = 1.500; // (g/cm^3)
             c.rotationRate = 0.00022871; // (rad/sec)
 
             c.hasLidarData = true;
@@ -1897,7 +1908,7 @@ public class RyuguConfigs extends SmallBodyViewConfig
             c.imageSearchDefaultEndDate = new GregorianCalendar(2021, 0, 31, 0, 0, 0).getTime();
             c.imageSearchDefaultMaxSpacecraftDistance = 120000.0;
             c.imageSearchDefaultMaxResolution = 300.0;
-            c.density = 1200.; // (kg/m^3)
+            c.density = 1.200; // (g/cm^3)
             c.rotationRate = 0.00022871; // (rad/sec)
 
             c.hasLidarData = true;
@@ -1986,7 +1997,7 @@ public class RyuguConfigs extends SmallBodyViewConfig
             c.imageSearchDefaultEndDate = new GregorianCalendar(2021, 0, 31, 0, 0, 0).getTime();
             c.imageSearchDefaultMaxSpacecraftDistance = 120000.0;
             c.imageSearchDefaultMaxResolution = 300.0;
-            c.density = 1200.; // (kg/m^3)
+            c.density = 1.200; // (g/cm^3)
             c.rotationRate = 0.00022871; // (rad/sec)
 
             c.hasLidarData = true;
@@ -2075,7 +2086,7 @@ public class RyuguConfigs extends SmallBodyViewConfig
             c.imageSearchDefaultEndDate = new GregorianCalendar(2021, 0, 31, 0, 0, 0).getTime();
             c.imageSearchDefaultMaxSpacecraftDistance = 120000.0;
             c.imageSearchDefaultMaxResolution = 300.0;
-            c.density = 1200.; // (kg/m^3)
+            c.density = 1.200; // (g/cm^3)
             c.rotationRate = 0.00022867; // (rad/sec)
 
             c.hasLidarData = true;
@@ -2132,7 +2143,7 @@ public class RyuguConfigs extends SmallBodyViewConfig
 
     private static ImagingInstrument setupImagingInstrument(SBMTFileLocator fileLocator, SBMTBodyConfiguration bodyConfig, ShapeModelConfiguration modelConfig, Instrument instrument, QueryBase queryBase, ImageSource[] imageSources, ImageType imageType)
     {
-        Builder<ImagingInstrumentConfiguration> imagingInstBuilder = ImagingInstrumentConfiguration.builder(instrument, SpectralMode.MONO, queryBase, imageSources, fileLocator, imageType);
+        Builder<ImagingInstrumentConfiguration> imagingInstBuilder = ImagingInstrumentConfiguration.builder(instrument, SpectralImageMode.MONO, queryBase, imageSources, fileLocator, imageType);
 
         // Put it all together in a session.
         Builder<SessionConfiguration> builder = SessionConfiguration.builder(bodyConfig, modelConfig, fileLocator);

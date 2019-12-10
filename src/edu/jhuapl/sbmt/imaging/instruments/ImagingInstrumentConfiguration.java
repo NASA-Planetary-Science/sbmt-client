@@ -4,18 +4,18 @@ import edu.jhuapl.saavtk.config.Configurable;
 import edu.jhuapl.saavtk.config.ExtensibleTypedLookup;
 import edu.jhuapl.saavtk.config.FixedTypedLookup;
 import edu.jhuapl.saavtk.config.Key;
-import edu.jhuapl.sbmt.client.SpectralMode;
 import edu.jhuapl.sbmt.config.SBMTFileLocator;
 import edu.jhuapl.sbmt.model.image.ImageSource;
 import edu.jhuapl.sbmt.model.image.ImageType;
 import edu.jhuapl.sbmt.model.image.Instrument;
+import edu.jhuapl.sbmt.model.image.SpectralImageMode;
 import edu.jhuapl.sbmt.query.QueryBase;
 
 public class ImagingInstrumentConfiguration extends ExtensibleTypedLookup implements Configurable
 {
     // Required keys.
     public static final Key<Instrument> INSTRUMENT = Key.of("Instrument");
-    public static final Key<SpectralMode> SPECTRAL_MODE = Key.of("Spectral Mode");
+    public static final Key<SpectralImageMode> SPECTRAL_MODE = Key.of("Spectral Mode");
     public static final Key<QueryBase> QUERY_BASE = Key.of("Search query");
     public static final Key<ImageSource[]> IMAGE_SOURCE = Key.of("Image source for searches");
     public static final Key<SBMTFileLocator> FILE_LOCATOR = Key.of("Image file locator");
@@ -31,7 +31,7 @@ public class ImagingInstrumentConfiguration extends ExtensibleTypedLookup implem
     // Use this one for sbmt2 branch.
     public static Builder<ImagingInstrumentConfiguration> builder(
             Instrument instrument,
-            SpectralMode spectralMode,
+            SpectralImageMode spectralMode,
             QueryBase queryBase,
             ImageSource[] imageSource,
             SBMTFileLocator imageFileLocator)
@@ -54,7 +54,7 @@ public class ImagingInstrumentConfiguration extends ExtensibleTypedLookup implem
     // Use this one for sbmt1dev branch.
     public static Builder<ImagingInstrumentConfiguration> builder(
             Instrument instrument,
-            SpectralMode spectralMode,
+            SpectralImageMode spectralMode,
             QueryBase queryBase,
             ImageSource[] imageSource,
             SBMTFileLocator imageFileLocator,

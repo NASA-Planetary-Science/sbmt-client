@@ -547,13 +547,19 @@ public class ImageResultsTableController
         IdPair resultIntervalCurrentlyShown = imageSearchModel.getResultIntervalCurrentlyShown();
         IdPair originalInterval = resultIntervalCurrentlyShown;
         removeImageBoundaries(originalInterval);
+        int step = Integer.parseInt((String) imageResultsTableView.getNumberOfBoundariesComboBox().getSelectedItem());
         if (resultIntervalCurrentlyShown != null)
         {
             // Only get the prev block if there's something left to show.
             if (resultIntervalCurrentlyShown.id1 > 0)
             {
-                resultIntervalCurrentlyShown.prevBlock(Integer.parseInt((String) imageResultsTableView.getNumberOfBoundariesComboBox().getSelectedItem()));
+                resultIntervalCurrentlyShown.prevBlock(step);
                 showImageBoundaries(resultIntervalCurrentlyShown);
+            }
+            else
+            {
+            	resultIntervalCurrentlyShown = new IdPair(imageRawResults.size()-step, imageRawResults.size());
+            	showImageBoundaries(resultIntervalCurrentlyShown);
             }
         }
 
@@ -564,12 +570,18 @@ public class ImageResultsTableController
         IdPair resultIntervalCurrentlyShown = imageSearchModel.getResultIntervalCurrentlyShown();
         IdPair originalInterval = resultIntervalCurrentlyShown;
         removeImageBoundaries(originalInterval);
+        int step = Integer.parseInt((String) imageResultsTableView.getNumberOfBoundariesComboBox().getSelectedItem());
         if (resultIntervalCurrentlyShown != null)
         {
             // Only get the next block if there's something left to show.
             if (resultIntervalCurrentlyShown.id2 < imageResultsTableView.getResultList().getModel().getRowCount())
             {
-                resultIntervalCurrentlyShown.nextBlock(Integer.parseInt((String) imageResultsTableView.getNumberOfBoundariesComboBox().getSelectedItem()));
+                resultIntervalCurrentlyShown.nextBlock(step);
+                showImageBoundaries(resultIntervalCurrentlyShown);
+            }
+            else
+            {
+            	resultIntervalCurrentlyShown = new IdPair(0, step);
                 showImageBoundaries(resultIntervalCurrentlyShown);
             }
         }
@@ -1043,6 +1055,11 @@ public class ImageResultsTableController
 
         }
     }
+
+	public List<ImageKeyInterface> getImageKeys()
+	{
+		return imageKeys;
+	}
 
     //    class DragDropRowTableUI extends BasicTableUI {
     //

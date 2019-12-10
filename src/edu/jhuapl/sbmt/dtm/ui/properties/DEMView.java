@@ -17,7 +17,9 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 import javax.swing.AbstractAction;
 import javax.swing.ImageIcon;
@@ -56,6 +58,7 @@ import edu.jhuapl.saavtk.model.structure.Line;
 import edu.jhuapl.saavtk.model.structure.LineModel;
 import edu.jhuapl.saavtk.pick.PickManager;
 import edu.jhuapl.saavtk.pick.PickManager.PickMode;
+import edu.jhuapl.saavtk.pick.PickUtil;
 import edu.jhuapl.saavtk.popup.PopupManager;
 import edu.jhuapl.saavtk.popup.PopupMenu;
 import edu.jhuapl.saavtk.util.LatLon;
@@ -83,7 +86,7 @@ public class DEMView extends JFrame implements ActionListener, PropertyChangeLis
     private static final String Color = "Color";
 
     // State vars
-    private final LineModel lineModel;
+    private final LineModel<Line> lineModel;
     private final ModelManager modelManager;
     private final PickManager pickManager;
     private final DEMPlot plot;
@@ -124,7 +127,7 @@ public class DEMView extends JFrame implements ActionListener, PropertyChangeLis
 
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 
-        StatusBar statusBar = new StatusBar();
+        StatusBar statusBar = new StatusBar(true);
         add(statusBar, BorderLayout.PAGE_END);
 
         // Look up dem object in main view
@@ -141,7 +144,7 @@ public class DEMView extends JFrame implements ActionListener, PropertyChangeLis
         }
         priDEM.setColoringIndex(secDEM.getColoringIndex());
 
-        lineModel = new LineModel(priDEM, true);
+        lineModel = new LineModel<>(priDEM, true);
         lineModel.setMaximumVerticesPerLine(2);
         HashMap<ModelNames, Model> allModels = new HashMap<ModelNames, Model>();
         allModels.put(ModelNames.SMALL_BODY, priDEM);
@@ -157,7 +160,8 @@ public class DEMView extends JFrame implements ActionListener, PropertyChangeLis
         PopupMenu popupMenu = new MapmakerLinesPopupMenu(modelManager, parentPolyhedralModel, renderer);
         popupManager.registerPopup(lineModel, popupMenu);
 
-        pickManager = new PickManager(renderer, statusBar, modelManager, popupManager);
+        pickManager = new PickManager(renderer, modelManager, popupManager);
+        PickUtil.installDefaultPickHandler(pickManager, statusBar, renderer, modelManager);
 
         refColorbar = new Colorbar(renderer);
 
@@ -270,11 +274,11 @@ public class DEMView extends JFrame implements ActionListener, PropertyChangeLis
         {
             removeFaultyProfiles();
 
-            lineModel.addNewStructure();
+            Line tmpItem = lineModel.addNewStructure();
 
             // Set the color of this new structure
-            int idx = lineModel.getNumberOfStructures() - 1;
-            lineModel.setStructureColor(idx, getDefaultColor(idx));
+            int idx = lineModel.getNumItems() - 1;
+            lineModel.setStructureColor(tmpItem, getDefaultColor(idx));
 
             pickManager.setPickMode(PickMode.LINE_DRAW);
             editButton.setSelected(true);
@@ -527,13 +531,13 @@ public class DEMView extends JFrame implements ActionListener, PropertyChangeLis
      *
      * @param aIdx
      */
-    private int[] getDefaultColor(int aIdx)
+    private Color getDefaultColor(int aIdx)
     {
         int numColors = DefaultDrawingSupplier.DEFAULT_PAINT_SEQUENCE.length;
         int tmpIdx = aIdx % numColors;
-        Color tmpColor = (Color)DefaultDrawingSupplier.DEFAULT_PAINT_SEQUENCE[tmpIdx];
 
-        return new int[] {tmpColor.getRed(), tmpColor.getGreen(), tmpColor.getBlue(), tmpColor.getAlpha()};
+        Color retColor = (Color)DefaultDrawingSupplier.DEFAULT_PAINT_SEQUENCE[tmpIdx];
+        return retColor;
     }
 
     private void saveView(File file) throws IOException
@@ -543,16 +547,16 @@ public class DEMView extends JFrame implements ActionListener, PropertyChangeLis
 
         String eol = System.getProperty("line.separator");
 
-        int numProfiles = lineModel.getNumberOfStructures();
+        int numProfiles = lineModel.getNumItems();
         for (int i=0; i<numProfiles; ++i)
         {
-            Line line = (Line)lineModel.getStructure(i);
+            Line line = lineModel.getStructure(i);
             if (line.controlPointIds.size() != 2)
                 continue;
 
             LatLon ll0 = line.getControlPoints().get(0);
             LatLon ll1 = line.getControlPoints().get(1);
-            int[] color = line.getColor();
+            Color color = line.getColor();
             out.write(eol + Profile + "=" + i + eol);
             out.write(StartLatitude + "=" + ll0.lat + eol);
             out.write(StartLongitude + "=" + ll0.lon + eol);
@@ -561,10 +565,10 @@ public class DEMView extends JFrame implements ActionListener, PropertyChangeLis
             out.write(EndLongitude + "=" + ll1.lon + eol);
             out.write(EndRadius + "=" + ll1.rad + eol);
             out.write(Color + "=" +
-                    color[0] + " " +
-                    color[1] + " " +
-                    color[2] + " " +
-                    color[3] + eol);
+                    color.getRed() + " " +
+                    color.getGreen() + " " +
+                    color.getBlue() + " " +
+                    color.getAlpha() + eol);
             out.write(plot.getProfileAsString(i));
         }
 
@@ -616,19 +620,18 @@ public class DEMView extends JFrame implements ActionListener, PropertyChangeLis
             else if (Color.equals(key))
             {
                 String[] c = value.split("\\s+");
-
-                int[] color = new int[4];
-                color[0] = Integer.parseInt(c[0]);
-                color[1] = Integer.parseInt(c[1]);
-                color[2] = Integer.parseInt(c[2]);
-                color[3] = Integer.parseInt(c[3]);
+                int rVal = Integer.parseInt(c[0]);
+                int gVal = Integer.parseInt(c[1]);
+                int bVal = Integer.parseInt(c[2]);
+                int aVal = Integer.parseInt(c[3]);
+                Color color = new Color(rVal, gVal, bVal, aVal);
 
                 double[] p1 = MathUtil.latrec(new LatLon(start));
                 double[] p2 = MathUtil.latrec(new LatLon(end));
 
-                lineModel.addNewStructure();
-                lineModel.activateStructure(lineId);
-                lineModel.setStructureColor(lineId, color);
+                Line tmpItem = lineModel.addNewStructure();
+                lineModel.activateStructure(tmpItem);
+                lineModel.setStructureColor(tmpItem, color);
                 lineModel.insertVertexIntoActivatedStructure(p1);
                 lineModel.insertVertexIntoActivatedStructure(p2);
 
@@ -639,19 +642,25 @@ public class DEMView extends JFrame implements ActionListener, PropertyChangeLis
         in.close();
     }
 
-    // It's possible that sometimes, faulty lines without 2 vertices get created.
-    // Remove them here.
-    private void removeFaultyProfiles()
-    {
-        int numProfiles = lineModel.getNumberOfStructures();
-        for (int i=numProfiles-1; i>=0; --i)
-        {
-            Line line = (Line)lineModel.getStructure(i);
-            if (line.controlPointIds.size() != 2)
-                lineModel.removeStructure(i);
-        }
+ 	/**
+ 	 * Helper method to remove lines without 2 vertices.
+ 	 * <P>
+ 	 * It's possible that sometimes, faulty lines without 2 vertices get created.
+ 	 * Remove them here.
+ 	 * <P>
+ 	 * TODO: The fact that this method exists indicates faulty design / logic!
+ 	 */
+     private void removeFaultyProfiles()
+     {
+    	 List<Line> badItemL = new ArrayList<>();
+    	 for (Line aItem : lineModel.getAllItems())
+    	 {
+    		 if (aItem.getControlPoints().size() != 2)
+    			 badItemL.add(aItem);
+    	 }
 
-    }
+    	 lineModel.removeStructures(badItemL);
+     }
 
     private void removeAllProfiles()
     {

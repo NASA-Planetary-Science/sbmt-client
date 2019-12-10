@@ -21,60 +21,64 @@ import edu.jhuapl.saavtk.popup.PopupMenu;
 import edu.jhuapl.sbmt.util.gravity.Gravity;
 
 /**
- * Popup menu used by the mapmaker view for profiles. It is meant to replace LinesPopupMenu
- * which is used in the regular views.
+ * Popup menu used by the mapmaker view for profiles. It is meant to replace
+ * LinesPopupMenu which is used in the regular views.
  */
 public class MapmakerLinesPopupMenu extends PopupMenu
 {
-    private LineModel model = null;
-    private JMenuItem saveProfileAction;
-    private int pickedCellId = -1;
-    private PolyhedralModel parentPolyhedralModel;
+	// Ref vars
+	private final LineModel<Line> refLineManager;
+	private final PolyhedralModel refPolyhedralModel;
 
-    public MapmakerLinesPopupMenu(ModelManager modelManager, PolyhedralModel parentPolyhedralModel, Renderer renderer)
-    {
-        this.model = (LineModel)modelManager.getModel(ModelNames.LINE_STRUCTURES);
-        this.parentPolyhedralModel = parentPolyhedralModel;
+	// Gui vars
+	private final JMenuItem saveProfileAction;
 
-        saveProfileAction = new JMenuItem(new SaveProfileAction());
-        saveProfileAction.setText("Save Profile...");
-        saveProfileAction.setEnabled(true);
-        this.add(saveProfileAction);
-    }
+	// State vars
+	private int pickedCellId = -1;
 
-    @Override
-    public void showPopup(MouseEvent e, vtkProp pickedProp, int pickedCellId,
-            double[] pickedPosition)
-    {
-        this.pickedCellId = pickedCellId;
-        show(e.getComponent(), e.getX(), e.getY());
-    }
+	public MapmakerLinesPopupMenu(ModelManager aModelManager, PolyhedralModel aPolyhedralModel, Renderer aRenderer)
+	{
+		refLineManager = (LineModel<Line>) aModelManager.getModel(ModelNames.LINE_STRUCTURES);
+		refPolyhedralModel = aPolyhedralModel;
 
-    private class SaveProfileAction extends AbstractAction
-    {
-        public void actionPerformed(ActionEvent e)
-        {
-            if (pickedCellId < 0 || pickedCellId >= model.getNumberOfStructures())
-                return;
+		saveProfileAction = new JMenuItem(new SaveProfileAction());
+		saveProfileAction.setText("Save Profile...");
+		saveProfileAction.setEnabled(true);
+		add(saveProfileAction);
+	}
 
-            try
-            {
-                File file = CustomFileChooser.showSaveDialog(getInvoker(), "Save Profile", "profile.csv");
-                if (file != null)
-                {
-                    Line lin = model.getLines().get(pickedCellId);
-                    Gravity.saveProfileUsingGravityProgram(lin, pickedCellId, file, parentPolyhedralModel, parentPolyhedralModel);
-                }
-            }
-            catch (Exception e1)
-            {
-                e1.printStackTrace();
-                JOptionPane.showMessageDialog(getInvoker(),
-                        e1.getMessage()!=null ? e1.getMessage() : "An error occurred saving the profile.",
-                        "Error",
-                        JOptionPane.ERROR_MESSAGE);
-                return;
-            }
-        }
-    }
+	@Override
+	public void showPopup(MouseEvent e, vtkProp pickedProp, int aPickedCellId, double[] aPickedPosition)
+	{
+		pickedCellId = aPickedCellId;
+		show(e.getComponent(), e.getX(), e.getY());
+	}
+
+	private class SaveProfileAction extends AbstractAction
+	{
+		public void actionPerformed(ActionEvent e)
+		{
+			if (pickedCellId < 0 || pickedCellId >= refLineManager.getNumItems())
+				return;
+			Line tmpLine = refLineManager.getStructure(pickedCellId);
+
+			// Prompt the user for the file to save to
+			File file = CustomFileChooser.showSaveDialog(getInvoker(), "Save Profile", "profile.csv");
+			if (file == null)
+				return;
+
+			try
+			{
+				Gravity.saveProfileUsingGravityProgram(tmpLine, pickedCellId, file, refPolyhedralModel, refPolyhedralModel);
+			}
+			catch (Exception e1)
+			{
+				e1.printStackTrace();
+				JOptionPane.showMessageDialog(getInvoker(),
+						e1.getMessage() != null ? e1.getMessage() : "An error occurred saving the profile.", "Error",
+						JOptionPane.ERROR_MESSAGE);
+				return;
+			}
+		}
+	}
 }

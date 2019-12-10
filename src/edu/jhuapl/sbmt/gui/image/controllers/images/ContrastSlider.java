@@ -21,7 +21,7 @@ public class ContrastSlider extends RangeSlider
 		int lowValue = 0;
 		int hiValue = 255;
 		// get existing contrast and set slider appropriately
-		if (image!=null && image instanceof PerspectiveImage)
+		if (image instanceof PerspectiveImage)
 		{
 			if (!offlimb) { // get image contrast
 				lowValue = ((PerspectiveImage)image).getDisplayedRange().min;

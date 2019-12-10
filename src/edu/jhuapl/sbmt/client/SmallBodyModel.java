@@ -24,7 +24,7 @@ public class SmallBodyModel extends GenericPolyhedralModel implements ISmallBody
 
 	public ISmallBodyViewConfig getSmallBodyConfig()
     {
-        return (SmallBodyViewConfig)getConfig();
+        return (ISmallBodyViewConfig)getConfig();
     }
 
 	public String serverPath(String fileName)

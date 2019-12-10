@@ -11,6 +11,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import org.apache.commons.io.FilenameUtils;
+
 public class AmicaBackplanesLatexGenerator
 {
     private static void generateLatex(String name, List<File> files) throws IOException
@@ -133,7 +135,8 @@ public class AmicaBackplanesLatexGenerator
         {
             String filename = f.getName();
             if (filename.endsWith(".gz"))
-                filename = filename.substring(0, filename.length()-3);
+            	filename = FilenameUtils.getBaseName(filename);
+//                filename = filename.substring(0, filename.length()-3);
 
             out.write(filename + "\n");
         }

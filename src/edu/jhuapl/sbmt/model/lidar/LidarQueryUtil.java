@@ -178,7 +178,6 @@ public class LidarQueryUtil
 			}
 			in.close();
 		}
-
 		List<LidarTrack> retTrackL = LidarTrackUtil.formTracks(aIdGenerator, tmpPointL, tmpPointSourceM,
 				timeSeparationBetweenTracks, minTrackLen);
 		return retTrackL;

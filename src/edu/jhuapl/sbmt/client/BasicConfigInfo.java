@@ -61,7 +61,6 @@ public class BasicConfigInfo implements MetadataManager
 			{
 				if (defaultMission == SbmtMultiMissionTool.getMission())
 				{
-					System.out.println("BasicConfigInfo: BasicConfigInfo: setting unique name");
 					ViewConfig.setFirstTimeDefaultModelName(uniqueName);
 					break;
 				}
@@ -69,9 +68,9 @@ public class BasicConfigInfo implements MetadataManager
 
 
 			if (config.version != null)
-				this.configURL = ((SmallBodyViewConfig)config).rootDirOnServer + "/" + config.author +  "_" + config.body.toString().replaceAll(" ", "_") + config.version.replaceAll(" ", "_") + ".json";
+				this.configURL = ((SmallBodyViewConfig)config).rootDirOnServer + "/" + config.author +  "_" + config.body.toString().replaceAll(" ", "_") + config.version.replaceAll(" ", "_") + "_v" + SmallBodyViewConfigMetadataIO.metadataVersion + ".json";
 			else
-				this.configURL = ((SmallBodyViewConfig)config).rootDirOnServer + "/" + config.author +  "_" + config.body.toString().replaceAll(" ", "_") + ".json";
+				this.configURL = ((SmallBodyViewConfig)config).rootDirOnServer + "/" + config.author +  "_" + config.body.toString().replaceAll(" ", "_") + "_v" + SmallBodyViewConfigMetadataIO.metadataVersion + ".json";
 		}
 	}
 
@@ -203,6 +202,31 @@ public class BasicConfigInfo implements MetadataManager
 	public boolean isEnabled()
 	{
 		return enabled;
+	}
+
+	public String getConfigURL()
+	{
+		return configURL;
+	}
+
+	public ShapeModelType getAuthor()
+	{
+		return author;
+	}
+
+	public ShapeModelBody getBody()
+	{
+		return body;
+	}
+
+	public String getVersion()
+	{
+		return version;
+	}
+
+	public String getShapeModelName()
+	{
+		return shapeModelName;
 	}
 
 	@Override
