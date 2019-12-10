@@ -163,7 +163,7 @@ public class SbmtView extends View implements PropertyChangeListener
 	@Override
 	protected void initialize() throws InvocationTargetException, InterruptedException
 	{
-		if (configInfo != null)
+		if (configInfo != null && (getConfig() == null))
 		{
 			setConfig(SmallBodyViewConfig.getSmallBodyConfig(configInfo));
 		}
