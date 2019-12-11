@@ -45,6 +45,11 @@ public class QueryModelAccessibility implements Callable<Integer>
     public Integer call() throws Exception
     {
         Debug.setEnabled(debug);
+        return getUserModelsFromConfigs();
+    }
+
+    protected Integer getUserModelsFromConfigs() throws IOException
+    {
         FileCache.setSilenceInfoMessages(true);
 
         // Get a unique location for the file cache and point Configuration to it.
@@ -89,6 +94,7 @@ public class QueryModelAccessibility implements Callable<Integer>
             }
         }
         return 0;
+
     }
 
     protected ImmutableList<BasicConfigInfo> getAllConfigsInfo() throws IOException
