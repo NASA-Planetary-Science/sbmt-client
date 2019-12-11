@@ -92,6 +92,8 @@ public class StandardTrajectory implements Trajectory
         this.x = new ArrayList<Double>();
         this.y = new ArrayList<Double>();
         this.z = new ArrayList<Double>();
+        name = "";
+        description = "";
     }
 
     public String toString()

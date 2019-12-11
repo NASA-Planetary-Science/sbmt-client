@@ -207,4 +207,9 @@ public class StandardStateHistory implements StateHistory
 		return trajectory;
 	}
 
+	public void setTrajectory(Trajectory trajectory)
+	{
+		this.trajectory = trajectory;
+	}
+
 }

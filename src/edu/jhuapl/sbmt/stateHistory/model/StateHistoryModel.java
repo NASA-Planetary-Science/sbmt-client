@@ -128,6 +128,7 @@ public class StateHistoryModel implements HasTime // extends AbstractModel imple
 
     private void fireHistorySegmentCreatedListener(StateHistory historySegment)
 	{
+    	System.out.println("StateHistoryModel: fireHistorySegmentCreatedListener: number of listeners " + listeners.size());
 		for (StateHistoryModelChangedListener listener : listeners)
 		{
 			listener.historySegmentCreated(historySegment);
@@ -409,11 +410,15 @@ public class StateHistoryModel implements HasTime // extends AbstractModel imple
 
             if(com.mysql.jdbc.StringUtils.isNullOrEmpty(timeArray.get(0)[0]))
             {
+            	System.out.println("StateHistoryModel: createNewTimeInterval: start time " + flybyState.getUtc());
                 timeArray.get(0)[0] = flybyState.getUtc();
             }
             timeArray.get(0)[1] = flybyState.getUtc();
 
         }
+        history.setTrajectory(temp);
+        runs.addRun(history);
+        System.out.println("StateHistoryModel: createNewTimeInterval: created history");
         fireHistorySegmentCreatedListener(history);
 
         TrajectoryActor trajectoryActor = new TrajectoryActor(temp);

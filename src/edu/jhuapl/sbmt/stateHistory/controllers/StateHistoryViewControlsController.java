@@ -40,6 +40,8 @@ public class StateHistoryViewControlsController implements ItemListener
 		this.historyModel = historyModel;
 		this.renderModel = renderModel;
 		this.runs = historyModel.getRuns();
+		this.view = new StateHistoryViewControlsPanel();
+		initializeViewControlPanel();
 	}
 
 	private void initializeViewControlPanel()
@@ -193,7 +195,7 @@ public class StateHistoryViewControlsController implements ItemListener
                     view.setCursor(new Cursor(Cursor.WAIT_CURSOR));
                     DateTime startTime = historyModel.getStartTime();
                     DateTime endTime = historyModel.getEndTime();
-                    currentRun.saveAnimation(StateHistoryController.this,
+                    renderModel.saveAnimation(StateHistoryViewControlsController.this.getView(),
                             "" + startTime, "" + endTime);
                     view.setCursor(Cursor.getDefaultCursor());
 //                    currentRun.saveAnimation(StateHistoryController.this, view.getStartTimeSpinner().getModel().getValue().toString(), view.getStopTimeSpinner().getModel().getValue().toString());

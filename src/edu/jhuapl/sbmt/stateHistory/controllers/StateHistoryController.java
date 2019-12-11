@@ -24,7 +24,11 @@ import edu.jhuapl.sbmt.client.SmallBodyViewConfig;
 import edu.jhuapl.sbmt.stateHistory.model.StateHistoryModel;
 import edu.jhuapl.sbmt.stateHistory.model.StateHistoryUtil;
 import edu.jhuapl.sbmt.stateHistory.model.stateHistory.StateHistoryCollection;
+import edu.jhuapl.sbmt.stateHistory.rendering.StateHistoryRenderManager;
+import edu.jhuapl.sbmt.stateHistory.rendering.StateHistoryRenderModel;
 import edu.jhuapl.sbmt.stateHistory.ui.version2.StateHistoryIntervalGenerationPanel;
+import edu.jhuapl.sbmt.stateHistory.ui.version2.StateHistoryIntervalPlaybackPanel;
+import edu.jhuapl.sbmt.stateHistory.ui.version2.StateHistoryViewControlsPanel;
 import edu.jhuapl.sbmt.stateHistory.ui.version2.table.StateHistoryTableView;
 
 public class StateHistoryController //implements TableModelListener, IStateHistoryPanel
@@ -54,10 +58,12 @@ public class StateHistoryController //implements TableModelListener, IStateHisto
 
     private SmallBodyViewConfig config;
     private StateHistoryModel historyModel;
+    private StateHistoryRenderModel renderModel;
     private StateHistoryIntervalGenerationController intervalGenerationController;
     private StateHistoryIntervalSelectionController intervalSelectionController;
-//    private StateHistoryIntervalPlaybackController intervalPlaybackController;
-//    private StateHistoryViewControlsController viewControlsController;
+    private StateHistoryIntervalPlaybackController intervalPlaybackController;
+    private StateHistoryViewControlsController viewControlsController;
+    private StateHistoryRenderManager renderManager;
 
     //time control pane
     private StateHistoryCollection stateHistoryCollection;
@@ -85,11 +91,13 @@ public class StateHistoryController //implements TableModelListener, IStateHisto
         DateTime end = ISODateTimeFormat.dateTimeParser().parseDateTime(StateHistoryUtil.readString((int)StateHistoryUtil.getBinaryFileLength(path, lineLength)*lineLength-lineLength, path));
 
         historyModel = new StateHistoryModel(start, end, bodyModel, renderer);
+        renderManager = new StateHistoryRenderManager(renderer, historyModel);
+        renderModel = new StateHistoryRenderModel();
 
         this.intervalGenerationController = new StateHistoryIntervalGenerationController(historyModel, start, end);
         this.intervalSelectionController = new StateHistoryIntervalSelectionController(historyModel, bodyModel, renderer);
-//        this.intervalPlaybackController = new StateHistoryIntervalPlaybackController(historyModel);
-//        this.viewControlsController = new StateHistoryViewControlsController(historyModel);
+        this.intervalPlaybackController = new StateHistoryIntervalPlaybackController(historyModel);
+        this.viewControlsController = new StateHistoryViewControlsController(historyModel, renderModel);
 
 
 
@@ -124,8 +132,8 @@ public class StateHistoryController //implements TableModelListener, IStateHisto
     	StateHistoryIntervalGenerationPanel intervalGenerationPanel = intervalGenerationController.getView();
     	StateHistoryTableView intervalSelectionPanel = intervalSelectionController.getView();
     	intervalSelectionPanel.setup();
-//    	StateHistoryIntervalPlaybackPanel intervalPlaybackPanel = intervalPlaybackController.getView();
-//    	StateHistoryViewControlsPanel viewControlsPanel = viewControlsController.getView();
+    	StateHistoryIntervalPlaybackPanel intervalPlaybackPanel = intervalPlaybackController.getView();
+    	StateHistoryViewControlsPanel viewControlsPanel = viewControlsController.getView();
 
     	timeControlsPanel.add(intervalGenerationPanel);
     	timeControlsPanel.add(intervalSelectionPanel);
@@ -133,8 +141,8 @@ public class StateHistoryController //implements TableModelListener, IStateHisto
     	JPanel panel = new JPanel();
     	panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
     	panel.add(timeControlsPanel);
-//    	panel.add(intervalPlaybackPanel);
-//    	panel.add(viewControlsPanel);
+    	panel.add(intervalPlaybackPanel);
+    	panel.add(viewControlsPanel);
     	return panel;
 
     }

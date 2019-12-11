@@ -29,6 +29,8 @@ public class TrajectoryActor extends vtkActor
 
 		SetMapper(trajectoryMapper);
 
+		SetVisibility(1);
+
 	}
 
 	private void createTrajectoryPolyData()

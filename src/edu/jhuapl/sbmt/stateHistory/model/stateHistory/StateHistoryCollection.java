@@ -3,7 +3,10 @@ package edu.jhuapl.sbmt.stateHistory.model.stateHistory;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+
+import com.google.common.collect.ImmutableList;
 
 import vtk.vtkActor;
 import vtk.vtkProp;
@@ -14,6 +17,7 @@ import edu.jhuapl.saavtk.util.Properties;
 import edu.jhuapl.sbmt.client.SmallBodyModel;
 import edu.jhuapl.sbmt.stateHistory.model.interfaces.HasTime;
 import edu.jhuapl.sbmt.stateHistory.model.interfaces.StateHistory;
+import edu.jhuapl.sbmt.stateHistory.rendering.TrajectoryActor;
 
 public class StateHistoryCollection extends SaavtkItemManager<StateHistory> /*AbstractModel*/ implements PropertyChangeListener, HasTime
 {
@@ -21,6 +25,8 @@ public class StateHistoryCollection extends SaavtkItemManager<StateHistory> /*Ab
     private ArrayList<StateHistoryKey> keys = new ArrayList<StateHistoryKey>();
     private List<StateHistory> simRuns = new ArrayList<StateHistory>();
     private StateHistory currentRun = null;
+    private HashMap<StateHistory, TrajectoryActor> stateHistoryToRendererMap = new HashMap<StateHistory, TrajectoryActor>();
+
 
     public StateHistoryCollection(SmallBodyModel smallBodyModel)
     {
@@ -89,6 +95,11 @@ public class StateHistoryCollection extends SaavtkItemManager<StateHistory> /*Ab
         // set the current run
         simRuns.add(run);
         keys.add(key);
+
+        TrajectoryActor trajectoryActor = new TrajectoryActor(run.getTrajectory());
+        stateHistoryToRendererMap.put(run, trajectoryActor);
+
+        setAllItems(simRuns);
 //        setCurrentRun(key);  TODO only do this when selected? this way loading a new interval doesn't override existing one
 //        run.addPropertyChangeListener(this);
         this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
@@ -102,6 +113,8 @@ public class StateHistoryCollection extends SaavtkItemManager<StateHistory> /*Ab
         StateHistory run = getRunFromKey(key);
         simRuns.remove(run);
         keys.remove(key);
+
+        stateHistoryToRendererMap.remove(run);
 
         // change the current run to the first on the list
 //        this.currentRun = simRuns.get(0);
@@ -199,6 +212,11 @@ public class StateHistoryCollection extends SaavtkItemManager<StateHistory> /*Ab
             return null;
     }
 
+    public TrajectoryActor getTrajectoryActorForStateHistory(StateHistory segment)
+    {
+    	return stateHistoryToRendererMap.get(segment);
+    }
+
 //    public void setOffset(double offset)
 //    {
 //        if (currentRun != null)
@@ -229,6 +247,40 @@ public class StateHistoryCollection extends SaavtkItemManager<StateHistory> /*Ab
     public List<StateHistoryKey> getKeys()
     {
         return keys;
+    }
+
+    @Override
+	public ImmutableList<StateHistory> getAllItems()
+	{
+    	System.out.println("StateHistoryCollection: getAllItems: number of sim runs " + simRuns);
+    	return ImmutableList.copyOf(simRuns);
+	}
+
+    @Override
+    public int getNumItems()
+    {
+    	return simRuns.size();
+    }
+
+    public boolean isStateHistoryMapped(StateHistory segment)
+    {
+    	return stateHistoryToRendererMap.get(segment) != null;
+    }
+
+    public boolean getVisibility(StateHistory segment)
+    {
+    	if (isStateHistoryMapped(segment) == false ) return false;
+    	TrajectoryActor renderer = stateHistoryToRendererMap.get(segment);
+    	if (renderer == null) return false;
+        return (renderer.GetVisibility() == 1);
+    }
+
+    public void setVisibility(StateHistory segment, boolean visibility)
+    {
+    	TrajectoryActor renderer = stateHistoryToRendererMap.get(segment);
+    	int isVisible = (visibility == true) ? 1 : 0;
+        renderer.SetVisibility(isVisible);
+        this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, renderer);
     }
 
 }

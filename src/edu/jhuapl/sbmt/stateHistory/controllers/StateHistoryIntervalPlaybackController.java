@@ -44,6 +44,7 @@ public class StateHistoryIntervalPlaybackController
 	public StateHistoryIntervalPlaybackController(StateHistoryModel historyModel)
 	{
 		this.historyModel = historyModel;
+		view = new StateHistoryIntervalPlaybackPanel();
 		initializeIntervalPlaybackPanel();
 	}
 

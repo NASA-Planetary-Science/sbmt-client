@@ -40,7 +40,7 @@ public class StateHistoryViewControlsPanel extends JPanel
 
 	public StateHistoryViewControlsPanel()
 	{
-		// TODO Auto-generated constructor stub
+		initUI();
 	}
 
 	public StateHistoryViewControlsPanel(LayoutManager layout)

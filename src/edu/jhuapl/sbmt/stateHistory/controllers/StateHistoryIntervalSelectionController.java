@@ -45,6 +45,7 @@ public class StateHistoryIntervalSelectionController implements TableModelListen
 		this.bodyModel = bodyModel;
 		this.historyModel = historyModel;
 		this.runs = historyModel.getRuns();
+		this.view = new StateHistoryTableView(runs);
 		System.out.println("StateHistoryIntervalSelectionController: StateHistoryIntervalSelectionController: runs " + runs);
 		initializeIntervalSelectionPanel();
 	}
@@ -109,7 +110,11 @@ public class StateHistoryIntervalSelectionController implements TableModelListen
 			@Override
 			public void historySegmentCreated(StateHistory historySegment)
 			{
-//				view.getTable().addInterval(historySegment, renderer);
+				System.out.println(
+						"StateHistoryIntervalSelectionController.initializeIntervalSelectionPanel().new DefaultStateHistoryModelChangedListener() {...}: historySegmentCreated: number runs " + runs.size());
+
+				view.getTable().repaint();
+				//				view.getTable().addInterval(historySegment, renderer);
 			}
 		});
     }

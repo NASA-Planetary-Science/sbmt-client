@@ -35,7 +35,7 @@ public class StateHistoryIntervalPlaybackPanel extends JPanel
 
 	public StateHistoryIntervalPlaybackPanel()
 	{
-		// TODO Auto-generated constructor stub
+		initUI();
 	}
 
 	public StateHistoryIntervalPlaybackPanel(LayoutManager layout)
@@ -58,16 +58,15 @@ public class StateHistoryIntervalPlaybackPanel extends JPanel
 
 	private void initUI()
 	{
-		JPanel intervalPlaybackPanel = new JPanel();
-        intervalPlaybackPanel
-                .setBorder(new TitledBorder(null, "Interval Playback",
+//		JPanel intervalPlaybackPanel = new JPanel();
+        setBorder(new TitledBorder(null, "Interval Playback",
                         TitledBorder.LEADING, TitledBorder.TOP, null, null));
 //        timeControlPanel.add(intervalPlaybackPanel);
-        intervalPlaybackPanel.setLayout(
-                new BoxLayout(intervalPlaybackPanel, BoxLayout.Y_AXIS));
+        setLayout(
+                new BoxLayout(this, BoxLayout.Y_AXIS));
 
         JPanel panel_17 = new JPanel();
-        intervalPlaybackPanel.add(panel_17);
+        add(panel_17);
         panel_17.setLayout(new BoxLayout(panel_17, BoxLayout.X_AXIS));
 
         slider = new JSlider();
@@ -81,7 +80,7 @@ public class StateHistoryIntervalPlaybackPanel extends JPanel
         slider.setValue(defaultValue);
 
         JPanel panel = new JPanel();
-        intervalPlaybackPanel.add(panel);
+        add(panel);
         panel.setLayout(new BoxLayout(panel, BoxLayout.X_AXIS));
 
         JLabel lblNewLabel_1 = new JLabel("Play Speed:");
@@ -149,7 +148,7 @@ public class StateHistoryIntervalPlaybackPanel extends JPanel
         panel.add(fastForwardButton);
 
         JPanel panel_1 = new JPanel();
-        intervalPlaybackPanel.add(panel_1);
+        add(panel_1);
         panel_1.setLayout(new BoxLayout(panel_1, BoxLayout.X_AXIS));
 
         JLabel lblEnterUtcTime = new JLabel("Enter UTC Time:");

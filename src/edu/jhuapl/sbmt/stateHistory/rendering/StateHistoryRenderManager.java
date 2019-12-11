@@ -3,8 +3,6 @@ package edu.jhuapl.sbmt.stateHistory.rendering;
 import java.io.File;
 import java.util.ArrayList;
 
-import javax.swing.JFileChooser;
-
 import vtk.vtkActor;
 import vtk.vtkAssembly;
 import vtk.vtkConeSource;
@@ -22,16 +20,12 @@ import edu.jhuapl.saavtk.util.ConvertResourceToFile;
 import edu.jhuapl.saavtk.util.MathUtil;
 import edu.jhuapl.saavtk.util.Properties;
 import edu.jhuapl.sbmt.client.SmallBodyModel;
-import edu.jhuapl.sbmt.stateHistory.model.AnimatorFrameRunnable;
 import edu.jhuapl.sbmt.stateHistory.model.StateHistoryModel;
-import edu.jhuapl.sbmt.stateHistory.model.animator.AnimationFrame;
+import edu.jhuapl.sbmt.stateHistory.model.StateHistoryModelChangedListener;
 import edu.jhuapl.sbmt.stateHistory.model.interfaces.State;
 import edu.jhuapl.sbmt.stateHistory.model.interfaces.StateHistory;
 import edu.jhuapl.sbmt.stateHistory.model.interfaces.Trajectory;
 import edu.jhuapl.sbmt.stateHistory.model.trajectory.StandardTrajectory;
-import edu.jhuapl.sbmt.stateHistory.rendering.animator.Animator;
-import edu.jhuapl.sbmt.stateHistory.ui.AnimationFileDialog;
-import edu.jhuapl.sbmt.stateHistory.ui.version2.IStateHistoryPanel;
 
 public class StateHistoryRenderManager extends AbstractModel // implements
 																// HasTime
@@ -41,7 +35,6 @@ public class StateHistoryRenderManager extends AbstractModel // implements
     //Use approximate radius of largest solar system body as scale for surface intercept vector.
     private static final double JupiterScale = 75000;
 
-	private double timeStep;
 	private TimeBarTextActor timeBarTextActor;
 	private StatusBarTextActor statusBarTextActor;
 	private vtkScalarBarActor scalarBarActor;
@@ -80,6 +73,7 @@ public class StateHistoryRenderManager extends AbstractModel // implements
 		this.renderer = renderer;
 		this.historyModel = historyModel;
 		this.smallBodyModel = historyModel.getSmallBodyModel();
+		initialize();
 	}
 
 	private void initialize()
@@ -122,10 +116,56 @@ public class StateHistoryRenderManager extends AbstractModel // implements
 
 		if (timeBarTextActor == null)
 			setupTimeBar();
+
+		historyModel.addStateHistoryModelChangedListener(new StateHistoryModelChangedListener()
+		{
+
+			@Override
+			public void trajectoryThicknessChanged(Double thickness)
+			{
+				// TODO Auto-generated method stub
+
+			}
+
+			@Override
+			public void trajectoryColorChanged(double[] color)
+			{
+				// TODO Auto-generated method stub
+
+			}
+
+			@Override
+			public void timeChanged(Double t)
+			{
+				// TODO Auto-generated method stub
+
+			}
+
+			@Override
+			public void historySegmentCreated(StateHistory segment)
+			{
+				trajectoryActor = historyModel.getRuns().getTrajectoryActorForStateHistory(segment);
+				setTrajectoryColor(new double[] {0.0, 0.0, 1.0, 1.0});
+				setTrajectoryLineThickness(1.0);
+				stateHistoryActors.add(trajectoryActor);
+				trajectoryActor.Modified();
+//				System.out.println(
+//						"StateHistoryRenderManager.initialize().new StateHistoryModelChangedListener() {...}: historySegmentCreated: adding " + trajectoryActor);
+				pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
+			}
+
+			@Override
+			public void distanceTextChanged(String distanceText)
+			{
+				// TODO Auto-generated method stub
+
+			}
+		});
 	}
 
 	public ArrayList<vtkProp> getProps()
 	{
+		System.out.println("StateHistoryRenderManager: getProps: actors size " + stateHistoryActors.size());
 		return stateHistoryActors;
 	}
 
@@ -404,42 +444,7 @@ public class StateHistoryRenderManager extends AbstractModel // implements
 		renderer.setCameraViewAngle(angle);
 	}
 
-	// starts the process for creating the movie frames
-	public void saveAnimation(IStateHistoryPanel panel, String start, String end)
-	{
-		AnimationFileDialog dialog = new AnimationFileDialog(start, end);
-		int result = dialog.showSaveDialog(panel.getView());
 
-		if (result == JFileChooser.CANCEL_OPTION || result == JFileChooser.ERROR_OPTION)
-		{
-			return;
-		}
-
-		File file = dialog.getSelectedFile();
-
-		int frameNum = (Integer) dialog.getNumFrames().getValue();
-		timeStep = 1.0 / (double) frameNum;
-
-		Animator animator = new Animator(renderer);
-		animator.saveAnimation(frameNum, file, new AnimatorFrameRunnable()
-		{
-			@Override
-			public void run(AnimationFrame frame)
-			{
-				// TODO Auto-generated method stub
-				super.run(frame);
-				run();
-			}
-
-			@Override
-			public void run()
-			{
-				setTimeFraction(getFrame().timeFraction);
-				getFrame().panel.setTimeSlider(getFrame().timeFraction);
-			}
-		});
-
-	}
 
 	// updated method so that it is togglable for pointers, trajectory etc. -
 	// Alex W

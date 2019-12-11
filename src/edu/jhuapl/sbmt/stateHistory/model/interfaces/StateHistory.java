@@ -52,4 +52,6 @@ public interface StateHistory extends HasTime
 
     public Trajectory getTrajectory();
 
+    public void setTrajectory(Trajectory traj);
+
 }

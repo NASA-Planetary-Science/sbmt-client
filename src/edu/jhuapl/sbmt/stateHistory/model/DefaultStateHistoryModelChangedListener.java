@@ -18,48 +18,6 @@ public class DefaultStateHistoryModelChangedListener implements StateHistoryMode
 	}
 
 	@Override
-	public void showSpacecraftChanged(boolean showSpacecraft)
-	{
-		// TODO Auto-generated method stub
-
-	}
-
-	@Override
-	public void showSpacecraftDirectionChanged(boolean showSpacecraftDirection)
-	{
-		// TODO Auto-generated method stub
-
-	}
-
-	@Override
-	public void showSunChanged(boolean showSun)
-	{
-		// TODO Auto-generated method stub
-
-	}
-
-	@Override
-	public void showEarthChanged(boolean showEarth)
-	{
-		// TODO Auto-generated method stub
-
-	}
-
-	@Override
-	public void showScalarBarChanged(boolean showScalarBar)
-	{
-		// TODO Auto-generated method stub
-
-	}
-
-	@Override
-	public void showTrajectoryChanged(boolean showTrajectory)
-	{
-		// TODO Auto-generated method stub
-
-	}
-
-	@Override
 	public void trajectoryColorChanged(double[] color)
 	{
 		// TODO Auto-generated method stub
@@ -86,19 +44,4 @@ public class DefaultStateHistoryModelChangedListener implements StateHistoryMode
 		// TODO Auto-generated method stub
 
 	}
-
-	@Override
-	public void showLightingChanged(boolean showLighting)
-	{
-		// TODO Auto-generated method stub
-
-	}
-
-	@Override
-	public void showTimeBarChanged(boolean showTimeBar)
-	{
-		// TODO Auto-generated method stub
-
-	}
-
 }

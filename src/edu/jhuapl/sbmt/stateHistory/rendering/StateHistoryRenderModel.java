@@ -1,10 +1,15 @@
 package edu.jhuapl.sbmt.stateHistory.rendering;
 
+import java.awt.Component;
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.swing.JFileChooser;
+
 import edu.jhuapl.saavtk.gui.render.Renderer.LightingType;
 import edu.jhuapl.sbmt.client.SmallBodyModel;
+import edu.jhuapl.sbmt.stateHistory.ui.AnimationFileDialog;
 
 public class StateHistoryRenderModel
 {
@@ -45,6 +50,9 @@ public class StateHistoryRenderModel
     private double[] fixedLightDirection;
     private double[] cameraFocalPoint;
     private LightingType lightingType;
+
+	private double timeStep;
+
 
 	public StateHistoryRenderModel()
 	{
@@ -462,6 +470,44 @@ public class StateHistoryRenderModel
 	public void setCameraFocalPoint(double[] cameraFocalPoint)
 	{
 		this.cameraFocalPoint = cameraFocalPoint;
+	}
+
+	// starts the process for creating the movie frames
+	public void saveAnimation(Component panel, String start, String end)
+	{
+		AnimationFileDialog dialog = new AnimationFileDialog(start, end);
+		int result = dialog.showSaveDialog(panel);
+
+		if (result == JFileChooser.CANCEL_OPTION || result == JFileChooser.ERROR_OPTION)
+		{
+			return;
+		}
+
+		File file = dialog.getSelectedFile();
+
+		int frameNum = (Integer) dialog.getNumFrames().getValue();
+		timeStep = 1.0 / (double) frameNum;
+
+		//TODO Fix
+//		Animator animator = new Animator(renderer);
+//		animator.saveAnimation(frameNum, file, new AnimatorFrameRunnable()
+//		{
+//			@Override
+//			public void run(AnimationFrame frame)
+//			{
+//				// TODO Auto-generated method stub
+//				super.run(frame);
+//				run();
+//			}
+//
+//			@Override
+//			public void run()
+//			{
+//				setTimeFraction(getFrame().timeFraction);
+//				getFrame().panel.setTimeSlider(getFrame().timeFraction);
+//			}
+//		});
+
 	}
 
 }
