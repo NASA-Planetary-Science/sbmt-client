@@ -12,8 +12,8 @@ import com.google.common.collect.ImmutableList;
 import edu.jhuapl.saavtk.util.Configuration;
 import edu.jhuapl.saavtk.util.Debug;
 import edu.jhuapl.saavtk.util.FileCache;
-import edu.jhuapl.saavtk.util.FileCache.UnauthorizedAccessException;
 import edu.jhuapl.saavtk.util.SafeURLPaths;
+import edu.jhuapl.saavtk.util.UrlInfo.UrlStatus;
 import edu.jhuapl.sbmt.client.BasicConfigInfo;
 import edu.jhuapl.sbmt.client.SbmtMultiMissionTool;
 
@@ -71,18 +71,59 @@ public class QueryModelAccessibility implements Callable<Integer>
                 throw new IOException("Unable to create directory " + cacheDir);
             }
 
+            long sleepTime = 50000;
             for (BasicConfigInfo info : getAllConfigsInfo())
             {
-                try
+                if (info.isEnabled())
                 {
-                    if (info.isEnabled() && FileCache.isFileGettable(info.getConfigURL()))
+                    boolean forceQuery = false;
+
+                    boolean doQuery = true;
+                    int maximumNumberTries = 3;
+                    for (int index = 0; index < maximumNumberTries && doQuery; ++index)
                     {
-                        System.err.println(info.getUniqueName());
+                        UrlStatus status = FileCache.instance().query(info.getConfigURL(), forceQuery).getUrlState().getStatus();
+                        Debug.err().println(info.getUniqueName() + ": " + status);
+
+                        doQuery = false;
+                        switch (status)
+                        {
+                        case ACCESSIBLE:
+                            System.out.println(info.getUniqueName());
+                            break;
+                        case NOT_AUTHORIZED:
+                            break;
+                        case NOT_FOUND:
+                            break;
+                        case HTTP_ERROR:
+                            break;
+                        case CONNECTION_ERROR:
+                            doQuery = true; // Try again.
+                            break;
+                        case INVALID_URL:
+                            break;
+                        case UNKNOWN:
+                            doQuery = true; // Try again.
+                            break;
+                        default:
+                            throw new AssertionError();
+                        }
+
+                        if (doQuery)
+                        {
+                            try
+                            {
+                                Debug.err().println("Pausing for " + sleepTime / 1000);
+                                Thread.sleep(sleepTime);
+                            }
+                            catch (InterruptedException e)
+                            {
+                                doQuery = false;
+                            }
+                        }
+
+                        forceQuery = doQuery;
                     }
-                }
-                catch (UnauthorizedAccessException e)
-                {
-                    // Ignore -- that's why we're asking.
                 }
             }
         }
