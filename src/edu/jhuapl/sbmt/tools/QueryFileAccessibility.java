@@ -73,7 +73,7 @@ public class QueryFileAccessibility implements Callable<Integer>
 
         // Get a unique location for the file cache and point Configuration to it.
         UUID uniqueCacheDir = UUID.randomUUID();
-        File cacheDir = SAFE_URL_PATHS.get(System.getProperty("user.home"), uniqueCacheDir.toString()).toFile();
+        File cacheDir = SAFE_URL_PATHS.get(System.getProperty("java.io.tmpdir"), uniqueCacheDir.toString()).toFile();
         Configuration.setCacheDir(cacheDir.toString());
 
         // Initialize the tool/mission.
