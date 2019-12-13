@@ -11,9 +11,10 @@ import com.google.common.collect.ImmutableList;
 
 import edu.jhuapl.saavtk.util.Configuration;
 import edu.jhuapl.saavtk.util.Debug;
+import edu.jhuapl.saavtk.util.DownloadableFileInfo.DownloadableFileState;
+import edu.jhuapl.saavtk.util.DownloadableFileManager;
 import edu.jhuapl.saavtk.util.FileCache;
 import edu.jhuapl.saavtk.util.SafeURLPaths;
-import edu.jhuapl.saavtk.util.UrlInfo.UrlStatus;
 import edu.jhuapl.sbmt.client.BasicConfigInfo;
 import edu.jhuapl.sbmt.client.SbmtMultiMissionTool;
 
@@ -71,58 +72,24 @@ public class QueryModelAccessibility implements Callable<Integer>
                 throw new IOException("Unable to create directory " + cacheDir);
             }
 
-            long sleepTime = 50000;
-            for (BasicConfigInfo info : getAllConfigsInfo())
+            DownloadableFileManager fileManager = FileCache.instance();
+            ImmutableList<BasicConfigInfo> allConfigInfo = getAllConfigsInfo();
+            for (BasicConfigInfo info : allConfigInfo)
             {
                 if (info.isEnabled())
                 {
-                    boolean forceQuery = false;
+                    fileManager.getState(info.getConfigURL());
+                }
+            }
+            fileManager.queryAll(true);
 
-                    boolean doQuery = true;
-                    int maximumNumberTries = 3;
-                    for (int index = 0; index < maximumNumberTries && doQuery; ++index)
-                    {
-                        UrlStatus status = FileCache.instance().query(info.getConfigURL(), forceQuery).getUrlState().getStatus();
-                        Debug.err().println(info.getUniqueName() + ": " + status);
-
-                        doQuery = false;
-                        switch (status)
-                        {
-                        case ACCESSIBLE:
-                            System.out.println(info.getUniqueName());
-                            break;
-                        case NOT_AUTHORIZED:
-                            break;
-                        case NOT_FOUND:
-                            break;
-                        case HTTP_ERROR:
-                            break;
-                        case CONNECTION_ERROR:
-                            doQuery = true; // Try again.
-                            break;
-                        case INVALID_URL:
-                            break;
-                        case UNKNOWN:
-                            doQuery = true; // Try again.
-                            break;
-                        default:
-                            throw new AssertionError();
-                        }
-
-                        if (doQuery)
-                        {
-                            try
-                            {
-                                Debug.err().println("Pausing for " + sleepTime / 1000);
-                                Thread.sleep(sleepTime);
-                            }
-                            catch (InterruptedException e)
-                            {
-                                doQuery = false;
-                            }
-                        }
-
-                        forceQuery = doQuery;
+            for (BasicConfigInfo info : allConfigInfo)
+            {
+                if (info.isEnabled())
+                {
+                    DownloadableFileState state = fileManager.getState(info.getConfigURL());
+                    if (state.isAccessible()) {
+                        System.out.println(info.getUniqueName());
                     }
                 }
             }
