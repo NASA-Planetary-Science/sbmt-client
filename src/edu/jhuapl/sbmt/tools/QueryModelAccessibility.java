@@ -2,12 +2,11 @@ package edu.jhuapl.sbmt.tools;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.Callable;
 
 import org.apache.commons.io.FileUtils;
-
-import com.google.common.collect.ImmutableList;
 
 import edu.jhuapl.saavtk.util.Configuration;
 import edu.jhuapl.saavtk.util.Debug;
@@ -17,11 +16,8 @@ import edu.jhuapl.saavtk.util.FileCache;
 import edu.jhuapl.saavtk.util.SafeURLPaths;
 import edu.jhuapl.sbmt.client.BasicConfigInfo;
 import edu.jhuapl.sbmt.client.SbmtMultiMissionTool;
+import edu.jhuapl.sbmt.client.SmallBodyViewConfig;
 
-import crucible.crust.metadata.api.Key;
-import crucible.crust.metadata.api.Metadata;
-import crucible.crust.metadata.impl.FixedMetadata;
-import crucible.crust.metadata.impl.gson.Serializers;
 import picocli.CommandLine;
 import picocli.CommandLine.Option;
 import picocli.CommandLine.Parameters;
@@ -73,7 +69,9 @@ public class QueryModelAccessibility implements Callable<Integer>
             }
 
             DownloadableFileManager fileManager = FileCache.instance();
-            ImmutableList<BasicConfigInfo> allConfigInfo = getAllConfigsInfo();
+
+            SmallBodyViewConfig.initialize();
+            List<BasicConfigInfo> allConfigInfo = SmallBodyViewConfig.getConfigIdentifiers();
             for (BasicConfigInfo info : allConfigInfo)
             {
                 if (info.isEnabled())
@@ -103,27 +101,6 @@ public class QueryModelAccessibility implements Callable<Integer>
         }
         return 0;
 
-    }
-
-    protected ImmutableList<BasicConfigInfo> getAllConfigsInfo() throws IOException
-    {
-        // Download the allBodies file.
-        String allBodiesURLString = SAFE_URL_PATHS.getString(Configuration.getDataRootURL().toString(), "allBodies.json");
-        File allBodiesFile = FileCache.getFileFromServer(allBodiesURLString);
-
-        // Get the bodies from the allBodies metadata.
-        FixedMetadata metadata = Serializers.deserialize(allBodiesFile, "AllBodies");
-
-        ImmutableList.Builder<BasicConfigInfo> builder = ImmutableList.builder();
-        for (Key<?> key : metadata.getKeys())
-        {
-            Metadata bodyMetadata = (Metadata) metadata.get(key);
-            BasicConfigInfo configInfo = new BasicConfigInfo();
-            configInfo.retrieve(bodyMetadata);
-            builder.add(configInfo);
-        }
-
-        return builder.build();
     }
 
     public static void main(String[] args)
