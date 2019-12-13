@@ -7,7 +7,9 @@ $password=$_POST['password'];
 $args=$_POST['args'];
 $stdin=$_POST['stdin'];
 
-$cmd = "QueryFileAccessibility.sh $rootURL $userName $password $args";
+$SBMTROOT='/disks/d0180/htdocs-sbmt/sbmt/query/sbmt';
+
+$cmd = "export SBMTROOT=$SBMTROOT; $SBMTROOT/bin/QueryFileAccessibility.sh $rootURL $userName $password $args";
 
 $descriptorspec = array(
     0 => array("pipe", "r"),
