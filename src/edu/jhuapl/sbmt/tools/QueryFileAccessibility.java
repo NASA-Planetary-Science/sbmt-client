@@ -164,8 +164,9 @@ public class QueryFileAccessibility implements Callable<Integer>
 
         for (String urlString : urlStrings)
         {
-            UrlState state = fileManager.getState(urlString).getUrlState();
-            System.out.println(urlString + "," + state.getStatus() + "," + state.getContentLength() + "," + state.getLastModified());
+            String decodedUrlString = urlString.replaceAll("|",  ":");
+            UrlState state = fileManager.getState(decodedUrlString).getUrlState();
+            System.out.println(decodedUrlString + "," + state.getStatus() + "," + state.getContentLength() + "," + state.getLastModified());
         }
 
         return 0;
