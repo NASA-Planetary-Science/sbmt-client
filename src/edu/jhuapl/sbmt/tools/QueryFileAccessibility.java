@@ -148,7 +148,7 @@ public class QueryFileAccessibility implements Callable<Integer>
         {
             while (reader.ready())
             {
-                String urlString = reader.readLine();
+                String urlString = reader.readLine().replace("|",  ":");
                 builder.add(urlString);
                 fileManager.getState(urlString);
             }
@@ -164,7 +164,7 @@ public class QueryFileAccessibility implements Callable<Integer>
 
         for (String urlString : urlStrings)
         {
-            String decodedUrlString = urlString.replace("|",  ":");
+            String decodedUrlString = urlString;
             UrlState state = fileManager.getState(decodedUrlString).getUrlState();
             System.out.println(decodedUrlString + "," + state.getStatus() + "," + state.getContentLength() + "," + state.getLastModified());
         }
