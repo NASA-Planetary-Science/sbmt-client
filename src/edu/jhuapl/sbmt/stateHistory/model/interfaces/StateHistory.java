@@ -15,7 +15,7 @@ public interface StateHistory extends HasTime
 
     public Double getTimeFraction();
 
-    public void setTimeFraction(Double time);
+    public void setTimeFraction(StateHistory history, Double time);
 
     public Double getMinTime();
     public Double getMaxTime();

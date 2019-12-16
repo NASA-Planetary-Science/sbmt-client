@@ -6,7 +6,6 @@ import org.joda.time.DateTimeZone;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 
-import edu.jhuapl.sbmt.gui.lidar.color.ColorProvider;
 import edu.jhuapl.sbmt.gui.lidar.color.ConstColorProvider;
 import edu.jhuapl.sbmt.stateHistory.model.interfaces.StateHistory;
 import edu.jhuapl.sbmt.stateHistory.model.stateHistory.StateHistoryCollection;
@@ -36,8 +35,7 @@ public class StateHistoryItemHandler extends BasicItemHandler<StateHistory, Stat
 			case Show:
 				return stateHistoryCollection.getVisibility(stateHistory);
 			case Color:
-				ColorProvider blueCP = new ConstColorProvider(Color.BLUE);
-				return blueCP;
+				return new ConstColorProvider(new Color((int)stateHistory.getTrajectoryColor()[0], (int)stateHistory.getTrajectoryColor()[1], (int)stateHistory.getTrajectoryColor()[2]));
 			case Line:
 				return 1;
 			case Name:

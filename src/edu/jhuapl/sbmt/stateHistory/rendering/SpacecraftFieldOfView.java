@@ -30,6 +30,7 @@ public class SpacecraftFieldOfView extends vtkConeSource
 
 	public vtkActor getActor()
 	{
+		if (spacecraftFovActor != null) return spacecraftFovActor;
         vtkPolyDataMapper spacecraftFovMapper = new vtkPolyDataMapper();
         spacecraftFovMapper.SetInputData(GetOutput());
         spacecraftFovActor = new vtkActor();

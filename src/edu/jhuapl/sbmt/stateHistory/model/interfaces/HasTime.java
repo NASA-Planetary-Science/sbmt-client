@@ -6,5 +6,5 @@ public interface HasTime
 
     public Double getTimeFraction();
 
-    public void setTimeFraction(Double timeFraction);
+    public void setTimeFraction(StateHistory state, Double timeFraction);
 }

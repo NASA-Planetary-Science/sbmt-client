@@ -1,29 +1,27 @@
 package edu.jhuapl.sbmt.stateHistory.controllers;
 
-import java.awt.Cursor;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
-import javax.swing.JOptionPane;
 import javax.swing.JSlider;
 import javax.swing.JTextField;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
-import org.joda.time.DateTime;
-
+import edu.jhuapl.saavtk.gui.render.Renderer;
 import edu.jhuapl.saavtk.gui.render.Renderer.LightingType;
-import edu.jhuapl.sbmt.stateHistory.model.DefaultStateHistoryModelChangedListener;
 import edu.jhuapl.sbmt.stateHistory.model.StateHistoryModel;
 import edu.jhuapl.sbmt.stateHistory.model.interfaces.StateHistory;
+import edu.jhuapl.sbmt.stateHistory.model.stateHistory.RendererLookDirection;
 import edu.jhuapl.sbmt.stateHistory.model.stateHistory.StateHistoryCollection;
-import edu.jhuapl.sbmt.stateHistory.rendering.StateHistoryRenderModel;
 import edu.jhuapl.sbmt.stateHistory.ui.version2.StateHistoryViewControlsPanel;
 
 public class StateHistoryViewControlsController implements ItemListener
@@ -32,13 +30,14 @@ public class StateHistoryViewControlsController implements ItemListener
 	public boolean earthEnabled = true;
 	private StateHistoryViewControlsPanel view;
 	private StateHistoryModel historyModel;
-	private StateHistoryRenderModel renderModel;
+//	private StateHistoryRenderModel renderModel;
 	private StateHistoryCollection runs;
+	private Renderer renderer;
 
-	public StateHistoryViewControlsController(StateHistoryModel historyModel, StateHistoryRenderModel renderModel)
+	public StateHistoryViewControlsController(StateHistoryModel historyModel, Renderer renderer)
 	{
 		this.historyModel = historyModel;
-		this.renderModel = renderModel;
+		this.renderer = renderer;
 		this.runs = historyModel.getRuns();
 		this.view = new StateHistoryViewControlsPanel();
 		initializeViewControlPanel();
@@ -57,6 +56,16 @@ public class StateHistoryViewControlsController implements ItemListener
         view.getShowSpacecraft().addItemListener(this);
         view.getShowLighting().addItemListener(this);
 
+        runs.addPropertyChangeListener(new PropertyChangeListener()
+		{
+
+			@Override
+			public void propertyChange(PropertyChangeEvent evt)
+			{
+				if (renderer.getLighting() == LightingType.FIXEDLIGHT)
+					renderer.setFixedLightDirection(runs.getCurrentRun().getSunPosition());
+			}
+		});
 
         view.getViewOptions().addActionListener(new ActionListener()
         {
@@ -68,20 +77,24 @@ public class StateHistoryViewControlsController implements ItemListener
                 if (currentRun != null) { // can't do any view things if we don't have a trajectory / time history
                     String selectedItem = (String)((JComboBox<String>)e.getSource()).getSelectedItem();
                     view.getShowSpacecraft().setEnabled(true);
-                    /*if(selectedItem.equals(viewChoices.FREE.toString())){
 
-                    } else*/ if(selectedItem.equals(viewChoices.EARTH.toString())){
-                        renderModel.setMove(false);
-                        renderModel.setShowEarthView(true); //, view.getShowSpacecraft().isSelected());
-                        view.getViewInputAngle().setText(Double.toString(renderModel.getCameraViewAngle()));
-                    } else if(selectedItem.equals(viewChoices.SUN.toString())){
-                        renderModel.setMove(false);
-                        renderModel.setShowEarthView(false); //, view.getShowSpacecraft().isSelected());
-                        renderModel.setShowSunView(true); //, view.getShowSpacecraft().isSelected());
-                        view.getViewInputAngle().setText(Double.toString(renderModel.getCameraViewAngle()));
-                    } else if(selectedItem.equals(viewChoices.SPACECRAFT.toString())){
-                       setSpacecraftView(currentRun);
-                    }
+                    double[] lookFromDirection = runs.updateLookDirection(RendererLookDirection.SPACECRAFT);
+        			renderer.setCameraOrientation(lookFromDirection, renderer.getCameraFocalPoint(), upVector, renderer.getCameraViewAngle());
+
+//                    /*if(selectedItem.equals(viewChoices.FREE.toString())){
+//
+//                    } else*/ if(selectedItem.equals(viewChoices.EARTH.toString())){
+//                        renderModel.setMove(false);
+//                        renderModel.setShowEarthView(true); //, view.getShowSpacecraft().isSelected());
+//                        view.getViewInputAngle().setText(Double.toString(renderer.getCameraViewAngle()));
+//                    } else if(selectedItem.equals(viewChoices.SUN.toString())){
+//                        renderModel.setMove(false);
+//                        renderModel.setShowEarthView(false); //, view.getShowSpacecraft().isSelected());
+//                        renderModel.setShowSunView(true); //, view.getShowSpacecraft().isSelected());
+//                        view.getViewInputAngle().setText(Double.toString(renderer.getCameraViewAngle()));
+//                    } else if(selectedItem.equals(viewChoices.SPACECRAFT.toString())){
+//                       setSpacecraftView(currentRun);
+//                    }
                 }
             }
         });
@@ -92,7 +105,7 @@ public class StateHistoryViewControlsController implements ItemListener
             public void actionPerformed(ActionEvent e) {
                 StateHistory currentRun = runs.getCurrentRun();
                 if( currentRun != null){
-                    renderModel.setCameraFocalPoint(new double[] {0,0,0});
+                    renderer.setCameraFocalPoint(new double[] {0,0,0});
                 }
             }
         });
@@ -104,12 +117,12 @@ public class StateHistoryViewControlsController implements ItemListener
             @Override
             public void actionPerformed(ActionEvent e)
             {
-                StateHistory currentRun = runs.getCurrentRun();
+//                StateHistory currentRun = runs.getCurrentRun();
                 String selectedItem = (String)((JComboBox<String>)e.getSource()).getSelectedItem();
                 if(selectedItem.equals("Distance to Center")){
-                    historyModel.setDistanceText("Distance to Center");
+                    runs.setDistanceText("Distance to Center");
                 }else if(selectedItem.equals("Distance to Surface")){
-                    historyModel.setDistanceText("Distance to Surface");
+                    runs.setDistanceText("Distance to Surface");
                 }
             }
         });
@@ -120,12 +133,8 @@ public class StateHistoryViewControlsController implements ItemListener
             @Override
             public void stateChanged(ChangeEvent e)
             {
-                StateHistory currentRun = runs.getCurrentRun();
-                if (currentRun != null)
-                {
-                    JSlider slider = (JSlider) e.getSource();
-                    renderModel.setEarthPointerSize(slider.getValue());
-                }
+            	JSlider slider = (JSlider) e.getSource();
+            	runs.setEarthDirectionMarkerSize(slider.getValue());
 
             }
         });
@@ -136,13 +145,8 @@ public class StateHistoryViewControlsController implements ItemListener
             @Override
             public void stateChanged(ChangeEvent e)
             {
-                StateHistory currentRun = runs.getCurrentRun();
-                if (currentRun != null)
-                {
-                    JSlider slider = (JSlider) e.getSource();
-                    renderModel.setSunPointerSize(slider.getValue());
-                }
-
+            	JSlider slider = (JSlider) e.getSource();
+            	runs.setSunDirectionMarkerSize(slider.getValue());
             }
         });
 
@@ -152,12 +156,8 @@ public class StateHistoryViewControlsController implements ItemListener
             @Override
             public void stateChanged(ChangeEvent e)
             {
-                StateHistory currentRun = runs.getCurrentRun();
-                if (currentRun != null)
-                {
-                    JSlider slider = (JSlider)e.getSource();
-                    renderModel.setSpacecraftPointerSize(slider.getValue());
-                }
+            	JSlider slider = (JSlider) e.getSource();
+            	runs.setSpacecraftDirectionMarkerSize(slider.getValue());
             }
         });
 
@@ -168,15 +168,15 @@ public class StateHistoryViewControlsController implements ItemListener
             public void actionPerformed(ActionEvent e)
             {
                 if(e.getSource() == view.getSetViewAngle()){
-                    StateHistory currentRun = runs.getCurrentRun();
+//                    StateHistory currentRun = runs.getCurrentRun();
                     if(!(Double.parseDouble(view.getViewInputAngle().getText())>120.0 || Double.parseDouble(view.getViewInputAngle().getText())<1.0)){
-                        renderModel.setCameraViewAngle(Double.parseDouble(view.getViewInputAngle().getText()));
+                        renderer.setCameraViewAngle(Double.parseDouble(view.getViewInputAngle().getText()));
                     }else if(Double.parseDouble(view.getViewInputAngle().getText())>120){
                         view.getViewInputAngle().setText("120.0");
-                        renderModel.setViewAngle(120.0);
+                        renderer.setCameraViewAngle(120.0);
                     }else{
                         view.getViewInputAngle().setText("1.0");
-                        renderModel.setViewAngle(1.0);
+                        renderer.setCameraViewAngle(1.0);
                     }
                 }
 
@@ -189,38 +189,25 @@ public class StateHistoryViewControlsController implements ItemListener
             @Override
             public void actionPerformed(ActionEvent e)
             {
-                StateHistory currentRun = runs.getCurrentRun();
-                if (currentRun != null)
-                {
-                    view.setCursor(new Cursor(Cursor.WAIT_CURSOR));
-                    DateTime startTime = historyModel.getStartTime();
-                    DateTime endTime = historyModel.getEndTime();
-                    renderModel.saveAnimation(StateHistoryViewControlsController.this.getView(),
-                            "" + startTime, "" + endTime);
-                    view.setCursor(Cursor.getDefaultCursor());
-//                    currentRun.saveAnimation(StateHistoryController.this, view.getStartTimeSpinner().getModel().getValue().toString(), view.getStopTimeSpinner().getModel().getValue().toString());
-                }else
-                {
-                    JOptionPane.showMessageDialog(null, "No History Interval selected.", "Error",
-                            JOptionPane.ERROR_MESSAGE);
-                    return;
-                }
+//                StateHistory currentRun = runs.getCurrentRun();
+//                if (currentRun != null)
+//                {
+//                    view.setCursor(new Cursor(Cursor.WAIT_CURSOR));
+//                    DateTime startTime = historyModel.getStartTime();
+//                    DateTime endTime = historyModel.getEndTime();
+//                    renderModel.saveAnimation(StateHistoryViewControlsController.this.getView(),
+//                            "" + startTime, "" + endTime);
+//                    view.setCursor(Cursor.getDefaultCursor());
+////                    currentRun.saveAnimation(StateHistoryController.this, view.getStartTimeSpinner().getModel().getValue().toString(), view.getStopTimeSpinner().getModel().getValue().toString());
+//                }else
+//                {
+//                    JOptionPane.showMessageDialog(null, "No History Interval selected.", "Error",
+//                            JOptionPane.ERROR_MESSAGE);
+//                    return;
+//                }
 
             }
         });
-
-        historyModel.addStateHistoryModelChangedListener(new DefaultStateHistoryModelChangedListener()
-		{
-			@Override
-			public void historySegmentCreated(StateHistory historySegment)
-			{
-				view.setEnabled(true);
-
-				String currentView = (String)view.getViewOptions().getSelectedItem();
-                if (currentView.equals(viewChoices.SPACECRAFT.toString()))
-                    view.getShowSpacecraft().setEnabled(false);
-			}
-		});
 
     }
 
@@ -259,15 +246,15 @@ public class StateHistoryViewControlsController implements ItemListener
 
     private void setSpacecraftView(StateHistory currentRun)
     {
-        renderModel.setShowEarthView(false); //, view.getShowSpacecraft().isSelected());
-        renderModel.setShowSunView(false); //, view.getShowSpacecraft().isSelected());
-        renderModel.setMove(true);
-        renderModel.setActorVisibility("Spacecraft", false);
+//        renderModel.setShowEarthView(false); //, view.getShowSpacecraft().isSelected());
+//        renderModel.setShowSunView(false); //, view.getShowSpacecraft().isSelected());
+//        renderModel.setMove(true);
+//        renderModel.setActorVisibility("Spacecraft", false);
         view.getShowSpacecraft().setEnabled(false);
         view.getDistanceOptions().setEnabled(false);
-        view.getViewInputAngle().setText(Double.toString(renderModel.getCameraViewAngle()));
+        view.getViewInputAngle().setText(Double.toString(renderer.getCameraViewAngle()));
 //        renderModel.setCameraViewAngle(currentRun.getRenderer().getCameraViewAngle());
-        view.getViewOptions().setSelectedIndex(0);
+//        view.getViewOptions().setSelectedIndex(0);
     }
 
     @Override
@@ -296,47 +283,57 @@ public class StateHistoryViewControlsController implements ItemListener
         {
             if(e.getStateChange() == ItemEvent.SELECTED){
                 if(source == showEarthMarker){
-                    renderModel.setActorVisibility("Earth", true);
+//                    renderModel.setActorVisibility("Earth", true);
+                	runs.setEarthDirectionMarkerVisibility(true);
                     earthSlider.setEnabled(true);
                     earthText.setEnabled(true);
                 } else if(source == showSunMarker){
-                	renderModel.setActorVisibility("Sun", true);
+//                	renderModel.setActorVisibility("Sun", true);
+                	runs.setSunDirectionMarkerVisibility(true);
                     sunSlider.setEnabled(true);
                     sunText.setEnabled(true);
                 } else if(source == showSpacecraftMarker){
-                	renderModel.setActorVisibility("SpacecraftMarker", true);
+//                	renderModel.setActorVisibility("SpacecraftMarker", true);
+                	runs.setSpacecraftDirectionMarkerVisibility(true);
                     spacecraftSlider.setEnabled(true);
                     spacecraftText.setEnabled(true);
                 } else if(source == showSpacecraft){
                     distanceOptions.setEnabled(true);
                     historyModel.setDistanceText(distanceOptions.getSelectedItem().toString());
-                    renderModel.setActorVisibility("Spacecraft", true);
+//                    renderModel.setActorVisibility("Spacecraft", true);
+                    runs.setSpacecraftLabelVisibility(true);
+                    runs.setSpacecraftVisibility(true);
                 } else if(source == showLighting){
-                    renderModel.setActorVisibility("Lighting", true);
-                    renderModel.setFixedLightDirection(currentRun.getSunPosition());
-                    renderModel.setLightingType(LightingType.FIXEDLIGHT);
+//                    renderModel.setActorVisibility("Lighting", true);
+                    renderer.setFixedLightDirection(currentRun.getSunPosition());
+                    renderer.setLighting(LightingType.FIXEDLIGHT);
                 }
 
             }
             if(e.getStateChange() == ItemEvent.DESELECTED){
                 if(source == showEarthMarker){
-                    renderModel.setActorVisibility("Earth", false);
+//                    renderModel.setActorVisibility("Earth", false);
+                    runs.setEarthDirectionMarkerVisibility(false);
                     earthSlider.setEnabled(false);
                     earthText.setEnabled(false);
                 } else if(source == showSunMarker){
-                    renderModel.setActorVisibility("Sun", false);
+//                    renderModel.setActorVisibility("Sun", false);
+                    runs.setSunDirectionMarkerVisibility(false);
                     sunSlider.setEnabled(false);
                     sunText.setEnabled(false);
                 } else if(source == showSpacecraftMarker){
-                    renderModel.setActorVisibility("SpacecraftMarker", false);
+//                    renderModel.setActorVisibility("SpacecraftMarker", false);
+                    runs.setSpacecraftDirectionMarkerVisibility(false);
                     spacecraftSlider.setEnabled(false);
                     spacecraftText.setEnabled(false);
                 } else if(source == showSpacecraft){
                     distanceOptions.setEnabled(false);
-                    renderModel.setActorVisibility("Spacecraft", false);
+//                    renderModel.setActorVisibility("Spacecraft", false);
+                    runs.setSpacecraftVisibility(false);
+                    runs.setSpacecraftLabelVisibility(false);
                 } else if(source == showLighting){
-                    renderModel.setActorVisibility("Lighting", false);
-                    renderModel.setLightingType(LightingType.LIGHT_KIT);
+//                    renderModel.setActorVisibility("Lighting", false);
+                    renderer.setLighting(LightingType.LIGHT_KIT);
                 }
             }
             //TODO fire actor visiblity update here

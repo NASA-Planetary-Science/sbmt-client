@@ -38,6 +38,31 @@ public class StateHistoryViewControlsPanel extends JPanel
     private JLabel lblVerticalFov;
     private JTextField viewInputAngle;
 
+    @Override
+    public void setEnabled(boolean enabled)
+    {
+    	viewOptions.setEnabled(enabled);
+    	btnResetCameraTo.setEnabled(enabled);
+    	saveAnimationButton.setEnabled(enabled);
+    	setViewAngle.setEnabled(enabled);
+//    	spacecraftSlider.setEnabled(enabled);
+    	showSpacecraftMarker.setEnabled(enabled);
+//    	sunSlider.setEnabled(enabled);
+    	showSunPointer.setEnabled(enabled);
+//    	earthSlider.setEnabled(enabled);
+    	showEarthPointer.setEnabled(enabled);
+    	showLighting.setEnabled(enabled);
+    	distanceOptions.setEnabled(enabled);
+    	showSpacecraft.setEnabled(enabled);
+    	earthText.setEnabled(enabled);
+    	sunText.setEnabled(enabled);
+    	spacecraftText.setEnabled(enabled);
+    	lblSelectView.setEnabled(enabled);
+    	lblVerticalFov.setEnabled(enabled);
+    	viewInputAngle.setEnabled(enabled);
+    	super.setEnabled(enabled);
+    }
+
 	public StateHistoryViewControlsPanel()
 	{
 		initUI();
@@ -182,7 +207,7 @@ public class StateHistoryViewControlsPanel extends JPanel
 
         viewInputAngle = new JTextField();
         viewInputAngle.setMaximumSize( new Dimension(Integer.MAX_VALUE, viewInputAngle.getPreferredSize().height) );
-
+        viewInputAngle.setText("30.0");
         viewInputAngle.setEnabled(false);
         panel_14.add(viewInputAngle);
         viewInputAngle.setColumns(10);

@@ -94,6 +94,7 @@ public class StandardTrajectory implements Trajectory
         this.z = new ArrayList<Double>();
         name = "";
         description = "";
+        this.color = new double[] {0, 255, 255, 255};
     }
 
     public String toString()

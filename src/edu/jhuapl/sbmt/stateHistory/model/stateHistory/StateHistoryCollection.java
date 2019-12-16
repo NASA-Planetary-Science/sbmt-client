@@ -9,14 +9,29 @@ import java.util.List;
 import com.google.common.collect.ImmutableList;
 
 import vtk.vtkActor;
+import vtk.vtkMatrix4x4;
 import vtk.vtkProp;
+import vtk.vtkScalarBarActor;
+import vtk.vtkTransform;
 
 import edu.jhuapl.saavtk.model.SaavtkItemManager;
+import edu.jhuapl.saavtk.util.BoundingBox;
+import edu.jhuapl.saavtk.util.Configuration;
+import edu.jhuapl.saavtk.util.ConvertResourceToFile;
+import edu.jhuapl.saavtk.util.MathUtil;
 import edu.jhuapl.saavtk.util.Properties;
 //import edu.jhuapl.sbmt.client.ModelFactory;
 import edu.jhuapl.sbmt.client.SmallBodyModel;
 import edu.jhuapl.sbmt.stateHistory.model.interfaces.HasTime;
 import edu.jhuapl.sbmt.stateHistory.model.interfaces.StateHistory;
+import edu.jhuapl.sbmt.stateHistory.rendering.EarthDirectionMarker;
+import edu.jhuapl.sbmt.stateHistory.rendering.SpacecraftBody;
+import edu.jhuapl.sbmt.stateHistory.rendering.SpacecraftDirectionMarker;
+import edu.jhuapl.sbmt.stateHistory.rendering.SpacecraftFieldOfView;
+import edu.jhuapl.sbmt.stateHistory.rendering.SpacecraftLabel;
+import edu.jhuapl.sbmt.stateHistory.rendering.StatusBarTextActor;
+import edu.jhuapl.sbmt.stateHistory.rendering.SunDirectionMarker;
+import edu.jhuapl.sbmt.stateHistory.rendering.TimeBarTextActor;
 import edu.jhuapl.sbmt.stateHistory.rendering.TrajectoryActor;
 
 public class StateHistoryCollection extends SaavtkItemManager<StateHistory> /*AbstractModel*/ implements PropertyChangeListener, HasTime
@@ -26,11 +41,52 @@ public class StateHistoryCollection extends SaavtkItemManager<StateHistory> /*Ab
     private List<StateHistory> simRuns = new ArrayList<StateHistory>();
     private StateHistory currentRun = null;
     private HashMap<StateHistory, TrajectoryActor> stateHistoryToRendererMap = new HashMap<StateHistory, TrajectoryActor>();
+    private SpacecraftBody spacecraft;
+    private double[] spacecraftPosition;
+    private double[] earthPosition;
+    private double[] sunPosition;
 
+    //Text Actors
+    private TimeBarTextActor timeBarActor;
+    private StatusBarTextActor statusBarTextActor;
+    private vtkScalarBarActor scalarBarActor;
+	private SpacecraftLabel spacecraftLabelActor;
+
+	//FOV Actors
+	private SpacecraftFieldOfView spacecraftFov;
+
+	//Direction markers
+    private SpacecraftDirectionMarker scDirectionMarker;
+	private SunDirectionMarker sunDirectionMarker;
+	private EarthDirectionMarker earthDirectionMarker;
+
+	double[] zAxis = {1,0,0};
+	double markerRadius, markerHeight;
+
+    private static final double JupiterScale = 75000;
+    private double[] sunDirection;
 
     public StateHistoryCollection(SmallBodyModel smallBodyModel)
     {
         this.smallBodyModel = smallBodyModel;
+        BoundingBox bb = smallBodyModel.getBoundingBox();
+        double width = Math.max((bb.xmax-bb.xmin), Math.max((bb.ymax-bb.ymin), (bb.zmax-bb.zmin)));
+        markerRadius = 0.02 * width;
+        markerHeight = markerRadius * 3.0;
+        this.spacecraftLabelActor = new SpacecraftLabel();
+        this.spacecraftLabelActor.VisibilityOff();
+
+        this.spacecraft = new SpacecraftBody(ConvertResourceToFile.convertResourceToRealFile(this, "/edu/jhuapl/sbmt/data/cassini-9k.stl", Configuration.getApplicationDataDir()).getAbsolutePath());
+        this.spacecraft.getActor().VisibilityOff();
+
+        this.scDirectionMarker = new SpacecraftDirectionMarker(markerRadius, markerHeight, 0, 0, 0);
+        this.scDirectionMarker.getActor().VisibilityOff();
+
+        this.earthDirectionMarker = new EarthDirectionMarker(markerRadius, markerHeight, 0, 0, 0);
+        this.earthDirectionMarker.getActor().VisibilityOff();
+
+        this.sunDirectionMarker = new SunDirectionMarker(markerRadius, markerHeight, 0, 0, 0);
+        this.sunDirectionMarker.getActor().VisibilityOff();
     }
 
     private boolean containsKey(StateHistoryKey key)
@@ -83,26 +139,46 @@ public class StateHistoryCollection extends SaavtkItemManager<StateHistory> /*Ab
 
     }
 
-    public void addRun(StateHistory run)//  throws FitsException, IOException
+    public void addRunToList(StateHistory run)
     {
-        StateHistoryKey key = run.getKey();
-        if (containsKey(key))
+         simRuns.add(run);
+         keys.add(run.getKey());
+         this.currentRun = run;
+         setAllItems(simRuns);
+    }
+
+    public void setSpacecraft(SpacecraftBody spacecraft)
+    {
+    	this.spacecraft = spacecraft;
+    }
+
+    public TrajectoryActor addRun(StateHistory run)//  throws FitsException, IOException
+    {
+//        StateHistoryKey key = run.getKey();
+        if (stateHistoryToRendererMap.get(run) != null)
         {
-            this.currentRun = this.getRun(key);
-            return;
+        	TrajectoryActor trajActor = stateHistoryToRendererMap.get(run);
+//            select(spec);
+            trajActor.SetVisibility(1);
+            return trajActor;
         }
 
-        // set the current run
-        simRuns.add(run);
-        keys.add(key);
-
+        // Get the trajectory actor the state history segment
         TrajectoryActor trajectoryActor = new TrajectoryActor(run.getTrajectory());
+        trajectoryActor.VisibilityOn();
+        trajectoryActor.GetMapper().Update();
+//        trajectoryActor.setTrajectoryColor(new double[] {255, 0, 0, 255});
+//        System.out.println("StateHistoryCollection: addRun: adding to renderer map, number of change listeners " + changeListeners.size());
         stateHistoryToRendererMap.put(run, trajectoryActor);
+//        for (StateHistoryCollectionChangedListener listener : changeListeners)
+//        	listener.historySegmentMapped(run);
 
-        setAllItems(simRuns);
 //        setCurrentRun(key);  TODO only do this when selected? this way loading a new interval doesn't override existing one
 //        run.addPropertyChangeListener(this);
         this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
+        this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, trajectoryActor);
+
+        return trajectoryActor;
     }
 
     public void removeRun(StateHistoryKey key)
@@ -111,8 +187,8 @@ public class StateHistoryCollection extends SaavtkItemManager<StateHistory> /*Ab
             return;
 
         StateHistory run = getRunFromKey(key);
-        simRuns.remove(run);
-        keys.remove(key);
+//        simRuns.remove(run);
+//        keys.remove(key);
 
         stateHistoryToRendererMap.remove(run);
 
@@ -153,11 +229,24 @@ public class StateHistoryCollection extends SaavtkItemManager<StateHistory> /*Ab
 
     public ArrayList<vtkProp> getProps()
     {
+    	ArrayList<vtkProp> props = new ArrayList<vtkProp>();
+    	for (StateHistory history : stateHistoryToRendererMap.keySet())
+    		props.add(stateHistoryToRendererMap.get(history));
+
+   		props.add(spacecraft.getActor());
+   		props.add(scDirectionMarker.getActor());
+   		props.add(spacecraftLabelActor);
+   		props.add(earthDirectionMarker.getActor());
+   		props.add(sunDirectionMarker.getActor());
+
+
+    	return props;
+
     	//TODO fix
 //        if (currentRun != null)
 //            return currentRun.getProps();
 //        else
-            return new ArrayList<vtkProp>();
+//            return new ArrayList<vtkProp>();
     }
 
     public void propertyChange(PropertyChangeEvent evt)
@@ -198,11 +287,11 @@ public class StateHistoryCollection extends SaavtkItemManager<StateHistory> /*Ab
         return containsKey(key);
     }
 
-    public void setTimeFraction(Double timeFraction)
-    {
-        if (currentRun != null)
-           currentRun.setTimeFraction(timeFraction);
-    }
+//    public void setTimeFraction(Double timeFraction)
+//    {
+//        if (currentRun != null)
+//           currentRun.setTimeFraction(timeFraction);
+//    }
 
     public Double getTimeFraction()
     {
@@ -252,7 +341,6 @@ public class StateHistoryCollection extends SaavtkItemManager<StateHistory> /*Ab
     @Override
 	public ImmutableList<StateHistory> getAllItems()
 	{
-    	System.out.println("StateHistoryCollection: getAllItems: number of sim runs " + simRuns);
     	return ImmutableList.copyOf(simRuns);
 	}
 
@@ -281,6 +369,343 @@ public class StateHistoryCollection extends SaavtkItemManager<StateHistory> /*Ab
     	int isVisible = (visibility == true) ? 1 : 0;
         renderer.SetVisibility(isVisible);
         this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, renderer);
+    }
+
+    //time updates
+    private void updateTimeBarActor(double time)
+    {
+//    	if (timeBarActor != null)
+//        {
+//            updateTimeBarPosition(renderer.getPanelWidth(), renderer.getPanelHeight());
+//            updateTimeBarValue(time);
+//        }
+    }
+
+    private void updateSunPosition(StateHistory history, double time)
+    {
+	   sunPosition = history.getSunPosition();
+       vtkMatrix4x4 sunMarkerMatrix = new vtkMatrix4x4();
+
+
+       double[] sunMarkerPosition = new double[3];
+       sunDirection = new double[3];
+       double[] sunViewpoint = new double[3];
+       double[] sunViewDirection = new double[3];
+       MathUtil.unorm(sunPosition, sunDirection);
+       MathUtil.vscl(JupiterScale, sunDirection, sunViewpoint);
+       MathUtil.vscl(-1.0, sunDirection, sunViewDirection);
+       int result = smallBodyModel.computeRayIntersection(sunViewpoint, sunViewDirection, sunMarkerPosition);
+       for (int i=0; i<3; i++)
+       {
+           sunMarkerMatrix.SetElement(i, 3, sunMarkerPosition[i]);
+       }
+
+	   sunDirectionMarker.updateSunPosition(sunPosition, sunMarkerPosition);
+
+//
+//
+//       //rotates sun pointer to point in direction of sun - Alex W
+//       double[] zAxis = {1,0,0};
+//       double[] sunPos = history.getSunPosition();
+//       double[] sunPosDirection = new double[3];
+//       MathUtil.unorm(sunPos, sunPosDirection);
+//       double[] rotationAxisSun = new double[3];
+//       MathUtil.vcrss(sunPosDirection, zAxis, rotationAxisSun);
+//       double rotationAngleSun = ((180.0/Math.PI)*MathUtil.vsep(zAxis, sunPosDirection));
+//
+//       vtkTransform sunMarkerTransform = new vtkTransform();
+//       //sunMarkerTransform.PostMultiply();
+//       sunMarkerTransform.Translate(sunMarkerPosition);
+//       sunMarkerTransform.RotateWXYZ(-rotationAngleSun, rotationAxisSun[0], rotationAxisSun[1], rotationAxisSun[2]);
+//       sunDirectionMarker.getActor().SetUserTransform(sunMarkerTransform);
+//       sunAssembly.SetUserTransform(sunMarkerTransform);
+    }
+
+    private void updateEarthPosition(StateHistory history, double time)
+    {
+        earthPosition = history.getEarthPosition();
+        vtkMatrix4x4 earthMarkerMatrix = new vtkMatrix4x4();
+
+        double[] earthMarkerPosition = new double[3];
+        double[] earthDirection = new double[3];
+        double[] earthViewpoint = new double[3];
+        double[] earthViewDirection = new double[3];
+        MathUtil.unorm(earthPosition, earthDirection);
+        MathUtil.vscl(JupiterScale, earthDirection, earthViewpoint);
+        MathUtil.vscl(-1.0, earthDirection, earthViewDirection);
+        int result = smallBodyModel.computeRayIntersection(earthViewpoint, earthViewDirection, earthMarkerPosition);
+        for (int i=0; i<3; i++)
+        {
+            earthMarkerMatrix.SetElement(i, 3, earthMarkerPosition[i]);
+        }
+
+        earthDirectionMarker.updateEarthPosition(earthPosition, earthMarkerPosition);
+
+    }
+
+    private void updateSpacecraftPosition(StateHistory history, double time)
+    {
+    	vtkMatrix4x4 spacecraftBodyMatrix = new vtkMatrix4x4();
+        vtkMatrix4x4 spacecraftIconMatrix = new vtkMatrix4x4();
+        vtkMatrix4x4 fovMatrix = new vtkMatrix4x4();
+        vtkMatrix4x4 fovRotateXMatrix = new vtkMatrix4x4();
+        vtkMatrix4x4 fovRotateYMatrix = new vtkMatrix4x4();
+        vtkMatrix4x4 fovRotateZMatrix = new vtkMatrix4x4();
+        vtkMatrix4x4 fovScaleMatrix = new vtkMatrix4x4();
+
+        double iconScale = 1.0;
+        // set to identity
+        spacecraftBodyMatrix.Identity();
+        spacecraftIconMatrix.Identity();
+        fovMatrix.Identity();
+        fovRotateXMatrix.Identity();
+        fovRotateYMatrix.Identity();
+        fovRotateZMatrix.Identity();
+        double[] xaxis = history.getCurrentValue().getSpacecraftXAxis();
+        double[] yaxis = history.getCurrentValue().getSpacecraftYAxis();
+        double[] zaxis = history.getCurrentValue().getSpacecraftZAxis();
+        // set body orientation matrix
+        for (int i=0; i<3; i++)
+        {
+            spacecraftBodyMatrix.SetElement(i, 0, xaxis[i]);
+            spacecraftBodyMatrix.SetElement(i, 1, yaxis[i]);
+            spacecraftBodyMatrix.SetElement(i, 2, zaxis[i]);
+        }
+
+        // create the icon matrix, which is just the body matrix scaled by a factor
+        for (int i=0; i<3; i++)
+            spacecraftIconMatrix.SetElement(i, i, iconScale);
+        spacecraftIconMatrix.Multiply4x4(spacecraftIconMatrix, spacecraftBodyMatrix, spacecraftIconMatrix);
+
+
+        spacecraftPosition = history.getSpacecraftPosition();
+        double[] spacecraftMarkerPosition = new double[3];
+        double[] spacecraftDirection = new double[3];
+        double[] spacecraftViewpoint = new double[3];
+        double[] spacecraftViewDirection = new double[3];
+        MathUtil.unorm(spacecraftPosition, spacecraftDirection);
+        MathUtil.vscl(JupiterScale, spacecraftDirection, spacecraftViewpoint);
+        MathUtil.vscl(-1.0, spacecraftDirection, spacecraftViewDirection);
+        int result = smallBodyModel.computeRayIntersection(spacecraftViewpoint, spacecraftViewDirection, spacecraftMarkerPosition);
+
+        //rotates spacecraft pointer to point in direction of spacecraft - Alex W
+        double[] spacecraftPos = spacecraftMarkerPosition;
+        double[] spacecraftPosDirection = new double[3];
+        MathUtil.unorm(spacecraftPos, spacecraftPosDirection);
+        double[] rotationAxisSpacecraft = new double[3];
+        MathUtil.vcrss(spacecraftPosDirection, zAxis, rotationAxisSpacecraft);
+
+        double rotationAngleSpacecraft = ((180.0/Math.PI)*MathUtil.vsep(zAxis, spacecraftPosDirection));
+
+        vtkTransform spacecraftMarkerTransform = new vtkTransform();
+        spacecraftMarkerTransform.Translate(spacecraftPos);
+        spacecraftMarkerTransform.RotateWXYZ(-rotationAngleSpacecraft, rotationAxisSpacecraft[0], rotationAxisSpacecraft[1], rotationAxisSpacecraft[2]);
+
+     // set translation
+        for (int i=0; i<3; i++)
+        {
+            spacecraftBodyMatrix.SetElement(i, 3, spacecraftPosition[i]);
+            spacecraftIconMatrix.SetElement(i, 3, spacecraftPosition[i]);
+//            fovMatrix.SetElement(i, 3, spacecraftPosition[i]);
+
+        }
+
+        spacecraft.getActor().SetUserMatrix(spacecraftIconMatrix);
+
+        spacecraftLabelActor.SetAttachmentPoint(spacecraftPosition);
+        spacecraftLabelActor.setDistanceText(history.getCurrentValue(), spacecraftPosition, smallBodyModel);
+
+//        spacecraftFovActor.SetUserMatrix(fovMatrix);
+        //            spacecraftFovActor.SetUserMatrix(spacecraftBodyMatrix);
+
+        scDirectionMarker.getActor().SetUserTransform(spacecraftMarkerTransform);
+
+//        spacecraftBoresight.Modified();
+        spacecraft.getActor().Modified();
+        scDirectionMarker.getActor().Modified();
+        spacecraftLabelActor.Modified();
+//        spacecraftFov.Modified();
+//        spacecraftMarkerBody.Modified();
+    }
+
+    private void updateLighting(double time)
+    {
+//    	// toggle for lighting - Alex W
+//        if (timeFraction >= 0.0 && showLighting)
+//        {
+//            renderer.setFixedLightDirection(sunDirection);
+//            renderer.setLighting(LightingType.FIXEDLIGHT);
+//            updateActorVisibility();
+//        }
+//        else
+//            renderer.setLighting(LightingType.LIGHT_KIT);
+    }
+
+	public double[] updateLookDirection(RendererLookDirection lookDirection)
+    {
+		double[] focalpoint = {0,0,0};
+        double[] upVector = {0,1,0};
+
+		// set camera to earth, spacecraft, or sun views - Alex W
+		if(lookDirection == RendererLookDirection.EARTH)
+		{
+			double[] newEarthPos = new double[3];
+			MathUtil.unorm(earthPosition, newEarthPos);
+			MathUtil.vscl(scalingFactor, newEarthPos, newEarthPos);
+//			renderer.setCameraOrientation(newEarthPos, renderer.getCameraFocalPoint(), upVector, renderer.getCameraViewAngle());
+		}
+		else if(lookDirection == RendererLookDirection.SPACECRAFT)
+		{
+//			renderer.setCameraOrientation(currentFlybyStateHistory.getSpacecraftPosition(), renderer.getCameraFocalPoint(), upVector, renderer.getCameraViewAngle());
+		}
+		else if(lookDirection == RendererLookDirection.SUN)
+		{
+			double[] newSunPos = new double[3];
+			MathUtil.unorm(sunPosition, newSunPos);
+			MathUtil.vscl(scalingFactor, newSunPos, newSunPos);
+//			renderer.setCameraOrientation(newSunPos, renderer.getCameraFocalPoint(), upVector, renderer.getCameraViewAngle());
+		}
+    }
+
+    public void setTimeFraction(StateHistory state, Double timeFraction)
+    {
+        if (state != null && spacecraft.getActor() != null)
+        {
+        	System.out.println("StateHistoryCollection: setTimeFraction: " + timeFraction);
+        	updateSpacecraftPosition(state, timeFraction);
+        	updateEarthPosition(state, timeFraction);
+        	updateSunPosition(state, timeFraction);
+
+
+
+//
+//            String speedText = String.format("%7.1f km %7.3f km/sec   .", radius, speed);
+//
+//            // set the current orientation
+//
+//
+//            // create spacecraft matrices
+//
+//
+//            vtkMatrix4x4 sunMarkerMatrix = new vtkMatrix4x4();
+//            vtkMatrix4x4 earthMarkerMatrix = new vtkMatrix4x4();
+//
+//            vtkMatrix4x4 spacecraftInstrumentMatrix = new vtkMatrix4x4();
+//
+//            // set to identity
+//
+//            sunMarkerMatrix.Identity();
+//            earthMarkerMatrix.Identity();
+//            //fovMatrix = new vtkMatrix4x4
+//
+//
+//            // rotate the FOV about the Z axis
+//            //            double sinRotZ = Math.sin(spacecraftRotationZ);
+//            //            double cosRotZ = Math.cos(spacecraftRotationZ);
+//            //            fovRotateZMatrix.SetElement(0, 0, cosRotZ);
+//            //            fovRotateZMatrix.SetElement(1, 1, cosRotZ);
+//            //            fovRotateZMatrix.SetElement(0, 1, sinRotZ);
+//            //            fovRotateZMatrix.SetElement(1, 0, -sinRotZ);
+//
+//            // scale the FOV
+//            //            fovScaleMatrix.SetElement(0, 0, fovHeight);
+//            //            fovScaleMatrix.SetElement(1, 1, fovWidth);
+//            //            fovScaleMatrix.SetElement(2, 2, fovDepth);
+//
+//            // rotate the FOV about the Y axis
+//            //            double sinRotY = Math.sin(spacecraftRotationY);
+//            //            double cosRotY = Math.cos(spacecraftRotationY);
+//            //            fovRotateYMatrix.SetElement(0, 0, cosRotY);
+//            //            fovRotateYMatrix.SetElement(2, 2, cosRotY);
+//            //            fovRotateYMatrix.SetElement(0, 2, sinRotY);
+//            //            fovRotateYMatrix.SetElement(2, 0, -sinRotY);
+//            //
+//            //            fovMatrix.Multiply4x4(fovScaleMatrix, fovRotateZMatrix, spacecraftInstrumentMatrix);
+//            //            fovMatrix.Multiply4x4(fovRotateYMatrix, spacecraftInstrumentMatrix, spacecraftInstrumentMatrix);
+//            //
+//            ////            spacecraftFovMatrix.Multiply4x4(fovRotateYMatrix, fovRotateZMatrix, spacecraftInstrumentMatrix);
+//            //
+//            //            fovMatrix.Multiply4x4(spacecraftBodyMatrix, spacecraftInstrumentMatrix, fovMatrix);
+//
+//            // set translation
+//            for (int i=0; i<3; i++)
+//            {
+//                sunMarkerMatrix.SetElement(i, 3, sunMarkerPosition[i]);
+//                earthMarkerMatrix.SetElement(i, 3, earthMarkerPosition[i]);
+//            }
+//
+//            //            spacecraftBoresightActor.SetUserMatrix(matrix);
+//
+////            monolithBodyActor.SetUserMatrix(spacecraftBodyMatrix);
+//
+//
+//            earthMarkerActor.SetUserMatrix(earthMarkerMatrix);
+//            //            earthMarkerHeadActor.SetUserMatrix(earthMarkerMatrix);
+//            //sunMarkerActor.SetUserMatrix(sunMarkerMatrix);
+//
+////          monolithBody.Modified();
+//
+//
+//            earthMarkerHead.Modified();
+//            earthMarkerBody.Modified();
+//            sunAssembly.Modified();
+
+            this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
+        }
+    }
+
+    public void setSpacecraftVisibility(boolean visible)
+    {
+    	spacecraft.getActor().SetVisibility(visible == true ? 1: 0);
+    	this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, spacecraft);
+    }
+
+    public void setSpacecraftLabelVisibility(boolean visible)
+    {
+    	spacecraftLabelActor.SetVisibility(visible == true ? 1: 0);
+    	this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, spacecraftLabelActor);
+    }
+
+    public void setSpacecraftDirectionMarkerVisibility(boolean visible)
+    {
+    	scDirectionMarker.getActor().SetVisibility(visible == true ? 1: 0);
+    	this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, scDirectionMarker);
+    }
+
+    public void setSpacecraftDirectionMarkerSize(int radius)
+    {
+    	scDirectionMarker.setSpacecraftPointerSize(radius);
+    	this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, scDirectionMarker);
+    }
+
+    public void setEarthDirectionMarkerVisibility(boolean visible)
+    {
+    	earthDirectionMarker.getActor().SetVisibility(visible == true ? 1: 0);
+    	this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, earthDirectionMarker);
+    }
+
+    public void setEarthDirectionMarkerSize(int radius)
+    {
+    	earthDirectionMarker.setEarthPointerSize(radius);
+    	this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, earthDirectionMarker);
+    }
+
+    public void setSunDirectionMarkerVisibility(boolean visible)
+    {
+    	sunDirectionMarker.getActor().SetVisibility(visible == true ? 1: 0);
+    	this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, sunDirectionMarker);
+    }
+
+    public void setSunDirectionMarkerSize(int radius)
+    {
+    	sunDirectionMarker.setSunPointerSize(radius);
+    	this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, sunDirectionMarker);
+    }
+
+    public void setDistanceText(String distanceText)
+    {
+    	spacecraftLabelActor.setDistanceString(distanceText);
+    	this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, spacecraftLabelActor);
     }
 
 }

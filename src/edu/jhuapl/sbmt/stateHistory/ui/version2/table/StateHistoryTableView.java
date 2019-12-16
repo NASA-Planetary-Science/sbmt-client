@@ -74,8 +74,10 @@ public class StateHistoryTableView extends JPanel
         resultList = buildTable();
 //        prevButton = new JButton("Prev");
 //        nextButton = new JButton("Next");
-        removeStateHistoryButton = new JButton("Remove State History");
+        removeStateHistoryButton = new JButton("Hide State History");
         showStateHistoryButton = new JButton("Show State History");
+        removeStateHistoryButton.setEnabled(false);
+        showStateHistoryButton.setEnabled(false);
         loadStateHistoryButton = new JButton("Load...");
         saveStateHistoryButton = new JButton("Save...");
     }

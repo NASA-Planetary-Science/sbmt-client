@@ -19,6 +19,7 @@ public class SunDirectionMarker extends vtkConeSource
 	double rotationAngleSun;
 	double[] rotationAxisSun;
 	double[] sunPos;
+	private double scale = 1.0;
 
 	public SunDirectionMarker(double markerRadius, double markerHeight,
 			double centerX, double centerY, double centerZ)
@@ -48,6 +49,7 @@ public class SunDirectionMarker extends vtkConeSource
 
 	public vtkActor getActor()
 	{
+		if (sunMarkerActor != null) return sunMarkerActor;
 		vtkPolyDataMapper sunMapper = new vtkPolyDataMapper();
         sunMapper.SetInputData(GetOutput());
         sunMarkerActor = new vtkActor();
@@ -59,17 +61,14 @@ public class SunDirectionMarker extends vtkConeSource
         sunMarkerActor.GetProperty().ShadingOn();
         sunMarkerActor.GetProperty().SetInterpolationToFlat();
         sunMarkerActor.GetProperty().SetRepresentationToSurface();
-
-
-        System.out.println("SunDirectionMarker: getActor: returning actor");
-        updateSunPosition(sunPos);
+        sunMarkerActor.SetScale(scale);
         return sunMarkerActor;
 	}
 
-	public void updateSunPosition(double[] sunPos)
+	public void updateSunPosition(double[] sunPos, double[] sunMarkerPosition)
 	{
 		this.sunPos = sunPos;
-		System.out.println("SunDirectionMarker: updateSunPosition: updating ");
+		this.sunMarkerPosition = sunMarkerPosition;
 		if (sunMarkerActor == null) return;
 		double[] zAxis = {1,0,0};
         double[] sunPosDirection = new double[3];
@@ -88,16 +87,9 @@ public class SunDirectionMarker extends vtkConeSource
     // set the sun pointer size - Alex W
     public void setSunPointerSize(int radius)
     {
-        double scale = (2.66e-4 * Math.pow((double)radius,2) + 1e-4*(double)radius + .33);
-//        sunAssembly.SetScale(scale);
+        scale = (2.66e-4 * Math.pow((double)radius,2) + 1e-4*(double)radius + .33);
         sunMarkerActor.SetScale(scale);
-        Update();
-        Modified();
-//        sunMarker.Update();
-//        sunMarker.Modified();
-//        sunMarkerHead.Update();
-//        sunMarkerHead.Modified();
-//        updateActorVisibility();
+        sunMarkerActor.Modified();
     }
 
 }

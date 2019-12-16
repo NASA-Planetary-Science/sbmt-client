@@ -31,6 +31,11 @@ public class StateHistoryIntervalPlaybackPanel extends JPanel
     private int defaultValue = 0; // 15;
     private JSpinner timeBox;
     private JButton setTimeButton;
+    private JLabel lblEnterUtcTime;
+    private JPanel utcPanel;
+    private JPanel playPanel;
+    private JLabel playSpeedLabel;
+
 
 
 	public StateHistoryIntervalPlaybackPanel()
@@ -79,12 +84,12 @@ public class StateHistoryIntervalPlaybackPanel extends JPanel
         slider.setSnapToTicks(false);
         slider.setValue(defaultValue);
 
-        JPanel panel = new JPanel();
-        add(panel);
-        panel.setLayout(new BoxLayout(panel, BoxLayout.X_AXIS));
+        playPanel = new JPanel();
+        add(playPanel);
+        playPanel.setLayout(new BoxLayout(playPanel, BoxLayout.X_AXIS));
 
-        JLabel lblNewLabel_1 = new JLabel("Play Speed:");
-        panel.add(lblNewLabel_1);
+        playSpeedLabel = new JLabel("Play Speed:");
+        playPanel.add(playSpeedLabel);
 
         Image questionMark;
         try
@@ -94,7 +99,7 @@ public class StateHistoryIntervalPlaybackPanel extends JPanel
             JLabel questionRate = new JLabel(question);
             questionRate.setToolTipText("<html>The speed of the animation is X times <br>faster than 1 second of real time. Ex. <br>60 means 1 minute of the interval is <br>traveled per second</html>");
 
-            panel.add(questionRate);
+            playPanel.add(questionRate);
 
         }
         catch (IOException e)
@@ -103,9 +108,9 @@ public class StateHistoryIntervalPlaybackPanel extends JPanel
             e.printStackTrace();
         }
 
-        rateTextField = new JTextField("60.0    ");
+        rateTextField = new JTextField("60.0");
         rateTextField.setMaximumSize( new Dimension(Integer.MAX_VALUE, rateTextField.getPreferredSize().height) );
-        panel.add(rateTextField);
+        playPanel.add(rateTextField);
         rateTextField.setColumns(10);
 
         rewindButton = new JButton("");
@@ -119,7 +124,7 @@ public class StateHistoryIntervalPlaybackPanel extends JPanel
         {
             rewindButton.setText("Rewind");
         }
-        panel.add(rewindButton);
+        playPanel.add(rewindButton);
 
         playButton = new JButton("");
         try
@@ -132,7 +137,7 @@ public class StateHistoryIntervalPlaybackPanel extends JPanel
         {
             playButton.setText("Play");
         }
-        panel.add(playButton);
+        playPanel.add(playButton);
 
         fastForwardButton = new JButton("");
         try
@@ -145,24 +150,24 @@ public class StateHistoryIntervalPlaybackPanel extends JPanel
         {
               fastForwardButton.setText("Fast Forward");
         }
-        panel.add(fastForwardButton);
+        playPanel.add(fastForwardButton);
 
-        JPanel panel_1 = new JPanel();
-        add(panel_1);
-        panel_1.setLayout(new BoxLayout(panel_1, BoxLayout.X_AXIS));
+        utcPanel = new JPanel();
+        add(utcPanel);
+        utcPanel.setLayout(new BoxLayout(utcPanel, BoxLayout.X_AXIS));
 
-        JLabel lblEnterUtcTime = new JLabel("Enter UTC Time:");
-        panel_1.add(lblEnterUtcTime);
+        lblEnterUtcTime = new JLabel("Enter UTC Time:");
+        utcPanel.add(lblEnterUtcTime);
 
         timeBox = new JSpinner();
         // timeBox.setEditor(new DateEditor(timeBox, "yyyy-MMM-dd
         // HH:mm:ss.SSS"));
         timeBox.setMinimumSize(new Dimension(36, 22));
         timeBox.setPreferredSize(new Dimension(200, 28));
-        panel_1.add(timeBox);
+        utcPanel.add(timeBox);
 
         setTimeButton = new JButton("Set Time");
-        panel_1.add(setTimeButton);
+        utcPanel.add(setTimeButton);
 
 	}
 
@@ -200,6 +205,21 @@ public class StateHistoryIntervalPlaybackPanel extends JPanel
     public JButton getSetTimeButton()
     {
         return setTimeButton;
+    }
+
+    @Override
+    public void setEnabled(boolean enabled)
+    {
+    	rateTextField.setEnabled(enabled);
+    	rewindButton.setEnabled(enabled);
+    	playButton.setEnabled(enabled);
+    	fastForwardButton.setEnabled(enabled);
+    	timeBox.setEnabled(enabled);
+    	setTimeButton.setEnabled(enabled);
+    	playSpeedLabel.setEnabled(enabled);
+    	lblEnterUtcTime.setEnabled(enabled);
+    	playPanel.setEnabled(enabled);
+    	super.setEnabled(enabled);
     }
 
 }

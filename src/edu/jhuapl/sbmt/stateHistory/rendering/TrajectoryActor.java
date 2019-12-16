@@ -24,6 +24,7 @@ public class TrajectoryActor extends vtkActor
 	public TrajectoryActor(Trajectory trajectory)
 	{
 		this.trajectory = trajectory;
+		this.trajectoryColor = trajectory.getTrajectoryColor();
 
 		createTrajectoryPolyData();
 
@@ -56,6 +57,7 @@ public class TrajectoryActor extends vtkActor
             Double y = traj.getY().get(i);
             Double z = traj.getZ().get(i);
 
+            if (i==0) System.out.println("TrajectoryActor: createTrajectoryPolyData: x y z " + x + " " + y + " " + z);
             points.InsertNextPoint(x, y, z);
             idList.SetId(i, i);
         }
@@ -74,8 +76,9 @@ public class TrajectoryActor extends vtkActor
         trajectoryMapper.Modified();
         GetProperty().SetLineWidth(trajectoryLineThickness);
 
-
 		trajectoryMapper.SetInputData(trajectoryPolylines);
+
+		trajectoryMapper.Update();
 
 	}
 

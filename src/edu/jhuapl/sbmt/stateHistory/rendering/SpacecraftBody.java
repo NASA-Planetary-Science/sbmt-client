@@ -34,6 +34,7 @@ public class SpacecraftBody extends vtkPolyData
 
 	public vtkActor getActor()
 	{
+		if (spacecraftBodyActor != null) return spacecraftBodyActor;
 		vtkPolyDataMapper spacecraftBodyMapper = new vtkPolyDataMapper();
         spacecraftBodyMapper.SetInputData(this);
         spacecraftBodyActor = new vtkActor();
@@ -44,6 +45,7 @@ public class SpacecraftBody extends vtkPolyData
         spacecraftBodyActor.GetProperty().SetSpecularPower(80.0);
         spacecraftBodyActor.GetProperty().ShadingOn();
         spacecraftBodyActor.GetProperty().SetInterpolationToFlat();
+        spacecraftBodyActor.SetScale(0.01);
         return spacecraftBodyActor;
 	}
 

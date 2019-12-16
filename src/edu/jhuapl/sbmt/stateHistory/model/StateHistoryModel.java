@@ -16,13 +16,13 @@ import vtk.vtkProp;
 
 import edu.jhuapl.saavtk.gui.render.Renderer;
 import edu.jhuapl.saavtk.model.ModelManager;
+import edu.jhuapl.saavtk.model.ModelNames;
 import edu.jhuapl.saavtk.util.BoundingBox;
 import edu.jhuapl.saavtk.util.FileCache;
 import edu.jhuapl.saavtk.util.MapUtil;
 import edu.jhuapl.sbmt.client.SmallBodyModel;
 import edu.jhuapl.sbmt.client.SmallBodyViewConfig;
 import edu.jhuapl.sbmt.stateHistory.controllers.StateHistoryController.RunInfo;
-import edu.jhuapl.sbmt.stateHistory.model.interfaces.HasTime;
 import edu.jhuapl.sbmt.stateHistory.model.interfaces.State;
 import edu.jhuapl.sbmt.stateHistory.model.interfaces.StateHistory;
 import edu.jhuapl.sbmt.stateHistory.model.interfaces.Trajectory;
@@ -32,10 +32,9 @@ import edu.jhuapl.sbmt.stateHistory.model.stateHistory.StandardStateHistory;
 import edu.jhuapl.sbmt.stateHistory.model.stateHistory.StateHistoryCollection;
 import edu.jhuapl.sbmt.stateHistory.model.stateHistory.StateHistoryKey;
 import edu.jhuapl.sbmt.stateHistory.model.trajectory.StandardTrajectory;
-import edu.jhuapl.sbmt.stateHistory.rendering.TrajectoryActor;
 
 
-public class StateHistoryModel implements HasTime // extends AbstractModel implements PropertyChangeListener, /*TableModel,*/ HasTime//, ActionListener
+public class StateHistoryModel //implements HasTime // extends AbstractModel implements PropertyChangeListener, /*TableModel,*/ //HasTime//, ActionListener
 {
 	List<StateHistoryModelChangedListener> listeners = new ArrayList<StateHistoryModelChangedListener>();
     private ModelManager modelManager;
@@ -85,17 +84,18 @@ public class StateHistoryModel implements HasTime // extends AbstractModel imple
 
     private String statusBarString;
 
-    static public StateHistoryModel createStateHistory(DateTime start, DateTime end, SmallBodyModel smallBodyModel, Renderer renderer)
+    static public StateHistoryModel createStateHistory(DateTime start, DateTime end, SmallBodyModel smallBodyModel, Renderer renderer, ModelManager modelManager)
     {
-        return new StateHistoryModel(start, end, smallBodyModel, renderer);
+        return new StateHistoryModel(start, end, smallBodyModel, renderer, modelManager);
     }
 
-    public StateHistoryModel(DateTime start, DateTime end, SmallBodyModel smallBodyModel, Renderer renderer)
+    public StateHistoryModel(DateTime start, DateTime end, SmallBodyModel smallBodyModel, Renderer renderer, ModelManager modelManager)
     {
         this.smallBodyModel = smallBodyModel;
         this.startTime = start;
         this.endTime = end;
-        this.runs = new StateHistoryCollection(smallBodyModel);
+        this.modelManager = modelManager;
+        this.runs = (StateHistoryCollection)modelManager.getModel(ModelNames.STATE_HISTORY_COLLECTION);
         initialize();
 
     }
@@ -179,15 +179,15 @@ public class StateHistoryModel implements HasTime // extends AbstractModel imple
 	}
 
 
-    /****
-     *
-     * Interval Playback
-     *
-     ****/
-    public void setTimeFraction(Double timeFraction)
-	{
-
-	}
+//    /****
+//     *
+//     * Interval Playback
+//     *
+//     ****/
+//    public void setTimeFraction(Double timeFraction)
+//	{
+//
+//	}
 
     public Double getTime()
     {
@@ -252,7 +252,7 @@ public class StateHistoryModel implements HasTime // extends AbstractModel imple
             BigDecimal num1 = new BigDecimal(duration1.getMillis());
             BigDecimal num2 = new BigDecimal(duration2.getMillis());
             BigDecimal tf = num1.divide(num2,50,RoundingMode.UP);
-            setTimeFraction(Double.parseDouble(tf.toString()));
+//            setTimeFraction(Double.parseDouble(tf.toString()));
             fireTimeChangedListener(Double.parseDouble(tf.toString()));
 //            panel.setTimeSlider(Double.parseDouble(tf.toString()));
         }
@@ -410,40 +410,17 @@ public class StateHistoryModel implements HasTime // extends AbstractModel imple
 
             if(com.mysql.jdbc.StringUtils.isNullOrEmpty(timeArray.get(0)[0]))
             {
-            	System.out.println("StateHistoryModel: createNewTimeInterval: start time " + flybyState.getUtc());
                 timeArray.get(0)[0] = flybyState.getUtc();
             }
             timeArray.get(0)[1] = flybyState.getUtc();
 
         }
+
+        history.setTime(history.getMinTime());
         history.setTrajectory(temp);
-        runs.addRun(history);
-        System.out.println("StateHistoryModel: createNewTimeInterval: created history");
+        runs.addRunToList(history);
         fireHistorySegmentCreatedListener(history);
 
-        TrajectoryActor trajectoryActor = new TrajectoryActor(temp);
-
-//        createTrajectoryPolyData();
-//
-//        trajectoryMapper.SetInputData(trajectoryPolylines);
-//
-//        vtkActor actor = new vtkActor();
-//        trajectoryActor = actor;
-//        trajectoryActor.SetMapper(trajectoryMapper);
-//        trajectoryActor.GetProperty().SetLineWidth(trajectoryLineThickness);
-//        setTimeFraction(0.0);
-//        try
-//        {
-//            panel.initializeRunList();
-//        }
-//        catch (IOException e)
-//        {
-//            e.printStackTrace();
-//        }
-//
-//        initialize();
-//        spacecraftBody.Modified();
-//        trajectoryActor.Modified();
         return 1;
     }
 
@@ -459,11 +436,8 @@ public class StateHistoryModel implements HasTime // extends AbstractModel imple
 
      public void loadIntervalFromFile(File runFile, SmallBodyModel bodyModel)
      {
-//         StateHistoryKey key = new StateHistoryKey(intervals);
-//         StateHistoryModel shm = new StateHistoryModel(bodyModel, renderer);
-         StateHistory newRow = StateHistoryModelIOHelper.loadStateHistoryFromFile(runFile, smallBodyModel.getConfig().getShapeModelName());
-//         addInterval(newRow, renderer);
-         runs.addRun(newRow);
+         StateHistory newRow = StateHistoryModelIOHelper.loadStateHistoryFromFile(runFile, smallBodyModel.getConfig().getShapeModelName(), new StateHistoryKey(runs));
+         runs.addRunToList(newRow);
          fireHistorySegmentCreatedListener(newRow);
      }
 

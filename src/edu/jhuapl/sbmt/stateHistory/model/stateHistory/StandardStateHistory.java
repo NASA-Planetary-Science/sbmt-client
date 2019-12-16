@@ -57,7 +57,7 @@ public class StandardStateHistory implements StateHistory
         return result;
     }
 
-    public void setTimeFraction(Double timeFraction)
+    public void setTimeFraction(StateHistory history, Double timeFraction)
     {
         double min = getMinTime();
         double max = getMaxTime();

@@ -21,7 +21,6 @@ import org.joda.time.format.ISODateTimeFormat;
 
 import edu.jhuapl.saavtk.gui.render.Renderer;
 import edu.jhuapl.sbmt.stateHistory.model.StateHistoryModel;
-import edu.jhuapl.sbmt.stateHistory.model.interfaces.HasTime;
 import edu.jhuapl.sbmt.stateHistory.model.interfaces.StateHistory;
 import edu.jhuapl.sbmt.stateHistory.model.stateHistory.StateHistoryCollection;
 import edu.jhuapl.sbmt.stateHistory.ui.version2.StateHistoryIntervalPlaybackPanel;
@@ -35,16 +34,19 @@ public class StateHistoryIntervalPlaybackController
     private boolean manualSetTime = false;
     public double currentOffsetTime = 0.0;
     private double offsetScale = 1.0; // 0.025;
-    private HasTime model;
+//    private HasTime model;
     private StateHistoryCollection runs;
     private Renderer renderer;
     private StateHistoryIntervalPlaybackPanel view;
     private StateHistoryModel historyModel;
 
-	public StateHistoryIntervalPlaybackController(StateHistoryModel historyModel)
+	public StateHistoryIntervalPlaybackController(StateHistoryModel historyModel, Renderer renderer)
 	{
 		this.historyModel = historyModel;
+		this.runs = historyModel.getRuns();
+		this.renderer = renderer;
 		view = new StateHistoryIntervalPlaybackPanel();
+		createTimer();
 		initializeIntervalPlaybackPanel();
 	}
 
@@ -53,13 +55,13 @@ public class StateHistoryIntervalPlaybackController
         final JSlider slider = view.getSlider();
         slider.addChangeListener(new ChangeListener() {         //ADD TO CONTROLLER
             public void stateChanged(ChangeEvent evt) {
-                if(slider.getValueIsAdjusting()){
-                    int val = slider.getValue();
-                    int max = slider.getMaximum();
-                    int min = slider.getMinimum();
-                    currentOffsetTime = (double)(val - min) / (double)(max-min) * offsetScale;
-                    ((HasTime)model).setTimeFraction(currentOffsetTime);
-                }
+//                if(slider.getValueIsAdjusting()){
+//                    int val = slider.getValue();
+//                    int max = slider.getMaximum();
+//                    int min = slider.getMinimum();
+//                    currentOffsetTime = (double)(val - min) / (double)(max-min) * offsetScale;
+//                    ((HasTime)model).setTimeFraction(currentOffsetTime);
+//                }
             }
         });
 
@@ -83,8 +85,8 @@ public class StateHistoryIntervalPlaybackController
 
                 slider.setValue(historyModel.getDefaultSliderValue());
                 currentOffsetTime = 0.0;
-                if (model != null)
-                    model.setTimeFraction(currentOffsetTime);
+//                if (model != null)
+                    runs.setTimeFraction(runs.getCurrentRun(), currentOffsetTime);
             }
         });
 
@@ -108,8 +110,8 @@ public class StateHistoryIntervalPlaybackController
 
                 slider.setValue(historyModel.getSliderFinalValue());
                 currentOffsetTime = 1.0;
-                if (model != null)
-                    model.setTimeFraction(currentOffsetTime);
+//                if (model != null)
+                    runs.setTimeFraction(runs.getCurrentRun(), currentOffsetTime);
 
             }
         });
@@ -253,23 +255,23 @@ public class StateHistoryIntervalPlaybackController
             @Override
             public void actionPerformed(ActionEvent e)
             {
-                double period = model.getPeriod();
+                double period = runs.getPeriod();
                 double deltaRealTime = timer.getDelay() / 1000.0;
                 double playRate = 1.0;
                 try {
                    playRate = Double.parseDouble(view.getRateTextField().getText());
-                } catch (Exception ex) { playRate = 1.0; }
+                } catch (Exception ex) { ex.printStackTrace(); playRate = 1.0; }
 
                 double deltaSimulationTime = deltaRealTime * playRate;
                 double deltaOffsetTime = deltaSimulationTime / period;
-                //System.out.println("Delta time: " + deltaSimulationTime + " Delta offset time: " + deltaOffsetTime);
+//                System.out.println("Delta time: " + deltaSimulationTime + " Delta offset time: " + deltaOffsetTime);
 
                 currentOffsetTime += deltaOffsetTime;
                 // time looping
                 if (currentOffsetTime > 1.0)
                     currentOffsetTime = 0.0;
-
-                model.setTimeFraction(currentOffsetTime);
+                runs.getCurrentRun().setTimeFraction(runs.getCurrentRun(), currentOffsetTime);
+                runs.setTimeFraction(runs.getCurrentRun(), currentOffsetTime);
 
                 int max = view.getSlider().getMaximum();
                 int min = view.getSlider().getMinimum();

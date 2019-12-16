@@ -43,6 +43,7 @@ public class SpacecraftDirectionMarker extends vtkConeSource
 
 	public vtkActor getActor()
 	{
+		if (spacecraftMarkerHeadActor != null) return spacecraftMarkerHeadActor;
 		vtkPolyDataMapper spacecrafterMarkerHeadMapper = new vtkPolyDataMapper();
         spacecrafterMarkerHeadMapper.SetInputData(GetOutput());
         spacecraftMarkerHeadActor = new vtkActor();

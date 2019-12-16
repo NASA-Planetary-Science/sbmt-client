@@ -21,15 +21,19 @@ import edu.jhuapl.saavtk.model.ModelNames;
 import edu.jhuapl.saavtk.util.FileCache;
 import edu.jhuapl.sbmt.client.SmallBodyModel;
 import edu.jhuapl.sbmt.client.SmallBodyViewConfig;
+import edu.jhuapl.sbmt.stateHistory.model.DefaultStateHistoryModelChangedListener;
 import edu.jhuapl.sbmt.stateHistory.model.StateHistoryModel;
 import edu.jhuapl.sbmt.stateHistory.model.StateHistoryUtil;
+import edu.jhuapl.sbmt.stateHistory.model.interfaces.StateHistory;
 import edu.jhuapl.sbmt.stateHistory.model.stateHistory.StateHistoryCollection;
-import edu.jhuapl.sbmt.stateHistory.rendering.StateHistoryRenderManager;
 import edu.jhuapl.sbmt.stateHistory.rendering.StateHistoryRenderModel;
 import edu.jhuapl.sbmt.stateHistory.ui.version2.StateHistoryIntervalGenerationPanel;
 import edu.jhuapl.sbmt.stateHistory.ui.version2.StateHistoryIntervalPlaybackPanel;
 import edu.jhuapl.sbmt.stateHistory.ui.version2.StateHistoryViewControlsPanel;
 import edu.jhuapl.sbmt.stateHistory.ui.version2.table.StateHistoryTableView;
+
+import glum.item.ItemEventListener;
+import glum.item.ItemEventType;
 
 public class StateHistoryController //implements TableModelListener, IStateHistoryPanel
 {
@@ -63,7 +67,7 @@ public class StateHistoryController //implements TableModelListener, IStateHisto
     private StateHistoryIntervalSelectionController intervalSelectionController;
     private StateHistoryIntervalPlaybackController intervalPlaybackController;
     private StateHistoryViewControlsController viewControlsController;
-    private StateHistoryRenderManager renderManager;
+//    private StateHistoryRenderManager renderManager;
 
     //time control pane
     private StateHistoryCollection stateHistoryCollection;
@@ -90,19 +94,20 @@ public class StateHistoryController //implements TableModelListener, IStateHisto
         DateTime start = ISODateTimeFormat.dateTimeParser().parseDateTime(StateHistoryUtil.readString(lineLength, path));//oldDate.parse(currentRun.getIntervalTime()[0]);
         DateTime end = ISODateTimeFormat.dateTimeParser().parseDateTime(StateHistoryUtil.readString((int)StateHistoryUtil.getBinaryFileLength(path, lineLength)*lineLength-lineLength, path));
 
-        historyModel = new StateHistoryModel(start, end, bodyModel, renderer);
-        renderManager = new StateHistoryRenderManager(renderer, historyModel);
+        historyModel = new StateHistoryModel(start, end, bodyModel, renderer, modelManager);
+//        renderManager = new StateHistoryRenderManager(renderer, historyModel);
         renderModel = new StateHistoryRenderModel();
 
         this.intervalGenerationController = new StateHistoryIntervalGenerationController(historyModel, start, end);
         this.intervalSelectionController = new StateHistoryIntervalSelectionController(historyModel, bodyModel, renderer);
-        this.intervalPlaybackController = new StateHistoryIntervalPlaybackController(historyModel);
-        this.viewControlsController = new StateHistoryViewControlsController(historyModel, renderModel);
+        this.intervalPlaybackController = new StateHistoryIntervalPlaybackController(historyModel, renderer);
+        this.viewControlsController = new StateHistoryViewControlsController(historyModel, renderer);
 
-
+        intervalPlaybackController.getView().setEnabled(false);
+        viewControlsController.getView().setEnabled(false);
 
 //        intervalPlaybackController.createTimer();
-
+        //TODO restore this
 //        renWin.getRenderWindow().AddObserver("EndEvent", this, "updateTimeBarPosition");
         renWin.getComponent().addComponentListener(new ComponentAdapter()
         {
@@ -118,6 +123,31 @@ public class StateHistoryController //implements TableModelListener, IStateHisto
 //                }
             }
         });
+
+        runs.addListener(new ItemEventListener()
+		{
+
+			@Override
+			public void handleItemEvent(Object aSource, ItemEventType aEventType)
+			{
+				if (aEventType == ItemEventType.ItemsSelected)
+				{
+					intervalPlaybackController.getView().setEnabled(runs.getSelectedItems().size() > 0);
+					viewControlsController.getView().setEnabled(runs.getSelectedItems().size() > 0);
+				}
+
+			}
+		});
+
+        historyModel.addStateHistoryModelChangedListener(new DefaultStateHistoryModelChangedListener()
+		{
+        	@Override
+        	public void historySegmentCreated(StateHistory historySegment)
+        	{
+        		runs.setTimeFraction(historySegment, historySegment.getTime());
+        		super.historySegmentCreated(historySegment);
+        	}
+		});
     }
 
     public JPanel getView()

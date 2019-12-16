@@ -8,6 +8,7 @@ import org.joda.time.DateTime;
 import edu.jhuapl.saavtk.gui.render.Renderer;
 import edu.jhuapl.saavtk.model.Graticule;
 import edu.jhuapl.saavtk.model.Model;
+import edu.jhuapl.saavtk.model.ModelManager;
 import edu.jhuapl.saavtk.model.ModelNames;
 import edu.jhuapl.saavtk.model.ShapeModelBody;
 import edu.jhuapl.saavtk.model.ShapeModelType;
@@ -81,11 +82,12 @@ public class SbmtModelFactory
             DateTime start,
             DateTime end,
             SmallBodyModel smallBodyModel,
+            ModelManager modelManager,
             Renderer renderer,
             boolean loadPointingOnly) throws FitsException, IOException
     {
         SmallBodyViewConfig config = (SmallBodyViewConfig)smallBodyModel.getSmallBodyConfig();
-        return new StateHistoryModel(start, end, smallBodyModel, renderer);
+        return new StateHistoryModel(start, end, smallBodyModel, renderer, modelManager);
     }
 
     static public Image createImage(

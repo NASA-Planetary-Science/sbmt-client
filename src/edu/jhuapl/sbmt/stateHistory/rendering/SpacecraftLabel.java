@@ -3,11 +3,16 @@ package edu.jhuapl.sbmt.stateHistory.rendering;
 import vtk.vtkCaptionActor2D;
 
 import edu.jhuapl.saavtk.util.MathUtil;
+import edu.jhuapl.sbmt.client.SmallBodyModel;
 import edu.jhuapl.sbmt.stateHistory.model.interfaces.State;
 
 public class SpacecraftLabel extends vtkCaptionActor2D
 {
 	private static final double JupiterScale = 75000;
+	private String distanceString = "Distance to Center";
+	private State state;
+	private double[] spacecraftPosition;
+	private SmallBodyModel smallBodyModel;
 
 	public SpacecraftLabel()
 	{
@@ -30,11 +35,20 @@ public class SpacecraftLabel extends vtkCaptionActor2D
 		// TODO Auto-generated constructor stub
 	}
 
+	public void setDistanceString(String distanceString)
+	{
+		this.distanceString = distanceString;
+		setDistanceText(state, spacecraftPosition, smallBodyModel);
+	}
+
 	// set the distance text from center or surface to the spacecraft - Alex W
-    public void setDistanceText(String option, State state, double[] spacecraftPosition)
+    public void setDistanceText(State state, double[] spacecraftPosition, SmallBodyModel smallBodyModel)
     {
+    	this.state = state;
+    	this.spacecraftPosition = spacecraftPosition;
+    	this.smallBodyModel = smallBodyModel;
     	int distanceOption = 0;
-    	if(option.equals("Distance to Surface"))
+    	if(distanceString.equals("Distance to Surface"))
         {
             distanceOption = 1;
         }
@@ -53,7 +67,7 @@ public class SpacecraftLabel extends vtkCaptionActor2D
         MathUtil.vscl(-1.0, spacecraftDirection, spacecraftViewDirection);
 
         double radius = Math.sqrt(spacecraftPosition[0]*spacecraftPosition[0] + spacecraftPosition[1]*spacecraftPosition[1] + spacecraftPosition[2]*spacecraftPosition[2]);
-//        double result = smallBodyModel.computeRayIntersection(spacecraftViewpoint, spacecraftViewDirection, spacecraftMarkerPosition);
+        double result = smallBodyModel.computeRayIntersection(spacecraftViewpoint, spacecraftViewDirection, spacecraftMarkerPosition);
         double smallBodyRadius = Math.sqrt(spacecraftMarkerPosition[0]*spacecraftMarkerPosition[0] + spacecraftMarkerPosition[1]*spacecraftMarkerPosition[1] + spacecraftMarkerPosition[2]*spacecraftMarkerPosition[2]);
         if (distanceOption == 1)
         {

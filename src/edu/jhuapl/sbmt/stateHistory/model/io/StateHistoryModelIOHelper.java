@@ -5,10 +5,14 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Set;
 
+import edu.jhuapl.sbmt.stateHistory.model.interfaces.State;
 import edu.jhuapl.sbmt.stateHistory.model.interfaces.StateHistory;
 import edu.jhuapl.sbmt.stateHistory.model.scState.CsvState;
+import edu.jhuapl.sbmt.stateHistory.model.stateHistory.StandardStateHistory;
+import edu.jhuapl.sbmt.stateHistory.model.stateHistory.StateHistoryKey;
 import edu.jhuapl.sbmt.stateHistory.model.trajectory.StandardTrajectory;
 
 public class StateHistoryModelIOHelper
@@ -79,8 +83,9 @@ public class StateHistoryModelIOHelper
 
     }
 
-	public static StateHistory loadStateHistoryFromFile(File runFile, String shapeModelName)
+	public static StateHistory loadStateHistoryFromFile(File runFile, String shapeModelName, StateHistoryKey key)
     {
+		ArrayList<String[]> timeArray = new ArrayList<>(3);
         Integer firstIndex = null;
         String runDirName = runFile.getAbsolutePath();
         StandardTrajectory trajectory;
@@ -116,75 +121,53 @@ public class StateHistoryModelIOHelper
             // fill in the Trajectory parameters
             trajectory.setId(0);
 
-//            // create a new history instance and add it to the Map
-//            history = new StandardStateHistory();
-//
-//            // discard first line of body name
-//            in.readLine();
-//
-//            // get name, desc, color form second line
-//            String info = in.readLine();
-//            String[] data = info.split(",");
-//            trajectory.setName(data[0]);
-////            setTrajectoryName(data[0]);
-//            setDescription(data[1]);
-//            fireTrajectoryColorChangedListener(new double[]{Double.parseDouble(data[2]), Double.parseDouble(data[3]),
-//                                            Double.parseDouble(data[4]),Double.parseDouble(data[5])});
-//            fireTrajectoryThicknessChangedListener(Double.parseDouble(data[6]));
-//
-//
-//            // discard third line of headers
-//            in.readLine();
-//
-//            String line;
-//            String[] timeSet = new String[2];
-//            timeArray.add(timeSet);
-//            while ((line = in.readLine()) != null)
-//            {
-//                // parse line of file
-//                State flybyState = new CsvState(line);
-//
-//                // add to history
-//                history.put(flybyState);
-//
-//                double[] spacecraftPosition = flybyState.getSpacecraftPosition();
-//
-//                trajectory.getX().add(spacecraftPosition[0]);
-//                trajectory.getY().add(spacecraftPosition[1]);
-//                trajectory.getZ().add(spacecraftPosition[2]);
-//
-//                if(com.mysql.jdbc.StringUtils.isNullOrEmpty(timeArray.get(0)[0])){
-//                    timeArray.get(0)[0] = flybyState.getUtc();
-//                }
-//                timeArray.get(0)[1] = flybyState.getUtc();
-//            }
-//            in.close();
-//
-//            this.currentFlybyStateHistory = history;
-//
-//
+            // create a new history instance and add it to the Map
+            history = new StandardStateHistory(key);
+
+            // discard first line of body name
+            in.readLine();
+
+            // get name, desc, color form second line
+            String info = in.readLine();
+            String[] data = info.split(",");
+            trajectory.setName(data[0]);
+            trajectory.setTrajectoryDescription(data[1]);
+
+            // discard third line of headers
+            in.readLine();
+
+            String line;
+            String[] timeSet = new String[2];
+            timeArray.add(timeSet);
+            while ((line = in.readLine()) != null)
+            {
+                // parse line of file
+                State flybyState = new CsvState(line);
+
+                // add to history
+                history.put(flybyState);
+
+                double[] spacecraftPosition = flybyState.getSpacecraftPosition();
+
+                trajectory.getX().add(spacecraftPosition[0]);
+                trajectory.getY().add(spacecraftPosition[1]);
+                trajectory.getZ().add(spacecraftPosition[2]);
+
+                if(com.mysql.jdbc.StringUtils.isNullOrEmpty(timeArray.get(0)[0])){
+                    timeArray.get(0)[0] = flybyState.getUtc();
+                }
+                timeArray.get(0)[1] = flybyState.getUtc();
+            }
+            in.close();
+
+            history.setTrajectory(trajectory);
+
         } catch (Exception e) {
             e.printStackTrace();
         }
-//
-//        DateTime start = ISODateTimeFormat.dateTimeParser().parseDateTime(timeArray.get(0)[0]);
-//        DateTime stop = ISODateTimeFormat.dateTimeParser().parseDateTime(timeArray.get(0)[1]);
-//        this.startTime = start;
-//        this.endTime = stop;
-//
-//
-//        // set up vtk stuff
-//        fireTrajectoryCreatedListener(trajectory);
-//
-////        createTrajectoryPolyData();
-////        trajectoryMapper.SetInputData(trajectoryPolylines);
-////        trajectoryActor.SetMapper(trajectoryMapper);
-//        setTimeFraction(0.0);
-
-
-//        initialize();
-//        spacecraftBody.Modified();
-//        trajectoryActor.Modified();
+        System.out.println("StateHistoryModelIOHelper: loadStateHistoryFromFile: min time " + history.getMinTime());
+        System.out.println("StateHistoryModelIOHelper: loadStateHistoryFromFile: max time " + history.getMaxTime());
+        history.setTime(history.getMinTime());
         return history;
 
     }
