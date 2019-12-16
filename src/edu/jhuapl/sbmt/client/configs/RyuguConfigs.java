@@ -51,7 +51,7 @@ public class RyuguConfigs extends SmallBodyViewConfig
 	{
 		super(ImmutableList.<String>copyOf(DEFAULT_GASKELL_LABELS_PER_RESOLUTION), ImmutableList.<Integer>copyOf(DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION));
 
-		SpectrumSearchSpec nirs3 = new SpectrumSearchSpec("NIRS3", "/ryugu/shared/nirs3", "spectra", "spectrumlist.txt", ImageSource.valueFor("Corrected SPICE Derived"), "Wave Number (1/cm)", "Radiance", "NIRS3");
+		SpectrumSearchSpec nirs3 = new SpectrumSearchSpec("NIRS3", "/ryugu/shared/nirs3", "spectra", "spectrumlist.txt", ImageSource.valueFor("Corrected SPICE Derived"), "nm", "Radiance", "NIRS3");
 		List<SpectrumSearchSpec> nirs3Specs = new ArrayList<SpectrumSearchSpec>();
 		nirs3Specs.add(nirs3);
 
