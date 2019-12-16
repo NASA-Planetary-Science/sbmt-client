@@ -90,12 +90,11 @@ public class SbmtRunnable implements Runnable
                     {
                         if (!isCancelled())
                         {
+                            FileCache.instance().startAccessMonitor();
+
                             frame.pack();
                             frame.setVisible(true);
                             System.out.println("\nSBMT Ready");
-
-                            FileCache.showDotsForFiles(false);
-                            FileCache.instance().startAccessMonitor();
 
                             Console.hideConsole();
                             Console.setDefaultLocation(frame);
@@ -150,7 +149,6 @@ public class SbmtRunnable implements Runnable
 			{}
 		}
 
-		FileCache.showDotsForFiles(true);
 		System.out.println("Welcome to the Small Body Mapping Tool (SBMT)");
 		System.out.println(mission + " edition" + (compileDate != null ? " built " + DATE_FORMAT.format(compileDate) : ""));
 		if (Debug.isEnabled())
