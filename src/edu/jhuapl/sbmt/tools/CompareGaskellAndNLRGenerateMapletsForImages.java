@@ -118,7 +118,7 @@ public class CompareGaskellAndNLRGenerateMapletsForImages
 
     public static void main(String[] args) throws Exception
     {
-        NativeLibraryLoader.loadVtkLibrariesHeadless();
+        NativeLibraryLoader.loadHeadlessVtkLibraries();
 
         SmallBodyViewConfig config = SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.EROS, ShapeModelType.GASKELL);
         SmallBodyModel smallBodyModel = SbmtModelFactory.createSmallBodyModel(config);

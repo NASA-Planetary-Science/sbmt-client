@@ -633,7 +633,7 @@ public class DatabaseGeneratorSql
 
         // VTK
         System.setProperty("java.awt.headless", "true");
-        NativeLibraryLoader.loadVtkLibrariesHeadless();
+        NativeLibraryLoader.loadHeadlessVtkLibraries();
 
         ImageSource mode = ImageSource.valueOf(args[i++].toUpperCase());
 //        String body = args[i++];
