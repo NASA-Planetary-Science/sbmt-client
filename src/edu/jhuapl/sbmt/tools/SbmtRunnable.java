@@ -1,5 +1,6 @@
 package edu.jhuapl.sbmt.tools;
 
+import java.awt.HeadlessException;
 import java.io.File;
 import java.net.JarURLConnection;
 import java.text.SimpleDateFormat;
@@ -44,12 +45,13 @@ public class SbmtRunnable implements Runnable
 		{
 			Mission mission = SbmtMultiMissionTool.getMission();
 			writeStartupMessage(mission);
+
+			NativeLibraryLoader.loadAllVtkLibraries();
+
 			SmallBodyViewConfig.initialize();
 			//            new SmallBodyViewConfigMetadataIO(SmallBodyViewConfig.getBuiltInConfigs()).write(new File("/Users/steelrj1/Desktop/test.json"), "Test");
 
 			configureMissionBodies(mission);
-
-			NativeLibraryLoader.loadVtkLibraries();
 
 			vtkJavaGarbageCollector garbageCollector = new vtkJavaGarbageCollector();
 			//garbageCollector.SetDebug(true);
@@ -103,6 +105,12 @@ public class SbmtRunnable implements Runnable
 
 			    swingWorker.execute();
 			});
+		}
+		catch (HeadlessException e)
+		{
+		    e.printStackTrace();
+		    System.err.println("\nThe SBMT requires a fully functional graphics environment and cannot be run \"headless\"");
+		    System.err.println("Unable to launch the SBMT.");
 		}
 		catch (Throwable throwable)
 		{
