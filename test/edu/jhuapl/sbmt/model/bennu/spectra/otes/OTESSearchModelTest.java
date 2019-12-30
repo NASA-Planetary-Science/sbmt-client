@@ -61,7 +61,7 @@ class OTESSearchModelTest
 	static void setUpBeforeClass() throws Exception
 	{
 		System.setProperty("java.awt.headless", "true");
-        NativeLibraryLoader.loadVtkLibraries();
+        NativeLibraryLoader.loadVtkLibrariesHeadless();
         searchParameters = new SpectrumSearchParametersModel();
         Calendar.getInstance().set(2018, 12, 1);
         searchParameters.setStartDate(Calendar.getInstance().getTime());
