@@ -45,7 +45,7 @@ public class SbmtTestRunnable implements Runnable
 
 			configureMissionBodies(mission);
 
-			NativeLibraryLoader.loadVtkLibraries();
+			NativeLibraryLoader.loadAllVtkLibraries();
 
 			vtkJavaGarbageCollector garbageCollector = new vtkJavaGarbageCollector();
 			//garbageCollector.SetDebug(true);
