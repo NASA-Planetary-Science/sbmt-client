@@ -18,6 +18,7 @@ public class StandardStateHistory implements StateHistory
     private Double time;
     private StateHistoryKey key;
     private Trajectory trajectory;
+    private double minDisplayFraction = 0.0, maxDisplayFraction = 1.0;
 //    private double[] trajectoryColor;
 //    private String trajectoryName;
 //    private String trajectoryDescription;
@@ -50,8 +51,8 @@ public class StandardStateHistory implements StateHistory
 
     public Double getTimeFraction()
     {
-        double min = getMinTime();
-        double max = getMaxTime();
+        double min = getMinTime() + minDisplayFraction*(getMaxTime() - getMinTime());
+        double max = getMaxTime() - (1-maxDisplayFraction)*(getMaxTime()-getMinTime());
         double time = getTime();
         double result = (time - min) / (max - min);
         return result;
@@ -59,9 +60,11 @@ public class StandardStateHistory implements StateHistory
 
     public void setTimeFraction(StateHistory history, Double timeFraction)
     {
-        double min = getMinTime();
-        double max = getMaxTime();
+//    	System.out.println("StandardStateHistory: setTimeFraction: min display frac " + minDisplayFraction);
+        double min = getMinTime() + minDisplayFraction*(getMaxTime() - getMinTime());
+        double max = getMaxTime() - (1-maxDisplayFraction)*(getMaxTime()-getMinTime());
         double time = min + timeFraction * (max - min);
+//        System.out.println("StandardStateHistory: setTimeFraction: time is now " + time);
         setTime(time);
     }
 
@@ -210,6 +213,30 @@ public class StandardStateHistory implements StateHistory
 	public void setTrajectory(Trajectory trajectory)
 	{
 		this.trajectory = trajectory;
+	}
+
+	@Override
+	public double getMinDisplayFraction()
+	{
+		return minDisplayFraction;
+	}
+
+	@Override
+	public void setMinDisplayFraction(double minDisplayFraction)
+	{
+		this.minDisplayFraction = minDisplayFraction;
+	}
+
+	@Override
+	public double getMaxDisplayFraction()
+	{
+		return maxDisplayFraction;
+	}
+
+	@Override
+	public void setMaxDisplayFraction(double maxDisplayFraction)
+	{
+		this.maxDisplayFraction = maxDisplayFraction;
 	}
 
 }

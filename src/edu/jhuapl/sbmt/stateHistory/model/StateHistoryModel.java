@@ -128,7 +128,6 @@ public class StateHistoryModel //implements HasTime // extends AbstractModel imp
 
     private void fireHistorySegmentCreatedListener(StateHistory historySegment)
 	{
-    	System.out.println("StateHistoryModel: fireHistorySegmentCreatedListener: number of listeners " + listeners.size());
 		for (StateHistoryModelChangedListener listener : listeners)
 		{
 			listener.historySegmentCreated(historySegment);
@@ -557,6 +556,11 @@ public class StateHistoryModel //implements HasTime // extends AbstractModel imp
         if (traj == null) return "";
         return traj.toString();
     }
+
+	public double getScalingFactor()
+	{
+		return scalingFactor;
+	}
 
 //    private void setCurrentTrajectory(Trajectory temp)
 //    {

@@ -20,26 +20,29 @@ import vtk.rendering.jogl.vtkJoglPanelComponent;
 import edu.jhuapl.saavtk.gui.render.Renderer;
 import edu.jhuapl.sbmt.stateHistory.model.AnimatorFrameRunnable;
 import edu.jhuapl.sbmt.stateHistory.model.animator.AnimationFrame;
+import edu.jhuapl.sbmt.stateHistory.model.stateHistory.StateHistoryCollection;
 
 public class Animator implements ActionListener
 {
 	private BlockingQueue<AnimationFrame> animationFrameQueue;
     private Renderer renderer;
     private AnimatorFrameRunnable completionBlock;
+    private Runnable movieBlock;
+    private StateHistoryCollection runs;
 
-	public Animator(Renderer renderer)
+	public Animator(Renderer renderer, StateHistoryCollection runs)
 	{
 		this.renderer = renderer;
+		this.runs = runs;
 	}
 
 	// creates animation frame with data to move the camera
-    public AnimationFrame createAnimationFrameWithTimeFraction(double tf, File file, int delay/*, IStateHistoryPanel panel*/)
+    public AnimationFrame createAnimationFrameWithTimeFraction(double tf, File file, int delay)
     {
         AnimationFrame result = new AnimationFrame();
         result.timeFraction = tf;
         result.file = file;
         result.delay = delay;
-//        result.panel = panel;
 
         return result;
     }
@@ -54,8 +57,8 @@ public class Animator implements ActionListener
                 // The following line is needed due to some weird threading
                 // issue with JOGL when saving out the pixel buffer. Note release
                 // needs to be called at the end.
-                renWin.getComponent().getContext().makeCurrent();
 
+                renWin.getComponent().getContext().makeCurrent();
                 renWin.getVTKLock().lock();
                 vtkWindowToImageFilter windowToImage = new vtkWindowToImageFilter();
                 windowToImage.SetInput(renWin.getRenderWindow());
@@ -119,6 +122,7 @@ public class Animator implements ActionListener
     @Override
     public void actionPerformed(ActionEvent e)
     {
+    	if (renderer.getRenderWindowPanel().getComponent().getWidth() %2 != 0) renderer.getRenderWindowPanel().getComponent().setSize(renderer.getRenderWindowPanel().getComponent().getWidth() + 1, renderer.getRenderWindowPanel().getComponent().getHeight());
         AnimationFrame frame = animationFrameQueue.peek();
         if (frame != null)
         {
@@ -126,22 +130,27 @@ public class Animator implements ActionListener
             {
                 saveToFile(frame.file, renderer.getRenderWindowPanel());
                 animationFrameQueue.remove();
+
             }
             else
             {
             	completionBlock.run(frame);
-//                setAnimationFrame(frame);
                 frame.staged = true;
+
             }
 
             Timer timer = new Timer(frame.delay, this);
             timer.setRepeats(false);
             timer.start();
         }
+        else
+        {
+           	movieBlock.run();
+        }
 
     }
 
-    public void saveAnimation(int frameNum, File file, AnimatorFrameRunnable completionBlock)
+    public void saveAnimation(int frameNum, File file, AnimatorFrameRunnable completionBlock, Runnable movieBlock)
     {
     	animationFrameQueue = new LinkedBlockingQueue<AnimationFrame>();
 
@@ -158,6 +167,7 @@ public class Animator implements ActionListener
             animationFrameQueue.add(frame);
         }
         this.completionBlock = completionBlock;
+        this.movieBlock = movieBlock;
         this.actionPerformed(null);
     }
 

@@ -22,6 +22,7 @@ public class StateHistoryIntervalPlaybackPanel extends JPanel
     private JTextField rateTextField;
     private JButton rewindButton;
     private JButton playButton;
+    private JButton recordButton;
     private JButton fastForwardButton;
     private JSlider slider;
     private int sliderMin = 0;
@@ -139,6 +140,20 @@ public class StateHistoryIntervalPlaybackPanel extends JPanel
         }
         playPanel.add(playButton);
 
+        recordButton = new JButton("");
+        try
+        {
+            Image play = ImageIO.read(getClass().getResource("/edu/jhuapl/sbmt/data/questionMark.png"));
+            play.getScaledInstance(10, 10, Image.SCALE_DEFAULT);
+            Icon playIcon = new ImageIcon(play);
+            recordButton.setIcon(playIcon);
+        }catch (Exception e)
+        {
+            recordButton.setText("Play");
+        }
+        playPanel.add(recordButton);
+
+
         fastForwardButton = new JButton("");
         try
         {
@@ -187,7 +202,12 @@ public class StateHistoryIntervalPlaybackPanel extends JPanel
         return fastForwardButton;
     }
 
-    public JSlider getSlider()
+    public JButton getRecordButton()
+	{
+		return recordButton;
+	}
+
+	public JSlider getSlider()
     {
         return slider;
     }

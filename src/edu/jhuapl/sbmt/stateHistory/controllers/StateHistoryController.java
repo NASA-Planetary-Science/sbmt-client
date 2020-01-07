@@ -5,6 +5,7 @@ import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 import java.io.File;
 
+import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
 import javax.swing.JPanel;
 import javax.swing.border.EtchedBorder;
@@ -21,12 +22,12 @@ import edu.jhuapl.saavtk.model.ModelNames;
 import edu.jhuapl.saavtk.util.FileCache;
 import edu.jhuapl.sbmt.client.SmallBodyModel;
 import edu.jhuapl.sbmt.client.SmallBodyViewConfig;
+import edu.jhuapl.sbmt.gui.lidar.PercentIntervalChanger;
 import edu.jhuapl.sbmt.stateHistory.model.DefaultStateHistoryModelChangedListener;
 import edu.jhuapl.sbmt.stateHistory.model.StateHistoryModel;
 import edu.jhuapl.sbmt.stateHistory.model.StateHistoryUtil;
 import edu.jhuapl.sbmt.stateHistory.model.interfaces.StateHistory;
 import edu.jhuapl.sbmt.stateHistory.model.stateHistory.StateHistoryCollection;
-import edu.jhuapl.sbmt.stateHistory.rendering.StateHistoryRenderModel;
 import edu.jhuapl.sbmt.stateHistory.ui.version2.StateHistoryIntervalGenerationPanel;
 import edu.jhuapl.sbmt.stateHistory.ui.version2.StateHistoryIntervalPlaybackPanel;
 import edu.jhuapl.sbmt.stateHistory.ui.version2.StateHistoryViewControlsPanel;
@@ -62,9 +63,10 @@ public class StateHistoryController //implements TableModelListener, IStateHisto
 
     private SmallBodyViewConfig config;
     private StateHistoryModel historyModel;
-    private StateHistoryRenderModel renderModel;
+//    private StateHistoryRenderModel renderModel;
     private StateHistoryIntervalGenerationController intervalGenerationController;
     private StateHistoryIntervalSelectionController intervalSelectionController;
+    private StateHistoryDisplayedIntervalController intervalDisplayedController;
     private StateHistoryIntervalPlaybackController intervalPlaybackController;
     private StateHistoryViewControlsController viewControlsController;
 //    private StateHistoryRenderManager renderManager;
@@ -96,13 +98,15 @@ public class StateHistoryController //implements TableModelListener, IStateHisto
 
         historyModel = new StateHistoryModel(start, end, bodyModel, renderer, modelManager);
 //        renderManager = new StateHistoryRenderManager(renderer, historyModel);
-        renderModel = new StateHistoryRenderModel();
+//        renderModel = new StateHistoryRenderModel();
 
         this.intervalGenerationController = new StateHistoryIntervalGenerationController(historyModel, start, end);
         this.intervalSelectionController = new StateHistoryIntervalSelectionController(historyModel, bodyModel, renderer);
         this.intervalPlaybackController = new StateHistoryIntervalPlaybackController(historyModel, renderer);
+        this.intervalDisplayedController = new StateHistoryDisplayedIntervalController(historyModel);
         this.viewControlsController = new StateHistoryViewControlsController(historyModel, renderer);
 
+        intervalDisplayedController.getView().setEnabled(false);
         intervalPlaybackController.getView().setEnabled(false);
         viewControlsController.getView().setEnabled(false);
 
@@ -132,6 +136,7 @@ public class StateHistoryController //implements TableModelListener, IStateHisto
 			{
 				if (aEventType == ItemEventType.ItemsSelected)
 				{
+					intervalDisplayedController.getView().setEnabled(runs.getSelectedItems().size() > 0);
 					intervalPlaybackController.getView().setEnabled(runs.getSelectedItems().size() > 0);
 					viewControlsController.getView().setEnabled(runs.getSelectedItems().size() > 0);
 				}
@@ -162,6 +167,10 @@ public class StateHistoryController //implements TableModelListener, IStateHisto
     	StateHistoryIntervalGenerationPanel intervalGenerationPanel = intervalGenerationController.getView();
     	StateHistoryTableView intervalSelectionPanel = intervalSelectionController.getView();
     	intervalSelectionPanel.setup();
+
+    	PercentIntervalChanger displayedPanel = intervalDisplayedController.getView().getTimeIntervalChanger();
+    	displayedPanel.setBorder(BorderFactory.createTitledBorder("Displayed Track Data"));
+
     	StateHistoryIntervalPlaybackPanel intervalPlaybackPanel = intervalPlaybackController.getView();
     	StateHistoryViewControlsPanel viewControlsPanel = viewControlsController.getView();
 
@@ -171,6 +180,7 @@ public class StateHistoryController //implements TableModelListener, IStateHisto
     	JPanel panel = new JPanel();
     	panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
     	panel.add(timeControlsPanel);
+    	panel.add(displayedPanel);
     	panel.add(intervalPlaybackPanel);
     	panel.add(viewControlsPanel);
     	return panel;

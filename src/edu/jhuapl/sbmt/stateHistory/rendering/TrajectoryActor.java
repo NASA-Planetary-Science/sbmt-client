@@ -18,7 +18,8 @@ public class TrajectoryActor extends vtkActor
     private double[] trajectoryColor = {0, 255, 255, 255};
     private double trajectoryLineThickness = 1;
     private String trajectoryName = ""; // default name and description fields
-
+    private double minFraction = 0.0;
+    private double maxFraction = 1.0;
 
 
 	public TrajectoryActor(Trajectory trajectory)
@@ -51,13 +52,12 @@ public class TrajectoryActor extends vtkActor
         int size = traj.getX().size();
         idList.SetNumberOfIds(size);
 
-        for (int i=0;i<size;++i)
+        for (int i=(int)(minFraction*size);i<maxFraction*size;++i)
         {
             Double x = traj.getX().get(i);
             Double y = traj.getY().get(i);
             Double z = traj.getZ().get(i);
 
-            if (i==0) System.out.println("TrajectoryActor: createTrajectoryPolyData: x y z " + x + " " + y + " " + z);
             points.InsertNextPoint(x, y, z);
             idList.SetId(i, i);
         }
@@ -132,5 +132,13 @@ public class TrajectoryActor extends vtkActor
     	if (show == true) { VisibilityOn(); } else { VisibilityOff(); }
 		Modified();
     }
+
+	public void setMinMaxFraction(double min, double max)
+	{
+		this.minFraction = min;
+		this.maxFraction = max;
+//		System.out.println("TrajectoryActor: setMinMaxFraction: min max " + min + " " + max);
+		createTrajectoryPolyData();
+	}
 
 }

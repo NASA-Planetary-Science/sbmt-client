@@ -66,6 +66,9 @@ public class StateHistoryCollection extends SaavtkItemManager<StateHistory> /*Ab
     private static final double JupiterScale = 75000;
     private double[] sunDirection;
 
+    private double[] currentLookFromDirection;
+//    private double[] currentLookToDirection;
+
     public StateHistoryCollection(SmallBodyModel smallBodyModel)
     {
         this.smallBodyModel = smallBodyModel;
@@ -139,6 +142,11 @@ public class StateHistoryCollection extends SaavtkItemManager<StateHistory> /*Ab
 
     }
 
+    public void setCurrentRun(StateHistory run)
+    {
+    	currentRun = run;
+    }
+
     public void addRunToList(StateHistory run)
     {
          simRuns.add(run);
@@ -165,6 +173,7 @@ public class StateHistoryCollection extends SaavtkItemManager<StateHistory> /*Ab
 
         // Get the trajectory actor the state history segment
         TrajectoryActor trajectoryActor = new TrajectoryActor(run.getTrajectory());
+        trajectoryActor.setMinMaxFraction(run.getMinDisplayFraction(), run.getMaxDisplayFraction());
         trajectoryActor.VisibilityOn();
         trajectoryActor.GetMapper().Update();
 //        trajectoryActor.setTrajectoryColor(new double[] {255, 0, 0, 255});
@@ -187,17 +196,9 @@ public class StateHistoryCollection extends SaavtkItemManager<StateHistory> /*Ab
             return;
 
         StateHistory run = getRunFromKey(key);
-//        simRuns.remove(run);
-//        keys.remove(key);
-
         stateHistoryToRendererMap.remove(run);
 
-        // change the current run to the first on the list
-//        this.currentRun = simRuns.get(0);
         this.currentRun = null;
-
-//        run.removePropertyChangeListener(this);
-
         this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
         this.pcs.firePropertyChange(Properties.MODEL_REMOVED, null, run);
     }
@@ -239,6 +240,11 @@ public class StateHistoryCollection extends SaavtkItemManager<StateHistory> /*Ab
    		props.add(earthDirectionMarker.getActor());
    		props.add(sunDirectionMarker.getActor());
 
+//   		for (vtkProp prop : props)
+//   		{
+//   			prop.SetDragable(0);
+//   			prop.SetPickable(0);
+//   		}
 
     	return props;
 
@@ -401,24 +407,6 @@ public class StateHistoryCollection extends SaavtkItemManager<StateHistory> /*Ab
        }
 
 	   sunDirectionMarker.updateSunPosition(sunPosition, sunMarkerPosition);
-
-//
-//
-//       //rotates sun pointer to point in direction of sun - Alex W
-//       double[] zAxis = {1,0,0};
-//       double[] sunPos = history.getSunPosition();
-//       double[] sunPosDirection = new double[3];
-//       MathUtil.unorm(sunPos, sunPosDirection);
-//       double[] rotationAxisSun = new double[3];
-//       MathUtil.vcrss(sunPosDirection, zAxis, rotationAxisSun);
-//       double rotationAngleSun = ((180.0/Math.PI)*MathUtil.vsep(zAxis, sunPosDirection));
-//
-//       vtkTransform sunMarkerTransform = new vtkTransform();
-//       //sunMarkerTransform.PostMultiply();
-//       sunMarkerTransform.Translate(sunMarkerPosition);
-//       sunMarkerTransform.RotateWXYZ(-rotationAngleSun, rotationAxisSun[0], rotationAxisSun[1], rotationAxisSun[2]);
-//       sunDirectionMarker.getActor().SetUserTransform(sunMarkerTransform);
-//       sunAssembly.SetUserTransform(sunMarkerTransform);
     }
 
     private void updateEarthPosition(StateHistory history, double time)
@@ -541,10 +529,10 @@ public class StateHistoryCollection extends SaavtkItemManager<StateHistory> /*Ab
 //            renderer.setLighting(LightingType.LIGHT_KIT);
     }
 
-	public double[] updateLookDirection(RendererLookDirection lookDirection)
+	public double[] updateLookDirection(RendererLookDirection lookDirection, double scalingFactor)
     {
 		double[] focalpoint = {0,0,0};
-        double[] upVector = {0,1,0};
+
 
 		// set camera to earth, spacecraft, or sun views - Alex W
 		if(lookDirection == RendererLookDirection.EARTH)
@@ -552,10 +540,19 @@ public class StateHistoryCollection extends SaavtkItemManager<StateHistory> /*Ab
 			double[] newEarthPos = new double[3];
 			MathUtil.unorm(earthPosition, newEarthPos);
 			MathUtil.vscl(scalingFactor, newEarthPos, newEarthPos);
+		    currentLookFromDirection = newEarthPos;
+
+			return newEarthPos;
 //			renderer.setCameraOrientation(newEarthPos, renderer.getCameraFocalPoint(), upVector, renderer.getCameraViewAngle());
 		}
 		else if(lookDirection == RendererLookDirection.SPACECRAFT)
 		{
+			double[] boresight = new double[] {currentRun.getSpacecraftPosition()[0]*0.9,
+					currentRun.getSpacecraftPosition()[1]*0.9,
+					currentRun.getSpacecraftPosition()[2]*0.9
+			};
+			currentLookFromDirection = boresight;
+			return boresight;
 //			renderer.setCameraOrientation(currentFlybyStateHistory.getSpacecraftPosition(), renderer.getCameraFocalPoint(), upVector, renderer.getCameraViewAngle());
 		}
 		else if(lookDirection == RendererLookDirection.SUN)
@@ -563,7 +560,22 @@ public class StateHistoryCollection extends SaavtkItemManager<StateHistory> /*Ab
 			double[] newSunPos = new double[3];
 			MathUtil.unorm(sunPosition, newSunPos);
 			MathUtil.vscl(scalingFactor, newSunPos, newSunPos);
+			currentLookFromDirection = newSunPos;
+			return newSunPos;
 //			renderer.setCameraOrientation(newSunPos, renderer.getCameraFocalPoint(), upVector, renderer.getCameraViewAngle());
+		}
+		else if (lookDirection == RendererLookDirection.SPACECRAFT_THIRD)
+		{
+			double[] thirdPerson = new double[] {currentRun.getSpacecraftPosition()[0]*1.1,
+					currentRun.getSpacecraftPosition()[1]*1.1,
+					currentRun.getSpacecraftPosition()[2]*1.1
+			};
+			currentLookFromDirection = thirdPerson;
+			return thirdPerson;
+		}
+		else //free view mode
+		{
+			return currentRun.getSpacecraftPosition();
 		}
     }
 
@@ -571,7 +583,6 @@ public class StateHistoryCollection extends SaavtkItemManager<StateHistory> /*Ab
     {
         if (state != null && spacecraft.getActor() != null)
         {
-        	System.out.println("StateHistoryCollection: setTimeFraction: " + timeFraction);
         	updateSpacecraftPosition(state, timeFraction);
         	updateEarthPosition(state, timeFraction);
         	updateSunPosition(state, timeFraction);
@@ -707,5 +718,24 @@ public class StateHistoryCollection extends SaavtkItemManager<StateHistory> /*Ab
     	spacecraftLabelActor.setDistanceString(distanceText);
     	this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, spacecraftLabelActor);
     }
+
+	public double[] getCurrentLookFromDirection()
+	{
+		return currentLookFromDirection;
+	}
+
+	public void setTrajectoryMinMax(StateHistory run, double min, double max)
+	{
+		TrajectoryActor trajActor = stateHistoryToRendererMap.get(run);
+//		System.out.println("StateHistoryCollection: setTrajectoryMinMax: trajactor " + trajActor);
+		if (trajActor != null)
+        {
+//			System.out.println("StateHistoryCollection: setTrajectoryMinMax: updating to " + min + " " + max);
+//			trajActor.setMinMaxFraction(min, max);
+//			trajActor.Modified();
+//			this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, trajActor);
+        }
+	}
+
 
 }

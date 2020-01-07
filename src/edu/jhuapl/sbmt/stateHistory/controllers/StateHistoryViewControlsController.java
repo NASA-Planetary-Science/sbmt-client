@@ -16,6 +16,9 @@ import javax.swing.JTextField;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
+import org.apache.commons.math3.geometry.euclidean.threed.Vector3D;
+
+import edu.jhuapl.saavtk.gui.render.RenderPanel;
 import edu.jhuapl.saavtk.gui.render.Renderer;
 import edu.jhuapl.saavtk.gui.render.Renderer.LightingType;
 import edu.jhuapl.sbmt.stateHistory.model.StateHistoryModel;
@@ -24,13 +27,15 @@ import edu.jhuapl.sbmt.stateHistory.model.stateHistory.RendererLookDirection;
 import edu.jhuapl.sbmt.stateHistory.model.stateHistory.StateHistoryCollection;
 import edu.jhuapl.sbmt.stateHistory.ui.version2.StateHistoryViewControlsPanel;
 
+import glum.item.ItemEventListener;
+import glum.item.ItemEventType;
+
 public class StateHistoryViewControlsController implements ItemListener
 {
 
 	public boolean earthEnabled = true;
 	private StateHistoryViewControlsPanel view;
 	private StateHistoryModel historyModel;
-//	private StateHistoryRenderModel renderModel;
 	private StateHistoryCollection runs;
 	private Renderer renderer;
 
@@ -47,7 +52,7 @@ public class StateHistoryViewControlsController implements ItemListener
     {
         String[] distanceChoices = {"Distance to Center", "Distance to Surface"};
         DefaultComboBoxModel<String> comboModelDistance = new DefaultComboBoxModel<String>(distanceChoices);
-        DefaultComboBoxModel<String> comboModelView = new DefaultComboBoxModel<String>(viewChoices.valuesAsStrings(earthEnabled));
+        DefaultComboBoxModel<RendererLookDirection> comboModelView = new DefaultComboBoxModel<RendererLookDirection>(RendererLookDirection.values());
         view.getDistanceOptions().setModel(comboModelDistance);
         view.getViewOptions().setModel(comboModelView);
         view.getShowEarthPointer().addItemListener(this);
@@ -62,8 +67,23 @@ public class StateHistoryViewControlsController implements ItemListener
 			@Override
 			public void propertyChange(PropertyChangeEvent evt)
 			{
-				if (renderer.getLighting() == LightingType.FIXEDLIGHT)
+				updateLookDirection();
+				if (renderer.getLighting() == LightingType.FIXEDLIGHT && runs.getCurrentRun() != null)
 					renderer.setFixedLightDirection(runs.getCurrentRun().getSunPosition());
+			}
+		});
+
+        runs.addListener(new ItemEventListener()
+		{
+
+			@Override
+			public void handleItemEvent(Object aSource, ItemEventType aEventType)
+			{
+				if (aEventType == ItemEventType.ItemsSelected)
+				{
+					runs.setTimeFraction(runs.getCurrentRun(), 0.0);
+					updateLookDirection();
+				}
 			}
 		});
 
@@ -73,33 +93,10 @@ public class StateHistoryViewControlsController implements ItemListener
             @Override
             public void actionPerformed(ActionEvent e)
             {
-                StateHistory currentRun = runs.getCurrentRun();
-                if (currentRun != null) { // can't do any view things if we don't have a trajectory / time history
-                    String selectedItem = (String)((JComboBox<String>)e.getSource()).getSelectedItem();
-                    view.getShowSpacecraft().setEnabled(true);
-
-                    double[] lookFromDirection = runs.updateLookDirection(RendererLookDirection.SPACECRAFT);
-        			renderer.setCameraOrientation(lookFromDirection, renderer.getCameraFocalPoint(), upVector, renderer.getCameraViewAngle());
-
-//                    /*if(selectedItem.equals(viewChoices.FREE.toString())){
-//
-//                    } else*/ if(selectedItem.equals(viewChoices.EARTH.toString())){
-//                        renderModel.setMove(false);
-//                        renderModel.setShowEarthView(true); //, view.getShowSpacecraft().isSelected());
-//                        view.getViewInputAngle().setText(Double.toString(renderer.getCameraViewAngle()));
-//                    } else if(selectedItem.equals(viewChoices.SUN.toString())){
-//                        renderModel.setMove(false);
-//                        renderModel.setShowEarthView(false); //, view.getShowSpacecraft().isSelected());
-//                        renderModel.setShowSunView(true); //, view.getShowSpacecraft().isSelected());
-//                        view.getViewInputAngle().setText(Double.toString(renderer.getCameraViewAngle()));
-//                    } else if(selectedItem.equals(viewChoices.SPACECRAFT.toString())){
-//                       setSpacecraftView(currentRun);
-//                    }
-                }
+            	updateLookDirection();
             }
         });
 
-        view.getViewOptions().setSelectedIndex(0);
 
         view.getBtnResetCameraTo().addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
@@ -113,17 +110,11 @@ public class StateHistoryViewControlsController implements ItemListener
 
         view.getDistanceOptions().addActionListener(new ActionListener()
         {
-
             @Override
             public void actionPerformed(ActionEvent e)
             {
-//                StateHistory currentRun = runs.getCurrentRun();
                 String selectedItem = (String)((JComboBox<String>)e.getSource()).getSelectedItem();
-                if(selectedItem.equals("Distance to Center")){
-                    runs.setDistanceText("Distance to Center");
-                }else if(selectedItem.equals("Distance to Surface")){
-                    runs.setDistanceText("Distance to Surface");
-                }
+                runs.setDistanceText(selectedItem);
             }
         });
 
@@ -168,7 +159,6 @@ public class StateHistoryViewControlsController implements ItemListener
             public void actionPerformed(ActionEvent e)
             {
                 if(e.getSource() == view.getSetViewAngle()){
-//                    StateHistory currentRun = runs.getCurrentRun();
                     if(!(Double.parseDouble(view.getViewInputAngle().getText())>120.0 || Double.parseDouble(view.getViewInputAngle().getText())<1.0)){
                         renderer.setCameraViewAngle(Double.parseDouble(view.getViewInputAngle().getText()));
                     }else if(Double.parseDouble(view.getViewInputAngle().getText())>120){
@@ -183,79 +173,51 @@ public class StateHistoryViewControlsController implements ItemListener
             }
         });
 
-        view.getSaveAnimationButton().addActionListener(new ActionListener()
-        {
+        view.getViewOptions().setSelectedIndex(0);
 
-            @Override
-            public void actionPerformed(ActionEvent e)
-            {
-//                StateHistory currentRun = runs.getCurrentRun();
-//                if (currentRun != null)
-//                {
-//                    view.setCursor(new Cursor(Cursor.WAIT_CURSOR));
-//                    DateTime startTime = historyModel.getStartTime();
-//                    DateTime endTime = historyModel.getEndTime();
-//                    renderModel.saveAnimation(StateHistoryViewControlsController.this.getView(),
-//                            "" + startTime, "" + endTime);
-//                    view.setCursor(Cursor.getDefaultCursor());
-////                    currentRun.saveAnimation(StateHistoryController.this, view.getStartTimeSpinner().getModel().getValue().toString(), view.getStopTimeSpinner().getModel().getValue().toString());
-//                }else
-//                {
-//                    JOptionPane.showMessageDialog(null, "No History Interval selected.", "Error",
-//                            JOptionPane.ERROR_MESSAGE);
-//                    return;
-//                }
 
-            }
-        });
+        view.updateUI();
 
     }
 
-	private enum viewChoices {
-//      FREE("Free View"),
-      SPACECRAFT("Spacecraft View"),
-      EARTH("Earth View"),
-      SUN("Sun View");
+	private void updateLookDirection()
+	{
+		RendererLookDirection selectedItem = (RendererLookDirection)view.getViewOptions().getSelectedItem();
+		double[] upVector = {0,1,0};
+        StateHistory currentRun = runs.getCurrentRun();
 
-        private final String text;
+        if (currentRun != null) { // can't do any view things if we don't have a trajectory / time history
 
-        private viewChoices(final String text)
-        {
-            this.text = text;
+			if (selectedItem == RendererLookDirection.FREE_VIEW) return;
+			Vector3D targOrig = new Vector3D(renderer.getCameraFocalPoint());
+
+			if (selectedItem == RendererLookDirection.SUN || selectedItem == RendererLookDirection.EARTH)
+			{
+				Vector3D targAxis = new Vector3D(runs.updateLookDirection(selectedItem, historyModel.getScalingFactor()));
+
+	            double[] lookFromDirection = runs.updateLookDirection(selectedItem, historyModel.getScalingFactor());
+	            renderer.setCameraOrientation(lookFromDirection, renderer.getCameraFocalPoint(), upVector, renderer.getCameraViewAngle());
+
+
+				((RenderPanel)renderer.getRenderWindowPanel()).setZoomOnly(true, targAxis, targOrig);
+			}
+			else
+			{
+	        	renderer.getCamera().reset();
+	        	((RenderPanel)renderer.getRenderWindowPanel()).setZoomOnly(false, Vector3D.ZERO, targOrig);
+	            view.getShowSpacecraft().setEnabled(true);
+
+	            double[] lookFromDirection = runs.updateLookDirection(selectedItem, historyModel.getScalingFactor());
+	//            System.out.println("StateHistoryViewControlsController: updateLookDirection: look dir " + lookFromDirection[0] + " " + lookFromDirection[1] + " " + lookFromDirection[2]);
+	//			renderer.getCamera().setUpUnit(new Vector3D(upVector));
+	            renderer.setCameraOrientation(lookFromDirection, renderer.getCameraFocalPoint(), upVector, renderer.getCameraViewAngle());
+
+				boolean scSelected = (selectedItem == RendererLookDirection.SPACECRAFT);
+				view.getShowSpacecraft().setEnabled(!scSelected);
+		        view.getDistanceOptions().setEnabled(!scSelected);
+			}
         }
-
-        public String toString()
-        {
-            return text;
-        }
-
-        public static String[] valuesAsStrings(boolean earthIncluded)
-        {
-            viewChoices[] values = values();
-            if (earthIncluded == false)
-            {
-                values = new viewChoices[]{viewChoices.SPACECRAFT, viewChoices.SUN};
-            }
-            String[] asStrings = new String[values.length];
-            for (int ix = 0; ix < values.length; ix++) {
-                asStrings[ix] = values[ix].toString();
-            }
-            return asStrings;
-        }
-    }
-
-    private void setSpacecraftView(StateHistory currentRun)
-    {
-//        renderModel.setShowEarthView(false); //, view.getShowSpacecraft().isSelected());
-//        renderModel.setShowSunView(false); //, view.getShowSpacecraft().isSelected());
-//        renderModel.setMove(true);
-//        renderModel.setActorVisibility("Spacecraft", false);
-        view.getShowSpacecraft().setEnabled(false);
-        view.getDistanceOptions().setEnabled(false);
-        view.getViewInputAngle().setText(Double.toString(renderer.getCameraViewAngle()));
-//        renderModel.setCameraViewAngle(currentRun.getRenderer().getCameraViewAngle());
-//        view.getViewOptions().setSelectedIndex(0);
-    }
+	}
 
     @Override
     public void itemStateChanged(ItemEvent e) throws NullPointerException
@@ -278,159 +240,37 @@ public class StateHistoryViewControlsController implements ItemListener
         //
         // handles changes in options to show/hide different parts of the model. Ex. pointers, lighting, trajectory
         //
+        boolean selected = (e.getStateChange() == ItemEvent.SELECTED);
 
-        try
-        {
-            if(e.getStateChange() == ItemEvent.SELECTED){
-                if(source == showEarthMarker){
-//                    renderModel.setActorVisibility("Earth", true);
-                	runs.setEarthDirectionMarkerVisibility(true);
-                    earthSlider.setEnabled(true);
-                    earthText.setEnabled(true);
-                } else if(source == showSunMarker){
-//                	renderModel.setActorVisibility("Sun", true);
-                	runs.setSunDirectionMarkerVisibility(true);
-                    sunSlider.setEnabled(true);
-                    sunText.setEnabled(true);
-                } else if(source == showSpacecraftMarker){
-//                	renderModel.setActorVisibility("SpacecraftMarker", true);
-                	runs.setSpacecraftDirectionMarkerVisibility(true);
-                    spacecraftSlider.setEnabled(true);
-                    spacecraftText.setEnabled(true);
-                } else if(source == showSpacecraft){
-                    distanceOptions.setEnabled(true);
-                    historyModel.setDistanceText(distanceOptions.getSelectedItem().toString());
-//                    renderModel.setActorVisibility("Spacecraft", true);
-                    runs.setSpacecraftLabelVisibility(true);
-                    runs.setSpacecraftVisibility(true);
-                } else if(source == showLighting){
-//                    renderModel.setActorVisibility("Lighting", true);
-                    renderer.setFixedLightDirection(currentRun.getSunPosition());
-                    renderer.setLighting(LightingType.FIXEDLIGHT);
-                }
-
-            }
-            if(e.getStateChange() == ItemEvent.DESELECTED){
-                if(source == showEarthMarker){
-//                    renderModel.setActorVisibility("Earth", false);
-                    runs.setEarthDirectionMarkerVisibility(false);
-                    earthSlider.setEnabled(false);
-                    earthText.setEnabled(false);
-                } else if(source == showSunMarker){
-//                    renderModel.setActorVisibility("Sun", false);
-                    runs.setSunDirectionMarkerVisibility(false);
-                    sunSlider.setEnabled(false);
-                    sunText.setEnabled(false);
-                } else if(source == showSpacecraftMarker){
-//                    renderModel.setActorVisibility("SpacecraftMarker", false);
-                    runs.setSpacecraftDirectionMarkerVisibility(false);
-                    spacecraftSlider.setEnabled(false);
-                    spacecraftText.setEnabled(false);
-                } else if(source == showSpacecraft){
-                    distanceOptions.setEnabled(false);
-//                    renderModel.setActorVisibility("Spacecraft", false);
-                    runs.setSpacecraftVisibility(false);
-                    runs.setSpacecraftLabelVisibility(false);
-                } else if(source == showLighting){
-//                    renderModel.setActorVisibility("Lighting", false);
-                    renderer.setLighting(LightingType.LIGHT_KIT);
-                }
-            }
-            //TODO fire actor visiblity update here
-//            currentRun.updateActorVisibility();
-        }catch(Exception ex){
-
+        if(source == showEarthMarker){
+        	runs.setEarthDirectionMarkerVisibility(selected);
+            earthSlider.setEnabled(selected);
+            earthText.setEnabled(selected);
+        } else if(source == showSunMarker){
+        	runs.setSunDirectionMarkerVisibility(selected);
+            sunSlider.setEnabled(selected);
+            sunText.setEnabled(selected);
+        } else if(source == showSpacecraftMarker){
+        	runs.setSpacecraftDirectionMarkerVisibility(selected);
+            spacecraftSlider.setEnabled(selected);
+            spacecraftText.setEnabled(selected);
+        } else if(source == showSpacecraft){
+            distanceOptions.setEnabled(selected);
+            if (selected)
+            	historyModel.setDistanceText(distanceOptions.getSelectedItem().toString());
+            runs.setSpacecraftLabelVisibility(selected);
+            runs.setSpacecraftVisibility(selected);
+        } else if(source == showLighting){
+        	if (selected)
+        	{
+        		renderer.setFixedLightDirection(currentRun.getSunPosition());
+        		renderer.setLighting(LightingType.FIXEDLIGHT);
+        	}
+        	else
+        	{
+        		renderer.setLighting(LightingType.LIGHT_KIT);
+        	}
         }
-
-
-//        try
-//        {
-//            if(e.getStateChange() == ItemEvent.SELECTED){
-//                if(source == showEarthMarker){
-//                    currentRun.setActorVisibility("Earth", true);
-//                } else if(source == showSunMarker){
-//                    currentRun.setActorVisibility("Sun", true);
-//                } else if(source == showSpacecraftMarkerHead){
-//                    currentRun.setActorVisibility("SpacecraftMarkerHead", true);
-//                } else if(source == showSpacecraftMarker){
-//                    distanceOptions.setEnabled(true);
-//                    currentRun.setDistanceText(distanceOptions.getSelectedItem().toString());
-//                    currentRun.setActorVisibility("SpacecraftMarker", true);
-//                } else if(source == showLighting){
-//                    currentRun.setActorVisibility("Lighting", true);
-//                    renderer.setFixedLightDirection(currentRun.getSunPosition());
-//                    renderer.setLighting(LightingType.FIXEDLIGHT);
-////                } else if(source == showSpacecraftView){
-////                    currentRun.setSpacecraftMovement(true);
-////                    currentRun.setActorVisibility("SpacecraftMarker", false);
-////                    showSpacecraftMarker.setSelected(false);
-////                    showSpacecraftMarker.setEnabled(false);
-////                    distanceOptions.setEnabled(false);
-////                    viewAngleInput.setText(Double.toString(currentRun.getRenderer().getCameraViewAngle()));
-////                    renderer.setCameraViewAngle(currentRun.getRenderer().getCameraViewAngle());
-////                }else if(source == showEarthView){
-////                    if(!showSpacecraftMarker.isEnabled()){
-////                        showSpacecraftMarker.setSelected(false);
-////                        showSpacecraftMarker.setEnabled(true);
-////                        currentRun.setSpacecraftMovement(false);
-////                    }
-////                    currentRun.setSpacecraftMovement(false);
-////                    currentRun.setEarthView(true);
-////                    viewAngleInput.setText(Double.toString(renderer.getCameraViewAngle()));
-////                }else if(source == showSunView){
-////                    currentRun.setSpacecraftMovement(false);
-////                    currentRun.setEarthView(false);
-////                    currentRun.setSunView(true);
-////                    viewAngleInput.setText(Double.toString(renderer.getCameraViewAngle()));
-////                }else if(source == showFreeView){
-////
-////                }else if(source == mapTrajectory){
-////                    currentRun.setActorVisibility("Trajectory", true);
-////                    showTrajectory.setEnabled(true);
-////                    showTrajectory.setSelected(true);
-////                }else if(source == showTrajectory){
-////                    currentRun.showTrajectory(true);
-//                }
-//
-//            }
-//            if(e.getStateChange() == ItemEvent.DESELECTED){
-//                if(source == showEarthMarker){
-//                    currentRun.setActorVisibility("Earth", false);
-//                } else if(source == showSunMarker){
-//                    currentRun.setActorVisibility("Sun", false);
-//                } else if(source == showSpacecraftMarkerHead){
-//                    currentRun.setActorVisibility("SpacecraftMarkerHead", false);
-//                } else if(source == showSpacecraftMarker){
-//                    distanceOptions.setEnabled(false);
-//                    currentRun.setActorVisibility("SpacecraftMarker", false);
-//                } else if(source == showLighting){
-//                    currentRun.setActorVisibility("Lighting", false);
-//                    renderer.setLighting(LightingType.LIGHT_KIT);
-////                } else if(source == showSpacecraftView){
-////                    currentRun.setSpacecraftMovement(false);
-////                    showSpacecraftMarker.setSelected(false);
-////                    showSpacecraftMarker.setEnabled(true);
-////                    distanceOptions.setEnabled(false);
-////                } else if(source == showEarthView){
-////                    currentRun.setSpacecraftMovement(false);
-////                    currentRun.setEarthView(false);
-////                } else if(source == showSunView){
-////                    currentRun.setSpacecraftMovement(false);
-////                    currentRun.setEarthView(false);
-////                    currentRun.setSunView(false);
-////                } else if(source == mapTrajectory){
-////                    currentRun.setActorVisibility("Trajectory", false);
-////                    showTrajectory.setEnabled(false);
-////                    showTrajectory.setSelected(false);
-////                } else if(source == showTrajectory){
-////                    currentRun.showTrajectory(false);
-//                }
-//            }
-//            currentRun.updateActorVisibility();
-//        }catch(Exception ex){
-//
-//        }
-
     }
 
 	public StateHistoryViewControlsPanel getView()

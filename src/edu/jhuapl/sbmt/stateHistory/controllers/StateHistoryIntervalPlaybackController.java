@@ -1,13 +1,21 @@
 package edu.jhuapl.sbmt.stateHistory.controllers;
 
+import java.awt.Component;
+import java.awt.Cursor;
 import java.awt.Image;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 import javax.imageio.ImageIO;
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
+import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
 import javax.swing.JSlider;
 import javax.swing.JSpinner;
@@ -20,9 +28,14 @@ import org.joda.time.DateTime;
 import org.joda.time.format.ISODateTimeFormat;
 
 import edu.jhuapl.saavtk.gui.render.Renderer;
+import edu.jhuapl.sbmt.stateHistory.model.AnimatorFrameRunnable;
 import edu.jhuapl.sbmt.stateHistory.model.StateHistoryModel;
+import edu.jhuapl.sbmt.stateHistory.model.animator.AnimationFrame;
+import edu.jhuapl.sbmt.stateHistory.model.animator.MovieGenerator;
 import edu.jhuapl.sbmt.stateHistory.model.interfaces.StateHistory;
 import edu.jhuapl.sbmt.stateHistory.model.stateHistory.StateHistoryCollection;
+import edu.jhuapl.sbmt.stateHistory.rendering.animator.Animator;
+import edu.jhuapl.sbmt.stateHistory.ui.AnimationFileDialog;
 import edu.jhuapl.sbmt.stateHistory.ui.version2.StateHistoryIntervalPlaybackPanel;
 
 public class StateHistoryIntervalPlaybackController
@@ -45,6 +58,7 @@ public class StateHistoryIntervalPlaybackController
 		this.historyModel = historyModel;
 		this.runs = historyModel.getRuns();
 		this.renderer = renderer;
+
 		view = new StateHistoryIntervalPlaybackPanel();
 		createTimer();
 		initializeIntervalPlaybackPanel();
@@ -130,6 +144,8 @@ public class StateHistoryIntervalPlaybackController
                     {
 //                        System.out.println(ex);
                     }
+
+//                    ((RenderPanel)(renderer.getRenderWindowPanel())).constrainRotationAxis(Vector3D.ZERO, new Vector3D(runs.getCurrentLookFromDirection()));
                     timer.stop();
                     renderer.setMouseEnabled(true);
                     if (runs.getCurrentRun() != null)
@@ -156,6 +172,9 @@ public class StateHistoryIntervalPlaybackController
                     {
 //                        System.out.println(ex);
                     }
+//                    ((RenderPanel)(renderer.getRenderWindowPanel())).constrainRotationAxis(Vector3D.PLUS_J, new Vector3D(runs.getCurrentLookFromDirection()));
+
+//                    ((RenderPanel)(renderer.getRenderWindowPanel())).constrainRotationAxis(new Vector3D(renderer.getCameraFocalPoint()), new Vector3D(runs.getCurrentLookFromDirection()));
                     timer.start();
                     renderer.setMouseEnabled(false);
                     if (runs.getCurrentRun() != null)
@@ -190,6 +209,30 @@ public class StateHistoryIntervalPlaybackController
                         historyModel.setInputTime(dt1); //The method needs to run twice because running once gets it close to the input but not exact. Twice shows the exact time. I don't know why.
                 }else{
                     JOptionPane.showMessageDialog(null, "No Time Interval selected.", "Error",
+                            JOptionPane.ERROR_MESSAGE);
+                    return;
+                }
+
+            }
+        });
+
+        view.getRecordButton().addActionListener(new ActionListener()
+        {
+            @Override
+            public void actionPerformed(ActionEvent e)
+            {
+                StateHistory currentRun = runs.getCurrentRun();
+                if (currentRun != null)
+                {
+                    view.setCursor(new Cursor(Cursor.WAIT_CURSOR));
+                    DateTime startTime = historyModel.getStartTime();
+                    DateTime endTime = historyModel.getEndTime();
+                    saveAnimation(StateHistoryIntervalPlaybackController.this.getView(),
+                            "" + startTime, "" + endTime);
+                    view.setCursor(Cursor.getDefaultCursor());
+                }else
+                {
+                    JOptionPane.showMessageDialog(null, "No History Interval selected.", "Error",
                             JOptionPane.ERROR_MESSAGE);
                     return;
                 }
@@ -287,6 +330,77 @@ public class StateHistoryIntervalPlaybackController
 	public StateHistoryIntervalPlaybackPanel getView()
 	{
 		return view;
+	}
+
+
+
+	// starts the process for creating the movie frames
+	public void saveAnimation(Component panel, String start, String end)
+	{
+		AnimationFileDialog dialog = new AnimationFileDialog(start, end);
+		int result = dialog.showSaveDialog(panel);
+
+		if (result == JFileChooser.CANCEL_OPTION || result == JFileChooser.ERROR_OPTION)
+		{
+			return;
+		}
+
+		File file = dialog.getSelectedFile();
+
+		int frameNum = (Integer) dialog.getNumFrames().getValue();
+		double timeStep = 1.0 / (double) frameNum;
+
+		Animator animator = new Animator(renderer, runs);
+		animator.saveAnimation(frameNum, file, new AnimatorFrameRunnable()
+		{
+			@Override
+			public void run(AnimationFrame frame)
+			{
+				// TODO Auto-generated method stub
+				super.run(frame);
+				run();
+			}
+
+			@Override
+			public void run()
+			{
+				runs.getCurrentRun().setTimeFraction(runs.getCurrentRun(), getFrame().timeFraction);
+				runs.setTimeFraction(runs.getCurrentRun(), currentOffsetTime);
+				setTimeSlider(getFrame().timeFraction);
+			}
+		},
+		new Runnable()
+		{
+
+			@Override
+			public void run()
+			{
+				String path = file.getAbsolutePath().substring(0, file.getAbsolutePath().lastIndexOf(File.separator));
+		        String base = file.getAbsolutePath().substring(file.getAbsolutePath().lastIndexOf(File.separator));
+		        String ext = ".png";
+				List<String> filenames = new ArrayList<String>();
+				for (int i=0; i<=frameNum; i++)
+				{
+					String index = String.format("%03d",  (int)i);
+					filenames.add(path+base+"_Frame_"+index+ext);
+				}
+				try
+				{
+					MovieGenerator.create(filenames, new File(path+base + ".mp4"), renderer.getWidth(), renderer.getHeight());
+				}
+				catch (FileNotFoundException e)
+				{
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				catch (IOException e)
+				{
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
+		});
+
 	}
 
 }

@@ -54,4 +54,13 @@ public interface StateHistory extends HasTime
 
     public void setTrajectory(Trajectory traj);
 
+    public double getMinDisplayFraction();
+
+	public void setMinDisplayFraction(double minDisplayFraction);
+
+	public double getMaxDisplayFraction();
+
+	public void setMaxDisplayFraction(double maxDisplayFraction);
+
+
 }

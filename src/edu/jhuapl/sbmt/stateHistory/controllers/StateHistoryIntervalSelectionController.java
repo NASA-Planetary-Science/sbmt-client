@@ -116,8 +116,6 @@ public class StateHistoryIntervalSelectionController //implements TableModelList
 			@Override
 			public void historySegmentCreated(StateHistory historySegment)
 			{
-				System.out.println(
-						"StateHistoryIntervalSelectionController.initializeIntervalSelectionPanel().new DefaultStateHistoryModelChangedListener() {...}: historySegmentCreated: repainting table");
 				view.getTable().repaint();
 			}
 		});

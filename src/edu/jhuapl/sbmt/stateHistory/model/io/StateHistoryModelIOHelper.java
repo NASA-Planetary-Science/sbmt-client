@@ -165,8 +165,6 @@ public class StateHistoryModelIOHelper
         } catch (Exception e) {
             e.printStackTrace();
         }
-        System.out.println("StateHistoryModelIOHelper: loadStateHistoryFromFile: min time " + history.getMinTime());
-        System.out.println("StateHistoryModelIOHelper: loadStateHistoryFromFile: max time " + history.getMaxTime());
         history.setTime(history.getMinTime());
         return history;
 
