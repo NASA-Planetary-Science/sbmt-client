@@ -46,7 +46,6 @@ public class TrajectoryActor extends vtkActor
         vtkUnsignedCharArray colors = new vtkUnsignedCharArray();
         vtkPolyLine polyline = new vtkPolyLine();
         vtkCellArray edges = new vtkCellArray();
-//        vtkCellArray vertices = new vtkCellArray();
 
         colors.SetNumberOfComponents(4);
 
@@ -67,39 +66,25 @@ public class TrajectoryActor extends vtkActor
         polylines.InsertNextCell(polyline);
         colors.InsertNextTuple4(trajectoryColor[0], trajectoryColor[1], trajectoryColor[2], trajectoryColor[3]);	//last one is alpha
 
-        System.out.println("TrajectoryActor: createTrajectoryPolyData2: num points " + points.GetNumberOfPoints());
-//        colors.SetNumberOfTuples(points.GetNumberOfPoints());
         for (int i=(int)(minFraction*size);i<maxFraction*size;i++)
         {
         	vtkLine edge = new vtkLine();
         	edge.GetPointIds().SetId(0, i);
         	edge.GetPointIds().SetId(1, (i+1));
-//        	System.out.println("TrajectoryActor: createTrajectoryPolyData2: edge " + i + " " + (i+1));
         	edges.InsertNextCell(edge);
 
-
-//        	vtkVertex vertex = new vtkVertex();
-//        	vertex.GetPointIds().SetId(0, i);
-//        	vertices.InsertNextCell(vertex);
-//            colors.InsertNextTuple4(trajectoryColor[0], trajectoryColor[1], trajectoryColor[2], trajectoryColor[3]);	//last one is alpha
-//
-            colors.InsertNextTuple4(trajectoryColor[0], trajectoryColor[1], trajectoryColor[2], trajectoryColor[3]);	//last one is alpha
+            colors.InsertNextTuple4(trajectoryColor[0], trajectoryColor[1], trajectoryColor[2], 50.0);	//last one is alpha
 
         }
-        System.out.println("TrajectoryActor: createTrajectoryPolyData2: number of edges " + edges.GetNumberOfCells());
 
         vtkPolyData trajectoryPolyline = new vtkPolyData();
         trajectoryPolyline.SetPoints(points);
         trajectoryPolyline.SetLines(edges);
         trajectoryPolyline.SetVerts(polylines);
 
-        System.out.println("TrajectoryActor: createTrajectoryPolyData2: number of cells " + trajectoryPolyline.GetPoints().GetNumberOfPoints());
-        System.out.println("TrajectoryActor: createTrajectoryPolyData2: number of edges " + trajectoryPolyline.GetLines().GetNumberOfCells());
-        System.out.println("TrajectoryActor: createTrajectoryPolyData2: number of verts " + trajectoryPolyline.GetVerts().GetNumberOfCells());
         trajectoryPolyline.GetCellData().SetScalars(colors);
 
         trajectoryPolylines = trajectoryPolyline;
-        System.out.println("TrajectoryActor: createTrajectoryPolyData: setting mapper");
         trajectoryMapper.SetInputData(trajectoryPolyline);
         trajectoryMapper.Modified();
         GetProperty().SetLineWidth(trajectoryLineThickness);
