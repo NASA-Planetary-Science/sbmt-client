@@ -315,7 +315,11 @@ public class CustomImageResultsTableController extends ImageResultsTableControll
                 CustomImageKeyInterface info;
                 if (key.getProjectionType() == ProjectionType.PERSPECTIVE)
         		{
-        			info = new CustomPerspectiveImageKey(SafeURLPaths.instance().getUrl(getCustomDataFolder() + File.separator + key.getImageFilename()), key.getImageFilename(), key.getSource(), key.getImageType(), ((CustomPerspectiveImageKey)key).getRotation(), ((CustomPerspectiveImageKey)key).getFlip(), key.getFileType(), key.getPointingFile(), key.getDate(), key.getName());
+        			info = new CustomPerspectiveImageKey( //
+        			        SafeURLPaths.instance().getUrl(getCustomDataFolder() + File.separator + key.getImageFilename()), //
+        			        key.getImageFilename(), key.getSource(), key.getImageType(), //
+        			        ((CustomPerspectiveImageKey)key).getRotation(), ((CustomPerspectiveImageKey)key).getFlip(), //
+        			        key.getFileType(), key.getPointingFile(), key.getDate(), key.getOriginalName());
                     boundaries.addBoundary(info);
 
         		}
@@ -427,7 +431,11 @@ public class CustomImageResultsTableController extends ImageResultsTableControll
         CustomImageKeyInterface info;
         if (key.getProjectionType() == ProjectionType.PERSPECTIVE)
 		{
-			info = new CustomPerspectiveImageKey(SafeURLPaths.instance().getUrl(getCustomDataFolder() + File.separator + key.getImageFilename()), key.getImageFilename(), key.getSource(), key.getImageType(), ((CustomPerspectiveImageKey)key).getRotation(), ((CustomPerspectiveImageKey)key).getFlip(), key.getFileType(), key.getPointingFile(), key.getDate(), key.getName());
+			info = new CustomPerspectiveImageKey(//
+			        SafeURLPaths.instance().getUrl(getCustomDataFolder() + File.separator + key.getImageFilename()), //
+			        key.getImageFilename(), key.getSource(), key.getImageType(), //
+			        ((CustomPerspectiveImageKey)key).getRotation(), ((CustomPerspectiveImageKey)key).getFlip(), //
+			        key.getFileType(), key.getPointingFile(), key.getDate(), key.getOriginalName());
 		}
 		else
 		{
@@ -519,7 +527,11 @@ public class CustomImageResultsTableController extends ImageResultsTableControll
                 CustomImageKeyInterface info = results.get(row);
                 if (info.getProjectionType() == ProjectionType.PERSPECTIVE)
         		{
-        			key = new CustomPerspectiveImageKey(SafeURLPaths.instance().getUrl(getCustomDataFolder() + File.separator + info.getImageFilename()), info.getImageFilename(), info.getSource(), info.getImageType(), ((CustomPerspectiveImageKey)info).getRotation(), ((CustomPerspectiveImageKey)info).getFlip(), info.getFileType(), info.getPointingFile(), info.getDate(), info.getName());
+        			key = new CustomPerspectiveImageKey(//
+        			        SafeURLPaths.instance().getUrl(getCustomDataFolder() + File.separator + info.getImageFilename()), //
+        			        info.getImageFilename(), info.getSource(), info.getImageType(), //
+        			        ((CustomPerspectiveImageKey)info).getRotation(), ((CustomPerspectiveImageKey)info).getFlip(), //
+        			        info.getFileType(), info.getPointingFile(), info.getDate(), info.getOriginalName());
         		}
         		else
         		{

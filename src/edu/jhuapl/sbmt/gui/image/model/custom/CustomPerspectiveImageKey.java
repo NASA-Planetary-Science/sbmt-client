@@ -141,11 +141,9 @@ public class CustomPerspectiveImageKey implements StorableAsMetadata<CustomPersp
 	        FileType fileType = FileType.valueOf(metadata.get(fileTypeKey));
 	        String pointingFilename = metadata.get(pointingFilenameKey);
 	        Date date = metadata.get(dateKey);
-	        CustomPerspectiveImageKey result = new CustomPerspectiveImageKey(name, imagefilename, source, imageType, rotation, flip, fileType, pointingFilename, date, name);
-	        result.imagefilename = imagefilename;
-	        result.originalName = metadata.hasKey(originalNameKey) ? metadata.get(originalNameKey) : name;
+	        String originalName = metadata.hasKey(originalNameKey) ? metadata.get(originalNameKey) : name;
 
-			return result;
+	        return new CustomPerspectiveImageKey(name, imagefilename, source, imageType, rotation, flip, fileType, pointingFilename, date, originalName);
 		}, CustomPerspectiveImageKey.class, key -> {
 		    return key.store();
 		});
