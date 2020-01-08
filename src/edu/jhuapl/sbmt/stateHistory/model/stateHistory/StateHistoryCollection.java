@@ -727,13 +727,13 @@ public class StateHistoryCollection extends SaavtkItemManager<StateHistory> /*Ab
 	public void setTrajectoryMinMax(StateHistory run, double min, double max)
 	{
 		TrajectoryActor trajActor = stateHistoryToRendererMap.get(run);
-//		System.out.println("StateHistoryCollection: setTrajectoryMinMax: trajactor " + trajActor);
+		System.out.println("StateHistoryCollection: setTrajectoryMinMax: trajactor " + trajActor);
 		if (trajActor != null)
         {
-//			System.out.println("StateHistoryCollection: setTrajectoryMinMax: updating to " + min + " " + max);
-//			trajActor.setMinMaxFraction(min, max);
-//			trajActor.Modified();
-//			this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, trajActor);
+			System.out.println("StateHistoryCollection: setTrajectoryMinMax: updating to " + min + " " + max);
+			trajActor.setMinMaxFraction(min, max);
+			trajActor.Modified();
+			this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, trajActor);
         }
 	}
 

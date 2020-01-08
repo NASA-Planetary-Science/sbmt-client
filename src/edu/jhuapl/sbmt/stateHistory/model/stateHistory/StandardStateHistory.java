@@ -63,8 +63,9 @@ public class StandardStateHistory implements StateHistory
 //    	System.out.println("StandardStateHistory: setTimeFraction: min display frac " + minDisplayFraction);
         double min = getMinTime() + minDisplayFraction*(getMaxTime() - getMinTime());
         double max = getMaxTime() - (1-maxDisplayFraction)*(getMaxTime()-getMinTime());
+        System.out.println("StandardStateHistory: setTimeFraction: min max " + min + " " + max);
         double time = min + timeFraction * (max - min);
-//        System.out.println("StandardStateHistory: setTimeFraction: time is now " + time);
+        System.out.println("StandardStateHistory: setTimeFraction: time is now " + time);
         setTime(time);
     }
 

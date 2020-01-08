@@ -127,7 +127,7 @@ public class StateHistoryIntervalSelectionController //implements TableModelList
 			public void propertyChange(PropertyChangeEvent evt)
 			{
 				view.getTable().repaint();
-				renderer.getRenderWindowPanel().resetCameraClippingRange();
+//				renderer.getRenderWindowPanel().resetCameraClippingRange();
 			}
 		});
 

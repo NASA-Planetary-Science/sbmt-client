@@ -186,18 +186,27 @@ public class StateHistoryViewControlsController implements ItemListener
 		double[] upVector = {0,1,0};
         StateHistory currentRun = runs.getCurrentRun();
 
-        if (currentRun != null) { // can't do any view things if we don't have a trajectory / time history
-
-			if (selectedItem == RendererLookDirection.FREE_VIEW) return;
+        if (currentRun != null) 	// can't do any view things if we don't have a trajectory / time history
+        {
 			Vector3D targOrig = new Vector3D(renderer.getCameraFocalPoint());
+
+			if (selectedItem == RendererLookDirection.FREE_VIEW)
+			{
+				((RenderPanel)renderer.getRenderWindowPanel()).setZoomOnly(false, Vector3D.ZERO, targOrig);
+				return;
+			}
 
 			if (selectedItem == RendererLookDirection.SUN || selectedItem == RendererLookDirection.EARTH)
 			{
 				Vector3D targAxis = new Vector3D(runs.updateLookDirection(selectedItem, historyModel.getScalingFactor()));
 
 	            double[] lookFromDirection = runs.updateLookDirection(selectedItem, historyModel.getScalingFactor());
-	            renderer.setCameraOrientation(lookFromDirection, renderer.getCameraFocalPoint(), upVector, renderer.getCameraViewAngle());
 
+//	            upVector = new double[]{0, Math.abs(lookFromDirection[1]), 0};
+
+	            renderer.setCameraOrientation(lookFromDirection, renderer.getCameraFocalPoint(), upVector, renderer.getCameraViewAngle());
+//	            renderer.setCameraUpUnit(new Vector3D(new double[]{0,1,0}));
+//	            System.out.println("StateHistoryViewControlsController: updateLookDirection: camera up " + renderer.getCamera().getUpUnit());
 
 				((RenderPanel)renderer.getRenderWindowPanel()).setZoomOnly(true, targAxis, targOrig);
 			}
