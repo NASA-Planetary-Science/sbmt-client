@@ -325,7 +325,9 @@ public class CustomImageResultsTableController extends ImageResultsTableControll
         		}
         		else
         		{
-        			info = new CustomCylindricalImageKey(SafeURLPaths.instance().getUrl(getCustomDataFolder() + File.separator + key.getImageFilename()), key.getImageFilename(), key.getImageType(), key.getSource(), key.getDate(), key.getName());
+        			info = new CustomCylindricalImageKey( //
+        			        SafeURLPaths.instance().getUrl(getCustomDataFolder() + File.separator + key.getImageFilename()), //
+        			        key.getImageFilename(), key.getImageType(), key.getSource(), key.getDate(), key.getOriginalName());
         		}
                 //TODO For now, we don't handle cylindrical image boundaries, since it is a PerspectiveImageBoundary - need to make new classes for this.
             }
@@ -527,7 +529,7 @@ public class CustomImageResultsTableController extends ImageResultsTableControll
                 CustomImageKeyInterface info = results.get(row);
                 if (info.getProjectionType() == ProjectionType.PERSPECTIVE)
         		{
-        			key = new CustomPerspectiveImageKey(//
+        			key = new CustomPerspectiveImageKey( //
         			        SafeURLPaths.instance().getUrl(getCustomDataFolder() + File.separator + info.getImageFilename()), //
         			        info.getImageFilename(), info.getSource(), info.getImageType(), //
         			        ((CustomPerspectiveImageKey)info).getRotation(), ((CustomPerspectiveImageKey)info).getFlip(), //
@@ -535,7 +537,9 @@ public class CustomImageResultsTableController extends ImageResultsTableControll
         		}
         		else
         		{
-        			key = new CustomCylindricalImageKey(SafeURLPaths.instance().getUrl(getCustomDataFolder() + File.separator + info.getImageFilename()), info.getImageFilename(), info.getImageType(), info.getSource(), info.getDate(), info.getName());
+        			key = new CustomCylindricalImageKey( //
+        			        SafeURLPaths.instance().getUrl(getCustomDataFolder() + File.separator + info.getImageFilename()), //
+        			        info.getImageFilename(), info.getImageType(), info.getSource(), info.getDate(), info.getOriginalName());
         		}
                 // There used to be an assignment here of the key.imageType, but that field is now immutable.
                 // However, it appears that this assignment is not necessary -- the correct ImageType is

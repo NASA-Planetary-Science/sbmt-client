@@ -175,7 +175,9 @@ public class CustomImagesModel extends ImageSearchModel
 		}
 		else
 		{
-			revisedKey = new CustomCylindricalImageKey(SafeURLPaths.instance().getUrl(getCustomDataFolder() + File.separator + info.getImageFilename()), info.getImageFilename(), info.getImageType(), info.getSource(), info.getDate(), info.getName());
+			revisedKey = new CustomCylindricalImageKey( //
+			        SafeURLPaths.instance().getUrl(getCustomDataFolder() + File.separator + info.getImageFilename()), //
+			        info.getImageFilename(), info.getImageType(), info.getSource(), info.getDate(), info.getOriginalName());
 		}
 		return revisedKey;
     }

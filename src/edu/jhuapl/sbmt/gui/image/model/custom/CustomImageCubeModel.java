@@ -71,7 +71,9 @@ public class CustomImageCubeModel extends ImageCubeModel
      		}
      		else
      		{
-     			newKey = new CustomCylindricalImageKey(SafeURLPaths.instance().getUrl(getCustomDataFolder() + File.separator + info.getImageFilename()), info.getImageFilename(), info.getImageType(), info.getSource(), info.getDate(), info.getName());
+     			newKey = new CustomCylindricalImageKey( //
+     			        SafeURLPaths.instance().getUrl(getCustomDataFolder() + File.separator + info.getImageFilename()), //
+     			        info.getImageFilename(), info.getImageType(), info.getSource(), info.getDate(), info.getOriginalName());
      		}
          }
          for (CustomImageKeyInterface selectedKey : selectedKeys)
