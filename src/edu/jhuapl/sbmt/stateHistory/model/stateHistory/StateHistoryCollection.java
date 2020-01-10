@@ -5,6 +5,7 @@ import java.beans.PropertyChangeListener;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.function.Function;
 
 import com.google.common.collect.ImmutableList;
 
@@ -14,6 +15,8 @@ import vtk.vtkProp;
 import vtk.vtkScalarBarActor;
 import vtk.vtkTransform;
 
+import edu.jhuapl.saavtk.colormap.Colormap;
+import edu.jhuapl.saavtk.colormap.Colormaps;
 import edu.jhuapl.saavtk.model.SaavtkItemManager;
 import edu.jhuapl.saavtk.util.BoundingBox;
 import edu.jhuapl.saavtk.util.Configuration;
@@ -24,6 +27,7 @@ import edu.jhuapl.saavtk.util.Properties;
 import edu.jhuapl.sbmt.client.SmallBodyModel;
 import edu.jhuapl.sbmt.stateHistory.model.interfaces.HasTime;
 import edu.jhuapl.sbmt.stateHistory.model.interfaces.StateHistory;
+import edu.jhuapl.sbmt.stateHistory.model.interfaces.Trajectory;
 import edu.jhuapl.sbmt.stateHistory.rendering.EarthDirectionMarker;
 import edu.jhuapl.sbmt.stateHistory.rendering.SpacecraftBody;
 import edu.jhuapl.sbmt.stateHistory.rendering.SpacecraftDirectionMarker;
@@ -173,6 +177,19 @@ public class StateHistoryCollection extends SaavtkItemManager<StateHistory> /*Ab
 
         // Get the trajectory actor the state history segment
         TrajectoryActor trajectoryActor = new TrajectoryActor(run.getTrajectory());
+        Colormap colormap = Colormaps.getNewInstanceOfBuiltInColormap("Rainbow");
+        colormap.setRangeMax(12);
+        colormap.setRangeMin(0);
+        Function<Double, Double> coloringFunction = time -> {
+
+        	Trajectory traj = run.getTrajectory();
+        	int index = traj.getTime().lastIndexOf(time);
+        	double distance = Math.sqrt(Math.pow(traj.getX().get(index), 2) + Math.pow(traj.getY().get(index), 2) + Math.pow(traj.getZ().get(index), 2));
+        	System.out.println("StateHistoryCollection: addRun: returning distance " + distance);
+        	return distance;
+        };
+        trajectoryActor.setColoringFunction(coloringFunction, colormap);
+
         trajectoryActor.setMinMaxFraction(run.getMinDisplayFraction(), run.getMaxDisplayFraction());
         trajectoryActor.VisibilityOn();
         trajectoryActor.GetMapper().Update();
@@ -661,7 +678,7 @@ public class StateHistoryCollection extends SaavtkItemManager<StateHistory> /*Ab
 //            earthMarkerBody.Modified();
 //            sunAssembly.Modified();
 
-            this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
+            this.pcs.firePropertyChange("POSITION_CHANGED" /*Properties.MODEL_CHANGED*/, null, null);
         }
     }
 
@@ -727,10 +744,8 @@ public class StateHistoryCollection extends SaavtkItemManager<StateHistory> /*Ab
 	public void setTrajectoryMinMax(StateHistory run, double min, double max)
 	{
 		TrajectoryActor trajActor = stateHistoryToRendererMap.get(run);
-		System.out.println("StateHistoryCollection: setTrajectoryMinMax: trajactor " + trajActor);
 		if (trajActor != null)
         {
-			System.out.println("StateHistoryCollection: setTrajectoryMinMax: updating to " + min + " " + max);
 			trajActor.setMinMaxFraction(min, max);
 			trajActor.Modified();
 			this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, trajActor);

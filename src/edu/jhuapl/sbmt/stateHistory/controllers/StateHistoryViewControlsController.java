@@ -67,9 +67,12 @@ public class StateHistoryViewControlsController implements ItemListener
 			@Override
 			public void propertyChange(PropertyChangeEvent evt)
 			{
-				updateLookDirection();
-				if (renderer.getLighting() == LightingType.FIXEDLIGHT && runs.getCurrentRun() != null)
-					renderer.setFixedLightDirection(runs.getCurrentRun().getSunPosition());
+				if (evt.getPropertyName().equals("POSITION_CHANGED"))
+				{
+					updateLookDirection();
+					if (renderer.getLighting() == LightingType.FIXEDLIGHT && runs.getCurrentRun() != null)
+						renderer.setFixedLightDirection(runs.getCurrentRun().getSunPosition());
+				}
 			}
 		});
 
@@ -201,12 +204,8 @@ public class StateHistoryViewControlsController implements ItemListener
 				Vector3D targAxis = new Vector3D(runs.updateLookDirection(selectedItem, historyModel.getScalingFactor()));
 
 	            double[] lookFromDirection = runs.updateLookDirection(selectedItem, historyModel.getScalingFactor());
-
-//	            upVector = new double[]{0, Math.abs(lookFromDirection[1]), 0};
-
+	            renderer.setCameraFocalPoint(new double[] {0, 0, 0});
 	            renderer.setCameraOrientation(lookFromDirection, renderer.getCameraFocalPoint(), upVector, renderer.getCameraViewAngle());
-//	            renderer.setCameraUpUnit(new Vector3D(new double[]{0,1,0}));
-//	            System.out.println("StateHistoryViewControlsController: updateLookDirection: camera up " + renderer.getCamera().getUpUnit());
 
 				((RenderPanel)renderer.getRenderWindowPanel()).setZoomOnly(true, targAxis, targOrig);
 			}
@@ -217,8 +216,6 @@ public class StateHistoryViewControlsController implements ItemListener
 	            view.getShowSpacecraft().setEnabled(true);
 
 	            double[] lookFromDirection = runs.updateLookDirection(selectedItem, historyModel.getScalingFactor());
-	//            System.out.println("StateHistoryViewControlsController: updateLookDirection: look dir " + lookFromDirection[0] + " " + lookFromDirection[1] + " " + lookFromDirection[2]);
-	//			renderer.getCamera().setUpUnit(new Vector3D(upVector));
 	            renderer.setCameraOrientation(lookFromDirection, renderer.getCameraFocalPoint(), upVector, renderer.getCameraViewAngle());
 
 				boolean scSelected = (selectedItem == RendererLookDirection.SPACECRAFT);

@@ -18,6 +18,10 @@ public interface Trajectory
 
     public void setId(int id);
 
+    public ArrayList<Double> getTime();
+
+    public void setTime(ArrayList<Double> times);
+
     public ArrayList<Double> getX();
 
     public void setX(ArrayList<Double> x);

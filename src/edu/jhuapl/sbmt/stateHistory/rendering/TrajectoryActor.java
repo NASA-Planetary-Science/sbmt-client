@@ -1,5 +1,11 @@
 package edu.jhuapl.sbmt.stateHistory.rendering;
 
+import java.awt.Color;
+import java.util.function.Function;
+
+import com.google.common.collect.Range;
+import com.google.common.collect.Ranges;
+
 import vtk.vtkActor;
 import vtk.vtkCellArray;
 import vtk.vtkIdList;
@@ -10,6 +16,7 @@ import vtk.vtkPolyDataMapper;
 import vtk.vtkPolyLine;
 import vtk.vtkUnsignedCharArray;
 
+import edu.jhuapl.saavtk.colormap.Colormap;
 import edu.jhuapl.sbmt.stateHistory.model.interfaces.Trajectory;
 
 public class TrajectoryActor extends vtkActor
@@ -22,7 +29,11 @@ public class TrajectoryActor extends vtkActor
     private String trajectoryName = ""; // default name and description fields
     private double minFraction = 0.0;
     private double maxFraction = 1.0;
-
+    private vtkUnsignedCharArray colors;
+    private int size;
+    private vtkPolyData trajectoryPolyline;
+    private Function<Double, Double> coloringFunction;
+    private Colormap colormap;
 
 	public TrajectoryActor(Trajectory trajectory)
 	{
@@ -43,7 +54,7 @@ public class TrajectoryActor extends vtkActor
         vtkIdList idList = new vtkIdList();
         vtkPoints points = new vtkPoints();
         vtkCellArray polylines = new vtkCellArray();
-        vtkUnsignedCharArray colors = new vtkUnsignedCharArray();
+        colors = new vtkUnsignedCharArray();
         vtkPolyLine polyline = new vtkPolyLine();
         vtkCellArray edges = new vtkCellArray();
 
@@ -52,7 +63,7 @@ public class TrajectoryActor extends vtkActor
         Trajectory traj =  trajectory;
         traj.setCellId(cellId);
 
-        int size = traj.getX().size();
+        size = traj.getX().size();
         for (int i=(int)(minFraction*size);i<maxFraction*size;i++)
         {
         	Double x = traj.getX().get(i);
@@ -64,7 +75,7 @@ public class TrajectoryActor extends vtkActor
         }
 
         polylines.InsertNextCell(polyline);
-        colors.InsertNextTuple4(trajectoryColor[0], trajectoryColor[1], trajectoryColor[2], trajectoryColor[3]);	//last one is alpha
+        colors.InsertNextTuple4(trajectoryColor[0], trajectoryColor[1], trajectoryColor[2], 0.0);	//last one is alpha
 
         for (int i=(int)(minFraction*size);i<maxFraction*size;i++)
         {
@@ -72,12 +83,14 @@ public class TrajectoryActor extends vtkActor
         	edge.GetPointIds().SetId(0, i);
         	edge.GetPointIds().SetId(1, (i+1));
         	edges.InsertNextCell(edge);
+        	Color colorAtIndex = getColorAtIndex(i);
+        	colors.InsertNextTuple4(colorAtIndex.getRed(), colorAtIndex.getGreen(), colorAtIndex.getBlue(), colorAtIndex.getAlpha());
 
-            colors.InsertNextTuple4(trajectoryColor[0], trajectoryColor[1], trajectoryColor[2], 50.0);	//last one is alpha
+//            colors.InsertNextTuple4(trajectoryColor[0], trajectoryColor[1], trajectoryColor[2], 150.0);	//last one is alpha
 
         }
 
-        vtkPolyData trajectoryPolyline = new vtkPolyData();
+        trajectoryPolyline = new vtkPolyData();
         trajectoryPolyline.SetPoints(points);
         trajectoryPolyline.SetLines(edges);
         trajectoryPolyline.SetVerts(polylines);
@@ -90,9 +103,54 @@ public class TrajectoryActor extends vtkActor
         GetProperty().SetLineWidth(trajectoryLineThickness);
 
 		trajectoryMapper.SetInputData(trajectoryPolylines);
-		System.out.println("TrajectoryActor: createTrajectoryPolyData: updating");
 		trajectoryMapper.Update();
 
+	}
+
+	private void updateShownSegments()
+	{
+		int minValueToColor = (int)(minFraction*size);
+		int maxValueToColor = (int)(maxFraction*size);
+		Range<Integer> coloredRange = Ranges.closed(minValueToColor, maxValueToColor);
+		double alphaColor = 150.0;
+
+		vtkCellArray edges = new vtkCellArray();
+		for (int i=0; i<size; i++)
+        {
+			if (!coloredRange.contains(i)) continue;
+			vtkLine edge = new vtkLine();
+        	edge.GetPointIds().SetId(0, i);
+        	edge.GetPointIds().SetId(1, (i+1));
+        	edges.InsertNextCell(edge);
+        	Color colorAtIndex = getColorAtIndex(i);
+        	colors.SetTuple4(i, colorAtIndex.getRed(), colorAtIndex.getGreen(), colorAtIndex.getBlue(), colorAtIndex.getAlpha());
+//			alphaColor = 150.0;
+//			if (!coloredRange.contains(i)) alphaColor = 0.0;
+//			colors.SetTuple4(i, trajectoryColor[0], trajectoryColor[1], trajectoryColor[2], alphaColor);
+        }
+		trajectoryPolyline.SetLines(edges);
+		trajectoryMapper.Modified();
+		trajectoryMapper.Update();
+	}
+
+	/**
+	 * Sets the coloring function (time based) and associated colormap.  The colormap is expected
+	 * to have its min and max values already set.
+	 * @param coloringFunction
+	 * @param colormap
+	 */
+	public void setColoringFunction(Function<Double, Double> coloringFunction, Colormap colormap)
+	{
+		this.coloringFunction = coloringFunction;
+		this.colormap = colormap;
+	}
+
+	private Color getColorAtIndex(int index)
+	{
+		if (coloringFunction == null) return new Color((int)trajectoryColor[0], (int)trajectoryColor[1], (int)trajectoryColor[2], (int)trajectoryColor[3]);
+		double time = trajectory.getTime().get(index);
+		double valueAtTime = coloringFunction.apply(time);
+		return colormap.getColor(valueAtTime);
 	}
 
 	private void createTrajectoryPolyData()
@@ -198,8 +256,8 @@ public class TrajectoryActor extends vtkActor
 	{
 		this.minFraction = min;
 		this.maxFraction = max;
-		System.out.println("TrajectoryActor: setMinMaxFraction: min max " + min + " " + max);
-		createTrajectoryPolyData();
+		updateShownSegments();
+//		createTrajectoryPolyData();
 	}
 
 }

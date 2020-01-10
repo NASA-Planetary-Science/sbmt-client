@@ -12,6 +12,7 @@ public class StandardTrajectory implements Trajectory
     private ArrayList<Double> x;
     private ArrayList<Double> y;
     private ArrayList<Double> z;
+    private ArrayList<Double> times;
     private double[] color;
     private double thickness;
     private String description;
@@ -50,6 +51,16 @@ public class StandardTrajectory implements Trajectory
         this.id = id;
     }
 
+    public ArrayList<Double> getTime()
+    {
+        return times;
+    }
+
+
+    public void setTime(ArrayList<Double> times)
+    {
+        this.times = times;
+    }
 
     public ArrayList<Double> getX()
     {
@@ -92,6 +103,7 @@ public class StandardTrajectory implements Trajectory
         this.x = new ArrayList<Double>();
         this.y = new ArrayList<Double>();
         this.z = new ArrayList<Double>();
+        this.times = new ArrayList<Double>();
         name = "";
         description = "";
         this.color = new double[] {0, 255, 255, 255};

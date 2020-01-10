@@ -406,6 +406,7 @@ public class StateHistoryModel //implements HasTime // extends AbstractModel imp
             temp.getX().add(spacecraftPosition[0]);
             temp.getY().add(spacecraftPosition[1]);
             temp.getZ().add(spacecraftPosition[2]);
+            temp.getTime().add(flybyState.getEphemerisTime());
 
             if(com.mysql.jdbc.StringUtils.isNullOrEmpty(timeArray.get(0)[0]))
             {
