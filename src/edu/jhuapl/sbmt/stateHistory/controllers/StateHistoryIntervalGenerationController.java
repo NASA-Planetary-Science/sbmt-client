@@ -56,6 +56,8 @@ public class StateHistoryIntervalGenerationController
                 double total = DateTimeSpinner.getTimeSpanBetween(view.getStartTimeSpinner(), view.getStopTimeSpinner());
                 DateTime dtStart2 = view.getStartTimeSpinner().getISOFormattedTime();
                 DateTime dtEnd2 = view.getStopTimeSpinner().getISOFormattedTime();
+                System.out.println(
+						"StateHistoryIntervalGenerationController.initializeIntervalGenerationPanel().new ActionListener() {...}: actionPerformed: dtEnd2 " + dtEnd2);
                 historyModel.setStartTime(dtStart2);
                 historyModel.setEndTime(dtEnd2);
 

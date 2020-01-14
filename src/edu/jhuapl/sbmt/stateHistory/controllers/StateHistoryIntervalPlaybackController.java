@@ -45,7 +45,7 @@ public class StateHistoryIntervalPlaybackController
     private boolean playChecked = false;
     private boolean manualSetTime = false;
     public double currentOffsetTime = 0.0;
-    private double offsetScale = 1.0; // 0.025;
+    private double offsetScale = 0.1; // 0.025;
     private StateHistoryCollection runs;
     private Renderer renderer;
     private StateHistoryIntervalPlaybackPanel view;
@@ -67,13 +67,14 @@ public class StateHistoryIntervalPlaybackController
         final JSlider slider = view.getSlider();
         slider.addChangeListener(new ChangeListener() {         //ADD TO CONTROLLER
             public void stateChanged(ChangeEvent evt) {
-//                if(slider.getValueIsAdjusting()){
-//                    int val = slider.getValue();
-//                    int max = slider.getMaximum();
-//                    int min = slider.getMinimum();
+                if(slider.getValueIsAdjusting()){
+                    int val = slider.getValue();
+                    int max = slider.getMaximum();
+                    int min = slider.getMinimum();
 //                    currentOffsetTime = (double)(val - min) / (double)(max-min) * offsetScale;
+                    view.getTimeBox().setValue(new Date(historyModel.getStartTime().toDate().getTime() + new Double(1000*val/((double)(max - min)) * runs.getCurrentRun().getPeriod()).longValue()));
 //                    ((HasTime)model).setTimeFraction(currentOffsetTime);
-//                }
+                }
             }
         });
 
@@ -288,31 +289,22 @@ public class StateHistoryIntervalPlaybackController
                 double deltaSimulationTime = deltaRealTime * playRate;
                 double deltaOffsetTime = deltaSimulationTime / period;
 
-                System.out.println(
-						"StateHistoryIntervalPlaybackController.createTimer().new ActionListener() {...}: actionPerformed: deltaoffsettime " + deltaOffsetTime);
-
                 currentOffsetTime += deltaOffsetTime;
-                // time looping
-                if (currentOffsetTime > 1.0)
-                    currentOffsetTime = 0.0;
-                runs.getCurrentRun().setTimeFraction(runs.getCurrentRun(), currentOffsetTime);
-                runs.setTimeFraction(runs.getCurrentRun(), currentOffsetTime);
 
                 int max = view.getSlider().getMaximum();
                 int min = view.getSlider().getMinimum();
-
                 int val = (int)Math.round((currentOffsetTime / offsetScale) * ((double)(max - min)) + min);
-                System.out.println(
-						"StateHistoryIntervalPlaybackController.createTimer().new ActionListener() {...}: actionPerformed: time fraction is " + runs.getTimeFraction() + " and period " + runs.getCurrentRun().getPeriod());
-//                System.out.println(
-//						"StateHistoryIntervalPlaybackController.createTimer().new ActionListener() {...}: actionPerformed: min time " + historyModel.getStartTime());
-//                System.out.println(
-//						"StateHistoryIntervalPlaybackController.createTimer().new ActionListener() {...}: actionPerformed: val is " + val);
-                view.getSlider().setValue(val);
-                view.getTimeBox().setValue(new Date(historyModel.getStartTime().toDate().getTime() + new Double(runs.getTimeFraction() * runs.getCurrentRun().getPeriod()).longValue()));
-//                System.out.println(
-//						"StateHistoryIntervalPlaybackController.createTimer().new ActionListener() {...}: actionPerformed: time box " + view.getTimeBox().getValue());
+                // time looping
+                if (val >= max)
+                {
+                	timer.stop();
+                    currentOffsetTime = 0.0;
+                }
 
+                runs.getCurrentRun().setTimeFraction(runs.getCurrentRun(), currentOffsetTime);
+                runs.setTimeFraction(runs.getCurrentRun(), currentOffsetTime);
+                view.getSlider().setValue(val);
+                view.getTimeBox().setValue(new Date(historyModel.getStartTime().toDate().getTime() + new Double(1000*val/((double)(max - min)) * runs.getCurrentRun().getPeriod()).longValue()));
             }
         });
         timer.setDelay(timerInterval);
