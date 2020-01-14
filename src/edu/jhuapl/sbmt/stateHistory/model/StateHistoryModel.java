@@ -429,12 +429,12 @@ public class StateHistoryModel //implements HasTime // extends AbstractModel imp
 		return runs;
 	}
 
-	 public void saveRowToFile(StateHistory history, File file)
+	 public void saveRowToFile(StateHistory history, File file) throws StateHistoryIOException
      {
          StateHistoryModelIOHelper.saveIntervalToFile(smallBodyModel.getConfig().getShapeModelName(), history, file.getAbsolutePath());
      }
 
-     public void loadIntervalFromFile(File runFile, SmallBodyModel bodyModel)
+     public void loadIntervalFromFile(File runFile, SmallBodyModel bodyModel) throws StateHistoryIOException
      {
          StateHistory newRow = StateHistoryModelIOHelper.loadStateHistoryFromFile(runFile, smallBodyModel.getConfig().getShapeModelName(), new StateHistoryKey(runs));
          runs.addRunToList(newRow);

@@ -1,11 +1,7 @@
 package edu.jhuapl.sbmt.stateHistory.controllers;
 
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
 
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JCheckBox;
@@ -13,8 +9,6 @@ import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JSlider;
 import javax.swing.JTextField;
-import javax.swing.event.ChangeEvent;
-import javax.swing.event.ChangeListener;
 
 import org.apache.commons.math3.geometry.euclidean.threed.Vector3D;
 
@@ -27,12 +21,10 @@ import edu.jhuapl.sbmt.stateHistory.model.stateHistory.RendererLookDirection;
 import edu.jhuapl.sbmt.stateHistory.model.stateHistory.StateHistoryCollection;
 import edu.jhuapl.sbmt.stateHistory.ui.version2.StateHistoryViewControlsPanel;
 
-import glum.item.ItemEventListener;
 import glum.item.ItemEventType;
 
 public class StateHistoryViewControlsController implements ItemListener
 {
-
 	public boolean earthEnabled = true;
 	private StateHistoryViewControlsPanel view;
 	private StateHistoryModel historyModel;
@@ -61,119 +53,70 @@ public class StateHistoryViewControlsController implements ItemListener
         view.getShowSpacecraft().addItemListener(this);
         view.getShowLighting().addItemListener(this);
 
-        runs.addPropertyChangeListener(new PropertyChangeListener()
-		{
+        runs.addPropertyChangeListener(evt -> {
 
-			@Override
-			public void propertyChange(PropertyChangeEvent evt)
-			{
-				if (evt.getPropertyName().equals("POSITION_CHANGED"))
-				{
-					updateLookDirection();
-					if (renderer.getLighting() == LightingType.FIXEDLIGHT && runs.getCurrentRun() != null)
-						renderer.setFixedLightDirection(runs.getCurrentRun().getSunPosition());
-				}
-			}
+			if (!evt.getPropertyName().equals("POSITION_CHANGED")) return;
+
+			updateLookDirection();
+			if ((renderer.getLighting() == LightingType.FIXEDLIGHT && runs.getCurrentRun() != null) == false) return;
+
+			renderer.setFixedLightDirection(runs.getCurrentRun().getSunPosition());
 		});
 
-        runs.addListener(new ItemEventListener()
+        runs.addListener((aSource, aEventType) ->
 		{
-
-			@Override
-			public void handleItemEvent(Object aSource, ItemEventType aEventType)
-			{
-				if (aEventType == ItemEventType.ItemsSelected)
-				{
-					runs.setTimeFraction(runs.getCurrentRun(), 0.0);
-					updateLookDirection();
-				}
-			}
+			if (aEventType != ItemEventType.ItemsSelected) return;
+			runs.setTimeFraction(runs.getCurrentRun(), 0.0);
+			updateLookDirection();
 		});
 
-        view.getViewOptions().addActionListener(new ActionListener()
-        {
+        view.getViewOptions().addActionListener(e -> { updateLookDirection(); });
 
-            @Override
-            public void actionPerformed(ActionEvent e)
-            {
-            	updateLookDirection();
-            }
+
+        view.getBtnResetCameraTo().addActionListener(e -> {
+            if( runs.getCurrentRun() == null) return;
+            renderer.setCameraFocalPoint(new double[] {0,0,0});
         });
 
 
-        view.getBtnResetCameraTo().addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                StateHistory currentRun = runs.getCurrentRun();
-                if( currentRun != null){
-                    renderer.setCameraFocalPoint(new double[] {0,0,0});
-                }
-            }
+        view.getDistanceOptions().addActionListener(e ->
+        {
+	        String selectedItem = (String)((JComboBox<String>)e.getSource()).getSelectedItem();
+	        runs.setDistanceText(selectedItem);
         });
 
-
-        view.getDistanceOptions().addActionListener(new ActionListener()
+        view.getEarthSlider().addChangeListener(e ->
         {
-            @Override
-            public void actionPerformed(ActionEvent e)
-            {
-                String selectedItem = (String)((JComboBox<String>)e.getSource()).getSelectedItem();
-                runs.setDistanceText(selectedItem);
-            }
+        	JSlider slider = (JSlider) e.getSource();
+        	runs.setEarthDirectionMarkerSize(slider.getValue());
         });
 
-        view.getEarthSlider().addChangeListener(new ChangeListener()
+        view.getSunSlider().addChangeListener(e ->
         {
-
-            @Override
-            public void stateChanged(ChangeEvent e)
-            {
-            	JSlider slider = (JSlider) e.getSource();
-            	runs.setEarthDirectionMarkerSize(slider.getValue());
-
-            }
+          	JSlider slider = (JSlider) e.getSource();
+           	runs.setSunDirectionMarkerSize(slider.getValue());
         });
 
-        view.getSunSlider().addChangeListener(new ChangeListener()
+        view.getSpacecraftSlider().addChangeListener(e ->
         {
-
-            @Override
-            public void stateChanged(ChangeEvent e)
-            {
-            	JSlider slider = (JSlider) e.getSource();
-            	runs.setSunDirectionMarkerSize(slider.getValue());
-            }
+        	JSlider slider = (JSlider) e.getSource();
+        	runs.setSpacecraftDirectionMarkerSize(slider.getValue());
         });
 
-        view.getSpacecraftSlider().addChangeListener(new ChangeListener()
+        view.getSetViewAngle().addActionListener(e ->
         {
+            if(e.getSource() != view.getSetViewAngle()) return;
 
-            @Override
-            public void stateChanged(ChangeEvent e)
-            {
-            	JSlider slider = (JSlider) e.getSource();
-            	runs.setSpacecraftDirectionMarkerSize(slider.getValue());
+            if(!(Double.parseDouble(view.getViewInputAngle().getText())>120.0 || Double.parseDouble(view.getViewInputAngle().getText())<1.0)){
+                renderer.setCameraViewAngle(Double.parseDouble(view.getViewInputAngle().getText()));
+            }else if(Double.parseDouble(view.getViewInputAngle().getText())>120){
+                view.getViewInputAngle().setText("120.0");
+                renderer.setCameraViewAngle(120.0);
+            }else{
+                view.getViewInputAngle().setText("1.0");
+                renderer.setCameraViewAngle(1.0);
             }
-        });
 
-        view.getSetViewAngle().addActionListener(new ActionListener()
-        {
-
-            @Override
-            public void actionPerformed(ActionEvent e)
-            {
-                if(e.getSource() == view.getSetViewAngle()){
-                    if(!(Double.parseDouble(view.getViewInputAngle().getText())>120.0 || Double.parseDouble(view.getViewInputAngle().getText())<1.0)){
-                        renderer.setCameraViewAngle(Double.parseDouble(view.getViewInputAngle().getText()));
-                    }else if(Double.parseDouble(view.getViewInputAngle().getText())>120){
-                        view.getViewInputAngle().setText("120.0");
-                        renderer.setCameraViewAngle(120.0);
-                    }else{
-                        view.getViewInputAngle().setText("1.0");
-                        renderer.setCameraViewAngle(1.0);
-                    }
-                }
-
-            }
         });
 
         view.getViewOptions().setSelectedIndex(0);
@@ -199,7 +142,8 @@ public class StateHistoryViewControlsController implements ItemListener
 				return;
 			}
 
-			if (selectedItem == RendererLookDirection.SUN || selectedItem == RendererLookDirection.EARTH)
+//			if (selectedItem == RendererLookDirection.SUN || selectedItem == RendererLookDirection.EARTH)
+			else
 			{
 				Vector3D targAxis = new Vector3D(runs.updateLookDirection(selectedItem, historyModel.getScalingFactor()));
 
@@ -208,20 +152,25 @@ public class StateHistoryViewControlsController implements ItemListener
 	            renderer.setCameraOrientation(lookFromDirection, renderer.getCameraFocalPoint(), upVector, renderer.getCameraViewAngle());
 
 				((RenderPanel)renderer.getRenderWindowPanel()).setZoomOnly(true, targAxis, targOrig);
-			}
-			else
-			{
-	        	renderer.getCamera().reset();
-	        	((RenderPanel)renderer.getRenderWindowPanel()).setZoomOnly(false, Vector3D.ZERO, targOrig);
-	            view.getShowSpacecraft().setEnabled(true);
 
-	            double[] lookFromDirection = runs.updateLookDirection(selectedItem, historyModel.getScalingFactor());
-	            renderer.setCameraOrientation(lookFromDirection, renderer.getCameraFocalPoint(), upVector, renderer.getCameraViewAngle());
-
+				//toggle the ability to show the spacecraft depending on what mode we're in
 				boolean scSelected = (selectedItem == RendererLookDirection.SPACECRAFT);
 				view.getShowSpacecraft().setEnabled(!scSelected);
 		        view.getDistanceOptions().setEnabled(!scSelected);
 			}
+//			else
+//			{
+//	        	renderer.getCamera().reset();
+//	        	((RenderPanel)renderer.getRenderWindowPanel()).setZoomOnly(false, Vector3D.ZERO, targOrig);
+//	            view.getShowSpacecraft().setEnabled(true);
+//
+//	            double[] lookFromDirection = runs.updateLookDirection(selectedItem, historyModel.getScalingFactor());
+//	            renderer.setCameraOrientation(lookFromDirection, renderer.getCameraFocalPoint(), upVector, renderer.getCameraViewAngle());
+//
+//				boolean scSelected = (selectedItem == RendererLookDirection.SPACECRAFT);
+//				view.getShowSpacecraft().setEnabled(!scSelected);
+//		        view.getDistanceOptions().setEnabled(!scSelected);
+//			}
         }
 	}
 

@@ -8,6 +8,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Set;
 
+import edu.jhuapl.sbmt.stateHistory.model.StateHistoryIOException;
 import edu.jhuapl.sbmt.stateHistory.model.interfaces.State;
 import edu.jhuapl.sbmt.stateHistory.model.interfaces.StateHistory;
 import edu.jhuapl.sbmt.stateHistory.model.scState.CsvState;
@@ -18,7 +19,7 @@ import edu.jhuapl.sbmt.stateHistory.model.trajectory.StandardTrajectory;
 public class StateHistoryModelIOHelper
 {
 
-	public static void saveIntervalToFile(String shapeModelName, StateHistory interval, String fileName)
+	public static void saveIntervalToFile(String shapeModelName, StateHistory interval, String fileName) throws StateHistoryIOException
     {
         // writes the header for the new history
 		try
@@ -70,8 +71,8 @@ public class StateHistoryModelIOHelper
         }
         catch (IOException e)
         {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+        	e.printStackTrace();
+            throw new StateHistoryIOException("A problem occurred when saving the state history; please see the console for a stack trace", e);
         }
 
         // get each flyby state in currentFlybyStateHistory, and write to CSV
@@ -83,7 +84,7 @@ public class StateHistoryModelIOHelper
 
     }
 
-	public static StateHistory loadStateHistoryFromFile(File runFile, String shapeModelName, StateHistoryKey key)
+	public static StateHistory loadStateHistoryFromFile(File runFile, String shapeModelName, StateHistoryKey key) throws StateHistoryIOException
     {
 		ArrayList<String[]> timeArray = new ArrayList<>(3);
         Integer firstIndex = null;
@@ -93,26 +94,19 @@ public class StateHistoryModelIOHelper
         try
         {
             String runName = runFile.getName();
-            if (runName.endsWith(".csv"))
-            {
-                BufferedReader in = new BufferedReader(new FileReader(runFile));
+            if (!runName.endsWith(".csv")) throw new StateHistoryIOException("File does not have a csv extension; please choose another file");
+
+            BufferedReader in = new BufferedReader(new FileReader(runFile));
 //                String beforeParse = in.readLine();
 //                String input = beforeParse.substring(0, beforeParse.indexOf(','));
 //                if(input.equals(shapeModelName)){
 //                    passFileNames.add(runName);
 //                }
-                in.close();
-            }
-        }
-        catch (Exception e1)
-        {
-            // TODO Auto-generated catch block
-            e1.printStackTrace();
-        }
+            in.close();
 
-        StateHistory history = null;
-        try {
-            BufferedReader in = new BufferedReader(new FileReader(runDirName));
+
+            StateHistory history = null;
+            in = new BufferedReader(new FileReader(runDirName));
 
             if (firstIndex == null)
                 firstIndex = 0;
@@ -162,12 +156,13 @@ public class StateHistoryModelIOHelper
 
             history.setTrajectory(trajectory);
 
-        } catch (Exception e) {
-            e.printStackTrace();
+            history.setTime(history.getMinTime());
+            return history;
         }
-        history.setTime(history.getMinTime());
-        return history;
-
+        catch (Exception e1)
+        {
+        	e1.printStackTrace();
+            throw new StateHistoryIOException("There was a problem reading the state history file.  See the console for details, and please make sure it is the right format", e1);
+        }
     }
-
 }

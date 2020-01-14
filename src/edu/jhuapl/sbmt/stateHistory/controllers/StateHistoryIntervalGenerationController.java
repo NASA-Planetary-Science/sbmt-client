@@ -27,6 +27,7 @@ public class StateHistoryIntervalGenerationController
 	{
 		this.historyModel = historyModel;
 		this.newStart = newStart.toDate();
+		System.out.println("StateHistoryIntervalGenerationController: StateHistoryIntervalGenerationController: new start " + newStart.toDate().getTime());
 		this.newEnd = newEnd.toDate();
 		initializeIntervalGenerationPanel();
 	}

@@ -2,7 +2,6 @@ package edu.jhuapl.sbmt.stateHistory.ui.version2;
 
 import java.awt.Dimension;
 import java.awt.Image;
-import java.awt.LayoutManager;
 import java.io.IOException;
 
 import javax.imageio.ImageIO;
@@ -36,7 +35,7 @@ public class StateHistoryIntervalPlaybackPanel extends JPanel
     private JPanel utcPanel;
     private JPanel playPanel;
     private JLabel playSpeedLabel;
-
+    private Dimension spinnerSize = new Dimension(400, 28);
 
 
 	public StateHistoryIntervalPlaybackPanel()
@@ -44,32 +43,10 @@ public class StateHistoryIntervalPlaybackPanel extends JPanel
 		initUI();
 	}
 
-	public StateHistoryIntervalPlaybackPanel(LayoutManager layout)
-	{
-		super(layout);
-		// TODO Auto-generated constructor stub
-	}
-
-	public StateHistoryIntervalPlaybackPanel(boolean isDoubleBuffered)
-	{
-		super(isDoubleBuffered);
-		// TODO Auto-generated constructor stub
-	}
-
-	public StateHistoryIntervalPlaybackPanel(LayoutManager layout, boolean isDoubleBuffered)
-	{
-		super(layout, isDoubleBuffered);
-		// TODO Auto-generated constructor stub
-	}
-
 	private void initUI()
 	{
-//		JPanel intervalPlaybackPanel = new JPanel();
-        setBorder(new TitledBorder(null, "Interval Playback",
-                        TitledBorder.LEADING, TitledBorder.TOP, null, null));
-//        timeControlPanel.add(intervalPlaybackPanel);
-        setLayout(
-                new BoxLayout(this, BoxLayout.Y_AXIS));
+        setBorder(new TitledBorder(null, "Interval Playback", TitledBorder.LEADING, TitledBorder.TOP, null, null));
+        setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
 
         JPanel panel_17 = new JPanel();
         add(panel_17);
@@ -175,17 +152,15 @@ public class StateHistoryIntervalPlaybackPanel extends JPanel
         utcPanel.add(lblEnterUtcTime);
 
         timeBox = new JSpinner();
-        // timeBox.setEditor(new DateEditor(timeBox, "yyyy-MMM-dd
-        // HH:mm:ss.SSS"));
-        timeBox.setMinimumSize(new Dimension(36, 22));
-        timeBox.setPreferredSize(new Dimension(200, 28));
+
+        timeBox.setMinimumSize(spinnerSize);
+        timeBox.setPreferredSize(spinnerSize);
+        timeBox.setMaximumSize(spinnerSize);
         utcPanel.add(timeBox);
 
         setTimeButton = new JButton("Set Time");
         utcPanel.add(setTimeButton);
-
 	}
-
 
     public JButton getRewindButton()
     {

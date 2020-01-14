@@ -185,7 +185,7 @@ public class StateHistoryCollection extends SaavtkItemManager<StateHistory> /*Ab
         	Trajectory traj = run.getTrajectory();
         	int index = traj.getTime().lastIndexOf(time);
         	double distance = Math.sqrt(Math.pow(traj.getX().get(index), 2) + Math.pow(traj.getY().get(index), 2) + Math.pow(traj.getZ().get(index), 2));
-        	System.out.println("StateHistoryCollection: addRun: returning distance " + distance);
+//        	System.out.println("StateHistoryCollection: addRun: returning distance " + distance);
         	return distance;
         };
         trajectoryActor.setColoringFunction(coloringFunction, colormap);

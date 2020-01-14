@@ -40,14 +40,12 @@ import edu.jhuapl.sbmt.stateHistory.ui.version2.StateHistoryIntervalPlaybackPane
 
 public class StateHistoryIntervalPlaybackController
 {
-
     private Timer timer;
     public static final int timerInterval = 100;
     private boolean playChecked = false;
     private boolean manualSetTime = false;
     public double currentOffsetTime = 0.0;
     private double offsetScale = 1.0; // 0.025;
-//    private HasTime model;
     private StateHistoryCollection runs;
     private Renderer renderer;
     private StateHistoryIntervalPlaybackPanel view;
@@ -79,116 +77,98 @@ public class StateHistoryIntervalPlaybackController
             }
         });
 
-        view.getRewindButton().addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent evt) {
+        view.getRewindButton().addActionListener(e -> {
 
-                if(playChecked){
-                    try
-                    {
-                        Image play = ImageIO.read(getClass().getResource("/edu/jhuapl/sbmt/data/PlayButton.png"));
-                        play.getScaledInstance(10, 10, Image.SCALE_DEFAULT);
-                        Icon playIcon = new ImageIcon(play);
-                        view.getPlayButton().setIcon(playIcon);
-                    }catch (Exception ex)
-                    {
-//                        System.out.println(ex);
-                    }
-                    timer.stop();
-                    playChecked = false;
-                }
-
-                slider.setValue(historyModel.getDefaultSliderValue());
-                currentOffsetTime = 0.0;
-//                if (model != null)
-                    runs.setTimeFraction(runs.getCurrentRun(), currentOffsetTime);
-            }
-        });
-
-        view.getFastForwardButton().addActionListener(new ActionListener(){
-            public void actionPerformed(ActionEvent e)
-            {
-                if(playChecked){
-                    try
-                    {
-                        Image play = ImageIO.read(getClass().getResource("/edu/jhuapl/sbmt/data/PlayButton.png"));
-                        play.getScaledInstance(10, 10, Image.SCALE_DEFAULT);
-                        Icon playIcon = new ImageIcon(play);
-                        view.getPlayButton().setIcon(playIcon);
-                    }catch (Exception ex)
-                    {
-//                        System.out.println(ex);
-                    }
-                    timer.stop();
-                    playChecked = false;
-                }
-
-                slider.setValue(historyModel.getSliderFinalValue());
-                currentOffsetTime = 1.0;
-//                if (model != null)
-                    runs.setTimeFraction(runs.getCurrentRun(), currentOffsetTime);
-
-            }
-        });
-
-        view.getPlayButton().addActionListener(new ActionListener(){
-            public void actionPerformed(ActionEvent e)
-            {
-                if(playChecked){
-                    try
-                    {
-                        Image play = ImageIO.read(getClass().getResource("/edu/jhuapl/sbmt/data/PlayButton.png"));
-                        play.getScaledInstance(10, 10, Image.SCALE_DEFAULT);
-                        Icon playIcon = new ImageIcon(play);
-                        view.getPlayButton().setIcon(playIcon);
-                    }catch (Exception ex)
-                    {
-//                        System.out.println(ex);
-                    }
-
-//                    ((RenderPanel)(renderer.getRenderWindowPanel())).constrainRotationAxis(Vector3D.ZERO, new Vector3D(runs.getCurrentLookFromDirection()));
-                    timer.stop();
-                    renderer.setMouseEnabled(true);
-                    if (runs.getCurrentRun() != null)
-                    {
-                    	historyModel.setStatusBarString("");
-//                        runs.getCurrentRun().updateStatusBarValue("");
-                    }
-                    playChecked = false;
-                }
-                else
+            if(playChecked){
+                try
                 {
-//                    if (view.getTable().getSelectedRowCount() == 0)
-//                    {
-//                        JOptionPane.showMessageDialog(null, "Please select a row from the table before playing", "Choose Interval",
-//                                JOptionPane.OK_OPTION);
-//                        return;
-//                    }
-                    try
-                    {
-                        Image pause = ImageIO.read(getClass().getResource("/edu/jhuapl/sbmt/data/PauseButton.png"));
-                        Icon pauseIcon = new ImageIcon(pause);
-                        view.getPlayButton().setIcon(pauseIcon);
-                    }catch (Exception ex)
-                    {
-//                        System.out.println(ex);
-                    }
-//                    ((RenderPanel)(renderer.getRenderWindowPanel())).constrainRotationAxis(Vector3D.PLUS_J, new Vector3D(runs.getCurrentLookFromDirection()));
-
-//                    ((RenderPanel)(renderer.getRenderWindowPanel())).constrainRotationAxis(new Vector3D(renderer.getCameraFocalPoint()), new Vector3D(runs.getCurrentLookFromDirection()));
-                    timer.start();
-                    renderer.setMouseEnabled(false);
-                    if (runs.getCurrentRun() != null)
-                    {
-//                        runs.getCurrentRun().updateStatusBarPosition(renWin.getComponent().getWidth(), renWin.getComponent().getHeight());
-                        historyModel.setStatusBarString("Playing (mouse disabled)");
-//                    	runs.getCurrentRun().updateStatusBarValue("Playing (mouse disabled)");
-                    }
-                    playChecked = true;
+                    Image play = ImageIO.read(getClass().getResource("/edu/jhuapl/sbmt/data/PlayButton.png"));
+                    play.getScaledInstance(10, 10, Image.SCALE_DEFAULT);
+                    Icon playIcon = new ImageIcon(play);
+                    view.getPlayButton().setIcon(playIcon);
+                }catch (Exception ex)
+                {
+//              	System.out.println(ex);
                 }
+                timer.stop();
+                playChecked = false;
+            }
+
+            slider.setValue(historyModel.getDefaultSliderValue());
+            currentOffsetTime = 0.0;
+            runs.setTimeFraction(runs.getCurrentRun(), currentOffsetTime);
+
+        });
+
+        view.getFastForwardButton().addActionListener(e -> {
+
+            if(playChecked){
+                try
+                {
+                    Image play = ImageIO.read(getClass().getResource("/edu/jhuapl/sbmt/data/PlayButton.png"));
+                    play.getScaledInstance(10, 10, Image.SCALE_DEFAULT);
+                    Icon playIcon = new ImageIcon(play);
+                    view.getPlayButton().setIcon(playIcon);
+                }catch (Exception ex)
+                {
+//              	System.out.println(ex);
+                }
+                timer.stop();
+                playChecked = false;
+            }
+
+            slider.setValue(historyModel.getSliderFinalValue());
+            currentOffsetTime = 1.0;
+            runs.setTimeFraction(runs.getCurrentRun(), currentOffsetTime);
+        });
+
+        view.getPlayButton().addActionListener(e -> {
+
+            if(playChecked){
+                try
+                {
+                    Image play = ImageIO.read(getClass().getResource("/edu/jhuapl/sbmt/data/PlayButton.png"));
+                    play.getScaledInstance(10, 10, Image.SCALE_DEFAULT);
+                    Icon playIcon = new ImageIcon(play);
+                    view.getPlayButton().setIcon(playIcon);
+                }catch (Exception ex)
+                {
+//              	System.out.println(ex);
+                }
+
+                timer.stop();
+                renderer.setMouseEnabled(true);
+                if (runs.getCurrentRun() != null)
+                {
+                	historyModel.setStatusBarString("");
+//                  runs.getCurrentRun().updateStatusBarValue("");
+                }
+                playChecked = false;
+            }
+            else
+            {
+                try
+                {
+                    Image pause = ImageIO.read(getClass().getResource("/edu/jhuapl/sbmt/data/PauseButton.png"));
+                    Icon pauseIcon = new ImageIcon(pause);
+                    view.getPlayButton().setIcon(pauseIcon);
+                }catch (Exception ex)
+                {
+//              	System.out.println(ex);
+                }
+                timer.start();
+                renderer.setMouseEnabled(false);
+                if (runs.getCurrentRun() != null)
+                {
+//                  runs.getCurrentRun().updateStatusBarPosition(renWin.getComponent().getWidth(), renWin.getComponent().getHeight());
+                    historyModel.setStatusBarString("Playing (mouse disabled)");
+//                  runs.getCurrentRun().updateStatusBarValue("Playing (mouse disabled)");
+                }
+                playChecked = true;
             }
         });
 
-        view.getTimeBox().setModel(new SpinnerDateModel(new java.util.Date(1126411200000L), null, null, java.util.Calendar.DAY_OF_MONTH));
+        view.getTimeBox().setModel(new SpinnerDateModel(new Date(1126411200000L), null, null, java.util.Calendar.DAY_OF_MONTH));
         view.getTimeBox().setEditor(new JSpinner.DateEditor(view.getTimeBox(), "yyyy-MMM-dd HH:mm:ss.SSS"));
 
         view.getSetTimeButton().addActionListener(new ActionListener()
@@ -252,6 +232,7 @@ public class StateHistoryIntervalPlaybackController
                 {
                     Double time = currentRun.getTime();
                     historyModel.setTimeBarValue(time);
+
                 }catch(Exception ex){
 
                 }
@@ -274,9 +255,6 @@ public class StateHistoryIntervalPlaybackController
     // used to set the time for the slider and its time fraction.
     //
     public void setTimeSlider(double tf){
-//        StateHistoryModel currentRun = runs.getCurrentRun();
-//        TimeChanger tc = timeControlPane.getTimeChanger();
-//        tc.setSliderValue(tf);
         setSliderValue(tf);
         currentOffsetTime = tf;
     }
@@ -288,6 +266,8 @@ public class StateHistoryIntervalPlaybackController
         int val = (int)Math.round(max * tf);
 
         view.getSlider().setValue(val);
+
+
     }
 
     public void createTimer()
@@ -307,7 +287,9 @@ public class StateHistoryIntervalPlaybackController
 
                 double deltaSimulationTime = deltaRealTime * playRate;
                 double deltaOffsetTime = deltaSimulationTime / period;
-//                System.out.println("Delta time: " + deltaSimulationTime + " Delta offset time: " + deltaOffsetTime);
+
+                System.out.println(
+						"StateHistoryIntervalPlaybackController.createTimer().new ActionListener() {...}: actionPerformed: deltaoffsettime " + deltaOffsetTime);
 
                 currentOffsetTime += deltaOffsetTime;
                 // time looping
@@ -320,7 +302,16 @@ public class StateHistoryIntervalPlaybackController
                 int min = view.getSlider().getMinimum();
 
                 int val = (int)Math.round((currentOffsetTime / offsetScale) * ((double)(max - min)) + min);
+                System.out.println(
+						"StateHistoryIntervalPlaybackController.createTimer().new ActionListener() {...}: actionPerformed: time fraction is " + runs.getTimeFraction() + " and period " + runs.getCurrentRun().getPeriod());
+//                System.out.println(
+//						"StateHistoryIntervalPlaybackController.createTimer().new ActionListener() {...}: actionPerformed: min time " + historyModel.getStartTime());
+//                System.out.println(
+//						"StateHistoryIntervalPlaybackController.createTimer().new ActionListener() {...}: actionPerformed: val is " + val);
                 view.getSlider().setValue(val);
+                view.getTimeBox().setValue(new Date(historyModel.getStartTime().toDate().getTime() + new Double(runs.getTimeFraction() * runs.getCurrentRun().getPeriod()).longValue()));
+//                System.out.println(
+//						"StateHistoryIntervalPlaybackController.createTimer().new ActionListener() {...}: actionPerformed: time box " + view.getTimeBox().getValue());
 
             }
         });
@@ -371,7 +362,6 @@ public class StateHistoryIntervalPlaybackController
 		},
 		new Runnable()
 		{
-
 			@Override
 			public void run()
 			{
@@ -400,7 +390,5 @@ public class StateHistoryIntervalPlaybackController
 				}
 			}
 		});
-
 	}
-
 }

@@ -17,6 +17,7 @@ public class StateHistoryIntervalGenerationPanel extends JPanel
     private DateTimeSpinner startTimeSpinner;
     private DateTimeSpinner stopTimeSpinner;
     private JButton getIntervalButton;
+    private Dimension spinnerSize = new Dimension(400, 28);
 
 	public StateHistoryIntervalGenerationPanel()
 	{
@@ -25,21 +26,8 @@ public class StateHistoryIntervalGenerationPanel extends JPanel
 
 	private void initUI()
 	{
-//        JPanel panel_18 = new JPanel();
-//        scrollPane.setViewportView(panel_18);
-//        panel_18.setLayout(new BoxLayout(panel_18, BoxLayout.Y_AXIS));
-//        JPanel timeControlPanel = new JPanel();
-//		panel_18.add(timeControlPanel);
-
-
-//        setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
-
-//        JPanel intervalGenerationPanel = new JPanel();
-        setBorder(new TitledBorder(null, "Interval Generation",
-                        TitledBorder.LEADING, TitledBorder.TOP, null, null));
-//        add(intervalGenerationPanel);
-        setLayout(
-                new BoxLayout(this, BoxLayout.Y_AXIS));
+        setBorder(new TitledBorder(null, "Interval Generation", TitledBorder.LEADING, TitledBorder.TOP, null, null));
+        setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
 
         JPanel panel_4 = new JPanel();
         panel_4.setBorder(null);
@@ -55,7 +43,6 @@ public class StateHistoryIntervalGenerationPanel extends JPanel
         availableTimeLabel = new JTextPane();
         availableTimeLabel.setMaximumSize( new Dimension(Integer.MAX_VALUE, availableTimeLabel.getPreferredSize().height*2) );
 
-
         panel_4.add(availableTimeLabel);
 
         JPanel panel_5 = new JPanel();
@@ -70,12 +57,9 @@ public class StateHistoryIntervalGenerationPanel extends JPanel
         panel_5.add(horizontalGlue_1);
 
         startTimeSpinner = new DateTimeSpinner();
-        // startTimeSpinner.setEditor(new
-        // javax.swing.JSpinner.DateEditor(startTimeSpinner, "yyyy-MMM-dd
-        // HH:mm:ss.SSS"));
-        startTimeSpinner.setMinimumSize(new java.awt.Dimension(400, 28));
-        startTimeSpinner.setMaximumSize(new java.awt.Dimension(400, 28));
-        startTimeSpinner.setPreferredSize(new java.awt.Dimension(400, 28));
+        startTimeSpinner.setMinimumSize(spinnerSize);
+        startTimeSpinner.setMaximumSize(spinnerSize);
+        startTimeSpinner.setPreferredSize(spinnerSize);
         panel_5.add(startTimeSpinner);
 
         JPanel panel_6 = new JPanel();
@@ -90,11 +74,9 @@ public class StateHistoryIntervalGenerationPanel extends JPanel
         panel_6.add(horizontalGlue_2);
 
         stopTimeSpinner = new DateTimeSpinner();
-        // stopTimeSpinner.setEditor(new DateEditor(stopTimeSpinner,
-        // "yyyy-MMM-dd HH:mm:ss.SSS"));
-        stopTimeSpinner.setMinimumSize(new java.awt.Dimension(400, 28));
-        stopTimeSpinner.setMaximumSize(new java.awt.Dimension(400, 28));
-        stopTimeSpinner.setPreferredSize(new java.awt.Dimension(400, 28));
+        stopTimeSpinner.setMinimumSize(spinnerSize);
+        stopTimeSpinner.setMaximumSize(spinnerSize);
+        stopTimeSpinner.setPreferredSize(spinnerSize);
         panel_6.add(stopTimeSpinner);
 
         JPanel panel_7 = new JPanel();
@@ -125,5 +107,4 @@ public class StateHistoryIntervalGenerationPanel extends JPanel
     {
         return getIntervalButton;
     }
-
 }
