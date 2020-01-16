@@ -32,7 +32,6 @@ import edu.jhuapl.sbmt.stateHistory.model.AnimatorFrameRunnable;
 import edu.jhuapl.sbmt.stateHistory.model.StateHistoryModel;
 import edu.jhuapl.sbmt.stateHistory.model.animator.AnimationFrame;
 import edu.jhuapl.sbmt.stateHistory.model.animator.MovieGenerator;
-import edu.jhuapl.sbmt.stateHistory.model.interfaces.StateHistory;
 import edu.jhuapl.sbmt.stateHistory.model.stateHistory.StateHistoryCollection;
 import edu.jhuapl.sbmt.stateHistory.rendering.animator.Animator;
 import edu.jhuapl.sbmt.stateHistory.ui.AnimationFileDialog;
@@ -42,7 +41,7 @@ public class StateHistoryIntervalPlaybackController
 {
     private Timer timer;
     public static final int timerInterval = 100;
-    private boolean playChecked = false;
+    private boolean isPlaying = false;
     private boolean manualSetTime = false;
     public double currentOffsetTime = 0.0;
     private double offsetScale = 0.1; // 0.025;
@@ -50,6 +49,8 @@ public class StateHistoryIntervalPlaybackController
     private Renderer renderer;
     private StateHistoryIntervalPlaybackPanel view;
     private StateHistoryModel historyModel;
+    private Icon playIcon;
+    private Icon pauseIcon;
 
 	public StateHistoryIntervalPlaybackController(StateHistoryModel historyModel, Renderer renderer)
 	{
@@ -58,8 +59,28 @@ public class StateHistoryIntervalPlaybackController
 		this.renderer = renderer;
 
 		view = new StateHistoryIntervalPlaybackPanel();
+		try
+		{
+			initializeButtonIcons();
+		}
+		catch (IOException e)
+		{
+			JOptionPane.showMessageDialog(null, "There was an error loading the button icons; please see the console for a stack trace", "Loading Error",
+                    JOptionPane.ERROR_MESSAGE);
+			e.printStackTrace();
+		}
 		createTimer();
 		initializeIntervalPlaybackPanel();
+	}
+
+	private void initializeButtonIcons() throws IOException
+	{
+		Image play = ImageIO.read(getClass().getResource("/edu/jhuapl/sbmt/data/PlayButton.png"));
+        play.getScaledInstance(10, 10, Image.SCALE_DEFAULT);
+        playIcon = new ImageIcon(play);
+
+        Image pause = ImageIO.read(getClass().getResource("/edu/jhuapl/sbmt/data/PauseButton.png"));
+        pauseIcon = new ImageIcon(pause);
 	}
 
 	private void initializeIntervalPlaybackPanel()
@@ -80,44 +101,15 @@ public class StateHistoryIntervalPlaybackController
 
         view.getRewindButton().addActionListener(e -> {
 
-            if(playChecked){
-                try
-                {
-                    Image play = ImageIO.read(getClass().getResource("/edu/jhuapl/sbmt/data/PlayButton.png"));
-                    play.getScaledInstance(10, 10, Image.SCALE_DEFAULT);
-                    Icon playIcon = new ImageIcon(play);
-                    view.getPlayButton().setIcon(playIcon);
-                }catch (Exception ex)
-                {
-//              	System.out.println(ex);
-                }
-                timer.stop();
-                playChecked = false;
-            }
-
+            if (isPlaying) toggleToPlay();
             slider.setValue(historyModel.getDefaultSliderValue());
             currentOffsetTime = 0.0;
             runs.setTimeFraction(runs.getCurrentRun(), currentOffsetTime);
-
         });
 
         view.getFastForwardButton().addActionListener(e -> {
 
-            if(playChecked){
-                try
-                {
-                    Image play = ImageIO.read(getClass().getResource("/edu/jhuapl/sbmt/data/PlayButton.png"));
-                    play.getScaledInstance(10, 10, Image.SCALE_DEFAULT);
-                    Icon playIcon = new ImageIcon(play);
-                    view.getPlayButton().setIcon(playIcon);
-                }catch (Exception ex)
-                {
-//              	System.out.println(ex);
-                }
-                timer.stop();
-                playChecked = false;
-            }
-
+            if (isPlaying) toggleToPlay();
             slider.setValue(historyModel.getSliderFinalValue());
             currentOffsetTime = 1.0;
             runs.setTimeFraction(runs.getCurrentRun(), currentOffsetTime);
@@ -125,39 +117,21 @@ public class StateHistoryIntervalPlaybackController
 
         view.getPlayButton().addActionListener(e -> {
 
-            if(playChecked){
-                try
-                {
-                    Image play = ImageIO.read(getClass().getResource("/edu/jhuapl/sbmt/data/PlayButton.png"));
-                    play.getScaledInstance(10, 10, Image.SCALE_DEFAULT);
-                    Icon playIcon = new ImageIcon(play);
-                    view.getPlayButton().setIcon(playIcon);
-                }catch (Exception ex)
-                {
-//              	System.out.println(ex);
-                }
+            if(isPlaying){
+                toggleToPlay();
 
-                timer.stop();
                 renderer.setMouseEnabled(true);
                 if (runs.getCurrentRun() != null)
                 {
                 	historyModel.setStatusBarString("");
 //                  runs.getCurrentRun().updateStatusBarValue("");
                 }
-                playChecked = false;
+
             }
             else
             {
-                try
-                {
-                    Image pause = ImageIO.read(getClass().getResource("/edu/jhuapl/sbmt/data/PauseButton.png"));
-                    Icon pauseIcon = new ImageIcon(pause);
-                    view.getPlayButton().setIcon(pauseIcon);
-                }catch (Exception ex)
-                {
-//              	System.out.println(ex);
-                }
-                timer.start();
+            	toggleToPause();
+
                 renderer.setMouseEnabled(false);
                 if (runs.getCurrentRun() != null)
                 {
@@ -165,82 +139,64 @@ public class StateHistoryIntervalPlaybackController
                     historyModel.setStatusBarString("Playing (mouse disabled)");
 //                  runs.getCurrentRun().updateStatusBarValue("Playing (mouse disabled)");
                 }
-                playChecked = true;
             }
         });
 
         view.getTimeBox().setModel(new SpinnerDateModel(new Date(1126411200000L), null, null, java.util.Calendar.DAY_OF_MONTH));
         view.getTimeBox().setEditor(new JSpinner.DateEditor(view.getTimeBox(), "yyyy-MMM-dd HH:mm:ss.SSS"));
 
-        view.getSetTimeButton().addActionListener(new ActionListener()
-        {
+        view.getSetTimeButton().addActionListener(e -> {
+            Date enteredTime = (Date) view.getTimeBox().getModel().getValue();
+            DateTime dt = new DateTime(enteredTime);
+            DateTime dt1 = ISODateTimeFormat.dateTimeParser().parseDateTime(dt.toString());
+            boolean success = historyModel.setInputTime(dt1);
+            if (success) // only call again if the first call was a success
+                historyModel.setInputTime(dt1); //The method needs to run twice because running once gets it close to the input but not exact. Twice shows the exact time. I don't know why.
 
-            @Override
-            public void actionPerformed(ActionEvent e)
-            {
-                StateHistory currentRun = historyModel.getCurrentFlybyStateHistory();
-                if (currentRun != null)
-                {
-                    Date enteredTime = (Date) view.getTimeBox().getModel().getValue();
-                    DateTime dt = new DateTime(enteredTime);
-                    DateTime dt1 = ISODateTimeFormat.dateTimeParser()
-                            .parseDateTime(dt.toString());
-                    boolean success = historyModel.setInputTime(dt1);
-                    if (success) // only call again if the first call was a success
-                        historyModel.setInputTime(dt1); //The method needs to run twice because running once gets it close to the input but not exact. Twice shows the exact time. I don't know why.
-                }else{
-                    JOptionPane.showMessageDialog(null, "No Time Interval selected.", "Error",
-                            JOptionPane.ERROR_MESSAGE);
-                    return;
-                }
-
-            }
         });
 
-        view.getRecordButton().addActionListener(new ActionListener()
-        {
-            @Override
-            public void actionPerformed(ActionEvent e)
-            {
-                StateHistory currentRun = runs.getCurrentRun();
-                if (currentRun != null)
-                {
-                    view.setCursor(new Cursor(Cursor.WAIT_CURSOR));
-                    DateTime startTime = historyModel.getStartTime();
-                    DateTime endTime = historyModel.getEndTime();
-                    saveAnimation(StateHistoryIntervalPlaybackController.this.getView(),
-                            "" + startTime, "" + endTime);
-                    view.setCursor(Cursor.getDefaultCursor());
-                }else
-                {
-                    JOptionPane.showMessageDialog(null, "No History Interval selected.", "Error",
-                            JOptionPane.ERROR_MESSAGE);
-                    return;
-                }
-
-            }
+        view.getRecordButton().addActionListener(e -> {
+            view.setCursor(new Cursor(Cursor.WAIT_CURSOR));
+            DateTime startTime = historyModel.getStartTime();
+            DateTime endTime = historyModel.getEndTime();
+            saveAnimation(StateHistoryIntervalPlaybackController.this.getView(), startTime, endTime);
+            view.setCursor(Cursor.getDefaultCursor());
         });
     }
 
-	private void updateTimeBarValue()
-    {
-        if (runs != null)
-        {
-            StateHistory currentRun = runs.getCurrentRun();
-            if (currentRun != null)
-            {
-                try
-                {
-                    Double time = currentRun.getTime();
-                    historyModel.setTimeBarValue(time);
+	private void toggleToPlay()
+	{
+		view.getPlayButton().setIcon(playIcon);
+        timer.stop();
+        isPlaying = false;
+	}
 
-                }catch(Exception ex){
+	private void toggleToPause()
+	{
+        view.getPlayButton().setIcon(pauseIcon);
+        timer.start();
+        isPlaying = true;
+	}
 
-                }
-            }
-        }
-    }
-
+//	private void updateTimeBarValue()
+//    {
+//        if (runs != null)
+//        {
+//            StateHistory currentRun = runs.getCurrentRun();
+//            if (currentRun != null)
+//            {
+//                try
+//                {
+//                    Double time = currentRun.getTime();
+//                    historyModel.setTimeBarValue(time);
+//
+//                }catch(Exception ex){
+//
+//                }
+//            }
+//        }
+//    }
+//
 //    public void updateTimeBarPosition()
 //    {
 //        if (runs != null)
@@ -263,12 +219,8 @@ public class StateHistoryIntervalPlaybackController
     public void setSliderValue(double tf){
         manualSetTime = true;
         int max = view.getSlider().getMaximum();
-
         int val = (int)Math.round(max * tf);
-
         view.getSlider().setValue(val);
-
-
     }
 
     public void createTimer()
@@ -315,12 +267,10 @@ public class StateHistoryIntervalPlaybackController
 		return view;
 	}
 
-
-
 	// starts the process for creating the movie frames
-	public void saveAnimation(Component panel, String start, String end)
+	public void saveAnimation(Component panel, DateTime start, DateTime end)
 	{
-		AnimationFileDialog dialog = new AnimationFileDialog(start, end);
+		AnimationFileDialog dialog = new AnimationFileDialog(start.toString(), end.toString());
 		int result = dialog.showSaveDialog(panel);
 
 		if (result == JFileChooser.CANCEL_OPTION || result == JFileChooser.ERROR_OPTION)

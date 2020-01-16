@@ -2,7 +2,6 @@ package edu.jhuapl.sbmt.stateHistory.ui.version2.table;
 
 import java.awt.Color;
 import java.awt.Component;
-import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.List;
 
@@ -39,7 +38,6 @@ import glum.item.ItemManagerUtil;
 public class StateHistoryTableView extends JPanel
 {
 	private JButton loadStateHistoryButton;
-//    private JPanel monochromePanel;
 //    private JButton nextButton;
 //    private JButton prevButton;
 //    private JButton removeBoundariesButton;
@@ -80,6 +78,7 @@ public class StateHistoryTableView extends JPanel
         showStateHistoryButton.setEnabled(false);
         loadStateHistoryButton = new JButton("Load...");
         saveStateHistoryButton = new JButton("Save...");
+        saveStateHistoryButton.setEnabled(false);
     }
 
     public void setup()
@@ -116,28 +115,21 @@ public class StateHistoryTableView extends JPanel
         panel_2.add(loadStateHistoryButton);
 
         panel_2.add(saveStateHistoryButton);
-
     }
 
     private JTable buildTable()
     {
-    	ActionListener listener = new ActionListener()
-		{
+    	ActionListener listener = e -> {
+			Object source = e.getSource();
 
-			@Override
-			public void actionPerformed(ActionEvent e)
+			List<StateHistory> tmpL = stateHistoryCollection.getSelectedItems().asList();
+			if (source == selectAllB)
+				ItemManagerUtil.selectAll(stateHistoryCollection);
+			else if (source == selectNoneB)
+				ItemManagerUtil.selectNone(stateHistoryCollection);
+			else if (source == selectInvertB)
 			{
-				Object source = e.getSource();
-
-				List<StateHistory> tmpL = stateHistoryCollection.getSelectedItems().asList();
-				if (source == selectAllB)
-					ItemManagerUtil.selectAll(stateHistoryCollection);
-				else if (source == selectNoneB)
-					ItemManagerUtil.selectNone(stateHistoryCollection);
-				else if (source == selectInvertB)
-				{
-					ItemManagerUtil.selectInvert(stateHistoryCollection);
-				}
+				ItemManagerUtil.selectInvert(stateHistoryCollection);
 			}
 		};
 
@@ -182,19 +174,12 @@ public class StateHistoryTableView extends JPanel
 		tmpComposer.setRenderer(StateHistoryColumnLookup.Show, new BooleanCellRenderer());
 		tmpComposer.setEditor(StateHistoryColumnLookup.Color, new ColorProviderCellEditor());
 		tmpComposer.setRenderer(StateHistoryColumnLookup.Color, new ColorProviderCellRenderer(false));
-//		tmpComposer.setEditor(StateHistoryColumnLookup.Line, new NumberEditor());
 		tmpComposer.setRenderer(StateHistoryColumnLookup.Line, new NumberRenderer("##", "--"));
 
 		tmpComposer.setRenderer(StateHistoryColumnLookup.Name, tmpTimeRenderer);
 		tmpComposer.setRenderer(StateHistoryColumnLookup.Description, tmpTimeRenderer);
 		tmpComposer.setRenderer(StateHistoryColumnLookup.StartTime, tmpTimeRenderer);
 		tmpComposer.setRenderer(StateHistoryColumnLookup.EndTime, tmpTimeRenderer);
-
-//    	    			tmpComposer.setRenderer(StateHistoryColumnLookup.Color, new ColorProviderCellRenderer(false));
-//    	    			tmpComposer.setRenderer(StateHistoryColumnLookup.Name, new PrePendRenderer("Trk "));
-//    	    			tmpComposer.setRenderer(StateHistoryColumnLookup.NumPoints, new NumberRenderer("###,###,###", "---"));
-//    	    			tmpComposer.setRenderer(StateHistoryColumnLookup.BegTime, tmpTimeRenderer);
-//    	    			tmpComposer.setRenderer(StateHistoryColumnLookup.Date, tmpTimeRenderer);
 
 		stateHistoryTableHandler = new StateHistoryItemHandler(stateHistoryCollection, tmpComposer);
 		ItemProcessor<StateHistory> tmpIP = stateHistoryCollection;

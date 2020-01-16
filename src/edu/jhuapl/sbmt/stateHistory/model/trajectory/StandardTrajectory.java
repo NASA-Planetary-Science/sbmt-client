@@ -16,6 +16,7 @@ public class StandardTrajectory implements Trajectory
     private double[] color;
     private double thickness;
     private String description;
+    private boolean isFaded;
 
     public int getCellId()
     {
@@ -167,5 +168,17 @@ public class StandardTrajectory implements Trajectory
 	public void setTrajectoryLineThickness(double thickness)
 	{
 		this.thickness = thickness;
+	}
+
+	public boolean isFaded()
+	{
+		return isFaded;
+	}
+
+	public void setFaded(boolean isFaded)
+	{
+		this.isFaded = isFaded;
+		this.color[3] = isFaded ? 50 : 255;
+		System.out.println("StandardTrajectory: setFaded: alpha is " + this.color[3]);
 	}
 }

@@ -35,12 +35,19 @@ public class TrajectoryActor extends vtkActor
     private Function<Double, Double> coloringFunction;
     private Colormap colormap;
 
+
+	public TrajectoryActor(long id)
+	{
+		super(id);
+		// TODO Auto-generated constructor stub
+	}
+
 	public TrajectoryActor(Trajectory trajectory)
 	{
 		this.trajectory = trajectory;
 		this.trajectoryColor = trajectory.getTrajectoryColor();
 
-		createTrajectoryPolyData2();
+		createTrajectoryPolyData();
 
 		SetMapper(trajectoryMapper);
 
@@ -48,7 +55,7 @@ public class TrajectoryActor extends vtkActor
 
 	}
 
-	private void createTrajectoryPolyData2()
+	private void createTrajectoryPolyData()
 	{
 		int cellId = 0;
         vtkIdList idList = new vtkIdList();
@@ -76,7 +83,6 @@ public class TrajectoryActor extends vtkActor
 
         polylines.InsertNextCell(polyline);
         colors.InsertNextTuple4(trajectoryColor[0], trajectoryColor[1], trajectoryColor[2], 0.0);	//last one is alpha
-
         for (int i=(int)(minFraction*size);i<maxFraction*size;i++)
         {
         	vtkLine edge = new vtkLine();
@@ -85,9 +91,6 @@ public class TrajectoryActor extends vtkActor
         	edges.InsertNextCell(edge);
         	Color colorAtIndex = getColorAtIndex(i);
         	colors.InsertNextTuple4(colorAtIndex.getRed(), colorAtIndex.getGreen(), colorAtIndex.getBlue(), colorAtIndex.getAlpha());
-
-//            colors.InsertNextTuple4(trajectoryColor[0], trajectoryColor[1], trajectoryColor[2], 150.0);	//last one is alpha
-
         }
 
         trajectoryPolyline = new vtkPolyData();
@@ -104,7 +107,6 @@ public class TrajectoryActor extends vtkActor
 
 		trajectoryMapper.SetInputData(trajectoryPolylines);
 		trajectoryMapper.Update();
-
 	}
 
 	private void updateShownSegments()
@@ -112,10 +114,9 @@ public class TrajectoryActor extends vtkActor
 		int minValueToColor = (int)(minFraction*size);
 		int maxValueToColor = (int)(maxFraction*size);
 		Range<Integer> coloredRange = Ranges.closed(minValueToColor, maxValueToColor);
-		double alphaColor = 150.0;
 
 		vtkCellArray edges = new vtkCellArray();
-		for (int i=0; i<size; i++)
+		for (int i=0; i<size-1; i++)
         {
 			if (!coloredRange.contains(i)) continue;
 			vtkLine edge = new vtkLine();
@@ -123,10 +124,7 @@ public class TrajectoryActor extends vtkActor
         	edge.GetPointIds().SetId(1, (i+1));
         	edges.InsertNextCell(edge);
         	Color colorAtIndex = getColorAtIndex(i);
-        	colors.SetTuple4(i, colorAtIndex.getRed(), colorAtIndex.getGreen(), colorAtIndex.getBlue(), colorAtIndex.getAlpha());
-//			alphaColor = 150.0;
-//			if (!coloredRange.contains(i)) alphaColor = 0.0;
-//			colors.SetTuple4(i, trajectoryColor[0], trajectoryColor[1], trajectoryColor[2], alphaColor);
+        	colors.SetTuple4(i+1, colorAtIndex.getRed(), colorAtIndex.getGreen(), colorAtIndex.getBlue(), colorAtIndex.getAlpha());
         }
 		trajectoryPolyline.SetLines(edges);
 		trajectoryMapper.Modified();
@@ -150,61 +148,9 @@ public class TrajectoryActor extends vtkActor
 		if (coloringFunction == null) return new Color((int)trajectoryColor[0], (int)trajectoryColor[1], (int)trajectoryColor[2], (int)trajectoryColor[3]);
 		double time = trajectory.getTime().get(index);
 		double valueAtTime = coloringFunction.apply(time);
-		return colormap.getColor(valueAtTime);
-	}
-
-	private void createTrajectoryPolyData()
-	{
-		createTrajectoryPolyData2();
-//		trajectoryPolylines = new vtkPolyData();
-//
-//		int cellId = 0;
-//        vtkIdList idList = new vtkIdList();
-//        vtkPoints points = new vtkPoints();
-//        vtkCellArray lines = new vtkCellArray();
-//        vtkUnsignedCharArray colors = new vtkUnsignedCharArray();
-//        colors.SetNumberOfComponents(4);
-//
-//        Trajectory traj =  trajectory;
-//        traj.setCellId(cellId);
-//
-//        int size = traj.getX().size();
-//        idList.SetNumberOfIds(size);
-//        System.out.println("TrajectoryActor: createTrajectoryPolyData: going from " + (int)(minFraction*size) + " to " + maxFraction*size);
-//        for (int i=(int)(minFraction*size);i<maxFraction*size;++i)
-//        {
-//            Double x = traj.getX().get(i);
-//            Double y = traj.getY().get(i);
-//            Double z = traj.getZ().get(i);
-//
-//            points.InsertNextPoint(x, y, z);
-//            idList.SetId(i, i);
-//        }
-//        System.out.println("TrajectoryActor: createTrajectoryPolyData: done with for loop");
-//        lines.InsertNextCell(idList);
-//        colors.InsertNextTuple4(trajectoryColor[0], trajectoryColor[1], trajectoryColor[2], trajectoryColor[3]);	//last one is alpha
-//
-//        vtkPolyData trajectoryPolyline = new vtkPolyData();
-//        trajectoryPolyline.SetPoints(points);
-//        trajectoryPolyline.SetLines(lines);
-//        trajectoryPolyline.GetCellData().SetScalars(colors);
-//
-//        trajectoryPolylines = trajectoryPolyline;
-//        System.out.println("TrajectoryActor: createTrajectoryPolyData: setting mapper");
-//        trajectoryMapper.SetInputData(trajectoryPolyline);
-//        trajectoryMapper.Modified();
-//        GetProperty().SetLineWidth(trajectoryLineThickness);
-//
-//		trajectoryMapper.SetInputData(trajectoryPolylines);
-//		System.out.println("TrajectoryActor: createTrajectoryPolyData: updating");
-//		trajectoryMapper.Update();
-
-	}
-
-	public TrajectoryActor(long id)
-	{
-		super(id);
-		// TODO Auto-generated constructor stub
+		Color color = colormap.getColor(valueAtTime);
+		color = new Color(color.getRed(), color.getGreen(), color.getBlue(), (int)trajectoryColor[3]);
+		return color;
 	}
 
 	public void setTrajectoryLineThickness(double value)
@@ -231,9 +177,7 @@ public class TrajectoryActor extends vtkActor
         this.trajectoryColor = color;
         // recreate poly data with new color
         createTrajectoryPolyData();
-//        if (showing) {
-//            this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
-//        }
+        updateShownSegments();
     }
 
     public void setTrajectoryName(String name)
@@ -257,7 +201,5 @@ public class TrajectoryActor extends vtkActor
 		this.minFraction = min;
 		this.maxFraction = max;
 		updateShownSegments();
-//		createTrajectoryPolyData();
 	}
-
 }

@@ -78,7 +78,6 @@ public class StateHistoryViewControlsController implements ItemListener
             renderer.setCameraFocalPoint(new double[] {0,0,0});
         });
 
-
         view.getDistanceOptions().addActionListener(e ->
         {
 	        String selectedItem = (String)((JComboBox<String>)e.getSource()).getSelectedItem();
@@ -120,10 +119,7 @@ public class StateHistoryViewControlsController implements ItemListener
         });
 
         view.getViewOptions().setSelectedIndex(0);
-
-
         view.updateUI();
-
     }
 
 	private void updateLookDirection()
@@ -141,8 +137,6 @@ public class StateHistoryViewControlsController implements ItemListener
 				((RenderPanel)renderer.getRenderWindowPanel()).setZoomOnly(false, Vector3D.ZERO, targOrig);
 				return;
 			}
-
-//			if (selectedItem == RendererLookDirection.SUN || selectedItem == RendererLookDirection.EARTH)
 			else
 			{
 				Vector3D targAxis = new Vector3D(runs.updateLookDirection(selectedItem, historyModel.getScalingFactor()));
@@ -158,19 +152,6 @@ public class StateHistoryViewControlsController implements ItemListener
 				view.getShowSpacecraft().setEnabled(!scSelected);
 		        view.getDistanceOptions().setEnabled(!scSelected);
 			}
-//			else
-//			{
-//	        	renderer.getCamera().reset();
-//	        	((RenderPanel)renderer.getRenderWindowPanel()).setZoomOnly(false, Vector3D.ZERO, targOrig);
-//	            view.getShowSpacecraft().setEnabled(true);
-//
-//	            double[] lookFromDirection = runs.updateLookDirection(selectedItem, historyModel.getScalingFactor());
-//	            renderer.setCameraOrientation(lookFromDirection, renderer.getCameraFocalPoint(), upVector, renderer.getCameraViewAngle());
-//
-//				boolean scSelected = (selectedItem == RendererLookDirection.SPACECRAFT);
-//				view.getShowSpacecraft().setEnabled(!scSelected);
-//		        view.getDistanceOptions().setEnabled(!scSelected);
-//			}
         }
 	}
 

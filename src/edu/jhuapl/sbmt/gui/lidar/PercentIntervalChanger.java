@@ -83,4 +83,9 @@ public class PercentIntervalChanger extends JPanel implements ChangeListener
 		for (ActionListener aListener : listenerL)
 			aListener.actionPerformed(new ActionEvent(this, 0, "update"));
 	}
+
+	public RangeSlider getSlider()
+	{
+		return slider;
+	}
 }

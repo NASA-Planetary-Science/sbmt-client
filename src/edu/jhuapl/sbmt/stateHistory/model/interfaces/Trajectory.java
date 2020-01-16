@@ -48,4 +48,8 @@ public interface Trajectory
 
     public void setTrajectoryLineThickness(double thickness);
 
+    public void setFaded(boolean isFaded);
+
+    public boolean isFaded();
+
 }

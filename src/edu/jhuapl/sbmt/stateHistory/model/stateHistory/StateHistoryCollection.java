@@ -394,6 +394,14 @@ public class StateHistoryCollection extends SaavtkItemManager<StateHistory> /*Ab
         this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, renderer);
     }
 
+    public void refreshColoring(StateHistory segment)
+    {
+    	TrajectoryActor renderer = stateHistoryToRendererMap.get(segment);
+    	if (renderer == null) return;
+    	renderer.setTrajectoryColor(segment.getTrajectoryColor());
+    	this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, renderer);
+    }
+
     //time updates
     private void updateTimeBarActor(double time)
     {

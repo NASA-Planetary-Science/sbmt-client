@@ -55,7 +55,6 @@ public class StateHistoryIntervalSelectionController
                         JOptionPane.ERROR_MESSAGE);
                 return;
 			}
-
         });
 
         view.getSaveStateHistoryButton().addActionListener(e -> {
@@ -118,6 +117,12 @@ public class StateHistoryIntervalSelectionController
 			if (aEventType != ItemEventType.ItemsSelected) return;
 			view.getRemoveStateHistoryButton().setEnabled(runs.getSelectedItems().size() > 0);
 			view.getShowStateHistoryButton().setEnabled(runs.getSelectedItems().size() > 0);
+			view.getSaveStateHistoryButton().setEnabled(runs.getSelectedItems().size() == 1);
+			for (StateHistory history : runs.getAllItems())
+			{
+				history.getTrajectory().setFaded(!runs.getSelectedItems().contains(history));
+				runs.refreshColoring(history);
+			}
 		});
     }
 

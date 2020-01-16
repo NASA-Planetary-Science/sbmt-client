@@ -28,6 +28,8 @@ public class StateHistoryItemHandler extends BasicItemHandler<StateHistory, Stat
 	@Override
 	public Object getColumnValue(StateHistory stateHistory, StateHistoryColumnLookup aEnum)
 	{
+		DateTimeFormatter fmt = DateTimeFormat.forPattern("yyyy-MM-dd'T'HH:mm:ss");
+		String timeString;
 		switch (aEnum)
 		{
 			case Map:
@@ -43,15 +45,12 @@ public class StateHistoryItemHandler extends BasicItemHandler<StateHistory, Stat
 			case Description:
 				return stateHistory.getTrajectoryDescription();
 			case StartTime:
-				DateTimeFormatter fmt = DateTimeFormat.forPattern("yyyy-MM-dd'T'HH:mm:ss");
 				fmt.withZone(DateTimeZone.UTC);
-				String timeString = TimeUtil.et2str(stateHistory.getMinTime());
+				timeString = TimeUtil.et2str(stateHistory.getMinTime());
 				return timeString.substring(0, 23);
 			case EndTime:
-				DateTimeFormatter fmt2 = DateTimeFormat.forPattern("yyyy-MM-dd'T'HH:mm:ss");
-				fmt2.withZone(DateTimeZone.UTC);
+				fmt.withZone(DateTimeZone.UTC);
 				timeString = TimeUtil.et2str(stateHistory.getMaxTime());
-//				DateTime endTime = new DateTime(stateHistory.getMaxTime().longValue());
 				return timeString.substring(0, 23);
 			default:
 				break;
@@ -82,5 +81,4 @@ public class StateHistoryItemHandler extends BasicItemHandler<StateHistory, Stat
 		else
 			throw new UnsupportedOperationException("Column is not supported. Enum: " + aEnum);
 	}
-
 }
