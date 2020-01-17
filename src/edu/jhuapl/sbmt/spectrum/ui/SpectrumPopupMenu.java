@@ -94,7 +94,6 @@ public class SpectrumPopupMenu<S extends BasicSpectrum> extends PopupMenu implem
         this.boundaries = sbc;
         this.infoPanelManager = infoPanelManager;
         this.renderer=renderer;
-
         showRemoveSpectrumIn3DMenuItem = new JCheckBoxMenuItem(new ShowRemoveIn3DAction());
         showRemoveSpectrumIn3DMenuItem.setText("Show Footprint");
         this.add(showRemoveSpectrumIn3DMenuItem);
@@ -194,6 +193,9 @@ public class SpectrumPopupMenu<S extends BasicSpectrum> extends PopupMenu implem
             showToSunVectorMenuItem.setEnabled(false);
             setIlluminationMenuItem.setEnabled(false);
         }
+
+        if (collection.getSelectedItems().size() > 1) setIlluminationMenuItem.setEnabled(false);
+
 
     }
 
