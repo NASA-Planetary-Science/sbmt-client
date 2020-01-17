@@ -70,6 +70,7 @@ public class SpectrumPopupMenu<S extends BasicSpectrum> extends PopupMenu implem
     private List<S> spectrum = new ArrayList<S>();
     private JMenuItem showStatisticsMenuItem;
     private Renderer renderer;
+    private Vector3D currentIlluminationVector;
 
     private IBasicSpectrumRenderer<S> spectrumRenderer;
     ComputeStatisticsTask task;
@@ -177,7 +178,7 @@ public class SpectrumPopupMenu<S extends BasicSpectrum> extends PopupMenu implem
             centerSpectrumMenuItem.setEnabled(true);
             showToSunVectorMenuItem.setSelected(spectrumRenderer.isToSunVectorShowing());
             showToSunVectorMenuItem.setEnabled(true);
-            if (renderer.getLighting() == LightingType.FIXEDLIGHT) setIlluminationMenuItem.setSelected(true);
+            if ((renderer.getLighting() == LightingType.FIXEDLIGHT) && (currentIlluminationVector.equals(new Vector3D(spectrumRenderer.getSpectrum().getToSunUnitVector())))) setIlluminationMenuItem.setSelected(true);
             else setIlluminationMenuItem.setSelected(false);
             setIlluminationMenuItem.setEnabled(true);
 
@@ -408,19 +409,21 @@ public class SpectrumPopupMenu<S extends BasicSpectrum> extends PopupMenu implem
     {
         public void actionPerformed(ActionEvent e)
         {
+        	currentIlluminationVector = null;
+        	JMenuItem menuItem = (JMenuItem)e.getSource();
+        	if (menuItem.isSelected()) currentIlluminationVector = new Vector3D(spectrumRenderer.getSpectrum().getToSunUnitVector());
             try
             {
-                if (renderer.getLighting() == LightingType.FIXEDLIGHT)
+                if (renderer.getLighting() == LightingType.FIXEDLIGHT && currentIlluminationVector == null)
                 {
                     renderer.setLighting(LightingType.LIGHT_KIT);
                 }
                 else
                 {
                     renderer.setLighting(LightingType.FIXEDLIGHT);
+                    renderer.setFixedLightDirection(currentIlluminationVector.toArray()); // the fixed light direction points to the light
                 }
 
-                Vector3D toSunVector=new Vector3D(spectrumRenderer.getSpectrum().getToSunUnitVector());
-                renderer.setFixedLightDirection(toSunVector.toArray()); // the fixed light direction points to the light
 
                 updateMenuItems();
             }
