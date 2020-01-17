@@ -101,7 +101,7 @@ public class SpectrumSearchParametersPanel  extends JPanel
     {
         // TODO: Override and setup in subclass
         hierarchicalSearchScrollPane = new JScrollPane();
-        hierarchicalSearchScrollPane.setPreferredSize(new java.awt.Dimension(150, 150));
+        hierarchicalSearchScrollPane.setPreferredSize(new Dimension(150, 150));
         add(hierarchicalSearchScrollPane);
     }
 
@@ -580,5 +580,17 @@ public class SpectrumSearchParametersPanel  extends JPanel
     {
         return degenerateCheckBox;
     }
+
+    @Override
+	public Dimension getPreferredSize()
+	{
+		return new Dimension(650, 175);
+	}
+
+    @Override
+	public Dimension getMaximumSize()
+	{
+		return new Dimension(650, 175);
+	}
 
 }
