@@ -3,10 +3,13 @@ package edu.jhuapl.sbmt.dtm.ui.menu;
 import java.awt.event.ActionEvent;
 import java.awt.event.MouseEvent;
 import java.io.File;
+import java.util.List;
 
 import javax.swing.AbstractAction;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
+
+import org.apache.commons.math3.geometry.euclidean.threed.Vector3D;
 
 import vtk.vtkProp;
 
@@ -15,9 +18,9 @@ import edu.jhuapl.saavtk.gui.render.Renderer;
 import edu.jhuapl.saavtk.model.ModelManager;
 import edu.jhuapl.saavtk.model.ModelNames;
 import edu.jhuapl.saavtk.model.PolyhedralModel;
-import edu.jhuapl.saavtk.model.structure.Line;
 import edu.jhuapl.saavtk.model.structure.LineModel;
 import edu.jhuapl.saavtk.popup.PopupMenu;
+import edu.jhuapl.saavtk.structure.PolyLine;
 import edu.jhuapl.sbmt.util.gravity.Gravity;
 
 /**
@@ -27,7 +30,7 @@ import edu.jhuapl.sbmt.util.gravity.Gravity;
 public class MapmakerLinesPopupMenu extends PopupMenu
 {
 	// Ref vars
-	private final LineModel<Line> refLineManager;
+	private final LineModel<PolyLine> refLineManager;
 	private final PolyhedralModel refPolyhedralModel;
 
 	// Gui vars
@@ -38,7 +41,7 @@ public class MapmakerLinesPopupMenu extends PopupMenu
 
 	public MapmakerLinesPopupMenu(ModelManager aModelManager, PolyhedralModel aPolyhedralModel, Renderer aRenderer)
 	{
-		refLineManager = (LineModel<Line>) aModelManager.getModel(ModelNames.LINE_STRUCTURES);
+		refLineManager = (LineModel<PolyLine>) aModelManager.getModel(ModelNames.LINE_STRUCTURES);
 		refPolyhedralModel = aPolyhedralModel;
 
 		saveProfileAction = new JMenuItem(new SaveProfileAction());
@@ -60,7 +63,7 @@ public class MapmakerLinesPopupMenu extends PopupMenu
 		{
 			if (pickedCellId < 0 || pickedCellId >= refLineManager.getNumItems())
 				return;
-			Line tmpLine = refLineManager.getStructure(pickedCellId);
+			PolyLine tmpLine = refLineManager.getItem(pickedCellId);
 
 			// Prompt the user for the file to save to
 			File file = CustomFileChooser.showSaveDialog(getInvoker(), "Save Profile", "profile.csv");
@@ -69,7 +72,13 @@ public class MapmakerLinesPopupMenu extends PopupMenu
 
 			try
 			{
-				Gravity.saveProfileUsingGravityProgram(tmpLine, pickedCellId, file, refPolyhedralModel, refPolyhedralModel);
+				// Require at least two control points
+				if (tmpLine.getControlPoints().size() != 2)
+					throw new Exception("Line must contain exactly 2 control points.");
+
+				// Delegate
+				List<Vector3D> xyzPointL = refLineManager.getXyzPointsFor(tmpLine);
+				Gravity.saveProfileUsingGravityProgram(xyzPointL, file, refPolyhedralModel);
 			}
 			catch (Exception e1)
 			{
