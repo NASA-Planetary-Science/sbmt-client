@@ -49,7 +49,8 @@ public class BasicConfigInfo implements MetadataManager
 			System.out.println("BasicConfigInfo: BasicConfigInfo: unique name " + uniqueName);
 			for (SbmtMultiMissionTool.Mission presentMission : presentInVersion)
 			{
-				if (presentMission == SbmtMultiMissionTool.getMission())
+				//allow the body if the "present in Mission" value equals the tool's preset mission value OR if the tool's present mission value is the apl internal nightly
+				if ((presentMission == SbmtMultiMissionTool.getMission()) || (SbmtMultiMissionTool.getMission() == SbmtMultiMissionTool.Mission.APL_INTERNAL_NIGHTLY))
 				{
 					enabled = true;
 					break;
@@ -160,7 +161,7 @@ public class BasicConfigInfo implements MetadataManager
 		{
 			for (SbmtMultiMissionTool.Mission presentMission : presentInVersion)
 			{
-				if (presentMission == SbmtMultiMissionTool.getMission())
+				if ((presentMission == SbmtMultiMissionTool.getMission()) || (SbmtMultiMissionTool.getMission() == SbmtMultiMissionTool.Mission.APL_INTERNAL_NIGHTLY))
 				{
 					enabled = true;
 					break;

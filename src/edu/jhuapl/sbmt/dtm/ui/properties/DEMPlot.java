@@ -1,14 +1,8 @@
 package edu.jhuapl.sbmt.dtm.ui.properties;
 
-import java.awt.BasicStroke;
-import java.awt.Color;
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
-import java.util.ArrayList;
 import java.util.List;
 
-import javax.swing.JPanel;
-
+import org.apache.commons.math3.geometry.euclidean.threed.Vector3D;
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartMouseEvent;
 import org.jfree.chart.ChartMouseListener;
@@ -21,239 +15,157 @@ import org.jfree.chart.plot.XYPlot;
 import org.jfree.chart.renderer.xy.XYItemRenderer;
 import org.jfree.chart.renderer.xy.XYLineAndShapeRenderer;
 import org.jfree.data.xy.XYSeries;
-import org.jfree.data.xy.XYSeriesCollection;
 
-import edu.jhuapl.saavtk.model.structure.Line;
 import edu.jhuapl.saavtk.model.structure.LineModel;
-import edu.jhuapl.saavtk.util.Properties;
+import edu.jhuapl.saavtk.structure.PolyLine;
+import edu.jhuapl.saavtk.structure.plot.BaseLinePlot;
 import edu.jhuapl.sbmt.dtm.model.DEM;
 
-
-public class DEMPlot implements ChartMouseListener, PropertyChangeListener
+public class DEMPlot extends BaseLinePlot implements ChartMouseListener
 {
-	// Ref vars
-   private LineModel<Line> refLineModel;
-   private DEM refDemModel;
+	private LineModel<PolyLine> refManager;
+	private DEM refDemModel;
 
-   // State vars
-    private XYSeriesCollection valueDistanceDataset;
-    private ChartPanel chartPanel;
-    private int coloringIndex;
+	// State vars
+	private ChartPanel chartPanel;
+	private int coloringIndex;
 
-    private int numberOfProfilesCreated = 0;
+	public DEMPlot(LineModel<PolyLine> aManager, DEM aDemModel, int aColoringIndex)
+	{
+		super(aManager);
 
-    public DEMPlot(LineModel<Line> aLineModel, DEM aDemModel, int aColoringIndex)
-    {
-        refLineModel = aLineModel;
-        refDemModel = aDemModel;
+		refManager = aManager;
+		refDemModel = aDemModel;
 
-        coloringIndex = aColoringIndex;
+		coloringIndex = aColoringIndex;
 
-        aLineModel.addPropertyChangeListener(this);
+		JFreeChart chart1 = ChartFactory.createXYLineChart("", "", "", getXYDataSet(), PlotOrientation.VERTICAL, false,
+				true, false);
 
-        valueDistanceDataset = new XYSeriesCollection();
+		// add the jfreechart graph
+		chartPanel = new ChartPanel(chart1);
+		chartPanel.setMouseWheelEnabled(true);
+		chartPanel.addChartMouseListener(this);
+		updateChartLabels();
 
-        JFreeChart chart1 = ChartFactory.createXYLineChart("", "", "",
-            valueDistanceDataset, PlotOrientation.VERTICAL, false, true, false);
+		XYPlot plot = (XYPlot) chart1.getPlot();
+		plot.setDomainPannable(true);
+		plot.setRangePannable(true);
 
-        // add the jfreechart graph
-        chartPanel = new ChartPanel(chart1);
-        chartPanel.setMouseWheelEnabled(true);
-        chartPanel.addChartMouseListener(this);
-        updateChartLabels();
+		XYItemRenderer r = plot.getRenderer();
+		if (r instanceof XYLineAndShapeRenderer)
+		{
+			XYLineAndShapeRenderer renderer = (XYLineAndShapeRenderer) r;
+			renderer.setBaseShapesVisible(false);
+			renderer.setBaseShapesFilled(true);
+		}
 
-        XYPlot plot = (XYPlot) chart1.getPlot();
-        plot.setDomainPannable(true);
-        plot.setRangePannable(true);
+	}
 
-        XYItemRenderer r = plot.getRenderer();
-        if (r instanceof XYLineAndShapeRenderer) {
-            XYLineAndShapeRenderer renderer = (XYLineAndShapeRenderer) r;
-            renderer.setBaseShapesVisible(false);
-            renderer.setBaseShapesFilled(true);
-        }
-    }
+	@Override
+	public ChartPanel getChartPanel()
+	{
+		return chartPanel;
+	}
 
-    public JPanel getChartPanel()
-    {
-        return chartPanel;
-    }
+	@Override
+	protected void getPlotPoints(PolyLine aItem, List<Double> xValueL, List<Double> yValueL)
+	{
+		// Bail if the line is not visible or valid
+		if (aItem.getVisible() == false || aItem.getControlPoints().size() < 2)
+			return;
 
-    private void setSeriesColor(int lineId)
-    {
-   	 if (lineId == -1 || lineId >= valueDistanceDataset.getSeriesCount())
-   		 return;
+		List<Vector3D> xyzPointL = refManager.getXyzPointsFor(aItem);
+		refDemModel.generateProfile(xyzPointL, yValueL, xValueL, coloringIndex);
+	}
 
-        Line line = refLineModel.getStructure(lineId);
-        Color color = line.getColor();
-        ((XYPlot)chartPanel.getChart().getPlot()).getRenderer().setSeriesPaint(
-                lineId, color);
-    }
+	private void updateChartLabels()
+	{
+		// Figure out labels to use
+		String title, domainLabel, rangeLabel;
+		String[] coloringNames = refDemModel.getColoringNames();
+		String[] coloringUnits = refDemModel.getColoringUnits();
+		int numColors = coloringNames.length;
 
-    private void addProfile()
-    {
-        int lineId = refLineModel.getNumItems()-1;
-        XYSeries series = new XYSeries("Profile " + numberOfProfilesCreated++);
-        valueDistanceDataset.addSeries(series);
-        setSeriesColor(lineId);
-        ((XYPlot)chartPanel.getChart().getPlot()).getRenderer().setSeriesStroke(
-                lineId, new BasicStroke(2.0f)); // set line thickness
-        updateProfile(lineId);
-    }
+		if (coloringIndex < 0 || coloringIndex >= numColors)
+		{
+			// By default show radius
+			title = "Radius vs. Distance";
+			domainLabel = "Distance (m)";
+			rangeLabel = "Radius (m)";
+		}
+		else
+		{
+			title = coloringNames[coloringIndex] + " vs. Distance";
+			domainLabel = "Distance (m)";
+			rangeLabel = coloringNames[coloringIndex];
 
-    private void updateProfile(int lineId)
-    {
-        if (lineId == -1 || lineId >= valueDistanceDataset.getSeriesCount())
-            return;
+			// Try to add units for range label if possible
+			if (coloringUnits[coloringIndex].length() > 0)
+			{
+				rangeLabel += " (" + coloringUnits[coloringIndex] + ")";
+			}
+		}
 
-        Line line = refLineModel.getStructure(lineId);
-        List<Double> value= new ArrayList<Double>();
-        List<Double> distance = new ArrayList<Double>();
-        refDemModel.generateProfile(line.xyzPointList, value, distance, coloringIndex);
+		// Apply the labels to the chart
+		chartPanel.getChart().setTitle(title);
+		chartPanel.getChart().getXYPlot().getDomainAxis().setLabel(domainLabel);
+		chartPanel.getChart().getXYPlot().getRangeAxis().setLabel(rangeLabel);
+	}
 
-        XYSeries series = valueDistanceDataset.getSeries(lineId);
-        series.clear();
-        int N = value.size();
-        for (int i=0; i<N; ++i)
-            series.add(distance.get(i), value.get(i), false);
-        series.fireSeriesChanged();
-    }
+	public String getProfileAsString(PolyLine aItem)
+	{
+		// Figure out what to label the range
+		String[] coloringNames = refDemModel.getColoringNames();
 
-    private void updateChartLabels(){
-        // Figure out labels to use
-        String title, domainLabel, rangeLabel;
-        String[] coloringNames = refDemModel.getColoringNames();
-        String[] coloringUnits = refDemModel.getColoringUnits();
-        int numColors = coloringNames.length;
+		String rangeLabel = "Value";
+		if (coloringIndex >= 0 || coloringIndex < coloringNames.length)
+			rangeLabel = coloringNames[coloringIndex];
 
-        if(coloringIndex < 0 || coloringIndex >= numColors)
-        {
-            // By default show radius
-            title = "Radius vs. Distance";
-            domainLabel = "Distance (m)";
-            rangeLabel = "Radius (m)";
-        }
-        else
-        {
-            title = coloringNames[coloringIndex] + " vs. Distance";
-            domainLabel = "Distance (m)";
-            rangeLabel = coloringNames[coloringIndex];
+		StringBuilder buffer = new StringBuilder();
 
-            // Try to add units for range label if possible
-            if(coloringUnits[coloringIndex].length() > 0)
-            {
-                rangeLabel += " (" + coloringUnits[coloringIndex] + ")";
-            }
-        }
+		XYSeries series = getSeriesFor(aItem);
 
-        // Apply the labels to the chart
-        chartPanel.getChart().setTitle(title);;
-        chartPanel.getChart().getXYPlot().getDomainAxis().setLabel(domainLabel);
-        chartPanel.getChart().getXYPlot().getRangeAxis().setLabel(rangeLabel);
-    }
+		String eol = System.getProperty("line.separator");
 
-    private void removeProfile(int lineId)
-    {
-        if (lineId == -1 || lineId >= valueDistanceDataset.getSeriesCount())
-      	  return;
+		int N = series.getItemCount();
 
-        valueDistanceDataset.removeSeries(lineId);
-    }
+		buffer.append("Distance=");
+		for (int i = 0; i < N; ++i)
+			buffer.append(series.getX(i) + " ");
+		buffer.append(eol);
 
-    public String getProfileAsString(int lineId)
-    {
-        // Figure out what to label the range
-        String rangeLabel;
-        String[] coloringNames = refDemModel.getColoringNames();
-        int numColors = coloringNames.length;
+		buffer.append(rangeLabel + "=");
+		for (int i = 0; i < N; ++i)
+			buffer.append(series.getY(i) + " ");
+		buffer.append(eol);
 
-        if(coloringIndex < 0 || coloringIndex >= numColors)
-        {
-            rangeLabel = "Value";
-        }
-        else
-        {
-            rangeLabel = coloringNames[coloringIndex];
-        }
+		return buffer.toString();
+	}
 
-        StringBuilder buffer = new StringBuilder();
+	public void setColoringIndex(int index)
+	{
+		// Save value of index
+		coloringIndex = index;
 
-        XYSeries series = valueDistanceDataset.getSeries(lineId);
+		// Update chart labels
+		updateChartLabels();
 
-        String eol = System.getProperty("line.separator");
+		// Update all profiles
+		notifyAllStale();
+	}
 
-        int N = series.getItemCount();
+	public void chartMouseClicked(ChartMouseEvent arg0)
+	{
+		ChartEntity entity = arg0.getEntity();
+		if (entity instanceof XYItemEntity)
+		{
+			// int id = ((XYItemEntity)entity).getItem();
+		}
+	}
 
-        buffer.append("Distance=");
-        for (int i=0; i<N; ++i)
-            buffer.append(series.getX(i) + " ");
+	public void chartMouseMoved(ChartMouseEvent arg0)
+	{
+	}
 
-        buffer.append(eol);
-
-        buffer.append(rangeLabel + "=");
-        for (int i=0; i<N; ++i)
-            buffer.append(series.getY(i) + " ");
-
-        buffer.append(eol);
-
-        return buffer.toString();
-    }
-
-    public void setColoringIndex(int index){
-        // Save value of index
-        coloringIndex = index;
-
-        // Update chart labels
-        updateChartLabels();
-
-        // Update all profiles
-        int numLines = valueDistanceDataset.getSeriesCount();
-        for(int i=0; i<numLines; i++){
-            updateProfile(i);
-        }
-    }
-
-    public void chartMouseClicked(ChartMouseEvent arg0)
-    {
-        ChartEntity entity = arg0.getEntity();
-
-        if (entity instanceof XYItemEntity)
-        {
-            //int id = ((XYItemEntity)entity).getItem();
-        }
-    }
-
-    public void chartMouseMoved(ChartMouseEvent arg0)
-    {
-    }
-
-    public void propertyChange(PropertyChangeEvent evt)
-    {
-   	 Line line = null;
-   	 if (evt.getNewValue() instanceof Line)
-   		 line = (Line)evt.getNewValue();
-		 int lineId = refLineModel.getAllItems().indexOf(evt.getNewValue());
-
-        if (Properties.VERTEX_INSERTED_INTO_LINE.equals(evt.getPropertyName()))
-        {
-            if (line != null && line.controlPointIds.size() == 2)
-                addProfile();
-        }
-        else if (Properties.VERTEX_POSITION_CHANGED.equals(evt.getPropertyName()))
-        {
-            updateProfile(lineId);
-        }
-        else if (Properties.STRUCTURE_REMOVED.equals(evt.getPropertyName()))
-        {
-            removeProfile(lineId);
-        }
-        else if (Properties.ALL_STRUCTURES_REMOVED.equals(evt.getPropertyName()))
-        {
-            valueDistanceDataset.removeAllSeries();
-        }
-        else if (Properties.COLOR_CHANGED.equals(evt.getPropertyName()))
-        {
-            setSeriesColor(lineId);
-        }
-    }
 }

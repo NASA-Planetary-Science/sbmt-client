@@ -254,6 +254,7 @@ public class SbmtRunnable implements Runnable
 	{
 		switch (mission)
 		{
+		case APL_INTERNAL_NIGHTLY:
 		case APL_INTERNAL:
 //		case STAGE_APL_INTERNAL:
 		case TEST_APL_INTERNAL:
