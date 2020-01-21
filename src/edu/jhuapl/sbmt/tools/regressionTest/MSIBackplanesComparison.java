@@ -59,7 +59,7 @@ public class MSIBackplanesComparison
         Configuration.setAPLVersion(true);
         SmallBodyViewConfig.initialize();
         System.setProperty("java.awt.headless", "true");
-        NativeLibraryLoader.loadVtkLibrariesHeadless();
+        NativeLibraryLoader.loadHeadlessVtkLibraries();
         Authenticator.authenticate();
 
         smallBodyModel = SbmtModelFactory.createSmallBodyModel(SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.EROS, ShapeModelType.GASKELL, null));
