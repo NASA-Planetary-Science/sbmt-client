@@ -995,7 +995,9 @@ public class ImageInfoPanel extends ModelInfoWindow implements MouseListener, Mo
         if (image instanceof PerspectiveImage)
         {
             double[] delta = { getAdjustFactor(), 0.0 };
-            ((PerspectiveImage)image).moveTargetPixelCoordinates(delta);
+//            ((PerspectiveImage)image).moveTargetPixelCoordinates(delta);
+//            ((PerspectiveImage)image).moveYawAngleBy(getAdjustFactor());
+            ((PerspectiveImage)image).moveSampleOffsetBy(-getAdjustFactor()/1000.0);
             ((PerspectiveImage)image).firePropertyChange();
         }
     }//GEN-LAST:event_leftButtonActionPerformed
@@ -1004,7 +1006,9 @@ public class ImageInfoPanel extends ModelInfoWindow implements MouseListener, Mo
         if (image instanceof PerspectiveImage)
         {
             double[] delta = { -getAdjustFactor(), 0.0 };
-            ((PerspectiveImage)image).moveTargetPixelCoordinates(delta);
+//            ((PerspectiveImage)image).moveTargetPixelCoordinates(delta);
+//            ((PerspectiveImage)image).moveYawAngleBy(-getAdjustFactor());
+            ((PerspectiveImage)image).moveSampleOffsetBy(getAdjustFactor()/1000.0);
             ((PerspectiveImage)image).firePropertyChange();
         }
     }//GEN-LAST:event_rightButtonActionPerformed
@@ -1013,7 +1017,9 @@ public class ImageInfoPanel extends ModelInfoWindow implements MouseListener, Mo
         if (image instanceof PerspectiveImage)
         {
             double[] delta = { 0.0, -getAdjustFactor() };
-            ((PerspectiveImage)image).moveTargetPixelCoordinates(delta);
+//            ((PerspectiveImage)image).moveTargetPixelCoordinates(delta);
+//            ((PerspectiveImage)image).movePitchAngleBy(getAdjustFactor());
+            ((PerspectiveImage)image).moveLineOffsetBy(getAdjustFactor()/1000.0);
             ((PerspectiveImage)image).firePropertyChange();
         }
     }//GEN-LAST:event_upButtonActionPerformed
@@ -1022,7 +1028,9 @@ public class ImageInfoPanel extends ModelInfoWindow implements MouseListener, Mo
         if (image instanceof PerspectiveImage)
         {
             double[] delta = { 0.0, getAdjustFactor() };
-            ((PerspectiveImage)image).moveTargetPixelCoordinates(delta);
+//            ((PerspectiveImage)image).moveTargetPixelCoordinates(delta);
+//            ((PerspectiveImage)image).movePitchAngleBy(-getAdjustFactor());
+            ((PerspectiveImage)image).moveLineOffsetBy(-getAdjustFactor()/1000.0);
             ((PerspectiveImage)image).firePropertyChange();
         }
     }//GEN-LAST:event_downButtonActionPerformed
