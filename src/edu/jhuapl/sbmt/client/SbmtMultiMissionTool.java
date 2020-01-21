@@ -66,6 +66,7 @@ public class SbmtMultiMissionTool
 
     public enum Mission
 	{
+    	APL_INTERNAL_NIGHTLY("b1bc7ec"),
 		APL_INTERNAL("b1bc7ed"),
 		PUBLIC_RELEASE("3ee38f0"),
 		TEST_APL_INTERNAL("fb404a7"),
@@ -213,6 +214,11 @@ public class SbmtMultiMissionTool
 
 		switch (mission)
 		{
+		case APL_INTERNAL_NIGHTLY:
+			Configuration.setAppName("sbmt-internal-nightly");
+			Configuration.setCacheVersion("2");
+			Configuration.setAppTitle("SBMT");
+			break;
 		case APL_INTERNAL:
 		case PUBLIC_RELEASE:
 			Configuration.setAppName("sbmt");
@@ -352,6 +358,7 @@ public class SbmtMultiMissionTool
                 SbmtSplash splash = null;
                 switch (mission)
                 {
+                case APL_INTERNAL_NIGHTLY:
                 case APL_INTERNAL:
                 case PUBLIC_RELEASE:
                 case STAGE_APL_INTERNAL:
