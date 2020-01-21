@@ -39,8 +39,8 @@ import edu.jhuapl.sbmt.model.image.Image;
 import edu.jhuapl.sbmt.model.image.ImageKeyInterface;
 import edu.jhuapl.sbmt.model.image.ImageSource;
 import edu.jhuapl.sbmt.model.image.ImageType;
-import edu.jhuapl.sbmt.model.image.marsmissions.MarsMissionImage;
 import edu.jhuapl.sbmt.model.image.SpectralImageMode;
+import edu.jhuapl.sbmt.model.image.marsmissions.MarsMissionImage;
 import edu.jhuapl.sbmt.model.itokawa.AmicaImage;
 import edu.jhuapl.sbmt.model.itokawa.Itokawa;
 import edu.jhuapl.sbmt.model.leisa.LEISAJupiterImage;
@@ -126,9 +126,11 @@ public class SbmtModelFactory
                     return new FcImage(key, smallBodyModel, loadPointingOnly);
                 else if (key.getInstrument().getType() == ImageType.FCCERES_IMAGE)
                     return new FcCeresImage(key, smallBodyModel, loadPointingOnly);
-                else if (key.getInstrument().getType() == ImageType.PHOBOS_IMAGE)
+                else if (key.getInstrument().getType() == ImageType.valueOf("MARS_MOON_IMAGE"))
                     return MarsMissionImage.of(key, smallBodyModel, loadPointingOnly);
-                else if (key.getInstrument().getType() == ImageType.DEIMOS_IMAGE)
+                else if (key.getInstrument().getType() == ImageType.valueOf("PHOBOS_IMAGE"))
+                    return MarsMissionImage.of(key, smallBodyModel, loadPointingOnly);
+                else if (key.getInstrument().getType() == ImageType.valueOf("DEIMOS_IMAGE"))
                     return MarsMissionImage.of(key, smallBodyModel, loadPointingOnly);
                 else if (key.getInstrument().getType() == ImageType.OSIRIS_IMAGE)
                     return new OsirisImage(key, smallBodyModel, loadPointingOnly);
@@ -186,9 +188,11 @@ public class SbmtModelFactory
                 return new FcImage(key, smallBodyModel, loadPointingOnly);
             else if (key.getImageType() == ImageType.FCCERES_IMAGE)
                 return new FcCeresImage(key, smallBodyModel, loadPointingOnly);
-            else if (key.getImageType() == ImageType.PHOBOS_IMAGE)
+            else if (key.getImageType() == ImageType.valueOf("MARS_MOON_IMAGE"))
                 return MarsMissionImage.of(key, smallBodyModel, loadPointingOnly);
-            else if (key.getImageType() == ImageType.DEIMOS_IMAGE)
+            else if (key.getImageType() == ImageType.valueOf("PHOBOS_IMAGE"))
+                return MarsMissionImage.of(key, smallBodyModel, loadPointingOnly);
+            else if (key.getImageType() == ImageType.valueOf("DEIMOS_IMAGE"))
                 return MarsMissionImage.of(key, smallBodyModel, loadPointingOnly);
             else if (key.getImageType() == ImageType.OSIRIS_IMAGE)
                 return new OsirisImage(key, smallBodyModel, loadPointingOnly);
