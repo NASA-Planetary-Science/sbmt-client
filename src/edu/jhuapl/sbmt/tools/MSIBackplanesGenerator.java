@@ -142,7 +142,7 @@ public class MSIBackplanesGenerator
         Configuration.setAPLVersion(true);
         SmallBodyViewConfig.initialize();
         System.setProperty("java.awt.headless", "true");
-        NativeLibraryLoader.loadVtkLibrariesHeadless();
+        NativeLibraryLoader.loadHeadlessVtkLibraries();
         Authenticator.authenticate();
 
         //Set up the distributed environment
