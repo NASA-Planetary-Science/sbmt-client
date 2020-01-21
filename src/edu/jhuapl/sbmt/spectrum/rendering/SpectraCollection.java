@@ -3,6 +3,7 @@ package edu.jhuapl.sbmt.spectrum.rendering;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -424,7 +425,7 @@ public class SpectraCollection<S extends BasicSpectrum> extends SaavtkItemManage
 	}
 
 	@Override
-	public void removeItems(List<S> specs)
+	public void removeItems(Collection<S> specs)
 	{
 		// Remove relevant state and VTK mappings
 		for (BasicSpectrum spec : specs)
@@ -439,7 +440,7 @@ public class SpectraCollection<S extends BasicSpectrum> extends SaavtkItemManage
 //		updateVtkVars(tmpL);
 	}
 
-	public void setAllItems(List<S> specs)
+	public void setAllItems(Collection<S> specs)
 	{
 		List<S> instrumentList = new ArrayList<S>();
 		for (S spec : specs)
@@ -484,7 +485,7 @@ public class SpectraCollection<S extends BasicSpectrum> extends SaavtkItemManage
 	}
 
 	@Override
-	public void setSelectedItems(List<S> specs)
+	public void setSelectedItems(Collection<S> specs)
 	{
 		super.setSelectedItems(specs);
 	}
