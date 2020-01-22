@@ -3,13 +3,15 @@ package edu.jhuapl.sbmt.tools;
 import java.io.File;
 import java.util.TreeSet;
 
+import org.apache.commons.math3.geometry.euclidean.threed.Vector3D;
+
 import edu.jhuapl.saavtk.model.LidarDataSource;
 import edu.jhuapl.saavtk.model.ModelNames;
 import edu.jhuapl.saavtk.model.ShapeModelBody;
 import edu.jhuapl.saavtk.model.ShapeModelType;
 import edu.jhuapl.saavtk.model.structure.AbstractEllipsePolygonModel;
 import edu.jhuapl.saavtk.model.structure.CircleSelectionModel;
-import edu.jhuapl.saavtk.model.structure.EllipsePolygon;
+import edu.jhuapl.saavtk.structure.Ellipse;
 import edu.jhuapl.saavtk.util.BoundingBox;
 import edu.jhuapl.saavtk.util.NativeLibraryLoader;
 import edu.jhuapl.sbmt.client.SbmtModelFactory;
@@ -112,11 +114,12 @@ public class SearchLidarDataInsideMaplet
                 createLidarModels(smallBodyModel).get(ModelNames.LIDAR_SEARCH);
         AbstractEllipsePolygonModel selectionModel = new CircleSelectionModel(smallBodyModel);
 
-        selectionModel.addNewStructure(dem.getCenter(), dem.getBoundingBoxDiagonalLength()/2.0, 1.0, 0.0);
+        Vector3D center = new Vector3D(dem.getCenter());
+        selectionModel.addNewStructure(center, dem.getBoundingBoxDiagonalLength()/2.0, 1.0, 0.0);
 
-        EllipsePolygon region = (EllipsePolygon)selectionModel.getStructure(0);
+        Ellipse region = selectionModel.getItem(0);
 
-        TreeSet<Integer> cubeList = smallBodyModel.getIntersectingCubes(new BoundingBox(region.getVtkInteriorPolyData().GetBounds()));
+        TreeSet<Integer> cubeList = smallBodyModel.getIntersectingCubes(new BoundingBox(selectionModel.getVtkInteriorPolyDataFor(region).GetBounds()));
 
         String name = (String)config.lidarSearchDataSourceMap.keySet().toArray()[0];
         String path = (String)config.lidarSearchDataSourceMap.values().toArray()[0];

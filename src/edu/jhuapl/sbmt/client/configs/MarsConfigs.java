@@ -59,7 +59,7 @@ public class MarsConfigs extends SmallBodyViewConfig
                 new ImagingInstrument( //
                         SpectralImageMode.MONO, //
                         new GenericPhpQuery("/GASKELL/PHOBOS/IMAGING", "PHOBOS", "/GASKELL/PHOBOS/IMAGING/images/gallery"), //
-                        ImageType.PHOBOS_IMAGE, //
+                        ImageType.valueOf("MARS_MOON_IMAGE"), //
                         new ImageSource[]{ImageSource.GASKELL, ImageSource.SPICE}, //
                         Instrument.IMAGING_DATA //
                         ) //
@@ -151,7 +151,7 @@ public class MarsConfigs extends SmallBodyViewConfig
                     new ImagingInstrument( //
                             SpectralImageMode.MONO, //
                             new GenericPhpQuery("/GASKELL/PHOBOSEXPERIMENTAL/IMAGING", "PHOBOSEXP", "/GASKELL/PHOBOS/IMAGING/images/gallery"), //
-                            ImageType.PHOBOS_IMAGE, //
+                            ImageType.valueOf("MARS_MOON_IMAGE"), //
                             new ImageSource[]{ImageSource.GASKELL}, //
                             Instrument.IMAGING_DATA //
                             ) //
@@ -216,7 +216,7 @@ public class MarsConfigs extends SmallBodyViewConfig
                             SpectralImageMode.MONO, //
 //                            new GenericPhpQuery("/phobos/ernst2018/imaging", "PHOBOS_ERNST_2018", "/phobos/ernst2018/imaging/gallery"), //
                             new FixedListQuery("/phobos/ernst2018/imaging", "/phobos/ernst2018/imaging/gallery"), //
-                            ImageType.PHOBOS_IMAGE, //
+                            ImageType.valueOf("MARS_MOON_IMAGE"), //
                             new ImageSource[]{ ImageSource.GASKELL }, //
                             Instrument.IMAGING_DATA, //
                             0., //
@@ -322,7 +322,7 @@ public class MarsConfigs extends SmallBodyViewConfig
                     new ImagingInstrument( //
                             SpectralImageMode.MONO, //
                             new GenericPhpQuery("/THOMAS/DEIMOSEXPERIMENTAL/IMAGING", "DEIMOS", "/THOMAS/DEIMOSEXPERIMENTAL/IMAGING/viking/gallery"), //
-                            ImageType.DEIMOS_IMAGE, //
+                            ImageType.valueOf("MARS_MOON_IMAGE"), //
                             new ImageSource[]{ImageSource.SPICE, ImageSource.CORRECTED}, //
                             Instrument.IMAGING_DATA //
                             ) //
@@ -370,7 +370,7 @@ public class MarsConfigs extends SmallBodyViewConfig
                             SpectralImageMode.MONO, //
 //                            new GenericPhpQuery("/deimos/ernst2018/imaging", "DEIMOS_ERNST_2018", "/deimos/ernst2018/imaging/gallery"), //
                             new FixedListQuery("/deimos/ernst2018/imaging", "/deimos/ernst2018/imaging/gallery"), //
-                            ImageType.DEIMOS_IMAGE, //
+                            ImageType.valueOf("MARS_MOON_IMAGE"), //
                             new ImageSource[]{ ImageSource.GASKELL }, //
                             Instrument.IMAGING_DATA, //
                             0., //
@@ -420,7 +420,7 @@ public class MarsConfigs extends SmallBodyViewConfig
                     new ImagingInstrument(
                             SpectralImageMode.MONO,
                             new FixedListQuery("/phobos/ernst2018-megane/imaging", "/phobos/ernst2018-megane/imaging/gallery"),
-                            ImageType.PHOBOS_IMAGE,
+                            ImageType.valueOf("MARS_MOON_IMAGE"),
                             new ImageSource[]{ ImageSource.GASKELL },
                             Instrument.IMAGING_DATA,
                             0.,

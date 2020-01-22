@@ -42,6 +42,7 @@ import edu.jhuapl.sbmt.gui.image.model.custom.CustomPerspectiveImageKey;
 import edu.jhuapl.sbmt.model.bennu.spectra.otes.OTES;
 import edu.jhuapl.sbmt.model.bennu.spectra.ovirs.OVIRS;
 import edu.jhuapl.sbmt.model.eros.nis.NIS;
+import edu.jhuapl.sbmt.model.image.ImageFactory;
 import edu.jhuapl.sbmt.model.phobos.MEGANE;
 import edu.jhuapl.sbmt.model.ryugu.nirs3.NIRS3;
 import edu.jhuapl.sbmt.spectrum.model.core.SpectrumInstrumentMetadata;
@@ -65,6 +66,7 @@ public class SbmtMultiMissionTool
 
     public enum Mission
 	{
+    	APL_INTERNAL_NIGHTLY("b1bc7ec"),
 		APL_INTERNAL("b1bc7ed"),
 		PUBLIC_RELEASE("3ee38f0"),
 		TEST_APL_INTERNAL("fb404a7"),
@@ -155,6 +157,7 @@ public class SbmtMultiMissionTool
 		NIS.initializeSerializationProxy();
 		NIRS3.initializeSerializationProxy();
 		MEGANE.initializeSerializationProxy();
+		ImageFactory.initializeSerializationProxy();
 	}
 
 	public static void setEnableAuthentication(boolean enableAuthentication)
@@ -211,6 +214,11 @@ public class SbmtMultiMissionTool
 
 		switch (mission)
 		{
+		case APL_INTERNAL_NIGHTLY:
+			Configuration.setAppName("sbmt-internal-nightly");
+			Configuration.setCacheVersion("2");
+			Configuration.setAppTitle("SBMT");
+			break;
 		case APL_INTERNAL:
 		case PUBLIC_RELEASE:
 			Configuration.setAppName("sbmt");
@@ -350,6 +358,7 @@ public class SbmtMultiMissionTool
                 SbmtSplash splash = null;
                 switch (mission)
                 {
+                case APL_INTERNAL_NIGHTLY:
                 case APL_INTERNAL:
                 case PUBLIC_RELEASE:
                 case STAGE_APL_INTERNAL:

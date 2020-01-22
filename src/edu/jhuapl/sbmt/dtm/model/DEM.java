@@ -29,7 +29,6 @@ import vtk.vtksbCellLocator;
 
 import edu.jhuapl.saavtk.gui.render.camera.CameraUtil;
 import edu.jhuapl.saavtk.util.MathUtil;
-import edu.jhuapl.saavtk.util.Point3D;
 import edu.jhuapl.saavtk.util.PolyDataUtil;
 import edu.jhuapl.saavtk.util.ProgressListener;
 import edu.jhuapl.saavtk.util.Properties;
@@ -692,7 +691,7 @@ public class DEM extends SmallBodyModel implements PropertyChangeListener
         return boundary;
     }
 
-    public void generateProfile(List<Point3D> xyzPointList,
+    public void generateProfile(List<Vector3D> xyzPointList,
             List<Double> profileValues, List<Double> profileDistances, int coloringIndex)
     {
         profileValues.clear();
@@ -707,8 +706,8 @@ public class DEM extends SmallBodyModel implements PropertyChangeListener
         // on the line closest to p. The distance from p to the start of the line is what
         // is placed in heights. Use SPICE's nplnpt function for this.
 
-        double[] first = xyzPointList.get(0).xyz;
-        double[] last = xyzPointList.get(xyzPointList.size()-1).xyz;
+        double[] first = xyzPointList.get(0).toArray();
+        double[] last = xyzPointList.get(xyzPointList.size()-1).toArray();
         double[] lindir = new double[3];
         lindir[0] = last[0] - first[0];
         lindir[1] = last[1] - first[1];
@@ -737,20 +736,22 @@ public class DEM extends SmallBodyModel implements PropertyChangeListener
         // Sample
         if(valuePerPoint != null || useDefaultProfile)
         {
-            for (Point3D p : xyzPointList)
+            for (Vector3D aPt : xyzPointList)
             {
-                int cellId = findClosestCell(p.xyz);
+                double[] xyzArr = aPt.toArray();
+
+                int cellId = findClosestCell(xyzArr);
 
                 double val;
                 if(useDefaultProfile)
                 {
                     // Compute the radius
-                    val = MathUtil.reclat(p.xyz).rad * 1000;
+                    val = MathUtil.reclat(xyzArr).rad * 1000;
                 }
                 else
                 {
                     // Interpolate to get the plate coloring
-                    val = PolyDataUtil.interpolateWithinCell(dem, valuePerPoint, cellId, p.xyz, idList);
+                    val = PolyDataUtil.interpolateWithinCell(dem, valuePerPoint, cellId, xyzArr, idList);
                 }
 
                 profileValues.add(val);
@@ -761,7 +762,7 @@ public class DEM extends SmallBodyModel implements PropertyChangeListener
                 }
                 else
                 {
-                    MathUtil.nplnpt(first, lindir, p.xyz, pnear, notused);
+                    MathUtil.nplnpt(first, lindir, xyzArr, pnear, notused);
                     double dist = 1000.0f * MathUtil.distanceBetween(first, pnear);
                     profileDistances.add(dist);
                 }

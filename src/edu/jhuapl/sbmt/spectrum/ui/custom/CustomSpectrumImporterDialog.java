@@ -401,10 +401,16 @@ public class CustomSpectrumImporterDialog extends JDialog
 
         SpectraType[] spectraTypes = SpectraTypeFactory.values();
         DefaultComboBoxModel<SpectraType> comboBoxModel = new DefaultComboBoxModel<SpectraType>();
+        System.out.println("CustomSpectrumImporterDialog: initComponents: instrument display name " + instrument.getDisplayName());
         for (SpectraType type : spectraTypes)
         {
         	String typeName = type.getDisplayName();
-        	if (typeName.contains("_")) typeName = typeName.substring(0, typeName.indexOf("_"));
+        	System.out.println("CustomSpectrumImporterDialog: initComponents: type name " + typeName);
+        	if (typeName.contains("_"))
+    		{
+        		comboBoxModel.removeElement(type);
+        		typeName = typeName.substring(0, typeName.indexOf("_"));
+    		}
         	if (instrument.getDisplayName().equals(typeName))
         		comboBoxModel.addElement(type);
         }

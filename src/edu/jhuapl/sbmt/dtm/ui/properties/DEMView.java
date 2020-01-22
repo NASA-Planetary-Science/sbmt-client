@@ -38,6 +38,8 @@ import javax.swing.JToggleButton;
 
 import org.jfree.chart.plot.DefaultDrawingSupplier;
 
+import com.google.common.collect.ImmutableList;
+
 import vtk.vtkObject;
 import vtk.vtkProp;
 import vtk.vtkRenderer;
@@ -54,15 +56,17 @@ import edu.jhuapl.saavtk.model.Model;
 import edu.jhuapl.saavtk.model.ModelManager;
 import edu.jhuapl.saavtk.model.ModelNames;
 import edu.jhuapl.saavtk.model.PolyhedralModel;
-import edu.jhuapl.saavtk.model.structure.Line;
 import edu.jhuapl.saavtk.model.structure.LineModel;
+import edu.jhuapl.saavtk.pick.ControlPointsPicker;
 import edu.jhuapl.saavtk.pick.PickManager;
-import edu.jhuapl.saavtk.pick.PickManager.PickMode;
 import edu.jhuapl.saavtk.pick.PickUtil;
+import edu.jhuapl.saavtk.pick.Picker;
 import edu.jhuapl.saavtk.popup.PopupManager;
 import edu.jhuapl.saavtk.popup.PopupMenu;
+import edu.jhuapl.saavtk.structure.PolyLineMode;
+import edu.jhuapl.saavtk.structure.PolyLine;
+import edu.jhuapl.saavtk.structure.io.StructureMiscUtil;
 import edu.jhuapl.saavtk.util.LatLon;
-import edu.jhuapl.saavtk.util.MathUtil;
 import edu.jhuapl.saavtk.util.Properties;
 import edu.jhuapl.sbmt.client.SbmtModelManager;
 import edu.jhuapl.sbmt.dtm.model.DEM;
@@ -86,9 +90,10 @@ public class DEMView extends JFrame implements ActionListener, PropertyChangeLis
     private static final String Color = "Color";
 
     // State vars
-    private final LineModel<Line> lineModel;
+    private final LineModel<PolyLine> lineModel;
     private final ModelManager modelManager;
     private final PickManager pickManager;
+    private final Picker priPicker;
     private final DEMPlot plot;
     private final DEM priDEM;
     private final DEMKey key;
@@ -144,7 +149,7 @@ public class DEMView extends JFrame implements ActionListener, PropertyChangeLis
         }
         priDEM.setColoringIndex(secDEM.getColoringIndex());
 
-        lineModel = new LineModel<>(priDEM, true);
+        lineModel = new LineModel<>(priDEM, PolyLineMode.PROFILE);
         lineModel.setMaximumVerticesPerLine(2);
         HashMap<ModelNames, Model> allModels = new HashMap<ModelNames, Model>();
         allModels.put(ModelNames.SMALL_BODY, priDEM);
@@ -162,6 +167,7 @@ public class DEMView extends JFrame implements ActionListener, PropertyChangeLis
 
         pickManager = new PickManager(renderer, modelManager, popupManager);
         PickUtil.installDefaultPickHandler(pickManager, statusBar, renderer, modelManager);
+        priPicker = new ControlPointsPicker<>(renderer, pickManager, modelManager, lineModel);
 
         refColorbar = new Colorbar(renderer);
 
@@ -272,25 +278,17 @@ public class DEMView extends JFrame implements ActionListener, PropertyChangeLis
         }
         else if (source == newButton)
         {
-            removeFaultyProfiles();
-
-            Line tmpItem = lineModel.addNewStructure();
-
-            // Set the color of this new structure
-            int idx = lineModel.getNumItems() - 1;
-            lineModel.setStructureColor(tmpItem, getDefaultColor(idx));
-
-            pickManager.setPickMode(PickMode.LINE_DRAW);
-            editButton.setSelected(true);
+           removeFaultyProfiles();
+           doActionAddNewLine();
         }
         else if (source == editButton)
         {
             removeFaultyProfiles();
 
-            if (editButton.isSelected())
-                pickManager.setPickMode(PickMode.LINE_DRAW);
-            else
-                pickManager.setPickMode(PickMode.DEFAULT);
+            Picker tmpPicker = null;
+            if (editButton.isSelected() == true)
+            	tmpPicker = priPicker;
+            pickManager.setActivePicker(tmpPicker);
         }
         else if (source == deleteAllButton)
         {
@@ -396,6 +394,32 @@ public class DEMView extends JFrame implements ActionListener, PropertyChangeLis
 
         setJMenuBar(menuBar);
     }
+
+   	/**
+   	 * Helper method that handles the "new profile" action.
+   	 * <P>
+   	 * The action will result in the (immediate) addition of a new line in our
+   	 * lineManager(line).
+   	 */
+   	private void doActionAddNewLine()
+   	{
+   		// Instantiate the new line
+   		int tmpId = StructureMiscUtil.calcNextId(lineModel);
+   		List<LatLon> controlPointL = new ArrayList<>();
+   		PolyLine tmpItem = new PolyLine(tmpId, null, controlPointL);
+   		tmpItem.setColor(getDefaultColor(tmpId));
+
+   		// Install the line
+   		List<PolyLine> fullL = new ArrayList<>(lineModel.getAllItems());
+   		fullL.add(tmpItem);
+
+   		lineModel.setAllItems(fullL);
+   		lineModel.setActivatedItem(tmpItem);
+
+   		// Update other state vars
+   		pickManager.setActivePicker(priPicker);
+   		editButton.setSelected(true);
+   	}
 
     /**
      * Helper method that will synchronize the DEM(s) to reflect the coloring as
@@ -513,7 +537,6 @@ public class DEMView extends JFrame implements ActionListener, PropertyChangeLis
                 secDEM.setCurrentColoringRange(i, priDEM.getCurrentColoringRange(i));
 
             // Reset the primary model's coloring range to the defaults
-//            double[] tmpArr = dem.getCurrentColoringRange(coloringIndex);
             double[] tmpArr = priDEM.getDefaultColoringRange(coloringIndex);
             secDEM.setCurrentColoringRange(coloringIndex, tmpArr);
         }
@@ -547,17 +570,19 @@ public class DEMView extends JFrame implements ActionListener, PropertyChangeLis
 
         String eol = System.getProperty("line.separator");
 
-        int numProfiles = lineModel.getNumItems();
-        for (int i=0; i<numProfiles; ++i)
+        int tmpCnt = -1;
+        for (PolyLine aLine : lineModel.getAllItems())
         {
-            Line line = lineModel.getStructure(i);
-            if (line.controlPointIds.size() != 2)
+            tmpCnt++;
+
+            // Ignore invalid profiles
+            if (aLine.getControlPoints().size() != 2)
                 continue;
 
-            LatLon ll0 = line.getControlPoints().get(0);
-            LatLon ll1 = line.getControlPoints().get(1);
-            Color color = line.getColor();
-            out.write(eol + Profile + "=" + i + eol);
+            LatLon ll0 = aLine.getControlPoints().get(0);
+            LatLon ll1 = aLine.getControlPoints().get(1);
+            Color color = aLine.getColor();
+            out.write(eol + Profile + "=" + tmpCnt + eol);
             out.write(StartLatitude + "=" + ll0.lat + eol);
             out.write(StartLongitude + "=" + ll0.lon + eol);
             out.write(StartRadius + "=" + ll0.rad + eol);
@@ -569,7 +594,7 @@ public class DEMView extends JFrame implements ActionListener, PropertyChangeLis
                     color.getGreen() + " " +
                     color.getBlue() + " " +
                     color.getAlpha() + eol);
-            out.write(plot.getProfileAsString(i));
+            out.write(plot.getProfileAsString(aLine));
         }
 
         out.close();
@@ -585,10 +610,11 @@ public class DEMView extends JFrame implements ActionListener, PropertyChangeLis
 
         String line;
 
-        double[] start = new LatLon().get();
-        double[] end = new LatLon().get();
+        double[] llBegArr = new LatLon().get();
+        double[] llEndArr = new LatLon().get();
         int lineId = 0;
 
+        List<PolyLine> itemL = new ArrayList<>();
         while ((line = in.readLine()) != null)
         {
             line = line.trim();
@@ -606,17 +632,17 @@ public class DEMView extends JFrame implements ActionListener, PropertyChangeLis
             String value = tokens[1].trim();
 
             if (StartLatitude.equals(key))
-                start[0] = Double.parseDouble(value);
+                llBegArr[0] = Double.parseDouble(value);
             else if (StartLongitude.equals(key))
-                start[1] = Double.parseDouble(value);
+                llBegArr[1] = Double.parseDouble(value);
             else if (StartRadius.equals(key))
-                start[2] = Double.parseDouble(value);
+                llBegArr[2] = Double.parseDouble(value);
             else if (EndLatitude.equals(key))
-                end[0] = Double.parseDouble(value);
+                llEndArr[0] = Double.parseDouble(value);
             else if (EndLongitude.equals(key))
-                end[1] = Double.parseDouble(value);
+                llEndArr[1] = Double.parseDouble(value);
             else if (EndRadius.equals(key))
-                end[2] = Double.parseDouble(value);
+                llEndArr[2] = Double.parseDouble(value);
             else if (Color.equals(key))
             {
                 String[] c = value.split("\\s+");
@@ -626,20 +652,20 @@ public class DEMView extends JFrame implements ActionListener, PropertyChangeLis
                 int aVal = Integer.parseInt(c[3]);
                 Color color = new Color(rVal, gVal, bVal, aVal);
 
-                double[] p1 = MathUtil.latrec(new LatLon(start));
-                double[] p2 = MathUtil.latrec(new LatLon(end));
+                LatLon begLL = new LatLon(llBegArr);
+                LatLon endLL = new LatLon(llEndArr);
+                List<LatLon> controlPointL = ImmutableList.of(begLL, endLL);
+                PolyLine tmpItem = new PolyLine(lineId, null, controlPointL);
+                tmpItem.setColor(color);
+                itemL.add(tmpItem);
 
-                Line tmpItem = lineModel.addNewStructure();
-                lineModel.activateStructure(tmpItem);
-                lineModel.setStructureColor(tmpItem, color);
-                lineModel.insertVertexIntoActivatedStructure(p1);
-                lineModel.insertVertexIntoActivatedStructure(p2);
-
-                ++lineId;
+                lineId++;
             }
         }
 
         in.close();
+
+        lineModel.setAllItems(itemL);
     }
 
  	/**
@@ -652,20 +678,20 @@ public class DEMView extends JFrame implements ActionListener, PropertyChangeLis
  	 */
      private void removeFaultyProfiles()
      {
-    	 List<Line> badItemL = new ArrayList<>();
-    	 for (Line aItem : lineModel.getAllItems())
+    	 List<PolyLine> badItemL = new ArrayList<>();
+    	 for (PolyLine aItem : lineModel.getAllItems())
     	 {
     		 if (aItem.getControlPoints().size() != 2)
     			 badItemL.add(aItem);
     	 }
 
-    	 lineModel.removeStructures(badItemL);
+    	 lineModel.removeItems(badItemL);
      }
 
     private void removeAllProfiles()
     {
         lineModel.removeAllStructures();
-        pickManager.setPickMode(PickMode.DEFAULT);
+        pickManager.setActivePicker(null);
         editButton.setSelected(false);
     }
 

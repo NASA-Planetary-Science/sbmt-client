@@ -12,7 +12,6 @@ import javax.swing.SwingWorker;
 import javax.swing.ToolTipManager;
 
 import vtk.vtkJavaGarbageCollector;
-import vtk.vtkNativeLibrary;
 
 import edu.jhuapl.saavtk.config.ViewConfig;
 import edu.jhuapl.saavtk.gui.Console;
@@ -22,6 +21,7 @@ import edu.jhuapl.saavtk.model.ShapeModelType;
 import edu.jhuapl.saavtk.util.Configuration;
 import edu.jhuapl.saavtk.util.Debug;
 import edu.jhuapl.saavtk.util.FileCache;
+import edu.jhuapl.saavtk.util.NativeLibraryLoader;
 import edu.jhuapl.sbmt.client.ShapeModelPopulation;
 import edu.jhuapl.sbmt.spectrum.model.driver.SbmtTesterMultiMissionTool.Mission;
 
@@ -45,9 +45,7 @@ public class SbmtTestRunnable implements Runnable
 
 			configureMissionBodies(mission);
 
-			//  NativeLibraryLoader.loadVtkLibraries();
-
-			vtkNativeLibrary.LoadAllNativeLibraries();
+			NativeLibraryLoader.loadAllVtkLibraries();
 
 			vtkJavaGarbageCollector garbageCollector = new vtkJavaGarbageCollector();
 			//garbageCollector.SetDebug(true);
