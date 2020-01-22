@@ -231,7 +231,6 @@ public class RGBColoringPanel<S extends BasicSpectrum> extends JPanel implements
         getGreenMaxSpinner().setValue(model.getGreenMaxVal());
         getBlueMaxSpinner().setValue(model.getBlueMaxVal());
 
-        System.out.println("RGBColoringPanel: setupComboBoxes: red size " + getRedComboBox().getPreferredSize());
         getRedComboBox().setPreferredSize(preferredComboSize);
         getRedComboBox().setMaximumSize(maxComboSize);
         getRedComboBox().setMinimumSize(minComboSize);

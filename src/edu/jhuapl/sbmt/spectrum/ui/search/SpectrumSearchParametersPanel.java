@@ -71,12 +71,14 @@ public class SpectrumSearchParametersPanel  extends JPanel
     private JCheckBox fullCheckBox;
     private JCheckBox partialCheckBox;
     private JCheckBox degenerateCheckBox;
+    private boolean isHierarchical;
 
     public SpectrumSearchParametersPanel(boolean isHierarchical)
     {
         setBorder(new TitledBorder(null, "Search Parameters",
                 TitledBorder.LEADING, TitledBorder.TOP, null, null));
         setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
+        this.isHierarchical = isHierarchical;
         if (isHierarchical) initHierarchicalSearch();
         else initParameterSearch();
 
@@ -108,8 +110,8 @@ public class SpectrumSearchParametersPanel  extends JPanel
 
     private void initParameterSearch()
     {
-        Component verticalStrut_10 = Box.createVerticalStrut(5);
-        add(verticalStrut_10);
+//        Component verticalStrut_10 = Box.createVerticalStrut(5);
+//        add(verticalStrut_10);
 
         JPanel choicePanel = new JPanel();
         add(choicePanel);
@@ -130,8 +132,8 @@ public class SpectrumSearchParametersPanel  extends JPanel
         parametersRadioButton.setSelected(true);
 
 
-        Component verticalStrut_9 = Box.createVerticalStrut(20);
-        add(verticalStrut_9);
+//        Component verticalStrut_9 = Box.createVerticalStrut(20);
+//        add(verticalStrut_9);
 
         final JPanel filenamePanel = new JPanel();
         filenamePanel.setVisible(false);
@@ -224,7 +226,7 @@ public class SpectrumSearchParametersPanel  extends JPanel
         Component horizontalGlue_9 = Box.createHorizontalGlue();
         panel_2.add(horizontalGlue_9);
 
-        Component verticalStrut_7 = Box.createVerticalStrut(20);
+        Component verticalStrut_7 = Box.createVerticalStrut(10);
         parametersPanel.add(verticalStrut_7);
 
         JPanel panel_3 = new JPanel();
@@ -246,7 +248,7 @@ public class SpectrumSearchParametersPanel  extends JPanel
         Component horizontalGlue_6 = Box.createHorizontalGlue();
         panel_3.add(horizontalGlue_6);
 
-        Component verticalStrut_6 = Box.createVerticalStrut(20);
+        Component verticalStrut_6 = Box.createVerticalStrut(10);
         parametersPanel.add(verticalStrut_6);
 
         JPanel panel_4 = new JPanel();
@@ -278,7 +280,7 @@ public class SpectrumSearchParametersPanel  extends JPanel
         Component horizontalGlue_1 = Box.createHorizontalGlue();
         panel_4.add(horizontalGlue_1);
 
-        Component verticalStrut_5 = Box.createVerticalStrut(10);
+        Component verticalStrut_5 = Box.createVerticalStrut(5);
         parametersPanel.add(verticalStrut_5);
 
         JPanel panel_6 = new JPanel();
@@ -310,7 +312,7 @@ public class SpectrumSearchParametersPanel  extends JPanel
         Component horizontalGlue_3 = Box.createHorizontalGlue();
         panel_6.add(horizontalGlue_3);
 
-        Component verticalStrut_3 = Box.createVerticalStrut(10);
+        Component verticalStrut_3 = Box.createVerticalStrut(5);
         parametersPanel.add(verticalStrut_3);
 
         JPanel panel_7 = new JPanel();
@@ -342,7 +344,7 @@ public class SpectrumSearchParametersPanel  extends JPanel
         Component horizontalGlue_4 = Box.createHorizontalGlue();
         panel_7.add(horizontalGlue_4);
 
-        Component verticalStrut_2 = Box.createVerticalStrut(10);
+        Component verticalStrut_2 = Box.createVerticalStrut(5);
         parametersPanel.add(verticalStrut_2);
 
         JPanel panel_8 = new JPanel();
@@ -378,8 +380,8 @@ public class SpectrumSearchParametersPanel  extends JPanel
         parametersPanel.add(auxPanel);
         auxPanel.setLayout(new BoxLayout(auxPanel, BoxLayout.Y_AXIS));
 
-        Component verticalStrut = Box.createVerticalStrut(20);
-        add(verticalStrut);
+//        Component verticalStrut = Box.createVerticalStrut(20);
+//        add(verticalStrut);
 
 
     }
@@ -582,15 +584,27 @@ public class SpectrumSearchParametersPanel  extends JPanel
     }
 
     @Override
+	public Dimension getMinimumSize()
+	{
+    	if (isHierarchical)
+    		return new Dimension(650, 175);
+    	return new Dimension(650, 325);
+	}
+
+    @Override
 	public Dimension getPreferredSize()
 	{
-		return new Dimension(650, 175);
+    	if (isHierarchical)
+    		return new Dimension(650, 175);
+    	return new Dimension(650, 325);
 	}
 
     @Override
 	public Dimension getMaximumSize()
 	{
-		return new Dimension(650, 175);
+    	if (isHierarchical)
+    		return new Dimension(650, 175);
+    	return new Dimension(650, 325);
 	}
 
 }
