@@ -1,5 +1,6 @@
 package edu.jhuapl.sbmt.spectrum.controllers.standard;
 
+import java.awt.Dimension;
 import java.io.File;
 import java.util.List;
 
@@ -131,6 +132,7 @@ public class SpectrumResultsTableController<S extends BasicSpectrum>
         // setup Image Results Table view components
         panel.getNumberOfBoundariesComboBox().setModel(new DefaultComboBoxModel(new String[] { "10", "20", "30", "40", "50", "60", "70", "80", "90", "100", "110", "120", "130", "140", "150", "160", "170", "180", "190", "200", "210", "220", "230", "240", "250", " " }));
         panel.getNumberOfBoundariesComboBox().addActionListener(evt -> numberOfBoundariesComboBoxActionPerformed());
+        panel.getNumberOfBoundariesComboBox().setMaximumSize(new Dimension(75, 40));
         model.setNumberOfBoundariesToShow(10);
 
         panel.getPrevButton().setText("<");
