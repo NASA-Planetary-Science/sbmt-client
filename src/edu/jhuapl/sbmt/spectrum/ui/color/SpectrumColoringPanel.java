@@ -1,5 +1,6 @@
 package edu.jhuapl.sbmt.spectrum.ui.color;
 
+import java.awt.Dimension;
 import java.util.Hashtable;
 
 import javax.swing.BoxLayout;
@@ -43,6 +44,7 @@ public class SpectrumColoringPanel<S extends BasicSpectrum> extends JPanel
         coloringDetailPanel = new JPanel();
         add(coloringDetailPanel);
         coloringDetailPanel.setLayout(new BoxLayout(coloringDetailPanel, BoxLayout.Y_AXIS));
+
     }
 
     public void switchToPanelForColoringStyle(SpectrumColoringStyle style)
@@ -66,6 +68,18 @@ public class SpectrumColoringPanel<S extends BasicSpectrum> extends JPanel
     public void registerColoringPanel(SpectrumColoringStyle style, ISpectrumColoringPanel panel)
 	{
 		coloringPanels.put(style, panel);
+	}
+
+    @Override
+	public Dimension getPreferredSize()
+	{
+		return new Dimension(650, 200);
+	}
+
+    @Override
+	public Dimension getMaximumSize()
+	{
+		return new Dimension(650, 200);
 	}
 
 }

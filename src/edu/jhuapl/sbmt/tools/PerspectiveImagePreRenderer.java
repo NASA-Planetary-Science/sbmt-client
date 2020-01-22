@@ -158,7 +158,7 @@ public class PerspectiveImagePreRenderer
 
         // VTK
         System.setProperty("java.awt.headless", "true");
-        NativeLibraryLoader.loadVtkLibrariesHeadless();
+        NativeLibraryLoader.loadHeadlessVtkLibraries();
 
         SmallBodyViewConfig config = SmallBodyViewConfig.getSmallBodyConfig(body, type);
         ImagingInstrument instrument = config.imagingInstruments[imagerIndex];
