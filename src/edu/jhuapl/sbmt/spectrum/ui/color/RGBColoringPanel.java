@@ -46,7 +46,12 @@ public class RGBColoringPanel<S extends BasicSpectrum> extends JPanel implements
     private JLabel blueMaxLabel;
     private ISpectralInstrument instrument;
     private RGBSpectrumColorer<S> model;
-
+    private Dimension preferredSpinnerSize;
+    private Dimension minSpinnerSize;
+    private Dimension maxSpinnerSize;
+    private Dimension preferredComboSize;
+    private Dimension minComboSize;
+    private Dimension maxComboSize;
 
 	public RGBColoringPanel(RGBSpectrumColorer<S> model, ISpectralInstrument instrument)
 	{
@@ -76,14 +81,18 @@ public class RGBColoringPanel<S extends BasicSpectrum> extends JPanel implements
 
         redComboBox = new JComboBox<String>();
         panel_11.add(redComboBox);
-
+        panel_11.add(Box.createHorizontalGlue());
         JLabel lblMin = new JLabel("Min");
         panel_11.add(lblMin);
 
+        preferredComboSize = new Dimension(250, 28);
+        minComboSize = new Dimension(250, 28);
+        maxComboSize = new Dimension(250, 28);
+
         SpinnerNumberModel spinnerNumberModel = new SpinnerNumberModel(Double.valueOf(0.05d), null, null, Double.valueOf(0.01d));
-        Dimension preferredSpinnerSize = new Dimension(100, 28);
-        Dimension minSpinnerSize = new Dimension(36, 22);
-        Dimension maxSpinnerSize = new Dimension(100, 22);
+        preferredSpinnerSize = new Dimension(100, 28);
+        minSpinnerSize = new Dimension(36, 22);
+        maxSpinnerSize = new Dimension(100, 22);
 
         redMinSpinner = new JSpinner();
         redMinSpinner.setModel(spinnerNumberModel);
@@ -111,7 +120,7 @@ public class RGBColoringPanel<S extends BasicSpectrum> extends JPanel implements
 
         greenComboBox = new JComboBox<String>();
         panel_12.add(greenComboBox);
-
+        panel_12.add(Box.createHorizontalGlue());
         greenMinLabel = new JLabel("Min");
         panel_12.add(greenMinLabel);
 
@@ -141,7 +150,7 @@ public class RGBColoringPanel<S extends BasicSpectrum> extends JPanel implements
 
         blueComboBox = new JComboBox<String>();
         panel_13.add(blueComboBox);
-
+        panel_13.add(Box.createHorizontalGlue());
         blueMinLabel = new JLabel("Min");
         panel_13.add(blueMinLabel);
 
@@ -221,6 +230,18 @@ public class RGBColoringPanel<S extends BasicSpectrum> extends JPanel implements
         getRedMaxSpinner().setValue(model.getRedMaxVal());
         getGreenMaxSpinner().setValue(model.getGreenMaxVal());
         getBlueMaxSpinner().setValue(model.getBlueMaxVal());
+
+        getRedComboBox().setPreferredSize(preferredComboSize);
+        getRedComboBox().setMaximumSize(maxComboSize);
+        getRedComboBox().setMinimumSize(minComboSize);
+
+        getGreenComboBox().setPreferredSize(preferredComboSize);
+        getGreenComboBox().setMaximumSize(maxComboSize);
+        getGreenComboBox().setMinimumSize(minComboSize);
+
+        getBlueComboBox().setPreferredSize(preferredComboSize);
+        getBlueComboBox().setMaximumSize(maxComboSize);
+        getBlueComboBox().setMinimumSize(minComboSize);
     }
 
     /**
