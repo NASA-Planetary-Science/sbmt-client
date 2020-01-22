@@ -78,6 +78,14 @@ public class SmallBodyViewConfigMetadataIO implements MetadataManager
 
         String rootDir = "/Users/steelrj1/Desktop/configs" + metadataVersion + "/";
 
+        // Create the directory just in case. Then make sure it exists before proceeding.
+        File rootDirFile = new File(rootDir);
+        rootDirFile.mkdirs();
+        if (!rootDirFile.isDirectory())
+        {
+            throw new IOException("Unable to create root config directory " + rootDir);
+        }
+
         List<ViewConfig> builtInConfigs = SmallBodyViewConfig.getBuiltInConfigs();
         System.out.println("SmallBodyViewConfigMetadataIO: main: walking through Configs");
         for (ViewConfig config : builtInConfigs)
