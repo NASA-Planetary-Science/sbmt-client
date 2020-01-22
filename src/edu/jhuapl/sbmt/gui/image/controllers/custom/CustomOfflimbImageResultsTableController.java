@@ -404,7 +404,7 @@ public class CustomOfflimbImageResultsTableController extends CustomImageResults
             if (column == offlimbTableView.getShowFootprintColumnIndex() || column == offlimbTableView.getOffLimbIndex() || column == offlimbTableView.getFrusColumnIndex())
             {
                 String name = imageRawResults.get(row).get(0);
-                ImageKeyInterface key = imageSearchModel.createImageKey(name, imageSearchModel.getImageSourceOfLastQuery(), instrument);
+                ImageKeyInterface key = imageSearchModel.createImageKey(name.substring(0, name.length()-4), imageSearchModel.getImageSourceOfLastQuery(), instrument);
                 ImageCollection images = (ImageCollection)imageSearchModel.getModelManager().getModel(imageSearchModel.getImageCollectionModelName());
                 return images.containsImage(key);
             }
