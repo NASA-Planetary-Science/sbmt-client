@@ -2,6 +2,7 @@ package edu.jhuapl.sbmt.spectrum.ui.table;
 
 import java.awt.Color;
 import java.awt.Component;
+import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.List;
@@ -121,6 +122,7 @@ public class SpectrumResultsTableView<S extends BasicSpectrum> extends JPanel
 
         panel.add(lblNumberBoundaries);
 
+        numberOfBoundariesComboBox.setPreferredSize(new Dimension(numberOfBoundariesComboBox.getWidth(), lblNumberBoundaries.getHeight()));
         panel.add(numberOfBoundariesComboBox);
 
         panel.add(prevButton);
