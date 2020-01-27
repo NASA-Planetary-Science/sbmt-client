@@ -30,7 +30,7 @@ import edu.jhuapl.sbmt.gui.image.model.ImageKey;
 import edu.jhuapl.sbmt.model.bennu.imaging.OcamsFlightImage;
 import edu.jhuapl.sbmt.model.image.ImageKeyInterface;
 import edu.jhuapl.sbmt.model.image.ImageSource;
-import edu.jhuapl.sbmt.model.image.PerspectiveImage;
+import edu.jhuapl.sbmt.model.image.perspectiveImage.PerspectiveImage;
 
 public class ServerOffLimbPlaneCalculator
 {
@@ -77,11 +77,11 @@ public class ServerOffLimbPlaneCalculator
         // (2a) determine ray-cast depth; currently implemented as camera-to-origin distance plus body bounding-box diagonal length -- that way rays will always extend from the camera position past the entire body
         scPos=new Vector3D(spacecraftPosition);
         int currentSlice = img.getCurrentSlice();
-        if (img.minFrustumDepth[currentSlice]==0)
-            img.minFrustumDepth[currentSlice]=0;
-        if (img.maxFrustumDepth[currentSlice]==0)
-            img.maxFrustumDepth[currentSlice]=scPos.getNorm()+img.getSmallBodyModel().getBoundingBoxDiagonalLength();
-        maxRayDepth=(img.minFrustumDepth[currentSlice]+img.maxFrustumDepth[currentSlice]);
+        if (img.getMinFrustumDepth(currentSlice)==0)
+            img.setMinFrustumDepth(currentSlice, 0);
+        if (img.getMaxFrustumDepth(currentSlice)==0)
+            img.setMaxFrustumDepth(currentSlice, scPos.getNorm()+img.getSmallBodyModel().getBoundingBoxDiagonalLength());
+        maxRayDepth=(img.getMinFrustumDepth(currentSlice)+img.getMaxFrustumDepth(currentSlice));
         ffacx=maxRayDepth*Math.tan(Math.toRadians(fovx/2));    // img is the scaling factor in the plane perpendicular to the boresight, which maps unit vectors from the camera position onto the chosen max depth, in frustum coordinates, thus forming a ray
         ffacy=maxRayDepth*Math.tan(Math.toRadians(fovy/2));
 
