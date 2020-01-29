@@ -32,8 +32,12 @@ import picocli.CommandLine.Parameters;
 /**
  * Main class that performs accessibility checks for supplied lists of URL
  * segments descending from a top-level SBMT root URL. The output is one line
- * per URL containing the original input URL segment, the
- * {@link UrlStatus} as a string, the content length (long) and last-modified time (long).
+ * per URL containing the original input URL segment, the {@link UrlStatus} as a
+ * string, the content length (long) and last-modified time (long).
+ * <p>
+ * VERY IMPORTANT: this class needs to be kept in synch with the way
+ * {@link DownloadableFileManager} works to formulate the queries and interpret
+ * the results of what this class does.
  *
  * @author peachjm1
  *
