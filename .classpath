@@ -14,5 +14,10 @@
 	<classpathentry kind="lib" path="lib/drmaa.jar"/>
 	<classpathentry kind="lib" path="lib/altwg.jar"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.junit.JUNIT_CONTAINER/5"/>
+	<classpathentry kind="lib" path="/saavtk/lib/commons-text-1.8.jar" sourcepath="/saavtk/lib/commons-text-1.8-sources.jar">
+		<attributes>
+			<attribute name="javadoc_location" value="jar:platform:/resource/saavtk/lib/commons-text-1.8-javadoc.jar!/"/>
+		</attributes>
+	</classpathentry>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

@@ -10,6 +10,7 @@ import java.util.UUID;
 import java.util.concurrent.Callable;
 
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.text.StringEscapeUtils;
 
 import com.google.common.collect.ImmutableList;
 
@@ -70,6 +71,12 @@ public class QueryFileAccessibility implements Callable<Integer>
     protected int queryFiles() throws IOException
     {
         FileCache.setSilenceInfoMessages(true);
+
+        // Unescape things that were escaped.
+        rootURLString = StringEscapeUtils.unescapeHtml4(rootURLString);
+        userName = StringEscapeUtils.unescapeHtml4(userName);
+        password = StringEscapeUtils.unescapeHtml4(password);
+        inputFile = StringEscapeUtils.unescapeHtml4(inputFile);
 
         // Get a unique location for the file cache and point Configuration to it.
         UUID uniqueCacheDir = UUID.randomUUID();
@@ -148,6 +155,8 @@ public class QueryFileAccessibility implements Callable<Integer>
         {
             while (reader.ready())
             {
+                // Decode pipes as colons. They were encoded to get the query string through the web
+                // server, which rejects queries containing colons.
                 String urlString = reader.readLine().replace("|",  ":");
                 builder.add(urlString);
                 fileManager.getState(urlString);
@@ -164,7 +173,7 @@ public class QueryFileAccessibility implements Callable<Integer>
 
         for (String urlString : urlStrings)
         {
-            String decodedUrlString = urlString;
+            String decodedUrlString = StringEscapeUtils.unescapeHtml4(urlString);
             UrlState state = fileManager.getState(decodedUrlString).getUrlState();
             System.out.println(decodedUrlString + "," + state.getStatus() + "," + state.getContentLength() + "," + state.getLastModified());
         }
