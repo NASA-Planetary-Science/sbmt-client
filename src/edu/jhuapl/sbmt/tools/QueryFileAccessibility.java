@@ -6,6 +6,8 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
 import java.util.UUID;
 import java.util.concurrent.Callable;
 
@@ -31,15 +33,21 @@ import picocli.CommandLine.Parameters;
 /**
  * Main class that performs accessibility checks for supplied lists of URL
  * segments descending from a top-level SBMT root URL. The output is one line
- * per URL containing the original input URL segment, the
- * {@link UrlStatus} as a string, the content length (long) and last-modified time (long).
+ * per URL containing the original input URL segment, the {@link UrlStatus} as a
+ * string, the content length (long) and last-modified time (long).
+ * <p>
+ * VERY IMPORTANT: this class needs to be kept in synch with the way
+ * {@link DownloadableFileManager} works to formulate the queries and interpret
+ * the results of what this class does.
  *
  * @author peachjm1
  *
  */
 public class QueryFileAccessibility implements Callable<Integer>
 {
-    private final SafeURLPaths SAFE_URL_PATHS = SafeURLPaths.instance();
+    private static final String UrlDecoding = DownloadableFileManager.getURLEncoding();
+
+    private static final SafeURLPaths SAFE_URL_PATHS = SafeURLPaths.instance();
 
     @Parameters(index = "0", description = "The root URL from which all local file paths are determined")
     private String rootURLString;
@@ -59,6 +67,9 @@ public class QueryFileAccessibility implements Callable<Integer>
     @Option(names = { "-d", "-debug", "--debug" }, description = "Enable/disable debugging")
     private boolean debug = false;
 
+    @Option(names = { "-e", "-encode", "--encode" }, description = "Enable/disable URL decoding (true when used as back-end of web page, false for running from command line)")
+    private boolean decodingEnabled = true;
+
     @Override
     public Integer call() throws Exception
     {
@@ -70,6 +81,11 @@ public class QueryFileAccessibility implements Callable<Integer>
     protected int queryFiles() throws IOException
     {
         FileCache.setSilenceInfoMessages(true);
+
+//        rootURLString = decodeIfEnabled(rootURLString);
+        userName = decodeIfEnabled(userName);
+        password = decodeIfEnabled(password);
+//        inputFile = decodeIfEnabled(inputFile);
 
         // Get a unique location for the file cache and point Configuration to it.
         UUID uniqueCacheDir = UUID.randomUUID();
@@ -96,7 +112,7 @@ public class QueryFileAccessibility implements Callable<Integer>
                 Debug.err().println("Reading URL segments from file " + inputFile);
                 try (InputStream stream = new FileInputStream(inputFile))
                 {
-                    result = queryFilesFromStream(stream);
+                    result = queryFilesFromStream(stream, false);
                 }
             }
             else if (testMode)
@@ -107,7 +123,7 @@ public class QueryFileAccessibility implements Callable<Integer>
             else
             {
                 Debug.err().println("Checking URL segments supplied on stdin");
-                result = queryFilesFromStream(System.in);
+                result = queryFilesFromStream(System.in, true);
             }
         }
         finally
@@ -140,7 +156,7 @@ public class QueryFileAccessibility implements Callable<Integer>
         return query(fileManager, builder.build());
     }
 
-    protected int queryFilesFromStream(InputStream stream) throws IOException
+    protected int queryFilesFromStream(InputStream stream, boolean decodeIfNecessary) throws IOException
     {
         DownloadableFileManager fileManager = FileCache.instance();
         ImmutableList.Builder<String> builder = ImmutableList.builder();
@@ -148,7 +164,11 @@ public class QueryFileAccessibility implements Callable<Integer>
         {
             while (reader.ready())
             {
-                String urlString = reader.readLine().replace("|",  ":");
+                String urlString = reader.readLine();
+                if (decodeIfNecessary)
+                {
+                    urlString = decodeIfEnabled(urlString);
+                }
                 builder.add(urlString);
                 fileManager.getState(urlString);
             }
@@ -171,6 +191,18 @@ public class QueryFileAccessibility implements Callable<Integer>
 
         return 0;
 
+    }
+
+    protected String decodeIfEnabled(String string)
+    {
+        try
+        {
+            return decodingEnabled ? URLDecoder.decode(string, UrlDecoding) : string;
+        }
+        catch (UnsupportedEncodingException e)
+        {
+            throw new AssertionError(e);
+        }
     }
 
     public static void main(String[] args)
