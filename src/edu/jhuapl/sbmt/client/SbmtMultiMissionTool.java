@@ -553,7 +553,7 @@ public class SbmtMultiMissionTool
 	                }
 	            }
 	        });
-	        if (!FileCache.instance().getRootInfo().getState().isAccessible())
+	        if (!FileCache.instance().getRootState().isAccessible())
 	        {
 	            FileCache.setOfflineMode(true, Configuration.getCacheDir());
 	            String message = "Unable to find server " + dataRootUrl + ". Starting in offline mode. See console log for more information.";
