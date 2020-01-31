@@ -132,9 +132,7 @@ public class ImagePopupMenu<K extends ImageKeyInterface> extends PopupMenu
             }
         }
 
-        saveToDiskMenuItem = new JMenuItem(new SaveImageAction());
-        saveToDiskMenuItem.setText("Save FITS Image...");
-        this.add(saveToDiskMenuItem);
+
 
         saveBackplanesMenuItem = new JMenuItem(new SaveBackplanesAction());
         saveBackplanesMenuItem.setText("Generate Backplanes...");
@@ -155,12 +153,16 @@ public class ImagePopupMenu<K extends ImageKeyInterface> extends PopupMenu
         exportENVIImageMenuItem.setText("Export ENVI Image...");
         this.add(exportENVIImageMenuItem);
 
+        saveToDiskMenuItem = new JMenuItem(new SaveImageAction());
+        saveToDiskMenuItem.setText("Export FITS Image...");
+        this.add(saveToDiskMenuItem);
+
         exportInfofileMenuItem = new JMenuItem(new ExportInfofileAction());
         exportInfofileMenuItem.setText("Export INFO File...");
         this.add(exportInfofileMenuItem);
 
         exportFitsInfoPairsMenuItem = new JMenuItem(new ExportFitsInfoPairsAction());
-        exportFitsInfoPairsMenuItem.setText("Export FITS/Info File(s)");
+        exportFitsInfoPairsMenuItem.setText("Export FITS/Info File(s)...");
         this.add(exportFitsInfoPairsMenuItem);
 
         changeNormalOffsetMenuItem = new JMenuItem(new ChangeNormalOffsetAction());
@@ -221,6 +223,7 @@ public class ImagePopupMenu<K extends ImageKeyInterface> extends PopupMenu
         boolean enableShowImageInfo = false;
         boolean enableSaveBackplanes = false;
         boolean enableSaveToDisk = false;
+        boolean enableBulkSaveToDisk = false;
         boolean enableChangeNormalOffset = false;
         boolean selectShowFrustum = true;
         boolean enableShowFrustum = true;
@@ -263,7 +266,7 @@ public class ImagePopupMenu<K extends ImageKeyInterface> extends PopupMenu
                 enableChangeOpacity = containsImage;
             }
 
-            if (imageKeys.size() >= 1) enableSaveToDisk = containsImage;
+            if (imageKeys.size() >= 1) enableBulkSaveToDisk = containsImage;
 
             if (containsImage)
             {
@@ -381,6 +384,7 @@ public class ImagePopupMenu<K extends ImageKeyInterface> extends PopupMenu
         hideImageMenuItem.setSelected(selectHideImage);
         hideImageMenuItem.setEnabled(enableHideImage);
         colorMenu.setEnabled(enableBoundaryColor);
+        exportFitsInfoPairsMenuItem.setEnabled(enableBulkSaveToDisk);
     }
 
     public class MapImageAction extends AbstractAction
@@ -505,70 +509,70 @@ public class ImagePopupMenu<K extends ImageKeyInterface> extends PopupMenu
     {
         public void actionPerformed(ActionEvent e)
         {
-        	JFileChooser outputDirChooser = new JFileChooser();
-        	outputDirChooser.setDialogTitle("Save FITS File(s) to...");
-        	outputDirChooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
-        	outputDirChooser.setAcceptAllFileFilterUsed(false);
-
-        	if (outputDirChooser.showOpenDialog(ImagePopupMenu.this) != JFileChooser.APPROVE_OPTION) return;
-        	File outDir = outputDirChooser.getSelectedFile();
-        	System.out.println("ImagePopupMenu.SaveImageAction: actionPerformed: outdir " + outDir);
-        	for (ImageKeyInterface imageKey : imageKeys)
-        	{
-        		if (!(imageCollection.getImage(imageKey) instanceof PerspectiveImage)) continue;
-	            File file = null;
-	            try
-	            {
-	            	//save fits
-	                PerspectiveImage image = (PerspectiveImage)imageCollection.getImage(imageKey);
-	                String path = image.getFitFileFullPath();
-	                String extension = FilenameUtils.getExtension(path);
-	                String imageFileName = FilenameUtils.getBaseName(path);
-//	                file = new File(outDir, imageKey.getImageFilename().substring(imageKey.getImageFilename().lastIndexOf("/")) + extension);
-                    file = new File(outDir, imageFileName + "." + extension);
-	                File fitFile = FileCache.getFileFromServer(imageKey.getName() + "." + extension);
-                    FileUtil.copyFile(fitFile, file);
-	            }
-	            catch(Exception ex)
-	            {
-	                JOptionPane.showMessageDialog(JOptionPane.getFrameForComponent(invoker),
-	                        "Unable to save file to " + file.getAbsolutePath(),
-	                        "Error Saving File",
-	                        JOptionPane.ERROR_MESSAGE);
-	                ex.printStackTrace();
-	            }
-
-        	}
-
-//            if (imageKeys.size() != 1)
-//                return;
-//            ImageKeyInterface imageKey = imageKeys.get(0);
+//        	JFileChooser outputDirChooser = new JFileChooser();
+//        	outputDirChooser.setDialogTitle("Save FITS File(s) to...");
+//        	outputDirChooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+//        	outputDirChooser.setAcceptAllFileFilterUsed(false);
 //
-//            File file = null;
-//            try
-//            {
-//                imageCollection.addImage(imageKey);
-//                PerspectiveImage image = (PerspectiveImage)imageCollection.getImage(imageKey);
-//                String path = image.getFitFileFullPath();
-//                String extension = path.substring(path.lastIndexOf("."));
-//                String imageFileName = new File(path).getName();
-//
-//                file = CustomFileChooser.showSaveDialog(invoker, "Save FITS image", imageFileName, "fit");
-//                if (file != null)
-//                {
-//                    File fitFile = FileCache.getFileFromServer(imageKey.getName() + extension);
-//
+//        	if (outputDirChooser.showOpenDialog(ImagePopupMenu.this) != JFileChooser.APPROVE_OPTION) return;
+//        	File outDir = outputDirChooser.getSelectedFile();
+//        	System.out.println("ImagePopupMenu.SaveImageAction: actionPerformed: outdir " + outDir);
+//        	for (ImageKeyInterface imageKey : imageKeys)
+//        	{
+//        		if (!(imageCollection.getImage(imageKey) instanceof PerspectiveImage)) continue;
+//	            File file = null;
+//	            try
+//	            {
+//	            	//save fits
+//	                PerspectiveImage image = (PerspectiveImage)imageCollection.getImage(imageKey);
+//	                String path = image.getFitFileFullPath();
+//	                String extension = FilenameUtils.getExtension(path);
+//	                String imageFileName = FilenameUtils.getBaseName(path);
+////	                file = new File(outDir, imageKey.getImageFilename().substring(imageKey.getImageFilename().lastIndexOf("/")) + extension);
+//                    file = new File(outDir, imageFileName + "." + extension);
+//	                File fitFile = FileCache.getFileFromServer(imageKey.getName() + "." + extension);
 //                    FileUtil.copyFile(fitFile, file);
-//                }
-//            }
-//            catch(Exception ex)
-//            {
-//                JOptionPane.showMessageDialog(JOptionPane.getFrameForComponent(invoker),
-//                        "Unable to save file to " + file.getAbsolutePath(),
-//                        "Error Saving File",
-//                        JOptionPane.ERROR_MESSAGE);
-//                ex.printStackTrace();
-//            }
+//	            }
+//	            catch(Exception ex)
+//	            {
+//	                JOptionPane.showMessageDialog(JOptionPane.getFrameForComponent(invoker),
+//	                        "Unable to save file to " + file.getAbsolutePath(),
+//	                        "Error Saving File",
+//	                        JOptionPane.ERROR_MESSAGE);
+//	                ex.printStackTrace();
+//	            }
+//
+//        	}
+
+            if (imageKeys.size() != 1)
+                return;
+            ImageKeyInterface imageKey = imageKeys.get(0);
+
+            File file = null;
+            try
+            {
+                imageCollection.addImage(imageKey);
+                PerspectiveImage image = (PerspectiveImage)imageCollection.getImage(imageKey);
+                String path = image.getFitFileFullPath();
+                String extension = FilenameUtils.getExtension(path);
+                String imageFileName = FilenameUtils.getBaseName(path);
+
+                file = CustomFileChooser.showSaveDialog(invoker, "Save FITS image", imageFileName, extension);
+                if (file != null)
+                {
+                    File fitFile = FileCache.getFileFromServer(imageKey.getName() + "." + extension);
+
+                    FileUtil.copyFile(fitFile, file);
+                }
+            }
+            catch(Exception ex)
+            {
+                JOptionPane.showMessageDialog(JOptionPane.getFrameForComponent(invoker),
+                        "Unable to save file to " + file.getAbsolutePath(),
+                        "Error Saving File",
+                        JOptionPane.ERROR_MESSAGE);
+                ex.printStackTrace();
+            }
         }
     }
 
