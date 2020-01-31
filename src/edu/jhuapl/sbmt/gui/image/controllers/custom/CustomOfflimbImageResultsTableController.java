@@ -24,6 +24,8 @@ import javax.swing.event.TableModelEvent;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
 
+import org.apache.commons.io.FilenameUtils;
+
 import edu.jhuapl.saavtk.gui.render.Renderer;
 import edu.jhuapl.saavtk.util.Properties;
 import edu.jhuapl.sbmt.client.SbmtInfoWindowManager;
@@ -35,7 +37,7 @@ import edu.jhuapl.sbmt.gui.image.ui.images.OfflimbImageResultsTableView;
 import edu.jhuapl.sbmt.model.image.ImageCollection;
 import edu.jhuapl.sbmt.model.image.ImageKeyInterface;
 import edu.jhuapl.sbmt.model.image.ImagingInstrument;
-import edu.jhuapl.sbmt.model.image.PerspectiveImage;
+import edu.jhuapl.sbmt.model.image.perspectiveImage.PerspectiveImage;
 
 public class CustomOfflimbImageResultsTableController extends CustomImageResultsTableController
 {
@@ -403,8 +405,8 @@ public class CustomOfflimbImageResultsTableController extends CustomImageResults
             // Only allow editing the hide column if the image is mapped
             if (column == offlimbTableView.getShowFootprintColumnIndex() || column == offlimbTableView.getOffLimbIndex() || column == offlimbTableView.getFrusColumnIndex())
             {
-                String name = imageRawResults.get(row).get(0);
-                ImageKeyInterface key = imageSearchModel.createImageKey(name.substring(0, name.length()-4), imageSearchModel.getImageSourceOfLastQuery(), instrument);
+                String name = FilenameUtils.getBaseName(imageRawResults.get(row).get(0));
+                ImageKeyInterface key = imageSearchModel.createImageKey(name, imageSearchModel.getImageSourceOfLastQuery(), instrument);
                 ImageCollection images = (ImageCollection)imageSearchModel.getModelManager().getModel(imageSearchModel.getImageCollectionModelName());
                 return images.containsImage(key);
             }
