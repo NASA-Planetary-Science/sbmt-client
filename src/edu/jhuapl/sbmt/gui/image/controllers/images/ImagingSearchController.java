@@ -3,6 +3,7 @@ package edu.jhuapl.sbmt.gui.image.controllers.images;
 import javax.swing.JPanel;
 
 import edu.jhuapl.saavtk.gui.render.Renderer;
+import edu.jhuapl.saavtk.model.Controller;
 import edu.jhuapl.saavtk.model.ModelManager;
 import edu.jhuapl.saavtk.pick.PickManager;
 import edu.jhuapl.sbmt.client.SbmtInfoWindowManager;
@@ -22,7 +23,7 @@ import edu.jhuapl.sbmt.model.image.ImagingInstrument;
 import edu.jhuapl.sbmt.model.image.PerspectiveImageBoundaryCollection;
 
 
-public class ImagingSearchController
+public class ImagingSearchController implements Controller<ImageSearchModel, ImagingSearchPanel>
 {
     private ImageResultsTableController imageResultsTableController;
     private ImageSearchParametersController searchParametersController;
@@ -31,6 +32,7 @@ public class ImagingSearchController
     private ImagingSearchPanel panel;
     protected final ModelManager modelManager;
     protected final Renderer renderer;
+	private final ImageSearchModel imageSearchModel;
 
 
     public ImagingSearchController(SmallBodyViewConfig smallBodyConfig,
@@ -43,7 +45,7 @@ public class ImagingSearchController
         this.modelManager = modelManager;
         this.renderer = renderer;
 
-        ImageSearchModel imageSearchModel = new ImageSearchModel(smallBodyConfig, modelManager, renderer, instrument);
+        this.imageSearchModel = new ImageSearchModel(smallBodyConfig, modelManager, renderer, instrument);
         ImageCollection imageCollection = (ImageCollection)modelManager.getModel(imageSearchModel.getImageCollectionModelName());
         PerspectiveImageBoundaryCollection imageBoundaryCollection = (PerspectiveImageBoundaryCollection)modelManager.getModel(imageSearchModel.getImageBoundaryCollectionModelName());
 
@@ -78,4 +80,16 @@ public class ImagingSearchController
     {
         return panel;
     }
+
+	@Override
+	public ImageSearchModel getModel()
+	{
+		return imageSearchModel;
+	}
+
+	@Override
+	public ImagingSearchPanel getView()
+	{
+		return panel;
+	}
 }

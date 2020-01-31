@@ -12,7 +12,7 @@ import edu.jhuapl.saavtk.util.Properties;
 import edu.jhuapl.sbmt.client.SmallBodyModel;
 import edu.jhuapl.sbmt.gui.image.model.ImageKey;
 import edu.jhuapl.sbmt.model.image.ImageKeyInterface;
-import edu.jhuapl.sbmt.model.image.PerspectiveImage;
+import edu.jhuapl.sbmt.model.image.perspectiveImage.PerspectiveImage;
 
 import nom.tam.fits.BasicHDU;
 import nom.tam.fits.Fits;
@@ -80,20 +80,21 @@ public class LEISAJupiterImage extends PerspectiveImage
         // this so the image is displayed properly.
 //        ImageDataUtil.flipImageYAxis(rawImage);
         ImageDataUtil.flipImageXAxis(rawImage);
+        super.processRawImage(rawImage);
     }
 
     public int getDefaultSlice() { return INITIAL_BAND; }
 
     public boolean shiftBands() { return true; }
 
-    public int getNumberBands()
+    public int getImageDepth()
     {
         return 256;
     }
 
     protected int loadNumSlices()
     {
-        return getNumberBands();
+        return getImageDepth();
     }
 
     public double[] getPixelDirection(double sample, double line)

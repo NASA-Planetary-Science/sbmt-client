@@ -65,10 +65,10 @@ public interface CustomImageKeyInterface extends ImageKeyInterface
 			 Key<Double> urlatKey = Key.of("urlat");
 			 Key<Double> urlonKey = Key.of("urlon");
 			 CustomCylindricalImageKey key = new CustomCylindricalImageKey(metadata.get(nameKey), metadata.get(imageFileNameKey), ImageType.valueOf(metadata.get(imageTypeKey)), ImageSource.LOCAL_PERSPECTIVE, new Date(), metadata.get(nameKey));
-			 key.lllat = metadata.get(lllatKey);
-			 key.lllon = metadata.get(lllonKey);
-			 key.urlat = metadata.get(urlatKey);
-			 key.urlon = metadata.get(urlonKey);
+			 key.setLllat(metadata.get(lllatKey));
+			 key.setLllon(metadata.get(lllonKey));
+			 key.setUrlat(metadata.get(urlatKey));
+			 key.setUrlon(metadata.get(urlonKey));
 			 return key;
 		 }
 	}

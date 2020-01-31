@@ -20,6 +20,8 @@ import javax.swing.JMenu;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 
+import org.apache.commons.io.FilenameUtils;
+
 import vtk.vtkActor;
 import vtk.vtkProp;
 
@@ -42,9 +44,9 @@ import edu.jhuapl.sbmt.model.image.Image;
 import edu.jhuapl.sbmt.model.image.ImageCollection;
 import edu.jhuapl.sbmt.model.image.ImageKeyInterface;
 import edu.jhuapl.sbmt.model.image.ImageSource;
-import edu.jhuapl.sbmt.model.image.PerspectiveImage;
 import edu.jhuapl.sbmt.model.image.PerspectiveImageBoundary;
 import edu.jhuapl.sbmt.model.image.PerspectiveImageBoundaryCollection;
+import edu.jhuapl.sbmt.model.image.perspectiveImage.PerspectiveImage;
 import edu.jhuapl.sbmt.model.leisa.LEISAJupiterImage;
 import edu.jhuapl.sbmt.model.mvic.MVICQuadJupiterImage;
 
@@ -520,10 +522,11 @@ public class ImagePopupMenu<K extends ImageKeyInterface> extends PopupMenu
 	            	//save fits
 	                PerspectiveImage image = (PerspectiveImage)imageCollection.getImage(imageKey);
 	                String path = image.getFitFileFullPath();
-	                String extension = path.substring(path.lastIndexOf("."));
-
-	                file = new File(outDir, imageKey.getImageFilename().substring(imageKey.getImageFilename().lastIndexOf("/")) + extension);
-                    File fitFile = FileCache.getFileFromServer(imageKey.getName() + extension);
+	                String extension = FilenameUtils.getExtension(path);
+	                String imageFileName = FilenameUtils.getBaseName(path);
+//	                file = new File(outDir, imageKey.getImageFilename().substring(imageKey.getImageFilename().lastIndexOf("/")) + extension);
+                    file = new File(outDir, imageFileName + "." + extension);
+	                File fitFile = FileCache.getFileFromServer(imageKey.getName() + "." + extension);
                     FileUtil.copyFile(fitFile, file);
 	            }
 	            catch(Exception ex)
@@ -778,7 +781,7 @@ public class ImagePopupMenu<K extends ImageKeyInterface> extends PopupMenu
 
                         String defaultFileName = null;
                         if (imageFileName != null)
-                            defaultFileName = imageFileName.substring(0, imageFileName.length() - 3) + "INFO";
+                            defaultFileName = imageFileName.substring(0, imageFileName.length() - FilenameUtils.getExtension(imageFileName).length()) + "INFO";
 
                         File file = CustomFileChooser.showSaveDialog(invoker, "Save INFO file as...", defaultFileName);
                         if (file == null)
@@ -788,7 +791,7 @@ public class ImagePopupMenu<K extends ImageKeyInterface> extends PopupMenu
 
                         String filename = file.getAbsolutePath();
 
-                        System.out.println("Exporting INFO file for " + image.getImageName() + " to " + filename);
+//                        System.out.println("Exporting INFO file for " + image.getImageName() + " to " + filename);
 
                         image.saveImageInfo(filename);
                     }

@@ -18,13 +18,12 @@ import java.util.Arrays;
 import javax.swing.JOptionPane;
 
 import edu.jhuapl.saavtk.gui.dialog.CustomFileChooser;
-import edu.jhuapl.saavtk.model.LidarDatasourceInfo;
+import edu.jhuapl.saavtk.model.LidarDataSource;
 
 
 public class CustomLidarDataImporterDialog extends javax.swing.JDialog
 {
     private boolean okayPressed = false;
-    private int numCells = 0;
     private boolean isEditMode;
     private static final String LEAVE_UNMODIFIED = "<leave unmodified or empty to use existing plate data>";
     private String origOlaDatasourcePath; // used in Edit mode only to store original filename
@@ -40,36 +39,33 @@ public class CustomLidarDataImporterDialog extends javax.swing.JDialog
     /**
      * Set the cell data info
      */
-    public void setLidarDatasourceInfo(LidarDatasourceInfo info, int numCells)
+    public void setLidarDatasourceInfo(LidarDataSource info)
     {
         if (isEditMode)
         {
             cellDataPathTextField.setText(LEAVE_UNMODIFIED);
-            origOlaDatasourcePath = info.path;
+            origOlaDatasourcePath = info.getPath();
         }
 
-        nameTextField.setText(info.name);
-        this.numCells = numCells;
+        nameTextField.setText(info.getName());
     }
 
     /**
      * @return
      */
-    public LidarDatasourceInfo getLidarDatasourceInfo()
+    public LidarDataSource getLidarDatasourceInfo()
     {
-        LidarDatasourceInfo info = new LidarDatasourceInfo();
-        info.path = cellDataPathTextField.getText();
-        info.name = nameTextField.getText();
+       String name = nameTextField.getText();
 
+       String path = cellDataPathTextField.getText();
         if (isEditMode &&
-                (LEAVE_UNMODIFIED.equals(info.path) || info.path == null || info.path.isEmpty()))
+                (LEAVE_UNMODIFIED.equals(path) || path == null || path.isEmpty()))
         {
-            info.path = origOlaDatasourcePath;
+            path = origOlaDatasourcePath;
         }
 
-        info.name = nameTextField.getText();
-
-        return info;
+        LidarDataSource retInfo = new LidarDataSource(name, path);
+        return retInfo;
     }
 
     private String validateInput()

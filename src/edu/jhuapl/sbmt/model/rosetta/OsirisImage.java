@@ -11,7 +11,7 @@ import edu.jhuapl.saavtk.util.FileCache;
 import edu.jhuapl.saavtk.util.ImageDataUtil;
 import edu.jhuapl.sbmt.client.SmallBodyModel;
 import edu.jhuapl.sbmt.model.image.ImageKeyInterface;
-import edu.jhuapl.sbmt.model.image.PerspectiveImage;
+import edu.jhuapl.sbmt.model.image.perspectiveImage.PerspectiveImage;
 
 import nom.tam.fits.FitsException;
 
@@ -33,7 +33,7 @@ public class OsirisImage extends PerspectiveImage
     {
         // Flip image along y axis and rotate it. Only needed for NAC images.
         ImageKeyInterface key = getKey();
-        File keyFile = new File(key.getName());
+        File keyFile = new File(key.getOriginalName());
         if (keyFile.getName().startsWith("N"))
         {
             ImageDataUtil.flipImageYAxis(rawImage);
@@ -42,6 +42,7 @@ public class OsirisImage extends PerspectiveImage
 
         if (key.getName().contains("67P"))
         {
+        	super.processRawImage(rawImage);
             return;
         }
         else // for lutetia
@@ -75,6 +76,7 @@ public class OsirisImage extends PerspectiveImage
 
             // shift origin back to zero
             rawImage.SetOrigin(0.0, 0.0, 0.0);
+            super.processRawImage(rawImage);
         }
     }
 

@@ -15,7 +15,7 @@ public enum Instrument
     MAPCAM("MAPCAM"),
     POLYCAM("POLYCAM"),
     NAVCAM("NAVCAM"),
-    IMAGING_DATA("Imaging Data"),
+    IMAGING_DATA("Imaging"),
     MVIC("MVIC"),
     LEISA("LEISA"),
     LORRI("LORRI"),
@@ -39,5 +39,14 @@ public enum Instrument
     public String toString()
     {
         return str;
+    }
+
+    public static Instrument valueFor(String str)
+    {
+    	for (Instrument inst : values())
+    	{
+    		if (str.equals(inst.toString())) return inst;
+    	}
+    	return null;
     }
 }

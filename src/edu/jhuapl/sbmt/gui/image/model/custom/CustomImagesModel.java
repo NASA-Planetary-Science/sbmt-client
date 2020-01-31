@@ -26,6 +26,7 @@ import vtk.vtkPNGWriter;
 
 import edu.jhuapl.saavtk.gui.render.Renderer;
 import edu.jhuapl.saavtk.model.FileType;
+import edu.jhuapl.saavtk.model.GenericPolyhedralModel;
 import edu.jhuapl.saavtk.model.Model;
 import edu.jhuapl.saavtk.model.ModelManager;
 import edu.jhuapl.saavtk.model.ModelNames;
@@ -36,6 +37,7 @@ import edu.jhuapl.saavtk.util.MapUtil;
 import edu.jhuapl.saavtk.util.Properties;
 import edu.jhuapl.saavtk.util.SafeURLPaths;
 import edu.jhuapl.sbmt.client.SmallBodyViewConfig;
+import edu.jhuapl.sbmt.config.Strings;
 import edu.jhuapl.sbmt.gui.image.model.CustomImageKeyInterface;
 import edu.jhuapl.sbmt.gui.image.model.CustomImageResultsListener;
 import edu.jhuapl.sbmt.gui.image.model.images.ImageSearchModel;
@@ -50,7 +52,6 @@ import edu.jhuapl.sbmt.model.image.ImageKeyInterface;
 import edu.jhuapl.sbmt.model.image.ImageSource;
 import edu.jhuapl.sbmt.model.image.ImageType;
 import edu.jhuapl.sbmt.model.image.PerspectiveImageBoundaryCollection;
-import edu.jhuapl.sbmt.model.spectrum.Spectrum;
 import edu.jhuapl.sbmt.util.VtkENVIReader;
 
 import crucible.crust.metadata.api.Key;
@@ -89,11 +90,13 @@ public class CustomImagesModel extends ImageSearchModel
         this(model.getSmallBodyConfig(), model.getModelManager(), model.getRenderer(), model.getInstrument());
     }
 
+    @Override
     public ModelNames getImageCollectionModelName()
     {
         return ModelNames.CUSTOM_IMAGES;
     }
 
+    @Override
     public ModelNames getImageBoundaryCollectionModelName()
     {
         return ModelNames.PERSPECTIVE_CUSTOM_IMAGE_BOUNDARIES;
@@ -132,16 +135,49 @@ public class CustomImagesModel extends ImageSearchModel
         images.addImage(key);
     }
 
+    @Override
+    public void loadImage(String name)
+    {
+    	CustomImageKeyInterface key = (CustomImageKeyInterface)createImageKey(name, imageSourceOfLastQuery, instrument);
+//        for (ImageKeyInterface key : keys)
+//        {
+            try
+            {
+                ImageCollection images = (ImageCollection)modelManager.getModel(getImageCollectionModelName());
+                if (!images.containsImage(key))
+                {
+                	key.setImagefilename(getCustomDataFolder() + File.separator + key.getImageFilename());
+                    loadImage(key, images);
+                }
+            }
+            catch (Exception e1) {
+                JOptionPane.showMessageDialog(JOptionPane.getFrameForComponent(null),
+                        "There was an error mapping the image.",
+                        "Error",
+                        JOptionPane.ERROR_MESSAGE);
+
+                e1.printStackTrace();
+            }
+
+//        }
+   }
+
     public CustomImageKeyInterface getRevisedKey(CustomImageKeyInterface info)
     {
     	CustomImageKeyInterface revisedKey = null;
 		if (info.getProjectionType() == ProjectionType.PERSPECTIVE)
 		{
-			revisedKey = new CustomPerspectiveImageKey(SafeURLPaths.instance().getUrl(getCustomDataFolder() + File.separator + info.getImageFilename()), info.getImageFilename(), info.getSource(), info.getImageType(), ((CustomPerspectiveImageKey)info).getRotation(), ((CustomPerspectiveImageKey)info).getFlip(), info.getFileType(), info.getPointingFile(), info.getDate(), info.getName());
+			revisedKey = new CustomPerspectiveImageKey( //
+			        SafeURLPaths.instance().getUrl(getCustomDataFolder() + File.separator + info.getImageFilename()), //
+			        info.getImageFilename(), info.getSource(), info.getImageType(), //
+			        ((CustomPerspectiveImageKey)info).getRotation(), ((CustomPerspectiveImageKey)info).getFlip(), //
+			        info.getFileType(), info.getPointingFile(), info.getDate(), info.getOriginalName());
 		}
 		else
 		{
-			revisedKey = new CustomCylindricalImageKey(SafeURLPaths.instance().getUrl(getCustomDataFolder() + File.separator + info.getImageFilename()), info.getImageFilename(), info.getImageType(), info.getSource(), info.getDate(), info.getName());
+			revisedKey = new CustomCylindricalImageKey( //
+			        SafeURLPaths.instance().getUrl(getCustomDataFolder() + File.separator + info.getImageFilename()), //
+			        info.getImageFilename(), info.getImageType(), info.getSource(), info.getDate(), info.getOriginalName());
 		}
 		return revisedKey;
     }
@@ -170,6 +206,18 @@ public class CustomImagesModel extends ImageSearchModel
     {
         images.removeImage(key);
     }
+
+    @Override
+    public void unloadImage(String name)
+    {
+
+    	ImageKeyInterface key = createImageKey(name, imageSourceOfLastQuery, instrument);
+//        for (ImageKeyInterface key : keys)
+        {
+            ImageCollection images = (ImageCollection)modelManager.getModel(getImageCollectionModelName());
+            unloadImage(key, images);
+        }
+   }
 
     public void unloadImages(String name, CustomImageKeyInterface key)
     {
@@ -325,6 +373,7 @@ public class CustomImagesModel extends ImageSearchModel
     	  CustomImageKeyInterface oldImageInfo = customImages.get(selectedItem);
 
           CustomImageImporterDialog dialog = new CustomImageImporterDialog(null, true, getInstrument());
+          dialog.setCurrentImageNames(getCustomImageNames());
           dialog.setImageInfo(oldImageInfo, getModelManager().getPolyhedralModel().isEllipsoid());
           dialog.setLocationRelativeTo(null);
           dialog.setVisible(true);
@@ -493,10 +542,10 @@ public class CustomImagesModel extends ImageSearchModel
                     {
                     	CustomCylindricalImageKey imageInfo = new CustomCylindricalImageKey(name, imageFilename, imageType, ImageSource.LOCAL_CYLINDRICAL, new Date(), name);
 
-                        imageInfo.lllat = lllats[i];
-                        imageInfo.lllon = lllons[i];
-                        imageInfo.urlat = urlats[i];
-                        imageInfo.urlon = urlons[i];
+                        imageInfo.setLllat(lllats[i]);
+                        imageInfo.setLllon(lllons[i]);
+                        imageInfo.setUrlat(urlats[i]);
+                        imageInfo.setUrlon(urlons[i]);
 
                         customImages.add(imageInfo);
 
@@ -530,7 +579,7 @@ public class CustomImagesModel extends ImageSearchModel
             updateConfigFile();
             return true;
         }
-        else if (configMap.getAsArray(Spectrum.SPECTRUM_NAMES) != null)
+        else if (configMap.getAsArray(Strings.SPECTRUM_NAMES.getName()) != null)
         {
             //backup the old config file
         	String dir = new File(getConfigFilename()).getParent();
@@ -564,10 +613,31 @@ public class CustomImagesModel extends ImageSearchModel
         if (!updated)
         {
             if (!(new File(getConfigFilename()).exists())) return;
-            FixedMetadata metadata = Serializers.deserialize(new File(getConfigFilename()), "CustomImages");
-            retrieve(metadata);
-        }
+            //check to make sure the old plate coloring config file isn't here
+            MapUtil configMap = new MapUtil(getConfigFilename());
+            //check here if the model uses the very old format, and rename if so
+            if (configMap.containsKey("CustomShapeModelFormat"))
+            {
+            	File configDir = new File(getModelManager().getPolyhedralModel().getPlateConfigFilename()).getParentFile();
+            	FileUtils.moveFile(new File(getConfigFilename()), new File(configDir, "shapeConfig.txt"));
+				return;
+            }
 
+			if (configMap.containsKey(GenericPolyhedralModel.CELL_DATA_FILENAMES))
+			{
+				FileUtils.moveFile(new File(getConfigFilename()), new File(getModelManager().getPolyhedralModel().getPlateConfigFilename()));
+				return;
+			}
+			try
+			{
+                FixedMetadata metadata = Serializers.deserialize(new File(getConfigFilename()), "CustomImages");
+                retrieve(metadata);
+			}
+			catch (Exception e)
+			{
+			    e.printStackTrace();
+			}
+        }
         for (CustomImageKeyInterface info : customImages)
         {
             fireInfoChangedListeners(info);
@@ -575,6 +645,16 @@ public class CustomImagesModel extends ImageSearchModel
 
         initialized = true;
         fireResultsChanged();
+    }
+
+    public List<String> getCustomImageNames()
+    {
+    	ArrayList<String> list = new ArrayList<String>();
+    	for (CustomImageKeyInterface info : customImages)
+        {
+    		list.add(info.getName());
+        }
+    	return list;
     }
 
     public void propertyChange(PropertyChangeEvent evt)
@@ -742,7 +822,6 @@ public class CustomImagesModel extends ImageSearchModel
             for (Metadata meta : metadataArray)
             {
             	CustomImageKeyInterface info = CustomImageKeyInterface.retrieve(meta);
-
                 customImages.add(info);
             }
             updateConfigFile();

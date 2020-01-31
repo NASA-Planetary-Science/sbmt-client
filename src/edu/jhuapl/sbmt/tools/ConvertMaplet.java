@@ -6,7 +6,7 @@ import vtk.vtkPolyData;
 
 import edu.jhuapl.saavtk.util.NativeLibraryLoader;
 import edu.jhuapl.saavtk.util.PolyDataUtil;
-import edu.jhuapl.sbmt.model.dem.DEM;
+import edu.jhuapl.sbmt.dtm.model.DEM;
 
 public class ConvertMaplet
 {
@@ -84,7 +84,7 @@ public class ConvertMaplet
         String mapletFile = args[i++];
         String outputFile = args[i];
 
-        NativeLibraryLoader.loadVtkLibrariesHeadless();
+        NativeLibraryLoader.loadHeadlessVtkLibraries();
 
         DEM dem = null;
         try

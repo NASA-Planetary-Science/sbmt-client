@@ -5,6 +5,7 @@ import java.awt.Component;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.List;
+import java.util.Set;
 
 import javax.swing.JButton;
 import javax.swing.JDialog;
@@ -13,11 +14,13 @@ import javax.swing.JOptionPane;
 
 import org.apache.commons.math3.geometry.euclidean.threed.Vector3D;
 
-import edu.jhuapl.saavtk.gui.GNumberField;
-import edu.jhuapl.saavtk.gui.GuiUtil;
-import edu.jhuapl.sbmt.model.lidar.LidarSearchDataCollection;
-import edu.jhuapl.sbmt.model.lidar.Track;
+import edu.jhuapl.sbmt.model.lidar.LidarTrack;
+import edu.jhuapl.sbmt.model.lidar.LidarTrackManager;
 
+import glum.gui.GuiUtil;
+import glum.gui.component.GNumberField;
+import glum.item.ItemEventListener;
+import glum.item.ItemEventType;
 import net.miginfocom.swing.MigLayout;
 
 /**
@@ -30,14 +33,16 @@ import net.miginfocom.swing.MigLayout;
  * <LI>Reset: Reset user input to the zero vector and apply the changes.
  * <LI>Close: Dismiss the dialog.
  * </UL>
+ *
+ * @author lopeznr1
  */
-public class LidarTrackTranslateDialog extends JDialog implements ActionListener, TrackEventListener
+public class LidarTrackTranslateDialog extends JDialog implements ActionListener, ItemEventListener
 {
 	// Constants
 	private final Color failColor = Color.RED.darker();
 
 	// Reference vars
-	private LidarSearchDataCollection refModel;
+	private final LidarTrackManager refModel;
 
 	// GUI vars
 	private JLabel infoL, warnL;
@@ -54,7 +59,7 @@ public class LidarTrackTranslateDialog extends JDialog implements ActionListener
 	/**
 	 * Standard Constructor
 	 */
-	public LidarTrackTranslateDialog(Component aParent, LidarSearchDataCollection aModel)
+	public LidarTrackTranslateDialog(Component aParent, LidarTrackManager aModel)
 	{
 		super(JOptionPane.getFrameForComponent(aParent));
 
@@ -85,7 +90,7 @@ public class LidarTrackTranslateDialog extends JDialog implements ActionListener
 	}
 
 	@Override
-	public void handleTrackEvent(Object aSource, ItemEventType aEventType)
+	public void handleItemEvent(Object aSource, ItemEventType aEventType)
 	{
 		// Ignore events while we are not displayed
 		if (isVisible() == false)
@@ -116,10 +121,10 @@ public class LidarTrackTranslateDialog extends JDialog implements ActionListener
 	 */
 	private void doActionApply()
 	{
-		List<Track> trackL = refModel.getSelectedTracks();
+		Set<LidarTrack> trackS = refModel.getSelectedItems();
 
 		Vector3D tmpVect = getTranslationVectorFromGui();
-		refModel.setTranslation(trackL, tmpVect);
+		refModel.setTranslation(trackS, tmpVect);
 	}
 
 	/**
@@ -127,11 +132,11 @@ public class LidarTrackTranslateDialog extends JDialog implements ActionListener
 	 */
 	private void doActionReset()
 	{
-		List<Track> trackL = refModel.getSelectedTracks();
+		Set<LidarTrack> trackS = refModel.getSelectedItems();
 
 		Vector3D tmpVect = Vector3D.ZERO;
 		setInputVector(tmpVect);
-		refModel.setTranslation(trackL, tmpVect);
+		refModel.setTranslation(trackS, tmpVect);
 	}
 
 	/**
@@ -182,7 +187,7 @@ public class LidarTrackTranslateDialog extends JDialog implements ActionListener
 	private Vector3D getTranslationVectorFromSelectedTracks()
 	{
 		// Retrieve the list of selected Tracks
-		List<Track> trackL = refModel.getSelectedTracks();
+		List<LidarTrack> trackL = refModel.getSelectedItems().asList();
 		if (trackL.size() == 0)
 			return Vector3D.NaN;
 
@@ -191,7 +196,7 @@ public class LidarTrackTranslateDialog extends JDialog implements ActionListener
 
 		// Check that all translation vectors are equal
 		boolean tmpBool = true;
-		for (Track aTrack : trackL)
+		for (LidarTrack aTrack : trackL)
 		{
 			Vector3D evalVect = refModel.getTranslation(aTrack);
 			tmpBool &= retVect.equals(evalVect);
@@ -257,7 +262,7 @@ public class LidarTrackTranslateDialog extends JDialog implements ActionListener
 	 */
 	private void updateGui()
 	{
-		List<Track> trackL = refModel.getSelectedTracks();
+		Set<LidarTrack> trackS = refModel.getSelectedItems();
 
 		// Update the applyB
 		boolean isValidInput = xTranslateNF.isValidInput();
@@ -265,19 +270,19 @@ public class LidarTrackTranslateDialog extends JDialog implements ActionListener
 		isValidInput &= zTranslateNF.isValidInput();
 
 		boolean tmpBool = isValidInput;
-		tmpBool &= trackL.size() > 0;
+		tmpBool &= trackS.size() > 0;
 		applyB.setEnabled(tmpBool);
 
 		// Update the resetB
-		tmpBool = trackL.size() > 0;
+		tmpBool = trackS.size() > 0;
 		resetB.setEnabled(tmpBool);
 
 		// Update the infoL / warnL
-		infoL.setText("Selected Tracks: " + trackL.size());
+		infoL.setText("Selected Tracks: " + trackS.size());
 
 		String regMsg = "";
 		String errMsg = null;
-		if (trackL.size() == 0)
+		if (trackS.size() == 0)
 			errMsg = "There are no selected tracks.";
 		else if (isValidInput == false)
 			errMsg = "Please enter valid input.";

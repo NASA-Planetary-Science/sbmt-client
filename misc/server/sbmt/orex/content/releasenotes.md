@@ -4,6 +4,129 @@
 
 # Release Notes
 
+## December 12, 2019 (SBMT-0.7.8)
+
+### New:
+- Added feature to save custom stretches for images.
+- Numerous updates to the spectra instrument and custom data tabs.
+- Provided two ways to save spectra: SBMT original file and human readable.
+- Added option to view the spacecraft position on lidar tabs.
+- Removed level of detail changes when selecting a structure or data file via the shape model.
+- Number of datapoints in a lidar track are now pre-computed for all lidar search tabs and the OREx OLA browse tab.
+- Added the ability to visualize a lidar colorbar in the renderer window.
+
+### Bug Fixes:
+- Re-instated several keyboard shortcuts (f, r, s, w).
+- Fixed a bug that caused custom images not to load for Windows.
+- Fixed a bug that caused a program crash when searches on distinct datasets were run in series.
+- Fixed a bug that caused exported DTM models not to reflect their parents’ data tabs.
+- Fixed a bug that caused incorrect computation of elevation across profiles.
+- Fixed a bug that caused error messages when selecting a pre-existing custom model.
+- Fixed a bug that caused some images of Phobos and Deimos to be flipped when projected on the model.
+- Fixed the broken “tutorials” link in the help menu.
+
+### OREx only:
+- Delivery of 20191027 model.
+- Update of 20190828 model.
+- Update of 20190612 model. 
+- Fixed bug that caused OLA start and stop times to be incorrect.
+- Updated Bennu observing conditions files.
+- Added OVIRS tab under custom data.
+- Improvements to the way custom Bennu images are imported.
+- Re-ordered models chronologically instead of alphabetically.
+
+
+## October 25, 2019 (SBMT-0.7.7.2)
+
+### Bug Fixes:
+- Restored a set of missing parameters from the body configuration metadata that broke some functionality
+
+## October 17, 2019 (SBMT-0.7.7.1)
+
+### Bug Fixes:
+- Fixed bug related to the View Search Results as Image Gallery not being enabled for certain bodies
+
+## October 11, 2019 (SBMT-0.7.7)
+
+### New:
+- Added support for MacOS Catalina 
+- The install process for the software for all Mac users has changed to accommodate this support: 1) Open the downloaded .pkg and follow instructions in the install wizard. 2) SBMT will now appear as an application in the /Applications/SBMT folder. The functionality of the tool should be unchanged. Please contact sbmt@jhuapl.edu if you encounter installation issues.  
+- Added ability for client to add new models to SBMT without requiring a new release.
+- Added offlimb image visualization capability for custom images.
+- Added ability to define default color scheme for visualizing plate colorings.
+- Added functionality for colorizing lidar tracks.
+- Added visual indicators to show which column(s) is being used for sorting.
+- Added scalebar value to DTM properties panel.
+- Improved performance of lidar track processing.
+- Improved indication on body of which lidar tracks are selected.
+- Improved tables implemented for lidar tab.
+- Improved logic for selecting multiple structures.
+- Improved performance when hiding/showing many circles/ellipse/points structures.
+
+### Bug fixes:
+- Fixed bug that allowed duplicate custom image names to be created.
+- Fixed a bug causing strange behavior when user went on and offline repeatedly.
+- Fixed a bug that prevented structures from being deleted.
+- Fixed a bug that caused a model error when a custom perspective image was imported after a custom cylindrical image (or vice versa).
+
+### OREx only:
+- Changed default color scheme for Bennu models to Spectral_Low Blue.
+- Delivery of 20190612 model.
+- Delivery of 20190828 model.
+
+## July 10, 2019 (SBMT-0.7.6)
+ 
+### New 
+- Major improvements to the layout of the LIDAR pane, for both browse and search
+- Support for multiple basemaps on the main Body page, with server side support, has been added
+- The startup process of the tool has been streamlined, and it should start much quicker, pushing some tasks to work in the background
+- As part of the above streamlining, SBMT can now detect whether you go on or offline, and update menu items accordingly
+- Some models now have image footprints and offlimb images pre-rendered on the server; we will be adding more of these over time
+ 
+### Bug fixes
+- A fix in 0.7.5.1 caused the CPU to run high - this has been resolved
+- A difference in reported pixel location and value when certain pointing types were used has been resolved - they should now be consistent across pointing types (e.g. SPICE vs SPC)
+- Several fixes related to reporting the proper pixel, value and lat/lon have been made
+- Improvements to the structures rendering have been made, especially with large numbers of structures
+
+### OREx only
+- Server side processing for OLA has been updated - search should be more reliable
+- 2018 models have been removed from SBMT since there are newer, more accurate models to use
+- For the 2 higher resolution models, certain data used to render the image and offlimb footprints (where applicable) have been pre-generated, which should greatly reduce the amount of time it takes to map images on those resolutions.  
+
+## May 9, 2019 (SBMT-0.7.5.1)
+ 
+### Bug fixes
+- Custom Plate colorings and Custom images no longer write to the same configuration file (removes an exception seen by some users)
+- Save plate data/view statistics in polygons now works properly
+- Loading plate colorings then a structures file no longer crashes the tool
+- The scalebar on the 3D screen should now update properly as the user zooms in/out
+- Various updates to the behavior of the image table (NOTE: There is a known issue where sorting by Date requires 2 clicks of the column; we are investigating)
+
+## April 25, 2019 (SBMT-0.7.5)
+
+### New
+- Added ability to save structures when saving state
+- Added the ability to sort lists of images, data, and structures by column headers
+- Added a properties button to view FITS headers for plate colorings
+- Added the ability to sync contrast stretches between portions of images that are on the body and off the limb
+- Added ability to customize the color of offlimb image boundaries 
+- Improved lidar GUI and features
+- Enabled the ability to right click and view options for custom images
+ 
+### Bug fixes
+- Fixed a bug that caused the tool to hang on startup when too many restricted models were encountered
+- Fixed bug that was not properly saving images in the save state
+- Reinstated ability to save plate data within multiple structures
+- Fixed a bug that would not allow flip edits to already loaded custom images
+- Fixed a bug that caused custom lighting to be removed when an image was unmapped
+ 
+### OREx only
+- Added a NAVCAM tab
+- Fixed a bug that caused an error when performing an OCAMS search
+- Fixed a bug that prevented sunward arrow from appearing for OTES and OVIRS spectra
+- Added new shape models
+
 ## March 8, 2019 (SBMT-0.7.4.1)
 
 ### Bug Fixes

@@ -29,7 +29,6 @@ import edu.jhuapl.sbmt.lidar.LidarPoint;
 import edu.jhuapl.sbmt.lidar.RawLidarFile;
 import edu.jhuapl.sbmt.lidar.hyperoctree.hayabusa2.Hayabusa2HyperTreeGenerator;
 import edu.jhuapl.sbmt.lidar.hyperoctree.nlr.NlrFSHyperTreeGenerator;
-import edu.jhuapl.sbmt.lidar.hyperoctree.ola.OlaFSHyperPoint;
 import edu.jhuapl.sbmt.lidar.hyperoctree.ola.OlaFSHyperTreeGenerator;
 import edu.jhuapl.sbmt.lidar.hyperoctree.ola.OlaFSHyperTreeNode;
 import edu.jhuapl.sbmt.util.TimeUtil;
@@ -189,12 +188,12 @@ public abstract class FSHyperTreeGenerator
 
         // set up environment
         System.setProperty("java.awt.headless", "true");
-        NativeLibraryLoader.loadVtkLibrariesHeadless();
+        NativeLibraryLoader.loadHeadlessVtkLibraries();
         Path inputDirectoryListFile=Paths.get(inputDirectoryListFileString);
         Path outputDirectory=Paths.get(outputDirectoryString);
 
         int dataFileByteLimit = (int)(dataFileMBLimit*1024*1024);
-        int maxPointsPerLeaf = dataFileByteLimit/new OlaFSHyperPoint().getSizeInBytes();
+        int maxPointsPerLeaf = dataFileByteLimit/new FSHyperPointWithFileTag().getSizeInBytes();
         DataOutputStreamPool pool = new DataOutputStreamPool(maxNumOpenOutputFiles);
 
         LidarInstrument instrument = LidarInstrument.valueOf(instrumentName);

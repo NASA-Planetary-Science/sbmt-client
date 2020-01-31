@@ -30,7 +30,7 @@ import edu.jhuapl.sbmt.client.SmallBodyViewConfig;
 import edu.jhuapl.sbmt.lidar.DataOutputStreamPool;
 import edu.jhuapl.sbmt.lidar.hyperoctree.HyperBox;
 import edu.jhuapl.sbmt.lidar.hyperoctree.HyperException;
-import edu.jhuapl.sbmt.model.spectrum.hypertree.SpectrumHypertreeGenerator;
+import edu.jhuapl.sbmt.spectrum.model.hypertree.SpectrumHypertreeGenerator;
 import edu.jhuapl.sbmt.tools.Authenticator;
 
 public class BoundedObjectHyperTreeGenerator
@@ -203,7 +203,7 @@ public class BoundedObjectHyperTreeGenerator
          * Get body model
          */
         System.setProperty("java.awt.headless", "true");
-        NativeLibraryLoader.loadVtkLibrariesHeadless();
+        NativeLibraryLoader.loadHeadlessVtkLibraries();
 
         SmallBodyViewConfig config;
         if (bodyName.equalsIgnoreCase("EARTH")) {

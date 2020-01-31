@@ -19,6 +19,8 @@ import javax.swing.JMenu;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 
+import org.apache.commons.io.FilenameUtils;
+
 import vtk.vtkActor;
 import vtk.vtkProp;
 
@@ -36,9 +38,9 @@ import edu.jhuapl.sbmt.client.SbmtInfoWindowManager;
 import edu.jhuapl.sbmt.client.SbmtSpectrumWindowManager;
 import edu.jhuapl.sbmt.model.image.Image;
 import edu.jhuapl.sbmt.model.image.ImageCube.ImageCubeKey;
+import edu.jhuapl.sbmt.model.image.perspectiveImage.PerspectiveImage;
 import edu.jhuapl.sbmt.model.image.ImageCubeCollection;
 import edu.jhuapl.sbmt.model.image.ImageSource;
-import edu.jhuapl.sbmt.model.image.PerspectiveImage;
 import edu.jhuapl.sbmt.model.image.PerspectiveImageBoundary;
 import edu.jhuapl.sbmt.model.image.PerspectiveImageBoundaryCollection;
 import edu.jhuapl.sbmt.model.leisa.LEISAJupiterImage;
@@ -692,7 +694,7 @@ public class ImageCubePopupMenu extends PopupMenu
 
                     String defaultFileName = null;
                     if (imageFileName != null)
-                        defaultFileName = imageFileName.substring(0, imageFileName.length()-3) + "INFO";
+                        defaultFileName = imageFileName.substring(0, imageFileName.length() - FilenameUtils.getExtension(imageFileName).length()) + "INFO";
 
                     File file = CustomFileChooser.showSaveDialog(invoker, "Save INFO file as...", defaultFileName);
                     if (file == null)
@@ -702,7 +704,7 @@ public class ImageCubePopupMenu extends PopupMenu
 
                     String filename = file.getAbsolutePath();
 
-                    System.out.println("Exporting INFO file for " + image.getImageName() + " to " + filename);
+//                    System.out.println("Exporting INFO file for " + image.getImageName() + " to " + filename);
 
                     image.saveImageInfo(filename);
                 }

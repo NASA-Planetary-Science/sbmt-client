@@ -18,6 +18,9 @@ import edu.jhuapl.saavtk.model.AbstractModel;
 import edu.jhuapl.saavtk.util.Properties;
 import edu.jhuapl.sbmt.client.SbmtModelFactory;
 import edu.jhuapl.sbmt.client.SmallBodyModel;
+import edu.jhuapl.sbmt.gui.image.model.CustomImageKeyInterface;
+import edu.jhuapl.sbmt.gui.image.ui.custom.CustomImageImporterDialog.ProjectionType;
+import edu.jhuapl.sbmt.model.image.perspectiveImage.PerspectiveImage;
 
 import nom.tam.fits.FitsException;
 
@@ -76,6 +79,16 @@ public class PerspectiveImageBoundaryCollection extends AbstractModel implements
         if (containsKey(key))
             return;
 
+        if (key instanceof CustomImageKeyInterface)
+        {
+            ProjectionType projectionType = ((CustomImageKeyInterface) key).getProjectionType();
+            if (projectionType != ProjectionType.PERSPECTIVE)
+            {
+                System.err.println("Boundary does not exist for progjection type " + projectionType);
+                return;
+            }
+        }
+
         PerspectiveImageBoundary boundary = createBoundary(key, smallBodyModel);
 
         smallBodyModel.addPropertyChangeListener(boundary);
@@ -90,7 +103,7 @@ public class PerspectiveImageBoundaryCollection extends AbstractModel implements
         for (vtkProp act : boundaryPieces)
             actorToBoundaryMap.put(act, boundary);
 
-        this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
+        this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, boundary);
     }
 
     public void removeBoundary(ImageKeyInterface key)
@@ -112,7 +125,7 @@ public class PerspectiveImageBoundaryCollection extends AbstractModel implements
             boundary.removePropertyChangeListener(this);
             smallBodyModel.removePropertyChangeListener(boundary);
 
-            this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
+            this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, boundary);
         }
     }
 
@@ -175,7 +188,7 @@ public class PerspectiveImageBoundaryCollection extends AbstractModel implements
     {
         if (Properties.MODEL_CHANGED.equals(evt.getPropertyName()))
         {
-            this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
+            this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, evt.getNewValue());
         }
     }
 }

@@ -75,10 +75,10 @@ import edu.jhuapl.saavtk.model.Model;
 import edu.jhuapl.saavtk.model.ModelManager;
 import edu.jhuapl.saavtk.model.ModelNames;
 import edu.jhuapl.saavtk.model.structure.AbstractEllipsePolygonModel;
-import edu.jhuapl.saavtk.model.structure.EllipsePolygon;
 import edu.jhuapl.saavtk.pick.PickEvent;
 import edu.jhuapl.saavtk.pick.PickManager;
 import edu.jhuapl.saavtk.pick.PickManager.PickMode;
+import edu.jhuapl.saavtk.structure.Ellipse;
 import edu.jhuapl.saavtk.util.Configuration;
 import edu.jhuapl.saavtk.util.FileUtil;
 import edu.jhuapl.saavtk.util.IdPair;
@@ -98,11 +98,11 @@ import edu.jhuapl.sbmt.model.image.Image;
 import edu.jhuapl.sbmt.model.image.ImageCollection;
 import edu.jhuapl.sbmt.model.image.ImageCube;
 import edu.jhuapl.sbmt.model.image.ImageCube.ImageCubeKey;
+import edu.jhuapl.sbmt.model.image.perspectiveImage.PerspectiveImage;
 import edu.jhuapl.sbmt.model.image.ImageCubeCollection;
 import edu.jhuapl.sbmt.model.image.ImageKeyInterface;
 import edu.jhuapl.sbmt.model.image.ImageSource;
 import edu.jhuapl.sbmt.model.image.ImagingInstrument;
-import edu.jhuapl.sbmt.model.image.PerspectiveImage;
 import edu.jhuapl.sbmt.model.image.PerspectiveImageBoundary;
 import edu.jhuapl.sbmt.model.image.PerspectiveImageBoundaryCollection;
 import edu.jhuapl.sbmt.model.phobos.HierarchicalSearchSpecification.Selection;
@@ -2590,9 +2590,10 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
             TreeSet<Integer> cubeList = null;
             AbstractEllipsePolygonModel selectionModel = (AbstractEllipsePolygonModel)modelManager.getModel(ModelNames.CIRCLE_SELECTION);
             SmallBodyModel smallBodyModel = (SmallBodyModel)modelManager.getModel(ModelNames.SMALL_BODY);
-            if (selectionModel.getNumberOfStructures() > 0)
+            if (selectionModel.getNumItems() > 0)
             {
-                EllipsePolygon region = (EllipsePolygon)selectionModel.getStructure(0);
+                int numberOfSides = selectionModel.getNumberOfSides();
+                Ellipse region = selectionModel.getItem(0);
 
                 // Always use the lowest resolution model for getting the intersection cubes list.
                 // Therefore, if the selection region was created using a higher resolution model,
@@ -2600,12 +2601,12 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
                 if (smallBodyModel.getModelResolution() > 0)
                 {
                     vtkPolyData interiorPoly = new vtkPolyData();
-                    smallBodyModel.drawRegularPolygonLowRes(region.getCenter(), region.radius, region.numberOfSides, interiorPoly, null);
+                    smallBodyModel.drawRegularPolygonLowRes(region.getCenter().toArray(), region.getRadius(), numberOfSides, interiorPoly, null);
                     cubeList = smallBodyModel.getIntersectingCubes(interiorPoly);
                 }
                 else
                 {
-                    cubeList = smallBodyModel.getIntersectingCubes(region.interiorPolyData);
+                    cubeList = smallBodyModel.getIntersectingCubes(selectionModel.getVtkInteriorPolyDataFor(region));
                 }
             }
 
