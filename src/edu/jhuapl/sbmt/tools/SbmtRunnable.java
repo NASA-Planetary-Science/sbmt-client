@@ -66,6 +66,8 @@ public class SbmtRunnable implements Runnable
 			    MainWindow frame = new SbmtMainWindow(initialShapeModelPath);
 			    MainWindow.setMainWindow(frame);
 
+			    FileCache.instance().startAccessMonitor();
+
                 SwingWorker<Void, Void> swingWorker = new SwingWorker<Void, Void>() {
 
                     @Override
@@ -90,8 +92,6 @@ public class SbmtRunnable implements Runnable
                     {
                         if (!isCancelled())
                         {
-                            FileCache.instance().startAccessMonitor();
-
                             frame.pack();
                             frame.setVisible(true);
                             System.out.println("\nSBMT Ready");

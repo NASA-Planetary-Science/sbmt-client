@@ -22,6 +22,7 @@ import edu.jhuapl.saavtk.pick.PickManager;
 import edu.jhuapl.saavtk.structure.Ellipse;
 import edu.jhuapl.saavtk.util.BoundingBox;
 import edu.jhuapl.saavtk.util.FileCache.NonexistentRemoteFile;
+import edu.jhuapl.saavtk.util.FileCache.UnauthorizedAccessException;
 import edu.jhuapl.sbmt.client.BodyViewConfig;
 import edu.jhuapl.sbmt.lidar.hyperoctree.FSHyperTreeSkeleton;
 import edu.jhuapl.sbmt.lidar.hyperoctree.hayabusa2.Hayabusa2LidarHypertreeSkeleton;
@@ -86,6 +87,12 @@ public class LidarHyperTreeSearchPanel extends LidarSearchPanel
 		catch (NonexistentRemoteFile aExp)
 		{
 			JOptionPane.showMessageDialog(this, "There is no existing tree for this phase", "Error",
+					JOptionPane.ERROR_MESSAGE);
+			return;
+		}
+		catch (UnauthorizedAccessException aExp)
+		{
+			JOptionPane.showMessageDialog(this, "You do not have access to these data as the logged in user.", "Error",
 					JOptionPane.ERROR_MESSAGE);
 			return;
 		}
