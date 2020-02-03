@@ -52,7 +52,7 @@ public class QueryModelAccessibility implements Callable<Integer>
 
     protected Integer getUserModelsFromConfigs() throws IOException
     {
-        FileCache.setSilenceInfoMessages(true);
+        FileCache.enableInfoMessages(false);
 
         // Get a unique location for the file cache and point Configuration to it.
         UUID uniqueCacheDir = UUID.randomUUID();

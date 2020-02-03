@@ -84,7 +84,7 @@ public class QueryFileAccessibility implements Callable<Integer>
 
     protected int queryFiles() throws IOException
     {
-        FileCache.setSilenceInfoMessages(true);
+        FileCache.enableInfoMessages(false);
 
 //        rootURLString = decodeIfEnabled(rootURLString);
         userName = decodeIfEnabled(userName);
