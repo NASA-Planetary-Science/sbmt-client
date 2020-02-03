@@ -38,10 +38,15 @@ public class QueryModelAccessibility implements Callable<Integer>
     @Option(names = { "-d", "-debug", "--debug" }, description = "Enable/disable debugging")
     private boolean debug = false;
 
+    @Option(names = { "-debug-cache", "--debug-cache" }, description = "Enable/disable file cache debugging")
+    private boolean debugCache = false;
+
     @Override
     public Integer call() throws Exception
     {
         Debug.setEnabled(debug);
+        FileCache.enableDebug(debugCache);
+
         return getUserModelsFromConfigs();
     }
 
