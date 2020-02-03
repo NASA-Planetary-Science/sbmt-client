@@ -43,7 +43,7 @@ import edu.jhuapl.saavtk.model.structure.PolygonModel;
 import edu.jhuapl.saavtk.pick.PickManager;
 import edu.jhuapl.saavtk.pick.PickUtil;
 import edu.jhuapl.saavtk.popup.PopupMenu;
-import edu.jhuapl.saavtk.structure.gui.StructureTabbedPane;
+import edu.jhuapl.saavtk.structure.gui.StructureMainPanel;
 import edu.jhuapl.saavtk.util.Configuration;
 import edu.jhuapl.saavtk.util.FileCache;
 import edu.jhuapl.saavtk.util.Properties;
@@ -163,7 +163,7 @@ public class SbmtView extends View implements PropertyChangeListener
 	@Override
 	protected void initialize() throws InvocationTargetException, InterruptedException
 	{
-		if (configInfo != null)
+		if (configInfo != null && (getConfig() == null))
 		{
 			setConfig(SmallBodyViewConfig.getSmallBodyConfig(configInfo));
 		}
@@ -374,7 +374,7 @@ public class SbmtView extends View implements PropertyChangeListener
 			allModels.put(ModelNames.STATE_HISTORY_COLLECTION, new StateHistoryCollection(smallBodyModel));
 		}
 
-		allModels.put(ModelNames.LINE_STRUCTURES, new LineModel(smallBodyModel));
+		allModels.put(ModelNames.LINE_STRUCTURES, new LineModel<>(smallBodyModel));
 		allModels.put(ModelNames.POLYGON_STRUCTURES, new PolygonModel(smallBodyModel));
 		allModels.put(ModelNames.CIRCLE_STRUCTURES, new CircleModel(smallBodyModel));
 		allModels.put(ModelNames.ELLIPSE_STRUCTURES, new EllipseModel(smallBodyModel));
@@ -643,7 +643,7 @@ public class SbmtView extends View implements PropertyChangeListener
 				addTab("Lineament", component);
 			}
 
-			addTab("Structures", new StructureTabbedPane(getModelManager(), getPickManager(), getRenderer(), getStatusBar()));
+			addTab("Structures", new StructureMainPanel(getModelManager(), getPickManager(), getRenderer(), getStatusBar(), getPopupManager()));
 
 			JTabbedPane customDataPane = new JTabbedPane();
 			customDataPane.setBorder(BorderFactory.createEmptyBorder());
@@ -670,7 +670,7 @@ public class SbmtView extends View implements PropertyChangeListener
 //				if (i.getDisplayName().equals("NIS"))
 //					continue; //we can't properly handle NIS custom data for now without info files, which we don't have.
 				customDataPane.addTab(i.getDisplayName() + " Spectra", new CustomSpectraSearchController(getModelManager(), (SbmtInfoWindowManager) getInfoPanelManager(), getPickManager(), getRenderer(), getPolyhedralModelConfig().hierarchicalSpectraSearchSpecification, i).getPanel());
-				break;
+//				break;
 			}
 
 			// Add the "lidar tracks" tab

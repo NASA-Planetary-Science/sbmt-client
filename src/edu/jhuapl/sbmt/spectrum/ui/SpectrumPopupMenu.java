@@ -43,6 +43,7 @@ import edu.jhuapl.sbmt.client.SbmtInfoWindowManager;
 import edu.jhuapl.sbmt.client.SmallBodyModel;
 import edu.jhuapl.sbmt.spectrum.model.core.BasicSpectrum;
 import edu.jhuapl.sbmt.spectrum.model.core.BasicSpectrumInstrument;
+import edu.jhuapl.sbmt.spectrum.model.core.SpectrumIOException;
 import edu.jhuapl.sbmt.spectrum.model.core.interfaces.IBasicSpectrumRenderer;
 import edu.jhuapl.sbmt.spectrum.model.statistics.SpectrumStatistics;
 import edu.jhuapl.sbmt.spectrum.model.statistics.SpectrumStatistics.Sample;
@@ -69,6 +70,7 @@ public class SpectrumPopupMenu<S extends BasicSpectrum> extends PopupMenu implem
     private List<S> spectrum = new ArrayList<S>();
     private JMenuItem showStatisticsMenuItem;
     private Renderer renderer;
+    private Vector3D currentIlluminationVector;
 
     private IBasicSpectrumRenderer<S> spectrumRenderer;
     ComputeStatisticsTask task;
@@ -93,7 +95,6 @@ public class SpectrumPopupMenu<S extends BasicSpectrum> extends PopupMenu implem
         this.boundaries = sbc;
         this.infoPanelManager = infoPanelManager;
         this.renderer=renderer;
-
         showRemoveSpectrumIn3DMenuItem = new JCheckBoxMenuItem(new ShowRemoveIn3DAction());
         showRemoveSpectrumIn3DMenuItem.setText("Show Footprint");
         this.add(showRemoveSpectrumIn3DMenuItem);
@@ -177,7 +178,7 @@ public class SpectrumPopupMenu<S extends BasicSpectrum> extends PopupMenu implem
             centerSpectrumMenuItem.setEnabled(true);
             showToSunVectorMenuItem.setSelected(spectrumRenderer.isToSunVectorShowing());
             showToSunVectorMenuItem.setEnabled(true);
-            if (renderer.getLighting() == LightingType.FIXEDLIGHT) setIlluminationMenuItem.setSelected(true);
+            if ((renderer.getLighting() == LightingType.FIXEDLIGHT) && (currentIlluminationVector.equals(new Vector3D(spectrumRenderer.getSpectrum().getToSunUnitVector())))) setIlluminationMenuItem.setSelected(true);
             else setIlluminationMenuItem.setSelected(false);
             setIlluminationMenuItem.setEnabled(true);
 
@@ -193,6 +194,9 @@ public class SpectrumPopupMenu<S extends BasicSpectrum> extends PopupMenu implem
             showToSunVectorMenuItem.setEnabled(false);
             setIlluminationMenuItem.setEnabled(false);
         }
+
+        if (collection.getSelectedItems().size() > 1) setIlluminationMenuItem.setEnabled(false);
+
 
     }
 
@@ -225,7 +229,17 @@ public class SpectrumPopupMenu<S extends BasicSpectrum> extends PopupMenu implem
         {
             if (showRemoveSpectrumIn3DMenuItem.isSelected())
             {
-            	collection.addSpectrum(spectrum.get(0), spectrum.get(0).isCustomSpectra);
+            	try
+				{
+					collection.addSpectrum(spectrum.get(0), spectrum.get(0).isCustomSpectra);
+				}
+            	catch (SpectrumIOException e1)
+				{
+            		JOptionPane.showMessageDialog(JOptionPane.getFrameForComponent(null),
+		                     e1.getMessage(),
+		                     "Error",
+		                     JOptionPane.ERROR_MESSAGE);
+				}
             }
             else
                 collection.removeSpectrum(spectrum.get(0));
@@ -395,19 +409,21 @@ public class SpectrumPopupMenu<S extends BasicSpectrum> extends PopupMenu implem
     {
         public void actionPerformed(ActionEvent e)
         {
+        	currentIlluminationVector = null;
+        	JMenuItem menuItem = (JMenuItem)e.getSource();
+        	if (menuItem.isSelected()) currentIlluminationVector = new Vector3D(spectrumRenderer.getSpectrum().getToSunUnitVector());
             try
             {
-                if (renderer.getLighting() == LightingType.FIXEDLIGHT)
+                if (renderer.getLighting() == LightingType.FIXEDLIGHT && currentIlluminationVector == null)
                 {
                     renderer.setLighting(LightingType.LIGHT_KIT);
                 }
                 else
                 {
                     renderer.setLighting(LightingType.FIXEDLIGHT);
+                    renderer.setFixedLightDirection(currentIlluminationVector.toArray()); // the fixed light direction points to the light
                 }
 
-                Vector3D toSunVector=new Vector3D(spectrumRenderer.getSpectrum().getToSunUnitVector());
-                renderer.setFixedLightDirection(toSunVector.toArray()); // the fixed light direction points to the light
 
                 updateMenuItems();
             }

@@ -56,10 +56,10 @@ import edu.jhuapl.saavtk.model.Model;
 import edu.jhuapl.saavtk.model.ModelManager;
 import edu.jhuapl.saavtk.model.ModelNames;
 import edu.jhuapl.saavtk.model.structure.AbstractEllipsePolygonModel;
-import edu.jhuapl.saavtk.model.structure.EllipsePolygon;
 import edu.jhuapl.saavtk.pick.PickEvent;
 import edu.jhuapl.saavtk.pick.PickManager;
 import edu.jhuapl.saavtk.pick.PickManager.PickMode;
+import edu.jhuapl.saavtk.structure.Ellipse;
 import edu.jhuapl.saavtk.util.FileCache;
 import edu.jhuapl.saavtk.util.FileUtil;
 import edu.jhuapl.saavtk.util.MapUtil;
@@ -884,9 +884,9 @@ public class CustomDEMPanel extends JPanel implements PropertyChangeListener, Ac
             AbstractEllipsePolygonModel selectionModel = (AbstractEllipsePolygonModel)modelManager.getModel(ModelNames.CIRCLE_SELECTION);
             if (selectionModel.getNumItems() > 0)
             {
-                EllipsePolygon region = (EllipsePolygon)selectionModel.getStructure(0);
+                Ellipse region = selectionModel.getItem(0);
 
-                centerPoint = region.getCenter();
+                centerPoint = region.getCenter().toArray();
                 radius = region.getRadius();
             }
             else

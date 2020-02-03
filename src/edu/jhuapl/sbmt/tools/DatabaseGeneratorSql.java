@@ -32,7 +32,7 @@ import edu.jhuapl.sbmt.model.image.ImageKeyInterface;
 import edu.jhuapl.sbmt.model.image.ImageSource;
 import edu.jhuapl.sbmt.model.image.ImagingInstrument;
 import edu.jhuapl.sbmt.model.image.Instrument;
-import edu.jhuapl.sbmt.model.image.PerspectiveImage;
+import edu.jhuapl.sbmt.model.image.perspectiveImage.PerspectiveImage;
 
 public class DatabaseGeneratorSql
 {
@@ -633,7 +633,7 @@ public class DatabaseGeneratorSql
 
         // VTK
         System.setProperty("java.awt.headless", "true");
-        NativeLibraryLoader.loadVtkLibrariesHeadless();
+        NativeLibraryLoader.loadHeadlessVtkLibraries();
 
         ImageSource mode = ImageSource.valueOf(args[i++].toUpperCase());
 //        String body = args[i++];

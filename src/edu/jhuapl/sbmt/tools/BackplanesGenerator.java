@@ -25,7 +25,7 @@ import edu.jhuapl.sbmt.gui.image.model.ImageKey;
 import edu.jhuapl.sbmt.model.image.ImageSource;
 import edu.jhuapl.sbmt.model.image.ImagingInstrument;
 import edu.jhuapl.sbmt.model.image.Instrument;
-import edu.jhuapl.sbmt.model.image.PerspectiveImage;
+import edu.jhuapl.sbmt.model.image.perspectiveImage.PerspectiveImage;
 import edu.jhuapl.sbmt.util.BackplanesFileFormat;
 
 
@@ -386,7 +386,7 @@ public class BackplanesGenerator
         Configuration.setAPLVersion(true);
         SmallBodyViewConfig.initialize();
         System.setProperty("java.awt.headless", "true");
-        NativeLibraryLoader.loadVtkLibrariesHeadless();
+        NativeLibraryLoader.loadHeadlessVtkLibraries();
         Authenticator.authenticate();
 
         // Parse parameters to create SBMT classes.

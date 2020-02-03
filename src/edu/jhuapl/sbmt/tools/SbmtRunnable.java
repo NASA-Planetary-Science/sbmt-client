@@ -1,5 +1,6 @@
 package edu.jhuapl.sbmt.tools;
 
+import java.awt.HeadlessException;
 import java.io.File;
 import java.net.JarURLConnection;
 import java.text.SimpleDateFormat;
@@ -12,7 +13,6 @@ import javax.swing.SwingWorker;
 import javax.swing.ToolTipManager;
 
 import vtk.vtkJavaGarbageCollector;
-import vtk.vtkNativeLibrary;
 
 import edu.jhuapl.saavtk.config.ViewConfig;
 import edu.jhuapl.saavtk.gui.Console;
@@ -22,6 +22,7 @@ import edu.jhuapl.saavtk.model.ShapeModelType;
 import edu.jhuapl.saavtk.util.Configuration;
 import edu.jhuapl.saavtk.util.Debug;
 import edu.jhuapl.saavtk.util.FileCache;
+import edu.jhuapl.saavtk.util.NativeLibraryLoader;
 import edu.jhuapl.sbmt.client.SbmtMainWindow;
 import edu.jhuapl.sbmt.client.SbmtMultiMissionTool;
 import edu.jhuapl.sbmt.client.SbmtMultiMissionTool.Mission;
@@ -44,14 +45,13 @@ public class SbmtRunnable implements Runnable
 		{
 			Mission mission = SbmtMultiMissionTool.getMission();
 			writeStartupMessage(mission);
+
+			NativeLibraryLoader.loadAllVtkLibraries();
+
 			SmallBodyViewConfig.initialize();
 			//            new SmallBodyViewConfigMetadataIO(SmallBodyViewConfig.getBuiltInConfigs()).write(new File("/Users/steelrj1/Desktop/test.json"), "Test");
 
 			configureMissionBodies(mission);
-
-			//  NativeLibraryLoader.loadVtkLibraries();
-
-			vtkNativeLibrary.LoadAllNativeLibraries();
 
 			vtkJavaGarbageCollector garbageCollector = new vtkJavaGarbageCollector();
 			//garbageCollector.SetDebug(true);
@@ -65,6 +65,8 @@ public class SbmtRunnable implements Runnable
 
 			    MainWindow frame = new SbmtMainWindow(initialShapeModelPath);
 			    MainWindow.setMainWindow(frame);
+
+			    FileCache.instance().startAccessMonitor();
 
                 SwingWorker<Void, Void> swingWorker = new SwingWorker<Void, Void>() {
 
@@ -94,9 +96,6 @@ public class SbmtRunnable implements Runnable
                             frame.setVisible(true);
                             System.out.println("\nSBMT Ready");
 
-                            FileCache.showDotsForFiles(false);
-                            FileCache.instance().startAccessMonitor();
-
                             Console.hideConsole();
                             Console.setDefaultLocation(frame);
                         }
@@ -105,6 +104,12 @@ public class SbmtRunnable implements Runnable
 
 			    swingWorker.execute();
 			});
+		}
+		catch (HeadlessException e)
+		{
+		    e.printStackTrace();
+		    System.err.println("\nThe SBMT requires a fully functional graphics environment and cannot be run \"headless\"");
+		    System.err.println("Unable to launch the SBMT.");
 		}
 		catch (Throwable throwable)
 		{
@@ -150,7 +155,6 @@ public class SbmtRunnable implements Runnable
 			{}
 		}
 
-		FileCache.showDotsForFiles(true);
 		System.out.println("Welcome to the Small Body Mapping Tool (SBMT)");
 		System.out.println(mission + " edition" + (compileDate != null ? " built " + DATE_FORMAT.format(compileDate) : ""));
 		if (Debug.isEnabled())
@@ -254,6 +258,7 @@ public class SbmtRunnable implements Runnable
 	{
 		switch (mission)
 		{
+		case APL_INTERNAL_NIGHTLY:
 		case APL_INTERNAL:
 //		case STAGE_APL_INTERNAL:
 		case TEST_APL_INTERNAL:

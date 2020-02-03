@@ -10,7 +10,7 @@ import java.io.InputStreamReader;
 import java.util.Map;
 import java.util.Vector;
 
-import edu.jhuapl.saavtk.util.DownloadableFileInfo.DownloadableFileState;
+import edu.jhuapl.saavtk.util.DownloadableFileState;
 import edu.jhuapl.saavtk.util.FileCache;
 import edu.jhuapl.saavtk.util.FileCache.NoInternetAccessException;
 import edu.jhuapl.saavtk.util.FileCache.UnauthorizedAccessException;

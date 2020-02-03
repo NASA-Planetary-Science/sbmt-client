@@ -15,7 +15,7 @@ import edu.jhuapl.sbmt.gui.image.model.cubes.ImageCubeModel;
 import edu.jhuapl.sbmt.gui.image.ui.custom.CustomImageImporterDialog.ProjectionType;
 import edu.jhuapl.sbmt.model.image.ImageCube;
 import edu.jhuapl.sbmt.model.image.ImageCube.ImageCubeKey;
-import edu.jhuapl.sbmt.model.image.PerspectiveImage;
+import edu.jhuapl.sbmt.model.image.perspectiveImage.PerspectiveImage;
 
 import nom.tam.fits.FitsException;
 
@@ -62,12 +62,18 @@ public class CustomImageCubeModel extends ImageCubeModel
             CustomImageKeyInterface newKey = null;
      		if (info.getProjectionType() == ProjectionType.PERSPECTIVE)
      		{
-     			newKey = new CustomPerspectiveImageKey(SafeURLPaths.instance().getUrl(getCustomDataFolder() + File.separator + info.getImageFilename()), info.getImageFilename(), info.getSource(), info.getImageType(), ((CustomPerspectiveImageKey)info).getRotation(), ((CustomPerspectiveImageKey)info).getFlip(), info.getFileType(), info.getPointingFile(), info.getDate(), info.getName());
+     			newKey = new CustomPerspectiveImageKey( //
+     			        SafeURLPaths.instance().getUrl(getCustomDataFolder() + File.separator + info.getImageFilename()), //
+     			        info.getImageFilename(), info.getSource(), info.getImageType(), //
+     			        ((CustomPerspectiveImageKey)info).getRotation(), ((CustomPerspectiveImageKey)info).getFlip(), //
+     			        info.getFileType(), info.getPointingFile(), info.getDate(), info.getOriginalName());
                 selectedKeys.add(newKey);
      		}
      		else
      		{
-     			newKey = new CustomCylindricalImageKey(SafeURLPaths.instance().getUrl(getCustomDataFolder() + File.separator + info.getImageFilename()), info.getImageFilename(), info.getImageType(), info.getSource(), info.getDate(), info.getName());
+     			newKey = new CustomCylindricalImageKey( //
+     			        SafeURLPaths.instance().getUrl(getCustomDataFolder() + File.separator + info.getImageFilename()), //
+     			        info.getImageFilename(), info.getImageType(), info.getSource(), info.getDate(), info.getOriginalName());
      		}
          }
          for (CustomImageKeyInterface selectedKey : selectedKeys)

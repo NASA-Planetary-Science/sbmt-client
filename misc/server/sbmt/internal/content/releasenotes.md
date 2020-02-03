@@ -4,6 +4,37 @@
 
 # Release Notes
 
+## December 12, 2019 (SBMT-0.7.8)
+
+### New:
+- Added feature to save custom stretches for images.
+- Numerous updates to the spectra instrument and custom data tabs.
+- Provided two ways to save spectra: SBMT original file and human readable.
+- Added option to view the spacecraft position on lidar tabs.
+- Removed level of detail changes when selecting a structure or data file via the shape model.
+- Number of datapoints in a lidar track are now pre-computed for all lidar search tabs and the OREx OLA browse tab.
+- Added the ability to visualize a lidar colorbar in the renderer window.
+
+### Bug Fixes:
+- Re-instated several keyboard shortcuts (f, r, s, w).
+- Fixed a bug that caused custom images not to load for Windows.
+- Fixed a bug that caused a program crash when searches on distinct datasets were run in series.
+- Fixed a bug that caused exported DTM models not to reflect their parents’ data tabs.
+- Fixed a bug that caused incorrect computation of elevation across profiles.
+- Fixed a bug that caused error messages when selecting a pre-existing custom model.
+- Fixed a bug that caused some images of Phobos and Deimos to be flipped when projected on the model.
+- Fixed the broken “tutorials” link in the help menu.
+
+### OREx only:
+- Delivery of 20191027 model.
+- Update of 20190828 model.
+- Update of 20190612 model. 
+- Fixed bug that caused OLA start and stop times to be incorrect.
+- Updated Bennu observing conditions files.
+- Added OVIRS tab under custom data.
+- Improvements to the way custom Bennu images are imported.
+- Re-ordered models chronologically instead of alphabetically.
+
 ## October 25, 2019 (SBMT-0.7.7.2)
 
 ### Bug Fixes:

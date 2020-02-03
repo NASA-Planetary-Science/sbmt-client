@@ -15,9 +15,9 @@ import javax.swing.JPanel;
 import edu.jhuapl.saavtk.gui.dialog.CustomFileChooser;
 import edu.jhuapl.saavtk.model.ModelNames;
 import edu.jhuapl.saavtk.model.structure.AbstractEllipsePolygonModel;
-import edu.jhuapl.saavtk.model.structure.EllipsePolygon;
 import edu.jhuapl.saavtk.pick.PickManager;
 import edu.jhuapl.saavtk.pick.PickManager.PickMode;
+import edu.jhuapl.saavtk.structure.Ellipse;
 import edu.jhuapl.saavtk2.task.Task;
 import edu.jhuapl.sbmt.client.SmallBodyViewConfig;
 import edu.jhuapl.sbmt.dtm.model.DEMKey;
@@ -164,9 +164,9 @@ public class DtmCreationControlController implements ActionListener, PropertyCha
             AbstractEllipsePolygonModel selectionModel = (AbstractEllipsePolygonModel)model.getModelManager().getModel(ModelNames.CIRCLE_SELECTION);
             if (selectionModel.getNumItems() > 0)
             {
-                EllipsePolygon region = (EllipsePolygon)selectionModel.getStructure(0);
+                Ellipse region = selectionModel.getItem(0);
 
-                centerPoint = region.getCenter();
+                centerPoint = region.getCenter().toArray();
                 radius = region.getRadius();
             }
             else

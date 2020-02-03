@@ -46,12 +46,12 @@ import edu.jhuapl.saavtk.model.PointInCylinderChecker;
 import edu.jhuapl.saavtk.model.PointInRegionChecker;
 import edu.jhuapl.saavtk.model.PolyhedralModel;
 import edu.jhuapl.saavtk.model.structure.AbstractEllipsePolygonModel;
-import edu.jhuapl.saavtk.model.structure.EllipsePolygon;
 import edu.jhuapl.saavtk.pick.PickManager;
 import edu.jhuapl.saavtk.pick.PickManager.PickMode;
 import edu.jhuapl.saavtk.pick.PickManagerListener;
 import edu.jhuapl.saavtk.pick.PickUtil;
 import edu.jhuapl.saavtk.pick.Picker;
+import edu.jhuapl.saavtk.structure.Ellipse;
 import edu.jhuapl.saavtk.util.BoundingBox;
 import edu.jhuapl.sbmt.client.BodyViewConfig;
 import edu.jhuapl.sbmt.model.lidar.LidarQueryUtil;
@@ -132,7 +132,8 @@ public class LidarSearchPanel extends JPanel
 
 		if (aSelectionRegion.getNumItems() > 0)
 		{
-			EllipsePolygon region = (EllipsePolygon) aSelectionRegion.getStructure(0);
+			int numberOfSides = aSelectionRegion.getNumberOfSides();
+			Ellipse region = aSelectionRegion.getItem(0);
 
 			// Always use the lowest resolution model for getting the intersection
 			// cubes list. Therefore, if the selection region was created using a
@@ -141,13 +142,13 @@ public class LidarSearchPanel extends JPanel
 			if (refSmallBodyModel.getModelResolution() > 0)
 			{
 				vtkPolyData interiorPoly = new vtkPolyData();
-				refSmallBodyModel.drawRegularPolygonLowRes(region.getCenter(), region.getRadius(),
-						region.getNumberOfSides(), interiorPoly, null);
+				refSmallBodyModel.drawRegularPolygonLowRes(region.getCenter().toArray(), region.getRadius(), numberOfSides,
+						interiorPoly, null);
 				cubeList = refSmallBodyModel.getIntersectingCubes(new BoundingBox(interiorPoly.GetBounds()));
 			}
 			else
 			{
-				cubeList = refSmallBodyModel.getIntersectingCubes(new BoundingBox(region.getVtkInteriorPolyData().GetBounds()));
+				cubeList = refSmallBodyModel.getIntersectingCubes(new BoundingBox(aSelectionRegion.getVtkInteriorPolyDataFor(region).GetBounds()));
 			}
 		}
 		else
@@ -583,9 +584,9 @@ public class LidarSearchPanel extends JPanel
 		PointInCylinderChecker checker = null;
 		if (aSelectionRegion.getNumItems() > 0)
 		{
-			EllipsePolygon region = (EllipsePolygon) aSelectionRegion.getStructure(0);
+			Ellipse region = aSelectionRegion.getItem(0);
 			if (region.getRadius() > 0.0)
-				checker = new PointInCylinderChecker(refModelManager.getPolyhedralModel(), region.getCenter(),
+				checker = new PointInCylinderChecker(refModelManager.getPolyhedralModel(), region.getCenter().toArray(),
 						region.getRadius());
 		}
 

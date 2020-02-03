@@ -84,7 +84,7 @@ public class ConvertMaplet
         String mapletFile = args[i++];
         String outputFile = args[i];
 
-        NativeLibraryLoader.loadVtkLibrariesHeadless();
+        NativeLibraryLoader.loadHeadlessVtkLibraries();
 
         DEM dem = null;
         try

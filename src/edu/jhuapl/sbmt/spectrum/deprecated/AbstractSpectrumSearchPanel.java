@@ -64,10 +64,10 @@ import edu.jhuapl.saavtk.model.Model;
 import edu.jhuapl.saavtk.model.ModelManager;
 import edu.jhuapl.saavtk.model.ModelNames;
 import edu.jhuapl.saavtk.model.structure.AbstractEllipsePolygonModel;
-import edu.jhuapl.saavtk.model.structure.EllipsePolygon;
 import edu.jhuapl.saavtk.pick.PickEvent;
 import edu.jhuapl.saavtk.pick.PickManager;
 import edu.jhuapl.saavtk.pick.PickManager.PickMode;
+import edu.jhuapl.saavtk.structure.Ellipse;
 import edu.jhuapl.saavtk.util.IdPair;
 import edu.jhuapl.saavtk.util.PolyDataUtil;
 import edu.jhuapl.saavtk.util.Properties;
@@ -81,6 +81,7 @@ import edu.jhuapl.sbmt.query.fixedlist.FixedListQuery;
 import edu.jhuapl.sbmt.query.fixedlist.FixedListSearchMetadata;
 import edu.jhuapl.sbmt.spectrum.model.core.BasicSpectrum;
 import edu.jhuapl.sbmt.spectrum.model.core.BasicSpectrumInstrument;
+import edu.jhuapl.sbmt.spectrum.model.core.SpectrumIOException;
 import edu.jhuapl.sbmt.spectrum.model.core.interfaces.IBasicSpectrumRenderer;
 import edu.jhuapl.sbmt.spectrum.model.core.search.SpectraHierarchicalSearchSpecification;
 import edu.jhuapl.sbmt.spectrum.model.io.SpectrumListIO;
@@ -486,7 +487,17 @@ public abstract class AbstractSpectrumSearchPanel extends JPanel implements Mous
 //            {
 //                String currentSpectrum = spectrumRawResults.get(i).getFullPath();
 //                model.addSpectrum(createSpectrumName(currentSpectrum), instrument, false);
-            	model.addSpectrum(spectrumRawResults.get(i), false);
+            	try
+				{
+					model.addSpectrum(spectrumRawResults.get(i), false);
+				}
+            	catch (SpectrumIOException e)
+				{
+					JOptionPane.showMessageDialog(JOptionPane.getFrameForComponent(null),
+		                     e.getMessage(),
+		                     "Error",
+		                     JOptionPane.ERROR_MESSAGE);
+				}
 //            }
 //            catch (IOException e1) {
 //                e1.printStackTrace();
@@ -1746,7 +1757,8 @@ public abstract class AbstractSpectrumSearchPanel extends JPanel implements Mous
             SmallBodyModel erosModel = (SmallBodyModel)modelManager.getModel(ModelNames.SMALL_BODY);
             if (selectionModel.getAllItems().size() > 0)
             {
-                EllipsePolygon region = (EllipsePolygon)selectionModel.getStructure(0);
+                int numberOfSides = selectionModel.getNumberOfSides();
+                Ellipse region = selectionModel.getItem(0);
 
                 // Always use the lowest resolution model for getting the intersection cubes list.
                 // Therefore, if the selection region was created using a higher resolution model,
@@ -1754,12 +1766,12 @@ public abstract class AbstractSpectrumSearchPanel extends JPanel implements Mous
                 if (erosModel.getModelResolution() > 0)
                 {
                     vtkPolyData interiorPoly = new vtkPolyData();
-                    erosModel.drawRegularPolygonLowRes(region.getCenter(), region.getRadius(), region.getNumberOfSides(), interiorPoly, null);
+                    erosModel.drawRegularPolygonLowRes(region.getCenter().toArray(), region.getRadius(), numberOfSides, interiorPoly, null);
                     cubeList = erosModel.getIntersectingCubes(interiorPoly);
                 }
                 else
                 {
-                    cubeList = erosModel.getIntersectingCubes(region.getVtkInteriorPolyData());
+                    cubeList = erosModel.getIntersectingCubes(selectionModel.getVtkInteriorPolyDataFor(region));
                 }
             }
 
