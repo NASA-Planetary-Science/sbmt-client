@@ -125,7 +125,7 @@ public class StateHistoryViewControlsController implements ItemListener
 	private void updateLookDirection()
 	{
 		RendererLookDirection selectedItem = (RendererLookDirection)view.getViewOptions().getSelectedItem();
-		double[] upVector = {0,1,0};
+		double[] upVector = {0,0,1};
         StateHistory currentRun = runs.getCurrentRun();
 
         if (currentRun != null) 	// can't do any view things if we don't have a trajectory / time history
