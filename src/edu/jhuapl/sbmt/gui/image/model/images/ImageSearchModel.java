@@ -577,7 +577,7 @@ public class ImageSearchModel implements Controller.Model, MetadataManager
         if (getInstrument().getSearchQuery() instanceof FixedListQuery)
         {
             FixedListQuery query = (FixedListQuery) getInstrument().getSearchQuery();
-            results = query.runQuery(FixedListSearchMetadata.of("Imaging Search", "imagelist", "images", query.getRootPath(), imageSource)).getResultlist();
+            results = query.runQuery(FixedListSearchMetadata.of("Imaging Search", "imagelist", "images", query.getRootPath(), imageSource, searchFilename)).getResultlist();
         }
         else
         {

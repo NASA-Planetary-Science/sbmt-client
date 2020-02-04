@@ -30,8 +30,7 @@ import edu.jhuapl.saavtk.model.structure.Line;
 import edu.jhuapl.saavtk.model.structure.Polygon;
 import edu.jhuapl.saavtk.util.Configuration;
 import edu.jhuapl.saavtk.util.Debug;
-import edu.jhuapl.saavtk.util.DownloadableFileInfo;
-import edu.jhuapl.saavtk.util.DownloadableFileInfo.DownloadableFileState;
+import edu.jhuapl.saavtk.util.DownloadableFileState;
 import edu.jhuapl.saavtk.util.FileCache;
 import edu.jhuapl.saavtk.util.LatLon;
 import edu.jhuapl.saavtk.util.SafeURLPaths;
@@ -544,7 +543,7 @@ public class SbmtMultiMissionTool
 
 	        Configuration.setupPasswordAuthentication(dataRootUrl, passwordFilesToTry);
 	        FileCache.addServerUrlPropertyChangeListener(e -> {
-	            if (e.getPropertyName().equals(DownloadableFileInfo.STATE_PROPERTY))
+	            if (e.getPropertyName().equals(DownloadableFileState.STATE_PROPERTY))
 	            {
 	                DownloadableFileState rootState = (DownloadableFileState) e.getNewValue();
 	                if (rootState.getUrlState().getStatus() == UrlStatus.NOT_AUTHORIZED)
@@ -554,7 +553,7 @@ public class SbmtMultiMissionTool
 	                }
 	            }
 	        });
-	        if (!FileCache.instance().getRootInfo().getState().isAccessible())
+	        if (!FileCache.instance().getRootState().isAccessible())
 	        {
 	            FileCache.setOfflineMode(true, Configuration.getCacheDir());
 	            String message = "Unable to find server " + dataRootUrl + ". Starting in offline mode. See console log for more information.";

@@ -10,8 +10,8 @@ import org.apache.commons.io.FileUtils;
 
 import edu.jhuapl.saavtk.util.Configuration;
 import edu.jhuapl.saavtk.util.Debug;
-import edu.jhuapl.saavtk.util.DownloadableFileInfo.DownloadableFileState;
 import edu.jhuapl.saavtk.util.DownloadableFileManager;
+import edu.jhuapl.saavtk.util.DownloadableFileState;
 import edu.jhuapl.saavtk.util.FileCache;
 import edu.jhuapl.saavtk.util.SafeURLPaths;
 import edu.jhuapl.sbmt.client.BasicConfigInfo;
