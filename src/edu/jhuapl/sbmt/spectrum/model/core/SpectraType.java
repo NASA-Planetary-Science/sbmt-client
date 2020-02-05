@@ -28,6 +28,7 @@ public class SpectraType implements ISpectraType
 
     public String getDisplayName()
     {
+    	if (displayName.contains("_")) return displayName.substring(0, displayName.indexOf("_"));
         return displayName;
     }
 
@@ -63,6 +64,6 @@ public class SpectraType implements ISpectraType
     @Override
 	public String toString()
 	{
-		return displayName;
+		return getDisplayName();
 	}
 }
