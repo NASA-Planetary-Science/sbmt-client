@@ -157,10 +157,11 @@ public class SbmtRunnable implements Runnable
 
 		System.out.println("Welcome to the Small Body Mapping Tool (SBMT)");
 		System.out.println(mission + " edition" + (compileDate != null ? " built " + DATE_FORMAT.format(compileDate) : ""));
-		if (Debug.isEnabled())
-		{
-			System.out.println("Tool started in debug mode; diagnostic output is enabled.");
-		}
+        Debug.of().out().println("Tool started in debug mode; diagnostic output is enabled.");
+        if (FileCache.isEnableDebug())
+        {
+            System.out.println("Tool started in file cache debug mode; diagnostic output related to file caching/accessibility is enabled.");
+        }
 		if (!FileCache.instance().isServerAccessEnabled())
 		{
 			System.out.println("\nTool started in offline mode; skipping password authentication.");

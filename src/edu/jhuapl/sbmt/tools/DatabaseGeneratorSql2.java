@@ -525,6 +525,7 @@ public class DatabaseGeneratorSql2
             else if (args[i].equals("--debug"))
             {
                 Debug.setEnabled(true);
+                FileCache.enableDebug(true);
             }
             else if (args[i].equals("--remote"))
             {

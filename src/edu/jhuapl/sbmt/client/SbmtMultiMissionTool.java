@@ -487,10 +487,15 @@ public class SbmtMultiMissionTool
 		redirectStreams = getOption(args, "--no-stream-redirect") == null;
 		clearCache = getOption(args, "--auto-clear-cache") != null;
 		SmallBodyViewConfig.betaMode = getOption(args, "--beta") != null;
-		if (getOption(args, "--debug") != null)
-		{
-			Debug.setEnabled(true);
-		}
+        if (getOption(args, "--debug") != null)
+        {
+            Debug.setEnabled(true);
+        }
+
+        // Use --debug-cache to control both the debug and informational messages.
+        boolean debugCache = getOption(args, "--debug-cache") != null;
+        FileCache.enableDebug(debugCache);
+        FileCache.enableInfoMessages(debugCache);
 
 		// Get other arguments.
 		initialShapeModelPath = null;
