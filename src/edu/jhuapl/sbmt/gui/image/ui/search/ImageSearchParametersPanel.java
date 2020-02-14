@@ -73,6 +73,10 @@ public class ImageSearchParametersPanel extends JPanel
     private JPanel auxPanel;
     private JRadioButton parametersRadioButton;
     private JRadioButton filenameRadioButton;
+    private boolean isFixedListSearch = false;
+    private ButtonGroup searchByGroup;
+    private JPanel parametersPanel;
+    private JPanel filenamePanel;
 
     public ImageSearchParametersPanel()
     {
@@ -114,7 +118,8 @@ public class ImageSearchParametersPanel extends JPanel
 
         parametersRadioButton = new JRadioButton(
                 "Search by Parameters");
-        choicePanel.add(parametersRadioButton);
+        if (isFixedListSearch == false)
+        	choicePanel.add(parametersRadioButton);
 
 
         filenameRadioButton = new JRadioButton(
@@ -122,7 +127,7 @@ public class ImageSearchParametersPanel extends JPanel
         choicePanel.add(filenameRadioButton);
 
 
-        ButtonGroup searchByGroup = new ButtonGroup();
+        searchByGroup = new ButtonGroup();
         searchByGroup.add(filenameRadioButton);
         searchByGroup.add(parametersRadioButton);
         parametersRadioButton.setSelected(true);
@@ -131,7 +136,7 @@ public class ImageSearchParametersPanel extends JPanel
         Component verticalStrut_9 = Box.createVerticalStrut(20);
         add(verticalStrut_9);
 
-        final JPanel filenamePanel = new JPanel();
+        filenamePanel = new JPanel();
         filenamePanel.setVisible(false);
         add(filenamePanel);
         filenamePanel.setLayout(new BoxLayout(filenamePanel, BoxLayout.X_AXIS));
@@ -150,7 +155,7 @@ public class ImageSearchParametersPanel extends JPanel
         Component horizontalGlue = Box.createHorizontalGlue();
         filenamePanel.add(horizontalGlue);
 
-        final JPanel parametersPanel = new JPanel();
+        parametersPanel = new JPanel();
         add(parametersPanel);
         parametersPanel
                 .setLayout(new BoxLayout(parametersPanel, BoxLayout.Y_AXIS));
@@ -164,6 +169,8 @@ public class ImageSearchParametersPanel extends JPanel
             	searchByNumberTextField.setText("");
                 parametersPanel.setVisible(true);
                 filenamePanel.setVisible(false);
+                selectRegionButton.setVisible(true);
+                clearRegionButton.setVisible(true);
             }
         });
 
@@ -175,6 +182,8 @@ public class ImageSearchParametersPanel extends JPanel
             {
                 parametersPanel.setVisible(false);
                 filenamePanel.setVisible(true);
+                selectRegionButton.setVisible(false);
+                clearRegionButton.setVisible(false);
             }
         });
 
@@ -700,5 +709,29 @@ public class ImageSearchParametersPanel extends JPanel
     {
         return parametersRadioButton;
     }
+
+	public void setFixedListSearch(boolean isFixedListSearch)
+	{
+		this.isFixedListSearch = isFixedListSearch;
+		if (isFixedListSearch)
+		{
+			 parametersPanel.setVisible(false);
+             filenamePanel.setVisible(true);
+             selectRegionButton.setVisible(false);
+             clearRegionButton.setVisible(false);
+             parametersRadioButton.setVisible(false);
+             filenameRadioButton.setVisible(false);
+		}
+		else
+		{
+			searchByNumberTextField.setText("");
+            parametersPanel.setVisible(true);
+            filenamePanel.setVisible(false);
+            selectRegionButton.setVisible(true);
+            clearRegionButton.setVisible(true);
+            parametersRadioButton.setVisible(true);
+            filenameRadioButton.setVisible(true);
+		}
+	}
 
 }
