@@ -49,6 +49,7 @@
       	<pathelement location="${libDir}/crucible-metadata-4.3.jar"/>
       	<pathelement location="${libDir}/crucible-settings-4.0.jar"/>
         <pathelement location="${libDir}/commons-io-2.0.jar"/>
+        <pathelement location="${libDir}/commons-math3-3.6.1.jar"/>
         <pathelement location="${libDir}/commons-math3-3.2.jar"/>
       	<pathelement location="${libDir}/commons-text-1.8.jar"/>
         <pathelement location="${libDir}/gson-2.8.0.jar"/>
@@ -171,7 +172,7 @@
         <fileset dir="${rootdir}/lib">
           <include name="*.jar" />
         </fileset>
-        <pathelement location="${rootdir}/lib/commons-math3-3.6.1.jar"/>
+        <pathelement location="${libDir}/commons-math3-3.6.1.jar"/>
       	<pathelement location="${libDir}/crucible-metadata-4.3.jar"/>
       	<pathelement location="${libDir}/crucible-settings-4.0.jar"/>
         <pathelement location="${libDir}/commons-io-2.0.jar"/>
@@ -227,8 +228,8 @@
         	commons-io-2.0.jar
         	crucible-metadata-4.3.jar
         	crucible-settings-4.0.jar
+        	commons-math3-3.6.1.jar
             commons-math3-3.2.jar
-            commons-math3-3.6.1.jar
           	commons-text-1.8.jar
             gson-2.8.0.jar
             nom-tam-fits-1.13.1m0.jar
@@ -346,8 +347,8 @@
         	commons-io-2.0.jar
         	crucible-settings-4.0.jar
         	crucible-metadata-4.3.jar
-            commons-math3-3.2.jar
             commons-math3-3.6.1.jar
+            commons-math3-3.2.jar
           	commons-text-1.8.jar
         	gson-2.8.0.jar
             nom-tam-fits-1.13.1m0.jar
@@ -451,8 +452,8 @@
         <attribute name="Class-Path" value="commons-io-2.0.jar
         									crucible-settings-4.0.jar
         									crucible-metadata-4.3.jar
+        									commons-math3-3.6.1.jar
                                             commons-math3-3.2.jar
-                                            commons-math3-3.6.1.jar
                                             commons-text-1.8.jar
                                             gson-2.8.0.jar
                                             nom-tam-fits-1.13.1m0.jar
@@ -587,8 +588,8 @@
   	<delete file="${rootlibDir}/crucible-settings-4.0.jar"/>
    	<delete file="${rootlibDir}/crucible-metadata-4.3.jar"/>
     <delete file="${rootlibDir}/commons-io-2.0.jar"/>
-    <delete file="${rootlibDir}/commons-math3-3.2.jar"/>
     <delete file="${rootlibDir}/commons-math3-3.6.1.jar"/>
+    <delete file="${rootlibDir}/commons-math3-3.2.jar"/>
   	<delete file="${rootlibDir}/commons-text-1.8.jar"/>
     <delete file="${rootlibDir}/gson-2.8.0.jar"/>
     <delete file="${rootlibDir}/nom-tam-fits-1.13.1m0.jar"/>
@@ -658,8 +659,8 @@
       	<pathelement location="${libDir}/crucible-settings-4.0.jar"/>
       	<pathelement location="${libDir}/crucible-metadata-4.3.jar"/>
         <pathelement location="${libDir}/commons-io-2.0.jar"/>
-        <pathelement location="${libDir}/commons-math3-3.2.jar"/>
         <pathelement location="${libDir}/commons-math3-3.6.1.jar"/>
+        <pathelement location="${libDir}/commons-math3-3.2.jar"/>
         <pathelement location="${libDir}/commons-text-1.8.jar"/>
         <pathelement location="${libDir}/gson-2.8.0.jar"/>
         <pathelement location="${libDir}/nom-tam-fits-1.13.1m0.jar"/>
