@@ -169,7 +169,7 @@
 		   debug="on" >
       <classpath>
         <fileset dir="${rootdir}/lib">
-          <include name="**/*.jar" />
+          <include name="*.jar" />
         </fileset>
         <pathelement location="${rootdir}/lib/commons-math3-3.6.1.jar"/>
       	<pathelement location="${libDir}/crucible-metadata-4.3.jar"/>
