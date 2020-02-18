@@ -220,7 +220,7 @@ ${int_win_zip} : ${NEARAPLJAR}
  
 # Note this uses near.jar, and creating 'runsbmt' is same as linux64 but different than win64
 # and generate_runsbmt.sh takes the PUBLIC parameters.
-${pub_mac_zip} : ${NEARJAR}
+${pub_mac_zip} : ${NEARAPLJAR}
 		@echo "Making $@"
 		@mkdir -p ${pub_mac_sbmt_lib_dir}
 		cp ${top_level_dir}/lib/*.jar ${pub_mac_sbmt_lib_dir}
@@ -230,7 +230,7 @@ ${pub_mac_zip} : ${NEARJAR}
 		cp ${jogl_dir}/gluegen-rt.jar ${pub_mac_sbmt_lib_dir}
 		cp ${jogl_dir}/jogl-all.jar ${pub_mac_sbmt_lib_dir}
 		cp ${SAAVTKJAR} ${pub_mac_sbmt_lib_dir}
-		cp ${NEARJAR} ${pub_mac_sbmt_lib_dir}
+		cp ${NEARAPLJAR} ${pub_mac_sbmt_lib_dir}
 		cp -R ${vtk_dir}/mac64 ${pub_mac_sbmt_lib_dir}
 		cp -R ${jre_dir}/jre-mac64 ${pub_mac_sbmt_dir}
 		rm -rf ${pub_mac_sbmt_dir}/jre
@@ -242,7 +242,7 @@ ${pub_mac_zip} : ${NEARJAR}
 
 # Note this uses near.jar, and creating 'runsbmt' is same as mac64 but different than win64
 # and generate_runsbmt.sh takes the PUBLIC parameters.
-${pub_linux_zip} : ${NEARJAR} 
+${pub_linux_zip} : ${NEARAPLJAR} 
 		@echo "Making $@"
 		@mkdir -p ${pub_linux_sbmt_lib_dir}
 		cp ${top_level_dir}/lib/*.jar ${pub_linux_sbmt_lib_dir}
@@ -254,7 +254,7 @@ ${pub_linux_zip} : ${NEARJAR}
 		cp ${jogl_dir}/gluegen-rt-natives-linux-amd64.jar ${pub_linux_sbmt_lib_dir}
 		cp ${jogl_dir}/jogl-all-natives-linux-amd64.jar ${pub_linux_sbmt_lib_dir}
 		cp ${SAAVTKJAR} ${pub_linux_sbmt_lib_dir}
-		cp ${NEARJAR} ${pub_linux_sbmt_lib_dir}
+		cp ${NEARAPLJAR} ${pub_linux_sbmt_lib_dir}
 		cp -R ${vtk_dir}/linux64 ${pub_linux_sbmt_lib_dir}
 		cp -R ${jre_dir}/jre-linux64 ${pub_linux_sbmt_dir}
 		rm -rf ${pub_linux_sbmt_dir}/jre
@@ -265,7 +265,7 @@ ${pub_linux_zip} : ${NEARJAR}
 		(cd ${pub_linux_dir} ; zip -q -r ${linux_zip} ${RELEASE})
 
 # Note this uses near.jar, and creating the 'runsbmt' script is different here.
-${pub_win_zip} : ${NEARJAR}
+${pub_win_zip} : ${NEARAPLJAR}
 		@echo "Making $@"
 		@mkdir -p ${pub_win_sbmt_lib_dir}
 		cp ${top_level_dir}/lib/*.jar ${pub_win_sbmt_lib_dir}
@@ -275,7 +275,7 @@ ${pub_win_zip} : ${NEARJAR}
 		cp ${jogl_dir}/gluegen-rt.jar ${pub_win_sbmt_lib_dir}
 		cp ${jogl_dir}/jogl-all.jar ${pub_win_sbmt_lib_dir}
 		cp ${SAAVTKJAR} ${pub_win_sbmt_lib_dir}
-		cp ${NEARJAR} ${pub_win_sbmt_lib_dir}
+		cp ${NEARAPLJAR} ${pub_win_sbmt_lib_dir}
 		cp -R ${vtk_dir}/win64 ${pub_win_sbmt_lib_dir}
 		cp -R ${jre_dir}/jre-win64 ${pub_win_sbmt_dir}
 		rm -rf ${pub_win_sbmt_dir}/jre
