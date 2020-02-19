@@ -4,6 +4,35 @@
 
 # Release Notes
 
+## February 19, 2020 (SBMT-0.7.9)
+
+### New:
+- Added additional information columns to structures tables.
+- Added ability to sort structure column tables by numerical content.
+- Added support of comments at the top of structures files, denoted by # for circles, ellipses, and points files, and denoted by <!--   This should be commented out --> appearing after the first XML line of paths and polygons files.
+- Added ability to load structures of any type from any structures sub-tab.
+- Added GUI to facilitate loading/replacing/appending structures files.
+- Improved the logic used when creating new paths and polygons.
+- Added a progress bar when loading paths and polygons.
+- Changed structures files to have labels hidden by default when loaded.
+- Improved the resize behavior of spectra panels.
+- Established new image class for images of Phobos and Deimos (MARS_MOON_IMAGE) for custom import.
+- Added ability to import custom shape models in stl format.
+- Updated images in Phobos>Gaskell 2011 model to match those in Phobos>Ernst et al. model.
+
+### Bug Fixes:
+- Fixed a bug that caused the colors of circles and points to default to pink when loaded.
+- Fixed a bug that caused Itokawa AMICA images to appear black.
+- Fixed a bug that prevented circles from being drawn on some custom loaded shape models.
+- Fixed a bug that caused pull-down menus in custom spectra import GUI to overlap.
+- Fixed a bug that caused simulate lighting option to not be marked as on after selected via right click.
+- Fixed a bug that could cause a hard crash when appending or replacing structures files.
+- Fixed bugs that caused profile plots (selected via paths) to behave improperly.
+- Fixed bug that prevented “cancel” button from working when loading structures.
+- Fixed a bug that caused database queries to fail instead of returning a fixed list of results.
+- Fixed a bug that caused issues when rendering structure labels.
+- Fixed a bug affecting the implementation of shape model opacity.
+
 ## December 12, 2019 (SBMT-0.7.8)
 
 ### New:
