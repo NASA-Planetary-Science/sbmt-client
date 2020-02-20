@@ -56,7 +56,6 @@ public class StateHistoryViewControlsController implements ItemListener
         runs.addPropertyChangeListener(evt -> {
 
 			if (!evt.getPropertyName().equals("POSITION_CHANGED")) return;
-
 			updateLookDirection();
 			if ((renderer.getLighting() == LightingType.FIXEDLIGHT && runs.getCurrentRun() != null) == false) return;
 
@@ -67,7 +66,7 @@ public class StateHistoryViewControlsController implements ItemListener
 		{
 			if (aEventType != ItemEventType.ItemsSelected) return;
 			runs.setTimeFraction(runs.getCurrentRun(), 0.0);
-			updateLookDirection();
+//			updateLookDirection();
 		});
 
         view.getViewOptions().addActionListener(e -> { updateLookDirection(); });
@@ -134,6 +133,13 @@ public class StateHistoryViewControlsController implements ItemListener
 
 			if (selectedItem == RendererLookDirection.FREE_VIEW)
 			{
+				Vector3D targAxis = new Vector3D(runs.updateLookDirection(selectedItem, historyModel.getScalingFactor()));
+
+//	            double[] lookFromDirection = runs.updateLookDirection(selectedItem, historyModel.getScalingFactor());
+	            double[] lookFromDirection = renderer.getCameraPosition();
+	            renderer.setCameraFocalPoint(new double[] {0, 0, 0});
+	            renderer.setCameraOrientation(lookFromDirection, renderer.getCameraFocalPoint(), renderer.getCamera().getUpUnit().toArray(), renderer.getCameraViewAngle());
+
 				((RenderPanel)renderer.getRenderWindowPanel()).setZoomOnly(false, Vector3D.ZERO, targOrig);
 				return;
 			}

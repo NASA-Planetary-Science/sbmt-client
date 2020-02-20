@@ -179,6 +179,5 @@ public class StandardTrajectory implements Trajectory
 	{
 		this.isFaded = isFaded;
 		this.color[3] = isFaded ? 50 : 255;
-		System.out.println("StandardTrajectory: setFaded: alpha is " + this.color[3]);
 	}
 }

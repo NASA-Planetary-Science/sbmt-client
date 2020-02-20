@@ -5,7 +5,6 @@ import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 import java.io.File;
 
-import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
 import javax.swing.JPanel;
 import javax.swing.border.EtchedBorder;
@@ -22,7 +21,6 @@ import edu.jhuapl.saavtk.model.ModelNames;
 import edu.jhuapl.saavtk.util.FileCache;
 import edu.jhuapl.sbmt.client.SmallBodyModel;
 import edu.jhuapl.sbmt.client.SmallBodyViewConfig;
-import edu.jhuapl.sbmt.gui.lidar.PercentIntervalChanger;
 import edu.jhuapl.sbmt.stateHistory.model.DefaultStateHistoryModelChangedListener;
 import edu.jhuapl.sbmt.stateHistory.model.StateHistoryModel;
 import edu.jhuapl.sbmt.stateHistory.model.StateHistoryUtil;
@@ -118,15 +116,15 @@ public class StateHistoryController //implements TableModelListener, IStateHisto
 			viewControlsController.getView().setEnabled(runs.getSelectedItems().size() > 0);
 		});
 
-        historyModel.addStateHistoryModelChangedListener(new DefaultStateHistoryModelChangedListener()
-		{
-        	@Override
-        	public void historySegmentCreated(StateHistory historySegment)
-        	{
-        		runs.setTimeFraction(historySegment, historySegment.getTime());
-        		super.historySegmentCreated(historySegment);
-        	}
-		});
+//        historyModel.addStateHistoryModelChangedListener(new DefaultStateHistoryModelChangedListener()
+//		{
+//        	@Override
+//        	public void historySegmentCreated(StateHistory historySegment)
+//        	{
+//        		runs.setTimeFraction(historySegment, historySegment.getTime());
+//        		super.historySegmentCreated(historySegment);
+//        	}
+//		});
     }
 
     public JPanel getView()

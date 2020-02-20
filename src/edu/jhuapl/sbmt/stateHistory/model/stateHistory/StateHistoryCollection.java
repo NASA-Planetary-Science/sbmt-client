@@ -600,6 +600,7 @@ public class StateHistoryCollection extends SaavtkItemManager<StateHistory> /*Ab
 		}
 		else //free view mode
 		{
+			currentLookFromDirection = currentRun.getSpacecraftPosition();
 			return currentRun.getSpacecraftPosition();
 		}
     }

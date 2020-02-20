@@ -86,15 +86,28 @@ public class StateHistoryIntervalPlaybackController
 	private void initializeIntervalPlaybackPanel()
     {
         final JSlider slider = view.getSlider();
-        slider.addChangeListener(new ChangeListener() {         //ADD TO CONTROLLER
+        slider.addChangeListener(new ChangeListener() {
             public void stateChanged(ChangeEvent evt) {
                 if(slider.getValueIsAdjusting()){
                     int val = slider.getValue();
                     int max = slider.getMaximum();
                     int min = slider.getMinimum();
-//                    currentOffsetTime = (double)(val - min) / (double)(max-min) * offsetScale;
+
+                    double period = runs.getPeriod();
+                    double deltaRealTime = 1; //timer.getDelay() / 1000.0;
+                    double playRate = 1.0;
+                    try {
+                       playRate = Double.parseDouble(view.getRateTextField().getText());
+                    } catch (Exception ex) { ex.printStackTrace(); playRate = 1.0; }
+
+                    double deltaSimulationTime = deltaRealTime * playRate;
+                    double deltaOffsetTime = deltaSimulationTime / period;
+                    currentOffsetTime = (val*(period/playRate)/max)*deltaOffsetTime;
+
+                    runs.getCurrentRun().setTimeFraction(runs.getCurrentRun(), currentOffsetTime);
+                    runs.setTimeFraction(runs.getCurrentRun(), currentOffsetTime);
+
                     view.getTimeBox().setValue(new Date(historyModel.getStartTime().toDate().getTime() + new Double(1000*val/((double)(max - min)) * runs.getCurrentRun().getPeriod()).longValue()));
-//                    ((HasTime)model).setTimeFraction(currentOffsetTime);
                 }
             }
         });
@@ -232,12 +245,11 @@ public class StateHistoryIntervalPlaybackController
             public void actionPerformed(ActionEvent e)
             {
                 double period = runs.getPeriod();
-                double deltaRealTime = timer.getDelay() / 1000.0;
+                double deltaRealTime = 1; //timer.getDelay() / 1000.0;
                 double playRate = 1.0;
                 try {
                    playRate = Double.parseDouble(view.getRateTextField().getText());
                 } catch (Exception ex) { ex.printStackTrace(); playRate = 1.0; }
-
                 double deltaSimulationTime = deltaRealTime * playRate;
                 double deltaOffsetTime = deltaSimulationTime / period;
 
@@ -253,7 +265,7 @@ public class StateHistoryIntervalPlaybackController
                     currentOffsetTime = 0.0;
                 }
 
-                runs.getCurrentRun().setTimeFraction(runs.getCurrentRun(), currentOffsetTime);
+                runs.getCurrentRun().setTimeFraction(runs.getCurrentRun(), 10*currentOffsetTime);
                 runs.setTimeFraction(runs.getCurrentRun(), currentOffsetTime);
                 view.getSlider().setValue(val);
                 view.getTimeBox().setValue(new Date(historyModel.getStartTime().toDate().getTime() + new Double(1000*val/((double)(max - min)) * runs.getCurrentRun().getPeriod()).longValue()));
