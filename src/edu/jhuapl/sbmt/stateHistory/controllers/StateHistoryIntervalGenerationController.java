@@ -4,11 +4,15 @@ import java.awt.Cursor;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.function.Function;
 
 import javax.swing.JSpinner;
+import javax.swing.ProgressMonitor;
 import javax.swing.SpinnerDateModel;
 
 import org.joda.time.DateTime;
+
+import com.jidesoft.utils.SwingWorker;
 
 import edu.jhuapl.sbmt.stateHistory.model.StateHistoryModel;
 import edu.jhuapl.sbmt.stateHistory.model.stateHistory.StateHistoryKey;
@@ -24,6 +28,7 @@ public class StateHistoryIntervalGenerationController
     private SimpleDateFormat dateFormatter;
     private SpinnerDateModel spinnerDateModel;
     private JSpinner.DateEditor dateEditor;
+    private ProgressMonitor progressMonitor;
 
 	public StateHistoryIntervalGenerationController(StateHistoryModel historyModel, DateTime newStart, DateTime newEnd)
 	{
@@ -63,10 +68,34 @@ public class StateHistoryIntervalGenerationController
             // TODO check key generation
             // generate random stateHistoryKey to use for this interval
             StateHistoryKey key = new StateHistoryKey(historyModel.getRuns());
-            int success = historyModel.createNewTimeInterval(key, total, "");
+
+            progressMonitor = new ProgressMonitor(null, "Calculating History...", "", 0, 100);
+    		progressMonitor.setProgress(0);
+        	SwingWorker<Void, Void> task = new SwingWorker<Void, Void>()
+    		{
+    			@Override
+    			protected Void doInBackground() throws Exception
+    			{
+    				int success = historyModel.createNewTimeInterval(key, total, "", new Function<Double, Void>()
+					{
+						@Override
+						public Void apply(Double t)
+						{
+							progressMonitor.setProgress(t.intValue());
+							return null;
+						}
+					});
+    		        return null;
+    			}
+    		};
+    		task.execute();
+
+
             view.setCursor(Cursor.getDefaultCursor());
         });
     }
+
+
 
 	public StateHistoryIntervalGenerationPanel getView()
 	{

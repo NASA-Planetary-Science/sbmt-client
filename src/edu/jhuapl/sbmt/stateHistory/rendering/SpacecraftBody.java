@@ -1,5 +1,7 @@
 package edu.jhuapl.sbmt.stateHistory.rendering;
 
+import java.awt.Color;
+
 import vtk.vtkActor;
 import vtk.vtkPolyData;
 import vtk.vtkPolyDataMapper;
@@ -47,6 +49,21 @@ public class SpacecraftBody extends vtkPolyData
         spacecraftBodyActor.GetProperty().SetInterpolationToFlat();
         spacecraftBodyActor.SetScale(0.01);
         return spacecraftBodyActor;
+	}
+
+	public void setScale(double scale)
+	{
+		spacecraftBodyActor.SetScale(scale);
+	}
+
+	public void setColor(double[] color)
+	{
+		spacecraftBodyActor.GetProperty().SetDiffuseColor(spacecraftColor);
+	}
+
+	public void setColor(Color color)
+	{
+		spacecraftBodyActor.GetProperty().SetDiffuseColor(new double[] {color.getRed()/255.0, color.getGreen()/255.0, color.getBlue()/255.0});
 	}
 
 }

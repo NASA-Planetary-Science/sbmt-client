@@ -1,11 +1,12 @@
 package edu.jhuapl.sbmt.stateHistory.model.stateHistory;
 
+import java.awt.Color;
+import java.awt.Font;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.function.Function;
 
 import com.google.common.collect.ImmutableList;
 
@@ -25,9 +26,9 @@ import edu.jhuapl.saavtk.util.MathUtil;
 import edu.jhuapl.saavtk.util.Properties;
 //import edu.jhuapl.sbmt.client.ModelFactory;
 import edu.jhuapl.sbmt.client.SmallBodyModel;
+import edu.jhuapl.sbmt.stateHistory.model.StateHistoryColoringFunctions;
 import edu.jhuapl.sbmt.stateHistory.model.interfaces.HasTime;
 import edu.jhuapl.sbmt.stateHistory.model.interfaces.StateHistory;
-import edu.jhuapl.sbmt.stateHistory.model.interfaces.Trajectory;
 import edu.jhuapl.sbmt.stateHistory.rendering.EarthDirectionMarker;
 import edu.jhuapl.sbmt.stateHistory.rendering.SpacecraftBody;
 import edu.jhuapl.sbmt.stateHistory.rendering.SpacecraftDirectionMarker;
@@ -180,21 +181,13 @@ public class StateHistoryCollection extends SaavtkItemManager<StateHistory> /*Ab
         Colormap colormap = Colormaps.getNewInstanceOfBuiltInColormap("Rainbow");
         colormap.setRangeMax(12);
         colormap.setRangeMin(0);
-        Function<Double, Double> coloringFunction = time -> {
 
-        	Trajectory traj = run.getTrajectory();
-        	int index = traj.getTime().lastIndexOf(time);
-        	double distance = Math.sqrt(Math.pow(traj.getX().get(index), 2) + Math.pow(traj.getY().get(index), 2) + Math.pow(traj.getZ().get(index), 2));
-//        	System.out.println("StateHistoryCollection: addRun: returning distance " + distance);
-        	return distance;
-        };
-        trajectoryActor.setColoringFunction(coloringFunction, colormap);
+        trajectoryActor.setColoringFunction(StateHistoryColoringFunctions.DISTANCE.getColoringFunction(), colormap);
 
         trajectoryActor.setMinMaxFraction(run.getMinDisplayFraction(), run.getMaxDisplayFraction());
         trajectoryActor.VisibilityOn();
         trajectoryActor.GetMapper().Update();
-//        trajectoryActor.setTrajectoryColor(new double[] {255, 0, 0, 255});
-//        System.out.println("StateHistoryCollection: addRun: adding to renderer map, number of change listeners " + changeListeners.size());
+
         stateHistoryToRendererMap.put(run, trajectoryActor);
 //        for (StateHistoryCollectionChangedListener listener : changeListeners)
 //        	listener.historySegmentMapped(run);
@@ -691,6 +684,13 @@ public class StateHistoryCollection extends SaavtkItemManager<StateHistory> /*Ab
         }
     }
 
+
+    public void setSpacecraftColor(Color color)
+    {
+    	spacecraft.setColor(color);
+    	this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, spacecraft);
+    }
+
     public void setSpacecraftVisibility(boolean visible)
     {
     	spacecraft.getActor().SetVisibility(visible == true ? 1: 0);
@@ -721,6 +721,12 @@ public class StateHistoryCollection extends SaavtkItemManager<StateHistory> /*Ab
     	this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, earthDirectionMarker);
     }
 
+    public void setSpacecraftSize(double scale)
+    {
+    	spacecraft.setScale(scale);
+    	this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, spacecraft);
+    }
+
     public void setEarthDirectionMarkerSize(int radius)
     {
     	earthDirectionMarker.setEarthPointerSize(radius);
@@ -743,6 +749,37 @@ public class StateHistoryCollection extends SaavtkItemManager<StateHistory> /*Ab
     {
     	spacecraftLabelActor.setDistanceString(distanceText);
     	this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, spacecraftLabelActor);
+    }
+
+    public void setDistanceTextFont(Font distanceTextFont)
+    {
+    	spacecraftLabelActor.setDistanceStringFont(distanceTextFont);
+    	this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, spacecraftLabelActor);
+    }
+
+    public void setDistanceTextVisiblity(boolean isVisible)
+    {
+    	int visible = (isVisible) ? 1 : 0;
+    	spacecraftLabelActor.SetVisibility(visible);
+    	this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, spacecraftLabelActor);
+    }
+
+    public void setEarthDirectionMarkerColor(Color color)
+    {
+    	earthDirectionMarker.setColor(color);
+    	this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, earthDirectionMarker);
+    }
+
+    public void setSunDirectionMarkerColor(Color color)
+    {
+    	sunDirectionMarker.setColor(color);
+    	this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, sunDirectionMarker);
+    }
+
+    public void setScDirectionMarkerColor(Color color)
+    {
+    	scDirectionMarker.setColor(color);
+    	this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, scDirectionMarker);
     }
 
 	public double[] getCurrentLookFromDirection()

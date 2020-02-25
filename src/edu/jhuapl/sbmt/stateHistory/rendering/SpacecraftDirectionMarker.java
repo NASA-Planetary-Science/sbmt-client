@@ -1,5 +1,7 @@
 package edu.jhuapl.sbmt.stateHistory.rendering;
 
+import java.awt.Color;
+
 import vtk.vtkActor;
 import vtk.vtkConeSource;
 import vtk.vtkPolyDataMapper;
@@ -55,6 +57,11 @@ public class SpacecraftDirectionMarker extends vtkConeSource
         spacecraftMarkerHeadActor.GetProperty().ShadingOn();
         spacecraftMarkerHeadActor.GetProperty().SetInterpolationToPhong();
         return spacecraftMarkerHeadActor;
+	}
+
+	public void setColor(Color color)
+	{
+		spacecraftMarkerHeadActor.GetProperty().SetDiffuseColor(new double[] {color.getRed()/255.0, color.getGreen()/255.0, color.getBlue()/255.0});
 	}
 
 

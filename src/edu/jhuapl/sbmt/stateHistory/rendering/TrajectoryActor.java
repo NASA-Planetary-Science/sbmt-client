@@ -1,7 +1,7 @@
 package edu.jhuapl.sbmt.stateHistory.rendering;
 
 import java.awt.Color;
-import java.util.function.Function;
+import java.util.function.BiFunction;
 
 import com.google.common.collect.Range;
 import com.google.common.collect.Ranges;
@@ -32,7 +32,7 @@ public class TrajectoryActor extends vtkActor
     private vtkUnsignedCharArray colors;
     private int size;
     private vtkPolyData trajectoryPolyline;
-    private Function<Double, Double> coloringFunction;
+    private BiFunction<Trajectory, Double, Double> coloringFunction;
     private Colormap colormap;
 
 
@@ -137,7 +137,7 @@ public class TrajectoryActor extends vtkActor
 	 * @param coloringFunction
 	 * @param colormap
 	 */
-	public void setColoringFunction(Function<Double, Double> coloringFunction, Colormap colormap)
+	public void setColoringFunction(BiFunction<Trajectory, Double, Double> coloringFunction, Colormap colormap)
 	{
 		this.coloringFunction = coloringFunction;
 		this.colormap = colormap;
@@ -147,7 +147,7 @@ public class TrajectoryActor extends vtkActor
 	{
 		if (coloringFunction == null) return new Color((int)trajectoryColor[0], (int)trajectoryColor[1], (int)trajectoryColor[2], (int)trajectoryColor[3]);
 		double time = trajectory.getTime().get(index);
-		double valueAtTime = coloringFunction.apply(time);
+		double valueAtTime = coloringFunction.apply(trajectory, time);
 		Color color = colormap.getColor(valueAtTime);
 		color = new Color(color.getRed(), color.getGreen(), color.getBlue(), (int)trajectoryColor[3]);
 		return color;

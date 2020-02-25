@@ -1,5 +1,7 @@
 package edu.jhuapl.sbmt.stateHistory.rendering;
 
+import java.awt.Font;
+
 import vtk.vtkCaptionActor2D;
 
 import edu.jhuapl.saavtk.util.MathUtil;
@@ -17,6 +19,7 @@ public class SpacecraftLabel extends vtkCaptionActor2D
 	public SpacecraftLabel()
 	{
 		 SetCaption("");
+		 GetTextActor().SetTextScaleModeToNone();
          GetCaptionTextProperty().SetColor(1.0, 1.0, 1.0);
          GetCaptionTextProperty().SetJustificationToLeft();
          GetCaptionTextProperty().BoldOff();
@@ -26,13 +29,21 @@ public class SpacecraftLabel extends vtkCaptionActor2D
          SetHeight(.6);
          SetBorder(0);
          SetLeader(0);
-         VisibilityOn();
+         VisibilityOff();
 	}
 
 	public SpacecraftLabel(long id)
 	{
 		super(id);
 		// TODO Auto-generated constructor stub
+	}
+
+	public void setDistanceStringFont(Font font)
+	{
+		GetCaptionTextProperty().SetFontSize(font.getSize());
+		GetCaptionTextProperty().SetFontFamilyAsString(font.getFamily());
+		if (font.isBold()) GetCaptionTextProperty().BoldOn(); else GetCaptionTextProperty().BoldOff();
+		if (font.isItalic()) GetCaptionTextProperty().ItalicOn(); else GetCaptionTextProperty().ItalicOff();
 	}
 
 	public void setDistanceString(String distanceString)

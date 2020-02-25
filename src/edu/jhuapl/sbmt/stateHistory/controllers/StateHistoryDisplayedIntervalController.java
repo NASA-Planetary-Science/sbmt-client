@@ -1,14 +1,12 @@
 package edu.jhuapl.sbmt.stateHistory.controllers;
 
-import java.util.Date;
-
-import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 
 import edu.jhuapl.sbmt.gui.lidar.PercentIntervalChanger;
 import edu.jhuapl.sbmt.stateHistory.model.StateHistoryModel;
 import edu.jhuapl.sbmt.stateHistory.ui.version2.StateHistoryDisplayedIntervalPanel;
+import edu.jhuapl.sbmt.util.TimeUtil;
 
 import glum.item.ItemEventType;
 
@@ -50,16 +48,21 @@ public class StateHistoryDisplayedIntervalController
 		{
 			if (aEventType != ItemEventType.ItemsSelected) return;
 			if (historyModel.getRuns().getSelectedItems().size() > 0) updateDisplayedTimeRange(0.0, 1.0);
+
 		});
 	}
 
 	private void updateDisplayedTimeRange(double minValue, double maxValue)
 	{
 		Double period = historyModel.getRuns().getCurrentRun().getPeriod();
-		Date start = new Date(historyModel.getStartTime().toDate().getTime() + new Double(1000*minValue * period).longValue());
-		Date end = new Date(historyModel.getStartTime().toDate().getTime() + new Double(1000*maxValue * period).longValue());
-		view.getDisplayedStartTimeLabel().setText(new DateTime(start).toString(fmt));
-		view.getDisplayedStopTimeLabel().setText(new DateTime(end).toString(fmt));
+//		Date start = new Date(historyModel.getStartTime().toDate().getTime() + new Double(1000*minValue * period).longValue());
+//		Date end = new Date(historyModel.getStartTime().toDate().getTime() + new Double(1000*maxValue * period).longValue());
+
+		String minTime = TimeUtil.et2str(historyModel.getRuns().getCurrentRun().getMinTime());
+		String maxTime = TimeUtil.et2str(historyModel.getRuns().getCurrentRun().getMaxTime());
+
+		view.getDisplayedStartTimeLabel().setText(minTime.substring(0, minTime.length()-3));
+		view.getDisplayedStopTimeLabel().setText(maxTime.substring(0, maxTime.length()-3));
 	}
 
 	public StateHistoryDisplayedIntervalPanel getView()

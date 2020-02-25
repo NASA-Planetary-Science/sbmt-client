@@ -8,6 +8,8 @@ import java.awt.event.ActionListener;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -36,6 +38,9 @@ import edu.jhuapl.sbmt.stateHistory.model.stateHistory.StateHistoryCollection;
 import edu.jhuapl.sbmt.stateHistory.rendering.animator.Animator;
 import edu.jhuapl.sbmt.stateHistory.ui.AnimationFileDialog;
 import edu.jhuapl.sbmt.stateHistory.ui.version2.StateHistoryIntervalPlaybackPanel;
+import edu.jhuapl.sbmt.util.TimeUtil;
+
+import glum.item.ItemEventType;
 
 public class StateHistoryIntervalPlaybackController
 {
@@ -71,6 +76,7 @@ public class StateHistoryIntervalPlaybackController
 		}
 		createTimer();
 		initializeIntervalPlaybackPanel();
+
 	}
 
 	private void initializeButtonIcons() throws IOException
@@ -83,31 +89,50 @@ public class StateHistoryIntervalPlaybackController
         pauseIcon = new ImageIcon(pause);
 	}
 
+	private void updatePlaypanelValues()
+	{
+		final JSlider slider = view.getSlider();
+		int val = slider.getValue();
+        int max = slider.getMaximum();
+        int min = slider.getMinimum();
+
+        double period = runs.getPeriod();
+        double deltaRealTime = 1; //timer.getDelay() / 1000.0;
+        double playRate = 1.0;
+        try {
+           playRate = Double.parseDouble(view.getRateTextField().getText());
+        } catch (Exception ex) { ex.printStackTrace(); playRate = 1.0; }
+
+        double deltaSimulationTime = deltaRealTime * playRate;
+        double deltaOffsetTime = deltaSimulationTime / period;
+        currentOffsetTime = (val*(period/playRate)/max)*deltaOffsetTime;
+
+        runs.getCurrentRun().setTimeFraction(runs.getCurrentRun(), currentOffsetTime);
+        runs.setTimeFraction(runs.getCurrentRun(), currentOffsetTime);
+
+        Date date = null;
+		try
+		{
+			date = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS").parse(TimeUtil.et2str(runs.getCurrentRun().getTime()));
+		} catch (ParseException e)
+		{
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+        view.getTimeBox().setValue(date);
+
+//        view.getTimeBox().setValue(new Date(runs.getCurrentRun().getMinTime().longValue() + new Double(1000*val/((double)(max - min)) * runs.getCurrentRun().getPeriod()).longValue()));
+
+	}
+
 	private void initializeIntervalPlaybackPanel()
     {
         final JSlider slider = view.getSlider();
         slider.addChangeListener(new ChangeListener() {
             public void stateChanged(ChangeEvent evt) {
                 if(slider.getValueIsAdjusting()){
-                    int val = slider.getValue();
-                    int max = slider.getMaximum();
-                    int min = slider.getMinimum();
-
-                    double period = runs.getPeriod();
-                    double deltaRealTime = 1; //timer.getDelay() / 1000.0;
-                    double playRate = 1.0;
-                    try {
-                       playRate = Double.parseDouble(view.getRateTextField().getText());
-                    } catch (Exception ex) { ex.printStackTrace(); playRate = 1.0; }
-
-                    double deltaSimulationTime = deltaRealTime * playRate;
-                    double deltaOffsetTime = deltaSimulationTime / period;
-                    currentOffsetTime = (val*(period/playRate)/max)*deltaOffsetTime;
-
-                    runs.getCurrentRun().setTimeFraction(runs.getCurrentRun(), currentOffsetTime);
-                    runs.setTimeFraction(runs.getCurrentRun(), currentOffsetTime);
-
-                    view.getTimeBox().setValue(new Date(historyModel.getStartTime().toDate().getTime() + new Double(1000*val/((double)(max - min)) * runs.getCurrentRun().getPeriod()).longValue()));
+                	updatePlaypanelValues();
                 }
             }
         });
@@ -175,6 +200,17 @@ public class StateHistoryIntervalPlaybackController
             saveAnimation(StateHistoryIntervalPlaybackController.this.getView(), startTime, endTime);
             view.setCursor(Cursor.getDefaultCursor());
         });
+
+        runs.addListener((aSource, aEventType) -> {
+			if (aEventType != ItemEventType.ItemsSelected) return;
+			if (historyModel.getRuns().getSelectedItems().size() > 0)
+			{
+				historyModel.getRuns().setCurrentRun(historyModel.getRuns().getSelectedItems().asList().get(0));
+//				historyModel.setStartTime(runs.getCurrentRun().);
+			}
+			updatePlaypanelValues();
+        });
+
     }
 
 	private void toggleToPlay()

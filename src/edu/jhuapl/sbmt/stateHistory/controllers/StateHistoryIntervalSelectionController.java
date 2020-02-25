@@ -123,6 +123,7 @@ public class StateHistoryIntervalSelectionController
 				history.getTrajectory().setFaded(!runs.getSelectedItems().contains(history));
 				runs.refreshColoring(history);
 			}
+
 		});
     }
 

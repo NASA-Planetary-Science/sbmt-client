@@ -1,5 +1,7 @@
 package edu.jhuapl.sbmt.stateHistory.rendering;
 
+import java.awt.Color;
+
 import vtk.vtkActor;
 import vtk.vtkConeSource;
 import vtk.vtkPolyDataMapper;
@@ -63,6 +65,11 @@ public class SunDirectionMarker extends vtkConeSource
         sunMarkerActor.GetProperty().SetRepresentationToSurface();
         sunMarkerActor.SetScale(scale);
         return sunMarkerActor;
+	}
+
+	public void setColor(Color color)
+	{
+		sunMarkerActor.GetProperty().SetDiffuseColor(new double[] {color.getRed()/255.0, color.getGreen()/255.0, color.getBlue()/255.0});
 	}
 
 	public void updateSunPosition(double[] sunPos, double[] sunMarkerPosition)

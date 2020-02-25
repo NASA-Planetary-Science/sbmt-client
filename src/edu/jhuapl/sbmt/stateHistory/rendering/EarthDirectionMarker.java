@@ -1,5 +1,7 @@
 package edu.jhuapl.sbmt.stateHistory.rendering;
 
+import java.awt.Color;
+
 import vtk.vtkActor;
 import vtk.vtkConeSource;
 import vtk.vtkPolyDataMapper;
@@ -60,6 +62,11 @@ public class EarthDirectionMarker extends vtkConeSource
         earthMarkerHeadActor.GetProperty().SetInterpolationToPhong();
         earthMarkerHeadActor.SetScale(scale);
         return earthMarkerHeadActor;
+	}
+
+	public void setColor(Color color)
+	{
+		earthMarkerHeadActor.GetProperty().SetDiffuseColor(new double[] {color.getRed()/255.0, color.getGreen()/255.0, color.getBlue()/255.0});
 	}
 
 	public void updateEarthPosition(double[] earthPosition, double[] earthMarkerPosition)

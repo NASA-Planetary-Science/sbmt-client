@@ -1,24 +1,33 @@
 package edu.jhuapl.sbmt.stateHistory.controllers;
 
+import java.awt.Color;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 
 import javax.swing.DefaultComboBoxModel;
+import javax.swing.Icon;
 import javax.swing.JCheckBox;
+import javax.swing.JColorChooser;
 import javax.swing.JComboBox;
+import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JSlider;
 import javax.swing.JTextField;
 
 import org.apache.commons.math3.geometry.euclidean.threed.Vector3D;
+import org.jfree.ui.FontChooserDialog;
 
+import edu.jhuapl.saavtk.colormap.Colormap;
 import edu.jhuapl.saavtk.gui.render.RenderPanel;
 import edu.jhuapl.saavtk.gui.render.Renderer;
 import edu.jhuapl.saavtk.gui.render.Renderer.LightingType;
+import edu.jhuapl.saavtk.util.ColorIcon;
+import edu.jhuapl.sbmt.stateHistory.model.StateHistoryColoringFunctions;
 import edu.jhuapl.sbmt.stateHistory.model.StateHistoryModel;
 import edu.jhuapl.sbmt.stateHistory.model.interfaces.StateHistory;
 import edu.jhuapl.sbmt.stateHistory.model.stateHistory.RendererLookDirection;
 import edu.jhuapl.sbmt.stateHistory.model.stateHistory.StateHistoryCollection;
+import edu.jhuapl.sbmt.stateHistory.rendering.TrajectoryActor;
 import edu.jhuapl.sbmt.stateHistory.ui.version2.StateHistoryViewControlsPanel;
 
 import glum.item.ItemEventType;
@@ -77,10 +86,78 @@ public class StateHistoryViewControlsController implements ItemListener
             renderer.setCameraFocalPoint(new double[] {0,0,0});
         });
 
+        view.getLabelCheckBox().addActionListener(e -> {
+        	view.getDistanceOptions().setEnabled(view.getLabelCheckBox().isSelected());
+        	view.getLabelFontButton().setEnabled(view.getLabelCheckBox().isSelected());
+        	runs.setDistanceTextVisiblity(view.getLabelCheckBox().isSelected());
+        });
+
         view.getDistanceOptions().addActionListener(e ->
         {
 	        String selectedItem = (String)((JComboBox<String>)e.getSource()).getSelectedItem();
 	        runs.setDistanceText(selectedItem);
+        });
+
+        view.getLabelFontButton().addActionListener(e -> {
+        	JFrame fontFrame = new JFrame();
+        	FontChooserDialog fontDialog = new FontChooserDialog(fontFrame, "Choose Font", true, view.getLabelFont());
+        	fontDialog.setSize(400, 300);
+        	fontDialog.setVisible(true);
+        	if (fontDialog.getSelectedFont() != null)
+        	{
+        		view.setLabelFont(fontDialog.getSelectedFont());
+        		runs.setDistanceTextFont(fontDialog.getSelectedFont());
+        	}
+        });
+
+        view.getSpacecraftColorButton().addActionListener(e ->
+        {
+        	Color tmpColor = JColorChooser.showDialog(this.getView(), "Color Chooser Dialog", view.getSpacecraftColor());
+        	if (tmpColor == null)
+    			return;
+        	view.setSpacecraftColor(tmpColor);
+        	Icon spacecraftIcon = new ColorIcon(view.getSpacecraftColor(), Color.BLACK, view.getIconW(), 10);
+    		view.getSpacecraftColorButton().setIcon(spacecraftIcon);
+    		runs.setSpacecraftColor(view.getSpacecraftColor());
+        });
+
+        view.getEarthPointerColorButton().addActionListener(e ->
+        {
+        	Color tmpColor = JColorChooser.showDialog(this.getView(), "Color Chooser Dialog", view.getEarthPointerColor());
+        	if (tmpColor == null)
+    			return;
+        	view.setEarthPointerColor(tmpColor);
+        	Icon earthIcon = new ColorIcon(view.getEarthPointerColor(), Color.BLACK, view.getIconW(), 10);
+    		view.getEarthPointerColorButton().setIcon(earthIcon);
+    		runs.setEarthDirectionMarkerColor(view.getEarthPointerColor());
+        });
+
+        view.getSunPointerColorButton().addActionListener(e ->
+        {
+        	Color tmpColor = JColorChooser.showDialog(this.getView(), "Color Chooser Dialog", view.getSunPointerColor());
+        	if (tmpColor == null)
+    			return;
+        	view.setSunPointerColor(tmpColor);
+        	Icon sunIcon = new ColorIcon(view.getSunPointerColor(), Color.BLACK, view.getIconW(), 10);
+    		view.getSunPointerColorButton().setIcon(sunIcon);
+    		runs.setSunDirectionMarkerColor(view.getSunPointerColor());
+        });
+
+        view.getScPointerColorButton().addActionListener(e ->
+        {
+        	Color tmpColor = JColorChooser.showDialog(this.getView(), "Color Chooser Dialog", view.getScPointerColor());
+        	if (tmpColor == null)
+    			return;
+        	view.setScPointerColor(tmpColor);
+        	Icon scIcon = new ColorIcon(view.getScPointerColor(), Color.BLACK, view.getIconW(), 10);
+    		view.getScPointerColorButton().setIcon(scIcon);
+    		runs.setScDirectionMarkerColor(view.getScPointerColor());
+        });
+
+        view.getScSizeSlider().addChangeListener(e ->
+        {
+        	JSlider slider = (JSlider) e.getSource();
+        	runs.setSpacecraftSize(slider.getValue()*.0002);
         });
 
         view.getEarthSlider().addChangeListener(e ->
@@ -115,6 +192,24 @@ public class StateHistoryViewControlsController implements ItemListener
                 renderer.setCameraViewAngle(1.0);
             }
 
+        });
+
+        view.getColorFunctionComboBox().addActionListener(e -> {
+        	TrajectoryActor trajectoryActor = runs.getTrajectoryActorForStateHistory(runs.getCurrentRun());
+        	Colormap colormap = (Colormap)view.getColormapComboBox().getSelectedItem();
+        	colormap.setRangeMax(12);
+            colormap.setRangeMin(0);
+        	trajectoryActor.setColoringFunction(StateHistoryColoringFunctions.DISTANCE.getColoringFunction(), colormap);
+        	runs.refreshColoring(runs.getCurrentRun());
+        });
+
+        view.getColormapComboBox().addActionListener(e -> {
+        	TrajectoryActor trajectoryActor = runs.getTrajectoryActorForStateHistory(runs.getCurrentRun());
+        	Colormap colormap = (Colormap)view.getColormapComboBox().getSelectedItem();
+        	colormap.setRangeMax(12);
+            colormap.setRangeMin(0);
+        	trajectoryActor.setColoringFunction(StateHistoryColoringFunctions.DISTANCE.getColoringFunction(), colormap);
+        	runs.refreshColoring(runs.getCurrentRun());
         });
 
         view.getViewOptions().setSelectedIndex(0);
@@ -156,7 +251,7 @@ public class StateHistoryViewControlsController implements ItemListener
 				//toggle the ability to show the spacecraft depending on what mode we're in
 				boolean scSelected = (selectedItem == RendererLookDirection.SPACECRAFT);
 				view.getShowSpacecraft().setEnabled(!scSelected);
-		        view.getDistanceOptions().setEnabled(!scSelected);
+//		        view.getDistanceOptions().setEnabled(!scSelected);
 			}
         }
 	}
@@ -188,20 +283,25 @@ public class StateHistoryViewControlsController implements ItemListener
         	runs.setEarthDirectionMarkerVisibility(selected);
             earthSlider.setEnabled(selected);
             earthText.setEnabled(selected);
+            System.out.println("StateHistoryViewControlsController: itemStateChanged: earth pointer color " + view.getEarthPointerColor());
+            runs.setEarthDirectionMarkerColor(view.getEarthPointerColor());
         } else if(source == showSunMarker){
         	runs.setSunDirectionMarkerVisibility(selected);
             sunSlider.setEnabled(selected);
             sunText.setEnabled(selected);
+            runs.setSunDirectionMarkerColor(view.getSunPointerColor());
         } else if(source == showSpacecraftMarker){
         	runs.setSpacecraftDirectionMarkerVisibility(selected);
             spacecraftSlider.setEnabled(selected);
             spacecraftText.setEnabled(selected);
+            runs.setScDirectionMarkerColor(view.getScPointerColor());
         } else if(source == showSpacecraft){
-            distanceOptions.setEnabled(selected);
+//            distanceOptions.setEnabled(selected);
             if (selected)
             	historyModel.setDistanceText(distanceOptions.getSelectedItem().toString());
-            runs.setSpacecraftLabelVisibility(selected);
+//            runs.setSpacecraftLabelVisibility(selected);
             runs.setSpacecraftVisibility(selected);
+            view.getScSizeSlider().setEnabled(selected);
         } else if(source == showLighting){
         	if (selected)
         	{

@@ -2,12 +2,15 @@ package edu.jhuapl.sbmt.stateHistory.model;
 
 import java.io.File;
 import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Function;
 
 import javax.swing.JOptionPane;
+import javax.swing.SwingUtilities;
 
 import org.joda.time.DateTime;
 import org.joda.time.Interval;
@@ -321,7 +324,7 @@ public class StateHistoryModel //implements HasTime // extends AbstractModel imp
      * @return -1 if error thrown on creation, 1 if successfully created
      */
     // returns
-    public int createNewTimeInterval(StateHistoryKey key, double length, String name)
+    public int createNewTimeInterval(StateHistoryKey key, double length, String name, Function<Double, Void> progressFunction)
     {
 
         // gets the history file from the server
@@ -413,13 +416,31 @@ public class StateHistoryModel //implements HasTime // extends AbstractModel imp
                 timeArray.get(0)[0] = flybyState.getUtc();
             }
             timeArray.get(0)[1] = flybyState.getUtc();
-
+            double completion = 100*((double)(i-positionStart))/(double)(positionEnd - positionStart);
+            progressFunction.apply(completion);
         }
 
         history.setTime(history.getMinTime());
         history.setTrajectory(temp);
-        runs.addRunToList(history);
-        fireHistorySegmentCreatedListener(history);
+        try
+		{
+			SwingUtilities.invokeAndWait(new Runnable()
+			{
+
+				@Override
+				public void run()
+				{
+					 runs.addRunToList(history);
+				     fireHistorySegmentCreatedListener(history);
+
+				}
+			});
+		} catch (InvocationTargetException | InterruptedException e)
+		{
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
 
         return 1;
     }
