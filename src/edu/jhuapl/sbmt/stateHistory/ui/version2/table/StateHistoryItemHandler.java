@@ -37,7 +37,7 @@ public class StateHistoryItemHandler extends BasicItemHandler<StateHistory, Stat
 			case Show:
 				return stateHistoryCollection.getVisibility(stateHistory);
 			case Color:
-				return new ConstColorProvider(new Color((int)stateHistory.getTrajectoryColor()[0], (int)stateHistory.getTrajectoryColor()[1], (int)stateHistory.getTrajectoryColor()[2]));
+				return new ConstColorProvider(new Color((int)(stateHistory.getTrajectoryColor()[0]), (int)(stateHistory.getTrajectoryColor()[1]), (int)(stateHistory.getTrajectoryColor()[2]), (int)(stateHistory.getTrajectoryColor()[3])));
 			case Line:
 				return 1;
 			case Name:
@@ -77,6 +77,10 @@ public class StateHistoryItemHandler extends BasicItemHandler<StateHistory, Stat
 			{
 				stateHistoryCollection.setVisibility(history, (boolean) aValue);
 			}
+		}
+		else if (aEnum == StateHistoryColumnLookup.Color)
+		{
+			stateHistoryCollection.setTrajectoryColor(history, ((ConstColorProvider)aValue).getBaseColor());
 		}
 		else
 			throw new UnsupportedOperationException("Column is not supported. Enum: " + aEnum);

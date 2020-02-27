@@ -182,7 +182,7 @@ public class StateHistoryCollection extends SaavtkItemManager<StateHistory> /*Ab
         colormap.setRangeMax(12);
         colormap.setRangeMin(0);
 
-        trajectoryActor.setColoringFunction(StateHistoryColoringFunctions.DISTANCE.getColoringFunction(), colormap);
+        trajectoryActor.setColoringFunction(StateHistoryColoringFunctions.PER_TABLE.getColoringFunction(), colormap);
 
         trajectoryActor.setMinMaxFraction(run.getMinDisplayFraction(), run.getMaxDisplayFraction());
         trajectoryActor.VisibilityOn();
@@ -385,6 +385,18 @@ public class StateHistoryCollection extends SaavtkItemManager<StateHistory> /*Ab
     	int isVisible = (visibility == true) ? 1 : 0;
         renderer.SetVisibility(isVisible);
         this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, renderer);
+    }
+
+    public void setTrajectoryColor(StateHistory segment, Color color)
+    {
+    	double[] colorAsIntArray = new double[] {color.getRed(), color.getGreen(), color.getBlue(), color.getAlpha()};
+    	double[] colorAsDoubleArray = new double[] {color.getRed()/255.0, color.getGreen()/255.0, color.getBlue()/255.0, color.getAlpha()/255.0};
+    	segment.getTrajectory().setTrajectoryColor(colorAsIntArray);
+    	TrajectoryActor renderer = stateHistoryToRendererMap.get(segment);
+    	renderer.setColoringFunction(null, null);
+    	renderer.setTrajectoryColor(colorAsDoubleArray);
+    	refreshColoring(segment);
+//    	this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, renderer);
     }
 
     public void refreshColoring(StateHistory segment)

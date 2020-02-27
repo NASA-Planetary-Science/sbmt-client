@@ -199,7 +199,10 @@ public class StateHistoryViewControlsController implements ItemListener
         	Colormap colormap = (Colormap)view.getColormapComboBox().getSelectedItem();
         	colormap.setRangeMax(12);
             colormap.setRangeMin(0);
-        	trajectoryActor.setColoringFunction(StateHistoryColoringFunctions.DISTANCE.getColoringFunction(), colormap);
+            StateHistoryColoringFunctions coloringFunction = ((StateHistoryColoringFunctions)view.getColorFunctionComboBox().getSelectedItem());
+            view.getColormapComboBox().setEnabled(!(coloringFunction == StateHistoryColoringFunctions.PER_TABLE));
+
+        	trajectoryActor.setColoringFunction(coloringFunction.getColoringFunction(), colormap);
         	runs.refreshColoring(runs.getCurrentRun());
         });
 
@@ -208,7 +211,8 @@ public class StateHistoryViewControlsController implements ItemListener
         	Colormap colormap = (Colormap)view.getColormapComboBox().getSelectedItem();
         	colormap.setRangeMax(12);
             colormap.setRangeMin(0);
-        	trajectoryActor.setColoringFunction(StateHistoryColoringFunctions.DISTANCE.getColoringFunction(), colormap);
+
+        	trajectoryActor.setColoringFunction(((StateHistoryColoringFunctions)view.getColormapComboBox().getSelectedItem()).getColoringFunction(), colormap);
         	runs.refreshColoring(runs.getCurrentRun());
         });
 

@@ -134,7 +134,8 @@ public class StateHistoryViewControlsPanel extends JPanel implements ActionListe
     	coloringPanel.setEnabled(enabled);
     	colorFunctionComboBox.setEnabled(enabled);
     	colorFunctionLabel.setEnabled(enabled);
-    	colormapComboBox.setEnabled(enabled);
+    	colormapComboBox.setEnabled(!(((StateHistoryColoringFunctions)colorFunctionComboBox.getSelectedItem()) == StateHistoryColoringFunctions.PER_TABLE));
+//    	colormapComboBox.setEnabled(enabled);
     	colorRampLabel.setEnabled(enabled);
     	super.setEnabled(enabled);
     }
@@ -603,6 +604,8 @@ public class StateHistoryViewControlsPanel extends JPanel implements ActionListe
 
 		colormapComboBox.setPreferredSize(new Dimension(300, 30));
 		colormapComboBox.setMaximumSize(new Dimension(300, 30));
+
+		colormapComboBox.setEnabled(!(((StateHistoryColoringFunctions)colorFunctionComboBox.getSelectedItem()) == StateHistoryColoringFunctions.PER_TABLE));
 
     	JPanel horizPanel2 = new JPanel();
         horizPanel2.setLayout(new BoxLayout(horizPanel2, BoxLayout.X_AXIS));

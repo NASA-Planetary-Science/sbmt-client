@@ -6,6 +6,7 @@ import edu.jhuapl.sbmt.stateHistory.model.interfaces.Trajectory;
 
 public enum StateHistoryColoringFunctions
 {
+	PER_TABLE("Per Table", null),
 	DISTANCE("Distance", (traj, time) -> {
 
     	int index = traj.getTime().lastIndexOf(time);
