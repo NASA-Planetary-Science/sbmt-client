@@ -15,6 +15,7 @@ import javax.swing.JTable;
 import javax.swing.border.TitledBorder;
 import javax.swing.table.TableCellRenderer;
 
+import edu.jhuapl.saavtk.gui.table.TablePopupHandler;
 import edu.jhuapl.saavtk.gui.util.IconUtil;
 import edu.jhuapl.saavtk.gui.util.ToolTipUtil;
 import edu.jhuapl.sbmt.gui.lidar.color.ColorProvider;
@@ -24,6 +25,8 @@ import edu.jhuapl.sbmt.gui.table.ColorProviderCellRenderer;
 import edu.jhuapl.sbmt.gui.table.EphemerisTimeRenderer;
 import edu.jhuapl.sbmt.stateHistory.model.interfaces.StateHistory;
 import edu.jhuapl.sbmt.stateHistory.model.stateHistory.StateHistoryCollection;
+import edu.jhuapl.sbmt.stateHistory.ui.popup.StateHistoryGuiUtil;
+import edu.jhuapl.sbmt.stateHistory.ui.popup.StateHistoryPopupMenu;
 
 import glum.gui.GuiUtil;
 import glum.gui.misc.BooleanCellEditor;
@@ -32,7 +35,6 @@ import glum.gui.panel.itemList.ItemHandler;
 import glum.gui.panel.itemList.ItemListPanel;
 import glum.gui.panel.itemList.ItemProcessor;
 import glum.gui.panel.itemList.query.QueryComposer;
-import glum.gui.table.NumberRenderer;
 import glum.item.ItemManagerUtil;
 
 public class StateHistoryTableView extends JPanel
@@ -133,6 +135,9 @@ public class StateHistoryTableView extends JPanel
 			}
 		};
 
+		//Popup menu
+		StateHistoryPopupMenu stateHistoryPopupMenu = StateHistoryGuiUtil.formStateHistoryFileSpecPopupMenu(stateHistoryCollection, this);
+
     	// Table header
 		selectInvertB = GuiUtil.formButton(listener, IconUtil.getSelectInvert());
 		selectInvertB.setToolTipText(ToolTipUtil.getSelectInvert());
@@ -158,8 +163,8 @@ public class StateHistoryTableView extends JPanel
 		tmpComposer.addAttribute(StateHistoryColumnLookup.Map, Boolean.class, "Map", null);
 		tmpComposer.addAttribute(StateHistoryColumnLookup.Show, Boolean.class, "Show", null);
 		tmpComposer.addAttribute(StateHistoryColumnLookup.Color, Color.class, "Color", null);
-		tmpComposer.addAttribute(StateHistoryColumnLookup.Line, Double.class, "Line", null);
-		tmpComposer.addAttribute(StateHistoryColumnLookup.Name, String.class, "Name", null);
+//		tmpComposer.addAttribute(StateHistoryColumnLookup.Line, Double.class, "Line", null);
+//		tmpComposer.addAttribute(StateHistoryColumnLookup.Name, String.class, "Name", null);
 		tmpComposer.addAttribute(StateHistoryColumnLookup.Description, String.class, "Description", null);
 		tmpComposer.addAttribute(StateHistoryColumnLookup.StartTime, String.class, "Start Time", null);
 		tmpComposer.addAttribute(StateHistoryColumnLookup.EndTime, String.class, "End Time", null);
@@ -174,9 +179,9 @@ public class StateHistoryTableView extends JPanel
 		tmpComposer.setRenderer(StateHistoryColumnLookup.Show, new BooleanCellRenderer());
 		tmpComposer.setEditor(StateHistoryColumnLookup.Color, new ColorProviderCellEditor());
 		tmpComposer.setRenderer(StateHistoryColumnLookup.Color, new ColorProviderCellRenderer(false));
-		tmpComposer.setRenderer(StateHistoryColumnLookup.Line, new NumberRenderer("##", "--"));
-
-		tmpComposer.setRenderer(StateHistoryColumnLookup.Name, tmpTimeRenderer);
+//		tmpComposer.setRenderer(StateHistoryColumnLookup.Line, new NumberRenderer("##", "--"));
+//
+//		tmpComposer.setRenderer(StateHistoryColumnLookup.Name, tmpTimeRenderer);
 		tmpComposer.setRenderer(StateHistoryColumnLookup.Description, tmpTimeRenderer);
 		tmpComposer.setRenderer(StateHistoryColumnLookup.StartTime, tmpTimeRenderer);
 		tmpComposer.setRenderer(StateHistoryColumnLookup.EndTime, tmpTimeRenderer);
@@ -188,6 +193,7 @@ public class StateHistoryTableView extends JPanel
 		configureColumnWidths();
 		JTable stateHistoryTable = stateHistoryILP.getTable();
 		stateHistoryTable.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
+		stateHistoryTable.addMouseListener(new TablePopupHandler(stateHistoryCollection, stateHistoryPopupMenu));
 //		spectrumTable.addMouseListener(new SpectrumTablePopupListener<>(stateHistoryCollection, spectrumPopupMenu, spectrumTable));
 
 //		spectrumCollection.addListener(new ItemEventListener()
@@ -278,7 +284,7 @@ public class StateHistoryTableView extends JPanel
 		int minW = 30;
 
 		ColorProvider blackCP = new ConstColorProvider(Color.BLACK);
-		Object[] nomArr = { true, true, blackCP, 0.0, "Name", "Description", dateTimeStr, dateTimeStr };
+		Object[] nomArr = { true, true, blackCP, /*0.0, "Name",*/ "Description", dateTimeStr, dateTimeStr };
 		for (int aCol = 0; aCol < nomArr.length; aCol++)
 		{
 			TableCellRenderer tmpRenderer = tmpTable.getCellRenderer(0, aCol);

@@ -16,7 +16,6 @@ import vtk.vtkProp;
 import vtk.vtkScalarBarActor;
 import vtk.vtkTransform;
 
-import edu.jhuapl.saavtk.colormap.Colormap;
 import edu.jhuapl.saavtk.colormap.Colormaps;
 import edu.jhuapl.saavtk.model.SaavtkItemManager;
 import edu.jhuapl.saavtk.util.BoundingBox;
@@ -165,35 +164,25 @@ public class StateHistoryCollection extends SaavtkItemManager<StateHistory> /*Ab
     	this.spacecraft = spacecraft;
     }
 
-    public TrajectoryActor addRun(StateHistory run)//  throws FitsException, IOException
+    public TrajectoryActor addRun(StateHistory run)
     {
-//        StateHistoryKey key = run.getKey();
         if (stateHistoryToRendererMap.get(run) != null)
         {
         	TrajectoryActor trajActor = stateHistoryToRendererMap.get(run);
-//            select(spec);
             trajActor.SetVisibility(1);
             return trajActor;
         }
 
         // Get the trajectory actor the state history segment
         TrajectoryActor trajectoryActor = new TrajectoryActor(run.getTrajectory());
-        Colormap colormap = Colormaps.getNewInstanceOfBuiltInColormap("Rainbow");
-        colormap.setRangeMax(12);
-        colormap.setRangeMin(0);
-
-        trajectoryActor.setColoringFunction(StateHistoryColoringFunctions.PER_TABLE.getColoringFunction(), colormap);
+        trajectoryActor.setColoringFunction(StateHistoryColoringFunctions.PER_TABLE.getColoringFunction(), Colormaps.getNewInstanceOfBuiltInColormap("Rainbow"));
 
         trajectoryActor.setMinMaxFraction(run.getMinDisplayFraction(), run.getMaxDisplayFraction());
         trajectoryActor.VisibilityOn();
         trajectoryActor.GetMapper().Update();
 
         stateHistoryToRendererMap.put(run, trajectoryActor);
-//        for (StateHistoryCollectionChangedListener listener : changeListeners)
-//        	listener.historySegmentMapped(run);
 
-//        setCurrentRun(key);  TODO only do this when selected? this way loading a new interval doesn't override existing one
-//        run.addPropertyChangeListener(this);
         this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
         this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, trajectoryActor);
 
@@ -810,5 +799,16 @@ public class StateHistoryCollection extends SaavtkItemManager<StateHistory> /*Ab
         }
 	}
 
+	public void setOthersHiddenExcept(List<StateHistory> history)
+	{
+		for (StateHistory hist : getAllItems())
+		{
+			setVisibility(hist, history.contains(hist));
+		}
+	}
 
+	public SmallBodyModel getSmallBodyModel()
+	{
+		return smallBodyModel;
+	}
 }

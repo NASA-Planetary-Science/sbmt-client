@@ -8,9 +8,9 @@ public enum StateHistoryColumnLookup
 
 	Color,
 
-	Line,
-
-	Name,
+//	Line,
+//
+//	Name,
 
 	Description,
 
