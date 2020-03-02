@@ -763,9 +763,10 @@ public class ImagePopupMenu<K extends ImageKeyInterface> extends PopupMenu
 					exporter.SetRenderWindow(renderPanel.getRenderWindow());
 
 					Map<vtkActor, String> actorsToSave=Maps.newHashMap();
+//					image.getRendererHelper().get
 					actorsToSave.put(image.getFootprintActor(), "footprint");
-					actorsToSave.put(image.getOffLimbActor(), "offlimb");
-					actorsToSave.put(image.getOffLimbBoundaryActor(), "offlimb_boundary");
+					actorsToSave.put(image.getOfflimbActor(), "offlimb");
+					actorsToSave.put(image.getOfflimbBoundaryActor(), "offlimb_boundary");
 					actorsToSave.put(image.getFrustumActor(), "frustum");
 					actorsToSave.put(boundary.getActor(), "boundary");
 
