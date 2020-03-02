@@ -34,7 +34,7 @@ import edu.jhuapl.saavtk.model.Controller;
 import edu.jhuapl.saavtk.model.ModelManager;
 import edu.jhuapl.saavtk.model.ModelNames;
 import edu.jhuapl.saavtk.model.structure.AbstractEllipsePolygonModel;
-import edu.jhuapl.saavtk.model.structure.EllipsePolygon;
+import edu.jhuapl.saavtk.structure.Ellipse;
 import edu.jhuapl.saavtk.util.IdPair;
 import edu.jhuapl.sbmt.client.SmallBodyModel;
 import edu.jhuapl.sbmt.client.SmallBodyViewConfig;
@@ -46,9 +46,9 @@ import edu.jhuapl.sbmt.model.image.Image;
 import edu.jhuapl.sbmt.model.image.ImageCollection;
 import edu.jhuapl.sbmt.model.image.ImageKeyInterface;
 import edu.jhuapl.sbmt.model.image.ImageSource;
-import edu.jhuapl.sbmt.model.image.PerspectiveImage;
 import edu.jhuapl.sbmt.model.image.PerspectiveImageBoundary;
 import edu.jhuapl.sbmt.model.image.PerspectiveImageBoundaryCollection;
+import edu.jhuapl.sbmt.model.image.perspectiveImage.PerspectiveImage;
 import edu.jhuapl.sbmt.model.phobos.HierarchicalSearchSpecification.Selection;
 import edu.jhuapl.sbmt.query.database.ImageDatabaseSearchMetadata;
 import edu.jhuapl.sbmt.query.fixedlist.FixedListQuery;
@@ -504,7 +504,8 @@ public class ImageSearchModel implements Controller.Model, MetadataManager
         SmallBodyModel smallBodyModel = (SmallBodyModel)getModelManager().getModel(ModelNames.SMALL_BODY);
         if (selectionModel.getNumItems() > 0)
         {
-            EllipsePolygon region = selectionModel.getStructure(0);
+            int numberOfSides = selectionModel.getNumberOfSides();
+            Ellipse region = selectionModel.getItem(0);
 
             // Always use the lowest resolution model for getting the intersection cubes list.
             // Therefore, if the selection region was created using a higher resolution model,
@@ -512,12 +513,12 @@ public class ImageSearchModel implements Controller.Model, MetadataManager
             if (smallBodyModel.getModelResolution() > 0)
             {
                 vtkPolyData interiorPoly = new vtkPolyData();
-                smallBodyModel.drawRegularPolygonLowRes(region.getCenter(), region.getRadius(), region.getNumberOfSides(), interiorPoly, null);
+                smallBodyModel.drawRegularPolygonLowRes(region.getCenter().toArray(), region.getRadius(), numberOfSides, interiorPoly, null);
                 cubeList = smallBodyModel.getIntersectingCubes(interiorPoly);
             }
             else
             {
-                cubeList = smallBodyModel.getIntersectingCubes(region.getVtkInteriorPolyData());
+                cubeList = smallBodyModel.getIntersectingCubes(selectionModel.getVtkInteriorPolyDataFor(region));
             }
         }
 
@@ -576,7 +577,7 @@ public class ImageSearchModel implements Controller.Model, MetadataManager
         if (getInstrument().getSearchQuery() instanceof FixedListQuery)
         {
             FixedListQuery query = (FixedListQuery) getInstrument().getSearchQuery();
-            results = query.runQuery(FixedListSearchMetadata.of("Imaging Search", "imagelist", "images", query.getRootPath(), imageSource)).getResultlist();
+            results = query.runQuery(FixedListSearchMetadata.of("Imaging Search", "imagelist", "images", query.getRootPath(), imageSource, searchFilename)).getResultlist();
         }
         else
         {

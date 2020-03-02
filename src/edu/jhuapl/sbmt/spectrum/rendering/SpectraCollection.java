@@ -3,6 +3,7 @@ package edu.jhuapl.sbmt.spectrum.rendering;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -21,6 +22,7 @@ import edu.jhuapl.saavtk.util.Properties;
 import edu.jhuapl.sbmt.client.ISmallBodyModel;
 import edu.jhuapl.sbmt.client.SbmtSpectrumModelFactory;
 import edu.jhuapl.sbmt.spectrum.model.core.BasicSpectrum;
+import edu.jhuapl.sbmt.spectrum.model.core.SpectrumIOException;
 import edu.jhuapl.sbmt.spectrum.model.core.interfaces.IBasicSpectrumRenderer;
 import edu.jhuapl.sbmt.spectrum.model.core.interfaces.SearchSpec;
 import edu.jhuapl.sbmt.spectrum.model.core.interfaces.SpectrumCollectionChangedListener;
@@ -119,7 +121,7 @@ public class SpectraCollection<S extends BasicSpectrum> extends SaavtkItemManage
         return spectrumToActorsMap.keySet();
     }
 
-    public IBasicSpectrumRenderer<S> addSpectrum(S spectrum, boolean isCustom) //throws IOException
+    public IBasicSpectrumRenderer<S> addSpectrum(S spectrum, boolean isCustom) throws SpectrumIOException
     {
         if (spectrumToRendererMap.get(spectrum) != null)
         {
@@ -135,7 +137,12 @@ public class SpectraCollection<S extends BasicSpectrum> extends SaavtkItemManage
         	spectrumRenderer = SbmtSpectrumModelFactory.createSpectrumRenderer(spectrum, spectrum.getInstrument());
         	spectrumRenderer.getSpectrum().readSpectrumFromFile();
         }
-        catch (Exception e) {
+        catch (SpectrumIOException sioe)
+        {
+        	throw new SpectrumIOException(sioe);
+        }
+        catch (Exception e)
+        {
             e.printStackTrace();
         }
 
@@ -418,7 +425,7 @@ public class SpectraCollection<S extends BasicSpectrum> extends SaavtkItemManage
 	}
 
 	@Override
-	public void removeItems(List<S> specs)
+	public void removeItems(Collection<S> specs)
 	{
 		// Remove relevant state and VTK mappings
 		for (BasicSpectrum spec : specs)
@@ -433,7 +440,7 @@ public class SpectraCollection<S extends BasicSpectrum> extends SaavtkItemManage
 //		updateVtkVars(tmpL);
 	}
 
-	public void setAllItems(List<S> specs)
+	public void setAllItems(Collection<S> specs)
 	{
 		List<S> instrumentList = new ArrayList<S>();
 		for (S spec : specs)
@@ -457,7 +464,7 @@ public class SpectraCollection<S extends BasicSpectrum> extends SaavtkItemManage
 		{
 			if (spec.getInstrument().getDisplayName().equals(activeInstrument.getDisplayName()))
 			{
-				spec.setId(i++);
+				spec.setId(i++ + 1);
 				instrumentList.add(spec);
 			}
 		}
@@ -478,7 +485,7 @@ public class SpectraCollection<S extends BasicSpectrum> extends SaavtkItemManage
 	}
 
 	@Override
-	public void setSelectedItems(List<S> specs)
+	public void setSelectedItems(Collection<S> specs)
 	{
 		super.setSelectedItems(specs);
 	}

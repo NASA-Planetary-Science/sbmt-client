@@ -18,10 +18,11 @@ import edu.jhuapl.saavtk.model.LidarDataSource;
 import edu.jhuapl.saavtk.model.ModelManager;
 import edu.jhuapl.saavtk.model.PointInRegionChecker;
 import edu.jhuapl.saavtk.model.structure.AbstractEllipsePolygonModel;
-import edu.jhuapl.saavtk.model.structure.EllipsePolygon;
 import edu.jhuapl.saavtk.pick.PickManager;
+import edu.jhuapl.saavtk.structure.Ellipse;
 import edu.jhuapl.saavtk.util.BoundingBox;
 import edu.jhuapl.saavtk.util.FileCache.NonexistentRemoteFile;
+import edu.jhuapl.saavtk.util.FileCache.UnauthorizedAccessException;
 import edu.jhuapl.sbmt.client.BodyViewConfig;
 import edu.jhuapl.sbmt.lidar.hyperoctree.FSHyperTreeSkeleton;
 import edu.jhuapl.sbmt.lidar.hyperoctree.hayabusa2.Hayabusa2LidarHypertreeSkeleton;
@@ -89,22 +90,29 @@ public class LidarHyperTreeSearchPanel extends LidarSearchPanel
 					JOptionPane.ERROR_MESSAGE);
 			return;
 		}
+		catch (UnauthorizedAccessException aExp)
+		{
+			JOptionPane.showMessageDialog(this, "You do not have access to these data as the logged in user.", "Error",
+					JOptionPane.ERROR_MESSAGE);
+			return;
+		}
 
 		vtkPolyData interiorPoly = new vtkPolyData();
 		if (aSelectionRegion.getNumItems() > 0)
 		{
-			EllipsePolygon region = aSelectionRegion.getStructure(0);
+         int numberOfSides = aSelectionRegion.getNumberOfSides();
+			Ellipse region = aSelectionRegion.getItem(0);
 
 			// Always use the lowest resolution model for getting the intersection
 			// cubes list. Therefore, if the selection region was created using a
 			// higher resolution model, we need to recompute the selection region
 			// using the low res model.
 			if (refSmallBodyModel.getModelResolution() > 0)
-				refSmallBodyModel.drawRegularPolygonLowRes(region.getCenter(), region.getRadius(),
-						region.getNumberOfSides(), interiorPoly, null); // this sets
+				refSmallBodyModel.drawRegularPolygonLowRes(region.getCenter().toArray(), region.getRadius(),
+						numberOfSides, interiorPoly, null); // this sets
 																						// interiorPoly
 			else
-				interiorPoly = region.getVtkInteriorPolyData();
+				interiorPoly = aSelectionRegion.getVtkInteriorPolyDataFor(region);
 		}
 		else
 		{

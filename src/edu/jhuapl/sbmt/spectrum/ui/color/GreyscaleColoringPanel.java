@@ -36,7 +36,12 @@ public class GreyscaleColoringPanel<S extends BasicSpectrum> extends JPanel impl
     private JLabel greyMaxLabel;
     private ISpectralInstrument instrument;
     private GreyscaleSpectrumColorer<S> model;
-
+    private Dimension preferredSpinnerSize;
+    private Dimension minSpinnerSize;
+    private Dimension maxSpinnerSize;
+    private Dimension preferredComboSize;
+    private Dimension minComboSize;
+    private Dimension maxComboSize;
 
 	public GreyscaleColoringPanel(GreyscaleSpectrumColorer<S> model, ISpectralInstrument instrument)
 	{
@@ -50,9 +55,13 @@ public class GreyscaleColoringPanel<S extends BasicSpectrum> extends JPanel impl
 	{
 		setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
 
-        Dimension preferredSpinnerSize = new Dimension(100, 28);
-        Dimension minSpinnerSize = new Dimension(36, 22);
-        Dimension maxSpinnerSize = new Dimension(100, 22);
+        preferredSpinnerSize = new Dimension(100, 28);
+        minSpinnerSize = new Dimension(36, 22);
+        maxSpinnerSize = new Dimension(100, 22);
+
+        preferredComboSize = new Dimension(250, 28);
+        minComboSize = new Dimension(250, 28);
+        maxComboSize = new Dimension(250, 28);
 
         JPanel panel_10 = new JPanel();
         add(panel_10);
@@ -70,7 +79,7 @@ public class GreyscaleColoringPanel<S extends BasicSpectrum> extends JPanel impl
 
         greyComboBox = new JComboBox<String>();
         panel_12.add(greyComboBox);
-
+        panel_12.add(Box.createHorizontalGlue());
         greyMinLabel = new JLabel("Min");
         panel_12.add(greyMinLabel);
 
@@ -128,6 +137,10 @@ public class GreyscaleColoringPanel<S extends BasicSpectrum> extends JPanel impl
         }
 
         greyMaxSpinner.setValue(model.getGreyMaxVal());
+
+        greyComboBox.setPreferredSize(preferredComboSize);
+        greyComboBox.setMaximumSize(maxComboSize);
+        greyComboBox.setMinimumSize(minComboSize);
     }
 
 	private void greyComboBoxActionPerformed(ActionEvent evt) {

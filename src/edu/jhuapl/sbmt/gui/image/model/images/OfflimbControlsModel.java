@@ -4,7 +4,7 @@ import java.util.Vector;
 
 import edu.jhuapl.saavtk.model.Controller;
 import edu.jhuapl.sbmt.gui.image.model.OfflimbModelChangedListener;
-import edu.jhuapl.sbmt.model.image.PerspectiveImage;
+import edu.jhuapl.sbmt.model.image.perspectiveImage.PerspectiveImage;
 
 import crucible.crust.metadata.api.Key;
 import crucible.crust.metadata.api.Metadata;

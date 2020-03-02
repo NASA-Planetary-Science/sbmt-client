@@ -65,7 +65,7 @@ public class SpectrumBoundsCalculator
         SmallBodyViewConfig.initialize();
 
         System.setProperty("java.awt.headless", "true");
-        NativeLibraryLoader.loadVtkLibrariesHeadless();
+        NativeLibraryLoader.loadHeadlessVtkLibraries();
 
 
         // get body model

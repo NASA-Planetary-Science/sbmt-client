@@ -30,8 +30,7 @@ import edu.jhuapl.saavtk.model.structure.Line;
 import edu.jhuapl.saavtk.model.structure.Polygon;
 import edu.jhuapl.saavtk.util.Configuration;
 import edu.jhuapl.saavtk.util.Debug;
-import edu.jhuapl.saavtk.util.DownloadableFileInfo;
-import edu.jhuapl.saavtk.util.DownloadableFileInfo.DownloadableFileState;
+import edu.jhuapl.saavtk.util.DownloadableFileState;
 import edu.jhuapl.saavtk.util.FileCache;
 import edu.jhuapl.saavtk.util.LatLon;
 import edu.jhuapl.saavtk.util.SafeURLPaths;
@@ -42,6 +41,7 @@ import edu.jhuapl.sbmt.gui.image.model.custom.CustomPerspectiveImageKey;
 import edu.jhuapl.sbmt.model.bennu.spectra.otes.OTES;
 import edu.jhuapl.sbmt.model.bennu.spectra.ovirs.OVIRS;
 import edu.jhuapl.sbmt.model.eros.nis.NIS;
+import edu.jhuapl.sbmt.model.image.ImageFactory;
 import edu.jhuapl.sbmt.model.phobos.MEGANE;
 import edu.jhuapl.sbmt.model.ryugu.nirs3.NIRS3;
 import edu.jhuapl.sbmt.spectrum.model.core.SpectrumInstrumentMetadata;
@@ -65,6 +65,7 @@ public class SbmtMultiMissionTool
 
     public enum Mission
 	{
+    	APL_INTERNAL_NIGHTLY("b1bc7ec"),
 		APL_INTERNAL("b1bc7ed"),
 		PUBLIC_RELEASE("3ee38f0"),
 		TEST_APL_INTERNAL("fb404a7"),
@@ -155,6 +156,7 @@ public class SbmtMultiMissionTool
 		NIS.initializeSerializationProxy();
 		NIRS3.initializeSerializationProxy();
 		MEGANE.initializeSerializationProxy();
+		ImageFactory.initializeSerializationProxy();
 	}
 
 	public static void setEnableAuthentication(boolean enableAuthentication)
@@ -211,6 +213,11 @@ public class SbmtMultiMissionTool
 
 		switch (mission)
 		{
+		case APL_INTERNAL_NIGHTLY:
+			Configuration.setAppName("sbmt-internal-nightly");
+			Configuration.setCacheVersion("2");
+			Configuration.setAppTitle("SBMT");
+			break;
 		case APL_INTERNAL:
 		case PUBLIC_RELEASE:
 			Configuration.setAppName("sbmt");
@@ -350,6 +357,7 @@ public class SbmtMultiMissionTool
                 SbmtSplash splash = null;
                 switch (mission)
                 {
+                case APL_INTERNAL_NIGHTLY:
                 case APL_INTERNAL:
                 case PUBLIC_RELEASE:
                 case STAGE_APL_INTERNAL:
@@ -479,10 +487,14 @@ public class SbmtMultiMissionTool
 		redirectStreams = getOption(args, "--no-stream-redirect") == null;
 		clearCache = getOption(args, "--auto-clear-cache") != null;
 		SmallBodyViewConfig.betaMode = getOption(args, "--beta") != null;
-		if (getOption(args, "--debug") != null)
-		{
-			Debug.setEnabled(true);
-		}
+        if (getOption(args, "--debug") != null)
+        {
+            Debug.setEnabled(true);
+        }
+
+        // Use --debug-cache to control both the debug and informational messages.
+        boolean debugCache = getOption(args, "--debug-cache") != null;
+        FileCache.enableDebug(debugCache);
 
 		// Get other arguments.
 		initialShapeModelPath = null;
@@ -535,7 +547,7 @@ public class SbmtMultiMissionTool
 
 	        Configuration.setupPasswordAuthentication(dataRootUrl, passwordFilesToTry);
 	        FileCache.addServerUrlPropertyChangeListener(e -> {
-	            if (e.getPropertyName().equals(DownloadableFileInfo.STATE_PROPERTY))
+	            if (e.getPropertyName().equals(DownloadableFileState.STATE_PROPERTY))
 	            {
 	                DownloadableFileState rootState = (DownloadableFileState) e.getNewValue();
 	                if (rootState.getUrlState().getStatus() == UrlStatus.NOT_AUTHORIZED)
@@ -545,7 +557,7 @@ public class SbmtMultiMissionTool
 	                }
 	            }
 	        });
-	        if (!FileCache.instance().getRootInfo().getState().isAccessible())
+	        if (!FileCache.instance().getRootState().isAccessible())
 	        {
 	            FileCache.setOfflineMode(true, Configuration.getCacheDir());
 	            String message = "Unable to find server " + dataRootUrl + ". Starting in offline mode. See console log for more information.";

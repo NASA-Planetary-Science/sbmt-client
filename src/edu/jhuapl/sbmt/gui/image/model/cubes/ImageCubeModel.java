@@ -14,6 +14,7 @@ import edu.jhuapl.sbmt.model.image.ColorImage.NoOverlapException;
 import edu.jhuapl.sbmt.model.image.ImageCollection;
 import edu.jhuapl.sbmt.model.image.ImageCube;
 import edu.jhuapl.sbmt.model.image.ImageCube.ImageCubeKey;
+import edu.jhuapl.sbmt.model.image.perspectiveImage.PerspectiveImage;
 
 import crucible.crust.metadata.api.Key;
 import crucible.crust.metadata.api.Metadata;
@@ -22,7 +23,6 @@ import crucible.crust.metadata.impl.SettableMetadata;
 
 import edu.jhuapl.sbmt.model.image.ImageCubeCollection;
 import edu.jhuapl.sbmt.model.image.ImageKeyInterface;
-import edu.jhuapl.sbmt.model.image.PerspectiveImage;
 
 import crucible.crust.metadata.api.Key;
 import crucible.crust.metadata.api.Metadata;

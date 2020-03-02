@@ -4,6 +4,66 @@
 
 # Release Notes
 
+## February 19, 2020 (SBMT-0.7.9)
+
+### New:
+- Added additional information columns to structures tables.
+- Added ability to sort structure column tables by numerical content.
+- Added support of comments at the top of structures files, denoted by # for circles, ellipses, and points files, and denoted by <!--   This should be commented out --> appearing after the first XML line of paths and polygons files.
+- Added ability to load structures of any type from any structures sub-tab.
+- Added GUI to facilitate loading/replacing/appending structures files.
+- Improved the logic used when creating new paths and polygons.
+- Added a progress bar when loading paths and polygons.
+- Changed structures files to have labels hidden by default when loaded.
+- Improved the resize behavior of spectra panels.
+- Established new image class for images of Phobos and Deimos (MARS_MOON_IMAGE) for custom import.
+- Added ability to import custom shape models in stl format.
+- Updated images in Phobos>Gaskell 2011 model to match those in Phobos>Ernst et al. model.
+
+### Bug Fixes:
+- Fixed a bug that caused the colors of circles and points to default to pink when loaded.
+- Fixed a bug that caused Itokawa AMICA images to appear black.
+- Fixed a bug that prevented circles from being drawn on some custom loaded shape models.
+- Fixed a bug that caused pull-down menus in custom spectra import GUI to overlap.
+- Fixed a bug that caused simulate lighting option to not be marked as on after selected via right click.
+- Fixed a bug that could cause a hard crash when appending or replacing structures files.
+- Fixed bugs that caused profile plots (selected via paths) to behave improperly.
+- Fixed bug that prevented “cancel” button from working when loading structures.
+- Fixed a bug that caused database queries to fail instead of returning a fixed list of results.
+- Fixed a bug that caused issues when rendering structure labels.
+- Fixed a bug affecting the implementation of shape model opacity.
+
+## December 12, 2019 (SBMT-0.7.8)
+
+### New:
+- Added feature to save custom stretches for images.
+- Numerous updates to the spectra instrument and custom data tabs.
+- Provided two ways to save spectra: SBMT original file and human readable.
+- Added option to view the spacecraft position on lidar tabs.
+- Removed level of detail changes when selecting a structure or data file via the shape model.
+- Number of datapoints in a lidar track are now pre-computed for all lidar search tabs and the OREx OLA browse tab.
+- Added the ability to visualize a lidar colorbar in the renderer window.
+
+### Bug Fixes:
+- Re-instated several keyboard shortcuts (f, r, s, w).
+- Fixed a bug that caused custom images not to load for Windows.
+- Fixed a bug that caused a program crash when searches on distinct datasets were run in series.
+- Fixed a bug that caused exported DTM models not to reflect their parents’ data tabs.
+- Fixed a bug that caused incorrect computation of elevation across profiles.
+- Fixed a bug that caused error messages when selecting a pre-existing custom model.
+- Fixed a bug that caused some images of Phobos and Deimos to be flipped when projected on the model.
+- Fixed the broken “tutorials” link in the help menu.
+
+### OREx only:
+- Delivery of 20191027 model.
+- Update of 20190828 model.
+- Update of 20190612 model. 
+- Fixed bug that caused OLA start and stop times to be incorrect.
+- Updated Bennu observing conditions files.
+- Added OVIRS tab under custom data.
+- Improvements to the way custom Bennu images are imported.
+- Re-ordered models chronologically instead of alphabetically.
+
 ## October 25, 2019 (SBMT-0.7.7.2)
 
 ### Bug Fixes:

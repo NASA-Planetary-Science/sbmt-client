@@ -49,12 +49,14 @@
       	<pathelement location="${libDir}/crucible-metadata-4.3.jar"/>
       	<pathelement location="${libDir}/crucible-settings-4.0.jar"/>
         <pathelement location="${libDir}/commons-io-2.0.jar"/>
+        <pathelement location="${libDir}/commons-math3-3.6.1.jar"/>
         <pathelement location="${libDir}/commons-math3-3.2.jar"/>
+      	<pathelement location="${libDir}/commons-text-1.8.jar"/>
         <pathelement location="${libDir}/gson-2.8.0.jar"/>
         <pathelement location="${libDir}/nom-tam-fits-1.13.1m0.jar"/>
         <pathelement location="${libDir}/guava-13.0.1.jar"/>
       	<pathelement location="${libDir}/guava-mini-0.1.jar"/>
-        <pathelement location="${libDir}/glum-1.1.1.jar"/>
+        <pathelement location="${libDir}/glum-1.2.jar"/>
         <pathelement location="${libDir}/Jama-1.0.2.jar"/>
         <pathelement location="${libDir}/jcommon-1.0.16.jar"/>
         <pathelement location="${libDir}/jfreechart-1.0.13.jar"/>
@@ -168,17 +170,19 @@
 		   debug="on" >
       <classpath>
         <fileset dir="${rootdir}/lib">
-          <include name="**/*.jar" />
+          <include name="*.jar" />
         </fileset>
+        <pathelement location="${libDir}/commons-math3-3.6.1.jar"/>
       	<pathelement location="${libDir}/crucible-metadata-4.3.jar"/>
       	<pathelement location="${libDir}/crucible-settings-4.0.jar"/>
         <pathelement location="${libDir}/commons-io-2.0.jar"/>
         <pathelement location="${libDir}/commons-math3-3.2.jar"/>
+      	<pathelement location="${libDir}/commons-text-1.8.jar"/>
         <pathelement location="${libDir}/gson-2.8.0.jar"/>
         <pathelement location="${libDir}/nom-tam-fits-1.13.1m0.jar"/>
         <pathelement location="${libDir}/guava-13.0.1.jar"/>
       	<pathelement location="${libDir}/guava-mini-0.1.jar"/>
-        <pathelement location="${libDir}/glum-1.1.1.jar"/>
+        <pathelement location="${libDir}/glum-1.2.jar"/>
         <pathelement location="${libDir}/Jama-1.0.2.jar"/>
         <pathelement location="${libDir}/jcommon-1.0.16.jar"/>
         <pathelement location="${libDir}/jfreechart-1.0.13.jar"/>
@@ -224,12 +228,14 @@
         	commons-io-2.0.jar
         	crucible-metadata-4.3.jar
         	crucible-settings-4.0.jar
+        	commons-math3-3.6.1.jar
             commons-math3-3.2.jar
+          	commons-text-1.8.jar
             gson-2.8.0.jar
             nom-tam-fits-1.13.1m0.jar
             guava-13.0.1.jar
         	guava-mini-0.1.jar
-            glum-1.1.1.jar
+            glum-1.2.jar
             Jama-1.0.2.jar
             jcommon-1.0.16.jar
             jfreechart-1.0.13.jar
@@ -341,12 +347,14 @@
         	commons-io-2.0.jar
         	crucible-settings-4.0.jar
         	crucible-metadata-4.3.jar
+            commons-math3-3.6.1.jar
             commons-math3-3.2.jar
+          	commons-text-1.8.jar
         	gson-2.8.0.jar
             nom-tam-fits-1.13.1m0.jar
             guava-13.0.1.jar
         	guava-mini-0.1.jar
-            glum-1.1.1.jar
+            glum-1.2.jar
             Jama-1.0.2.jar
             jcommon-1.0.16.jar
             jfreechart-1.0.13.jar
@@ -444,12 +452,14 @@
         <attribute name="Class-Path" value="commons-io-2.0.jar
         									crucible-settings-4.0.jar
         									crucible-metadata-4.3.jar
+        									commons-math3-3.6.1.jar
                                             commons-math3-3.2.jar
+                                            commons-text-1.8.jar
                                             gson-2.8.0.jar
                                             nom-tam-fits-1.13.1m0.jar
                                             guava-13.0.1.jar
 											guava-mini-0.1.jar
-                                            glum-1.1.1.jar
+                                            glum-1.2.jar
                                             Jama-1.0.2.jar
                                             jcommon-1.0.16.jar
                                             jfreechart-1.0.13.jar
@@ -578,12 +588,14 @@
   	<delete file="${rootlibDir}/crucible-settings-4.0.jar"/>
    	<delete file="${rootlibDir}/crucible-metadata-4.3.jar"/>
     <delete file="${rootlibDir}/commons-io-2.0.jar"/>
+    <delete file="${rootlibDir}/commons-math3-3.6.1.jar"/>
     <delete file="${rootlibDir}/commons-math3-3.2.jar"/>
+  	<delete file="${rootlibDir}/commons-text-1.8.jar"/>
     <delete file="${rootlibDir}/gson-2.8.0.jar"/>
     <delete file="${rootlibDir}/nom-tam-fits-1.13.1m0.jar"/>
     <delete file="${rootlibDir}/guava-13.0.1.jar"/>
   	<delete file="${rootlibDir}/guava-mini-0.1.jar"/>
-    <delete file="${rootlibDir}/glum-1.1.1.jar"/>
+    <delete file="${rootlibDir}/glum-1.2.jar"/>
     <delete file="${rootlibDir}/Jama-1.0.2.jar"/>
     <delete file="${rootlibDir}/jcommon-1.0.16.jar"/>
     <delete file="${rootlibDir}/jfreechart-1.0.13.jar"/>
@@ -621,9 +633,11 @@
 <!--
         <pathelement location="${libDir}/commons-io-2.0.jar"/>
         <pathelement location="${libDir}/commons-math3-3.2.jar"/>
+        <pathelement location="${libDir}/commons-text-1.8.jar"/>
         <pathelement location="${libDir}/gson-2.8.0.jar"/>
         <pathelement location="${libDir}/nom-tam-fits-1.13.1m0.jar"/>
         <pathelement location="${libDir}/guava-13.0.1.jar"/>
+        <pathelement location="${libDir}/glum-1.2.jar"/>
         <pathelement location="${libDir}/Jama-1.0.2.jar"/>
         <pathelement location="${libDir}/jcommon-1.0.16.jar"/>
         <pathelement location="${libDir}/jfreechart-1.0.13.jar"/>
@@ -645,12 +659,14 @@
       	<pathelement location="${libDir}/crucible-settings-4.0.jar"/>
       	<pathelement location="${libDir}/crucible-metadata-4.3.jar"/>
         <pathelement location="${libDir}/commons-io-2.0.jar"/>
+        <pathelement location="${libDir}/commons-math3-3.6.1.jar"/>
         <pathelement location="${libDir}/commons-math3-3.2.jar"/>
+        <pathelement location="${libDir}/commons-text-1.8.jar"/>
         <pathelement location="${libDir}/gson-2.8.0.jar"/>
         <pathelement location="${libDir}/nom-tam-fits-1.13.1m0.jar"/>
         <pathelement location="${libDir}/guava-13.0.1.jar"/>
       	<pathelement location="${libDir}/guava-mini-0.1.jar"/>
-        <pathelement location="${libDir}/glum-1.1.1.jar"/>
+        <pathelement location="${libDir}/glum-1.2.jar"/>
         <pathelement location="${libDir}/Jama-1.0.2.jar"/>
         <pathelement location="${libDir}/jcommon-1.0.16.jar"/>
         <pathelement location="${libDir}/jfreechart-1.0.13.jar"/>

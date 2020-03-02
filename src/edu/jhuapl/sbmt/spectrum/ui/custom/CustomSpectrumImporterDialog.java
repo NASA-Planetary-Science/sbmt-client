@@ -404,7 +404,6 @@ public class CustomSpectrumImporterDialog extends JDialog
         for (SpectraType type : spectraTypes)
         {
         	String typeName = type.getDisplayName();
-        	if (typeName.contains("_")) typeName = typeName.substring(0, typeName.indexOf("_"));
         	if (instrument.getDisplayName().equals(typeName))
         		comboBoxModel.addElement(type);
         }

@@ -1,6 +1,8 @@
 package edu.jhuapl.sbmt.spectrum.model.core;
 
-public class SpectrumIOException extends Exception
+import java.io.IOException;
+
+public class SpectrumIOException extends IOException
 {
 
 	public SpectrumIOException()
@@ -26,11 +28,11 @@ public class SpectrumIOException extends Exception
 		// TODO Auto-generated constructor stub
 	}
 
-	public SpectrumIOException(String message, Throwable cause, boolean enableSuppression, boolean writableStackTrace)
-	{
-		super(message, cause, enableSuppression, writableStackTrace);
-		// TODO Auto-generated constructor stub
-	}
+//	public SpectrumIOException(String message, Throwable cause, boolean enableSuppression, boolean writableStackTrace)
+//	{
+//		super(message, cause, enableSuppression, writableStackTrace);
+//		// TODO Auto-generated constructor stub
+//	}
 
 
 }

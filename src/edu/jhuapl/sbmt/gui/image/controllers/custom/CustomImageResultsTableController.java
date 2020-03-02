@@ -42,8 +42,8 @@ import edu.jhuapl.sbmt.gui.image.ui.custom.CustomImageImporterDialog.ProjectionT
 import edu.jhuapl.sbmt.model.image.ImageCollection;
 import edu.jhuapl.sbmt.model.image.ImageKeyInterface;
 import edu.jhuapl.sbmt.model.image.ImagingInstrument;
-import edu.jhuapl.sbmt.model.image.PerspectiveImage;
 import edu.jhuapl.sbmt.model.image.PerspectiveImageBoundaryCollection;
+import edu.jhuapl.sbmt.model.image.perspectiveImage.PerspectiveImage;
 
 public class CustomImageResultsTableController extends ImageResultsTableController
 {
@@ -315,13 +315,19 @@ public class CustomImageResultsTableController extends ImageResultsTableControll
                 CustomImageKeyInterface info;
                 if (key.getProjectionType() == ProjectionType.PERSPECTIVE)
         		{
-        			info = new CustomPerspectiveImageKey(SafeURLPaths.instance().getUrl(getCustomDataFolder() + File.separator + key.getImageFilename()), key.getImageFilename(), key.getSource(), key.getImageType(), ((CustomPerspectiveImageKey)key).getRotation(), ((CustomPerspectiveImageKey)key).getFlip(), key.getFileType(), key.getPointingFile(), key.getDate(), key.getName());
+        			info = new CustomPerspectiveImageKey( //
+        			        SafeURLPaths.instance().getUrl(getCustomDataFolder() + File.separator + key.getImageFilename()), //
+        			        key.getImageFilename(), key.getSource(), key.getImageType(), //
+        			        ((CustomPerspectiveImageKey)key).getRotation(), ((CustomPerspectiveImageKey)key).getFlip(), //
+        			        key.getFileType(), key.getPointingFile(), key.getDate(), key.getOriginalName());
                     boundaries.addBoundary(info);
 
         		}
         		else
         		{
-        			info = new CustomCylindricalImageKey(SafeURLPaths.instance().getUrl(getCustomDataFolder() + File.separator + key.getImageFilename()), key.getImageFilename(), key.getImageType(), key.getSource(), key.getDate(), key.getName());
+        			info = new CustomCylindricalImageKey( //
+        			        SafeURLPaths.instance().getUrl(getCustomDataFolder() + File.separator + key.getImageFilename()), //
+        			        key.getImageFilename(), key.getImageType(), key.getSource(), key.getDate(), key.getOriginalName());
         		}
                 //TODO For now, we don't handle cylindrical image boundaries, since it is a PerspectiveImageBoundary - need to make new classes for this.
             }
@@ -427,7 +433,11 @@ public class CustomImageResultsTableController extends ImageResultsTableControll
         CustomImageKeyInterface info;
         if (key.getProjectionType() == ProjectionType.PERSPECTIVE)
 		{
-			info = new CustomPerspectiveImageKey(SafeURLPaths.instance().getUrl(getCustomDataFolder() + File.separator + key.getImageFilename()), key.getImageFilename(), key.getSource(), key.getImageType(), ((CustomPerspectiveImageKey)key).getRotation(), ((CustomPerspectiveImageKey)key).getFlip(), key.getFileType(), key.getPointingFile(), key.getDate(), key.getName());
+			info = new CustomPerspectiveImageKey(//
+			        SafeURLPaths.instance().getUrl(getCustomDataFolder() + File.separator + key.getImageFilename()), //
+			        key.getImageFilename(), key.getSource(), key.getImageType(), //
+			        ((CustomPerspectiveImageKey)key).getRotation(), ((CustomPerspectiveImageKey)key).getFlip(), //
+			        key.getFileType(), key.getPointingFile(), key.getDate(), key.getOriginalName());
 		}
 		else
 		{
@@ -519,11 +529,17 @@ public class CustomImageResultsTableController extends ImageResultsTableControll
                 CustomImageKeyInterface info = results.get(row);
                 if (info.getProjectionType() == ProjectionType.PERSPECTIVE)
         		{
-        			key = new CustomPerspectiveImageKey(SafeURLPaths.instance().getUrl(getCustomDataFolder() + File.separator + info.getImageFilename()), info.getImageFilename(), info.getSource(), info.getImageType(), ((CustomPerspectiveImageKey)info).getRotation(), ((CustomPerspectiveImageKey)info).getFlip(), info.getFileType(), info.getPointingFile(), info.getDate(), info.getName());
+        			key = new CustomPerspectiveImageKey( //
+        			        SafeURLPaths.instance().getUrl(getCustomDataFolder() + File.separator + info.getImageFilename()), //
+        			        info.getImageFilename(), info.getSource(), info.getImageType(), //
+        			        ((CustomPerspectiveImageKey)info).getRotation(), ((CustomPerspectiveImageKey)info).getFlip(), //
+        			        info.getFileType(), info.getPointingFile(), info.getDate(), info.getOriginalName());
         		}
         		else
         		{
-        			key = new CustomCylindricalImageKey(SafeURLPaths.instance().getUrl(getCustomDataFolder() + File.separator + info.getImageFilename()), info.getImageFilename(), info.getImageType(), info.getSource(), info.getDate(), info.getName());
+        			key = new CustomCylindricalImageKey( //
+        			        SafeURLPaths.instance().getUrl(getCustomDataFolder() + File.separator + info.getImageFilename()), //
+        			        info.getImageFilename(), info.getImageType(), info.getSource(), info.getDate(), info.getOriginalName());
         		}
                 // There used to be an assignment here of the key.imageType, but that field is now immutable.
                 // However, it appears that this assignment is not necessary -- the correct ImageType is
