@@ -406,6 +406,9 @@ public class SbmtView extends View implements PropertyChangeListener
 
 		for (ImagingInstrument instrument : getPolyhedralModelConfig().imagingInstruments)
 		{
+			PerspectiveImageBoundaryCollection colorBoundaries = (PerspectiveImageBoundaryCollection) getModelManager().getModel(ModelNames.PERSPECTIVE_IMAGE_BOUNDARIES);
+			PerspectiveImageBoundaryCollection cubeBoundaries = (PerspectiveImageBoundaryCollection) getModelManager().getModel(ModelNames.PERSPECTIVE_IMAGE_BOUNDARIES);
+
 			if (instrument.spectralMode == SpectralImageMode.MONO)
 			{
 				ImageCollection images = (ImageCollection) getModelManager().getModel(ModelNames.IMAGES);
@@ -413,13 +416,14 @@ public class SbmtView extends View implements PropertyChangeListener
 				ColorImageCollection colorImages = (ColorImageCollection) getModelManager().getModel(ModelNames.COLOR_IMAGES);
 				ImageCubeCollection imageCubes = (ImageCubeCollection) getModelManager().getModel(ModelNames.CUBE_IMAGES);
 
+
 				PopupMenu popupMenu = new ImagePopupMenu<>(getModelManager(), images, boundaries, (SbmtInfoWindowManager) getInfoPanelManager(), (SbmtSpectrumWindowManager) getSpectrumPanelManager(), getRenderer(), getRenderer());
 				registerPopup(getModel(ModelNames.PERSPECTIVE_IMAGE_BOUNDARIES), popupMenu);
 
-				popupMenu = new ColorImagePopupMenu(colorImages, (SbmtInfoWindowManager) getInfoPanelManager(), getModelManager(), getRenderer());
+				popupMenu = new ColorImagePopupMenu(colorImages, colorBoundaries, (SbmtInfoWindowManager) getInfoPanelManager(), getModelManager(), getRenderer(), getRenderer());
 				registerPopup(getModel(ModelNames.COLOR_IMAGES), popupMenu);
 
-				popupMenu = new ImageCubePopupMenu(imageCubes, boundaries, (SbmtInfoWindowManager) getInfoPanelManager(), (SbmtSpectrumWindowManager) getSpectrumPanelManager(), getRenderer(), getRenderer());
+				popupMenu = new ImageCubePopupMenu(imageCubes, cubeBoundaries, (SbmtInfoWindowManager) getInfoPanelManager(), (SbmtSpectrumWindowManager) getSpectrumPanelManager(), getRenderer(), getRenderer());
 				registerPopup(getModel(ModelNames.CUBE_IMAGES), popupMenu);
 			}
 
@@ -432,7 +436,7 @@ public class SbmtView extends View implements PropertyChangeListener
 				PopupMenu popupMenu = new ImagePopupMenu<>(getModelManager(), images, boundaries, (SbmtInfoWindowManager) getInfoPanelManager(), (SbmtSpectrumWindowManager) getSpectrumPanelManager(), getRenderer(), getRenderer());
 				registerPopup(getModel(ModelNames.PERSPECTIVE_IMAGE_BOUNDARIES), popupMenu);
 
-				popupMenu = new ColorImagePopupMenu(colorImages, (SbmtInfoWindowManager) getInfoPanelManager(), getModelManager(), getRenderer());
+				popupMenu = new ColorImagePopupMenu(colorImages, colorBoundaries, (SbmtInfoWindowManager) getInfoPanelManager(), getModelManager(), getRenderer(), getRenderer());
 				registerPopup(getModel(ModelNames.COLOR_IMAGES), popupMenu);
 			}
 			else if (instrument.spectralMode == SpectralImageMode.HYPER)
@@ -445,10 +449,10 @@ public class SbmtView extends View implements PropertyChangeListener
 				PopupMenu popupMenu = new ImagePopupMenu<>(getModelManager(), images, boundaries, (SbmtInfoWindowManager) getInfoPanelManager(), (SbmtSpectrumWindowManager) getSpectrumPanelManager(), getRenderer(), getRenderer());
 				registerPopup(getModel(ModelNames.PERSPECTIVE_IMAGE_BOUNDARIES), popupMenu);
 
-				popupMenu = new ColorImagePopupMenu(colorImages, (SbmtInfoWindowManager) getInfoPanelManager(), getModelManager(), getRenderer());
+				popupMenu = new ColorImagePopupMenu(colorImages, colorBoundaries, (SbmtInfoWindowManager) getInfoPanelManager(), getModelManager(), getRenderer(), getRenderer());
 				registerPopup(getModel(ModelNames.COLOR_IMAGES), popupMenu);
 
-				popupMenu = new ImageCubePopupMenu(imageCubes, boundaries, (SbmtInfoWindowManager) getInfoPanelManager(), (SbmtSpectrumWindowManager) getSpectrumPanelManager(), getRenderer(), getRenderer());
+				popupMenu = new ImageCubePopupMenu(imageCubes, cubeBoundaries, (SbmtInfoWindowManager) getInfoPanelManager(), (SbmtSpectrumWindowManager) getSpectrumPanelManager(), getRenderer(), getRenderer());
 				registerPopup(getModel(ModelNames.CUBE_IMAGES), popupMenu);
 			}
 		}

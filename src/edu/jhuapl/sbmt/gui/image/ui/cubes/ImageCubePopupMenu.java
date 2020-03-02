@@ -38,11 +38,11 @@ import edu.jhuapl.sbmt.client.SbmtInfoWindowManager;
 import edu.jhuapl.sbmt.client.SbmtSpectrumWindowManager;
 import edu.jhuapl.sbmt.model.image.Image;
 import edu.jhuapl.sbmt.model.image.ImageCube.ImageCubeKey;
-import edu.jhuapl.sbmt.model.image.perspectiveImage.PerspectiveImage;
 import edu.jhuapl.sbmt.model.image.ImageCubeCollection;
 import edu.jhuapl.sbmt.model.image.ImageSource;
 import edu.jhuapl.sbmt.model.image.PerspectiveImageBoundary;
 import edu.jhuapl.sbmt.model.image.PerspectiveImageBoundaryCollection;
+import edu.jhuapl.sbmt.model.image.perspectiveImage.PerspectiveImage;
 import edu.jhuapl.sbmt.model.leisa.LEISAJupiterImage;
 import edu.jhuapl.sbmt.model.mvic.MVICQuadJupiterImage;
 
@@ -99,7 +99,7 @@ public class ImageCubePopupMenu extends PopupMenu
         this.invoker = invoker;
 
         mapImageMenuItem = new JCheckBoxMenuItem(new MapImageAction());
-        mapImageMenuItem.setText("Map Image");
+        mapImageMenuItem.setText("Map Image Cube");
         this.add(mapImageMenuItem);
 
         mapBoundaryMenuItem = new JCheckBoxMenuItem(new MapBoundaryAction());

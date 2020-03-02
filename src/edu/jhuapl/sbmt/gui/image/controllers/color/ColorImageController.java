@@ -18,6 +18,7 @@ import javax.swing.event.TableModelEvent;
 import javax.swing.event.TableModelListener;
 import javax.swing.table.DefaultTableModel;
 
+import edu.jhuapl.saavtk.gui.render.Renderer;
 import edu.jhuapl.saavtk.gui.render.Renderer.LightingType;
 import edu.jhuapl.saavtk.util.Properties;
 import edu.jhuapl.sbmt.client.SbmtInfoWindowManager;
@@ -48,10 +49,12 @@ public class ColorImageController
     private ColorImageResultsTableModeListener tableModelListener;
     private ColorImageResultsPropertyChangeListener propertyChangeListener;
     private ColorImageCollection colorImages;
+    private Renderer renderer;
 
-    public ColorImageController(ImageSearchModel model, ColorImageModel colorModel, SbmtInfoWindowManager infoPanelManager)
+    public ColorImageController(ImageSearchModel model, ColorImageModel colorModel, SbmtInfoWindowManager infoPanelManager, Renderer renderer)
     {
         this.model = model;
+        this.renderer = renderer;
         model.addResultsChangedListener(new ImageSearchResultsListener()
         {
 
@@ -108,7 +111,7 @@ public class ColorImageController
     {
         boundaries = (PerspectiveImageBoundaryCollection)model.getModelManager().getModel(model.getImageBoundaryCollectionModelName());
 
-        ColorImagePopupMenu colorImagePopupMenu = new ColorImagePopupMenu(colorImages, infoPanelManager, model.getModelManager(), panel);
+        ColorImagePopupMenu colorImagePopupMenu = new ColorImagePopupMenu(colorImages, boundaries, infoPanelManager, model.getModelManager(), renderer, panel);
         panel.setColorImagePopupMenu(colorImagePopupMenu);
 
         colorImages.addPropertyChangeListener(propertyChangeListener);
