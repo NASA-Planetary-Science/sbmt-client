@@ -742,46 +742,46 @@ public class ImagePopupMenu<K extends ImageKeyInterface> extends PopupMenu
 		@Override
 		public void actionPerformed(ActionEvent e) {
 			try {
-				if (imageKeys.size() != 1)
-					return; // currently only one image is supported
 
-				ImageKeyInterface imageKey = imageKeys.get(0);
-				File file = CustomFileChooser.showSaveDialog(null, "Export to OBJ", FilenameUtils.getBaseName(FilenameUtils.removeExtension(imageKey.getName()))+".obj");
+				for (ImageKeyInterface imageKey : imageKeys)
+				{
+					File file = CustomFileChooser.showSaveDialog(null, "Export to OBJ", FilenameUtils.getBaseName(FilenameUtils.removeExtension(imageKey.getName()))+".obj");
 
-				if (file != null) {
+					if (file != null) {
 
-					String fileprefix = FilenameUtils.removeExtension(file.getAbsolutePath());
+						String fileprefix = FilenameUtils.removeExtension(file.getAbsolutePath());
 
-					imageCollection.addImage(imageKey);
-					imageBoundaryCollection.addBoundary(imageKey);
-					PerspectiveImage image = (PerspectiveImage) imageCollection.getImage(imageKey);
-					PerspectiveImageBoundary boundary = imageBoundaryCollection.getBoundary(imageKey);
+						imageCollection.addImage(imageKey);
+						imageBoundaryCollection.addBoundary(imageKey);
+						PerspectiveImage image = (PerspectiveImage) imageCollection.getImage(imageKey);
+						PerspectiveImageBoundary boundary = imageBoundaryCollection.getBoundary(imageKey);
 
-					vtkJoglPanelComponent renderPanel = new vtkJoglPanelComponent();
-					renderPanel.getRenderWindow().OffScreenRenderingOn();
-					vtkOBJExporter exporter = new vtkOBJExporter();
-					exporter.SetRenderWindow(renderPanel.getRenderWindow());
+						vtkJoglPanelComponent renderPanel = new vtkJoglPanelComponent();
+						renderPanel.getRenderWindow().OffScreenRenderingOn();
+						vtkOBJExporter exporter = new vtkOBJExporter();
+						exporter.SetRenderWindow(renderPanel.getRenderWindow());
 
-					Map<vtkActor, String> actorsToSave=Maps.newHashMap();
-//					image.getRendererHelper().get
-					actorsToSave.put(image.getFootprintActor(), "footprint");
-					actorsToSave.put(image.getOfflimbActor(), "offlimb");
-					actorsToSave.put(image.getOfflimbBoundaryActor(), "offlimb_boundary");
-					actorsToSave.put(image.getFrustumActor(), "frustum");
-					actorsToSave.put(boundary.getActor(), "boundary");
+						Map<vtkActor, String> actorsToSave=Maps.newHashMap();
+	//					image.getRendererHelper().get
+						actorsToSave.put(image.getFootprintActor(), "footprint");
+						actorsToSave.put(image.getOfflimbActor(), "offlimb");
+						actorsToSave.put(image.getOfflimbBoundaryActor(), "offlimb_boundary");
+						actorsToSave.put(image.getFrustumActor(), "frustum");
+						actorsToSave.put(boundary.getActor(), "boundary");
 
-					for (vtkActor actor : actorsToSave.keySet())
-					{
+						for (vtkActor actor : actorsToSave.keySet())
+						{
 
-						if (actor.GetVisibility() == 1) {
-							renderPanel.getRenderer().AddActor(actor);
-							renderPanel.Render();
-							exporter.SetFilePrefix(fileprefix + "_" + actorsToSave.get(actor));
-							exporter.Update();
-							renderPanel.getRenderer().RemoveActor(actor);
+							if (actor.GetVisibility() == 1) {
+								renderPanel.getRenderer().AddActor(actor);
+								renderPanel.Render();
+								exporter.SetFilePrefix(fileprefix + "_" + actorsToSave.get(actor));
+								exporter.Update();
+								renderPanel.getRenderer().RemoveActor(actor);
+							}
 						}
+						renderPanel.Delete();
 					}
-					renderPanel.Delete();
 				}
 			} catch (Exception ex) {
 				ex.printStackTrace();
