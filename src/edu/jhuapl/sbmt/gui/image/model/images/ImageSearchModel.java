@@ -12,6 +12,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
+import java.util.SortedMap;
 import java.util.TimeZone;
 import java.util.TreeSet;
 import java.util.Vector;
@@ -33,6 +34,7 @@ import edu.jhuapl.saavtk.model.Controller;
 import edu.jhuapl.saavtk.model.ModelManager;
 import edu.jhuapl.saavtk.model.ModelNames;
 import edu.jhuapl.saavtk.model.structure.AbstractEllipsePolygonModel;
+import edu.jhuapl.saavtk.structure.Ellipse;
 import edu.jhuapl.saavtk.util.IdPair;
 import edu.jhuapl.sbmt.client.SmallBodyModel;
 import edu.jhuapl.sbmt.client.SmallBodyViewConfig;
@@ -44,9 +46,9 @@ import edu.jhuapl.sbmt.model.image.Image;
 import edu.jhuapl.sbmt.model.image.ImageCollection;
 import edu.jhuapl.sbmt.model.image.ImageKeyInterface;
 import edu.jhuapl.sbmt.model.image.ImageSource;
-import edu.jhuapl.sbmt.model.image.PerspectiveImage;
 import edu.jhuapl.sbmt.model.image.PerspectiveImageBoundary;
 import edu.jhuapl.sbmt.model.image.PerspectiveImageBoundaryCollection;
+import edu.jhuapl.sbmt.model.image.perspectiveImage.PerspectiveImage;
 import edu.jhuapl.sbmt.model.phobos.HierarchicalSearchSpecification.Selection;
 import edu.jhuapl.sbmt.query.database.ImageDatabaseSearchMetadata;
 import edu.jhuapl.sbmt.query.fixedlist.FixedListQuery;
@@ -86,9 +88,10 @@ public class ImageSearchModel implements Controller.Model, MetadataManager
     final Key<Metadata> imageTreeFilterKey = Key.of("imageTreeFilters");
     final Key<List<String[]>> imageListKey = Key.of("imageList");
     final Key<Set<String>> selectedImagesKey = Key.of("imagesSelected");
-    final Key<Map<String, Boolean>> isShowingKey = Key.of("imagesShowing");
-    final Key<Map<String, Boolean>> isFrustrumShowingKey = Key.of("frustrumShowing");
-    final Key<Map<String, Boolean>> isBoundaryShowingKey = Key.of("boundaryShowing");
+    final Key<SortedMap<String, Boolean>> isShowingKey = Key.of("imagesShowing");
+    final Key<SortedMap<String, Boolean>> isOffLimbShowingKey = Key.of("offLimbShowing");
+    final Key<SortedMap<String, Boolean>> isFrustrumShowingKey = Key.of("frustrumShowing");
+    final Key<SortedMap<String, Boolean>> isBoundaryShowingKey = Key.of("boundaryShowing");
 
     private SmallBodyViewConfig smallBodyConfig;
     protected ModelManager modelManager;
@@ -105,7 +108,6 @@ public class ImageSearchModel implements Controller.Model, MetadataManager
     private Vector<ImageSearchResultsListener> resultsListeners;
     private Vector<ImageSearchModelListener> modelListeners;
     protected int[] selectedImageIndices;
-    private MetadataManager stateManager;
     protected List<Integer> camerasSelected;
     protected List<Integer> filtersSelected;
     private double minDistanceQuery;
@@ -173,7 +175,7 @@ public class ImageSearchModel implements Controller.Model, MetadataManager
         images.addImage(key);
     }
 
-    public void loadImages(String name)
+    public void loadImage(String name)
     {
 
         List<ImageKeyInterface> keys = createImageKeys(name, imageSourceOfLastQuery, instrument);
@@ -204,7 +206,7 @@ public class ImageSearchModel implements Controller.Model, MetadataManager
         images.removeImage(key);
     }
 
-    public void unloadImages(String name)
+    public void unloadImage(String name)
     {
 
         List<ImageKeyInterface> keys = createImageKeys(name, imageSourceOfLastQuery, instrument);
@@ -500,9 +502,10 @@ public class ImageSearchModel implements Controller.Model, MetadataManager
         TreeSet<Integer> cubeList = null;
         AbstractEllipsePolygonModel selectionModel = (AbstractEllipsePolygonModel)getModelManager().getModel(ModelNames.CIRCLE_SELECTION);
         SmallBodyModel smallBodyModel = (SmallBodyModel)getModelManager().getModel(ModelNames.SMALL_BODY);
-        if (selectionModel.getNumberOfStructures() > 0)
+        if (selectionModel.getNumItems() > 0)
         {
-            AbstractEllipsePolygonModel.EllipsePolygon region = (AbstractEllipsePolygonModel.EllipsePolygon)selectionModel.getStructure(0);
+            int numberOfSides = selectionModel.getNumberOfSides();
+            Ellipse region = selectionModel.getItem(0);
 
             // Always use the lowest resolution model for getting the intersection cubes list.
             // Therefore, if the selection region was created using a higher resolution model,
@@ -510,12 +513,12 @@ public class ImageSearchModel implements Controller.Model, MetadataManager
             if (smallBodyModel.getModelResolution() > 0)
             {
                 vtkPolyData interiorPoly = new vtkPolyData();
-                smallBodyModel.drawRegularPolygonLowRes(region.center, region.radius, region.numberOfSides, interiorPoly, null);
+                smallBodyModel.drawRegularPolygonLowRes(region.getCenter().toArray(), region.getRadius(), numberOfSides, interiorPoly, null);
                 cubeList = smallBodyModel.getIntersectingCubes(interiorPoly);
             }
             else
             {
-                cubeList = smallBodyModel.getIntersectingCubes(region.interiorPolyData);
+                cubeList = smallBodyModel.getIntersectingCubes(selectionModel.getVtkInteriorPolyDataFor(region));
             }
         }
 
@@ -574,7 +577,7 @@ public class ImageSearchModel implements Controller.Model, MetadataManager
         if (getInstrument().getSearchQuery() instanceof FixedListQuery)
         {
             FixedListQuery query = (FixedListQuery) getInstrument().getSearchQuery();
-            results = query.runQuery(FixedListSearchMetadata.of("Imaging Search", "imagelist", "images", query.getRootPath(), imageSource)).getResultlist();
+            results = query.runQuery(FixedListSearchMetadata.of("Imaging Search", "imagelist", "images", query.getRootPath(), imageSource, searchFilename)).getResultlist();
         }
         else
         {
@@ -1364,7 +1367,7 @@ public class ImageSearchModel implements Controller.Model, MetadataManager
         ImmutableSortedMap.Builder<String, Boolean> bndr = ImmutableSortedMap.naturalOrder();
         for (ImageKeyInterface key : boundaries.getImageKeys())
         {
-            if (instrument.equals(((ImageKey)key).instrument) && pointing.equals(key.getSource()))
+            if (instrument.equals(((ImageKey)key).getInstrument()) && pointing.equals(key.getSource()))
             {
                 PerspectiveImageBoundary boundary = boundaries.getBoundary(key);
                 String fullName = key.getName();
@@ -1377,20 +1380,26 @@ public class ImageSearchModel implements Controller.Model, MetadataManager
         // Save mapped image information.
         ImageCollection imageCollection = (ImageCollection) modelManager.getModel(getImageCollectionModelName());
         ImmutableSortedMap.Builder<String, Boolean> showing = ImmutableSortedMap.naturalOrder();
+        ImmutableSortedMap.Builder<String, Boolean> offLimb = ImmutableSortedMap.naturalOrder();
         ImmutableSortedMap.Builder<String, Boolean> frus = ImmutableSortedMap.naturalOrder();
 
         for (Image image : imageCollection.getImages())
         {
-            String name = image.getImageName();
-            showing.put(name, image.isVisible());
-            if (image instanceof PerspectiveImage)
-            {
-                PerspectiveImage perspectiveImage = (PerspectiveImage) image;
-                frus.put(name, perspectiveImage.isFrustumShowing());
-            }
-            ImageKeyInterface key = image.getKey();
+        	ImageKeyInterface key = image.getKey();
+        	if (instrument.equals(key.getInstrument()) && pointing.equals(key.getSource()))
+        	{
+        		String name = image.getImageName();
+        		showing.put(name, image.isVisible());
+        		if (image instanceof PerspectiveImage)
+        		{
+        			PerspectiveImage perspectiveImage = (PerspectiveImage) image;
+        			offLimb.put(name, perspectiveImage.offLimbFootprintIsVisible());
+        			frus.put(name, perspectiveImage.isFrustumShowing());
+        		}
+        	}
         }
         result.put(isShowingKey, showing.build());
+        result.put(isOffLimbShowingKey, offLimb.build());
         result.put(isFrustrumShowingKey, frus.build());
 
         return result;
@@ -1520,22 +1529,29 @@ public class ImageSearchModel implements Controller.Model, MetadataManager
         // Restore mapped image information.
         ImageCollection imageCollection = (ImageCollection) modelManager.getModel(getImageCollectionModelName());
         Map<String, Boolean> showing = source.get(isShowingKey);
+        Map<String, Boolean> offLimb = source.hasKey(isOffLimbShowingKey) ? source.get(isOffLimbShowingKey) : ImmutableMap.of();
         Map<String, Boolean> frus = source.get(isFrustrumShowingKey);
         for (String name : showing.keySet())
         {
             String fullName = instrument.getSearchQuery().getDataPath() + "/" + name;
-            loadImages(fullName);
+            loadImage(fullName);
         }
 
         for (Image image : imageCollection.getImages())
         {
-            String name = image.getImageName();
-            image.setVisible(showing.containsKey(name) ? showing.get(name) : false);
-            if (image instanceof PerspectiveImage)
-            {
-                PerspectiveImage perspectiveImage = (PerspectiveImage) image;
-                perspectiveImage.setShowFrustum(frus.containsKey(name) ? frus.get(name) : false);
-            }
+        	ImageKeyInterface key = image.getKey();
+        	if (instrument.equals(key.getInstrument()) && pointing.equals(key.getSource()))
+        	{
+        		String name = image.getImageName();
+        		image.setVisible(showing.containsKey(name) ? showing.get(name) : false);
+        		if (image instanceof PerspectiveImage)
+        		{
+        			PerspectiveImage perspectiveImage = (PerspectiveImage) image;
+                    perspectiveImage.setOffLimbFootprintVisibility(offLimb.containsKey(name) ? offLimb.get(name) : false);
+        			perspectiveImage.setShowFrustum(frus.containsKey(name) ? frus.get(name) : false);
+        		}
+        	}
+
         }
 
         fireModelChanged();

@@ -20,7 +20,7 @@ import crucible.crust.metadata.impl.SettableMetadata;
  * A query which simply returns a fixed list of images. No actual search is done.
  * Useful for getting a quick search working without having to update the database.
  */
-public class FixedListQuery extends FixedListQueryBase
+public class FixedListQuery<T> extends FixedListQueryBase
 {
     protected String rootPath;
     protected /*final*/ boolean multiSource;
@@ -53,9 +53,9 @@ public class FixedListQuery extends FixedListQueryBase
     }
 
     @Override
-    public FixedListQuery clone()
+    public FixedListQuery<T> clone()
     {
-        return (FixedListQuery) super.clone();
+        return (FixedListQuery<T>) super.clone();
     }
 
     @Override
@@ -65,11 +65,12 @@ public class FixedListQuery extends FixedListQueryBase
     }
 
     @Override
-    public ISearchResultsMetadata runQuery(SearchMetadata queryMetadata)
+    public ISearchResultsMetadata<T> runQuery(SearchMetadata queryMetadata)
     {
         FixedMetadata metadata = queryMetadata.getMetadata();
         String fileListRoot = metadata.get(FixedListSearchMetadata.FILE_LIST);
         String dataPath = metadata.get(FixedListSearchMetadata.DATA_PATH);
+        String searchString = metadata.get(FixedListSearchMetadata.SEARCH_STRING);
         rootPath = metadata.get(FixedListSearchMetadata.ROOT_PATH);
 
         String fileListSuffix = null;
@@ -95,7 +96,8 @@ public class FixedListQuery extends FixedListQueryBase
         }
         String fileList = getFileList(fileListRoot, fileListSuffix);
 
-        List<List<String>> results = getResultsFromFileListOnServer(rootPath + "/" /*+ dataListPrefix + "/"*/ + fileList, rootPath + "/" + dataPath + "/", getGalleryPath());
+        List<List<String>> results;
+       	results = getResultsFromFileListOnServer(rootPath + "/" /*+ dataListPrefix + "/"*/ + fileList, rootPath + "/" + dataPath + "/", getGalleryPath(), searchString);
 
         return SearchResultsMetadata.of("", results);   //"" should really be a query name here, if applicable
     }
@@ -138,7 +140,7 @@ public class FixedListQuery extends FixedListQueryBase
             final String fileListWithSuffix = fileListRoot + "-" + fileListSuffix + ".txt";
             try
             {
-                if (FileCache.isFileGettable(SafeURLPaths.instance().getString(rootPath, fileListWithSuffix)))
+                if (FileCache.instance().isAccessible(SafeURLPaths.instance().getString(rootPath, fileListWithSuffix)))
                 {
                     return fileListWithSuffix;
                 }
@@ -179,7 +181,8 @@ public class FixedListQuery extends FixedListQueryBase
     {
         rootPath = read(rootPathKey, source);
         multiSource = read(multiSourceKey, source);
-        galleryPath = read(galleryPathKey, source);
+        if (source.hasKey(galleryPathKey))
+        	galleryPath = read(galleryPathKey, source);
     }
 
 //    @Override

@@ -14,7 +14,7 @@ import edu.jhuapl.sbmt.model.image.ImageType;
 
 import crucible.crust.metadata.api.Key;
 import crucible.crust.metadata.api.Metadata;
-import crucible.crust.metadata.api.ProvidableFromMetadata;
+import crucible.crust.metadata.api.ProvidesGenericObjectFromMetadata;
 import crucible.crust.metadata.impl.InstanceGetter;
 
 public interface CustomImageKeyInterface extends ImageKeyInterface
@@ -65,10 +65,10 @@ public interface CustomImageKeyInterface extends ImageKeyInterface
 			 Key<Double> urlatKey = Key.of("urlat");
 			 Key<Double> urlonKey = Key.of("urlon");
 			 CustomCylindricalImageKey key = new CustomCylindricalImageKey(metadata.get(nameKey), metadata.get(imageFileNameKey), ImageType.valueOf(metadata.get(imageTypeKey)), ImageSource.LOCAL_PERSPECTIVE, new Date(), metadata.get(nameKey));
-			 key.lllat = metadata.get(lllatKey);
-			 key.lllon = metadata.get(lllonKey);
-			 key.urlat = metadata.get(urlatKey);
-			 key.urlon = metadata.get(urlonKey);
+			 key.setLllat(metadata.get(lllatKey));
+			 key.setLllon(metadata.get(lllonKey));
+			 key.setUrlat(metadata.get(urlatKey));
+			 key.setUrlon(metadata.get(urlonKey));
 			 return key;
 		 }
 	}
@@ -80,13 +80,13 @@ public interface CustomImageKeyInterface extends ImageKeyInterface
 		if (key.toString().equals("CUSTOM_CYLINDRICAL_IMAGE_KEY"))
 		{
 			Key<CustomCylindricalImageKey> CUSTOM_CYLINDRICAL_IMAGE_KEY = Key.of("customCylindricalImage");
-			ProvidableFromMetadata<CustomCylindricalImageKey> metadata = InstanceGetter.defaultInstanceGetter().of(CUSTOM_CYLINDRICAL_IMAGE_KEY);
+			ProvidesGenericObjectFromMetadata<CustomCylindricalImageKey> metadata = InstanceGetter.defaultInstanceGetter().providesGenericObjectFromMetadata(CUSTOM_CYLINDRICAL_IMAGE_KEY);
 			return metadata.provide(objectMetadata);
 		}
 		else
 		{
 			Key<CustomPerspectiveImageKey> CUSTOM_PERSPECTIVE_IMAGE_KEY = Key.of("customPerspectiveImage");
-			ProvidableFromMetadata<CustomPerspectiveImageKey> metadata = InstanceGetter.defaultInstanceGetter().of(CUSTOM_PERSPECTIVE_IMAGE_KEY);
+			ProvidesGenericObjectFromMetadata<CustomPerspectiveImageKey> metadata = InstanceGetter.defaultInstanceGetter().providesGenericObjectFromMetadata(CUSTOM_PERSPECTIVE_IMAGE_KEY);
 			return metadata.provide(objectMetadata);
 		}
 	}

@@ -8,7 +8,6 @@ import java.util.Scanner;
 
 import org.apache.commons.math3.geometry.euclidean.threed.Vector3D;
 
-import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 
 import edu.jhuapl.saavtk.gui.render.Renderer;
@@ -16,23 +15,24 @@ import edu.jhuapl.saavtk.model.ModelManager;
 import edu.jhuapl.saavtk.pick.PickManager;
 import edu.jhuapl.saavtk.util.FileCache;
 import edu.jhuapl.saavtk.util.IdPair;
+import edu.jhuapl.sbmt.client.BodyViewConfig;
 import edu.jhuapl.sbmt.client.SbmtInfoWindowManager;
-import edu.jhuapl.sbmt.client.SmallBodyViewConfig;
-import edu.jhuapl.sbmt.gui.spectrum.SpectrumSearchPanel;
-import edu.jhuapl.sbmt.model.eros.NisQuery;
-import edu.jhuapl.sbmt.model.spectrum.instruments.SpectralInstrument;
+import edu.jhuapl.sbmt.spectrum.deprecated.AbstractSpectrumSearchPanel;
+import edu.jhuapl.sbmt.spectrum.model.core.BasicSpectrum;
+import edu.jhuapl.sbmt.spectrum.model.core.BasicSpectrumInstrument;
 
-public class NISSearchPanel extends SpectrumSearchPanel
+public class NISSearchPanel extends AbstractSpectrumSearchPanel
 {
 
     Map<String,String> nisFileToObservationTimeMap=Maps.newHashMap();
     static Map<String,Vector3D> nisFileToSunPositionMap=Maps.newHashMap();
 
-    public NISSearchPanel(SmallBodyViewConfig smallBodyConfig, ModelManager modelManager,
+    public NISSearchPanel(BodyViewConfig smallBodyConfig, ModelManager modelManager,
             SbmtInfoWindowManager infoPanelManager, PickManager pickManager,
-            Renderer renderer, SpectralInstrument instrument)
+            Renderer renderer, BasicSpectrumInstrument instrument)
     {
-        super(smallBodyConfig, modelManager, infoPanelManager, pickManager, renderer, instrument);
+        super(smallBodyConfig.hasHierarchicalSpectraSearch, smallBodyConfig.hierarchicalSpectraSearchSpecification,
+        		modelManager, infoPanelManager, pickManager, renderer, instrument);
         // TODO Auto-generated constructor stub
 
         try
@@ -94,27 +94,28 @@ public class NISSearchPanel extends SpectrumSearchPanel
 
 
     @Override
-    protected void setSpectrumSearchResults(List<List<String>> results)
+    protected void setSpectrumSearchResults(List<BasicSpectrum> results)
     {
         spectrumResultsLabelText = results.size() + " spectra matched";
         resultsLabel.setText(spectrumResultsLabelText);
 
-        List<String> matchedImages=Lists.newArrayList();
-        for (List<String> res : results)
-        {
-            String path = NisQuery.getNisPath(res);
-            matchedImages.add(path);
-        }
+//        List<String> matchedImages=Lists.newArrayList();
+//        for (List<String> res : results)
+//        {
+//            String path = NisQuery.getNisPath(res);
+//            matchedImages.add(path);
+//        }
 
 
-        spectrumRawResults = matchedImages;
+        spectrumRawResults = results;
 
         String[] formattedResults = new String[results.size()];
 
         // add the results to the list
         int i=0;
-        for (String str : matchedImages)
+        for (BasicSpectrum spectrum : spectrumRawResults)
         {
+        	String str = spectrum.getDataName();
             String fileNum=str.substring(16,25);
             String strippedFileName=str.replace("/NIS/2000/", "");
             String detailedTime=nisFileToObservationTimeMap.get(strippedFileName);

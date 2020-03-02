@@ -1,5 +1,6 @@
 package edu.jhuapl.sbmt.tools;
 
+import java.awt.HeadlessException;
 import java.io.File;
 import java.net.JarURLConnection;
 import java.text.SimpleDateFormat;
@@ -8,10 +9,10 @@ import java.util.concurrent.TimeUnit;
 
 import javax.swing.JOptionPane;
 import javax.swing.JPopupMenu;
+import javax.swing.SwingWorker;
 import javax.swing.ToolTipManager;
 
 import vtk.vtkJavaGarbageCollector;
-import vtk.vtkNativeLibrary;
 
 import edu.jhuapl.saavtk.config.ViewConfig;
 import edu.jhuapl.saavtk.gui.Console;
@@ -21,6 +22,7 @@ import edu.jhuapl.saavtk.model.ShapeModelType;
 import edu.jhuapl.saavtk.util.Configuration;
 import edu.jhuapl.saavtk.util.Debug;
 import edu.jhuapl.saavtk.util.FileCache;
+import edu.jhuapl.saavtk.util.NativeLibraryLoader;
 import edu.jhuapl.sbmt.client.SbmtMainWindow;
 import edu.jhuapl.sbmt.client.SbmtMultiMissionTool;
 import edu.jhuapl.sbmt.client.SbmtMultiMissionTool.Mission;
@@ -43,35 +45,71 @@ public class SbmtRunnable implements Runnable
 		{
 			Mission mission = SbmtMultiMissionTool.getMission();
 			writeStartupMessage(mission);
+
+			NativeLibraryLoader.loadAllVtkLibraries();
+
 			SmallBodyViewConfig.initialize();
 			//            new SmallBodyViewConfigMetadataIO(SmallBodyViewConfig.getBuiltInConfigs()).write(new File("/Users/steelrj1/Desktop/test.json"), "Test");
 
 			configureMissionBodies(mission);
-
-			//  NativeLibraryLoader.loadVtkLibraries();
-
-			vtkNativeLibrary.LoadAllNativeLibraries();
 
 			vtkJavaGarbageCollector garbageCollector = new vtkJavaGarbageCollector();
 			//garbageCollector.SetDebug(true);
 			garbageCollector.SetScheduleTime(5, TimeUnit.SECONDS);
 			garbageCollector.SetAutoGarbageCollection(true);
 
-			JPopupMenu.setDefaultLightWeightPopupEnabled(false);
-			ToolTipManager.sharedInstance().setLightWeightPopupEnabled(false);
-			ToolTipManager.sharedInstance().setDismissDelay(600000); // 10 minutes
+			Configuration.runAndWaitOnEDT(() -> {
+			    JPopupMenu.setDefaultLightWeightPopupEnabled(false);
+			    ToolTipManager.sharedInstance().setLightWeightPopupEnabled(false);
+			    ToolTipManager.sharedInstance().setDismissDelay(600000); // 10 minutes
 
-			MainWindow frame = new SbmtMainWindow(initialShapeModelPath);
-			MainWindow.setMainWindow(frame);
-			FileCache.showDotsForFiles(false);
+			    MainWindow frame = new SbmtMainWindow(initialShapeModelPath);
+			    MainWindow.setMainWindow(frame);
 
-			frame.pack();
-			frame.setVisible(true);
+			    FileCache.instance().startAccessMonitor();
 
-			System.out.println("\nSBMT Ready");
+                SwingWorker<Void, Void> swingWorker = new SwingWorker<Void, Void>() {
 
-			Console.hideConsole();
-			Console.setDefaultLocation(frame);
+                    @Override
+                    protected Void doInBackground() throws Exception
+                    {
+                        while (!frame.isReady())
+                        {
+                            try
+                            {
+                                Thread.sleep(100);
+                            }
+                            catch (InterruptedException ignored)
+                            {
+                                break;
+                            }
+                        }
+
+                        return null;
+                    }
+
+                    protected void done()
+                    {
+                        if (!isCancelled())
+                        {
+                            frame.pack();
+                            frame.setVisible(true);
+                            System.out.println("\nSBMT Ready");
+
+                            Console.hideConsole();
+                            Console.setDefaultLocation(frame);
+                        }
+                    }
+                };
+
+			    swingWorker.execute();
+			});
+		}
+		catch (HeadlessException e)
+		{
+		    e.printStackTrace();
+		    System.err.println("\nThe SBMT requires a fully functional graphics environment and cannot be run \"headless\"");
+		    System.err.println("Unable to launch the SBMT.");
 		}
 		catch (Throwable throwable)
 		{
@@ -79,11 +117,19 @@ public class SbmtRunnable implements Runnable
 			throwable.printStackTrace();
 			System.err.println("\nThe SBMT had a serious error during launch. Please review messages above for more information.");
 			System.err.println("\nTry restarting the tool. Please report persistent launch problems to sbmt@jhuapl.edu.");
-			System.err.println("\nNote that the SBMT requires an internet connection in order to download built-in model data.");
-	        JOptionPane.showMessageDialog(null,
-	                "A problem occurred during start-up. Please review messages in the console window.",
-	                "Warning",
-	                JOptionPane.WARNING_MESSAGE);
+			System.err.println("\nNote that the SBMT requires an internet connection to download standard model data from the server.");
+			try
+            {
+                Configuration.runAndWaitOnEDT(() -> {
+                JOptionPane.showMessageDialog(null,
+                        "A problem occurred during start-up. Please review messages in the console window.",
+                        "Warning",
+                        JOptionPane.WARNING_MESSAGE);
+                });
+            }
+            catch (Exception ignored)
+            {
+            }
 		}
 	}
 
@@ -109,14 +155,14 @@ public class SbmtRunnable implements Runnable
 			{}
 		}
 
-		FileCache.showDotsForFiles(true);
 		System.out.println("Welcome to the Small Body Mapping Tool (SBMT)");
 		System.out.println(mission + " edition" + (compileDate != null ? " built " + DATE_FORMAT.format(compileDate) : ""));
-		if (Debug.isEnabled())
-		{
-			System.out.println("Tool started in debug mode; diagnostic output is enabled.");
-		}
-		if (FileCache.getOfflineMode())
+        Debug.of().out().println("Tool started in debug mode; diagnostic output is enabled.");
+        if (FileCache.isEnableDebug())
+        {
+            System.out.println("Tool started in file cache debug mode; diagnostic output related to file caching/accessibility is enabled.");
+        }
+		if (!FileCache.instance().isServerAccessEnabled())
 		{
 			System.out.println("\nTool started in offline mode; skipping password authentication.");
 			System.out.println("Only cached models and data will be available.");
@@ -164,14 +210,48 @@ public class SbmtRunnable implements Runnable
 
 	protected void enableMissionBodies(Mission mission)
 	{
-		for (ViewConfig each: SmallBodyViewConfig.getBuiltInConfigs())
-		{
-			if (each instanceof SmallBodyViewConfig)
-			{
-				SmallBodyViewConfig config = (SmallBodyViewConfig) each;
-				setBodyEnableState(mission, config);
-			}
-		}
+//		for (BasicConfigInfo info : SmallBodyViewConfig.getConfigIdentifiers().values())
+//		{
+//			for (SbmtMultiMissionTool.Mission presentMission : info.getPresentInVersion())
+//			{
+//				if (presentMission == mission)
+//					info.enable(true);
+//			}
+//			for (SbmtMultiMissionTool.Mission defaultMission : info.getDefaultFor())
+//			{
+//				if (defaultMission == mission)
+//					ViewConfig.setFirstTimeDefaultModelName(info.getUniqueName());
+//			}
+//		}
+
+//		for (ViewConfig each: SmallBodyViewConfig.getBuiltInConfigs())
+//		{
+//			if (each instanceof SmallBodyViewConfig)
+//			{
+//				SmallBodyViewConfig config = (SmallBodyViewConfig) each;
+//				BasicConfigInfo info = new BasicConfigInfo(config);
+//				for (SbmtMultiMissionTool.Mission presentMission : info.getPresentInVersion())
+//				{
+//					if (presentMission == mission)
+//					{
+//						System.out.println("SbmtRunnable: enableMissionBodies: enabled " + config.getUniqueName());
+//						config.enable(true);
+//						break;
+//					}
+//					else
+//						config.enable(false);
+//				}
+//				for (SbmtMultiMissionTool.Mission defaultMission : info.getDefaultFor())
+//				{
+//					if (defaultMission == mission)
+//					{
+//						ViewConfig.setFirstTimeDefaultModelName(info.getUniqueName());
+//						break;
+//					}
+//				}
+////				setBodyEnableState(mission, config);
+//			}
+//		}
 
 	}
 
@@ -179,18 +259,20 @@ public class SbmtRunnable implements Runnable
 	{
 		switch (mission)
 		{
+		case APL_INTERNAL_NIGHTLY:
 		case APL_INTERNAL:
-		case STAGE_APL_INTERNAL:
+//		case STAGE_APL_INTERNAL:
 		case TEST_APL_INTERNAL:
 			config.enable(true);
 			break;
 		case PUBLIC_RELEASE:
-		case STAGE_PUBLIC_RELEASE:
+//		case STAGE_PUBLIC_RELEASE:
 		case TEST_PUBLIC_RELEASE:
 			if (!ShapeModelBody.EARTH.equals(config.body)
 					&& !ShapeModelBody.RQ36.equals(config.body)
 					&& !ShapeModelBody.RYUGU.equals(config.body)
-					&& !ShapeModelPopulation.PLUTO.equals(config.population))
+					&& !ShapeModelPopulation.PLUTO.equals(config.population)
+					&& (!config.getUniqueName().contains("MEGANE")))
             {
                 config.enable(true);
             }
@@ -209,7 +291,7 @@ public class SbmtRunnable implements Runnable
 				config.enable(true);
 			}
 			break;
-		case HAYABUSA2_STAGE:
+//		case HAYABUSA2_STAGE:
 		case HAYABUSA2_DEPLOY:
 			if (ShapeModelBody.RYUGU.equals(config.body))
 			{
@@ -220,7 +302,7 @@ public class SbmtRunnable implements Runnable
 		case OSIRIS_REX:
 		case OSIRIS_REX_DEPLOY:
 		case OSIRIS_REX_MIRROR_DEPLOY:
-		case OSIRIS_REX_STAGE:
+//		case OSIRIS_REX_STAGE:
 			if (ShapeModelBody.RQ36.equals(config.body)
 					|| ShapeModelBody.EROS.equals(config.body)
 					|| ShapeModelBody.ITOKAWA.equals(config.body)

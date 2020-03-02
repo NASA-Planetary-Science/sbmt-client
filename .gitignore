@@ -15,6 +15,9 @@ log
 /favorites
 *.vtk
 /eros_sunVectors.txt
+<<<<<<< HEAD
+/GMT-*/
+=======
 /GMT-1549401047479/
 /GMT-1549463326487/
 /GMT-1549463328781/
@@ -27,3 +30,4 @@ log
 /GMT-1549463341416/
 /GMT-1549463342652/
 /GMT-1549463344074/
+>>>>>>> refs/heads/sbmt1dev

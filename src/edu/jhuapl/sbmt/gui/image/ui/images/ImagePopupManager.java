@@ -1,5 +1,6 @@
 package edu.jhuapl.sbmt.gui.image.ui.images;
 
+import java.awt.AWTException;
 import java.awt.event.MouseEvent;
 import java.util.HashMap;
 
@@ -9,20 +10,17 @@ import edu.jhuapl.saavtk.gui.render.Renderer;
 import edu.jhuapl.saavtk.model.Model;
 import edu.jhuapl.saavtk.model.ModelManager;
 import edu.jhuapl.saavtk.model.ModelNames;
-import edu.jhuapl.saavtk.popup.CirclesPopupMenu;
-import edu.jhuapl.saavtk.popup.EllipsesPopupMenu;
 import edu.jhuapl.saavtk.popup.GraticulePopupMenu;
 import edu.jhuapl.saavtk.popup.LinesPopupMenu;
-import edu.jhuapl.saavtk.popup.PointsPopupMenu;
-import edu.jhuapl.saavtk.popup.PolygonsPopupMenu;
 import edu.jhuapl.saavtk.popup.PopupManager;
 import edu.jhuapl.saavtk.popup.PopupMenu;
+import edu.jhuapl.saavtk.popup.StructuresPopupMenu;
 import edu.jhuapl.sbmt.client.SbmtInfoWindowManager;
 import edu.jhuapl.sbmt.client.SbmtSpectrumWindowManager;
-import edu.jhuapl.sbmt.gui.lidar.LidarPopupMenu;
+import edu.jhuapl.sbmt.gui.lidar.popup.LidarGuiUtil;
 import edu.jhuapl.sbmt.model.image.ImageCollection;
 import edu.jhuapl.sbmt.model.image.PerspectiveImageBoundaryCollection;
-import edu.jhuapl.sbmt.model.lidar.LidarSearchDataCollection;
+import edu.jhuapl.sbmt.model.lidar.LidarTrackManager;
 
 /**
  * This class is responsible for the creation of popups and for the routing
@@ -42,20 +40,27 @@ public class ImagePopupManager extends PopupManager
         PopupMenu popupMenu = new LinesPopupMenu(modelManager, renderer);
         registerPopup(modelManager.getModel(ModelNames.LINE_STRUCTURES), popupMenu);
 
-        popupMenu = new PolygonsPopupMenu(modelManager, renderer);
+        popupMenu = new StructuresPopupMenu<>(modelManager, renderer, ModelNames.POLYGON_STRUCTURES);
         registerPopup(modelManager.getModel(ModelNames.POLYGON_STRUCTURES), popupMenu);
 
-        popupMenu = new CirclesPopupMenu(modelManager, renderer);
+        popupMenu = new StructuresPopupMenu<>(modelManager, renderer, ModelNames.CIRCLE_STRUCTURES);
         registerPopup(modelManager.getModel(ModelNames.CIRCLE_STRUCTURES), popupMenu);
 
-        popupMenu = new EllipsesPopupMenu(modelManager, renderer);
+        popupMenu = new StructuresPopupMenu<>(modelManager, renderer, ModelNames.ELLIPSE_STRUCTURES);
         registerPopup(modelManager.getModel(ModelNames.ELLIPSE_STRUCTURES), popupMenu);
 
-        popupMenu = new PointsPopupMenu(modelManager, renderer);
+        popupMenu = new StructuresPopupMenu<>(modelManager, renderer, ModelNames.POINT_STRUCTURES);
         registerPopup(modelManager.getModel(ModelNames.POINT_STRUCTURES), popupMenu);
 
-        popupMenu = new GraticulePopupMenu(modelManager, renderer);
-        registerPopup(modelManager.getModel(ModelNames.GRATICULE), popupMenu);
+        try
+        {
+            popupMenu = new GraticulePopupMenu(modelManager, renderer);
+            registerPopup(modelManager.getModel(ModelNames.GRATICULE), popupMenu);
+        }
+        catch (AWTException e)
+        {
+            e.printStackTrace();
+        }
 
         ImageCollection imageCollection =
                 (ImageCollection)modelManager.getModel(ModelNames.IMAGES);
@@ -64,9 +69,9 @@ public class ImagePopupManager extends PopupManager
         popupMenu = new ImagePopupMenu(modelManager, imageCollection, imageBoundaries, infoPanelManager, spectrumPanelManager, renderer, renderer);
         registerPopup(modelManager.getModel(ModelNames.IMAGES), popupMenu);
 
-        LidarSearchDataCollection tracks = (LidarSearchDataCollection)modelManager.getModel(ModelNames.TRACKS);
-        popupMenu = new LidarPopupMenu(tracks, renderer);
-        registerPopup(tracks, popupMenu);
+        LidarTrackManager lidarTrackManager = (LidarTrackManager)modelManager.getModel(ModelNames.TRACKS);
+        popupMenu = LidarGuiUtil.formLidarTrackPopupMenu(lidarTrackManager, renderer);
+        registerPopup(lidarTrackManager, popupMenu);
     }
 
     public PopupMenu getPopup(Model model)

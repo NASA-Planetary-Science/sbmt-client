@@ -9,7 +9,7 @@ import edu.jhuapl.saavtk.util.FileCache;
 import edu.jhuapl.saavtk.util.ImageDataUtil;
 import edu.jhuapl.sbmt.client.SmallBodyModel;
 import edu.jhuapl.sbmt.model.image.ImageKeyInterface;
-import edu.jhuapl.sbmt.model.image.PerspectiveImage;
+import edu.jhuapl.sbmt.model.image.perspectiveImage.PerspectiveImage;
 
 import nom.tam.fits.FitsException;
 
@@ -29,6 +29,8 @@ public class MVICJupiterImage extends PerspectiveImage
         // this so the image is displayed properly.
         ImageDataUtil.flipImageYAxis(rawImage);
         ImageDataUtil.flipImageXAxis(rawImage);
+
+        super.processRawImage(rawImage);
     }
 
     @Override

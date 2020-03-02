@@ -59,7 +59,7 @@ public class MSIBackplanesComparison
         Configuration.setAPLVersion(true);
         SmallBodyViewConfig.initialize();
         System.setProperty("java.awt.headless", "true");
-        NativeLibraryLoader.loadVtkLibrariesHeadless();
+        NativeLibraryLoader.loadHeadlessVtkLibraries();
         Authenticator.authenticate();
 
         smallBodyModel = SbmtModelFactory.createSmallBodyModel(SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.EROS, ShapeModelType.GASKELL, null));
@@ -165,7 +165,7 @@ public class MSIBackplanesComparison
     private static String createBackplanes(String fitsImageFile, String outputFolder, ImageSource pointing, BackplanesFileFormat fmt, int resolutionLevel) throws Exception
     {
         smallBodyModel.setModelResolution(resolutionLevel);
-        ImageKey key = new ImageKey(fitsImageFile.replace(".FIT", ""), pointing, smallBodyModel.getSmallBodyConfig().imagingInstruments[0]);
+        ImageKey key = new ImageKey(fitsImageFile.replace(".FIT", ""), pointing, ((SmallBodyViewConfig)smallBodyModel.getSmallBodyConfig()).imagingInstruments[0]);
 
         //Write out the FITS file
         (new BackplanesGenerator()).generateBackplanes(fitsImageFile, key.instrument.getInstrumentName(), outputFolder, smallBodyModel, fmt, pointing);

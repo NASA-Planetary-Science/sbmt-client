@@ -142,7 +142,7 @@ public class MSIBackplanesGenerator
         Configuration.setAPLVersion(true);
         SmallBodyViewConfig.initialize();
         System.setProperty("java.awt.headless", "true");
-        NativeLibraryLoader.loadVtkLibrariesHeadless();
+        NativeLibraryLoader.loadHeadlessVtkLibraries();
         Authenticator.authenticate();
 
         //Set up the distributed environment
@@ -156,7 +156,7 @@ public class MSIBackplanesGenerator
         ShapeModelBody body = ShapeModelBody.EROS;
         BackplanesFileFormat fmt = BackplanesFileFormat.FITS;
         SmallBodyModel smallBodyModel = SbmtModelFactory.createSmallBodyModel(SmallBodyViewConfig.getSmallBodyConfig(body, author, null));
-        ImagingInstrument instr = smallBodyModel.getSmallBodyConfig().imagingInstruments[0];
+        ImagingInstrument instr = ((SmallBodyViewConfig)smallBodyModel.getSmallBodyConfig()).imagingInstruments[0];
 
         //Read each line in the input image list and form the command line
         //call to BackplanesGenerator using the image on that line.
