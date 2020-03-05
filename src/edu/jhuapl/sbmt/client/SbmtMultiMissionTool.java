@@ -495,7 +495,6 @@ public class SbmtMultiMissionTool
         // Use --debug-cache to control both the debug and informational messages.
         boolean debugCache = getOption(args, "--debug-cache") != null;
         FileCache.enableDebug(debugCache);
-        FileCache.enableInfoMessages(debugCache);
 
 		// Get other arguments.
 		initialShapeModelPath = null;
