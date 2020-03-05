@@ -598,6 +598,8 @@ public class SpectrumSearchParametersPanel  extends JPanel
 	{
     	if (isHierarchical)
     		return new Dimension(650, 175);
+    	else if (parametersRadioButton.isSelected() == false)
+    		return new Dimension(650, 175);
     	return new Dimension(650, 325);
 	}
 
@@ -605,6 +607,8 @@ public class SpectrumSearchParametersPanel  extends JPanel
 	public Dimension getPreferredSize()
 	{
     	if (isHierarchical)
+    		return new Dimension(650, 175);
+    	else if (parametersRadioButton.isSelected() == false)
     		return new Dimension(650, 175);
     	return new Dimension(650, 325);
 	}
@@ -614,7 +618,10 @@ public class SpectrumSearchParametersPanel  extends JPanel
 	{
     	if (isHierarchical)
     		return new Dimension(650, 175);
-    	return new Dimension(650, 325);
+    	else if (parametersRadioButton.isSelected() == false)
+    		return new Dimension(650, 175);
+    	else
+    		return new Dimension(650, 325);
 	}
 
     public void setFixedListSearch(boolean isFixedListSearch)
