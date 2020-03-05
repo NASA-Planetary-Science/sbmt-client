@@ -169,8 +169,8 @@ public class ImageSearchParametersPanel extends JPanel
             	searchByNumberTextField.setText("");
                 parametersPanel.setVisible(true);
                 filenamePanel.setVisible(false);
-                selectRegionButton.setVisible(true);
-                clearRegionButton.setVisible(true);
+//                selectRegionButton.setVisible(true);
+//                clearRegionButton.setVisible(true);
             }
         });
 
@@ -182,8 +182,8 @@ public class ImageSearchParametersPanel extends JPanel
             {
                 parametersPanel.setVisible(false);
                 filenamePanel.setVisible(true);
-                selectRegionButton.setVisible(false);
-                clearRegionButton.setVisible(false);
+//                selectRegionButton.setVisible(false);
+//                clearRegionButton.setVisible(false);
             }
         });
 
