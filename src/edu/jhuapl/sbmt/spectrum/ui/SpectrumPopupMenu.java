@@ -170,6 +170,7 @@ public class SpectrumPopupMenu<S extends BasicSpectrum> extends PopupMenu implem
             centerSpectrumMenuItem.setEnabled(isMapped);
             showToSunVectorMenuItem.setEnabled(isMapped);
             setIlluminationMenuItem.setEnabled(isMapped);
+            saveSpectrumMenuItem.setEnabled(isMapped);
             if (spectrumRenderer != null && (renderer != null))
             {
             	showToSunVectorMenuItem.setSelected(spectrumRenderer.isToSunVectorShowing());
@@ -211,6 +212,7 @@ public class SpectrumPopupMenu<S extends BasicSpectrum> extends PopupMenu implem
             showToSunVectorMenuItem.setSelected(false);
             setIlluminationMenuItem.setSelected(false);
             setIlluminationMenuItem.setEnabled(false);
+            saveSpectrumMenuItem.setEnabled(allMapped);
     	}
     }
 
