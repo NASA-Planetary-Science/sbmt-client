@@ -41,8 +41,8 @@ import edu.jhuapl.saavtk.popup.PopupMenu;
 import edu.jhuapl.saavtk.util.FileUtil;
 import edu.jhuapl.sbmt.client.SbmtInfoWindowManager;
 import edu.jhuapl.sbmt.client.SmallBodyModel;
+import edu.jhuapl.sbmt.spectrum.model.EnabledState;
 import edu.jhuapl.sbmt.spectrum.model.core.BasicSpectrum;
-import edu.jhuapl.sbmt.spectrum.model.core.BasicSpectrumInstrument;
 import edu.jhuapl.sbmt.spectrum.model.core.SpectrumIOException;
 import edu.jhuapl.sbmt.spectrum.model.core.interfaces.IBasicSpectrumRenderer;
 import edu.jhuapl.sbmt.spectrum.model.statistics.SpectrumStatistics;
@@ -55,7 +55,7 @@ import edu.jhuapl.sbmt.spectrum.rendering.SpectrumBoundaryCollection;
 public class SpectrumPopupMenu<S extends BasicSpectrum> extends PopupMenu implements PropertyChangeListener
 {
     private ModelManager modelManager;
-    private String currentSpectrum;
+    private List<String> currentSpectrum;
     private JMenuItem showRemoveSpectrumIn3DMenuItem;
     private JMenuItem showSpectrumInfoMenuItem;
     private JMenuItem centerSpectrumMenuItem;
@@ -72,7 +72,6 @@ public class SpectrumPopupMenu<S extends BasicSpectrum> extends PopupMenu implem
     private Renderer renderer;
     private Vector3D currentIlluminationVector;
 
-    private IBasicSpectrumRenderer<S> spectrumRenderer;
     ComputeStatisticsTask task;
     JProgressBar statisticsProgressBar=new JProgressBar(0,100);
 
@@ -90,6 +89,7 @@ public class SpectrumPopupMenu<S extends BasicSpectrum> extends PopupMenu implem
             ModelManager modelManager,
             SbmtInfoWindowManager infoPanelManager, Renderer renderer)
     {
+    	this.currentSpectrum = new ArrayList<String>();
         this.modelManager = modelManager;
         this.collection = collection;
         this.boundaries = sbc;
@@ -104,14 +104,12 @@ public class SpectrumPopupMenu<S extends BasicSpectrum> extends PopupMenu implem
             showSpectrumInfoMenuItem = new JMenuItem(new ShowSpectrumAction());
             showSpectrumInfoMenuItem.setText("Graph Spectrum...");
             this.add(showSpectrumInfoMenuItem);
-        }
 
-        if (this.infoPanelManager != null)
-        {
             showStatisticsMenuItem=new JMenuItem(new ShowStatisticsAction());
             showStatisticsMenuItem.setText("Statistics...");
             this.add(showStatisticsMenuItem);
         }
+
         centerSpectrumMenuItem = new JMenuItem(new CenterImageAction());
         centerSpectrumMenuItem.setText("Center in Window");
         if (renderer!=null)
@@ -136,7 +134,6 @@ public class SpectrumPopupMenu<S extends BasicSpectrum> extends PopupMenu implem
 
         saveSpectrumMenuItem = new JMenu("Save Spectrum");
 
-
         saveOriginalSpectrumMenuItem = new JMenuItem(new SaveOriginalSpectrumAction());
         saveOriginalSpectrumMenuItem.setText("Save Original Spectrum...");
         saveHumanReadableSpectrumMenuItem = new JMenuItem(new SaveSpectrumAction());
@@ -148,65 +145,80 @@ public class SpectrumPopupMenu<S extends BasicSpectrum> extends PopupMenu implem
         this.add(saveSpectrumMenuItem);
     }
 
-
-
     public void setCurrentSpectrum(String name)
     {
-        currentSpectrum = name;
+        currentSpectrum.add(name);
         updateMenuItems();
     }
 
     private void updateMenuItems()
     {
-        spectrumRenderer = collection.getSpectrumForName(currentSpectrum);
-        boolean containsSpectrum = false;
-        if (spectrumRenderer != null) containsSpectrum = true;
-        showRemoveSpectrumIn3DMenuItem.setSelected(containsSpectrum);
+    	if (collection.getSelectedItems().size() == 1)
+    	{
+    		S selectedSpectrum = collection.getSelectedItems().asList().get(0);
+    		IBasicSpectrumRenderer<S> spectrumRenderer = collection.getRendererForSpectrum(selectedSpectrum);
+    		boolean isMapped = collection.isSpectrumMapped(selectedSpectrum);
+    		showRemoveSpectrumIn3DMenuItem.setSelected(isMapped);
+    		if (showSpectrumInfoMenuItem != null)
+    			showSpectrumInfoMenuItem.setEnabled(isMapped);
+    		if (showStatisticsMenuItem != null)
+    			showStatisticsMenuItem.setEnabled(isMapped);
+    		showFrustumMenuItem.setSelected(collection.getFrustumVisibility(selectedSpectrum));
+            showFrustumMenuItem.setEnabled(isMapped);
+            showOutlineMenuItem.setSelected(boundaries.getVisibility(selectedSpectrum));
+            showOutlineMenuItem.setEnabled(isMapped);
+            centerSpectrumMenuItem.setEnabled(isMapped);
+            showToSunVectorMenuItem.setEnabled(isMapped);
+            setIlluminationMenuItem.setEnabled(isMapped);
+            if (spectrumRenderer != null && (renderer != null))
+            {
+            	showToSunVectorMenuItem.setSelected(spectrumRenderer.isToSunVectorShowing());
+            	showToSunVectorMenuItem.setEnabled(isMapped);
+            	if ((renderer.getLighting() == LightingType.FIXEDLIGHT) && (currentIlluminationVector.equals(new Vector3D(selectedSpectrum.getToSunUnitVector())))) setIlluminationMenuItem.setSelected(true);
+                else setIlluminationMenuItem.setSelected(false);
+                setIlluminationMenuItem.setEnabled(isMapped);
+            }
 
-        if (showSpectrumInfoMenuItem != null)
-            showSpectrumInfoMenuItem.setEnabled(containsSpectrum);
+    	}
+    	else if (collection.getSelectedItems().size() > 1)
+    	{
+    		boolean allMapped = true;
+    		boolean allOutlined = true;
+    		boolean allFrustra = true;
 
-        saveSpectrumMenuItem.setEnabled(containsSpectrum);
+    		for (S spec : collection.getSelectedItems())
+    		{
+    			if (!collection.isSpectrumMapped(spec)) { allMapped = false; break; }
+    		}
 
-        if (containsSpectrum)
-        {
-            showFrustumMenuItem.setSelected(spectrumRenderer.isFrustumShowing());
-            showFrustumMenuItem.setEnabled(true);
-            showOutlineMenuItem.setSelected(spectrumRenderer.isOutlineShowing());
-            showOutlineMenuItem.setSelected(boundaries.getVisibility(spectrumRenderer.getSpectrum()));
-            showOutlineMenuItem.setEnabled(true);
-            centerSpectrumMenuItem.setEnabled(true);
-            showToSunVectorMenuItem.setSelected(spectrumRenderer.isToSunVectorShowing());
-            showToSunVectorMenuItem.setEnabled(true);
-            if ((renderer.getLighting() == LightingType.FIXEDLIGHT) && (currentIlluminationVector.equals(new Vector3D(spectrumRenderer.getSpectrum().getToSunUnitVector())))) setIlluminationMenuItem.setSelected(true);
-            else setIlluminationMenuItem.setSelected(false);
-            setIlluminationMenuItem.setEnabled(true);
+    		EnabledState boundaryVisbility = boundaries.getBoundaryVisbility(collection.getSelectedItems());
+    		EnabledState frustumVisbility = collection.getFrustumVisbility(collection.getSelectedItems());
+    		if (frustumVisbility == EnabledState.PARTIAL) allFrustra = false;
+    		if (boundaryVisbility == EnabledState.PARTIAL) allOutlined = false;
+    		showRemoveSpectrumIn3DMenuItem.setSelected(allMapped);
+    		if (showStatisticsMenuItem != null)
+    			showStatisticsMenuItem.setEnabled(false);
+    		if (showSpectrumInfoMenuItem != null)
+    			showSpectrumInfoMenuItem.setEnabled(false);
 
-        }
-        else
-        {
-            showFrustumMenuItem.setSelected(false);
-            showFrustumMenuItem.setEnabled(false);
-            showOutlineMenuItem.setSelected(false);
-            showOutlineMenuItem.setEnabled(false);
+			showFrustumMenuItem.setSelected(frustumVisbility == EnabledState.ALL);
+			showFrustumMenuItem.setEnabled(allMapped && allFrustra);
+
+            showOutlineMenuItem.setSelected(boundaryVisbility == EnabledState.ALL);
+            showOutlineMenuItem.setEnabled(allMapped && allOutlined);
             centerSpectrumMenuItem.setEnabled(false);
-            showToSunVectorMenuItem.setSelected(false);
             showToSunVectorMenuItem.setEnabled(false);
+            showToSunVectorMenuItem.setSelected(false);
+            setIlluminationMenuItem.setSelected(false);
             setIlluminationMenuItem.setEnabled(false);
-        }
-
-        if (collection.getSelectedItems().size() > 1) setIlluminationMenuItem.setEnabled(false);
-
-
+    	}
     }
-
-    BasicSpectrumInstrument instrument;
 
     public void setCurrentSpectrum(S spec)
     {
         spectrum.clear();
         spectrum.add(spec);
-        currentSpectrum = spec.getSpectrumName();
+        currentSpectrum.add(spec.getSpectrumName());
         updateMenuItems();
     }
 
@@ -214,13 +226,9 @@ public class SpectrumPopupMenu<S extends BasicSpectrum> extends PopupMenu implem
     {
         spectrum.clear();
         spectrum.addAll(keys);
-        currentSpectrum = keys.get(0).getSpectrumName().substring(keys.get(0).getSpectrumName().lastIndexOf("/")+1);
+        for (S key : keys)
+        	currentSpectrum.add(key.getSpectrumName().substring(keys.get(0).getSpectrumName().lastIndexOf("/")+1));
         updateMenuItems();
-    }
-
-    public void setInstrument(BasicSpectrumInstrument instrument)
-    {
-        this.instrument=instrument;
     }
 
     private class ShowRemoveIn3DAction extends AbstractAction
@@ -231,7 +239,8 @@ public class SpectrumPopupMenu<S extends BasicSpectrum> extends PopupMenu implem
             {
             	try
 				{
-					collection.addSpectrum(spectrum.get(0), spectrum.get(0).isCustomSpectra);
+            		for (S spec : collection.getSelectedItems())
+            			collection.addSpectrum(spec, spec.isCustomSpectra);
 				}
             	catch (SpectrumIOException e1)
 				{
@@ -242,7 +251,8 @@ public class SpectrumPopupMenu<S extends BasicSpectrum> extends PopupMenu implem
 				}
             }
             else
-                collection.removeSpectrum(spectrum.get(0));
+            	for (S spec : collection.getSelectedItems())
+            		collection.removeSpectrum(spec);
         }
     }
 
@@ -252,7 +262,8 @@ public class SpectrumPopupMenu<S extends BasicSpectrum> extends PopupMenu implem
         {
             try
             {
-                infoPanelManager.addData(spectrumRenderer);
+            	S spec = collection.getSelectedItems().asList().get(0);
+                infoPanelManager.addData(collection.getRendererForSpectrum(spec));
                 updateMenuItems();
             }
             catch (IOException e1) {
@@ -286,7 +297,7 @@ public class SpectrumPopupMenu<S extends BasicSpectrum> extends PopupMenu implem
     {
         List<IBasicSpectrumRenderer<S>> spectra = collection.getSelectedSpectra();
         if (spectra.size()==0)
-            spectra.add(spectrumRenderer);    // this was the old default behavior, but now we just do this if there are no spectra explicitly selected
+            spectra.add(collection.getRendererForSpectrum(collection.getSelectedItems().asList().get(0)));    // this was the old default behavior, but now we just do this if there are no spectra explicitly selected
 
         // compute statistics
         task=new ComputeStatisticsTask(spectra);
@@ -363,9 +374,13 @@ public class SpectrumPopupMenu<S extends BasicSpectrum> extends PopupMenu implem
     {
         public void actionPerformed(ActionEvent e)
         {
-            double[] up=new Vector3D(spectrumRenderer.getSpectrum().getFrustumCorner(1)).subtract(new Vector3D(spectrumRenderer.getSpectrum().getFrustumCorner(0))).toArray();
-            if (spectrumRenderer.getShiftedFootprint()!=null)
-                renderer.setCameraOrientation(spectrumRenderer.getSpectrum().getFrustumOrigin(), spectrumRenderer.getShiftedFootprint().GetCenter(), up, renderer.getCameraViewAngle());
+        	S spec = collection.getSelectedItems().asList().get(0);
+        	IBasicSpectrumRenderer<S> spectrumRenderer = collection.getRendererForSpectrum(spec);
+
+    		double[] up=new Vector3D(spectrumRenderer.getSpectrum().getFrustumCorner(1)).subtract(new Vector3D(spectrumRenderer.getSpectrum().getFrustumCorner(0))).toArray();
+    		if (spectrumRenderer.getShiftedFootprint()!=null)
+    			renderer.setCameraOrientation(spectrumRenderer.getSpectrum().getFrustumOrigin(), spectrumRenderer.getShiftedFootprint().GetCenter(), up, renderer.getCameraViewAngle());
+
         }
     }
 
@@ -373,7 +388,11 @@ public class SpectrumPopupMenu<S extends BasicSpectrum> extends PopupMenu implem
     {
         public void actionPerformed(ActionEvent e)
         {
-            spectrumRenderer.setShowFrustum(showFrustumMenuItem.isSelected());
+        	for (S spec : collection.getSelectedItems())
+        	{
+        		collection.getRendererForSpectrum(spec).setShowFrustum(showFrustumMenuItem.isSelected());
+        	}
+
             updateMenuItems();
         }
     }
@@ -383,7 +402,17 @@ public class SpectrumPopupMenu<S extends BasicSpectrum> extends PopupMenu implem
     {
         public void actionPerformed(ActionEvent e)
         {
-          	boundaries.setVisibility(spectrumRenderer.getSpectrum(), showOutlineMenuItem.isSelected());
+    		boolean allOutlined = true;
+    		for (S spec : collection.getSelectedItems())
+    		{
+    			if (!boundaries.getVisibility(spec)) { allOutlined = false; break; }
+    		}
+
+    		for (S spec : collection.getSelectedItems())
+    		{
+    			boundaries.setVisibility(spec, !allOutlined);
+    		}
+
             updateMenuItems();
         }
     }
@@ -394,6 +423,8 @@ public class SpectrumPopupMenu<S extends BasicSpectrum> extends PopupMenu implem
         {
             try
             {
+            	S spec = collection.getSelectedItems().asList().get(0);
+            	IBasicSpectrumRenderer<S> spectrumRenderer = collection.getRendererForSpectrum(spec);
                 spectrumRenderer.setShowToSunVector(showToSunVectorMenuItem.isSelected());
                 updateMenuItems();
             }
@@ -411,27 +442,30 @@ public class SpectrumPopupMenu<S extends BasicSpectrum> extends PopupMenu implem
         {
         	currentIlluminationVector = null;
         	JMenuItem menuItem = (JMenuItem)e.getSource();
-        	if (menuItem.isSelected()) currentIlluminationVector = new Vector3D(spectrumRenderer.getSpectrum().getToSunUnitVector());
-            try
-            {
-                if (renderer.getLighting() == LightingType.FIXEDLIGHT && currentIlluminationVector == null)
-                {
-                    renderer.setLighting(LightingType.LIGHT_KIT);
-                }
-                else
-                {
-                    renderer.setLighting(LightingType.FIXEDLIGHT);
-                    renderer.setFixedLightDirection(currentIlluminationVector.toArray()); // the fixed light direction points to the light
-                }
+        	for (S spec : collection.getSelectedItems())
+        	{
+        		IBasicSpectrumRenderer<S> spectrumRenderer = collection.getRendererForSpectrum(spec);
+	        	if (menuItem.isSelected()) currentIlluminationVector = new Vector3D(spectrumRenderer.getSpectrum().getToSunUnitVector());
+	            try
+	            {
+	                if (renderer.getLighting() == LightingType.FIXEDLIGHT && currentIlluminationVector == null)
+	                {
+	                    renderer.setLighting(LightingType.LIGHT_KIT);
+	                }
+	                else
+	                {
+	                    renderer.setLighting(LightingType.FIXEDLIGHT);
+	                    renderer.setFixedLightDirection(currentIlluminationVector.toArray()); // the fixed light direction points to the light
+	                }
 
 
-                updateMenuItems();
-            }
-            catch (Exception ex)
-            {
-                ex.printStackTrace();
-            }
-
+	                updateMenuItems();
+	            }
+	            catch (Exception ex)
+	            {
+	                ex.printStackTrace();
+	            }
+        	}
         }
     }
 
@@ -441,15 +475,19 @@ public class SpectrumPopupMenu<S extends BasicSpectrum> extends PopupMenu implem
          {
              try
              {
-                 String name = new File(spectrumRenderer.getSpectrum().getFullPath()).getName();
-                 File file = CustomFileChooser.showSaveDialog(saveSpectrumMenuItem, "Select File", name);
-                 if (file != null)
-                 {
-                	 File cachedFile = new File(spectrumRenderer.getSpectrum().getFullPath());
-                	 FileUtil.copyFile(cachedFile, file);
-                	 File toInfoFilename = new File(file.getParentFile(), FilenameUtils.getBaseName(file.getAbsolutePath()) + ".INFO");
-                	 spectrumRenderer.getSpectrum().saveInfofile(toInfoFilename);
-                 }
+            	 for (S spec : collection.getSelectedItems())
+             	{
+             		 IBasicSpectrumRenderer<S> spectrumRenderer = collection.getRendererForSpectrum(spec);
+	                 String name = new File(spectrumRenderer.getSpectrum().getFullPath()).getName();
+	                 File file = CustomFileChooser.showSaveDialog(saveSpectrumMenuItem, "Select File", name);
+	                 if (file != null)
+	                 {
+	                	 File cachedFile = new File(spectrumRenderer.getSpectrum().getFullPath());
+	                	 FileUtil.copyFile(cachedFile, file);
+	                	 File toInfoFilename = new File(file.getParentFile(), FilenameUtils.getBaseName(file.getAbsolutePath()) + ".INFO");
+	                	 spectrumRenderer.getSpectrum().saveInfofile(toInfoFilename);
+	                 }
+             	}
              }
              catch (IOException e1)
              {
@@ -469,13 +507,17 @@ public class SpectrumPopupMenu<S extends BasicSpectrum> extends PopupMenu implem
         {
             try
             {
-                String name = new File(spectrumRenderer.getSpectrum().getFullPath()).getName();
-                name = FilenameUtils.getBaseName(name) + "-humanReadable.txt";
-                File file = CustomFileChooser.showSaveDialog(saveSpectrumMenuItem, "Select File", name);
-                if (file != null)
-                {
-                    spectrumRenderer.getSpectrum().saveSpectrum(file);
-                }
+            	for (S spec : collection.getSelectedItems())
+            	{
+            		IBasicSpectrumRenderer<S> spectrumRenderer = collection.getRendererForSpectrum(spec);
+	                String name = new File(spectrumRenderer.getSpectrum().getFullPath()).getName();
+	                name = FilenameUtils.getBaseName(name) + "-humanReadable.txt";
+	                File file = CustomFileChooser.showSaveDialog(saveSpectrumMenuItem, "Select File", name);
+	                if (file != null)
+	                {
+	                    spectrumRenderer.getSpectrum().saveSpectrum(file);
+	                }
+            	}
             }
             catch (IOException e1)
             {

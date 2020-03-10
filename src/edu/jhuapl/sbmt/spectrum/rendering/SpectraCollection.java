@@ -21,6 +21,7 @@ import edu.jhuapl.saavtk.model.SaavtkItemManager;
 import edu.jhuapl.saavtk.util.Properties;
 import edu.jhuapl.sbmt.client.ISmallBodyModel;
 import edu.jhuapl.sbmt.client.SbmtSpectrumModelFactory;
+import edu.jhuapl.sbmt.spectrum.model.EnabledState;
 import edu.jhuapl.sbmt.spectrum.model.core.BasicSpectrum;
 import edu.jhuapl.sbmt.spectrum.model.core.SpectrumIOException;
 import edu.jhuapl.sbmt.spectrum.model.core.interfaces.IBasicSpectrumRenderer;
@@ -258,6 +259,19 @@ public class SpectraCollection<S extends BasicSpectrum> extends SaavtkItemManage
     	IBasicSpectrumRenderer<S> spectrumRenderer = spectrumToRendererMap.get(spec);
     	if (spectrumRenderer == null) return false;
         return spectrumRenderer.isFrustumShowing();
+    }
+
+    public EnabledState getFrustumVisbility(ImmutableSet<S> spectra)
+    {
+    	int numEnabled = 0;
+    	int numDisabled = 0;
+    	for (BasicSpectrum spec : spectra)
+    	{
+    		if (getFrustumVisibility(spec) == false) numDisabled++; else numEnabled++;
+    	}
+    	if (spectra.size() == numEnabled) return EnabledState.ALL;
+    	else if (spectra.size() == numDisabled) return EnabledState.NONE;
+    	else return EnabledState.PARTIAL;
     }
 
     public boolean getBoundaryVisibility(BasicSpectrum spec)

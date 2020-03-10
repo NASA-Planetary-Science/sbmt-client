@@ -36,6 +36,7 @@ import edu.jhuapl.sbmt.spectrum.model.core.BasicSpectrum;
 import edu.jhuapl.sbmt.spectrum.model.core.search.BaseSpectrumSearchModel;
 import edu.jhuapl.sbmt.spectrum.model.core.search.SpectraHierarchicalSearchSpecification;
 import edu.jhuapl.sbmt.spectrum.model.core.search.SpectrumSearchParametersModel;
+import edu.jhuapl.sbmt.spectrum.model.core.search.SpectrumSearchSpec;
 import edu.jhuapl.sbmt.spectrum.ui.search.SpectrumSearchParametersPanel;
 
 /**
@@ -48,7 +49,7 @@ public class SpectrumSearchParametersController<S extends BasicSpectrum>
     protected SpectrumSearchParametersPanel panel;
     protected BaseSpectrumSearchModel<S> model;
     protected PickManager pickManager;
-    protected SpectraHierarchicalSearchSpecification spectraSpec;
+    protected SpectraHierarchicalSearchSpecification<SpectrumSearchSpec> spectraSpec;
     private boolean hasHierarchicalSpectraSearch;
     private double imageSearchDefaultMaxSpacecraftDistance;
     private Date imageSearchDefaultStartDate;
@@ -68,7 +69,7 @@ public class SpectrumSearchParametersController<S extends BasicSpectrum>
      * @param pickManager								The System pick manager
      * @param modelManager								The system model manager
      */
-    public SpectrumSearchParametersController(Date imageSearchDefaultStartDate, Date imageSearchDefaultEndDate, boolean hasHierarchicalSpectraSearch, double imageSearchDefaultMaxSpacecraftDistance, SpectraHierarchicalSearchSpecification spectraSpec, BaseSpectrumSearchModel<S> model, PickManager pickManager, ModelManager modelManager)
+    public SpectrumSearchParametersController(Date imageSearchDefaultStartDate, Date imageSearchDefaultEndDate, boolean hasHierarchicalSpectraSearch, double imageSearchDefaultMaxSpacecraftDistance, SpectraHierarchicalSearchSpecification<SpectrumSearchSpec> spectraSpec, BaseSpectrumSearchModel<S> model, PickManager pickManager, ModelManager modelManager)
     {
         this.model = model;
         searchParameters = new SpectrumSearchParametersModel();

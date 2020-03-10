@@ -461,7 +461,6 @@ public class SbmtView extends View implements PropertyChangeListener
 				SpectraCollection spectrumCollection = (SpectraCollection)getModel(ModelNames.SPECTRA);
 				SpectrumBoundaryCollection spectrumBoundaryCollection = (SpectrumBoundaryCollection)getModel(ModelNames.SPECTRA_BOUNDARIES);
 				PopupMenu popupMenu = new SpectrumPopupMenu(spectrumCollection, spectrumBoundaryCollection, getModelManager(), (SbmtInfoWindowManager) getInfoPanelManager(), getRenderer());
-				((SpectrumPopupMenu) popupMenu).setInstrument(getPolyhedralModelConfig().spectralInstruments.get(0));
 				registerPopup(getModel(ModelNames.SPECTRA), popupMenu);
 			}
 		}
@@ -578,7 +577,6 @@ public class SbmtView extends View implements PropertyChangeListener
 				addTab(instrument.getDisplayName(), component);
 
 				PopupMenu popupMenu = new SpectrumPopupMenu(spectrumCollection, boundaryCollection, getModelManager(), (SbmtInfoWindowManager) getInfoPanelManager(), getRenderer());
-				((SpectrumPopupMenu) popupMenu).setInstrument(getPolyhedralModelConfig().spectralInstruments.get(0));
 				registerPopup(spectrumCollection, popupMenu);
 
 			}
@@ -593,7 +591,6 @@ public class SbmtView extends View implements PropertyChangeListener
 
 
 				PopupMenu popupMenu = new SpectrumPopupMenu(spectrumCollection, boundaryCollection, getModelManager(), (SbmtInfoWindowManager) getInfoPanelManager(), getRenderer());
-				((SpectrumPopupMenu) popupMenu).setInstrument(getPolyhedralModelConfig().spectralInstruments.get(0));
 				registerPopup(spectrumCollection, popupMenu);
 			}
 			else if (displayName.equals("OVIRS"))
@@ -603,7 +600,6 @@ public class SbmtView extends View implements PropertyChangeListener
 				JComponent component = new OREXSpectrumTabbedPane<OVIRSSpectrum>(getPolyhedralModelConfig(), getModelManager(), (SbmtInfoWindowManager) getInfoPanelManager(), getPickManager(), getRenderer(), instrument, spectrumCollection);
 				addTab(instrument.getDisplayName(), component);
 				PopupMenu popupMenu = new SpectrumPopupMenu(spectrumCollection, boundaryCollection, getModelManager(), (SbmtInfoWindowManager) getInfoPanelManager(), getRenderer());
-				((SpectrumPopupMenu) popupMenu).setInstrument(getPolyhedralModelConfig().spectralInstruments.get(1));
 				registerPopup(spectrumCollection, popupMenu);
 			}
 			else if (displayName.equals("NIRS3"))
@@ -619,7 +615,6 @@ public class SbmtView extends View implements PropertyChangeListener
 						getModelManager(), (SbmtInfoWindowManager) getInfoPanelManager(), getPickManager(), getRenderer(), instrument, model).getPanel();
 				addTab(instrument.getDisplayName(), component);
 				PopupMenu popupMenu = new SpectrumPopupMenu(spectrumCollection, boundaryCollection, getModelManager(), (SbmtInfoWindowManager) getInfoPanelManager(), getRenderer());
-				((SpectrumPopupMenu) popupMenu).setInstrument(getPolyhedralModelConfig().spectralInstruments.get(0));
 				registerPopup(spectrumCollection, popupMenu);
 			}
 			else if (displayName.equals("MEGANE"))
