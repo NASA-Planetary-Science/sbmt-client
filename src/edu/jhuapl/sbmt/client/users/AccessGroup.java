@@ -16,7 +16,7 @@ public final class AccessGroup
         ImmutableList.Builder<String> builder = ImmutableList.builder();
         for (String filePath : filePaths)
         {
-            builder.add(SafeURLPaths.instance().getString(filePath));
+            builder.add(cleanPath(filePath));
         }
 
         return new AccessGroup(id, new LinkedHashSet<>(builder.build()));
@@ -39,6 +39,11 @@ public final class AccessGroup
     public ImmutableList<String> getAuthorizedFilePaths()
     {
         return ImmutableList.copyOf(filePaths);
+    }
+
+    public static String cleanPath(String path)
+    {
+        return SafeURLPaths.instance().getString(path.replaceFirst("^[/\\\\]+", "").replaceFirst("[/\\\\]+$", ""));
     }
 
     @Override

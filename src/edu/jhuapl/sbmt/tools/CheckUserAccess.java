@@ -172,7 +172,8 @@ public class CheckUserAccess implements Callable<Integer>
 
     protected boolean isAuthorized(String urlString, Map<String, Set<String>> urlToGroupMap, UserCollection userCollection)
     {
-        String matchString = urlString.replaceFirst("/+$", "");
+        String matchString = AccessGroup.cleanPath(urlString);
+
         Set<String> authorizedGroupIds = null;
         while (authorizedGroupIds == null && matchString.matches("^.*\\S.*$"))
         {
