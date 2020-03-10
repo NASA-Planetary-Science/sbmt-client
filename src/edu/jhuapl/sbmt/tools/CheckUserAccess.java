@@ -3,11 +3,9 @@ package edu.jhuapl.sbmt.tools;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.io.PrintStream;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.nio.file.Files;
@@ -85,43 +83,32 @@ public class CheckUserAccess implements Callable<Integer>
 
         Users.initializeSerializationProxies();
 
-        try (PrintStream ps = new PrintStream(new FileOutputStream("/project/sbmt2/sbmt/data/accessControl/CheckUserAccess-exceptions.txt")))
+        rootURLString = SafePaths.getUrl(rootURLString);
+        userName = decodeIfEnabled(userName);
+
+        serverTopPath = SafePaths.get(serverTopPath.toString(), rootURLString.replaceFirst("^[^:]+:/+[^/]+/+sbmt/+", "").replaceFirst("/+data/*$", ""));
+
+        int result;
+        if (inputFile != null)
         {
-            try
+            Debug.of().err().println("Reading URL segments from file " + inputFile);
+            try (InputStream stream = new FileInputStream(inputFile))
             {
-                rootURLString = SafePaths.getUrl(rootURLString);
-                userName = decodeIfEnabled(userName);
-
-                serverTopPath = SafePaths.get(serverTopPath.toString(), rootURLString.replaceFirst("^[^:]+:/+[^/]+/+sbmt/+", "").replaceFirst("/+data/*$", ""));
-
-                int result;
-                if (inputFile != null)
-                {
-                    Debug.of().err().println("Reading URL segments from file " + inputFile);
-                    try (InputStream stream = new FileInputStream(inputFile))
-                    {
-                        result = queryFilesFromStream(stream, false);
-                    }
-                }
-                else if (testMode)
-                {
-                    Debug.of().err().println("Testing this utility");
-                    result = testQueryFiles();
-                }
-                else
-                {
-                    Debug.of().err().println("Checking URL segments supplied on stdin");
-                    result = queryFilesFromStream(System.in, true);
-                }
-
-                return result;
-            }
-            catch (Exception e)
-            {
-                e.printStackTrace(ps);
-                throw e;
+                result = queryFilesFromStream(stream, false);
             }
         }
+        else if (testMode)
+        {
+            Debug.of().err().println("Testing this utility");
+            result = testQueryFiles();
+        }
+        else
+        {
+            Debug.of().err().println("Checking URL segments supplied on stdin");
+            result = queryFilesFromStream(System.in, true);
+        }
+
+        return result;
     }
 
     protected int queryFilesFromStream(InputStream stream, boolean decodeIfNecessary) throws IOException
