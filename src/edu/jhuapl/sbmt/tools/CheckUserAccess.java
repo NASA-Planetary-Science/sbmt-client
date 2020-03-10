@@ -157,7 +157,7 @@ public class CheckUserAccess implements Callable<Integer>
         long lastModified = 0;
         if (authorized)
         {
-            File file = serverTopPath.resolve(urlString).toFile();
+            File file = SafePaths.get(serverTopPath.toString(), urlString).toFile();
             status = file.exists() ? UrlStatus.ACCESSIBLE : UrlStatus.NOT_FOUND;
             length = file.length();
             lastModified = file.lastModified();
