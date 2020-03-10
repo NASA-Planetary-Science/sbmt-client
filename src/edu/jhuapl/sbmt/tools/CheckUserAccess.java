@@ -67,9 +67,9 @@ public class CheckUserAccess implements Callable<Integer>
     private boolean decodingEnabled = true;
 
     // This is changed after startup.
-    private Path serverTopPath = SafePaths.get("/disks/d0180/htdocs-sbmt/sbmt/query/sbmt2");
+    private Path serverTopPath = SafePaths.get("/project/sbmt2");
 
-    private Path accessControlFilesPath = SafePaths.get("/disks/d0180/htdocs-sbmt/sbmt/query/accessControl");
+    private Path accessControlFilesPath = SafePaths.get("/project/sbmt2/sbmt/data/accessControl");
 
     protected CheckUserAccess()
     {
