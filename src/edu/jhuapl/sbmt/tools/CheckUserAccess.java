@@ -73,12 +73,9 @@ public class CheckUserAccess implements Callable<Integer>
 
     private Path accessControlFilesPath = SafePaths.get("/project/sbmt2/sbmt/data/accessControl");
 
-    private final PrintStream ps;
-
-    protected CheckUserAccess(PrintStream ps)
+    protected CheckUserAccess()
     {
         super();
-        this.ps = ps;
     }
 
     @Override
@@ -88,39 +85,42 @@ public class CheckUserAccess implements Callable<Integer>
 
         Users.initializeSerializationProxies();
 
-        try
+        try (PrintStream ps = new PrintStream(new FileOutputStream("/project/sbmt2/sbmt/data/accessControl/CheckUserAccess-exceptions.txt")))
         {
-            rootURLString = SafePaths.getUrl(rootURLString);
-            userName = decodeIfEnabled(userName);
-
-            serverTopPath = SafePaths.get(serverTopPath.toString(), rootURLString.replaceFirst("^[^:]+:/+[^/]+/+sbmt/+", "").replaceFirst("/+data/*$", ""));
-
-            int result;
-            if (inputFile != null)
+            try
             {
-                Debug.of().err().println("Reading URL segments from file " + inputFile);
-                try (InputStream stream = new FileInputStream(inputFile))
+                rootURLString = SafePaths.getUrl(rootURLString);
+                userName = decodeIfEnabled(userName);
+
+                serverTopPath = SafePaths.get(serverTopPath.toString(), rootURLString.replaceFirst("^[^:]+:/+[^/]+/+sbmt/+", "").replaceFirst("/+data/*$", ""));
+
+                int result;
+                if (inputFile != null)
                 {
-                    result = queryFilesFromStream(stream, false);
+                    Debug.of().err().println("Reading URL segments from file " + inputFile);
+                    try (InputStream stream = new FileInputStream(inputFile))
+                    {
+                        result = queryFilesFromStream(stream, false);
+                    }
                 }
-            }
-            else if (testMode)
-            {
-                Debug.of().err().println("Testing this utility");
-                result = testQueryFiles();
-            }
-            else
-            {
-                Debug.of().err().println("Checking URL segments supplied on stdin");
-                result = queryFilesFromStream(System.in, true);
-            }
+                else if (testMode)
+                {
+                    Debug.of().err().println("Testing this utility");
+                    result = testQueryFiles();
+                }
+                else
+                {
+                    Debug.of().err().println("Checking URL segments supplied on stdin");
+                    result = queryFilesFromStream(System.in, true);
+                }
 
-            return result;
-        }
-        catch (Exception e)
-        {
-            e.printStackTrace(ps);
-            throw e;
+                return result;
+            }
+            catch (Exception e)
+            {
+                e.printStackTrace(ps);
+                throw e;
+            }
         }
     }
 
@@ -304,16 +304,9 @@ public class CheckUserAccess implements Callable<Integer>
     {
         System.setProperty("java.awt.headless", "true");
 
-        try (PrintStream ps = new PrintStream(new FileOutputStream("/project/sbmt2/sbmt/data/accessControl/CheckUserAccess-exceptions.txt")))
-        {
-            ps.println("I got here");
-            int exitCode = new CommandLine(new CheckUserAccess(ps)).execute(args);
-            System.exit(exitCode);
-        }
-        catch (Exception e)
-        {
+        int exitCode = new CommandLine(new CheckUserAccess()).execute(args);
 
-        }
+        System.exit(exitCode);
     }
 
     private static AccessGroupCollection groupsFromUsers(UserCollection userCollection)
