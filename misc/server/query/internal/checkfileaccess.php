@@ -3,13 +3,12 @@
 // Get posted data that we know the keys to
 $rootURL=$_POST['rootURL'];
 $userName=$_POST['userName'];
-$password=$_POST['password'];
 $args=$_POST['args'];
 $stdin=$_POST['stdin'];
 
 $SBMTROOT='/disks/d0180/htdocs-sbmt/sbmt/query/sbmt';
 
-$cmd = "export SBMTROOT=$SBMTROOT; $SBMTROOT/bin/CheckUserAccess.sh $rootURL $userName $password $args";
+$cmd = "export SBMTROOT=$SBMTROOT; $SBMTROOT/bin/CheckUserAccess.sh $rootURL $userName $args";
 
 $descriptorspec = array(
     0 => array("pipe", "r"),
