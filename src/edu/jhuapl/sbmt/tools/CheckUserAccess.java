@@ -20,7 +20,7 @@ import com.google.common.collect.ImmutableList;
 
 import edu.jhuapl.saavtk.util.Debug;
 import edu.jhuapl.saavtk.util.SafeURLPaths;
-import edu.jhuapl.saavtk.util.UrlInfo.UrlStatus;
+import edu.jhuapl.saavtk.util.UrlStatus;
 import edu.jhuapl.sbmt.client.users.AccessGroup;
 import edu.jhuapl.sbmt.client.users.AccessGroupCollection;
 import edu.jhuapl.sbmt.client.users.User;
