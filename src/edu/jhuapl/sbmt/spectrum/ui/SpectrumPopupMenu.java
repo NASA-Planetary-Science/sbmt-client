@@ -169,7 +169,7 @@ public class SpectrumPopupMenu<S extends BasicSpectrum> extends PopupMenu implem
     		if (showStatisticsMenuItem != null)
     			showStatisticsMenuItem.setEnabled(isMapped);
     		showSpectrumMenuItem.setEnabled(isMapped);
-    		showSpectrumMenuItem.setSelected(collection.getBoundaryVisibility(selectedSpectrum));
+    		showSpectrumMenuItem.setSelected(collection.getVisibility(selectedSpectrum));
     		showFrustumMenuItem.setSelected(collection.getFrustumVisibility(selectedSpectrum));
             showFrustumMenuItem.setEnabled(isMapped);
             showOutlineMenuItem.setSelected(boundaries.getVisibility(selectedSpectrum));
