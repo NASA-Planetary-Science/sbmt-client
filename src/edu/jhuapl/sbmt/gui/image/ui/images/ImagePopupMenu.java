@@ -15,7 +15,6 @@ import java.util.List;
 
 import javax.swing.AbstractAction;
 import javax.swing.JCheckBoxMenuItem;
-import javax.swing.JFileChooser;
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
@@ -27,6 +26,7 @@ import vtk.vtkProp;
 
 import edu.jhuapl.saavtk.gui.dialog.ColorChooser;
 import edu.jhuapl.saavtk.gui.dialog.CustomFileChooser;
+import edu.jhuapl.saavtk.gui.dialog.DirectoryChooser;
 import edu.jhuapl.saavtk.gui.dialog.NormalOffsetChangerDialog;
 import edu.jhuapl.saavtk.gui.dialog.OpacityChanger;
 import edu.jhuapl.saavtk.gui.render.Renderer;
@@ -333,7 +333,7 @@ public class ImagePopupMenu<K extends ImageKeyInterface> extends PopupMenu
             }
         }
 
-        if (enableBoundaryColor)
+        if (enableBoundaryColor && imageKeys.size() > 0)
         {
             HashSet<String> colors = new HashSet<String>();
             for (ImageKeyInterface imageKey : imageKeys)
@@ -814,14 +814,16 @@ public class ImagePopupMenu<K extends ImageKeyInterface> extends PopupMenu
     {
         public void actionPerformed(ActionEvent e)
         {
-        	JFileChooser outputDirChooser = new JFileChooser();
-        	outputDirChooser.setDialogTitle("Choose Save Directory");
-        	outputDirChooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
-        	outputDirChooser.setAcceptAllFileFilterUsed(false);
-
-        	if (outputDirChooser.showOpenDialog(ImagePopupMenu.this) == JFileChooser.CANCEL_OPTION) return;
+//        	CustomFileChooser outputDirChooser =   CustomFileChooser.showSaveDialog(null, "Save FITS/INFO Pairs to Directory...");
+//        	outputDirChooser.
+//        	outputDirChooser.setDialogTitle("Choose Save Directory");
+//        	outputDirChooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+//        	outputDirChooser.setAcceptAllFileFilterUsed(false);
+//        	File outputDir = CustomFileChooser.showSaveDialog(null, "Save FITS/INFO Pairs to Directory...");
+        	File outputDir = DirectoryChooser.showOpenDialog(null, "Save FITS/INFO Pairs to Directory...");
+        	if (outputDir == null) return;
 //        	if (outputDirChooser.showOpenDialog(ImagePopupMenu.this) == JFileChooser.ERROR_OPTION) return;	//TODO handle errors
-        	File outDir = outputDirChooser.getSelectedFile();
+        	File outDir = outputDir;
         	for (ImageKeyInterface imageKey : imageKeys)
         	{
         		if (!(imageCollection.getImage(imageKey) instanceof PerspectiveImage)) continue;
@@ -836,7 +838,6 @@ public class ImagePopupMenu<K extends ImageKeyInterface> extends PopupMenu
 	                file = new File(outDir, imageKey.getImageFilename().substring(imageKey.getImageFilename().lastIndexOf("/")) + extension);
                     File fitFile = FileCache.getFileFromServer(imageKey.getName() + extension);
                     FileUtil.copyFile(fitFile, file);
-
 	                //save info file
 	                String fullPathName = image.getFitFileFullPath();
                     if (fullPathName == null)
