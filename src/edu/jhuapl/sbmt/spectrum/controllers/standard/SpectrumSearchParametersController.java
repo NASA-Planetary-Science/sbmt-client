@@ -58,6 +58,7 @@ public class SpectrumSearchParametersController<S extends BasicSpectrum>
     private SpectrumSearchParametersModel searchParameters;
     private ProgressMonitor searchProgressMonitor;
     private TreeSet<Integer> cubeList = null;
+    private boolean isFixedListSearch = false;
 
     /**
      * @param imageSearchDefaultStartDate				The search start date
@@ -424,5 +425,17 @@ public class SpectrumSearchParametersController<S extends BasicSpectrum>
     public SpectrumSearchParametersPanel getPanel()
     {
         return panel;
+    }
+
+    public boolean isFixedListSearch()
+    {
+    	return isFixedListSearch;
+    }
+
+
+    public void setFixedListSearch(boolean isFixedListSearch)
+    {
+    	this.isFixedListSearch = isFixedListSearch;
+    	panel.setFixedListSearch(isFixedListSearch);
     }
 }
