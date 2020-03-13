@@ -72,6 +72,11 @@ public class SpectrumSearchParametersPanel  extends JPanel
     private JCheckBox partialCheckBox;
     private JCheckBox degenerateCheckBox;
     private boolean isHierarchical;
+    private ButtonGroup searchByGroup;
+    private JPanel parametersPanel;
+    private JPanel filenamePanel;
+
+    private boolean isFixedListSearch = false;
 
     public SpectrumSearchParametersPanel(boolean isHierarchical)
     {
@@ -118,7 +123,8 @@ public class SpectrumSearchParametersPanel  extends JPanel
 
         parametersRadioButton = new JRadioButton(
                 "Search by Parameters");
-        choicePanel.add(parametersRadioButton);
+        if (isFixedListSearch == false)
+        	choicePanel.add(parametersRadioButton);
 
 
         filenameRadioButton = new JRadioButton(
@@ -126,7 +132,7 @@ public class SpectrumSearchParametersPanel  extends JPanel
         choicePanel.add(filenameRadioButton);
 
 
-        ButtonGroup searchByGroup = new ButtonGroup();
+        searchByGroup = new ButtonGroup();
         searchByGroup.add(filenameRadioButton);
         searchByGroup.add(parametersRadioButton);
         parametersRadioButton.setSelected(true);
@@ -135,7 +141,7 @@ public class SpectrumSearchParametersPanel  extends JPanel
 //        Component verticalStrut_9 = Box.createVerticalStrut(20);
 //        add(verticalStrut_9);
 
-        final JPanel filenamePanel = new JPanel();
+        filenamePanel = new JPanel();
         filenamePanel.setVisible(false);
         add(filenamePanel);
         filenamePanel.setLayout(new BoxLayout(filenamePanel, BoxLayout.X_AXIS));
@@ -154,7 +160,7 @@ public class SpectrumSearchParametersPanel  extends JPanel
         Component horizontalGlue = Box.createHorizontalGlue();
         filenamePanel.add(horizontalGlue);
 
-        final JPanel parametersPanel = new JPanel();
+        parametersPanel = new JPanel();
         add(parametersPanel);
         parametersPanel
                 .setLayout(new BoxLayout(parametersPanel, BoxLayout.Y_AXIS));
@@ -167,6 +173,8 @@ public class SpectrumSearchParametersPanel  extends JPanel
             {
                 parametersPanel.setVisible(true);
                 filenamePanel.setVisible(false);
+//                selectRegionButton.setVisible(true);
+//                clearRegionButton.setVisible(true);
             }
         });
 
@@ -178,6 +186,8 @@ public class SpectrumSearchParametersPanel  extends JPanel
             {
                 parametersPanel.setVisible(false);
                 filenamePanel.setVisible(true);
+//                selectRegionButton.setVisible(false);
+//                clearRegionButton.setVisible(false);
             }
         });
 
@@ -588,6 +598,8 @@ public class SpectrumSearchParametersPanel  extends JPanel
 	{
     	if (isHierarchical)
     		return new Dimension(650, 175);
+    	else if (parametersRadioButton.isSelected() == false)
+    		return new Dimension(650, 175);
     	return new Dimension(650, 325);
 	}
 
@@ -595,6 +607,8 @@ public class SpectrumSearchParametersPanel  extends JPanel
 	public Dimension getPreferredSize()
 	{
     	if (isHierarchical)
+    		return new Dimension(650, 175);
+    	else if (parametersRadioButton.isSelected() == false)
     		return new Dimension(650, 175);
     	return new Dimension(650, 325);
 	}
@@ -604,7 +618,34 @@ public class SpectrumSearchParametersPanel  extends JPanel
 	{
     	if (isHierarchical)
     		return new Dimension(650, 175);
-    	return new Dimension(650, 325);
+    	else if (parametersRadioButton.isSelected() == false)
+    		return new Dimension(650, 175);
+    	else
+    		return new Dimension(650, 325);
+	}
+
+    public void setFixedListSearch(boolean isFixedListSearch)
+	{
+		this.isFixedListSearch = isFixedListSearch;
+		if (isFixedListSearch)
+		{
+			 parametersPanel.setVisible(false);
+             filenamePanel.setVisible(true);
+             selectRegionButton.setVisible(false);
+             clearRegionButton.setVisible(false);
+             parametersRadioButton.setVisible(false);
+             filenameRadioButton.setVisible(false);
+		}
+		else
+		{
+			searchByNumberTextField.setText("");
+            parametersPanel.setVisible(true);
+            filenamePanel.setVisible(false);
+            selectRegionButton.setVisible(true);
+            clearRegionButton.setVisible(true);
+            parametersRadioButton.setVisible(true);
+            filenameRadioButton.setVisible(true);
+		}
 	}
 
 }
