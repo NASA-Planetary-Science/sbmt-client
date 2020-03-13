@@ -57,6 +57,7 @@ public class SpectrumPopupMenu<S extends BasicSpectrum> extends PopupMenu implem
     private ModelManager modelManager;
     private List<String> currentSpectrum;
     private JMenuItem showRemoveSpectrumIn3DMenuItem;
+    private JMenuItem showSpectrumMenuItem;
     private JMenuItem showSpectrumInfoMenuItem;
     private JMenuItem centerSpectrumMenuItem;
     private JMenuItem showFrustumMenuItem;
@@ -96,12 +97,16 @@ public class SpectrumPopupMenu<S extends BasicSpectrum> extends PopupMenu implem
         this.infoPanelManager = infoPanelManager;
         this.renderer=renderer;
         showRemoveSpectrumIn3DMenuItem = new JCheckBoxMenuItem(new ShowRemoveIn3DAction());
-        showRemoveSpectrumIn3DMenuItem.setText("Show Footprint");
+        showRemoveSpectrumIn3DMenuItem.setText("Map Footprint");
         this.add(showRemoveSpectrumIn3DMenuItem);
+
+        showSpectrumMenuItem = new JCheckBoxMenuItem(new ShowSpectrumAction());
+        showSpectrumMenuItem.setText("Show Footprint");
+        this.add(showSpectrumMenuItem);
 
         if (this.infoPanelManager != null)
         {
-            showSpectrumInfoMenuItem = new JMenuItem(new ShowSpectrumAction());
+            showSpectrumInfoMenuItem = new JMenuItem(new ShowSpectrumGraphAction());
             showSpectrumInfoMenuItem.setText("Graph Spectrum...");
             this.add(showSpectrumInfoMenuItem);
 
@@ -163,6 +168,8 @@ public class SpectrumPopupMenu<S extends BasicSpectrum> extends PopupMenu implem
     			showSpectrumInfoMenuItem.setEnabled(isMapped);
     		if (showStatisticsMenuItem != null)
     			showStatisticsMenuItem.setEnabled(isMapped);
+    		showSpectrumMenuItem.setEnabled(isMapped);
+    		showSpectrumMenuItem.setSelected(collection.getBoundaryVisibility(selectedSpectrum));
     		showFrustumMenuItem.setSelected(collection.getFrustumVisibility(selectedSpectrum));
             showFrustumMenuItem.setEnabled(isMapped);
             showOutlineMenuItem.setSelected(boundaries.getVisibility(selectedSpectrum));
@@ -186,7 +193,7 @@ public class SpectrumPopupMenu<S extends BasicSpectrum> extends PopupMenu implem
     		boolean allMapped = true;
     		boolean allOutlined = true;
     		boolean allFrustra = true;
-
+    		boolean allShown = true;
     		for (S spec : collection.getSelectedItems())
     		{
     			if (!collection.isSpectrumMapped(spec)) { allMapped = false; break; }
@@ -194,13 +201,18 @@ public class SpectrumPopupMenu<S extends BasicSpectrum> extends PopupMenu implem
 
     		EnabledState boundaryVisbility = boundaries.getBoundaryVisbility(collection.getSelectedItems());
     		EnabledState frustumVisbility = collection.getFrustumVisbility(collection.getSelectedItems());
+    		EnabledState spectrumVisibility = collection.getVisibility(collection.getSelectedItems());
     		if (frustumVisbility == EnabledState.PARTIAL) allFrustra = false;
     		if (boundaryVisbility == EnabledState.PARTIAL) allOutlined = false;
+    		if (spectrumVisibility == EnabledState.PARTIAL) allShown = false;
     		showRemoveSpectrumIn3DMenuItem.setSelected(allMapped);
     		if (showStatisticsMenuItem != null)
     			showStatisticsMenuItem.setEnabled(false);
     		if (showSpectrumInfoMenuItem != null)
     			showSpectrumInfoMenuItem.setEnabled(false);
+
+    		showSpectrumMenuItem.setSelected(spectrumVisibility == EnabledState.ALL);
+    		showSpectrumMenuItem.setEnabled(allMapped && allShown);
 
 			showFrustumMenuItem.setSelected(frustumVisbility == EnabledState.ALL);
 			showFrustumMenuItem.setEnabled(allMapped && allFrustra);
@@ -242,7 +254,10 @@ public class SpectrumPopupMenu<S extends BasicSpectrum> extends PopupMenu implem
             	try
 				{
             		for (S spec : collection.getSelectedItems())
+            		{
             			collection.addSpectrum(spec, spec.isCustomSpectra);
+            			boundaries.addBoundary(spec);
+            		}
 				}
             	catch (SpectrumIOException e1)
 				{
@@ -254,11 +269,31 @@ public class SpectrumPopupMenu<S extends BasicSpectrum> extends PopupMenu implem
             }
             else
             	for (S spec : collection.getSelectedItems())
+            	{
             		collection.removeSpectrum(spec);
+            		boundaries.removeBoundary(spec);
+            	}
         }
     }
 
     private class ShowSpectrumAction extends AbstractAction
+    {
+    	public void actionPerformed(ActionEvent e)
+    	{
+    		if (showSpectrumMenuItem.isSelected())
+    		{
+    			for (S spec : collection.getSelectedItems())
+            		collection.setVisibility(spec, true);
+    		}
+    		else
+    		{
+    			for (S spec : collection.getSelectedItems())
+            		collection.setVisibility(spec, false);
+    		}
+    	}
+    }
+
+    private class ShowSpectrumGraphAction extends AbstractAction
     {
         public void actionPerformed(ActionEvent e)
         {

@@ -247,6 +247,19 @@ public class SpectraCollection<S extends BasicSpectrum> extends SaavtkItemManage
         return spectrumRenderer.isVisible();
     }
 
+    public EnabledState getVisibility(ImmutableSet<S> spectra)
+    {
+    	int numEnabled = 0;
+    	int numDisabled = 0;
+    	for (BasicSpectrum spec : spectra)
+    	{
+    		if (getVisibility(spec) == false) numDisabled++; else numEnabled++;
+    	}
+    	if (spectra.size() == numEnabled) return EnabledState.ALL;
+    	else if (spectra.size() == numDisabled) return EnabledState.NONE;
+    	else return EnabledState.PARTIAL;
+    }
+
     public void setFrustumVisibility(BasicSpectrum spec, boolean visibility)
     {
         spectrumToRendererMap.get(spec).setShowFrustum(visibility);
