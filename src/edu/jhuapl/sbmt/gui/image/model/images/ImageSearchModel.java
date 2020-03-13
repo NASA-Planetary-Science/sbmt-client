@@ -35,6 +35,7 @@ import edu.jhuapl.saavtk.model.ModelManager;
 import edu.jhuapl.saavtk.model.ModelNames;
 import edu.jhuapl.saavtk.model.structure.AbstractEllipsePolygonModel;
 import edu.jhuapl.saavtk.structure.Ellipse;
+import edu.jhuapl.saavtk.util.FileCache;
 import edu.jhuapl.saavtk.util.IdPair;
 import edu.jhuapl.sbmt.client.SmallBodyModel;
 import edu.jhuapl.sbmt.client.SmallBodyViewConfig;
@@ -647,6 +648,23 @@ public class ImageSearchModel implements Controller.Model, MetadataManager
 
         setImageResults(processResults(results));
 
+    }
+
+    public List<List<String>> getFixedList(ImageSource imageSource)
+    {
+    	String rootPath = getInstrument().getSearchQuery().getRootPath();
+    	String dataPath = getInstrument().getSearchQuery().getDataPath();
+    	String galleryPath = getInstrument().getSearchQuery().getGalleryPath();
+    	String imageListName = "imagelist-info.txt";
+        if (imageSource.equals(ImageSource.GASKELL))
+        {
+        	imageListName = "imagelist-sum.txt";
+        	if (!FileCache.instance().isAccessible(rootPath + "/" + imageListName))
+        		imageListName = "imagelist.txt";
+        }
+        return getInstrument().getSearchQuery().getResultsFromFileListOnServer(rootPath + "/" + imageListName, dataPath, galleryPath);
+//    	FixedListQuery<List<String>> query = (FixedListQuery<List<String>>) getInstrument().getSearchQuery();
+//        return query.runQuery(FixedListSearchMetadata.of("Imaging Search", "imagelist", "images", query.getRootPath(), imageSource, searchFilename)).getResultlist();
     }
 
 
