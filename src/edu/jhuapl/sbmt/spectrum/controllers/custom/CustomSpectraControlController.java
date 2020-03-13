@@ -8,6 +8,7 @@ import javax.swing.JOptionPane;
 import edu.jhuapl.sbmt.spectrum.model.core.BasicSpectrum;
 import edu.jhuapl.sbmt.spectrum.model.core.search.CustomSpectraSearchModel;
 import edu.jhuapl.sbmt.spectrum.model.core.search.SpectraHierarchicalSearchSpecification;
+import edu.jhuapl.sbmt.spectrum.model.core.search.SpectrumSearchSpec;
 import edu.jhuapl.sbmt.spectrum.model.sbmtCore.spectra.CustomSpectrumKeyInterface;
 import edu.jhuapl.sbmt.spectrum.ui.custom.CustomSpectraControlPanel;
 import edu.jhuapl.sbmt.spectrum.ui.custom.CustomSpectrumImporterDialog;
@@ -23,12 +24,12 @@ public class CustomSpectraControlController<S extends BasicSpectrum>
     private CustomSpectraControlPanel panel;
     private CustomSpectraSearchModel<S> model;
     private List<CustomSpectrumKeyInterface> customSpectra;
-    private SpectraHierarchicalSearchSpecification spectraSpec;
+    private SpectraHierarchicalSearchSpecification<SpectrumSearchSpec> spectraSpec;
 
     /**
      * @param model	The custom spectra model
      */
-    public CustomSpectraControlController(CustomSpectraSearchModel<S> model, SpectraHierarchicalSearchSpecification spectraSpec)
+    public CustomSpectraControlController(CustomSpectraSearchModel<S> model, SpectraHierarchicalSearchSpecification<SpectrumSearchSpec> spectraSpec)
     {
         panel = new CustomSpectraControlPanel();
         this.model = model;

@@ -2,7 +2,6 @@ package edu.jhuapl.sbmt.spectrum.controllers.custom;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
 
 import javax.swing.JOptionPane;
@@ -24,6 +23,7 @@ import edu.jhuapl.sbmt.spectrum.model.core.SpectrumInstrumentFactory;
 import edu.jhuapl.sbmt.spectrum.model.core.interfaces.CustomSpectraResultsListener;
 import edu.jhuapl.sbmt.spectrum.model.core.search.CustomSpectraSearchModel;
 import edu.jhuapl.sbmt.spectrum.model.core.search.SpectraHierarchicalSearchSpecification;
+import edu.jhuapl.sbmt.spectrum.model.core.search.SpectrumSearchSpec;
 import edu.jhuapl.sbmt.spectrum.model.sbmtCore.spectra.CustomSpectrumKeyInterface;
 import edu.jhuapl.sbmt.spectrum.rendering.SpectraCollection;
 import edu.jhuapl.sbmt.spectrum.rendering.SpectrumBoundaryCollection;
@@ -55,7 +55,7 @@ public class CustomSpectraSearchController<S extends BasicSpectrum>
     public CustomSpectraSearchController(ModelManager modelManager,
             SbmtInfoWindowManager infoPanelManager,
             PickManager pickManager, Renderer renderer,
-            SpectraHierarchicalSearchSpecification spectraSpec, BasicSpectrumInstrument instrument)
+            SpectraHierarchicalSearchSpecification<SpectrumSearchSpec> spectraSpec, BasicSpectrumInstrument instrument)
     {
     	this.instrument = instrument;
         this.spectrumSearchModel =  new CustomSpectraSearchModel<S>(modelManager, instrument);
@@ -73,7 +73,6 @@ public class CustomSpectraSearchController<S extends BasicSpectrum>
             {
 //            	spectrumCollection.removeAllSpectra();
 //				boundaries.removeAllBoundaries();
-            	List<S> spectra = new ArrayList<S>();
             	for (CustomSpectrumKeyInterface info : results)
             	{
             		resultAdded(info);
