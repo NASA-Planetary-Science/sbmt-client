@@ -67,6 +67,9 @@ public class QueryFileAccessibility implements Callable<Integer>
     @Option(names = { "-d", "-debug", "--debug" }, description = "Enable/disable debugging")
     private boolean debug = false;
 
+    @Option(names = { "-debug-cache", "--debug-cache" }, description = "Enable/disable file cache debugging")
+    private boolean debugCache = false;
+
     @Option(names = { "-e", "-encode", "--encode" }, description = "Enable/disable URL decoding (true when used as back-end of web page, false for running from command line)")
     private boolean decodingEnabled = true;
 
@@ -74,13 +77,14 @@ public class QueryFileAccessibility implements Callable<Integer>
     public Integer call() throws Exception
     {
         Debug.setEnabled(debug);
+        FileCache.enableDebug(debugCache);
 
         return queryFiles();
     }
 
     protected int queryFiles() throws IOException
     {
-        FileCache.setSilenceInfoMessages(true);
+        FileCache.enableInfoMessages(false);
 
 //        rootURLString = decodeIfEnabled(rootURLString);
         userName = decodeIfEnabled(userName);
@@ -109,7 +113,7 @@ public class QueryFileAccessibility implements Callable<Integer>
 
             if (inputFile != null)
             {
-                Debug.err().println("Reading URL segments from file " + inputFile);
+                Debug.of().err().println("Reading URL segments from file " + inputFile);
                 try (InputStream stream = new FileInputStream(inputFile))
                 {
                     result = queryFilesFromStream(stream, false);
@@ -117,12 +121,12 @@ public class QueryFileAccessibility implements Callable<Integer>
             }
             else if (testMode)
             {
-                Debug.err().println("Checking all model config files");
+                Debug.of().err().println("Checking all model config files");
                 result = queryAllModels();
             }
             else
             {
-                Debug.err().println("Checking URL segments supplied on stdin");
+                Debug.of().err().println("Checking URL segments supplied on stdin");
                 result = queryFilesFromStream(System.in, true);
             }
         }

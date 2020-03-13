@@ -354,6 +354,10 @@ public class SbmtTesterMultiMissionTool
 		{
 			Debug.setEnabled(true);
 		}
+        if (getOption(args, "--debug-cache") != null)
+        {
+            FileCache.enableDebug(true);
+        }
 
 		// Get other arguments.
 		initialShapeModelPath = null;
