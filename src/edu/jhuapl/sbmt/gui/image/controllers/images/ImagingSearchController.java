@@ -21,6 +21,7 @@ import edu.jhuapl.sbmt.model.image.ImageCollection;
 import edu.jhuapl.sbmt.model.image.ImageCubeCollection;
 import edu.jhuapl.sbmt.model.image.ImagingInstrument;
 import edu.jhuapl.sbmt.model.image.PerspectiveImageBoundaryCollection;
+import edu.jhuapl.sbmt.query.fixedlist.FixedListQuery;
 
 
 public class ImagingSearchController implements Controller<ImageSearchModel, ImagingSearchPanel>
@@ -53,6 +54,8 @@ public class ImagingSearchController implements Controller<ImageSearchModel, Ima
         this.imageResultsTableController.setImageResultsPanel();
 
         this.searchParametersController = new ImageSearchParametersController(imageSearchModel, pickManager);
+        if (instrument.searchQuery instanceof FixedListQuery)
+        	this.searchParametersController.setFixedListSearch(true);
         this.searchParametersController.setupSearchParametersPanel();
 
         ImageCubeModel cubeModel = new ImageCubeModel();

@@ -58,7 +58,8 @@ public class MarsConfigs extends SmallBodyViewConfig
         c.imagingInstruments = new ImagingInstrument[] {
                 new ImagingInstrument( //
                         SpectralImageMode.MONO, //
-                        new GenericPhpQuery("/GASKELL/PHOBOS/IMAGING", "PHOBOS", "/GASKELL/PHOBOS/IMAGING/images/gallery"), //
+                        new FixedListQuery("/GASKELL/PHOBOS/imaging", "/GASKELL/PHOBOS/imaging/images/gallery"), //
+//                        new GenericPhpQuery("/GASKELL/PHOBOS/IMAGING", "PHOBOS", "/GASKELL/PHOBOS/IMAGING/images/gallery"), //
                         ImageType.valueOf("MARS_MOON_IMAGE"), //
                         new ImageSource[]{ImageSource.GASKELL, ImageSource.SPICE}, //
                         Instrument.IMAGING_DATA //
@@ -67,18 +68,18 @@ public class MarsConfigs extends SmallBodyViewConfig
 
         c.imageSearchDefaultStartDate = new GregorianCalendar(1976, 6, 24, 0, 0, 0).getTime();
         c.imageSearchDefaultEndDate = new GregorianCalendar(2011, 6, 7, 0, 0, 0).getTime();
-        c.imageSearchFilterNames = new String[] {
-                "VSK, Channel 1",
-                "VSK, Channel 2",
-                "VSK, Channel 3",
-                "VIS, Blue",
-                "VIS, Minus Blue",
-                "VIS, Violet",
-                "VIS, Clear",
-                "VIS, Green",
-                "VIS, Red",
-        };
-        c.imageSearchUserDefinedCheckBoxesNames = new String[] { "Phobos 2", "Viking Orbiter 1-A", "Viking Orbiter 1-B", "Viking Orbiter 2-A", "Viking Orbiter 2-B", "MEX HRSC" };
+//        c.imageSearchFilterNames = new String[] {
+//                "VSK, Channel 1",
+//                "VSK, Channel 2",
+//                "VSK, Channel 3",
+//                "VIS, Blue",
+//                "VIS, Minus Blue",
+//                "VIS, Violet",
+//                "VIS, Clear",
+//                "VIS, Green",
+//                "VIS, Red",
+//        };
+//        c.imageSearchUserDefinedCheckBoxesNames = new String[] { "Phobos 2", "Viking Orbiter 1-A", "Viking Orbiter 1-B", "Viking Orbiter 2-A", "Viking Orbiter 2-B", "MEX HRSC" };
         c.imageSearchDefaultMaxSpacecraftDistance = 12000.0;
         c.imageSearchDefaultMaxResolution = 300.0;
         c.hasLidarData = true;
