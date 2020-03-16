@@ -216,7 +216,7 @@ public class SpectrumStatistics<S extends BasicSpectrum> extends AbstractModel
         return val/wtot/Math.pow(getWeightedVariance(samples),2);
     }
 
-    public static List<Sample> sampleEmergenceAngle(IBasicSpectrumRenderer spectrum, Vector3D scPos)
+    public static <S extends BasicSpectrum> List<Sample> sampleEmergenceAngle(IBasicSpectrumRenderer<S> spectrum, Vector3D scPos)
     {
         vtkPolyData footprint=spectrum.getUnshiftedFootprint();
         List<Sample> samples=Lists.newArrayList();
@@ -242,7 +242,7 @@ public class SpectrumStatistics<S extends BasicSpectrum> extends AbstractModel
     }
 
     // TODO: incorporate occlusion in a meaningful way
-    public static List<Sample> sampleIncidenceAngle(IBasicSpectrumRenderer spectrum, Vector3D toSunVector)//, double[] illuminationFactors)
+    public static <S extends BasicSpectrum> List<Sample> sampleIncidenceAngle(IBasicSpectrumRenderer<S> spectrum, Vector3D toSunVector)//, double[] illuminationFactors)
     {
         vtkPolyData footprint=spectrum.getUnshiftedFootprint();
         List<Sample> samples=Lists.newArrayList();
@@ -284,14 +284,14 @@ public class SpectrumStatistics<S extends BasicSpectrum> extends AbstractModel
         return samples;
     }
 
-    public static List<Sample> sampleIrradiance(IBasicSpectrumRenderer spectrum, double[] illuminationFactors)
+    public static <S extends BasicSpectrum> List<Sample> sampleIrradiance(IBasicSpectrumRenderer<S> spectrum, double[] illuminationFactors)
     {
         vtkPolyData footprint=spectrum.getUnshiftedFootprint();
         List<Sample> samples=Lists.newArrayList();
         vtkDoubleArray overlapFraction=(vtkDoubleArray)footprint.GetCellData().GetArray(BasicSpectrumRenderer.faceAreaFractionArrayName);
         for (int c=0; c<footprint.GetNumberOfCells(); c++)
         {
-            vtkTriangle tri=(vtkTriangle)footprint.GetCell(c);
+//            vtkTriangle tri=(vtkTriangle)footprint.GetCell(c);
                 Sample sample=new Sample();
                 sample.value=illuminationFactors[c];
                 sample.weight=overlapFraction.GetValue(c);
