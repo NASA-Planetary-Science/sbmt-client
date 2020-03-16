@@ -496,7 +496,7 @@ public class CustomImageResultsTableController extends ImageResultsTableControll
                 name = (String)tableModel.getValueAt(row, imageResultsTableView.getFilenameColumnIndex());
                 if ((Boolean)imageResultsTableView.getResultList().getValueAt(row, imageResultsTableView.getMapColumnIndex()))
                 {
-                    model.loadImages(name, results.get(row));
+                    model.loadImages(results.get(row));
                 }
                 else
                 {
