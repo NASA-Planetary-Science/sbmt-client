@@ -4,6 +4,21 @@
 
 # Release Notes
 
+## March 17, 2020 (SBMT-0.7.9.1)
+
+### New:
+- Added ability to bulk save fits images 
+- Added ability to have right-click options act on multiple selected spectra
+- Standardized ability to use wildcards when searching image databases
+- Added ability to show image boundary for image cubes created within the tool
+- Improved error messages for when a user tries to access data they are not authorized to view
+- Disabled search parameter option for image collections that work off of a fixed list
+
+
+### Bug Fixes:
+- Fixed a bug that prevented the "name" field from being properly ingested for circles, ellipses, and points 
+- Fixed a bug that caused a custom image to be unmapped if edited
+
 ## February 19, 2020 (SBMT-0.7.9)
 
 ### New:
