@@ -39,6 +39,11 @@ public class ColorImageModel implements Controller.Model, MetadataManager
         return ModelNames.COLOR_IMAGES;
     }
 
+    public ModelNames getImageBoundaryCollectionModelName()
+    {
+        return ModelNames.PERSPECTIVE_COLOR_IMAGE_BOUNDARIES;
+    }
+
     public ImageKeyInterface getSelectedRedKey()
     {
         return selectedRedKey;

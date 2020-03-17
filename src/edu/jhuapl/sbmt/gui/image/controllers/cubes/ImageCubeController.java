@@ -137,7 +137,7 @@ public class ImageCubeController
 
     protected void setupPanel()
     {
-        boundaries = (PerspectiveImageBoundaryCollection)model.getModelManager().getModel(model.getImageBoundaryCollectionModelName());
+        boundaries = (PerspectiveImageBoundaryCollection)model.getModelManager().getModel(cubeModel.getImageBoundaryCollectionModelName());
         imageCubes = (ImageCubeCollection)model.getModelManager().getModel(cubeModel.getImageCubeCollectionModelName());
         imageCubePopupMenu = new ImageCubePopupMenu(imageCubes, boundaries, infoPanelManager, spectrumPanelManager, renderer, panel);
 

@@ -352,7 +352,6 @@ public class SbmtTesterView extends View implements PropertyChangeListener
 			SpectrumBoundaryCollection spectrumBoundaryCollection = (SpectrumBoundaryCollection)getModel(ModelNames.SPECTRA_BOUNDARIES);
 
 			PopupMenu popupMenu = new SpectrumPopupMenu(spectrumCollection, spectrumBoundaryCollection, getModelManager(), (SbmtInfoWindowManager) getInfoPanelManager(), getRenderer());
-			((SpectrumPopupMenu) popupMenu).setInstrument(getPolyhedralModelConfig().spectralInstruments.get(0));
 			registerPopup(getModel(ModelNames.SPECTRA), popupMenu);
 
 		}

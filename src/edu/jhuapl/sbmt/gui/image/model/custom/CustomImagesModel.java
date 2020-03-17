@@ -182,7 +182,7 @@ public class CustomImagesModel extends ImageSearchModel
 		return revisedKey;
     }
 
-    public void loadImages(String name, CustomImageKeyInterface info)
+    public void loadImages(CustomImageKeyInterface info)
     {
 		CustomImageKeyInterface revisedKey = getRevisedKey(info);
 		try
@@ -385,13 +385,9 @@ public class CustomImagesModel extends ImageSearchModel
               try
               {
                   saveImage(selectedItem, oldImageInfo, newImageInfo);
-                  remapImageToRenderer(selectedItem);
+                  loadImages(newImageInfo);
               }
               catch (IOException e)
-              {
-                  e.printStackTrace();
-              }
-              catch (FitsException e)
               {
                   e.printStackTrace();
               }
@@ -468,8 +464,8 @@ public class CustomImagesModel extends ImageSearchModel
             imageCollection.addImage(imageKey);
             if (visible)
                 image.setVisible(true);
+            }
         }
-    }
 
     public CustomImageKeyInterface getImageKeyForIndex(int index)
     {

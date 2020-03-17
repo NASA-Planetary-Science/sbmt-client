@@ -109,7 +109,7 @@ public class ColorImageController
 
     private void setupPanel()
     {
-        boundaries = (PerspectiveImageBoundaryCollection)model.getModelManager().getModel(model.getImageBoundaryCollectionModelName());
+        boundaries = (PerspectiveImageBoundaryCollection)model.getModelManager().getModel(colorModel.getImageBoundaryCollectionModelName());
 
         ColorImagePopupMenu colorImagePopupMenu = new ColorImagePopupMenu(colorImages, boundaries, infoPanelManager, model.getModelManager(), renderer, panel);
         panel.setColorImagePopupMenu(colorImagePopupMenu);
