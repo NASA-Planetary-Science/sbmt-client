@@ -135,7 +135,7 @@ public class ColorImagePopupMenu extends PopupMenu
     public void setCurrentImage(ColorImageKey key)
     {
         imageKey = key;
-
+        imageKeys.add(key);
         updateMenuItems();
     }
 
@@ -216,7 +216,10 @@ public class ColorImagePopupMenu extends PopupMenu
                 try
                 {
                     if (mapBoundaryMenuItem.isSelected())
+                    {
+                    	System.out.println("ColorImagePopupMenu.MapBoundaryAction: actionPerformed: adding image boundary");
                         imageBoundaryCollection.addBoundary(imageKey);
+                    }
                     else
                         imageBoundaryCollection.removeBoundary(imageKey);
                 }
