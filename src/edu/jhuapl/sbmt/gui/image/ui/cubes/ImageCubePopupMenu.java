@@ -117,7 +117,7 @@ public class ImageCubePopupMenu extends PopupMenu
         {
             showImageSpectrumMenuItem = new JMenuItem(new ShowSpectrumAction());
             showImageSpectrumMenuItem.setText("Spectrum...");
-            this.add(showImageSpectrumMenuItem);
+//            this.add(showImageSpectrumMenuItem);
         }
 
         saveToDiskMenuItem = new JMenuItem(new SaveImageAction());
