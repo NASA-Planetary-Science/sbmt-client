@@ -641,6 +641,7 @@ public class CustomImagesModel extends ImageSearchModel
 
         initialized = true;
         fireResultsChanged();
+        setResultIntervalCurrentlyShown(null);
     }
 
     public List<String> getCustomImageNames()
