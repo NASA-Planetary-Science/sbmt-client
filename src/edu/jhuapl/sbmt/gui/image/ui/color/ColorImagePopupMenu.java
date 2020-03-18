@@ -85,7 +85,7 @@ public class ColorImagePopupMenu extends PopupMenu
 
         mapBoundaryMenuItem = new JCheckBoxMenuItem(new MapBoundaryAction());
         mapBoundaryMenuItem.setText("Map Image Boundary");
-        this.add(mapBoundaryMenuItem);
+//        this.add(mapBoundaryMenuItem);
 
         if (this.infoPanelManager != null)
         {
@@ -118,7 +118,7 @@ public class ColorImagePopupMenu extends PopupMenu
         this.add(hideImageMenuItem);
 
         colorMenu = new JMenu("Boundary Color");
-        this.add(colorMenu);
+//        this.add(colorMenu);
         for (ColorUtil.DefaultColor color : ColorUtil.DefaultColor.values())
         {
             JCheckBoxMenuItem colorMenuItem = new JCheckBoxMenuItem(new BoundaryColorAction(color.color()));
