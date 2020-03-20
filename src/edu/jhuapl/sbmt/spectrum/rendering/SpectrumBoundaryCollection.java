@@ -8,12 +8,15 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
+import com.google.common.collect.ImmutableSet;
+
 import vtk.vtkActor;
 import vtk.vtkProp;
 
 import edu.jhuapl.saavtk.model.AbstractModel;
 import edu.jhuapl.saavtk.util.Properties;
 import edu.jhuapl.sbmt.client.SmallBodyModel;
+import edu.jhuapl.sbmt.spectrum.model.EnabledState;
 import edu.jhuapl.sbmt.spectrum.model.core.BasicSpectrum;
 import edu.jhuapl.sbmt.spectrum.model.core.SpectrumBoundary;
 import edu.jhuapl.sbmt.spectrum.model.core.interfaces.IBasicSpectrumRenderer;
@@ -214,6 +217,19 @@ public class SpectrumBoundaryCollection<S extends BasicSpectrum> extends Abstrac
     	if (!spectrumCollection.getActiveInstrument().getDisplayName().equals(spec.getInstrument().getDisplayName())) return false;
     	if (spectrumToBoundaryMap.get(spec) == null) return false;
     	return spectrumToBoundaryMap.get(spec).getVisibility();
+    }
+
+    public EnabledState getBoundaryVisbility(ImmutableSet<S> spectra)
+    {
+    	int numEnabled = 0;
+    	int numDisabled = 0;
+    	for (BasicSpectrum spec : spectra)
+    	{
+    		if (getVisibility(spec) == false) numDisabled++; else numEnabled++;
+    	}
+    	if (spectra.size() == numEnabled) return EnabledState.ALL;
+    	else if (spectra.size() == numDisabled) return EnabledState.NONE;
+    	else return EnabledState.PARTIAL;
     }
 
     public void propertyChange(PropertyChangeEvent evt)

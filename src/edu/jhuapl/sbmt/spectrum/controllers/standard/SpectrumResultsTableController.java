@@ -42,7 +42,7 @@ public class SpectrumResultsTableController<S extends BasicSpectrum>
     protected BasicSpectrumInstrument instrument;
     protected SpectrumStringRenderer stringRenderer;
     protected SpectraCollection<S> spectrumCollection;
-    protected SpectrumPopupMenu spectrumPopupMenu;
+    protected SpectrumPopupMenu<S> spectrumPopupMenu;
     protected SpectrumBoundaryCollection<S> boundaries;
     private SpectrumSearchResultsListener<S> tableResultsChangedListener;
     private ProgressMonitor progressMonitor;
@@ -59,8 +59,7 @@ public class SpectrumResultsTableController<S extends BasicSpectrum>
      */
     public SpectrumResultsTableController(BasicSpectrumInstrument instrument, SpectraCollection<S> spectrumCollection, ModelManager modelManager, SpectrumBoundaryCollection<S> boundaries, BaseSpectrumSearchModel<S> model, Renderer renderer, SbmtInfoWindowManager infoPanelManager)
     {
-        spectrumPopupMenu = new SpectrumPopupMenu(spectrumCollection, boundaries, modelManager,infoPanelManager, renderer);
-        spectrumPopupMenu.setInstrument(instrument);
+        spectrumPopupMenu = new SpectrumPopupMenu<S>(spectrumCollection, boundaries, modelManager,infoPanelManager, renderer);
         this.spectrumCollection = spectrumCollection;
 
         this.spectrumCollection.setActiveInstrument(instrument);

@@ -1,6 +1,5 @@
 package edu.jhuapl.sbmt.spectrum.ui.table;
 
-import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
@@ -20,8 +19,6 @@ import javax.swing.table.TableCellRenderer;
 
 import edu.jhuapl.saavtk.gui.util.IconUtil;
 import edu.jhuapl.saavtk.gui.util.ToolTipUtil;
-import edu.jhuapl.sbmt.gui.lidar.color.ColorProvider;
-import edu.jhuapl.sbmt.gui.lidar.color.ConstColorProvider;
 import edu.jhuapl.sbmt.gui.table.EphemerisTimeRenderer;
 import edu.jhuapl.sbmt.spectrum.model.core.BasicSpectrum;
 import edu.jhuapl.sbmt.spectrum.rendering.SpectraCollection;
@@ -56,7 +53,7 @@ public class SpectrumResultsTableView<S extends BasicSpectrum> extends JPanel
     private JButton showSpectraButton;
     private JButton saveSpectraListButton;
     private JButton saveSelectedSpectraListButton;
-    private SpectrumPopupMenu spectrumPopupMenu;
+    private SpectrumPopupMenu<S> spectrumPopupMenu;
     protected JTable resultList;
     private JLabel resultsLabel;
     private JLabel lblNumberBoundaries;
@@ -72,7 +69,7 @@ public class SpectrumResultsTableView<S extends BasicSpectrum> extends JPanel
     /**
      * @wbp.parser.constructor
      */
-    public SpectrumResultsTableView(SpectraCollection<S> spectrumCollection, SpectrumBoundaryCollection<S> boundaryCollection, SpectrumPopupMenu spectrumPopupMenu)
+    public SpectrumResultsTableView(SpectraCollection<S> spectrumCollection, SpectrumBoundaryCollection<S> boundaryCollection, SpectrumPopupMenu<S> spectrumPopupMenu)
     {
         this.spectrumPopupMenu = spectrumPopupMenu;
         this.spectrumCollection = spectrumCollection;
@@ -327,12 +324,12 @@ public class SpectrumResultsTableView<S extends BasicSpectrum> extends JPanel
         this.resultsLabel = resultsLabel;
     }
 
-    public SpectrumPopupMenu getSpectrumPopupMenu()
+    public SpectrumPopupMenu<S> getSpectrumPopupMenu()
     {
         return spectrumPopupMenu;
     }
 
-    public void setSpectrumPopupMenu(SpectrumPopupMenu spectrumPopupMenu)
+    public void setSpectrumPopupMenu(SpectrumPopupMenu<S> spectrumPopupMenu)
     {
         this.spectrumPopupMenu = spectrumPopupMenu;
     }
@@ -355,12 +352,12 @@ public class SpectrumResultsTableView<S extends BasicSpectrum> extends JPanel
 //		}
 
 		JTable tmpTable = spectrumILP.getTable();
-		String trackStr = "" + tmpTable.getRowCount();
+//		String trackStr = "" + tmpTable.getRowCount();
 //		String pointStr = "" + maxPts;
 		String dateTimeStr = "9999-88-88T00:00:00.000000";
 		int minW = 30;
 
-		ColorProvider blackCP = new ConstColorProvider(Color.BLACK);
+//		ColorProvider blackCP = new ConstColorProvider(Color.BLACK);
 		Object[] nomArr = { true, true, true, true, minW, dateTimeStr, dateTimeStr };
 		for (int aCol = 0; aCol < nomArr.length; aCol++)
 		{

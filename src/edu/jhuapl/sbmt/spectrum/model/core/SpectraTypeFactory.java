@@ -17,6 +17,7 @@ public class SpectraTypeFactory
 
 	public static void registerSpectraType(String displayName, QueryBase queryBase, SpectrumMath spectrumMath, String bandCenterUnit, Double[] bandCenters)
 	{
+		if (registeredModels.get(displayName) != null) return;
 		registeredModels.put(displayName, new SpectraType(displayName, queryBase, spectrumMath, bandCenterUnit, bandCenters));
 	}
 
