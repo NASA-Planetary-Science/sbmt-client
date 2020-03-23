@@ -24,7 +24,7 @@ import picocli.CommandLine.Parameters;
 
 /**
  * Server-side file-system-only checker for file access. This version skips all
- * checks and reports ALL files accessible. This is for debugging purposes.
+ * checks and reports ALL files accessible. This is for debugging/profiling/optimizing purposes.
  *
  * @author peachjm1
  *
@@ -56,10 +56,7 @@ public class DontCheckUserAccess implements Callable<Integer>
     // This is changed after startup.
     private Path serverTopPath = SafePaths.get("/project/sbmt2");
 
-    // private Path accessControlFilesPath =
-    // SafePaths.get("/project/sbmt2/sbmt/data/accessControl");
-    private Path accessControlFilesPath =
-            SafePaths.get("/Users/peachjm1/UserAccessChecker");
+     private Path accessControlFilesPath = SafePaths.get("/project/sbmt2/sbmt/data/accessControl");
 
     protected DontCheckUserAccess()
     {
