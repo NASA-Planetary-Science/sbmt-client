@@ -662,9 +662,7 @@ public class ImageSearchModel implements Controller.Model, MetadataManager
         	if (!FileCache.instance().isAccessible(rootPath + "/" + imageListName))
         		imageListName = "imagelist.txt";
         }
-        return getInstrument().getSearchQuery().getResultsFromFileListOnServer(rootPath + "/" + imageListName, dataPath, galleryPath);
-//    	FixedListQuery<List<String>> query = (FixedListQuery<List<String>>) getInstrument().getSearchQuery();
-//        return query.runQuery(FixedListSearchMetadata.of("Imaging Search", "imagelist", "images", query.getRootPath(), imageSource, searchFilename)).getResultlist();
+        return getInstrument().getSearchQuery().getResultsFromFileListOnServer(rootPath + "/" + imageListName, dataPath, galleryPath, false);
     }
 
 

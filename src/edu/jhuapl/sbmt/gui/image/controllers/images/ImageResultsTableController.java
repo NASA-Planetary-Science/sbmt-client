@@ -474,8 +474,11 @@ public class ImageResultsTableController
                 	return !namesOnly.contains(entry.get(0).substring(entry.get(0).lastIndexOf("/")+1));
                 });
 
-                System.out.println("ImageResultsTableController: loadImageListButtonActionPerformed: line size differ from results " + (lines.size() == results.size()));
-                System.out.println("ImageResultsTableController: loadImageListButtonActionPerformed: after prune, results size " + results.size());
+                if (!((lines.size()-1) == results.size()))
+                {
+                    JOptionPane.showMessageDialog(JOptionPane.getFrameForComponent(imageResultsTableView), "Only some of the images in the file had pointing for this model;\n images without pointing (count: " + (lines.size() - results.size() - 1)  + ") have been ignored", "Warning", JOptionPane.ERROR_MESSAGE);
+                }
+
 
                 //TODO needed?
                 imageSearchModel.setImageResults(new ArrayList<List<String>>());
