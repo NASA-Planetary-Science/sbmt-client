@@ -49,12 +49,8 @@ import glum.item.ItemEventType;
 public class StateHistoryIntervalPlaybackController
 {
     private Timer timer;
-    public static final int timerInterval = 100;
     private boolean isPlaying = false;
     public double currentOffsetTime = 0.0;
-    private double offsetScale = 0.1; // 0.025;
-    private StateHistoryCollection runs;
-    private Renderer renderer;
     private StateHistoryIntervalPlaybackPanel view;
     private StateHistoryModel historyModel;
     private Icon playIcon;
@@ -67,8 +63,6 @@ public class StateHistoryIntervalPlaybackController
 	public StateHistoryIntervalPlaybackController(StateHistoryModel historyModel, Renderer renderer)
 	{
 		this.historyModel = historyModel;
-		this.runs = historyModel.getRuns();
-		this.renderer = renderer;
 
 		view = new StateHistoryIntervalPlaybackPanel();
 		try
@@ -81,8 +75,8 @@ public class StateHistoryIntervalPlaybackController
                     JOptionPane.ERROR_MESSAGE);
 			e.printStackTrace();
 		}
-		createTimer();
-		initializeIntervalPlaybackPanel();
+		createTimer(historyModel.getRuns());
+		initializeIntervalPlaybackPanel(renderer, historyModel.getRuns());
 
 	}
 
@@ -103,7 +97,7 @@ public class StateHistoryIntervalPlaybackController
 	/**
 	 * Updates the time fraction and date values as the slider gets updated
 	 */
-	private void updatePlaypanelValues()
+	private void updatePlaypanelValues(StateHistoryCollection runs)
 	{
 		final JSlider slider = view.getSlider();
 		int val = slider.getValue();
@@ -140,13 +134,13 @@ public class StateHistoryIntervalPlaybackController
 	/**
 	 * Sets up listeners for various UI components
 	 */
-	private void initializeIntervalPlaybackPanel()
+	private void initializeIntervalPlaybackPanel(Renderer renderer, StateHistoryCollection runs)
     {
         final JSlider slider = view.getSlider();
         slider.addChangeListener(new ChangeListener() {
             public void stateChanged(ChangeEvent evt) {
                 if(slider.getValueIsAdjusting()){
-                	updatePlaypanelValues();
+                	updatePlaypanelValues(runs);
                 }
             }
         });
@@ -211,7 +205,7 @@ public class StateHistoryIntervalPlaybackController
             view.setCursor(new Cursor(Cursor.WAIT_CURSOR));
             DateTime startTime = historyModel.getStartTime();
             DateTime endTime = historyModel.getEndTime();
-            saveAnimation(startTime, endTime);
+            saveAnimation(startTime, endTime, renderer, runs);
             view.setCursor(Cursor.getDefaultCursor());
         });
 
@@ -222,7 +216,7 @@ public class StateHistoryIntervalPlaybackController
 				historyModel.getRuns().setCurrentRun(historyModel.getRuns().getSelectedItems().asList().get(0));
 //				historyModel.setStartTime(runs.getCurrentRun().);
 			}
-			updatePlaypanelValues();
+			updatePlaypanelValues(runs);
         });
 
     }
@@ -303,8 +297,10 @@ public class StateHistoryIntervalPlaybackController
      * Creates a timer that handles the execution of time steps, calculating the proper
      * time and passing that to interested components in the rest of the system
      */
-    public void createTimer()
+    private void createTimer(StateHistoryCollection runs)
     {
+    	int timerInterval = 100;
+    	double offsetScale = 0.1; // 0.025;
         timer = new Timer(timerInterval, new ActionListener()
         {
 
@@ -363,7 +359,7 @@ public class StateHistoryIntervalPlaybackController
 	 * @param start
 	 * @param end
 	 */
-	public void saveAnimation(DateTime start, DateTime end)
+	public void saveAnimation(DateTime start, DateTime end, Renderer renderer, StateHistoryCollection runs)
 	{
 		//Create a dialog to grab the filename for the saved movie
 		AnimationFileDialog dialog = new AnimationFileDialog(start.toString(), end.toString());
