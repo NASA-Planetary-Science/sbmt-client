@@ -9,10 +9,19 @@ import edu.jhuapl.sbmt.stateHistory.model.stateHistory.StateHistoryCollection;
  *
  * @author steelrj1
  */
+/**
+ * @author steelrj1
+ *
+ */
 public class StateHistoryGuiUtil
 {
 	/**
 	 * Forms the popup menu associated with lidar files.
+	 */
+	/**
+	 * @param aManager
+	 * @param aParent
+	 * @return
 	 */
 	public static StateHistoryPopupMenu formStateHistoryFileSpecPopupMenu(StateHistoryCollection aManager,
 			Component aParent)

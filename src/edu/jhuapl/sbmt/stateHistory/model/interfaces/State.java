@@ -1,71 +1,137 @@
 package edu.jhuapl.sbmt.stateHistory.model.interfaces;
 
+/**
+ * @author steelrj1
+ *
+ */
 public interface State
 {
-    /** Image */
+    /**
+     * @return
+     */
     public int getImageNumber();
 
-    /** Frame */
+    /**
+     * @return
+     */
     public int getFrameNumber();
 
-    /** Ephemeris Time */
+    /**
+     * @return
+     */
     public double getEphemerisTime();
 
-    /** UTC Time */
+    /**
+     * @return
+     */
     public String getUtc();
 
-    /** View Angle (deg) */
+    /**
+     * @return
+     */
     public double getViewingAngle();
 
     /** Roll Angle (deg) */
+    /**
+     * @return
+     */
     public double getRollAngle();
 
     /** Spacecraft Altitude (km) */
+    /**
+     * @return
+     */
     public double getSpacecraftAltitude();
 
     /** Intercept XYZ (km) - derived from SurfaceIntercept */
+    /**
+     * @return
+     */
     public double[] getSurfaceIntercept();
 
     /** Intercept Lat-Lon (deg) */
+    /**
+     * @return
+     */
     public double[] getSurfaceInterceptLatLon();
 
     /** Cross Track Spacing (km) */
+    /**
+     * @return
+     */
     public double getCrossTrackPixelSpacingKm();
 
     /** Along Track Spacing (km) */
+    /**
+     * @return
+     */
     public double getAlongTrackPixelSpacing();
 
     /** Solar Incidence Angle (deg) */
+    /**
+     * @return
+     */
     public double getSolarIncidenceAngle();
 
     /** Emission Angle (deg) */
+    /**
+     * @return
+     */
     public double getEmissionAngle();
 
     /** Local Solar Time (deg) */
+    /**
+     * @return
+     */
     public double getLocalSolarTime();
 
     /** Spacecraft Position (km) */
+    /**
+     * @return
+     */
     public double[] getSpacecraftPosition();
 
     /** Spacecraft Velocity (km/s) */
+    /**
+     * @return
+     */
     public double[] getSpacecraftVelocity();
 
     /** Earth Position (km) */
+    /**
+     * @return
+     */
     public double[] getEarthPosition();
 
     /** Sun Position (km) */
+    /**
+     * @return
+     */
     public double[] getSunPosition();
 
     /** Sub Solar Point Lat-Lon (deg) */
+    /**
+     * @return
+     */
     public double[] getSubSolarPointLatLon();
 
-    /** Frame Score */
+    /**
+     * @return
+     */
     public float getFrameScore();
 
-    /** SC X Axis */
+    /**
+     * @return
+     */
     public double[] getSpacecraftXAxis();
-    /** SC Y Axis */
+
+    /**
+     * @return
+     */
     public double[] getSpacecraftYAxis();
-    /** SC Z Axis */
+
+    /**
+     * @return
+     */
     public double[] getSpacecraftZAxis();
 }

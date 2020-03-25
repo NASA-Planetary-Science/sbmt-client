@@ -8,20 +8,35 @@ import javax.swing.SpinnerModel;
 import org.joda.time.DateTime;
 import org.joda.time.format.ISODateTimeFormat;
 
+/**
+ * @author steelrj1
+ *
+ */
 public class DateTimeSpinner extends JSpinner
 {
 
+	/**
+	 *
+	 */
 	public DateTimeSpinner()
 	{
 		// TODO Auto-generated constructor stub
 	}
 
+	/**
+	 * @param model
+	 */
 	public DateTimeSpinner(SpinnerModel model)
 	{
 		super(model);
 		// TODO Auto-generated constructor stub
 	}
 
+	/**
+	 * @param start
+	 * @param end
+	 * @return
+	 */
 	public static double getTimeSpanBetween(DateTimeSpinner start, DateTimeSpinner end)
 	{
         Date beginTime = (Date)start.getModel().getValue();
@@ -31,6 +46,9 @@ public class DateTimeSpinner extends JSpinner
         return total;
 	}
 
+	/**
+	 * @return
+	 */
 	public DateTime getISOFormattedTime()
 	{
 		Date date = ((Date)getModel().getValue());

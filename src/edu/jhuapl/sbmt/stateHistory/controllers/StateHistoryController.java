@@ -21,10 +21,8 @@ import edu.jhuapl.saavtk.model.ModelNames;
 import edu.jhuapl.saavtk.util.FileCache;
 import edu.jhuapl.sbmt.client.SmallBodyModel;
 import edu.jhuapl.sbmt.client.SmallBodyViewConfig;
-import edu.jhuapl.sbmt.stateHistory.model.DefaultStateHistoryModelChangedListener;
 import edu.jhuapl.sbmt.stateHistory.model.StateHistoryModel;
 import edu.jhuapl.sbmt.stateHistory.model.StateHistoryUtil;
-import edu.jhuapl.sbmt.stateHistory.model.interfaces.StateHistory;
 import edu.jhuapl.sbmt.stateHistory.model.stateHistory.StateHistoryCollection;
 import edu.jhuapl.sbmt.stateHistory.ui.version2.StateHistoryDisplayedIntervalPanel;
 import edu.jhuapl.sbmt.stateHistory.ui.version2.StateHistoryIntervalGenerationPanel;
@@ -34,58 +32,65 @@ import edu.jhuapl.sbmt.stateHistory.ui.version2.table.StateHistoryTableView;
 
 import glum.item.ItemEventType;
 
-public class StateHistoryController //implements TableModelListener, IStateHistoryPanel
+/**
+ * The controller that drives the main panel for the StateHistory tab.
+ * @author steelrj1
+ *
+ */
+public class StateHistoryController
 {
-    public static class RunInfo
-    {
-        public String name = "";        // name to call this run for display purposes
-        public String runfilename = ""; // filename of run on disk
-
-        @Override
-        public String toString()
-        {
-            return name;
-        }
-    }
-
-    private SmallBodyModel bodyModel;
-    private vtkJoglPanelComponent renWin;
-
-    private StateHistoryCollection runs;
-    private File path;
-    final int lineLength = 121;
-
-    private SmallBodyViewConfig config;
-    private StateHistoryModel historyModel;
+    /**
+     * Controller for the interval generation panel
+     */
     private StateHistoryIntervalGenerationController intervalGenerationController;
+
+    /**
+     * Controller for the interval selection panel
+     */
     private StateHistoryIntervalSelectionController intervalSelectionController;
+
+    /**
+     * Controller for the displayed interval panel
+     */
     private StateHistoryDisplayedIntervalController intervalDisplayedController;
+
+    /**
+     * Controller for the interval playback panel
+     */
     private StateHistoryIntervalPlaybackController intervalPlaybackController;
+
+    /**
+     * Controller for the view controls panel
+     */
     private StateHistoryViewControlsController viewControlsController;
 
-    public StateHistoryController(
-            final ModelManager modelManager,
-            Renderer renderer, boolean earthEnabled)
+    /**
+     * @param modelManager
+     * @param renderer
+     */
+    public StateHistoryController(final ModelManager modelManager, Renderer renderer)
     {
-        this.renWin = renderer.getRenderWindowPanel();
-        bodyModel = (SmallBodyModel) modelManager.getPolyhedralModel();
-        config = (SmallBodyViewConfig) bodyModel.getConfig();
+    	File path = null;
+    	int lineLength = 121;
+    	vtkJoglPanelComponent renWin = renderer.getRenderWindowPanel();
+        SmallBodyModel bodyModel = (SmallBodyModel) modelManager.getPolyhedralModel();
+        SmallBodyViewConfig config = (SmallBodyViewConfig) bodyModel.getConfig();
         try {
             path = FileCache.getFileFromServer(config.timeHistoryFile);
         } catch (Exception e) {
             e.printStackTrace();
         }
 
-        runs = (StateHistoryCollection)modelManager.getModel(ModelNames.STATE_HISTORY_COLLECTION);
-        DateTime start = ISODateTimeFormat.dateTimeParser().parseDateTime(StateHistoryUtil.readString(lineLength, path));//oldDate.parse(currentRun.getIntervalTime()[0]);
+        StateHistoryCollection runs = (StateHistoryCollection)modelManager.getModel(ModelNames.STATE_HISTORY_COLLECTION);
+        DateTime start = ISODateTimeFormat.dateTimeParser().parseDateTime(StateHistoryUtil.readString(lineLength, path));
         DateTime end = ISODateTimeFormat.dateTimeParser().parseDateTime(StateHistoryUtil.readString((int)StateHistoryUtil.getBinaryFileLength(path, lineLength)*lineLength-lineLength, path));
 
-        historyModel = new StateHistoryModel(start, end, bodyModel, renderer, modelManager);
+        StateHistoryModel historyModel = new StateHistoryModel(start, end, bodyModel, renderer, modelManager);
 
         this.intervalGenerationController = new StateHistoryIntervalGenerationController(historyModel, start, end);
         this.intervalSelectionController = new StateHistoryIntervalSelectionController(historyModel, bodyModel, renderer);
         this.intervalPlaybackController = new StateHistoryIntervalPlaybackController(historyModel, renderer);
-        this.intervalDisplayedController = new StateHistoryDisplayedIntervalController(historyModel);
+        this.intervalDisplayedController = new StateHistoryDisplayedIntervalController(historyModel.getRuns());
         this.viewControlsController = new StateHistoryViewControlsController(historyModel, renderer);
 
         intervalDisplayedController.getView().setEnabled(false);
@@ -115,18 +120,12 @@ public class StateHistoryController //implements TableModelListener, IStateHisto
 			intervalPlaybackController.getView().setEnabled(runs.getSelectedItems().size() > 0);
 			viewControlsController.getView().setEnabled(runs.getSelectedItems().size() > 0);
 		});
-
-//        historyModel.addStateHistoryModelChangedListener(new DefaultStateHistoryModelChangedListener()
-//		{
-//        	@Override
-//        	public void historySegmentCreated(StateHistory historySegment)
-//        	{
-//        		runs.setTimeFraction(historySegment, historySegment.getTime());
-//        		super.historySegmentCreated(historySegment);
-//        	}
-//		});
     }
 
+    /**
+     * Returns a JPanel made of the child views that comprise this parent view
+     * @return
+     */
     public JPanel getView()
     {
     	JPanel timeControlsPanel = new JPanel();
@@ -139,9 +138,6 @@ public class StateHistoryController //implements TableModelListener, IStateHisto
     	StateHistoryIntervalGenerationPanel intervalGenerationPanel = intervalGenerationController.getView();
     	StateHistoryTableView intervalSelectionPanel = intervalSelectionController.getView();
     	intervalSelectionPanel.setup();
-
-//    	PercentIntervalChanger displayedPanel = intervalDisplayedController.getView().getTimeIntervalChanger();
-//    	displayedPanel.setBorder(BorderFactory.createTitledBorder("Displayed Track Data"));
 
     	StateHistoryDisplayedIntervalPanel displayedPanel = intervalDisplayedController.getView();
 

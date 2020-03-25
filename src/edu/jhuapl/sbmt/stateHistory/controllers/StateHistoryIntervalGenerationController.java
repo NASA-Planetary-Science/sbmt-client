@@ -19,37 +19,45 @@ import edu.jhuapl.sbmt.stateHistory.model.stateHistory.StateHistoryKey;
 import edu.jhuapl.sbmt.stateHistory.ui.version2.DateTimeSpinner;
 import edu.jhuapl.sbmt.stateHistory.ui.version2.StateHistoryIntervalGenerationPanel;
 
+/**
+ * Controller that governs the "Interval Generation" panel of the State History tab
+ * @author steelrj1
+ *
+ */
 public class StateHistoryIntervalGenerationController
 {
+	/**
+	 * View governed by this controller
+	 */
 	private StateHistoryIntervalGenerationPanel view;
-    private Date newStart;
-    private Date newEnd;
-    private StateHistoryModel historyModel;
-    private SimpleDateFormat dateFormatter;
-    private SpinnerDateModel spinnerDateModel;
-    private JSpinner.DateEditor dateEditor;
-    private ProgressMonitor progressMonitor;
 
+	/**
+	 * Constructor
+	 *
+	 *
+	 * @param historyModel  the underlying state history model
+	 * @param newStart		the start date of the range that can be search
+	 * @param newEnd		the end date of the range that can be searched
+	 */
 	public StateHistoryIntervalGenerationController(StateHistoryModel historyModel, DateTime newStart, DateTime newEnd)
 	{
-		this.historyModel = historyModel;
-		this.newStart = newStart.toDate();
-		this.newEnd = newEnd.toDate();
-		dateFormatter = new SimpleDateFormat("yyyy-MMM-dd HH:mm:ss.SSS");
-		initializeIntervalGenerationPanel();
+		initializeIntervalGenerationPanel(historyModel, newStart.toDate(), newEnd.toDate());
 	}
 
-	private void initializeIntervalGenerationPanel()
+	/**
+	 * Initializes the panel.
+	 */
+	private void initializeIntervalGenerationPanel(StateHistoryModel historyModel, Date newStart, Date newEnd)
     {
+		SimpleDateFormat dateFormatter = new SimpleDateFormat("yyyy-MMM-dd HH:mm:ss.SSS");
 		view = new StateHistoryIntervalGenerationPanel();
-        view.getAvailableTimeLabel().setEditable(false);
-        view.getAvailableTimeLabel().setBackground(null);
-        view.getAvailableTimeLabel().setBorder(null);
+
         view.getAvailableTimeLabel().setText(dateFormatter.format(newStart)+ " to\n " + dateFormatter.format(newEnd));
 
-        spinnerDateModel = new SpinnerDateModel(newStart, null, null, Calendar.DAY_OF_MONTH);
+        //Initialize and setup the spinner models for the start and end time for the interval generation
+        SpinnerDateModel spinnerDateModel = new SpinnerDateModel(newStart, null, null, Calendar.DAY_OF_MONTH);
         view.getStartTimeSpinner().setModel(spinnerDateModel);
-		dateEditor = new JSpinner.DateEditor(view.getStartTimeSpinner(), "yyyy-MMM-dd HH:mm:ss.SSS");
+        JSpinner.DateEditor dateEditor = new JSpinner.DateEditor(view.getStartTimeSpinner(), "yyyy-MMM-dd HH:mm:ss.SSS");
         view.getStartTimeSpinner().setEditor(dateEditor);
 
         spinnerDateModel = new SpinnerDateModel(newEnd, null, null, Calendar.DAY_OF_MONTH);
@@ -57,6 +65,7 @@ public class StateHistoryIntervalGenerationController
 		dateEditor = new JSpinner.DateEditor(view.getStopTimeSpinner(), "yyyy-MMM-dd HH:mm:ss.SSS");
         view.getStopTimeSpinner().setEditor(dateEditor);
 
+        //Adds an action listener to the "Get interval" button.
         view.getGetIntervalButton().addActionListener(e -> {
             view.setCursor(new Cursor(Cursor.WAIT_CURSOR));
             double total = DateTimeSpinner.getTimeSpanBetween(view.getStartTimeSpinner(), view.getStopTimeSpinner());
@@ -69,7 +78,9 @@ public class StateHistoryIntervalGenerationController
             // generate random stateHistoryKey to use for this interval
             StateHistoryKey key = new StateHistoryKey(historyModel.getRuns());
 
-            progressMonitor = new ProgressMonitor(null, "Calculating History...", "", 0, 100);
+            //Setup a progress monitor to display status to the user while generating the state history
+            //for the given interval
+            ProgressMonitor progressMonitor = new ProgressMonitor(null, "Calculating History...", "", 0, 100);
     		progressMonitor.setProgress(0);
         	SwingWorker<Void, Void> task = new SwingWorker<Void, Void>()
     		{
@@ -96,7 +107,10 @@ public class StateHistoryIntervalGenerationController
     }
 
 
-
+	/**
+	 * Returns the panel associated with this controller
+	 * @return the panel associated with this controller
+	 */
 	public StateHistoryIntervalGenerationPanel getView()
 	{
 		return view;

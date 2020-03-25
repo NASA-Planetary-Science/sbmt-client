@@ -16,44 +16,121 @@ import javax.swing.JSpinner;
 import javax.swing.JTextField;
 import javax.swing.border.TitledBorder;
 
+/**
+ * The panel that controls the VCR-like set of playback controls for the State History tab
+ * @author steelrj1
+ *
+ */
 public class StateHistoryIntervalPlaybackPanel extends JPanel
 {
+    /**
+     * The playback rate text field.  Governs how many seconds is advanced every ticker of the slider
+     */
     private JTextField rateTextField;
+
+    /**
+     * Rewind button for moving to the start of the slider
+     */
     private JButton rewindButton;
+
+    /**
+     * Play button - starts to play at the time denoted in the slider; toggles to pause button during playback
+     */
     private JButton playButton;
+
+    /**
+     * Record button - records the playback to file
+     */
     private JButton recordButton;
+
+    /**
+     * Fast forward button for moving to the end of the slider
+     */
     private JButton fastForwardButton;
+
+    /**
+     * The JSlider that shows the current timestep within the selected trajectory
+     */
     private JSlider slider;
+
+    /**
+     * Minimum slider value
+     */
     private int sliderMin = 0;
+
+    /**
+     * Maximum slider value
+     */
     private int sliderMax = 900;
+
+    /**
+     *	Minor tick value for slider
+     */
     private int sliderMinorTick = 30;
+
+    /**
+     * Major tick value for slider
+     */
     private int sliderMajorTick = 150;
+
+    /**
+     * Default value for the slider
+     */
     private int defaultValue = 0; // 15;
+
+    /**
+     * JSpinner that allows the user to dial up a specific time.  Also shows the corresponding time of the slider
+     */
     private JSpinner timeBox;
+
+    /**
+     * JButton that sets the time as defined in the <pre>timeBox</pre>
+     */
     private JButton setTimeButton;
+
+    /**
+     * JLabel for "Enter UTC Time"
+     */
     private JLabel lblEnterUtcTime;
+
+    /**
+     * Parent panel that contains the UTC time components
+     */
     private JPanel utcPanel;
+
+    /**
+     * Parent panel that containst the playback controls
+     */
     private JPanel playPanel;
+
+    /**
+     * JLabel for the play speed
+     */
     private JLabel playSpeedLabel;
-    private Dimension spinnerSize = new Dimension(400, 28);
 
 
+	/**
+	 * Constructor.
+	 */
 	public StateHistoryIntervalPlaybackPanel()
 	{
 		initUI();
 	}
 
+	/**
+	 * Builds the user interface elements
+	 */
 	private void initUI()
 	{
         setBorder(new TitledBorder(null, "Interval Playback", TitledBorder.LEADING, TitledBorder.TOP, null, null));
         setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
 
-        JPanel panel_17 = new JPanel();
-        add(panel_17);
-        panel_17.setLayout(new BoxLayout(panel_17, BoxLayout.X_AXIS));
+        JPanel panel_1 = new JPanel();
+        add(panel_1);
+        panel_1.setLayout(new BoxLayout(panel_1, BoxLayout.X_AXIS));
 
         slider = new JSlider();
-        panel_17.add(slider);
+        panel_1.add(slider);
         slider.setMinimum(sliderMin);
         slider.setMaximum(sliderMax);
         slider.setMinorTickSpacing(sliderMinorTick);
@@ -92,56 +169,20 @@ public class StateHistoryIntervalPlaybackPanel extends JPanel
         rateTextField.setColumns(10);
 
         rewindButton = new JButton("");
-        try
-        {
-            Image rewind = ImageIO.read(getClass().getResource("/edu/jhuapl/sbmt/data/RewindButton.png"));
-            Icon rewindIcon = new ImageIcon(rewind);
-            rewindButton.setIcon(rewindIcon);
-        }
-        catch (Exception e)
-        {
-            rewindButton.setText("Rewind");
-        }
+        customizeButton(rewindButton, "/edu/jhuapl/sbmt/data/RewindButton.png", "Rewind");
         playPanel.add(rewindButton);
 
         playButton = new JButton("");
-        try
-        {
-            Image play = ImageIO.read(getClass().getResource("/edu/jhuapl/sbmt/data/PlayButton.png"));
-            play.getScaledInstance(10, 10, Image.SCALE_DEFAULT);
-            Icon playIcon = new ImageIcon(play);
-            playButton.setIcon(playIcon);
-        }catch (Exception e)
-        {
-            playButton.setText("Play");
-        }
+        customizeButton(playButton, "/edu/jhuapl/sbmt/data/PlayButton.png", "Play");
         playPanel.add(playButton);
 
         recordButton = new JButton("");
-        try
-        {
-            Image play = ImageIO.read(getClass().getResource("/edu/jhuapl/sbmt/data/questionMark.png"));
-            play.getScaledInstance(10, 10, Image.SCALE_DEFAULT);
-            Icon playIcon = new ImageIcon(play);
-            recordButton.setIcon(playIcon);
-        }catch (Exception e)
-        {
-            recordButton.setText("Play");
-        }
+        customizeButton(recordButton, "/edu/jhuapl/sbmt/data/questionMark.png", "Record");
         playPanel.add(recordButton);
 
 
         fastForwardButton = new JButton("");
-        try
-        {
-            Image fast = ImageIO.read(getClass().getResource("/edu/jhuapl/sbmt/data/FastforwardButton.png"));
-            Icon fastforwardIcon = new ImageIcon(fast);
-            fastForwardButton.setIcon(fastforwardIcon);
-        }
-        catch (Exception e)
-        {
-              fastForwardButton.setText("Fast Forward");
-        }
+        customizeButton(fastForwardButton, "/edu/jhuapl/sbmt/data/FastforwardButton.png", "Fast Forward");
         playPanel.add(fastForwardButton);
 
         utcPanel = new JPanel();
@@ -153,6 +194,7 @@ public class StateHistoryIntervalPlaybackPanel extends JPanel
 
         timeBox = new JSpinner();
 
+        Dimension spinnerSize = new Dimension(400, 28);
         timeBox.setMinimumSize(spinnerSize);
         timeBox.setPreferredSize(spinnerSize);
         timeBox.setMaximumSize(spinnerSize);
@@ -162,41 +204,93 @@ public class StateHistoryIntervalPlaybackPanel extends JPanel
         utcPanel.add(setTimeButton);
 	}
 
+	/**
+	 * Helper method to add icons to the various button
+	 * @param button	JButton to configure
+	 * @param filename	The filename of the image for this button, relative to the getResource call (for our purposes "/edu/jhuapl/sbmt/data/..."
+	 * @param altText	Alternative text to show if an exception is thrown loading the image
+	 */
+	private void customizeButton(JButton button, String filename, String altText)
+	{
+		try
+        {
+            Image image = ImageIO.read(getClass().getResource(filename));
+            image.getScaledInstance(10, 10, Image.SCALE_DEFAULT);
+            Icon icon = new ImageIcon(image);
+            button.setIcon(icon);
+        }
+        catch (Exception e)
+        {
+            button.setText(altText);
+        }
+	}
+
+    /**
+     * Returns the rewind button
+     * @return the rewind button
+     */
     public JButton getRewindButton()
     {
         return rewindButton;
     }
 
+    /**
+     * Returns the play button
+     * @return the play button
+     */
     public JButton getPlayButton()
     {
         return playButton;
     }
 
+    /**
+     * Returns the fast forward button
+     * @return the fast forward button
+     */
     public JButton getFastForwardButton()
     {
         return fastForwardButton;
     }
 
+    /**
+     * Returns the record button
+     * @return the record button
+     */
     public JButton getRecordButton()
 	{
 		return recordButton;
 	}
 
+	/**
+	 * @return
+	 */
 	public JSlider getSlider()
     {
         return slider;
     }
 
+    /**
+     * Returns the rate text field JTextField
+     * @return the rate text field JTextField
+     */
     public JTextField getRateTextField()
     {
         return rateTextField;
     }
 
+    /**
+     * Returns the time box spinner
+     * @return the time box spinner
+     */
     public JSpinner getTimeBox()
     {
         return timeBox;
     }
 
+    /**
+     * Returns the set time button
+     * @return the set time button
+     */
     public JButton getSetTimeButton()
     {
         return setTimeButton;

@@ -9,18 +9,62 @@ import vtk.vtkTransform;
 
 import edu.jhuapl.saavtk.util.MathUtil;
 
+/**
+ * @author steelrj1
+ *
+ */
 public class EarthDirectionMarker extends vtkConeSource
 {
+	/**
+	 *
+	 */
 	private vtkActor earthMarkerHeadActor;
+	/**
+	 *
+	 */
 	private double[] white = {1.0, 1.0, 1.0, 1.0};
+    /**
+     *
+     */
     private double[] earthMarkerColor = {0.0, 0.0, 1.0, 1.0};
+    /**
+     *
+     */
     private double markerRadius;
+	/**
+	 *
+	 */
 	private double markerHeight;
+	/**
+	 *
+	 */
+	/**
+	 *
+	 */
+	/**
+	 *
+	 */
 	private double centerX, centerY, centerZ;
+	/**
+	 *
+	 */
 	double[] zAxis = {1,0,0};
+	/**
+	 *
+	 */
 	double[] earthMarkerPosition = new double[3];
+	/**
+	 *
+	 */
 	private double scale = 1.0;
 
+	/**
+	 * @param markerRadius
+	 * @param markerHeight
+	 * @param centerX
+	 * @param centerY
+	 * @param centerZ
+	 */
 	public EarthDirectionMarker(double markerRadius, double markerHeight,
 			double centerX, double centerY, double centerZ)
 	{
@@ -32,6 +76,9 @@ public class EarthDirectionMarker extends vtkConeSource
 		updateSource();
 	}
 
+	/**
+	 *
+	 */
 	private void updateSource()
 	{
 		SetRadius(markerRadius);
@@ -41,12 +88,18 @@ public class EarthDirectionMarker extends vtkConeSource
         Update();
 	}
 
+	/**
+	 * @param id
+	 */
 	public EarthDirectionMarker(long id)
 	{
 		super(id);
 		// TODO Auto-generated constructor stub
 	}
 
+	/**
+	 * @return
+	 */
 	public vtkActor getActor()
 	{
 		if (earthMarkerHeadActor != null) return earthMarkerHeadActor;
@@ -64,11 +117,18 @@ public class EarthDirectionMarker extends vtkConeSource
         return earthMarkerHeadActor;
 	}
 
+	/**
+	 * @param color
+	 */
 	public void setColor(Color color)
 	{
 		earthMarkerHeadActor.GetProperty().SetDiffuseColor(new double[] {color.getRed()/255.0, color.getGreen()/255.0, color.getBlue()/255.0});
 	}
 
+	/**
+	 * @param earthPosition
+	 * @param earthMarkerPosition
+	 */
 	public void updateEarthPosition(double[] earthPosition, double[] earthMarkerPosition)
 	{
 		this.earthMarkerPosition = earthMarkerPosition;
@@ -88,6 +148,9 @@ public class EarthDirectionMarker extends vtkConeSource
 
 
 	// set the earth pointer size - Alex W
+    /**
+     * @param radius
+     */
     public void setEarthPointerSize(int radius)
     {
     	scale = (2.66e-4 * Math.pow((double)radius,2) + 1e-4*(double)radius + .33);

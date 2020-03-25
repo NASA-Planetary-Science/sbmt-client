@@ -19,16 +19,32 @@ import edu.jhuapl.sbmt.stateHistory.model.stateHistory.StateHistoryCollection;
  *
  * @author steelrj1
  */
+/**
+ * @author steelrj1
+ *
+ * @param <G1>
+ */
 public class MultiColorStateHistoryAction<G1> extends StateHistoryPopAction<G1>
 {
 	// Ref vars
+	/**
+	 *
+	 */
 	private final StateHistoryCollection refManager;
 
 	// State vars
+	/**
+	 *
+	 */
 	private Map<JMenuItem, StateHistoryPopAction<G1>> actionM;
 
 	/**
 	 * Standard Constructor
+	 */
+	/**
+	 * @param aManager
+	 * @param aParent
+	 * @param aMenu
 	 */
 	public MultiColorStateHistoryAction(StateHistoryCollection aManager, Component aParent, JMenu aMenu)
 	{
@@ -56,12 +72,18 @@ public class MultiColorStateHistoryAction<G1> extends StateHistoryPopAction<G1>
 		aMenu.add(resetColorMI);
 	}
 
+	/**
+	 *
+	 */
 	@Override
 	public void executeAction(List<G1> aItemL)
 	{
 		; // Nothing to do
 	}
 
+	/**
+	 *
+	 */
 	@Override
 	public void setChosenItems(Collection<G1> aItemC, JMenuItem aAssocMI)
 	{
@@ -101,6 +123,11 @@ public class MultiColorStateHistoryAction<G1> extends StateHistoryPopAction<G1>
 	 *
 	 * @param aAction Action corresponding to the menu item.
 	 * @param aTitle The title of the menu item.
+	 */
+	/**
+	 * @param aAction
+	 * @param aTitle
+	 * @return
 	 */
 	private JMenuItem formMenuItem(StateHistoryPopAction<G1> aAction, String aTitle)
 	{

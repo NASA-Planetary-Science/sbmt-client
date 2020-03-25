@@ -25,9 +25,17 @@ import edu.jhuapl.sbmt.stateHistory.model.interfaces.StateHistory;
 import edu.jhuapl.sbmt.stateHistory.model.stateHistory.StateHistoryCollection;
 import edu.jhuapl.sbmt.stateHistory.model.stateHistory.StateHistoryKey;
 
+/**
+ * @author steelrj1
+ *
+ */
 public class TimeIntervalTable extends JTable
 {
 
+    /**
+     * @author steelrj1
+     *
+     */
     public static enum columns {
             MAP("Map"),
             SHOW("Show"),
@@ -61,14 +69,31 @@ public class TimeIntervalTable extends JTable
 
 
 
+    /**
+     *
+     */
     Set<StateHistoryKey> allKeys = Sets.newHashSet();
+    /**
+     *
+     */
     StateHistoryCollection intervals;
+    /**
+     *
+     */
     SmallBodyModel bodyModel;
+    /**
+     *
+     */
     Renderer renderer;
 
 
     /**
      * Create the Table
+     */
+    /**
+     * @param intervals
+     * @param model
+     * @param renderer
      */
     public TimeIntervalTable(StateHistoryCollection intervals, SmallBodyModel model, Renderer renderer)
     {
@@ -94,6 +119,10 @@ public class TimeIntervalTable extends JTable
 
 
 
+    /**
+     * @author steelrj1
+     *
+     */
     public class TimeIntervalTableModel extends DefaultTableModel
     {
 
@@ -160,6 +189,10 @@ public class TimeIntervalTable extends JTable
 
     }
 
+    /**
+     * @author steelrj1
+     *
+     */
     public class StringRenderer extends DefaultTableCellRenderer
     {
         public Component getTableCellRendererComponent(
@@ -173,6 +206,10 @@ public class TimeIntervalTable extends JTable
         }
     }
 
+    /**
+     * @author steelrj1
+     *
+     */
     class ColorRenderer extends JLabel implements TableCellRenderer
     {
         private Border unselectedBorder = null;
@@ -219,6 +256,10 @@ public class TimeIntervalTable extends JTable
     }
 
     // Add an interval to the table.  Use ImageTable as an example
+    /**
+     * @param interval
+     * @param renderer
+     */
     public void addInterval(StateHistory interval, Renderer renderer)
     {
         StateHistoryKey key = interval.getKey();

@@ -4,9 +4,16 @@ import vtk.vtkTextActor;
 
 import edu.jhuapl.sbmt.util.TimeUtil;
 
+/**
+ * @author steelrj1
+ *
+ */
 public class TimeBarTextActor extends vtkTextActor
 {
 
+	/**
+	 *
+	 */
 	public TimeBarTextActor()
 	{
 		GetTextProperty().SetColor(1.0, 1.0, 1.0);
@@ -15,6 +22,9 @@ public class TimeBarTextActor extends vtkTextActor
         VisibilityOn();
 	}
 
+	/**
+	 * @param id
+	 */
 	public TimeBarTextActor(long id)
 	{
 		super(id);
@@ -24,6 +34,9 @@ public class TimeBarTextActor extends vtkTextActor
         VisibilityOn();
 	}
 
+	/**
+	 * @param time
+	 */
 	public void updateTimeBarValue(double time)
     {
         String utcValue =TimeUtil.et2str(time).substring(0, 23);
@@ -31,6 +44,10 @@ public class TimeBarTextActor extends vtkTextActor
 //        this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
     }
 
+    /**
+     * @param windowWidth
+     * @param windowHeight
+     */
     public void updateTimeBarPosition(int windowWidth, int windowHeight)
     {
         int newTimeBarWidthInPixels = (int)Math.min(0.75*windowWidth, 200.0);

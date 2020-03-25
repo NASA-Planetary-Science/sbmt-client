@@ -14,16 +14,30 @@ import edu.jhuapl.sbmt.stateHistory.model.stateHistory.StateHistoryCollection;
  *
  * @author steelrj1
  */
+/**
+ * @author steelrj1
+ *
+ */
 class HideShowStateHistoryAction extends StateHistoryPopAction<StateHistory>
 {
 	// Ref vars
+	/**
+	 *
+	 */
 	private final StateHistoryCollection refManager;
 
 	// Attributes
+	/**
+	 *
+	 */
 	private final String itemLabelStr;
 
 	/**
 	 * Standard Constructor
+	 */
+	/**
+	 * @param aManager
+	 * @param aItemLabelStr
 	 */
 	public HideShowStateHistoryAction(StateHistoryCollection aManager, String aItemLabelStr)
 	{
@@ -32,6 +46,9 @@ class HideShowStateHistoryAction extends StateHistoryPopAction<StateHistory>
 		itemLabelStr = aItemLabelStr;
 	}
 
+	/**
+	 *
+	 */
 	@Override
 	public void executeAction(List<StateHistory> aItemL)
 	{
@@ -46,6 +63,9 @@ class HideShowStateHistoryAction extends StateHistoryPopAction<StateHistory>
 			refManager.setVisibility(history, tmpBool);
 	}
 
+	/**
+	 *
+	 */
 	@Override
 	public void setChosenItems(Collection<StateHistory> aItemC, JMenuItem aAssocMI)
 	{

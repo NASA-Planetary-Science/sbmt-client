@@ -4,14 +4,33 @@ import vtk.vtkActor;
 import vtk.vtkConeSource;
 import vtk.vtkPolyDataMapper;
 
+/**
+ * @author steelrj1
+ *
+ */
 public class SpacecraftFieldOfView extends vtkConeSource
 {
+	/**
+	 *
+	 */
 	private vtkActor spacecraftFovActor;
+    /**
+     *
+     */
     private double[] spacecraftFovOffset = {0.0, 0.0, 0.5};
+    /**
+     *
+     */
     private double[] fovColor = {0.3, 0.3, 1.0, 0.5};
+	/**
+	 *
+	 */
 	private double[] white = {1.0, 1.0, 1.0, 1.0};
 
 
+	/**
+	 *
+	 */
 	public SpacecraftFieldOfView()
 	{
 		SetDirection(0.0, 0.0, -1.0);
@@ -22,12 +41,18 @@ public class SpacecraftFieldOfView extends vtkConeSource
         Update();
 	}
 
+	/**
+	 * @param id
+	 */
 	public SpacecraftFieldOfView(long id)
 	{
 		super(id);
 		// TODO Auto-generated constructor stub
 	}
 
+	/**
+	 * @return
+	 */
 	public vtkActor getActor()
 	{
 		if (spacecraftFovActor != null) return spacecraftFovActor;

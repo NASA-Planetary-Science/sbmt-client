@@ -4,9 +4,20 @@ import java.util.function.BiFunction;
 
 import edu.jhuapl.sbmt.stateHistory.model.interfaces.Trajectory;
 
+/**
+ * @author steelrj1
+ *
+ */
 public enum StateHistoryColoringFunctions
 {
+	/**
+	 *
+	 */
 	PER_TABLE("Per Table", null),
+
+	/**
+	 *
+	 */
 	DISTANCE("Distance", (traj, time) -> {
 
     	int index = traj.getTime().lastIndexOf(time);
@@ -41,11 +52,21 @@ public enum StateHistoryColoringFunctions
     	int index = traj.getTime().lastIndexOf(time);
     	double distance = Math.sqrt(Math.pow(traj.getX().get(index), 2) + Math.pow(traj.getY().get(index), 2) + Math.pow(traj.getZ().get(index), 2));
     	return distance;
-    })*/;
+    })*//**
+     *
+     */
+    ;
 
 	private String name;
+	/**
+	 *
+	 */
 	BiFunction<Trajectory, Double, Double> coloringFunction;
 
+	/**
+	 * @param name
+	 * @param coloringFunction
+	 */
 	private StateHistoryColoringFunctions(String name, BiFunction<Trajectory, Double, Double> coloringFunction)
 	{
 		this.name = name;
@@ -58,6 +79,9 @@ public enum StateHistoryColoringFunctions
 		return name;
 	}
 
+	/**
+	 * @return
+	 */
 	public BiFunction<Trajectory, Double, Double> getColoringFunction()
 	{
 		return coloringFunction;

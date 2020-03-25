@@ -10,19 +10,32 @@ import edu.jhuapl.sbmt.stateHistory.model.stateHistory.StateHistoryCollection;
  *
  * @author steelrj1
  */
+/**
+ * @author steelrj1
+ *
+ */
 class HideOtherStateHistoryAction extends StateHistoryPopAction<StateHistory>
 {
 	// Ref vars
+	/**
+	 *
+	 */
 	private final StateHistoryCollection refManager;
 
 	/**
 	 * Standard Constructor
+	 */
+	/**
+	 * @param aManager
 	 */
 	public HideOtherStateHistoryAction(StateHistoryCollection aManager)
 	{
 		refManager = aManager;
 	}
 
+	/**
+	 *
+	 */
 	@Override
 	public void executeAction(List<StateHistory> aItemL)
 	{

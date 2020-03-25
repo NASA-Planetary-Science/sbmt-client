@@ -25,7 +25,6 @@ import edu.jhuapl.saavtk.util.FileCache;
 import edu.jhuapl.saavtk.util.MapUtil;
 import edu.jhuapl.sbmt.client.SmallBodyModel;
 import edu.jhuapl.sbmt.client.SmallBodyViewConfig;
-import edu.jhuapl.sbmt.stateHistory.controllers.StateHistoryController.RunInfo;
 import edu.jhuapl.sbmt.stateHistory.model.interfaces.State;
 import edu.jhuapl.sbmt.stateHistory.model.interfaces.StateHistory;
 import edu.jhuapl.sbmt.stateHistory.model.interfaces.Trajectory;
@@ -37,61 +36,155 @@ import edu.jhuapl.sbmt.stateHistory.model.stateHistory.StateHistoryKey;
 import edu.jhuapl.sbmt.stateHistory.model.trajectory.StandardTrajectory;
 
 
+/**
+ * @author steelrj1
+ *
+ */
 public class StateHistoryModel //implements HasTime // extends AbstractModel implements PropertyChangeListener, /*TableModel,*/ //HasTime//, ActionListener
 {
+	/**
+	 *
+	 */
 	List<StateHistoryModelChangedListener> listeners = new ArrayList<StateHistoryModelChangedListener>();
+    /**
+     *
+     */
     private ModelManager modelManager;
 
+    /**
+     *
+     */
     private Double time;
 
+    /**
+     *
+     */
     public static final String RUN_NAMES = "RunNames"; // What name to give this image for display
+    /**
+     *
+     */
     public static final String RUN_FILENAMES = "RunFilenames"; // Filename of image on disk
 
 
+    /**
+     *
+     */
     private boolean initialized =false;
+    /**
+     *
+     */
     private String description = "desc";
+    /**
+     *
+     */
     private File path = null;
+    /**
+     *
+     */
     final int lineLength = 121;
 
+    /**
+     *
+     */
     private double timeStep;
 
 
+    /**
+     *
+     */
     private ArrayList<String[]> timeArray = new ArrayList<>(3);
 
+    /**
+     *
+     */
     private boolean visible; // able to be shown
+    /**
+     *
+     */
     private boolean showing = false; // currently showing
+    /**
+     *
+     */
     public static final double offsetHeight = 2.0;
+    /**
+     *
+     */
     private double offset = offsetHeight;
 
 //    protected final StateHistoryKey key;
 
 
-    private StateHistory currentFlybyStateHistory;
+//    /**
+//     *
+//     */
+//    private StateHistory currentFlybyStateHistory;
+    /**
+     *
+     */
     private DateTime startTime;
+    /**
+     *
+     */
     private DateTime endTime;
 
+    /**
+     *
+     */
     private SmallBodyModel smallBodyModel;
+    /**
+     *
+     */
     private double scalingFactor = 0.0;
 
 
+    /**
+     *
+     */
     private StateHistoryCollection runs;
 
     // variables related to the scalar bar
 //    private int coloringIndex = 1;
 
+    /**
+     *
+     */
     private int defaultSliderValue = 0;
+    /**
+     *
+     */
     private int sliderFinalValue = 900;
 
+    /**
+     *
+     */
     private Double timeBarValue;
 //    private Double currentTime;
 
+    /**
+     *
+     */
     private String statusBarString;
 
+    /**
+     * @param start
+     * @param end
+     * @param smallBodyModel
+     * @param renderer
+     * @param modelManager
+     * @return
+     */
     static public StateHistoryModel createStateHistory(DateTime start, DateTime end, SmallBodyModel smallBodyModel, Renderer renderer, ModelManager modelManager)
     {
         return new StateHistoryModel(start, end, smallBodyModel, renderer, modelManager);
     }
 
+    /**
+     * @param start
+     * @param end
+     * @param smallBodyModel
+     * @param renderer
+     * @param modelManager
+     */
     public StateHistoryModel(DateTime start, DateTime end, SmallBodyModel smallBodyModel, Renderer renderer, ModelManager modelManager)
     {
         this.smallBodyModel = smallBodyModel;
@@ -103,13 +196,22 @@ public class StateHistoryModel //implements HasTime // extends AbstractModel imp
 
     }
 
+    /**
+     * @param smallBodyModel
+     */
     public StateHistoryModel(SmallBodyModel smallBodyModel)
     {
         this.smallBodyModel = smallBodyModel;
     }
 
+    /**
+     *
+     */
     private List<String> passFileNames = new ArrayList<String>();
 
+    /**
+     *
+     */
     private void initialize()
     {
         BoundingBox bb = smallBodyModel.getBoundingBox();
@@ -117,6 +219,9 @@ public class StateHistoryModel //implements HasTime // extends AbstractModel imp
         scalingFactor = 30.62*width + -0.0002237;
     }
 
+    /**
+     * @param listener
+     */
     public void addStateHistoryModelChangedListener(StateHistoryModelChangedListener listener)
     {
     	listeners.add(listener);
@@ -129,6 +234,9 @@ public class StateHistoryModel //implements HasTime // extends AbstractModel imp
      *
      ***/
 
+    /**
+     * @param historySegment
+     */
     private void fireHistorySegmentCreatedListener(StateHistory historySegment)
 	{
 		for (StateHistoryModelChangedListener listener : listeners)
@@ -141,29 +249,47 @@ public class StateHistoryModel //implements HasTime // extends AbstractModel imp
      * Interval Selection
      ****/
     // gets the start and end times of a trajectory - Alex W
+    /**
+     * @return
+     */
     public String[] getIntervalTime()
     {
         return timeArray.get(0);
     }
 
+    /**
+     * @return
+     */
     public DateTime getStartTime()
     {
         return startTime;
     }
 
+    /**
+     * @return
+     */
     public DateTime getEndTime()
     {
         return endTime;
     }
 
+    /**
+     * @return
+     */
     public String getDescription() {
         return description;
     }
+    /**
+     * @param desc
+     */
     public void setDescription(String desc)
     {
         description = desc;
     }
 
+    /**
+     * @param color
+     */
     private void fireTrajectoryColorChangedListener(double[] color)
 	{
 		for (StateHistoryModelChangedListener listener : listeners)
@@ -172,6 +298,9 @@ public class StateHistoryModel //implements HasTime // extends AbstractModel imp
 		}
 	}
 
+	/**
+	 * @param thickness
+	 */
 	private void fireTrajectoryThicknessChangedListener(double thickness)
 	{
 		for (StateHistoryModelChangedListener listener : listeners)
@@ -191,45 +320,67 @@ public class StateHistoryModel //implements HasTime // extends AbstractModel imp
 //
 //	}
 
+    /**
+     * @return
+     */
     public Double getTime()
     {
         return time;
     }
 
+    /**
+     * @param time
+     */
     public void setTime(Double time)
     {
         this.time = time;
-        if (currentFlybyStateHistory != null)
-            currentFlybyStateHistory.setTime(time);
+        if (runs.getCurrentRun() != null)
+        	runs.getCurrentRun().setTime(time);
     }
 
+    /**
+     * @param startTime
+     */
     public void setStartTime(DateTime startTime)
 	{
 		this.startTime = startTime;
 	}
 
+	/**
+	 * @param endTime
+	 */
 	public void setEndTime(DateTime endTime)
 	{
 		this.endTime = endTime;
 	}
 
+	/**
+	 * @return
+	 */
 	public Double getTimeFraction()
     {
-        if (currentFlybyStateHistory != null)
-            return currentFlybyStateHistory.getTimeFraction();
+        if (runs.getCurrentRun() != null)
+            return runs.getCurrentRun().getTimeFraction();
         else
             return null;
     }
 
+    /**
+     * @return
+     */
     public Double getPeriod()
     {
-        if (currentFlybyStateHistory != null)
-            return currentFlybyStateHistory.getPeriod();
+        if (runs.getCurrentRun() != null)
+            return runs.getCurrentRun().getPeriod();
         else
             return 0.0;
     }
 
     // set time of animation - Alex W
+    /**
+     * @param dt
+     * @return
+     */
     public boolean setInputTime(DateTime dt)
     {
         try
@@ -265,6 +416,9 @@ public class StateHistoryModel //implements HasTime // extends AbstractModel imp
         return true;
     }
 
+    /**
+     * @param t
+     */
     private void fireTimeChangedListener(Double t)
 	{
 		for (StateHistoryModelChangedListener listener : listeners)
@@ -273,35 +427,56 @@ public class StateHistoryModel //implements HasTime // extends AbstractModel imp
 		}
 	}
 
+    /**
+     * @return
+     */
     public boolean getInitialized(){
         return initialized;
     }
 
+    /**
+     * @return
+     */
     public String getTrajectoryName()
     {
-    	return currentFlybyStateHistory.getTrajectoryName();
+    	return runs.getCurrentRun().getTrajectoryName();
     }
 
+    /**
+     * @return
+     */
     public String defaultTrajectoryName() {
         return startTime.toString() + "_" + endTime.toString();
     }
 
     // returns sun position - Alex W
+    /**
+     * @return
+     */
     public double[] getSunPosition()
     {
-        return currentFlybyStateHistory.getSunPosition();
+        return runs.getCurrentRun().getSunPosition();
     }
 
+    /**
+     * @param distanceText
+     */
     public void setDistanceText(String distanceText)
     {
     	fireDistanceTextChangedListener(distanceText);
     }
 
+    /**
+     * @param timeBarValue
+     */
     public void setTimeBarValue(Double timeBarValue)
     {
     	this.timeBarValue = timeBarValue;
     }
 
+	/**
+	 * @param distanceText
+	 */
 	private void fireDistanceTextChangedListener(String distanceText)
 	{
 		for (StateHistoryModelChangedListener listener : listeners)
@@ -324,6 +499,13 @@ public class StateHistoryModel //implements HasTime // extends AbstractModel imp
      * @return -1 if error thrown on creation, 1 if successfully created
      */
     // returns
+    /**
+     * @param key
+     * @param length
+     * @param name
+     * @param progressFunction
+     * @return
+     */
     public int createNewTimeInterval(StateHistoryKey key, double length, String name, Function<Double, Void> progressFunction)
     {
 
@@ -383,7 +565,7 @@ public class StateHistoryModel //implements HasTime // extends AbstractModel imp
         Trajectory temp = new StandardTrajectory();
         StateHistory history = new StandardStateHistory(key);
 
-        this.currentFlybyStateHistory = history;
+        this.runs.setCurrentRun(history);
 
         //  reads the binary file and writes the data to a CSV file
         String[] timeSet = new String[2];
@@ -445,24 +627,40 @@ public class StateHistoryModel //implements HasTime // extends AbstractModel imp
         return 1;
     }
 
+	/**
+	 * @return
+	 */
 	public StateHistoryCollection getRuns()
 	{
 		return runs;
 	}
 
-	 public void saveRowToFile(StateHistory history, File file) throws StateHistoryIOException
+	 /**
+	 * @param history
+	 * @param file
+	 * @throws StateHistoryIOException
+	 */
+	public void saveRowToFile(StateHistory history, File file) throws StateHistoryIOException
      {
          StateHistoryModelIOHelper.saveIntervalToFile(smallBodyModel.getConfig().getShapeModelName(), history, file.getAbsolutePath());
      }
 
-     public void loadIntervalFromFile(File runFile, SmallBodyModel bodyModel) throws StateHistoryIOException
+     /**
+     * @param runFile
+     * @param bodyModel
+     * @throws StateHistoryIOException
+     */
+    public void loadIntervalFromFile(File runFile, SmallBodyModel bodyModel) throws StateHistoryIOException
      {
          StateHistory newRow = StateHistoryModelIOHelper.loadStateHistoryFromFile(runFile, smallBodyModel.getConfig().getShapeModelName(), new StateHistoryKey(runs));
          runs.addRunToList(newRow);
          fireHistorySegmentCreatedListener(newRow);
      }
 
-     public void initializeRunList() throws IOException
+     /**
+     * @throws IOException
+     */
+    public void initializeRunList() throws IOException
      {
          if (initialized)
              return;
@@ -496,12 +694,18 @@ public class StateHistoryModel //implements HasTime // extends AbstractModel imp
          initialized = true;
      }
 
-     private String getConfigFilename()
+     /**
+     * @return
+     */
+    private String getConfigFilename()
      {
          return modelManager.getPolyhedralModel().getConfigFilename();
      }
 
-     private void updateConfigFile()
+     /**
+     *
+     */
+    private void updateConfigFile()
      {
 //         MapUtil configMap = new MapUtil(getConfigFilename());
 //
@@ -531,54 +735,87 @@ public class StateHistoryModel //implements HasTime // extends AbstractModel imp
 //         configMap.put(newMap);
      }
 
+	/**
+	 * @return
+	 */
 	public int getDefaultSliderValue()
 	{
 		return defaultSliderValue;
 	}
 
+	/**
+	 * @param defaultSliderValue
+	 */
 	public void setDefaultSliderValue(int defaultSliderValue)
 	{
 		this.defaultSliderValue = defaultSliderValue;
 	}
 
+	/**
+	 * @return
+	 */
 	public int getSliderFinalValue()
 	{
 		return sliderFinalValue;
 	}
 
+	/**
+	 * @param sliderFinalValue
+	 */
 	public void setSliderFinalValue(int sliderFinalValue)
 	{
 		this.sliderFinalValue = sliderFinalValue;
 	}
 
+	/**
+	 * @return
+	 */
 	public String getStatusBarString()
 	{
 		return statusBarString;
 	}
 
+	/**
+	 * @param statusBarString
+	 */
 	public void setStatusBarString(String statusBarString)
 	{
 		this.statusBarString = statusBarString;
 		//TODO fire something here?
 	}
 
+	/**
+	 * @return
+	 */
 	public StateHistory getCurrentFlybyStateHistory()
 	{
-		return currentFlybyStateHistory;
+		return runs.getCurrentRun();
 	}
 
+	/**
+	 * @return
+	 */
 	public SmallBodyModel getSmallBodyModel()
 	{
 		return smallBodyModel;
 	}
 
+    /**
+     * @param prop
+     * @param cellId
+     * @param pickPosition
+     * @return
+     */
     public String getClickStatusBarText(vtkProp prop, int cellId, double[] pickPosition)
     {
-        Trajectory traj = currentFlybyStateHistory.getTrajectory();
+        Trajectory traj = runs.getCurrentRun().getTrajectory();
         if (traj == null) return "";
         return traj.toString();
     }
 
+	/**
+	 * @return
+	 */
 	public double getScalingFactor()
 	{
 		return scalingFactor;
@@ -601,5 +838,16 @@ public class StateHistoryModel //implements HasTime // extends AbstractModel imp
 //    	this.trajectory.setName(name);
 //    }
 
+    static class RunInfo
+    {
+        public String name = "";        // name to call this run for display purposes
+        public String runfilename = ""; // filename of run on disk
+
+        @Override
+        public String toString()
+        {
+            return name;
+        }
+    }
 
 }

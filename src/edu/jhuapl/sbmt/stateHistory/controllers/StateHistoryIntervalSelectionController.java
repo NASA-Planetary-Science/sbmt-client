@@ -18,27 +18,30 @@ import edu.jhuapl.sbmt.stateHistory.ui.version2.table.StateHistoryTableView;
 
 import glum.item.ItemEventType;
 
+/**
+ * @author steelrj1
+ *
+ */
 public class StateHistoryIntervalSelectionController
 {
-
-    private SmallBodyModel bodyModel;
-    private Renderer renderer;
-    private StateHistoryCollection runs;
     private StateHistoryTableView view;
-    private StateHistoryModel historyModel;
 
+	/**
+	 * @param historyModel
+	 * @param bodyModel
+	 * @param renderer
+	 */
 	public StateHistoryIntervalSelectionController(StateHistoryModel historyModel, SmallBodyModel bodyModel, Renderer renderer)
 	{
-		this.renderer = renderer;
-		this.bodyModel = bodyModel;
-		this.historyModel = historyModel;
-		this.runs = historyModel.getRuns();
-		this.view = new StateHistoryTableView(runs);
-		initializeIntervalSelectionPanel();
+		initializeIntervalSelectionPanel(historyModel, bodyModel, renderer);
 	}
 
-	private void initializeIntervalSelectionPanel()
+	/**
+	 * Sets up listeners for various UI components
+	 */
+	private void initializeIntervalSelectionPanel(StateHistoryModel historyModel, SmallBodyModel bodyModel, Renderer renderer)
     {
+		StateHistoryCollection runs = historyModel.getRuns();
 		view = new StateHistoryTableView(runs);
 
         view.getLoadStateHistoryButton().addActionListener(e -> {
@@ -127,28 +130,12 @@ public class StateHistoryIntervalSelectionController
 		});
     }
 
+	/**
+	 * The panel associated with this controller
+	 * @return
+	 */
 	public StateHistoryTableView getView()
 	{
 		return view;
 	}
-
-    //
-    // a custom table model that was tried to display map and show options for multiple trajectories. Not used because multiple trajectory showing would mess up the animation.
-    //
-
-//    class OptionsTableModel extends DefaultTableModel
-//    {
-//        public OptionsTableModel(Object[][] data, String[] columnNames)
-//        {
-//            super(data, columnNames);
-//        }
-//
-//        public boolean isCellEditable(int row, int column)
-//        {
-//            if (column == 2 && !(boolean)optionsTable.getValueAt(0, 1)) //|| column ==6 || column ==7)
-//                return false;
-//            else
-//                return true;
-//        }
-//    }
 }

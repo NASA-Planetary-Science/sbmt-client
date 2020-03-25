@@ -37,29 +37,75 @@ import glum.gui.panel.itemList.ItemProcessor;
 import glum.gui.panel.itemList.query.QueryComposer;
 import glum.item.ItemManagerUtil;
 
+/**
+ * @author steelrj1
+ *
+ */
 public class StateHistoryTableView extends JPanel
 {
+	/**
+	 *
+	 */
 	private JButton loadStateHistoryButton;
 //    private JButton nextButton;
 //    private JButton prevButton;
 //    private JButton removeBoundariesButton;
+    /**
+     *
+     */
     private JButton removeStateHistoryButton;
+    /**
+     *
+     */
     private JButton showStateHistoryButton;
+    /**
+     *
+     */
     private JButton saveStateHistoryButton;
 //    private JButton saveSelectedSpectraListButton;
 //    private SpectrumPopupMenu spectrumPopupMenu;
+    /**
+     *
+     */
     protected JTable resultList;
+    /**
+     *
+     */
     private JLabel resultsLabel;
 
     //for table
+    /**
+     *
+     */
     private JLabel titleL;
+    /**
+     *
+     */
+    /**
+     *
+     */
+    /**
+     *
+     */
     private JButton selectAllB, selectInvertB, selectNoneB;
+    /**
+     *
+     */
     private StateHistoryCollection stateHistoryCollection;
+    /**
+     *
+     */
     private ItemListPanel<StateHistory> stateHistoryILP;
+    /**
+     *
+     */
     private ItemHandler<StateHistory> stateHistoryTableHandler;
 
     /**
      * @wbp.parser.constructor
+     */
+    /**
+     * @param stateHistoryCollection
      */
     public StateHistoryTableView(StateHistoryCollection stateHistoryCollection/*, SpectrumPopupMenu spectrumPopupMenu*/)
     {
@@ -68,6 +114,9 @@ public class StateHistoryTableView extends JPanel
         init();
     }
 
+    /**
+     *
+     */
     protected void init()
     {
         resultsLabel = new JLabel("0 Results");
@@ -83,6 +132,9 @@ public class StateHistoryTableView extends JPanel
         saveStateHistoryButton.setEnabled(false);
     }
 
+    /**
+     *
+     */
     public void setup()
     {
         setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
@@ -119,6 +171,9 @@ public class StateHistoryTableView extends JPanel
         panel_2.add(saveStateHistoryButton);
     }
 
+    /**
+     * @return
+     */
     private JTable buildTable()
     {
     	ActionListener listener = e -> {
@@ -215,36 +270,57 @@ public class StateHistoryTableView extends JPanel
 		return stateHistoryTable;
     }
 
+    /**
+     * @return
+     */
     public JTable getTable()
     {
         return resultList;
     }
 
+    /**
+     * @return
+     */
     public JLabel getResultsLabel()
     {
         return resultsLabel;
     }
 
+    /**
+     * @return
+     */
     public JButton getLoadStateHistoryButton()
     {
         return loadStateHistoryButton;
     }
 
+    /**
+     * @return
+     */
     public JButton getShowStateHistoryButton()
     {
         return showStateHistoryButton;
     }
 
+    /**
+     * @return
+     */
     public JButton getRemoveStateHistoryButton()
     {
         return removeStateHistoryButton;
     }
 
+    /**
+     * @return
+     */
     public JButton getSaveStateHistoryButton()
     {
         return saveStateHistoryButton;
     }
 
+    /**
+     * @param resultsLabel
+     */
     public void setResultsLabel(JLabel resultsLabel)
     {
         this.resultsLabel = resultsLabel;
@@ -260,11 +336,17 @@ public class StateHistoryTableView extends JPanel
 //        this.spectrumPopupMenu = spectrumPopupMenu;
 //    }
 
+	/**
+	 * @return
+	 */
 	public ItemHandler<StateHistory> getStateHistoryTableHandler()
 	{
 		return stateHistoryTableHandler;
 	}
 
+	/**
+	 *
+	 */
 	private void configureColumnWidths()
 	{
 //		int maxPts = 99;

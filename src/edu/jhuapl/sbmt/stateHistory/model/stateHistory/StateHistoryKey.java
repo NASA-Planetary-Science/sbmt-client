@@ -8,9 +8,18 @@ import java.util.Random;
  */
 public class StateHistoryKey
 {
+    /**
+     *
+     */
     public static final Random RAND = new Random();
+    /**
+     *
+     */
     public Integer value;
 
+    /**
+     * @param runs
+     */
     public StateHistoryKey(StateHistoryCollection runs)
     {
         value = RAND.nextInt(1000);

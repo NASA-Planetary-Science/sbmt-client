@@ -2,14 +2,24 @@ package edu.jhuapl.sbmt.stateHistory.rendering;
 
 import vtk.vtkTextActor;
 
+/**
+ * @author steelrj1
+ *
+ */
 public class StatusBarTextActor extends vtkTextActor
 {
 
+	/**
+	 *
+	 */
 	public StatusBarTextActor()
 	{
 		// TODO Auto-generated constructor stub
 	}
 
+	/**
+	 * @param id
+	 */
 	public StatusBarTextActor(long id)
 	{
 		super(id);
@@ -18,6 +28,10 @@ public class StatusBarTextActor extends vtkTextActor
 
 
 
+    /**
+     * @param windowWidth
+     * @param windowHeight
+     */
     public void updateStatusBarPosition(int windowWidth, int windowHeight)
     {
         int newStatusBarWidthInPixels = (int)Math.min(0.75*windowWidth, 200.0);
@@ -36,6 +50,9 @@ public class StatusBarTextActor extends vtkTextActor
 //        this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
     }
 
+    /**
+     * @param text
+     */
     public void updateStatusBarValue(String text)
     {
         SetInput(text);

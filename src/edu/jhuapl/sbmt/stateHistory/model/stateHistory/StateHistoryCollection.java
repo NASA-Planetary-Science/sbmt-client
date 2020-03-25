@@ -40,39 +40,111 @@ import edu.jhuapl.sbmt.stateHistory.rendering.TrajectoryActor;
 
 public class StateHistoryCollection extends SaavtkItemManager<StateHistory> /*AbstractModel*/ implements PropertyChangeListener, HasTime
 {
+    /**
+     *
+     */
     private SmallBodyModel smallBodyModel;
+    /**
+     *
+     */
     private ArrayList<StateHistoryKey> keys = new ArrayList<StateHistoryKey>();
+    /**
+     *
+     */
     private List<StateHistory> simRuns = new ArrayList<StateHistory>();
+    /**
+     *
+     */
     private StateHistory currentRun = null;
+    /**
+     *
+     */
     private HashMap<StateHistory, TrajectoryActor> stateHistoryToRendererMap = new HashMap<StateHistory, TrajectoryActor>();
+    /**
+     *
+     */
     private SpacecraftBody spacecraft;
+    /**
+     *
+     */
     private double[] spacecraftPosition;
+    /**
+     *
+     */
     private double[] earthPosition;
+    /**
+     *
+     */
     private double[] sunPosition;
 
     //Text Actors
+    /**
+     *
+     */
     private TimeBarTextActor timeBarActor;
+    /**
+     *
+     */
     private StatusBarTextActor statusBarTextActor;
+    /**
+     *
+     */
     private vtkScalarBarActor scalarBarActor;
+	/**
+	 *
+	 */
 	private SpacecraftLabel spacecraftLabelActor;
 
 	//FOV Actors
+	/**
+	 *
+	 */
 	private SpacecraftFieldOfView spacecraftFov;
 
 	//Direction markers
+    /**
+     *
+     */
     private SpacecraftDirectionMarker scDirectionMarker;
+	/**
+	 *
+	 */
 	private SunDirectionMarker sunDirectionMarker;
+	/**
+	 *
+	 */
 	private EarthDirectionMarker earthDirectionMarker;
 
+	/**
+	 *
+	 */
 	double[] zAxis = {1,0,0};
+	/**
+	 *
+	 */
+	/**
+	 *
+	 */
 	double markerRadius, markerHeight;
 
+    /**
+     *
+     */
     private static final double JupiterScale = 75000;
+    /**
+     *
+     */
     private double[] sunDirection;
 
+    /**
+     *
+     */
     private double[] currentLookFromDirection;
 //    private double[] currentLookToDirection;
 
+    /**
+     * @param smallBodyModel
+     */
     public StateHistoryCollection(SmallBodyModel smallBodyModel)
     {
         this.smallBodyModel = smallBodyModel;
@@ -96,6 +168,10 @@ public class StateHistoryCollection extends SaavtkItemManager<StateHistory> /*Ab
         this.sunDirectionMarker.getActor().VisibilityOff();
     }
 
+    /**
+     * @param key
+     * @return
+     */
     private boolean containsKey(StateHistoryKey key)
     {
         for (StateHistory run : simRuns)
@@ -107,6 +183,10 @@ public class StateHistoryCollection extends SaavtkItemManager<StateHistory> /*Ab
         return false;
     }
 
+    /**
+     * @param key
+     * @return
+     */
     private StateHistory getRunFromKey(StateHistoryKey key)
     {
         for (StateHistory run : simRuns)
@@ -118,6 +198,10 @@ public class StateHistoryCollection extends SaavtkItemManager<StateHistory> /*Ab
         return null;
     }
 
+    /**
+     * @param row
+     * @return
+     */
     public StateHistoryKey getKeyFromRow(int row)
     {
         if (keys.size() > row) {
@@ -126,16 +210,26 @@ public class StateHistoryCollection extends SaavtkItemManager<StateHistory> /*Ab
         return null;
     }
 
+    /**
+     * @param row
+     * @return
+     */
     public StateHistory getRunFromRow(int row)
     {
         return getRunFromKey(getKeyFromRow(row));
     }
 
+    /**
+     * @return
+     */
     public StateHistory getCurrentRun()
     {
         return currentRun;
     }
 
+    /**
+     * @param key
+     */
     public void setCurrentRun(StateHistoryKey key)
     {
         StateHistory run = getRunFromKey(key);
@@ -146,11 +240,17 @@ public class StateHistoryCollection extends SaavtkItemManager<StateHistory> /*Ab
 
     }
 
+    /**
+     * @param run
+     */
     public void setCurrentRun(StateHistory run)
     {
     	currentRun = run;
     }
 
+    /**
+     * @param run
+     */
     public void addRunToList(StateHistory run)
     {
          simRuns.add(run);
@@ -159,11 +259,18 @@ public class StateHistoryCollection extends SaavtkItemManager<StateHistory> /*Ab
          setAllItems(simRuns);
     }
 
+    /**
+     * @param spacecraft
+     */
     public void setSpacecraft(SpacecraftBody spacecraft)
     {
     	this.spacecraft = spacecraft;
     }
 
+    /**
+     * @param run
+     * @return
+     */
     public TrajectoryActor addRun(StateHistory run)
     {
         if (stateHistoryToRendererMap.get(run) != null)
@@ -189,6 +296,9 @@ public class StateHistoryCollection extends SaavtkItemManager<StateHistory> /*Ab
         return trajectoryActor;
     }
 
+    /**
+     * @param key
+     */
     public void removeRun(StateHistoryKey key)
     {
         if (!containsKey(key))
@@ -202,6 +312,9 @@ public class StateHistoryCollection extends SaavtkItemManager<StateHistory> /*Ab
         this.pcs.firePropertyChange(Properties.MODEL_REMOVED, null, run);
     }
 
+    /**
+     * @param keys
+     */
     public void removeRuns(StateHistoryKey[] keys)
     {
         for (StateHistoryKey key : keys) {
@@ -220,6 +333,9 @@ public class StateHistoryCollection extends SaavtkItemManager<StateHistory> /*Ab
 //                removeRun(run.getKey());
 //    }
 
+    /**
+     * @param show
+     */
     public void setShowTrajectories(boolean show)
     {
     	//TODO fix
@@ -227,6 +343,9 @@ public class StateHistoryCollection extends SaavtkItemManager<StateHistory> /*Ab
 //            run.setShowSpacecraft(show);
     }
 
+    /**
+     *
+     */
     public ArrayList<vtkProp> getProps()
     {
     	ArrayList<vtkProp> props = new ArrayList<vtkProp>();
@@ -254,12 +373,18 @@ public class StateHistoryCollection extends SaavtkItemManager<StateHistory> /*Ab
 //            return new ArrayList<vtkProp>();
     }
 
+    /**
+     *
+     */
     public void propertyChange(PropertyChangeEvent evt)
     {
         if (Properties.MODEL_CHANGED.equals(evt.getPropertyName()))
             this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
     }
 
+    /**
+     *
+     */
     public String getClickStatusBarText(vtkProp prop, int cellId, double[] pickPosition)
     {
     	//TODO fix
@@ -277,16 +402,28 @@ public class StateHistoryCollection extends SaavtkItemManager<StateHistory> /*Ab
 //            return "No simulation run selected";
 //    }
 
+    /**
+     * @param actor
+     * @return
+     */
     public StateHistory getRun(vtkActor actor)
     {
         return currentRun;
     }
 
+    /**
+     * @param key
+     * @return
+     */
     public StateHistory getRun(StateHistoryKey key)
     {
         return getRunFromKey(key);
     }
 
+    /**
+     * @param key
+     * @return
+     */
     public boolean containsRun(StateHistoryKey key)
     {
         return containsKey(key);
@@ -298,6 +435,9 @@ public class StateHistoryCollection extends SaavtkItemManager<StateHistory> /*Ab
 //           currentRun.setTimeFraction(timeFraction);
 //    }
 
+    /**
+     *
+     */
     public Double getTimeFraction()
     {
         if (currentRun!= null)
@@ -306,6 +446,10 @@ public class StateHistoryCollection extends SaavtkItemManager<StateHistory> /*Ab
             return null;
     }
 
+    /**
+     * @param segment
+     * @return
+     */
     public TrajectoryActor getTrajectoryActorForStateHistory(StateHistory segment)
     {
     	return stateHistoryToRendererMap.get(segment);
@@ -325,6 +469,9 @@ public class StateHistoryCollection extends SaavtkItemManager<StateHistory> /*Ab
 //            return 0.0;
 //    }
 
+    /**
+     *
+     */
     public Double getPeriod()
     {
         if (currentRun != null)
@@ -333,33 +480,53 @@ public class StateHistoryCollection extends SaavtkItemManager<StateHistory> /*Ab
             return 0.0;
     }
 
+    /**
+     * @return
+     */
     public int size()
     {
         return simRuns.size();
     }
 
+    /**
+     * @return
+     */
     public List<StateHistoryKey> getKeys()
     {
         return keys;
     }
 
+    /**
+     *
+     */
     @Override
 	public ImmutableList<StateHistory> getAllItems()
 	{
     	return ImmutableList.copyOf(simRuns);
 	}
 
+    /**
+     *
+     */
     @Override
     public int getNumItems()
     {
     	return simRuns.size();
     }
 
+    /**
+     * @param segment
+     * @return
+     */
     public boolean isStateHistoryMapped(StateHistory segment)
     {
     	return stateHistoryToRendererMap.get(segment) != null;
     }
 
+    /**
+     * @param segment
+     * @return
+     */
     public boolean getVisibility(StateHistory segment)
     {
     	if (isStateHistoryMapped(segment) == false ) return false;
@@ -368,6 +535,10 @@ public class StateHistoryCollection extends SaavtkItemManager<StateHistory> /*Ab
         return (renderer.GetVisibility() == 1);
     }
 
+    /**
+     * @param segment
+     * @param visibility
+     */
     public void setVisibility(StateHistory segment, boolean visibility)
     {
     	TrajectoryActor renderer = stateHistoryToRendererMap.get(segment);
@@ -376,6 +547,10 @@ public class StateHistoryCollection extends SaavtkItemManager<StateHistory> /*Ab
         this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, renderer);
     }
 
+    /**
+     * @param segment
+     * @param color
+     */
     public void setTrajectoryColor(StateHistory segment, Color color)
     {
     	double[] colorAsIntArray = new double[] {color.getRed(), color.getGreen(), color.getBlue(), color.getAlpha()};
@@ -388,6 +563,9 @@ public class StateHistoryCollection extends SaavtkItemManager<StateHistory> /*Ab
 //    	this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, renderer);
     }
 
+    /**
+     * @param segment
+     */
     public void refreshColoring(StateHistory segment)
     {
     	TrajectoryActor renderer = stateHistoryToRendererMap.get(segment);
@@ -397,6 +575,9 @@ public class StateHistoryCollection extends SaavtkItemManager<StateHistory> /*Ab
     }
 
     //time updates
+    /**
+     * @param time
+     */
     private void updateTimeBarActor(double time)
     {
 //    	if (timeBarActor != null)
@@ -406,6 +587,10 @@ public class StateHistoryCollection extends SaavtkItemManager<StateHistory> /*Ab
 //        }
     }
 
+    /**
+     * @param history
+     * @param time
+     */
     private void updateSunPosition(StateHistory history, double time)
     {
 	   sunPosition = history.getSunPosition();
@@ -428,6 +613,10 @@ public class StateHistoryCollection extends SaavtkItemManager<StateHistory> /*Ab
 	   sunDirectionMarker.updateSunPosition(sunPosition, sunMarkerPosition);
     }
 
+    /**
+     * @param history
+     * @param time
+     */
     private void updateEarthPosition(StateHistory history, double time)
     {
         earthPosition = history.getEarthPosition();
@@ -450,6 +639,10 @@ public class StateHistoryCollection extends SaavtkItemManager<StateHistory> /*Ab
 
     }
 
+    /**
+     * @param history
+     * @param time
+     */
     private void updateSpacecraftPosition(StateHistory history, double time)
     {
     	vtkMatrix4x4 spacecraftBodyMatrix = new vtkMatrix4x4();
@@ -535,6 +728,9 @@ public class StateHistoryCollection extends SaavtkItemManager<StateHistory> /*Ab
 //        spacecraftMarkerBody.Modified();
     }
 
+    /**
+     * @param time
+     */
     private void updateLighting(double time)
     {
 //    	// toggle for lighting - Alex W
@@ -548,6 +744,11 @@ public class StateHistoryCollection extends SaavtkItemManager<StateHistory> /*Ab
 //            renderer.setLighting(LightingType.LIGHT_KIT);
     }
 
+	/**
+	 * @param lookDirection
+	 * @param scalingFactor
+	 * @return
+	 */
 	public double[] updateLookDirection(RendererLookDirection lookDirection, double scalingFactor)
     {
 		double[] focalpoint = {0,0,0};
@@ -599,8 +800,12 @@ public class StateHistoryCollection extends SaavtkItemManager<StateHistory> /*Ab
 		}
     }
 
-    public void setTimeFraction(StateHistory state, Double timeFraction)
+    /**
+     *
+     */
+    public void setTimeFraction(Double timeFraction)
     {
+    	StateHistory state = getCurrentRun();
         if (state != null && spacecraft.getActor() != null)
         {
         	updateSpacecraftPosition(state, timeFraction);
@@ -686,78 +891,117 @@ public class StateHistoryCollection extends SaavtkItemManager<StateHistory> /*Ab
     }
 
 
+    /**
+     * @param color
+     */
     public void setSpacecraftColor(Color color)
     {
     	spacecraft.setColor(color);
     	this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, spacecraft);
     }
 
+    /**
+     * @param visible
+     */
     public void setSpacecraftVisibility(boolean visible)
     {
     	spacecraft.getActor().SetVisibility(visible == true ? 1: 0);
     	this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, spacecraft);
     }
 
+    /**
+     * @param visible
+     */
     public void setSpacecraftLabelVisibility(boolean visible)
     {
     	spacecraftLabelActor.SetVisibility(visible == true ? 1: 0);
     	this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, spacecraftLabelActor);
     }
 
+    /**
+     * @param visible
+     */
     public void setSpacecraftDirectionMarkerVisibility(boolean visible)
     {
     	scDirectionMarker.getActor().SetVisibility(visible == true ? 1: 0);
     	this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, scDirectionMarker);
     }
 
+    /**
+     * @param radius
+     */
     public void setSpacecraftDirectionMarkerSize(int radius)
     {
     	scDirectionMarker.setSpacecraftPointerSize(radius);
     	this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, scDirectionMarker);
     }
 
+    /**
+     * @param visible
+     */
     public void setEarthDirectionMarkerVisibility(boolean visible)
     {
     	earthDirectionMarker.getActor().SetVisibility(visible == true ? 1: 0);
     	this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, earthDirectionMarker);
     }
 
+    /**
+     * @param scale
+     */
     public void setSpacecraftSize(double scale)
     {
     	spacecraft.setScale(scale);
     	this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, spacecraft);
     }
 
+    /**
+     * @param radius
+     */
     public void setEarthDirectionMarkerSize(int radius)
     {
     	earthDirectionMarker.setEarthPointerSize(radius);
     	this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, earthDirectionMarker);
     }
 
+    /**
+     * @param visible
+     */
     public void setSunDirectionMarkerVisibility(boolean visible)
     {
     	sunDirectionMarker.getActor().SetVisibility(visible == true ? 1: 0);
     	this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, sunDirectionMarker);
     }
 
+    /**
+     * @param radius
+     */
     public void setSunDirectionMarkerSize(int radius)
     {
     	sunDirectionMarker.setSunPointerSize(radius);
     	this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, sunDirectionMarker);
     }
 
+    /**
+     * @param distanceText
+     */
     public void setDistanceText(String distanceText)
     {
     	spacecraftLabelActor.setDistanceString(distanceText);
     	this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, spacecraftLabelActor);
     }
 
+    /**
+     * @param distanceTextFont
+     */
     public void setDistanceTextFont(Font distanceTextFont)
     {
     	spacecraftLabelActor.setDistanceStringFont(distanceTextFont);
     	this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, spacecraftLabelActor);
     }
 
+    /**
+     * @param isVisible
+     */
     public void setDistanceTextVisiblity(boolean isVisible)
     {
     	int visible = (isVisible) ? 1 : 0;
@@ -765,29 +1009,46 @@ public class StateHistoryCollection extends SaavtkItemManager<StateHistory> /*Ab
     	this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, spacecraftLabelActor);
     }
 
+    /**
+     * @param color
+     */
     public void setEarthDirectionMarkerColor(Color color)
     {
     	earthDirectionMarker.setColor(color);
     	this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, earthDirectionMarker);
     }
 
+    /**
+     * @param color
+     */
     public void setSunDirectionMarkerColor(Color color)
     {
     	sunDirectionMarker.setColor(color);
     	this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, sunDirectionMarker);
     }
 
+    /**
+     * @param color
+     */
     public void setScDirectionMarkerColor(Color color)
     {
     	scDirectionMarker.setColor(color);
     	this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, scDirectionMarker);
     }
 
+	/**
+	 * @return
+	 */
 	public double[] getCurrentLookFromDirection()
 	{
 		return currentLookFromDirection;
 	}
 
+	/**
+	 * @param run
+	 * @param min
+	 * @param max
+	 */
 	public void setTrajectoryMinMax(StateHistory run, double min, double max)
 	{
 		TrajectoryActor trajActor = stateHistoryToRendererMap.get(run);
@@ -799,6 +1060,9 @@ public class StateHistoryCollection extends SaavtkItemManager<StateHistory> /*Ab
         }
 	}
 
+	/**
+	 * @param history
+	 */
 	public void setOthersHiddenExcept(List<StateHistory> history)
 	{
 		for (StateHistory hist : getAllItems())
@@ -807,6 +1071,9 @@ public class StateHistoryCollection extends SaavtkItemManager<StateHistory> /*Ab
 		}
 	}
 
+	/**
+	 * @return
+	 */
 	public SmallBodyModel getSmallBodyModel()
 	{
 		return smallBodyModel;

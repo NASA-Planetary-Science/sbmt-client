@@ -12,25 +12,42 @@ import edu.jhuapl.sbmt.stateHistory.model.stateHistory.StateHistoryCollection;
  *
  * @author steelrj1
  */
+/**
+ * @author steelrj1
+ *
+ * @param <G1>
+ */
 class ResetStateHistoryColorAction<G1> extends StateHistoryPopAction<G1>
 {
 	// Ref vars
+	/**
+	 *
+	 */
 	private final StateHistoryCollection refManager;
 
 	/**
 	 * Standard Constructor
+	 */
+	/**
+	 * @param aManager
 	 */
 	public ResetStateHistoryColorAction(StateHistoryCollection aManager)
 	{
 		refManager = aManager;
 	}
 
+	/**
+	 *
+	 */
 	@Override
 	public void executeAction(List<G1> aItemL)
 	{
 //		refManager.clearCustomColorProvider(aItemL);
 	}
 
+	/**
+	 *
+	 */
 	@Override
 	public void setChosenItems(Collection<G1> aItemC, JMenuItem aAssocMI)
 	{

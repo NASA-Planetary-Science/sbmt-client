@@ -3,10 +3,23 @@ package edu.jhuapl.sbmt.stateHistory.model;
 import java.io.File;
 import java.io.RandomAccessFile;
 
+/**
+ * @author steelrj1
+ *
+ */
 public class StateHistoryUtil
 {
 
 	 // binary searches the binary file for a time for the new time interval feature - Alex W
+    /**
+     * @param first
+     * @param last
+     * @param target
+     * @param pos
+     * @param lineLength
+     * @param path
+     * @return
+     */
     public static int binarySearch(int first, int last, String target, boolean pos, int lineLength, File path)
     {
         if(first > last)
@@ -31,6 +44,11 @@ public class StateHistoryUtil
     }
 
     // gets the number of lines of a binary file, needed for the binary search - Alex W
+    /**
+     * @param path
+     * @param lineLength
+     * @return
+     */
     public static long getBinaryFileLength(File path, int lineLength)
     {
         long length = 0;
@@ -48,6 +66,11 @@ public class StateHistoryUtil
     }
 
     // reads binary that represents a String - Alex W
+    /**
+     * @param postion
+     * @param path
+     * @return
+     */
     public static String readString(int postion, File path)
     {
         String string = "";
@@ -66,6 +89,11 @@ public class StateHistoryUtil
     }
 
     // reads binary that represents a double - Alex W
+    /**
+     * @param postion
+     * @param path
+     * @return
+     */
     public static double readBinary(int postion, File path)
     {
         double num = 0;

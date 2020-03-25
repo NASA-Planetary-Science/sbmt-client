@@ -16,9 +16,19 @@ import edu.jhuapl.sbmt.stateHistory.model.stateHistory.StandardStateHistory;
 import edu.jhuapl.sbmt.stateHistory.model.stateHistory.StateHistoryKey;
 import edu.jhuapl.sbmt.stateHistory.model.trajectory.StandardTrajectory;
 
+/**
+ * @author steelrj1
+ *
+ */
 public class StateHistoryModelIOHelper
 {
 
+	/**
+	 * @param shapeModelName
+	 * @param interval
+	 * @param fileName
+	 * @throws StateHistoryIOException
+	 */
 	public static void saveIntervalToFile(String shapeModelName, StateHistory interval, String fileName) throws StateHistoryIOException
     {
         // writes the header for the new history
@@ -84,6 +94,13 @@ public class StateHistoryModelIOHelper
 
     }
 
+	/**
+	 * @param runFile
+	 * @param shapeModelName
+	 * @param key
+	 * @return
+	 * @throws StateHistoryIOException
+	 */
 	public static StateHistory loadStateHistoryFromFile(File runFile, String shapeModelName, StateHistoryKey key) throws StateHistoryIOException
     {
 		ArrayList<String[]> timeArray = new ArrayList<>(3);

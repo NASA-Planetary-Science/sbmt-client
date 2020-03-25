@@ -20,14 +20,28 @@ import edu.jhuapl.sbmt.stateHistory.model.stateHistory.StateHistoryCollection;
  *
  * @author steelrj1
  */
+/**
+ * @author steelrj1
+ *
+ */
 class SaveFileAction extends StateHistoryPopAction<StateHistory>
 {
 	// Ref vars
+	/**
+	 *
+	 */
 	private final StateHistoryCollection refManager;
+	/**
+	 *
+	 */
 	private final Component refParent;
 
 	/**
 	 * Standard Constructor
+	 */
+	/**
+	 * @param aManager
+	 * @param aParent
 	 */
 	public SaveFileAction(StateHistoryCollection aManager, Component aParent)
 	{
@@ -35,6 +49,9 @@ class SaveFileAction extends StateHistoryPopAction<StateHistory>
 		refParent = aParent;
 	}
 
+	/**
+	 *
+	 */
 	@Override
 	public void executeAction(List<StateHistory> aItemL)
 	{
@@ -68,6 +85,9 @@ class SaveFileAction extends StateHistoryPopAction<StateHistory>
 		}
 	}
 
+	/**
+	 *
+	 */
 	@Override
 	public void setChosenItems(Collection<StateHistory> aItemC, JMenuItem aAssocMI)
 	{

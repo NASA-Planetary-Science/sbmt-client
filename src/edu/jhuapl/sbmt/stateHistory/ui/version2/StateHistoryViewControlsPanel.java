@@ -34,74 +34,234 @@ import edu.jhuapl.sbmt.stateHistory.model.stateHistory.RendererLookDirection;
 
 import glum.gui.GuiUtil;
 
+/**
+ * @author steelrj1
+ *
+ */
 public class StateHistoryViewControlsPanel extends JPanel implements ActionListener
 {
 
+    /**
+     *
+     */
     private JComboBox<RendererLookDirection> viewOptions;
+    /**
+     *
+     */
     private JButton btnResetCameraTo;
 //    private JButton saveAnimationButton;
+    /**
+     *
+     */
     private JButton setViewAngle;
+    /**
+     *
+     */
     private JSlider spacecraftSlider;
+    /**
+     *
+     */
     private JCheckBox showSpacecraftMarker;
+    /**
+     *
+     */
     private JSlider sunSlider;
+    /**
+     *
+     */
     private JCheckBox showSunPointer;
+    /**
+     *
+     */
     private JSlider earthSlider;
+    /**
+     *
+     */
     private JCheckBox showEarthPointer;
+    /**
+     *
+     */
     private JCheckBox showLighting;
+    /**
+     *
+     */
     private JComboBox<String> distanceOptions;
+    /**
+     *
+     */
     private JCheckBox showSpacecraft;
+    /**
+     *
+     */
     private JLabel earthText;
+    /**
+     *
+     */
     private JLabel sunText;
+    /**
+     *
+     */
     private JLabel spacecraftText;
+    /**
+     *
+     */
     private JLabel lblSelectView;
+    /**
+     *
+     */
     private JLabel lblVerticalFov;
+    /**
+     *
+     */
     private JTextField viewInputAngle;
+    /**
+     *
+     */
     private JButton resizeEarthPointerButton;
+    /**
+     *
+     */
     private JButton scLabelButton;
+    /**
+     *
+     */
     private JButton resizeSunPointerButton;
+    /**
+     *
+     */
     private JButton resizeSpacecraftPointerButton;
+    /**
+     *
+     */
     private JPanel viewOptionsPanel;
+    /**
+     *
+     */
     private JPanel widgetPanel;
+    /**
+     *
+     */
     private JPanel coloringPanel;
 
+    /**
+     *
+     */
     private JSlider scSizeSlider;
 
+    /**
+     *
+     */
     private JCheckBox labelCheckBox;
 
+    /**
+     *
+     */
     private Boolean scLabelShown = false;
+    /**
+     *
+     */
     private Boolean earthResizeShown = false;
+    /**
+     *
+     */
     private Boolean sunResizeShown = false;
+    /**
+     *
+     */
     private Boolean scResizeShown = false;
 
+    /**
+     *
+     */
     private JButton scPointerColorButton;
+    /**
+     *
+     */
     private JButton sunPointerColorButton;
+    /**
+     *
+     */
     private JButton earthPointerColorButton;
+    /**
+     *
+     */
     private JButton spacecraftColorButton;
 
 
+    /**
+     *
+     */
     private Color scPointerColor = Color.GREEN;
+    /**
+     *
+     */
     private Color sunPointerColor = Color.YELLOW;
+    /**
+     *
+     */
     private Color earthPointerColor;
+    /**
+     *
+     */
     private Color spacecraftColor;
 
+    /**
+     *
+     */
     private JLabel scPointerColorLabel;
+    /**
+     *
+     */
     private JLabel sunPointerColorLabel;
+    /**
+     *
+     */
     private JLabel earthPointerColorLabel;
 
+    /**
+     *
+     */
     private Image questionImage = null;
+    /**
+     *
+     */
     private Icon questionIcon;
 
+    /**
+     *
+     */
     private JLabel colorFunctionLabel;
+    /**
+     *
+     */
     private JLabel colorRampLabel;
+    /**
+     *
+     */
     private JComboBox<StateHistoryColoringFunctions> colorFunctionComboBox;
+    /**
+     *
+     */
     private JComboBox colormapComboBox;
 
+    /**
+     *
+     */
     private JButton labelFontButton;
 
+    /**
+     *
+     */
     private Font labelFont;
 
+    /**
+     *
+     */
     private int iconW;
 
+    /**
+     *
+     */
     @Override
     public void setEnabled(boolean enabled)
     {
@@ -140,6 +300,9 @@ public class StateHistoryViewControlsPanel extends JPanel implements ActionListe
     	super.setEnabled(enabled);
     }
 
+	/**
+	 *
+	 */
 	public StateHistoryViewControlsPanel()
 	{
 		earthPointerColor = Color.BLUE;
@@ -148,24 +311,37 @@ public class StateHistoryViewControlsPanel extends JPanel implements ActionListe
 		initUI();
 	}
 
+	/**
+	 * @param layout
+	 */
 	public StateHistoryViewControlsPanel(LayoutManager layout)
 	{
 		super(layout);
 		// TODO Auto-generated constructor stub
 	}
 
+	/**
+	 * @param isDoubleBuffered
+	 */
 	public StateHistoryViewControlsPanel(boolean isDoubleBuffered)
 	{
 		super(isDoubleBuffered);
 		// TODO Auto-generated constructor stub
 	}
 
+	/**
+	 * @param layout
+	 * @param isDoubleBuffered
+	 */
 	public StateHistoryViewControlsPanel(LayoutManager layout, boolean isDoubleBuffered)
 	{
 		super(layout, isDoubleBuffered);
 		// TODO Auto-generated constructor stub
 	}
 
+	/**
+	 *
+	 */
 	private void initUI()
 	{
 		setBorder(new TitledBorder(null, "View Controls",
@@ -197,6 +373,9 @@ public class StateHistoryViewControlsPanel extends JPanel implements ActionListe
 //        updateGui();
 	}
 
+	/**
+	 *
+	 */
 	private void configureShowSpacecraftControls()
 	{
 		//Show spacecraft panel
@@ -289,6 +468,9 @@ public class StateHistoryViewControlsPanel extends JPanel implements ActionListe
         scPanel4.setVisible(false);
 	}
 
+	/**
+	 *
+	 */
 	private void configureShowLightingControls()
 	{
 		 //Show lighting panel
@@ -305,6 +487,9 @@ public class StateHistoryViewControlsPanel extends JPanel implements ActionListe
         panel_10.add(horizontalGlue_3);
 	}
 
+	/**
+	 *
+	 */
 	private void configureShowEarthControls()
 	{
 		 //Show Earth Pointer Panel
@@ -360,6 +545,9 @@ public class StateHistoryViewControlsPanel extends JPanel implements ActionListe
         earthPanel2.add(earthPointerColorButton);
 	}
 
+	/**
+	 *
+	 */
 	private void configureShowSunControls()
 	{
 		//Show Sun Pointer Panel
@@ -418,6 +606,9 @@ public class StateHistoryViewControlsPanel extends JPanel implements ActionListe
 //        sunPointerColorButton.setIcon(sunIcon);
 	}
 
+	/**
+	 *
+	 */
 	private void configureShowSCPointerControls()
 	{
 		//Show S/C pointer panel
@@ -478,6 +669,9 @@ public class StateHistoryViewControlsPanel extends JPanel implements ActionListe
         scPanel2.add(Box.createHorizontalGlue());
 	}
 
+	/**
+	 *
+	 */
 	private void configureDisplayItemsPanel()
 	{
 
@@ -508,6 +702,9 @@ public class StateHistoryViewControlsPanel extends JPanel implements ActionListe
 
 	}
 
+	/**
+	 *
+	 */
 	private void configureViewOptionsPanel()
 	{
 		 //*********************
@@ -568,6 +765,9 @@ public class StateHistoryViewControlsPanel extends JPanel implements ActionListe
         panel_15.setLayout(new BoxLayout(panel_15, BoxLayout.X_AXIS));
 	}
 
+	/**
+	 *
+	 */
 	private void configureColoringPanel()
 	{
 		coloringPanel = new JPanel();
@@ -620,6 +820,9 @@ public class StateHistoryViewControlsPanel extends JPanel implements ActionListe
         coloringPanel.add(horizPanel2);
 	}
 
+	/**
+	 *
+	 */
 	@Override
 	public void actionPerformed(ActionEvent aEvent)
 	{
@@ -661,6 +864,9 @@ public class StateHistoryViewControlsPanel extends JPanel implements ActionListe
 	/**
 	 * Helper method that will update the UI to reflect the user selected colors.
 	 */
+	/**
+	 *
+	 */
 	private void updateGui()
 	{
 
@@ -682,16 +888,25 @@ public class StateHistoryViewControlsPanel extends JPanel implements ActionListe
 		earthPointerColorButton.setIcon(earthIcon);
 	}
 
+	/**
+	 *
+	 */
 	public void updateUI()
 	{
 		updateGui();
 	}
 
+    /**
+     * @return
+     */
     public JComboBox<RendererLookDirection> getViewOptions()
     {
         return viewOptions;
     }
 
+    /**
+     * @return
+     */
     public JButton getBtnResetCameraTo()
     {
         return btnResetCameraTo;
@@ -702,181 +917,289 @@ public class StateHistoryViewControlsPanel extends JPanel implements ActionListe
 //        return saveAnimationButton;
 //    }
 
+    /**
+     * @return
+     */
     public JButton getSetViewAngle()
     {
         return setViewAngle;
     }
 
+    /**
+     * @return
+     */
     public JTextField getViewInputAngle()
     {
         return viewInputAngle;
     }
 
+    /**
+     * @return
+     */
     public JSlider getSpacecraftSlider()
     {
         return spacecraftSlider;
     }
 
+    /**
+     * @return
+     */
     public JCheckBox getShowSpacecraftMarker()
     {
         return showSpacecraftMarker;
     }
 
+    /**
+     * @return
+     */
     public JSlider getSunSlider()
     {
         return sunSlider;
     }
 
+    /**
+     * @return
+     */
     public JCheckBox getShowSunPointer()
     {
         return showSunPointer;
     }
 
+    /**
+     * @return
+     */
     public JSlider getEarthSlider()
     {
         return earthSlider;
     }
 
+    /**
+     * @return
+     */
     public JCheckBox getShowEarthPointer()
     {
         return showEarthPointer;
     }
 
+    /**
+     * @return
+     */
     public JCheckBox getShowLighting()
     {
         return showLighting;
     }
 
+    /**
+     * @return
+     */
     public JComboBox<String> getDistanceOptions()
     {
         return distanceOptions;
     }
 
+    /**
+     * @return
+     */
     public JCheckBox getShowSpacecraft()
     {
         return showSpacecraft;
     }
 
+    /**
+     * @return
+     */
     public JLabel getEarthText()
     {
         return earthText;
     }
 
+    /**
+     * @return
+     */
     public JLabel getSunText()
     {
         return sunText;
     }
 
+    /**
+     * @return
+     */
     public JLabel getSpacecraftText()
     {
         return spacecraftText;
     }
 
+    /**
+     * @return
+     */
     public JLabel getLblSelectView()
     {
         return lblSelectView;
     }
 
+    /**
+     * @return
+     */
     public JLabel getLblVerticalFov()
     {
         return lblVerticalFov;
     }
 
+	/**
+	 * @return
+	 */
 	public JComboBox<StateHistoryColoringFunctions> getColorFunctionComboBox()
 	{
 		return colorFunctionComboBox;
 	}
 
+	/**
+	 * @return
+	 */
 	public JComboBox getColormapComboBox()
 	{
 		return colormapComboBox;
 	}
 
+	/**
+	 * @return
+	 */
 	public JSlider getScSizeSlider()
 	{
 		return scSizeSlider;
 	}
 
+	/**
+	 * @return
+	 */
 	public Color getScPointerColor()
 	{
 		return scPointerColor;
 	}
 
+	/**
+	 * @return
+	 */
 	public Color getSunPointerColor()
 	{
 		return sunPointerColor;
 	}
 
+	/**
+	 * @return
+	 */
 	public Color getEarthPointerColor()
 	{
 		return earthPointerColor;
 	}
 
+	/**
+	 * @return
+	 */
 	public Color getSpacecraftColor()
 	{
 		return spacecraftColor;
 	}
 
+	/**
+	 * @param scPointerColor
+	 */
 	public void setScPointerColor(Color scPointerColor)
 	{
 		this.scPointerColor = new Color(scPointerColor.getRGB());
 	}
 
+	/**
+	 * @param sunPointerColor
+	 */
 	public void setSunPointerColor(Color sunPointerColor)
 	{
 		this.sunPointerColor = new Color(sunPointerColor.getRGB());
 	}
 
+	/**
+	 * @param earthPointerColor
+	 */
 	public void setEarthPointerColor(Color earthPointerColor)
 	{
 		this.earthPointerColor = new Color(earthPointerColor.getRGB());
 	}
 
+	/**
+	 * @param spacecraftColor
+	 */
 	public void setSpacecraftColor(Color spacecraftColor)
 	{
 		this.spacecraftColor = new Color(spacecraftColor.getRGB());
 	}
 
+	/**
+	 * @return
+	 */
 	public JButton getSpacecraftColorButton()
 	{
 		return spacecraftColorButton;
 	}
 
+	/**
+	 * @return
+	 */
 	public JButton getScPointerColorButton()
 	{
 		return scPointerColorButton;
 	}
 
+	/**
+	 * @return
+	 */
 	public JButton getSunPointerColorButton()
 	{
 		return sunPointerColorButton;
 	}
 
+	/**
+	 * @return
+	 */
 	public JButton getEarthPointerColorButton()
 	{
 		return earthPointerColorButton;
 	}
 
+	/**
+	 * @return
+	 */
 	public int getIconW()
 	{
 		return iconW;
 	}
 
+	/**
+	 * @return
+	 */
 	public JButton getLabelFontButton()
 	{
 		return labelFontButton;
 	}
 
+	/**
+	 * @return
+	 */
 	public Font getLabelFont()
 	{
 		return labelFont;
 	}
 
+	/**
+	 * @param labelFont
+	 */
 	public void setLabelFont(Font labelFont)
 	{
 		this.labelFont = labelFont;
 	}
 
+	/**
+	 * @return
+	 */
 	public JCheckBox getLabelCheckBox()
 	{
 		return labelCheckBox;

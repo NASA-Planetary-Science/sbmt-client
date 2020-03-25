@@ -22,14 +22,37 @@ import edu.jhuapl.sbmt.stateHistory.model.AnimatorFrameRunnable;
 import edu.jhuapl.sbmt.stateHistory.model.animator.AnimationFrame;
 import edu.jhuapl.sbmt.stateHistory.model.stateHistory.StateHistoryCollection;
 
+/**
+ * @author steelrj1
+ *
+ */
 public class Animator implements ActionListener
 {
+	/**
+	 *
+	 */
 	private BlockingQueue<AnimationFrame> animationFrameQueue;
+    /**
+     *
+     */
     private Renderer renderer;
+    /**
+     *
+     */
     private AnimatorFrameRunnable completionBlock;
+    /**
+     *
+     */
     private Runnable movieBlock;
+    /**
+     *
+     */
     private StateHistoryCollection runs;
 
+	/**
+	 * @param renderer
+	 * @param runs
+	 */
 	public Animator(Renderer renderer, StateHistoryCollection runs)
 	{
 		this.renderer = renderer;
@@ -37,6 +60,12 @@ public class Animator implements ActionListener
 	}
 
 	// creates animation frame with data to move the camera
+    /**
+     * @param tf
+     * @param file
+     * @param delay
+     * @return
+     */
     public AnimationFrame createAnimationFrameWithTimeFraction(double tf, File file, int delay)
     {
         AnimationFrame result = new AnimationFrame();
@@ -48,6 +77,10 @@ public class Animator implements ActionListener
     }
 
     // saves a view to a file
+    /**
+     * @param file
+     * @param renWin
+     */
     public static void saveToFile(File file, vtkJoglPanelComponent renWin)
     {
         if (file != null)
@@ -119,6 +152,9 @@ public class Animator implements ActionListener
     }
 
  // called repeatedly to update the renderer and take the picture
+    /**
+     *
+     */
     @Override
     public void actionPerformed(ActionEvent e)
     {
@@ -150,6 +186,12 @@ public class Animator implements ActionListener
 
     }
 
+    /**
+     * @param frameNum
+     * @param file
+     * @param completionBlock
+     * @param movieBlock
+     */
     public void saveAnimation(int frameNum, File file, AnimatorFrameRunnable completionBlock, Runnable movieBlock)
     {
     	animationFrameQueue = new LinkedBlockingQueue<AnimationFrame>();

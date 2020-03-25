@@ -1,6 +1,5 @@
 package edu.jhuapl.sbmt.stateHistory.controllers;
 
-import java.awt.Component;
 import java.awt.Cursor;
 import java.awt.Image;
 import java.awt.event.ActionEvent;
@@ -42,12 +41,16 @@ import edu.jhuapl.sbmt.util.TimeUtil;
 
 import glum.item.ItemEventType;
 
+/**
+ * Controller that governs the "Interval Playback" panel in the StateHistory tab
+ * @author steelrj1
+ *
+ */
 public class StateHistoryIntervalPlaybackController
 {
     private Timer timer;
     public static final int timerInterval = 100;
     private boolean isPlaying = false;
-    private boolean manualSetTime = false;
     public double currentOffsetTime = 0.0;
     private double offsetScale = 0.1; // 0.025;
     private StateHistoryCollection runs;
@@ -57,6 +60,10 @@ public class StateHistoryIntervalPlaybackController
     private Icon playIcon;
     private Icon pauseIcon;
 
+	/**
+	 * @param historyModel
+	 * @param renderer
+	 */
 	public StateHistoryIntervalPlaybackController(StateHistoryModel historyModel, Renderer renderer)
 	{
 		this.historyModel = historyModel;
@@ -79,6 +86,10 @@ public class StateHistoryIntervalPlaybackController
 
 	}
 
+	/**
+	 * Attempts to initialize the artwork for the pause and play buttons
+	 * @throws IOException
+	 */
 	private void initializeButtonIcons() throws IOException
 	{
 		Image play = ImageIO.read(getClass().getResource("/edu/jhuapl/sbmt/data/PlayButton.png"));
@@ -89,6 +100,9 @@ public class StateHistoryIntervalPlaybackController
         pauseIcon = new ImageIcon(pause);
 	}
 
+	/**
+	 * Updates the time fraction and date values as the slider gets updated
+	 */
 	private void updatePlaypanelValues()
 	{
 		final JSlider slider = view.getSlider();
@@ -107,8 +121,8 @@ public class StateHistoryIntervalPlaybackController
         double deltaOffsetTime = deltaSimulationTime / period;
         currentOffsetTime = (val*(period/playRate)/max)*deltaOffsetTime;
 
-        runs.getCurrentRun().setTimeFraction(runs.getCurrentRun(), currentOffsetTime);
-        runs.setTimeFraction(runs.getCurrentRun(), currentOffsetTime);
+        runs.getCurrentRun().setTimeFraction(currentOffsetTime);
+        runs.setTimeFraction(currentOffsetTime);
 
         Date date = null;
 		try
@@ -121,11 +135,11 @@ public class StateHistoryIntervalPlaybackController
 		}
 
         view.getTimeBox().setValue(date);
-
-//        view.getTimeBox().setValue(new Date(runs.getCurrentRun().getMinTime().longValue() + new Double(1000*val/((double)(max - min)) * runs.getCurrentRun().getPeriod()).longValue()));
-
 	}
 
+	/**
+	 * Sets up listeners for various UI components
+	 */
 	private void initializeIntervalPlaybackPanel()
     {
         final JSlider slider = view.getSlider();
@@ -142,7 +156,7 @@ public class StateHistoryIntervalPlaybackController
             if (isPlaying) toggleToPlay();
             slider.setValue(historyModel.getDefaultSliderValue());
             currentOffsetTime = 0.0;
-            runs.setTimeFraction(runs.getCurrentRun(), currentOffsetTime);
+            runs.setTimeFraction(currentOffsetTime);
         });
 
         view.getFastForwardButton().addActionListener(e -> {
@@ -150,7 +164,7 @@ public class StateHistoryIntervalPlaybackController
             if (isPlaying) toggleToPlay();
             slider.setValue(historyModel.getSliderFinalValue());
             currentOffsetTime = 1.0;
-            runs.setTimeFraction(runs.getCurrentRun(), currentOffsetTime);
+            runs.setTimeFraction(currentOffsetTime);
         });
 
         view.getPlayButton().addActionListener(e -> {
@@ -197,7 +211,7 @@ public class StateHistoryIntervalPlaybackController
             view.setCursor(new Cursor(Cursor.WAIT_CURSOR));
             DateTime startTime = historyModel.getStartTime();
             DateTime endTime = historyModel.getEndTime();
-            saveAnimation(StateHistoryIntervalPlaybackController.this.getView(), startTime, endTime);
+            saveAnimation(startTime, endTime);
             view.setCursor(Cursor.getDefaultCursor());
         });
 
@@ -213,6 +227,9 @@ public class StateHistoryIntervalPlaybackController
 
     }
 
+	/**
+	 * Toggles the Play/Pause button to show the play icon and stop
+	 */
 	private void toggleToPlay()
 	{
 		view.getPlayButton().setIcon(playIcon);
@@ -220,6 +237,9 @@ public class StateHistoryIntervalPlaybackController
         isPlaying = false;
 	}
 
+	/**
+	 * Toggles the Play/Pause button to show the pause button and start playback
+	 */
 	private void toggleToPause()
 	{
         view.getPlayButton().setIcon(pauseIcon);
@@ -260,18 +280,29 @@ public class StateHistoryIntervalPlaybackController
     //
     // used to set the time for the slider and its time fraction.
     //
+    /**
+     * Sets the value of the JSlider that displays the time through this trajectory
+     * @param tf
+     */
     public void setTimeSlider(double tf){
         setSliderValue(tf);
         currentOffsetTime = tf;
     }
 
-    public void setSliderValue(double tf){
-        manualSetTime = true;
+    /**
+     * Helper method to set the slider value based on the time fraction passed in
+     * @param tf
+     */
+    private void setSliderValue(double tf){
         int max = view.getSlider().getMaximum();
         int val = (int)Math.round(max * tf);
         view.getSlider().setValue(val);
     }
 
+    /**
+     * Creates a timer that handles the execution of time steps, calculating the proper
+     * time and passing that to interested components in the rest of the system
+     */
     public void createTimer()
     {
         timer = new Timer(timerInterval, new ActionListener()
@@ -301,25 +332,42 @@ public class StateHistoryIntervalPlaybackController
                     currentOffsetTime = 0.0;
                 }
 
-                runs.getCurrentRun().setTimeFraction(runs.getCurrentRun(), 10*currentOffsetTime);
-                runs.setTimeFraction(runs.getCurrentRun(), currentOffsetTime);
+                runs.getCurrentRun().setTimeFraction(10*currentOffsetTime);
+                runs.setTimeFraction(currentOffsetTime);
+
+                //Update the slider
                 view.getSlider().setValue(val);
+
+                //Update the time box with the current time
                 view.getTimeBox().setValue(new Date(historyModel.getStartTime().toDate().getTime() + new Double(1000*val/((double)(max - min)) * runs.getCurrentRun().getPeriod()).longValue()));
             }
         });
         timer.setDelay(timerInterval);
     }
 
+	/**
+	 * Returnst the panel associated with this controller
+	 * @return
+	 */
 	public StateHistoryIntervalPlaybackPanel getView()
 	{
 		return view;
 	}
 
 	// starts the process for creating the movie frames
-	public void saveAnimation(Component panel, DateTime start, DateTime end)
+	/**
+	 * Handles the animation and saving to file of the renderer frames when the user
+	 * presses record
+	 *
+	 * @param panel
+	 * @param start
+	 * @param end
+	 */
+	public void saveAnimation(DateTime start, DateTime end)
 	{
+		//Create a dialog to grab the filename for the saved movie
 		AnimationFileDialog dialog = new AnimationFileDialog(start.toString(), end.toString());
-		int result = dialog.showSaveDialog(panel);
+		int result = dialog.showSaveDialog(view);
 
 		if (result == JFileChooser.CANCEL_OPTION || result == JFileChooser.ERROR_OPTION)
 		{
@@ -329,8 +377,11 @@ public class StateHistoryIntervalPlaybackController
 		File file = dialog.getSelectedFile();
 
 		int frameNum = (Integer) dialog.getNumFrames().getValue();
-		double timeStep = 1.0 / (double) frameNum;
 
+		//Create an animator, which takes the number of frames, the file to save to, an
+		//AnimatorFrameRunnable which handles the updating of the timestep, and a Runnable
+		//that is kicked off in the background to handle the compilation of the frames into
+		//a moving using MovieGenerator
 		Animator animator = new Animator(renderer, runs);
 		animator.saveAnimation(frameNum, file, new AnimatorFrameRunnable()
 		{
@@ -345,8 +396,8 @@ public class StateHistoryIntervalPlaybackController
 			@Override
 			public void run()
 			{
-				runs.getCurrentRun().setTimeFraction(runs.getCurrentRun(), getFrame().timeFraction);
-				runs.setTimeFraction(runs.getCurrentRun(), currentOffsetTime);
+				runs.getCurrentRun().setTimeFraction(getFrame().timeFraction);
+				runs.setTimeFraction(currentOffsetTime);
 				setTimeSlider(getFrame().timeFraction);
 			}
 		},
@@ -370,12 +421,14 @@ public class StateHistoryIntervalPlaybackController
 				}
 				catch (FileNotFoundException e)
 				{
-					// TODO Auto-generated catch block
+					JOptionPane.showMessageDialog(null, "The stated file could not be found; please see the console for a stack trace", "Saving Error",
+		                    JOptionPane.ERROR_MESSAGE);
 					e.printStackTrace();
 				}
 				catch (IOException e)
 				{
-					// TODO Auto-generated catch block
+					JOptionPane.showMessageDialog(null, "There was a problem writing the frames to file; please see the console for a stack trace", "Loading Error",
+		                    JOptionPane.ERROR_MESSAGE);
 					e.printStackTrace();
 				}
 			}

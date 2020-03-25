@@ -4,16 +4,32 @@ import javax.swing.BoxLayout;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 
+/**
+ * @author steelrj1
+ *
+ */
 public class StateHistoryPanel2  extends JPanel
 {
+    /**
+     *
+     */
     private JScrollPane tableScrollPane;
+    /**
+     *
+     */
     private JPanel panel_9;
 
+    /**
+     *
+     */
     private JPanel intervalSelectionPanel;
 
 
     /**
      * Create the panel.
+     */
+    /**
+     *
      */
     public StateHistoryPanel2()
     {
@@ -46,6 +62,9 @@ public class StateHistoryPanel2  extends JPanel
 
 
 
+    /**
+     * @return
+     */
     public JPanel getPanel_9()
     {
         return panel_9;
@@ -53,6 +72,9 @@ public class StateHistoryPanel2  extends JPanel
 
 
 
+    /**
+     * @return
+     */
     public JPanel getIntervalSelectionPanel() {
         return intervalSelectionPanel;
     }

@@ -13,42 +13,76 @@ import altwg.util.MathUtil;
 
 public class StandardStateHistory implements StateHistory
 {
+    /**
+     *
+     */
     private NavigableMap<Double, State> timeToFlybyState = new TreeMap<Double, State>();
 
+    /**
+     *
+     */
     private Double time;
+    /**
+     *
+     */
     private StateHistoryKey key;
+    /**
+     *
+     */
     private Trajectory trajectory;
+
+    /**
+     *
+     */
     private double minDisplayFraction = 0.0, maxDisplayFraction = 1.0;
 //    private double[] trajectoryColor;
 //    private String trajectoryName;
 //    private String trajectoryDescription;
 //    private double trajectoryThickness;
 
+    /**
+     *
+     */
     public StateHistoryKey getKey()
     {
     	return key;
     }
 
+    /**
+     *
+     */
     public Double getTime()
     {
         return time;
     }
 
+    /**
+     *
+     */
     public void setTime(Double time)
     {
         this.time = time;
     }
 
+    /**
+     *
+     */
     public Double getMinTime()
     {
         return timeToFlybyState.firstKey();
     }
 
+    /**
+     *
+     */
     public Double getMaxTime()
     {
         return timeToFlybyState.lastKey();
     }
 
+    /**
+     *
+     */
     public Double getTimeFraction()
     {
         double min = getMinTime() + minDisplayFraction*(getMaxTime() - getMinTime());
@@ -58,59 +92,86 @@ public class StandardStateHistory implements StateHistory
         return result;
     }
 
-    public void setTimeFraction(StateHistory history, Double timeFraction)
+    /**
+     *
+     */
+    public void setTimeFraction(Double timeFraction)
     {
-//    	System.out.println("StandardStateHistory: setTimeFraction: min display frac " + minDisplayFraction);
         double min = getMinTime() + minDisplayFraction*(getMaxTime() - getMinTime());
         double max = getMaxTime() - (1-maxDisplayFraction)*(getMaxTime()-getMinTime());
-//        System.out.println("StandardStateHistory: setTimeFraction: min max " + min + " " + max);
         double time = min + timeFraction * (max - min);
-//        System.out.println("StandardStateHistory: setTimeFraction: time is now " + time);
         setTime(time);
     }
 
+    /**
+     * @param key
+     */
     public StandardStateHistory(StateHistoryKey key)
     {
     	this.key = key;
     }
 
+    /**
+     *
+     */
     public void put(State flybyState)
     {
         put(flybyState.getEphemerisTime(), flybyState);
     }
 
+    /**
+     *
+     */
     public void put(Double time, State flybyState)
     {
         timeToFlybyState.put(time, flybyState);
     }
 
+    /**
+     *
+     */
     public Entry<Double, State> getFloorEntry(Double time)
     {
         return timeToFlybyState.floorEntry(time);
     }
 
+    /**
+     *
+     */
     public Entry<Double, State> getCeilingEntry(Double time)
     {
         return timeToFlybyState.ceilingEntry(time);
     }
 
+    /**
+     *
+     */
     public State getValue(Double time)
     {
         // for now, just return floor
         return getFloorEntry(time).getValue();
     }
 
+    /**
+     *
+     */
     public State getCurrentValue()
     {
         // for now, just return floor
         return getValue(getTime());
     }
 
+    /**
+     *
+     */
     public Double getPeriod()
     {
         return getMaxTime() - getMinTime();
     }
 
+    /**
+     *
+     */
     public double[] getSpacecraftPosition()
     {
         State floor = getFloorEntry(time).getValue();
@@ -124,6 +185,9 @@ public class StandardStateHistory implements StateHistory
         return interpolateDouble(floorPosition, ceilingPosition, floorTime, ceilingTime, time);
     }
 
+    /**
+     *
+     */
     public double[] getSunPosition()
     {
         State floor = getFloorEntry(time).getValue();
@@ -136,6 +200,9 @@ public class StandardStateHistory implements StateHistory
         return interpolateDouble(floorPosition, ceilingPosition, floorTime, ceilingTime, time);
     }
 
+    /**
+     *
+     */
     public double[] getEarthPosition()
     {
         State floor = getFloorEntry(time).getValue();
@@ -149,6 +216,14 @@ public class StandardStateHistory implements StateHistory
     }
 
 
+    /**
+     * @param floorPosition
+     * @param ceilingPosition
+     * @param floorTime
+     * @param ceilingTime
+     * @param time
+     * @return
+     */
     private double[] interpolateDouble(double[] floorPosition, double[] ceilingPosition, double floorTime, double ceilingTime, double time)
     {
         double timeDelta = ceilingTime - floorTime;
@@ -174,6 +249,9 @@ public class StandardStateHistory implements StateHistory
         }
     }
 
+    /**
+     *
+     */
     @Override
     public Set<Double> getAllKeys()
     {
@@ -181,59 +259,89 @@ public class StandardStateHistory implements StateHistory
 
     }
 
+	/**
+	 *
+	 */
 	@Override
 	public String getTrajectoryName()
 	{
 		return trajectory.getName();
 	}
 
+	/**
+	 *
+	 */
 	@Override
 	public String getTrajectoryDescription()
 	{
 		return trajectory.toString();
 	}
 
+	/**
+	 *
+	 */
 	@Override
 	public double[] getTrajectoryColor()
 	{
 		return trajectory.getTrajectoryColor();
 	}
 
+	/**
+	 *
+	 */
 	@Override
 	public double getTrajectoryThickness()
 	{
 		return trajectory.getTrajectoryThickness();
 	}
 
+	/**
+	 *
+	 */
 	@Override
 	public Trajectory getTrajectory()
 	{
 		return trajectory;
 	}
 
+	/**
+	 *
+	 */
 	public void setTrajectory(Trajectory trajectory)
 	{
 		this.trajectory = trajectory;
 	}
 
+	/**
+	 *
+	 */
 	@Override
 	public double getMinDisplayFraction()
 	{
 		return minDisplayFraction;
 	}
 
+	/**
+	 *
+	 */
 	@Override
 	public void setMinDisplayFraction(double minDisplayFraction)
 	{
 		this.minDisplayFraction = minDisplayFraction;
 	}
 
+	/**
+	 *
+	 */
 	@Override
 	public double getMaxDisplayFraction()
 	{
 		return maxDisplayFraction;
 	}
 
+	/**
+	 *
+	 */
 	@Override
 	public void setMaxDisplayFraction(double maxDisplayFraction)
 	{

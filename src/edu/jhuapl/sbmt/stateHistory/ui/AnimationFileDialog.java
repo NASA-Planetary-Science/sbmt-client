@@ -8,13 +8,31 @@ import javax.swing.JPanel;
 import javax.swing.JSpinner;
 import javax.swing.SpinnerNumberModel;
 
-import edu.jhuapl.saavtk.gui.dialog.CustomFileChooser;
-
+/**
+ * @author steelrj1
+ *
+ */
 public class AnimationFileDialog extends JFileChooser
 {
+	/**
+	 *
+	 */
+	/**
+	 *
+	 */
+	/**
+	 *
+	 */
 	private JLabel frames, fromLabel, toLabel;
+    /**
+     *
+     */
     private JSpinner numFrames;
 
+	/**
+	 * @param start
+	 * @param end
+	 */
 	public AnimationFileDialog(String start, String end)
 	{
 		super();
@@ -44,6 +62,9 @@ public class AnimationFileDialog extends JFileChooser
 //        return showSaveDialog(JOptionPane.getFrameForComponent(component));
 //	}
 
+	/**
+	 * @return
+	 */
 	public JSpinner getNumFrames()
 	{
 		return numFrames;

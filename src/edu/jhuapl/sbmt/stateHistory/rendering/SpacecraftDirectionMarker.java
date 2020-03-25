@@ -6,16 +6,51 @@ import vtk.vtkActor;
 import vtk.vtkConeSource;
 import vtk.vtkPolyDataMapper;
 
+/**
+ * @author steelrj1
+ *
+ */
 public class SpacecraftDirectionMarker extends vtkConeSource
 {
+	/**
+	 *
+	 */
 	private vtkActor spacecraftMarkerHeadActor;
+    /**
+     *
+     */
     private double[] spacecraftMarkerColor = {0.0, 1.0, 0.0, 1.0};
+    /**
+     *
+     */
     private double markerRadius;
+	/**
+	 *
+	 */
 	private double markerHeight;
+	/**
+	 *
+	 */
+	/**
+	 *
+	 */
+	/**
+	 *
+	 */
 	private double centerX, centerY, centerZ;
+    /**
+     *
+     */
     private double[] white = {1.0, 1.0, 1.0, 1.0};
 
 
+	/**
+	 * @param markerRadius
+	 * @param markerHeight
+	 * @param centerX
+	 * @param centerY
+	 * @param centerZ
+	 */
 	public SpacecraftDirectionMarker(double markerRadius, double markerHeight,
 			double centerX, double centerY, double centerZ)
 	{
@@ -27,6 +62,9 @@ public class SpacecraftDirectionMarker extends vtkConeSource
 		updateSource();
 	}
 
+	/**
+	 *
+	 */
 	private void updateSource()
 	{
 		SetRadius(markerRadius);
@@ -36,6 +74,9 @@ public class SpacecraftDirectionMarker extends vtkConeSource
         Update();
 	}
 
+	/**
+	 * @param id
+	 */
 	public SpacecraftDirectionMarker(long id)
 	{
 		super(id);
@@ -43,6 +84,9 @@ public class SpacecraftDirectionMarker extends vtkConeSource
 	}
 
 
+	/**
+	 * @return
+	 */
 	public vtkActor getActor()
 	{
 		if (spacecraftMarkerHeadActor != null) return spacecraftMarkerHeadActor;
@@ -59,6 +103,9 @@ public class SpacecraftDirectionMarker extends vtkConeSource
         return spacecraftMarkerHeadActor;
 	}
 
+	/**
+	 * @param color
+	 */
 	public void setColor(Color color)
 	{
 		spacecraftMarkerHeadActor.GetProperty().SetDiffuseColor(new double[] {color.getRed()/255.0, color.getGreen()/255.0, color.getBlue()/255.0});
@@ -66,6 +113,9 @@ public class SpacecraftDirectionMarker extends vtkConeSource
 
 
     // set the spacecraft pointer size - Alex W
+    /**
+     * @param radius
+     */
     public void setSpacecraftPointerSize(int radius)
     {
         double rad = markerRadius *(2.66e-4 * Math.pow((double)radius,2) + 1e-4*(double)radius + .33);

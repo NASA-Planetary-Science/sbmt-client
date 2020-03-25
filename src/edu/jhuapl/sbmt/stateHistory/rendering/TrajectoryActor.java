@@ -19,29 +19,78 @@ import vtk.vtkUnsignedCharArray;
 import edu.jhuapl.saavtk.colormap.Colormap;
 import edu.jhuapl.sbmt.stateHistory.model.interfaces.Trajectory;
 
+/**
+ * @author steelrj1
+ *
+ */
 public class TrajectoryActor extends vtkActor
 {
+    /**
+     *
+     */
     private Trajectory trajectory;
+    /**
+     *
+     */
     private vtkPolyData trajectoryPolylines;
+    /**
+     *
+     */
     private vtkPolyDataMapper trajectoryMapper = new vtkPolyDataMapper();
+    /**
+     *
+     */
     private double[] trajectoryColor = {0, 255, 255, 255};
+    /**
+     *
+     */
     private double trajectoryLineThickness = 1;
+    /**
+     *
+     */
     private String trajectoryName = ""; // default name and description fields
+    /**
+     *
+     */
     private double minFraction = 0.0;
+    /**
+     *
+     */
     private double maxFraction = 1.0;
+    /**
+     *
+     */
     private vtkUnsignedCharArray colors;
+    /**
+     *
+     */
     private int size;
+    /**
+     *
+     */
     private vtkPolyData trajectoryPolyline;
+    /**
+     *
+     */
     private BiFunction<Trajectory, Double, Double> coloringFunction;
+    /**
+     *
+     */
     private Colormap colormap;
 
 
+	/**
+	 * @param id
+	 */
 	public TrajectoryActor(long id)
 	{
 		super(id);
 		// TODO Auto-generated constructor stub
 	}
 
+	/**
+	 * @param trajectory
+	 */
 	public TrajectoryActor(Trajectory trajectory)
 	{
 		this.trajectory = trajectory;
@@ -55,6 +104,9 @@ public class TrajectoryActor extends vtkActor
 
 	}
 
+	/**
+	 *
+	 */
 	private void createTrajectoryPolyData()
 	{
 		int cellId = 0;
@@ -109,6 +161,9 @@ public class TrajectoryActor extends vtkActor
 		trajectoryMapper.Update();
 	}
 
+	/**
+	 *
+	 */
 	private void updateShownSegments()
 	{
 		int minValueToColor = (int)(minFraction*size);
@@ -137,12 +192,20 @@ public class TrajectoryActor extends vtkActor
 	 * @param coloringFunction
 	 * @param colormap
 	 */
+	/**
+	 * @param coloringFunction
+	 * @param colormap
+	 */
 	public void setColoringFunction(BiFunction<Trajectory, Double, Double> coloringFunction, Colormap colormap)
 	{
 		this.coloringFunction = coloringFunction;
 		this.colormap = colormap;
 	}
 
+	/**
+	 * @param index
+	 * @return
+	 */
 	private Color getColorAtIndex(int index)
 	{
 		if (coloringFunction == null) return new Color((int)trajectoryColor[0], (int)trajectoryColor[1], (int)trajectoryColor[2], (int)trajectoryColor[3]);
@@ -153,6 +216,9 @@ public class TrajectoryActor extends vtkActor
 		return color;
 	}
 
+	/**
+	 * @param value
+	 */
 	public void setTrajectoryLineThickness(double value)
     {
         this.trajectoryLineThickness = value;
@@ -162,16 +228,25 @@ public class TrajectoryActor extends vtkActor
 //        this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null , null);
     }
 
+    /**
+     * @return
+     */
     public double getTrajectoryLineThickness()
     {
         return trajectoryLineThickness;
     }
 
+    /**
+     * @return
+     */
     public double[] getTrajectoryColor()
     {
         return trajectoryColor;
     }
 
+    /**
+     * @param color
+     */
     public void setTrajectoryColor(double[] color)
     {
         this.trajectoryColor = color;
@@ -180,22 +255,35 @@ public class TrajectoryActor extends vtkActor
         updateShownSegments();
     }
 
+    /**
+     * @param name
+     */
     public void setTrajectoryName(String name)
     {
         trajectoryName = name;
     }
 
+    /**
+     * @return
+     */
     public String getTrajectoryName()
 	{
 		return trajectoryName;
 	}
 
+	/**
+	 * @param show
+	 */
 	public void showTrajectory(boolean show)
     {
     	if (show == true) { VisibilityOn(); } else { VisibilityOff(); }
 		Modified();
     }
 
+	/**
+	 * @param min
+	 * @param max
+	 */
 	public void setMinMaxFraction(double min, double max)
 	{
 		this.minFraction = min;

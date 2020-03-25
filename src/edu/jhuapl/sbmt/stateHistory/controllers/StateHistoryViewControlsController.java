@@ -32,6 +32,10 @@ import edu.jhuapl.sbmt.stateHistory.ui.version2.StateHistoryViewControlsPanel;
 
 import glum.item.ItemEventType;
 
+/**
+ * @author steelrj1
+ *
+ */
 public class StateHistoryViewControlsController implements ItemListener
 {
 	public boolean earthEnabled = true;
@@ -40,6 +44,10 @@ public class StateHistoryViewControlsController implements ItemListener
 	private StateHistoryCollection runs;
 	private Renderer renderer;
 
+	/**
+	 * @param historyModel
+	 * @param renderer
+	 */
 	public StateHistoryViewControlsController(StateHistoryModel historyModel, Renderer renderer)
 	{
 		this.historyModel = historyModel;
@@ -49,6 +57,9 @@ public class StateHistoryViewControlsController implements ItemListener
 		initializeViewControlPanel();
 	}
 
+	/**
+	 *
+	 */
 	private void initializeViewControlPanel()
     {
         String[] distanceChoices = {"Distance to Center", "Distance to Surface"};
@@ -74,7 +85,7 @@ public class StateHistoryViewControlsController implements ItemListener
         runs.addListener((aSource, aEventType) ->
 		{
 			if (aEventType != ItemEventType.ItemsSelected) return;
-			runs.setTimeFraction(runs.getCurrentRun(), 0.0);
+			runs.setTimeFraction(0.0);
 //			updateLookDirection();
 		});
 
@@ -220,6 +231,9 @@ public class StateHistoryViewControlsController implements ItemListener
         view.updateUI();
     }
 
+	/**
+	 *
+	 */
 	private void updateLookDirection()
 	{
 		RendererLookDirection selectedItem = (RendererLookDirection)view.getViewOptions().getSelectedItem();
@@ -260,6 +274,9 @@ public class StateHistoryViewControlsController implements ItemListener
         }
 	}
 
+    /**
+     *
+     */
     @Override
     public void itemStateChanged(ItemEvent e) throws NullPointerException
     {
@@ -319,6 +336,9 @@ public class StateHistoryViewControlsController implements ItemListener
         }
     }
 
+	/**
+	 * @return
+	 */
 	public StateHistoryViewControlsPanel getView()
 	{
 		return view;

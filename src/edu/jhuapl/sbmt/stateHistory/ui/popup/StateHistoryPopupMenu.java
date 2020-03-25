@@ -18,17 +18,30 @@ import edu.jhuapl.sbmt.stateHistory.model.stateHistory.StateHistoryCollection;
  *
  * @author steelrj1
  */
+/**
+ * @author steelrj1
+ *
+ */
 public class StateHistoryPopupMenu extends PopupMenu
 {
 	// Reference vars
+	/**
+	 *
+	 */
 	private StateHistoryCollection refManager;
 
 	// State vars
+	/**
+	 *
+	 */
 	private Map<JMenuItem, StateHistoryPopAction<StateHistory>> actionM;
 
 	/**
 	 * Standard Constructor
 	 *
+	 * @param aManager
+	 */
+	/**
 	 * @param aManager
 	 */
 	public StateHistoryPopupMenu(StateHistoryCollection aManager)
@@ -44,6 +57,10 @@ public class StateHistoryPopupMenu extends PopupMenu
 	 * A simple menu item will be created and associated with the specified
 	 * action.
 	 */
+	/**
+	 * @param aAction
+	 * @param aTitle
+	 */
 	public void installPopAction(StateHistoryPopAction<StateHistory> aAction, String aTitle)
 	{
 		JMenuItem tmpMI = new JMenuItem(aAction);
@@ -58,12 +75,19 @@ public class StateHistoryPopupMenu extends PopupMenu
 	 * <P>
 	 * The action will be associated with the specified menu item.
 	 */
+	/**
+	 * @param aAction
+	 * @param aTargMI
+	 */
 	public void installPopAction(StateHistoryPopAction<StateHistory> aAction, JMenuItem aTargMI)
 	{
 		add(aTargMI);
 		actionM.put(aTargMI, aAction);
 	}
 
+	/**
+	 *
+	 */
 	@Override
 	public void showPopup(MouseEvent aEvent, vtkProp aPickedProp, int aPickedCellId, double[] aPickedPosition)
 	{

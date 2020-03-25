@@ -19,13 +19,24 @@ import com.google.common.collect.ImmutableList;
  *
  * @author steelrj1
  */
+/**
+ * @author steelrj1
+ *
+ * @param <G1>
+ */
 public abstract class StateHistoryPopAction<G1> extends AbstractAction
 {
 	// State vars
+	/**
+	 *
+	 */
 	private ImmutableList<G1> itemL;
 
 	/**
 	 * Standard Constructor
+	 */
+	/**
+	 *
 	 */
 	public StateHistoryPopAction()
 	{
@@ -38,16 +49,26 @@ public abstract class StateHistoryPopAction<G1> extends AbstractAction
 	 *
 	 * @param aItemL
 	 */
+	/**
+	 * @param aItemL
+	 */
 	public abstract void executeAction(List<G1> aItemL);
 
 	/**
 	 * Sets in the lidar objects that are currently selected.
+	 */
+	/**
+	 * @param aItemC
+	 * @param aAssocMI
 	 */
 	public void setChosenItems(Collection<G1> aItemC, JMenuItem aAssocMI)
 	{
 		itemL = ImmutableList.copyOf(aItemC);
 	}
 
+	/**
+	 *
+	 */
 	@Override
 	public void actionPerformed(ActionEvent aAction)
 	{

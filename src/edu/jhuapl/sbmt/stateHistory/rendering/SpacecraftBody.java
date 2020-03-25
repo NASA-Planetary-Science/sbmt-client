@@ -8,13 +8,29 @@ import vtk.vtkPolyDataMapper;
 
 import edu.jhuapl.saavtk.util.PolyDataUtil;
 
+/**
+ * @author steelrj1
+ *
+ */
 public class SpacecraftBody extends vtkPolyData
 {
+	/**
+	 *
+	 */
 	private vtkActor spacecraftBodyActor;
+    /**
+     *
+     */
     private double[] spacecraftColor = {1.0, 0.7, 0.4, 1.0};
+    /**
+     *
+     */
     private double[] white = {1.0, 1.0, 1.0, 1.0};
 
 
+	/**
+	 * @param filename
+	 */
 	public SpacecraftBody(String filename)
 	{
 		try
@@ -28,12 +44,18 @@ public class SpacecraftBody extends vtkPolyData
 		}
 	}
 
+	/**
+	 * @param id
+	 */
 	public SpacecraftBody(long id)
 	{
 		super(id);
 		// TODO Auto-generated constructor stub
 	}
 
+	/**
+	 * @return
+	 */
 	public vtkActor getActor()
 	{
 		if (spacecraftBodyActor != null) return spacecraftBodyActor;
@@ -51,16 +73,25 @@ public class SpacecraftBody extends vtkPolyData
         return spacecraftBodyActor;
 	}
 
+	/**
+	 * @param scale
+	 */
 	public void setScale(double scale)
 	{
 		spacecraftBodyActor.SetScale(scale);
 	}
 
+	/**
+	 * @param color
+	 */
 	public void setColor(double[] color)
 	{
 		spacecraftBodyActor.GetProperty().SetDiffuseColor(spacecraftColor);
 	}
 
+	/**
+	 * @param color
+	 */
 	public void setColor(Color color)
 	{
 		spacecraftBodyActor.GetProperty().SetDiffuseColor(new double[] {color.getRed()/255.0, color.getGreen()/255.0, color.getBlue()/255.0});

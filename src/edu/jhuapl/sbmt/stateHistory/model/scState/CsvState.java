@@ -8,21 +8,72 @@ import java.io.IOException;
 import edu.jhuapl.sbmt.stateHistory.model.interfaces.State;
 import edu.jhuapl.sbmt.util.TimeUtil;
 
+/**
+ * @author steelrj1
+ *
+ */
 public class CsvState implements State
 {
+    /**
+     *
+     */
     private String utc;
+    /**
+     *
+     */
     private double ephemerisTime;
 
+    /**
+     *
+     */
     private double[] spacecraftPosition;
+
+    /**
+     *
+     */
     private double[] spacecraftVelocity;
+
+    /**
+     *
+     */
     private double[] earthPosition;
+
+    /**
+     *
+     */
     private double[] sunPosition;
 
+    /**
+     *
+     */
     private double[] spacecraftXAxis;
+
+    /**
+     *
+     */
     private double[] spacecraftYAxis;
+
+    /**
+     *
+     */
     private double[] spacecraftZAxis;
 
     //writes the binary data to a CSV file and sets the data to the correct variables
+    /**
+     * @param utc
+     * @param sunPosX
+     * @param sunPosY
+     * @param sunPosZ
+     * @param earthPosX
+     * @param earthPosY
+     * @param earthPosZ
+     * @param spacecraftPosX
+     * @param spacecraftPosY
+     * @param spacecraftPosZ
+     * @param spacecraftVelX
+     * @param spacecraftVelY
+     * @param spacecraftVelZ
+     */
     public CsvState(String utc, double sunPosX, double sunPosY, double sunPosZ,
                                 double earthPosX, double earthPosY, double earthPosZ,
                                 double spacecraftPosX, double spacecraftPosY, double spacecraftPosZ,
@@ -42,6 +93,9 @@ public class CsvState implements State
         spacecraftZAxis = new double[] { 0.0, 0.0, 1.0 };
     }
 
+    /**
+     * @param path
+     */
     public void writeToCSV(String path)
     {
         try
@@ -93,6 +147,9 @@ public class CsvState implements State
     }
 
     // reads in a csv line and adds the data to the correct variables
+    /**
+     * @param line
+     */
     public CsvState(String line)
     {
         // initial values

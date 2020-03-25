@@ -14,10 +14,21 @@ import edu.jhuapl.sbmt.util.TimeUtil;
 import glum.gui.panel.itemList.BasicItemHandler;
 import glum.gui.panel.itemList.query.QueryComposer;
 
+/**
+ * @author steelrj1
+ *
+ */
 public class StateHistoryItemHandler extends BasicItemHandler<StateHistory, StateHistoryColumnLookup>
 {
+	/**
+	 *
+	 */
 	private final StateHistoryCollection stateHistoryCollection;
 
+	/**
+	 * @param aManager
+	 * @param aComposer
+	 */
 	public StateHistoryItemHandler(StateHistoryCollection aManager, QueryComposer<StateHistoryColumnLookup> aComposer)
 	{
 		super(aComposer);
@@ -25,6 +36,9 @@ public class StateHistoryItemHandler extends BasicItemHandler<StateHistory, Stat
 		stateHistoryCollection = aManager;
 	}
 
+	/**
+	 *
+	 */
 	@Override
 	public Object getColumnValue(StateHistory stateHistory, StateHistoryColumnLookup aEnum)
 	{
@@ -59,6 +73,9 @@ public class StateHistoryItemHandler extends BasicItemHandler<StateHistory, Stat
 		throw new UnsupportedOperationException("Column is not supported. Enum: " + aEnum);
 	}
 
+	/**
+	 *
+	 */
 	@Override
 	public void setColumnValue(StateHistory history, StateHistoryColumnLookup aEnum, Object aValue)
 	{
