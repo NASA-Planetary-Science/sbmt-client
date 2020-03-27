@@ -248,11 +248,6 @@ public class SbmtModelFactory
 
     static public SmallBodyModel createSmallBodyModel(SmallBodyViewConfig config)
     {
-        if (!config.isAccessible())
-        {
-            throw new RuntimeException("Unable to access data for model " + config.getUniqueName());
-        }
-
         SmallBodyModel result = null;
         ShapeModelBody name = config.body;
         ShapeModelType author = config.author;
