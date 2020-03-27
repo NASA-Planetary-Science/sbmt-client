@@ -8,7 +8,7 @@ import edu.jhuapl.sbmt.util.TimeUtil;
 import glum.item.ItemEventType;
 
 /**
- * Controller that displays the "Available Files" panel in the state history tab
+ * Controller that displays the "Displayed Interval" panel in the state history tab
  * @author steelrj1
  *
  */

@@ -19,6 +19,7 @@ import edu.jhuapl.sbmt.stateHistory.ui.version2.table.StateHistoryTableView;
 import glum.item.ItemEventType;
 
 /**
+ * Controller that governs the "Available Files" panel for the StateHistory tab
  * @author steelrj1
  *
  */
@@ -44,6 +45,7 @@ public class StateHistoryIntervalSelectionController
 		StateHistoryCollection runs = historyModel.getRuns();
 		view = new StateHistoryTableView(runs);
 
+		//Queries for a file to load history from, passing to the model for loading
         view.getLoadStateHistoryButton().addActionListener(e -> {
 
         	File file = CustomFileChooser.showOpenDialog(view, "Select File");
@@ -60,6 +62,7 @@ public class StateHistoryIntervalSelectionController
 			}
         });
 
+        //Gets a file to save the history to, and passes that onto the model for saving
         view.getSaveStateHistoryButton().addActionListener(e -> {
 
             if (view.getTable().getSelectedRowCount() == 1)
@@ -90,16 +93,19 @@ public class StateHistoryIntervalSelectionController
 
         });
 
+        //For each of the selected items, set their visiblity to true
         view.getShowStateHistoryButton().addActionListener(e ->
 		{
 			runs.getSelectedItems().forEach(history -> { runs.setVisibility(history, true); } );
 		});
 
+        //For each of the selected items, set the visibility to false
         view.getRemoveStateHistoryButton().addActionListener(e ->
         {
         	runs.getSelectedItems().forEach(history -> { runs.setVisibility(history, false); } );
         });
 
+        //If a new state history segment is created, repaint the table
         historyModel.addStateHistoryModelChangedListener(new DefaultStateHistoryModelChangedListener()
 		{
 			@Override
@@ -109,12 +115,16 @@ public class StateHistoryIntervalSelectionController
 			}
 		});
 
+        //If the vtk properties of the state histories change, repaint the table and reset the clipping
+        //range to ensure things are updated on the renderer
         runs.addPropertyChangeListener(evt ->
 		{
 			view.getTable().repaint();
 			renderer.getRenderWindowPanel().resetCameraClippingRange();
 		});
 
+        //Responds to changes in item selection.  Enables/disables buttons, and fades displayed trajectories
+        //in the renderer appropriately
         runs.addListener((aSource, aEventType) ->
 		{
 			if (aEventType != ItemEventType.ItemsSelected) return;

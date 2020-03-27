@@ -566,6 +566,7 @@ public class StateHistoryModel //implements HasTime // extends AbstractModel imp
         StateHistory history = new StandardStateHistory(key);
 
         this.runs.setCurrentRun(history);
+        System.out.println("StateHistoryModel: createNewTimeInterval: set current run " + history);
 
         //  reads the binary file and writes the data to a CSV file
         String[] timeSet = new String[2];

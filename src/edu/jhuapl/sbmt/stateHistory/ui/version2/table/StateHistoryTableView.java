@@ -3,12 +3,10 @@ package edu.jhuapl.sbmt.stateHistory.ui.version2.table;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.event.ActionListener;
-import java.util.List;
 
 import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
-import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
@@ -44,62 +42,50 @@ import glum.item.ItemManagerUtil;
 public class StateHistoryTableView extends JPanel
 {
 	/**
-	 *
+	 * JButton to load state history from file
 	 */
 	private JButton loadStateHistoryButton;
-//    private JButton nextButton;
-//    private JButton prevButton;
-//    private JButton removeBoundariesButton;
+
     /**
-     *
+     * JButton to remove state history from table
      */
     private JButton removeStateHistoryButton;
+
     /**
-     *
+     * JButton to show state history in renderer
      */
     private JButton showStateHistoryButton;
+
     /**
-     *
+     * JButton to save state history to file
      */
     private JButton saveStateHistoryButton;
-//    private JButton saveSelectedSpectraListButton;
-//    private SpectrumPopupMenu spectrumPopupMenu;
+
     /**
-     *
+     *	JTable to display loaded state histories
      */
     protected JTable resultList;
-    /**
-     *
-     */
-    private JLabel resultsLabel;
 
-    //for table
     /**
-     *
-     */
-    private JLabel titleL;
-    /**
-     *
-     */
-    /**
-     *
-     */
-    /**
-     *
+     * JButtons for selection in the table
      */
     private JButton selectAllB, selectInvertB, selectNoneB;
+
     /**
-     *
+     * The collection of loaded state history objects
      */
     private StateHistoryCollection stateHistoryCollection;
+
     /**
-     *
+     *	The state history item list panel, used to help handle interactions with the table
      */
     private ItemListPanel<StateHistory> stateHistoryILP;
+
     /**
-     *
+     * The state history table handler, used to help populate the table
      */
     private ItemHandler<StateHistory> stateHistoryTableHandler;
+
 
     /**
      * @wbp.parser.constructor
@@ -109,20 +95,16 @@ public class StateHistoryTableView extends JPanel
      */
     public StateHistoryTableView(StateHistoryCollection stateHistoryCollection/*, SpectrumPopupMenu spectrumPopupMenu*/)
     {
-//        this.spectrumPopupMenu = spectrumPopupMenu;
         this.stateHistoryCollection = stateHistoryCollection;
         init();
     }
 
     /**
-     *
+     * Initializes UI elements
      */
     protected void init()
     {
-        resultsLabel = new JLabel("0 Results");
         resultList = buildTable();
-//        prevButton = new JButton("Prev");
-//        nextButton = new JButton("Next");
         removeStateHistoryButton = new JButton("Hide State History");
         showStateHistoryButton = new JButton("Show State History");
         removeStateHistoryButton.setEnabled(false);
@@ -133,7 +115,7 @@ public class StateHistoryTableView extends JPanel
     }
 
     /**
-     *
+     *	Sets up the UI elements
      */
     public void setup()
     {
@@ -142,8 +124,6 @@ public class StateHistoryTableView extends JPanel
         JPanel panel_4 = new JPanel();
         add(panel_4);
         panel_4.setLayout(new BoxLayout(panel_4, BoxLayout.X_AXIS));
-
-        panel_4.add(resultsLabel);
 
         Component horizontalGlue = Box.createHorizontalGlue();
         panel_4.add(horizontalGlue);
@@ -157,21 +137,18 @@ public class StateHistoryTableView extends JPanel
         JPanel panel_1 = new JPanel();
         add(panel_1);
         panel_1.setLayout(new BoxLayout(panel_1, BoxLayout.X_AXIS));
-
         panel_1.add(showStateHistoryButton);
-
         panel_1.add(removeStateHistoryButton);
 
         JPanel panel_2 = new JPanel();
         add(panel_2);
         panel_2.setLayout(new BoxLayout(panel_2, BoxLayout.X_AXIS));
-
         panel_2.add(loadStateHistoryButton);
-
         panel_2.add(saveStateHistoryButton);
     }
 
     /**
+     * Builds the JTable.
      * @return
      */
     private JTable buildTable()
@@ -179,7 +156,6 @@ public class StateHistoryTableView extends JPanel
     	ActionListener listener = e -> {
 			Object source = e.getSource();
 
-			List<StateHistory> tmpL = stateHistoryCollection.getSelectedItems().asList();
 			if (source == selectAllB)
 				ItemManagerUtil.selectAll(stateHistoryCollection);
 			else if (source == selectNoneB)
@@ -205,8 +181,7 @@ public class StateHistoryTableView extends JPanel
 
 		JPanel buttonPanel = new JPanel();
 		buttonPanel.setLayout(new BoxLayout(buttonPanel, BoxLayout.X_AXIS));
-		titleL = new JLabel("State History: ---");
-		buttonPanel.add(titleL, "growx,span,split");
+
 		buttonPanel.add(Box.createHorizontalGlue());
 		buttonPanel.add(selectInvertB, "w 24!,h 24!");
 		buttonPanel.add(selectNoneB, "w 24!,h 24!");
@@ -218,8 +193,6 @@ public class StateHistoryTableView extends JPanel
 		tmpComposer.addAttribute(StateHistoryColumnLookup.Map, Boolean.class, "Map", null);
 		tmpComposer.addAttribute(StateHistoryColumnLookup.Show, Boolean.class, "Show", null);
 		tmpComposer.addAttribute(StateHistoryColumnLookup.Color, Color.class, "Color", null);
-//		tmpComposer.addAttribute(StateHistoryColumnLookup.Line, Double.class, "Line", null);
-//		tmpComposer.addAttribute(StateHistoryColumnLookup.Name, String.class, "Name", null);
 		tmpComposer.addAttribute(StateHistoryColumnLookup.Description, String.class, "Description", null);
 		tmpComposer.addAttribute(StateHistoryColumnLookup.StartTime, String.class, "Start Time", null);
 		tmpComposer.addAttribute(StateHistoryColumnLookup.EndTime, String.class, "End Time", null);
@@ -232,11 +205,8 @@ public class StateHistoryTableView extends JPanel
 		tmpComposer.setRenderer(StateHistoryColumnLookup.Show, new BooleanCellRenderer());
 		tmpComposer.setEditor(StateHistoryColumnLookup.Show, new BooleanCellEditor());
 		tmpComposer.setRenderer(StateHistoryColumnLookup.Show, new BooleanCellRenderer());
-		tmpComposer.setEditor(StateHistoryColumnLookup.Color, new ColorProviderCellEditor());
+		tmpComposer.setEditor(StateHistoryColumnLookup.Color, new ColorProviderCellEditor<StateHistory>());
 		tmpComposer.setRenderer(StateHistoryColumnLookup.Color, new ColorProviderCellRenderer(false));
-//		tmpComposer.setRenderer(StateHistoryColumnLookup.Line, new NumberRenderer("##", "--"));
-//
-//		tmpComposer.setRenderer(StateHistoryColumnLookup.Name, tmpTimeRenderer);
 		tmpComposer.setRenderer(StateHistoryColumnLookup.Description, tmpTimeRenderer);
 		tmpComposer.setRenderer(StateHistoryColumnLookup.StartTime, tmpTimeRenderer);
 		tmpComposer.setRenderer(StateHistoryColumnLookup.EndTime, tmpTimeRenderer);
@@ -249,29 +219,13 @@ public class StateHistoryTableView extends JPanel
 		JTable stateHistoryTable = stateHistoryILP.getTable();
 		stateHistoryTable.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
 		stateHistoryTable.addMouseListener(new TablePopupHandler(stateHistoryCollection, stateHistoryPopupMenu));
-//		spectrumTable.addMouseListener(new SpectrumTablePopupListener<>(stateHistoryCollection, spectrumPopupMenu, spectrumTable));
-
-//		spectrumCollection.addListener(new ItemEventListener()
-//		{
-//
-//			@Override
-//			public void handleItemEvent(Object aSource, ItemEventType aEventType)
-//			{
-//				if (aEventType == ItemEventType.ItemsMutated)
-//				{
-//					spectrumTableHandler = new SpectrumItemHandler<S>(spectrumCollection, boundaryCollection, tmpComposer);
-//					ItemProcessor<S> tmpIP = spectrumCollection;
-////					spectrumILP = new ItemListPanel<>(spectrumTableHandler, tmpIP, true);
-//				}
-//
-//			}
-//		});
 
 		return stateHistoryTable;
     }
 
     /**
-     * @return
+     * Returns the JTable used to display the list of loaded state histories
+     * @return the JTable used to display the list of loaded state histories
      */
     public JTable getTable()
     {
@@ -279,15 +233,8 @@ public class StateHistoryTableView extends JPanel
     }
 
     /**
-     * @return
-     */
-    public JLabel getResultsLabel()
-    {
-        return resultsLabel;
-    }
-
-    /**
-     * @return
+     * Returns the load state history button
+     * @return the load state history button
      */
     public JButton getLoadStateHistoryButton()
     {
@@ -295,7 +242,8 @@ public class StateHistoryTableView extends JPanel
     }
 
     /**
-     * @return
+     * Returns the show state history button
+     * @return the show state history button
      */
     public JButton getShowStateHistoryButton()
     {
@@ -303,7 +251,8 @@ public class StateHistoryTableView extends JPanel
     }
 
     /**
-     * @return
+     * Returns the remove state history button
+     * @return the remove state history button
      */
     public JButton getRemoveStateHistoryButton()
     {
@@ -311,62 +260,25 @@ public class StateHistoryTableView extends JPanel
     }
 
     /**
-     * @return
+     * Returns the save state history button
+     * @return the save state history button
      */
     public JButton getSaveStateHistoryButton()
     {
         return saveStateHistoryButton;
     }
 
-    /**
-     * @param resultsLabel
-     */
-    public void setResultsLabel(JLabel resultsLabel)
-    {
-        this.resultsLabel = resultsLabel;
-    }
-
-//    public SpectrumPopupMenu getSpectrumPopupMenu()
-//    {
-//        return spectrumPopupMenu;
-//    }
-//
-//    public void setSpectrumPopupMenu(SpectrumPopupMenu spectrumPopupMenu)
-//    {
-//        this.spectrumPopupMenu = spectrumPopupMenu;
-//    }
-
 	/**
-	 * @return
-	 */
-	public ItemHandler<StateHistory> getStateHistoryTableHandler()
-	{
-		return stateHistoryTableHandler;
-	}
-
-	/**
-	 *
+	 * Configures the appropriate table colun width for the given expected type of data
 	 */
 	private void configureColumnWidths()
 	{
-//		int maxPts = 99;
-//		String sourceStr = "Data Source";
-//		for (BasicSpectrum spec : spectrumCollection.getAllItems())
-//		{
-//			maxPts = Math.max(maxPts, spec.getNumberOfPoints());
-//			String tmpStr = SpectrumItemHandler.getSourceFileString(aTrack);
-//			if (tmpStr.length() > sourceStr.length())
-//				sourceStr = tmpStr;
-//		}
-
 		JTable tmpTable = stateHistoryILP.getTable();
-		String trackStr = "" + tmpTable.getRowCount();
-//		String pointStr = "" + maxPts;
 		String dateTimeStr = "9999-88-88T00:00:00.000000";
 		int minW = 30;
 
 		ColorProvider blackCP = new ConstColorProvider(Color.BLACK);
-		Object[] nomArr = { true, true, blackCP, /*0.0, "Name",*/ "Description", dateTimeStr, dateTimeStr };
+		Object[] nomArr = { true, true, blackCP, "Description", dateTimeStr, dateTimeStr };
 		for (int aCol = 0; aCol < nomArr.length; aCol++)
 		{
 			TableCellRenderer tmpRenderer = tmpTable.getCellRenderer(0, aCol);
@@ -375,6 +287,4 @@ public class StateHistoryTableView extends JPanel
 			tmpTable.getColumnModel().getColumn(aCol).setPreferredWidth(tmpW + 10);
 		}
 	}
-
-
 }

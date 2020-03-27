@@ -57,8 +57,9 @@ public class StateHistoryIntervalPlaybackController
     private Icon pauseIcon;
 
 	/**
-	 * @param historyModel
-	 * @param renderer
+	 * Constructor
+	 * @param historyModel  the state history model
+	 * @param renderer		the renderer object
 	 */
 	public StateHistoryIntervalPlaybackController(StateHistoryModel historyModel, Renderer renderer)
 	{
@@ -271,9 +272,6 @@ public class StateHistoryIntervalPlaybackController
 //        }
 //    }
 
-    //
-    // used to set the time for the slider and its time fraction.
-    //
     /**
      * Sets the value of the JSlider that displays the time through this trajectory
      * @param tf
@@ -350,7 +348,6 @@ public class StateHistoryIntervalPlaybackController
 		return view;
 	}
 
-	// starts the process for creating the movie frames
 	/**
 	 * Handles the animation and saving to file of the renderer frames when the user
 	 * presses record

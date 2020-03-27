@@ -282,13 +282,14 @@ public class StateHistoryCollection extends SaavtkItemManager<StateHistory> /*Ab
 
         // Get the trajectory actor the state history segment
         TrajectoryActor trajectoryActor = new TrajectoryActor(run.getTrajectory());
+        stateHistoryToRendererMap.put(run, trajectoryActor);
+
         trajectoryActor.setColoringFunction(StateHistoryColoringFunctions.PER_TABLE.getColoringFunction(), Colormaps.getNewInstanceOfBuiltInColormap("Rainbow"));
 
         trajectoryActor.setMinMaxFraction(run.getMinDisplayFraction(), run.getMaxDisplayFraction());
         trajectoryActor.VisibilityOn();
         trajectoryActor.GetMapper().Update();
-
-        stateHistoryToRendererMap.put(run, trajectoryActor);
+        System.out.println("StateHistoryCollection: addRun: adding traj actor to run " + run + " for " + this);
 
         this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
         this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, trajectoryActor);
@@ -452,6 +453,7 @@ public class StateHistoryCollection extends SaavtkItemManager<StateHistory> /*Ab
      */
     public TrajectoryActor getTrajectoryActorForStateHistory(StateHistory segment)
     {
+    	System.out.println("StateHistoryCollection: getTrajectoryActorForStateHistory: number entries " + stateHistoryToRendererMap.size() + " segment " + segment + " for " + this);
     	return stateHistoryToRendererMap.get(segment);
     }
 
