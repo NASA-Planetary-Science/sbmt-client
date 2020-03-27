@@ -11,11 +11,11 @@ import java.net.CookiePolicy;
 import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 
 import javax.swing.ImageIcon;
+import javax.swing.JDialog;
 import javax.swing.JOptionPane;
+import javax.swing.SwingWorker;
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
 
@@ -116,6 +116,7 @@ public class SbmtMultiMissionTool
 
 	private static Mission mission = RELEASED_MISSION;
 	private static boolean missionConfigured = false;
+    private static volatile JDialog offlinePopup = null;
 
 	private static boolean enableAuthentication;
 
@@ -386,35 +387,47 @@ public class SbmtMultiMissionTool
                     throw new AssertionError();
                 }
 
-                splash.setAlwaysOnTop(true);
                 splash.validate();
                 splash.setVisible(true);
-
                 if (Console.isEnabled())
                 {
                     Console.showStandaloneConsole();
                 }
+                splash.toFront();
+
+                if (offlinePopup != null)
+                {
+                    offlinePopup.toFront();
+                }
 
                 final SbmtSplash finalSplash = splash;
-                ExecutorService executor = Executors.newSingleThreadExecutor();
-                executor.execute(() -> {
-                    // Kill the splash screen after a suitable pause.
-                    try
+
+                SwingWorker<Void, Void> timeOut = new SwingWorker<Void, Void>() {
+
+                    @Override
+                    protected Void doInBackground() throws Exception
                     {
-                        Thread.sleep(3500);
+                        // Kill the splash screen after a suitable pause.
+                        try
+                        {
+                            Thread.sleep(3500);
+                        }
+                        catch (InterruptedException e)
+                        {
+                            // Ignore this one.
+                        }
+                        finally
+                        {
+                            EventQueue.invokeLater(() -> {
+                                finalSplash.setVisible(false);
+                            });
+                        }
+
+                        return null;
                     }
-                    catch (InterruptedException e)
-                    {
-                        // Ignore this one.
-                    }
-                    finally
-                    {
-                        EventQueue.invokeLater(() -> {
-                            finalSplash.setVisible(false);
-                        });
-                    }
-                });
-                executor.shutdown();
+
+                };
+                timeOut.execute();
             });
         }
         catch (Exception e)
@@ -568,7 +581,10 @@ public class SbmtMultiMissionTool
 	            else
 	            {
 	                Configuration.runOnEDT(() -> {
-	                    JOptionPane.showMessageDialog(null, message, "No internet access", JOptionPane.INFORMATION_MESSAGE);
+	                    JOptionPane pane = new JOptionPane(message, JOptionPane.INFORMATION_MESSAGE);
+	                    offlinePopup = pane.createDialog("No internet access");
+	                    offlinePopup.setVisible(true);
+	                    offlinePopup.dispose();
 	                });
 	            }
 	        }
