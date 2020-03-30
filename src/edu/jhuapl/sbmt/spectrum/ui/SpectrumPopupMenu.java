@@ -29,6 +29,7 @@ import vtk.vtkIdTypeArray;
 import vtk.vtkProp;
 
 import edu.jhuapl.saavtk.gui.dialog.CustomFileChooser;
+import edu.jhuapl.saavtk.gui.dialog.DirectoryChooser;
 import edu.jhuapl.saavtk.gui.render.Renderer;
 import edu.jhuapl.saavtk.gui.render.Renderer.LightingType;
 import edu.jhuapl.saavtk.illum.IlluminationField;
@@ -506,37 +507,82 @@ public class SpectrumPopupMenu<S extends BasicSpectrum> extends PopupMenu implem
         }
     }
 
-    private class SaveOriginalSpectrumAction extends AbstractAction
-    {
-    	 public void actionPerformed(ActionEvent e)
-         {
-             try
-             {
-            	 for (S spec : collection.getSelectedItems())
-             	{
-             		 IBasicSpectrumRenderer<S> spectrumRenderer = collection.getRendererForSpectrum(spec);
-	                 String name = new File(spectrumRenderer.getSpectrum().getFullPath()).getName();
-	                 File file = CustomFileChooser.showSaveDialog(saveSpectrumMenuItem, "Select File", name);
-	                 if (file != null)
-	                 {
-	                	 File cachedFile = new File(spectrumRenderer.getSpectrum().getFullPath());
-	                	 FileUtil.copyFile(cachedFile, file);
-	                	 File toInfoFilename = new File(file.getParentFile(), FilenameUtils.getBaseName(file.getAbsolutePath()) + ".INFO");
-	                	 spectrumRenderer.getSpectrum().saveInfofile(toInfoFilename);
-	                 }
-             	}
-             }
-             catch (IOException e1)
-             {
-                 JOptionPane.showMessageDialog(JOptionPane.getFrameForComponent(saveSpectrumMenuItem),
-                         "There was an error saving the file.",
-                         "Error",
-                         JOptionPane.ERROR_MESSAGE);
+	private class SaveOriginalSpectrumAction extends AbstractAction
+	{
+		public void actionPerformed(ActionEvent e)
+		{
+			try
+			{
+				if (collection.getSelectedItems().size() == 1)
+				{
+					IBasicSpectrumRenderer<S> spectrumRenderer = collection.getRendererForSpectrum(collection.getSelectedItems().asList().get(0));
+					String name = new File(spectrumRenderer.getSpectrum().getFullPath()).getName();
+					File file = CustomFileChooser.showSaveDialog(saveSpectrumMenuItem, "Select File", name);
+					if (file == null) return;
+					S spec = spectrumRenderer.getSpectrum();
+					if (spectrumRenderer.getSpectrum().isCustomSpectra == false)
+					{
+						File cachedFile = new File(spectrumRenderer.getSpectrum().getFullPath());
+						FileUtil.copyFile(cachedFile, file);
+						File toInfoFilename = new File(file.getParentFile(),
+								FilenameUtils.getBaseName(file.getAbsolutePath()) + ".INFO");
+						System.out.println("SpectrumPopupMenu.SaveOriginalSpectrumAction: actionPerformed: to info file name " + toInfoFilename);
+						spectrumRenderer.getSpectrum().saveInfofile(toInfoFilename);
+					}
+					else
+					{
+						File cachedFile = new File(spec.getFullPath());
+						FileUtil.copyFile(cachedFile, file);
+						File cachedInfoFile = new File(cachedFile.getParentFile(),
+								FilenameUtils.getBaseName(cachedFile.getAbsolutePath()) + ".INFO");
+						File toInfoFilename = new File(file.getParentFile(),
+								FilenameUtils.getBaseName(file.getAbsolutePath()) + ".INFO");
+						FileUtil.copyFile(cachedInfoFile, toInfoFilename);
 
-                 e1.printStackTrace();
-             }
-         }
-    }
+					}
+				}
+				else if (collection.getSelectedItems().size() > 1)
+				{
+					File directory = DirectoryChooser.showOpenDialog(null, "Save Spectra to Directory...");
+					if (directory == null) return;
+					for (S spec : collection.getSelectedItems())
+					{
+						IBasicSpectrumRenderer<S> spectrumRenderer = collection.getRendererForSpectrum(spec);
+						String name = new File(spectrumRenderer.getSpectrum().getFullPath()).getName();
+//						File file = CustomFileChooser.showSaveDialog(saveSpectrumMenuItem, "Select File", name);
+
+						if (spectrumRenderer.getSpectrum().isCustomSpectra == false)
+						{
+							File cachedFile = new File(spectrumRenderer.getSpectrum().getFullPath());
+							FileUtil.copyFile(cachedFile, new File(directory, name));
+							File toInfoFilename = new File(directory,
+									FilenameUtils.getBaseName(new File(spectrumRenderer.getSpectrum().getFullPath()).getAbsolutePath()) + ".INFO");
+							spectrumRenderer.getSpectrum().saveInfofile(toInfoFilename);
+						}
+						else
+						{
+							File cachedFile = new File(spec.getFullPath());
+							FileUtil.copyFile(cachedFile, new File(directory, name));
+							File cachedInfoFile = new File(cachedFile.getParentFile(),
+									FilenameUtils.getBaseName(cachedFile.getAbsolutePath()) + ".INFO");
+							File toInfoFilename = new File(directory,
+									FilenameUtils.getBaseName(new File(directory, name).getAbsolutePath()) + ".INFO");
+							FileUtil.copyFile(cachedInfoFile, toInfoFilename);
+						}
+
+					}
+				}
+
+
+			} catch (IOException e1)
+			{
+				JOptionPane.showMessageDialog(JOptionPane.getFrameForComponent(saveSpectrumMenuItem),
+						"There was an error saving the file.", "Error", JOptionPane.ERROR_MESSAGE);
+
+				e1.printStackTrace();
+			}
+		}
+	}
 
     private class SaveSpectrumAction extends AbstractAction
     {
@@ -544,17 +590,29 @@ public class SpectrumPopupMenu<S extends BasicSpectrum> extends PopupMenu implem
         {
             try
             {
-            	for (S spec : collection.getSelectedItems())
-            	{
-            		IBasicSpectrumRenderer<S> spectrumRenderer = collection.getRendererForSpectrum(spec);
+            	if (collection.getSelectedItems().size() == 1)
+				{
+            		IBasicSpectrumRenderer<S> spectrumRenderer = collection.getRendererForSpectrum(collection.getSelectedItems().asList().get(0));
 	                String name = new File(spectrumRenderer.getSpectrum().getFullPath()).getName();
 	                name = FilenameUtils.getBaseName(name) + "-humanReadable.txt";
 	                File file = CustomFileChooser.showSaveDialog(saveSpectrumMenuItem, "Select File", name);
-	                if (file != null)
-	                {
-	                    spectrumRenderer.getSpectrum().saveSpectrum(file);
-	                }
-            	}
+	                if (file == null) return;
+	                S spec = spectrumRenderer.getSpectrum();
+					spectrumRenderer.getSpectrum().saveSpectrum(file);
+				}
+            	else if (collection.getSelectedItems().size() > 1)
+				{
+					File directory = DirectoryChooser.showOpenDialog(null, "Save Spectra to Directory...");
+					if (directory == null) return;
+	            	for (S spec : collection.getSelectedItems())
+	            	{
+	            		IBasicSpectrumRenderer<S> spectrumRenderer = collection.getRendererForSpectrum(spec);
+		                String name = new File(spectrumRenderer.getSpectrum().getFullPath()).getName();
+		                name = FilenameUtils.getBaseName(name) + "-humanReadable.txt";
+//		                File file = CustomFileChooser.showSaveDialog(saveSpectrumMenuItem, "Select File", name);
+	                	spectrumRenderer.getSpectrum().saveSpectrum(new File(directory, name));
+	            	}
+				}
             }
             catch (IOException e1)
             {
