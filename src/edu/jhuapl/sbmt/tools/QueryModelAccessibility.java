@@ -84,7 +84,7 @@ public class QueryModelAccessibility implements Callable<Integer>
                     fileManager.getState(info.getConfigURL());
                 }
             }
-            fileManager.queryAll(true);
+            fileManager.updateAccessAllUrls(true, true);
 
             for (BasicConfigInfo info : allConfigInfo)
             {

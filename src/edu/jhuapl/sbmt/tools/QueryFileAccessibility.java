@@ -184,7 +184,7 @@ public class QueryFileAccessibility implements Callable<Integer>
     protected int query(DownloadableFileManager fileManager, Iterable<String> urlStrings)
     {
         // Now actually query the status of all the files.
-        fileManager.queryAll(true);
+        fileManager.updateAccessAllUrls(true, true);
 
         for (String urlString : urlStrings)
         {
