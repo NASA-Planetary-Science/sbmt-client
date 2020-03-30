@@ -12,17 +12,29 @@ import edu.jhuapl.sbmt.stateHistory.ui.version2.viewControls.StateHistoryDisplay
 import edu.jhuapl.sbmt.stateHistory.ui.version2.viewControls.StateHistoryViewOptionsController;
 
 /**
+ * Controller that governs the "View Controls" panel in the StateHistory tab
  * @author steelrj1
  *
  */
 public class StateHistoryViewControlsPanel extends JPanel
 {
+	/**
+	 * The controller that governs the "Display Items" sub panel
+	 */
 	private StateHistoryDisplayItemsController displayItemsControls;
+
+	/**
+	 * The controller that governs the "Coloring Options" sub panel
+	 */
 	private StateHistoryColoringOptionsController coloringControls;
+
+	/**
+	 * The controller that governs the "View Options" sub panel
+	 */
 	private StateHistoryViewOptionsController viewControls;
 
 	/**
-	 *
+	 * Constructor.
 	 */
 	public StateHistoryViewControlsPanel(StateHistoryModel historyModel, Renderer renderer)
 	{
@@ -30,7 +42,7 @@ public class StateHistoryViewControlsPanel extends JPanel
 	}
 
 	/**
-	 *
+	 * Initializes the user interface using the given <pre>historyModel</pre> and <pre>renderer</pre>
 	 */
 	private void initUI(StateHistoryModel historyModel, Renderer renderer)
 	{
@@ -38,13 +50,9 @@ public class StateHistoryViewControlsPanel extends JPanel
                 TitledBorder.LEADING, TitledBorder.TOP, null, null));
         setLayout(new BoxLayout(this, BoxLayout.X_AXIS));
 
-        viewControls =
-        		new StateHistoryViewOptionsController(historyModel, renderer);
-
-        coloringControls =
-        		new StateHistoryColoringOptionsController(historyModel);
-        displayItemsControls =
-        		new StateHistoryDisplayItemsController(historyModel, renderer);
+        viewControls = new StateHistoryViewOptionsController(historyModel, renderer);
+        coloringControls = new StateHistoryColoringOptionsController(historyModel);
+        displayItemsControls = new StateHistoryDisplayItemsController(historyModel, renderer);
 
         //this is a cross panel listener action, so set it up here, above the 3 controllers
         viewControls.getView().getViewOptions().addActionListener(e ->
@@ -75,10 +83,10 @@ public class StateHistoryViewControlsPanel extends JPanel
 	}
 
 	/**
-	 *
+	 * Forces a refresh to the "Show spacecraft" panel of the "Display Items" sub panel
 	 */
 	public void updateUI()
 	{
-//		displayItemsControls.getView().getShowSpacecraftPanel().updateGui();
+		displayItemsControls.getView().getShowSpacecraftPanel().updateGui();
 	}
 }

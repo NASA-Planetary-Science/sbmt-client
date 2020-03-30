@@ -9,6 +9,7 @@ import org.joda.time.DateTime;
 import org.joda.time.format.ISODateTimeFormat;
 
 /**
+ * Custom JSpinner to handle DateTime entries
  * @author steelrj1
  *
  */
@@ -16,7 +17,7 @@ public class DateTimeSpinner extends JSpinner
 {
 
 	/**
-	 *
+	 * Default Constructor
 	 */
 	public DateTimeSpinner()
 	{
@@ -24,7 +25,8 @@ public class DateTimeSpinner extends JSpinner
 	}
 
 	/**
-	 * @param model
+	 * Constructor.  Takes in SpinnerModel to init parent
+	 * @param model	SpinnerModel to initialize the parent JSpinner
 	 */
 	public DateTimeSpinner(SpinnerModel model)
 	{
@@ -33,9 +35,11 @@ public class DateTimeSpinner extends JSpinner
 	}
 
 	/**
-	 * @param start
-	 * @param end
-	 * @return
+	 * Returns the number of seconds between the DateTime values denoted
+	 * by the <pre>start</start> and <pre>end</pre> arguments
+	 * @param start	The DateTimeSpinner denoting the start time
+	 * @param end	The DateTimeSpinner denoting the end time
+	 * @return		The number of seconds between <pre>start</start> and <pre>end</pre>
 	 */
 	public static double getTimeSpanBetween(DateTimeSpinner start, DateTimeSpinner end)
 	{
@@ -47,7 +51,8 @@ public class DateTimeSpinner extends JSpinner
 	}
 
 	/**
-	 * @return
+	 * Returns the DateTime for the ISO compliant string in this spinner
+	 * @return	the DateTime for the ISO compliant string
 	 */
 	public DateTime getISOFormattedTime()
 	{

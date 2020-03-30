@@ -1,4 +1,4 @@
-package edu.jhuapl.sbmt.stateHistory.rendering;
+package edu.jhuapl.sbmt.stateHistory.rendering.text;
 
 import vtk.vtkTextActor;
 

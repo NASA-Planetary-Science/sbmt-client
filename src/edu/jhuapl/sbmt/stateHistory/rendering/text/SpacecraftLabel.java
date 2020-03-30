@@ -1,4 +1,4 @@
-package edu.jhuapl.sbmt.stateHistory.rendering;
+package edu.jhuapl.sbmt.stateHistory.rendering.text;
 
 import java.awt.Font;
 
@@ -8,14 +8,42 @@ import edu.jhuapl.saavtk.util.MathUtil;
 import edu.jhuapl.sbmt.client.SmallBodyModel;
 import edu.jhuapl.sbmt.stateHistory.model.interfaces.State;
 
+/**
+ * vtkCaptionActor2D object that float near the spacecraft model, showing
+ * user defined information such as "Distance to Center"
+ * @author steelrj1
+ *
+ */
 public class SpacecraftLabel extends vtkCaptionActor2D
 {
+	/**
+	 *
+	 */
 	private static final double JupiterScale = 75000;
+
+	/**
+	 *
+	 */
 	private String distanceString = "Distance to Center";
+
+	/**
+	 *
+	 */
 	private State state;
+
+	/**
+	 *
+	 */
 	private double[] spacecraftPosition;
+
+	/**
+	 *
+	 */
 	private SmallBodyModel smallBodyModel;
 
+	/**
+	 * Constructor.  Initializes attributes for the parent vtkCaptionActor2D object
+	 */
 	public SpacecraftLabel()
 	{
 		 SetCaption("");
@@ -32,12 +60,20 @@ public class SpacecraftLabel extends vtkCaptionActor2D
          VisibilityOff();
 	}
 
+	/**
+	 * vtk based Constructor
+	 * @param id
+	 */
 	public SpacecraftLabel(long id)
 	{
 		super(id);
 		// TODO Auto-generated constructor stub
 	}
 
+	/**
+	 * Sets the font for the displayed string
+	 * @param font
+	 */
 	public void setDistanceStringFont(Font font)
 	{
 		GetCaptionTextProperty().SetFontSize(font.getSize());
@@ -46,6 +82,10 @@ public class SpacecraftLabel extends vtkCaptionActor2D
 		if (font.isItalic()) GetCaptionTextProperty().ItalicOn(); else GetCaptionTextProperty().ItalicOff();
 	}
 
+	/**
+	 * Sets the distance string property, then updates the rendered object
+	 * @param distanceString
+	 */
 	public void setDistanceString(String distanceString)
 	{
 		this.distanceString = distanceString;
@@ -53,6 +93,12 @@ public class SpacecraftLabel extends vtkCaptionActor2D
 	}
 
 	// set the distance text from center or surface to the spacecraft - Alex W
+    /**
+     * Sets the current distance text based on the passed in state, spacecraft position and small body model.
+     * @param state					The <pre>State</pre> object that gives the spacecraft velocity
+     * @param spacecraftPosition	The spacecraft position, as a double array, relative to the body fixed frame
+     * @param smallBodyModel		The spacecraft model used to compute the distance from spacecraft to surface
+     */
     public void setDistanceText(State state, double[] spacecraftPosition, SmallBodyModel smallBodyModel)
     {
     	this.state = state;
@@ -63,9 +109,7 @@ public class SpacecraftLabel extends vtkCaptionActor2D
         {
             distanceOption = 1;
         }
-//        State state = currentFlybyStateHistory.getCurrentValue();
 
-//        double[] spacecraftPosition = currentFlybyStateHistory.getSpacecraftPosition();
         double velocity[] = state.getSpacecraftVelocity();
         double speed = Math.sqrt(velocity[0]*velocity[0] + velocity[1]*velocity[1] + velocity[2]*velocity[2]);
 
@@ -88,7 +132,5 @@ public class SpacecraftLabel extends vtkCaptionActor2D
         String speedText = String.format("%7.1f km %7.3f km/sec   .", radius, speed);
         SetCaption(speedText);
         Modified();
-//        updateActorVisibility();
     }
-
 }

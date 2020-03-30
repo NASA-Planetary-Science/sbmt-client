@@ -28,15 +28,15 @@ import edu.jhuapl.sbmt.client.SmallBodyModel;
 import edu.jhuapl.sbmt.stateHistory.model.StateHistoryColoringFunctions;
 import edu.jhuapl.sbmt.stateHistory.model.interfaces.HasTime;
 import edu.jhuapl.sbmt.stateHistory.model.interfaces.StateHistory;
-import edu.jhuapl.sbmt.stateHistory.rendering.EarthDirectionMarker;
 import edu.jhuapl.sbmt.stateHistory.rendering.SpacecraftBody;
-import edu.jhuapl.sbmt.stateHistory.rendering.SpacecraftDirectionMarker;
 import edu.jhuapl.sbmt.stateHistory.rendering.SpacecraftFieldOfView;
-import edu.jhuapl.sbmt.stateHistory.rendering.SpacecraftLabel;
-import edu.jhuapl.sbmt.stateHistory.rendering.StatusBarTextActor;
-import edu.jhuapl.sbmt.stateHistory.rendering.SunDirectionMarker;
-import edu.jhuapl.sbmt.stateHistory.rendering.TimeBarTextActor;
 import edu.jhuapl.sbmt.stateHistory.rendering.TrajectoryActor;
+import edu.jhuapl.sbmt.stateHistory.rendering.directionMarkers.EarthDirectionMarker;
+import edu.jhuapl.sbmt.stateHistory.rendering.directionMarkers.SpacecraftDirectionMarker;
+import edu.jhuapl.sbmt.stateHistory.rendering.directionMarkers.SunDirectionMarker;
+import edu.jhuapl.sbmt.stateHistory.rendering.text.SpacecraftLabel;
+import edu.jhuapl.sbmt.stateHistory.rendering.text.StatusBarTextActor;
+import edu.jhuapl.sbmt.stateHistory.rendering.text.TimeBarTextActor;
 
 public class StateHistoryCollection extends SaavtkItemManager<StateHistory> /*AbstractModel*/ implements PropertyChangeListener, HasTime
 {
@@ -934,7 +934,7 @@ public class StateHistoryCollection extends SaavtkItemManager<StateHistory> /*Ab
      */
     public void setSpacecraftDirectionMarkerSize(int radius)
     {
-    	scDirectionMarker.setSpacecraftPointerSize(radius);
+    	scDirectionMarker.setPointerSize(radius);
     	this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, scDirectionMarker);
     }
 
@@ -961,7 +961,7 @@ public class StateHistoryCollection extends SaavtkItemManager<StateHistory> /*Ab
      */
     public void setEarthDirectionMarkerSize(int radius)
     {
-    	earthDirectionMarker.setEarthPointerSize(radius);
+    	earthDirectionMarker.setPointerSize(radius);
     	this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, earthDirectionMarker);
     }
 
@@ -979,7 +979,7 @@ public class StateHistoryCollection extends SaavtkItemManager<StateHistory> /*Ab
      */
     public void setSunDirectionMarkerSize(int radius)
     {
-    	sunDirectionMarker.setSunPointerSize(radius);
+    	sunDirectionMarker.setPointerSize(radius);
     	this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, sunDirectionMarker);
     }
 
