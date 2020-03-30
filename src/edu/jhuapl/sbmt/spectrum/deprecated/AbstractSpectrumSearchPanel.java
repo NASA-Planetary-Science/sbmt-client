@@ -364,7 +364,6 @@ public abstract class AbstractSpectrumSearchPanel extends JPanel implements Mous
             {
                 resultList.setSelectedIndex(index);
                 spectrumPopupMenu.setCurrentSpectrum(createSpectrumName(spectrumRawResults.get(index).getFullPath()));
-                spectrumPopupMenu.setInstrument(instrument);
                 spectrumPopupMenu.show(e.getComponent(), e.getX(), e.getY());
             }
         }

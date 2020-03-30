@@ -23,8 +23,6 @@ public class SpectrumColoringModel<S extends BasicSpectrum>
     private SpectrumColoringStyle spectrumColoringStyle = SpectrumColoringStyle.RGB;
     private ISpectrumColorer<S> currentColorer;
     private HashMap<SpectrumColoringStyle, ISpectrumColorer<S>> colorers;
-    private double[] rgbMaxvals;
-    private int[] rgbIndices;
     private GreyscaleSpectrumColorer<S> greyScaleColorer;
     private RGBSpectrumColorer<S> rgbColorer;
     private EmissionSpectrumColorer<S> emissionColorer;
@@ -134,7 +132,6 @@ public class SpectrumColoringModel<S extends BasicSpectrum>
 	 */
 	public void setRgbMaxvals(double[] rgbMaxvals)
 	{
-		this.rgbMaxvals = rgbMaxvals;
 		rgbColorer.setRedMaxVal(rgbMaxvals[0]);
 		rgbColorer.setGreenMaxVal(rgbMaxvals[1]);
 		rgbColorer.setBlueMaxVal(rgbMaxvals[2]);
@@ -150,7 +147,6 @@ public class SpectrumColoringModel<S extends BasicSpectrum>
 	 */
 	public void setRgbIndices(int[] rgbIndices)
 	{
-		this.rgbIndices = rgbIndices;
 		rgbColorer.setRedIndex(rgbIndices[0]);
 		rgbColorer.setGreenIndex(rgbIndices[1]);
 		rgbColorer.setBlueIndex(rgbIndices[2]);

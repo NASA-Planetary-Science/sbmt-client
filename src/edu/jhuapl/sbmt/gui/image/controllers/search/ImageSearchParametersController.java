@@ -34,7 +34,7 @@ public class ImageSearchParametersController
     private PickManager pickManager;
     private JPanel auxPanel;
     protected SmallBodyViewConfig smallBodyConfig;
-
+    private boolean isFixedListSearch = false;
 
     public ImageSearchParametersController(ImageSearchModel model, PickManager pickManager)
     {
@@ -604,5 +604,18 @@ public class ImageSearchParametersController
         this.auxPanel = auxPanel;
         panel.setAuxPanel(auxPanel);
     }
+
+
+	public boolean isFixedListSearch()
+	{
+		return isFixedListSearch;
+	}
+
+
+	public void setFixedListSearch(boolean isFixedListSearch)
+	{
+		this.isFixedListSearch = isFixedListSearch;
+		panel.setFixedListSearch(isFixedListSearch);
+	}
 
 }

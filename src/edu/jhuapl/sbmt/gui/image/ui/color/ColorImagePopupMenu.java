@@ -1,27 +1,36 @@
 package edu.jhuapl.sbmt.gui.image.ui.color;
 
+import java.awt.Color;
 import java.awt.Component;
 import java.awt.event.ActionEvent;
 import java.awt.event.MouseEvent;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.swing.AbstractAction;
 import javax.swing.JCheckBoxMenuItem;
+import javax.swing.JMenu;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 
 import vtk.vtkActor;
 import vtk.vtkProp;
 
+import edu.jhuapl.saavtk.gui.dialog.ColorChooser;
 import edu.jhuapl.saavtk.gui.dialog.NormalOffsetChangerDialog;
 import edu.jhuapl.saavtk.gui.dialog.OpacityChanger;
+import edu.jhuapl.saavtk.gui.render.Renderer;
 import edu.jhuapl.saavtk.model.ModelManager;
 import edu.jhuapl.saavtk.popup.PopupMenu;
+import edu.jhuapl.saavtk.util.ColorUtil;
 import edu.jhuapl.sbmt.client.SbmtInfoWindowManager;
 import edu.jhuapl.sbmt.model.image.ColorImage;
 import edu.jhuapl.sbmt.model.image.ColorImage.ColorImageKey;
 import edu.jhuapl.sbmt.model.image.ColorImage.NoOverlapException;
 import edu.jhuapl.sbmt.model.image.ColorImageCollection;
+import edu.jhuapl.sbmt.model.image.PerspectiveImageBoundary;
+import edu.jhuapl.sbmt.model.image.PerspectiveImageBoundaryCollection;
 
 import nom.tam.fits.FitsException;
 
@@ -30,14 +39,23 @@ public class ColorImagePopupMenu extends PopupMenu
 {
     private Component invoker;
     private ColorImageCollection imageCollection;
+    private PerspectiveImageBoundaryCollection imageBoundaryCollection;
     private ColorImageKey imageKey;
     //private ModelManager modelManager;
     private JMenuItem showRemoveImageIn3DMenuItem;
+    private JMenuItem mapBoundaryMenuItem;
     private JMenuItem showImageInfoMenuItem;
     private JMenuItem changeNormalOffsetMenuItem;
     private JMenuItem changeOpacityMenuItem;
     private JMenuItem hideImageMenuItem;
     private SbmtInfoWindowManager infoPanelManager;
+    private List<ColorImageKey> imageKeys = new ArrayList<ColorImageKey>();
+    private JMenuItem centerImageMenuItem;
+    private JMenuItem showFrustumMenuItem;
+    private JMenu colorMenu;
+    private List<JCheckBoxMenuItem> colorMenuItems = new ArrayList<JCheckBoxMenuItem>();
+    private JMenuItem customColorMenuItem;
+    private Renderer renderer;
 
     /**
      *
@@ -48,12 +66,16 @@ public class ColorImagePopupMenu extends PopupMenu
      */
     public ColorImagePopupMenu(
             ColorImageCollection imageCollection,
+            PerspectiveImageBoundaryCollection imageBoundaryCollection,
             SbmtInfoWindowManager infoPanelManager,
             ModelManager modelManager,
+            Renderer renderer,
             Component invoker)
     {
         this.imageCollection = imageCollection;
         this.infoPanelManager = infoPanelManager;
+        this.imageBoundaryCollection = imageBoundaryCollection;
+        this.renderer = renderer;
         //this.modelManager = modelManager;
         this.invoker = invoker;
 
@@ -61,12 +83,27 @@ public class ColorImagePopupMenu extends PopupMenu
         showRemoveImageIn3DMenuItem.setText("Map Color Image");
         this.add(showRemoveImageIn3DMenuItem);
 
+        mapBoundaryMenuItem = new JCheckBoxMenuItem(new MapBoundaryAction());
+        mapBoundaryMenuItem.setText("Map Image Boundary");
+//        this.add(mapBoundaryMenuItem);
+
         if (this.infoPanelManager != null)
         {
             showImageInfoMenuItem = new JMenuItem(new ShowInfoAction());
             showImageInfoMenuItem.setText("Properties...");
             this.add(showImageInfoMenuItem);
         }
+
+//        if (renderer != null)
+//        {
+//            centerImageMenuItem = new JMenuItem(new CenterImageAction());
+//            centerImageMenuItem.setText("Center in Window");
+//            this.add(centerImageMenuItem);
+//        }
+
+//        showFrustumMenuItem = new JCheckBoxMenuItem(new ShowFrustumAction());
+//        showFrustumMenuItem.setText("Show Frustum");
+//        this.add(showFrustumMenuItem);
 
         changeNormalOffsetMenuItem = new JMenuItem(new ChangeNormalOffsetAction());
         changeNormalOffsetMenuItem.setText("Change Normal Offset...");
@@ -79,12 +116,26 @@ public class ColorImagePopupMenu extends PopupMenu
         hideImageMenuItem = new JCheckBoxMenuItem(new HideImageAction());
         hideImageMenuItem.setText("Hide Image");
         this.add(hideImageMenuItem);
+
+        colorMenu = new JMenu("Boundary Color");
+//        this.add(colorMenu);
+        for (ColorUtil.DefaultColor color : ColorUtil.DefaultColor.values())
+        {
+            JCheckBoxMenuItem colorMenuItem = new JCheckBoxMenuItem(new BoundaryColorAction(color.color()));
+            colorMenuItems.add(colorMenuItem);
+            colorMenuItem.setText(color.toString().toLowerCase().replace('_', ' '));
+            colorMenu.add(colorMenuItem);
+        }
+        colorMenu.addSeparator();
+        customColorMenuItem = new JMenuItem(new CustomBoundaryColorAction());
+        customColorMenuItem.setText("Custom...");
+        colorMenu.add(customColorMenuItem);
     }
 
     public void setCurrentImage(ColorImageKey key)
     {
         imageKey = key;
-
+        imageKeys.add(key);
         updateMenuItems();
     }
 
@@ -156,6 +207,92 @@ public class ColorImagePopupMenu extends PopupMenu
         }
     }
 
+    private class MapBoundaryAction extends AbstractAction
+    {
+        public void actionPerformed(ActionEvent e)
+        {
+            for (ColorImageKey imageKey : imageKeys)
+            {
+                try
+                {
+                    if (mapBoundaryMenuItem.isSelected())
+                    {
+                    	System.out.println("ColorImagePopupMenu.MapBoundaryAction: actionPerformed: adding image boundary");
+                        imageBoundaryCollection.addBoundary(imageKey);
+                    }
+                    else
+                        imageBoundaryCollection.removeBoundary(imageKey);
+                }
+                catch (FitsException e1) {
+                    e1.printStackTrace();
+                }
+                catch (IOException e1) {
+                    e1.printStackTrace();
+                }
+            }
+
+            updateMenuItems();
+        }
+    }
+
+//    private class CenterImageAction extends AbstractAction
+//    {
+//        public void actionPerformed(ActionEvent e)
+//        {
+//            if (imageKeys.size() != 1)
+//                return;
+//            ColorImageKey imageKey = imageKeys.get(0);
+//
+//            double[] spacecraftPosition = new double[3];
+//            double[] focalPoint = new double[3];
+//            double[] upVector = new double[3];
+//            double viewAngle = 0.0;
+//
+//            if (imageBoundaryCollection != null && imageBoundaryCollection.containsBoundary(imageKey))
+//            {
+//                PerspectiveImageBoundary boundary = imageBoundaryCollection.getBoundary(imageKey);
+//                boundary.getCameraOrientation(spacecraftPosition, focalPoint, upVector);
+//
+//                viewAngle = boundary.getImage().getMaxFovAngle();
+//            }
+//            else if (imageCollection.containsImage(imageKey))
+//            {
+//                ColorImage image = (ColorImage)imageCollection.getImage(imageKey);
+//                image.getCameraOrientation(spacecraftPosition, focalPoint, upVector);
+//
+//                viewAngle = image.getMaxFovAngle();
+//            }
+//            else
+//            {
+//                return;
+//            }
+//
+//            renderer.setCameraOrientation(spacecraftPosition, focalPoint, upVector, viewAngle);
+//        }
+//    }
+
+//    private class ShowFrustumAction extends AbstractAction
+//    {
+//        public void actionPerformed(ActionEvent e)
+//        {
+//            for (ColorImageKey imageKey : imageKeys)
+//            {
+//                try
+//                {
+//                    imageCollection.addImage(imageKey);
+//                    PerspectiveImage image = (PerspectiveImage)imageCollection.getImage(imageKey);
+//                    image.setShowFrustum(showFrustumMenuItem.isSelected());
+//                }
+//                catch (Exception ex)
+//                {
+//                    ex.printStackTrace();
+//                }
+//            }
+//
+//            updateMenuItems();
+//        }
+//    }
+
     private class ChangeNormalOffsetAction extends AbstractAction
     {
         public void actionPerformed(ActionEvent e)
@@ -213,6 +350,45 @@ public class ColorImagePopupMenu extends PopupMenu
                 ColorImage image = imageCollection.getImage((vtkActor)pickedProp);
                 setCurrentImage(image.getColorKey());
                 show(e.getComponent(), e.getX(), e.getY());
+            }
+        }
+    }
+
+    private class BoundaryColorAction extends AbstractAction
+    {
+        private Color color;
+
+        public BoundaryColorAction(Color color)
+        {
+            this.color = color;
+        }
+
+        public void actionPerformed(ActionEvent e)
+        {
+            for (ColorImageKey imageKey : imageKeys)
+            {
+                PerspectiveImageBoundary boundary = imageBoundaryCollection.getBoundary(imageKey);
+                boundary.setBoundaryColor(color);
+            }
+
+            updateMenuItems();
+        }
+    }
+
+    private class CustomBoundaryColorAction extends AbstractAction
+    {
+        public void actionPerformed(ActionEvent e)
+        {
+            PerspectiveImageBoundary boundary = imageBoundaryCollection.getBoundary(imageKeys.get(0));
+            int[] currentColor = boundary.getBoundaryColor();
+            Color newColor = ColorChooser.showColorChooser(invoker, currentColor);
+            if (newColor != null)
+            {
+                for (ColorImageKey imageKey : imageKeys)
+                {
+                    boundary = imageBoundaryCollection.getBoundary(imageKey);
+                    boundary.setBoundaryColor(newColor);
+                }
             }
         }
     }

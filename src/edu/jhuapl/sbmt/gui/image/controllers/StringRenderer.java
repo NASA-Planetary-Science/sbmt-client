@@ -36,7 +36,7 @@ public class StringRenderer extends DefaultTableCellRenderer
     	if (table.getRowSorter() != null)
     		actualRow = table.getRowSorter().convertRowIndexToModel(row);
         Component co = super.getTableCellRendererComponent(table, value, isSelected, hasFocus, actualRow, column);
-        if (imageRawResults.get(actualRow).size() == 0) return co;
+        if (imageRawResults.size() == 0 || imageRawResults.get(actualRow).size() == 0) return co;
         String name = imageRawResults.get(actualRow).get(0);
 //        ImageKey key = new ImageKey(name.substring(0, name.length()-4), sourceOfLastQuery, instrument);
 //        String filename = name.substring(0, name.lastIndexOf("."));
