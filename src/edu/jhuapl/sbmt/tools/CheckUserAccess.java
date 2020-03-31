@@ -15,6 +15,7 @@ import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.Callable;
+import java.util.concurrent.Executors;
 
 import com.google.common.collect.ImmutableList;
 
@@ -79,6 +80,18 @@ public class CheckUserAccess implements Callable<Integer>
     @Override
     public Integer call() throws Exception
     {
+        Executors.newSingleThreadExecutor().execute(() -> {
+            try
+            {
+                Thread.sleep(60000);
+            }
+            catch (InterruptedException e)
+            {
+
+            }
+            System.exit(1);
+        });
+
         Debug.setEnabled(debug);
 
         Users.initializeSerializationProxies();
