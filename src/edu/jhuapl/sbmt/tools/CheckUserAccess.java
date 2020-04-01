@@ -83,7 +83,7 @@ public class CheckUserAccess implements Callable<Integer>
         Executors.newSingleThreadExecutor().execute(() -> {
             try
             {
-                Thread.sleep(300000);
+                Thread.sleep(60000);
             }
             catch (InterruptedException e)
             {
