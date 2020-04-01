@@ -80,18 +80,6 @@ public class CheckUserAccess implements Callable<Integer>
     @Override
     public Integer call() throws Exception
     {
-        Executors.newSingleThreadExecutor().execute(() -> {
-            try
-            {
-                Thread.sleep(900000);
-            }
-            catch (InterruptedException e)
-            {
-
-            }
-            System.exit(1);
-        });
-
         Debug.setEnabled(debug);
 
         Users.initializeSerializationProxies();
@@ -303,22 +291,41 @@ public class CheckUserAccess implements Callable<Integer>
 
     public static void main(String[] args)
     {
-        System.setProperty("java.awt.headless", "true");
-
-        int exitCode;
+        int exitCode = 1;
         try
         {
-            CheckUserAccess checkUserAccess = new CheckUserAccess();
-            new CommandLine(checkUserAccess).parseArgs(args);
+            System.setProperty("java.awt.headless", "true");
 
-            exitCode = checkUserAccess.call();
+            // Start a self-destruct thread to ensure this doesn't linger if the process hangs.
+            Executors.newSingleThreadExecutor().execute(() -> {
+                int selfDestructCode = 0;
+                try
+                {
+                    // Two minutes is at least 20 times longer than this script should ever need.
+                    Thread.sleep(120000);
+                    selfDestructCode = 1;
+                }
+                catch (Exception e)
+                {
+
+                }
+                finally
+                {
+                    System.exit(selfDestructCode);
+                }
+            });
+
+
+            exitCode = new CommandLine(new CheckUserAccess()).execute(args);
         }
         catch (Throwable t)
         {
-            exitCode = 1;
-        }
 
-        System.exit(exitCode);
+        }
+        finally
+        {
+            System.exit(exitCode);
+        }
     }
 
     private static AccessGroupCollection groupsFromUsers(UserCollection userCollection)
