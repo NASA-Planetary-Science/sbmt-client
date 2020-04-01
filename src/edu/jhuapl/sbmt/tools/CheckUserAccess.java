@@ -83,7 +83,7 @@ public class CheckUserAccess implements Callable<Integer>
         Executors.newSingleThreadExecutor().execute(() -> {
             try
             {
-                Thread.sleep(60000);
+                Thread.sleep(900000);
             }
             catch (InterruptedException e)
             {
@@ -305,7 +305,18 @@ public class CheckUserAccess implements Callable<Integer>
     {
         System.setProperty("java.awt.headless", "true");
 
-        int exitCode = new CommandLine(new CheckUserAccess()).execute(args);
+        int exitCode;
+        try
+        {
+            CheckUserAccess checkUserAccess = new CheckUserAccess();
+            new CommandLine(checkUserAccess).parseArgs(args);
+
+            exitCode = checkUserAccess.call();
+        }
+        catch (Throwable t)
+        {
+            exitCode = 1;
+        }
 
         System.exit(exitCode);
     }
