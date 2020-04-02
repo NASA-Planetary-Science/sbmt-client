@@ -5,8 +5,8 @@ import java.util.TreeSet;
 
 import org.apache.commons.math3.geometry.euclidean.threed.Vector3D;
 
+import edu.jhuapl.saavtk.gui.render.QuietSceneChangeNotifier;
 import edu.jhuapl.saavtk.model.LidarDataSource;
-import edu.jhuapl.saavtk.model.ModelNames;
 import edu.jhuapl.saavtk.model.ShapeModelBody;
 import edu.jhuapl.saavtk.model.ShapeModelType;
 import edu.jhuapl.saavtk.model.structure.AbstractEllipsePolygonModel;
@@ -110,8 +110,7 @@ public class SearchLidarDataInsideMaplet
 
         SmallBodyViewConfig config = SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.EROS, ShapeModelType.GASKELL);
         SmallBodyModel smallBodyModel = SbmtModelFactory.createSmallBodyModel(config);
-        LidarTrackManager trackManager = (LidarTrackManager) SbmtModelFactory.
-                createLidarModels(smallBodyModel).get(ModelNames.LIDAR_SEARCH);
+        LidarTrackManager trackManager = new LidarTrackManager(QuietSceneChangeNotifier.Instance, smallBodyModel);
         AbstractEllipsePolygonModel selectionModel = new CircleSelectionModel(smallBodyModel);
 
         Vector3D center = new Vector3D(dem.getCenter());
