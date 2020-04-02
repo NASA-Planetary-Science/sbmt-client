@@ -7,7 +7,7 @@ import edu.jhuapl.saavtk.util.NativeLibraryLoader;
 import edu.jhuapl.sbmt.client.SbmtModelFactory;
 import edu.jhuapl.sbmt.client.SmallBodyModel;
 import edu.jhuapl.sbmt.client.SmallBodyViewConfig;
-import edu.jhuapl.sbmt.model.lidar.LidarTrackManager;
+import edu.jhuapl.sbmt.lidar.LidarTrackManager;
 
 /**
  * This program takes a lidar track, fits a plane through it and reorients the track into

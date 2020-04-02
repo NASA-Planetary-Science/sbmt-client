@@ -19,10 +19,10 @@ import edu.jhuapl.sbmt.client.SmallBodyModel;
 import edu.jhuapl.sbmt.client.SmallBodyViewConfig;
 import edu.jhuapl.sbmt.dtm.model.DEM;
 import edu.jhuapl.sbmt.dtm.service.PointInDEMChecker;
-import edu.jhuapl.sbmt.model.lidar.LidarFileUtil;
-import edu.jhuapl.sbmt.model.lidar.LidarQueryUtil;
-import edu.jhuapl.sbmt.model.lidar.LidarSearchParms;
-import edu.jhuapl.sbmt.model.lidar.LidarTrackManager;
+import edu.jhuapl.sbmt.lidar.LidarSearchParms;
+import edu.jhuapl.sbmt.lidar.LidarTrackManager;
+import edu.jhuapl.sbmt.lidar.util.LidarFileUtil;
+import edu.jhuapl.sbmt.lidar.util.LidarQueryUtil;
 import edu.jhuapl.sbmt.util.TimeUtil;
 
 public class SearchLidarDataInsideMaplet
