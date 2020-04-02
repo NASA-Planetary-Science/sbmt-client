@@ -5,7 +5,7 @@ import javax.swing.JTabbedPane;
 
 import edu.jhuapl.saavtk.gui.render.Renderer;
 import edu.jhuapl.saavtk.model.ModelManager;
-import edu.jhuapl.saavtk.model.ModelNames;
+import edu.jhuapl.saavtk.model.PolyhedralModel;
 import edu.jhuapl.saavtk.pick.PickManager;
 import edu.jhuapl.sbmt.client.SmallBodyViewConfig;
 import edu.jhuapl.sbmt.model.image.Instrument;
@@ -16,9 +16,10 @@ import edu.jhuapl.sbmt.model.lidar.LidarTrackManager;
 import net.miginfocom.swing.MigLayout;
 
 /**
- * UI component that holds 2 sub panels:
+ * UI component that holds 3 sub panels:
  * <UL>
  * <LI>Browse panel: Provides UI to browse fixed list of lidar data products
+ * <LI>Custom panel: Provides UI to browse custom list of lidar data products
  * <LI>Search panel: Provides UI to allow user to query for list of lidar tracks
  * </UL>
  *
@@ -33,11 +34,14 @@ public class LidarPanel extends JTabbedPane
 			Renderer aRenderer)
 	{
 		JPanel browsePanel = formBrowsePanel(aBodyViewConfig, aModelManager, aPickManager, aRenderer);
+		JPanel customPanel = formCustomPanel(aBodyViewConfig, aModelManager, aPickManager, aRenderer);
 		JPanel searchPanel = formSearchPanel(aBodyViewConfig, aModelManager, aPickManager, aRenderer);
 
+		addTab("Custom", customPanel);
 		addTab("Browse", browsePanel);
 		if (searchPanel != null)
 			addTab("Search", searchPanel);
+		setSelectedComponent(browsePanel);
 	}
 
 	/**
@@ -54,9 +58,43 @@ public class LidarPanel extends JTabbedPane
 		else if (tmpInstrument == Instrument.OLA)
 			dataSourceName = "Default";
 
-		LidarFileSpecManager tmpFileSpecManager = (LidarFileSpecManager) aModelManager.getModel(ModelNames.LIDAR_BROWSE);
-		LidarFileSpecPanel retPanel = new LidarFileSpecPanel(tmpFileSpecManager, aBodyViewConfig, aRenderer,
+		// Form the LidarFileSpecManager
+		LidarFileSpecManager tmpFileSpecManager = new LidarFileSpecManager(aModelManager, aBodyViewConfig);
+		aRenderer.addVtkPropProvider(tmpFileSpecManager);
+
+		// Manually register for events of interest
+		aPickManager.getDefaultPicker().addListener(tmpFileSpecManager);
+		aPickManager.getDefaultPicker().addPropProvider(tmpFileSpecManager);
+
+		// Form the "browse" panel
+		LidarFileSpecPanel retPanel = new LidarFileSpecPanel(tmpFileSpecManager, aPickManager, aRenderer, aBodyViewConfig,
 				dataSourceName);
+		return retPanel;
+	}
+
+	/**
+	 * Helper utility method that forms the 'custom' tabbed panel.
+	 */
+	private static JPanel formCustomPanel(SmallBodyViewConfig aBodyViewConfig, ModelManager aModelManager,
+			PickManager aPickManager, Renderer aRenderer)
+	{
+		// Form the LidarTrackManager
+		PolyhedralModel tmpSmallBody = aModelManager.getPolyhedralModel();
+		LidarTrackManager tmpTrackManager = new LidarTrackManager(aModelManager, tmpSmallBody);
+		aRenderer.addVtkPropProvider(tmpTrackManager);
+
+		// Manually register for events of interest
+		aPickManager.getDefaultPicker().addListener(tmpTrackManager);
+		aPickManager.getDefaultPicker().addPropProvider(tmpTrackManager);
+
+		// Form the 'custom' panel
+		LidarLoadPanel tmpLidarLoadPanel = new LidarLoadPanel(tmpTrackManager);
+		LidarTrackPanel tmpLidarListPanel = new LidarTrackPanel(tmpTrackManager, aPickManager, aRenderer,
+				aModelManager, aBodyViewConfig);
+
+		JPanel retPanel = new JPanel(new MigLayout("", "", "0[]0"));
+		retPanel.add(tmpLidarLoadPanel, "growx,wrap");
+		retPanel.add(tmpLidarListPanel, "growx,growy,pushx,pushy");
 		return retPanel;
 	}
 
@@ -67,46 +105,43 @@ public class LidarPanel extends JTabbedPane
 			PickManager aPickManager, Renderer aRenderer)
 	{
 		// MOLA search isn't working, so disable it for now.
-		if (aBodyViewConfig.lidarInstrumentName.equals(Instrument.MOLA))
+		if (aBodyViewConfig.lidarInstrumentName.equals(Instrument.MOLA) == true)
 			return null;
 
 		boolean hasHyperTreeSearch = aBodyViewConfig.hasHypertreeBasedLidarSearch;
 		Instrument tmpInstrument = aBodyViewConfig.lidarInstrumentName;
-		LidarTrackManager tmpTrackManager;
+
+		// Form the LidarTrackManager
+		PolyhedralModel tmpSmallBody = aModelManager.getPolyhedralModel();
+		LidarTrackManager tmpTrackManager = new LidarTrackManager(aModelManager, tmpSmallBody);
+		aRenderer.addVtkPropProvider(tmpTrackManager);
+
+		// Manually register for events of interest
+		aPickManager.getDefaultPicker().addListener(tmpTrackManager);
+		aPickManager.getDefaultPicker().addPropProvider(tmpTrackManager);
 
 		// Form the appropriate 'search' panel
-		LidarSearchPanel searchPanel;
+		DataType dataType = null;
 		if (tmpInstrument == Instrument.MOLA && hasHyperTreeSearch == true)
-		{
-			tmpTrackManager = (LidarTrackManager) aModelManager.getModel(ModelNames.LIDAR_HYPERTREE_SEARCH);
-			searchPanel = new LidarHyperTreeSearchPanel(aBodyViewConfig, aModelManager, aPickManager, tmpTrackManager,
-					DataType.Mola);
-		}
-		else if (tmpInstrument == Instrument.LASER && hasHyperTreeSearch)
-		{
-			tmpTrackManager = (LidarTrackManager) aModelManager.getModel(ModelNames.LIDAR_HYPERTREE_SEARCH);
-			searchPanel = new LidarHyperTreeSearchPanel(aBodyViewConfig, aModelManager, aPickManager, tmpTrackManager,
-					DataType.Hayabusa);
-		}
+			dataType = DataType.Mola;
+		else if (tmpInstrument == Instrument.LASER && hasHyperTreeSearch == true)
+			dataType = DataType.Hayabusa;
 		else if (tmpInstrument == Instrument.OLA && hasHyperTreeSearch == true)
-		{
-			tmpTrackManager = (LidarTrackManager) aModelManager.getModel(ModelNames.LIDAR_HYPERTREE_SEARCH);
-			searchPanel = new LidarHyperTreeSearchPanel(aBodyViewConfig, aModelManager, aPickManager, tmpTrackManager,
-					DataType.Ola);
-		}
-		else
-		{
-			tmpTrackManager = (LidarTrackManager) aModelManager.getModel(ModelNames.LIDAR_SEARCH);
+			dataType = DataType.Ola;
+
+		LidarSearchPanel searchPanel;
+		if (dataType == null)
 			searchPanel = new LidarSearchPanel(aBodyViewConfig, aModelManager, aPickManager, tmpTrackManager);
-		}
+		else
+			searchPanel = new LidarHyperTreeSearchPanel(aBodyViewConfig, aModelManager, aPickManager, tmpTrackManager,
+					dataType);
 
 		// Form the 'list' panel
-		JPanel trackPanel = new LidarTrackPanel(tmpTrackManager, aModelManager, aBodyViewConfig, aPickManager, aRenderer);
+		JPanel trackPanel = new LidarTrackPanel(tmpTrackManager, aPickManager, aRenderer, aModelManager, aBodyViewConfig);
 
 		JPanel retPanel = new JPanel(new MigLayout("", "0[]0", "0[]0"));
 		retPanel.add(searchPanel, "growx,span,wrap");
 		retPanel.add(trackPanel, "growx,growy,pushx,pushy");
-
 		return retPanel;
 	}
 }

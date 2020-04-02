@@ -234,7 +234,7 @@ public class LidarPlot extends JFrame implements ChartMouseListener
 			selectPoint(id);
 
 			LidarPoint tmpPoint = refTrack.getPointList().get(id);
-			refModel.setSelectedPoint(tmpPoint, refTrack);
+			refModel.setSelectedPoint(refTrack, tmpPoint);
 		}
 		else
 		{

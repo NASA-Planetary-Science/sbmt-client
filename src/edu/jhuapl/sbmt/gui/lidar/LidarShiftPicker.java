@@ -16,6 +16,7 @@ import edu.jhuapl.saavtk.model.Model;
 import edu.jhuapl.saavtk.model.ModelManager;
 import edu.jhuapl.saavtk.model.PolyhedralModel;
 import edu.jhuapl.saavtk.pick.EditMode;
+import edu.jhuapl.saavtk.pick.PickTarget;
 import edu.jhuapl.saavtk.pick.PickUtilEx;
 import edu.jhuapl.saavtk.pick.Picker;
 import edu.jhuapl.sbmt.lidar.LidarPoint;
@@ -37,8 +38,8 @@ public class LidarShiftPicker extends Picker implements ItemEventListener
 {
 	// Reference vars
 	private ModelManager refModelManager;
-	private PolyhedralModel refSmallBodyModel;
 	private LidarTrackManager refTrackManager;
+	private PolyhedralModel refSmallBody;
 	private vtkJoglPanelComponent refRenWin;
 
 	// VTK vars
@@ -52,11 +53,11 @@ public class LidarShiftPicker extends Picker implements ItemEventListener
 	public LidarShiftPicker(LidarTrackManager aTrackManager, Renderer aRenderer, ModelManager aModelManager)
 	{
 		refModelManager = aModelManager;
-		refSmallBodyModel = (PolyhedralModel) aModelManager.getPolyhedralModel();
 		refTrackManager = aTrackManager;
+		refSmallBody = aModelManager.getPolyhedralModel();
 		refRenWin = aRenderer.getRenderWindowPanel();
 
-		smallBodyPicker = PickUtilEx.formSmallBodyPicker(refSmallBodyModel);
+		smallBodyPicker = PickUtilEx.formSmallBodyPicker(refSmallBody);
 		pointPicker = PickUtilEx.formEmptyPicker();
 
 		currEditMode = EditMode.CLICKABLE;
@@ -121,7 +122,8 @@ public class LidarShiftPicker extends Picker implements ItemEventListener
 		// Retrieve the position of the selected LidarPoint
 		vtkActor tmpActor = pointPicker.GetActor();
 		int tmpCellId = pointPicker.GetCellId();
-		LidarPoint tmpLP = refTrackManager.getLidarPointFromVtkPick(tmpActor, tmpCellId);
+		PickTarget tmpPickTarg = new PickTarget(tmpActor, Vector3D.ZERO, Vector3D.ZERO, tmpCellId);
+		LidarPoint tmpLP = refTrackManager.getLidarPointFrom(tmpPickTarg);
 		if (tmpLP == null)
 			return;
 
@@ -153,7 +155,7 @@ public class LidarShiftPicker extends Picker implements ItemEventListener
 
 		vtkActor pickedActor = smallBodyPicker.GetActor();
 		Model model = refModelManager.getModel(pickedActor);
-		if (model != refSmallBodyModel)
+		if (model != refSmallBody)
 			return;
 
 		// Perform the translation

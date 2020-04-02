@@ -3,6 +3,8 @@ package edu.jhuapl.sbmt.gui.lidar;
 import java.awt.Component;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.InputEvent;
+import java.awt.event.MouseEvent;
 import java.io.File;
 import java.io.IOException;
 import java.text.DecimalFormat;
@@ -19,9 +21,13 @@ import javax.swing.JTable;
 
 import edu.jhuapl.saavtk.gui.dialog.DirectoryChooser;
 import edu.jhuapl.saavtk.gui.render.Renderer;
-import edu.jhuapl.saavtk.gui.table.TablePopupHandler;
 import edu.jhuapl.saavtk.gui.util.IconUtil;
 import edu.jhuapl.saavtk.gui.util.ToolTipUtil;
+import edu.jhuapl.saavtk.pick.PickListener;
+import edu.jhuapl.saavtk.pick.PickManager;
+import edu.jhuapl.saavtk.pick.PickMode;
+import edu.jhuapl.saavtk.pick.PickTarget;
+import edu.jhuapl.saavtk.pick.PickUtil;
 import edu.jhuapl.saavtk.util.FileCache;
 import edu.jhuapl.saavtk.util.FileCache.UnauthorizedAccessException;
 import edu.jhuapl.saavtk.util.FileUtil;
@@ -31,7 +37,6 @@ import edu.jhuapl.sbmt.gui.lidar.color.ColorMode;
 import edu.jhuapl.sbmt.gui.lidar.color.ColorProvider;
 import edu.jhuapl.sbmt.gui.lidar.color.GroupColorProvider;
 import edu.jhuapl.sbmt.gui.lidar.popup.LidarGuiUtil;
-import edu.jhuapl.sbmt.gui.lidar.popup.LidarPopupMenu;
 import edu.jhuapl.sbmt.gui.table.ColorProviderCellEditor;
 import edu.jhuapl.sbmt.gui.table.ColorProviderCellRenderer;
 import edu.jhuapl.sbmt.gui.table.EphemerisTimeRenderer;
@@ -41,6 +46,7 @@ import edu.jhuapl.sbmt.model.lidar.LidarFileSpecLoadUtil;
 import edu.jhuapl.sbmt.model.lidar.LidarFileSpecManager;
 
 import glum.gui.GuiUtil;
+import glum.gui.action.PopupMenu;
 import glum.gui.component.GSlider;
 import glum.gui.misc.BooleanCellEditor;
 import glum.gui.misc.BooleanCellRenderer;
@@ -49,6 +55,7 @@ import glum.gui.panel.itemList.ItemListPanel;
 import glum.gui.panel.itemList.ItemProcessor;
 import glum.gui.panel.itemList.query.QueryComposer;
 import glum.gui.table.NumberRenderer;
+import glum.gui.table.TablePopupHandler;
 import glum.item.ItemEventListener;
 import glum.item.ItemEventType;
 import glum.item.ItemManagerUtil;
@@ -68,7 +75,7 @@ import net.miginfocom.swing.MigLayout;
  *
  * @author lopeznr1
  */
-public class LidarFileSpecPanel extends JPanel implements ActionListener, ItemEventListener
+public class LidarFileSpecPanel extends JPanel implements ActionListener, ItemEventListener, PickListener
 {
 	// Ref vars
 	private LidarFileSpecManager refManager;
@@ -79,6 +86,7 @@ public class LidarFileSpecPanel extends JPanel implements ActionListener, ItemEv
 	private String failFetchMsg;
 
 	// GUI vars
+	private final PopupMenu<?> popupMenu;
 	private ItemListPanel<LidarFileSpec> lidarILP;
 	private JLabel titleL;
 	private JButton selectAllB, selectInvertB, selectNoneB;
@@ -93,8 +101,8 @@ public class LidarFileSpecPanel extends JPanel implements ActionListener, ItemEv
 	/**
 	 * Standard Constructor
 	 */
-	public LidarFileSpecPanel(LidarFileSpecManager aLidarManager, SmallBodyViewConfig aBodyViewConfig,
-			Renderer aRenderer, String aDataSourceName)
+	public LidarFileSpecPanel(LidarFileSpecManager aLidarManager, PickManager aPickManager, Renderer aRenderer,
+			SmallBodyViewConfig aBodyViewConfig, String aDataSourceName)
 	{
 		refManager = aLidarManager;
 
@@ -109,7 +117,7 @@ public class LidarFileSpecPanel extends JPanel implements ActionListener, ItemEv
 		setLayout(new MigLayout());
 
 		// Popup menu
-		LidarPopupMenu<?> lidarPopupMenu = LidarGuiUtil.formLidarFileSpecPopupMenu(refManager, this);
+		popupMenu = LidarGuiUtil.formLidarFileSpecPopupMenu(refManager, this);
 
 		// Table header
 		selectInvertB = GuiUtil.formButton(this, IconUtil.getSelectInvert());
@@ -159,15 +167,16 @@ public class LidarFileSpecPanel extends JPanel implements ActionListener, ItemEv
 
 		JTable lidarTable = lidarILP.getTable();
 		lidarTable.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
-		lidarTable.addMouseListener(new TablePopupHandler(refManager, lidarPopupMenu));
+		lidarTable.addMouseListener(new TablePopupHandler(refManager, popupMenu));
 		add(new JScrollPane(lidarTable), "growx,growy,pushy,span,wrap");
 
 		// Action buttons: hide / save / show
 		hideB = GuiUtil.formButton(this, "Hide");
-		hideB.setToolTipText("Hide Items");
+		hideB.setToolTipText("Hide Files");
 		showB = GuiUtil.formButton(this, "Show");
-		showB.setToolTipText("Show Items");
-		saveB = GuiUtil.formButton(this, "Save Files");
+		showB.setToolTipText("Show Files");
+		saveB = GuiUtil.formButton(this, "Save");
+		saveB.setToolTipText("Save Files");
 
 		// Radial offset section
 		radialS = new GSlider(this, 30, -15, 15);
@@ -205,6 +214,7 @@ public class LidarFileSpecPanel extends JPanel implements ActionListener, ItemEv
 
 		// Register for events of interest
 		refManager.addListener(this);
+		aPickManager.getDefaultPicker().addListener(this);
 	}
 
 	/**
@@ -282,6 +292,24 @@ public class LidarFileSpecPanel extends JPanel implements ActionListener, ItemEv
 	public void handleItemEvent(Object aSource, ItemEventType aEventType)
 	{
 		updateGui();
+	}
+
+	@Override
+	public void handlePickAction(InputEvent aEvent, PickMode aMode, PickTarget aPrimaryTarg, PickTarget aSurfaceTarg)
+	{
+		// Bail if we are are not associated with the PickTarget
+		if (LidarGuiUtil.isAssociatedPickTarget(aPrimaryTarg, refManager) == false)
+			return;
+
+		// Bail if not a valid pick action
+		if (PickUtil.isPopupTrigger(aEvent) == false || aMode != PickMode.ActiveSec)
+			return;
+
+		// Show the popup
+		Component tmpComp = aEvent.getComponent();
+		int posX = ((MouseEvent) aEvent).getX();
+		int posY = ((MouseEvent) aEvent).getY();
+		popupMenu.show(tmpComp, posX, posY);
 	}
 
 	/**

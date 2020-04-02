@@ -14,6 +14,7 @@ import javax.swing.JOptionPane;
 
 import org.apache.commons.math3.geometry.euclidean.threed.Vector3D;
 
+import edu.jhuapl.saavtk.gui.util.Colors;
 import edu.jhuapl.sbmt.model.lidar.LidarTrack;
 import edu.jhuapl.sbmt.model.lidar.LidarTrackManager;
 
@@ -38,11 +39,8 @@ import net.miginfocom.swing.MigLayout;
  */
 public class LidarTrackTranslateDialog extends JDialog implements ActionListener, ItemEventListener
 {
-	// Constants
-	private final Color failColor = Color.RED.darker();
-
 	// Reference vars
-	private final LidarTrackManager refModel;
+	private final LidarTrackManager refManager;
 
 	// GUI vars
 	private JLabel infoL, warnL;
@@ -59,11 +57,11 @@ public class LidarTrackTranslateDialog extends JDialog implements ActionListener
 	/**
 	 * Standard Constructor
 	 */
-	public LidarTrackTranslateDialog(Component aParent, LidarTrackManager aModel)
+	public LidarTrackTranslateDialog(Component aParent, LidarTrackManager aManager)
 	{
 		super(JOptionPane.getFrameForComponent(aParent));
 
-		refModel = aModel;
+		refManager = aManager;
 
 		currVect = Vector3D.ZERO;
 
@@ -72,7 +70,7 @@ public class LidarTrackTranslateDialog extends JDialog implements ActionListener
 		setLocationRelativeTo(aParent);
 
 		// Register for events of interest
-		refModel.addListener(this);
+		refManager.addListener(this);
 	}
 
 	@Override
@@ -121,10 +119,10 @@ public class LidarTrackTranslateDialog extends JDialog implements ActionListener
 	 */
 	private void doActionApply()
 	{
-		Set<LidarTrack> trackS = refModel.getSelectedItems();
+		Set<LidarTrack> trackS = refManager.getSelectedItems();
 
 		Vector3D tmpVect = getTranslationVectorFromGui();
-		refModel.setTranslation(trackS, tmpVect);
+		refManager.setTranslation(trackS, tmpVect);
 	}
 
 	/**
@@ -132,11 +130,11 @@ public class LidarTrackTranslateDialog extends JDialog implements ActionListener
 	 */
 	private void doActionReset()
 	{
-		Set<LidarTrack> trackS = refModel.getSelectedItems();
+		Set<LidarTrack> trackS = refManager.getSelectedItems();
 
 		Vector3D tmpVect = Vector3D.ZERO;
 		setInputVector(tmpVect);
-		refModel.setTranslation(trackS, tmpVect);
+		refManager.setTranslation(trackS, tmpVect);
 	}
 
 	/**
@@ -187,18 +185,18 @@ public class LidarTrackTranslateDialog extends JDialog implements ActionListener
 	private Vector3D getTranslationVectorFromSelectedTracks()
 	{
 		// Retrieve the list of selected Tracks
-		List<LidarTrack> trackL = refModel.getSelectedItems().asList();
+		List<LidarTrack> trackL = refManager.getSelectedItems().asList();
 		if (trackL.size() == 0)
 			return Vector3D.NaN;
 
 		// Retrieve the 1st Track's translation vector
-		Vector3D retVect = refModel.getTranslation(trackL.get(0));
+		Vector3D retVect = refManager.getTranslation(trackL.get(0));
 
 		// Check that all translation vectors are equal
 		boolean tmpBool = true;
 		for (LidarTrack aTrack : trackL)
 		{
-			Vector3D evalVect = refModel.getTranslation(aTrack);
+			Vector3D evalVect = refManager.getTranslation(aTrack);
 			tmpBool &= retVect.equals(evalVect);
 		}
 
@@ -262,7 +260,7 @@ public class LidarTrackTranslateDialog extends JDialog implements ActionListener
 	 */
 	private void updateGui()
 	{
-		Set<LidarTrack> trackS = refModel.getSelectedItems();
+		Set<LidarTrack> trackS = refManager.getSelectedItems();
 
 		// Update the applyB
 		boolean isValidInput = xTranslateNF.isValidInput();
@@ -293,9 +291,9 @@ public class LidarTrackTranslateDialog extends JDialog implements ActionListener
 		if (errMsg != null)
 			warnL.setText(errMsg);
 
-		Color fgColor = Color.BLACK;
+		Color fgColor = Colors.getPassFG();
 		if (errMsg != null)
-			fgColor = failColor;
+			fgColor = Colors.getFailFG();
 		warnL.setForeground(fgColor);
 	}
 

@@ -19,6 +19,7 @@ import javax.swing.JOptionPane;
 import javax.swing.JTextField;
 
 import edu.jhuapl.saavtk.gui.dialog.DirectoryChooser;
+import edu.jhuapl.saavtk.gui.util.Colors;
 import edu.jhuapl.sbmt.model.lidar.LidarFileUtil;
 import edu.jhuapl.sbmt.model.lidar.LidarTrack;
 import edu.jhuapl.sbmt.model.lidar.LidarTrackManager;
@@ -37,11 +38,8 @@ import net.miginfocom.swing.MigLayout;
  */
 public class LidarSaveDialog extends JDialog implements ActionListener, ItemEventListener
 {
-	// Constants
-	private final Color failColor = Color.RED.darker();
-
 	// Reference vars
-	private final LidarTrackManager refModel;
+	private final LidarTrackManager refManager;
 
 	// GUI vars
 	private JLabel infoL, warnL;
@@ -56,18 +54,18 @@ public class LidarSaveDialog extends JDialog implements ActionListener, ItemEven
 	/**
 	 * Standard Constructor
 	 */
-	public LidarSaveDialog(Component aParent, LidarTrackManager aModel)
+	public LidarSaveDialog(Component aParent, LidarTrackManager aManager)
 	{
 		super(JOptionPane.getFrameForComponent(aParent));
 
-		refModel = aModel;
+		refManager = aManager;
 
 		formGui();
 		pack();
 		setLocationRelativeTo(aParent);
 
 		// Register for events of interest
-		refModel.addListener(this);
+		refManager.addListener(this);
 	}
 
 	@Override
@@ -109,7 +107,7 @@ public class LidarSaveDialog extends JDialog implements ActionListener, ItemEven
 	 */
 	private void doActionAccept()
 	{
-		Set<LidarTrack> trackS = refModel.getSelectedItems();
+		Set<LidarTrack> trackS = refManager.getSelectedItems();
 		File folder = new File(folderTF.getText());
 		String baseName = baseNameTF.getText();
 		boolean isRota = rotaCB.isSelected();
@@ -120,7 +118,7 @@ public class LidarSaveDialog extends JDialog implements ActionListener, ItemEven
 			File unifiedFile = getUnifiedFile();
 			try
 			{
-				LidarFileUtil.saveTracksToTextFile(refModel, unifiedFile, trackS, isRota);
+				LidarFileUtil.saveTracksToTextFile(refManager, unifiedFile, trackS, isRota);
 			}
 			catch (IOException aExp)
 			{
@@ -134,7 +132,7 @@ public class LidarSaveDialog extends JDialog implements ActionListener, ItemEven
 		{
 			try
 			{
-				LidarFileUtil.saveTracksToFolder(refModel, folder, trackS, baseName, isRota);
+				LidarFileUtil.saveTracksToFolder(refManager, folder, trackS, baseName, isRota);
 			}
 			catch (IOException aExp)
 			{
@@ -232,7 +230,7 @@ public class LidarSaveDialog extends JDialog implements ActionListener, ItemEven
 	 */
 	private void updateGui()
 	{
-		Set<LidarTrack> trackS = refModel.getSelectedItems();
+		Set<LidarTrack> trackS = refManager.getSelectedItems();
 
 		boolean isValidFolder = folderTF.getText().length() > 0;
 		boolean isValidBaseName = baseNameTF.getText().trim().length() > 0;
@@ -283,9 +281,9 @@ public class LidarSaveDialog extends JDialog implements ActionListener, ItemEven
 		if (errMsg != null)
 			warnL.setText(errMsg);
 
-		Color fgColor = Color.BLACK;
+		Color fgColor = Colors.getPassFG();
 		if (errMsg != null)
-			fgColor = failColor;
+			fgColor = Colors.getFailFG();
 		warnL.setForeground(fgColor);
 
 		// Update the action buttons
