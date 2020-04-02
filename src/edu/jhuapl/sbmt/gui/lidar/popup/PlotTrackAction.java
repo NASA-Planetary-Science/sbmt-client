@@ -11,12 +11,14 @@ import edu.jhuapl.sbmt.model.lidar.LidarGeoUtil;
 import edu.jhuapl.sbmt.model.lidar.LidarTrack;
 import edu.jhuapl.sbmt.model.lidar.LidarTrackManager;
 
+import glum.gui.action.PopAction;
+
 /**
- * Object that defines the action: "Plot Track".
+ * {@link PopAction} that defines the action: "Plot Track".
  *
  * @author lopeznr1
  */
-class PlotTrackAction extends LidarPopAction<LidarTrack>
+class PlotTrackAction extends PopAction<LidarTrack>
 {
 	// Ref vars
 	private final LidarTrackManager refManager;
@@ -63,7 +65,7 @@ class PlotTrackAction extends LidarPopAction<LidarTrack>
 	{
 		super.setChosenItems(aItemC, aAssocMI);
 
-		// Enable the plot menuitem if the number of selected tracks == 1
+		// Enable the plot menuitem if the number of selected items == 1
 		boolean isEnabled = aItemC.size() == 1;
 		aAssocMI.setEnabled(isEnabled);
 	}

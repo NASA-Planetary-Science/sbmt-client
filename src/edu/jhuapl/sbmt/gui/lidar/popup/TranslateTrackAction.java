@@ -7,12 +7,14 @@ import edu.jhuapl.sbmt.gui.lidar.LidarTrackTranslateDialog;
 import edu.jhuapl.sbmt.model.lidar.LidarTrack;
 import edu.jhuapl.sbmt.model.lidar.LidarTrackManager;
 
+import glum.gui.action.PopAction;
+
 /**
- * Object that defines the translate track action.
+ * {@link PopAction} that defines the translate track action.
  *
  * @author lopeznr1
  */
-class TranslateTrackAction extends LidarPopAction<LidarTrack>
+class TranslateTrackAction extends PopAction<LidarTrack>
 {
 	// Ref vars
 	private final LidarTrackManager refManager;

@@ -4,11 +4,20 @@ import java.awt.Component;
 
 import javax.swing.JMenu;
 
+import vtk.vtkProp;
+
+import edu.jhuapl.saavtk.pick.PickTarget;
+import edu.jhuapl.saavtk.structure.StructureManager;
 import edu.jhuapl.saavtk.util.Configuration;
+import edu.jhuapl.saavtk.util.SaavtkLODActor;
 import edu.jhuapl.sbmt.model.lidar.LidarFileSpec;
 import edu.jhuapl.sbmt.model.lidar.LidarFileSpecManager;
+import edu.jhuapl.sbmt.model.lidar.LidarManager;
 import edu.jhuapl.sbmt.model.lidar.LidarTrack;
 import edu.jhuapl.sbmt.model.lidar.LidarTrackManager;
+import edu.jhuapl.sbmt.model.lidar.vtk.VtkLidarPainter;
+
+import glum.gui.action.PopupMenu;
 
 /**
  * Collection of lidar UI utility methods.
@@ -20,39 +29,57 @@ public class LidarGuiUtil
 	/**
 	 * Forms the popup menu associated with lidar files.
 	 */
-	public static LidarPopupMenu<LidarFileSpec> formLidarFileSpecPopupMenu(LidarFileSpecManager aManager,
-			Component aParent)
+	public static PopupMenu<LidarFileSpec> formLidarFileSpecPopupMenu(LidarFileSpecManager aManager, Component aParent)
 	{
-		LidarPopupMenu<LidarFileSpec> retLPM = new LidarPopupMenu<>(aManager);
+		PopupMenu<LidarFileSpec> retPM = new PopupMenu<>(aManager);
 
 		JMenu colorMenu = new JMenu("File Color");
-		retLPM.installPopAction(new MultiColorLidarAction<>(aManager, aParent, colorMenu), colorMenu);
+		retPM.installPopAction(new MultiColorLidarAction<>(aManager, aParent, colorMenu), colorMenu);
 
-		retLPM.installPopAction(new SaveFileAction(aManager, aParent), "Save File");
-		retLPM.installPopAction(new HideShowLidarAction<>(aManager, "File"), "Show File");
-		retLPM.installPopAction(new HideOtherLidarAction<>(aManager), "Hide Other Files");
+		retPM.installPopAction(new SaveFileAction(aManager, aParent), "Save File");
+		retPM.installPopAction(new HideShowLidarAction<>(aManager, "File"), "Show File");
+		retPM.installPopAction(new HideOtherLidarAction<>(aManager), "Hide Other Files");
 
-		return retLPM;
+		return retPM;
 	}
 
 	/**
 	 * Forms the popup menu associated with lidar tracks.
 	 */
-	public static LidarPopupMenu<LidarTrack> formLidarTrackPopupMenu(LidarTrackManager aManager, Component aParent)
+	public static PopupMenu<LidarTrack> formLidarTrackPopupMenu(LidarTrackManager aManager, Component aParent)
 	{
-		LidarPopupMenu<LidarTrack> retLPM = new LidarPopupMenu<>(aManager);
+		PopupMenu<LidarTrack> retPM = new PopupMenu<>(aManager);
 
 		JMenu colorMenu = new JMenu("Track Color");
-		retLPM.installPopAction(new MultiColorLidarAction<>(aManager, aParent, colorMenu), colorMenu);
+		retPM.installPopAction(new MultiColorLidarAction<>(aManager, aParent, colorMenu), colorMenu);
 
-		retLPM.installPopAction(new SaveTrackAction(aManager, aParent), "Save Track");
-		retLPM.installPopAction(new HideShowLidarAction<>(aManager, "Track"), "Show Track");
-		retLPM.installPopAction(new HideOtherLidarAction<>(aManager), "Hide Other Tracks");
-		retLPM.installPopAction(new TranslateTrackAction(aManager, aParent), "Translate Track");
+		retPM.installPopAction(new SaveTrackAction(aManager, aParent), "Save Track");
+		retPM.installPopAction(new HideShowLidarAction<>(aManager, "Track"), "Show Track");
+		retPM.installPopAction(new HideOtherLidarAction<>(aManager), "Hide Other Tracks");
+		retPM.installPopAction(new TranslateTrackAction(aManager, aParent), "Translate Track");
 		if (Configuration.isAPLVersion() == true)
-			retLPM.installPopAction(new PlotTrackAction(aManager), "Plot Track...");
+			retPM.installPopAction(new PlotTrackAction(aManager), "Plot Track...");
 
-		return retLPM;
+		return retPM;
+	}
+
+	/**
+	 * Utility method that returns true if the specified {@link PickTarget} is
+	 * associated with the provided {@link StructureManager}.
+	 */
+	public static boolean isAssociatedPickTarget(PickTarget aPickTarget, LidarManager<?> aManager)
+	{
+		// Bail if the actor is not the right type
+		vtkProp tmpProp = aPickTarget.getActor();
+		if (tmpProp instanceof SaavtkLODActor == false)
+			return false;
+
+		// Bail if tmpProp is not associated with the LidarManager
+		VtkLidarPainter<?> tmpPainter = ((SaavtkLODActor) tmpProp).getAssocModel(VtkLidarPainter.class);
+		if (tmpPainter == null || tmpPainter.getManager() != aManager)
+			return false;
+
+		return true;
 	}
 
 }

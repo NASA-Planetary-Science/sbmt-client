@@ -8,12 +8,14 @@ import javax.swing.JMenuItem;
 import edu.jhuapl.saavtk.gui.util.MessageUtil;
 import edu.jhuapl.sbmt.model.lidar.LidarManager;
 
+import glum.gui.action.PopAction;
+
 /**
  * Object that defines the action: "Hide/Show Items".
  *
  * @author lopeznr1
  */
-class HideShowLidarAction<G1> extends LidarPopAction<G1>
+class HideShowLidarAction<G1> extends PopAction<G1>
 {
 	// Ref vars
 	private final LidarManager<G1> refManager;

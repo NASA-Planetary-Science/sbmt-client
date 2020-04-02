@@ -7,12 +7,14 @@ import edu.jhuapl.sbmt.gui.lidar.color.ColorProvider;
 import edu.jhuapl.sbmt.gui.lidar.color.ConstColorProvider;
 import edu.jhuapl.sbmt.model.lidar.LidarManager;
 
+import glum.gui.action.PopAction;
+
 /**
- * Object that defines the action: "Fixed Color".
+ * {@link PopAction} that defines the action: "Fixed Color".
  *
  * @author lopeznr1
  */
-class FixedLidarColorAction<G1> extends LidarPopAction<G1>
+class FixedLidarColorAction<G1> extends PopAction<G1>
 {
 	// Ref vars
 	private final LidarManager<G1> refManager;

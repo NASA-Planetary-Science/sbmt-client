@@ -16,12 +16,14 @@ import edu.jhuapl.saavtk.util.FileUtil;
 import edu.jhuapl.sbmt.model.lidar.LidarFileSpec;
 import edu.jhuapl.sbmt.model.lidar.LidarFileSpecManager;
 
+import glum.gui.action.PopAction;
+
 /**
- * Object that defines the action: "Save Tracks".
+ * {@link PopAction} that defines the action: "Save Tracks".
  *
  * @author lopeznr1
  */
-class SaveFileAction extends LidarPopAction<LidarFileSpec>
+class SaveFileAction extends PopAction<LidarFileSpec>
 {
 	// Ref vars
 	private final LidarFileSpecManager refManager;

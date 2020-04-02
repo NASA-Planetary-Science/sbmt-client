@@ -11,12 +11,14 @@ import edu.jhuapl.sbmt.gui.lidar.LidarSaveDialog;
 import edu.jhuapl.sbmt.model.lidar.LidarTrack;
 import edu.jhuapl.sbmt.model.lidar.LidarTrackManager;
 
+import glum.gui.action.PopAction;
+
 /**
- * Object that defines the action: "Save Track".
+ * {@link PopAction} that defines the action: "Save Track".
  *
  * @author lopeznr1
  */
-class SaveTrackAction extends LidarPopAction<LidarTrack>
+class SaveTrackAction extends PopAction<LidarTrack>
 {
 	// Ref vars
 	private final LidarTrackManager refManager;

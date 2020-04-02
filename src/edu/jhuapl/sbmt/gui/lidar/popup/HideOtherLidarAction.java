@@ -4,12 +4,14 @@ import java.util.List;
 
 import edu.jhuapl.sbmt.model.lidar.LidarManager;
 
+import glum.gui.action.PopAction;
+
 /**
- * Object that defines the action: "Hide Other Items".
+ * {@link PopAction} that defines the action: "Hide Other Items".
  *
  * @author lopeznr1
  */
-class HideOtherLidarAction<G1> extends LidarPopAction<G1>
+class HideOtherLidarAction<G1> extends PopAction<G1>
 {
 	// Ref vars
 	private final LidarManager<G1> refManager;

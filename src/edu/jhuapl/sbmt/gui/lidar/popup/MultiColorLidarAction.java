@@ -15,19 +15,22 @@ import javax.swing.JMenuItem;
 import edu.jhuapl.saavtk.util.ColorUtil;
 import edu.jhuapl.sbmt.model.lidar.LidarManager;
 
+import glum.gui.action.PopAction;
+
 /**
- * Action corresponding to the lidar color menu item. This action does not
- * provide any color changing function but rather delegate to sub actions.
+ * {@link PopAction} corresponding to the lidar color menu item. This action
+ * does not provide any color changing function but rather delegate to sub
+ * actions.
  *
  * @author lopeznr1
  */
-public class MultiColorLidarAction<G1> extends LidarPopAction<G1>
+public class MultiColorLidarAction<G1> extends PopAction<G1>
 {
 	// Ref vars
 	private final LidarManager<G1> refManager;
 
 	// State vars
-	private Map<JMenuItem, LidarPopAction<G1>> actionM;
+	private Map<JMenuItem, PopAction<G1>> actionM;
 
 	/**
 	 * Standard Constructor
@@ -41,7 +44,7 @@ public class MultiColorLidarAction<G1> extends LidarPopAction<G1>
 		// Form the static color menu items
 		for (ColorUtil.DefaultColor color : ColorUtil.DefaultColor.values())
 		{
-			LidarPopAction<G1> tmpLPA = new FixedLidarColorAction<>(aManager, color.color());
+			PopAction<G1> tmpLPA = new FixedLidarColorAction<>(aManager, color.color());
 			JCheckBoxMenuItem tmpColorMI = new JCheckBoxMenuItem(tmpLPA);
 			tmpColorMI.setText(color.toString().toLowerCase().replace('_', ' '));
 			actionM.put(tmpColorMI, tmpLPA);
@@ -82,7 +85,7 @@ public class MultiColorLidarAction<G1> extends LidarPopAction<G1>
 		// Update our child LidarPopActions
 		for (JMenuItem aMI : actionM.keySet())
 		{
-			LidarPopAction<G1> tmpLPA = actionM.get(aMI);
+			PopAction<G1> tmpLPA = actionM.get(aMI);
 			tmpLPA.setChosenItems(aItemC, aMI);
 
 			// If all items have the same custom color and match one of the
@@ -104,7 +107,7 @@ public class MultiColorLidarAction<G1> extends LidarPopAction<G1>
 	 * @param aAction Action corresponding to the menu item.
 	 * @param aTitle The title of the menu item.
 	 */
-	private JMenuItem formMenuItem(LidarPopAction<G1> aAction, String aTitle)
+	private JMenuItem formMenuItem(PopAction<G1> aAction, String aTitle)
 	{
 		JMenuItem retMI = new JMenuItem(aAction);
 		retMI.setText(aTitle);
