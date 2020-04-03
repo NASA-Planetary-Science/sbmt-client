@@ -87,6 +87,6 @@ public class StateHistoryViewControlsPanel extends JPanel
 	 */
 	public void updateUI()
 	{
-		displayItemsControls.getView().getShowSpacecraftPanel().updateGui();
+//		displayItemsControls.getView().getShowSpacecraftPanel().updateGui();
 	}
 }

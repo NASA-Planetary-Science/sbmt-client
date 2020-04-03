@@ -5,31 +5,35 @@ import vtk.vtkConeSource;
 import vtk.vtkPolyDataMapper;
 
 /**
+ * vtkConeSource child class representing the FOV of an instrument
  * @author steelrj1
  *
  */
 public class SpacecraftFieldOfView extends vtkConeSource
 {
 	/**
-	 *
+	 * The vtkActor for this object
 	 */
 	private vtkActor spacecraftFovActor;
+
     /**
-     *
+     * The offset of the FOV from the spacecraft
      */
     private double[] spacecraftFovOffset = {0.0, 0.0, 0.5};
+
     /**
-     *
+     * The color of the FOV
      */
     private double[] fovColor = {0.3, 0.3, 1.0, 0.5};
+
 	/**
-	 *
+	 * Static property for the white color
 	 */
-	private double[] white = {1.0, 1.0, 1.0, 1.0};
+	private static double[] white = {1.0, 1.0, 1.0, 1.0};
 
 
 	/**
-	 *
+	 * Constructor.  Initializes values for the parent vtkConeSource
 	 */
 	public SpacecraftFieldOfView()
 	{
@@ -42,6 +46,7 @@ public class SpacecraftFieldOfView extends vtkConeSource
 	}
 
 	/**
+	 * vtk Constructor
 	 * @param id
 	 */
 	public SpacecraftFieldOfView(long id)
@@ -51,6 +56,7 @@ public class SpacecraftFieldOfView extends vtkConeSource
 	}
 
 	/**
+	 * Returns the vtkActor for this object, creating if needed.
 	 * @return
 	 */
 	public vtkActor getActor()

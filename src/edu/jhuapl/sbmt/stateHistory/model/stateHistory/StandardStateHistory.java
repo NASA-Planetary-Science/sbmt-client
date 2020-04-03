@@ -1,15 +1,25 @@
 package edu.jhuapl.sbmt.stateHistory.model.stateHistory;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.Map.Entry;
 import java.util.NavigableMap;
 import java.util.Set;
 import java.util.TreeMap;
+
+import javax.swing.JOptionPane;
+
+import org.joda.time.Interval;
 
 import edu.jhuapl.sbmt.stateHistory.model.interfaces.State;
 import edu.jhuapl.sbmt.stateHistory.model.interfaces.StateHistory;
 import edu.jhuapl.sbmt.stateHistory.model.interfaces.Trajectory;
 
 import altwg.util.MathUtil;
+import crucible.crust.metadata.api.Key;
+import crucible.crust.metadata.api.Version;
+import crucible.crust.metadata.impl.InstanceGetter;
+import crucible.crust.metadata.impl.SettableMetadata;
 
 public class StandardStateHistory implements StateHistory
 {
@@ -22,14 +32,36 @@ public class StandardStateHistory implements StateHistory
      *
      */
     private Double time;
+
+    /**
+     *
+     */
+    private Double startTime;
+
+    /**
+     *
+     */
+    private Double endTime;
+
     /**
      *
      */
     private StateHistoryKey key;
+
     /**
      *
      */
     private Trajectory trajectory;
+
+    /**
+     *
+     */
+    private String name;
+
+    /**
+     *
+     */
+    private Double[] color;
 
     /**
      *
@@ -39,6 +71,61 @@ public class StandardStateHistory implements StateHistory
 //    private String trajectoryName;
 //    private String trajectoryDescription;
 //    private double trajectoryThickness;
+
+    //Metadata Information
+    private static final Key<StandardStateHistory> STANDARD_STATE_HISTORY_KEY = Key.of("StandardStateHistory");
+	private static final Key<StateHistoryKey> STATEHISTORY_KEY_KEY = Key.of("key");
+	private static final Key<Double> CURRENT_TIME_KEY = Key.of("currentTime");
+	private static final Key<Double> START_TIME_KEY = Key.of("startTime");
+	private static final Key<Double> END_TIME_KEY = Key.of("stopTime");
+	private static final Key<String> STATE_HISTORY_NAME_KEY = Key.of("name");
+	private static final Key<Double[]> COLOR_KEY = Key.of("color");
+
+    public static void initializeSerializationProxy()
+	{
+    	InstanceGetter.defaultInstanceGetter().register(STANDARD_STATE_HISTORY_KEY, (source) -> {
+
+    		StateHistoryKey key = source.get(STATEHISTORY_KEY_KEY);
+    		Double currentTime = source.get(CURRENT_TIME_KEY);
+    		Double startTime = source.get(START_TIME_KEY);
+    		Double endTime = source.get(END_TIME_KEY);
+    		String name = source.get(STATE_HISTORY_NAME_KEY);
+    		Double[] color = source.get(COLOR_KEY);
+
+    		StandardStateHistory stateHistory = new StandardStateHistory(key, currentTime, startTime, endTime, name, color);
+    		return stateHistory;
+
+    	}, StandardStateHistory.class, stateHistory -> {
+
+    		SettableMetadata result = SettableMetadata.of(Version.of(1, 0));
+    		result.put(STATEHISTORY_KEY_KEY, stateHistory.getKey());
+    		result.put(CURRENT_TIME_KEY, stateHistory.getTime());
+    		result.put(START_TIME_KEY, stateHistory.getMinTime());
+    		result.put(END_TIME_KEY, stateHistory.getMaxTime());
+    		result.put(STATE_HISTORY_NAME_KEY, stateHistory.getTrajectoryName());
+    		result.put(COLOR_KEY, new Double[] { stateHistory.getTrajectoryColor()[0], stateHistory.getTrajectoryColor()[1], stateHistory.getTrajectoryColor()[2], stateHistory.getTrajectoryColor()[3]});
+    		return result;
+    	});
+
+	}
+
+    /**
+     * @param key
+     */
+    public StandardStateHistory(StateHistoryKey key)
+    {
+    	this.key = key;
+    }
+
+    public StandardStateHistory(StateHistoryKey key, Double currentTime, Double startTime, Double endTime, String name, Double[] color)
+    {
+    	this.key = key;
+    	this.time = currentTime;
+//    	this.setTrajectoryName(name);
+    	this.startTime = startTime;
+    	this.endTime = endTime;
+    	this.color = color;
+    }
 
     /**
      *
@@ -59,9 +146,25 @@ public class StandardStateHistory implements StateHistory
     /**
      *
      */
-    public void setTime(Double time)
+    public void setTime(Double dt)
     {
-        this.time = time;
+        if( dt < getMinTime() || dt > getMaxTime())
+        {
+            JOptionPane.showMessageDialog(null, "Entered time is outside the range of the selected interval.", "Error",
+                    JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+        Interval interval1 = new Interval(getMinTime().longValue(), dt.longValue());
+        Interval interval2 = new Interval(getMinTime().longValue(), getMaxTime().longValue());
+
+        org.joda.time.Duration duration1 = interval1.toDuration();
+        org.joda.time.Duration duration2 = interval2.toDuration();
+
+        BigDecimal num1 = new BigDecimal(duration1.getMillis());
+        BigDecimal num2 = new BigDecimal(duration2.getMillis());
+        BigDecimal tf = num1.divide(num2,50,RoundingMode.UP);
+        this.time = dt;
+//        this.time = Double.parseDouble(tf.toString());
     }
 
     /**
@@ -69,6 +172,7 @@ public class StandardStateHistory implements StateHistory
      */
     public Double getMinTime()
     {
+    	if (startTime != null) return startTime;
         return timeToFlybyState.firstKey();
     }
 
@@ -77,6 +181,7 @@ public class StandardStateHistory implements StateHistory
      */
     public Double getMaxTime()
     {
+    	if (endTime != null) return endTime;
         return timeToFlybyState.lastKey();
     }
 
@@ -101,14 +206,6 @@ public class StandardStateHistory implements StateHistory
         double max = getMaxTime() - (1-maxDisplayFraction)*(getMaxTime()-getMinTime());
         double time = min + timeFraction * (max - min);
         setTime(time);
-    }
-
-    /**
-     * @param key
-     */
-    public StandardStateHistory(StateHistoryKey key)
-    {
-    	this.key = key;
     }
 
     /**
@@ -180,7 +277,6 @@ public class StandardStateHistory implements StateHistory
         double[] ceilingPosition = ceiling.getSpacecraftPosition();
         double floorTime = floor.getEphemerisTime();
         double ceilingTime = ceiling.getEphemerisTime();
-//        System.out.println("Floor: " + floorTime + " Ceiling: " + ceilingTime);
 
         return interpolateDouble(floorPosition, ceilingPosition, floorTime, ceilingTime, time);
     }
@@ -265,7 +361,8 @@ public class StandardStateHistory implements StateHistory
 	@Override
 	public String getTrajectoryName()
 	{
-		return trajectory.getName();
+		return name;
+//		return trajectory.getName();
 	}
 
 	/**
@@ -274,6 +371,7 @@ public class StandardStateHistory implements StateHistory
 	@Override
 	public String getTrajectoryDescription()
 	{
+		if (trajectory == null) return "";
 		return trajectory.toString();
 	}
 
@@ -283,7 +381,8 @@ public class StandardStateHistory implements StateHistory
 	@Override
 	public double[] getTrajectoryColor()
 	{
-		return trajectory.getTrajectoryColor();
+		if (color == null) return trajectory.getTrajectoryColor();
+		return new double[] {color[0], color[1], color[2], color[3]};
 	}
 
 	/**
@@ -346,6 +445,18 @@ public class StandardStateHistory implements StateHistory
 	public void setMaxDisplayFraction(double maxDisplayFraction)
 	{
 		this.maxDisplayFraction = maxDisplayFraction;
+	}
+
+	@Override
+	public void setTrajectoryName(String name)
+	{
+		this.trajectory.setName(name);
+	}
+
+	public void setTrajectoryColor(Double[] color)
+	{
+		this.color = color;
+		this.trajectory.setTrajectoryColor(new double[] {color[0], color[1], color[2], color[3]});
 	}
 
 }

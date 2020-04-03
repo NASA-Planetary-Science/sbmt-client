@@ -294,4 +294,13 @@ public class StandardTrajectory implements Trajectory
 		this.isFaded = isFaded;
 		this.color[3] = isFaded ? 50 : 255;
 	}
+
+	@Override
+	public void addPositionAtTime(double[] spacecraftPosition, double time)
+	{
+		getX().add(spacecraftPosition[0]);
+		getY().add(spacecraftPosition[1]);
+		getZ().add(spacecraftPosition[2]);
+		getTime().add(time);
+	}
 }

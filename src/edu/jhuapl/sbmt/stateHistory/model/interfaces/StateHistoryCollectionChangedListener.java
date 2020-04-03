@@ -1,6 +1,4 @@
-package edu.jhuapl.sbmt.stateHistory.model.stateHistory;
-
-import edu.jhuapl.sbmt.stateHistory.model.interfaces.StateHistory;
+package edu.jhuapl.sbmt.stateHistory.model.interfaces;
 
 public interface StateHistoryCollectionChangedListener
 {

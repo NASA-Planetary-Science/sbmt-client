@@ -17,27 +17,27 @@ import edu.jhuapl.sbmt.stateHistory.model.interfaces.State;
 public class SpacecraftLabel extends vtkCaptionActor2D
 {
 	/**
-	 *
+	 * Scaling factor
 	 */
 	private static final double JupiterScale = 75000;
 
 	/**
-	 *
+	 * Distance string, set to a default of "Distance to Center"
 	 */
 	private String distanceString = "Distance to Center";
 
 	/**
-	 *
+	 * The passed in <pre>State</pre> object for this label
 	 */
 	private State state;
 
 	/**
-	 *
+	 * The spacecraft position array in body fixed coordinates
 	 */
 	private double[] spacecraftPosition;
 
 	/**
-	 *
+	 * The small body model used to calculate intercepts
 	 */
 	private SmallBodyModel smallBodyModel;
 

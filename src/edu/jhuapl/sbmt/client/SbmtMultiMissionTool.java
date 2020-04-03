@@ -48,6 +48,8 @@ import edu.jhuapl.sbmt.spectrum.model.core.SpectrumInstrumentMetadata;
 import edu.jhuapl.sbmt.spectrum.model.core.search.SpectrumSearchSpec;
 import edu.jhuapl.sbmt.spectrum.model.io.SpectrumInstrumentMetadataIO;
 import edu.jhuapl.sbmt.spectrum.model.key.CustomSpectrumKey;
+import edu.jhuapl.sbmt.stateHistory.model.stateHistory.StandardStateHistory;
+import edu.jhuapl.sbmt.stateHistory.model.stateHistory.StateHistoryKey;
 import edu.jhuapl.sbmt.tools.SbmtRunnable;
 
 /**
@@ -157,6 +159,8 @@ public class SbmtMultiMissionTool
 		NIRS3.initializeSerializationProxy();
 		MEGANE.initializeSerializationProxy();
 		ImageFactory.initializeSerializationProxy();
+		StandardStateHistory.initializeSerializationProxy();
+		StateHistoryKey.initializeSerializationProxy();
 	}
 
 	public static void setEnableAuthentication(boolean enableAuthentication)

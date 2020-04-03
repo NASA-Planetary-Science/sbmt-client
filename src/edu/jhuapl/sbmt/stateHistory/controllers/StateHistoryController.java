@@ -4,6 +4,7 @@ import java.awt.Color;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 import java.io.File;
+import java.io.IOException;
 
 import javax.swing.BoxLayout;
 import javax.swing.JPanel;
@@ -23,6 +24,7 @@ import edu.jhuapl.sbmt.client.SmallBodyModel;
 import edu.jhuapl.sbmt.client.SmallBodyViewConfig;
 import edu.jhuapl.sbmt.stateHistory.model.StateHistoryModel;
 import edu.jhuapl.sbmt.stateHistory.model.StateHistoryUtil;
+import edu.jhuapl.sbmt.stateHistory.model.io.StateHistoryInputException;
 import edu.jhuapl.sbmt.stateHistory.model.stateHistory.StateHistoryCollection;
 import edu.jhuapl.sbmt.stateHistory.ui.version2.StateHistoryDisplayedIntervalPanel;
 import edu.jhuapl.sbmt.stateHistory.ui.version2.StateHistoryIntervalGenerationPanel;
@@ -82,10 +84,21 @@ public class StateHistoryController
         }
 
         StateHistoryCollection runs = (StateHistoryCollection)modelManager.getModel(ModelNames.STATE_HISTORY_COLLECTION);
+
+        //grab the min max times from the input
         DateTime start = ISODateTimeFormat.dateTimeParser().parseDateTime(StateHistoryUtil.readString(lineLength, path));
         DateTime end = ISODateTimeFormat.dateTimeParser().parseDateTime(StateHistoryUtil.readString((int)StateHistoryUtil.getBinaryFileLength(path, lineLength)*lineLength-lineLength, path));
 
-        StateHistoryModel historyModel = new StateHistoryModel(start, end, bodyModel, renderer, modelManager);
+        StateHistoryModel historyModel = null;
+		try
+		{
+			historyModel = new StateHistoryModel(start, end, bodyModel, renderer, modelManager);
+		}
+		catch (IOException | StateHistoryInputException e1)
+		{
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
 
         this.intervalGenerationController = new StateHistoryIntervalGenerationController(historyModel, start, end);
         this.intervalSelectionController = new StateHistoryIntervalSelectionController(historyModel, bodyModel, renderer);
@@ -104,8 +117,9 @@ public class StateHistoryController
             @Override
             public void componentResized(ComponentEvent e)
             {
-//                updateTimeBarValue();
-//                updateTimeBarPosition();
+                runs.updateTimeBarValue();
+                runs.updateTimeBarLocation(e.getComponent().getWidth(), e.getComponent().getHeight());
+                runs.updateStatusBarLocation(e.getComponent().getWidth(), e.getComponent().getHeight());
 //                StateHistory currentRun = stateHistoryCollection.getCurrentRun();
 //                if (currentRun != null)
 //                {

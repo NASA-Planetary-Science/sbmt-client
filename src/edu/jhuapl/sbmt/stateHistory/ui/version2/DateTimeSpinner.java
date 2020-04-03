@@ -39,9 +39,9 @@ public class DateTimeSpinner extends JSpinner
 	 * by the <pre>start</start> and <pre>end</pre> arguments
 	 * @param start	The DateTimeSpinner denoting the start time
 	 * @param end	The DateTimeSpinner denoting the end time
-	 * @return		The number of seconds between <pre>start</start> and <pre>end</pre>
+	 * @return		The number of days between <pre>start</start> and <pre>end</pre>
 	 */
-	public static double getTimeSpanBetween(DateTimeSpinner start, DateTimeSpinner end)
+	public static double getDaysBetween(DateTimeSpinner start, DateTimeSpinner end)
 	{
         Date beginTime = (Date)start.getModel().getValue();
         Date stopTime = (Date)end.getModel().getValue();

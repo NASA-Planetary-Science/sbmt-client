@@ -72,7 +72,7 @@ class SaveFileAction extends StateHistoryPopAction<StateHistory>
 			for (StateHistory stateHistory : workS)
 			{
 				history = stateHistory;
-				StateHistoryModelIOHelper.saveIntervalToFile(refManager.getSmallBodyModel().getConfig().getShapeModelName(), stateHistory, new File(targPath, stateHistory.getTrajectoryName()).getAbsolutePath());
+				StateHistoryModelIOHelper.saveIntervalToFile(refManager.getBodyName(), stateHistory, new File(targPath, stateHistory.getTrajectoryName()).getAbsolutePath());
 				passCnt++;
 			}
 		}

@@ -202,7 +202,7 @@ public class StateHistoryDisplayItemsController implements ItemListener
 		{
 			// distanceOptions.setEnabled(selected);
 			if (selected)
-				historyModel.setDistanceText(distanceOptions.getSelectedItem().toString());
+				historyModel.getRuns().setDistanceText(distanceOptions.getSelectedItem().toString());
 			// runs.setSpacecraftLabelVisibility(selected);
 			runs.setSpacecraftVisibility(selected);
 			view.getShowSpacecraftPanel().getScSizeSlider().setEnabled(selected);

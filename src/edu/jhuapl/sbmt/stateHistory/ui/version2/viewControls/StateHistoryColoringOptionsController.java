@@ -34,7 +34,6 @@ public class StateHistoryColoringOptionsController
 	 */
 	private void initializeViewControlPanel()
 	{
-		System.out.println("StateHistoryColoringOptionsController: initializeViewControlPanel: **************************");
 		//create the attributes model and view objects
 		model = new StateHistoryColorOptionsAttributeModel();
 		view = new StateHistoryColoringOptionsPanel();

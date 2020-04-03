@@ -5,6 +5,7 @@ import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
 
+import edu.jhuapl.sbmt.stateHistory.model.StateHistoryUtil;
 import edu.jhuapl.sbmt.stateHistory.model.interfaces.State;
 import edu.jhuapl.sbmt.util.TimeUtil;
 
@@ -91,6 +92,17 @@ public class CsvState implements State
         spacecraftXAxis = new double[] { 1.0, 0.0, 0.0 };
         spacecraftYAxis = new double[] { 0.0, 1.0, 0.0 };
         spacecraftZAxis = new double[] { 0.0, 0.0, 1.0 };
+    }
+
+    public CsvState(int i, File path, int[] position)
+    {
+    	this(StateHistoryUtil.readString(i, path),
+					StateHistoryUtil.readBinary(position[0], path), StateHistoryUtil.readBinary(position[1], path),
+					StateHistoryUtil.readBinary(position[2], path), StateHistoryUtil.readBinary(position[3], path),
+					StateHistoryUtil.readBinary(position[4], path), StateHistoryUtil.readBinary(position[5], path),
+					StateHistoryUtil.readBinary(position[6], path), StateHistoryUtil.readBinary(position[7], path),
+					StateHistoryUtil.readBinary(position[8], path), StateHistoryUtil.readBinary(position[9], path),
+					StateHistoryUtil.readBinary(position[10], path), StateHistoryUtil.readBinary(position[11], path));
     }
 
     /**

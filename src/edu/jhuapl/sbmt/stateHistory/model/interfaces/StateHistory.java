@@ -9,8 +9,24 @@ import edu.jhuapl.sbmt.stateHistory.model.stateHistory.StateHistoryKey;
  * @author steelrj1
  *
  */
-public interface StateHistory extends HasTime
+public interface StateHistory
 {
+	/**
+     * @return
+     */
+    public Double getPeriod();
+
+    /**
+     * @return
+     */
+    public Double getTimeFraction();
+
+    /**
+     * @param state
+     * @param timeFraction
+     */
+    public void setTimeFraction(Double timeFraction);
+
     /**
      *
      */
@@ -25,16 +41,6 @@ public interface StateHistory extends HasTime
      * @param time
      */
     public void setTime(Double time);
-
-    /**
-     *
-     */
-    public Double getTimeFraction();
-
-    /**
-     *
-     */
-    public void setTimeFraction(Double time);
 
     /**
      * @return
@@ -136,6 +142,11 @@ public interface StateHistory extends HasTime
     public void setTrajectory(Trajectory traj);
 
     /**
+     * @param traj
+     */
+    public void setTrajectoryName(String name);
+
+    /**
      * @return
      */
     public double getMinDisplayFraction();
@@ -154,6 +165,5 @@ public interface StateHistory extends HasTime
 	 * @param maxDisplayFraction
 	 */
 	public void setMaxDisplayFraction(double maxDisplayFraction);
-
 
 }

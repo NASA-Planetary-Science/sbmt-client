@@ -8,7 +8,6 @@ import com.google.common.collect.Ranges;
 
 import vtk.vtkActor;
 import vtk.vtkCellArray;
-import vtk.vtkIdList;
 import vtk.vtkLine;
 import vtk.vtkPoints;
 import vtk.vtkPolyData;
@@ -20,6 +19,7 @@ import edu.jhuapl.saavtk.colormap.Colormap;
 import edu.jhuapl.sbmt.stateHistory.model.interfaces.Trajectory;
 
 /**
+ * vtkActor that represents a state history trajectory
  * @author steelrj1
  *
  */
@@ -29,50 +29,57 @@ public class TrajectoryActor extends vtkActor
      *
      */
     private Trajectory trajectory;
+
     /**
      *
      */
     private vtkPolyData trajectoryPolylines;
+
     /**
      *
      */
     private vtkPolyDataMapper trajectoryMapper = new vtkPolyDataMapper();
+
     /**
      *
      */
     private double[] trajectoryColor = {0, 255, 255, 255};
+
     /**
      *
      */
     private double trajectoryLineThickness = 1;
-    /**
-     *
-     */
-    private String trajectoryName = ""; // default name and description fields
+
     /**
      *
      */
     private double minFraction = 0.0;
+
     /**
      *
      */
     private double maxFraction = 1.0;
+
     /**
      *
      */
     private vtkUnsignedCharArray colors;
+
     /**
      *
      */
     private int size;
+
     /**
      *
      */
     private vtkPolyData trajectoryPolyline;
+
     /**
      *
      */
     private BiFunction<Trajectory, Double, Double> coloringFunction;
+
     /**
      *
      */
@@ -89,28 +96,24 @@ public class TrajectoryActor extends vtkActor
 	}
 
 	/**
-	 * @param trajectory
+	 * Constructor
+	 * @param trajectory	The <pre>Trajectory</pre> for this <pre>TrajectoryActor</pre>
 	 */
 	public TrajectoryActor(Trajectory trajectory)
 	{
 		this.trajectory = trajectory;
 		this.trajectoryColor = trajectory.getTrajectoryColor();
-
 		createTrajectoryPolyData();
-
 		SetMapper(trajectoryMapper);
-
 		SetVisibility(1);
-
 	}
 
 	/**
-	 *
+	 *	Creates the polydata for this actor.
 	 */
 	private void createTrajectoryPolyData()
 	{
 		int cellId = 0;
-        vtkIdList idList = new vtkIdList();
         vtkPoints points = new vtkPoints();
         vtkCellArray polylines = new vtkCellArray();
         colors = new vtkUnsignedCharArray();
@@ -162,7 +165,8 @@ public class TrajectoryActor extends vtkActor
 	}
 
 	/**
-	 *
+	 * Based on the current <pre>minFraction</pre> and <pre>maxFraction</pre> values, updates the shown
+	 * shown segments of the trajectory, and updates the mapper as appropriate.
 	 */
 	private void updateShownSegments()
 	{
@@ -203,8 +207,9 @@ public class TrajectoryActor extends vtkActor
 	}
 
 	/**
-	 * @param index
-	 * @return
+	 * For the given trajectory index (which in turn provides a time), returns the color of the trajectory at this time
+	 * @param index	the index into the arraylist of times that make up this trajectory
+	 * @return	the <pre>Color</pre> of the trajectory at this index
 	 */
 	private Color getColorAtIndex(int index)
 	{
@@ -217,7 +222,8 @@ public class TrajectoryActor extends vtkActor
 	}
 
 	/**
-	 * @param value
+	 * Sets the thickness of the trajectory line
+	 * @param value	the thickness of the trajectory
 	 */
 	public void setTrajectoryLineThickness(double value)
     {
@@ -229,7 +235,8 @@ public class TrajectoryActor extends vtkActor
     }
 
     /**
-     * @return
+     * Returns the trajectory line thickness
+     * @return the trajectory line thickness
      */
     public double getTrajectoryLineThickness()
     {
@@ -237,7 +244,8 @@ public class TrajectoryActor extends vtkActor
     }
 
     /**
-     * @return
+     * Returns the trajectory color
+     * @return the trajectory color
      */
     public double[] getTrajectoryColor()
     {
@@ -245,7 +253,8 @@ public class TrajectoryActor extends vtkActor
     }
 
     /**
-     * @param color
+     * Sets the trajectory color
+     * @param color the trajectory color as a double array with values from 0.0 to 1.0
      */
     public void setTrajectoryColor(double[] color)
     {
@@ -256,22 +265,25 @@ public class TrajectoryActor extends vtkActor
     }
 
     /**
-     * @param name
+     * Sets the trajectory name
+     * @param name the name of the trajectory
      */
     public void setTrajectoryName(String name)
     {
-        trajectoryName = name;
+        trajectory.setName(name);
     }
 
     /**
-     * @return
+     * Returns the name of the trajectory
+     * @return the name of the trajectory
      */
     public String getTrajectoryName()
 	{
-		return trajectoryName;
+		return trajectory.getName();
 	}
 
 	/**
+	 * Toggles the visibility of the trajectory based on the value of <pre>show</pre>
 	 * @param show
 	 */
 	public void showTrajectory(boolean show)
@@ -281,6 +293,7 @@ public class TrajectoryActor extends vtkActor
     }
 
 	/**
+	 * Sets the minFraction and maxFraction values, and updates the shownSegments
 	 * @param min
 	 * @param max
 	 */

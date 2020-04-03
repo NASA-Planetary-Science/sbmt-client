@@ -18,8 +18,8 @@ import vtk.vtkWindowToImageFilter;
 import vtk.rendering.jogl.vtkJoglPanelComponent;
 
 import edu.jhuapl.saavtk.gui.render.Renderer;
-import edu.jhuapl.sbmt.stateHistory.model.AnimatorFrameRunnable;
 import edu.jhuapl.sbmt.stateHistory.model.animator.AnimationFrame;
+import edu.jhuapl.sbmt.stateHistory.model.animator.AnimatorFrameRunnable;
 import edu.jhuapl.sbmt.stateHistory.model.stateHistory.StateHistoryCollection;
 
 /**

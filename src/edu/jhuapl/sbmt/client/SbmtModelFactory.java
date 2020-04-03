@@ -62,6 +62,7 @@ import edu.jhuapl.sbmt.model.simple.SimpleSmallBody;
 import edu.jhuapl.sbmt.model.vesta.FcImage;
 import edu.jhuapl.sbmt.model.vesta_old.VestaOld;
 import edu.jhuapl.sbmt.stateHistory.model.StateHistoryModel;
+import edu.jhuapl.sbmt.stateHistory.model.io.StateHistoryInputException;
 import edu.jhuapl.sbmt.stateHistory.model.stateHistory.StateHistoryKey;
 
 import nom.tam.fits.FitsException;
@@ -84,7 +85,7 @@ public class SbmtModelFactory
             SmallBodyModel smallBodyModel,
             ModelManager modelManager,
             Renderer renderer,
-            boolean loadPointingOnly) throws FitsException, IOException
+            boolean loadPointingOnly) throws FitsException, IOException, StateHistoryInputException
     {
         SmallBodyViewConfig config = (SmallBodyViewConfig)smallBodyModel.getSmallBodyConfig();
         return new StateHistoryModel(start, end, smallBodyModel, renderer, modelManager);

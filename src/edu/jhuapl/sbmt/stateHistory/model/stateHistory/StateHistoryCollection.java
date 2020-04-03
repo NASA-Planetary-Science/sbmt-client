@@ -5,1045 +5,459 @@ import java.awt.Font;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 
 import com.google.common.collect.ImmutableList;
 
-import vtk.vtkActor;
-import vtk.vtkMatrix4x4;
 import vtk.vtkProp;
-import vtk.vtkScalarBarActor;
-import vtk.vtkTransform;
 
-import edu.jhuapl.saavtk.colormap.Colormaps;
 import edu.jhuapl.saavtk.model.SaavtkItemManager;
-import edu.jhuapl.saavtk.util.BoundingBox;
-import edu.jhuapl.saavtk.util.Configuration;
-import edu.jhuapl.saavtk.util.ConvertResourceToFile;
-import edu.jhuapl.saavtk.util.MathUtil;
 import edu.jhuapl.saavtk.util.Properties;
-//import edu.jhuapl.sbmt.client.ModelFactory;
 import edu.jhuapl.sbmt.client.SmallBodyModel;
-import edu.jhuapl.sbmt.stateHistory.model.StateHistoryColoringFunctions;
-import edu.jhuapl.sbmt.stateHistory.model.interfaces.HasTime;
 import edu.jhuapl.sbmt.stateHistory.model.interfaces.StateHistory;
 import edu.jhuapl.sbmt.stateHistory.rendering.SpacecraftBody;
-import edu.jhuapl.sbmt.stateHistory.rendering.SpacecraftFieldOfView;
 import edu.jhuapl.sbmt.stateHistory.rendering.TrajectoryActor;
-import edu.jhuapl.sbmt.stateHistory.rendering.directionMarkers.EarthDirectionMarker;
-import edu.jhuapl.sbmt.stateHistory.rendering.directionMarkers.SpacecraftDirectionMarker;
-import edu.jhuapl.sbmt.stateHistory.rendering.directionMarkers.SunDirectionMarker;
-import edu.jhuapl.sbmt.stateHistory.rendering.text.SpacecraftLabel;
-import edu.jhuapl.sbmt.stateHistory.rendering.text.StatusBarTextActor;
-import edu.jhuapl.sbmt.stateHistory.rendering.text.TimeBarTextActor;
 
-public class StateHistoryCollection extends SaavtkItemManager<StateHistory> /*AbstractModel*/ implements PropertyChangeListener, HasTime
+import crucible.crust.metadata.api.Key;
+import crucible.crust.metadata.api.Metadata;
+import crucible.crust.metadata.api.MetadataManager;
+import crucible.crust.metadata.api.Version;
+import crucible.crust.metadata.impl.SettableMetadata;
+
+/**
+ * Item manager that governs the available state histories for display in the
+ * table, and once selected, in the renderer
+ *
+ * @author steelrj1
+ *
+ */
+public class StateHistoryCollection extends SaavtkItemManager<StateHistory> implements PropertyChangeListener, MetadataManager
 {
-    /**
-     *
-     */
-    private SmallBodyModel smallBodyModel;
-    /**
-     *
-     */
-    private ArrayList<StateHistoryKey> keys = new ArrayList<StateHistoryKey>();
-    /**
-     *
-     */
-    private List<StateHistory> simRuns = new ArrayList<StateHistory>();
-    /**
-     *
-     */
-    private StateHistory currentRun = null;
-    /**
-     *
-     */
-    private HashMap<StateHistory, TrajectoryActor> stateHistoryToRendererMap = new HashMap<StateHistory, TrajectoryActor>();
-    /**
-     *
-     */
-    private SpacecraftBody spacecraft;
-    /**
-     *
-     */
-    private double[] spacecraftPosition;
-    /**
-     *
-     */
-    private double[] earthPosition;
-    /**
-     *
-     */
-    private double[] sunPosition;
-
-    //Text Actors
-    /**
-     *
-     */
-    private TimeBarTextActor timeBarActor;
-    /**
-     *
-     */
-    private StatusBarTextActor statusBarTextActor;
-    /**
-     *
-     */
-    private vtkScalarBarActor scalarBarActor;
 	/**
 	 *
 	 */
-	private SpacecraftLabel spacecraftLabelActor;
-
-	//FOV Actors
-	/**
-	 *
-	 */
-	private SpacecraftFieldOfView spacecraftFov;
-
-	//Direction markers
-    /**
-     *
-     */
-    private SpacecraftDirectionMarker scDirectionMarker;
-	/**
-	 *
-	 */
-	private SunDirectionMarker sunDirectionMarker;
-	/**
-	 *
-	 */
-	private EarthDirectionMarker earthDirectionMarker;
+	private ArrayList<StateHistoryKey> keys = new ArrayList<StateHistoryKey>();
 
 	/**
 	 *
 	 */
-	double[] zAxis = {1,0,0};
+	private List<StateHistory> simRuns = new ArrayList<StateHistory>();
+
 	/**
 	 *
 	 */
+	private StateHistory currentRun = null;
+
 	/**
 	 *
 	 */
-	double markerRadius, markerHeight;
+	private StateHistoryRendererManager renderManager;
 
-    /**
-     *
-     */
-    private static final double JupiterScale = 75000;
-    /**
-     *
-     */
-    private double[] sunDirection;
+	/**
+	 *
+	 */
+	private String bodyName;
 
-    /**
-     *
-     */
-    private double[] currentLookFromDirection;
-//    private double[] currentLookToDirection;
+	final Key<List<StateHistory>> stateHistoryKey = Key.of("stateHistoryCollection");
 
-    /**
-     * @param smallBodyModel
-     */
-    public StateHistoryCollection(SmallBodyModel smallBodyModel)
-    {
-        this.smallBodyModel = smallBodyModel;
-        BoundingBox bb = smallBodyModel.getBoundingBox();
-        double width = Math.max((bb.xmax-bb.xmin), Math.max((bb.ymax-bb.ymin), (bb.zmax-bb.zmin)));
-        markerRadius = 0.02 * width;
-        markerHeight = markerRadius * 3.0;
-        this.spacecraftLabelActor = new SpacecraftLabel();
-        this.spacecraftLabelActor.VisibilityOff();
-
-        this.spacecraft = new SpacecraftBody(ConvertResourceToFile.convertResourceToRealFile(this, "/edu/jhuapl/sbmt/data/cassini-9k.stl", Configuration.getApplicationDataDir()).getAbsolutePath());
-        this.spacecraft.getActor().VisibilityOff();
-
-        this.scDirectionMarker = new SpacecraftDirectionMarker(markerRadius, markerHeight, 0, 0, 0);
-        this.scDirectionMarker.getActor().VisibilityOff();
-
-        this.earthDirectionMarker = new EarthDirectionMarker(markerRadius, markerHeight, 0, 0, 0);
-        this.earthDirectionMarker.getActor().VisibilityOff();
-
-        this.sunDirectionMarker = new SunDirectionMarker(markerRadius, markerHeight, 0, 0, 0);
-        this.sunDirectionMarker.getActor().VisibilityOff();
-    }
-
-    /**
-     * @param key
-     * @return
-     */
-    private boolean containsKey(StateHistoryKey key)
-    {
-        for (StateHistory run : simRuns)
-        {
-            if (run.getKey().equals(key))
-                return true;
-        }
-
-        return false;
-    }
-
-    /**
-     * @param key
-     * @return
-     */
-    private StateHistory getRunFromKey(StateHistoryKey key)
-    {
-        for (StateHistory run : simRuns)
-        {
-            if (run.getKey().equals(key))
-                return run;
-        }
-
-        return null;
-    }
-
-    /**
-     * @param row
-     * @return
-     */
-    public StateHistoryKey getKeyFromRow(int row)
-    {
-        if (keys.size() > row) {
-            return keys.get(row);
-        }
-        return null;
-    }
-
-    /**
-     * @param row
-     * @return
-     */
-    public StateHistory getRunFromRow(int row)
-    {
-        return getRunFromKey(getKeyFromRow(row));
-    }
-
-    /**
-     * @return
-     */
-    public StateHistory getCurrentRun()
-    {
-        return currentRun;
-    }
-
-    /**
-     * @param key
-     */
-    public void setCurrentRun(StateHistoryKey key)
-    {
-        StateHistory run = getRunFromKey(key);
-        if (run != null && run != currentRun)
-        {
-            currentRun = run;
-        }
-
-    }
-
-    /**
-     * @param run
-     */
-    public void setCurrentRun(StateHistory run)
-    {
-    	currentRun = run;
-    }
-
-    /**
-     * @param run
-     */
-    public void addRunToList(StateHistory run)
-    {
-         simRuns.add(run);
-         keys.add(run.getKey());
-         this.currentRun = run;
-         setAllItems(simRuns);
-    }
-
-    /**
-     * @param spacecraft
-     */
-    public void setSpacecraft(SpacecraftBody spacecraft)
-    {
-    	this.spacecraft = spacecraft;
-    }
-
-    /**
-     * @param run
-     * @return
-     */
-    public TrajectoryActor addRun(StateHistory run)
-    {
-        if (stateHistoryToRendererMap.get(run) != null)
-        {
-        	TrajectoryActor trajActor = stateHistoryToRendererMap.get(run);
-            trajActor.SetVisibility(1);
-            return trajActor;
-        }
-
-        // Get the trajectory actor the state history segment
-        TrajectoryActor trajectoryActor = new TrajectoryActor(run.getTrajectory());
-        stateHistoryToRendererMap.put(run, trajectoryActor);
-
-        trajectoryActor.setColoringFunction(StateHistoryColoringFunctions.PER_TABLE.getColoringFunction(), Colormaps.getNewInstanceOfBuiltInColormap("Rainbow"));
-
-        trajectoryActor.setMinMaxFraction(run.getMinDisplayFraction(), run.getMaxDisplayFraction());
-        trajectoryActor.VisibilityOn();
-        trajectoryActor.GetMapper().Update();
-        System.out.println("StateHistoryCollection: addRun: adding traj actor to run " + run + " for " + this);
-
-        this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
-        this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, trajectoryActor);
-
-        return trajectoryActor;
-    }
-
-    /**
-     * @param key
-     */
-    public void removeRun(StateHistoryKey key)
-    {
-        if (!containsKey(key))
-            return;
-
-        StateHistory run = getRunFromKey(key);
-        stateHistoryToRendererMap.remove(run);
-
-        this.currentRun = null;
-        this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
-        this.pcs.firePropertyChange(Properties.MODEL_REMOVED, null, run);
-    }
-
-    /**
-     * @param keys
-     */
-    public void removeRuns(StateHistoryKey[] keys)
-    {
-        for (StateHistoryKey key : keys) {
-            removeRun(key);
-        }
-    }
-
-    /**
-     * Remove all images of the specified source
-     * @param source
-     */
-//    public void removeRuns(StateHistorySource source)
-//    {
-//        for (StateHistoryModel run : simRuns)
-//            if (run.getKey().source == source)
-//                removeRun(run.getKey());
-//    }
-
-    /**
-     * @param show
-     */
-    public void setShowTrajectories(boolean show)
-    {
-    	//TODO fix
-//        for (StateHistory run : simRuns)
-//            run.setShowSpacecraft(show);
-    }
-
-    /**
-     *
-     */
-    public ArrayList<vtkProp> getProps()
-    {
-    	ArrayList<vtkProp> props = new ArrayList<vtkProp>();
-    	for (StateHistory history : stateHistoryToRendererMap.keySet())
-    		props.add(stateHistoryToRendererMap.get(history));
-
-   		props.add(spacecraft.getActor());
-   		props.add(scDirectionMarker.getActor());
-   		props.add(spacecraftLabelActor);
-   		props.add(earthDirectionMarker.getActor());
-   		props.add(sunDirectionMarker.getActor());
-
-//   		for (vtkProp prop : props)
-//   		{
-//   			prop.SetDragable(0);
-//   			prop.SetPickable(0);
-//   		}
-
-    	return props;
-
-    	//TODO fix
-//        if (currentRun != null)
-//            return currentRun.getProps();
-//        else
-//            return new ArrayList<vtkProp>();
-    }
-
-    /**
-     *
-     */
-    public void propertyChange(PropertyChangeEvent evt)
-    {
-        if (Properties.MODEL_CHANGED.equals(evt.getPropertyName()))
-            this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
-    }
-
-    /**
-     *
-     */
-    public String getClickStatusBarText(vtkProp prop, int cellId, double[] pickPosition)
-    {
-    	//TODO fix
-//        if (currentRun != null)
-//            return currentRun.getClickStatusBarText(prop, cellId, pickPosition);
-//        else
-            return "No simulation run selected";
-    }
-
-//    public String getRunName(vtkActor actor)
-//    {
-//        if (currentRun != null)
-//            return currentRun.getKey().name;
-//        else
-//            return "No simulation run selected";
-//    }
-
-    /**
-     * @param actor
-     * @return
-     */
-    public StateHistory getRun(vtkActor actor)
-    {
-        return currentRun;
-    }
-
-    /**
-     * @param key
-     * @return
-     */
-    public StateHistory getRun(StateHistoryKey key)
-    {
-        return getRunFromKey(key);
-    }
-
-    /**
-     * @param key
-     * @return
-     */
-    public boolean containsRun(StateHistoryKey key)
-    {
-        return containsKey(key);
-    }
-
-//    public void setTimeFraction(Double timeFraction)
-//    {
-//        if (currentRun != null)
-//           currentRun.setTimeFraction(timeFraction);
-//    }
-
-    /**
-     *
-     */
-    public Double getTimeFraction()
-    {
-        if (currentRun!= null)
-            return currentRun.getTimeFraction();
-        else
-            return null;
-    }
-
-    /**
-     * @param segment
-     * @return
-     */
-    public TrajectoryActor getTrajectoryActorForStateHistory(StateHistory segment)
-    {
-    	System.out.println("StateHistoryCollection: getTrajectoryActorForStateHistory: number entries " + stateHistoryToRendererMap.size() + " segment " + segment + " for " + this);
-    	return stateHistoryToRendererMap.get(segment);
-    }
-
-//    public void setOffset(double offset)
-//    {
-//        if (currentRun != null)
-//            currentRun.setOffset(offset);
-//    }
-//
-//    public double getOffset()
-//    {
-//        if (currentRun!= null)
-//            return currentRun.getOffset();
-//        else
-//            return 0.0;
-//    }
-
-    /**
-     *
-     */
-    public Double getPeriod()
-    {
-        if (currentRun != null)
-            return ((HasTime)currentRun).getPeriod();
-        else
-            return 0.0;
-    }
-
-    /**
-     * @return
-     */
-    public int size()
-    {
-        return simRuns.size();
-    }
-
-    /**
-     * @return
-     */
-    public List<StateHistoryKey> getKeys()
-    {
-        return keys;
-    }
-
-    /**
-     *
-     */
-    @Override
-	public ImmutableList<StateHistory> getAllItems()
+	/**
+	 * @param smallBodyModel
+	 */
+	public StateHistoryCollection(SmallBodyModel smallBodyModel)
 	{
-    	return ImmutableList.copyOf(simRuns);
+		this.renderManager = new StateHistoryRendererManager(smallBodyModel, pcs);
+		this.bodyName = smallBodyModel.getConfig().getShapeModelName();
 	}
 
-    /**
-     *
-     */
-    @Override
-    public int getNumItems()
-    {
-    	return simRuns.size();
-    }
-
-    /**
-     * @param segment
-     * @return
-     */
-    public boolean isStateHistoryMapped(StateHistory segment)
-    {
-    	return stateHistoryToRendererMap.get(segment) != null;
-    }
-
-    /**
-     * @param segment
-     * @return
-     */
-    public boolean getVisibility(StateHistory segment)
-    {
-    	if (isStateHistoryMapped(segment) == false ) return false;
-    	TrajectoryActor renderer = stateHistoryToRendererMap.get(segment);
-    	if (renderer == null) return false;
-        return (renderer.GetVisibility() == 1);
-    }
-
-    /**
-     * @param segment
-     * @param visibility
-     */
-    public void setVisibility(StateHistory segment, boolean visibility)
-    {
-    	TrajectoryActor renderer = stateHistoryToRendererMap.get(segment);
-    	int isVisible = (visibility == true) ? 1 : 0;
-        renderer.SetVisibility(isVisible);
-        this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, renderer);
-    }
-
-    /**
-     * @param segment
-     * @param color
-     */
-    public void setTrajectoryColor(StateHistory segment, Color color)
-    {
-    	double[] colorAsIntArray = new double[] {color.getRed(), color.getGreen(), color.getBlue(), color.getAlpha()};
-    	double[] colorAsDoubleArray = new double[] {color.getRed()/255.0, color.getGreen()/255.0, color.getBlue()/255.0, color.getAlpha()/255.0};
-    	segment.getTrajectory().setTrajectoryColor(colorAsIntArray);
-    	TrajectoryActor renderer = stateHistoryToRendererMap.get(segment);
-    	renderer.setColoringFunction(null, null);
-    	renderer.setTrajectoryColor(colorAsDoubleArray);
-    	refreshColoring(segment);
-//    	this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, renderer);
-    }
-
-    /**
-     * @param segment
-     */
-    public void refreshColoring(StateHistory segment)
-    {
-    	TrajectoryActor renderer = stateHistoryToRendererMap.get(segment);
-    	if (renderer == null) return;
-    	renderer.setTrajectoryColor(segment.getTrajectoryColor());
-    	this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, renderer);
-    }
-
-    //time updates
-    /**
-     * @param time
-     */
-    private void updateTimeBarActor(double time)
-    {
-//    	if (timeBarActor != null)
-//        {
-//            updateTimeBarPosition(renderer.getPanelWidth(), renderer.getPanelHeight());
-//            updateTimeBarValue(time);
-//        }
-    }
-
-    /**
-     * @param history
-     * @param time
-     */
-    private void updateSunPosition(StateHistory history, double time)
-    {
-	   sunPosition = history.getSunPosition();
-       vtkMatrix4x4 sunMarkerMatrix = new vtkMatrix4x4();
-
-
-       double[] sunMarkerPosition = new double[3];
-       sunDirection = new double[3];
-       double[] sunViewpoint = new double[3];
-       double[] sunViewDirection = new double[3];
-       MathUtil.unorm(sunPosition, sunDirection);
-       MathUtil.vscl(JupiterScale, sunDirection, sunViewpoint);
-       MathUtil.vscl(-1.0, sunDirection, sunViewDirection);
-       int result = smallBodyModel.computeRayIntersection(sunViewpoint, sunViewDirection, sunMarkerPosition);
-       for (int i=0; i<3; i++)
-       {
-           sunMarkerMatrix.SetElement(i, 3, sunMarkerPosition[i]);
-       }
-
-	   sunDirectionMarker.updateSunPosition(sunPosition, sunMarkerPosition);
-    }
-
-    /**
-     * @param history
-     * @param time
-     */
-    private void updateEarthPosition(StateHistory history, double time)
-    {
-        earthPosition = history.getEarthPosition();
-        vtkMatrix4x4 earthMarkerMatrix = new vtkMatrix4x4();
-
-        double[] earthMarkerPosition = new double[3];
-        double[] earthDirection = new double[3];
-        double[] earthViewpoint = new double[3];
-        double[] earthViewDirection = new double[3];
-        MathUtil.unorm(earthPosition, earthDirection);
-        MathUtil.vscl(JupiterScale, earthDirection, earthViewpoint);
-        MathUtil.vscl(-1.0, earthDirection, earthViewDirection);
-        int result = smallBodyModel.computeRayIntersection(earthViewpoint, earthViewDirection, earthMarkerPosition);
-        for (int i=0; i<3; i++)
-        {
-            earthMarkerMatrix.SetElement(i, 3, earthMarkerPosition[i]);
-        }
-
-        earthDirectionMarker.updateEarthPosition(earthPosition, earthMarkerPosition);
-
-    }
-
-    /**
-     * @param history
-     * @param time
-     */
-    private void updateSpacecraftPosition(StateHistory history, double time)
-    {
-    	vtkMatrix4x4 spacecraftBodyMatrix = new vtkMatrix4x4();
-        vtkMatrix4x4 spacecraftIconMatrix = new vtkMatrix4x4();
-        vtkMatrix4x4 fovMatrix = new vtkMatrix4x4();
-        vtkMatrix4x4 fovRotateXMatrix = new vtkMatrix4x4();
-        vtkMatrix4x4 fovRotateYMatrix = new vtkMatrix4x4();
-        vtkMatrix4x4 fovRotateZMatrix = new vtkMatrix4x4();
-        vtkMatrix4x4 fovScaleMatrix = new vtkMatrix4x4();
-
-        double iconScale = 1.0;
-        // set to identity
-        spacecraftBodyMatrix.Identity();
-        spacecraftIconMatrix.Identity();
-        fovMatrix.Identity();
-        fovRotateXMatrix.Identity();
-        fovRotateYMatrix.Identity();
-        fovRotateZMatrix.Identity();
-        double[] xaxis = history.getCurrentValue().getSpacecraftXAxis();
-        double[] yaxis = history.getCurrentValue().getSpacecraftYAxis();
-        double[] zaxis = history.getCurrentValue().getSpacecraftZAxis();
-        // set body orientation matrix
-        for (int i=0; i<3; i++)
-        {
-            spacecraftBodyMatrix.SetElement(i, 0, xaxis[i]);
-            spacecraftBodyMatrix.SetElement(i, 1, yaxis[i]);
-            spacecraftBodyMatrix.SetElement(i, 2, zaxis[i]);
-        }
-
-        // create the icon matrix, which is just the body matrix scaled by a factor
-        for (int i=0; i<3; i++)
-            spacecraftIconMatrix.SetElement(i, i, iconScale);
-        spacecraftIconMatrix.Multiply4x4(spacecraftIconMatrix, spacecraftBodyMatrix, spacecraftIconMatrix);
-
-
-        spacecraftPosition = history.getSpacecraftPosition();
-        double[] spacecraftMarkerPosition = new double[3];
-        double[] spacecraftDirection = new double[3];
-        double[] spacecraftViewpoint = new double[3];
-        double[] spacecraftViewDirection = new double[3];
-        MathUtil.unorm(spacecraftPosition, spacecraftDirection);
-        MathUtil.vscl(JupiterScale, spacecraftDirection, spacecraftViewpoint);
-        MathUtil.vscl(-1.0, spacecraftDirection, spacecraftViewDirection);
-        int result = smallBodyModel.computeRayIntersection(spacecraftViewpoint, spacecraftViewDirection, spacecraftMarkerPosition);
-
-        //rotates spacecraft pointer to point in direction of spacecraft - Alex W
-        double[] spacecraftPos = spacecraftMarkerPosition;
-        double[] spacecraftPosDirection = new double[3];
-        MathUtil.unorm(spacecraftPos, spacecraftPosDirection);
-        double[] rotationAxisSpacecraft = new double[3];
-        MathUtil.vcrss(spacecraftPosDirection, zAxis, rotationAxisSpacecraft);
-
-        double rotationAngleSpacecraft = ((180.0/Math.PI)*MathUtil.vsep(zAxis, spacecraftPosDirection));
-
-        vtkTransform spacecraftMarkerTransform = new vtkTransform();
-        spacecraftMarkerTransform.Translate(spacecraftPos);
-        spacecraftMarkerTransform.RotateWXYZ(-rotationAngleSpacecraft, rotationAxisSpacecraft[0], rotationAxisSpacecraft[1], rotationAxisSpacecraft[2]);
-
-     // set translation
-        for (int i=0; i<3; i++)
-        {
-            spacecraftBodyMatrix.SetElement(i, 3, spacecraftPosition[i]);
-            spacecraftIconMatrix.SetElement(i, 3, spacecraftPosition[i]);
-//            fovMatrix.SetElement(i, 3, spacecraftPosition[i]);
-
-        }
-
-        spacecraft.getActor().SetUserMatrix(spacecraftIconMatrix);
-
-        spacecraftLabelActor.SetAttachmentPoint(spacecraftPosition);
-        spacecraftLabelActor.setDistanceText(history.getCurrentValue(), spacecraftPosition, smallBodyModel);
-
-//        spacecraftFovActor.SetUserMatrix(fovMatrix);
-        //            spacecraftFovActor.SetUserMatrix(spacecraftBodyMatrix);
-
-        scDirectionMarker.getActor().SetUserTransform(spacecraftMarkerTransform);
-
-//        spacecraftBoresight.Modified();
-        spacecraft.getActor().Modified();
-        scDirectionMarker.getActor().Modified();
-        spacecraftLabelActor.Modified();
-//        spacecraftFov.Modified();
-//        spacecraftMarkerBody.Modified();
-    }
-
-    /**
-     * @param time
-     */
-    private void updateLighting(double time)
-    {
-//    	// toggle for lighting - Alex W
-//        if (timeFraction >= 0.0 && showLighting)
-//        {
-//            renderer.setFixedLightDirection(sunDirection);
-//            renderer.setLighting(LightingType.FIXEDLIGHT);
-//            updateActorVisibility();
-//        }
-//        else
-//            renderer.setLighting(LightingType.LIGHT_KIT);
-    }
-
 	/**
-	 * @param lookDirection
-	 * @param scalingFactor
+	 * @param key
 	 * @return
 	 */
-	public double[] updateLookDirection(RendererLookDirection lookDirection, double scalingFactor)
-    {
-		double[] focalpoint = {0,0,0};
-
-
-		// set camera to earth, spacecraft, or sun views - Alex W
-		if(lookDirection == RendererLookDirection.EARTH)
+	private boolean containsKey(StateHistoryKey key)
+	{
+		for (StateHistory run : simRuns)
 		{
-			double[] newEarthPos = new double[3];
-			MathUtil.unorm(earthPosition, newEarthPos);
-			MathUtil.vscl(scalingFactor, newEarthPos, newEarthPos);
-		    currentLookFromDirection = newEarthPos;
-
-			return newEarthPos;
-//			renderer.setCameraOrientation(newEarthPos, renderer.getCameraFocalPoint(), upVector, renderer.getCameraViewAngle());
+			if (run.getKey().equals(key))
+				return true;
 		}
-		else if(lookDirection == RendererLookDirection.SPACECRAFT)
+
+		return false;
+	}
+
+	/**
+	 * @param key
+	 * @return
+	 */
+	private StateHistory getRunFromKey(StateHistoryKey key)
+	{
+		for (StateHistory run : simRuns)
 		{
-			double[] boresight = new double[] {currentRun.getSpacecraftPosition()[0]*0.9,
-					currentRun.getSpacecraftPosition()[1]*0.9,
-					currentRun.getSpacecraftPosition()[2]*0.9
-			};
-			currentLookFromDirection = boresight;
-			return boresight;
-//			renderer.setCameraOrientation(currentFlybyStateHistory.getSpacecraftPosition(), renderer.getCameraFocalPoint(), upVector, renderer.getCameraViewAngle());
+			if (run.getKey().equals(key))
+				return run;
 		}
-		else if(lookDirection == RendererLookDirection.SUN)
+
+		return null;
+	}
+
+	/**
+	 * @return
+	 */
+	public StateHistory getCurrentRun()
+	{
+		return currentRun;
+	}
+
+	/**
+	 * @param run
+	 */
+	public void setCurrentRun(StateHistory run)
+	{
+		System.out.println("StateHistoryCollection: setCurrentRun: setting current run " + run);
+		currentRun = run;
+	}
+
+	/**
+	 * @param run
+	 */
+	public void addRunToList(StateHistory run)
+	{
+		simRuns.add(run);
+		keys.add(run.getKey());
+		setCurrentRun(run);
+		setAllItems(simRuns);
+	}
+
+	/**
+	 * @param spacecraft
+	 */
+	public void setSpacecraft(SpacecraftBody spacecraft)
+	{
+		renderManager.setSpacecraft(spacecraft);
+	}
+
+	/**
+	 * @param run
+	 * @return
+	 */
+	public TrajectoryActor addRun(StateHistory run)
+	{
+		return renderManager.addRun(run);
+	}
+
+	/**
+	 * @param key
+	 */
+	public void removeRun(StateHistoryKey key)
+	{
+		if (!containsKey(key))
+			return;
+
+		StateHistory run = getRunFromKey(key);
+		this.currentRun = null;
+		renderManager.removeRun(run);
+	}
+
+	/**
+	 * @param keys
+	 */
+	public void removeRuns(StateHistoryKey[] keys)
+	{
+		for (StateHistoryKey key : keys)
 		{
-			double[] newSunPos = new double[3];
-			MathUtil.unorm(sunPosition, newSunPos);
-			MathUtil.vscl(scalingFactor, newSunPos, newSunPos);
-			currentLookFromDirection = newSunPos;
-			return newSunPos;
-//			renderer.setCameraOrientation(newSunPos, renderer.getCameraFocalPoint(), upVector, renderer.getCameraViewAngle());
+			removeRun(key);
 		}
-		else if (lookDirection == RendererLookDirection.SPACECRAFT_THIRD)
-		{
-			double[] thirdPerson = new double[] {currentRun.getSpacecraftPosition()[0]*1.1,
-					currentRun.getSpacecraftPosition()[1]*1.1,
-					currentRun.getSpacecraftPosition()[2]*1.1
-			};
-			currentLookFromDirection = thirdPerson;
-			return thirdPerson;
-		}
-		else //free view mode
-		{
-			currentLookFromDirection = currentRun.getSpacecraftPosition();
-			return currentRun.getSpacecraftPosition();
-		}
-    }
+	}
 
-    /**
-     *
-     */
-    public void setTimeFraction(Double timeFraction)
-    {
-    	StateHistory state = getCurrentRun();
-        if (state != null && spacecraft.getActor() != null)
-        {
-        	updateSpacecraftPosition(state, timeFraction);
-        	updateEarthPosition(state, timeFraction);
-        	updateSunPosition(state, timeFraction);
+	/**
+	 * @param show
+	 */
+	public void setShowTrajectories(boolean show)
+	{
+		// TODO fix
+		// for (StateHistory run : simRuns)
+		// run.setShowSpacecraft(show);
+	}
 
+	/**
+	 * @param segment
+	 * @return
+	 */
+	public boolean isStateHistoryMapped(StateHistory segment)
+	{
+		return renderManager.isStateHistoryMapped(segment);
+	}
 
+	/**
+	 * @param segment
+	 * @param color
+	 */
+	public void setTrajectoryColor(StateHistory segment, Color color)
+	{
+		renderManager.setTrajectoryColor(segment, color);
+	}
 
-//
-//            String speedText = String.format("%7.1f km %7.3f km/sec   .", radius, speed);
-//
-//            // set the current orientation
-//
-//
-//            // create spacecraft matrices
-//
-//
-//            vtkMatrix4x4 sunMarkerMatrix = new vtkMatrix4x4();
-//            vtkMatrix4x4 earthMarkerMatrix = new vtkMatrix4x4();
-//
-//            vtkMatrix4x4 spacecraftInstrumentMatrix = new vtkMatrix4x4();
-//
-//            // set to identity
-//
-//            sunMarkerMatrix.Identity();
-//            earthMarkerMatrix.Identity();
-//            //fovMatrix = new vtkMatrix4x4
-//
-//
-//            // rotate the FOV about the Z axis
-//            //            double sinRotZ = Math.sin(spacecraftRotationZ);
-//            //            double cosRotZ = Math.cos(spacecraftRotationZ);
-//            //            fovRotateZMatrix.SetElement(0, 0, cosRotZ);
-//            //            fovRotateZMatrix.SetElement(1, 1, cosRotZ);
-//            //            fovRotateZMatrix.SetElement(0, 1, sinRotZ);
-//            //            fovRotateZMatrix.SetElement(1, 0, -sinRotZ);
-//
-//            // scale the FOV
-//            //            fovScaleMatrix.SetElement(0, 0, fovHeight);
-//            //            fovScaleMatrix.SetElement(1, 1, fovWidth);
-//            //            fovScaleMatrix.SetElement(2, 2, fovDepth);
-//
-//            // rotate the FOV about the Y axis
-//            //            double sinRotY = Math.sin(spacecraftRotationY);
-//            //            double cosRotY = Math.cos(spacecraftRotationY);
-//            //            fovRotateYMatrix.SetElement(0, 0, cosRotY);
-//            //            fovRotateYMatrix.SetElement(2, 2, cosRotY);
-//            //            fovRotateYMatrix.SetElement(0, 2, sinRotY);
-//            //            fovRotateYMatrix.SetElement(2, 0, -sinRotY);
-//            //
-//            //            fovMatrix.Multiply4x4(fovScaleMatrix, fovRotateZMatrix, spacecraftInstrumentMatrix);
-//            //            fovMatrix.Multiply4x4(fovRotateYMatrix, spacecraftInstrumentMatrix, spacecraftInstrumentMatrix);
-//            //
-//            ////            spacecraftFovMatrix.Multiply4x4(fovRotateYMatrix, fovRotateZMatrix, spacecraftInstrumentMatrix);
-//            //
-//            //            fovMatrix.Multiply4x4(spacecraftBodyMatrix, spacecraftInstrumentMatrix, fovMatrix);
-//
-//            // set translation
-//            for (int i=0; i<3; i++)
-//            {
-//                sunMarkerMatrix.SetElement(i, 3, sunMarkerPosition[i]);
-//                earthMarkerMatrix.SetElement(i, 3, earthMarkerPosition[i]);
-//            }
-//
-//            //            spacecraftBoresightActor.SetUserMatrix(matrix);
-//
-////            monolithBodyActor.SetUserMatrix(spacecraftBodyMatrix);
-//
-//
-//            earthMarkerActor.SetUserMatrix(earthMarkerMatrix);
-//            //            earthMarkerHeadActor.SetUserMatrix(earthMarkerMatrix);
-//            //sunMarkerActor.SetUserMatrix(sunMarkerMatrix);
-//
-////          monolithBody.Modified();
-//
-//
-//            earthMarkerHead.Modified();
-//            earthMarkerBody.Modified();
-//            sunAssembly.Modified();
+	/**
+	 *
+	 */
+	public void propertyChange(PropertyChangeEvent evt)
+	{
+		if (Properties.MODEL_CHANGED.equals(evt.getPropertyName()))
+			this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
+	}
 
-            this.pcs.firePropertyChange("POSITION_CHANGED" /*Properties.MODEL_CHANGED*/, null, null);
-        }
-    }
+	/**
+	 *
+	 */
+	public String getClickStatusBarText(vtkProp prop, int cellId, double[] pickPosition)
+	{
+		// TODO fix
+		// if (currentRun != null)
+		// return currentRun.getClickStatusBarText(prop, cellId, pickPosition);
+		// else
+		return "No simulation run selected";
+	}
 
+	public void updateTimeBarValue()
+	{
+		renderManager.updateTimeBarValue(getCurrentRun().getTime());
+	}
 
-    /**
-     * @param color
-     */
-    public void setSpacecraftColor(Color color)
-    {
-    	spacecraft.setColor(color);
-    	this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, spacecraft);
-    }
+	public void updateTimeBarValue(double time)
+	{
+		renderManager.updateTimeBarValue(time);
+	}
 
-    /**
-     * @param visible
-     */
-    public void setSpacecraftVisibility(boolean visible)
-    {
-    	spacecraft.getActor().SetVisibility(visible == true ? 1: 0);
-    	this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, spacecraft);
-    }
+	public void updateTimeBarLocation(int width, int height)
+	{
+		renderManager.updateTimeBarLocation(width, height);
+	}
 
-    /**
-     * @param visible
-     */
-    public void setSpacecraftLabelVisibility(boolean visible)
-    {
-    	spacecraftLabelActor.SetVisibility(visible == true ? 1: 0);
-    	this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, spacecraftLabelActor);
-    }
+	public void updateStatusBarValue(String text)
+	{
+		renderManager.updateStatusBarValue(text);
+	}
 
-    /**
-     * @param visible
-     */
-    public void setSpacecraftDirectionMarkerVisibility(boolean visible)
-    {
-    	scDirectionMarker.getActor().SetVisibility(visible == true ? 1: 0);
-    	this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, scDirectionMarker);
-    }
+	public void updateStatusBarLocation(int width, int height)
+	{
+		renderManager.updateStatusBarLocation(width, height);
+	}
 
-    /**
-     * @param radius
-     */
-    public void setSpacecraftDirectionMarkerSize(int radius)
-    {
-    	scDirectionMarker.setPointerSize(radius);
-    	this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, scDirectionMarker);
-    }
+	/**
+	 * @param segment
+	 * @return
+	 */
+	public TrajectoryActor getTrajectoryActorForStateHistory(StateHistory segment)
+	{
+		return renderManager.getTrajectoryActorForStateHistory(segment);
+	}
 
-    /**
-     * @param visible
-     */
-    public void setEarthDirectionMarkerVisibility(boolean visible)
-    {
-    	earthDirectionMarker.getActor().SetVisibility(visible == true ? 1: 0);
-    	this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, earthDirectionMarker);
-    }
+	/**
+	 *
+	 */
+	public Double getPeriod()
+	{
+		if (currentRun != null)
+			return currentRun.getPeriod();
+		else
+			return 0.0;
+	}
 
-    /**
-     * @param scale
-     */
-    public void setSpacecraftSize(double scale)
-    {
-    	spacecraft.setScale(scale);
-    	this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, spacecraft);
-    }
+	/**
+	 * @return
+	 */
+	public List<StateHistoryKey> getKeys()
+	{
+		return keys;
+	}
 
-    /**
-     * @param radius
-     */
-    public void setEarthDirectionMarkerSize(int radius)
-    {
-    	earthDirectionMarker.setPointerSize(radius);
-    	this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, earthDirectionMarker);
-    }
+	/**
+	 *
+	 */
+	@Override
+	public ImmutableList<StateHistory> getAllItems()
+	{
+		return ImmutableList.copyOf(simRuns);
+	}
 
-    /**
-     * @param visible
-     */
-    public void setSunDirectionMarkerVisibility(boolean visible)
-    {
-    	sunDirectionMarker.getActor().SetVisibility(visible == true ? 1: 0);
-    	this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, sunDirectionMarker);
-    }
+	/**
+	 *
+	 */
+	@Override
+	public int getNumItems()
+	{
+		return simRuns.size();
+	}
 
-    /**
-     * @param radius
-     */
-    public void setSunDirectionMarkerSize(int radius)
-    {
-    	sunDirectionMarker.setPointerSize(radius);
-    	this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, sunDirectionMarker);
-    }
+	public boolean getVisibility(StateHistory segment)
+	{
+		return renderManager.getVisibility(segment);
+	}
 
-    /**
-     * @param distanceText
-     */
-    public void setDistanceText(String distanceText)
-    {
-    	spacecraftLabelActor.setDistanceString(distanceText);
-    	this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, spacecraftLabelActor);
-    }
+	/**
+	 * @param segment
+	 * @param visibility
+	 */
+	public void setVisibility(StateHistory segment, boolean visibility)
+	{
+		renderManager.setVisibility(segment, visibility);
+	}
 
-    /**
-     * @param distanceTextFont
-     */
-    public void setDistanceTextFont(Font distanceTextFont)
-    {
-    	spacecraftLabelActor.setDistanceStringFont(distanceTextFont);
-    	this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, spacecraftLabelActor);
-    }
+	/**
+	 * @param segment
+	 */
+	public void refreshColoring(StateHistory segment)
+	{
+		renderManager.refreshColoring(segment);
+	}
 
-    /**
-     * @param isVisible
-     */
-    public void setDistanceTextVisiblity(boolean isVisible)
-    {
-    	int visible = (isVisible) ? 1 : 0;
-    	spacecraftLabelActor.SetVisibility(visible);
-    	this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, spacecraftLabelActor);
-    }
+	/**
+	 *
+	 */
+	public void setTimeFraction(Double timeFraction)
+	{
+		renderManager.setTimeFraction(timeFraction, getCurrentRun());
+		renderManager.updateTimeBarValue(getCurrentRun().getTime());
+	}
 
-    /**
-     * @param color
-     */
-    public void setEarthDirectionMarkerColor(Color color)
-    {
-    	earthDirectionMarker.setColor(color);
-    	this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, earthDirectionMarker);
-    }
+	/**
+	 * @param color
+	 */
+	public void setSpacecraftColor(Color color)
+	{
+		renderManager.setSpacecraftColor(color);
+	}
 
-    /**
-     * @param color
-     */
-    public void setSunDirectionMarkerColor(Color color)
-    {
-    	sunDirectionMarker.setColor(color);
-    	this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, sunDirectionMarker);
-    }
+	/**
+	 * @param visible
+	 */
+	public void setSpacecraftVisibility(boolean visible)
+	{
+		renderManager.setSpacecraftVisibility(visible);
+	}
 
-    /**
-     * @param color
-     */
-    public void setScDirectionMarkerColor(Color color)
-    {
-    	scDirectionMarker.setColor(color);
-    	this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, scDirectionMarker);
-    }
+	/**
+	 * @param visible
+	 */
+	public void setSpacecraftLabelVisibility(boolean visible)
+	{
+		renderManager.setSpacecraftLabelVisibility(visible);
+	}
+
+	/**
+	 * @param visible
+	 */
+	public void setSpacecraftDirectionMarkerVisibility(boolean visible)
+	{
+		renderManager.setSpacecraftDirectionMarkerVisibility(visible);
+	}
+
+	/**
+	 * @param radius
+	 */
+	public void setSpacecraftDirectionMarkerSize(int radius)
+	{
+		renderManager.setSpacecraftDirectionMarkerSize(radius);
+	}
+
+	/**
+	 * @param visible
+	 */
+	public void setEarthDirectionMarkerVisibility(boolean visible)
+	{
+		renderManager.setEarthDirectionMarkerVisibility(visible);
+	}
+
+	/**
+	 * @param scale
+	 */
+	public void setSpacecraftSize(double scale)
+	{
+		renderManager.setSpacecraftSize(scale);
+	}
+
+	public String getBodyName()
+	{
+		return bodyName;
+	}
+
+	/**
+	 * @param radius
+	 */
+	public void setEarthDirectionMarkerSize(int radius)
+	{
+		renderManager.setEarthDirectionMarkerSize(radius);
+	}
+
+	/**
+	 * @param visible
+	 */
+	public void setSunDirectionMarkerVisibility(boolean visible)
+	{
+		renderManager.setSunDirectionMarkerVisibility(visible);
+	}
+
+	/**
+	 * @param radius
+	 */
+	public void setSunDirectionMarkerSize(int radius)
+	{
+		renderManager.setSunDirectionMarkerSize(radius);
+	}
+
+	/**
+	 * @param distanceText
+	 */
+	public void setDistanceText(String distanceText)
+	{
+		renderManager.setDistanceText(distanceText);
+	}
+
+	/**
+	 * @param distanceTextFont
+	 */
+	public void setDistanceTextFont(Font distanceTextFont)
+	{
+		renderManager.setDistanceTextFont(distanceTextFont);
+	}
+
+	/**
+	 * @param isVisible
+	 */
+	public void setDistanceTextVisiblity(boolean isVisible)
+	{
+		renderManager.setDistanceTextVisiblity(isVisible);
+	}
+
+	/**
+	 * @param color
+	 */
+	public void setEarthDirectionMarkerColor(Color color)
+	{
+		renderManager.setEarthDirectionMarkerColor(color);
+	}
+
+	/**
+	 * @param color
+	 */
+	public void setSunDirectionMarkerColor(Color color)
+	{
+		renderManager.setSunDirectionMarkerColor(color);
+	}
+
+	/**
+	 * @param color
+	 */
+	public void setScDirectionMarkerColor(Color color)
+	{
+		renderManager.setScDirectionMarkerColor(color);
+	}
 
 	/**
 	 * @return
 	 */
 	public double[] getCurrentLookFromDirection()
 	{
-		return currentLookFromDirection;
+		return renderManager.getCurrentLookFromDirection();
 	}
 
 	/**
@@ -1053,13 +467,7 @@ public class StateHistoryCollection extends SaavtkItemManager<StateHistory> /*Ab
 	 */
 	public void setTrajectoryMinMax(StateHistory run, double min, double max)
 	{
-		TrajectoryActor trajActor = stateHistoryToRendererMap.get(run);
-		if (trajActor != null)
-        {
-			trajActor.setMinMaxFraction(min, max);
-			trajActor.Modified();
-			this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, trajActor);
-        }
+		renderManager.setTrajectoryMinMax(run, min, max);
 	}
 
 	/**
@@ -1069,15 +477,42 @@ public class StateHistoryCollection extends SaavtkItemManager<StateHistory> /*Ab
 	{
 		for (StateHistory hist : getAllItems())
 		{
-			setVisibility(hist, history.contains(hist));
+			renderManager.setVisibility(hist, history.contains(hist));
 		}
 	}
 
+	public ArrayList<vtkProp> getProps()
+	{
+		return renderManager.getProps();
+	}
+
 	/**
+	 * @param lookDirection
+	 * @param scalingFactor
 	 * @return
 	 */
-	public SmallBodyModel getSmallBodyModel()
+	public double[] updateLookDirection(RendererLookDirection lookDirection)
 	{
-		return smallBodyModel;
+		return renderManager.updateLookDirection(lookDirection);
+	}
+
+	/**
+	 * Stores the model to metadata
+	 */
+	@Override
+	public Metadata store()
+	{
+		SettableMetadata result = SettableMetadata.of(Version.of(1, 0));
+    	result.put(stateHistoryKey, simRuns);
+    	return result;
+	}
+
+	/**
+	 * Fetches the model from metadata
+	 */
+	@Override
+	public void retrieve(Metadata source)
+	{
+		simRuns = source.get(stateHistoryKey);
 	}
 }

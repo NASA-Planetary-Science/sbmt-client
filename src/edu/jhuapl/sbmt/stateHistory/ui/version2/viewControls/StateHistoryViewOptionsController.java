@@ -86,7 +86,8 @@ public class StateHistoryViewOptionsController
 			RendererLookDirection lookDir = model.getRendererLookDirectionForStateHistory(runs.getCurrentRun());
 			Double inputAngle = model.getViewInputAngleForStateHistory(runs.getCurrentRun());
 			view.getViewOptions().setSelectedItem(lookDir);
-			view.getViewInputAngle().setText("" + inputAngle);
+			if (inputAngle != null)
+				view.getViewInputAngle().setText("" + inputAngle);
 		});
 
 		view.getViewOptions().setSelectedIndex(0);
@@ -105,7 +106,7 @@ public class StateHistoryViewOptionsController
 		if (currentRun == null) return; // can't do any view things if we don't have a trajectory / time history
 
 		Vector3D targOrig = new Vector3D(renderer.getCameraFocalPoint());
-		Vector3D targAxis = new Vector3D(runs.updateLookDirection(selectedItem, historyModel.getScalingFactor()));
+		Vector3D targAxis = new Vector3D(runs.updateLookDirection(selectedItem));
 		renderer.setCameraFocalPoint(new double[]{ 0, 0, 0 });
 		double[] lookFromDirection;
 		if (selectedItem == RendererLookDirection.FREE_VIEW)
@@ -117,7 +118,7 @@ public class StateHistoryViewOptionsController
 		}
 		else
 		{
-			lookFromDirection = runs.updateLookDirection(selectedItem, historyModel.getScalingFactor());
+			lookFromDirection = runs.updateLookDirection(selectedItem);
 			renderer.setCameraOrientation(lookFromDirection, renderer.getCameraFocalPoint(), upVector,
 					renderer.getCameraViewAngle());
 			((RenderPanel) renderer.getRenderWindowPanel()).setZoomOnly(true, targAxis, targOrig);

@@ -1,6 +1,4 @@
-package edu.jhuapl.sbmt.stateHistory.model;
-
-import edu.jhuapl.sbmt.stateHistory.model.animator.AnimationFrame;
+package edu.jhuapl.sbmt.stateHistory.model.animator;
 
 public abstract class AnimatorFrameRunnable implements Runnable
 {

@@ -1,6 +1,7 @@
 package edu.jhuapl.sbmt.stateHistory.controllers;
 
 import java.io.File;
+import java.io.IOException;
 
 import javax.swing.JOptionPane;
 
@@ -10,9 +11,9 @@ import edu.jhuapl.saavtk.gui.dialog.CustomFileChooser;
 import edu.jhuapl.saavtk.gui.render.Renderer;
 import edu.jhuapl.sbmt.client.SmallBodyModel;
 import edu.jhuapl.sbmt.stateHistory.model.DefaultStateHistoryModelChangedListener;
-import edu.jhuapl.sbmt.stateHistory.model.StateHistoryIOException;
 import edu.jhuapl.sbmt.stateHistory.model.StateHistoryModel;
 import edu.jhuapl.sbmt.stateHistory.model.interfaces.StateHistory;
+import edu.jhuapl.sbmt.stateHistory.model.io.StateHistoryIOException;
 import edu.jhuapl.sbmt.stateHistory.model.stateHistory.StateHistoryCollection;
 import edu.jhuapl.sbmt.stateHistory.ui.version2.table.StateHistoryTableView;
 
@@ -54,7 +55,7 @@ public class StateHistoryIntervalSelectionController
 			{
 				historyModel.loadIntervalFromFile(file, bodyModel);
 			}
-        	catch (StateHistoryIOException e1)
+        	catch (StateHistoryIOException | IOException e1)
 			{
         		JOptionPane.showMessageDialog(null, e1.getMessage(), "Loading Error",
                         JOptionPane.ERROR_MESSAGE);
@@ -76,7 +77,7 @@ public class StateHistoryIntervalSelectionController
                 StateHistory history = runs.getSelectedItems().asList().get(0);
                 try
 				{
-					historyModel.saveRowToFile(history, file);
+					historyModel.saveHistoryToFile(history, file);
 				}
                 catch (StateHistoryIOException e1)
 				{
@@ -136,6 +137,7 @@ public class StateHistoryIntervalSelectionController
 				history.getTrajectory().setFaded(!runs.getSelectedItems().contains(history));
 				runs.refreshColoring(history);
 			}
+			runs.updateTimeBarValue();
 
 		});
     }

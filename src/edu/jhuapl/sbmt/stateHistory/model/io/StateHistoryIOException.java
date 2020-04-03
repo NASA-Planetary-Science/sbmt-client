@@ -1,4 +1,4 @@
-package edu.jhuapl.sbmt.stateHistory.model;
+package edu.jhuapl.sbmt.stateHistory.model.io;
 
 /**
  * @author steelrj1

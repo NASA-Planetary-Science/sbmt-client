@@ -1,11 +1,13 @@
 package edu.jhuapl.sbmt.stateHistory.controllers;
 
 import java.awt.Cursor;
+import java.lang.reflect.InvocationTargetException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.function.Function;
 
+import javax.swing.JOptionPane;
 import javax.swing.JSpinner;
 import javax.swing.ProgressMonitor;
 import javax.swing.SpinnerDateModel;
@@ -15,6 +17,7 @@ import org.joda.time.DateTime;
 import com.jidesoft.utils.SwingWorker;
 
 import edu.jhuapl.sbmt.stateHistory.model.StateHistoryModel;
+import edu.jhuapl.sbmt.stateHistory.model.io.StateHistoryInputException;
 import edu.jhuapl.sbmt.stateHistory.model.stateHistory.StateHistoryKey;
 import edu.jhuapl.sbmt.stateHistory.ui.version2.DateTimeSpinner;
 import edu.jhuapl.sbmt.stateHistory.ui.version2.StateHistoryIntervalGenerationPanel;
@@ -68,11 +71,19 @@ public class StateHistoryIntervalGenerationController
         //Adds an action listener to the "Get interval" button.
         view.getGetIntervalButton().addActionListener(e -> {
             view.setCursor(new Cursor(Cursor.WAIT_CURSOR));
-            double total = DateTimeSpinner.getTimeSpanBetween(view.getStartTimeSpinner(), view.getStopTimeSpinner());
-            DateTime dtStart2 = view.getStartTimeSpinner().getISOFormattedTime();
-            DateTime dtEnd2 = view.getStopTimeSpinner().getISOFormattedTime();
-            historyModel.setStartTime(dtStart2);
-            historyModel.setEndTime(dtEnd2);
+            double total = DateTimeSpinner.getDaysBetween(view.getStartTimeSpinner(), view.getStopTimeSpinner());
+
+    		// check length of interval
+    		if (total > 10.0)
+    		{
+    			int result = JOptionPane.showConfirmDialog(getView(),
+    					"The interval you selected is longer than 10 days and may take a while to generate. \nAre you sure you want to create it?");
+    			if (result == JOptionPane.CANCEL_OPTION || result == JOptionPane.NO_OPTION)
+    				return;
+    		}
+
+            DateTime startTime = view.getStartTimeSpinner().getISOFormattedTime();
+            DateTime endTime = view.getStopTimeSpinner().getISOFormattedTime();
 
             // TODO check key generation
             // generate random stateHistoryKey to use for this interval
@@ -87,20 +98,31 @@ public class StateHistoryIntervalGenerationController
     			@Override
     			protected Void doInBackground() throws Exception
     			{
-    				int success = historyModel.createNewTimeInterval(key, total, "", new Function<Double, Void>()
-					{
-						@Override
-						public Void apply(Double t)
+    				try
+    				{
+	    				historyModel.createNewTimeInterval(key, startTime, endTime, total, "", new Function<Double, Void>()
 						{
-							progressMonitor.setProgress(t.intValue());
-							return null;
-						}
-					});
+							@Override
+							public Void apply(Double t)
+							{
+								progressMonitor.setProgress(t.intValue());
+								return null;
+							}
+						});
+    				}
+    				catch (StateHistoryInputException shie)
+    				{
+    					JOptionPane.showMessageDialog(null, shie.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+    				}
+    				catch (InvocationTargetException | InterruptedException ie)
+    				{
+    					JOptionPane.showMessageDialog(null, "Error adding state history; see console for details", "Error", JOptionPane.ERROR_MESSAGE);
+    					ie.printStackTrace();
+    				}
     		        return null;
     			}
     		};
     		task.execute();
-
 
             view.setCursor(Cursor.getDefaultCursor());
         });

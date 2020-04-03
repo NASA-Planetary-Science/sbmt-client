@@ -29,9 +29,9 @@ import org.joda.time.DateTime;
 import org.joda.time.format.ISODateTimeFormat;
 
 import edu.jhuapl.saavtk.gui.render.Renderer;
-import edu.jhuapl.sbmt.stateHistory.model.AnimatorFrameRunnable;
 import edu.jhuapl.sbmt.stateHistory.model.StateHistoryModel;
 import edu.jhuapl.sbmt.stateHistory.model.animator.AnimationFrame;
+import edu.jhuapl.sbmt.stateHistory.model.animator.AnimatorFrameRunnable;
 import edu.jhuapl.sbmt.stateHistory.model.animator.MovieGenerator;
 import edu.jhuapl.sbmt.stateHistory.model.stateHistory.StateHistoryCollection;
 import edu.jhuapl.sbmt.stateHistory.rendering.animator.Animator;
@@ -55,6 +55,7 @@ public class StateHistoryIntervalPlaybackController
     private StateHistoryModel historyModel;
     private Icon playIcon;
     private Icon pauseIcon;
+    private Renderer renderer;
 
 	/**
 	 * Constructor
@@ -122,7 +123,7 @@ public class StateHistoryIntervalPlaybackController
         Date date = null;
 		try
 		{
-			date = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS").parse(TimeUtil.et2str(runs.getCurrentRun().getTime()));
+			date = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS").parse(TimeUtil.et2str(runs.getCurrentRun().getTime()).substring(0, 23));
 		} catch (ParseException e)
 		{
 			// TODO Auto-generated catch block
@@ -137,6 +138,7 @@ public class StateHistoryIntervalPlaybackController
 	 */
 	private void initializeIntervalPlaybackPanel(Renderer renderer, StateHistoryCollection runs)
     {
+		this.renderer = renderer;
         final JSlider slider = view.getSlider();
         slider.addChangeListener(new ChangeListener() {
             public void stateChanged(ChangeEvent evt) {
@@ -170,8 +172,9 @@ public class StateHistoryIntervalPlaybackController
                 renderer.setMouseEnabled(true);
                 if (runs.getCurrentRun() != null)
                 {
-                	historyModel.setStatusBarString("");
-//                  runs.getCurrentRun().updateStatusBarValue("");
+//                	historyModel.setStatusBarString("");
+                	runs.updateStatusBarValue("");
+                	renderer.getRenderWindowPanel().resetCameraClippingRange();
                 }
 
             }
@@ -182,9 +185,10 @@ public class StateHistoryIntervalPlaybackController
                 renderer.setMouseEnabled(false);
                 if (runs.getCurrentRun() != null)
                 {
-//                  runs.getCurrentRun().updateStatusBarPosition(renWin.getComponent().getWidth(), renWin.getComponent().getHeight());
-                    historyModel.setStatusBarString("Playing (mouse disabled)");
-//                  runs.getCurrentRun().updateStatusBarValue("Playing (mouse disabled)");
+//                	runs.updateStatusBarPosition(renWin.getComponent().getWidth(), renWin.getComponent().getHeight());
+//                    historyModel.setStatusBarString("Playing (mouse disabled)");
+                    runs.updateStatusBarValue("Playing (mouse disabled)");
+                    renderer.getRenderWindowPanel().resetCameraClippingRange();
                 }
             }
         });
@@ -196,9 +200,10 @@ public class StateHistoryIntervalPlaybackController
             Date enteredTime = (Date) view.getTimeBox().getModel().getValue();
             DateTime dt = new DateTime(enteredTime);
             DateTime dt1 = ISODateTimeFormat.dateTimeParser().parseDateTime(dt.toString());
-            boolean success = historyModel.setInputTime(dt1);
-            if (success) // only call again if the first call was a success
-                historyModel.setInputTime(dt1); //The method needs to run twice because running once gets it close to the input but not exact. Twice shows the exact time. I don't know why.
+            historyModel.getRuns().getCurrentRun().setTime(new Double(dt1.toDate().getTime()));
+//            boolean success = historyModel.setCurrentTime(dt1);
+//            if (success) // only call again if the first call was a success
+//                historyModel.setCurrentTime(dt1); //The method needs to run twice because running once gets it close to the input but not exact. Twice shows the exact time. I don't know why.
 
         });
 
@@ -215,6 +220,7 @@ public class StateHistoryIntervalPlaybackController
 			if (historyModel.getRuns().getSelectedItems().size() > 0)
 			{
 				historyModel.getRuns().setCurrentRun(historyModel.getRuns().getSelectedItems().asList().get(0));
+				updateTimeBarValue();
 //				historyModel.setStartTime(runs.getCurrentRun().);
 			}
 			updatePlaypanelValues(runs);
@@ -242,35 +248,20 @@ public class StateHistoryIntervalPlaybackController
         isPlaying = true;
 	}
 
-//	private void updateTimeBarValue()
-//    {
-//        if (runs != null)
-//        {
-//            StateHistory currentRun = runs.getCurrentRun();
-//            if (currentRun != null)
-//            {
-//                try
-//                {
-//                    Double time = currentRun.getTime();
-//                    historyModel.setTimeBarValue(time);
-//
-//                }catch(Exception ex){
-//
-//                }
-//            }
-//        }
-//    }
-//
-//    public void updateTimeBarPosition()
-//    {
-//        if (runs != null)
-//        {
-//            StateHistoryCollection runs = (StateHistoryCollection)modelManager.getModel(ModelNames.STATE_HISTORY_COLLECTION);
-//            StateHistory currentRun = runs.getCurrentRun();
-//            if (currentRun != null)
-//                currentRun.updateTimeBarPosition(renWin.getComponent().getWidth(), renWin.getComponent().getHeight());
-//        }
-//    }
+	private void updateTimeBarValue()
+    {
+		historyModel.getRuns().updateTimeBarValue(historyModel.getRuns().getCurrentRun().getTime());
+    }
+
+    public void updateTimeBarPosition()
+    {
+    	historyModel.getRuns().updateTimeBarLocation(renderer.getRenderWindowPanel().getComponent().getWidth(), renderer.getRenderWindowPanel().getComponent().getHeight());
+    }
+
+    public void updateStatusBarPosition()
+    {
+    	historyModel.getRuns().updateStatusBarLocation(renderer.getRenderWindowPanel().getComponent().getWidth(), renderer.getRenderWindowPanel().getComponent().getHeight());
+    }
 
     /**
      * Sets the value of the JSlider that displays the time through this trajectory
@@ -333,7 +324,19 @@ public class StateHistoryIntervalPlaybackController
                 view.getSlider().setValue(val);
 
                 //Update the time box with the current time
-                view.getTimeBox().setValue(new Date(historyModel.getStartTime().toDate().getTime() + new Double(1000*val/((double)(max - min)) * runs.getCurrentRun().getPeriod()).longValue()));
+                //view.getTimeBox().setValue(new Date(historyModel.getStartTime().toDate().getTime() + new Double(1000*val/((double)(max - min)) * runs.getCurrentRun().getPeriod()).longValue()));
+//    			System.out.println("StateHistoryIntervalPlaybackController: createTimer: time " + runs.getCurrentRun().getTime() + " " + TimeUtil.et2str(runs.getCurrentRun().getTime()));
+
+                Date date = null;
+        		try
+        		{
+        			date = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS").parse(TimeUtil.et2str(runs.getCurrentRun().getTime()).substring(0, 23));
+        		} catch (ParseException pe)
+        		{
+        			// TODO Auto-generated catch block
+        			pe.printStackTrace();
+        		}
+                view.getTimeBox().setValue(date);
             }
         });
         timer.setDelay(timerInterval);

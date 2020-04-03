@@ -15,21 +15,26 @@ import edu.jhuapl.saavtk.util.PolyDataUtil;
 public class SpacecraftBody extends vtkPolyData
 {
 	/**
-	 *
+	 * The vtkActor associated with this vtkPolyData
 	 */
 	private vtkActor spacecraftBodyActor;
+
     /**
-     *
+     * The default color of the spacecraft
      */
     private double[] spacecraftColor = {1.0, 0.7, 0.4, 1.0};
+
     /**
-     *
+     * Static instance of the white color double array
      */
-    private double[] white = {1.0, 1.0, 1.0, 1.0};
+    private static double[] white = {1.0, 1.0, 1.0, 1.0};
 
 
 	/**
-	 * @param filename
+	 * Constructor.  Loads a shapemodel with the given filename and
+	 * copies the vtkPolydata into this object
+	 *
+	 * @param filename	Filename of the spacecraft obj to load
 	 */
 	public SpacecraftBody(String filename)
 	{
@@ -45,6 +50,7 @@ public class SpacecraftBody extends vtkPolyData
 	}
 
 	/**
+	 * vtk Constructor
 	 * @param id
 	 */
 	public SpacecraftBody(long id)
@@ -54,7 +60,8 @@ public class SpacecraftBody extends vtkPolyData
 	}
 
 	/**
-	 * @return
+	 * Returns the vtkActor for this polydata
+	 * @return the vtkActor for this polydata
 	 */
 	public vtkActor getActor()
 	{
@@ -74,7 +81,8 @@ public class SpacecraftBody extends vtkPolyData
 	}
 
 	/**
-	 * @param scale
+	 * Sets the current scale of the spacecraft
+	 * @param scale	the current scale of the spacecraft from 0 to 1
 	 */
 	public void setScale(double scale)
 	{
@@ -82,7 +90,8 @@ public class SpacecraftBody extends vtkPolyData
 	}
 
 	/**
-	 * @param color
+	 * Sets the color of the spacecraft actor
+	 * @param color	the color of the spacecraft actor, where the color is a double array with values from 0.0 to 1.0
 	 */
 	public void setColor(double[] color)
 	{
@@ -90,7 +99,8 @@ public class SpacecraftBody extends vtkPolyData
 	}
 
 	/**
-	 * @param color
+	 * Sets the color of the spacecraft actor
+	 * @param color	the color of the spacecraft actor, where the color is a Color object
 	 */
 	public void setColor(Color color)
 	{

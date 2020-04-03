@@ -125,4 +125,10 @@ public interface Trajectory
      */
     public boolean isFaded();
 
+    /**
+     * @param position
+     * @param time
+     */
+    public void addPositionAtTime(double[] spacecraftPosition, double time);
+
 }

@@ -1,6 +1,7 @@
 package edu.jhuapl.sbmt.stateHistory.model;
 
 import edu.jhuapl.sbmt.stateHistory.model.interfaces.StateHistory;
+import edu.jhuapl.sbmt.stateHistory.model.interfaces.StateHistoryModelChangedListener;
 
 /**
  * @author steelrj1
