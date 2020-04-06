@@ -78,6 +78,8 @@ public class SbmtMultiMissionTool
 		OSIRIS_REX_DEPLOY("7cd84588"),
 		OSIRIS_REX_MIRROR_DEPLOY("7cd84589"),
 		NH_DEPLOY("8ff86312"),
+		DART_DEV("9da75292"),
+		DART_DEPLOY("9da75293"),
 		STAGE_APL_INTERNAL("f7e441b"),
 		STAGE_PUBLIC_RELEASE("8cc8e12");
 
@@ -291,6 +293,18 @@ public class SbmtMultiMissionTool
 			Configuration.setCacheVersion("");
 			Configuration.setAppTitle("SBMT/New Horizons");
 			break;
+		case DART_DEV:
+			Configuration.setAppName("sbmt1dart-dev");
+			Configuration.setCacheVersion("");
+			Configuration.setAppTitle("SBMT/DART (Development Version)");
+            Colormaps.setDefaultColormapName("Spectral_lowBlue");
+			break;
+		case DART_DEPLOY:
+			Configuration.setAppName("sbmt1dart");
+			Configuration.setCacheVersion("");
+			Configuration.setAppTitle("SBMT/DART");
+            Colormaps.setDefaultColormapName("Spectral_lowBlue");
+			break;
 		default:
 			throw new AssertionError();
 		}
@@ -365,6 +379,8 @@ public class SbmtMultiMissionTool
                 case TEST_APL_INTERNAL:
                 case TEST_PUBLIC_RELEASE:
                 case NH_DEPLOY:
+                case DART_DEV:
+                case DART_DEPLOY:
                     splash = new SbmtSplash("resources", "splashLogo.png");
                     break;
                 case HAYABUSA2_DEV:
