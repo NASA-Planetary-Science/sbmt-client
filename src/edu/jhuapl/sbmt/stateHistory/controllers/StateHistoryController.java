@@ -67,6 +67,16 @@ public class StateHistoryController
     private StateHistoryViewControlsController viewControlsController;
 
     /**
+     * Renderer that the controller interacts with
+     */
+    private Renderer renderer;
+
+    /**
+     * State history model that manages state histories
+     */
+    private StateHistoryModel historyModel = null;
+
+    /**
      * @param modelManager
      * @param renderer
      */
@@ -89,7 +99,7 @@ public class StateHistoryController
         DateTime start = ISODateTimeFormat.dateTimeParser().parseDateTime(StateHistoryUtil.readString(lineLength, path));
         DateTime end = ISODateTimeFormat.dateTimeParser().parseDateTime(StateHistoryUtil.readString((int)StateHistoryUtil.getBinaryFileLength(path, lineLength)*lineLength-lineLength, path));
 
-        StateHistoryModel historyModel = null;
+
 		try
 		{
 			historyModel = new StateHistoryModel(start, end, bodyModel, renderer, modelManager);
@@ -110,8 +120,7 @@ public class StateHistoryController
         intervalPlaybackController.getView().setEnabled(false);
         viewControlsController.getView().setEnabled(false);
 
-        //TODO restore this
-//        renWin.getRenderWindow().AddObserver("EndEvent", this, "updateTimeBarPosition");
+        renWin.getRenderWindow().AddObserver("EndEvent", this, "updateTimeBarPosition");
         renWin.getComponent().addComponentListener(new ComponentAdapter()
         {
             @Override
@@ -120,11 +129,6 @@ public class StateHistoryController
                 runs.updateTimeBarValue();
                 runs.updateTimeBarLocation(e.getComponent().getWidth(), e.getComponent().getHeight());
                 runs.updateStatusBarLocation(e.getComponent().getWidth(), e.getComponent().getHeight());
-//                StateHistory currentRun = stateHistoryCollection.getCurrentRun();
-//                if (currentRun != null)
-//                {
-//                    currentRun.updateStatusBarPosition(e.getComponent().getWidth(), e.getComponent().getHeight());
-//                }
             }
         });
 
@@ -169,4 +173,14 @@ public class StateHistoryController
     	panel.add(intervalPlaybackPanel);
     	return panel;
     }
+
+
+    /**
+     * Private method used to respond to the "EndEvent" event above
+     */
+    private void updateTimeBarPosition()
+    {
+    	historyModel.getRuns().updateTimeBarLocation(renderer.getRenderWindowPanel().getComponent().getWidth(), renderer.getRenderWindowPanel().getComponent().getHeight());
+    }
+
 }

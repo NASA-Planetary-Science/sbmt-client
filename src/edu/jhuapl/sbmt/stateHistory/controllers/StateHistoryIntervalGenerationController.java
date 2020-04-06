@@ -48,6 +48,15 @@ public class StateHistoryIntervalGenerationController
 	}
 
 	/**
+	 * Returns the panel associated with this controller
+	 * @return the panel associated with this controller
+	 */
+	public StateHistoryIntervalGenerationPanel getView()
+	{
+		return view;
+	}
+
+	/**
 	 * Initializes the panel.
 	 */
 	private void initializeIntervalGenerationPanel(StateHistoryModel historyModel, Date newStart, Date newEnd)
@@ -71,10 +80,10 @@ public class StateHistoryIntervalGenerationController
         //Adds an action listener to the "Get interval" button.
         view.getGetIntervalButton().addActionListener(e -> {
             view.setCursor(new Cursor(Cursor.WAIT_CURSOR));
-            double total = DateTimeSpinner.getDaysBetween(view.getStartTimeSpinner(), view.getStopTimeSpinner());
+            double totalDays = DateTimeSpinner.getDaysBetween(view.getStartTimeSpinner(), view.getStopTimeSpinner());
 
-    		// check length of interval
-    		if (total > 10.0)
+    		// check length of interval - if more than 10, warn the user before proceeding
+    		if (totalDays > 10.0)
     		{
     			int result = JOptionPane.showConfirmDialog(getView(),
     					"The interval you selected is longer than 10 days and may take a while to generate. \nAre you sure you want to create it?");
@@ -100,7 +109,7 @@ public class StateHistoryIntervalGenerationController
     			{
     				try
     				{
-	    				historyModel.createNewTimeInterval(key, startTime, endTime, total, "", new Function<Double, Void>()
+	    				historyModel.createNewTimeInterval(key, startTime, endTime, totalDays, "", new Function<Double, Void>()
 						{
 							@Override
 							public Void apply(Double t)
@@ -127,14 +136,4 @@ public class StateHistoryIntervalGenerationController
             view.setCursor(Cursor.getDefaultCursor());
         });
     }
-
-
-	/**
-	 * Returns the panel associated with this controller
-	 * @return the panel associated with this controller
-	 */
-	public StateHistoryIntervalGenerationPanel getView()
-	{
-		return view;
-	}
 }

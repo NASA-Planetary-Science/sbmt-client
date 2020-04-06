@@ -79,9 +79,20 @@ public class StateHistoryIntervalPlaybackController
 		}
 		createTimer(historyModel.getRuns());
 		initializeIntervalPlaybackPanel(renderer, historyModel.getRuns());
-
 	}
 
+	/**
+	 * Returnst the panel associated with this controller
+	 * @return
+	 */
+	public StateHistoryIntervalPlaybackPanel getView()
+	{
+		return view;
+	}
+
+	///////////////////////
+	// Private Methods
+	///////////////////////
 	/**
 	 * Attempts to initialize the artwork for the pause and play buttons
 	 * @throws IOException
@@ -104,7 +115,6 @@ public class StateHistoryIntervalPlaybackController
 		final JSlider slider = view.getSlider();
 		int val = slider.getValue();
         int max = slider.getMaximum();
-        int min = slider.getMinimum();
 
         double period = runs.getPeriod();
         double deltaRealTime = 1; //timer.getDelay() / 1000.0;
@@ -166,17 +176,16 @@ public class StateHistoryIntervalPlaybackController
 
         view.getPlayButton().addActionListener(e -> {
 
-            if(isPlaying){
+            if(isPlaying)
+            {
                 toggleToPlay();
 
                 renderer.setMouseEnabled(true);
                 if (runs.getCurrentRun() != null)
                 {
-//                	historyModel.setStatusBarString("");
                 	runs.updateStatusBarValue("");
                 	renderer.getRenderWindowPanel().resetCameraClippingRange();
                 }
-
             }
             else
             {
@@ -185,9 +194,7 @@ public class StateHistoryIntervalPlaybackController
                 renderer.setMouseEnabled(false);
                 if (runs.getCurrentRun() != null)
                 {
-//                	runs.updateStatusBarPosition(renWin.getComponent().getWidth(), renWin.getComponent().getHeight());
-//                    historyModel.setStatusBarString("Playing (mouse disabled)");
-                    runs.updateStatusBarValue("Playing (mouse disabled)");
+                	runs.updateStatusBarValue("Playing (mouse disabled)");
                     renderer.getRenderWindowPanel().resetCameraClippingRange();
                 }
             }
@@ -201,10 +208,6 @@ public class StateHistoryIntervalPlaybackController
             DateTime dt = new DateTime(enteredTime);
             DateTime dt1 = ISODateTimeFormat.dateTimeParser().parseDateTime(dt.toString());
             historyModel.getRuns().getCurrentRun().setTime(new Double(dt1.toDate().getTime()));
-//            boolean success = historyModel.setCurrentTime(dt1);
-//            if (success) // only call again if the first call was a success
-//                historyModel.setCurrentTime(dt1); //The method needs to run twice because running once gets it close to the input but not exact. Twice shows the exact time. I don't know why.
-
         });
 
         view.getRecordButton().addActionListener(e -> {
@@ -221,7 +224,6 @@ public class StateHistoryIntervalPlaybackController
 			{
 				historyModel.getRuns().setCurrentRun(historyModel.getRuns().getSelectedItems().asList().get(0));
 				updateTimeBarValue();
-//				historyModel.setStartTime(runs.getCurrentRun().);
 			}
 			updatePlaypanelValues(runs);
         });
@@ -253,21 +255,11 @@ public class StateHistoryIntervalPlaybackController
 		historyModel.getRuns().updateTimeBarValue(historyModel.getRuns().getCurrentRun().getTime());
     }
 
-    public void updateTimeBarPosition()
-    {
-    	historyModel.getRuns().updateTimeBarLocation(renderer.getRenderWindowPanel().getComponent().getWidth(), renderer.getRenderWindowPanel().getComponent().getHeight());
-    }
-
-    public void updateStatusBarPosition()
-    {
-    	historyModel.getRuns().updateStatusBarLocation(renderer.getRenderWindowPanel().getComponent().getWidth(), renderer.getRenderWindowPanel().getComponent().getHeight());
-    }
-
     /**
      * Sets the value of the JSlider that displays the time through this trajectory
      * @param tf
      */
-    public void setTimeSlider(double tf){
+    private void setTimeSlider(double tf){
         setSliderValue(tf);
         currentOffsetTime = tf;
     }
@@ -324,9 +316,6 @@ public class StateHistoryIntervalPlaybackController
                 view.getSlider().setValue(val);
 
                 //Update the time box with the current time
-                //view.getTimeBox().setValue(new Date(historyModel.getStartTime().toDate().getTime() + new Double(1000*val/((double)(max - min)) * runs.getCurrentRun().getPeriod()).longValue()));
-//    			System.out.println("StateHistoryIntervalPlaybackController: createTimer: time " + runs.getCurrentRun().getTime() + " " + TimeUtil.et2str(runs.getCurrentRun().getTime()));
-
                 Date date = null;
         		try
         		{
@@ -343,15 +332,6 @@ public class StateHistoryIntervalPlaybackController
     }
 
 	/**
-	 * Returnst the panel associated with this controller
-	 * @return
-	 */
-	public StateHistoryIntervalPlaybackPanel getView()
-	{
-		return view;
-	}
-
-	/**
 	 * Handles the animation and saving to file of the renderer frames when the user
 	 * presses record
 	 *
@@ -359,7 +339,7 @@ public class StateHistoryIntervalPlaybackController
 	 * @param start
 	 * @param end
 	 */
-	public void saveAnimation(DateTime start, DateTime end, Renderer renderer, StateHistoryCollection runs)
+	private void saveAnimation(DateTime start, DateTime end, Renderer renderer, StateHistoryCollection runs)
 	{
 		//Create a dialog to grab the filename for the saved movie
 		AnimationFileDialog dialog = new AnimationFileDialog(start.toString(), end.toString());

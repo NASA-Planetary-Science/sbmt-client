@@ -66,6 +66,15 @@ public class StateHistoryDisplayedIntervalController
 	}
 
 	/**
+	 * Returns the view associated with this controller
+	 * @return the view associated with this controller
+	 */
+	public StateHistoryDisplayedIntervalPanel getView()
+	{
+		return view;
+	}
+
+	/**
 	 * Updates the displayed start/stop time label
 	 * @param minValue the minimum fraction (between 0 and 1) of the entire interval being displayed
 	 * @param maxValue the maximum fraction (between 0 and 1) of the entire interval being displayed
@@ -77,14 +86,5 @@ public class StateHistoryDisplayedIntervalController
 
 		view.getDisplayedStartTimeLabel().setText(minTime.substring(0, minTime.length()-3));
 		view.getDisplayedStopTimeLabel().setText(maxTime.substring(0, maxTime.length()-3));
-	}
-
-	/**
-	 * Returns the view associated with this controller
-	 * @return the view associated with this controller
-	 */
-	public StateHistoryDisplayedIntervalPanel getView()
-	{
-		return view;
 	}
 }

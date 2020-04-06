@@ -225,6 +225,26 @@ public class BasicConfigInfo implements MetadataManager
 		return shapeModelName;
 	}
 
+	public BodyType getType()
+	{
+		return type;
+	}
+
+	public ShapeModelDataUsed getDataUsed()
+	{
+		return dataUsed;
+	}
+
+	public String getModelLabel()
+	{
+		return modelLabel;
+	}
+
+	public ShapeModelPopulation getPopulation()
+	{
+		return population;
+	}
+
 	@Override
 	public String toString()
 	{

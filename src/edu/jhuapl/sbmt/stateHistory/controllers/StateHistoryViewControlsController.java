@@ -25,16 +25,7 @@ public class StateHistoryViewControlsController
 	public StateHistoryViewControlsController(StateHistoryModel historyModel, Renderer renderer)
 	{
 		this.view = new StateHistoryViewControlsPanel(historyModel, renderer);
-//		initializeViewControlPanel();
 	}
-
-//	/**
-//	 *
-//	 */
-//	private void initializeViewControlPanel()
-//    {
-//        view.updateUI();
-//    }
 
 	/**
 	 * The panel associated with this controller
