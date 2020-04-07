@@ -268,6 +268,7 @@ public class SbmtRunnable implements Runnable
 		case PUBLIC_RELEASE:
 //		case STAGE_PUBLIC_RELEASE:
 		case TEST_PUBLIC_RELEASE:
+		case DART_DEPLOY:
 			if (!ShapeModelBody.EARTH.equals(config.body)
 					&& !ShapeModelBody.RQ36.equals(config.body)
 					&& !ShapeModelBody.RYUGU.equals(config.body)
@@ -298,7 +299,6 @@ public class SbmtRunnable implements Runnable
 				config.enable(true);
 			}
 			break;
-
 		case OSIRIS_REX:
 		case OSIRIS_REX_DEPLOY:
 		case OSIRIS_REX_MIRROR_DEPLOY:
