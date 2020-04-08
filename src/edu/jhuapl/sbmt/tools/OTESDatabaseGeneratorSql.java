@@ -15,8 +15,11 @@ import vtk.vtkPolyData;
 
 import edu.jhuapl.saavtk.model.ShapeModelBody;
 import edu.jhuapl.saavtk.model.ShapeModelType;
+import edu.jhuapl.saavtk.util.Debug;
+import edu.jhuapl.saavtk.util.FileCache;
 import edu.jhuapl.saavtk.util.FileUtil;
 import edu.jhuapl.saavtk.util.NativeLibraryLoader;
+import edu.jhuapl.saavtk.util.SafeURLPaths;
 import edu.jhuapl.sbmt.client.ISmallBodyModel;
 import edu.jhuapl.sbmt.client.SbmtModelFactory;
 import edu.jhuapl.sbmt.client.SbmtSpectrumModelFactory;
@@ -251,9 +254,73 @@ public class OTESDatabaseGeneratorSql
         System.setProperty("java.awt.headless", "true");
         NativeLibraryLoader.loadVtkLibraries();
 
-        String bodyName = args[0];
-        String authorName = args[1];
+        final SafeURLPaths safeUrlPaths = SafeURLPaths.instance();
+        // default configuration parameters
+        boolean aplVersion = true;
+        String rootURL = safeUrlPaths.getUrl("/disks/d0180/htdocs-sbmt/internal/sbmt");
+
+        boolean appendTables = false;
+        boolean modifyMain = false;
+        boolean remote = false;
+        String bodyName="";
+        String authorName="";
         String versionString = null;
+        String diffFileList = null;
+        String instrumentString = null;
+
+        int i = 0;
+        for (; i < args.length; ++i)
+        {
+            if (args[i].equals("--root-url"))
+            {
+                rootURL = safeUrlPaths.getUrl(args[++i]);
+            }
+            else if (args[i].equals("--append-tables"))
+            {
+                appendTables = true;
+            }
+            else if (args[i].equals("--modify-main"))
+            {
+                modifyMain = true;
+            }
+            else if (args[i].equals("--debug"))
+            {
+                Debug.setEnabled(true);
+                FileCache.enableDebug(true);
+            }
+            else if (args[i].equals("--remote"))
+            {
+                remote = true;
+            }
+//            else if (args[i].equals("--cameraIndex"))
+//            {
+//                cameraIndex = Integer.parseInt(args[++i]);
+//            }
+            else if (args[i].equals("--body"))
+            {
+            	bodyName = args[++i];
+            }
+            else if (args[i].equals("--author"))
+            {
+            	authorName = args[++i];
+            }
+            else if (args[i].equals("--version"))
+            {
+            	versionString = args[++i];
+            }
+            else if (args[i].equals("--instrument"))
+            {
+            	instrumentString = args[++i].toUpperCase();
+            }
+            else if (args[i].equals("--diffList"))
+            {
+            	diffFileList = args[++i];
+            }
+            else {
+                // We've encountered something that is not an option, must be at the args
+                break;
+            }
+        }
 
         bodyModel = SbmtModelFactory.createSmallBodyModel(SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.valueOf(bodyName), ShapeModelType.provide(authorName), versionString));
 
