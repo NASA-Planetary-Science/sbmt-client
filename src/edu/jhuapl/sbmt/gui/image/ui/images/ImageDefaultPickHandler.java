@@ -6,6 +6,7 @@ import java.util.Set;
 import vtk.vtkActor;
 
 import edu.jhuapl.saavtk.model.Model;
+import edu.jhuapl.saavtk.model.ModelManager;
 import edu.jhuapl.saavtk.pick.PickListener;
 import edu.jhuapl.saavtk.pick.PickMode;
 import edu.jhuapl.saavtk.pick.PickTarget;
@@ -24,16 +25,27 @@ import edu.jhuapl.sbmt.model.image.perspectiveImage.PerspectiveImage;
  */
 public class ImageDefaultPickHandler implements PickListener
 {
+	// Reference vars
+	private final ModelManager refModelManager;
+
+	/**
+	 * Standard Constructor
+	 */
+	public ImageDefaultPickHandler(ModelManager aModelManager)
+	{
+		refModelManager = aModelManager;
+	}
+
 	@Override
 	public void handlePickAction(InputEvent aEvent, PickMode aMode, PickTarget aPrimaryTarg, PickTarget aSurfaceTarg)
 	{
 		// Bail if not the right type of model
-		Model tmpModel = aPrimaryTarg.getModel();
+		Model tmpModel = refModelManager.getModel(aPrimaryTarg.getActor());
 		if (tmpModel instanceof ImageCollection == false)
 			return;
 
-		// Bail if no surface target or not an active action
-		if (aSurfaceTarg == PickTarget.Invalid || aMode != PickMode.Active)
+		// Bail if no surface target or not the primary action
+		if (aSurfaceTarg == PickTarget.Invalid || aMode != PickMode.ActivePri)
 			return;
 
 		// Ensure we have at least one image
