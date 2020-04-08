@@ -62,7 +62,7 @@ import org.joda.time.DateTimeZone;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSortedMap;
 import com.google.common.collect.ImmutableSortedSet;
-import com.google.common.collect.Ranges;
+import com.google.common.collect.Range;
 import com.jidesoft.swing.CheckBoxTree;
 
 import vtk.vtkActor;
@@ -2668,13 +2668,13 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
             {
                 // Run queries based on user specifications
                 ImageDatabaseSearchMetadata searchMetadata = ImageDatabaseSearchMetadata.of("", startDateJoda, endDateJoda,
-                        Ranges.closed(Double.valueOf(fromDistanceTextField.getText()), Double.valueOf(toDistanceTextField.getText())),
+                        Range.closed(Double.valueOf(fromDistanceTextField.getText()), Double.valueOf(toDistanceTextField.getText())),
                         searchField, null,
-                        Ranges.closed(Double.valueOf(fromIncidenceTextField.getText()), Double.valueOf(toIncidenceTextField.getText())),
-                        Ranges.closed(Double.valueOf(fromEmissionTextField.getText()), Double.valueOf(toEmissionTextField.getText())),
-                        Ranges.closed(Double.valueOf(fromPhaseTextField.getText()), Double.valueOf(toPhaseTextField.getText())),
+                        Range.closed(Double.valueOf(fromIncidenceTextField.getText()), Double.valueOf(toIncidenceTextField.getText())),
+                        Range.closed(Double.valueOf(fromEmissionTextField.getText()), Double.valueOf(toEmissionTextField.getText())),
+                        Range.closed(Double.valueOf(fromPhaseTextField.getText()), Double.valueOf(toPhaseTextField.getText())),
                         sumOfProductsSearch, camerasSelected, filtersSelected,
-                        Ranges.closed(Double.valueOf(fromResolutionTextField.getText()), Double.valueOf(toResolutionTextField.getText())),
+                        Range.closed(Double.valueOf(fromResolutionTextField.getText()), Double.valueOf(toResolutionTextField.getText())),
                         cubeList, imageSource, hasLimbComboBox.getSelectedIndex());
 
                 results = instrument.searchQuery.runQuery(searchMetadata).getResultlist();
@@ -2790,13 +2790,13 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
                 {
 
                     ImageDatabaseSearchMetadata searchMetadataOther = ImageDatabaseSearchMetadata.of("", startDateJoda, endDateJoda,
-                            Ranges.closed(Double.valueOf(fromDistanceTextField.getText()), Double.valueOf(toDistanceTextField.getText())),
+                            Range.closed(Double.valueOf(fromDistanceTextField.getText()), Double.valueOf(toDistanceTextField.getText())),
                             searchField, null,
-                            Ranges.closed(Double.valueOf(fromIncidenceTextField.getText()), Double.valueOf(toIncidenceTextField.getText())),
-                            Ranges.closed(Double.valueOf(fromEmissionTextField.getText()), Double.valueOf(toEmissionTextField.getText())),
-                            Ranges.closed(Double.valueOf(fromPhaseTextField.getText()), Double.valueOf(toPhaseTextField.getText())),
+                            Range.closed(Double.valueOf(fromIncidenceTextField.getText()), Double.valueOf(toIncidenceTextField.getText())),
+                            Range.closed(Double.valueOf(fromEmissionTextField.getText()), Double.valueOf(toEmissionTextField.getText())),
+                            Range.closed(Double.valueOf(fromPhaseTextField.getText()), Double.valueOf(toPhaseTextField.getText())),
                             sumOfProductsSearch, camerasSelected, filtersSelected,
-                            Ranges.closed(Double.valueOf(fromResolutionTextField.getText()), Double.valueOf(toResolutionTextField.getText())),
+                            Range.closed(Double.valueOf(fromResolutionTextField.getText()), Double.valueOf(toResolutionTextField.getText())),
                             cubeList, imageSource == ImageSource.SPICE ? ImageSource.GASKELL_UPDATED : ImageSource.SPICE, hasLimbComboBox.getSelectedIndex());
 
                     resultsOtherSource = instrument.searchQuery.runQuery(searchMetadataOther).getResultlist();
