@@ -322,7 +322,13 @@ public class OTESDatabaseGeneratorSql
             }
         }
 
-        bodyModel = SbmtModelFactory.createSmallBodyModel(SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.valueOf(bodyName), ShapeModelType.provide(authorName), versionString));
+        SmallBodyViewConfig config = null;
+        if (versionString != null)
+        	config = SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.valueOf(bodyName), ShapeModelType.provide(authorName), versionString);
+        else
+        	config = SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.valueOf(bodyName), ShapeModelType.provide(authorName));
+
+        bodyModel = SbmtModelFactory.createSmallBodyModel(config);
 
         String otesFileList=args[0];
         int mode = Integer.parseInt(args[1]);
