@@ -361,7 +361,7 @@ public class OTESDatabaseGeneratorSql
 
         List<String> otesFiles = null;
         try {
-            otesFiles = FileUtil.getFileLinesAsStringList(otesFileList);
+            otesFiles = FileUtil.getFileLinesAsStringList(otesFileList.substring(5));
         } catch (IOException e2) {
             e2.printStackTrace();
             return;
