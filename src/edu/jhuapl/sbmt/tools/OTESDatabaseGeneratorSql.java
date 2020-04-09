@@ -179,7 +179,7 @@ public class OTESDatabaseGeneratorSql
             if (otesInsert == null)
             {
                 otesInsert = db.preparedStatement(
-                        "insert into " + OTESSpectraTable + " (year, day, midtime, minincidence, maxincidence, minemission, maxemission, minphase, maxphase, range) values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+                        "insert into " + OTESSpectraTable + " (year, day, midtime, minincidence, maxincidence, minemission, maxemission, minphase, maxphase, range) values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
             }
 
             DateTime midtime = new DateTime(new DateTime(date).toString(), DateTimeZone.UTC);
