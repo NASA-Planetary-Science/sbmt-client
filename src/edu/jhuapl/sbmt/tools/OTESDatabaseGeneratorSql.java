@@ -15,6 +15,7 @@ import vtk.vtkPolyData;
 
 import edu.jhuapl.saavtk.model.ShapeModelBody;
 import edu.jhuapl.saavtk.model.ShapeModelType;
+import edu.jhuapl.saavtk.util.Configuration;
 import edu.jhuapl.saavtk.util.Debug;
 import edu.jhuapl.saavtk.util.FileCache;
 import edu.jhuapl.saavtk.util.FileUtil;
@@ -22,6 +23,7 @@ import edu.jhuapl.saavtk.util.NativeLibraryLoader;
 import edu.jhuapl.saavtk.util.SafeURLPaths;
 import edu.jhuapl.sbmt.client.ISmallBodyModel;
 import edu.jhuapl.sbmt.client.SbmtModelFactory;
+import edu.jhuapl.sbmt.client.SbmtMultiMissionTool;
 import edu.jhuapl.sbmt.client.SbmtSpectrumModelFactory;
 import edu.jhuapl.sbmt.client.SmallBodyViewConfig;
 import edu.jhuapl.sbmt.model.bennu.spectra.otes.OTES;
@@ -251,13 +253,31 @@ public class OTESDatabaseGeneratorSql
      */
     public static void main(String[] args) throws IOException
     {
-        System.setProperty("java.awt.headless", "true");
-        NativeLibraryLoader.loadVtkLibraries();
-
         final SafeURLPaths safeUrlPaths = SafeURLPaths.instance();
         // default configuration parameters
         boolean aplVersion = true;
         String rootURL = safeUrlPaths.getUrl("/disks/d0180/htdocs-sbmt/internal/sbmt");
+
+    	// Important: set the mission before changing things in the Configuration. Otherwise,
+        // setting the mission will undo those changes.
+        SbmtMultiMissionTool.configureMission();
+
+        // basic default configuration, most of these will be overwritten by the configureMission() method
+        Configuration.setAPLVersion(aplVersion);
+        Configuration.setRootURL(rootURL);
+
+        // authentication
+        Authenticator.authenticate();
+
+        // initialize view config
+        SmallBodyViewConfig.fromServer = true;
+
+        SmallBodyViewConfig.initialize();
+
+        System.setProperty("java.awt.headless", "true");
+        NativeLibraryLoader.loadVtkLibraries();
+
+
 
         boolean appendTables = false;
         boolean modifyMain = false;
