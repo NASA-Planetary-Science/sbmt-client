@@ -182,7 +182,7 @@ public class OTESDatabaseGeneratorSql
                         "insert into " + OTESSpectraTable + " values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
             }
 
-            DateTime midtime = new DateTime(otesSpectrum.getDateTime().toString(), DateTimeZone.UTC);
+            DateTime midtime = new DateTime(new DateTime(date).toString(), DateTimeZone.UTC);
             // Replace the "T" with a space
             //time = time.substring(0, 10) + " " + time.substring(11, time.length());
 
