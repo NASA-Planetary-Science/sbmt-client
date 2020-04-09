@@ -4,6 +4,9 @@ import java.io.File;
 import java.io.IOException;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 import java.util.TreeSet;
 
@@ -64,8 +67,8 @@ public class OTESDatabaseGeneratorSql
         	}
 
             db.update(
-                    "create table " + tableName + "(" +
-                    "id int PRIMARY KEY, " +
+                    "CREATE TABLE IF NOT EXISTS " + tableName + "(" +
+                    "id int PRIMARY KEY AUTO_INCREMENT, " +
                     "year smallint, " +
                     "day smallint, " +
                     "midtime bigint, " +
@@ -107,8 +110,8 @@ public class OTESDatabaseGeneratorSql
         	}
 
             db.update(
-                    "create table " + tableName + "(" +
-                    "id int PRIMARY KEY, " +
+                    "CREATE TABLE IF NOT EXISTS " + tableName + "(" +
+                    "id int PRIMARY KEY AUTO_INCREMENT, " +
                     "otesspectrumid int, " +
                     "cubeid int)"
                 );
@@ -131,19 +134,42 @@ public class OTESDatabaseGeneratorSql
             // Don't check if all OTES files exist here, since we want to allow searches on spectra
             // that don't intersect the asteroid
 
-            System.out.println("starting otes " + count++ + "  " + filename);
+        	//20181102t040042
+            System.out.println("starting otes " + count + "  " + filename);
 
             String dayOfYearStr = "";
             String yearStr = "";
 
+            String[] parts = filename.split("/");
+            String[] parts2 = parts[1].split(" ");
+            String[] parts3 = parts2[0].split("_");
+            String name = parts3[0];
+
+            SimpleDateFormat format = new SimpleDateFormat("yyyyMMdd't'hhmmss's'SSS");
+            Date date = null;
+			try
+			{
+				date = format.parse(name);
+			}
+			catch (ParseException e)
+			{
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+            SimpleDateFormat yearFormat = new SimpleDateFormat("y");
+            SimpleDateFormat doyFormat = new SimpleDateFormat("D");
+
+            dayOfYearStr = doyFormat.format(date);
+            yearStr = yearFormat.format(date);
+
             File origFile = new File(filename);
-            File f = origFile;
-
-            f = f.getParentFile();
-            dayOfYearStr = f.getName();
-
-            f = f.getParentFile();
-            yearStr = f.getName();
+//            File f = origFile;
+//
+//            f = f.getParentFile();
+//            dayOfYearStr = f.getName();
+//
+//            f = f.getParentFile();
+//            yearStr = f.getName();
 
 
             BasicSpectrum otesSpectrum = SbmtSpectrumModelFactory.createSpectrum(origFile.getAbsolutePath(), otes);
@@ -159,7 +185,7 @@ public class OTESDatabaseGeneratorSql
             // Replace the "T" with a space
             //time = time.substring(0, 10) + " " + time.substring(11, time.length());
 
-            System.out.println("id: " + Integer.parseInt(origFile.getName().substring(2, 11)));
+//            System.out.println("id: " + Integer.parseInt(origFile.getName().substring(2, 11)));
             System.out.println("year: " + yearStr);
             System.out.println("dayofyear: " + dayOfYearStr);
             System.out.println("midtime: " + midtime);
@@ -174,7 +200,7 @@ public class OTESDatabaseGeneratorSql
             System.out.println(" ");
 
 
-            otesInsert.setInt(1, Integer.parseInt(origFile.getName().substring(2, 11)));
+//            otesInsert.setInt(1, Integer.parseInt(origFile.getName().substring(2, 11)));
             otesInsert.setShort(2, Short.parseShort(yearStr));
             otesInsert.setShort(3, Short.parseShort(dayOfYearStr));
             otesInsert.setLong(4, midtime.getMillis());
@@ -188,7 +214,52 @@ public class OTESDatabaseGeneratorSql
 //            otesInsert.setShort(12, otesSpectrum.getPolygonTypeFlag());
 
             otesInsert.executeUpdate();
+
+            populateOTESCubeTableForFile(filename, count++);
         }
+    }
+
+    private static void populateOTESCubeTableForFile(String otesFile, int spectrumIndex) throws SQLException, IOException
+    {
+    	 File origFile = new File(otesFile);
+
+         OTESSpectrum otesSpectrum = (OTESSpectrum)SbmtSpectrumModelFactory.createSpectrum(origFile.getAbsolutePath(), otes);
+         BasicSpectrumRenderer<OTESSpectrum> otesSpectrumRenderer = new BasicSpectrumRenderer<OTESSpectrum>(otesSpectrum, bodyModel, true);
+         otesSpectrumRenderer.generateFootprint();
+
+         if (footprintPolyData == null)
+             footprintPolyData = new vtkPolyData();
+         footprintPolyData.DeepCopy(otesSpectrumRenderer.getUnshiftedFootprint());
+         footprintPolyData.ComputeBounds();
+
+
+         if (otesInsert2 == null)
+         {
+             otesInsert2 = db.preparedStatement(
+                     "insert into " + OTESCubesTable + " values (?, ?, ?)");
+         }
+
+         TreeSet<Integer> cubeIds = bodyModel.getIntersectingCubes(footprintPolyData);
+         System.out.println("cubeIds:  " + cubeIds);
+         System.out.println("number of cubes: " + cubeIds.size());
+//         System.out.println("id: " + count);
+         System.out.println("number of cells in polydata " + footprintPolyData.GetNumberOfCells());
+
+         for (Integer i : cubeIds)
+         {
+//             otesInsert2.setInt(1, count);
+             otesInsert2.setInt(2, spectrumIndex);
+             otesInsert2.setInt(3, i);
+
+             otesInsert2.executeUpdate();
+
+//             ++count;
+         }
+
+         otesSpectrumRenderer.Delete();
+         System.out.println("deleted " + vtkObject.JAVA_OBJECT_MANAGER.gc(true));
+         System.out.println(" ");
+         System.out.println(" ");
     }
 
     private static void populateOTESTablesCubes(List<String> otesFiles) throws SQLException, IOException
@@ -385,7 +456,7 @@ public class OTESDatabaseGeneratorSql
         try
 		{
 			populateOTESTables(otesFiles);
-	        populateOTESTablesCubes(otesFiles);
+//	        populateOTESTablesCubes(otesFiles);
 
 		}
 		catch (SQLException | IOException e1)
