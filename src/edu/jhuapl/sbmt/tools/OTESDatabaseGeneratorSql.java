@@ -356,7 +356,7 @@ public class OTESDatabaseGeneratorSql
 
         bodyModel = SbmtModelFactory.createSmallBodyModel(config);
 
-        String otesFileList = rootURL + File.separator + "bennu/shared/otes/" + dataType + "/spectrumlist.txt";
+        String otesFileList = rootURL + File.separator + "data/bennu/shared/otes/" + dataType + "/spectrumlist.txt";
 //        int mode = Integer.parseInt(args[1]);
 
         List<String> otesFiles = null;
