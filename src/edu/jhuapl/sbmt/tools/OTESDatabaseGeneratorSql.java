@@ -33,6 +33,7 @@ import edu.jhuapl.sbmt.model.bennu.spectra.OREXSpectraFactory;
 import edu.jhuapl.sbmt.model.bennu.spectra.otes.OTES;
 import edu.jhuapl.sbmt.model.bennu.spectra.otes.OTESSpectrum;
 import edu.jhuapl.sbmt.spectrum.model.core.BasicSpectrum;
+import edu.jhuapl.sbmt.spectrum.model.core.interfaces.IBasicSpectrumRenderer;
 import edu.jhuapl.sbmt.spectrum.rendering.BasicSpectrumRenderer;
 
 public class OTESDatabaseGeneratorSql
@@ -228,8 +229,11 @@ public class OTESDatabaseGeneratorSql
     {
     	 File origFile = new File(otesFile);
     	 String tableName = modelName + "_" + OTESCubesTable + "_" + dataType;
-         OTESSpectrum otesSpectrum = (OTESSpectrum)SbmtSpectrumModelFactory.createSpectrum(origFile.getAbsolutePath(), otes);
-         BasicSpectrumRenderer<OTESSpectrum> otesSpectrumRenderer = new BasicSpectrumRenderer<OTESSpectrum>(otesSpectrum, bodyModel, true);
+
+    	 IBasicSpectrumRenderer<OTESSpectrum> otesSpectrumRenderer = SbmtSpectrumModelFactory.createSpectrumRenderer(origFile.getAbsolutePath(), otes);
+
+//         OTESSpectrum otesSpectrum = (OTESSpectrum)SbmtSpectrumModelFactory.createSpectrum(origFile.getAbsolutePath(), otes);
+//         BasicSpectrumRenderer<OTESSpectrum> otesSpectrumRenderer = new BasicSpectrumRenderer<OTESSpectrum>(otesSpectrum, bodyModel, true);
          otesSpectrumRenderer.generateFootprint();
 
          if (footprintPolyData == null)
