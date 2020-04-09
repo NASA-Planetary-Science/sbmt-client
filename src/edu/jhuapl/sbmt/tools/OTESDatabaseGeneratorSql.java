@@ -179,7 +179,7 @@ public class OTESDatabaseGeneratorSql
             if (otesInsert == null)
             {
                 otesInsert = db.preparedStatement(
-                        "insert into " + OTESSpectraTable + " values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+                        "insert into " + OTESSpectraTable + " (year, day, midtime, minincidence, maxincidence, minemission, maxemission, minphase, maxphase, range) values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
             }
 
             DateTime midtime = new DateTime(new DateTime(date).toString(), DateTimeZone.UTC);
@@ -187,6 +187,7 @@ public class OTESDatabaseGeneratorSql
             //time = time.substring(0, 10) + " " + time.substring(11, time.length());
 
 //            System.out.println("id: " + Integer.parseInt(origFile.getName().substring(2, 11)));
+            System.out.println("id: " + count);
             System.out.println("year: " + yearStr);
             System.out.println("dayofyear: " + dayOfYearStr);
             System.out.println("midtime: " + midtime);
@@ -202,21 +203,23 @@ public class OTESDatabaseGeneratorSql
 
 
 //            otesInsert.setInt(1, Integer.parseInt(origFile.getName().substring(2, 11)));
-            otesInsert.setShort(2, Short.parseShort(yearStr));
-            otesInsert.setShort(3, Short.parseShort(dayOfYearStr));
-            otesInsert.setLong(4, midtime.getMillis());
-            otesInsert.setDouble(5, otesSpectrum.getMinIncidence());
-            otesInsert.setDouble(6, otesSpectrum.getMaxIncidence());
-            otesInsert.setDouble(7, otesSpectrum.getMinEmission());
-            otesInsert.setDouble(8, otesSpectrum.getMaxEmission());
-            otesInsert.setDouble(9, otesSpectrum.getMinPhase());
-            otesInsert.setDouble(10, otesSpectrum.getMaxPhase());
-            otesInsert.setDouble(11, otesSpectrum.getRange());
+//            otesInsert.setInt(1, count);
+            otesInsert.setShort(1, Short.parseShort(yearStr));
+            otesInsert.setShort(2, Short.parseShort(dayOfYearStr));
+            otesInsert.setLong(3, midtime.getMillis());
+            otesInsert.setDouble(4, otesSpectrum.getMinIncidence());
+            otesInsert.setDouble(5, otesSpectrum.getMaxIncidence());
+            otesInsert.setDouble(6, otesSpectrum.getMinEmission());
+            otesInsert.setDouble(7, otesSpectrum.getMaxEmission());
+            otesInsert.setDouble(8, otesSpectrum.getMinPhase());
+            otesInsert.setDouble(9, otesSpectrum.getMaxPhase());
+            otesInsert.setDouble(10, otesSpectrum.getRange());
 //            otesInsert.setShort(12, otesSpectrum.getPolygonTypeFlag());
 
-            otesInsert.executeUpdate();
+            int rowCount = otesInsert.executeUpdate();
 
-            populateOTESCubeTableForFile(filename, count++);
+            populateOTESCubeTableForFile(filename, rowCount-1);
+            count++;
         }
     }
 
@@ -237,7 +240,7 @@ public class OTESDatabaseGeneratorSql
          if (otesInsert2 == null)
          {
              otesInsert2 = db.preparedStatement(
-                     "insert into " + OTESCubesTable + " values (?, ?, ?)");
+                     "insert into " + OTESCubesTable + " (otesspectrumid, cubeid) values (?, ?)");
          }
 
          TreeSet<Integer> cubeIds = bodyModel.getIntersectingCubes(footprintPolyData);
@@ -249,8 +252,8 @@ public class OTESDatabaseGeneratorSql
          for (Integer i : cubeIds)
          {
 //             otesInsert2.setInt(1, count);
-             otesInsert2.setInt(2, spectrumIndex);
-             otesInsert2.setInt(3, i);
+             otesInsert2.setInt(1, spectrumIndex);
+             otesInsert2.setInt(2, i);
 
              otesInsert2.executeUpdate();
 
