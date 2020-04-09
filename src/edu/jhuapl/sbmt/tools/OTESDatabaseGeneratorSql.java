@@ -47,6 +47,7 @@ public class OTESDatabaseGeneratorSql
     private static void createOTESTables(String modelName, String dataType, boolean appendTables)
     {
     	String tableName = modelName + "_" + OTESSpectraTable + "_" + dataType;
+    	System.out.println("OTESDatabaseGeneratorSql: createOTESTables: tablename " + tableName);
         try {
 
             //make a table
@@ -377,7 +378,7 @@ public class OTESDatabaseGeneratorSql
         }
 
         String modelName = "bennu_" + authorName.toLowerCase().replace("_", "");
-
+        System.out.println("OTESDatabaseGeneratorSql: main: model name " + modelName);
         createOTESTables(modelName, dataType, appendTables);
         createOTESTablesCubes(modelName, dataType, appendTables);
 
