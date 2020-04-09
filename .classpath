@@ -19,8 +19,6 @@
 			<attribute name="javadoc_location" value="jar:platform:/resource/saavtk/lib/commons-text-1.8-javadoc.jar!/"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry kind="lib" path="/saavtk/lib/crucible-core-20200408.jar" sourcepath="/saavtk/lib/crucible-core-src-20200408.zip"/>
-	<classpathentry kind="lib" path="/saavtk/lib/crucible-mantle-20200408.jar" sourcepath="/saavtk/lib/crucible-mantle-src-20200408.zip"/>
 	<classpathentry kind="lib" path="/saavtk/lib/jafama-2.3.1.jar"/>
 	<classpathentry kind="lib" path="/saavtk/lib/jsr305.jar"/>
 	<classpathentry kind="output" path="bin"/>
