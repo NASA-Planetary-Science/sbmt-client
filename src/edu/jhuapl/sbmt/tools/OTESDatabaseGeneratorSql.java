@@ -377,7 +377,7 @@ public class OTESDatabaseGeneratorSql
             return;
         }
 
-        String modelName = "bennu_" + authorName.toLowerCase().replace("_", "");
+        String modelName = "bennu_" + authorName.toLowerCase().replace("-", "");
         System.out.println("OTESDatabaseGeneratorSql: main: model name " + modelName);
         createOTESTables(modelName, dataType, appendTables);
         createOTESTablesCubes(modelName, dataType, appendTables);
