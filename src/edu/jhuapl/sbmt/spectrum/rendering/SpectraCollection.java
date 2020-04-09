@@ -135,7 +135,7 @@ public class SpectraCollection<S extends BasicSpectrum> extends SaavtkItemManage
         IBasicSpectrumRenderer<S> spectrumRenderer = null;
         try
         {
-        	spectrumRenderer = SbmtSpectrumModelFactory.createSpectrumRenderer(spectrum, spectrum.getInstrument());
+        	spectrumRenderer = SbmtSpectrumModelFactory.createSpectrumRenderer(spectrum, spectrum.getInstrument(), false);
         	spectrumRenderer.getSpectrum().readSpectrumFromFile();
         }
         catch (SpectrumIOException sioe)

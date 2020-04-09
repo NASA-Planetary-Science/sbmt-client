@@ -106,7 +106,7 @@ public class SpectrumListIO
             try
             {
             	String filename = lines.get(i).split(",")[0];
-            	spectrumRenderer = SbmtSpectrumModelFactory.createSpectrumRenderer(filename, instrument);
+            	spectrumRenderer = SbmtSpectrumModelFactory.createSpectrumRenderer(filename, instrument, false);
             }
             catch (Exception e) {
                 e.printStackTrace();

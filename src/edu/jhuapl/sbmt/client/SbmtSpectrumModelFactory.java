@@ -43,17 +43,18 @@ public class SbmtSpectrumModelFactory
 
 	static public IBasicSpectrumRenderer createSpectrumRenderer(
 			String path,
-			BasicSpectrumInstrument instrument) throws IOException
+			BasicSpectrumInstrument instrument,
+			boolean headless) throws IOException
     {
 		SpectrumBuilder<String, ISmallBodyModel, BasicSpectrumInstrument> builder = registeredModels.get(instrument.getDisplayName());
-    	return builder.buildSpectrumRenderer(path, registeredSmallBodyModels.get(instrument.getDisplayName()), instrument);
+    	return builder.buildSpectrumRenderer(path, registeredSmallBodyModels.get(instrument.getDisplayName()), instrument, headless);
 
     }
 
-	static public IBasicSpectrumRenderer createSpectrumRenderer(BasicSpectrum spec, BasicSpectrumInstrument instrument) throws IOException
+	static public IBasicSpectrumRenderer createSpectrumRenderer(BasicSpectrum spec, BasicSpectrumInstrument instrument, boolean headless) throws IOException
     {
 		SpectrumBuilder<String, ISmallBodyModel, BasicSpectrumInstrument> builder = registeredModels.get(instrument.getDisplayName());
-    	return builder.buildSpectrumRenderer(spec, registeredSmallBodyModels.get(instrument.getDisplayName()));
+    	return builder.buildSpectrumRenderer(spec, registeredSmallBodyModels.get(instrument.getDisplayName()), headless);
 
     }
 

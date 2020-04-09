@@ -230,7 +230,7 @@ public class OTESDatabaseGeneratorSql
     	 File origFile = new File(otesFile);
     	 String tableName = modelName + "_" + OTESCubesTable + "_" + dataType;
 
-    	 IBasicSpectrumRenderer<OTESSpectrum> otesSpectrumRenderer = SbmtSpectrumModelFactory.createSpectrumRenderer(origFile.getAbsolutePath(), otes);
+    	 IBasicSpectrumRenderer<OTESSpectrum> otesSpectrumRenderer = SbmtSpectrumModelFactory.createSpectrumRenderer(origFile.getAbsolutePath(), otes, true);
 
 //         OTESSpectrum otesSpectrum = (OTESSpectrum)SbmtSpectrumModelFactory.createSpectrum(origFile.getAbsolutePath(), otes);
 //         BasicSpectrumRenderer<OTESSpectrum> otesSpectrumRenderer = new BasicSpectrumRenderer<OTESSpectrum>(otesSpectrum, bodyModel, true);
