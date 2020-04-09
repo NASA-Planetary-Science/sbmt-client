@@ -43,7 +43,7 @@ public class BasicSpectrumRenderer<S extends BasicSpectrum> extends AbstractMode
 	PropertyChangeSupport pcs = new PropertyChangeSupport(this);
     protected boolean footprintGenerated = false;
 
-	protected vtkActor selectionActor = new vtkActor();
+	protected vtkActor selectionActor;
     protected vtkPolyData selectionPolyData = new vtkPolyData();
     protected vtkPolyData footprint;
     protected vtkPolyData shiftedFootprint;
@@ -53,7 +53,7 @@ public class BasicSpectrumRenderer<S extends BasicSpectrum> extends AbstractMode
     protected vtkPolyData outlinePolyData = new vtkPolyData();
     boolean isOutlineShowing;
 
-    protected vtkActor toSunVectorActor = new vtkActor();
+    protected vtkActor toSunVectorActor;
     protected vtkPolyData toSunVectorPolyData = new vtkPolyData();
     protected boolean isToSunVectorShowing = false;
 
@@ -62,7 +62,7 @@ public class BasicSpectrumRenderer<S extends BasicSpectrum> extends AbstractMode
     protected boolean isSelected;
     protected double footprintHeight;
 
-    protected vtkActor outlineActor = new vtkActor();
+    protected vtkActor outlineActor;
     protected ISmallBodyModel smallBodyModel;
     protected S spectrum;
     public static final String faceAreaFractionArrayName="faceAreaFraction";
@@ -90,8 +90,11 @@ public class BasicSpectrumRenderer<S extends BasicSpectrum> extends AbstractMode
         this.headless = headless;
         if (headless == false)
         {
+        	selectionActor = new vtkActor();
             createSelectionActor();
+            outlineActor = new vtkActor();
             createOutlineActor();
+            toSunVectorActor = new vtkActor();
             createToSunVectorActor();
         }
 	}
