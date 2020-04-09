@@ -40,28 +40,30 @@ public class OTESDatabaseGeneratorSql
     static private PreparedStatement otesInsert = null;
     static private PreparedStatement otesInsert2 = null;
     static private ISmallBodyModel bodyModel;
-    //static private vtkPolyDataReader footprintReader;
     static private vtkPolyData footprintPolyData;
-    //static private double[] meanPlateSizes;
 
     static private OTES otes=new OTES();
 
-    private static void createOTESTables()
+    private static void createOTESTables(String modelName, String dataType, boolean appendTables)
     {
+    	String tableName = modelName + "_" + OTESSpectraTable + "_" + dataType;
         try {
 
             //make a table
-            try
-            {
-                db.dropTable(OTESSpectraTable);
-            }
-            catch(Exception e)
-            {
-                e.printStackTrace();
-            }
+        	if (appendTables == false)
+        	{
+	            try
+	            {
+	                db.dropTable(tableName);
+	            }
+	            catch(Exception e)
+	            {
+	                e.printStackTrace();
+	            }
+        	}
 
             db.update(
-                    "create table " + OTESSpectraTable + "(" +
+                    "create table " + tableName + "(" +
                     "id int PRIMARY KEY, " +
                     "year smallint, " +
                     "day smallint, " +
@@ -85,22 +87,26 @@ public class OTESDatabaseGeneratorSql
         }
     }
 
-    private static void createOTESTablesCubes()
+    private static void createOTESTablesCubes(String modelName, String dataType, boolean appendTables)
     {
+    	String tableName = modelName + "_" + OTESCubesTable + "_" + dataType;
         try {
 
             //make a table
-            try
-            {
-                db.dropTable(OTESCubesTable);
-            }
-            catch(Exception e)
-            {
-                e.printStackTrace();
-            }
+        	if (appendTables == false)
+        	{
+	            try
+	            {
+	                db.dropTable(tableName);
+	            }
+	            catch(Exception e)
+	            {
+	                e.printStackTrace();
+	            }
+        	}
 
             db.update(
-                    "create table " + OTESCubesTable + "(" +
+                    "create table " + tableName + "(" +
                     "id int PRIMARY KEY, " +
                     "otesspectrumid int, " +
                     "cubeid int)"
@@ -286,7 +292,7 @@ public class OTESDatabaseGeneratorSql
         String authorName="";
         String versionString = null;
         String diffFileList = null;
-        String instrumentString = null;
+        String dataType = null;
 
         int i = 0;
         for (; i < args.length; ++i)
@@ -328,9 +334,9 @@ public class OTESDatabaseGeneratorSql
             {
             	versionString = args[++i];
             }
-            else if (args[i].equals("--instrument"))
+            else if (args[i].equals("--dataType"))
             {
-            	instrumentString = args[++i].toUpperCase();
+            	dataType = args[++i];
             }
             else if (args[i].equals("--diffList"))
             {
@@ -350,8 +356,8 @@ public class OTESDatabaseGeneratorSql
 
         bodyModel = SbmtModelFactory.createSmallBodyModel(config);
 
-        String otesFileList=args[0];
-        int mode = Integer.parseInt(args[1]);
+        String otesFileList = args[0] + File.separator + "bennu/shared/otes/" + dataType + "/spectrumlist.txt";
+//        int mode = Integer.parseInt(args[1]);
 
         List<String> otesFiles = null;
         try {
@@ -370,22 +376,39 @@ public class OTESDatabaseGeneratorSql
             return;
         }
 
-        if (mode == 5 || mode == 0)
-            createOTESTables();
-        else if (mode == 6 || mode == 0)
-            createOTESTablesCubes();
+        String modelName = "bennu_" + authorName.toLowerCase().replace("_", "");
 
+        createOTESTables(modelName, dataType, appendTables);
+        createOTESTablesCubes(modelName, dataType, appendTables);
 
         try
-        {
-            if (mode == 5 || mode == 0)
-                populateOTESTables(otesFiles);
-            else if (mode == 6 || mode == 0)
-                populateOTESTablesCubes(otesFiles);
-        }
-        catch (Exception e1) {
-            e1.printStackTrace();
-        }
+		{
+			populateOTESTables(otesFiles);
+	        populateOTESTablesCubes(otesFiles);
+
+		}
+		catch (SQLException | IOException e1)
+		{
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
+
+//        if (mode == 5 || mode == 0)
+//            createOTESTables();
+//        else if (mode == 6 || mode == 0)
+//            createOTESTablesCubes();
+//
+//
+//        try
+//        {
+//            if (mode == 5 || mode == 0)
+//                populateOTESTables(otesFiles);
+//            else if (mode == 6 || mode == 0)
+//                populateOTESTablesCubes(otesFiles);
+//        }
+//        catch (Exception e1) {
+//            e1.printStackTrace();
+//        }
 
 
         try
