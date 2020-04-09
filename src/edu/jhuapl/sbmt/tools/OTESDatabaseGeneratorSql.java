@@ -127,8 +127,9 @@ public class OTESDatabaseGeneratorSql
         }
     }
 
-    private static void populateOTESTables(List<String> otesFiles) throws SQLException, IOException
+    private static void populateOTESTables(String modelName, String dataType, List<String> otesFiles) throws SQLException, IOException
     {
+    	String tableName = modelName + "_" + OTESSpectraTable + "_" + dataType;
         int count = 0;
         for (String filename : otesFiles)
         {
@@ -179,7 +180,7 @@ public class OTESDatabaseGeneratorSql
             if (otesInsert == null)
             {
                 otesInsert = db.preparedStatement(
-                        "insert into " + OTESSpectraTable + " (year, day, midtime, minincidence, maxincidence, minemission, maxemission, minphase, maxphase, range) values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+                        "insert into " + tableName + " (year, day, midtime, minincidence, maxincidence, minemission, maxemission, minphase, maxphase, range) values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
             }
 
             DateTime midtime = new DateTime(new DateTime(date).toString(), DateTimeZone.UTC);
@@ -218,15 +219,15 @@ public class OTESDatabaseGeneratorSql
 
             int rowCount = otesInsert.executeUpdate();
 
-            populateOTESCubeTableForFile(filename, rowCount-1);
+            populateOTESCubeTableForFile(modelName, dataType, filename, rowCount-1);
             count++;
         }
     }
 
-    private static void populateOTESCubeTableForFile(String otesFile, int spectrumIndex) throws SQLException, IOException
+    private static void populateOTESCubeTableForFile(String modelName, String dataType, String otesFile, int spectrumIndex) throws SQLException, IOException
     {
     	 File origFile = new File(otesFile);
-
+    	 String tableName = modelName + "_" + OTESCubesTable + "_" + dataType;
          OTESSpectrum otesSpectrum = (OTESSpectrum)SbmtSpectrumModelFactory.createSpectrum(origFile.getAbsolutePath(), otes);
          BasicSpectrumRenderer<OTESSpectrum> otesSpectrumRenderer = new BasicSpectrumRenderer<OTESSpectrum>(otesSpectrum, bodyModel, true);
          otesSpectrumRenderer.generateFootprint();
@@ -240,7 +241,7 @@ public class OTESDatabaseGeneratorSql
          if (otesInsert2 == null)
          {
              otesInsert2 = db.preparedStatement(
-                     "insert into " + OTESCubesTable + " (otesspectrumid, cubeid) values (?, ?)");
+                     "insert into " + tableName + " (otesspectrumid, cubeid) values (?, ?)");
          }
 
          TreeSet<Integer> cubeIds = bodyModel.getIntersectingCubes(footprintPolyData);
@@ -461,7 +462,7 @@ public class OTESDatabaseGeneratorSql
 
         try
 		{
-			populateOTESTables(otesFiles);
+			populateOTESTables(modelName, dataType, otesFiles);
 //	        populateOTESTablesCubes(otesFiles);
 
 		}
