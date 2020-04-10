@@ -249,7 +249,7 @@ public class AdvancedSpectrumRenderer<S extends BasicSpectrum> extends BasicSpec
 			createOutlineActor();
 
 			footprintGenerated = true;
-			computeCellNormals();
+			computeIlluminationAngles();
 
 		}
 	}
