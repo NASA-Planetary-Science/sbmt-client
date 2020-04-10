@@ -177,7 +177,7 @@ public class OTESDatabaseGeneratorSql
 //            yearStr = f.getName();
 
        	 	IBasicSpectrumRenderer<OTESSpectrum> otesSpectrumRenderer = SbmtSpectrumModelFactory.createSpectrumRenderer(filename, otes, true);
-
+       	 	otesSpectrumRenderer.generateFootprint();
 //            BasicSpectrum otesSpectrum = SbmtSpectrumModelFactory.createSpectrum(filename, otes);
 //            otesSpectrum.isCustomSpectra = true;
 
@@ -226,17 +226,17 @@ public class OTESDatabaseGeneratorSql
             otesInsert.executeUpdate();
             ResultSet rs = otesInsert.getGeneratedKeys();
             rs.next();
-            populateOTESCubeTableForFile(modelName, dataType, filename, rs.getInt(1));
+            populateOTESCubeTableForFile(modelName, dataType, otesSpectrumRenderer, rs.getInt(1));
             count++;
         }
     }
 
-    private static void populateOTESCubeTableForFile(String modelName, String dataType, String otesFile, int spectrumIndex) throws SQLException, IOException
+    private static void populateOTESCubeTableForFile(String modelName, String dataType, IBasicSpectrumRenderer<OTESSpectrum> otesSpectrumRenderer, int spectrumIndex) throws SQLException, IOException
     {
-    	 File origFile = new File(otesFile);
+//    	 File origFile = new File(otesFile);
     	 String tableName = modelName + "_" + OTESCubesTable + "_" + dataType;
 
-    	 IBasicSpectrumRenderer<OTESSpectrum> otesSpectrumRenderer = SbmtSpectrumModelFactory.createSpectrumRenderer(otesFile, otes, true);
+//    	 IBasicSpectrumRenderer<OTESSpectrum> otesSpectrumRenderer = SbmtSpectrumModelFactory.createSpectrumRenderer(otesFile, otes, true);
 //    	 otesSpectrumRenderer.getSpectrum().isCustomSpectra = true;
 //         OTESSpectrum otesSpectrum = (OTESSpectrum)SbmtSpectrumModelFactory.createSpectrum(origFile.getAbsolutePath(), otes);
 //         BasicSpectrumRenderer<OTESSpectrum> otesSpectrumRenderer = new BasicSpectrumRenderer<OTESSpectrum>(otesSpectrum, bodyModel, true);

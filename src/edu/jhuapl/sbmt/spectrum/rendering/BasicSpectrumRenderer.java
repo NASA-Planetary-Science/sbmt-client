@@ -185,6 +185,7 @@ public class BasicSpectrumRenderer<S extends BasicSpectrum> extends AbstractMode
                 createOutlinePolyData();
                 createOutlineActor();
             }
+            computeIlluminationAngles();
         }
     }
 
