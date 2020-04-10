@@ -476,7 +476,7 @@ public class OTESDatabaseGeneratorSql
 
         try
 		{
-			populateOTESTables(modelName, dataType, otesFiles);
+			populateOTESTables(modelName, dataType, updatedFilenames);
 //	        populateOTESTablesCubes(otesFiles);
 
 		}
