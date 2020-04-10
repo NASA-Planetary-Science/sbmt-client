@@ -6,6 +6,7 @@ import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.TreeSet;
@@ -236,6 +237,7 @@ public class OTESDatabaseGeneratorSql
 //         BasicSpectrumRenderer<OTESSpectrum> otesSpectrumRenderer = new BasicSpectrumRenderer<OTESSpectrum>(otesSpectrum, bodyModel, true);
          otesSpectrumRenderer.generateFootprint();
 
+
          if (footprintPolyData == null)
              footprintPolyData = new vtkPolyData();
          footprintPolyData.DeepCopy(otesSpectrumRenderer.getUnshiftedFootprint());
@@ -443,9 +445,17 @@ public class OTESDatabaseGeneratorSql
 //        int mode = Integer.parseInt(args[1]);
 
         List<String> otesFiles = null;
+        List<String> updatedFilenames = new ArrayList<String>();
         try {
             otesFiles = FileUtil.getFileLinesAsStringList(otesFileList.substring(5));
-        } catch (IOException e2) {
+            for (String otesFile : otesFiles)
+            {
+            	String actualName = (rootURL + File.separator + "data/bennu/shared/otes/" + dataType + "/spectra/" + otesFile.split(" ")[0]).substring(5);
+            	System.out.println("OTESDatabaseGeneratorSql: main: actual name " + actualName);
+            	updatedFilenames.add(actualName);
+            }
+        }
+        catch (IOException e2) {
             e2.printStackTrace();
             return;
         }
