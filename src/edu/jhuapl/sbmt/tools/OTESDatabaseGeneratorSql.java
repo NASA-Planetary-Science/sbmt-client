@@ -177,7 +177,7 @@ public class OTESDatabaseGeneratorSql
 //            yearStr = f.getName();
 
 
-            BasicSpectrum otesSpectrum = SbmtSpectrumModelFactory.createSpectrum(origFile.getAbsolutePath(), otes);
+            BasicSpectrum otesSpectrum = SbmtSpectrumModelFactory.createSpectrum(filename, otes);
 //            otesSpectrum.isCustomSpectra = true;
 
             if (otesInsert == null)
@@ -232,7 +232,7 @@ public class OTESDatabaseGeneratorSql
     	 File origFile = new File(otesFile);
     	 String tableName = modelName + "_" + OTESCubesTable + "_" + dataType;
 
-    	 IBasicSpectrumRenderer<OTESSpectrum> otesSpectrumRenderer = SbmtSpectrumModelFactory.createSpectrumRenderer(origFile.getAbsolutePath(), otes, true);
+    	 IBasicSpectrumRenderer<OTESSpectrum> otesSpectrumRenderer = SbmtSpectrumModelFactory.createSpectrumRenderer(otesFile, otes, true);
 //    	 otesSpectrumRenderer.getSpectrum().isCustomSpectra = true;
 //         OTESSpectrum otesSpectrum = (OTESSpectrum)SbmtSpectrumModelFactory.createSpectrum(origFile.getAbsolutePath(), otes);
 //         BasicSpectrumRenderer<OTESSpectrum> otesSpectrumRenderer = new BasicSpectrumRenderer<OTESSpectrum>(otesSpectrum, bodyModel, true);
