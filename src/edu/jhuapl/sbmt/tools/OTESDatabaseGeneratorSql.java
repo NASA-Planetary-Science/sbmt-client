@@ -448,9 +448,11 @@ public class OTESDatabaseGeneratorSql
         List<String> updatedFilenames = new ArrayList<String>();
         try {
             otesFiles = FileUtil.getFileLinesAsStringList(otesFileList.substring(5));
-            for (String otesFile : otesFiles)
+//            for (String otesFile : otesFiles)
+            for (int j=0; j<10; j++)
             {
-            	String actualName = (rootURL + File.separator + "data/bennu/shared/otes/" + dataType + "/spectra/" + otesFile.split(" ")[0]).substring(5);
+            	String otesFile = otesFiles.get(j);
+            	String actualName = (rootURL + File.separator + "data/bennu/shared/otes/" + dataType + "/spectra/" + otesFile.split(" ")[0]).substring(7);
             	System.out.println("OTESDatabaseGeneratorSql: main: actual name " + actualName);
             	updatedFilenames.add(actualName);
             }
