@@ -144,10 +144,11 @@ public class OTESDatabaseGeneratorSql
             String dayOfYearStr = "";
             String yearStr = "";
 
-            String[] parts = filename.split("/");
-            String[] parts2 = parts[1].split(" ");
-            String[] parts3 = parts2[0].split("_");
-            String name = parts3[0];
+//            String[] parts = filename.split("/");
+//            String[] parts2 = parts[1].split(" ");
+//            String[] parts3 = parts2[0].split("_");
+//            String name = parts3[0];
+            String name = filename.substring(filename.lastIndexOf("/")+1);
 
             SimpleDateFormat format = new SimpleDateFormat("yyyyMMdd't'hhmmss's'SSS");
             Date date = null;
