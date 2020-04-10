@@ -221,7 +221,7 @@ public class SqlManager
 
     public PreparedStatement preparedStatement(String st) throws SQLException
     {
-        return conn.prepareStatement(st);
+        return conn.prepareStatement(st, Statement.RETURN_GENERATED_KEYS);
     }
 
 
