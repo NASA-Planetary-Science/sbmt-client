@@ -87,6 +87,8 @@ public class BasicSpectrumRenderer<S extends BasicSpectrum> extends AbstractMode
     private double maxEmission = -Double.MAX_VALUE;
     private double minPhase = Double.MAX_VALUE;
     private double maxPhase = -Double.MAX_VALUE;
+    private double minRange = Double.MAX_VALUE;
+    private double maxRange = -Double.MAX_VALUE;
 
 
 	public BasicSpectrumRenderer(S spectrum, ISmallBodyModel smallBodyModel, boolean headless)
@@ -666,6 +668,17 @@ public class BasicSpectrumRenderer<S extends BasicSpectrum> extends AbstractMode
         return angles;
     }
 
+    double computeRangeAtPoint(double[] pt, double[] normal)
+    {
+    	double[] scvec = {
+        		spacecraftPosition[0] - pt[0],
+        		spacecraftPosition[1] - pt[1],
+        		spacecraftPosition[2] - pt[2]};
+
+
+    	return Math.sqrt(Math.pow(scvec[0], 2) + Math.pow(scvec[1], 2) + Math.pow(scvec[2], 2));
+    }
+
 	void computeIlluminationAngles()
     {
         if (footprintGenerated == false)
@@ -703,6 +716,7 @@ public class BasicSpectrumRenderer<S extends BasicSpectrum> extends AbstractMode
             double incidence = angles[0];
             double emission = angles[1];
             double phase = angles[2];
+            double range = computeRangeAtPoint(centroid, normal);
 
             if (incidence < minIncidence)
                 minIncidence = incidence;
@@ -716,6 +730,10 @@ public class BasicSpectrumRenderer<S extends BasicSpectrum> extends AbstractMode
                 minPhase = phase;
             if (phase > maxPhase)
                 maxPhase = phase;
+            if (range < minRange)
+                minRange = range;
+            if (range > maxRange)
+                maxRange = range;
             cell.Delete();
         }
 
@@ -753,5 +771,15 @@ public class BasicSpectrumRenderer<S extends BasicSpectrum> extends AbstractMode
 	public double getMaxPhase()
 	{
 		return maxPhase;
+	}
+
+	public double getMinRange()
+	{
+		return minRange;
+	}
+
+	public double getMaxRange()
+	{
+		return maxRange;
 	}
 }

@@ -99,4 +99,8 @@ public interface IBasicSpectrumRenderer<S extends BasicSpectrum> extends Propert
 
 	public double getMaxPhase();
 
+	public double getMinRange();
+
+	public double getMaxRange();
+
 }

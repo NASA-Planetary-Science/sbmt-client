@@ -81,7 +81,8 @@ public class OTESDatabaseGeneratorSql
                     "maxemission double," +
                     "minphase double," +
                     "maxphase double," +
-                    "range double)"
+                    "minrange double," +
+                    "maxrange double)"
                 );
         } catch (SQLException ex2) {
 
@@ -185,7 +186,7 @@ public class OTESDatabaseGeneratorSql
             {
 
                 otesInsert = db.preparedStatement(
-                        "insert into " + tableName + " (year, day, midtime, minincidence, maxincidence, minemission, maxemission, minphase, maxphase, range) values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+                        "insert into " + tableName + " (year, day, midtime, minincidence, maxincidence, minemission, maxemission, minphase, maxphase, minrange, maxrange) values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
             }
 
             DateTime midtime = new DateTime(new DateTime(date).toString(), DateTimeZone.UTC);
@@ -203,7 +204,8 @@ public class OTESDatabaseGeneratorSql
             System.out.println("maxEmission: " + otesSpectrumRenderer.getMaxEmission());
             System.out.println("minPhase: " + otesSpectrumRenderer.getMinPhase());
             System.out.println("maxPhase: " + otesSpectrumRenderer.getMaxPhase());
-            System.out.println("range: " + otesSpectrumRenderer.getSpectrum().getRange());
+            System.out.println("minrange: " + otesSpectrumRenderer.getMinRange());
+            System.out.println("maxrange: " + otesSpectrumRenderer.getMaxRange());
 //            System.out.println("polygon type: " + otesSpectrum.getPolygonTypeFlag());
             System.out.println(" ");
 
@@ -219,7 +221,8 @@ public class OTESDatabaseGeneratorSql
             otesInsert.setDouble(7, otesSpectrumRenderer.getMaxEmission());
             otesInsert.setDouble(8, otesSpectrumRenderer.getMinPhase());
             otesInsert.setDouble(9, otesSpectrumRenderer.getMaxPhase());
-            otesInsert.setDouble(10, otesSpectrumRenderer.getSpectrum().getRange());
+            otesInsert.setDouble(10, otesSpectrumRenderer.getMinRange());
+            otesInsert.setDouble(11, otesSpectrumRenderer.getMinRange());
 //            otesInsert.setString(11, x);
 //            otesInsert.setShort(12, otesSpectrum.getPolygonTypeFlag());
 
