@@ -3,6 +3,7 @@ package edu.jhuapl.sbmt.tools;
 import java.io.File;
 import java.io.IOException;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -182,6 +183,7 @@ public class OTESDatabaseGeneratorSql
 
             if (otesInsert == null)
             {
+
                 otesInsert = db.preparedStatement(
                         "insert into " + tableName + " (year, day, midtime, minincidence, maxincidence, minemission, maxemission, minphase, maxphase, range) values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
             }
@@ -218,11 +220,13 @@ public class OTESDatabaseGeneratorSql
             otesInsert.setDouble(8, otesSpectrum.getMinPhase());
             otesInsert.setDouble(9, otesSpectrum.getMaxPhase());
             otesInsert.setDouble(10, otesSpectrum.getRange());
+//            otesInsert.setString(11, x);
 //            otesInsert.setShort(12, otesSpectrum.getPolygonTypeFlag());
 
-            int rowCount = otesInsert.executeUpdate();
+//            int rowCount = otesInsert.executeUpdate();
+            ResultSet rs = otesInsert.getGeneratedKeys();
 
-            populateOTESCubeTableForFile(modelName, dataType, filename, rowCount-1);
+            populateOTESCubeTableForFile(modelName, dataType, filename, rs.getInt(1));
             count++;
         }
     }
