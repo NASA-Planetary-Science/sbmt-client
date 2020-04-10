@@ -34,7 +34,6 @@ import edu.jhuapl.sbmt.client.SmallBodyViewConfig;
 import edu.jhuapl.sbmt.model.bennu.spectra.OREXSpectraFactory;
 import edu.jhuapl.sbmt.model.bennu.spectra.otes.OTES;
 import edu.jhuapl.sbmt.model.bennu.spectra.otes.OTESSpectrum;
-import edu.jhuapl.sbmt.spectrum.model.core.BasicSpectrum;
 import edu.jhuapl.sbmt.spectrum.model.core.interfaces.IBasicSpectrumRenderer;
 import edu.jhuapl.sbmt.spectrum.rendering.BasicSpectrumRenderer;
 
@@ -177,8 +176,9 @@ public class OTESDatabaseGeneratorSql
 //            f = f.getParentFile();
 //            yearStr = f.getName();
 
+       	 	IBasicSpectrumRenderer<OTESSpectrum> otesSpectrumRenderer = SbmtSpectrumModelFactory.createSpectrumRenderer(filename, otes, true);
 
-            BasicSpectrum otesSpectrum = SbmtSpectrumModelFactory.createSpectrum(filename, otes);
+//            BasicSpectrum otesSpectrum = SbmtSpectrumModelFactory.createSpectrum(filename, otes);
 //            otesSpectrum.isCustomSpectra = true;
 
             if (otesInsert == null)
@@ -197,13 +197,13 @@ public class OTESDatabaseGeneratorSql
             System.out.println("year: " + yearStr);
             System.out.println("dayofyear: " + dayOfYearStr);
             System.out.println("midtime: " + midtime);
-            System.out.println("minIncidence: " + otesSpectrum.getMinIncidence());
-            System.out.println("maxIncidence: " + otesSpectrum.getMaxIncidence());
-            System.out.println("minEmission: " + otesSpectrum.getMinEmission());
-            System.out.println("maxEmission: " + otesSpectrum.getMaxEmission());
-            System.out.println("minPhase: " + otesSpectrum.getMinPhase());
-            System.out.println("maxPhase: " + otesSpectrum.getMaxPhase());
-            System.out.println("range: " + otesSpectrum.getRange());
+            System.out.println("minIncidence: " + otesSpectrumRenderer.getMinIncidence());
+            System.out.println("maxIncidence: " + otesSpectrumRenderer.getMaxIncidence());
+            System.out.println("minEmission: " + otesSpectrumRenderer.getMinEmission());
+            System.out.println("maxEmission: " + otesSpectrumRenderer.getMaxEmission());
+            System.out.println("minPhase: " + otesSpectrumRenderer.getMinPhase());
+            System.out.println("maxPhase: " + otesSpectrumRenderer.getMaxPhase());
+            System.out.println("range: " + otesSpectrumRenderer.getSpectrum().getRange());
 //            System.out.println("polygon type: " + otesSpectrum.getPolygonTypeFlag());
             System.out.println(" ");
 
@@ -213,13 +213,13 @@ public class OTESDatabaseGeneratorSql
             otesInsert.setShort(1, Short.parseShort(yearStr));
             otesInsert.setShort(2, Short.parseShort(dayOfYearStr));
             otesInsert.setLong(3, midtime.getMillis());
-            otesInsert.setDouble(4, otesSpectrum.getMinIncidence());
-            otesInsert.setDouble(5, otesSpectrum.getMaxIncidence());
-            otesInsert.setDouble(6, otesSpectrum.getMinEmission());
-            otesInsert.setDouble(7, otesSpectrum.getMaxEmission());
-            otesInsert.setDouble(8, otesSpectrum.getMinPhase());
-            otesInsert.setDouble(9, otesSpectrum.getMaxPhase());
-            otesInsert.setDouble(10, otesSpectrum.getRange());
+            otesInsert.setDouble(4, otesSpectrumRenderer.getMinIncidence());
+            otesInsert.setDouble(5, otesSpectrumRenderer.getMaxIncidence());
+            otesInsert.setDouble(6, otesSpectrumRenderer.getMinEmission());
+            otesInsert.setDouble(7, otesSpectrumRenderer.getMaxEmission());
+            otesInsert.setDouble(8, otesSpectrumRenderer.getMinPhase());
+            otesInsert.setDouble(9, otesSpectrumRenderer.getMaxPhase());
+            otesInsert.setDouble(10, otesSpectrumRenderer.getSpectrum().getRange());
 //            otesInsert.setString(11, x);
 //            otesInsert.setShort(12, otesSpectrum.getPolygonTypeFlag());
 

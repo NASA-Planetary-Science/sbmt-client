@@ -87,4 +87,16 @@ public interface IBasicSpectrumRenderer<S extends BasicSpectrum> extends Propert
 
 	public void setColor(double[] color);
 
+	public double getMinIncidence();
+
+	public double getMaxIncidence();
+
+	public double getMinEmission();
+
+	public double getMaxEmission();
+
+	public double getMinPhase();
+
+	public double getMaxPhase();
+
 }

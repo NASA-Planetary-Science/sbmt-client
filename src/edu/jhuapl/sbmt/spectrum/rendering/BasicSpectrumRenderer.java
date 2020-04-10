@@ -9,7 +9,10 @@ import java.util.List;
 import org.apache.commons.math3.geometry.euclidean.threed.Vector3D;
 
 import vtk.vtkActor;
+import vtk.vtkCell;
 import vtk.vtkCellArray;
+import vtk.vtkCellData;
+import vtk.vtkDataArray;
 import vtk.vtkDoubleArray;
 import vtk.vtkFeatureEdges;
 import vtk.vtkIdList;
@@ -18,6 +21,7 @@ import vtk.vtkLine;
 import vtk.vtkPoints;
 import vtk.vtkPolyData;
 import vtk.vtkPolyDataMapper;
+import vtk.vtkPolyDataNormals;
 import vtk.vtkProp;
 import vtk.vtkProperty;
 import vtk.vtkTriangle;
@@ -74,6 +78,15 @@ public class BasicSpectrumRenderer<S extends BasicSpectrum> extends AbstractMode
 	protected double[] frustum4;
     protected boolean showFrustum = false;
     protected double[] color;
+
+    private boolean normalsGenerated = false;
+    private vtkPolyDataNormals normalsFilter;
+    private double minIncidence = Double.MAX_VALUE;
+    private double maxIncidence = -Double.MAX_VALUE;
+    private double minEmission = Double.MAX_VALUE;
+    private double maxEmission = -Double.MAX_VALUE;
+    private double minPhase = Double.MAX_VALUE;
+    private double maxPhase = -Double.MAX_VALUE;
 
 
 	public BasicSpectrumRenderer(S spectrum, ISmallBodyModel smallBodyModel, boolean headless)
@@ -603,5 +616,139 @@ public class BasicSpectrumRenderer<S extends BasicSpectrum> extends AbstractMode
 	public void setColor(double[] color)
 	{
 		this.color = color;
+	}
+
+	void computeCellNormals()
+    {
+        if (normalsGenerated == false)
+        {
+        	normalsFilter = new vtkPolyDataNormals();
+            normalsFilter.SetInputData(footprint);
+            normalsFilter.SetComputeCellNormals(1);
+            normalsFilter.SetComputePointNormals(0);
+            // normalsFilter.AutoOrientNormalsOn();
+            // normalsFilter.ConsistencyOn();
+            normalsFilter.SplittingOff();
+            normalsFilter.Update();
+
+            if (footprint != null)
+            {
+                vtkPolyData normalsFilterOutput = normalsFilter.GetOutput();
+                footprint.DeepCopy(normalsFilterOutput);
+                normalsGenerated = true;
+            }
+        }
+    }
+
+    // Computes the incidence, emission, and phase at a point on the footprint with
+    // a given normal.
+    // (I.e. the normal of the plate which the point is lying on).
+    // The output is a 3-vector with the first component equal to the incidence,
+    // the second component equal to the emission and the third component equal to
+    // the phase.
+    double[] computeIlluminationAnglesAtPoint(double[] pt, double[] normal)
+    {
+        double[] scvec = {
+        		spacecraftPosition[0] - pt[0],
+        		spacecraftPosition[1] - pt[1],
+        		spacecraftPosition[2] - pt[2]};
+
+        double[] sunVectorAdjusted = spectrum.getToSunUnitVector();
+        double incidence = MathUtil.vsep(normal, sunVectorAdjusted) * 180.0 / Math.PI;
+        double emission = MathUtil.vsep(normal, scvec) * 180.0 / Math.PI;
+        double phase = MathUtil.vsep(sunVectorAdjusted, scvec) * 180.0 / Math.PI;
+
+        double[] angles = { incidence, emission, phase };
+
+        return angles;
+    }
+
+	void computeIlluminationAngles()
+    {
+        if (footprintGenerated == false)
+            generateFootprint();
+
+        computeCellNormals();
+
+        int numberOfCells = footprint.GetNumberOfCells();
+
+        vtkPoints points = footprint.GetPoints();
+        vtkCellData footprintCellData = footprint.GetCellData();
+        vtkDataArray normals = footprintCellData.GetNormals();
+
+        this.minEmission = Double.MAX_VALUE;
+        this.maxEmission = -Double.MAX_VALUE;
+        this.minIncidence = Double.MAX_VALUE;
+        this.maxIncidence = -Double.MAX_VALUE;
+        this.minPhase = Double.MAX_VALUE;
+        this.maxPhase = -Double.MAX_VALUE;
+
+        for (int i = 0; i < numberOfCells; ++i)
+        {
+            vtkCell cell = footprint.GetCell(i);
+            double[] pt0 = points.GetPoint(cell.GetPointId(0));
+            double[] pt1 = points.GetPoint(cell.GetPointId(1));
+            double[] pt2 = points.GetPoint(cell.GetPointId(2));
+            double[] centroid = {
+                    (pt0[0] + pt1[0] + pt2[0]) / 3.0,
+                    (pt0[1] + pt1[1] + pt2[1]) / 3.0,
+                    (pt0[2] + pt1[2] + pt2[2]) / 3.0
+            };
+            double[] normal = normals.GetTuple3(i);
+
+            double[] angles = computeIlluminationAnglesAtPoint(centroid, normal);
+            double incidence = angles[0];
+            double emission = angles[1];
+            double phase = angles[2];
+
+            if (incidence < minIncidence)
+                minIncidence = incidence;
+            if (incidence > maxIncidence)
+                maxIncidence = incidence;
+            if (emission < minEmission)
+                minEmission = emission;
+            if (emission > maxEmission)
+                maxEmission = emission;
+            if (phase < minPhase)
+                minPhase = phase;
+            if (phase > maxPhase)
+                maxPhase = phase;
+            cell.Delete();
+        }
+
+        points.Delete();
+        footprintCellData.Delete();
+        if (normals != null)
+            normals.Delete();
+    }
+
+	public double getMinIncidence()
+	{
+		return minIncidence;
+	}
+
+	public double getMaxIncidence()
+	{
+		return maxIncidence;
+	}
+
+	public double getMinEmission()
+	{
+		return minEmission;
+	}
+
+	public double getMaxEmission()
+	{
+		return maxEmission;
+	}
+
+	public double getMinPhase()
+	{
+		return minPhase;
+	}
+
+	public double getMaxPhase()
+	{
+		return maxPhase;
 	}
 }
