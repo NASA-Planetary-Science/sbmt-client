@@ -178,7 +178,7 @@ public class OTESDatabaseGeneratorSql
 
 
             BasicSpectrum otesSpectrum = SbmtSpectrumModelFactory.createSpectrum(origFile.getAbsolutePath(), otes);
-
+            otesSpectrum.isCustomSpectra = true;
 
             if (otesInsert == null)
             {
