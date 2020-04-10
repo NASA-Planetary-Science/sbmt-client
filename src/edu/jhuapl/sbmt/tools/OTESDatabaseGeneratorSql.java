@@ -223,7 +223,7 @@ public class OTESDatabaseGeneratorSql
 //            otesInsert.setString(11, x);
 //            otesInsert.setShort(12, otesSpectrum.getPolygonTypeFlag());
 
-//            int rowCount = otesInsert.executeUpdate();
+            otesInsert.executeUpdate();
             ResultSet rs = otesInsert.getGeneratedKeys();
 
             populateOTESCubeTableForFile(modelName, dataType, filename, rs.getInt(1));
