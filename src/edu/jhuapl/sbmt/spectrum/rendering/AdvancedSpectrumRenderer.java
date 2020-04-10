@@ -247,6 +247,7 @@ public class AdvancedSpectrumRenderer<S extends BasicSpectrum> extends BasicSpec
 			createOutlinePolyData();
 			createOutlineActor();
 
+			computeCellNormals();
 		}
 	}
 }
