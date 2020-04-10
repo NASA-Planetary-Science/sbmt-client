@@ -225,7 +225,7 @@ public class OTESDatabaseGeneratorSql
 
             otesInsert.executeUpdate();
             ResultSet rs = otesInsert.getGeneratedKeys();
-
+            rs.next();
             populateOTESCubeTableForFile(modelName, dataType, filename, rs.getInt(1));
             count++;
         }
