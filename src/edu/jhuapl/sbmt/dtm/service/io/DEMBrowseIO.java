@@ -12,8 +12,8 @@ import java.util.Vector;
 
 import edu.jhuapl.saavtk.util.DownloadableFileState;
 import edu.jhuapl.saavtk.util.FileCache;
-import edu.jhuapl.saavtk.util.FileCache.NoInternetAccessException;
-import edu.jhuapl.saavtk.util.FileCache.UnauthorizedAccessException;
+import edu.jhuapl.saavtk.util.NoInternetAccessException;
+import edu.jhuapl.saavtk.util.UnauthorizedAccessException;
 import edu.jhuapl.sbmt.dtm.model.DEMKey;
 
 public class DEMBrowseIO
