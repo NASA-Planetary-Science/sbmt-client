@@ -349,6 +349,8 @@ public class OTESDatabaseGeneratorSql
         String versionString = null;
         String diffFileList = null;
         String dataType = null;
+        int startIndex = 0;
+        int endIndex = 0;
 
         int i = 0;
         for (; i < args.length; ++i)
@@ -394,6 +396,14 @@ public class OTESDatabaseGeneratorSql
             {
             	diffFileList = args[++i];
             }
+            else if (args[i].equals("--startIndex"))
+            {
+            	startIndex = Integer.parseInt(args[++i]);
+            }
+            else if (args[i].equals("--endIndex"))
+            {
+            	endIndex = Integer.parseInt(args[++i]);
+            }
             else {
                 // We've encountered something that is not an option, must be at the args
                 break;
@@ -417,7 +427,7 @@ public class OTESDatabaseGeneratorSql
         try {
             otesFiles = FileUtil.getFileLinesAsStringList(otesFileList.substring(5));
 //            for (String otesFile : otesFiles)
-            for (int j=0; j<50000; j++)
+            for (int j=startIndex; j<endIndex; j++)
             {
             	String otesFile = otesFiles.get(j);
             	String actualName = (rootURL + File.separator + "data/bennu/shared/otes/" + dataType + "/spectra/" + otesFile.split(" ")[0]);
