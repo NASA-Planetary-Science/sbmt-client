@@ -427,6 +427,7 @@ public class OTESDatabaseGeneratorSql
         try {
             otesFiles = FileUtil.getFileLinesAsStringList(otesFileList.substring(5));
 //            for (String otesFile : otesFiles)
+            if (endIndex > otesFiles.size()) endIndex = otesFiles.size();
             for (int j=startIndex; j<endIndex; j++)
             {
             	String otesFile = otesFiles.get(j);
