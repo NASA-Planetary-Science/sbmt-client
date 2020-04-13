@@ -668,7 +668,7 @@ public class BasicSpectrumRenderer<S extends BasicSpectrum> extends AbstractMode
         return angles;
     }
 
-    double computeRangeAtPoint(double[] pt, double[] normal)
+    double computeRangeAtPoint(double[] pt)
     {
     	double[] scvec = {
         		spacecraftPosition[0] - pt[0],
@@ -716,7 +716,7 @@ public class BasicSpectrumRenderer<S extends BasicSpectrum> extends AbstractMode
             double incidence = angles[0];
             double emission = angles[1];
             double phase = angles[2];
-            double range = computeRangeAtPoint(centroid, normal);
+            double range = computeRangeAtPoint(centroid);
 
             if (incidence < minIncidence)
                 minIncidence = incidence;

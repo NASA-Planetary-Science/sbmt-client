@@ -136,7 +136,6 @@ public class AdvancedSpectrumRenderer<S extends BasicSpectrum> extends BasicSpec
 	{
 		if (!footprintGenerated)
 		{
-			System.out.println("AdvancedSpectrumRenderer: generateFootprint: no footprint yet, loading file to generate");
 			spectrum.readPointingFromInfoFile();
 			try
 			{

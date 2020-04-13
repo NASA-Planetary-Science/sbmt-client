@@ -53,7 +53,6 @@ public class OTESDatabaseGeneratorSql
     private static void createOTESTables(String modelName, String dataType, boolean appendTables)
     {
     	String tableName = modelName + "_" + OTESSpectraTable + "_" + dataType;
-    	System.out.println("OTESDatabaseGeneratorSql: createOTESTables: tablename " + tableName);
         try {
 
             //make a table
@@ -136,19 +135,10 @@ public class OTESDatabaseGeneratorSql
         int count = 0;
         for (String filename : otesFiles)
         {
-            // Don't check if all OTES files exist here, since we want to allow searches on spectra
-            // that don't intersect the asteroid
-
-        	//20181102t040042
-            System.out.println("starting otes " + count + "  " + filename);
+            System.out.println("Processing OTES index:" + count + "  filename: " + filename);
 
             String dayOfYearStr = "";
             String yearStr = "";
-
-//            String[] parts = filename.split("/");
-//            String[] parts2 = parts[1].split(" ");
-//            String[] parts3 = parts2[0].split("_");
-//            String name = parts3[0];
             String name = filename.substring(filename.lastIndexOf("/")+1);
 
             SimpleDateFormat format = new SimpleDateFormat("yyyyMMdd't'hhmmss's'SSS");
@@ -168,50 +158,33 @@ public class OTESDatabaseGeneratorSql
             dayOfYearStr = doyFormat.format(date);
             yearStr = yearFormat.format(date);
 
-            File origFile = new File(filename);
-//            File f = origFile;
-//
-//            f = f.getParentFile();
-//            dayOfYearStr = f.getName();
-//
-//            f = f.getParentFile();
-//            yearStr = f.getName();
-
        	 	IBasicSpectrumRenderer<OTESSpectrum> otesSpectrumRenderer = SbmtSpectrumModelFactory.createSpectrumRenderer(filename, otes, true);
        	 	otesSpectrumRenderer.generateFootprint();
-//            BasicSpectrum otesSpectrum = SbmtSpectrumModelFactory.createSpectrum(filename, otes);
-//            otesSpectrum.isCustomSpectra = true;
 
             if (otesInsert == null)
             {
-
+            	//the index auto increments, so start with the year column
                 otesInsert = db.preparedStatement(
                         "insert into " + tableName + " (year, day, midtime, minincidence, maxincidence, minemission, maxemission, minphase, maxphase, minrange, maxrange) values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
             }
 
             DateTime midtime = new DateTime(new DateTime(date).toString(), DateTimeZone.UTC);
-            // Replace the "T" with a space
-            //time = time.substring(0, 10) + " " + time.substring(11, time.length());
 
-//            System.out.println("id: " + Integer.parseInt(origFile.getName().substring(2, 11)));
-            System.out.println("id: " + count);
-            System.out.println("year: " + yearStr);
-            System.out.println("dayofyear: " + dayOfYearStr);
-            System.out.println("midtime: " + midtime);
-            System.out.println("minIncidence: " + otesSpectrumRenderer.getMinIncidence());
-            System.out.println("maxIncidence: " + otesSpectrumRenderer.getMaxIncidence());
-            System.out.println("minEmission: " + otesSpectrumRenderer.getMinEmission());
-            System.out.println("maxEmission: " + otesSpectrumRenderer.getMaxEmission());
-            System.out.println("minPhase: " + otesSpectrumRenderer.getMinPhase());
-            System.out.println("maxPhase: " + otesSpectrumRenderer.getMaxPhase());
-            System.out.println("minrange: " + otesSpectrumRenderer.getMinRange());
-            System.out.println("maxrange: " + otesSpectrumRenderer.getMaxRange());
-//            System.out.println("polygon type: " + otesSpectrum.getPolygonTypeFlag());
+//            System.out.println("id: " + count);
+//            System.out.println("year: " + yearStr);
+//            System.out.println("dayofyear: " + dayOfYearStr);
+//            System.out.println("midtime: " + midtime);
+//            System.out.println("minIncidence: " + otesSpectrumRenderer.getMinIncidence());
+//            System.out.println("maxIncidence: " + otesSpectrumRenderer.getMaxIncidence());
+//            System.out.println("minEmission: " + otesSpectrumRenderer.getMinEmission());
+//            System.out.println("maxEmission: " + otesSpectrumRenderer.getMaxEmission());
+//            System.out.println("minPhase: " + otesSpectrumRenderer.getMinPhase());
+//            System.out.println("maxPhase: " + otesSpectrumRenderer.getMaxPhase());
+//            System.out.println("minrange: " + otesSpectrumRenderer.getMinRange());
+//            System.out.println("maxrange: " + otesSpectrumRenderer.getMaxRange());
             System.out.println(" ");
 
-
-//            otesInsert.setInt(1, Integer.parseInt(origFile.getName().substring(2, 11)));
-//            otesInsert.setInt(1, count);
+            //The index autoincrements, so start adding with the year string
             otesInsert.setShort(1, Short.parseShort(yearStr));
             otesInsert.setShort(2, Short.parseShort(dayOfYearStr));
             otesInsert.setLong(3, midtime.getMillis());
@@ -236,15 +209,7 @@ public class OTESDatabaseGeneratorSql
 
     private static void populateOTESCubeTableForFile(String modelName, String dataType, IBasicSpectrumRenderer<OTESSpectrum> otesSpectrumRenderer, int spectrumIndex) throws SQLException, IOException
     {
-//    	 File origFile = new File(otesFile);
     	 String tableName = modelName + "_" + OTESCubesTable + "_" + dataType;
-
-//    	 IBasicSpectrumRenderer<OTESSpectrum> otesSpectrumRenderer = SbmtSpectrumModelFactory.createSpectrumRenderer(otesFile, otes, true);
-//    	 otesSpectrumRenderer.getSpectrum().isCustomSpectra = true;
-//         OTESSpectrum otesSpectrum = (OTESSpectrum)SbmtSpectrumModelFactory.createSpectrum(origFile.getAbsolutePath(), otes);
-//         BasicSpectrumRenderer<OTESSpectrum> otesSpectrumRenderer = new BasicSpectrumRenderer<OTESSpectrum>(otesSpectrum, bodyModel, true);
-         otesSpectrumRenderer.generateFootprint();
-
 
          if (footprintPolyData == null)
              footprintPolyData = new vtkPolyData();
@@ -254,6 +219,7 @@ public class OTESDatabaseGeneratorSql
 
          if (otesInsert2 == null)
          {
+        	//index autoincrements, so start with the otesspectrum id column
              otesInsert2 = db.preparedStatement(
                      "insert into " + tableName + " (otesspectrumid, cubeid) values (?, ?)");
          }
@@ -262,10 +228,11 @@ public class OTESDatabaseGeneratorSql
          System.out.println("cubeIds:  " + cubeIds);
          System.out.println("number of cubes: " + cubeIds.size());
 //         System.out.println("id: " + count);
-         System.out.println("number of cells in polydata " + footprintPolyData.GetNumberOfCells());
+//         System.out.println("number of cells in polydata " + footprintPolyData.GetNumberOfCells());
 
          for (Integer i : cubeIds)
          {
+        	 //index autoincrements, so start with the otesspectrum id column
 //             otesInsert2.setInt(1, count);
              otesInsert2.setInt(1, spectrumIndex);
              otesInsert2.setInt(2, i);
@@ -277,8 +244,8 @@ public class OTESDatabaseGeneratorSql
 
          otesSpectrumRenderer.Delete();
          System.out.println("deleted " + vtkObject.JAVA_OBJECT_MANAGER.gc(true));
-         System.out.println(" ");
-         System.out.println(" ");
+//         System.out.println(" ");
+//         System.out.println(" ");
     }
 
     private static void populateOTESTablesCubes(List<String> otesFiles) throws SQLException, IOException
@@ -291,7 +258,7 @@ public class OTESDatabaseGeneratorSql
             if (filesExist == false)
                 continue;
 
-            System.out.println("\n\nstarting otes " + filename + " " + filecount++ + "/" + otesFiles.size());
+            System.out.println("\n\nProcessing otes " + filename + " " + filecount++ + "/" + otesFiles.size());
 
             File origFile = new File(filename);
 
@@ -314,8 +281,8 @@ public class OTESDatabaseGeneratorSql
             TreeSet<Integer> cubeIds = bodyModel.getIntersectingCubes(footprintPolyData);
             System.out.println("cubeIds:  " + cubeIds);
             System.out.println("number of cubes: " + cubeIds.size());
-            System.out.println("id: " + count);
-            System.out.println("number of cells in polydata " + footprintPolyData.GetNumberOfCells());
+//            System.out.println("id: " + count);
+//            System.out.println("number of cells in polydata " + footprintPolyData.GetNumberOfCells());
 
             for (Integer i : cubeIds)
             {
@@ -329,9 +296,9 @@ public class OTESDatabaseGeneratorSql
             }
 
             otesSpectrumRenderer.Delete();
-            System.out.println("deleted " + vtkObject.JAVA_OBJECT_MANAGER.gc(true));
-            System.out.println(" ");
-            System.out.println(" ");
+//            System.out.println("deleted " + vtkObject.JAVA_OBJECT_MANAGER.gc(true));
+//            System.out.println(" ");
+//            System.out.println(" ");
         }
     }
 
@@ -374,8 +341,6 @@ public class OTESDatabaseGeneratorSql
         System.setProperty("java.awt.headless", "true");
         NativeLibraryLoader.loadVtkLibraries();
 
-
-
         boolean appendTables = false;
         boolean modifyMain = false;
         boolean remote = false;
@@ -409,10 +374,6 @@ public class OTESDatabaseGeneratorSql
             {
                 remote = true;
             }
-//            else if (args[i].equals("--cameraIndex"))
-//            {
-//                cameraIndex = Integer.parseInt(args[++i]);
-//            }
             else if (args[i].equals("--body"))
             {
             	bodyName = args[++i];
@@ -450,18 +411,16 @@ public class OTESDatabaseGeneratorSql
         OREXSpectraFactory.initializeModels(bodyModel);
 
         String otesFileList = rootURL + File.separator + "data/bennu/shared/otes/" + dataType + "/spectrumlist.txt";
-//        int mode = Integer.parseInt(args[1]);
 
         List<String> otesFiles = null;
         List<String> updatedFilenames = new ArrayList<String>();
         try {
             otesFiles = FileUtil.getFileLinesAsStringList(otesFileList.substring(5));
 //            for (String otesFile : otesFiles)
-            for (int j=0; j<10; j++)
+            for (int j=0; j<50000; j++)
             {
             	String otesFile = otesFiles.get(j);
-            	String actualName = (rootURL + File.separator + "data/bennu/shared/otes/" + dataType + "/spectra/" + otesFile.split(" ")[0])/*.substring(7)*/;
-            	System.out.println("OTESDatabaseGeneratorSql: main: actual name " + actualName);
+            	String actualName = (rootURL + File.separator + "data/bennu/shared/otes/" + dataType + "/spectra/" + otesFile.split(" ")[0]);
             	updatedFilenames.add(actualName);
             }
         }
@@ -480,7 +439,6 @@ public class OTESDatabaseGeneratorSql
         }
 
         String modelName = "bennu_" + authorName.toLowerCase().replace("-", "");
-        System.out.println("OTESDatabaseGeneratorSql: main: model name " + modelName);
         createOTESTables(modelName, dataType, appendTables);
         createOTESTablesCubes(modelName, dataType, appendTables);
 
@@ -488,6 +446,7 @@ public class OTESDatabaseGeneratorSql
 		{
 			populateOTESTables(modelName, dataType, updatedFilenames);
 //	        populateOTESTablesCubes(otesFiles);
+			db.shutdown();
 
 		}
 		catch (SQLException | IOException e1)
@@ -495,32 +454,6 @@ public class OTESDatabaseGeneratorSql
 			// TODO Auto-generated catch block
 			e1.printStackTrace();
 		}
-
-//        if (mode == 5 || mode == 0)
-//            createOTESTables();
-//        else if (mode == 6 || mode == 0)
-//            createOTESTablesCubes();
-//
-//
-//        try
-//        {
-//            if (mode == 5 || mode == 0)
-//                populateOTESTables(otesFiles);
-//            else if (mode == 6 || mode == 0)
-//                populateOTESTablesCubes(otesFiles);
-//        }
-//        catch (Exception e1) {
-//            e1.printStackTrace();
-//        }
-
-
-        try
-        {
-            db.shutdown();
-        }
-        catch (SQLException e) {
-            e.printStackTrace();
-        }
     }
 
 }
