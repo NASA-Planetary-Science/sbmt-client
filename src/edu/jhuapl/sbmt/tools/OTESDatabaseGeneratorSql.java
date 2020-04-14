@@ -82,7 +82,7 @@ public class OTESDatabaseGeneratorSql
                     "maxphase double," +
                     "minrange double," +
                     "maxrange double, " +
-                    "filename string)"
+                    "filename char(128))"
                 );
         } catch (SQLException ex2) {
 
