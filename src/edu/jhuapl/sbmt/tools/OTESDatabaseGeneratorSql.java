@@ -197,7 +197,7 @@ public class OTESDatabaseGeneratorSql
             otesInsert.setDouble(9, otesSpectrumRenderer.getMaxPhase());
             otesInsert.setDouble(10, otesSpectrumRenderer.getMinRange());
             otesInsert.setDouble(11, otesSpectrumRenderer.getMinRange());
-            String filenamePlusParent = filename.substring(filename.lastIndexOf("spectra/")+9);
+            String filenamePlusParent = filename.substring(filename.lastIndexOf("spectra/")+8);
             otesInsert.setString(12, filenamePlusParent);
 //            otesInsert.setShort(12, otesSpectrum.getPolygonTypeFlag());
 
