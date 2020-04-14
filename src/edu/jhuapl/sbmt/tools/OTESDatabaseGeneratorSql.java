@@ -215,7 +215,7 @@ public class OTESDatabaseGeneratorSql
 
          if (footprintPolyData == null)
              footprintPolyData = new vtkPolyData();
-         footprintPolyData.DeepCopy(otesSpectrumRenderer.getUnshiftedFootprint());
+         footprintPolyData.DeepCopy(otesSpectrumRenderer.getShiftedFootprint());
          footprintPolyData.ComputeBounds();
 
 
