@@ -151,7 +151,7 @@ public class PerspectiveImagePreRenderer
         SbmtMultiMissionTool.configureMission();
 
         // authentication
-        Authenticator.authenticate();
+        Configuration.authenticate();
 
         // initialize view config
         SmallBodyViewConfig.initialize();

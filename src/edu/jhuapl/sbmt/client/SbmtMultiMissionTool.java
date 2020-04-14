@@ -1,7 +1,6 @@
 package edu.jhuapl.sbmt.client;
 
 import java.awt.EventQueue;
-import java.io.File;
 import java.io.IOException;
 import java.io.PrintStream;
 import java.lang.reflect.InvocationTargetException;
@@ -19,7 +18,6 @@ import javax.swing.SwingWorker;
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
 
-import com.google.common.collect.ImmutableList;
 import com.jgoodies.looks.LookUtils;
 
 import edu.jhuapl.saavtk.colormap.Colormaps;
@@ -548,48 +546,48 @@ public class SbmtMultiMissionTool
 		}
 	}
 
-	protected void setUpAuthentication()
-	{
-	    if (enableAuthentication)
-	    {
-	        URL dataRootUrl = Configuration.getDataRootURL();
-	        // Set up two locations to check for passwords: in the installed location or in the user's home directory.
-	        String jarLocation = SbmtMultiMissionTool.class.getProtectionDomain().getCodeSource().getLocation().getPath();
-	        String parent = new File(jarLocation).getParentFile().getParent();
-	        ImmutableList<Path> passwordFilesToTry = ImmutableList.of(SAFE_URL_PATHS.get(Configuration.getApplicationDataDir(), "password.txt"), SAFE_URL_PATHS.get(parent, "password.txt"));
+    protected void setUpAuthentication()
+    {
+        if (enableAuthentication)
+        {
+            URL dataRootUrl = Configuration.getDataRootURL();
 
-	        Configuration.setupPasswordAuthentication(dataRootUrl, passwordFilesToTry);
-	        FileCache.addServerUrlPropertyChangeListener(e -> {
-	            if (e.getPropertyName().equals(DownloadableFileState.STATE_PROPERTY))
-	            {
-	                DownloadableFileState rootState = (DownloadableFileState) e.getNewValue();
-	                if (rootState.getUrlState().getStatus() == UrlStatus.NOT_AUTHORIZED)
-	                {
-	                    Configuration.setupPasswordAuthentication(dataRootUrl, passwordFilesToTry);
-	                    FileCache.instance().queryAllInBackground(true);
-	                }
-	            }
-	        });
-	        if (!FileCache.instance().getRootState().isAccessible())
-	        {
-	            FileCache.setOfflineMode(true, Configuration.getCacheDir());
-	            String message = "Unable to find server " + dataRootUrl + ". Starting in offline mode. See console log for more information.";
-	            if (Configuration.isHeadless())
-	            {
-	                System.err.println(message);
-	            }
-	            else
-	            {
-	                Configuration.runOnEDT(() -> {
-	                    JOptionPane pane = new JOptionPane(message, JOptionPane.INFORMATION_MESSAGE);
-	                    offlinePopup = pane.createDialog("No internet access");
-	                    offlinePopup.setVisible(true);
-	                    offlinePopup.dispose();
-	                });
-	            }
-	        }
-	    }
-	}
+            Configuration.getSwingAuthorizor().setUpAuthorization();
+            FileCache.instance().queryAllInBackground(true);
+
+            FileCache.addServerUrlPropertyChangeListener(e -> {
+                if (e.getPropertyName().equals(DownloadableFileState.STATE_PROPERTY))
+                {
+                    DownloadableFileState rootState = (DownloadableFileState) e.getNewValue();
+                    if (rootState.getUrlState().getStatus() == UrlStatus.NOT_AUTHORIZED)
+                    {
+                        if (Configuration.getSwingAuthorizor().updateCredentials())
+                        {
+                            FileCache.instance().queryAllInBackground(true);
+                        }
+                    }
+                }
+            });
+            if (FileCache.instance().getRootState().getStatus() != UrlStatus.ACCESSIBLE)
+            {
+                FileCache.setOfflineMode(true, Configuration.getCacheDir());
+                String message = "Unable to connect to server " + dataRootUrl + ". Starting in offline mode. See console log for more information.";
+                if (Configuration.isHeadless())
+                {
+                    System.err.println(message);
+                }
+                else
+                {
+                    Configuration.runOnEDT(() -> {
+                        JOptionPane pane = new JOptionPane(message, JOptionPane.INFORMATION_MESSAGE);
+                        offlinePopup = pane.createDialog("No internet access");
+                        offlinePopup.setVisible(true);
+                        offlinePopup.dispose();
+                    });
+                }
+            }
+        }
+    }
 
 	public static void main(String[] args)
 	{
