@@ -81,7 +81,8 @@ public class OTESDatabaseGeneratorSql
                     "minphase double," +
                     "maxphase double," +
                     "minrange double," +
-                    "maxrange double)"
+                    "maxrange double, " +
+                    "filename string)"
                 );
         } catch (SQLException ex2) {
 
@@ -165,7 +166,7 @@ public class OTESDatabaseGeneratorSql
             {
             	//the index auto increments, so start with the year column
                 otesInsert = db.preparedStatement(
-                        "insert into " + tableName + " (year, day, midtime, minincidence, maxincidence, minemission, maxemission, minphase, maxphase, minrange, maxrange) values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+                        "insert into " + tableName + " (year, day, midtime, minincidence, maxincidence, minemission, maxemission, minphase, maxphase, minrange, maxrange, filename) values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
             }
 
             DateTime midtime = new DateTime(new DateTime(date).toString(), DateTimeZone.UTC);
@@ -196,7 +197,8 @@ public class OTESDatabaseGeneratorSql
             otesInsert.setDouble(9, otesSpectrumRenderer.getMaxPhase());
             otesInsert.setDouble(10, otesSpectrumRenderer.getMinRange());
             otesInsert.setDouble(11, otesSpectrumRenderer.getMinRange());
-//            otesInsert.setString(11, x);
+            String filenamePlusParent = filename.substring(filename.lastIndexOf("spectra/")+9);
+            otesInsert.setString(12, filenamePlusParent);
 //            otesInsert.setShort(12, otesSpectrum.getPolygonTypeFlag());
 
             otesInsert.executeUpdate();
