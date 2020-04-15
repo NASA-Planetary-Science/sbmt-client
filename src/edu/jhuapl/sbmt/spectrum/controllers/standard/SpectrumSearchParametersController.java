@@ -283,6 +283,8 @@ public class SpectrumSearchParametersController<S extends BasicSpectrum>
                         cubeList = bodyModel.getIntersectingCubes(selectionModel.getVtkInteriorPolyDataFor(region));
                     }
                 }
+                else
+                	cubeList = null;
 
                 SwingWorker<Void, Void> searchTask = new SwingWorker<Void, Void>()
 				{
