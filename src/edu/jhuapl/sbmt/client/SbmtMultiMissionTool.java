@@ -7,7 +7,6 @@ import java.lang.reflect.InvocationTargetException;
 import java.net.CookieHandler;
 import java.net.CookieManager;
 import java.net.CookiePolicy;
-import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
@@ -32,6 +31,8 @@ import edu.jhuapl.saavtk.util.DownloadableFileState;
 import edu.jhuapl.saavtk.util.FileCache;
 import edu.jhuapl.saavtk.util.LatLon;
 import edu.jhuapl.saavtk.util.SafeURLPaths;
+import edu.jhuapl.saavtk.util.ServerSettingsManager;
+import edu.jhuapl.saavtk.util.ServerSettingsManager.ServerSettings;
 import edu.jhuapl.saavtk.util.UrlStatus;
 import edu.jhuapl.sbmt.dtm.model.DEMKey;
 import edu.jhuapl.sbmt.gui.image.model.custom.CustomCylindricalImageKey;
@@ -550,28 +551,16 @@ public class SbmtMultiMissionTool
     {
         if (enableAuthentication)
         {
-            URL dataRootUrl = Configuration.getDataRootURL();
+            ServerSettings serverSettings = ServerSettingsManager.instance().get();
 
-            Configuration.getSwingAuthorizor().setUpAuthorization();
-            FileCache.instance().queryAllInBackground(true);
-
-            FileCache.addServerUrlPropertyChangeListener(e -> {
-                if (e.getPropertyName().equals(DownloadableFileState.STATE_PROPERTY))
-                {
-                    DownloadableFileState rootState = (DownloadableFileState) e.getNewValue();
-                    if (rootState.getUrlState().getStatus() == UrlStatus.NOT_AUTHORIZED)
-                    {
-                        if (Configuration.getSwingAuthorizor().updateCredentials())
-                        {
-                            FileCache.instance().queryAllInBackground(true);
-                        }
-                    }
-                }
-            });
-            if (FileCache.instance().getRootState().getStatus() != UrlStatus.ACCESSIBLE)
+            if (serverSettings.isServerAccessible())
+            {
+                Configuration.getSwingAuthorizor().setUpAuthorization();
+            }
+            else
             {
                 FileCache.setOfflineMode(true, Configuration.getCacheDir());
-                String message = "Unable to connect to server " + dataRootUrl + ". Starting in offline mode. See console log for more information.";
+                String message = "Unable to connect to server " + Configuration.getDataRootURL() + ". Starting in offline mode. See console log for more information.";
                 if (Configuration.isHeadless())
                 {
                     System.err.println(message);
@@ -586,6 +575,21 @@ public class SbmtMultiMissionTool
                     });
                 }
             }
+            FileCache.instance().queryAllInBackground(true);
+
+            FileCache.addServerUrlPropertyChangeListener(e -> {
+                if (e.getPropertyName().equals(DownloadableFileState.STATE_PROPERTY))
+                {
+                    DownloadableFileState rootState = (DownloadableFileState) e.getNewValue();
+                    if (rootState.getUrlState().getStatus() == UrlStatus.NOT_AUTHORIZED)
+                    {
+                        if (Configuration.getSwingAuthorizor().setUpAuthorization())
+                        {
+                            FileCache.instance().queryAllInBackground(true);
+                        }
+                    }
+                }
+            });
         }
     }
 
