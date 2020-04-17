@@ -180,6 +180,8 @@ public class SbmtRunnable implements Runnable
 				System.out.println("You may update your user name and pasword on the Body -> Update Password menu.");
 			}
 		}
+		System.out.println("\nStoring application data in " + Configuration.getApplicationDataDir());
+
 		if (Console.isConfigured())
 		{
 			System.out.println("\nThis is the SBMT console. You can show or hide it on the Console menu.");
