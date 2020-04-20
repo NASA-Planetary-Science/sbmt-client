@@ -409,7 +409,7 @@ public class SbmtMultiMissionTool
                         // Kill the splash screen after a suitable pause.
                         try
                         {
-                            Thread.sleep(3500);
+                            Thread.sleep(4000);
                         }
                         catch (InterruptedException e)
                         {
@@ -481,12 +481,12 @@ public class SbmtMultiMissionTool
 
 		setUpStreams();
 
+		// Display splash screen.
+		displaySplash(mission);
+
 		setUpAuthentication();
 
 		clearCache();
-
-		// Display splash screen.
-		displaySplash(mission);
 
 		// Start up the client.
 		new SbmtRunnable(initialShapeModelPath).run();
