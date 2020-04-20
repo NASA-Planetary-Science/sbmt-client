@@ -233,7 +233,7 @@ public class SbmtMultiMissionTool
 			break;
 		case TEST_APL_INTERNAL:
 		case TEST_PUBLIC_RELEASE:
-			Configuration.setRootURL("http://sbmt.jhuapl.edu/internal/multi-mission/test");
+			Configuration.setRootURL("http://sbmt-web.jhuapl.edu/internal/multi-mission/test");
 			Configuration.setAppName("sbmt-test");
 			Configuration.setCacheVersion("2");
 			Configuration.setAppTitle("SBMT");
