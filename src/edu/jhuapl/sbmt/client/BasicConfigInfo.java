@@ -57,15 +57,17 @@ public class BasicConfigInfo implements MetadataManager
 				else
 					enabled = false;
 			}
-			for (SbmtMultiMissionTool.Mission defaultMission : defaultFor)
-			{
-				if (defaultMission == SbmtMultiMissionTool.getMission())
-				{
-					SmallBodyViewConfig.setDefaultModelName(uniqueName);
-					break;
-				}
-			}
-
+            if (SmallBodyViewConfig.getDefaultModelName() == null)
+            {
+                for (SbmtMultiMissionTool.Mission defaultMission : defaultFor)
+                {
+                    if (defaultMission == SbmtMultiMissionTool.getMission())
+                    {
+                        SmallBodyViewConfig.setDefaultModelName(uniqueName);
+                        break;
+                    }
+                }
+            }
 
 			if (config.version != null)
 				this.configURL = ((SmallBodyViewConfig)config).rootDirOnServer + "/" + config.author +  "_" + config.body.toString().replaceAll(" ", "_") + config.version.replaceAll(" ", "_") + "_v" + SmallBodyViewConfigMetadataIO.metadataVersion + ".json";
@@ -168,14 +170,17 @@ public class BasicConfigInfo implements MetadataManager
 				else
 					enabled = false;
 			}
-			for (SbmtMultiMissionTool.Mission defaultMission : defaultFor)
-			{
-				if (defaultMission == SbmtMultiMissionTool.getMission())
-				{
-					SmallBodyViewConfig.setDefaultModelName(uniqueName);
-					break;
-				}
-			}
+            if (SmallBodyViewConfig.getDefaultModelName() == null)
+            {
+                for (SbmtMultiMissionTool.Mission defaultMission : defaultFor)
+                {
+                    if (defaultMission == SbmtMultiMissionTool.getMission())
+                    {
+                        SmallBodyViewConfig.setDefaultModelName(uniqueName);
+                        break;
+                    }
+                }
+            }
 		}
 	}
 

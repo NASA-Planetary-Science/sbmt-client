@@ -136,10 +136,14 @@ public class SmallBodyViewConfig extends BodyViewConfig implements ISmallBodyVie
         try
         {
             java.nio.file.Files.deleteIfExists(defaultModelFile);
-            defaultModelFile.toFile().createNewFile();
-            FileWriter writer = new FileWriter(defaultModelFile.toFile());
-            writer.write(defaultModelName);
-            writer.close();
+            if (defaultModelName != null)
+            {
+                defaultModelFile.toFile().createNewFile();
+                try (FileWriter writer = new FileWriter(defaultModelFile.toFile()))
+                {
+                    writer.write(defaultModelName);
+                }
+            }
         }
         catch (IOException e)
         {
@@ -164,7 +168,7 @@ public class SmallBodyViewConfig extends BodyViewConfig implements ISmallBodyVie
             }
         }
 
-        return "433 Eros";
+        return null;
     }
 
     public static void resetDefaultModelName()
