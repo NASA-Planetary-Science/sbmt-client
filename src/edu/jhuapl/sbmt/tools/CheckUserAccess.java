@@ -87,7 +87,7 @@ public class CheckUserAccess implements Callable<Integer>
         rootURLString = SafePaths.getUrl(rootURLString);
         userName = decodeIfEnabled(userName);
 
-        serverTopPath = SafePaths.get(serverTopPath.toString(), rootURLString.replaceFirst("^[^:]+:/+[^/]+/+sbmt/+", "").replaceFirst("/+data/*$", ""));
+        serverTopPath = SafePaths.get(serverTopPath.toString(), identifyDataArea());
 
         int result;
         if (inputFile != null)
@@ -110,6 +110,20 @@ public class CheckUserAccess implements Callable<Integer>
         }
 
         return result;
+    }
+
+    protected String identifyDataArea()
+    {
+        ImmutableList<String> serverAreas = ImmutableList.of("prod", "test", "stage");
+        for (String area : serverAreas)
+        {
+            if (rootURLString.matches(".*\\b" + area + "\\b.*"))
+            {
+                return area;
+            }
+        }
+
+        return serverAreas.get(0);
     }
 
     protected int queryFilesFromStream(InputStream stream, boolean decodeIfNecessary) throws IOException
