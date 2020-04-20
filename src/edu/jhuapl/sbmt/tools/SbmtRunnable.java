@@ -162,6 +162,7 @@ public class SbmtRunnable implements Runnable
         {
             System.out.println("Tool started in file cache debug mode; diagnostic output related to file caching/accessibility is enabled.");
         }
+        System.out.println("\nUsing server at " + Configuration.getDataRootURL());
 		if (!FileCache.instance().isServerAccessEnabled())
 		{
 			System.out.println("\nTool started in offline mode; skipping password authentication.");
@@ -169,7 +170,6 @@ public class SbmtRunnable implements Runnable
 		}
 		else
 		{
-			System.out.println("\nUsing server at " + Configuration.getDataRootURL());
 			if (Configuration.getAuthorizor().isValidCredentialsLoaded())
 			{
 				System.out.println("\nValid user name and password entered. Access may be granted to some restricted models.");
