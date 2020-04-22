@@ -16,7 +16,12 @@ import vtk.vtkPolyLine;
 import vtk.vtkUnsignedCharArray;
 
 import edu.jhuapl.saavtk.colormap.Colormap;
+import edu.jhuapl.sbmt.model.lidar.feature.FeatureAttr;
+import edu.jhuapl.sbmt.stateHistory.model.StateHistoryColoringFunctions;
 import edu.jhuapl.sbmt.stateHistory.model.interfaces.Trajectory;
+import edu.jhuapl.sbmt.stateHistory.ui.color.ColorProvider;
+import edu.jhuapl.sbmt.stateHistory.ui.color.GroupColorProvider;
+import edu.jhuapl.sbmt.stateHistory.ui.color.StateHistoryFeatureType;
 
 /**
  * vtkActor that represents a state history trajectory
@@ -84,6 +89,10 @@ public class TrajectoryActor extends vtkActor
      *
      */
     private Colormap colormap;
+
+    private GroupColorProvider gcp;
+
+    private FeatureAttr coloringAttribute;
 
 
 	/**
@@ -206,6 +215,11 @@ public class TrajectoryActor extends vtkActor
 		this.colormap = colormap;
 	}
 
+	public void setColoringProvider(GroupColorProvider gcp)
+	{
+		this.gcp = gcp;
+	}
+
 	/**
 	 * For the given trajectory index (which in turn provides a time), returns the color of the trajectory at this time
 	 * @param index	the index into the arraylist of times that make up this trajectory
@@ -213,12 +227,38 @@ public class TrajectoryActor extends vtkActor
 	 */
 	private Color getColorAtIndex(int index)
 	{
-		if (coloringFunction == null) return new Color((int)trajectoryColor[0], (int)trajectoryColor[1], (int)trajectoryColor[2], (int)trajectoryColor[3]);
-		double time = trajectory.getTime().get(index);
-		double valueAtTime = coloringFunction.apply(trajectory, time);
-		Color color = colormap.getColor(valueAtTime);
-		color = new Color(color.getRed(), color.getGreen(), color.getBlue(), (int)trajectoryColor[3]);
-		return color;
+		if (gcp == null)
+		{
+			if (coloringFunction == null) return new Color((int)trajectoryColor[0], (int)trajectoryColor[1], (int)trajectoryColor[2], (int)trajectoryColor[3]);
+//			System.out.println("TrajectoryActor: getColorAtIndex: using old method");
+			double time = trajectory.getTime().get(index);
+			double valueAtTime = coloringFunction.apply(trajectory, time);
+			Color color = colormap.getColor(valueAtTime);
+			color = new Color(color.getRed(), color.getGreen(), color.getBlue(), (int)trajectoryColor[3]);
+			return color;
+		}
+		else
+		{
+//			System.out.println("TrajectoryActor: getColorAtIndex: using color provider");
+			ColorProvider colorProvider = gcp.getColorProviderFor(trajectory, index, trajectory.getTime().size());
+			StateHistoryFeatureType featureType = colorProvider.getFeatureType();
+			if (featureType == StateHistoryFeatureType.Time)
+			{
+				double time = trajectory.getTime().get(index);
+				return colorProvider.getColor(6.2e8, 6.3e8, time);
+			}
+			else if (featureType == StateHistoryFeatureType.Distance)
+			{
+				double time = trajectory.getTime().get(index);
+				double valueAtTime = StateHistoryColoringFunctions.DISTANCE.getColoringFunction().apply(trajectory, time);
+				if (valueAtTime < 0.859 || valueAtTime > 9.66) System.out.println("TrajectoryActor: getColorAtIndex: out of bounds");
+				return colorProvider.getColor(0.859, 9.66, valueAtTime);
+			}
+			else
+				return colorProvider.getColor(0.0, 1.0, 0.7);
+
+//			return color;
+		}
 	}
 
 	/**

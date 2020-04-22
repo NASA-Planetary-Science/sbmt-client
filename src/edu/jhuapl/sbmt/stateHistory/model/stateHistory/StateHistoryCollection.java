@@ -14,15 +14,20 @@ import vtk.vtkProp;
 import edu.jhuapl.saavtk.model.SaavtkItemManager;
 import edu.jhuapl.saavtk.util.Properties;
 import edu.jhuapl.sbmt.client.SmallBodyModel;
+import edu.jhuapl.sbmt.model.lidar.feature.FeatureAttr;
 import edu.jhuapl.sbmt.stateHistory.model.interfaces.StateHistory;
 import edu.jhuapl.sbmt.stateHistory.rendering.SpacecraftBody;
 import edu.jhuapl.sbmt.stateHistory.rendering.TrajectoryActor;
+import edu.jhuapl.sbmt.stateHistory.ui.color.ConstGroupColorProvider;
+import edu.jhuapl.sbmt.stateHistory.ui.color.GroupColorProvider;
+import edu.jhuapl.sbmt.stateHistory.ui.color.StateHistoryFeatureType;
 
 import crucible.crust.metadata.api.Key;
 import crucible.crust.metadata.api.Metadata;
 import crucible.crust.metadata.api.MetadataManager;
 import crucible.crust.metadata.api.Version;
 import crucible.crust.metadata.impl.SettableMetadata;
+import glum.item.ItemEventType;
 
 /**
  * Item manager that governs the available state histories for display in the
@@ -59,6 +64,8 @@ public class StateHistoryCollection extends SaavtkItemManager<StateHistory> impl
 	private String bodyName;
 
 	final Key<List<StateHistory>> stateHistoryKey = Key.of("stateHistoryCollection");
+
+	private ConstGroupColorProvider sourceGCP;
 
 	/**
 	 * @param smallBodyModel
@@ -112,7 +119,6 @@ public class StateHistoryCollection extends SaavtkItemManager<StateHistory> impl
 	 */
 	public void setCurrentRun(StateHistory run)
 	{
-		System.out.println("StateHistoryCollection: setCurrentRun: setting current run " + run);
 		currentRun = run;
 	}
 
@@ -125,6 +131,19 @@ public class StateHistoryCollection extends SaavtkItemManager<StateHistory> impl
 		keys.add(run.getKey());
 		setCurrentRun(run);
 		setAllItems(simRuns);
+	}
+
+//	@Override
+//	public void setAllItems(Collection<StateHistory> aItemC)
+//	{
+//		renderManager.setAllItems(aItemC);
+//		// Delegate
+//		super.setAllItems(aItemC);
+//	}
+
+	public void notify(Object obj, ItemEventType type)
+	{
+		notifyListeners(obj, type);
 	}
 
 	/**
@@ -494,6 +513,16 @@ public class StateHistoryCollection extends SaavtkItemManager<StateHistory> impl
 	public double[] updateLookDirection(RendererLookDirection lookDirection)
 	{
 		return renderManager.updateLookDirection(lookDirection);
+	}
+
+	public FeatureAttr getFeatureAttrFor(StateHistory item, StateHistoryFeatureType aFeatureType)
+	{
+		return renderManager.getFeatureAttrFor(item, aFeatureType);
+	}
+
+	public void installGroupColorProviders(GroupColorProvider aSrcGCP)
+	{
+		renderManager.installGroupColorProviders(aSrcGCP);
 	}
 
 	/**

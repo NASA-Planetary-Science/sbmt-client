@@ -51,7 +51,7 @@ public class StateHistoryViewControlsPanel extends JPanel
         setLayout(new BoxLayout(this, BoxLayout.X_AXIS));
 
         viewControls = new StateHistoryViewOptionsController(historyModel, renderer);
-        coloringControls = new StateHistoryColoringOptionsController(historyModel);
+        coloringControls = new StateHistoryColoringOptionsController(historyModel, renderer);
         displayItemsControls = new StateHistoryDisplayItemsController(historyModel, renderer);
 
         //this is a cross panel listener action, so set it up here, above the 3 controllers

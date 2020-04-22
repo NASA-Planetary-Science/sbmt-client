@@ -84,6 +84,7 @@ public class StateHistoryController
     {
     	File path = null;
     	int lineLength = 121;
+    	this.renderer = renderer;
     	vtkJoglPanelComponent renWin = renderer.getRenderWindowPanel();
         SmallBodyModel bodyModel = (SmallBodyModel) modelManager.getPolyhedralModel();
         SmallBodyViewConfig config = (SmallBodyViewConfig) bodyModel.getConfig();
