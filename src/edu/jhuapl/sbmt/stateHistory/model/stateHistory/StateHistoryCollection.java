@@ -15,10 +15,10 @@ import edu.jhuapl.saavtk.model.SaavtkItemManager;
 import edu.jhuapl.saavtk.util.Properties;
 import edu.jhuapl.sbmt.client.SmallBodyModel;
 import edu.jhuapl.sbmt.lidar.feature.FeatureAttr;
+import edu.jhuapl.sbmt.lidar.gui.color.ConstGroupColorProvider;
 import edu.jhuapl.sbmt.stateHistory.model.interfaces.StateHistory;
 import edu.jhuapl.sbmt.stateHistory.rendering.SpacecraftBody;
 import edu.jhuapl.sbmt.stateHistory.rendering.TrajectoryActor;
-import edu.jhuapl.sbmt.stateHistory.ui.color.ConstGroupColorProvider;
 import edu.jhuapl.sbmt.stateHistory.ui.color.GroupColorProvider;
 import edu.jhuapl.sbmt.stateHistory.ui.color.StateHistoryFeatureType;
 

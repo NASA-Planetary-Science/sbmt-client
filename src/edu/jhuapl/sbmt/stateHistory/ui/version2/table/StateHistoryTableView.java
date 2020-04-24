@@ -18,10 +18,10 @@ import edu.jhuapl.saavtk.gui.util.ToolTipUtil;
 import edu.jhuapl.sbmt.gui.table.ColorProviderCellEditor;
 import edu.jhuapl.sbmt.gui.table.ColorProviderCellRenderer;
 import edu.jhuapl.sbmt.gui.table.EphemerisTimeRenderer;
+import edu.jhuapl.sbmt.lidar.gui.color.ColorProvider;
+import edu.jhuapl.sbmt.lidar.gui.color.ConstColorProvider;
 import edu.jhuapl.sbmt.stateHistory.model.interfaces.StateHistory;
 import edu.jhuapl.sbmt.stateHistory.model.stateHistory.StateHistoryCollection;
-import edu.jhuapl.sbmt.stateHistory.ui.color.ColorProvider;
-import edu.jhuapl.sbmt.stateHistory.ui.color.ConstColorProvider;
 import edu.jhuapl.sbmt.stateHistory.ui.popup.StateHistoryGuiUtil;
 import edu.jhuapl.sbmt.stateHistory.ui.popup.StateHistoryPopupMenu;
 
