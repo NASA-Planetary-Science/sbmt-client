@@ -62,6 +62,7 @@ getDirName() {
     result="$(cd $1; check $?; pwd -P)"
     check $?
   fi
+
   echo $result
 }
 
@@ -81,22 +82,22 @@ guessRawDataParentDir() {
     exit 1
   fi
 
-  startDir="$(getDirName $1)"
+  dir="$(getDirName $1)"
   check $?
 
   # Extract everything to the right of right-most rawdata/.
-  suffix=`echo $startDir | sed -n 's:.*/rawdata/::p'`
+  suffix=`echo $dir | sed -n 's:.*/rawdata/::p'`
 
   if test "$suffix" != ""; then
-    rawDataParentDir=`echo $startDir | sed "s:/rawdata/$suffix$::"`
-  elif test `echo $startDir | grep -c '/rawdata$'` -gt 0; then
-    rawDataParentDir=`echo $startDir | sed "s:/rawdata$::"`
+    result=`echo $dir | sed "s:/rawdata/$suffix$::"`
+  elif test `echo $dir | grep -c '/rawdata$'` -gt 0; then
+    result=`echo $dir | sed "s:/rawdata$::"`
   else
-    echo "guessRawDataParentDir: can't guess rawdata location from $startDir" >&2
+    echo "guessRawDataParentDir: can't guess rawdata location from $dir" >&2
     exit 1
   fi
   
-  echo $rawDataParentDir
+  echo $result
 }
 
 # Create a directory if it doesn't already exist.
@@ -104,15 +105,15 @@ createDirIfNecessary() {
   (
     dir=$1
     if test "x$dir" = x; then
-      echo "createDirIfNecessary: missing/blank directory argument." 2>&1
+      echo "createDirIfNecessary: missing/blank directory argument." >&2
       exit 1
     fi
 
     if test ! -d $dir; then
-      echo mkdir -p $dir 2>&1
-      mkdir -p $dir 2>&1
+      echo mkdir -p $dir
+      mkdir -p $dir
       if test $? -ne 0; then
-        echo "createDirIfNecessary: unable to create directory $dir." 2>&1
+        echo "createDirIfNecessary: unable to create directory $dir." >&2
         exit 1
       fi
     fi
@@ -131,14 +132,15 @@ doRsync() {
       src=`echo $src | sed -e 's:/*$:/:'`
     fi
 
-    echo nice time $rsyncCmd $src $dest 2>&1
-    nice time $rsyncCmd $src $dest 2>&1
+    rsyncCmd="rsync -rlptgDH --copy-links"
+    echo nice time $rsyncCmd $src $dest
+    nice time $rsyncCmd $src $dest
     if test $? -ne 0; then
-      echo "Failed to rsync $src $dest" 2>&1
+      echo "Failed to rsync $src $dest" >&2
       exit 1
     fi
 
-    echo "" 2>&1
+    echo ""
   )
   if test $? -ne 0; then exit 1; fi
 }
@@ -149,15 +151,15 @@ doRsyncDir() {
     src=$1
     dest=$2
     if test ! -e $src; then
-      echo "Source $src does not exist" 2>&1
+      echo "Source $src does not exist" >&2
       exit 1
     fi
     if test ! -d $src; then
-      echo "Source $src is unexpectedly not a directory." 2>&1
+      echo "Source $src is unexpectedly not a directory." >&2
       exit 1
     fi
     if test -e $dest -a ! -d $dest; then
-      echo "Destination $dest exists but is unexpectedly not a directory." 2>&1
+      echo "Destination $dest exists but is unexpectedly not a directory." >&2
       exit 1
     fi
     createDirIfNecessary $dest
@@ -269,7 +271,7 @@ moveDirectory() {
     src=$1
     dest=$2
     if test "x$src" = x -o "x$dest" = x; then
-      echo "Missing argument(s) to moveDirectory" 2>&1
+      echo "Missing argument(s) to moveDirectory" >&2
       exit 1
     fi
     if test -d $src; then
@@ -277,7 +279,7 @@ moveDirectory() {
         rm -rf $dest-bak
         mv -f $dest $dest-bak
         if test $? -ne 0; then
-          echo "Unable to back up $dest; not moving directory $src"
+          echo "Unable to back up $dest; not moving directory $src" >&2
           exit 1
         fi
       fi
@@ -286,8 +288,8 @@ moveDirectory() {
       createDirIfNecessary $destParent
       if test $? -ne 0; then exit 1; fi
 
-      echo "mv $src $dest" 2>&1
-      mv -f $src $dest 2>&1
+      echo "mv $src $dest"
+      mv -f $src $dest
       if test $? -ne 0; then exit 1; fi
 
       # Prune an orphaned parent directory, but ignore failures.
@@ -306,7 +308,7 @@ moveFile() {
     src=$1
     dest=$2
     if test "x$src" = x -o "x$dest" = x; then
-      echo "Missing argument(s) to moveDirectory" 2>&1
+      echo "Missing argument(s) to moveDirectory" >&2
       exit 1
     fi
     if test -f $src; then
@@ -314,7 +316,7 @@ moveFile() {
         rm -rf $dest-bak
         mv $dest $dest-bak
         if test $? -ne 0; then
-          echo "Unable to back up $dest; not moving file $src"
+          echo "Unable to back up $dest; not moving file $src" >&2
           exit 1
         fi
       fi
@@ -323,8 +325,8 @@ moveFile() {
       createDirIfNecessary $destParent
       if test $? -ne 0; then exit 1; fi
 
-      echo "mv $src $dest" 2>&1
-      mv $src $dest 2>&1
+      echo "mv $src $dest"
+      mv $src $dest
       if test $? -ne 0; then exit 1; fi
 
       # Prune an orphaned parent directory, but ignore failures.
@@ -338,121 +340,109 @@ moveFile() {
   if test $? -ne 0; then exit 1; fi
 }
 
-# Runs in a sub-shell. Indicates success by touching a marker file.
-checkoutCodeIfNecessary() (
-  (
-    if test "x$1" = x; then
-      echo "Missing argument for where to check out code" 2>&1
-      exit 1
-    fi
-    sbmtCodeTop="$1"
-    createDirIfNecessary $sbmtCodeTop
+checkoutCodeIfNecessary() {
+  if test "$sbmtCodeTop" = ""; then
+    echo "Missing location of top of source code tree" >&2
+    exit 1
+  elif test "$saavtkBranch" = ""; then
+    echo "Missing branch definition for saavtk" >&2
+    exit 1
+  elif test "$sbmtBranch" = ""; then
+    echo "Missing branch definition for sbmt" >&2
+    exit 1
+  fi
 
-    if test "x$2" = x; then
-      saavtkBranch=saavtk1dev
-    else
-      saavtkBranch=$2
-    fi
-  
-    if test "x$3" = x; then
-      sbmtBranch=sbmt1dev
-    else
-      sbmtBranch=$3
-    fi
-  
-    markerFile="$sbmtCodeTop/git-succeeded.txt"
-    if test ! -f $markerFile;  then
-      cd $sbmtCodeTop 2>&1
+  createDirIfNecessary "$sbmtCodeTop"
+
+  markerFile="$sbmtCodeTop/git-succeeded.txt"
+  if test ! -f $markerFile;  then
+    (
+      cd $sbmtCodeTop
+      check $?
       chgrp sbmtsw .
+      check $?
       chmod 2775 .
-      if test $? -ne 0; then
-        echo "Unable to checkout code in directory $sbmtCodeTop" 2>&1
-        exit 1
-      fi
-      echo "In directory $sbmtCodeTop" 2>&1
-      echo "git clone http://hardin:8080/scm/git/vtk/saavtk --branch $saavtkBranch > git-clone-saavtk.txt" 2>&1
-      git clone http://hardin:8080/scm/git/vtk/saavtk --branch $saavtkBranch > git-clone-saavtk.txt 2>&1
-      if test $? -ne 0; then
-        echo "Unable to git clone saavtk" 2>&1
-        exit 1
-      fi
-      echo "git clone http://hardin:8080/scm/git/sbmt --branch $sbmtBranch > git-clone-sbmt.txt" 2>&1
-      git clone http://hardin:8080/scm/git/sbmt --branch $sbmtBranch > git-clone-sbmt.txt 2>&1
-      if test $? -ne 0; then
-        echo "Unable to git clone sbmt" 2>&1
-        exit 1
-      fi
+      check $?
+
+      echo "In directory $sbmtCodeTop"
+      echo "nice git clone http://hardin.jhuapl.edu:8080/scm/git/vtk/saavtk --branch $saavtkBranch > git-clone-saavtk.txt"
+      nice git clone http://hardin.jhuapl.edu:8080/scm/git/vtk/saavtk --branch $saavtkBranch > git-clone-saavtk.txt 2>&1
+      check $? "Unable to git clone saavtk"
+
+      echo "nice git clone http://hardin.jhuapl.edu:8080/scm/git/sbmt --branch $sbmtBranch > git-clone-sbmt.txt"
+      nice git clone http://hardin.jhuapl.edu:8080/scm/git/sbmt --branch $sbmtBranch > git-clone-sbmt.txt 2>&1
+      check $? "Unable to git clone sbmt"
+
       touch $markerFile
-    else
-      echo "Marker file $markerFile exists already; skipping git clone commands" 2>&1
-    fi
-  )
-  if test $? -ne 0; then exit 1; fi
-)
+    )
+    check $? Check-out failed.
+  else
+    echo "Marker file $markerFile exists already; skipping git clone commands"
+  fi
+}
 
-# Runs in a sub-shell. Indicates success by touching a marker file.
-buildCodeIfNecessary() (
-  (
-    sbmtCodeTop="$1/sbmt"
-    if test "x$sbmtCodeTop" = x; then
-      echo "Missing argument for where to check out code" 2>&1
-      exit 1
-    elif test ! -d $sbmtCodeTop; then
-      echo "No such code directory: $sbmtCodeTop" 2>&1
-      exit 1
-    fi
-    markerFile="$sbmtCodeTop/make-release-succeeded.txt"
-    if test ! -f $markerFile;  then
-      cd "$sbmtCodeTop" 2>&1
-      chgrp sbmtsw .
-      chmod 2775 .
-      if test $? -ne 0; then
-        echo "Unable to build code in directory $sbmtCodeTop" 2>&1
-        exit 1
-      fi
+buildCodeIfNecessary() {
+  if test "$sbmtCodeTop" = ""; then
+    echo "Missing location of top of source code tree" >&2
+    exit 1
+  elif test "$SAAVTKROOT" = ""; then
+    echo "Missing definition for environment variable SAAVTKROOT" >&2
+    exit 1
+  elif test "$SBMTROOT" = ""; then
+    echo "Missing definition for environment variable SBMTROOT" >&2
+    exit 1
+  fi
 
+  if test ! -d "$sbmtCodeTop/saavtk"; then
+    echo "No such code directory: $sbmtCodeTop/saavtk" >&2
+    exit 1
+  elif test ! -d "$sbmtCodeTop/sbmt"; then
+    echo "No such code directory: $sbmtCodeTop/sbmt" >&2
+    exit 1
+  fi
+
+  dir="$sbmtCodeTop/sbmt"
+  markerFile="$dir/make-release-succeeded.txt"
+  if test ! -f $markerFile;  then
+    (
+      cd "$dir"
+      check $?
+  
       # Before building, need to set the released mission.
-      $SBMTROOT/misc/scripts/set-released-mission.sh APL_INTERNAL
-      if test $? -ne 0; then
-        echo "Setting the released mission failed in directory $sbmtCodeTop" 2>&1
-        exit 1
-      fi
-
+      $dir/misc/scripts/set-released-mission.sh APL_INTERNAL
+      check $? "Setting the released mission failed in directory $dir"
+  
       # Capture this step in its own log file.
-      echo "Building code in $sbmtCodeTop; see log $sbmtCodeTop/make-release.txt" 2>&1
-      make release > make-release.txt 2>&1
-      if test $? -ne 0; then
-        echo "Make release failed in directory $sbmtCodeTop" 2>&1
-        exit 1
-      fi
-
+      echo "Building code in $dir; see log $dir/make-release.txt"
+      nice make release > make-release.txt 2>&1
+      check $? "Make release failed in directory $dir"
+  
       touch $markerFile
-    else
-      echo "Marker file $markerFile exists already; skipping build step" 2>&1
-    fi
-  )
-  if test $? -ne 0; then exit 1; fi
-)
+    )
+  else
+    echo "Marker file $markerFile exists already; skipping build step"
+  fi
+}
 
 removeDuplicates() {
   (
     file=$1
     if test "x$file" = x; then
-      echo "removeDuplicates was called but missing its argument, the file from which to remove duplicates." 2>&1
+      echo "removeDuplicates was called but missing its argument, the file from which to remove duplicates." >&2
       exit 1
     fi
     if test ! -f $file; then
-      echo "removeDuplicates: file $file does not exist." 2>&1
+      echo "removeDuplicates: file $file does not exist." >&2
       exit 1
     fi
     mv $file $file.in
     if test $? -ne 0; then
-      echo "removeDuplicates: unable to rename file $file." 2>&1
+      echo "removeDuplicates: unable to rename file $file." >&2
       exit 1
     fi
     sort -u $file.in > $file
     if test $? -ne 0; then
-      echo "removeDuplicates: unable to remove duplicate lines from file $file." 2>&1
+      echo "removeDuplicates: unable to remove duplicate lines from file $file." >&2
       exit 1
     fi
     rm -f $file.in
@@ -464,11 +454,11 @@ doGzipDir() {
   (
     dir=$1
     if test "x$dir" = x; then
-      echo "Cannot gzip files in missing/blank directory." 2>&1
+      echo "Cannot gzip files in missing/blank directory." >&2
       exit 1
     fi
     if test ! -d $dir; then
-      echo "Cannot gzip files in $dir: not a directory." 2>&1
+      echo "Cannot gzip files in $dir: not a directory." >&2
       exit 1
     fi
     for file in $dir/*; do
@@ -476,7 +466,7 @@ doGzipDir() {
         if test `file $file 2>&1 | grep -ic gzip` -eq 0; then
           gzip -cf $file > $file.gz
           if test $? -ne 0; then
-            echo "Problem gzipping file $file" 2>&1
+            echo "Problem gzipping file $file" >&2
             exit 1
           fi
           rm -f $file
@@ -491,7 +481,7 @@ doGzipDirIfNecessary() {
   (
     dir=$1
     if test "x$dir" = x; then
-      echo "Cannot gzip files in missing/blank directory." 2>&1
+      echo "Cannot gzip files in missing/blank directory." >&2
       exit 1
     fi
     if test -d $dir; then
@@ -508,36 +498,36 @@ doGzipDirIfNecessary() {
 # rest are copied if present and skipped otherwise
 # without an error. 
 copyStandardModelFiles() {
-  (
-    # Require a manifest file. Don't comment this out.
-    copyFile aamanifest.txt
+  createDirIfNecessary $destTop
+  check $?
 
-    doRsyncOptionalDir "$srcTop/basemap" "$destTop/shape"
-    doRsyncOptionalDir "$srcTop/dtm" "$destTop/dtm"
-    doRsyncOptionalDir "$srcTop/coloring" "$destTop/coloring"
-    doRsyncOptionalDir "$srcTop/shape" "$destTop/shape"
-  )
-  if test $? -ne 0; then exit 1; fi
+  # Require a manifest file. Do not comment this out.
+  doRsync "$srcTop/aamanifest.txt" "$destTop/aamanifest.txt"
+
+  doRsyncOptionalDir "$srcTop/basemap" "$destTop/shape"
+  doRsyncOptionalDir "$srcTop/dtm" "$destTop/dtm"
+  doRsyncOptionalDir "$srcTop/coloring" "$destTop/coloring"
+  doRsyncOptionalDir "$srcTop/shape" "$destTop/shape"
 }
 
 # Run DiscoverPlateColorings.sh, which is linked to a java tool that creates metadata files for plate colorings.
 discoverPlateColorings() {
-  coloringDir=$destTop/$outputTopPath/coloring
+  coloringDir="$destTop/coloring"
   coloringList="coloringlist.txt"
   if test `ls $coloringDir/coloring*.smd 2> /dev/null | wc -c` -eq 0; then
-    ls $coloringDir 2> /dev/null | grep -v '.smd' | grep -v '.json' | grep -v "^$coloringList$" > $rawDataTop/$coloringList
+    ls $coloringDir 2> /dev/null | grep -v '.smd' | grep -v '.json' | grep -v "^$coloringList$" > $coloringDir/$coloringList
     
-    if test `grep -c . $rawDataTop/$coloringList` -eq 0; then
-      echo "No coloring files found in $coloringDir" 2>&1
+    if test `grep -c . "$coloringDir/$coloringList"` -eq 0; then
+      echo "No coloring files found in $coloringDir"
     else
-      $sbmtCodeTop/sbmt/bin/DiscoverPlateColorings.sh "$coloringDir" "$outputTopPath/coloring" "$modelId/$bodyId" "$rawDataTop/$coloringList" 2>&1
+      $sbmtCodeTop/sbmt/bin/DiscoverPlateColorings.sh "$coloringDir" "$outputTopPath/coloring" "$modelId/$bodyId" "$coloringList"
       if test $? -ne 0; then
-        echo "Failed to generate plate coloring metadata" 2>&1
+        echo "Failed to generate plate coloring metadata" >&2
         exit 1
       fi
     fi
-    rm -f $rawDataTop/$coloringList 2>&1
+    rm -f $coloringDir/$coloringList
   else
-    echo "File(s) coloring*.smd exist -- skipping generation of plate coloring metadata" 2>&1
+    echo "File(s) coloring*.smd exist -- skipping generation of plate coloring metadata"
   fi
 }

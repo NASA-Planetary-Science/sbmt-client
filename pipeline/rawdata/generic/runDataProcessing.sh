@@ -48,9 +48,12 @@ processedTop="$rawDataRootDir/processed/$processingPath"
 
 sbmtCodeTop=$rawDataTop
 
+# Environment variables:
+export SAAVTKROOT="$sbmtCodeTop/saavtk"
+export SBMTROOT="$sbmtCodeTop/sbmt"
+
 echo "rawDataTop is $rawDataTop"
 echo "processedTop is $processedTop"
 echo "sbmtCodeTop is $sbmtCodeTop"
-exit
 
-. $processingScript
+. "$rawDataTop/$(basename $processingScript)"

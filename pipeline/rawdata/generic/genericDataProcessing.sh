@@ -41,14 +41,18 @@
 # Processing Info
 #-------------------------------------------------------------------------------
 # Developer: James Peachey
-# Redmine issue #: 2107
 # Notes:
 #
 #-------------------------------------------------------------------------------
 
 #-------------------------------------------------------------------------------
-# This block must be updated for each delivery.
+# Update this block for each delivery.
 #-------------------------------------------------------------------------------
+
+# This string identifies the processing being performed. It must be all
+# lower case and contain no underscores or whitespace. It may not be left
+# blank.
+processingId="redmine-2107"
 
 # This is the full path to the delivery as provided by a scientist. This may
 # or may not fully comply with all SBMT guidelines for layout and naming.
@@ -72,24 +76,27 @@ modelId="DidymosA-DRA-v01A"
 bodyId="65803 Didymos"
 
 # Code branches used for SAAVTK/SBMT checkout. Many deliveries will work with
-# any recent versions of these packages, so this frequently can just be the
+# any recent version of these packages, so this frequently can just be the
 # standard main development branches.
 saavtkBranch="saavtk1dev-redmine-2107"
 sbmtBranch="sbmt1dev-redmine-2107"
+
+# Location for deployed files.
+deployedTop="/project/sbmt2/sbmt/data/bodies/$outputTopPath"
 #-------------------------------------------------------------------------------
 
 #-------------------------------------------------------------------------------
 # Check out and build saavtk and sbmt. Comment these out if you don't need
 # the SBMT client for this delivery. The SBMT client is used for processing
 # plate colorings, and/or images.
-checkoutCodeIfNecessary $sbmtCodeTop $saavtkBranch $sbmtBranch
+checkoutCodeIfNecessary
 buildCodeIfNecessary
 
 #-------------------------------------------------------------------------------
 # Delivery to raw data.
 #-------------------------------------------------------------------------------
 srcTop="$deliveryTop"
-destTop="$rawDataTop"
+destTop="$rawDataTop/$outputTopPath"
 
 # Copy any/all standard model files.
 copyStandardModelFiles
@@ -101,14 +108,15 @@ copyOptionalDir draco imaging/draco
 #-------------------------------------------------------------------------------
 # Raw data to processed.
 #-------------------------------------------------------------------------------
-srcTop="$rawDataTop"
-destTop="$processedTop"
+srcTop="$rawDataTop/$outputTopPath"
+destTop="$processedTop/$outputTopPath"
 
 # Copy any/all standard model files.
 copyStandardModelFiles
 
-# Copy and tailor this for each imager. Comment out if there are no imagers.
-copyOptionalDir draco imaging/draco
+# All the individual imagers are in the imaging directory, so can get them
+# all at once this way.
+copyOptionalDir imaging
 
 # Process plate colorings.
 discoverPlateColorings
