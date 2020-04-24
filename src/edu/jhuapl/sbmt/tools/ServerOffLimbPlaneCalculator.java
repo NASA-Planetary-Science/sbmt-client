@@ -47,7 +47,7 @@ public class ServerOffLimbPlaneCalculator
 
     public ServerOffLimbPlaneCalculator(PerspectiveImage img)
     {
-        sw = new Stopwatch();
+        sw = Stopwatch.createUnstarted();
         sw.start();
         setupParameters(img);
     }

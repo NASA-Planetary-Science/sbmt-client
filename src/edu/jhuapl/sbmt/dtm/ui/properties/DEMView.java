@@ -2,9 +2,12 @@ package edu.jhuapl.sbmt.dtm.ui.properties;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.InputEvent;
+import java.awt.event.MouseEvent;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
 import java.beans.PropertyChangeEvent;
@@ -58,13 +61,14 @@ import edu.jhuapl.saavtk.model.ModelNames;
 import edu.jhuapl.saavtk.model.PolyhedralModel;
 import edu.jhuapl.saavtk.model.structure.LineModel;
 import edu.jhuapl.saavtk.pick.ControlPointsPicker;
+import edu.jhuapl.saavtk.pick.PickListener;
 import edu.jhuapl.saavtk.pick.PickManager;
+import edu.jhuapl.saavtk.pick.PickMode;
+import edu.jhuapl.saavtk.pick.PickTarget;
 import edu.jhuapl.saavtk.pick.PickUtil;
 import edu.jhuapl.saavtk.pick.Picker;
-import edu.jhuapl.saavtk.popup.PopupManager;
-import edu.jhuapl.saavtk.popup.PopupMenu;
-import edu.jhuapl.saavtk.structure.PolyLineMode;
 import edu.jhuapl.saavtk.structure.PolyLine;
+import edu.jhuapl.saavtk.structure.PolyLineMode;
 import edu.jhuapl.saavtk.structure.io.StructureMiscUtil;
 import edu.jhuapl.saavtk.util.LatLon;
 import edu.jhuapl.saavtk.util.Properties;
@@ -72,12 +76,11 @@ import edu.jhuapl.sbmt.client.SbmtModelManager;
 import edu.jhuapl.sbmt.dtm.model.DEM;
 import edu.jhuapl.sbmt.dtm.model.DEMCollection;
 import edu.jhuapl.sbmt.dtm.model.DEMKey;
-import edu.jhuapl.sbmt.dtm.ui.menu.MapmakerLinesPopupMenu;
-import edu.jhuapl.sbmt.gui.image.ui.images.ImagePopupManager;
 
+import glum.gui.action.PopupMenu;
 import net.miginfocom.swing.MigLayout;
 
-public class DEMView extends JFrame implements ActionListener, PropertyChangeListener, WindowListener
+public class DEMView extends JFrame implements ActionListener, PickListener, PropertyChangeListener, WindowListener
 {
     // Constants
     private static final String Profile = "Profile";
@@ -90,6 +93,7 @@ public class DEMView extends JFrame implements ActionListener, PropertyChangeLis
     private static final String Color = "Color";
 
     // State vars
+ 	 private final PopupMenu<PolyLine> popupMenu;
     private final LineModel<PolyLine> lineModel;
     private final ModelManager modelManager;
     private final PickManager pickManager;
@@ -160,12 +164,11 @@ public class DEMView extends JFrame implements ActionListener, PropertyChangeLis
         renderer = new Renderer(modelManager);
         renderer.setMinimumSize(new Dimension(0, 0));
 
-         PopupManager popupManager = new ImagePopupManager(modelManager, null, null, renderer);
-        // The following replaces LinesPopupMenu with MapmakerLinesPopupMenu
-        PopupMenu popupMenu = new MapmakerLinesPopupMenu(modelManager, parentPolyhedralModel, renderer);
-        popupManager.registerPopup(lineModel, popupMenu);
+        // Popup menu
+        popupMenu = new PopupMenu<>(lineModel);
+        popupMenu.installPopAction(new SaveGravityProfileAction<>(lineModel, parentPolyhedralModel, renderer), "Save Profile...");
 
-        pickManager = new PickManager(renderer, modelManager, popupManager);
+        pickManager = new PickManager(renderer, modelManager);
         PickUtil.installDefaultPickHandler(pickManager, statusBar, renderer, modelManager);
         priPicker = new ControlPointsPicker<>(renderer, pickManager, modelManager, lineModel);
 
@@ -197,6 +200,7 @@ public class DEMView extends JFrame implements ActionListener, PropertyChangeLis
         lineModel.addPropertyChangeListener(this);
         modelManager.addPropertyChangeListener(this);
         pickManager.getDefaultPicker().addPropertyChangeListener(this);
+        pickManager.getDefaultPicker().addListener(this);
 
         updateControlPanel(null);
 
@@ -295,6 +299,33 @@ public class DEMView extends JFrame implements ActionListener, PropertyChangeLis
             removeAllProfiles();
         }
     }
+
+ 	@Override
+ 	public void handlePickAction(InputEvent aEvent, PickMode aMode, PickTarget aPrimaryTarg, PickTarget aSurfaceTarg)
+ 	{
+ 		// Bail if no picked target
+ 		if (aPrimaryTarg == PickTarget.Invalid)
+ 			return;
+
+ 		// Bail if the picked item does not correspond to the lineModel's actor
+ 		if (aPrimaryTarg.getActor() != lineModel.getVtkItemActor())
+ 			return;
+
+ 		// Bail if not a valid pick action
+ 		if (PickUtil.isPopupTrigger(aEvent) == false || aMode != PickMode.ActiveSec)
+ 			return;
+
+		// Update the popup to reflect the selected items
+ 		int cellId = aPrimaryTarg.getCellId();
+ 		PolyLine tmpItem = lineModel.getItem(cellId);
+ 		lineModel.setSelectedItems(ImmutableList.of(tmpItem));
+
+ 		// Show the popup
+ 		Component tmpComp = aEvent.getComponent();
+ 		int posX = ((MouseEvent) aEvent).getX();
+ 		int posY = ((MouseEvent) aEvent).getY();
+ 		popupMenu.show(tmpComp, posX, posY);
+ 	}
 
     /**
      * Helper method to create the control panel.

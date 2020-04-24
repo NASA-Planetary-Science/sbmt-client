@@ -50,7 +50,7 @@ public class ImageResultsTableView extends JPanel
     {
         resultsLabel = new JLabel("0 Results");
         resultList = new ImageResultsTable();
-        lblNumberBoundaries = new JLabel("Number Boundaries:");
+        lblNumberBoundaries = new JLabel("Number of Boundaries:");
         numberOfBoundariesComboBox = new JComboBox<Integer>();
         prevButton = new JButton("Prev");
         nextButton = new JButton("Next");

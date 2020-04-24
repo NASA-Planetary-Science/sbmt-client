@@ -188,6 +188,38 @@ public class CustomImageResultsTableController extends ImageResultsTableControll
     }
 
     @Override
+    protected void prevButtonActionPerformed(ActionEvent evt)
+    {
+        IdPair resultIntervalCurrentlyShown = model.getResultIntervalCurrentlyShown();
+        IdPair originalInterval = resultIntervalCurrentlyShown;
+        removeImageBoundaries(originalInterval);
+        int step = Integer.parseInt((String) imageResultsTableView.getNumberOfBoundariesComboBox().getSelectedItem());
+        if (resultIntervalCurrentlyShown != null)
+        {
+            // Only get the prev block if there's something left to show.
+            if (resultIntervalCurrentlyShown.id1 > 0)
+            {
+            	if (resultIntervalCurrentlyShown.id1 - step > 0)
+            	{
+            		resultIntervalCurrentlyShown.prevBlock(step);
+            		showImageBoundaries(resultIntervalCurrentlyShown);
+            	}
+            	else
+            	{
+            		resultIntervalCurrentlyShown = new IdPair(0, resultIntervalCurrentlyShown.id1);
+            		showImageBoundaries(resultIntervalCurrentlyShown);
+            	}
+            }
+            else
+            {
+            	resultIntervalCurrentlyShown = new IdPair(imageRawResults.size()-step, imageRawResults.size());
+            	showImageBoundaries(resultIntervalCurrentlyShown);
+            }
+        }
+
+    }
+
+    @Override
     protected void nextButtonActionPerformed(java.awt.event.ActionEvent evt)
     {
 
@@ -195,9 +227,16 @@ public class CustomImageResultsTableController extends ImageResultsTableControll
         if (resultIntervalCurrentlyShown != null)
         {
             // Only get the next block if there's something left to show.
+            int step = Integer.parseInt((String) imageResultsTableView.getNumberOfBoundariesComboBox().getSelectedItem());
+
             if (resultIntervalCurrentlyShown.id2 < imageResultsTableView.getResultList().getModel().getRowCount())
             {
                 resultIntervalCurrentlyShown.nextBlock(Integer.parseInt((String)imageResultsTableView.getNumberOfBoundariesComboBox().getSelectedItem()));
+                showImageBoundaries(resultIntervalCurrentlyShown);
+            }
+            else
+            {
+            	resultIntervalCurrentlyShown = new IdPair(0, step);
                 showImageBoundaries(resultIntervalCurrentlyShown);
             }
         }
@@ -301,7 +340,7 @@ public class CustomImageResultsTableController extends ImageResultsTableControll
         int startId = idPair.id1;
         int endId = idPair.id2;
         boundaries.removeAllBoundaries();
-
+        model.setResultIntervalCurrentlyShown(idPair);
         for (int i=startId; i<endId; ++i)
         {
             if (i < 0)
@@ -341,6 +380,7 @@ public class CustomImageResultsTableController extends ImageResultsTableControll
                 break;
             }
         }
+
     }
 
     @Override

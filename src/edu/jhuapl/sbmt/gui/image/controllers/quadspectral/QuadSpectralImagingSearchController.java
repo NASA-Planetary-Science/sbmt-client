@@ -72,7 +72,7 @@ public class QuadSpectralImagingSearchController
         this.imageCubeController = new ImageCubeController(imageSearchModel, cubeModel, infoPanelManager, imageCubePopupMenu, spectrumPanelManager, renderer);
 
         ColorImageModel colorModel = new ColorImageModel();
-        this.colorImageController = new ColorImageController(imageSearchModel, colorModel, infoPanelManager);
+        this.colorImageController = new ColorImageController(imageSearchModel, colorModel, infoPanelManager, renderer);
 
         init();
     }

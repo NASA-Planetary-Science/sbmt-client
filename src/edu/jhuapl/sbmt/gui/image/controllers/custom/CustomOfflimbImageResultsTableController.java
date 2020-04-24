@@ -284,15 +284,21 @@ public class CustomOfflimbImageResultsTableController extends CustomImageResults
     	JTable resultList = imageResultsTableView.getResultList();
         imageResultsTableView.getResultList().getModel().removeTableModelListener(tableModelListener);
         int size = imageRawResults.size();
-        int startIndex = imageSearchModel.getResultIntervalCurrentlyShown().id1;
-        int endIndex = Math.min(size, imageSearchModel.getResultIntervalCurrentlyShown().id2);
+        int startIndex = 0, endIndex = 10;
+        if (imageSearchModel.getResultIntervalCurrentlyShown() != null)
+        {
+        	startIndex = model.getResultIntervalCurrentlyShown().id1;
+        	endIndex = Math.min(size, model.getResultIntervalCurrentlyShown().id2);
+        }
         if (modifiedTableRow > size) modifiedTableRow = -1;
         if (modifiedTableRow != -1)
         {
         	startIndex = modifiedTableRow;
         	endIndex = startIndex + 1;
         }
-
+        int numberOfBoundaries = Integer.parseInt((String)imageResultsTableView.getNumberOfBoundariesComboBox().getSelectedItem());
+        if (startIndex - numberOfBoundaries > -1) startIndex = startIndex - numberOfBoundaries;
+        if (endIndex + numberOfBoundaries > size) endIndex = size;
         for (int i=startIndex; i<endIndex; ++i)
         {
             CustomImageKeyInterface info = getConvertedKey(model.getImageKeyForIndex(i));
@@ -324,6 +330,7 @@ public class CustomOfflimbImageResultsTableController extends CustomImageResults
                 resultList.setValueAt(false, i, imageResultsTableView.getBndrColumnIndex());
             }
         }
+
         imageResultsTableView.getResultList().getModel().addTableModelListener(tableModelListener);
         // Repaint the list in case the boundary colors has changed
         resultList.repaint();
