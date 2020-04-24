@@ -13,16 +13,15 @@ import javax.swing.JTable;
 import javax.swing.border.TitledBorder;
 import javax.swing.table.TableCellRenderer;
 
-import edu.jhuapl.saavtk.gui.table.TablePopupHandler;
 import edu.jhuapl.saavtk.gui.util.IconUtil;
 import edu.jhuapl.saavtk.gui.util.ToolTipUtil;
-import edu.jhuapl.sbmt.gui.lidar.color.ColorProvider;
-import edu.jhuapl.sbmt.gui.lidar.color.ConstColorProvider;
 import edu.jhuapl.sbmt.gui.table.ColorProviderCellEditor;
 import edu.jhuapl.sbmt.gui.table.ColorProviderCellRenderer;
 import edu.jhuapl.sbmt.gui.table.EphemerisTimeRenderer;
 import edu.jhuapl.sbmt.stateHistory.model.interfaces.StateHistory;
 import edu.jhuapl.sbmt.stateHistory.model.stateHistory.StateHistoryCollection;
+import edu.jhuapl.sbmt.stateHistory.ui.color.ColorProvider;
+import edu.jhuapl.sbmt.stateHistory.ui.color.ConstColorProvider;
 import edu.jhuapl.sbmt.stateHistory.ui.popup.StateHistoryGuiUtil;
 import edu.jhuapl.sbmt.stateHistory.ui.popup.StateHistoryPopupMenu;
 
@@ -33,6 +32,7 @@ import glum.gui.panel.itemList.ItemHandler;
 import glum.gui.panel.itemList.ItemListPanel;
 import glum.gui.panel.itemList.ItemProcessor;
 import glum.gui.panel.itemList.query.QueryComposer;
+import glum.gui.table.TablePopupHandler;
 import glum.item.ItemManagerUtil;
 
 /**

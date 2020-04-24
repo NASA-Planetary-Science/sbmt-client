@@ -4,7 +4,6 @@ import java.awt.Color;
 import java.util.function.BiFunction;
 
 import com.google.common.collect.Range;
-import com.google.common.collect.Ranges;
 
 import vtk.vtkActor;
 import vtk.vtkCellArray;
@@ -16,7 +15,7 @@ import vtk.vtkPolyLine;
 import vtk.vtkUnsignedCharArray;
 
 import edu.jhuapl.saavtk.colormap.Colormap;
-import edu.jhuapl.sbmt.model.lidar.feature.FeatureAttr;
+import edu.jhuapl.sbmt.lidar.feature.FeatureAttr;
 import edu.jhuapl.sbmt.stateHistory.model.StateHistoryColoringFunctions;
 import edu.jhuapl.sbmt.stateHistory.model.interfaces.Trajectory;
 import edu.jhuapl.sbmt.stateHistory.ui.color.ColorProvider;
@@ -181,7 +180,7 @@ public class TrajectoryActor extends vtkActor
 	{
 		int minValueToColor = (int)(minFraction*size);
 		int maxValueToColor = (int)(maxFraction*size);
-		Range<Integer> coloredRange = Ranges.closed(minValueToColor, maxValueToColor);
+		Range<Integer> coloredRange = Range.closed(minValueToColor, maxValueToColor);
 
 		vtkCellArray edges = new vtkCellArray();
 		for (int i=0; i<size-1; i++)

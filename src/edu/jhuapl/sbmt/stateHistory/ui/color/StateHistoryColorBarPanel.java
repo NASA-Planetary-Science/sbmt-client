@@ -4,13 +4,12 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 import com.google.common.collect.Range;
-import com.google.common.collect.Ranges;
 
 import edu.jhuapl.saavtk.colormap.Colorbar;
 import edu.jhuapl.saavtk.colormap.Colormap;
 import edu.jhuapl.saavtk.colormap.Colormaps;
 import edu.jhuapl.saavtk.gui.render.Renderer;
-import edu.jhuapl.sbmt.model.lidar.feature.FeatureAttr;
+import edu.jhuapl.sbmt.lidar.feature.FeatureAttr;
 import edu.jhuapl.sbmt.stateHistory.model.interfaces.StateHistory;
 import edu.jhuapl.sbmt.stateHistory.model.stateHistory.StateHistoryCollection;
 
@@ -181,7 +180,7 @@ public class StateHistoryColorBarPanel extends ColorBarPanel<StateHistoryFeature
 		if (tmpFA == null || tmpFA.getNumVals() == 0)
 			return aFullRange;
 
-		Range<Double> tmpRangeZ = Ranges.closed(tmpFA.getMinVal(), tmpFA.getMaxVal());
+		Range<Double> tmpRangeZ = Range.closed(tmpFA.getMinVal(), tmpFA.getMaxVal());
 
 		// Grow fullRangeZ to include the specified lidar data
 		if (aFullRange == null)

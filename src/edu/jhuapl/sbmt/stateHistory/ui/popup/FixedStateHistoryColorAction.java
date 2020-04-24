@@ -3,9 +3,9 @@ package edu.jhuapl.sbmt.stateHistory.ui.popup;
 import java.awt.Color;
 import java.util.List;
 
-import edu.jhuapl.sbmt.gui.lidar.color.ColorProvider;
-import edu.jhuapl.sbmt.gui.lidar.color.ConstColorProvider;
 import edu.jhuapl.sbmt.stateHistory.model.stateHistory.StateHistoryCollection;
+import edu.jhuapl.sbmt.stateHistory.ui.color.ColorProvider;
+import edu.jhuapl.sbmt.stateHistory.ui.color.ConstColorProvider;
 
 /**
  * Object that defines the action: "Fixed Color" (based on code from lopeznr1)

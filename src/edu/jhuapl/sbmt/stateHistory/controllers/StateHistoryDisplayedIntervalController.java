@@ -1,6 +1,6 @@
 package edu.jhuapl.sbmt.stateHistory.controllers;
 
-import edu.jhuapl.sbmt.gui.lidar.PercentIntervalChanger;
+import edu.jhuapl.sbmt.lidar.gui.PercentIntervalChanger;
 import edu.jhuapl.sbmt.stateHistory.model.stateHistory.StateHistoryCollection;
 import edu.jhuapl.sbmt.stateHistory.ui.version2.StateHistoryDisplayedIntervalPanel;
 import edu.jhuapl.sbmt.util.TimeUtil;

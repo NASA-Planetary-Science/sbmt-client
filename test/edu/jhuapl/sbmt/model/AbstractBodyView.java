@@ -56,11 +56,9 @@ import edu.jhuapl.sbmt.dtm.service.demCreators.MapmakerRemoteDEMCreator;
 import edu.jhuapl.sbmt.dtm.ui.menu.DEMPopupMenu;
 import edu.jhuapl.sbmt.gui.eros.LineamentControlPanel;
 import edu.jhuapl.sbmt.gui.image.ui.images.ImageDefaultPickHandler;
-import edu.jhuapl.sbmt.gui.lidar.LidarPanel;
+import edu.jhuapl.sbmt.lidar.gui.LidarPanel;
 import edu.jhuapl.sbmt.model.custom.CustomGraticule;
 import edu.jhuapl.sbmt.model.eros.LineamentModel;
-import edu.jhuapl.sbmt.model.lidar.LidarFileSpecManager;
-import edu.jhuapl.sbmt.model.lidar.LidarTrackManager;
 import edu.jhuapl.sbmt.spectrum.model.hypertree.SpectraSearchDataCollection;
 import edu.jhuapl.sbmt.spectrum.rendering.SpectraCollection;
 import edu.jhuapl.sbmt.spectrum.rendering.SpectrumBoundaryCollection;
@@ -271,34 +269,6 @@ public abstract class AbstractBodyView extends View implements PropertyChangeLis
         return models;
     }
 
-    static public HashMap<ModelNames, Model> createLidarModels(SmallBodyModel smallBodyModel)
-    {
-        HashMap<ModelNames, Model> models = new HashMap<ModelNames, Model>();
-
-        models.put(ModelNames.LIDAR_BROWSE, new LidarFileSpecManager(smallBodyModel));
-        models.put(ModelNames.LIDAR_SEARCH, new LidarTrackManager(smallBodyModel));
-        if (smallBodyModel.getSmallBodyConfig().hasHypertreeLidarSearch())
-        {
-            switch (smallBodyModel.getSmallBodyConfig().getLidarInstrument())
-            {
-            case MOLA:
-                models.put(ModelNames.LIDAR_HYPERTREE_SEARCH, new LidarTrackManager(smallBodyModel));
-                break;
-            case OLA:
-                models.put(ModelNames.LIDAR_HYPERTREE_SEARCH, new LidarTrackManager(smallBodyModel));
-                break;
-            case LASER:
-                models.put(ModelNames.LIDAR_HYPERTREE_SEARCH, new LidarTrackManager(smallBodyModel));
-                break;
-                default:
-                	throw new AssertionError();
-            }
-
-
-        }
-
-        return models;
-    }
 
     static public Graticule createGraticule(SmallBodyModel smallBodyModel)
     {
@@ -332,12 +302,15 @@ public abstract class AbstractBodyView extends View implements PropertyChangeLis
     @Override
     protected void setupPickManager()
     {
-		PickManager tmpPickManager = new PickManager(getRenderer(), getModelManager(), getPopupManager());
+		PickManager tmpPickManager = new PickManager(getRenderer(), getModelManager());
 		PickUtil.installDefaultPickHandler(tmpPickManager, getStatusBar(), getRenderer(), getModelManager());
 		setPickManager(tmpPickManager);
 
+		// Manually register the PopupManager with the PickManager
+		tmpPickManager.getDefaultPicker().addListener(getPopupManager());
+
 		// TODO: This should be moved out of here to a logical relevant location
-		tmpPickManager.getDefaultPicker().addListener(new ImageDefaultPickHandler());
+		tmpPickManager.getDefaultPicker().addListener(new ImageDefaultPickHandler(getModelManager()));
     }
 
     @Override
@@ -613,7 +586,7 @@ public abstract class AbstractBodyView extends View implements PropertyChangeLis
 
     protected void addStructuresTab()
     {
-		addTab("Structures", new StructureMainPanel(getModelManager(), getPickManager(), getRenderer(), getStatusBar(), getPopupManager()));
+		addTab("Structures", new StructureMainPanel(getPickManager(), getRenderer(), getStatusBar(), getModelManager()));
     }
 
 	protected void addDEMTab()

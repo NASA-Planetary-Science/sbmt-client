@@ -12,9 +12,9 @@ import vtk.vtkUnsignedCharArray;
 import vtk.vtkVertex;
 
 import edu.jhuapl.sbmt.lidar.LidarPoint;
-import edu.jhuapl.sbmt.model.lidar.feature.FeatureAttr;
-import edu.jhuapl.sbmt.model.lidar.feature.FeatureAttrBuilder;
-import edu.jhuapl.sbmt.model.lidar.feature.VtkFeatureAttr;
+import edu.jhuapl.sbmt.lidar.feature.FeatureAttr;
+import edu.jhuapl.sbmt.lidar.feature.FeatureAttrBuilder;
+import edu.jhuapl.sbmt.lidar.feature.VtkFeatureAttr;
 
 /**
  * Collection of VTK based utility methods.
