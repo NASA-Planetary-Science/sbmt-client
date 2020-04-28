@@ -10,7 +10,6 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.TreeSet;
 import java.util.Vector;
 
 import org.joda.time.DateTime;
@@ -118,7 +117,7 @@ public class OTESDatabaseGeneratorSql
                     "CREATE TABLE IF NOT EXISTS " + tableName + "(" +
                     "id int PRIMARY KEY AUTO_INCREMENT, " +
                     "otesspectrumid int, " +
-                    "cubeid int)"
+                    "cubeid char(128))"
                 );
         } catch (SQLException ex2) {
 
@@ -227,23 +226,35 @@ public class OTESDatabaseGeneratorSql
                      "insert into " + tableName + " (otesspectrumid, cubeid) values (?, ?)");
          }
 
-         TreeSet<Integer> cubeIds = bodyModel.getIntersectingCubes(footprintPolyData);
-//         System.out.println("cubeIds:  " + cubeIds);
-         System.out.println("number of cubes: " + cubeIds.size());
-//         System.out.println("id: " + count);
-//         System.out.println("number of cells in polydata " + footprintPolyData.GetNumberOfCells());
-
-         for (Integer i : cubeIds)
+         Vector<String> cubePaths = bodyModel.getIntersectingRCubes(footprintPolyData);
+         for (String i : cubePaths)
          {
-        	 //index autoincrements, so start with the otesspectrum id column
-//             otesInsert2.setInt(1, count);
              otesInsert2.setInt(1, spectrumIndex);
-             otesInsert2.setInt(2, i);
+             otesInsert2.setString(2, i);
 
              otesInsert2.executeUpdate();
 
 //             ++count;
          }
+
+
+//         TreeSet<Integer> cubeIds = bodyModel.getIntersectingCubes(footprintPolyData);
+////         System.out.println("cubeIds:  " + cubeIds);
+//         System.out.println("number of cubes: " + cubeIds.size());
+////         System.out.println("id: " + count);
+////         System.out.println("number of cells in polydata " + footprintPolyData.GetNumberOfCells());
+//
+//         for (Integer i : cubeIds)
+//         {
+//        	 //index autoincrements, so start with the otesspectrum id column
+////             otesInsert2.setInt(1, count);
+//             otesInsert2.setInt(1, spectrumIndex);
+//             otesInsert2.setInt(2, i);
+//
+//             otesInsert2.executeUpdate();
+//
+////             ++count;
+//         }
 
          otesSpectrumRenderer.Delete();
          System.out.println("deleted " + vtkObject.JAVA_OBJECT_MANAGER.gc(true));
