@@ -74,6 +74,7 @@ import edu.jhuapl.sbmt.lidar.gui.LidarPanel;
 import edu.jhuapl.sbmt.model.bennu.spectra.OREXSpectraFactory;
 import edu.jhuapl.sbmt.model.bennu.spectra.OREXSpectrumSearchController;
 import edu.jhuapl.sbmt.model.bennu.spectra.OREXSpectrumTabbedPane;
+import edu.jhuapl.sbmt.model.bennu.spectra.otes.OTESSearchModel;
 import edu.jhuapl.sbmt.model.bennu.spectra.otes.OTESSpectrum;
 import edu.jhuapl.sbmt.model.bennu.spectra.ovirs.OVIRSSpectrum;
 import edu.jhuapl.sbmt.model.custom.CustomGraticule;
@@ -579,7 +580,12 @@ public class SbmtView extends View implements PropertyChangeListener
 //				SpectrumBoundaryCollection<OTESSpectrum> boundaryCollection = new SpectrumBoundaryCollection(smallBodyModel, otesSpectrumCollection);
 
 				OREXSpectraFactory.initializeModels(smallBodyModel);
-				JComponent component = new OREXSpectrumTabbedPane<OTESSpectrum>(getPolyhedralModelConfig(), getModelManager(), (SbmtInfoWindowManager) getInfoPanelManager(), getPickManager(), getRenderer(), instrument, spectrumCollection);
+//				JComponent component = new OREXSpectrumTabbedPane<OTESSpectrum>(getPolyhedralModelConfig(), getModelManager(), (SbmtInfoWindowManager) getInfoPanelManager(), getPickManager(), getRenderer(), instrument, spectrumCollection);
+
+				OTESSearchModel model = new OTESSearchModel(getModelManager(), instrument);
+				JComponent component = new OREXSpectrumSearchController<OTESSpectrum>(getPolyhedralModelConfig().imageSearchDefaultStartDate, getPolyhedralModelConfig().imageSearchDefaultEndDate,
+						/*getPolyhedralModelConfig().hasHierarchicalSpectraSearch*/ false, getPolyhedralModelConfig().imageSearchDefaultMaxSpacecraftDistance, getPolyhedralModelConfig().hierarchicalSpectraSearchSpecification,
+						getModelManager(), (SbmtInfoWindowManager) getInfoPanelManager(), getPickManager(), getRenderer(), instrument, model).getPanel();
 				addTab(instrument.getDisplayName(), component);
 
 

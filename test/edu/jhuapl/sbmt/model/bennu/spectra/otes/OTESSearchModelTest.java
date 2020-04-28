@@ -5,7 +5,6 @@ import static org.junit.jupiter.api.Assertions.fail;
 
 import java.util.Calendar;
 import java.util.HashMap;
-import java.util.List;
 
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.TreeModel;
@@ -45,8 +44,6 @@ import edu.jhuapl.sbmt.spectrum.model.statistics.SpectrumStatisticsCollection;
 import edu.jhuapl.sbmt.spectrum.rendering.SpectraCollection;
 import edu.jhuapl.sbmt.spectrum.rendering.SpectrumBoundaryCollection;
 import edu.jhuapl.sbmt.tools.Authenticator;
-
-import crucible.crust.metadata.api.Metadata;
 
 class OTESSearchModelTest
 {
@@ -160,9 +157,9 @@ class OTESSearchModelTest
 	{
 		HierarchicalSearchLeafNode otesL2Node = new HierarchicalSearchLeafNode("OTES L2 Calibrated Radiance", 0, -1);
 		TreePath[] treePath = new TreePath[] {new TreePath(new DefaultMutableTreeNode[] {orexNode, new DefaultMutableTreeNode(otesL2Node)})};
-		otesSearchModel.performSearch(searchParameters, null, true, smallBodyConfig.hierarchicalSpectraSearchSpecification, treePath, null);
-		List<OTESSpectrum> results = otesSearchModel.getSpectrumRawResults();
-		Metadata metadata = otesSearchModel.store();
+//		otesSearchModel.performSearch(searchParameters, null, true, smallBodyConfig.hierarchicalSpectraSearchSpecification, treePath, null);
+//		List<OTESSpectrum> results = otesSearchModel.getSpectrumRawResults();
+//		Metadata metadata = otesSearchModel.store();
 //		try
 //		{
 //			Serializers.serialize("SpectrumTest", metadata, new File("/Users/steelrj1/Desktop", "test.json"));
@@ -171,7 +168,7 @@ class OTESSearchModelTest
 //			// TODO Auto-generated catch block
 //			e.printStackTrace();
 //		}
-		System.out.println("OTESSearchModelTest: testPerformSearch: results size " + results.size());
+//		System.out.println("OTESSearchModelTest: testPerformSearch: results size " + results.size());
 	}
 
 	@Test

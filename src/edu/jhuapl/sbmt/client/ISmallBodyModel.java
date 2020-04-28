@@ -4,6 +4,7 @@ import java.beans.PropertyChangeListener;
 import java.io.IOException;
 import java.util.List;
 import java.util.TreeSet;
+import java.util.Vector;
 
 import vtk.vtkFloatArray;
 import vtk.vtkPolyData;
@@ -54,6 +55,8 @@ public interface ISmallBodyModel
 	public void drawRegularPolygonLowRes(double[] center, double radius, int numberOfSides, vtkPolyData outputInterior, vtkPolyData outputBoundary);
 
 	TreeSet<Integer> getIntersectingCubes(vtkPolyData interiorPoly);
+
+	public Vector<String> getIntersectingRCubes(vtkPolyData polydata);
 
 	BoundingBox getBoundingBox();
 

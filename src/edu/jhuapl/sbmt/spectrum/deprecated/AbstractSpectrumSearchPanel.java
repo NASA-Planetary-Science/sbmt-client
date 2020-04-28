@@ -1813,7 +1813,7 @@ public abstract class AbstractSpectrumSearchPanel extends JPanel implements Mous
                             Range.closed(Double.valueOf(fromIncidenceTextField.getText()), Double.valueOf(toIncidenceTextField.getText())),
                             Range.closed(Double.valueOf(fromEmissionTextField.getText()), Double.valueOf(toEmissionTextField.getText())),
                             Range.closed(Double.valueOf(fromPhaseTextField.getText()), Double.valueOf(toPhaseTextField.getText())),
-                            cubeList);
+                            cubeList, erosModel.getConfig().author.toString().toLowerCase().replace("-", ""), "l2");	//TODO FIX THIS
 
                     DatabaseQueryBase query = (DatabaseQueryBase)queryType;
                     results = query.runQuery(searchMetadata).getResultlist();

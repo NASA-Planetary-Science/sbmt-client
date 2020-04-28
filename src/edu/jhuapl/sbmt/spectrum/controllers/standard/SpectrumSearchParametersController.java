@@ -9,8 +9,10 @@ import java.beans.PropertyChangeListener;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.TreeSet;
+import java.util.Vector;
 
 import javax.swing.JFormattedTextField;
+import javax.swing.JOptionPane;
 import javax.swing.JSpinner;
 import javax.swing.ProgressMonitor;
 import javax.swing.SpinnerDateModel;
@@ -33,6 +35,7 @@ import edu.jhuapl.saavtk.structure.Ellipse;
 import edu.jhuapl.sbmt.client.SmallBodyModel;
 import edu.jhuapl.sbmt.core.listeners.SearchProgressListener;
 import edu.jhuapl.sbmt.spectrum.model.core.BasicSpectrum;
+import edu.jhuapl.sbmt.spectrum.model.core.SpectrumIOException;
 import edu.jhuapl.sbmt.spectrum.model.core.search.BaseSpectrumSearchModel;
 import edu.jhuapl.sbmt.spectrum.model.core.search.SpectraHierarchicalSearchSpecification;
 import edu.jhuapl.sbmt.spectrum.model.core.search.SpectrumSearchParametersModel;
@@ -58,6 +61,7 @@ public class SpectrumSearchParametersController<S extends BasicSpectrum>
     private SpectrumSearchParametersModel searchParameters;
     private ProgressMonitor searchProgressMonitor;
     private TreeSet<Integer> cubeList = null;
+    private Vector<String> pathList = null;
     private boolean isFixedListSearch = false;
 
     /**
@@ -277,60 +281,79 @@ public class SpectrumSearchParametersController<S extends BasicSpectrum>
                         vtkPolyData interiorPoly = new vtkPolyData();
                         bodyModel.drawRegularPolygonLowRes(region.getCenter().toArray(), region.getRadius(), numberOfSides, interiorPoly, null);
                         cubeList = bodyModel.getIntersectingCubes(interiorPoly);
+                        pathList = bodyModel.getIntersectingRCubes(interiorPoly);
                     }
                     else
                     {
                         cubeList = bodyModel.getIntersectingCubes(selectionModel.getVtkInteriorPolyDataFor(region));
+                        pathList = bodyModel.getIntersectingRCubes(selectionModel.getVtkInteriorPolyDataFor(region));
                     }
                 }
                 else
+                {
                 	cubeList = null;
+                	pathList = null;
+                }
+                System.out.println(
+						"SpectrumSearchParametersController.setupSearchParametersPanel().new ActionListener() {...}: actionPerformed: path list is " + pathList);
 
                 SwingWorker<Void, Void> searchTask = new SwingWorker<Void, Void>()
 				{
 
 					@Override
-					protected Void doInBackground() throws Exception
+					protected Void doInBackground() //throws Exception
 					{
-						model.performSearch(searchParameters, cubeList, hasHierarchicalSpectraSearch, spectraSpec, model.getSelectedPath(), new SearchProgressListener()
+						try
 						{
-							@Override
-							public void searchStarted()
+							model.performSearch(searchParameters, cubeList, hasHierarchicalSpectraSearch, spectraSpec, model.getSelectedPath(), new SearchProgressListener()
 							{
-								 searchProgressMonitor = new ProgressMonitor(null, "Performing Spectra Search...", "", 0, 100);
-								 searchProgressMonitor.setMillisToDecideToPopup(0);
-								 searchProgressMonitor.setMillisToPopup(0);
-							     searchProgressMonitor.setProgress(0);
-							}
+								@Override
+								public void searchStarted()
+								{
+									 searchProgressMonitor = new ProgressMonitor(null, "Performing Spectra Search...", "", 0, 100);
+									 searchProgressMonitor.setMillisToDecideToPopup(0);
+									 searchProgressMonitor.setMillisToPopup(0);
+								     searchProgressMonitor.setProgress(0);
+								}
 
-							public void searchNoteUpdated(String note)
-							{
-								searchProgressMonitor.setNote(note);
-							}
+								public void searchNoteUpdated(String note)
+								{
+									searchProgressMonitor.setNote(note);
+								}
 
-							@Override
-							public void searchProgressChanged(int percentComplete)
-							{
-								searchProgressMonitor.setProgress(percentComplete);
-							}
+								@Override
+								public void searchProgressChanged(int percentComplete)
+								{
+									searchProgressMonitor.setProgress(percentComplete);
+								}
 
-							@Override
-							public void searchEnded()
-							{
-								searchProgressMonitor.setProgress(100);
-							}
+								@Override
+								public void searchEnded()
+								{
+									searchProgressMonitor.setProgress(100);
+								}
 
-							@Override
-							public void searchIndeterminate()
-							{
-								searchProgressMonitor = new ProgressMonitor(null, "Performing Spectra Search...", "", 0, 100);
-								searchProgressMonitor.setMillisToDecideToPopup(0);
-								searchProgressMonitor.setMillisToPopup(0);
-								searchProgressMonitor.setProgress(99);
-								searchProgressMonitor.setNote("Waiting for results");
-							}
-						});
-						return null;
+								@Override
+								public void searchIndeterminate()
+								{
+									searchProgressMonitor = new ProgressMonitor(null, "Performing Spectra Search...", "", 0, 100);
+									searchProgressMonitor.setMillisToDecideToPopup(0);
+									searchProgressMonitor.setMillisToPopup(0);
+									searchProgressMonitor.setProgress(99);
+									searchProgressMonitor.setNote("Waiting for results");
+								}
+							});
+							return null;
+						}
+						catch (SpectrumIOException sioe)
+						{
+							 JOptionPane.showMessageDialog(JOptionPane.getFrameForComponent(panel),
+				                     sioe.getMessage(),
+				                     "Error",
+				                     JOptionPane.ERROR_MESSAGE);
+							 searchProgressMonitor.setProgress(100);
+							 return null;
+						}
 					}
 				};
 				searchTask.addPropertyChangeListener(new PropertyChangeListener()
@@ -370,6 +393,11 @@ public class SpectrumSearchParametersController<S extends BasicSpectrum>
         searchParameters.setMaxEmissionQuery(Integer.parseInt(panel.getToEmissionTextField().getText()));
         searchParameters.setMinPhaseQuery(Integer.parseInt(panel.getFromPhaseTextField().getText()));
         searchParameters.setMaxPhaseQuery(Integer.parseInt(panel.getToPhaseTextField().getText()));
+
+        SmallBodyModel bodyModel = (SmallBodyModel)modelManager.getModel(ModelNames.SMALL_BODY);
+        System.out.println("SpectrumSearchParametersController: setSearchParameters: " + bodyModel.getConfig());
+        searchParameters.setModelName(bodyModel.getConfig().author.toString().toLowerCase().replace("-", ""));
+        searchParameters.setDataType("l2"); //TODO fix this
     }
 
     /**

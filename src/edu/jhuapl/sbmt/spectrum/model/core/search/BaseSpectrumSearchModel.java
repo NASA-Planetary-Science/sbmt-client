@@ -195,7 +195,7 @@ public class BaseSpectrumSearchModel<S extends BasicSpectrum> implements ISpectr
      */
     public void performSearch(SpectrumSearchParametersModel searchParameters, TreeSet<Integer> cubeList,
     							boolean hasHierarchicalSpectraSearch, SpectraHierarchicalSearchSpecification<?> hierarchicalSpectraSearchSpecification,
-    							TreePath[] selectedPath, SearchProgressListener progressListener)
+    							TreePath[] selectedPath, SearchProgressListener progressListener) throws SpectrumIOException
     {
         results.clear();
         SpectraHierarchicalSearchSpecification spectraSpec = null;
