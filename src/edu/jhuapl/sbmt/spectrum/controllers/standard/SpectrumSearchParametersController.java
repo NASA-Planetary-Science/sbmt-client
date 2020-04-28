@@ -305,7 +305,7 @@ public class SpectrumSearchParametersController<S extends BasicSpectrum>
 					{
 						try
 						{
-							model.performSearch(searchParameters, cubeList, hasHierarchicalSpectraSearch, spectraSpec, model.getSelectedPath(), new SearchProgressListener()
+							model.performSearch(searchParameters, cubeList, pathList, hasHierarchicalSpectraSearch, spectraSpec, model.getSelectedPath(), new SearchProgressListener()
 							{
 								@Override
 								public void searchStarted()

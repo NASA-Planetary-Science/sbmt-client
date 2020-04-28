@@ -50,7 +50,6 @@ import org.apache.commons.math3.geometry.euclidean.threed.Vector3D;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 
-import com.google.common.collect.Range;
 import com.jidesoft.swing.CheckBoxTree;
 
 import vtk.vtkFunctionParser;
@@ -75,8 +74,6 @@ import edu.jhuapl.sbmt.client.SbmtInfoWindowManager;
 import edu.jhuapl.sbmt.client.SmallBodyModel;
 import edu.jhuapl.sbmt.model.image.ImageSource;
 import edu.jhuapl.sbmt.query.IQueryBase;
-import edu.jhuapl.sbmt.query.database.DatabaseQueryBase;
-import edu.jhuapl.sbmt.query.database.SpectraDatabaseSearchMetadata;
 import edu.jhuapl.sbmt.query.fixedlist.FixedListQuery;
 import edu.jhuapl.sbmt.query.fixedlist.FixedListSearchMetadata;
 import edu.jhuapl.sbmt.spectrum.model.core.BasicSpectrum;
@@ -1807,16 +1804,16 @@ public abstract class AbstractSpectrumSearchPanel extends JPanel implements Mous
                 }
                 else
                 {
-                    SpectraDatabaseSearchMetadata searchMetadata = SpectraDatabaseSearchMetadata.of("", startDateJoda, endDateJoda,
-                            Range.closed(Double.valueOf(fromDistanceTextField.getText()), Double.valueOf(toDistanceTextField.getText())),
-                            "", polygonTypesChecked,
-                            Range.closed(Double.valueOf(fromIncidenceTextField.getText()), Double.valueOf(toIncidenceTextField.getText())),
-                            Range.closed(Double.valueOf(fromEmissionTextField.getText()), Double.valueOf(toEmissionTextField.getText())),
-                            Range.closed(Double.valueOf(fromPhaseTextField.getText()), Double.valueOf(toPhaseTextField.getText())),
-                            cubeList, erosModel.getConfig().author.toString().toLowerCase().replace("-", ""), "l2");	//TODO FIX THIS
-
-                    DatabaseQueryBase query = (DatabaseQueryBase)queryType;
-                    results = query.runQuery(searchMetadata).getResultlist();
+//                    SpectraDatabaseSearchMetadata searchMetadata = SpectraDatabaseSearchMetadata.of("", startDateJoda, endDateJoda,
+//                            Range.closed(Double.valueOf(fromDistanceTextField.getText()), Double.valueOf(toDistanceTextField.getText())),
+//                            "", polygonTypesChecked,
+//                            Range.closed(Double.valueOf(fromIncidenceTextField.getText()), Double.valueOf(toIncidenceTextField.getText())),
+//                            Range.closed(Double.valueOf(fromEmissionTextField.getText()), Double.valueOf(toEmissionTextField.getText())),
+//                            Range.closed(Double.valueOf(fromPhaseTextField.getText()), Double.valueOf(toPhaseTextField.getText())),
+//                            cubeList, erosModel.getConfig().author.toString().toLowerCase().replace("-", ""), "l2");	//TODO FIX THIS
+//
+//                    DatabaseQueryBase query = (DatabaseQueryBase)queryType;
+//                    results = query.runQuery(searchMetadata).getResultlist();
                 }
             }
 
