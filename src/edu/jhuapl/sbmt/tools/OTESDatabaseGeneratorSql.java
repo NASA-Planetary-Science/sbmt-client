@@ -11,6 +11,8 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Vector;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
@@ -47,6 +49,7 @@ public class OTESDatabaseGeneratorSql
     static private PreparedStatement otesInsert2 = null;
     static private ISmallBodyModel bodyModel;
     static private vtkPolyData footprintPolyData;
+    static private boolean writeToDB = false;
 
     static private OTES otes=new OTES();
 
@@ -161,50 +164,63 @@ public class OTESDatabaseGeneratorSql
 
        	 	IBasicSpectrumRenderer<OTESSpectrum> otesSpectrumRenderer = SbmtSpectrumModelFactory.createSpectrumRenderer(filename, otes, true);
        	 	otesSpectrumRenderer.generateFootprint();
+			DateTime midtime = new DateTime(new DateTime(date).toString(), DateTimeZone.UTC);
+			String filenamePlusParent = filename.substring(filename.lastIndexOf("otes/") + 5);
 
-            if (otesInsert == null)
-            {
-            	//the index auto increments, so start with the year column
-                otesInsert = db.preparedStatement(
-                        "insert into " + tableName + " (year, day, midtime, minincidence, maxincidence, minemission, maxemission, minphase, maxphase, minrange, maxrange, filename) values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
-            }
+			if (writeToDB == true)
+			{
+	            if (otesInsert == null)
+	            {
+	            	//the index auto increments, so start with the year column
+	                otesInsert = db.preparedStatement(
+	                        "insert into " + tableName + " (year, day, midtime, minincidence, maxincidence, minemission, maxemission, minphase, maxphase, minrange, maxrange, filename) values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+	            }
 
-            DateTime midtime = new DateTime(new DateTime(date).toString(), DateTimeZone.UTC);
+				// System.out.println("id: " + count);
+				// System.out.println("year: " + yearStr);
+				// System.out.println("dayofyear: " + dayOfYearStr);
+				// System.out.println("midtime: " + midtime);
+				// System.out.println("minIncidence: " +
+				// otesSpectrumRenderer.getMinIncidence());
+				// System.out.println("maxIncidence: " +
+				// otesSpectrumRenderer.getMaxIncidence());
+				// System.out.println("minEmission: " +
+				// otesSpectrumRenderer.getMinEmission());
+				// System.out.println("maxEmission: " +
+				// otesSpectrumRenderer.getMaxEmission());
+				// System.out.println("minPhase: " +
+				// otesSpectrumRenderer.getMinPhase());
+				// System.out.println("maxPhase: " +
+				// otesSpectrumRenderer.getMaxPhase());
+				// System.out.println("minrange: " +
+				// otesSpectrumRenderer.getMinRange());
+				// System.out.println("maxrange: " +
+				// otesSpectrumRenderer.getMaxRange());
+//				System.out.println(" ");
 
-//            System.out.println("id: " + count);
-//            System.out.println("year: " + yearStr);
-//            System.out.println("dayofyear: " + dayOfYearStr);
-//            System.out.println("midtime: " + midtime);
-//            System.out.println("minIncidence: " + otesSpectrumRenderer.getMinIncidence());
-//            System.out.println("maxIncidence: " + otesSpectrumRenderer.getMaxIncidence());
-//            System.out.println("minEmission: " + otesSpectrumRenderer.getMinEmission());
-//            System.out.println("maxEmission: " + otesSpectrumRenderer.getMaxEmission());
-//            System.out.println("minPhase: " + otesSpectrumRenderer.getMinPhase());
-//            System.out.println("maxPhase: " + otesSpectrumRenderer.getMaxPhase());
-//            System.out.println("minrange: " + otesSpectrumRenderer.getMinRange());
-//            System.out.println("maxrange: " + otesSpectrumRenderer.getMaxRange());
-            System.out.println(" ");
+				// The index autoincrements, so start adding with the year string
+				otesInsert.setShort(1, Short.parseShort(yearStr));
+				otesInsert.setShort(2, Short.parseShort(dayOfYearStr));
+				otesInsert.setLong(3, midtime.getMillis());
+				otesInsert.setDouble(4, otesSpectrumRenderer.getMinIncidence());
+				otesInsert.setDouble(5, otesSpectrumRenderer.getMaxIncidence());
+				otesInsert.setDouble(6, otesSpectrumRenderer.getMinEmission());
+				otesInsert.setDouble(7, otesSpectrumRenderer.getMaxEmission());
+				otesInsert.setDouble(8, otesSpectrumRenderer.getMinPhase());
+				otesInsert.setDouble(9, otesSpectrumRenderer.getMaxPhase());
+				otesInsert.setDouble(10, otesSpectrumRenderer.getMinRange());
+				otesInsert.setDouble(11, otesSpectrumRenderer.getMinRange());
+				otesInsert.setString(12, filenamePlusParent);
+				// otesInsert.setShort(12, otesSpectrum.getPolygonTypeFlag());
 
-            //The index autoincrements, so start adding with the year string
-            otesInsert.setShort(1, Short.parseShort(yearStr));
-            otesInsert.setShort(2, Short.parseShort(dayOfYearStr));
-            otesInsert.setLong(3, midtime.getMillis());
-            otesInsert.setDouble(4, otesSpectrumRenderer.getMinIncidence());
-            otesInsert.setDouble(5, otesSpectrumRenderer.getMaxIncidence());
-            otesInsert.setDouble(6, otesSpectrumRenderer.getMinEmission());
-            otesInsert.setDouble(7, otesSpectrumRenderer.getMaxEmission());
-            otesInsert.setDouble(8, otesSpectrumRenderer.getMinPhase());
-            otesInsert.setDouble(9, otesSpectrumRenderer.getMaxPhase());
-            otesInsert.setDouble(10, otesSpectrumRenderer.getMinRange());
-            otesInsert.setDouble(11, otesSpectrumRenderer.getMinRange());
-            String filenamePlusParent = filename.substring(filename.lastIndexOf("otes/")+5);
-            otesInsert.setString(12, filenamePlusParent);
-//            otesInsert.setShort(12, otesSpectrum.getPolygonTypeFlag());
+				otesInsert.executeUpdate();
+				ResultSet rs = otesInsert.getGeneratedKeys();
+				rs.next();
+	            populateOTESCubeTableForFile(modelName, dataType, otesSpectrumRenderer, rs.getInt(1));
+			}
+			else
+	            populateOTESCubeTableForFile(modelName, dataType, otesSpectrumRenderer, count);
 
-            otesInsert.executeUpdate();
-            ResultSet rs = otesInsert.getGeneratedKeys();
-            rs.next();
-            populateOTESCubeTableForFile(modelName, dataType, otesSpectrumRenderer, rs.getInt(1));
             count++;
         }
     }
@@ -218,24 +234,31 @@ public class OTESDatabaseGeneratorSql
          footprintPolyData.DeepCopy(otesSpectrumRenderer.getShiftedFootprint());
          footprintPolyData.ComputeBounds();
 
-
-         if (otesInsert2 == null)
-         {
-        	//index autoincrements, so start with the otesspectrum id column
-             otesInsert2 = db.preparedStatement(
-                     "insert into " + tableName + " (otesspectrumid, cubeid) values (?, ?)");
-         }
-
+         Logger logger = Logger.getAnonymousLogger();
+         logger.log(Level.INFO, "Finding cube paths");
          Vector<String> cubePaths = bodyModel.getIntersectingRCubes(footprintPolyData);
-         for (String i : cubePaths)
+         logger.log(Level.INFO, "Found cube paths ");
+
+
+         if (writeToDB == true)
          {
-             otesInsert2.setInt(1, spectrumIndex);
-             otesInsert2.setString(2, i);
+	         if (otesInsert2 == null)
+	         {
+	        	//index autoincrements, so start with the otesspectrum id column
+	             otesInsert2 = db.preparedStatement(
+	                     "insert into " + tableName + " (otesspectrumid, cubeid) values (?, ?)");
+	         }
 
-             otesInsert2.executeUpdate();
+	         for (String i : cubePaths)
+	         {
+	             otesInsert2.setInt(1, spectrumIndex);
+	             otesInsert2.setString(2, i);
 
-//             ++count;
-         }
+	             otesInsert2.executeUpdate();
+
+	//             ++count;
+	         }
+	         logger.log(Level.INFO, "Placed in DB");
 
 
 //         TreeSet<Integer> cubeIds = bodyModel.getIntersectingCubes(footprintPolyData);
@@ -247,15 +270,11 @@ public class OTESDatabaseGeneratorSql
 //         for (Integer i : cubeIds)
 //         {
 //        	 //index autoincrements, so start with the otesspectrum id column
-////             otesInsert2.setInt(1, count);
 //             otesInsert2.setInt(1, spectrumIndex);
 //             otesInsert2.setInt(2, i);
-//
 //             otesInsert2.executeUpdate();
-//
-////             ++count;
 //         }
-
+         }
          otesSpectrumRenderer.Delete();
          System.out.println("deleted " + vtkObject.JAVA_OBJECT_MANAGER.gc(true));
 //         System.out.println(" ");
@@ -292,7 +311,10 @@ public class OTESDatabaseGeneratorSql
                         "insert into " + OTESCubesTable + " values (?, ?, ?)");
             }
 
+            Logger logger = Logger.getAnonymousLogger();
+            logger.log(Level.INFO, "Finding cube paths");
             Vector<String> cubePaths = bodyModel.getIntersectingRCubes(footprintPolyData);
+            logger.log(Level.INFO, "Found cube path");
             for (String i : cubePaths)
             {
                 otesInsert2.setInt(1, count);
@@ -452,6 +474,7 @@ public class OTESDatabaseGeneratorSql
         List<String> updatedFilenames = new ArrayList<String>();
         try {
             otesFiles = FileUtil.getFileLinesAsStringList(otesFileList.substring(5));
+
 //            for (String otesFile : otesFiles)
             if (endIndex > otesFiles.size()) endIndex = otesFiles.size();
             for (int j=startIndex; j<endIndex; j++)
@@ -465,25 +488,27 @@ public class OTESDatabaseGeneratorSql
             e2.printStackTrace();
             return;
         }
-
-        try
-        {
-            db = new SqlManager(null);
-        }
-        catch (Exception ex1) {
-            ex1.printStackTrace();
-            return;
-        }
-
         String modelName = "bennu_" + authorName.toLowerCase().replace("-", "");
-        createOTESTables(modelName, dataType, appendTables);
-        createOTESTablesCubes(modelName, dataType, appendTables);
+
+        if (writeToDB == true)
+        {
+	        try
+	        {
+	            db = new SqlManager(null);
+	        }
+	        catch (Exception ex1) {
+	            ex1.printStackTrace();
+	            return;
+	        }
+
+        	createOTESTables(modelName, dataType, appendTables);
+        	createOTESTablesCubes(modelName, dataType, appendTables);
+        }
 
         try
 		{
 			populateOTESTables(modelName, dataType, updatedFilenames);
-//	        populateOTESTablesCubes(otesFiles);
-			db.shutdown();
+			if (writeToDB == true) db.shutdown();
 
 		}
 		catch (SQLException | IOException e1)
@@ -492,5 +517,169 @@ public class OTESDatabaseGeneratorSql
 			e1.printStackTrace();
 		}
     }
+
+    //LOCAL VERSION
+//    /**
+//     * @param args
+//     * @throws IOException
+//     */
+//    public static void main(String[] args) throws IOException
+//    {
+//        final SafeURLPaths safeUrlPaths = SafeURLPaths.instance();
+//        // default configuration parameters
+//        boolean aplVersion = true;
+////        String rootURL = safeUrlPaths.getUrl("/disks/d0180/htdocs-sbmt/internal/sbmt");
+//        String rootURL = safeUrlPaths.getUrl("http://sbmt.jhuapl.edu/sbmt/prod/");
+//
+//    	// Important: set the mission before changing things in the Configuration. Otherwise,
+//        // setting the mission will undo those changes.
+//        SbmtMultiMissionTool.configureMission();
+//
+//        // basic default configuration, most of these will be overwritten by the configureMission() method
+//        Configuration.setAPLVersion(aplVersion);
+//        Configuration.setRootURL(rootURL);
+//
+//        // authentication
+//        Authenticator.authenticate();
+//
+//        // initialize view config
+//        SmallBodyViewConfig.fromServer = true;
+//
+//        SmallBodyViewConfig.initialize();
+//
+//        System.setProperty("java.awt.headless", "true");
+//        NativeLibraryLoader.loadVtkLibraries();
+//
+//        boolean appendTables = false;
+//        boolean modifyMain = false;
+//        boolean remote = false;
+//        String bodyName="";
+//        String authorName="";
+//        String versionString = null;
+//        String diffFileList = null;
+//        String dataType = null;
+//        int startIndex = 0;
+//        int endIndex = 0;
+//
+//        int i = 0;
+//        for (; i < args.length; ++i)
+//        {
+//            if (args[i].equals("--root-url"))
+//            {
+//                rootURL = safeUrlPaths.getUrl(args[++i]);
+//            }
+//            else if (args[i].equals("--append-tables"))
+//            {
+//                appendTables = true;
+//            }
+//            else if (args[i].equals("--modify-main"))
+//            {
+//                modifyMain = true;
+//            }
+//            else if (args[i].equals("--debug"))
+//            {
+//                Debug.setEnabled(true);
+//                FileCache.enableDebug(true);
+//            }
+//            else if (args[i].equals("--remote"))
+//            {
+//                remote = true;
+//            }
+//            else if (args[i].equals("--body"))
+//            {
+//            	bodyName = args[++i];
+//            }
+//            else if (args[i].equals("--author"))
+//            {
+//            	authorName = args[++i];
+//            }
+//            else if (args[i].equals("--version"))
+//            {
+//            	versionString = args[++i];
+//            }
+//            else if (args[i].equals("--dataType"))
+//            {
+//            	dataType = args[++i];
+//            }
+//            else if (args[i].equals("--diffList"))
+//            {
+//            	diffFileList = args[++i];
+//            }
+//            else if (args[i].equals("--startIndex"))
+//            {
+//            	startIndex = Integer.parseInt(args[++i]);
+//            }
+//            else if (args[i].equals("--endIndex"))
+//            {
+//            	endIndex = Integer.parseInt(args[++i]);
+//            }
+//            else {
+//                // We've encountered something that is not an option, must be at the args
+//                break;
+//            }
+//        }
+//
+//        SmallBodyViewConfig config = null;
+//        if (versionString != null)
+//        	config = SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.valueOf(bodyName), ShapeModelType.provide(authorName), versionString);
+//        else
+//        	config = SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.valueOf(bodyName), ShapeModelType.provide(authorName));
+//
+//        bodyModel = SbmtModelFactory.createSmallBodyModel(config);
+//
+//        OREXSpectraFactory.initializeModels(bodyModel);
+//
+//        String otesFileList = rootURL + File.separator + "data/bennu/shared/otes/" + dataType + "/spectrumlist.txt";
+//        File otesFileFromServer = FileCache.getFileFromServer(otesFileList);
+//
+//        List<String> otesFiles = null;
+//        List<String> updatedFilenames = new ArrayList<String>();
+//        try {
+////            otesFiles = FileUtil.getFileLinesAsStringList(otesFileList.substring(5));
+//            otesFiles = FileUtil.getFileLinesAsStringList(otesFileFromServer.getAbsolutePath());
+//
+////            for (String otesFile : otesFiles)
+//            if (endIndex > otesFiles.size()) endIndex = otesFiles.size();
+//            for (int j=startIndex; j<endIndex; j++)
+//            {
+//            	String otesFile = otesFiles.get(j);
+////            	String actualName = (rootURL + File.separator + "data/bennu/shared/otes/" + dataType + "/spectra/" + otesFile.split(" ")[0]);
+//            	String actualName = (/*rootURL + File.separator + "data/*/"bennu/shared/otes/" + dataType + "/spectra/" + otesFile.split(" ")[0]);
+//
+//            	updatedFilenames.add(actualName);
+//            }
+//        }
+//        catch (IOException e2) {
+//            e2.printStackTrace();
+//            return;
+//        }
+//
+//        try
+//        {
+//            db = new SqlManager(null);
+//        }
+//        catch (Exception ex1) {
+////            ex1.printStackTrace();
+////            return;
+//        }
+//
+//        String modelName = "bennu_" + authorName.toLowerCase().replace("-", "");
+//        createOTESTables(modelName, dataType, appendTables);
+//        createOTESTablesCubes(modelName, dataType, appendTables);
+//
+//        try
+//		{
+//			populateOTESTables(modelName, dataType, updatedFilenames);
+////	        populateOTESTablesCubes(otesFiles);
+//			if (db != null)
+//				db.shutdown();
+//
+//		}
+//		catch (SQLException | IOException e1)
+//		{
+//			// TODO Auto-generated catch block
+//			e1.printStackTrace();
+//		}
+//    }
 
 }
