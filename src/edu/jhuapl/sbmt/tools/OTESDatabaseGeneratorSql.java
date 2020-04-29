@@ -10,6 +10,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.TreeSet;
 import java.util.Vector;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -234,46 +235,48 @@ public class OTESDatabaseGeneratorSql
          footprintPolyData.DeepCopy(otesSpectrumRenderer.getShiftedFootprint());
          footprintPolyData.ComputeBounds();
 
-         Logger logger = Logger.getAnonymousLogger();
-         logger.log(Level.INFO, "Finding cube paths");
-         Vector<String> cubePaths = bodyModel.getIntersectingRCubes(footprintPolyData);
-         logger.log(Level.INFO, "Found cube paths ");
+//         Logger logger = Logger.getAnonymousLogger();
+//         logger.log(Level.INFO, "Finding cube paths");
+//         Vector<String> cubePaths = bodyModel.getIntersectingRCubes(footprintPolyData);
+//         logger.log(Level.INFO, "Found cube paths ");
+//
+//
+//         if (writeToDB == true)
+//         {
+//	         if (otesInsert2 == null)
+//	         {
+//	        	//index autoincrements, so start with the otesspectrum id column
+//	             otesInsert2 = db.preparedStatement(
+//	                     "insert into " + tableName + " (otesspectrumid, cubeid) values (?, ?)");
+//	         }
+//
+//	         for (String i : cubePaths)
+//	         {
+//	             otesInsert2.setInt(1, spectrumIndex);
+//	             otesInsert2.setString(2, i);
+//
+//	             otesInsert2.executeUpdate();
+//
+//	//             ++count;
+//	         }
+//	         logger.log(Level.INFO, "Placed in DB");
+//         }
 
+         TreeSet<Integer> cubeIds = bodyModel.getIntersectingCubes(footprintPolyData);
+//       System.out.println("cubeIds:  " + cubeIds);
+//         System.out.println("number of cubes: " + cubeIds.size());
+//       System.out.println("id: " + count);
+//       System.out.println("number of cells in polydata " + footprintPolyData.GetNumberOfCells());
 
          if (writeToDB == true)
          {
-	         if (otesInsert2 == null)
-	         {
-	        	//index autoincrements, so start with the otesspectrum id column
-	             otesInsert2 = db.preparedStatement(
-	                     "insert into " + tableName + " (otesspectrumid, cubeid) values (?, ?)");
-	         }
-
-	         for (String i : cubePaths)
-	         {
-	             otesInsert2.setInt(1, spectrumIndex);
-	             otesInsert2.setString(2, i);
-
-	             otesInsert2.executeUpdate();
-
-	//             ++count;
-	         }
-	         logger.log(Level.INFO, "Placed in DB");
-
-
-//         TreeSet<Integer> cubeIds = bodyModel.getIntersectingCubes(footprintPolyData);
-////         System.out.println("cubeIds:  " + cubeIds);
-//         System.out.println("number of cubes: " + cubeIds.size());
-////         System.out.println("id: " + count);
-////         System.out.println("number of cells in polydata " + footprintPolyData.GetNumberOfCells());
-//
-//         for (Integer i : cubeIds)
-//         {
-//        	 //index autoincrements, so start with the otesspectrum id column
-//             otesInsert2.setInt(1, spectrumIndex);
-//             otesInsert2.setInt(2, i);
-//             otesInsert2.executeUpdate();
-//         }
+	       for (Integer i : cubeIds)
+	       {
+	      	 //index autoincrements, so start with the otesspectrum id column
+	           otesInsert2.setInt(1, spectrumIndex);
+	           otesInsert2.setInt(2, i);
+	           otesInsert2.executeUpdate();
+	       }
          }
          otesSpectrumRenderer.Delete();
          System.out.println("deleted " + vtkObject.JAVA_OBJECT_MANAGER.gc(true));
