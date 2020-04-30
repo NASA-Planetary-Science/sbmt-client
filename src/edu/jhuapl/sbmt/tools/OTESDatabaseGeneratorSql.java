@@ -50,7 +50,7 @@ public class OTESDatabaseGeneratorSql
     static private PreparedStatement otesInsert2 = null;
     static private ISmallBodyModel bodyModel;
     static private vtkPolyData footprintPolyData;
-    static private boolean writeToDB = false;
+    static private boolean writeToDB = true;
 
     static private OTES otes=new OTES();
 
