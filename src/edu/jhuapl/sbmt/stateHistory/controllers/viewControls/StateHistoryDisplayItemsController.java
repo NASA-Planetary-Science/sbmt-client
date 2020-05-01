@@ -1,4 +1,4 @@
-package edu.jhuapl.sbmt.stateHistory.ui.version2.viewControls;
+package edu.jhuapl.sbmt.stateHistory.controllers.viewControls;
 
 import java.awt.Color;
 import java.awt.event.ItemEvent;
@@ -21,6 +21,7 @@ import edu.jhuapl.saavtk.util.ColorIcon;
 import edu.jhuapl.sbmt.stateHistory.model.StateHistoryModel;
 import edu.jhuapl.sbmt.stateHistory.model.interfaces.StateHistory;
 import edu.jhuapl.sbmt.stateHistory.model.stateHistory.StateHistoryCollection;
+import edu.jhuapl.sbmt.stateHistory.ui.version2.viewControls.StateHistoryDisplayItemsPanel;
 
 public class StateHistoryDisplayItemsController implements ItemListener
 {
@@ -64,7 +65,7 @@ public class StateHistoryDisplayItemsController implements ItemListener
 
 		view.getShowSpacecraftPanel().getDistanceOptions().addActionListener(e ->
 		{
-			String selectedItem = (String) ((JComboBox<String>) e.getSource()).getSelectedItem();
+			String selectedItem = (String)view.getShowSpacecraftPanel().getDistanceOptions().getSelectedItem();
 			runs.setDistanceText(selectedItem);
 		});
 
@@ -164,7 +165,7 @@ public class StateHistoryDisplayItemsController implements ItemListener
 		JCheckBox showSunMarker = view.getShowSunPanel().getShowSunPointer();
 		JCheckBox showSpacecraft = view.getShowSpacecraftPanel().getShowSpacecraft();
 		JCheckBox showSpacecraftMarker = view.getShowSpacecraftPointerPanel().getShowSpacecraftMarker();
-		JComboBox distanceOptions = view.getShowSpacecraftPanel().getDistanceOptions();
+		JComboBox<String> distanceOptions = view.getShowSpacecraftPanel().getDistanceOptions();
 		JCheckBox showLighting = view.getShowLightingPanel().getShowLighting();
 		JSlider earthSlider = view.getShowEarthPanel().getEarthSlider();
 		JSlider sunSlider = view.getShowSunPanel().getSunSlider();

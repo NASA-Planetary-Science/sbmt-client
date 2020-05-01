@@ -33,6 +33,7 @@ import edu.jhuapl.sbmt.stateHistory.model.StateHistoryModel;
 import edu.jhuapl.sbmt.stateHistory.model.animator.AnimationFrame;
 import edu.jhuapl.sbmt.stateHistory.model.animator.AnimatorFrameRunnable;
 import edu.jhuapl.sbmt.stateHistory.model.animator.MovieGenerator;
+import edu.jhuapl.sbmt.stateHistory.model.io.StateHistoryInvalidTimeException;
 import edu.jhuapl.sbmt.stateHistory.model.stateHistory.StateHistoryCollection;
 import edu.jhuapl.sbmt.stateHistory.rendering.animator.Animator;
 import edu.jhuapl.sbmt.stateHistory.ui.AnimationFileDialog;
@@ -55,7 +56,6 @@ public class StateHistoryIntervalPlaybackController
     private StateHistoryModel historyModel;
     private Icon playIcon;
     private Icon pauseIcon;
-    private Renderer renderer;
 
 	/**
 	 * Constructor
@@ -127,13 +127,22 @@ public class StateHistoryIntervalPlaybackController
         double deltaOffsetTime = deltaSimulationTime / period;
         currentOffsetTime = (val*(period/playRate)/max)*deltaOffsetTime;
 
-        runs.getCurrentRun().setTimeFraction(currentOffsetTime);
+        try
+		{
+			runs.getCurrentRun().setTimeFraction(currentOffsetTime);
+		}
+		catch (StateHistoryInvalidTimeException e1)
+		{
+			JOptionPane.showMessageDialog(null, e1.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+			// TODO Auto-generated catch block
+//			e1.printStackTrace();
+		}
         runs.setTimeFraction(currentOffsetTime);
 
         Date date = null;
 		try
 		{
-			date = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS").parse(TimeUtil.et2str(runs.getCurrentRun().getTime()).substring(0, 23));
+			date = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS").parse(TimeUtil.et2str(runs.getCurrentRun().getCurrentTime()).substring(0, 23));
 		} catch (ParseException e)
 		{
 			// TODO Auto-generated catch block
@@ -148,7 +157,6 @@ public class StateHistoryIntervalPlaybackController
 	 */
 	private void initializeIntervalPlaybackPanel(Renderer renderer, StateHistoryCollection runs)
     {
-		this.renderer = renderer;
         final JSlider slider = view.getSlider();
         slider.addChangeListener(new ChangeListener() {
             public void stateChanged(ChangeEvent evt) {
@@ -207,7 +215,17 @@ public class StateHistoryIntervalPlaybackController
             Date enteredTime = (Date) view.getTimeBox().getModel().getValue();
             DateTime dt = new DateTime(enteredTime);
             DateTime dt1 = ISODateTimeFormat.dateTimeParser().parseDateTime(dt.toString());
-            historyModel.getRuns().getCurrentRun().setTime(new Double(dt1.toDate().getTime()));
+
+            try
+			{
+				historyModel.getRuns().getCurrentRun().setCurrentTime(new Double(dt1.toDate().getTime()));
+			}
+			catch (StateHistoryInvalidTimeException e1)
+			{
+	            JOptionPane.showMessageDialog(null, e1.getMessage(), "Error",
+	                    JOptionPane.ERROR_MESSAGE);
+//				e1.printStackTrace();
+			}
         });
 
         view.getRecordButton().addActionListener(e -> {
@@ -252,7 +270,7 @@ public class StateHistoryIntervalPlaybackController
 
 	private void updateTimeBarValue()
     {
-		historyModel.getRuns().updateTimeBarValue(historyModel.getRuns().getCurrentRun().getTime());
+		historyModel.getRuns().updateTimeBarValue(historyModel.getRuns().getCurrentRun().getCurrentTime());
     }
 
     /**
@@ -309,7 +327,16 @@ public class StateHistoryIntervalPlaybackController
                     currentOffsetTime = 0.0;
                 }
 
-                runs.getCurrentRun().setTimeFraction(10*currentOffsetTime);
+                try
+				{
+					runs.getCurrentRun().setTimeFraction(10*currentOffsetTime);
+				}
+				catch (StateHistoryInvalidTimeException e1)
+				{
+					JOptionPane.showMessageDialog(null, e1.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+					// TODO Auto-generated catch block
+//					e1.printStackTrace();
+				}
                 runs.setTimeFraction(currentOffsetTime);
 
                 //Update the slider
@@ -319,7 +346,7 @@ public class StateHistoryIntervalPlaybackController
                 Date date = null;
         		try
         		{
-        			date = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS").parse(TimeUtil.et2str(runs.getCurrentRun().getTime()).substring(0, 23));
+        			date = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS").parse(TimeUtil.et2str(runs.getCurrentRun().getCurrentTime()).substring(0, 23));
         		} catch (ParseException pe)
         		{
         			// TODO Auto-generated catch block
@@ -358,7 +385,7 @@ public class StateHistoryIntervalPlaybackController
 		//AnimatorFrameRunnable which handles the updating of the timestep, and a Runnable
 		//that is kicked off in the background to handle the compilation of the frames into
 		//a moving using MovieGenerator
-		Animator animator = new Animator(renderer, runs);
+		Animator animator = new Animator(renderer);
 		animator.saveAnimation(frameNum, file, new AnimatorFrameRunnable()
 		{
 			@Override
@@ -372,7 +399,17 @@ public class StateHistoryIntervalPlaybackController
 			@Override
 			public void run()
 			{
-				runs.getCurrentRun().setTimeFraction(getFrame().timeFraction);
+				try
+				{
+					runs.getCurrentRun().setTimeFraction(getFrame().timeFraction);
+				}
+				catch (StateHistoryInvalidTimeException e)
+				{
+					JOptionPane.showMessageDialog(null, e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+
+					// TODO Auto-generated catch block
+//					e.printStackTrace();
+				}
 				runs.setTimeFraction(currentOffsetTime);
 				setTimeSlider(getFrame().timeFraction);
 			}

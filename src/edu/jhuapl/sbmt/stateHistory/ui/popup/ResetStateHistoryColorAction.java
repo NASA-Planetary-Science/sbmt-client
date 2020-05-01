@@ -20,10 +20,10 @@ import edu.jhuapl.sbmt.stateHistory.model.stateHistory.StateHistoryCollection;
 class ResetStateHistoryColorAction<G1> extends StateHistoryPopAction<G1>
 {
 	// Ref vars
-	/**
-	 *
-	 */
-	private final StateHistoryCollection refManager;
+//	/**
+//	 *
+//	 */
+//	private final StateHistoryCollection refManager;
 
 	/**
 	 * Standard Constructor
@@ -33,7 +33,7 @@ class ResetStateHistoryColorAction<G1> extends StateHistoryPopAction<G1>
 	 */
 	public ResetStateHistoryColorAction(StateHistoryCollection aManager)
 	{
-		refManager = aManager;
+//		refManager = aManager;
 	}
 
 	/**

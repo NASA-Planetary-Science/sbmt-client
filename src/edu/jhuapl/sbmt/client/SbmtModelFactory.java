@@ -6,9 +6,7 @@ import org.joda.time.DateTime;
 
 import edu.jhuapl.saavtk.gui.render.Renderer;
 import edu.jhuapl.saavtk.model.Graticule;
-import edu.jhuapl.saavtk.model.Model;
 import edu.jhuapl.saavtk.model.ModelManager;
-import edu.jhuapl.saavtk.model.ModelNames;
 import edu.jhuapl.saavtk.model.ShapeModelBody;
 import edu.jhuapl.saavtk.model.ShapeModelType;
 import edu.jhuapl.sbmt.dtm.model.DEM;
@@ -60,6 +58,7 @@ import edu.jhuapl.sbmt.model.vesta.FcImage;
 import edu.jhuapl.sbmt.model.vesta_old.VestaOld;
 import edu.jhuapl.sbmt.stateHistory.model.StateHistoryModel;
 import edu.jhuapl.sbmt.stateHistory.model.io.StateHistoryInputException;
+import edu.jhuapl.sbmt.stateHistory.model.io.StateHistoryInvalidTimeException;
 import edu.jhuapl.sbmt.stateHistory.model.stateHistory.StateHistoryKey;
 
 import nom.tam.fits.FitsException;
@@ -82,7 +81,7 @@ public class SbmtModelFactory
             SmallBodyModel smallBodyModel,
             ModelManager modelManager,
             Renderer renderer,
-            boolean loadPointingOnly) throws FitsException, IOException, StateHistoryInputException
+            boolean loadPointingOnly) throws FitsException, IOException, StateHistoryInputException, StateHistoryInvalidTimeException
     {
         SmallBodyViewConfig config = (SmallBodyViewConfig)smallBodyModel.getSmallBodyConfig();
         return new StateHistoryModel(start, end, smallBodyModel, renderer, modelManager);

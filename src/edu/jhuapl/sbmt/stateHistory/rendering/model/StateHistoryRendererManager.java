@@ -1,4 +1,4 @@
-package edu.jhuapl.sbmt.stateHistory.model.stateHistory;
+package edu.jhuapl.sbmt.stateHistory.rendering.model;
 
 import java.awt.Color;
 import java.awt.Font;
@@ -15,14 +15,12 @@ import edu.jhuapl.saavtk.util.BoundingBox;
 import edu.jhuapl.saavtk.util.Configuration;
 import edu.jhuapl.saavtk.util.ConvertResourceToFile;
 import edu.jhuapl.saavtk.util.Properties;
-import edu.jhuapl.sbmt.client.BodyViewConfig;
 import edu.jhuapl.sbmt.client.SmallBodyModel;
-import edu.jhuapl.sbmt.client.SmallBodyViewConfig;
 import edu.jhuapl.sbmt.lidar.feature.FeatureAttr;
 import edu.jhuapl.sbmt.lidar.feature.VtkFeatureAttr;
 import edu.jhuapl.sbmt.stateHistory.model.StateHistoryColoringFunctions;
-import edu.jhuapl.sbmt.stateHistory.model.interfaces.IStateHistoryPositionCalculator;
 import edu.jhuapl.sbmt.stateHistory.model.interfaces.StateHistory;
+import edu.jhuapl.sbmt.stateHistory.model.stateHistory.RendererLookDirection;
 import edu.jhuapl.sbmt.stateHistory.rendering.SpacecraftBody;
 import edu.jhuapl.sbmt.stateHistory.rendering.SpacecraftFieldOfView;
 import edu.jhuapl.sbmt.stateHistory.rendering.TrajectoryActor;
@@ -32,8 +30,6 @@ import edu.jhuapl.sbmt.stateHistory.rendering.directionMarkers.SunDirectionMarke
 import edu.jhuapl.sbmt.stateHistory.rendering.text.SpacecraftLabel;
 import edu.jhuapl.sbmt.stateHistory.rendering.text.StatusBarTextActor;
 import edu.jhuapl.sbmt.stateHistory.rendering.text.TimeBarTextActor;
-import edu.jhuapl.sbmt.stateHistory.ui.color.ConstColorProvider;
-import edu.jhuapl.sbmt.stateHistory.ui.color.ConstGroupColorProvider;
 import edu.jhuapl.sbmt.stateHistory.ui.color.GroupColorProvider;
 import edu.jhuapl.sbmt.stateHistory.ui.color.StateHistoryFeatureType;
 
@@ -106,13 +102,13 @@ public class StateHistoryRendererManager
      *
      */
 	private double scalingFactor = 0.0;
-	private GroupColorProvider sourceGCP;
-
-	private double begPercent;
-	private double endPercent;
-	private final BodyViewConfig refBodyViewConfig;
-
-	private GroupColorProvider colorProvider;
+//	private GroupColorProvider sourceGCP;
+//
+//	private double begPercent;
+//	private double endPercent;
+//	private final BodyViewConfig refBodyViewConfig;
+//
+//	private GroupColorProvider colorProvider;
 
 
 	private IStateHistoryPositionCalculator positionCalculator;
@@ -149,10 +145,10 @@ public class StateHistoryRendererManager
 
 		this.pcs = pcs;
 
-		refBodyViewConfig = (SmallBodyViewConfig) smallBodyModel.getSmallBodyConfig();
-		sourceGCP = new ConstGroupColorProvider(new ConstColorProvider(Color.GREEN));
-		begPercent = 0.0;
-		endPercent = 1.0;
+//		refBodyViewConfig = (SmallBodyViewConfig) smallBodyModel.getSmallBodyConfig();
+//		sourceGCP = new ConstGroupColorProvider(new ConstColorProvider(Color.GREEN));
+//		begPercent = 0.0;
+//		endPercent = 1.0;
 //		propM = new HashMap<>();
 //		vAuxM = new HashMap<>();
 //		vPainterM = new HashMap<>();
@@ -179,7 +175,7 @@ public class StateHistoryRendererManager
 		trajectoryActor.setColoringFunction(StateHistoryColoringFunctions.PER_TABLE.getColoringFunction(),
 				Colormaps.getNewInstanceOfBuiltInColormap("Rainbow"));
 
-		trajectoryActor.setMinMaxFraction(run.getMinDisplayFraction(), run.getMaxDisplayFraction());
+		trajectoryActor.setMinMaxFraction(run.getTrajectory().getMinDisplayFraction(), run.getTrajectory().getMaxDisplayFraction());
 		trajectoryActor.VisibilityOn();
 		trajectoryActor.GetMapper().Update();
 
@@ -250,7 +246,7 @@ public class StateHistoryRendererManager
 	 */
 	public void setTrajectoryColor(StateHistory segment, Color color)
 	{
-		GroupColorProvider colorSource = colorProvider;
+//		GroupColorProvider colorSource = colorProvider;
 
 		double[] colorAsIntArray = new double[]
 		{ color.getRed(), color.getGreen(), color.getBlue(), color.getAlpha() };
@@ -628,7 +624,7 @@ public class StateHistoryRendererManager
 
 	public void installGroupColorProviders(GroupColorProvider aSrcGCP/*, StateHistoryCollection runs*/)
 	{
-		this.colorProvider = aSrcGCP;
+//		this.colorProvider = aSrcGCP;
 //		int tmpIdx = -1;
 //		int numItems = runs.getNumItems();
 //		for (StateHistory aItem : runs.getAllItems())

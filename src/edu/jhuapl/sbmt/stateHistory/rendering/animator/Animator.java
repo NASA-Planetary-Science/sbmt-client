@@ -20,7 +20,6 @@ import vtk.rendering.jogl.vtkJoglPanelComponent;
 import edu.jhuapl.saavtk.gui.render.Renderer;
 import edu.jhuapl.sbmt.stateHistory.model.animator.AnimationFrame;
 import edu.jhuapl.sbmt.stateHistory.model.animator.AnimatorFrameRunnable;
-import edu.jhuapl.sbmt.stateHistory.model.stateHistory.StateHistoryCollection;
 
 /**
  * @author steelrj1
@@ -44,19 +43,15 @@ public class Animator implements ActionListener
      *
      */
     private Runnable movieBlock;
-    /**
-     *
-     */
-    private StateHistoryCollection runs;
+
 
 	/**
 	 * @param renderer
 	 * @param runs
 	 */
-	public Animator(Renderer renderer, StateHistoryCollection runs)
+	public Animator(Renderer renderer)
 	{
 		this.renderer = renderer;
-		this.runs = runs;
 	}
 
 	// creates animation frame with data to move the camera

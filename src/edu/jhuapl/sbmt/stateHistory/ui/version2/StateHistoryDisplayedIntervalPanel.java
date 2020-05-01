@@ -5,7 +5,7 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.border.TitledBorder;
 
-import edu.jhuapl.sbmt.lidar.gui.PercentIntervalChanger;
+import edu.jhuapl.sbmt.stateHistory.ui.StateHistoryPercentIntervalChanger;
 
 /**
  * The panel that displays the controls for limiting what portion of the selected state history is shown
@@ -18,7 +18,7 @@ public class StateHistoryDisplayedIntervalPanel extends JPanel //implements Acti
 	/**
 	 * Control that allows the user to restrict the portion of the state history that is shown
 	 */
-	private PercentIntervalChanger timeIntervalChanger;
+	private StateHistoryPercentIntervalChanger timeIntervalChanger;
 
 	/**
 	 * JLabels that display the current start and stop times
@@ -54,8 +54,8 @@ public class StateHistoryDisplayedIntervalPanel extends JPanel //implements Acti
 		setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
 
 		//initialize and setup the PercentIntervalChanger
-		timeIntervalChanger = new PercentIntervalChanger("Displayed Trajectory Data");
-//		add(timeIntervalChanger.getSlider());
+		timeIntervalChanger = new StateHistoryPercentIntervalChanger("Displayed Trajectory Data");
+		add(timeIntervalChanger.getSlider());
 		timeIntervalChanger.setEnabled(false);
 
 		//also display the displayed time window segment in labels below
@@ -76,7 +76,7 @@ public class StateHistoryDisplayedIntervalPanel extends JPanel //implements Acti
 	 * Returns the percent interval changer
 	 * @return the percent interval changer
 	 */
-	public PercentIntervalChanger getTimeIntervalChanger()
+	public StateHistoryPercentIntervalChanger getTimeIntervalChanger()
 	{
 		return timeIntervalChanger;
 	}

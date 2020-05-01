@@ -6,15 +6,15 @@ package edu.jhuapl.sbmt.stateHistory.model.interfaces;
  */
 public interface State
 {
-    /**
-     * @return
-     */
-    public int getImageNumber();
-
-    /**
-     * @return
-     */
-    public int getFrameNumber();
+//    /**
+//     * @return
+//     */
+//    public int getImageNumber();
+//
+//    /**
+//     * @return
+//     */
+//    public int getFrameNumber();
 
     /**
      * @return
@@ -26,64 +26,64 @@ public interface State
      */
     public String getUtc();
 
-    /**
-     * @return
-     */
-    public double getViewingAngle();
-
-    /** Roll Angle (deg) */
-    /**
-     * @return
-     */
-    public double getRollAngle();
-
-    /** Spacecraft Altitude (km) */
-    /**
-     * @return
-     */
-    public double getSpacecraftAltitude();
-
-    /** Intercept XYZ (km) - derived from SurfaceIntercept */
-    /**
-     * @return
-     */
-    public double[] getSurfaceIntercept();
-
-    /** Intercept Lat-Lon (deg) */
-    /**
-     * @return
-     */
-    public double[] getSurfaceInterceptLatLon();
-
-    /** Cross Track Spacing (km) */
-    /**
-     * @return
-     */
-    public double getCrossTrackPixelSpacingKm();
-
-    /** Along Track Spacing (km) */
-    /**
-     * @return
-     */
-    public double getAlongTrackPixelSpacing();
-
-    /** Solar Incidence Angle (deg) */
-    /**
-     * @return
-     */
-    public double getSolarIncidenceAngle();
-
-    /** Emission Angle (deg) */
-    /**
-     * @return
-     */
-    public double getEmissionAngle();
-
-    /** Local Solar Time (deg) */
-    /**
-     * @return
-     */
-    public double getLocalSolarTime();
+//    /**
+//     * @return
+//     */
+//    public double getViewingAngle();
+//
+//    /** Roll Angle (deg) */
+//    /**
+//     * @return
+//     */
+//    public double getRollAngle();
+//
+//    /** Spacecraft Altitude (km) */
+//    /**
+//     * @return
+//     */
+//    public double getSpacecraftAltitude();
+//
+//    /** Intercept XYZ (km) - derived from SurfaceIntercept */
+//    /**
+//     * @return
+//     */
+//    public double[] getSurfaceIntercept();
+//
+//    /** Intercept Lat-Lon (deg) */
+//    /**
+//     * @return
+//     */
+//    public double[] getSurfaceInterceptLatLon();
+//
+//    /** Cross Track Spacing (km) */
+//    /**
+//     * @return
+//     */
+//    public double getCrossTrackPixelSpacingKm();
+//
+//    /** Along Track Spacing (km) */
+//    /**
+//     * @return
+//     */
+//    public double getAlongTrackPixelSpacing();
+//
+//    /** Solar Incidence Angle (deg) */
+//    /**
+//     * @return
+//     */
+//    public double getSolarIncidenceAngle();
+//
+//    /** Emission Angle (deg) */
+//    /**
+//     * @return
+//     */
+//    public double getEmissionAngle();
+//
+//    /** Local Solar Time (deg) */
+//    /**
+//     * @return
+//     */
+//    public double getLocalSolarTime();
 
     /** Spacecraft Position (km) */
     /**
@@ -109,16 +109,16 @@ public interface State
      */
     public double[] getSunPosition();
 
-    /** Sub Solar Point Lat-Lon (deg) */
-    /**
-     * @return
-     */
-    public double[] getSubSolarPointLatLon();
-
-    /**
-     * @return
-     */
-    public float getFrameScore();
+//    /** Sub Solar Point Lat-Lon (deg) */
+//    /**
+//     * @return
+//     */
+//    public double[] getSubSolarPointLatLon();
+//
+//    /**
+//     * @return
+//     */
+//    public float getFrameScore();
 
     /**
      * @return

@@ -1,4 +1,4 @@
-package edu.jhuapl.sbmt.stateHistory.ui.version2.viewControls;
+package edu.jhuapl.sbmt.stateHistory.controllers.viewControls;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -14,10 +14,12 @@ import edu.jhuapl.sbmt.stateHistory.model.StateHistoryColoringFunctions;
 import edu.jhuapl.sbmt.stateHistory.model.StateHistoryModel;
 import edu.jhuapl.sbmt.stateHistory.model.interfaces.StateHistory;
 import edu.jhuapl.sbmt.stateHistory.model.stateHistory.StateHistoryCollection;
+import edu.jhuapl.sbmt.stateHistory.model.viewOptions.StateHistoryColorOptionsAttributeModel;
 import edu.jhuapl.sbmt.stateHistory.rendering.TrajectoryActor;
 import edu.jhuapl.sbmt.stateHistory.ui.color.ColorConfigPanel;
 import edu.jhuapl.sbmt.stateHistory.ui.color.ColorMode;
 import edu.jhuapl.sbmt.stateHistory.ui.color.GroupColorProvider;
+import edu.jhuapl.sbmt.stateHistory.ui.version2.viewControls.StateHistoryColoringOptionsPanel;
 
 import glum.item.ItemEventType;
 
@@ -115,8 +117,8 @@ public class StateHistoryColoringOptionsController implements ActionListener
 	 */
 	public JPanel getView()
 	{
-//		return view;
-		return colorConfigPanel;
+		return view;
+//		return colorConfigPanel;
 	}
 
 	@Override

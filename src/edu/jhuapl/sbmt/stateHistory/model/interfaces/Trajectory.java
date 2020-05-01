@@ -131,4 +131,32 @@ public interface Trajectory
      */
     public void addPositionAtTime(double[] spacecraftPosition, double time);
 
+    //Display fraction (which portions of the overall time window are being worked on)
+
+    /**
+     * Returns the min display fraction
+     * @return
+     */
+    public double getMinDisplayFraction();
+
+	/**
+	 * Set the min display fraction (a value between 0.0 and 1.0), representing the min
+	 * portion of this state history trajectory is displayed
+	 * @param minDisplayFraction
+	 */
+	public void setMinDisplayFraction(double minDisplayFraction);
+
+	/**
+	 * Returns the max display fraction
+	 * @return
+	 */
+	public double getMaxDisplayFraction();
+
+	/**
+	 * Set the max display fraction (a value between 0.0 and 1.0) representing the max
+	 * portion of this state history trajectory is displayed
+	 * @param maxDisplayFraction
+	 */
+	public void setMaxDisplayFraction(double maxDisplayFraction);
+
 }

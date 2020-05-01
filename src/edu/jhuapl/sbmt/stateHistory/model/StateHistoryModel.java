@@ -22,6 +22,7 @@ import edu.jhuapl.sbmt.stateHistory.model.interfaces.StateHistory;
 import edu.jhuapl.sbmt.stateHistory.model.interfaces.StateHistoryModelChangedListener;
 import edu.jhuapl.sbmt.stateHistory.model.io.StateHistoryIOException;
 import edu.jhuapl.sbmt.stateHistory.model.io.StateHistoryInputException;
+import edu.jhuapl.sbmt.stateHistory.model.io.StateHistoryInvalidTimeException;
 import edu.jhuapl.sbmt.stateHistory.model.io.StateHistoryModelIOHelper;
 import edu.jhuapl.sbmt.stateHistory.model.stateHistory.PregenStateHistoryIntervalGenerator;
 import edu.jhuapl.sbmt.stateHistory.model.stateHistory.StateHistoryCollection;
@@ -102,7 +103,7 @@ public class StateHistoryModel
 	 * @throws IOException
 	 */
 	public StateHistoryModel(DateTime start, DateTime end, SmallBodyModel smallBodyModel, Renderer renderer,
-			ModelManager modelManager) throws IOException, StateHistoryInputException
+			ModelManager modelManager) throws IOException, StateHistoryInputException, StateHistoryInvalidTimeException
 	{
 		this.viewConfig = smallBodyModel.getSmallBodyConfig();
 		this.startTime = start;
@@ -164,7 +165,7 @@ public class StateHistoryModel
 	 * @return StateHistory object if successful; null otherwise
 	 */
 	public void createNewTimeInterval(StateHistoryKey key, DateTime startTime, DateTime endTime, double duration,
-			String name, Function<Double, Void> progressFunction) throws StateHistoryInputException, IOException, InvocationTargetException, InterruptedException
+			String name, Function<Double, Void> progressFunction) throws StateHistoryInputException, StateHistoryInvalidTimeException, IOException, InvocationTargetException, InterruptedException
 	{
 		StateHistory history = intervalGenerator.createNewTimeInterval(key, startTime, endTime, duration, name,
 				progressFunction);
@@ -216,7 +217,7 @@ public class StateHistoryModel
 	/**
 	 * @throws IOException
 	 */
-	private void initializeRunList() throws IOException, StateHistoryInputException
+	private void initializeRunList() throws IOException, StateHistoryInputException, StateHistoryInvalidTimeException
 	{
 		if (initialized)
 			return;

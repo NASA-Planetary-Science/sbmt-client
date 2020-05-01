@@ -20,10 +20,10 @@ import edu.jhuapl.sbmt.stateHistory.ui.color.ConstColorProvider;
 class FixedStateHistoryColorAction<G1> extends StateHistoryPopAction<G1>
 {
 	// Ref vars
-	/**
-	 *
-	 */
-	private final StateHistoryCollection refManager;
+//	/**
+//	 *
+//	 */
+//	private final StateHistoryCollection refManager;
 	/**
 	 *
 	 */
@@ -38,7 +38,7 @@ class FixedStateHistoryColorAction<G1> extends StateHistoryPopAction<G1>
 	 */
 	public FixedStateHistoryColorAction(StateHistoryCollection aManager, Color aColor)
 	{
-		refManager = aManager;
+//		refManager = aManager;
 		refCP = new ConstColorProvider(aColor);
 	}
 

@@ -15,7 +15,6 @@ import vtk.vtkPolyLine;
 import vtk.vtkUnsignedCharArray;
 
 import edu.jhuapl.saavtk.colormap.Colormap;
-import edu.jhuapl.sbmt.lidar.feature.FeatureAttr;
 import edu.jhuapl.sbmt.stateHistory.model.StateHistoryColoringFunctions;
 import edu.jhuapl.sbmt.stateHistory.model.interfaces.Trajectory;
 import edu.jhuapl.sbmt.stateHistory.ui.color.ColorProvider;
@@ -90,8 +89,8 @@ public class TrajectoryActor extends vtkActor
     private Colormap colormap;
 
     private GroupColorProvider gcp;
-
-    private FeatureAttr coloringAttribute;
+//
+//    private FeatureAttr coloringAttribute;
 
 
 	/**

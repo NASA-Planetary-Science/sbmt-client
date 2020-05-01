@@ -7,6 +7,7 @@ import java.io.File;
 import java.io.IOException;
 
 import javax.swing.BoxLayout;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.border.EtchedBorder;
 import javax.swing.border.TitledBorder;
@@ -25,11 +26,11 @@ import edu.jhuapl.sbmt.client.SmallBodyViewConfig;
 import edu.jhuapl.sbmt.stateHistory.model.StateHistoryModel;
 import edu.jhuapl.sbmt.stateHistory.model.StateHistoryUtil;
 import edu.jhuapl.sbmt.stateHistory.model.io.StateHistoryInputException;
+import edu.jhuapl.sbmt.stateHistory.model.io.StateHistoryInvalidTimeException;
 import edu.jhuapl.sbmt.stateHistory.model.stateHistory.StateHistoryCollection;
 import edu.jhuapl.sbmt.stateHistory.ui.version2.StateHistoryDisplayedIntervalPanel;
 import edu.jhuapl.sbmt.stateHistory.ui.version2.StateHistoryIntervalGenerationPanel;
 import edu.jhuapl.sbmt.stateHistory.ui.version2.StateHistoryIntervalPlaybackPanel;
-import edu.jhuapl.sbmt.stateHistory.ui.version2.StateHistoryViewControlsPanel;
 import edu.jhuapl.sbmt.stateHistory.ui.version2.table.StateHistoryTableView;
 
 import glum.item.ItemEventType;
@@ -110,6 +111,11 @@ public class StateHistoryController
 			// TODO Auto-generated catch block
 			e1.printStackTrace();
 		}
+		catch (StateHistoryInvalidTimeException shie)
+		{
+			JOptionPane.showMessageDialog(null, shie.getMessage(), "Error",
+                    JOptionPane.ERROR_MESSAGE);
+		}
 
         this.intervalGenerationController = new StateHistoryIntervalGenerationController(historyModel, start, end);
         this.intervalSelectionController = new StateHistoryIntervalSelectionController(historyModel, bodyModel, renderer);
@@ -161,7 +167,7 @@ public class StateHistoryController
     	StateHistoryDisplayedIntervalPanel displayedPanel = intervalDisplayedController.getView();
 
     	StateHistoryIntervalPlaybackPanel intervalPlaybackPanel = intervalPlaybackController.getView();
-    	StateHistoryViewControlsPanel viewControlsPanel = viewControlsController.getView();
+    	JPanel viewControlsPanel = viewControlsController.getView();
 
     	timeControlsPanel.add(intervalGenerationPanel);
     	timeControlsPanel.add(intervalSelectionPanel);
@@ -177,9 +183,11 @@ public class StateHistoryController
 
 
     /**
-     * Private method used to respond to the "EndEvent" event above
+     * Private method used to respond to the "EndEvent" event above.  Note that since it is called as a response to a VTK event, it isn't directly invoked in Java; therefore
+     * the warning that it is never used locally gets shown; I've added the @SupressWarnings annotation for this.
      */
-    private void updateTimeBarPosition()
+    @SuppressWarnings("unused")
+	private void updateTimeBarPosition()
     {
     	historyModel.getRuns().updateTimeBarLocation(renderer.getRenderWindowPanel().getComponent().getWidth(), renderer.getRenderWindowPanel().getComponent().getHeight());
     }

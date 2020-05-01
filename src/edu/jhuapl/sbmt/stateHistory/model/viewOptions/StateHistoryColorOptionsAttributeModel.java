@@ -1,4 +1,4 @@
-package edu.jhuapl.sbmt.stateHistory.ui.version2.viewControls;
+package edu.jhuapl.sbmt.stateHistory.model.viewOptions;
 
 import java.util.HashMap;
 

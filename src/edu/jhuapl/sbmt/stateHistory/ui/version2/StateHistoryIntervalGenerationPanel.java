@@ -11,6 +11,8 @@ import javax.swing.JPanel;
 import javax.swing.JTextPane;
 import javax.swing.border.TitledBorder;
 
+import edu.jhuapl.sbmt.stateHistory.ui.DateTimeSpinner;
+
 /**
  * @author steelrj1
  *

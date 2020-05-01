@@ -15,10 +15,10 @@ import edu.jhuapl.saavtk.model.SaavtkItemManager;
 import edu.jhuapl.saavtk.util.Properties;
 import edu.jhuapl.sbmt.client.SmallBodyModel;
 import edu.jhuapl.sbmt.lidar.feature.FeatureAttr;
-import edu.jhuapl.sbmt.lidar.gui.color.ConstGroupColorProvider;
 import edu.jhuapl.sbmt.stateHistory.model.interfaces.StateHistory;
 import edu.jhuapl.sbmt.stateHistory.rendering.SpacecraftBody;
 import edu.jhuapl.sbmt.stateHistory.rendering.TrajectoryActor;
+import edu.jhuapl.sbmt.stateHistory.rendering.model.StateHistoryRendererManager;
 import edu.jhuapl.sbmt.stateHistory.ui.color.GroupColorProvider;
 import edu.jhuapl.sbmt.stateHistory.ui.color.StateHistoryFeatureType;
 
@@ -65,7 +65,7 @@ public class StateHistoryCollection extends SaavtkItemManager<StateHistory> impl
 
 	final Key<List<StateHistory>> stateHistoryKey = Key.of("stateHistoryCollection");
 
-	private ConstGroupColorProvider sourceGCP;
+//	private ConstGroupColorProvider sourceGCP;
 
 	/**
 	 * @param smallBodyModel
@@ -238,7 +238,8 @@ public class StateHistoryCollection extends SaavtkItemManager<StateHistory> impl
 
 	public void updateTimeBarValue()
 	{
-		renderManager.updateTimeBarValue(getCurrentRun().getTime());
+		if (getCurrentRun() == null) return;
+		renderManager.updateTimeBarValue(getCurrentRun().getCurrentTime());
 	}
 
 	public void updateTimeBarValue(double time)
@@ -276,7 +277,7 @@ public class StateHistoryCollection extends SaavtkItemManager<StateHistory> impl
 	public Double getPeriod()
 	{
 		if (currentRun != null)
-			return currentRun.getPeriod();
+			return currentRun.getTimeWindow();
 		else
 			return 0.0;
 	}
@@ -335,7 +336,7 @@ public class StateHistoryCollection extends SaavtkItemManager<StateHistory> impl
 	public void setTimeFraction(Double timeFraction)
 	{
 		renderManager.setTimeFraction(timeFraction, getCurrentRun());
-		renderManager.updateTimeBarValue(getCurrentRun().getTime());
+		renderManager.updateTimeBarValue(getCurrentRun().getCurrentTime());
 	}
 
 	/**

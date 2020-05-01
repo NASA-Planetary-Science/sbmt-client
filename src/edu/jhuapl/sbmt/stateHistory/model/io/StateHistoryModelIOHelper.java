@@ -85,9 +85,9 @@ public class StateHistoryModelIOHelper
         }
 
         // get each flyby state in currentFlybyStateHistory, and write to CSV
-        Set<Double> keySet = interval.getAllKeys();
+        Set<Double> keySet = interval.getAllTimes();
         for (Double key : keySet) {
-            CsvState history = (CsvState)interval.getValue(key);
+            CsvState history = (CsvState)interval.getStateAtTime(key);
             history.writeToCSV(fileName);
         }
 
@@ -155,7 +155,7 @@ public class StateHistoryModelIOHelper
                 State flybyState = new CsvState(line);
 
                 // add to history
-                history.put(flybyState);
+                history.addState(flybyState);
 
                 double[] spacecraftPosition = flybyState.getSpacecraftPosition();
 
@@ -172,7 +172,7 @@ public class StateHistoryModelIOHelper
 
             history.setTrajectory(trajectory);
 
-            history.setTime(history.getMinTime());
+            history.setCurrentTime(history.getMinTime());
             return history;
         }
         catch (Exception e1)

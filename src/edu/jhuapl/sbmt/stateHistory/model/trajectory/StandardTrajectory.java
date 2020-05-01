@@ -6,196 +6,192 @@ import edu.jhuapl.sbmt.stateHistory.model.interfaces.Trajectory;
 
 public class StandardTrajectory implements Trajectory
 {
-    /**
-     *
-     */
-    private int cellId;
-    /**
-     *
-     */
-    private String name;
-    /**
-     *
-     */
-    private int id;
-    /**
-     *
-     */
-    private ArrayList<Double> x;
-    /**
-     *
-     */
-    private ArrayList<Double> y;
-    /**
-     *
-     */
-    private ArrayList<Double> z;
-    /**
-     *
-     */
-    private ArrayList<Double> times;
-    /**
-     *
-     */
-    private double[] color;
-    /**
-     *
-     */
-    private double thickness;
-    /**
-     *
-     */
-    private String description;
-    /**
-     *
-     */
-    private boolean isFaded;
+	/**
+	 *
+	 */
+	private int cellId;
+	/**
+	 *
+	 */
+	private String name;
+	/**
+	 *
+	 */
+	private int id;
+	/**
+	 *
+	 */
+	private ArrayList<Double> x;
+	/**
+	 *
+	 */
+	private ArrayList<Double> y;
+	/**
+	 *
+	 */
+	private ArrayList<Double> z;
+	/**
+	 *
+	 */
+	private ArrayList<Double> times;
+	/**
+	 *
+	 */
+	private double[] color;
+	/**
+	 *
+	 */
+	private double thickness;
+	/**
+	 *
+	 */
+	private String description;
+	/**
+	 *
+	 */
+	private boolean isFaded;
 
-    /**
-     *
-     */
-    public int getCellId()
-    {
-        return cellId;
-    }
+	/**
+	 *
+	 */
+	private double minDisplayFraction = 0.0, maxDisplayFraction = 1.0;
 
-    /**
-     *
-     */
-    public void setCellId(int cellId)
-    {
-        this.cellId = cellId;
-    }
+	/**
+	 *
+	 */
+	public int getCellId()
+	{
+		return cellId;
+	}
 
+	/**
+	 *
+	 */
+	public void setCellId(int cellId)
+	{
+		this.cellId = cellId;
+	}
 
-    /**
-     *
-     */
-    public String getName()
-    {
-        return name;
-    }
+	/**
+	 *
+	 */
+	public String getName()
+	{
+		return name;
+	}
 
+	/**
+	 *
+	 */
+	public void setName(String name)
+	{
+		this.name = name;
+	}
 
-    /**
-     *
-     */
-    public void setName(String name)
-    {
-        this.name = name;
-    }
+	/**
+	 *
+	 */
+	public int getId()
+	{
+		return id;
+	}
 
+	/**
+	 *
+	 */
+	public void setId(int id)
+	{
+		this.id = id;
+	}
 
-    /**
-     *
-     */
-    public int getId()
-    {
-        return id;
-    }
+	/**
+	 *
+	 */
+	public ArrayList<Double> getTime()
+	{
+		return times;
+	}
 
+	/**
+	 *
+	 */
+	public void setTime(ArrayList<Double> times)
+	{
+		this.times = times;
+	}
 
-    /**
-     *
-     */
-    public void setId(int id)
-    {
-        this.id = id;
-    }
+	/**
+	 *
+	 */
+	public ArrayList<Double> getX()
+	{
+		return x;
+	}
 
-    /**
-     *
-     */
-    public ArrayList<Double> getTime()
-    {
-        return times;
-    }
+	/**
+	 *
+	 */
+	public void setX(ArrayList<Double> x)
+	{
+		this.x = x;
+	}
 
+	/**
+	 *
+	 */
+	public ArrayList<Double> getY()
+	{
+		return y;
+	}
 
-    /**
-     *
-     */
-    public void setTime(ArrayList<Double> times)
-    {
-        this.times = times;
-    }
+	/**
+	 *
+	 */
+	public void setY(ArrayList<Double> y)
+	{
+		this.y = y;
+	}
 
-    /**
-     *
-     */
-    public ArrayList<Double> getX()
-    {
-        return x;
-    }
+	/**
+	 *
+	 */
+	public ArrayList<Double> getZ()
+	{
+		return z;
+	}
 
+	/**
+	 *
+	 */
+	public void setZ(ArrayList<Double> z)
+	{
+		this.z = z;
+	}
 
-    /**
-     *
-     */
-    public void setX(ArrayList<Double> x)
-    {
-        this.x = x;
-    }
+	/**
+	 *
+	 */
+	public StandardTrajectory()
+	{
+		super();
+		this.x = new ArrayList<Double>();
+		this.y = new ArrayList<Double>();
+		this.z = new ArrayList<Double>();
+		this.times = new ArrayList<Double>();
+		name = "";
+		description = "";
+		this.color = new double[]
+		{ 0, 255, 255, 255 };
+	}
 
+	/**
+	 *
+	 */
+	public String toString()
+	{
+		return "Trajectory " + getId() + " = " + getName() + " contains " + getX().size() + " vertices";
 
-    /**
-     *
-     */
-    public ArrayList<Double> getY()
-    {
-        return y;
-    }
-
-
-    /**
-     *
-     */
-    public void setY(ArrayList<Double> y)
-    {
-        this.y = y;
-    }
-
-
-    /**
-     *
-     */
-    public ArrayList<Double> getZ()
-    {
-        return z;
-    }
-
-
-    /**
-     *
-     */
-    public void setZ(ArrayList<Double> z)
-    {
-        this.z = z;
-    }
-
-    /**
-     *
-     */
-    public StandardTrajectory()
-    {
-        super();
-        this.x = new ArrayList<Double>();
-        this.y = new ArrayList<Double>();
-        this.z = new ArrayList<Double>();
-        this.times = new ArrayList<Double>();
-        name = "";
-        description = "";
-        this.color = new double[] {0, 255, 255, 255};
-    }
-
-    /**
-     *
-     */
-    public String toString()
-    {
-        return "Trajectory " + getId() + " = " + getName() + " contains " + getX().size() + " vertices";
-
-    }
+	}
 
 	/**
 	 *
@@ -302,5 +298,44 @@ public class StandardTrajectory implements Trajectory
 		getY().add(spacecraftPosition[1]);
 		getZ().add(spacecraftPosition[2]);
 		getTime().add(time);
+	}
+
+	// Display fraction (which portions of the overall time window are being
+	// worked on)
+
+	/**
+	 *
+	 */
+	@Override
+	public double getMinDisplayFraction()
+	{
+		return minDisplayFraction;
+	}
+
+	/**
+	 *
+	 */
+	@Override
+	public void setMinDisplayFraction(double minDisplayFraction)
+	{
+		this.minDisplayFraction = minDisplayFraction;
+	}
+
+	/**
+	 *
+	 */
+	@Override
+	public double getMaxDisplayFraction()
+	{
+		return maxDisplayFraction;
+	}
+
+	/**
+	 *
+	 */
+	@Override
+	public void setMaxDisplayFraction(double maxDisplayFraction)
+	{
+		this.maxDisplayFraction = maxDisplayFraction;
 	}
 }

@@ -1,7 +1,10 @@
 package edu.jhuapl.sbmt.stateHistory.controllers;
 
-import edu.jhuapl.sbmt.lidar.gui.PercentIntervalChanger;
+import javax.swing.JOptionPane;
+
+import edu.jhuapl.sbmt.stateHistory.model.io.StateHistoryInvalidTimeException;
 import edu.jhuapl.sbmt.stateHistory.model.stateHistory.StateHistoryCollection;
+import edu.jhuapl.sbmt.stateHistory.ui.StateHistoryPercentIntervalChanger;
 import edu.jhuapl.sbmt.stateHistory.ui.version2.StateHistoryDisplayedIntervalPanel;
 import edu.jhuapl.sbmt.util.TimeUtil;
 
@@ -52,14 +55,23 @@ public class StateHistoryDisplayedIntervalController
 		//The action listener for the time interval changer; takes values from the changer
 		//and passes them onto the current run so the display can properly update
 		view.getTimeIntervalChanger().addActionListener(e -> {
-			PercentIntervalChanger changer = view.getTimeIntervalChanger();
+			StateHistoryPercentIntervalChanger changer = view.getTimeIntervalChanger();
 			double minValue = changer.getLowValue();
 			double maxValue = changer.getHighValue();
 			double timeFraction = intervalSet.getCurrentRun().getTimeFraction();
 			intervalSet.setTrajectoryMinMax(intervalSet.getCurrentRun(), minValue, maxValue);
-			intervalSet.getCurrentRun().setMinDisplayFraction(minValue);
-			intervalSet.getCurrentRun().setMaxDisplayFraction(maxValue);
-			intervalSet.getCurrentRun().setTimeFraction(timeFraction);
+			intervalSet.getCurrentRun().getTrajectory().setMinDisplayFraction(minValue);
+			intervalSet.getCurrentRun().getTrajectory().setMaxDisplayFraction(maxValue);
+			try
+			{
+				intervalSet.getCurrentRun().setTimeFraction(timeFraction);
+			}
+			catch (StateHistoryInvalidTimeException e1)
+			{
+				JOptionPane.showMessageDialog(null, e1.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+				// TODO Auto-generated catch block
+//				e1.printStackTrace();
+			}
 
 			updateDisplayedTimeRange(minValue, maxValue);
 		});

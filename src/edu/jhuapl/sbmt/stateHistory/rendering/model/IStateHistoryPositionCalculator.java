@@ -1,5 +1,6 @@
-package edu.jhuapl.sbmt.stateHistory.model.interfaces;
+package edu.jhuapl.sbmt.stateHistory.rendering.model;
 
+import edu.jhuapl.sbmt.stateHistory.model.interfaces.StateHistory;
 import edu.jhuapl.sbmt.stateHistory.model.stateHistory.RendererLookDirection;
 import edu.jhuapl.sbmt.stateHistory.rendering.SpacecraftBody;
 import edu.jhuapl.sbmt.stateHistory.rendering.directionMarkers.EarthDirectionMarker;

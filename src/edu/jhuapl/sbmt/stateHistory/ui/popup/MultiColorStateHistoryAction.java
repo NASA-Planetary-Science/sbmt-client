@@ -27,10 +27,10 @@ import edu.jhuapl.sbmt.stateHistory.model.stateHistory.StateHistoryCollection;
 public class MultiColorStateHistoryAction<G1> extends StateHistoryPopAction<G1>
 {
 	// Ref vars
-	/**
-	 *
-	 */
-	private final StateHistoryCollection refManager;
+//	/**
+//	 *
+//	 */
+//	private final StateHistoryCollection refManager;
 
 	// State vars
 	/**
@@ -48,7 +48,7 @@ public class MultiColorStateHistoryAction<G1> extends StateHistoryPopAction<G1>
 	 */
 	public MultiColorStateHistoryAction(StateHistoryCollection aManager, Component aParent, JMenu aMenu)
 	{
-		refManager = aManager;
+//		refManager = aManager;
 
 		actionM = new HashMap<>();
 

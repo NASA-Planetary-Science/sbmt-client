@@ -1,19 +1,14 @@
 package edu.jhuapl.sbmt.stateHistory.model.stateHistory;
 
-import java.math.BigDecimal;
-import java.math.RoundingMode;
 import java.util.Map.Entry;
 import java.util.NavigableMap;
 import java.util.Set;
 import java.util.TreeMap;
 
-import javax.swing.JOptionPane;
-
-import org.joda.time.Interval;
-
 import edu.jhuapl.sbmt.stateHistory.model.interfaces.State;
 import edu.jhuapl.sbmt.stateHistory.model.interfaces.StateHistory;
 import edu.jhuapl.sbmt.stateHistory.model.interfaces.Trajectory;
+import edu.jhuapl.sbmt.stateHistory.model.io.StateHistoryInvalidTimeException;
 
 import altwg.util.MathUtil;
 import crucible.crust.metadata.api.Key;
@@ -21,17 +16,26 @@ import crucible.crust.metadata.api.Version;
 import crucible.crust.metadata.impl.InstanceGetter;
 import crucible.crust.metadata.impl.SettableMetadata;
 
+/**
+ * Standard class for holding history information.  A timeToStateMap keeps a correlation between ephemeris time
+ * and an object that obeys the <pre>State</pre> interface.
+ *
+ * This class contains a reference to an object that implements the <pre>Trajectory</pre> interface, which helps describe
+ * how this state history can be rendered.
+ * @author steelrj1
+ *
+ */
 public class StandardStateHistory implements StateHistory
 {
     /**
      *
      */
-    private NavigableMap<Double, State> timeToFlybyState = new TreeMap<Double, State>();
+    private NavigableMap<Double, State> timeToStateMap = new TreeMap<Double, State>();
 
     /**
      *
      */
-    private Double time;
+    private Double currentTime;
 
     /**
      *
@@ -63,14 +67,8 @@ public class StandardStateHistory implements StateHistory
      */
     private Double[] color;
 
-    /**
-     *
-     */
-    private double minDisplayFraction = 0.0, maxDisplayFraction = 1.0;
-//    private double[] trajectoryColor;
-//    private String trajectoryName;
-//    private String trajectoryDescription;
-//    private double trajectoryThickness;
+
+
 
     //Metadata Information
     private static final Key<StandardStateHistory> STANDARD_STATE_HISTORY_KEY = Key.of("StandardStateHistory");
@@ -99,7 +97,7 @@ public class StandardStateHistory implements StateHistory
 
     		SettableMetadata result = SettableMetadata.of(Version.of(1, 0));
     		result.put(STATEHISTORY_KEY_KEY, stateHistory.getKey());
-    		result.put(CURRENT_TIME_KEY, stateHistory.getTime());
+    		result.put(CURRENT_TIME_KEY, stateHistory.getCurrentTime());
     		result.put(START_TIME_KEY, stateHistory.getMinTime());
     		result.put(END_TIME_KEY, stateHistory.getMaxTime());
     		result.put(STATE_HISTORY_NAME_KEY, stateHistory.getTrajectoryName());
@@ -120,8 +118,8 @@ public class StandardStateHistory implements StateHistory
     public StandardStateHistory(StateHistoryKey key, Double currentTime, Double startTime, Double endTime, String name, Double[] color)
     {
     	this.key = key;
-    	this.time = currentTime;
-//    	this.setTrajectoryName(name);
+    	this.currentTime = currentTime;
+    	this.setTrajectoryName(name);
     	this.startTime = startTime;
     	this.endTime = endTime;
     	this.color = color;
@@ -138,32 +136,33 @@ public class StandardStateHistory implements StateHistory
     /**
      *
      */
-    public Double getTime()
+    public Double getCurrentTime()
     {
-        return time;
+        return currentTime;
     }
 
     /**
      *
      */
-    public void setTime(Double dt)
+    public void setCurrentTime(Double dt) throws StateHistoryInvalidTimeException
     {
         if( dt < getMinTime() || dt > getMaxTime())
         {
-            JOptionPane.showMessageDialog(null, "Entered time is outside the range of the selected interval.", "Error",
-                    JOptionPane.ERROR_MESSAGE);
-            return;
+        	throw new StateHistoryInvalidTimeException("Entered time is outside the range of the selected interval.");
+//            JOptionPane.showMessageDialog(null, "Entered time is outside the range of the selected interval.", "Error",
+//                    JOptionPane.ERROR_MESSAGE);
+//            return;
         }
-        Interval interval1 = new Interval(getMinTime().longValue(), dt.longValue());
-        Interval interval2 = new Interval(getMinTime().longValue(), getMaxTime().longValue());
+//        Interval interval1 = new Interval(getMinTime().longValue(), dt.longValue());
+//        Interval interval2 = new Interval(getMinTime().longValue(), getMaxTime().longValue());
 
-        org.joda.time.Duration duration1 = interval1.toDuration();
-        org.joda.time.Duration duration2 = interval2.toDuration();
+//        org.joda.time.Duration duration1 = interval1.toDuration();
+//        org.joda.time.Duration duration2 = interval2.toDuration();
 
-        BigDecimal num1 = new BigDecimal(duration1.getMillis());
-        BigDecimal num2 = new BigDecimal(duration2.getMillis());
-        BigDecimal tf = num1.divide(num2,50,RoundingMode.UP);
-        this.time = dt;
+//        BigDecimal num1 = new BigDecimal(duration1.getMillis());
+//        BigDecimal num2 = new BigDecimal(duration2.getMillis());
+//        BigDecimal tf = num1.divide(num2,50,RoundingMode.UP);
+        this.currentTime = dt;
 //        this.time = Double.parseDouble(tf.toString());
     }
 
@@ -173,16 +172,14 @@ public class StandardStateHistory implements StateHistory
     public Double getMinTime()
     {
     	if (startTime != null) return startTime;
-        return timeToFlybyState.firstKey();
+        return timeToStateMap.firstKey();
     }
 
-    /**
-     *
-     */
+
     public Double getMaxTime()
     {
     	if (endTime != null) return endTime;
-        return timeToFlybyState.lastKey();
+        return timeToStateMap.lastKey();
     }
 
     /**
@@ -190,9 +187,9 @@ public class StandardStateHistory implements StateHistory
      */
     public Double getTimeFraction()
     {
-        double min = getMinTime() + minDisplayFraction*(getMaxTime() - getMinTime());
-        double max = getMaxTime() - (1-maxDisplayFraction)*(getMaxTime()-getMinTime());
-        double time = getTime();
+        double min = getMinTime() + trajectory.getMinDisplayFraction()*(getMaxTime() - getMinTime());
+        double max = getMaxTime() - (1-trajectory.getMaxDisplayFraction())*(getMaxTime()-getMinTime());
+        double time = getCurrentTime();
         double result = (time - min) / (max - min);
         return result;
     }
@@ -200,85 +197,88 @@ public class StandardStateHistory implements StateHistory
     /**
      *
      */
-    public void setTimeFraction(Double timeFraction)
+    public void setTimeFraction(Double timeFraction) throws StateHistoryInvalidTimeException
     {
-        double min = getMinTime() + minDisplayFraction*(getMaxTime() - getMinTime());
-        double max = getMaxTime() - (1-maxDisplayFraction)*(getMaxTime()-getMinTime());
+        double min = getMinTime() + trajectory.getMinDisplayFraction()*(getMaxTime() - getMinTime());
+        double max = getMaxTime() - (1-trajectory.getMaxDisplayFraction())*(getMaxTime()-getMinTime());
         double time = min + timeFraction * (max - min);
-        setTime(time);
+        setCurrentTime(time);
     }
 
     /**
      *
      */
-    public void put(State flybyState)
+    public void addState(State flybyState)
     {
-        put(flybyState.getEphemerisTime(), flybyState);
+        addStateAtTime(flybyState.getEphemerisTime(), flybyState);
     }
 
     /**
      *
      */
-    public void put(Double time, State flybyState)
+    public void addStateAtTime(Double time, State flybyState)
     {
-        timeToFlybyState.put(time, flybyState);
+        timeToStateMap.put(time, flybyState);
     }
 
     /**
      *
      */
-    public Entry<Double, State> getFloorEntry(Double time)
+    public Entry<Double, State> getStateBeforeOrAtTime(Double time)
     {
-        return timeToFlybyState.floorEntry(time);
+        return timeToStateMap.floorEntry(time);
     }
 
     /**
      *
      */
-    public Entry<Double, State> getCeilingEntry(Double time)
+    public Entry<Double, State> getStateAtOrAfter(Double time)
     {
-        return timeToFlybyState.ceilingEntry(time);
+        return timeToStateMap.ceilingEntry(time);
     }
 
     /**
      *
      */
-    public State getValue(Double time)
-    {
-        // for now, just return floor
-        return getFloorEntry(time).getValue();
-    }
-
-    /**
-     *
-     */
-    public State getCurrentValue()
+    public State getStateAtTime(Double time)
     {
         // for now, just return floor
-        return getValue(getTime());
+        return getStateBeforeOrAtTime(time).getValue();
     }
 
     /**
      *
      */
-    public Double getPeriod()
+    public State getCurrentState()
+    {
+        // for now, just return floor
+        return getStateAtTime(getCurrentTime());
+    }
+
+    /**
+     *
+     */
+    public Double getTimeWindow()
     {
         return getMaxTime() - getMinTime();
     }
+
+
+    //Heavenly body position getters
 
     /**
      *
      */
     public double[] getSpacecraftPosition()
     {
-        State floor = getFloorEntry(time).getValue();
-        State ceiling = getCeilingEntry(time).getValue();
+        State floor = getStateBeforeOrAtTime(currentTime).getValue();
+        State ceiling = getStateAtOrAfter(currentTime).getValue();
         double[] floorPosition = floor.getSpacecraftPosition();
         double[] ceilingPosition = ceiling.getSpacecraftPosition();
         double floorTime = floor.getEphemerisTime();
         double ceilingTime = ceiling.getEphemerisTime();
 
-        return interpolateDouble(floorPosition, ceilingPosition, floorTime, ceilingTime, time);
+        return interpolateDouble(floorPosition, ceilingPosition, floorTime, ceilingTime, currentTime);
     }
 
     /**
@@ -286,14 +286,14 @@ public class StandardStateHistory implements StateHistory
      */
     public double[] getSunPosition()
     {
-        State floor = getFloorEntry(time).getValue();
-        State ceiling = getCeilingEntry(time).getValue();
+        State floor = getStateBeforeOrAtTime(currentTime).getValue();
+        State ceiling = getStateAtOrAfter(currentTime).getValue();
         double[] floorPosition = floor.getSunPosition();
         double[] ceilingPosition = ceiling.getSunPosition();
         double floorTime = floor.getEphemerisTime();
         double ceilingTime = ceiling.getEphemerisTime();
 
-        return interpolateDouble(floorPosition, ceilingPosition, floorTime, ceilingTime, time);
+        return interpolateDouble(floorPosition, ceilingPosition, floorTime, ceilingTime, currentTime);
     }
 
     /**
@@ -301,14 +301,14 @@ public class StandardStateHistory implements StateHistory
      */
     public double[] getEarthPosition()
     {
-        State floor = getFloorEntry(time).getValue();
-        State ceiling = getCeilingEntry(time).getValue();
+        State floor = getStateBeforeOrAtTime(currentTime).getValue();
+        State ceiling = getStateAtOrAfter(currentTime).getValue();
         double[] floorPosition = floor.getEarthPosition();
         double[] ceilingPosition = ceiling.getEarthPosition();
         double floorTime = floor.getEphemerisTime();
         double ceilingTime = ceiling.getEphemerisTime();
 
-        return interpolateDouble(floorPosition, ceilingPosition, floorTime, ceilingTime, time);
+        return interpolateDouble(floorPosition, ceilingPosition, floorTime, ceilingTime, currentTime);
     }
 
 
@@ -349,11 +349,15 @@ public class StandardStateHistory implements StateHistory
      *
      */
     @Override
-    public Set<Double> getAllKeys()
+    public Set<Double> getAllTimes()
     {
-        return timeToFlybyState.keySet();
+        return timeToStateMap.keySet();
 
     }
+
+
+
+	//Trajectory related
 
 	/**
 	 *
@@ -409,42 +413,6 @@ public class StandardStateHistory implements StateHistory
 	public void setTrajectory(Trajectory trajectory)
 	{
 		this.trajectory = trajectory;
-	}
-
-	/**
-	 *
-	 */
-	@Override
-	public double getMinDisplayFraction()
-	{
-		return minDisplayFraction;
-	}
-
-	/**
-	 *
-	 */
-	@Override
-	public void setMinDisplayFraction(double minDisplayFraction)
-	{
-		this.minDisplayFraction = minDisplayFraction;
-	}
-
-	/**
-	 *
-	 */
-	@Override
-	public double getMaxDisplayFraction()
-	{
-		return maxDisplayFraction;
-	}
-
-	/**
-	 *
-	 */
-	@Override
-	public void setMaxDisplayFraction(double maxDisplayFraction)
-	{
-		this.maxDisplayFraction = maxDisplayFraction;
 	}
 
 	@Override

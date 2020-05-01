@@ -1,4 +1,4 @@
-package edu.jhuapl.sbmt.stateHistory.ui.version2;
+package edu.jhuapl.sbmt.stateHistory.ui;
 
 import java.util.Date;
 

@@ -225,20 +225,6 @@ public class CsvState implements State
     }
 
     @Override
-    public int getImageNumber()
-    {
-        // TODO Auto-generated method stub
-        return 0;
-    }
-
-    @Override
-    public int getFrameNumber()
-    {
-        // TODO Auto-generated method stub
-        return 0;
-    }
-
-    @Override
     public double getEphemerisTime()
     {
         return ephemerisTime;
@@ -250,75 +236,103 @@ public class CsvState implements State
         return utc;
     }
 
-    @Override
-    public double getViewingAngle()
-    {
-        // TODO Auto-generated method stub
-        return 0;
-    }
-
-    @Override
-    public double getRollAngle()
-    {
-        // TODO Auto-generated method stub
-        return 0;
-    }
-
-    @Override
-    public double getSpacecraftAltitude()
-    {
-        // TODO Auto-generated method stub
-        return 0;
-    }
-
-    @Override
-    public double[] getSurfaceIntercept()
-    {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    @Override
-    public double[] getSurfaceInterceptLatLon()
-    {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    @Override
-    public double getCrossTrackPixelSpacingKm()
-    {
-        // TODO Auto-generated method stub
-        return 0;
-    }
-
-    @Override
-    public double getAlongTrackPixelSpacing()
-    {
-        // TODO Auto-generated method stub
-        return 0;
-    }
-
-    @Override
-    public double getSolarIncidenceAngle()
-    {
-        // TODO Auto-generated method stub
-        return 0;
-    }
-
-    @Override
-    public double getEmissionAngle()
-    {
-        // TODO Auto-generated method stub
-        return 0;
-    }
-
-    @Override
-    public double getLocalSolarTime()
-    {
-        // TODO Auto-generated method stub
-        return 0;
-    }
+//    @Override
+//    public int getImageNumber()
+//    {
+//        // TODO Auto-generated method stub
+//        return 0;
+//    }
+//
+//    @Override
+//    public int getFrameNumber()
+//    {
+//        // TODO Auto-generated method stub
+//        return 0;
+//    }
+//
+//    @Override
+//    public double getViewingAngle()
+//    {
+//        // TODO Auto-generated method stub
+//        return 0;
+//    }
+//
+//    @Override
+//    public double getRollAngle()
+//    {
+//        // TODO Auto-generated method stub
+//        return 0;
+//    }
+//
+//    @Override
+//    public double getSpacecraftAltitude()
+//    {
+//        // TODO Auto-generated method stub
+//        return 0;
+//    }
+//
+//    @Override
+//    public double[] getSurfaceIntercept()
+//    {
+//        // TODO Auto-generated method stub
+//        return null;
+//    }
+//
+//    @Override
+//    public double[] getSurfaceInterceptLatLon()
+//    {
+//        // TODO Auto-generated method stub
+//        return null;
+//    }
+//
+//    @Override
+//    public double getCrossTrackPixelSpacingKm()
+//    {
+//        // TODO Auto-generated method stub
+//        return 0;
+//    }
+//
+//    @Override
+//    public double getAlongTrackPixelSpacing()
+//    {
+//        // TODO Auto-generated method stub
+//        return 0;
+//    }
+//
+//    @Override
+//    public double getSolarIncidenceAngle()
+//    {
+//        // TODO Auto-generated method stub
+//        return 0;
+//    }
+//
+//    @Override
+//    public double getEmissionAngle()
+//    {
+//        // TODO Auto-generated method stub
+//        return 0;
+//    }
+//
+//    @Override
+//    public double getLocalSolarTime()
+//    {
+//        // TODO Auto-generated method stub
+//        return 0;
+//    }
+//
+//    @Override
+//    public double[] getSubSolarPointLatLon()
+//    {
+//        // TODO Auto-generated method stub
+//        return null;
+//    }
+//
+//    @Override
+//    public float getFrameScore()
+//    {
+//        // TODO Auto-generated method stub
+//        return 0;
+//    }
 
     @Override
     public double[] getSpacecraftPosition()
@@ -342,20 +356,6 @@ public class CsvState implements State
     public double[] getEarthPosition()
     {
         return earthPosition;
-    }
-
-    @Override
-    public double[] getSubSolarPointLatLon()
-    {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    @Override
-    public float getFrameScore()
-    {
-        // TODO Auto-generated method stub
-        return 0;
     }
 
     @Override

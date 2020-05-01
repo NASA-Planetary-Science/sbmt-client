@@ -18,14 +18,14 @@ import edu.jhuapl.sbmt.stateHistory.model.stateHistory.StateHistoryCollection;
 class CustomStateHistoryColorAction<G1> extends StateHistoryPopAction<G1>
 {
 	// Ref vars
-	/**
-	 *
-	 */
-	private final StateHistoryCollection refManager;
-	/**
-	 *
-	 */
-	private final Component refParent;
+//	/**
+//	 *
+//	 */
+//	private final StateHistoryCollection refManager;
+//	/**
+//	 *
+//	 */
+//	private final Component refParent;
 
 	/**
 	 * Standard Constructor
@@ -36,8 +36,8 @@ class CustomStateHistoryColorAction<G1> extends StateHistoryPopAction<G1>
 	 */
 	public CustomStateHistoryColorAction(StateHistoryCollection aManager, Component aParent)
 	{
-		refManager = aManager;
-		refParent = aParent;
+//		refManager = aManager;
+//		refParent = aParent;
 	}
 
 	/**

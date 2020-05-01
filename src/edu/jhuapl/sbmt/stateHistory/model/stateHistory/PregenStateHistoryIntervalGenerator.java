@@ -18,6 +18,7 @@ import edu.jhuapl.sbmt.stateHistory.model.interfaces.State;
 import edu.jhuapl.sbmt.stateHistory.model.interfaces.StateHistory;
 import edu.jhuapl.sbmt.stateHistory.model.interfaces.Trajectory;
 import edu.jhuapl.sbmt.stateHistory.model.io.StateHistoryInputException;
+import edu.jhuapl.sbmt.stateHistory.model.io.StateHistoryInvalidTimeException;
 import edu.jhuapl.sbmt.stateHistory.model.scState.CsvState;
 import edu.jhuapl.sbmt.stateHistory.model.trajectory.StandardTrajectory;
 
@@ -37,7 +38,7 @@ public class PregenStateHistoryIntervalGenerator implements IStateHistoryInterva
 		this.config = config;
 	}
 
-	public StateHistory createNewTimeInterval(StateHistory history, Function<Double, Void> progressFunction) throws StateHistoryInputException
+	public StateHistory createNewTimeInterval(StateHistory history, Function<Double, Void> progressFunction) throws StateHistoryInputException, StateHistoryInvalidTimeException
 	{
 		String startString = edu.jhuapl.sbmt.util.TimeUtil.et2str(history.getMinTime());
 		String endString = edu.jhuapl.sbmt.util.TimeUtil.et2str(history.getMaxTime());
@@ -45,11 +46,11 @@ public class PregenStateHistoryIntervalGenerator implements IStateHistoryInterva
 		DateTime start = formatter.parseDateTime(startString.substring(0, 23));
 		DateTime end = formatter.parseDateTime(endString.substring(0, 23));
 		return createNewTimeInterval(history, history.getKey(), start, end,
-										history.getPeriod()/(24.0 * 60.0 * 60.0 * 1000.0), history.getTrajectoryName(), progressFunction);
+										history.getTimeWindow()/(24.0 * 60.0 * 60.0 * 1000.0), history.getTrajectoryName(), progressFunction);
 	}
 
 	public StateHistory createNewTimeInterval(StateHistoryKey key, DateTime startTime, DateTime endTime, double duration,
-			String name, Function<Double, Void> progressFunction) throws StateHistoryInputException
+			String name, Function<Double, Void> progressFunction) throws StateHistoryInputException, StateHistoryInvalidTimeException
 	{
 		return createNewTimeInterval(null, key, startTime, endTime, duration, name, progressFunction);
 	}
@@ -65,7 +66,7 @@ public class PregenStateHistoryIntervalGenerator implements IStateHistoryInterva
 	 * @return 						StateHistory object if successful; null otherwise
 	 */
 	public StateHistory createNewTimeInterval(StateHistory tempHistory, StateHistoryKey key, DateTime startTime, DateTime endTime, double duration,
-			String name, Function<Double, Void> progressFunction) throws StateHistoryInputException
+			String name, Function<Double, Void> progressFunction) throws StateHistoryInputException, StateHistoryInvalidTimeException
 	{
 		StateHistory history = tempHistory;
 		File path = null;
@@ -126,14 +127,14 @@ public class PregenStateHistoryIntervalGenerator implements IStateHistoryInterva
 			State flybyState = new CsvState(i, path, position);
 
 			// add to history
-			history.put(flybyState);
+			history.addState(flybyState);
 
 			trajectory.addPositionAtTime(flybyState.getSpacecraftPosition(), flybyState.getEphemerisTime());
 
 			double completion = 100 * ((double) (i - positionStart)) / (double) (positionEnd - positionStart);
 			if (progressFunction != null) progressFunction.apply(completion);
 		}
-		history.setTime(history.getMinTime());
+		history.setCurrentTime(history.getMinTime());
 		history.setTrajectory(trajectory);
 		return history;
 	}

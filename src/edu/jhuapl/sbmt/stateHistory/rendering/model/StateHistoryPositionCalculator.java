@@ -1,15 +1,15 @@
 /**
  *
  */
-package edu.jhuapl.sbmt.stateHistory.model.stateHistory;
+package edu.jhuapl.sbmt.stateHistory.rendering.model;
 
 import vtk.vtkMatrix4x4;
 import vtk.vtkTransform;
 
 import edu.jhuapl.saavtk.util.MathUtil;
 import edu.jhuapl.sbmt.client.SmallBodyModel;
-import edu.jhuapl.sbmt.stateHistory.model.interfaces.IStateHistoryPositionCalculator;
 import edu.jhuapl.sbmt.stateHistory.model.interfaces.StateHistory;
+import edu.jhuapl.sbmt.stateHistory.model.stateHistory.RendererLookDirection;
 import edu.jhuapl.sbmt.stateHistory.rendering.SpacecraftBody;
 import edu.jhuapl.sbmt.stateHistory.rendering.directionMarkers.EarthDirectionMarker;
 import edu.jhuapl.sbmt.stateHistory.rendering.directionMarkers.SpacecraftDirectionMarker;
@@ -84,6 +84,7 @@ public class StateHistoryPositionCalculator implements IStateHistoryPositionCalc
 		MathUtil.vscl(JupiterScale, sunDirection, sunViewpoint);
 		MathUtil.vscl(-1.0, sunDirection, sunViewDirection);
 		int result = smallBodyModel.computeRayIntersection(sunViewpoint, sunViewDirection, sunMarkerPosition);
+		if (result == -1) return;
 		for (int i = 0; i < 3; i++)
 		{
 			sunMarkerMatrix.SetElement(i, 3, sunMarkerPosition[i]);
@@ -106,6 +107,7 @@ public class StateHistoryPositionCalculator implements IStateHistoryPositionCalc
 		MathUtil.vscl(JupiterScale, earthDirection, earthViewpoint);
 		MathUtil.vscl(-1.0, earthDirection, earthViewDirection);
 		int result = smallBodyModel.computeRayIntersection(earthViewpoint, earthViewDirection, earthMarkerPosition);
+		if (result == -1) return;
 		for (int i = 0; i < 3; i++)
 		{
 			earthMarkerMatrix.SetElement(i, 3, earthMarkerPosition[i]);
@@ -125,7 +127,7 @@ public class StateHistoryPositionCalculator implements IStateHistoryPositionCalc
 		vtkMatrix4x4 fovRotateXMatrix = new vtkMatrix4x4();
 		vtkMatrix4x4 fovRotateYMatrix = new vtkMatrix4x4();
 		vtkMatrix4x4 fovRotateZMatrix = new vtkMatrix4x4();
-		vtkMatrix4x4 fovScaleMatrix = new vtkMatrix4x4();
+//		vtkMatrix4x4 fovScaleMatrix = new vtkMatrix4x4();
 
 		double iconScale = 1.0;
 		// set to identity
@@ -135,9 +137,9 @@ public class StateHistoryPositionCalculator implements IStateHistoryPositionCalc
 		fovRotateXMatrix.Identity();
 		fovRotateYMatrix.Identity();
 		fovRotateZMatrix.Identity();
-		double[] xaxis = history.getCurrentValue().getSpacecraftXAxis();
-		double[] yaxis = history.getCurrentValue().getSpacecraftYAxis();
-		double[] zaxis = history.getCurrentValue().getSpacecraftZAxis();
+		double[] xaxis = history.getCurrentState().getSpacecraftXAxis();
+		double[] yaxis = history.getCurrentState().getSpacecraftYAxis();
+		double[] zaxis = history.getCurrentState().getSpacecraftZAxis();
 		// set body orientation matrix
 		for (int i = 0; i < 3; i++)
 		{
@@ -162,7 +164,7 @@ public class StateHistoryPositionCalculator implements IStateHistoryPositionCalc
 		MathUtil.vscl(-1.0, spacecraftDirection, spacecraftViewDirection);
 		int result = smallBodyModel.computeRayIntersection(spacecraftViewpoint, spacecraftViewDirection,
 				spacecraftMarkerPosition);
-
+		if (result == -1) return;
 		// rotates spacecraft pointer to point in direction of spacecraft - Alex
 		// W
 		double[] spacecraftPos = spacecraftMarkerPosition;
@@ -190,7 +192,7 @@ public class StateHistoryPositionCalculator implements IStateHistoryPositionCalc
 		spacecraft.getActor().SetUserMatrix(spacecraftIconMatrix);
 
 		spacecraftLabelActor.SetAttachmentPoint(spacecraftPosition);
-		spacecraftLabelActor.setDistanceText(history.getCurrentValue(), spacecraftPosition, smallBodyModel);
+		spacecraftLabelActor.setDistanceText(history.getCurrentState(), spacecraftPosition, smallBodyModel);
 
 		// spacecraftFovActor.SetUserMatrix(fovMatrix);
 		// spacecraftFovActor.SetUserMatrix(spacecraftBodyMatrix);

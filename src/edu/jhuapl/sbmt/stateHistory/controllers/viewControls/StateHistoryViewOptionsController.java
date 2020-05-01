@@ -1,4 +1,4 @@
-package edu.jhuapl.sbmt.stateHistory.ui.version2.viewControls;
+package edu.jhuapl.sbmt.stateHistory.controllers.viewControls;
 
 import javax.swing.DefaultComboBoxModel;
 
@@ -11,6 +11,8 @@ import edu.jhuapl.sbmt.stateHistory.model.StateHistoryModel;
 import edu.jhuapl.sbmt.stateHistory.model.interfaces.StateHistory;
 import edu.jhuapl.sbmt.stateHistory.model.stateHistory.RendererLookDirection;
 import edu.jhuapl.sbmt.stateHistory.model.stateHistory.StateHistoryCollection;
+import edu.jhuapl.sbmt.stateHistory.model.viewOptions.StateHistoryViewOptionsModel;
+import edu.jhuapl.sbmt.stateHistory.ui.version2.viewControls.StateHistoryViewOptionsPanel;
 
 import glum.item.ItemEventType;
 
@@ -20,11 +22,9 @@ public class StateHistoryViewOptionsController
 	private StateHistoryViewOptionsModel model;
 	private Renderer renderer;
 	private StateHistoryCollection runs;
-	private StateHistoryModel historyModel;
 
 	public StateHistoryViewOptionsController(StateHistoryModel historyModel, Renderer renderer)
 	{
-		this.historyModel = historyModel;
 		this.runs = historyModel.getRuns();
 		this.renderer = renderer;
 		initializeViewControlPanel();
