@@ -41,7 +41,6 @@ import edu.jhuapl.sbmt.spectrum.model.io.SpectrumInstrumentMetadataIO;
 import edu.jhuapl.sbmt.spectrum.model.statistics.SpectrumStatistics;
 import edu.jhuapl.sbmt.spectrum.model.statistics.SpectrumStatistics.Sample;
 import edu.jhuapl.sbmt.spectrum.rendering.AdvancedSpectrumRenderer;
-import edu.jhuapl.sbmt.tools.Authenticator;
 
 /**
  * Generate an input file for the Spectrum hypertree search.  This will be a file
@@ -60,7 +59,7 @@ public class SpectrumBoundsCalculator
         SbmtMultiMissionTool.configureMission();
 
         // need password to access OREX data
-        Authenticator.authenticate();
+        Configuration.authenticate();
 
         SmallBodyViewConfig.initialize();
 

@@ -1,13 +1,13 @@
 package edu.jhuapl.sbmt.tools;
 
-import edu.jhuapl.saavtk.model.ModelNames;
+import edu.jhuapl.saavtk.gui.render.QuietSceneChangeNotifier;
 import edu.jhuapl.saavtk.model.ShapeModelBody;
 import edu.jhuapl.saavtk.model.ShapeModelType;
 import edu.jhuapl.saavtk.util.NativeLibraryLoader;
 import edu.jhuapl.sbmt.client.SbmtModelFactory;
 import edu.jhuapl.sbmt.client.SmallBodyModel;
 import edu.jhuapl.sbmt.client.SmallBodyViewConfig;
-import edu.jhuapl.sbmt.model.lidar.LidarTrackManager;
+import edu.jhuapl.sbmt.lidar.LidarTrackManager;
 
 /**
  * This program takes a lidar track, fits a plane through it and reorients the track into
@@ -41,8 +41,7 @@ public class ReprojectLidarTrackToFittedPlane
 
         SmallBodyViewConfig config = SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.EROS, ShapeModelType.GASKELL);
         SmallBodyModel smallBodyModel = SbmtModelFactory.createSmallBodyModel(config);
-        LidarTrackManager trackManager = (LidarTrackManager) SbmtModelFactory.
-                createLidarModels(smallBodyModel).get(ModelNames.LIDAR_SEARCH);
+        LidarTrackManager trackManager = new LidarTrackManager(QuietSceneChangeNotifier.Instance, smallBodyModel);
 
 //        try
 //        {

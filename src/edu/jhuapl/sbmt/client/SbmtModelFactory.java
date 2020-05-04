@@ -1,14 +1,11 @@
 package edu.jhuapl.sbmt.client;
 
 import java.io.IOException;
-import java.util.HashMap;
 
 import org.joda.time.DateTime;
 
 import edu.jhuapl.saavtk.gui.render.Renderer;
 import edu.jhuapl.saavtk.model.Graticule;
-import edu.jhuapl.saavtk.model.Model;
-import edu.jhuapl.saavtk.model.ModelNames;
 import edu.jhuapl.saavtk.model.ShapeModelBody;
 import edu.jhuapl.saavtk.model.ShapeModelType;
 import edu.jhuapl.sbmt.dtm.model.DEM;
@@ -44,8 +41,6 @@ import edu.jhuapl.sbmt.model.image.marsmissions.MarsMissionImage;
 import edu.jhuapl.sbmt.model.itokawa.AmicaImage;
 import edu.jhuapl.sbmt.model.itokawa.Itokawa;
 import edu.jhuapl.sbmt.model.leisa.LEISAJupiterImage;
-import edu.jhuapl.sbmt.model.lidar.LidarFileSpecManager;
-import edu.jhuapl.sbmt.model.lidar.LidarTrackManager;
 import edu.jhuapl.sbmt.model.lorri.LorriImage;
 import edu.jhuapl.sbmt.model.mathilde.MSIMathildeImage;
 import edu.jhuapl.sbmt.model.mvic.MVICQuadJupiterImage;
@@ -253,11 +248,6 @@ public class SbmtModelFactory
 
     static public SmallBodyModel createSmallBodyModel(SmallBodyViewConfig config)
     {
-        if (!config.isAccessible())
-        {
-            throw new RuntimeException("Unable to access data for model " + config.getUniqueName());
-        }
-
         SmallBodyModel result = null;
         ShapeModelBody name = config.body;
         ShapeModelType author = config.author;
@@ -394,35 +384,6 @@ public class SbmtModelFactory
 //        models.put(ModelNames.SPECTRA, new SpectraCollection(smallBodyModel));
 //        return models;
 //    }
-
-    static public HashMap<ModelNames, Model> createLidarModels(SmallBodyModel smallBodyModel)
-    {
-        HashMap<ModelNames, Model> models = new HashMap<ModelNames, Model>();
-
-        models.put(ModelNames.LIDAR_BROWSE, new LidarFileSpecManager(smallBodyModel));
-        models.put(ModelNames.LIDAR_SEARCH, new LidarTrackManager(smallBodyModel));
-        if (smallBodyModel.getSmallBodyConfig().hasHypertreeLidarSearch())
-        {
-            switch (smallBodyModel.getSmallBodyConfig().getLidarInstrument())
-            {
-            case MOLA:
-                models.put(ModelNames.LIDAR_HYPERTREE_SEARCH, new LidarTrackManager(smallBodyModel));
-                break;
-            case OLA:
-                models.put(ModelNames.LIDAR_HYPERTREE_SEARCH, new LidarTrackManager(smallBodyModel));
-                break;
-            case LASER:
-                models.put(ModelNames.LIDAR_HYPERTREE_SEARCH, new LidarTrackManager(smallBodyModel));
-                break;
-                default:
-                	throw new AssertionError();
-            }
-
-
-        }
-
-        return models;
-    }
 
     static public DEM createDEM(
             DEMKey key,

@@ -34,7 +34,6 @@ import edu.jhuapl.sbmt.spectrum.model.core.BasicSpectrumInstrument;
 import edu.jhuapl.sbmt.spectrum.model.core.SpectraTypeFactory;
 import edu.jhuapl.sbmt.spectrum.model.core.SpectrumInstrumentFactory;
 import edu.jhuapl.sbmt.spectrum.model.io.SpectrumInstrumentMetadataIO;
-import edu.jhuapl.sbmt.tools.Authenticator;
 import edu.jhuapl.sbmt.tools.DBRunInfo;
 
 import crucible.crust.metadata.api.Key;
@@ -69,7 +68,7 @@ public class SmallBodyViewConfigMetadataIO implements MetadataManager
         SettableMetadata allBodiesMetadata = SettableMetadata.of(Version.of(metadataVersion));
         Configuration.setAPLVersion(true);
         SbmtMultiMissionTool.configureMission();
-        Authenticator.authenticate();
+        Configuration.authenticate();
         SmallBodyViewConfig.initializeWithStaticConfigs();
         for (ViewConfig each: SmallBodyViewConfig.getBuiltInConfigs())
         {

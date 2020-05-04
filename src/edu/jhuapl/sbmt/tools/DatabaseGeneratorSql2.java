@@ -566,7 +566,7 @@ public class DatabaseGeneratorSql2
         SbmtMultiMissionTool.configureMission();
 
         // authentication
-        Authenticator.authenticate();
+        Configuration.authenticate();
 
         // initialize view config
         SmallBodyViewConfig.initialize();

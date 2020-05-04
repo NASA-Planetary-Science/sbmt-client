@@ -74,7 +74,7 @@ public class SpectralImagingSearchController implements Controller<ImageSearchMo
         this.imageCubeController = new SpectralImageCubeController(imageSearchModel, cubeModel, infoPanelManager, imageCubePopupMenu, spectrumPanelManager, renderer);
 
         ColorImageModel colorModel = new ColorImageModel();
-        this.colorImageController = new ColorImageController(imageSearchModel, colorModel, infoPanelManager);
+        this.colorImageController = new ColorImageController(imageSearchModel, colorModel, infoPanelManager, renderer);
 
         this.model = imageSearchModel;
         this.panel = new ImagingSearchPanel();

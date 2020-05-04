@@ -625,7 +625,7 @@ public class DatabaseGeneratorSql
         Configuration.setRootURL(rootURL);
 
         // authentication
-        Authenticator.authenticate();
+        Configuration.authenticate();
 
         // initialize view config
         SmallBodyViewConfig.fromServer = true;

@@ -161,7 +161,7 @@ public class SbmtTestRunnable implements Runnable
 		else
 		{
 			System.out.println("\nUsing server at " + Configuration.getDataRootURL());
-			if (Configuration.wasUserPasswordAccepted())
+            if (Configuration.getAuthorizor().isValidCredentialsLoaded())
 			{
 				System.out.println("\nValid user name and password entered. Access may be granted to some restricted models.");
 			}
