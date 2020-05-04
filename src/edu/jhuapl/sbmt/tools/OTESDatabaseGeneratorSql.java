@@ -133,8 +133,8 @@ public class OTESDatabaseGeneratorSql
 		int count = 0;
 		for (String filename : otesFiles)
 		{
-			System.out.println("Processing OTES index:" + count + "  filename: " + filename);
-			if (count % 100 == 0)
+//			System.out.println("Processing OTES index:" + count + "  filename: " + filename);
+			if (count % 50 == 0)
 				logger.log(Level.INFO,
 						"Processing OTES index:" + count + "of " + otesFiles.size() + ", filename: " + filename);
 			String dayOfYearStr = "";
@@ -210,9 +210,9 @@ public class OTESDatabaseGeneratorSql
 				otesInsert.setDouble(11, otesSpectrumRenderer.getMinRange());
 				otesInsert.setString(12, filenamePlusParent);
 				// otesInsert.setShort(12, otesSpectrum.getPolygonTypeFlag());
-				logger.log(Level.INFO, "insert statement for spectra populated");
+//				logger.log(Level.INFO, "insert statement for spectra populated");
 				otesInsert.executeUpdate();
-				logger.log(Level.INFO, "insert statement updated completed");
+//				logger.log(Level.INFO, "insert statement updated completed");
 				ResultSet rs = otesInsert.getGeneratedKeys();
 				rs.next();
 				populateOTESCubeTableForFile(modelName, dataType, otesSpectrumRenderer, rs.getInt(1));
@@ -236,7 +236,7 @@ public class OTESDatabaseGeneratorSql
 			footprintPolyData = new vtkPolyData();
 		footprintPolyData.DeepCopy(otesSpectrumRenderer.getShiftedFootprint());
 		footprintPolyData.ComputeBounds();
-		logger.log(Level.INFO, "Footprint bounds calculated");
+//		logger.log(Level.INFO, "Footprint bounds calculated");
 
 		// Logger logger = Logger.getAnonymousLogger();
 		// logger.log(Level.INFO, "Finding cube paths");
@@ -268,7 +268,7 @@ public class OTESDatabaseGeneratorSql
 		// }
 
 		TreeSet<Integer> cubeIds = bodyModel.getIntersectingCubes(footprintPolyData);
-		logger.log(Level.INFO, "Intersected cubes calculated");
+//		logger.log(Level.INFO, "Intersected cubes calculated");
 
 		// System.out.println("cubeIds: " + cubeIds);
 		// System.out.println("number of cubes: " + cubeIds.size());
@@ -298,8 +298,9 @@ public class OTESDatabaseGeneratorSql
 
 		}
 		otesSpectrumRenderer.Delete();
-		System.out.println("deleted " + vtkObject.JAVA_OBJECT_MANAGER.gc(true));
-		logger.log(Level.INFO, "Done inserting cube rows");
+		vtkObject.JAVA_OBJECT_MANAGER.gc(true);
+//		System.out.println("deleted " + vtkObject.JAVA_OBJECT_MANAGER.gc(true));
+//		logger.log(Level.INFO, "Done inserting cube rows");
 
 		// System.out.println(" ");
 		// System.out.println(" ");
