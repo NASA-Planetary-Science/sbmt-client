@@ -54,6 +54,8 @@ public class OTESDatabaseGeneratorSql
 
     static private OTES otes=new OTES();
 
+    static Logger logger = Logger.getAnonymousLogger();
+
     private static void createOTESTables(String modelName, String dataType, boolean appendTables)
     {
     	String tableName = modelName + "_" + OTESSpectraTable + "_" + dataType;
@@ -141,7 +143,8 @@ public class OTESDatabaseGeneratorSql
         for (String filename : otesFiles)
         {
             System.out.println("Processing OTES index:" + count + "  filename: " + filename);
-
+            if (count % 100 == 0)
+            	logger.log(Level.INFO, "Processing OTES index:" + count + "of " + otesFiles.size() + ", filename: " + filename);
             String dayOfYearStr = "";
             String yearStr = "";
             String name = filename.substring(filename.lastIndexOf("/")+1);
@@ -213,8 +216,9 @@ public class OTESDatabaseGeneratorSql
 				otesInsert.setDouble(11, otesSpectrumRenderer.getMinRange());
 				otesInsert.setString(12, filenamePlusParent);
 				// otesInsert.setShort(12, otesSpectrum.getPolygonTypeFlag());
-
+				logger.log(Level.INFO, "insert statement for spectra populated");
 				otesInsert.executeUpdate();
+				logger.log(Level.INFO, "insert statement updated completed");
 				ResultSet rs = otesInsert.getGeneratedKeys();
 				rs.next();
 	            populateOTESCubeTableForFile(modelName, dataType, otesSpectrumRenderer, rs.getInt(1));
@@ -228,12 +232,15 @@ public class OTESDatabaseGeneratorSql
 
     private static void populateOTESCubeTableForFile(String modelName, String dataType, IBasicSpectrumRenderer<OTESSpectrum> otesSpectrumRenderer, int spectrumIndex) throws SQLException, IOException
     {
+		 logger.log(Level.INFO, "Populating cube table for " + spectrumIndex);
+
     	 String tableName = modelName + "_" + OTESCubesTable + "_" + dataType;
 
          if (footprintPolyData == null)
              footprintPolyData = new vtkPolyData();
          footprintPolyData.DeepCopy(otesSpectrumRenderer.getShiftedFootprint());
          footprintPolyData.ComputeBounds();
+		 logger.log(Level.INFO, "Footprint bounds calculated");
 
 //         Logger logger = Logger.getAnonymousLogger();
 //         logger.log(Level.INFO, "Finding cube paths");
@@ -263,6 +270,8 @@ public class OTESDatabaseGeneratorSql
 //         }
 
          TreeSet<Integer> cubeIds = bodyModel.getIntersectingCubes(footprintPolyData);
+		 logger.log(Level.INFO, "Intersected cubes calculated");
+
 //       System.out.println("cubeIds:  " + cubeIds);
 //         System.out.println("number of cubes: " + cubeIds.size());
 //       System.out.println("id: " + count);
@@ -277,9 +286,13 @@ public class OTESDatabaseGeneratorSql
 	           otesInsert2.setInt(2, i);
 	           otesInsert2.executeUpdate();
 	       }
+		   logger.log(Level.INFO, "All cube rows inserted");
+
          }
          otesSpectrumRenderer.Delete();
          System.out.println("deleted " + vtkObject.JAVA_OBJECT_MANAGER.gc(true));
+		 logger.log(Level.INFO, "Done inserting cube rows");
+
 //         System.out.println(" ");
 //         System.out.println(" ");
     }
@@ -368,6 +381,8 @@ public class OTESDatabaseGeneratorSql
      */
     public static void main(String[] args) throws IOException
     {
+
+    	logger.log(Level.INFO, "Starting main method");
         final SafeURLPaths safeUrlPaths = SafeURLPaths.instance();
         // default configuration parameters
         boolean aplVersion = true;
@@ -460,7 +475,7 @@ public class OTESDatabaseGeneratorSql
                 break;
             }
         }
-
+        logger.log(Level.INFO, "Parsed arguments, initializing body model");
         SmallBodyViewConfig config = null;
         if (versionString != null)
         	config = SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.valueOf(bodyName), ShapeModelType.provide(authorName), versionString);
@@ -468,7 +483,7 @@ public class OTESDatabaseGeneratorSql
         	config = SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.valueOf(bodyName), ShapeModelType.provide(authorName));
 
         bodyModel = SbmtModelFactory.createSmallBodyModel(config);
-
+        logger.log(Level.INFO, "Body Model initialized");
         OREXSpectraFactory.initializeModels(bodyModel);
 
         String otesFileList = rootURL + File.separator + "data/bennu/shared/otes/" + dataType + "/spectrumlist.txt";
@@ -491,6 +506,9 @@ public class OTESDatabaseGeneratorSql
             e2.printStackTrace();
             return;
         }
+        logger.log(Level.INFO, "Filename list built, number of entries " + (endIndex-startIndex));
+
+
         String modelName = "bennu_" + authorName.toLowerCase().replace("-", "");
 
         if (writeToDB == true)
@@ -507,7 +525,7 @@ public class OTESDatabaseGeneratorSql
         	createOTESTables(modelName, dataType, appendTables);
         	createOTESTablesCubes(modelName, dataType, appendTables);
         }
-
+        logger.log(Level.INFO, "Database tables created.  ");
         try
 		{
 			populateOTESTables(modelName, dataType, updatedFilenames);
