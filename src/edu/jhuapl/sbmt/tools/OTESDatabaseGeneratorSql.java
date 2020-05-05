@@ -161,6 +161,10 @@ public class OTESDatabaseGeneratorSql
 			IBasicSpectrumRenderer<OTESSpectrum> otesSpectrumRenderer = SbmtSpectrumModelFactory
 					.createSpectrumRenderer(filename, otes, true);
 			otesSpectrumRenderer.generateFootprint();
+
+			//if no intersection took place, skip this loop
+			if (otesSpectrumRenderer.getShiftedFootprint() == null) continue;
+
 			DateTime midtime = new DateTime(new DateTime(date).toString(), DateTimeZone.UTC);
 			String filenamePlusParent = filename.substring(filename.lastIndexOf("otes/") + 5);
 
@@ -392,6 +396,7 @@ public class OTESDatabaseGeneratorSql
 	 * @param args
 	 * @throws IOException
 	 */
+
 	public static void main(String[] args) throws IOException
 	{
 
@@ -563,183 +568,202 @@ public class OTESDatabaseGeneratorSql
 		}
 	}
 
-	// LOCAL VERSION
-	// /**
-	// * @param args
-	// * @throws IOException
-	// */
-	// public static void main(String[] args) throws IOException
-	// {
-	// final SafeURLPaths safeUrlPaths = SafeURLPaths.instance();
-	// // default configuration parameters
-	// boolean aplVersion = true;
-	//// String rootURL =
-	// safeUrlPaths.getUrl("/disks/d0180/htdocs-sbmt/internal/sbmt");
-	// String rootURL =
-	// safeUrlPaths.getUrl("http://sbmt.jhuapl.edu/sbmt/prod/");
-	//
-	// // Important: set the mission before changing things in the
-	// Configuration. Otherwise,
-	// // setting the mission will undo those changes.
-	// SbmtMultiMissionTool.configureMission();
-	//
-	// // basic default configuration, most of these will be overwritten by the
-	// configureMission() method
-	// Configuration.setAPLVersion(aplVersion);
-	// Configuration.setRootURL(rootURL);
-	//
-	// // authentication
-	// Authenticator.authenticate();
-	//
-	// // initialize view config
-	// SmallBodyViewConfig.fromServer = true;
-	//
-	// SmallBodyViewConfig.initialize();
-	//
-	// System.setProperty("java.awt.headless", "true");
-	// NativeLibraryLoader.loadVtkLibraries();
-	//
-	// boolean appendTables = false;
-	// boolean modifyMain = false;
-	// boolean remote = false;
-	// String bodyName="";
-	// String authorName="";
-	// String versionString = null;
-	// String diffFileList = null;
-	// String dataType = null;
-	// int startIndex = 0;
-	// int endIndex = 0;
-	//
-	// int i = 0;
-	// for (; i < args.length; ++i)
-	// {
-	// if (args[i].equals("--root-url"))
-	// {
-	// rootURL = safeUrlPaths.getUrl(args[++i]);
-	// }
-	// else if (args[i].equals("--append-tables"))
-	// {
-	// appendTables = true;
-	// }
-	// else if (args[i].equals("--modify-main"))
-	// {
-	// modifyMain = true;
-	// }
-	// else if (args[i].equals("--debug"))
-	// {
-	// Debug.setEnabled(true);
-	// FileCache.enableDebug(true);
-	// }
-	// else if (args[i].equals("--remote"))
-	// {
-	// remote = true;
-	// }
-	// else if (args[i].equals("--body"))
-	// {
-	// bodyName = args[++i];
-	// }
-	// else if (args[i].equals("--author"))
-	// {
-	// authorName = args[++i];
-	// }
-	// else if (args[i].equals("--version"))
-	// {
-	// versionString = args[++i];
-	// }
-	// else if (args[i].equals("--dataType"))
-	// {
-	// dataType = args[++i];
-	// }
-	// else if (args[i].equals("--diffList"))
-	// {
-	// diffFileList = args[++i];
-	// }
-	// else if (args[i].equals("--startIndex"))
-	// {
-	// startIndex = Integer.parseInt(args[++i]);
-	// }
-	// else if (args[i].equals("--endIndex"))
-	// {
-	// endIndex = Integer.parseInt(args[++i]);
-	// }
-	// else {
-	// // We've encountered something that is not an option, must be at the args
-	// break;
-	// }
-	// }
-	//
-	// SmallBodyViewConfig config = null;
-	// if (versionString != null)
-	// config =
-	// SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.valueOf(bodyName),
-	// ShapeModelType.provide(authorName), versionString);
-	// else
-	// config =
-	// SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.valueOf(bodyName),
-	// ShapeModelType.provide(authorName));
-	//
-	// bodyModel = SbmtModelFactory.createSmallBodyModel(config);
-	//
-	// OREXSpectraFactory.initializeModels(bodyModel);
-	//
-	// String otesFileList = rootURL + File.separator +
-	// "data/bennu/shared/otes/" + dataType + "/spectrumlist.txt";
-	// File otesFileFromServer = FileCache.getFileFromServer(otesFileList);
-	//
-	// List<String> otesFiles = null;
-	// List<String> updatedFilenames = new ArrayList<String>();
-	// try {
-	//// otesFiles =
-	// FileUtil.getFileLinesAsStringList(otesFileList.substring(5));
-	// otesFiles =
-	// FileUtil.getFileLinesAsStringList(otesFileFromServer.getAbsolutePath());
-	//
-	//// for (String otesFile : otesFiles)
-	// if (endIndex > otesFiles.size()) endIndex = otesFiles.size();
-	// for (int j=startIndex; j<endIndex; j++)
-	// {
-	// String otesFile = otesFiles.get(j);
-	//// String actualName = (rootURL + File.separator +
-	// "data/bennu/shared/otes/" + dataType + "/spectra/" + otesFile.split("
-	// ")[0]);
-	// String actualName = (/*rootURL + File.separator +
-	// "data/*/"bennu/shared/otes/" + dataType + "/spectra/" + otesFile.split("
-	// ")[0]);
-	//
-	// updatedFilenames.add(actualName);
-	// }
-	// }
-	// catch (IOException e2) {
-	// e2.printStackTrace();
-	// return;
-	// }
-	//
-	// try
-	// {
-	// db = new SqlManager(null);
-	// }
-	// catch (Exception ex1) {
-	//// ex1.printStackTrace();
-	//// return;
-	// }
-	//
-	// String modelName = "bennu_" + authorName.toLowerCase().replace("-", "");
-	// createOTESTables(modelName, dataType, appendTables);
-	// createOTESTablesCubes(modelName, dataType, appendTables);
-	//
-	// try
-	// {
-	// populateOTESTables(modelName, dataType, updatedFilenames);
-	//// populateOTESTablesCubes(otesFiles);
-	// if (db != null)
-	// db.shutdown();
-	//
-	// }
-	// catch (SQLException | IOException e1)
-	// {
-	// // TODO Auto-generated catch block
-	// e1.printStackTrace();
-	// }
-	// }
 
+//	 LOCAL VERSION
+	 /**
+	 * @param args
+	 * @throws IOException
+	 */
+	/*
+	 public static void main(String[] args) throws IOException
+	 {
+		 final SafeURLPaths safeUrlPaths = SafeURLPaths.instance();
+		 // default configuration parameters
+		 boolean aplVersion = true;
+		 String rootURL = safeUrlPaths.getUrl("http://sbmt.jhuapl.edu/sbmt/prod/");
+
+		 // Important: set the mission before changing things in thecConfiguration. Otherwise,
+		 // setting the mission will undo those changes.
+		 SbmtMultiMissionTool.configureMission();
+
+		 // basic default configuration, most of these will be overwritten by the configureMission() method
+		 Configuration.setAPLVersion(aplVersion);
+		 Configuration.setRootURL(rootURL);
+
+		 // authentication
+		 Authenticator.authenticate();
+
+		 // initialize view config
+		 SmallBodyViewConfig.fromServer = true;
+
+		 SmallBodyViewConfig.initialize();
+
+		 System.setProperty("java.awt.headless", "true");
+		 NativeLibraryLoader.loadVtkLibraries();
+
+		 boolean appendTables = false;
+		 boolean modifyMain = false;
+		 boolean remote = false;
+		 String bodyName="";
+		 String authorName="";
+		 String versionString = null;
+		 String diffFileList = null;
+		 String dataType = null;
+		 int startIndex = 0;
+		 int endIndex = 0;
+
+		 int i = 0;
+		 for (; i < args.length; ++i)
+		 {
+			 if (args[i].equals("--root-url"))
+			 {
+				 rootURL = safeUrlPaths.getUrl(args[++i]);
+			 }
+			 else if (args[i].equals("--append-tables"))
+			 {
+				 appendTables = true;
+			 }
+			 else if (args[i].equals("--modify-main"))
+			 {
+				 modifyMain = true;
+			 }
+			 else if (args[i].equals("--debug"))
+			 {
+				 Debug.setEnabled(true);
+				 FileCache.enableDebug(true);
+			 }
+			 else if (args[i].equals("--remote"))
+			 {
+				 remote = true;
+			 }
+			 else if (args[i].equals("--body"))
+			 {
+				 bodyName = args[++i];
+			 }
+			 else if (args[i].equals("--author"))
+			 {
+				 authorName = args[++i];
+			 }
+			 else if (args[i].equals("--version"))
+			 {
+				 versionString = args[++i];
+			 }
+			 else if (args[i].equals("--dataType"))
+			 {
+				 dataType = args[++i];
+			 }
+			 else if (args[i].equals("--diffList"))
+			 {
+				 diffFileList = args[++i];
+			 }
+			 else if (args[i].equals("--startIndex"))
+			 {
+				 startIndex = Integer.parseInt(args[++i]);
+			 }
+			 else if (args[i].equals("--endIndex"))
+			 {
+				 endIndex = Integer.parseInt(args[++i]);
+			 }
+			 else {
+				 // We've encountered something that is not an option, must be at the args
+				 break;
+			 }
+		 }
+
+		 SmallBodyViewConfig config = null;
+		 if (versionString != null)
+			 config =
+			 SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.valueOf(bodyName),
+			 ShapeModelType.provide(authorName), versionString);
+		 else
+			 config =
+			 SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.valueOf(bodyName),
+			 ShapeModelType.provide(authorName));
+
+		 bodyModel = SbmtModelFactory.createSmallBodyModel(config);
+
+		 OREXSpectraFactory.initializeModels(bodyModel);
+
+		 String otesFileList = rootURL + File.separator +
+		 "data/bennu/shared/otes/" + dataType + "/spectrumlist.txt";
+		 File otesFileFromServer = FileCache.getFileFromServer(otesFileList);
+
+		 List<String> otesFiles = null;
+		 List<String> updatedFilenames = new ArrayList<String>();
+		 try {
+			 otesFiles =FileUtil.getFileLinesAsStringList(otesFileFromServer.getAbsolutePath());
+
+			// for (String otesFile : otesFiles)
+			 if (endIndex > otesFiles.size()) endIndex = otesFiles.size();
+			 for (int j=startIndex; j<endIndex; j++)
+			 {
+				 String otesFile = otesFiles.get(j);
+				 String actualName = ("bennu/shared/otes/" + dataType + "/spectra/" + otesFile.split(" ")[0]);
+
+				 updatedFilenames.add(actualName);
+			 }
+		 }
+		 catch (IOException e2) {
+			 e2.printStackTrace();
+			 return;
+		 }
+		 String modelName = "bennu_" + authorName.toLowerCase().replace("-", "");
+		 if (writeToDB == true)
+		 {
+			try
+			{
+				db = new SqlManager(null);
+			}
+			catch (Exception ex1)
+			{
+				ex1.printStackTrace();
+				return;
+			}
+
+			createOTESTables(modelName, dataType, appendTables);
+			createOTESTablesCubes(modelName, dataType, appendTables);
+		 }
+		 logger.log(Level.INFO, "Database tables created.  ");
+		 try
+		 {
+			populateOTESTables(modelName, dataType, updatedFilenames);
+			if (writeToDB == true)
+				db.shutdown();
+
+		 }
+		 catch (SQLException | IOException e1)
+		 {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		 }
+
+
+
+//		 try
+//		 {
+//			 db = new SqlManager(null);
+//		 }
+//		 catch (Exception ex1) {
+//			// ex1.printStackTrace();
+//			// return;
+//		 }
+//
+//	 	String modelName = "bennu_" + authorName.toLowerCase().replace("-", "");
+//	 	createOTESTables(modelName, dataType, appendTables);
+//	 	createOTESTablesCubes(modelName, dataType, appendTables);
+//
+//		 try
+//		 {
+//			 populateOTESTables(modelName, dataType, updatedFilenames);
+//			 if (db != null)
+//			 db.shutdown();
+//
+//		 }
+//		 catch (SQLException | IOException e1)
+//		 {
+//			 // TODO Auto-generated catch block
+//			 e1.printStackTrace();
+//		 }
+	 }
+*/
 }
