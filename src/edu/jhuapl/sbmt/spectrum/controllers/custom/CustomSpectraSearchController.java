@@ -29,6 +29,8 @@ import edu.jhuapl.sbmt.spectrum.rendering.SpectraCollection;
 import edu.jhuapl.sbmt.spectrum.rendering.SpectrumBoundaryCollection;
 import edu.jhuapl.sbmt.spectrum.ui.search.SpectrumSearchPanel;
 
+import glum.item.ItemEventType;
+
 /**
  * Controller class for the Custom Search UI.  In charge of starting up the appropriate models and sub panels required for the UI.
  * @author steelrj1
@@ -157,6 +159,17 @@ public class CustomSpectraSearchController<S extends BasicSpectrum>
 
 			}
         });
+
+		spectrumCollection.addListener((aSource, aEventType) ->
+		{
+			if (aEventType == ItemEventType.ItemsSelected)
+			{
+				if (spectrumCollection.getSelectedItems() == null || searchParametersController == null) return;
+				int selectedCount = spectrumCollection.getSelectedItems().size();
+				searchParametersController.getPanel().getEditButton().setEnabled(selectedCount != 0);
+				searchParametersController.getPanel().getDeleteButton().setEnabled(selectedCount != 0);
+			}
+		});
         this.spectrumResultsTableController.setSpectrumResultsPanel();
 
         this.searchParametersController = new CustomSpectraControlController<S>(spectrumSearchModel, spectraSpec);
