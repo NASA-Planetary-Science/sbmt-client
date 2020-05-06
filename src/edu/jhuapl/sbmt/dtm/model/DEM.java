@@ -27,7 +27,7 @@ import vtk.vtkPolyDataNormals;
 import vtk.vtkProp;
 import vtk.vtksbCellLocator;
 
-import edu.jhuapl.saavtk.gui.render.camera.CameraUtil;
+import edu.jhuapl.saavtk.camera.CameraUtil;
 import edu.jhuapl.saavtk.util.MathUtil;
 import edu.jhuapl.saavtk.util.PolyDataUtil;
 import edu.jhuapl.saavtk.util.ProgressListener;
