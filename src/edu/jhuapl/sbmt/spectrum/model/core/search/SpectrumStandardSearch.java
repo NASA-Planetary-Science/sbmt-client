@@ -11,7 +11,7 @@ import javax.swing.tree.TreePath;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 
-import com.google.common.collect.Ranges;
+import com.google.common.collect.Range;
 
 import edu.jhuapl.sbmt.client.SbmtSpectrumModelFactory;
 import edu.jhuapl.sbmt.core.listeners.SearchProgressListener;
@@ -131,11 +131,11 @@ public class SpectrumStandardSearch<S extends BasicSpectrum>
                 else
                 {
                     SpectraDatabaseSearchMetadata searchMetadata = SpectraDatabaseSearchMetadata.of("", startDateJoda, endDateJoda,
-                            Ranges.closed(searchParameters.getMinDistanceQuery(), searchParameters.getMaxDistanceQuery()),
+                            Range.closed(searchParameters.getMinDistanceQuery(), searchParameters.getMaxDistanceQuery()),
                             searchParameters.getSearchByFilename(), searchParameters.getPolygonTypesChecked(),
-                            Ranges.closed(searchParameters.getMinIncidenceQuery(), searchParameters.getMaxIncidenceQuery()),
-                            Ranges.closed(searchParameters.getMinEmissionQuery(), searchParameters.getMaxEmissionQuery()),
-                            Ranges.closed(searchParameters.getMinPhaseQuery(), searchParameters.getMaxPhaseQuery()),
+                            Range.closed(searchParameters.getMinIncidenceQuery(), searchParameters.getMaxIncidenceQuery()),
+                            Range.closed(searchParameters.getMinEmissionQuery(), searchParameters.getMaxEmissionQuery()),
+                            Range.closed(searchParameters.getMinPhaseQuery(), searchParameters.getMaxPhaseQuery()),
                             cubeList);
                     DatabaseQueryBase query = (DatabaseQueryBase)queryType;
                     progressListener.searchIndeterminate();

@@ -439,24 +439,46 @@ public class ImageResultsTableController
         {
             try
             {
+            	List<List<String>> fixedList = null;
                 SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS");
                 sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
-
+                List<String> namesOnly = new ArrayList<String>();
                 List<List<String>> results = new ArrayList<List<String>>();
                 List<String> lines = FileUtil.getFileLinesAsStringList(file.getAbsolutePath());
+                System.out.println("ImageResultsTableController: loadImageListButtonActionPerformed: lines size " + lines.size());
+
                 for (int i = 0; i < lines.size(); ++i)
                 {
                     if (lines.get(i).startsWith("#"))
                         continue;
                     String[] words = lines.get(i).trim().split("\\s+");
+                    ImageSource imageSource = ImageSource.valueFor(words[2].replace("_", " "));
+                    if (fixedList == null) { fixedList = imageSearchModel.getFixedList(imageSource); System.out.println("ImageResultsTableController: loadImageListButtonActionPerformed: first entry " + fixedList.get(fixedList.size()-1).get(0));}
+//                    System.out.println("ImageResultsTableController: loadImageListButtonActionPerformed: words 0 " + words[0]);
                     List<String> result = new ArrayList<String>();
                     String name = instrument.searchQuery.getDataPath() + "/" + words[0];
                     result.add(name);
                     Date dt = sdf.parse(words[1]);
                     result.add(String.valueOf(dt.getTime()));
                     results.add(result);
-                    imageSearchModel.setImageSourceOfLastQuery(ImageSource.valueFor(words[2].replace("_", " ")));
+                    imageSearchModel.setImageSourceOfLastQuery(imageSource);
                 }
+
+                for (List<String> fixedEntry : fixedList)
+                {
+                    namesOnly.add(fixedEntry.get(0).substring(fixedEntry.get(0).lastIndexOf("/")+1));
+                }
+//                fixedList.retainAll(results);
+                results.removeIf(entry -> {
+
+                	return !namesOnly.contains(entry.get(0).substring(entry.get(0).lastIndexOf("/")+1));
+                });
+
+                if (!((lines.size()-1) == results.size()))
+                {
+                    JOptionPane.showMessageDialog(JOptionPane.getFrameForComponent(imageResultsTableView), "Only some of the images in the file had pointing for this model;\n images without pointing (count: " + (lines.size() - results.size() - 1)  + ") have been ignored", "Warning", JOptionPane.ERROR_MESSAGE);
+                }
+
 
                 //TODO needed?
                 imageSearchModel.setImageResults(new ArrayList<List<String>>());

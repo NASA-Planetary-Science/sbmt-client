@@ -42,7 +42,7 @@ public class SpectrumResultsTableController<S extends BasicSpectrum>
     protected BasicSpectrumInstrument instrument;
     protected SpectrumStringRenderer stringRenderer;
     protected SpectraCollection<S> spectrumCollection;
-    protected SpectrumPopupMenu spectrumPopupMenu;
+    protected SpectrumPopupMenu<S> spectrumPopupMenu;
     protected SpectrumBoundaryCollection<S> boundaries;
     private SpectrumSearchResultsListener<S> tableResultsChangedListener;
     private ProgressMonitor progressMonitor;
@@ -59,8 +59,7 @@ public class SpectrumResultsTableController<S extends BasicSpectrum>
      */
     public SpectrumResultsTableController(BasicSpectrumInstrument instrument, SpectraCollection<S> spectrumCollection, ModelManager modelManager, SpectrumBoundaryCollection<S> boundaries, BaseSpectrumSearchModel<S> model, Renderer renderer, SbmtInfoWindowManager infoPanelManager)
     {
-        spectrumPopupMenu = new SpectrumPopupMenu(spectrumCollection, boundaries, modelManager,infoPanelManager, renderer);
-        spectrumPopupMenu.setInstrument(instrument);
+        spectrumPopupMenu = new SpectrumPopupMenu<S>(spectrumCollection, boundaries, modelManager,infoPanelManager, renderer);
         this.spectrumCollection = spectrumCollection;
 
         this.spectrumCollection.setActiveInstrument(instrument);
@@ -184,8 +183,31 @@ public class SpectrumResultsTableController<S extends BasicSpectrum>
          {
     		 File file = CustomFileChooser.showOpenDialog(null, "Select File");
     	     if (file == null) return;
-    	     model.clearSpectraFromDisplay();
-             model.loadSpectrumListFromFile(file);
+
+    	     if (model.getSpectrumRawResults().size() > 0)
+    	     {
+				Object[] options =
+				{ "Append", "Overwrite" };
+				int n = JOptionPane.showOptionDialog(getPanel(), "Spectra currently exist; append to this list, or overwrite?", "Append/Overwrite",
+						JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE, null,
+						options, // the titles of buttons
+						options[0]); // default button title
+
+				if (n == 0) //append
+				{
+					model.loadSpectrumListFromFile(file, true);
+				}
+				else	//overwrite
+				{
+		    	     model.clearSpectraFromDisplay();
+		             model.loadSpectrumListFromFile(file, false);
+				}
+    	     }
+    	     else
+    	     {
+    	    	 model.clearSpectraFromDisplay();
+	             model.loadSpectrumListFromFile(file, false);
+    	     }
          }
          catch (SpectrumIOException e)
          {

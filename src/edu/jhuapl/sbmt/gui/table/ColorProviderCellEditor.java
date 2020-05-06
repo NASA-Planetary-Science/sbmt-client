@@ -10,8 +10,8 @@ import javax.swing.SwingUtilities;
 import javax.swing.table.TableCellEditor;
 
 import edu.jhuapl.saavtk.gui.dialog.ColorChooser;
-import edu.jhuapl.sbmt.gui.lidar.color.ColorProvider;
-import edu.jhuapl.sbmt.gui.lidar.color.ConstColorProvider;
+import edu.jhuapl.sbmt.lidar.gui.color.ColorProvider;
+import edu.jhuapl.sbmt.lidar.gui.color.ConstColorProvider;
 
 /**
  * {@link TableCellEditor} used to edit colors for a table cell where the data

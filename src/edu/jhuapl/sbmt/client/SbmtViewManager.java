@@ -3,6 +3,7 @@ package edu.jhuapl.sbmt.client;
 import java.awt.Frame;
 import java.io.File;
 import java.io.IOException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.Iterator;
@@ -23,6 +24,9 @@ import com.google.common.collect.Sets;
 
 import edu.jhuapl.saavtk.gui.Console;
 import edu.jhuapl.saavtk.gui.RecentlyViewed;
+import edu.jhuapl.saavtk.gui.ShapeModelImporter;
+import edu.jhuapl.saavtk.gui.ShapeModelImporter.FormatType;
+import edu.jhuapl.saavtk.gui.ShapeModelImporter.ShapeModelType;
 import edu.jhuapl.saavtk.gui.StatusBar;
 import edu.jhuapl.saavtk.gui.View;
 import edu.jhuapl.saavtk.gui.ViewManager;
@@ -47,6 +51,10 @@ public class SbmtViewManager extends ViewManager
     // Flag indicating preference to add a separator in a menu.
     private static final String SEPARATOR = LABEL_PREFIX + "---";
 
+    private static boolean failsafeModelInitialized = false;
+
+    private static String failsafeModelName = null;
+
     // These are similar but distinct from SMALL_BODY_LIST/SMALL_BODY_LOOKUP.
     // This list contains all menu entries, each of which may refer to a View/ViewConfig,
     // or a simple text string/label, or a marker for a separator. Only ViewConfig objects
@@ -63,6 +71,8 @@ public class SbmtViewManager extends ViewManager
 
     private List<String> registeredConfigURLs = new ArrayList<String>();
 
+    private String defaultModelName;
+
     public SbmtViewManager(StatusBar statusBar, Frame frame, String tempCustomShapeModelPath)
     {
         super(statusBar, frame, tempCustomShapeModelPath);
@@ -70,6 +80,109 @@ public class SbmtViewManager extends ViewManager
         this.configMap = Maps.newHashMap();
         this.stateManager = TrackedMetadataManager.of("ViewManager");
         setupViews(); // Must be called before this view manager is used.
+    }
+
+    /**
+     * This implementation uses the default model name provided by
+     * {@link SmallBodyViewConfig#getDefaultModelName()} to set the initial default
+     * model, but this may be changed by calling
+     * {@link #setDefaultModelName(String)}.
+     */
+    @Override
+    public String getDefaultModelName()
+    {
+        if (defaultModelName == null)
+        {
+            defaultModelName = SmallBodyViewConfig.getDefaultModelName();
+        }
+
+        return defaultModelName;
+    }
+
+    /**
+     * Set the current default model name. Note this affects only the running tool,
+     * not the persistent model name saved on disk.
+     */
+    @Override
+    public void setDefaultModelName(String modelName)
+    {
+        this.defaultModelName = modelName;
+    }
+
+    /**
+     * Make the current default model persistent so that it will be used for the
+     * default model next time the tool is run. This implementation uses using
+     * {@link SmallBodyViewConfig#setDefaultModelName(String).
+     */
+    @Override
+    public void saveDefaultModelName()
+    {
+        SmallBodyViewConfig.setDefaultModelName(defaultModelName);
+    }
+
+    /**
+     * Revert the default model name which will be used the next time the tool
+     * starts. This implementation uses
+     * {@link SmallBodyViewConfig#resetDefaultModelName()}.
+     */
+    @Override
+    public void resetDefaultModelName()
+    {
+        SmallBodyViewConfig.resetDefaultModelName();
+        this.defaultModelName = SmallBodyViewConfig.getDefaultModelName();
+    }
+
+    /**
+     * Returns the name of a failsafe built-in model of Eros that is equivalent to
+     * the Eros/Gaskell 2008 low resolution body model, but without any plate
+     * colorings, images, spectra etc. This model will be used only in the case
+     * where a first-time user starts without internet access.
+     * <p>
+     * The first time this is called, it will attempt to create the model using
+     * resources found by the class loader. If the resources are not found, or if
+     * model creation fails for any other reason, it will not be attempted again.
+     * Instead, the basic model name returned will be null whenever this method is
+     * called.
+     * <p>
+     * The model created will be treated as if it were created by the user as a
+     * custom model.
+     */
+    @Override
+    protected String provideBasicModel()
+    {
+        if (!failsafeModelInitialized)
+        {
+            failsafeModelInitialized = true;
+
+            URL failsafeModelURL = getClass().getResource("/edu/jhuapl/sbmt/data/Eros_ver64q.vtk");
+
+            if (failsafeModelURL != null)
+            {
+                String modelName = "Eros-Gaskell-2008";
+
+                ShapeModelImporter importer = new ShapeModelImporter();
+
+                importer.setShapeModelType(ShapeModelType.FILE);
+                importer.setName(modelName);
+                importer.setFormat(FormatType.VTK);
+                importer.setModelPath(failsafeModelURL.getFile());
+
+                String[] errorMessage = new String[1];
+
+                boolean result = importer.importShapeModel(errorMessage, false);
+
+                if (result)
+                {
+                    failsafeModelName = modelName;
+                }
+                else
+                {
+                    System.err.println(errorMessage[0]);
+                }
+            }
+        }
+
+        return failsafeModelName;
     }
 
     @Override

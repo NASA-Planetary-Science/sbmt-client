@@ -41,7 +41,7 @@ import edu.jhuapl.saavtk.util.DownloadableFileState;
 import edu.jhuapl.saavtk.util.FileCache;
 import edu.jhuapl.saavtk.util.FileUtil;
 import edu.jhuapl.saavtk.util.SafeURLPaths;
-import edu.jhuapl.saavtk.util.UrlInfo.UrlStatus;
+import edu.jhuapl.saavtk.util.UnauthorizedAccessException;
 
 import crucible.crust.metadata.api.Key;
 import crucible.crust.metadata.api.Metadata;
@@ -159,22 +159,20 @@ public abstract class QueryBase implements Cloneable, MetadataManager, IQueryBas
 
     protected boolean checkAuthorizedAccess()
     {
-        DownloadableFileState state = FileCache.instance().query(getDataPath(), false);
-
-        if (state.isAccessible())
+        try
         {
-            return true;
+            return FileCache.isFileGettable(getDataPath());
         }
-        else if (state.isUrlUnauthorized())
+        catch (UnauthorizedAccessException e)
         {
             JOptionPane.showMessageDialog(null,
-                    "You are not authorized to access this data.",
+                    "You are not authorized to access these data.",
                     "Warning",
                     JOptionPane.WARNING_MESSAGE);
+            return false;
         }
-
-        return false;
     }
+
     protected String constructUrlArguments(HashMap<String, String> args)
     {
         String str = "";
@@ -218,15 +216,24 @@ public abstract class QueryBase implements Cloneable, MetadataManager, IQueryBas
         return results;
     }
 
-    protected List<List<String>> getResultsFromFileListOnServer(
+    public List<List<String>> getResultsFromFileListOnServer(
             String pathToFileListOnServer,
             String pathToImageFolderOnServer,
             String pathToGalleryFolderOnServer)
     {
+    	return getResultsFromFileListOnServer(pathToFileListOnServer, pathToImageFolderOnServer, pathToGalleryFolderOnServer, true);
+    }
+
+    public List<List<String>> getResultsFromFileListOnServer(
+            String pathToFileListOnServer,
+            String pathToImageFolderOnServer,
+            String pathToGalleryFolderOnServer,
+            boolean showFixedListPrompt)
+    {
     	DownloadableFileState state = FileCache.refreshStateInfo(pathToFileListOnServer);
-    	if (state.getUrlState().getStatus() != UrlStatus.ACCESSIBLE)
+    	if (!state.isAccessible())
     	{
-    		return getCachedResults(getDataPath());
+    		return getCachedResults(getDataPath(), null);
     	}
 
         if (!pathToImageFolderOnServer.endsWith("/"))
@@ -251,7 +258,7 @@ public abstract class QueryBase implements Cloneable, MetadataManager, IQueryBas
 
 
         // Let user know that search uses fixed list and ignores search parameters
-        if (!Boolean.parseBoolean(System.getProperty("java.awt.headless")))
+        if (!Boolean.parseBoolean(System.getProperty("java.awt.headless")) && showFixedListPrompt)
         	JOptionPane.showMessageDialog(null,
                 "Search uses a fixed list and ignores all but file name search parameters.",
                 "Notification",
@@ -414,7 +421,8 @@ public abstract class QueryBase implements Cloneable, MetadataManager, IQueryBas
      * @return the image list
      */
     protected List<List<String>> getCachedResults(
-            String pathToDataFolder
+            String pathToDataFolder,
+            String searchString
             )
     {
         if (headless  == false)
@@ -434,14 +442,29 @@ public abstract class QueryBase implements Cloneable, MetadataManager, IQueryBas
             filesFound.put(path, file);
         }
 
-        final List<List<String>> result = new ArrayList<>();
+        final List<List<String>> results = new ArrayList<>();
         SortedMap<String, List<String>> inventory = getDataInventory();
         for (Entry<String, List<String>> each: inventory.entrySet())
         {
             if (filesFound.containsKey(each.getKey()))
-                result.add(each.getValue());
+                results.add(each.getValue());
         }
-        return result;
+        if (searchString != null && !searchString.isEmpty())
+        {
+            searchString = wildcardToPathRegex(searchString);
+            List<List<String>> unfilteredResults = results;
+            List<List<String>> filteredResults = new ArrayList<>();
+            for (List<String> result : unfilteredResults)
+            {
+                String name = result.get(0);
+                if (name.matches(searchString))
+                {
+                    filteredResults.add(result);
+                }
+            }
+            return filteredResults;
+        }
+        return results;
     }
 
     /**

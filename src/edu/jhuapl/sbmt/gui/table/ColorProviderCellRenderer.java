@@ -9,7 +9,7 @@ import javax.swing.JTable;
 import javax.swing.border.Border;
 import javax.swing.table.DefaultTableCellRenderer;
 
-import edu.jhuapl.sbmt.gui.lidar.color.ColorProvider;
+import edu.jhuapl.sbmt.lidar.gui.color.ColorProvider;
 
 /**
  * Class that used to display a filled color rectangle for a table cell where

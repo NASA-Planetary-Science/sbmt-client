@@ -84,7 +84,7 @@ public class CustomImageController
         ImageCubePopupMenu imageCubePopupMenu = new ImageCubePopupMenu(imageCubeCollection, imageBoundaryCollection, infoPanelManager, spectrumPanelManager, renderer, getPanel());
         this.imageCubeController = new SpectralImageCubeController(customImageModel, customCubeModel, infoPanelManager, imageCubePopupMenu, spectrumPanelManager, renderer);
         CustomColorImageModel colorModel = new CustomColorImageModel();
-        this.colorImageController = new ColorImageController(customImageModel, colorModel, infoPanelManager);
+        this.colorImageController = new ColorImageController(customImageModel, colorModel, infoPanelManager, renderer);
 
         init();
     }
