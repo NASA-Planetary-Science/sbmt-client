@@ -166,7 +166,7 @@ public class CustomSpectraSearchController<S extends BasicSpectrum>
 			{
 				if (spectrumCollection.getSelectedItems() == null || searchParametersController == null) return;
 				int selectedCount = spectrumCollection.getSelectedItems().size();
-				searchParametersController.getPanel().getEditButton().setEnabled(selectedCount != 0);
+				searchParametersController.getPanel().getEditButton().setEnabled(selectedCount == 1);
 				searchParametersController.getPanel().getDeleteButton().setEnabled(selectedCount != 0);
 			}
 		});
