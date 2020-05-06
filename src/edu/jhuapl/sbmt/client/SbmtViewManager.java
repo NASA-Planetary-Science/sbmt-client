@@ -3,7 +3,6 @@ package edu.jhuapl.sbmt.client;
 import java.awt.Frame;
 import java.io.File;
 import java.io.IOException;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.Iterator;
@@ -33,6 +32,9 @@ import edu.jhuapl.saavtk.gui.ViewManager;
 import edu.jhuapl.saavtk.gui.menu.FavoritesMenu;
 import edu.jhuapl.saavtk.gui.menu.FileMenu;
 import edu.jhuapl.saavtk.model.ShapeModelBody;
+import edu.jhuapl.saavtk.util.Configuration;
+import edu.jhuapl.saavtk.util.ConvertResourceToFile;
+import edu.jhuapl.saavtk.util.SafeURLPaths;
 
 import crucible.crust.metadata.api.Key;
 import crucible.crust.metadata.api.Metadata;
@@ -154,9 +156,10 @@ public class SbmtViewManager extends ViewManager
         {
             failsafeModelInitialized = true;
 
-            URL failsafeModelURL = getClass().getResource("/edu/jhuapl/sbmt/data/Eros_ver64q.vtk");
+            String failsafeParent = SafeURLPaths.instance().getString(Configuration.getApplicationDataDir(), "failsafeErosModel");
+            File failsafeModel = ConvertResourceToFile.convertResourceToRealFile(this, "/edu/jhuapl/sbmt/data/Eros_ver64q.vtk", failsafeParent);
 
-            if (failsafeModelURL != null)
+            if (failsafeModel != null && failsafeModel.exists())
             {
                 String modelName = "Eros-Gaskell-2008";
 
@@ -165,7 +168,7 @@ public class SbmtViewManager extends ViewManager
                 importer.setShapeModelType(ShapeModelType.FILE);
                 importer.setName(modelName);
                 importer.setFormat(FormatType.VTK);
-                importer.setModelPath(failsafeModelURL.getFile());
+                importer.setModelPath(failsafeModel.getPath());
 
                 String[] errorMessage = new String[1];
 
