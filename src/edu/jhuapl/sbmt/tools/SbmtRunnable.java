@@ -162,6 +162,7 @@ public class SbmtRunnable implements Runnable
         {
             System.out.println("Tool started in file cache debug mode; diagnostic output related to file caching/accessibility is enabled.");
         }
+        System.out.println("\nUsing server at " + Configuration.getDataRootURL());
 		if (!FileCache.instance().isServerAccessEnabled())
 		{
 			System.out.println("\nTool started in offline mode; skipping password authentication.");
@@ -169,8 +170,7 @@ public class SbmtRunnable implements Runnable
 		}
 		else
 		{
-			System.out.println("\nUsing server at " + Configuration.getDataRootURL());
-			if (Configuration.wasUserPasswordAccepted())
+			if (Configuration.getAuthorizor().isValidCredentialsLoaded())
 			{
 				System.out.println("\nValid user name and password entered. Access may be granted to some restricted models.");
 			}
@@ -180,6 +180,8 @@ public class SbmtRunnable implements Runnable
 				System.out.println("You may update your user name and pasword on the Body -> Update Password menu.");
 			}
 		}
+		System.out.println("\nStoring application data in " + Configuration.getApplicationDataDir());
+
 		if (Console.isConfigured())
 		{
 			System.out.println("\nThis is the SBMT console. You can show or hide it on the Console menu.");
