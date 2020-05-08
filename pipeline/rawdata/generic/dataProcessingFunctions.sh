@@ -10,7 +10,9 @@
 # Check the exit status of a previous command, which is passed as the first
 # argument. If it's non-0, print an optional context messsage if present,
 # and then call exit from within the invoking shell, passing along the
-# provided status. 
+# provided status.
+#
+# Because this exits and does not run in a sub-shell, use cautiously.
 check() {
   if test "$1" = ""; then
     echo "check: first argument is blank" >&2
@@ -101,11 +103,11 @@ guessRawDataParentDir() {
 }
 
 # Create a directory if it doesn't already exist.
-createDirIfNecessary() {
+createDir() {
   (
     dir=$1
     if test "x$dir" = x; then
-      echo "createDirIfNecessary: missing/blank directory argument." >&2
+      echo "createDir: missing/blank directory argument." >&2
       exit 1
     fi
 
@@ -113,7 +115,7 @@ createDirIfNecessary() {
       echo mkdir -p $dir
       mkdir -p $dir
       if test $? -ne 0; then
-        echo "createDirIfNecessary: unable to create directory $dir." >&2
+        echo "createDir: unable to create directory $dir." >&2
         exit 1
       fi
     fi
@@ -162,7 +164,7 @@ doRsyncDir() {
       echo "Destination $dest exists but is unexpectedly not a directory." >&2
       exit 1
     fi
-    createDirIfNecessary $dest
+    createDir $dest
     doRsync $src $dest
   )
   if test $? -ne 0; then exit 1; fi
@@ -285,7 +287,7 @@ moveDirectory() {
       fi
 
       destParent=`echo $dest | sed 's:/[^/][^/]*/*$::'`
-      createDirIfNecessary $destParent
+      createDir $destParent
       if test $? -ne 0; then exit 1; fi
 
       echo "mv $src $dest"
@@ -322,7 +324,7 @@ moveFile() {
       fi
 
       destParent=`echo $dest | sed 's:/[^/][^/]*/*$::'`
-      createDirIfNecessary $destParent
+      createDir $destParent
       if test $? -ne 0; then exit 1; fi
 
       echo "mv $src $dest"
@@ -340,7 +342,7 @@ moveFile() {
   if test $? -ne 0; then exit 1; fi
 }
 
-checkoutCodeIfNecessary() {
+checkoutCode() {
   if test "$sbmtCodeTop" = ""; then
     echo "Missing location of top of source code tree" >&2
     exit 1
@@ -352,7 +354,7 @@ checkoutCodeIfNecessary() {
     exit 1
   fi
 
-  createDirIfNecessary "$sbmtCodeTop"
+  createDir "$sbmtCodeTop"
 
   markerFile="$sbmtCodeTop/git-succeeded.txt"
   if test ! -f $markerFile;  then
@@ -381,7 +383,7 @@ checkoutCodeIfNecessary() {
   fi
 }
 
-buildCodeIfNecessary() {
+buildCode() {
   if test "$sbmtCodeTop" = ""; then
     echo "Missing location of top of source code tree" >&2
     exit 1
@@ -477,7 +479,7 @@ doGzipDir() {
   if test $? -ne 0; then exit 1; fi
 }
 
-doGzipDirIfNecessary() {
+doGzipOptionalDir() {
   (
     dir=$1
     if test "x$dir" = x; then
@@ -498,7 +500,7 @@ doGzipDirIfNecessary() {
 # rest are copied if present and skipped otherwise
 # without an error. 
 copyStandardModelFiles() {
-  createDirIfNecessary $destTop
+  createDir $destTop
   check $?
 
   # Require a manifest file. Do not comment this out.
@@ -530,4 +532,31 @@ discoverPlateColorings() {
   else
     echo "File(s) coloring*.smd exist -- skipping generation of plate coloring metadata"
   fi
+}
+
+# Create INFO files from SPICE kernels.
+createInfoFiles() {
+  metakernel=$1
+  target=$2
+  spacecraft=$3
+  instrument=$4
+  sclockKeyword=$5
+  src=$6
+  dest=$7
+  
+  createInfoFiles="$sbmtCodeTop/sbmt/misc/spice/create_info_files"
+  if test ! -f $createInfoFiles; then
+    (cd $sbmtCodeTop/sbmt/misc/spice; check $?; ./compile.sh)
+    check $?
+  fi
+
+  # metakernel full path
+  # target body (frame) name
+  # spacecraft name
+  # instrument instrument frame ID
+  # sclockKeyword keyword used for SCLOCK identified in each input FITS image file
+  # imageList full path to a file containing a list of paths to each image.
+  # dest full path to output directory to hold INFO files
+  # infoList full path to output file containing list of all INFO files in the destination directory. 
+  $createInfoFiles $metakernel $target $spacecraft $instrument $sclockKeyword $imageList $dest $infoList 2>&1 > create_info_files.txt
 }
