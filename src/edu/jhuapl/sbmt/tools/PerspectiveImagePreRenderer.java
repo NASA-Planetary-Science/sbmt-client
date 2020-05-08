@@ -19,8 +19,8 @@ import edu.jhuapl.saavtk.model.ShapeModelBody;
 import edu.jhuapl.saavtk.model.ShapeModelType;
 import edu.jhuapl.saavtk.util.Configuration;
 import edu.jhuapl.saavtk.util.FileCache;
-import edu.jhuapl.saavtk.util.FileCache.NonexistentRemoteFile;
 import edu.jhuapl.saavtk.util.NativeLibraryLoader;
+import edu.jhuapl.saavtk.util.NonexistentRemoteFile;
 import edu.jhuapl.saavtk.util.SafeURLPaths;
 import edu.jhuapl.sbmt.client.SbmtModelFactory;
 import edu.jhuapl.sbmt.client.SbmtMultiMissionTool;
@@ -151,7 +151,7 @@ public class PerspectiveImagePreRenderer
         SbmtMultiMissionTool.configureMission();
 
         // authentication
-        Authenticator.authenticate();
+        Configuration.authenticate();
 
         // initialize view config
         SmallBodyViewConfig.initialize();

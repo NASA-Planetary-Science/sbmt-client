@@ -476,19 +476,35 @@ public class CustomSpectraSearchModel<S extends BasicSpectrum> extends BaseSpect
      * @throws Exception
      */
     @Override
-    public void loadSpectrumListFromFile(File file) throws SpectrumIOException
+    public void loadSpectrumListFromFile(File file, boolean append) throws SpectrumIOException
     {
     	Preconditions.checkNotNull(customDataFolder);
     	List<CustomSpectrumKeyInterface> oldKeys = new ArrayList<CustomSpectrumKeyInterface>(customSpectraKeys);
-    	SpectrumListIO.loadCustomSpectrumListButtonActionPerformed(file, customSpectraKeys, instrument, new Runnable()
+    	SpectrumListIO.loadCustomSpectrumListButtonActionPerformed(file, append, customSpectraKeys, instrument, new Runnable()
 		{
 			@Override
 			public void run()
 			{
-				deleteSpectraFromList(oldKeys);
-				updateConfigFile();
-				fireResultsChanged();
-				setResultIntervalCurrentlyShown(new IdPair(0, getNumberOfBoundariesToShow()));
+				if (append == false)
+				{
+					deleteSpectraFromList(oldKeys);
+					updateConfigFile();
+					fireResultsChanged();
+					setResultIntervalCurrentlyShown(new IdPair(0, getNumberOfBoundariesToShow()));
+				}
+				else
+				{
+					updateConfigFile();
+					for (CustomSpectrumKeyInterface key : customSpectraKeys)
+					{
+						if (!oldKeys.contains(key))
+						{
+							fireResultAdded(key);
+						}
+					}
+					setResultIntervalCurrentlyShown(new IdPair(0, getNumberOfBoundariesToShow()));
+
+				}
 			}
 		});
     }

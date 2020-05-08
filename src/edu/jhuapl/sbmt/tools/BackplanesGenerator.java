@@ -387,7 +387,7 @@ public class BackplanesGenerator
         SmallBodyViewConfig.initialize();
         System.setProperty("java.awt.headless", "true");
         NativeLibraryLoader.loadHeadlessVtkLibraries();
-        Authenticator.authenticate();
+        Configuration.authenticate();
 
         // Parse parameters to create SBMT classes.
         try
