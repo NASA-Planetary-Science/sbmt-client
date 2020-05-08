@@ -381,11 +381,14 @@ public class OVIRSDatabaseGeneratorSql
 		List<String> updatedFilenames = new ArrayList<String>();
 		try
 		{
-			ovirsFiles = FileUtil.getFileLinesAsStringList(ovirsFileList.substring(5));
 			if (localRun == true)
 			{
 				File ovirsFileFromServer = FileCache.getFileFromServer(ovirsFileList);
 				ovirsFiles = FileUtil.getFileLinesAsStringList(ovirsFileFromServer.getAbsolutePath());
+			}
+			else
+			{
+				ovirsFiles = FileUtil.getFileLinesAsStringList(ovirsFileList.substring(5));
 			}
 
 			if (endIndex > ovirsFiles.size())

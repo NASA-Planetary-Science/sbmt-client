@@ -9,7 +9,6 @@ import java.beans.PropertyChangeListener;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.TreeSet;
-import java.util.Vector;
 
 import javax.swing.JFormattedTextField;
 import javax.swing.JOptionPane;
@@ -61,7 +60,6 @@ public class SpectrumSearchParametersController<S extends BasicSpectrum>
     private SpectrumSearchParametersModel searchParameters;
     private ProgressMonitor searchProgressMonitor;
     private TreeSet<Integer> cubeList = null;
-    private Vector<String> pathList = null;
     private boolean isFixedListSearch = false;
 
     /**
@@ -281,21 +279,17 @@ public class SpectrumSearchParametersController<S extends BasicSpectrum>
                         vtkPolyData interiorPoly = new vtkPolyData();
                         bodyModel.drawRegularPolygonLowRes(region.getCenter().toArray(), region.getRadius(), numberOfSides, interiorPoly, null);
                         cubeList = bodyModel.getIntersectingCubes(interiorPoly);
-                        pathList = bodyModel.getIntersectingRCubes(interiorPoly);
                     }
                     else
                     {
                         cubeList = bodyModel.getIntersectingCubes(selectionModel.getVtkInteriorPolyDataFor(region));
-                        pathList = bodyModel.getIntersectingRCubes(selectionModel.getVtkInteriorPolyDataFor(region));
                     }
+//                    bodyModel.setCubeVisibility(cubeList);
                 }
                 else
                 {
                 	cubeList = null;
-                	pathList = null;
                 }
-                System.out.println(
-						"SpectrumSearchParametersController.setupSearchParametersPanel().new ActionListener() {...}: actionPerformed: path list is " + pathList);
 
                 SwingWorker<Void, Void> searchTask = new SwingWorker<Void, Void>()
 				{
@@ -305,7 +299,7 @@ public class SpectrumSearchParametersController<S extends BasicSpectrum>
 					{
 						try
 						{
-							model.performSearch(searchParameters, cubeList, pathList, hasHierarchicalSpectraSearch, spectraSpec, model.getSelectedPath(), new SearchProgressListener()
+							model.performSearch(searchParameters, cubeList, hasHierarchicalSpectraSearch, spectraSpec, model.getSelectedPath(), new SearchProgressListener()
 							{
 								@Override
 								public void searchStarted()

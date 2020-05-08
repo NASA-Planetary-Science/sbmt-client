@@ -193,14 +193,14 @@ public class BaseSpectrumSearchModel<S extends BasicSpectrum> implements ISpectr
      * @param selectedPath
      * @param progressListener
      */
-    public void performSearch(SpectrumSearchParametersModel searchParameters, TreeSet<Integer> cubeList, Vector<String> pathList,
+    public void performSearch(SpectrumSearchParametersModel searchParameters, TreeSet<Integer> cubeList,
     							boolean hasHierarchicalSpectraSearch, SpectraHierarchicalSearchSpecification<?> hierarchicalSpectraSearchSpecification,
     							TreePath[] selectedPath, SearchProgressListener progressListener) throws SpectrumIOException
     {
         results.clear();
         SpectraHierarchicalSearchSpecification spectraSpec = null;
         if (hasHierarchicalSpectraSearch) {	spectraSpec = hierarchicalSpectraSearchSpecification.clone(); }
-        setSpectrumRawResults(new SpectrumStandardSearch(searchParameters, hasHierarchicalSpectraSearch, spectraSpec).search(instrument, cubeList, pathList, selectedPath, progressListener));
+        setSpectrumRawResults(new SpectrumStandardSearch(searchParameters, hasHierarchicalSpectraSearch, spectraSpec).search(instrument, cubeList, selectedPath, progressListener));
     }
 
     /**

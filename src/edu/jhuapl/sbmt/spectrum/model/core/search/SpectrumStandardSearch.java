@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.GregorianCalendar;
 import java.util.List;
 import java.util.TreeSet;
-import java.util.Vector;
 
 import javax.swing.tree.TreeModel;
 import javax.swing.tree.TreePath;
@@ -46,7 +45,7 @@ public class SpectrumStandardSearch<S extends BasicSpectrum>
 		this.spectraSpec = searchSpec;
 	}
 
-	public List<S> search(BasicSpectrumInstrument instrument, TreeSet<Integer> cubeList, Vector<String> pathList, TreePath[] selectedPaths, SearchProgressListener progressListener) throws SpectrumIOException
+	public List<S> search(BasicSpectrumInstrument instrument, TreeSet<Integer> cubeList, TreePath[] selectedPaths, SearchProgressListener progressListener) throws SpectrumIOException
 	{
 		List<S> tempResults = null;
         try
@@ -138,7 +137,7 @@ public class SpectrumStandardSearch<S extends BasicSpectrum>
                             Range.closed(searchParameters.getMinIncidenceQuery(), searchParameters.getMaxIncidenceQuery()),
                             Range.closed(searchParameters.getMinEmissionQuery(), searchParameters.getMaxEmissionQuery()),
                             Range.closed(searchParameters.getMinPhaseQuery(), searchParameters.getMaxPhaseQuery()),
-                            cubeList, pathList, searchParameters.getModelName(), searchParameters.getDataType());
+                            cubeList, searchParameters.getModelName(), searchParameters.getDataType());
                     DatabaseQueryBase query = (DatabaseQueryBase)queryType;
                     progressListener.searchIndeterminate();
                     tempResults = query.runQuery(searchMetadata).getResultlist();

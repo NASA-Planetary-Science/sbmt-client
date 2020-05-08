@@ -19,6 +19,7 @@ import org.joda.time.DateTimeZone;
 
 import vtk.vtkObject;
 import vtk.vtkPolyData;
+import vtk.vtkPolyDataWriter;
 
 import edu.jhuapl.saavtk.model.ShapeModelBody;
 import edu.jhuapl.saavtk.model.ShapeModelType;
@@ -381,11 +382,15 @@ public class OTESDatabaseGeneratorSql
 		List<String> updatedFilenames = new ArrayList<String>();
 		try
 		{
-			otesFiles = FileUtil.getFileLinesAsStringList(otesFileList.substring(5));
+
 			if (localRun == true)
 			{
 				File otesFileFromServer = FileCache.getFileFromServer(otesFileList);
 				otesFiles = FileUtil.getFileLinesAsStringList(otesFileFromServer.getAbsolutePath());
+			}
+			else
+			{
+				otesFiles = FileUtil.getFileLinesAsStringList(otesFileList.substring(5));
 			}
 
 			if (endIndex > otesFiles.size())
