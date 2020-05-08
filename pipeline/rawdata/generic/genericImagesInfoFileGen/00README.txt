@@ -1,0 +1,2 @@
+This directory was imported from the DMZ directory /project/sbmt2/sbmt/scripts/genericImagesInfoFileGen in the state
+it was in on 2020-05-08. It was subsequently the basis for the createInfoFiles directory.
