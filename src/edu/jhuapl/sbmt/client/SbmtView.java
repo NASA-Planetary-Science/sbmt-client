@@ -728,7 +728,10 @@ public class SbmtView extends View implements PropertyChangeListener
 		PickUtil.installDefaultPickHandler(tmpPickManager, getStatusBar(), getRenderer(), getModelManager());
 		setPickManager(tmpPickManager);
 
-		// Manually register the PopupManager with the PickManager
+		// Manually register the Renderer with the DefaultPicker
+		tmpPickManager.getDefaultPicker().addListener(getRenderer());
+
+		// Manually register the PopupManager with the DefaultPicker
 		tmpPickManager.getDefaultPicker().addListener(getPopupManager());
 
 		// TODO: This should be moved out of here to a logical relevant location

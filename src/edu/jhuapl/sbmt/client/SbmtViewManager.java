@@ -11,6 +11,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.SortedSet;
 
+import javax.swing.JCheckBoxMenuItem;
+import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.JSeparator;
@@ -22,6 +24,8 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 
+import edu.jhuapl.saavtk.camera.gui.CameraQuaternionAction;
+import edu.jhuapl.saavtk.camera.gui.CameraRegularAction;
 import edu.jhuapl.saavtk.gui.Console;
 import edu.jhuapl.saavtk.gui.RecentlyViewed;
 import edu.jhuapl.saavtk.gui.ShapeModelImporter;
@@ -30,9 +34,12 @@ import edu.jhuapl.saavtk.gui.ShapeModelImporter.ShapeModelType;
 import edu.jhuapl.saavtk.gui.StatusBar;
 import edu.jhuapl.saavtk.gui.View;
 import edu.jhuapl.saavtk.gui.ViewManager;
+import edu.jhuapl.saavtk.gui.menu.EnableLODsAction;
 import edu.jhuapl.saavtk.gui.menu.FavoritesMenu;
 import edu.jhuapl.saavtk.gui.menu.FileMenu;
+import edu.jhuapl.saavtk.gui.menu.PickToleranceAction;
 import edu.jhuapl.saavtk.model.ShapeModelBody;
+import edu.jhuapl.saavtk.scalebar.gui.ScaleBarAction;
 
 import crucible.crust.metadata.api.Key;
 import crucible.crust.metadata.api.Metadata;
@@ -191,28 +198,40 @@ public class SbmtViewManager extends ViewManager
         fileMenu.setMnemonic('F');
         menuBar.add(fileMenu);
 
+        // Body menu
         recentsMenu = new RecentlyViewed(this);
-        viewMenu = new SbmtViewMenu(this, recentsMenu);
+
+        bodyMenu = new SbmtViewMenu(this, recentsMenu);
+        bodyMenu.setMnemonic('B');
+        bodyMenu.add(new JSeparator());
+        bodyMenu.add(new FavoritesMenu(this));
+        bodyMenu.add(createPasswordMenu());
+        bodyMenu.add(new JSeparator());
+        bodyMenu.add(recentsMenu);
+        menuBar.add(bodyMenu);
+
+        // View menu
+        JMenu viewMenu = new JMenu("View");
         viewMenu.setMnemonic('V');
+        viewMenu.add(new JMenuItem(new CameraRegularAction(this)));
+        viewMenu.add(new JMenuItem(new CameraQuaternionAction(this)));
+        viewMenu.add(new JMenuItem(new ScaleBarAction(this)));
+
+        viewMenu.addSeparator();
+        JCheckBoxMenuItem enableLodMI = new JCheckBoxMenuItem(new EnableLODsAction());
+        enableLodMI.setSelected(true);
+        viewMenu.add(enableLodMI);
+        viewMenu.add(new PickToleranceAction(this));
 
         menuBar.add(viewMenu);
 
-        favoritesMenu = new FavoritesMenu(this);
-
-        JMenuItem passwordMenu = createPasswordMenu();
-
-        viewMenu.add(new JSeparator());
-        viewMenu.add(favoritesMenu);
-        viewMenu.add(passwordMenu);
-        viewMenu.add(new JSeparator());
-        viewMenu.add(recentsMenu);
-
+        // Console menu
         Console.addConsoleMenu(menuBar);
 
+        // Help menu
         helpMenu = new SbmtHelpMenu(this);
         helpMenu.setMnemonic('H');
         menuBar.add(helpMenu);
-
     }
 
     @Override
