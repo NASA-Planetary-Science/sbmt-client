@@ -3,9 +3,16 @@ package edu.jhuapl.sbmt.tools;
 import java.io.File;
 import java.io.IOException;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.TreeSet;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
@@ -15,16 +22,21 @@ import vtk.vtkPolyData;
 
 import edu.jhuapl.saavtk.model.ShapeModelBody;
 import edu.jhuapl.saavtk.model.ShapeModelType;
+import edu.jhuapl.saavtk.util.Configuration;
+import edu.jhuapl.saavtk.util.Debug;
+import edu.jhuapl.saavtk.util.FileCache;
 import edu.jhuapl.saavtk.util.FileUtil;
 import edu.jhuapl.saavtk.util.NativeLibraryLoader;
+import edu.jhuapl.saavtk.util.SafeURLPaths;
 import edu.jhuapl.sbmt.client.ISmallBodyModel;
 import edu.jhuapl.sbmt.client.SbmtModelFactory;
+import edu.jhuapl.sbmt.client.SbmtMultiMissionTool;
 import edu.jhuapl.sbmt.client.SbmtSpectrumModelFactory;
 import edu.jhuapl.sbmt.client.SmallBodyViewConfig;
+import edu.jhuapl.sbmt.model.bennu.spectra.OREXSpectraFactory;
 import edu.jhuapl.sbmt.model.bennu.spectra.ovirs.OVIRS;
 import edu.jhuapl.sbmt.model.bennu.spectra.ovirs.OVIRSSpectrum;
-import edu.jhuapl.sbmt.spectrum.model.core.BasicSpectrum;
-import edu.jhuapl.sbmt.spectrum.rendering.BasicSpectrumRenderer;
+import edu.jhuapl.sbmt.spectrum.model.core.interfaces.IBasicSpectrumRenderer;
 
 public class OVIRSDatabaseGeneratorSql
 {
@@ -36,270 +48,393 @@ public class OVIRSDatabaseGeneratorSql
     static private PreparedStatement ovirsInsert2 = null;
     static private ISmallBodyModel bodyModel;
     static private vtkPolyData footprintPolyData;
+    static private boolean writeToDB = true;
 
-    static private OVIRS ovirs=new OVIRS();
+	static private OVIRS ovirs = new OVIRS();
 
-    private static void createOVIRSTables()
-    {
-        try {
+	static Logger logger = Logger.getAnonymousLogger();
 
-            //make a table
-            try
-            {
-                db.dropTable(OVIRSSpectraTable);
-            }
-            catch(Exception e)
-            {
-                e.printStackTrace();
-            }
+	private static void createOVIRSTables(String modelName, String dataType, boolean appendTables)
+	{
+		String tableName = modelName + "_" + OVIRSSpectraTable + "_" + dataType;
+		try
+		{
 
-            db.update(
-                    "create table " + OVIRSSpectraTable + "(" +
-                    "id int PRIMARY KEY, " +
-                    "year smallint, " +
-                    "day smallint, " +
-                    "midtime bigint, " +
-                    "minincidence double," +
-                    "maxincidence double," +
-                    "minemission double," +
-                    "maxemission double," +
-                    "minphase double," +
-                    "maxphase double," +
-                    "range double)"
-                );
-        } catch (SQLException ex2) {
+			// make a table
+			if (appendTables == false)
+			{
+				try
+				{
+					db.dropTable(tableName);
+				}
+				catch (Exception e)
+				{
+					e.printStackTrace();
+				}
+			}
 
-            //ignore
-            ex2.printStackTrace();  // second time we run program
-            //  should throw execption since table
-            // already there
-            //
-            // this will have no effect on the db
-        }
-    }
+			db.update("CREATE TABLE IF NOT EXISTS " + tableName + "(" + "id int PRIMARY KEY AUTO_INCREMENT, "
+					+ "year smallint, " + "day smallint, " + "midtime bigint, " + "minincidence double,"
+					+ "maxincidence double," + "minemission double," + "maxemission double," + "minphase double,"
+					+ "maxphase double," + "minrange double," + "maxrange double, " + "filename char(128))");
+		}
+		catch (SQLException ex2)
+		{
+			ex2.printStackTrace();
+		}
+	}
 
-    private static void createOVIRSTablesCubes()
-    {
-        try {
+	private static void createOVIRSTablesCubes(String modelName, String dataType, boolean appendTables)
+	{
+		String tableName = modelName + "_" + OVIRSCubesTable + "_" + dataType;
+		try
+		{
 
-            //make a table
-            try
-            {
-                db.dropTable(OVIRSCubesTable);
-            }
-            catch(Exception e)
-            {
-                e.printStackTrace();
-            }
+			// make a table
+			if (appendTables == false)
+			{
+				try
+				{
+					db.dropTable(tableName);
+				}
+				catch (Exception e)
+				{
+					e.printStackTrace();
+				}
+			}
 
-            db.update(
-                    "create table " + OVIRSCubesTable + "(" +
-                    "id int PRIMARY KEY, " +
-                    "ovirsspectrumid int, " +
-                    "cubeid int)"
-                );
-        } catch (SQLException ex2) {
+			db.update("CREATE TABLE IF NOT EXISTS " + tableName + "(" + "id int PRIMARY KEY AUTO_INCREMENT, "
+					+ "ovirsspectrumid int, " + "cubeid char(128))");
+		}
+		catch (SQLException ex2)
+		{
+			ex2.printStackTrace();
+		}
+	}
 
-            //ignore
-            ex2.printStackTrace();  // second time we run program
-            //  should throw execption since table
-            // already there
-            //
-            // this will have no effect on the db
-        }
-    }
+	private static void populateOVIRSTables(String modelName, String dataType, List<String> ovirsFiles)
+			throws SQLException, IOException
+	{
+		String tableName = modelName + "_" + OVIRSSpectraTable + "_" + dataType;
+		int count = 0;
+		for (String filename : ovirsFiles)
+		{
+			if (count % 100 == 0)
+				logger.log(Level.INFO,
+						"Processing OVIRS index:" + count + "of " + ovirsFiles.size() + ", filename: " + filename);
+			String dayOfYearStr = "";
+			String yearStr = "";
+			String name = filename.substring(filename.lastIndexOf("/") + 1);
 
-    private static void populateOVIRSTables(List<String> ovirsFiles) throws SQLException, IOException
-    {
-        int count = 0;
-        for (String filename : ovirsFiles)
-        {
-            // Don't check if all OVIRS files exist here, since we want to allow searches on spectra
-            // that don't intersect the asteroid
+			SimpleDateFormat format = new SimpleDateFormat("yyyyMMdd't'hhmmss's'SSS");
+			Date date = null;
+			try
+			{
+				date = format.parse(name);
+			}
+			catch (ParseException e)
+			{
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			SimpleDateFormat yearFormat = new SimpleDateFormat("y");
+			SimpleDateFormat doyFormat = new SimpleDateFormat("D");
 
-            System.out.println("starting ovirs " + count++ + "  " + filename);
+			dayOfYearStr = doyFormat.format(date);
+			yearStr = yearFormat.format(date);
 
-            String dayOfYearStr = "";
-            String yearStr = "";
+			IBasicSpectrumRenderer<OVIRSSpectrum> ovirsSpectrumRenderer = SbmtSpectrumModelFactory
+					.createSpectrumRenderer(filename, ovirs, true);
+			ovirsSpectrumRenderer.generateFootprint();
 
-            File origFile = new File(filename);
-            File f = origFile;
+			//if no intersection took place, skip this loop
+			if (ovirsSpectrumRenderer.getShiftedFootprint() == null) continue;
 
-            f = f.getParentFile();
-            dayOfYearStr = f.getName();
+			DateTime midtime = new DateTime(new DateTime(date).toString(), DateTimeZone.UTC);
+			String filenamePlusParent = filename.substring(filename.lastIndexOf("ovirs/") + 5);
 
-            f = f.getParentFile();
-            yearStr = f.getName();
+			if (writeToDB == true)
+			{
+				if (ovirsInsert == null)
+				{
+					// the index auto increments, so start with the year column
+					ovirsInsert = db.preparedStatement("insert into " + tableName
+							+ " (year, day, midtime, minincidence, maxincidence, minemission, maxemission, minphase, maxphase, minrange, maxrange, filename) values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+				}
 
+				// The index autoincrements, so start adding with the year
+				// string
+				ovirsInsert.setShort(1, Short.parseShort(yearStr));
+				ovirsInsert.setShort(2, Short.parseShort(dayOfYearStr));
+				ovirsInsert.setLong(3, midtime.getMillis());
+				ovirsInsert.setDouble(4, ovirsSpectrumRenderer.getMinIncidence());
+				ovirsInsert.setDouble(5, ovirsSpectrumRenderer.getMaxIncidence());
+				ovirsInsert.setDouble(6, ovirsSpectrumRenderer.getMinEmission());
+				ovirsInsert.setDouble(7, ovirsSpectrumRenderer.getMaxEmission());
+				ovirsInsert.setDouble(8, ovirsSpectrumRenderer.getMinPhase());
+				ovirsInsert.setDouble(9, ovirsSpectrumRenderer.getMaxPhase());
+				ovirsInsert.setDouble(10, ovirsSpectrumRenderer.getMinRange());
+				ovirsInsert.setDouble(11, ovirsSpectrumRenderer.getMinRange());
+				ovirsInsert.setString(12, filenamePlusParent);
+//				logger.log(Level.INFO, "insert statement for spectra populated");
+				ovirsInsert.executeUpdate();
+//				logger.log(Level.INFO, "insert statement updated completed");
+				ResultSet rs = ovirsInsert.getGeneratedKeys();
+				rs.next();
+				populateOVIRSCubeTableForFile(modelName, dataType, ovirsSpectrumRenderer, rs.getInt(1));
+			}
+			else
+				populateOVIRSCubeTableForFile(modelName, dataType, ovirsSpectrumRenderer, count);
 
-            BasicSpectrum ovirsSpectrum = SbmtSpectrumModelFactory.createSpectrum(origFile.getAbsolutePath(), ovirs);
+			count++;
+		}
+	}
 
+	private static void populateOVIRSCubeTableForFile(String modelName, String dataType,
+			IBasicSpectrumRenderer<OVIRSSpectrum> ovirsSpectrumRenderer, int spectrumIndex)
+			throws SQLException, IOException
+	{
+		logger.log(Level.INFO, "Populating cube table for " + spectrumIndex);
 
-            if (ovirsInsert == null)
-            {
-                ovirsInsert = db.preparedStatement(
-                        "insert into " + OVIRSSpectraTable + " values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
-            }
+		String tableName = modelName + "_" + OVIRSCubesTable + "_" + dataType;
 
-            DateTime midtime = new DateTime(ovirsSpectrum.getDateTime().toString(), DateTimeZone.UTC);
-            // Replace the "T" with a space
-            //time = time.substring(0, 10) + " " + time.substring(11, time.length());
+		if (footprintPolyData == null)
+			footprintPolyData = new vtkPolyData();
+		footprintPolyData.DeepCopy(ovirsSpectrumRenderer.getShiftedFootprint());
+		footprintPolyData.ComputeBounds();
+//		logger.log(Level.INFO, "Footprint bounds calculated");
 
-            System.out.println("id: " + Integer.parseInt(origFile.getName().substring(2, 11)));
-            System.out.println("year: " + yearStr);
-            System.out.println("dayofyear: " + dayOfYearStr);
-            System.out.println("midtime: " + midtime);
-            System.out.println("minIncidence: " + ovirsSpectrum.getMinIncidence());
-            System.out.println("maxIncidence: " + ovirsSpectrum.getMaxIncidence());
-            System.out.println("minEmission: " + ovirsSpectrum.getMinEmission());
-            System.out.println("maxEmission: " + ovirsSpectrum.getMaxEmission());
-            System.out.println("minPhase: " + ovirsSpectrum.getMinPhase());
-            System.out.println("maxPhase: " + ovirsSpectrum.getMaxPhase());
-            System.out.println("range: " + ovirsSpectrum.getRange());
-//            System.out.println("polygon type: " + ovirsSpectrum.getPolygonTypeFlag());
-            System.out.println(" ");
+		TreeSet<Integer> cubeIds = bodyModel.getIntersectingCubes(footprintPolyData);
+//		logger.log(Level.INFO, "Intersected cubes calculated");
 
+		// System.out.println("cubeIds: " + cubeIds);
+		// System.out.println("number of cubes: " + cubeIds.size());
+		// System.out.println("id: " + count);
+		// System.out.println("number of cells in polydata " +
+		// footprintPolyData.GetNumberOfCells());
 
-            ovirsInsert.setInt(1, Integer.parseInt(origFile.getName().substring(2, 11)));
-            ovirsInsert.setShort(2, Short.parseShort(yearStr));
-            ovirsInsert.setShort(3, Short.parseShort(dayOfYearStr));
-            ovirsInsert.setLong(4, midtime.getMillis());
-            ovirsInsert.setDouble(5, ovirsSpectrum.getMinIncidence());
-            ovirsInsert.setDouble(6, ovirsSpectrum.getMaxIncidence());
-            ovirsInsert.setDouble(7, ovirsSpectrum.getMinEmission());
-            ovirsInsert.setDouble(8, ovirsSpectrum.getMaxEmission());
-            ovirsInsert.setDouble(9, ovirsSpectrum.getMinPhase());
-            ovirsInsert.setDouble(10, ovirsSpectrum.getMaxPhase());
-            ovirsInsert.setDouble(11, ovirsSpectrum.getRange());
-//            ovirsInsert.setShort(12, ovirsSpectrum.getPolygonTypeFlag());
+		if (writeToDB == true)
+		{
+			if (ovirsInsert2 == null)
+			{
+				// index autoincrements, so start with the ovirsspectrum id column
+				ovirsInsert2 = db
+						.preparedStatement("insert into " + tableName + " (ovirsspectrumid, cubeid) values (?, ?)");
+			}
 
-            ovirsInsert.executeUpdate();
-        }
-    }
+			for (Integer i : cubeIds)
+			{
+				ovirsInsert2.setInt(1, spectrumIndex);
+				ovirsInsert2.setInt(2, i);
+				ovirsInsert2.executeUpdate();
+			}
+			logger.log(Level.INFO, "All cube rows inserted");
 
-    private static void populateOVIRSTablesCubes(List<String> ovirsFiles) throws SQLException, IOException
-    {
-        int count = 0;
-        int filecount = 0;
-        for (String filename : ovirsFiles)
-        {
-            boolean filesExist = checkIfAllOVIRSFilesExist(filename);
-            if (filesExist == false)
-                continue;
+		}
+		ovirsSpectrumRenderer.Delete();
+		vtkObject.JAVA_OBJECT_MANAGER.gc(true);
+//		logger.log(Level.INFO, "Done inserting cube rows");
+	}
 
-            System.out.println("\n\nstarting ovirs " + filename + " " + filecount++ + "/" + ovirsFiles.size());
+	static boolean checkIfAllOVIRSFilesExist(String line)
+	{
+		File file = new File(line);
+		if (!file.exists())
+			return false;
 
-            File origFile = new File(filename);
+		return true;
+	}
 
-            OVIRSSpectrum ovirsSpectrum = (OVIRSSpectrum)SbmtSpectrumModelFactory.createSpectrum(origFile.getAbsolutePath(), ovirs);
-            BasicSpectrumRenderer<OVIRSSpectrum> ovirsSpectrumRenderer = new BasicSpectrumRenderer<OVIRSSpectrum>(ovirsSpectrum, bodyModel, true);
-            ovirsSpectrumRenderer.generateFootprint();
+	/**
+	 * @param args
+	 * @throws IOException
+	 */
 
-            if (footprintPolyData == null)
-                footprintPolyData = new vtkPolyData();
-            footprintPolyData.DeepCopy(ovirsSpectrumRenderer.getUnshiftedFootprint());
-            footprintPolyData.ComputeBounds();
+	public static void main(String[] args) throws IOException
+	{
+		logger.setLevel(Level.OFF);
+		logger.log(Level.INFO, "Starting main method");
+		final SafeURLPaths safeUrlPaths = SafeURLPaths.instance();
+		// default configuration parameters
+		boolean aplVersion = true;
+		String rootURL = safeUrlPaths.getUrl("/disks/d0180/htdocs-sbmt/internal/sbmt");
 
+		// Important: set the mission before changing things in the
+		// Configuration. Otherwise,
+		// setting the mission will undo those changes.
+		SbmtMultiMissionTool.configureMission();
 
-            if (ovirsInsert2 == null)
-            {
-                ovirsInsert2 = db.preparedStatement(
-                        "insert into " + OVIRSCubesTable + " values (?, ?, ?)");
-            }
+		// basic default configuration, most of these will be overwritten by the
+		// configureMission() method
+		Configuration.setAPLVersion(aplVersion);
+		Configuration.setRootURL(rootURL);
 
-            TreeSet<Integer> cubeIds = bodyModel.getIntersectingCubes(footprintPolyData);
-            System.out.println("cubeIds:  " + cubeIds);
-            System.out.println("number of cubes: " + cubeIds.size());
-            System.out.println("id: " + count);
-            System.out.println("number of cells in polydata " + footprintPolyData.GetNumberOfCells());
+		// authentication
+		Authenticator.authenticate();
 
-            for (Integer i : cubeIds)
-            {
-                ovirsInsert2.setInt(1, count);
-                ovirsInsert2.setInt(2, Integer.parseInt(origFile.getName().substring(2, 11)));
-                ovirsInsert2.setInt(3, i);
+		// initialize view config
+		SmallBodyViewConfig.fromServer = true;
 
-                ovirsInsert2.executeUpdate();
+		SmallBodyViewConfig.initialize();
 
-                ++count;
-            }
+		System.setProperty("java.awt.headless", "true");
+		NativeLibraryLoader.loadVtkLibraries();
 
-            ovirsSpectrumRenderer.Delete();
-            System.out.println("deleted " + vtkObject.JAVA_OBJECT_MANAGER.gc(true));
-            System.out.println(" ");
-            System.out.println(" ");
-        }
-    }
+		boolean appendTables = false;
+		boolean modifyMain = false;
+		boolean remote = false;
+		boolean localRun = false;
+		String bodyName = "";
+		String authorName = "";
+		String versionString = null;
+		String diffFileList = null;
+		String dataType = null;
+		int startIndex = 0;
+		int endIndex = 0;
 
-    static boolean checkIfAllOVIRSFilesExist(String line)
-    {
-        File file = new File(line);
-        if (!file.exists())
-            return false;
+		int i = 0;
+		for (; i < args.length; ++i)
+		{
+			if (args[i].equals("--root-url"))
+			{
+				rootURL = safeUrlPaths.getUrl(args[++i]);
+			}
+			else if (args[i].equals("--append-tables"))
+			{
+				appendTables = true;
+			}
+			else if (args[i].equals("--modify-main"))
+			{
+				modifyMain = true;
+			}
+			else if (args[i].equals("--debug"))
+			{
+				Debug.setEnabled(true);
+				FileCache.enableDebug(true);
+				logger.setLevel(Level.INFO);
+			}
+			else if (args[i].equals("--remote"))
+			{
+				remote = true;
+			}
+			else if (args[i].equals("--body"))
+			{
+				bodyName = args[++i];
+			}
+			else if (args[i].equals("--author"))
+			{
+				authorName = args[++i];
+			}
+			else if (args[i].equals("--version"))
+			{
+				versionString = args[++i];
+			}
+			else if (args[i].equals("--dataType"))
+			{
+				dataType = args[++i];
+			}
+			else if (args[i].equals("--diffList"))
+			{
+				diffFileList = args[++i];
+			}
+			else if (args[i].equals("--startIndex"))
+			{
+				startIndex = Integer.parseInt(args[++i]);
+			}
+			else if (args[i].equals("--endIndex"))
+			{
+				endIndex = Integer.parseInt(args[++i]);
+			}
+			else if (args[i].equals("--dryRun"))
+			{
+				writeToDB = false;
+			}
+			else if (args[i].equals("--localRun"))
+			{
+				localRun = true;
+			}
+			else
+			{
+				// We've encountered something that is not an option, must be at
+				// the args
+				break;
+			}
+		}
+		logger.log(Level.INFO, "Parsed arguments, initializing body model");
+		SmallBodyViewConfig config = null;
+		if (versionString != null)
+			config = SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.valueOf(bodyName),
+					ShapeModelType.provide(authorName), versionString);
+		else
+			config = SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.valueOf(bodyName),
+					ShapeModelType.provide(authorName));
 
-        return true;
-    }
+		bodyModel = SbmtModelFactory.createSmallBodyModel(config);
 
-    /**
-     * @param args
-     * @throws IOException
-     */
-    public static void main(String[] args) throws IOException
-    {
-        System.setProperty("java.awt.headless", "true");
-        NativeLibraryLoader.loadVtkLibraries();
+		logger.log(Level.INFO, "Body Model initialized");
 
-        String bodyName = args[0];
-        String authorName = args[1];
-        String versionString = null;
+		OREXSpectraFactory.initializeModels(bodyModel);
 
-        bodyModel = SbmtModelFactory.createSmallBodyModel(SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.valueOf(bodyName), ShapeModelType.provide(authorName), versionString));
+		String ovirsFileList = rootURL + File.separator + "data/bennu/shared/ovirs/" + dataType + "/spectrumlist.txt";
 
-        String ovirsFileList=args[0];
-        int mode = Integer.parseInt(args[1]);
+		List<String> ovirsFiles = null;
+		List<String> updatedFilenames = new ArrayList<String>();
+		try
+		{
+			ovirsFiles = FileUtil.getFileLinesAsStringList(ovirsFileList.substring(5));
+			if (localRun == true)
+			{
+				File ovirsFileFromServer = FileCache.getFileFromServer(ovirsFileList);
+				ovirsFiles = FileUtil.getFileLinesAsStringList(ovirsFileFromServer.getAbsolutePath());
+			}
 
-        List<String> ovirsFiles = null;
-        try {
-            ovirsFiles = FileUtil.getFileLinesAsStringList(ovirsFileList);
-        } catch (IOException e2) {
-            e2.printStackTrace();
-            return;
-        }
+			if (endIndex > ovirsFiles.size())
+				endIndex = ovirsFiles.size();
+			for (int j = startIndex; j < endIndex; j++)
+			{
+				String ovirsFile = ovirsFiles.get(j);
+				String actualName = (rootURL + File.separator + "data/bennu/shared/ovirs/" + dataType + "/spectra/"
+						+ ovirsFile.split(" ")[0]);
+				if (localRun == true) actualName = ("bennu/shared/ovirs/" + dataType + "/spectra/" + ovirsFile.split(" ")[0]);
+				updatedFilenames.add(actualName);
+			}
+		}
+		catch (IOException e2)
+		{
+			e2.printStackTrace();
+			return;
+		}
+		logger.log(Level.INFO, "Filename list built, number of entries " + (endIndex - startIndex));
 
-        try
-        {
-            db = new SqlManager(null);
-        }
-        catch (Exception ex1) {
-            ex1.printStackTrace();
-            return;
-        }
+		String modelName = "bennu_" + authorName.toLowerCase().replace("-", "");
 
-        if (mode == 5 || mode == 0)
-            createOVIRSTables();
-        else if (mode == 6 || mode == 0)
-            createOVIRSTablesCubes();
+		if (writeToDB == true)
+		{
+			try
+			{
+				db = new SqlManager(null);
+			}
+			catch (Exception ex1)
+			{
+				ex1.printStackTrace();
+				return;
+			}
 
+			createOVIRSTables(modelName, dataType, appendTables);
+			createOVIRSTablesCubes(modelName, dataType, appendTables);
+		}
+		logger.log(Level.INFO, "Database tables created.  ");
+		try
+		{
+			populateOVIRSTables(modelName, dataType, updatedFilenames);
+			if (writeToDB == true)
+				db.shutdown();
 
-        try
-        {
-            if (mode == 5 || mode == 0)
-                populateOVIRSTables(ovirsFiles);
-            else if (mode == 6 || mode == 0)
-                populateOVIRSTablesCubes(ovirsFiles);
-        }
-        catch (Exception e1) {
-            e1.printStackTrace();
-        }
-
-
-        try
-        {
-            db.shutdown();
-        }
-        catch (SQLException e) {
-            e.printStackTrace();
-        }
-    }
-
+		}
+		catch (SQLException | IOException e1)
+		{
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
+	}
 }
