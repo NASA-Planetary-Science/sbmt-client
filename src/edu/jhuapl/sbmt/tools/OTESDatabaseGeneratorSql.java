@@ -19,7 +19,6 @@ import org.joda.time.DateTimeZone;
 
 import vtk.vtkObject;
 import vtk.vtkPolyData;
-import vtk.vtkPolyDataWriter;
 
 import edu.jhuapl.saavtk.model.ShapeModelBody;
 import edu.jhuapl.saavtk.model.ShapeModelType;
@@ -195,7 +194,7 @@ public class OTESDatabaseGeneratorSql
 			IBasicSpectrumRenderer<OTESSpectrum> otesSpectrumRenderer, int spectrumIndex)
 			throws SQLException, IOException
 	{
-		logger.log(Level.INFO, "Populating cube table for " + spectrumIndex);
+		logger.log(Level.FINE, "Populating cube table for " + spectrumIndex);
 
 		String tableName = modelName + "_" + OTESCubesTable + "_" + dataType;
 
@@ -203,10 +202,10 @@ public class OTESDatabaseGeneratorSql
 			footprintPolyData = new vtkPolyData();
 		footprintPolyData.DeepCopy(otesSpectrumRenderer.getShiftedFootprint());
 		footprintPolyData.ComputeBounds();
-//		logger.log(Level.INFO, "Footprint bounds calculated");
+		logger.log(Level.FINE, "Footprint bounds calculated");
 
 		TreeSet<Integer> cubeIds = bodyModel.getIntersectingCubes(footprintPolyData);
-//		logger.log(Level.INFO, "Intersected cubes calculated");
+		logger.log(Level.FINE, "Intersected cubes calculated");
 
 		// System.out.println("cubeIds: " + cubeIds);
 		// System.out.println("number of cubes: " + cubeIds.size());
@@ -229,12 +228,12 @@ public class OTESDatabaseGeneratorSql
 				otesInsert2.setInt(2, i);
 				otesInsert2.executeUpdate();
 			}
-			logger.log(Level.INFO, "All cube rows inserted");
+			logger.log(Level.FINE, "All cube rows inserted");
 
 		}
 		otesSpectrumRenderer.Delete();
 		vtkObject.JAVA_OBJECT_MANAGER.gc(true);
-//		logger.log(Level.INFO, "Done inserting cube rows");
+		logger.log(Level.FINE, "Done inserting cube rows");
 	}
 
 	static boolean checkIfAllOTESFilesExist(String line)
@@ -253,7 +252,7 @@ public class OTESDatabaseGeneratorSql
 
 	public static void main(String[] args) throws IOException
 	{
-		logger.setLevel(Level.OFF);
+//		logger.setLevel(Level.OFF);
 		logger.log(Level.INFO, "Starting main method");
 		final SafeURLPaths safeUrlPaths = SafeURLPaths.instance();
 		// default configuration parameters
