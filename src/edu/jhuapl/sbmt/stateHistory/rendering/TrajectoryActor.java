@@ -227,10 +227,12 @@ public class TrajectoryActor extends vtkActor
 	{
 		if (gcp == null)
 		{
+//			System.out.println("TrajectoryActor: getColorAtIndex: traj color 3 " + trajectoryColor[3]);
 			if (coloringFunction == null) return new Color((int)trajectoryColor[0], (int)trajectoryColor[1], (int)trajectoryColor[2], (int)trajectoryColor[3]);
-//			System.out.println("TrajectoryActor: getColorAtIndex: using old method");
+//			System.out.println("TrajectoryActor: getColorAtIndex: using old method, colormax " + colormap.getRangeMax());
 			double time = trajectory.getTime().get(index);
 			double valueAtTime = coloringFunction.apply(trajectory, time);
+//			System.out.println("TrajectoryActor: getColorAtIndex: value at time " + valueAtTime);
 			Color color = colormap.getColor(valueAtTime);
 			color = new Color(color.getRed(), color.getGreen(), color.getBlue(), (int)trajectoryColor[3]);
 			return color;
@@ -302,23 +304,23 @@ public class TrajectoryActor extends vtkActor
         updateShownSegments();
     }
 
-    /**
-     * Sets the trajectory name
-     * @param name the name of the trajectory
-     */
-    public void setTrajectoryName(String name)
-    {
-        trajectory.setName(name);
-    }
-
-    /**
-     * Returns the name of the trajectory
-     * @return the name of the trajectory
-     */
-    public String getTrajectoryName()
-	{
-		return trajectory.getName();
-	}
+//    /**
+//     * Sets the trajectory name
+//     * @param name the name of the trajectory
+//     */
+//    public void setTrajectoryName(String name)
+//    {
+//        trajectory.setName(name);
+//    }
+//
+//    /**
+//     * Returns the name of the trajectory
+//     * @return the name of the trajectory
+//     */
+//    public String getTrajectoryName()
+//	{
+//		return trajectory.getName();
+//	}
 
 	/**
 	 * Toggles the visibility of the trajectory based on the value of <pre>show</pre>

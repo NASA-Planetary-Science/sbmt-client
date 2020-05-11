@@ -1,6 +1,8 @@
 package edu.jhuapl.sbmt.stateHistory.model.io;
 
 /**
+ * Exception thrown when performing I/O operations on
+ * a State History segment
  * @author steelrj1
  *
  */

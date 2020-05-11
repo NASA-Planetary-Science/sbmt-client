@@ -18,28 +18,46 @@ import org.jfree.ui.FontChooserDialog;
 import edu.jhuapl.saavtk.gui.render.Renderer;
 import edu.jhuapl.saavtk.gui.render.Renderer.LightingType;
 import edu.jhuapl.saavtk.util.ColorIcon;
-import edu.jhuapl.sbmt.stateHistory.model.StateHistoryModel;
 import edu.jhuapl.sbmt.stateHistory.model.interfaces.StateHistory;
 import edu.jhuapl.sbmt.stateHistory.model.stateHistory.StateHistoryCollection;
 import edu.jhuapl.sbmt.stateHistory.ui.version2.viewControls.StateHistoryDisplayItemsPanel;
 
+/**
+ * Controllers that governs the view which contains controls for which items to display in the renderer
+ * @author steelrj1
+ *
+ */
 public class StateHistoryDisplayItemsController implements ItemListener
 {
+	/**
+	 * The view that this controller governs
+	 */
 	StateHistoryDisplayItemsPanel view;
+
+	/**
+	 * The collection of state history elements
+	 */
 	private StateHistoryCollection runs;
-	private StateHistoryModel historyModel;
+
+	/**
+	 * The renderer that is being updated by the elements governed by this controller
+	 */
 	private Renderer renderer;
 
-	public StateHistoryDisplayItemsController(StateHistoryModel historyModel, Renderer renderer)
+	/**
+	 * Constructor.  Sets state properties and initializes view control panel
+	 * @param historyModel
+	 * @param renderer
+	 */
+	public StateHistoryDisplayItemsController(StateHistoryCollection runs, Renderer renderer)
 	{
-		this.historyModel = historyModel;
-		this.runs = historyModel.getRuns();
+		this.runs = runs;
 		this.renderer = renderer;
 		initializeViewControlPanel();
 	}
 
 	/**
-	 *
+	 * Initializes the view control panel, and sets up action listeners, etc
 	 */
 	private void initializeViewControlPanel()
 	{
@@ -187,27 +205,31 @@ public class StateHistoryDisplayItemsController implements ItemListener
 			System.out.println("StateHistoryViewControlsController: itemStateChanged: earth pointer color "
 					+ view.getShowEarthPanel().getEarthPointerColor());
 			runs.setEarthDirectionMarkerColor(view.getShowEarthPanel().getEarthPointerColor());
-		} else if (source == showSunMarker)
+		}
+		else if (source == showSunMarker)
 		{
 			runs.setSunDirectionMarkerVisibility(selected);
 			sunSlider.setEnabled(selected);
 			sunText.setEnabled(selected);
 			runs.setSunDirectionMarkerColor(view.getShowSunPanel().getSunPointerColor());
-		} else if (source == showSpacecraftMarker)
+		}
+		else if (source == showSpacecraftMarker)
 		{
 			runs.setSpacecraftDirectionMarkerVisibility(selected);
 			spacecraftSlider.setEnabled(selected);
 			spacecraftText.setEnabled(selected);
 			runs.setScDirectionMarkerColor(view.getShowSpacecraftPointerPanel().getScPointerColor());
-		} else if (source == showSpacecraft)
+		}
+		else if (source == showSpacecraft)
 		{
 			// distanceOptions.setEnabled(selected);
 			if (selected)
-				historyModel.getRuns().setDistanceText(distanceOptions.getSelectedItem().toString());
+				runs.setDistanceText(distanceOptions.getSelectedItem().toString());
 			// runs.setSpacecraftLabelVisibility(selected);
 			runs.setSpacecraftVisibility(selected);
 			view.getShowSpacecraftPanel().getScSizeSlider().setEnabled(selected);
-		} else if (source == showLighting)
+		}
+		else if (source == showLighting)
 		{
 			if (selected)
 			{

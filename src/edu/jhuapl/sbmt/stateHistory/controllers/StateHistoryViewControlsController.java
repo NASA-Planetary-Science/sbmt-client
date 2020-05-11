@@ -9,7 +9,7 @@ import edu.jhuapl.sbmt.stateHistory.controllers.viewControls.StateHistoryColorin
 import edu.jhuapl.sbmt.stateHistory.controllers.viewControls.StateHistoryDisplayItemsController;
 import edu.jhuapl.sbmt.stateHistory.controllers.viewControls.StateHistoryViewOptionsController;
 import edu.jhuapl.sbmt.stateHistory.model.StateHistoryModel;
-import edu.jhuapl.sbmt.stateHistory.model.stateHistory.RendererLookDirection;
+import edu.jhuapl.sbmt.stateHistory.model.viewOptions.RendererLookDirection;
 
 /**
  * Controller that governs the "View Controls" panel in the StateHistory tab
@@ -50,9 +50,9 @@ public class StateHistoryViewControlsController
 	 */
 	private void initUI(StateHistoryModel historyModel, Renderer renderer)
 	{
-        viewControls = new StateHistoryViewOptionsController(historyModel, renderer);
-        coloringControls = new StateHistoryColoringOptionsController(historyModel, renderer);
-        displayItemsControls = new StateHistoryDisplayItemsController(historyModel, renderer);
+        viewControls = new StateHistoryViewOptionsController(historyModel.getRuns(), renderer);
+        coloringControls = new StateHistoryColoringOptionsController(historyModel.getRuns(), renderer);
+        displayItemsControls = new StateHistoryDisplayItemsController(historyModel.getRuns(), renderer);
 
         //this is a cross panel listener action, so set it up here, above the 3 controllers
         viewControls.getView().getViewOptions().addActionListener(e ->

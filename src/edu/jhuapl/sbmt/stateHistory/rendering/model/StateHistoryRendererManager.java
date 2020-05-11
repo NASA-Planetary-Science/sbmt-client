@@ -20,7 +20,7 @@ import edu.jhuapl.sbmt.lidar.feature.FeatureAttr;
 import edu.jhuapl.sbmt.lidar.feature.VtkFeatureAttr;
 import edu.jhuapl.sbmt.stateHistory.model.StateHistoryColoringFunctions;
 import edu.jhuapl.sbmt.stateHistory.model.interfaces.StateHistory;
-import edu.jhuapl.sbmt.stateHistory.model.stateHistory.RendererLookDirection;
+import edu.jhuapl.sbmt.stateHistory.model.viewOptions.RendererLookDirection;
 import edu.jhuapl.sbmt.stateHistory.rendering.SpacecraftBody;
 import edu.jhuapl.sbmt.stateHistory.rendering.SpacecraftFieldOfView;
 import edu.jhuapl.sbmt.stateHistory.rendering.TrajectoryActor;
@@ -269,7 +269,7 @@ public class StateHistoryRendererManager
 		TrajectoryActor renderer = stateHistoryToRendererMap.get(segment);
 		if (renderer == null)
 			return;
-		renderer.setTrajectoryColor(segment.getTrajectoryColor());
+		renderer.setTrajectoryColor(segment.getTrajectory().getTrajectoryColor());
 		this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, renderer);
 	}
 

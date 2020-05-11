@@ -10,42 +10,47 @@ public class StandardTrajectory implements Trajectory
 	 *
 	 */
 	private int cellId;
-	/**
-	 *
-	 */
-	private String name;
+
 	/**
 	 *
 	 */
 	private int id;
+
 	/**
 	 *
 	 */
 	private ArrayList<Double> x;
+
 	/**
 	 *
 	 */
 	private ArrayList<Double> y;
+
 	/**
 	 *
 	 */
 	private ArrayList<Double> z;
+
 	/**
 	 *
 	 */
 	private ArrayList<Double> times;
+
 	/**
 	 *
 	 */
 	private double[] color;
+
 	/**
 	 *
 	 */
 	private double thickness;
+
 	/**
 	 *
 	 */
 	private String description;
+
 	/**
 	 *
 	 */
@@ -70,22 +75,6 @@ public class StandardTrajectory implements Trajectory
 	public void setCellId(int cellId)
 	{
 		this.cellId = cellId;
-	}
-
-	/**
-	 *
-	 */
-	public String getName()
-	{
-		return name;
-	}
-
-	/**
-	 *
-	 */
-	public void setName(String name)
-	{
-		this.name = name;
 	}
 
 	/**
@@ -178,7 +167,7 @@ public class StandardTrajectory implements Trajectory
 		this.y = new ArrayList<Double>();
 		this.z = new ArrayList<Double>();
 		this.times = new ArrayList<Double>();
-		name = "";
+//		name = "";
 		description = "";
 		this.color = new double[]
 		{ 0, 255, 255, 255 };
@@ -189,7 +178,7 @@ public class StandardTrajectory implements Trajectory
 	 */
 	public String toString()
 	{
-		return "Trajectory " + getId() + " = " + getName() + " contains " + getX().size() + " vertices";
+		return "Trajectory " + getId() + " = contains " + getX().size() + " vertices";
 
 	}
 
@@ -242,15 +231,6 @@ public class StandardTrajectory implements Trajectory
 	 *
 	 */
 	@Override
-	public void setTrajectoryName(String name)
-	{
-		this.name = name;
-	}
-
-	/**
-	 *
-	 */
-	@Override
 	public void setTrajectoryDescription(String desc)
 	{
 		this.description = desc;
@@ -289,6 +269,7 @@ public class StandardTrajectory implements Trajectory
 	{
 		this.isFaded = isFaded;
 		this.color[3] = isFaded ? 50 : 255;
+		System.out.println("StandardTrajectory: setFaded: color 3 is now " + this.color[3]);
 	}
 
 	@Override

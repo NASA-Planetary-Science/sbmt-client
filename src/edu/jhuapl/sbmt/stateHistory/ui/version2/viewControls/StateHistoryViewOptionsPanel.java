@@ -14,7 +14,7 @@ import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.border.TitledBorder;
 
-import edu.jhuapl.sbmt.stateHistory.model.stateHistory.RendererLookDirection;
+import edu.jhuapl.sbmt.stateHistory.model.viewOptions.RendererLookDirection;
 
 public class StateHistoryViewOptionsPanel extends JPanel implements ActionListener
 {

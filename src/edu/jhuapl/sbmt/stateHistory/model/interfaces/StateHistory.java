@@ -7,6 +7,7 @@ import edu.jhuapl.sbmt.stateHistory.model.io.StateHistoryInvalidTimeException;
 import edu.jhuapl.sbmt.stateHistory.model.stateHistory.StateHistoryKey;
 
 /**
+ * Interface for classes that store state history segment information
  * @author steelrj1
  *
  */
@@ -125,32 +126,15 @@ public interface StateHistory
      */
     public double[] getEarthPosition();
 
-
-	//Trajectory based methods
-
-	/**
-	 * Returns the name of this trajectory
+    /**
      * @return
      */
-    public String getTrajectoryName();
+    public String getStateHistoryName();
 
     /**
-     * Returns the trajectory description
-     * @return
+     * @param name
      */
-    public String getTrajectoryDescription();
-
-    /**
-     * Returns the trajectory color
-     * @return
-     */
-    public double[] getTrajectoryColor();
-
-    /**
-     * Returns the trajectory thickness
-     * @return
-     */
-    public double getTrajectoryThickness();
+    public void setStateHistoryName(String name);
 
     /**
      * Returns the trajectory object for this state history
@@ -164,10 +148,9 @@ public interface StateHistory
      */
     public void setTrajectory(Trajectory traj);
 
-    /**
-     * Sets the trajectory's name to <pre>name</pre>
-     * @param name
-     */
-    public void setTrajectoryName(String name);
-
+	/**
+	 * Sets the color of the trajectory associated with this state history
+	 * @param color
+	 */
+	public void setTrajectoryColor(Double[] color);
 }

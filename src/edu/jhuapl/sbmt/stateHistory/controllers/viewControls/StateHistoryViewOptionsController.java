@@ -7,31 +7,54 @@ import org.apache.commons.math3.geometry.euclidean.threed.Vector3D;
 import edu.jhuapl.saavtk.gui.render.RenderPanel;
 import edu.jhuapl.saavtk.gui.render.Renderer;
 import edu.jhuapl.saavtk.gui.render.Renderer.LightingType;
-import edu.jhuapl.sbmt.stateHistory.model.StateHistoryModel;
 import edu.jhuapl.sbmt.stateHistory.model.interfaces.StateHistory;
-import edu.jhuapl.sbmt.stateHistory.model.stateHistory.RendererLookDirection;
 import edu.jhuapl.sbmt.stateHistory.model.stateHistory.StateHistoryCollection;
+import edu.jhuapl.sbmt.stateHistory.model.viewOptions.RendererLookDirection;
 import edu.jhuapl.sbmt.stateHistory.model.viewOptions.StateHistoryViewOptionsModel;
 import edu.jhuapl.sbmt.stateHistory.ui.version2.viewControls.StateHistoryViewOptionsPanel;
 
 import glum.item.ItemEventType;
 
+/**
+ * @author steelrj1
+ *
+ */
 public class StateHistoryViewOptionsController
 {
+	/**
+	 * The view governed by this controller
+	 */
 	private StateHistoryViewOptionsPanel view;
+
+	/**
+	 * The model that contains information about the view options
+	 */
 	private StateHistoryViewOptionsModel model;
+
+	/**
+	 * The renderer being manipulated
+	 */
 	private Renderer renderer;
+
+	/**
+	 * The collection of state history items
+	 */
 	private StateHistoryCollection runs;
 
-	public StateHistoryViewOptionsController(StateHistoryModel historyModel, Renderer renderer)
+	/**
+	 * Constructor.  Sets properties and initializes the view control panel
+	 * @param runs
+	 * @param renderer
+	 */
+	public StateHistoryViewOptionsController(StateHistoryCollection runs, Renderer renderer)
 	{
-		this.runs = historyModel.getRuns();
+		this.runs = runs;
 		this.renderer = renderer;
 		initializeViewControlPanel();
 	}
 
 	/**
-	 *
+	 * Initializes the view control panel, sets action listeners, etc
 	 */
 	private void initializeViewControlPanel()
 	{
@@ -111,7 +134,7 @@ public class StateHistoryViewOptionsController
 		double[] lookFromDirection;
 		if (selectedItem == RendererLookDirection.FREE_VIEW)
 		{
-			lookFromDirection = renderer.getCameraPosition();
+			lookFromDirection = renderer.getCamera().getPosition().toArray();
 			renderer.setCameraOrientation(lookFromDirection, renderer.getCameraFocalPoint(),
 					renderer.getCamera().getUpUnit().toArray(), renderer.getCameraViewAngle());
 			((RenderPanel) renderer.getRenderWindowPanel()).setZoomOnly(false, Vector3D.ZERO, targOrig);

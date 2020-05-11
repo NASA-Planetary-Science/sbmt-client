@@ -1,5 +1,11 @@
 package edu.jhuapl.sbmt.stateHistory.model.io;
 
+/**
+ * Exception that is thrown when detecting users input errors when building
+ * a state history segment (i.e. the times range is too small)
+ * @author steelrj1
+ *
+ */
 public class StateHistoryInputException extends Exception
 {
 

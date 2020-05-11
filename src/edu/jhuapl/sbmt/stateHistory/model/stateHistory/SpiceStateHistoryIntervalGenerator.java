@@ -8,6 +8,11 @@ import edu.jhuapl.sbmt.stateHistory.model.interfaces.IStateHistoryIntervalGenera
 import edu.jhuapl.sbmt.stateHistory.model.interfaces.StateHistory;
 import edu.jhuapl.sbmt.stateHistory.model.io.StateHistoryInputException;
 
+/**
+ * Class to generate a state history interval using SPICE kernels
+ * @author steelrj1
+ *
+ */
 public class SpiceStateHistoryIntervalGenerator implements IStateHistoryIntervalGenerator
 {
 	private double cadence;

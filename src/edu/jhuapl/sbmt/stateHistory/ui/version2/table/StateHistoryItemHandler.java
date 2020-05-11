@@ -51,13 +51,16 @@ public class StateHistoryItemHandler extends BasicItemHandler<StateHistory, Stat
 			case Show:
 				return stateHistoryCollection.getVisibility(stateHistory);
 			case Color:
-				return new ConstColorProvider(new Color((int)(stateHistory.getTrajectoryColor()[0]), (int)(stateHistory.getTrajectoryColor()[1]), (int)(stateHistory.getTrajectoryColor()[2]), (int)(stateHistory.getTrajectoryColor()[3])));
+				return new ConstColorProvider(new Color((int)(stateHistory.getTrajectory().getTrajectoryColor()[0]),
+											(int)(stateHistory.getTrajectory().getTrajectoryColor()[1]),
+											(int)(stateHistory.getTrajectory().getTrajectoryColor()[2]),
+											(int)(stateHistory.getTrajectory().getTrajectoryColor()[3])));
 //			case Line:
 //				return 1;
 //			case Name:
 //				return stateHistory.getTrajectoryName();
 			case Description:
-				return stateHistory.getTrajectoryDescription();
+				return stateHistory.getTrajectory().getTrajectoryDescription();
 			case StartTime:
 				fmt.withZone(DateTimeZone.UTC);
 				timeString = TimeUtil.et2str(stateHistory.getMinTime());

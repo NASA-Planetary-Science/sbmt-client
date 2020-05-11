@@ -8,6 +8,11 @@ import edu.jhuapl.sbmt.stateHistory.model.io.StateHistoryInputException;
 import edu.jhuapl.sbmt.stateHistory.model.io.StateHistoryInvalidTimeException;
 import edu.jhuapl.sbmt.stateHistory.model.stateHistory.StateHistoryKey;
 
+/**
+ * Interface for classes that can generate state history intervals
+ * @author steelrj1
+ *
+ */
 public interface IStateHistoryIntervalGenerator
 {
     /***

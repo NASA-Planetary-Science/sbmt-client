@@ -68,8 +68,6 @@ public class StandardStateHistory implements StateHistory
     private Double[] color;
 
 
-
-
     //Metadata Information
     private static final Key<StandardStateHistory> STANDARD_STATE_HISTORY_KEY = Key.of("StandardStateHistory");
 	private static final Key<StateHistoryKey> STATEHISTORY_KEY_KEY = Key.of("key");
@@ -100,11 +98,10 @@ public class StandardStateHistory implements StateHistory
     		result.put(CURRENT_TIME_KEY, stateHistory.getCurrentTime());
     		result.put(START_TIME_KEY, stateHistory.getMinTime());
     		result.put(END_TIME_KEY, stateHistory.getMaxTime());
-    		result.put(STATE_HISTORY_NAME_KEY, stateHistory.getTrajectoryName());
-    		result.put(COLOR_KEY, new Double[] { stateHistory.getTrajectoryColor()[0], stateHistory.getTrajectoryColor()[1], stateHistory.getTrajectoryColor()[2], stateHistory.getTrajectoryColor()[3]});
+    		result.put(STATE_HISTORY_NAME_KEY, stateHistory.getStateHistoryName());
+    		result.put(COLOR_KEY, new Double[] { stateHistory.getTrajectory().getTrajectoryColor()[0], stateHistory.getTrajectory().getTrajectoryColor()[1], stateHistory.getTrajectory().getTrajectoryColor()[2], stateHistory.getTrajectory().getTrajectoryColor()[3]});
     		return result;
     	});
-
 	}
 
     /**
@@ -115,11 +112,18 @@ public class StandardStateHistory implements StateHistory
     	this.key = key;
     }
 
+    /**
+     * @param key
+     * @param currentTime
+     * @param startTime
+     * @param endTime
+     * @param name
+     * @param color
+     */
     public StandardStateHistory(StateHistoryKey key, Double currentTime, Double startTime, Double endTime, String name, Double[] color)
     {
     	this.key = key;
     	this.currentTime = currentTime;
-    	this.setTrajectoryName(name);
     	this.startTime = startTime;
     	this.endTime = endTime;
     	this.color = color;
@@ -345,86 +349,40 @@ public class StandardStateHistory implements StateHistory
         }
     }
 
-    /**
-     *
-     */
     @Override
     public Set<Double> getAllTimes()
     {
         return timeToStateMap.keySet();
-
     }
 
-
-
-	//Trajectory related
-
-	/**
-	 *
-	 */
-	@Override
-	public String getTrajectoryName()
-	{
-		return name;
-//		return trajectory.getName();
-	}
-
-	/**
-	 *
-	 */
-	@Override
-	public String getTrajectoryDescription()
-	{
-		if (trajectory == null) return "";
-		return trajectory.toString();
-	}
-
-	/**
-	 *
-	 */
-	@Override
-	public double[] getTrajectoryColor()
-	{
-		if (color == null) return trajectory.getTrajectoryColor();
-		return new double[] {color[0], color[1], color[2], color[3]};
-	}
-
-	/**
-	 *
-	 */
-	@Override
-	public double getTrajectoryThickness()
-	{
-		return trajectory.getTrajectoryThickness();
-	}
-
-	/**
-	 *
-	 */
 	@Override
 	public Trajectory getTrajectory()
 	{
 		return trajectory;
 	}
 
-	/**
-	 *
-	 */
+	@Override
 	public void setTrajectory(Trajectory trajectory)
 	{
 		this.trajectory = trajectory;
 	}
 
 	@Override
-	public void setTrajectoryName(String name)
-	{
-		this.trajectory.setName(name);
-	}
-
 	public void setTrajectoryColor(Double[] color)
 	{
 		this.color = color;
 		this.trajectory.setTrajectoryColor(new double[] {color[0], color[1], color[2], color[3]});
 	}
 
+	@Override
+	public String getStateHistoryName()
+	{
+		return name;
+	}
+
+	@Override
+	public void setStateHistoryName(String name)
+	{
+		this.name = name;
+	}
 }

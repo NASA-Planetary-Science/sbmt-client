@@ -3,7 +3,6 @@ package edu.jhuapl.sbmt.stateHistory.model.viewOptions;
 import java.util.HashMap;
 
 import edu.jhuapl.sbmt.stateHistory.model.interfaces.StateHistory;
-import edu.jhuapl.sbmt.stateHistory.model.stateHistory.RendererLookDirection;
 
 public class StateHistoryViewOptionsModel
 {

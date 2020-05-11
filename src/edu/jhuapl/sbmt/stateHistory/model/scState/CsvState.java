@@ -10,57 +10,58 @@ import edu.jhuapl.sbmt.stateHistory.model.interfaces.State;
 import edu.jhuapl.sbmt.util.TimeUtil;
 
 /**
+ * Spacecraft state object represented by a set of comma separated values
  * @author steelrj1
  *
  */
 public class CsvState implements State
 {
     /**
-     *
+     * State time in UTC
      */
     private String utc;
     /**
-     *
+     * State time in ephemeris time
      */
     private double ephemerisTime;
 
     /**
-     *
+     * Spacecraft position, in km, in body fixed frame
      */
     private double[] spacecraftPosition;
 
     /**
-     *
+     * Spacecraft velocity vector, in km/s, in body fixed frame
      */
     private double[] spacecraftVelocity;
 
     /**
-     *
+     * Earth position vector, in km, in body fixed frame
      */
     private double[] earthPosition;
 
     /**
-     *
+     * Sun position vector, in km, in body fixed frame
      */
     private double[] sunPosition;
 
     /**
-     *
+     * Spacecraft X-Axis vector, in km, in body fixed frame
      */
     private double[] spacecraftXAxis;
 
     /**
-     *
+     * Spacecraft Y-Axis vector, in km, in body fixed frame
      */
     private double[] spacecraftYAxis;
 
     /**
-     *
+     * Spacecraft Z-Axis vector, in km, in body fixed frame
      */
     private double[] spacecraftZAxis;
 
-    //writes the binary data to a CSV file and sets the data to the correct variables
     /**
+     * Writes the binary data to a CSV file and sets the data to the correct variables
      * @param utc
      * @param sunPosX
      * @param sunPosY
@@ -82,9 +83,6 @@ public class CsvState implements State
     {
         this.utc = utc;
         ephemerisTime = TimeUtil.str2et(utc);
-
-        //System.out.println("Time: " + utc + "  " + earthPosY);
-
         sunPosition = new double[] {sunPosX, sunPosY, sunPosZ};
         earthPosition = new double[] {earthPosX, earthPosY, earthPosZ};
         spacecraftPosition = new double[] {spacecraftPosX, spacecraftPosY, spacecraftPosZ};
@@ -106,6 +104,7 @@ public class CsvState implements State
     }
 
     /**
+     * Writes the state object out to a comma separated value line in the file (appending to it)
      * @param path
      */
     public void writeToCSV(String path)
@@ -158,8 +157,8 @@ public class CsvState implements State
 
     }
 
-    // reads in a csv line and adds the data to the correct variables
     /**
+     * Reads in a csv line and adds the data to the correct variables
      * @param line
      */
     public CsvState(String line)
@@ -180,7 +179,6 @@ public class CsvState implements State
         {
             utc = parts[0].trim();
             ephemerisTime = TimeUtil.str2et(utc);
-//            System.out.println("State: " + utc + " = " + ephemerisTime);
         }
 
         if (ntokens > 3)

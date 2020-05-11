@@ -16,6 +16,7 @@ import edu.jhuapl.sbmt.stateHistory.model.stateHistory.StateHistoryKey;
 import edu.jhuapl.sbmt.stateHistory.model.trajectory.StandardTrajectory;
 
 /**
+ * Helper class for saving/loading state history intervals to the filesystem.
  * @author steelrj1
  *
  */
@@ -23,6 +24,8 @@ public class StateHistoryModelIOHelper
 {
 
 	/**
+	 * Saves state history interval to file. Format is the full expanded "Mark 1"
+	 * format, used before SPICE integration.
 	 * @param shapeModelName
 	 * @param interval
 	 * @param fileName
@@ -39,13 +42,13 @@ public class StateHistoryModelIOHelper
             writer.append('\n');
 
             // Create header of name, description, color
-            writer.append(interval.getTrajectoryName() + ',');
-            writer.append(interval.getTrajectoryDescription() + ',');
-            for (double colorElement : interval.getTrajectoryColor()) {
+            writer.append(interval.getStateHistoryName() + ',');
+            writer.append(interval.getTrajectory().getTrajectoryDescription() + ',');
+            for (double colorElement : interval.getTrajectory().getTrajectoryColor()) {
                 writer.append(Double.toString(colorElement));
                 writer.append(',');
             }
-            writer.append(Double.toString(interval.getTrajectoryThickness()));
+            writer.append(Double.toString(interval.getTrajectory().getTrajectoryThickness()));
             writer.append('\n');
 
             // header of column names for each entry
@@ -94,6 +97,8 @@ public class StateHistoryModelIOHelper
     }
 
 	/**
+	 * Loads state history interval from a file.  Format is the full expanded "Mark 1"
+	 * format, used before SPICE integration.
 	 * @param runFile
 	 * @param shapeModelName
 	 * @param key
@@ -140,7 +145,7 @@ public class StateHistoryModelIOHelper
             // get name, desc, color form second line
             String info = in.readLine();
             String[] data = info.split(",");
-            trajectory.setName(data[0]);
+//            trajectory.setName(data[0]);
             trajectory.setTrajectoryDescription(data[1]);
 
             // discard third line of headers

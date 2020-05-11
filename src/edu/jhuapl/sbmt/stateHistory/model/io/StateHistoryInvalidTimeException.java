@@ -1,5 +1,11 @@
 package edu.jhuapl.sbmt.stateHistory.model.io;
 
+/**
+ * Exception that is thrown when an invalid time is used to attempt
+ * to generate a StateHistory segment
+ * @author steelrj1
+ *
+ */
 public class StateHistoryInvalidTimeException extends Exception
 {
 

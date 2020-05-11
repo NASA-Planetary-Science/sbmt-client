@@ -23,6 +23,7 @@ import edu.jhuapl.sbmt.stateHistory.model.scState.CsvState;
 import edu.jhuapl.sbmt.stateHistory.model.trajectory.StandardTrajectory;
 
 /**
+ * Class that generates state history from a pre-generated state history file that lives on the server
  * @author steelrj1
  *
  */
@@ -46,7 +47,7 @@ public class PregenStateHistoryIntervalGenerator implements IStateHistoryInterva
 		DateTime start = formatter.parseDateTime(startString.substring(0, 23));
 		DateTime end = formatter.parseDateTime(endString.substring(0, 23));
 		return createNewTimeInterval(history, history.getKey(), start, end,
-										history.getTimeWindow()/(24.0 * 60.0 * 60.0 * 1000.0), history.getTrajectoryName(), progressFunction);
+										history.getTimeWindow()/(24.0 * 60.0 * 60.0 * 1000.0), history.getStateHistoryName(), progressFunction);
 	}
 
 	public StateHistory createNewTimeInterval(StateHistoryKey key, DateTime startTime, DateTime endTime, double duration,

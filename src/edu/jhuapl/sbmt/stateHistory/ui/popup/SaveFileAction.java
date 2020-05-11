@@ -72,14 +72,14 @@ class SaveFileAction extends StateHistoryPopAction<StateHistory>
 			for (StateHistory stateHistory : workS)
 			{
 				history = stateHistory;
-				StateHistoryModelIOHelper.saveIntervalToFile(refManager.getBodyName(), stateHistory, new File(targPath, stateHistory.getTrajectoryName()).getAbsolutePath());
+				StateHistoryModelIOHelper.saveIntervalToFile(refManager.getBodyName(), stateHistory, new File(targPath, stateHistory.getStateHistoryName()).getAbsolutePath());
 				passCnt++;
 			}
 		}
 		catch (Exception aExp)
 		{
 			String errMsg = "Failed to save " + (workS.size() - passCnt) + "files. Failed on state history file: ";
-			errMsg += history.getTrajectoryName();
+			errMsg += history.getStateHistoryName();
 			JOptionPane.showMessageDialog(rootComp, errMsg, "Error Saving State History Files", JOptionPane.ERROR_MESSAGE);
 			aExp.printStackTrace();
 		}

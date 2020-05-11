@@ -1,4 +1,4 @@
-package edu.jhuapl.sbmt.stateHistory.model.stateHistory;
+package edu.jhuapl.sbmt.stateHistory.model.viewOptions;
 
 public enum RendererLookDirection
 {

@@ -23,16 +23,6 @@ public interface Trajectory
     /**
      * @return
      */
-    public String getName();
-
-    /**
-     * @param name
-     */
-    public void setName(String name);
-
-    /**
-     * @return
-     */
     public int getId();
 
     /**
@@ -94,11 +84,6 @@ public interface Trajectory
      * @param color
      */
     public void setTrajectoryColor(double[] color);
-
-    /**
-     * @param name
-     */
-    public void setTrajectoryName(String name);
 
     /**
      * @param desc

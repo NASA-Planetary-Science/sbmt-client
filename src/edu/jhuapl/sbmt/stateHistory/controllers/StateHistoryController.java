@@ -78,6 +78,7 @@ public class StateHistoryController
     private StateHistoryModel historyModel = null;
 
     /**
+     * Constructor.  Initializes properties, sets listeners, etc
      * @param modelManager
      * @param renderer
      */
@@ -143,7 +144,7 @@ public class StateHistoryController
 			if (aEventType != ItemEventType.ItemsSelected) return;
 			intervalDisplayedController.getView().setEnabled(runs.getSelectedItems().size() > 0);
 			intervalPlaybackController.getView().setEnabled(runs.getSelectedItems().size() > 0);
-			viewControlsController.getView().setEnabled(runs.getSelectedItems().size() > 0);
+			viewControlsController.setEnabled(runs.getSelectedItems().size() > 0);
 		});
     }
 
