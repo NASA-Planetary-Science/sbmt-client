@@ -1,12 +1,13 @@
 # SPICE
 SPICE_DIR			= /project/sbmtpipeline/software/spice/cspice
-SPICE_LIB			= $(SPICE_DIR)/cspice.a
+SPICE_LIB			= $(SPICE_DIR)/lib/cspice.a
 #
 # Compiler
 CXX				= g++
-COPT				= -O2 # change to -g for debugging
+# Change -O2 to -g for debugging
+COPT				= -O2
 CFLAGS				= -Wall --pedantic
-CINCLUDES			= -I$(SPICE_DIR)
+CINCLUDES			= -I$(SPICE_DIR)/include
 CLIBS				= $(SPICE_LIB)
 #
 # Tool
@@ -15,5 +16,8 @@ SRC				= createInfoFiles.cpp getSpacecraftState.cpp getTargetState.cpp getFov.cp
 
 $(TOOL): $(SRC)
 	$(CXX) -o $@ $(COPT) $(CFLAGS) $(CINCLUDES) $(SRC) $(CLIBS)
+	
+clean:
+	rm $(TOOL)
 
 .SUFFIXES:
