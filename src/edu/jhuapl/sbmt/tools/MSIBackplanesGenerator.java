@@ -143,7 +143,7 @@ public class MSIBackplanesGenerator
         SmallBodyViewConfig.initialize();
         System.setProperty("java.awt.headless", "true");
         NativeLibraryLoader.loadHeadlessVtkLibraries();
-        Authenticator.authenticate();
+        Configuration.authenticate();
 
         //Set up the distributed environment
         ArrayList<String> commandList = new ArrayList<String>();

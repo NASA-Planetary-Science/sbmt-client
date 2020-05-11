@@ -212,7 +212,7 @@ public class ServerOffLimbPlaneCalculator
         SbmtMultiMissionTool.configureMission();
 
          // authentication
-        Authenticator.authenticate();
+        Configuration.authenticate();
         NativeLibraryLoader.loadVtkLibraries();
          // initialize view config
         SmallBodyViewConfig.initialize();

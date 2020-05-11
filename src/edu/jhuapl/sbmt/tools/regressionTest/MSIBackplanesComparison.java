@@ -17,7 +17,6 @@ import edu.jhuapl.sbmt.client.SmallBodyViewConfig;
 import edu.jhuapl.sbmt.gui.image.model.ImageKey;
 import edu.jhuapl.sbmt.model.eros.MSIImage;
 import edu.jhuapl.sbmt.model.image.ImageSource;
-import edu.jhuapl.sbmt.tools.Authenticator;
 import edu.jhuapl.sbmt.tools.BackplanesGenerator;
 import edu.jhuapl.sbmt.util.BackplaneInfo;
 import edu.jhuapl.sbmt.util.BackplanesFileFormat;
@@ -60,7 +59,7 @@ public class MSIBackplanesComparison
         SmallBodyViewConfig.initialize();
         System.setProperty("java.awt.headless", "true");
         NativeLibraryLoader.loadHeadlessVtkLibraries();
-        Authenticator.authenticate();
+        Configuration.authenticate();
 
         smallBodyModel = SbmtModelFactory.createSmallBodyModel(SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.EROS, ShapeModelType.GASKELL, null));
 

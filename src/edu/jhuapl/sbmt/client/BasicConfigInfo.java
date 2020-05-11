@@ -2,7 +2,6 @@ package edu.jhuapl.sbmt.client;
 
 import java.util.Arrays;
 
-import edu.jhuapl.saavtk.config.ViewConfig;
 import edu.jhuapl.saavtk.model.ShapeModelBody;
 import edu.jhuapl.saavtk.model.ShapeModelType;
 
@@ -58,15 +57,17 @@ public class BasicConfigInfo implements MetadataManager
 				else
 					enabled = false;
 			}
-			for (SbmtMultiMissionTool.Mission defaultMission : defaultFor)
-			{
-				if (defaultMission == SbmtMultiMissionTool.getMission())
-				{
-					ViewConfig.setFirstTimeDefaultModelName(uniqueName);
-					break;
-				}
-			}
-
+            if (SmallBodyViewConfig.getDefaultModelName() == null)
+            {
+                for (SbmtMultiMissionTool.Mission defaultMission : defaultFor)
+                {
+                    if (defaultMission == SbmtMultiMissionTool.getMission())
+                    {
+                        SmallBodyViewConfig.setDefaultModelName(uniqueName);
+                        break;
+                    }
+                }
+            }
 
 			if (config.version != null)
 				this.configURL = ((SmallBodyViewConfig)config).rootDirOnServer + "/" + config.author +  "_" + config.body.toString().replaceAll(" ", "_") + config.version.replaceAll(" ", "_") + "_v" + SmallBodyViewConfigMetadataIO.metadataVersion + ".json";
@@ -169,14 +170,17 @@ public class BasicConfigInfo implements MetadataManager
 				else
 					enabled = false;
 			}
-			for (SbmtMultiMissionTool.Mission defaultMission : defaultFor)
-			{
-				if (defaultMission == SbmtMultiMissionTool.getMission())
-				{
-					ViewConfig.setFirstTimeDefaultModelName(uniqueName);
-					break;
-				}
-			}
+            if (SmallBodyViewConfig.getDefaultModelName() == null)
+            {
+                for (SbmtMultiMissionTool.Mission defaultMission : defaultFor)
+                {
+                    if (defaultMission == SbmtMultiMissionTool.getMission())
+                    {
+                        SmallBodyViewConfig.setDefaultModelName(uniqueName);
+                        break;
+                    }
+                }
+            }
 		}
 	}
 

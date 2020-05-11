@@ -3,6 +3,7 @@ package edu.jhuapl.sbmt.client;
 import java.awt.Frame;
 import java.io.File;
 import java.io.IOException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.Iterator;
@@ -10,6 +11,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.SortedSet;
 
+import javax.swing.JCheckBoxMenuItem;
+import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.JSeparator;
@@ -21,14 +24,22 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 
+import edu.jhuapl.saavtk.camera.gui.CameraQuaternionAction;
+import edu.jhuapl.saavtk.camera.gui.CameraRegularAction;
 import edu.jhuapl.saavtk.gui.Console;
 import edu.jhuapl.saavtk.gui.RecentlyViewed;
+import edu.jhuapl.saavtk.gui.ShapeModelImporter;
+import edu.jhuapl.saavtk.gui.ShapeModelImporter.FormatType;
+import edu.jhuapl.saavtk.gui.ShapeModelImporter.ShapeModelType;
 import edu.jhuapl.saavtk.gui.StatusBar;
 import edu.jhuapl.saavtk.gui.View;
 import edu.jhuapl.saavtk.gui.ViewManager;
+import edu.jhuapl.saavtk.gui.menu.EnableLODsAction;
 import edu.jhuapl.saavtk.gui.menu.FavoritesMenu;
 import edu.jhuapl.saavtk.gui.menu.FileMenu;
+import edu.jhuapl.saavtk.gui.menu.PickToleranceAction;
 import edu.jhuapl.saavtk.model.ShapeModelBody;
+import edu.jhuapl.saavtk.scalebar.gui.ScaleBarAction;
 
 import crucible.crust.metadata.api.Key;
 import crucible.crust.metadata.api.Metadata;
@@ -47,6 +58,10 @@ public class SbmtViewManager extends ViewManager
     // Flag indicating preference to add a separator in a menu.
     private static final String SEPARATOR = LABEL_PREFIX + "---";
 
+    private static boolean failsafeModelInitialized = false;
+
+    private static String failsafeModelName = null;
+
     // These are similar but distinct from SMALL_BODY_LIST/SMALL_BODY_LOOKUP.
     // This list contains all menu entries, each of which may refer to a View/ViewConfig,
     // or a simple text string/label, or a marker for a separator. Only ViewConfig objects
@@ -63,6 +78,8 @@ public class SbmtViewManager extends ViewManager
 
     private List<String> registeredConfigURLs = new ArrayList<String>();
 
+    private String defaultModelName;
+
     public SbmtViewManager(StatusBar statusBar, Frame frame, String tempCustomShapeModelPath)
     {
         super(statusBar, frame, tempCustomShapeModelPath);
@@ -72,34 +89,149 @@ public class SbmtViewManager extends ViewManager
         setupViews(); // Must be called before this view manager is used.
     }
 
+    /**
+     * This implementation uses the default model name provided by
+     * {@link SmallBodyViewConfig#getDefaultModelName()} to set the initial default
+     * model, but this may be changed by calling
+     * {@link #setDefaultModelName(String)}.
+     */
+    @Override
+    public String getDefaultModelName()
+    {
+        if (defaultModelName == null)
+        {
+            defaultModelName = SmallBodyViewConfig.getDefaultModelName();
+        }
+
+        return defaultModelName;
+    }
+
+    /**
+     * Set the current default model name. Note this affects only the running tool,
+     * not the persistent model name saved on disk.
+     */
+    @Override
+    public void setDefaultModelName(String modelName)
+    {
+        this.defaultModelName = modelName;
+    }
+
+    /**
+     * Make the current default model persistent so that it will be used for the
+     * default model next time the tool is run. This implementation uses using
+     * {@link SmallBodyViewConfig#setDefaultModelName(String).
+     */
+    @Override
+    public void saveDefaultModelName()
+    {
+        SmallBodyViewConfig.setDefaultModelName(defaultModelName);
+    }
+
+    /**
+     * Revert the default model name which will be used the next time the tool
+     * starts. This implementation uses
+     * {@link SmallBodyViewConfig#resetDefaultModelName()}.
+     */
+    @Override
+    public void resetDefaultModelName()
+    {
+        SmallBodyViewConfig.resetDefaultModelName();
+        this.defaultModelName = SmallBodyViewConfig.getDefaultModelName();
+    }
+
+    /**
+     * Returns the name of a failsafe built-in model of Eros that is equivalent to
+     * the Eros/Gaskell 2008 low resolution body model, but without any plate
+     * colorings, images, spectra etc. This model will be used only in the case
+     * where a first-time user starts without internet access.
+     * <p>
+     * The first time this is called, it will attempt to create the model using
+     * resources found by the class loader. If the resources are not found, or if
+     * model creation fails for any other reason, it will not be attempted again.
+     * Instead, the basic model name returned will be null whenever this method is
+     * called.
+     * <p>
+     * The model created will be treated as if it were created by the user as a
+     * custom model.
+     */
+    @Override
+    protected String provideBasicModel()
+    {
+        if (!failsafeModelInitialized)
+        {
+            failsafeModelInitialized = true;
+
+            URL failsafeModelURL = getClass().getResource("/edu/jhuapl/sbmt/data/Eros_ver64q.vtk");
+
+            if (failsafeModelURL != null)
+            {
+                String modelName = "Eros-Gaskell-2008";
+
+                ShapeModelImporter importer = new ShapeModelImporter();
+
+                importer.setShapeModelType(ShapeModelType.FILE);
+                importer.setName(modelName);
+                importer.setFormat(FormatType.VTK);
+                importer.setModelPath(failsafeModelURL.getFile());
+
+                String[] errorMessage = new String[1];
+
+                boolean result = importer.importShapeModel(errorMessage, false);
+
+                if (result)
+                {
+                    failsafeModelName = modelName;
+                }
+                else
+                {
+                    System.err.println(errorMessage[0]);
+                }
+            }
+        }
+
+        return failsafeModelName;
+    }
+
     @Override
     protected void createMenus(JMenuBar menuBar) {
         fileMenu = new FileMenu(this, ImmutableList.of("sbmt"));
         fileMenu.setMnemonic('F');
         menuBar.add(fileMenu);
 
+        // Body menu
         recentsMenu = new RecentlyViewed(this);
-        viewMenu = new SbmtViewMenu(this, recentsMenu);
+
+        bodyMenu = new SbmtViewMenu(this, recentsMenu);
+        bodyMenu.setMnemonic('B');
+        bodyMenu.add(new JSeparator());
+        bodyMenu.add(new FavoritesMenu(this));
+        bodyMenu.add(createPasswordMenu());
+        bodyMenu.add(new JSeparator());
+        bodyMenu.add(recentsMenu);
+        menuBar.add(bodyMenu);
+
+        // View menu
+        JMenu viewMenu = new JMenu("View");
         viewMenu.setMnemonic('V');
+        viewMenu.add(new JMenuItem(new CameraRegularAction(this)));
+        viewMenu.add(new JMenuItem(new CameraQuaternionAction(this)));
+        viewMenu.add(new JMenuItem(new ScaleBarAction(this)));
+
+        viewMenu.addSeparator();
+        JCheckBoxMenuItem enableLodMI = new JCheckBoxMenuItem(new EnableLODsAction());
+        enableLodMI.setSelected(true);
+        viewMenu.add(enableLodMI);
+        viewMenu.add(new PickToleranceAction(this));
 
         menuBar.add(viewMenu);
 
-        favoritesMenu = new FavoritesMenu(this);
-
-        JMenuItem passwordMenu = createPasswordMenu();
-
-        viewMenu.add(new JSeparator());
-        viewMenu.add(favoritesMenu);
-        viewMenu.add(passwordMenu);
-        viewMenu.add(new JSeparator());
-        viewMenu.add(recentsMenu);
-
+        // Console menu
         Console.addConsoleMenu(menuBar);
 
+        // Help menu
         helpMenu = new SbmtHelpMenu(this);
         helpMenu.setMnemonic('H');
         menuBar.add(helpMenu);
-
     }
 
     @Override
