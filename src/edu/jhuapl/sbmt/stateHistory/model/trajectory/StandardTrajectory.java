@@ -269,7 +269,6 @@ public class StandardTrajectory implements Trajectory
 	{
 		this.isFaded = isFaded;
 		this.color[3] = isFaded ? 50 : 255;
-		System.out.println("StandardTrajectory: setFaded: color 3 is now " + this.color[3]);
 	}
 
 	@Override

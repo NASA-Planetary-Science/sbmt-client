@@ -22,8 +22,8 @@ public enum StateHistoryColumnLookup
 	Color,
 
 //	Line,
-//
-//	Name,
+
+	Name,
 
 	/**
 	 *

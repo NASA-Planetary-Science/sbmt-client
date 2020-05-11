@@ -60,7 +60,12 @@ public class StandardStateHistory implements StateHistory
     /**
      *
      */
-    private String name;
+    private String name = "";
+
+    /**
+     *
+     */
+    private String description = "";
 
     /**
      *
@@ -75,6 +80,7 @@ public class StandardStateHistory implements StateHistory
 	private static final Key<Double> START_TIME_KEY = Key.of("startTime");
 	private static final Key<Double> END_TIME_KEY = Key.of("stopTime");
 	private static final Key<String> STATE_HISTORY_NAME_KEY = Key.of("name");
+	private static final Key<String> STATE_HISTORY_DESCRIPTION_KEY = Key.of("description");
 	private static final Key<Double[]> COLOR_KEY = Key.of("color");
 
     public static void initializeSerializationProxy()
@@ -86,9 +92,16 @@ public class StandardStateHistory implements StateHistory
     		Double startTime = source.get(START_TIME_KEY);
     		Double endTime = source.get(END_TIME_KEY);
     		String name = source.get(STATE_HISTORY_NAME_KEY);
+    		String description = "";
+    		try
+    		{
+    			description = source.get(STATE_HISTORY_DESCRIPTION_KEY);
+    		}
+    		catch (IllegalArgumentException iae) {}
+    		if (name == null) name = "";
     		Double[] color = source.get(COLOR_KEY);
 
-    		StandardStateHistory stateHistory = new StandardStateHistory(key, currentTime, startTime, endTime, name, color);
+    		StandardStateHistory stateHistory = new StandardStateHistory(key, currentTime, startTime, endTime, name, description, color);
     		return stateHistory;
 
     	}, StandardStateHistory.class, stateHistory -> {
@@ -99,7 +112,8 @@ public class StandardStateHistory implements StateHistory
     		result.put(START_TIME_KEY, stateHistory.getMinTime());
     		result.put(END_TIME_KEY, stateHistory.getMaxTime());
     		result.put(STATE_HISTORY_NAME_KEY, stateHistory.getStateHistoryName());
-    		result.put(COLOR_KEY, new Double[] { stateHistory.getTrajectory().getTrajectoryColor()[0], stateHistory.getTrajectory().getTrajectoryColor()[1], stateHistory.getTrajectory().getTrajectoryColor()[2], stateHistory.getTrajectory().getTrajectoryColor()[3]});
+    		result.put(STATE_HISTORY_DESCRIPTION_KEY, stateHistory.getStateHistoryDescription())
+;    		result.put(COLOR_KEY, new Double[] { stateHistory.getTrajectory().getTrajectoryColor()[0], stateHistory.getTrajectory().getTrajectoryColor()[1], stateHistory.getTrajectory().getTrajectoryColor()[2], stateHistory.getTrajectory().getTrajectoryColor()[3]});
     		return result;
     	});
 	}
@@ -120,13 +134,15 @@ public class StandardStateHistory implements StateHistory
      * @param name
      * @param color
      */
-    public StandardStateHistory(StateHistoryKey key, Double currentTime, Double startTime, Double endTime, String name, Double[] color)
+    public StandardStateHistory(StateHistoryKey key, Double currentTime, Double startTime, Double endTime, String name, String description, Double[] color)
     {
     	this.key = key;
     	this.currentTime = currentTime;
     	this.startTime = startTime;
     	this.endTime = endTime;
     	this.color = color;
+    	this.name = name;
+    	this.description = description;
     }
 
     /**
@@ -384,5 +400,17 @@ public class StandardStateHistory implements StateHistory
 	public void setStateHistoryName(String name)
 	{
 		this.name = name;
+	}
+
+	@Override
+	public String getStateHistoryDescription()
+	{
+		return description;
+	}
+
+	@Override
+	public void setStateHistoryDescription(String description)
+	{
+		this.description = description;
 	}
 }

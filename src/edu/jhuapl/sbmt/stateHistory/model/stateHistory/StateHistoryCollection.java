@@ -16,6 +16,7 @@ import edu.jhuapl.saavtk.util.Properties;
 import edu.jhuapl.sbmt.client.SmallBodyModel;
 import edu.jhuapl.sbmt.lidar.feature.FeatureAttr;
 import edu.jhuapl.sbmt.stateHistory.model.interfaces.StateHistory;
+import edu.jhuapl.sbmt.stateHistory.model.interfaces.StateHistoryCollectionChangedListener;
 import edu.jhuapl.sbmt.stateHistory.model.viewOptions.RendererLookDirection;
 import edu.jhuapl.sbmt.stateHistory.rendering.SpacecraftBody;
 import edu.jhuapl.sbmt.stateHistory.rendering.TrajectoryActor;
@@ -39,6 +40,11 @@ import glum.item.ItemEventType;
  */
 public class StateHistoryCollection extends SaavtkItemManager<StateHistory> implements PropertyChangeListener, MetadataManager
 {
+	/**
+	 *
+	 */
+	private ArrayList<StateHistoryCollectionChangedListener> changeListeners = new ArrayList<StateHistoryCollectionChangedListener>();
+
 	/**
 	 *
 	 */
@@ -75,6 +81,19 @@ public class StateHistoryCollection extends SaavtkItemManager<StateHistory> impl
 	{
 		this.renderManager = new StateHistoryRendererManager(smallBodyModel, pcs);
 		this.bodyName = smallBodyModel.getConfig().getShapeModelName();
+	}
+
+	public void addStateHistoryCollectionChangedListener(StateHistoryCollectionChangedListener listener)
+	{
+		changeListeners.add(listener);
+	}
+
+	public void fireHistorySegmentUpdatedListeners(StateHistory history)
+	{
+		for (StateHistoryCollectionChangedListener listener : changeListeners)
+		{
+			listener.historySegmentUpdated(history);
+		}
 	}
 
 	/**

@@ -19,6 +19,7 @@ import edu.jhuapl.sbmt.client.SmallBodyModel;
 import edu.jhuapl.sbmt.client.SmallBodyViewConfig;
 import edu.jhuapl.sbmt.stateHistory.model.interfaces.IStateHistoryIntervalGenerator;
 import edu.jhuapl.sbmt.stateHistory.model.interfaces.StateHistory;
+import edu.jhuapl.sbmt.stateHistory.model.interfaces.StateHistoryCollectionChangedListener;
 import edu.jhuapl.sbmt.stateHistory.model.interfaces.StateHistoryModelChangedListener;
 import edu.jhuapl.sbmt.stateHistory.model.io.StateHistoryIOException;
 import edu.jhuapl.sbmt.stateHistory.model.io.StateHistoryInputException;
@@ -110,6 +111,23 @@ public class StateHistoryModel
 		this.endTime = end;
 		this.modelManager = modelManager;
 		this.runs = (StateHistoryCollection) modelManager.getModel(ModelNames.STATE_HISTORY_COLLECTION);
+		this.runs.addStateHistoryCollectionChangedListener(new StateHistoryCollectionChangedListener()
+		{
+
+			@Override
+			public void historySegmentUpdated(StateHistory history)
+			{
+				try
+				{
+					updateConfigFile();
+				}
+				catch (IOException e)
+				{
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
+		});
 		this.intervalGenerator = new PregenStateHistoryIntervalGenerator((SmallBodyViewConfig) viewConfig);
 		initializeRunList();
 	}

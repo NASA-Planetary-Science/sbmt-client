@@ -9,10 +9,13 @@ package edu.jhuapl.sbmt.stateHistory.model.interfaces;
 public interface StateHistoryCollectionChangedListener
 {
 
-	/**
-	 * Notifies listeners that the <pre>history</pre> object has changed
-	 * @param segment
-	 */
-	public void historySegmentMapped(StateHistory history);
+//	/**
+//	 * Notifies listeners that the <pre>history</pre> object has changed
+//	 * @param segment
+//	 */
+//	public void historySegmentMapped(StateHistory history);
+
+	public void historySegmentUpdated(StateHistory history);
+
 
 }

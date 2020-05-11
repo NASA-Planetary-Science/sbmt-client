@@ -137,6 +137,16 @@ public interface StateHistory
     public void setStateHistoryName(String name);
 
     /**
+     * @return
+     */
+    public String getStateHistoryDescription();
+
+    /**
+     * @param name
+     */
+    public void setStateHistoryDescription(String description);
+
+    /**
      * Returns the trajectory object for this state history
      * @return
      */

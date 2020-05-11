@@ -57,10 +57,11 @@ public class StateHistoryItemHandler extends BasicItemHandler<StateHistory, Stat
 											(int)(stateHistory.getTrajectory().getTrajectoryColor()[3])));
 //			case Line:
 //				return 1;
-//			case Name:
-//				return stateHistory.getTrajectoryName();
+			case Name:
+				if (stateHistory.getStateHistoryName().equals("")) return "Segment " + stateHistory.getKey().value;
+				return stateHistory.getStateHistoryName();
 			case Description:
-				return stateHistory.getTrajectory().getTrajectoryDescription();
+				return stateHistory.getStateHistoryDescription();
 			case StartTime:
 				fmt.withZone(DateTimeZone.UTC);
 				timeString = TimeUtil.et2str(stateHistory.getMinTime());
@@ -97,6 +98,16 @@ public class StateHistoryItemHandler extends BasicItemHandler<StateHistory, Stat
 			{
 				stateHistoryCollection.setVisibility(history, (boolean) aValue);
 			}
+		}
+		else if (aEnum == StateHistoryColumnLookup.Name)
+		{
+			history.setStateHistoryName((String)aValue);
+			stateHistoryCollection.fireHistorySegmentUpdatedListeners(history);
+		}
+		else if (aEnum == StateHistoryColumnLookup.Description)
+		{
+			history.setStateHistoryDescription((String)aValue);
+			stateHistoryCollection.fireHistorySegmentUpdatedListeners(history);
 		}
 		else if (aEnum == StateHistoryColumnLookup.Color)
 		{

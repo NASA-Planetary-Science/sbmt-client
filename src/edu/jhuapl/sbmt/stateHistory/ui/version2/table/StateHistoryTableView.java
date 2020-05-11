@@ -6,10 +6,12 @@ import java.awt.event.ActionListener;
 
 import javax.swing.Box;
 import javax.swing.BoxLayout;
+import javax.swing.DefaultCellEditor;
 import javax.swing.JButton;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
+import javax.swing.JTextField;
 import javax.swing.border.TitledBorder;
 import javax.swing.table.TableCellRenderer;
 
@@ -193,6 +195,7 @@ public class StateHistoryTableView extends JPanel
 		tmpComposer.addAttribute(StateHistoryColumnLookup.Map, Boolean.class, "Map", null);
 		tmpComposer.addAttribute(StateHistoryColumnLookup.Show, Boolean.class, "Show", null);
 		tmpComposer.addAttribute(StateHistoryColumnLookup.Color, Color.class, "Color", null);
+		tmpComposer.addAttribute(StateHistoryColumnLookup.Name, String.class, "Name", null);
 		tmpComposer.addAttribute(StateHistoryColumnLookup.Description, String.class, "Description", null);
 		tmpComposer.addAttribute(StateHistoryColumnLookup.StartTime, String.class, "Start Time", null);
 		tmpComposer.addAttribute(StateHistoryColumnLookup.EndTime, String.class, "End Time", null);
@@ -207,7 +210,9 @@ public class StateHistoryTableView extends JPanel
 		tmpComposer.setRenderer(StateHistoryColumnLookup.Show, new BooleanCellRenderer());
 		tmpComposer.setEditor(StateHistoryColumnLookup.Color, new ColorProviderCellEditor<StateHistory>());
 		tmpComposer.setRenderer(StateHistoryColumnLookup.Color, new ColorProviderCellRenderer(false));
+		tmpComposer.setEditor(StateHistoryColumnLookup.Name, new DefaultCellEditor(new JTextField()));
 		tmpComposer.setRenderer(StateHistoryColumnLookup.Description, tmpTimeRenderer);
+		tmpComposer.setEditor(StateHistoryColumnLookup.Description, new DefaultCellEditor(new JTextField()));
 		tmpComposer.setRenderer(StateHistoryColumnLookup.StartTime, tmpTimeRenderer);
 		tmpComposer.setRenderer(StateHistoryColumnLookup.EndTime, tmpTimeRenderer);
 
@@ -278,7 +283,7 @@ public class StateHistoryTableView extends JPanel
 		int minW = 30;
 
 		ColorProvider blackCP = new ConstColorProvider(Color.BLACK);
-		Object[] nomArr = { true, true, blackCP, "Description", dateTimeStr, dateTimeStr };
+		Object[] nomArr = { true, true, blackCP, "Segment000", "Description", dateTimeStr, dateTimeStr };
 		for (int aCol = 0; aCol < nomArr.length; aCol++)
 		{
 			TableCellRenderer tmpRenderer = tmpTable.getCellRenderer(0, aCol);
