@@ -101,9 +101,11 @@ sbmtCodeTop=$rawDataTop
 # Environment variables:
 export SAAVTKROOT="$sbmtCodeTop/saavtk"
 export SBMTROOT="$sbmtCodeTop/sbmt"
+export PATH="$PATH:/project/sbmtpipeline/software/heasoft/bin"
 
 echo "rawDataTop is $rawDataTop"
 echo "processedTop is $processedTop"
 echo "sbmtCodeTop is $sbmtCodeTop"
+echo "HEASoft/Ftools installation is in /project/sbmtpipeline/software/heasoft/bin"
 
 . "$rawDataTop/$(basename $processingScript)"
