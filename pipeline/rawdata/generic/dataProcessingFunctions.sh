@@ -64,7 +64,7 @@ getDirName() {
   msg=$2
   
   if test -f "$1"; then
-    result="$(cd "$(dirname "$1")"; check $? $msg getDirName: cannot cd to parent of $1"; pwd -P)"
+    result="$(cd "$(dirname "$1")"; check $? $msg getDirName: cannot cd to parent of $1; pwd -P)"
     check $? "$msg getDirName: cannot determine parent of $1" 
   else
     result="$(cd $1; check $? $msg getDirName: cannot cd to $1; pwd -P)"
@@ -118,7 +118,7 @@ createDir() {
 
     if test ! -d "$dir"; then
       echo "mkdir -p $dir"
-      mkdir -p" $dir"
+      mkdir -p "$dir"
       if test $? -ne 0; then
         echo "createDir: unable to create directory $dir." >&2
         exit 1
@@ -140,7 +140,7 @@ createParentDir() {
     parentDir=$(dirname "$dir")"/.."
     if test ! -d "$parentDir"; then
       echo "mkdir -p $parentDir"
-      mkdir -p" $parentDir"
+      mkdir -p "$parentDir"
       if test $? -ne 0; then
         echo "createParentDir: unable to create directory $parentDir." >&2
         exit 1
@@ -597,10 +597,12 @@ extractFITSFileTimes() {
   fi
 
   if test "$dir" = "$topDir"; then
-    :
+    relPath=
   elif test `echo $dir | grep -c "$topDir/"` -eq 0; then
     echo "extractFITSFileTimes: top directory $topDir is not an ancestor of directory $dir" >&2
     exit 1
+  else
+    relPath=`echo $dir | sed "s:^$topDir/::"`
   fi
 
   if test "$listFile" = ""; then
@@ -618,20 +620,20 @@ extractFITSFileTimes() {
   createParentDir $listFile
   
   rm -f $listFile
-  for file in $dir/* .; do
+  for file in `ls $dir/` .; do
     if test "$file" != .; then
       # Ftool ftlist prints the whole header line for the keyword, however many times it appears in the file.
       # Parse the first match, assumed to have the standard FITS keyword form:
       # keyname = 'value' / comment
       # In general the comment and the single quotes are not guaranteed to be present, so try to be bullet-proof
       # with the seds. Also the output should have a T rather than space separating the date from the time.
-      value=`ftlist infile=$file option=k include=$timeStampKeyword | head -1 | sed 's:[^=]*=[  ]*::' | sed 's:[  ]*/.*$::'| \
-        sed "s:^''*::" | sed "s:''"'*$*::' | sed 's: :T::'`
+      value=`ftlist "infile=$dir/$file" option=k include=$timeStampKeyword | head -1 | \
+        sed 's:[^=]*=[  ]*::' | sed 's:[  ]*/.*$::' | sed "s:^''*::" | sed "s:''*$::" | sed 's: :T:'`
       if test $? -eq 0 -a "$value" != ""; then
-        fileRelativePath=`echo $file | sed "s:^$topDir/:/:"`
-        echo "$fileRelativePath, $value" >> $listFile
+        echo "$relPath/$file, $value" >> $listFile
       else
         echo "extractFITSFileTimes: unable to extract time; skipping file $file" >&2
+exit 1
       fi
     fi
   done
