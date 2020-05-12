@@ -2,6 +2,7 @@
 #include <iomanip>
 #include <iostream>
 #include <sstream>
+#include <stdexcept>
 #include <string>
 #include <utility>
 #include <vector>
@@ -69,7 +70,7 @@ vector<pair<string, string> > loadFileList(const string& filelist) {
         }
     } else {
         cerr << "Error: Unable to open file '" << filelist << "'" << endl;
-        exit(1);
+        throw runtime_error("Can't open file " + filelist);
     }
 
     return files;
@@ -88,7 +89,7 @@ void saveInfoFile(string filename,
     if (!fout.is_open())
     {
         cerr << "Error: Unable to open file " << filename << " for writing" << endl;
-        exit(1);
+        throw runtime_error("Can't open file " + filename);
     }
 
     fout.precision(16);
