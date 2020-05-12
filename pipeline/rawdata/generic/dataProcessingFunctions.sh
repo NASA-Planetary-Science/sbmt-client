@@ -627,13 +627,12 @@ extractFITSFileTimes() {
       # keyname = 'value' / comment
       # In general the comment and the single quotes are not guaranteed to be present, so try to be bullet-proof
       # with the seds. Also the output should have a T rather than space separating the date from the time.
-      value=`ftlist "infile=$dir/$file" option=k include=$timeStampKeyword | head -1 | \
+      value=`ftlist "infile=$dir/$file" option=k include=$timeStampKeyword 2> /dev/null | head -1 | \
         sed 's:[^=]*=[  ]*::' | sed 's:[  ]*/.*$::' | sed "s:^''*::" | sed "s:''*$::" | sed 's: :T:'`
       if test $? -eq 0 -a "$value" != ""; then
         echo "$relPath/$file, $value" >> $listFile
       else
         echo "extractFITSFileTimes: unable to extract time; skipping file $file" >&2
-exit 1
       fi
     fi
   done
