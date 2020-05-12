@@ -1,3 +1,4 @@
+#include <algorithm>
 #include <fstream>
 #include <iomanip>
 #include <iostream>
@@ -189,7 +190,14 @@ int main(int argc, char** argv)
     furnsh_c(metakernel.c_str());
     cout << "Furnished SPICE files" << endl;
     erract_c("SET", 1, (char*)"RETURN");
-    vector< pair<string, string> > fitfiles = loadFileList(inputfilelist);
+
+    vector< pair<string, string> > fitfiles;
+    try {
+    	vector< pair<string, string> > listFiles = loadFileList(inputfilelist);
+		copy(listFiles.begin(), listFiles.end(), fitfiles.begin());
+    } catch (exception e) {
+    	return 1;
+    }
 
     // Output list of missing info files.
     ofstream missingInfoStream(missingInfoList.c_str());
@@ -255,9 +263,13 @@ int main(int argc, char** argv)
 
 		string infofilename = infofileDir + "/"
 				+ fileName.substr(0, last_dot_idx) + ".INFO";
-		saveInfoFile(infofilename, utc, scposb, boredir, updir, frustum,
+		try {
+			saveInfoFile(infofilename, utc, scposb, boredir, updir, frustum,
 				sunPosition);
-		cout << "created " << infofilename << endl;
+			cout << "created " << infofilename << endl;
+		} catch (exception e) {
+			break;
+		}
 
 		fout << fileName << " " << utc << endl;
 	}
