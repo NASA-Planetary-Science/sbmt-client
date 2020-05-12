@@ -94,7 +94,9 @@ copyOptionalDir imaging
 # Process plate colorings.
 discoverPlateColorings
 
-createInfoFiles imaging/draco/spice imaging/draco/infofiles
+createInfoFilesFromFITSImages imaging/draco/spice/myMetakernel \
+  DIDYMOSA IAU_DIDYMOSA DART DRACO_FRAME \
+  imaging/draco/images imaging/draco/infofiles
 #-------------------------------------------------------------------------------
 
 # Done.
