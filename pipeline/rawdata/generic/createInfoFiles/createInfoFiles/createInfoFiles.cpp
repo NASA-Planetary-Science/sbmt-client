@@ -1,35 +1,23 @@
-#include <stdlib.h>
-#include <stdio.h>
-#include <iomanip>
-#include <string>
-#include <sys/stat.h>
-#include <cstdlib>
-#include <iostream>
 #include <fstream>
+#include <iomanip>
+#include <iostream>
+#include <sstream>
+#include <string>
+#include <utility>
 #include <vector>
+
 #include "SpiceUsr.h"
-
-#define  FILSIZ         256
-            #define  LNSIZE         81
-            #define  MAXCOV         100000
-            #define  WINSIZ         ( 2 * MAXCOV )
-            #define  TIMLEN         51
-
-
-#define MAXBND 4
-#define WDSIZE 32
 
 using namespace std;
 
-void getTargetState    (double et, const char* spacecraft, const char* observerBody, const char* bodyFrame, const char* targetBody, double targetpos[3], double velocity[3]);
-void getSpacecraftState(double et, const char* spacecraft, const char* observerBody, const char* bodyFrame, double scPosition[3], double velocity[3]);
-void getFov            (double et, const char* spacecraft, const char* observerBody, const char* bodyFrame, const char* instrFrame, double boredir[3], double updir[3], double frustum[12]);
+void getTargetState    (double et, const char* spacecraft, const char* body, const char* bodyFrame, const char* targetBody, double targetpos[3], double velocity[3]);
+void getSpacecraftState(double et, const char* spacecraft, const char* body, const char* bodyFrame, double scPosition[3], double velocity[3]);
+void getFov            (double et, const char* spacecraft, const char* body, const char* bodyFrame, const char* instrFrame, double boredir[3], double updir[3], double frustum[12]);
 
 
 // ******************************************************************
 // Generic package to generate SPICE pointing info files. FITS header
-// information is not used (TBD - may need it to orient the images,
-// but keywords are mission-specific).
+// information is not used.
 // ******************************************************************
 
 
@@ -38,176 +26,53 @@ void getFov            (double et, const char* spacecraft, const char* observerB
 const std::string whiteSpaces(" \f\n\r\t\v");
 
 // Remove initial and trailing whitespace from string. Modifies string in-place
-inline void trimRight(std::string& str, const std::string& trimChars =
+inline string trimRight(std::string& str, const std::string& trimChars =
         whiteSpaces) {
     std::string::size_type pos = str.find_last_not_of(trimChars);
     str.erase(pos + 1);
+    return str;
 }
 
-inline void trimLeft(std::string& str, const std::string& trimChars =
+inline string trimLeft(std::string& str, const std::string& trimChars =
         whiteSpaces) {
     std::string::size_type pos = str.find_first_not_of(trimChars);
     str.erase(0, pos);
+    return str;
 }
 
-inline void trim(std::string& str, const std::string& trimChars = whiteSpaces) {
+inline string trim(std::string& str, const std::string& trimChars = whiteSpaces) {
     trimRight(str, trimChars);
     trimLeft(str, trimChars);
+    return str;
 }
 
-void removeSurroundingQuotes(string& str) {
-    //cout << "removing surrounding quotes" << endl;
-    int length = str.size();
-    if (str[length - 1] == '\'')
-        str = str.substr(0, length - 1);
-    if (str[0] == '\'')
-        str = str.substr(1);
-    //cout << "removed surrounding quotes" << endl;
-}
-
-vector<string> loadFileList(const string& filelist) {
+vector<pair<string, string> > loadFileList(const string& filelist) {
     ifstream fin(filelist.c_str());
 
-    vector < string > files;
+    vector < pair<string, string> > files;
 
     if (fin.is_open()) {
         string line;
-        while (getline(fin, line))
-            files.push_back(line);
+        while (!fin.eof()) {
+        	getline(fin, line);
+        	stringstream ss(line);
+        	vector<string> splitLine;
+        	while (!ss.eof()) {
+        		string segment;
+        		getline(ss, segment, ',');
+        		splitLine.push_back(segment);
+        	}
+        	if (splitLine.size() != 2) {
+        		throw out_of_range("Each line must have a file name and image time, separated by commas.");
+        	}
+            files.push_back(make_pair(trim(splitLine[0]), trim(splitLine[1])));
+        }
     } else {
         cerr << "Error: Unable to open file '" << filelist << "'" << endl;
         exit(1);
     }
 
     return files;
-}
-
-void splitFitsHeaderLineIntoKeyAndValue(const string& line, string& key,
-        string& value) {
-    //cout << "string length is " << line.length() << endl;
-    key = line.substr(0, 8);
-    trim(key);
-    //cout << "splitting fits header: " << key << endl;
-    if (line.length() < 10)
-    {
-       value = "";
-       return;
-    }
-    value = line.substr(10);
-    //cout << "value is " << value << endl;
-    size_t found = value.find_last_of("/");
-    if (found != string::npos)
-        value = value.substr(0, found);
-    trim(value);
-    //cout << "trimmed value is " << value << endl;
-    removeSurroundingQuotes(value);
-    trim(value);
-    //cout << "split fits header: " << key << "," << value << endl;
-}
-
-void convertFileUTC2String(const char* filename, char* utc, int offset)
-{
-  int n;
-  n=sprintf (utc, "%c%c%c%c-%c%c-%c%cT%c%c:%c%c:%c%c", filename[offset+9], filename[offset+10], filename[offset+11], filename[offset+12], filename[offset+13], filename[offset+14], filename[offset+15], filename[offset+16], filename[offset+18], filename[offset+19], filename[offset+20], filename[offset+21], filename[offset+22], filename[offset+23]);
-}
-
-//Hayabusa 2 specific call?
-void convertFileUTC2String(const char* filename, char* utc)
-{
-  convertFileUTC2String(filename, utc, 61);
-}
-
-void getStringFieldFromFitsHeader(const string& fitfile,
-		   string key,
-		   string& value )
-{
-    	ifstream fin(fitfile.c_str());
-
-    	if (!fin.is_open())
-    	{
-        	cerr << "Error: Unable to open file '" << fitfile << "'" << endl;
-        	exit(1);
-    	}
-
-	string str;
-        char buffer[81];
-        string currkey;
-        string val;
-        while(true)
-        {
-            fin.read(buffer, 80);
-            buffer[80] = '\0';
-            str = buffer;
-            splitFitsHeaderLineIntoKeyAndValue(str, currkey, val);
-            if (currkey == key)
-            {
-            	value = val.c_str();
-                break;
-            }
-        }
-
-	fin.close();
-}
-
-
-void getEt(const string& fitfile,
-	   string sclkkey,
-           string& utc,
-           double& et,
-	   const char* scid)
-{
-    int instid;
-    int found;
-
-    //if the key is FILENAME, use this to switch to the built in methods that parse the filename
-    if (sclkkey == "FILENAME")
-    {
-	int len = 25;
-     	char utcchar[len];
-	std::size_t found = fitfile.find_last_of("/\\");
-	string filename = fitfile.substr(found+1);
-	convertFileUTC2String(filename.c_str(), utcchar, 0);
-	utc = string(utcchar);
-	utc2et_c(utcchar, &et);
-	return;
-    }
-
-
-    bodn2c_c(scid, &instid, &found);
-    if (failed_c() || !found)
-    {
-        cerr << "Spacecraft id " << scid << " instrument id " << instid << endl;
-        cerr << "failed or found is " << found <<  endl;
-        return;
-    }
-    ifstream fin(fitfile.c_str());
-
-    if (fin.is_open())
-    {
-    	string str;
-    	getStringFieldFromFitsHeader(fitfile, sclkkey, str);
-	//if the FITS header fails, attempt to determine from the filename
-	//Not knowing the file format a priori though, this should probably throw an error
-        if ( str.empty()  )
-        {   
-            int len = 19;
-            char utcchar[len];
-            convertFileUTC2String(fitfile.c_str(), utcchar);
-            str =(string) utcchar;
-        }
-
-        utc = str;
-        utc2et_c(str.c_str(), &et);
-//        cout << "et is " << et << endl;
-//        cout << "UTC is " << utc << endl;
-    }
-    else
-    {
-        cerr << "Error: Unable to open file '" << fitfile << "'" << endl;
-        exit(1);
-    }
-
-    fin.close();
 }
 
 void saveInfoFile(string filename,
@@ -276,23 +141,27 @@ void saveInfoFile(string filename,
 /*
 
   Taken from Amica create_info_files.cpp and LORRI create_info_files.cpp
+  and then heavily modified.
 
   This program creates an info file for each fit file. For example the
   file N2516167681.INFO is created for the fit file N2516167681.FIT.
 
   This program takes the following input arguments:
 
-  1. kernelfiles - a SPICE meta-kernel file containing the paths to the kernel files
+  1. metakernel - a SPICE meta-kernel file containing the paths to the kernel files
   2. body - IAU name of the target body, all caps
   3. bodyFrame - Typically IAU_<body>, but could be something like RYUGU_FIXED
-  4. sc - SPICE spacecraft name
-  5. instrframe - SPICE instrument frame name
-  6. fitstimekeyword - FITS header time keyword, UTC assumed
-  7. input file list - path to file in which all image files are listed
-  8. output folder - path to folder where infofiles should be saved to
-  9. output file list - path to file in which all files for which an infofile was
-     created will be listed along with their start times.
- 10. missing info list - path to file in which all files for which no infofile
+  4. spacecraft - SPICE spacecraft name
+  5. instrumentframe - SPICE instrument frame name
+  6. imageTimeStampFile - path to CSV file in which all image files are listed (relative
+     to "topDir") with their UTC time stamps
+  7. infoDir - path to output directory where infofiles should be saved to
+  8. imageListFile - path to output file in which all image files for which an infofile was
+     created (image file name only, not full path) will be listed along with
+     their start times.
+  9. imageListFullPathFile - path to output file in which all image files for which an infofile
+     was created will be listed (full path relative to the server directory).
+ 10. missingInfoList - path to output file in which all image files for which no infofile
      was created will be listed, preceded with a string giving the cause for
      why no infofile could be created.
 */
@@ -300,84 +169,99 @@ int main(int argc, char** argv)
 {
     if (argc < 11)
     {
-        cerr << "Usage: create_info_files <kernelfiles> <body> <bodyFrame> <sc> <instrframe> <fitstimekeyword> <inputfilelist> <infofilefolder> <outputfilelist> <missinginfolist>" << endl;
+        cerr << "Usage: createInfoFiles <metakernel> <body> <bodyFrame> <spacecraft> <instrumentFrame> "
+        		"<imageTimeStampFile> <infoDir> <imageListFile> <imageListFullPathFile> <missingInfoList>" << endl;
         return 1;
     }
-    string kernelfiles = argv[1];
-    const char* body = argv[2];
-    const char* bodyFrame = argv[3];
-    const char* scid = argv[4];
-    const char*  instr = argv[5];
-    string sclkkey = argv[6];
-    string inputfilelist = argv[7];
-    string infofilefolder = argv[8];
-    string outputfilelist = argv[9];
-    string errorlogfile = argv[10];
-    cout << "Error log file " << errorlogfile << endl;
-    furnsh_c(kernelfiles.c_str());
-    cout << "Furnished SPICE files" << endl;	
+    int argIndex = 0;
+    string metakernel = argv[++argIndex];
+    const char* body = argv[++argIndex];
+    const char* bodyFrame = argv[++argIndex];
+    const char* scid = argv[++argIndex];
+    const char* instr = argv[++argIndex];
+    string inputfilelist = argv[++argIndex];
+    string infofileDir = argv[++argIndex];
+    string imageListFile = argv[++argIndex];
+    string imageListFullPathFile = argv[++argIndex];
+    string missingInfoList = argv[++argIndex];
+
+    furnsh_c(metakernel.c_str());
+    cout << "Furnished SPICE files" << endl;
     erract_c("SET", 1, (char*)"RETURN");
-    vector<string> fitfiles = loadFileList(inputfilelist);
-	
-    //Error log
-    ofstream errorOut(errorlogfile.c_str());
-    if (!errorOut.is_open()) {
-        cerr << "Error: Unable to open error log file " << errorlogfile.c_str()  << " for writing" << endl;
-        exit(1);
+    vector< pair<string, string> > fitfiles = loadFileList(inputfilelist);
+
+    // Output list of missing info files.
+    ofstream missingInfoStream(missingInfoList.c_str());
+    if (!missingInfoStream.is_open()) {
+        cerr << "Error: Unable to open missing info log file " << missingInfoList.c_str()  << " for writing" << endl;
+        return 1;
     }
+    cout << "Missing info file: " << missingInfoList << endl;
 
     //Image list
-    ofstream fout(outputfilelist.c_str());
+    ofstream fout(imageListFile.c_str());
     if (!fout.is_open()) {
-        cerr << "Error: Unable to open file for writing" << endl;
-        exit(1);
+        cerr << "Error: Unable to open file " << imageListFile << " for writing" << endl;
+        return 1;
     }
 
-    cout << "Processing image list of size " << fitfiles.size() << endl;
-    for (unsigned int i=0; i<fitfiles.size(); ++i)
-    {
-        reset_c();
-        string utc;
-        double et;
-        double scposb[3];
-        SpiceDouble unused[3];
-        double boredir[3];
-        double updir[3];
-        double frustum[12];
-        double sunPosition[3];
-        //cout << "Getting time from file " << fitfiles[i] << endl;
-        getEt(fitfiles[i], sclkkey, utc, et, scid);
-	//cout << "UTC is " << utc << " and et is " << et << endl;
-        if (failed_c())
-	{
-	    errorOut << "Unable to get time for image file " << fitfiles[i] << endl;
-            continue;
-	}
-
-	getSpacecraftState(et, scid, body, bodyFrame, scposb, unused);
-	getTargetState(et, scid, body, bodyFrame, "SUN", sunPosition, unused);
-	getFov(et, scid, body, bodyFrame, instr, boredir, updir, frustum);
-        if (failed_c())
-	{
-	    errorOut << "Unable to get pointing for image file " << fitfiles[i] << endl;
-            continue;
-	}
-
-        const size_t last_slash_idx = fitfiles[i].find_last_of("\\/");
-        if (std::string::npos != last_slash_idx)
-        {
-            fitfiles[i].erase(0, last_slash_idx + 1);
-        }
-        int length = fitfiles[i].size();
-
-        string infofilename = infofilefolder + "/"
-                + fitfiles[i].substr(0, length-4) + ".INFO";
-        saveInfoFile(infofilename, utc, scposb, boredir, updir, frustum, sunPosition);
-        cout << "created " << infofilename << endl;
-
-        fout << fitfiles[i].substr(0, length) << " " << utc << endl;
+    ofstream foutFullPath(imageListFile.c_str());
+    if (!foutFullPath.is_open()) {
+        cerr << "Error: Unable to open file " << imageListFile << " for writing" << endl;
+        return 1;
     }
+
+	cout << "Processing image list of size " << fitfiles.size() << endl;
+	for (unsigned int i = 0; i < fitfiles.size(); ++i) {
+		reset_c();
+		pair < string, string > fileWithTime = fitfiles[i];
+		string fileName = fileWithTime.first;
+		const char *utc = fileWithTime.second.c_str();
+		double et;
+		double scposb[3];
+		SpiceDouble unused[3];
+		double boredir[3];
+		double updir[3];
+		double frustum[12];
+		double sunPosition[3];
+
+		utc2et_c(utc, &et);
+		if (failed_c()) {
+			missingInfoStream << "Unable to get ET for image file "
+					<< fileName << endl;
+			continue;
+		}
+
+		getSpacecraftState(et, scid, body, bodyFrame, scposb, unused);
+		getTargetState(et, scid, body, bodyFrame, "SUN", sunPosition, unused);
+		getFov(et, scid, body, bodyFrame, instr, boredir, updir, frustum);
+		if (failed_c()) {
+			missingInfoStream << "Unable to get pointing for image file " << fileName << endl;
+			continue;
+		}
+
+		foutFullPath << fileName << endl;
+
+		size_t last_slash_idx = fileName.find_last_of("\\/");
+		if (std::string::npos != last_slash_idx) {
+			fileName.erase(0, last_slash_idx + 1);
+		}
+
+		size_t last_dot_idx = fileName.find_last_of(".");
+		if (std::string::npos == last_dot_idx) {
+			last_dot_idx = fileName.size();
+		}
+
+		string infofilename = infofileDir + "/"
+				+ fileName.substr(0, last_dot_idx) + ".INFO";
+		saveInfoFile(infofilename, utc, scposb, boredir, updir, frustum,
+				sunPosition);
+		cout << "created " << infofilename << endl;
+
+		fout << fileName << " " << utc << endl;
+	}
     cout << "done." << endl;
-    errorOut.close();
+    missingInfoStream.close();
+
     return 0;
 }
