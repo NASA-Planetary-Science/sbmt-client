@@ -19,11 +19,11 @@ import javax.swing.JMenuItem;
 import vtk.vtkActor;
 import vtk.vtkProp;
 
+import edu.jhuapl.saavtk.camera.CoordinateSystem;
 import edu.jhuapl.saavtk.config.ViewConfig;
 import edu.jhuapl.saavtk.gui.dialog.ColorChooser;
 import edu.jhuapl.saavtk.gui.dialog.ShapeModelImporterDialog;
 import edu.jhuapl.saavtk.gui.render.Renderer;
-import edu.jhuapl.saavtk.gui.render.camera.CoordinateSystem;
 import edu.jhuapl.saavtk.model.PolyhedralModel;
 import edu.jhuapl.saavtk.popup.PopupMenu;
 //import edu.jhuapl.near.popupmenus.ImagePopupMenu.ShowInfoAction;
