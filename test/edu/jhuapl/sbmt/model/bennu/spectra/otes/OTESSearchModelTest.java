@@ -43,7 +43,6 @@ import edu.jhuapl.sbmt.spectrum.model.sbmtCore.spectra.ISpectralInstrument;
 import edu.jhuapl.sbmt.spectrum.model.statistics.SpectrumStatisticsCollection;
 import edu.jhuapl.sbmt.spectrum.rendering.SpectraCollection;
 import edu.jhuapl.sbmt.spectrum.rendering.SpectrumBoundaryCollection;
-import edu.jhuapl.sbmt.tools.Authenticator;
 
 class OTESSearchModelTest
 {
@@ -71,7 +70,7 @@ class OTESSearchModelTest
 
 
         SbmtMultiMissionTool.configureMission();
-        Authenticator.authenticate();
+        Configuration.authenticate();
 
         SmallBodyViewConfig.initialize();
         smallBodyConfig = SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.RQ36, ShapeModelType.ALTWG_SPC_v20190414);

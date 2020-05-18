@@ -131,7 +131,7 @@ public class SpectrumListIO
 	 * @param completionBlock
 	 * @throws Exception
 	 */
-	public static <S extends BasicSpectrum> void loadCustomSpectrumListButtonActionPerformed(File file,
+	public static <S extends BasicSpectrum> void loadCustomSpectrumListButtonActionPerformed(File file, boolean append,
 			List<CustomSpectrumKeyInterface> results, BasicSpectrumInstrument instrument, Runnable completionBlock)
 			throws SpectrumIOException
 	{
@@ -140,11 +140,22 @@ public class SpectrumListIO
 		FixedMetadata metadata;
 		try
 		{
-			results.clear();
 			final Key<List<CustomSpectrumKeyInterface>> customSpectraKey = Key.of("SavedSpectra");
 			metadata = Serializers.deserialize(file, "SavedSpectra");
 			List<CustomSpectrumKeyInterface> customSpectraList = metadata.get(customSpectraKey);
-			results.addAll(customSpectraList);
+
+			if (append == false)
+			{
+				results.clear();
+				results.addAll(customSpectraList);
+			}
+			else	//appending
+			{
+				for (CustomSpectrumKeyInterface key : customSpectraList)
+				{
+					if (!results.contains(key)) results.add(key);
+				}
+			}
 			completionBlock.run();
 
 		}

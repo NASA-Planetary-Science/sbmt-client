@@ -183,8 +183,31 @@ public class SpectrumResultsTableController<S extends BasicSpectrum>
          {
     		 File file = CustomFileChooser.showOpenDialog(null, "Select File");
     	     if (file == null) return;
-    	     model.clearSpectraFromDisplay();
-             model.loadSpectrumListFromFile(file);
+
+    	     if (model.getSpectrumRawResults().size() > 0)
+    	     {
+				Object[] options =
+				{ "Append", "Overwrite" };
+				int n = JOptionPane.showOptionDialog(getPanel(), "Spectra currently exist; append to this list, or overwrite?", "Append/Overwrite",
+						JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE, null,
+						options, // the titles of buttons
+						options[0]); // default button title
+
+				if (n == 0) //append
+				{
+					model.loadSpectrumListFromFile(file, true);
+				}
+				else	//overwrite
+				{
+		    	     model.clearSpectraFromDisplay();
+		             model.loadSpectrumListFromFile(file, false);
+				}
+    	     }
+    	     else
+    	     {
+    	    	 model.clearSpectraFromDisplay();
+	             model.loadSpectrumListFromFile(file, false);
+    	     }
          }
          catch (SpectrumIOException e)
          {

@@ -1,25 +1,23 @@
 package edu.jhuapl.sbmt.spectrum.model.driver;
 
 import java.awt.EventQueue;
-import java.io.File;
 import java.io.IOException;
 import java.io.PrintStream;
 import java.lang.reflect.InvocationTargetException;
 import java.net.CookieHandler;
 import java.net.CookieManager;
 import java.net.CookiePolicy;
-import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 import javax.swing.ImageIcon;
+import javax.swing.JDialog;
 import javax.swing.JOptionPane;
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
 
-import com.google.common.collect.ImmutableList;
 import com.jgoodies.looks.LookUtils;
 
 import edu.jhuapl.saavtk.gui.Console;
@@ -33,7 +31,9 @@ import edu.jhuapl.saavtk.util.DownloadableFileState;
 import edu.jhuapl.saavtk.util.FileCache;
 import edu.jhuapl.saavtk.util.LatLon;
 import edu.jhuapl.saavtk.util.SafeURLPaths;
-import edu.jhuapl.saavtk.util.UrlInfo.UrlStatus;
+import edu.jhuapl.saavtk.util.ServerSettingsManager;
+import edu.jhuapl.saavtk.util.ServerSettingsManager.ServerSettings;
+import edu.jhuapl.saavtk.util.UrlStatus;
 import edu.jhuapl.sbmt.client.SbmtSplash;
 import edu.jhuapl.sbmt.client.SmallBodyViewConfig;
 import edu.jhuapl.sbmt.dtm.model.DEMKey;
@@ -99,6 +99,7 @@ public class SbmtTesterMultiMissionTool
 	private static final Mission RELEASED_MISSION = null;
 	private static Mission mission = RELEASED_MISSION;
 	private static boolean missionConfigured = false;
+    private static volatile JDialog offlinePopup = null;
 
 	private static boolean enableAuthentication;
 
@@ -398,45 +399,51 @@ public class SbmtTesterMultiMissionTool
 		}
 	}
 
-	protected void setUpAuthentication()
-	{
-	    if (enableAuthentication)
-	    {
-	        URL dataRootUrl = Configuration.getDataRootURL();
-	        // Set up two locations to check for passwords: in the installed location or in the user's home directory.
-	        String jarLocation = SbmtTesterMultiMissionTool.class.getProtectionDomain().getCodeSource().getLocation().getPath();
-	        String parent = new File(jarLocation).getParentFile().getParent();
-	        ImmutableList<Path> passwordFilesToTry = ImmutableList.of(SAFE_URL_PATHS.get(Configuration.getApplicationDataDir(), "password.txt"), SAFE_URL_PATHS.get(parent, "password.txt"));
+    protected void setUpAuthentication()
+    {
+        if (enableAuthentication)
+        {
+            ServerSettings serverSettings = ServerSettingsManager.instance().get();
 
-	        Configuration.setupPasswordAuthentication(dataRootUrl, passwordFilesToTry);
-	        FileCache.addServerUrlPropertyChangeListener(e -> {
-	            if (e.getPropertyName().equals(DownloadableFileState.STATE_PROPERTY))
-	            {
-	                DownloadableFileState rootState = (DownloadableFileState) e.getNewValue();
-	                if (rootState.getUrlState().getStatus() == UrlStatus.NOT_AUTHORIZED)
-	                {
-	                    Configuration.setupPasswordAuthentication(dataRootUrl, passwordFilesToTry);
-	                    FileCache.instance().queryAllInBackground(true);
-	                }
-	            }
-	        });
-	        if (!FileCache.instance().getRootState().isAccessible())
-	        {
-	            FileCache.setOfflineMode(true, Configuration.getCacheDir());
-	            String message = "Unable to find server " + dataRootUrl + ". Starting in offline mode. See console log for more information.";
-	            if (Configuration.isHeadless())
-	            {
-	                System.err.println(message);
-	            }
-	            else
-	            {
-	                Configuration.runOnEDT(() -> {
-	                    JOptionPane.showMessageDialog(null, message, "No internet access", JOptionPane.INFORMATION_MESSAGE);
-	                });
-	            }
-	        }
-	    }
-	}
+            if (serverSettings.isServerAccessible())
+            {
+                Configuration.getSwingAuthorizor().setUpAuthorization();
+            }
+            else
+            {
+                FileCache.setOfflineMode(true, Configuration.getCacheDir());
+                String message = "Unable to connect to server " + Configuration.getDataRootURL() + ". Starting in offline mode. See console log for more information.";
+                if (Configuration.isHeadless())
+                {
+                    System.err.println(message);
+                }
+                else
+                {
+                    Configuration.runOnEDT(() -> {
+                        JOptionPane pane = new JOptionPane(message, JOptionPane.INFORMATION_MESSAGE);
+                        offlinePopup = pane.createDialog("No internet access");
+                        offlinePopup.setVisible(true);
+                        offlinePopup.dispose();
+                    });
+                }
+            }
+            FileCache.instance().queryAllInBackground(true);
+
+            FileCache.addServerUrlPropertyChangeListener(e -> {
+                if (e.getPropertyName().equals(DownloadableFileState.STATE_PROPERTY))
+                {
+                    DownloadableFileState rootState = (DownloadableFileState) e.getNewValue();
+                    if (rootState.getUrlState().getStatus() == UrlStatus.NOT_AUTHORIZED)
+                    {
+                        if (Configuration.getSwingAuthorizor().setUpAuthorization())
+                        {
+                            FileCache.instance().queryAllInBackground(true);
+                        }
+                    }
+                }
+            });
+        }
+    }
 
 	public static void main(String[] args)
 	{
