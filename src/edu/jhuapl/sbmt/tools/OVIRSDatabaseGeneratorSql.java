@@ -270,7 +270,7 @@ public class OVIRSDatabaseGeneratorSql
 		Configuration.setRootURL(rootURL);
 
 		// authentication
-		Authenticator.authenticate();
+//		Authenticator.authenticate();
 
 		// initialize view config
 		SmallBodyViewConfig.fromServer = true;

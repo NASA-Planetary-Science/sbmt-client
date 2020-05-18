@@ -269,8 +269,8 @@ public class OTESDatabaseGeneratorSql
 		Configuration.setAPLVersion(aplVersion);
 		Configuration.setRootURL(rootURL);
 
-		// authentication
-		Authenticator.authenticate();
+//		// authentication
+//		Authenticator.authenticate();
 
 		// initialize view config
 		SmallBodyViewConfig.fromServer = true;
