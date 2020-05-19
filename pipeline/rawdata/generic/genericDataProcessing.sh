@@ -62,8 +62,8 @@ deployedTop="/project/sbmt2/sbmt/data/bodies/$outputTopPath"
 # Check out and build saavtk and sbmt. Comment these out if you don't need
 # the SBMT client for this delivery. The SBMT client is used for processing
 # plate colorings, and/or images.
-checkoutCode
-buildCode
+# checkoutCode
+# buildCode
 
 #-------------------------------------------------------------------------------
 # Delivery to raw data.
@@ -72,10 +72,10 @@ srcTop="$deliveryTop"
 destTop="$rawDataTop/$outputTopPath"
 
 # Copy any/all standard model files.
-copyStandardModelFiles
+# copyStandardModelFiles
 
 # Copy and tailor this for each imager. Comment out if there are no imagers.
-copyOptionalDir draco imaging/draco
+# copyOptionalDir draco imaging/draco
 #-------------------------------------------------------------------------------
 
 #-------------------------------------------------------------------------------
@@ -85,17 +85,17 @@ srcTop="$rawDataTop/$outputTopPath"
 destTop="$processedTop/$outputTopPath"
 
 # Copy any/all standard model files.
-copyStandardModelFiles
+# copyStandardModelFiles
 
 # All the individual imagers are in the imaging directory, so can get them
 # all at once this way.
-copyOptionalDir imaging
+# copyOptionalDir imaging
 
 # Process plate colorings.
-discoverPlateColorings
+# discoverPlateColorings
 
-createInfoFilesFromFITSImages imaging/draco/spice/myMetakernel \
-  DIDYMOSA IAU_DIDYMOSA DART DRACO_FRAME \
+createInfoFilesFromFITSImages imaging/draco/spice/generic.mk \
+  Didymos Didymos DART Draco COR_UTC \
   imaging/draco/images imaging/draco/infofiles
 #-------------------------------------------------------------------------------
 

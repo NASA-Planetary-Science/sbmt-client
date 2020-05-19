@@ -572,13 +572,17 @@ createInfoFilesFromFITSImages() {
   imageDir=$7
   infoDir=$8
 
-  # Generate image list with time stamps from the content of the image directory.
+# Generate image list with time stamps from the content of the image directory.
   imageTimeStampFile=$(getDirName "$destTop/$imageDir/..")"/imagelist-with-time.txt"
-  extractFITSFileTimes $timeStampKeyword $srcTop "$srcTop/$imageDir" $imageTimeStampFile 
+
+  if test ! -f $imageTimeStampFile; then
+    extractFITSFileTimes $timeStampKeyword $srcTop "$srcTop/$imageDir" $imageTimeStampFile 
+  else
+    echo "File $imageTimeStampFile exists -- skipping extracting times from FITS images"
+  fi
 
   createInfoFilesFromImageTimeStamps $metakernel $body $bodyFrame $spacecraft $instrumentFrame \
     $imageTimeStampFile $infoDir
-  check $?
 }
 
 # First argument is the keyword associated with time stamps.
@@ -598,7 +602,7 @@ extractFITSFileTimes() {
 
   if test "$dir" = "$topDir"; then
     relPath=
-  elif test `echo $dir | grep -c "$topDir/"` -eq 0; then
+  elif test `echo $dir | grep -c "^$topDir/"` -eq 0; then
     echo "extractFITSFileTimes: top directory $topDir is not an ancestor of directory $dir" >&2
     exit 1
   else
@@ -662,7 +666,7 @@ createInfoFilesFromImageTimeStamps() {
     exit 1
   fi
 
-  parentDir=$(getDirName "$infoDir/..")
+  parentDir=$(getDirName "$destTop/$infoDir/..")
   imageListFile="$parentDir/imagelist-info.txt"
   imageListFullPathFile="$parentDir/imagelist-fullpath-info.txt"
   missingInfoList="$parentDir/missing-info.txt"
@@ -676,7 +680,7 @@ createInfoFilesFromImageTimeStamps() {
     exit 1
   fi
 
-  createDir "$infoDir"
+  createDir "$destTop/$infoDir"
  
   #  1. metakernel - a SPICE meta-kernel file containing the paths to the kernel files
   #  2. body - IAU name of the target body, all caps
@@ -694,6 +698,10 @@ createInfoFilesFromImageTimeStamps() {
   # 10. missingInfoList - path to output file in which all image files for which no infofile
   #     was created will be listed, preceded with a string giving the cause for
   #     why no infofile could be created.
-  $createInfoFiles $metakernel $body $bodyFrame $spacecraft $instrumentFrame \
-    $imageTimeStampFile $infoDir $imageListFile $iamgeListFullPathFile $missingInfoList 2>&1 > create_info_files.txt
+
+  echo $createInfoFilesDir/createInfoFiles $destTop/$metakernel $body $bodyFrame $spacecraft $instrumentFrame \
+    $imageTimeStampFile "$destTop/$infoDir" $imageListFile $imageListFullPathFile $missingInfoList
+
+  $createInfoFilesDir/createInfoFiles $destTop/$metakernel $body $bodyFrame $spacecraft $instrumentFrame \
+    $imageTimeStampFile "$destTop/$infoDir" $imageListFile $imageListFullPathFile $missingInfoList 2>&1 > create_info_files.txt
 }

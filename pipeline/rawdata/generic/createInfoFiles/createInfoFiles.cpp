@@ -55,11 +55,16 @@ vector<pair<string, string> > loadFileList(const string& filelist) {
 
     if (fin.is_open()) {
         string line;
-        while (!fin.eof()) {
+        while (fin.good()) {
         	getline(fin, line);
+
+                if (trim(line).size() == 0) {
+                    continue;
+                }
+
         	stringstream ss(line);
         	vector<string> splitLine;
-        	while (!ss.eof()) {
+        	while (ss.good()) {
         		string segment;
         		getline(ss, segment, ',');
         		splitLine.push_back(segment);
@@ -67,7 +72,7 @@ vector<pair<string, string> > loadFileList(const string& filelist) {
         	if (splitLine.size() != 2) {
         		throw out_of_range("Each line must have a file name and image time, separated by commas.");
         	}
-            files.push_back(make_pair(trim(splitLine[0]), trim(splitLine[1])));
+        	files.push_back(make_pair(trim(splitLine[0]), trim(splitLine[1])));
         }
     } else {
         cerr << "Error: Unable to open file '" << filelist << "'" << endl;
@@ -193,9 +198,9 @@ int main(int argc, char** argv)
 
     vector< pair<string, string> > fitfiles;
     try {
-    	vector< pair<string, string> > listFiles = loadFileList(inputfilelist);
-		copy(listFiles.begin(), listFiles.end(), fitfiles.begin());
+    	fitfiles = loadFileList(inputfilelist);
     } catch (exception e) {
+    	cerr << "Error while trying to load file list: " << e.what() << endl;
     	return 1;
     }
 
