@@ -18,6 +18,9 @@
 #
 #-------------------------------------------------------------------------------
 
+echo "Tailor this script first for the specific delivery being processed."
+exit 1
+
 #-------------------------------------------------------------------------------
 # Update this block for each delivery.
 #-------------------------------------------------------------------------------
@@ -72,10 +75,10 @@ srcTop="$deliveryTop"
 destTop="$rawDataTop/$outputTopPath"
 
 # Copy any/all standard model files.
-# copyStandardModelFiles
+copyStandardModelFiles
 
 # Copy and tailor this for each imager. Comment out if there are no imagers.
-# copyOptionalDir draco imaging/draco
+copyOptionalDir draco imaging/draco
 #-------------------------------------------------------------------------------
 
 #-------------------------------------------------------------------------------
@@ -85,18 +88,16 @@ srcTop="$rawDataTop/$outputTopPath"
 destTop="$processedTop/$outputTopPath"
 
 # Copy any/all standard model files.
-# copyStandardModelFiles
+copyStandardModelFiles
 
 # All the individual imagers are in the imaging directory, so can get them
 # all at once this way.
-# copyOptionalDir imaging
+copyOptionalDir imaging
 
 # Process plate colorings.
-# discoverPlateColorings
+discoverPlateColorings
 
 createInfoFilesFromFITSImages imaging/draco/spice/generic.mk \
   Didymos Didymos DART Draco COR_UTC \
   imaging/draco/images imaging/draco/infofiles
 #-------------------------------------------------------------------------------
-
-# Done.
