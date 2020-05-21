@@ -443,7 +443,7 @@ updateLink() {
     processingId=$3
     
     if test "$src" = "" -o "$dest" = "" -o "$processingId" = ""; then
-      echo "linkFile: missing argument(s). Need source, destination and processing id." >&2
+      echo "updateLink: missing argument(s). Need source, destination and processing id." >&2
       if test $# -gt 1; then
         echo "$*" >&2
       fi
@@ -451,7 +451,7 @@ updateLink() {
     fi
   
     if test ! -e $src; then
-      echo "linkFile: source file/directory $src does not exist." >&2
+      echo "updateLink: source file/directory $src does not exist." >&2
       exit 1
     fi
   
@@ -463,13 +463,24 @@ updateLink() {
       destDir=`removePathEnding "$dest" "$destFile"`
       check $? "updateLink failed to get directory"
 
-      if test "$destDir" = x; then
+      if test "$destDir" = ""; then
         destDir=.
       fi
 
       backup="$destDir/.$destFile-bak-$processingId"
-      mv $dest $backup
-      check $? "updateLink failed to back up $dest"
+      # Only back up once.
+      if test ! -e $backup; then
+        mv $dest $backup
+        check $? "updateLink failed to back up $dest"
+      elif test -L $dest; then
+        # A symbolic link is probably from an earlier installation - remove it.
+        rm -f $dest
+        check $? "updateLink failed to remove link $dest"
+      else
+        # A file or directory AND what appears to be a back-up both exist here.
+        # This should not ever happen, so do not continue.
+        check 1 "updateLink did not expect to find file $dest"
+      fi
     fi
 
     ln -s $src $dest
@@ -480,6 +491,23 @@ updateLink() {
         mv $backup $dest
       fi
       check $status "updateLink failed to create new link"
+    fi
+  )
+  check $?
+}
+
+updateOptionalLink() {
+  (
+    src=$1
+
+    if test "$src" = ""; then
+      echo "updateOptionalLink: missing first argument (source file for link)" >&2
+      exit 1
+    fi
+
+    if test -e "$src"; then
+      updateLink $src $2 $3
+      check $?
     fi
   )
   check $?
@@ -650,10 +678,26 @@ copyStandardModelFiles() {
   # Require a manifest file. Do not comment this out.
   doRsync "$srcTop/aamanifest.txt" "$destTop/aamanifest.txt"
 
-  doRsyncOptionalDir "$srcTop/basemap" "$destTop/shape"
+  doRsyncOptionalDir "$srcTop/basemap" "$destTop/basemap"
   doRsyncOptionalDir "$srcTop/dtm" "$destTop/dtm"
   doRsyncOptionalDir "$srcTop/coloring" "$destTop/coloring"
   doRsyncOptionalDir "$srcTop/shape" "$destTop/shape"
+}
+
+linkStandardModelFiles() {
+  (
+    createDir $destTop
+    check $?
+
+echo "in $destTop, trying to link $srcTop/shape etc."
+    cd $destTop
+    updateOptionalLink "$srcTop/basemap" "basemap" "$processingId"
+    updateOptionalLink "$srcTop/dtm" "dtm" "$processingId"
+    updateOptionalLink "$srcTop/coloring" "coloring" "$processingId"
+    updateOptionalLink "$srcTop/shape" "shape" "$processingId"
+  
+  )
+  check $? "linkStandardModelFiles failed"
 }
 
 # Run DiscoverPlateColorings.sh, which is linked to a java tool that creates metadata files for plate colorings.
