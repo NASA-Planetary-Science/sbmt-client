@@ -7,6 +7,18 @@
 #                 similar clients.
 #-------------------------------------------------------------------------------
 
+# Check whether the logged in user name is the same as the provided argument.
+checkIdentity() {
+  if test "$1" = ""; then
+    echo "checkIdentity: first argument is blank (should be user name" >&2
+    exit 1
+  elif test "$1" = `whoami`; then
+    echo true
+  else
+    echo false
+  fi
+}
+
 # Check the exit status of a previous command, which is passed as the first
 # argument. If it's non-0, print an optional context messsage if present,
 # and then call exit from within the invoking shell, passing along the
@@ -72,6 +84,57 @@ getDirName() {
   fi
 
   echo $result
+}
+
+# Get just the filename from a full or partial path. Directories,
+# symbolic links and files are all treated like files, i.e. this really
+# returns the final segment. This is done lexically, without checking
+# for existence of any part.
+getFileName() {
+  (
+    path=$1
+    if test "$path" = ""; then
+      check 1 "getFileName: path argument missing/blank"
+    fi
+  
+    # Remove trailing slashes, then everything up to and including a final slash.
+    echo $path | sed 's://*$::' | sed 's:.*/::'
+  )
+  check $?
+}
+
+# Remove suffix from a string.
+removeSuffix() {
+  (
+    string=$1
+    suffix=$2
+    if test "$string" = "" -o "$suffix" = ""; then
+      check 1 "removeSuffix: one or more missing arguments"
+    fi
+  
+    result=`echo $string | sed "s:$suffix$::"`
+    if test "$result" = "$string"; then
+      check 1 "removeSuffix: unable to remove suffix $suffix from string $string"
+    fi
+  )
+  check $?
+}
+
+removePathEnding() {
+  (
+    path=$1
+    ending=$2
+    if test "$path" = "" -o "$ending" = ""; then
+      check 1 "removePathEnding: one or more missing arguments"
+    fi
+  
+    result=`echo $path | sed "s:/*$ending$::"`
+    if test "$result" = "$path"; then
+      check 1 "removePathEnding: unable to remove ending $ending from path $path"
+    fi
+    echo $result
+  )
+  check $?
 }
 
 # Guess the parent of a "raw data" path (supplied as an argument).
@@ -369,6 +432,59 @@ moveFile() {
   if test $? -ne 0; then exit 1; fi
 }
 
+# Create a symbolic link to source path ($1) in destination path ($2).
+# Behaves just like ln -s $1 $2 except that if $2 identifies an
+# existing file/symbolic link/directory, it will first be moved aside
+# before the link is created.
+updateLink() {
+  (
+    src=$1
+    dest=$2
+    processingId=$3
+    
+    if test "$src" = "" -o "$dest" = "" -o "$processingId" = ""; then
+      echo "linkFile: missing argument(s). Need source, destination and processing id." >&2
+      if test $# -gt 1; then
+        echo "$*" >&2
+      fi
+      exit 1
+    fi
+  
+    if test ! -e $src; then
+      echo "linkFile: source file/directory $src does not exist." >&2
+      exit 1
+    fi
+  
+    # If destination already exists, back it up rather than removing it outright.
+    if test -e $dest; then
+      destFile=`getFileName "$dest"`
+      check $? "updateLink failed to get file name"
+
+      destDir=`removePathEnding "$dest" "$destFile"`
+      check $? "updateLink failed to get directory"
+
+      if test "$destDir" = x; then
+        destDir=.
+      fi
+
+      backup="$destDir/.$destFile-bak-$processingId"
+      mv $dest $backup
+      check $? "updateLink failed to back up $dest"
+    fi
+
+    ln -s $src $dest
+    status=$?
+    if test $status -ne 0; then
+      # Failed to create link, so restore backup.
+      if test "$backup" != ""; then
+        mv $backup $dest
+      fi
+      check $status "updateLink failed to create new link"
+    fi
+  )
+  check $?
+}
+
 checkoutCode() {
   if test "$sbmtCodeTop" = ""; then
     echo "Missing location of top of source code tree" >&2
@@ -453,6 +569,7 @@ buildCode() {
   fi
 }
 
+# Deprecated: don't use this; sort -o infile infile will sort in place.
 removeDuplicates() {
   (
     file=$1
