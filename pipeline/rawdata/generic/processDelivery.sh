@@ -65,13 +65,6 @@ deployedTop="/project/sbmt2/sbmt/data/bodies/$outputTopPath"
 #-------------------------------------------------------------------------------
 
 #-------------------------------------------------------------------------------
-# Check out and build saavtk and sbmt. Comment these out if you don't need
-# the SBMT client for this delivery. The SBMT client is used for processing
-# plate colorings, and/or images.
-# checkoutCode
-# buildCode
-
-#-------------------------------------------------------------------------------
 # Delivery to raw data.
 #-------------------------------------------------------------------------------
 srcTop="$deliveryTop"
