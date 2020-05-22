@@ -48,7 +48,7 @@ check() {
   status=$?
   if test $status -ne 0; then
     if test $# -gt 1; then
-      echo "status=$*" >&2
+      echo "$*" | sed 's:[^ ][^ ]* *::' >&2
     fi
     exit $status
   fi
