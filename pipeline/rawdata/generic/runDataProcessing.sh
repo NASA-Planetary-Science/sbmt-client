@@ -9,66 +9,84 @@
 #-------------------------------------------------------------------------------
 # This script functions as the "main" driver for processing a data delivery.
 # The preconditions for processing a delivery are: a) a data provider has
-# placed a
-# set/collection of data in the "delivered" area and b) the provider has
-# requested the delivery be processed and provided whatever instructions
-# and metadata are necessary to the developer. The deliveryThe provider also must provide
-# instructions and metadata about the delivery. normally proceeds in three stages:
-#   Delivered-to-Raw-data: 
+# placed a set/collection of data in the "deliveries" area and b) the provider
+# has provided whatever instructions and metadata are necessary to the
+# developer, and requested the delivery be processed, typically using a
+# redmine issue.
+#
+# This script in itself just imports a library of commonly-needed shell script
+# functions, sets up the runtime environment and then invokes the "payload",
+# a data processing script provided as one of the arguments. Presumably the
+# payload will perform one or more of the steps needed to process the data
+# from deliveries -> raw data -> processed -> deployed -> served.
 #
 # The following variables will be properly set by runDataProcessing.sh
-# before this script is run, so you may safely use them in this script:
+# before the payload script is run, so you may safely use these in the
+# payload script:
 #
-#       rawDataTop: directory where this script is located, used as the
-#                   the top of the "raw" area for this delivery.
+#       rawDataTop: directory where the payload script is located, used
+#                   as the the top of the "raw" area for this delivery.
 #     processedTop: top of this corresponding processed area for this
 #                   delivery. This is usually parallel to rawDataTop.
+#      deployedTop: top of the corresponding deployed data area for
+#                   this delivery. This is typically an area visible
+#                   to the server but it is not the path the server
+#                   uses to access the data.
 #      sbmtCodeTop: where sbmt and saavtk are checked out and built.
 #
-# Functions defined in dataProcessingFunctions.sh are available in this
-# script. By convention, all higher-level functions defined there
-# are relatively smart in that they will try to detect and skip steps
-# that were completed successfully in a previous run. The functions are
-# also designed such that even if a step is repeated, there will be no
-# harm done other than the loss of time to repeat the step.
+# Functions defined in the common functions library dataProcessingFunctions.sh
+# are available in the payload script. These functions will try when possible to
+# avoid repeating expensive operations that were completed successfully
+# in a previous run. The functions are also designed such that even if an
+# operation is repeated, there will be no harm done other than the loss of time
+# to repeat the step. Thus it is generally ok to invoke a payload script more
+# than once.
 #
 # When a function encounters an error performing a particular step,
-# the error will be logged and all downstream processing that depends on
-# that step being completed will be skipped, but otherwise processing will
-# continue until the end of the current stage.
-# 
-# Functions with the word "Optional" in the name indicate that the
-# function will not throw an error if the operation cannot be completed,
-# for example if this delivery does not include the item in question.
+# the error will be logged and the invoking shell will exit.
 #
-# Otherwise, this script will exit immediately when an error is encountered
-# so that the developer may correct the problem and then execute this script
-# again.
+# Functions with the word "Optional" in the name indicate that the
+# function will not throw an error if inputs needed for the operation are not
+# included in the delivery being processed. They will still throw errors
+# if the optional step is attempted but a problem is encountered.
+#
+# In addition, the runtime environment is set up to include the HEASoft/Ftools
+# package, which has a rich, (albeit quirky) set of utilities for manipulating
+# FITS files.
 #
 # Copy the files runDataProcessing.sh and dataProcessingFunctions.sh into the
-# same directory where this script is located, and run the copy of
-# runDataProcessing.sh so that the processing scripts used are archived
+# same directory where this script is located, and run that copy of
+# runDataProcessing.sh so that the processing framework used is archived
 # along with the rest of the delivery.
 #
 usage() {
-  echo "Usage: $0 dataProcessingScript"
+  echo "--------------------------------------------------------------------------------"
+  echo "Usage: $0 dataProcessing.sh processingID outputTop [ serverTop ]"
   echo ""
-  echo "          dataProcessingScript is a text file containing specific commands"
-  echo "              to be used for this processing action."
+  echo "       dataProcessing.sh is a Bourne shell script containing specific commands"
+  echo "           to be used for this processing action, typically a locally"
+  echo "           tailored processing or deployment script."
+  echo ""
+  echo "        processingID identifies the processing run, typically 'redmine-XXXX'"
+  echo ""
+  echo "        outputTop identifies the output path relative to the top of"
+  echo "            the raw/processed/deployed/served directory. Typically this would"
+  echo "            identify either a body/model or mission/instrument, for"
+  echo "            example, 'didymosa/didymosa-dra-v01a' or 'dart/draco'."
+  echo ""
+  echo "        serverTop is an optional argument, needed to serve completely"
+  echo "            processed and deployed data. The serverTop gives the path to the"
+  echo "            the area the server actually uses to provide data. Typically this"
+  echo "            will be one of '/project/sbmt2/test', '/project/sbmt2/stage',"
+  echo "            or '/project/sbmt2/prod'."
+  echo "--------------------------------------------------------------------------------"
 }
 
-if test $# -ne 1; then
-  (usage >&2)
-  exit 1
-elif test "$1" = "-h"; then
+if test "$1" = "-h"; then
   usage
   exit 0
-fi
-
-processingScript=$1
-
-if test ! -f $processingScript; then
-  echo "Script $processingScript is not a file" >&2
+elif test $# -lt 3; then
+  (usage >&2)
   exit 1
 fi
 
@@ -82,9 +100,19 @@ fi
 
 . $commonFunctions
 
+processingScript=$1
+processingId=$2
+outputTop=$3
+serverTop=$4
+
+if test ! -f $processingScript; then
+  (usage >&2)
+  check 1 "Script $processingScript is not a file"
+fi
+
 # Guess the root of the raw data hierarchy (the directory containing rawdata/).
 # Locate it based on the processing script location.
-# This is probably several levels up from the preocessing script.
+# This is probably several levels up from the supplied payload script.
 rawDataRootDir=$(guessRawDataParentDir "$processingScript")
 
 # Top of the raw data is just the directory containing the processing script.
@@ -95,6 +123,9 @@ processingPath=`echo $rawDataTop | sed "s:$rawDataRootDir/[^/][^/]*/*::"`
 
 # Processed directory is parallel to raw data directory.
 processedTop="$rawDataRootDir/processed/$processingPath"
+
+# Location for deployed files.
+deployedTop="/project/sbmt2/sbmt/data/bodies"
 
 sbmtCodeTop=$rawDataTop
 

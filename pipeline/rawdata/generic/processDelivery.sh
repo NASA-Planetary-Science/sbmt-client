@@ -1,6 +1,11 @@
 #-------------------------------------------------------------------------------
 # Customizable mission/model/body-specific data processing/import script.
 #-------------------------------------------------------------------------------
+#
+# Customize this script to copy a delivery from the deliveries area to
+# the "raw data" area, and to process the raw data into the "processed data"
+# area. Run this script from a normal user account.
+#
 # Do not invoke this script directly! Edit it as necessary to work for a
 # specific data delivery, then pass the path to this script as an argument
 # to runDataProcessing.sh, which will execute this script to process that
@@ -28,19 +33,9 @@ exit 1
 # Update this block for each delivery.
 #-------------------------------------------------------------------------------
 
-# This string identifies the processing being performed. It must be all
-# lower case and contain no underscores or whitespace. It may not be left
-# blank.
-processingId="redmine-2107"
-
 # This is the full path to the delivery as provided by a scientist. This may
 # or may not fully comply with all SBMT guidelines for layout and naming.
 deliveryTop="/project/sbmtpipeline/deliveries/didymosa/20200420/didymosA-DRA-v01A"
-
-# This is the *relative* path to the top output directory as it will be
-# defined in the raw, processed and deployed locations.
-# Must be all lower case and contain no underscores or whitespace.
-outputTopPath="didymosa/didymosa-dra-v01a"
 
 # The identifier of the SBMT model. For a given body, this uniquely identifies
 # the model. This may not include any whitespace. If no items being imported
@@ -56,19 +51,17 @@ bodyId="65803 Didymos"
 
 # Code branches used for SAAVTK/SBMT checkout. Many deliveries will work with
 # any recent version of these packages, so this frequently can just be the
-# standard main development branches.
+# standard main development branches, saavtk1dev and sbmt1dev, respectively.
 saavtkBranch="saavtk1dev-redmine-2107"
 sbmtBranch="sbmt1dev-redmine-2107"
 
-# Location for deployed files.
-deployedTop="/project/sbmt2/sbmt/data/bodies/$outputTopPath"
 #-------------------------------------------------------------------------------
 
 #-------------------------------------------------------------------------------
 # Delivery to raw data.
 #-------------------------------------------------------------------------------
 srcTop="$deliveryTop"
-destTop="$rawDataTop/$outputTopPath"
+destTop="$rawDataTop/$outputTop"
 
 # Copy any/all standard model files.
 copyStandardModelFiles
@@ -80,8 +73,8 @@ copyOptionalDir draco imaging/draco
 #-------------------------------------------------------------------------------
 # Raw data to processed.
 #-------------------------------------------------------------------------------
-srcTop="$rawDataTop/$outputTopPath"
-destTop="$processedTop/$outputTopPath"
+srcTop="$rawDataTop/$outputTop"
+destTop="$processedTop/$outputTop"
 
 # Copy any/all standard model files.
 copyStandardModelFiles
@@ -93,6 +86,7 @@ copyOptionalDir imaging
 # Process plate colorings.
 discoverPlateColorings
 
+# Update/check the SPICE parameters.
 createInfoFilesFromFITSImages imaging/draco/spice/generic.mk \
   Didymos Didymos DART Draco COR_UTC \
   imaging/draco/images imaging/draco/infofiles
