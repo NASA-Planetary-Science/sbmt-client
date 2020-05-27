@@ -208,6 +208,8 @@ public class OTESDatabaseGeneratorSql
 
 		if (writeToDB == true)
 		{
+			//TODO add check to see if spectrumID currently exists and call update
+			//instead of insert
 			if (otesInsert2 == null)
 			{
 				// index autoincrements, so start with the otesspectrum id column
