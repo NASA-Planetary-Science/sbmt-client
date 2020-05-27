@@ -49,67 +49,44 @@ public class OTESDatabaseGeneratorSql
 	static private ISmallBodyModel bodyModel;
 	static private vtkPolyData footprintPolyData;
 	static private boolean writeToDB = true;
+	static private boolean appendTables;
 
 	static private OTES otes = new OTES();
 
 	static Logger logger = Logger.getAnonymousLogger();
 
-	private static void createOTESTables(String modelName, String dataType, boolean appendTables)
+	private static void dropTable(String tableName)
 	{
-		String tableName = modelName + "_" + OTESSpectraTable + "_" + dataType;
 		try
 		{
-
-			// make a table
-			if (appendTables == false)
-			{
-				try
-				{
-					db.dropTable(tableName);
-				}
-				catch (Exception e)
-				{
-					e.printStackTrace();
-				}
-			}
-
-			db.update("CREATE TABLE IF NOT EXISTS " + tableName + "(" + "id int PRIMARY KEY AUTO_INCREMENT, "
-					+ "year smallint, " + "day smallint, " + "midtime bigint, " + "minincidence double,"
-					+ "maxincidence double," + "minemission double," + "maxemission double," + "minphase double,"
-					+ "maxphase double," + "minrange double," + "maxrange double, " + "filename char(128))");
+			db.dropTable(tableName);
 		}
-		catch (SQLException ex2)
+		catch (Exception e)
 		{
-			ex2.printStackTrace();
+			e.printStackTrace();
 		}
 	}
 
-	private static void createOTESTablesCubes(String modelName, String dataType, boolean appendTables)
+	private static void createOTESTables(String modelName, String dataType, boolean appendTables) throws SQLException
+	{
+		String tableName = modelName + "_" + OTESSpectraTable + "_" + dataType;
+		if (appendTables == false) dropTable(tableName);
+
+		// make a table
+		db.update("CREATE TABLE IF NOT EXISTS " + tableName + "(" + "id int PRIMARY KEY AUTO_INCREMENT, "
+				+ "year smallint, " + "day smallint, " + "midtime bigint, " + "minincidence double,"
+				+ "maxincidence double," + "minemission double," + "maxemission double," + "minphase double,"
+				+ "maxphase double," + "minrange double," + "maxrange double, " + "filename char(128))");
+	}
+
+	private static void createOTESTablesCubes(String modelName, String dataType, boolean appendTables) throws SQLException
 	{
 		String tableName = modelName + "_" + OTESCubesTable + "_" + dataType;
-		try
-		{
+		if (appendTables == false) dropTable(tableName);
 
-			// make a table
-			if (appendTables == false)
-			{
-				try
-				{
-					db.dropTable(tableName);
-				}
-				catch (Exception e)
-				{
-					e.printStackTrace();
-				}
-			}
-
-			db.update("CREATE TABLE IF NOT EXISTS " + tableName + "(" + "id int PRIMARY KEY AUTO_INCREMENT, "
-					+ "otesspectrumid int, " + "cubeid char(128))");
-		}
-		catch (SQLException ex2)
-		{
-			ex2.printStackTrace();
-		}
+		// make a table
+		db.update("CREATE TABLE IF NOT EXISTS " + tableName + "(" + "id int PRIMARY KEY AUTO_INCREMENT, "
+				+ "otesspectrumid int, " + "cubeid char(128))");
 	}
 
 	private static void populateOTESTables(String modelName, String dataType, List<String> otesFiles)
@@ -155,6 +132,22 @@ public class OTESDatabaseGeneratorSql
 
 			if (writeToDB == true)
 			{
+				List<List<Object>> checkQuery;
+				// If appending and there is already an entry for the filename then skip
+	            if(appendTables){
+	            	checkQuery = db.query("SELECT * FROM `" + tableName + "` WHERE `filename` = \"" +
+	                    new File(filename).getName() + "\"");
+	                if(checkQuery != null && !checkQuery.isEmpty() &&
+	                		checkQuery.get(0) != null && !checkQuery.get(0).isEmpty() &&
+	                				checkQuery.get(0).get(0) != null){
+	                	int id = Integer.parseInt((String)checkQuery.get(0).get(0));
+	                    System.out.println("\n\nskipping image insertion for " + filename + ", already in table, updating cubes for id " + id);
+//	                    populateOTESCubeTableForFile(modelName, dataType, otesSpectrumRenderer, id);
+	                    continue;
+	                }
+	            }
+
+
 				if (otesInsert == null)
 				{
 					// the index auto increments, so start with the year column
@@ -248,9 +241,10 @@ public class OTESDatabaseGeneratorSql
 	/**
 	 * @param args
 	 * @throws IOException
+	 * @throws SQLException
 	 */
 
-	public static void main(String[] args) throws IOException
+	public static void main(String[] args) throws IOException, SQLException
 	{
 //		logger.setLevel(Level.OFF);
 		logger.log(Level.INFO, "Starting main method");
