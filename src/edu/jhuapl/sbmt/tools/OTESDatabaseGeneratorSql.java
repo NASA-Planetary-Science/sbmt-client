@@ -98,7 +98,7 @@ public class OTESDatabaseGeneratorSql
 		{
 			if (count % 100 == 0)
 				logger.log(Level.INFO,
-						"Processing OTES index:" + count + "of " + otesFiles.size() + ", filename: " + filename);
+						"Processing OTES index:" + count + " of " + otesFiles.size() + ", filename: " + filename);
 			String dayOfYearStr = "";
 			String yearStr = "";
 			String name = filename.substring(filename.lastIndexOf("/") + 1);
