@@ -9,11 +9,11 @@ import java.util.Map;
 
 import org.apache.commons.math3.geometry.euclidean.threed.Vector3D;
 
+import edu.jhuapl.saavtk.camera.Camera;
+import edu.jhuapl.saavtk.camera.CameraUtil;
+import edu.jhuapl.saavtk.camera.CoordinateSystem;
 import edu.jhuapl.saavtk.gui.dialog.OpacityChanger;
 import edu.jhuapl.saavtk.gui.render.Renderer;
-import edu.jhuapl.saavtk.gui.render.camera.Camera;
-import edu.jhuapl.saavtk.gui.render.camera.CameraUtil;
-import edu.jhuapl.saavtk.gui.render.camera.CoordinateSystem;
 import edu.jhuapl.saavtk.model.PolyhedralModel;
 import edu.jhuapl.sbmt.dtm.model.DEM;
 import edu.jhuapl.sbmt.dtm.model.DEMBoundaryCollection;

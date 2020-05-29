@@ -19,6 +19,8 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 
+import com.google.common.collect.Range;
+
 import edu.jhuapl.saavtk.gui.dialog.DirectoryChooser;
 import edu.jhuapl.saavtk.gui.render.Renderer;
 import edu.jhuapl.saavtk.gui.util.IconUtil;
@@ -29,8 +31,8 @@ import edu.jhuapl.saavtk.pick.PickMode;
 import edu.jhuapl.saavtk.pick.PickTarget;
 import edu.jhuapl.saavtk.pick.PickUtil;
 import edu.jhuapl.saavtk.util.FileCache;
-import edu.jhuapl.saavtk.util.FileCache.UnauthorizedAccessException;
 import edu.jhuapl.saavtk.util.FileUtil;
+import edu.jhuapl.saavtk.util.UnauthorizedAccessException;
 import edu.jhuapl.sbmt.client.SmallBodyViewConfig;
 import edu.jhuapl.sbmt.gui.table.ColorProviderCellEditor;
 import edu.jhuapl.sbmt.gui.table.ColorProviderCellRenderer;
@@ -179,7 +181,8 @@ public class LidarFileSpecPanel extends JPanel implements ActionListener, ItemEv
 		saveB.setToolTipText("Save Files");
 
 		// Radial offset section
-		radialS = new GSlider(this, 30, -15, 15);
+		Range<Double> tmpRange = Range.closed(-15.0, 15.0);
+		radialS = new GSlider(this, tmpRange, 30);
 		radialS.setMajorTickSpacing(5);
 		radialS.setMinorTickSpacing(1);
 		radialS.setPaintTicks(true);
