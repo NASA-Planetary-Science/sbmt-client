@@ -20,7 +20,7 @@ import edu.jhuapl.sbmt.stateHistory.model.StateHistoryModel;
 import edu.jhuapl.sbmt.stateHistory.model.io.StateHistoryInputException;
 import edu.jhuapl.sbmt.stateHistory.model.stateHistory.StateHistoryKey;
 import edu.jhuapl.sbmt.stateHistory.ui.DateTimeSpinner;
-import edu.jhuapl.sbmt.stateHistory.ui.version2.StateHistoryIntervalGenerationPanel;
+import edu.jhuapl.sbmt.stateHistory.ui.state.version2.StateHistoryIntervalGenerationPanel;
 
 /**
  * Controller that governs the "Interval Generation" panel of the State History tab

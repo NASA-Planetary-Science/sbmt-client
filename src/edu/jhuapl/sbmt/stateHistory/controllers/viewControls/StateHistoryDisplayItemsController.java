@@ -20,7 +20,7 @@ import edu.jhuapl.saavtk.gui.render.Renderer.LightingType;
 import edu.jhuapl.saavtk.util.ColorIcon;
 import edu.jhuapl.sbmt.stateHistory.model.interfaces.StateHistory;
 import edu.jhuapl.sbmt.stateHistory.model.stateHistory.StateHistoryCollection;
-import edu.jhuapl.sbmt.stateHistory.ui.version2.viewControls.StateHistoryDisplayItemsPanel;
+import edu.jhuapl.sbmt.stateHistory.ui.state.version2.viewControls.StateHistoryDisplayItemsPanel;
 
 /**
  * Controllers that governs the view which contains controls for which items to display in the renderer

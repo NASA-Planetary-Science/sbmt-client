@@ -17,9 +17,9 @@ import vtk.vtkUnsignedCharArray;
 import edu.jhuapl.saavtk.colormap.Colormap;
 import edu.jhuapl.sbmt.stateHistory.model.StateHistoryColoringFunctions;
 import edu.jhuapl.sbmt.stateHistory.model.interfaces.Trajectory;
-import edu.jhuapl.sbmt.stateHistory.ui.color.ColorProvider;
-import edu.jhuapl.sbmt.stateHistory.ui.color.GroupColorProvider;
-import edu.jhuapl.sbmt.stateHistory.ui.color.StateHistoryFeatureType;
+import edu.jhuapl.sbmt.stateHistory.ui.state.color.ColorProvider;
+import edu.jhuapl.sbmt.stateHistory.ui.state.color.GroupColorProvider;
+import edu.jhuapl.sbmt.stateHistory.ui.state.color.StateHistoryFeatureType;
 
 /**
  * vtkActor that represents a state history trajectory

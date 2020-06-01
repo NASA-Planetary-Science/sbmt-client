@@ -7,7 +7,7 @@ import vtk.vtkProp;
 import edu.jhuapl.saavtk.vtk.VtkResource;
 import edu.jhuapl.sbmt.lidar.LidarPoint;
 import edu.jhuapl.sbmt.lidar.feature.FeatureAttr;
-import edu.jhuapl.sbmt.stateHistory.ui.color.StateHistoryFeatureType;
+import edu.jhuapl.sbmt.stateHistory.ui.state.color.StateHistoryFeatureType;
 
 /**
  * Interface that defines methods used to render lidar data via the VTK

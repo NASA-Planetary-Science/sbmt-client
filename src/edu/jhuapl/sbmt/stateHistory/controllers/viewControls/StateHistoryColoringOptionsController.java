@@ -11,7 +11,7 @@ import edu.jhuapl.sbmt.stateHistory.model.StateHistoryColoringFunctions;
 import edu.jhuapl.sbmt.stateHistory.model.stateHistory.StateHistoryCollection;
 import edu.jhuapl.sbmt.stateHistory.model.viewOptions.StateHistoryColorOptionsAttributeModel;
 import edu.jhuapl.sbmt.stateHistory.rendering.TrajectoryActor;
-import edu.jhuapl.sbmt.stateHistory.ui.version2.viewControls.StateHistoryColoringOptionsPanel;
+import edu.jhuapl.sbmt.stateHistory.ui.state.version2.viewControls.StateHistoryColoringOptionsPanel;
 
 import glum.item.ItemEventType;
 

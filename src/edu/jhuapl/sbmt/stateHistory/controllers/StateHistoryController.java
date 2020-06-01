@@ -23,15 +23,16 @@ import edu.jhuapl.saavtk.model.ModelNames;
 import edu.jhuapl.saavtk.util.FileCache;
 import edu.jhuapl.sbmt.client.SmallBodyModel;
 import edu.jhuapl.sbmt.client.SmallBodyViewConfig;
+import edu.jhuapl.sbmt.stateHistory.model.IPositionOrientation;
 import edu.jhuapl.sbmt.stateHistory.model.StateHistoryModel;
 import edu.jhuapl.sbmt.stateHistory.model.StateHistoryUtil;
 import edu.jhuapl.sbmt.stateHistory.model.io.StateHistoryInputException;
 import edu.jhuapl.sbmt.stateHistory.model.io.StateHistoryInvalidTimeException;
 import edu.jhuapl.sbmt.stateHistory.model.stateHistory.StateHistoryCollection;
-import edu.jhuapl.sbmt.stateHistory.ui.version2.StateHistoryDisplayedIntervalPanel;
-import edu.jhuapl.sbmt.stateHistory.ui.version2.StateHistoryIntervalGenerationPanel;
-import edu.jhuapl.sbmt.stateHistory.ui.version2.StateHistoryIntervalPlaybackPanel;
-import edu.jhuapl.sbmt.stateHistory.ui.version2.table.StateHistoryTableView;
+import edu.jhuapl.sbmt.stateHistory.ui.state.version2.StateHistoryDisplayedIntervalPanel;
+import edu.jhuapl.sbmt.stateHistory.ui.state.version2.StateHistoryIntervalGenerationPanel;
+import edu.jhuapl.sbmt.stateHistory.ui.state.version2.StateHistoryIntervalPlaybackPanel;
+import edu.jhuapl.sbmt.stateHistory.ui.state.version2.table.StateHistoryTableView;
 
 import glum.item.ItemEventType;
 
@@ -76,6 +77,8 @@ public class StateHistoryController
      * State history model that manages state histories
      */
     private StateHistoryModel historyModel = null;
+
+    private IPositionOrientation positionOrientation = null;
 
     /**
      * Constructor.  Initializes properties, sets listeners, etc
@@ -192,5 +195,10 @@ public class StateHistoryController
     {
     	historyModel.getRuns().updateTimeBarLocation(renderer.getRenderWindowPanel().getComponent().getWidth(), renderer.getRenderWindowPanel().getComponent().getHeight());
     }
+
+    public void setPositionOrientationManager(IPositionOrientation positionOrientation)
+	{
+    	this.positionOrientation = positionOrientation;
+	}
 
 }

@@ -21,8 +21,8 @@ import edu.jhuapl.sbmt.stateHistory.model.viewOptions.RendererLookDirection;
 import edu.jhuapl.sbmt.stateHistory.rendering.SpacecraftBody;
 import edu.jhuapl.sbmt.stateHistory.rendering.TrajectoryActor;
 import edu.jhuapl.sbmt.stateHistory.rendering.model.StateHistoryRendererManager;
-import edu.jhuapl.sbmt.stateHistory.ui.color.GroupColorProvider;
-import edu.jhuapl.sbmt.stateHistory.ui.color.StateHistoryFeatureType;
+import edu.jhuapl.sbmt.stateHistory.ui.state.color.GroupColorProvider;
+import edu.jhuapl.sbmt.stateHistory.ui.state.color.StateHistoryFeatureType;
 
 import crucible.crust.metadata.api.Key;
 import crucible.crust.metadata.api.Metadata;

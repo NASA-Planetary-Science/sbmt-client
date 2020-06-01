@@ -11,7 +11,7 @@ import edu.jhuapl.sbmt.stateHistory.model.interfaces.StateHistory;
 import edu.jhuapl.sbmt.stateHistory.model.stateHistory.StateHistoryCollection;
 import edu.jhuapl.sbmt.stateHistory.model.viewOptions.RendererLookDirection;
 import edu.jhuapl.sbmt.stateHistory.model.viewOptions.StateHistoryViewOptionsModel;
-import edu.jhuapl.sbmt.stateHistory.ui.version2.viewControls.StateHistoryViewOptionsPanel;
+import edu.jhuapl.sbmt.stateHistory.ui.state.version2.viewControls.StateHistoryViewOptionsPanel;
 
 import glum.item.ItemEventType;
 

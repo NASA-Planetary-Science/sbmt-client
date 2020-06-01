@@ -4,8 +4,8 @@ import javax.swing.JOptionPane;
 
 import edu.jhuapl.sbmt.stateHistory.model.io.StateHistoryInvalidTimeException;
 import edu.jhuapl.sbmt.stateHistory.model.stateHistory.StateHistoryCollection;
-import edu.jhuapl.sbmt.stateHistory.ui.StateHistoryPercentIntervalChanger;
-import edu.jhuapl.sbmt.stateHistory.ui.version2.StateHistoryDisplayedIntervalPanel;
+import edu.jhuapl.sbmt.stateHistory.ui.state.StateHistoryPercentIntervalChanger;
+import edu.jhuapl.sbmt.stateHistory.ui.state.version2.StateHistoryDisplayedIntervalPanel;
 import edu.jhuapl.sbmt.util.TimeUtil;
 
 import glum.item.ItemEventType;

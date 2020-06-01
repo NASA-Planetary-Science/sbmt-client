@@ -37,7 +37,7 @@ import edu.jhuapl.sbmt.stateHistory.model.io.StateHistoryInvalidTimeException;
 import edu.jhuapl.sbmt.stateHistory.model.stateHistory.StateHistoryCollection;
 import edu.jhuapl.sbmt.stateHistory.rendering.animator.Animator;
 import edu.jhuapl.sbmt.stateHistory.ui.AnimationFileDialog;
-import edu.jhuapl.sbmt.stateHistory.ui.version2.StateHistoryIntervalPlaybackPanel;
+import edu.jhuapl.sbmt.stateHistory.ui.state.version2.StateHistoryIntervalPlaybackPanel;
 import edu.jhuapl.sbmt.util.TimeUtil;
 
 import glum.item.ItemEventType;

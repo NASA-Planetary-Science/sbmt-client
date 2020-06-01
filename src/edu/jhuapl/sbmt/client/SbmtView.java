@@ -96,7 +96,7 @@ import edu.jhuapl.sbmt.spectrum.model.statistics.SpectrumStatisticsCollection;
 import edu.jhuapl.sbmt.spectrum.rendering.SpectraCollection;
 import edu.jhuapl.sbmt.spectrum.rendering.SpectrumBoundaryCollection;
 import edu.jhuapl.sbmt.spectrum.ui.SpectrumPopupMenu;
-import edu.jhuapl.sbmt.stateHistory.controllers.StateHistoryController;
+import edu.jhuapl.sbmt.stateHistory.controllers.ObservationPlanningController;
 import edu.jhuapl.sbmt.stateHistory.model.stateHistory.StateHistoryCollection;
 
 import crucible.crust.metadata.api.Key;
@@ -707,7 +707,8 @@ public class SbmtView extends View implements PropertyChangeListener
 ////			}
             if (getPolyhedralModelConfig().hasStateHistory)
             {
-                StateHistoryController controller = new StateHistoryController(getModelManager(), getRenderer());
+//                StateHistoryController controller = new StateHistoryController(getModelManager(), getRenderer());
+                ObservationPlanningController controller = new ObservationPlanningController(getModelManager(), getRenderer(), getPolyhedralModelConfig());
 //                if (getConfig().body == ShapeModelBody.EARTH)
 //                    controller = new StateHistoryController(getModelManager(), getRenderer(), false);
 //                else

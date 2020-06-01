@@ -15,7 +15,7 @@ import edu.jhuapl.sbmt.stateHistory.model.StateHistoryModel;
 import edu.jhuapl.sbmt.stateHistory.model.interfaces.StateHistory;
 import edu.jhuapl.sbmt.stateHistory.model.io.StateHistoryIOException;
 import edu.jhuapl.sbmt.stateHistory.model.stateHistory.StateHistoryCollection;
-import edu.jhuapl.sbmt.stateHistory.ui.version2.table.StateHistoryTableView;
+import edu.jhuapl.sbmt.stateHistory.ui.state.version2.table.StateHistoryTableView;
 
 import glum.item.ItemEventType;
 

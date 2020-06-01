@@ -30,8 +30,8 @@ import edu.jhuapl.sbmt.stateHistory.rendering.directionMarkers.SunDirectionMarke
 import edu.jhuapl.sbmt.stateHistory.rendering.text.SpacecraftLabel;
 import edu.jhuapl.sbmt.stateHistory.rendering.text.StatusBarTextActor;
 import edu.jhuapl.sbmt.stateHistory.rendering.text.TimeBarTextActor;
-import edu.jhuapl.sbmt.stateHistory.ui.color.GroupColorProvider;
-import edu.jhuapl.sbmt.stateHistory.ui.color.StateHistoryFeatureType;
+import edu.jhuapl.sbmt.stateHistory.ui.state.color.GroupColorProvider;
+import edu.jhuapl.sbmt.stateHistory.ui.state.color.StateHistoryFeatureType;
 
 public class StateHistoryRendererManager
 {

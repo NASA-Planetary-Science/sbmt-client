@@ -2,8 +2,8 @@ package edu.jhuapl.sbmt.stateHistory.rendering.model;
 
 import java.awt.Color;
 
-import edu.jhuapl.sbmt.stateHistory.ui.color.ColorProvider;
-import edu.jhuapl.sbmt.stateHistory.ui.color.ConstColorProvider;
+import edu.jhuapl.sbmt.stateHistory.ui.state.color.ColorProvider;
+import edu.jhuapl.sbmt.stateHistory.ui.state.color.ConstColorProvider;
 
 
 

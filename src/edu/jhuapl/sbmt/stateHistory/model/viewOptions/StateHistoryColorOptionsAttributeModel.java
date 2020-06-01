@@ -5,7 +5,7 @@ import java.util.HashMap;
 import edu.jhuapl.saavtk.colormap.Colormap;
 import edu.jhuapl.sbmt.stateHistory.model.StateHistoryColoringFunctions;
 import edu.jhuapl.sbmt.stateHistory.model.interfaces.StateHistory;
-import edu.jhuapl.sbmt.stateHistory.ui.color.GroupColorProvider;
+import edu.jhuapl.sbmt.stateHistory.ui.state.color.GroupColorProvider;
 
 public class StateHistoryColorOptionsAttributeModel
 {
