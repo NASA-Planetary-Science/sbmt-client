@@ -168,6 +168,10 @@ echo "Begin `date`" >> $log 2>&1
    #createDirIfNecessary $destTop/$processingModelName/polycam/images
    #createDirIfNecessary $destTop/$processingModelName/polycam/gallery
 
+   # Process the json/config file:
+   configFile="$(processingModelName)_101955_Bennu_v7.8.json"
+   doRsync "$rawDataTop/$configFile" "$destTop/$processingModelName/$configFile"
+
    # Process the shape models.
    doRsyncDirIfNecessary $srcTop/$rawdataModelName/shape/ $destTop/$processingModelName/shape/
    doGzipDirIfNecessary $destTop/$processingModelName/shape
