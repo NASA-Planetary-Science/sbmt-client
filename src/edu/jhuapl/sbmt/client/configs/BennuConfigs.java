@@ -3667,12 +3667,12 @@ public class BennuConfigs extends SmallBodyViewConfig
 
             c.databaseRunInfos = new DBRunInfo[]
             {
-                new DBRunInfo(ImageSource.GASKELL, Instrument.MAPCAM, ShapeModelBody.RQ36.toString(), "/project/sbmt2/sbmt/data/bodies/bennu/ola-v20-ptm/mapcam/imagelist-fullpath-sum.txt", "bennu_olav20_mapcam"),
-                new DBRunInfo(ImageSource.GASKELL, Instrument.POLYCAM, ShapeModelBody.RQ36.toString(), "/project/sbmt2/sbmt/data/bodies/bennu/ola-v20-ptm/polycam/imagelist-fullpath-sum.txt", "bennu_olav20_polycam"),
+                new DBRunInfo(ImageSource.GASKELL, Instrument.MAPCAM, ShapeModelBody.RQ36.toString(), "/project/sbmt2/sbmt/data/bodies/bennu/ola-v20-ptm/mapcam/imagelist-fullpath-sum.txt", "bennu_olav20ptm_mapcam"),
+                new DBRunInfo(ImageSource.GASKELL, Instrument.POLYCAM, ShapeModelBody.RQ36.toString(), "/project/sbmt2/sbmt/data/bodies/bennu/ola-v20-ptm/polycam/imagelist-fullpath-sum.txt", "bennu_olav20ptm_polycam"),
 
-                new DBRunInfo(ImageSource.SPICE, Instrument.MAPCAM, ShapeModelBody.RQ36.toString(), "/project/sbmt2/sbmt/data/bodies/bennu/ola-v20-ptm/mapcam/imagelist-fullpath-info.txt", "bennu_olav20_mapcam"),
-                new DBRunInfo(ImageSource.SPICE, Instrument.POLYCAM, ShapeModelBody.RQ36.toString(), "/project/sbmt2/sbmt/data/bodies/bennu/ola-v20-ptm/polycam/imagelist-fullpath-info.txt", "bennu_olav20_polycam"),
-                new DBRunInfo(ImageSource.SPICE, Instrument.NAVCAM, ShapeModelBody.RQ36.toString(), "/project/sbmt2/sbmt/data/bodies/bennu/ola-v20-ptm/navcam/imagelist-fullpath-info.txt", "bennu_olav20_navcam")
+                new DBRunInfo(ImageSource.SPICE, Instrument.MAPCAM, ShapeModelBody.RQ36.toString(), "/project/sbmt2/sbmt/data/bodies/bennu/ola-v20-ptm/mapcam/imagelist-fullpath-info.txt", "bennu_olav20ptm_mapcam"),
+                new DBRunInfo(ImageSource.SPICE, Instrument.POLYCAM, ShapeModelBody.RQ36.toString(), "/project/sbmt2/sbmt/data/bodies/bennu/ola-v20-ptm/polycam/imagelist-fullpath-info.txt", "bennu_olav20ptm_polycam"),
+                new DBRunInfo(ImageSource.SPICE, Instrument.NAVCAM, ShapeModelBody.RQ36.toString(), "/project/sbmt2/sbmt/data/bodies/bennu/ola-v20-ptm/navcam/imagelist-fullpath-info.txt", "bennu_olav20ptm_navcam")
             };
 
             configArray.add(c);
