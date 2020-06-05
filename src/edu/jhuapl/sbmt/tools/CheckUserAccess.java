@@ -26,7 +26,7 @@ import edu.jhuapl.sbmt.client.users.AccessGroup;
 import edu.jhuapl.sbmt.client.users.AccessGroupCollection;
 import edu.jhuapl.sbmt.client.users.User;
 import edu.jhuapl.sbmt.client.users.UserCollection;
-import edu.jhuapl.sbmt.client.users.Users;
+import edu.jhuapl.sbmt.client.users.UserSerialization;
 
 import crucible.crust.metadata.api.Key;
 import crucible.crust.metadata.api.Metadata;
@@ -82,7 +82,7 @@ public class CheckUserAccess implements Callable<Integer>
     {
         Debug.setEnabled(debug);
 
-        Users.initializeSerializationProxies();
+        UserSerialization.initializeSerializationProxies();
 
         rootURLString = SafePaths.getUrl(rootURLString);
         userName = decodeIfEnabled(userName);
