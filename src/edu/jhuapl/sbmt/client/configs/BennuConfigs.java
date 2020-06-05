@@ -46,13 +46,31 @@ import edu.jhuapl.sbmt.tools.DBRunInfo;
 
 public class BennuConfigs extends SmallBodyViewConfig
 {
+    private static final SbmtMultiMissionTool.Mission[] OREXClients = new SbmtMultiMissionTool.Mission[] { //
+            SbmtMultiMissionTool.Mission.OSIRIS_REX, SbmtMultiMissionTool.Mission.OSIRIS_REX_TEST, SbmtMultiMissionTool.Mission.OSIRIS_REX_DEPLOY, //
+            SbmtMultiMissionTool.Mission.OSIRIS_REX_MIRROR_DEPLOY
+    };
+
+    private static final SbmtMultiMissionTool.Mission[] ClientsWithOREXModels = new SbmtMultiMissionTool.Mission[] { //
+            SbmtMultiMissionTool.Mission.APL_INTERNAL, SbmtMultiMissionTool.Mission.TEST_APL_INTERNAL, SbmtMultiMissionTool.Mission.STAGE_APL_INTERNAL, //
+            SbmtMultiMissionTool.Mission.OSIRIS_REX, SbmtMultiMissionTool.Mission.OSIRIS_REX_TEST, SbmtMultiMissionTool.Mission.OSIRIS_REX_DEPLOY, //
+            SbmtMultiMissionTool.Mission.OSIRIS_REX_MIRROR_DEPLOY
+    };
+
+    private static final SbmtMultiMissionTool.Mission[] AllBennuClients = new SbmtMultiMissionTool.Mission[] { //
+            SbmtMultiMissionTool.Mission.PUBLIC_RELEASE, SbmtMultiMissionTool.Mission.TEST_PUBLIC_RELEASE, SbmtMultiMissionTool.Mission.STAGE_PUBLIC_RELEASE, //
+            SbmtMultiMissionTool.Mission.APL_INTERNAL, SbmtMultiMissionTool.Mission.TEST_APL_INTERNAL, SbmtMultiMissionTool.Mission.STAGE_APL_INTERNAL, //
+            SbmtMultiMissionTool.Mission.OSIRIS_REX, SbmtMultiMissionTool.Mission.OSIRIS_REX_TEST, SbmtMultiMissionTool.Mission.OSIRIS_REX_DEPLOY, //
+            SbmtMultiMissionTool.Mission.OSIRIS_REX_MIRROR_DEPLOY
+    };
+
 	List<SpectrumInstrumentMetadata<SpectrumSearchSpec>> instrumentSearchSpecs = new ArrayList<SpectrumInstrumentMetadata<SpectrumSearchSpec>>();
 
 	public BennuConfigs()
 	{
 		super(ImmutableList.<String>copyOf(DEFAULT_GASKELL_LABELS_PER_RESOLUTION), ImmutableList.<Integer>copyOf(DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION));
 
-		this.defaultForMissions = new SbmtMultiMissionTool.Mission[] {};
+		this.defaultForMissions = DefaultForNoMissions;
 
 		SpectrumSearchSpec otesL2 = new SpectrumSearchSpec("OTES L2 Calibrated Radiance", "/bennu/shared/otes/l2", "spectra", "spectrumlist.txt", ImageSource.valueFor("Corrected SPICE Derived"), "Wave Number (1/cm)", "Radiance", "OTES L2 Calibrated Radiance");
 		SpectrumSearchSpec otesL3 = new SpectrumSearchSpec("OTES L3 Spot Emissivity", "/bennu/shared/otes/l3", "spectra", "spectrumlist.txt", ImageSource.valueFor("Corrected SPICE Derived"), "Wave Number (1/cm)", "Emissivity", "OTES L3 Spot Emissivity");
@@ -71,6 +89,7 @@ public class BennuConfigs extends SmallBodyViewConfig
 		instrumentSearchSpecs.add(new SpectrumInstrumentMetadata<SpectrumSearchSpec>("OTES", otesSpecs));
 		instrumentSearchSpecs.add(new SpectrumInstrumentMetadata<SpectrumSearchSpec>("OVIRS", ovirsSpecs));
 
+        presentInMissions = ClientsWithOREXModels;
 	}
 
 
@@ -376,9 +395,6 @@ public class BennuConfigs extends SmallBodyViewConfig
             c.imageSearchDefaultMaxSpacecraftDistance = 120000.0;
             c.imageSearchDefaultMaxResolution = 300.0;
 
-            c.presentInMissions = new SbmtMultiMissionTool.Mission[] {SbmtMultiMissionTool.Mission.APL_INTERNAL, SbmtMultiMissionTool.Mission.TEST_APL_INTERNAL,SbmtMultiMissionTool.Mission.STAGE_APL_INTERNAL,
-            														  SbmtMultiMissionTool.Mission.OSIRIS_REX, SbmtMultiMissionTool.Mission.OSIRIS_REX_DEPLOY,
-            														  SbmtMultiMissionTool.Mission.OSIRIS_REX_MIRROR_DEPLOY};
 
             configArray.add(c);
         }
@@ -402,10 +418,7 @@ public class BennuConfigs extends SmallBodyViewConfig
         c.useMinimumReferencePotential = true;
         c.rotationRate = 0.00040613;
 
-        c.presentInMissions = new SbmtMultiMissionTool.Mission[] {SbmtMultiMissionTool.Mission.APL_INTERNAL, SbmtMultiMissionTool.Mission.TEST_APL_INTERNAL,SbmtMultiMissionTool.Mission.STAGE_APL_INTERNAL,
-                SbmtMultiMissionTool.Mission.OSIRIS_REX, SbmtMultiMissionTool.Mission.OSIRIS_REX_DEPLOY,
-                SbmtMultiMissionTool.Mission.OSIRIS_REX_MIRROR_DEPLOY,
-                SbmtMultiMissionTool.Mission.PUBLIC_RELEASE, SbmtMultiMissionTool.Mission.TEST_PUBLIC_RELEASE, SbmtMultiMissionTool.Mission.STAGE_PUBLIC_RELEASE};
+        c.presentInMissions = AllBennuClients;
 
         configArray.add(c);
 
@@ -519,10 +532,6 @@ public class BennuConfigs extends SmallBodyViewConfig
             	new DBRunInfo(ImageSource.GASKELL, Instrument.POLYCAM, ShapeModelBody.RQ36.toString(), "/project/nearsdc/data/GASKELL/RQ36_V3/POLYCAM/imagelist-fullpath.txt", "RQ36_POLY"),
             };
 
-            c.presentInMissions = new SbmtMultiMissionTool.Mission[] {SbmtMultiMissionTool.Mission.APL_INTERNAL, SbmtMultiMissionTool.Mission.TEST_APL_INTERNAL,SbmtMultiMissionTool.Mission.STAGE_APL_INTERNAL,
-            															SbmtMultiMissionTool.Mission.OSIRIS_REX, SbmtMultiMissionTool.Mission.OSIRIS_REX_DEPLOY,
-            															SbmtMultiMissionTool.Mission.OSIRIS_REX_MIRROR_DEPLOY};
-
             configArray.add(c);
 
             c.hasHypertreeBasedLidarSearch = true; // enable tree-based lidar searching
@@ -626,16 +635,6 @@ public class BennuConfigs extends SmallBodyViewConfig
 
             c.dtmBrowseDataSourceMap.put("Default", "bennu/bennu-simulated-v4/dtm/browse/fileList.txt");
 //            c.dtmSearchDataSourceMap.put("Default", "bennu/bennu-simulated-v4/dtm/search/hypertree/dataSource.lidar");
-
-//            if ((SbmtMultiMissionTool.getMission() == SbmtMultiMissionTool.Mission.OSIRIS_REX) || (SbmtMultiMissionTool.getMission() == SbmtMultiMissionTool.Mission.OSIRIS_REX_DEPLOY) ||
-//                    (SbmtMultiMissionTool.getMission() == SbmtMultiMissionTool.Mission.OSIRIS_REX_STAGE) || (SbmtMultiMissionTool.getMission() == SbmtMultiMissionTool.Mission.OSIRIS_REX_MIRROR_DEPLOY))
-//            {
-//                ViewConfig.setFirstTimeDefaultModelName(c.getUniqueName());
-//            }
-
-            c.presentInMissions = new SbmtMultiMissionTool.Mission[] {SbmtMultiMissionTool.Mission.APL_INTERNAL, SbmtMultiMissionTool.Mission.TEST_APL_INTERNAL,SbmtMultiMissionTool.Mission.STAGE_APL_INTERNAL,
-            															SbmtMultiMissionTool.Mission.OSIRIS_REX, SbmtMultiMissionTool.Mission.OSIRIS_REX_DEPLOY,
-            															SbmtMultiMissionTool.Mission.OSIRIS_REX_MIRROR_DEPLOY};
 
             c.databaseRunInfos = new DBRunInfo[]
             {
@@ -1958,15 +1957,6 @@ public class BennuConfigs extends SmallBodyViewConfig
             	new DBRunInfo(ImageSource.SPICE, Instrument.NAVCAM, ShapeModelBody.RQ36.toString(), "/project/sbmt2/sbmt/data/bodies/bennu/altwg-spc-v20190105/navcam/imagelist-fullpath-info.txt", "bennu_altwgspcv20190105_navcam")
             };
 
-            c.presentInMissions = new SbmtMultiMissionTool.Mission[] {SbmtMultiMissionTool.Mission.APL_INTERNAL, SbmtMultiMissionTool.Mission.TEST_APL_INTERNAL,SbmtMultiMissionTool.Mission.STAGE_APL_INTERNAL,
-            															SbmtMultiMissionTool.Mission.OSIRIS_REX, SbmtMultiMissionTool.Mission.OSIRIS_REX_DEPLOY,
-            															SbmtMultiMissionTool.Mission.OSIRIS_REX_MIRROR_DEPLOY};
-
-            if ((SbmtMultiMissionTool.getMission() == SbmtMultiMissionTool.Mission.OSIRIS_REX) || (SbmtMultiMissionTool.getMission() == SbmtMultiMissionTool.Mission.OSIRIS_REX_DEPLOY) ||
-                     (SbmtMultiMissionTool.getMission() == SbmtMultiMissionTool.Mission.OSIRIS_REX_MIRROR_DEPLOY))
-            {
-//                ViewConfig.setFirstTimeDefaultModelName(c.getUniqueName());
-            }
             configArray.add(c);
         }
 
@@ -2131,15 +2121,6 @@ public class BennuConfigs extends SmallBodyViewConfig
             	new DBRunInfo(ImageSource.SPICE, Instrument.NAVCAM, ShapeModelBody.RQ36.toString(), "/project/sbmt2/sbmt/data/bodies/bennu/altwg-spc-v20190114/navcam/imagelist-fullpath-info.txt", "bennu_altwgspcv20190114_navcam")
             };
 
-            c.presentInMissions = new SbmtMultiMissionTool.Mission[] {SbmtMultiMissionTool.Mission.APL_INTERNAL, SbmtMultiMissionTool.Mission.TEST_APL_INTERNAL,SbmtMultiMissionTool.Mission.STAGE_APL_INTERNAL,
-            															SbmtMultiMissionTool.Mission.OSIRIS_REX, SbmtMultiMissionTool.Mission.OSIRIS_REX_DEPLOY,
-            															SbmtMultiMissionTool.Mission.OSIRIS_REX_MIRROR_DEPLOY};
-
-            if ((SbmtMultiMissionTool.getMission() == SbmtMultiMissionTool.Mission.OSIRIS_REX) || (SbmtMultiMissionTool.getMission() == SbmtMultiMissionTool.Mission.OSIRIS_REX_DEPLOY) ||
-                    (SbmtMultiMissionTool.getMission() == SbmtMultiMissionTool.Mission.OSIRIS_REX_MIRROR_DEPLOY))
-            {
-//                ViewConfig.setFirstTimeDefaultModelName(c.getUniqueName());
-            }
             configArray.add(c);
         }
 
@@ -2295,16 +2276,6 @@ public class BennuConfigs extends SmallBodyViewConfig
             	new DBRunInfo(ImageSource.SPICE, Instrument.NAVCAM, ShapeModelBody.RQ36.toString(), "/project/sbmt2/sbmt/data/bodies/bennu/altwg-spc-v20190117/navcam/imagelist-fullpath-info.txt", "bennu_altwgspcv20190117_navcam")
             };
 
-
-            c.presentInMissions = new SbmtMultiMissionTool.Mission[] {SbmtMultiMissionTool.Mission.APL_INTERNAL, SbmtMultiMissionTool.Mission.TEST_APL_INTERNAL,SbmtMultiMissionTool.Mission.STAGE_APL_INTERNAL,
-            															SbmtMultiMissionTool.Mission.OSIRIS_REX, SbmtMultiMissionTool.Mission.OSIRIS_REX_DEPLOY,
-            															SbmtMultiMissionTool.Mission.OSIRIS_REX_MIRROR_DEPLOY};
-
-            if ((SbmtMultiMissionTool.getMission() == SbmtMultiMissionTool.Mission.OSIRIS_REX) || (SbmtMultiMissionTool.getMission() == SbmtMultiMissionTool.Mission.OSIRIS_REX_DEPLOY) ||
-                    (SbmtMultiMissionTool.getMission() == SbmtMultiMissionTool.Mission.OSIRIS_REX_MIRROR_DEPLOY))
-            {
-//                ViewConfig.setFirstTimeDefaultModelName(c.getUniqueName());
-            }
             configArray.add(c);
         }
 
@@ -2460,15 +2431,6 @@ public class BennuConfigs extends SmallBodyViewConfig
             	new DBRunInfo(ImageSource.SPICE, Instrument.NAVCAM, ShapeModelBody.RQ36.toString(), "/project/sbmt2/sbmt/data/bodies/bennu/altwg-spc-v20190121/navcam/imagelist-fullpath-info.txt", "bennu_altwgspcv20190121_navcam")
             };
 
-            c.presentInMissions = new SbmtMultiMissionTool.Mission[] {SbmtMultiMissionTool.Mission.APL_INTERNAL, SbmtMultiMissionTool.Mission.TEST_APL_INTERNAL,SbmtMultiMissionTool.Mission.STAGE_APL_INTERNAL,
-            															SbmtMultiMissionTool.Mission.OSIRIS_REX, SbmtMultiMissionTool.Mission.OSIRIS_REX_DEPLOY,
-            															SbmtMultiMissionTool.Mission.OSIRIS_REX_MIRROR_DEPLOY};
-
-//            if ((SbmtMultiMissionTool.getMission() == SbmtMultiMissionTool.Mission.OSIRIS_REX) || (SbmtMultiMissionTool.getMission() == SbmtMultiMissionTool.Mission.OSIRIS_REX_DEPLOY) ||
-//                    (SbmtMultiMissionTool.getMission() == SbmtMultiMissionTool.Mission.OSIRIS_REX_MIRROR_DEPLOY))
-//            {
-//                ViewConfig.setFirstTimeDefaultModelName(c.getUniqueName());
-//            }
             configArray.add(c);
         }
 
@@ -2624,15 +2586,6 @@ public class BennuConfigs extends SmallBodyViewConfig
             	new DBRunInfo(ImageSource.SPICE, Instrument.NAVCAM, ShapeModelBody.RQ36.toString(), "/project/sbmt2/sbmt/data/bodies/bennu/altwg-spc-v20190207a/navcam/imagelist-fullpath-info.txt", "bennu_altwgspcv20190207a_navcam")
             };
 
-            c.presentInMissions = new SbmtMultiMissionTool.Mission[] {SbmtMultiMissionTool.Mission.APL_INTERNAL, SbmtMultiMissionTool.Mission.TEST_APL_INTERNAL,SbmtMultiMissionTool.Mission.STAGE_APL_INTERNAL,
-            															SbmtMultiMissionTool.Mission.OSIRIS_REX, SbmtMultiMissionTool.Mission.OSIRIS_REX_DEPLOY,
-            															SbmtMultiMissionTool.Mission.OSIRIS_REX_MIRROR_DEPLOY};
-
-            if ((SbmtMultiMissionTool.getMission() == SbmtMultiMissionTool.Mission.OSIRIS_REX) || (SbmtMultiMissionTool.getMission() == SbmtMultiMissionTool.Mission.OSIRIS_REX_DEPLOY) ||
-                    (SbmtMultiMissionTool.getMission() == SbmtMultiMissionTool.Mission.OSIRIS_REX_MIRROR_DEPLOY))
-            {
-//                ViewConfig.setFirstTimeDefaultModelName(c.getUniqueName());
-            }
             configArray.add(c);
         }
 
@@ -2789,15 +2742,6 @@ public class BennuConfigs extends SmallBodyViewConfig
             	new DBRunInfo(ImageSource.SPICE, Instrument.NAVCAM, ShapeModelBody.RQ36.toString(), "/project/sbmt2/sbmt/data/bodies/bennu/altwg-spc-v20190207b/navcam/imagelist-fullpath-info.txt", "bennu_altwgspcv20190207b_navcam")
             };
 
-            c.presentInMissions = new SbmtMultiMissionTool.Mission[] {SbmtMultiMissionTool.Mission.APL_INTERNAL, SbmtMultiMissionTool.Mission.TEST_APL_INTERNAL,SbmtMultiMissionTool.Mission.STAGE_APL_INTERNAL,
-            															SbmtMultiMissionTool.Mission.OSIRIS_REX, SbmtMultiMissionTool.Mission.OSIRIS_REX_DEPLOY,
-            															SbmtMultiMissionTool.Mission.OSIRIS_REX_MIRROR_DEPLOY};
-
-            if ((SbmtMultiMissionTool.getMission() == SbmtMultiMissionTool.Mission.OSIRIS_REX) || (SbmtMultiMissionTool.getMission() == SbmtMultiMissionTool.Mission.OSIRIS_REX_DEPLOY) ||
-                    (SbmtMultiMissionTool.getMission() == SbmtMultiMissionTool.Mission.OSIRIS_REX_MIRROR_DEPLOY))
-            {
-//                ViewConfig.setFirstTimeDefaultModelName(c.getUniqueName());
-            }
             configArray.add(c);
         }
 
@@ -2954,15 +2898,6 @@ public class BennuConfigs extends SmallBodyViewConfig
             	new DBRunInfo(ImageSource.SPICE, Instrument.NAVCAM, ShapeModelBody.RQ36.toString(), "/project/sbmt2/sbmt/data/bodies/bennu/altwg-spc-v20190414/navcam/imagelist-fullpath-info.txt", "bennu_altwgspcv20190414_navcam")
             };
 
-            c.presentInMissions = new SbmtMultiMissionTool.Mission[] {SbmtMultiMissionTool.Mission.APL_INTERNAL, SbmtMultiMissionTool.Mission.TEST_APL_INTERNAL,SbmtMultiMissionTool.Mission.STAGE_APL_INTERNAL,
-            															SbmtMultiMissionTool.Mission.OSIRIS_REX, SbmtMultiMissionTool.Mission.OSIRIS_REX_DEPLOY,
-            															SbmtMultiMissionTool.Mission.OSIRIS_REX_MIRROR_DEPLOY};
-
-            if ((SbmtMultiMissionTool.getMission() == SbmtMultiMissionTool.Mission.OSIRIS_REX) || (SbmtMultiMissionTool.getMission() == SbmtMultiMissionTool.Mission.OSIRIS_REX_DEPLOY) ||
-                    (SbmtMultiMissionTool.getMission() == SbmtMultiMissionTool.Mission.OSIRIS_REX_MIRROR_DEPLOY))
-            {
-//                ViewConfig.setFirstTimeDefaultModelName(c.getUniqueName());
-            }
             configArray.add(c);
         }
 
@@ -3118,15 +3053,6 @@ public class BennuConfigs extends SmallBodyViewConfig
                 new DBRunInfo(ImageSource.SPICE, Instrument.NAVCAM, ShapeModelBody.RQ36.toString(), "/project/sbmt2/sbmt/data/bodies/bennu/altwg-spo-v20190612/navcam/imagelist-fullpath-info.txt", "bennu_altwgspov20190612_navcam")
             };
 
-            c.presentInMissions = new SbmtMultiMissionTool.Mission[] {SbmtMultiMissionTool.Mission.APL_INTERNAL, SbmtMultiMissionTool.Mission.TEST_APL_INTERNAL,SbmtMultiMissionTool.Mission.STAGE_APL_INTERNAL,
-                                                                        SbmtMultiMissionTool.Mission.OSIRIS_REX, SbmtMultiMissionTool.Mission.OSIRIS_REX_DEPLOY,
-                                                                        SbmtMultiMissionTool.Mission.OSIRIS_REX_MIRROR_DEPLOY};
-
-            if ((SbmtMultiMissionTool.getMission() == SbmtMultiMissionTool.Mission.OSIRIS_REX) || (SbmtMultiMissionTool.getMission() == SbmtMultiMissionTool.Mission.OSIRIS_REX_DEPLOY) ||
-                    (SbmtMultiMissionTool.getMission() == SbmtMultiMissionTool.Mission.OSIRIS_REX_MIRROR_DEPLOY))
-            {
-//                ViewConfig.setFirstTimeDefaultModelName(c.getUniqueName());
-            }
             configArray.add(c);
         }
 
@@ -3282,15 +3208,6 @@ public class BennuConfigs extends SmallBodyViewConfig
                 new DBRunInfo(ImageSource.SPICE, Instrument.NAVCAM, ShapeModelBody.RQ36.toString(), "/project/sbmt2/sbmt/data/bodies/bennu/altwg-spc-v20190828/navcam/imagelist-fullpath-info.txt", "bennu_altwgspcv20190828_navcam")
             };
 
-            c.presentInMissions = new SbmtMultiMissionTool.Mission[] {SbmtMultiMissionTool.Mission.APL_INTERNAL, SbmtMultiMissionTool.Mission.TEST_APL_INTERNAL,SbmtMultiMissionTool.Mission.STAGE_APL_INTERNAL,
-                                                                        SbmtMultiMissionTool.Mission.OSIRIS_REX, SbmtMultiMissionTool.Mission.OSIRIS_REX_DEPLOY,
-                                                                        SbmtMultiMissionTool.Mission.OSIRIS_REX_MIRROR_DEPLOY};
-
-            if ((SbmtMultiMissionTool.getMission() == SbmtMultiMissionTool.Mission.OSIRIS_REX) || (SbmtMultiMissionTool.getMission() == SbmtMultiMissionTool.Mission.OSIRIS_REX_DEPLOY) ||
-                    (SbmtMultiMissionTool.getMission() == SbmtMultiMissionTool.Mission.OSIRIS_REX_MIRROR_DEPLOY))
-            {
-//                ViewConfig.setFirstTimeDefaultModelName(c.getUniqueName());
-            }
             configArray.add(c);
         }
 
@@ -3446,15 +3363,6 @@ public class BennuConfigs extends SmallBodyViewConfig
                 new DBRunInfo(ImageSource.SPICE, Instrument.NAVCAM, ShapeModelBody.RQ36.toString(), "/project/sbmt2/sbmt/data/bodies/bennu/altwg-spc-v20191027/navcam/imagelist-fullpath-info.txt", "bennu_altwgspcv20191027_navcam")
             };
 
-            c.presentInMissions = new SbmtMultiMissionTool.Mission[] {SbmtMultiMissionTool.Mission.APL_INTERNAL, SbmtMultiMissionTool.Mission.TEST_APL_INTERNAL,SbmtMultiMissionTool.Mission.STAGE_APL_INTERNAL,
-                                                                        SbmtMultiMissionTool.Mission.OSIRIS_REX, SbmtMultiMissionTool.Mission.OSIRIS_REX_DEPLOY,
-                                                                        SbmtMultiMissionTool.Mission.OSIRIS_REX_MIRROR_DEPLOY};
-
-            if ((SbmtMultiMissionTool.getMission() == SbmtMultiMissionTool.Mission.OSIRIS_REX) || (SbmtMultiMissionTool.getMission() == SbmtMultiMissionTool.Mission.OSIRIS_REX_DEPLOY) ||
-                    (SbmtMultiMissionTool.getMission() == SbmtMultiMissionTool.Mission.OSIRIS_REX_MIRROR_DEPLOY))
-            {
-//                ViewConfig.setFirstTimeDefaultModelName(c.getUniqueName());
-            }
             configArray.add(c);
         }
 
@@ -3464,7 +3372,7 @@ public class BennuConfigs extends SmallBodyViewConfig
             c.body = ShapeModelBody.RQ36;
             c.type = BodyType.ASTEROID;
             c.population = ShapeModelPopulation.NEO;
-            c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
+            c.dataUsed = ShapeModelDataUsed.LIDAR_BASED;
             c.author = ShapeModelType.provide("OLA-v20");
             c.modelLabel = c.author.name();
             c.rootDirOnServer = "/bennu/ola-v20-spc";
@@ -3610,16 +3518,8 @@ public class BennuConfigs extends SmallBodyViewConfig
                 new DBRunInfo(ImageSource.SPICE, Instrument.NAVCAM, ShapeModelBody.RQ36.toString(), "/project/sbmt2/sbmt/data/bodies/bennu/ola-v20-spc/navcam/imagelist-fullpath-info.txt", "bennu_olav20_navcam")
             };
 
-            c.presentInMissions = new SbmtMultiMissionTool.Mission[] {SbmtMultiMissionTool.Mission.APL_INTERNAL, SbmtMultiMissionTool.Mission.TEST_APL_INTERNAL,SbmtMultiMissionTool.Mission.STAGE_APL_INTERNAL,
-                                                                        SbmtMultiMissionTool.Mission.OSIRIS_REX, SbmtMultiMissionTool.Mission.OSIRIS_REX_DEPLOY,
-                                                                        SbmtMultiMissionTool.Mission.OSIRIS_REX_MIRROR_DEPLOY};
-            c.defaultForMissions = new SbmtMultiMissionTool.Mission[] {SbmtMultiMissionTool.Mission.OSIRIS_REX, SbmtMultiMissionTool.Mission.OSIRIS_REX_DEPLOY, SbmtMultiMissionTool.Mission.OSIRIS_REX_MIRROR_DEPLOY};
+            c.defaultForMissions = OREXClients;
 
-            if ((SbmtMultiMissionTool.getMission() == SbmtMultiMissionTool.Mission.OSIRIS_REX) || (SbmtMultiMissionTool.getMission() == SbmtMultiMissionTool.Mission.OSIRIS_REX_DEPLOY) ||
-                    (SbmtMultiMissionTool.getMission() == SbmtMultiMissionTool.Mission.OSIRIS_REX_MIRROR_DEPLOY))
-            {
-//                ViewConfig.setFirstTimeDefaultModelName(c.getUniqueName());
-            }
             configArray.add(c);
         }
 
@@ -3629,7 +3529,7 @@ public class BennuConfigs extends SmallBodyViewConfig
             c.body = ShapeModelBody.RQ36;
             c.type = BodyType.ASTEROID;
             c.population = ShapeModelPopulation.NEO;
-            c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
+            c.dataUsed = ShapeModelDataUsed.LIDAR_BASED;
             c.author = ShapeModelType.provide("OLA-v20-PTM");
             c.modelLabel = c.author.name();
             c.rootDirOnServer = "/bennu/ola-v20-ptm";
@@ -3775,15 +3675,6 @@ public class BennuConfigs extends SmallBodyViewConfig
                 new DBRunInfo(ImageSource.SPICE, Instrument.NAVCAM, ShapeModelBody.RQ36.toString(), "/project/sbmt2/sbmt/data/bodies/bennu/ola-v20-ptm/navcam/imagelist-fullpath-info.txt", "bennu_olav20_navcam")
             };
 
-            c.presentInMissions = new SbmtMultiMissionTool.Mission[] {SbmtMultiMissionTool.Mission.APL_INTERNAL, SbmtMultiMissionTool.Mission.TEST_APL_INTERNAL,SbmtMultiMissionTool.Mission.STAGE_APL_INTERNAL,
-                                                                        SbmtMultiMissionTool.Mission.OSIRIS_REX, SbmtMultiMissionTool.Mission.OSIRIS_REX_DEPLOY,
-                                                                        SbmtMultiMissionTool.Mission.OSIRIS_REX_MIRROR_DEPLOY};
-
-            if ((SbmtMultiMissionTool.getMission() == SbmtMultiMissionTool.Mission.OSIRIS_REX) || (SbmtMultiMissionTool.getMission() == SbmtMultiMissionTool.Mission.OSIRIS_REX_DEPLOY) ||
-                    (SbmtMultiMissionTool.getMission() == SbmtMultiMissionTool.Mission.OSIRIS_REX_MIRROR_DEPLOY))
-            {
-//                ViewConfig.setFirstTimeDefaultModelName(c.getUniqueName());
-            }
             configArray.add(c);
         }
 

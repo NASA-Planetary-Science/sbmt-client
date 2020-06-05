@@ -74,7 +74,8 @@ public class SbmtMultiMissionTool
 		HAYABUSA2_DEPLOY("355536d"),
 		OSIRIS_REX("7cd84586"),
 //		OSIRIS_REX_STAGE("7cd84587"),
-		OSIRIS_REX_DEPLOY("7cd84588"),
+        OSIRIS_REX_DEPLOY("7cd84588"),
+        OSIRIS_REX_TEST("h887aa63"),
 		OSIRIS_REX_MIRROR_DEPLOY("7cd84589"),
 		NH_DEPLOY("8ff86312"),
 		STAGE_APL_INTERNAL("f7e441b"),
@@ -259,13 +260,20 @@ public class SbmtMultiMissionTool
 			Configuration.setCacheVersion("");
 			Configuration.setAppTitle("SBMT/Hayabusa2");
 			break;
-		case OSIRIS_REX:
-			//                Configuration.setRootURL("http://sbmt.jhuapl.edu/internal/sbmt");
-			Configuration.setAppName("sbmt1orex-dev");
-			Configuration.setCacheVersion("");
-			Configuration.setAppTitle("SBMT/OSIRIS REx-Dev");
-			Colormaps.setDefaultColormapName("Spectral_lowBlue");
-			break;
+        case OSIRIS_REX:
+            //                Configuration.setRootURL("http://sbmt.jhuapl.edu/internal/sbmt");
+            Configuration.setAppName("sbmt1orex-dev");
+            Configuration.setCacheVersion("");
+            Configuration.setAppTitle("SBMT/OSIRIS REx-Dev");
+            Colormaps.setDefaultColormapName("Spectral_lowBlue");
+            break;
+        case OSIRIS_REX_TEST:
+            Configuration.setRootURL("http://sbmt-web.jhuapl.edu/internal/multi-mission/test");
+            Configuration.setAppName("sbmt1orex-test");
+            Configuration.setCacheVersion("");
+            Configuration.setAppTitle("SBMT/OSIRIS REx-Test");
+            Colormaps.setDefaultColormapName("Spectral_lowBlue");
+            break;
 //		case OSIRIS_REX_STAGE:
 //			Configuration.setRootURL("http://orexsbmt.jhuapl.edu/sbmt");
 //			Configuration.setAppName("sbmt1orex-stage");
@@ -377,6 +385,7 @@ public class SbmtMultiMissionTool
                     splash = new SbmtSplash("resources", "splashLogoHb2.png");
                     break;
                 case OSIRIS_REX:
+                case OSIRIS_REX_TEST:
                 case OSIRIS_REX_DEPLOY:
                 case OSIRIS_REX_MIRROR_DEPLOY:
 //                case OSIRIS_REX_STAGE:
