@@ -3535,7 +3535,7 @@ public class BennuConfigs extends SmallBodyViewConfig
             c.rootDirOnServer = "/bennu/ola-v20-ptm";
             c.shapeModelFileExtension = ".obj";
             c.setResolution( //
-                    ImmutableList.of("Medium (217032 plates)", "High (886904)", "Very High (3366134 plates)"),
+                    ImmutableList.of("Medium (217032 plates)", "High (886904 plates)", "Very High (3366134 plates)"),
                     ImmutableList.of(217032, 886904, 3366134));
             c.imageSearchDefaultStartDate = new GregorianCalendar(2000, 0, 1, 0, 0, 0).getTime();
             c.imageSearchDefaultEndDate = new GregorianCalendar(2050, 0, 1, 0, 0, 0).getTime();
