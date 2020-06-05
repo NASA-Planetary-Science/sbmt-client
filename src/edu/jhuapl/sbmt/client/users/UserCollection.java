@@ -53,16 +53,20 @@ public class UserCollection
         this.groupIds = groupIds;
     }
 
+    /**
+     * Return the user in the collection that matches the specified identifier
+     * string, or null if the collection has no user that matches the
+     * identifier.
+     *
+     * @param id the identifier to match
+     * @return the matching {@link User} object, or null
+     * @throws NullPointerException if id is null
+     */
     public User getUser(String id)
     {
-        User result = users.get(id);
+        Preconditions.checkNotNull(id);
 
-        if (result == null)
-        {
-            result = User.ofUnauthorized();
-        }
-
-        return result;
+        return users.get(id);
     }
 
     public ImmutableList<User> getUsers()
