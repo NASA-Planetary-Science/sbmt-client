@@ -204,7 +204,7 @@ public class DEMView extends JFrame implements ActionListener, PickListener, Pro
         JTabbedPane tmpTabbedPane = new JTabbedPane();
         tmpTabbedPane.add("Chart", plot.getChartPanel());
         tmpTabbedPane.add("Scale Bar", new ScaleBarPanel(renderer, scaleBarPainter));
-        tmpTabbedPane.add("Camera: Reg", new CameraRegularPanel(renderer));
+        tmpTabbedPane.add("Camera: Reg", new CameraRegularPanel(renderer, priDEM));
         tmpTabbedPane.add("Camera: Quat", tmpQuatPanel);
 
         JSplitPane splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, renderer, tmpTabbedPane);
