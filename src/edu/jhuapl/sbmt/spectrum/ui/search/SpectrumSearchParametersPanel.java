@@ -76,6 +76,8 @@ public class SpectrumSearchParametersPanel  extends JPanel
     private JPanel parametersPanel;
     private JPanel filenamePanel;
 
+    private String[] dataTypes;
+
     private boolean isFixedListSearch = false;
 
     public SpectrumSearchParametersPanel(boolean isHierarchical)
@@ -115,9 +117,6 @@ public class SpectrumSearchParametersPanel  extends JPanel
 
     private void initParameterSearch()
     {
-//        Component verticalStrut_10 = Box.createVerticalStrut(5);
-//        add(verticalStrut_10);
-
         JPanel choicePanel = new JPanel();
         add(choicePanel);
 
@@ -136,10 +135,6 @@ public class SpectrumSearchParametersPanel  extends JPanel
         searchByGroup.add(filenameRadioButton);
         searchByGroup.add(parametersRadioButton);
         parametersRadioButton.setSelected(true);
-
-
-//        Component verticalStrut_9 = Box.createVerticalStrut(20);
-//        add(verticalStrut_9);
 
         filenamePanel = new JPanel();
         filenamePanel.setVisible(false);
@@ -173,8 +168,6 @@ public class SpectrumSearchParametersPanel  extends JPanel
             {
                 parametersPanel.setVisible(true);
                 filenamePanel.setVisible(false);
-//                selectRegionButton.setVisible(true);
-//                clearRegionButton.setVisible(true);
             }
         });
 
@@ -186,8 +179,6 @@ public class SpectrumSearchParametersPanel  extends JPanel
             {
                 parametersPanel.setVisible(false);
                 filenamePanel.setVisible(true);
-//                selectRegionButton.setVisible(false);
-//                clearRegionButton.setVisible(false);
             }
         });
 
@@ -389,11 +380,6 @@ public class SpectrumSearchParametersPanel  extends JPanel
         auxPanel = new JPanel();
         parametersPanel.add(auxPanel);
         auxPanel.setLayout(new BoxLayout(auxPanel, BoxLayout.Y_AXIS));
-
-//        Component verticalStrut = Box.createVerticalStrut(20);
-//        add(verticalStrut);
-
-
     }
 
     protected List<BasicSpectrum> processResults(List<BasicSpectrum> input)
@@ -646,6 +632,11 @@ public class SpectrumSearchParametersPanel  extends JPanel
             parametersRadioButton.setVisible(true);
             filenameRadioButton.setVisible(true);
 		}
+	}
+
+	public void setDataTypes(String[] dataTypes)
+	{
+		this.dataTypes = dataTypes;
 	}
 
 }

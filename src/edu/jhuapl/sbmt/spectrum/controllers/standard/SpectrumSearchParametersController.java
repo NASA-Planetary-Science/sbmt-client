@@ -61,6 +61,7 @@ public class SpectrumSearchParametersController<S extends BasicSpectrum>
     private ProgressMonitor searchProgressMonitor;
     private TreeSet<Integer> cubeList = null;
     private boolean isFixedListSearch = false;
+    private String[] dataTypes;
 
     /**
      * @param imageSearchDefaultStartDate				The search start date
@@ -389,9 +390,8 @@ public class SpectrumSearchParametersController<S extends BasicSpectrum>
         searchParameters.setMaxPhaseQuery(Integer.parseInt(panel.getToPhaseTextField().getText()));
 
         SmallBodyModel bodyModel = (SmallBodyModel)modelManager.getModel(ModelNames.SMALL_BODY);
-        System.out.println("SpectrumSearchParametersController: setSearchParameters: " + bodyModel.getConfig());
         searchParameters.setModelName(bodyModel.getConfig().author.toString().toLowerCase().replace("-", ""));
-        searchParameters.setDataType("l2"); //TODO fix this
+//        searchParameters.setDataType(panel.getDataType());
     }
 
     /**
@@ -462,4 +462,9 @@ public class SpectrumSearchParametersController<S extends BasicSpectrum>
     	this.isFixedListSearch = isFixedListSearch;
     	panel.setFixedListSearch(isFixedListSearch);
     }
+
+	public void setDataTypes(String[] dataTypes)
+	{
+		this.dataTypes = dataTypes;
+	}
 }
