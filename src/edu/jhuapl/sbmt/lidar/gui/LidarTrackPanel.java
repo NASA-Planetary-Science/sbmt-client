@@ -25,6 +25,8 @@ import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import javax.swing.table.TableCellRenderer;
 
+import com.google.common.collect.Range;
+
 import edu.jhuapl.saavtk.colormap.SigFigNumberFormat;
 import edu.jhuapl.saavtk.gui.render.Renderer;
 import edu.jhuapl.saavtk.gui.util.IconUtil;
@@ -37,7 +39,6 @@ import edu.jhuapl.saavtk.pick.PickMode;
 import edu.jhuapl.saavtk.pick.PickTarget;
 import edu.jhuapl.saavtk.pick.PickUtil;
 import edu.jhuapl.saavtk.pick.Picker;
-import edu.jhuapl.sbmt.client.SmallBodyViewConfig;
 import edu.jhuapl.sbmt.gui.table.ColorProviderCellEditor;
 import edu.jhuapl.sbmt.gui.table.ColorProviderCellRenderer;
 import edu.jhuapl.sbmt.gui.table.EphemerisTimeRenderer;
@@ -117,7 +118,7 @@ public class LidarTrackPanel extends JPanel
 	 * Standard Constructor
 	 */
 	public LidarTrackPanel(LidarTrackManager aTrackManager, PickManager aPickManager, Renderer aRenderer,
-			ModelManager aModelManager, SmallBodyViewConfig aBodyViewConfig)
+			ModelManager aModelManager)
 	{
 		refTrackManager = aTrackManager;
 		refPickManager = aPickManager;
@@ -196,7 +197,8 @@ public class LidarTrackPanel extends JPanel
 		saveB.setToolTipText("Save Tracks");
 
 		// Radial offset section
-		radialS = new GSlider(this, 30, -15, 15);
+		Range<Double> tmpRange = Range.closed(-15.0, 15.0);
+		radialS = new GSlider(this, tmpRange, 30);
 		radialS.setMajorTickSpacing(5);
 		radialS.setMinorTickSpacing(1);
 		radialS.setPaintTicks(true);

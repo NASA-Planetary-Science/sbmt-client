@@ -27,7 +27,7 @@ import vtk.vtkPolyDataNormals;
 import vtk.vtkProp;
 import vtk.vtksbCellLocator;
 
-import edu.jhuapl.saavtk.gui.render.camera.CameraUtil;
+import edu.jhuapl.saavtk.model.PolyModelUtil;
 import edu.jhuapl.saavtk.util.MathUtil;
 import edu.jhuapl.saavtk.util.PolyDataUtil;
 import edu.jhuapl.saavtk.util.ProgressListener;
@@ -856,7 +856,8 @@ public class DEM extends SmallBodyModel implements PropertyChangeListener
         return centerOfDEM;
     }
 
-    public void delete()
+    @Override
+	public void delete()
     {
         dem.Delete();
         boundary.Delete();
@@ -901,7 +902,8 @@ public class DEM extends SmallBodyModel implements PropertyChangeListener
         // TODO Do something here.
     }
 
-    public void setVisible(boolean b)
+    @Override
+	public void setVisible(boolean b)
     {
         List<vtkProp> props = super.getProps();
         for (vtkProp p : props)
@@ -1039,7 +1041,7 @@ public class DEM extends SmallBodyModel implements PropertyChangeListener
 		if (cAverageSurfaceNormal != null)
 			return cAverageSurfaceNormal;
 
-		cAverageSurfaceNormal = CameraUtil.calcSurfaceNormal(this);
+		cAverageSurfaceNormal = PolyModelUtil.calcSurfaceNormal(this);
 		return cAverageSurfaceNormal;
 	}
 
@@ -1050,7 +1052,16 @@ public class DEM extends SmallBodyModel implements PropertyChangeListener
 		if (cGeometricCenterPoint != null)
 			return cGeometricCenterPoint;
 
-		cGeometricCenterPoint = CameraUtil.calcCenterPoint(this);
+		cGeometricCenterPoint = PolyModelUtil.calcCenterPoint(this);
 		return cGeometricCenterPoint;
 	}
+
+	@Override
+	public boolean isPolyhedron()
+	{
+		// A digital elevation maps is a polygonal surface. They typically cover
+		// just a small portion of a polyhedral model.
+		return false;
+	}
+
 }

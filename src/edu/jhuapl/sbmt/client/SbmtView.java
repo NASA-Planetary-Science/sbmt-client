@@ -617,11 +617,14 @@ public class SbmtView extends View implements PropertyChangeListener
 
 		}
 
-		if (getPolyhedralModelConfig().hasLidarData)
-		{
-			JComponent component = new LidarPanel(getPolyhedralModelConfig(), getModelManager(), getPickManager(), getRenderer());
-			addTab(getPolyhedralModelConfig().lidarInstrumentName.toString(), component);
-		}
+		// Lidar tab
+		SmallBodyViewConfig tmpSmallBodyConfig = getPolyhedralModelConfig();
+		String lidarInstrName = "Lidar";
+		if (tmpSmallBodyConfig.hasLidarData == true)
+			lidarInstrName = tmpSmallBodyConfig.lidarInstrumentName.toString();
+
+		JComponent lidarPanel = new LidarPanel(getModelManager(), getPickManager(), getRenderer(), tmpSmallBodyConfig);
+		addTab(lidarInstrName, lidarPanel);
 
 		if (Configuration.isAPLVersion())
 		{
@@ -728,7 +731,10 @@ public class SbmtView extends View implements PropertyChangeListener
 		PickUtil.installDefaultPickHandler(tmpPickManager, getStatusBar(), getRenderer(), getModelManager());
 		setPickManager(tmpPickManager);
 
-		// Manually register the PopupManager with the PickManager
+		// Manually register the Renderer with the DefaultPicker
+		tmpPickManager.getDefaultPicker().addListener(getRenderer());
+
+		// Manually register the PopupManager with the DefaultPicker
 		tmpPickManager.getDefaultPicker().addListener(getPopupManager());
 
 		// TODO: This should be moved out of here to a logical relevant location
