@@ -19,7 +19,5 @@
 			<attribute name="javadoc_location" value="jar:platform:/resource/saavtk/lib/commons-text-1.8-javadoc.jar!/"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry kind="lib" path="/saavtk/lib/crucible-metadata-4.4.1.jar"/>
-	<classpathentry kind="lib" path="/saavtk/lib/crucible-settings-4.1.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
