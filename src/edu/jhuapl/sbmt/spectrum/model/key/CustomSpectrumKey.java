@@ -192,4 +192,91 @@ public class CustomSpectrumKey implements CustomSpectrumKeyInterface
 		});
 	}
 
+	@Override
+	public int hashCode()
+	{
+		final int prime = 31;
+		int result = 1;
+//		result = prime * result + ((fileType == null) ? 0 : fileType.hashCode());
+//		result = prime * result + ((instrument == null) ? 0 : instrument.hashCode());
+		result = prime * result + ((name == null) ? 0 : name.hashCode());
+//		result = prime * result + ((pointingFilename == null) ? 0 : pointingFilename.hashCode());
+//		result = prime * result + ((spectrumFilename == null) ? 0 : spectrumFilename.hashCode());
+//		result = prime * result + ((spectrumType == null) ? 0 : spectrumType.hashCode());
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj)
+	{
+		if (this == obj)
+		{
+			return true;
+		}
+		if (obj == null)
+		{
+			return false;
+		}
+		if (getClass() != obj.getClass())
+		{
+			return false;
+		}
+		CustomSpectrumKey other = (CustomSpectrumKey) obj;
+//		if (fileType != other.fileType)
+//		{
+//			return false;
+//		}
+//		if (instrument == null)
+//		{
+//			if (other.instrument != null)
+//			{
+//				return false;
+//			}
+//		} else if (!instrument.equals(other.instrument))
+//		{
+//			return false;
+//		}
+		if (name == null)
+		{
+			if (other.name != null)
+			{
+				return false;
+			}
+		} else if (!name.equals(other.name))
+		{
+			return false;
+		}
+//		if (pointingFilename == null)
+//		{
+//			if (other.pointingFilename != null)
+//			{
+//				return false;
+//			}
+//		} else if (!pointingFilename.equals(other.pointingFilename))
+//		{
+//			return false;
+//		}
+//		if (spectrumFilename == null)
+//		{
+//			if (other.spectrumFilename != null)
+//			{
+//				return false;
+//			}
+//		} else if (!spectrumFilename.equals(other.spectrumFilename))
+//		{
+//			return false;
+//		}
+//		if (spectrumType == null)
+//		{
+//			if (other.spectrumType != null)
+//			{
+//				return false;
+//			}
+//		} else if (!spectrumType.equals(other.spectrumType))
+//		{
+//			return false;
+//		}
+		return true;
+	}
+
 }

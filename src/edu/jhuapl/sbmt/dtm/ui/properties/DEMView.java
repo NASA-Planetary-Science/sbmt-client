@@ -2,9 +2,12 @@ package edu.jhuapl.sbmt.dtm.ui.properties;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.InputEvent;
+import java.awt.event.MouseEvent;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
 import java.beans.PropertyChangeEvent;
@@ -34,6 +37,7 @@ import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JSplitPane;
+import javax.swing.JTabbedPane;
 import javax.swing.JToggleButton;
 
 import org.jfree.chart.plot.DefaultDrawingSupplier;
@@ -44,6 +48,8 @@ import vtk.vtkObject;
 import vtk.vtkProp;
 import vtk.vtkRenderer;
 
+import edu.jhuapl.saavtk.camera.gui.CameraQuaternionPanel;
+import edu.jhuapl.saavtk.camera.gui.CameraRegularPanel;
 import edu.jhuapl.saavtk.colormap.Colorbar;
 import edu.jhuapl.saavtk.colormap.Colormap;
 import edu.jhuapl.saavtk.colormap.ColormapUtil;
@@ -58,13 +64,16 @@ import edu.jhuapl.saavtk.model.ModelNames;
 import edu.jhuapl.saavtk.model.PolyhedralModel;
 import edu.jhuapl.saavtk.model.structure.LineModel;
 import edu.jhuapl.saavtk.pick.ControlPointsPicker;
+import edu.jhuapl.saavtk.pick.PickListener;
 import edu.jhuapl.saavtk.pick.PickManager;
+import edu.jhuapl.saavtk.pick.PickMode;
+import edu.jhuapl.saavtk.pick.PickTarget;
 import edu.jhuapl.saavtk.pick.PickUtil;
 import edu.jhuapl.saavtk.pick.Picker;
-import edu.jhuapl.saavtk.popup.PopupManager;
-import edu.jhuapl.saavtk.popup.PopupMenu;
-import edu.jhuapl.saavtk.structure.PolyLineMode;
+import edu.jhuapl.saavtk.scalebar.ScaleBarPainter;
+import edu.jhuapl.saavtk.scalebar.gui.ScaleBarPanel;
 import edu.jhuapl.saavtk.structure.PolyLine;
+import edu.jhuapl.saavtk.structure.PolyLineMode;
 import edu.jhuapl.saavtk.structure.io.StructureMiscUtil;
 import edu.jhuapl.saavtk.util.LatLon;
 import edu.jhuapl.saavtk.util.Properties;
@@ -72,12 +81,11 @@ import edu.jhuapl.sbmt.client.SbmtModelManager;
 import edu.jhuapl.sbmt.dtm.model.DEM;
 import edu.jhuapl.sbmt.dtm.model.DEMCollection;
 import edu.jhuapl.sbmt.dtm.model.DEMKey;
-import edu.jhuapl.sbmt.dtm.ui.menu.MapmakerLinesPopupMenu;
-import edu.jhuapl.sbmt.gui.image.ui.images.ImagePopupManager;
 
+import glum.gui.action.PopupMenu;
 import net.miginfocom.swing.MigLayout;
 
-public class DEMView extends JFrame implements ActionListener, PropertyChangeListener, WindowListener
+public class DEMView extends JFrame implements ActionListener, PickListener, PropertyChangeListener, WindowListener
 {
     // Constants
     private static final String Profile = "Profile";
@@ -90,6 +98,7 @@ public class DEMView extends JFrame implements ActionListener, PropertyChangeLis
     private static final String Color = "Color";
 
     // State vars
+ 	 private final PopupMenu<PolyLine> popupMenu;
     private final LineModel<PolyLine> lineModel;
     private final ModelManager modelManager;
     private final PickManager pickManager;
@@ -116,6 +125,7 @@ public class DEMView extends JFrame implements ActionListener, PropertyChangeLis
     private JButton saveButton;
     private JLabel fileL;
     private Renderer renderer;
+    private ScaleBarPainter scaleBarPainter;
 
     public Renderer getRenderer()
     {
@@ -160,12 +170,15 @@ public class DEMView extends JFrame implements ActionListener, PropertyChangeLis
         renderer = new Renderer(modelManager);
         renderer.setMinimumSize(new Dimension(0, 0));
 
-         PopupManager popupManager = new ImagePopupManager(modelManager, null, null, renderer);
-        // The following replaces LinesPopupMenu with MapmakerLinesPopupMenu
-        PopupMenu popupMenu = new MapmakerLinesPopupMenu(modelManager, parentPolyhedralModel, renderer);
-        popupManager.registerPopup(lineModel, popupMenu);
+        scaleBarPainter = new ScaleBarPainter(renderer, modelManager);
+        renderer.addVtkPropProvider(scaleBarPainter);
 
-        pickManager = new PickManager(renderer, modelManager, popupManager);
+        // Popup menu
+        popupMenu = new PopupMenu<>(lineModel);
+        popupMenu.installPopAction(new SaveGravityProfileAction<>(lineModel, parentPolyhedralModel, renderer), "Save Profile...");
+
+        pickManager = new PickManager(renderer, modelManager);
+        pickManager.getDefaultPicker().addListener(renderer);
         PickUtil.installDefaultPickHandler(pickManager, statusBar, renderer, modelManager);
         priPicker = new ControlPointsPicker<>(renderer, pickManager, modelManager, lineModel);
 
@@ -173,8 +186,29 @@ public class DEMView extends JFrame implements ActionListener, PropertyChangeLis
 
         plot = new DEMPlot(lineModel, priDEM, secDEM.getColoringIndex());
 
-        JSplitPane splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT,
-                renderer, plot.getChartPanel());
+        // Specialized quaternion panel
+        CameraQuaternionPanel tmpQuatPanel = new CameraQuaternionPanel(renderer);
+
+        boolean isFirst = true;
+  		  for (Component aComp : tmpQuatPanel.getActionButtons())
+  		  {
+            if (isFirst == true)
+                tmpQuatPanel.add(aComp, "span,split,align right");
+            else
+            	tmpQuatPanel.add(aComp, "");
+
+            isFirst = false;
+         }
+
+        // Add the components in
+        JTabbedPane tmpTabbedPane = new JTabbedPane();
+        tmpTabbedPane.add("Chart", plot.getChartPanel());
+        tmpTabbedPane.add("Scale Bar", new ScaleBarPanel(renderer, scaleBarPainter));
+        tmpTabbedPane.add("Camera: Reg", new CameraRegularPanel(renderer, priDEM));
+        tmpTabbedPane.add("Camera: Quat", tmpQuatPanel);
+
+        JSplitPane splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, renderer, tmpTabbedPane);
+        splitPane.setDividerLocation(300);
         splitPane.setResizeWeight(0.5);
         splitPane.setOneTouchExpandable(true);
 
@@ -197,6 +231,7 @@ public class DEMView extends JFrame implements ActionListener, PropertyChangeLis
         lineModel.addPropertyChangeListener(this);
         modelManager.addPropertyChangeListener(this);
         pickManager.getDefaultPicker().addPropertyChangeListener(this);
+        pickManager.getDefaultPicker().addListener(this);
 
         updateControlPanel(null);
 
@@ -295,6 +330,33 @@ public class DEMView extends JFrame implements ActionListener, PropertyChangeLis
             removeAllProfiles();
         }
     }
+
+ 	@Override
+ 	public void handlePickAction(InputEvent aEvent, PickMode aMode, PickTarget aPrimaryTarg, PickTarget aSurfaceTarg)
+ 	{
+ 		// Bail if no picked target
+ 		if (aPrimaryTarg == PickTarget.Invalid)
+ 			return;
+
+ 		// Bail if the picked item does not correspond to the lineModel's actor
+ 		if (aPrimaryTarg.getActor() != lineModel.getVtkItemActor())
+ 			return;
+
+ 		// Bail if not a valid pick action
+ 		if (PickUtil.isPopupTrigger(aEvent) == false || aMode != PickMode.ActiveSec)
+ 			return;
+
+		// Update the popup to reflect the selected items
+ 		int cellId = aPrimaryTarg.getCellId();
+ 		PolyLine tmpItem = lineModel.getItem(cellId);
+ 		lineModel.setSelectedItems(ImmutableList.of(tmpItem));
+
+ 		// Show the popup
+ 		Component tmpComp = aEvent.getComponent();
+ 		int posX = ((MouseEvent) aEvent).getX();
+ 		int posY = ((MouseEvent) aEvent).getY();
+ 		popupMenu.show(tmpComp, posX, posY);
+ 	}
 
     /**
      * Helper method to create the control panel.
@@ -729,7 +791,8 @@ public class DEMView extends JFrame implements ActionListener, PropertyChangeLis
             this.renderer = renderer;
         }
 
-        public void actionPerformed(ActionEvent actionEvent)
+        @Override
+		public void actionPerformed(ActionEvent actionEvent)
         {
             renderer.saveToFile();
         }
@@ -742,7 +805,8 @@ public class DEMView extends JFrame implements ActionListener, PropertyChangeLis
             super("PLT (Gaskell Format)...");
         }
 
-        public void actionPerformed(ActionEvent actionEvent)
+        @Override
+		public void actionPerformed(ActionEvent actionEvent)
         {
             File file = CustomFileChooser.showSaveDialog(null, "Export Shape Model to PLT", "model.plt");
 
@@ -770,7 +834,8 @@ public class DEMView extends JFrame implements ActionListener, PropertyChangeLis
             super("OBJ...");
         }
 
-        public void actionPerformed(ActionEvent actionEvent)
+        @Override
+		public void actionPerformed(ActionEvent actionEvent)
         {
             File file = CustomFileChooser.showSaveDialog(null, "Export Shape Model to OBJ", "model.obj");
 
@@ -798,7 +863,8 @@ public class DEMView extends JFrame implements ActionListener, PropertyChangeLis
             super("STL...");
         }
 
-        public void actionPerformed(ActionEvent actionEvent)
+        @Override
+		public void actionPerformed(ActionEvent actionEvent)
         {
             File file = CustomFileChooser.showSaveDialog(null, "Export Shape Model to STL", "model.stl");
 
@@ -826,7 +892,8 @@ public class DEMView extends JFrame implements ActionListener, PropertyChangeLis
             super("Export Plate Data...");
         }
 
-        public void actionPerformed(ActionEvent actionEvent)
+        @Override
+		public void actionPerformed(ActionEvent actionEvent)
         {
             String name = "platedata.csv";
             File file = CustomFileChooser.showSaveDialog(DEMView.this, "Export Plate Data", name);
@@ -858,7 +925,11 @@ public class DEMView extends JFrame implements ActionListener, PropertyChangeLis
             doConfigureColorbar();
 
         if (source == modelManager)
+        {
+            renderer.setProps(modelManager.getProps());
+
             doConfigureModelManager();
+        }
 
         // Force a repaint
         renderer.getRenderWindowPanel().Render();

@@ -64,4 +64,8 @@ public interface CustomSpectrumKeyInterface extends SpectrumKeyInterface
 		return metadata.provide(objectMetadata);
 
 	}
+
+	public int hashCode();
+
+	public boolean equals(Object obj);
 }
