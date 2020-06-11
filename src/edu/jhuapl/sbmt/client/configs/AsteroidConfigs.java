@@ -137,7 +137,7 @@ public class AsteroidConfigs extends SmallBodyViewConfig
         															SbmtMultiMissionTool.Mission.HAYABUSA2_DEPLOY, SbmtMultiMissionTool.Mission.HAYABUSA2_DEV,
         															SbmtMultiMissionTool.Mission.OSIRIS_REX, SbmtMultiMissionTool.Mission.OSIRIS_REX_TEST,
         															SbmtMultiMissionTool.Mission.OSIRIS_REX_DEPLOY, SbmtMultiMissionTool.Mission.OSIRIS_REX_MIRROR_DEPLOY,
-        															SbmtMultiMissionTool.Mission.NH_DEPLOY, SbmtMultiMissionTool.Mission.NH_DEPLOY,
+        															SbmtMultiMissionTool.Mission.NH_DEPLOY,
         															SbmtMultiMissionTool.Mission.DART_DEPLOY, SbmtMultiMissionTool.Mission.DART_DEV};
 
         c.defaultForMissions = new SbmtMultiMissionTool.Mission[] {SbmtMultiMissionTool.Mission.PUBLIC_RELEASE, SbmtMultiMissionTool.Mission.TEST_PUBLIC_RELEASE,
