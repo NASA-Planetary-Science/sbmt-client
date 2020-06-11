@@ -308,6 +308,7 @@ public class SpectrumSearchParametersController<S extends BasicSpectrum>
 								@Override
 								public void searchStarted()
 								{
+									setSearchParameters();
 									 searchProgressMonitor = new ProgressMonitor(null, "Performing Spectra Search...", "", 0, 100);
 									 searchProgressMonitor.setMillisToDecideToPopup(0);
 									 searchProgressMonitor.setMillisToPopup(0);

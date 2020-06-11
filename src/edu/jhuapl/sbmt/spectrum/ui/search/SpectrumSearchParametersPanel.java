@@ -655,9 +655,11 @@ public class SpectrumSearchParametersPanel  extends JPanel
 
 	public String getSelectedDataTypes()
 	{
-		if (dataTypeGroup.getSelection().getSelectedObjects() == null) return "";
-		JRadioButton selected = (JRadioButton)dataTypeGroup.getSelection().getSelectedObjects()[0];
-		return selected.getText();
+		for (JRadioButton button : dataTypeRadioButtons)
+		{
+			if (button.isSelected()) return button.getText().toLowerCase();
+		}
+		return "";
 	}
 
 }
