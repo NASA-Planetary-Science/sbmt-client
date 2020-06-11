@@ -61,7 +61,7 @@ public class SpectrumSearchParametersPanel  extends JPanel
     private JFormattedTextField fromIncidenceTextField;
     private JLabel fromPhaseLabel;
     private JFormattedTextField fromPhaseTextField;
-    private JLabel hasLimbLabel;
+    private JLabel dataTypesLabel;
     protected JScrollPane hierarchicalSearchScrollPane;
     private JButton clearRegionButton;
     private JTextField textField;
@@ -77,11 +77,14 @@ public class SpectrumSearchParametersPanel  extends JPanel
     private JPanel filenamePanel;
 
     private String[] dataTypes;
+    private JRadioButton[] dataTypeRadioButtons;
+    private ButtonGroup dataTypeGroup;
 
     private boolean isFixedListSearch = false;
 
-    public SpectrumSearchParametersPanel(boolean isHierarchical)
+    public SpectrumSearchParametersPanel(boolean isHierarchical, String[] dataTypes)
     {
+    	this.dataTypes = dataTypes;
         setBorder(new TitledBorder(null, "Search Parameters",
                 TitledBorder.LEADING, TitledBorder.TOP, null, null));
         setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
@@ -234,17 +237,33 @@ public class SpectrumSearchParametersPanel  extends JPanel
         parametersPanel.add(panel_3);
         panel_3.setLayout(new BoxLayout(panel_3, BoxLayout.X_AXIS));
 
-        hasLimbLabel = new JLabel("Field of View Polygon Type:");
-        panel_3.add(hasLimbLabel);
+        dataTypesLabel = new JLabel("Data Types:");
+        panel_3.add(dataTypesLabel);
 
-        fullCheckBox = new JCheckBox("Full");
-        panel_3.add(fullCheckBox);
+        dataTypeRadioButtons = new JRadioButton[dataTypes.length];
+        dataTypeGroup = new ButtonGroup();
+        int i=0;
+        for (String dataType : dataTypes)
+        {
+        	dataTypeRadioButtons[i] = new JRadioButton(dataType);
+        	panel_3.add(dataTypeRadioButtons[i]);
+        	dataTypeGroup.add(dataTypeRadioButtons[i]);
+        	i++;
+        }
+        dataTypeRadioButtons[0].setSelected(true);
+        dataTypeGroup.setSelected(dataTypeRadioButtons[0].getModel(), true);
 
-        partialCheckBox = new JCheckBox("Partial");
-        panel_3.add(partialCheckBox);
+//        hasLimbLabel = new JLabel("Field of View Polygon Type:");
+//        panel_3.add(hasLimbLabel);
+//
+//        fullCheckBox = new JCheckBox("Full");
+//        panel_3.add(fullCheckBox);
+//
+//        partialCheckBox = new JCheckBox("Partial");
+//        panel_3.add(partialCheckBox);
 
-        degenerateCheckBox = new JCheckBox("Degenerate");
-        panel_3.add(degenerateCheckBox);
+//        degenerateCheckBox = new JCheckBox("Degenerate");
+//        panel_3.add(degenerateCheckBox);
 
         Component horizontalGlue_6 = Box.createHorizontalGlue();
         panel_3.add(horizontalGlue_6);
@@ -536,7 +555,7 @@ public class SpectrumSearchParametersPanel  extends JPanel
 
     public JLabel getHasLimbLabel()
     {
-        return hasLimbLabel;
+        return dataTypesLabel;
     }
 
     public JScrollPane getHierarchicalSearchScrollPane()
@@ -634,9 +653,11 @@ public class SpectrumSearchParametersPanel  extends JPanel
 		}
 	}
 
-	public void setDataTypes(String[] dataTypes)
+	public String getSelectedDataTypes()
 	{
-		this.dataTypes = dataTypes;
+		if (dataTypeGroup.getSelection().getSelectedObjects() == null) return "";
+		JRadioButton selected = (JRadioButton)dataTypeGroup.getSelection().getSelectedObjects()[0];
+		return selected.getText();
 	}
 
 }

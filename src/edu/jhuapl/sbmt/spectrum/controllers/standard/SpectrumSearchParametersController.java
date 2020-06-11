@@ -73,13 +73,16 @@ public class SpectrumSearchParametersController<S extends BasicSpectrum>
      * @param pickManager								The System pick manager
      * @param modelManager								The system model manager
      */
-    public SpectrumSearchParametersController(Date imageSearchDefaultStartDate, Date imageSearchDefaultEndDate, boolean hasHierarchicalSpectraSearch, double imageSearchDefaultMaxSpacecraftDistance, SpectraHierarchicalSearchSpecification<SpectrumSearchSpec> spectraSpec, BaseSpectrumSearchModel<S> model, PickManager pickManager, ModelManager modelManager)
+    public SpectrumSearchParametersController(Date imageSearchDefaultStartDate, Date imageSearchDefaultEndDate, String[] dataTypes,
+    											boolean hasHierarchicalSpectraSearch, double imageSearchDefaultMaxSpacecraftDistance,
+    											SpectraHierarchicalSearchSpecification<SpectrumSearchSpec> spectraSpec,
+    											BaseSpectrumSearchModel<S> model, PickManager pickManager, ModelManager modelManager)
     {
         this.model = model;
         searchParameters = new SpectrumSearchParametersModel();
         this.modelManager = modelManager;
         this.spectraSpec = spectraSpec;
-        this.panel = new SpectrumSearchParametersPanel(hasHierarchicalSpectraSearch);
+        this.panel = new SpectrumSearchParametersPanel(hasHierarchicalSpectraSearch, dataTypes);
         this.pickManager = pickManager;
         this.hasHierarchicalSpectraSearch = hasHierarchicalSpectraSearch;
         this.imageSearchDefaultMaxSpacecraftDistance = imageSearchDefaultMaxSpacecraftDistance;
@@ -182,11 +185,11 @@ public class SpectrumSearchParametersController<S extends BasicSpectrum>
             searchParameters.setEndDate(imageSearchDefaultEndDate);
             ((SpinnerDateModel)endSpinner.getModel()).setValue(searchParameters.getEndDate());
 
-            panel.getFullCheckBox().addActionListener(evt -> searchParameters.addToPolygonsSelected(0));
-
-            panel.getPartialCheckBox().addActionListener(evt -> searchParameters.addToPolygonsSelected(0));
-
-            panel.getDegenerateCheckBox().addActionListener(evt -> searchParameters.addToPolygonsSelected(0));
+//            panel.getFullCheckBox().addActionListener(evt -> searchParameters.addToPolygonsSelected(0));
+//
+//            panel.getPartialCheckBox().addActionListener(evt -> searchParameters.addToPolygonsSelected(0));
+//
+//            panel.getDegenerateCheckBox().addActionListener(evt -> searchParameters.addToPolygonsSelected(0));
 
             panel.getFromDistanceTextField().getDocument().addDocumentListener(new DocumentListener()
             {
@@ -391,6 +394,7 @@ public class SpectrumSearchParametersController<S extends BasicSpectrum>
 
         SmallBodyModel bodyModel = (SmallBodyModel)modelManager.getModel(ModelNames.SMALL_BODY);
         searchParameters.setModelName(bodyModel.getConfig().author.toString().toLowerCase().replace("-", ""));
+        searchParameters.setDataType(panel.getSelectedDataTypes());
 //        searchParameters.setDataType(panel.getDataType());
     }
 
