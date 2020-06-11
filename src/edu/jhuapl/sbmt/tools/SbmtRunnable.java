@@ -14,7 +14,6 @@ import javax.swing.ToolTipManager;
 
 import vtk.vtkJavaGarbageCollector;
 
-import edu.jhuapl.saavtk.config.ViewConfig;
 import edu.jhuapl.saavtk.gui.Console;
 import edu.jhuapl.saavtk.gui.MainWindow;
 import edu.jhuapl.saavtk.util.Configuration;
@@ -47,8 +46,6 @@ public class SbmtRunnable implements Runnable
 
 			SmallBodyViewConfig.initialize();
 			//            new SmallBodyViewConfigMetadataIO(SmallBodyViewConfig.getBuiltInConfigs()).write(new File("/Users/steelrj1/Desktop/test.json"), "Test");
-
-			configureMissionBodies(mission);
 
 			vtkJavaGarbageCollector garbageCollector = new vtkJavaGarbageCollector();
 			//garbageCollector.SetDebug(true);
@@ -192,66 +189,6 @@ public class SbmtRunnable implements Runnable
 			System.out.println("The in-app console is disabled.");
 		}
 		System.out.println();
-	}
-	protected void configureMissionBodies(Mission mission)
-	{
-		disableAllBodies();
-		enableMissionBodies(mission);
-	}
-
-	protected void disableAllBodies()
-	{
-		for (ViewConfig each: SmallBodyViewConfig.getBuiltInConfigs())
-		{
-			each.enable(false);
-		}
-	}
-
-	protected void enableMissionBodies(Mission mission)
-	{
-//		for (BasicConfigInfo info : SmallBodyViewConfig.getConfigIdentifiers().values())
-//		{
-//			for (SbmtMultiMissionTool.Mission presentMission : info.getPresentInVersion())
-//			{
-//				if (presentMission == mission)
-//					info.enable(true);
-//			}
-//			for (SbmtMultiMissionTool.Mission defaultMission : info.getDefaultFor())
-//			{
-//				if (defaultMission == mission)
-//					ViewConfig.setFirstTimeDefaultModelName(info.getUniqueName());
-//			}
-//		}
-
-//		for (ViewConfig each: SmallBodyViewConfig.getBuiltInConfigs())
-//		{
-//			if (each instanceof SmallBodyViewConfig)
-//			{
-//				SmallBodyViewConfig config = (SmallBodyViewConfig) each;
-//				BasicConfigInfo info = new BasicConfigInfo(config);
-//				for (SbmtMultiMissionTool.Mission presentMission : info.getPresentInVersion())
-//				{
-//					if (presentMission == mission)
-//					{
-//						System.out.println("SbmtRunnable: enableMissionBodies: enabled " + config.getUniqueName());
-//						config.enable(true);
-//						break;
-//					}
-//					else
-//						config.enable(false);
-//				}
-//				for (SbmtMultiMissionTool.Mission defaultMission : info.getDefaultFor())
-//				{
-//					if (defaultMission == mission)
-//					{
-//						ViewConfig.setFirstTimeDefaultModelName(info.getUniqueName());
-//						break;
-//					}
-//				}
-////				setBodyEnableState(mission, config);
-//			}
-//		}
-
 	}
 
 }
