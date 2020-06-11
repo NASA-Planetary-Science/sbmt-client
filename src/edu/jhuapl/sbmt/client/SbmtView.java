@@ -617,11 +617,14 @@ public class SbmtView extends View implements PropertyChangeListener
 
 		}
 
-		if (getPolyhedralModelConfig().hasLidarData)
-		{
-			JComponent component = new LidarPanel(getPolyhedralModelConfig(), getModelManager(), getPickManager(), getRenderer());
-			addTab(getPolyhedralModelConfig().lidarInstrumentName.toString(), component);
-		}
+		// Lidar tab
+		SmallBodyViewConfig tmpSmallBodyConfig = getPolyhedralModelConfig();
+		String lidarInstrName = "Lidar";
+		if (tmpSmallBodyConfig.hasLidarData == true)
+			lidarInstrName = tmpSmallBodyConfig.lidarInstrumentName.toString();
+
+		JComponent lidarPanel = new LidarPanel(getModelManager(), getPickManager(), getRenderer(), tmpSmallBodyConfig);
+		addTab(lidarInstrName, lidarPanel);
 
 		if (Configuration.isAPLVersion())
 		{

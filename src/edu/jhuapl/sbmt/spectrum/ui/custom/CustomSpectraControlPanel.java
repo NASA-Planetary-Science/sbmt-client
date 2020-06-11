@@ -18,9 +18,11 @@ public class CustomSpectraControlPanel extends JPanel
         add(newButton);
 
         editButton = new JButton("Edit...");
+        editButton.setEnabled(false);
         add(editButton);
 
         deleteButton = new JButton("Delete...");
+        deleteButton.setEnabled(false);
         add(deleteButton);
     }
 
