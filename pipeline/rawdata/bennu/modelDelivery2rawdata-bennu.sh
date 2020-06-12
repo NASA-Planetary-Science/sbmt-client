@@ -118,7 +118,7 @@ doRsyncDir $srcTop/$deliveredModelName/shape $destTop/$processingModelName/shape
 
 for dir in ${dirsToCopy[@]}
 do
-  if [ -d "$srcTop/$deliveredModelName/$dir" ]
+  if [ -d "$srcTop/$deliveredModelName/$dir" -a `ls "$srcTop/$deliveredModelName/$dir/" | wc -l` -gt 0 ]
   then
     # copy the files
     doRsyncDir $srcTop/$deliveredModelName/$dir $destTop/$processingModelName/$dir

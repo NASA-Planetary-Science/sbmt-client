@@ -14,7 +14,7 @@ import crucible.crust.metadata.api.Version;
 import crucible.crust.metadata.impl.InstanceGetter;
 import crucible.crust.metadata.impl.SettableMetadata;
 
-public class Users
+public class UserSerialization
 {
     private static volatile boolean initialized = false;
     public static synchronized void initializeSerializationProxies()

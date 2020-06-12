@@ -68,7 +68,9 @@ public class SmallBodyViewConfig extends BodyViewConfig implements ISmallBodyVie
 {
     private final static Path defaultModelFile = Paths.get(Configuration.getApplicationDataDir() + File.separator + "defaultModelToLoad");
 
-	static public boolean fromServer = false;
+    protected static final SbmtMultiMissionTool.Mission[] DefaultForNoMissions = new SbmtMultiMissionTool.Mission[] {};
+
+    static public boolean fromServer = false;
 	private static final List<BasicConfigInfo> CONFIG_INFO = new ArrayList<>();
     private static final Map<String, BasicConfigInfo> VIEWCONFIG_IDENTIFIERS = new HashMap<>();
     private static final Map<String, ViewConfig> LOADED_VIEWCONFIGS = new HashMap<>();

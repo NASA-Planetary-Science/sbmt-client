@@ -26,7 +26,7 @@ import edu.jhuapl.sbmt.client.users.AccessGroup;
 import edu.jhuapl.sbmt.client.users.AccessGroupCollection;
 import edu.jhuapl.sbmt.client.users.User;
 import edu.jhuapl.sbmt.client.users.UserCollection;
-import edu.jhuapl.sbmt.client.users.Users;
+import edu.jhuapl.sbmt.client.users.UserSerialization;
 
 import crucible.crust.metadata.api.Key;
 import crucible.crust.metadata.api.Metadata;
@@ -82,7 +82,7 @@ public class CheckUserAccess implements Callable<Integer>
     {
         Debug.setEnabled(debug);
 
-        Users.initializeSerializationProxies();
+        UserSerialization.initializeSerializationProxies();
 
         rootURLString = SafePaths.getUrl(rootURLString);
         userName = decodeIfEnabled(userName);
@@ -204,6 +204,13 @@ public class CheckUserAccess implements Callable<Integer>
         else
         {
             User user = userCollection.getUser(userName);
+
+            if (user == null)
+            {
+                // Give public access to any user not explicitly in the
+                // collection.
+                user = User.ofPublic();
+            }
             for (String groupId : authorizedGroupIds)
             {
                 if (user.isInGroup(groupId))
@@ -310,12 +317,14 @@ public class CheckUserAccess implements Callable<Integer>
         {
             System.setProperty("java.awt.headless", "true");
 
-            // Start a self-destruct thread to ensure this doesn't linger if the process hangs.
+            // Start a self-destruct thread to ensure this doesn't linger if the
+            // process hangs.
             Executors.newSingleThreadExecutor().execute(() -> {
                 int selfDestructCode = 0;
                 try
                 {
-                    // Two minutes is at least 20 times longer than this script should ever need.
+                    // Two minutes is at least 20 times longer than this script
+                    // should ever need.
                     Thread.sleep(120000);
                     selfDestructCode = 1;
                 }
@@ -328,7 +337,6 @@ public class CheckUserAccess implements Callable<Integer>
                     System.exit(selfDestructCode);
                 }
             });
-
 
             exitCode = new CommandLine(new CheckUserAccess()).execute(args);
         }

@@ -76,9 +76,12 @@ public class SbmtMultiMissionTool
 		HAYABUSA2_DEPLOY("355536d"),
 		OSIRIS_REX("7cd84586"),
 //		OSIRIS_REX_STAGE("7cd84587"),
-		OSIRIS_REX_DEPLOY("7cd84588"),
+        OSIRIS_REX_DEPLOY("7cd84588"),
+        OSIRIS_REX_TEST("h887aa63"),
 		OSIRIS_REX_MIRROR_DEPLOY("7cd84589"),
 		NH_DEPLOY("8ff86312"),
+		DART_DEV("9da75292"),
+		DART_DEPLOY("9da75293"),
 		STAGE_APL_INTERNAL("f7e441b"),
 		STAGE_PUBLIC_RELEASE("8cc8e12");
 
@@ -263,13 +266,20 @@ public class SbmtMultiMissionTool
 			Configuration.setCacheVersion("");
 			Configuration.setAppTitle("SBMT/Hayabusa2");
 			break;
-		case OSIRIS_REX:
-			//                Configuration.setRootURL("http://sbmt.jhuapl.edu/internal/sbmt");
-			Configuration.setAppName("sbmt1orex-dev");
-			Configuration.setCacheVersion("");
-			Configuration.setAppTitle("SBMT/OSIRIS REx-Dev");
-			Colormaps.setDefaultColormapName("Spectral_lowBlue");
-			break;
+        case OSIRIS_REX:
+            //                Configuration.setRootURL("http://sbmt.jhuapl.edu/internal/sbmt");
+            Configuration.setAppName("sbmt1orex-dev");
+            Configuration.setCacheVersion("");
+            Configuration.setAppTitle("SBMT/OSIRIS REx-Dev");
+            Colormaps.setDefaultColormapName("Spectral_lowBlue");
+            break;
+        case OSIRIS_REX_TEST:
+            Configuration.setRootURL("http://sbmt-web.jhuapl.edu/internal/multi-mission/test");
+            Configuration.setAppName("sbmt1orex-test");
+            Configuration.setCacheVersion("");
+            Configuration.setAppTitle("SBMT/OSIRIS REx-Test");
+            Colormaps.setDefaultColormapName("Spectral_lowBlue");
+            break;
 //		case OSIRIS_REX_STAGE:
 //			Configuration.setRootURL("http://orexsbmt.jhuapl.edu/sbmt");
 //			Configuration.setAppName("sbmt1orex-stage");
@@ -294,6 +304,18 @@ public class SbmtMultiMissionTool
 			Configuration.setAppName("sbmtnh");
 			Configuration.setCacheVersion("");
 			Configuration.setAppTitle("SBMT/New Horizons");
+			break;
+		case DART_DEV:
+			Configuration.setAppName("sbmt1dart-dev");
+			Configuration.setCacheVersion("");
+			Configuration.setAppTitle("SBMT/DART (Development Version)");
+            Colormaps.setDefaultColormapName("Spectral_lowBlue");
+			break;
+		case DART_DEPLOY:
+			Configuration.setAppName("sbmt1dart");
+			Configuration.setCacheVersion("");
+			Configuration.setAppTitle("SBMT/DART");
+            Colormaps.setDefaultColormapName("Spectral_lowBlue");
 			break;
 		default:
 			throw new AssertionError();
@@ -369,6 +391,8 @@ public class SbmtMultiMissionTool
                 case TEST_APL_INTERNAL:
                 case TEST_PUBLIC_RELEASE:
                 case NH_DEPLOY:
+                case DART_DEV:
+                case DART_DEPLOY:
                     splash = new SbmtSplash("resources", "splashLogo.png");
                     break;
                 case HAYABUSA2_DEV:
@@ -381,6 +405,7 @@ public class SbmtMultiMissionTool
                     splash = new SbmtSplash("resources", "splashLogoHb2.png");
                     break;
                 case OSIRIS_REX:
+                case OSIRIS_REX_TEST:
                 case OSIRIS_REX_DEPLOY:
                 case OSIRIS_REX_MIRROR_DEPLOY:
 //                case OSIRIS_REX_STAGE:

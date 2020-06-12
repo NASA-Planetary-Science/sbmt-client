@@ -135,10 +135,15 @@ public class AsteroidConfigs extends SmallBodyViewConfig
         															SbmtMultiMissionTool.Mission.APL_INTERNAL, SbmtMultiMissionTool.Mission.TEST_APL_INTERNAL,
         															SbmtMultiMissionTool.Mission.STAGE_APL_INTERNAL,
         															SbmtMultiMissionTool.Mission.HAYABUSA2_DEPLOY, SbmtMultiMissionTool.Mission.HAYABUSA2_DEV,
-        															SbmtMultiMissionTool.Mission.OSIRIS_REX, SbmtMultiMissionTool.Mission.OSIRIS_REX_DEPLOY,
-        															SbmtMultiMissionTool.Mission.OSIRIS_REX_MIRROR_DEPLOY, SbmtMultiMissionTool.Mission.NH_DEPLOY};
+        															SbmtMultiMissionTool.Mission.OSIRIS_REX, SbmtMultiMissionTool.Mission.OSIRIS_REX_TEST,
+        															SbmtMultiMissionTool.Mission.OSIRIS_REX_DEPLOY, SbmtMultiMissionTool.Mission.OSIRIS_REX_MIRROR_DEPLOY,
+        															SbmtMultiMissionTool.Mission.NH_DEPLOY,
+        															SbmtMultiMissionTool.Mission.DART_DEPLOY, SbmtMultiMissionTool.Mission.DART_DEV};
 
-        c.defaultForMissions = new SbmtMultiMissionTool.Mission[] {SbmtMultiMissionTool.Mission.PUBLIC_RELEASE, SbmtMultiMissionTool.Mission.TEST_PUBLIC_RELEASE, SbmtMultiMissionTool.Mission.STAGE_APL_INTERNAL, SbmtMultiMissionTool.Mission.APL_INTERNAL, SbmtMultiMissionTool.Mission.TEST_APL_INTERNAL};
+        c.defaultForMissions = new SbmtMultiMissionTool.Mission[] {SbmtMultiMissionTool.Mission.PUBLIC_RELEASE, SbmtMultiMissionTool.Mission.TEST_PUBLIC_RELEASE,
+        														SbmtMultiMissionTool.Mission.STAGE_APL_INTERNAL, SbmtMultiMissionTool.Mission.APL_INTERNAL,
+        														SbmtMultiMissionTool.Mission.TEST_APL_INTERNAL,
+        														SbmtMultiMissionTool.Mission.DART_DEPLOY, SbmtMultiMissionTool.Mission.DART_DEV};
 
         configArray.add(c);
 
@@ -273,7 +278,8 @@ public class AsteroidConfigs extends SmallBodyViewConfig
         															SbmtMultiMissionTool.Mission.APL_INTERNAL, SbmtMultiMissionTool.Mission.TEST_APL_INTERNAL,
         															SbmtMultiMissionTool.Mission.STAGE_APL_INTERNAL,
         															SbmtMultiMissionTool.Mission.HAYABUSA2_DEPLOY, SbmtMultiMissionTool.Mission.HAYABUSA2_DEV,
-        															SbmtMultiMissionTool.Mission.OSIRIS_REX, SbmtMultiMissionTool.Mission.OSIRIS_REX_DEPLOY,
+        															SbmtMultiMissionTool.Mission.OSIRIS_REX, SbmtMultiMissionTool.Mission.OSIRIS_REX_TEST,
+        															SbmtMultiMissionTool.Mission.OSIRIS_REX_DEPLOY,
         															SbmtMultiMissionTool.Mission.OSIRIS_REX_MIRROR_DEPLOY, SbmtMultiMissionTool.Mission.NH_DEPLOY};
         c.defaultForMissions = new SbmtMultiMissionTool.Mission[] {};
 
