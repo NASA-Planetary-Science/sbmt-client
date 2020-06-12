@@ -570,7 +570,7 @@ public abstract class AbstractBodyView extends View implements PropertyChangeLis
     {
     	if (getPolyhedralModelConfig().hasLidarData)
         {
-            JComponent component = new LidarPanel(getPolyhedralModelConfig(), getModelManager(), getPickManager(), getRenderer());
+            JComponent component = new LidarPanel(getModelManager(), getPickManager(), getRenderer(), getPolyhedralModelConfig());
             addTab(getPolyhedralModelConfig().lidarInstrumentName.toString(), component);
         }
     }
