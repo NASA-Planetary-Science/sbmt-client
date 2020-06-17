@@ -9,7 +9,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.SortedSet;
 
-import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
@@ -31,13 +30,13 @@ import edu.jhuapl.saavtk.gui.RecentlyViewed;
 import edu.jhuapl.saavtk.gui.StatusBar;
 import edu.jhuapl.saavtk.gui.View;
 import edu.jhuapl.saavtk.gui.ViewManager;
-import edu.jhuapl.saavtk.gui.menu.EnableLODsAction;
 import edu.jhuapl.saavtk.gui.menu.FavoritesMenu;
 import edu.jhuapl.saavtk.gui.menu.FileMenu;
 import edu.jhuapl.saavtk.gui.menu.PickToleranceAction;
 import edu.jhuapl.saavtk.model.ShapeModelBody;
 import edu.jhuapl.saavtk.model.ShapeModelType;
 import edu.jhuapl.saavtk.scalebar.gui.ScaleBarAction;
+import edu.jhuapl.saavtk.view.lod.gui.LodAction;
 import edu.jhuapl.sbmt.client.BodyType;
 import edu.jhuapl.sbmt.client.BodyViewConfig;
 import edu.jhuapl.sbmt.client.SbmtHelpMenu;
@@ -124,9 +123,7 @@ public class SbmtTesterViewManager extends ViewManager
         viewMenu.add(new JMenuItem(new ScaleBarAction(this)));
 
         viewMenu.addSeparator();
-        JCheckBoxMenuItem enableLodMI = new JCheckBoxMenuItem(new EnableLODsAction());
-        enableLodMI.setSelected(true);
-        viewMenu.add(enableLodMI);
+        viewMenu.add(new JMenuItem(new LodAction(this)));
         viewMenu.add(new PickToleranceAction(this));
 
         menuBar.add(viewMenu);

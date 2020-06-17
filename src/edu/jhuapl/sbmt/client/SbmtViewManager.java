@@ -10,7 +10,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.SortedSet;
 
-import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
@@ -33,7 +32,6 @@ import edu.jhuapl.saavtk.gui.ShapeModelImporter.ShapeModelType;
 import edu.jhuapl.saavtk.gui.StatusBar;
 import edu.jhuapl.saavtk.gui.View;
 import edu.jhuapl.saavtk.gui.ViewManager;
-import edu.jhuapl.saavtk.gui.menu.EnableLODsAction;
 import edu.jhuapl.saavtk.gui.menu.FavoritesMenu;
 import edu.jhuapl.saavtk.gui.menu.FileMenu;
 import edu.jhuapl.saavtk.gui.menu.PickToleranceAction;
@@ -42,6 +40,7 @@ import edu.jhuapl.saavtk.scalebar.gui.ScaleBarAction;
 import edu.jhuapl.saavtk.util.Configuration;
 import edu.jhuapl.saavtk.util.ConvertResourceToFile;
 import edu.jhuapl.saavtk.util.SafeURLPaths;
+import edu.jhuapl.saavtk.view.lod.gui.LodAction;
 
 import crucible.crust.metadata.api.Key;
 import crucible.crust.metadata.api.Metadata;
@@ -221,9 +220,7 @@ public class SbmtViewManager extends ViewManager
         viewMenu.add(new JMenuItem(new ScaleBarAction(this)));
 
         viewMenu.addSeparator();
-        JCheckBoxMenuItem enableLodMI = new JCheckBoxMenuItem(new EnableLODsAction());
-        enableLodMI.setSelected(true);
-        viewMenu.add(enableLodMI);
+        viewMenu.add(new JMenuItem(new LodAction(this)));
         viewMenu.add(new PickToleranceAction(this));
 
         menuBar.add(viewMenu);
@@ -235,7 +232,6 @@ public class SbmtViewManager extends ViewManager
         helpMenu = new SbmtHelpMenu(this);
         helpMenu.setMnemonic('H');
         menuBar.add(helpMenu);
-
     }
 
     @Override
