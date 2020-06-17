@@ -3314,6 +3314,8 @@ public class BennuConfigs extends SmallBodyViewConfig
             c.useMinimumReferencePotential = true;
             c.rotationRate = 4.0626E-4;
             c.bodyReferencePotential = -0.02517940647257273;
+            c.hasCustomBodyCubeSize = true;
+            c.customBodyCubeSize = 0.02; //km
 
             c.hasImageMap = true;
 
