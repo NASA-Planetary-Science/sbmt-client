@@ -278,6 +278,7 @@ public class SpectrumSearchParametersController<S extends BasicSpectrum>
                     // Always use the lowest resolution model for getting the intersection cubes list.
                     // Therefore, if the selection region was created using a higher resolution model,
                     // we need to recompute the selection region using the low res model.
+                    bodyModel.calculateCubeSize(true);	//TODO This is a HACK until we can get all databases built with smaller cubes
                     if (bodyModel.getModelResolution() > 0)
                     {
                         vtkPolyData interiorPoly = new vtkPolyData();
@@ -288,6 +289,8 @@ public class SpectrumSearchParametersController<S extends BasicSpectrum>
                     {
                         cubeList = bodyModel.getIntersectingCubes(selectionModel.getVtkInteriorPolyDataFor(region));
                     }
+                    bodyModel.calculateCubeSize(false);
+                    bodyModel.clearCubes();
 //                    bodyModel.setCubeVisibility(cubeList);
                 }
                 else
