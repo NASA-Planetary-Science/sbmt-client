@@ -3279,7 +3279,7 @@ public class BennuConfigs extends SmallBodyViewConfig
 
             c.hasMapmaker = false;
             c.hasHierarchicalSpectraSearch = true;
-            c.hasHypertreeBasedSpectraSearch = false;
+            c.hasHypertreeBasedSpectraSearch = true;
             c.spectraSearchDataSourceMap = new LinkedHashMap<>();
             c.spectraSearchDataSourceMap.put("OTES_L2", c.rootDirOnServer + "/otes/l2/hypertree/dataSource.spectra");
             c.spectraSearchDataSourceMap.put("OTES_L3", c.rootDirOnServer + "/otes/l3/hypertree/dataSource.spectra");
