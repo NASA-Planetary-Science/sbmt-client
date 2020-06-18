@@ -128,6 +128,15 @@ public class AdvancedSpectrumRenderer<S extends BasicSpectrum> extends BasicSpec
         footprintActors.add(toSunVectorActor);
         footprintActors.add(outlineActor);
 
+//        vtkOutlineFilter outlineFilter = new vtkOutlineFilter();
+//        outlineFilter.SetInputData(shiftedFootprint);
+//        vtkPolyDataMapper bbMapper = new vtkPolyDataMapper();
+//        bbMapper.SetInputConnection(outlineFilter.GetOutputPort());
+//        vtkActor bbActor = new vtkActor();
+//        bbActor.SetMapper(bbMapper);
+//        bbActor.GetProperty().SetColor(0.0, 0.0, 1.0);
+//        footprintActors.add(bbActor);
+
         return footprintActors;
     }
 
@@ -246,6 +255,9 @@ public class AdvancedSpectrumRenderer<S extends BasicSpectrum> extends BasicSpec
 			createToSunVectorActor();
 			createOutlinePolyData();
 			createOutlineActor();
+
+			footprintGenerated = true;
+			computeIlluminationAngles();
 
 		}
 	}

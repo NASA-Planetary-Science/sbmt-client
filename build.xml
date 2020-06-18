@@ -60,7 +60,7 @@
         <pathelement location="${libDir}/jsr305.jar"/>
         <pathelement location="${libDir}/guava-28.2.jar"/>
       	<pathelement location="${libDir}/guava-mini-0.1.jar"/>
-        <pathelement location="${libDir}/glum-1.3.jar"/>
+        <pathelement location="${libDir}/glum-1.3.1.jar"/>
         <pathelement location="${libDir}/Jama-1.0.2.jar"/>
         <pathelement location="${libDir}/jcommon-1.0.16.jar"/>
         <pathelement location="${libDir}/jfreechart-1.0.13.jar"/>
@@ -190,7 +190,7 @@
         <pathelement location="${libDir}/jsr305.jar"/>
         <pathelement location="${libDir}/guava-28.2.jar"/>
       	<pathelement location="${libDir}/guava-mini-0.1.jar"/>
-        <pathelement location="${libDir}/glum-1.3.jar"/>
+        <pathelement location="${libDir}/glum-1.3.1.jar"/>
         <pathelement location="${libDir}/Jama-1.0.2.jar"/>
         <pathelement location="${libDir}/jcommon-1.0.16.jar"/>
         <pathelement location="${libDir}/jfreechart-1.0.13.jar"/>
@@ -247,7 +247,7 @@
         	jsr305.jar
             guava-28.2.jar
         	guava-mini-0.1.jar
-            glum-1.3.jar
+            glum-1.3.1.jar
             Jama-1.0.2.jar
             jcommon-1.0.16.jar
             jfreechart-1.0.13.jar
@@ -370,7 +370,7 @@
         	jsr305.jar
             guava-28.2.jar
         	guava-mini-0.1.jar
-            glum-1.3.jar
+            glum-1.3.1.jar
             Jama-1.0.2.jar
             jcommon-1.0.16.jar
             jfreechart-1.0.13.jar
@@ -479,7 +479,7 @@
         									jsr305.jar
                                             guava-28.2.jar
 											guava-mini-0.1.jar
-                                            glum-1.3.jar
+                                            glum-1.3.1.jar
                                             Jama-1.0.2.jar
                                             jcommon-1.0.16.jar
                                             jfreechart-1.0.13.jar
@@ -619,7 +619,7 @@
     <delete file="${rootlibDir}/jsr305.jar"/>
     <delete file="${rootlibDir}/guava-28.2.jar"/>
   	<delete file="${rootlibDir}/guava-mini-0.1.jar"/>
-    <delete file="${rootlibDir}/glum-1.3.jar"/>
+    <delete file="${rootlibDir}/glum-1.3.1.jar"/>
     <delete file="${rootlibDir}/Jama-1.0.2.jar"/>
     <delete file="${rootlibDir}/jcommon-1.0.16.jar"/>
     <delete file="${rootlibDir}/jfreechart-1.0.13.jar"/>
@@ -667,7 +667,7 @@
         <pathelement location="${libDir}/jafama-2.3.1.jar"/>
         <pathelement location="${libDir}/jsr305.jar"/>
         <pathelement location="${libDir}/guava-28.2.jar"/>
-        <pathelement location="${libDir}/glum-1.3.jar"/>
+        <pathelement location="${libDir}/glum-1.3.1.jar"/>
         <pathelement location="${libDir}/Jama-1.0.2.jar"/>
         <pathelement location="${libDir}/jcommon-1.0.16.jar"/>
         <pathelement location="${libDir}/jfreechart-1.0.13.jar"/>
@@ -700,7 +700,7 @@
         <pathelement location="${libDir}/jsr305.jar"/>
         <pathelement location="${libDir}/guava-28.2.jar"/>
       	<pathelement location="${libDir}/guava-mini-0.1.jar"/>
-        <pathelement location="${libDir}/glum-1.3.jar"/>
+        <pathelement location="${libDir}/glum-1.3.1.jar"/>
         <pathelement location="${libDir}/Jama-1.0.2.jar"/>
         <pathelement location="${libDir}/jcommon-1.0.16.jar"/>
         <pathelement location="${libDir}/jfreechart-1.0.13.jar"/>

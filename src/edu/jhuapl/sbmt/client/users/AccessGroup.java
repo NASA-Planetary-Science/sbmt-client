@@ -9,6 +9,8 @@ import edu.jhuapl.saavtk.util.SafeURLPaths;
 
 public final class AccessGroup
 {
+    public static final String PublicGroupId = "Public";
+
     public static AccessGroup of(String id, Iterable<String> filePaths)
     {
         Preconditions.checkNotNull(filePaths);

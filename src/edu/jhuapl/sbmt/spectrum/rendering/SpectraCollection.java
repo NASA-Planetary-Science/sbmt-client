@@ -135,7 +135,7 @@ public class SpectraCollection<S extends BasicSpectrum> extends SaavtkItemManage
         IBasicSpectrumRenderer<S> spectrumRenderer = null;
         try
         {
-        	spectrumRenderer = SbmtSpectrumModelFactory.createSpectrumRenderer(spectrum, spectrum.getInstrument());
+        	spectrumRenderer = SbmtSpectrumModelFactory.createSpectrumRenderer(spectrum, spectrum.getInstrument(), false);
         	spectrumRenderer.getSpectrum().readSpectrumFromFile();
         }
         catch (SpectrumIOException sioe)
@@ -219,6 +219,13 @@ public class SpectraCollection<S extends BasicSpectrum> extends SaavtkItemManage
         }
     }
 
+    public void hideSpectrum(BasicSpectrum spec)
+    {
+    	if (!activeInstrument.getDisplayName().equals(spec.getInstrument().getDisplayName())) return;
+    	IBasicSpectrumRenderer<S> renderer = spectrumToRendererMap.get(spec);
+    	if (renderer == null) return;
+    	renderer.setVisible(false);
+    }
     public boolean isSpectrumMapped(BasicSpectrum spec)
     {
     	if (!activeInstrument.getDisplayName().equals(spec.getInstrument().getDisplayName())) return false;
@@ -292,6 +299,13 @@ public class SpectraCollection<S extends BasicSpectrum> extends SaavtkItemManage
     	IBasicSpectrumRenderer<S> spectrumRenderer = spectrumToRendererMap.get(spec);
     	if (spectrumRenderer == null) return false;
         return spectrumRenderer.isOutlineShowing();
+    }
+
+    public void setBoundaryVisibility(BasicSpectrum spec, boolean boundaryVisible)
+    {
+    	IBasicSpectrumRenderer<S> spectrumRenderer = spectrumToRendererMap.get(spec);
+    	if (spectrumRenderer == null) return;
+        spectrumRenderer.setShowOutline(boundaryVisible);
     }
 
     public IBasicSpectrumRenderer<S> getRendererForSpectrum(BasicSpectrum spec)

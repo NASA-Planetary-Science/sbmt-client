@@ -94,7 +94,7 @@ public class CustomSpectraControlController<S extends BasicSpectrum>
      */
     private void editButtonActionPerformed()
     {
-    	if (model.getSelectedSpectraIndices() == null) return;
+    	if (model.getSelectedSpectraIndices() == null || model.getSelectedSpectraIndices().length == 0) return;
     	int selectedItem = model.getSelectedSpectraIndices()[0];
     	if (selectedItem < 0) return;
 
@@ -129,7 +129,7 @@ public class CustomSpectraControlController<S extends BasicSpectrum>
     private void deleteButtonActionPerformed()
     {
     	int[] selectedSpectra = model.getSelectedSpectraIndices();
-    	if (selectedSpectra == null) return;
+    	if (selectedSpectra == null || selectedSpectra.length == 0) return;
 
 		String infoMsg = "Are you sure you want to delete this spectra?";
 		int result = JOptionPane.showConfirmDialog(JOptionPane.getFrameForComponent(panel), infoMsg, "Confirm Deletion",

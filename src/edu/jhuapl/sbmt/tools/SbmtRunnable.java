@@ -14,11 +14,8 @@ import javax.swing.ToolTipManager;
 
 import vtk.vtkJavaGarbageCollector;
 
-import edu.jhuapl.saavtk.config.ViewConfig;
 import edu.jhuapl.saavtk.gui.Console;
 import edu.jhuapl.saavtk.gui.MainWindow;
-import edu.jhuapl.saavtk.model.ShapeModelBody;
-import edu.jhuapl.saavtk.model.ShapeModelType;
 import edu.jhuapl.saavtk.util.Configuration;
 import edu.jhuapl.saavtk.util.Debug;
 import edu.jhuapl.saavtk.util.FileCache;
@@ -26,7 +23,6 @@ import edu.jhuapl.saavtk.util.NativeLibraryLoader;
 import edu.jhuapl.sbmt.client.SbmtMainWindow;
 import edu.jhuapl.sbmt.client.SbmtMultiMissionTool;
 import edu.jhuapl.sbmt.client.SbmtMultiMissionTool.Mission;
-import edu.jhuapl.sbmt.client.ShapeModelPopulation;
 import edu.jhuapl.sbmt.client.SmallBodyViewConfig;
 
 public class SbmtRunnable implements Runnable
@@ -50,8 +46,6 @@ public class SbmtRunnable implements Runnable
 
 			SmallBodyViewConfig.initialize();
 			//            new SmallBodyViewConfigMetadataIO(SmallBodyViewConfig.getBuiltInConfigs()).write(new File("/Users/steelrj1/Desktop/test.json"), "Test");
-
-			configureMissionBodies(mission);
 
 			vtkJavaGarbageCollector garbageCollector = new vtkJavaGarbageCollector();
 			//garbageCollector.SetDebug(true);
@@ -196,133 +190,5 @@ public class SbmtRunnable implements Runnable
 		}
 		System.out.println();
 	}
-	protected void configureMissionBodies(Mission mission)
-	{
-		disableAllBodies();
-		enableMissionBodies(mission);
-	}
 
-	protected void disableAllBodies()
-	{
-		for (ViewConfig each: SmallBodyViewConfig.getBuiltInConfigs())
-		{
-			each.enable(false);
-		}
-	}
-
-	protected void enableMissionBodies(Mission mission)
-	{
-//		for (BasicConfigInfo info : SmallBodyViewConfig.getConfigIdentifiers().values())
-//		{
-//			for (SbmtMultiMissionTool.Mission presentMission : info.getPresentInVersion())
-//			{
-//				if (presentMission == mission)
-//					info.enable(true);
-//			}
-//			for (SbmtMultiMissionTool.Mission defaultMission : info.getDefaultFor())
-//			{
-//				if (defaultMission == mission)
-//					ViewConfig.setFirstTimeDefaultModelName(info.getUniqueName());
-//			}
-//		}
-
-//		for (ViewConfig each: SmallBodyViewConfig.getBuiltInConfigs())
-//		{
-//			if (each instanceof SmallBodyViewConfig)
-//			{
-//				SmallBodyViewConfig config = (SmallBodyViewConfig) each;
-//				BasicConfigInfo info = new BasicConfigInfo(config);
-//				for (SbmtMultiMissionTool.Mission presentMission : info.getPresentInVersion())
-//				{
-//					if (presentMission == mission)
-//					{
-//						System.out.println("SbmtRunnable: enableMissionBodies: enabled " + config.getUniqueName());
-//						config.enable(true);
-//						break;
-//					}
-//					else
-//						config.enable(false);
-//				}
-//				for (SbmtMultiMissionTool.Mission defaultMission : info.getDefaultFor())
-//				{
-//					if (defaultMission == mission)
-//					{
-//						ViewConfig.setFirstTimeDefaultModelName(info.getUniqueName());
-//						break;
-//					}
-//				}
-////				setBodyEnableState(mission, config);
-//			}
-//		}
-
-	}
-
-	protected void setBodyEnableState(Mission mission, SmallBodyViewConfig config)
-	{
-		switch (mission)
-		{
-		case APL_INTERNAL_NIGHTLY:
-		case APL_INTERNAL:
-//		case STAGE_APL_INTERNAL:
-		case TEST_APL_INTERNAL:
-			config.enable(true);
-			break;
-		case PUBLIC_RELEASE:
-//		case STAGE_PUBLIC_RELEASE:
-		case TEST_PUBLIC_RELEASE:
-			if (!ShapeModelBody.EARTH.equals(config.body)
-					&& !ShapeModelBody.RQ36.equals(config.body)
-					&& !ShapeModelBody.RYUGU.equals(config.body)
-					&& !ShapeModelPopulation.PLUTO.equals(config.population)
-					&& (!config.getUniqueName().contains("MEGANE")))
-            {
-                config.enable(true);
-            }
-			else if (ShapeModelBody.RQ36.equals(config.body) && ShapeModelType.NOLAN.equals(config.author))
-			{
-				// This is the only public Bennu model.
-                config.enable(true);
-			}
-            break;
-        case HAYABUSA2_DEV:
-			if (ShapeModelBody.EROS.equals(config.body)
-					|| ShapeModelBody.ITOKAWA.equals(config.body)
-					|| ShapeModelBody.RYUGU.equals(config.body)
-					|| (ShapeModelBody.EARTH.equals(config.body) && ShapeModelType.JAXA_SFM_v20180627.equals(config.author)))
-			{
-				config.enable(true);
-			}
-			break;
-//		case HAYABUSA2_STAGE:
-		case HAYABUSA2_DEPLOY:
-			if (ShapeModelBody.RYUGU.equals(config.body))
-			{
-				config.enable(true);
-			}
-			break;
-
-		case OSIRIS_REX:
-		case OSIRIS_REX_DEPLOY:
-		case OSIRIS_REX_MIRROR_DEPLOY:
-//		case OSIRIS_REX_STAGE:
-			if (ShapeModelBody.RQ36.equals(config.body)
-					|| ShapeModelBody.EROS.equals(config.body)
-					|| ShapeModelBody.ITOKAWA.equals(config.body)
-					|| ShapeModelType.OREX.equals(config.author))
-			{
-				config.enable(true);
-			}
-			break;
-		case NH_DEPLOY:
-			if (ShapeModelBody.MU69.equals(config.body)
-					|| ShapeModelBody.EROS.equals(config.body)
-					|| ShapeModelBody.ITOKAWA.equals(config.body))
-			{
-				config.enable(true);
-			}
-			break;
-		default:
-			throw new AssertionError();
-		}
-	}
 }
