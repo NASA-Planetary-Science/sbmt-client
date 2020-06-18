@@ -62,6 +62,7 @@ public class SpectrumSearchParametersController<S extends BasicSpectrum>
     private TreeSet<Integer> cubeList = null;
     private boolean isFixedListSearch = false;
     private String[] dataTypes;
+    private boolean hasHypertreeSpectralSearch;
 
     /**
      * @param imageSearchDefaultStartDate				The search start date
@@ -74,7 +75,8 @@ public class SpectrumSearchParametersController<S extends BasicSpectrum>
      * @param modelManager								The system model manager
      */
     public SpectrumSearchParametersController(Date imageSearchDefaultStartDate, Date imageSearchDefaultEndDate, String[] dataTypes,
-    											boolean hasHierarchicalSpectraSearch, double imageSearchDefaultMaxSpacecraftDistance,
+    											boolean hasHierarchicalSpectraSearch, boolean hasHypertreeSpectralSearch,
+    											double imageSearchDefaultMaxSpacecraftDistance,
     											SpectraHierarchicalSearchSpecification<SpectrumSearchSpec> spectraSpec,
     											BaseSpectrumSearchModel<S> model, PickManager pickManager, ModelManager modelManager)
     {
@@ -88,6 +90,7 @@ public class SpectrumSearchParametersController<S extends BasicSpectrum>
         this.imageSearchDefaultMaxSpacecraftDistance = imageSearchDefaultMaxSpacecraftDistance;
         this.imageSearchDefaultEndDate = imageSearchDefaultEndDate;
         this.imageSearchDefaultStartDate = imageSearchDefaultStartDate;
+        this.hasHypertreeSpectralSearch = hasHypertreeSpectralSearch;
     }
 
     /**
@@ -278,7 +281,8 @@ public class SpectrumSearchParametersController<S extends BasicSpectrum>
                     // Always use the lowest resolution model for getting the intersection cubes list.
                     // Therefore, if the selection region was created using a higher resolution model,
                     // we need to recompute the selection region using the low res model.
-                    bodyModel.calculateCubeSize(true);	//TODO This is a HACK until we can get all databases built with smaller cubes
+                    if (hasHypertreeSpectralSearch)
+                    	bodyModel.calculateCubeSize(true, 10.0);	//TODO This is a HACK until we can get all databases built with smaller cubes
                     if (bodyModel.getModelResolution() > 0)
                     {
                         vtkPolyData interiorPoly = new vtkPolyData();
@@ -289,9 +293,10 @@ public class SpectrumSearchParametersController<S extends BasicSpectrum>
                     {
                         cubeList = bodyModel.getIntersectingCubes(selectionModel.getVtkInteriorPolyDataFor(region));
                     }
-                    bodyModel.calculateCubeSize(false);
+                    bodyModel.setCubeVisibility(cubeList);
+                    if (hasHypertreeSpectralSearch)
+                    	bodyModel.calculateCubeSize(false, 0.0);
                     bodyModel.clearCubes();
-//                    bodyModel.setCubeVisibility(cubeList);
                 }
                 else
                 {
