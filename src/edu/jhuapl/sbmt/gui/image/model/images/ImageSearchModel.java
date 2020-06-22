@@ -521,6 +521,9 @@ public class ImageSearchModel implements Controller.Model, MetadataManager
             {
                 cubeList = smallBodyModel.getIntersectingCubes(selectionModel.getVtkInteriorPolyDataFor(region));
             }
+            smallBodyModel.setCubeVisibility(cubeList);
+            smallBodyModel.calculateCubeSize(false, 0.0);
+            smallBodyModel.clearCubes();
         }
 
         ImageSource imageSource = getImageSourceOfLastQuery(); // ImageSource.valueOf(((Enum)panel.getSourceComboBox().getSelectedItem()).name());

@@ -10,7 +10,6 @@ import java.util.List;
 import java.util.Map;
 
 import javax.swing.BorderFactory;
-import javax.swing.JComponent;
 import javax.swing.JTabbedPane;
 
 import com.google.common.collect.ImmutableList;
@@ -62,18 +61,14 @@ import edu.jhuapl.sbmt.gui.image.ui.images.ImageDefaultPickHandler;
 import edu.jhuapl.sbmt.gui.image.ui.images.ImagePopupManager;
 import edu.jhuapl.sbmt.gui.image.ui.images.ImagePopupMenu;
 import edu.jhuapl.sbmt.model.bennu.shapeModel.BennuV4;
-import edu.jhuapl.sbmt.model.bennu.spectra.OREXSpectrumSearchController;
-import edu.jhuapl.sbmt.model.bennu.spectra.OREXSpectrumTabbedPane;
 import edu.jhuapl.sbmt.model.custom.CustomGraticule;
 import edu.jhuapl.sbmt.model.eros.LineamentModel;
-import edu.jhuapl.sbmt.model.eros.nis.NISSearchModel;
 import edu.jhuapl.sbmt.model.image.ColorImageCollection;
 import edu.jhuapl.sbmt.model.image.IImagingInstrument;
 import edu.jhuapl.sbmt.model.image.ImageCollection;
 import edu.jhuapl.sbmt.model.image.ImageCubeCollection;
 import edu.jhuapl.sbmt.model.image.PerspectiveImageBoundaryCollection;
 import edu.jhuapl.sbmt.model.image.SpectralImageMode;
-import edu.jhuapl.sbmt.model.ryugu.nirs3.NIRS3SearchModel;
 import edu.jhuapl.sbmt.spectrum.model.core.BasicSpectrumInstrument;
 import edu.jhuapl.sbmt.spectrum.model.hypertree.SpectraSearchDataCollection;
 import edu.jhuapl.sbmt.spectrum.model.statistics.SpectrumStatisticsCollection;
@@ -389,32 +384,32 @@ public class SbmtTesterView extends View implements PropertyChangeListener
 
 			String displayName = instrument.getDisplayName();
 //			if (displayName.equals(SpectraType.NIS_SPECTRA.getDisplayName()))
-			if (displayName.equals("NIS"))
-			{
-				NISSearchModel model = new NISSearchModel(getModelManager(), instrument);
-				JComponent component = new OREXSpectrumSearchController(getPolyhedralModelConfig().imageSearchDefaultStartDate, getPolyhedralModelConfig().imageSearchDefaultEndDate,
-						getPolyhedralModelConfig().hasHierarchicalSpectraSearch, getPolyhedralModelConfig().imageSearchDefaultMaxSpacecraftDistance, getPolyhedralModelConfig().hierarchicalSpectraSearchSpecification,
-						getModelManager(), (SbmtInfoWindowManager) getInfoPanelManager(), getPickManager(), getRenderer(), instrument, model).getPanel();
-				addTab(instrument.getDisplayName(), component);
-			}
-			else if (displayName.equals("OTES"))
-			{
-				JComponent component = new OREXSpectrumTabbedPane(getPolyhedralModelConfig(), getModelManager(), (SbmtInfoWindowManager) getInfoPanelManager(), getPickManager(), getRenderer(), instrument, spectrumCollection);
-				addTab(instrument.getDisplayName(), component);
-			}
-			else if (displayName.equals("OVIRS"))
-			{
-				JComponent component = new OREXSpectrumTabbedPane(getPolyhedralModelConfig(), getModelManager(), (SbmtInfoWindowManager) getInfoPanelManager(), getPickManager(), getRenderer(), instrument, spectrumCollection);
-				addTab(instrument.getDisplayName(), component);
-			}
-			else if (displayName.equals("NIRS3"))
-			{
-				NIRS3SearchModel model = new NIRS3SearchModel(getModelManager(), instrument);
-				JComponent component = new OREXSpectrumSearchController(getPolyhedralModelConfig().imageSearchDefaultStartDate, getPolyhedralModelConfig().imageSearchDefaultEndDate,
-						getPolyhedralModelConfig().hasHierarchicalSpectraSearch, getPolyhedralModelConfig().imageSearchDefaultMaxSpacecraftDistance, getPolyhedralModelConfig().hierarchicalSpectraSearchSpecification,
-						getModelManager(), (SbmtInfoWindowManager) getInfoPanelManager(), getPickManager(), getRenderer(), instrument, model).getPanel();
-				addTab(instrument.getDisplayName(), component);
-			}
+//			if (displayName.equals("NIS"))
+//			{
+//				NISSearchModel model = new NISSearchModel(getModelManager(), instrument);
+//				JComponent component = new OREXSpectrumSearchController(getPolyhedralModelConfig().imageSearchDefaultStartDate, getPolyhedralModelConfig().imageSearchDefaultEndDate,
+//						getPolyhedralModelConfig().hasHierarchicalSpectraSearch, getPolyhedralModelConfig().imageSearchDefaultMaxSpacecraftDistance, getPolyhedralModelConfig().hierarchicalSpectraSearchSpecification,
+//						getModelManager(), (SbmtInfoWindowManager) getInfoPanelManager(), getPickManager(), getRenderer(), instrument, model).getPanel();
+//				addTab(instrument.getDisplayName(), component);
+//			}
+//			else if (displayName.equals("OTES"))
+//			{
+//				JComponent component = new OREXSpectrumTabbedPane(getPolyhedralModelConfig(), getModelManager(), (SbmtInfoWindowManager) getInfoPanelManager(), getPickManager(), getRenderer(), instrument, spectrumCollection);
+//				addTab(instrument.getDisplayName(), component);
+//			}
+//			else if (displayName.equals("OVIRS"))
+//			{
+//				JComponent component = new OREXSpectrumTabbedPane(getPolyhedralModelConfig(), getModelManager(), (SbmtInfoWindowManager) getInfoPanelManager(), getPickManager(), getRenderer(), instrument, spectrumCollection);
+//				addTab(instrument.getDisplayName(), component);
+//			}
+//			else if (displayName.equals("NIRS3"))
+//			{
+//				NIRS3SearchModel model = new NIRS3SearchModel(getModelManager(), instrument);
+//				JComponent component = new OREXSpectrumSearchController(getPolyhedralModelConfig().imageSearchDefaultStartDate, getPolyhedralModelConfig().imageSearchDefaultEndDate,
+//						getPolyhedralModelConfig().hasHierarchicalSpectraSearch, getPolyhedralModelConfig().imageSearchDefaultMaxSpacecraftDistance, getPolyhedralModelConfig().hierarchicalSpectraSearchSpecification,
+//						getModelManager(), (SbmtInfoWindowManager) getInfoPanelManager(), getPickManager(), getRenderer(), instrument, model).getPanel();
+//				addTab(instrument.getDisplayName(), component);
+//			}
 
 		}
 

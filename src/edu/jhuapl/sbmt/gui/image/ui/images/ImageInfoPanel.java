@@ -60,7 +60,7 @@ import vtk.rendering.jogl.vtkJoglPanelComponent;
 import edu.jhuapl.saavtk.gui.ModelInfoWindow;
 import edu.jhuapl.saavtk.gui.StatusBar;
 import edu.jhuapl.saavtk.gui.dialog.CustomFileChooser;
-import edu.jhuapl.saavtk.gui.render.Renderer;
+import edu.jhuapl.saavtk.gui.render.RenderIoUtil;
 import edu.jhuapl.saavtk.model.Model;
 import edu.jhuapl.sbmt.gui.image.controllers.images.ContrastSlider;
 import edu.jhuapl.sbmt.gui.image.controllers.images.OfflimbControlsController;
@@ -318,7 +318,7 @@ public class ImageInfoPanel extends ModelInfoWindow implements MouseListener, Mo
             public void actionPerformed(ActionEvent e)
             {
                 File file = CustomFileChooser.showSaveDialog(renWin.getComponent(), "Export to PNG Image...", "image.png", "png");
-                Renderer.saveToFile(file, renWin, null);
+                RenderIoUtil.saveToFile(file, renWin, null);
             }
         });
         fileMenu.add(mi);

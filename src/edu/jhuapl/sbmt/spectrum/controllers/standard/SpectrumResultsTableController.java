@@ -408,8 +408,9 @@ public class SpectrumResultsTableController<S extends BasicSpectrum>
     {
     	spectrumCollection.getSelectedItems().forEach(spectrum ->
     	{
-    		spectrumCollection.removeSpectrum(spectrum);
-            boundaries.removeBoundary(spectrum);
+    		spectrumCollection.hideSpectrum(spectrum);
+//    		spectrumCollection.removeSpectrum(spectrum);
+//            boundaries.removeBoundary(spectrum);
     	});
         model.setResultIntervalCurrentlyShown(null);
     }
@@ -422,8 +423,9 @@ public class SpectrumResultsTableController<S extends BasicSpectrum>
     {
     	spectrumCollection.getSelectedItems().forEach(spectrum ->
     	{
-    		spectrumCollection.removeSpectrum(spectrum);
-            boundaries.removeBoundary(spectrum);
+    		spectrumCollection.hideSpectrum(spectrum);
+//    		spectrumCollection.removeSpectrum(spectrum);
+//            boundaries.removeBoundary(spectrum);
     	});
 
         model.setResultIntervalCurrentlyShown(null);

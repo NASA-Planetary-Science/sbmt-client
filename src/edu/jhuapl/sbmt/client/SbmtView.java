@@ -562,7 +562,9 @@ public class SbmtView extends View implements PropertyChangeListener
 //				double[] rgbMaxVals = new double[] {0.05, 0.05, 0.05};
 //	            int[] rgbIndices = new int[] { 1, 25, 50 };
 				JComponent component = new OREXSpectrumSearchController<NISSpectrum>(getPolyhedralModelConfig().imageSearchDefaultStartDate, getPolyhedralModelConfig().imageSearchDefaultEndDate,
-						getPolyhedralModelConfig().hasHierarchicalSpectraSearch, getPolyhedralModelConfig().imageSearchDefaultMaxSpacecraftDistance, getPolyhedralModelConfig().hierarchicalSpectraSearchSpecification,
+						getPolyhedralModelConfig().hasHierarchicalSpectraSearch, getPolyhedralModelConfig().hasHypertreeBasedSpectraSearch,
+						getPolyhedralModelConfig().imageSearchDefaultMaxSpacecraftDistance, new String[] {"L2"},
+						getPolyhedralModelConfig().hierarchicalSpectraSearchSpecification,
 						getModelManager(), (SbmtInfoWindowManager) getInfoPanelManager(), getPickManager(), getRenderer(), instrument, model).getPanel();
                 addTab(instrument.getDisplayName(), component);
 
@@ -577,6 +579,11 @@ public class SbmtView extends View implements PropertyChangeListener
 
 				OREXSpectraFactory.initializeModels(smallBodyModel);
 				JComponent component = new OREXSpectrumTabbedPane<OTESSpectrum>(getPolyhedralModelConfig(), getModelManager(), (SbmtInfoWindowManager) getInfoPanelManager(), getPickManager(), getRenderer(), instrument, spectrumCollection);
+
+//				OTESSearchModel model = new OTESSearchModel(getModelManager(), instrument);
+//				JComponent component = new OREXSpectrumSearchController<OTESSpectrum>(getPolyhedralModelConfig().imageSearchDefaultStartDate, getPolyhedralModelConfig().imageSearchDefaultEndDate,
+//						/*getPolyhedralModelConfig().hasHierarchicalSpectraSearch*/ false, getPolyhedralModelConfig().imageSearchDefaultMaxSpacecraftDistance, getPolyhedralModelConfig().hierarchicalSpectraSearchSpecification,
+//						getModelManager(), (SbmtInfoWindowManager) getInfoPanelManager(), getPickManager(), getRenderer(), instrument, model).getPanel();
                 addTab(instrument.getDisplayName(), component);
 
 
@@ -601,7 +608,9 @@ public class SbmtView extends View implements PropertyChangeListener
 //				double[] rgbMaxVals = new double[] {0.00005, 0.0001, 0.002};
 //	            int[] rgbIndices = new int[] { 100, 70, 40 };
 				JComponent component = new OREXSpectrumSearchController<NIRS3Spectrum>(getPolyhedralModelConfig().imageSearchDefaultStartDate, getPolyhedralModelConfig().imageSearchDefaultEndDate,
-						getPolyhedralModelConfig().hasHierarchicalSpectraSearch, getPolyhedralModelConfig().imageSearchDefaultMaxSpacecraftDistance, getPolyhedralModelConfig().hierarchicalSpectraSearchSpecification,
+						getPolyhedralModelConfig().hasHierarchicalSpectraSearch, getPolyhedralModelConfig().hasHypertreeBasedSpectraSearch,
+						getPolyhedralModelConfig().imageSearchDefaultMaxSpacecraftDistance, new String[] {"L2"},
+						getPolyhedralModelConfig().hierarchicalSpectraSearchSpecification,
 						getModelManager(), (SbmtInfoWindowManager) getInfoPanelManager(), getPickManager(), getRenderer(), instrument, model).getPanel();
                 addTab(instrument.getDisplayName(), component);
 				PopupMenu popupMenu = new SpectrumPopupMenu(spectrumCollection, boundaryCollection, getModelManager(), (SbmtInfoWindowManager) getInfoPanelManager(), getRenderer());

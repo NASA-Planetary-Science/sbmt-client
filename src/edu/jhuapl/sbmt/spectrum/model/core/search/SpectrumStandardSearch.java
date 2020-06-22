@@ -23,6 +23,7 @@ import edu.jhuapl.sbmt.query.fixedlist.FixedListQuery;
 import edu.jhuapl.sbmt.query.fixedlist.FixedListSearchMetadata;
 import edu.jhuapl.sbmt.spectrum.model.core.BasicSpectrum;
 import edu.jhuapl.sbmt.spectrum.model.core.BasicSpectrumInstrument;
+import edu.jhuapl.sbmt.spectrum.model.core.SpectrumIOException;
 import edu.jhuapl.sbmt.spectrum.model.core.interfaces.InstrumentMetadata;
 import edu.jhuapl.sbmt.spectrum.model.core.interfaces.SearchSpec;
 
@@ -44,7 +45,7 @@ public class SpectrumStandardSearch<S extends BasicSpectrum>
 		this.spectraSpec = searchSpec;
 	}
 
-	public List<S> search(BasicSpectrumInstrument instrument, TreeSet<Integer> cubeList, TreePath[] selectedPaths, SearchProgressListener progressListener)
+	public List<S> search(BasicSpectrumInstrument instrument, TreeSet<Integer> cubeList, TreePath[] selectedPaths, SearchProgressListener progressListener) throws SpectrumIOException
 	{
 		List<S> tempResults = null;
         try
@@ -136,7 +137,7 @@ public class SpectrumStandardSearch<S extends BasicSpectrum>
                             Range.closed(searchParameters.getMinIncidenceQuery(), searchParameters.getMaxIncidenceQuery()),
                             Range.closed(searchParameters.getMinEmissionQuery(), searchParameters.getMaxEmissionQuery()),
                             Range.closed(searchParameters.getMinPhaseQuery(), searchParameters.getMaxPhaseQuery()),
-                            cubeList);
+                            cubeList, searchParameters.getModelName(), searchParameters.getDataType());
                     DatabaseQueryBase query = (DatabaseQueryBase)queryType;
                     progressListener.searchIndeterminate();
                     tempResults = query.runQuery(searchMetadata).getResultlist();
@@ -145,8 +146,14 @@ public class SpectrumStandardSearch<S extends BasicSpectrum>
             }
             return tempResults;
         }
+        catch (RuntimeException re)
+        {
+        	System.out.println("SpectrumStandardSearch: search: rethrow");
+        	throw new SpectrumIOException(re.getMessage());
+        }
         catch (Exception e)
         {
+        	System.out.println("SpectrumStandardSearch: search: exception");
             e.printStackTrace();
             System.out.println(e);
             return null;
