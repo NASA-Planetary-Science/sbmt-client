@@ -1,7 +1,6 @@
 package edu.jhuapl.sbmt.stateHistory.ui.state.version2.viewControls.displayItems;
 
 import java.awt.Color;
-import java.awt.Component;
 
 import javax.swing.Box;
 import javax.swing.BoxLayout;
@@ -80,12 +79,13 @@ public class StateHistoryDisplayItemShowSpacecraftPointerPanel extends AbstractS
 		add(scPanel2);
 		scPanel2.setLayout(new BoxLayout(scPanel2, BoxLayout.X_AXIS));
 
-		showSpacecraftMarker = new JCheckBox("Show S/C Pointer");
+		showSpacecraftMarker = new JCheckBox("S/C Pointer");
 		showSpacecraftMarker.setEnabled(false);
 		scPanel1.add(showSpacecraftMarker);
 
-		Component horizontalStrut_3 = Box.createHorizontalStrut(30);
-		scPanel1.add(horizontalStrut_3);
+//		Component horizontalStrut_3 = Box.createHorizontalStrut(30);
+//		scPanel1.add(horizontalStrut_3);
+		scPanel1.add(Box.createHorizontalGlue());
 
 		resizeSpacecraftPointerButton = new JButton(questionIcon);
 
@@ -104,7 +104,7 @@ public class StateHistoryDisplayItemShowSpacecraftPointerPanel extends AbstractS
 
 		});
 		scPanel1.add(resizeSpacecraftPointerButton);
-		scPanel1.add(Box.createHorizontalGlue());
+//		scPanel1.add(Box.createHorizontalGlue());
 
 		spacecraftText = new JLabel("Resize:");
 		spacecraftText.setEnabled(false);

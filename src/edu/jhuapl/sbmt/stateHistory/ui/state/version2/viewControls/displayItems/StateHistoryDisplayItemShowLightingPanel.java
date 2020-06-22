@@ -32,10 +32,13 @@ public class StateHistoryDisplayItemShowLightingPanel extends JPanel
 	{
 		// Show lighting panel
 		setLayout(new BoxLayout(this, BoxLayout.X_AXIS));
-		showLighting = new JCheckBox("Show Lighting");
+		showLighting = new JCheckBox("Lighting");
 		showLighting.setEnabled(false);
 		add(showLighting);
+//		add(Box.createHorizontalStrut(175));
 		add(Box.createHorizontalGlue());
+
+
 	}
 
 	/**

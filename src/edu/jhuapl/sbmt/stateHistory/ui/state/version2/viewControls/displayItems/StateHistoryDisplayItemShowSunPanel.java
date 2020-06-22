@@ -1,7 +1,6 @@
 package edu.jhuapl.sbmt.stateHistory.ui.state.version2.viewControls.displayItems;
 
 import java.awt.Color;
-import java.awt.Component;
 
 import javax.swing.Box;
 import javax.swing.BoxLayout;
@@ -80,12 +79,13 @@ public class StateHistoryDisplayItemShowSunPanel extends AbstractStateHistoryDis
 		add(sunPanel2);
 		sunPanel2.setLayout(new BoxLayout(sunPanel2, BoxLayout.X_AXIS));
 
-		showSunPointer = new JCheckBox("Show Sun Pointer");
+		showSunPointer = new JCheckBox("Sun Pointer");
 		showSunPointer.setEnabled(false);
 		sunPanel1.add(showSunPointer);
 
-		Component horizontalStrut_2 = Box.createHorizontalStrut(30);
-		sunPanel1.add(horizontalStrut_2);
+//		Component horizontalStrut_2 = Box.createHorizontalStrut(30);
+//		sunPanel1.add(horizontalStrut_2);
+		sunPanel1.add(Box.createHorizontalGlue());
 
 		resizeSunPointerButton = new JButton(questionIcon);
 		resizeSunPointerButton.addActionListener(e ->
@@ -102,7 +102,7 @@ public class StateHistoryDisplayItemShowSunPanel extends AbstractStateHistoryDis
 				resizeSunPointerButton.setIcon(questionIcon);
 		});
 		sunPanel1.add(resizeSunPointerButton);
-		sunPanel1.add(Box.createHorizontalGlue());
+//		sunPanel1.add(Box.createHorizontalGlue());
 
 		sunText = new JLabel("Resize:");
 		sunText.setEnabled(false);

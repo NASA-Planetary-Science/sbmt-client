@@ -1,7 +1,6 @@
 package edu.jhuapl.sbmt.stateHistory.ui.state.version2.viewControls.displayItems;
 
 import java.awt.Color;
-import java.awt.Component;
 
 import javax.swing.Box;
 import javax.swing.BoxLayout;
@@ -80,12 +79,13 @@ public class StateHistoryDisplayItemShowEarthPanel extends AbstractStateHistoryD
 		add(earthPanel2);
 		earthPanel2.setLayout(new BoxLayout(earthPanel2, BoxLayout.X_AXIS));
 
-		showEarthPointer = new JCheckBox("Show Earth Pointer");
+		showEarthPointer = new JCheckBox("Earth Pointer");
 		showEarthPointer.setEnabled(false);
 		earthPanel1.add(showEarthPointer);
 
-		Component horizontalStrut_5 = Box.createHorizontalStrut(25);
-		earthPanel1.add(horizontalStrut_5);
+//		Component horizontalStrut_5 = Box.createHorizontalStrut(25);
+//		earthPanel1.add(horizontalStrut_5);
+		earthPanel1.add(Box.createHorizontalGlue());
 
 		resizeEarthPointerButton = new JButton(questionIcon);
 		resizeEarthPointerButton.addActionListener(e ->
@@ -102,7 +102,7 @@ public class StateHistoryDisplayItemShowEarthPanel extends AbstractStateHistoryD
 				resizeEarthPointerButton.setIcon(questionIcon);
 		});
 		earthPanel1.add(resizeEarthPointerButton);
-		earthPanel1.add(Box.createHorizontalGlue());
+//		earthPanel1.add(Box.createHorizontalGlue());
 
 		earthText = new JLabel("Resize:");
 		earthText.setEnabled(false);

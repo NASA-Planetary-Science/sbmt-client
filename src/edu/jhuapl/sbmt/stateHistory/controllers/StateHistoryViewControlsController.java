@@ -1,5 +1,7 @@
 package edu.jhuapl.sbmt.stateHistory.controllers;
 
+import java.awt.GridLayout;
+
 import javax.swing.BoxLayout;
 import javax.swing.JPanel;
 import javax.swing.border.TitledBorder;
@@ -83,6 +85,7 @@ public class StateHistoryViewControlsController
 		view.setBorder(new TitledBorder(null, "View Controls",
                 TitledBorder.LEADING, TitledBorder.TOP, null, null));
         view.setLayout(new BoxLayout(view, BoxLayout.X_AXIS));
+        view.setLayout(new GridLayout(1, 2));
 
         JPanel rightPanel = new JPanel();
         rightPanel.setLayout(new BoxLayout(rightPanel, BoxLayout.Y_AXIS));

@@ -1,7 +1,6 @@
 package edu.jhuapl.sbmt.stateHistory.ui.state.version2.viewControls.displayItems;
 
 import java.awt.Color;
-import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Font;
 
@@ -103,12 +102,13 @@ public class StateHistoryDisplayItemShowSpacecraftPanel extends AbstractStateHis
 		add(scPanel4);
 		scPanel4.setLayout(new BoxLayout(scPanel4, BoxLayout.X_AXIS));
 
-		showSpacecraft = new JCheckBox("Show Spacecraft");
+		showSpacecraft = new JCheckBox("Spacecraft");
 		showSpacecraft.setEnabled(false);
 		scPanel1.add(showSpacecraft);
 
-		Component horizontalStrut = Box.createHorizontalStrut(25);
-		scPanel1.add(horizontalStrut);
+//		Component horizontalStrut = Box.createHorizontalStrut(25);
+//		scPanel1.add(horizontalStrut);
+		scPanel1.add(Box.createHorizontalGlue());
 
 		scLabelButton = new JButton(questionIcon);
 		scLabelButton.addActionListener(e ->
@@ -127,7 +127,7 @@ public class StateHistoryDisplayItemShowSpacecraftPanel extends AbstractStateHis
 				scLabelButton.setIcon(questionIcon);
 		});
 		scPanel1.add(scLabelButton);
-		scPanel1.add(Box.createHorizontalGlue());
+//		scPanel1.add(Box.createHorizontalGlue());
 
 		labelCheckBox = new JCheckBox("Label:");
 		labelCheckBox.setEnabled(false);

@@ -1,5 +1,6 @@
 package edu.jhuapl.sbmt.stateHistory.ui.state.version2.viewControls;
 
+import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.JPanel;
 import javax.swing.border.TitledBorder;
@@ -33,10 +34,15 @@ public class StateHistoryDisplayItemsPanel extends JPanel
 		setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
 
 		add(showSpacecraftPanel = new StateHistoryDisplayItemShowSpacecraftPanel());
+		add(Box.createVerticalGlue());
 		add(showEarthPanel = new StateHistoryDisplayItemShowEarthPanel());
+		add(Box.createVerticalGlue());
 		add(showSunPanel = new StateHistoryDisplayItemShowSunPanel());
-		add(showLightingPanel = new StateHistoryDisplayItemShowLightingPanel());
+		add(Box.createVerticalGlue());
 		add(showSpacecraftPointerPanel = new StateHistoryDisplayItemShowSpacecraftPointerPanel());
+		add(Box.createVerticalGlue());
+		add(showLightingPanel = new StateHistoryDisplayItemShowLightingPanel());
+
 	}
 
 	public StateHistoryDisplayItemShowSpacecraftPanel getShowSpacecraftPanel()
