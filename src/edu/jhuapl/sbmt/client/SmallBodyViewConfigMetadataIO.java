@@ -75,7 +75,7 @@ public class SmallBodyViewConfigMetadataIO implements MetadataManager
             each.enable(true);
         }
 
-        String rootDir = "/Users/steelrj1/Desktop/configs-0.8.0" + metadataVersion + "/";
+        String rootDir = "/Users/steelrj1/Desktop/sbmt-configs/configs" + metadataVersion + "/";
 
         // Create the directory just in case. Then make sure it exists before proceeding.
         File rootDirFile = new File(rootDir);
