@@ -394,7 +394,7 @@ public class BennuConfigs extends SmallBodyViewConfig
 
             c.imageSearchDefaultMaxSpacecraftDistance = 120000.0;
             c.imageSearchDefaultMaxResolution = 300.0;
-
+            c.presentInMissions = new SbmtMultiMissionTool.Mission[] {};
 
             configArray.add(c);
         }
