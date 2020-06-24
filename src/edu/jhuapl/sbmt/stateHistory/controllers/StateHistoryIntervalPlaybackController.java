@@ -28,14 +28,14 @@ import javax.swing.event.ChangeListener;
 import org.joda.time.DateTime;
 import org.joda.time.format.ISODateTimeFormat;
 
+import edu.jhuapl.saavtk.animator.AnimationFrame;
+import edu.jhuapl.saavtk.animator.Animator;
+import edu.jhuapl.saavtk.animator.AnimatorFrameRunnable;
+import edu.jhuapl.saavtk.animator.MovieGenerator;
 import edu.jhuapl.saavtk.gui.render.Renderer;
 import edu.jhuapl.sbmt.stateHistory.model.StateHistoryModel;
-import edu.jhuapl.sbmt.stateHistory.model.animator.AnimationFrame;
-import edu.jhuapl.sbmt.stateHistory.model.animator.AnimatorFrameRunnable;
-import edu.jhuapl.sbmt.stateHistory.model.animator.MovieGenerator;
 import edu.jhuapl.sbmt.stateHistory.model.io.StateHistoryInvalidTimeException;
 import edu.jhuapl.sbmt.stateHistory.model.stateHistory.StateHistoryCollection;
-import edu.jhuapl.sbmt.stateHistory.rendering.animator.Animator;
 import edu.jhuapl.sbmt.stateHistory.ui.AnimationFileDialog;
 import edu.jhuapl.sbmt.stateHistory.ui.state.version2.StateHistoryIntervalPlaybackPanel;
 import edu.jhuapl.sbmt.util.TimeUtil;
