@@ -184,7 +184,7 @@ public class DEMView extends JFrame implements ActionListener, PickListener, Pro
 		pickManager = new PickManager(renderer, modelManager);
 		pickManager.getDefaultPicker().addListener(renderer);
 		PickUtil.installDefaultPickHandler(pickManager, statusBar, renderer, modelManager);
-		priPicker = new ControlPointsPicker<>(renderer, pickManager, modelManager, lineModel);
+		priPicker = new ControlPointsPicker<>(renderer, pickManager, priDEM, lineModel);
 
 		refColorbar = new Colorbar(renderer);
 
