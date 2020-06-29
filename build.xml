@@ -46,6 +46,8 @@
            destdir="${rootSAAVTKdir}/build/classes"
            debug="off" >
       <classpath>
+      	<pathelement location="${libDir}/crucible-core-20200408.jar"/>
+      	<pathelement location="${libDir}/crucible-mantle-spice-20200408.jar"/>
       	<pathelement location="${libDir}/crucible-metadata-4.4.1.jar"/>
       	<pathelement location="${libDir}/crucible-settings-4.1.jar"/>
         <pathelement location="${libDir}/commons-io-2.0.jar"/>
@@ -172,6 +174,8 @@
         <fileset dir="${rootdir}/lib">
           <include name="*.jar" />
         </fileset>
+      	<pathelement location="${libDir}/crucible-core-20200408.jar"/>
+      	<pathelement location="${libDir}/crucible-mantle-spice-20200408.jar"/>
         <pathelement location="${libDir}/commons-math3-3.6.1.jar"/>
       	<pathelement location="${libDir}/crucible-metadata-4.4.1.jar"/>
       	<pathelement location="${libDir}/crucible-settings-4.1.jar"/>
@@ -226,6 +230,8 @@
       <manifest>
         <attribute name="Class-Path" value="netcdfAll-4.3.jar
         	commons-io-2.0.jar
+        	crucible-core-20200408.jar
+      		crucible-mantle-spice-20200408.jar
         	crucible-metadata-4.4.1.jar
         	crucible-settings-4.1.jar
         	commons-math3-3.6.1.jar
@@ -345,6 +351,8 @@
       <manifest>
         <attribute name="Class-Path" value="netcdfAll-4.3.jar
         	commons-io-2.0.jar
+        	crucible-core-20200408.jar
+        	crucible-mantle-spice-20200408.jar
         	crucible-settings-4.1.jar
         	crucible-metadata-4.4.1.jar
             commons-math3-3.6.1.jar
@@ -450,6 +458,8 @@
     <jar destfile="${rootSAAVTKdir}/build/jar/saavtk.jar" basedir="${rootSAAVTKdir}/build/classes">
       <manifest>
         <attribute name="Class-Path" value="commons-io-2.0.jar
+        									crucible-core-20200408.jar
+        	      							crucible-mantle-spice-20200408.jar
         									crucible-settings-4.1.jar
         									crucible-metadata-4.4.1.jar
         									commons-math3-3.6.1.jar
@@ -585,6 +595,8 @@
   <target name="clean">
     <delete dir="${rootdir}/build"/>
     <delete dir="${rootSAAVTKdir}/build"/>
+  	<delete file="${rootlibDir}/crucible-mantle-spice-20200408.jar"/>
+  	<delete file="${rootlibDir}/crucible-core-20200408.jar"/>
   	<delete file="${rootlibDir}/crucible-settings-4.1.jar"/>
    	<delete file="${rootlibDir}/crucible-metadata-4.4.1.jar"/>
     <delete file="${rootlibDir}/commons-io-2.0.jar"/>
@@ -656,6 +668,8 @@
         <pathelement location="${rootdir}/build/jar/near.jar"/>
         <pathelement location="${rootSAAVTKdir}/build/jar/saavtk.jar"/>
 -->
+      	<pathelement location="${libDir}/crucible-core-20200408.jar"/>
+      	<pathelement location="${libDir}/crucible-mantle-spice-20200408.jar"/>
       	<pathelement location="${libDir}/crucible-settings-4.1.jar"/>
       	<pathelement location="${libDir}/crucible-metadata-4.4.1.jar"/>
         <pathelement location="${libDir}/commons-io-2.0.jar"/>
