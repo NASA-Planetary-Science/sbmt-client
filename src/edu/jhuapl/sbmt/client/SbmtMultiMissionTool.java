@@ -267,6 +267,8 @@ public class SbmtMultiMissionTool
 	    String compileDateString = DATE_FORMAT.format(compileDate);
 	    String fullTitle = "SBMT " + versionString + " (" + compileDateString + ")";
 	    String abbrTitle = "SBMT " + "(" + compileDateString + ")";
+	    fullTitle = "SBMT";
+	    abbrTitle = "SBMT";
 
 		switch (mission)
 		{
@@ -306,7 +308,7 @@ public class SbmtMultiMissionTool
 			Configuration.setAppName("sbmthyb2-dev");
 			Configuration.setCacheVersion("");
 			Configuration.setReleaseType(ReleaseType.DEVELOPMENT);
-			Configuration.setAppTitle("SBMT/Hayabusa2-Dev " + "(" + compileDateString + ")");
+			Configuration.setAppTitle("SBMT/Hayabusa2-Dev"/* + "(" + compileDateString + ")"*/);
             // Configuration.setDatabaseSuffix("_test");
 			break;
 //		case HAYABUSA2_STAGE:
@@ -319,20 +321,20 @@ public class SbmtMultiMissionTool
 			Configuration.setRootURL("http://hyb2sbmt.u-aizu.ac.jp/sbmt");
 			Configuration.setAppName("sbmthyb2");
 			Configuration.setCacheVersion("");
-			Configuration.setAppTitle("SBMT/Hayabusa2 " + versionString + " (" + compileDateString + ")");
+			Configuration.setAppTitle("SBMT/Hayabusa2" /*+ versionString + " (" + compileDateString + ")"*/);
 			break;
         case OSIRIS_REX:
             //                Configuration.setRootURL("http://sbmt.jhuapl.edu/internal/sbmt");
             Configuration.setAppName("sbmt1orex-dev");
             Configuration.setCacheVersion("");
-            Configuration.setAppTitle("SBMT/OSIRIS REx-Dev " + "(" + compileDateString + ")");
+            Configuration.setAppTitle("SBMT/OSIRIS REx-Dev" /*+ "(" + compileDateString + ")"*/);
             Colormaps.setDefaultColormapName("Spectral_lowBlue");
             break;
         case OSIRIS_REX_TEST:
             Configuration.setRootURL("http://sbmt-web.jhuapl.edu/internal/multi-mission/test");
             Configuration.setAppName("sbmt1orex-test");
             Configuration.setCacheVersion("");
-            Configuration.setAppTitle("SBMT/OSIRIS REx-Test " + versionString + " (" + compileDateString + ")");
+            Configuration.setAppTitle("SBMT/OSIRIS REx-Test" /*+ versionString + " (" + compileDateString + ")"*/);
             Colormaps.setDefaultColormapName("Spectral_lowBlue");
             break;
 //		case OSIRIS_REX_STAGE:
@@ -345,32 +347,32 @@ public class SbmtMultiMissionTool
 			//                Configuration.setRootURL("http://sbmt.jhuapl.edu/sbmt");
 			Configuration.setAppName("sbmt1orex-mirror");
 			Configuration.setCacheVersion("");
-			Configuration.setAppTitle("SBMT/OSIRIS REx APL Mirror " + versionString + " (" + compileDateString + ")");
+			Configuration.setAppTitle("SBMT/OSIRIS REx APL Mirror" /*+ versionString + " (" + compileDateString + ")"*/);
             Colormaps.setDefaultColormapName("Spectral_lowBlue");
 			break;
 		case OSIRIS_REX_DEPLOY:
 			Configuration.setRootURL("https://uasbmt.lpl.arizona.edu/sbmt");
 			Configuration.setAppName("sbmt1orex");
 			Configuration.setCacheVersion("");
-			Configuration.setAppTitle("SBMT/OSIRIS REx " + versionString + " (" + compileDateString + ")");
+			Configuration.setAppTitle("SBMT/OSIRIS REx"/* + versionString + " (" + compileDateString + ")"*/);
             Colormaps.setDefaultColormapName("Spectral_lowBlue");
 			break;
 		case NH_DEPLOY:
 			Configuration.setAppName("sbmtnh");
 			Configuration.setCacheVersion("");
-			Configuration.setAppTitle("SBMT/New Horizons " + versionString + " (" + compileDateString + ")");
+			Configuration.setAppTitle("SBMT/New Horizons" /*+ versionString + " (" + compileDateString + ")"*/);
 			break;
 		case DART_DEV:
 			Configuration.setAppName("sbmt1dart-dev");
 			Configuration.setCacheVersion("");
 			Configuration.setReleaseType(ReleaseType.DEVELOPMENT);
-			Configuration.setAppTitle("SBMT/DART (Development Version) " + "(" + compileDateString + ")");
+			Configuration.setAppTitle("SBMT/DART (Development Version)" /*+ "(" + compileDateString + ")"*/);
             Colormaps.setDefaultColormapName("Spectral_lowBlue");
 			break;
 		case DART_DEPLOY:
 			Configuration.setAppName("sbmt1dart");
 			Configuration.setCacheVersion("");
-			Configuration.setAppTitle("SBMT/DART " + versionString + " (" + compileDateString + ")");
+			Configuration.setAppTitle("SBMT/DART" /*+ versionString + " (" + compileDateString + ")"*/);
             Colormaps.setDefaultColormapName("Spectral_lowBlue");
 			break;
 		default:
