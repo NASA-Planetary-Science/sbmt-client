@@ -15,6 +15,7 @@ import vtk.vtkJavaGarbageCollector;
 import edu.jhuapl.saavtk.gui.Console;
 import edu.jhuapl.saavtk.gui.MainWindow;
 import edu.jhuapl.saavtk.util.Configuration;
+import edu.jhuapl.saavtk.util.Configuration.ReleaseType;
 import edu.jhuapl.saavtk.util.Debug;
 import edu.jhuapl.saavtk.util.FileCache;
 import edu.jhuapl.saavtk.util.NativeLibraryLoader;
@@ -130,7 +131,7 @@ public class SbmtRunnable implements Runnable
 	protected void writeStartupMessage(Mission mission)
 	{
 		Date compileDate = SbmtMultiMissionTool.compileDate;
-		String version = SbmtMultiMissionTool.versionString;
+		String version = (Configuration.getReleaseType() == ReleaseType.DEVELOPMENT) ? "" : SbmtMultiMissionTool.versionString;
 
 		System.out.println("Welcome to the Small Body Mapping Tool (SBMT) " + version);
 		System.out.println(mission + " edition" + (compileDate != null ? " built " + DATE_FORMAT.format(compileDate) : ""));
