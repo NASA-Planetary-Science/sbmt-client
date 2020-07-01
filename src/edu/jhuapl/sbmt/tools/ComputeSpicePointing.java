@@ -28,7 +28,7 @@ import nom.tam.fits.Fits;
 import nom.tam.fits.FitsException;
 import nom.tam.fits.HeaderCard;
 
-public abstract class ComputeSpicePointing
+public class ComputeSpicePointing
 {
     private static final Pattern MetaKernelPattern = Pattern.compile(".*\\.mk", Pattern.CASE_INSENSITIVE);
 
@@ -53,7 +53,6 @@ public abstract class ComputeSpicePointing
             int sclkIdCode = Integer.parseInt(args[index++]);
             FrameID instrumentFrame = new SimpleFrameID(args[index++]);
 
-            String inputString = args[index++];
             String mkPathString = args[index++];
             ImmutableList<Path> mkPaths;
             if (MetaKernelPattern.asPredicate().test(mkPathString))
@@ -66,15 +65,14 @@ public abstract class ComputeSpicePointing
                 throw new UnsupportedOperationException("TODO: implement reader for a list of MK files");
             }
 
+            String inputString = args[index++];
             Path inputDir = Paths.get(args[index++]);
             Path outputDir = Paths.get(args[index++]);
             String fitsTimeKey = args[index++];
 
             SpicePointingProvider provider = SpicePointingProvider.of(mkPaths, bodyId, bodyFrame, scId, sclkIdCode, instrumentFrame);
-            return new ComputeSpicePointing(provider, inputString, inputDir, outputDir, fitsTimeKey) {
 
-            };
-
+            return new ComputeSpicePointing(provider, inputString, inputDir, outputDir, fitsTimeKey);
         }
         catch (Exception e)
         {
@@ -116,16 +114,19 @@ public abstract class ComputeSpicePointing
         stream.println("--------------------------------------------------------------------------------");
         stream.println("Usage: ComputeSpicePointing bodyId bodyFrame scId sclkIdCode instrumentFrame");
         stream.println("                      mkFile inputFile inputDir outputDir fitsTimeKey\n");
-        stream.println("             All input paths are relative to inputDir.");
         stream.println("               sclkIdCode - this is a mission-specific int. Take a guess;");
         stream.println("                      program will probably fail but will advise you");
         stream.println("                      of your options.\n");
         stream.println("               mkFile - metakernel file\n");
         stream.println("               inputFile - a text file with a list of input FITS files.\n");
+        stream.println("               inputDir - top directory containing files listed in inputFile.\n");
         stream.println("               outputDir - output directory only; tool will populate this.\n");
         stream.println("               fitsTimeKey - time keyword.");
         stream.println("--------------------------------------------------------------------------------");
-        System.exit(exitCode);
+        if (exitCode == 0)
+        {
+            System.exit(exitCode);
+        }
     }
 
     /**
@@ -146,7 +147,7 @@ public abstract class ComputeSpicePointing
     protected LinkedHashMap<String, String> getOutputFilesKeyedOnTime(Path inputDir, String fitsFileList, String timeKeyName) throws IOException
     {
         LinkedHashMap<String, String> result = new LinkedHashMap<>();
-        try (BufferedReader reader = new BufferedReader(new FileReader(inputDir.resolve(fitsFileList).toFile())))
+        try (BufferedReader reader = new BufferedReader(new FileReader(new File(fitsFileList))))
         {
             String fitsFileName;
             while ((fitsFileName = reader.readLine()) != null)
@@ -199,7 +200,7 @@ public abstract class ComputeSpicePointing
 
         try (BufferedWriter writer = new BufferedWriter(new FileWriter(outputDir.resolve(fileName).toFile())))
         {
-
+            writer.write(pointing.toString());
         }
 
     }
