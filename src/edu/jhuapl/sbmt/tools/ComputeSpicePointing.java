@@ -187,12 +187,11 @@ public class ComputeSpicePointing
         {
             throw new IOException("Output area " + outputDir + " exists but is not a directory. Can't create output");
         }
-        File parentDir = outputDir.getParentFile();
-        if (parentDir.exists() && !parentDir.isDirectory())
-        {
-            throw new IOException("Output area parent " + parentDir + " exists but is not a directory. Can't create output");
-        }
         outputDir.mkdirs();
+        if (!outputDir.isDirectory())
+        {
+            throw new IOException("Output area " + outputDir + " is not a directory. Can't create output");
+        }
     }
 
     protected void writePointingFile(Pointing pointing, String fileName) throws IOException
