@@ -628,7 +628,7 @@ public class SbmtView extends View implements PropertyChangeListener
 
 		// Lidar tab
 		SmallBodyViewConfig tmpSmallBodyConfig = getPolyhedralModelConfig();
-		String lidarInstrName = "Lidar";
+		String lidarInstrName = "Tracks";
 		if (tmpSmallBodyConfig.hasLidarData == true)
 			lidarInstrName = tmpSmallBodyConfig.lidarInstrumentName.toString();
 
@@ -844,7 +844,7 @@ public class SbmtView extends View implements PropertyChangeListener
 					Renderer localRenderer = SbmtView.this.getRenderer();
 					if (localRenderer != null)
 					{
-						RenderPanel panel = (RenderPanel) localRenderer.getRenderWindowPanel();
+						RenderPanel panel = localRenderer.getRenderWindowPanel();
 						vtkCamera camera = panel.getActiveCamera();
 						result.put(POSITION_KEY, camera.GetPosition());
 						result.put(UP_KEY, camera.GetViewUp());
@@ -913,7 +913,7 @@ public class SbmtView extends View implements PropertyChangeListener
                     Renderer localRenderer = SbmtView.this.getRenderer();
                     if (localRenderer != null)
                     {
-                        RenderPanel panel = (RenderPanel) localRenderer.getRenderWindowPanel();
+                        RenderPanel panel = localRenderer.getRenderWindowPanel();
                         vtkCamera camera = panel.getActiveCamera();
                             camera.SetPosition(state.get(POSITION_KEY));
                             camera.SetViewUp(state.get(UP_KEY));
