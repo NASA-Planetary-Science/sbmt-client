@@ -42,14 +42,15 @@ public class ComputeSpicePointing
         }
         try
         {
-            if (args.length != 10)
+            if (args.length != 11)
             {
-                throw new IllegalArgumentException("Must have 10 command line arguments");
+                throw new IllegalArgumentException("Must have 11 command line arguments");
             }
 
             EphemerisID bodyId = new SimpleEphemerisID(args[index++]);
             FrameID bodyFrame = new SimpleFrameID(args[index++]);
             EphemerisID scId = new SimpleEphemerisID(args[index++]);
+            FrameID scFrame = new SimpleFrameID(args[index++]);
             int sclkIdCode = Integer.parseInt(args[index++]);
             FrameID instrumentFrame = new SimpleFrameID(args[index++]);
 
@@ -70,7 +71,7 @@ public class ComputeSpicePointing
             Path outputDir = Paths.get(args[index++]);
             String fitsTimeKey = args[index++];
 
-            SpicePointingProvider provider = SpicePointingProvider.of(mkPaths, bodyId, bodyFrame, scId, sclkIdCode, instrumentFrame);
+            SpicePointingProvider provider = SpicePointingProvider.of(mkPaths, bodyId, bodyFrame, scId, scFrame, sclkIdCode, instrumentFrame);
 
             return new ComputeSpicePointing(provider, inputString, inputDir, outputDir, fitsTimeKey);
         }
@@ -112,8 +113,8 @@ public class ComputeSpicePointing
     protected static void usage(PrintStream stream, int exitCode)
     {
         stream.println("--------------------------------------------------------------------------------");
-        stream.println("Usage: ComputeSpicePointing bodyId bodyFrame scId sclkIdCode instrumentFrame");
-        stream.println("                      mkFile inputFile inputDir outputDir fitsTimeKey\n");
+        stream.println("Usage: ComputeSpicePointing bodyId bodyFrame scId scFrame sclkIdCode");
+        stream.println("                     instFrame mkFile inputFile inputDir outputDir fitsTimeKey\n");
         stream.println("               sclkIdCode - this is a mission-specific int. Take a guess;");
         stream.println("                      program will probably fail but will advise you");
         stream.println("                      of your options.\n");
