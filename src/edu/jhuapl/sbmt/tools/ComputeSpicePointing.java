@@ -156,6 +156,7 @@ public class ComputeSpicePointing
                 try (Fits fits = new Fits(file))
                 {
                     HeaderCard keyword = null;
+                    fits.read();
                     for (int hduIndex = 0; hduIndex < fits.getNumberOfHDUs() && keyword == null; ++hduIndex)
                     {
                         keyword = fits.getHDU(hduIndex).getHeader().findCard(timeKeyName);
