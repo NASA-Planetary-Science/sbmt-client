@@ -465,9 +465,10 @@ moveFile() {
   if test $? -ne 0; then exit 1; fi
 }
 
-# Create a symbolic link to source path ($1) in destination path ($2).
+# Create a symbolic link to source path ($1) in destination path ($2). Back up
+# existing destination paths first, using the processingId ($3) to identify/name the backup.
 # Behaves just like ln -s $1 $2 except that if $2 identifies an
-# existing file/symbolic link/directory, it will first be moved aside
+# existing file/symbolic link/directory, that item will first be moved aside
 # before the link is created.
 updateLink() {
   (
@@ -506,13 +507,13 @@ updateLink() {
         mv $dest $backup
         check $? "updateLink failed to back up $dest"
       elif test -L $dest; then
-        # A symbolic link is probably from an earlier installation - remove it.
+        # This symbolic link is probably from an earlier invocation of updateLink - remove it.
         rm -f $dest
         check $? "updateLink failed to remove link $dest"
       else
         # A file or directory AND what appears to be a back-up both exist here.
         # This should not ever happen, so do not continue.
-        check 1 "updateLink did not expect to find file $dest"
+        check 1 "updateLink did not expect to find both a real file $dest and a backup $backup"
       fi
     fi
 
@@ -780,8 +781,11 @@ linkStandardModelFiles() {
     createDir $destTop
     check $?
 
-echo "in $destTop, trying to link $srcTop/shape etc."
     cd $destTop
+    check $?
+
+    echo "In $destTop, trying to link $srcTop/shape etc."
+
     updateOptionalLink "$srcTop/basemap" "basemap" "$processingId"
     updateOptionalLink "$srcTop/dtm" "dtm" "$processingId"
     updateOptionalLink "$srcTop/coloring" "coloring" "$processingId"

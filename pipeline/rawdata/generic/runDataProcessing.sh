@@ -61,10 +61,10 @@
 #
 usage() {
   echo "--------------------------------------------------------------------------------"
-  echo "Usage: $0 dataProcessing.sh processingID outputTop [ serverTop ]"
+  echo "Usage: $0 processDeliveryScript processingID outputTop [ serverTop ]"
   echo ""
-  echo "       dataProcessing.sh is a Bourne shell script containing specific commands"
-  echo "           to be used for this processing action, typically a locally"
+  echo "       processDeliveryScript is a Bourne shell script containing specific"
+  echo "           commands to be used for this processing action, typically a locally"
   echo "           tailored processing or deployment script."
   echo ""
   echo "        processingID identifies the processing run, typically 'redmine-XXXX'"
