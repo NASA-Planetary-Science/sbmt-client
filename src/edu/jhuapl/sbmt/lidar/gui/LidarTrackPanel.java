@@ -31,7 +31,7 @@ import edu.jhuapl.saavtk.colormap.SigFigNumberFormat;
 import edu.jhuapl.saavtk.gui.render.Renderer;
 import edu.jhuapl.saavtk.gui.util.IconUtil;
 import edu.jhuapl.saavtk.gui.util.ToolTipUtil;
-import edu.jhuapl.saavtk.model.ModelManager;
+import edu.jhuapl.saavtk.model.PolyhedralModel;
 import edu.jhuapl.saavtk.pick.PickListener;
 import edu.jhuapl.saavtk.pick.PickManager;
 import edu.jhuapl.saavtk.pick.PickManagerListener;
@@ -39,7 +39,6 @@ import edu.jhuapl.saavtk.pick.PickMode;
 import edu.jhuapl.saavtk.pick.PickTarget;
 import edu.jhuapl.saavtk.pick.PickUtil;
 import edu.jhuapl.saavtk.pick.Picker;
-import edu.jhuapl.sbmt.client.SmallBodyViewConfig;
 import edu.jhuapl.sbmt.gui.table.ColorProviderCellEditor;
 import edu.jhuapl.sbmt.gui.table.ColorProviderCellRenderer;
 import edu.jhuapl.sbmt.gui.table.EphemerisTimeRenderer;
@@ -115,16 +114,14 @@ public class LidarTrackPanel extends JPanel
 	private JCheckBox showSpacecraftCB;
 	private JSpinner pointSizeSpinner;
 
-	/**
-	 * Standard Constructor
-	 */
+	/** Standard Constructor */
 	public LidarTrackPanel(LidarTrackManager aTrackManager, PickManager aPickManager, Renderer aRenderer,
-			ModelManager aModelManager, SmallBodyViewConfig aBodyViewConfig)
+			PolyhedralModel aSmallBody)
 	{
 		refTrackManager = aTrackManager;
 		refPickManager = aPickManager;
 
-		lidarPicker = new LidarShiftPicker(refTrackManager, aRenderer, aModelManager);
+		lidarPicker = new LidarShiftPicker(refTrackManager, aRenderer, aSmallBody);
 		radialOffsetScale = LidarGeoUtil.getOffsetScale(refTrackManager);
 
 		setLayout(new MigLayout());

@@ -565,7 +565,9 @@ public class SbmtView extends View implements PropertyChangeListener
 //				double[] rgbMaxVals = new double[] {0.05, 0.05, 0.05};
 //	            int[] rgbIndices = new int[] { 1, 25, 50 };
 				JComponent component = new OREXSpectrumSearchController<NISSpectrum>(getPolyhedralModelConfig().imageSearchDefaultStartDate, getPolyhedralModelConfig().imageSearchDefaultEndDate,
-						getPolyhedralModelConfig().hasHierarchicalSpectraSearch, getPolyhedralModelConfig().imageSearchDefaultMaxSpacecraftDistance, getPolyhedralModelConfig().hierarchicalSpectraSearchSpecification,
+						getPolyhedralModelConfig().hasHierarchicalSpectraSearch, getPolyhedralModelConfig().hasHypertreeBasedSpectraSearch,
+						getPolyhedralModelConfig().imageSearchDefaultMaxSpacecraftDistance, new String[] {"L2"},
+						getPolyhedralModelConfig().hierarchicalSpectraSearchSpecification,
 						getModelManager(), (SbmtInfoWindowManager) getInfoPanelManager(), getPickManager(), getRenderer(), instrument, model).getPanel();
 				addTab(instrument.getDisplayName(), component);
 
@@ -580,6 +582,11 @@ public class SbmtView extends View implements PropertyChangeListener
 
 				OREXSpectraFactory.initializeModels(smallBodyModel);
 				JComponent component = new OREXSpectrumTabbedPane<OTESSpectrum>(getPolyhedralModelConfig(), getModelManager(), (SbmtInfoWindowManager) getInfoPanelManager(), getPickManager(), getRenderer(), instrument, spectrumCollection);
+
+//				OTESSearchModel model = new OTESSearchModel(getModelManager(), instrument);
+//				JComponent component = new OREXSpectrumSearchController<OTESSpectrum>(getPolyhedralModelConfig().imageSearchDefaultStartDate, getPolyhedralModelConfig().imageSearchDefaultEndDate,
+//						/*getPolyhedralModelConfig().hasHierarchicalSpectraSearch*/ false, getPolyhedralModelConfig().imageSearchDefaultMaxSpacecraftDistance, getPolyhedralModelConfig().hierarchicalSpectraSearchSpecification,
+//						getModelManager(), (SbmtInfoWindowManager) getInfoPanelManager(), getPickManager(), getRenderer(), instrument, model).getPanel();
 				addTab(instrument.getDisplayName(), component);
 
 
@@ -604,7 +611,9 @@ public class SbmtView extends View implements PropertyChangeListener
 //				double[] rgbMaxVals = new double[] {0.00005, 0.0001, 0.002};
 //	            int[] rgbIndices = new int[] { 100, 70, 40 };
 				JComponent component = new OREXSpectrumSearchController<NIRS3Spectrum>(getPolyhedralModelConfig().imageSearchDefaultStartDate, getPolyhedralModelConfig().imageSearchDefaultEndDate,
-						getPolyhedralModelConfig().hasHierarchicalSpectraSearch, getPolyhedralModelConfig().imageSearchDefaultMaxSpacecraftDistance, getPolyhedralModelConfig().hierarchicalSpectraSearchSpecification,
+						getPolyhedralModelConfig().hasHierarchicalSpectraSearch, getPolyhedralModelConfig().hasHypertreeBasedSpectraSearch,
+						getPolyhedralModelConfig().imageSearchDefaultMaxSpacecraftDistance, new String[] {"L2"},
+						getPolyhedralModelConfig().hierarchicalSpectraSearchSpecification,
 						getModelManager(), (SbmtInfoWindowManager) getInfoPanelManager(), getPickManager(), getRenderer(), instrument, model).getPanel();
 				addTab(instrument.getDisplayName(), component);
 				PopupMenu popupMenu = new SpectrumPopupMenu(spectrumCollection, boundaryCollection, getModelManager(), (SbmtInfoWindowManager) getInfoPanelManager(), getRenderer());
@@ -617,11 +626,14 @@ public class SbmtView extends View implements PropertyChangeListener
 
 		}
 
-		if (getPolyhedralModelConfig().hasLidarData)
-		{
-			JComponent component = new LidarPanel(getPolyhedralModelConfig(), getModelManager(), getPickManager(), getRenderer());
-			addTab(getPolyhedralModelConfig().lidarInstrumentName.toString(), component);
-		}
+		// Lidar tab
+		SmallBodyViewConfig tmpSmallBodyConfig = getPolyhedralModelConfig();
+		String lidarInstrName = "Tracks";
+		if (tmpSmallBodyConfig.hasLidarData == true)
+			lidarInstrName = tmpSmallBodyConfig.lidarInstrumentName.toString();
+
+		JComponent lidarPanel = new LidarPanel(getModelManager(), getPickManager(), getRenderer(), tmpSmallBodyConfig);
+		addTab(lidarInstrName, lidarPanel);
 
 		if (Configuration.isAPLVersion())
 		{
@@ -832,7 +844,7 @@ public class SbmtView extends View implements PropertyChangeListener
 					Renderer localRenderer = SbmtView.this.getRenderer();
 					if (localRenderer != null)
 					{
-						RenderPanel panel = (RenderPanel) localRenderer.getRenderWindowPanel();
+						RenderPanel panel = localRenderer.getRenderWindowPanel();
 						vtkCamera camera = panel.getActiveCamera();
 						result.put(POSITION_KEY, camera.GetPosition());
 						result.put(UP_KEY, camera.GetViewUp());
@@ -901,7 +913,7 @@ public class SbmtView extends View implements PropertyChangeListener
                     Renderer localRenderer = SbmtView.this.getRenderer();
                     if (localRenderer != null)
                     {
-                        RenderPanel panel = (RenderPanel) localRenderer.getRenderWindowPanel();
+                        RenderPanel panel = localRenderer.getRenderWindowPanel();
                         vtkCamera camera = panel.getActiveCamera();
                             camera.SetPosition(state.get(POSITION_KEY));
                             camera.SetViewUp(state.get(UP_KEY));

@@ -5,6 +5,184 @@
 # Description:    Common funcs used by most if not all pipeline scripts
 #-------------------------------------------------------------------------------
 
+# Check the exit status of a previous command, which is passed as the first
+# argument. If it's non-0, print an optional context messsage if present,
+# and then call exit from within the invoking shell, passing along the
+# provided status.
+#
+# Because this exits and does not run in a sub-shell, use cautiously.
+check() {
+  if test "$1" = ""; then
+    echo "check: first argument is blank" >&2
+    if test $# -gt 1; then
+      echo "$*" >&2
+    fi
+    exit 1
+  fi
+
+  # This strange-looking check is necessary for bullet-proofing in case $1
+  # doesn't contain an integer. A simple if test... does not behave reliably.
+  # To make matters worse, exit won't actually terminate the invoking shell
+  # in such a case either. Bottom line: if you are debugging and you get an
+  # error on the next line, check the calling code, which must not be
+  # passing an integer for argument 1.
+  ( exit $1 )
+  
+  # If $1 did contain an integer, the exit status will be that integer.
+  # Otherwise, status will be some other integer. In any case, status
+  # for sure will now be an integer, so it will behave itself in the test. 
+  status=$?
+  if test $status -ne 0; then
+    if test $# -gt 1; then
+      echo "$*" | sed 's:[^ ][^ ]* *::' >&2
+    fi
+    exit $status
+  fi
+}
+
+# Get the extension from the string, file name or directory name specified by the first argument.
+# The extension is defined as any non-dot characters that follow the final dot in the string.
+# If a directory exists with the given name, the extension will be derived from the first file that
+# has an extension listed in that directory.
+#
+# The argument (whether a string, file, or directory) may specify a base name, a relative
+# path, a partial path, or an absolute path.
+#
+# This function only generates an error if the argument is omitted. If the argument specifies an
+# empty directory, or a directory whose files have no extensions, an empty string will be
+# returned. Similarly, if the argument is a string that does not have an extension (non-period
+# characters following a period), an empty string is returned.
+guessFileExtension() {
+  (
+    file=$1
+    if test "$file" = ""; then
+      check $? "guessFileExtension: missing name of file or directory from which to guess the extension"
+    fi
+
+    if test -d "$file"; then
+      ext=`ls "$file/"*.* | head -n 1 | sed -n 's:.*\.::p'`
+    else
+      ext=`echo $file | sed -n 's:.*\.::p'`
+    fi
+    # Prevent matching a final dot within a directory path or path segment.
+    if test `echo $ext | grep -c /` -gt 0; then
+      ext=
+    fi
+    echo $ext
+  )
+  check $?
+}
+
+# Check files in a list of files against a directory for discrepancies. If any files in the list
+# are not present in the directory, the function will finish all its checks, but then
+# terminate the invoking shell with a non-0 status. Warnings will be generated if files are
+# found in the directory that are not present in the list, but excess files of this kind
+# would not cause the invoking shell to terminate.
+#
+# If the directory content exactly matches the list, no output will be produced. Otherwise,
+# each discrepancy will be reported on the standard output (not the standard error stream).
+#
+# This function only writes to the standard error stream if the function itself cannot
+# execute properly. In such cases, the function will also exit the invoking shell with a
+# non-zero status.
+checkFileList() {
+  (
+    fileList=$1
+    dir=$2
+
+    if test "$fileList" = ""; then
+      check 1 "checkFileList: missing the list of files to check"
+    elif test ! -f "$fileList"; then
+      check 1 "checkFileList: argument with list of files to check is not a file: $fileList"
+    fi
+
+    if test "$dir" = ""; then
+      check 1 "checkFileList: missing the directory to check"
+    elif test ! -d "$dir"; then
+      check 1 "checkFileList: argument with directory to check is not a directory: $dir"
+    fi
+
+    status=0
+    firstTime=true
+    for file in `cat "$fileList"`; do
+      if test ! -e "$dir/$file"; then
+        status=1
+        if test $firstTime = true; then
+          firstTime=false
+          echo "ERROR: the following items in the list do not exist in the directory:"
+        fi
+        echo $file
+      fi
+    done
+
+    firstTime=true
+    for file in `cd "$dir"; ls`; do
+      if test `grep -c "^$file" "$fileList"` -eq 0; then
+        if test $firstTime = true; then
+          firstTime=false
+          echo "WARNING: the following items in the directory are not in the list:"
+        fi
+        echo $file
+      fi
+    done
+
+    check $status
+  )
+  check $?
+}
+
+# Check files in the sumfiles/ directory against make_sumfiles.in for discrepancies, i.e., listed files not
+# found in the directory or files in the directory not listed in make_sumfiles.in.
+#
+# 1st argument is the path to the imager directory to check.
+#
+# The 2nd argument is optional; it is the name of an output log file used to store details of
+# the check. If no log file is specified, the details will be sent to standard output. The caller
+# could also just capture the standard output stream and do whatever with it. The advantage of
+# providing the log file as an argument rather than the stream is that this function will automatically
+# remove the log file if no discrepancies are found. Error messages still will be sent to the standard
+# error stream regardless.
+checkSumFiles() {
+  (
+    imagerDir=$1
+    logFile=$2
+
+    if test "$imagerDir" = ""; then
+      check 1 "checkSumFiles: missing the directory to check"
+    elif test ! -d "$imagerDir"; then
+      check 1 "checkSumFiles: argument with directory to check is not a directory: $imagerDir"
+    fi
+
+    if test ! -f "$imagerDir/make_sumfiles.in"; then
+      check 1 "checkSumFiles: cannot find file $imagerDir/make_sumfiles.in"
+    fi
+
+    tmpFileList=checkSumFiles-$(basename "$imagerDir").tmp
+    ext=`guessFileExtension $imagerDir/sumfiles`
+    sed "s: .*:.$ext:" "$imagerDir/make_sumfiles.in" > $tmpFileList
+    check $? "checkSumFiles: could not edit $imagerDir/make_sumfiles.in to create $tmpFileList"
+
+    echo "checkSumFiles: in directory $imagerDir, comparing content of sumfiles/ directory to list in make_sumfiles.in"
+    if test "$logFile" != ""; then
+      echo "checkSumFiles: in directory $imagerDir, comparing content of sumfiles/ directory to list in make_sumfiles.in" > $logFile
+      checkFileList "$tmpFileList" "$imagerDir/sumfiles" >> $logFile
+      check $? "checkSumFiles: problems with content of $imagerDir. Files checked listed in $tmpFileList. See details in $logFile"
+    else
+      checkFileList "$tmpFileList" "$imagerDir/sumfiles"
+      check $? "checkSumFiles: problems with content of $imagerDir. Files checked listed in $tmpFileList."
+    fi
+
+    # Clean up if no problems were found.
+    rm -f $tmpFileList
+    if test "$logFile" != ""; then
+      if test ! -s $logFile; then
+        rm -f $logFile
+      fi
+    fi
+  )
+  check $?
+}
+
 # Create a directory if it doesn't already exist.
 createDirIfNecessary() {
   (

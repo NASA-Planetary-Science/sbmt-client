@@ -22,9 +22,8 @@ import edu.jhuapl.saavtk.pick.HookUtil;
 import edu.jhuapl.saavtk.pick.PickListener;
 import edu.jhuapl.saavtk.pick.PickMode;
 import edu.jhuapl.saavtk.pick.PickTarget;
-import edu.jhuapl.saavtk.util.MathUtil;
 import edu.jhuapl.saavtk.util.Properties;
-import edu.jhuapl.saavtk.util.SaavtkLODActor;
+import edu.jhuapl.saavtk.view.AssocActor;
 import edu.jhuapl.sbmt.lidar.feature.FeatureAttr;
 import edu.jhuapl.sbmt.lidar.feature.FeatureType;
 import edu.jhuapl.sbmt.lidar.gui.color.ColorProvider;
@@ -158,9 +157,9 @@ public class LidarTrackManager extends BaseItemManager<LidarTrack>
 		{
 			Vector3D targetV = aLP.getTargetPosition();
 
-			double[] ptLidarArr = LidarGeoUtil.transformTarget(tmpVect, radialOffset, targetV).toArray();
-			double[] ptClosest = refSmallBody.findClosestPoint(ptLidarArr);
-			tmpErr += MathUtil.distance2Between(ptLidarArr, ptClosest);
+			Vector3D ptLidar = LidarGeoUtil.transformTarget(tmpVect, radialOffset, targetV);
+			Vector3D ptClosest = refSmallBody.findClosestPoint(ptLidar);
+			tmpErr += ptLidar.distanceSq(ptClosest);
 		}
 
 		// Update the cache and return the error
@@ -608,11 +607,11 @@ public class LidarTrackManager extends BaseItemManager<LidarTrack>
 	{
 		// Bail if aProp is not the right type
 		vtkProp tmpProp = aPickTarg.getActor();
-		if (tmpProp instanceof SaavtkLODActor == false)
+		if (tmpProp instanceof AssocActor == false)
 			return null;
 
 		// Retrieve the painter and return it if we are the associated manager
-		VtkLidarPainter<?> tmpPainter = ((SaavtkLODActor) tmpProp).getAssocModel(VtkLidarPainter.class);
+		VtkLidarPainter<?> tmpPainter = ((AssocActor) tmpProp).getAssocModel(VtkLidarPainter.class);
 		if (tmpPainter != null && tmpPainter.getManager() == this)
 			return (VtkLidarPainter<LidarTrack>) tmpPainter;
 
