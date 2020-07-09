@@ -26,7 +26,7 @@
 # When tailoring is complete, remove or comment out the next two lines
 # before invoking using runDataProcessing.sh to actually process the
 # delivery.
-echo "Tailor this script first for the specific delivery being processed."
+echo "Tailor this script first for the specific delivery being processed." >&2
 exit 1
 
 #-------------------------------------------------------------------------------
