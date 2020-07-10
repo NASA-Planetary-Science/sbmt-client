@@ -893,7 +893,7 @@ discoverPlateColorings() {
 
 processDTMs() {
   (
-    src=$destTop/dtm
+    src=$srcTop/dtm
     if test -d $src; then
       dest=$destTop/dtm/browse
   
