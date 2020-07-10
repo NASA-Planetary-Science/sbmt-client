@@ -795,17 +795,78 @@ linkStandardModelFiles() {
   check $? "linkStandardModelFiles failed"
 }
 
+# List plate coloring files in the preferred sort order.
+listPlateColoringFiles() {
+  (
+    coloringDir=$1
+    if test "$coloringDir" = ""; then
+      check 1 "listPlateColoringFiles coloringDir argument is missing"
+    fi
+  
+    if test ! -d $coloringDir; then
+      check 1 "listPlateColoringFiles first argument must be directory where coloring files are found"
+    fi
+  
+    listFile=$2
+    if test "$listFile" = ""; then
+      check 1 "listPlateColoringFiles listFile argument is missing"
+    fi
+
+    rm -f $listFile
+    check $? "listPlateColorfingFiles could not remove list file $listFile"
+
+    ls $coloringDir/Slope* >> $listFile 2> /dev/null
+    ls $coloringDir/*slp* >> $listFile 2> /dev/null
+    ls $coloringDir/Elevation* >> $listFile 2> /dev/null
+    ls $coloringDir/*elv* >> $listFile 2> /dev/null
+    ls $coloringDir/GravitationalAcceleration* >> $listFile 2> /dev/null
+    ls $coloringDir/*grm* >> $listFile 2> /dev/null
+    ls $coloringDir/GravitationalPotential* >> $listFile 2> /dev/null
+    ls $coloringDir/*pot* >> $listFile 2> /dev/null
+    ls $coloringDir/*fti* >> $listFile 2> /dev/null
+    ls $coloringDir/*fdi* >> $listFile 2> /dev/null
+    ls $coloringDir/*mti* >> $listFile 2> /dev/null
+    ls $coloringDir/*tiv* >> $listFile 2> /dev/null
+    ls $coloringDir/*mdi* >> $listFile 2> /dev/null
+    ls $coloringDir/*div* >> $listFile 2> /dev/null
+    ls $coloringDir/*rti* >> $listFile 2> /dev/null
+    ls $coloringDir/*rdi* >> $listFile 2> /dev/null
+    ls $coloringDir/*mht* >> $listFile 2> /dev/null
+    ls $coloringDir/*grv* >> $listFile 2> /dev/null
+    ls $coloringDir/*nvf* >> $listFile 2> /dev/null
+    # ls $coloringDir/*alb* >> $listFile 2> /dev/null
+    # ls $coloringDir/*are* >> $listFile 2> /dev/null
+    # ls $coloringDir/*rad* >> $listFile 2> /dev/null
+
+    # List everything that didn't match one of the above patterns in its natural sort order.
+    ls $coloringDir/* 2> /dev/null | grep -v Slope | grep -v slp | grep -v Elevation | grep -v elv | \
+       grep -v GravitationalAcceleration | grep -v grm | grep -v GravitationalPotential | \
+       grep -v pot | grep -v fti | grep -v fdi | grep -v mti | grep -v tiv | grep -v mdi | \
+       grep -v div | grep -v rti | grep -v rdi | grep -v mht | grep -v grv | grep -v nvf | sort \
+          >> $listFile 2> /dev/null
+    # Remove paths into a temporary file.
+    sed 's:.*/::' $listFile > $listFile-tmp
+    
+    # Pingpong back from temp file to final list file, stripping out non-coloring files that might have gotten mixed in.
+    cat $listFile-tmp | grep -v '\.smd' | grep -v '\.json' | grep -v $(getFileName $listFile) > $listFile
+
+    # Remove temp file.
+    rm -f $listFile-tmp
+  )
+  check $? "listPlateColoringFiles failed"
+}
+
 # Run DiscoverPlateColorings.sh, which is linked to a java tool that creates metadata files for plate colorings.
 discoverPlateColorings() {
   coloringDir="$destTop/coloring"
   coloringList="coloringlist.txt"
   if test `ls $coloringDir/coloring*.smd 2> /dev/null | wc -c` -eq 0; then
-    ls $coloringDir 2> /dev/null | grep -v '.smd' | grep -v '.json' | grep -v "^$coloringList$" > $coloringDir/$coloringList
+    listPlateColoringFiles $coloringDir $coloringDir/$coloringList
     
     if test `grep -c . "$coloringDir/$coloringList"` -eq 0; then
       echo "No coloring files found in $coloringDir"
     else
-      $sbmtCodeTop/sbmt/bin/DiscoverPlateColorings.sh "$coloringDir" "$outputTopPath/coloring" "$modelId/$bodyId" "$coloringList"
+      $sbmtCodeTop/sbmt/bin/DiscoverPlateColorings.sh "$coloringDir" "$outputTop/coloring" "$modelId/$bodyId" "$coloringList"
       if test $? -ne 0; then
         echo "Failed to generate plate coloring metadata" >&2
         exit 1
