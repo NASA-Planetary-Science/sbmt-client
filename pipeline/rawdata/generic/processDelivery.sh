@@ -63,11 +63,9 @@ sbmtBranch="sbmt1dev-redmine-2107"
 srcTop="$deliveryTop"
 destTop="$rawDataTop/$outputTop"
 
-# Copy any/all standard model files.
-copyStandardModelFiles
+# Copy all delivered files.
+copyDir .
 
-# Copy and tailor this for each imager. Comment out if there are no imagers.
-copyOptionalDir draco imaging/draco
 #-------------------------------------------------------------------------------
 
 #-------------------------------------------------------------------------------
@@ -79,12 +77,10 @@ destTop="$processedTop/$outputTop"
 # Copy any/all standard model files.
 copyStandardModelFiles
 
-# All the individual imagers are in the imaging directory, so can get them
-# all at once this way.
-copyOptionalDir imaging
-
 # Process plate colorings.
 discoverPlateColorings
+
+processDTMs
 
 # Update/check the SPICE parameters.
 createInfoFilesFromFITSImages imaging/draco/spice/generic.mk \

@@ -308,6 +308,7 @@ doRsyncOptionalDir() {
   if test $? -ne 0; then exit 1; fi
 }
 
+# Deprecated. Use doRsync.
 # Set srcTop and destTop to point to source and destination top location.
 # Then call this, passing src and dest relative to these "top" directories.
 copyFile() {
@@ -335,6 +336,7 @@ copyFile() {
   if test $? -ne 0; then exit 1; fi
 }
 
+# Deprecated. Use doRsyncDir.
 # Copy a directory. Throws an error and quits if source is missing.
 # Set srcTop and destTop to point to source and destination top location.
 # Then call this, passing src and dest relative to these "top" directories.
@@ -771,8 +773,9 @@ copyStandardModelFiles() {
   doRsync "$srcTop/aamanifest.txt" "$destTop/aamanifest.txt"
 
   doRsyncOptionalDir "$srcTop/basemap" "$destTop/basemap"
-  doRsyncOptionalDir "$srcTop/dtm" "$destTop/dtm"
-  doRsyncOptionalDir "$srcTop/coloring" "$destTop/coloring"
+  # DTMs and coloring files are copied during processing now.
+#  doRsyncOptionalDir "$srcTop/dtm" "$destTop/dtm"
+#  doRsyncOptionalDir "$srcTop/coloring" "$destTop/coloring"
   doRsyncOptionalDir "$srcTop/shape" "$destTop/shape"
 }
 
@@ -858,24 +861,56 @@ listPlateColoringFiles() {
 
 # Run DiscoverPlateColorings.sh, which is linked to a java tool that creates metadata files for plate colorings.
 discoverPlateColorings() {
-  coloringDir="$destTop/coloring"
-  coloringList="coloringlist.txt"
-  if test `ls $coloringDir/coloring*.smd 2> /dev/null | wc -c` -eq 0; then
-    listPlateColoringFiles $coloringDir $coloringDir/$coloringList
+  (
+    src=$srcTop/coloring
+    if test -d $src; then
+      dest=$destTop/coloring
+      
+      doRsyncDir $src $dest
+  
+      if test `ls $dest/coloring*.smd 2> /dev/null | wc -c` -eq 0; then
+        doGzipDir $dest
     
-    if test `grep -c . "$coloringDir/$coloringList"` -eq 0; then
-      echo "No coloring files found in $coloringDir"
-    else
-      $sbmtCodeTop/sbmt/bin/DiscoverPlateColorings.sh "$coloringDir" "$outputTop/coloring" "$modelId/$bodyId" "$coloringList"
-      if test $? -ne 0; then
-        echo "Failed to generate plate coloring metadata" >&2
-        exit 1
+        coloringList="coloringlist.txt"    
+        listPlateColoringFiles $dest $dest/$coloringList
+        
+        if test -s $dest/$coloringList; then
+          $sbmtCodeTop/sbmt/bin/DiscoverPlateColorings.sh "$dest" "$outputTop/coloring" "$modelId/$bodyId" "$coloringList"
+          check $? "Failed to generate plate coloring metadata"
+        else
+          echo "No coloring files found in $dest"
+        fi
+        rm -f $dest/$coloringList
+      else
+        echo "File(s) coloring*.smd exist -- skipping generation of plate coloring metadata"
       fi
+    else
+      echo "discoverPlateColorings: nothing to process; no source directory $src"
     fi
-    rm -f $coloringDir/$coloringList
-  else
-    echo "File(s) coloring*.smd exist -- skipping generation of plate coloring metadata"
-  fi
+  )
+  check $? "discoverPlateColorings failed"
+}
+
+processDTMs() {
+  (
+    src=$destTop/dtm
+    if test -d $src; then
+      dest=$destTop/dtm/browse
+  
+      doRsyncDir $src $dest
+  
+      fileList="fileList.txt"
+      (cd $dest; ls | sed 's:\(.*\):\1\,\1:' | grep -v $fileList > $fileList)
+      check $? "processDTMs: problem creating DTM file list $dest/$fileList"
+  
+      if test ! -s $dest/fileList; then
+        echo "processDTMs: directory exists but has no DTMs: $dest"
+      fi
+    else
+      echo "processDTMs: nothing to process; no source directory $src"
+    fi  
+  )
+  check $? "processDTMs failed"
 }
 
 # Create INFO files from a SPICE metakernel plus a directory with FITS images that have time stamps associated with a keyword.
