@@ -903,7 +903,7 @@ processDTMs() {
       (cd $dest; ls | sed 's:\(.*\):\1\,\1:' | grep -v $fileList > $fileList)
       check $? "processDTMs: problem creating DTM file list $dest/$fileList"
   
-      if test ! -s $dest/fileList; then
+      if test ! -s $dest/$fileList; then
         echo "processDTMs: directory exists but has no DTMs: $dest"
       fi
     else
