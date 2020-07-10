@@ -308,7 +308,6 @@ doRsyncOptionalDir() {
   if test $? -ne 0; then exit 1; fi
 }
 
-# Deprecated. Use doRsync.
 # Set srcTop and destTop to point to source and destination top location.
 # Then call this, passing src and dest relative to these "top" directories.
 copyFile() {
@@ -336,7 +335,6 @@ copyFile() {
   if test $? -ne 0; then exit 1; fi
 }
 
-# Deprecated. Use doRsyncDir.
 # Copy a directory. Throws an error and quits if source is missing.
 # Set srcTop and destTop to point to source and destination top location.
 # Then call this, passing src and dest relative to these "top" directories.
@@ -760,17 +758,12 @@ checkFileList() {
 }
 
 # Copy (rsync) standard model files and directories:
-#   aamanifest, basemap/, coloring/, dtm/, shape/
-# The only *required* item is aamanifest.txt. If that
-# is imissing a fatal error is thrown. The
-# rest are copied if present and skipped otherwise
+#   basemap/, shape/
+# These are copied if present and skipped otherwise
 # without an error. 
 copyStandardModelFiles() {
   createDir $destTop
   check $?
-
-  # Require a manifest file. Do not comment this out.
-  doRsync "$srcTop/aamanifest.txt" "$destTop/aamanifest.txt"
 
   doRsyncOptionalDir "$srcTop/basemap" "$destTop/basemap"
   # DTMs and coloring files are copied during processing now.

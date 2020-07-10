@@ -34,10 +34,10 @@ exit 1
 #-------------------------------------------------------------------------------
 # Install first into processing-specific directory.
 srcTop="$processedTop/$outputTop"
-destTop="$deployedTop/$outputTop/$processingId"
+destTop="$deployedTop/$outputTop-$processingId"
 
 # Copy the entire processed area to the deployed area.
-copyDir $srcTop $destTop
+copyDir .
 
 # Update links in the server area to point to the deployed directory.
 if test "$serverTop" != ""; then
