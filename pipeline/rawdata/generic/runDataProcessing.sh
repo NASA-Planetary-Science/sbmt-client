@@ -24,15 +24,23 @@
 # before the payload script is run, so you may safely use these in the
 # payload script:
 #
-#       rawDataTop: directory where the payload script is located, used
-#                   as the the top of the "raw" area for this delivery.
-#     processedTop: top of this corresponding processed area for this
-#                   delivery. This is usually parallel to rawDataTop.
-#      deployedTop: top of the corresponding deployed data area for
-#                   this delivery. This is typically an area visible
-#                   to the server but it is not the path the server
-#                   uses to access the data.
-#      sbmtCodeTop: where sbmt and saavtk are checked out and built.
+#   pipelineRawData: general top of the raw data area, under which specific
+#                    deliveries are imported, processed and deployed.
+#
+#        rawDataTop: directory where the payload script is located; assumed to
+#                    be the top of the "raw" area for this specific delivery.
+#
+# pipelineProcessed: general top level of the processed area, under which
+#                    specific processed deliveries are staged for deploymeent.
+#
+#      processedTop: top of this corresponding processed area for this
+#                    specific delivery. This is usually parallel to rawDataTop.
+#
+#       deployedTop: general top of the corresponding deployed data area for
+#                    this delivery, the final location under which specific
+#                    delivered data is actually placed.
+#
+#       sbmtCodeTop: where sbmt and saavtk are checked out and built.
 #
 # Functions defined in the common functions library dataProcessingFunctions.sh
 # are available in the payload script. These functions will try when possible to
@@ -110,19 +118,35 @@ if test ! -f $processingScript; then
   check 1 "Script $processingScript is not a file"
 fi
 
+#-------------------------------------------------------------------------------
+# Assume the absolute path to the processing script is:
+# /project/sbmtpipeline/rawdata/arbitrary/path/to/model/or/imager/redmine-1234/processDelivery.sh
+# The next block of code extracts these variables:
+#     pipelineTop = /project/sbmtpipeline
+#     rawDataTop = /project/sbmtpipeline/rawdata/arbitrary/path/to/model/or/imager/redmine-1234
+#     processingPath = arbitrary/path/to/model/or/imager/redmine-1234
 # Guess the root of the raw data hierarchy (the directory containing rawdata/).
 # Locate it based on the processing script location.
 # This is probably several levels up from the supplied payload script.
-rawDataRootDir=$(guessRawDataParentDir "$processingScript")
+# Interpret this to be the location of the pipeline as a whole.
+pipelineTop=$(guessRawDataParentDir "$processingScript")
 
 # Top of the raw data is just the directory containing the processing script.
 rawDataTop=$(getDirName "$processingScript")
 
-# Processing path is the part of rawDataTop that is below rawDataRootDir/rawdata.
-processingPath=`echo $rawDataTop | sed "s:$rawDataRootDir/[^/][^/]*/*::"`
+# Processing path is the part of rawDataTop that is below pipelineTop/rawdata.
+processingPath=`echo $rawDataTop | sed "s:$pipelineTop/[^/][^/]*/*::"`
+#-------------------------------------------------------------------------------
+
+#-------------------------------------------------------------------------------
+# Pipeline's raw data area; ancestor of this delivery, presumably all deliveries.
+pipelineRawData=`echo $rawDataTop | sed "s:/$processingPath$::"`
+
+# Pipeline's processed area; "processed" subdirectory of pipeline top.
+pipelineProcessed="$pipelineTop/processed"
 
 # Processed directory is parallel to raw data directory.
-processedTop="$rawDataRootDir/processed/$processingPath"
+processedTop="$pipelineProcessed/$processingPath"
 
 # Location for deployed files.
 deployedTop="/project/sbmt2/sbmt/data/bodies"
@@ -134,8 +158,11 @@ export SAAVTKROOT="$sbmtCodeTop/saavtk"
 export SBMTROOT="$sbmtCodeTop/sbmt"
 export PATH="$PATH:/project/sbmtpipeline/software/heasoft/bin"
 
+echo "pipelineRawDatais $pipelineRawData"
 echo "rawDataTop is $rawDataTop"
+echo "pipelineProcessed is $pipelineProcessed"
 echo "processedTop is $processedTop"
+echo "deployedTop is $deployedTop"
 echo "sbmtCodeTop is $sbmtCodeTop"
 echo "HEASoft/Ftools installation is in /project/sbmtpipeline/software/heasoft/bin"
 
