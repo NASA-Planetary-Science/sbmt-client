@@ -158,7 +158,7 @@ export SAAVTKROOT="$sbmtCodeTop/saavtk"
 export SBMTROOT="$sbmtCodeTop/sbmt"
 export PATH="$PATH:/project/sbmtpipeline/software/heasoft/bin"
 
-echo "pipelineRawDatais $pipelineRawData"
+echo "pipelineRawData is $pipelineRawData"
 echo "rawDataTop is $rawDataTop"
 echo "pipelineProcessed is $pipelineProcessed"
 echo "processedTop is $processedTop"
