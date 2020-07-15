@@ -4,7 +4,9 @@ import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.function.Function;
 
 import javax.swing.SwingUtilities;
@@ -16,7 +18,6 @@ import edu.jhuapl.saavtk.model.ModelManager;
 import edu.jhuapl.saavtk.model.ModelNames;
 import edu.jhuapl.sbmt.client.ISmallBodyViewConfig;
 import edu.jhuapl.sbmt.client.SmallBodyModel;
-import edu.jhuapl.sbmt.client.SmallBodyViewConfig;
 import edu.jhuapl.sbmt.stateHistory.model.interfaces.IStateHistoryIntervalGenerator;
 import edu.jhuapl.sbmt.stateHistory.model.interfaces.StateHistory;
 import edu.jhuapl.sbmt.stateHistory.model.interfaces.StateHistoryCollectionChangedListener;
@@ -25,7 +26,6 @@ import edu.jhuapl.sbmt.stateHistory.model.io.StateHistoryIOException;
 import edu.jhuapl.sbmt.stateHistory.model.io.StateHistoryInputException;
 import edu.jhuapl.sbmt.stateHistory.model.io.StateHistoryInvalidTimeException;
 import edu.jhuapl.sbmt.stateHistory.model.io.StateHistoryModelIOHelper;
-import edu.jhuapl.sbmt.stateHistory.model.stateHistory.PregenStateHistoryIntervalGenerator;
 import edu.jhuapl.sbmt.stateHistory.model.stateHistory.StateHistoryCollection;
 import edu.jhuapl.sbmt.stateHistory.model.stateHistory.StateHistoryKey;
 
@@ -38,6 +38,8 @@ import crucible.crust.metadata.impl.gson.Serializers;
  */
 public class StateHistoryModel
 {
+	Map<StateHistorySourceType, IStateHistoryIntervalGenerator> intervalGenerators = new HashMap<StateHistorySourceType, IStateHistoryIntervalGenerator>();
+
 	/**
 	 *
 	 */
@@ -86,7 +88,7 @@ public class StateHistoryModel
 	/**
 	 *
 	 */
-	private IStateHistoryIntervalGenerator intervalGenerator;
+	private IStateHistoryIntervalGenerator activeIntervalGenerator;
 
 	private boolean initialized;
 
@@ -128,8 +130,9 @@ public class StateHistoryModel
 				}
 			}
 		});
-		this.intervalGenerator = new PregenStateHistoryIntervalGenerator((SmallBodyViewConfig) viewConfig);
-		initializeRunList();
+//		registerIntervalGenerator(StateHistorySourceType.PREGEN, new PregenStateHistoryIntervalGenerator((SmallBodyViewConfig) viewConfig));
+//		this.activeIntervalGenerator = intervalGenerators.get(StateHistorySourceType.PREGEN);
+//		initializeRunList();
 	}
 
 	/**
@@ -146,6 +149,22 @@ public class StateHistoryModel
 	private void fireHistorySegmentCreatedListener(StateHistory historySegment)
 	{
 		listeners.forEach(listener -> listener.historySegmentCreated(historySegment));
+	}
+
+	/**
+	 * @param historySegment
+	 */
+	private void fireHistorySegmentRemovedListener(StateHistory historySegment)
+	{
+		listeners.forEach(listener -> listener.historySegmentRemoved(historySegment));
+	}
+
+	public void removeRun(StateHistory historySegment) throws IOException
+	{
+		runs.removeRun(historySegment.getKey());
+		runs.removeRunFromList(historySegment);
+		fireHistorySegmentRemovedListener(historySegment);
+		updateConfigFile();
 	}
 
 	/**
@@ -185,7 +204,7 @@ public class StateHistoryModel
 	public void createNewTimeInterval(StateHistoryKey key, DateTime startTime, DateTime endTime, double duration,
 			String name, Function<Double, Void> progressFunction) throws StateHistoryInputException, StateHistoryInvalidTimeException, IOException, InvocationTargetException, InterruptedException
 	{
-		StateHistory history = intervalGenerator.createNewTimeInterval(key, startTime, endTime, duration, name,
+		StateHistory history = activeIntervalGenerator.createNewTimeInterval(key, startTime, endTime, duration, name,
 				progressFunction);
 
 		SwingUtilities.invokeAndWait(new Runnable()
@@ -235,7 +254,7 @@ public class StateHistoryModel
 	/**
 	 * @throws IOException
 	 */
-	private void initializeRunList() throws IOException, StateHistoryInputException, StateHistoryInvalidTimeException
+	public void initializeRunList() throws IOException, StateHistoryInputException, StateHistoryInvalidTimeException
 	{
 		if (initialized)
 			return;
@@ -245,7 +264,7 @@ public class StateHistoryModel
 		runs.retrieve(metadata);
 		for (StateHistory history : runs.getAllItems())
 		{
-			intervalGenerator.createNewTimeInterval(history, null);
+			activeIntervalGenerator.createNewTimeInterval(history, null);
 			if (runs.getCurrentRun() == null) runs.setCurrentRun(history);
 			runs.setTimeFraction(0.0);
 		}
@@ -303,5 +322,31 @@ public class StateHistoryModel
 	{
 		this.statusBarString = statusBarString;
 		// TODO fire something here?
+	}
+
+	/**
+	 * @param intervalGenerator the intervalGenerator to set
+	 */
+	public void setIntervalGenerator(IStateHistoryIntervalGenerator intervalGenerator)
+	{
+		this.activeIntervalGenerator = intervalGenerator;
+	}
+
+	public void setIntervalGenerator(StateHistorySourceType generatorType)
+	{
+		this.activeIntervalGenerator = intervalGenerators.get(generatorType);
+	}
+
+	public void registerIntervalGenerator(StateHistorySourceType generatorType, IStateHistoryIntervalGenerator generator)
+	{
+		intervalGenerators.put(generatorType, generator);
+	}
+
+	/**
+	 * @return the activeIntervalGenerator
+	 */
+	public IStateHistoryIntervalGenerator getActiveIntervalGenerator()
+	{
+		return activeIntervalGenerator;
 	}
 }

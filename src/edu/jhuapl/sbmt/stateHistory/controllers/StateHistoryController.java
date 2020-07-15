@@ -25,9 +25,12 @@ import edu.jhuapl.sbmt.client.SmallBodyModel;
 import edu.jhuapl.sbmt.client.SmallBodyViewConfig;
 import edu.jhuapl.sbmt.stateHistory.model.IPositionOrientation;
 import edu.jhuapl.sbmt.stateHistory.model.StateHistoryModel;
+import edu.jhuapl.sbmt.stateHistory.model.StateHistorySourceType;
 import edu.jhuapl.sbmt.stateHistory.model.StateHistoryUtil;
 import edu.jhuapl.sbmt.stateHistory.model.io.StateHistoryInputException;
 import edu.jhuapl.sbmt.stateHistory.model.io.StateHistoryInvalidTimeException;
+import edu.jhuapl.sbmt.stateHistory.model.stateHistory.PregenStateHistoryIntervalGenerator;
+import edu.jhuapl.sbmt.stateHistory.model.stateHistory.SpiceStateHistoryIntervalGenerator;
 import edu.jhuapl.sbmt.stateHistory.model.stateHistory.StateHistoryCollection;
 import edu.jhuapl.sbmt.stateHistory.ui.state.version2.StateHistoryDisplayedIntervalPanel;
 import edu.jhuapl.sbmt.stateHistory.ui.state.version2.StateHistoryIntervalGenerationPanel;
@@ -109,6 +112,15 @@ public class StateHistoryController
 		try
 		{
 			historyModel = new StateHistoryModel(start, end, bodyModel, renderer, modelManager);
+			historyModel.registerIntervalGenerator(StateHistorySourceType.SPICE, new SpiceStateHistoryIntervalGenerator(60));	//TODO update this to be a parameter in view config
+			historyModel.setIntervalGenerator(StateHistorySourceType.SPICE);
+			if (!config.timeHistoryFile.equals(""))
+			{
+				historyModel.registerIntervalGenerator(StateHistorySourceType.PREGEN, new PregenStateHistoryIntervalGenerator(config));
+				historyModel.setIntervalGenerator(StateHistorySourceType.PREGEN);
+
+			}
+			historyModel.initializeRunList();
 		}
 		catch (IOException | StateHistoryInputException e1)
 		{

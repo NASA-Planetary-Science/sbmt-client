@@ -52,4 +52,11 @@ public class DefaultStateHistoryModelChangedListener implements StateHistoryMode
 		// TODO Auto-generated method stub
 
 	}
+
+	@Override
+	public void historySegmentRemoved(StateHistory historySegment)
+	{
+		// TODO Auto-generated method stub
+
+	}
 }

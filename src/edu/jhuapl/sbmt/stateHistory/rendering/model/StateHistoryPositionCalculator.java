@@ -74,6 +74,7 @@ public class StateHistoryPositionCalculator implements IStateHistoryPositionCalc
 	public void updateSunPosition(StateHistory history, double time, SunDirectionMarker sunDirectionMarker)
 	{
 		sunPosition = history.getSunPosition();
+		if (sunPosition == null) return;
 		vtkMatrix4x4 sunMarkerMatrix = new vtkMatrix4x4();
 
 		double[] sunMarkerPosition = new double[3];
@@ -97,6 +98,7 @@ public class StateHistoryPositionCalculator implements IStateHistoryPositionCalc
 	public void updateEarthPosition(StateHistory history, double time, EarthDirectionMarker earthDirectionMarker)
 	{
 		earthPosition = history.getEarthPosition();
+		if (earthPosition == null) return;
 		vtkMatrix4x4 earthMarkerMatrix = new vtkMatrix4x4();
 
 		double[] earthMarkerPosition = new double[3];
@@ -143,6 +145,7 @@ public class StateHistoryPositionCalculator implements IStateHistoryPositionCalc
 		// set body orientation matrix
 		for (int i = 0; i < 3; i++)
 		{
+			if (history.getCurrentState().getSpacecraftXAxis() == null) continue;
 			spacecraftBodyMatrix.SetElement(i, 0, xaxis[i]);
 			spacecraftBodyMatrix.SetElement(i, 1, yaxis[i]);
 			spacecraftBodyMatrix.SetElement(i, 2, zaxis[i]);

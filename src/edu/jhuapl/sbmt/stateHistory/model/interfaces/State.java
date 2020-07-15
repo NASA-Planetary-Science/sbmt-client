@@ -26,6 +26,8 @@ public interface State
      */
     public String getUtc();
 
+    public void writeToCSV(String path);
+
 //    /**
 //     * @return
 //     */

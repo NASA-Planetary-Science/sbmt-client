@@ -111,6 +111,7 @@ public class SpacecraftLabel extends vtkCaptionActor2D
         }
 
         double velocity[] = state.getSpacecraftVelocity();
+        if (velocity == null) return;
         double speed = Math.sqrt(velocity[0]*velocity[0] + velocity[1]*velocity[1] + velocity[2]*velocity[2]);
 
         double[] spacecraftMarkerPosition = new double[3];

@@ -1,6 +1,8 @@
 package edu.jhuapl.sbmt.stateHistory.controllers;
 
 import java.awt.Cursor;
+import java.awt.event.ComponentAdapter;
+import java.awt.event.ComponentEvent;
 import java.lang.reflect.InvocationTargetException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -17,7 +19,9 @@ import org.joda.time.DateTime;
 import com.jidesoft.utils.SwingWorker;
 
 import edu.jhuapl.sbmt.stateHistory.model.StateHistoryModel;
+import edu.jhuapl.sbmt.stateHistory.model.StateHistorySourceType;
 import edu.jhuapl.sbmt.stateHistory.model.io.StateHistoryInputException;
+import edu.jhuapl.sbmt.stateHistory.model.stateHistory.SpiceStateHistoryIntervalGenerator;
 import edu.jhuapl.sbmt.stateHistory.model.stateHistory.StateHistoryKey;
 import edu.jhuapl.sbmt.stateHistory.ui.DateTimeSpinner;
 import edu.jhuapl.sbmt.stateHistory.ui.state.version2.StateHistoryIntervalGenerationPanel;
@@ -98,6 +102,13 @@ public class StateHistoryIntervalGenerationController
             // generate random stateHistoryKey to use for this interval
             StateHistoryKey key = new StateHistoryKey(historyModel.getRuns());
 
+            historyModel.setIntervalGenerator(view.getStateHistorySourceType());
+
+            if (view.getStateHistorySourceType() == StateHistorySourceType.SPICE)
+        	{
+            	((SpiceStateHistoryIntervalGenerator)historyModel.getActiveIntervalGenerator()).setMetaKernelFile(view.getMetakernelToLoad());
+        	}
+
             //Setup a progress monitor to display status to the user while generating the state history
             //for the given interval
             ProgressMonitor progressMonitor = new ProgressMonitor(null, "Calculating History...", "", 0, 100);
@@ -128,6 +139,10 @@ public class StateHistoryIntervalGenerationController
     					JOptionPane.showMessageDialog(null, "Error adding state history; see console for details", "Error", JOptionPane.ERROR_MESSAGE);
     					ie.printStackTrace();
     				}
+    				catch (Exception e)
+    				{
+    					e.printStackTrace();
+    				}
     		        return null;
     			}
     		};
@@ -135,5 +150,15 @@ public class StateHistoryIntervalGenerationController
 
             view.setCursor(Cursor.getDefaultCursor());
         });
+
+
+        view.addComponentListener(new ComponentAdapter()
+		{
+			@Override
+			public void componentResized(ComponentEvent e)
+			{
+				view.repaint();
+			}
+		});
     }
 }

@@ -64,6 +64,11 @@ public class StateHistoryTableView extends JPanel
 	private JButton saveStateHistoryButton;
 
 	/**
+	 * JButton to delete the selected State History
+	 */
+	private JButton deleteStateHistoryButton;
+
+	/**
 	 * JTable to display loaded state histories
 	 */
 	protected JTable resultList;
@@ -117,6 +122,7 @@ public class StateHistoryTableView extends JPanel
 		showStateHistoryButton.setEnabled(false);
 		loadStateHistoryButton = new JButton("Load...");
 		saveStateHistoryButton = new JButton("Save...");
+		deleteStateHistoryButton = new JButton("Delete...");
 		saveStateHistoryButton.setEnabled(false);
 	}
 
@@ -151,6 +157,7 @@ public class StateHistoryTableView extends JPanel
 		panel_2.setLayout(new BoxLayout(panel_2, BoxLayout.X_AXIS));
 		panel_2.add(loadStateHistoryButton);
 		panel_2.add(saveStateHistoryButton);
+		panel_2.add(deleteStateHistoryButton);
 	}
 
 	/**
@@ -282,6 +289,14 @@ public class StateHistoryTableView extends JPanel
 	public JButton getSaveStateHistoryButton()
 	{
 		return saveStateHistoryButton;
+	}
+
+	/**
+	 * @return the deleteStateHistoryButton
+	 */
+	public JButton getDeleteStateHistoryButton()
+	{
+		return deleteStateHistoryButton;
 	}
 
 	/**

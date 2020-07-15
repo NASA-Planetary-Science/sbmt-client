@@ -90,7 +90,7 @@ public class StateHistoryModelIOHelper
         // get each flyby state in currentFlybyStateHistory, and write to CSV
         Set<Double> keySet = interval.getAllTimes();
         for (Double key : keySet) {
-            CsvState history = (CsvState)interval.getStateAtTime(key);
+            State history = interval.getStateAtTime(key);
             history.writeToCSV(fileName);
         }
 

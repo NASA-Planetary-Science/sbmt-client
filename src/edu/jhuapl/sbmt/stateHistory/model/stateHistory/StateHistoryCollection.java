@@ -153,6 +153,18 @@ public class StateHistoryCollection extends SaavtkItemManager<StateHistory> impl
 		setAllItems(simRuns);
 	}
 
+	/**
+	 * @param run
+	 */
+	public void removeRunFromList(StateHistory run)
+	{
+		simRuns.remove(run);
+		keys.remove(run.getKey());
+		setCurrentRun(simRuns.get(0));
+		setAllItems(simRuns);
+	}
+
+
 //	@Override
 //	public void setAllItems(Collection<StateHistory> aItemC)
 //	{
@@ -189,7 +201,10 @@ public class StateHistoryCollection extends SaavtkItemManager<StateHistory> impl
 	public void removeRun(StateHistoryKey key)
 	{
 		if (!containsKey(key))
+		{
+			System.out.println("StateHistoryCollection: removeRun: doesn't contain key " + key);
 			return;
+		}
 
 		StateHistory run = getRunFromKey(key);
 		this.currentRun = null;

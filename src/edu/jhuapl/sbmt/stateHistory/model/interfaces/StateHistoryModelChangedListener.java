@@ -38,4 +38,10 @@ public interface StateHistoryModelChangedListener
 	 */
 	public void historySegmentCreated(StateHistory history);
 
+	/**
+	 * Notifies when a new StateHistory has been created
+	 * @param trajectory
+	 */
+	public void historySegmentRemoved(StateHistory history);
+
 }

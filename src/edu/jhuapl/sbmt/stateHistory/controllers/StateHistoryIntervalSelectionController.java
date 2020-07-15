@@ -94,6 +94,29 @@ public class StateHistoryIntervalSelectionController
 
         });
 
+        view.getDeleteStateHistoryButton().addActionListener(e -> {
+
+        	if (view.getTable().getSelectedRowCount() == 0) return;
+        	int n = JOptionPane.showOptionDialog(view, "Delete selected trajectories?", "Confirm Deletion", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE, null, null, null);
+        	if (n == JOptionPane.NO_OPTION) return;
+    		for (StateHistory history : runs.getSelectedItems())
+    		{
+    			try
+				{
+					historyModel.removeRun(history);
+				}
+				catch (IOException e1)
+				{
+					JOptionPane.showMessageDialog(null, "Problem saving the state history configuration file", "Error",
+                            JOptionPane.ERROR_MESSAGE);
+					e1.printStackTrace();
+				}
+
+
+    		}
+        });
+
+
         //For each of the selected items, set their visiblity to true
         view.getShowStateHistoryButton().addActionListener(e ->
 		{
@@ -111,6 +134,12 @@ public class StateHistoryIntervalSelectionController
 		{
 			@Override
 			public void historySegmentCreated(StateHistory historySegment)
+			{
+				view.getTable().repaint();
+			}
+
+			@Override
+			public void historySegmentRemoved(StateHistory historySegment)
 			{
 				view.getTable().repaint();
 			}

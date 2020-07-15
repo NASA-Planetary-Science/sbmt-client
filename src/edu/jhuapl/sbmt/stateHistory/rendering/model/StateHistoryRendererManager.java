@@ -191,7 +191,6 @@ public class StateHistoryRendererManager
 	public void removeRun(StateHistory run)
 	{
 		stateHistoryToRendererMap.remove(run);
-
 		this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
 		this.pcs.firePropertyChange(Properties.MODEL_REMOVED, null, run);
 	}
