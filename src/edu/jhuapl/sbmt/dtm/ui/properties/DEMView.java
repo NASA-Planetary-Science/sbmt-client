@@ -273,9 +273,9 @@ public class DEMView extends JFrame implements ActionListener, PickListener, Pro
 			}
 			catch (Exception aExp)
 			{
+				aExp.printStackTrace();
 				JOptionPane.showMessageDialog(JOptionPane.getFrameForComponent(loadButton),
 						"Unable to load file " + file.getAbsolutePath(), "Error Loading File", JOptionPane.ERROR_MESSAGE);
-				aExp.printStackTrace();
 			}
 		}
 		else if (source == saveButton)
@@ -291,9 +291,9 @@ public class DEMView extends JFrame implements ActionListener, PickListener, Pro
 			}
 			catch (Exception aExp)
 			{
+				aExp.printStackTrace();
 				JOptionPane.showMessageDialog(JOptionPane.getFrameForComponent(saveButton),
 						"Unable to save file to " + file.getAbsolutePath(), "Error Saving File", JOptionPane.ERROR_MESSAGE);
-				aExp.printStackTrace();
 			}
 		}
 		else if (source == syncColoringCB)
@@ -725,6 +725,12 @@ public class DEMView extends JFrame implements ActionListener, PickListener, Pro
 		in.close();
 
 		lineModel.setAllItems(itemL);
+
+		// Force the activation painter to be properly updated
+		PolyLine activeItem = null;
+		if (itemL.size() > 0)
+			activeItem = itemL.get(0);
+		lineModel.setActivatedItem(activeItem);
 	}
 
 	/**
