@@ -13,7 +13,6 @@ import org.joda.time.DateTimeZone;
 
 import com.google.common.collect.Range;
 
-import edu.jhuapl.sbmt.client.SbmtSpectrumModelFactory;
 import edu.jhuapl.sbmt.core.listeners.SearchProgressListener;
 import edu.jhuapl.sbmt.model.image.ImageSource;
 import edu.jhuapl.sbmt.query.IQueryBase;
@@ -77,7 +76,6 @@ public class SpectrumStandardSearch<S extends BasicSpectrum>
             if(hasHierarchicalSpectraSearch)
             {
             	spectraSpec.readHierarchyForInstrument(instrument.getDisplayName());
-//                SpectraCollection collection = (SpectraCollection)getModelManager().getModel(ModelNames.SPECTRA);
                 // Process the user's selections
                 spectraSpec.processTreeSelections(selectedPaths);
 
@@ -96,28 +94,8 @@ public class SpectrumStandardSearch<S extends BasicSpectrum>
                                                                                         spec.getSource());
                     progressListener.searchIndeterminate();
                     progressListener.searchNoteUpdated("Getting results from server....");
-                    List<List<String>> thisResult = instrument.getQueryBase().runQuery(searchMetadata).getResultlist();
-                    int i=0;
-
-                    BasicSpectrum spectrum = null;
-                    List<S> choiceResults = new ArrayList<S>(thisResult.size());
-                    progressListener.searchNoteUpdated("Processing results....");
-                    for (List<String> str : thisResult)
-                    {
-                    	 try
-                         {
-                         	spectrum = SbmtSpectrumModelFactory.createSpectrum(str.get(0), instrument, str.get(1));
-                         	spectrum.setMetadata(spec);
-                         	choiceResults.add((S)spectrum);
-                         	i++;
-                         	progressListener.searchProgressChanged((int)((((double)i/(double)thisResult.size())*100)));
-                         }
-                         catch (Exception e) {
-                        	 System.out.println("SpectrumStandardSearch: search error when building spectrum: " + e.getLocalizedMessage());
-                        	 e.printStackTrace();
-                         }
-                    }
-                    tempResults.addAll(choiceResults);
+                    List<S> thisResult = instrument.getQueryBase().runQuery(searchMetadata).getResultlist();
+                    tempResults.addAll(thisResult);
                     progressListener.searchEnded();
                 }
             }
