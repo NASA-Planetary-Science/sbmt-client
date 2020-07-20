@@ -1,8 +1,6 @@
 package edu.jhuapl.sbmt.tools;
 
 import java.awt.HeadlessException;
-import java.io.File;
-import java.net.JarURLConnection;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.concurrent.TimeUnit;
@@ -17,6 +15,7 @@ import vtk.vtkJavaGarbageCollector;
 import edu.jhuapl.saavtk.gui.Console;
 import edu.jhuapl.saavtk.gui.MainWindow;
 import edu.jhuapl.saavtk.util.Configuration;
+import edu.jhuapl.saavtk.util.Configuration.ReleaseType;
 import edu.jhuapl.saavtk.util.Debug;
 import edu.jhuapl.saavtk.util.FileCache;
 import edu.jhuapl.saavtk.util.NativeLibraryLoader;
@@ -131,25 +130,10 @@ public class SbmtRunnable implements Runnable
 
 	protected void writeStartupMessage(Mission mission)
 	{
-		Date compileDate = null;
-		try
-		{
-			compileDate = new Date(new File(getClass().getClassLoader().getResource(getClass().getCanonicalName().replace('.', '/') + ".class").toURI()).lastModified());
-		}
-		catch (@SuppressWarnings("unused") Exception e)
-		{
-			try
-			{
-				String rn = getClass().getName().replace('.', '/') + ".class";
-				JarURLConnection j = (JarURLConnection) ClassLoader.getSystemResource(rn).openConnection();
-				long time =  j.getJarFile().getEntry("META-INF/MANIFEST.MF").getTime();
-				compileDate = new Date(time);
-			}
-			catch (@SuppressWarnings("unused") Exception e1)
-			{}
-		}
+		Date compileDate = SbmtMultiMissionTool.compileDate;
+		String version = (Configuration.getReleaseType() == ReleaseType.DEVELOPMENT) ? "" : SbmtMultiMissionTool.versionString;
 
-		System.out.println("Welcome to the Small Body Mapping Tool (SBMT)");
+		System.out.println("Welcome to the Small Body Mapping Tool (SBMT) " + version);
 		System.out.println(mission + " edition" + (compileDate != null ? " built " + DATE_FORMAT.format(compileDate) : ""));
         Debug.of().out().println("Tool started in debug mode; diagnostic output is enabled.");
         if (FileCache.isEnableDebug())

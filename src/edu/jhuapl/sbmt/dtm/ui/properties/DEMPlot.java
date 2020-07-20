@@ -75,7 +75,11 @@ public class DEMPlot extends BaseLinePlot implements ChartMouseListener
 		if (aItem.getVisible() == false || aItem.getControlPoints().size() < 2)
 			return;
 
+		// Bail if there are no points for this plot
 		List<Vector3D> xyzPointL = refManager.getXyzPointsFor(aItem);
+		if (xyzPointL.size() == 0)
+			return;
+
 		refDemModel.generateProfile(xyzPointL, yValueL, xValueL, coloringIndex);
 	}
 
@@ -119,7 +123,7 @@ public class DEMPlot extends BaseLinePlot implements ChartMouseListener
 		String[] coloringNames = refDemModel.getColoringNames();
 
 		String rangeLabel = "Value";
-		if (coloringIndex >= 0 || coloringIndex < coloringNames.length)
+		if (coloringIndex >= 0 && coloringIndex < coloringNames.length)
 			rangeLabel = coloringNames[coloringIndex];
 
 		StringBuilder buffer = new StringBuilder();
@@ -155,6 +159,7 @@ public class DEMPlot extends BaseLinePlot implements ChartMouseListener
 		notifyAllStale();
 	}
 
+	@Override
 	public void chartMouseClicked(ChartMouseEvent arg0)
 	{
 		ChartEntity entity = arg0.getEntity();
@@ -164,6 +169,7 @@ public class DEMPlot extends BaseLinePlot implements ChartMouseListener
 		}
 	}
 
+	@Override
 	public void chartMouseMoved(ChartMouseEvent arg0)
 	{
 	}
