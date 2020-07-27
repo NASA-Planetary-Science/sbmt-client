@@ -15,7 +15,7 @@ import java.util.regex.Pattern;
 
 import com.google.common.collect.ImmutableList;
 
-import edu.jhuapl.sbmt.pointing.Pointing;
+import edu.jhuapl.sbmt.pointing.InstrumentPointing;
 import edu.jhuapl.sbmt.pointing.spice.SpicePointingProvider;
 
 import crucible.core.mechanics.EphemerisID;
@@ -196,7 +196,7 @@ public class ComputeSpicePointing
         }
     }
 
-    protected void writePointingFile(Pointing pointing, String fileName) throws IOException
+    protected void writePointingFile(InstrumentPointing pointing, String fileName) throws IOException
     {
 
         try (BufferedWriter writer = new BufferedWriter(new FileWriter(outputDir.resolve(fileName).toFile())))
