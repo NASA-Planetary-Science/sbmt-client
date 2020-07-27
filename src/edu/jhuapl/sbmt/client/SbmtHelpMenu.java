@@ -1,9 +1,6 @@
 package edu.jhuapl.sbmt.client;
 
-import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
-import java.net.JarURLConnection;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
@@ -13,6 +10,7 @@ import javax.swing.JPanel;
 
 import edu.jhuapl.saavtk.gui.menu.HelpMenu;
 import edu.jhuapl.saavtk.util.Configuration;
+import edu.jhuapl.saavtk.util.Configuration.ReleaseType;
 
 
 public class SbmtHelpMenu extends HelpMenu
@@ -28,45 +26,11 @@ public class SbmtHelpMenu extends HelpMenu
     public void showAbout()
     {
         final String COPYRIGHT  = "\u00a9";
-
-        Date compileDate = null;
-        try
-        {
-            compileDate = new Date(new File(getClass().getClassLoader().getResource(getClass().getCanonicalName().replace('.', '/') + ".class").toURI()).lastModified());
-        }
-        catch (@SuppressWarnings("unused") Exception e)
-        {
-            try {
-                String rn = getClass().getName().replace('.', '/') + ".class";
-                JarURLConnection j = (JarURLConnection) ClassLoader.getSystemResource(rn).openConnection();
-                long time =  j.getJarFile().getEntry("META-INF/MANIFEST.MF").getTime();
-                compileDate = new Date(time);
-            } catch (@SuppressWarnings("unused") Exception e1) {
-            }
-        }
-
-
-        String versionString = "\n";
-        try
-        {
-            // note: currently this seems to be broken, perhaps because this file isn't being generated anymore by the release process -turnerj1
-            InputStream is = this.getClass().getResourceAsStream("/svn.version");
-            byte[] data = new byte[256];
-            is.read(data, 0, data.length);
-            String[] tmp = (new String(data)).trim().split("\\s+");
-            // Don't want to make the assumption that release names contain only dates.
-            // Release names can now be anything. So, display it exactly as it is.
-            //tmp[3] = tmp[3].replace('-', '.');
-           versionString = "Version: " + tmp[3] + "\n\n";
-        }
-        catch (Exception e)
-        {
-//            System.out.println("exception = " + e.toString());
-        }
-
+        String versionString = (Configuration.getReleaseType() == ReleaseType.DEVELOPMENT) ? "" : SbmtMultiMissionTool.versionString;
+        Date compileDate = SbmtMultiMissionTool.compileDate;
         JOptionPane.showMessageDialog(JOptionPane.getFrameForComponent(getRootPanel()),
-                "Small Body Mapping Tool (" + SbmtMultiMissionTool.getMission() + " edition" + (compileDate != null ? " built " + DATE_FORMAT.format(compileDate) : "") + ")\n" + versionString +
-                COPYRIGHT + " " + Calendar.getInstance().get(Calendar.YEAR) + " The Johns Hopkins University Applied Physics Laboratory\n",
+                "Small Body Mapping Tool " + versionString + "\n\n" + SbmtMultiMissionTool.getMission() + " edition" + (compileDate != null ? " built " + DATE_FORMAT.format(compileDate) : "") + "\n\n"  +
+                COPYRIGHT + " " + Calendar.getInstance().get(Calendar.YEAR) + " The Johns Hopkins University Applied Physics Laboratory, LLC\n",
                 "About Small Body Mapping Tool",
                 JOptionPane.PLAIN_MESSAGE);
     }

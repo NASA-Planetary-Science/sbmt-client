@@ -46,7 +46,7 @@ import crucible.crust.metadata.impl.gson.Serializers;
 
 public class SmallBodyViewConfigMetadataIO implements MetadataManager
 {
-	static String metadataVersion = "7.8";
+	static String metadataVersion = "8.0";
 
 
 	//TODO: This needs a new home
@@ -75,7 +75,7 @@ public class SmallBodyViewConfigMetadataIO implements MetadataManager
             each.enable(true);
         }
 
-        String rootDir = "/Users/steelrj1/Desktop/configs" + metadataVersion + "/";
+        String rootDir = "/Users/steelrj1/Desktop/sbmt-configs/configs" + metadataVersion + "/";
 
         // Create the directory just in case. Then make sure it exists before proceeding.
         File rootDirFile = new File(rootDir);

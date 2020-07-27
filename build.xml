@@ -176,6 +176,8 @@
         <fileset dir="${rootdir}/lib">
           <include name="*.jar" />
         </fileset>
+      	<pathelement location="${libDir}/crucible-core-20200408.jar"/>
+      	<pathelement location="${libDir}/crucible-mantle-spice-20200408.jar"/>
         <pathelement location="${libDir}/commons-math3-3.6.1.jar"/>
       	<pathelement location="${libDir}/crucible-core-20200408.jar"/>
       	<pathelement location="${libDir}/crucible-mantle-spice-20200408.jar"/>

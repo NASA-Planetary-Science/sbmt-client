@@ -394,7 +394,7 @@ public class BennuConfigs extends SmallBodyViewConfig
 
             c.imageSearchDefaultMaxSpacecraftDistance = 120000.0;
             c.imageSearchDefaultMaxResolution = 300.0;
-
+            c.presentInMissions = new SbmtMultiMissionTool.Mission[] {};
 
             configArray.add(c);
         }
@@ -3279,7 +3279,7 @@ public class BennuConfigs extends SmallBodyViewConfig
 
             c.hasMapmaker = false;
             c.hasHierarchicalSpectraSearch = true;
-            c.hasHypertreeBasedSpectraSearch = false;
+            c.hasHypertreeBasedSpectraSearch = true;
             c.spectraSearchDataSourceMap = new LinkedHashMap<>();
             c.spectraSearchDataSourceMap.put("OTES_L2", c.rootDirOnServer + "/otes/l2/hypertree/dataSource.spectra");
             c.spectraSearchDataSourceMap.put("OTES_L3", c.rootDirOnServer + "/otes/l3/hypertree/dataSource.spectra");
@@ -3486,10 +3486,16 @@ public class BennuConfigs extends SmallBodyViewConfig
             startStop.add(c.lidarSearchDefaultEndDate);
             c.orexSearchTimeMap.put("Recon", startStop);
 
+            startStop = new ArrayList<Date>();
+            startStop.add(new GregorianCalendar(2019, 6, 1, 0, 0, 0).getTime());
+            startStop.add(new GregorianCalendar(2019, 7, 6, 0, 0, 0).getTime());
+            c.orexSearchTimeMap.put("OLAv20", startStop);
+
             c.lidarSearchDataSourceMap.put("Preliminary", c.rootDirOnServer + "/ola/search/preliminary/dataSource.lidar");
             c.lidarSearchDataSourceMap.put("Detailed", c.rootDirOnServer + "/ola/search/detailed/dataSource.lidar");
             c.lidarSearchDataSourceMap.put("OrbB", c.rootDirOnServer + "/ola/search/orbB/dataSource.lidar");
             c.lidarSearchDataSourceMap.put("Recon", c.rootDirOnServer + "/ola/search/recon/dataSource.lidar");
+            c.lidarSearchDataSourceMap.put("OLAv20", c.rootDirOnServer + "/ola/search/olav20/dataSource.lidar");
             /*
              *
              */
@@ -3643,10 +3649,16 @@ public class BennuConfigs extends SmallBodyViewConfig
             startStop.add(c.lidarSearchDefaultEndDate);
             c.orexSearchTimeMap.put("Recon", startStop);
 
+            startStop = new ArrayList<Date>();
+            startStop.add(new GregorianCalendar(2019, 6, 1, 0, 0, 0).getTime());
+            startStop.add(new GregorianCalendar(2019, 7, 6, 0, 0, 0).getTime());
+            c.orexSearchTimeMap.put("OLAv20", startStop);
+
             c.lidarSearchDataSourceMap.put("Preliminary", c.rootDirOnServer + "/ola/search/preliminary/dataSource.lidar");
             c.lidarSearchDataSourceMap.put("Detailed", c.rootDirOnServer + "/ola/search/detailed/dataSource.lidar");
             c.lidarSearchDataSourceMap.put("OrbB", c.rootDirOnServer + "/ola/search/orbB/dataSource.lidar");
             c.lidarSearchDataSourceMap.put("Recon", c.rootDirOnServer + "/ola/search/recon/dataSource.lidar");
+            c.lidarSearchDataSourceMap.put("OLAv20", c.rootDirOnServer + "/ola/search/olav20/dataSource.lidar");
             /*
              *
              */
