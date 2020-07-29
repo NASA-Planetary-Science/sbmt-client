@@ -222,6 +222,7 @@ public class ComputeSpicePointing
             writer.println("FRUSTUM2            = " + format(formatter, null));
             writer.println("FRUSTUM3            = " + format(formatter, null));
             writer.println("FRUSTUM4            = " + format(formatter, null));
+            writer.println("SUN_POSITION_LT     = " + format(formatter, null));
         }
 
     }
@@ -230,7 +231,7 @@ public class ComputeSpicePointing
     {
         if (vector == null)
         {
-            vector = new UnwritableVectorIJK(1., -1., -1.);
+            vector = new UnwritableVectorIJK(-1., -1., -1.);
         }
 
         StringBuilder builder = new StringBuilder("( ");
@@ -242,7 +243,7 @@ public class ComputeSpicePointing
         builder.append(formatter.format(vector.getK()));
         builder.append(" )");
 
-        return builder.toString();
+        return builder.toString().toLowerCase().replaceAll("e(\\d)", "e+$1");
     }
 
     public static void main(String[] args)
