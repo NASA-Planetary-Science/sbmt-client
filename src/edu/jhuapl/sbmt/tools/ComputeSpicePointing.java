@@ -221,7 +221,7 @@ public class ComputeSpicePointing
             writer.println("FRUSTUM2            = " + format(formatter, null));
             writer.println("FRUSTUM3            = " + format(formatter, null));
             writer.println("FRUSTUM4            = " + format(formatter, null));
-            writer.println("SUN_POSITION_LT     = " + format(formatter, null));
+            writer.println("SUN_POSITION_LT     = " + format(formatter, pointing.getSunPos()));
         }
 
     }
