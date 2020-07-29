@@ -1,14 +1,15 @@
 package edu.jhuapl.sbmt.tools;
 
 import java.io.BufferedReader;
-import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintStream;
+import java.io.PrintWriter;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.text.DecimalFormat;
 import java.text.ParseException;
 import java.util.LinkedHashMap;
 import java.util.Map.Entry;
@@ -19,6 +20,7 @@ import com.google.common.collect.ImmutableList;
 import edu.jhuapl.sbmt.pointing.InstrumentPointing;
 import edu.jhuapl.sbmt.pointing.spice.SpicePointingProvider;
 
+import crucible.core.math.vectorspace.UnwritableVectorIJK;
 import crucible.core.mechanics.EphemerisID;
 import crucible.core.mechanics.FrameID;
 import crucible.core.mechanics.utilities.SimpleEphemerisID;
@@ -207,11 +209,40 @@ public class ComputeSpicePointing
 
         UTCEpoch utcTime = SpicePointingProvider.getUTC(utcTimeString);
         InstrumentPointing pointing = provider.provide(utcTimeSystem.getTSEpoch(utcTime));
-        try (BufferedWriter writer = new BufferedWriter(new FileWriter(outputDir.resolve(fileName).toFile())))
+//        DecimalFormat format = new DecimalFormat("2.3329262947290133e-01");
+        DecimalFormat formatter = new DecimalFormat("0.################e+0#");
+        try (PrintWriter writer = new PrintWriter(new FileWriter(outputDir.resolve(fileName).toFile())))
         {
-            writer.write(pointing.toString());
+            writer.println("START_TIME          = " + utcTimeString);
+            writer.println("STOP_TIME           = " + utcTimeString);
+            writer.println("SPACECRAFT_POSITION = " + format(formatter, pointing.getSpacecraftPos()));
+            writer.println("BORESIGHT_DIRECTION = " + format(formatter, pointing.getBoresight()));
+            writer.println("UP_DIRECTION        = " + format(formatter, pointing.getUp()));
+            writer.println("FRUSTUM1            = " + format(formatter, null));
+            writer.println("FRUSTUM2            = " + format(formatter, null));
+            writer.println("FRUSTUM3            = " + format(formatter, null));
+            writer.println("FRUSTUM4            = " + format(formatter, null));
         }
 
+    }
+
+    protected String format(DecimalFormat formatter, UnwritableVectorIJK vector)
+    {
+        if (vector == null)
+        {
+            vector = new UnwritableVectorIJK(1., -1., -1.);
+        }
+
+        StringBuilder builder = new StringBuilder("( ");
+
+        builder.append(formatter.format(vector.getI()));
+        builder.append(" , ");
+        builder.append(formatter.format(vector.getJ()));
+        builder.append(" , ");
+        builder.append(formatter.format(vector.getK()));
+        builder.append(" )");
+
+        return builder.toString();
     }
 
     public static void main(String[] args)
