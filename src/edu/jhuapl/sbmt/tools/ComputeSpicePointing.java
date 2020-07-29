@@ -9,6 +9,7 @@ import java.io.IOException;
 import java.io.PrintStream;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.text.ParseException;
 import java.util.LinkedHashMap;
 import java.util.Map.Entry;
 import java.util.regex.Pattern;
@@ -22,7 +23,7 @@ import crucible.core.mechanics.EphemerisID;
 import crucible.core.mechanics.FrameID;
 import crucible.core.mechanics.utilities.SimpleEphemerisID;
 import crucible.core.mechanics.utilities.SimpleFrameID;
-import crucible.core.time.TimeSystems;
+import crucible.core.time.TimeSystem;
 import crucible.core.time.UTCEpoch;
 import nom.tam.fits.Fits;
 import nom.tam.fits.FitsException;
@@ -101,12 +102,17 @@ public class ComputeSpicePointing
     public void run() throws Exception
     {
         LinkedHashMap<String, String> outputFileMap = getOutputFilesKeyedOnTime(inputDir, inputString, fitsTimeKey);
+
         createOutputDirectory();
-        TimeSystems timeSystems = provider.getTimeSystems();
+
+        TimeSystem<UTCEpoch> utcTimeSystem = provider.getTimeSystems().getUTC();
+
         for (Entry<String, String> entry : outputFileMap.entrySet())
         {
-            UTCEpoch utcTime = SpicePointingProvider.getUTC(entry.getKey());
-            writePointingFile(provider.provide(timeSystems.getUTC().getTSEpoch(utcTime)), entry.getValue());
+            String utcTimeString = entry.getKey();
+            String fileName = entry.getValue();
+
+            writePointingFile(utcTimeSystem, utcTimeString, fileName);
         }
     }
 
@@ -196,9 +202,11 @@ public class ComputeSpicePointing
         }
     }
 
-    protected void writePointingFile(InstrumentPointing pointing, String fileName) throws IOException
+    protected void writePointingFile(TimeSystem<UTCEpoch> utcTimeSystem, String utcTimeString, String fileName) throws IOException, ParseException
     {
 
+        UTCEpoch utcTime = SpicePointingProvider.getUTC(utcTimeString);
+        InstrumentPointing pointing = provider.provide(utcTimeSystem.getTSEpoch(utcTime));
         try (BufferedWriter writer = new BufferedWriter(new FileWriter(outputDir.resolve(fileName).toFile())))
         {
             writer.write(pointing.toString());
