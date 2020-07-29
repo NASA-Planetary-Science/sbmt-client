@@ -210,7 +210,7 @@ public class ComputeSpicePointing
         UTCEpoch utcTime = SpicePointingProvider.getUTC(utcTimeString);
         InstrumentPointing pointing = provider.provide(utcTimeSystem.getTSEpoch(utcTime));
 //        DecimalFormat format = new DecimalFormat("2.3329262947290133e-01");
-        DecimalFormat formatter = new DecimalFormat("0.################e+0#");
+        DecimalFormat formatter = new DecimalFormat("0.################E00");
         try (PrintWriter writer = new PrintWriter(new FileWriter(outputDir.resolve(fileName).toFile())))
         {
             writer.println("START_TIME          = " + utcTimeString);
