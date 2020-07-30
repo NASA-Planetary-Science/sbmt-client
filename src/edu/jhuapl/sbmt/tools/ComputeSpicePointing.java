@@ -70,14 +70,14 @@ public class ComputeSpicePointing
                 throw new UnsupportedOperationException("TODO: implement reader for a list of MK files");
             }
 
-            String inputString = args[index++];
+            Path inputFilePath = Paths.get(args[index++]);
             Path inputDir = Paths.get(args[index++]);
             Path outputDir = Paths.get(args[index++]);
             String fitsTimeKey = args[index++];
 
             SpicePointingProvider provider = SpicePointingProvider.of(mkPaths, bodyId, bodyFrame, scId, scFrame, sclkIdCode, instrumentFrame);
 
-            return new ComputeSpicePointing(provider, inputString, inputDir, outputDir, fitsTimeKey);
+            return new ComputeSpicePointing(provider, inputFilePath, inputDir, outputDir, fitsTimeKey);
         }
         catch (Exception e)
         {
@@ -87,16 +87,16 @@ public class ComputeSpicePointing
     }
 
     private final SpicePointingProvider provider;
-    private final String inputString;
+    private final Path inputFilePath;
     private final Path inputDir;
     private final Path outputDir;
     private final String fitsTimeKey;
 
-    protected ComputeSpicePointing(SpicePointingProvider provider, String inputString, Path inputDir, Path outputDir, String fitsTimeKey)
+    protected ComputeSpicePointing(SpicePointingProvider provider, Path inputFilePath, Path inputDir, Path outputDir, String fitsTimeKey)
     {
         super();
         this.provider = provider;
-        this.inputString = inputString;
+        this.inputFilePath = inputFilePath;
         this.inputDir = inputDir;
         this.outputDir = outputDir;
         this.fitsTimeKey = fitsTimeKey;
@@ -104,7 +104,7 @@ public class ComputeSpicePointing
 
     public void run() throws Exception
     {
-        LinkedHashMap<String, String> outputFileMap = getOutputFilesKeyedOnTime(inputDir, inputString, fitsTimeKey);
+        LinkedHashMap<String, String> outputFileMap = getOutputFilesKeyedOnTime(inputDir, inputFilePath, fitsTimeKey);
 
         createOutputDirectory();
 
@@ -147,17 +147,17 @@ public class ComputeSpicePointing
      *
      * @param inputDir path relative to which both fitsFileList and its content
      *            FITS files are located
-     * @param fitsFileList the file containing the list of FITS files, one per
-     *            line
+     * @param fitsFileList path to file containing the list of FITS files, one
+     *            per line
      * @param timeKeyName the time keyword used to get the times from the files
      * @return a map of output file names, keyed on the time string read from
      *         each input FITS file
      * @throws IOException if any I/O errors or {@link FitsException} occurs.
      */
-    protected LinkedHashMap<String, String> getOutputFilesKeyedOnTime(Path inputDir, String fitsFileList, String timeKeyName) throws IOException
+    protected LinkedHashMap<String, String> getOutputFilesKeyedOnTime(Path inputDir, Path fitsFileList, String timeKeyName) throws IOException
     {
         LinkedHashMap<String, String> result = new LinkedHashMap<>();
-        try (BufferedReader reader = new BufferedReader(new FileReader(new File(fitsFileList))))
+        try (BufferedReader reader = new BufferedReader(new FileReader(fitsFileList.toFile())))
         {
             String fitsFileName;
             while ((fitsFileName = reader.readLine()) != null)
