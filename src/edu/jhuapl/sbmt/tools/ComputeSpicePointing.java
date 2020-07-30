@@ -56,7 +56,7 @@ public class ComputeSpicePointing
             EphemerisID scId = new SimpleEphemerisID(args[index++]);
             FrameID scFrame = new SimpleFrameID(args[index++]);
             int sclkIdCode = Integer.parseInt(args[index++]);
-            FrameID instrumentFrame = new SimpleFrameID(args[index++]);
+            FrameID instFrame = new SimpleFrameID(args[index++]);
 
             String mkPathString = args[index++];
             ImmutableList<Path> mkPaths;
@@ -75,9 +75,9 @@ public class ComputeSpicePointing
             Path outputDir = Paths.get(args[index++]);
             String fitsTimeKey = args[index++];
 
-            SpicePointingProvider provider = SpicePointingProvider.of(mkPaths, bodyId, bodyFrame, scId, scFrame, sclkIdCode, instrumentFrame);
+            SpicePointingProvider provider = SpicePointingProvider.of(mkPaths, bodyId, bodyFrame, scId, scFrame, sclkIdCode, instFrame);
 
-            return new ComputeSpicePointing(provider, inputFilePath, inputDir, outputDir, fitsTimeKey);
+            return new ComputeSpicePointing(provider, instFrame, inputFilePath, inputDir, outputDir, fitsTimeKey);
         }
         catch (Exception e)
         {
@@ -87,15 +87,17 @@ public class ComputeSpicePointing
     }
 
     private final SpicePointingProvider provider;
+    private final FrameID instFrame;
     private final Path inputFilePath;
     private final Path inputDir;
     private final Path outputDir;
     private final String fitsTimeKey;
 
-    protected ComputeSpicePointing(SpicePointingProvider provider, Path inputFilePath, Path inputDir, Path outputDir, String fitsTimeKey)
+    protected ComputeSpicePointing(SpicePointingProvider provider, FrameID instFrame, Path inputFilePath, Path inputDir, Path outputDir, String fitsTimeKey)
     {
         super();
         this.provider = provider;
+        this.instFrame = instFrame;
         this.inputFilePath = inputFilePath;
         this.inputDir = inputDir;
         this.outputDir = outputDir;
@@ -209,7 +211,7 @@ public class ComputeSpicePointing
     {
 
         UTCEpoch utcTime = SpicePointingProvider.getUTC(utcTimeString);
-        InstrumentPointing pointing = provider.provide(utcTimeSystem.getTSEpoch(utcTime));
+        InstrumentPointing pointing = provider.provide(instFrame, utcTimeSystem.getTSEpoch(utcTime));
         DecimalFormat formatter = new DecimalFormat("0.0000000000000000E00");
         try (PrintWriter writer = new PrintWriter(new FileWriter(outputDir.resolve(fileName).toFile())))
         {
