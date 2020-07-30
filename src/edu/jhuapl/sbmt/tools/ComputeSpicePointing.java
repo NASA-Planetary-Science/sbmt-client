@@ -24,8 +24,6 @@ import edu.jhuapl.sbmt.pointing.spice.SpicePointingProvider;
 import crucible.core.math.vectorspace.UnwritableVectorIJK;
 import crucible.core.mechanics.EphemerisID;
 import crucible.core.mechanics.FrameID;
-import crucible.core.mechanics.utilities.SimpleEphemerisID;
-import crucible.core.mechanics.utilities.SimpleFrameID;
 import crucible.core.time.TimeSystem;
 import crucible.core.time.UTCEpoch;
 import nom.tam.fits.Fits;
@@ -51,12 +49,12 @@ public class ComputeSpicePointing
                 throw new IllegalArgumentException("Must have 11 command line arguments");
             }
 
-            EphemerisID bodyId = new SimpleEphemerisID(args[index++]);
-            FrameID bodyFrame = new SimpleFrameID(args[index++]);
-            EphemerisID scId = new SimpleEphemerisID(args[index++]);
-            FrameID scFrame = new SimpleFrameID(args[index++]);
+            EphemerisID bodyId = SpicePointingProvider.getEphemerisId(args[index++]);
+            String centerFrameName = args[index++];
+            String scName = args[index++];
+            String scFrameName = args[index++];
             int sclkIdCode = Integer.parseInt(args[index++]);
-            FrameID instFrame = new SimpleFrameID(args[index++]);
+            FrameID instFrame = SpicePointingProvider.getFrameId(args[index++]);
 
             String mkPathString = args[index++];
             ImmutableList<Path> mkPaths;
@@ -75,9 +73,9 @@ public class ComputeSpicePointing
             Path outputDir = Paths.get(args[index++]);
             String fitsTimeKey = args[index++];
 
-            SpicePointingProvider provider = SpicePointingProvider.of(mkPaths, bodyId, bodyFrame, scId, scFrame, sclkIdCode, instFrame);
+            SpicePointingProvider.Builder builder = SpicePointingProvider.builder(mkPaths, centerFrameName, scName, scFrameName);
 
-            return new ComputeSpicePointing(provider, instFrame, inputFilePath, inputDir, outputDir, fitsTimeKey);
+            return new ComputeSpicePointing(builder.build(), instFrame, bodyId, inputFilePath, inputDir, outputDir, fitsTimeKey);
         }
         catch (Exception e)
         {
@@ -88,16 +86,19 @@ public class ComputeSpicePointing
 
     private final SpicePointingProvider provider;
     private final FrameID instFrame;
+    private final EphemerisID bodyId;
     private final Path inputFilePath;
     private final Path inputDir;
     private final Path outputDir;
     private final String fitsTimeKey;
 
-    protected ComputeSpicePointing(SpicePointingProvider provider, FrameID instFrame, Path inputFilePath, Path inputDir, Path outputDir, String fitsTimeKey)
+    protected ComputeSpicePointing(SpicePointingProvider provider, FrameID instFrame, EphemerisID bodyId, Path inputFilePath, Path inputDir, Path outputDir, String fitsTimeKey)
     {
         super();
+
         this.provider = provider;
         this.instFrame = instFrame;
+        this.bodyId = bodyId;
         this.inputFilePath = inputFilePath;
         this.inputDir = inputDir;
         this.outputDir = outputDir;
@@ -211,7 +212,7 @@ public class ComputeSpicePointing
     {
 
         UTCEpoch utcTime = SpicePointingProvider.getUTC(utcTimeString);
-        InstrumentPointing pointing = provider.provide(instFrame, utcTimeSystem.getTSEpoch(utcTime));
+        InstrumentPointing pointing = provider.provide(instFrame, bodyId, utcTimeSystem.getTSEpoch(utcTime));
         DecimalFormat formatter = new DecimalFormat("0.0000000000000000E00");
         try (PrintWriter writer = new PrintWriter(new FileWriter(outputDir.resolve(fileName).toFile())))
         {
