@@ -49,12 +49,12 @@ public class ComputeSpicePointing
                 throw new IllegalArgumentException("Must have 11 command line arguments");
             }
 
-            EphemerisID bodyId = SpicePointingProvider.getEphemerisId(args[index++]);
+            String bodyName = args[index++];
             String centerFrameName = args[index++];
             String scName = args[index++];
             String scFrameName = args[index++];
             int sclkIdCode = Integer.parseInt(args[index++]);
-            FrameID instFrame = SpicePointingProvider.getFrameId(args[index++]);
+            String instFrameName = args[index++];
 
             String mkPathString = args[index++];
             ImmutableList<Path> mkPaths;
@@ -74,6 +74,10 @@ public class ComputeSpicePointing
             String fitsTimeKey = args[index++];
 
             SpicePointingProvider.Builder builder = SpicePointingProvider.builder(mkPaths, centerFrameName, scName, scFrameName);
+
+            EphemerisID bodyId = builder.bindEphemeris(bodyName);
+
+            FrameID instFrame = builder.bindFrame(instFrameName);
 
             return new ComputeSpicePointing(builder.build(), instFrame, bodyId, inputFilePath, inputDir, outputDir, fitsTimeKey);
         }
