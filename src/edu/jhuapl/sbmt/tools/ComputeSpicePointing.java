@@ -12,6 +12,7 @@ import java.nio.file.Paths;
 import java.text.DecimalFormat;
 import java.text.ParseException;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map.Entry;
 import java.util.regex.Pattern;
 
@@ -212,15 +213,17 @@ public class ComputeSpicePointing
         DecimalFormat formatter = new DecimalFormat("0.0000000000000000E00");
         try (PrintWriter writer = new PrintWriter(new FileWriter(outputDir.resolve(fileName).toFile())))
         {
+            List<UnwritableVectorIJK> frustum = pointing.getFrustum();
+
             writer.println("START_TIME          = " + utcTimeString);
             writer.println("STOP_TIME           = " + utcTimeString);
             writer.println("SPACECRAFT_POSITION = " + format(formatter, pointing.getSpacecraftPos()));
             writer.println("BORESIGHT_DIRECTION = " + format(formatter, pointing.getBoresight()));
             writer.println("UP_DIRECTION        = " + format(formatter, pointing.getUp()));
-            writer.println("FRUSTUM1            = " + format(formatter, null));
-            writer.println("FRUSTUM2            = " + format(formatter, null));
-            writer.println("FRUSTUM3            = " + format(formatter, null));
-            writer.println("FRUSTUM4            = " + format(formatter, null));
+            writer.println("FRUSTUM1            = " + format(formatter, frustum.get(0)));
+            writer.println("FRUSTUM2            = " + format(formatter, frustum.get(1)));
+            writer.println("FRUSTUM3            = " + format(formatter, frustum.get(2)));
+            writer.println("FRUSTUM4            = " + format(formatter, frustum.get(3)));
             writer.println("SUN_POSITION_LT     = " + format(formatter, pointing.getSunPos()));
         }
 
