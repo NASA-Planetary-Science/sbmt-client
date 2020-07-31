@@ -11,11 +11,13 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.text.DecimalFormat;
 import java.text.ParseException;
+import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map.Entry;
 import java.util.regex.Pattern;
 
+import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
 
 import edu.jhuapl.sbmt.pointing.spice.SpiceInstrumentPointing;
@@ -24,7 +26,7 @@ import edu.jhuapl.sbmt.pointing.spice.SpicePointingProvider;
 import crucible.core.math.vectorspace.UnwritableVectorIJK;
 import crucible.core.mechanics.EphemerisID;
 import crucible.core.mechanics.FrameID;
-import crucible.core.time.TimeSystem;
+import crucible.core.time.TimeSystems;
 import crucible.core.time.UTCEpoch;
 import nom.tam.fits.Fits;
 import nom.tam.fits.FitsException;
@@ -32,6 +34,8 @@ import nom.tam.fits.HeaderCard;
 
 public class ComputeSpicePointing
 {
+    protected static final TimeSystems DefaultTimeSystems = TimeSystems.builder().build();
+
     private static final Pattern MetaKernelPattern = Pattern.compile(".*\\.mk", Pattern.CASE_INSENSITIVE);
 
     public static ComputeSpicePointing of(String[] args) throws Exception
@@ -44,16 +48,15 @@ public class ComputeSpicePointing
         }
         try
         {
-            if (args.length != 11)
+            if (args.length != 10)
             {
-                throw new IllegalArgumentException("Must have 11 command line arguments");
+                throw new IllegalArgumentException("Must have 10 command line arguments");
             }
 
             String bodyName = args[index++];
             String centerFrameName = args[index++];
             String scName = args[index++];
             String scFrameName = args[index++];
-            int sclkIdCode = Integer.parseInt(args[index++]);
             String instFrameName = args[index++];
 
             String mkPathString = args[index++];
@@ -115,25 +118,20 @@ public class ComputeSpicePointing
 
         createOutputDirectory();
 
-        TimeSystem<UTCEpoch> utcTimeSystem = provider.getTimeSystems().getUTC();
-
         for (Entry<String, String> entry : outputFileMap.entrySet())
         {
             String utcTimeString = entry.getKey();
             String fileName = entry.getValue();
 
-            writePointingFile(utcTimeSystem, utcTimeString, fileName);
+            writePointingFile(utcTimeString, fileName);
         }
     }
 
     protected static void usage(PrintStream stream, int exitCode)
     {
         stream.println("--------------------------------------------------------------------------------");
-        stream.println("Usage: ComputeSpicePointing bodyId bodyFrame scId scFrame sclkIdCode");
-        stream.println("                     instFrame mkFile inputFile inputDir outputDir fitsTimeKey\n");
-        stream.println("               sclkIdCode - this is a mission-specific int. Take a guess;");
-        stream.println("                      program will probably fail but will advise you");
-        stream.println("                      of your options.\n");
+        stream.println("Usage: ComputeSpicePointing bodyId bodyFrame scId scFrame instFrame");
+        stream.println("                     mkFile inputFile inputDir outputDir fitsTimeKey\n");
         stream.println("               mkFile - metakernel file\n");
         stream.println("               inputFile - a text file with a list of input FITS files.\n");
         stream.println("               inputDir - top directory containing files listed in inputFile.\n");
@@ -212,10 +210,12 @@ public class ComputeSpicePointing
         }
     }
 
-    protected void writePointingFile(TimeSystem<UTCEpoch> utcTimeSystem, String utcTimeString, String fileName) throws IOException, ParseException
+    protected void writePointingFile(String utcTimeString, String fileName) throws IOException, ParseException
     {
-        UTCEpoch utcTime = SpicePointingProvider.getUTC(utcTimeString);
-        SpiceInstrumentPointing pointing = provider.provide(instFrame, bodyId, utcTimeSystem.getTSEpoch(utcTime));
+        UTCEpoch utcTime = getUTC(utcTimeString);
+        double time = DefaultTimeSystems.getTDB().getTime(DefaultTimeSystems.getUTC().getTSEpoch(utcTime));
+
+        SpiceInstrumentPointing pointing = provider.provide(instFrame, bodyId, time);
         EphemerisID sunId = SpicePointingProvider.SunEphemerisId;
         DecimalFormat formatter = new DecimalFormat("0.0000000000000000E00");
         try (PrintWriter writer = new PrintWriter(new FileWriter(outputDir.resolve(fileName).toFile())))
@@ -253,6 +253,73 @@ public class ComputeSpicePointing
         builder.append(" )");
 
         return builder.toString().toLowerCase().replaceAll("e(\\d)", "e+$1");
+    }
+
+    public static UTCEpoch getUTC(String utcString) throws ParseException
+    {
+        Preconditions.checkNotNull(utcString);
+
+        UTCEpoch result;
+
+        String[] fields = utcString.split("[^\\d\\.]");
+        if (fields.length == 5 || fields.length == 6)
+        {
+            // UTC fields separated by non-numeric characters, either
+            // yyyy-doy... or yyyy-mm-dd.
+            // Parse all but the last field as integers.
+            List<Integer> integers = new ArrayList<>();
+            for (int index = 0; index < fields.length - 1; ++index)
+            {
+                integers.add(Integer.parseInt(fields[index]));
+            }
+
+            // Parse the last field as a double (seconds).
+            double sec = 0.;
+            if (fields.length > integers.size())
+            {
+                sec = Double.parseDouble(fields[integers.size()]);
+            }
+
+            if (integers.size() == 4)
+            {
+                result = new UTCEpoch(integers.get(0), integers.get(1), integers.get(2), integers.get(3), sec);
+            }
+            else if (integers.size() == 5)
+            {
+                result = new UTCEpoch(integers.get(0), integers.get(1), integers.get(2), integers.get(3), integers.get(4), sec);
+            }
+            else
+            {
+                throw new AssertionError("fields was either 5 or 6 elements, so array must be 4 or 5");
+            }
+        }
+        else if (utcString.length() == 13)
+        {
+            // yyyydddhhmmss
+            int y = Integer.parseInt(utcString.substring(0, 4));
+            int doy = Integer.parseInt(utcString.substring(4, 7));
+            int hr = Integer.parseInt(utcString.substring(7, 9));
+            int mn = Integer.parseInt(utcString.substring(9, 11));
+            int s = Integer.parseInt(utcString.substring(11, 13));
+            result = new UTCEpoch(y, doy, hr, mn, s);
+        }
+        else if (utcString.length() == 14)
+        {
+            // yyyymmddhhmmss
+            int y = Integer.parseInt(utcString.substring(0, 4));
+            int m = Integer.parseInt(utcString.substring(4, 6));
+            int d = Integer.parseInt(utcString.substring(6, 8));
+            int h = Integer.parseInt(utcString.substring(8, 10));
+            int mn = Integer.parseInt(utcString.substring(10, 12));
+            int s = Integer.parseInt(utcString.substring(12, 14));
+            result = new UTCEpoch(y, m, d, h, mn, s);
+        }
+        else
+        {
+            throw new ParseException("Can't parse string as time: " + utcString, 0);
+        }
+
+        return result;
     }
 
     public static void main(String[] args)
