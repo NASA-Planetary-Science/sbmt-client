@@ -214,9 +214,9 @@ public class ComputeSpicePointing
 
     protected void writePointingFile(TimeSystem<UTCEpoch> utcTimeSystem, String utcTimeString, String fileName) throws IOException, ParseException
     {
-
         UTCEpoch utcTime = SpicePointingProvider.getUTC(utcTimeString);
         SpiceInstrumentPointing pointing = provider.provide(instFrame, bodyId, utcTimeSystem.getTSEpoch(utcTime));
+        EphemerisID sunId = SpicePointingProvider.SunEphemerisId;
         DecimalFormat formatter = new DecimalFormat("0.0000000000000000E00");
         try (PrintWriter writer = new PrintWriter(new FileWriter(outputDir.resolve(fileName).toFile())))
         {
@@ -231,7 +231,7 @@ public class ComputeSpicePointing
             writer.println("FRUSTUM2            = " + format(formatter, frustum.get(1)));
             writer.println("FRUSTUM3            = " + format(formatter, frustum.get(2)));
             writer.println("FRUSTUM4            = " + format(formatter, frustum.get(3)));
-            writer.println("SUN_POSITION_LT     = " + format(formatter, pointing.getSunPos()));
+            writer.println("SUN_POSITION_LT     = " + format(formatter, pointing.getPos(sunId)));
         }
 
     }
