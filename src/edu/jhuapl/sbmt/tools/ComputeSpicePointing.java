@@ -24,6 +24,7 @@ import edu.jhuapl.sbmt.pointing.spice.SpiceInstrumentPointing;
 import edu.jhuapl.sbmt.pointing.spice.SpicePointingProvider;
 
 import crucible.core.math.vectorspace.UnwritableVectorIJK;
+import crucible.core.mechanics.CelestialBodies;
 import crucible.core.mechanics.EphemerisID;
 import crucible.core.mechanics.FrameID;
 import crucible.core.time.TimeSystems;
@@ -216,7 +217,6 @@ public class ComputeSpicePointing
         double time = DefaultTimeSystems.getTDB().getTime(DefaultTimeSystems.getUTC().getTSEpoch(utcTime));
 
         SpiceInstrumentPointing pointing = provider.provide(instFrame, bodyId, time);
-        EphemerisID sunId = SpicePointingProvider.SunEphemerisId;
         DecimalFormat formatter = new DecimalFormat("0.0000000000000000E00");
         try (PrintWriter writer = new PrintWriter(new FileWriter(outputDir.resolve(fileName).toFile())))
         {
@@ -231,7 +231,7 @@ public class ComputeSpicePointing
             writer.println("FRUSTUM2            = " + format(formatter, frustum.get(1)));
             writer.println("FRUSTUM3            = " + format(formatter, frustum.get(2)));
             writer.println("FRUSTUM4            = " + format(formatter, frustum.get(3)));
-            writer.println("SUN_POSITION_LT     = " + format(formatter, pointing.getPos(sunId)));
+            writer.println("SUN_POSITION_LT     = " + format(formatter, pointing.getPos(CelestialBodies.SUN)));
         }
 
     }
