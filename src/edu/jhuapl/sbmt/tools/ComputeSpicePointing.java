@@ -18,7 +18,7 @@ import java.util.regex.Pattern;
 
 import com.google.common.collect.ImmutableList;
 
-import edu.jhuapl.sbmt.pointing.InstrumentPointing;
+import edu.jhuapl.sbmt.pointing.spice.SpiceInstrumentPointing;
 import edu.jhuapl.sbmt.pointing.spice.SpicePointingProvider;
 
 import crucible.core.math.vectorspace.UnwritableVectorIJK;
@@ -216,7 +216,7 @@ public class ComputeSpicePointing
     {
 
         UTCEpoch utcTime = SpicePointingProvider.getUTC(utcTimeString);
-        InstrumentPointing pointing = provider.provide(instFrame, bodyId, utcTimeSystem.getTSEpoch(utcTime));
+        SpiceInstrumentPointing pointing = provider.provide(instFrame, bodyId, utcTimeSystem.getTSEpoch(utcTime));
         DecimalFormat formatter = new DecimalFormat("0.0000000000000000E00");
         try (PrintWriter writer = new PrintWriter(new FileWriter(outputDir.resolve(fileName).toFile())))
         {
