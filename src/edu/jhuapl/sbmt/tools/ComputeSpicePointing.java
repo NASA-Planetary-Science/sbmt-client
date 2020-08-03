@@ -224,14 +224,14 @@ public class ComputeSpicePointing
 
             writer.println("START_TIME          = " + utcTimeString);
             writer.println("STOP_TIME           = " + utcTimeString);
-            writer.println("SPACECRAFT_POSITION = " + format(formatter, pointing.getSpacecraftPos()));
+            writer.println("SPACECRAFT_POSITION = " + format(formatter, pointing.getScPosition()));
             writer.println("BORESIGHT_DIRECTION = " + format(formatter, pointing.getBoresight()));
-            writer.println("UP_DIRECTION        = " + format(formatter, pointing.getUp()));
+            writer.println("UP_DIRECTION        = " + format(formatter, pointing.getUpDirection()));
             writer.println("FRUSTUM1            = " + format(formatter, frustum.get(0)));
             writer.println("FRUSTUM2            = " + format(formatter, frustum.get(1)));
             writer.println("FRUSTUM3            = " + format(formatter, frustum.get(2)));
             writer.println("FRUSTUM4            = " + format(formatter, frustum.get(3)));
-            writer.println("SUN_POSITION_LT     = " + format(formatter, pointing.getPos(CelestialBodies.SUN)));
+            writer.println("SUN_POSITION_LT     = " + format(formatter, pointing.getPosition(CelestialBodies.SUN)));
         }
 
     }
