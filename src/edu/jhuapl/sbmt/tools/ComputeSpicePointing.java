@@ -20,7 +20,7 @@ import java.util.regex.Pattern;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
 
-import edu.jhuapl.sbmt.pointing.spice.SpiceInstrumentPointing;
+import edu.jhuapl.sbmt.pointing.InstrumentPointing;
 import edu.jhuapl.sbmt.pointing.spice.SpicePointingProvider;
 
 import crucible.core.math.vectorspace.UnwritableVectorIJK;
@@ -55,7 +55,7 @@ public class ComputeSpicePointing
             }
 
             String bodyName = args[index++];
-            String centerFrameName = args[index++];
+            String bodyFrameName = args[index++];
             String scName = args[index++];
             String scFrameName = args[index++];
             String instFrameName = args[index++];
@@ -77,7 +77,7 @@ public class ComputeSpicePointing
             Path outputDir = Paths.get(args[index++]);
             String fitsTimeKey = args[index++];
 
-            SpicePointingProvider.Builder builder = SpicePointingProvider.builder(mkPaths, centerFrameName, scName, scFrameName);
+            SpicePointingProvider.Builder builder = SpicePointingProvider.builder(mkPaths, bodyName, bodyFrameName, scName, scFrameName);
 
             EphemerisID bodyId = builder.bindEphemeris(bodyName);
 
@@ -94,7 +94,6 @@ public class ComputeSpicePointing
 
     private final SpicePointingProvider provider;
     private final FrameID instFrame;
-    private final EphemerisID bodyId;
     private final Path inputFilePath;
     private final Path inputDir;
     private final Path outputDir;
@@ -106,7 +105,6 @@ public class ComputeSpicePointing
 
         this.provider = provider;
         this.instFrame = instFrame;
-        this.bodyId = bodyId;
         this.inputFilePath = inputFilePath;
         this.inputDir = inputDir;
         this.outputDir = outputDir;
@@ -216,7 +214,7 @@ public class ComputeSpicePointing
         UTCEpoch utcTime = getUTC(utcTimeString);
         double time = DefaultTimeSystems.getTDB().getTime(DefaultTimeSystems.getUTC().getTSEpoch(utcTime));
 
-        SpiceInstrumentPointing pointing = provider.provide(instFrame, bodyId, time);
+        InstrumentPointing pointing = provider.provide(instFrame, time);
         DecimalFormat formatter = new DecimalFormat("0.0000000000000000E00");
         try (PrintWriter writer = new PrintWriter(new FileWriter(outputDir.resolve(fileName).toFile())))
         {
