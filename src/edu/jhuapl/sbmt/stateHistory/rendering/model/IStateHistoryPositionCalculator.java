@@ -1,5 +1,6 @@
 package edu.jhuapl.sbmt.stateHistory.rendering.model;
 
+import edu.jhuapl.sbmt.model.image.perspectiveImage.PerspectiveImageFrustum;
 import edu.jhuapl.sbmt.stateHistory.model.interfaces.StateHistory;
 import edu.jhuapl.sbmt.stateHistory.model.viewOptions.RendererLookDirection;
 import edu.jhuapl.sbmt.stateHistory.rendering.SpacecraftBody;
@@ -27,7 +28,7 @@ public interface IStateHistoryPositionCalculator
 	 * @param time
 	 */
 	public void updateSpacecraftPosition(StateHistory history, double time, SpacecraftBody spacecraft, SpacecraftDirectionMarker scDirectionMarker,
-			SpacecraftLabel spacecraftLabelActor);
+			SpacecraftLabel spacecraftLabelActor, PerspectiveImageFrustum fov);
 
 	/**
 	 * @param lookDirection

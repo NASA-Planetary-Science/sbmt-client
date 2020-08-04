@@ -8,9 +8,15 @@ import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
 
-import edu.jhuapl.sbmt.pointing.Pointing;
+import edu.jhuapl.sbmt.pointing.spice.SpiceInstrumentPointing;
+import edu.jhuapl.sbmt.pointing.spice.SpicePointingProvider;
 import edu.jhuapl.sbmt.stateHistory.model.interfaces.State;
 import edu.jhuapl.sbmt.util.TimeUtil;
+
+import crucible.core.math.vectorspace.UnwritableVectorIJK;
+import crucible.core.mechanics.EphemerisID;
+import crucible.core.mechanics.FrameID;
+import crucible.core.mechanics.utilities.SimpleEphemerisID;
 
 /**
  * @author steelrj1
@@ -18,7 +24,7 @@ import edu.jhuapl.sbmt.util.TimeUtil;
  */
 public class SpiceState implements State
 {
-	private Pointing pointing;
+	private SpiceInstrumentPointing pointing;
 
     /**
      * State time in UTC
@@ -30,13 +36,19 @@ public class SpiceState implements State
      */
     private double ephemerisTime;
 
+    private EphemerisID bodyId;
+
+    private SpicePointingProvider pointingProvider;
+
 	/**
 	 *
 	 */
-	public SpiceState(Pointing pointing, double et)
+	public SpiceState(SpicePointingProvider pointingProvider, FrameID defaultInstFrame, EphemerisID bodyId, double et)
 	{
-		this.pointing = pointing;
+		this.pointingProvider = pointingProvider;
+		this.pointing = pointingProvider.provide(defaultInstFrame, bodyId, et);
 		this.ephemerisTime = et;
+		this.bodyId = bodyId;
 		this.utc = TimeUtil.et2str(et);
 	}
 
@@ -50,6 +62,22 @@ public class SpiceState implements State
 	public String getUtc()
 	{
 		return utc;
+	}
+
+	public double[] getInstrumentLookDirection(FrameID instrumentFrameID)
+	{
+		SpiceInstrumentPointing pointing = pointingProvider.provide(instrumentFrameID, bodyId, ephemerisTime);
+		UnwritableVectorIJK boresight = pointing.getBoresight().createNegated();
+//		System.out.println("SpiceState: getInstrumentLookDirection: returning boresight " + boresight + " for " + instrumentFrameID + " wrt " + bodyId);
+		return new double[] {
+				boresight.getI(), boresight.getJ(), boresight.getK()
+		};
+	}
+
+	public UnwritableVectorIJK getFrustum(FrameID instrumentFrameID, int index)
+	{
+		SpiceInstrumentPointing pointing = pointingProvider.provide(instrumentFrameID, bodyId, ephemerisTime);
+		return pointing.getFrustum().get(index);
 	}
 
 	@Override
@@ -75,27 +103,30 @@ public class SpiceState implements State
 	@Override
 	public double[] getEarthPosition()
 	{
-		return new double[] { 0.0, 0.0, 0.0 };
-//		return new double[] { pointing.getSunPos().getI(),
-//	  			  pointing.getSunPos().getJ(),
-//	  			  pointing.getSunPos().getK()
-//
-//		};
+//		return new double[] { 0.0, 0.0, 0.0 };
+		EphemerisID earth = new SimpleEphemerisID("EARTH");
+		return new double[] { pointing.getPos(earth).getI(),
+	  			  pointing.getPos(earth).getJ(),
+	  			  pointing.getPos(earth).getK()
+
+		};
 	}
 
 	@Override
 	public double[] getSunPosition()
 	{
-		return new double[] { pointing.getSunPos().getI(),
-				  			  pointing.getSunPos().getJ(),
-				  			  pointing.getSunPos().getK()
+		EphemerisID sun = new SimpleEphemerisID("SUN");
+		return new double[] { pointing.getPos(sun).getI(),
+	  			  pointing.getPos(sun).getJ(),
+	  			  pointing.getPos(sun).getK()
+
 		};
 	}
 
 	@Override
 	public double[] getSpacecraftXAxis()
 	{
-		return new double[] { 0.0, 0.0, 0.0 };
+		return new double[] { 1.0, 0.0, 0.0 };
 		// TODO Auto-generated method stub
 //		return null;
 	}
@@ -103,7 +134,7 @@ public class SpiceState implements State
 	@Override
 	public double[] getSpacecraftYAxis()
 	{
-		return new double[] { 0.0, 0.0, 0.0 };
+		return new double[] { 0.0, 1.0, 0.0 };
 		// TODO Auto-generated method stub
 //		return null;
 	}
@@ -111,7 +142,7 @@ public class SpiceState implements State
 	@Override
 	public double[] getSpacecraftZAxis()
 	{
-		return new double[] { 0.0, 0.0, 0.0 };
+		return new double[] { 0.0, 0.0, 1.0 };
 		// TODO Auto-generated method stub
 //		return null;
 	}

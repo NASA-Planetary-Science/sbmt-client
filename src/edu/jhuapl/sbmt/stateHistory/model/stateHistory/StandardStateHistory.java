@@ -5,12 +5,15 @@ import java.util.NavigableMap;
 import java.util.Set;
 import java.util.TreeMap;
 
+import edu.jhuapl.sbmt.stateHistory.model.StateHistorySourceType;
 import edu.jhuapl.sbmt.stateHistory.model.interfaces.State;
 import edu.jhuapl.sbmt.stateHistory.model.interfaces.StateHistory;
 import edu.jhuapl.sbmt.stateHistory.model.interfaces.Trajectory;
 import edu.jhuapl.sbmt.stateHistory.model.io.StateHistoryInvalidTimeException;
 
 import altwg.util.MathUtil;
+import crucible.core.math.vectorspace.UnwritableVectorIJK;
+import crucible.core.mechanics.FrameID;
 import crucible.crust.metadata.api.Key;
 import crucible.crust.metadata.api.Version;
 import crucible.crust.metadata.impl.InstanceGetter;
@@ -72,6 +75,10 @@ public class StandardStateHistory implements StateHistory
      */
     private Double[] color;
 
+    private StateHistorySourceType type;
+
+    private String sourceFile;
+
 
     //Metadata Information
     private static final Key<StandardStateHistory> STANDARD_STATE_HISTORY_KEY = Key.of("StandardStateHistory");
@@ -82,6 +89,8 @@ public class StandardStateHistory implements StateHistory
 	private static final Key<String> STATE_HISTORY_NAME_KEY = Key.of("name");
 	private static final Key<String> STATE_HISTORY_DESCRIPTION_KEY = Key.of("description");
 	private static final Key<Double[]> COLOR_KEY = Key.of("color");
+	private static final Key<String> TYPE_KEY = Key.of("type");
+	private static final Key<String> SOURCE_FILE = Key.of("sourceFile");
 
     public static void initializeSerializationProxy()
 	{
@@ -92,6 +101,8 @@ public class StandardStateHistory implements StateHistory
     		Double startTime = source.get(START_TIME_KEY);
     		Double endTime = source.get(END_TIME_KEY);
     		String name = source.get(STATE_HISTORY_NAME_KEY);
+    		StateHistorySourceType type = StateHistorySourceType.valueOf(source.get(TYPE_KEY));
+    		String sourceFile = source.get(SOURCE_FILE);
     		String description = "";
     		try
     		{
@@ -101,7 +112,7 @@ public class StandardStateHistory implements StateHistory
     		if (name == null) name = "";
     		Double[] color = source.get(COLOR_KEY);
 
-    		StandardStateHistory stateHistory = new StandardStateHistory(key, currentTime, startTime, endTime, name, description, color);
+    		StandardStateHistory stateHistory = new StandardStateHistory(key, currentTime, startTime, endTime, name, description, color, type, sourceFile);
     		return stateHistory;
 
     	}, StandardStateHistory.class, stateHistory -> {
@@ -112,8 +123,10 @@ public class StandardStateHistory implements StateHistory
     		result.put(START_TIME_KEY, stateHistory.getMinTime());
     		result.put(END_TIME_KEY, stateHistory.getMaxTime());
     		result.put(STATE_HISTORY_NAME_KEY, stateHistory.getStateHistoryName());
-    		result.put(STATE_HISTORY_DESCRIPTION_KEY, stateHistory.getStateHistoryDescription())
-;    		result.put(COLOR_KEY, new Double[] { stateHistory.getTrajectory().getTrajectoryColor()[0], stateHistory.getTrajectory().getTrajectoryColor()[1], stateHistory.getTrajectory().getTrajectoryColor()[2], stateHistory.getTrajectory().getTrajectoryColor()[3]});
+    		result.put(STATE_HISTORY_DESCRIPTION_KEY, stateHistory.getStateHistoryDescription());
+    		result.put(TYPE_KEY, stateHistory.getType().toString());
+    		result.put(SOURCE_FILE, stateHistory.getSourceFile());
+    		result.put(COLOR_KEY, new Double[] { stateHistory.getTrajectory().getTrajectoryColor()[0], stateHistory.getTrajectory().getTrajectoryColor()[1], stateHistory.getTrajectory().getTrajectoryColor()[2], stateHistory.getTrajectory().getTrajectoryColor()[3]});
     		return result;
     	});
 	}
@@ -134,7 +147,7 @@ public class StandardStateHistory implements StateHistory
      * @param name
      * @param color
      */
-    public StandardStateHistory(StateHistoryKey key, Double currentTime, Double startTime, Double endTime, String name, String description, Double[] color)
+    public StandardStateHistory(StateHistoryKey key, Double currentTime, Double startTime, Double endTime, String name, String description, Double[] color, StateHistorySourceType type, String sourceFile)
     {
     	this.key = key;
     	this.currentTime = currentTime;
@@ -143,6 +156,8 @@ public class StandardStateHistory implements StateHistory
     	this.color = color;
     	this.name = name;
     	this.description = description;
+    	this.type = type;
+    	this.sourceFile = sourceFile;
     }
 
     /**
@@ -153,7 +168,22 @@ public class StandardStateHistory implements StateHistory
     	return key;
     }
 
-    /**
+    public StateHistorySourceType getType()
+	{
+		return type;
+	}
+
+	public String getSourceFile()
+	{
+		return sourceFile;
+	}
+
+	public void setType(StateHistorySourceType type)
+	{
+		this.type = type;
+	}
+
+	/**
      *
      */
     public Double getCurrentTime()
@@ -263,6 +293,7 @@ public class StandardStateHistory implements StateHistory
     public State getStateAtTime(Double time)
     {
         // for now, just return floor
+//    	System.out.println("StandardStateHistory: getStateAtTime: time is " + time + " returning " + getStateBeforeOrAtTime(time).getValue());
         return getStateBeforeOrAtTime(time).getValue();
     }
 
@@ -412,5 +443,25 @@ public class StandardStateHistory implements StateHistory
 	public void setStateHistoryDescription(String description)
 	{
 		this.description = description;
+	}
+
+	@Override
+	public double[] getInstrumentLookDirection(FrameID instrumentFrameID)
+	{
+		double[] lookDir = getCurrentState().getInstrumentLookDirection(instrumentFrameID);
+//		System.out.println("StandardStateHistory: getInstrumentLookDirection: returning " + lookDir[0] + " " + lookDir[1] + " " + lookDir[2]);
+		return lookDir;
+	}
+
+	@Override
+	public UnwritableVectorIJK getFrustum(FrameID instrumentFrameID, int index)
+	{
+		return getCurrentState().getFrustum(instrumentFrameID, index);
+	}
+
+	@Override
+	public void setSourceFile(String sourceFile)
+	{
+		this.sourceFile = sourceFile;
 	}
 }

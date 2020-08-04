@@ -36,4 +36,7 @@ public interface IStateHistoryIntervalGenerator
 	 * @throws StateHistoryInputException
 	 */
 	public StateHistory createNewTimeInterval(StateHistory history, Function<Double, Void> progressFunction) throws StateHistoryInputException, StateHistoryInvalidTimeException;
+
+
+	public void setSourceFile(String sourceFile);
 }

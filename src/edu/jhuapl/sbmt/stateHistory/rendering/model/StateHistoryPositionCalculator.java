@@ -8,6 +8,7 @@ import vtk.vtkTransform;
 
 import edu.jhuapl.saavtk.util.MathUtil;
 import edu.jhuapl.sbmt.client.SmallBodyModel;
+import edu.jhuapl.sbmt.model.image.perspectiveImage.PerspectiveImageFrustum;
 import edu.jhuapl.sbmt.stateHistory.model.interfaces.StateHistory;
 import edu.jhuapl.sbmt.stateHistory.model.viewOptions.RendererLookDirection;
 import edu.jhuapl.sbmt.stateHistory.rendering.SpacecraftBody;
@@ -15,6 +16,9 @@ import edu.jhuapl.sbmt.stateHistory.rendering.directionMarkers.EarthDirectionMar
 import edu.jhuapl.sbmt.stateHistory.rendering.directionMarkers.SpacecraftDirectionMarker;
 import edu.jhuapl.sbmt.stateHistory.rendering.directionMarkers.SunDirectionMarker;
 import edu.jhuapl.sbmt.stateHistory.rendering.text.SpacecraftLabel;
+
+import crucible.core.mechanics.FrameID;
+import crucible.core.mechanics.utilities.SimpleFrameID;
 
 /**
  * @author steelrj1
@@ -121,7 +125,7 @@ public class StateHistoryPositionCalculator implements IStateHistoryPositionCalc
 
 	@Override
 	public void updateSpacecraftPosition(StateHistory history, double time, SpacecraftBody spacecraft, SpacecraftDirectionMarker scDirectionMarker,
-			SpacecraftLabel spacecraftLabelActor)
+			SpacecraftLabel spacecraftLabelActor, PerspectiveImageFrustum fov)
 	{
 		vtkMatrix4x4 spacecraftBodyMatrix = new vtkMatrix4x4();
 		vtkMatrix4x4 spacecraftIconMatrix = new vtkMatrix4x4();
@@ -129,7 +133,7 @@ public class StateHistoryPositionCalculator implements IStateHistoryPositionCalc
 		vtkMatrix4x4 fovRotateXMatrix = new vtkMatrix4x4();
 		vtkMatrix4x4 fovRotateYMatrix = new vtkMatrix4x4();
 		vtkMatrix4x4 fovRotateZMatrix = new vtkMatrix4x4();
-//		vtkMatrix4x4 fovScaleMatrix = new vtkMatrix4x4();
+		vtkMatrix4x4 fovScaleMatrix = new vtkMatrix4x4();
 
 		double iconScale = 1.0;
 		// set to identity
@@ -158,6 +162,7 @@ public class StateHistoryPositionCalculator implements IStateHistoryPositionCalc
 		spacecraftIconMatrix.Multiply4x4(spacecraftIconMatrix, spacecraftBodyMatrix, spacecraftIconMatrix);
 
 		spacecraftPosition = history.getSpacecraftPosition();
+//		System.out.println("StateHistoryPositionCalculator: updateSpacecraftPosition: sc pos " + spacecraftPosition[0] + " " +  spacecraftPosition[1] + " " + spacecraftPosition[2]);
 		double[] spacecraftMarkerPosition = new double[3];
 		double[] spacecraftDirection = new double[3];
 		double[] spacecraftViewpoint = new double[3];
@@ -188,17 +193,37 @@ public class StateHistoryPositionCalculator implements IStateHistoryPositionCalc
 		{
 			spacecraftBodyMatrix.SetElement(i, 3, spacecraftPosition[i]);
 			spacecraftIconMatrix.SetElement(i, 3, spacecraftPosition[i]);
-			// fovMatrix.SetElement(i, 3, spacecraftPosition[i]);
+			fovMatrix.SetElement(i, 3, spacecraftPosition[i]);
 
 		}
-
 		spacecraft.getActor().SetUserMatrix(spacecraftIconMatrix);
 
 		spacecraftLabelActor.SetAttachmentPoint(spacecraftPosition);
 		spacecraftLabelActor.setDistanceText(history.getCurrentState(), spacecraftPosition, smallBodyModel);
 
-		// spacecraftFovActor.SetUserMatrix(fovMatrix);
-		// spacecraftFovActor.SetUserMatrix(spacecraftBodyMatrix);
+//		fov.getActor().SetUserMatrix(fovMatrix);
+//		fov.getActor().SetUserMatrix(spacecraftBodyMatrix);
+		FrameID instrumentFrameID = new SimpleFrameID("ORX_OCAMS_POLYCAM");
+		double[] lookDirection = history.getInstrumentLookDirection(instrumentFrameID);
+		double[] frus1 = new double[] { history.getFrustum(instrumentFrameID, 0).getI(), history.getFrustum(instrumentFrameID, 0).getJ(), history.getFrustum(instrumentFrameID, 0).getK()};
+		double[] frus2 = new double[] { history.getFrustum(instrumentFrameID, 1).getI(), history.getFrustum(instrumentFrameID, 1).getJ(), history.getFrustum(instrumentFrameID, 1).getK()};
+		double[] frus3 = new double[] { history.getFrustum(instrumentFrameID, 2).getI(), history.getFrustum(instrumentFrameID, 2).getJ(), history.getFrustum(instrumentFrameID, 2).getK()};
+		double[] frus4 = new double[] { history.getFrustum(instrumentFrameID, 3).getI(), history.getFrustum(instrumentFrameID, 3).getJ(), history.getFrustum(instrumentFrameID, 3).getK()};
+//		System.out.println("StateHistoryPositionCalculator: updateSpacecraftPosition: fov actor " + fov.getFrustumActor());
+//		System.out.println("StateHistoryPositionCalculator: updateSpacecraftPosition: scpos" + spacecraftPosition[0] + " " + spacecraftPosition[1] + " " + spacecraftPosition[2]);
+//		System.out.println("StateHistoryPositionCalculator: updateSpacecraftPosition: frus 1" + frus1[0] + " " + frus1[1] + " " + frus1[2]);
+//		System.out.println("StateHistoryPositionCalculator: updateSpacecraftPosition: frus 2" + frus2[0] + " " + frus2[1] + " " + frus2[2]);
+//		System.out.println("StateHistoryPositionCalculator: updateSpacecraftPosition: frus 3" + frus3[0] + " " + frus3[1] + " " + frus3[2]);
+//		System.out.println("StateHistoryPositionCalculator: updateSpacecraftPosition: frus 4" + frus4[0] + " " + frus4[1] + " " + frus4[2]);
+
+		fov.updatePointing(spacecraftPosition, frus1, frus2, frus3, frus4);
+//		fov.SetAngle(0.794);
+//		fov.SetCenter(new double[] {lookDirection[0]/2.0, lookDirection[1]/2.0, lookDirection[2]/2.0});
+////		fov.SetCenter(new double[] {spacecraftPosition[0]/2.0, spacecraftPosition[1]/2.0, spacecraftPosition[2]/2.0});
+//		System.out.println("StateHistoryPositionCalculator: updateSpacecraftPosition: fov center " + fov.GetCenter()[0] + " " + fov.GetCenter()[1] + " " + fov.GetCenter()[2]);
+//		fov.SetDirection(lookDirection);
+//		fov.SetHeight(MathUtil.vnorm(spacecraftPosition));
+//		fov.Update();
 
 		scDirectionMarker.getActor().SetUserTransform(spacecraftMarkerTransform);
 
@@ -206,7 +231,8 @@ public class StateHistoryPositionCalculator implements IStateHistoryPositionCalc
 		spacecraft.getActor().Modified();
 		scDirectionMarker.getActor().Modified();
 		spacecraftLabelActor.Modified();
-		// spacecraftFov.Modified();
+		if (fov.getFrustumActor() != null)
+			fov.getFrustumActor().Modified();
 
 	}
 

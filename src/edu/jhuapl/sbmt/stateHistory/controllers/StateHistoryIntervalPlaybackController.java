@@ -307,7 +307,7 @@ public class StateHistoryIntervalPlaybackController
             public void actionPerformed(ActionEvent e)
             {
                 double period = runs.getPeriod();
-                double deltaRealTime = 1; //timer.getDelay() / 1000.0;
+                double deltaRealTime = 1/10.0; //timer.getDelay() / 1000.0;
                 double playRate = 1.0;
                 try {
                    playRate = Double.parseDouble(view.getRateTextField().getText());

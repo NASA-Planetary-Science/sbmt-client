@@ -107,6 +107,7 @@ public class StateHistoryModelIOHelper
 	 */
 	public static StateHistory loadStateHistoryFromFile(File runFile, String shapeModelName, StateHistoryKey key) throws StateHistoryIOException
     {
+		System.out.println("StateHistoryModelIOHelper: loadStateHistoryFromFile: loading state history from file");
 		ArrayList<String[]> timeArray = new ArrayList<>(3);
         Integer firstIndex = null;
         String runDirName = runFile.getAbsolutePath();

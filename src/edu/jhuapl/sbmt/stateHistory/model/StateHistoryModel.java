@@ -264,6 +264,8 @@ public class StateHistoryModel
 		runs.retrieve(metadata);
 		for (StateHistory history : runs.getAllItems())
 		{
+			setIntervalGenerator(history.getType());
+			activeIntervalGenerator.setSourceFile(history.getSourceFile());
 			activeIntervalGenerator.createNewTimeInterval(history, null);
 			if (runs.getCurrentRun() == null) runs.setCurrentRun(history);
 			runs.setTimeFraction(0.0);
@@ -334,6 +336,7 @@ public class StateHistoryModel
 
 	public void setIntervalGenerator(StateHistorySourceType generatorType)
 	{
+		System.out.println("StateHistoryModel: setIntervalGenerator: setting interval gen to " + generatorType);
 		this.activeIntervalGenerator = intervalGenerators.get(generatorType);
 	}
 

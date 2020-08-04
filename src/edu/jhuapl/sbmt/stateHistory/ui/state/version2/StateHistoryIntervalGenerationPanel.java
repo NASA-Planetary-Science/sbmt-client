@@ -55,7 +55,7 @@ public class StateHistoryIntervalGenerationPanel extends JPanel
 
 	private String metakernelToLoad;
 
-	private StateHistorySourceType stateHistorySourceType;
+	private StateHistorySourceType stateHistorySourceType = StateHistorySourceType.PREGEN;
 
     /**
      * JLabel showing the available time to choose from

@@ -157,16 +157,21 @@ public class StateHistoryIntervalSelectionController
         //in the renderer appropriately
         runs.addListener((aSource, aEventType) ->
 		{
-			if (aEventType != ItemEventType.ItemsSelected) return;
-			view.getRemoveStateHistoryButton().setEnabled(runs.getSelectedItems().size() > 0);
-			view.getShowStateHistoryButton().setEnabled(runs.getSelectedItems().size() > 0);
-			view.getSaveStateHistoryButton().setEnabled(runs.getSelectedItems().size() == 1);
-			for (StateHistory history : runs.getAllItems())
-			{
-				history.getTrajectory().setFaded(!runs.getSelectedItems().contains(history));
-				runs.refreshColoring(history);
+			try {
+				if (aEventType != ItemEventType.ItemsSelected) return;
+				view.getRemoveStateHistoryButton().setEnabled(runs.getSelectedItems().size() > 0);
+				view.getShowStateHistoryButton().setEnabled(runs.getSelectedItems().size() > 0);
+				view.getSaveStateHistoryButton().setEnabled(runs.getSelectedItems().size() == 1);
+				for (StateHistory history : runs.getAllItems())
+				{
+					history.getTrajectory().setFaded(!runs.getSelectedItems().contains(history));
+					runs.refreshColoring(history);
+				}
+				runs.updateTimeBarValue();
 			}
-			runs.updateTimeBarValue();
+			catch (Exception e) {
+				e.printStackTrace();
+			}
 
 		});
     }

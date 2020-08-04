@@ -12,6 +12,7 @@ import org.joda.time.format.DateTimeFormatter;
 
 import edu.jhuapl.saavtk.util.FileCache;
 import edu.jhuapl.sbmt.client.SmallBodyViewConfig;
+import edu.jhuapl.sbmt.stateHistory.model.StateHistorySourceType;
 import edu.jhuapl.sbmt.stateHistory.model.StateHistoryUtil;
 import edu.jhuapl.sbmt.stateHistory.model.interfaces.IStateHistoryIntervalGenerator;
 import edu.jhuapl.sbmt.stateHistory.model.interfaces.State;
@@ -30,6 +31,7 @@ import edu.jhuapl.sbmt.stateHistory.model.trajectory.StandardTrajectory;
 public class PregenStateHistoryIntervalGenerator implements IStateHistoryIntervalGenerator
 {
 	SmallBodyViewConfig config;
+	String sourceFile;
 
 	/**
 	 *
@@ -39,6 +41,11 @@ public class PregenStateHistoryIntervalGenerator implements IStateHistoryInterva
 		this.config = config;
 	}
 
+	public void setSourceFile(String sourceFile)
+	{
+		this.sourceFile = sourceFile;
+	}
+
 	public StateHistory createNewTimeInterval(StateHistory history, Function<Double, Void> progressFunction) throws StateHistoryInputException, StateHistoryInvalidTimeException
 	{
 		String startString = edu.jhuapl.sbmt.util.TimeUtil.et2str(history.getMinTime());
@@ -46,6 +53,7 @@ public class PregenStateHistoryIntervalGenerator implements IStateHistoryInterva
 		DateTimeFormatter formatter = DateTimeFormat.forPattern("yyyy-MM-dd'T'HH:mm:ss.SSS");
 		DateTime start = formatter.parseDateTime(startString.substring(0, 23));
 		DateTime end = formatter.parseDateTime(endString.substring(0, 23));
+		System.out.println("PregenStateHistoryIntervalGenerator: createNewTimeInterval:1 ");
 		return createNewTimeInterval(history, history.getKey(), start, end,
 										history.getTimeWindow()/(24.0 * 60.0 * 60.0 * 1000.0), history.getStateHistoryName(), progressFunction);
 	}
@@ -53,6 +61,7 @@ public class PregenStateHistoryIntervalGenerator implements IStateHistoryInterva
 	public StateHistory createNewTimeInterval(StateHistoryKey key, DateTime startTime, DateTime endTime, double duration,
 			String name, Function<Double, Void> progressFunction) throws StateHistoryInputException, StateHistoryInvalidTimeException
 	{
+		System.out.println("PregenStateHistoryIntervalGenerator: createNewTimeInterval: 2");
 		return createNewTimeInterval(null, key, startTime, endTime, duration, name, progressFunction);
 	}
 
@@ -69,6 +78,7 @@ public class PregenStateHistoryIntervalGenerator implements IStateHistoryInterva
 	public StateHistory createNewTimeInterval(StateHistory tempHistory, StateHistoryKey key, DateTime startTime, DateTime endTime, double duration,
 			String name, Function<Double, Void> progressFunction) throws StateHistoryInputException, StateHistoryInvalidTimeException
 	{
+		System.out.println("PregenStateHistoryIntervalGenerator: createNewTimeInterval: creating new time interval");
 		StateHistory history = tempHistory;
 		File path = null;
 		final int lineLength = 121;
@@ -129,7 +139,6 @@ public class PregenStateHistoryIntervalGenerator implements IStateHistoryInterva
 
 			// add to history
 			history.addState(flybyState);
-
 			trajectory.addPositionAtTime(flybyState.getSpacecraftPosition(), flybyState.getEphemerisTime());
 
 			double completion = 100 * ((double) (i - positionStart)) / (double) (positionEnd - positionStart);
@@ -137,6 +146,8 @@ public class PregenStateHistoryIntervalGenerator implements IStateHistoryInterva
 		}
 		history.setCurrentTime(history.getMinTime());
 		history.setTrajectory(trajectory);
+		history.setType(StateHistorySourceType.PREGEN);
+		history.setSourceFile(sourceFile);
 		return history;
 	}
 }

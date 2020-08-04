@@ -11,9 +11,8 @@ import org.joda.time.format.DateTimeFormatter;
 
 import com.google.common.collect.ImmutableList;
 
-import edu.jhuapl.sbmt.pointing.Pointing;
-import edu.jhuapl.sbmt.pointing.PointingProvider;
 import edu.jhuapl.sbmt.pointing.spice.SpicePointingProvider;
+import edu.jhuapl.sbmt.stateHistory.model.StateHistorySourceType;
 import edu.jhuapl.sbmt.stateHistory.model.interfaces.IStateHistoryIntervalGenerator;
 import edu.jhuapl.sbmt.stateHistory.model.interfaces.State;
 import edu.jhuapl.sbmt.stateHistory.model.interfaces.StateHistory;
@@ -41,14 +40,21 @@ import crucible.core.time.UTCEpoch;
 public class SpiceStateHistoryIntervalGenerator implements IStateHistoryIntervalGenerator
 {
 	private double cadence;
-	private PointingProvider pointingProvider;
+	private SpicePointingProvider pointingProvider;
     protected static final TimeSystems DefaultTimeSystems = TimeSystems.builder().build();
     private TimeSystem<Double> tdbTs = DefaultTimeSystems.getTDB();
     private TimeSystem<UTCEpoch> utcTs = DefaultTimeSystems.getUTC();
+    private String sourceFile;
 
 	public SpiceStateHistoryIntervalGenerator(double cadence)
 	{
 		this.cadence = cadence;
+	}
+
+	public void setSourceFile(String sourceFile)
+	{
+		this.sourceFile = sourceFile;
+		setMetaKernelFile(sourceFile);
 	}
 
 	public void setMetaKernelFile(String mkFilename)
@@ -56,20 +62,36 @@ public class SpiceStateHistoryIntervalGenerator implements IStateHistoryInterval
 		Path mkPath = Paths.get(mkFilename);
 
 		//get these from the config maybe?  The instrument may have to come from somewhere else....
-		EphemerisID bodyId = new SimpleEphemerisID("BENNU");
+//		EphemerisID bodyId = new SimpleEphemerisID("BENNU");
 		EphemerisID scId = new SimpleEphemerisID("ORX");
 
 		FrameID bodyFrame = new SimpleFrameID("IAU_BENNU");
+//		FrameID scFrameName = new SimpleFrameID("ORX_SPACECRAFT");
 		FrameID scFrame = new SimpleFrameID("ORX");
 		FrameID instrumentFrame = new SimpleFrameID("ORX_OCAMS_POLYCAM");
+
+		String bodyName = "BENNU";
 
 		int sclkIdCode = -64;
 
 		try
 		{
-			System.out.println("SpiceStateHistoryIntervalGenerator: setMetaKernelFile: making pointing provider " + mkPath);
-			pointingProvider = SpicePointingProvider.of(ImmutableList.copyOf(new Path[] {mkPath}), bodyId, bodyFrame,
-					scId, scFrame, sclkIdCode, instrumentFrame);
+//			System.out.println("SpiceStateHistoryIntervalGenerator: setMetaKernelFile: making pointing provider " + mkPath);
+			SpicePointingProvider.Builder builder = SpicePointingProvider.builder(ImmutableList.copyOf(new Path[] {mkPath}), "IAU_BENNU", "ORX", "ORX_SPACECRAFT");
+
+            EphemerisID bennuBodyId = builder.bindEphemeris(bodyName);
+            EphemerisID earthBodyId = builder.bindEphemeris("EARTH");
+            EphemerisID sunBodyId = builder.bindEphemeris("SUN");
+
+            FrameID polycamInstFrame = builder.bindFrame("ORX_OCAMS_POLYCAM");
+            FrameID mapcamInstFrame = builder.bindFrame("ORX_OCAMS_MAPCAM");
+            FrameID navcamInstFrame = builder.bindFrame("ORX_OCAMS_NAVCAM");
+            builder.bindFrame("ORX_SPACECRAFT");
+//            builder.bindFrame("ORX");
+
+            pointingProvider = builder.build();
+//			pointingProvider = SpicePointingProvider.of(ImmutableList.copyOf(new Path[] {mkPath}), bodyId, bodyFrame,
+//					scId, scFrame, sclkIdCode, instrumentFrame);
 		}
 		catch (Exception e)
 		{
@@ -114,7 +136,9 @@ public class SpiceStateHistoryIntervalGenerator implements IStateHistoryInterval
 	public StateHistory createNewTimeInterval(StateHistory tempHistory, StateHistoryKey key, DateTime startTime, DateTime endTime, double duration,
 			String name, Function<Double, Void> progressFunction) throws StateHistoryInputException, StateHistoryInvalidTimeException
 	{
+		System.out.println("SpiceStateHistoryIntervalGenerator: createNewTimeInterval: pointing provider " + pointingProvider);
 		if (pointingProvider == null) return null;
+		System.out.println("SpiceStateHistoryIntervalGenerator: createNewTimeInterval: ");
 		StateHistory history = tempHistory;
 		// creates the trajectory
 		Trajectory trajectory = new StandardTrajectory();
@@ -126,23 +150,32 @@ public class SpiceStateHistoryIntervalGenerator implements IStateHistoryInterval
 		UTCEpoch endEpoch = UTCEpoch.fromString(dateFormatter.format(endTime.toDate()));
 		double timeWindowDuration = utcTs.difference(startEpoch, endEpoch);
 
+		EphemerisID bodyId = new SimpleEphemerisID("BENNU");
+		FrameID scFrame = new SimpleFrameID("ORX_SPACECRAFT");
+		FrameID polycamInstFrame = new SimpleFrameID("ORX_OCAMS_POLYCAM");
+
 		for (UTCEpoch time = startEpoch; time.compareTo(endEpoch) == -1; time = advanceUTCEpochByTime(time, cadence) )
 		{
+//			System.out.println("SpiceStateHistoryIntervalGenerator: createNewTimeInterval: time " + time);
 			//populate a flyby state object, and use it to populate the history and trajectory
 			double tdbTime = getTDBTimeForUTCEpoch(time);
 
-			Pointing pointing = pointingProvider.provide(tdbTs.getTSEpoch(tdbTime));
+//			SpiceInstrumentPointing pointing = pointingProvider.provide(tdbTs.getTSEpoch(tdbTime));
+//			SpiceInstrumentPointing pointing = pointingProvider.provide(polycamInstFrame, bodyId, tdbTime);
+//			UnwritableVectorIJK scPos = pointing.getSpacecraftPos();
 
-			State flybyState = new SpiceState(pointing, TimeUtil.str2et(time.toString()));
+			State flybyState = new SpiceState(pointingProvider, polycamInstFrame, bodyId, TimeUtil.str2et(time.toString()));
 			// add to history
 			history.addState(flybyState);
 			trajectory.addPositionAtTime(flybyState.getSpacecraftPosition(), flybyState.getEphemerisTime());
 			double completion = Math.abs(100 * ((double) (utcTs.difference(startEpoch, time))) / timeWindowDuration);
 			if (progressFunction != null) progressFunction.apply(completion);
 		}
-		progressFunction.apply(100.0);
+		if (progressFunction != null)  progressFunction.apply(100.0);
 		history.setCurrentTime(history.getMinTime());
 		history.setTrajectory(trajectory);
+		history.setType(StateHistorySourceType.SPICE);
+		history.setSourceFile(sourceFile);
 		return history;
 	}
 
@@ -154,7 +187,7 @@ public class SpiceStateHistoryIntervalGenerator implements IStateHistoryInterval
 	private UTCEpoch advanceUTCEpochByTime(UTCEpoch epoch, double delta)
 	{
 		UTCEpoch newEpoch = utcTs.add(epoch, delta);
-		System.out.println("SpiceStateHistoryIntervalGenerator: advanceUTCEpochByTime: new epoch " + newEpoch);
+//		System.out.println("SpiceStateHistoryIntervalGenerator: advanceUTCEpochByTime: new epoch " + newEpoch);
 		return newEpoch;
 	}
 

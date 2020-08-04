@@ -35,11 +35,13 @@ public class SpacecraftFieldOfView extends vtkConeSource
 	/**
 	 * Constructor.  Initializes values for the parent vtkConeSource
 	 */
-	public SpacecraftFieldOfView()
+	public SpacecraftFieldOfView(double fovHalfAngleDegrees)
 	{
 		SetDirection(0.0, 0.0, -1.0);
-        SetRadius(0.5);
-        SetCenter(spacecraftFovOffset);
+		SetAngle(fovHalfAngleDegrees);
+		CappingOff();
+//        SetRadius(0.5);
+//        SetCenter(spacecraftFovOffset);
         SetHeight(1.0);
         SetResolution(4);
         Update();
@@ -74,6 +76,11 @@ public class SpacecraftFieldOfView extends vtkConeSource
         spacecraftFovActor.GetProperty().ShadingOn();
         spacecraftFovActor.GetProperty().SetInterpolationToPhong();
         return spacecraftFovActor;
+	}
+
+	public void setVisibility(int isVisible)
+	{
+		spacecraftFovActor.SetVisibility(isVisible);
 	}
 
 }

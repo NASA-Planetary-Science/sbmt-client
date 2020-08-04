@@ -9,6 +9,9 @@ import edu.jhuapl.sbmt.stateHistory.model.StateHistoryUtil;
 import edu.jhuapl.sbmt.stateHistory.model.interfaces.State;
 import edu.jhuapl.sbmt.util.TimeUtil;
 
+import crucible.core.math.vectorspace.UnwritableVectorIJK;
+import crucible.core.mechanics.FrameID;
+
 /**
  * Spacecraft state object represented by a set of comma separated values
  * @author steelrj1
@@ -373,5 +376,23 @@ public class CsvState implements State
     {
         return spacecraftZAxis;
     }
+
+	@Override
+	public double[] getInstrumentLookDirection(FrameID instrumentFrameID)
+	{
+//		System.out.println("CsvState: getInstrumentLookDirection: ");
+		return new double[]{0.0, 0.0, 1.0};
+	}
+
+	public UnwritableVectorIJK getFrustum(FrameID instrumentFrameID, int index)
+	{
+		return new UnwritableVectorIJK(new double[] {0,0,1});
+	}
+
+	@Override
+	public String toString()
+	{
+		return "CSV State:  SC Position: " + getSpacecraftPosition()[0] + "," + getSpacecraftPosition()[1] + "," + getSpacecraftPosition()[2];
+	}
 
 }

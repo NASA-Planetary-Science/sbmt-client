@@ -3,8 +3,12 @@ package edu.jhuapl.sbmt.stateHistory.model.interfaces;
 import java.util.Map.Entry;
 import java.util.Set;
 
+import edu.jhuapl.sbmt.stateHistory.model.StateHistorySourceType;
 import edu.jhuapl.sbmt.stateHistory.model.io.StateHistoryInvalidTimeException;
 import edu.jhuapl.sbmt.stateHistory.model.stateHistory.StateHistoryKey;
+
+import crucible.core.math.vectorspace.UnwritableVectorIJK;
+import crucible.core.mechanics.FrameID;
 
 /**
  * Interface for classes that store state history segment information
@@ -17,6 +21,10 @@ public interface StateHistory
      *
      */
 	public static final double epsilon = 0.0000001;
+
+	public StateHistorySourceType getType();
+
+	public String getSourceFile();
 
 	/**
 	 * Returns the time window for this state history
@@ -114,6 +122,10 @@ public interface StateHistory
      */
     public double[] getSpacecraftPosition();
 
+    public double[] getInstrumentLookDirection(FrameID instrumentFrameID);
+
+    public UnwritableVectorIJK getFrustum(FrameID instrumentFrameID, int index);
+
     /**
      * Returns the sun position in the body fixed frame
      * @return
@@ -163,4 +175,8 @@ public interface StateHistory
 	 * @param color
 	 */
 	public void setTrajectoryColor(Double[] color);
+
+	public void setType(StateHistorySourceType type);
+
+	public void setSourceFile(String sourceFile);
 }

@@ -18,11 +18,11 @@ import edu.jhuapl.saavtk.util.Properties;
 import edu.jhuapl.sbmt.client.SmallBodyModel;
 import edu.jhuapl.sbmt.lidar.feature.FeatureAttr;
 import edu.jhuapl.sbmt.lidar.feature.VtkFeatureAttr;
+import edu.jhuapl.sbmt.model.image.perspectiveImage.PerspectiveImageFrustum;
 import edu.jhuapl.sbmt.stateHistory.model.StateHistoryColoringFunctions;
 import edu.jhuapl.sbmt.stateHistory.model.interfaces.StateHistory;
 import edu.jhuapl.sbmt.stateHistory.model.viewOptions.RendererLookDirection;
 import edu.jhuapl.sbmt.stateHistory.rendering.SpacecraftBody;
-import edu.jhuapl.sbmt.stateHistory.rendering.SpacecraftFieldOfView;
 import edu.jhuapl.sbmt.stateHistory.rendering.TrajectoryActor;
 import edu.jhuapl.sbmt.stateHistory.rendering.directionMarkers.EarthDirectionMarker;
 import edu.jhuapl.sbmt.stateHistory.rendering.directionMarkers.SpacecraftDirectionMarker;
@@ -39,6 +39,11 @@ public class StateHistoryRendererManager
 	*
 	*/
 	private HashMap<StateHistory, TrajectoryActor> stateHistoryToRendererMap = new HashMap<StateHistory, TrajectoryActor>();
+
+//	/**
+//	*
+//	*/
+//	private HashMap<StateHistory, SpacecraftFieldOfView> stateHistoryToFOVMap = new HashMap<StateHistory, SpacecraftFieldOfView>();
 
 	/**
 	*
@@ -70,7 +75,9 @@ public class StateHistoryRendererManager
 	/**
 	 *
 	 */
-	private SpacecraftFieldOfView spacecraftFov;
+//	private SpacecraftFieldOfView spacecraftFov;
+
+	private PerspectiveImageFrustum spacecraftFov;
 
 	// Direction markers
 	/**
@@ -143,6 +150,10 @@ public class StateHistoryRendererManager
 
 		this.statusBarTextActor = new StatusBarTextActor();
 
+//		this.spacecraftFov = new SpacecraftFieldOfView(0.794);
+		this.spacecraftFov = new PerspectiveImageFrustum(0, 0, 0, true, smallBodyModel.getBoundingBoxDiagonalLength());
+//		this.spacecraftFov.getActor().VisibilityOff();
+
 		this.pcs = pcs;
 
 //		refBodyViewConfig = (SmallBodyViewConfig) smallBodyModel.getSmallBodyConfig();
@@ -172,6 +183,8 @@ public class StateHistoryRendererManager
 		TrajectoryActor trajectoryActor = new TrajectoryActor(run.getTrajectory());
 		stateHistoryToRendererMap.put(run, trajectoryActor);
 
+
+
 		trajectoryActor.setColoringFunction(StateHistoryColoringFunctions.PER_TABLE.getColoringFunction(),
 				Colormaps.getNewInstanceOfBuiltInColormap("Rainbow"));
 
@@ -179,6 +192,7 @@ public class StateHistoryRendererManager
 		trajectoryActor.VisibilityOn();
 		trajectoryActor.GetMapper().Update();
 
+		this.spacecraftFov.getFrustumActor().VisibilityOn();
 		this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
 		this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, trajectoryActor);
 
@@ -324,8 +338,12 @@ public class StateHistoryRendererManager
 	{
 		ArrayList<vtkProp> props = new ArrayList<vtkProp>();
 		for (StateHistory history : stateHistoryToRendererMap.keySet())
+		{
 			props.add(stateHistoryToRendererMap.get(history));
 
+		}
+		if (spacecraftFov.getFrustumActor() != null)
+			props.add(spacecraftFov.getFrustumActor());
 		props.add(spacecraft.getActor());
 		props.add(scDirectionMarker.getActor());
 		props.add(spacecraftLabelActor);
@@ -367,7 +385,7 @@ public class StateHistoryRendererManager
 		// StateHistory state = getCurrentRun();
 		if (state != null && spacecraft.getActor() != null)
 		{
-			positionCalculator.updateSpacecraftPosition(state, timeFraction, spacecraft, scDirectionMarker, spacecraftLabelActor);
+			positionCalculator.updateSpacecraftPosition(state, timeFraction, spacecraft, scDirectionMarker, spacecraftLabelActor, spacecraftFov);
 			positionCalculator.updateEarthPosition(state, timeFraction, earthDirectionMarker);
 			positionCalculator.updateSunPosition(state, timeFraction, sunDirectionMarker);
 			this.pcs.firePropertyChange("POSITION_CHANGED", null, null);
@@ -550,6 +568,16 @@ public class StateHistoryRendererManager
 			trajActor.Modified();
 			this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, trajActor);
 		}
+	}
+
+	/**
+	 * @param visible
+	 */
+	public void setSpacecraftFOVVisibility(boolean visible)
+	{
+		if (spacecraftFov.getFrustumActor() != null)
+			spacecraftFov.getFrustumActor().SetVisibility(visible == true ? 1 : 0);
+		this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, spacecraftFov);
 	}
 
 	public double[] updateLookDirection(RendererLookDirection lookDirection)
