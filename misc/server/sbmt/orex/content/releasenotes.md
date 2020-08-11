@@ -4,6 +4,39 @@
 
 # Release Notes
 
+## July 27, 2020 (SBMT-0.8.0)
+
+### New:
+
+- Added a new "View" menu to the main SBMT menu bar. The "View" menu includes options for setting the scale bar, camera settings, pick accuracy and LOD settings (the latter two pertain to selecting structures, lidar tracks, etc.)
+- Released new OLA-based shape models of Bennu (v20 AltWG and PTM models) (OREx-specific)
+- Improved LOD capabilities (which enable feature selection) to allow the user to choose to prioritize speed vs. rendering quality
+- Added search capability for OTES and OVIRS (OREx-specific)
+- Headers added to circle, point, and ellipse structures files
+- LIDAR GUI improvements
+- Added camera config panel and scalebar support for regional DTMs
+- Added ability to adjust camera to a enable a specified scale bar value
+- Improved error handling when loading image lists
+- Added option to choose to either "append" or "replace" custom spectra when loading list
+- Improved camera panel to give the user more control over camera position and orientation
+- Improved About dialog and frame title for version representation
+- Added ability to save spectrum popup menu item to a directory for multiple spectra
+
+### Bug Fixes
+
+- Made stability improvements to SBMT server
+- Improved behavior when client starts without network access
+- Improved structure selection capability
+- Updated scale bar behavior to preserve accuracy when body no longer fills the field of view
+- Corrected radius reporting for structures whose lat/lon were changed by right click
+- Fixed bug that when clicking "Edit" on Custom Spectrum tab with no spectra selected threw exceptions
+- Fixed bug where coordinate grid (lat/lon) labels did not show up for bodies on Windows machines
+- Fixed bug with drawing circles correctly on high-resolution models
+- Improved structures loading time
+- Corrected a bug in save state capability
+- Fixed a bug that lead circle structures to inadvertently be loaded as point structures, and vis versa
+- Fixed an issue that led to inconsistent angle behavior when editing the ellipse angle
+
 ## March 17, 2020 (SBMT-0.7.9.1)
 
 ### New:
