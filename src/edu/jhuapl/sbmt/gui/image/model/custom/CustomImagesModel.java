@@ -51,7 +51,6 @@ import edu.jhuapl.sbmt.model.image.ImageCollection;
 import edu.jhuapl.sbmt.model.image.ImageKeyInterface;
 import edu.jhuapl.sbmt.model.image.ImageSource;
 import edu.jhuapl.sbmt.model.image.ImageType;
-import edu.jhuapl.sbmt.model.image.PerspectiveImageBoundaryCollection;
 import edu.jhuapl.sbmt.util.VtkENVIReader;
 
 import crucible.crust.metadata.api.Key;
@@ -69,7 +68,6 @@ public class CustomImagesModel extends ImageSearchModel
     private boolean initialized = false;
 //    private int numImagesInCollection = -1;
     final Key<List<CustomImageKeyInterface>> customImagesKey = Key.of("customImages");
-    private PerspectiveImageBoundaryCollection boundaries;
     CustomImageKeyInterface revisedKey = null;
 
     public CustomImagesModel(SmallBodyViewConfig smallBodyConfig,
@@ -82,7 +80,6 @@ public class CustomImagesModel extends ImageSearchModel
         this.customImageListeners = new Vector<CustomImageResultsListener>();
 
         this.imageCollection = (ImageCollection)modelManager.getModel(getImageCollectionModelName());
-        this.boundaries = (PerspectiveImageBoundaryCollection)modelManager.getModel(getImageBoundaryCollectionModelName());
     }
 
     public CustomImagesModel(ImageSearchModel model)
@@ -226,7 +223,11 @@ public class CustomImagesModel extends ImageSearchModel
 
     public void removeAllButtonActionPerformed(ActionEvent evt)
     {
-        boundaries.removeAllBoundaries();
+    	for (CustomImageKeyInterface key : customImages)
+        {
+        	Image image = imageCollection.getImage(key);
+        	if (image != null) image.setBoundaryVisibility(false);
+        }
         setResultIntervalCurrentlyShown(null);
     }
 

@@ -44,7 +44,6 @@ public class OfflimbImageResultsTableController extends ImageResultsTableControl
         if (this.propertyChangeListener != null)
         {
             this.imageCollection.removePropertyChangeListener(this.propertyChangeListener);
-            this.boundaries.removePropertyChangeListener(this.propertyChangeListener);
             this.propertyChangeListener = new OfflimbImageResultsPropertyChangeListener();
         }
     }
@@ -225,7 +224,7 @@ public class OfflimbImageResultsTableController extends ImageResultsTableControl
                 tableModel.setValueAt(false, index, offlimbTableView.getOffLimbIndex());
             }
 
-            tableModel.setValueAt(boundaries.containsBoundary(key), index, imageResultsTableView.getBndrColumnIndex());
+            tableModel.setValueAt(imageCollection.getImage(key).isBoundaryVisible(), index, imageResultsTableView.getBndrColumnIndex());
         }
 
     }

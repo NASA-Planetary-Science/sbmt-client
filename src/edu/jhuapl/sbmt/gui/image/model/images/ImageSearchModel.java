@@ -1,5 +1,6 @@
 package edu.jhuapl.sbmt.gui.image.model.images;
 
+import java.awt.Color;
 import java.io.File;
 import java.io.IOException;
 import java.text.ParseException;
@@ -47,8 +48,6 @@ import edu.jhuapl.sbmt.model.image.Image;
 import edu.jhuapl.sbmt.model.image.ImageCollection;
 import edu.jhuapl.sbmt.model.image.ImageKeyInterface;
 import edu.jhuapl.sbmt.model.image.ImageSource;
-import edu.jhuapl.sbmt.model.image.PerspectiveImageBoundary;
-import edu.jhuapl.sbmt.model.image.PerspectiveImageBoundaryCollection;
 import edu.jhuapl.sbmt.model.image.perspectiveImage.PerspectiveImage;
 import edu.jhuapl.sbmt.model.phobos.HierarchicalSearchSpecification.Selection;
 import edu.jhuapl.sbmt.query.database.ImageDatabaseSearchMetadata;
@@ -93,6 +92,7 @@ public class ImageSearchModel implements Controller.Model, MetadataManager
     final Key<SortedMap<String, Boolean>> isOffLimbShowingKey = Key.of("offLimbShowing");
     final Key<SortedMap<String, Boolean>> isFrustrumShowingKey = Key.of("frustrumShowing");
     final Key<SortedMap<String, Boolean>> isBoundaryShowingKey = Key.of("boundaryShowing");
+    final Key<SortedMap<String, Color>> boundaryColorKey = Key.of("boundaryColor");
 
     private SmallBodyViewConfig smallBodyConfig;
     protected ModelManager modelManager;
@@ -1381,20 +1381,33 @@ public class ImageSearchModel implements Controller.Model, MetadataManager
         }
         result.put(selectedImagesKey, selected.build());
 
-        // Save boundary info.
-        PerspectiveImageBoundaryCollection boundaries = (PerspectiveImageBoundaryCollection)modelManager.getModel(getImageBoundaryCollectionModelName());
         ImmutableSortedMap.Builder<String, Boolean> bndr = ImmutableSortedMap.naturalOrder();
-        for (ImageKeyInterface key : boundaries.getImageKeys())
+        ImmutableSortedMap.Builder<String, Color> bndrColor = ImmutableSortedMap.naturalOrder();
+        for (Image image: imageCollection.getImages())
         {
-            if (instrument.equals(((ImageKey)key).getInstrument()) && pointing.equals(key.getSource()))
-            {
-                PerspectiveImageBoundary boundary = boundaries.getBoundary(key);
-                String fullName = key.getName();
-                String name = new File(fullName).getName();
-                bndr.put(name, boundary.isVisible());
-            }
+        	ImageKeyInterface key = image.getKey();
+        	String fullName = key.getName();
+        	String name = new File(fullName).getName();
+        	bndr.put(name, image.isBoundaryVisible());
+        	bndrColor.put(name, image.getBoundaryColor());
         }
         result.put(isBoundaryShowingKey, bndr.build());
+        result.put(boundaryColorKey, bndrColor.build());
+
+        // Save boundary info.
+//        PerspectiveImageBoundaryCollection boundaries = (PerspectiveImageBoundaryCollection)modelManager.getModel(getImageBoundaryCollectionModelName());
+//        ImmutableSortedMap.Builder<String, Boolean> bndr = ImmutableSortedMap.naturalOrder();
+//        for (ImageKeyInterface key : boundaries.getImageKeys())
+//        {
+//            if (instrument.equals(((ImageKey)key).getInstrument()) && pointing.equals(key.getSource()))
+//            {
+//                PerspectiveImageBoundary boundary = boundaries.getBoundary(key);
+//                String fullName = key.getName();
+//                String name = new File(fullName).getName();
+//                bndr.put(name, boundary.isVisible());
+//            }
+//        }
+//        result.put(isBoundaryShowingKey, bndr.build());
 
         // Save mapped image information.
         ImageCollection imageCollection = (ImageCollection) modelManager.getModel(getImageCollectionModelName());
@@ -1500,7 +1513,7 @@ public class ImageSearchModel implements Controller.Model, MetadataManager
 
         // Restore region selected.
         AbstractEllipsePolygonModel selectionModel = (AbstractEllipsePolygonModel)modelManager.getModel(ModelNames.CIRCLE_SELECTION);
-        PerspectiveImageBoundaryCollection boundaries = (PerspectiveImageBoundaryCollection)modelManager.getModel(getImageBoundaryCollectionModelName());
+//        PerspectiveImageBoundaryCollection boundaries = (PerspectiveImageBoundaryCollection)modelManager.getModel(getImageBoundaryCollectionModelName());
 
         selectionModel.retrieve(source.get(circleSelectionKey));
 
@@ -1522,28 +1535,70 @@ public class ImageSearchModel implements Controller.Model, MetadataManager
 //        }
 
         // Restore boundaries. First clear any associated with this model.
-        for (ImageKeyInterface key : boundaries.getImageKeys())
+        for (Image image : imageCollection.getImages())
         {
-            if (instrument.equals(((ImageKey)key).instrument) && pointing.equals(key.getSource()))
-            {
-                boundaries.removeBoundary(key);
-            }
+        	image.setBoundaryVisibility(false);
         }
         Map<String, Boolean> bndr = source.get(isBoundaryShowingKey);
         for (Entry<String, Boolean> entry : bndr.entrySet())
         {
-            try
+        	try
             {
                 String fullName = instrument.getSearchQuery().getDataPath() + "/" + entry.getKey();
                 ImageKeyInterface imageKey = createImageKey(fullName, pointing, instrument);
-                boundaries.addBoundary(imageKey);
-                boundaries.getBoundary(imageKey).setVisible(entry.getValue());
+                Image image = imageCollection.getImage(imageKey);
+                if (image != null)
+                {
+                	image.setBoundaryVisibility(entry.getValue());
+                }
             }
             catch (Exception e)
             {
                 e.printStackTrace();
             }
         }
+
+        Map<String, Color> bndrColor = source.get(boundaryColorKey);
+        for (Entry<String, Color> entry : bndrColor.entrySet())
+        {
+        	try
+            {
+                String fullName = instrument.getSearchQuery().getDataPath() + "/" + entry.getKey();
+                ImageKeyInterface imageKey = createImageKey(fullName, pointing, instrument);
+                Image image = imageCollection.getImage(imageKey);
+                if (image != null)
+                {
+                	image.setBoundaryColor(entry.getValue());
+                }
+            }
+            catch (Exception e)
+            {
+                e.printStackTrace();
+            }
+        }
+
+//        for (ImageKeyInterface key : boundaries.getImageKeys())
+//        {
+//            if (instrument.equals(((ImageKey)key).instrument) && pointing.equals(key.getSource()))
+//            {
+//                boundaries.removeBoundary(key);
+//            }
+//        }
+//        Map<String, Boolean> bndr = source.get(isBoundaryShowingKey);
+//        for (Entry<String, Boolean> entry : bndr.entrySet())
+//        {
+//            try
+//            {
+//                String fullName = instrument.getSearchQuery().getDataPath() + "/" + entry.getKey();
+//                ImageKeyInterface imageKey = createImageKey(fullName, pointing, instrument);
+//                boundaries.addBoundary(imageKey);
+//                boundaries.getBoundary(imageKey).setVisible(entry.getValue());
+//            }
+//            catch (Exception e)
+//            {
+//                e.printStackTrace();
+//            }
+//        }
 
         // Restore mapped image information.
         ImageCollection imageCollection = (ImageCollection) modelManager.getModel(getImageCollectionModelName());
