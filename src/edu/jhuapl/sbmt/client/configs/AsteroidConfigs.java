@@ -509,7 +509,7 @@ public class AsteroidConfigs extends SmallBodyViewConfig
         c.shapeModelFileNames = prepend(c.rootDirOnServer, "243ida.llr.gz");
         c.hasImageMap = true;
         c.setResolution(ImmutableList.of(32040));
-
+//
         /*c.imagingInstruments = new ImagingInstrument[] {
                 new ImagingInstrument( //
                         SpectralImageMode.MONO, //
