@@ -510,7 +510,7 @@ public class AsteroidConfigs extends SmallBodyViewConfig
         c.hasImageMap = true;
         c.setResolution(ImmutableList.of(32040));
 
-        c.imagingInstruments = new ImagingInstrument[] {
+        /*c.imagingInstruments = new ImagingInstrument[] {
                 new ImagingInstrument( //
                         SpectralImageMode.MONO, //
                         new FixedListQuery("/THOMAS/IDA/SSI", "/THOMAS/IDA/SSI/images/gallery"), //
@@ -518,7 +518,7 @@ public class AsteroidConfigs extends SmallBodyViewConfig
                         new ImageSource[]{ImageSource.CORRECTED}, //
                         Instrument.SSI //
                         ) //
-        };
+        };*/
 
         c.imageSearchDefaultStartDate = new GregorianCalendar(1993, 7, 28, 0, 0, 0).getTime();
         c.imageSearchDefaultEndDate = new GregorianCalendar(1993, 7, 29, 0, 0, 0).getTime();
@@ -564,7 +564,7 @@ public class AsteroidConfigs extends SmallBodyViewConfig
         c.hasImageMap = true;
         c.setResolution(ImmutableList.of(14160));
 
-        c.imagingInstruments = new ImagingInstrument[] {
+        /*c.imagingInstruments = new ImagingInstrument[] {
                 new ImagingInstrument( //
                         SpectralImageMode.MONO, //
                         new FixedListQuery("/THOMAS/MATHILDE/MSI", "/THOMAS/MATHILDE/MSI/images/gallery"), //
@@ -572,7 +572,7 @@ public class AsteroidConfigs extends SmallBodyViewConfig
                         new ImageSource[]{ImageSource.CORRECTED}, //
                         Instrument.MSI //
                         ) //
-        };
+        };*/
 
         c.imageSearchDefaultStartDate = new GregorianCalendar(1997, 5, 27, 0, 0, 0).getTime();
         c.imageSearchDefaultEndDate = new GregorianCalendar(1997, 5, 28, 0, 0, 0).getTime();
@@ -626,7 +626,7 @@ public class AsteroidConfigs extends SmallBodyViewConfig
         c.hasImageMap = true;
         c.setResolution(ImmutableList.of(32040));
 
-        c.imagingInstruments = new ImagingInstrument[] {
+        /*c.imagingInstruments = new ImagingInstrument[] {
                 new ImagingInstrument( //
                         SpectralImageMode.MONO, //
                         new FixedListQuery("/THOMAS/GASPRA/SSI", "/THOMAS/GASPRA/SSI/images/gallery"), //
@@ -634,7 +634,7 @@ public class AsteroidConfigs extends SmallBodyViewConfig
                         new ImageSource[]{ImageSource.CORRECTED}, //
                         Instrument.SSI //
                         ) //
-        };
+        };*/
 
         c.imageSearchDefaultStartDate = new GregorianCalendar(1991, 9, 29, 0, 0, 0).getTime();
         c.imageSearchDefaultEndDate = new GregorianCalendar(1991, 9, 30, 0, 0, 0).getTime();
