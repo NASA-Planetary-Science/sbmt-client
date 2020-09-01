@@ -694,7 +694,7 @@ public class AsteroidConfigs extends SmallBodyViewConfig
         c.author = ShapeModelType.HANUS;
         c.modelLabel = "Hanus et al. (2013)";
         c.rootDirOnServer = "/psyche/hanus";
-        c.shapeModelFileNames = prepend(c.rootDirOnServer, "shape.obj");
+        c.shapeModelFileExtension = ".obj";
         c.setResolution(ImmutableList.of(2038));
 
         c.presentInMissions = new SbmtMultiMissionTool.Mission[] {SbmtMultiMissionTool.Mission.PUBLIC_RELEASE, SbmtMultiMissionTool.Mission.TEST_PUBLIC_RELEASE, SbmtMultiMissionTool.Mission.STAGE_PUBLIC_RELEASE, SbmtMultiMissionTool.Mission.STAGE_APL_INTERNAL, SbmtMultiMissionTool.Mission.APL_INTERNAL, SbmtMultiMissionTool.Mission.TEST_APL_INTERNAL};
@@ -710,7 +710,7 @@ public class AsteroidConfigs extends SmallBodyViewConfig
         c.author = ShapeModelType.VIIKINKOSKI;
         c.modelLabel = "Viikinkoski et al. (2018)";
         c.rootDirOnServer = "/psyche/viikinkoski";
-        c.shapeModelFileNames = prepend(c.rootDirOnServer, "tri_file_octdec_2.obj");
+        c.shapeModelFileExtension = ".obj";
         c.setResolution(ImmutableList.of(1352));
 
         c.presentInMissions = new SbmtMultiMissionTool.Mission[] {SbmtMultiMissionTool.Mission.PUBLIC_RELEASE, SbmtMultiMissionTool.Mission.TEST_PUBLIC_RELEASE, SbmtMultiMissionTool.Mission.STAGE_PUBLIC_RELEASE, SbmtMultiMissionTool.Mission.STAGE_APL_INTERNAL, SbmtMultiMissionTool.Mission.APL_INTERNAL, SbmtMultiMissionTool.Mission.TEST_APL_INTERNAL};
