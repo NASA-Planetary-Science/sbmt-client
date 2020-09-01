@@ -509,7 +509,7 @@ public class AsteroidConfigs extends SmallBodyViewConfig
         c.shapeModelFileNames = prepend(c.rootDirOnServer, "243ida.llr.gz");
         c.hasImageMap = true;
         c.setResolution(ImmutableList.of(32040));
-//
+
         /*c.imagingInstruments = new ImagingInstrument[] {
                 new ImagingInstrument( //
                         SpectralImageMode.MONO, //
@@ -680,6 +680,38 @@ public class AsteroidConfigs extends SmallBodyViewConfig
         c.rootDirOnServer = "/JORDA/STEINS";
         c.shapeModelFileNames = prepend(c.rootDirOnServer, "steins_cart.plt.gz");
         c.setResolution(ImmutableList.of(20480));
+
+        c.presentInMissions = new SbmtMultiMissionTool.Mission[] {SbmtMultiMissionTool.Mission.PUBLIC_RELEASE, SbmtMultiMissionTool.Mission.TEST_PUBLIC_RELEASE, SbmtMultiMissionTool.Mission.STAGE_PUBLIC_RELEASE, SbmtMultiMissionTool.Mission.STAGE_APL_INTERNAL, SbmtMultiMissionTool.Mission.APL_INTERNAL, SbmtMultiMissionTool.Mission.TEST_APL_INTERNAL};
+        c.defaultForMissions = new SbmtMultiMissionTool.Mission[] {};
+
+        configArray.add(c);
+
+        c = new AsteroidConfigs();
+        c.body = ShapeModelBody.PSYCHE;
+        c.type = BodyType.ASTEROID;
+        c.population = ShapeModelPopulation.MAIN_BELT;
+        c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
+        c.author = ShapeModelType.HANUS;
+        c.modelLabel = "Hanus et al. (2013)";
+        c.rootDirOnServer = "/psyche/hanus";
+        c.shapeModelFileNames = prepend(c.rootDirOnServer, "shape.obj");
+        c.setResolution(ImmutableList.of(2038));
+
+        c.presentInMissions = new SbmtMultiMissionTool.Mission[] {SbmtMultiMissionTool.Mission.PUBLIC_RELEASE, SbmtMultiMissionTool.Mission.TEST_PUBLIC_RELEASE, SbmtMultiMissionTool.Mission.STAGE_PUBLIC_RELEASE, SbmtMultiMissionTool.Mission.STAGE_APL_INTERNAL, SbmtMultiMissionTool.Mission.APL_INTERNAL, SbmtMultiMissionTool.Mission.TEST_APL_INTERNAL};
+        c.defaultForMissions = new SbmtMultiMissionTool.Mission[] {};
+
+        configArray.add(c);
+
+        c = new AsteroidConfigs();
+        c.body = ShapeModelBody.PSYCHE;
+        c.type = BodyType.ASTEROID;
+        c.population = ShapeModelPopulation.MAIN_BELT;
+        c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
+        c.author = ShapeModelType.VIIKINKOSKI;
+        c.modelLabel = "Viikinkoski et al. (2018)";
+        c.rootDirOnServer = "/psyche/viikinkoski";
+        c.shapeModelFileNames = prepend(c.rootDirOnServer, "tri_file_octdec_2.obj");
+        c.setResolution(ImmutableList.of(1352));
 
         c.presentInMissions = new SbmtMultiMissionTool.Mission[] {SbmtMultiMissionTool.Mission.PUBLIC_RELEASE, SbmtMultiMissionTool.Mission.TEST_PUBLIC_RELEASE, SbmtMultiMissionTool.Mission.STAGE_PUBLIC_RELEASE, SbmtMultiMissionTool.Mission.STAGE_APL_INTERNAL, SbmtMultiMissionTool.Mission.APL_INTERNAL, SbmtMultiMissionTool.Mission.TEST_APL_INTERNAL};
         c.defaultForMissions = new SbmtMultiMissionTool.Mission[] {};
