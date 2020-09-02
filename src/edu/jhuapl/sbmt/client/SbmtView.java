@@ -131,7 +131,7 @@ public class SbmtView extends View implements PropertyChangeListener
 		shapeModelName = configInfo.shapeModelName;
     	this.stateManager = TrackedMetadataManager.of("View " + configInfo.uniqueName);
 		this.metadataManagers = new HashMap<>();
-		this.configURL = configInfo.configURL;
+		this.configURL = configInfo.getConfigURL();
 		initializeStateManager();
 	}
 
@@ -149,7 +149,7 @@ public class SbmtView extends View implements PropertyChangeListener
 		shapeModelName = configInfo.shapeModelName;
 		this.stateManager = TrackedMetadataManager.of("View " + getUniqueName());
 		this.metadataManagers = new HashMap<>();
-		this.configURL = configInfo.configURL;
+		this.configURL = configInfo.getConfigURL();
 
 		initializeStateManager();
 	}
