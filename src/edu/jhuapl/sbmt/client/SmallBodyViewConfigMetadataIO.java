@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Vector;
 
+import com.github.davidmoten.guavamini.Preconditions;
 import com.google.common.collect.ImmutableList;
 
 import edu.jhuapl.saavtk.config.ViewConfig;
@@ -46,7 +47,7 @@ import crucible.crust.metadata.impl.gson.Serializers;
 
 public class SmallBodyViewConfigMetadataIO implements MetadataManager
 {
-	static String metadataVersion = "8.0";
+	static String metadataVersion = "9.0";
 
 
 	//TODO: This needs a new home
@@ -65,6 +66,8 @@ public class SmallBodyViewConfigMetadataIO implements MetadataManager
 
     public static void main(String[] args) throws IOException
     {
+        Preconditions.checkArgument(args.length == 1, "Usage: SmallBodyViewConfigMetadataIO.sh <output-directory-full-path>\nThe output directory will be created if it does not exist");
+
         SettableMetadata allBodiesMetadata = SettableMetadata.of(Version.of(metadataVersion));
         Configuration.setAPLVersion(true);
         SbmtMultiMissionTool.configureMission();
@@ -75,7 +78,7 @@ public class SmallBodyViewConfigMetadataIO implements MetadataManager
             each.enable(true);
         }
 
-        String rootDir = "/Users/steelrj1/Desktop/sbmt-configs/configs" + metadataVersion + "/";
+        String rootDir = args[0].replaceFirst("/*$", "/") + BasicConfigInfo.getConfigPathPrefix() + "/";
 
         // Create the directory just in case. Then make sure it exists before proceeding.
         File rootDirFile = new File(rootDir);
