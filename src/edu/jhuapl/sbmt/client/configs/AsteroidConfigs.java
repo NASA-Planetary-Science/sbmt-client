@@ -518,7 +518,7 @@ public class AsteroidConfigs extends SmallBodyViewConfig
                         new ImageSource[]{ImageSource.CORRECTED}, //
                         Instrument.SSI //
                         ) //
-        };*/
+        };
 
         c.imageSearchDefaultStartDate = new GregorianCalendar(1993, 7, 28, 0, 0, 0).getTime();
         c.imageSearchDefaultEndDate = new GregorianCalendar(1993, 7, 29, 0, 0, 0).getTime();
@@ -526,6 +526,7 @@ public class AsteroidConfigs extends SmallBodyViewConfig
         c.imageSearchUserDefinedCheckBoxesNames = new String[] {};
         c.imageSearchDefaultMaxSpacecraftDistance = 40000.0;
         c.imageSearchDefaultMaxResolution = 4000.0;
+        */
         c.presentInMissions = new SbmtMultiMissionTool.Mission[] {SbmtMultiMissionTool.Mission.PUBLIC_RELEASE, SbmtMultiMissionTool.Mission.TEST_PUBLIC_RELEASE, SbmtMultiMissionTool.Mission.STAGE_PUBLIC_RELEASE, SbmtMultiMissionTool.Mission.STAGE_APL_INTERNAL, SbmtMultiMissionTool.Mission.APL_INTERNAL, SbmtMultiMissionTool.Mission.TEST_APL_INTERNAL};
         c.defaultForMissions = new SbmtMultiMissionTool.Mission[] {};
 
@@ -572,7 +573,7 @@ public class AsteroidConfigs extends SmallBodyViewConfig
                         new ImageSource[]{ImageSource.CORRECTED}, //
                         Instrument.MSI //
                         ) //
-        };*/
+        };
 
         c.imageSearchDefaultStartDate = new GregorianCalendar(1997, 5, 27, 0, 0, 0).getTime();
         c.imageSearchDefaultEndDate = new GregorianCalendar(1997, 5, 28, 0, 0, 0).getTime();
@@ -588,6 +589,7 @@ public class AsteroidConfigs extends SmallBodyViewConfig
         c.imageSearchUserDefinedCheckBoxesNames = new String[] {};
         c.imageSearchDefaultMaxSpacecraftDistance = 40000.0;
         c.imageSearchDefaultMaxResolution = 4000.0;
+        */
         c.presentInMissions = new SbmtMultiMissionTool.Mission[] {SbmtMultiMissionTool.Mission.PUBLIC_RELEASE, SbmtMultiMissionTool.Mission.TEST_PUBLIC_RELEASE, SbmtMultiMissionTool.Mission.STAGE_PUBLIC_RELEASE, SbmtMultiMissionTool.Mission.STAGE_APL_INTERNAL, SbmtMultiMissionTool.Mission.APL_INTERNAL, SbmtMultiMissionTool.Mission.TEST_APL_INTERNAL};
         c.defaultForMissions = new SbmtMultiMissionTool.Mission[] {};
 
@@ -634,7 +636,7 @@ public class AsteroidConfigs extends SmallBodyViewConfig
                         new ImageSource[]{ImageSource.CORRECTED}, //
                         Instrument.SSI //
                         ) //
-        };*/
+        };
 
         c.imageSearchDefaultStartDate = new GregorianCalendar(1991, 9, 29, 0, 0, 0).getTime();
         c.imageSearchDefaultEndDate = new GregorianCalendar(1991, 9, 30, 0, 0, 0).getTime();
@@ -642,6 +644,7 @@ public class AsteroidConfigs extends SmallBodyViewConfig
         c.imageSearchUserDefinedCheckBoxesNames = new String[] {};
         c.imageSearchDefaultMaxSpacecraftDistance = 40000.0;
         c.imageSearchDefaultMaxResolution = 4000.0;
+        */
 
         c.presentInMissions = new SbmtMultiMissionTool.Mission[] {SbmtMultiMissionTool.Mission.PUBLIC_RELEASE, SbmtMultiMissionTool.Mission.TEST_PUBLIC_RELEASE, SbmtMultiMissionTool.Mission.STAGE_PUBLIC_RELEASE, SbmtMultiMissionTool.Mission.STAGE_APL_INTERNAL, SbmtMultiMissionTool.Mission.APL_INTERNAL, SbmtMultiMissionTool.Mission.TEST_APL_INTERNAL};
         c.defaultForMissions = new SbmtMultiMissionTool.Mission[] {};
