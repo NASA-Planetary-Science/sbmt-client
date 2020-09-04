@@ -54,6 +54,28 @@ check() {
   fi
 }
 
+# Confirm identity of user invoking this command is the sbmt account.
+confirmSbmt() {
+  (
+    isSbmt=$(checkIdentity sbmt)
+    if test "$isSbmt" != true; then
+      check 1
+    fi
+  )
+  check $?, $*
+}
+
+# Confirm identity of user invoking this command is NOT the sbmt account.
+confirmNotSbmt() {
+  (
+    isSbmt=$(checkIdentity sbmt)
+    if test "$isSbmt" != false; then
+      check 1
+    fi
+  )
+  check $?, $*
+}
+
 # Get the absolute path of the directory for the path passed as an argument.
 # If the argument identifies an existing directory, this function returns the
 # path to that directory. If the argument identifies a file, this function

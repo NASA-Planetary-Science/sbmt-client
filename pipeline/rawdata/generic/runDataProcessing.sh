@@ -42,6 +42,9 @@
 #
 #       sbmtCodeTop: where sbmt and saavtk are checked out and built.
 #
+#        scriptName: the name of the script currently being run; intended for
+#                    use in output text, or for log file names, etc.
+# 
 # Functions defined in the common functions library dataProcessingFunctions.sh
 # are available in the payload script. These functions will try when possible to
 # avoid repeating expensive operations that were completed successfully
@@ -67,9 +70,11 @@
 # runDataProcessing.sh so that the processing framework used is archived
 # along with the rest of the delivery.
 #
+runnerScript=`echo $0 | sed 's:.*/::'`
+
 usage() {
   echo "--------------------------------------------------------------------------------"
-  echo "Usage: $0 processDeliveryScript processingID outputTop [ serverTop ]"
+  echo "Usage: $runnerScript processDeliveryScript processingID outputTop [ serverTop ]"
   echo ""
   echo "       processDeliveryScript is a Bourne shell script containing specific"
   echo "           commands to be used for this processing action, typically a locally"
@@ -87,6 +92,9 @@ usage() {
   echo "            the area the server actually uses to provide data. Typically this"
   echo "            will be one of '/project/sbmt2/test', '/project/sbmt2/stage',"
   echo "            or '/project/sbmt2/prod'."
+  echo ""
+  echo "        Read the top block of $runnerScript for further details about how"
+  echo "        it works."
   echo "--------------------------------------------------------------------------------"
 }
 
@@ -108,6 +116,8 @@ fi
 
 . $commonFunctions
 
+confirmSbmt "$runnerScript: you must be logged into the sbmt account to process deliveries"
+
 processingScript=$1
 processingId=$2
 outputTop=$3
@@ -117,6 +127,10 @@ if test ! -f $processingScript; then
   (usage >&2)
   check 1 "Script $processingScript is not a file"
 fi
+
+# Extract the name of the processing script, which may be used in
+# output messages etc.
+scriptName=`echo $processingScript | sed 's:.*/::'`
 
 #-------------------------------------------------------------------------------
 # Assume the absolute path to the processing script is:
