@@ -268,18 +268,66 @@ createParentDir() {
   if test $? -ne 0; then exit 1; fi
 }
 
-# Perform an rsync from the source to the destination.
+# Perform an rsync from the source (1st argument) to the destination (2nd argument).
+# There is an optional 3rd argument, which is extra command line options for rsync.
+#
+# The rsync command will for sure be invoked with these options:
+#   -r recursive
+#   -p preserve permissions
+#   -t preserve modification times
+#   -g preserve group
+#   -D preserve "special" files (named sockets and fifos, probably irrelevant)
+#   -H preserve hard links. This is unlikely to matter, but is hugely important if
+#       it does. If the source area contains 2 hardlinked files and you leave out this
+#       option, two copies will be made at the destination.
+#
+# If the optional 3rd argument to doRsync is omitted, --links --copy-unsafe-links --keep-dirlinks
+# (see below) will also be added to the rsync command line.
+#
+# The 3rd argument, if present, is intended to be a combination of the options below, to control
+# how links are handled. It could also be any rsync options that do not conflict with
+# the standard options. Note rsync options can be confusing, read descriptions
+# carefully.
+#
+#   --links (-l) means recreate source links in the destination in general. If you omit this,
+#       symlinks get skipped completely. Options below (if also supplied) take precedence.
+#
+#   --copy-links (-L) copy the files/directories that source links point to. Destination will
+#       tend to have only files/dirs. Overrides --links completely.
+#
+#   --copy-unsafe-links copy the files/directories that source links point to, but only for links
+#       that point outside the source tree. Does not imply --links for other links.
+#
+#   --copy-dirlinks (-k) copy directories (and only directories) that source links point to. Does not
+#       imply --links for links that point to files.
+#
+#   --keep-dirlinks (-K). Given a source element that resolves to a directory, if the destination
+#       already has a link with the same name, and that link points to a directory, follow that
+#       link on the destination side rather than delete the destination link and replace it with
+#       a copy of the source directory. For example, supposed a source directory "polycam" corresponds
+#       to a destination link polycam -> ../shared/polycam, where ../shared/polycam really is a
+#       directory. If --keep-dirlinks is specified, the destination link would be left in place and
+#       followed to sync the contents of source "polycam" with ../shared/polycam. Without --keep-dirlinks,
+#       the destination link would be deleted, a new polycam directory would be created and *that*
+#       would be synced with the source.
+#
+# This is a lower level function, so it does not check its arguments as carefully, be warned.    
 doRsync() {
   (
     src=$1
     dest=$2
+    linkOptions=$3
 
     # Make sure source directories end in a slash.
     if test -d $src; then
       src=`echo $src | sed -e 's:/*$:/:'`
     fi
 
-    rsyncCmd="rsync -rlptgDH --copy-links"
+    if test "$linkOptions" = ""; then
+      linkOptions="--links --copy-unsafe-links --keep-dirlinks"
+    fi
+
+    rsyncCmd="rsync -rptgDH $linkOptions"
     echo nice time $rsyncCmd $src $dest
     nice time $rsyncCmd $src $dest
     if test $? -ne 0; then
@@ -310,7 +358,7 @@ doRsyncDir() {
       exit 1
     fi
     createDir $dest
-    doRsync $src $dest
+    doRsync $src $dest "$3"
   )
   if test $? -ne 0; then exit 1; fi
 }
@@ -324,7 +372,7 @@ doRsyncOptionalDir() {
     # Check only existence here. doRsyncDir will take care of
     # reporting error if src is not a directory.
     if test -e "$src"; then
-      doRsyncDir "$src" "$dest"
+      doRsyncDir $src $dest  "$3"
     fi
   )
   if test $? -ne 0; then exit 1; fi
@@ -352,7 +400,7 @@ copyFile() {
       echo "copyFile: Variable destTop is not set" >&2
       exit 1
     fi
-    doRsync "$srcTop/$src" "$destTop/$dest"
+    doRsync $srcTop/$src $destTop/$dest "$3"
   )
   if test $? -ne 0; then exit 1; fi
 }
@@ -380,7 +428,7 @@ copyDir() {
       echo "copyDir: Variable destTop is not set" >&2
       exit 1
     fi
-    doRsyncDir "$srcTop/$src" "$destTop/$dest"
+    doRsyncDir $srcTop/$src $destTop/$dest "$3"
   )
   if test $? -ne 0; then exit 1; fi
 }
@@ -408,7 +456,7 @@ copyOptionalDir() {
       echo "copyOptionalDir: Variable destTop is not set" >&2
       exit 1
     fi
-    doRsyncOptionalDir "$srcTop/$src" "$destTop/$dest"
+    doRsyncOptionalDir $srcTop/$src $destTop/$dest "$3"
   )
   if test $? -ne 0; then exit 1; fi
 }
@@ -537,6 +585,10 @@ updateLink() {
         # This should not ever happen, so do not continue.
         check 1 "updateLink did not expect to find both a real file $dest and a backup $backup"
       fi
+    elif test -L $dest; then
+      # Destination is a broken link (test -L returned true but test -e returned false).
+      # Remove it.
+      rm -f $dest
     fi
 
     ln -s $src $dest
@@ -548,6 +600,33 @@ updateLink() {
       fi
       check $status "updateLink failed to create new link"
     fi
+  )
+  check $?
+}
+
+updateRelativeLink() {
+  (
+    src=$1
+    if test "$src" = ""; then
+      check 1 "updateRelativeLink: missing first argument (source file for link)"
+    fi
+
+    dest=$2
+    if test "$dest" = ""; then
+      check 1 "updateRelativeLink: missing second argument (destination file for link)"
+    fi
+
+    processingId=$3
+    if test "$processingId" = ""; then
+      check 1 "updateRelativeLink: missing processingID for the link"
+    fi
+
+    destDir=$(getDirName $dest)
+
+    relSrc=`realpath --relativeTo=$destDir $src`
+    check $? "updateRelativeLink: cannot compute relative path to $src from $destDir"
+
+    updateLink $relSrc $dest $processingId
   )
   check $?
 }
@@ -567,117 +646,6 @@ updateOptionalLink() {
     fi
   )
   check $?
-}
-
-checkoutCode() {
-  if test "$sbmtCodeTop" = ""; then
-    echo "Missing location of top of source code tree" >&2
-    exit 1
-  elif test "$saavtkBranch" = ""; then
-    echo "Missing branch definition for saavtk" >&2
-    exit 1
-  elif test "$sbmtBranch" = ""; then
-    echo "Missing branch definition for sbmt" >&2
-    exit 1
-  fi
-
-  createDir "$sbmtCodeTop"
-
-  markerFile="$sbmtCodeTop/git-succeeded.txt"
-  if test ! -f $markerFile;  then
-    (
-      cd $sbmtCodeTop
-      check $?
-      chgrp sbmtsw .
-      check $?
-      chmod 2775 .
-      check $?
-
-      echo "In directory $sbmtCodeTop"
-      echo "nice git clone http://hardin.jhuapl.edu:8080/scm/git/vtk/saavtk --branch $saavtkBranch > git-clone-saavtk.txt"
-      nice git clone http://hardin.jhuapl.edu:8080/scm/git/vtk/saavtk --branch $saavtkBranch > git-clone-saavtk.txt 2>&1
-      check $? "Unable to git clone saavtk"
-
-      echo "nice git clone http://hardin.jhuapl.edu:8080/scm/git/sbmt --branch $sbmtBranch > git-clone-sbmt.txt"
-      nice git clone http://hardin.jhuapl.edu:8080/scm/git/sbmt --branch $sbmtBranch > git-clone-sbmt.txt 2>&1
-      check $? "Unable to git clone sbmt"
-
-      touch $markerFile
-    )
-    check $? Check-out failed.
-  else
-    echo "Marker file $markerFile exists already; skipping git clone commands"
-  fi
-}
-
-buildCode() {
-  if test "$sbmtCodeTop" = ""; then
-    echo "Missing location of top of source code tree" >&2
-    exit 1
-  elif test "$SAAVTKROOT" = ""; then
-    echo "Missing definition for environment variable SAAVTKROOT" >&2
-    exit 1
-  elif test "$SBMTROOT" = ""; then
-    echo "Missing definition for environment variable SBMTROOT" >&2
-    exit 1
-  fi
-
-  if test ! -d "$sbmtCodeTop/saavtk"; then
-    echo "No such code directory: $sbmtCodeTop/saavtk" >&2
-    exit 1
-  elif test ! -d "$sbmtCodeTop/sbmt"; then
-    echo "No such code directory: $sbmtCodeTop/sbmt" >&2
-    exit 1
-  fi
-
-  dir="$sbmtCodeTop/sbmt"
-  markerFile="$dir/make-release-succeeded.txt"
-  if test ! -f $markerFile;  then
-    (
-      cd "$dir"
-      check $?
-  
-      # Before building, need to set the released mission.
-      $dir/misc/scripts/set-released-mission.sh APL_INTERNAL
-      check $? "Setting the released mission failed in directory $dir"
-  
-      # Capture this step in its own log file.
-      echo "Building code in $dir; see log $dir/make-release.txt"
-      nice make release > make-release.txt 2>&1
-      check $? "Make release failed in directory $dir"
-  
-      touch $markerFile
-    )
-  else
-    echo "Marker file $markerFile exists already; skipping build step"
-  fi
-}
-
-# Deprecated: don't use this; sort -o infile infile will sort in place.
-removeDuplicates() {
-  (
-    file=$1
-    if test "x$file" = x; then
-      echo "removeDuplicates was called but missing its argument, the file from which to remove duplicates." >&2
-      exit 1
-    fi
-    if test ! -f $file; then
-      echo "removeDuplicates: file $file does not exist." >&2
-      exit 1
-    fi
-    mv $file $file.in
-    if test $? -ne 0; then
-      echo "removeDuplicates: unable to rename file $file." >&2
-      exit 1
-    fi
-    sort -u $file.in > $file
-    if test $? -ne 0; then
-      echo "removeDuplicates: unable to remove duplicate lines from file $file." >&2
-      exit 1
-    fi
-    rm -f $file.in
-  )
-  if test $? -ne 0; then exit 1; fi
 }
 
 doGzipDir() {
@@ -794,6 +762,11 @@ copyStandardModelFiles() {
   doRsyncOptionalDir "$srcTop/shape" "$destTop/shape"
 }
 
+# This made a "deployed" model directory with no info about
+# the processing ID in the name, but containing links to each
+# specific part of the model in the delivered real directory
+# (that does include processing Id(. 
+# Deprecated. Only one top-level link is ever made.
 linkStandardModelFiles() {
   (
     createDir $destTop
@@ -881,7 +854,7 @@ discoverPlateColorings() {
     if test -d $src; then
       dest=$destTop/coloring
       
-      doRsyncDir $src $dest
+      doRsyncDir $src $dest "$1"
   
       if test `ls $dest/coloring*.smd 2> /dev/null | wc -c` -eq 0; then
         doGzipDir $dest
@@ -912,7 +885,7 @@ processDTMs() {
     if test -d $src; then
       dest=$destTop/dtm/browse
   
-      doRsyncDir $src $dest
+      doRsyncDir $src $dest "$1"
   
       fileList="fileList.txt"
       (cd $dest; ls | sed 's:\(.*\):\1\,\1:' | grep -v $fileList > $fileList)
