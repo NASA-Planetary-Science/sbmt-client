@@ -49,6 +49,13 @@
 #                    to the deployed directory will be created during
 #                    deployment. Normally this is the test server. 
 # 
+#            logTop: absolute path to the location under raw data where
+#                    log files from individual processing steps may be
+#                    located.
+#
+#  modelMetadataDir: directory name under which generated model metadata files
+#                    are located.
+#
 # Functions defined in the common functions library dataProcessingFunctions.sh
 # are available in the payload script. These functions will try when possible to
 # avoid repeating expensive operations that were completed successfully
@@ -167,6 +174,15 @@ serverTop="/project/sbmt2/test"
 
 # Location of the code.
 sbmtCodeTop=$rawDataTop
+
+# Location of log files.
+# Date stamp to be used in log files.
+dateStamp=`date '+%Y-%m-%dT%H%M%S'`
+logTop=$rawDataTop/logs/$dateStamp
+
+# Bodies metadata directory name. Must be kept in sync with ModelMetadataGenerator/
+# SmallBodyViewConfigMetadataIO.
+modelMetadataDir=allBodies
 
 # Environment variables:
 export SAAVTKROOT="$sbmtCodeTop/saavtk"

@@ -1079,7 +1079,7 @@ checkSumFiles() {
     echo "checkSumFiles: in directory $imagerDir, comparing content of sumfiles/ directory to list in make_sumfiles.in"
     if test "$logFile" != ""; then
       echo "checkSumFiles: in directory $imagerDir, comparing content of sumfiles/ directory to list in make_sumfiles.in" > $logFile
-      checkFileList "$tmpFileList" "$imagerDir/sumfiles" >> $logFile
+      checkFileList "$tmpFileList" "$imagerDir/sumfiles" >> $logFile 2>&1
       check $? "checkSumFiles: problems with content of $imagerDir. Files checked listed in $tmpFileList. See details in $logFile"
     else
       checkFileList "$tmpFileList" "$imagerDir/sumfiles"
@@ -1093,6 +1093,29 @@ checkSumFiles() {
         rm -f $logFile
       fi
     fi
+  )
+  check $?
+}
+
+# Generate a full set of model metadata files using the client distribution associated with this
+# delivery.
+#
+# param destDir the destination directory under which the metadata files will be created 
+generateModelMetadata() {
+  (
+    destDir=$1
+    logFile=$logTop/ModelMetadataGenerator.txt
+
+    if test "$destDir" = ""; then
+      check 1 "generateModelMetadata: first argument must be target area where to write model metadata."
+    fi
+  
+    createDir $logTop
+
+    echo "$sbmtCodeTop/sbmt/bin/ModelMetadataGenerator.sh $destDir"
+    $sbmtCodeTop/sbmt/bin/ModelMetadataGenerator.sh $destDir >> $logFile 2>&1
+    check $? "generateModelMetadata: problems generating metadata. For details, see file $logFile"
+
   )
   check $?
 }

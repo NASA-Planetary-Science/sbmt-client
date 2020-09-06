@@ -17,10 +17,19 @@
 #-------------------------------------------------------------------------------
 # Processing Info
 #-------------------------------------------------------------------------------
-# Developer: James Peachey
-# Delivery:
+# Developer:
+# Delivery: redmine-XXXX
 # Notes:
 #
+#-------------------------------------------------------------------------------
+
+#-------------------------------------------------------------------------------
+# Do not remove or comment out this block. It prevents direct invocation.
+#-------------------------------------------------------------------------------
+if test "$invokedByRunner" != true; then
+  echo "This script must be invoked by runDataProcessing.sh" >&2
+  exit 1
+fi
 #-------------------------------------------------------------------------------
 
 # When tailoring is complete, remove or comment out the next two lines
@@ -36,15 +45,22 @@ exit 1
 srcTop="$processedTop/$outputTop"
 destTop="$deployedTop/$outputTop-$processingId"
 
-# Copy the entire processed area to the deployed area.
+# Copy the processed data area to the deployed area.
 copyDir .
 
-# Update links in the server area to point to the deployed directory.
-if test "$serverTop" != ""; then
-  srcTop="$destTop"
-  destTop="$serverTop"
-  linkStandardModelFiles
-  
-  # Handle imager
-fi
+# Update the data symbolic links at the top level in the deployed area, and
+# the server area.
+updateRelativeLink $destTop $deployedTop/$outputTop
+updateRelativeLink $destTop $serverTop/$outputTop
+
+# Install full set of metadata.
+srcTop="$processedTop/$modelMetadataDir"
+destTop="$serverTop/$modelMetadataDir-$processingId"
+
+# Copy metadata to server area.
+copyDir .
+
+# Update the metadata symbolic links at the top level in the server area.
+updateRelativeLink $destTop $serverTop/$modelMetadataDir
+
 #-------------------------------------------------------------------------------
