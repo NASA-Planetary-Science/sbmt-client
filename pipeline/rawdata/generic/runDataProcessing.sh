@@ -44,6 +44,10 @@
 #
 #        scriptName: the name of the script currently being run; intended for
 #                    use in output text, or for log file names, etc.
+#
+#         serverTop: the top of the server area, in which a symbolic link
+#                    to the deployed directory will be created during
+#                    deployment. Normally this is the test server. 
 # 
 # Functions defined in the common functions library dataProcessingFunctions.sh
 # are available in the payload script. These functions will try when possible to
@@ -74,7 +78,7 @@ runnerScript=`echo $0 | sed 's:.*/::'`
 
 usage() {
   echo "--------------------------------------------------------------------------------"
-  echo "Usage: $runnerScript processDeliveryScript processingID outputTop [ serverTop ]"
+  echo "Usage: $runnerScript processDeliveryScript processingID outputTop"
   echo ""
   echo "       processDeliveryScript is a Bourne shell script containing specific"
   echo "           commands to be used for this processing action, typically a locally"
@@ -86,12 +90,6 @@ usage() {
   echo "            the raw/processed/deployed/served directory. Typically this would"
   echo "            identify either a body/model or mission/instrument, for"
   echo "            example, 'didymosa/didymosa-dra-v01a' or 'dart/draco'."
-  echo ""
-  echo "        serverTop is an optional argument, needed to serve completely"
-  echo "            processed and deployed data. The serverTop gives the path to the"
-  echo "            the area the server actually uses to provide data. Typically this"
-  echo "            will be one of '/project/sbmt2/test', '/project/sbmt2/stage',"
-  echo "            or '/project/sbmt2/prod'."
   echo ""
   echo "        Read the top block of $runnerScript for further details about how"
   echo "        it works."
@@ -121,7 +119,6 @@ confirmSbmt "$runnerScript: you must be logged into the sbmt account to process 
 processingScript=$1
 processingId=$2
 outputTop=$3
-serverTop=$4
 
 if test ! -f $processingScript; then
   (usage >&2)
@@ -165,6 +162,10 @@ processedTop="$pipelineProcessed/$processingPath"
 # Location for deployed files.
 deployedTop="/project/sbmt2/sbmt/data/bodies"
 
+# Location of the server top.
+serverTop="/project/sbmt2/test"
+
+# Location of the code.
 sbmtCodeTop=$rawDataTop
 
 # Environment variables:
@@ -172,6 +173,7 @@ export SAAVTKROOT="$sbmtCodeTop/saavtk"
 export SBMTROOT="$sbmtCodeTop/sbmt"
 export PATH="$PATH:/project/sbmtpipeline/software/heasoft/bin"
 
+echo "scriptName is $scriptName"
 echo "pipelineRawData is $pipelineRawData"
 echo "rawDataTop is $rawDataTop"
 echo "pipelineProcessed is $pipelineProcessed"
@@ -179,5 +181,9 @@ echo "processedTop is $processedTop"
 echo "deployedTop is $deployedTop"
 echo "sbmtCodeTop is $sbmtCodeTop"
 echo "HEASoft/Ftools installation is in /project/sbmtpipeline/software/heasoft/bin"
+
+# This variable is set so that scripts can tell whether they were run by this runner
+# script, as opposed to being run directly.
+invokedByRunner=true
 
 . "$rawDataTop/$(basename $processingScript)"
