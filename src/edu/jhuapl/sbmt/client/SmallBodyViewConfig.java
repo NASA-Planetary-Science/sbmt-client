@@ -28,6 +28,7 @@ import edu.jhuapl.saavtk.util.UnauthorizedAccessException;
 import edu.jhuapl.sbmt.client.configs.AsteroidConfigs;
 import edu.jhuapl.sbmt.client.configs.BennuConfigs;
 import edu.jhuapl.sbmt.client.configs.CometConfigs;
+import edu.jhuapl.sbmt.client.configs.DartConfigs;
 import edu.jhuapl.sbmt.client.configs.MarsConfigs;
 import edu.jhuapl.sbmt.client.configs.NewHorizonsConfigs;
 import edu.jhuapl.sbmt.client.configs.RyuguConfigs;
@@ -261,6 +262,7 @@ public class SmallBodyViewConfig extends BodyViewConfig implements ISmallBodyVie
     	ConfigArrayList configArray = getBuiltInConfigs();
 		AsteroidConfigs.initialize(configArray);
 		BennuConfigs.initialize(configArray);
+		DartConfigs.instance().initialize(configArray);
 		CometConfigs.initialize(configArray);
 		MarsConfigs.initialize(configArray);
 		NewHorizonsConfigs.initialize(configArray);
