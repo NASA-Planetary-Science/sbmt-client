@@ -1,6 +1,5 @@
+#How to Process SBMT Model/Data Deliveries
 --------------------------------------------------------------------------------
-# H1
-How to process model deliveries
 
 These instructions assume there is a redmine issue for delivering some model
 file(s). The issue is referred to below as <redmine-XXXX>. The delivery will
@@ -8,7 +7,46 @@ be associated with a set of saavtk and sbmt code repository branches. Except
 as explicitly noted, these steps should be performed while logged in as
 yourself, not logged into the sbmt account.
 
-The model data processing scripts include many time-consuming steps, and
+Self-contained deliveries of complete models (whether brand new or an update
+to an existing model) are relatively straightforward. The instructions below
+should be pretty reliable for this case. For "partial" deliveries that
+provide an update to an existing model, there are many variables that can
+affect how the delivery should be processed. The steps below should be seen
+as a guideline in that case. (In the future, as the processes for handling
+updates mature, it is hoped that more precise instructions can be written.
+
+A delivery may require client changes as well as server changes. These are
+described separately below. Client changes should be made first.
+
+#Client-side Delivery Processing Steps
+--------------------------------------------------------------------------------
+
+The client will need to be modified if this is a new model delivery, or if
+the delivery includes a qualitative change to an existing model, such as
+introducing coloring files, SUM files, INFO files, DTMs etc., to a model
+that has none. Client changes are not normally needed for deliveries that
+provide replacement or additional files of a type the client already has.
+For example, if delivering new SUM files for a model that already has
+SUM files, no client change would normally be necessary.
+
+The client changes referred to here are independent of changes to add
+completely new functionality. That type of client change is normally
+detailed in its own separate redmine issue. The client changes referred to
+here (associated with a delivery redmine issue) are to update the code that
+generates model-specific metadata (JSON) files that control how a model
+is loaded at run-time by the client.
+
+TODO: write more detailed description of this:
+To add or modify models, browse the edu.jhuapl.sbmt.client.configs package
+to find the correct subclass of SmallBodyViewConfig in which to add the
+provided model. Add the model there by copying the code from a similar model
+and modifying it. This may involve making minor changes elsewhere, for example
+to add a new body enumeration to ShapeModelBody.
+
+#Server-side Delivery Processing Steps
+--------------------------------------------------------------------------------
+
+The server-side processing steps include many time-consuming steps, and
 there are many possible causes of errors. The scripts and functions described
 below are designed so that they may safely be invoked more than once in the
 event of partial execution. In most cases, steps that were already completed
@@ -58,7 +96,6 @@ defined in dataProcessingFunctions.sh to perform the deployment. Except as
 explicitly noted, deployDelivery.sh should not perform any additional
 processing, i.e., it should just do basic things like copy files and create
 symbolic links.
---------------------------------------------------------------------------------
 
 7. Run the tailored command to import and process the delivery:
 
@@ -88,3 +125,4 @@ was deployed correctly.
 9. The delivered model/code should at this point be visible if you now
 launch a test client, i.e., using the "SmallBodyMappingToolAPL - Test"
 run configuration in Eclipse.
+--------------------------------------------------------------------------------
