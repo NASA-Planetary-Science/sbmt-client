@@ -372,7 +372,7 @@ doRsyncOptionalDir() {
     # Check only existence here. doRsyncDir will take care of
     # reporting error if src is not a directory.
     if test -e "$src"; then
-      doRsyncDir $src $dest  "$3"
+      doRsyncDir $src $dest "$3"
     fi
   )
   if test $? -ne 0; then exit 1; fi
@@ -758,7 +758,7 @@ checkFileList() {
 # without an error. If copied, shape directory is gzipped and
 # symbolic links with standardized names to the original shape file
 # names are created.
-copyStandardModelFiles() {
+processStandardModelFiles() {
   createDir $destTop
   check $?
 
@@ -766,7 +766,8 @@ copyStandardModelFiles() {
   # DTMs and coloring files are copied during processing now.
 #  doRsyncOptionalDir "$srcTop/dtm" "$destTop/dtm"
 #  doRsyncOptionalDir "$srcTop/coloring" "$destTop/coloring"
-  doRsyncOptionalDir "$srcTop/shape" "$destTop/shape"
+  # Delete other files in the shape directory in case this is a re-start.
+  doRsyncOptionalDir "$srcTop/shape" "$destTop/shape" "--delete --links --copy-unsafe-links --keep-dirlinks"
   doGzipOptionalDir "$destTop/shape"
 
   if test -d "$destTop/shape"; then
