@@ -41,10 +41,10 @@ check() {
   # error on the next line, check the calling code, which must not be
   # passing an integer for argument 1.
   ( exit $1 )
-  
+
   # If $1 did contain an integer, the exit status will be that integer.
   # Otherwise, status will be some other integer. In any case, status
-  # for sure will now be an integer, so it will behave itself in the test. 
+  # for sure will now be an integer, so it will behave itself in the test.
   status=$?
   if test $status -ne 0; then
     if test $# -gt 1; then
@@ -88,7 +88,7 @@ confirmNotSbmt() {
 #
 # Calling this function does not change the current path in the invoking shell,
 # but this function does use "cd" in a sub-shell to go to the directory whose
-# path it returns.   
+# path it returns.
 getDirName() {
   if test "x$1" = x; then
     echo "$2 getDirName: directory name is blank." >&2
@@ -96,13 +96,13 @@ getDirName() {
   fi
 
   msg=$2
-  
-  if test -d "$1"; then 
+
+  if test -d "$1"; then
     result="$(cd $1; check $? $msg getDirName: cannot cd to $1; pwd -P)"
     check $? "$msg getDirName: cannot determine directory name of $1"
   else
     result="$(cd "$(dirname "$1")"; check $? $msg getDirName: cannot cd to parent of $1; pwd -P)"
-    check $? "$msg getDirName: cannot determine parent of $1" 
+    check $? "$msg getDirName: cannot determine parent of $1"
   fi
 
   echo $result
@@ -118,7 +118,7 @@ getFileName() {
     if test "$path" = ""; then
       check 1 "getFileName: path argument missing/blank"
     fi
-  
+
     # Remove trailing slashes, then everything up to and including a final slash.
     echo $path | sed 's://*$::' | sed 's:.*/::'
   )
@@ -133,7 +133,7 @@ removeSuffix() {
     if test "$string" = "" -o "$suffix" = ""; then
       check 1 "removeSuffix: one or more missing arguments"
     fi
-  
+
     result=`echo $string | sed "s:$suffix$::"`
     if test "$result" = "$string"; then
       check 1 "removeSuffix: unable to remove suffix $suffix from string $string"
@@ -149,7 +149,7 @@ removePathEnding() {
     if test "$path" = "" -o "$ending" = ""; then
       check 1 "removePathEnding: one or more missing arguments"
     fi
-  
+
     result=`echo $path | sed "s:/*$ending$::"`
     if test "$result" = "$path"; then
       check 1 "removePathEnding: unable to remove ending $ending from path $path"
@@ -198,10 +198,10 @@ guessFileExtension() {
 # to the left of the "rawdata" segment. If the path contains more than one
 # segment named "rawdata", the right-most one will be used.
 #
-# If the supplied path does not include the segment "rawdata", 
+# If the supplied path does not include the segment "rawdata",
 #
 # This function uses getDirName to rationalize paths, so the supplied argument
-# must actually exist in the file system.  
+# must actually exist in the file system.
 guessRawDataParentDir() {
   if test "$1" = ""; then
     echo "guessRawDataParentDir: no directory supplied as an argument" >&2
@@ -221,7 +221,7 @@ guessRawDataParentDir() {
     echo "guessRawDataParentDir: can't guess rawdata location from $dir" >&2
     exit 1
   fi
-  
+
   echo $result
 }
 
@@ -311,7 +311,7 @@ createParentDir() {
 #       the destination link would be deleted, a new polycam directory would be created and *that*
 #       would be synced with the source.
 #
-# This is a lower level function, so it does not check its arguments as carefully, be warned.    
+# This is a lower level function, so it does not check its arguments as carefully, be warned.
 doRsync() {
   (
     src=$1
@@ -391,7 +391,7 @@ copyFile() {
     else
       dest=$2
     fi
- 
+
     if test "x$srcTop" = x; then
       echo "copyFile: Variable srcTop is not set" >&2
       exit 1
@@ -419,7 +419,7 @@ copyDir() {
     else
       dest=$2
     fi
-  
+
     if test "x$srcTop" = x; then
       echo "copyDir: Variable srcTop is not set" >&2
       exit 1
@@ -447,7 +447,7 @@ copyOptionalDir() {
     else
       dest=$2
     fi
-  
+
     if test "x$srcTop" = x; then
       echo "copyOptionalDir: Variable srcTop is not set" >&2
       exit 1
@@ -545,7 +545,7 @@ updateLink() {
     src=$1
     dest=$2
     processingId=$3
-    
+
     if test "$src" = "" -o "$dest" = "" -o "$processingId" = ""; then
       echo "updateLink: missing argument(s). Need source, destination and processing id." >&2
       if test $# -gt 1; then
@@ -553,12 +553,14 @@ updateLink() {
       fi
       exit 1
     fi
-  
+
     if test ! -e $src; then
       echo "updateLink: source file/directory $src does not exist." >&2
       exit 1
     fi
-  
+
+    echo "Updating symbolic link from $src to $dest in $(pwd -P)"
+
     # If destination already exists, back it up rather than removing it outright.
     if test -e $dest; then
       destFile=`getFileName "$dest"`
@@ -619,7 +621,7 @@ updateRelativeLink() {
     # Use dirname here to get one level up from the destination link name,
     # whether or not it exists yet.
     destDir=$(dirname $dest)
- 
+
     relSrc=`realpath --relative-to=$destDir $src`
     check $? "updateRelativeLink: cannot compute relative path to $src from $destDir"
 
@@ -753,7 +755,7 @@ checkFileList() {
 # Copy (rsync) standard model files and directories:
 #   basemap/, shape/
 # These are copied if present and skipped otherwise
-# without an error. 
+# without an error.
 copyStandardModelFiles() {
   createDir $destTop
   check $?
@@ -768,7 +770,7 @@ copyStandardModelFiles() {
 # This made a "deployed" model directory with no info about
 # the processing ID in the name, but containing links to each
 # specific part of the model in the delivered real directory
-# (that does include processing Id(. 
+# (that does include processing Id(.
 # Deprecated. Only one top-level link is ever made.
 linkStandardModelFiles() {
   (
@@ -784,7 +786,7 @@ linkStandardModelFiles() {
     updateOptionalLink "$srcTop/dtm" "dtm" "$processingId"
     updateOptionalLink "$srcTop/coloring" "coloring" "$processingId"
     updateOptionalLink "$srcTop/shape" "shape" "$processingId"
-  
+
   )
   check $? "linkStandardModelFiles failed"
 }
@@ -796,11 +798,11 @@ listPlateColoringFiles() {
     if test "$coloringDir" = ""; then
       check 1 "listPlateColoringFiles coloringDir argument is missing"
     fi
-  
+
     if test ! -d $coloringDir; then
       check 1 "listPlateColoringFiles first argument must be directory where coloring files are found"
     fi
-  
+
     listFile=$2
     if test "$listFile" = ""; then
       check 1 "listPlateColoringFiles listFile argument is missing"
@@ -840,7 +842,7 @@ listPlateColoringFiles() {
           >> $listFile 2> /dev/null
     # Remove paths into a temporary file.
     sed 's:.*/::' $listFile > $listFile-tmp
-    
+
     # Pingpong back from temp file to final list file, stripping out non-coloring files that might have gotten mixed in.
     cat $listFile-tmp | grep -v '\.smd' | grep -v '\.json' | grep -v $(getFileName $listFile) > $listFile
 
@@ -856,15 +858,15 @@ discoverPlateColorings() {
     src=$srcTop/coloring
     if test -d $src; then
       dest=$destTop/coloring
-      
+
       doRsyncDir $src $dest "$1"
-  
+
       if test `ls $dest/coloring*.smd 2> /dev/null | wc -c` -eq 0; then
         doGzipDir $dest
-    
-        coloringList="coloringlist.txt"    
+
+        coloringList="coloringlist.txt"
         listPlateColoringFiles $dest $dest/$coloringList
-        
+
         if test -s $dest/$coloringList; then
           $sbmtCodeTop/sbmt/bin/DiscoverPlateColorings.sh "$dest" "$outputTop/coloring" "$modelId/$bodyId" "$coloringList"
           check $? "Failed to generate plate coloring metadata"
@@ -887,19 +889,19 @@ processDTMs() {
     src=$srcTop/dtm
     if test -d $src; then
       dest=$destTop/dtm/browse
-  
+
       doRsyncDir $src $dest "$1"
-  
+
       fileList="fileList.txt"
       (cd $dest; ls | sed 's:\(.*\):\1\,\1:' | grep -v $fileList > $fileList)
       check $? "processDTMs: problem creating DTM file list $dest/$fileList"
-  
+
       if test ! -s $dest/$fileList; then
         echo "processDTMs: directory exists but has no DTMs: $dest"
       fi
     else
       echo "processDTMs: nothing to process; no source directory $src"
-    fi  
+    fi
   )
   check $? "processDTMs failed"
 }
@@ -919,7 +921,7 @@ createInfoFilesFromFITSImages() {
   imageTimeStampFile=$(getDirName "$destTop/$imageDir/..")"/imagelist-with-time.txt"
 
   if test ! -f $imageTimeStampFile; then
-    extractFITSFileTimes $timeStampKeyword $srcTop "$srcTop/$imageDir" $imageTimeStampFile 
+    extractFITSFileTimes $timeStampKeyword $srcTop "$srcTop/$imageDir" $imageTimeStampFile
   else
     echo "File $imageTimeStampFile exists -- skipping extracting times from FITS images"
   fi
@@ -937,7 +939,7 @@ extractFITSFileTimes() {
   topDir=$(getDirName "$2")
   dir=$(getDirName "$3")
   listFile=$4
-  
+
   if test "$timeStampKeyword" = ""; then
     echo "extractFITSFileTimes: timeStampKeyword argument is blank." >&2
     exit 1
@@ -965,7 +967,7 @@ extractFITSFileTimes() {
   fi
 
   createParentDir $listFile
-  
+
   rm -f $listFile
   for file in `ls $dir/` .; do
     if test "$file" != .; then
@@ -1023,7 +1025,7 @@ createInfoFilesFromImageTimeStamps() {
   fi
 
   createDir "$destTop/$infoDir"
- 
+
   #  1. metakernel - a SPICE meta-kernel file containing the paths to the kernel files
   #  2. body - IAU name of the target body, all caps
   #  3. bodyFrame - Typically IAU_<body>, but could be something like RYUGU_FIXED
@@ -1103,7 +1105,7 @@ checkSumFiles() {
 # Generate a full set of model metadata files using the client distribution associated with this
 # delivery.
 #
-# param destDir the destination directory under which the metadata files will be created 
+# param destDir the destination directory under which the metadata files will be created
 generateModelMetadata() {
   (
     destDir=$1
@@ -1112,7 +1114,7 @@ generateModelMetadata() {
     if test "$destDir" = ""; then
       check 1 "generateModelMetadata: first argument must be target area where to write model metadata."
     fi
-  
+
     createDir $logTop
 
     echo "$sbmtCodeTop/sbmt/bin/ModelMetadataGenerator.sh $destDir"
