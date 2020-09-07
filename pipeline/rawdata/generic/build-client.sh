@@ -189,4 +189,4 @@ fi
 
 echo "$thisScript succeeded. This distribution is ready to be used. Full"
 echo "instructions for processing model deliveries may be found in"
-echo "sbmt/pipeline/rawdata/generic/AAREADME.txt"
+echo "sbmt/pipeline/rawdata/generic/AAREADME.md"
