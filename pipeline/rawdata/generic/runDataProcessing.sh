@@ -180,9 +180,8 @@ sbmtCodeTop=$rawDataTop
 dateStamp=`date '+%Y-%m-%dT%H%M%S'`
 logTop=$rawDataTop/logs/$dateStamp
 
-# Bodies metadata directory name. Must be kept in sync with ModelMetadataGenerator/
-# SmallBodyViewConfigMetadataIO.
-modelMetadataDir=allBodies
+# Bodies metadata directory name. Must be kept in sync with BodyViewConfig.getConfigInfoVersion().
+modelMetadataDir=allBodies-9.0
 
 # Environment variables:
 export SAAVTKROOT="$sbmtCodeTop/saavtk"
