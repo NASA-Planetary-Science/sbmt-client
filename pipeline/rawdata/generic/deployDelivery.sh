@@ -57,7 +57,7 @@ updateRelativeLink $destTop $serverTop/$outputTop
 srcTop="$processedTop/$modelMetadataDir"
 destTop="$serverTop/$modelMetadataDir-$processingId"
 
-# Copy metadata to server area.
+# Copy model metadata to server area.
 copyDir .
 
 # Update the metadata symbolic links at the top level in the server area.
