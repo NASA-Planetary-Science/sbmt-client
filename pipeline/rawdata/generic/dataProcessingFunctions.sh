@@ -571,7 +571,7 @@ updateLink() {
         destDir=.
       fi
 
-      backup="$destDir/backup-before-$destFile-$processingId"
+      backup="$destDir/BACKUP-before-$destFile-$processingId"
       # Only back up once.
       if test ! -e $backup; then
         mv $dest $backup
