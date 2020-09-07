@@ -97,12 +97,12 @@ getDirName() {
 
   msg=$2
   
-  if test -f "$1"; then
+  if test -d "$1"; then 
+    result="$(cd $1; check $? $msg getDirName: cannot cd to $1; pwd -P)"
+    check $? "$msg getDirName: cannot determine directory name of $1"
+  else
     result="$(cd "$(dirname "$1")"; check $? $msg getDirName: cannot cd to parent of $1; pwd -P)"
     check $? "$msg getDirName: cannot determine parent of $1" 
-  else
-    result="$(cd $1; check $? $msg getDirName: cannot cd to $1; pwd -P)"
-    check $? "$msg getDirName: cannot determine directory name of $1" 
   fi
 
   echo $result
@@ -571,7 +571,7 @@ updateLink() {
         destDir=.
       fi
 
-      backup="$destDir/.$destFile-bak-$processingId"
+      backup="$destDir/backup-before-$destFile-$processingId"
       # Only back up once.
       if test ! -e $backup; then
         mv $dest $backup
@@ -620,6 +620,9 @@ updateRelativeLink() {
 
     relSrc=`realpath --relative-to=$destDir $src`
     check $? "updateRelativeLink: cannot compute relative path to $src from $destDir"
+
+    cd $destDir
+    check $? "updateRelativeLink: cannot cd to destination directory $destDir"
 
     updateLink $relSrc $dest $processingId
   )
