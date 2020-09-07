@@ -62,7 +62,7 @@ confirmSbmt() {
       check 1
     fi
   )
-  check $?, $*
+  check $? $*
 }
 
 # Confirm identity of user invoking this command is NOT the sbmt account.
@@ -73,7 +73,7 @@ confirmNotSbmt() {
       check 1
     fi
   )
-  check $?, $*
+  check $? $*
 }
 
 # Get the absolute path of the directory for the path passed as an argument.
