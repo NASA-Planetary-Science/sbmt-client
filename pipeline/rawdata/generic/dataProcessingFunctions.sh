@@ -616,10 +616,15 @@ updateRelativeLink() {
       check 1 "updateRelativeLink: missing second argument (destination file for link)"
     fi
 
-    destDir=$(getDirName $dest)
-
+    # Use dirname here to get one level up from the destination link name,
+    # whether or not it exists yet.
+    destDir=$(dirname $dest)
+ 
     relSrc=`realpath --relative-to=$destDir $src`
     check $? "updateRelativeLink: cannot compute relative path to $src from $destDir"
+
+    # Make sure the destination directory exists.
+    createDir $destDir
 
     cd $destDir
     check $? "updateRelativeLink: cannot cd to destination directory $destDir"
