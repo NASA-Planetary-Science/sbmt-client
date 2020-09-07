@@ -85,8 +85,10 @@ public class SbmtMultiMissionTool
         OSIRIS_REX_TEST("h887aa63"),
 		OSIRIS_REX_MIRROR_DEPLOY("7cd84589"),
 		NH_DEPLOY("8ff86312"),
-		DART_DEV("9da75292"),
+        DART_DEV("9da75292"),
 		DART_DEPLOY("9da75293"),
+        DART_TEST("8f449edc"),
+        DART_STAGE("afac11cb"),
 		STAGE_APL_INTERNAL("f7e441b"),
 		STAGE_PUBLIC_RELEASE("8cc8e12");
 
@@ -97,7 +99,7 @@ public class SbmtMultiMissionTool
 			this.hashedName = hashedName;
 		}
 
-		String getHashedName()
+		public String getHashedName()
 		{
 			return hashedName;
 		}

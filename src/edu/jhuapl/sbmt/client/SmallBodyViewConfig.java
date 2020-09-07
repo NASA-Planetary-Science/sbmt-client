@@ -28,6 +28,7 @@ import edu.jhuapl.saavtk.util.UnauthorizedAccessException;
 import edu.jhuapl.sbmt.client.configs.AsteroidConfigs;
 import edu.jhuapl.sbmt.client.configs.BennuConfigs;
 import edu.jhuapl.sbmt.client.configs.CometConfigs;
+import edu.jhuapl.sbmt.client.configs.DartConfigs;
 import edu.jhuapl.sbmt.client.configs.MarsConfigs;
 import edu.jhuapl.sbmt.client.configs.NewHorizonsConfigs;
 import edu.jhuapl.sbmt.client.configs.RyuguConfigs;
@@ -108,7 +109,7 @@ public class SmallBodyViewConfig extends BodyViewConfig implements ISmallBodyVie
     	    Preconditions.checkArgument(VIEWCONFIG_IDENTIFIERS.containsKey(configID), "No configuration available for model " + configID);
 
     		BasicConfigInfo info = VIEWCONFIG_IDENTIFIERS.get(configID);
-    		ViewConfig fetchedConfig = fetchRemoteConfig(configID, info.configURL, fromServer);
+    		ViewConfig fetchedConfig = fetchRemoteConfig(configID, info.getConfigURL(), fromServer);
     		LOADED_VIEWCONFIGS.put(configID, fetchedConfig);
 
     		return (SmallBodyViewConfig)fetchedConfig;
@@ -125,7 +126,7 @@ public class SmallBodyViewConfig extends BodyViewConfig implements ISmallBodyVie
     	{
             Preconditions.checkArgument(VIEWCONFIG_IDENTIFIERS.containsKey(configID), "No configuration available for model " + configID);
 
-    		ViewConfig fetchedConfig = fetchRemoteConfig(configID, VIEWCONFIG_IDENTIFIERS.get(configID).configURL, fromServer);
+    		ViewConfig fetchedConfig = fetchRemoteConfig(configID, VIEWCONFIG_IDENTIFIERS.get(configID).getConfigURL(), fromServer);
     		LOADED_VIEWCONFIGS.put(configID, fetchedConfig);
     		return (SmallBodyViewConfig)fetchedConfig;
     	}
@@ -184,7 +185,7 @@ public class SmallBodyViewConfig extends BodyViewConfig implements ISmallBodyVie
     	ConfigArrayList configs = new ConfigArrayList();
         try
         {
-            File allBodies = FileCache.getFileFromServer("allBodies_v" + SmallBodyViewConfigMetadataIO.metadataVersion + ".json");
+            File allBodies = FileCache.getFileFromServer(BasicConfigInfo.getConfigPathPrefix() + "/" + "allBodies_v" + BasicConfigInfo.getConfigInfoVersion() + ".json");
             FixedMetadata metadata = Serializers.deserialize(allBodies, "AllBodies");
             for (Key key : metadata.getKeys())
             {
@@ -210,9 +211,6 @@ public class SmallBodyViewConfig extends BodyViewConfig implements ISmallBodyVie
 
     private static ViewConfig fetchRemoteConfig(String name, String url, boolean fromServer)
     {
-    	if (fromServer)
-    		url = url.replaceFirst("http://sbmt.jhuapl.edu", "file:///disks/d0180/htdocs-sbmt");
-
     	ConfigArrayList ioConfigs = new ConfigArrayList();
         ioConfigs.add(new SmallBodyViewConfig(ImmutableList.<String> copyOf(DEFAULT_GASKELL_LABELS_PER_RESOLUTION), ImmutableList.<Integer> copyOf(DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION)));
         SmallBodyViewConfigMetadataIO io = new SmallBodyViewConfigMetadataIO(ioConfigs);
@@ -264,6 +262,7 @@ public class SmallBodyViewConfig extends BodyViewConfig implements ISmallBodyVie
     	ConfigArrayList configArray = getBuiltInConfigs();
 		AsteroidConfigs.initialize(configArray);
 		BennuConfigs.initialize(configArray);
+		DartConfigs.instance().initialize(configArray);
 		CometConfigs.initialize(configArray);
 		MarsConfigs.initialize(configArray);
 		NewHorizonsConfigs.initialize(configArray);

@@ -118,7 +118,7 @@ public class SbmtViewMenu extends ViewMenu
         }
         parentMenu.add(mi);
 
-        String urlString = config.configURL;
+        String urlString = config.getConfigURL();
         FileCache.instance().addStateListener(urlString, state -> {
             try
             {

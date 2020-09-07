@@ -138,12 +138,18 @@ public class AsteroidConfigs extends SmallBodyViewConfig
         															SbmtMultiMissionTool.Mission.OSIRIS_REX, SbmtMultiMissionTool.Mission.OSIRIS_REX_TEST,
         															SbmtMultiMissionTool.Mission.OSIRIS_REX_DEPLOY, SbmtMultiMissionTool.Mission.OSIRIS_REX_MIRROR_DEPLOY,
         															SbmtMultiMissionTool.Mission.NH_DEPLOY,
-        															SbmtMultiMissionTool.Mission.DART_DEPLOY, SbmtMultiMissionTool.Mission.DART_DEV};
+        															SbmtMultiMissionTool.Mission.DART_DEV,
+        															SbmtMultiMissionTool.Mission.DART_DEPLOY,
+        															SbmtMultiMissionTool.Mission.DART_TEST,
+        															SbmtMultiMissionTool.Mission.DART_STAGE};
 
         c.defaultForMissions = new SbmtMultiMissionTool.Mission[] {SbmtMultiMissionTool.Mission.PUBLIC_RELEASE, SbmtMultiMissionTool.Mission.TEST_PUBLIC_RELEASE,
         														SbmtMultiMissionTool.Mission.STAGE_APL_INTERNAL, SbmtMultiMissionTool.Mission.APL_INTERNAL,
         														SbmtMultiMissionTool.Mission.TEST_APL_INTERNAL,
-        														SbmtMultiMissionTool.Mission.DART_DEPLOY, SbmtMultiMissionTool.Mission.DART_DEV};
+                                                                SbmtMultiMissionTool.Mission.DART_DEV,
+                                                                SbmtMultiMissionTool.Mission.DART_DEPLOY,
+                                                                SbmtMultiMissionTool.Mission.DART_TEST,
+                                                                SbmtMultiMissionTool.Mission.DART_STAGE};
 
         configArray.add(c);
 
@@ -510,7 +516,7 @@ public class AsteroidConfigs extends SmallBodyViewConfig
         c.hasImageMap = true;
         c.setResolution(ImmutableList.of(32040));
 
-        c.imagingInstruments = new ImagingInstrument[] {
+        /*c.imagingInstruments = new ImagingInstrument[] {
                 new ImagingInstrument( //
                         SpectralImageMode.MONO, //
                         new FixedListQuery("/THOMAS/IDA/SSI", "/THOMAS/IDA/SSI/images/gallery"), //
@@ -526,6 +532,7 @@ public class AsteroidConfigs extends SmallBodyViewConfig
         c.imageSearchUserDefinedCheckBoxesNames = new String[] {};
         c.imageSearchDefaultMaxSpacecraftDistance = 40000.0;
         c.imageSearchDefaultMaxResolution = 4000.0;
+        */
         c.presentInMissions = new SbmtMultiMissionTool.Mission[] {SbmtMultiMissionTool.Mission.PUBLIC_RELEASE, SbmtMultiMissionTool.Mission.TEST_PUBLIC_RELEASE, SbmtMultiMissionTool.Mission.STAGE_PUBLIC_RELEASE, SbmtMultiMissionTool.Mission.STAGE_APL_INTERNAL, SbmtMultiMissionTool.Mission.APL_INTERNAL, SbmtMultiMissionTool.Mission.TEST_APL_INTERNAL};
         c.defaultForMissions = new SbmtMultiMissionTool.Mission[] {};
 
@@ -564,7 +571,7 @@ public class AsteroidConfigs extends SmallBodyViewConfig
         c.hasImageMap = true;
         c.setResolution(ImmutableList.of(14160));
 
-        c.imagingInstruments = new ImagingInstrument[] {
+        /*c.imagingInstruments = new ImagingInstrument[] {
                 new ImagingInstrument( //
                         SpectralImageMode.MONO, //
                         new FixedListQuery("/THOMAS/MATHILDE/MSI", "/THOMAS/MATHILDE/MSI/images/gallery"), //
@@ -588,6 +595,7 @@ public class AsteroidConfigs extends SmallBodyViewConfig
         c.imageSearchUserDefinedCheckBoxesNames = new String[] {};
         c.imageSearchDefaultMaxSpacecraftDistance = 40000.0;
         c.imageSearchDefaultMaxResolution = 4000.0;
+        */
         c.presentInMissions = new SbmtMultiMissionTool.Mission[] {SbmtMultiMissionTool.Mission.PUBLIC_RELEASE, SbmtMultiMissionTool.Mission.TEST_PUBLIC_RELEASE, SbmtMultiMissionTool.Mission.STAGE_PUBLIC_RELEASE, SbmtMultiMissionTool.Mission.STAGE_APL_INTERNAL, SbmtMultiMissionTool.Mission.APL_INTERNAL, SbmtMultiMissionTool.Mission.TEST_APL_INTERNAL};
         c.defaultForMissions = new SbmtMultiMissionTool.Mission[] {};
 
@@ -626,7 +634,7 @@ public class AsteroidConfigs extends SmallBodyViewConfig
         c.hasImageMap = true;
         c.setResolution(ImmutableList.of(32040));
 
-        c.imagingInstruments = new ImagingInstrument[] {
+        /*c.imagingInstruments = new ImagingInstrument[] {
                 new ImagingInstrument( //
                         SpectralImageMode.MONO, //
                         new FixedListQuery("/THOMAS/GASPRA/SSI", "/THOMAS/GASPRA/SSI/images/gallery"), //
@@ -642,6 +650,7 @@ public class AsteroidConfigs extends SmallBodyViewConfig
         c.imageSearchUserDefinedCheckBoxesNames = new String[] {};
         c.imageSearchDefaultMaxSpacecraftDistance = 40000.0;
         c.imageSearchDefaultMaxResolution = 4000.0;
+        */
 
         c.presentInMissions = new SbmtMultiMissionTool.Mission[] {SbmtMultiMissionTool.Mission.PUBLIC_RELEASE, SbmtMultiMissionTool.Mission.TEST_PUBLIC_RELEASE, SbmtMultiMissionTool.Mission.STAGE_PUBLIC_RELEASE, SbmtMultiMissionTool.Mission.STAGE_APL_INTERNAL, SbmtMultiMissionTool.Mission.APL_INTERNAL, SbmtMultiMissionTool.Mission.TEST_APL_INTERNAL};
         c.defaultForMissions = new SbmtMultiMissionTool.Mission[] {};
@@ -680,6 +689,38 @@ public class AsteroidConfigs extends SmallBodyViewConfig
         c.rootDirOnServer = "/JORDA/STEINS";
         c.shapeModelFileNames = prepend(c.rootDirOnServer, "steins_cart.plt.gz");
         c.setResolution(ImmutableList.of(20480));
+
+        c.presentInMissions = new SbmtMultiMissionTool.Mission[] {SbmtMultiMissionTool.Mission.PUBLIC_RELEASE, SbmtMultiMissionTool.Mission.TEST_PUBLIC_RELEASE, SbmtMultiMissionTool.Mission.STAGE_PUBLIC_RELEASE, SbmtMultiMissionTool.Mission.STAGE_APL_INTERNAL, SbmtMultiMissionTool.Mission.APL_INTERNAL, SbmtMultiMissionTool.Mission.TEST_APL_INTERNAL};
+        c.defaultForMissions = new SbmtMultiMissionTool.Mission[] {};
+
+        configArray.add(c);
+
+        c = new AsteroidConfigs();
+        c.body = ShapeModelBody.PSYCHE;
+        c.type = BodyType.ASTEROID;
+        c.population = ShapeModelPopulation.MAIN_BELT;
+        c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
+        c.author = ShapeModelType.HANUS;
+        c.modelLabel = "Hanus et al. (2013)";
+        c.rootDirOnServer = "/psyche/hanus";
+        c.shapeModelFileExtension = ".obj";
+        c.setResolution(ImmutableList.of(2038));
+
+        c.presentInMissions = new SbmtMultiMissionTool.Mission[] {SbmtMultiMissionTool.Mission.PUBLIC_RELEASE, SbmtMultiMissionTool.Mission.TEST_PUBLIC_RELEASE, SbmtMultiMissionTool.Mission.STAGE_PUBLIC_RELEASE, SbmtMultiMissionTool.Mission.STAGE_APL_INTERNAL, SbmtMultiMissionTool.Mission.APL_INTERNAL, SbmtMultiMissionTool.Mission.TEST_APL_INTERNAL};
+        c.defaultForMissions = new SbmtMultiMissionTool.Mission[] {};
+
+        configArray.add(c);
+
+        c = new AsteroidConfigs();
+        c.body = ShapeModelBody.PSYCHE;
+        c.type = BodyType.ASTEROID;
+        c.population = ShapeModelPopulation.MAIN_BELT;
+        c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
+        c.author = ShapeModelType.VIIKINKOSKI;
+        c.modelLabel = "Viikinkoski et al. (2018)";
+        c.rootDirOnServer = "/psyche/viikinkoski";
+        c.shapeModelFileExtension = ".obj";
+        c.setResolution(ImmutableList.of(1352));
 
         c.presentInMissions = new SbmtMultiMissionTool.Mission[] {SbmtMultiMissionTool.Mission.PUBLIC_RELEASE, SbmtMultiMissionTool.Mission.TEST_PUBLIC_RELEASE, SbmtMultiMissionTool.Mission.STAGE_PUBLIC_RELEASE, SbmtMultiMissionTool.Mission.STAGE_APL_INTERNAL, SbmtMultiMissionTool.Mission.APL_INTERNAL, SbmtMultiMissionTool.Mission.TEST_APL_INTERNAL};
         c.defaultForMissions = new SbmtMultiMissionTool.Mission[] {};
