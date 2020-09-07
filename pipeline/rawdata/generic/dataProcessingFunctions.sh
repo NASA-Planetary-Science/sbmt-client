@@ -1141,12 +1141,12 @@ createFileSymLinks() {
     dir=$1
     prefix=$2
 
-    if test "$destDir" = ""; then
+    if test "$dir" = ""; then
       check 1 "createFileSymLinks: first argument missing; must be directory in which to create symbolic links"
     fi
   
-    if test ! -d $destDir; then
-      check 1 "createFileSymLinks: $destDir is not a directory"
+    if test ! -d $dir; then
+      check 1 "createFileSymLinks: $dDir is not a directory"
     fi
   
     if test "$prefix" = ""; then
