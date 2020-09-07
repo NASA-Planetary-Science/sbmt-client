@@ -28,7 +28,7 @@ mission=TEST_APL_INTERNAL
 # of the below variables to true.
 forceSaavtkCheckout=false
 forceSbmtCheckout=false
-forceBuild=false
+forceBuild=true
 #
 # It is assumed that this script is being run on the server most of the time,
 # and that it may be operating outside a full check-out of sbmt. It looks for
