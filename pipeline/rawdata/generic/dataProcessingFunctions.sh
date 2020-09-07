@@ -1125,3 +1125,52 @@ generateModelMetadata() {
   check $?
 }
 
+# Infer symbolic link names for arbitrary file names. This is so that the provider can use
+# whatever names they want for, say, shape files, but the tool will see shape0, shape1, etc.
+createFileSymLinks() {
+  (
+    dir=$1
+    prefix=$2
+
+    if test "$destDir" = ""; then
+      check 1 "createFileSymLinks: first argument missing; must be directory in which to create symbolic links"
+    fi
+  
+    if test ! -d $destDir; then
+      check 1 "createFileSymLinks: $destDir is not a directory"
+    fi
+  
+    if test "$prefix" = ""; then
+      check 1 "createFileSymLinks: second argument missing; must be prefix for symbolic link names" 
+    fi
+  
+    cd $dir
+    check $? "createFileSymLinks: unable to cd $dir"
+
+    let res=0
+    for file in `ls -Sr *`; do
+      lastSuffix=`echo $file | sed -e 's:.*\(\.[^\.]*\)$:\1:'`
+      if test $lastSuffix = ".gz"; then
+        suffix=`echo $file | sed -e 's:.*\(\.[^\.]*\.[^\.]*\)$:\1:'`
+      else
+        suffix=$lastSuffix
+      fi
+
+      linkName="$prefix${res}$suffix"
+
+      if test $file = $linkName; then
+        continue
+      fi 
+
+      # Remove any previous links.
+      rm -f $linkName
+
+      ln -s $file $linkName
+      check $? "createFileSymLinks: unable to create symbolic link from $file to $linkName"
+      
+      let res=res+1
+    done
+  )
+  check $?
+}
+
