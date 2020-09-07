@@ -13,9 +13,17 @@ import crucible.crust.metadata.impl.SettableMetadata;
 
 public class BasicConfigInfo implements MetadataManager
 {
+
+    private static final String configInfoVersion = "9.0";
+
     // This variable gives the prefix used to locate configuration metadata
     // relative to the top of the model.
-    private static final String ConfigPathPrefix = "allBodies";
+    private static final String ConfigPathPrefix = "allBodies-" + configInfoVersion;
+
+    public static String getConfigInfoVersion()
+    {
+        return configInfoVersion;
+    }
 
     public static String getConfigPathPrefix()
     {
@@ -87,7 +95,7 @@ public class BasicConfigInfo implements MetadataManager
             this.configURL = "/" + ConfigPathPrefix + ((SmallBodyViewConfig) config).rootDirOnServer + //
                     "/" + config.author + "_" + //
                     config.body.toString().replaceAll(" ", "_") + modelVersion + //
-                    "_v" + SmallBodyViewConfigMetadataIO.metadataVersion + ".json";
+                    "_v" + getConfigInfoVersion() + ".json";
 		}
 	}
 
