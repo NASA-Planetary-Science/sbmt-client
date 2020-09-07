@@ -47,13 +47,13 @@ exit 1
 
 # This is the full path to the delivery as provided by a scientist. This may
 # or may not fully comply with all SBMT guidelines for layout and naming.
-deliveryTop="/project/sbmtpipeline/deliveries/didymosa/20200420/didymosA-DRA-v01A"
+deliveryTop="/project/sbmtpipeline/deliveries-dart/ideal_impact1-20200629-v01/didymos/SMv01A-truth"
 
 # The identifier of the SBMT model. For a given body, this uniquely identifies
 # the model. This may not include any whitespace. If no items being imported
 # are associated with a specific model, this may be set to an empty string,
 # but it should not be removed. This is used for processing plate colorings.
-modelId="DidymosA-DRA-v01A"
+modelId="ideal_impact1-20200629-v01"
 
 # The identifier of the body as it appears in the SBMT. If no items being
 # imported are associated with a specific body, this may be set to an
@@ -83,16 +83,16 @@ destTop="$processedTop/$outputTop"
 # Generate complete set of model metadata.
 generateModelMetadata $processedTop
 
-# Copy any/all standard model files.
-copyStandardModelFiles
+# Process any/all standard model files.
+processStandardModelFiles
 
 # Process plate colorings.
-discoverPlateColorings
+# discoverPlateColorings
 
-processDTMs
+# processDTMs
 
 # Update/check the SPICE parameters.
-createInfoFilesFromFITSImages imaging/draco/spice/generic.mk \
-  Didymos Didymos DART Draco COR_UTC \
-  imaging/draco/images imaging/draco/infofiles
+# createInfoFilesFromFITSImages imaging/draco/spice/generic.mk \
+#   Didymos Didymos DART Draco COR_UTC \
+#   imaging/draco/images imaging/draco/infofiles
 #-------------------------------------------------------------------------------
