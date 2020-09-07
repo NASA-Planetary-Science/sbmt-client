@@ -616,14 +616,9 @@ updateRelativeLink() {
       check 1 "updateRelativeLink: missing second argument (destination file for link)"
     fi
 
-    processingId=$3
-    if test "$processingId" = ""; then
-      check 1 "updateRelativeLink: missing processingID for the link"
-    fi
-
     destDir=$(getDirName $dest)
 
-    relSrc=`realpath --relativeTo=$destDir $src`
+    relSrc=`realpath --relative-to=$destDir $src`
     check $? "updateRelativeLink: cannot compute relative path to $src from $destDir"
 
     updateLink $relSrc $dest $processingId
