@@ -752,10 +752,12 @@ checkFileList() {
   check $?
 }
 
-# Copy (rsync) standard model files and directories:
+# Process (rsync and post-process) standard model files and directories:
 #   basemap/, shape/
 # These are copied if present and skipped otherwise
-# without an error.
+# without an error. If copied, shape directory is gzipped and
+# symbolic links with standardized names to the original shape file
+# names are created.
 copyStandardModelFiles() {
   createDir $destTop
   check $?
@@ -765,6 +767,13 @@ copyStandardModelFiles() {
 #  doRsyncOptionalDir "$srcTop/dtm" "$destTop/dtm"
 #  doRsyncOptionalDir "$srcTop/coloring" "$destTop/coloring"
   doRsyncOptionalDir "$srcTop/shape" "$destTop/shape"
+  doGzipOptionalDir "$destTop/shape"
+
+  if test -d "$destTop/shape"; then
+    # First argument is directory, second is the prefix
+    # for output file name(s).
+    createFileSymLinks "$destTop/shape" shape
+  fi
 }
 
 # This made a "deployed" model directory with no info about
