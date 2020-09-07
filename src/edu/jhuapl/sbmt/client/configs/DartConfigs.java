@@ -5,6 +5,7 @@ import java.util.List;
 
 import org.apache.commons.text.WordUtils;
 
+import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
 
 import edu.jhuapl.saavtk.config.ViewConfig;
@@ -71,9 +72,12 @@ public class DartConfigs
      */
     public void initialize(List<ViewConfig> configList)
     {
+        Preconditions.checkNotNull(configList);
+
         SmallBodyViewConfig c;
 
-        c = createSingleResolutionConfig(ShapeModelBody.DIDYMOS, "ideal_impact1-20200629-v01", 1996);
+        c = createSingleResolutionConfig(ShapeModelBody.DIDYMOS, "ideal-impact1-20200629-v01", 1996);
+        configList.add(c);
 
         // Move this line around as needed to select the current default model.
         final SmallBodyViewConfig defaultConfig = c;
@@ -104,11 +108,12 @@ public class DartConfigs
         c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
         c.author = ShapeModelType.provide(modelId);
         c.modelLabel = createLabel(c.author);
-        c.rootDirOnServer = modelId.replaceAll("_", "-");
+        c.rootDirOnServer = ("/" + body.name() + "/" + modelId.replaceAll("_", "-")).toLowerCase();
         c.presentInMissions = ClientsWithDartModels;
         // c.defaultForMissions = ...
+        c.setShapeModelFileExtension(".obj");
 
-        String tableBaseName = (body.name() + "_" + modelId + "_").toLowerCase();
+        String tableBaseName = (body.name() + "_" + modelId + "_").replaceAll("[\\s-]", "_").toLowerCase();
 
         String dracoTable = tableBaseName + "draco";
         String lukeTable = tableBaseName + "luke";
@@ -165,7 +170,7 @@ public class DartConfigs
 
         // DART-specific corrections: version should be lowercase v, dash after
         // word "impact":
-        label = label.replaceAll("V(\\d)", "v\\1").replaceAll("Impact", "Impact ");
+        label = label.replaceAll("V(\\d)", "v$1").replaceAll("Impact", "Impact ");
 
         return label;
     }
