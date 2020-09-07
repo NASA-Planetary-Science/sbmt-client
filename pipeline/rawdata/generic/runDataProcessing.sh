@@ -196,9 +196,13 @@ echo "processedTop is $processedTop"
 echo "deployedTop is $deployedTop"
 echo "sbmtCodeTop is $sbmtCodeTop"
 echo "HEASoft/Ftools installation is in /project/sbmtpipeline/software/heasoft/bin"
+echo "--------------------------------------------------------------------------------"
+echo "Begin $processingScript"
+echo "--------------------------------------------------------------------------------"
 
 # This variable is set so that scripts can tell whether they were run by this runner
 # script, as opposed to being run directly.
 invokedByRunner=true
 
 . "$rawDataTop/$(basename $processingScript)"
+echo "--------------------------------------------------------------------------------"
