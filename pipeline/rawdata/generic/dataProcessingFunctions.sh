@@ -916,6 +916,129 @@ processDTMs() {
   check $? "processDTMs failed"
 }
 
+# First argument is the keyword associated with time stamps.
+# Next argument is the top-level directory; this will be stripped out of the beginning of file names.
+# Next argument is the directory to search for FITS files. This must be a descendant of the top-level directory.
+# Next argument is the output file that will hold the comma-separated file-name, date/time.
+extractFITSFileTimes() {
+  (
+    timeStampKeyword=$1
+    topDir=$(getDirName "$2")
+    dir=$(getDirName "$3")
+    listFile=$4
+
+    if test "$timeStampKeyword" = ""; then
+      check 1 "extractFITSFileTimes: timeStampKeyword argument is blank."
+    fi
+
+    if test "$dir" = "$topDir"; then
+      relPath=
+    elif test `echo $dir | grep -c "^$topDir/"` -eq 0; then
+      check 1 "extractFITSFileTimes: top directory $topDir is not an ancestor of directory $dir"
+    else
+      relPath=`echo $dir | sed "s:^$topDir/::"`
+    fi
+
+    if test "$listFile" = ""; then
+      check 1 "extractFITSFileTimes: listFile argument is blank."
+    fi
+
+    # Need Ftools for this.
+    type ftlist
+    if test $? -ne 0; then
+      check 1 "extractFITSFileTimes: need to have Ftools in your path for this to work" >&2
+    fi
+
+    createParentDir $listFile
+
+    rm -f $listFile
+    for file in `ls $dir/` .; do
+      if test "$file" != .; then
+        # Ftool ftlist prints the whole header line for the keyword, however many times it appears in the file.
+        # Parse the first match, assumed to have the standard FITS keyword form:
+        # keyname = 'value' / comment
+        # In general the comment and the single quotes are not guaranteed to be present, so try to be bullet-proof
+        # with the seds. Also the output should have a T rather than space separating the date from the time.
+        value=`ftlist "infile=$dir/$file" option=k include=$timeStampKeyword 2> /dev/null | head -1 | \
+          sed 's:[^=]*=[  ]*::' | sed 's:[  ]*/.*$::' | sed "s:^''*::" | sed "s:''*$::" | sed 's: :T:'`
+        if test $? -eq 0 -a "$value" != ""; then
+          echo "$relPath/$file, $value" >> $listFile
+        else
+          echo "extractFITSFileTimes: unable to extract time; skipping file $file" >&2
+        fi
+      fi
+    done
+  )
+  check $?
+}
+
+# Create INFO files from a SPICE metakernel plus a CSV file containing a list of images with time stamps.
+createInfoFilesFromImageTimeStamps() {
+  (
+    metakernel=$1
+    body=$2
+    bodyFrame=$3
+    spacecraft=$4
+    instrumentFrame=$5
+    imageTimeStampFile=$6
+    infoDir=$7
+
+    if test "$imageTimeStampFile" = ""; then
+      check 1 "createInfoFilesFromImageTimeStamps: image time stamp file argument is blank."
+    elif test ! -f $imageTimeStampFile; then
+      check 1 "createInfoFilesFromImageTimeStamps: image time stamp file $imageTimeStampFile does not exist."
+    fi
+
+    if test "$infoDir" = ""; then
+      check 1 "createInfoFilesFromImageTimeStamps: infoDir argument is blank."
+    fi
+
+    parentDir=$(getDirName "$destTop/$infoDir/..")
+    imageListFile="$parentDir/imagelist-info.txt"
+    imageListFullPathFile="$parentDir/imagelist-fullpath-info.txt"
+    missingInfoList="$parentDir/missing-info.txt"
+
+    createInfoFilesDir="$sbmtCodeTop/sbmt/pipeline/rawdata/generic/createInfoFiles"
+    if test -d $createInfoFiles; then
+      (cd $createInfoFilesDir; check $?; make)
+      check $?
+    else
+      check 1 "createInfoFilesFromImageTimeStamps: directory $createInfoFilesDir does not exist"
+    fi
+
+    createDir "$destTop/$infoDir"
+
+    #  1. metakernel - full path to a SPICE meta-kernel file containing the paths to the kernel files
+    #  2. body - IAU name of the target body, all caps
+    #  3. bodyFrame - Typically IAU_<body>, but could be something like RYUGU_FIXED
+    #  4. spacecraft - SPICE spacecraft name
+    #  5. instrumentframe - SPICE instrument frame name
+    #  6. imageTimeStampFile - path to CSV file in which all image files are listed (relative
+    #     to "topDir") with their UTC time stamps
+    #  7. infoDir - path to output directory where infofiles should be saved to
+    #  8. imageListFile - path to output file in which all image files for which an infofile was
+    #     created (image file name only, not full path) will be listed along with
+    #     their start times.
+    #  9. imageListFullPathFile - path to output file in which all image files for which an infofile
+    #     was created will be listed (full path relative to the server directory).
+    # 10. missingInfoList - path to output file in which all image files for which no infofile
+    #     was created will be listed, preceded with a string giving the cause for
+    #     why no infofile could be created.
+
+    # Must invoke tool from the temporary spice directory in case the metakernel uses relative paths.
+    cd $tmpSpiceDir
+    check $? "createInforFilesFromImageTimeStamps: unable to cd $tmpSpiceDir"
+
+    echo $createInfoFilesDir/createInfoFiles $metakernel $body $bodyFrame $spacecraft $instrumentFrame \
+      $imageTimeStampFile "$destTop/$infoDir" $imageListFile $imageListFullPathFile $missingInfoList
+
+    $createInfoFilesDir/createInfoFiles $metakernel $body $bodyFrame $spacecraft $instrumentFrame \
+      $imageTimeStampFile "$destTop/$infoDir" $imageListFile $imageListFullPathFile $missingInfoList 2>&1 > create_info_files.txt
+    check $?
+  )
+  check $?
+}
+
 # Create INFO files from a SPICE metakernel plus a directory with FITS images that have time stamps associated with a keyword.
 createInfoFilesFromFITSImages() {
   metakernel=$1
@@ -926,6 +1049,46 @@ createInfoFilesFromFITSImages() {
   timeStampKeyword=$6
   imageDir=$7
   infoDir=$8
+
+  if test "$metakernel" = ""; then
+    check 1 "createInfoFilesFromFITSImages: missing/blank first argument; must be full path to the metakernel"
+  fi
+
+  if test ! -f $metakernel; then
+    check 1 "createInfoFilesFromFITSImages: first argument $metakernel is not a full path to a metakernel file"
+  fi
+
+  if test "$body" = ""; then
+    check 1 "createInfoFilesFromFITSImages: missing/blank second argument must specify NAIF-compliant body name"
+  fi
+
+  if test "$bodyFrame" = ""; then
+    check 1 "createInfoFilesFromFITSImages: missing/blank third argument must specify NAIF-compliant body frame ID"
+  fi
+
+  if test "$spacecraft" = ""; then
+    check 1 "createInfoFilesFromFITSImages: missing/blank fourth argument must specify NAIF-compliant spacecraft ID"
+  fi
+
+  if test "$instrumentFrame" = ""; then
+    check 1 "createInfoFilesFromFITSImages: missing/blank fifth argument must specify NAIF-compliant instrument frame ID"
+  fi
+
+  if test "$timeStampKeyword" = ""; then
+    check 1 "createInfoFilesFromFITSImages: missing/blank sixth argument must specify keyword used to extract time stamps"
+  fi
+
+  if test "$imageDir" = ""; then
+    check 1 "createInfoFilesFromFITSImages: missing/blank seventh argument must specify image directory relative to $srcTop"
+  fi
+
+  if test ! -d "$srcTop/$imageDir"; then
+    check 1 "createInfoFilesFromFITSImages: seventh argument $imageDir is not a must specify image directory relative to $srcTop"
+  fi
+
+  if test "$infoDir" = ""; then
+    check 1 "createInfoFilesFromFITSImages: missing/blank eighth argument must specify image directory relative to $srcTop"
+  fi
 
 # Generate image list with time stamps from the content of the image directory.
   imageTimeStampFile=$(getDirName "$destTop/$imageDir/..")"/imagelist-with-time.txt"
@@ -938,126 +1101,6 @@ createInfoFilesFromFITSImages() {
 
   createInfoFilesFromImageTimeStamps $metakernel $body $bodyFrame $spacecraft $instrumentFrame \
     $imageTimeStampFile $infoDir
-}
-
-# First argument is the keyword associated with time stamps.
-# Next argument is the top-level directory; this will be stripped out of the beginning of file names.
-# Next argument is the directory to search for FITS files. This must be a descendant of the top-level directory.
-# Next argument is the output file that will hold the comma-separated file-name, date/time.
-extractFITSFileTimes() {
-  timeStampKeyword=$1
-  topDir=$(getDirName "$2")
-  dir=$(getDirName "$3")
-  listFile=$4
-
-  if test "$timeStampKeyword" = ""; then
-    echo "extractFITSFileTimes: timeStampKeyword argument is blank." >&2
-    exit 1
-  fi
-
-  if test "$dir" = "$topDir"; then
-    relPath=
-  elif test `echo $dir | grep -c "^$topDir/"` -eq 0; then
-    echo "extractFITSFileTimes: top directory $topDir is not an ancestor of directory $dir" >&2
-    exit 1
-  else
-    relPath=`echo $dir | sed "s:^$topDir/::"`
-  fi
-
-  if test "$listFile" = ""; then
-    echo "extractFITSFileTimes: listFile argument is blank." >&2
-    exit 1
-  fi
-
-  # Need Ftools for this.
-  type ftlist
-  if test $? -ne 0; then
-    echo "extractFITSFileTimes: need to have Ftools in your path for this to work" >&2
-    exit 1
-  fi
-
-  createParentDir $listFile
-
-  rm -f $listFile
-  for file in `ls $dir/` .; do
-    if test "$file" != .; then
-      # Ftool ftlist prints the whole header line for the keyword, however many times it appears in the file.
-      # Parse the first match, assumed to have the standard FITS keyword form:
-      # keyname = 'value' / comment
-      # In general the comment and the single quotes are not guaranteed to be present, so try to be bullet-proof
-      # with the seds. Also the output should have a T rather than space separating the date from the time.
-      value=`ftlist "infile=$dir/$file" option=k include=$timeStampKeyword 2> /dev/null | head -1 | \
-        sed 's:[^=]*=[  ]*::' | sed 's:[  ]*/.*$::' | sed "s:^''*::" | sed "s:''*$::" | sed 's: :T:'`
-      if test $? -eq 0 -a "$value" != ""; then
-        echo "$relPath/$file, $value" >> $listFile
-      else
-        echo "extractFITSFileTimes: unable to extract time; skipping file $file" >&2
-      fi
-    fi
-  done
-}
-
-# Create INFO files from a SPICE metakernel plus a CSV file containing a list of images with time stamps.
-createInfoFilesFromImageTimeStamps() {
-  metakernel=$1
-  body=$2
-  bodyFrame=$3
-  spacecraft=$4
-  instrumentFrame=$5
-  imageTimeStampFile=$6
-  infoDir=$7
-
-  if test "$imageTimeStampFile" = ""; then
-    echo "createInfoFilesFromImageTimeStamps: image time stamp file argument is blank." >&2
-    exit 1
-  elif test ! -f $imageTimeStampFile; then
-    echo "createInfoFilesFromImageTimeStamps: image time stamp file $imageTimeStampFile does not exist." >&2
-    exit 1
-  fi
-
-  if test "$infoDir" = ""; then
-    echo "createInfoFilesFromImageTimeStamps: infoDir argument is blank." >&2
-    exit 1
-  fi
-
-  parentDir=$(getDirName "$destTop/$infoDir/..")
-  imageListFile="$parentDir/imagelist-info.txt"
-  imageListFullPathFile="$parentDir/imagelist-fullpath-info.txt"
-  missingInfoList="$parentDir/missing-info.txt"
-
-  createInfoFilesDir="$sbmtCodeTop/sbmt/pipeline/rawdata/generic/createInfoFiles"
-  if test -d $createInfoFiles; then
-    (cd $createInfoFilesDir; check $?; make)
-    check $?
-  else
-    echo "createInfoFilesFromImageTimeStamps: directory $createInfoFilesDir does not exist" >&2
-    exit 1
-  fi
-
-  createDir "$destTop/$infoDir"
-
-  #  1. metakernel - a SPICE meta-kernel file containing the paths to the kernel files
-  #  2. body - IAU name of the target body, all caps
-  #  3. bodyFrame - Typically IAU_<body>, but could be something like RYUGU_FIXED
-  #  4. spacecraft - SPICE spacecraft name
-  #  5. instrumentframe - SPICE instrument frame name
-  #  6. imageTimeStampFile - path to CSV file in which all image files are listed (relative
-  #     to "topDir") with their UTC time stamps
-  #  7. infoDir - path to output directory where infofiles should be saved to
-  #  8. imageListFile - path to output file in which all image files for which an infofile was
-  #     created (image file name only, not full path) will be listed along with
-  #     their start times.
-  #  9. imageListFullPathFile - path to output file in which all image files for which an infofile
-  #     was created will be listed (full path relative to the server directory).
-  # 10. missingInfoList - path to output file in which all image files for which no infofile
-  #     was created will be listed, preceded with a string giving the cause for
-  #     why no infofile could be created.
-
-  echo $createInfoFilesDir/createInfoFiles $destTop/$metakernel $body $bodyFrame $spacecraft $instrumentFrame \
-    $imageTimeStampFile "$destTop/$infoDir" $imageListFile $imageListFullPathFile $missingInfoList
-
-  $createInfoFilesDir/createInfoFiles $destTop/$metakernel $body $bodyFrame $spacecraft $instrumentFrame \
-    $imageTimeStampFile "$destTop/$infoDir" $imageListFile $imageListFullPathFile $missingInfoList 2>&1 > create_info_files.txt
 }
 
 # Check files in the sumfiles/ directory against make_sumfiles.in for discrepancies, i.e., listed files not
@@ -1145,15 +1188,15 @@ createFileSymLinks() {
     if test "$dir" = ""; then
       check 1 "createFileSymLinks: first argument missing; must be directory in which to create symbolic links"
     fi
-  
+
     if test ! -d $dir; then
       check 1 "createFileSymLinks: $dDir is not a directory"
     fi
-  
+
     if test "$prefix" = ""; then
-      check 1 "createFileSymLinks: second argument missing; must be prefix for symbolic link names" 
+      check 1 "createFileSymLinks: second argument missing; must be prefix for symbolic link names"
     fi
-  
+
     cd $dir
     check $? "createFileSymLinks: unable to cd $dir"
 
@@ -1170,17 +1213,92 @@ createFileSymLinks() {
 
       if test $file = $linkName; then
         continue
-      fi 
+      fi
 
       # Remove any previous links.
       rm -f $linkName
 
       ln -s $file $linkName
       check $? "createFileSymLinks: unable to create symbolic link from $file to $linkName"
-      
+
       let res=res+1
     done
   )
   check $?
 }
 
+# Unpack any archives found in the provided directory. If none, just skip.
+unpackArchives() {
+  (
+    srcDir=$1
+
+    if test "$srcDir" = ""; then
+      check 1 "unpackArchives: missing/blank first argument must be source directory that may contain archive files"
+    fi
+
+    if test ! -d "$srcDir"; then
+      check 1 "unpackArchives: first argument $srcDir does not specify a source directory that may contain archive files"
+    fi
+
+    cd $srcDir
+    check $? "unpackArchives: cannot cd $srcDir"
+
+    # Use . to ensure for loop has at least one match.
+    for file in `ls *.tar` .; do
+      if test $file != "."; then
+        tar xf $file
+        check $? "unpackArchives: unable to untar file $file"
+      fi
+    done
+
+    # Use . to ensure for loop has at least one match.
+    for file in `ls *.tgz *.tar.gz` .; do
+      if test $file != "."; then
+        tar zxf $file
+        check $? "unpackArchives: unable to untar gzipped file $file"
+      fi
+    done
+
+  )
+  check $?
+}
+
+# Edit metakernel files to replace delivered paths with the top of the temporary spice tree.
+# param srcDir the directory in which to edit the metakernels
+# param regEx the expression to match in the input file(s)
+editMetakernels() {
+  (
+    srcDir=$1
+
+    regEx=$2
+
+    if test "$srcDir" = ""; then
+      check 1 "editMetakernels: missing/blank first argument must be source directory that may contain metakernel files"
+    fi
+
+    if test ! -d "$srcDir"; then
+      check 1 "editMetakernels: first argument $srcDir does not specify a source directory that may contain metakernel files"
+    fi
+
+    if test "$regEx" = ""; then
+      check 1 "editMetakernels: missing/blank second argument must be regular expression to match delivered paths in metakernels"
+    fi
+
+    cd $srcDir
+    check $? "editMetakernels: cannot cd $srcDir"
+
+    # Use . to ensure for loop has at least one match.
+    for file in `ls *.mk *.tm` .; do
+      if test $file != "."; then
+        if test ! -f "$file.bak"; then
+          sed -i bak -e "s:$regEx:$tmpSpiceDir:"
+          check $? "unpackArchives: unable to untar file $file"
+        else
+          echo "File $file.bak already exists -- not re-editing metakernel file $srcDir/$file"
+        fi
+      fi
+    done
+
+  )
+  check $?
+}
