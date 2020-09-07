@@ -125,21 +125,21 @@ public class DartConfigs
                         new GenericPhpQuery(c.rootDirOnServer + "/draco", dracoTable, dracoTable, c.rootDirOnServer + "/draco/gallery"), //
                         ImageType.GENERIC_IMAGE, //
                         InfoFiles, //
-                        Instrument.POLYCAM //
+                        Instrument.DRACO //
                 ),
                 new ImagingInstrument( //
                         SpectralImageMode.MONO, //
                         new GenericPhpQuery(c.rootDirOnServer + "/luke", lukeTable, lukeTable, c.rootDirOnServer + "/luke/gallery"), //
                         ImageType.GENERIC_IMAGE, //
                         InfoFiles, //
-                        Instrument.POLYCAM //
+                        Instrument.LUKE //
                 ),
                 new ImagingInstrument( //
                         SpectralImageMode.MONO, //
                         new GenericPhpQuery(c.rootDirOnServer + "/leia", leiaTable, leiaTable, c.rootDirOnServer + "/leia/gallery"), //
                         ImageType.GENERIC_IMAGE, //
                         InfoFiles, //
-                        Instrument.POLYCAM //
+                        Instrument.LEIA //
                 ),
         };
 
