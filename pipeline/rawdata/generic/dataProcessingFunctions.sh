@@ -1157,7 +1157,7 @@ createFileSymLinks() {
     check $? "createFileSymLinks: unable to cd $dir"
 
     let res=0
-    for file in `ls -Sr *`; do
+    for file in `ls -Sr * | grep -v "^$prefix"`; do
       lastSuffix=`echo $file | sed -e 's:.*\(\.[^\.]*\)$:\1:'`
       if test $lastSuffix = ".gz"; then
         suffix=`echo $file | sed -e 's:.*\(\.[^\.]*\.[^\.]*\)$:\1:'`
