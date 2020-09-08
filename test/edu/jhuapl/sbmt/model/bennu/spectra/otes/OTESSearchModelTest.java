@@ -17,6 +17,7 @@ import org.junit.jupiter.api.Test;
 import com.jidesoft.swing.CheckBoxTree;
 
 import edu.jhuapl.saavtk.model.Model;
+import edu.jhuapl.saavtk.model.ModelManager;
 import edu.jhuapl.saavtk.model.ModelNames;
 import edu.jhuapl.saavtk.model.ShapeModelBody;
 import edu.jhuapl.saavtk.model.ShapeModelType;
@@ -31,7 +32,6 @@ import edu.jhuapl.saavtk.util.NativeLibraryLoader;
 import edu.jhuapl.saavtk.util.SafeURLPaths;
 import edu.jhuapl.sbmt.client.SBMTModelBootstrap;
 import edu.jhuapl.sbmt.client.SbmtModelFactory;
-import edu.jhuapl.sbmt.client.SbmtModelManager;
 import edu.jhuapl.sbmt.client.SbmtMultiMissionTool;
 import edu.jhuapl.sbmt.client.SmallBodyModel;
 import edu.jhuapl.sbmt.client.SmallBodyViewConfig;
@@ -100,7 +100,7 @@ class OTESSearchModelTest
 		allModels.put(ModelNames.POINT_STRUCTURES, new PointModel(smallBodyModel));
 		allModels.put(ModelNames.CIRCLE_SELECTION, new CircleSelectionModel(smallBodyModel));
 
-		SbmtModelManager modelManager = new SbmtModelManager(smallBodyModel, allModels);
+		ModelManager modelManager = new ModelManager(smallBodyModel, allModels);
 
         otesSearchModel = new OTESSearchModel(modelManager, SpectrumInstrumentFactory.getInstrumentForName("OTES"));
 
