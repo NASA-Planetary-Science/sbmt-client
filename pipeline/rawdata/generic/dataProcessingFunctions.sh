@@ -2,9 +2,31 @@
 #-------------------------------------------------------------------------------
 # Developer:      James Peachey, based on commonFuncs.sh by Russell Turner,
 #                 Alex Welsh and Josh Steele.
-# Description:    Utilities to support processing data in context of
-#                 importing models, images, spectra etc. into SBMT or
-#                 similar clients.
+# Description:
+#   Utilities to support processing data in context of
+#   importing models, images, spectra etc. into SBMT or similar clients.
+#   The functions defined here are designed to fail and quit at the first
+#   sign of a problem to prevent costly malfunctions on the server.
+#
+#   General note: the functions largely make use of the pattern below,
+#   which is good for exiting when an error is encountered, and also
+#   for encapsulating local variables. This works because curly braces
+#   define function body without spawning a sub-shell, but parentheses
+#   spawn a sub-shell.
+#
+# functionName() {
+#   # Still in the parent (calling) shell here.
+#   (
+#     # Now in the sub-shell.
+#     localVar=...
+#
+#     <command> ...
+#     check $? "functionName: command had an error; this exits the sub-shell.
+#   )
+#   # localVar is no longer defined here.
+#   check $? # Exits parent shell if $? -ne 0, i.e., if the sub-shell exited
+#   with non-0 exit code.
+# }
 #-------------------------------------------------------------------------------
 
 # Check whether the logged in user name is the same as the provided argument.
@@ -19,15 +41,18 @@ checkIdentity() {
   fi
 }
 
-# Check the exit status of a previous command, which is passed as the first
-# argument. If it's non-0, print an optional context messsage if present,
-# and then call exit from within the invoking shell, passing along the
-# provided status.
+# Checks the status code that is passed as the first argument. If it's missing,
+# blank or non-0, prints the remaining arguments, which are assumed to
+# provide an error message, and then calls exit from within the invoking shell,
+# thus terminating the script that called it and returning a non-0 status code.
 #
-# Because this exits and does not run in a sub-shell, use cautiously.
+# If the first argument is 0, this function takes no action whatsoever.
+#
 check() {
+  # A missing or blank first argument should be interpreted as an error.
   if test "$1" = ""; then
-    echo "check: first argument is blank" >&2
+    # In case the first argument was blank, but additional arguments provide
+    # error message, print them before exiting.
     if test $# -gt 1; then
       echo "$*" >&2
     fi
@@ -179,7 +204,7 @@ guessFileExtension() {
     fi
 
     if test -d "$file"; then
-      ext=`ls "$file/"*.* | head -n 1 | sed -n 's:.*\.::p'`
+      ext=`ls "$file/"*.* 2> /dev/null | head -n 1 | sed -n 's:.*\.::p'`
     else
       ext=`echo $file | sed -n 's:.*\.::p'`
     fi
@@ -198,7 +223,7 @@ guessFileExtension() {
 # to the left of the "rawdata" segment. If the path contains more than one
 # segment named "rawdata", the right-most one will be used.
 #
-# If the supplied path does not include the segment "rawdata",
+# If the supplied path does not include the segment "rawdata", this errors out.
 #
 # This function uses getDirName to rationalize paths, so the supplied argument
 # must actually exist in the file system.
@@ -952,7 +977,7 @@ extractFITSFileTimes() {
     createParentDir $listFile
 
     rm -f $listFile
-    for file in `ls $dir/` .; do
+    for file in `ls $dir/ 2> /dev/null` .; do
       if test "$file" != .; then
         # Ftool ftlist prints the whole header line for the keyword, however many times it appears in the file.
         # Parse the first match, assumed to have the standard FITS keyword form:
@@ -1201,27 +1226,29 @@ createFileSymLinks() {
     check $? "createFileSymLinks: unable to cd $dir"
 
     let res=0
-    for file in `ls -Sr * | grep -v "^$prefix"`; do
-      lastSuffix=`echo $file | sed -e 's:.*\(\.[^\.]*\)$:\1:'`
-      if test $lastSuffix = ".gz"; then
-        suffix=`echo $file | sed -e 's:.*\(\.[^\.]*\.[^\.]*\)$:\1:'`
-      else
-        suffix=$lastSuffix
+    for file in `ls -Sr * 2> /dev/null | grep -v "^$prefix"` .; do
+      if test "$file" != .; then
+        lastSuffix=`echo $file | sed -e 's:.*\(\.[^\.]*\)$:\1:'`
+        if test $lastSuffix = ".gz"; then
+          suffix=`echo $file | sed -e 's:.*\(\.[^\.]*\.[^\.]*\)$:\1:'`
+        else
+          suffix=$lastSuffix
+        fi
+
+        linkName="$prefix${res}$suffix"
+
+        if test $file = $linkName; then
+          continue
+        fi
+
+        # Remove any previous links.
+        rm -f $linkName
+
+        ln -s $file $linkName
+        check $? "createFileSymLinks: unable to create symbolic link from $file to $linkName"
+
+        let res=res+1
       fi
-
-      linkName="$prefix${res}$suffix"
-
-      if test $file = $linkName; then
-        continue
-      fi
-
-      # Remove any previous links.
-      rm -f $linkName
-
-      ln -s $file $linkName
-      check $? "createFileSymLinks: unable to create symbolic link from $file to $linkName"
-
-      let res=res+1
     done
   )
   check $?
@@ -1244,16 +1271,16 @@ unpackArchives() {
     check $? "unpackArchives: cannot cd $srcDir"
 
     # Use . to ensure for loop has at least one match.
-    for file in `ls *.tar` .; do
-      if test $file != "."; then
+    for file in `ls *.tar 2> /dev/null` .; do
+      if test "$file" != .; then
         tar xf $file
         check $? "unpackArchives: unable to untar file $file"
       fi
     done
 
     # Use . to ensure for loop has at least one match.
-    for file in `ls *.tgz *.tar.gz` .; do
-      if test $file != "."; then
+    for file in `ls *.tgz *.tar.gz 2> /dev/null` .; do
+      if test "$file" != .; then
         tar zxf $file
         check $? "unpackArchives: unable to untar gzipped file $file"
       fi
@@ -1288,8 +1315,8 @@ editMetakernels() {
     check $? "editMetakernels: cannot cd $srcDir"
 
     # Use . to ensure for loop has at least one match.
-    for file in `ls *.mk *.tm` .; do
-      if test $file != "."; then
+    for file in `ls *.mk *.tm 2> /dev/null` .; do
+      if test "$file" != .; then
         if test ! -f "$file.bak"; then
           sed -i bak -e "s:$regEx:$tmpSpiceDir:"
           check $? "unpackArchives: unable to untar file $file"
@@ -1298,6 +1325,39 @@ editMetakernels() {
         fi
       fi
     done
+
+  )
+  check $?
+}
+
+# Run the database generator to create a table for a particular instrument.
+#
+# param instrument the instrument identifier, as it is or will be referred to in a Java Instrument object
+# param pointing the type of pointing, usually either GASKELL or SPICE
+generateDatabaseTable() {
+  (
+    instrument=$1
+    pointing=$2
+
+    if test "$instrument" = ""; then
+      check 1 "generateDatabaseTable: missing/blank first argument, which must be the name of an instrument"
+    fi
+
+    if test "$pointing" = ""; then
+      check 1 "generateDatabaseTable: missing/blank second argument, which must be the pointing type"
+    fi
+
+    tool=DatabaseGeneratorSql.sh
+    pathToTool=$sbmtCodeTop/sbmt/bin/$tool
+
+    # Just in case, make sure pointing is all uppercase.
+    pointing=${pointing^^}
+
+    logFile=$logDir/$tool-$instrument-$pointing.txt
+    echo $pathToTool --root-url file://$serverTop/data --body "$bodyId" --author "$modelId" --instrument "$instrument" $pointing
+    $pathToTool --root-url file://$serverTop/data --body "$bodyId" --author "$modelId" --instrument "$instrument" $pointing \
+      > $logFile 2>&1
+    check $? "generateDatabaseTable: $tool had an error. See log file $logFile"
 
   )
   check $?
