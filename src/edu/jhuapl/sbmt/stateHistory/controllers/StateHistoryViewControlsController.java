@@ -1,12 +1,10 @@
 package edu.jhuapl.sbmt.stateHistory.controllers;
 
-import java.awt.GridLayout;
-
 import javax.swing.BoxLayout;
 import javax.swing.JPanel;
-import javax.swing.border.TitledBorder;
 
 import edu.jhuapl.saavtk.gui.render.Renderer;
+import edu.jhuapl.saavtk.model.ColoringDataManager;
 import edu.jhuapl.sbmt.stateHistory.controllers.viewControls.StateHistoryColoringOptionsController;
 import edu.jhuapl.sbmt.stateHistory.controllers.viewControls.StateHistoryDisplayItemsController;
 import edu.jhuapl.sbmt.stateHistory.controllers.viewControls.StateHistoryViewOptionsController;
@@ -42,18 +40,18 @@ public class StateHistoryViewControlsController
 	 * @param historyModel
 	 * @param renderer
 	 */
-	public StateHistoryViewControlsController(StateHistoryModel historyModel, Renderer renderer)
+	public StateHistoryViewControlsController(StateHistoryModel historyModel, Renderer renderer, ColoringDataManager coloringDataManager)
 	{
-		initUI(historyModel, renderer);
+		initUI(historyModel, renderer, coloringDataManager);
 	}
 
 	/**
 	 * Initializes the user interface using the given <pre>historyModel</pre> and <pre>renderer</pre>
 	 */
-	private void initUI(StateHistoryModel historyModel, Renderer renderer)
+	private void initUI(StateHistoryModel historyModel, Renderer renderer, ColoringDataManager coloringDataManager)
 	{
         viewControls = new StateHistoryViewOptionsController(historyModel.getRuns(), renderer);
-        coloringControls = new StateHistoryColoringOptionsController(historyModel.getRuns(), renderer);
+        coloringControls = new StateHistoryColoringOptionsController(historyModel.getRuns(), renderer, coloringDataManager);
         displayItemsControls = new StateHistoryDisplayItemsController(historyModel.getRuns(), renderer);
 
         //this is a cross panel listener action, so set it up here, above the 3 controllers
@@ -82,19 +80,10 @@ public class StateHistoryViewControlsController
 	public JPanel getView()
 	{
 		JPanel view = new JPanel();
-		view.setBorder(new TitledBorder(null, "View Controls",
-                TitledBorder.LEADING, TitledBorder.TOP, null, null));
-        view.setLayout(new BoxLayout(view, BoxLayout.X_AXIS));
-        view.setLayout(new GridLayout(1, 2));
-
-        JPanel rightPanel = new JPanel();
-        rightPanel.setLayout(new BoxLayout(rightPanel, BoxLayout.Y_AXIS));
-        rightPanel.add(viewControls.getView());
-        rightPanel.add(coloringControls.getView());
-
+        view.setLayout(new BoxLayout(view, BoxLayout.Y_AXIS));
         view.add(displayItemsControls.getView());
-        view.add(rightPanel);
+        view.add(viewControls.getView());
+        view.add(coloringControls.getView());
 		return view;
 	}
-
 }

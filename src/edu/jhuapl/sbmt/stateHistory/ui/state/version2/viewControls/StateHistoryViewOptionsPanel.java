@@ -1,13 +1,17 @@
 package edu.jhuapl.sbmt.stateHistory.ui.state.version2.viewControls;
 
+import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.ItemListener;
+import java.util.Vector;
 
 import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
+import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -48,8 +52,21 @@ public class StateHistoryViewOptionsPanel extends JPanel implements ActionListen
 	 */
 	private JLabel lblVerticalFov;
 
+	private JLabel availableFovsLabel;
+
+	private Vector<String> fovs;
+
+	private JCheckBox[] fovCheckboxes;
+
+	private JPanel fovPanel = new JPanel();
+	private JPanel fovPanela = new JPanel();
+	private JPanel fovPanelb = new JPanel();
+
+	private ItemListener checkboxItemListener;
+
 	public StateHistoryViewOptionsPanel()
 	{
+		this.fovs = new Vector<String>();
 		initUI();
 	}
 
@@ -66,7 +83,6 @@ public class StateHistoryViewOptionsPanel extends JPanel implements ActionListen
 		// *********************
 		// View Options Panel
 		// *********************
-
 		setBorder(new TitledBorder(null, "View Options", TitledBorder.LEADING, TitledBorder.TOP, null, null));
 		setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
 
@@ -93,29 +109,73 @@ public class StateHistoryViewOptionsPanel extends JPanel implements ActionListen
 		panel_2.add(btnResetCameraTo);
 
 		// FOV panel
-		JPanel panel_14 = new JPanel();
-		add(panel_14);
-		panel_14.setLayout(new BoxLayout(panel_14, BoxLayout.X_AXIS));
+		add(updateFOVsPanel());
+		fovPanel.setLayout(new BoxLayout(fovPanel, BoxLayout.Y_AXIS));
+	}
 
-		lblVerticalFov = new JLabel("FOV (deg):");
-		lblVerticalFov.setEnabled(false);
-		panel_14.add(lblVerticalFov);
+	private JPanel updateFOVsPanel()
+	{
+		fovPanel.removeAll();
 
-		viewInputAngle = new JTextField();
-		viewInputAngle.setMaximumSize(new Dimension(150, viewInputAngle.getPreferredSize().height));
-		viewInputAngle.setText("30.0");
-		viewInputAngle.setEnabled(false);
-		panel_14.add(viewInputAngle);
-		viewInputAngle.setColumns(10);
+		if (fovs == null || fovs.size() == 0)
+		{
+			fovPanela.removeAll();
+			fovPanela.setLayout(new BoxLayout(fovPanela, BoxLayout.X_AXIS));
+			lblVerticalFov = new JLabel("FOV (deg):");
+			lblVerticalFov.setEnabled(false);
+			fovPanela.add(lblVerticalFov);
 
-		setViewAngle = new JButton("Set");
-		setViewAngle.setEnabled(false);
-		panel_14.add(setViewAngle);
-		panel_14.add(Box.createHorizontalGlue());
+			viewInputAngle = new JTextField();
+			viewInputAngle.setMaximumSize(new Dimension(150, viewInputAngle.getPreferredSize().height));
+			viewInputAngle.setText("30.0");
+			viewInputAngle.setEnabled(false);
+			fovPanela.add(viewInputAngle);
+			viewInputAngle.setColumns(10);
 
-		JPanel panel_15 = new JPanel();
-		add(panel_15);
-		panel_15.setLayout(new BoxLayout(panel_15, BoxLayout.X_AXIS));
+			setViewAngle = new JButton("Set");
+			setViewAngle.setEnabled(false);
+			fovPanela.add(setViewAngle);
+			fovPanela.add(Box.createHorizontalGlue());
+			fovPanel.add(fovPanela);
+		}
+		else
+		{
+			fovPanelb.removeAll();
+			fovCheckboxes = new JCheckBox[fovs.size()];
+			fovPanelb.setLayout(new BoxLayout(fovPanelb, BoxLayout.Y_AXIS));
+			fovPanelb.setBackground(Color.red);
+			availableFovsLabel = new JLabel("Available FOVs");
+			JPanel labelPanel = new JPanel();
+			labelPanel.setLayout(new BoxLayout(labelPanel, BoxLayout.X_AXIS));
+			labelPanel.add(availableFovsLabel);
+			labelPanel.add(Box.createHorizontalGlue());
+			fovPanelb.add(labelPanel);
+			int i=0;
+			for (String fov : fovs)
+			{
+				JCheckBox fovCheckBox = new JCheckBox(fov);
+				fovCheckBox.addItemListener(checkboxItemListener);
+				JPanel checkboxPanel = new JPanel();
+				checkboxPanel.setLayout(new BoxLayout(checkboxPanel, BoxLayout.X_AXIS));
+				checkboxPanel.add(fovCheckBox);
+				checkboxPanel.add(Box.createHorizontalGlue());
+				fovPanelb.add(checkboxPanel);
+				fovCheckboxes[i++] = fovCheckBox;
+			}
+			fovPanel.add(fovPanelb);
+		}
+		return fovPanel;
+	}
+
+	public void setAvailableFOVs(Vector<String> fovs)
+	{
+		this.fovs = fovs;
+		updateFOVsPanel();
+	}
+
+	public JCheckBox[] getFovCheckBoxes()
+	{
+		return fovCheckboxes;
 	}
 
 	@Override
@@ -184,5 +244,13 @@ public class StateHistoryViewOptionsPanel extends JPanel implements ActionListen
     	viewInputAngle.setEnabled(enabled);
 
 		super.setEnabled(enabled);
+	}
+
+	/**
+	 * @param checkboxItemListener the checkboxItemListener to set
+	 */
+	public void setCheckboxItemListener(ItemListener checkboxItemListener)
+	{
+		this.checkboxItemListener = checkboxItemListener;
 	}
 }

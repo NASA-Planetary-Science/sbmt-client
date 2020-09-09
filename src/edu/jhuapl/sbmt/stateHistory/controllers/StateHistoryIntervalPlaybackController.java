@@ -148,7 +148,7 @@ public class StateHistoryIntervalPlaybackController
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-
+		historyModel.setTime(runs.getCurrentRun().getCurrentTime());
         view.getTimeBox().setValue(date);
 	}
 
@@ -280,6 +280,7 @@ public class StateHistoryIntervalPlaybackController
     private void setTimeSlider(double tf){
         setSliderValue(tf);
         currentOffsetTime = tf;
+        historyModel.setTime(historyModel.getRuns().getCurrentRun().getCurrentTime());
     }
 
     /**
@@ -353,6 +354,7 @@ public class StateHistoryIntervalPlaybackController
         			pe.printStackTrace();
         		}
                 view.getTimeBox().setValue(date);
+                historyModel.setTime(runs.getCurrentRun().getCurrentTime());
             }
         });
         timer.setDelay(timerInterval);

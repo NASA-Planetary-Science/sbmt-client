@@ -5,6 +5,7 @@ import java.util.NavigableMap;
 import java.util.Set;
 import java.util.TreeMap;
 
+import edu.jhuapl.sbmt.pointing.IPointingProvider;
 import edu.jhuapl.sbmt.stateHistory.model.StateHistorySourceType;
 import edu.jhuapl.sbmt.stateHistory.model.interfaces.State;
 import edu.jhuapl.sbmt.stateHistory.model.interfaces.StateHistory;
@@ -13,7 +14,6 @@ import edu.jhuapl.sbmt.stateHistory.model.io.StateHistoryInvalidTimeException;
 
 import altwg.util.MathUtil;
 import crucible.core.math.vectorspace.UnwritableVectorIJK;
-import crucible.core.mechanics.FrameID;
 import crucible.crust.metadata.api.Key;
 import crucible.crust.metadata.api.Version;
 import crucible.crust.metadata.impl.InstanceGetter;
@@ -78,6 +78,8 @@ public class StandardStateHistory implements StateHistory
     private StateHistorySourceType type;
 
     private String sourceFile;
+
+    private IPointingProvider pointingProvider;
 
 
     //Metadata Information
@@ -233,6 +235,22 @@ public class StandardStateHistory implements StateHistory
     }
 
     /**
+	 * @param startTime the startTime to set
+	 */
+	public void setStartTime(Double startTime)
+	{
+		this.startTime = startTime;
+	}
+
+	/**
+	 * @param endTime the endTime to set
+	 */
+	public void setEndTime(Double endTime)
+	{
+		this.endTime = endTime;
+	}
+
+    /**
      *
      */
     public Double getTimeFraction()
@@ -293,7 +311,6 @@ public class StandardStateHistory implements StateHistory
     public State getStateAtTime(Double time)
     {
         // for now, just return floor
-//    	System.out.println("StandardStateHistory: getStateAtTime: time is " + time + " returning " + getStateBeforeOrAtTime(time).getValue());
         return getStateBeforeOrAtTime(time).getValue();
     }
 
@@ -317,19 +334,26 @@ public class StandardStateHistory implements StateHistory
 
     //Heavenly body position getters
 
-    /**
-     *
-     */
-    public double[] getSpacecraftPosition()
+    @Override
+    public double[] getSpacecraftPositionAtTime(double time)
     {
-        State floor = getStateBeforeOrAtTime(currentTime).getValue();
-        State ceiling = getStateAtOrAfter(currentTime).getValue();
+//    	System.out.println("StandardStateHistory: getSpacecraftPositionAtTime: time " + time);
+    	State floor = getStateBeforeOrAtTime(time).getValue();
+    	if (getStateAtOrAfter(time) == null) return floor.getSpacecraftPosition();
+        State ceiling = getStateAtOrAfter(time).getValue();
         double[] floorPosition = floor.getSpacecraftPosition();
         double[] ceilingPosition = ceiling.getSpacecraftPosition();
         double floorTime = floor.getEphemerisTime();
         double ceilingTime = ceiling.getEphemerisTime();
 
-        return interpolateDouble(floorPosition, ceilingPosition, floorTime, ceilingTime, currentTime);
+        return interpolateDouble(floorPosition, ceilingPosition, floorTime, ceilingTime, time);
+    }
+    /**
+     *
+     */
+    public double[] getSpacecraftPosition()
+    {
+        return getSpacecraftPositionAtTime(currentTime);
     }
 
     /**
@@ -338,6 +362,7 @@ public class StandardStateHistory implements StateHistory
     public double[] getSunPosition()
     {
         State floor = getStateBeforeOrAtTime(currentTime).getValue();
+        if (getStateAtOrAfter(currentTime) == null) return floor.getSunPosition();
         State ceiling = getStateAtOrAfter(currentTime).getValue();
         double[] floorPosition = floor.getSunPosition();
         double[] ceilingPosition = ceiling.getSunPosition();
@@ -353,6 +378,7 @@ public class StandardStateHistory implements StateHistory
     public double[] getEarthPosition()
     {
         State floor = getStateBeforeOrAtTime(currentTime).getValue();
+        if (getStateAtOrAfter(currentTime) == null) return floor.getEarthPosition();
         State ceiling = getStateAtOrAfter(currentTime).getValue();
         double[] floorPosition = floor.getEarthPosition();
         double[] ceilingPosition = ceiling.getEarthPosition();
@@ -446,22 +472,47 @@ public class StandardStateHistory implements StateHistory
 	}
 
 	@Override
-	public double[] getInstrumentLookDirection(FrameID instrumentFrameID)
+	public double[] getInstrumentLookDirection(String instrumentFrameName)
 	{
-		double[] lookDir = getCurrentState().getInstrumentLookDirection(instrumentFrameID);
-//		System.out.println("StandardStateHistory: getInstrumentLookDirection: returning " + lookDir[0] + " " + lookDir[1] + " " + lookDir[2]);
+		double[] lookDir = getCurrentState().getInstrumentLookDirection(instrumentFrameName);
 		return lookDir;
 	}
 
 	@Override
-	public UnwritableVectorIJK getFrustum(FrameID instrumentFrameID, int index)
+	public double[] getInstrumentLookDirectionAtTime(String instrumentFrameName, double time)
 	{
-		return getCurrentState().getFrustum(instrumentFrameID, index);
+		double[] lookDir = getStateAtTime(time).getInstrumentLookDirection(instrumentFrameName);
+		return lookDir;
+	}
+
+	@Override
+	public UnwritableVectorIJK getFrustum(String instrumentFrameName, int index)
+	{
+		return getCurrentState().getFrustum(instrumentFrameName, index);
+	}
+
+	@Override
+	public UnwritableVectorIJK getFrustumAtTime(String instrumentFrameName, int index, double time)
+	{
+//		System.out.println("StandardStateHistory: getFrustumAtTime: getting frustum at time " + time);
+		return getStateAtTime(time).getFrustum(instrumentFrameName, index);
 	}
 
 	@Override
 	public void setSourceFile(String sourceFile)
 	{
 		this.sourceFile = sourceFile;
+	}
+
+	@Override
+	public IPointingProvider getPointingProvider()
+	{
+		return pointingProvider;
+	}
+
+	@Override
+	public void setPointingProvider(IPointingProvider pointingProvider)
+	{
+		this.pointingProvider = pointingProvider;
 	}
 }

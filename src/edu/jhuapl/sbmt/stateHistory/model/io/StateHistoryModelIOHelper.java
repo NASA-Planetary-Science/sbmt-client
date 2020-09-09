@@ -165,9 +165,10 @@ public class StateHistoryModelIOHelper
 
                 double[] spacecraftPosition = flybyState.getSpacecraftPosition();
 
-                trajectory.getX().add(spacecraftPosition[0]);
-                trajectory.getY().add(spacecraftPosition[1]);
-                trajectory.getZ().add(spacecraftPosition[2]);
+                //TODO go back and look at this once pointing provider implementation in place - needed?
+//                trajectory.getX().add(spacecraftPosition[0]);
+//                trajectory.getY().add(spacecraftPosition[1]);
+//                trajectory.getZ().add(spacecraftPosition[2]);
 
                 if(com.mysql.jdbc.StringUtils.isNullOrEmpty(timeArray.get(0)[0])){
                     timeArray.get(0)[0] = flybyState.getUtc();

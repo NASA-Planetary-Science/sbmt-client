@@ -8,13 +8,13 @@ import java.util.List;
 
 import com.google.common.collect.ImmutableList;
 
+import vtk.vtkActor;
 import vtk.vtkProp;
 
 import edu.jhuapl.saavtk.model.SaavtkItemManager;
 import edu.jhuapl.saavtk.util.Properties;
 import edu.jhuapl.sbmt.client.SmallBodyModel;
 import edu.jhuapl.sbmt.stateHistory.model.io.PlannedSpectrumIOHelper;
-import edu.jhuapl.sbmt.stateHistory.rendering.planning.PlannedInstrumentDataActor;
 import edu.jhuapl.sbmt.stateHistory.rendering.planning.PlannedInstrumentRendererManager;
 
 import crucible.crust.metadata.api.Metadata;
@@ -82,9 +82,10 @@ public class PlannedSpectrumCollection extends SaavtkItemManager<PlannedSpectrum
 	 * @param run
 	 * @return
 	 */
-	public PlannedInstrumentDataActor addSpectrum(PlannedSpectrum run, SmallBodyModel model)
+	public vtkActor addSpectrum(PlannedSpectrum run, SmallBodyModel model)
 	{
-		return renderManager.addPlannedData(run, model);
+		return null;
+//		return renderManager.addPlannedData(run, model);
 	}
 
 	/**

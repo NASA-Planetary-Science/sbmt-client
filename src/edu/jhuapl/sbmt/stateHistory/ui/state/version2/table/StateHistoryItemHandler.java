@@ -62,6 +62,8 @@ public class StateHistoryItemHandler extends BasicItemHandler<StateHistory, Stat
 				return stateHistory.getStateHistoryName();
 			case Description:
 				return stateHistory.getStateHistoryDescription();
+			case Source:
+				return "SOURCE-UPDATE";
 			case StartTime:
 				fmt.withZone(DateTimeZone.UTC);
 				timeString = TimeUtil.et2str(stateHistory.getMinTime());

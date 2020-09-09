@@ -1,3 +1,6 @@
+/**
+ *
+ */
 package edu.jhuapl.sbmt.stateHistory.ui.state.version2.viewControls.displayItems;
 
 import javax.swing.Box;
@@ -9,50 +12,46 @@ import javax.swing.JPanel;
  * @author steelrj1
  *
  */
-public class StateHistoryDisplayItemShowLightingPanel extends JPanel
+public class StateHistoryDisplayInstrumentFrustumPanel extends JPanel
 {
+	/**
+	 *
+	 */
+	private JCheckBox showFrustum;
 
 	/**
 	 *
 	 */
-	private JCheckBox showLighting;
-
-	/**
-	 *
-	 */
-	public StateHistoryDisplayItemShowLightingPanel()
+	public StateHistoryDisplayInstrumentFrustumPanel()
 	{
-		configureShowLightingControls();
+		configureShowFrustumControls();
 	}
 
 	/**
 	 *
 	 */
-	private void configureShowLightingControls()
+	private void configureShowFrustumControls()
 	{
 		// Show lighting panel
 		setLayout(new BoxLayout(this, BoxLayout.X_AXIS));
-		showLighting = new JCheckBox("Lighting");
-		showLighting.setEnabled(false);
-		add(showLighting);
+		showFrustum = new JCheckBox("Instrument Frustrum");
+		showFrustum.setEnabled(false);
+		add(showFrustum);
 		add(Box.createHorizontalGlue());
-
-
 	}
 
 	/**
 	 * @return
 	 */
-	public JCheckBox getShowLighting()
+	public JCheckBox getShowFrustum()
 	{
-		return showLighting;
+		return showFrustum;
 	}
 
 	@Override
 	public void setEnabled(boolean enabled)
 	{
-		showLighting.setEnabled(enabled);
+		showFrustum.setEnabled(enabled);
 		super.setEnabled(enabled);
 	}
-
 }

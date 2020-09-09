@@ -4,9 +4,12 @@ import java.awt.Color;
 import java.awt.Font;
 import java.beans.PropertyChangeSupport;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
+import java.util.Objects;
+import java.util.Vector;
 
-import vtk.vtkDoubleArray;
 import vtk.vtkProp;
 import vtk.vtkScalarBarActor;
 
@@ -17,7 +20,7 @@ import edu.jhuapl.saavtk.util.ConvertResourceToFile;
 import edu.jhuapl.saavtk.util.Properties;
 import edu.jhuapl.sbmt.client.SmallBodyModel;
 import edu.jhuapl.sbmt.lidar.feature.FeatureAttr;
-import edu.jhuapl.sbmt.lidar.feature.VtkFeatureAttr;
+import edu.jhuapl.sbmt.model.image.perspectiveImage.PerspectiveImageFootprint;
 import edu.jhuapl.sbmt.model.image.perspectiveImage.PerspectiveImageFrustum;
 import edu.jhuapl.sbmt.stateHistory.model.StateHistoryColoringFunctions;
 import edu.jhuapl.sbmt.stateHistory.model.interfaces.StateHistory;
@@ -39,11 +42,6 @@ public class StateHistoryRendererManager
 	*
 	*/
 	private HashMap<StateHistory, TrajectoryActor> stateHistoryToRendererMap = new HashMap<StateHistory, TrajectoryActor>();
-
-//	/**
-//	*
-//	*/
-//	private HashMap<StateHistory, SpacecraftFieldOfView> stateHistoryToFOVMap = new HashMap<StateHistory, SpacecraftFieldOfView>();
 
 	/**
 	*
@@ -72,12 +70,9 @@ public class StateHistoryRendererManager
 	private SpacecraftLabel spacecraftLabelActor;
 
 	// FOV Actors
-	/**
-	 *
-	 */
-//	private SpacecraftFieldOfView spacecraftFov;
+	private PerspectiveImageFrustum[] spacecraftFov;
 
-	private PerspectiveImageFrustum spacecraftFov;
+	private PerspectiveImageFootprint[] footprint;
 
 	// Direction markers
 	/**
@@ -109,6 +104,17 @@ public class StateHistoryRendererManager
      *
      */
 	private double scalingFactor = 0.0;
+
+	private double diagonalLength;
+
+	private HashMap<String, PerspectiveImageFootprint> instrumentNameToFootprintMap = new HashMap<String, PerspectiveImageFootprint>();
+	private HashMap<String, PerspectiveImageFrustum> instrumentNameToFovMap = new HashMap<String, PerspectiveImageFrustum>();
+
+	private boolean displayFootprints, displayBoundaries, displayFrusta;
+	private Vector<String> selectedFOVs = new Vector<String>();
+
+	private List<vtkProp> plannedScienceActors = new ArrayList<vtkProp>();
+
 //	private GroupColorProvider sourceGCP;
 //
 //	private double begPercent;
@@ -125,7 +131,7 @@ public class StateHistoryRendererManager
 	{
 		this.positionCalculator = new StateHistoryPositionCalculator(smallBodyModel);
 		BoundingBox bb = smallBodyModel.getBoundingBox();
-
+		diagonalLength = smallBodyModel.getBoundingBoxDiagonalLength();
 		double width = Math.max((bb.xmax - bb.xmin), Math.max((bb.ymax - bb.ymin), (bb.zmax - bb.zmin)));
 		scalingFactor = 30.62*width + -0.0002237;
 		markerRadius = 0.02 * width;
@@ -150,10 +156,8 @@ public class StateHistoryRendererManager
 
 		this.statusBarTextActor = new StatusBarTextActor();
 
-//		this.spacecraftFov = new SpacecraftFieldOfView(0.794);
-		this.spacecraftFov = new PerspectiveImageFrustum(0, 0, 0, true, smallBodyModel.getBoundingBoxDiagonalLength());
-//		this.spacecraftFov.getActor().VisibilityOff();
-
+		footprint = new PerspectiveImageFootprint[] {};
+		spacecraftFov = new PerspectiveImageFrustum[] {};
 		this.pcs = pcs;
 
 //		refBodyViewConfig = (SmallBodyViewConfig) smallBodyModel.getSmallBodyConfig();
@@ -166,12 +170,23 @@ public class StateHistoryRendererManager
 //		vActorToPainterM = new HashMap<>();
 	}
 
+	public void addPlannedScienceActors(List<vtkProp> actors)
+	{
+		plannedScienceActors.addAll(actors);
+	}
+
+	public void clearPlannedScience()
+	{
+		plannedScienceActors.clear();
+	}
+
 	/**
 	 * @param run
 	 * @return
 	 */
 	public TrajectoryActor addRun(StateHistory run)
 	{
+		updateFovs(run);
 		if (stateHistoryToRendererMap.get(run) != null)
 		{
 			TrajectoryActor trajActor = stateHistoryToRendererMap.get(run);
@@ -192,7 +207,18 @@ public class StateHistoryRendererManager
 		trajectoryActor.VisibilityOn();
 		trajectoryActor.GetMapper().Update();
 
-		this.spacecraftFov.getFrustumActor().VisibilityOn();
+
+
+		boolean instrumentPointingAvailable = run.getTrajectory().isHasInstrumentPointingInfo();
+//		Arrays.stream(this.spacecraftFov).filter(fov -> fov.getFrustumActor() != null).forEach(fov -> {
+////			fov.getFrustumActor().SetVisibility(instrumentPointingAvailable ? 1 : 0);
+//		});
+
+		Arrays.stream(this.footprint).filter(footprint -> footprint.getFootprintActor() != null).forEach(footprint -> {
+//			footprint.getFootprintActor().SetVisibility(instrumentPointingAvailable ? 1 : 0);
+			if (instrumentPointingAvailable) footprint.setFootprintColor();
+		});
+
 		this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
 		this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, trajectoryActor);
 
@@ -205,8 +231,87 @@ public class StateHistoryRendererManager
 	public void removeRun(StateHistory run)
 	{
 		stateHistoryToRendererMap.remove(run);
+		Arrays.stream(this.spacecraftFov).forEach(fov -> fov.getFrustumActor().VisibilityOff());
+		Arrays.stream(this.footprint).forEach(footprint -> footprint.getFootprintActor().VisibilityOff());
 		this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
 		this.pcs.firePropertyChange(Properties.MODEL_REMOVED, null, run);
+	}
+
+	private void updateFovs(StateHistory run)
+	{
+		if (footprint.length != 0) return;
+		int numberOfInstruments = run.getPointingProvider().getInstrumentNames().length;
+		if (numberOfInstruments > 0)
+		{
+			footprint = new PerspectiveImageFootprint[numberOfInstruments];
+			spacecraftFov = new PerspectiveImageFrustum[numberOfInstruments];
+			int i=0;
+			for (String instName : run.getPointingProvider().getInstrumentNames())
+			{
+				Color color = new Color((int)(Math.random() * 0x1000000));
+				PerspectiveImageFrustum fov = new PerspectiveImageFrustum(1, 0, 0, true, diagonalLength);
+				fov.setColor(color);
+				fov.setInstrumentName(instName);
+				spacecraftFov[i] = fov;
+				if (spacecraftFov[i].getFrustumActor() != null)
+					spacecraftFov[i].getFrustumActor().VisibilityOff();
+				PerspectiveImageFootprint fprint = new PerspectiveImageFootprint();
+				fprint.setInstrumentName(instName);
+				fprint.setColor(color);
+				footprint[i] = fprint;
+				if (footprint[i].getFootprintActor() != null)
+				{
+					footprint[i].setBoundaryVisible(false);
+					footprint[i].setVisible(false);
+				}
+				i++;
+			}
+		}
+
+	}
+
+	public void setFootprintPlateColoring(String name)
+	{
+		Arrays.stream(footprint).forEach(item -> {
+			if (name.equals("")) item.setPlateColoringName(null);
+			else item.setPlateColoringName(name);
+			this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, item);
+		});
+		updateVisibilities();
+	}
+
+	public void updateFOVVisibility(Vector<String> selectedFOVs)
+	{
+		this.selectedFOVs = selectedFOVs;
+		updateVisibilities();
+	}
+
+	public void updateFootprintBoundaryVisibility(Vector<String> selectedFOVs)
+	{
+		this.selectedFOVs = selectedFOVs;
+		updateVisibilities();
+	}
+
+	public void updateFootprintVisibility(Vector<String> selectedFOVs)
+	{
+		this.selectedFOVs = selectedFOVs;
+		updateVisibilities();
+	}
+
+	private void updateVisibilities()
+	{
+		Arrays.stream(spacecraftFov).filter(item -> item.getFrustumActor() != null).forEach(item -> {
+			item.getFrustumActor().SetVisibility(displayFrusta && selectedFOVs.contains(item.getInstrumentName()) ? 1 : 0);
+			this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, item);
+		});
+		Arrays.stream(footprint).forEach(item -> {
+			item.setBoundaryVisible(displayBoundaries && selectedFOVs.contains(item.getInstrumentName()));
+			this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, item);
+		});
+		Arrays.stream(footprint).forEach(item -> {
+			item.setVisible(displayFootprints && selectedFOVs.contains(item.getInstrumentName()));
+			this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, item);
+		});
 	}
 
 	/**
@@ -241,6 +346,8 @@ public class StateHistoryRendererManager
 		TrajectoryActor renderer = stateHistoryToRendererMap.get(stateHistory);
 		int isVisible = (visibility == true) ? 1 : 0;
 		renderer.SetVisibility(isVisible);
+		Arrays.stream(this.spacecraftFov).forEach(fov -> fov.getFrustumActor().SetVisibility(isVisible));
+		Arrays.stream(this.footprint).forEach(footprint -> footprint.getFootprintActor().SetVisibility(isVisible));
 		this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, renderer);
 
 //		StateHistoryRenderProperties tmpProp = propM.get(stateHistory);
@@ -303,9 +410,9 @@ public class StateHistoryRendererManager
 	 */
 	public void updateTimeBarLocation(int width, int height)
 	{
-		if (timeBarActor == null) return;
-		timeBarActor.updateTimeBarPosition(width, height);
-        this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
+//		if (timeBarActor == null) return;
+//		timeBarActor.updateTimeBarPosition(width, height);
+//        this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
 
 	}
 
@@ -342,8 +449,13 @@ public class StateHistoryRendererManager
 			props.add(stateHistoryToRendererMap.get(history));
 
 		}
-		if (spacecraftFov.getFrustumActor() != null)
-			props.add(spacecraftFov.getFrustumActor());
+		if (spacecraftFov != null)
+		{
+			Arrays.stream(this.spacecraftFov).filter(Objects::nonNull).forEach(fov -> props.add(fov.getFrustumActor()));
+			Arrays.stream(this.footprint).filter(Objects::nonNull).forEach(footprint -> props.add(footprint.getFootprintActor()));
+			Arrays.stream(this.footprint).filter(Objects::nonNull).forEach(footprint -> props.add(footprint.getFootprintBoundaryActor()));
+		}
+
 		props.add(spacecraft.getActor());
 		props.add(scDirectionMarker.getActor());
 		props.add(spacecraftLabelActor);
@@ -351,6 +463,8 @@ public class StateHistoryRendererManager
 		props.add(sunDirectionMarker.getActor());
 		props.add(timeBarActor);
 		props.add(statusBarTextActor);
+//		System.out.println("StateHistoryRendererManager: getProps: adding planned science count " + plannedScienceActors.size());
+		props.addAll(plannedScienceActors);
 
 		return props;
 
@@ -383,9 +497,11 @@ public class StateHistoryRendererManager
 	public void setTimeFraction(Double timeFraction, StateHistory state)
 	{
 		// StateHistory state = getCurrentRun();
-		if (state != null && spacecraft.getActor() != null)
+		updateFovs(state);
+		if (state != null && spacecraft.getActor() != null )
 		{
-			positionCalculator.updateSpacecraftPosition(state, timeFraction, spacecraft, scDirectionMarker, spacecraftLabelActor, spacecraftFov);
+			positionCalculator.updateSpacecraftPosition(state, timeFraction, spacecraft, scDirectionMarker,
+														spacecraftLabelActor, spacecraftFov, footprint);
 			positionCalculator.updateEarthPosition(state, timeFraction, earthDirectionMarker);
 			positionCalculator.updateSunPosition(state, timeFraction, sunDirectionMarker);
 			this.pcs.firePropertyChange("POSITION_CHANGED", null, null);
@@ -407,6 +523,36 @@ public class StateHistoryRendererManager
 	public TrajectoryActor getTrajectoryActorForStateHistory(StateHistory segment)
 	{
 		return stateHistoryToRendererMap.get(segment);
+	}
+
+	/**
+	 * @param visible
+	 */
+	public void setInstrumentFootprintVisibility(boolean visible)
+	{
+		displayFootprints = visible;
+		updateVisibilities();
+		this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, spacecraft);
+	}
+
+	/**
+	 * @param visible
+	 */
+	public void setInstrumentFootprintBorderVisibility(boolean visible)
+	{
+		displayBoundaries = visible;
+		updateVisibilities();
+		this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, spacecraft);
+	}
+
+	/**
+	 * @param visible
+	 */
+	public void setInstrumentFrustumVisibility(boolean visible)
+	{
+		displayFrusta = visible;
+		updateVisibilities();
+		this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
 	}
 
 	/**
@@ -575,9 +721,23 @@ public class StateHistoryRendererManager
 	 */
 	public void setSpacecraftFOVVisibility(boolean visible)
 	{
-		if (spacecraftFov.getFrustumActor() != null)
-			spacecraftFov.getFrustumActor().SetVisibility(visible == true ? 1 : 0);
+		Arrays.stream(this.spacecraftFov).filter(fov -> fov.getFrustumActor() != null).forEach(fov -> {
+			fov.getFrustumActor().SetVisibility(visible == true ? 1 : 0);
+			setSpacecraftFOVFootprintVisibility(visible);
+		});
 		this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, spacecraftFov);
+	}
+
+	/**
+	 * @param visible
+	 */
+	public void setSpacecraftFOVFootprintVisibility(boolean visible)
+	{
+		Arrays.stream(this.footprint).filter(footprint -> footprint.getFootprintActor() != null).forEach(footprint -> {
+			footprint.getFootprintActor().SetVisibility(visible == true ? 1 : 0);
+		});
+
+		this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, footprint);
 	}
 
 	public double[] updateLookDirection(RendererLookDirection lookDirection)
@@ -593,31 +753,32 @@ public class StateHistoryRendererManager
 		return positionCalculator.getCurrentLookFromDirection();
 	}
 
-
+	//TODO reimplement once colorization is in place
 	public FeatureAttr getFeatureAttrFor(StateHistory item, StateHistoryFeatureType aFeatureType)
 	{
-		if (aFeatureType == StateHistoryFeatureType.Time)
-		{
-			vtkDoubleArray timeArray = new vtkDoubleArray();
-			for (Double nextTime : item.getTrajectory().getTime())
-			{
-				timeArray.InsertNextValue(nextTime);
-			}
-			return new VtkFeatureAttr(timeArray);
-		}
-		else if (aFeatureType == StateHistoryFeatureType.Distance)
-		{
-			vtkDoubleArray distanceArray = new vtkDoubleArray();
-			for (int i=0; i<item.getTrajectory().getX().size(); i++)
-			{
-				double distance = Math.sqrt(Math.pow(item.getTrajectory().getX().get(i), 2) +
-											Math.pow(item.getTrajectory().getY().get(i), 2) +
-											Math.pow(item.getTrajectory().getZ().get(i), 2));
-				distanceArray.InsertNextValue(distance);
-			}
-			return new VtkFeatureAttr(distanceArray);
-		}
-		else return null;
+		return null;
+//		if (aFeatureType == StateHistoryFeatureType.Time)
+//		{
+//			vtkDoubleArray timeArray = new vtkDoubleArray();
+//			for (Double nextTime : item.getTrajectory().getTime())
+//			{
+//				timeArray.InsertNextValue(nextTime);
+//			}
+//			return new VtkFeatureAttr(timeArray);
+//		}
+//		else if (aFeatureType == StateHistoryFeatureType.Distance)
+//		{
+//			vtkDoubleArray distanceArray = new vtkDoubleArray();
+//			for (int i=0; i<item.getTrajectory().getX().size(); i++)
+//			{
+//				double distance = Math.sqrt(Math.pow(item.getTrajectory().getX().get(i), 2) +
+//											Math.pow(item.getTrajectory().getY().get(i), 2) +
+//											Math.pow(item.getTrajectory().getZ().get(i), 2));
+//				distanceArray.InsertNextValue(distance);
+//			}
+//			return new VtkFeatureAttr(distanceArray);
+//		}
+//		else return null;
 	}
 
 //	private Map<StateHistory, VtkStateHistoryPainter<StateHistory>> vPainterM;

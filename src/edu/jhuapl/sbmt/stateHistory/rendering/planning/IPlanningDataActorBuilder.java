@@ -5,5 +5,5 @@ import edu.jhuapl.sbmt.client.SmallBodyModel;
 @FunctionalInterface
 public interface IPlanningDataActorBuilder<PlannedInstrumentData>
 {
-	PlannedInstrumentDataActor buildActorForPlanningData(PlannedInstrumentData data, SmallBodyModel model);
+	PlannedDataActor buildActorForPlanningData(PlannedInstrumentData data, SmallBodyModel model);
 }

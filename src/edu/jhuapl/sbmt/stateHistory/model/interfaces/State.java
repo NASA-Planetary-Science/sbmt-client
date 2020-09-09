@@ -1,7 +1,6 @@
 package edu.jhuapl.sbmt.stateHistory.model.interfaces;
 
 import crucible.core.math.vectorspace.UnwritableVectorIJK;
-import crucible.core.mechanics.FrameID;
 
 /**
  * @author steelrj1
@@ -90,9 +89,9 @@ public interface State
 //     */
 //    public double getLocalSolarTime();
 
-    public UnwritableVectorIJK getFrustum(FrameID instrumentFrameID, int index);
+    public UnwritableVectorIJK getFrustum(String instrumentFrameName, int index);
 
-    public double[] getInstrumentLookDirection(FrameID instrumentFrameID);
+    public double[] getInstrumentLookDirection(String instrumentFrameName);
 
     /** Spacecraft Position (km) */
     /**

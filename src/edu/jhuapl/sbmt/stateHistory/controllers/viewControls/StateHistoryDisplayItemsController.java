@@ -73,6 +73,9 @@ public class StateHistoryDisplayItemsController implements ItemListener
 		view.getShowSpacecraftPointerPanel().getShowSpacecraftMarker().addItemListener(this);
 		view.getShowSpacecraftPanel().getShowSpacecraft().addItemListener(this);
 		view.getShowLightingPanel().getShowLighting().addItemListener(this);
+		view.getShowInstrumentFootprintPanel().getShowFootprint().addItemListener(this);
+		view.getShowInstrumentFootprintBorderPanel().getShowFootprintBorder().addItemListener(this);
+		view.getShowInstrumentFrustumPanel().getShowFrustum().addItemListener(this);
 
 		view.getShowSpacecraftPanel().getLabelCheckBox().addActionListener(e ->
 		{
@@ -191,6 +194,9 @@ public class StateHistoryDisplayItemsController implements ItemListener
 		JLabel earthText = view.getShowEarthPanel().getEarthText();
 		JLabel sunText = view.getShowSunPanel().getSunText();
 		JLabel spacecraftText = view.getShowSpacecraftPointerPanel().getSpacecraftText();
+		JCheckBox showInstrumentFrustum = view.getShowInstrumentFrustumPanel().getShowFrustum();
+		JCheckBox showInstrumentFootprint = view.getShowInstrumentFootprintPanel().getShowFootprint();
+		JCheckBox showInstrumentFootprintBorder = view.getShowInstrumentFootprintBorderPanel().getShowFootprintBorder();
 		//
 		// handles changes in options to show/hide different parts of the model.
 		// Ex. pointers, lighting, trajectory
@@ -226,6 +232,7 @@ public class StateHistoryDisplayItemsController implements ItemListener
 			if (selected)
 				runs.setDistanceText(distanceOptions.getSelectedItem().toString());
 			// runs.setSpacecraftLabelVisibility(selected);
+			System.out.println("StateHistoryDisplayItemsController: itemStateChanged: s/c selected " + selected);
 			runs.setSpacecraftVisibility(selected);
 			view.getShowSpacecraftPanel().getScSizeSlider().setEnabled(selected);
 		}
@@ -239,6 +246,18 @@ public class StateHistoryDisplayItemsController implements ItemListener
 			{
 				renderer.setLighting(LightingType.LIGHT_KIT);
 			}
+		}
+		else if (source == showInstrumentFootprint)
+		{
+			runs.setInstrumentFootprintVisibility(selected);
+		}
+		else if (source == showInstrumentFrustum)
+		{
+			runs.setInstrumentFrustumVisibility(selected);
+		}
+		else if (source == showInstrumentFootprintBorder)
+		{
+			runs.setInstrumentFootprintBorderVisibility(selected);
 		}
 	}
 

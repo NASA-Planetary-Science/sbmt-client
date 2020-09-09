@@ -1,3 +1,6 @@
+/**
+ *
+ */
 package edu.jhuapl.sbmt.stateHistory.ui.state.version2.viewControls.displayItems;
 
 import javax.swing.Box;
@@ -9,50 +12,46 @@ import javax.swing.JPanel;
  * @author steelrj1
  *
  */
-public class StateHistoryDisplayItemShowLightingPanel extends JPanel
+public class StateHistoryDisplayInstrumentFootprintPanel extends JPanel
 {
+	/**
+	 *
+	 */
+	private JCheckBox showFootprint;
 
 	/**
 	 *
 	 */
-	private JCheckBox showLighting;
-
-	/**
-	 *
-	 */
-	public StateHistoryDisplayItemShowLightingPanel()
+	public StateHistoryDisplayInstrumentFootprintPanel()
 	{
-		configureShowLightingControls();
+		configureShowFootprintControls();
 	}
 
 	/**
 	 *
 	 */
-	private void configureShowLightingControls()
+	private void configureShowFootprintControls()
 	{
 		// Show lighting panel
 		setLayout(new BoxLayout(this, BoxLayout.X_AXIS));
-		showLighting = new JCheckBox("Lighting");
-		showLighting.setEnabled(false);
-		add(showLighting);
+		showFootprint = new JCheckBox("Instrument Footprint");
+		showFootprint.setEnabled(false);
+		add(showFootprint);
 		add(Box.createHorizontalGlue());
-
-
 	}
 
 	/**
 	 * @return
 	 */
-	public JCheckBox getShowLighting()
+	public JCheckBox getShowFootprint()
 	{
-		return showLighting;
+		return showFootprint;
 	}
 
 	@Override
 	public void setEnabled(boolean enabled)
 	{
-		showLighting.setEnabled(enabled);
+		showFootprint.setEnabled(enabled);
 		super.setEnabled(enabled);
 	}
-
 }

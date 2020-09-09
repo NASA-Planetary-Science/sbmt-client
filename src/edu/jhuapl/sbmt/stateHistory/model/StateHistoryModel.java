@@ -18,6 +18,7 @@ import edu.jhuapl.saavtk.model.ModelManager;
 import edu.jhuapl.saavtk.model.ModelNames;
 import edu.jhuapl.sbmt.client.ISmallBodyViewConfig;
 import edu.jhuapl.sbmt.client.SmallBodyModel;
+import edu.jhuapl.sbmt.pointing.spice.SpiceInfo;
 import edu.jhuapl.sbmt.stateHistory.model.interfaces.IStateHistoryIntervalGenerator;
 import edu.jhuapl.sbmt.stateHistory.model.interfaces.StateHistory;
 import edu.jhuapl.sbmt.stateHistory.model.interfaces.StateHistoryCollectionChangedListener;
@@ -26,6 +27,7 @@ import edu.jhuapl.sbmt.stateHistory.model.io.StateHistoryIOException;
 import edu.jhuapl.sbmt.stateHistory.model.io.StateHistoryInputException;
 import edu.jhuapl.sbmt.stateHistory.model.io.StateHistoryInvalidTimeException;
 import edu.jhuapl.sbmt.stateHistory.model.io.StateHistoryModelIOHelper;
+import edu.jhuapl.sbmt.stateHistory.model.stateHistory.SpiceStateHistory;
 import edu.jhuapl.sbmt.stateHistory.model.stateHistory.StateHistoryCollection;
 import edu.jhuapl.sbmt.stateHistory.model.stateHistory.StateHistoryKey;
 
@@ -141,6 +143,14 @@ public class StateHistoryModel
 	public void addStateHistoryModelChangedListener(StateHistoryModelChangedListener listener)
 	{
 		listeners.add(listener);
+	}
+
+	/**
+	 * @param historySegment
+	 */
+	private void fireTimeChangeListener(double t)
+	{
+		listeners.forEach(listener -> listener.timeChanged(t));
 	}
 
 	/**
@@ -265,7 +275,9 @@ public class StateHistoryModel
 		for (StateHistory history : runs.getAllItems())
 		{
 			setIntervalGenerator(history.getType());
-			activeIntervalGenerator.setSourceFile(history.getSourceFile());
+			SpiceInfo spice = null;
+			if (history instanceof SpiceStateHistory) spice = ((SpiceStateHistory)history).getSpiceInfo();
+			activeIntervalGenerator.setSourceFile(history.getSourceFile(), spice);
 			activeIntervalGenerator.createNewTimeInterval(history, null);
 			if (runs.getCurrentRun() == null) runs.setCurrentRun(history);
 			runs.setTimeFraction(0.0);
@@ -336,7 +348,6 @@ public class StateHistoryModel
 
 	public void setIntervalGenerator(StateHistorySourceType generatorType)
 	{
-		System.out.println("StateHistoryModel: setIntervalGenerator: setting interval gen to " + generatorType);
 		this.activeIntervalGenerator = intervalGenerators.get(generatorType);
 	}
 
@@ -351,5 +362,10 @@ public class StateHistoryModel
 	public IStateHistoryIntervalGenerator getActiveIntervalGenerator()
 	{
 		return activeIntervalGenerator;
+	}
+
+	public void setTime(double time)
+	{
+		fireTimeChangeListener(time);
 	}
 }

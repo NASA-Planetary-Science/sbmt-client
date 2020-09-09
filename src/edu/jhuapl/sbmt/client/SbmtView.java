@@ -719,7 +719,7 @@ public class SbmtView extends View implements PropertyChangeListener
             if (getPolyhedralModelConfig().hasStateHistory)
             {
 //                StateHistoryController controller = new StateHistoryController(getModelManager(), getRenderer());
-                ObservationPlanningController controller = new ObservationPlanningController(getModelManager(), getRenderer(), getPolyhedralModelConfig());
+                ObservationPlanningController controller = new ObservationPlanningController(getModelManager(), smallBodyModel, getRenderer(), getPolyhedralModelConfig(), smallBodyModel.getColoringDataManager());
 //                if (getConfig().body == ShapeModelBody.EARTH)
 //                    controller = new StateHistoryController(getModelManager(), getRenderer(), false);
 //                else

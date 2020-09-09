@@ -2,7 +2,10 @@ package edu.jhuapl.sbmt.stateHistory.model;
 
 import java.util.function.BiFunction;
 
+import edu.jhuapl.sbmt.pointing.InstrumentPointing;
 import edu.jhuapl.sbmt.stateHistory.model.interfaces.Trajectory;
+
+import crucible.core.math.vectorspace.UnwritableVectorIJK;
 
 /**
  * @author steelrj1
@@ -20,9 +23,12 @@ public enum StateHistoryColoringFunctions
 	 */
 	DISTANCE("Distance", (traj, time) -> {
 
-    	int index = traj.getTime().lastIndexOf(time);
-    	double distance = Math.sqrt(Math.pow(traj.getX().get(index), 2) + Math.pow(traj.getY().get(index), 2) + Math.pow(traj.getZ().get(index), 2));
-    	return distance;
+//    	int index = traj.getTime().lastIndexOf(time);
+		InstrumentPointing pointing = traj.getPointingProvider().provide(time);
+		UnwritableVectorIJK scPosition = pointing.getScPosition();
+		return scPosition.getLength();
+//    	double distance = Math.sqrt(Math.pow(traj.getX().get(index), 2) + Math.pow(traj.getY().get(index), 2) + Math.pow(traj.getZ().get(index), 2));
+//    	return distance;
     })/*,
 	TIME("Time", (traj, time) -> {
 
@@ -62,6 +68,7 @@ public enum StateHistoryColoringFunctions
 	 *
 	 */
 	BiFunction<Trajectory, Double, Double> coloringFunction;
+
 
 	/**
 	 * @param name

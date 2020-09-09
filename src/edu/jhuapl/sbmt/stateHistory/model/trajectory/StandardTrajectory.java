@@ -1,7 +1,7 @@
 package edu.jhuapl.sbmt.stateHistory.model.trajectory;
 
-import java.util.ArrayList;
-
+import edu.jhuapl.sbmt.pointing.IPointingProvider;
+import edu.jhuapl.sbmt.pointing.spice.SpicePointingProvider;
 import edu.jhuapl.sbmt.stateHistory.model.interfaces.Trajectory;
 
 public class StandardTrajectory implements Trajectory
@@ -16,25 +16,29 @@ public class StandardTrajectory implements Trajectory
 	 */
 	private int id;
 
-	/**
-	 *
-	 */
-	private ArrayList<Double> x;
+	private int numPoints;
 
-	/**
-	 *
-	 */
-	private ArrayList<Double> y;
+	private double startTime, stopTime;
 
-	/**
-	 *
-	 */
-	private ArrayList<Double> z;
-
-	/**
-	 *
-	 */
-	private ArrayList<Double> times;
+//	/**
+//	 *
+//	 */
+//	private ArrayList<Double> x;
+//
+//	/**
+//	 *
+//	 */
+//	private ArrayList<Double> y;
+//
+//	/**
+//	 *
+//	 */
+//	private ArrayList<Double> z;
+//
+//	/**
+//	 *
+//	 */
+//	private ArrayList<Double> times;
 
 	/**
 	 *
@@ -60,6 +64,9 @@ public class StandardTrajectory implements Trajectory
 	 *
 	 */
 	private double minDisplayFraction = 0.0, maxDisplayFraction = 1.0;
+
+	private IPointingProvider pointingProvider;
+
 
 	/**
 	 *
@@ -93,69 +100,69 @@ public class StandardTrajectory implements Trajectory
 		this.id = id;
 	}
 
-	/**
-	 *
-	 */
-	public ArrayList<Double> getTime()
-	{
-		return times;
-	}
-
-	/**
-	 *
-	 */
-	public void setTime(ArrayList<Double> times)
-	{
-		this.times = times;
-	}
-
-	/**
-	 *
-	 */
-	public ArrayList<Double> getX()
-	{
-		return x;
-	}
-
-	/**
-	 *
-	 */
-	public void setX(ArrayList<Double> x)
-	{
-		this.x = x;
-	}
-
-	/**
-	 *
-	 */
-	public ArrayList<Double> getY()
-	{
-		return y;
-	}
-
-	/**
-	 *
-	 */
-	public void setY(ArrayList<Double> y)
-	{
-		this.y = y;
-	}
-
-	/**
-	 *
-	 */
-	public ArrayList<Double> getZ()
-	{
-		return z;
-	}
-
-	/**
-	 *
-	 */
-	public void setZ(ArrayList<Double> z)
-	{
-		this.z = z;
-	}
+//	/**
+//	 *
+//	 */
+//	public ArrayList<Double> getTime()
+//	{
+//		return times;
+//	}
+//
+//	/**
+//	 *
+//	 */
+//	public void setTime(ArrayList<Double> times)
+//	{
+//		this.times = times;
+//	}
+//
+//	/**
+//	 *
+//	 */
+//	public ArrayList<Double> getX()
+//	{
+//		return x;
+//	}
+//
+//	/**
+//	 *
+//	 */
+//	public void setX(ArrayList<Double> x)
+//	{
+//		this.x = x;
+//	}
+//
+//	/**
+//	 *
+//	 */
+//	public ArrayList<Double> getY()
+//	{
+//		return y;
+//	}
+//
+//	/**
+//	 *
+//	 */
+//	public void setY(ArrayList<Double> y)
+//	{
+//		this.y = y;
+//	}
+//
+//	/**
+//	 *
+//	 */
+//	public ArrayList<Double> getZ()
+//	{
+//		return z;
+//	}
+//
+//	/**
+//	 *
+//	 */
+//	public void setZ(ArrayList<Double> z)
+//	{
+//		this.z = z;
+//	}
 
 	/**
 	 *
@@ -163,10 +170,10 @@ public class StandardTrajectory implements Trajectory
 	public StandardTrajectory()
 	{
 		super();
-		this.x = new ArrayList<Double>();
-		this.y = new ArrayList<Double>();
-		this.z = new ArrayList<Double>();
-		this.times = new ArrayList<Double>();
+//		this.x = new ArrayList<Double>();
+//		this.y = new ArrayList<Double>();
+//		this.z = new ArrayList<Double>();
+//		this.times = new ArrayList<Double>();
 //		name = "";
 		description = "";
 		this.color = new double[]
@@ -178,7 +185,7 @@ public class StandardTrajectory implements Trajectory
 	 */
 	public String toString()
 	{
-		return "Trajectory " + getId() + " = contains " + getX().size() + " vertices";
+		return "Trajectory " + getId() + " = contains " + numPoints + " vertices";
 
 	}
 
@@ -271,14 +278,14 @@ public class StandardTrajectory implements Trajectory
 		this.color[3] = isFaded ? 50 : 255;
 	}
 
-	@Override
-	public void addPositionAtTime(double[] spacecraftPosition, double time)
-	{
-		getX().add(spacecraftPosition[0]);
-		getY().add(spacecraftPosition[1]);
-		getZ().add(spacecraftPosition[2]);
-		getTime().add(time);
-	}
+//	@Override
+//	public void addPositionAtTime(double[] spacecraftPosition, double time)
+//	{
+//		getX().add(spacecraftPosition[0]);
+//		getY().add(spacecraftPosition[1]);
+//		getZ().add(spacecraftPosition[2]);
+//		getTime().add(time);
+//	}
 
 	// Display fraction (which portions of the overall time window are being
 	// worked on)
@@ -318,4 +325,65 @@ public class StandardTrajectory implements Trajectory
 	{
 		this.maxDisplayFraction = maxDisplayFraction;
 	}
+
+	@Override
+	public IPointingProvider getPointingProvider()
+	{
+		return pointingProvider;
+	}
+
+	@Override
+	public void setPointingProvider(IPointingProvider pointingProvider)
+	{
+		this.pointingProvider = pointingProvider;
+	}
+
+	@Override
+	public void setStartTime(double time)
+	{
+		this.startTime = time;
+	}
+
+	@Override
+	public double getStartTime()
+	{
+		return startTime;
+	}
+
+	@Override
+	public void setStopTime(double time)
+	{
+		this.stopTime = time;
+	}
+
+	@Override
+	public double getStopTime()
+	{
+		return stopTime;
+	}
+
+	/**
+	 * @return the numPoints
+	 */
+	public int getNumPoints()
+	{
+		return numPoints;
+	}
+
+	/**
+	 * @param numPoints the numPoints to set
+	 */
+	public void setNumPoints(int numPoints)
+	{
+		this.numPoints = numPoints;
+	}
+
+	/**
+	 * @return the hasInstrumentPointingInfo
+	 */
+	public boolean isHasInstrumentPointingInfo()
+	{
+		return pointingProvider instanceof SpicePointingProvider;
+	}
+
 }

@@ -10,18 +10,17 @@ import vtk.vtkProperty;
 
 import edu.jhuapl.saavtk.util.MathUtil;
 import edu.jhuapl.sbmt.client.SmallBodyModel;
-import edu.jhuapl.sbmt.stateHistory.model.IPositionOrientation;
 import edu.jhuapl.sbmt.stateHistory.model.planning.PlannedInstrumentData;
 
 public class PlannedSpectrumActor extends PlannedInstrumentDataActor
 {
 	private PlannedInstrumentData data;
 	private SmallBodyModel model;
-	private IPositionOrientation positionOrientationManager;
+//	private IPositionOrientation positionOrientationManager;
 
-	public PlannedSpectrumActor(PlannedInstrumentData data, SmallBodyModel model, IPositionOrientation positionOrientationManager)
+	public PlannedSpectrumActor(PlannedInstrumentData data, SmallBodyModel model/*, IPositionOrientation positionOrientationManager*/)
 	{
-		super(data, model, positionOrientationManager);
+		super(data, model/*, positionOrientationManager*/);
 	}
 
 	//TODO this should really be reworked to be based on the shape of the FOV - it's based on a square, where it may be circular, like with OTES

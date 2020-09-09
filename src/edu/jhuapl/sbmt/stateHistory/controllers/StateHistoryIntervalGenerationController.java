@@ -18,6 +18,7 @@ import org.joda.time.DateTime;
 
 import com.jidesoft.utils.SwingWorker;
 
+import edu.jhuapl.sbmt.pointing.spice.SpiceInfo;
 import edu.jhuapl.sbmt.stateHistory.model.StateHistoryModel;
 import edu.jhuapl.sbmt.stateHistory.model.StateHistorySourceType;
 import edu.jhuapl.sbmt.stateHistory.model.io.StateHistoryInputException;
@@ -106,7 +107,12 @@ public class StateHistoryIntervalGenerationController
 
             if (view.getStateHistorySourceType() == StateHistorySourceType.SPICE)
         	{
-            	((SpiceStateHistoryIntervalGenerator)historyModel.getActiveIntervalGenerator()).setMetaKernelFile(view.getMetakernelToLoad());
+            	//TODO load this from the metadata
+//            	SpiceInfo spice = new SpiceInfo("ORX", "IAU_BENNU", "ORX_SPACECRAFT", "BENNU",
+//            			new String[] {"EARTH" , "SUN"}, new String[] {"ORX_OCAMS_POLYCAM", "ORX_OCAMS_MAPCAM", "ORX_OCAMS_SAMCAM", "ORX_NAVCAM1", "ORX_NAVCAM2", "ORX_OLA_LOW", "ORX_OLA_HIGH"});
+            	SpiceInfo spice = new SpiceInfo("MMX", "IAU_PHOBOS", "MMX_SPACECRAFT", "PHOBOS",
+            			new String[] {"EARTH" , "SUN", "MARS"}, new String[] {"MMX_MEGANE"});
+            	((SpiceStateHistoryIntervalGenerator)historyModel.getActiveIntervalGenerator()).setMetaKernelFile(view.getMetakernelToLoad(), spice);
         	}
 
             //Setup a progress monitor to display status to the user while generating the state history

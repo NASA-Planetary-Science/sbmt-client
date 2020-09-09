@@ -4,6 +4,7 @@ import java.util.function.Function;
 
 import org.joda.time.DateTime;
 
+import edu.jhuapl.sbmt.pointing.spice.SpiceInfo;
 import edu.jhuapl.sbmt.stateHistory.model.io.StateHistoryInputException;
 import edu.jhuapl.sbmt.stateHistory.model.io.StateHistoryInvalidTimeException;
 import edu.jhuapl.sbmt.stateHistory.model.stateHistory.StateHistoryKey;
@@ -38,5 +39,5 @@ public interface IStateHistoryIntervalGenerator
 	public StateHistory createNewTimeInterval(StateHistory history, Function<Double, Void> progressFunction) throws StateHistoryInputException, StateHistoryInvalidTimeException;
 
 
-	public void setSourceFile(String sourceFile);
+	public void setSourceFile(String sourceFile, SpiceInfo spice);
 }

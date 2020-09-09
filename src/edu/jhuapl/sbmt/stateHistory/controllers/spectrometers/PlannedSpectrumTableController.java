@@ -9,14 +9,13 @@ import edu.jhuapl.saavtk.gui.dialog.CustomFileChooser;
 import edu.jhuapl.saavtk.gui.render.Renderer;
 import edu.jhuapl.saavtk.model.ModelManager;
 import edu.jhuapl.sbmt.client.SmallBodyViewConfig;
-import edu.jhuapl.sbmt.stateHistory.model.IPositionOrientation;
 import edu.jhuapl.sbmt.stateHistory.model.planning.spectrometers.PlannedSpectrumCollection;
 import edu.jhuapl.sbmt.stateHistory.ui.spectrometers.PlannedSpectrumView;
 
 public class PlannedSpectrumTableController
 {
 	PlannedSpectrumView view;
-	IPositionOrientation positionOrientationManager;
+//	IPositionOrientation positionOrientationManager;
 
 	public PlannedSpectrumTableController(final ModelManager modelManager, Renderer renderer, PlannedSpectrumCollection collection, SmallBodyViewConfig config)
 	{
@@ -56,10 +55,10 @@ public class PlannedSpectrumTableController
 		});
 	}
 
-	public void setPositionOrientationManager(IPositionOrientation manager)
-	{
-		this.positionOrientationManager = manager;
-	}
+//	public void setPositionOrientationManager(IPositionOrientation manager)
+//	{
+//		this.positionOrientationManager = manager;
+//	}
 
 	public PlannedSpectrumView getView()
 	{

@@ -5,7 +5,9 @@ import java.awt.Font;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.Vector;
 
 import com.google.common.collect.ImmutableList;
 
@@ -70,6 +72,10 @@ public class StateHistoryCollection extends SaavtkItemManager<StateHistory> impl
 	 */
 	private String bodyName;
 
+	private Vector<String> selectedFOVs;
+
+	private Vector<String> availableFOVs;
+
 	final Key<List<StateHistory>> stateHistoryKey = Key.of("stateHistoryCollection");
 
 //	private ConstGroupColorProvider sourceGCP;
@@ -81,6 +87,8 @@ public class StateHistoryCollection extends SaavtkItemManager<StateHistory> impl
 	{
 		this.renderManager = new StateHistoryRendererManager(smallBodyModel, pcs);
 		this.bodyName = smallBodyModel.getConfig().getShapeModelName();
+		selectedFOVs = new Vector<String>();
+		availableFOVs = new Vector<String>();
 	}
 
 	public void addStateHistoryCollectionChangedListener(StateHistoryCollectionChangedListener listener)
@@ -164,6 +172,16 @@ public class StateHistoryCollection extends SaavtkItemManager<StateHistory> impl
 		setAllItems(simRuns);
 	}
 
+	public void clearPlannedScience()
+	{
+		renderManager.clearPlannedScience();
+	}
+
+	public void addPlannedScience(List<vtkProp> actors)
+	{
+		renderManager.addPlannedScienceActors(actors);
+	}
+
 
 //	@Override
 //	public void setAllItems(Collection<StateHistory> aItemC)
@@ -192,6 +210,12 @@ public class StateHistoryCollection extends SaavtkItemManager<StateHistory> impl
 	 */
 	public TrajectoryActor addRun(StateHistory run)
 	{
+		availableFOVs.clear();
+		selectedFOVs.clear();
+		Arrays.stream(run.getPointingProvider().getInstrumentNames()).forEach(inst -> availableFOVs.add(inst));
+		System.out.println("StateHistoryCollection: addRun: number of available FOVs " + availableFOVs.size());
+		this.currentRun = run;
+		notifyListeners(this, ItemEventType.ItemsChanged);
 		return renderManager.addRun(run);
 	}
 
@@ -372,6 +396,66 @@ public class StateHistoryCollection extends SaavtkItemManager<StateHistory> impl
 	{
 		renderManager.setTimeFraction(timeFraction, getCurrentRun());
 		renderManager.updateTimeBarValue(getCurrentRun().getCurrentTime());
+	}
+
+	public void addSelectedFov(String fov)
+	{
+		selectedFOVs.add(fov);
+		renderManager.updateFOVVisibility(getSelectedFOVs());
+		renderManager.updateFootprintVisibility(getSelectedFOVs());
+		renderManager.updateFootprintBoundaryVisibility(getSelectedFOVs());
+	}
+
+	public void removeSelectedFov(String fov)
+	{
+		selectedFOVs.remove(fov);
+		renderManager.updateFOVVisibility(getSelectedFOVs());
+		renderManager.updateFootprintVisibility(getSelectedFOVs());
+		renderManager.updateFootprintBoundaryVisibility(getSelectedFOVs());
+	}
+
+	public Vector<String> getSelectedFOVs()
+	{
+		return selectedFOVs;
+	}
+
+	public void addAvailableFov(String fov)
+	{
+		availableFOVs.add(fov);
+	}
+
+	public Vector<String> getAvailableFOVs()
+	{
+		return availableFOVs;
+	}
+
+	public void setFootprintPlateColoring(String coloringName)
+	{
+		renderManager.setFootprintPlateColoring(coloringName);
+	}
+
+	/**
+	 * @param visible
+	 */
+	public void setInstrumentFootprintVisibility(boolean visible)
+	{
+		renderManager.setInstrumentFootprintVisibility(visible);
+	}
+
+	/**
+	 * @param visible
+	 */
+	public void setInstrumentFootprintBorderVisibility(boolean visible)
+	{
+		renderManager.setInstrumentFootprintBorderVisibility(visible);
+	}
+
+	/**
+	 * @param visible
+	 */
+	public void setInstrumentFrustumVisibility(boolean visible)
+	{
+		renderManager.setInstrumentFrustumVisibility(visible);
 	}
 
 	/**

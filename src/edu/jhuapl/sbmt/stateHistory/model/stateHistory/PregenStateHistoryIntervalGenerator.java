@@ -12,6 +12,9 @@ import org.joda.time.format.DateTimeFormatter;
 
 import edu.jhuapl.saavtk.util.FileCache;
 import edu.jhuapl.sbmt.client.SmallBodyViewConfig;
+import edu.jhuapl.sbmt.pointing.IPointingProvider;
+import edu.jhuapl.sbmt.pointing.pregen.PregenPointingProvider;
+import edu.jhuapl.sbmt.pointing.spice.SpiceInfo;
 import edu.jhuapl.sbmt.stateHistory.model.StateHistorySourceType;
 import edu.jhuapl.sbmt.stateHistory.model.StateHistoryUtil;
 import edu.jhuapl.sbmt.stateHistory.model.interfaces.IStateHistoryIntervalGenerator;
@@ -22,6 +25,7 @@ import edu.jhuapl.sbmt.stateHistory.model.io.StateHistoryInputException;
 import edu.jhuapl.sbmt.stateHistory.model.io.StateHistoryInvalidTimeException;
 import edu.jhuapl.sbmt.stateHistory.model.scState.CsvState;
 import edu.jhuapl.sbmt.stateHistory.model.trajectory.StandardTrajectory;
+import edu.jhuapl.sbmt.util.TimeUtil;
 
 /**
  * Class that generates state history from a pre-generated state history file that lives on the server
@@ -32,13 +36,14 @@ public class PregenStateHistoryIntervalGenerator implements IStateHistoryInterva
 {
 	SmallBodyViewConfig config;
 	String sourceFile;
-
+	private IPointingProvider pointingProvider;
 	/**
 	 *
 	 */
 	public PregenStateHistoryIntervalGenerator(SmallBodyViewConfig config)
 	{
 		this.config = config;
+		this.sourceFile = config.timeHistoryFile;
 	}
 
 	public void setSourceFile(String sourceFile)
@@ -46,14 +51,23 @@ public class PregenStateHistoryIntervalGenerator implements IStateHistoryInterva
 		this.sourceFile = sourceFile;
 	}
 
+	@Override
+	public void setSourceFile(String sourceFile, SpiceInfo spice)
+	{
+		setSourceFile(sourceFile);
+	}
+
 	public StateHistory createNewTimeInterval(StateHistory history, Function<Double, Void> progressFunction) throws StateHistoryInputException, StateHistoryInvalidTimeException
 	{
+
 		String startString = edu.jhuapl.sbmt.util.TimeUtil.et2str(history.getMinTime());
 		String endString = edu.jhuapl.sbmt.util.TimeUtil.et2str(history.getMaxTime());
 		DateTimeFormatter formatter = DateTimeFormat.forPattern("yyyy-MM-dd'T'HH:mm:ss.SSS");
 		DateTime start = formatter.parseDateTime(startString.substring(0, 23));
 		DateTime end = formatter.parseDateTime(endString.substring(0, 23));
-		System.out.println("PregenStateHistoryIntervalGenerator: createNewTimeInterval:1 ");
+		pointingProvider = PregenPointingProvider.builder(sourceFile, start, end).build();
+
+
 		return createNewTimeInterval(history, history.getKey(), start, end,
 										history.getTimeWindow()/(24.0 * 60.0 * 60.0 * 1000.0), history.getStateHistoryName(), progressFunction);
 	}
@@ -61,7 +75,6 @@ public class PregenStateHistoryIntervalGenerator implements IStateHistoryInterva
 	public StateHistory createNewTimeInterval(StateHistoryKey key, DateTime startTime, DateTime endTime, double duration,
 			String name, Function<Double, Void> progressFunction) throws StateHistoryInputException, StateHistoryInvalidTimeException
 	{
-		System.out.println("PregenStateHistoryIntervalGenerator: createNewTimeInterval: 2");
 		return createNewTimeInterval(null, key, startTime, endTime, duration, name, progressFunction);
 	}
 
@@ -78,7 +91,6 @@ public class PregenStateHistoryIntervalGenerator implements IStateHistoryInterva
 	public StateHistory createNewTimeInterval(StateHistory tempHistory, StateHistoryKey key, DateTime startTime, DateTime endTime, double duration,
 			String name, Function<Double, Void> progressFunction) throws StateHistoryInputException, StateHistoryInvalidTimeException
 	{
-		System.out.println("PregenStateHistoryIntervalGenerator: createNewTimeInterval: creating new time interval");
 		StateHistory history = tempHistory;
 		File path = null;
 		final int lineLength = 121;
@@ -124,6 +136,10 @@ public class PregenStateHistoryIntervalGenerator implements IStateHistoryInterva
 		Trajectory trajectory = new StandardTrajectory();
 		if (tempHistory == null) history = new StandardStateHistory(key);
 
+		trajectory.setNumPoints(1000);
+		trajectory.setPointingProvider(pointingProvider);
+		trajectory.setStartTime(TimeUtil.str2et(startString));
+		trajectory.setStopTime(TimeUtil.str2et(endString));
 		// reads the binary file and writes the data to a CSV file
 		for (int i = positionStart; i <= positionEnd; i += lineLength)
 		{
@@ -134,12 +150,12 @@ public class PregenStateHistoryIntervalGenerator implements IStateHistoryInterva
 				position[j] = i + 25 + (j * 8);
 			}
 
-			//populate a flyby state object, and use it to populate the history and trajectory
-			State flybyState = new CsvState(i, path, position);
+			//populate a  state object, and use it to populate the history and trajectory
+			State state = new CsvState(i, path, position);
 
 			// add to history
-			history.addState(flybyState);
-			trajectory.addPositionAtTime(flybyState.getSpacecraftPosition(), flybyState.getEphemerisTime());
+			history.addState(state);
+//			trajectory.addPositionAtTime(flybyState.getSpacecraftPosition(), flybyState.getEphemerisTime());
 
 			double completion = 100 * ((double) (i - positionStart)) / (double) (positionEnd - positionStart);
 			if (progressFunction != null) progressFunction.apply(completion);
@@ -148,6 +164,7 @@ public class PregenStateHistoryIntervalGenerator implements IStateHistoryInterva
 		history.setTrajectory(trajectory);
 		history.setType(StateHistorySourceType.PREGEN);
 		history.setSourceFile(sourceFile);
+		history.setPointingProvider(pointingProvider);
 		return history;
 	}
 }

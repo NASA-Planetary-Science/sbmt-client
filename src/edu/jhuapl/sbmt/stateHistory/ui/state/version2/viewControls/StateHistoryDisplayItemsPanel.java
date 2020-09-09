@@ -5,6 +5,9 @@ import javax.swing.BoxLayout;
 import javax.swing.JPanel;
 import javax.swing.border.TitledBorder;
 
+import edu.jhuapl.sbmt.stateHistory.ui.state.version2.viewControls.displayItems.StateHistoryDisplayInstrumentFootprintBorderPanel;
+import edu.jhuapl.sbmt.stateHistory.ui.state.version2.viewControls.displayItems.StateHistoryDisplayInstrumentFootprintPanel;
+import edu.jhuapl.sbmt.stateHistory.ui.state.version2.viewControls.displayItems.StateHistoryDisplayInstrumentFrustumPanel;
 import edu.jhuapl.sbmt.stateHistory.ui.state.version2.viewControls.displayItems.StateHistoryDisplayItemShowEarthPanel;
 import edu.jhuapl.sbmt.stateHistory.ui.state.version2.viewControls.displayItems.StateHistoryDisplayItemShowLightingPanel;
 import edu.jhuapl.sbmt.stateHistory.ui.state.version2.viewControls.displayItems.StateHistoryDisplayItemShowSpacecraftPanel;
@@ -19,6 +22,9 @@ public class StateHistoryDisplayItemsPanel extends JPanel
 	StateHistoryDisplayItemShowSunPanel showSunPanel;
 	StateHistoryDisplayItemShowLightingPanel showLightingPanel;
 	StateHistoryDisplayItemShowSpacecraftPointerPanel showSpacecraftPointerPanel;
+	StateHistoryDisplayInstrumentFootprintBorderPanel showInstrumentFootprintBorderPanel;
+	StateHistoryDisplayInstrumentFootprintPanel showInstrumentFootprintPanel;
+	StateHistoryDisplayInstrumentFrustumPanel showInstrumentFrustumPanel;
 
 	public StateHistoryDisplayItemsPanel()
 	{
@@ -42,6 +48,12 @@ public class StateHistoryDisplayItemsPanel extends JPanel
 		add(showSpacecraftPointerPanel = new StateHistoryDisplayItemShowSpacecraftPointerPanel());
 		add(Box.createVerticalGlue());
 		add(showLightingPanel = new StateHistoryDisplayItemShowLightingPanel());
+		add(Box.createVerticalGlue());
+		add(showInstrumentFrustumPanel = new StateHistoryDisplayInstrumentFrustumPanel());
+		add(Box.createVerticalGlue());
+		add(showInstrumentFootprintPanel = new StateHistoryDisplayInstrumentFootprintPanel());
+		add(Box.createVerticalGlue());
+		add(showInstrumentFootprintBorderPanel = new StateHistoryDisplayInstrumentFootprintBorderPanel());
 
 	}
 
@@ -70,6 +82,21 @@ public class StateHistoryDisplayItemsPanel extends JPanel
 		return showSpacecraftPointerPanel;
 	}
 
+	public StateHistoryDisplayInstrumentFootprintPanel getShowInstrumentFootprintPanel()
+	{
+		return showInstrumentFootprintPanel;
+	}
+
+	public StateHistoryDisplayInstrumentFootprintBorderPanel getShowInstrumentFootprintBorderPanel()
+	{
+		return showInstrumentFootprintBorderPanel;
+	}
+
+	public StateHistoryDisplayInstrumentFrustumPanel getShowInstrumentFrustumPanel()
+	{
+		return showInstrumentFrustumPanel;
+	}
+
 	@Override
 	public void setEnabled(boolean enabled)
 	{
@@ -79,6 +106,9 @@ public class StateHistoryDisplayItemsPanel extends JPanel
 		showSunPanel.setEnabled(enabled);
 		showLightingPanel.setEnabled(enabled);
 		showSpacecraftPointerPanel.setEnabled(enabled);
+		showInstrumentFootprintPanel.setEnabled(enabled);
+		showInstrumentFootprintBorderPanel.setEnabled(enabled);
+		showInstrumentFrustumPanel.setEnabled(enabled);
 		super.setEnabled(enabled);
 	}
 

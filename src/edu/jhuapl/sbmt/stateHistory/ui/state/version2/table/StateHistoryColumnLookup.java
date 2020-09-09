@@ -19,6 +19,11 @@ public enum StateHistoryColumnLookup
 	/**
 	 *
 	 */
+	Source,
+
+	/**
+	 *
+	 */
 	Color,
 
 //	Line,

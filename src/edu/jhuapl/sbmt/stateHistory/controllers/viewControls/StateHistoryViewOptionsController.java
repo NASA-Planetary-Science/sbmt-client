@@ -1,6 +1,7 @@
 package edu.jhuapl.sbmt.stateHistory.controllers.viewControls;
 
 import javax.swing.DefaultComboBoxModel;
+import javax.swing.JCheckBox;
 
 import org.apache.commons.math3.geometry.euclidean.threed.Vector3D;
 
@@ -61,6 +62,7 @@ public class StateHistoryViewOptionsController
 		DefaultComboBoxModel<RendererLookDirection> comboModelView = new DefaultComboBoxModel<RendererLookDirection>(
 				RendererLookDirection.values());
 		view = new StateHistoryViewOptionsPanel();
+		view.setAvailableFOVs(runs.getAvailableFOVs());
 		model = new StateHistoryViewOptionsModel();
 
 		view.getViewInputAngle().setText("30.0");
@@ -100,6 +102,12 @@ public class StateHistoryViewOptionsController
 			renderer.setFixedLightDirection(runs.getCurrentRun().getSunPosition());
 		});
 
+        runs.addListener((aSource, aEventType) ->
+		{
+			if (aEventType != ItemEventType.ItemsChanged) return;
+			view.setAvailableFOVs(runs.getAvailableFOVs());
+		});
+
         //on a change in selection in the table, reset the time fraction and update the state history's look angle
         //and look direction
         runs.addListener((aSource, aEventType) ->
@@ -109,11 +117,24 @@ public class StateHistoryViewOptionsController
 			RendererLookDirection lookDir = model.getRendererLookDirectionForStateHistory(runs.getCurrentRun());
 			Double inputAngle = model.getViewInputAngleForStateHistory(runs.getCurrentRun());
 			view.getViewOptions().setSelectedItem(lookDir);
+
 			if (inputAngle != null)
 				view.getViewInputAngle().setText("" + inputAngle);
 		});
 
 		view.getViewOptions().setSelectedIndex(0);
+		view.setCheckboxItemListener(e ->
+		{
+			JCheckBox fovCheckbox = (JCheckBox)e.getSource();
+			if (fovCheckbox.isSelected())
+			{
+				runs.addSelectedFov(fovCheckbox.getText());
+			}
+			else
+			{
+				runs.removeSelectedFov(fovCheckbox.getText());
+			}
+		});
 	}
 
 	/**
@@ -146,6 +167,7 @@ public class StateHistoryViewOptionsController
 					renderer.getCameraViewAngle());
 			((RenderPanel) renderer.getRenderWindowPanel()).setZoomOnly(true, targAxis, targOrig);
 		}
+		renderer.getRenderWindowPanel().resetCameraClippingRange();
 	}
 
 	/**

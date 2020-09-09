@@ -3,12 +3,12 @@ package edu.jhuapl.sbmt.stateHistory.model.interfaces;
 import java.util.Map.Entry;
 import java.util.Set;
 
+import edu.jhuapl.sbmt.pointing.IPointingProvider;
 import edu.jhuapl.sbmt.stateHistory.model.StateHistorySourceType;
 import edu.jhuapl.sbmt.stateHistory.model.io.StateHistoryInvalidTimeException;
 import edu.jhuapl.sbmt.stateHistory.model.stateHistory.StateHistoryKey;
 
 import crucible.core.math.vectorspace.UnwritableVectorIJK;
-import crucible.core.mechanics.FrameID;
 
 /**
  * Interface for classes that store state history segment information
@@ -70,6 +70,16 @@ public interface StateHistory
     public Double getMaxTime();
 
     /**
+	 * @param startTime the startTime to set
+	 */
+	public void setStartTime(Double startTime);
+
+	/**
+	 * @param endTime the endTime to set
+	 */
+	public void setEndTime(Double endTime);
+
+    /**
      * @param flybyState
      */
     public void addState(State flybyState);
@@ -122,9 +132,15 @@ public interface StateHistory
      */
     public double[] getSpacecraftPosition();
 
-    public double[] getInstrumentLookDirection(FrameID instrumentFrameID);
+    public double[] getSpacecraftPositionAtTime(double time);
 
-    public UnwritableVectorIJK getFrustum(FrameID instrumentFrameID, int index);
+    public double[] getInstrumentLookDirection(String instrumentFrameName);
+
+    public double[] getInstrumentLookDirectionAtTime(String instrumentFrameName, double time);
+
+    public UnwritableVectorIJK getFrustum(String instrumentFrameName, int index);
+
+    public UnwritableVectorIJK getFrustumAtTime(String instrumentFrameName, int index, double time);
 
     /**
      * Returns the sun position in the body fixed frame
@@ -179,4 +195,8 @@ public interface StateHistory
 	public void setType(StateHistorySourceType type);
 
 	public void setSourceFile(String sourceFile);
+
+	public IPointingProvider getPointingProvider();
+
+	public void setPointingProvider(IPointingProvider pointingProvider);
 }

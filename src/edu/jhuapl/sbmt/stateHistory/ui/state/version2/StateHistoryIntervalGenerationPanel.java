@@ -1,7 +1,6 @@
 package edu.jhuapl.sbmt.stateHistory.ui.state.version2;
 
 import java.awt.CardLayout;
-import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
@@ -199,7 +198,7 @@ public class StateHistoryIntervalGenerationPanel extends JPanel
 		JPanel timeRangePanel = new JPanel();
 		timeRangePanel.setLayout(new BoxLayout(timeRangePanel, BoxLayout.Y_AXIS));
 		JPanel panel_1 = new JPanel();
-		panel_1.setBackground(Color.red);
+//		panel_1.setBackground(Color.red);
         panel_1.setBorder(null);
         timeRangePanel.add(panel_1);
         panel_1.setLayout(new BoxLayout(panel_1, BoxLayout.X_AXIS));
@@ -219,7 +218,7 @@ public class StateHistoryIntervalGenerationPanel extends JPanel
         panel_1.add(availableTimeLabel);
 
         JPanel panel_2 = new JPanel();
-        panel_2.setBackground(Color.orange);
+//        panel_2.setBackground(Color.orange);
         panel_2.setBorder(null);
         timeRangePanel.add(panel_2);
         panel_2.setLayout(new BoxLayout(panel_2, BoxLayout.X_AXIS));
@@ -237,7 +236,7 @@ public class StateHistoryIntervalGenerationPanel extends JPanel
         panel_2.add(startTimeSpinner);
 
         JPanel panel_3 = new JPanel();
-        panel_3.setBackground(Color.yellow);
+//        panel_3.setBackground(Color.yellow);
         panel_3.setBorder(null);
         timeRangePanel.add(panel_3);
         panel_3.setLayout(new BoxLayout(panel_3, BoxLayout.X_AXIS));
@@ -255,7 +254,7 @@ public class StateHistoryIntervalGenerationPanel extends JPanel
         panel_3.add(stopTimeSpinner);
 
         JPanel panel_4 = new JPanel();
-        panel_4.setBackground(Color.green);
+//        panel_4.setBackground(Color.green);
         panel_4.setBorder(null);
         timeRangePanel.add(panel_4);
         panel_4.setLayout(new BoxLayout(panel_4, BoxLayout.X_AXIS));

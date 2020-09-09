@@ -8,14 +8,16 @@ import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
 
-import edu.jhuapl.sbmt.pointing.spice.SpiceInstrumentPointing;
+import com.google.common.base.Preconditions;
+
+import edu.jhuapl.sbmt.pointing.InstrumentPointing;
 import edu.jhuapl.sbmt.pointing.spice.SpicePointingProvider;
 import edu.jhuapl.sbmt.stateHistory.model.interfaces.State;
 import edu.jhuapl.sbmt.util.TimeUtil;
 
 import crucible.core.math.vectorspace.UnwritableVectorIJK;
 import crucible.core.mechanics.EphemerisID;
-import crucible.core.mechanics.FrameID;
+import crucible.core.mechanics.providers.lockable.LockableFrameLinkEvaluationException;
 import crucible.core.mechanics.utilities.SimpleEphemerisID;
 
 /**
@@ -24,7 +26,7 @@ import crucible.core.mechanics.utilities.SimpleEphemerisID;
  */
 public class SpiceState implements State
 {
-	private SpiceInstrumentPointing pointing;
+	private InstrumentPointing pointing;
 
     /**
      * State time in UTC
@@ -40,16 +42,16 @@ public class SpiceState implements State
 
     private SpicePointingProvider pointingProvider;
 
+    private String currentInstrumentFrameName = null;
+
 	/**
 	 *
 	 */
-	public SpiceState(SpicePointingProvider pointingProvider, FrameID defaultInstFrame, EphemerisID bodyId, double et)
+	public SpiceState(SpicePointingProvider pointingProvider)
 	{
 		this.pointingProvider = pointingProvider;
-		this.pointing = pointingProvider.provide(defaultInstFrame, bodyId, et);
-		this.ephemerisTime = et;
-		this.bodyId = bodyId;
-		this.utc = TimeUtil.et2str(et);
+		this.bodyId = pointingProvider.getTargetId();
+		this.currentInstrumentFrameName = pointingProvider.getInstrumentNames()[0];
 	}
 
 	@Override
@@ -64,50 +66,66 @@ public class SpiceState implements State
 		return utc;
 	}
 
-	public double[] getInstrumentLookDirection(FrameID instrumentFrameID)
+	public double[] getInstrumentLookDirection(String instrumentFrameName)
 	{
-		SpiceInstrumentPointing pointing = pointingProvider.provide(instrumentFrameID, bodyId, ephemerisTime);
-		UnwritableVectorIJK boresight = pointing.getBoresight().createNegated();
-//		System.out.println("SpiceState: getInstrumentLookDirection: returning boresight " + boresight + " for " + instrumentFrameID + " wrt " + bodyId);
-		return new double[] {
-				boresight.getI(), boresight.getJ(), boresight.getK()
-		};
+		Preconditions.checkNotNull(ephemerisTime);
+		InstrumentPointing pointing = pointingProvider.provide(instrumentFrameName, ephemerisTime);
+		try {
+			UnwritableVectorIJK boresight = pointing.getBoresight().createNegated();
+			return new double[] {
+					boresight.getI(), boresight.getJ(), boresight.getK()
+			};
+		}
+		catch (LockableFrameLinkEvaluationException lflee)
+		{
+			return new double[] {0.0, 0.0, 0.0};
+		}
 	}
 
-	public UnwritableVectorIJK getFrustum(FrameID instrumentFrameID, int index)
+	public UnwritableVectorIJK getFrustum(String instrumentFrameName, int index)
 	{
-		SpiceInstrumentPointing pointing = pointingProvider.provide(instrumentFrameID, bodyId, ephemerisTime);
-		return pointing.getFrustum().get(index);
+		Preconditions.checkNotNull(ephemerisTime);
+		InstrumentPointing pointing = pointingProvider.provide(instrumentFrameName, ephemerisTime);
+		try {
+			return pointing.getFrustum().get(index);
+		}
+		catch (LockableFrameLinkEvaluationException le) {
+			return new UnwritableVectorIJK(0, 0, 1);
+		}
+
 	}
 
 	@Override
 	public double[] getSpacecraftPosition()
 	{
-		return new double[] { pointing.getSpacecraftPos().getI(),
-							  pointing.getSpacecraftPos().getJ(),
-							  pointing.getSpacecraftPos().getK()
+		Preconditions.checkNotNull(ephemerisTime);
+		Preconditions.checkNotNull(pointing);
+		return new double[] { pointing.getScPosition().getI(),
+							  pointing.getScPosition().getJ(),
+							  pointing.getScPosition().getK()
 		};
 	}
 
 	@Override
 	public double[] getSpacecraftVelocity()
 	{
-//		return null;
-		return new double[] { 0.0, 0.0, 0.0 };
-//		return new double[] { pointing.getSpacecraftPos().getI(),
-//							  pointing.getSpacecraftPos().getJ(),
-//							  pointing.getSpacecraftPos().getK()
-//		};
+		Preconditions.checkNotNull(ephemerisTime);
+		Preconditions.checkNotNull(pointing);
+		return new double[] { pointing.getScVelocity().getI(),
+							  pointing.getScVelocity().getJ(),
+							  pointing.getScVelocity().getK()
+		};
 	}
 
 	@Override
 	public double[] getEarthPosition()
 	{
-//		return new double[] { 0.0, 0.0, 0.0 };
+		Preconditions.checkNotNull(ephemerisTime);
+		Preconditions.checkNotNull(pointing);
 		EphemerisID earth = new SimpleEphemerisID("EARTH");
-		return new double[] { pointing.getPos(earth).getI(),
-	  			  pointing.getPos(earth).getJ(),
-	  			  pointing.getPos(earth).getK()
+		return new double[] { pointing.getPosition(earth).getI(),
+	  			  pointing.getPosition(earth).getJ(),
+	  			  pointing.getPosition(earth).getK()
 
 		};
 	}
@@ -115,10 +133,12 @@ public class SpiceState implements State
 	@Override
 	public double[] getSunPosition()
 	{
+		Preconditions.checkNotNull(ephemerisTime);
+		Preconditions.checkNotNull(pointing);
 		EphemerisID sun = new SimpleEphemerisID("SUN");
-		return new double[] { pointing.getPos(sun).getI(),
-	  			  pointing.getPos(sun).getJ(),
-	  			  pointing.getPos(sun).getK()
+		return new double[] { pointing.getPosition(sun).getI(),
+	  			  pointing.getPosition(sun).getJ(),
+	  			  pointing.getPosition(sun).getK()
 
 		};
 	}
@@ -126,25 +146,74 @@ public class SpiceState implements State
 	@Override
 	public double[] getSpacecraftXAxis()
 	{
-		return new double[] { 1.0, 0.0, 0.0 };
-		// TODO Auto-generated method stub
-//		return null;
+		Preconditions.checkNotNull(ephemerisTime);
+		Preconditions.checkNotNull(pointing);
+		double[] xAxis = new double[3];
+//		try {
+			xAxis[0] = pointing.getScRotation().getColumn(0).getI();
+			xAxis[1] = pointing.getScRotation().getColumn(0).getJ();
+			xAxis[2] = pointing.getScRotation().getColumn(0).getK();
+			return xAxis;
+//		}
+//		catch (LockableFrameLinkEvaluationException lflee)
+//		{
+//			return new double[] {1.0, 0.0, 0.0};
+//		}
 	}
 
 	@Override
 	public double[] getSpacecraftYAxis()
 	{
-		return new double[] { 0.0, 1.0, 0.0 };
-		// TODO Auto-generated method stub
-//		return null;
+		Preconditions.checkNotNull(ephemerisTime);
+		Preconditions.checkNotNull(pointing);
+		double[] yAxis = new double[3];
+//		try {
+			yAxis[0] = pointing.getScRotation().getColumn(1).getI();
+			yAxis[1] = pointing.getScRotation().getColumn(1).getJ();
+			yAxis[2] = pointing.getScRotation().getColumn(1).getK();
+			return yAxis;
+//		}
+//		catch (LockableFrameLinkEvaluationException lflee)
+//		{
+//			return new double[] {0.0, 1.0, 0.0};
+//		}
 	}
 
 	@Override
 	public double[] getSpacecraftZAxis()
 	{
-		return new double[] { 0.0, 0.0, 1.0 };
-		// TODO Auto-generated method stub
-//		return null;
+		Preconditions.checkNotNull(ephemerisTime);
+		Preconditions.checkNotNull(pointing);
+		double[] zAxis = new double[3];
+//		try {
+			zAxis[0] = pointing.getScRotation().getColumn(2).getI();
+			zAxis[1] = pointing.getScRotation().getColumn(2).getJ();
+			zAxis[2] = pointing.getScRotation().getColumn(2).getK();
+			return zAxis;
+//		}
+//		catch (LockableFrameLinkEvaluationException lflee)
+//		{
+//			return new double[] {0.0, 0.0, 1.0};
+//		}
+	}
+
+	/**
+	 * @param ephemerisTime the ephemerisTime to set
+	 */
+	public void setEphemerisTime(double ephemerisTime)
+	{
+		this.ephemerisTime = ephemerisTime;
+		this.utc = TimeUtil.et2str(ephemerisTime);
+		this.pointing = pointingProvider.provide(currentInstrumentFrameName, ephemerisTime);
+
+	}
+
+	/**
+	 * @param currentInstrumentFrameName the currentInstrumentFrameName to set
+	 */
+	public void setCurrentInstrumentFrameName(String currentInstrumentFrameName)
+	{
+		this.currentInstrumentFrameName = currentInstrumentFrameName;
 	}
 
 	/**

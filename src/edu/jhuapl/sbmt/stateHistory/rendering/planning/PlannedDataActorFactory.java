@@ -20,10 +20,10 @@ public class PlannedDataActorFactory
 		registeredModels.put(uniqueName, builder);
 	}
 
-	static public PlannedInstrumentDataActor createPlannedDataActorFor(PlannedInstrumentData data, SmallBodyModel model)
+	static public PlannedDataActor createPlannedDataActorFor(PlannedInstrumentData data, SmallBodyModel model)
 			throws FitsException, IOException
     {
-    	System.out.println("PlannedDataActorFactory: createImage: getting " + data.getInstrumentName());
+//    	System.out.println("PlannedDataActorFactory: createImage: getting " + data.getInstrumentName());
     	IPlanningDataActorBuilder<PlannedInstrumentData> builder = registeredModels.get(data.getInstrumentName());
     	return builder.buildActorForPlanningData(data, model);
     }

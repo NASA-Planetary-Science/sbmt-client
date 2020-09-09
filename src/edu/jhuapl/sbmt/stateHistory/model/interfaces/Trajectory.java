@@ -1,6 +1,6 @@
 package edu.jhuapl.sbmt.stateHistory.model.interfaces;
 
-import java.util.ArrayList;
+import edu.jhuapl.sbmt.pointing.IPointingProvider;
 
 
 /**
@@ -30,45 +30,59 @@ public interface Trajectory
      */
     public void setId(int id);
 
-    /**
-     * @return
-     */
-    public ArrayList<Double> getTime();
+    public void setStartTime(double time);
+    public double getStartTime();
 
-    /**
-     * @param times
-     */
-    public void setTime(ArrayList<Double> times);
+    public void setStopTime(double time);
+    public double getStopTime();
 
-    /**
-     * @return
-     */
-    public ArrayList<Double> getX();
+    public void setNumPoints(int numPoints);
+    public int getNumPoints();
 
-    /**
-     * @param x
-     */
-    public void setX(ArrayList<Double> x);
+    public boolean isHasInstrumentPointingInfo();
+//    /**
+//     * @return
+//     */
+//    public ArrayList<Double> getTime();
+//
+//    /**
+//     * @param times
+//     */
+//    public void setTime(ArrayList<Double> times);
+//
+//    /**
+//     * @return
+//     */
+//    public ArrayList<Double> getX();
+//
+//    /**
+//     * @param x
+//     */
+//    public void setX(ArrayList<Double> x);
+//
+//    /**
+//     * @return
+//     */
+//    public ArrayList<Double> getY();
+//
+//    /**
+//     * @param y
+//     */
+//    public void setY(ArrayList<Double> y);
+//
+//    /**
+//     * @return
+//     */
+//    public ArrayList<Double> getZ();
+//
+//    /**
+//     * @param z
+//     */
+//    public void setZ(ArrayList<Double> z);
 
-    /**
-     * @return
-     */
-    public ArrayList<Double> getY();
+    public IPointingProvider getPointingProvider();
 
-    /**
-     * @param y
-     */
-    public void setY(ArrayList<Double> y);
-
-    /**
-     * @return
-     */
-    public ArrayList<Double> getZ();
-
-    /**
-     * @param z
-     */
-    public void setZ(ArrayList<Double> z);
+    public void setPointingProvider(IPointingProvider pointingProvider);
 
     /**
      * @return
@@ -110,11 +124,11 @@ public interface Trajectory
      */
     public boolean isFaded();
 
-    /**
-     * @param position
-     * @param time
-     */
-    public void addPositionAtTime(double[] spacecraftPosition, double time);
+//    /**
+//     * @param position
+//     * @param time
+//     */
+//    public void addPositionAtTime(double[] spacecraftPosition, double time);
 
     //Display fraction (which portions of the overall time window are being worked on)
 

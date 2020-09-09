@@ -6,7 +6,9 @@ import java.beans.PropertyChangeListener;
 import javax.swing.JPanel;
 
 import edu.jhuapl.saavtk.colormap.Colormap;
+import edu.jhuapl.saavtk.gui.panel.JComboBoxWithItemState;
 import edu.jhuapl.saavtk.gui.render.Renderer;
+import edu.jhuapl.saavtk.model.ColoringDataManager;
 import edu.jhuapl.sbmt.stateHistory.model.StateHistoryColoringFunctions;
 import edu.jhuapl.sbmt.stateHistory.model.stateHistory.StateHistoryCollection;
 import edu.jhuapl.sbmt.stateHistory.model.viewOptions.StateHistoryColorOptionsAttributeModel;
@@ -57,6 +59,8 @@ public class StateHistoryColoringOptionsController //implements ActionListener
 	 */
 	private Colormap colormapChoice;
 
+	private ColoringDataManager coloringDataManager;
+
 //	/**
 //	 *
 //	 */
@@ -66,7 +70,7 @@ public class StateHistoryColoringOptionsController //implements ActionListener
 	 * @param historyModel
 	 * @param renderer
 	 */
-	public StateHistoryColoringOptionsController(StateHistoryCollection runs, Renderer renderer)
+	public StateHistoryColoringOptionsController(StateHistoryCollection runs, Renderer renderer, ColoringDataManager coloringDataManager)
 	{
 //		this.historyModel = historyModel;
 //		runs = historyModel.getRuns();
@@ -74,6 +78,7 @@ public class StateHistoryColoringOptionsController //implements ActionListener
 //		colorConfigPanel = new ColorConfigPanel<>(this, runs, renderer);
 //		colorConfigPanel.setActiveMode(ColorMode.Simple);
 //		this.runs = runs;
+		this.coloringDataManager = coloringDataManager;
 		initializeViewControlPanel(runs);
 	}
 
@@ -84,7 +89,7 @@ public class StateHistoryColoringOptionsController //implements ActionListener
 	{
 		//create the attributes model and view objects
 		model = new StateHistoryColorOptionsAttributeModel();
-		view = new StateHistoryColoringOptionsPanel();
+		view = new StateHistoryColoringOptionsPanel(coloringDataManager);
 		colormapChoice = (Colormap) view.getColormapComboBox().getSelectedItem();
 		colormapChoice.setRangeMax(12);
 		colormapChoice.setRangeMin(0);
@@ -144,6 +149,13 @@ public class StateHistoryColoringOptionsController //implements ActionListener
 			Colormap stateHistoryColormap = model.getColormapForStateHistory(runs.getCurrentRun());
 			if (stateHistoryColormap != null)
 				view.getColormapComboBox().setSelectedItem(stateHistoryColormap);
+		});
+
+		view.setPlateColoringsItemListener(e ->
+		{
+			JComboBoxWithItemState<String> combo = (JComboBoxWithItemState<String>)e.getSource();
+			runs.setFootprintPlateColoring(combo.getModel().getSelectedItem().toString());
+
 		});
 	}
 

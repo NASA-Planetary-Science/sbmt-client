@@ -15,7 +15,7 @@ import nom.tam.fits.FitsException;
 public class PlannedInstrumentRendererManager
 {
 	List<PlannedInstrumentData> dataToRender = new ArrayList<PlannedInstrumentData>();
-	private HashMap<PlannedInstrumentData, PlannedInstrumentDataActor> plannedInstrumentDataToRendererMap = new HashMap<PlannedInstrumentData, PlannedInstrumentDataActor>();
+	private HashMap<PlannedInstrumentData, PlannedDataActor> plannedInstrumentDataToRendererMap = new HashMap<PlannedInstrumentData, PlannedDataActor>();
 
 	/**
 	 *
@@ -28,17 +28,17 @@ public class PlannedInstrumentRendererManager
 		this.pcs = pcs;
 	}
 
-	public PlannedInstrumentDataActor addPlannedData(PlannedInstrumentData data, SmallBodyModel model)
+	public PlannedDataActor addPlannedData(PlannedInstrumentData data, SmallBodyModel model)
 	{
-		if (plannedInstrumentDataToRendererMap.get(data) != null)
-		{
-			PlannedInstrumentDataActor dataActor = plannedInstrumentDataToRendererMap.get(data);
-			dataActor.SetVisibility(1);
-			return dataActor;
-		}
+//		if (plannedInstrumentDataToRendererMap.get(data) != null)
+//		{
+//			PlannedDataActor dataActor = plannedInstrumentDataToRendererMap.get(data);
+//			dataActor.SetVisibility(1);
+//			return dataActor;
+//		}
 
 		// Get the actor for the planned data
-		PlannedInstrumentDataActor dataActor = null;
+		PlannedDataActor dataActor = null;
 		try
 		{
 			dataActor = PlannedDataActorFactory.createPlannedDataActorFor(data, model);
@@ -48,9 +48,10 @@ public class PlannedInstrumentRendererManager
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+		System.out.println("PlannedInstrumentRendererManager: addPlannedData: adding to map");
 		plannedInstrumentDataToRendererMap.put(data, dataActor);
 
-//		dataActor.VisibilityOn();
+		dataActor.SetVisibility(0);
 //		dataActor.GetMapper().Update();
 
 		this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
@@ -67,6 +68,7 @@ public class PlannedInstrumentRendererManager
 	public void setVisibility(PlannedInstrumentData data, boolean isVisible)
 	{
 		data.setShowing(isVisible);
+		plannedInstrumentDataToRendererMap.get(data).SetVisibility(isVisible ? 1: 0);
 	}
 
 	public void setFrustumVisibility(PlannedInstrumentData data, boolean isVisible)

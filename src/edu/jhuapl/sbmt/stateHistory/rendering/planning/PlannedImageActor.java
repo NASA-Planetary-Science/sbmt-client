@@ -11,14 +11,13 @@ import vtk.vtksbCellLocator;
 import edu.jhuapl.saavtk.util.MathUtil;
 import edu.jhuapl.saavtk.util.PolyDataUtil;
 import edu.jhuapl.sbmt.client.SmallBodyModel;
-import edu.jhuapl.sbmt.stateHistory.model.IPositionOrientation;
 import edu.jhuapl.sbmt.stateHistory.model.planning.PlannedInstrumentData;
 
 public class PlannedImageActor extends PlannedInstrumentDataActor
 {
-	public PlannedImageActor(PlannedInstrumentData data, SmallBodyModel smallBodyModel, IPositionOrientation positionOrientationManager)
+	public PlannedImageActor(PlannedInstrumentData data, SmallBodyModel smallBodyModel/*, IPositionOrientation positionOrientationManager*/)
 	{
-		super(data, smallBodyModel, positionOrientationManager);
+		super(data, smallBodyModel/*, positionOrientationManager*/);
 	}
 
 	void calculateFrustum(double time)

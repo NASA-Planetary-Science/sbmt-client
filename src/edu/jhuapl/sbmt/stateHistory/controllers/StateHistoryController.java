@@ -23,7 +23,6 @@ import edu.jhuapl.saavtk.model.ModelNames;
 import edu.jhuapl.saavtk.util.FileCache;
 import edu.jhuapl.sbmt.client.SmallBodyModel;
 import edu.jhuapl.sbmt.client.SmallBodyViewConfig;
-import edu.jhuapl.sbmt.stateHistory.model.IPositionOrientation;
 import edu.jhuapl.sbmt.stateHistory.model.StateHistoryModel;
 import edu.jhuapl.sbmt.stateHistory.model.StateHistorySourceType;
 import edu.jhuapl.sbmt.stateHistory.model.StateHistoryUtil;
@@ -34,7 +33,6 @@ import edu.jhuapl.sbmt.stateHistory.model.stateHistory.SpiceStateHistoryInterval
 import edu.jhuapl.sbmt.stateHistory.model.stateHistory.StateHistoryCollection;
 import edu.jhuapl.sbmt.stateHistory.ui.state.version2.StateHistoryDisplayedIntervalPanel;
 import edu.jhuapl.sbmt.stateHistory.ui.state.version2.StateHistoryIntervalGenerationPanel;
-import edu.jhuapl.sbmt.stateHistory.ui.state.version2.StateHistoryIntervalPlaybackPanel;
 import edu.jhuapl.sbmt.stateHistory.ui.state.version2.table.StateHistoryTableView;
 
 import glum.item.ItemEventType;
@@ -61,15 +59,12 @@ public class StateHistoryController
      */
     private StateHistoryDisplayedIntervalController intervalDisplayedController;
 
-    /**
-     * Controller for the interval playback panel
-     */
-    private StateHistoryIntervalPlaybackController intervalPlaybackController;
 
-    /**
-     * Controller for the view controls panel
-     */
-    private StateHistoryViewControlsController viewControlsController;
+
+//    /**
+//     * Controller for the view controls panel
+//     */
+//    private StateHistoryViewControlsController viewControlsController;
 
     /**
      * Renderer that the controller interacts with
@@ -81,7 +76,7 @@ public class StateHistoryController
      */
     private StateHistoryModel historyModel = null;
 
-    private IPositionOrientation positionOrientation = null;
+//    private IPositionOrientation positionOrientation = null;
 
     /**
      * Constructor.  Initializes properties, sets listeners, etc
@@ -112,7 +107,7 @@ public class StateHistoryController
 		try
 		{
 			historyModel = new StateHistoryModel(start, end, bodyModel, renderer, modelManager);
-			historyModel.registerIntervalGenerator(StateHistorySourceType.SPICE, new SpiceStateHistoryIntervalGenerator(1));	//TODO update this to be a parameter in view config
+			historyModel.registerIntervalGenerator(StateHistorySourceType.SPICE, new SpiceStateHistoryIntervalGenerator(.01));	//TODO update this to be a parameter in view config
 			historyModel.setIntervalGenerator(StateHistorySourceType.SPICE);
 			if (!config.timeHistoryFile.equals(""))
 			{
@@ -135,13 +130,13 @@ public class StateHistoryController
 
         this.intervalGenerationController = new StateHistoryIntervalGenerationController(historyModel, start, end);
         this.intervalSelectionController = new StateHistoryIntervalSelectionController(historyModel, bodyModel, renderer);
-        this.intervalPlaybackController = new StateHistoryIntervalPlaybackController(historyModel, renderer);
+
         this.intervalDisplayedController = new StateHistoryDisplayedIntervalController(historyModel.getRuns());
-        this.viewControlsController = new StateHistoryViewControlsController(historyModel, renderer);
+//        this.viewControlsController = new StateHistoryViewControlsController(historyModel, renderer);
 
         intervalDisplayedController.getView().setEnabled(false);
-        intervalPlaybackController.getView().setEnabled(false);
-        viewControlsController.getView().setEnabled(false);
+
+
 
         renWin.getRenderWindow().AddObserver("EndEvent", this, "updateTimeBarPosition");
         renWin.getComponent().addComponentListener(new ComponentAdapter()
@@ -158,8 +153,8 @@ public class StateHistoryController
         runs.addListener((aSource, aEventType) -> {
 			if (aEventType != ItemEventType.ItemsSelected) return;
 			intervalDisplayedController.getView().setEnabled(runs.getSelectedItems().size() > 0);
-			intervalPlaybackController.getView().setEnabled(runs.getSelectedItems().size() > 0);
-			viewControlsController.setEnabled(runs.getSelectedItems().size() > 0);
+//			intervalPlaybackController.getView().setEnabled(runs.getSelectedItems().size() > 0);
+//			viewControlsController.setEnabled(runs.getSelectedItems().size() > 0);
 		});
     }
 
@@ -182,8 +177,8 @@ public class StateHistoryController
 
     	StateHistoryDisplayedIntervalPanel displayedPanel = intervalDisplayedController.getView();
 
-    	StateHistoryIntervalPlaybackPanel intervalPlaybackPanel = intervalPlaybackController.getView();
-    	JPanel viewControlsPanel = viewControlsController.getView();
+//    	StateHistoryIntervalPlaybackPanel intervalPlaybackPanel = intervalPlaybackController.getView();
+//    	JPanel viewControlsPanel = viewControlsController.getView();
 
     	timeControlsPanel.add(intervalGenerationPanel);
     	timeControlsPanel.add(intervalSelectionPanel);
@@ -192,8 +187,8 @@ public class StateHistoryController
     	panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
     	panel.add(timeControlsPanel);
     	panel.add(displayedPanel);
-    	panel.add(viewControlsPanel);
-    	panel.add(intervalPlaybackPanel);
+//    	panel.add(viewControlsPanel);
+//    	panel.add(intervalPlaybackPanel);
     	return panel;
     }
 
@@ -208,9 +203,17 @@ public class StateHistoryController
     	historyModel.getRuns().updateTimeBarLocation(renderer.getRenderWindowPanel().getComponent().getWidth(), renderer.getRenderWindowPanel().getComponent().getHeight());
     }
 
-    public void setPositionOrientationManager(IPositionOrientation positionOrientation)
+//    public void setPositionOrientationManager(IPositionOrientation positionOrientation)
+//	{
+//    	this.positionOrientation = positionOrientation;
+//	}
+
+	/**
+	 * @return the historyModel
+	 */
+	public StateHistoryModel getHistoryModel()
 	{
-    	this.positionOrientation = positionOrientation;
+		return historyModel;
 	}
 
 }

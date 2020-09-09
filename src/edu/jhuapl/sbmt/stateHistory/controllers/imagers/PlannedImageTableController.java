@@ -9,14 +9,13 @@ import edu.jhuapl.saavtk.gui.dialog.CustomFileChooser;
 import edu.jhuapl.saavtk.gui.render.Renderer;
 import edu.jhuapl.saavtk.model.ModelManager;
 import edu.jhuapl.sbmt.client.SmallBodyViewConfig;
-import edu.jhuapl.sbmt.stateHistory.model.IPositionOrientation;
 import edu.jhuapl.sbmt.stateHistory.model.planning.imagers.PlannedImageCollection;
 import edu.jhuapl.sbmt.stateHistory.ui.imagers.PlannedImageView;
 
 public class PlannedImageTableController
 {
 	PlannedImageView view;
-	IPositionOrientation positionOrientationManager;
+//	IPositionOrientation positionOrientationManager;
 
 	public PlannedImageTableController(final ModelManager modelManager, Renderer renderer, PlannedImageCollection collection, SmallBodyViewConfig config)
 	{
@@ -54,11 +53,6 @@ public class PlannedImageTableController
 			}
 
 		});
-	}
-
-	public void setPositionOrientationManager(IPositionOrientation manager)
-	{
-		this.positionOrientationManager = manager;
 	}
 
 	public PlannedImageView getView()
