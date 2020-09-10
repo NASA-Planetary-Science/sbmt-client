@@ -988,6 +988,7 @@ extractFITSFileTimes() {
           sed 's:[^=]*=[  ]*::' | sed 's:[  ]*/.*$::' | sed "s:^''*::" | sed "s:''*$::" | sed 's: :T:'`
         if test $? -eq 0 -a "$value" != ""; then
           echo "$relPath/$file, $value" >> $listFile
+          check $? "extractFITSFileTimes: unable to write to $listFile"
         else
           echo "extractFITSFileTimes: unable to extract time; skipping file $file" >&2
         fi
@@ -1008,22 +1009,24 @@ createInfoFilesFromImageTimeStamps() {
     imageTimeStampFile=$6
     infoDir=$7
 
+    funcName=createInfoFilesFromImageTimeStamps
+    
     # Must invoke tool from the temporary spice directory in case the metakernel uses relative paths.
     cd $tmpSpiceDir
-    check $? "createInforFilesFromImageTimeStamps: unable to cd $tmpSpiceDir"
+    check $? "$funcName: unable to cd $tmpSpiceDir"
 
     if test ! -f $metakernel; then
-      check 1 "createInfoFilesFromImageTimeStamps: first argument $metakernel is not the path to a metakernel file"
+      check 1 "$funcName: first argument $metakernel is not the path to a metakernel file"
     fi
 
     if test "$imageTimeStampFile" = ""; then
-      check 1 "createInfoFilesFromImageTimeStamps: image time stamp file argument is blank."
+      check 1 "$funcName: image time stamp file argument is blank."
     elif test ! -f $imageTimeStampFile; then
-      check 1 "createInfoFilesFromImageTimeStamps: image time stamp file $imageTimeStampFile does not exist."
+      check 1 "$funcName: image time stamp file $imageTimeStampFile does not exist."
     fi
 
     if test "$infoDir" = ""; then
-      check 1 "createInfoFilesFromImageTimeStamps: infoDir argument is blank."
+      check 1 "$funcName: infoDir argument is blank."
     fi
 
     parentDir=$(getDirName "$destTop/$infoDir/..")
@@ -1036,7 +1039,7 @@ createInfoFilesFromImageTimeStamps() {
       (cd $createInfoFilesDir; check $?; make)
       check $?
     else
-      check 1 "createInfoFilesFromImageTimeStamps: directory $createInfoFilesDir does not exist"
+      check 1 "$funcName: directory $createInfoFilesDir does not exist"
     fi
 
     createDir "$destTop/$infoDir"
@@ -1063,7 +1066,7 @@ createInfoFilesFromImageTimeStamps() {
 
     $createInfoFilesDir/createInfoFiles $metakernel $body $bodyFrame $spacecraft $instrumentFrame \
       $imageTimeStampFile "$destTop/$infoDir" $imageListFile $imageListFullPathFile $missingInfoList 2>&1 > create_info_files.txt
-    check $?
+    check $? "$funcName: creating info files failed."
   )
   check $?
 }
@@ -1079,44 +1082,51 @@ createInfoFilesFromFITSImages() {
   imageDir=$7
   infoDir=$8
 
+  funcName=createInfoFilesFromFITSImages
+  
   if test "$metakernel" = ""; then
-    check 1 "createInfoFilesFromFITSImages: missing/blank first argument; must be path to metakernel valid in $tmpSpiceDir"
+    check 1 "$funcName: missing/blank first argument; must be path to metakernel valid in $tmpSpiceDir"
   fi
 
   if test "$body" = ""; then
-    check 1 "createInfoFilesFromFITSImages: missing/blank second argument must specify NAIF-compliant body name"
+    check 1 "$funcName: missing/blank second argument must specify NAIF-compliant body name"
   fi
 
   if test "$bodyFrame" = ""; then
-    check 1 "createInfoFilesFromFITSImages: missing/blank third argument must specify NAIF-compliant body frame ID"
+    check 1 "$funcName: missing/blank third argument must specify NAIF-compliant body frame ID"
   fi
 
   if test "$spacecraft" = ""; then
-    check 1 "createInfoFilesFromFITSImages: missing/blank fourth argument must specify NAIF-compliant spacecraft ID"
+    check 1 "$funcName: missing/blank fourth argument must specify NAIF-compliant spacecraft ID"
   fi
 
   if test "$instrumentFrame" = ""; then
-    check 1 "createInfoFilesFromFITSImages: missing/blank fifth argument must specify NAIF-compliant instrument frame ID"
+    check 1 "$funcName: missing/blank fifth argument must specify NAIF-compliant instrument frame ID"
   fi
 
   if test "$timeStampKeyword" = ""; then
-    check 1 "createInfoFilesFromFITSImages: missing/blank sixth argument must specify keyword used to extract time stamps"
+    check 1 "$funcName: missing/blank sixth argument must specify keyword used to extract time stamps"
   fi
 
   if test "$imageDir" = ""; then
-    check 1 "createInfoFilesFromFITSImages: missing/blank seventh argument must specify image directory relative to $srcTop"
+    check 1 "$funcName: missing/blank seventh argument must specify image directory relative to $srcTop"
   fi
 
   if test ! -d "$srcTop/$imageDir"; then
-    check 1 "createInfoFilesFromFITSImages: seventh argument $imageDir is not a must specify image directory relative to $srcTop"
+    check 1 "$funcName: seventh argument $imageDir must specify image directory relative to $srcTop"
   fi
 
   if test "$infoDir" = ""; then
-    check 1 "createInfoFilesFromFITSImages: missing/blank eighth argument must specify image directory relative to $srcTop"
+    check 1 "$funcName: missing/blank eighth argument must specify image directory relative to $srcTop"
   fi
 
-# Generate image list with time stamps from the content of the image directory.
-  imageTimeStampFile=$(getDirName "$destTop/$imageDir/..")"/imagelist-with-time.txt"
+  # Generate image list with time stamps from the content of the image directory.
+  imageTimeStampDir=$(getDirName "$destTop/$imageDir/..")
+  if test "$imageTimeStampDir" = ""; then
+    check 1 "$funcName: can't get directory name from $destTop/$imageDir/.."
+  fi
+
+  imageTimeStampFile="$imageTimeStampDir/imagelist-with-time.txt"
 
   if test ! -f $imageTimeStampFile; then
     extractFITSFileTimes $timeStampKeyword $srcTop "$srcTop/$imageDir" $imageTimeStampFile
