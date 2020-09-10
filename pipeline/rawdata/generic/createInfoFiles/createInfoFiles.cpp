@@ -220,9 +220,9 @@ int main(int argc, char** argv)
         return 1;
     }
 
-    ofstream foutFullPath(imageListFile.c_str());
+    ofstream foutFullPath(imageListFullPathFile.c_str());
     if (!foutFullPath.is_open()) {
-        cerr << "Error: Unable to open file " << imageListFile << " for writing" << endl;
+        cerr << "Error: Unable to open file " << imageListFullPathFile << " for writing" << endl;
         return 1;
     }
 
