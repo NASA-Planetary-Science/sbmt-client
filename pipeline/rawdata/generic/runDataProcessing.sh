@@ -195,6 +195,11 @@ export SAAVTKROOT="$sbmtCodeTop/saavtk"
 export SBMTROOT="$sbmtCodeTop/sbmt"
 export PATH="$PATH:/project/sbmtpipeline/software/heasoft/bin"
 
+echo "********************************************************************************"
+echo
+echo "--------------------------------------------------------------------------------"
+echo "$dateStamp: $runnerScript variables:
+echo "--------------------------------------------------------------------------------"
 echo "scriptName is $scriptName"
 echo "sbmtCodeTop is $sbmtCodeTop"
 echo "logTop is $logTop"
@@ -208,7 +213,7 @@ echo "modelMetadataDir is $modelMetadataDir"
 echo "tmpSpiceDir is $tmpSpiceDir"
 echo "HEASoft/Ftools installation is in /project/sbmtpipeline/software/heasoft/bin"
 echo "--------------------------------------------------------------------------------"
-echo "Begin $processingScript"
+echo "Executing $processingScript"
 echo "--------------------------------------------------------------------------------"
 
 # This variable is set so that scripts can tell whether they were run by this runner
@@ -217,3 +222,4 @@ invokedByRunner=true
 
 . "$rawDataTop/$(basename $processingScript)"
 echo "--------------------------------------------------------------------------------"
+echo
