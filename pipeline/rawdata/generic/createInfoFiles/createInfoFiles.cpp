@@ -192,6 +192,7 @@ int main(int argc, char** argv)
     string imageListFullPathFile = argv[++argIndex];
     string missingInfoList = argv[++argIndex];
 
+    cout << "Initializing SPICE with metakernel " << metakernel << endl;
     furnsh_c(metakernel.c_str());
     cout << "Furnished SPICE files" << endl;
     erract_c("SET", 1, (char*)"RETURN");
