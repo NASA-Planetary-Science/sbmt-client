@@ -1121,6 +1121,10 @@ createInfoFilesFromImageTimeStamps() {
     fi
 
     parentDir=$(getDirName "$destTop/$infoDir/..")
+    if test "$parentDir" = ""; then
+      check 1 "$funcName: could not determine parent directory of $destTop/$infoDir/.."
+    fi
+
     imageListFile="$parentDir/imagelist-info.txt"
     imageListFullPathFile="$parentDir/imagelist-fullpath-info.txt"
     missingInfoList="$parentDir/missing-info.txt"
@@ -1156,8 +1160,9 @@ createInfoFilesFromImageTimeStamps() {
       $imageTimeStampFile "$destTop/$infoDir" $imageListFile $imageListFullPathFile $missingInfoList
 
     $createInfoFilesDir/createInfoFiles $metakernel $body $bodyFrame $spacecraft $instrumentFrame \
-      $imageTimeStampFile "$destTop/$infoDir" $imageListFile $imageListFullPathFile $missingInfoList 2>&1 > create_info_files.txt
-    check $? "$funcName: creating info files failed."
+      $imageTimeStampFile "$destTop/$infoDir" $imageListFile $imageListFullPathFile $missingInfoList > \
+      $logTop/createInfoFiles.txt 2>&1
+    check $? "$funcName: creating info files failed. See log file $logTop/createInfoFiles.txt."
   )
   check $?
 }
@@ -1454,7 +1459,7 @@ generateDatabaseTable() {
     # Just in case, make sure pointing is all uppercase.
     pointing=${pointing^^}
 
-    logFile=$logDir/$tool-$instrument-$pointing.txt
+    logFile=$logTop/$tool-$instrument-$pointing.txt
     echo $pathToTool --root-url file://$serverTop/data --body "$bodyId" --author "$modelId" --instrument "$instrument" $pointing
     $pathToTool --root-url file://$serverTop/data --body "$bodyId" --author "$modelId" --instrument "$instrument" $pointing \
       > $logFile 2>&1
