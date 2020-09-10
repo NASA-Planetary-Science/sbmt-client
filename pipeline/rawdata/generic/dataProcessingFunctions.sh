@@ -1156,6 +1156,8 @@ createInfoFilesFromImageTimeStamps() {
     #     was created will be listed, preceded with a string giving the cause for
     #     why no infofile could be created.
 
+    createDir $logTop
+
     echo $createInfoFilesDir/createInfoFiles $metakernel $body $bodyFrame $spacecraft $instrumentFrame \
       $imageTimeStampFile "$destTop/$infoDir" $imageListFile $imageListFullPathFile $missingInfoList
 
@@ -1460,6 +1462,9 @@ generateDatabaseTable() {
     pointing=${pointing^^}
 
     logFile=$logTop/$tool-$instrument-$pointing.txt
+
+    createDir $logTop
+
     echo $pathToTool --root-url file://$serverTop/data --body "$bodyId" --author "$modelId" --instrument "$instrument" $pointing
     $pathToTool --root-url file://$serverTop/data --body "$bodyId" --author "$modelId" --instrument "$instrument" $pointing \
       > $logFile 2>&1
