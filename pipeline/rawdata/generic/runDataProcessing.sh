@@ -195,11 +195,10 @@ export SAAVTKROOT="$sbmtCodeTop/saavtk"
 export SBMTROOT="$sbmtCodeTop/sbmt"
 export PATH="$PATH:/project/sbmtpipeline/software/heasoft/bin"
 
-echo "********************************************************************************"
 echo
-echo "--------------------------------------------------------------------------------"
+echo "********************************************************************************"
 echo "$dateStamp: $runnerScript variables:"
-echo "--------------------------------------------------------------------------------"
+echo "********************************************************************************"
 echo "scriptName is $scriptName"
 echo "sbmtCodeTop is $sbmtCodeTop"
 echo "logTop is $logTop"
