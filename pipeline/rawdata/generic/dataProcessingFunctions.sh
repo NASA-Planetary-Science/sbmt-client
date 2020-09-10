@@ -560,72 +560,163 @@ moveFile() {
   if test $? -ne 0; then exit 1; fi
 }
 
-# Create a symbolic link to source path ($1) in destination path ($2). Back up
-# existing destination paths first, using the processingId ($3) to identify/name the backup.
-# Behaves just like ln -s $1 $2 except that if $2 identifies an
-# existing file/symbolic link/directory, that item will first be moved aside
-# before the link is created.
-updateLink() {
+# Create a symbolic link after checking whether it may be done without removing a file or
+# directory. Existing links (broken or not) are removed and replaced, but existing files
+# or directories are NEVER removed.
+#
+# param target the target path, i.e. the path that locates the thing being linked to
+# param linkPath the path to the symbolic link that will be created
+#
+# Example 1: suppose there is no file/directory/link named bar. Then typing
+# "updateLink foo bar" would behave just like "ln -s foo bar".
+#
+# Example 2: suppose there is a file/directory/link named bar. The same command
+# "updateLink foo bar" would, in this case, error out if bar is a file or directory.
+# If bar is itself a symbolic link, this command would in effect execute the commands:
+# "rm -f bar" and then "ln -s foo bar".
+#
+createLink() {
   (
-    src=$1
-    dest=$2
-    processingId=$3
+    target=$1
+    linkPath=$2
 
-    if test "$src" = "" -o "$dest" = "" -o "$processingId" = ""; then
-      echo "updateLink: missing argument(s). Need source, destination and processing id." >&2
+    if test "$target" = "" -o "$linkPath" = ""; then
+      echo "createLink: missing argument(s). Need target and linkPath" >&2
       if test $# -gt 1; then
         echo "$*" >&2
       fi
       exit 1
     fi
 
-    if test ! -e $src; then
-      echo "updateLink: source file/directory $src does not exist." >&2
+    if test ! -e $target; then
+      echo "createLink: target file/directory $target does not exist." >&2
       exit 1
     fi
 
-    echo "Updating symbolic link from $src to $dest in $(pwd -P)"
+    echo "Updating symbolic link from $target to $linkPath in $(pwd -P)"
 
-    # If destination already exists, back it up rather than removing it outright.
-    if test -e $dest; then
-      destFile=`getFileName "$dest"`
-      check $? "updateLink failed to get file name"
-
-      destDir=`removePathEnding "$dest" "$destFile"`
-      check $? "updateLink failed to get directory"
-
-      if test "$destDir" = ""; then
-        destDir=.
-      fi
-
-      backup="$destDir/BACKUP-before-$destFile-$processingId"
-      # Only back up once.
-      if test ! -e $backup; then
-        mv $dest $backup
-        check $? "updateLink failed to back up $dest"
-      elif test -L $dest; then
-        # This symbolic link is probably from an earlier invocation of updateLink - remove it.
-        rm -f $dest
-        check $? "updateLink failed to remove link $dest"
-      else
-        # A file or directory AND what appears to be a back-up both exist here.
-        # This should not ever happen, so do not continue.
-        check 1 "updateLink did not expect to find both a real file $dest and a backup $backup"
-      fi
-    elif test -L $dest; then
-      # Destination is a broken link (test -L returned true but test -e returned false).
-      # Remove it.
-      rm -f $dest
+    if test -L $linkPath; then
+      # Remove symbolic links to make way for the new link.
+      rm -f $linkPath
+      check $? "createLink failed to remove link $linkPath"
     fi
 
-    ln -s $src $dest
+    # Need to be sure linkPath does not already exist before creating a new link.
+    if test -e $linkPath; then
+      check 1 "createLink encountered existing item at $linkPath that could not be moved aside or deleted."
+    fi
+
+    ln -s $target $linkPath
     status=$?
     if test $status -ne 0; then
-      # Failed to create link, so restore backup.
+      # Failed to create link, so restore backup if possible.
       if test "$backup" != ""; then
-        mv $backup $dest
+        if test -e $backup && ! -e $linkPath; then
+          echo "createLink: restoring $backup to $linkPath"
+          mv $backup $linkPath
+        fi
       fi
-      check $status "updateLink failed to create new link"
+      check $status "createLink failed to create new link from $target to $linkPath"
+    fi
+  )
+  check $?
+}
+
+# Create a symbolic link, first moving aside whatever file/directory/link currently
+# exists in the link path. Existing broken links are simply removed. Actual files or
+# directories are NEVER removed.
+#
+# param target the target path, i.e. the path that locates the thing being linked to
+# param linkPath the path to the symbolic link that will be created
+# param suffix the suffix that will be appended when moving aside an existing link path
+#
+# Example 1: suppose there is no file/directory/link named bar. Then typing
+# "updateLink foo bar redmine-1236" would behave just like "ln -s foo bar".
+#
+# Example 2: suppose there is a file/directory/link named bar. If bar is a symbolic
+# link, assume it is not broken. The same command "updateLink foo bar redmine-1236"
+# would, in this case, do the equivalent of two commands:
+# "mv bar BACKUP-bar-redmine-1236" and then "ln -s foo bar". However, if
+# BACKUP-bar-redmine-1236 exists already, and is not a symbolic link, this function will
+# error out, i.e. this function never deletes an actual file or directory.
+#
+# Example 3: suppose there is a broken link named bar. Then typing
+# "updateLink foo bar redmine-1236" would in effect execute the commands:
+# "rm -f bar" and then "ln -s foo bar". The broken link will not be backed up, just removed.
+#
+updateLink() {
+  (
+    target=$1
+    linkPath=$2
+    backupSuffix=$3
+
+    if test "$target" = "" -o "$linkPath" = "" -o "$backupSuffix" = ""; then
+      echo "updateLink: missing argument(s). Need target, linkPath and backup suffix." >&2
+      if test $# -gt 1; then
+        echo "$*" >&2
+      fi
+      exit 1
+    fi
+
+    if test ! -e $target; then
+      echo "updateLink: target file/directory $target does not exist." >&2
+      exit 1
+    fi
+
+    echo "Updating symbolic link from $target to $linkPath in $(pwd -P)"
+
+    # If linkPath already exists, back it up rather than removing it.
+    if test -e $linkPath; then
+      linkPathFile=`getFileName "$linkPath"`
+      check $? "updateLink failed to get file name"
+
+      linkPathDir=`removePathEnding "$linkPath" "$linkPathFile"`
+      check $? "updateLink failed to get directory"
+
+      if test "$linkPathDir" = ""; then
+        linkPathDir=.
+      fi
+
+      backup="$linkPathDir/BACKUP-$linkPathFile-$backupSuffix"
+      # Only back up once.
+      if test ! -e $backup; then
+        # Backup does not exist or is itself a broken link. Just overwrite it with linkPath.
+        mv $linkPath $backup
+        check $? "updateLink failed to back up $linkPath"
+      elif test -L $linkPath; then
+        # Backup exists and the current linkPath is a link that points somewhere. Probably
+        # the backup is from a previous call to this function, so leave the backup alone,
+        # but delete the current linkPath so that it may be recreated below.
+        rm -f $linkPath
+        check $? "updateLink failed to remove link $linkPath"
+      else
+        # Backup points to a file or directory AND linkPath points to a file or directory.
+        # This should not ever happen, so do not continue.
+        check 1 "updateLink did not expect to find real files/directories in $linkPath and $backup"
+      fi
+    elif test -L $linkPath; then
+      # linkPath is a broken link (test -L returned true but test -e returned false).
+      # Remove it, don't bother backing it up.
+      rm -f $linkPath
+      check $? "updateLink failed to remove link $linkPath"
+    fi
+
+    # Need to be sure linkPath does not already exist before creating a new link.
+    if test -e $linkPath; then
+      check 1 "updateLink encountered existing item at $linkPath that could not be moved aside or deleted."
+    fi
+
+    ln -s $target $linkPath
+    status=$?
+    if test $status -ne 0; then
+      # Failed to create link, so restore backup if possible.
+      if test "$backup" != ""; then
+        if test -e $backup && ! -e $linkPath; then
+          echo "updateLink: restoring $backup to $linkPath"
+          mv $backup $linkPath
+        fi
+      fi
+      check $status "updateLink failed to create new link from $target to $linkPath"
     fi
   )
   check $?
@@ -633,45 +724,45 @@ updateLink() {
 
 updateRelativeLink() {
   (
-    src=$1
-    if test "$src" = ""; then
-      check 1 "updateRelativeLink: missing first argument (source file for link)"
+    target=$1
+    if test "$target" = ""; then
+      check 1 "updateRelativeLink: missing first argument (target for link)"
     fi
 
-    dest=$2
-    if test "$dest" = ""; then
-      check 1 "updateRelativeLink: missing second argument (destination file for link)"
+    linkPath=$2
+    if test "$linkPath" = ""; then
+      check 1 "updateRelativeLink: missing second argument (the link path)"
     fi
 
-    # Use dirname here to get one level up from the destination link name,
+    # Use dirname here to get one level up from the linkPath link name,
     # whether or not it exists yet.
-    destDir=$(dirname $dest)
+    linkPathDir=$(dirname $linkPath)
 
-    relSrc=`realpath --relative-to=$destDir $src`
-    check $? "updateRelativeLink: cannot compute relative path to $src from $destDir"
+    reltarget=`realpath --relative-to=$linkPathDir $target`
+    check $? "updateRelativeLink: cannot compute relative path to $target from $linkPathDir"
 
-    # Make sure the destination directory exists.
-    createDir $destDir
+    # Make sure the linkPath directory exists.
+    createDir $linkPathDir
 
-    cd $destDir
-    check $? "updateRelativeLink: cannot cd to destination directory $destDir"
+    cd $linkPathDir
+    check $? "updateRelativeLink: cannot cd to linkPath directory $linkPathDir"
 
-    updateLink $relSrc $dest $processingId
+    updateLink $reltarget $linkPath $3
   )
   check $?
 }
 
 updateOptionalLink() {
   (
-    src=$1
+    target=$1
 
-    if test "$src" = ""; then
-      echo "updateOptionalLink: missing first argument (source file for link)" >&2
+    if test "$target" = ""; then
+      echo "updateOptionalLink: missing first argument (target file for link)" >&2
       exit 1
     fi
 
-    if test -e "$src"; then
-      updateLink $src $2 $3
+    if test -e "$target"; then
+      updateLink $target $2 $3
       check $?
     fi
   )

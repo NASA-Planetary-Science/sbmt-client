@@ -50,8 +50,8 @@ copyDir .
 
 # Update the data symbolic links at the top level in the deployed area, and
 # the server area.
-updateRelativeLink $destTop $deployedTop/$outputTop
-updateRelativeLink $destTop $serverTop/$outputTop
+updateRelativeLink $destTop $deployedTop/$outputTop $processingId
+updateRelativeLink $destTop $serverTop/$outputTop $processingId
 
 # Install full set of metadata.
 srcTop="$processedTop/$modelMetadataDir"
@@ -61,6 +61,6 @@ destTop="$serverTop/$modelMetadataDir-$processingId"
 copyDir .
 
 # Update the metadata symbolic links at the top level in the server area.
-updateRelativeLink $destTop $serverTop/$modelMetadataDir
+updateRelativeLink $destTop $serverTop/$modelMetadataDir $processingId
 
 #-------------------------------------------------------------------------------
