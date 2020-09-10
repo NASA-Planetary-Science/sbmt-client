@@ -198,7 +198,7 @@ export PATH="$PATH:/project/sbmtpipeline/software/heasoft/bin"
 echo "********************************************************************************"
 echo
 echo "--------------------------------------------------------------------------------"
-echo "$dateStamp: $runnerScript variables:
+echo "$dateStamp: $runnerScript variables:"
 echo "--------------------------------------------------------------------------------"
 echo "scriptName is $scriptName"
 echo "sbmtCodeTop is $sbmtCodeTop"
