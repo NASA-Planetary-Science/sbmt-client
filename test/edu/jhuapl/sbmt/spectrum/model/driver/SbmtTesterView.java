@@ -71,7 +71,6 @@ import edu.jhuapl.sbmt.model.image.SpectralImageMode;
 import edu.jhuapl.sbmt.model.time.StateHistoryCollection;
 import edu.jhuapl.sbmt.spectrum.model.core.BasicSpectrumInstrument;
 import edu.jhuapl.sbmt.spectrum.model.hypertree.SpectraSearchDataCollection;
-import edu.jhuapl.sbmt.spectrum.model.statistics.SpectrumStatisticsCollection;
 import edu.jhuapl.sbmt.spectrum.rendering.SpectraCollection;
 import edu.jhuapl.sbmt.spectrum.rendering.SpectrumBoundaryCollection;
 import edu.jhuapl.sbmt.spectrum.ui.SpectrumPopupMenu;
@@ -219,19 +218,19 @@ public class SbmtTesterView extends View implements PropertyChangeListener
 
 		if (getPolyhedralModelConfig().hasSpectralData)
 		{
-			SpectraCollection collection = new SpectraCollection(smallBodyModel);
-
-			System.out.println("SbmtTesterView: setupModelManager: has spectral data");
-			allModels.put(ModelNames.SPECTRA_BOUNDARIES, new SpectrumBoundaryCollection(smallBodyModel, collection));
-			HashMap<ModelNames, Model> models = new HashMap<ModelNames, Model>();
-
-			models.put(ModelNames.SPECTRA_HYPERTREE_SEARCH, new SpectraSearchDataCollection(smallBodyModel));
-
-
-			models.put(ModelNames.SPECTRA, collection);
-			allModels.putAll(models);
-			//if (getPolyhedralModelConfig().body == ShapeModelBody.EROS)
-			allModels.put(ModelNames.STATISTICS, new SpectrumStatisticsCollection());
+//			SpectraCollection collection = new SpectraCollection(smallBodyModel);
+//
+//			System.out.println("SbmtTesterView: setupModelManager: has spectral data");
+//			allModels.put(ModelNames.SPECTRA_BOUNDARIES, new SpectrumBoundaryCollection(smallBodyModel, collection));
+//			HashMap<ModelNames, Model> models = new HashMap<ModelNames, Model>();
+//
+//			models.put(ModelNames.SPECTRA_HYPERTREE_SEARCH, new SpectraSearchDataCollection(smallBodyModel));
+//
+//
+//			models.put(ModelNames.SPECTRA, collection);
+//			allModels.putAll(models);
+//			//if (getPolyhedralModelConfig().body == ShapeModelBody.EROS)
+//			allModels.put(ModelNames.STATISTICS, new SpectrumStatisticsCollection());
 		}
 //
 //		if (getPolyhedralModelConfig().hasLidarData)
@@ -708,7 +707,7 @@ public class SbmtTesterView extends View implements PropertyChangeListener
 
         models.put(ModelNames.SPECTRA_HYPERTREE_SEARCH, new SpectraSearchDataCollection(smallBodyModel));
 
-        models.put(ModelNames.SPECTRA, new SpectraCollection(smallBodyModel));
+//        models.put(ModelNames.SPECTRA, new SpectraCollection(smallBodyModel));
         return models;
     }
 

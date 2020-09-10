@@ -1,5 +1,6 @@
 package edu.jhuapl.sbmt.spectrum.ui.table;
 
+import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
@@ -17,6 +18,10 @@ import javax.swing.JTable;
 import javax.swing.border.TitledBorder;
 import javax.swing.table.TableCellRenderer;
 
+import edu.jhuapl.saavtk.color.gui.ColorProviderCellEditor;
+import edu.jhuapl.saavtk.color.gui.ColorProviderCellRenderer;
+import edu.jhuapl.saavtk.color.provider.ColorProvider;
+import edu.jhuapl.saavtk.color.provider.ConstColorProvider;
 import edu.jhuapl.saavtk.gui.util.IconUtil;
 import edu.jhuapl.saavtk.gui.util.ToolTipUtil;
 import edu.jhuapl.sbmt.gui.table.EphemerisTimeRenderer;
@@ -197,6 +202,7 @@ public class SpectrumResultsTableView<S extends BasicSpectrum> extends JPanel
 		QueryComposer<SpectrumColumnLookup> tmpComposer = new QueryComposer<>();
 		tmpComposer.addAttribute(SpectrumColumnLookup.Map, Boolean.class, "Map", null);
 		tmpComposer.addAttribute(SpectrumColumnLookup.Show, Boolean.class, "Show", null);
+		tmpComposer.addAttribute(SpectrumColumnLookup.Color, ColorProvider.class, "Color", null);
 		tmpComposer.addAttribute(SpectrumColumnLookup.Frus, Boolean.class, "Frus", null);
 		tmpComposer.addAttribute(SpectrumColumnLookup.Bndr, Boolean.class, "Bndr", null);
 		tmpComposer.addAttribute(SpectrumColumnLookup.Id, Integer.class, "Id", null);
@@ -210,6 +216,8 @@ public class SpectrumResultsTableView<S extends BasicSpectrum> extends JPanel
 		tmpComposer.setRenderer(SpectrumColumnLookup.Show, new BooleanCellRenderer());
 		tmpComposer.setEditor(SpectrumColumnLookup.Show, new BooleanCellEditor());
 		tmpComposer.setRenderer(SpectrumColumnLookup.Show, new BooleanCellRenderer());
+		tmpComposer.setEditor(SpectrumColumnLookup.Color, new ColorProviderCellEditor<>());
+		tmpComposer.setRenderer(SpectrumColumnLookup.Color, new ColorProviderCellRenderer(false));
 		tmpComposer.setEditor(SpectrumColumnLookup.Frus, new BooleanCellEditor());
 		tmpComposer.setRenderer(SpectrumColumnLookup.Frus, new BooleanCellRenderer());
 		tmpComposer.setEditor(SpectrumColumnLookup.Bndr, new BooleanCellEditor());
@@ -357,8 +365,8 @@ public class SpectrumResultsTableView<S extends BasicSpectrum> extends JPanel
 		String dateTimeStr = "9999-88-88T00:00:00.000000";
 		int minW = 30;
 
-//		ColorProvider blackCP = new ConstColorProvider(Color.BLACK);
-		Object[] nomArr = { true, true, true, true, minW, dateTimeStr, dateTimeStr };
+		ColorProvider blackCP = new ConstColorProvider(Color.BLACK);
+		Object[] nomArr = { true, true, blackCP, true, true, minW, dateTimeStr, dateTimeStr };
 		for (int aCol = 0; aCol < nomArr.length; aCol++)
 		{
 			TableCellRenderer tmpRenderer = tmpTable.getCellRenderer(0, aCol);

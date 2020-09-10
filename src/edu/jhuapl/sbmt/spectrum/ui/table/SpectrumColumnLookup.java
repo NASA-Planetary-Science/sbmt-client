@@ -11,6 +11,8 @@ enum SpectrumColumnLookup
 
 	Show,
 
+	Color,
+
 	Frus,
 
 	Bndr,

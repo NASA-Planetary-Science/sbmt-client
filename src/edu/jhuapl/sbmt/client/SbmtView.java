@@ -339,12 +339,12 @@ public class SbmtView extends View implements PropertyChangeListener
 
 		if (getPolyhedralModelConfig().hasSpectralData)
 		{
-			allModels.putAll(createSpectralModels(smallBodyModel));
+			allModels.putAll(createSpectralModels(smallBodyModel, getModelManager()));
 			allModels.put(ModelNames.SPECTRA_BOUNDARIES, new SpectrumBoundaryCollection(smallBodyModel, (SpectraCollection)allModels.get(ModelNames.SPECTRA)));
 			//if (getPolyhedralModelConfig().body == ShapeModelBody.EROS)
 			allModels.put(ModelNames.STATISTICS, new SpectrumStatisticsCollection());
 
-			SpectraCollection customCollection = new SpectraCollection(smallBodyModel);
+			SpectraCollection customCollection = new SpectraCollection(getModelManager(), smallBodyModel);
 			allModels.put(ModelNames.CUSTOM_SPECTRA, customCollection);
 			allModels.put(ModelNames.CUSTOM_SPECTRA_BOUNDARIES, new SpectrumBoundaryCollection(smallBodyModel, (SpectraCollection)allModels.get(ModelNames.CUSTOM_SPECTRA)));
 		}
@@ -1005,7 +1005,7 @@ public class SbmtView extends View implements PropertyChangeListener
         return new LineamentModel();
     }
 
-    static public HashMap<ModelNames, Model> createSpectralModels(SmallBodyModel smallBodyModel)
+    static public HashMap<ModelNames, Model> createSpectralModels(SmallBodyModel smallBodyModel, ModelManager modelManager)
     {
         HashMap<ModelNames, Model> models = new HashMap<ModelNames, Model>();
 
@@ -1015,7 +1015,7 @@ public class SbmtView extends View implements PropertyChangeListener
 
         models.put(ModelNames.SPECTRA_HYPERTREE_SEARCH, new SpectraSearchDataCollection(smallBodyModel));
 
-        SpectraCollection collection = new SpectraCollection(smallBodyModel);
+        SpectraCollection collection = new SpectraCollection(modelManager, smallBodyModel);
 
         models.put(ModelNames.SPECTRA, collection);
         return models;
