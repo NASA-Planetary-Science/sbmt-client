@@ -1008,6 +1008,14 @@ createInfoFilesFromImageTimeStamps() {
     imageTimeStampFile=$6
     infoDir=$7
 
+    # Must invoke tool from the temporary spice directory in case the metakernel uses relative paths.
+    cd $tmpSpiceDir
+    check $? "createInforFilesFromImageTimeStamps: unable to cd $tmpSpiceDir"
+
+    if test ! -f $metakernel; then
+      check 1 "createInfoFilesFromImageTimeStamps: first argument $metakernel is not the path to a metakernel file"
+    fi
+
     if test "$imageTimeStampFile" = ""; then
       check 1 "createInfoFilesFromImageTimeStamps: image time stamp file argument is blank."
     elif test ! -f $imageTimeStampFile; then
@@ -1050,10 +1058,6 @@ createInfoFilesFromImageTimeStamps() {
     #     was created will be listed, preceded with a string giving the cause for
     #     why no infofile could be created.
 
-    # Must invoke tool from the temporary spice directory in case the metakernel uses relative paths.
-    cd $tmpSpiceDir
-    check $? "createInforFilesFromImageTimeStamps: unable to cd $tmpSpiceDir"
-
     echo $createInfoFilesDir/createInfoFiles $metakernel $body $bodyFrame $spacecraft $instrumentFrame \
       $imageTimeStampFile "$destTop/$infoDir" $imageListFile $imageListFullPathFile $missingInfoList
 
@@ -1076,11 +1080,7 @@ createInfoFilesFromFITSImages() {
   infoDir=$8
 
   if test "$metakernel" = ""; then
-    check 1 "createInfoFilesFromFITSImages: missing/blank first argument; must be full path to the metakernel"
-  fi
-
-  if test ! -f $metakernel; then
-    check 1 "createInfoFilesFromFITSImages: first argument $metakernel is not a full path to a metakernel file"
+    check 1 "createInfoFilesFromFITSImages: missing/blank first argument; must be path to metakernel valid in $tmpSpiceDir"
   fi
 
   if test "$body" = ""; then
