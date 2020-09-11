@@ -184,7 +184,7 @@ public class SmallBodyViewConfig extends BodyViewConfig implements ISmallBodyVie
     	ConfigArrayList configs = new ConfigArrayList();
         try
         {
-            File allBodies = FileCache.getFileFromServer("allBodies_v" + SmallBodyViewConfigMetadataIO.metadataVersion + ".json");
+            File allBodies = FileCache.getFileFromServer("allBodies/allBodies_v" + SmallBodyViewConfigMetadataIO.metadataVersion + ".json");
             FixedMetadata metadata = Serializers.deserialize(allBodies, "AllBodies");
             for (Key key : metadata.getKeys())
             {
@@ -210,8 +210,7 @@ public class SmallBodyViewConfig extends BodyViewConfig implements ISmallBodyVie
 
     private static ViewConfig fetchRemoteConfig(String name, String url, boolean fromServer)
     {
-    	if (fromServer)
-    		url = url.replaceFirst("http://sbmt.jhuapl.edu", "file:///disks/d0180/htdocs-sbmt");
+    	url = "/allBodies" + url;
 
     	ConfigArrayList ioConfigs = new ConfigArrayList();
         ioConfigs.add(new SmallBodyViewConfig(ImmutableList.<String> copyOf(DEFAULT_GASKELL_LABELS_PER_RESOLUTION), ImmutableList.<Integer> copyOf(DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION)));
