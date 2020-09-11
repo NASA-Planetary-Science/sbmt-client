@@ -1465,9 +1465,10 @@ generateDatabaseTable() {
 
     createDir $logTop
 
-    echo $pathToTool --root-url file://$serverTop/data --body "$bodyId" --author "$modelId" --instrument "$instrument" $pointing
-    $pathToTool --root-url file://$serverTop/data --body "$bodyId" --author "$modelId" --instrument "$instrument" $pointing \
-      > $logFile 2>&1
+    echo $pathToTool --root-url file://$processedTop --body "$bodyId" --author "$modelId" --instrument "$instrument" $pointing | \
+      tee -ai $logFile
+    $pathToTool --root-url file://$processedTop --body "$bodyId" --author "$modelId" --instrument "$instrument" $pointing \
+      >> $logFile 2>&1
     check $? "generateDatabaseTable: $tool had an error. See log file $logFile"
 
   )
