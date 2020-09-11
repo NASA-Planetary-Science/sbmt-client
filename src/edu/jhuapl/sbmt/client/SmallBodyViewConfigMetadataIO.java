@@ -46,7 +46,7 @@ import crucible.crust.metadata.impl.gson.Serializers;
 
 public class SmallBodyViewConfigMetadataIO implements MetadataManager
 {
-	static String metadataVersion = "8.0";
+	static String metadataVersion = "8.1";
 
 
 	//TODO: This needs a new home
