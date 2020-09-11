@@ -724,14 +724,16 @@ updateLink() {
 
 createRelativeLink() {
   (
+    funcName=${FUNCNAME[0]}
+
     target=$1
     if test "$target" = ""; then
-      check 1 "updateRelativeLink: missing first argument (target for link)"
+      check 1 "$funcName: missing first argument (target for link)"
     fi
 
     linkPath=$2
     if test "$linkPath" = ""; then
-      check 1 "updateRelativeLink: missing second argument (the link path)"
+      check 1 "$funcName: missing second argument (the link path)"
     fi
 
     # Use dirname here to get one level up from the linkPath link name,
@@ -739,13 +741,13 @@ createRelativeLink() {
     linkPathDir=$(dirname $linkPath)
 
     reltarget=`realpath --relative-to=$linkPathDir $target`
-    check $? "updateRelativeLink: cannot compute relative path to $target from $linkPathDir"
+    check $? "$funcName: cannot compute relative path to $target from $linkPathDir"
 
     # Make sure the linkPath directory exists.
     createDir $linkPathDir
 
     cd $linkPathDir
-    check $? "updateRelativeLink: cannot cd to linkPath directory $linkPathDir"
+    check $? "$funcName: cannot cd to linkPath directory $linkPathDir"
 
     createLink $reltarget $linkPath
   )
@@ -754,14 +756,16 @@ createRelativeLink() {
 
 updateRelativeLink() {
   (
+    funcName=${FUNCNAME[0]}
+
     target=$1
     if test "$target" = ""; then
-      check 1 "updateRelativeLink: missing first argument (target for link)"
+      check 1 "$funcName: missing first argument (target for link)"
     fi
 
     linkPath=$2
     if test "$linkPath" = ""; then
-      check 1 "updateRelativeLink: missing second argument (the link path)"
+      check 1 "$funcName: missing second argument (the link path)"
     fi
 
     # Use dirname here to get one level up from the linkPath link name,
@@ -769,13 +773,13 @@ updateRelativeLink() {
     linkPathDir=$(dirname $linkPath)
 
     reltarget=`realpath --relative-to=$linkPathDir $target`
-    check $? "updateRelativeLink: cannot compute relative path to $target from $linkPathDir"
+    check $? "$funcName: cannot compute relative path to $target from $linkPathDir"
 
     # Make sure the linkPath directory exists.
     createDir $linkPathDir
 
     cd $linkPathDir
-    check $? "updateRelativeLink: cannot cd to linkPath directory $linkPathDir"
+    check $? "$funcName: cannot cd to linkPath directory $linkPathDir"
 
     updateLink $reltarget $linkPath $3
   )
@@ -1122,6 +1126,8 @@ extractFITSFileTimes() {
 # Create INFO files from a SPICE metakernel plus a CSV file containing a list of images with time stamps.
 createInfoFilesFromImageTimeStamps() {
   (
+    funcName=${FUNCNAME[0]}
+    
     metakernel=$1
     body=$2
     bodyFrame=$3
@@ -1130,8 +1136,6 @@ createInfoFilesFromImageTimeStamps() {
     imageTimeStampFile=$6
     infoDir=$7
 
-    funcName=createInfoFilesFromImageTimeStamps
-    
     # Must invoke tool from the temporary spice directory in case the metakernel uses relative paths.
     cd $tmpSpiceDir
     check $? "$funcName: unable to cd $tmpSpiceDir"
@@ -1201,6 +1205,8 @@ createInfoFilesFromImageTimeStamps() {
 
 # Create INFO files from a SPICE metakernel plus a directory with FITS images that have time stamps associated with a keyword.
 createInfoFilesFromFITSImages() {
+  funcName=${FUNCNAME[0]}
+  
   metakernel=$1
   body=$2
   bodyFrame=$3
@@ -1210,8 +1216,6 @@ createInfoFilesFromFITSImages() {
   imageDir=$7
   infoDir=$8
 
-  funcName=createInfoFilesFromFITSImages
-  
   if test "$metakernel" = ""; then
     check 1 "$funcName: missing/blank first argument; must be path to metakernel valid in $tmpSpiceDir"
   fi
