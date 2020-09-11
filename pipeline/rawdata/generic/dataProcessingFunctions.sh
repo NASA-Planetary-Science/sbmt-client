@@ -722,6 +722,36 @@ updateLink() {
   check $?
 }
 
+createRelativeLink() {
+  (
+    target=$1
+    if test "$target" = ""; then
+      check 1 "updateRelativeLink: missing first argument (target for link)"
+    fi
+
+    linkPath=$2
+    if test "$linkPath" = ""; then
+      check 1 "updateRelativeLink: missing second argument (the link path)"
+    fi
+
+    # Use dirname here to get one level up from the linkPath link name,
+    # whether or not it exists yet.
+    linkPathDir=$(dirname $linkPath)
+
+    reltarget=`realpath --relative-to=$linkPathDir $target`
+    check $? "updateRelativeLink: cannot compute relative path to $target from $linkPathDir"
+
+    # Make sure the linkPath directory exists.
+    createDir $linkPathDir
+
+    cd $linkPathDir
+    check $? "updateRelativeLink: cannot cd to linkPath directory $linkPathDir"
+
+    createLink $reltarget $linkPath
+  )
+  check $?
+}
+
 updateRelativeLink() {
   (
     target=$1
@@ -1465,9 +1495,9 @@ generateDatabaseTable() {
 
     createDir $logTop
 
-    echo $pathToTool --root-url file://$processedTop --body "$bodyId" --author "$modelId" --instrument "$instrument" $pointing | \
+    echo $pathToTool --root-url file://$processedTop --body "${bodyId^^}" --author "$modelId" --instrument "$instrument" $pointing | \
       tee -ai $logFile
-    $pathToTool --root-url file://$processedTop --body "$bodyId" --author "$modelId" --instrument "$instrument" $pointing \
+    $pathToTool --root-url file://$processedTop --body "${bodyId^^}" --author "$modelId" --instrument "$instrument" $pointing \
       >> $logFile 2>&1
     check $? "generateDatabaseTable: $tool had an error. See log file $logFile"
 
