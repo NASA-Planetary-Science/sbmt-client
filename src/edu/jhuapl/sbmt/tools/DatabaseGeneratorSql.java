@@ -618,7 +618,7 @@ public class DatabaseGeneratorSql
 
         // Important: set the mission before changing things in the Configuration. Otherwise,
         // setting the mission will undo those changes.
-        SbmtMultiMissionTool.configureMission();
+        SbmtMultiMissionTool.configureMission(rootURL);
 
         // basic default configuration, most of these will be overwritten by the configureMission() method
         Configuration.setAPLVersion(aplVersion);
