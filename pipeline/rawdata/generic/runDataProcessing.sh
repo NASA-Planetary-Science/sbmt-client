@@ -199,6 +199,8 @@ echo
 echo "********************************************************************************"
 echo "$dateStamp: $runnerScript variables:"
 echo "********************************************************************************"
+echo "processingId is $processingId"
+echo "outputTop is $outputTop"
 echo "scriptName is $scriptName"
 echo "sbmtCodeTop is $sbmtCodeTop"
 echo "logTop is $logTop"
