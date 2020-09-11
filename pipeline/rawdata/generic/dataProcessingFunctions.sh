@@ -577,11 +577,13 @@ moveFile() {
 #
 createLink() {
   (
+    funcName=${FUNCNAME[0]}
+
     target=$1
     linkPath=$2
 
     if test "$target" = "" -o "$linkPath" = ""; then
-      echo "createLink: missing argument(s). Need target and linkPath" >&2
+      echo "$funcName: missing argument(s). Need target and linkPath" >&2
       if test $# -gt 1; then
         echo "$*" >&2
       fi
@@ -589,21 +591,21 @@ createLink() {
     fi
 
     if test ! -e $target; then
-      echo "createLink: target file/directory $target does not exist." >&2
+      echo "$funcName: target file/directory $target does not exist." >&2
       exit 1
     fi
 
-    echo "Updating symbolic link from $target to $linkPath in $(pwd -P)"
+    echo "$funcName: creating symbolic link to $target named $linkPath in $(pwd -P)"
 
     if test -L $linkPath; then
       # Remove symbolic links to make way for the new link.
       rm -f $linkPath
-      check $? "createLink failed to remove link $linkPath"
+      check $? "$funcName failed to remove link $linkPath"
     fi
 
     # Need to be sure linkPath does not already exist before creating a new link.
     if test -e $linkPath; then
-      check 1 "createLink encountered existing item at $linkPath that could not be moved aside or deleted."
+      check 1 "$funcName encountered existing item at $linkPath that could not be moved aside or deleted."
     fi
 
     ln -s $target $linkPath
@@ -612,11 +614,11 @@ createLink() {
       # Failed to create link, so restore backup if possible.
       if test "$backup" != ""; then
         if test -e $backup && ! -e $linkPath; then
-          echo "createLink: restoring $backup to $linkPath"
+          echo "$funcName: restoring $backup to $linkPath"
           mv $backup $linkPath
         fi
       fi
-      check $status "createLink failed to create new link from $target to $linkPath"
+      check $status "$funcName failed to create new link to $target named $linkPath"
     fi
   )
   check $?
@@ -646,12 +648,14 @@ createLink() {
 #
 updateLink() {
   (
+    funcName=${FUNCNAME[0]}
+
     target=$1
     linkPath=$2
     backupSuffix=$3
 
     if test "$target" = "" -o "$linkPath" = "" -o "$backupSuffix" = ""; then
-      echo "updateLink: missing argument(s). Need target, linkPath and backup suffix." >&2
+      echo "$funcName: missing argument(s). Need target, linkPath and backup suffix." >&2
       if test $# -gt 1; then
         echo "$*" >&2
       fi
@@ -659,19 +663,19 @@ updateLink() {
     fi
 
     if test ! -e $target; then
-      echo "updateLink: target file/directory $target does not exist." >&2
+      echo "$funcName: target file/directory $target does not exist." >&2
       exit 1
     fi
 
-    echo "Updating symbolic link from $target to $linkPath in $(pwd -P)"
+    echo "$function: updating symbolic link to $target named $linkPath in $(pwd -P)"
 
     # If linkPath already exists, back it up rather than removing it.
     if test -e $linkPath; then
       linkPathFile=`getFileName "$linkPath"`
-      check $? "updateLink failed to get file name"
+      check $? "$funcName failed to get file name"
 
       linkPathDir=`removePathEnding "$linkPath" "$linkPathFile"`
-      check $? "updateLink failed to get directory"
+      check $? "$funcName failed to get directory"
 
       if test "$linkPathDir" = ""; then
         linkPathDir=.
@@ -682,28 +686,28 @@ updateLink() {
       if test ! -e $backup; then
         # Backup does not exist or is itself a broken link. Just overwrite it with linkPath.
         mv $linkPath $backup
-        check $? "updateLink failed to back up $linkPath"
+        check $? "$funcName failed to back up $linkPath"
       elif test -L $linkPath; then
         # Backup exists and the current linkPath is a link that points somewhere. Probably
         # the backup is from a previous call to this function, so leave the backup alone,
         # but delete the current linkPath so that it may be recreated below.
         rm -f $linkPath
-        check $? "updateLink failed to remove link $linkPath"
+        check $? "$funcName failed to remove link $linkPath"
       else
         # Backup points to a file or directory AND linkPath points to a file or directory.
         # This should not ever happen, so do not continue.
-        check 1 "updateLink did not expect to find real files/directories in $linkPath and $backup"
+        check 1 "$funcName did not expect to find real files/directories in $linkPath and $backup"
       fi
     elif test -L $linkPath; then
       # linkPath is a broken link (test -L returned true but test -e returned false).
       # Remove it, don't bother backing it up.
       rm -f $linkPath
-      check $? "updateLink failed to remove link $linkPath"
+      check $? "$funcName failed to remove link $linkPath"
     fi
 
     # Need to be sure linkPath does not already exist before creating a new link.
     if test -e $linkPath; then
-      check 1 "updateLink encountered existing item at $linkPath that could not be moved aside or deleted."
+      check 1 "$funcName encountered existing item at $linkPath that could not be moved aside or deleted."
     fi
 
     ln -s $target $linkPath
@@ -712,11 +716,11 @@ updateLink() {
       # Failed to create link, so restore backup if possible.
       if test "$backup" != ""; then
         if test -e $backup && ! -e $linkPath; then
-          echo "updateLink: restoring $backup to $linkPath"
+          echo "$funcName: restoring $backup to $linkPath"
           mv $backup $linkPath
         fi
       fi
-      check $status "updateLink failed to create new link from $target to $linkPath"
+      check $status "$funcName failed to create new link to $target named $linkPath"
     fi
   )
   check $?
