@@ -24,6 +24,15 @@
 # before the payload script is run, so you may safely use these in the
 # payload script:
 #
+#        scriptName: the name of the script currently being run; intended for
+#                    use in output text, or for log file names, etc.
+# 
+#       sbmtCodeTop: where sbmt and saavtk are checked out and built.
+#
+#            logTop: absolute path to the location under raw data where
+#                    log files from individual processing steps may be
+#                    located.
+#
 #   pipelineRawData: general top of the raw data area, under which specific
 #                    deliveries are imported, processed and deployed.
 #
@@ -40,21 +49,15 @@
 #                    this delivery, the final location under which specific
 #                    delivered data is actually placed.
 #
-#       sbmtCodeTop: where sbmt and saavtk are checked out and built.
-#
-#        scriptName: the name of the script currently being run; intended for
-#                    use in output text, or for log file names, etc.
-#
 #         serverTop: the top of the server area, in which a symbolic link
 #                    to the deployed directory will be created during
 #                    deployment. Normally this is the test server. 
-# 
-#            logTop: absolute path to the location under raw data where
-#                    log files from individual processing steps may be
-#                    located.
 #
 #  modelMetadataDir: directory name under which generated model metadata files
 #                    are located.
+#
+#       tmpSpiceDir: directory name under which spice files are temporarily
+#                    unpacked during processing.
 #
 # Functions defined in the common functions library dataProcessingFunctions.sh
 # are available in the payload script. These functions will try when possible to
@@ -183,21 +186,35 @@ logTop=$rawDataTop/logs/$dateStamp
 # Bodies metadata directory name. Must be kept in sync with BodyViewConfig.getConfigInfoVersion().
 modelMetadataDir=allBodies-9.0
 
+# Directory in which to unpack SPICE files. Should be as short as possible
+# due to SPICE path restrictions.
+tmpSpiceDir="/project/sbmt2/spice"
+
 # Environment variables:
 export SAAVTKROOT="$sbmtCodeTop/saavtk"
 export SBMTROOT="$sbmtCodeTop/sbmt"
 export PATH="$PATH:/project/sbmtpipeline/software/heasoft/bin"
 
+echo
+echo "********************************************************************************"
+echo "$dateStamp: $runnerScript variables:"
+echo "********************************************************************************"
+echo "processingId is $processingId"
+echo "outputTop is $outputTop"
 echo "scriptName is $scriptName"
+echo "sbmtCodeTop is $sbmtCodeTop"
+echo "logTop is $logTop"
 echo "pipelineRawData is $pipelineRawData"
 echo "rawDataTop is $rawDataTop"
 echo "pipelineProcessed is $pipelineProcessed"
 echo "processedTop is $processedTop"
 echo "deployedTop is $deployedTop"
-echo "sbmtCodeTop is $sbmtCodeTop"
+echo "serverTop is $serverTop"
+echo "modelMetadataDir is $modelMetadataDir"
+echo "tmpSpiceDir is $tmpSpiceDir"
 echo "HEASoft/Ftools installation is in /project/sbmtpipeline/software/heasoft/bin"
 echo "--------------------------------------------------------------------------------"
-echo "Begin $processingScript"
+echo "Executing $processingScript"
 echo "--------------------------------------------------------------------------------"
 
 # This variable is set so that scripts can tell whether they were run by this runner
@@ -206,3 +223,4 @@ invokedByRunner=true
 
 . "$rawDataTop/$(basename $processingScript)"
 echo "--------------------------------------------------------------------------------"
+echo

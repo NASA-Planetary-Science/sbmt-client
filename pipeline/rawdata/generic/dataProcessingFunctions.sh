@@ -2,9 +2,31 @@
 #-------------------------------------------------------------------------------
 # Developer:      James Peachey, based on commonFuncs.sh by Russell Turner,
 #                 Alex Welsh and Josh Steele.
-# Description:    Utilities to support processing data in context of
-#                 importing models, images, spectra etc. into SBMT or
-#                 similar clients.
+# Description:
+#   Utilities to support processing data in context of
+#   importing models, images, spectra etc. into SBMT or similar clients.
+#   The functions defined here are designed to fail and quit at the first
+#   sign of a problem to prevent costly malfunctions on the server.
+#
+#   General note: the functions largely make use of the pattern below,
+#   which is good for exiting when an error is encountered, and also
+#   for encapsulating local variables. This works because curly braces
+#   define function body without spawning a sub-shell, but parentheses
+#   spawn a sub-shell.
+#
+# functionName() {
+#   # Still in the parent (calling) shell here.
+#   (
+#     # Now in the sub-shell.
+#     localVar=...
+#
+#     <command> ...
+#     check $? "functionName: command had an error; this exits the sub-shell.
+#   )
+#   # localVar is no longer defined here.
+#   check $? # Exits parent shell if $? -ne 0, i.e., if the sub-shell exited
+#   with non-0 exit code.
+# }
 #-------------------------------------------------------------------------------
 
 # Check whether the logged in user name is the same as the provided argument.
@@ -19,15 +41,18 @@ checkIdentity() {
   fi
 }
 
-# Check the exit status of a previous command, which is passed as the first
-# argument. If it's non-0, print an optional context messsage if present,
-# and then call exit from within the invoking shell, passing along the
-# provided status.
+# Checks the status code that is passed as the first argument. If it's missing,
+# blank or non-0, prints the remaining arguments, which are assumed to
+# provide an error message, and then calls exit from within the invoking shell,
+# thus terminating the script that called it and returning a non-0 status code.
 #
-# Because this exits and does not run in a sub-shell, use cautiously.
+# If the first argument is 0, this function takes no action whatsoever.
+#
 check() {
+  # A missing or blank first argument should be interpreted as an error.
   if test "$1" = ""; then
-    echo "check: first argument is blank" >&2
+    # In case the first argument was blank, but additional arguments provide
+    # error message, print them before exiting.
     if test $# -gt 1; then
       echo "$*" >&2
     fi
@@ -179,7 +204,7 @@ guessFileExtension() {
     fi
 
     if test -d "$file"; then
-      ext=`ls "$file/"*.* | head -n 1 | sed -n 's:.*\.::p'`
+      ext=`ls "$file/"*.* 2> /dev/null | head -n 1 | sed -n 's:.*\.::p'`
     else
       ext=`echo $file | sed -n 's:.*\.::p'`
     fi
@@ -198,7 +223,7 @@ guessFileExtension() {
 # to the left of the "rawdata" segment. If the path contains more than one
 # segment named "rawdata", the right-most one will be used.
 #
-# If the supplied path does not include the segment "rawdata",
+# If the supplied path does not include the segment "rawdata", this errors out.
 #
 # This function uses getDirName to rationalize paths, so the supplied argument
 # must actually exist in the file system.
@@ -535,118 +560,247 @@ moveFile() {
   if test $? -ne 0; then exit 1; fi
 }
 
-# Create a symbolic link to source path ($1) in destination path ($2). Back up
-# existing destination paths first, using the processingId ($3) to identify/name the backup.
-# Behaves just like ln -s $1 $2 except that if $2 identifies an
-# existing file/symbolic link/directory, that item will first be moved aside
-# before the link is created.
-updateLink() {
+# Create a symbolic link after checking whether it may be done without removing a file or
+# directory. Existing links (broken or not) are removed and replaced, but existing files
+# or directories are NEVER removed.
+#
+# param target the target path, i.e. the path that locates the thing being linked to
+# param linkPath the path to the symbolic link that will be created
+#
+# Example 1: suppose there is no file/directory/link named bar. Then typing
+# "updateLink foo bar" would behave just like "ln -s foo bar".
+#
+# Example 2: suppose there is a file/directory/link named bar. The same command
+# "updateLink foo bar" would, in this case, error out if bar is a file or directory.
+# If bar is itself a symbolic link, this command would in effect execute the commands:
+# "rm -f bar" and then "ln -s foo bar".
+#
+createLink() {
   (
-    src=$1
-    dest=$2
-    processingId=$3
+    funcName=${FUNCNAME[0]}
 
-    if test "$src" = "" -o "$dest" = "" -o "$processingId" = ""; then
-      echo "updateLink: missing argument(s). Need source, destination and processing id." >&2
+    target=$1
+    linkPath=$2
+
+    if test "$target" = "" -o "$linkPath" = ""; then
+      echo "$funcName: missing argument(s). Need target and linkPath" >&2
       if test $# -gt 1; then
         echo "$*" >&2
       fi
       exit 1
     fi
 
-    if test ! -e $src; then
-      echo "updateLink: source file/directory $src does not exist." >&2
+    if test ! -e $target; then
+      echo "$funcName: target file/directory $target does not exist." >&2
       exit 1
     fi
 
-    echo "Updating symbolic link from $src to $dest in $(pwd -P)"
+    echo "$funcName: creating symbolic link to $target named $linkPath in $(pwd -P)"
 
-    # If destination already exists, back it up rather than removing it outright.
-    if test -e $dest; then
-      destFile=`getFileName "$dest"`
-      check $? "updateLink failed to get file name"
-
-      destDir=`removePathEnding "$dest" "$destFile"`
-      check $? "updateLink failed to get directory"
-
-      if test "$destDir" = ""; then
-        destDir=.
-      fi
-
-      backup="$destDir/BACKUP-before-$destFile-$processingId"
-      # Only back up once.
-      if test ! -e $backup; then
-        mv $dest $backup
-        check $? "updateLink failed to back up $dest"
-      elif test -L $dest; then
-        # This symbolic link is probably from an earlier invocation of updateLink - remove it.
-        rm -f $dest
-        check $? "updateLink failed to remove link $dest"
-      else
-        # A file or directory AND what appears to be a back-up both exist here.
-        # This should not ever happen, so do not continue.
-        check 1 "updateLink did not expect to find both a real file $dest and a backup $backup"
-      fi
-    elif test -L $dest; then
-      # Destination is a broken link (test -L returned true but test -e returned false).
-      # Remove it.
-      rm -f $dest
+    if test -L $linkPath; then
+      # Remove symbolic links to make way for the new link.
+      rm -f $linkPath
+      check $? "$funcName failed to remove link $linkPath"
     fi
 
-    ln -s $src $dest
+    # Need to be sure linkPath does not already exist before creating a new link.
+    if test -e $linkPath; then
+      check 1 "$funcName encountered existing item at $linkPath that could not be moved aside or deleted."
+    fi
+
+    ln -s $target $linkPath
     status=$?
     if test $status -ne 0; then
-      # Failed to create link, so restore backup.
+      # Failed to create link, so restore backup if possible.
       if test "$backup" != ""; then
-        mv $backup $dest
+        if test -e $backup && ! -e $linkPath; then
+          echo "$funcName: restoring $backup to $linkPath"
+          mv $backup $linkPath
+        fi
       fi
-      check $status "updateLink failed to create new link"
+      check $status "$funcName failed to create new link to $target named $linkPath"
     fi
+  )
+  check $?
+}
+
+# Create a symbolic link, first moving aside whatever file/directory/link currently
+# exists in the link path. Existing broken links are simply removed. Actual files or
+# directories are NEVER removed.
+#
+# param target the target path, i.e. the path that locates the thing being linked to
+# param linkPath the path to the symbolic link that will be created
+# param suffix the suffix that will be appended when moving aside an existing link path
+#
+# Example 1: suppose there is no file/directory/link named bar. Then typing
+# "updateLink foo bar redmine-1236" would behave just like "ln -s foo bar".
+#
+# Example 2: suppose there is a file/directory/link named bar. If bar is a symbolic
+# link, assume it is not broken. The same command "updateLink foo bar redmine-1236"
+# would, in this case, do the equivalent of two commands:
+# "mv bar BACKUP-bar-redmine-1236" and then "ln -s foo bar". However, if
+# BACKUP-bar-redmine-1236 exists already, and is not a symbolic link, this function will
+# error out, i.e. this function never deletes an actual file or directory.
+#
+# Example 3: suppose there is a broken link named bar. Then typing
+# "updateLink foo bar redmine-1236" would in effect execute the commands:
+# "rm -f bar" and then "ln -s foo bar". The broken link will not be backed up, just removed.
+#
+updateLink() {
+  (
+    funcName=${FUNCNAME[0]}
+
+    target=$1
+    linkPath=$2
+    backupSuffix=$3
+
+    if test "$target" = "" -o "$linkPath" = "" -o "$backupSuffix" = ""; then
+      echo "$funcName: missing argument(s). Need target, linkPath and backup suffix." >&2
+      if test $# -gt 1; then
+        echo "$*" >&2
+      fi
+      exit 1
+    fi
+
+    if test ! -e $target; then
+      echo "$funcName: target file/directory $target does not exist." >&2
+      exit 1
+    fi
+
+    echo "$function: updating symbolic link to $target named $linkPath in $(pwd -P)"
+
+    # If linkPath already exists, back it up rather than removing it.
+    if test -e $linkPath; then
+      linkPathFile=`getFileName "$linkPath"`
+      check $? "$funcName failed to get file name"
+
+      linkPathDir=`removePathEnding "$linkPath" "$linkPathFile"`
+      check $? "$funcName failed to get directory"
+
+      if test "$linkPathDir" = ""; then
+        linkPathDir=.
+      fi
+
+      backup="$linkPathDir/BACKUP-$linkPathFile-$backupSuffix"
+      # Only back up once.
+      if test ! -e $backup; then
+        # Backup does not exist or is itself a broken link. Just overwrite it with linkPath.
+        mv $linkPath $backup
+        check $? "$funcName failed to back up $linkPath"
+      elif test -L $linkPath; then
+        # Backup exists and the current linkPath is a link that points somewhere. Probably
+        # the backup is from a previous call to this function, so leave the backup alone,
+        # but delete the current linkPath so that it may be recreated below.
+        rm -f $linkPath
+        check $? "$funcName failed to remove link $linkPath"
+      else
+        # Backup points to a file or directory AND linkPath points to a file or directory.
+        # This should not ever happen, so do not continue.
+        check 1 "$funcName did not expect to find real files/directories in $linkPath and $backup"
+      fi
+    elif test -L $linkPath; then
+      # linkPath is a broken link (test -L returned true but test -e returned false).
+      # Remove it, don't bother backing it up.
+      rm -f $linkPath
+      check $? "$funcName failed to remove link $linkPath"
+    fi
+
+    # Need to be sure linkPath does not already exist before creating a new link.
+    if test -e $linkPath; then
+      check 1 "$funcName encountered existing item at $linkPath that could not be moved aside or deleted."
+    fi
+
+    ln -s $target $linkPath
+    status=$?
+    if test $status -ne 0; then
+      # Failed to create link, so restore backup if possible.
+      if test "$backup" != ""; then
+        if test -e $backup && ! -e $linkPath; then
+          echo "$funcName: restoring $backup to $linkPath"
+          mv $backup $linkPath
+        fi
+      fi
+      check $status "$funcName failed to create new link to $target named $linkPath"
+    fi
+  )
+  check $?
+}
+
+createRelativeLink() {
+  (
+    funcName=${FUNCNAME[0]}
+
+    target=$1
+    if test "$target" = ""; then
+      check 1 "$funcName: missing first argument (target for link)"
+    fi
+
+    linkPath=$2
+    if test "$linkPath" = ""; then
+      check 1 "$funcName: missing second argument (the link path)"
+    fi
+
+    # Use dirname here to get one level up from the linkPath link name,
+    # whether or not it exists yet.
+    linkPathDir=$(dirname $linkPath)
+
+    reltarget=`realpath --relative-to=$linkPathDir $target`
+    check $? "$funcName: cannot compute relative path to $target from $linkPathDir"
+
+    # Make sure the linkPath directory exists.
+    createDir $linkPathDir
+
+    cd $linkPathDir
+    check $? "$funcName: cannot cd to linkPath directory $linkPathDir"
+
+    createLink $reltarget $linkPath
   )
   check $?
 }
 
 updateRelativeLink() {
   (
-    src=$1
-    if test "$src" = ""; then
-      check 1 "updateRelativeLink: missing first argument (source file for link)"
+    funcName=${FUNCNAME[0]}
+
+    target=$1
+    if test "$target" = ""; then
+      check 1 "$funcName: missing first argument (target for link)"
     fi
 
-    dest=$2
-    if test "$dest" = ""; then
-      check 1 "updateRelativeLink: missing second argument (destination file for link)"
+    linkPath=$2
+    if test "$linkPath" = ""; then
+      check 1 "$funcName: missing second argument (the link path)"
     fi
 
-    # Use dirname here to get one level up from the destination link name,
+    # Use dirname here to get one level up from the linkPath link name,
     # whether or not it exists yet.
-    destDir=$(dirname $dest)
+    linkPathDir=$(dirname $linkPath)
 
-    relSrc=`realpath --relative-to=$destDir $src`
-    check $? "updateRelativeLink: cannot compute relative path to $src from $destDir"
+    reltarget=`realpath --relative-to=$linkPathDir $target`
+    check $? "$funcName: cannot compute relative path to $target from $linkPathDir"
 
-    # Make sure the destination directory exists.
-    createDir $destDir
+    # Make sure the linkPath directory exists.
+    createDir $linkPathDir
 
-    cd $destDir
-    check $? "updateRelativeLink: cannot cd to destination directory $destDir"
+    cd $linkPathDir
+    check $? "$funcName: cannot cd to linkPath directory $linkPathDir"
 
-    updateLink $relSrc $dest $processingId
+    updateLink $reltarget $linkPath $3
   )
   check $?
 }
 
 updateOptionalLink() {
   (
-    src=$1
+    target=$1
 
-    if test "$src" = ""; then
-      echo "updateOptionalLink: missing first argument (source file for link)" >&2
+    if test "$target" = ""; then
+      echo "updateOptionalLink: missing first argument (target file for link)" >&2
       exit 1
     fi
 
-    if test -e "$src"; then
-      updateLink $src $2 $3
+    if test -e "$target"; then
+      updateLink $target $2 $3
       check $?
     fi
   )
@@ -916,8 +1070,147 @@ processDTMs() {
   check $? "processDTMs failed"
 }
 
+# First argument is the keyword associated with time stamps.
+# Next argument is the top-level directory; this will be stripped out of the beginning of file names.
+# Next argument is the directory to search for FITS files. This must be a descendant of the top-level directory.
+# Next argument is the output file that will hold the comma-separated file-name, date/time.
+extractFITSFileTimes() {
+  (
+    timeStampKeyword=$1
+    topDir=$(getDirName "$2")
+    dir=$(getDirName "$3")
+    listFile=$4
+
+    if test "$timeStampKeyword" = ""; then
+      check 1 "extractFITSFileTimes: timeStampKeyword argument is blank."
+    fi
+
+    if test "$dir" = "$topDir"; then
+      relPath=
+    elif test `echo $dir | grep -c "^$topDir/"` -eq 0; then
+      check 1 "extractFITSFileTimes: top directory $topDir is not an ancestor of directory $dir"
+    else
+      relPath=`echo $dir | sed "s:^$topDir/::"`
+    fi
+
+    if test "$listFile" = ""; then
+      check 1 "extractFITSFileTimes: listFile argument is blank."
+    fi
+
+    # Need Ftools for this.
+    type ftlist
+    if test $? -ne 0; then
+      check 1 "extractFITSFileTimes: need to have Ftools in your path for this to work" >&2
+    fi
+
+    createParentDir $listFile
+
+    rm -f $listFile
+    for file in `ls $dir/ 2> /dev/null` .; do
+      if test "$file" != .; then
+        # Ftool ftlist prints the whole header line for the keyword, however many times it appears in the file.
+        # Parse the first match, assumed to have the standard FITS keyword form:
+        # keyname = 'value' / comment
+        # In general the comment and the single quotes are not guaranteed to be present, so try to be bullet-proof
+        # with the seds. Also the output should have a T rather than space separating the date from the time.
+        value=`ftlist "infile=$dir/$file" option=k include=$timeStampKeyword 2> /dev/null | head -1 | \
+          sed 's:[^=]*=[  ]*::' | sed 's:[  ]*/.*$::' | sed "s:^''*::" | sed "s:''*$::" | sed 's: :T:'`
+        if test $? -eq 0 -a "$value" != ""; then
+          echo "$relPath/$file, $value" >> $listFile
+          check $? "extractFITSFileTimes: unable to write to $listFile"
+        else
+          echo "extractFITSFileTimes: unable to extract time; skipping file $file" >&2
+        fi
+      fi
+    done
+  )
+  check $?
+}
+
+# Create INFO files from a SPICE metakernel plus a CSV file containing a list of images with time stamps.
+createInfoFilesFromImageTimeStamps() {
+  (
+    funcName=${FUNCNAME[0]}
+    
+    metakernel=$1
+    body=$2
+    bodyFrame=$3
+    spacecraft=$4
+    instrumentFrame=$5
+    imageTimeStampFile=$6
+    infoDir=$7
+
+    # Must invoke tool from the temporary spice directory in case the metakernel uses relative paths.
+    cd $tmpSpiceDir
+    check $? "$funcName: unable to cd $tmpSpiceDir"
+
+    if test ! -f $metakernel; then
+      check 1 "$funcName: first argument $metakernel is not the path to a metakernel file"
+    fi
+
+    if test "$imageTimeStampFile" = ""; then
+      check 1 "$funcName: image time stamp file argument is blank."
+    elif test ! -f $imageTimeStampFile; then
+      check 1 "$funcName: image time stamp file $imageTimeStampFile does not exist."
+    fi
+
+    if test "$infoDir" = ""; then
+      check 1 "$funcName: infoDir argument is blank."
+    fi
+
+    parentDir=$(getDirName "$destTop/$infoDir/..")
+    if test "$parentDir" = ""; then
+      check 1 "$funcName: could not determine parent directory of $destTop/$infoDir/.."
+    fi
+
+    imageListFile="$parentDir/imagelist-info.txt"
+    imageListFullPathFile="$parentDir/imagelist-fullpath-info.txt"
+    missingInfoList="$parentDir/missing-info.txt"
+
+    createInfoFilesDir="$sbmtCodeTop/sbmt/pipeline/rawdata/generic/createInfoFiles"
+    if test -d $createInfoFiles; then
+      (cd $createInfoFilesDir; check $?; make)
+      check $?
+    else
+      check 1 "$funcName: directory $createInfoFilesDir does not exist"
+    fi
+
+    createDir "$destTop/$infoDir"
+
+    #  1. metakernel - full path to a SPICE meta-kernel file containing the paths to the kernel files
+    #  2. body - IAU name of the target body, all caps
+    #  3. bodyFrame - Typically IAU_<body>, but could be something like RYUGU_FIXED
+    #  4. spacecraft - SPICE spacecraft name
+    #  5. instrumentframe - SPICE instrument frame name
+    #  6. imageTimeStampFile - path to CSV file in which all image files are listed (relative
+    #     to "topDir") with their UTC time stamps
+    #  7. infoDir - path to output directory where infofiles should be saved to
+    #  8. imageListFile - path to output file in which all image files for which an infofile was
+    #     created (image file name only, not full path) will be listed along with
+    #     their start times.
+    #  9. imageListFullPathFile - path to output file in which all image files for which an infofile
+    #     was created will be listed (full path relative to the server directory).
+    # 10. missingInfoList - path to output file in which all image files for which no infofile
+    #     was created will be listed, preceded with a string giving the cause for
+    #     why no infofile could be created.
+
+    createDir $logTop
+
+    echo $createInfoFilesDir/createInfoFiles $metakernel $body $bodyFrame $spacecraft $instrumentFrame \
+      $imageTimeStampFile "$destTop/$infoDir" $imageListFile $imageListFullPathFile $missingInfoList
+
+    $createInfoFilesDir/createInfoFiles $metakernel $body $bodyFrame $spacecraft $instrumentFrame \
+      $imageTimeStampFile "$destTop/$infoDir" $imageListFile $imageListFullPathFile $missingInfoList > \
+      $logTop/createInfoFiles.txt 2>&1
+    check $? "$funcName: creating info files failed. See log file $logTop/createInfoFiles.txt."
+  )
+  check $?
+}
+
 # Create INFO files from a SPICE metakernel plus a directory with FITS images that have time stamps associated with a keyword.
 createInfoFilesFromFITSImages() {
+  funcName=${FUNCNAME[0]}
+  
   metakernel=$1
   body=$2
   bodyFrame=$3
@@ -927,8 +1220,49 @@ createInfoFilesFromFITSImages() {
   imageDir=$7
   infoDir=$8
 
-# Generate image list with time stamps from the content of the image directory.
-  imageTimeStampFile=$(getDirName "$destTop/$imageDir/..")"/imagelist-with-time.txt"
+  if test "$metakernel" = ""; then
+    check 1 "$funcName: missing/blank first argument; must be path to metakernel valid in $tmpSpiceDir"
+  fi
+
+  if test "$body" = ""; then
+    check 1 "$funcName: missing/blank second argument must specify NAIF-compliant body name"
+  fi
+
+  if test "$bodyFrame" = ""; then
+    check 1 "$funcName: missing/blank third argument must specify NAIF-compliant body frame ID"
+  fi
+
+  if test "$spacecraft" = ""; then
+    check 1 "$funcName: missing/blank fourth argument must specify NAIF-compliant spacecraft ID"
+  fi
+
+  if test "$instrumentFrame" = ""; then
+    check 1 "$funcName: missing/blank fifth argument must specify NAIF-compliant instrument frame ID"
+  fi
+
+  if test "$timeStampKeyword" = ""; then
+    check 1 "$funcName: missing/blank sixth argument must specify keyword used to extract time stamps"
+  fi
+
+  if test "$imageDir" = ""; then
+    check 1 "$funcName: missing/blank seventh argument must specify image directory relative to $srcTop"
+  fi
+
+  if test ! -d "$srcTop/$imageDir"; then
+    check 1 "$funcName: seventh argument $imageDir must specify image directory relative to $srcTop"
+  fi
+
+  if test "$infoDir" = ""; then
+    check 1 "$funcName: missing/blank eighth argument must specify image directory relative to $srcTop"
+  fi
+
+  # Generate image list with time stamps from the content of the image directory.
+  imageTimeStampDir=$(getDirName "$destTop/$imageDir/..")
+  if test "$imageTimeStampDir" = ""; then
+    check 1 "$funcName: can't get directory name from $destTop/$imageDir/.."
+  fi
+
+  imageTimeStampFile="$imageTimeStampDir/imagelist-with-time.txt"
 
   if test ! -f $imageTimeStampFile; then
     extractFITSFileTimes $timeStampKeyword $srcTop "$srcTop/$imageDir" $imageTimeStampFile
@@ -938,126 +1272,6 @@ createInfoFilesFromFITSImages() {
 
   createInfoFilesFromImageTimeStamps $metakernel $body $bodyFrame $spacecraft $instrumentFrame \
     $imageTimeStampFile $infoDir
-}
-
-# First argument is the keyword associated with time stamps.
-# Next argument is the top-level directory; this will be stripped out of the beginning of file names.
-# Next argument is the directory to search for FITS files. This must be a descendant of the top-level directory.
-# Next argument is the output file that will hold the comma-separated file-name, date/time.
-extractFITSFileTimes() {
-  timeStampKeyword=$1
-  topDir=$(getDirName "$2")
-  dir=$(getDirName "$3")
-  listFile=$4
-
-  if test "$timeStampKeyword" = ""; then
-    echo "extractFITSFileTimes: timeStampKeyword argument is blank." >&2
-    exit 1
-  fi
-
-  if test "$dir" = "$topDir"; then
-    relPath=
-  elif test `echo $dir | grep -c "^$topDir/"` -eq 0; then
-    echo "extractFITSFileTimes: top directory $topDir is not an ancestor of directory $dir" >&2
-    exit 1
-  else
-    relPath=`echo $dir | sed "s:^$topDir/::"`
-  fi
-
-  if test "$listFile" = ""; then
-    echo "extractFITSFileTimes: listFile argument is blank." >&2
-    exit 1
-  fi
-
-  # Need Ftools for this.
-  type ftlist
-  if test $? -ne 0; then
-    echo "extractFITSFileTimes: need to have Ftools in your path for this to work" >&2
-    exit 1
-  fi
-
-  createParentDir $listFile
-
-  rm -f $listFile
-  for file in `ls $dir/` .; do
-    if test "$file" != .; then
-      # Ftool ftlist prints the whole header line for the keyword, however many times it appears in the file.
-      # Parse the first match, assumed to have the standard FITS keyword form:
-      # keyname = 'value' / comment
-      # In general the comment and the single quotes are not guaranteed to be present, so try to be bullet-proof
-      # with the seds. Also the output should have a T rather than space separating the date from the time.
-      value=`ftlist "infile=$dir/$file" option=k include=$timeStampKeyword 2> /dev/null | head -1 | \
-        sed 's:[^=]*=[  ]*::' | sed 's:[  ]*/.*$::' | sed "s:^''*::" | sed "s:''*$::" | sed 's: :T:'`
-      if test $? -eq 0 -a "$value" != ""; then
-        echo "$relPath/$file, $value" >> $listFile
-      else
-        echo "extractFITSFileTimes: unable to extract time; skipping file $file" >&2
-      fi
-    fi
-  done
-}
-
-# Create INFO files from a SPICE metakernel plus a CSV file containing a list of images with time stamps.
-createInfoFilesFromImageTimeStamps() {
-  metakernel=$1
-  body=$2
-  bodyFrame=$3
-  spacecraft=$4
-  instrumentFrame=$5
-  imageTimeStampFile=$6
-  infoDir=$7
-
-  if test "$imageTimeStampFile" = ""; then
-    echo "createInfoFilesFromImageTimeStamps: image time stamp file argument is blank." >&2
-    exit 1
-  elif test ! -f $imageTimeStampFile; then
-    echo "createInfoFilesFromImageTimeStamps: image time stamp file $imageTimeStampFile does not exist." >&2
-    exit 1
-  fi
-
-  if test "$infoDir" = ""; then
-    echo "createInfoFilesFromImageTimeStamps: infoDir argument is blank." >&2
-    exit 1
-  fi
-
-  parentDir=$(getDirName "$destTop/$infoDir/..")
-  imageListFile="$parentDir/imagelist-info.txt"
-  imageListFullPathFile="$parentDir/imagelist-fullpath-info.txt"
-  missingInfoList="$parentDir/missing-info.txt"
-
-  createInfoFilesDir="$sbmtCodeTop/sbmt/pipeline/rawdata/generic/createInfoFiles"
-  if test -d $createInfoFiles; then
-    (cd $createInfoFilesDir; check $?; make)
-    check $?
-  else
-    echo "createInfoFilesFromImageTimeStamps: directory $createInfoFilesDir does not exist" >&2
-    exit 1
-  fi
-
-  createDir "$destTop/$infoDir"
-
-  #  1. metakernel - a SPICE meta-kernel file containing the paths to the kernel files
-  #  2. body - IAU name of the target body, all caps
-  #  3. bodyFrame - Typically IAU_<body>, but could be something like RYUGU_FIXED
-  #  4. spacecraft - SPICE spacecraft name
-  #  5. instrumentframe - SPICE instrument frame name
-  #  6. imageTimeStampFile - path to CSV file in which all image files are listed (relative
-  #     to "topDir") with their UTC time stamps
-  #  7. infoDir - path to output directory where infofiles should be saved to
-  #  8. imageListFile - path to output file in which all image files for which an infofile was
-  #     created (image file name only, not full path) will be listed along with
-  #     their start times.
-  #  9. imageListFullPathFile - path to output file in which all image files for which an infofile
-  #     was created will be listed (full path relative to the server directory).
-  # 10. missingInfoList - path to output file in which all image files for which no infofile
-  #     was created will be listed, preceded with a string giving the cause for
-  #     why no infofile could be created.
-
-  echo $createInfoFilesDir/createInfoFiles $destTop/$metakernel $body $bodyFrame $spacecraft $instrumentFrame \
-    $imageTimeStampFile "$destTop/$infoDir" $imageListFile $imageListFullPathFile $missingInfoList
-
-  $createInfoFilesDir/createInfoFiles $destTop/$metakernel $body $bodyFrame $spacecraft $instrumentFrame \
-    $imageTimeStampFile "$destTop/$infoDir" $imageListFile $imageListFullPathFile $missingInfoList 2>&1 > create_info_files.txt
 }
 
 # Check files in the sumfiles/ directory against make_sumfiles.in for discrepancies, i.e., listed files not
@@ -1145,42 +1359,156 @@ createFileSymLinks() {
     if test "$dir" = ""; then
       check 1 "createFileSymLinks: first argument missing; must be directory in which to create symbolic links"
     fi
-  
+
     if test ! -d $dir; then
       check 1 "createFileSymLinks: $dDir is not a directory"
     fi
-  
+
     if test "$prefix" = ""; then
-      check 1 "createFileSymLinks: second argument missing; must be prefix for symbolic link names" 
+      check 1 "createFileSymLinks: second argument missing; must be prefix for symbolic link names"
     fi
-  
+
     cd $dir
     check $? "createFileSymLinks: unable to cd $dir"
 
     let res=0
-    for file in `ls -Sr * | grep -v "^$prefix"`; do
-      lastSuffix=`echo $file | sed -e 's:.*\(\.[^\.]*\)$:\1:'`
-      if test $lastSuffix = ".gz"; then
-        suffix=`echo $file | sed -e 's:.*\(\.[^\.]*\.[^\.]*\)$:\1:'`
-      else
-        suffix=$lastSuffix
+    for file in `ls -Sr * 2> /dev/null | grep -v "^$prefix"` .; do
+      if test "$file" != .; then
+        lastSuffix=`echo $file | sed -e 's:.*\(\.[^\.]*\)$:\1:'`
+        if test $lastSuffix = ".gz"; then
+          suffix=`echo $file | sed -e 's:.*\(\.[^\.]*\.[^\.]*\)$:\1:'`
+        else
+          suffix=$lastSuffix
+        fi
+
+        linkName="$prefix${res}$suffix"
+
+        if test $file = $linkName; then
+          continue
+        fi
+
+        # Remove any previous links.
+        rm -f $linkName
+
+        ln -s $file $linkName
+        check $? "createFileSymLinks: unable to create symbolic link from $file to $linkName"
+
+        let res=res+1
       fi
-
-      linkName="$prefix${res}$suffix"
-
-      if test $file = $linkName; then
-        continue
-      fi 
-
-      # Remove any previous links.
-      rm -f $linkName
-
-      ln -s $file $linkName
-      check $? "createFileSymLinks: unable to create symbolic link from $file to $linkName"
-      
-      let res=res+1
     done
   )
   check $?
 }
 
+# Unpack any archives found in the provided directory. If none, just skip.
+unpackArchives() {
+  (
+    srcDir=$1
+
+    if test "$srcDir" = ""; then
+      check 1 "unpackArchives: missing/blank first argument must be source directory that may contain archive files"
+    fi
+
+    if test ! -d "$srcDir"; then
+      check 1 "unpackArchives: first argument $srcDir does not specify a source directory that may contain archive files"
+    fi
+
+    cd $srcDir
+    check $? "unpackArchives: cannot cd $srcDir"
+
+    # Use . to ensure for loop has at least one match.
+    for file in `ls *.tar 2> /dev/null` .; do
+      if test "$file" != .; then
+        tar xf $file
+        check $? "unpackArchives: unable to untar file $file"
+      fi
+    done
+
+    # Use . to ensure for loop has at least one match.
+    for file in `ls *.tgz *.tar.gz 2> /dev/null` .; do
+      if test "$file" != .; then
+        tar zxf $file
+        check $? "unpackArchives: unable to untar gzipped file $file"
+      fi
+    done
+
+  )
+  check $?
+}
+
+# Edit metakernel files to replace delivered paths with the top of the temporary spice tree.
+# param srcDir the directory in which to edit the metakernels
+# param regEx the expression to match in the input file(s)
+editMetakernels() {
+  (
+    srcDir=$1
+
+    regEx=$2
+
+    if test "$srcDir" = ""; then
+      check 1 "editMetakernels: missing/blank first argument must be source directory that may contain metakernel files"
+    fi
+
+    if test ! -d "$srcDir"; then
+      check 1 "editMetakernels: first argument $srcDir does not specify a source directory that may contain metakernel files"
+    fi
+
+    if test "$regEx" = ""; then
+      check 1 "editMetakernels: missing/blank second argument must be regular expression to match delivered paths in metakernels"
+    fi
+
+    cd $srcDir
+    check $? "editMetakernels: cannot cd $srcDir"
+
+    # Use . to ensure for loop has at least one match.
+    for file in `ls *.mk *.tm 2> /dev/null` .; do
+      if test "$file" != .; then
+        if test ! -f "$file.bak"; then
+          sed -i bak -e "s:$regEx:$tmpSpiceDir:"
+          check $? "unpackArchives: unable to untar file $file"
+        else
+          echo "File $file.bak already exists -- not re-editing metakernel file $srcDir/$file"
+        fi
+      fi
+    done
+
+  )
+  check $?
+}
+
+# Run the database generator to create a table for a particular instrument.
+#
+# param instrument the instrument identifier, as it is or will be referred to in a Java Instrument object
+# param pointing the type of pointing, usually either GASKELL or SPICE
+generateDatabaseTable() {
+  (
+    instrument=$1
+    pointing=$2
+
+    if test "$instrument" = ""; then
+      check 1 "generateDatabaseTable: missing/blank first argument, which must be the name of an instrument"
+    fi
+
+    if test "$pointing" = ""; then
+      check 1 "generateDatabaseTable: missing/blank second argument, which must be the pointing type"
+    fi
+
+    tool=DatabaseGeneratorSql.sh
+    pathToTool=$sbmtCodeTop/sbmt/bin/$tool
+
+    # Just in case, make sure pointing is all uppercase.
+    pointing=${pointing^^}
+
+    logFile=$logTop/$tool-$instrument-$pointing.txt
+
+    createDir $logTop
+
+    echo $pathToTool --root-url file://$processedTop --body "${bodyId^^}" --author "$modelId" --instrument "$instrument" $pointing | \
+      tee -ai $logFile
+    $pathToTool --root-url file://$processedTop --body "${bodyId^^}" --author "$modelId" --instrument "$instrument" $pointing \
+      >> $logFile 2>&1
+    check $? "generateDatabaseTable: $tool had an error. See log file $logFile"
+
+  )
+  check $?
+}

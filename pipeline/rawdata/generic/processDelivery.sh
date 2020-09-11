@@ -49,17 +49,20 @@ exit 1
 # or may not fully comply with all SBMT guidelines for layout and naming.
 deliveryTop="/project/sbmtpipeline/deliveries-dart/ideal_impact1-20200629-v01/didymos/SMv01A-truth"
 
-# The identifier of the SBMT model. For a given body, this uniquely identifies
-# the model. This may not include any whitespace. If no items being imported
-# are associated with a specific model, this may be set to an empty string,
-# but it should not be removed. This is used for processing plate colorings.
+# The identifier of the SBMT model, which should match how the model is or
+# will be identified with a ShapeModelType object. For a given body, this
+# uniquely identifies the model. This may not include any whitespace. If no
+# items being processed are associated with a specific model, this may be set
+# to an empty string but it should not be removed. This is used to process
+# plate colorings and images.
 modelId="ideal_impact1-20200629-v01"
 
-# The identifier of the body as it appears in the SBMT. If no items being
-# imported are associated with a specific body, this may be set to an
-# empty string, but it should not be removed.
-# This is used for processing plate colorings.
-bodyId="65803 Didymos"
+# The identifier of the body as it appears in the SBMT, which should match how
+# the body is or will be identified with a ShapeModelBody object. If no items
+# being processed are associated with a specific body, this may be set to an
+# empty string, but it should not be removed. This is used for processing
+# plate colorings and images.
+bodyId="Didymos"
 
 #-------------------------------------------------------------------------------
 

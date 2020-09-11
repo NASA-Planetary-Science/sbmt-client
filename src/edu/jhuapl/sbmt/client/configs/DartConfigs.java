@@ -23,6 +23,7 @@ import edu.jhuapl.sbmt.model.image.ImagingInstrument;
 import edu.jhuapl.sbmt.model.image.Instrument;
 import edu.jhuapl.sbmt.model.image.SpectralImageMode;
 import edu.jhuapl.sbmt.query.database.GenericPhpQuery;
+import edu.jhuapl.sbmt.tools.DBRunInfo;
 
 /**
  * DART mission-specific {@link SmallBodyViewConfig} implementation.
@@ -115,28 +116,33 @@ public class DartConfigs
 
         String tableBaseName = (body.name() + "_" + modelId + "_").replaceAll("[\\s-]", "_").toLowerCase();
 
+        String dracoDir = c.rootDirOnServer + "/draco";
         String dracoTable = tableBaseName + "draco";
+
+        String lukeDir = c.rootDirOnServer + "/luke";
         String lukeTable = tableBaseName + "luke";
+
+        String leiaDir = c.rootDirOnServer + "/leia";
         String leiaTable = tableBaseName + "leia";
 
         c.imagingInstruments = new ImagingInstrument[] {
                 new ImagingInstrument( //
                         SpectralImageMode.MONO, //
-                        new GenericPhpQuery(c.rootDirOnServer + "/draco", dracoTable, dracoTable, c.rootDirOnServer + "/draco/gallery"), //
+                        new GenericPhpQuery(dracoDir, dracoTable, dracoTable, c.rootDirOnServer + "/draco/gallery"), //
                         ImageType.GENERIC_IMAGE, //
                         InfoFiles, //
                         Instrument.DRACO //
                 ),
                 new ImagingInstrument( //
                         SpectralImageMode.MONO, //
-                        new GenericPhpQuery(c.rootDirOnServer + "/luke", lukeTable, lukeTable, c.rootDirOnServer + "/luke/gallery"), //
+                        new GenericPhpQuery(lukeDir, lukeTable, lukeTable, c.rootDirOnServer + "/luke/gallery"), //
                         ImageType.GENERIC_IMAGE, //
                         InfoFiles, //
                         Instrument.LUKE //
                 ),
                 new ImagingInstrument( //
                         SpectralImageMode.MONO, //
-                        new GenericPhpQuery(c.rootDirOnServer + "/leia", leiaTable, leiaTable, c.rootDirOnServer + "/leia/gallery"), //
+                        new GenericPhpQuery(leiaDir, leiaTable, leiaTable, c.rootDirOnServer + "/leia/gallery"), //
                         ImageType.GENERIC_IMAGE, //
                         InfoFiles, //
                         Instrument.LEIA //
@@ -149,6 +155,18 @@ public class DartConfigs
         c.imageSearchUserDefinedCheckBoxesNames = new String[] {};
         c.imageSearchDefaultMaxSpacecraftDistance = 1.0e3;
         c.imageSearchDefaultMaxResolution = 1.0e3;
+
+        // This should not be hardcoded here, need to revise processes to have this injected by the database generator.
+        String bodiesDir = "/project/sbmt2/sbmt/data/bodies";
+
+        c.databaseRunInfos = new DBRunInfo[] { //
+                new DBRunInfo(ImageSource.SPICE, Instrument.DRACO, body.toString(), //
+                        bodiesDir + dracoDir + "/imagelist-fullpath-info.txt", dracoTable), //
+                new DBRunInfo(ImageSource.SPICE, Instrument.LUKE, body.toString(), //
+                        bodiesDir + lukeDir + "/imagelist-fullpath-info.txt", lukeTable), //
+                new DBRunInfo(ImageSource.SPICE, Instrument.LEIA, body.toString(), //
+                        bodiesDir + leiaDir + "/imagelist-fullpath-info.txt", leiaTable) //
+        };
 
         return c;
     }
