@@ -129,6 +129,7 @@ getDirPath() {
       
       if test ! -d $dir; then
         check 1 "$funcName: parent of $1 does not exist"
+      fi
     fi
 
     echo $dir
