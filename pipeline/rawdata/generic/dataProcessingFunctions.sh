@@ -103,34 +103,42 @@ confirmNotSbmt() {
 
 # Get the absolute path of the directory for the path passed as an argument.
 # If the argument identifies an existing directory, this function returns the
-# path to that directory. If the argument identifies a file, this function
-# returns the parent directory of that file. If the argument does not identify
-# either a file or a directory, an error is thrown and the invoking shell will
-# exit.
+# physical absolute path to that directory. Otherwise, the UNIX utility
+# dirname is used to determine the lexical parent path. If that parent
+# directory exists, this function returns the physical absolute path of the
+# parent.
 #
-# An optional second argument is the error message that will be shown before
-# exit is called.
+# This function exits with an error if both the path and its lexical parent are
+# not directories.
 #
 # Calling this function does not change the current path in the invoking shell,
 # but this function does use "cd" in a sub-shell to go to the directory whose
 # path it returns.
-getDirName() {
-  if test "x$1" = x; then
-    echo "$2 getDirName: directory name is blank." >&2
-    exit 1
-  fi
+getDirPath() {
+  (
+    funcName=${FUNCNAME[0]}
 
-  msg=$2
+    if test "$1" = ""; then
+      check 1 "$funcName: directory name is blank."
+    fi
 
-  if test -d "$1"; then
-    result="$(cd $1; check $? $msg getDirName: cannot cd to $1; pwd -P)"
-    check $? "$msg getDirName: cannot determine directory name of $1"
-  else
-    result="$(cd "$(dirname "$1")"; check $? $msg getDirName: cannot cd to parent of $1; pwd -P)"
-    check $? "$msg getDirName: cannot determine parent of $1"
-  fi
+    dir="$1"
 
-  echo $result
+    if test -d "$dir"; then
+      dir=$(cd "$dir"; check $? "$funcName: cannot cd to $dir"; pwd -P)
+      check $? "getDirPath: cannot determine path to directory $1"
+    else
+      dir=$(dirname "$dir"); check $? "$funcName: dirname cannot determine parent of $1"
+      if test "$dir" != "" -a -d "$dir"; then
+        dir=$(cd "$dir"; check $? "$funcName: cannot cd to (parent) directory of directory $1"; pwd -P)
+      else
+        check 1 "$funcName: cannot derive a directory path from the input string $1"
+      fi
+    fi
+
+    echo $dir
+  )
+  check $?
 }
 
 # Get just the filename from a full or partial path. Directories,
@@ -225,7 +233,7 @@ guessFileExtension() {
 #
 # If the supplied path does not include the segment "rawdata", this errors out.
 #
-# This function uses getDirName to rationalize paths, so the supplied argument
+# This function uses getDirPath to rationalize paths, so the supplied argument
 # must actually exist in the file system.
 guessRawDataParentDir() {
   if test "$1" = ""; then
@@ -233,7 +241,7 @@ guessRawDataParentDir() {
     exit 1
   fi
 
-  dir=$(getDirName "$1")
+  dir=$(getDirPath "$1")
 
   # Extract everything to the right of right-most rawdata/.
   suffix=`echo $dir | sed -n 's:.*/rawdata/::p'`
@@ -1077,8 +1085,8 @@ processDTMs() {
 extractFITSFileTimes() {
   (
     timeStampKeyword=$1
-    topDir=$(getDirName "$2")
-    dir=$(getDirName "$3")
+    topDir=$(getDirPath "$2")
+    dir=$(getDirPath "$3")
     listFile=$4
 
     if test "$timeStampKeyword" = ""; then
@@ -1131,7 +1139,7 @@ extractFITSFileTimes() {
 createInfoFilesFromImageTimeStamps() {
   (
     funcName=${FUNCNAME[0]}
-    
+
     metakernel=$1
     body=$2
     bodyFrame=$3
@@ -1158,7 +1166,7 @@ createInfoFilesFromImageTimeStamps() {
       check 1 "$funcName: infoDir argument is blank."
     fi
 
-    parentDir=$(getDirName "$destTop/$infoDir/..")
+    parentDir=$(getDirPath "$destTop/$infoDir/..")
     if test "$parentDir" = ""; then
       check 1 "$funcName: could not determine parent directory of $destTop/$infoDir/.."
     fi
@@ -1210,7 +1218,7 @@ createInfoFilesFromImageTimeStamps() {
 # Create INFO files from a SPICE metakernel plus a directory with FITS images that have time stamps associated with a keyword.
 createInfoFilesFromFITSImages() {
   funcName=${FUNCNAME[0]}
-  
+
   metakernel=$1
   body=$2
   bodyFrame=$3
@@ -1257,7 +1265,7 @@ createInfoFilesFromFITSImages() {
   fi
 
   # Generate image list with time stamps from the content of the image directory.
-  imageTimeStampDir=$(getDirName "$destTop/$imageDir/..")
+  imageTimeStampDir=$(getDirPath "$destTop/$imageDir/..")
   if test "$imageTimeStampDir" = ""; then
     check 1 "$funcName: can't get directory name from $destTop/$imageDir/.."
   fi
