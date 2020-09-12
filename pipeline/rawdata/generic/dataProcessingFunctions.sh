@@ -103,17 +103,13 @@ confirmNotSbmt() {
 
 # Get the absolute path of the directory for the path passed as an argument.
 # If the argument identifies an existing directory, this function returns the
-# physical absolute path to that directory. Otherwise, the UNIX utility
-# dirname is used to determine the lexical parent path. If that parent
+# physical absolute path to that directory. Otherwise, if that parent
 # directory exists, this function returns the physical absolute path of the
 # parent.
 #
-# This function exits with an error if both the path and its lexical parent are
-# not directories.
+# This function exits with an error if both the path and its (resolved)
+# parent path are not directories.
 #
-# Calling this function does not change the current path in the invoking shell,
-# but this function does use "cd" in a sub-shell to go to the directory whose
-# path it returns.
 getDirPath() {
   (
     funcName=${FUNCNAME[0]}
@@ -125,15 +121,11 @@ getDirPath() {
     dir="$1"
 
     if test -d "$dir"; then
-      dir=$(cd "$dir"; check $? "$funcName: cannot cd to $dir"; pwd -P)
+      dir=$(realpath "$dir")
       check $? "getDirPath: cannot determine path to directory $1"
     else
-      dir=$(dirname "$dir"); check $? "$funcName: dirname cannot determine parent of $1"
-      if test "$dir" != "" -a -d "$dir"; then
-        dir=$(cd "$dir"; check $? "$funcName: cannot cd to (parent) directory of directory $1"; pwd -P)
-      else
-        check 1 "$funcName: cannot derive a directory path from the input string $1"
-      fi
+      dir=$(realPath "$dir/..")
+      check $? "getDirPath: cannot determine path to parent directory of $1"
     fi
 
     echo $dir
@@ -1167,9 +1159,6 @@ createInfoFilesFromImageTimeStamps() {
     fi
 
     parentDir=$(getDirPath "$destTop/$infoDir/..")
-    if test "$parentDir" = ""; then
-      check 1 "$funcName: could not determine parent directory of $destTop/$infoDir/.."
-    fi
 
     imageListFile="$parentDir/imagelist-info.txt"
     imageListFullPathFile="$parentDir/imagelist-fullpath-info.txt"
@@ -1266,9 +1255,6 @@ createInfoFilesFromFITSImages() {
 
   # Generate image list with time stamps from the content of the image directory.
   imageTimeStampDir=$(getDirPath "$destTop/$imageDir/..")
-  if test "$imageTimeStampDir" = ""; then
-    check 1 "$funcName: can't get directory name from $destTop/$imageDir/.."
-  fi
 
   imageTimeStampFile="$imageTimeStampDir/imagelist-with-time.txt"
 
