@@ -258,6 +258,13 @@ public class SbmtMultiMissionTool
 
     public static Mission configureMission()
     {
+        if (missionConfigured)
+        {
+            return mission;
+        }
+
+        Mission mission = getMission();
+
         String rootUrl = "http://sbmt.jhuapl.edu/sbmt/prod";
 
         switch (mission)
