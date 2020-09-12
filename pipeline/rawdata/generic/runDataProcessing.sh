@@ -153,7 +153,7 @@ scriptName=`echo $processingScript | sed 's:.*/::'`
 pipelineTop=$(guessRawDataParentDir "$processingScript")
 
 # Top of the raw data is just the directory containing the processing script.
-rawDataTop=$(getDirName "$processingScript")
+rawDataTop=$(getDirPath "$processingScript")
 
 # Processing path is the part of rawDataTop that is below pipelineTop/rawdata.
 processingPath=`echo $rawDataTop | sed "s:$pipelineTop/[^/][^/]*/*::"`
