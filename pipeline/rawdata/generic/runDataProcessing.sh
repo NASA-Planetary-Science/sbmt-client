@@ -85,6 +85,8 @@
 # along with the rest of the delivery.
 #
 runnerScript=`echo $0 | sed 's:.*/::'`
+# Date stamp to be used in outputs.
+dateStamp=`date '+%Y-%m-%dT%H%M%S'`
 
 usage() {
   echo "--------------------------------------------------------------------------------"
@@ -113,6 +115,11 @@ elif test $# -lt 3; then
   (usage >&2)
   exit 1
 fi
+
+echo
+echo "********************************************************************************"
+echo "$dateStamp: invoked to run $runnerScript"
+echo "********************************************************************************"
 
 thisDir=$(dirname "$0")
 commonFunctions=$thisDir/dataProcessingFunctions.sh
@@ -179,8 +186,6 @@ serverTop="/project/sbmt2/test"
 sbmtCodeTop=$rawDataTop
 
 # Location of log files.
-# Date stamp to be used in log files.
-dateStamp=`date '+%Y-%m-%dT%H%M%S'`
 logTop=$rawDataTop/logs/$dateStamp
 
 # Bodies metadata directory name. Must be kept in sync with BodyViewConfig.getConfigInfoVersion().
@@ -195,10 +200,9 @@ export SAAVTKROOT="$sbmtCodeTop/saavtk"
 export SBMTROOT="$sbmtCodeTop/sbmt"
 export PATH="$PATH:/project/sbmtpipeline/software/heasoft/bin"
 
-echo
-echo "********************************************************************************"
-echo "$dateStamp: $runnerScript variables:"
-echo "********************************************************************************"
+echo "--------------------------------------------------------------------------------"
+echo "Variable settings:
+echo "--------------------------------------------------------------------------------"
 echo "processingId is $processingId"
 echo "outputTop is $outputTop"
 echo "scriptName is $scriptName"

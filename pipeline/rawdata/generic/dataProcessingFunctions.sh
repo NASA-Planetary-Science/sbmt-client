@@ -122,10 +122,13 @@ getDirPath() {
 
     if test -d "$dir"; then
       dir=$(realpath "$dir")
-      check $? "getDirPath: cannot determine path to directory $1"
+      check $? "$funcName: cannot determine path to directory $1"
     else
-      dir=$(realPath "$dir/..")
-      check $? "getDirPath: cannot determine path to parent directory of $1"
+      dir=$(realPath -m "$dir/..")
+      check $? "$funcName: cannot determine path to parent directory of $1"
+      
+      if test ! -d $dir; then
+        check 1 "$funcName: parent of $1 does not exist"
     fi
 
     echo $dir
