@@ -272,13 +272,13 @@ public class SbmtMultiMissionTool
         case STAGE_APL_INTERNAL:
         case STAGE_PUBLIC_RELEASE:
         case DART_STAGE:
-            rootUrl = "http://sbmt.jhuapl.edu/sbmt/stage";
+            rootUrl = "http://sbmt-web.jhuapl.edu/internal/multi-mission/stage";
             break;
         case TEST_APL_INTERNAL:
         case TEST_PUBLIC_RELEASE:
         case DART_TEST:
         case OSIRIS_REX_TEST:
-            rootUrl = "http://sbmt-web.jhuapl.edu/sbmt/test";
+            rootUrl = "http://sbmt-web.jhuapl.edu/internal/multi-mission/test";
             break;
         case HAYABUSA2_DEPLOY:
             rootUrl = "http://hyb2sbmt.u-aizu.ac.jp/sbmt";
