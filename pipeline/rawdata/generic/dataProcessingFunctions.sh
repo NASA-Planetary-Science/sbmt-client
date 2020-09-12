@@ -124,7 +124,7 @@ getDirPath() {
       dir=$(realpath "$dir")
       check $? "$funcName: cannot determine path to directory $1"
     else
-      dir=$(realPath -m "$dir/..")
+      dir=$(realpath -m "$dir/..")
       check $? "$funcName: cannot determine path to parent directory of $1"
       
       if test ! -d "$dir"; then
