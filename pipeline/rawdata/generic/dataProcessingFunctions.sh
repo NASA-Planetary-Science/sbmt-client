@@ -127,7 +127,7 @@ getDirPath() {
       dir=$(realPath -m "$dir/..")
       check $? "$funcName: cannot determine path to parent directory of $1"
       
-      if test ! -d $dir; then
+      if test ! -d "$dir"; then
         check 1 "$funcName: parent of $1 does not exist"
       fi
     fi
@@ -138,7 +138,7 @@ getDirPath() {
 }
 
 # Get just the filename from a full or partial path. Directories,
-# symbolic links and files are all treated like files, i.e. this really
+# symbolic links and files are all treated like iles, i.e. this really
 # returns the final segment. This is done lexically, without checking
 # for existence of any part.
 getFileName() {

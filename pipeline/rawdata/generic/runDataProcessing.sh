@@ -227,4 +227,4 @@ invokedByRunner=true
 
 . "$rawDataTop/$(basename $processingScript)"
 echo "--------------------------------------------------------------------------------"
-echo
+echo ""
