@@ -201,7 +201,7 @@ export SBMTROOT="$sbmtCodeTop/sbmt"
 export PATH="$PATH:/project/sbmtpipeline/software/heasoft/bin"
 
 echo "--------------------------------------------------------------------------------"
-echo "Variable settings:
+echo "Variable settings:"
 echo "--------------------------------------------------------------------------------"
 echo "processingId is $processingId"
 echo "outputTop is $outputTop"
@@ -227,4 +227,4 @@ invokedByRunner=true
 
 . "$rawDataTop/$(basename $processingScript)"
 echo "--------------------------------------------------------------------------------"
-echo ""
+echo
