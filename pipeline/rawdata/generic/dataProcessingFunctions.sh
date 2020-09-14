@@ -29,6 +29,17 @@
 # }
 #-------------------------------------------------------------------------------
 
+# Check whether to skip this section. Warning, this exits the calling
+# shell. If any arguments are supplied, they are printed.
+checkSkip() {
+  if test "$skipSection" = "true"; then
+    if test $# -gt 0; then
+      echo "Skipping $*" >&2
+    fi
+    exit 0
+  fi
+}
+
 # Check whether the logged in user name is the same as the provided argument.
 checkIdentity() {
   if test "$1" = ""; then
@@ -113,6 +124,9 @@ confirmNotSbmt() {
 getDirPath() {
   (
     funcName=${FUNCNAME[0]}
+
+    # This function returns a value, so it doesn't checkSkip.
+    # checkSkip $funcName "$*"
 
     if test "$1" = ""; then
       check 1 "$funcName: directory name is blank."
@@ -583,6 +597,8 @@ createLink() {
   (
     funcName=${FUNCNAME[0]}
 
+    checkSkip $funcName "$*"
+
     target=$1
     linkPath=$2
 
@@ -653,6 +669,8 @@ createLink() {
 updateLink() {
   (
     funcName=${FUNCNAME[0]}
+
+    checkSkip $funcName "$*"
 
     target=$1
     linkPath=$2
@@ -734,6 +752,8 @@ createRelativeLink() {
   (
     funcName=${FUNCNAME[0]}
 
+    checkSkip $funcName "$*"
+
     target=$1
     if test "$target" = ""; then
       check 1 "$funcName: missing first argument (target for link)"
@@ -765,6 +785,8 @@ createRelativeLink() {
 updateRelativeLink() {
   (
     funcName=${FUNCNAME[0]}
+
+    checkSkip $funcName "$*"
 
     target=$1
     if test "$target" = ""; then
@@ -1136,6 +1158,8 @@ createInfoFilesFromImageTimeStamps() {
   (
     funcName=${FUNCNAME[0]}
 
+    checkSkip $funcName "$*"
+
     metakernel=$1
     body=$2
     bodyFrame=$3
@@ -1210,66 +1234,72 @@ createInfoFilesFromImageTimeStamps() {
 
 # Create INFO files from a SPICE metakernel plus a directory with FITS images that have time stamps associated with a keyword.
 createInfoFilesFromFITSImages() {
-  funcName=${FUNCNAME[0]}
-
-  metakernel=$1
-  body=$2
-  bodyFrame=$3
-  spacecraft=$4
-  instrumentFrame=$5
-  timeStampKeyword=$6
-  imageDir=$7
-  infoDir=$8
-
-  if test "$metakernel" = ""; then
-    check 1 "$funcName: missing/blank first argument; must be path to metakernel valid in $tmpSpiceDir"
-  fi
-
-  if test "$body" = ""; then
-    check 1 "$funcName: missing/blank second argument must specify NAIF-compliant body name"
-  fi
-
-  if test "$bodyFrame" = ""; then
-    check 1 "$funcName: missing/blank third argument must specify NAIF-compliant body frame ID"
-  fi
-
-  if test "$spacecraft" = ""; then
-    check 1 "$funcName: missing/blank fourth argument must specify NAIF-compliant spacecraft ID"
-  fi
-
-  if test "$instrumentFrame" = ""; then
-    check 1 "$funcName: missing/blank fifth argument must specify NAIF-compliant instrument frame ID"
-  fi
-
-  if test "$timeStampKeyword" = ""; then
-    check 1 "$funcName: missing/blank sixth argument must specify keyword used to extract time stamps"
-  fi
-
-  if test "$imageDir" = ""; then
-    check 1 "$funcName: missing/blank seventh argument must specify image directory relative to $srcTop"
-  fi
-
-  if test ! -d "$srcTop/$imageDir"; then
-    check 1 "$funcName: seventh argument $imageDir must specify image directory relative to $srcTop"
-  fi
-
-  if test "$infoDir" = ""; then
-    check 1 "$funcName: missing/blank eighth argument must specify image directory relative to $srcTop"
-  fi
-
-  # Generate image list with time stamps from the content of the image directory.
-  imageTimeStampDir=$(getDirPath "$destTop/$imageDir/..")
-
-  imageTimeStampFile="$imageTimeStampDir/imagelist-with-time.txt"
-
-  if test ! -f $imageTimeStampFile; then
-    extractFITSFileTimes $timeStampKeyword $srcTop "$srcTop/$imageDir" $imageTimeStampFile
-  else
-    echo "File $imageTimeStampFile exists -- skipping extracting times from FITS images"
-  fi
-
-  createInfoFilesFromImageTimeStamps $metakernel $body $bodyFrame $spacecraft $instrumentFrame \
-    $imageTimeStampFile $infoDir
+  (
+    funcName=${FUNCNAME[0]}
+  
+    checkSkip $funcName "$*"
+  
+    metakernel=$1
+    body=$2
+    bodyFrame=$3
+    spacecraft=$4
+    instrumentFrame=$5
+    timeStampKeyword=$6
+    imageDir=$7
+    infoDir=$8
+  
+    if test "$metakernel" = ""; then
+      check 1 "$funcName: missing/blank first argument; must be path to metakernel valid in $tmpSpiceDir"
+    fi
+  
+    if test "$body" = ""; then
+      check 1 "$funcName: missing/blank second argument must specify NAIF-compliant body name"
+    fi
+  
+    if test "$bodyFrame" = ""; then
+      check 1 "$funcName: missing/blank third argument must specify NAIF-compliant body frame ID"
+    fi
+  
+    if test "$spacecraft" = ""; then
+      check 1 "$funcName: missing/blank fourth argument must specify NAIF-compliant spacecraft ID"
+    fi
+  
+    if test "$instrumentFrame" = ""; then
+      check 1 "$funcName: missing/blank fifth argument must specify NAIF-compliant instrument frame ID"
+    fi
+  
+    if test "$timeStampKeyword" = ""; then
+      check 1 "$funcName: missing/blank sixth argument must specify keyword used to extract time stamps"
+    fi
+  
+    if test "$imageDir" = ""; then
+      check 1 "$funcName: missing/blank seventh argument must specify image directory relative to $srcTop"
+    fi
+  
+    if test ! -d "$srcTop/$imageDir"; then
+      check 1 "$funcName: seventh argument $imageDir must specify image directory relative to $srcTop"
+    fi
+  
+    if test "$infoDir" = ""; then
+      check 1 "$funcName: missing/blank eighth argument must specify image directory relative to $srcTop"
+    fi
+  
+    # Generate image list with time stamps from the content of the image directory.
+    imageTimeStampDir=$(getDirPath "$destTop/$imageDir/..")
+  
+    imageTimeStampFile="$imageTimeStampDir/imagelist-with-time.txt"
+  
+    if test ! -f $imageTimeStampFile; then
+      extractFITSFileTimes $timeStampKeyword $srcTop "$srcTop/$imageDir" $imageTimeStampFile
+    else
+      echo "File $imageTimeStampFile exists -- skipping extracting times from FITS images"
+    fi
+  
+    createInfoFilesFromImageTimeStamps $metakernel $body $bodyFrame $spacecraft $instrumentFrame \
+      $imageTimeStampFile $infoDir
+    )
+  )
+  check $?
 }
 
 # Check files in the sumfiles/ directory against make_sumfiles.in for discrepancies, i.e., listed files not
@@ -1480,15 +1510,19 @@ editMetakernels() {
 # param pointing the type of pointing, usually either GASKELL or SPICE
 generateDatabaseTable() {
   (
+    funcName=${FUNCNAME[0]}
+    
+    checkSkip $funcName "$*"
+
     instrument=$1
     pointing=$2
 
     if test "$instrument" = ""; then
-      check 1 "generateDatabaseTable: missing/blank first argument, which must be the name of an instrument"
+      check 1 "$funcName: missing/blank first argument, which must be the name of an instrument"
     fi
 
     if test "$pointing" = ""; then
-      check 1 "generateDatabaseTable: missing/blank second argument, which must be the pointing type"
+      check 1 "$funcName: missing/blank second argument, which must be the pointing type"
     fi
 
     tool=DatabaseGeneratorSql.sh
@@ -1505,7 +1539,7 @@ generateDatabaseTable() {
       tee -ai $logFile
     $pathToTool --root-url file://$processedTop --body "${bodyId^^}" --author "$modelId" --instrument "$instrument" $pointing \
       >> $logFile 2>&1
-    check $? "generateDatabaseTable: $tool had an error. See log file $logFile"
+    check $? "$funcName: $tool had an error. See log file $logFile"
 
   )
   check $?
@@ -1514,6 +1548,8 @@ generateDatabaseTable() {
 linkToProcessedArea() {
   (
     funcName=${FUNCNAME[0]}
+
+    checkSkip $funcName "$*"
 
     modelToUpdate=$1
 
