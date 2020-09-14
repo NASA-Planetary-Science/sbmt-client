@@ -400,7 +400,8 @@ public class BennuConfigs extends SmallBodyViewConfig
         {
             c = new BennuConfigs();
             c.setBodyParameters();
-
+            c.shapeModelFileExtension = ".vtk";
+            c.hasImageMap = false;
             c.dataUsed = ShapeModelDataUsed.SIMULATED;
             c.author = ShapeModelType.GASKELL;
             c.modelLabel = "OREX Simulated";
@@ -411,7 +412,7 @@ public class BennuConfigs extends SmallBodyViewConfig
             c.density = 1.26;
             c.rotationRate = 0.0004061303295118512;
 
-            if(Configuration.isMac()) c.hasBigmap = true;  // Right now bigmap only works on Macs
+            if(Configuration.isMac()) c.hasBigmap = false;  // Right now bigmap only works on Macs
 
             c.hasMapmaker = false;
 
@@ -483,12 +484,12 @@ public class BennuConfigs extends SmallBodyViewConfig
             c.setResolution(ImmutableList.of(
                     "Very Low (12288 plates)", DEFAULT_GASKELL_LABELS_PER_RESOLUTION[0], DEFAULT_GASKELL_LABELS_PER_RESOLUTION[1], DEFAULT_GASKELL_LABELS_PER_RESOLUTION[2], DEFAULT_GASKELL_LABELS_PER_RESOLUTION[3]),
                     ImmutableList.of(12288, DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[0], DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[1], DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[2], DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[3]));
-            c.density = 1260;
+            c.density = 1.260;
             c.rotationRate = 0.00040613;
             if(Configuration.isMac()) c.hasBigmap = true;  // Right now bigmap only works on Macs
 
             c.imagingInstruments = new ImagingInstrument[] { c.generatePolycamInstrument("bennu_altwgspcv20181109b_polycam", "bennu_altwgspcv20181109b_polycam", false),
-            												 c.generatePolycamInstrument("bennu_altwgspcv20181109b_mapcam", "bennu_altwgspcv20181109b_mapcam", false)
+            												 c.generateMapcamInstrument("bennu_altwgspcv20181109b_mapcam", "bennu_altwgspcv20181109b_mapcam", false)
             };
             c.hasStateHistory = true;
             c.timeHistoryFile = c.rootDirOnServer + "/history/timeHistory.bth";
@@ -513,7 +514,7 @@ public class BennuConfigs extends SmallBodyViewConfig
             c.setResolution(ImmutableList.of(
                     "Very Low (12288 plates)", DEFAULT_GASKELL_LABELS_PER_RESOLUTION[0], DEFAULT_GASKELL_LABELS_PER_RESOLUTION[1]),
                     ImmutableList.of(12288, DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[0], DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[1]));
-            c.density = 1260;
+            c.density = 1.260;
             c.rotationRate = 0.00040613;
             if(Configuration.isMac()) c.hasBigmap = true;  // Right now bigmap only works on Macs
 
@@ -562,7 +563,7 @@ public class BennuConfigs extends SmallBodyViewConfig
             c.setResolution(ImmutableList.of(
                     "Very Low (12288 plates)", DEFAULT_GASKELL_LABELS_PER_RESOLUTION[0], DEFAULT_GASKELL_LABELS_PER_RESOLUTION[1], DEFAULT_GASKELL_LABELS_PER_RESOLUTION[2], DEFAULT_GASKELL_LABELS_PER_RESOLUTION[3]),
                     ImmutableList.of(12288, DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[0], DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[1], DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[2], DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[3]));
-            c.density = 1260;
+            c.density = 1.260;
             c.rotationRate = 0.00040613;
             if(Configuration.isMac()) c.hasBigmap = true;  // Right now bigmap only works on Macs
 
@@ -604,7 +605,7 @@ public class BennuConfigs extends SmallBodyViewConfig
             c.setResolution(ImmutableList.of(
                     "Very Low (12288 plates)", DEFAULT_GASKELL_LABELS_PER_RESOLUTION[0], DEFAULT_GASKELL_LABELS_PER_RESOLUTION[1], DEFAULT_GASKELL_LABELS_PER_RESOLUTION[2], DEFAULT_GASKELL_LABELS_PER_RESOLUTION[3]),
                     ImmutableList.of(12288, DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[0], DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[1], DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[2], DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[3]));
-            c.density = 1260;
+            c.density = 1.260;
             c.rotationRate = 0.00040613;
             if(Configuration.isMac()) c.hasBigmap = true;  // Right now bigmap only works on Macs
 
@@ -645,7 +646,7 @@ public class BennuConfigs extends SmallBodyViewConfig
             c.setResolution(ImmutableList.of(
                     "Very Low (12288 plates)", DEFAULT_GASKELL_LABELS_PER_RESOLUTION[0], DEFAULT_GASKELL_LABELS_PER_RESOLUTION[1], DEFAULT_GASKELL_LABELS_PER_RESOLUTION[2], DEFAULT_GASKELL_LABELS_PER_RESOLUTION[3]),
                     ImmutableList.of(12288, DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[0], DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[1], DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[2], DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[3]));
-            c.density = 1260;
+            c.density = 1.260;
             c.rotationRate = 0.00040613;
             if(Configuration.isMac()) c.hasBigmap = true;  // Right now bigmap only works on Macs
 
@@ -688,7 +689,7 @@ public class BennuConfigs extends SmallBodyViewConfig
             c.setResolution(ImmutableList.of(
                     "Very Low (12288 plates)", DEFAULT_GASKELL_LABELS_PER_RESOLUTION[0], DEFAULT_GASKELL_LABELS_PER_RESOLUTION[1], DEFAULT_GASKELL_LABELS_PER_RESOLUTION[2], DEFAULT_GASKELL_LABELS_PER_RESOLUTION[3]),
                     ImmutableList.of(12288, DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[0], DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[1], DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[2], DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[3]));
-            c.density = 1260;
+            c.density = 1.260;
             c.rotationRate = 0.00040613;
             if(Configuration.isMac()) c.hasBigmap = true;  // Right now bigmap only works on Macs
 
@@ -1227,6 +1228,7 @@ public class BennuConfigs extends SmallBodyViewConfig
             c = new BennuConfigs();
             c.setBodyParameters();
 
+            c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
             c.author = ShapeModelType.provide("ALTWG-SPC-v20191027");
             c.modelLabel = c.author.name();
             c.rootDirOnServer = "/bennu/altwg-spc-v20191027";
