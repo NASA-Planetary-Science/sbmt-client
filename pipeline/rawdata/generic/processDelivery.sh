@@ -29,16 +29,14 @@
 # Do not remove or comment out this block. It prevents direct invocation.
 #-------------------------------------------------------------------------------
 if test "$invokedByRunner" != true; then
-  echo "This script must be invoked by runDataProcessing.sh" >&2
-  exit 1
+  check 1 "This script must be invoked by runDataProcessing.sh"
 fi
 #-------------------------------------------------------------------------------
 
-# When tailoring is complete, remove or comment out the next two lines
+# When tailoring is complete, remove or comment out the next line
 # before invoking using runDataProcessing.sh to actually process the
 # delivery.
-echo "Tailor this script first for the specific delivery being processed." >&2
-exit 1
+check 1 "Tailor this script first for the specific delivery being processed."
 
 #-------------------------------------------------------------------------------
 # Update this block for each delivery. All information below should be
