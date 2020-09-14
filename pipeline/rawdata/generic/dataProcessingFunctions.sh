@@ -453,8 +453,12 @@ copyFile() {
 # Then call this, passing src and dest relative to these "top" directories.
 copyDir() {
   (
+    funcName=${FUNCNAME[0]}
+
+    checkSkip $funcName "$*"
+
     if test "x$1" = x; then
-      echo "copyDir: source directory name is not set" >&2
+      echo "$funcName: source directory name is not set" >&2
     fi
     src=$1
     if test "x$2" = x; then
@@ -464,11 +468,11 @@ copyDir() {
     fi
 
     if test "x$srcTop" = x; then
-      echo "copyDir: Variable srcTop is not set" >&2
+      echo "$funcName: Variable srcTop is not set" >&2
       exit 1
     fi
     if test "x$destTop" = x; then
-      echo "copyDir: Variable destTop is not set" >&2
+      echo "$funcName: Variable destTop is not set" >&2
       exit 1
     fi
     doRsyncDir $srcTop/$src $destTop/$dest "$3"
@@ -1236,9 +1240,9 @@ createInfoFilesFromImageTimeStamps() {
 createInfoFilesFromFITSImages() {
   (
     funcName=${FUNCNAME[0]}
-  
+
     checkSkip $funcName "$*"
-  
+
     metakernel=$1
     body=$2
     bodyFrame=$3
@@ -1247,54 +1251,54 @@ createInfoFilesFromFITSImages() {
     timeStampKeyword=$6
     imageDir=$7
     infoDir=$8
-  
+
     if test "$metakernel" = ""; then
       check 1 "$funcName: missing/blank first argument; must be path to metakernel valid in $tmpSpiceDir"
     fi
-  
+
     if test "$body" = ""; then
       check 1 "$funcName: missing/blank second argument must specify NAIF-compliant body name"
     fi
-  
+
     if test "$bodyFrame" = ""; then
       check 1 "$funcName: missing/blank third argument must specify NAIF-compliant body frame ID"
     fi
-  
+
     if test "$spacecraft" = ""; then
       check 1 "$funcName: missing/blank fourth argument must specify NAIF-compliant spacecraft ID"
     fi
-  
+
     if test "$instrumentFrame" = ""; then
       check 1 "$funcName: missing/blank fifth argument must specify NAIF-compliant instrument frame ID"
     fi
-  
+
     if test "$timeStampKeyword" = ""; then
       check 1 "$funcName: missing/blank sixth argument must specify keyword used to extract time stamps"
     fi
-  
+
     if test "$imageDir" = ""; then
       check 1 "$funcName: missing/blank seventh argument must specify image directory relative to $srcTop"
     fi
-  
+
     if test ! -d "$srcTop/$imageDir"; then
       check 1 "$funcName: seventh argument $imageDir must specify image directory relative to $srcTop"
     fi
-  
+
     if test "$infoDir" = ""; then
       check 1 "$funcName: missing/blank eighth argument must specify image directory relative to $srcTop"
     fi
-  
+
     # Generate image list with time stamps from the content of the image directory.
     imageTimeStampDir=$(getDirPath "$destTop/$imageDir/..")
-  
+
     imageTimeStampFile="$imageTimeStampDir/imagelist-with-time.txt"
-  
+
     if test ! -f $imageTimeStampFile; then
       extractFITSFileTimes $timeStampKeyword $srcTop "$srcTop/$imageDir" $imageTimeStampFile
     else
       echo "File $imageTimeStampFile exists -- skipping extracting times from FITS images"
     fi
-  
+
     createInfoFilesFromImageTimeStamps $metakernel $body $bodyFrame $spacecraft $instrumentFrame \
       $imageTimeStampFile $infoDir
     )
@@ -1511,7 +1515,7 @@ editMetakernels() {
 generateDatabaseTable() {
   (
     funcName=${FUNCNAME[0]}
-    
+
     checkSkip $funcName "$*"
 
     instrument=$1
