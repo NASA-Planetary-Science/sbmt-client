@@ -1301,7 +1301,6 @@ createInfoFilesFromFITSImages() {
 
     createInfoFilesFromImageTimeStamps $metakernel $body $bodyFrame $spacecraft $instrumentFrame \
       $imageTimeStampFile $infoDir
-    )
   )
   check $?
 }
