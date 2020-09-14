@@ -21,7 +21,7 @@
 # Delivery: redmine-XXXX
 # Notes:
 # Information specific to this delivery and/or its processing should be
-# described here.
+# included here.
 #
 #-------------------------------------------------------------------------------
 
@@ -64,10 +64,21 @@ modelId="ideal_impact1-20200629-v01"
 # plate colorings and images.
 bodyId="Didymos"
 
+# Uncomment and edit this as needed if updating an already-processed model as
+# part of a delivery sequence. Because this in-effect changes files that
+# have already been processed, this should only be done to update
+# models that have not been deployed yet. To update a model that was already
+# deployed, need to reprocess it first, then update that processed model.
+# modelToUpdate="$pipelineProcessed/didymos/redmine-2197"
+
+# Uncomment and edit this as needed if generating INFO files from SPICE
+# kernels. Only used in this case.
+# spiceKernelTop="$pipelineProcessed/$scId/redmine-2200/$scId/spice/$instrument"
+
 #-------------------------------------------------------------------------------
 
 #-------------------------------------------------------------------------------
-# Delivery to raw data.
+# Delivery to Raw-data.
 #-------------------------------------------------------------------------------
 srcTop="$deliveryTop"
 destTop="$rawDataTop/$outputTop"
@@ -79,7 +90,7 @@ copyDir .
 #-------------------------------------------------------------------------------
 
 #-------------------------------------------------------------------------------
-# Raw data to processed. Depending on what is being delivered, include,
+# Raw-data to Processed. Depending on what is being delivered, include,
 # comment out, and/or edit the following blocks.
 #-------------------------------------------------------------------------------
 
@@ -90,6 +101,9 @@ copyDir .
 #-------------------------------------------------------------------------------
 srcTop="$rawDataTop/$outputTop"
 destTop="$processedTop/$outputTop"
+
+# Link to the directory in the processing area that is being updated.
+# linkToProcessedArea $modelToUpdate $destToprea
 
 # Generate complete set of model metadata.
 # generateModelMetadata $processedTop
@@ -121,7 +135,66 @@ destTop="$processedTop/$outputTop"
 # End SPICE block.
 #-------------------------------------------------------------------------------
 
-# createInfoFilesFromFITSImages imaging/draco/spice/generic.mk \
-#   Didymos Didymos DART Draco COR_UTC \
-#   imaging/draco/images imaging/draco/infofiles
+# Below here are only instrument data processing blocks. To avoid editing
+# this long and complicated section more than necessary to include/exclude
+# instrument data when tailoring this script, use a flag to skip execution
+# rather than commenting out. This also can be convenient to skip sections
+# when re-processing.
+#-------------------------------------------------------------------------------
+
+# This will cause the script to skip functions until skipSection is changed
+# to something else.
+skipSection=true
+
+# Begin Instrument processing section, which contains one or more sub-blocks.
+#-------------------------------------------------------------------------------
+
+# Need an Instrument sub-block like below for each instrument in this delivery.
+
+# Instrument sub-block.
+#-------------------------------------------------------------------------------
+instrument=draco
+
+#-------------------------------------------------------------------------------
+# Process SPICE inputs for this sub-block. This section is only needed
+# if this delivery requires generating INFO files from SPICE kernels
+# for this instrument.
+
+# Top of directory containing SPICE metakernel and kernels.
+scId=DART
+
+metakernel=imact.tm # relative to $spiceKernelTop.
+bodyId=${bodyId^^} # usually this is same as used for coloring, but all caps.
+bodyFrame=920065803_FIXED
+instFrame=DART_DRACO_2X2
+timeKeyword=COR_UTC # This is only used if extracting times from FITS files
+imageDir=$instrument/images
+infoFileDir=$instrument/infofiles
+
+# Make SPICE kernels available in the temporary SPICE directory. This is so
+# that any absolute paths in the metakernel may be edited to be as short
+# as possible.
+createLink "$spiceKernelTop" $tmpSpiceDir
+
+# Generate the info files for the images from the SPICE kernels using times in
+# FITS images. If the images don't have time stamps, can use
+# createInfoFilesFromTimeStamps instead.
+createInfoFilesFromFITSImages $metakernel \
+  $bodyId $bodyFrame $scId $instFrame $timeKeyword \
+  $imageDir  $infoFileDir
+
+# End SPICE processing for this instrument.
+#-------------------------------------------------------------------------------
+
+# Update database tables.
+# This symbolic link is needed because the database generator appends "/data"
+# to the root URL.
+createRelativeLink $processedTop $processedTop/data
+
+generateDatabaseTable ${instrument^^} SPICE
+
+# End Instrument sub-block.
+#-------------------------------------------------------------------------------
+
+# End Instrument processing sub-blocks.
 #-------------------------------------------------------------------------------
