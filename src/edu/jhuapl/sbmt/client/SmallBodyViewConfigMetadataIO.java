@@ -7,7 +7,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Vector;
 
-import com.github.davidmoten.guavamini.Preconditions;
+import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
 
 import edu.jhuapl.saavtk.config.ViewConfig;
