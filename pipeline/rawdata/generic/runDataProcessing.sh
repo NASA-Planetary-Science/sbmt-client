@@ -26,7 +26,7 @@
 #
 #        scriptName: the name of the script currently being run; intended for
 #                    use in output text, or for log file names, etc.
-# 
+#
 #       sbmtCodeTop: where sbmt and saavtk are checked out and built.
 #
 #            logTop: absolute path to the location under raw data where
@@ -51,7 +51,7 @@
 #
 #         serverTop: the top of the server area, in which a symbolic link
 #                    to the deployed directory will be created during
-#                    deployment. Normally this is the test server. 
+#                    deployment. Normally this is the test server.
 #
 #  modelMetadataDir: directory name under which generated model metadata files
 #                    are located.
@@ -148,11 +148,11 @@ scriptName=`echo $processingScript | sed 's:.*/::'`
 
 #-------------------------------------------------------------------------------
 # Assume the absolute path to the processing script is:
-# /project/sbmtpipeline/rawdata/arbitrary/path/to/model/or/imager/redmine-1234/processDelivery.sh
+# /project/sbmtpipeline/rawdata/arbitrary/path/to/model/or/instrument/redmine-1234/processDelivery.sh
 # The next block of code extracts these variables:
 #     pipelineTop = /project/sbmtpipeline
-#     rawDataTop = /project/sbmtpipeline/rawdata/arbitrary/path/to/model/or/imager/redmine-1234
-#     processingPath = arbitrary/path/to/model/or/imager/redmine-1234
+#     rawDataTop = /project/sbmtpipeline/rawdata/arbitrary/path/to/model/or/instrument/redmine-1234
+#     processingPath = arbitrary/path/to/model/or/instrument/redmine-1234
 # Guess the root of the raw data hierarchy (the directory containing rawdata/).
 # Locate it based on the processing script location.
 # This is probably several levels up from the supplied payload script.
