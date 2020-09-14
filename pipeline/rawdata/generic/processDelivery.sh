@@ -105,7 +105,7 @@ srcTop="$rawDataTop/$outputTop"
 destTop="$processedTop/$outputTop"
 
 # Link to the directory in the processing area that is being updated.
-# linkToProcessedArea $modelToUpdate $destToprea
+# linkToProcessedArea $modelToUpdate $destTop
 
 # Generate complete set of model metadata.
 # generateModelMetadata $processedTop
