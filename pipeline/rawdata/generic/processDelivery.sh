@@ -150,12 +150,17 @@ skipSection=true
 
 # Begin Instrument processing section, which contains one or more sub-blocks.
 #-------------------------------------------------------------------------------
+srcTop="$rawDataTop/$outputTop"
+destTop="$processedTop/$outputTop"
 
 # Need an Instrument sub-block like below for each instrument in this delivery.
 
 # Instrument sub-block.
 #-------------------------------------------------------------------------------
 instrument=draco
+
+# Copy all delivered instrument files.
+copyDir $instrument
 
 #-------------------------------------------------------------------------------
 # Process SPICE inputs for this sub-block. This section is only needed
