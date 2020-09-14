@@ -118,7 +118,7 @@ fi
 
 echo
 echo "********************************************************************************"
-echo "$dateStamp: invoked to run $runnerScript"
+echo "$dateStamp: starting to run $runnerScript"
 echo "********************************************************************************"
 
 thisDir=$(dirname "$0")
@@ -226,5 +226,10 @@ echo "--------------------------------------------------------------------------
 invokedByRunner=true
 
 . "$rawDataTop/$(basename $processingScript)"
+
+echo "--------------------------------------------------------------------------------"
+echo "Done with processing that started at $dateStamp"
+echo "Logs from this run are in $logTop"
+date '+%Y-%m-%dT%H%M%S'
 echo "--------------------------------------------------------------------------------"
 echo
