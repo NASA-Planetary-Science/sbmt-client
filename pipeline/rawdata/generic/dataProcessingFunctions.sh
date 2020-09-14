@@ -126,7 +126,7 @@ getDirPath() {
     else
       dir=$(realpath -m "$dir/..")
       check $? "$funcName: cannot determine path to parent directory of $1"
-      
+
       if test ! -d "$dir"; then
         check 1 "$funcName: parent of $1 does not exist"
       fi
@@ -1507,6 +1507,38 @@ generateDatabaseTable() {
       >> $logFile 2>&1
     check $? "generateDatabaseTable: $tool had an error. See log file $logFile"
 
+  )
+  check $?
+}
+
+linkToProcessedArea() {
+  (
+    funcName=${FUNCNAME[0]}
+
+    modelToUpdate=$1
+
+    if test "$modelToUpdate" = ""; then
+      check 1 "$funcName: mising first argument, which must be the full path to the processed model to update"
+    fi
+
+    modelToUpdate=`realpath -e $modelToUpdate`
+    check $? "$funcName: realpath cannot determine path of $modelToUpdate (must exist)"
+
+    if test `echo $modelToUpdate | grep -c ^$pipelineProcessed` -eq 0; then
+      check $? "$funcName: only can link to a model that is located under the path $pipelineProcessed"
+    fi
+
+    linkName=$2
+
+    if test "$linkName" = ""; then
+      check 1 "$funcName: missing second argument, which must be the link name"
+    fi
+
+    if test -e "$linkName"; then
+      check 1 "$funcName: second argument $linkName may not exist when linking to a processed model"
+    fi
+
+    createRelativeLink $modelToUpdate $linkName
   )
   check $?
 }
