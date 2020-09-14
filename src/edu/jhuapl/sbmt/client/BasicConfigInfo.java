@@ -18,7 +18,7 @@ public class BasicConfigInfo implements MetadataManager
 
     // This variable gives the prefix used to locate configuration metadata
     // relative to the top of the model.
-    private static final String ConfigPathPrefix = "allBodies-" + configInfoVersion;
+    private static final String ConfigPathPrefix = "allBodies-" + configInfoVersion + "-2159";
 
     public static String getConfigInfoVersion()
     {
