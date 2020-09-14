@@ -72,13 +72,21 @@ bodyId="Didymos"
 srcTop="$deliveryTop"
 destTop="$rawDataTop/$outputTop"
 
+# Copying the delivery to raw data should suffice for most deliveries.
 # Copy all delivered files.
 copyDir .
 
 #-------------------------------------------------------------------------------
 
 #-------------------------------------------------------------------------------
-# Raw data to processed.
+# Raw data to processed. Depending on what is being delivered, include,
+# comment out, and/or edit the following blocks.
+#-------------------------------------------------------------------------------
+
+# Begin standard model block. This is for most model-associated items, and
+# does not include image/spectra/lidar/spice related items. This block
+# properly does not include a top-level copyDir command. Rather, each type
+# of model-associated item has dedicated functions as shown below.
 #-------------------------------------------------------------------------------
 srcTop="$rawDataTop/$outputTop"
 destTop="$processedTop/$outputTop"
@@ -94,7 +102,25 @@ destTop="$processedTop/$outputTop"
 
 # processDTMs
 
-# Update/check the SPICE parameters.
+# End standard model block.
+#-------------------------------------------------------------------------------
+
+# Begin SPICE block. This is for anything that will use SPICE pointings, either
+# directly or indirectly.
+#-------------------------------------------------------------------------------
+# SPICE kernel processing block.
+srcTop="$rawDataTop/$outputTop"
+destTop="$processedTop/$outputTop"
+
+# Copy all delivered files.
+# copyDir .
+
+# Unpack any archives that are present in the delivered files.
+# unpackArchives $destTop
+
+# End SPICE block.
+#-------------------------------------------------------------------------------
+
 # createInfoFilesFromFITSImages imaging/draco/spice/generic.mk \
 #   Didymos Didymos DART Draco COR_UTC \
 #   imaging/draco/images imaging/draco/infofiles
