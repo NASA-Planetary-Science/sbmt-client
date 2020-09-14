@@ -84,10 +84,10 @@ srcTop="$rawDataTop/$outputTop"
 destTop="$processedTop/$outputTop"
 
 # Generate complete set of model metadata.
-generateModelMetadata $processedTop
+# generateModelMetadata $processedTop
 
 # Process any/all standard model files.
-processStandardModelFiles
+# processStandardModelFiles
 
 # Process plate colorings.
 # discoverPlateColorings
