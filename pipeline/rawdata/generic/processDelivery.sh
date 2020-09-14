@@ -43,6 +43,8 @@ exit 1
 #-------------------------------------------------------------------------------
 # Update this block for each delivery. All information below should be
 # included in the redmine issue and/or the delivery aamanifest.txt file.
+# Then tailor the rest of the script to use the data in this block as needed
+# to process this delivery. 
 #-------------------------------------------------------------------------------
 
 # This is the full path to the delivery as provided by a scientist. This may
