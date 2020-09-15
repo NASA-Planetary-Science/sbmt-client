@@ -156,16 +156,13 @@ public class DartConfigs
         c.imageSearchDefaultMaxSpacecraftDistance = 1.0e3;
         c.imageSearchDefaultMaxResolution = 1.0e3;
 
-        // This should not be hardcoded here, need to revise processes to have this injected by the database generator.
-        String bodiesDir = "/project/sbmt2/sbmt/data/bodies";
-
         c.databaseRunInfos = new DBRunInfo[] { //
                 new DBRunInfo(ImageSource.SPICE, Instrument.DRACO, body.toString(), //
-                        bodiesDir + dracoDir + "/imagelist-fullpath-info.txt", dracoTable), //
+                        dracoDir + "/imagelist-fullpath-info.txt", dracoTable), //
                 new DBRunInfo(ImageSource.SPICE, Instrument.LUKE, body.toString(), //
-                        bodiesDir + lukeDir + "/imagelist-fullpath-info.txt", lukeTable), //
+                        lukeDir + "/imagelist-fullpath-info.txt", lukeTable), //
                 new DBRunInfo(ImageSource.SPICE, Instrument.LEIA, body.toString(), //
-                        bodiesDir + leiaDir + "/imagelist-fullpath-info.txt", leiaTable) //
+                        leiaDir + "/imagelist-fullpath-info.txt", leiaTable) //
         };
 
         return c;

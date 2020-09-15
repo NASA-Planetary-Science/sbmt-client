@@ -622,7 +622,6 @@ public class DatabaseGeneratorSql
 
         // basic default configuration, most of these will be overwritten by the configureMission() method
         Configuration.setAPLVersion(aplVersion);
-        Configuration.setRootURL(rootURL);
 
         // authentication
         Configuration.authenticate();
@@ -665,6 +664,10 @@ public class DatabaseGeneratorSql
             {
                 if (ri.remotePathToFileList != null)
                     pathToFileList = ri.remotePathToFileList;
+            }
+            else
+            {
+                pathToFileList = safeUrlPaths.getUrl(safeUrlPaths.getString(rootURL, pathToFileList));
             }
 
             System.out.println("Generating: " + pathToFileList + ", mode=" + mode);
