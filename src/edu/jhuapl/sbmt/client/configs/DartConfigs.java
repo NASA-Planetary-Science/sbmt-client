@@ -129,21 +129,21 @@ public class DartConfigs
                 new ImagingInstrument( //
                         SpectralImageMode.MONO, //
                         new GenericPhpQuery(dracoDir, dracoTable, dracoTable, c.rootDirOnServer + "/draco/gallery"), //
-                        ImageType.GENERIC_IMAGE, //
+                        ImageType.valueOf("DART_IMAGE"), //
                         InfoFiles, //
                         Instrument.DRACO //
                 ),
                 new ImagingInstrument( //
                         SpectralImageMode.MONO, //
                         new GenericPhpQuery(lukeDir, lukeTable, lukeTable, c.rootDirOnServer + "/luke/gallery"), //
-                        ImageType.GENERIC_IMAGE, //
+                        ImageType.valueOf("LUKE_IMAGE"), //
                         InfoFiles, //
                         Instrument.LUKE //
                 ),
                 new ImagingInstrument( //
                         SpectralImageMode.MONO, //
                         new GenericPhpQuery(leiaDir, leiaTable, leiaTable, c.rootDirOnServer + "/leia/gallery"), //
-                        ImageType.GENERIC_IMAGE, //
+                        ImageType.valueOf("LEIA_IMAGE"), //
                         InfoFiles, //
                         Instrument.LEIA //
                 ),
