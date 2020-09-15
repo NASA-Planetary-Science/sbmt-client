@@ -42,7 +42,7 @@ check 1 "Tailor this script first for the specific delivery being processed."
 # Update this block for each delivery. All information below should be
 # included in the redmine issue and/or the delivery aamanifest.txt file.
 # Then tailor the rest of the script to use the data in this block as needed
-# to process this delivery. 
+# to process this delivery.
 #-------------------------------------------------------------------------------
 
 # This is the full path to the delivery as provided by a scientist. This may
@@ -69,11 +69,11 @@ bodyId="Didymos"
 # have already been processed, this should only be done to update
 # models that have not been deployed yet. To update a model that was already
 # deployed, need to reprocess it first, then update that processed model.
-# modelToUpdate="$pipelineProcessed/didymos/redmine-2197"
+# areaToUpdate="$pipelineProcessed/didymos/redmine-2197"
 
 # Uncomment and edit this as needed if generating INFO files from SPICE
 # kernels. Only used in this case.
-# spiceKernelTop="$pipelineProcessed/$scId/redmine-2200/$scId/spice/$instrument"
+# spiceKernelTop="$pipelineProcessed/dart/redmine-2200/dart/spice"
 
 #-------------------------------------------------------------------------------
 
@@ -103,7 +103,7 @@ srcTop="$rawDataTop/$outputTop"
 destTop="$processedTop/$outputTop"
 
 # Link to the directory in the processing area that is being updated.
-# linkToProcessedArea $modelToUpdate $destTop
+# linkToProcessedArea $areaToUpdate $processedTop
 
 # Generate complete set of model metadata.
 # generateModelMetadata $processedTop
@@ -165,10 +165,9 @@ copyDir $instrument
 # if this delivery requires generating INFO files from SPICE kernels
 # for this instrument.
 
-# Top of directory containing SPICE metakernel and kernels.
 scId=DART
 
-metakernel=imact.tm # relative to $spiceKernelTop.
+metakernel=impact.tm # relative to $tmpSpiceDir.
 bodyId=${bodyId^^} # usually this is same as used for coloring, but all caps.
 bodyFrame=920065803_FIXED
 instFrame=DART_DRACO_2X2
@@ -179,7 +178,7 @@ infoFileDir=$instrument/infofiles
 # Make SPICE kernels available in the temporary SPICE directory. This is so
 # that any absolute paths in the metakernel may be edited to be as short
 # as possible.
-createLink "$spiceKernelTop" $tmpSpiceDir
+createLink "$spiceKernelTop/$instrument" $tmpSpiceDir
 
 # Generate the info files for the images from the SPICE kernels using times in
 # FITS images. If the images don't have time stamps, can use
