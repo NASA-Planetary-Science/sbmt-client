@@ -537,7 +537,20 @@ public class DatabaseGeneratorSql
      * The version argument is optional, since models may not have a version.  The SmallBodyViewConfig handles this automatically (it defaults to null)
      *
      */
-    public static void main(String[] args) throws IOException
+    public static void main(String[] args)
+    {
+        try
+        {
+            doMain(args);
+        } catch (Throwable t)
+        {
+            t.printStackTrace();
+            System.exit(1);
+        }
+        System.exit(0);
+    }
+
+    protected static void doMain(String[] args) throws Exception
     {
         final SafeURLPaths safeUrlPaths = SafeURLPaths.instance();
         // default configuration parameters
