@@ -1554,16 +1554,16 @@ linkToProcessedArea() {
 
     checkSkip $funcName "$*"
 
-    modelToUpdate=$1
+    target=$1
 
-    if test "$modelToUpdate" = ""; then
+    if test "$target" = ""; then
       check 1 "$funcName: mising first argument, which must be the full path to the processed model to update"
     fi
 
-    modelToUpdate=`realpath -e $modelToUpdate`
-    check $? "$funcName: realpath cannot determine path of $modelToUpdate (must exist)"
+    target=`realpath -e $target`
+    check $? "$funcName: realpath cannot determine path of $target (must exist)"
 
-    if test `echo $modelToUpdate | grep -c ^$pipelineProcessed` -eq 0; then
+    if test `echo $target | grep -c ^$pipelineProcessed` -eq 0; then
       check $? "$funcName: only can link to a model that is located under the path $pipelineProcessed"
     fi
 
@@ -1574,10 +1574,13 @@ linkToProcessedArea() {
     fi
 
     if test -e "$linkName"; then
-      check 1 "$funcName: second argument $linkName may not exist when linking to a processed model"
+      linkedArea=`realpath $linkName`
+      if test "$linkedArea" != "$target"; then
+        check 1 "$funcName: second argument $linkName may not exist when linking to a processed model"
+      fi
     fi
 
-    createRelativeLink $modelToUpdate $linkName
+    createRelativeLink $target $linkName
   )
   check $?
 }
