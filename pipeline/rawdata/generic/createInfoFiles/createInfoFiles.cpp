@@ -195,7 +195,8 @@ int main(int argc, char** argv)
     cout << "Initializing SPICE with metakernel " << metakernel << endl;
     furnsh_c(metakernel.c_str());
     cout << "Furnished SPICE files" << endl;
-    erract_c("SET", 1, (char*)"RETURN");
+    // DON'T IGNORE ERRORS, FOR GOODNESS' SAKE!!!!!!!
+    // erract_c("SET", 1, (char*)"RETURN");
 
     vector< pair<string, string> > fitfiles;
     try {
