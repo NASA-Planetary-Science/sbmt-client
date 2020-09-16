@@ -160,7 +160,6 @@ destTop="$processedTop/$outputTop"
 scId=DART
 bodyId=${bodyId^^} # usually this is same as used for coloring, but all caps.
 bodyFrame=920065803_FIXED # Didymos-specific.
-timeKeyword=COR_UTC # This is only used if extracting times from FITS files.
 
 # End common (all-instrument) header/setup
 #-------------------------------------------------------------------------------
@@ -185,6 +184,7 @@ metakernel=impact.tm # relative to $tmpSpiceDir.
 instFrame=DART_DRACO_2X2 # This is specific to DRACO.
 imageDir=$instrument/images
 infoFileDir=$instrument/infofiles
+timeKeyword=COR_UTC # This is only used if extracting times from FITS files.
 
 # Make SPICE kernels available in the temporary SPICE directory. This is so
 # that any absolute paths in the metakernel may be edited to be as short
@@ -228,6 +228,7 @@ metakernel=luke.tm # relative to $tmpSpiceDir.
 instFrame=LICIA_PL-1 # THIS IS SPECIFIC TO LUKE.
 imageDir=$instrument/images
 infoFileDir=$instrument/infofiles
+timeKeyword=IMG_UTC # This is only used if extracting times from FITS files.
 
 # Make SPICE kernels available in the temporary SPICE directory. This is so
 # that any absolute paths in the metakernel may be edited to be as short
@@ -271,6 +272,7 @@ metakernel=leia.tm # relative to $tmpSpiceDir.
 instFrame=LICIA_PL-2 # THIS IS SPECIFIC TO LEIA.
 imageDir=$instrument/images
 infoFileDir=$instrument/infofiles
+timeKeyword=IMG_UTC # This is only used if extracting times from FITS files.
 
 # Make SPICE kernels available in the temporary SPICE directory. This is so
 # that any absolute paths in the metakernel may be edited to be as short
