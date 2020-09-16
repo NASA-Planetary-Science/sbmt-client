@@ -1106,31 +1106,33 @@ processDTMs() {
 # Next argument is the output file that will hold the comma-separated file-name, date/time.
 extractFITSFileTimes() {
   (
+    funcName=${FUNCNAME[0]}
+
     timeStampKeyword=$1
     topDir=$(getDirPath "$2")
     dir=$(getDirPath "$3")
     listFile=$4
 
     if test "$timeStampKeyword" = ""; then
-      check 1 "extractFITSFileTimes: timeStampKeyword argument is blank."
+      check 1 "$funcName: timeStampKeyword argument is blank."
     fi
 
     if test "$dir" = "$topDir"; then
       relPath=
     elif test `echo $dir | grep -c "^$topDir/"` -eq 0; then
-      check 1 "extractFITSFileTimes: top directory $topDir is not an ancestor of directory $dir"
+      check 1 "$funcName: top directory $topDir is not an ancestor of directory $dir"
     else
       relPath=`echo $dir | sed "s:^$topDir/::"`
     fi
 
     if test "$listFile" = ""; then
-      check 1 "extractFITSFileTimes: listFile argument is blank."
+      check 1 "$funcName: listFile argument is blank."
     fi
 
     # Need Ftools for this.
     type ftlist
     if test $? -ne 0; then
-      check 1 "extractFITSFileTimes: need to have Ftools in your path for this to work" >&2
+      check 1 "$funcName: need to have Ftools in your path for this to work" >&2
     fi
 
     createParentDir $listFile
@@ -1145,12 +1147,17 @@ extractFITSFileTimes() {
         # with the seds. Also the output should have a T rather than space separating the date from the time.
         value=`ftlist "infile=$dir/$file" option=k include=$timeStampKeyword 2> /dev/null | head -1 | \
           sed 's:[^=]*=[  ]*::' | sed 's:[  ]*/.*$::' | sed "s:^''*::" | sed "s:''*$::" | sed 's: :T:'`
-        if test $? -eq 0 -a "$value" != ""; then
-          echo "$relPath/$file, $value" >> $listFile
-          check $? "extractFITSFileTimes: unable to write to $listFile"
-        else
-          echo "extractFITSFileTimes: unable to extract time; skipping file $file" >&2
+        check $? "$funcName: ftlist command failed to extract time from file $dir/$file"
+
+        # If the keyword isn't present, the above command ends up with no time in it but doesn't return non-0 status.
+        # Confirm the value at least starts with a numeral.
+        if test `echo $value | grep -c '^[0-9]'` -eq 0; then
+          check 1 "$funcName: was unable to get a time for keyword $timeStampKeyword from file $dir/$file"
         fi
+
+        echo "$relPath/$file, $value" >> $listFile
+        check $? "$funcName: unable to write to $listFile"
+
       fi
     done
   )
