@@ -1271,7 +1271,7 @@ createInfoFilesFromImageTimeStamps() {
     $createInfoFilesDir/createInfoFiles $metakernel $body $bodyFrame $spacecraft $instrumentFrame \
       $imageTimeStampFile "$destTop/$infoDir" $imageListFile $imageListFullPathFile $missingInfoList > \
       $logTop/createInfoFiles.txt 2>&1
-    check $? "$funcName: creating info files failed. See log file $logTop/createInfoFiles.txt."
+    check $? "$funcName: creating info files failed. See log file $logTop/createInfoFiles.txt"
   )
   check $?
 }
