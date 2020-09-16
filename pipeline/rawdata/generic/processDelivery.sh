@@ -196,7 +196,7 @@ createLink $spiceKernelTop/$instrument $tmpSpiceDir
 # FITS images. If the images don't have time stamps, can use
 # createInfoFilesFromTimeStamps instead.
 createInfoFilesFromFITSImages $metakernel \
-  $bodyId $bodyFrame $scId $instFrame $timeKeyword \
+  $bodyId $bodyFrame $scId $instrument $instFrame $timeKeyword \
   $imageDir  $infoFileDir
 #-------------------------------------------------------------------------------
 
@@ -239,7 +239,7 @@ createLink $spiceKernelTop/$instrument $tmpSpiceDir
 # FITS images. If the images don't have time stamps, can use
 # createInfoFilesFromTimeStamps instead.
 createInfoFilesFromFITSImages $metakernel \
-  $bodyId $bodyFrame $scId $instFrame $timeKeyword \
+  $bodyId $bodyFrame $scId $instrument $instFrame $timeKeyword \
   $imageDir  $infoFileDir
 #-------------------------------------------------------------------------------
 
@@ -282,7 +282,7 @@ createLink $spiceKernelTop/$instrument $tmpSpiceDir
 # FITS images. If the images don't have time stamps, can use
 # createInfoFilesFromTimeStamps instead.
 createInfoFilesFromFITSImages $metakernel \
-  $bodyId $bodyFrame $scId $instFrame $timeKeyword \
+  $bodyId $bodyFrame $scId $instrument $instFrame $timeKeyword \
   $imageDir  $infoFileDir
 #-------------------------------------------------------------------------------
 
