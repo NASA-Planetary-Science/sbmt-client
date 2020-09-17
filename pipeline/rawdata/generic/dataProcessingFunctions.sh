@@ -118,11 +118,8 @@ confirmNotSbmt() {
 
 # Get the absolute path of the directory for the path passed as an argument.
 # If the argument identifies an existing file, the parent directory of that
-# file will be returned. if the argument identifies an existing directory,
-# this function returns the physical absolute path to that directory.
-#
-# This function exits with an error if the path does not identify a
-# file or a directory.
+# file will be returned. Otherwise, this function returns the physical
+# absolute path to that directory.
 #
 getDirPath() {
   (
@@ -137,14 +134,12 @@ getDirPath() {
 
     dir="$1"
 
-    if test -d "$dir"; then
-      dir=$(realpath "$dir")
-      check $? "$funcName: cannot determine path to directory $1"
-    elif test -f "$dir"; then
+    if test -f "$dir"; then
       dir=$(realpath -m "$dir/..")
       check $? "$funcName: cannot determine path to parent directory of $1"
     else
-      check 1 "$funcName: error: $1 is not a file or directory"
+      dir=$(realpath -m "$dir")
+      check $? "$funcName: cannot determine path from the string $1"
     fi
 
     echo $dir
