@@ -172,28 +172,6 @@ public class SbmtModelFactory
                     return new TIRImage(key, smallBodyModel, loadPointingOnly);
                 else if (key.getInstrument().getType() == ImageType.GENERIC_IMAGE)
                     return new CustomPerspectiveImage(key, smallBodyModel, loadPointingOnly);
-
-                // The factory below is a newer attempt to clean up and
-                // rationalize the creation of images. The idea would be to
-                // encode flips and rotations into the model metadata for the
-                // imager, then use those to correct the factory here before
-                // creating the image. Assuming the convention for ImageType
-                // will continue to be to name it "<IMAGER>_IMAGE" where
-                // <IMAGER> is the imager.
-                ImageType imageType = key.getInstrument().getType();
-                String imagerLabel = imageType.name().toUpperCase().replace("_IMAGE", "");
-                String imageDirectoryName = SafeURLPaths.instance().getString(config.getRootDirOnServer(), imagerLabel.toLowerCase());
-                ImageFactory factory = ImageFactory.of(imagerLabel, imageDirectoryName, imageType);
-                try
-                {
-                    Image image = factory.createImage(key, smallBodyModel, loadPointingOnly);
-
-                    return image;
-                }
-                catch (ImageCreationException e)
-                {
-                    return null;
-                }
             }
         }
         else if (ImageSource.LOCAL_PERSPECTIVE.equals(key.getSource()))
@@ -258,15 +236,34 @@ public class SbmtModelFactory
                 return new ONCTruthImage(key, smallBodyModel, loadPointingOnly);
             else if (key.getImageType() == ImageType.TIR_IMAGE)
                 return new TIRImage(key, smallBodyModel, loadPointingOnly);
-            else
-                return null;
         }
         else if (key instanceof CustomCylindricalImageKey)
         {
             return new CylindricalImage((CustomCylindricalImageKey) key, smallBodyModel);
         }
 
-        return null;
+        // The factory below is a newer attempt to clean up and
+        // rationalize the creation of images. The idea would be to
+        // encode flips and rotations into the model metadata for the
+        // imager, then use those to correct the factory here before
+        // creating the image. Assuming the convention for ImageType
+        // will continue to be to name it "<IMAGER>_IMAGE" where
+        // <IMAGER> is the imager.
+        ImageType imageType = key.getInstrument().getType();
+        String imagerLabel = imageType.name().toUpperCase().replace("_IMAGE", "");
+        String imageDirectoryName = SafeURLPaths.instance().getString(config.getRootDirOnServer(), imagerLabel.toLowerCase());
+        ImageFactory factory = ImageFactory.of(imagerLabel, imageDirectoryName, imageType);
+        try
+        {
+            Image image = factory.createImage(key, smallBodyModel, loadPointingOnly);
+
+            return image;
+        }
+        catch (ImageCreationException e)
+        {
+            throw new RuntimeException(e);
+        }
+
     }
 
     static public SmallBodyModel createSmallBodyModel(SmallBodyViewConfig config)
