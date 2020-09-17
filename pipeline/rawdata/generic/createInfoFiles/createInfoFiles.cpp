@@ -195,8 +195,8 @@ int main(int argc, char** argv)
     cout << "Initializing SPICE with metakernel " << metakernel << endl;
     furnsh_c(metakernel.c_str());
     cout << "Furnished SPICE files" << endl;
-    // DON'T IGNORE ERRORS, FOR GOODNESS' SAKE!!!!!!!
-    // erract_c("SET", 1, (char*)"RETURN");
+    // Do ignore errors because otherwise we don't get back much information.
+    erract_c("SET", 1, (char*)"RETURN");
 
     vector< pair<string, string> > fitfiles;
     try {
@@ -282,6 +282,11 @@ int main(int argc, char** argv)
 	}
     cout << "done." << endl;
     missingInfoStream.close();
+
+    // If errors did occur, at least exit with a non-0 status.
+    if (failed_c()) {
+    	return 1;
+    }
 
     return 0;
 }

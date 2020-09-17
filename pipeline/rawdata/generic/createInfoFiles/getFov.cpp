@@ -73,7 +73,7 @@ void getFov(double et, const char* spacecraft, const char* observerBody, const c
 //    spkpos_c(target, et, inertframe, abcorr, obs, targpos, &lt);
     spkpos_c(observerBody, et, inertframe, abcorr, spacecraft, notUsed, &lt);
     if (failed_c()) {
-        cerr << "Failed getFov call to spkpos" << endl;
+        cerr << "Failed getFov call to spkpos for frame " << instrFrame << endl;
         return;
     }
 
@@ -84,12 +84,12 @@ void getFov(double et, const char* spacecraft, const char* observerBody, const c
     */
     namfrm_c(instrFrame, &instid);
     if (failed_c()) {
-        cout << "Failed namfrm" << endl;
+        cout << "Failed namfrm for frame " << instrFrame << endl;
         return;
     }
     getfov_c(instid, MAXBND, WDSIZE, WDSIZE, shape, frame, bsight, &n, bounds);
     if (failed_c()) {
-        cout << "Failed getfov" << endl;
+        cout << "Failed getfov for frame " << instrFrame << ", which has returned id " << instid << endl;
         return;
     }
 
