@@ -89,7 +89,7 @@ void getFov(double et, const char* spacecraft, const char* observerBody, const c
     }
     getfov_c(instid, MAXBND, WDSIZE, WDSIZE, shape, frame, bsight, &n, bounds);
     if (failed_c()) {
-        cout << "Failed getfov for frame " << instrFrame << ", which has returned id " << instid << endl;
+        cout << "Failed getfov for frame " << instrFrame << ", which returned id " << instid << endl;
         return;
     }
 
