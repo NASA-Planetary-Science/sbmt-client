@@ -62,6 +62,21 @@ public class PlannedDataActorRegister
 			}
 		});
 
+//		PlannedDataActorFactory.registerModel("OTES", new IPlanningDataActorBuilder<PlannedInstrumentData>()
+//		{
+//
+//			@Override
+//			public PlannedDataActor buildActorForPlanningData(PlannedInstrumentData data, SmallBodyModel model)
+//			{
+//				PerspectiveImageFootprint footprint = new PerspectiveImageFootprint();
+//				footprint.setTime(data.getTime());
+//				footprint.setInstrumentName(data.getInstrumentName());
+//				footprint.setColor(Color.blue);
+//				footprint.setSmallBodyModel(model);
+//				return footprint;
+//			}
+//		});
+
 		PlannedDataActorFactory.registerModel("OLAHIGH", new IPlanningDataActorBuilder<PlannedInstrumentData>()
 		{
 

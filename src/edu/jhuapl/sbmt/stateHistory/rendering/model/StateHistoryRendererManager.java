@@ -7,7 +7,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Objects;
 import java.util.Vector;
 
 import vtk.vtkProp;
@@ -239,31 +238,48 @@ public class StateHistoryRendererManager
 
 	private void updateFovs(StateHistory run)
 	{
-		if (footprint.length != 0) return;
+//		if (footprint.length != 0) return;
 		int numberOfInstruments = run.getPointingProvider().getInstrumentNames().length;
 		if (numberOfInstruments > 0)
 		{
 			footprint = new PerspectiveImageFootprint[numberOfInstruments];
 			spacecraftFov = new PerspectiveImageFrustum[numberOfInstruments];
 			int i=0;
+			PerspectiveImageFrustum fov = null;
+			PerspectiveImageFootprint fprint = null;
 			for (String instName : run.getPointingProvider().getInstrumentNames())
 			{
 				Color color = new Color((int)(Math.random() * 0x1000000));
-				PerspectiveImageFrustum fov = new PerspectiveImageFrustum(1, 0, 0, true, diagonalLength);
-				fov.setColor(color);
-				fov.setInstrumentName(instName);
-				spacecraftFov[i] = fov;
-				if (spacecraftFov[i].getFrustumActor() != null)
-					spacecraftFov[i].getFrustumActor().VisibilityOff();
-				PerspectiveImageFootprint fprint = new PerspectiveImageFootprint();
-				fprint.setInstrumentName(instName);
-				fprint.setColor(color);
-				footprint[i] = fprint;
-				if (footprint[i].getFootprintActor() != null)
+				fov = instrumentNameToFovMap.get(instName);
+				if (fov == null)
 				{
-					footprint[i].setBoundaryVisible(false);
-					footprint[i].setVisible(false);
+					fov = new PerspectiveImageFrustum(1, 0, 0, true, diagonalLength);
+					instrumentNameToFovMap.put(instName, fov);
+					fov.getFrustumActor().VisibilityOff();
+					fov.setColor(color);
+					fov.setInstrumentName(instName);
 				}
+
+				spacecraftFov[i] = fov;
+//				if (spacecraftFov[i].getFrustumActor() != null)
+//					spacecraftFov[i].getFrustumActor().VisibilityOff();
+				fprint = instrumentNameToFootprintMap.get(instName);
+				if (fprint == null)
+				{
+					fprint = new PerspectiveImageFootprint();
+					instrumentNameToFootprintMap.put(instName, fprint);
+					fprint.setBoundaryVisible(false);
+					fprint.setVisible(false);
+					fprint.setInstrumentName(instName);
+					fprint.setColor(color);
+				}
+
+				footprint[i] = fprint;
+//				if (footprint[i].getFootprintActor() != null)
+//				{
+//					footprint[i].setBoundaryVisible(false);
+//					footprint[i].setVisible(false);
+//				}
 				i++;
 			}
 		}
@@ -451,9 +467,11 @@ public class StateHistoryRendererManager
 		}
 		if (spacecraftFov != null)
 		{
-			Arrays.stream(this.spacecraftFov).filter(Objects::nonNull).forEach(fov -> props.add(fov.getFrustumActor()));
-			Arrays.stream(this.footprint).filter(Objects::nonNull).forEach(footprint -> props.add(footprint.getFootprintActor()));
-			Arrays.stream(this.footprint).filter(Objects::nonNull).forEach(footprint -> props.add(footprint.getFootprintBoundaryActor()));
+//			if (this.spacecraftFov.length > 0)
+//				System.out.println("StateHistoryRendererManager: getProps: frustum actor " + this.spacecraftFov[0].getFrustumActor().GetClassName());
+			Arrays.stream(this.spacecraftFov).filter(fov -> fov.getFrustumActor() != null).forEach(fov -> props.add(fov.getFrustumActor()));
+			Arrays.stream(this.footprint).filter(fov -> fov.getFootprintActor() != null).forEach(footprint -> props.add(footprint.getFootprintActor()));
+			Arrays.stream(this.footprint).filter(fov -> fov.getFootprintActor() != null).forEach(footprint -> props.add(footprint.getFootprintBoundaryActor()));
 		}
 
 		props.add(spacecraft.getActor());

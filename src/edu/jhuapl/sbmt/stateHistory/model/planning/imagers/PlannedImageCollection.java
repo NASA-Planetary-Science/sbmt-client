@@ -217,10 +217,6 @@ public class PlannedImageCollection extends SaavtkItemManager<PlannedImage>
 	public void updateStateHistorySource(StateHistory stateHistory)
 	{
 		this.stateHistorySource = stateHistory;
-//		for (PlannedDataActor dataActor : plannedDataActors)
-//		{
-//			StateHistoryPositionCalculator.updateFootprintPointing(stateHistory, dataActor.getTime(), (PerspectiveImageFootprint)dataActor);
-//		}
 	}
 
 }

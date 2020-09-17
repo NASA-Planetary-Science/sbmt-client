@@ -213,7 +213,6 @@ public class StateHistoryCollection extends SaavtkItemManager<StateHistory> impl
 		availableFOVs.clear();
 		selectedFOVs.clear();
 		Arrays.stream(run.getPointingProvider().getInstrumentNames()).forEach(inst -> availableFOVs.add(inst));
-		System.out.println("StateHistoryCollection: addRun: number of available FOVs " + availableFOVs.size());
 		this.currentRun = run;
 		notifyListeners(this, ItemEventType.ItemsChanged);
 		return renderManager.addRun(run);

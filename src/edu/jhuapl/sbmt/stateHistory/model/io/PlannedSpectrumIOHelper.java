@@ -10,6 +10,7 @@ import java.time.format.DateTimeFormatter;
 
 import edu.jhuapl.sbmt.stateHistory.model.planning.spectrometers.PlannedSpectrum;
 import edu.jhuapl.sbmt.stateHistory.model.planning.spectrometers.PlannedSpectrumCollection;
+import edu.jhuapl.sbmt.util.TimeUtil;
 
 public class PlannedSpectrumIOHelper
 {
@@ -32,9 +33,11 @@ public class PlannedSpectrumIOHelper
 			if (line.startsWith("#")) continue;
 			//Now we've reached entries - build the
 			String[] parts = line.split(",");
-			Double et = Double.parseDouble(parts[0]);
-			String instrumentName = parts[1];
-			PlannedSpectrum plannedSpectrum = new PlannedSpectrum(et, instrumentName);
+			Double etStart = TimeUtil.str2et(parts[0]);
+			Double etEnd = TimeUtil.str2et(parts[1]);
+			String instrumentName = parts[2];
+			Integer cadence = Integer.parseInt(parts[3]);
+			PlannedSpectrum plannedSpectrum = new PlannedSpectrum(etStart, etEnd, cadence, instrumentName);
 			collection.addSpectrumToList(plannedSpectrum);
 		}
 		reader.close();
@@ -55,7 +58,7 @@ public class PlannedSpectrumIOHelper
 		writer.newLine();
 		for (PlannedSpectrum spectrum : collection.getAllItems())
 		{
-			writer.write(spectrum.getTime() + "," + spectrum.getInstrumentName());
+			writer.write(spectrum.getTime() + "," + spectrum.getStopTime() + "," + spectrum.getCadence() + "," + spectrum.getInstrumentName());
 			writer.newLine();
 		}
 

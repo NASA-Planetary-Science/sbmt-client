@@ -9,19 +9,21 @@ public class PlannedSpectrum implements PlannedInstrumentData
 {
 	private Color color = Color.green;
 	private Instrument instrument;
-	private Double time;
+	private Double startTime, stopTime;
+	private Integer cadence;
 	private boolean isShowing;
 	private boolean isFrustumShowing;
-	private String instrumentName;
 
 	public PlannedSpectrum()
 	{
 		// TODO Auto-generated constructor stub
 	}
 
-	public PlannedSpectrum(Double et, String instrumentName)
+	public PlannedSpectrum(Double etStart, Double etEnd, Integer cadence, String instrumentName)
 	{
-		this.time = et;
+		this.startTime = etStart;
+		this.stopTime = etEnd;
+		this.cadence = cadence;
 		this.instrument = Instrument.valueFor(instrumentName);
 	}
 
@@ -45,14 +47,24 @@ public class PlannedSpectrum implements PlannedInstrumentData
 		this.instrument = instrument;
 	}
 
-	public Double getTime()
+	public Double getStartTime()
 	{
-		return time;
+		return startTime;
 	}
 
-	public void setTime(Double time)
+	public void setStartTime(Double time)
 	{
-		this.time = time;
+		this.startTime = time;
+	}
+
+	public Double getStopTime()
+	{
+		return stopTime;
+	}
+
+	public void setStopTime(Double time)
+	{
+		this.stopTime = time;
 	}
 
 	public boolean isShowing()
@@ -78,5 +90,19 @@ public class PlannedSpectrum implements PlannedInstrumentData
 	public String getInstrumentName()
 	{
 		return instrument.name();
+	}
+
+	@Override
+	public Double getTime()
+	{
+		return startTime;
+	}
+
+	/**
+	 * @return the cadence
+	 */
+	public Integer getCadence()
+	{
+		return cadence;
 	}
 }

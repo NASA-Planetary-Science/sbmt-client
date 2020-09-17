@@ -22,7 +22,6 @@ public class PlannedImageItemHandler extends BasicItemHandler<PlannedImage, Plan
 	{
 		super(aComposer);
 		plannedImageCollection = aManager;
-		System.out.println("PlannedImageItemHandler: PlannedImageItemHandler: collection size " + plannedImageCollection.getNumItems());
 	}
 
 	/**
@@ -64,10 +63,13 @@ public class PlannedImageItemHandler extends BasicItemHandler<PlannedImage, Plan
 		{
 			case Show:
 				image.setShowing((Boolean)aValue);
+				break;
 			case Frus:
 				image.setFrustumShowing((Boolean)aValue);
+				break;
 			case Color:
 				image.setColor((Color)aValue);
+				break;
 			default:
 				throw new UnsupportedOperationException("Column is not supported. Enum: " + aEnum);
 		}

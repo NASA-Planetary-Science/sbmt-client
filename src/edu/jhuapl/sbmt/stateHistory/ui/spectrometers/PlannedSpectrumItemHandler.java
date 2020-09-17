@@ -22,7 +22,6 @@ public class PlannedSpectrumItemHandler extends BasicItemHandler<PlannedSpectrum
 	{
 		super(aComposer);
 		plannedSpectrumCollection = aManager;
-		System.out.println("PlannedSpectrumItemHandler: PlannedSpectrumItemHandler: collection size " + plannedSpectrumCollection.getNumItems());
 	}
 
 	/**
@@ -64,10 +63,13 @@ public class PlannedSpectrumItemHandler extends BasicItemHandler<PlannedSpectrum
 		{
 			case Show:
 				spectrum.setShowing((Boolean)aValue);
+				break;
 			case Frus:
 				spectrum.setFrustumShowing((Boolean)aValue);
+				break;
 			case Color:
 				spectrum.setColor((Color)aValue);
+				break;
 			default:
 				throw new UnsupportedOperationException("Column is not supported. Enum: " + aEnum);
 		}

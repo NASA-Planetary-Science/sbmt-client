@@ -15,7 +15,6 @@ import edu.jhuapl.sbmt.stateHistory.ui.imagers.PlannedImageView;
 public class PlannedImageTableController
 {
 	PlannedImageView view;
-//	IPositionOrientation positionOrientationManager;
 
 	public PlannedImageTableController(final ModelManager modelManager, Renderer renderer, PlannedImageCollection collection, SmallBodyViewConfig config)
 	{

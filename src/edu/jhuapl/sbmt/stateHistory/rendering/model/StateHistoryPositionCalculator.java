@@ -292,9 +292,14 @@ public class StateHistoryPositionCalculator implements IStateHistoryPositionCalc
 
 		Arrays.stream(fov).forEach(fieldOfView ->
 		{
-			if (fieldOfView.getFrustumActor() != null && fieldOfView.getFrustumActor().GetVisibility() == 0) return;
+//			System.out.println("StateHistoryPositionCalculator: updateSpacecraftPosition: updating FOV");
+//			if (fieldOfView.getFrustumActor() != null && fieldOfView.getFrustumActor().GetVisibility() == 0)
+//			{
+//				System.out.println("StateHistoryPositionCalculator: updateSpacecraftPosition: exists but is hidden");
+////				return;
+//			}
 			FrameID instrumentFrameID = new SimpleFrameID(fieldOfView.getInstrumentName());
-
+//			System.out.println("StateHistoryPositionCalculator: updateSpacecraftPosition: inst frame id " + instrumentFrameID);
 //			System.out.println("StateHistoryPositionCalculator: updateSpacecraftPosition: inst name " + fieldOfView.getInstrumentName());
 			double[] frus1 = new double[] { history.getFrustum(instrumentFrameID.getName(), 0).getI(), history.getFrustum(instrumentFrameID.getName(), 0).getJ(), history.getFrustum(instrumentFrameID.getName(), 0).getK()};
 			double[] frus2 = new double[] { history.getFrustum(instrumentFrameID.getName(), 1).getI(), history.getFrustum(instrumentFrameID.getName(), 1).getJ(), history.getFrustum(instrumentFrameID.getName(), 1).getK()};
@@ -311,6 +316,7 @@ public class StateHistoryPositionCalculator implements IStateHistoryPositionCalc
 		});
 		Arrays.stream(footprint).forEach(fprint ->
 		{
+//			System.out.println("StateHistoryPositionCalculator: updateSpacecraftPosition: updating footprint");
 			FrameID instrumentFrameID = new SimpleFrameID(fprint.getInstrumentName());
 			double[] frus1 = new double[] { history.getFrustum(instrumentFrameID.getName(), 0).getI(), history.getFrustum(instrumentFrameID.getName(), 0).getJ(), history.getFrustum(instrumentFrameID.getName(), 0).getK()};
 			double[] frus2 = new double[] { history.getFrustum(instrumentFrameID.getName(), 1).getI(), history.getFrustum(instrumentFrameID.getName(), 1).getJ(), history.getFrustum(instrumentFrameID.getName(), 1).getK()};

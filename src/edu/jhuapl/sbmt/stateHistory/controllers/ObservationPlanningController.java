@@ -82,7 +82,7 @@ public class ObservationPlanningController
 //		spectrum.setInstrument(Instrument.NIS);
 //		spectrum.setTime(TimeUtil.str2et("2020-05-05T01:00:00.000"));
 //		spectrum.setColor(Color.green);
-		spectrumCollection = new PlannedSpectrumCollection();
+		spectrumCollection = new PlannedSpectrumCollection(smallBodyModel);
 //		spectrumCollection.addSpectrumToList(spectrum);
 		spectrumTableController = new PlannedSpectrumTableController(modelManager, renderer, spectrumCollection, config);
 		if (config.hasSpectralData) view.addTab("Spectra", spectrumTableController.getView());

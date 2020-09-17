@@ -15,7 +15,6 @@ import edu.jhuapl.sbmt.stateHistory.ui.spectrometers.PlannedSpectrumView;
 public class PlannedSpectrumTableController
 {
 	PlannedSpectrumView view;
-//	IPositionOrientation positionOrientationManager;
 
 	public PlannedSpectrumTableController(final ModelManager modelManager, Renderer renderer, PlannedSpectrumCollection collection, SmallBodyViewConfig config)
 	{
@@ -55,14 +54,8 @@ public class PlannedSpectrumTableController
 		});
 	}
 
-//	public void setPositionOrientationManager(IPositionOrientation manager)
-//	{
-//		this.positionOrientationManager = manager;
-//	}
-
 	public PlannedSpectrumView getView()
 	{
 		return view;
 	}
-
 }

@@ -20,7 +20,7 @@ import java.util.regex.Pattern;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
 
-import edu.jhuapl.sbmt.pointing.spice.SpiceInstrumentPointing;
+import edu.jhuapl.sbmt.pointing.InstrumentPointing;
 import edu.jhuapl.sbmt.pointing.spice.SpicePointingProvider;
 
 import crucible.core.math.vectorspace.UnwritableVectorIJK;
@@ -55,7 +55,7 @@ public class ComputeSpicePointing
             }
 
             String bodyName = args[index++];
-            String centerFrameName = args[index++];
+            String bodyFrameName = args[index++];
             String scName = args[index++];
             String scFrameName = args[index++];
             String instFrameName = args[index++];
@@ -77,7 +77,7 @@ public class ComputeSpicePointing
             Path outputDir = Paths.get(args[index++]);
             String fitsTimeKey = args[index++];
 
-            SpicePointingProvider.Builder builder = SpicePointingProvider.builder(mkPaths, centerFrameName, scName, scFrameName);
+            SpicePointingProvider.Builder builder = SpicePointingProvider.builder(mkPaths, bodyName, bodyFrameName, scName, scFrameName);
 
             EphemerisID bodyId = builder.bindEphemeris(bodyName);
 
@@ -94,7 +94,6 @@ public class ComputeSpicePointing
 
     private final SpicePointingProvider provider;
     private final FrameID instFrame;
-    private final EphemerisID bodyId;
     private final Path inputFilePath;
     private final Path inputDir;
     private final Path outputDir;
@@ -106,7 +105,6 @@ public class ComputeSpicePointing
 
         this.provider = provider;
         this.instFrame = instFrame;
-        this.bodyId = bodyId;
         this.inputFilePath = inputFilePath;
         this.inputDir = inputDir;
         this.outputDir = outputDir;
@@ -216,7 +214,7 @@ public class ComputeSpicePointing
         UTCEpoch utcTime = getUTC(utcTimeString);
         double time = DefaultTimeSystems.getTDB().getTime(DefaultTimeSystems.getUTC().getTSEpoch(utcTime));
 
-        SpiceInstrumentPointing pointing = provider.provide(instFrame, bodyId, time);
+        InstrumentPointing pointing = provider.provide(instFrame.getName(), time);
         DecimalFormat formatter = new DecimalFormat("0.0000000000000000E00");
         try (PrintWriter writer = new PrintWriter(new FileWriter(outputDir.resolve(fileName).toFile())))
         {
@@ -224,14 +222,14 @@ public class ComputeSpicePointing
 
             writer.println("START_TIME          = " + utcTimeString);
             writer.println("STOP_TIME           = " + utcTimeString);
-            writer.println("SPACECRAFT_POSITION = " + format(formatter, pointing.getSpacecraftPos()));
+            writer.println("SPACECRAFT_POSITION = " + format(formatter, pointing.getScPosition()));
             writer.println("BORESIGHT_DIRECTION = " + format(formatter, pointing.getBoresight()));
-            writer.println("UP_DIRECTION        = " + format(formatter, pointing.getUp()));
+            writer.println("UP_DIRECTION        = " + format(formatter, pointing.getUpDirection()));
             writer.println("FRUSTUM1            = " + format(formatter, frustum.get(0)));
             writer.println("FRUSTUM2            = " + format(formatter, frustum.get(1)));
             writer.println("FRUSTUM3            = " + format(formatter, frustum.get(2)));
             writer.println("FRUSTUM4            = " + format(formatter, frustum.get(3)));
-            writer.println("SUN_POSITION_LT     = " + format(formatter, pointing.getPos(CelestialBodies.SUN)));
+            writer.println("SUN_POSITION_LT     = " + format(formatter, pointing.getPosition(CelestialBodies.SUN)));
         }
 
     }
