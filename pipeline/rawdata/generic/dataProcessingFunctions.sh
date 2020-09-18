@@ -1287,7 +1287,7 @@ createInfoFilesFromFITSImages() {
     timeStampKeyword=$7
     topDir=$8
     imageDir=$9
-    infoDir=$10
+    infoDir="${10}" # Proof that Bourne shell is evil. $10 = "$1"0. Need the curly brace here.
 
     if test "$metakernel" = ""; then
       check 1 "$funcName: missing/blank first argument; must be path to metakernel valid in $tmpSpiceDir"
