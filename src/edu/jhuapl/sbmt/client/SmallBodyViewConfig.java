@@ -13,7 +13,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Scanner;
 
-import com.github.davidmoten.rtree.Serializers;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
 
@@ -53,9 +52,11 @@ import edu.jhuapl.sbmt.query.QueryBase;
 import edu.jhuapl.sbmt.query.fixedlist.FixedListQuery;
 import edu.jhuapl.sbmt.spectrum.model.core.search.SpectraHierarchicalSearchSpecification;
 
+import crucible.crust.metadata.api.Key;
+import crucible.crust.metadata.api.Metadata;
 import crucible.crust.metadata.impl.FixedMetadata;
 import crucible.crust.metadata.impl.SettableMetadata;
-import thredds.catalog2.Metadata;
+import crucible.crust.metadata.impl.gson.Serializers;
 
 /**
 * A SmallBodyConfig is a class for storing all which models should be instantiated
@@ -580,5 +581,4 @@ public class SmallBodyViewConfig extends BodyViewConfig implements ISmallBodyVie
 				+ ", useMinimumReferencePotential=" + useMinimumReferencePotential + ", hasCustomBodyCubeSize="
 				+ hasCustomBodyCubeSize + ", customBodyCubeSize=" + customBodyCubeSize + "]";
 	}
-
 }
