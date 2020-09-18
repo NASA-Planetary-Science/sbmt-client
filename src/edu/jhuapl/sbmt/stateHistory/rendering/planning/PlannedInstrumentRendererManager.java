@@ -48,7 +48,6 @@ public class PlannedInstrumentRendererManager
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		System.out.println("PlannedInstrumentRendererManager: addPlannedData: adding to map");
 		plannedInstrumentDataToRendererMap.put(data, dataActor);
 
 		dataActor.SetVisibility(0);

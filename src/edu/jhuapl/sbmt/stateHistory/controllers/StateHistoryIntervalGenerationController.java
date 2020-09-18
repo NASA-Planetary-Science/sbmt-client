@@ -88,7 +88,7 @@ public class StateHistoryIntervalGenerationController
             double totalDays = DateTimeSpinner.getDaysBetween(view.getStartTimeSpinner(), view.getStopTimeSpinner());
 
     		// check length of interval - if more than 10, warn the user before proceeding
-    		if (totalDays > 10.0)
+    		if (view.getStateHistorySourceType() == StateHistorySourceType.PREGEN && totalDays > 10.0)
     		{
     			int result = JOptionPane.showConfirmDialog(getView(),
     					"The interval you selected is longer than 10 days and may take a while to generate. \nAre you sure you want to create it?");
@@ -108,13 +108,13 @@ public class StateHistoryIntervalGenerationController
             if (view.getStateHistorySourceType() == StateHistorySourceType.SPICE)
         	{
             	//TODO load this from the metadata
-//            	SpiceInfo spice = new SpiceInfo("ORX", "IAU_BENNU", "ORX_SPACECRAFT", "BENNU",
-//            			new String[] {"EARTH" , "SUN"}, new String[] {"ORX_OCAMS_POLYCAM", "ORX_OCAMS_MAPCAM",
-//            															"ORX_OCAMS_SAMCAM", "ORX_NAVCAM1", "ORX_NAVCAM2",
+            	SpiceInfo spice = new SpiceInfo("ORX", "IAU_BENNU", "ORX_SPACECRAFT", "BENNU",
+            			new String[] {"EARTH" , "SUN"}, new String[] {"ORX_OCAMS_POLYCAM", "ORX_OCAMS_MAPCAM",
+            															"ORX_OCAMS_SAMCAM", "ORX_NAVCAM1", "ORX_NAVCAM2",
 //            															"ORX_OTES", "ORX_OVIRS",
-//            															"ORX_OLA_LOW", "ORX_OLA_HIGH"});
-            	SpiceInfo spice = new SpiceInfo("MMX", "IAU_PHOBOS", "MMX_SPACECRAFT", "PHOBOS",
-            			new String[] {"EARTH" , "SUN", "MARS"}, new String[] {"MMX_MEGANE"});
+            															"ORX_OLA_LOW", "ORX_OLA_HIGH"});
+//            	SpiceInfo spice = new SpiceInfo("MMX", "IAU_PHOBOS", "MMX_SPACECRAFT", "PHOBOS",
+//            			new String[] {"EARTH" , "SUN", "MARS"}, new String[] {"MMX_MEGANE"});
             	((SpiceStateHistoryIntervalGenerator)historyModel.getActiveIntervalGenerator()).setMetaKernelFile(view.getMetakernelToLoad(), spice);
         	}
 

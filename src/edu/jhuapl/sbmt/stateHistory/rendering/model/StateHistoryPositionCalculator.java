@@ -5,8 +5,6 @@ package edu.jhuapl.sbmt.stateHistory.rendering.model;
 
 import java.util.Arrays;
 
-import org.apache.commons.math3.geometry.euclidean.threed.Vector3D;
-
 import vtk.vtkMatrix4x4;
 import vtk.vtkTransform;
 
@@ -133,7 +131,6 @@ public class StateHistoryPositionCalculator implements IStateHistoryPositionCalc
 
 	public static void updateFootprintPointing(StateHistory history, double time, PerspectiveImageFootprint fprint)
 	{
-		System.out.println("StateHistoryPositionCalculator: updateFootprintPointing: updating pointing");
 		double[] spacecraftPosition = history.getSpacecraftPositionAtTime(time);
 		FrameID instrumentFrameID = new SimpleFrameID(fprint.getInstrumentName());
 		double[] frus1 = new double[] { history.getFrustumAtTime(instrumentFrameID.getName(), 0, time).getI(), history.getFrustumAtTime(instrumentFrameID.getName(), 0, time).getJ(), history.getFrustumAtTime(instrumentFrameID.getName(), 0, time).getK()};
@@ -141,7 +138,7 @@ public class StateHistoryPositionCalculator implements IStateHistoryPositionCalc
 		double[] frus3 = new double[] { history.getFrustumAtTime(instrumentFrameID.getName(), 2, time).getI(), history.getFrustumAtTime(instrumentFrameID.getName(), 2, time).getJ(), history.getFrustumAtTime(instrumentFrameID.getName(), 2, time).getK()};
 		double[] frus4 = new double[] { history.getFrustumAtTime(instrumentFrameID.getName(), 3, time).getI(), history.getFrustumAtTime(instrumentFrameID.getName(), 3, time).getJ(), history.getFrustumAtTime(instrumentFrameID.getName(), 3, time).getK()};
 		fprint.setStaticFootprintSet(true);
-		System.out.println("StateHistoryPositionCalculator: updateFootprintPointing: sc pos " + new Vector3D(spacecraftPosition));
+//		System.out.println("StateHistoryPositionCalculator: updateFootprintPointing: sc pos " + new Vector3D(spacecraftPosition));
 		fprint.updatePointing(spacecraftPosition, frus1, frus2, frus3, frus4, 1024, 1024, 1);
 
 	}
@@ -201,7 +198,7 @@ public class StateHistoryPositionCalculator implements IStateHistoryPositionCalc
 	{
 //		Logger.getAnonymousLogger().log(Level.INFO, "Updating sc pos");
 		if (footprint != null)
-			Arrays.stream(footprint).forEach(fprint -> fprint.setSmallBodyModel(smallBodyModel));
+			Arrays.stream(footprint).filter(fprint -> fprint != null).forEach(fprint -> fprint.setSmallBodyModel(smallBodyModel));
 		vtkMatrix4x4 spacecraftBodyMatrix = new vtkMatrix4x4();
 		vtkMatrix4x4 spacecraftIconMatrix = new vtkMatrix4x4();
 		vtkMatrix4x4 fovMatrix = new vtkMatrix4x4();
@@ -314,7 +311,7 @@ public class StateHistoryPositionCalculator implements IStateHistoryPositionCalc
 
 			fieldOfView.updatePointing(spacecraftPosition, frus1, frus2, frus3, frus4);
 		});
-		Arrays.stream(footprint).forEach(fprint ->
+		Arrays.stream(footprint).filter(fprint -> fprint != null).forEach(fprint ->
 		{
 //			System.out.println("StateHistoryPositionCalculator: updateSpacecraftPosition: updating footprint");
 			FrameID instrumentFrameID = new SimpleFrameID(fprint.getInstrumentName());
@@ -332,7 +329,7 @@ public class StateHistoryPositionCalculator implements IStateHistoryPositionCalc
 		spacecraftLabelActor.Modified();
 
 		Arrays.stream(fov).filter(fieldOfView -> fieldOfView.getFrustumActor() != null).forEach(fieldOfView -> { fieldOfView.getFrustumActor().Modified();});
-		Arrays.stream(footprint).filter(fprint -> fprint.getFootprintActor() != null).forEach(fprint -> { fprint.getFootprintActor().Modified(); fprint.getFootprintBoundaryActor().Modified();});
+		Arrays.stream(footprint).filter(fprint -> fprint != null).filter(fprint -> fprint.getFootprintActor() != null).forEach(fprint -> { fprint.getFootprintActor().Modified(); fprint.getFootprintBoundaryActor().Modified();});
 
 //		Logger.getAnonymousLogger().log(Level.INFO, "Updated sc pos to " + spacecraftPosition[0] + " " + spacecraftPosition[1] + " " + spacecraftPosition[2]);
 

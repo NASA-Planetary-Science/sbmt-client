@@ -213,7 +213,7 @@ public class StateHistoryRendererManager
 ////			fov.getFrustumActor().SetVisibility(instrumentPointingAvailable ? 1 : 0);
 //		});
 
-		Arrays.stream(this.footprint).filter(footprint -> footprint.getFootprintActor() != null).forEach(footprint -> {
+		Arrays.stream(this.footprint).filter(fprint -> fprint != null).filter(footprint -> footprint.getFootprintActor() != null).forEach(footprint -> {
 //			footprint.getFootprintActor().SetVisibility(instrumentPointingAvailable ? 1 : 0);
 			if (instrumentPointingAvailable) footprint.setFootprintColor();
 		});
@@ -320,11 +320,11 @@ public class StateHistoryRendererManager
 			item.getFrustumActor().SetVisibility(displayFrusta && selectedFOVs.contains(item.getInstrumentName()) ? 1 : 0);
 			this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, item);
 		});
-		Arrays.stream(footprint).forEach(item -> {
+		Arrays.stream(footprint).filter(fprint -> fprint != null).forEach(item -> {
 			item.setBoundaryVisible(displayBoundaries && selectedFOVs.contains(item.getInstrumentName()));
 			this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, item);
 		});
-		Arrays.stream(footprint).forEach(item -> {
+		Arrays.stream(footprint).filter(fprint -> fprint != null).forEach(item -> {
 			item.setVisible(displayFootprints && selectedFOVs.contains(item.getInstrumentName()));
 			this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, item);
 		});
@@ -470,8 +470,8 @@ public class StateHistoryRendererManager
 //			if (this.spacecraftFov.length > 0)
 //				System.out.println("StateHistoryRendererManager: getProps: frustum actor " + this.spacecraftFov[0].getFrustumActor().GetClassName());
 			Arrays.stream(this.spacecraftFov).filter(fov -> fov.getFrustumActor() != null).forEach(fov -> props.add(fov.getFrustumActor()));
-			Arrays.stream(this.footprint).filter(fov -> fov.getFootprintActor() != null).forEach(footprint -> props.add(footprint.getFootprintActor()));
-			Arrays.stream(this.footprint).filter(fov -> fov.getFootprintActor() != null).forEach(footprint -> props.add(footprint.getFootprintBoundaryActor()));
+			Arrays.stream(this.footprint).filter(fprint -> fprint != null).filter(fov -> fov.getFootprintActor() != null).forEach(footprint -> props.add(footprint.getFootprintActor()));
+			Arrays.stream(this.footprint).filter(fprint -> fprint != null).filter(fov -> fov.getFootprintActor() != null).forEach(footprint -> props.add(footprint.getFootprintBoundaryActor()));
 		}
 
 		props.add(spacecraft.getActor());
