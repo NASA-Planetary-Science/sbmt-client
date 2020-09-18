@@ -143,7 +143,7 @@ destTop="$processedTop/$outputTop"
 # This will cause the script to skip functions until skipSection is changed
 # to something else. This is used to minimize editing to control flow around
 # larger sections of code.
-skipSection=true # THIS SHOULD ALWAYS BE true WHEN CHECKING THIS IN!!!!
+skipSection="true" # THIS SHOULD ALWAYS BE true WHEN CHECKING THIS IN!!!
 
 # Begin common (all-instrument) header/setup
 #-------------------------------------------------------------------------------
@@ -157,9 +157,9 @@ destTop="$processedTop/$outputTop"
 # These variables are only used if this delivery generates INFO files from
 # SPICE kernels. These variables are valid for all instruments in this
 # delivery.
-scId=DART
-bodyId=${bodyId^^} # usually this is same as used for coloring, but all caps.
-bodyFrame=920065803_FIXED # Didymos-specific.
+scId="DART"
+bodyId="${bodyId^^}" # usually this is same as used for coloring, but all caps.
+bodyFrame="920065803_FIXED" # Didymos-specific.
 
 # End common (all-instrument) header/setup
 #-------------------------------------------------------------------------------
@@ -169,7 +169,7 @@ bodyFrame=920065803_FIXED # Didymos-specific.
 
 # Instrument sub-block (DRACO).
 #-------------------------------------------------------------------------------
-instrument=draco
+instrument="draco"
 
 # Copy all delivered instrument files.
 copyDir $instrument
@@ -178,13 +178,13 @@ copyDir $instrument
 # Process SPICE inputs for this sub-block. This sub-section is only needed
 # if this delivery requires generating INFO files from SPICE kernels
 # for this instrument. Otherwise, recommend uncommenting the following line:
-# skipSection=true
+# skipSection="true" THIS SHOULD ALWAYS BE true WHEN CHECKING THIS IN!!!
 
-metakernel=impact.tm # relative to $tmpSpiceDir.
-instFrame=DART_DRACO_2X2 # This is specific to DRACO.
-imageDir=$outputTop/$instrument/images
-infoFileDir=$outputTop/$instrument/infofiles
-timeKeyword=COR_UTC # This is only used if extracting times from FITS files.
+metakernel="impact.tm" # relative to $tmpSpiceDir.
+instFrame="DART_DRACO_2X2" # This is specific to DRACO.
+imageDir="$outputTop/$instrument/images"
+infoFileDir="$outputTop/$instrument/infofiles"
+timeKeyword="COR_UTC" # This is only used if extracting times from FITS files.
 
 # Make SPICE kernels available in the temporary SPICE directory. This is so
 # that any absolute paths in the metakernel may be edited to be as short
@@ -213,7 +213,7 @@ generateDatabaseTable ${instrument^^} SPICE
 
 # Instrument sub-block (LEIA).
 #-------------------------------------------------------------------------------
-instrument=leia
+instrument="leia"
 
 # Copy all delivered instrument files.
 copyDir $instrument
@@ -222,13 +222,13 @@ copyDir $instrument
 # Process SPICE inputs for this sub-block. This sub-section is only needed
 # if this delivery requires generating INFO files from SPICE kernels
 # for this instrument. Otherwise, recommend uncommenting the following line:
-# skipSection=true
+# skipSection="true" THIS SHOULD ALWAYS BE true WHEN CHECKING THIS IN!!!
 
-metakernel=leia.tm # relative to $tmpSpiceDir.
-instFrame=LICIA_PL-1 # THIS IS SPECIFIC TO LEIA.
-imageDir=$outputTop/$instrument/images
-infoFileDir=$outputTop/$instrument/infofiles
-timeKeyword=IMG_UTC # This is only used if extracting times from FITS files.
+metakernel="leia.tm" # relative to $tmpSpiceDir.
+instFrame="LICIA_PL-1" # THIS IS SPECIFIC TO LEIA.
+imageDir="$outputTop/$instrument/images"
+infoFileDir="$outputTop/$instrument/infofiles"
+timeKeyword="IMG_UTC" # This is only used if extracting times from FITS files.
 
 # Make SPICE kernels available in the temporary SPICE directory. This is so
 # that any absolute paths in the metakernel may be edited to be as short
@@ -257,7 +257,7 @@ generateDatabaseTable ${instrument^^} SPICE
 
 # Instrument sub-block (LUKE).
 #-------------------------------------------------------------------------------
-instrument=luke
+instrument="luke"
 
 # Copy all delivered instrument files.
 copyDir $instrument
@@ -266,13 +266,13 @@ copyDir $instrument
 # Process SPICE inputs for this sub-block. This sub-section is only needed
 # if this delivery requires generating INFO files from SPICE kernels
 # for this instrument. Otherwise, recommend uncommenting the following line:
-# skipSection=true
+# skipSection="true" THIS SHOULD ALWAYS BE true WHEN CHECKING THIS IN!!!
 
-metakernel=luke.tm # relative to $tmpSpiceDir.
-instFrame=LICIA_PL-2 # THIS IS SPECIFIC TO LUKE.
-imageDir=$outputTop/$instrument/images
-infoFileDir=$outputTop/$instrument/infofiles
-timeKeyword=IMG_UTC # This is only used if extracting times from FITS files.
+metakernel="luke.tm" # relative to $tmpSpiceDir.
+instFrame="LICIA_PL-2" # THIS IS SPECIFIC TO LUKE.
+imageDir="$outputTop/$instrument/images"
+infoFileDir="$outputTop/$instrument/infofiles"
+timeKeyword="IMG_UTC" # This is only used if extracting times from FITS files.
 
 # Make SPICE kernels available in the temporary SPICE directory. This is so
 # that any absolute paths in the metakernel may be edited to be as short
