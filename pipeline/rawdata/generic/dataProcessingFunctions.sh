@@ -1190,6 +1190,7 @@ extractFITSFileTimes() {
 }
 
 # Create INFO files from a SPICE metakernel plus a CSV file containing a list of images with time stamps.
+# Note that infoDir in this function is the FULL path to the output INFO file directory.
 createInfoFilesFromImageTimeStamps() {
   (
     funcName=${FUNCNAME[0]}
@@ -1220,10 +1221,10 @@ createInfoFilesFromImageTimeStamps() {
     fi
 
     if test "$infoDir" = ""; then
-      check 1 "$funcName: infoDir argument is blank."
+      check 1 "$funcName: blank/missing infoDir argument must be the FULL path to the output info file direoctory."
     fi
 
-    parentDir=$(getDirPath "$destTop/$infoDir/..")
+    parentDir=$(getDirPath "$infoDir/..")
 
     imageListFile="$parentDir/imagelist-info.txt"
     imageListFullPathFile="$parentDir/imagelist-fullpath-info.txt"
@@ -1237,7 +1238,7 @@ createInfoFilesFromImageTimeStamps() {
       check 1 "$funcName: directory $createInfoFilesDir does not exist"
     fi
 
-    createDir "$destTop/$infoDir"
+    createDir "$infoDir"
 
     #  1. metakernel - full path to a SPICE meta-kernel file containing the paths to the kernel files
     #  2. body - IAU name of the target body, all caps
@@ -1259,10 +1260,10 @@ createInfoFilesFromImageTimeStamps() {
     createDir $logTop
 
     echo $createInfoFilesDir/createInfoFiles $metakernel $body $bodyFrame $spacecraft $instrumentFrame \
-      $imageTimeStampFile "$destTop/$infoDir" $imageListFile $imageListFullPathFile $missingInfoList
+      $imageTimeStampFile "$infoDir" $imageListFile $imageListFullPathFile $missingInfoList
 
     $createInfoFilesDir/createInfoFiles $metakernel $body $bodyFrame $spacecraft $instrumentFrame \
-      $imageTimeStampFile "$destTop/$infoDir" $imageListFile $imageListFullPathFile $missingInfoList > \
+      $imageTimeStampFile "$infoDir" $imageListFile $imageListFullPathFile $missingInfoList > \
       $logTop/createInfoFiles-$instrument.txt 2>&1
     check $? "$funcName: creating info files failed. See log file $logTop/createInfoFiles-$instrument.txt"
   )
@@ -1270,6 +1271,7 @@ createInfoFilesFromImageTimeStamps() {
 }
 
 # Create INFO files from a SPICE metakernel plus a directory with FITS images that have time stamps associated with a keyword.
+# Note that infoDir in this function is a RELATIVE path to the output INFO file directory.
 createInfoFilesFromFITSImages() {
   (
     funcName=${FUNCNAME[0]}
@@ -1283,8 +1285,9 @@ createInfoFilesFromFITSImages() {
     instrument=$5
     instrumentFrame=$6
     timeStampKeyword=$7
-    imageDir=$8
-    infoDir=$9
+    topDir=$8
+    imageDir=$9
+    infoDir=$10
 
     if test "$metakernel" = ""; then
       check 1 "$funcName: missing/blank first argument; must be path to metakernel valid in $tmpSpiceDir"
@@ -1314,31 +1317,35 @@ createInfoFilesFromFITSImages() {
       check 1 "$funcName: missing/blank seventh argument must specify keyword used to extract time stamps"
     fi
 
-    if test "$imageDir" = ""; then
-      check 1 "$funcName: missing/blank eighth argument must specify image directory relative to $srcTop"
+    if test "$topDir" = ""; then
+      check 1 "$funcName: missing/blank eighth argument must specify the top of the installation"
     fi
 
-    if test ! -d "$srcTop/$imageDir"; then
-      check 1 "$funcName: eighth argument $imageDir must specify image directory relative to $srcTop"
+    if test "$imageDir" = ""; then
+      check 1 "$funcName: missing/blank ninth argument must specify image directory relative to $topDir"
+    fi
+
+    if test ! -d "$topDir/$imageDir"; then
+      check 1 "$funcName: ninth argument $imageDir must specify image directory relative to $topDir"
     fi
 
     if test "$infoDir" = ""; then
-      check 1 "$funcName: missing/blank ninth argument must specify image directory relative to $srcTop"
+      check 1 "$funcName: missing/blank tenth argument must specify output INFO file directory relative to $topDir"
     fi
 
     # Generate image list with time stamps from the content of the image directory.
-    imageTimeStampDir=$(getDirPath "$destTop/$imageDir/..")
+    imageTimeStampDir=$(getDirPath "$topDir/$imageDir/..")
 
     imageTimeStampFile="$imageTimeStampDir/imagelist-with-time.txt"
 
     if test ! -f $imageTimeStampFile; then
-      extractFITSFileTimes $timeStampKeyword $srcTop "$srcTop/$imageDir" $imageTimeStampFile
+      extractFITSFileTimes $timeStampKeyword $topDir "$topDir/$imageDir" $imageTimeStampFile
     else
       echo "$funcName: file $imageTimeStampFile already exists -- skipping extracting times from FITS images"
     fi
 
     createInfoFilesFromImageTimeStamps $metakernel $body $bodyFrame $spacecraft $instrument $instrumentFrame \
-      $imageTimeStampFile $infoDir
+      $imageTimeStampFile $topDir/$infoDir
   )
   check $?
 }

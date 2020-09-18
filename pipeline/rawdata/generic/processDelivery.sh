@@ -182,8 +182,8 @@ copyDir $instrument
 
 metakernel=impact.tm # relative to $tmpSpiceDir.
 instFrame=DART_DRACO_2X2 # This is specific to DRACO.
-imageDir=$instrument/images
-infoFileDir=$instrument/infofiles
+imageDir=$outputTop/$instrument/images
+infoFileDir=$outputTop/$instrument/infofiles
 timeKeyword=COR_UTC # This is only used if extracting times from FITS files.
 
 # Make SPICE kernels available in the temporary SPICE directory. This is so
@@ -197,7 +197,7 @@ createLink $spiceKernelTop/$instrument $tmpSpiceDir
 # createInfoFilesFromTimeStamps instead.
 createInfoFilesFromFITSImages $metakernel \
   $bodyId $bodyFrame $scId $instrument $instFrame $timeKeyword \
-  $imageDir  $infoFileDir
+  $processedTop $imageDir $infoFileDir
 #-------------------------------------------------------------------------------
 
 # Update database tables.
@@ -208,50 +208,6 @@ createRelativeLink $processedTop $processedTop/data
 generateDatabaseTable ${instrument^^} SPICE
 
 # End Instrument sub-block (DRACO).
-#-------------------------------------------------------------------------------
-
-
-# Instrument sub-block (LUKE).
-#-------------------------------------------------------------------------------
-instrument=luke
-
-# Copy all delivered instrument files.
-copyDir $instrument
-
-#-------------------------------------------------------------------------------
-# Process SPICE inputs for this sub-block. This sub-section is only needed
-# if this delivery requires generating INFO files from SPICE kernels
-# for this instrument. Otherwise, recommend uncommenting the following line:
-# skipSection=true
-
-metakernel=luke.tm # relative to $tmpSpiceDir.
-instFrame=LICIA_PL-1 # THIS IS SPECIFIC TO LUKE.
-imageDir=$instrument/images
-infoFileDir=$instrument/infofiles
-timeKeyword=IMG_UTC # This is only used if extracting times from FITS files.
-
-# Make SPICE kernels available in the temporary SPICE directory. This is so
-# that any absolute paths in the metakernel may be edited to be as short
-# as possible. Note there is only one temporary directory, so cannot
-# simulateously process two deliveries that use SPICE kernels.
-createLink $spiceKernelTop/$instrument $tmpSpiceDir
-
-# Generate the info files for the images from the SPICE kernels using times in
-# FITS images. If the images don't have time stamps, can use
-# createInfoFilesFromTimeStamps instead.
-createInfoFilesFromFITSImages $metakernel \
-  $bodyId $bodyFrame $scId $instrument $instFrame $timeKeyword \
-  $imageDir  $infoFileDir
-#-------------------------------------------------------------------------------
-
-# Update database tables.
-# This symbolic link is needed because the database generator appends "/data"
-# to the root URL, but this level of directory is not used in deliveries.
-createRelativeLink $processedTop $processedTop/data
-
-generateDatabaseTable ${instrument^^} SPICE
-
-# End Instrument sub-block (LUKE).
 #-------------------------------------------------------------------------------
 
 
@@ -269,9 +225,9 @@ copyDir $instrument
 # skipSection=true
 
 metakernel=leia.tm # relative to $tmpSpiceDir.
-instFrame=LICIA_PL-2 # THIS IS SPECIFIC TO LEIA.
-imageDir=$instrument/images
-infoFileDir=$instrument/infofiles
+instFrame=LICIA_PL-1 # THIS IS SPECIFIC TO LEIA.
+imageDir=$outputTop/$instrument/images
+infoFileDir=$outputTop/$instrument/infofiles
 timeKeyword=IMG_UTC # This is only used if extracting times from FITS files.
 
 # Make SPICE kernels available in the temporary SPICE directory. This is so
@@ -285,7 +241,7 @@ createLink $spiceKernelTop/$instrument $tmpSpiceDir
 # createInfoFilesFromTimeStamps instead.
 createInfoFilesFromFITSImages $metakernel \
   $bodyId $bodyFrame $scId $instrument $instFrame $timeKeyword \
-  $imageDir  $infoFileDir
+  $processedTop $imageDir $infoFileDir
 #-------------------------------------------------------------------------------
 
 # Update database tables.
@@ -296,6 +252,50 @@ createRelativeLink $processedTop $processedTop/data
 generateDatabaseTable ${instrument^^} SPICE
 
 # End Instrument sub-block (LEIA).
+#-------------------------------------------------------------------------------
+
+
+# Instrument sub-block (LUKE).
+#-------------------------------------------------------------------------------
+instrument=luke
+
+# Copy all delivered instrument files.
+copyDir $instrument
+
+#-------------------------------------------------------------------------------
+# Process SPICE inputs for this sub-block. This sub-section is only needed
+# if this delivery requires generating INFO files from SPICE kernels
+# for this instrument. Otherwise, recommend uncommenting the following line:
+# skipSection=true
+
+metakernel=luke.tm # relative to $tmpSpiceDir.
+instFrame=LICIA_PL-2 # THIS IS SPECIFIC TO LUKE.
+imageDir=$outputTop/$instrument/images
+infoFileDir=$outputTop/$instrument/infofiles
+timeKeyword=IMG_UTC # This is only used if extracting times from FITS files.
+
+# Make SPICE kernels available in the temporary SPICE directory. This is so
+# that any absolute paths in the metakernel may be edited to be as short
+# as possible. Note there is only one temporary directory, so cannot
+# simulateously process two deliveries that use SPICE kernels.
+createLink $spiceKernelTop/$instrument $tmpSpiceDir
+
+# Generate the info files for the images from the SPICE kernels using times in
+# FITS images. If the images don't have time stamps, can use
+# createInfoFilesFromTimeStamps instead.
+createInfoFilesFromFITSImages $metakernel \
+  $bodyId $bodyFrame $scId $instrument $instFrame $timeKeyword \
+  $processedTop $imageDir $infoFileDir
+#-------------------------------------------------------------------------------
+
+# Update database tables.
+# This symbolic link is needed because the database generator appends "/data"
+# to the root URL, but this level of directory is not used in deliveries.
+createRelativeLink $processedTop $processedTop/data
+
+generateDatabaseTable ${instrument^^} SPICE
+
+# End Instrument sub-block (LUKE).
 #-------------------------------------------------------------------------------
 
 
