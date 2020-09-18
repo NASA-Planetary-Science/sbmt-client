@@ -140,11 +140,6 @@ destTop="$processedTop/$outputTop"
 # Begin instrument processing section, which contains a common
 # header/setup section, and one or more instrument-specific sub-blocks.
 
-# This will cause the script to skip functions until skipSection is changed
-# to something else. This is used to minimize editing to control flow around
-# larger sections of code.
-skipSection="true" # THIS SHOULD ALWAYS BE true WHEN CHECKING THIS IN!!!
-
 # Begin common (all-instrument) header/setup
 #-------------------------------------------------------------------------------
 # This section includes variables that are common to all instruments in
@@ -166,6 +161,8 @@ bodyFrame="920065803_FIXED" # Didymos-specific.
 
 # Need an Instrument sub-block like below for each instrument in this delivery.
 
+
+skipSection="true" # THIS SHOULD ALWAYS BE true WHEN CHECKING THIS IN!!!
 
 # Instrument sub-block (DRACO).
 #-------------------------------------------------------------------------------
@@ -211,6 +208,8 @@ generateDatabaseTable ${instrument^^} SPICE
 #-------------------------------------------------------------------------------
 
 
+skipSection="true" # THIS SHOULD ALWAYS BE true WHEN CHECKING THIS IN!!!
+
 # Instrument sub-block (LEIA).
 #-------------------------------------------------------------------------------
 instrument="leia"
@@ -254,6 +253,8 @@ generateDatabaseTable ${instrument^^} SPICE
 # End Instrument sub-block (LEIA).
 #-------------------------------------------------------------------------------
 
+
+skipSection="true" # THIS SHOULD ALWAYS BE true WHEN CHECKING THIS IN!!!
 
 # Instrument sub-block (LUKE).
 #-------------------------------------------------------------------------------
