@@ -672,19 +672,19 @@ public class DatabaseGeneratorSql
             System.out.println("DatabaseGeneratorSql: main: writing to " + ri.databasePrefix + " for " + ri.instrument + " with " + ri.imageSource);
         	DatabaseGeneratorSql generator = new DatabaseGeneratorSql(config, ri.databasePrefix, appendTables, modifyMain, ri.instrument);
 
-            String pathToFileList = ri.pathToFileList;
+            String fileListUrl = ri.pathToFileList;
             if (remote)
             {
                 if (ri.remotePathToFileList != null)
-                    pathToFileList = ri.remotePathToFileList;
+                    fileListUrl = ri.remotePathToFileList;
             }
             else
             {
-                pathToFileList = safeUrlPaths.getUrl(safeUrlPaths.getString(rootURL, pathToFileList));
+                fileListUrl = safeUrlPaths.getUrl(safeUrlPaths.getString(Configuration.getDataRootURL().toString(), fileListUrl));
             }
 
-            System.out.println("Generating: " + pathToFileList + ", mode=" + mode);
-            generator.run(pathToFileList, mode, diffFileList);
+            System.out.println("Generating: " + fileListUrl + ", mode=" + mode);
+            generator.run(fileListUrl, mode, diffFileList);
         }
     }
 }
