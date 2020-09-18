@@ -94,6 +94,10 @@ copyDir .
 # comment out, and/or edit the following blocks.
 #-------------------------------------------------------------------------------
 
+# To update another processed area, uncomment to link to it here.
+# linkToProcessedArea $areaToUpdate $processedTop
+#-------------------------------------------------------------------------------
+
 # Begin standard model block. This is for most model-associated items, and
 # does not include image/spectra/lidar/spice related items. This block
 # properly does not include a top-level copyDir command. Rather, each type
@@ -101,9 +105,6 @@ copyDir .
 #-------------------------------------------------------------------------------
 srcTop="$rawDataTop/$outputTop"
 destTop="$processedTop/$outputTop"
-
-# Link to the directory in the processing area that is being updated.
-# linkToProcessedArea $areaToUpdate $processedTop
 
 # Generate complete set of model metadata.
 # generateModelMetadata $processedTop
