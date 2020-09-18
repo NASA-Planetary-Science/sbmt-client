@@ -152,7 +152,6 @@ destTop="$processedTop/$outputTop"
 # These variables are only used if this delivery generates INFO files from
 # SPICE kernels. These variables are valid for all instruments in this
 # delivery.
-scId="DART"
 bodyId="${bodyId^^}" # usually this is same as used for coloring, but all caps.
 bodyFrame="920065803_FIXED" # Didymos-specific.
 
@@ -166,6 +165,7 @@ skipSection="true" # THIS SHOULD ALWAYS BE true WHEN CHECKING THIS IN!!!
 
 # Instrument sub-block (DRACO).
 #-------------------------------------------------------------------------------
+scId="DART"
 instrument="draco"
 
 # Copy all delivered instrument files.
@@ -212,6 +212,7 @@ skipSection="true" # THIS SHOULD ALWAYS BE true WHEN CHECKING THIS IN!!!
 
 # Instrument sub-block (LEIA).
 #-------------------------------------------------------------------------------
+scId="LICIA"
 instrument="leia"
 
 # Copy all delivered instrument files.
@@ -258,6 +259,7 @@ skipSection="true" # THIS SHOULD ALWAYS BE true WHEN CHECKING THIS IN!!!
 
 # Instrument sub-block (LUKE).
 #-------------------------------------------------------------------------------
+scId="LICIA"
 instrument="luke"
 
 # Copy all delivered instrument files.
