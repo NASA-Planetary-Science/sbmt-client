@@ -111,7 +111,6 @@ public class SmallBodyViewConfigMetadataIO implements MetadataManager
                 FixedMetadata metadata = Serializers.deserialize(file, config.getUniqueName());
                 io2.metadataID = config.getUniqueName();
                 io2.retrieve(metadata);
-
                 if (!cfg.equals(config))
                 	System.err.println("SmallBodyViewConfigMetadataIO: main: cfg equals config is " + (cfg.equals(config) + " for " + config.getUniqueName()));
 
@@ -232,8 +231,8 @@ public class SmallBodyViewConfigMetadataIO implements MetadataManager
         if (c.hasHierarchicalImageSearch && c.hierarchicalImageSearchSpecification != null)
             write(hierarchicalImageSearchSpecification, c.hierarchicalImageSearchSpecification.getMetadataManager().store(), configMetadata);
 
-
-        write(hasHierarchicalSpectraSearch, c.hasHierarchicalSpectraSearch, configMetadata);
+        if (c.hasSpectralData && c.spectralInstruments.size() > 0)
+        	write(hasHierarchicalSpectraSearch, c.hasHierarchicalSpectraSearch, configMetadata);
         write(hasHypertreeBasedSpectraSearch, c.hasHypertreeBasedSpectraSearch, configMetadata);
         write(spectraSearchDataSourceMap, c.spectraSearchDataSourceMap, configMetadata);
         write(spectrumMetadataFile, c.spectrumMetadataFile, configMetadata);

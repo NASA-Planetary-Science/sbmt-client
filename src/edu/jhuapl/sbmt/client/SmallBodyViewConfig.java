@@ -506,7 +506,6 @@ public class SmallBodyViewConfig extends BodyViewConfig implements ISmallBodyVie
 		}
 		if (!super.equals(obj))
 		{
-//			System.out.println("SmallBodyViewConfig: equals: body view config parent doesn't equal");
 			return false;
 		}
 //		if (getClass() != obj.getClass())
