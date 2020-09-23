@@ -68,6 +68,10 @@ public class BennuConfigs extends SmallBodyViewConfig
     		SbmtMultiMissionTool.Mission.APL_INTERNAL, SbmtMultiMissionTool.Mission.TEST_APL_INTERNAL, SbmtMultiMissionTool.Mission.STAGE_APL_INTERNAL
     };
 
+    private static final SbmtMultiMissionTool.Mission[] PublicOnly = new SbmtMultiMissionTool.Mission[] {
+    		SbmtMultiMissionTool.Mission.PUBLIC_RELEASE, SbmtMultiMissionTool.Mission.TEST_PUBLIC_RELEASE, SbmtMultiMissionTool.Mission.STAGE_PUBLIC_RELEASE
+    };
+
 
 	List<SpectrumInstrumentMetadata<SpectrumSearchSpec>> instrumentSearchSpecs = new ArrayList<SpectrumInstrumentMetadata<SpectrumSearchSpec>>();
 
@@ -488,8 +492,8 @@ public class BennuConfigs extends SmallBodyViewConfig
             c.rotationRate = 0.00040613;
             if(Configuration.isMac()) c.hasBigmap = true;  // Right now bigmap only works on Macs
 
-            c.imagingInstruments = new ImagingInstrument[] { c.generatePolycamInstrument("bennu_altwgspcv20181109b_polycam", "bennu_altwgspcv20181109b_polycam", false),
-            												 c.generateMapcamInstrument("bennu_altwgspcv20181109b_mapcam", "bennu_altwgspcv20181109b_mapcam", false)
+            c.imagingInstruments = new ImagingInstrument[] { c.generatePolycamInstrument("bennu_altwgspcv20181109b_polycam", "bennu_altwgspcv20181109b_polycam", true, false),
+            												 c.generateMapcamInstrument("bennu_altwgspcv20181109b_mapcam", "bennu_altwgspcv20181109b_mapcam", true, false)
             };
             c.hasStateHistory = true;
             c.timeHistoryFile = c.rootDirOnServer + "/history/timeHistory.bth";
@@ -727,7 +731,7 @@ public class BennuConfigs extends SmallBodyViewConfig
 
             c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
             c.author = ShapeModelType.ALTWG_SPC_v20181217;
-            c.modelLabel = "ALTWG-SPC-v20181217";
+            c.modelLabel = "SPC v13";
             c.rootDirOnServer = "/bennu/altwg-spc-v20181217";
             c.setResolution(ImmutableList.of(
                     "Very Low (12288 plates)", DEFAULT_GASKELL_LABELS_PER_RESOLUTION[0], DEFAULT_GASKELL_LABELS_PER_RESOLUTION[1], DEFAULT_GASKELL_LABELS_PER_RESOLUTION[2], DEFAULT_GASKELL_LABELS_PER_RESOLUTION[3]),
@@ -737,8 +741,8 @@ public class BennuConfigs extends SmallBodyViewConfig
 
             if(Configuration.isMac()) c.hasBigmap = true;  // Right now bigmap only works on Macs
 
-            c.imagingInstruments = new ImagingInstrument[] { c.generatePolycamInstrument("bennu_altwgspcv20181217_polycam", "bennu_altwgspcv20181217_polycam", false),
-					 										 c.generateMapcamInstrument("bennu_altwgspcv20181217_mapcam", "bennu_altwgspcv20181217_mapcam", false),
+            c.imagingInstruments = new ImagingInstrument[] { c.generatePolycamInstrument("bennu_altwgspcv20181217_polycam", "bennu_altwgspcv20181217_polycam", true, false),
+					 										 c.generateMapcamInstrument("bennu_altwgspcv20181217_mapcam", "bennu_altwgspcv20181217_mapcam", true, false),
 					 										 c.generateNavcamInstrument("bennu_altwgspcv20181217_navcam", "bennu_altwgspcv20181217_navcam")
             };
 
@@ -752,6 +756,18 @@ public class BennuConfigs extends SmallBodyViewConfig
             c.setLidarParameters(true);
 
             configArray.add(c);
+
+            //public version
+            BennuConfigs public1217 = (BennuConfigs)c.clone();
+            public1217.author = ShapeModelType.provide("ALTWG-SPC-v20181217_SPC_v13_PUBLIC");
+            public1217.modelLabel = "SPC v13";
+            public1217.imagingInstruments = new ImagingInstrument[] { public1217.generatePolycamInstrument("bennu_altwgspcv20181217_public_polycam", "bennu_altwgspcv20181217_public_polycam", true, false),	//false = SPC only
+            															public1217.generateMapcamInstrument("bennu_altwgspcv20181217_public_mapcam", "bennu_altwgspcv20181217_public_mapcam", true, false),
+            };
+            public1217.disableSpectra();
+            public1217.hasImageMap = false;
+            public1217.presentInMissions = PublicOnly;
+            configArray.add(public1217);
         }
 
         if (Configuration.isAPLVersion())
@@ -761,7 +777,7 @@ public class BennuConfigs extends SmallBodyViewConfig
 
             c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
             c.author = ShapeModelType.ALTWG_SPC_v20181227;
-            c.modelLabel = "ALTWG-SPC-v20181227";
+            c.modelLabel = "SPC v14";
             c.rootDirOnServer = "/bennu/altwg-spc-v20181227";
             c.setResolution(ImmutableList.of(
                     "Very Low (12288 plates)", DEFAULT_GASKELL_LABELS_PER_RESOLUTION[0], DEFAULT_GASKELL_LABELS_PER_RESOLUTION[1], DEFAULT_GASKELL_LABELS_PER_RESOLUTION[2], DEFAULT_GASKELL_LABELS_PER_RESOLUTION[3]),
@@ -777,8 +793,8 @@ public class BennuConfigs extends SmallBodyViewConfig
                 c.hasBigmap = true;
             }
 
-            c.imagingInstruments = new ImagingInstrument[] { c.generatePolycamInstrument("bennu_altwgspcv20181227_polycam", "bennu_altwgspcv20181227_polycam", false),
-															 c.generateMapcamInstrument("bennu_altwgspcv20181227_mapcam", "bennu_altwgspcv20181227_mapcam", false),
+            c.imagingInstruments = new ImagingInstrument[] { c.generatePolycamInstrument("bennu_altwgspcv20181227_polycam", "bennu_altwgspcv20181227_polycam", true, false),
+															 c.generateMapcamInstrument("bennu_altwgspcv20181227_mapcam", "bennu_altwgspcv20181227_mapcam", true, false),
 															 c.generateNavcamInstrument("bennu_altwgspcv20181227_navcam", "bennu_altwgspcv20181227_navcam")
             };
 
@@ -793,6 +809,18 @@ public class BennuConfigs extends SmallBodyViewConfig
 
 
             configArray.add(c);
+
+            //public version
+            BennuConfigs public1227 = (BennuConfigs)c.clone();
+            public1227.author = ShapeModelType.provide("ALTWG-SPC-v20181227_SPC_v14_PUBLIC");
+            public1227.modelLabel = "SPC v14";
+            public1227.imagingInstruments = new ImagingInstrument[] { public1227.generatePolycamInstrument("bennu_altwgspcv20181227_public_polycam", "bennu_altwgspcv20181227_public_polycam", true, false),	//false = SPC only
+            														public1227.generateMapcamInstrument("bennu_altwgspcv20181227_public_mapcam", "bennu_altwgspcv20181227_public_mapcam", true, false),
+            };
+            public1227.disableSpectra();
+            public1227.hasImageMap = false;
+            public1227.presentInMissions = PublicOnly;
+            configArray.add(public1227);
         }
 
         if (Configuration.isAPLVersion())
@@ -813,8 +841,8 @@ public class BennuConfigs extends SmallBodyViewConfig
             if(Configuration.isMac()) c.hasBigmap = true;  // Right now bigmap only works on Macs
 
 
-            c.imagingInstruments = new ImagingInstrument[] { c.generatePolycamInstrument("bennu_altwgspcv20190105_polycam", "bennu_altwgspcv20190105_polycam", false),
-															 c.generateMapcamInstrument("bennu_altwgspcv20190105_mapcam", "bennu_altwgspcv20190105_mapcam", false),
+            c.imagingInstruments = new ImagingInstrument[] { c.generatePolycamInstrument("bennu_altwgspcv20190105_polycam", "bennu_altwgspcv20190105_polycam", true, false),
+															 c.generateMapcamInstrument("bennu_altwgspcv20190105_mapcam", "bennu_altwgspcv20190105_mapcam", true, false),
 															 c.generateNavcamInstrument("bennu_altwgspcv20190105_navcam", "bennu_altwgspcv20190105_navcam")
             };
 
@@ -861,8 +889,8 @@ public class BennuConfigs extends SmallBodyViewConfig
             if(Configuration.isMac()) c.hasBigmap = true;  // Right now bigmap only works on Macs
 
 
-            c.imagingInstruments = new ImagingInstrument[] { c.generatePolycamInstrument("bennu_altwgspcv20190114_polycam", "bennu_altwgspcv20190114_polycam", false),
-															 c.generateMapcamInstrument("bennu_altwgspcv20190114_mapcam", "bennu_altwgspcv20190114_mapcam", false),
+            c.imagingInstruments = new ImagingInstrument[] { c.generatePolycamInstrument("bennu_altwgspcv20190114_polycam", "bennu_altwgspcv20190114_polycam", true, false),
+															 c.generateMapcamInstrument("bennu_altwgspcv20190114_mapcam", "bennu_altwgspcv20190114_mapcam", true, false),
 															 c.generateNavcamInstrument("bennu_altwgspcv20190114_navcam", "bennu_altwgspcv20190114_navcam")
             };
 
@@ -909,8 +937,8 @@ public class BennuConfigs extends SmallBodyViewConfig
             if(Configuration.isMac()) c.hasBigmap = true;  // Right now bigmap only works on Macs
 
 
-            c.imagingInstruments = new ImagingInstrument[] { c.generatePolycamInstrument("bennu_altwgspcv20190117_polycam", "bennu_altwgspcv20190117_polycam", false),
-															 c.generateMapcamInstrument("bennu_altwgspcv20190117_mapcam", "bennu_altwgspcv20190117_mapcam", false),
+            c.imagingInstruments = new ImagingInstrument[] { c.generatePolycamInstrument("bennu_altwgspcv20190117_polycam", "bennu_altwgspcv20190117_polycam", true, false),
+															 c.generateMapcamInstrument("bennu_altwgspcv20190117_mapcam", "bennu_altwgspcv20190117_mapcam", true, false),
 															 c.generateNavcamInstrument("bennu_altwgspcv20190117_navcam", "bennu_altwgspcv20190117_navcam")
             };
 
@@ -945,7 +973,7 @@ public class BennuConfigs extends SmallBodyViewConfig
 
             c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
             c.author = ShapeModelType.ALTWG_SPC_v20190121;
-            c.modelLabel = "ALTWG-SPC-v20190121";
+            c.modelLabel = "SPC v20";
             c.rootDirOnServer = "/bennu/altwg-spc-v20190121";
             c.setResolution(ImmutableList.of(
                     "Very Low (12288 plates)", DEFAULT_GASKELL_LABELS_PER_RESOLUTION[0], DEFAULT_GASKELL_LABELS_PER_RESOLUTION[1], DEFAULT_GASKELL_LABELS_PER_RESOLUTION[2], DEFAULT_GASKELL_LABELS_PER_RESOLUTION[3]),
@@ -960,8 +988,8 @@ public class BennuConfigs extends SmallBodyViewConfig
                 c.hasBigmap = true;
             }
 
-            c.imagingInstruments = new ImagingInstrument[] { c.generatePolycamInstrument("bennu_altwgspcv20190121_polycam", "bennu_altwgspcv20190121_polycam", false),
-															 c.generateMapcamInstrument("bennu_altwgspcv20190121_mapcam", "bennu_altwgspcv20190121_mapcam", false),
+            c.imagingInstruments = new ImagingInstrument[] { c.generatePolycamInstrument("bennu_altwgspcv20190121_polycam", "bennu_altwgspcv20190121_polycam", true, false),
+															 c.generateMapcamInstrument("bennu_altwgspcv20190121_mapcam", "bennu_altwgspcv20190121_mapcam", true, false),
 															 c.generateNavcamInstrument("bennu_altwgspcv20190121_navcam", "bennu_altwgspcv20190121_navcam")
             };
 
@@ -987,6 +1015,19 @@ public class BennuConfigs extends SmallBodyViewConfig
             };
 
             configArray.add(c);
+
+            //public version
+            BennuConfigs public0121 = (BennuConfigs)c.clone();
+            public0121.author = ShapeModelType.provide("ALTWG-SPC-v20190121_SPC_v20_PUBLIC");
+            public0121.modelLabel = "SPC v20";
+            public0121.imagingInstruments = new ImagingInstrument[] { public0121.generatePolycamInstrument("bennu_altwgspcv20190121_public_polycam", "bennu_altwgspcv20190121_public_polycam", true, false),	//false = SPC only
+            															public0121.generateMapcamInstrument("bennu_altwgspcv20190121_public_mapcam", "bennu_altwgspcv20190121_public_mapcam", true, false),
+            };
+            public0121.disableSpectra();
+            public0121.hasImageMap = false;
+            public0121.presentInMissions = PublicOnly;
+            configArray.add(public0121);
+
         }
 
         if (Configuration.isAPLVersion())
@@ -1007,8 +1048,8 @@ public class BennuConfigs extends SmallBodyViewConfig
 
             if(Configuration.isMac()) c.hasBigmap = true;  // Right now bigmap only works on Macs
 
-            c.imagingInstruments = new ImagingInstrument[] { c.generatePolycamInstrument("bennu_altwgspcv20190207a_polycam", "bennu_altwgspcv20190207a_polycam", false),
-															 c.generateMapcamInstrument("bennu_altwgspcv20190207a_mapcam", "bennu_altwgspcv20190207a_mapcam", false),
+            c.imagingInstruments = new ImagingInstrument[] { c.generatePolycamInstrument("bennu_altwgspcv20190207a_polycam", "bennu_altwgspcv20190207a_polycam", true, false),
+															 c.generateMapcamInstrument("bennu_altwgspcv20190207a_mapcam", "bennu_altwgspcv20190207a_mapcam", true, false),
 															 c.generateNavcamInstrument("bennu_altwgspcv20190207a_navcam", "bennu_altwgspcv20190207a_navcam")
             };
 
@@ -1054,8 +1095,8 @@ public class BennuConfigs extends SmallBodyViewConfig
 
             if(Configuration.isMac()) c.hasBigmap = true;  // Right now bigmap only works on Macs
 
-            c.imagingInstruments = new ImagingInstrument[] { c.generatePolycamInstrument("bennu_altwgspcv20190207b_polycam", "bennu_altwgspcv20190207b_polycam", false),
-															 c.generateMapcamInstrument("bennu_altwgspcv20190207b_mapcam", "bennu_altwgspcv20190207b_mapcam", false),
+            c.imagingInstruments = new ImagingInstrument[] { c.generatePolycamInstrument("bennu_altwgspcv20190207b_polycam", "bennu_altwgspcv20190207b_polycam", true, false),
+															 c.generateMapcamInstrument("bennu_altwgspcv20190207b_mapcam", "bennu_altwgspcv20190207b_mapcam", true, false),
 															 c.generateNavcamInstrument("bennu_altwgspcv20190207b_navcam", "bennu_altwgspcv20190207b_navcam")
             };
 
@@ -1090,7 +1131,7 @@ public class BennuConfigs extends SmallBodyViewConfig
 
             c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
             c.author = ShapeModelType.ALTWG_SPC_v20190414;
-            c.modelLabel = "ALTWG-SPC-v20190414";
+            c.modelLabel = "SPC v28";
             c.rootDirOnServer = "/bennu/altwg-spc-v20190414";
             c.setResolution(ImmutableList.of(
                     "Very Low (12288 plates)", DEFAULT_GASKELL_LABELS_PER_RESOLUTION[0], DEFAULT_GASKELL_LABELS_PER_RESOLUTION[1], DEFAULT_GASKELL_LABELS_PER_RESOLUTION[2], DEFAULT_GASKELL_LABELS_PER_RESOLUTION[3]),
@@ -1101,8 +1142,8 @@ public class BennuConfigs extends SmallBodyViewConfig
 
             if(Configuration.isMac()) c.hasBigmap = true;  // Right now bigmap only works on Macs
 
-            c.imagingInstruments = new ImagingInstrument[] { c.generatePolycamInstrument("bennu_altwgspcv20190414_polycam", "bennu_altwgspcv20190414_polycam", false),
-															 c.generateMapcamInstrument("bennu_altwgspcv20190414_mapcam", "bennu_altwgspcv20190414_mapcam", false),
+            c.imagingInstruments = new ImagingInstrument[] { c.generatePolycamInstrument("bennu_altwgspcv20190414_polycam", "bennu_altwgspcv20190414_polycam", true, false),
+															 c.generateMapcamInstrument("bennu_altwgspcv20190414_mapcam", "bennu_altwgspcv20190414_mapcam", true, false),
 															 c.generateNavcamInstrument("bennu_altwgspcv20190414_navcam", "bennu_altwgspcv20190414_navcam")
             };
 
@@ -1128,6 +1169,18 @@ public class BennuConfigs extends SmallBodyViewConfig
             };
             c.presentInMissions = InternalOnly;
             configArray.add(c);
+
+            //public version
+            BennuConfigs public0414 = (BennuConfigs)c.clone();
+            public0414.author = ShapeModelType.provide("ALTWG-SPC-v20190414_SPC_v28_PUBLIC");
+            public0414.modelLabel = "SPC v28";
+            public0414.imagingInstruments = new ImagingInstrument[] { public0414.generatePolycamInstrument("bennu_altwgspcv20190414_public_polycam", "bennu_altwgspcv20190414_public_polycam", true, false),	//false = SPC only
+            														public0414.generateMapcamInstrument("bennu_altwgspcv20190414_public_mapcam", "bennu_altwgspcv20190414_public_mapcam", true, false),
+            };
+            public0414.disableSpectra();
+            public0414.hasImageMap = false;
+            public0414.presentInMissions = PublicOnly;
+            configArray.add(public0414);
         }
 
         if (Configuration.isAPLVersion())
@@ -1137,7 +1190,7 @@ public class BennuConfigs extends SmallBodyViewConfig
 
             c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
             c.author = ShapeModelType.ALTWG_SPO_v20190612;
-            c.modelLabel = "ALTWG-SPO-v20190612";
+            c.modelLabel = "SPO v34";
             c.rootDirOnServer = "/bennu/altwg-spo-v20190612";
             c.setResolution(ImmutableList.of(
                     "Very Low (12288 plates)", DEFAULT_GASKELL_LABELS_PER_RESOLUTION[0], DEFAULT_GASKELL_LABELS_PER_RESOLUTION[1], DEFAULT_GASKELL_LABELS_PER_RESOLUTION[2], DEFAULT_GASKELL_LABELS_PER_RESOLUTION[3]),
@@ -1148,8 +1201,8 @@ public class BennuConfigs extends SmallBodyViewConfig
 
             if(Configuration.isMac()) c.hasBigmap = true;  // Right now bigmap only works on Macs
 
-            c.imagingInstruments = new ImagingInstrument[] { c.generatePolycamInstrument("bennu_altwgspov20190612_polycam", "bennu_altwgspov20190612_polycam", false),
-															 c.generateMapcamInstrument("bennu_altwgspov20190612_mapcam", "bennu_altwgspov20190612_mapcam", false),
+            c.imagingInstruments = new ImagingInstrument[] { c.generatePolycamInstrument("bennu_altwgspov20190612_polycam", "bennu_altwgspov20190612_polycam", true, false),
+															 c.generateMapcamInstrument("bennu_altwgspov20190612_mapcam", "bennu_altwgspov20190612_mapcam", true, false),
 															 c.generateNavcamInstrument("bennu_altwgspov20190612_navcam", "bennu_altwgspov20190612_navcam")
             };
 
@@ -1174,6 +1227,18 @@ public class BennuConfigs extends SmallBodyViewConfig
                 new DBRunInfo(ImageSource.SPICE, Instrument.NAVCAM, ShapeModelBody.RQ36.toString(), "/project/sbmt2/sbmt/data/bodies/bennu/altwg-spo-v20190612/navcam/imagelist-fullpath-info.txt", "bennu_altwgspov20190612_navcam")
             };
             configArray.add(c);
+
+            //public version
+            BennuConfigs public0612 = (BennuConfigs)c.clone();
+            public0612.author = ShapeModelType.provide("ALTWG-SPC-v20190612_SPC_v34_PUBLIC");
+            public0612.modelLabel = "SPO v34";
+            public0612.imagingInstruments = new ImagingInstrument[] { public0612.generatePolycamInstrument("bennu_altwgspov20190612_public_polycam", "bennu_altwgspov20190612_public_polycam", true, false),	//false = SPC only
+            														public0612.generateMapcamInstrument("bennu_altwgspov20190612_public_mapcam", "bennu_altwgspov20190612_public_mapcam", true, false),
+            };
+            public0612.disableSpectra();
+            public0612.hasImageMap = false;
+            public0612.presentInMissions = PublicOnly;
+            configArray.add(public0612);
         }
 
         if (Configuration.isAPLVersion())
@@ -1183,7 +1248,7 @@ public class BennuConfigs extends SmallBodyViewConfig
 
             c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
             c.author = ShapeModelType.provide("ALTWG-SPC-v20190828");
-            c.modelLabel = c.author.name();
+            c.modelLabel = "SPC v42";
             c.rootDirOnServer = "/bennu/altwg-spc-v20190828";
             c.setResolution(ImmutableList.of(
                     "Very Low (12288 plates)", DEFAULT_GASKELL_LABELS_PER_RESOLUTION[0], DEFAULT_GASKELL_LABELS_PER_RESOLUTION[1], DEFAULT_GASKELL_LABELS_PER_RESOLUTION[2], DEFAULT_GASKELL_LABELS_PER_RESOLUTION[3]),
@@ -1194,8 +1259,8 @@ public class BennuConfigs extends SmallBodyViewConfig
 
             if(Configuration.isMac()) c.hasBigmap = true;  // Right now bigmap only works on Macs
 
-            c.imagingInstruments = new ImagingInstrument[] { c.generatePolycamInstrument("bennu_altwgspcv20190828_polycam", "bennu_altwgspcv20190828_polycam", false),
-															 c.generateMapcamInstrument("bennu_altwgspcv20190828_mapcam", "bennu_altwgspcv20190828_mapcam", false),
+            c.imagingInstruments = new ImagingInstrument[] { c.generatePolycamInstrument("bennu_altwgspcv20190828_polycam", "bennu_altwgspcv20190828_polycam", true, false),
+															 c.generateMapcamInstrument("bennu_altwgspcv20190828_mapcam", "bennu_altwgspcv20190828_mapcam", true, false),
 															 c.generateNavcamInstrument("bennu_altwgspcv20190828_navcam", "bennu_altwgspcv20190828_navcam")
             };
 
@@ -1221,6 +1286,18 @@ public class BennuConfigs extends SmallBodyViewConfig
             };
 
             configArray.add(c);
+
+            //public version
+            BennuConfigs public0828 = (BennuConfigs)c.clone();
+            public0828.author = ShapeModelType.provide("ALTWG-SPC-v20190828_SPC_v42_PUBLIC");
+            public0828.modelLabel = "SPC v42";
+            public0828.imagingInstruments = new ImagingInstrument[] { public0828.generatePolycamInstrument("bennu_altwgspcv20190828_public_polycam", "bennu_altwgspcv20190828_public_polycam", true, false),	//false = SPC only
+            														public0828.generateMapcamInstrument("bennu_altwgspcv20190828_public_mapcam", "bennu_altwgspcv20190828_public_mapcam", true, false),
+            };
+            public0828.disableSpectra();
+            public0828.hasImageMap = false;
+            public0828.presentInMissions = PublicOnly;
+            configArray.add(public0828);
         }
 
         if (Configuration.isAPLVersion())
@@ -1243,8 +1320,8 @@ public class BennuConfigs extends SmallBodyViewConfig
 
             if(Configuration.isMac()) c.hasBigmap = true;  // Right now bigmap only works on Macs
 
-            c.imagingInstruments = new ImagingInstrument[] { c.generatePolycamInstrument("bennu_altwgspcv20191027_polycam", "bennu_altwgspcv20191027_polycam", true),
-															 c.generateMapcamInstrument("bennu_altwgspcv20191027_mapcam", "bennu_altwgspcv20191027_mapcam", true),
+            c.imagingInstruments = new ImagingInstrument[] { c.generatePolycamInstrument("bennu_altwgspcv20191027_polycam", "bennu_altwgspcv20191027_polycam", true, true),
+															 c.generateMapcamInstrument("bennu_altwgspcv20191027_mapcam", "bennu_altwgspcv20191027_mapcam", true, true),
 															 c.generateNavcamInstrument("bennu_altwgspcv20191027_navcam", "bennu_altwgspcv20191027_navcam")
             };
 
@@ -1280,7 +1357,7 @@ public class BennuConfigs extends SmallBodyViewConfig
 
             c.dataUsed = ShapeModelDataUsed.LIDAR_BASED;
             c.author = ShapeModelType.provide("OLA-v20");
-            c.modelLabel = c.author.name();
+            c.modelLabel = "OLA v20";
             c.rootDirOnServer = "/bennu/ola-v20-spc";
             c.setResolution(ImmutableList.of(
                     "Very Low (12288 plates)", DEFAULT_GASKELL_LABELS_PER_RESOLUTION[0], DEFAULT_GASKELL_LABELS_PER_RESOLUTION[1], DEFAULT_GASKELL_LABELS_PER_RESOLUTION[2], DEFAULT_GASKELL_LABELS_PER_RESOLUTION[3]),
@@ -1291,8 +1368,8 @@ public class BennuConfigs extends SmallBodyViewConfig
 
             if(Configuration.isMac()) c.hasBigmap = true;  // Right now bigmap only works on Macs
 
-            c.imagingInstruments = new ImagingInstrument[] { c.generatePolycamInstrument("bennu_olav20_polycam", "bennu_olav20_polycam", true),
-															 c.generateMapcamInstrument("bennu_olav20_mapcam", "bennu_olav20_mapcam", true),
+            c.imagingInstruments = new ImagingInstrument[] { c.generatePolycamInstrument("bennu_olav20_polycam", "bennu_olav20_polycam", false, true),
+															 c.generateMapcamInstrument("bennu_olav20_mapcam", "bennu_olav20_mapcam", false, true),
 															 c.generateNavcamInstrument("bennu_olav20_navcam", "bennu_olav20_navcam")
             };
 
@@ -1327,6 +1404,23 @@ public class BennuConfigs extends SmallBodyViewConfig
             c.defaultForMissions = OREXClients;
 
             configArray.add(c);
+
+            //public version
+            BennuConfigs publicOLA = (BennuConfigs)c.clone();
+            publicOLA.author = ShapeModelType.provide("OLA-v20_PUBLIC");
+            publicOLA.modelLabel = "OLA v20";
+            publicOLA.disableSpectra();
+            publicOLA.hasImageMap = false;
+            publicOLA.presentInMissions = PublicOnly;
+
+            publicOLA.lidarBrowseDataSourceMap.put("Default", publicOLA.rootDirOnServer + "/ola/browse/fileListL2A.txt");
+            publicOLA.lidarBrowseFileListResourcePath = publicOLA.rootDirOnServer + "/ola/browse/fileListL2A.txt";
+            publicOLA.lidarBrowseWithPointsDataSourceMap.put("Default", publicOLA.rootDirOnServer + "/ola/browse/fileListL2A.txt");
+            publicOLA.lidarSearchDataSourceMap.clear();
+            publicOLA.orexSearchTimeMap.clear();
+            publicOLA.orexSearchTimeMap.put("OLAv20", startStop);
+            publicOLA.lidarSearchDataSourceMap.put("OLAv20", publicOLA.rootDirOnServer + "/ola/search/olav20/dataSource.lidar");
+            configArray.add(publicOLA);
         }
 
         if (Configuration.isAPLVersion())
@@ -1336,7 +1430,7 @@ public class BennuConfigs extends SmallBodyViewConfig
 
             c.dataUsed = ShapeModelDataUsed.LIDAR_BASED;
             c.author = ShapeModelType.provide("OLA-v20-PTM");
-            c.modelLabel = c.author.name();
+            c.modelLabel = "OLA v20 PTM";
             c.rootDirOnServer = "/bennu/ola-v20-ptm";
             c.setResolution( //
                     ImmutableList.of("Medium (217032 plates)", "High (886904 plates)", "Very High (3366134 plates)"),
@@ -1347,8 +1441,8 @@ public class BennuConfigs extends SmallBodyViewConfig
 
             if(Configuration.isMac()) c.hasBigmap = true;  // Right now bigmap only works on Macs
 
-            c.imagingInstruments = new ImagingInstrument[] { c.generatePolycamInstrument("bennu_olav20ptm_polycam", "bennu_olav20ptm_polycam", true),
-            												 c.generateMapcamInstrument("bennu_olav20ptm_mapcam", "bennu_olav20ptm_mapcam", true),
+            c.imagingInstruments = new ImagingInstrument[] { c.generatePolycamInstrument("bennu_olav20ptm_polycam", "bennu_olav20ptm_polycam", false, true),
+            												 c.generateMapcamInstrument("bennu_olav20ptm_mapcam", "bennu_olav20ptm_mapcam", false, true),
             												 c.generateNavcamInstrument("bennu_olav20ptm_navcam", "bennu_olav20ptm_navcam")
             };
 
@@ -1380,14 +1474,35 @@ public class BennuConfigs extends SmallBodyViewConfig
             };
 
             configArray.add(c);
+
+
+            //public version
+            BennuConfigs publicOLAptm = (BennuConfigs)c.clone();
+            publicOLAptm.author = ShapeModelType.provide("OLA-v20-PTM_PUBLIC");
+            publicOLAptm.modelLabel = "OLA v20 PTM";
+            publicOLAptm.disableSpectra();
+            publicOLAptm.hasImageMap = false;
+            publicOLAptm.presentInMissions = PublicOnly;
+
+            publicOLAptm.lidarBrowseDataSourceMap.put("Default", publicOLAptm.rootDirOnServer + "/ola/browse/fileListL2A.txt");
+            publicOLAptm.lidarBrowseFileListResourcePath = publicOLAptm.rootDirOnServer + "/ola/browse/fileListL2A.txt";
+            publicOLAptm.lidarBrowseWithPointsDataSourceMap.put("Default", publicOLAptm.rootDirOnServer + "/ola/browse/fileListL2A.txt");
+            publicOLAptm.lidarSearchDataSourceMap.clear();
+            publicOLAptm.orexSearchTimeMap.clear();
+            publicOLAptm.orexSearchTimeMap.put("OLAv20", startStop);
+            publicOLAptm.lidarSearchDataSourceMap.put("OLAv20", publicOLAptm.rootDirOnServer + "/ola/search/olav20/dataSource.lidar");
+            configArray.add(publicOLAptm);
         }
 
     }
 
-	private ImagingInstrument generatePolycamInstrument(String spcNamePrefix, String spiceNamePrefix, boolean includeSPICE)
+	private ImagingInstrument generatePolycamInstrument(String spcNamePrefix, String spiceNamePrefix, boolean includeSPC, boolean includeSPICE)
 	{
-		ImageSource[] imageSources = { ImageSource.GASKELL };
-		if (includeSPICE == true) imageSources = new ImageSource[]{ ImageSource.GASKELL,ImageSource.SPICE };
+		ImageSource[] imageSources = {};
+		ArrayList<ImageSource> imageSourceArray = new ArrayList<ImageSource>();
+		if (includeSPC) imageSourceArray.add(ImageSource.GASKELL);
+		if (includeSPICE) imageSourceArray.add(ImageSource.SPICE);
+		imageSources = imageSourceArray.toArray(imageSources);
 		ImagingInstrument instrument = new ImagingInstrument(
                 SpectralImageMode.MONO,
                 new GenericPhpQuery(rootDirOnServer + "/polycam", spcNamePrefix, spiceNamePrefix, rootDirOnServer + "/polycam/gallery"),
@@ -1398,10 +1513,13 @@ public class BennuConfigs extends SmallBodyViewConfig
 		return instrument;
 	}
 
-	private ImagingInstrument generateMapcamInstrument(String spcNamePrefix, String spiceNamePrefix, boolean includeSPICE)
+	private ImagingInstrument generateMapcamInstrument(String spcNamePrefix, String spiceNamePrefix, boolean includeSPC, boolean includeSPICE)
 	{
-		ImageSource[] imageSources = { ImageSource.GASKELL };
-		if (includeSPICE == true) imageSources = new ImageSource[]{ ImageSource.GASKELL,ImageSource.SPICE };
+		ImageSource[] imageSources = {};
+		ArrayList<ImageSource> imageSourceArray = new ArrayList<ImageSource>();
+		if (includeSPC) imageSourceArray.add(ImageSource.GASKELL);
+		if (includeSPICE) imageSourceArray.add(ImageSource.SPICE);
+		imageSources = imageSourceArray.toArray(imageSources);
 		return new ImagingInstrument(
                 SpectralImageMode.MONO,
                 new GenericPhpQuery(rootDirOnServer + "/mapcam", spcNamePrefix, spiceNamePrefix, rootDirOnServer + "/mapcam/gallery"),
@@ -1437,6 +1555,14 @@ public class BennuConfigs extends SmallBodyViewConfig
 
 	}
 
+	private void disableSpectra()
+	{
+		hasSpectralData = false;
+        hasHierarchicalSpectraSearch = false;
+        spectraSearchDataSourceMap.clear();
+        spectralInstruments.clear();
+	}
+
 	private void setSpectrumParameters()
 	{
 		hasSpectralData = true;
@@ -1465,8 +1591,8 @@ public class BennuConfigs extends SmallBodyViewConfig
          lidarSearchDefaultEndDate = new GregorianCalendar(2050, 0, 1, 0, 0, 0).getTime();
          lidarSearchDataSourceMap = new LinkedHashMap<>();
          lidarBrowseDataSourceMap = new LinkedHashMap<>();
-         lidarBrowseDataSourceMap.put("Default", rootDirOnServer + "/ola/browse/fileList.txt");
-         lidarBrowseFileListResourcePath = rootDirOnServer + "/ola/browse/fileList.txt";
+         lidarBrowseDataSourceMap.put("Default", rootDirOnServer + "/ola/browse/fileListv2.txt");
+         lidarBrowseFileListResourcePath = rootDirOnServer + "/ola/browse/fileListv2.txt";
          lidarBrowseWithPointsDataSourceMap.put("Default", rootDirOnServer + "/ola/browse/fileListv2.txt");
 
          if (hasHypertree)

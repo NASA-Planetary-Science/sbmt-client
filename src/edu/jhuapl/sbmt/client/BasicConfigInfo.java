@@ -62,7 +62,7 @@ public class BasicConfigInfo implements MetadataManager
 
 		if (author != ShapeModelType.CUSTOM)
 		{
-			System.out.println("BasicConfigInfo: unique name " + uniqueName);
+//			System.out.println("BasicConfigInfo: unique name " + uniqueName);
 			for (SbmtMultiMissionTool.Mission presentMission : presentInVersion)
 			{
 				//allow the body if the "present in Mission" value equals the tool's preset mission value OR if the tool's present mission value is the apl internal nightly
