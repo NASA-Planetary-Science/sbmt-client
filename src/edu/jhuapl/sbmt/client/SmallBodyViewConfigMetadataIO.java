@@ -89,7 +89,6 @@ public class SmallBodyViewConfigMetadataIO implements MetadataManager
         }
 
         List<ViewConfig> builtInConfigs = SmallBodyViewConfig.getBuiltInConfigs();
-        System.out.println("SmallBodyViewConfigMetadataIO: main: walking through Configs");
         for (ViewConfig config : builtInConfigs)
         {
             try
