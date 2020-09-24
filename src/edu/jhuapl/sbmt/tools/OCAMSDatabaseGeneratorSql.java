@@ -67,7 +67,7 @@ public class OCAMSDatabaseGeneratorSql
             "CREATE TABLE IF NOT EXISTS " + tableName + "(" +
             "id int PRIMARY KEY, " +
             "filename char(128), " +
-            "privacy char(128), " +
+            "privacy char(128) " +
             ")"
         );
 	}
