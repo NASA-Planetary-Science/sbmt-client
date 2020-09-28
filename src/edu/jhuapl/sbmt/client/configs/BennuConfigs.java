@@ -492,8 +492,8 @@ public class BennuConfigs extends SmallBodyViewConfig
             c.rotationRate = 0.00040613;
             if(Configuration.isMac()) c.hasBigmap = true;  // Right now bigmap only works on Macs
 
-            c.imagingInstruments = new ImagingInstrument[] { c.generatePolycamInstrument("bennu_altwgspcv20181109b_polycam", "bennu_altwgspcv20181109b_polycam", true, false),
-            												 c.generateMapcamInstrument("bennu_altwgspcv20181109b_mapcam", "bennu_altwgspcv20181109b_mapcam", true, false)
+            c.imagingInstruments = new ImagingInstrument[] { c.generatePolycamInstrument("bennu_altwgspcv20181109b_polycam", "bennu_altwgspcv20181109b_polycam", true, false, true),
+            												 c.generateMapcamInstrument("bennu_altwgspcv20181109b_mapcam", "bennu_altwgspcv20181109b_mapcam", true, false, true)
             };
             c.hasStateHistory = true;
             c.timeHistoryFile = c.rootDirOnServer + "/history/timeHistory.bth";
@@ -761,8 +761,8 @@ public class BennuConfigs extends SmallBodyViewConfig
             BennuConfigs public1217 = (BennuConfigs)c.clone();
             public1217.author = ShapeModelType.provide("ALTWG-SPC-v20181217_SPC_v13_PUBLIC");
             public1217.modelLabel = "SPC v13";
-            public1217.imagingInstruments = new ImagingInstrument[] { public1217.generatePolycamInstrument("bennu_altwgspcv20181217_public_polycam", "bennu_altwgspcv20181217_public_polycam", true, false),	//false = SPC only
-            															public1217.generateMapcamInstrument("bennu_altwgspcv20181217_public_mapcam", "bennu_altwgspcv20181217_public_mapcam", true, false),
+            public1217.imagingInstruments = new ImagingInstrument[] { public1217.generatePolycamInstrument("bennu_altwgspcv20181217_public_polycam", "bennu_altwgspcv20181217_public_polycam", true, false, true),	//false = SPC only
+            															public1217.generateMapcamInstrument("bennu_altwgspcv20181217_public_mapcam", "bennu_altwgspcv20181217_public_mapcam", true, false, true),
             };
             public1217.disableSpectra();
             public1217.hasImageMap = false;
@@ -814,8 +814,8 @@ public class BennuConfigs extends SmallBodyViewConfig
             BennuConfigs public1227 = (BennuConfigs)c.clone();
             public1227.author = ShapeModelType.provide("ALTWG-SPC-v20181227_SPC_v14_PUBLIC");
             public1227.modelLabel = "SPC v14";
-            public1227.imagingInstruments = new ImagingInstrument[] { public1227.generatePolycamInstrument("bennu_altwgspcv20181227_public_polycam", "bennu_altwgspcv20181227_public_polycam", true, false),	//false = SPC only
-            														public1227.generateMapcamInstrument("bennu_altwgspcv20181227_public_mapcam", "bennu_altwgspcv20181227_public_mapcam", true, false),
+            public1227.imagingInstruments = new ImagingInstrument[] { public1227.generatePolycamInstrument("bennu_altwgspcv20181227_public_polycam", "bennu_altwgspcv20181227_public_polycam", true, false, true),	//false = SPC only
+            														public1227.generateMapcamInstrument("bennu_altwgspcv20181227_public_mapcam", "bennu_altwgspcv20181227_public_mapcam", true, false, true),
             };
             public1227.disableSpectra();
             public1227.hasImageMap = false;
@@ -1020,8 +1020,8 @@ public class BennuConfigs extends SmallBodyViewConfig
             BennuConfigs public0121 = (BennuConfigs)c.clone();
             public0121.author = ShapeModelType.provide("ALTWG-SPC-v20190121_SPC_v20_PUBLIC");
             public0121.modelLabel = "SPC v20";
-            public0121.imagingInstruments = new ImagingInstrument[] { public0121.generatePolycamInstrument("bennu_altwgspcv20190121_public_polycam", "bennu_altwgspcv20190121_public_polycam", true, false),	//false = SPC only
-            															public0121.generateMapcamInstrument("bennu_altwgspcv20190121_public_mapcam", "bennu_altwgspcv20190121_public_mapcam", true, false),
+            public0121.imagingInstruments = new ImagingInstrument[] { public0121.generatePolycamInstrument("bennu_altwgspcv20190121_public_polycam", "bennu_altwgspcv20190121_public_polycam", true, false, true),	//false = SPC only
+            															public0121.generateMapcamInstrument("bennu_altwgspcv20190121_public_mapcam", "bennu_altwgspcv20190121_public_mapcam", true, false, true),
             };
             public0121.disableSpectra();
             public0121.hasImageMap = false;
@@ -1174,8 +1174,8 @@ public class BennuConfigs extends SmallBodyViewConfig
             BennuConfigs public0414 = (BennuConfigs)c.clone();
             public0414.author = ShapeModelType.provide("ALTWG-SPC-v20190414_SPC_v28_PUBLIC");
             public0414.modelLabel = "SPC v28";
-            public0414.imagingInstruments = new ImagingInstrument[] { public0414.generatePolycamInstrument("bennu_altwgspcv20190414_public_polycam", "bennu_altwgspcv20190414_public_polycam", true, false),	//false = SPC only
-            														public0414.generateMapcamInstrument("bennu_altwgspcv20190414_public_mapcam", "bennu_altwgspcv20190414_public_mapcam", true, false),
+            public0414.imagingInstruments = new ImagingInstrument[] { public0414.generatePolycamInstrument("bennu_altwgspcv20190414_public_polycam", "bennu_altwgspcv20190414_public_polycam", true, false, true),	//false = SPC only
+            														public0414.generateMapcamInstrument("bennu_altwgspcv20190414_public_mapcam", "bennu_altwgspcv20190414_public_mapcam", true, false, true),
             };
             public0414.disableSpectra();
             public0414.hasImageMap = false;
@@ -1232,8 +1232,8 @@ public class BennuConfigs extends SmallBodyViewConfig
             BennuConfigs public0612 = (BennuConfigs)c.clone();
             public0612.author = ShapeModelType.provide("ALTWG-SPC-v20190612_SPC_v34_PUBLIC");
             public0612.modelLabel = "SPO v34";
-            public0612.imagingInstruments = new ImagingInstrument[] { public0612.generatePolycamInstrument("bennu_altwgspov20190612_public_polycam", "bennu_altwgspov20190612_public_polycam", true, false),	//false = SPC only
-            														public0612.generateMapcamInstrument("bennu_altwgspov20190612_public_mapcam", "bennu_altwgspov20190612_public_mapcam", true, false),
+            public0612.imagingInstruments = new ImagingInstrument[] { public0612.generatePolycamInstrument("bennu_altwgspov20190612_public_polycam", "bennu_altwgspov20190612_public_polycam", true, false, true),
+            														public0612.generateMapcamInstrument("bennu_altwgspov20190612_public_mapcam", "bennu_altwgspov20190612_public_mapcam", true, false, true),
             };
             public0612.disableSpectra();
             public0612.hasImageMap = false;
@@ -1291,8 +1291,8 @@ public class BennuConfigs extends SmallBodyViewConfig
             BennuConfigs public0828 = (BennuConfigs)c.clone();
             public0828.author = ShapeModelType.provide("ALTWG-SPC-v20190828_SPC_v42_PUBLIC");
             public0828.modelLabel = "SPC v42";
-            public0828.imagingInstruments = new ImagingInstrument[] { public0828.generatePolycamInstrument("bennu_altwgspcv20190828_public_polycam", "bennu_altwgspcv20190828_public_polycam", true, false),	//false = SPC only
-            														public0828.generateMapcamInstrument("bennu_altwgspcv20190828_public_mapcam", "bennu_altwgspcv20190828_public_mapcam", true, false),
+            public0828.imagingInstruments = new ImagingInstrument[] { public0828.generatePolycamInstrument("bennu_altwgspcv20190828_public_polycam", "bennu_altwgspcv20190828_public_polycam", true, false, true),	//false = SPC only
+            														public0828.generateMapcamInstrument("bennu_altwgspcv20190828_public_mapcam", "bennu_altwgspcv20190828_public_mapcam", true, false, true),
             };
             public0828.disableSpectra();
             public0828.hasImageMap = false;
@@ -1413,6 +1413,11 @@ public class BennuConfigs extends SmallBodyViewConfig
             publicOLA.hasImageMap = false;
             publicOLA.presentInMissions = PublicOnly;
 
+            publicOLA.imagingInstruments = new ImagingInstrument[] { publicOLA.generatePolycamInstrument("bennu_olav20_polycam", "bennu_olav20_polycam", false, true, true),
+					 publicOLA.generateMapcamInstrument("bennu_olav20_mapcam", "bennu_olav20_mapcam", false, true, true),
+					 publicOLA.generateNavcamInstrument("bennu_olav20_navcam", "bennu_olav20_navcam", true)
+            };
+
             publicOLA.lidarBrowseDataSourceMap.put("Default", publicOLA.rootDirOnServer + "/ola/browse/fileListL2A.txt");
             publicOLA.lidarBrowseFileListResourcePath = publicOLA.rootDirOnServer + "/ola/browse/fileListL2A.txt";
             publicOLA.lidarBrowseWithPointsDataSourceMap.put("Default", publicOLA.rootDirOnServer + "/ola/browse/fileListL2A.txt");
@@ -1483,6 +1488,10 @@ public class BennuConfigs extends SmallBodyViewConfig
             publicOLAptm.disableSpectra();
             publicOLAptm.hasImageMap = false;
             publicOLAptm.presentInMissions = PublicOnly;
+            publicOLAptm.imagingInstruments = new ImagingInstrument[] { publicOLAptm.generatePolycamInstrument("bennu_olav20ptm_polycam", "bennu_olav20ptm_polycam", false, true, true),
+            		publicOLAptm.generateMapcamInstrument("bennu_olav20ptm_mapcam", "bennu_olav20ptm_mapcam", false, true, true),
+            		publicOLAptm.generateNavcamInstrument("bennu_olav20ptm_navcam", "bennu_olav20ptm_navcam", true)
+            };
 
             publicOLAptm.lidarBrowseDataSourceMap.put("Default", publicOLAptm.rootDirOnServer + "/ola/browse/fileListL2A.txt");
             publicOLAptm.lidarBrowseFileListResourcePath = publicOLAptm.rootDirOnServer + "/ola/browse/fileListL2A.txt";
@@ -1498,14 +1507,22 @@ public class BennuConfigs extends SmallBodyViewConfig
 
 	private ImagingInstrument generatePolycamInstrument(String spcNamePrefix, String spiceNamePrefix, boolean includeSPC, boolean includeSPICE)
 	{
+		return generatePolycamInstrument(spcNamePrefix, spiceNamePrefix, includeSPC, includeSPICE, false);
+	}
+
+	private ImagingInstrument generatePolycamInstrument(String spcNamePrefix, String spiceNamePrefix, boolean includeSPC, boolean includeSPICE, boolean publicOnly)
+	{
 		ImageSource[] imageSources = {};
 		ArrayList<ImageSource> imageSourceArray = new ArrayList<ImageSource>();
 		if (includeSPC) imageSourceArray.add(ImageSource.GASKELL);
 		if (includeSPICE) imageSourceArray.add(ImageSource.SPICE);
 		imageSources = imageSourceArray.toArray(imageSources);
+		GenericPhpQuery phpQuery = new GenericPhpQuery(rootDirOnServer + "/polycam", spcNamePrefix, spiceNamePrefix, rootDirOnServer + "/polycam/gallery");
+		phpQuery.setPublicOnly(publicOnly);
+		phpQuery.setImageNameTable("bennu_polycam_images");
 		ImagingInstrument instrument = new ImagingInstrument(
                 SpectralImageMode.MONO,
-                new GenericPhpQuery(rootDirOnServer + "/polycam", spcNamePrefix, spiceNamePrefix, rootDirOnServer + "/polycam/gallery"),
+                phpQuery,
                 ImageType.POLYCAM_FLIGHT_IMAGE,
                 imageSources,
                 Instrument.POLYCAM
@@ -1515,14 +1532,22 @@ public class BennuConfigs extends SmallBodyViewConfig
 
 	private ImagingInstrument generateMapcamInstrument(String spcNamePrefix, String spiceNamePrefix, boolean includeSPC, boolean includeSPICE)
 	{
+		return generateMapcamInstrument(spcNamePrefix, spiceNamePrefix, includeSPC, includeSPICE, false);
+	}
+
+	private ImagingInstrument generateMapcamInstrument(String spcNamePrefix, String spiceNamePrefix, boolean includeSPC, boolean includeSPICE, boolean publicOnly)
+	{
 		ImageSource[] imageSources = {};
 		ArrayList<ImageSource> imageSourceArray = new ArrayList<ImageSource>();
 		if (includeSPC) imageSourceArray.add(ImageSource.GASKELL);
 		if (includeSPICE) imageSourceArray.add(ImageSource.SPICE);
 		imageSources = imageSourceArray.toArray(imageSources);
+		GenericPhpQuery phpQuery = new GenericPhpQuery(rootDirOnServer + "/mapcam", spcNamePrefix, spiceNamePrefix, rootDirOnServer + "/mapcam/gallery");
+		phpQuery.setPublicOnly(publicOnly);
+		phpQuery.setImageNameTable("bennu_mapcam_images");
 		return new ImagingInstrument(
                 SpectralImageMode.MONO,
-                new GenericPhpQuery(rootDirOnServer + "/mapcam", spcNamePrefix, spiceNamePrefix, rootDirOnServer + "/mapcam/gallery"),
+                phpQuery,
                 ImageType.MAPCAM_FLIGHT_IMAGE,
                 imageSources,
                 Instrument.MAPCAM
@@ -1531,9 +1556,17 @@ public class BennuConfigs extends SmallBodyViewConfig
 
 	private ImagingInstrument generateNavcamInstrument(String spcNamePrefix, String spiceNamePrefix)
 	{
+		return generateNavcamInstrument(spcNamePrefix, spiceNamePrefix, false);
+	}
+
+	private ImagingInstrument generateNavcamInstrument(String spcNamePrefix, String spiceNamePrefix, boolean publicOnly)
+	{
+		GenericPhpQuery phpQuery = new GenericPhpQuery(rootDirOnServer + "/navcam", spcNamePrefix, spiceNamePrefix, rootDirOnServer + "/navcam/gallery");
+		phpQuery.setPublicOnly(publicOnly);
+		phpQuery.setImageNameTable("bennu_navcam_images");
 		return new ImagingInstrument(
                 SpectralImageMode.MONO,
-                new GenericPhpQuery(rootDirOnServer + "/navcam", spcNamePrefix, spiceNamePrefix, rootDirOnServer + "/navcam/gallery"),
+                phpQuery,
                 ImageType.NAVCAM_FLIGHT_IMAGE,
                 new ImageSource[]{ImageSource.SPICE},
                 Instrument.NAVCAM
