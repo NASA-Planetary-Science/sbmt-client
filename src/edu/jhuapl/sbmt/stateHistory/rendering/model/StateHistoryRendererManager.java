@@ -13,12 +13,12 @@ import vtk.vtkProp;
 import vtk.vtkScalarBarActor;
 
 import edu.jhuapl.saavtk.colormap.Colormaps;
+import edu.jhuapl.saavtk.feature.FeatureAttr;
 import edu.jhuapl.saavtk.util.BoundingBox;
 import edu.jhuapl.saavtk.util.Configuration;
 import edu.jhuapl.saavtk.util.ConvertResourceToFile;
 import edu.jhuapl.saavtk.util.Properties;
 import edu.jhuapl.sbmt.client.SmallBodyModel;
-import edu.jhuapl.sbmt.lidar.feature.FeatureAttr;
 import edu.jhuapl.sbmt.model.image.perspectiveImage.PerspectiveImageFootprint;
 import edu.jhuapl.sbmt.model.image.perspectiveImage.PerspectiveImageFrustum;
 import edu.jhuapl.sbmt.stateHistory.model.StateHistoryColoringFunctions;

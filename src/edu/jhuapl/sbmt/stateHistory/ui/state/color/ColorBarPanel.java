@@ -67,15 +67,15 @@ public class ColorBarPanel<G1> extends JPanel implements ActionListener
 		colormapL = new JLabel();
 
 		colormapBox = new GComboBox<>();
-		colormapBox.setRenderer(ColormapUtil.getFancyColormapRender2(colormapBox));
-		for (String aStr : Colormaps.getAllBuiltInColormapNames())
-		{
-			Colormap cmap = Colormaps.getNewInstanceOfBuiltInColormap(aStr);
-			colormapBox.addItem(cmap);
-			if (cmap.getName().equals(Colormaps.getCurrentColormapName()))
-				colormapBox.setSelectedItem(cmap);
-		}
-		colormapBox.addActionListener(this);
+//		colormapBox.setRenderer(ColormapUtil.getFancyColormapRender2(colormapBox));
+//		for (String aStr : Colormaps.getAllBuiltInColormapNames())
+//		{
+//			Colormap cmap = Colormaps.getNewInstanceOfBuiltInColormap(aStr);
+//			colormapBox.addItem(cmap);
+//			if (cmap.getName().equals(Colormaps.getCurrentColormapName()))
+//				colormapBox.setSelectedItem(cmap);
+//		}
+//		colormapBox.addActionListener(this);
 
 		// Range, NumColorLevels components
 		minValueL = new JLabel("Min Val:");

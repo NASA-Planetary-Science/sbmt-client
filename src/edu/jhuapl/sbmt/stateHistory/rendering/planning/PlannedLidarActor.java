@@ -11,13 +11,13 @@ import com.google.common.collect.ImmutableSet;
 
 import vtk.vtkActor;
 
+import edu.jhuapl.saavtk.color.provider.ColorProvider;
+import edu.jhuapl.saavtk.color.provider.GroupColorProvider;
+import edu.jhuapl.saavtk.feature.FeatureAttr;
+import edu.jhuapl.saavtk.feature.FeatureType;
 import edu.jhuapl.sbmt.lidar.BasicLidarPoint;
 import edu.jhuapl.sbmt.lidar.LidarManager;
 import edu.jhuapl.sbmt.lidar.LidarPoint;
-import edu.jhuapl.sbmt.lidar.feature.FeatureAttr;
-import edu.jhuapl.sbmt.lidar.feature.FeatureType;
-import edu.jhuapl.sbmt.lidar.gui.color.ColorProvider;
-import edu.jhuapl.sbmt.lidar.gui.color.GroupColorProvider;
 import edu.jhuapl.sbmt.lidar.vtk.VtkPointPainter;
 import edu.jhuapl.sbmt.stateHistory.model.planning.lidar.PlannedLidarTrack;
 

@@ -4,9 +4,9 @@ import java.util.List;
 
 import vtk.vtkProp;
 
+import edu.jhuapl.saavtk.feature.FeatureAttr;
 import edu.jhuapl.saavtk.vtk.VtkResource;
 import edu.jhuapl.sbmt.lidar.LidarPoint;
-import edu.jhuapl.sbmt.lidar.feature.FeatureAttr;
 import edu.jhuapl.sbmt.stateHistory.ui.state.color.StateHistoryFeatureType;
 
 /**

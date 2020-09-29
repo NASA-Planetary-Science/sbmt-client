@@ -19,7 +19,7 @@ import com.google.common.collect.ImmutableList;
 
 import vtk.vtkCamera;
 
-import edu.jhuapl.saavtk.colormap.Colorbar;
+import edu.jhuapl.saavtk.color.painter.ColorBarPainter;
 import edu.jhuapl.saavtk.gui.StatusBar;
 import edu.jhuapl.saavtk.gui.View;
 import edu.jhuapl.saavtk.gui.render.RenderPanel;
@@ -79,7 +79,7 @@ public abstract class AbstractBodyView extends View implements PropertyChangeLis
     private static final long serialVersionUID = 1L;
     private final TrackedMetadataManager stateManager;
     protected final Map<String, MetadataManager> metadataManagers;
-    private Colorbar smallBodyColorbar;
+    private ColorBarPainter smallBodyCBP;
 	private BasicConfigInfo configInfo;
 	protected SmallBodyModel smallBodyModel;
 
@@ -334,40 +334,36 @@ public abstract class AbstractBodyView extends View implements PropertyChangeLis
     public void setRenderer(Renderer renderer)
     {
         this.renderer = renderer;
-        smallBodyColorbar = new Colorbar(renderer);
+        smallBodyCBP = new ColorBarPainter(renderer);
     }
 
     @Override
     public void propertyChange(PropertyChangeEvent e)
     {
-        if (e.getPropertyName().equals(Properties.MODEL_CHANGED))
+    	if (e.getPropertyName().equals(Properties.MODEL_CHANGED))
         {
-            renderer.setProps(getModelManager().getProps());
-
-            if (smallBodyColorbar==null)
+			renderer.notifySceneChange();
+            renderer.getRenderWindowPanel().resetCameraClippingRange();
+			if (smallBodyCBP == null)
                 return;
 
             PolyhedralModel sbModel=(PolyhedralModel)getModelManager().getModel(ModelNames.SMALL_BODY);
             if (sbModel.isColoringDataAvailable() && sbModel.getColoringIndex()>=0)
             {
-                if (!smallBodyColorbar.isVisible())
-                    smallBodyColorbar.setVisible(true);
-                smallBodyColorbar.setColormap(sbModel.getColormap());
+				smallBodyCBP.setColorMapAttr(sbModel.getColormap().getColorMapAttr());
+				smallBodyCBP.setNumberOfLabels(sbModel.getColormap().getNumberOfLabels());
+
                 int index = sbModel.getColoringIndex();
                 String title = sbModel.getColoringName(index).trim();
                 String units = sbModel.getColoringUnits(index).trim();
-                if (units != null && !units.isEmpty())
-                {
+				if (units.isEmpty() == false)
                     title += " (" + units + ")";
-                }
-                smallBodyColorbar.setTitle(title);
-                if (renderer.getRenderWindowPanel().getRenderer().HasViewProp(smallBodyColorbar.getActor())==0)
-                    renderer.getRenderWindowPanel().getRenderer().AddActor(smallBodyColorbar.getActor());
-                smallBodyColorbar.getActor().SetNumberOfLabels(sbModel.getColormap().getNumberOfLabels());
-            }
-            else
-                smallBodyColorbar.setVisible(false);
+				smallBodyCBP.setTitle(title);
 
+				renderer.addVtkPropProvider(smallBodyCBP);
+                }
+            else
+				renderer.delVtkPropProvider(smallBodyCBP);
         }
         else
         {

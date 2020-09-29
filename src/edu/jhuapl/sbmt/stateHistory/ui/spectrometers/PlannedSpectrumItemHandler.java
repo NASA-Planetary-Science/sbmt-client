@@ -6,7 +6,7 @@ import org.joda.time.DateTimeZone;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 
-import edu.jhuapl.sbmt.lidar.gui.color.ConstColorProvider;
+import edu.jhuapl.saavtk.color.provider.ConstColorProvider;
 import edu.jhuapl.sbmt.stateHistory.model.planning.spectrometers.PlannedSpectrum;
 import edu.jhuapl.sbmt.stateHistory.model.planning.spectrometers.PlannedSpectrumCollection;
 import edu.jhuapl.sbmt.util.TimeUtil;

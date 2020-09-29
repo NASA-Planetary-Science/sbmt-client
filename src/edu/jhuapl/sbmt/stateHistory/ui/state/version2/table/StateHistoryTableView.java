@@ -15,13 +15,13 @@ import javax.swing.JTextField;
 import javax.swing.border.TitledBorder;
 import javax.swing.table.TableCellRenderer;
 
+import edu.jhuapl.saavtk.color.gui.ColorProviderCellEditor;
+import edu.jhuapl.saavtk.color.gui.ColorProviderCellRenderer;
+import edu.jhuapl.saavtk.color.provider.ColorProvider;
+import edu.jhuapl.saavtk.color.provider.ConstColorProvider;
 import edu.jhuapl.saavtk.gui.util.IconUtil;
 import edu.jhuapl.saavtk.gui.util.ToolTipUtil;
-import edu.jhuapl.sbmt.gui.table.ColorProviderCellEditor;
-import edu.jhuapl.sbmt.gui.table.ColorProviderCellRenderer;
 import edu.jhuapl.sbmt.gui.table.EphemerisTimeRenderer;
-import edu.jhuapl.sbmt.lidar.gui.color.ColorProvider;
-import edu.jhuapl.sbmt.lidar.gui.color.ConstColorProvider;
 import edu.jhuapl.sbmt.stateHistory.model.interfaces.StateHistory;
 import edu.jhuapl.sbmt.stateHistory.model.stateHistory.StateHistoryCollection;
 import edu.jhuapl.sbmt.stateHistory.ui.state.popup.StateHistoryGuiUtil;

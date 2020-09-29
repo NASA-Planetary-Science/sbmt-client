@@ -5,11 +5,9 @@ import java.awt.event.ActionListener;
 
 import com.google.common.collect.Range;
 
-import edu.jhuapl.saavtk.colormap.Colorbar;
-import edu.jhuapl.saavtk.colormap.Colormap;
-import edu.jhuapl.saavtk.colormap.Colormaps;
+import edu.jhuapl.saavtk.color.painter.ColorBarPainter;
+import edu.jhuapl.saavtk.feature.FeatureAttr;
 import edu.jhuapl.saavtk.gui.render.Renderer;
-import edu.jhuapl.sbmt.lidar.feature.FeatureAttr;
 import edu.jhuapl.sbmt.stateHistory.model.interfaces.StateHistory;
 import edu.jhuapl.sbmt.stateHistory.model.stateHistory.StateHistoryCollection;
 
@@ -31,7 +29,7 @@ public class StateHistoryColorBarPanel extends ColorBarPanel<StateHistoryFeature
 	private final Renderer refRenderer;
 
 	// State vars
-	private Colorbar colorBar;
+	private ColorBarPainter colorBar;
 	private boolean isActive;
 
 	/**
@@ -139,34 +137,34 @@ public class StateHistoryColorBarPanel extends ColorBarPanel<StateHistoryFeature
 	{
 		// Show the SAAVTK Colorbar whenever the ColorBarPanel has been selected
 		boolean isVisible = isActive;
-		if (isVisible == true)
-		{
-			// Lazy init
-			if (colorBar == null)
-				colorBar = new Colorbar(refRenderer);
-
-			ColorMapAttr tmpCMA = getColorMapAttr();
-			Colormap tmpColorMap = Colormaps.getNewInstanceOfBuiltInColormap(tmpCMA.getName());
-			tmpColorMap.setLogScale(tmpCMA.getIsLogScale());
-			tmpColorMap.setNumberOfLevels(tmpCMA.getNumLevels());
-			tmpColorMap.setRangeMin(tmpCMA.getMinVal());
-			tmpColorMap.setRangeMax(tmpCMA.getMaxVal());
-			colorBar.setColormap(tmpColorMap);
-
-			StateHistoryFeatureType tmpFT = getFeatureType();
-			String title = "" + tmpFT;
-			if (tmpFT == StateHistoryFeatureType.Distance)
-				title = "Spacecraft " + title;
-
-			colorBar.setTitle(title);
-
-			// Ensure the color bar is showing
-			if (refRenderer.getRenderWindowPanel().getRenderer().HasViewProp(colorBar.getActor()) == 0)
-				refRenderer.getRenderWindowPanel().getRenderer().AddActor(colorBar.getActor());
-		}
-
-		if (colorBar != null)
-			colorBar.setVisible(isVisible);
+//		if (isVisible == true)
+//		{
+//			// Lazy init
+//			if (colorBar == null)
+//				colorBar = new Colorbar(refRenderer);
+//
+//			ColorMapAttr tmpCMA = getColorMapAttr();
+//			Colormap tmpColorMap = Colormaps.getNewInstanceOfBuiltInColormap(tmpCMA.getName());
+//			tmpColorMap.setLogScale(tmpCMA.getIsLogScale());
+//			tmpColorMap.setNumberOfLevels(tmpCMA.getNumLevels());
+//			tmpColorMap.setRangeMin(tmpCMA.getMinVal());
+//			tmpColorMap.setRangeMax(tmpCMA.getMaxVal());
+//			colorBar.setColormap(tmpColorMap);
+//
+//			StateHistoryFeatureType tmpFT = getFeatureType();
+//			String title = "" + tmpFT;
+//			if (tmpFT == StateHistoryFeatureType.Distance)
+//				title = "Spacecraft " + title;
+//
+//			colorBar.setTitle(title);
+//
+//			// Ensure the color bar is showing
+//			if (refRenderer.getRenderWindowPanel().getRenderer().HasViewProp(colorBar.getActor()) == 0)
+//				refRenderer.getRenderWindowPanel().getRenderer().AddActor(colorBar.getActor());
+//		}
+//
+//		if (colorBar != null)
+//			colorBar.setVisible(isVisible);
 	}
 
 	/**
