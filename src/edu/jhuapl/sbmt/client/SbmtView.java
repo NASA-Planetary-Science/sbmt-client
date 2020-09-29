@@ -21,7 +21,7 @@ import com.google.common.collect.ImmutableList;
 
 import vtk.vtkCamera;
 
-import edu.jhuapl.saavtk.colormap.Colorbar;
+import edu.jhuapl.saavtk.color.painter.ColorBarPainter;
 import edu.jhuapl.saavtk.gui.StatusBar;
 import edu.jhuapl.saavtk.gui.View;
 import edu.jhuapl.saavtk.gui.render.RenderPanel;
@@ -119,7 +119,7 @@ public class SbmtView extends View implements PropertyChangeListener
 	private static final long serialVersionUID = 1L;
 	private final TrackedMetadataManager stateManager;
 	private final Map<String, MetadataManager> metadataManagers;
-	private Colorbar smallBodyColorbar;
+	private ColorBarPainter smallBodyCBP;
 	private BasicConfigInfo configInfo;
 	private SmallBodyModel smallBodyModel;
 
@@ -376,7 +376,7 @@ public class SbmtView extends View implements PropertyChangeListener
 		DEMBoundaryCollection demBoundaryCollection = new DEMBoundaryCollection(smallBodyModel, getModelManager());
 		allModels.put(ModelNames.DEM_BOUNDARY, demBoundaryCollection);
 
-		setModelManager(new SbmtModelManager(smallBodyModel, allModels));
+		setModelManager(new ModelManager(smallBodyModel, allModels));
 		colorImageCollection.setModelManager(getModelManager());
 		cubeCollection.setModelManager(getModelManager());
 		customColorImageCollection.setModelManager(getModelManager());
@@ -772,32 +772,28 @@ public class SbmtView extends View implements PropertyChangeListener
 	{
 		if (e.getPropertyName().equals(Properties.MODEL_CHANGED))
 		{
-			renderer.setProps(getModelManager().getProps());
+			renderer.notifySceneChange();
 
-			if (smallBodyColorbar == null)
+			if (smallBodyCBP == null)
 				return;
 
 			PolyhedralModel sbModel = (PolyhedralModel) getModelManager().getModel(ModelNames.SMALL_BODY);
 			if (sbModel.isColoringDataAvailable() && sbModel.getColoringIndex() >= 0)
 			{
-				if (!smallBodyColorbar.isVisible())
-					smallBodyColorbar.setVisible(true);
-				smallBodyColorbar.setColormap(sbModel.getColormap());
+				smallBodyCBP.setColorMapAttr(sbModel.getColormap().getColorMapAttr());
+				smallBodyCBP.setNumberOfLabels(sbModel.getColormap().getNumberOfLabels());
+
 				int index = sbModel.getColoringIndex();
 				String title = sbModel.getColoringName(index).trim();
 				String units = sbModel.getColoringUnits(index).trim();
-				if (units != null && !units.isEmpty())
-				{
+				if (units.isEmpty() == false)
 					title += " (" + units + ")";
-				}
-				smallBodyColorbar.setTitle(title);
-				if (renderer.getRenderWindowPanel().getRenderer().HasViewProp(smallBodyColorbar.getActor()) == 0)
-					renderer.getRenderWindowPanel().getRenderer().AddActor(smallBodyColorbar.getActor());
-				smallBodyColorbar.getActor().SetNumberOfLabels(sbModel.getColormap().getNumberOfLabels());
+				smallBodyCBP.setTitle(title);
+
+				renderer.addVtkPropProvider(smallBodyCBP);
 			}
 			else
-				smallBodyColorbar.setVisible(false);
-
+				renderer.delVtkPropProvider(smallBodyCBP);
 		}
 		else
 		{
@@ -809,7 +805,8 @@ public class SbmtView extends View implements PropertyChangeListener
 	public void setRenderer(Renderer renderer)
 	{
 		this.renderer = renderer;
-		smallBodyColorbar = new Colorbar(renderer);
+
+		smallBodyCBP = new ColorBarPainter(renderer);
 	}
 
 	private static final Version METADATA_VERSION = Version.of(1, 1); // Nested CURRENT_TAB stored as an array of strings.

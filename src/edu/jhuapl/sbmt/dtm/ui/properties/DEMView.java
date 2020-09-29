@@ -50,16 +50,18 @@ import vtk.vtkRenderer;
 
 import edu.jhuapl.saavtk.camera.gui.CameraQuaternionPanel;
 import edu.jhuapl.saavtk.camera.gui.CameraRegularPanel;
-import edu.jhuapl.saavtk.colormap.Colorbar;
+import edu.jhuapl.saavtk.color.gui.ColorTableListCellRenderer;
+import edu.jhuapl.saavtk.color.painter.ColorBarPainter;
+import edu.jhuapl.saavtk.color.table.ColorMapAttr;
+import edu.jhuapl.saavtk.color.table.ColorTable;
+import edu.jhuapl.saavtk.color.table.ColorTableUtil;
 import edu.jhuapl.saavtk.colormap.Colormap;
-import edu.jhuapl.saavtk.colormap.ColormapUtil;
 import edu.jhuapl.saavtk.colormap.Colormaps;
 import edu.jhuapl.saavtk.gui.StatusBar;
 import edu.jhuapl.saavtk.gui.dialog.CustomFileChooser;
 import edu.jhuapl.saavtk.gui.dialog.ScaleDataRangeDialog;
 import edu.jhuapl.saavtk.gui.render.RenderIoUtil;
 import edu.jhuapl.saavtk.gui.render.Renderer;
-import edu.jhuapl.saavtk.gui.render.SceneChangeNotifier;
 import edu.jhuapl.saavtk.model.Model;
 import edu.jhuapl.saavtk.model.ModelManager;
 import edu.jhuapl.saavtk.model.ModelNames;
@@ -81,13 +83,13 @@ import edu.jhuapl.saavtk.util.LatLon;
 import edu.jhuapl.saavtk.util.Properties;
 import edu.jhuapl.saavtk.view.lod.LodStatusPainter;
 import edu.jhuapl.saavtk.view.lod.gui.LodPanel;
-import edu.jhuapl.sbmt.client.SbmtModelManager;
 import edu.jhuapl.sbmt.dtm.model.DEM;
 import edu.jhuapl.sbmt.dtm.model.DEMCollection;
 import edu.jhuapl.sbmt.dtm.model.DEMKey;
 
 import glum.gui.GuiUtil;
 import glum.gui.action.PopupMenu;
+import glum.gui.component.GComboBox;
 import net.miginfocom.swing.MigLayout;
 
 public class DEMView extends JFrame implements ActionListener, PickListener, PropertyChangeListener, WindowListener
@@ -112,12 +114,12 @@ public class DEMView extends JFrame implements ActionListener, PickListener, Pro
 	private final DEM priDEM;
 	private final DEMKey key;
 	private final DEMCollection demCollection;
-	private final Colorbar refColorbar;
+	private final ColorBarPainter demColorBarPainter;
 
 	// Gui vars
 	private ScaleDataRangeDialog scaleDataDialog;
-	private JComboBox<Object> colormapBox;
-	private JLabel colormapL;
+	private GComboBox<ColorTable> colorTableBox;
+	private JLabel colorTableL;
 
 	private JComboBox<?> coloringTypeBox;
 	private JButton scaleColoringButton;
@@ -171,9 +173,10 @@ public class DEMView extends JFrame implements ActionListener, PickListener, Pro
 		allModels.put(ModelNames.SMALL_BODY, priDEM);
 		allModels.put(ModelNames.LINE_STRUCTURES, lineModel);
 
-		modelManager = new SbmtModelManager(priDEM, allModels);
+		modelManager = new ModelManager(priDEM, allModels);
 
-		renderer = new Renderer(modelManager);
+		renderer = new Renderer(priDEM);
+		renderer.addVtkPropProvider(modelManager);
 		renderer.setMinimumSize(new Dimension(0, 0));
 
 		// Popup menu
@@ -186,7 +189,7 @@ public class DEMView extends JFrame implements ActionListener, PickListener, Pro
 		PickUtil.installDefaultPickHandler(pickManager, statusBar, renderer, modelManager);
 		priPicker = new ControlPointsPicker<>(renderer, pickManager, priDEM, lineModel);
 
-		refColorbar = new Colorbar(renderer);
+		demColorBarPainter = new ColorBarPainter(renderer);
 
 		plot = new DEMPlot(lineModel, priDEM, secDEM.getColoringIndex());
 
@@ -207,7 +210,7 @@ public class DEMView extends JFrame implements ActionListener, PickListener, Pro
 		// Add the components in
 		JTabbedPane tmpTabbedPane = new JTabbedPane();
 		tmpTabbedPane.add("Chart", plot.getChartPanel());
-		tmpTabbedPane.add("Config", formConfigPanel(renderer, modelManager));
+		tmpTabbedPane.add("Config", formConfigPanel(renderer));
 		tmpTabbedPane.add("Camera: Reg", new CameraRegularPanel(renderer, priDEM));
 		tmpTabbedPane.add("Camera: Quat", tmpQuatPanel);
 
@@ -250,7 +253,7 @@ public class DEMView extends JFrame implements ActionListener, PickListener, Pro
 		Object source = aEvent.getSource();
 
 		// ColorMap ComboBox UI
-		if (source == colormapBox)
+		if (source == colorTableBox)
 		{
 			doUpdateColoringConfig();
 			updateControlPanel(source);
@@ -383,20 +386,13 @@ public class DEMView extends JFrame implements ActionListener, PickListener, Pro
 		retPanel.add(syncColoringCB, "wrap 20");
 
 		// ColorMap area
-		colormapL = new JLabel();
-		retPanel.add(colormapL, "wrap");
+		colorTableL = new JLabel();
+		retPanel.add(colorTableL, "wrap");
 
-		colormapBox = new JComboBox<>();
-		colormapBox.setRenderer(ColormapUtil.getFancyColormapRender2(colormapBox));
-		for (String aStr : Colormaps.getAllBuiltInColormapNames())
-		{
-			Colormap cmap = Colormaps.getNewInstanceOfBuiltInColormap(aStr);
-			colormapBox.addItem(cmap);
-			if (cmap.getName().equals(Colormaps.getCurrentColormapName()))
-				colormapBox.setSelectedItem(cmap);
-		}
-		colormapBox.addActionListener(this);
-		retPanel.add(colormapBox, "w 0:0:,wrap 20");
+		colorTableBox = new GComboBox<>(this, ColorTableUtil.getSystemColorTableList());
+		colorTableBox.setRenderer(new ColorTableListCellRenderer(colorTableBox));
+		colorTableBox.setChosenItem(ColorTableUtil.getSystemColorTableDefault());
+		retPanel.add(colorTableBox, "w 0:0:,wrap 20");
 
 		// Profile edit area
 		newButton = new JButton("New Profile");
@@ -491,7 +487,7 @@ public class DEMView extends JFrame implements ActionListener, PickListener, Pro
 	private void doUpdateColoringConfig()
 	{
 		// Update the primary DEM's ColorMap if necessary
-		String name = ((Colormap) colormapBox.getSelectedItem()).getName();
+		String name = colorTableBox.getChosenItem().getName();
 		if (name.equals(priDEM.getColormap().getName()) == false)
 		{
 			Colormap tmpColormap = Colormaps.getNewInstanceOfBuiltInColormap(name);
@@ -536,24 +532,26 @@ public class DEMView extends JFrame implements ActionListener, PickListener, Pro
 		// Disable the Colorbar if it is not needed
 		if (priDEM.isColoringDataAvailable() == false || priDEM.getColoringIndex() < 0)
 		{
-			refColorbar.setVisible(false);
+			renderer.delVtkPropProvider(demColorBarPainter);
 			return;
 		}
 
 		// Customize the Colorbar to reflect the dem model
-		if (!refColorbar.isVisible())
-			refColorbar.setVisible(true);
+		Colormap tmpColormap = priDEM.getColormap();
+		ColorMapAttr tmpCMA = tmpColormap.getColorMapAttr();
+		demColorBarPainter.setColorMapAttr(tmpCMA);
 
-		refColorbar.setColormap(priDEM.getColormap());
 		int index = priDEM.getColoringIndex();
 		String title = priDEM.getColoringName(index).trim();
 		String units = priDEM.getColoringUnits(index).trim();
-		if (units != null && !units.isEmpty())
+		if (units.isEmpty() == false)
 			title += " (" + units + ")";
-		refColorbar.setTitle(title);
+		demColorBarPainter.setTitle(title);
 
-		registerIfNotRegistered(renderer.getRenderWindowPanel().getRenderer(), refColorbar.getActor());
-		refColorbar.getActor().SetNumberOfLabels(priDEM.getColormap().getNumberOfLabels());
+		demColorBarPainter.setNumberOfLabels(priDEM.getColormap().getNumberOfLabels());
+		renderer.addVtkPropProvider(demColorBarPainter);
+
+		renderer.notifySceneChange();
 	}
 
 	/**
@@ -766,22 +764,22 @@ public class DEMView extends JFrame implements ActionListener, PickListener, Pro
 	private void updateControlPanel(Object aSource)
 	{
 		// Update the colormap icon (if necessary)
-		if (aSource == colormapBox || aSource == null)
+		if (aSource == colorTableBox || aSource == null)
 		{
-			int iconW = colormapL.getWidth();
-			int iconH = colormapL.getHeight();
+			int iconW = colorTableL.getWidth();
+			int iconH = colorTableL.getHeight();
 			if (iconH < 16)
 				iconH = 16;
 
-			Colormap evalColormap = (Colormap) colormapBox.getSelectedItem();
-			colormapL.setIcon(ColormapUtil.createIcon(evalColormap, iconW, iconH));
+			ColorTable tmpCT = colorTableBox.getChosenItem();
+			colorTableL.setIcon(ColorTableUtil.createIcon(tmpCT, iconW, iconH));
 		}
 
 		// Update enable state of various UI elements
 		boolean isEnabled = coloringTypeBox.getSelectedIndex() != coloringTypeBox.getItemCount() - 1;
 		scaleColoringButton.setEnabled(isEnabled);
-		colormapBox.setEnabled(isEnabled);
-		colormapL.setEnabled(isEnabled);
+		colorTableBox.setEnabled(isEnabled);
+		colorTableL.setEnabled(isEnabled);
 	}
 
 	private class SaveImageAction extends AbstractAction
@@ -921,7 +919,7 @@ public class DEMView extends JFrame implements ActionListener, PickListener, Pro
 
 		if (source == modelManager)
 		{
-			renderer.setProps(modelManager.getProps());
+			renderer.notifySceneChange();
 
 			doConfigureModelManager();
 		}
@@ -1037,17 +1035,17 @@ public class DEMView extends JFrame implements ActionListener, PickListener, Pro
 	 * <LI>{@link ScaleBarPanel}
 	 * </UL>
 	 */
-	private static JPanel formConfigPanel(Renderer aRenderer, SceneChangeNotifier aSceneChangeNotifier)
+	private static JPanel formConfigPanel(Renderer aRenderer)
 	{
 		JPanel retPanel = new JPanel(new MigLayout("", "", ""));
 
-		ScaleBarPainter scaleBarPainter = new ScaleBarPainter(aRenderer, aSceneChangeNotifier);
+		ScaleBarPainter scaleBarPainter = new ScaleBarPainter(aRenderer);
 		aRenderer.addVtkPropProvider(scaleBarPainter);
 		retPanel.add(new ScaleBarPanel(aRenderer, scaleBarPainter), "span,growx,wrap");
 
 		retPanel.add(GuiUtil.createDivider(), "growx,h 4!,span,wrap");
 
-		LodStatusPainter lodPainter = new LodStatusPainter(aRenderer, aSceneChangeNotifier);
+		LodStatusPainter lodPainter = new LodStatusPainter(aRenderer);
 		aRenderer.addVtkPropProvider(lodPainter);
 		retPanel.add(new LodPanel(aRenderer, lodPainter), "span,growx,wrap");
 
