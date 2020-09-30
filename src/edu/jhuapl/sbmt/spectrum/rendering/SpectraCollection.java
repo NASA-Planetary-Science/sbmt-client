@@ -22,6 +22,7 @@ import edu.jhuapl.saavtk.color.provider.ColorProvider;
 import edu.jhuapl.saavtk.color.provider.ColorWheelGroupColorProvider;
 import edu.jhuapl.saavtk.color.provider.GroupColorProvider;
 import edu.jhuapl.saavtk.gui.render.SceneChangeNotifier;
+import edu.jhuapl.saavtk.model.ModelManager;
 import edu.jhuapl.saavtk.model.SaavtkItemManager;
 import edu.jhuapl.saavtk.util.Properties;
 import edu.jhuapl.sbmt.client.ISmallBodyModel;
@@ -54,7 +55,7 @@ public class SpectraCollection<S extends BasicSpectrum> extends SaavtkItemManage
     private Map<S, SpectrumRenderProp> propM;
 
     private GroupColorProvider colorProvider;
-    private final SceneChangeNotifier refSceneChangeNotifier;
+    private SceneChangeNotifier refSceneChangeNotifier;
 
     Map<IBasicSpectrumRenderer<S>,Integer> ordinals=Maps.newHashMap();
     final static int defaultOrdinal=0;
@@ -698,6 +699,11 @@ public class SpectraCollection<S extends BasicSpectrum> extends SaavtkItemManage
 	public Map<S, SpectrumRenderProp> getPropertyMap()
 	{
 		return propM;
+	}
+
+	public void setModelManager(ModelManager refSceneChangeNotifier)
+	{
+		this.refSceneChangeNotifier = refSceneChangeNotifier;
 	}
 
 }

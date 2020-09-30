@@ -103,6 +103,7 @@ public class SpectrumItemHandler<S extends BasicSpectrum> extends BasicItemHandl
 			List<S> tmpL = ImmutableList.of(spec);
 			ColorProvider tmpCP = (ColorProvider) aValue;
 			spectrumCollection.installCustomColorProviders(tmpL, tmpCP);
+			boundaryCollection.getBoundary(spec).setBoundaryColor(tmpCP.getBaseColor());
 		}
 		else if (aEnum == SpectrumColumnLookup.Frus)
 		{

@@ -383,6 +383,8 @@ public class SbmtView extends View implements PropertyChangeListener
 		customCubeCollection.setModelManager(getModelManager());
 		demCollection.setModelManager(getModelManager());
 		demBoundaryCollection.setModelManager(getModelManager());
+		((SpectraCollection)(allModels.get(ModelNames.SPECTRA))).setModelManager(getModelManager());
+		((SpectraCollection)(allModels.get(ModelNames.CUSTOM_SPECTRA))).setModelManager(getModelManager());
 
 		getModelManager().addPropertyChangeListener(this);
 
