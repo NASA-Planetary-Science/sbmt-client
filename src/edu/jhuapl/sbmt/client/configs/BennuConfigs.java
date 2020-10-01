@@ -767,6 +767,8 @@ public class BennuConfigs extends SmallBodyViewConfig
             public1217.disableSpectra();
             public1217.hasImageMap = false;
             public1217.presentInMissions = PublicOnly;
+            public1217.orexSearchTimeMap.remove("Recon");
+	        public1217.lidarSearchDataSourceMap.remove("Recon");
             configArray.add(public1217);
         }
 
@@ -820,6 +822,8 @@ public class BennuConfigs extends SmallBodyViewConfig
             public1227.disableSpectra();
             public1227.hasImageMap = false;
             public1227.presentInMissions = PublicOnly;
+            public1227.orexSearchTimeMap.remove("Recon");
+	        public1227.lidarSearchDataSourceMap.remove("Recon");
             configArray.add(public1227);
         }
 
@@ -1026,6 +1030,8 @@ public class BennuConfigs extends SmallBodyViewConfig
             public0121.disableSpectra();
             public0121.hasImageMap = false;
             public0121.presentInMissions = PublicOnly;
+            public0121.orexSearchTimeMap.remove("Recon");
+	        public0121.lidarSearchDataSourceMap.remove("Recon");
             configArray.add(public0121);
 
         }
@@ -1180,6 +1186,8 @@ public class BennuConfigs extends SmallBodyViewConfig
             public0414.disableSpectra();
             public0414.hasImageMap = false;
             public0414.presentInMissions = PublicOnly;
+            public0414.orexSearchTimeMap.remove("Recon");
+	        public0414.lidarSearchDataSourceMap.remove("Recon");
             configArray.add(public0414);
         }
 
@@ -1238,6 +1246,8 @@ public class BennuConfigs extends SmallBodyViewConfig
             public0612.disableSpectra();
             public0612.hasImageMap = false;
             public0612.presentInMissions = PublicOnly;
+            public0612.orexSearchTimeMap.remove("Recon");
+	        public0612.lidarSearchDataSourceMap.remove("Recon");
             configArray.add(public0612);
         }
 
@@ -1297,6 +1307,13 @@ public class BennuConfigs extends SmallBodyViewConfig
             public0828.disableSpectra();
             public0828.hasImageMap = false;
             public0828.presentInMissions = PublicOnly;
+
+//            ArrayList<Date> startStop = new ArrayList<Date>();
+//	        startStop.add(new GregorianCalendar(2019, 8, 10, 0, 0, 0).getTime());
+//	        startStop.add(new GregorianCalendar(2019, 11, 17, 0, 0, 0).getTime());
+	        public0828.orexSearchTimeMap.remove("Recon");
+	        public0828.lidarSearchDataSourceMap.remove("Recon");
+
             configArray.add(public0828);
         }
 
