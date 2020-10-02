@@ -14,7 +14,6 @@ import java.util.Map;
 
 import javax.swing.BorderFactory;
 import javax.swing.JComponent;
-import javax.swing.JPanel;
 import javax.swing.JTabbedPane;
 
 import com.google.common.collect.ImmutableList;
@@ -85,6 +84,7 @@ import edu.jhuapl.sbmt.model.image.ImageCollection;
 import edu.jhuapl.sbmt.model.image.ImageCubeCollection;
 import edu.jhuapl.sbmt.model.image.ImagingInstrument;
 import edu.jhuapl.sbmt.model.image.SpectralImageMode;
+import edu.jhuapl.sbmt.model.phobos.controllers.MEGANEController;
 import edu.jhuapl.sbmt.model.ryugu.nirs3.H2SpectraFactory;
 import edu.jhuapl.sbmt.model.ryugu.nirs3.NIRS3SearchModel;
 import edu.jhuapl.sbmt.model.ryugu.nirs3.atRyugu.NIRS3Spectrum;
@@ -96,6 +96,7 @@ import edu.jhuapl.sbmt.spectrum.rendering.SpectraCollection;
 import edu.jhuapl.sbmt.spectrum.rendering.SpectrumBoundaryCollection;
 import edu.jhuapl.sbmt.spectrum.ui.SpectrumPopupMenu;
 import edu.jhuapl.sbmt.stateHistory.controllers.ObservationPlanningController;
+import edu.jhuapl.sbmt.stateHistory.model.interfaces.StateHistory;
 import edu.jhuapl.sbmt.stateHistory.model.stateHistory.StateHistoryCollection;
 
 import crucible.crust.metadata.api.Key;
@@ -106,6 +107,8 @@ import crucible.crust.metadata.impl.EmptyMetadata;
 import crucible.crust.metadata.impl.SettableMetadata;
 import crucible.crust.metadata.impl.TrackedMetadataManager;
 import crucible.crust.metadata.impl.Utilities;
+import glum.item.ItemEventListener;
+import glum.item.ItemEventType;
 
 /**
  * A view is a container which contains a control panel and renderer as well as
@@ -121,6 +124,7 @@ public class SbmtView extends View implements PropertyChangeListener
 	private ColorBarPainter smallBodyCBP;
 	private BasicConfigInfo configInfo;
 	private SmallBodyModel smallBodyModel;
+	private StateHistoryCollection historyCollection;
 
 	public SbmtView(StatusBar statusBar, BasicConfigInfo configInfo)
 	{
@@ -360,7 +364,8 @@ public class SbmtView extends View implements PropertyChangeListener
 
         if (getPolyhedralModelConfig().hasStateHistory)
         {
-            allModels.put(ModelNames.STATE_HISTORY_COLLECTION, new StateHistoryCollection(smallBodyModel));
+        	historyCollection = new StateHistoryCollection(smallBodyModel);
+            allModels.put(ModelNames.STATE_HISTORY_COLLECTION, historyCollection);
         }
 
 		allModels.put(ModelNames.LINE_STRUCTURES, new LineModel<>(smallBodyModel));
@@ -617,7 +622,25 @@ public class SbmtView extends View implements PropertyChangeListener
 			}
 			else if (displayName.equals("MEGANE"))
 			{
-				addTab(instrument.getDisplayName(), new JPanel());
+				MEGANEController meganeController = new MEGANEController(smallBodyModel);
+				historyCollection.addListener(new ItemEventListener()
+				{
+
+					@Override
+					public void handleItemEvent(Object aSource, ItemEventType aEventType)
+					{
+						if (aEventType == ItemEventType.ItemsSelected)
+						{
+							StateHistoryCollection history = (StateHistoryCollection)aSource;
+							StateHistory currentRun = history.getCurrentRun();
+							System.out.println(
+									"SbmtView.setupTabs().new ItemEventListener() {...}: handleItemEvent: broadcasting change to megane controllers");
+							meganeController.propertyChange(new PropertyChangeEvent(meganeController, "SPICEPROVIDER", null, currentRun.getPointingProvider()));
+						}
+
+					}
+				});
+				addTab(instrument.getDisplayName(), meganeController.getPanel());
             }
 
         }
