@@ -188,6 +188,7 @@ public class SmallBodyViewConfigMetadataIO implements MetadataManager
         write(timeHistoryFile, c.timeHistoryFile, configMetadata);
         write(hasImageMap, c.hasImageMap, configMetadata);
         write(hasStateHistory, c.hasStateHistory, configMetadata);
+        write(baseMapConfig, c.baseMapConfigName, configMetadata);
 
         write(density, c.density, configMetadata);
         write(rotationRate, c.rotationRate, configMetadata);
@@ -417,6 +418,7 @@ public class SmallBodyViewConfigMetadataIO implements MetadataManager
         c.timeHistoryFile = read(timeHistoryFile, configMetadata);
         c.hasImageMap = read(hasImageMap, configMetadata);
         c.hasStateHistory = read(hasStateHistory, configMetadata);
+        c.baseMapConfigName = read(baseMapConfig, configMetadata);
 
         c.density = read(density, configMetadata);
         c.rotationRate = read(rotationRate, configMetadata);
@@ -635,6 +637,7 @@ public class SmallBodyViewConfigMetadataIO implements MetadataManager
     final Key<Boolean> hasStateHistory = Key.of("hasStateHistory");
     final Key<String[]> presentInMissions = Key.of("presentInMissions");
     final Key<String[]> defaultForMissions = Key.of("defaultForMissions");
+    final Key<String> baseMapConfig = Key.of("baseMapConfig");
 
     final Key<Double> density = Key.of("density");
     final Key<Double> rotationRate = Key.of("rotationRate");

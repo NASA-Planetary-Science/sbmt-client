@@ -75,6 +75,8 @@ public class SmallBodyViewConfig extends BodyViewConfig implements ISmallBodyVie
     private static final Map<String, BasicConfigInfo> VIEWCONFIG_IDENTIFIERS = new HashMap<>();
     private static final Map<String, ViewConfig> LOADED_VIEWCONFIGS = new HashMap<>();
 
+    protected String baseMapConfigName = "config.txt";
+
     static public List<BasicConfigInfo> getConfigIdentifiers() { return CONFIG_INFO; }
 
     static public SmallBodyViewConfig getSmallBodyConfig(BasicConfigInfo configInfo)
@@ -354,7 +356,8 @@ public class SmallBodyViewConfig extends BodyViewConfig implements ISmallBodyVie
                 List<CustomCylindricalImageKey> imageMapKeys = ImmutableList.of();
 
                 // Newest/best way to specify maps is with metadata, if this model has it.
-                String metadataFileName = SafeURLPaths.instance().getString(serverPath("basemap"), "config.txt");
+                System.out.println("SmallBodyViewConfig: getImageMapKeys: basemap config " + baseMapConfigName);
+                String metadataFileName = SafeURLPaths.instance().getString(serverPath("basemap"), baseMapConfigName);
                 File metadataFile;
                 try
                 {
