@@ -14,6 +14,8 @@ import crucible.crust.metadata.impl.SettableMetadata;
 public class BasicConfigInfo implements MetadataManager
 {
 
+    // When this is changed, build-client.sh must also be changed to
+    // remain consistent.
     private static final String configInfoVersion = "9.0";
 
     // This variable gives the prefix used to locate configuration metadata
