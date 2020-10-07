@@ -97,7 +97,7 @@ public class SbmtMultiMissionTool
 			this.hashedName = hashedName;
 		}
 
-		String getHashedName()
+		public String getHashedName()
 		{
 			return hashedName;
 		}

@@ -359,6 +359,16 @@ public abstract class BodyViewConfig extends ViewConfig
         return modelFiles;
     }
 
+    public String getShapeModelFileExtension()
+    {
+        return shapeModelFileExtension;
+    }
+
+    public void setShapeModelFileExtension(String shapeModelFileExtension)
+    {
+        this.shapeModelFileExtension = shapeModelFileExtension;
+    }
+
     public Map<String, String> getSpectraSearchDataSourceMap()
 	{
 		return spectraSearchDataSourceMap;
