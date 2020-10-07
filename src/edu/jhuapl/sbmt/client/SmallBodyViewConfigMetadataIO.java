@@ -65,22 +65,23 @@ public class SmallBodyViewConfigMetadataIO implements MetadataManager
     {
         if (args.length < 1 || args.length > 2)
         {
-            System.err.println("Usage: SmallBodyViewConfigMetadataIO.sh <output-directory-full-path> [ -p ]\n\n\t-p means include only published data in the output model metadata; if omitted, include ALL data\n\n\tThe output directory will be created if it does not exist");
+            System.err.println("Usage: SmallBodyViewConfigMetadataIO.sh <output-directory-full-path> [ -pub ]\n\n\t-pub means include only published data in the output model metadata; if omitted, include ALL data\n\n\tThe output directory will be created if it does not exist");
             System.exit(1);
         }
+
+        boolean publishedDataOnly = args.length > 1 && (args[1].equalsIgnoreCase("-pub") || args[1].equalsIgnoreCase("--pub"));
+
         String configInfoVersion = BasicConfigInfo.getConfigInfoVersion();
-        boolean publicOnly = Boolean.parseBoolean(args[1]);
+
         SettableMetadata allBodiesMetadata = SettableMetadata.of(Version.of(configInfoVersion));
         Configuration.setAPLVersion(true);
         SbmtMultiMissionTool.configureMission();
         Configuration.authenticate();
-        SmallBodyViewConfig.initializeWithStaticConfigs(publicOnly);
+        SmallBodyViewConfig.initializeWithStaticConfigs(publishedDataOnly);
         for (ViewConfig each: SmallBodyViewConfig.getBuiltInConfigs())
         {
             each.enable(true);
         }
-
-        boolean publishedDataOnly = args.length > 1 && args[1].equals("-p");
 
         String rootDir = args[0].replaceFirst("/*$", "/") + BasicConfigInfo.getConfigPathPrefix(publishedDataOnly) + "/";
 
