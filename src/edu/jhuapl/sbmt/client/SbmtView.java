@@ -21,7 +21,6 @@ import com.google.common.collect.ImmutableList;
 
 import vtk.vtkCamera;
 
-import edu.jhuapl.saavtk.colormap.Colorbar;
 import edu.jhuapl.saavtk.gui.StatusBar;
 import edu.jhuapl.saavtk.gui.View;
 import edu.jhuapl.saavtk.gui.render.RenderPanel;
@@ -31,7 +30,6 @@ import edu.jhuapl.saavtk.model.Graticule;
 import edu.jhuapl.saavtk.model.Model;
 import edu.jhuapl.saavtk.model.ModelManager;
 import edu.jhuapl.saavtk.model.ModelNames;
-import edu.jhuapl.saavtk.model.PolyhedralModel;
 import edu.jhuapl.saavtk.model.ShapeModelBody;
 import edu.jhuapl.saavtk.model.ShapeModelType;
 import edu.jhuapl.saavtk.model.structure.CircleModel;
@@ -119,7 +117,6 @@ public class SbmtView extends View implements PropertyChangeListener
 	private static final long serialVersionUID = 1L;
 	private final TrackedMetadataManager stateManager;
 	private final Map<String, MetadataManager> metadataManagers;
-	private Colorbar smallBodyColorbar;
 	private BasicConfigInfo configInfo;
 	private SmallBodyModel smallBodyModel;
 
@@ -131,7 +128,7 @@ public class SbmtView extends View implements PropertyChangeListener
 		shapeModelName = configInfo.shapeModelName;
     	this.stateManager = TrackedMetadataManager.of("View " + configInfo.uniqueName);
 		this.metadataManagers = new HashMap<>();
-		this.configURL = configInfo.configURL;
+		this.configURL = configInfo.getConfigURL();
 		initializeStateManager();
 	}
 
@@ -149,7 +146,7 @@ public class SbmtView extends View implements PropertyChangeListener
 		shapeModelName = configInfo.shapeModelName;
 		this.stateManager = TrackedMetadataManager.of("View " + getUniqueName());
 		this.metadataManagers = new HashMap<>();
-		this.configURL = configInfo.configURL;
+		this.configURL = configInfo.getConfigURL();
 
 		initializeStateManager();
 	}
@@ -376,7 +373,7 @@ public class SbmtView extends View implements PropertyChangeListener
 		DEMBoundaryCollection demBoundaryCollection = new DEMBoundaryCollection(smallBodyModel, getModelManager());
 		allModels.put(ModelNames.DEM_BOUNDARY, demBoundaryCollection);
 
-		setModelManager(new SbmtModelManager(smallBodyModel, allModels));
+		setModelManager(new ModelManager(smallBodyModel, allModels));
 		colorImageCollection.setModelManager(getModelManager());
 		cubeCollection.setModelManager(getModelManager());
 		customColorImageCollection.setModelManager(getModelManager());
@@ -481,7 +478,7 @@ public class SbmtView extends View implements PropertyChangeListener
 	@Override
 	protected void setupTabs()
 	{
-		addTab(getPolyhedralModelConfig().getShapeModelName(), new SmallBodyControlPanel(getModelManager(), getPolyhedralModelConfig().getShapeModelName()));
+		addTab(getPolyhedralModelConfig().getShapeModelName(), new SmallBodyControlPanel(getRenderer(), getModelManager(), getPolyhedralModelConfig().getShapeModelName()));
 
 		if (getConfig().hasFlybyData)
 		{
@@ -771,45 +768,15 @@ public class SbmtView extends View implements PropertyChangeListener
 	public void propertyChange(PropertyChangeEvent e)
 	{
 		if (e.getPropertyName().equals(Properties.MODEL_CHANGED))
-		{
-			renderer.setProps(getModelManager().getProps());
-
-			if (smallBodyColorbar == null)
-				return;
-
-			PolyhedralModel sbModel = (PolyhedralModel) getModelManager().getModel(ModelNames.SMALL_BODY);
-			if (sbModel.isColoringDataAvailable() && sbModel.getColoringIndex() >= 0)
-			{
-				if (!smallBodyColorbar.isVisible())
-					smallBodyColorbar.setVisible(true);
-				smallBodyColorbar.setColormap(sbModel.getColormap());
-				int index = sbModel.getColoringIndex();
-				String title = sbModel.getColoringName(index).trim();
-				String units = sbModel.getColoringUnits(index).trim();
-				if (units != null && !units.isEmpty())
-				{
-					title += " (" + units + ")";
-				}
-				smallBodyColorbar.setTitle(title);
-				if (renderer.getRenderWindowPanel().getRenderer().HasViewProp(smallBodyColorbar.getActor()) == 0)
-					renderer.getRenderWindowPanel().getRenderer().AddActor(smallBodyColorbar.getActor());
-				smallBodyColorbar.getActor().SetNumberOfLabels(sbModel.getColormap().getNumberOfLabels());
-			}
-			else
-				smallBodyColorbar.setVisible(false);
-
-		}
+			renderer.notifySceneChange();
 		else
-		{
 			renderer.getRenderWindowPanel().Render();
-		}
 	}
 
 	@Override
 	public void setRenderer(Renderer renderer)
 	{
 		this.renderer = renderer;
-		smallBodyColorbar = new Colorbar(renderer);
 	}
 
 	private static final Version METADATA_VERSION = Version.of(1, 1); // Nested CURRENT_TAB stored as an array of strings.

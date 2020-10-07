@@ -108,7 +108,7 @@ public class SmallBodyViewConfig extends BodyViewConfig implements ISmallBodyVie
     	    Preconditions.checkArgument(VIEWCONFIG_IDENTIFIERS.containsKey(configID), "No configuration available for model " + configID);
 
     		BasicConfigInfo info = VIEWCONFIG_IDENTIFIERS.get(configID);
-    		ViewConfig fetchedConfig = fetchRemoteConfig(configID, info.configURL, fromServer);
+    		ViewConfig fetchedConfig = fetchRemoteConfig(configID, info.getConfigURL(), fromServer);
     		LOADED_VIEWCONFIGS.put(configID, fetchedConfig);
 
     		return (SmallBodyViewConfig)fetchedConfig;
@@ -125,7 +125,7 @@ public class SmallBodyViewConfig extends BodyViewConfig implements ISmallBodyVie
     	{
             Preconditions.checkArgument(VIEWCONFIG_IDENTIFIERS.containsKey(configID), "No configuration available for model " + configID);
 
-    		ViewConfig fetchedConfig = fetchRemoteConfig(configID, VIEWCONFIG_IDENTIFIERS.get(configID).configURL, fromServer);
+    		ViewConfig fetchedConfig = fetchRemoteConfig(configID, VIEWCONFIG_IDENTIFIERS.get(configID).getConfigURL(), fromServer);
     		LOADED_VIEWCONFIGS.put(configID, fetchedConfig);
     		return (SmallBodyViewConfig)fetchedConfig;
     	}
@@ -184,7 +184,7 @@ public class SmallBodyViewConfig extends BodyViewConfig implements ISmallBodyVie
     	ConfigArrayList configs = new ConfigArrayList();
         try
         {
-            File allBodies = FileCache.getFileFromServer("allBodies/allBodies_v" + SmallBodyViewConfigMetadataIO.metadataVersion + ".json");
+            File allBodies = FileCache.getFileFromServer(BasicConfigInfo.getConfigPathPrefix() + "/" + "allBodies_v" + BasicConfigInfo.getConfigInfoVersion() + ".json");
             FixedMetadata metadata = Serializers.deserialize(allBodies, "AllBodies");
             for (Key key : metadata.getKeys())
             {
@@ -210,8 +210,6 @@ public class SmallBodyViewConfig extends BodyViewConfig implements ISmallBodyVie
 
     private static ViewConfig fetchRemoteConfig(String name, String url, boolean fromServer)
     {
-    	url = "/allBodies" + url;
-
     	ConfigArrayList ioConfigs = new ConfigArrayList();
         ioConfigs.add(new SmallBodyViewConfig(ImmutableList.<String> copyOf(DEFAULT_GASKELL_LABELS_PER_RESOLUTION), ImmutableList.<Integer> copyOf(DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION)));
         SmallBodyViewConfigMetadataIO io = new SmallBodyViewConfigMetadataIO(ioConfigs);
