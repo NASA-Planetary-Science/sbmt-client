@@ -102,7 +102,7 @@ public class BennuConfigs extends SmallBodyViewConfig
 	}
 
 
-	public static void initialize(List<ViewConfig> configArray)
+	public static void initialize(List<ViewConfig> configArray, boolean publicOnly)
     {
         BennuConfigs c = new BennuConfigs();
 
@@ -755,11 +755,12 @@ public class BennuConfigs extends SmallBodyViewConfig
 
             c.setLidarParameters(true);
 
-            configArray.add(c);
+            if (!publicOnly)
+            	configArray.add(c);
 
             //public version
             BennuConfigs public1217 = (BennuConfigs)c.clone();
-            public1217.author = ShapeModelType.provide("ALTWG-SPC-v20181217_SPC_v13_PUBLIC");
+//            public1217.author = ShapeModelType.provide("ALTWG-SPC-v20181217_SPC_v13_PUBLIC");
             public1217.modelLabel = "SPC v13";
             public1217.imagingInstruments = new ImagingInstrument[] { public1217.generatePolycamInstrument("bennu_altwgspcv20181217_public_polycam", "bennu_altwgspcv20181217_public_polycam", true, false, true),	//false = SPC only
             															public1217.generateMapcamInstrument("bennu_altwgspcv20181217_public_mapcam", "bennu_altwgspcv20181217_public_mapcam", true, false, true),
@@ -772,7 +773,8 @@ public class BennuConfigs extends SmallBodyViewConfig
             public1217.lidarBrowseWithPointsDataSourceMap.put("Default", public1217.rootDirOnServer + "/ola/browse/fileList_public.txt");
             public1217.orexSearchTimeMap.remove("Recon");
 	        public1217.lidarSearchDataSourceMap.remove("Recon");
-            configArray.add(public1217);
+	        if (publicOnly)
+	        	configArray.add(public1217);
         }
 
         if (Configuration.isAPLVersion())
@@ -812,12 +814,12 @@ public class BennuConfigs extends SmallBodyViewConfig
 
             c.setLidarParameters(true);
 
-
-            configArray.add(c);
+            if (!publicOnly)
+            	configArray.add(c);
 
             //public version
             BennuConfigs public1227 = (BennuConfigs)c.clone();
-            public1227.author = ShapeModelType.provide("ALTWG-SPC-v20181227_SPC_v14_PUBLIC");
+//            public1227.author = ShapeModelType.provide("ALTWG-SPC-v20181227_SPC_v14_PUBLIC");
             public1227.modelLabel = "SPC v14";
             public1227.imagingInstruments = new ImagingInstrument[] { public1227.generatePolycamInstrument("bennu_altwgspcv20181227_public_polycam", "bennu_altwgspcv20181227_public_polycam", true, false, true),	//false = SPC only
             														public1227.generateMapcamInstrument("bennu_altwgspcv20181227_public_mapcam", "bennu_altwgspcv20181227_public_mapcam", true, false, true),
@@ -830,7 +832,8 @@ public class BennuConfigs extends SmallBodyViewConfig
             public1227.lidarBrowseWithPointsDataSourceMap.put("Default", public1227.rootDirOnServer + "/ola/browse/fileList_public.txt");
             public1227.orexSearchTimeMap.remove("Recon");
 	        public1227.lidarSearchDataSourceMap.remove("Recon");
-            configArray.add(public1227);
+	        if (publicOnly)
+	        	configArray.add(public1227);
         }
 
         if (Configuration.isAPLVersion())
@@ -1023,12 +1026,12 @@ public class BennuConfigs extends SmallBodyViewConfig
             	new DBRunInfo(ImageSource.SPICE, Instrument.POLYCAM, ShapeModelBody.RQ36.toString(), "/project/sbmt2/sbmt/data/bodies/bennu/altwg-spc-v20190121/polycam/imagelist-fullpath-info.txt", "bennu_altwgspcv20190121_polycam"),
             	new DBRunInfo(ImageSource.SPICE, Instrument.NAVCAM, ShapeModelBody.RQ36.toString(), "/project/sbmt2/sbmt/data/bodies/bennu/altwg-spc-v20190121/navcam/imagelist-fullpath-info.txt", "bennu_altwgspcv20190121_navcam")
             };
-
-            configArray.add(c);
+            if (!publicOnly)
+            	configArray.add(c);
 
             //public version
             BennuConfigs public0121 = (BennuConfigs)c.clone();
-            public0121.author = ShapeModelType.provide("ALTWG-SPC-v20190121_SPC_v20_PUBLIC");
+//            public0121.author = ShapeModelType.provide("ALTWG-SPC-v20190121_SPC_v20_PUBLIC");
             public0121.modelLabel = "SPC v20";
             public0121.imagingInstruments = new ImagingInstrument[] { public0121.generatePolycamInstrument("bennu_altwgspcv20190121_public_polycam", "bennu_altwgspcv20190121_public_polycam", true, false, true),	//false = SPC only
             															public0121.generateMapcamInstrument("bennu_altwgspcv20190121_public_mapcam", "bennu_altwgspcv20190121_public_mapcam", true, false, true),
@@ -1041,7 +1044,8 @@ public class BennuConfigs extends SmallBodyViewConfig
             public0121.lidarBrowseWithPointsDataSourceMap.put("Default", public0121.rootDirOnServer + "/ola/browse/fileList_public.txt");
             public0121.orexSearchTimeMap.remove("Recon");
 	        public0121.lidarSearchDataSourceMap.remove("Recon");
-            configArray.add(public0121);
+	        if (publicOnly)
+	        	configArray.add(public0121);
 
         }
 
@@ -1183,11 +1187,12 @@ public class BennuConfigs extends SmallBodyViewConfig
             	new DBRunInfo(ImageSource.SPICE, Instrument.NAVCAM, ShapeModelBody.RQ36.toString(), "/project/sbmt2/sbmt/data/bodies/bennu/altwg-spc-v20190414/navcam/imagelist-fullpath-info.txt", "bennu_altwgspcv20190414_navcam")
             };
             c.presentInMissions = InternalOnly;
-            configArray.add(c);
+            if (!publicOnly)
+            	configArray.add(c);
 
             //public version
             BennuConfigs public0414 = (BennuConfigs)c.clone();
-            public0414.author = ShapeModelType.provide("ALTWG-SPC-v20190414_SPC_v28_PUBLIC");
+//            public0414.author = ShapeModelType.provide("ALTWG-SPC-v20190414_SPC_v28_PUBLIC");
             public0414.modelLabel = "SPC v28";
             public0414.imagingInstruments = new ImagingInstrument[] { public0414.generatePolycamInstrument("bennu_altwgspcv20190414_public_polycam", "bennu_altwgspcv20190414_public_polycam", true, false, true),	//false = SPC only
             														public0414.generateMapcamInstrument("bennu_altwgspcv20190414_public_mapcam", "bennu_altwgspcv20190414_public_mapcam", true, false, true),
@@ -1201,7 +1206,8 @@ public class BennuConfigs extends SmallBodyViewConfig
             public0414.lidarBrowseWithPointsDataSourceMap.put("Default", public0414.rootDirOnServer + "/ola/browse/fileList_public.txt");
             public0414.orexSearchTimeMap.remove("Recon");
 	        public0414.lidarSearchDataSourceMap.remove("Recon");
-            configArray.add(public0414);
+	        if (publicOnly)
+	        	configArray.add(public0414);
         }
 
         if (Configuration.isAPLVersion())
@@ -1247,11 +1253,12 @@ public class BennuConfigs extends SmallBodyViewConfig
                 new DBRunInfo(ImageSource.SPICE, Instrument.POLYCAM, ShapeModelBody.RQ36.toString(), "/project/sbmt2/sbmt/data/bodies/bennu/altwg-spo-v20190612/polycam/imagelist-fullpath-info.txt", "bennu_altwgspov20190612_polycam"),
                 new DBRunInfo(ImageSource.SPICE, Instrument.NAVCAM, ShapeModelBody.RQ36.toString(), "/project/sbmt2/sbmt/data/bodies/bennu/altwg-spo-v20190612/navcam/imagelist-fullpath-info.txt", "bennu_altwgspov20190612_navcam")
             };
-            configArray.add(c);
+            if (!publicOnly)
+            	configArray.add(c);
 
             //public version
             BennuConfigs public0612 = (BennuConfigs)c.clone();
-            public0612.author = ShapeModelType.provide("ALTWG-SPC-v20190612_SPC_v34_PUBLIC");
+//            public0612.author = ShapeModelType.provide("ALTWG-SPC-v20190612_SPC_v34_PUBLIC");
             public0612.modelLabel = "SPO v34";
             public0612.imagingInstruments = new ImagingInstrument[] { public0612.generatePolycamInstrument("bennu_altwgspov20190612_public_polycam", "bennu_altwgspov20190612_public_polycam", true, false, true),
             														public0612.generateMapcamInstrument("bennu_altwgspov20190612_public_mapcam", "bennu_altwgspov20190612_public_mapcam", true, false, true),
@@ -1265,7 +1272,8 @@ public class BennuConfigs extends SmallBodyViewConfig
             public0612.lidarBrowseWithPointsDataSourceMap.put("Default", public0612.rootDirOnServer + "/ola/browse/fileList_public.txt");
             public0612.orexSearchTimeMap.remove("Recon");
 	        public0612.lidarSearchDataSourceMap.remove("Recon");
-            configArray.add(public0612);
+	        if (publicOnly)
+	        	configArray.add(public0612);
         }
 
         if (Configuration.isAPLVersion())
@@ -1311,12 +1319,12 @@ public class BennuConfigs extends SmallBodyViewConfig
                 new DBRunInfo(ImageSource.SPICE, Instrument.POLYCAM, ShapeModelBody.RQ36.toString(), "/project/sbmt2/sbmt/data/bodies/bennu/altwg-spc-v20190828/polycam/imagelist-fullpath-info.txt", "bennu_altwgspcv20190828_polycam"),
                 new DBRunInfo(ImageSource.SPICE, Instrument.NAVCAM, ShapeModelBody.RQ36.toString(), "/project/sbmt2/sbmt/data/bodies/bennu/altwg-spc-v20190828/navcam/imagelist-fullpath-info.txt", "bennu_altwgspcv20190828_navcam")
             };
-
-            configArray.add(c);
+            if (!publicOnly)
+            	configArray.add(c);
 
             //public version
             BennuConfigs public0828 = (BennuConfigs)c.clone();
-            public0828.author = ShapeModelType.provide("ALTWG-SPC-v20190828_SPC_v42_PUBLIC");
+//            public0828.author = ShapeModelType.provide("ALTWG-SPC-v20190828_SPC_v42_PUBLIC");
             public0828.modelLabel = "SPC v42";
             public0828.imagingInstruments = new ImagingInstrument[] { public0828.generatePolycamInstrument("bennu_altwgspcv20190828_public_polycam", "bennu_altwgspcv20190828_public_polycam", true, false, true),	//false = SPC only
             														public0828.generateMapcamInstrument("bennu_altwgspcv20190828_public_mapcam", "bennu_altwgspcv20190828_public_mapcam", true, false, true),
@@ -1331,8 +1339,8 @@ public class BennuConfigs extends SmallBodyViewConfig
             public0828.lidarBrowseWithPointsDataSourceMap.put("Default", public0828.rootDirOnServer + "/ola/browse/fileList_public.txt");
 	        public0828.orexSearchTimeMap.remove("Recon");
 	        public0828.lidarSearchDataSourceMap.remove("Recon");
-
-            configArray.add(public0828);
+	        if (publicOnly)
+	        	configArray.add(public0828);
         }
 
         if (Configuration.isAPLVersion())
@@ -1420,9 +1428,13 @@ public class BennuConfigs extends SmallBodyViewConfig
             startStop = new ArrayList<Date>();
             startStop.add(new GregorianCalendar(2019, 6, 1, 0, 0, 0).getTime());
             startStop.add(new GregorianCalendar(2019, 7, 6, 0, 0, 0).getTime());
+            c.lidarSearchDataSourceMap.clear();
+            c.orexSearchTimeMap.clear();
             c.orexSearchTimeMap.put("OLAv20", startStop);
             c.lidarSearchDataSourceMap.put("OLAv20", c.rootDirOnServer + "/ola/search/olav20/dataSource.lidar");
-
+            c.lidarBrowseDataSourceMap.put("Default", c.rootDirOnServer + "/ola/l2a/fileListL2A.txt");
+            c.lidarBrowseFileListResourcePath = c.rootDirOnServer + "/ola/l2a/fileListL2A.txt";
+            c.lidarBrowseWithPointsDataSourceMap.put("Default", c.rootDirOnServer + "/ola/l2a/fileListL2A.txt");
 
             c.dtmBrowseDataSourceMap.put("Default", "bennu/ola-v20-spc/dtm/browse/fileList.txt");
 
@@ -1437,12 +1449,12 @@ public class BennuConfigs extends SmallBodyViewConfig
             };
 
             c.defaultForMissions = OREXClients;
-
-            configArray.add(c);
+            if (!publicOnly)
+            	configArray.add(c);
 
             //public version
             BennuConfigs publicOLA = (BennuConfigs)c.clone();
-            publicOLA.author = ShapeModelType.provide("OLA-v20_PUBLIC");
+//            publicOLA.author = ShapeModelType.provide("OLA-v20_PUBLIC");
             publicOLA.modelLabel = "OLA v20";
             publicOLA.disableSpectra();
             publicOLA.hasImageMap = true;
@@ -1454,14 +1466,15 @@ public class BennuConfigs extends SmallBodyViewConfig
 					 publicOLA.generateNavcamInstrument("bennu_olav20_navcam", "bennu_olav20_navcam", true)
             };
 
-            publicOLA.lidarBrowseDataSourceMap.put("Default", publicOLA.rootDirOnServer + "/ola/browse/fileListL2A.txt");
-            publicOLA.lidarBrowseFileListResourcePath = publicOLA.rootDirOnServer + "/ola/browse/fileListL2A.txt";
-            publicOLA.lidarBrowseWithPointsDataSourceMap.put("Default", publicOLA.rootDirOnServer + "/ola/browse/fileListL2A.txt");
+            publicOLA.lidarBrowseDataSourceMap.put("Default", publicOLA.rootDirOnServer + "/ola/l2a/fileListL2A.txt");
+            publicOLA.lidarBrowseFileListResourcePath = publicOLA.rootDirOnServer + "/ola/l2a/fileListL2A.txt";
+            publicOLA.lidarBrowseWithPointsDataSourceMap.put("Default", publicOLA.rootDirOnServer + "/ola/l2a/fileListL2A.txt");
             publicOLA.lidarSearchDataSourceMap.clear();
             publicOLA.orexSearchTimeMap.clear();
             publicOLA.orexSearchTimeMap.put("OLAv20", startStop);
             publicOLA.lidarSearchDataSourceMap.put("OLAv20", publicOLA.rootDirOnServer + "/ola/search/olav20/dataSource.lidar");
-            configArray.add(publicOLA);
+            if (publicOnly)
+            	configArray.add(publicOLA);
         }
 
         if (Configuration.isAPLVersion())
@@ -1496,9 +1509,13 @@ public class BennuConfigs extends SmallBodyViewConfig
             ArrayList<Date> startStop = new ArrayList<Date>();
             startStop.add(new GregorianCalendar(2019, 6, 1, 0, 0, 0).getTime());
             startStop.add(new GregorianCalendar(2019, 7, 6, 0, 0, 0).getTime());
+            c.lidarSearchDataSourceMap.clear();
+            c.orexSearchTimeMap.clear();
             c.orexSearchTimeMap.put("OLAv20", startStop);
             c.lidarSearchDataSourceMap.put("OLAv20", c.rootDirOnServer + "/ola/search/olav20/dataSource.lidar");
-
+            c.lidarBrowseDataSourceMap.put("Default", c.rootDirOnServer + "/ola/l2a/fileListL2A.txt");
+            c.lidarBrowseFileListResourcePath = c.rootDirOnServer + "/ola/l2a/fileListL2A.txt";
+            c.lidarBrowseWithPointsDataSourceMap.put("Default", c.rootDirOnServer + "/ola/l2a/fileListL2A.txt");
 
             c.hasMapmaker = false;
 
@@ -1513,13 +1530,13 @@ public class BennuConfigs extends SmallBodyViewConfig
                 new DBRunInfo(ImageSource.SPICE, Instrument.POLYCAM, ShapeModelBody.RQ36.toString(), "/project/sbmt2/sbmt/data/bodies/bennu/ola-v20-ptm/polycam/imagelist-fullpath-info.txt", "bennu_olav20ptm_polycam"),
                 new DBRunInfo(ImageSource.SPICE, Instrument.NAVCAM, ShapeModelBody.RQ36.toString(), "/project/sbmt2/sbmt/data/bodies/bennu/ola-v20-ptm/navcam/imagelist-fullpath-info.txt", "bennu_olav20ptm_navcam")
             };
-
-            configArray.add(c);
+            if (!publicOnly)
+            	configArray.add(c);
 
 
             //public version
             BennuConfigs publicOLAptm = (BennuConfigs)c.clone();
-            publicOLAptm.author = ShapeModelType.provide("OLA-v20-PTM_PUBLIC");
+//            publicOLAptm.author = ShapeModelType.provide("OLA-v20-PTM_PUBLIC");
             publicOLAptm.modelLabel = "OLA v20 PTM";
             publicOLAptm.disableSpectra();
             publicOLAptm.hasImageMap = true;
@@ -1531,14 +1548,15 @@ public class BennuConfigs extends SmallBodyViewConfig
             		publicOLAptm.generateNavcamInstrument("bennu_olav20ptm_navcam", "bennu_olav20ptm_navcam", true)
             };
 
-            publicOLAptm.lidarBrowseDataSourceMap.put("Default", publicOLAptm.rootDirOnServer + "/ola/browse/fileListL2A.txt");
-            publicOLAptm.lidarBrowseFileListResourcePath = publicOLAptm.rootDirOnServer + "/ola/browse/fileListL2A.txt";
-            publicOLAptm.lidarBrowseWithPointsDataSourceMap.put("Default", publicOLAptm.rootDirOnServer + "/ola/browse/fileListL2A.txt");
+            publicOLAptm.lidarBrowseDataSourceMap.put("Default", publicOLAptm.rootDirOnServer + "/ola/l2a/fileListL2A.txt");
+            publicOLAptm.lidarBrowseFileListResourcePath = publicOLAptm.rootDirOnServer + "/ola/l2a/fileListL2A.txt";
+            publicOLAptm.lidarBrowseWithPointsDataSourceMap.put("Default", publicOLAptm.rootDirOnServer + "/ola/l2a/fileListL2A.txt");
             publicOLAptm.lidarSearchDataSourceMap.clear();
             publicOLAptm.orexSearchTimeMap.clear();
             publicOLAptm.orexSearchTimeMap.put("OLAv20", startStop);
             publicOLAptm.lidarSearchDataSourceMap.put("OLAv20", publicOLAptm.rootDirOnServer + "/ola/search/olav20/dataSource.lidar");
-            configArray.add(publicOLAptm);
+            if (publicOnly)
+            	configArray.add(publicOLAptm);
         }
 
     }

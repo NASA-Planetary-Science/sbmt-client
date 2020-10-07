@@ -64,15 +64,15 @@ public class SmallBodyViewConfigMetadataIO implements MetadataManager
 
     public static void main(String[] args) throws IOException
     {
-        Preconditions.checkArgument(args.length == 1, "Usage: SmallBodyViewConfigMetadataIO.sh <output-directory-full-path>\nThe output directory will be created if it does not exist");
+        Preconditions.checkArgument(args.length <= 2, "Usage: SmallBodyViewConfigMetadataIO.sh <output-directory-full-path>\nThe output directory will be created if it does not exist");
 
         String configInfoVersion = BasicConfigInfo.getConfigInfoVersion();
-
+        boolean publicOnly = Boolean.parseBoolean(args[1]);
         SettableMetadata allBodiesMetadata = SettableMetadata.of(Version.of(configInfoVersion));
         Configuration.setAPLVersion(true);
         SbmtMultiMissionTool.configureMission();
         Configuration.authenticate();
-        SmallBodyViewConfig.initializeWithStaticConfigs();
+        SmallBodyViewConfig.initializeWithStaticConfigs(publicOnly);
         for (ViewConfig each: SmallBodyViewConfig.getBuiltInConfigs())
         {
             each.enable(true);

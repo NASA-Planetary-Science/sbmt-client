@@ -258,11 +258,11 @@ public class SmallBodyViewConfig extends BodyViewConfig implements ISmallBodyVie
         return config;
     }
 
-    static void initializeWithStaticConfigs()
+    static void initializeWithStaticConfigs(boolean publicOnly)
     {
     	ConfigArrayList configArray = getBuiltInConfigs();
 		AsteroidConfigs.initialize(configArray);
-		BennuConfigs.initialize(configArray);
+		BennuConfigs.initialize(configArray, publicOnly);
 		CometConfigs.initialize(configArray);
 		MarsConfigs.initialize(configArray);
 		NewHorizonsConfigs.initialize(configArray);
@@ -356,7 +356,6 @@ public class SmallBodyViewConfig extends BodyViewConfig implements ISmallBodyVie
                 List<CustomCylindricalImageKey> imageMapKeys = ImmutableList.of();
 
                 // Newest/best way to specify maps is with metadata, if this model has it.
-                System.out.println("SmallBodyViewConfig: getImageMapKeys: basemap config " + baseMapConfigName);
                 String metadataFileName = SafeURLPaths.instance().getString(serverPath("basemap"), baseMapConfigName);
                 File metadataFile;
                 try
