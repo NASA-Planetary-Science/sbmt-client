@@ -71,35 +71,42 @@ public class SbmtMultiMissionTool
 
     public enum Mission
 	{
-    	APL_INTERNAL_NIGHTLY("b1bc7ec"),
-		APL_INTERNAL("b1bc7ed"),
-		PUBLIC_RELEASE("3ee38f0"),
-		TEST_APL_INTERNAL("fb404a7"),
-		TEST_PUBLIC_RELEASE("a1a32b4"),
-		HAYABUSA2_DEV("133314b"),
-//		HAYABUSA2_STAGE("244425c"),
-		HAYABUSA2_DEPLOY("355536d"),
-		OSIRIS_REX("7cd84586"),
-//		OSIRIS_REX_STAGE("7cd84587"),
-        OSIRIS_REX_DEPLOY("7cd84588"),
-        OSIRIS_REX_TEST("h887aa63"),
-		OSIRIS_REX_MIRROR_DEPLOY("7cd84589"),
-		NH_DEPLOY("8ff86312"),
-		DART_DEV("9da75292"),
-		DART_DEPLOY("9da75293"),
-		STAGE_APL_INTERNAL("f7e441b"),
-		STAGE_PUBLIC_RELEASE("8cc8e12");
+    	APL_INTERNAL_NIGHTLY("b1bc7ec", false),
+		APL_INTERNAL("b1bc7ed", false),
+		PUBLIC_RELEASE("3ee38f0", true),
+		TEST_APL_INTERNAL("fb404a7", false),
+		TEST_PUBLIC_RELEASE("a1a32b4", true),
+		HAYABUSA2_DEV("133314b", false),
+//		HAYABUSA2_STAGE("244425c", false),
+		HAYABUSA2_DEPLOY("355536d", false),
+		OSIRIS_REX("7cd84586", false),
+//		OSIRIS_REX_STAGE("7cd84587", false),
+        OSIRIS_REX_DEPLOY("7cd84588", false),
+        OSIRIS_REX_TEST("h887aa63", false),
+		OSIRIS_REX_MIRROR_DEPLOY("7cd84589", false),
+		NH_DEPLOY("8ff86312", false),
+		DART_DEV("9da75292", false),
+		DART_DEPLOY("9da75293", false),
+		STAGE_APL_INTERNAL("f7e441b", false),
+		STAGE_PUBLIC_RELEASE("8cc8e12", true);
 
 		private final String hashedName;
+        private final boolean publishedDataOnly;
 
-		Mission(String hashedName)
+		Mission(String hashedName, boolean publishedDataOnly)
 		{
 			this.hashedName = hashedName;
+            this.publishedDataOnly = publishedDataOnly;
 		}
 
 		public String getHashedName()
 		{
 			return hashedName;
+		}
+
+		public boolean isPublishedDataOnly()
+		{
+		    return publishedDataOnly;
 		}
 
 		public static Mission getMissionForName(String name)
@@ -222,7 +229,7 @@ public class SbmtMultiMissionTool
 		if (compileDate != null && !versionString.equals("\n")) return;
         try
         {
-        	Class classToLoad = sbmtClass.getClass();
+        	Class<?> classToLoad = sbmtClass.getClass();
         	ClassLoader classLoader = classToLoad.getClassLoader();
         	String classNameToLoad = sbmtClass.getClass().getCanonicalName().replace('.', '/').substring(0, sbmtClass.getClass().getCanonicalName().length()-8);
         	URL classURL = classLoader.getResource(classNameToLoad + ".class");
@@ -279,6 +286,13 @@ public class SbmtMultiMissionTool
 			Configuration.setReleaseType(ReleaseType.DEVELOPMENT);
 			break;
 		case APL_INTERNAL:
+            Configuration.setAppName("sbmt-apl");
+            Configuration.setCacheVersion("2");
+            if (!versionString.contentEquals(""))
+                Configuration.setAppTitle(fullTitle);
+            else
+                Configuration.setAppTitle(abbrTitle);
+            break;
 		case PUBLIC_RELEASE:
 			Configuration.setAppName("sbmt");
 			Configuration.setCacheVersion("2");
@@ -288,6 +302,11 @@ public class SbmtMultiMissionTool
 				Configuration.setAppTitle(abbrTitle);
 			break;
 		case STAGE_APL_INTERNAL:
+            Configuration.setRootURL("http://sbmt.jhuapl.edu/internal/multi-mission/stage");
+            Configuration.setAppName("sbmt-stage-apl");
+            Configuration.setCacheVersion("2");
+            Configuration.setAppTitle(fullTitle);
+            break;
 		case STAGE_PUBLIC_RELEASE:
 			Configuration.setRootURL("http://sbmt.jhuapl.edu/internal/multi-mission/stage");
 			Configuration.setAppName("sbmt-stage");
@@ -295,6 +314,12 @@ public class SbmtMultiMissionTool
 			Configuration.setAppTitle(fullTitle);
 			break;
 		case TEST_APL_INTERNAL:
+            Configuration.setRootURL("http://sbmt-web.jhuapl.edu/internal/multi-mission/test");
+            Configuration.setAppName("sbmt-test-apl");
+            Configuration.setCacheVersion("2");
+            Configuration.setAppTitle(fullTitle);
+            // Configuration.setDatabaseSuffix("_test");
+            break;
 		case TEST_PUBLIC_RELEASE:
 			Configuration.setRootURL("http://sbmt-web.jhuapl.edu/internal/multi-mission/test");
 			Configuration.setAppName("sbmt-test");
