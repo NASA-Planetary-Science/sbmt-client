@@ -286,6 +286,13 @@ public class SbmtMultiMissionTool
 			Configuration.setReleaseType(ReleaseType.DEVELOPMENT);
 			break;
 		case APL_INTERNAL:
+            Configuration.setAppName("sbmt-apl");
+            Configuration.setCacheVersion("2");
+            if (!versionString.contentEquals(""))
+                Configuration.setAppTitle(fullTitle);
+            else
+                Configuration.setAppTitle(abbrTitle);
+            break;
 		case PUBLIC_RELEASE:
 			Configuration.setAppName("sbmt");
 			Configuration.setCacheVersion("2");
@@ -295,6 +302,11 @@ public class SbmtMultiMissionTool
 				Configuration.setAppTitle(abbrTitle);
 			break;
 		case STAGE_APL_INTERNAL:
+            Configuration.setRootURL("http://sbmt.jhuapl.edu/internal/multi-mission/stage");
+            Configuration.setAppName("sbmt-stage-apl");
+            Configuration.setCacheVersion("2");
+            Configuration.setAppTitle(fullTitle);
+            break;
 		case STAGE_PUBLIC_RELEASE:
 			Configuration.setRootURL("http://sbmt.jhuapl.edu/internal/multi-mission/stage");
 			Configuration.setAppName("sbmt-stage");
@@ -302,6 +314,12 @@ public class SbmtMultiMissionTool
 			Configuration.setAppTitle(fullTitle);
 			break;
 		case TEST_APL_INTERNAL:
+            Configuration.setRootURL("http://sbmt-web.jhuapl.edu/internal/multi-mission/test");
+            Configuration.setAppName("sbmt-test-apl");
+            Configuration.setCacheVersion("2");
+            Configuration.setAppTitle(fullTitle);
+            // Configuration.setDatabaseSuffix("_test");
+            break;
 		case TEST_PUBLIC_RELEASE:
 			Configuration.setRootURL("http://sbmt-web.jhuapl.edu/internal/multi-mission/test");
 			Configuration.setAppName("sbmt-test");
