@@ -7,7 +7,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Vector;
 
-import com.github.davidmoten.guavamini.Preconditions;
 import com.google.common.collect.ImmutableList;
 
 import edu.jhuapl.saavtk.config.ViewConfig;
@@ -64,7 +63,11 @@ public class SmallBodyViewConfigMetadataIO implements MetadataManager
 
     public static void main(String[] args) throws IOException
     {
-        Preconditions.checkArgument(args.length == 1, "Usage: SmallBodyViewConfigMetadataIO.sh <output-directory-full-path>\nThe output directory will be created if it does not exist");
+        if (args.length < 1 || args.length > 2)
+        {
+            System.err.println("Usage: SmallBodyViewConfigMetadataIO.sh <output-directory-full-path> [ -p ]\n\n\t-p means include only published data in the output model metadata; if omitted, include ALL data\n\n\tThe output directory will be created if it does not exist");
+            System.exit(1);
+        }
 
         String configInfoVersion = BasicConfigInfo.getConfigInfoVersion();
 
@@ -78,7 +81,9 @@ public class SmallBodyViewConfigMetadataIO implements MetadataManager
             each.enable(true);
         }
 
-        String rootDir = args[0].replaceFirst("/*$", "/") + BasicConfigInfo.getConfigPathPrefix() + "/";
+        boolean publishedDataOnly = args.length > 1 && args[1].equals("-p");
+
+        String rootDir = args[0].replaceFirst("/*$", "/") + BasicConfigInfo.getConfigPathPrefix(publishedDataOnly) + "/";
 
         // Create the directory just in case. Then make sure it exists before proceeding.
         File rootDirFile = new File(rootDir);
@@ -97,7 +102,7 @@ public class SmallBodyViewConfigMetadataIO implements MetadataManager
                 String version = config.version == null ? "" : config.version;
 
                 File file = new File(rootDir + ((SmallBodyViewConfig) config).rootDirOnServer + "/" + config.author + "_" + config.body.toString().replaceAll(" ", "_") + version.replaceAll(" ", "_") + "_v" + configInfoVersion + ".json");
-                BasicConfigInfo configInfo = new BasicConfigInfo((BodyViewConfig)config);
+                BasicConfigInfo configInfo = new BasicConfigInfo((BodyViewConfig)config, publishedDataOnly);
                 allBodiesMetadata.put(Key.of(config.getUniqueName()), configInfo.store());
 
                 if (!file.exists()) file.getParentFile().mkdirs();

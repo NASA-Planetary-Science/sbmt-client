@@ -186,7 +186,7 @@ public class SmallBodyViewConfig extends BodyViewConfig implements ISmallBodyVie
     	ConfigArrayList configs = new ConfigArrayList();
         try
         {
-            File allBodies = FileCache.getFileFromServer(BasicConfigInfo.getConfigPathPrefix() + "/" + "allBodies_v" + BasicConfigInfo.getConfigInfoVersion() + ".json");
+            File allBodies = FileCache.getFileFromServer(BasicConfigInfo.getConfigPathPrefix(SbmtMultiMissionTool.getMission().isPublishedDataOnly()) + "/" + "allBodies_v" + BasicConfigInfo.getConfigInfoVersion() + ".json");
             FixedMetadata metadata = Serializers.deserialize(allBodies, "AllBodies");
             for (Key key : metadata.getKeys())
             {
