@@ -302,34 +302,34 @@ public class SbmtMultiMissionTool
 				Configuration.setAppTitle(abbrTitle);
 			break;
 		case STAGE_APL_INTERNAL:
-            Configuration.setRootURL("http://sbmt.jhuapl.edu/internal/multi-mission/stage");
+            Configuration.setRootURL("https://sbmt.jhuapl.edu/internal/multi-mission/stage");
             Configuration.setAppName("sbmt-stage-apl");
             Configuration.setCacheVersion("2");
             Configuration.setAppTitle(fullTitle);
             break;
 		case STAGE_PUBLIC_RELEASE:
-			Configuration.setRootURL("http://sbmt.jhuapl.edu/internal/multi-mission/stage");
+			Configuration.setRootURL("https://sbmt.jhuapl.edu/internal/multi-mission/stage");
 			Configuration.setAppName("sbmt-stage");
 			Configuration.setCacheVersion("2");
 			Configuration.setAppTitle(fullTitle);
 			break;
 		case TEST_APL_INTERNAL:
-            Configuration.setRootURL("http://sbmt-web.jhuapl.edu/internal/multi-mission/test");
+            Configuration.setRootURL("https://sbmt.jhuapl.edu/internal/multi-mission/test");
             Configuration.setAppName("sbmt-test-apl");
             Configuration.setCacheVersion("2");
             Configuration.setAppTitle(fullTitle);
             // Configuration.setDatabaseSuffix("_test");
             break;
 		case TEST_PUBLIC_RELEASE:
-			Configuration.setRootURL("http://sbmt-web.jhuapl.edu/internal/multi-mission/test");
+			Configuration.setRootURL("https://sbmt.jhuapl.edu/internal/multi-mission/test");
 			Configuration.setAppName("sbmt-test");
 			Configuration.setCacheVersion("2");
 			Configuration.setAppTitle(fullTitle);
             // Configuration.setDatabaseSuffix("_test");
 			break;
 		case HAYABUSA2_DEV:
-//			 Configuration.setRootURL("http://sbmt.jhuapl.edu/internal/sbmt");
-//			Configuration.setRootURL("http://sbmt.jhuapl.edu/internal/multi-mission/test");
+//			 Configuration.setRootURL("https://sbmt.jhuapl.edu/internal/sbmt");
+//			Configuration.setRootURL("https://sbmt.jhuapl.edu/internal/multi-mission/test");
 			Configuration.setAppName("sbmthyb2-dev");
 			Configuration.setCacheVersion("");
 			Configuration.setReleaseType(ReleaseType.DEVELOPMENT);
@@ -337,7 +337,7 @@ public class SbmtMultiMissionTool
             // Configuration.setDatabaseSuffix("_test");
 			break;
 //		case HAYABUSA2_STAGE:
-//			Configuration.setRootURL("http://hyb2sbmt.jhuapl.edu/sbmt");
+//			Configuration.setRootURL("https://hyb2sbmt.jhuapl.edu/sbmt");
 //			Configuration.setAppName("sbmthyb2-stage");
 //			Configuration.setCacheVersion("");
 //			Configuration.setAppTitle("SBMT/Hayabusa2-Stage");
@@ -349,14 +349,14 @@ public class SbmtMultiMissionTool
 			Configuration.setAppTitle("SBMT/Hayabusa2" /*+ versionString + " (" + compileDateString + ")"*/);
 			break;
         case OSIRIS_REX:
-            //                Configuration.setRootURL("http://sbmt.jhuapl.edu/internal/sbmt");
+            //                Configuration.setRootURL("https://sbmt.jhuapl.edu/internal/sbmt");
             Configuration.setAppName("sbmt1orex-dev");
             Configuration.setCacheVersion("");
             Configuration.setAppTitle("SBMT/OSIRIS REx-Dev" /*+ "(" + compileDateString + ")"*/);
             Colormaps.setDefaultColormapName("Spectral_lowBlue");
             break;
         case OSIRIS_REX_TEST:
-            Configuration.setRootURL("http://sbmt-web.jhuapl.edu/internal/multi-mission/test");
+            Configuration.setRootURL("https://sbmt.jhuapl.edu/internal/multi-mission/test");
             Configuration.setAppName("sbmt1orex-test");
             Configuration.setCacheVersion("");
             Configuration.setAppTitle("SBMT/OSIRIS REx-Test" /*+ versionString + " (" + compileDateString + ")"*/);
@@ -369,7 +369,7 @@ public class SbmtMultiMissionTool
 //			Configuration.setAppTitle("SBMT/OSIRIS REx-Stage");
 //			break;
 		case OSIRIS_REX_MIRROR_DEPLOY:
-			//                Configuration.setRootURL("http://sbmt.jhuapl.edu/sbmt");
+			//                Configuration.setRootURL("https://sbmt.jhuapl.edu/sbmt");
 			Configuration.setAppName("sbmt1orex-mirror");
 			Configuration.setCacheVersion("");
 			Configuration.setAppTitle("SBMT/OSIRIS REx APL Mirror" /*+ versionString + " (" + compileDateString + ")"*/);

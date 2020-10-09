@@ -433,7 +433,7 @@ public abstract class BodyViewConfig extends ViewConfig
     public static void main(String[] args)
     {
         System.out.println("serverPath(\"\", \"\") is \"" + serverPath("", "") + "\"");
-        System.out.println("serverPath(\"http://sbmt.jhuapl.edu/sbmt\", \"\", \"\") is \"" + serverPath("http://sbmt.jhuapl.edu/sbmt", "", "") + "\"");
+        System.out.println("serverPath(\"https://sbmt.jhuapl.edu/sbmt\", \"\", \"\") is \"" + serverPath("https://sbmt.jhuapl.edu/sbmt", "", "") + "\"");
         System.out.println("serverPath(\"file://sbmt.jhuapl.edu/sbmt\", \"\", \"filename.txt\") is \"" + serverPath("file://sbmt.jhuapl.edu/sbmt", "", "filename.txt") + "\"");
     }
 
