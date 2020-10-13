@@ -18,18 +18,14 @@ public class BasicConfigInfo implements MetadataManager
     // remain consistent.
     private static final String configInfoVersion = "9.0";
 
-    // This variable gives the prefix used to locate configuration metadata
-    // relative to the top of the model.
-    private static final String ConfigPathPrefix = "allBodies-" + configInfoVersion;
-
     public static String getConfigInfoVersion()
     {
         return configInfoVersion;
     }
 
-    public static String getConfigPathPrefix()
+    public static String getConfigPathPrefix(boolean publishedDataOnly)
     {
-        return ConfigPathPrefix;
+        return (publishedDataOnly ? "published/" : "proprietary/") + "allBodies-" + configInfoVersion;
     }
 
     ShapeModelPopulation population;
@@ -48,7 +44,7 @@ public class BasicConfigInfo implements MetadataManager
 
 	public BasicConfigInfo() {}
 
-	public BasicConfigInfo(BodyViewConfig config)
+	public BasicConfigInfo(BodyViewConfig config, boolean publishedDataOnly)
 	{
 		this.type = config.type;
 		this.population = config.population;
@@ -64,7 +60,7 @@ public class BasicConfigInfo implements MetadataManager
 
 		if (author != ShapeModelType.CUSTOM)
 		{
-			System.out.println("BasicConfigInfo: unique name " + uniqueName);
+//			System.out.println("BasicConfigInfo: unique name " + uniqueName);
 			for (SbmtMultiMissionTool.Mission presentMission : presentInVersion)
 			{
 				//allow the body if the "present in Mission" value equals the tool's preset mission value OR if the tool's present mission value is the apl internal nightly
@@ -94,7 +90,7 @@ public class BasicConfigInfo implements MetadataManager
             // modelVersion will add nothing.
             String modelVersion = config.version != null ? config.version.replaceAll(" ", "_") : "";
 
-            this.configURL = "/" + ConfigPathPrefix + ((SmallBodyViewConfig) config).rootDirOnServer + //
+            this.configURL = "/" + getConfigPathPrefix(publishedDataOnly) + ((SmallBodyViewConfig) config).rootDirOnServer + //
                     "/" + config.author + "_" + //
                     config.body.toString().replaceAll(" ", "_") + modelVersion + //
                     "_v" + getConfigInfoVersion() + ".json";

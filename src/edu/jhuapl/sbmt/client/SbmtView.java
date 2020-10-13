@@ -141,7 +141,7 @@ public class SbmtView extends View implements PropertyChangeListener
 	public SbmtView(StatusBar statusBar, SmallBodyViewConfig smallBodyConfig)
 	{
 		super(statusBar, smallBodyConfig);
-		this.configInfo = new BasicConfigInfo(smallBodyConfig);
+		this.configInfo = new BasicConfigInfo(smallBodyConfig, SbmtMultiMissionTool.getMission().isPublishedDataOnly());
 		uniqueName = configInfo.uniqueName;
 		shapeModelName = configInfo.shapeModelName;
 		this.stateManager = TrackedMetadataManager.of("View " + getUniqueName());

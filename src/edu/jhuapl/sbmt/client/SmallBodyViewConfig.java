@@ -76,6 +76,8 @@ public class SmallBodyViewConfig extends BodyViewConfig implements ISmallBodyVie
     private static final Map<String, BasicConfigInfo> VIEWCONFIG_IDENTIFIERS = new HashMap<>();
     private static final Map<String, ViewConfig> LOADED_VIEWCONFIGS = new HashMap<>();
 
+    protected String baseMapConfigName = "config.txt";
+
     static public List<BasicConfigInfo> getConfigIdentifiers() { return CONFIG_INFO; }
 
     static public SmallBodyViewConfig getSmallBodyConfig(BasicConfigInfo configInfo)
@@ -185,7 +187,7 @@ public class SmallBodyViewConfig extends BodyViewConfig implements ISmallBodyVie
     	ConfigArrayList configs = new ConfigArrayList();
         try
         {
-            File allBodies = FileCache.getFileFromServer(BasicConfigInfo.getConfigPathPrefix() + "/" + "allBodies_v" + BasicConfigInfo.getConfigInfoVersion() + ".json");
+            File allBodies = FileCache.getFileFromServer(BasicConfigInfo.getConfigPathPrefix(SbmtMultiMissionTool.getMission().isPublishedDataOnly()) + "/" + "allBodies_v" + BasicConfigInfo.getConfigInfoVersion() + ".json");
             FixedMetadata metadata = Serializers.deserialize(allBodies, "AllBodies");
             for (Key key : metadata.getKeys())
             {
@@ -257,11 +259,11 @@ public class SmallBodyViewConfig extends BodyViewConfig implements ISmallBodyVie
         return config;
     }
 
-    static void initializeWithStaticConfigs()
+    static void initializeWithStaticConfigs(boolean publicOnly)
     {
     	ConfigArrayList configArray = getBuiltInConfigs();
 		AsteroidConfigs.initialize(configArray);
-		BennuConfigs.initialize(configArray);
+		BennuConfigs.initialize(configArray, publicOnly);
 		DartConfigs.instance().initialize(configArray);
 		CometConfigs.initialize(configArray);
 		MarsConfigs.initialize(configArray);
@@ -356,7 +358,7 @@ public class SmallBodyViewConfig extends BodyViewConfig implements ISmallBodyVie
                 List<CustomCylindricalImageKey> imageMapKeys = ImmutableList.of();
 
                 // Newest/best way to specify maps is with metadata, if this model has it.
-                String metadataFileName = SafeURLPaths.instance().getString(serverPath("basemap"), "config.txt");
+                String metadataFileName = SafeURLPaths.instance().getString(serverPath("basemap"), baseMapConfigName);
                 File metadataFile;
                 try
                 {
@@ -508,7 +510,6 @@ public class SmallBodyViewConfig extends BodyViewConfig implements ISmallBodyVie
 		}
 		if (!super.equals(obj))
 		{
-//			System.out.println("SmallBodyViewConfig: equals: body view config parent doesn't equal");
 			return false;
 		}
 //		if (getClass() != obj.getClass())

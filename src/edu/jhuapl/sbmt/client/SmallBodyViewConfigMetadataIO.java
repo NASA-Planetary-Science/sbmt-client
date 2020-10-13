@@ -7,7 +7,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Vector;
 
-import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
 
 import edu.jhuapl.saavtk.config.ViewConfig;
@@ -64,7 +63,13 @@ public class SmallBodyViewConfigMetadataIO implements MetadataManager
 
     public static void main(String[] args) throws IOException
     {
-        Preconditions.checkArgument(args.length == 1, "Usage: SmallBodyViewConfigMetadataIO.sh <output-directory-full-path>\nThe output directory will be created if it does not exist");
+        if (args.length < 1 || args.length > 2)
+        {
+            System.err.println("Usage: SmallBodyViewConfigMetadataIO.sh <output-directory-full-path> [ -pub ]\n\n\t-pub means include only published data in the output model metadata; if omitted, include ALL data\n\n\tThe output directory will be created if it does not exist");
+            System.exit(1);
+        }
+
+        boolean publishedDataOnly = args.length > 1 && (args[1].equalsIgnoreCase("-pub") || args[1].equalsIgnoreCase("--pub"));
 
         String configInfoVersion = BasicConfigInfo.getConfigInfoVersion();
 
@@ -72,13 +77,13 @@ public class SmallBodyViewConfigMetadataIO implements MetadataManager
         Configuration.setAPLVersion(true);
         SbmtMultiMissionTool.configureMission();
         Configuration.authenticate();
-        SmallBodyViewConfig.initializeWithStaticConfigs();
+        SmallBodyViewConfig.initializeWithStaticConfigs(publishedDataOnly);
         for (ViewConfig each: SmallBodyViewConfig.getBuiltInConfigs())
         {
             each.enable(true);
         }
 
-        String rootDir = args[0].replaceFirst("/*$", "/") + BasicConfigInfo.getConfigPathPrefix() + "/";
+        String rootDir = args[0].replaceFirst("/*$", "/") + BasicConfigInfo.getConfigPathPrefix(publishedDataOnly) + "/";
 
         // Create the directory just in case. Then make sure it exists before proceeding.
         File rootDirFile = new File(rootDir);
@@ -89,7 +94,6 @@ public class SmallBodyViewConfigMetadataIO implements MetadataManager
         }
 
         List<ViewConfig> builtInConfigs = SmallBodyViewConfig.getBuiltInConfigs();
-        System.out.println("SmallBodyViewConfigMetadataIO: main: walking through Configs");
         for (ViewConfig config : builtInConfigs)
         {
             try
@@ -98,7 +102,7 @@ public class SmallBodyViewConfigMetadataIO implements MetadataManager
                 String version = config.version == null ? "" : config.version;
 
                 File file = new File(rootDir + ((SmallBodyViewConfig) config).rootDirOnServer + "/" + config.author + "_" + config.body.toString().replaceAll(" ", "_") + version.replaceAll(" ", "_") + "_v" + configInfoVersion + ".json");
-                BasicConfigInfo configInfo = new BasicConfigInfo((BodyViewConfig)config);
+                BasicConfigInfo configInfo = new BasicConfigInfo((BodyViewConfig)config, publishedDataOnly);
                 allBodiesMetadata.put(Key.of(config.getUniqueName()), configInfo.store());
 
                 if (!file.exists()) file.getParentFile().mkdirs();
@@ -111,7 +115,6 @@ public class SmallBodyViewConfigMetadataIO implements MetadataManager
                 FixedMetadata metadata = Serializers.deserialize(file, config.getUniqueName());
                 io2.metadataID = config.getUniqueName();
                 io2.retrieve(metadata);
-
                 if (!cfg.equals(config))
                 	System.err.println("SmallBodyViewConfigMetadataIO: main: cfg equals config is " + (cfg.equals(config) + " for " + config.getUniqueName()));
 
@@ -190,6 +193,7 @@ public class SmallBodyViewConfigMetadataIO implements MetadataManager
         write(timeHistoryFile, c.timeHistoryFile, configMetadata);
         write(hasImageMap, c.hasImageMap, configMetadata);
         write(hasStateHistory, c.hasStateHistory, configMetadata);
+        write(baseMapConfig, c.baseMapConfigName, configMetadata);
 
         write(density, c.density, configMetadata);
         write(rotationRate, c.rotationRate, configMetadata);
@@ -232,8 +236,8 @@ public class SmallBodyViewConfigMetadataIO implements MetadataManager
         if (c.hasHierarchicalImageSearch && c.hierarchicalImageSearchSpecification != null)
             write(hierarchicalImageSearchSpecification, c.hierarchicalImageSearchSpecification.getMetadataManager().store(), configMetadata);
 
-
-        write(hasHierarchicalSpectraSearch, c.hasHierarchicalSpectraSearch, configMetadata);
+        if (c.hasSpectralData && c.spectralInstruments.size() > 0)
+        	write(hasHierarchicalSpectraSearch, c.hasHierarchicalSpectraSearch, configMetadata);
         write(hasHypertreeBasedSpectraSearch, c.hasHypertreeBasedSpectraSearch, configMetadata);
         write(spectraSearchDataSourceMap, c.spectraSearchDataSourceMap, configMetadata);
         write(spectrumMetadataFile, c.spectrumMetadataFile, configMetadata);
@@ -419,6 +423,7 @@ public class SmallBodyViewConfigMetadataIO implements MetadataManager
         c.timeHistoryFile = read(timeHistoryFile, configMetadata);
         c.hasImageMap = read(hasImageMap, configMetadata);
         c.hasStateHistory = read(hasStateHistory, configMetadata);
+        c.baseMapConfigName = read(baseMapConfig, configMetadata);
 
         c.density = read(density, configMetadata);
         c.rotationRate = read(rotationRate, configMetadata);
@@ -637,6 +642,7 @@ public class SmallBodyViewConfigMetadataIO implements MetadataManager
     final Key<Boolean> hasStateHistory = Key.of("hasStateHistory");
     final Key<String[]> presentInMissions = Key.of("presentInMissions");
     final Key<String[]> defaultForMissions = Key.of("defaultForMissions");
+    final Key<String> baseMapConfig = Key.of("baseMapConfig");
 
     final Key<Double> density = Key.of("density");
     final Key<Double> rotationRate = Key.of("rotationRate");
