@@ -11,7 +11,7 @@ import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
 
 import edu.jhuapl.saavtk.model.BasicColoringDataManager;
-import edu.jhuapl.saavtk.model.ColoringData;
+import edu.jhuapl.saavtk.model.BasicColoringData;
 import edu.jhuapl.saavtk.model.ColoringDataManager;
 import edu.jhuapl.saavtk.model.GenericPolyhedralModel;
 import edu.jhuapl.saavtk.util.SafeURLPaths;
@@ -173,7 +173,7 @@ public class DiscoverPlateColorings
 			String units = getUnits(name, tableInfo, columnNumber);
 
 			file = new File(file.getAbsolutePath().replace(topDirectory.getAbsolutePath(), coloringDirectory));
-			coloringDataManager.add(ColoringData.of(name, file.toString(), ImmutableList.of(name), units, tableInfo.getNumberRows(), false));
+			coloringDataManager.add(BasicColoringData.of(name, file.toString(), ImmutableList.of(name), units, tableInfo.getNumberRows(), false));
 		}
 		catch (Exception e)
 		{
@@ -208,7 +208,7 @@ public class DiscoverPlateColorings
 				units = "";
 			}
 			file = new File(file.getAbsolutePath().replace(topDirectory.getAbsolutePath(), coloringDirectory));
-			coloringDataManager.add(ColoringData.of(name, file.toString(), ImmutableList.of(name + " X", name + " Y", name + " Z"), units, tableInfo.getNumberRows(), false));
+			coloringDataManager.add(BasicColoringData.of(name, file.toString(), ImmutableList.of(name + " X", name + " Y", name + " Z"), units, tableInfo.getNumberRows(), false));
 		}
 		catch (Exception e)
 		{
