@@ -15,10 +15,10 @@ import javax.swing.JToggleButton;
 import edu.jhuapl.saavtk.colormap.Colormap;
 import edu.jhuapl.saavtk.colormap.ColormapUtil;
 import edu.jhuapl.saavtk.colormap.Colormaps;
-import edu.jhuapl.saavtk.colormap.SigFigNumberFormat;
 
 import glum.gui.component.GComboBox;
 import glum.gui.component.GNumberField;
+import glum.text.SigFigNumberFormat;
 import net.miginfocom.swing.MigLayout;
 
 /**

@@ -285,6 +285,18 @@ public abstract class BodyViewConfig extends ViewConfig
         c.density = this.density;
         c.rotationRate = this.rotationRate;
         c.hasSpectralData = this.hasSpectralData;
+        if (this.hasSpectralData)
+        {
+        	c.hasHierarchicalSpectraSearch = this.hasHierarchicalSpectraSearch;
+        	c.hasHypertreeBasedSpectraSearch = this.hasHypertreeBasedSpectraSearch;
+        	c.spectrumMetadataFile = this.spectrumMetadataFile;
+
+        	c.hierarchicalSpectraSearchSpecification = this.hierarchicalSpectraSearchSpecification;
+        	c.spectralInstruments = new ArrayList<BasicSpectrumInstrument>(this.spectralInstruments);
+        	c.spectraSearchDataSourceMap = new LinkedHashMap<String, String>(this.spectraSearchDataSourceMap);
+        }
+
+
         c.hasLineamentData = this.hasLineamentData;
 
         if (this.hasLidarData)
@@ -357,6 +369,16 @@ public abstract class BodyViewConfig extends ViewConfig
         }
 
         return modelFiles;
+    }
+
+    public String getShapeModelFileExtension()
+    {
+        return shapeModelFileExtension;
+    }
+
+    public void setShapeModelFileExtension(String shapeModelFileExtension)
+    {
+        this.shapeModelFileExtension = shapeModelFileExtension;
     }
 
     public Map<String, String> getSpectraSearchDataSourceMap()

@@ -75,6 +75,8 @@ public class SmallBodyViewConfig extends BodyViewConfig implements ISmallBodyVie
     private static final Map<String, BasicConfigInfo> VIEWCONFIG_IDENTIFIERS = new HashMap<>();
     private static final Map<String, ViewConfig> LOADED_VIEWCONFIGS = new HashMap<>();
 
+    protected String baseMapConfigName = "config.txt";
+
     static public List<BasicConfigInfo> getConfigIdentifiers() { return CONFIG_INFO; }
 
     static public SmallBodyViewConfig getSmallBodyConfig(BasicConfigInfo configInfo)
@@ -108,7 +110,7 @@ public class SmallBodyViewConfig extends BodyViewConfig implements ISmallBodyVie
     	    Preconditions.checkArgument(VIEWCONFIG_IDENTIFIERS.containsKey(configID), "No configuration available for model " + configID);
 
     		BasicConfigInfo info = VIEWCONFIG_IDENTIFIERS.get(configID);
-    		ViewConfig fetchedConfig = fetchRemoteConfig(configID, info.configURL, fromServer);
+    		ViewConfig fetchedConfig = fetchRemoteConfig(configID, info.getConfigURL(), fromServer);
     		LOADED_VIEWCONFIGS.put(configID, fetchedConfig);
 
     		return (SmallBodyViewConfig)fetchedConfig;
@@ -125,7 +127,7 @@ public class SmallBodyViewConfig extends BodyViewConfig implements ISmallBodyVie
     	{
             Preconditions.checkArgument(VIEWCONFIG_IDENTIFIERS.containsKey(configID), "No configuration available for model " + configID);
 
-    		ViewConfig fetchedConfig = fetchRemoteConfig(configID, VIEWCONFIG_IDENTIFIERS.get(configID).configURL, fromServer);
+    		ViewConfig fetchedConfig = fetchRemoteConfig(configID, VIEWCONFIG_IDENTIFIERS.get(configID).getConfigURL(), fromServer);
     		LOADED_VIEWCONFIGS.put(configID, fetchedConfig);
     		return (SmallBodyViewConfig)fetchedConfig;
     	}
@@ -184,7 +186,7 @@ public class SmallBodyViewConfig extends BodyViewConfig implements ISmallBodyVie
     	ConfigArrayList configs = new ConfigArrayList();
         try
         {
-            File allBodies = FileCache.getFileFromServer("allBodies_v" + SmallBodyViewConfigMetadataIO.metadataVersion + ".json");
+            File allBodies = FileCache.getFileFromServer(BasicConfigInfo.getConfigPathPrefix(SbmtMultiMissionTool.getMission().isPublishedDataOnly()) + "/" + "allBodies_v" + BasicConfigInfo.getConfigInfoVersion() + ".json");
             FixedMetadata metadata = Serializers.deserialize(allBodies, "AllBodies");
             for (Key key : metadata.getKeys())
             {
@@ -210,9 +212,6 @@ public class SmallBodyViewConfig extends BodyViewConfig implements ISmallBodyVie
 
     private static ViewConfig fetchRemoteConfig(String name, String url, boolean fromServer)
     {
-    	if (fromServer)
-    		url = url.replaceFirst("http://sbmt.jhuapl.edu", "file:///disks/d0180/htdocs-sbmt");
-
     	ConfigArrayList ioConfigs = new ConfigArrayList();
         ioConfigs.add(new SmallBodyViewConfig(ImmutableList.<String> copyOf(DEFAULT_GASKELL_LABELS_PER_RESOLUTION), ImmutableList.<Integer> copyOf(DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION)));
         SmallBodyViewConfigMetadataIO io = new SmallBodyViewConfigMetadataIO(ioConfigs);
@@ -259,11 +258,11 @@ public class SmallBodyViewConfig extends BodyViewConfig implements ISmallBodyVie
         return config;
     }
 
-    static void initializeWithStaticConfigs()
+    static void initializeWithStaticConfigs(boolean publicOnly)
     {
     	ConfigArrayList configArray = getBuiltInConfigs();
 		AsteroidConfigs.initialize(configArray);
-		BennuConfigs.initialize(configArray);
+		BennuConfigs.initialize(configArray, publicOnly);
 		CometConfigs.initialize(configArray);
 		MarsConfigs.initialize(configArray);
 		NewHorizonsConfigs.initialize(configArray);
@@ -357,7 +356,7 @@ public class SmallBodyViewConfig extends BodyViewConfig implements ISmallBodyVie
                 List<CustomCylindricalImageKey> imageMapKeys = ImmutableList.of();
 
                 // Newest/best way to specify maps is with metadata, if this model has it.
-                String metadataFileName = SafeURLPaths.instance().getString(serverPath("basemap"), "config.txt");
+                String metadataFileName = SafeURLPaths.instance().getString(serverPath("basemap"), baseMapConfigName);
                 File metadataFile;
                 try
                 {
@@ -509,7 +508,6 @@ public class SmallBodyViewConfig extends BodyViewConfig implements ISmallBodyVie
 		}
 		if (!super.equals(obj))
 		{
-//			System.out.println("SmallBodyViewConfig: equals: body view config parent doesn't equal");
 			return false;
 		}
 //		if (getClass() != obj.getClass())

@@ -13,14 +13,29 @@ import crucible.crust.metadata.impl.SettableMetadata;
 
 public class BasicConfigInfo implements MetadataManager
 {
-	ShapeModelPopulation population;
+
+    // When this is changed, build-client.sh must also be changed to
+    // remain consistent.
+    private static final String configInfoVersion = "9.0";
+
+    public static String getConfigInfoVersion()
+    {
+        return configInfoVersion;
+    }
+
+    public static String getConfigPathPrefix(boolean publishedDataOnly)
+    {
+        return (publishedDataOnly ? "published/" : "proprietary/") + "allBodies-" + configInfoVersion;
+    }
+
+    ShapeModelPopulation population;
 	String shapeModelName;
 	String uniqueName;
 	ShapeModelType author;
 	BodyType type;
 	ShapeModelBody body;
 	ShapeModelDataUsed dataUsed;
-	String configURL;
+	private String configURL;
 	String version;
 	String modelLabel;
 	SbmtMultiMissionTool.Mission[] presentInVersion = null;
@@ -29,7 +44,7 @@ public class BasicConfigInfo implements MetadataManager
 
 	public BasicConfigInfo() {}
 
-	public BasicConfigInfo(BodyViewConfig config)
+	public BasicConfigInfo(BodyViewConfig config, boolean publishedDataOnly)
 	{
 		this.type = config.type;
 		this.population = config.population;
@@ -45,7 +60,7 @@ public class BasicConfigInfo implements MetadataManager
 
 		if (author != ShapeModelType.CUSTOM)
 		{
-			System.out.println("BasicConfigInfo: BasicConfigInfo: unique name " + uniqueName);
+//			System.out.println("BasicConfigInfo: unique name " + uniqueName);
 			for (SbmtMultiMissionTool.Mission presentMission : presentInVersion)
 			{
 				//allow the body if the "present in Mission" value equals the tool's preset mission value OR if the tool's present mission value is the apl internal nightly
@@ -69,10 +84,16 @@ public class BasicConfigInfo implements MetadataManager
                 }
             }
 
-			if (config.version != null)
-				this.configURL = ((SmallBodyViewConfig)config).rootDirOnServer + "/" + config.author +  "_" + config.body.toString().replaceAll(" ", "_") + config.version.replaceAll(" ", "_") + "_v" + SmallBodyViewConfigMetadataIO.metadataVersion + ".json";
-			else
-				this.configURL = ((SmallBodyViewConfig)config).rootDirOnServer + "/" + config.author +  "_" + config.body.toString().replaceAll(" ", "_") + "_v" + SmallBodyViewConfigMetadataIO.metadataVersion + ".json";
+            // Note: config.version is for when a model intrinsically has a
+            // version as part of its name. It has nothing to do with the
+            // metadata version. For most models config.version is null, so
+            // modelVersion will add nothing.
+            String modelVersion = config.version != null ? config.version.replaceAll(" ", "_") : "";
+
+            this.configURL = "/" + getConfigPathPrefix(publishedDataOnly) + ((SmallBodyViewConfig) config).rootDirOnServer + //
+                    "/" + config.author + "_" + //
+                    config.body.toString().replaceAll(" ", "_") + modelVersion + //
+                    "_v" + getConfigInfoVersion() + ".json";
 		}
 	}
 
@@ -254,7 +275,7 @@ public class BasicConfigInfo implements MetadataManager
 	{
 		return "BasicConfigInfo [population=" + population + ", shapeModelName=" + shapeModelName + ", uniqueName="
 				+ uniqueName + ", author=" + author + ", type=" + type + ", body=" + body + ", dataUsed=" + dataUsed
-				+ ", configURL=" + configURL + ", version=" + version + ", modelLabel=" + modelLabel
+				+ ", configURL=" + getConfigURL() + ", version=" + version + ", modelLabel=" + modelLabel
 				+ ", presentInVersion=" + Arrays.toString(presentInVersion) + ", defaultFor="
 				+ Arrays.toString(defaultFor) + ", enabled=" + enabled + "]";
 	}

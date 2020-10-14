@@ -28,7 +28,6 @@ import edu.jhuapl.saavtk.model.Graticule;
 import edu.jhuapl.saavtk.model.Model;
 import edu.jhuapl.saavtk.model.ModelManager;
 import edu.jhuapl.saavtk.model.ModelNames;
-import edu.jhuapl.saavtk.model.PolyhedralModel;
 import edu.jhuapl.saavtk.model.ShapeModelBody;
 import edu.jhuapl.saavtk.model.ShapeModelType;
 import edu.jhuapl.saavtk.pick.PickManager;
@@ -101,10 +100,10 @@ public abstract class AbstractBodyView extends View implements PropertyChangeLis
 	 * reduce memory and startup time. Therefore, this function should be called
 	 * prior to first time the View is shown in order to cause it
      */
-    public AbstractBodyView(StatusBar statusBar, SmallBodyViewConfig smallBodyConfig)
+    public AbstractBodyView(StatusBar statusBar, SmallBodyViewConfig smallBodyConfig, boolean publicOnly)
     {
         super(statusBar, smallBodyConfig);
-		this.configInfo = new BasicConfigInfo(smallBodyConfig);
+		this.configInfo = new BasicConfigInfo(smallBodyConfig, publicOnly);
 		uniqueName = configInfo.getUniqueName();
 		shapeModelName = configInfo.getShapeModelName();
         this.stateManager = TrackedMetadataManager.of("View " + getUniqueName());
@@ -343,27 +342,27 @@ public abstract class AbstractBodyView extends View implements PropertyChangeLis
     	if (e.getPropertyName().equals(Properties.MODEL_CHANGED))
         {
 			renderer.notifySceneChange();
-            renderer.getRenderWindowPanel().resetCameraClippingRange();
-			if (smallBodyCBP == null)
-                return;
-
-            PolyhedralModel sbModel=(PolyhedralModel)getModelManager().getModel(ModelNames.SMALL_BODY);
-            if (sbModel.isColoringDataAvailable() && sbModel.getColoringIndex()>=0)
-            {
-				smallBodyCBP.setColorMapAttr(sbModel.getColormap().getColorMapAttr());
-				smallBodyCBP.setNumberOfLabels(sbModel.getColormap().getNumberOfLabels());
-
-                int index = sbModel.getColoringIndex();
-                String title = sbModel.getColoringName(index).trim();
-                String units = sbModel.getColoringUnits(index).trim();
-				if (units.isEmpty() == false)
-                    title += " (" + units + ")";
-				smallBodyCBP.setTitle(title);
-
-				renderer.addVtkPropProvider(smallBodyCBP);
-                }
-            else
-				renderer.delVtkPropProvider(smallBodyCBP);
+//            renderer.getRenderWindowPanel().resetCameraClippingRange();
+//			if (smallBodyCBP == null)
+//                return;
+//
+//            PolyhedralModel sbModel=(PolyhedralModel)getModelManager().getModel(ModelNames.SMALL_BODY);
+//            if (sbModel.isColoringDataAvailable() && sbModel.getColoringIndex()>=0)
+//            {
+//				smallBodyCBP.setColorMapAttr(sbModel.getColormap().getColorMapAttr());
+//				smallBodyCBP.setNumberOfLabels(sbModel.getColormap().getNumberOfLabels());
+//
+//                int index = sbModel.getColoringIndex();
+//                String title = sbModel.getColoringName(index).trim();
+//                String units = sbModel.getColoringUnits(index).trim();
+//				if (units.isEmpty() == false)
+//                    title += " (" + units + ")";
+//				smallBodyCBP.setTitle(title);
+//
+//				renderer.addVtkPropProvider(smallBodyCBP);
+//                }
+//            else
+//				renderer.delVtkPropProvider(smallBodyCBP);
         }
         else
         {
