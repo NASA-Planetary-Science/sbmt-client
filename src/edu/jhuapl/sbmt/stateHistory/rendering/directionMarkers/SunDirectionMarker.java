@@ -1,5 +1,7 @@
 package edu.jhuapl.sbmt.stateHistory.rendering.directionMarkers;
 
+import java.awt.Color;
+
 import vtk.vtkActor;
 import vtk.vtkTransform;
 
@@ -21,8 +23,9 @@ public class SunDirectionMarker extends BaseDirectionMarker
 	public SunDirectionMarker(double markerRadius, double markerHeight,
 			double centerX, double centerY, double centerZ)
 	{
-		super(markerRadius, markerHeight, centerX, centerY, centerZ);
+		super(markerRadius, markerHeight, centerX, centerY, centerZ, "Sun Direction");
 		specularColorValue = 0.8;
+		markerColor = new double[] { Color.YELLOW.getRed()/255.0, Color.YELLOW.getGreen()/255.0, Color.YELLOW.getBlue()/255.0 };
 	}
 
 	/**

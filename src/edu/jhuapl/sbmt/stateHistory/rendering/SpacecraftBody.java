@@ -12,7 +12,7 @@ import edu.jhuapl.saavtk.util.PolyDataUtil;
  * @author steelrj1
  *
  */
-public class SpacecraftBody extends vtkPolyData
+public class SpacecraftBody extends vtkPolyData implements DisplayableItem
 {
 	/**
 	 * The vtkActor associated with this vtkPolyData
@@ -28,6 +28,8 @@ public class SpacecraftBody extends vtkPolyData
      * Static instance of the white color double array
      */
     private static double[] white = {1.0, 1.0, 1.0, 1.0};
+
+    private String label = "Spacecraft";
 
 
 	/**
@@ -105,6 +107,49 @@ public class SpacecraftBody extends vtkPolyData
 	public void setColor(Color color)
 	{
 		spacecraftBodyActor.GetProperty().SetDiffuseColor(new double[] {color.getRed()/255.0, color.getGreen()/255.0, color.getBlue()/255.0});
+	}
+
+	@Override
+	public boolean isVisible()
+	{
+		return spacecraftBodyActor.GetVisibility() == 1 ? true : false;
+	}
+
+	@Override
+	public void setVisible(boolean isVisible)
+	{
+		spacecraftBodyActor.SetVisibility(isVisible ? 1 : 0);
+	}
+
+	@Override
+	public String getLabel()
+	{
+		return label;
+	}
+
+	@Override
+	public void setLabel(String text)
+	{
+		this.label = text;
+	}
+
+	@Override
+	public Color getColor()
+	{
+		return new Color((float)spacecraftBodyActor.GetProperty().GetDiffuseColor()[0], (float)spacecraftBodyActor.GetProperty().GetDiffuseColor()[1], (float)spacecraftBodyActor.GetProperty().GetDiffuseColor()[2]);
+
+	}
+
+	@Override
+	public void setSize(double size)
+	{
+		this.setScale(size);
+	}
+
+	@Override
+	public double getSize()
+	{
+		return spacecraftBodyActor.GetScale()[0];
 	}
 
 }

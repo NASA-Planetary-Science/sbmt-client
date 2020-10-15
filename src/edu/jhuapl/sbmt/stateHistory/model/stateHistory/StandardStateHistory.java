@@ -250,28 +250,39 @@ public class StandardStateHistory implements StateHistory
 		this.endTime = endTime;
 	}
 
-    /**
-     *
-     */
-    public Double getTimeFraction()
-    {
-        double min = getMinTime() + trajectory.getMinDisplayFraction()*(getMaxTime() - getMinTime());
-        double max = getMaxTime() - (1-trajectory.getMaxDisplayFraction())*(getMaxTime()-getMinTime());
-        double time = getCurrentTime();
-        double result = (time - min) / (max - min);
-        return result;
-    }
-
-    /**
-     *
-     */
-    public void setTimeFraction(Double timeFraction) throws StateHistoryInvalidTimeException
-    {
-        double min = getMinTime() + trajectory.getMinDisplayFraction()*(getMaxTime() - getMinTime());
-        double max = getMaxTime() - (1-trajectory.getMaxDisplayFraction())*(getMaxTime()-getMinTime());
-        double time = min + timeFraction * (max - min);
-        setCurrentTime(time);
-    }
+//    /**
+//     *
+//     */
+//    public Double getTimeFraction()
+//    {
+//        double min = getMinTime() + trajectory.getMinDisplayFraction()*(getMaxTime() - getMinTime());
+//        double max = getMaxTime() - (1-trajectory.getMaxDisplayFraction())*(getMaxTime()-getMinTime());
+//        double time = getCurrentTime();
+//        double result = (time - min) / (max - min);
+//        return result;
+//    }
+//
+//    /**
+//     *
+//     */
+//    public void setTimeFraction(Double timeFraction) throws StateHistoryInvalidTimeException
+//    {
+//        double min = getMinTime() + trajectory.getMinDisplayFraction()*(getMaxTime() - getMinTime());
+//        double max = getMaxTime() - (1-trajectory.getMaxDisplayFraction())*(getMaxTime()-getMinTime());
+//        double time = min + timeFraction * (max - min);
+////        System.out.println("StandardStateHistory: setTimeFraction: setting time to " + time);
+//        setCurrentTime(time);
+//    }
+//
+//    public double getCurrentMinValue()
+//    {
+//    	return getMinTime() + trajectory.getMinDisplayFraction()*(getMaxTime() - getMinTime());
+//    }
+//
+//    public double getCurrentMaxValue()
+//    {
+//    	return getMaxTime() - (1-trajectory.getMaxDisplayFraction())*(getMaxTime()-getMinTime());
+//    }
 
     /**
      *

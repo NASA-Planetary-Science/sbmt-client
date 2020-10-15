@@ -20,6 +20,7 @@ import edu.jhuapl.sbmt.client.SmallBodyModel;
 import edu.jhuapl.sbmt.stateHistory.model.interfaces.StateHistory;
 import edu.jhuapl.sbmt.stateHistory.model.interfaces.StateHistoryCollectionChangedListener;
 import edu.jhuapl.sbmt.stateHistory.model.viewOptions.RendererLookDirection;
+import edu.jhuapl.sbmt.stateHistory.rendering.DisplayableItem;
 import edu.jhuapl.sbmt.stateHistory.rendering.SpacecraftBody;
 import edu.jhuapl.sbmt.stateHistory.rendering.TrajectoryActor;
 import edu.jhuapl.sbmt.stateHistory.rendering.model.StateHistoryRendererManager;
@@ -31,6 +32,8 @@ import crucible.crust.metadata.api.Metadata;
 import crucible.crust.metadata.api.MetadataManager;
 import crucible.crust.metadata.api.Version;
 import crucible.crust.metadata.impl.SettableMetadata;
+import glum.gui.panel.itemList.ItemProcessor;
+import glum.item.ItemEventListener;
 import glum.item.ItemEventType;
 
 /**
@@ -433,6 +436,56 @@ public class StateHistoryCollection extends SaavtkItemManager<StateHistory> impl
 		renderManager.setFootprintPlateColoring(coloringName);
 	}
 
+	public void setInstrumentFootprintColor(String fovName, Color color)
+	{
+		renderManager.setInstrumentFootprintColor(fovName, color);
+	}
+
+	public Color getInstrumentFootprintColor(String fovName)
+	{
+		return renderManager.getInstrumentFootprintColor(fovName);
+	}
+
+	public boolean getInstrumentFootprintVisibility(String fovName)
+	{
+		return renderManager.getInstrumentFootprintVisibility(fovName);
+	}
+
+	public void setInstrumentFootprintVisibility(String fovName, boolean isVisible)
+	{
+		renderManager.setInstrumentFootprintVisibility(fovName, isVisible);
+	}
+
+	public boolean getInstrumentFootprintBorderVisibility(String fovName)
+	{
+		return renderManager.getInstrumentFootprintBorderVisibility(fovName);
+	}
+
+	public void setInstrumentFootprintBorderVisibility(String fovName, boolean isVisible)
+	{
+		renderManager.setInstrumentFootprintBorderVisibility(fovName, isVisible);
+	}
+
+	public void setInstrumentFrustumColor(String fovName, Color color)
+	{
+		renderManager.setInstrumentFrustumColor(fovName, color);
+	}
+
+	public Color getInstrumentFrustumColor(String fovName)
+	{
+		return renderManager.getInstrumentFrustumColor(fovName);
+	}
+
+	public boolean getInstrumentFrustumVisibility(String fovName)
+	{
+		return renderManager.getInstrumentFrustumVisibility(fovName);
+	}
+
+	public void setInstrumentFrustumVisibility(String fovName, boolean isVisible)
+	{
+		renderManager.setInstrumentFrustumVisibility(fovName, isVisible);
+	}
+
 	/**
 	 * @param visible
 	 */
@@ -643,6 +696,74 @@ public class StateHistoryCollection extends SaavtkItemManager<StateHistory> impl
 	{
 		renderManager.installGroupColorProviders(aSrcGCP);
 	}
+
+	public ItemProcessor<String> getAllFOVProcessor()
+	{
+		return new ItemProcessor<String>()
+		{
+
+			@Override
+			public void addListener(ItemEventListener aListener)
+			{
+				// TODO Auto-generated method stub
+
+			}
+
+			@Override
+			public void delListener(ItemEventListener aListener)
+			{
+				// TODO Auto-generated method stub
+
+			}
+
+			@Override
+			public ImmutableList<String> getAllItems()
+			{
+				return ImmutableList.copyOf(StateHistoryCollection.this.availableFOVs);
+			}
+
+			@Override
+			public int getNumItems()
+			{
+				return StateHistoryCollection.this.availableFOVs.size();
+			}
+		};
+	}
+
+	public ItemProcessor<DisplayableItem> getDisplayItemsProcessor()
+	{
+		return new ItemProcessor<DisplayableItem>()
+		{
+
+			@Override
+			public void addListener(ItemEventListener aListener)
+			{
+				// TODO Auto-generated method stub
+
+			}
+
+			@Override
+			public void delListener(ItemEventListener aListener)
+			{
+				// TODO Auto-generated method stub
+
+			}
+
+			@Override
+			public ImmutableList<DisplayableItem> getAllItems()
+			{
+				return ImmutableList.copyOf(StateHistoryCollection.this.renderManager.getDisplayableItems());
+			}
+
+			@Override
+			public int getNumItems()
+			{
+				return StateHistoryCollection.this.renderManager.getDisplayableItems().size();
+			}
+		};
+	}
+
+
 
 	/**
 	 * Stores the model to metadata

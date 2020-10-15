@@ -13,6 +13,7 @@ import edu.jhuapl.sbmt.stateHistory.model.stateHistory.StateHistoryCollection;
 import edu.jhuapl.sbmt.stateHistory.model.viewOptions.RendererLookDirection;
 import edu.jhuapl.sbmt.stateHistory.model.viewOptions.StateHistoryViewOptionsModel;
 import edu.jhuapl.sbmt.stateHistory.ui.state.version2.viewControls.StateHistoryViewOptionsPanel;
+import edu.jhuapl.sbmt.stateHistory.ui.state.version2.viewControls.viewOptions.table.ViewOptionsTableView;
 
 import glum.item.ItemEventType;
 
@@ -135,6 +136,9 @@ public class StateHistoryViewOptionsController
 				runs.removeSelectedFov(fovCheckbox.getText());
 			}
 		});
+		ViewOptionsTableView tableView = new ViewOptionsTableView(runs);
+		tableView.setup();
+		view.setTableView(tableView);
 	}
 
 	/**

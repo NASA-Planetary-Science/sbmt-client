@@ -1,6 +1,5 @@
 package edu.jhuapl.sbmt.stateHistory.ui.state.version2.viewControls;
 
-import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
@@ -19,6 +18,7 @@ import javax.swing.JTextField;
 import javax.swing.border.TitledBorder;
 
 import edu.jhuapl.sbmt.stateHistory.model.viewOptions.RendererLookDirection;
+import edu.jhuapl.sbmt.stateHistory.ui.state.version2.viewControls.viewOptions.table.ViewOptionsTableView;
 
 public class StateHistoryViewOptionsPanel extends JPanel implements ActionListener
 {
@@ -63,6 +63,8 @@ public class StateHistoryViewOptionsPanel extends JPanel implements ActionListen
 	private JPanel fovPanelb = new JPanel();
 
 	private ItemListener checkboxItemListener;
+
+	private ViewOptionsTableView tableView = null;
 
 	public StateHistoryViewOptionsPanel()
 	{
@@ -140,31 +142,42 @@ public class StateHistoryViewOptionsPanel extends JPanel implements ActionListen
 		}
 		else
 		{
-			fovPanelb.removeAll();
-			fovCheckboxes = new JCheckBox[fovs.size()];
-			fovPanelb.setLayout(new BoxLayout(fovPanelb, BoxLayout.Y_AXIS));
-			fovPanelb.setBackground(Color.red);
-			availableFovsLabel = new JLabel("Available FOVs");
-			JPanel labelPanel = new JPanel();
-			labelPanel.setLayout(new BoxLayout(labelPanel, BoxLayout.X_AXIS));
-			labelPanel.add(availableFovsLabel);
-			labelPanel.add(Box.createHorizontalGlue());
-			fovPanelb.add(labelPanel);
-			int i=0;
-			for (String fov : fovs)
+//			fovPanelb.removeAll();
+//			fovCheckboxes = new JCheckBox[fovs.size()];
+//			fovPanelb.setLayout(new BoxLayout(fovPanelb, BoxLayout.Y_AXIS));
+//			fovPanelb.setBackground(Color.red);
+//			availableFovsLabel = new JLabel("Available FOVs");
+//			JPanel labelPanel = new JPanel();
+//			labelPanel.setLayout(new BoxLayout(labelPanel, BoxLayout.X_AXIS));
+//			labelPanel.add(availableFovsLabel);
+//			labelPanel.add(Box.createHorizontalGlue());
+//			fovPanelb.add(labelPanel);
+//			int i=0;
+//			for (String fov : fovs)
+//			{
+//				JCheckBox fovCheckBox = new JCheckBox(fov);
+//				fovCheckBox.addItemListener(checkboxItemListener);
+//				JPanel checkboxPanel = new JPanel();
+//				checkboxPanel.setLayout(new BoxLayout(checkboxPanel, BoxLayout.X_AXIS));
+//				checkboxPanel.add(fovCheckBox);
+//				checkboxPanel.add(Box.createHorizontalGlue());
+//				fovPanelb.add(checkboxPanel);
+//				fovCheckboxes[i++] = fovCheckBox;
+//			}
+//			fovPanel.add(fovPanelb);
+
+			if (tableView != null)
 			{
-				JCheckBox fovCheckBox = new JCheckBox(fov);
-				fovCheckBox.addItemListener(checkboxItemListener);
-				JPanel checkboxPanel = new JPanel();
-				checkboxPanel.setLayout(new BoxLayout(checkboxPanel, BoxLayout.X_AXIS));
-				checkboxPanel.add(fovCheckBox);
-				checkboxPanel.add(Box.createHorizontalGlue());
-				fovPanelb.add(checkboxPanel);
-				fovCheckboxes[i++] = fovCheckBox;
+				System.out.println("StateHistoryViewOptionsPanel: updateFOVsPanel: adading table");
+				fovPanel.add(tableView);
 			}
-			fovPanel.add(fovPanelb);
 		}
 		return fovPanel;
+	}
+
+	public void setTableView(ViewOptionsTableView tableView)
+	{
+		this.tableView = tableView;
 	}
 
 	public void setAvailableFOVs(Vector<String> fovs)

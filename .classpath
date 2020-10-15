@@ -21,5 +21,6 @@
 	</classpathentry>
 	<classpathentry kind="lib" path="lib/jcodec-0.2.3.jar"/>
 	<classpathentry kind="lib" path="lib/jcodec-javase-0.2.3.jar"/>
+	<classpathentry kind="lib" path="lib/lombok.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

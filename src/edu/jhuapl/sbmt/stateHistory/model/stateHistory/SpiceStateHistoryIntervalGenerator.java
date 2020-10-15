@@ -130,7 +130,7 @@ public class SpiceStateHistoryIntervalGenerator implements IStateHistoryInterval
 		double timeWindowDuration = utcTs.difference(startEpoch, endEpoch);
 
 		//add the pointing provider to the history and trajectory objects
-		trajectory.setNumPoints(1000);
+		trajectory.setNumPoints(Math.abs((int)timeWindowDuration/60));
 		trajectory.setPointingProvider(pointingProvider);
 		trajectory.setStartTime(TimeUtil.str2et(startEpoch.toString()));
 		trajectory.setStopTime(TimeUtil.str2et(endEpoch.toString()));

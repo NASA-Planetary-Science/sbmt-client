@@ -21,6 +21,7 @@ import edu.jhuapl.sbmt.stateHistory.model.planning.imagers.PlannedImageCollectio
 import edu.jhuapl.sbmt.stateHistory.model.planning.lidar.PlannedLidarTrackCollection;
 import edu.jhuapl.sbmt.stateHistory.model.planning.spectrometers.PlannedSpectrumCollection;
 import edu.jhuapl.sbmt.stateHistory.model.stateHistory.StateHistoryCollection;
+import edu.jhuapl.sbmt.stateHistory.model.time.StateHistoryTimeModel;
 import edu.jhuapl.sbmt.stateHistory.rendering.PlannedDataProperties;
 import edu.jhuapl.sbmt.stateHistory.ui.ObservationPlanningView;
 import edu.jhuapl.sbmt.stateHistory.ui.state.version2.StateHistoryIntervalPlaybackPanel;
@@ -41,6 +42,7 @@ public class ObservationPlanningController
 	PlannedImageCollection imageCollection;
 	PlannedSpectrumCollection spectrumCollection;
 	PlannedLidarTrackCollection lidarTrackCollection;
+	StateHistoryTimeModel timeModel;
 
     /**
      * Controller for the interval playback panel
@@ -49,9 +51,12 @@ public class ObservationPlanningController
 
 	public ObservationPlanningController(final ModelManager modelManager, SmallBodyModel smallBodyModel, Renderer renderer, SmallBodyViewConfig config, ColoringDataManager coloringDataManager)
 	{
-		stateHistoryController = new StateHistoryController(modelManager, renderer);
+		timeModel = new StateHistoryTimeModel();
+		stateHistoryController = new StateHistoryController(modelManager, renderer, timeModel);
 		viewControlsController = new ObservationPlanningViewControlsController(stateHistoryController.getHistoryModel(), modelManager, renderer, coloringDataManager);
-		this.intervalPlaybackController = new StateHistoryIntervalPlaybackController(stateHistoryController.getHistoryModel(), renderer);
+		this.intervalPlaybackController = new StateHistoryIntervalPlaybackController(stateHistoryController.getHistoryModel(), renderer, timeModel);
+
+
 		view.addTab("S/C Trajectory", stateHistoryController.getView());
 		intervalPlaybackController.getView().setEnabled(false);
 		registrar = new PlannedDataActorRegister();

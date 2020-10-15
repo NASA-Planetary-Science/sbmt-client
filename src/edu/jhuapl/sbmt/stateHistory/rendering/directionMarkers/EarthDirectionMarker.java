@@ -1,5 +1,7 @@
 package edu.jhuapl.sbmt.stateHistory.rendering.directionMarkers;
 
+import java.awt.Color;
+
 import vtk.vtkTransform;
 
 import edu.jhuapl.saavtk.util.MathUtil;
@@ -20,8 +22,9 @@ public class EarthDirectionMarker extends BaseDirectionMarker
 	public EarthDirectionMarker(double markerRadius, double markerHeight,
 			double centerX, double centerY, double centerZ)
 	{
-		super(markerRadius, markerHeight, centerX, centerY, centerZ);
+		super(markerRadius, markerHeight, centerX, centerY, centerZ, "Earth Direction");
 		specularColorValue = 0.8;
+		markerColor = new double[] { Color.BLUE.getRed()/255.0, Color.BLUE.getGreen()/255.0, Color.BLUE.getBlue()/255.0 };
 	}
 
 	/**
@@ -51,6 +54,7 @@ public class EarthDirectionMarker extends BaseDirectionMarker
         earthMarkerTransform.Translate(earthMarkerPosition);
         earthMarkerTransform.RotateWXYZ(-rotationAngleEarth, rotationAxisEarth[0], rotationAxisEarth[1], rotationAxisEarth[2]);
         markerHeadActor.SetUserTransform(earthMarkerTransform);
+
 	}
 
 }

@@ -61,7 +61,7 @@ public class StateHistoryViewControlsController
 			// mode we're in
         	RendererLookDirection selectedView = (RendererLookDirection) viewControls.getView().getViewOptions().getSelectedItem();
 			boolean scSelected = (selectedView == RendererLookDirection.SPACECRAFT);
-			displayItemsControls.getView().getShowSpacecraftPanel().getShowSpacecraft().setEnabled(!scSelected);
+//			displayItemsControls.getView().getShowSpacecraftPanel().getShowSpacecraft().setEnabled(!scSelected);
         });
 	}
 

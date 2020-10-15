@@ -32,18 +32,18 @@ public interface StateHistory
      */
     public Double getTimeWindow();
 
-    /**
-     * Returns the current time fraction
-     * @return
-     */
-    public Double getTimeFraction();
-
-    /**
-     * Sets the current time fraction
-     * @param state
-     * @param timeFraction
-     */
-    public void setTimeFraction(Double timeFraction) throws StateHistoryInvalidTimeException;
+//    /**
+//     * Returns the current time fraction
+//     * @return
+//     */
+//    public Double getTimeFraction();
+//
+//    /**
+//     * Sets the current time fraction
+//     * @param state
+//     * @param timeFraction
+//     */
+//    public void setTimeFraction(Double timeFraction) throws StateHistoryInvalidTimeException;
 
     /**
      * Returns the current time in the time window for this state history
@@ -68,6 +68,10 @@ public interface StateHistory
      * @return
      */
     public Double getMaxTime();
+
+//    public double getCurrentMinValue();
+//
+//    public double getCurrentMaxValue();
 
     /**
 	 * @param startTime the startTime to set

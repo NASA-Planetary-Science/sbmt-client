@@ -31,6 +31,8 @@ import edu.jhuapl.sbmt.stateHistory.model.io.StateHistoryInvalidTimeException;
 import edu.jhuapl.sbmt.stateHistory.model.stateHistory.PregenStateHistoryIntervalGenerator;
 import edu.jhuapl.sbmt.stateHistory.model.stateHistory.SpiceStateHistoryIntervalGenerator;
 import edu.jhuapl.sbmt.stateHistory.model.stateHistory.StateHistoryCollection;
+import edu.jhuapl.sbmt.stateHistory.model.time.StateHistoryTimeModel;
+import edu.jhuapl.sbmt.stateHistory.model.time.TimeWindow;
 import edu.jhuapl.sbmt.stateHistory.ui.state.version2.StateHistoryDisplayedIntervalPanel;
 import edu.jhuapl.sbmt.stateHistory.ui.state.version2.StateHistoryIntervalGenerationPanel;
 import edu.jhuapl.sbmt.stateHistory.ui.state.version2.table.StateHistoryTableView;
@@ -76,6 +78,8 @@ public class StateHistoryController
      */
     private StateHistoryModel historyModel = null;
 
+    private StateHistoryTimeModel timeModel = null;
+
 //    private IPositionOrientation positionOrientation = null;
 
     /**
@@ -83,11 +87,12 @@ public class StateHistoryController
      * @param modelManager
      * @param renderer
      */
-    public StateHistoryController(final ModelManager modelManager, Renderer renderer)
+    public StateHistoryController(final ModelManager modelManager, Renderer renderer, StateHistoryTimeModel timeModel)
     {
     	File path = null;
     	int lineLength = 121;
     	this.renderer = renderer;
+    	this.timeModel = timeModel;
     	vtkJoglPanelComponent renWin = renderer.getRenderWindowPanel();
         SmallBodyModel bodyModel = (SmallBodyModel) modelManager.getPolyhedralModel();
         SmallBodyViewConfig config = (SmallBodyViewConfig) bodyModel.getConfig();
@@ -102,6 +107,7 @@ public class StateHistoryController
         //grab the min max times from the input
         DateTime start = ISODateTimeFormat.dateTimeParser().parseDateTime(StateHistoryUtil.readString(lineLength, path));
         DateTime end = ISODateTimeFormat.dateTimeParser().parseDateTime(StateHistoryUtil.readString((int)StateHistoryUtil.getBinaryFileLength(path, lineLength)*lineLength-lineLength, path));
+    	this.timeModel.setTimeWindow(new TimeWindow(start, end));
 
 
 		try
@@ -131,7 +137,7 @@ public class StateHistoryController
         this.intervalGenerationController = new StateHistoryIntervalGenerationController(historyModel, start, end);
         this.intervalSelectionController = new StateHistoryIntervalSelectionController(historyModel, bodyModel, renderer);
 
-        this.intervalDisplayedController = new StateHistoryDisplayedIntervalController(historyModel.getRuns());
+        this.intervalDisplayedController = new StateHistoryDisplayedIntervalController(historyModel.getRuns(), timeModel);
 //        this.viewControlsController = new StateHistoryViewControlsController(historyModel, renderer);
 
         intervalDisplayedController.getView().setEnabled(false);
@@ -153,6 +159,7 @@ public class StateHistoryController
         runs.addListener((aSource, aEventType) -> {
 			if (aEventType != ItemEventType.ItemsSelected) return;
 			intervalDisplayedController.getView().setEnabled(runs.getSelectedItems().size() > 0);
+
 //			intervalPlaybackController.getView().setEnabled(runs.getSelectedItems().size() > 0);
 //			viewControlsController.setEnabled(runs.getSelectedItems().size() > 0);
 		});

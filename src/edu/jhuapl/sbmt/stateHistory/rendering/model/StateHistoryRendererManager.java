@@ -8,6 +8,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Vector;
+import java.util.stream.Collectors;
 
 import vtk.vtkProp;
 import vtk.vtkScalarBarActor;
@@ -24,6 +25,7 @@ import edu.jhuapl.sbmt.model.image.perspectiveImage.PerspectiveImageFrustum;
 import edu.jhuapl.sbmt.stateHistory.model.StateHistoryColoringFunctions;
 import edu.jhuapl.sbmt.stateHistory.model.interfaces.StateHistory;
 import edu.jhuapl.sbmt.stateHistory.model.viewOptions.RendererLookDirection;
+import edu.jhuapl.sbmt.stateHistory.rendering.DisplayableItem;
 import edu.jhuapl.sbmt.stateHistory.rendering.SpacecraftBody;
 import edu.jhuapl.sbmt.stateHistory.rendering.TrajectoryActor;
 import edu.jhuapl.sbmt.stateHistory.rendering.directionMarkers.EarthDirectionMarker;
@@ -109,7 +111,7 @@ public class StateHistoryRendererManager
 	private HashMap<String, PerspectiveImageFootprint> instrumentNameToFootprintMap = new HashMap<String, PerspectiveImageFootprint>();
 	private HashMap<String, PerspectiveImageFrustum> instrumentNameToFovMap = new HashMap<String, PerspectiveImageFrustum>();
 
-	private boolean displayFootprints, displayBoundaries, displayFrusta;
+	private boolean displayFootprints = true, displayBoundaries = true, displayFrusta = true;
 	private Vector<String> selectedFOVs = new Vector<String>();
 
 	private List<vtkProp> plannedScienceActors = new ArrayList<vtkProp>();
@@ -177,6 +179,17 @@ public class StateHistoryRendererManager
 	public void clearPlannedScience()
 	{
 		plannedScienceActors.clear();
+	}
+
+	public Vector<DisplayableItem> getDisplayableItems()
+	{
+		Vector<DisplayableItem> items = new Vector<DisplayableItem>();
+		items.add(earthDirectionMarker);
+		items.add(sunDirectionMarker);
+		items.add(scDirectionMarker);
+		items.add(spacecraft);
+
+		return items;
 	}
 
 	/**
@@ -553,6 +566,23 @@ public class StateHistoryRendererManager
 		this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, spacecraft);
 	}
 
+	public void setInstrumentFootprintColor(String name, Color color)
+	{
+
+		Arrays.stream(footprint).filter(fprint -> fprint.getInstrumentName().equals(name)).forEach(item -> {
+			item.setBoundaryColor(color);
+			item.setColor(color);
+			this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, item);
+		});
+	}
+
+	public Color getInstrumentFootprintColor(String name)
+	{
+		List<PerspectiveImageFootprint> fp = Arrays.stream(footprint).filter(fprint -> fprint.getInstrumentName().equals(name)).collect(Collectors.toList());
+		return fp.get(0).getColor();
+	}
+
+
 	/**
 	 * @param visible
 	 */
@@ -563,6 +593,52 @@ public class StateHistoryRendererManager
 		this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, spacecraft);
 	}
 
+	public boolean getInstrumentFootprintVisibility(String name)
+	{
+		List<PerspectiveImageFootprint> fp = Arrays.stream(footprint).filter(fprint -> fprint.getInstrumentName().equals(name)).collect(Collectors.toList());
+		return fp.get(0).isVisible();
+	}
+
+	public void setInstrumentFootprintVisibility(String name, boolean isVisible)
+	{
+		List<PerspectiveImageFootprint> fp = Arrays.stream(footprint).filter(fprint -> fprint.getInstrumentName().equals(name)).collect(Collectors.toList());
+		fp.get(0).setVisible(isVisible);
+		this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, fp.get(0));
+	}
+
+	public boolean getInstrumentFootprintBorderVisibility(String name)
+	{
+		List<PerspectiveImageFootprint> fp = Arrays.stream(footprint).filter(fprint -> fprint.getInstrumentName().equals(name)).collect(Collectors.toList());
+		return fp.get(0).getFootprintBoundaryActor().GetVisibility() == 1 ? true : false;
+	}
+
+	public void setInstrumentFootprintBorderVisibility(String name, boolean isVisible)
+	{
+		List<PerspectiveImageFootprint> fp = Arrays.stream(footprint).filter(fprint -> fprint.getInstrumentName().equals(name)).collect(Collectors.toList());
+		fp.get(0).setBoundaryVisible(isVisible);
+		this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, fp.get(0));
+	}
+
+	public boolean getInstrumentFrustumVisibility(String name)
+	{
+		List<PerspectiveImageFrustum> fovs = Arrays.stream(spacecraftFov).filter(item -> item.getInstrumentName().equals(name)).collect(Collectors.toList());
+		return fovs.get(0).getFrustumActor().GetVisibility() == 1 ? true : false;
+	}
+
+	public void setInstrumentFrustumVisibility(String name, boolean isVisible)
+	{
+//		Arrays.stream(this.spacecraftFov).filter(fov -> fov.getFrustumActor() != null).forEach(fov -> {
+//			fov.getFrustumActor().SetVisibility(visible == true ? 1 : 0);
+//			setSpacecraftFOVFootprintVisibility(visible);
+//		});
+//		this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, spacecraftFov);
+
+		List<PerspectiveImageFrustum> fovs = Arrays.stream(spacecraftFov).filter(item -> item.getInstrumentName().equals(name)).collect(Collectors.toList());
+		System.out.println("StateHistoryRendererManager: setInstrumentFrustumVisibility: got a frustum for " + name);
+		fovs.get(0).getFrustumActor().SetVisibility(isVisible? 1: 0);
+		this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, spacecraftFov);
+	}
+
 	/**
 	 * @param visible
 	 */
@@ -571,6 +647,20 @@ public class StateHistoryRendererManager
 		displayFrusta = visible;
 		updateVisibilities();
 		this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
+	}
+
+	public Color getInstrumentFrustumColor(String name)
+	{
+		List<PerspectiveImageFrustum> fovs = Arrays.stream(spacecraftFov).filter(item -> item.getInstrumentName().equals(name)).collect(Collectors.toList());
+		return fovs.get(0).getColor();
+	}
+
+	public void setInstrumentFrustumColor(String name, Color color)
+	{
+		Arrays.stream(spacecraftFov).filter(item -> item.getInstrumentName().equals(name)).forEach(item -> {
+			item.setColor(color);
+			this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, item);
+		});
 	}
 
 	/**

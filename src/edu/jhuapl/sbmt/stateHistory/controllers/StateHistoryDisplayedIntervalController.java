@@ -1,9 +1,9 @@
 package edu.jhuapl.sbmt.stateHistory.controllers;
 
-import javax.swing.JOptionPane;
-
-import edu.jhuapl.sbmt.stateHistory.model.io.StateHistoryInvalidTimeException;
 import edu.jhuapl.sbmt.stateHistory.model.stateHistory.StateHistoryCollection;
+import edu.jhuapl.sbmt.stateHistory.model.time.BaseStateHistoryTimeModelChangedListener;
+import edu.jhuapl.sbmt.stateHistory.model.time.StateHistoryTimeModel;
+import edu.jhuapl.sbmt.stateHistory.model.time.TimeWindow;
 import edu.jhuapl.sbmt.stateHistory.ui.state.StateHistoryPercentIntervalChanger;
 import edu.jhuapl.sbmt.stateHistory.ui.state.version2.StateHistoryDisplayedIntervalPanel;
 import edu.jhuapl.sbmt.util.TimeUtil;
@@ -27,6 +27,8 @@ public class StateHistoryDisplayedIntervalController
 	 */
 	private StateHistoryCollection intervalSet;
 
+	private StateHistoryTimeModel timeModel;
+
 	/**
 	 * Constructor.
 	 *
@@ -35,9 +37,10 @@ public class StateHistoryDisplayedIntervalController
 	 *
 	 * @param interval			The current set of StateHistory intervals
 	 */
-	public StateHistoryDisplayedIntervalController(StateHistoryCollection intervalSet)
+	public StateHistoryDisplayedIntervalController(StateHistoryCollection intervalSet, StateHistoryTimeModel timeModel)
 	{
 		this.intervalSet = intervalSet;
+		this.timeModel = timeModel;
 		view = new StateHistoryDisplayedIntervalPanel();
 
 		//If the selected item is changed, update the current run, reset the time range, and the time interval label
@@ -47,9 +50,13 @@ public class StateHistoryDisplayedIntervalController
 			if (intervalSet.getSelectedItems().size() > 0)
 			{
 				intervalSet.setCurrentRun(intervalSet.getSelectedItems().asList().get(0));
+				System.out
+				.println("StateHistoryDisplayedIntervalController: StateHistoryDisplayedIntervalController: updating dispalyed window");
+				timeModel.setTimeWindow(new TimeWindow(intervalSet.getCurrentRun().getMinTime(), intervalSet.getCurrentRun().getMaxTime()));
 				updateDisplayedTimeRange(0.0, 1.0);
 			}
 			view.getTimeIntervalChanger().setEnabled(intervalSet.getSelectedItems().size() > 0);
+
 		});
 
 		//The action listener for the time interval changer; takes values from the changer
@@ -58,22 +65,42 @@ public class StateHistoryDisplayedIntervalController
 			StateHistoryPercentIntervalChanger changer = view.getTimeIntervalChanger();
 			double minValue = changer.getLowValue();
 			double maxValue = changer.getHighValue();
-			double timeFraction = intervalSet.getCurrentRun().getTimeFraction();
+			timeModel.setFractionDisplayed(minValue, maxValue);
+//			System.out.println(
+//					"StateHistoryDisplayedIntervalController: StateHistoryDisplayedIntervalController: displayed time window " + timeModel.getDisplayedTimeWindow() + " time " + TimeUtil.et2str(timeModel.getEt()));
+
+			//TODO FIX ME
+//			double timeFraction = intervalSet.getCurrentRun().getTimeFraction();
 			intervalSet.setTrajectoryMinMax(intervalSet.getCurrentRun(), minValue, maxValue);
 			intervalSet.getCurrentRun().getTrajectory().setMinDisplayFraction(minValue);
 			intervalSet.getCurrentRun().getTrajectory().setMaxDisplayFraction(maxValue);
-			try
-			{
-				intervalSet.getCurrentRun().setTimeFraction(timeFraction);
-			}
-			catch (StateHistoryInvalidTimeException e1)
-			{
-				JOptionPane.showMessageDialog(null, e1.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
-				// TODO Auto-generated catch block
-//				e1.printStackTrace();
-			}
 
-			updateDisplayedTimeRange(minValue, maxValue);
+			//TODO FIX ME
+//			try
+//			{
+//				System.out.println(
+//						"StateHistoryDisplayedIntervalController: StateHistoryDisplayedIntervalController: time fraction " + timeFraction);
+//				intervalSet.getCurrentRun().setTimeFraction(timeFraction);
+//			}
+//			catch (StateHistoryInvalidTimeException e1)
+//			{
+//				JOptionPane.showMessageDialog(null, e1.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+//				// TODO Auto-generated catch block
+////				e1.printStackTrace();
+//			}
+//			System.out
+//					.println("StateHistoryDisplayedIntervalController: StateHistoryDisplayedIntervalController: min value " + minValue);
+//			updateDisplayedTimeRange(minValue, maxValue);
+		});
+
+		timeModel.addTimeModelChangeListener(new BaseStateHistoryTimeModelChangedListener() {
+			@Override
+			public void fractionDisplayedChanged(double minFractionDisplayed, double maxFractionDisplayed)
+			{
+				// TODO Auto-generated method stub
+				super.fractionDisplayedChanged(minFractionDisplayed, maxFractionDisplayed);
+				updateDisplayedTimeRange(minFractionDisplayed, minFractionDisplayed);
+			}
 		});
 	}
 
@@ -93,9 +120,11 @@ public class StateHistoryDisplayedIntervalController
 	 */
 	private void updateDisplayedTimeRange(double minValue, double maxValue)
 	{
-		String minTime = TimeUtil.et2str(intervalSet.getCurrentRun().getMinTime());
-		String maxTime = TimeUtil.et2str(intervalSet.getCurrentRun().getMaxTime());
+		TimeWindow window = timeModel.getDisplayedTimeWindow();
+		String minTime = TimeUtil.et2str(window.getStartTime());
+		String maxTime = TimeUtil.et2str(window.getStopTime());
 
+//		System.out.println("StateHistoryDisplayedIntervalController: updateDisplayedTimeRange: updating label " + minTime.substring(0, minTime.length()-3));
 		view.getDisplayedStartTimeLabel().setText(minTime.substring(0, minTime.length()-3));
 		view.getDisplayedStopTimeLabel().setText(maxTime.substring(0, maxTime.length()-3));
 	}

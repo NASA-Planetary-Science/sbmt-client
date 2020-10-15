@@ -280,6 +280,7 @@ public class StateHistoryModel
 			activeIntervalGenerator.setSourceFile(history.getSourceFile(), spice);
 			activeIntervalGenerator.createNewTimeInterval(history, null);
 			if (runs.getCurrentRun() == null) runs.setCurrentRun(history);
+			//TODO needs fixing?
 			runs.setTimeFraction(0.0);
 		}
 

@@ -184,28 +184,30 @@ public class SpiceStateHistory implements StateHistory
 		return getMaxTime() - getMinTime();
 	}
 
-	@Override
-	public Double getTimeFraction()
-	{
-		double min = getMinTime() + trajectory.getMinDisplayFraction()*(getMaxTime() - getMinTime());
-        double max = getMaxTime() - (1-trajectory.getMaxDisplayFraction())*(getMaxTime()-getMinTime());
-        double time = getCurrentTime();
-        double result = (time - min) / (max - min);
-        return result;
-	}
-
-	@Override
-	public void setTimeFraction(Double timeFraction) throws StateHistoryInvalidTimeException
-	{
-		double min = getMinTime() + trajectory.getMinDisplayFraction()*(getMaxTime() - getMinTime());
-        double max = getMaxTime() - (1-trajectory.getMaxDisplayFraction())*(getMaxTime()-getMinTime());
-        double time = min + timeFraction * (max - min);
-        setCurrentTime(time);
-	}
+//	@Override
+//	public Double getTimeFraction()
+//	{
+//		double min = getMinTime() + trajectory.getMinDisplayFraction()*(getMaxTime() - getMinTime());
+//        double max = getMaxTime() - (1-trajectory.getMaxDisplayFraction())*(getMaxTime()-getMinTime());
+//        double time = getCurrentTime();
+//        double result = (time - min) / (max - min);
+//        return result;
+//	}
+//
+//	@Override
+//	public void setTimeFraction(Double timeFraction) throws StateHistoryInvalidTimeException
+//	{
+//		double min = getMinTime() + trajectory.getMinDisplayFraction()*(getMaxTime() - getMinTime());
+//        double max = getMaxTime() - (1-trajectory.getMaxDisplayFraction())*(getMaxTime()-getMinTime());
+//        double time = min + timeFraction * (max - min);
+////        System.out.println("SpiceStateHistory: setTimeFraction: srtting time " + time);
+//        setCurrentTime(time);
+//	}
 
 	@Override
 	public Double getCurrentTime()
 	{
+//		System.out.println("SpiceStateHistory: getCurrentTime: returning " + currentTime);
 		return currentTime;
 	}
 
@@ -438,5 +440,17 @@ public class SpiceStateHistory implements StateHistory
 	{
 		this.spiceInfo = spiceInfo;
 	}
+
+//	@Override
+//	public double getCurrentMinValue()
+//    {
+//    	return getMinTime() + trajectory.getMinDisplayFraction()*(getMaxTime() - getMinTime());
+//    }
+//
+//	@Override
+//    public double getCurrentMaxValue()
+//    {
+//    	return getMaxTime() - (1-trajectory.getMaxDisplayFraction())*(getMaxTime()-getMinTime());
+//    }
 
 }
