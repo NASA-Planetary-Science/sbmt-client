@@ -10,10 +10,10 @@ import java.util.List;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
 
-import edu.jhuapl.saavtk.model.BasicColoringDataManager;
-import edu.jhuapl.saavtk.model.FileBasedColoringData;
-import edu.jhuapl.saavtk.model.ColoringDataManager;
 import edu.jhuapl.saavtk.model.GenericPolyhedralModel;
+import edu.jhuapl.saavtk.model.plateColoring.BasicColoringDataManager;
+import edu.jhuapl.saavtk.model.plateColoring.ColoringDataManager;
+import edu.jhuapl.saavtk.model.plateColoring.FileBasedColoringData;
 import edu.jhuapl.saavtk.util.SafeURLPaths;
 import edu.jhuapl.saavtk.util.file.DataFileInfo;
 import edu.jhuapl.saavtk.util.file.DataFileReader;
