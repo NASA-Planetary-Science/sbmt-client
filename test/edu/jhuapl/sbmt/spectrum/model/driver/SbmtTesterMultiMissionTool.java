@@ -111,7 +111,7 @@ public class SbmtTesterMultiMissionTool
 			ImageIcon erosIcon = new ImageIcon(SbmtTesterMultiMissionTool.class.getResource("/edu/jhuapl/sbmt/data/erosMacDock.png"));
 			if (!Configuration.isHeadless())
 			{
-			    OSXAdapter.setDockIconImage(erosIcon.getImage());
+			    java.awt.Taskbar.getTaskbar().setIconImage(erosIcon.getImage());
 			}
 		}
 

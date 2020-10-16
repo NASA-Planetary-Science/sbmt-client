@@ -27,7 +27,6 @@ import com.jgoodies.looks.LookUtils;
 
 import edu.jhuapl.saavtk.colormap.Colormaps;
 import edu.jhuapl.saavtk.gui.Console;
-import edu.jhuapl.saavtk.gui.OSXAdapter;
 import edu.jhuapl.saavtk.model.structure.EllipsePolygon;
 import edu.jhuapl.saavtk.model.structure.Line;
 import edu.jhuapl.saavtk.model.structure.Polygon;
@@ -140,7 +139,7 @@ public class SbmtMultiMissionTool
 			ImageIcon erosIcon = new ImageIcon(SbmtMultiMissionTool.class.getResource("/edu/jhuapl/sbmt/data/erosMacDock.png"));
 			if (!Configuration.isHeadless())
 			{
-			    OSXAdapter.setDockIconImage(erosIcon.getImage());
+			    java.awt.Taskbar.getTaskbar().setIconImage(erosIcon.getImage());
 			}
 		}
 
