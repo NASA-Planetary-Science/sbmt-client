@@ -12,7 +12,6 @@ import com.google.common.collect.ImmutableList;
 
 import edu.jhuapl.saavtk.model.GenericPolyhedralModel;
 import edu.jhuapl.saavtk.model.plateColoring.BasicColoringDataManager;
-import edu.jhuapl.saavtk.model.plateColoring.ColoringDataManager;
 import edu.jhuapl.saavtk.model.plateColoring.FileBasedColoringData;
 import edu.jhuapl.saavtk.util.SafeURLPaths;
 import edu.jhuapl.saavtk.util.file.DataFileInfo;
@@ -92,11 +91,6 @@ public class DiscoverPlateColorings
 			Serializers.serialize("Coloring Metadata", coloringDataManager.getMetadataManager(), metadataFile);
 			System.out.println("Wrote metadata for " + numberColoringFiles + " file(s) to the coloring metadata file " + metadataFile);
 		}
-	}
-
-	public ColoringDataManager getColoringDataManager()
-	{
-		return coloringDataManager.copy();
 	}
 
 	protected void extractColorings(DataFileInfo fileInfo)
