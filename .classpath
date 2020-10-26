@@ -22,9 +22,9 @@
 			<attribute name="module" value="true"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry kind="lib" path="lib/jide-oss-java11.jar"/>
 	<classpathentry kind="lib" path="/saavtk/lib/jgoodies-looks-2.4.0.jar"/>
-	<classpathentry kind="lib" path="lib/ui.jar"/>
 	<classpathentry kind="lib" path="/saavtk/lib/commons-io-2.8.0.jar"/>
+	<classpathentry kind="lib" path="/saavtk/lib/jogl/jogl-all.jar"/>
+	<classpathentry kind="lib" path="lib/jide-oss-java11.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
