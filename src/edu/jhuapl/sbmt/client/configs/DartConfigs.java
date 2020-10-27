@@ -79,6 +79,24 @@ public class DartConfigs
 
         c = createSingleResolutionConfig(ShapeModelBody.DIDYMOS, "ideal-impact1-20200629-v01", 1996);
         configList.add(c);
+        c = createSingleResolutionConfig(ShapeModelBody.DIDYMOS, "ideal-impact2-20200629-v01", 1996);
+        configList.add(c);
+        c = createSingleResolutionConfig(ShapeModelBody.DIDYMOS, "ideal-impact3-20200629-v01", 1996);
+        configList.add(c);
+        c = createSingleResolutionConfig(ShapeModelBody.DIDYMOS, "ideal-impact4-20200629-v01", 3145728);
+        configList.add(c);
+        c = createSingleResolutionConfig(ShapeModelBody.DIDYMOS, "ideal-impact5-20200629-v01", 3145728);
+        configList.add(c);
+        c = createSingleResolutionConfig(ShapeModelBody.DIMORPHOS, "ideal-impact1-20200629-v01", 3072);
+        configList.add(c);
+        c = createSingleResolutionConfig(ShapeModelBody.DIMORPHOS, "ideal-impact2-20200629-v01", 3145728);
+        configList.add(c);
+        c = createSingleResolutionConfig(ShapeModelBody.DIMORPHOS, "ideal-impact3-20200629-v01", 3366134);
+        configList.add(c);
+        c = createSingleResolutionConfig(ShapeModelBody.DIMORPHOS, "ideal-impact4-20200629-v01", 3145728);
+        configList.add(c);
+        c = createSingleResolutionConfig(ShapeModelBody.DIMORPHOS, "ideal-impact5-20200629-v01", 3366134);
+        configList.add(c);
 
         // Move this line around as needed to select the current default model.
         final SmallBodyViewConfig defaultConfig = c;
