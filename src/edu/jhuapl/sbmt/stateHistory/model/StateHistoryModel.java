@@ -33,6 +33,8 @@ import edu.jhuapl.sbmt.stateHistory.model.stateHistory.StateHistoryKey;
 
 import crucible.crust.metadata.impl.FixedMetadata;
 import crucible.crust.metadata.impl.gson.Serializers;
+import lombok.Getter;
+import lombok.Setter;
 
 /**
  * @author steelrj1
@@ -40,6 +42,9 @@ import crucible.crust.metadata.impl.gson.Serializers;
  */
 public class StateHistoryModel
 {
+	/**
+	 *
+	 */
 	Map<StateHistorySourceType, IStateHistoryIntervalGenerator> intervalGenerators = new HashMap<StateHistorySourceType, IStateHistoryIntervalGenerator>();
 
 	/**
@@ -55,31 +60,37 @@ public class StateHistoryModel
 	/**
 	 * Start time of the available state history
 	 */
+	@Getter
 	private DateTime startTime;
 
 	/**
 	 * End time of the available state history
 	 */
+	@Getter
 	private DateTime endTime;
 
 	/**
 	 *
 	 */
+	@Getter
 	private StateHistoryCollection runs;
 
 	/**
 	 *
 	 */
+	@Getter
 	private int defaultSliderValue = 0;
 
 	/**
 	 *
 	 */
+	@Getter
 	private int sliderFinalValue = 900;
 
 	/**
 	 *
 	 */
+	@Getter
 	private String statusBarString;
 
 	/**
@@ -90,6 +101,7 @@ public class StateHistoryModel
 	/**
 	 *
 	 */
+	@Getter @Setter
 	private IStateHistoryIntervalGenerator activeIntervalGenerator;
 
 	private boolean initialized;
@@ -132,9 +144,6 @@ public class StateHistoryModel
 				}
 			}
 		});
-//		registerIntervalGenerator(StateHistorySourceType.PREGEN, new PregenStateHistoryIntervalGenerator((SmallBodyViewConfig) viewConfig));
-//		this.activeIntervalGenerator = intervalGenerators.get(StateHistorySourceType.PREGEN);
-//		initializeRunList();
 	}
 
 	/**
@@ -177,22 +186,6 @@ public class StateHistoryModel
 		updateConfigFile();
 	}
 
-	/**
-	 * @return
-	 */
-	public DateTime getStartTime()
-	{
-		return startTime;
-	}
-
-	/**
-	 * @return
-	 */
-	public DateTime getEndTime()
-	{
-		return endTime;
-	}
-
 	/***
 	 * Interval Creation
 	 ***/
@@ -227,14 +220,6 @@ public class StateHistoryModel
 			}
 		});
 		updateConfigFile();
-	}
-
-	/**
-	 * @return
-	 */
-	public StateHistoryCollection getRuns()
-	{
-		return runs;
 	}
 
 	/**
@@ -297,37 +282,12 @@ public class StateHistoryModel
 		return stateHistoryConfigFile.getAbsolutePath();
 	}
 
-
 	/**
 	*
 	*/
 	private void updateConfigFile() throws IOException
 	{
 		Serializers.serialize("StateHistory", runs, new File(getConfigFilename()));
-	}
-
-	/**
-	 * @return
-	 */
-	public int getDefaultSliderValue()
-	{
-		return defaultSliderValue;
-	}
-
-	/**
-	 * @return
-	 */
-	public int getSliderFinalValue()
-	{
-		return sliderFinalValue;
-	}
-
-	/**
-	 * @return
-	 */
-	public String getStatusBarString()
-	{
-		return statusBarString;
 	}
 
 	/**
@@ -339,14 +299,6 @@ public class StateHistoryModel
 		// TODO fire something here?
 	}
 
-	/**
-	 * @param intervalGenerator the intervalGenerator to set
-	 */
-	public void setIntervalGenerator(IStateHistoryIntervalGenerator intervalGenerator)
-	{
-		this.activeIntervalGenerator = intervalGenerator;
-	}
-
 	public void setIntervalGenerator(StateHistorySourceType generatorType)
 	{
 		this.activeIntervalGenerator = intervalGenerators.get(generatorType);
@@ -355,14 +307,6 @@ public class StateHistoryModel
 	public void registerIntervalGenerator(StateHistorySourceType generatorType, IStateHistoryIntervalGenerator generator)
 	{
 		intervalGenerators.put(generatorType, generator);
-	}
-
-	/**
-	 * @return the activeIntervalGenerator
-	 */
-	public IStateHistoryIntervalGenerator getActiveIntervalGenerator()
-	{
-		return activeIntervalGenerator;
 	}
 
 	public void setTime(double time)

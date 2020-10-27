@@ -5,73 +5,32 @@ import java.awt.Color;
 import edu.jhuapl.sbmt.model.image.Instrument;
 import edu.jhuapl.sbmt.stateHistory.model.planning.PlannedInstrumentData;
 
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+
+@NoArgsConstructor
 public class PlannedImage implements PlannedInstrumentData
 {
+	@Getter @Setter
 	private Color color = Color.red;
-	private Instrument instrument;
-	private Double time;
-	private boolean isShowing = false;
-	private boolean isFrustumShowing = false;
 
-	public PlannedImage()
-	{
-		// TODO Auto-generated constructor stub
-	}
+	@Getter @Setter
+	private Instrument instrument;
+
+	@Getter @Setter
+	private Double time;
+
+	@Getter @Setter
+	private boolean isShowing = false;
+
+	@Getter @Setter
+	private boolean isFrustumShowing = false;
 
 	public PlannedImage(Double time, String instrumentName)
 	{
 		this.time = time;
 		this.instrument = Instrument.valueFor(instrumentName);
-	}
-
-	public Color getColor()
-	{
-		return color;
-	}
-
-	public void setColor(Color color)
-	{
-		this.color = color;
-	}
-
-	public Instrument getInstrument()
-	{
-		return instrument;
-	}
-
-	public void setInstrument(Instrument instrument)
-	{
-		this.instrument = instrument;
-	}
-
-	public Double getTime()
-	{
-		return time;
-	}
-
-	public void setTime(Double time)
-	{
-		this.time = time;
-	}
-
-	public boolean isShowing()
-	{
-		return isShowing;
-	}
-
-	public void setShowing(boolean isShowing)
-	{
-		this.isShowing = isShowing;
-	}
-
-	public boolean isFrustumShowing()
-	{
-		return isFrustumShowing;
-	}
-
-	public void setFrustumShowing(boolean isFrustumShowing)
-	{
-		this.isFrustumShowing = isFrustumShowing;
 	}
 
 	public String getInstrumentName()

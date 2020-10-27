@@ -41,7 +41,7 @@ public class DisplayOptionsItemHandler extends BasicItemHandler<DisplayableItem,
 			case Show:
 				return item.isVisible();
 			case Size:
-				return item.getSize();
+				return item.getPointerRadius();
 			case Label:
 				return item.getLabel();
 			case Color:
@@ -69,10 +69,8 @@ public class DisplayOptionsItemHandler extends BasicItemHandler<DisplayableItem,
 		}
 		else if (aEnum == DisplayOptionsColumnLookup.Size)
 		{
-			item.setSize((double)aValue);
+			item.setPointerRadius((double)aValue);
 			stateHistoryCollection.propertyChange(new PropertyChangeEvent(this, Properties.MODEL_CHANGED, null, item));
-
-//			stateHistoryCollection.setInstrumentFootprintBorderVisibility(fov, (boolean) aValue);
 		}
 		else if (aEnum == DisplayOptionsColumnLookup.Label)
 		{

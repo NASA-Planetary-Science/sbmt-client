@@ -8,6 +8,9 @@ import vtk.vtkPolyDataMapper;
 
 import edu.jhuapl.saavtk.util.PolyDataUtil;
 
+import lombok.Getter;
+import lombok.Setter;
+
 /**
  * @author steelrj1
  *
@@ -29,6 +32,7 @@ public class SpacecraftBody extends vtkPolyData implements DisplayableItem
      */
     private static double[] white = {1.0, 1.0, 1.0, 1.0};
 
+    @Getter @Setter
     private String label = "Spacecraft";
 
 
@@ -122,18 +126,6 @@ public class SpacecraftBody extends vtkPolyData implements DisplayableItem
 	}
 
 	@Override
-	public String getLabel()
-	{
-		return label;
-	}
-
-	@Override
-	public void setLabel(String text)
-	{
-		this.label = text;
-	}
-
-	@Override
 	public Color getColor()
 	{
 		return new Color((float)spacecraftBodyActor.GetProperty().GetDiffuseColor()[0], (float)spacecraftBodyActor.GetProperty().GetDiffuseColor()[1], (float)spacecraftBodyActor.GetProperty().GetDiffuseColor()[2]);
@@ -141,13 +133,13 @@ public class SpacecraftBody extends vtkPolyData implements DisplayableItem
 	}
 
 	@Override
-	public void setSize(double size)
+	public void setPointerRadius(double radius)
 	{
-		this.setScale(size);
+		this.setScale(radius);
 	}
 
 	@Override
-	public double getSize()
+	public double getPointerRadius()
 	{
 		return spacecraftBodyActor.GetScale()[0];
 	}

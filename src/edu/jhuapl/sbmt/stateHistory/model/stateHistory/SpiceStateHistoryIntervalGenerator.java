@@ -86,8 +86,8 @@ public class SpiceStateHistoryIntervalGenerator implements IStateHistoryInterval
 	public StateHistory createNewTimeInterval(StateHistory history, Function<Double, Void> progressFunction)
 			throws StateHistoryInputException, StateHistoryInvalidTimeException
 	{
-		String startString = edu.jhuapl.sbmt.util.TimeUtil.et2str(history.getMinTime());
-		String endString = edu.jhuapl.sbmt.util.TimeUtil.et2str(history.getMaxTime());
+		String startString = edu.jhuapl.sbmt.util.TimeUtil.et2str(history.getStartTime());
+		String endString = edu.jhuapl.sbmt.util.TimeUtil.et2str(history.getEndTime());
 		DateTimeFormatter formatter = DateTimeFormat.forPattern("yyyy-MM-dd'T'HH:mm:ss.SSS");
 		DateTime start = formatter.parseDateTime(startString.substring(0, 23));
 		DateTime end = formatter.parseDateTime(endString.substring(0, 23));
@@ -130,20 +130,15 @@ public class SpiceStateHistoryIntervalGenerator implements IStateHistoryInterval
 		double timeWindowDuration = utcTs.difference(startEpoch, endEpoch);
 
 		//add the pointing provider to the history and trajectory objects
-		trajectory.setNumPoints(Math.abs((int)timeWindowDuration/60));
 		trajectory.setPointingProvider(pointingProvider);
 		trajectory.setStartTime(TimeUtil.str2et(startEpoch.toString()));
 		trajectory.setStopTime(TimeUtil.str2et(endEpoch.toString()));
-//		for (UTCEpoch time = startEpoch; time.compareTo(endEpoch) == -1; time = advanceUTCEpochByTime(time, cadence) )
-//		{
-			//populate a state object, and use it to populate the history and trajectory
+		trajectory.setNumPoints(Math.abs((int)timeWindowDuration/60));
 
-			State state = new SpiceState(pointingProvider);
-			// add to history
-			history.addState(state);
-//			double completion = Math.abs(100 * ((double) (utcTs.difference(startEpoch, time))) / timeWindowDuration);
-//			if (progressFunction != null) progressFunction.apply(completion);
-//		}
+		State state = new SpiceState(pointingProvider);
+		// add to history
+		history.addState(state);
+
 		if (progressFunction != null)  progressFunction.apply(100.0);
 		history.setStartTime(TimeUtil.str2et(startEpoch.toString()));
 		history.setEndTime(TimeUtil.str2et(endEpoch.toString()));
@@ -155,11 +150,5 @@ public class SpiceStateHistoryIntervalGenerator implements IStateHistoryInterval
 		history.setPointingProvider(pointingProvider);
 		((SpiceStateHistory)history).setSpiceInfo(spiceInfo);
 		return history;
-	}
-
-	private UTCEpoch advanceUTCEpochByTime(UTCEpoch epoch, double delta)
-	{
-		UTCEpoch newEpoch = utcTs.add(epoch, delta);
-		return newEpoch;
 	}
 }

@@ -33,33 +33,39 @@ import glum.gui.panel.itemList.ItemProcessor;
 import glum.gui.panel.itemList.query.QueryComposer;
 import glum.gui.table.TablePopupHandler;
 import glum.item.ItemManagerUtil;
+import lombok.Getter;
 
 public class PlannedImageTableView extends JPanel
 {
 	/**
 	 * JButton to load planned image from file
 	 */
+	@Getter
 	private JButton loadPlannedImageButton;
 
     /**
      * JButton to remove planned image from table
      */
+	@Getter
     private JButton removePlannedImageButton;
 
     /**
      * JButton to show planned image in renderer
      */
+	@Getter
     private JButton showPlannedImageButton;
 
     /**
      * JButton to save planned image to file
      */
+	@Getter
     private JButton savePlannedImageButton;
 
     /**
      *	JTable to display loaded state histories
      */
-    protected JTable resultList;
+	@Getter
+    protected JTable table;
 
     /**
      * JButtons for selection in the table
@@ -92,7 +98,7 @@ public class PlannedImageTableView extends JPanel
      */
     protected void init()
     {
-        resultList = buildTable();
+        table = buildTable();
         removePlannedImageButton = new JButton("Hide Planned Image");
         showPlannedImageButton = new JButton("Show Planned Image");
         removePlannedImageButton.setEnabled(false);
@@ -120,7 +126,7 @@ public class PlannedImageTableView extends JPanel
         scrollPane.setPreferredSize(new java.awt.Dimension(150, 150));
         add(scrollPane);
 
-        scrollPane.setViewportView(resultList);
+        scrollPane.setViewportView(table);
 
         JPanel panel_1 = new JPanel();
         add(panel_1);
@@ -185,7 +191,6 @@ public class PlannedImageTableView extends JPanel
 		tmpComposer.addAttribute(PlannedImageColumnLookup.Instrument, String.class, "Instrument", null);
 		tmpComposer.addAttribute(PlannedImageColumnLookup.ImageTime, String.class, "Image Time", null);
 
-
 		EphemerisTimeRenderer tmpTimeRenderer = new EphemerisTimeRenderer(false);
 
 		tmpComposer.setEditor(PlannedImageColumnLookup.Show, new BooleanCellEditor());
@@ -209,51 +214,6 @@ public class PlannedImageTableView extends JPanel
 		return plannedImageTable;
     }
 
-    /**
-     * Returns the JTable used to display the list of loaded state histories
-     * @return the JTable used to display the list of loaded state histories
-     */
-    public JTable getTable()
-    {
-        return resultList;
-    }
-
-    /**
-     * Returns the load planned image button
-     * @return the load planned image button
-     */
-    public JButton getLoadPlannedImageButton()
-    {
-        return loadPlannedImageButton;
-    }
-
-    /**
-     * Returns the show planned image button
-     * @return the show planned image button
-     */
-    public JButton getShowPlannedImageButton()
-    {
-        return showPlannedImageButton;
-    }
-
-    /**
-     * Returns the remove planned image button
-     * @return the remove planned image button
-     */
-    public JButton getRemovePlannedImageButton()
-    {
-        return removePlannedImageButton;
-    }
-
-    /**
-     * Returns the save planned image button
-     * @return the save planned image button
-     */
-    public JButton getSavePlannedImageButton()
-    {
-        return savePlannedImageButton;
-    }
-
 	/**
 	 * Configures the appropriate table colun width for the given expected type of data
 	 */
@@ -273,5 +233,4 @@ public class PlannedImageTableView extends JPanel
 			tmpTable.getColumnModel().getColumn(aCol).setPreferredWidth(tmpW + 10);
 		}
 	}
-
 }

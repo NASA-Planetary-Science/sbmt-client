@@ -33,33 +33,39 @@ import glum.gui.panel.itemList.ItemProcessor;
 import glum.gui.panel.itemList.query.QueryComposer;
 import glum.gui.table.TablePopupHandler;
 import glum.item.ItemManagerUtil;
+import lombok.Getter;
 
 public class PlannedSpectrumTableView extends JPanel
 {
 	/**
 	 * JButton to load state history from file
 	 */
+	@Getter
 	private JButton loadPlannedSpectrumButton;
 
     /**
      * JButton to remove state history from table
      */
+	@Getter
     private JButton removePlannedSpectrumButton;
 
     /**
      * JButton to show state history in renderer
      */
+	@Getter
     private JButton showPlannedSpectrumButton;
 
     /**
      * JButton to save state history to file
      */
+	@Getter
     private JButton savePlannedSpectrumButton;
 
     /**
      *	JTable to display loaded state histories
      */
-    protected JTable resultList;
+	@Getter
+    protected JTable table;
 
     /**
      * JButtons for selection in the table
@@ -92,7 +98,7 @@ public class PlannedSpectrumTableView extends JPanel
      */
     protected void init()
     {
-        resultList = buildTable();
+        table = buildTable();
         removePlannedSpectrumButton = new JButton("Hide Planned Spectrum");
         showPlannedSpectrumButton = new JButton("Show Planned Spectrum");
         removePlannedSpectrumButton.setEnabled(false);
@@ -120,7 +126,7 @@ public class PlannedSpectrumTableView extends JPanel
         scrollPane.setPreferredSize(new java.awt.Dimension(150, 150));
         add(scrollPane);
 
-        scrollPane.setViewportView(resultList);
+        scrollPane.setViewportView(table);
 
         JPanel panel_1 = new JPanel();
         add(panel_1);
@@ -209,51 +215,6 @@ public class PlannedSpectrumTableView extends JPanel
 		return plannedSpectrumTable;
     }
 
-    /**
-     * Returns the JTable used to display the list of loaded state histories
-     * @return the JTable used to display the list of loaded state histories
-     */
-    public JTable getTable()
-    {
-        return resultList;
-    }
-
-    /**
-     * Returns the load state history button
-     * @return the load state history button
-     */
-    public JButton getLoadPlannedSpectrumButton()
-    {
-        return loadPlannedSpectrumButton;
-    }
-
-    /**
-     * Returns the show state history button
-     * @return the show state history button
-     */
-    public JButton getShowPlannedSpectrumButton()
-    {
-        return showPlannedSpectrumButton;
-    }
-
-    /**
-     * Returns the remove state history button
-     * @return the remove state history button
-     */
-    public JButton getRemovePlannedSpectrumButton()
-    {
-        return removePlannedSpectrumButton;
-    }
-
-    /**
-     * Returns the save state history button
-     * @return the save state history button
-     */
-    public JButton getSavePlannedSpectrumButton()
-    {
-        return savePlannedSpectrumButton;
-    }
-
 	/**
 	 * Configures the appropriate table colun width for the given expected type of data
 	 */
@@ -273,5 +234,4 @@ public class PlannedSpectrumTableView extends JPanel
 			tmpTable.getColumnModel().getColumn(aCol).setPreferredWidth(tmpW + 10);
 		}
 	}
-
 }

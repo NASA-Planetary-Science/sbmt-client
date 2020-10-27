@@ -4,6 +4,9 @@ import java.util.HashMap;
 
 import edu.jhuapl.sbmt.stateHistory.model.interfaces.StateHistory;
 
+import lombok.NoArgsConstructor;
+
+@NoArgsConstructor
 public class StateHistoryViewOptionsModel
 {
 	private HashMap<StateHistory, Double> stateHistoryToViewInputAngle =
@@ -12,15 +15,8 @@ public class StateHistoryViewOptionsModel
 	private HashMap<StateHistory, RendererLookDirection> stateHistoryToLookDirection =
 			new HashMap<StateHistory, RendererLookDirection>();
 
-	public StateHistoryViewOptionsModel()
-	{
-
-	}
-
 	public Double getViewInputAngleForStateHistory(StateHistory stateHistory)
 	{
-//		System.out.println("StateHistoryViewOptionsModel: getViewInputAngleForStateHistory: state history is " + stateHistory);
-//		System.out.println("StateHistoryViewOptionsModel: getViewInputAngleForStateHistory: hashmap " + stateHistoryToViewInputAngle);
 		return stateHistoryToViewInputAngle.get(stateHistory);
 	}
 
@@ -56,18 +52,4 @@ public class StateHistoryViewOptionsModel
 	{
 		stateHistoryToLookDirection.put(stateHistory, lookDir);
 	}
-
-//	public StateHistoryLookDirectionAttributes getAttributesForLookDirection(RendererLookDirection lookDir)
-//	{
-//		if (selectedItem == RendererLookDirection.FREE_VIEW)
-//		{
-//			double[] upVector = { 0, 0, 1 };
-//			return new StateHistoryLookDirectionAttributes(upVector, lookFromDirection, zoomOnly)
-//		}
-//		else
-//		{
-//
-//		}
-//	}
-
 }

@@ -12,8 +12,11 @@ import edu.jhuapl.sbmt.client.SmallBodyViewConfig;
 import edu.jhuapl.sbmt.stateHistory.model.planning.lidar.PlannedLidarTrackCollection;
 import edu.jhuapl.sbmt.stateHistory.ui.lidars.PlannedLidarTrackView;
 
+import lombok.Getter;
+
 public class PlannedLidarTableController
 {
+	@Getter
 	PlannedLidarTrackView view;
 
 	public PlannedLidarTableController(final ModelManager modelManager, Renderer renderer, PlannedLidarTrackCollection collection, SmallBodyViewConfig config)
@@ -53,10 +56,4 @@ public class PlannedLidarTableController
 
 		});
 	}
-
-	public PlannedLidarTrackView getView()
-	{
-		return view;
-	}
-
 }

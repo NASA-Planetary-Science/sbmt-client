@@ -4,19 +4,43 @@ import java.awt.Color;
 
 public interface DisplayableItem
 {
+	/**
+	 * @return
+	 */
 	public boolean isVisible();
 
+	/**
+	 * @param isVisible
+	 */
 	public void setVisible(boolean isVisible);
 
+	/**
+	 * @return
+	 */
 	public String getLabel();
 
+	/**
+	 * @param text
+	 */
 	public void setLabel(String text);
 
+	/**
+	 * @return
+	 */
 	public Color getColor();
 
+	/**
+	 * @param color
+	 */
 	public void setColor(Color color);
 
-	public double getSize();
+	/**
+	 * @return
+	 */
+	public double getPointerRadius();
 
-	public void setSize(double size);
+	/**
+	 * @param radius
+	 */
+	public void setPointerRadius(double radius);
 }

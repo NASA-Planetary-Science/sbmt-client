@@ -35,8 +35,6 @@ public class PlannedLidarTrackIOHelper
 			String instrumentName = parts[2];
 			double etStart = TimeUtil.str2et(parts[0]);
 			double etStop = TimeUtil.str2et(parts[1]);
-//			Double et = Double.parseDouble(parts[0]);
-//			String instrumentName = parts[1];
 			PlannedLidarTrack plannedLidarTrack = new PlannedLidarTrack(etStart, etStop, instrumentName.toUpperCase());
 			collection.addLidarTrackToList(plannedLidarTrack);
 		}
@@ -64,5 +62,4 @@ public class PlannedLidarTrackIOHelper
 
 		writer.close();
 	}
-
 }

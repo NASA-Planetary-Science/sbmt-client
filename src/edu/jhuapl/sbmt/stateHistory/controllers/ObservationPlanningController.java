@@ -32,7 +32,6 @@ public class ObservationPlanningController
 {
 	StateHistoryController stateHistoryController;
 	ObservationPlanningView view = new ObservationPlanningView();
-//	IPositionOrientation positionOrientationManager;
 	PlannedImageTableController imageTableController;
 	PlannedSpectrumTableController spectrumTableController;
 	PlannedLidarTableController lidarTableController;
@@ -70,25 +69,14 @@ public class ObservationPlanningController
 				super.timeChanged(t);
 				imageCollection.propertyChange(new PropertyChangeEvent(this, PlannedDataProperties.TIME_CHANGED, null, t));
 				lidarTrackCollection.propertyChange(new PropertyChangeEvent(this, PlannedDataProperties.TIME_CHANGED, null, t));
-
 			}
 		});
 
-//		PlannedImage image = new PlannedImage();
-//		image.setInstrument(Instrument.MSI);
-//		System.out.println("ObservationPlanningController: ObservationPlanningController: et " + TimeUtil.str2et("2020-05-05T01:00:00.000"));
-//		image.setTime(TimeUtil.str2et("2020-05-05T01:00:00.000"));
-//		image.setColor(Color.red);
 		imageCollection = new PlannedImageCollection(smallBodyModel);
-//		imageCollection.addImageToList(image);
 		imageTableController = new PlannedImageTableController(modelManager, renderer, imageCollection, config);
 		if (config.imagingInstruments.length > 0) view.addTab("Imagery", imageTableController.getView());
-//		PlannedSpectrum spectrum = new PlannedSpectrum();
-//		spectrum.setInstrument(Instrument.NIS);
-//		spectrum.setTime(TimeUtil.str2et("2020-05-05T01:00:00.000"));
-//		spectrum.setColor(Color.green);
+
 		spectrumCollection = new PlannedSpectrumCollection(smallBodyModel);
-//		spectrumCollection.addSpectrumToList(spectrum);
 		spectrumTableController = new PlannedSpectrumTableController(modelManager, renderer, spectrumCollection, config);
 		if (config.hasSpectralData) view.addTab("Spectra", spectrumTableController.getView());
 
@@ -100,35 +88,17 @@ public class ObservationPlanningController
 		StateHistoryCollection runs = (StateHistoryCollection)modelManager.getModel(ModelNames.STATE_HISTORY_COLLECTION);
         runs.addListener((aSource, aEventType) -> {
 			if (aEventType != ItemEventType.ItemsSelected) return;
-//			intervalDisplayedController.getView().setEnabled(runs.getSelectedItems().size() > 0);
 			intervalPlaybackController.getView().setEnabled(runs.getSelectedItems().size() > 0);
 			imageCollection.updateStateHistorySource(runs.getCurrentRun());
 			lidarTrackCollection.updateStateHistorySource(runs.getCurrentRun());
 			runs.clearPlannedScience();
 			runs.addPlannedScience(imageCollection.getProps());
 			runs.addPlannedScience(lidarTrackCollection.getProps());
-//			viewControlsController.setEnabled(runs.getSelectedItems().size() > 0);
 		});
 
         intervalPlaybackPanel = intervalPlaybackController.getView();
 
 	}
-
-//	public IPositionOrientation getPositionOrientationManager()
-//	{
-//		return positionOrientationManager;
-//	}
-//
-//	public void setPositionOrientationManager(IPositionOrientation positionOrientation)
-//	{
-//		this.positionOrientationManager = positionOrientation;
-//		stateHistoryController.setPositionOrientationManager(positionOrientation);
-//		imageTableController.setPositionOrientationManager(positionOrientation);
-//		spectrumTableController.setPositionOrientationManager(positionOrientation);
-//		lidarTableController.setPositionOrientationManager(positionOrientation);
-//		registrar.setPositionOrientationManager(positionOrientation);
-//	}
-
 
 	public JPanel getView()
 	{
@@ -138,5 +108,4 @@ public class ObservationPlanningController
 		panel.add(intervalPlaybackPanel);
 		return panel;
 	}
-
 }

@@ -7,14 +7,24 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Vector;
 import java.util.stream.Collectors;
 
+import com.google.common.collect.Range;
+
+import vtk.vtkDoubleArray;
 import vtk.vtkProp;
 import vtk.vtkScalarBarActor;
 
+import edu.jhuapl.saavtk.color.provider.ColorProvider;
+import edu.jhuapl.saavtk.color.provider.ConstColorProvider;
+import edu.jhuapl.saavtk.color.provider.ConstGroupColorProvider;
+import edu.jhuapl.saavtk.color.provider.GroupColorProvider;
 import edu.jhuapl.saavtk.colormap.Colormaps;
 import edu.jhuapl.saavtk.feature.FeatureAttr;
+import edu.jhuapl.saavtk.feature.FeatureType;
+import edu.jhuapl.saavtk.feature.VtkFeatureAttr;
 import edu.jhuapl.saavtk.util.BoundingBox;
 import edu.jhuapl.saavtk.util.Configuration;
 import edu.jhuapl.saavtk.util.ConvertResourceToFile;
@@ -22,6 +32,7 @@ import edu.jhuapl.saavtk.util.Properties;
 import edu.jhuapl.sbmt.client.SmallBodyModel;
 import edu.jhuapl.sbmt.model.image.perspectiveImage.PerspectiveImageFootprint;
 import edu.jhuapl.sbmt.model.image.perspectiveImage.PerspectiveImageFrustum;
+import edu.jhuapl.sbmt.pointing.InstrumentPointing;
 import edu.jhuapl.sbmt.stateHistory.model.StateHistoryColoringFunctions;
 import edu.jhuapl.sbmt.stateHistory.model.interfaces.StateHistory;
 import edu.jhuapl.sbmt.stateHistory.model.viewOptions.RendererLookDirection;
@@ -34,8 +45,11 @@ import edu.jhuapl.sbmt.stateHistory.rendering.directionMarkers.SunDirectionMarke
 import edu.jhuapl.sbmt.stateHistory.rendering.text.SpacecraftLabel;
 import edu.jhuapl.sbmt.stateHistory.rendering.text.StatusBarTextActor;
 import edu.jhuapl.sbmt.stateHistory.rendering.text.TimeBarTextActor;
-import edu.jhuapl.sbmt.stateHistory.ui.state.color.GroupColorProvider;
+import edu.jhuapl.sbmt.stateHistory.rendering.vtk.VtkStateHistoryPainter;
 import edu.jhuapl.sbmt.stateHistory.ui.state.color.StateHistoryFeatureType;
+
+import glum.item.IdGenerator;
+import glum.item.IncrIdGenerator;
 
 public class StateHistoryRendererManager
 {
@@ -116,13 +130,15 @@ public class StateHistoryRendererManager
 
 	private List<vtkProp> plannedScienceActors = new ArrayList<vtkProp>();
 
-//	private GroupColorProvider sourceGCP;
-//
+	private GroupColorProvider sourceGCP;
+
 //	private double begPercent;
 //	private double endPercent;
 //	private final BodyViewConfig refBodyViewConfig;
-//
-//	private GroupColorProvider colorProvider;
+
+	private GroupColorProvider colorProvider;
+
+	IdGenerator indexGen = new IncrIdGenerator(-1);
 
 
 	private IStateHistoryPositionCalculator positionCalculator;
@@ -162,13 +178,13 @@ public class StateHistoryRendererManager
 		this.pcs = pcs;
 
 //		refBodyViewConfig = (SmallBodyViewConfig) smallBodyModel.getSmallBodyConfig();
-//		sourceGCP = new ConstGroupColorProvider(new ConstColorProvider(Color.GREEN));
+		sourceGCP = new ConstGroupColorProvider(new ConstColorProvider(Color.GREEN));
 //		begPercent = 0.0;
 //		endPercent = 1.0;
-//		propM = new HashMap<>();
+		propM = new HashMap<>();
 //		vAuxM = new HashMap<>();
-//		vPainterM = new HashMap<>();
-//		vActorToPainterM = new HashMap<>();
+		vPainterM = new HashMap<>();
+		vActorToPainterM = new HashMap<>();
 	}
 
 	public void addPlannedScienceActors(List<vtkProp> actors)
@@ -210,7 +226,12 @@ public class StateHistoryRendererManager
 		TrajectoryActor trajectoryActor = new TrajectoryActor(run.getTrajectory());
 		stateHistoryToRendererMap.put(run, trajectoryActor);
 
+		ColorProvider tmpSrcCP = sourceGCP.getColorProviderFor(run, indexGen.getNextId(), stateHistoryToRendererMap.size());
 
+		StateHistoryRenderProperties tmpProp = new StateHistoryRenderProperties();
+		tmpProp.isVisible = false;
+		tmpProp.srcCP = tmpSrcCP;
+		propM.put(run, tmpProp);
 
 		trajectoryActor.setColoringFunction(StateHistoryColoringFunctions.PER_TABLE.getColoringFunction(),
 				Colormaps.getNewInstanceOfBuiltInColormap("Rainbow"));
@@ -233,7 +254,7 @@ public class StateHistoryRendererManager
 
 		this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
 		this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, trajectoryActor);
-
+//		updateVtkVars(stateHistoryToRendererMap.keySet());
 		return trajectoryActor;
 	}
 
@@ -401,7 +422,7 @@ public class StateHistoryRendererManager
 		{ color.getRed(), color.getGreen(), color.getBlue(), color.getAlpha() };
 		double[] colorAsDoubleArray = new double[]
 		{ color.getRed() / 255.0, color.getGreen() / 255.0, color.getBlue() / 255.0, color.getAlpha() / 255.0 };
-		segment.getTrajectory().setTrajectoryColor(colorAsIntArray);
+		segment.getTrajectory().setColor(colorAsIntArray);
 		TrajectoryActor renderer = stateHistoryToRendererMap.get(segment);
 		renderer.setColoringFunction(null, null);
 		renderer.setTrajectoryColor(colorAsDoubleArray);
@@ -418,7 +439,11 @@ public class StateHistoryRendererManager
 		TrajectoryActor renderer = stateHistoryToRendererMap.get(segment);
 		if (renderer == null)
 			return;
-		renderer.setTrajectoryColor(segment.getTrajectory().getTrajectoryColor());
+		StateHistoryRenderProperties tmpProp = propM.get(segment);
+//		Color color = tmpProp.srcCP.getBaseColor();
+//		renderer.setTrajectoryColor(new double[] {color.getRed(), color.getGreen(), color.getBlue(), color.getAlpha()});
+//		renderer.setTrajectoryColor(segment.getTrajectory().getTrajectoryColor());
+		renderer.setColoringProvider(tmpProp.srcCP);
 		this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, renderer);
 	}
 
@@ -861,38 +886,44 @@ public class StateHistoryRendererManager
 		return positionCalculator.getCurrentLookFromDirection();
 	}
 
-	//TODO reimplement once colorization is in place
-	public FeatureAttr getFeatureAttrFor(StateHistory item, StateHistoryFeatureType aFeatureType)
+	public FeatureAttr getFeatureAttrFor(StateHistory item, FeatureType aFeatureType)
 	{
-		return null;
-//		if (aFeatureType == StateHistoryFeatureType.Time)
-//		{
-//			vtkDoubleArray timeArray = new vtkDoubleArray();
-//			for (Double nextTime : item.getTrajectory().getTime())
-//			{
-//				timeArray.InsertNextValue(nextTime);
-//			}
-//			return new VtkFeatureAttr(timeArray);
-//		}
-//		else if (aFeatureType == StateHistoryFeatureType.Distance)
-//		{
-//			vtkDoubleArray distanceArray = new vtkDoubleArray();
-//			for (int i=0; i<item.getTrajectory().getX().size(); i++)
-//			{
-//				double distance = Math.sqrt(Math.pow(item.getTrajectory().getX().get(i), 2) +
-//											Math.pow(item.getTrajectory().getY().get(i), 2) +
-//											Math.pow(item.getTrajectory().getZ().get(i), 2));
-//				distanceArray.InsertNextValue(distance);
-//			}
-//			return new VtkFeatureAttr(distanceArray);
-//		}
-//		else return null;
+		int minValueToColor = (int)(item.getTrajectory().getMinDisplayFraction()*item.getTrajectory().getNumPoints());
+		int maxValueToColor = (int)(item.getTrajectory().getMaxDisplayFraction()*item.getTrajectory().getNumPoints());
+		Range<Integer> coloredRange = Range.closed(minValueToColor, maxValueToColor);
+
+		if (aFeatureType == StateHistoryFeatureType.Time)
+		{
+			double startTime = item.getTrajectory().getStartTime();
+			vtkDoubleArray timeArray = new vtkDoubleArray();
+			for (int i=0; i<item.getTrajectory().getNumPoints(); i++)
+			{
+				if (!coloredRange.contains(i)) continue;
+				timeArray.InsertNextValue(startTime + i*item.getTrajectory().getTimeStep());
+			}
+			return new VtkFeatureAttr(timeArray);
+		}
+		else if (aFeatureType == StateHistoryFeatureType.Distance)
+		{
+			double startTime = item.getTrajectory().getStartTime();
+			vtkDoubleArray distanceArray = new vtkDoubleArray();
+			for (int i=0; i<item.getTrajectory().getNumPoints(); i++)
+			{
+				if (!coloredRange.contains(i)) continue;
+				double nextTime = startTime + i*item.getTrajectory().getTimeStep();
+				InstrumentPointing instrumentPointing = item.getTrajectory().getPointingProvider().provide(nextTime);
+				double distance = instrumentPointing.getScPosition().getLength();
+				distanceArray.InsertNextValue(distance);
+			}
+			return new VtkFeatureAttr(distanceArray);
+		}
+		else return null;
 	}
 
-//	private Map<StateHistory, VtkStateHistoryPainter<StateHistory>> vPainterM;
-//	private Map<StateHistory, StateHistoryRenderProperties> propM;
+	private Map<StateHistory, VtkStateHistoryPainter<StateHistory>> vPainterM;
+	private Map<StateHistory, StateHistoryRenderProperties> propM;
 //	private Map<StateHistory, VtkStateHistoryPointProvider> vAuxM;
-//	private Map<vtkProp, VtkStateHistoryPainter<StateHistory>> vActorToPainterM;
+	private Map<vtkProp, VtkStateHistoryPainter<StateHistory>> vActorToPainterM;
 //
 //
 //	public void setAllItems(Collection<StateHistory> aItemC)
@@ -920,33 +951,36 @@ public class StateHistoryRendererManager
 
 	public void installGroupColorProviders(GroupColorProvider aSrcGCP/*, StateHistoryCollection runs*/)
 	{
-//		this.colorProvider = aSrcGCP;
-//		int tmpIdx = -1;
-//		int numItems = runs.getNumItems();
-//		for (StateHistory aItem : runs.getAllItems())
-//		{
-//			tmpIdx++;
-//
-//			// Skip to next if no RenderProp
-//			StateHistoryRenderProperties tmpProp = propM.get(aItem);
-//			if (tmpProp == null)
-//				continue;
-//
-//			// Skip to next if custom
-//			if (tmpProp.isCustomCP == true)
-//				continue;
-//
-//			tmpProp.srcCP = aSrcGCP.getColorProviderFor(aItem, tmpIdx, numItems);
-//		}
-//
+		this.colorProvider = aSrcGCP;
+		int tmpIdx = -1;
+		int numItems = stateHistoryToRendererMap.size(); //runs.getNumItems();
+		for (StateHistory aItem : stateHistoryToRendererMap.keySet())
+		{
+			tmpIdx++;
+
+			// Skip to next if no RenderProp
+			StateHistoryRenderProperties tmpProp = propM.get(aItem);
+			if (tmpProp == null)
+				continue;
+
+			// Skip to next if custom
+			if (tmpProp.isCustomCP == true)
+				continue;
+
+			tmpProp.srcCP = aSrcGCP.getColorProviderFor(aItem, tmpIdx, numItems);
+//			System.out.println("StateHistoryRendererManager: installGroupColorProviders: color provider " + tmpProp.srcCP.getBaseColor());
+			refreshColoring(aItem);
+
+		}
+		//TODO fix this?
 //		runs.notify(this, ItemEventType.ItemsMutated);
-//		updateVtkVars(runs.getAllItems());
+//		updateVtkVars(stateHistoryToRendererMap.keySet());
 	}
 
-//	/**
-//	 * Notification method that the lidar data associated with aFileSpec has been
-//	 * loaded. The provided VtkLidarDataPainter will contain the loaded state.
-//	 */
+	/**
+	 * Notification method that the lidar data associated with aFileSpec has been
+	 * loaded. The provided VtkLidarDataPainter will contain the loaded state.
+	 */
 //	protected void markStateHistoryLoadComplete(StateHistory stateHistory, VtkStateHistoryPointProvider aStateHistoryPointProvider,
 //			VtkStateHistoryPainter<StateHistory> aPainter, StateHistoryCollection runs)
 //	{
@@ -961,12 +995,12 @@ public class StateHistoryRendererManager
 //		runs.notify(this, ItemEventType.ItemsMutated);
 //		pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
 //	}
-//
-//	/**
-//	 * Helper method to load the lidar data into a VtkLidarDataPainter.
-//	 * <P>
-//	 * The actual loading of the lidar data may happen asynchronously.
-//	 */
+
+	/**
+	 * Helper method to load the lidar data into a VtkLidarDataPainter.
+	 * <P>
+	 * The actual loading of the lidar data may happen asynchronously.
+	 */
 //	private void loadVtkPainter(StateHistory history, StateHistoryCollection runs)
 //	{
 //		// Bail if the corresponding VTK data has already been created
@@ -988,7 +1022,7 @@ public class StateHistoryRendererManager
 //			aExp.printStackTrace();
 //		}
 //	}
-//
+
 //	/**
 //	 * Helper method that will update all relevant VTK vars.
 //	 * <P>
@@ -1013,8 +1047,4 @@ public class StateHistoryRendererManager
 //		// Notify our PropertyChangeListeners
 //		pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
 //	}
-
-
-
-
 }

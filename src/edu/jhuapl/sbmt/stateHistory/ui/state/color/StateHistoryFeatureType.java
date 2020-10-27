@@ -1,10 +1,22 @@
 package edu.jhuapl.sbmt.stateHistory.ui.state.color;
 
-public enum StateHistoryFeatureType
+import com.google.common.collect.ImmutableSet;
+
+import edu.jhuapl.saavtk.feature.FeatureType;
+
+/**
+ * @author steelrj1
+ *
+ */
+public class StateHistoryFeatureType
 {
-	Time,
+	// Constants
+	public static final FeatureType Time = new FeatureType("Time (sec)", null, 1.0);
 
-//	Radius,
+//	public static final FeatureType Radius = new FeatureType("Radius", null, 1.0);
 
-	Distance,
+	public static final FeatureType Distance = new FeatureType("Spacecraft Distance (km)", null, 1.0);
+
+	/** Provides access to all of the available lidar {@link FeatureType}s. */
+	public static final ImmutableSet<FeatureType> FullSet = ImmutableSet.of(Time, Distance);
 }

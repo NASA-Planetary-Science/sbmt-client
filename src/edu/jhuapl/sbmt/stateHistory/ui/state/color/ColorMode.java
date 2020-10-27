@@ -9,7 +9,7 @@ package edu.jhuapl.sbmt.stateHistory.ui.state.color;
  */
 public enum ColorMode
 {
-	AutoHue,
+//	AutoHue,
 
 	ColorMap,
 

@@ -16,14 +16,12 @@ public class PlannedDataActorFactory
 
 	static public void registerModel(String uniqueName, IPlanningDataActorBuilder<PlannedInstrumentData>  builder)
 	{
-		System.out.println("PlannedDataActorFactory: registerModel: adding unique name " + uniqueName);
 		registeredModels.put(uniqueName, builder);
 	}
 
 	static public PlannedDataActor createPlannedDataActorFor(PlannedInstrumentData data, SmallBodyModel model)
 			throws FitsException, IOException
     {
-//    	System.out.println("PlannedDataActorFactory: createImage: getting " + data.getInstrumentName());
     	IPlanningDataActorBuilder<PlannedInstrumentData> builder = registeredModels.get(data.getInstrumentName());
     	return builder.buildActorForPlanningData(data, model);
     }

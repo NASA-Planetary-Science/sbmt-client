@@ -13,7 +13,9 @@ import com.google.common.collect.ImmutableList;
 
 import vtk.vtkProp;
 
+import edu.jhuapl.saavtk.color.provider.GroupColorProvider;
 import edu.jhuapl.saavtk.feature.FeatureAttr;
+import edu.jhuapl.saavtk.feature.FeatureType;
 import edu.jhuapl.saavtk.model.SaavtkItemManager;
 import edu.jhuapl.saavtk.util.Properties;
 import edu.jhuapl.sbmt.client.SmallBodyModel;
@@ -24,8 +26,6 @@ import edu.jhuapl.sbmt.stateHistory.rendering.DisplayableItem;
 import edu.jhuapl.sbmt.stateHistory.rendering.SpacecraftBody;
 import edu.jhuapl.sbmt.stateHistory.rendering.TrajectoryActor;
 import edu.jhuapl.sbmt.stateHistory.rendering.model.StateHistoryRendererManager;
-import edu.jhuapl.sbmt.stateHistory.ui.state.color.GroupColorProvider;
-import edu.jhuapl.sbmt.stateHistory.ui.state.color.StateHistoryFeatureType;
 
 import crucible.crust.metadata.api.Key;
 import crucible.crust.metadata.api.Metadata;
@@ -35,6 +35,8 @@ import crucible.crust.metadata.impl.SettableMetadata;
 import glum.gui.panel.itemList.ItemProcessor;
 import glum.item.ItemEventListener;
 import glum.item.ItemEventType;
+import lombok.Getter;
+import lombok.Setter;
 
 /**
  * Item manager that governs the available state histories for display in the
@@ -53,6 +55,7 @@ public class StateHistoryCollection extends SaavtkItemManager<StateHistory> impl
 	/**
 	 *
 	 */
+	@Getter
 	private ArrayList<StateHistoryKey> keys = new ArrayList<StateHistoryKey>();
 
 	/**
@@ -63,6 +66,7 @@ public class StateHistoryCollection extends SaavtkItemManager<StateHistory> impl
 	/**
 	 *
 	 */
+	@Getter @Setter
 	private StateHistory currentRun = null;
 
 	/**
@@ -73,15 +77,16 @@ public class StateHistoryCollection extends SaavtkItemManager<StateHistory> impl
 	/**
 	 *
 	 */
+	@Getter
 	private String bodyName;
 
+	@Getter
 	private Vector<String> selectedFOVs;
 
+	@Getter
 	private Vector<String> availableFOVs;
 
 	final Key<List<StateHistory>> stateHistoryKey = Key.of("stateHistoryCollection");
-
-//	private ConstGroupColorProvider sourceGCP;
 
 	/**
 	 * @param smallBodyModel
@@ -135,22 +140,6 @@ public class StateHistoryCollection extends SaavtkItemManager<StateHistory> impl
 		}
 
 		return null;
-	}
-
-	/**
-	 * @return
-	 */
-	public StateHistory getCurrentRun()
-	{
-		return currentRun;
-	}
-
-	/**
-	 * @param run
-	 */
-	public void setCurrentRun(StateHistory run)
-	{
-		currentRun = run;
 	}
 
 	/**
@@ -249,16 +238,6 @@ public class StateHistoryCollection extends SaavtkItemManager<StateHistory> impl
 	}
 
 	/**
-	 * @param show
-	 */
-	public void setShowTrajectories(boolean show)
-	{
-		// TODO fix
-		// for (StateHistory run : simRuns)
-		// run.setShowSpacecraft(show);
-	}
-
-	/**
 	 * @param segment
 	 * @return
 	 */
@@ -344,14 +323,6 @@ public class StateHistoryCollection extends SaavtkItemManager<StateHistory> impl
 	}
 
 	/**
-	 * @return
-	 */
-	public List<StateHistoryKey> getKeys()
-	{
-		return keys;
-	}
-
-	/**
 	 *
 	 */
 	@Override
@@ -416,19 +387,9 @@ public class StateHistoryCollection extends SaavtkItemManager<StateHistory> impl
 		renderManager.updateFootprintBoundaryVisibility(getSelectedFOVs());
 	}
 
-	public Vector<String> getSelectedFOVs()
-	{
-		return selectedFOVs;
-	}
-
 	public void addAvailableFov(String fov)
 	{
 		availableFOVs.add(fov);
-	}
-
-	public Vector<String> getAvailableFOVs()
-	{
-		return availableFOVs;
 	}
 
 	public void setFootprintPlateColoring(String coloringName)
@@ -566,11 +527,6 @@ public class StateHistoryCollection extends SaavtkItemManager<StateHistory> impl
 		renderManager.setSpacecraftSize(scale);
 	}
 
-	public String getBodyName()
-	{
-		return bodyName;
-	}
-
 	/**
 	 * @param radius
 	 */
@@ -687,7 +643,7 @@ public class StateHistoryCollection extends SaavtkItemManager<StateHistory> impl
 		return renderManager.updateLookDirection(lookDirection);
 	}
 
-	public FeatureAttr getFeatureAttrFor(StateHistory item, StateHistoryFeatureType aFeatureType)
+	public FeatureAttr getFeatureAttrFor(StateHistory item, FeatureType aFeatureType)
 	{
 		return renderManager.getFeatureAttrFor(item, aFeatureType);
 	}

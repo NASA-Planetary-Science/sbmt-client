@@ -8,6 +8,9 @@ import vtk.vtkPolyDataMapper;
 
 import edu.jhuapl.sbmt.stateHistory.rendering.DisplayableItem;
 
+import lombok.Getter;
+import lombok.Setter;
+
 public abstract class BaseDirectionMarker extends vtkConeSource implements DisplayableItem
 {
 
@@ -59,7 +62,10 @@ public abstract class BaseDirectionMarker extends vtkConeSource implements Displ
 	 */
 	protected double specularColorValue;
 
+	@Getter @Setter
 	protected String label;
+
+	protected double pointerRadius = 0.5;
 
 	public BaseDirectionMarker(long id)
 	{
@@ -118,9 +124,9 @@ public abstract class BaseDirectionMarker extends vtkConeSource implements Displ
 	/**
 	 * @param radius
 	 */
-	public void setPointerSize(int radius)
+	public void setPointerSize(double radius)
 	{
-		scale = (2.66e-4 * Math.pow((double) radius, 2) + 1e-4 * (double) radius + .33);
+		scale = (2.66e-4 * Math.pow((double) 100*radius, 2) + 1e-4 * (double) 100*radius + .33);
 		markerHeadActor.SetScale(scale);
 		markerHeadActor.Modified();
 	}
@@ -157,33 +163,17 @@ public abstract class BaseDirectionMarker extends vtkConeSource implements Displ
 		markerHeadActor.SetVisibility(isVisible ? 1 : 0);
 	}
 
-	/**
-	 * @return the label
-	 */
-	public String getLabel()
+	@Override
+	public void setPointerRadius(double radius)
 	{
-		return label;
-	}
-
-	/**
-	 * @param label
-	 *            the label to set
-	 */
-	public void setLabel(String label)
-	{
-		this.label = label;
+		this.pointerRadius = radius;
+		this.setPointerSize(radius);
 	}
 
 	@Override
-	public void setSize(double size)
+	public double getPointerRadius()
 	{
-		this.setPointerSize((int) size);
-	}
-
-	@Override
-	public double getSize()
-	{
-		return scale;
+		return pointerRadius;
 	}
 
 }

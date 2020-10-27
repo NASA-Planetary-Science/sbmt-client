@@ -20,10 +20,13 @@ import lombok.Setter;
 @AllArgsConstructor
 public class TimeWindow
 {
-	@Getter
-	@Setter
+	@Getter @Setter
 	public double startTime, stopTime;
 
+	/**
+	 * @param start
+	 * @param end
+	 */
 	public TimeWindow(DateTime start, DateTime end)
 	{
 		SimpleDateFormat dateFormatter = new SimpleDateFormat("yyyy-D'T'HH:mm:ss.SSS");	//generates Year-DOY date format
@@ -40,5 +43,4 @@ public class TimeWindow
 	{
 		return "Time window: ( " + TimeUtil.et2str(startTime) + " - " + TimeUtil.et2str(stopTime) + ")";
 	}
-
 }

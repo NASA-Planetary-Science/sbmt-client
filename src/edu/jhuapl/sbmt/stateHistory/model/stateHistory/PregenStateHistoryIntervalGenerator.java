@@ -27,6 +27,8 @@ import edu.jhuapl.sbmt.stateHistory.model.scState.CsvState;
 import edu.jhuapl.sbmt.stateHistory.model.trajectory.StandardTrajectory;
 import edu.jhuapl.sbmt.util.TimeUtil;
 
+import lombok.Setter;
+
 /**
  * Class that generates state history from a pre-generated state history file that lives on the server
  * @author steelrj1
@@ -35,7 +37,10 @@ import edu.jhuapl.sbmt.util.TimeUtil;
 public class PregenStateHistoryIntervalGenerator implements IStateHistoryIntervalGenerator
 {
 	SmallBodyViewConfig config;
+
+	@Setter
 	String sourceFile;
+
 	private IPointingProvider pointingProvider;
 	/**
 	 *
@@ -44,11 +49,6 @@ public class PregenStateHistoryIntervalGenerator implements IStateHistoryInterva
 	{
 		this.config = config;
 		this.sourceFile = config.timeHistoryFile;
-	}
-
-	public void setSourceFile(String sourceFile)
-	{
-		this.sourceFile = sourceFile;
 	}
 
 	@Override
@@ -60,8 +60,8 @@ public class PregenStateHistoryIntervalGenerator implements IStateHistoryInterva
 	public StateHistory createNewTimeInterval(StateHistory history, Function<Double, Void> progressFunction) throws StateHistoryInputException, StateHistoryInvalidTimeException
 	{
 
-		String startString = edu.jhuapl.sbmt.util.TimeUtil.et2str(history.getMinTime());
-		String endString = edu.jhuapl.sbmt.util.TimeUtil.et2str(history.getMaxTime());
+		String startString = edu.jhuapl.sbmt.util.TimeUtil.et2str(history.getStartTime());
+		String endString = edu.jhuapl.sbmt.util.TimeUtil.et2str(history.getEndTime());
 		DateTimeFormatter formatter = DateTimeFormat.forPattern("yyyy-MM-dd'T'HH:mm:ss.SSS");
 		DateTime start = formatter.parseDateTime(startString.substring(0, 23));
 		DateTime end = formatter.parseDateTime(endString.substring(0, 23));
@@ -136,10 +136,11 @@ public class PregenStateHistoryIntervalGenerator implements IStateHistoryInterva
 		Trajectory trajectory = new StandardTrajectory();
 		if (tempHistory == null) history = new StandardStateHistory(key);
 
-		trajectory.setNumPoints(1000);
 		trajectory.setPointingProvider(pointingProvider);
 		trajectory.setStartTime(TimeUtil.str2et(startString));
 		trajectory.setStopTime(TimeUtil.str2et(endString));
+		trajectory.setNumPoints(1000);
+
 		// reads the binary file and writes the data to a CSV file
 		for (int i = positionStart; i <= positionEnd; i += lineLength)
 		{
@@ -160,7 +161,7 @@ public class PregenStateHistoryIntervalGenerator implements IStateHistoryInterva
 			double completion = 100 * ((double) (i - positionStart)) / (double) (positionEnd - positionStart);
 			if (progressFunction != null) progressFunction.apply(completion);
 		}
-		history.setCurrentTime(history.getMinTime());
+		history.setCurrentTime(history.getStartTime());
 		history.setTrajectory(trajectory);
 		history.setType(StateHistorySourceType.PREGEN);
 		history.setSourceFile(sourceFile);

@@ -12,8 +12,11 @@ import edu.jhuapl.sbmt.client.SmallBodyViewConfig;
 import edu.jhuapl.sbmt.stateHistory.model.planning.spectrometers.PlannedSpectrumCollection;
 import edu.jhuapl.sbmt.stateHistory.ui.spectrometers.PlannedSpectrumView;
 
+import lombok.Getter;
+
 public class PlannedSpectrumTableController
 {
+	@Getter
 	PlannedSpectrumView view;
 
 	public PlannedSpectrumTableController(final ModelManager modelManager, Renderer renderer, PlannedSpectrumCollection collection, SmallBodyViewConfig config)
@@ -52,10 +55,5 @@ public class PlannedSpectrumTableController
 			}
 
 		});
-	}
-
-	public PlannedSpectrumView getView()
-	{
-		return view;
 	}
 }

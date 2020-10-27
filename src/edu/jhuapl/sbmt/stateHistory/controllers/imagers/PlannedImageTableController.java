@@ -12,8 +12,11 @@ import edu.jhuapl.sbmt.client.SmallBodyViewConfig;
 import edu.jhuapl.sbmt.stateHistory.model.planning.imagers.PlannedImageCollection;
 import edu.jhuapl.sbmt.stateHistory.ui.imagers.PlannedImageView;
 
+import lombok.Getter;
+
 public class PlannedImageTableController
 {
+	@Getter
 	PlannedImageView view;
 
 	public PlannedImageTableController(final ModelManager modelManager, Renderer renderer, PlannedImageCollection collection, SmallBodyViewConfig config)
@@ -52,10 +55,5 @@ public class PlannedImageTableController
 			}
 
 		});
-	}
-
-	public PlannedImageView getView()
-	{
-		return view;
 	}
 }

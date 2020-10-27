@@ -1,5 +1,8 @@
 package edu.jhuapl.sbmt.stateHistory.controllers.viewControls;
 
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
+
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JCheckBox;
 
@@ -13,9 +16,9 @@ import edu.jhuapl.sbmt.stateHistory.model.stateHistory.StateHistoryCollection;
 import edu.jhuapl.sbmt.stateHistory.model.viewOptions.RendererLookDirection;
 import edu.jhuapl.sbmt.stateHistory.model.viewOptions.StateHistoryViewOptionsModel;
 import edu.jhuapl.sbmt.stateHistory.ui.state.version2.viewControls.StateHistoryViewOptionsPanel;
-import edu.jhuapl.sbmt.stateHistory.ui.state.version2.viewControls.viewOptions.table.ViewOptionsTableView;
 
 import glum.item.ItemEventType;
+import lombok.Getter;
 
 /**
  * @author steelrj1
@@ -26,45 +29,48 @@ public class StateHistoryViewOptionsController
 	/**
 	 * The view governed by this controller
 	 */
+	@Getter
 	private StateHistoryViewOptionsPanel view;
 
 	/**
-	 * The model that contains information about the view options
-	 */
-	private StateHistoryViewOptionsModel model;
-
-	/**
-	 * The renderer being manipulated
-	 */
-	private Renderer renderer;
-
-	/**
-	 * The collection of state history items
-	 */
-	private StateHistoryCollection runs;
-
-	/**
 	 * Constructor.  Sets properties and initializes the view control panel
-	 * @param runs
-	 * @param renderer
+	 * @param runs			The collection of state history items
+	 * @param renderer		The renderer being manipulated
 	 */
 	public StateHistoryViewOptionsController(StateHistoryCollection runs, Renderer renderer)
 	{
-		this.runs = runs;
-		this.renderer = renderer;
-		initializeViewControlPanel();
+		initializeViewControlPanel(runs, renderer);
+		view.getShowLightingPanel().getShowLighting().addItemListener(new ItemListener()
+		{
+			@Override
+			public void itemStateChanged(ItemEvent e)
+			{
+				boolean selected = (e.getStateChange() == ItemEvent.SELECTED);
+				if (selected)
+				{
+					renderer.setFixedLightDirection(runs.getCurrentRun().getSunPosition());
+					renderer.setLighting(LightingType.FIXEDLIGHT);
+				}
+				else
+				{
+					renderer.setLighting(LightingType.LIGHT_KIT);
+				}
+			}
+		});
 	}
 
 	/**
 	 * Initializes the view control panel, sets action listeners, etc
+	 *
+ 	 * @param runs			The collection of state history items
+	 * @param renderer		The renderer being manipulated
 	 */
-	private void initializeViewControlPanel()
+	private void initializeViewControlPanel(StateHistoryCollection runs, Renderer renderer)
 	{
 		DefaultComboBoxModel<RendererLookDirection> comboModelView = new DefaultComboBoxModel<RendererLookDirection>(
 				RendererLookDirection.values());
 		view = new StateHistoryViewOptionsPanel();
-		view.setAvailableFOVs(runs.getAvailableFOVs());
-		model = new StateHistoryViewOptionsModel();
+		StateHistoryViewOptionsModel model = new StateHistoryViewOptionsModel();
 
 		view.getViewInputAngle().setText("30.0");
 
@@ -73,7 +79,7 @@ public class StateHistoryViewOptionsController
 
 		view.getViewOptions().addActionListener(e ->
 		{
-			updateLookDirection();
+			updateLookDirection(runs, renderer, model);
 		});
 
 		//set the action listener for the reset to nadir button
@@ -98,15 +104,9 @@ public class StateHistoryViewOptionsController
         runs.addPropertyChangeListener(evt -> {
 
 			if (!evt.getPropertyName().equals("POSITION_CHANGED")) return;
-			updateLookDirection();
+			updateLookDirection(runs, renderer, model);
 			if ((renderer.getLighting() == LightingType.FIXEDLIGHT && runs.getCurrentRun() != null) == false) return;
 			renderer.setFixedLightDirection(runs.getCurrentRun().getSunPosition());
-		});
-
-        runs.addListener((aSource, aEventType) ->
-		{
-			if (aEventType != ItemEventType.ItemsChanged) return;
-			view.setAvailableFOVs(runs.getAvailableFOVs());
 		});
 
         //on a change in selection in the table, reset the time fraction and update the state history's look angle
@@ -136,15 +136,16 @@ public class StateHistoryViewOptionsController
 				runs.removeSelectedFov(fovCheckbox.getText());
 			}
 		});
-		ViewOptionsTableView tableView = new ViewOptionsTableView(runs);
-		tableView.setup();
-		view.setTableView(tableView);
 	}
 
 	/**
 	 * Updates the look direction based on the selected option in user interface
+	 *
+	 * @param runs			The collection of state history items
+	 * @param renderer		The renderer being manipulated
+	 * @param model			The model that contains information about the view options
 	 */
-	private void updateLookDirection()
+	private void updateLookDirection(StateHistoryCollection runs, Renderer renderer, StateHistoryViewOptionsModel model)
 	{
 		RendererLookDirection selectedItem = (RendererLookDirection) view.getViewOptions().getSelectedItem();
 		model.setRendererLookDirectionForStateHistory(selectedItem, runs.getCurrentRun());
@@ -173,14 +174,4 @@ public class StateHistoryViewOptionsController
 		}
 		renderer.getRenderWindowPanel().resetCameraClippingRange();
 	}
-
-	/**
-	 * The panel associated with this controller
-	 * @return
-	 */
-	public StateHistoryViewOptionsPanel getView()
-	{
-		return view;
-	}
-
 }

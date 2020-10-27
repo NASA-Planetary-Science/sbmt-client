@@ -20,11 +20,11 @@ import edu.jhuapl.sbmt.stateHistory.rendering.SpacecraftBody;
 import edu.jhuapl.sbmt.stateHistory.rendering.directionMarkers.EarthDirectionMarker;
 import edu.jhuapl.sbmt.stateHistory.rendering.directionMarkers.SpacecraftDirectionMarker;
 import edu.jhuapl.sbmt.stateHistory.rendering.directionMarkers.SunDirectionMarker;
-import edu.jhuapl.sbmt.stateHistory.rendering.planning.PlannedLidarActor;
 import edu.jhuapl.sbmt.stateHistory.rendering.text.SpacecraftLabel;
 
 import crucible.core.mechanics.FrameID;
 import crucible.core.mechanics.utilities.SimpleFrameID;
+import lombok.Getter;
 
 /**
  * @author steelrj1
@@ -65,6 +65,7 @@ public class StateHistoryPositionCalculator implements IStateHistoryPositionCalc
 	/**
 	*
 	*/
+	@Getter
 	private double[] currentLookFromDirection;
 
 	/**
@@ -160,10 +161,10 @@ public class StateHistoryPositionCalculator implements IStateHistoryPositionCalc
 		return new BasicLidarPoint(boresightInterceptPosition, spacecraftPosition, time, range, intensity);
 	}
 
-	public static void updateLidarFootprintPointing(StateHistory history, double time, PlannedLidarActor fprint, SmallBodyModel smallBodyModel)
+	public static void updateLidarFootprintPointing(StateHistory history, double time, String instrumentName, SmallBodyModel smallBodyModel)
 	{
 		double[] spacecraftPosition = history.getSpacecraftPositionAtTime(time);
-		FrameID instrumentFrameID = new SimpleFrameID(fprint.getInstrumentName());
+		FrameID instrumentFrameID = new SimpleFrameID(instrumentName);
 //		System.out.println("StateHistoryPositionCalculator: updateLidarFootprintPointing: inst name " + fprint.getInstrumentName());
 		double[] boresightInterceptPosition = new double[3];
 		double[] spacecraftDirection = new double[3];
@@ -369,12 +370,6 @@ public class StateHistoryPositionCalculator implements IStateHistoryPositionCalc
 		{
 			currentLookFromDirection = spacecraftPosition;
 		}
-		return currentLookFromDirection;
-	}
-
-	@Override
-	public double[] getCurrentLookFromDirection()
-	{
 		return currentLookFromDirection;
 	}
 }

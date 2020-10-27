@@ -112,10 +112,10 @@ public class ViewOptionsTableView extends JPanel
 
 		scrollPane.setViewportView(resultList);
 
-		JPanel panel_1 = new JPanel();
-		add(panel_1);
-		panel_1.setLayout(new BoxLayout(panel_1, BoxLayout.X_AXIS));
-		panel_1.add(showStateHistoryButton);
+//		JPanel panel_1 = new JPanel();
+//		add(panel_1);
+//		panel_1.setLayout(new BoxLayout(panel_1, BoxLayout.X_AXIS));
+//		panel_1.add(showStateHistoryButton);
 
 	}
 

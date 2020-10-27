@@ -39,5 +39,9 @@ public interface IStateHistoryIntervalGenerator
 	public StateHistory createNewTimeInterval(StateHistory history, Function<Double, Void> progressFunction) throws StateHistoryInputException, StateHistoryInvalidTimeException;
 
 
+	/**
+	 * @param sourceFile
+	 * @param spice
+	 */
 	public void setSourceFile(String sourceFile, SpiceInfo spice);
 }

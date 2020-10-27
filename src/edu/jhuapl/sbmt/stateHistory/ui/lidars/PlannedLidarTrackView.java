@@ -6,8 +6,11 @@ import javax.swing.JPanel;
 import edu.jhuapl.sbmt.client.SmallBodyViewConfig;
 import edu.jhuapl.sbmt.stateHistory.model.planning.lidar.PlannedLidarTrackCollection;
 
+import lombok.Getter;
+
 public class PlannedLidarTrackView extends JPanel
 {
+	@Getter
 	PlannedLidarTrackTableView table;
 
 	public PlannedLidarTrackView(PlannedLidarTrackCollection collection, SmallBodyViewConfig config)
@@ -16,10 +19,5 @@ public class PlannedLidarTrackView extends JPanel
 		table = new PlannedLidarTrackTableView(collection);
 		table.setup();
 		add(table);
-	}
-
-	public PlannedLidarTrackTableView getTable()
-	{
-		return table;
 	}
 }

@@ -18,6 +18,8 @@ import crucible.crust.metadata.api.Key;
 import crucible.crust.metadata.api.Version;
 import crucible.crust.metadata.impl.InstanceGetter;
 import crucible.crust.metadata.impl.SettableMetadata;
+import lombok.Getter;
+import lombok.Setter;
 
 /**
  * Standard class for holding history information.  A timeToStateMap keeps a correlation between ephemeris time
@@ -38,47 +40,57 @@ public class StandardStateHistory implements StateHistory
     /**
      *
      */
+    @Getter
     private Double currentTime;
 
     /**
      *
      */
+    @Setter
     private Double startTime;
 
     /**
      *
      */
+    @Setter
     private Double endTime;
 
     /**
      *
      */
+    @Getter
     private StateHistoryKey key;
 
     /**
      *
      */
+    @Getter @Setter
     private Trajectory trajectory;
 
     /**
      *
      */
-    private String name = "";
+    @Getter @Setter
+    private String stateHistoryName = "";
 
     /**
      *
      */
-    private String description = "";
+    @Getter @Setter
+    private String stateHistoryDescription = "";
 
     /**
      *
      */
     private Double[] color;
 
+    @Getter @Setter
     private StateHistorySourceType type;
 
+    @Getter @Setter
     private String sourceFile;
 
+    @Getter @Setter
     private IPointingProvider pointingProvider;
 
 
@@ -122,13 +134,13 @@ public class StandardStateHistory implements StateHistory
     		SettableMetadata result = SettableMetadata.of(Version.of(1, 0));
     		result.put(STATEHISTORY_KEY_KEY, stateHistory.getKey());
     		result.put(CURRENT_TIME_KEY, stateHistory.getCurrentTime());
-    		result.put(START_TIME_KEY, stateHistory.getMinTime());
-    		result.put(END_TIME_KEY, stateHistory.getMaxTime());
+    		result.put(START_TIME_KEY, stateHistory.getStartTime());
+    		result.put(END_TIME_KEY, stateHistory.getEndTime());
     		result.put(STATE_HISTORY_NAME_KEY, stateHistory.getStateHistoryName());
     		result.put(STATE_HISTORY_DESCRIPTION_KEY, stateHistory.getStateHistoryDescription());
     		result.put(TYPE_KEY, stateHistory.getType().toString());
     		result.put(SOURCE_FILE, stateHistory.getSourceFile());
-    		result.put(COLOR_KEY, new Double[] { stateHistory.getTrajectory().getTrajectoryColor()[0], stateHistory.getTrajectory().getTrajectoryColor()[1], stateHistory.getTrajectory().getTrajectoryColor()[2], stateHistory.getTrajectory().getTrajectoryColor()[3]});
+    		result.put(COLOR_KEY, new Double[] { stateHistory.getTrajectory().getColor()[0], stateHistory.getTrajectory().getColor()[1], stateHistory.getTrajectory().getColor()[2], stateHistory.getTrajectory().getColor()[3]});
     		return result;
     	});
 	}
@@ -156,8 +168,8 @@ public class StandardStateHistory implements StateHistory
     	this.startTime = startTime;
     	this.endTime = endTime;
     	this.color = color;
-    	this.name = name;
-    	this.description = description;
+    	this.stateHistoryName = name;
+    	this.stateHistoryDescription = description;
     	this.type = type;
     	this.sourceFile = sourceFile;
     }
@@ -165,40 +177,9 @@ public class StandardStateHistory implements StateHistory
     /**
      *
      */
-    public StateHistoryKey getKey()
-    {
-    	return key;
-    }
-
-    public StateHistorySourceType getType()
-	{
-		return type;
-	}
-
-	public String getSourceFile()
-	{
-		return sourceFile;
-	}
-
-	public void setType(StateHistorySourceType type)
-	{
-		this.type = type;
-	}
-
-	/**
-     *
-     */
-    public Double getCurrentTime()
-    {
-        return currentTime;
-    }
-
-    /**
-     *
-     */
     public void setCurrentTime(Double dt) throws StateHistoryInvalidTimeException
     {
-        if( dt < getMinTime() || dt > getMaxTime())
+        if( dt < getStartTime() || dt > getEndTime())
         {
         	throw new StateHistoryInvalidTimeException("Entered time is outside the range of the selected interval.");
 //            JOptionPane.showMessageDialog(null, "Entered time is outside the range of the selected interval.", "Error",
@@ -221,68 +202,18 @@ public class StandardStateHistory implements StateHistory
     /**
      *
      */
-    public Double getMinTime()
+    public Double getStartTime()
     {
     	if (startTime != null) return startTime;
         return timeToStateMap.firstKey();
     }
 
 
-    public Double getMaxTime()
+    public Double getEndTime()
     {
     	if (endTime != null) return endTime;
         return timeToStateMap.lastKey();
     }
-
-    /**
-	 * @param startTime the startTime to set
-	 */
-	public void setStartTime(Double startTime)
-	{
-		this.startTime = startTime;
-	}
-
-	/**
-	 * @param endTime the endTime to set
-	 */
-	public void setEndTime(Double endTime)
-	{
-		this.endTime = endTime;
-	}
-
-//    /**
-//     *
-//     */
-//    public Double getTimeFraction()
-//    {
-//        double min = getMinTime() + trajectory.getMinDisplayFraction()*(getMaxTime() - getMinTime());
-//        double max = getMaxTime() - (1-trajectory.getMaxDisplayFraction())*(getMaxTime()-getMinTime());
-//        double time = getCurrentTime();
-//        double result = (time - min) / (max - min);
-//        return result;
-//    }
-//
-//    /**
-//     *
-//     */
-//    public void setTimeFraction(Double timeFraction) throws StateHistoryInvalidTimeException
-//    {
-//        double min = getMinTime() + trajectory.getMinDisplayFraction()*(getMaxTime() - getMinTime());
-//        double max = getMaxTime() - (1-trajectory.getMaxDisplayFraction())*(getMaxTime()-getMinTime());
-//        double time = min + timeFraction * (max - min);
-////        System.out.println("StandardStateHistory: setTimeFraction: setting time to " + time);
-//        setCurrentTime(time);
-//    }
-//
-//    public double getCurrentMinValue()
-//    {
-//    	return getMinTime() + trajectory.getMinDisplayFraction()*(getMaxTime() - getMinTime());
-//    }
-//
-//    public double getCurrentMaxValue()
-//    {
-//    	return getMaxTime() - (1-trajectory.getMaxDisplayFraction())*(getMaxTime()-getMinTime());
-//    }
 
     /**
      *
@@ -339,7 +270,7 @@ public class StandardStateHistory implements StateHistory
      */
     public Double getTimeWindow()
     {
-        return getMaxTime() - getMinTime();
+        return getEndTime() - getStartTime();
     }
 
 
@@ -440,60 +371,22 @@ public class StandardStateHistory implements StateHistory
     }
 
 	@Override
-	public Trajectory getTrajectory()
-	{
-		return trajectory;
-	}
-
-	@Override
-	public void setTrajectory(Trajectory trajectory)
-	{
-		this.trajectory = trajectory;
-	}
-
-	@Override
 	public void setTrajectoryColor(Double[] color)
 	{
 		this.color = color;
-		this.trajectory.setTrajectoryColor(new double[] {color[0], color[1], color[2], color[3]});
-	}
-
-	@Override
-	public String getStateHistoryName()
-	{
-		return name;
-	}
-
-	@Override
-	public void setStateHistoryName(String name)
-	{
-		this.name = name;
-	}
-
-	@Override
-	public String getStateHistoryDescription()
-	{
-		return description;
-	}
-
-	@Override
-	public void setStateHistoryDescription(String description)
-	{
-		this.description = description;
+		this.trajectory.setColor(new double[] {color[0], color[1], color[2], color[3]});
 	}
 
 	@Override
 	public double[] getInstrumentLookDirection(String instrumentFrameName)
 	{
-		double[] lookDir = getCurrentState().getInstrumentLookDirection(instrumentFrameName);
-		return lookDir;
+		return getCurrentState().getInstrumentLookDirection(instrumentFrameName);
 	}
 
 	@Override
 	public double[] getInstrumentLookDirectionAtTime(String instrumentFrameName, double time)
 	{
-		double[] lookDir = getStateAtTime(time).getInstrumentLookDirection(instrumentFrameName);
-		return lookDir;
+		return getStateAtTime(time).getInstrumentLookDirection(instrumentFrameName);
 	}
 
 	@Override
@@ -505,25 +398,6 @@ public class StandardStateHistory implements StateHistory
 	@Override
 	public UnwritableVectorIJK getFrustumAtTime(String instrumentFrameName, int index, double time)
 	{
-//		System.out.println("StandardStateHistory: getFrustumAtTime: getting frustum at time " + time);
 		return getStateAtTime(time).getFrustum(instrumentFrameName, index);
-	}
-
-	@Override
-	public void setSourceFile(String sourceFile)
-	{
-		this.sourceFile = sourceFile;
-	}
-
-	@Override
-	public IPointingProvider getPointingProvider()
-	{
-		return pointingProvider;
-	}
-
-	@Override
-	public void setPointingProvider(IPointingProvider pointingProvider)
-	{
-		this.pointingProvider = pointingProvider;
 	}
 }

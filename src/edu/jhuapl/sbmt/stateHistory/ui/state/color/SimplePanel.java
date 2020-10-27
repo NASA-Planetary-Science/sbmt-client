@@ -10,14 +10,17 @@ import javax.swing.JColorChooser;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 
+import edu.jhuapl.saavtk.color.gui.EditGroupColorPanel;
+import edu.jhuapl.saavtk.color.provider.ConstGroupColorProvider;
+import edu.jhuapl.saavtk.color.provider.GroupColorProvider;
+import edu.jhuapl.saavtk.color.provider.SimpleColorProvider;
 import edu.jhuapl.saavtk.util.ColorIcon;
 
 import glum.gui.GuiUtil;
 import net.miginfocom.swing.MigLayout;
 
 /**
- * {@link StateHistoryColorConfigPanel} that provides simplistic configuration of lidar
- * data.
+ * {@link StateHistoryColorConfigPanel} that provides simplistic configuration of state history
  * <P>
  * The configuration options are:
  * <UL>
@@ -28,7 +31,7 @@ import net.miginfocom.swing.MigLayout;
  *
  * @author steelrj1
  */
-public class SimplePanel extends JPanel implements ActionListener, StateHistoryColorConfigPanel
+public class SimplePanel extends JPanel implements ActionListener, EditGroupColorPanel
 {
 	// Reference vars
 	private final ActionListener refListener;
@@ -43,7 +46,7 @@ public class SimplePanel extends JPanel implements ActionListener, StateHistoryC
 	/**
 	 * Standard Constructor
 	 */
-	public SimplePanel(ActionListener aListener, Color aSrcColor, Color aTgtColor)
+	public SimplePanel(ActionListener aListener, Color aSrcColor)
 	{
 		refListener = aListener;
 
@@ -89,7 +92,7 @@ public class SimplePanel extends JPanel implements ActionListener, StateHistoryC
 	}
 
 	@Override
-	public GroupColorProvider getSourceGroupColorProvider()
+	public GroupColorProvider getGroupColorProvider()
 	{
 		return new ConstGroupColorProvider(new SimpleColorProvider(srcColor));
 	}

@@ -8,6 +8,7 @@ import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.DefaultCellEditor;
 import javax.swing.JButton;
+import javax.swing.JComboBox;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
@@ -20,7 +21,6 @@ import edu.jhuapl.saavtk.color.provider.ColorProvider;
 import edu.jhuapl.saavtk.color.provider.ConstColorProvider;
 import edu.jhuapl.saavtk.gui.util.IconUtil;
 import edu.jhuapl.saavtk.gui.util.ToolTipUtil;
-import edu.jhuapl.sbmt.gui.table.EphemerisTimeRenderer;
 import edu.jhuapl.sbmt.stateHistory.model.interfaces.StateHistory;
 import edu.jhuapl.sbmt.stateHistory.model.stateHistory.StateHistoryCollection;
 import edu.jhuapl.sbmt.stateHistory.rendering.DisplayableItem;
@@ -112,10 +112,10 @@ public class DisplayOptionsTableView extends JPanel
 
 		scrollPane.setViewportView(resultList);
 
-		JPanel panel_1 = new JPanel();
-		add(panel_1);
-		panel_1.setLayout(new BoxLayout(panel_1, BoxLayout.X_AXIS));
-		panel_1.add(showStateHistoryButton);
+//		JPanel panel_1 = new JPanel();
+//		add(panel_1);
+//		panel_1.setLayout(new BoxLayout(panel_1, BoxLayout.X_AXIS));
+//		panel_1.add(showStateHistoryButton);
 
 	}
 
@@ -169,15 +169,14 @@ public class DisplayOptionsTableView extends JPanel
 		tmpComposer.addAttribute(DisplayOptionsColumnLookup.Color, Color.class, "Color", null);
 		tmpComposer.addAttribute(DisplayOptionsColumnLookup.Name, String.class, "Name", null);
 		tmpComposer.addAttribute(DisplayOptionsColumnLookup.Label, String.class, "Label", null);
-		tmpComposer.addAttribute(DisplayOptionsColumnLookup.Size, Integer.class, "Size", null);
+		tmpComposer.addAttribute(DisplayOptionsColumnLookup.Size, Double.class, "Size", null);
 
-
-		EphemerisTimeRenderer tmpTimeRenderer = new EphemerisTimeRenderer(false);
 		tmpComposer.setEditor(DisplayOptionsColumnLookup.Show, new BooleanCellEditor());
 		tmpComposer.setRenderer(DisplayOptionsColumnLookup.Show, new BooleanCellRenderer());
-//		tmpComposer.setEditor(DisplayOptionsColumnLookup.Size, new BooleanCellEditor());
-//		tmpComposer.setRenderer(DisplayOptionsColumnLookup.Size, new BooleanCellRenderer());
-//		tmpComposer.setEditor(DisplayOptionsColumnLookup.Label, new BooleanCellEditor());
+		JComboBox<Double> sizeCombo = new JComboBox<Double>(new Double[] {0.0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0});
+		sizeCombo.setSelectedIndex(5);
+		tmpComposer.setEditor(DisplayOptionsColumnLookup.Size, new DefaultCellEditor(sizeCombo));
+
 		tmpComposer.setEditor(DisplayOptionsColumnLookup.Label, new DefaultCellEditor(new JTextField()));
 		tmpComposer.setEditor(DisplayOptionsColumnLookup.Color, new ColorProviderCellEditor<StateHistory>());
 		tmpComposer.setRenderer(DisplayOptionsColumnLookup.Color, new ColorProviderCellRenderer(false));
@@ -226,7 +225,7 @@ public class DisplayOptionsTableView extends JPanel
 
 		ColorProvider blackCP = new ConstColorProvider(Color.BLACK);
 		Object[] nomArr =
-		{ true,  blackCP, "Segment000000000000000", "Segment000000000000000", 100};
+		{ true,  blackCP, "Segment000000000000000", "Segment000000000000000", 100000};
 		for (int aCol = 0; aCol < nomArr.length; aCol++)
 		{
 			TableCellRenderer tmpRenderer = tmpTable.getCellRenderer(0, aCol);

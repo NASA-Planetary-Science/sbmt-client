@@ -61,13 +61,6 @@ public class StateHistoryController
      */
     private StateHistoryDisplayedIntervalController intervalDisplayedController;
 
-
-
-//    /**
-//     * Controller for the view controls panel
-//     */
-//    private StateHistoryViewControlsController viewControlsController;
-
     /**
      * Renderer that the controller interacts with
      */
@@ -78,9 +71,10 @@ public class StateHistoryController
      */
     private StateHistoryModel historyModel = null;
 
+    /**
+     *
+     */
     private StateHistoryTimeModel timeModel = null;
-
-//    private IPositionOrientation positionOrientation = null;
 
     /**
      * Constructor.  Initializes properties, sets listeners, etc
@@ -138,11 +132,8 @@ public class StateHistoryController
         this.intervalSelectionController = new StateHistoryIntervalSelectionController(historyModel, bodyModel, renderer);
 
         this.intervalDisplayedController = new StateHistoryDisplayedIntervalController(historyModel.getRuns(), timeModel);
-//        this.viewControlsController = new StateHistoryViewControlsController(historyModel, renderer);
 
         intervalDisplayedController.getView().setEnabled(false);
-
-
 
         renWin.getRenderWindow().AddObserver("EndEvent", this, "updateTimeBarPosition");
         renWin.getComponent().addComponentListener(new ComponentAdapter()
@@ -159,9 +150,6 @@ public class StateHistoryController
         runs.addListener((aSource, aEventType) -> {
 			if (aEventType != ItemEventType.ItemsSelected) return;
 			intervalDisplayedController.getView().setEnabled(runs.getSelectedItems().size() > 0);
-
-//			intervalPlaybackController.getView().setEnabled(runs.getSelectedItems().size() > 0);
-//			viewControlsController.setEnabled(runs.getSelectedItems().size() > 0);
 		});
     }
 
@@ -184,9 +172,6 @@ public class StateHistoryController
 
     	StateHistoryDisplayedIntervalPanel displayedPanel = intervalDisplayedController.getView();
 
-//    	StateHistoryIntervalPlaybackPanel intervalPlaybackPanel = intervalPlaybackController.getView();
-//    	JPanel viewControlsPanel = viewControlsController.getView();
-
     	timeControlsPanel.add(intervalGenerationPanel);
     	timeControlsPanel.add(intervalSelectionPanel);
 
@@ -194,8 +179,6 @@ public class StateHistoryController
     	panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
     	panel.add(timeControlsPanel);
     	panel.add(displayedPanel);
-//    	panel.add(viewControlsPanel);
-//    	panel.add(intervalPlaybackPanel);
     	return panel;
     }
 
@@ -210,11 +193,6 @@ public class StateHistoryController
     	historyModel.getRuns().updateTimeBarLocation(renderer.getRenderWindowPanel().getComponent().getWidth(), renderer.getRenderWindowPanel().getComponent().getHeight());
     }
 
-//    public void setPositionOrientationManager(IPositionOrientation positionOrientation)
-//	{
-//    	this.positionOrientation = positionOrientation;
-//	}
-
 	/**
 	 * @return the historyModel
 	 */
@@ -222,5 +200,4 @@ public class StateHistoryController
 	{
 		return historyModel;
 	}
-
 }

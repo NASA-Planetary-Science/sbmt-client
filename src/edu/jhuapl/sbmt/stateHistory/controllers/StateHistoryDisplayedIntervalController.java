@@ -9,6 +9,7 @@ import edu.jhuapl.sbmt.stateHistory.ui.state.version2.StateHistoryDisplayedInter
 import edu.jhuapl.sbmt.util.TimeUtil;
 
 import glum.item.ItemEventType;
+import lombok.Getter;
 
 /**
  * Controller that displays the "Displayed Interval" panel in the state history tab
@@ -20,13 +21,12 @@ public class StateHistoryDisplayedIntervalController
 	/**
 	 * JPanel for displaying the displayed interval controls
 	 */
+	@Getter
 	private StateHistoryDisplayedIntervalPanel view;
 
 	/**
-	 * The current set of StateHistory intervals
+	 *
 	 */
-	private StateHistoryCollection intervalSet;
-
 	private StateHistoryTimeModel timeModel;
 
 	/**
@@ -39,7 +39,6 @@ public class StateHistoryDisplayedIntervalController
 	 */
 	public StateHistoryDisplayedIntervalController(StateHistoryCollection intervalSet, StateHistoryTimeModel timeModel)
 	{
-		this.intervalSet = intervalSet;
 		this.timeModel = timeModel;
 		view = new StateHistoryDisplayedIntervalPanel();
 
@@ -52,7 +51,7 @@ public class StateHistoryDisplayedIntervalController
 				intervalSet.setCurrentRun(intervalSet.getSelectedItems().asList().get(0));
 				System.out
 				.println("StateHistoryDisplayedIntervalController: StateHistoryDisplayedIntervalController: updating dispalyed window");
-				timeModel.setTimeWindow(new TimeWindow(intervalSet.getCurrentRun().getMinTime(), intervalSet.getCurrentRun().getMaxTime()));
+				timeModel.setTimeWindow(new TimeWindow(intervalSet.getCurrentRun().getStartTime(), intervalSet.getCurrentRun().getEndTime()));
 				updateDisplayedTimeRange(0.0, 1.0);
 			}
 			view.getTimeIntervalChanger().setEnabled(intervalSet.getSelectedItems().size() > 0);
@@ -62,55 +61,26 @@ public class StateHistoryDisplayedIntervalController
 		//The action listener for the time interval changer; takes values from the changer
 		//and passes them onto the current run so the display can properly update
 		view.getTimeIntervalChanger().addActionListener(e -> {
+
 			StateHistoryPercentIntervalChanger changer = view.getTimeIntervalChanger();
 			double minValue = changer.getLowValue();
 			double maxValue = changer.getHighValue();
 			timeModel.setFractionDisplayed(minValue, maxValue);
-//			System.out.println(
-//					"StateHistoryDisplayedIntervalController: StateHistoryDisplayedIntervalController: displayed time window " + timeModel.getDisplayedTimeWindow() + " time " + TimeUtil.et2str(timeModel.getEt()));
 
-			//TODO FIX ME
-//			double timeFraction = intervalSet.getCurrentRun().getTimeFraction();
 			intervalSet.setTrajectoryMinMax(intervalSet.getCurrentRun(), minValue, maxValue);
 			intervalSet.getCurrentRun().getTrajectory().setMinDisplayFraction(minValue);
 			intervalSet.getCurrentRun().getTrajectory().setMaxDisplayFraction(maxValue);
-
-			//TODO FIX ME
-//			try
-//			{
-//				System.out.println(
-//						"StateHistoryDisplayedIntervalController: StateHistoryDisplayedIntervalController: time fraction " + timeFraction);
-//				intervalSet.getCurrentRun().setTimeFraction(timeFraction);
-//			}
-//			catch (StateHistoryInvalidTimeException e1)
-//			{
-//				JOptionPane.showMessageDialog(null, e1.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
-//				// TODO Auto-generated catch block
-////				e1.printStackTrace();
-//			}
-//			System.out
-//					.println("StateHistoryDisplayedIntervalController: StateHistoryDisplayedIntervalController: min value " + minValue);
-//			updateDisplayedTimeRange(minValue, maxValue);
+			intervalSet.notify(intervalSet, ItemEventType.ItemsMutated);
 		});
 
 		timeModel.addTimeModelChangeListener(new BaseStateHistoryTimeModelChangedListener() {
 			@Override
 			public void fractionDisplayedChanged(double minFractionDisplayed, double maxFractionDisplayed)
 			{
-				// TODO Auto-generated method stub
 				super.fractionDisplayedChanged(minFractionDisplayed, maxFractionDisplayed);
 				updateDisplayedTimeRange(minFractionDisplayed, minFractionDisplayed);
 			}
 		});
-	}
-
-	/**
-	 * Returns the view associated with this controller
-	 * @return the view associated with this controller
-	 */
-	public StateHistoryDisplayedIntervalPanel getView()
-	{
-		return view;
 	}
 
 	/**
@@ -124,7 +94,6 @@ public class StateHistoryDisplayedIntervalController
 		String minTime = TimeUtil.et2str(window.getStartTime());
 		String maxTime = TimeUtil.et2str(window.getStopTime());
 
-//		System.out.println("StateHistoryDisplayedIntervalController: updateDisplayedTimeRange: updating label " + minTime.substring(0, minTime.length()-3));
 		view.getDisplayedStartTimeLabel().setText(minTime.substring(0, minTime.length()-3));
 		view.getDisplayedStopTimeLabel().setText(maxTime.substring(0, maxTime.length()-3));
 	}

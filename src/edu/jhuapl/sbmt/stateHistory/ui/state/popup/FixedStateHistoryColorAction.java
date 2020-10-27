@@ -3,9 +3,9 @@ package edu.jhuapl.sbmt.stateHistory.ui.state.popup;
 import java.awt.Color;
 import java.util.List;
 
+import edu.jhuapl.saavtk.color.provider.ColorProvider;
+import edu.jhuapl.saavtk.color.provider.ConstColorProvider;
 import edu.jhuapl.sbmt.stateHistory.model.stateHistory.StateHistoryCollection;
-import edu.jhuapl.sbmt.stateHistory.ui.state.color.ColorProvider;
-import edu.jhuapl.sbmt.stateHistory.ui.state.color.ConstColorProvider;
 
 /**
  * Object that defines the action: "Fixed Color" (based on code from lopeznr1)

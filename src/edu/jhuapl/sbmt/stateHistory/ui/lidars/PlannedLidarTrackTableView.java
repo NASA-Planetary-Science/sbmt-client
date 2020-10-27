@@ -33,33 +33,39 @@ import glum.gui.panel.itemList.ItemProcessor;
 import glum.gui.panel.itemList.query.QueryComposer;
 import glum.gui.table.TablePopupHandler;
 import glum.item.ItemManagerUtil;
+import lombok.Getter;
 
 public class PlannedLidarTrackTableView extends JPanel
 {
 	/**
 	 * JButton to load planned image from file
 	 */
+	@Getter
 	private JButton loadPlannedLidarTrackButton;
 
     /**
      * JButton to remove planned LidarTrack from table
      */
+	@Getter
     private JButton removePlannedLidarTrackButton;
 
     /**
      * JButton to show planned LidarTrack in renderer
      */
+	@Getter
     private JButton showPlannedLidarTrackButton;
 
     /**
      * JButton to save planned LidarTrack to file
      */
+	@Getter
     private JButton savePlannedLidarTrackButton;
 
     /**
      *	JTable to display loaded state histories
      */
-    protected JTable resultList;
+	@Getter
+    protected JTable table;
 
     /**
      * JButtons for selection in the table
@@ -92,7 +98,7 @@ public class PlannedLidarTrackTableView extends JPanel
      */
     protected void init()
     {
-        resultList = buildTable();
+        table = buildTable();
         removePlannedLidarTrackButton = new JButton("Hide Planned Lidar Track");
         showPlannedLidarTrackButton = new JButton("Show Planned Lidar Track");
         removePlannedLidarTrackButton.setEnabled(false);
@@ -120,7 +126,7 @@ public class PlannedLidarTrackTableView extends JPanel
         scrollPane.setPreferredSize(new java.awt.Dimension(150, 150));
         add(scrollPane);
 
-        scrollPane.setViewportView(resultList);
+        scrollPane.setViewportView(table);
 
         JPanel panel_1 = new JPanel();
         add(panel_1);
@@ -185,7 +191,6 @@ public class PlannedLidarTrackTableView extends JPanel
 		tmpComposer.addAttribute(PlannedLidarTrackColumnLookup.TrackStartTime, String.class, "Track Start Time", null);
 		tmpComposer.addAttribute(PlannedLidarTrackColumnLookup.TrackStopTime, String.class, "Track Stop Time", null);
 
-
 		EphemerisTimeRenderer tmpTimeRenderer = new EphemerisTimeRenderer(false);
 
 		tmpComposer.setEditor(PlannedLidarTrackColumnLookup.Show, new BooleanCellEditor());
@@ -194,7 +199,6 @@ public class PlannedLidarTrackTableView extends JPanel
 		tmpComposer.setRenderer(PlannedLidarTrackColumnLookup.Color, new ColorProviderCellRenderer(false));
 		tmpComposer.setRenderer(PlannedLidarTrackColumnLookup.TrackStartTime, tmpTimeRenderer);
 		tmpComposer.setRenderer(PlannedLidarTrackColumnLookup.TrackStopTime, tmpTimeRenderer);
-
 
 		plannedLidarTrackTableHandler = new PlannedLidarTrackItemHandler(plannedLidarTrackCollection, tmpComposer);
 		ItemProcessor<PlannedLidarTrack> tmpIP = plannedLidarTrackCollection;
@@ -207,51 +211,6 @@ public class PlannedLidarTrackTableView extends JPanel
 		plannedLidarTrackTable.addMouseListener(new TablePopupHandler(plannedLidarTrackCollection, null));
 
 		return plannedLidarTrackTable;
-    }
-
-    /**
-     * Returns the JTable used to display the list of loaded state histories
-     * @return the JTable used to display the list of loaded state histories
-     */
-    public JTable getTable()
-    {
-        return resultList;
-    }
-
-    /**
-     * Returns the load planned LidarTrack button
-     * @return the load planned LidarTrack button
-     */
-    public JButton getLoadPlannedLidarTrackButton()
-    {
-        return loadPlannedLidarTrackButton;
-    }
-
-    /**
-     * Returns the show planned LidarTrack button
-     * @return the show planned LidarTrack button
-     */
-    public JButton getShowPlannedLidarTrackButton()
-    {
-        return showPlannedLidarTrackButton;
-    }
-
-    /**
-     * Returns the remove planned LidarTrack button
-     * @return the remove planned LidarTrack button
-     */
-    public JButton getRemovePlannedLidarTrackButton()
-    {
-        return removePlannedLidarTrackButton;
-    }
-
-    /**
-     * Returns the save planned LidarTrack button
-     * @return the save planned LidarTrack button
-     */
-    public JButton getSavePlannedLidarTrackButton()
-    {
-        return savePlannedLidarTrackButton;
     }
 
 	/**
@@ -273,5 +232,4 @@ public class PlannedLidarTrackTableView extends JPanel
 			tmpTable.getColumnModel().getColumn(aCol).setPreferredWidth(tmpW + 10);
 		}
 	}
-
 }

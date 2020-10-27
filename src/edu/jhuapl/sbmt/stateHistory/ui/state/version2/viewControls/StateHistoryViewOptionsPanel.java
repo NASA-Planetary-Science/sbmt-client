@@ -5,12 +5,10 @@ import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ItemListener;
-import java.util.Vector;
 
 import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
-import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -18,7 +16,7 @@ import javax.swing.JTextField;
 import javax.swing.border.TitledBorder;
 
 import edu.jhuapl.sbmt.stateHistory.model.viewOptions.RendererLookDirection;
-import edu.jhuapl.sbmt.stateHistory.ui.state.version2.viewControls.viewOptions.table.ViewOptionsTableView;
+import edu.jhuapl.sbmt.stateHistory.ui.state.version2.viewControls.displayItems.StateHistoryDisplayItemShowLightingPanel;
 
 public class StateHistoryViewOptionsPanel extends JPanel implements ActionListener
 {
@@ -52,23 +50,17 @@ public class StateHistoryViewOptionsPanel extends JPanel implements ActionListen
 	 */
 	private JLabel lblVerticalFov;
 
-	private JLabel availableFovsLabel;
+	private ItemListener checkboxItemListener;
 
-	private Vector<String> fovs;
-
-	private JCheckBox[] fovCheckboxes;
+	StateHistoryDisplayItemShowLightingPanel showLightingPanel;
 
 	private JPanel fovPanel = new JPanel();
 	private JPanel fovPanela = new JPanel();
-	private JPanel fovPanelb = new JPanel();
 
-	private ItemListener checkboxItemListener;
 
-	private ViewOptionsTableView tableView = null;
 
 	public StateHistoryViewOptionsPanel()
 	{
-		this.fovs = new Vector<String>();
 		initUI();
 	}
 
@@ -87,6 +79,9 @@ public class StateHistoryViewOptionsPanel extends JPanel implements ActionListen
 		// *********************
 		setBorder(new TitledBorder(null, "View Options", TitledBorder.LEADING, TitledBorder.TOP, null, null));
 		setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
+
+		add(showLightingPanel = new StateHistoryDisplayItemShowLightingPanel());
+		add(Box.createVerticalGlue());
 
 		// Select view panel
 		JPanel panel_2 = new JPanel();
@@ -119,76 +114,31 @@ public class StateHistoryViewOptionsPanel extends JPanel implements ActionListen
 	{
 		fovPanel.removeAll();
 
-		if (fovs == null || fovs.size() == 0)
-		{
-			fovPanela.removeAll();
-			fovPanela.setLayout(new BoxLayout(fovPanela, BoxLayout.X_AXIS));
-			lblVerticalFov = new JLabel("FOV (deg):");
-			lblVerticalFov.setEnabled(false);
-			fovPanela.add(lblVerticalFov);
+		fovPanela.removeAll();
+		fovPanela.setLayout(new BoxLayout(fovPanela, BoxLayout.X_AXIS));
+		lblVerticalFov = new JLabel("FOV (deg):");
+		lblVerticalFov.setEnabled(false);
+		fovPanela.add(lblVerticalFov);
 
-			viewInputAngle = new JTextField();
-			viewInputAngle.setMaximumSize(new Dimension(150, viewInputAngle.getPreferredSize().height));
-			viewInputAngle.setText("30.0");
-			viewInputAngle.setEnabled(false);
-			fovPanela.add(viewInputAngle);
-			viewInputAngle.setColumns(10);
+		viewInputAngle = new JTextField();
+		viewInputAngle.setMaximumSize(new Dimension(150, viewInputAngle.getPreferredSize().height));
+		viewInputAngle.setText("30.0");
+		viewInputAngle.setEnabled(false);
+		fovPanela.add(viewInputAngle);
+		viewInputAngle.setColumns(10);
 
-			setViewAngle = new JButton("Set");
-			setViewAngle.setEnabled(false);
-			fovPanela.add(setViewAngle);
-			fovPanela.add(Box.createHorizontalGlue());
-			fovPanel.add(fovPanela);
-		}
-		else
-		{
-//			fovPanelb.removeAll();
-//			fovCheckboxes = new JCheckBox[fovs.size()];
-//			fovPanelb.setLayout(new BoxLayout(fovPanelb, BoxLayout.Y_AXIS));
-//			fovPanelb.setBackground(Color.red);
-//			availableFovsLabel = new JLabel("Available FOVs");
-//			JPanel labelPanel = new JPanel();
-//			labelPanel.setLayout(new BoxLayout(labelPanel, BoxLayout.X_AXIS));
-//			labelPanel.add(availableFovsLabel);
-//			labelPanel.add(Box.createHorizontalGlue());
-//			fovPanelb.add(labelPanel);
-//			int i=0;
-//			for (String fov : fovs)
-//			{
-//				JCheckBox fovCheckBox = new JCheckBox(fov);
-//				fovCheckBox.addItemListener(checkboxItemListener);
-//				JPanel checkboxPanel = new JPanel();
-//				checkboxPanel.setLayout(new BoxLayout(checkboxPanel, BoxLayout.X_AXIS));
-//				checkboxPanel.add(fovCheckBox);
-//				checkboxPanel.add(Box.createHorizontalGlue());
-//				fovPanelb.add(checkboxPanel);
-//				fovCheckboxes[i++] = fovCheckBox;
-//			}
-//			fovPanel.add(fovPanelb);
+		setViewAngle = new JButton("Set");
+		setViewAngle.setEnabled(false);
+		fovPanela.add(setViewAngle);
+		fovPanela.add(Box.createHorizontalGlue());
+		fovPanel.add(fovPanela);
 
-			if (tableView != null)
-			{
-				System.out.println("StateHistoryViewOptionsPanel: updateFOVsPanel: adading table");
-				fovPanel.add(tableView);
-			}
-		}
 		return fovPanel;
 	}
 
-	public void setTableView(ViewOptionsTableView tableView)
+	public StateHistoryDisplayItemShowLightingPanel getShowLightingPanel()
 	{
-		this.tableView = tableView;
-	}
-
-	public void setAvailableFOVs(Vector<String> fovs)
-	{
-		this.fovs = fovs;
-		updateFOVsPanel();
-	}
-
-	public JCheckBox[] getFovCheckBoxes()
-	{
-		return fovCheckboxes;
+		return showLightingPanel;
 	}
 
 	@Override
@@ -255,6 +205,7 @@ public class StateHistoryViewOptionsPanel extends JPanel implements ActionListen
     	lblSelectView.setEnabled(enabled);
     	lblVerticalFov.setEnabled(enabled);
     	viewInputAngle.setEnabled(enabled);
+		showLightingPanel.setEnabled(enabled);
 
 		super.setEnabled(enabled);
 	}

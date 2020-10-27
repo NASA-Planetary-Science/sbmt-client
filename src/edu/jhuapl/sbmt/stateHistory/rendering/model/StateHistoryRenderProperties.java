@@ -2,8 +2,8 @@ package edu.jhuapl.sbmt.stateHistory.rendering.model;
 
 import java.awt.Color;
 
-import edu.jhuapl.sbmt.stateHistory.ui.state.color.ColorProvider;
-import edu.jhuapl.sbmt.stateHistory.ui.state.color.ConstColorProvider;
+import edu.jhuapl.saavtk.color.provider.ColorProvider;
+import edu.jhuapl.saavtk.color.provider.ConstColorProvider;
 
 
 
@@ -13,6 +13,8 @@ import edu.jhuapl.sbmt.stateHistory.ui.state.color.ConstColorProvider;
  * <P>
  * Since this class is NOT to be exposed outside of this package there are no
  * publicly accessible methods and all access is package private.
+ *
+ * Based off a file for Lidar originally made by lopeznr1
  *
  * @author steelrj1
  */
@@ -33,6 +35,6 @@ class StateHistoryRenderProperties
 	{
 		isVisible = true;
 		isCustomCP = false;
-		srcCP = new ConstColorProvider(Color.GREEN);
+		srcCP = new ConstColorProvider(new Color(0.0f, 1.0f, 1.0f));
 	}
 }

@@ -51,14 +51,12 @@ public class StateHistoryItemHandler extends BasicItemHandler<StateHistory, Stat
 			case Show:
 				return stateHistoryCollection.getVisibility(stateHistory);
 			case Color:
-				return new ConstColorProvider(new Color((int)(stateHistory.getTrajectory().getTrajectoryColor()[0]),
-											(int)(stateHistory.getTrajectory().getTrajectoryColor()[1]),
-											(int)(stateHistory.getTrajectory().getTrajectoryColor()[2]),
-											(int)(stateHistory.getTrajectory().getTrajectoryColor()[3])));
-//			case Line:
-//				return 1;
+				return new ConstColorProvider(new Color((int)(stateHistory.getTrajectory().getColor()[0]),
+											(int)(stateHistory.getTrajectory().getColor()[1]),
+											(int)(stateHistory.getTrajectory().getColor()[2]),
+											(int)(stateHistory.getTrajectory().getColor()[3])));
 			case Name:
-				if (stateHistory.getStateHistoryName().equals("")) return "Segment " + stateHistory.getKey().value;
+				if (stateHistory.getStateHistoryName().equals("")) return "Segment " + stateHistory.getKey().getValue();
 				return stateHistory.getStateHistoryName();
 			case Description:
 				return stateHistory.getStateHistoryDescription();
@@ -66,11 +64,11 @@ public class StateHistoryItemHandler extends BasicItemHandler<StateHistory, Stat
 				return "SOURCE-UPDATE";
 			case StartTime:
 				fmt.withZone(DateTimeZone.UTC);
-				timeString = TimeUtil.et2str(stateHistory.getMinTime());
+				timeString = TimeUtil.et2str(stateHistory.getStartTime());
 				return timeString.substring(0, 23);
 			case EndTime:
 				fmt.withZone(DateTimeZone.UTC);
-				timeString = TimeUtil.et2str(stateHistory.getMaxTime());
+				timeString = TimeUtil.et2str(stateHistory.getEndTime());
 				return timeString.substring(0, 23);
 			default:
 				break;

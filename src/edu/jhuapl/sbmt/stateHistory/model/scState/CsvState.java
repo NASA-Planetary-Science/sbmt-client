@@ -10,6 +10,7 @@ import edu.jhuapl.sbmt.stateHistory.model.interfaces.State;
 import edu.jhuapl.sbmt.util.TimeUtil;
 
 import crucible.core.math.vectorspace.UnwritableVectorIJK;
+import lombok.Getter;
 
 /**
  * Spacecraft state object represented by a set of comma separated values
@@ -21,45 +22,55 @@ public class CsvState implements State
     /**
      * State time in UTC
      */
+	@Getter
     private String utc;
-    /**
+
+	/**
      * State time in ephemeris time
      */
+    @Getter
     private double ephemerisTime;
 
     /**
      * Spacecraft position, in km, in body fixed frame
      */
+    @Getter
     private double[] spacecraftPosition;
 
     /**
      * Spacecraft velocity vector, in km/s, in body fixed frame
      */
+    @Getter
     private double[] spacecraftVelocity;
 
     /**
      * Earth position vector, in km, in body fixed frame
      */
+    @Getter
     private double[] earthPosition;
 
     /**
      * Sun position vector, in km, in body fixed frame
      */
+    @Getter
     private double[] sunPosition;
 
     /**
      * Spacecraft X-Axis vector, in km, in body fixed frame
      */
+    @Getter
     private double[] spacecraftXAxis;
 
     /**
      * Spacecraft Y-Axis vector, in km, in body fixed frame
      */
+    @Getter
     private double[] spacecraftYAxis;
 
     /**
      * Spacecraft Z-Axis vector, in km, in body fixed frame
      */
+    @Getter
     private double[] spacecraftZAxis;
 
     /**
@@ -224,17 +235,22 @@ public class CsvState implements State
         }
     }
 
-    @Override
-    public double getEphemerisTime()
-    {
-        return ephemerisTime;
-    }
+	@Override
+	public double[] getInstrumentLookDirection(String instrumentFrameName)
+	{
+		return new double[]{0.0, 0.0, 1.0};
+	}
 
-    @Override
-    public String getUtc()
-    {
-        return utc;
-    }
+	public UnwritableVectorIJK getFrustum(String instrumentFrameName, int index)
+	{
+		return new UnwritableVectorIJK(new double[] {0,0,1});
+	}
+
+	@Override
+	public String toString()
+	{
+		return "CSV State:  SC Position: " + getSpacecraftPosition()[0] + "," + getSpacecraftPosition()[1] + "," + getSpacecraftPosition()[2];
+	}
 
 //    @Override
 //    public int getImageNumber()
@@ -333,65 +349,4 @@ public class CsvState implements State
 //        // TODO Auto-generated method stub
 //        return 0;
 //    }
-
-    @Override
-    public double[] getSpacecraftPosition()
-    {
-        return spacecraftPosition;
-    }
-
-    @Override
-    public double[] getSpacecraftVelocity()
-    {
-        return spacecraftVelocity;
-    }
-
-    @Override
-    public double[] getSunPosition()
-    {
-        return sunPosition;
-    }
-
-    @Override
-    public double[] getEarthPosition()
-    {
-        return earthPosition;
-    }
-
-    @Override
-    public double[] getSpacecraftXAxis()
-    {
-        return spacecraftXAxis;
-    }
-
-    @Override
-    public double[] getSpacecraftYAxis()
-    {
-        return spacecraftYAxis;
-    }
-
-    @Override
-    public double[] getSpacecraftZAxis()
-    {
-        return spacecraftZAxis;
-    }
-
-	@Override
-	public double[] getInstrumentLookDirection(String instrumentFrameName)
-	{
-//		System.out.println("CsvState: getInstrumentLookDirection: ");
-		return new double[]{0.0, 0.0, 1.0};
-	}
-
-	public UnwritableVectorIJK getFrustum(String instrumentFrameName, int index)
-	{
-		return new UnwritableVectorIJK(new double[] {0,0,1});
-	}
-
-	@Override
-	public String toString()
-	{
-		return "CSV State:  SC Position: " + getSpacecraftPosition()[0] + "," + getSpacecraftPosition()[1] + "," + getSpacecraftPosition()[2];
-	}
-
 }

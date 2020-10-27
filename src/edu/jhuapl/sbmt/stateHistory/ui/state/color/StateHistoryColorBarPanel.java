@@ -5,8 +5,16 @@ import java.awt.event.ActionListener;
 
 import com.google.common.collect.Range;
 
+import edu.jhuapl.saavtk.color.gui.ColorBarPanel;
+import edu.jhuapl.saavtk.color.gui.EditGroupColorPanel;
 import edu.jhuapl.saavtk.color.painter.ColorBarPainter;
+import edu.jhuapl.saavtk.color.provider.ColorBarColorProvider;
+import edu.jhuapl.saavtk.color.provider.ColorProvider;
+import edu.jhuapl.saavtk.color.provider.ConstGroupColorProvider;
+import edu.jhuapl.saavtk.color.provider.GroupColorProvider;
+import edu.jhuapl.saavtk.color.table.ColorMapAttr;
 import edu.jhuapl.saavtk.feature.FeatureAttr;
+import edu.jhuapl.saavtk.feature.FeatureType;
 import edu.jhuapl.saavtk.gui.render.Renderer;
 import edu.jhuapl.sbmt.stateHistory.model.interfaces.StateHistory;
 import edu.jhuapl.sbmt.stateHistory.model.stateHistory.StateHistoryCollection;
@@ -21,8 +29,8 @@ import glum.item.ItemEventType;
  *
  * @author steelrj1
  */
-public class StateHistoryColorBarPanel extends ColorBarPanel<StateHistoryFeatureType>
-		implements ItemEventListener, StateHistoryColorConfigPanel
+public class StateHistoryColorBarPanel extends ColorBarPanel
+		implements ItemEventListener, EditGroupColorPanel
 {
 	// Ref vars
 	private final StateHistoryCollection refManager;
@@ -35,23 +43,26 @@ public class StateHistoryColorBarPanel extends ColorBarPanel<StateHistoryFeature
 	/**
 	 * Standard Constructor
 	 */
-	public StateHistoryColorBarPanel(ActionListener aListener, StateHistoryCollection aManager, Renderer aRenderer)
+	public StateHistoryColorBarPanel(ActionListener aListener, StateHistoryCollection aManager, Renderer aRenderer,
+			ColorBarPainter colorBarPainter)
 	{
+		super(colorBarPainter, true);
+
 		refManager = aManager;
 		refRenderer = aRenderer;
 
-		colorBar = null;
+		colorBar = colorBarPainter;
 		isActive = false;
 
 //		addFeatureType(StateHistoryFeatureType.Radius, "Radius");
-		addFeatureType(StateHistoryFeatureType.Distance, "Spacecraft Distance");
-		addFeatureType(StateHistoryFeatureType.Time, "Time");
-		setFeatureType(StateHistoryFeatureType.Distance);
+		addFeatureType(StateHistoryFeatureType.Distance, "S/C Distance (km)");
+		addFeatureType(StateHistoryFeatureType.Time, "Time (Sec)");
 
 		// Auto register the provided ActionListener
 		addActionListener(aListener);
 
 		// Register for events of interest
+		addActionListener((aEvent) -> updateColorBar());
 		refManager.addListener(this);
 	}
 
@@ -66,24 +77,37 @@ public class StateHistoryColorBarPanel extends ColorBarPanel<StateHistoryFeature
 	@Override
 	public void activate(boolean aIsActive)
 	{
-		isActive = aIsActive;
-
 		// Ensure our default range is in sync
 		updateDefaultRange();
 
-		// Reset the current range to the defaults
-		double tmpMin = getDefaultMinValue();
-		double tmpMax = getDefaultMaxValue();
-		setCurrentMinMax(tmpMin, tmpMax);
+		// Force install the ColorMapAttr with the default (reset) range
+		ColorMapAttr tmpCMA = getColorMapAttr();
 
-		// Force an update to the color map
-		updateColorMapArea();
+		double minVal = Double.NaN;
+		double maxVal = Double.NaN;
+		FeatureType tmpFT = getFeatureType();
+		Range<Double> tmpRange = getResetRange(tmpFT);
+		if (tmpRange != null)
+		{
+			minVal = tmpRange.lowerEndpoint();
+			maxVal = tmpRange.upperEndpoint();
+		}
 
+		tmpCMA = new ColorMapAttr(tmpCMA.getColorTable(), minVal, maxVal, tmpCMA.getNumLevels(), tmpCMA.getIsLogScale());
+		setColorMapAttr(tmpCMA);
+
+		// Update the color bar
 		updateColorBar();
+
+		// Update the renderer to reflect the ColorBarPainter
+		if (aIsActive == true)
+			refRenderer.addVtkPropProvider(colorBar);
+		else
+			refRenderer.delVtkPropProvider(colorBar);
 	}
 
 	@Override
-	public GroupColorProvider getSourceGroupColorProvider()
+	public GroupColorProvider getGroupColorProvider()
 	{
 		ColorProvider tmpCP = new ColorBarColorProvider(getColorMapAttr(), getFeatureType());
 		return new ConstGroupColorProvider(tmpCP);
@@ -94,18 +118,30 @@ public class StateHistoryColorBarPanel extends ColorBarPanel<StateHistoryFeature
 	{
 		// Update our default range
 		if (aEventType == ItemEventType.ItemsChanged || aEventType == ItemEventType.ItemsMutated)
+		{
 			updateDefaultRange();
+			FeatureType tmpFT = getFeatureType();
+			double minVal = Double.NaN;
+			double maxVal = Double.NaN;
+			Range<Double> tmpRange = getResetRange(tmpFT);
+			if (tmpRange != null)
+			{
+				minVal = tmpRange.lowerEndpoint();
+				maxVal = tmpRange.upperEndpoint();
+			}
+
+			ColorMapAttr tmpCMA = new ColorMapAttr(getColorMapAttr().getColorTable(), minVal, maxVal, getColorMapAttr().getNumLevels(), getColorMapAttr().getIsLogScale());
+			colorBar.setColorMapAttr(tmpCMA);
+			setColorMapAttr(tmpCMA);
+		}
 	}
 
-	@Override
-	protected void updateDefaultRange()
+	/**
+	 * Helper method to calculate the range of values for the specified
+	 * {@link FeatureType}.
+	 */
+	private Range<Double> calcRangeForFeature(FeatureType aFeatureType)
 	{
-		// Bail if we are not visible. Maintenance of default range
-		// synchronization is relevant only when the panel is visible.
-		if (isShowing() == false)
-			return;
-
-		StateHistoryFeatureType tmpFT = getFeatureType();
 		Range<Double> fullRange = null;
 		for (StateHistory aItem : refManager.getAllItems())
 		{
@@ -113,65 +149,46 @@ public class StateHistoryColorBarPanel extends ColorBarPanel<StateHistoryFeature
 			if (refManager.getVisibility(aItem) == false)
 				continue;
 
-			fullRange = updateRange(aItem, tmpFT, fullRange);
+			fullRange = updateRange(aItem, aFeatureType, fullRange);
 		}
-
-		// Update our (internal) default range
-		double minVal = Double.NaN;
-		double maxVal = Double.NaN;
-		if (fullRange != null)
-		{
-			minVal = fullRange.lowerEndpoint();
-			maxVal = fullRange.upperEndpoint();
-		}
-
-		setDefaultRange(minVal, maxVal);
+		return fullRange;
 	}
 
 	/**
-	 * Helper method that keeps the color bar synchronized with the gui.
-	 * <P>
-	 * A {@link Colorbar} will be shown whenever this panel has been activated.
+	 * Helper method that updates the default range for all of the lidar
+	 * {@link FeatureType}s.
+	 */
+	private void updateDefaultRange()
+	{
+		// Bail if we are not visible. Maintenance of default range
+		// synchronization is relevant only when the panel is visible.
+//		if (isShowing() == false)
+//			return;
+		for (FeatureType aFeatureType : StateHistoryFeatureType.FullSet)
+		{
+			Range<Double> tmpRange = calcRangeForFeature(aFeatureType);
+			setResetRange(aFeatureType, tmpRange);
+		}
+	}
+
+	/**
+	 * Helper method that keeps the {@link ColorBarPainter} synchronized with the
+	 * gui.
 	 */
 	private void updateColorBar()
 	{
-		// Show the SAAVTK Colorbar whenever the ColorBarPanel has been selected
-		boolean isVisible = isActive;
-//		if (isVisible == true)
-//		{
-//			// Lazy init
-//			if (colorBar == null)
-//				colorBar = new Colorbar(refRenderer);
-//
-//			ColorMapAttr tmpCMA = getColorMapAttr();
-//			Colormap tmpColorMap = Colormaps.getNewInstanceOfBuiltInColormap(tmpCMA.getName());
-//			tmpColorMap.setLogScale(tmpCMA.getIsLogScale());
-//			tmpColorMap.setNumberOfLevels(tmpCMA.getNumLevels());
-//			tmpColorMap.setRangeMin(tmpCMA.getMinVal());
-//			tmpColorMap.setRangeMax(tmpCMA.getMaxVal());
-//			colorBar.setColormap(tmpColorMap);
-//
-//			StateHistoryFeatureType tmpFT = getFeatureType();
-//			String title = "" + tmpFT;
-//			if (tmpFT == StateHistoryFeatureType.Distance)
-//				title = "Spacecraft " + title;
-//
-//			colorBar.setTitle(title);
-//
-//			// Ensure the color bar is showing
-//			if (refRenderer.getRenderWindowPanel().getRenderer().HasViewProp(colorBar.getActor()) == 0)
-//				refRenderer.getRenderWindowPanel().getRenderer().AddActor(colorBar.getActor());
-//		}
-//
-//		if (colorBar != null)
-//			colorBar.setVisible(isVisible);
+		ColorMapAttr tmpCMA = getColorMapAttr();
+		colorBar.setColorMapAttr(tmpCMA);
+
+		FeatureType tmpFT = getFeatureType();
+		colorBar.setTitle(tmpFT.getName());
 	}
 
 	/**
 	 * Helper method that will update the fullRangeZ state var to include the
 	 * specified lidar data.
 	 */
-	private Range<Double> updateRange(StateHistory aItem, StateHistoryFeatureType aFeatureType, Range<Double> aFullRange)
+	private Range<Double> updateRange(StateHistory aItem, FeatureType aFeatureType, Range<Double> aFullRange)
 	{
 		// Bail if there are no values associated with the feature
 		FeatureAttr tmpFA = refManager.getFeatureAttrFor(aItem, aFeatureType);

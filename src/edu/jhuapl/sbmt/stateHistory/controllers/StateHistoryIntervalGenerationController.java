@@ -27,6 +27,8 @@ import edu.jhuapl.sbmt.stateHistory.model.stateHistory.StateHistoryKey;
 import edu.jhuapl.sbmt.stateHistory.ui.DateTimeSpinner;
 import edu.jhuapl.sbmt.stateHistory.ui.state.version2.StateHistoryIntervalGenerationPanel;
 
+import lombok.Getter;
+
 /**
  * Controller that governs the "Interval Generation" panel of the State History tab
  * @author steelrj1
@@ -37,6 +39,7 @@ public class StateHistoryIntervalGenerationController
 	/**
 	 * View governed by this controller
 	 */
+	@Getter
 	private StateHistoryIntervalGenerationPanel view;
 
 	/**
@@ -50,15 +53,6 @@ public class StateHistoryIntervalGenerationController
 	public StateHistoryIntervalGenerationController(StateHistoryModel historyModel, DateTime newStart, DateTime newEnd)
 	{
 		initializeIntervalGenerationPanel(historyModel, newStart.toDate(), newEnd.toDate());
-	}
-
-	/**
-	 * Returns the panel associated with this controller
-	 * @return the panel associated with this controller
-	 */
-	public StateHistoryIntervalGenerationPanel getView()
-	{
-		return view;
 	}
 
 	/**

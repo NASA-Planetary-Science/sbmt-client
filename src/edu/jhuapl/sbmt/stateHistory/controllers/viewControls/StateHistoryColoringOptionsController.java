@@ -1,11 +1,15 @@
 package edu.jhuapl.sbmt.stateHistory.controllers.viewControls;
 
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 
+import javax.swing.BorderFactory;
+import javax.swing.BoxLayout;
 import javax.swing.JPanel;
 
-import edu.jhuapl.saavtk.colormap.Colormap;
+import edu.jhuapl.saavtk.color.provider.GroupColorProvider;
 import edu.jhuapl.saavtk.gui.panel.JComboBoxWithItemState;
 import edu.jhuapl.saavtk.gui.render.Renderer;
 import edu.jhuapl.saavtk.model.ColoringDataManager;
@@ -13,16 +17,15 @@ import edu.jhuapl.sbmt.stateHistory.model.StateHistoryColoringFunctions;
 import edu.jhuapl.sbmt.stateHistory.model.stateHistory.StateHistoryCollection;
 import edu.jhuapl.sbmt.stateHistory.model.viewOptions.StateHistoryColorOptionsAttributeModel;
 import edu.jhuapl.sbmt.stateHistory.rendering.TrajectoryActor;
+import edu.jhuapl.sbmt.stateHistory.ui.state.color.StateHistoryColorConfigPanel;
 import edu.jhuapl.sbmt.stateHistory.ui.state.version2.viewControls.StateHistoryColoringOptionsPanel;
-
-import glum.item.ItemEventType;
 
 /**
  * Controller that governs the coloring views in the State History tab
  * @author steelrj1
  *
  */
-public class StateHistoryColoringOptionsController //implements ActionListener
+public class StateHistoryColoringOptionsController implements ActionListener
 {
 	/**
 	 * The view governed by this controller
@@ -34,20 +37,15 @@ public class StateHistoryColoringOptionsController //implements ActionListener
 	 */
 	private StateHistoryColorOptionsAttributeModel model;
 
-//	/**
-//	 * The collection of State Histories loaded into the tool
-//	 */
-//	private StateHistoryCollection runs;
+	/**
+	 * The collection of State Histories loaded into the tool
+	 */
+	private StateHistoryCollection runs;
 
 	/**
 	 * The active <pre>TrajectoryActor</pre> being colored
 	 */
 	private TrajectoryActor trajectoryActor;
-
-//	/**
-//	 *
-//	 */
-//	private StateHistoryModel historyModel;
 
 	/**
 	 * The current coloring function choice from the picker
@@ -57,14 +55,11 @@ public class StateHistoryColoringOptionsController //implements ActionListener
 	/**
 	 * The current colormap choice from the picker
 	 */
-	private Colormap colormapChoice;
+//	private Colormap colormapChoice;
 
 	private ColoringDataManager coloringDataManager;
 
-//	/**
-//	 *
-//	 */
-//	private ColorConfigPanel<?> colorConfigPanel;
+	private StateHistoryColorConfigPanel colorConfigPanel;
 
 	/**
 	 * @param historyModel
@@ -72,15 +67,17 @@ public class StateHistoryColoringOptionsController //implements ActionListener
 	 */
 	public StateHistoryColoringOptionsController(StateHistoryCollection runs, Renderer renderer, ColoringDataManager coloringDataManager)
 	{
-//		this.historyModel = historyModel;
-//		runs = historyModel.getRuns();
-
-//		colorConfigPanel = new ColorConfigPanel<>(this, runs, renderer);
-//		colorConfigPanel.setActiveMode(ColorMode.Simple);
-//		this.runs = runs;
+		this.runs = runs;
 		this.coloringDataManager = coloringDataManager;
+		this.colorConfigPanel = new StateHistoryColorConfigPanel(this, runs, renderer);
 		initializeViewControlPanel(runs);
 	}
+
+	public void actionPerformed(ActionEvent e)
+	{
+		GroupColorProvider srcGCP = colorConfigPanel.getSourceGroupColorProvider();
+		runs.installGroupColorProviders(srcGCP);
+	};
 
 	/**
 	 *
@@ -90,46 +87,9 @@ public class StateHistoryColoringOptionsController //implements ActionListener
 		//create the attributes model and view objects
 		model = new StateHistoryColorOptionsAttributeModel();
 		view = new StateHistoryColoringOptionsPanel(coloringDataManager);
-		colormapChoice = (Colormap) view.getColormapComboBox().getSelectedItem();
-		colormapChoice.setRangeMax(12);
-		colormapChoice.setRangeMin(0);
-		coloringFunctionChoice = ((StateHistoryColoringFunctions) view
-				.getColorFunctionComboBox().getSelectedItem());
-
-		view.getColorFunctionComboBox().addActionListener(e ->
-		{
-			coloringFunctionChoice = ((StateHistoryColoringFunctions) view
-					.getColorFunctionComboBox().getSelectedItem());
-			colormapChoice.setRangeMax(12);
-			colormapChoice.setRangeMin(0);
-			model.setColoringFunctionForStateHistory(coloringFunctionChoice, runs.getCurrentRun());
-			view.getColormapComboBox().setEnabled(!(coloringFunctionChoice == StateHistoryColoringFunctions.PER_TABLE));
-			trajectoryActor.setColoringFunction(coloringFunctionChoice.getColoringFunction(), colormapChoice);
-			runs.refreshColoring(runs.getCurrentRun());
-		});
-
-		view.getColormapComboBox().addActionListener(e ->
-		{
-			colormapChoice = (Colormap) view.getColormapComboBox().getSelectedItem();
-			colormapChoice.setRangeMax(12);
-			colormapChoice.setRangeMin(0);
-			model.setColormapForStateHistory(colormapChoice, runs.getCurrentRun());
-			trajectoryActor.setColoringFunction(coloringFunctionChoice.getColoringFunction(), colormapChoice);
-			runs.refreshColoring(runs.getCurrentRun());
-		});
-
-//		historyModel.addStateHistoryModelChangedListener(new DefaultStateHistoryModelChangedListener()
-//		{
-//			@Override
-//			public void historySegmentCreated(StateHistory historySegment)
-//			{
-//				super.historySegmentCreated(historySegment);
-//			}
-//		});
 
 		runs.addPropertyChangeListener(new PropertyChangeListener()
 		{
-
 			@Override
 			public void propertyChange(PropertyChangeEvent evt)
 			{
@@ -137,19 +97,19 @@ public class StateHistoryColoringOptionsController //implements ActionListener
 			}
 		});
 
-		//upon a change in selection in the table, update the UI widgets to reflect the current colormap and
-		//coloring function for this state history
-		runs.addListener((aSource, aEventType) ->
-		{
-			if (aEventType != ItemEventType.ItemsSelected) return;
-
-			StateHistoryColoringFunctions stateHistoryColoringFunction = model.getColoringFunctionForStateHistory(runs.getCurrentRun());
-			if (stateHistoryColoringFunction != null)
-				view.getColorFunctionComboBox().setSelectedItem(stateHistoryColoringFunction);
-			Colormap stateHistoryColormap = model.getColormapForStateHistory(runs.getCurrentRun());
-			if (stateHistoryColormap != null)
-				view.getColormapComboBox().setSelectedItem(stateHistoryColormap);
-		});
+//		//upon a change in selection in the table, update the UI widgets to reflect the current colormap and
+//		//coloring function for this state history
+//		runs.addListener((aSource, aEventType) ->
+//		{
+//			if (aEventType != ItemEventType.ItemsSelected) return;
+//
+//			StateHistoryColoringFunctions stateHistoryColoringFunction = model.getColoringFunctionForStateHistory(runs.getCurrentRun());
+////			if (stateHistoryColoringFunction != null)
+////				view.getColorFunctionComboBox().setSelectedItem(stateHistoryColoringFunction);
+////			Colormap stateHistoryColormap = model.getColormapForStateHistory(runs.getCurrentRun());
+////			if (stateHistoryColormap != null)
+////				view.getColormapComboBox().setSelectedItem(stateHistoryColormap);
+//		});
 
 		view.setPlateColoringsItemListener(e ->
 		{
@@ -165,25 +125,19 @@ public class StateHistoryColoringOptionsController //implements ActionListener
 	 */
 	public JPanel getView()
 	{
-		return view;
-//		return colorConfigPanel;
+		JPanel horizPanel = new JPanel();
+		horizPanel.setLayout(new BoxLayout(horizPanel, BoxLayout.X_AXIS));
+		this.colorConfigPanel.setBorder(BorderFactory.createTitledBorder("Trajectory Coloring"));
+		this.colorConfigPanel.setAlignmentY(0.5f);
+		horizPanel.add(this.colorConfigPanel);
+		horizPanel.add(view);
+
+		return horizPanel;
 	}
 
-//	@Override
-//	public void actionPerformed(ActionEvent e)
-//	{
-//		Object source = e.getSource();
-//		if (source == colorConfigPanel)
-//		{
-//			GroupColorProvider srcGCP = colorConfigPanel.getSourceGroupColorProvider();
-//			System.out.println("StateHistoryColoringOptionsController: actionPerformed: provider is " + srcGCP);
-//
-////			runs.installGroupColorProviders(srcGCP);
-//			trajectoryActor.setColoringProvider(srcGCP);
-////			trajectory
-//
-//			model.setColoringProviderForStateHistory(srcGCP, runs.getCurrentRun());
-//			runs.refreshColoring(runs.getCurrentRun());
-//		}
-//	}
+	public void setEnabled(boolean enabled)
+	{
+		this.view.setEnabled(enabled);
+		this.colorConfigPanel.setEnabled(enabled);
+	}
 }

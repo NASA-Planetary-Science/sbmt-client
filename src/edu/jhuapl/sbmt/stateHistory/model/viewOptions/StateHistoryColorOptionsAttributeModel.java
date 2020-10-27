@@ -2,10 +2,10 @@ package edu.jhuapl.sbmt.stateHistory.model.viewOptions;
 
 import java.util.HashMap;
 
+import edu.jhuapl.saavtk.color.provider.GroupColorProvider;
 import edu.jhuapl.saavtk.colormap.Colormap;
 import edu.jhuapl.sbmt.stateHistory.model.StateHistoryColoringFunctions;
 import edu.jhuapl.sbmt.stateHistory.model.interfaces.StateHistory;
-import edu.jhuapl.sbmt.stateHistory.ui.state.color.GroupColorProvider;
 
 public class StateHistoryColorOptionsAttributeModel
 {

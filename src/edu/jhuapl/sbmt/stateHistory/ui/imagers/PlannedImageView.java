@@ -6,8 +6,11 @@ import javax.swing.JPanel;
 import edu.jhuapl.sbmt.client.SmallBodyViewConfig;
 import edu.jhuapl.sbmt.stateHistory.model.planning.imagers.PlannedImageCollection;
 
+import lombok.Getter;
+
 public class PlannedImageView extends JPanel
 {
+	@Getter
 	PlannedImageTableView table;
 
 	public PlannedImageView(PlannedImageCollection collection, SmallBodyViewConfig config)
@@ -16,10 +19,5 @@ public class PlannedImageView extends JPanel
 		table = new PlannedImageTableView(collection);
 		table.setup();
 		add(table);
-	}
-
-	public PlannedImageTableView getTable()
-	{
-		return table;
 	}
 }

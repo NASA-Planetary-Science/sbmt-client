@@ -44,11 +44,11 @@ public class StateHistoryModelIOHelper
             // Create header of name, description, color
             writer.append(interval.getStateHistoryName() + ',');
             writer.append(interval.getTrajectory().getTrajectoryDescription() + ',');
-            for (double colorElement : interval.getTrajectory().getTrajectoryColor()) {
+            for (double colorElement : interval.getTrajectory().getColor()) {
                 writer.append(Double.toString(colorElement));
                 writer.append(',');
             }
-            writer.append(Double.toString(interval.getTrajectory().getTrajectoryThickness()));
+            writer.append(Double.toString(interval.getTrajectory().getThickness()));
             writer.append('\n');
 
             // header of column names for each entry
@@ -179,7 +179,11 @@ public class StateHistoryModelIOHelper
 
             history.setTrajectory(trajectory);
 
-            history.setCurrentTime(history.getMinTime());
+            history.setCurrentTime(history.getStartTime());
+            trajectory.setStartTime(history.getStartTime());
+            trajectory.setStopTime(history.getEndTime());
+            trajectory.setNumPoints(Math.abs((int)(history.getEndTime() - history.getStartTime())/60));
+
             return history;
         }
         catch (Exception e1)

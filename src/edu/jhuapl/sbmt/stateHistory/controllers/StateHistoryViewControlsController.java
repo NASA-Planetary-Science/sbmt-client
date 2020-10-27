@@ -7,6 +7,7 @@ import edu.jhuapl.saavtk.gui.render.Renderer;
 import edu.jhuapl.saavtk.model.ColoringDataManager;
 import edu.jhuapl.sbmt.stateHistory.controllers.viewControls.StateHistoryColoringOptionsController;
 import edu.jhuapl.sbmt.stateHistory.controllers.viewControls.StateHistoryDisplayItemsController;
+import edu.jhuapl.sbmt.stateHistory.controllers.viewControls.StateHistoryFOVController;
 import edu.jhuapl.sbmt.stateHistory.controllers.viewControls.StateHistoryViewOptionsController;
 import edu.jhuapl.sbmt.stateHistory.model.StateHistoryModel;
 import edu.jhuapl.sbmt.stateHistory.model.viewOptions.RendererLookDirection;
@@ -23,6 +24,11 @@ public class StateHistoryViewControlsController
 	 * The controller that governs the "Display Items" sub panel
 	 */
 	private StateHistoryDisplayItemsController displayItemsControls;
+
+	/**
+	 * The controller that governs the "Display Items" sub panel
+	 */
+	private StateHistoryFOVController fovControls;
 
 	/**
 	 * The controller that governs the "Coloring Options" sub panel
@@ -53,6 +59,7 @@ public class StateHistoryViewControlsController
         viewControls = new StateHistoryViewOptionsController(historyModel.getRuns(), renderer);
         coloringControls = new StateHistoryColoringOptionsController(historyModel.getRuns(), renderer, coloringDataManager);
         displayItemsControls = new StateHistoryDisplayItemsController(historyModel.getRuns(), renderer);
+        fovControls = new StateHistoryFOVController(historyModel.getRuns());
 
         //this is a cross panel listener action, so set it up here, above the 3 controllers
         viewControls.getView().getViewOptions().addActionListener(e ->
@@ -61,15 +68,15 @@ public class StateHistoryViewControlsController
 			// mode we're in
         	RendererLookDirection selectedView = (RendererLookDirection) viewControls.getView().getViewOptions().getSelectedItem();
 			boolean scSelected = (selectedView == RendererLookDirection.SPACECRAFT);
-//			displayItemsControls.getView().getShowSpacecraftPanel().getShowSpacecraft().setEnabled(!scSelected);
         });
 	}
 
 	public void setEnabled(boolean enabled)
 	{
 		viewControls.getView().setEnabled(enabled);
-		coloringControls.getView().setEnabled(enabled);
+		coloringControls.setEnabled(enabled);
 		displayItemsControls.getView().setEnabled(enabled);
+		fovControls.getView().setEnabled(enabled);
 	}
 
 
@@ -83,6 +90,7 @@ public class StateHistoryViewControlsController
         view.setLayout(new BoxLayout(view, BoxLayout.Y_AXIS));
         view.add(displayItemsControls.getView());
         view.add(viewControls.getView());
+        view.add(fovControls.getView());
         view.add(coloringControls.getView());
 		return view;
 	}

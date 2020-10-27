@@ -14,12 +14,15 @@ import vtk.vtkPolyDataMapper;
 import vtk.vtkPolyLine;
 import vtk.vtkUnsignedCharArray;
 
+import edu.jhuapl.saavtk.color.provider.ColorProvider;
 import edu.jhuapl.saavtk.colormap.Colormap;
+import edu.jhuapl.saavtk.feature.FeatureType;
 import edu.jhuapl.sbmt.pointing.InstrumentPointing;
 import edu.jhuapl.sbmt.stateHistory.model.interfaces.Trajectory;
-import edu.jhuapl.sbmt.stateHistory.ui.state.color.GroupColorProvider;
+import edu.jhuapl.sbmt.stateHistory.ui.state.color.StateHistoryFeatureType;
 
 import crucible.core.math.vectorspace.UnwritableVectorIJK;
+import lombok.Getter;
 
 /**
  * vtkActor that represents a state history trajectory
@@ -46,11 +49,13 @@ public class TrajectoryActor extends vtkActor
     /**
      *
      */
+    @Getter
     private double[] trajectoryColor = {0, 255, 255, 255};
 
     /**
      *
      */
+    @Getter
     private double trajectoryLineThickness = 2;
 
     /**
@@ -88,10 +93,10 @@ public class TrajectoryActor extends vtkActor
      */
     private Colormap colormap;
 
-    private GroupColorProvider gcp;
-
-//
-//    private FeatureAttr coloringAttribute;
+    /**
+     *
+     */
+    private ColorProvider gcp;
 
 
 	/**
@@ -110,7 +115,7 @@ public class TrajectoryActor extends vtkActor
 	public TrajectoryActor(Trajectory trajectory)
 	{
 		this.trajectory = trajectory;
-		this.trajectoryColor = trajectory.getTrajectoryColor();
+		this.trajectoryColor = trajectory.getColor();
 		createTrajectoryPolyData();
 		SetMapper(trajectoryMapper);
 		SetVisibility(1);
@@ -221,9 +226,10 @@ public class TrajectoryActor extends vtkActor
 		this.colormap = colormap;
 	}
 
-	public void setColoringProvider(GroupColorProvider gcp)
+	public void setColoringProvider(ColorProvider gcp)
 	{
 		this.gcp = gcp;
+		updateShownSegments();
 	}
 
 	/**
@@ -233,42 +239,30 @@ public class TrajectoryActor extends vtkActor
 	 */
 	private Color getColorAtIndex(int index)
 	{
-		int stepSize = (int)((trajectory.getStopTime() - trajectory.getStartTime())/trajectory.getNumPoints());
-		double time = trajectory.getStartTime() + stepSize*index;
+		double time = trajectory.getStartTime() + index*trajectory.getTimeStep();
 		if (gcp == null)
 		{
-//			System.out.println("TrajectoryActor: getColorAtIndex: traj color 3 " + trajectoryColor[3]);
 			if (coloringFunction == null) return new Color((int)trajectoryColor[0], (int)trajectoryColor[1], (int)trajectoryColor[2], (int)trajectoryColor[3]);
-//			System.out.println("TrajectoryActor: getColorAtIndex: using old method, colormax " + colormap.getRangeMax());
-//			double time = trajectory.getTime().get(index);
 			double valueAtTime = coloringFunction.apply(trajectory, time);
-//			System.out.println("TrajectoryActor: getColorAtIndex: value at time " + valueAtTime);
 			Color color = colormap.getColor(valueAtTime);
 			color = new Color(color.getRed(), color.getGreen(), color.getBlue(), (int)trajectoryColor[3]);
 			return color;
 		}
 		else
 		{
-			//TODO Fix once Colorization generic code is in place
-//			System.out.println("TrajectoryActor: getColorAtIndex: using color provider");
-//			ColorProvider colorProvider = gcp.getColorProviderFor(trajectory, index, trajectory.getTime().size());
-//			StateHistoryFeatureType featureType = colorProvider.getFeatureType();
-//			if (featureType == StateHistoryFeatureType.Time)
-//			{
-//				double time = trajectory.getTime().get(index);
-//				return colorProvider.getColor(6.2e8, 6.3e8, time);
-//			}
-//			else if (featureType == StateHistoryFeatureType.Distance)
-//			{
-//				double time = trajectory.getTime().get(index);
+			FeatureType featureType = gcp.getFeatureType();
+			if (featureType == StateHistoryFeatureType.Time)
+			{
+				return gcp.getColor(trajectory.getStartTime(), trajectory.getStopTime(), time);
+			}
+			else if (featureType == StateHistoryFeatureType.Distance)
+			{
+				double valueAtTime = trajectory.getPointingProvider().provide(time).getScPosition().getLength();
 //				double valueAtTime = StateHistoryColoringFunctions.DISTANCE.getColoringFunction().apply(trajectory, time);
-//				if (valueAtTime < 0.859 || valueAtTime > 9.66) System.out.println("TrajectoryActor: getColorAtIndex: out of bounds");
-//				return colorProvider.getColor(0.859, 9.66, valueAtTime);
-//			}
-//			else
-//				return colorProvider.getColor(0.0, 1.0, 0.7);
-			return null;
-//			return color;
+				return gcp.getColor(0.859, 9.66, valueAtTime);
+			}
+			else
+				return gcp.getColor(0.0, 1.0, 0.7);
 		}
 	}
 
@@ -286,24 +280,6 @@ public class TrajectoryActor extends vtkActor
     }
 
     /**
-     * Returns the trajectory line thickness
-     * @return the trajectory line thickness
-     */
-    public double getTrajectoryLineThickness()
-    {
-        return trajectoryLineThickness;
-    }
-
-    /**
-     * Returns the trajectory color
-     * @return the trajectory color
-     */
-    public double[] getTrajectoryColor()
-    {
-        return trajectoryColor;
-    }
-
-    /**
      * Sets the trajectory color
      * @param color the trajectory color as a double array with values from 0.0 to 1.0
      */
@@ -314,24 +290,6 @@ public class TrajectoryActor extends vtkActor
         createTrajectoryPolyData();
         updateShownSegments();
     }
-
-//    /**
-//     * Sets the trajectory name
-//     * @param name the name of the trajectory
-//     */
-//    public void setTrajectoryName(String name)
-//    {
-//        trajectory.setName(name);
-//    }
-//
-//    /**
-//     * Returns the name of the trajectory
-//     * @return the name of the trajectory
-//     */
-//    public String getTrajectoryName()
-//	{
-//		return trajectory.getName();
-//	}
 
 	/**
 	 * Toggles the visibility of the trajectory based on the value of <pre>show</pre>
@@ -354,6 +312,4 @@ public class TrajectoryActor extends vtkActor
 		this.maxFraction = max;
 		updateShownSegments();
 	}
-
-
 }

@@ -22,8 +22,14 @@ public interface StateHistory
      */
 	public static final double epsilon = 0.0000001;
 
+	/**
+	 * @return
+	 */
 	public StateHistorySourceType getType();
 
+	/**
+	 * @return
+	 */
 	public String getSourceFile();
 
 	/**
@@ -31,19 +37,6 @@ public interface StateHistory
      * @return
      */
     public Double getTimeWindow();
-
-//    /**
-//     * Returns the current time fraction
-//     * @return
-//     */
-//    public Double getTimeFraction();
-//
-//    /**
-//     * Sets the current time fraction
-//     * @param state
-//     * @param timeFraction
-//     */
-//    public void setTimeFraction(Double timeFraction) throws StateHistoryInvalidTimeException;
 
     /**
      * Returns the current time in the time window for this state history
@@ -61,17 +54,13 @@ public interface StateHistory
      * Returns the minimum available time in this state history
      * @return
      */
-    public Double getMinTime();
+    public Double getStartTime();
 
     /**
      * Returns the maximum available time in this state history
      * @return
      */
-    public Double getMaxTime();
-
-//    public double getCurrentMinValue();
-//
-//    public double getCurrentMaxValue();
+    public Double getEndTime();
 
     /**
 	 * @param startTime the startTime to set
@@ -136,14 +125,38 @@ public interface StateHistory
      */
     public double[] getSpacecraftPosition();
 
+    /**
+     * @param time
+     * @return
+     */
     public double[] getSpacecraftPositionAtTime(double time);
 
+    /**
+     * @param instrumentFrameName
+     * @return
+     */
     public double[] getInstrumentLookDirection(String instrumentFrameName);
 
+    /**
+     * @param instrumentFrameName
+     * @param time
+     * @return
+     */
     public double[] getInstrumentLookDirectionAtTime(String instrumentFrameName, double time);
 
+    /**
+     * @param instrumentFrameName
+     * @param index
+     * @return
+     */
     public UnwritableVectorIJK getFrustum(String instrumentFrameName, int index);
 
+    /**
+     * @param instrumentFrameName
+     * @param index
+     * @param time
+     * @return
+     */
     public UnwritableVectorIJK getFrustumAtTime(String instrumentFrameName, int index, double time);
 
     /**
@@ -196,11 +209,23 @@ public interface StateHistory
 	 */
 	public void setTrajectoryColor(Double[] color);
 
+	/**
+	 * @param type
+	 */
 	public void setType(StateHistorySourceType type);
 
+	/**
+	 * @param sourceFile
+	 */
 	public void setSourceFile(String sourceFile);
 
+	/**
+	 * @return
+	 */
 	public IPointingProvider getPointingProvider();
 
+	/**
+	 * @param pointingProvider
+	 */
 	public void setPointingProvider(IPointingProvider pointingProvider);
 }

@@ -18,6 +18,8 @@ import crucible.crust.metadata.api.Key;
 import crucible.crust.metadata.api.Version;
 import crucible.crust.metadata.impl.InstanceGetter;
 import crucible.crust.metadata.impl.SettableMetadata;
+import lombok.Getter;
+import lombok.Setter;
 
 public class SpiceStateHistory implements StateHistory
 {
@@ -25,51 +27,62 @@ public class SpiceStateHistory implements StateHistory
 	/**
 	*
 	*/
+	@Getter
 	private Double currentTime;
 
 	/**
 	 *
 	 */
+	@Getter @Setter
 	private Double startTime;
 
 	/**
 	 *
 	 */
+	@Getter @Setter
 	private Double endTime;
 
 	/**
 	 *
 	 */
+	@Getter
 	private StateHistoryKey key;
 
 	/**
 	 *
 	 */
+	@Getter @Setter
 	private Trajectory trajectory;
 
 	/**
 	 *
 	 */
-	private String name = "";
+	@Getter @Setter
+	private String stateHistoryName = "";
 
 	/**
 	 *
 	 */
-	private String description = "";
+	@Getter @Setter
+	private String stateHistoryDescription = "";
 
 	/**
 	 *
 	 */
 	private Double[] color;
 
+	@Getter @Setter
 	private StateHistorySourceType type;
 
+	@Getter @Setter
 	private String sourceFile;
 
+	@Getter @Setter
 	private IPointingProvider pointingProvider;
 
 	private SpiceState state;
 
+	@Getter @Setter
 	private SpiceInfo spiceInfo;
 
 	// Metadata Information
@@ -123,17 +136,17 @@ public class SpiceStateHistory implements StateHistory
 			SettableMetadata result = SettableMetadata.of(Version.of(1, 0));
 			result.put(STATEHISTORY_KEY_KEY, stateHistory.getKey());
 			result.put(CURRENT_TIME_KEY, stateHistory.getCurrentTime());
-			result.put(START_TIME_KEY, stateHistory.getMinTime());
-			result.put(END_TIME_KEY, stateHistory.getMaxTime());
+			result.put(START_TIME_KEY, stateHistory.getStartTime());
+			result.put(END_TIME_KEY, stateHistory.getEndTime());
 			result.put(STATE_HISTORY_NAME_KEY, stateHistory.getStateHistoryName());
 			result.put(STATE_HISTORY_DESCRIPTION_KEY, stateHistory.getStateHistoryDescription());
 			result.put(TYPE_KEY, stateHistory.getType().toString());
 			result.put(SOURCE_FILE, stateHistory.getSourceFile());
 			result.put(COLOR_KEY, new Double[]
-			{ stateHistory.getTrajectory().getTrajectoryColor()[0],
-					stateHistory.getTrajectory().getTrajectoryColor()[1],
-					stateHistory.getTrajectory().getTrajectoryColor()[2],
-					stateHistory.getTrajectory().getTrajectoryColor()[3] });
+			{ stateHistory.getTrajectory().getColor()[0],
+					stateHistory.getTrajectory().getColor()[1],
+					stateHistory.getTrajectory().getColor()[2],
+					stateHistory.getTrajectory().getColor()[3] });
 			result.put(SPICE_INFO_KEY, stateHistory.getSpiceInfo());
 			return result;
 		});
@@ -160,98 +173,31 @@ public class SpiceStateHistory implements StateHistory
 		this.startTime = startTime;
 		this.endTime = endTime;
 		this.color = color;
-		this.name = name;
-		this.description = description;
+		this.stateHistoryName = name;
+		this.stateHistoryDescription = description;
 		this.type = type;
 		this.sourceFile = sourceFile;
 	}
 
 	@Override
-	public StateHistorySourceType getType()
-	{
-		return type;
-	}
-
-	@Override
-	public String getSourceFile()
-	{
-		return sourceFile;
-	}
-
-	@Override
 	public Double getTimeWindow()
 	{
-		return getMaxTime() - getMinTime();
-	}
-
-//	@Override
-//	public Double getTimeFraction()
-//	{
-//		double min = getMinTime() + trajectory.getMinDisplayFraction()*(getMaxTime() - getMinTime());
-//        double max = getMaxTime() - (1-trajectory.getMaxDisplayFraction())*(getMaxTime()-getMinTime());
-//        double time = getCurrentTime();
-//        double result = (time - min) / (max - min);
-//        return result;
-//	}
-//
-//	@Override
-//	public void setTimeFraction(Double timeFraction) throws StateHistoryInvalidTimeException
-//	{
-//		double min = getMinTime() + trajectory.getMinDisplayFraction()*(getMaxTime() - getMinTime());
-//        double max = getMaxTime() - (1-trajectory.getMaxDisplayFraction())*(getMaxTime()-getMinTime());
-//        double time = min + timeFraction * (max - min);
-////        System.out.println("SpiceStateHistory: setTimeFraction: srtting time " + time);
-//        setCurrentTime(time);
-//	}
-
-	@Override
-	public Double getCurrentTime()
-	{
-//		System.out.println("SpiceStateHistory: getCurrentTime: returning " + currentTime);
-		return currentTime;
+		return getEndTime() - getStartTime();
 	}
 
 	@Override
 	public void setCurrentTime(Double time) throws StateHistoryInvalidTimeException
 	{
-		if( time < getMinTime() || time > getMaxTime())
+		if( time < getStartTime() || time > getEndTime())
         {
 			System.out.println("SpiceStateHistory: setCurrentTime: time is " + TimeUtil.et2str(time));
-			System.out.println("SpiceStateHistory: setCurrentTime: min time is " + TimeUtil.et2str(getMinTime()));
-			System.out.println("SpiceStateHistory: setCurrentTime: max time is " + TimeUtil.et2str(getMaxTime()));
+			System.out.println("SpiceStateHistory: setCurrentTime: min time is " + TimeUtil.et2str(getStartTime()));
+			System.out.println("SpiceStateHistory: setCurrentTime: max time is " + TimeUtil.et2str(getEndTime()));
         	throw new StateHistoryInvalidTimeException("Entered time is outside the range of the selected interval.");
 
         }
 		this.currentTime = time;
 		state.setEphemerisTime(time);
-	}
-
-	@Override
-	public Double getMinTime()
-	{
-		return startTime;
-	}
-
-	@Override
-	public Double getMaxTime()
-	{
-		return endTime;
-	}
-
-	/**
-	 * @param startTime the startTime to set
-	 */
-	public void setStartTime(Double startTime)
-	{
-		this.startTime = startTime;
-	}
-
-	/**
-	 * @param endTime the endTime to set
-	 */
-	public void setEndTime(Double endTime)
-	{
-		this.endTime = endTime;
 	}
 
 	@Override
@@ -298,12 +244,6 @@ public class SpiceStateHistory implements StateHistory
 	{
 		// TODO Auto-generated method stub
 		return null;
-	}
-
-	@Override
-	public StateHistoryKey getKey()
-	{
-		return key;
 	}
 
 	@Override
@@ -358,99 +298,9 @@ public class SpiceStateHistory implements StateHistory
 	}
 
 	@Override
-	public String getStateHistoryName()
-	{
-		return name;
-	}
-
-	@Override
-	public void setStateHistoryName(String name)
-	{
-		this.name = name;
-	}
-
-	@Override
-	public String getStateHistoryDescription()
-	{
-		return description;
-	}
-
-	@Override
-	public void setStateHistoryDescription(String description)
-	{
-		this.description = description;
-	}
-
-	@Override
-	public Trajectory getTrajectory()
-	{
-		return trajectory;
-	}
-
-	@Override
-	public void setTrajectory(Trajectory traj)
-	{
-		this.trajectory = traj;
-	}
-
-	@Override
 	public void setTrajectoryColor(Double[] color)
 	{
 		this.color = color;
-		this.trajectory.setTrajectoryColor(new double[] {color[0], color[1], color[2], color[3]});
+		this.trajectory.setColor(new double[] {color[0], color[1], color[2], color[3]});
 	}
-
-	@Override
-	public void setType(StateHistorySourceType type)
-	{
-		this.type = type;
-	}
-
-	@Override
-	public void setSourceFile(String sourceFile)
-	{
-		this.sourceFile = sourceFile;
-	}
-
-	@Override
-	public IPointingProvider getPointingProvider()
-	{
-		return pointingProvider;
-	}
-
-	@Override
-	public void setPointingProvider(IPointingProvider pointingProvider)
-	{
-		this.pointingProvider = pointingProvider;
-
-	}
-
-	/**
-	 * @return the spiceInfo
-	 */
-	public SpiceInfo getSpiceInfo()
-	{
-		return spiceInfo;
-	}
-
-	/**
-	 * @param spiceInfo the spiceInfo to set
-	 */
-	public void setSpiceInfo(SpiceInfo spiceInfo)
-	{
-		this.spiceInfo = spiceInfo;
-	}
-
-//	@Override
-//	public double getCurrentMinValue()
-//    {
-//    	return getMinTime() + trajectory.getMinDisplayFraction()*(getMaxTime() - getMinTime());
-//    }
-//
-//	@Override
-//    public double getCurrentMaxValue()
-//    {
-//    	return getMaxTime() - (1-trajectory.getMaxDisplayFraction())*(getMaxTime()-getMinTime());
-//    }
-
 }

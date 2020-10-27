@@ -35,8 +35,6 @@ public class PlannedImageIOHelper
 			String[] parts = line.split(",");
 			String instrumentName = parts[1];
 			double et = TimeUtil.str2et(parts[2]);
-//			Double et = Double.parseDouble(parts[0]);
-//			String instrumentName = parts[1];
 			PlannedImage plannedImage = new PlannedImage(et, instrumentName.toUpperCase());
 			collection.addImageToList(plannedImage);
 		}
@@ -64,5 +62,4 @@ public class PlannedImageIOHelper
 
 		writer.close();
 	}
-
 }

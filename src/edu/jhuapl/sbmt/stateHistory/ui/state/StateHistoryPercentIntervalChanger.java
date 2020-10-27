@@ -28,7 +28,6 @@ public class StateHistoryPercentIntervalChanger extends JPanel implements Change
 	{
 		listenerL = new ArrayList<>();
 
-//		setLayout(new BoxLayout(this, BoxLayout.LINE_AXIS));
 		setLayout(new BoxLayout(this, BoxLayout.X_AXIS));
 
 		setBorder(BorderFactory.createTitledBorder("Displayed Trajectory Data"));
@@ -80,6 +79,8 @@ public class StateHistoryPercentIntervalChanger extends JPanel implements Change
 	@Override
 	public void stateChanged(ChangeEvent aEvent)
 	{
+		RangeSlider source = (RangeSlider)aEvent.getSource();
+	    if (source.getValueIsAdjusting()) return;
 		for (ActionListener aListener : listenerL)
 			aListener.actionPerformed(new ActionEvent(this, 0, "update"));
 	}
