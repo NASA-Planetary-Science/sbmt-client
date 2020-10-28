@@ -12,7 +12,7 @@ import javax.swing.JPanel;
 import edu.jhuapl.saavtk.color.provider.GroupColorProvider;
 import edu.jhuapl.saavtk.gui.panel.JComboBoxWithItemState;
 import edu.jhuapl.saavtk.gui.render.Renderer;
-import edu.jhuapl.saavtk.model.ColoringDataManager;
+import edu.jhuapl.saavtk.model.plateColoring.ColoringDataManager;
 import edu.jhuapl.sbmt.stateHistory.model.StateHistoryColoringFunctions;
 import edu.jhuapl.sbmt.stateHistory.model.stateHistory.StateHistoryCollection;
 import edu.jhuapl.sbmt.stateHistory.model.viewOptions.StateHistoryColorOptionsAttributeModel;

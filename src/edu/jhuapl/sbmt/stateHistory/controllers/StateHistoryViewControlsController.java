@@ -4,7 +4,7 @@ import javax.swing.BoxLayout;
 import javax.swing.JPanel;
 
 import edu.jhuapl.saavtk.gui.render.Renderer;
-import edu.jhuapl.saavtk.model.ColoringDataManager;
+import edu.jhuapl.saavtk.model.plateColoring.ColoringDataManager;
 import edu.jhuapl.sbmt.stateHistory.controllers.viewControls.StateHistoryColoringOptionsController;
 import edu.jhuapl.sbmt.stateHistory.controllers.viewControls.StateHistoryDisplayItemsController;
 import edu.jhuapl.sbmt.stateHistory.controllers.viewControls.StateHistoryFOVController;

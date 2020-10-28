@@ -14,7 +14,9 @@ import javax.swing.border.TitledBorder;
 import com.google.common.collect.ImmutableList;
 
 import edu.jhuapl.saavtk.gui.panel.JComboBoxWithItemState;
-import edu.jhuapl.saavtk.model.ColoringDataManager;
+import edu.jhuapl.saavtk.model.plateColoring.ColoringData;
+import edu.jhuapl.saavtk.model.plateColoring.ColoringDataManager;
+import edu.jhuapl.saavtk.model.plateColoring.LoadableColoringData;
 import edu.jhuapl.saavtk.util.DownloadableFileManager.StateListener;
 import edu.jhuapl.saavtk.util.FileCache;
 import edu.jhuapl.saavtk.util.FileStateListenerTracker;
@@ -89,13 +91,17 @@ public class StateHistoryColoringOptionsPanel extends JPanel
                 }
                 else
                 {
-                    String urlString = coloringDataManager.get(name, numberElements).getFileName();
-                    if (urlString == null) continue;
-                    plateColorings.setEnabled(name, FileCache.instance().isAccessible(urlString));
-                    StateListener listener = e -> {
-                    	plateColorings.setEnabled(name, e.isAccessible());
-                    };
-                    boxListeners.addStateChangeListener(urlString, listener);
+                	ColoringData coloringData = coloringDataManager.get(name, numberElements);
+                    if (coloringData instanceof LoadableColoringData)
+                    {
+                        String urlString = ((LoadableColoringData) coloringData).getFileId();
+
+                        plateColorings.setEnabled(name, FileCache.instance().isAccessible(urlString));
+                        StateListener listener = e -> {
+                            plateColorings.setEnabled(name, e.isAccessible());
+                        };
+                        boxListeners.addStateChangeListener(urlString, listener);
+                    }
                 }
             }
 

@@ -12,10 +12,13 @@ import com.google.common.collect.ImmutableList;
 import vtk.vtkFloatArray;
 import vtk.vtkProp;
 
-import edu.jhuapl.saavtk.model.ColoringData;
-import edu.jhuapl.saavtk.model.CustomizableColoringDataManager;
 import edu.jhuapl.saavtk.model.SaavtkItemManager;
+import edu.jhuapl.saavtk.model.plateColoring.ColoringData;
+import edu.jhuapl.saavtk.model.plateColoring.ColoringDataFactory;
+import edu.jhuapl.saavtk.model.plateColoring.ColoringDataUtils;
+import edu.jhuapl.saavtk.model.plateColoring.CustomizableColoringDataManager;
 import edu.jhuapl.saavtk.util.Properties;
+import edu.jhuapl.saavtk.util.file.IndexableTuple;
 import edu.jhuapl.sbmt.client.SmallBodyModel;
 import edu.jhuapl.sbmt.model.image.perspectiveImage.PerspectiveImageFootprint;
 import edu.jhuapl.sbmt.stateHistory.model.interfaces.StateHistory;
@@ -116,19 +119,20 @@ public class PlannedImageCollection extends SaavtkItemManager<PlannedImage>
 		boolean hasNulls = true;
 		vtkFloatArray values = new vtkFloatArray();
 		values.SetNumberOfValues(numberElements);
-		ColoringData coloringData = ColoringData.of(name, columnNames, unit, numberElements, hasNulls, values);
-		coloringData.getData().SetValue(0, 500);
+		IndexableTuple indexableTuple = ColoringDataUtils.createIndexableFromVtkArray(values);
+		ColoringData coloringData = ColoringDataFactory.of(name, unit, numberElements, columnNames, hasNulls, indexableTuple);
+//		coloringData.getData().SetValue(0, 500);
 		nameToColoringMap.put(dataName, coloringData);
 		coloringDataManager.addCustom(coloringData);
 		return coloringData;
 
 	}
 
-	private void addDataToColoring(String dataName, int index, int value)
-	{
-		ColoringData data = nameToColoringMap.get(dataName);
-		data.getData().SetValue(index, value);
-	}
+//	private void addDataToColoring(String dataName, int index, int value)
+//	{
+//		ColoringData data = nameToColoringMap.get(dataName);
+//		data.getData().SetValue(index, value);
+//	}
 
 	/**
 	 * @param run

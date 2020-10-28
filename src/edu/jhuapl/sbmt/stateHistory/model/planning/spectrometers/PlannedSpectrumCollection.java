@@ -11,9 +11,9 @@ import com.google.common.collect.ImmutableList;
 
 import vtk.vtkProp;
 
-import edu.jhuapl.saavtk.model.ColoringData;
-import edu.jhuapl.saavtk.model.CustomizableColoringDataManager;
 import edu.jhuapl.saavtk.model.SaavtkItemManager;
+import edu.jhuapl.saavtk.model.plateColoring.ColoringData;
+import edu.jhuapl.saavtk.model.plateColoring.CustomizableColoringDataManager;
 import edu.jhuapl.saavtk.util.Properties;
 import edu.jhuapl.sbmt.client.SmallBodyModel;
 import edu.jhuapl.sbmt.model.image.perspectiveImage.PerspectiveImageFootprint;

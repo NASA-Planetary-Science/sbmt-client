@@ -6,9 +6,9 @@ import javax.swing.BoxLayout;
 import javax.swing.JPanel;
 
 import edu.jhuapl.saavtk.gui.render.Renderer;
-import edu.jhuapl.saavtk.model.ColoringDataManager;
 import edu.jhuapl.saavtk.model.ModelManager;
 import edu.jhuapl.saavtk.model.ModelNames;
+import edu.jhuapl.saavtk.model.plateColoring.ColoringDataManager;
 import edu.jhuapl.sbmt.client.SmallBodyModel;
 import edu.jhuapl.sbmt.client.SmallBodyViewConfig;
 import edu.jhuapl.sbmt.stateHistory.controllers.imagers.PlannedImageTableController;
