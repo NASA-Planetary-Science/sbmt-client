@@ -5,30 +5,24 @@ import java.awt.Color;
 import edu.jhuapl.sbmt.model.image.Instrument;
 import edu.jhuapl.sbmt.stateHistory.model.planning.PlannedInstrumentData;
 
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-
-@NoArgsConstructor
 public class PlannedLidarTrack implements PlannedInstrumentData
 {
-	@Getter @Setter
 	private Color color = Color.red;
 
-	@Getter @Setter
 	private Instrument instrument;
 
-	@Getter @Setter
 	private Double startTime;
 
-	@Getter @Setter
 	private Double stopTime;
 
-	@Getter @Setter
 	private boolean isShowing = false;
 
-	@Getter @Setter
 	private boolean isFrustumShowing = false;
+
+	public PlannedLidarTrack()
+	{
+
+	}
 
 	public PlannedLidarTrack(Double startTime, Double stopTime, String instrumentName)
 	{
@@ -45,6 +39,102 @@ public class PlannedLidarTrack implements PlannedInstrumentData
 	public String getInstrumentName()
 	{
 		return instrument.name();
+	}
+
+	/**
+	 * @return the color
+	 */
+	public Color getColor()
+	{
+		return color;
+	}
+
+	/**
+	 * @param color the color to set
+	 */
+	public void setColor(Color color)
+	{
+		this.color = color;
+	}
+
+	/**
+	 * @return the instrument
+	 */
+	public Instrument getInstrument()
+	{
+		return instrument;
+	}
+
+	/**
+	 * @param instrument the instrument to set
+	 */
+	public void setInstrument(Instrument instrument)
+	{
+		this.instrument = instrument;
+	}
+
+	/**
+	 * @return the startTime
+	 */
+	public Double getStartTime()
+	{
+		return startTime;
+	}
+
+	/**
+	 * @param startTime the startTime to set
+	 */
+	public void setStartTime(Double startTime)
+	{
+		this.startTime = startTime;
+	}
+
+	/**
+	 * @return the stopTime
+	 */
+	public Double getStopTime()
+	{
+		return stopTime;
+	}
+
+	/**
+	 * @param stopTime the stopTime to set
+	 */
+	public void setStopTime(Double stopTime)
+	{
+		this.stopTime = stopTime;
+	}
+
+	/**
+	 * @return the isShowing
+	 */
+	public boolean isShowing()
+	{
+		return isShowing;
+	}
+
+	/**
+	 * @param isShowing the isShowing to set
+	 */
+	public void setShowing(boolean isShowing)
+	{
+		this.isShowing = isShowing;
+	}
+
+	/**
+	 * @return the isFrustumShowing
+	 */
+	public boolean isFrustumShowing()
+	{
+		return isFrustumShowing;
+	}
+
+	/**
+	 * @param isFrustumShowing the isFrustumShowing to set
+	 */
+	public void setFrustumShowing(boolean isFrustumShowing)
+	{
+		this.isFrustumShowing = isFrustumShowing;
 	}
 
 }

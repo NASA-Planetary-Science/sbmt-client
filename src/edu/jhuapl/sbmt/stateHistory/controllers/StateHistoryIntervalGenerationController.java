@@ -27,8 +27,6 @@ import edu.jhuapl.sbmt.stateHistory.model.stateHistory.StateHistoryKey;
 import edu.jhuapl.sbmt.stateHistory.ui.DateTimeSpinner;
 import edu.jhuapl.sbmt.stateHistory.ui.state.version2.StateHistoryIntervalGenerationPanel;
 
-import lombok.Getter;
-
 /**
  * Controller that governs the "Interval Generation" panel of the State History tab
  * @author steelrj1
@@ -39,7 +37,6 @@ public class StateHistoryIntervalGenerationController
 	/**
 	 * View governed by this controller
 	 */
-	@Getter
 	private StateHistoryIntervalGenerationPanel view;
 
 	/**
@@ -164,4 +161,12 @@ public class StateHistoryIntervalGenerationController
 			}
 		});
     }
+
+	/**
+	 * @return the view
+	 */
+	public StateHistoryIntervalGenerationPanel getView()
+	{
+		return view;
+	}
 }

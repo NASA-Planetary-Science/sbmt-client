@@ -4,64 +4,52 @@ import edu.jhuapl.sbmt.pointing.IPointingProvider;
 import edu.jhuapl.sbmt.pointing.spice.SpicePointingProvider;
 import edu.jhuapl.sbmt.stateHistory.model.interfaces.Trajectory;
 
-import lombok.Getter;
-import lombok.Setter;
-
 public class StandardTrajectory implements Trajectory
 {
 	/**
 	 *
 	 */
-	@Getter @Setter
 	private int cellId;
 
 	/**
 	 *
 	 */
-	@Getter @Setter
+
 	private int id;
 
 	/**
 	 *
 	 */
-	@Getter @Setter
 	private String trajectoryDescription;
 
 	/**
 	 *
 	 */
-	@Getter
+
 	private boolean isFaded;
 
-	@Getter
 	private int numPoints;
 
-	@Getter @Setter
 	private double startTime, stopTime;
 
 	/**
 	 *
 	 */
-	@Getter @Setter
 	private double[] color;
 
 	/**
 	 *
 	 */
-	@Getter @Setter
 	private double thickness;
 
 
 	/**
 	 *
 	 */
-	@Getter @Setter
 	private double minDisplayFraction = 0.0, maxDisplayFraction = 1.0;
 
-	@Getter @Setter
 	private IPointingProvider pointingProvider;
 
-	@Getter
 	private double timeStep;
 
 	/**
@@ -106,6 +94,190 @@ public class StandardTrajectory implements Trajectory
 	public boolean isHasInstrumentPointingInfo()
 	{
 		return pointingProvider instanceof SpicePointingProvider;
+	}
+
+	/**
+	 * @return the cellId
+	 */
+	public int getCellId()
+	{
+		return cellId;
+	}
+
+	/**
+	 * @param cellId the cellId to set
+	 */
+	public void setCellId(int cellId)
+	{
+		this.cellId = cellId;
+	}
+
+	/**
+	 * @return the id
+	 */
+	public int getId()
+	{
+		return id;
+	}
+
+	/**
+	 * @param id the id to set
+	 */
+	public void setId(int id)
+	{
+		this.id = id;
+	}
+
+	/**
+	 * @return the trajectoryDescription
+	 */
+	public String getTrajectoryDescription()
+	{
+		return trajectoryDescription;
+	}
+
+	/**
+	 * @param trajectoryDescription the trajectoryDescription to set
+	 */
+	public void setTrajectoryDescription(String trajectoryDescription)
+	{
+		this.trajectoryDescription = trajectoryDescription;
+	}
+
+	/**
+	 * @return the isFaded
+	 */
+	public boolean isFaded()
+	{
+		return isFaded;
+	}
+
+	/**
+	 * @return the numPoints
+	 */
+	public int getNumPoints()
+	{
+		return numPoints;
+	}
+
+	/**
+	 * @return the startTime
+	 */
+	public double getStartTime()
+	{
+		return startTime;
+	}
+
+	/**
+	 * @param startTime the startTime to set
+	 */
+	public void setStartTime(double startTime)
+	{
+		this.startTime = startTime;
+	}
+
+	/**
+	 * @return the stopTime
+	 */
+	public double getStopTime()
+	{
+		return stopTime;
+	}
+
+	/**
+	 * @param stopTime the stopTime to set
+	 */
+	public void setStopTime(double stopTime)
+	{
+		this.stopTime = stopTime;
+	}
+
+	/**
+	 * @return the color
+	 */
+	public double[] getColor()
+	{
+		return color;
+	}
+
+	/**
+	 * @param color the color to set
+	 */
+	public void setColor(double[] color)
+	{
+		this.color = color;
+	}
+
+	/**
+	 * @return the thickness
+	 */
+	public double getThickness()
+	{
+		return thickness;
+	}
+
+	/**
+	 * @param thickness the thickness to set
+	 */
+	public void setThickness(double thickness)
+	{
+		this.thickness = thickness;
+	}
+
+	/**
+	 * @return the minDisplayFraction
+	 */
+	public double getMinDisplayFraction()
+	{
+		return minDisplayFraction;
+	}
+
+	/**
+	 * @param minDisplayFraction the minDisplayFraction to set
+	 */
+	public void setMinDisplayFraction(double minDisplayFraction)
+	{
+		this.minDisplayFraction = minDisplayFraction;
+	}
+
+	/**
+	 * @return the maxDisplayFraction
+	 */
+	public double getMaxDisplayFraction()
+	{
+		return maxDisplayFraction;
+	}
+
+	/**
+	 * @param maxDisplayFraction the maxDisplayFraction to set
+	 */
+	public void setMaxDisplayFraction(double maxDisplayFraction)
+	{
+		this.maxDisplayFraction = maxDisplayFraction;
+	}
+
+	/**
+	 * @return the pointingProvider
+	 */
+	public IPointingProvider getPointingProvider()
+	{
+		return pointingProvider;
+	}
+
+	/**
+	 * @param pointingProvider the pointingProvider to set
+	 */
+	public void setPointingProvider(IPointingProvider pointingProvider)
+	{
+		this.pointingProvider = pointingProvider;
+	}
+
+	/**
+	 * @return the timeStep
+	 */
+	public double getTimeStep()
+	{
+		return timeStep;
 	}
 
 }

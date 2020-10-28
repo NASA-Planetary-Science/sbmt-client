@@ -5,7 +5,6 @@ import edu.jhuapl.sbmt.stateHistory.ui.state.version2.viewControls.StateHistoryF
 import edu.jhuapl.sbmt.stateHistory.ui.state.version2.viewControls.viewOptions.table.ViewOptionsTableView;
 
 import glum.item.ItemEventType;
-import lombok.Getter;
 
 /**
  * @author steelrj1
@@ -16,7 +15,6 @@ public class StateHistoryFOVController
 	/**
 	 * The view governed by this controller
 	 */
-	@Getter
 	private StateHistoryFOVPanel view;
 
 	/**
@@ -52,5 +50,13 @@ public class StateHistoryFOVController
 		ViewOptionsTableView tableView = new ViewOptionsTableView(runs);
 		tableView.setup();
 		view.setTableView(tableView);
+	}
+
+	/**
+	 * @return the view
+	 */
+	public StateHistoryFOVPanel getView()
+	{
+		return view;
 	}
 }

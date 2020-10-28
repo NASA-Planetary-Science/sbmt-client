@@ -18,7 +18,6 @@ import edu.jhuapl.sbmt.stateHistory.model.viewOptions.StateHistoryViewOptionsMod
 import edu.jhuapl.sbmt.stateHistory.ui.state.version2.viewControls.StateHistoryViewOptionsPanel;
 
 import glum.item.ItemEventType;
-import lombok.Getter;
 
 /**
  * @author steelrj1
@@ -29,7 +28,6 @@ public class StateHistoryViewOptionsController
 	/**
 	 * The view governed by this controller
 	 */
-	@Getter
 	private StateHistoryViewOptionsPanel view;
 
 	/**
@@ -173,5 +171,13 @@ public class StateHistoryViewOptionsController
 			((RenderPanel) renderer.getRenderWindowPanel()).setZoomOnly(true, targAxis, targOrig);
 		}
 		renderer.getRenderWindowPanel().resetCameraClippingRange();
+	}
+
+	/**
+	 * @return the view
+	 */
+	public StateHistoryViewOptionsPanel getView()
+	{
+		return view;
 	}
 }

@@ -27,8 +27,6 @@ import edu.jhuapl.sbmt.stateHistory.model.scState.CsvState;
 import edu.jhuapl.sbmt.stateHistory.model.trajectory.StandardTrajectory;
 import edu.jhuapl.sbmt.util.TimeUtil;
 
-import lombok.Setter;
-
 /**
  * Class that generates state history from a pre-generated state history file that lives on the server
  * @author steelrj1
@@ -38,7 +36,6 @@ public class PregenStateHistoryIntervalGenerator implements IStateHistoryInterva
 {
 	SmallBodyViewConfig config;
 
-	@Setter
 	String sourceFile;
 
 	private IPointingProvider pointingProvider;
@@ -167,5 +164,13 @@ public class PregenStateHistoryIntervalGenerator implements IStateHistoryInterva
 		history.setSourceFile(sourceFile);
 		history.setPointingProvider(pointingProvider);
 		return history;
+	}
+
+	/**
+	 * @param sourceFile the sourceFile to set
+	 */
+	public void setSourceFile(String sourceFile)
+	{
+		this.sourceFile = sourceFile;
 	}
 }

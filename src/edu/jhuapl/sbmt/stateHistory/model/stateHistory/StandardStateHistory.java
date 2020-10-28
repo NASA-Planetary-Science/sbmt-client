@@ -18,8 +18,6 @@ import crucible.crust.metadata.api.Key;
 import crucible.crust.metadata.api.Version;
 import crucible.crust.metadata.impl.InstanceGetter;
 import crucible.crust.metadata.impl.SettableMetadata;
-import lombok.Getter;
-import lombok.Setter;
 
 /**
  * Standard class for holding history information.  A timeToStateMap keeps a correlation between ephemeris time
@@ -40,43 +38,36 @@ public class StandardStateHistory implements StateHistory
     /**
      *
      */
-    @Getter
     private Double currentTime;
 
     /**
      *
      */
-    @Setter
     private Double startTime;
 
     /**
      *
      */
-    @Setter
     private Double endTime;
 
     /**
      *
      */
-    @Getter
     private StateHistoryKey key;
 
     /**
      *
      */
-    @Getter @Setter
     private Trajectory trajectory;
 
     /**
      *
      */
-    @Getter @Setter
     private String stateHistoryName = "";
 
     /**
      *
      */
-    @Getter @Setter
     private String stateHistoryDescription = "";
 
     /**
@@ -84,13 +75,10 @@ public class StandardStateHistory implements StateHistory
      */
     private Double[] color;
 
-    @Getter @Setter
     private StateHistorySourceType type;
 
-    @Getter @Setter
     private String sourceFile;
 
-    @Getter @Setter
     private IPointingProvider pointingProvider;
 
 
@@ -399,5 +387,133 @@ public class StandardStateHistory implements StateHistory
 	public UnwritableVectorIJK getFrustumAtTime(String instrumentFrameName, int index, double time)
 	{
 		return getStateAtTime(time).getFrustum(instrumentFrameName, index);
+	}
+
+	/**
+	 * @return the currentTime
+	 */
+	public Double getCurrentTime()
+	{
+		return currentTime;
+	}
+
+	/**
+	 * @param startTime the startTime to set
+	 */
+	public void setStartTime(Double startTime)
+	{
+		this.startTime = startTime;
+	}
+
+	/**
+	 * @param endTime the endTime to set
+	 */
+	public void setEndTime(Double endTime)
+	{
+		this.endTime = endTime;
+	}
+
+	/**
+	 * @return the key
+	 */
+	public StateHistoryKey getKey()
+	{
+		return key;
+	}
+
+	/**
+	 * @return the trajectory
+	 */
+	public Trajectory getTrajectory()
+	{
+		return trajectory;
+	}
+
+	/**
+	 * @param trajectory the trajectory to set
+	 */
+	public void setTrajectory(Trajectory trajectory)
+	{
+		this.trajectory = trajectory;
+	}
+
+	/**
+	 * @return the stateHistoryName
+	 */
+	public String getStateHistoryName()
+	{
+		return stateHistoryName;
+	}
+
+	/**
+	 * @param stateHistoryName the stateHistoryName to set
+	 */
+	public void setStateHistoryName(String stateHistoryName)
+	{
+		this.stateHistoryName = stateHistoryName;
+	}
+
+	/**
+	 * @return the stateHistoryDescription
+	 */
+	public String getStateHistoryDescription()
+	{
+		return stateHistoryDescription;
+	}
+
+	/**
+	 * @param stateHistoryDescription the stateHistoryDescription to set
+	 */
+	public void setStateHistoryDescription(String stateHistoryDescription)
+	{
+		this.stateHistoryDescription = stateHistoryDescription;
+	}
+
+	/**
+	 * @return the type
+	 */
+	public StateHistorySourceType getType()
+	{
+		return type;
+	}
+
+	/**
+	 * @param type the type to set
+	 */
+	public void setType(StateHistorySourceType type)
+	{
+		this.type = type;
+	}
+
+	/**
+	 * @return the sourceFile
+	 */
+	public String getSourceFile()
+	{
+		return sourceFile;
+	}
+
+	/**
+	 * @param sourceFile the sourceFile to set
+	 */
+	public void setSourceFile(String sourceFile)
+	{
+		this.sourceFile = sourceFile;
+	}
+
+	/**
+	 * @return the pointingProvider
+	 */
+	public IPointingProvider getPointingProvider()
+	{
+		return pointingProvider;
+	}
+
+	/**
+	 * @param pointingProvider the pointingProvider to set
+	 */
+	public void setPointingProvider(IPointingProvider pointingProvider)
+	{
+		this.pointingProvider = pointingProvider;
 	}
 }

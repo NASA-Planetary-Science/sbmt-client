@@ -6,7 +6,6 @@ import crucible.crust.metadata.api.Key;
 import crucible.crust.metadata.api.Version;
 import crucible.crust.metadata.impl.InstanceGetter;
 import crucible.crust.metadata.impl.SettableMetadata;
-import lombok.Getter;
 
 /**
  * A StateHistoryKey should be used to uniquely distinguish one trajectory from another.
@@ -22,7 +21,6 @@ public class StateHistoryKey
     /**
      *
      */
-    @Getter
     private Integer value;
 
     //Metadata Information
@@ -66,5 +64,13 @@ public class StateHistoryKey
     		result.put(VALUE_KEY, stateHistoryKey.value);
     		return result;
     	});
+	}
+
+	/**
+	 * @return the value
+	 */
+	public Integer getValue()
+	{
+		return value;
 	}
 }

@@ -35,8 +35,6 @@ import crucible.crust.metadata.impl.SettableMetadata;
 import glum.gui.panel.itemList.ItemProcessor;
 import glum.item.ItemEventListener;
 import glum.item.ItemEventType;
-import lombok.Getter;
-import lombok.Setter;
 
 /**
  * Item manager that governs the available state histories for display in the
@@ -55,7 +53,6 @@ public class StateHistoryCollection extends SaavtkItemManager<StateHistory> impl
 	/**
 	 *
 	 */
-	@Getter
 	private ArrayList<StateHistoryKey> keys = new ArrayList<StateHistoryKey>();
 
 	/**
@@ -66,7 +63,6 @@ public class StateHistoryCollection extends SaavtkItemManager<StateHistory> impl
 	/**
 	 *
 	 */
-	@Getter @Setter
 	private StateHistory currentRun = null;
 
 	/**
@@ -77,13 +73,10 @@ public class StateHistoryCollection extends SaavtkItemManager<StateHistory> impl
 	/**
 	 *
 	 */
-	@Getter
 	private String bodyName;
 
-	@Getter
 	private Vector<String> selectedFOVs;
 
-	@Getter
 	private Vector<String> availableFOVs;
 
 	final Key<List<StateHistory>> stateHistoryKey = Key.of("stateHistoryCollection");
@@ -739,5 +732,53 @@ public class StateHistoryCollection extends SaavtkItemManager<StateHistory> impl
 	public void retrieve(Metadata source)
 	{
 		simRuns = source.get(stateHistoryKey);
+	}
+
+	/**
+	 * @return the keys
+	 */
+	public ArrayList<StateHistoryKey> getKeys()
+	{
+		return keys;
+	}
+
+	/**
+	 * @return the currentRun
+	 */
+	public StateHistory getCurrentRun()
+	{
+		return currentRun;
+	}
+
+	/**
+	 * @param currentRun the currentRun to set
+	 */
+	public void setCurrentRun(StateHistory currentRun)
+	{
+		this.currentRun = currentRun;
+	}
+
+	/**
+	 * @return the bodyName
+	 */
+	public String getBodyName()
+	{
+		return bodyName;
+	}
+
+	/**
+	 * @return the selectedFOVs
+	 */
+	public Vector<String> getSelectedFOVs()
+	{
+		return selectedFOVs;
+	}
+
+	/**
+	 * @return the availableFOVs
+	 */
+	public Vector<String> getAvailableFOVs()
+	{
+		return availableFOVs;
 	}
 }

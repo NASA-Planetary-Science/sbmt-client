@@ -2,17 +2,12 @@ package edu.jhuapl.sbmt.stateHistory.model.time;
 
 import java.util.Vector;
 
-import lombok.Getter;
-
 public class StateHistoryTimeModel
 {
-	@Getter
 	public TimeWindow twindow;
 
-	@Getter
 	public double et;
 
-	@Getter
 	public double minFractionDisplayed = 0.0, maxFractionDisplayed = 1.0;
 
 	public Vector<StateHistoryTimeModelChangedListener> changeListeners;
@@ -83,6 +78,38 @@ public class StateHistoryTimeModel
 	private void fireFractionDisplayedChangedListeners()
 	{
 		changeListeners.forEach( e -> e.fractionDisplayedChanged(minFractionDisplayed, maxFractionDisplayed));
+	}
+
+	/**
+	 * @return the twindow
+	 */
+	public TimeWindow getTwindow()
+	{
+		return twindow;
+	}
+
+	/**
+	 * @return the et
+	 */
+	public double getEt()
+	{
+		return et;
+	}
+
+	/**
+	 * @return the minFractionDisplayed
+	 */
+	public double getMinFractionDisplayed()
+	{
+		return minFractionDisplayed;
+	}
+
+	/**
+	 * @return the maxFractionDisplayed
+	 */
+	public double getMaxFractionDisplayed()
+	{
+		return maxFractionDisplayed;
 	}
 
 }

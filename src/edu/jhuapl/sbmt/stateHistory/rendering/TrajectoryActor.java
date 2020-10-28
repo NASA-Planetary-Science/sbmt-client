@@ -22,7 +22,6 @@ import edu.jhuapl.sbmt.stateHistory.model.interfaces.Trajectory;
 import edu.jhuapl.sbmt.stateHistory.ui.state.color.StateHistoryFeatureType;
 
 import crucible.core.math.vectorspace.UnwritableVectorIJK;
-import lombok.Getter;
 
 /**
  * vtkActor that represents a state history trajectory
@@ -49,13 +48,11 @@ public class TrajectoryActor extends vtkActor
     /**
      *
      */
-    @Getter
     private double[] trajectoryColor = {0, 255, 255, 255};
 
     /**
      *
      */
-    @Getter
     private double trajectoryLineThickness = 2;
 
     /**
@@ -311,5 +308,21 @@ public class TrajectoryActor extends vtkActor
 		this.minFraction = min;
 		this.maxFraction = max;
 		updateShownSegments();
+	}
+
+	/**
+	 * @return the trajectoryColor
+	 */
+	public double[] getTrajectoryColor()
+	{
+		return trajectoryColor;
+	}
+
+	/**
+	 * @return the trajectoryLineThickness
+	 */
+	public double getTrajectoryLineThickness()
+	{
+		return trajectoryLineThickness;
 	}
 }

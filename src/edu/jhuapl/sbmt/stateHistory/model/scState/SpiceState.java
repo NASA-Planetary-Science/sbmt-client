@@ -19,8 +19,6 @@ import crucible.core.math.vectorspace.UnwritableVectorIJK;
 import crucible.core.mechanics.EphemerisID;
 import crucible.core.mechanics.providers.lockable.LockableFrameLinkEvaluationException;
 import crucible.core.mechanics.utilities.SimpleEphemerisID;
-import lombok.Getter;
-import lombok.Setter;
 
 /**
  * @author steelrj1
@@ -33,20 +31,17 @@ public class SpiceState implements State
     /**
      * State time in UTC
      */
-	@Getter
     private String utc;
 
     /**
      * State time in ephemeris time
      */
-    @Getter
     private double ephemerisTime;
 
-//    private EphemerisID bodyId;
+    private EphemerisID bodyId;
 
     private SpicePointingProvider pointingProvider;
 
-    @Setter
     private String currentInstrumentFrameName = null;
 
 	/**
@@ -55,8 +50,20 @@ public class SpiceState implements State
 	public SpiceState(SpicePointingProvider pointingProvider)
 	{
 		this.pointingProvider = pointingProvider;
-//		this.bodyId = pointingProvider.getTargetId();
+		this.bodyId = pointingProvider.getTargetId();
 		this.currentInstrumentFrameName = pointingProvider.getInstrumentNames()[0];
+	}
+
+	@Override
+	public double getEphemerisTime()
+	{
+		return ephemerisTime;
+	}
+
+	@Override
+	public String getUtc()
+	{
+		return utc;
 	}
 
 	public double[] getInstrumentLookDirection(String instrumentFrameName)
@@ -85,6 +92,7 @@ public class SpiceState implements State
 		catch (LockableFrameLinkEvaluationException le) {
 			return new UnwritableVectorIJK(0, 0, 1);
 		}
+
 	}
 
 	@Override
@@ -198,6 +206,14 @@ public class SpiceState implements State
 		this.utc = TimeUtil.et2str(ephemerisTime);
 		this.pointing = pointingProvider.provide(currentInstrumentFrameName, ephemerisTime);
 
+	}
+
+	/**
+	 * @param currentInstrumentFrameName the currentInstrumentFrameName to set
+	 */
+	public void setCurrentInstrumentFrameName(String currentInstrumentFrameName)
+	{
+		this.currentInstrumentFrameName = currentInstrumentFrameName;
 	}
 
 	/**

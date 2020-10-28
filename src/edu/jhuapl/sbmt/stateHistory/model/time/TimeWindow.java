@@ -7,9 +7,6 @@ import org.joda.time.DateTime;
 import edu.jhuapl.sbmt.util.TimeUtil;
 
 import crucible.core.time.UTCEpoch;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.Setter;
 
 /**
  * Time window in et
@@ -17,11 +14,20 @@ import lombok.Setter;
  * @author steelrj1
  *
  */
-@AllArgsConstructor
+
 public class TimeWindow
 {
-	@Getter @Setter
 	public double startTime, stopTime;
+
+	/**
+	 * @param startTime
+	 * @param stopTime
+	 */
+	public TimeWindow(double startTime, double stopTime)
+	{
+		this.startTime = startTime;
+		this.stopTime = stopTime;
+	}
 
 	/**
 	 * @param start
@@ -42,5 +48,37 @@ public class TimeWindow
 	public String toString()
 	{
 		return "Time window: ( " + TimeUtil.et2str(startTime) + " - " + TimeUtil.et2str(stopTime) + ")";
+	}
+
+	/**
+	 * @return the startTime
+	 */
+	public double getStartTime()
+	{
+		return startTime;
+	}
+
+	/**
+	 * @param startTime the startTime to set
+	 */
+	public void setStartTime(double startTime)
+	{
+		this.startTime = startTime;
+	}
+
+	/**
+	 * @return the stopTime
+	 */
+	public double getStopTime()
+	{
+		return stopTime;
+	}
+
+	/**
+	 * @param stopTime the stopTime to set
+	 */
+	public void setStopTime(double stopTime)
+	{
+		this.stopTime = stopTime;
 	}
 }

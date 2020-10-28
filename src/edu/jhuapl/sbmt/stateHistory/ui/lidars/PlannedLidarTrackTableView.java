@@ -33,38 +33,32 @@ import glum.gui.panel.itemList.ItemProcessor;
 import glum.gui.panel.itemList.query.QueryComposer;
 import glum.gui.table.TablePopupHandler;
 import glum.item.ItemManagerUtil;
-import lombok.Getter;
 
 public class PlannedLidarTrackTableView extends JPanel
 {
 	/**
 	 * JButton to load planned image from file
 	 */
-	@Getter
 	private JButton loadPlannedLidarTrackButton;
 
     /**
      * JButton to remove planned LidarTrack from table
      */
-	@Getter
     private JButton removePlannedLidarTrackButton;
 
     /**
      * JButton to show planned LidarTrack in renderer
      */
-	@Getter
     private JButton showPlannedLidarTrackButton;
 
     /**
      * JButton to save planned LidarTrack to file
      */
-	@Getter
     private JButton savePlannedLidarTrackButton;
 
     /**
      *	JTable to display loaded state histories
      */
-	@Getter
     protected JTable table;
 
     /**
@@ -231,5 +225,45 @@ public class PlannedLidarTrackTableView extends JPanel
 			int tmpW = Math.max(minW, tmpComp.getPreferredSize().width + 1);
 			tmpTable.getColumnModel().getColumn(aCol).setPreferredWidth(tmpW + 10);
 		}
+	}
+
+	/**
+	 * @return the loadPlannedLidarTrackButton
+	 */
+	public JButton getLoadPlannedLidarTrackButton()
+	{
+		return loadPlannedLidarTrackButton;
+	}
+
+	/**
+	 * @return the removePlannedLidarTrackButton
+	 */
+	public JButton getRemovePlannedLidarTrackButton()
+	{
+		return removePlannedLidarTrackButton;
+	}
+
+	/**
+	 * @return the showPlannedLidarTrackButton
+	 */
+	public JButton getShowPlannedLidarTrackButton()
+	{
+		return showPlannedLidarTrackButton;
+	}
+
+	/**
+	 * @return the savePlannedLidarTrackButton
+	 */
+	public JButton getSavePlannedLidarTrackButton()
+	{
+		return savePlannedLidarTrackButton;
+	}
+
+	/**
+	 * @return the table
+	 */
+	public JTable getTable()
+	{
+		return table;
 	}
 }

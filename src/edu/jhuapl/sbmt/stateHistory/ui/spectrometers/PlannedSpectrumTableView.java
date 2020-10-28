@@ -33,38 +33,32 @@ import glum.gui.panel.itemList.ItemProcessor;
 import glum.gui.panel.itemList.query.QueryComposer;
 import glum.gui.table.TablePopupHandler;
 import glum.item.ItemManagerUtil;
-import lombok.Getter;
 
 public class PlannedSpectrumTableView extends JPanel
 {
 	/**
 	 * JButton to load state history from file
 	 */
-	@Getter
 	private JButton loadPlannedSpectrumButton;
 
     /**
      * JButton to remove state history from table
      */
-	@Getter
     private JButton removePlannedSpectrumButton;
 
     /**
      * JButton to show state history in renderer
      */
-	@Getter
     private JButton showPlannedSpectrumButton;
 
     /**
      * JButton to save state history to file
      */
-	@Getter
     private JButton savePlannedSpectrumButton;
 
     /**
      *	JTable to display loaded state histories
      */
-	@Getter
     protected JTable table;
 
     /**
@@ -233,5 +227,45 @@ public class PlannedSpectrumTableView extends JPanel
 			int tmpW = Math.max(minW, tmpComp.getPreferredSize().width + 1);
 			tmpTable.getColumnModel().getColumn(aCol).setPreferredWidth(tmpW + 10);
 		}
+	}
+
+	/**
+	 * @return the loadPlannedSpectrumButton
+	 */
+	public JButton getLoadPlannedSpectrumButton()
+	{
+		return loadPlannedSpectrumButton;
+	}
+
+	/**
+	 * @return the removePlannedSpectrumButton
+	 */
+	public JButton getRemovePlannedSpectrumButton()
+	{
+		return removePlannedSpectrumButton;
+	}
+
+	/**
+	 * @return the showPlannedSpectrumButton
+	 */
+	public JButton getShowPlannedSpectrumButton()
+	{
+		return showPlannedSpectrumButton;
+	}
+
+	/**
+	 * @return the savePlannedSpectrumButton
+	 */
+	public JButton getSavePlannedSpectrumButton()
+	{
+		return savePlannedSpectrumButton;
+	}
+
+	/**
+	 * @return the table
+	 */
+	public JTable getTable()
+	{
+		return table;
 	}
 }

@@ -18,8 +18,6 @@ import crucible.crust.metadata.api.Key;
 import crucible.crust.metadata.api.Version;
 import crucible.crust.metadata.impl.InstanceGetter;
 import crucible.crust.metadata.impl.SettableMetadata;
-import lombok.Getter;
-import lombok.Setter;
 
 public class SpiceStateHistory implements StateHistory
 {
@@ -27,62 +25,51 @@ public class SpiceStateHistory implements StateHistory
 	/**
 	*
 	*/
-	@Getter
 	private Double currentTime;
 
 	/**
 	 *
 	 */
-	@Getter @Setter
 	private Double startTime;
 
 	/**
 	 *
 	 */
-	@Getter @Setter
 	private Double endTime;
 
 	/**
 	 *
 	 */
-	@Getter
 	private StateHistoryKey key;
 
 	/**
 	 *
 	 */
-	@Getter @Setter
 	private Trajectory trajectory;
 
 	/**
 	 *
 	 */
-	@Getter @Setter
-	private String stateHistoryName = "";
+	private String name = "";
 
 	/**
 	 *
 	 */
-	@Getter @Setter
-	private String stateHistoryDescription = "";
+	private String description = "";
 
 	/**
 	 *
 	 */
 	private Double[] color;
 
-	@Getter @Setter
 	private StateHistorySourceType type;
 
-	@Getter @Setter
 	private String sourceFile;
 
-	@Getter @Setter
 	private IPointingProvider pointingProvider;
 
 	private SpiceState state;
 
-	@Getter @Setter
 	private SpiceInfo spiceInfo;
 
 	// Metadata Information
@@ -173,16 +160,55 @@ public class SpiceStateHistory implements StateHistory
 		this.startTime = startTime;
 		this.endTime = endTime;
 		this.color = color;
-		this.stateHistoryName = name;
-		this.stateHistoryDescription = description;
+		this.name = name;
+		this.description = description;
 		this.type = type;
 		this.sourceFile = sourceFile;
+	}
+
+	@Override
+	public StateHistorySourceType getType()
+	{
+		return type;
+	}
+
+	@Override
+	public String getSourceFile()
+	{
+		return sourceFile;
 	}
 
 	@Override
 	public Double getTimeWindow()
 	{
 		return getEndTime() - getStartTime();
+	}
+
+//	@Override
+//	public Double getTimeFraction()
+//	{
+//		double min = getMinTime() + trajectory.getMinDisplayFraction()*(getMaxTime() - getMinTime());
+//        double max = getMaxTime() - (1-trajectory.getMaxDisplayFraction())*(getMaxTime()-getMinTime());
+//        double time = getCurrentTime();
+//        double result = (time - min) / (max - min);
+//        return result;
+//	}
+//
+//	@Override
+//	public void setTimeFraction(Double timeFraction) throws StateHistoryInvalidTimeException
+//	{
+//		double min = getMinTime() + trajectory.getMinDisplayFraction()*(getMaxTime() - getMinTime());
+//        double max = getMaxTime() - (1-trajectory.getMaxDisplayFraction())*(getMaxTime()-getMinTime());
+//        double time = min + timeFraction * (max - min);
+////        System.out.println("SpiceStateHistory: setTimeFraction: srtting time " + time);
+//        setCurrentTime(time);
+//	}
+
+	@Override
+	public Double getCurrentTime()
+	{
+//		System.out.println("SpiceStateHistory: getCurrentTime: returning " + currentTime);
+		return currentTime;
 	}
 
 	@Override
@@ -198,6 +224,34 @@ public class SpiceStateHistory implements StateHistory
         }
 		this.currentTime = time;
 		state.setEphemerisTime(time);
+	}
+
+	@Override
+	public Double getStartTime()
+	{
+		return startTime;
+	}
+
+	@Override
+	public Double getEndTime()
+	{
+		return endTime;
+	}
+
+	/**
+	 * @param startTime the startTime to set
+	 */
+	public void setStartTime(Double startTime)
+	{
+		this.startTime = startTime;
+	}
+
+	/**
+	 * @param endTime the endTime to set
+	 */
+	public void setEndTime(Double endTime)
+	{
+		this.endTime = endTime;
 	}
 
 	@Override
@@ -244,6 +298,12 @@ public class SpiceStateHistory implements StateHistory
 	{
 		// TODO Auto-generated method stub
 		return null;
+	}
+
+	@Override
+	public StateHistoryKey getKey()
+	{
+		return key;
 	}
 
 	@Override
@@ -298,9 +358,99 @@ public class SpiceStateHistory implements StateHistory
 	}
 
 	@Override
+	public String getStateHistoryName()
+	{
+		return name;
+	}
+
+	@Override
+	public void setStateHistoryName(String name)
+	{
+		this.name = name;
+	}
+
+	@Override
+	public String getStateHistoryDescription()
+	{
+		return description;
+	}
+
+	@Override
+	public void setStateHistoryDescription(String description)
+	{
+		this.description = description;
+	}
+
+	@Override
+	public Trajectory getTrajectory()
+	{
+		return trajectory;
+	}
+
+	@Override
+	public void setTrajectory(Trajectory traj)
+	{
+		this.trajectory = traj;
+	}
+
+	@Override
 	public void setTrajectoryColor(Double[] color)
 	{
 		this.color = color;
 		this.trajectory.setColor(new double[] {color[0], color[1], color[2], color[3]});
 	}
+
+	@Override
+	public void setType(StateHistorySourceType type)
+	{
+		this.type = type;
+	}
+
+	@Override
+	public void setSourceFile(String sourceFile)
+	{
+		this.sourceFile = sourceFile;
+	}
+
+	@Override
+	public IPointingProvider getPointingProvider()
+	{
+		return pointingProvider;
+	}
+
+	@Override
+	public void setPointingProvider(IPointingProvider pointingProvider)
+	{
+		this.pointingProvider = pointingProvider;
+
+	}
+
+	/**
+	 * @return the spiceInfo
+	 */
+	public SpiceInfo getSpiceInfo()
+	{
+		return spiceInfo;
+	}
+
+	/**
+	 * @param spiceInfo the spiceInfo to set
+	 */
+	public void setSpiceInfo(SpiceInfo spiceInfo)
+	{
+		this.spiceInfo = spiceInfo;
+	}
+
+//	@Override
+//	public double getCurrentMinValue()
+//    {
+//    	return getMinTime() + trajectory.getMinDisplayFraction()*(getMaxTime() - getMinTime());
+//    }
+//
+//	@Override
+//    public double getCurrentMaxValue()
+//    {
+//    	return getMaxTime() - (1-trajectory.getMaxDisplayFraction())*(getMaxTime()-getMinTime());
+//    }
+
 }

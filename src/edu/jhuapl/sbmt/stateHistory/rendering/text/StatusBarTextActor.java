@@ -2,16 +2,17 @@ package edu.jhuapl.sbmt.stateHistory.rendering.text;
 
 import vtk.vtkTextActor;
 
-import lombok.NoArgsConstructor;
-
 /**
  * vtkTextActor that displays information at the bottom of the renderer
  * @author steelrj1
  *
  */
-@NoArgsConstructor
 public class StatusBarTextActor extends vtkTextActor
 {
+
+	public StatusBarTextActor() {
+
+	}
     /**
      * Updates the position of the status bar based on the current window width and height
      * @param windowWidth	the current window width

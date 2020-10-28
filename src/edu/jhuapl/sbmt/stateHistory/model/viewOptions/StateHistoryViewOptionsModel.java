@@ -4,11 +4,14 @@ import java.util.HashMap;
 
 import edu.jhuapl.sbmt.stateHistory.model.interfaces.StateHistory;
 
-import lombok.NoArgsConstructor;
-
-@NoArgsConstructor
 public class StateHistoryViewOptionsModel
 {
+
+	public StateHistoryViewOptionsModel()
+	{
+
+	}
+
 	private HashMap<StateHistory, Double> stateHistoryToViewInputAngle =
 			new HashMap<StateHistory, Double>();
 

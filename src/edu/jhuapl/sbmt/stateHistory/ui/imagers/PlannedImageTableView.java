@@ -33,38 +33,32 @@ import glum.gui.panel.itemList.ItemProcessor;
 import glum.gui.panel.itemList.query.QueryComposer;
 import glum.gui.table.TablePopupHandler;
 import glum.item.ItemManagerUtil;
-import lombok.Getter;
 
 public class PlannedImageTableView extends JPanel
 {
 	/**
 	 * JButton to load planned image from file
 	 */
-	@Getter
 	private JButton loadPlannedImageButton;
 
     /**
      * JButton to remove planned image from table
      */
-	@Getter
     private JButton removePlannedImageButton;
 
     /**
      * JButton to show planned image in renderer
      */
-	@Getter
     private JButton showPlannedImageButton;
 
     /**
      * JButton to save planned image to file
      */
-	@Getter
     private JButton savePlannedImageButton;
 
     /**
      *	JTable to display loaded state histories
      */
-	@Getter
     protected JTable table;
 
     /**
@@ -232,5 +226,45 @@ public class PlannedImageTableView extends JPanel
 			int tmpW = Math.max(minW, tmpComp.getPreferredSize().width + 1);
 			tmpTable.getColumnModel().getColumn(aCol).setPreferredWidth(tmpW + 10);
 		}
+	}
+
+	/**
+	 * @return the loadPlannedImageButton
+	 */
+	public JButton getLoadPlannedImageButton()
+	{
+		return loadPlannedImageButton;
+	}
+
+	/**
+	 * @return the removePlannedImageButton
+	 */
+	public JButton getRemovePlannedImageButton()
+	{
+		return removePlannedImageButton;
+	}
+
+	/**
+	 * @return the showPlannedImageButton
+	 */
+	public JButton getShowPlannedImageButton()
+	{
+		return showPlannedImageButton;
+	}
+
+	/**
+	 * @return the savePlannedImageButton
+	 */
+	public JButton getSavePlannedImageButton()
+	{
+		return savePlannedImageButton;
+	}
+
+	/**
+	 * @return the table
+	 */
+	public JTable getTable()
+	{
+		return table;
 	}
 }

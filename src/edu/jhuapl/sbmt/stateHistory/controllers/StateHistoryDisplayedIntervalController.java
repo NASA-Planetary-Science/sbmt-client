@@ -9,7 +9,6 @@ import edu.jhuapl.sbmt.stateHistory.ui.state.version2.StateHistoryDisplayedInter
 import edu.jhuapl.sbmt.util.TimeUtil;
 
 import glum.item.ItemEventType;
-import lombok.Getter;
 
 /**
  * Controller that displays the "Displayed Interval" panel in the state history tab
@@ -21,7 +20,6 @@ public class StateHistoryDisplayedIntervalController
 	/**
 	 * JPanel for displaying the displayed interval controls
 	 */
-	@Getter
 	private StateHistoryDisplayedIntervalPanel view;
 
 	/**
@@ -96,5 +94,13 @@ public class StateHistoryDisplayedIntervalController
 
 		view.getDisplayedStartTimeLabel().setText(minTime.substring(0, minTime.length()-3));
 		view.getDisplayedStopTimeLabel().setText(maxTime.substring(0, maxTime.length()-3));
+	}
+
+	/**
+	 * @return the view
+	 */
+	public StateHistoryDisplayedIntervalPanel getView()
+	{
+		return view;
 	}
 }

@@ -33,8 +33,6 @@ import edu.jhuapl.sbmt.stateHistory.model.stateHistory.StateHistoryKey;
 
 import crucible.crust.metadata.impl.FixedMetadata;
 import crucible.crust.metadata.impl.gson.Serializers;
-import lombok.Getter;
-import lombok.Setter;
 
 /**
  * @author steelrj1
@@ -60,37 +58,31 @@ public class StateHistoryModel
 	/**
 	 * Start time of the available state history
 	 */
-	@Getter
 	private DateTime startTime;
 
 	/**
 	 * End time of the available state history
 	 */
-	@Getter
 	private DateTime endTime;
 
 	/**
 	 *
 	 */
-	@Getter
 	private StateHistoryCollection runs;
 
 	/**
 	 *
 	 */
-	@Getter
 	private int defaultSliderValue = 0;
 
 	/**
 	 *
 	 */
-	@Getter
 	private int sliderFinalValue = 900;
 
 	/**
 	 *
 	 */
-	@Getter
 	private String statusBarString;
 
 	/**
@@ -101,7 +93,6 @@ public class StateHistoryModel
 	/**
 	 *
 	 */
-	@Getter @Setter
 	private IStateHistoryIntervalGenerator activeIntervalGenerator;
 
 	private boolean initialized;
@@ -312,5 +303,69 @@ public class StateHistoryModel
 	public void setTime(double time)
 	{
 		fireTimeChangeListener(time);
+	}
+
+	/**
+	 * @return the startTime
+	 */
+	public DateTime getStartTime()
+	{
+		return startTime;
+	}
+
+	/**
+	 * @return the endTime
+	 */
+	public DateTime getEndTime()
+	{
+		return endTime;
+	}
+
+	/**
+	 * @return the runs
+	 */
+	public StateHistoryCollection getRuns()
+	{
+		return runs;
+	}
+
+	/**
+	 * @return the defaultSliderValue
+	 */
+	public int getDefaultSliderValue()
+	{
+		return defaultSliderValue;
+	}
+
+	/**
+	 * @return the sliderFinalValue
+	 */
+	public int getSliderFinalValue()
+	{
+		return sliderFinalValue;
+	}
+
+	/**
+	 * @return the statusBarString
+	 */
+	public String getStatusBarString()
+	{
+		return statusBarString;
+	}
+
+	/**
+	 * @return the activeIntervalGenerator
+	 */
+	public IStateHistoryIntervalGenerator getActiveIntervalGenerator()
+	{
+		return activeIntervalGenerator;
+	}
+
+	/**
+	 * @param activeIntervalGenerator the activeIntervalGenerator to set
+	 */
+	public void setActiveIntervalGenerator(IStateHistoryIntervalGenerator activeIntervalGenerator)
+	{
+		this.activeIntervalGenerator = activeIntervalGenerator;
 	}
 }

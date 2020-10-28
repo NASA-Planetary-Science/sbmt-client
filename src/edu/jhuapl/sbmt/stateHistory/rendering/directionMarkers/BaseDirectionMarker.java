@@ -8,9 +8,6 @@ import vtk.vtkPolyDataMapper;
 
 import edu.jhuapl.sbmt.stateHistory.rendering.DisplayableItem;
 
-import lombok.Getter;
-import lombok.Setter;
-
 public abstract class BaseDirectionMarker extends vtkConeSource implements DisplayableItem
 {
 
@@ -62,7 +59,6 @@ public abstract class BaseDirectionMarker extends vtkConeSource implements Displ
 	 */
 	protected double specularColorValue;
 
-	@Getter @Setter
 	protected String label;
 
 	protected double pointerRadius = 0.5;
@@ -174,6 +170,22 @@ public abstract class BaseDirectionMarker extends vtkConeSource implements Displ
 	public double getPointerRadius()
 	{
 		return pointerRadius;
+	}
+
+	/**
+	 * @return the label
+	 */
+	public String getLabel()
+	{
+		return label;
+	}
+
+	/**
+	 * @param label the label to set
+	 */
+	public void setLabel(String label)
+	{
+		this.label = label;
 	}
 
 }

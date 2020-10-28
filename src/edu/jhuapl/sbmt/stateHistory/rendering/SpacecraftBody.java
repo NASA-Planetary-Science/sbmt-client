@@ -8,9 +8,6 @@ import vtk.vtkPolyDataMapper;
 
 import edu.jhuapl.saavtk.util.PolyDataUtil;
 
-import lombok.Getter;
-import lombok.Setter;
-
 /**
  * @author steelrj1
  *
@@ -32,7 +29,6 @@ public class SpacecraftBody extends vtkPolyData implements DisplayableItem
      */
     private static double[] white = {1.0, 1.0, 1.0, 1.0};
 
-    @Getter @Setter
     private String label = "Spacecraft";
 
 
@@ -142,6 +138,22 @@ public class SpacecraftBody extends vtkPolyData implements DisplayableItem
 	public double getPointerRadius()
 	{
 		return spacecraftBodyActor.GetScale()[0];
+	}
+
+	/**
+	 * @return the label
+	 */
+	public String getLabel()
+	{
+		return label;
+	}
+
+	/**
+	 * @param label the label to set
+	 */
+	public void setLabel(String label)
+	{
+		this.label = label;
 	}
 
 }

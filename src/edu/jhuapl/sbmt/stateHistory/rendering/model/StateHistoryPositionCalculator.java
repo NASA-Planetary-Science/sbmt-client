@@ -24,7 +24,6 @@ import edu.jhuapl.sbmt.stateHistory.rendering.text.SpacecraftLabel;
 
 import crucible.core.mechanics.FrameID;
 import crucible.core.mechanics.utilities.SimpleFrameID;
-import lombok.Getter;
 
 /**
  * @author steelrj1
@@ -65,7 +64,6 @@ public class StateHistoryPositionCalculator implements IStateHistoryPositionCalc
 	/**
 	*
 	*/
-	@Getter
 	private double[] currentLookFromDirection;
 
 	/**
@@ -370,6 +368,14 @@ public class StateHistoryPositionCalculator implements IStateHistoryPositionCalc
 		{
 			currentLookFromDirection = spacecraftPosition;
 		}
+		return currentLookFromDirection;
+	}
+
+	/**
+	 * @return the currentLookFromDirection
+	 */
+	public double[] getCurrentLookFromDirection()
+	{
 		return currentLookFromDirection;
 	}
 }

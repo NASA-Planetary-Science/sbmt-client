@@ -18,7 +18,6 @@ import edu.jhuapl.sbmt.stateHistory.model.stateHistory.StateHistoryCollection;
 import edu.jhuapl.sbmt.stateHistory.ui.state.version2.table.StateHistoryTableView;
 
 import glum.item.ItemEventType;
-import lombok.Getter;
 
 /**
  * Controller that governs the "Available Files" panel for the StateHistory tab
@@ -27,7 +26,6 @@ import lombok.Getter;
  */
 public class StateHistoryIntervalSelectionController
 {
-	@Getter
     private StateHistoryTableView view;
 
 	/**
@@ -174,4 +172,12 @@ public class StateHistoryIntervalSelectionController
 			}
 		});
     }
+
+	/**
+	 * @return the view
+	 */
+	public StateHistoryTableView getView()
+	{
+		return view;
+	}
 }
