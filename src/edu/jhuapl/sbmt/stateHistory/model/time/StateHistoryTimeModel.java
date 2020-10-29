@@ -1,6 +1,9 @@
 package edu.jhuapl.sbmt.stateHistory.model.time;
 
+import java.beans.PropertyChangeSupport;
 import java.util.Vector;
+
+import edu.jhuapl.saavtk.util.Properties;
 
 public class StateHistoryTimeModel
 {
@@ -12,17 +15,31 @@ public class StateHistoryTimeModel
 
 	public Vector<StateHistoryTimeModelChangedListener> changeListeners;
 
+	private static StateHistoryTimeModel instance;
+
+	private PropertyChangeSupport pcs;
+
+	public static StateHistoryTimeModel getInstance() {
+		if (instance == null) instance = new StateHistoryTimeModel();
+		return instance;
+	}
+
 	public StateHistoryTimeModel()
 	{
 		this.changeListeners = new Vector<StateHistoryTimeModelChangedListener>();
 	}
 
-	public StateHistoryTimeModel(TimeWindow twindow)
+	public void setPcs(PropertyChangeSupport pcs)
 	{
-		this.twindow = twindow;
-		this.et = twindow.getStartTime();
-		this.changeListeners = new Vector<StateHistoryTimeModelChangedListener>();
+		this.pcs = pcs;
 	}
+
+//	public StateHistoryTimeModel(TimeWindow twindow)
+//	{
+//		this.twindow = twindow;
+//		this.et = twindow.getStartTime();
+//		this.changeListeners = new Vector<StateHistoryTimeModelChangedListener>();
+//	}
 
 	public void setTime(double et)
 	{
@@ -68,6 +85,7 @@ public class StateHistoryTimeModel
 	private void fireTimeChangedListeners()
 	{
 		changeListeners.forEach( e -> e.timeChanged(et));
+		this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
 	}
 
 	private void fireTimeWindowChangedListeners()

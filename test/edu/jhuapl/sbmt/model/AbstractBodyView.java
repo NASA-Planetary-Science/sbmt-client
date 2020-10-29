@@ -618,7 +618,7 @@ public abstract class AbstractBodyView extends View implements PropertyChangeLis
     {
         if (getPolyhedralModelConfig().hasStateHistory)
         {
-            StateHistoryController controller = new StateHistoryController(getModelManager(), getRenderer(), new StateHistoryTimeModel());
+            StateHistoryController controller = new StateHistoryController(getModelManager(), getRenderer(), StateHistoryTimeModel.getInstance());
             addTab("Observing Conditions", controller.getView());
         }
     }

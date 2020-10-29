@@ -35,6 +35,7 @@ import edu.jhuapl.sbmt.model.image.perspectiveImage.PerspectiveImageFrustum;
 import edu.jhuapl.sbmt.pointing.InstrumentPointing;
 import edu.jhuapl.sbmt.stateHistory.model.StateHistoryColoringFunctions;
 import edu.jhuapl.sbmt.stateHistory.model.interfaces.StateHistory;
+import edu.jhuapl.sbmt.stateHistory.model.liveColoring.LiveColorableManager;
 import edu.jhuapl.sbmt.stateHistory.model.viewOptions.RendererLookDirection;
 import edu.jhuapl.sbmt.stateHistory.rendering.DisplayableItem;
 import edu.jhuapl.sbmt.stateHistory.rendering.SpacecraftBody;
@@ -143,9 +144,12 @@ public class StateHistoryRendererManager
 
 	private IStateHistoryPositionCalculator positionCalculator;
 
+	private SmallBodyModel smallBodyModel;
+
 
 	public StateHistoryRendererManager(SmallBodyModel smallBodyModel, PropertyChangeSupport pcs)
 	{
+		this.smallBodyModel = smallBodyModel;
 		this.positionCalculator = new StateHistoryPositionCalculator(smallBodyModel);
 		BoundingBox bb = smallBodyModel.getBoundingBox();
 		diagonalLength = smallBodyModel.getBoundingBoxDiagonalLength();
@@ -301,14 +305,19 @@ public class StateHistoryRendererManager
 				if (fprint == null)
 				{
 					fprint = new PerspectiveImageFootprint();
+					System.out.println("StateHistoryRendererManager: updateFovs: made new footprint " + instName);
 					instrumentNameToFootprintMap.put(instName, fprint);
 					fprint.setBoundaryVisible(false);
 					fprint.setVisible(false);
 					fprint.setInstrumentName(instName);
 					fprint.setColor(color);
+					fprint.setSmallBodyModel(smallBodyModel);
+					LiveColorableManager.updateFootprint(fprint);
 				}
 
 				footprint[i] = fprint;
+//
+
 //				if (footprint[i].getFootprintActor() != null)
 //				{
 //					footprint[i].setBoundaryVisible(false);
@@ -628,6 +637,7 @@ public class StateHistoryRendererManager
 	{
 		List<PerspectiveImageFootprint> fp = Arrays.stream(footprint).filter(fprint -> fprint.getInstrumentName().equals(name)).collect(Collectors.toList());
 		fp.get(0).setVisible(isVisible);
+		LiveColorableManager.updateFootprint(fp.get(0));
 		this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, fp.get(0));
 	}
 

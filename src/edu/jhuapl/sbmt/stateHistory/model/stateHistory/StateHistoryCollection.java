@@ -21,6 +21,7 @@ import edu.jhuapl.saavtk.util.Properties;
 import edu.jhuapl.sbmt.client.SmallBodyModel;
 import edu.jhuapl.sbmt.stateHistory.model.interfaces.StateHistory;
 import edu.jhuapl.sbmt.stateHistory.model.interfaces.StateHistoryCollectionChangedListener;
+import edu.jhuapl.sbmt.stateHistory.model.time.StateHistoryTimeModel;
 import edu.jhuapl.sbmt.stateHistory.model.viewOptions.RendererLookDirection;
 import edu.jhuapl.sbmt.stateHistory.rendering.DisplayableItem;
 import edu.jhuapl.sbmt.stateHistory.rendering.SpacecraftBody;
@@ -87,6 +88,7 @@ public class StateHistoryCollection extends SaavtkItemManager<StateHistory> impl
 	public StateHistoryCollection(SmallBodyModel smallBodyModel)
 	{
 		this.renderManager = new StateHistoryRendererManager(smallBodyModel, pcs);
+		StateHistoryTimeModel.getInstance().setPcs(pcs);
 		this.bodyName = smallBodyModel.getConfig().getShapeModelName();
 		selectedFOVs = new Vector<String>();
 		availableFOVs = new Vector<String>();

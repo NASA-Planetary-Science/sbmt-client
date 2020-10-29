@@ -12,6 +12,9 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.TimerTask;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javax.imageio.ImageIO;
 import javax.swing.Icon;
@@ -21,6 +24,7 @@ import javax.swing.JOptionPane;
 import javax.swing.JSlider;
 import javax.swing.JSpinner;
 import javax.swing.SpinnerDateModel;
+import javax.swing.SwingUtilities;
 import javax.swing.Timer;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
@@ -51,6 +55,7 @@ import edu.jhuapl.sbmt.util.TimeUtil;
 public class StateHistoryIntervalPlaybackController
 {
     private Timer timer;
+    private java.util.Timer timer2;
     private boolean isPlaying = false;
     public double currentOffsetTime = 0.0;
     private StateHistoryIntervalPlaybackPanel view;
@@ -58,6 +63,7 @@ public class StateHistoryIntervalPlaybackController
     private Icon playIcon;
     private Icon pauseIcon;
     private StateHistoryTimeModel timeModel;
+    private TimerTask timerTask;
 
 	/**
 	 * Constructor
@@ -68,6 +74,7 @@ public class StateHistoryIntervalPlaybackController
 	{
 		this.historyModel = historyModel;
 		this.timeModel = timeModel;
+		this.timer2 = new java.util.Timer();
 		view = new StateHistoryIntervalPlaybackPanel();
 		try
 		{
@@ -176,7 +183,7 @@ public class StateHistoryIntervalPlaybackController
         double deltaRealTime = 1; //timer.getDelay() / 1000.0;
         double playRate = 1.0;
         try {
-           playRate = Double.parseDouble(view.getRateTextField().getText());
+           playRate = Double.parseDouble(view.getTimeStepTextField().getText());
         } catch (Exception ex) { ex.printStackTrace(); playRate = 1.0; }
 
         double deltaSimulationTime = deltaRealTime * playRate;
@@ -296,6 +303,12 @@ public class StateHistoryIntervalPlaybackController
             view.setCursor(Cursor.getDefaultCursor());
         });
 
+        view.getPlaybackRateTextField().addActionListener(e -> {
+
+        	timer.setDelay(1000/Integer.parseInt(view.getPlaybackRateTextField().getText()));
+
+        });
+
         runs.addListener((aSource, aEventType) -> {
 //        	System.out.println("StateHistoryIntervalPlaybackController: initializeIntervalPlaybackPanel: event type " + aEventType);
 //			if (aEventType != ItemEventType.ItemsSelected) return;
@@ -317,6 +330,7 @@ public class StateHistoryIntervalPlaybackController
 	{
 		view.getPlayButton().setIcon(playIcon);
         timer.stop();
+        timer2.cancel();
         isPlaying = false;
 	}
 
@@ -327,6 +341,7 @@ public class StateHistoryIntervalPlaybackController
 	{
         view.getPlayButton().setIcon(pauseIcon);
         timer.start();
+//        timer2.scheduleAtFixedRate(timerTask, 0, 1);
         isPlaying = true;
 	}
 
@@ -361,28 +376,30 @@ public class StateHistoryIntervalPlaybackController
      */
     private void createTimer(StateHistoryCollection runs)
     {
-    	int timerInterval = 100;
-    	double offsetScale = 0.1; // 0.025;
-        timer = new Timer(timerInterval, new ActionListener()
-        {
+    	int timerInterval = 1000;	//how often the timer is fired, in ms
 
-            @Override
-            public void actionPerformed(ActionEvent e)
-            {
-                double period = runs.getPeriod();
-                double deltaRealTime = 1/10.0; //timer.getDelay() / 1000.0;
-                double playRate = 1.0;
-                try {
-                   playRate = Double.parseDouble(view.getRateTextField().getText());
-                } catch (Exception ex) { ex.printStackTrace(); playRate = 1.0; }
-                double deltaSimulationTime = deltaRealTime * playRate;
+        double deltaRealTime = 1/1.0; //timer.getDelay() / 1000.0;
+        int max = view.getSlider().getMaximum();
+        int min = view.getSlider().getMinimum();
+//        double timeStep = 1.0;
+//        try {
+
+//        } catch (Exception ex) { ex.printStackTrace(); timeStep = 1.0; }
+
+        timerTask = new TimerTask()
+		{
+
+			@Override
+			public void run()
+			{
+				double period = runs.getPeriod();
+                double timeStep = Double.parseDouble(view.getTimeStepTextField().getText());
+            	double deltaSimulationTime = deltaRealTime * timeStep;
                 double deltaOffsetTime = deltaSimulationTime / period;
 
                 currentOffsetTime += deltaOffsetTime;
 
-                int max = view.getSlider().getMaximum();
-                int min = view.getSlider().getMinimum();
-                int val = (int)Math.round((currentOffsetTime / offsetScale) * ((double)(max - min)) + min);
+                int val = (int)Math.round((currentOffsetTime / deltaRealTime) * ((double)(max - min)) + min);
                 // time looping
                 if (val >= max)
                 {
@@ -390,28 +407,61 @@ public class StateHistoryIntervalPlaybackController
                     currentOffsetTime = 0.0;
                 }
 
-                //TODO FIX ME
-//                try
-//				{
-//					runs.getCurrentRun().setTimeFraction(10*currentOffsetTime);
-//				}
-//				catch (StateHistoryInvalidTimeException e1)
-//				{
-//					JOptionPane.showMessageDialog(null, e1.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
-//					// TODO Auto-generated catch block
-////					e1.printStackTrace();
-//				}
-                timeModel.setTimeFraction(10*currentOffsetTime);
-//                runs.setTimeFraction(10*currentOffsetTime);
+                timeModel.setTimeFraction(deltaRealTime*currentOffsetTime);
 
-//                runs.setTimeFraction(currentOffsetTime);
+				//Update the slider
+                SwingUtilities.invokeLater(new Runnable()
+				{
 
-                //Update the slider
+					@Override
+					public void run()
+					{
+						  view.getSlider().setValue(val);
+
+			                //Update the time box with the current time
+			                Date date = getDateForET(timeModel.getEt());
+			                view.getTimeBox().setValue(date);
+			            	Logger.getAnonymousLogger().log(Level.INFO, "firing setting date " + date);
+
+			                historyModel.setTime(timeModel.getEt());
+					}
+				});
+
+			}
+		};
+
+
+    	timer = new Timer(timerInterval, new ActionListener()
+        {
+
+            @Override
+            public void actionPerformed(ActionEvent e)
+            {
+            	double period = runs.getPeriod();
+                double timeStep = Double.parseDouble(view.getTimeStepTextField().getText());
+            	double deltaSimulationTime = deltaRealTime * timeStep;
+                double deltaOffsetTime = deltaSimulationTime / period;
+
+                currentOffsetTime += deltaOffsetTime;
+
+                int val = (int)Math.round((currentOffsetTime / deltaRealTime) * ((double)(max - min)) + min);
+                // time looping
+                if (val >= max)
+                {
+                	timer.stop();
+                    currentOffsetTime = 0.0;
+                }
+
+                timeModel.setTimeFraction(deltaRealTime*currentOffsetTime);
+
+				//Update the slider
                 view.getSlider().setValue(val);
 
                 //Update the time box with the current time
                 Date date = getDateForET(timeModel.getEt());
                 view.getTimeBox().setValue(date);
+            	Logger.getAnonymousLogger().log(Level.INFO, "firing setting date " + date);
+
                 historyModel.setTime(timeModel.getEt());
             }
         });

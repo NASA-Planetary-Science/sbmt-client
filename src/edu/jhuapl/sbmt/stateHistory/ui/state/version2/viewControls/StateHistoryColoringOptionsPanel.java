@@ -1,6 +1,5 @@
 package edu.jhuapl.sbmt.stateHistory.ui.state.version2.viewControls;
 
-import java.awt.Color;
 import java.awt.event.ItemListener;
 import java.util.HashMap;
 import java.util.Map;
@@ -46,7 +45,6 @@ public class StateHistoryColoringOptionsPanel extends JPanel
 	{
 		setBorder(new TitledBorder(null, "Coloring Options", TitledBorder.LEADING, TitledBorder.TOP, null, null));
 //		setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
-		setBackground(Color.red);
 		//footprint coloring options
 		JLabel footprintColoringLabel = new JLabel("Footprint Coloring: ");
 

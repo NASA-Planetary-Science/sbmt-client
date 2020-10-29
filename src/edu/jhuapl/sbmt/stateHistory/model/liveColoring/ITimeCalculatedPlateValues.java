@@ -1,8 +1,8 @@
 package edu.jhuapl.sbmt.stateHistory.model.liveColoring;
 
-import vtk.vtkFloatArray;
+import vtk.vtkDataArray;
 
 public interface ITimeCalculatedPlateValues extends ICalculatedPlateValues
 {
-	vtkFloatArray getPlateValuesForTime(double time);
+	vtkDataArray getPlateValuesForTime(double time);
 }

@@ -24,9 +24,14 @@ import javax.swing.border.TitledBorder;
 public class StateHistoryIntervalPlaybackPanel extends JPanel
 {
     /**
-     * The playback rate text field.  Governs how many seconds is advanced every ticker of the slider
+     * The time step text field.  Governs how many seconds is advanced every ticker of the slider
      */
-    private JTextField rateTextField;
+    private JTextField timeStepTextField;
+
+    /**
+     * The playback rate text field.  Governs how much faster than realtime the playback is
+     */
+    private JTextField playbackRateTextField;
 
     /**
      * Rewind button for moving to the start of the slider
@@ -106,7 +111,12 @@ public class StateHistoryIntervalPlaybackPanel extends JPanel
     /**
      * JLabel for the play speed
      */
-    private JLabel playSpeedLabel;
+    private JLabel playbackRateLabel;
+
+    /**
+     * JLabel for the time step
+     */
+    private JLabel timeStepLabel;
 
 
 	/**
@@ -143,8 +153,8 @@ public class StateHistoryIntervalPlaybackPanel extends JPanel
         add(playPanel);
         playPanel.setLayout(new BoxLayout(playPanel, BoxLayout.X_AXIS));
 
-        playSpeedLabel = new JLabel("Play Speed:");
-        playPanel.add(playSpeedLabel);
+        timeStepLabel = new JLabel("Time Step:");
+        playPanel.add(timeStepLabel);
 
         Image questionMark;
         try
@@ -163,10 +173,35 @@ public class StateHistoryIntervalPlaybackPanel extends JPanel
             e.printStackTrace();
         }
 
-        rateTextField = new JTextField("60.0");
-        rateTextField.setMaximumSize( new Dimension(Integer.MAX_VALUE, rateTextField.getPreferredSize().height) );
-        playPanel.add(rateTextField);
-        rateTextField.setColumns(10);
+        timeStepTextField = new JTextField("60.0");
+        timeStepTextField.setMaximumSize( new Dimension(Integer.MAX_VALUE, timeStepTextField.getPreferredSize().height) );
+        playPanel.add(timeStepTextField);
+        timeStepTextField.setColumns(10);
+
+        playbackRateLabel = new JLabel("Playback Rate:");
+        playPanel.add(playbackRateLabel);
+
+        Image questionMark2;
+        try
+        {
+            questionMark2 = ImageIO.read(getClass().getResource("/edu/jhuapl/sbmt/data/questionMark.png"));
+            Icon question = new ImageIcon(questionMark2);
+            JLabel questionRate = new JLabel(question);
+            questionRate.setToolTipText("<html>The speed of the animation is X times <br>faster than 1 second of real time. Ex. <br>60 means 1 minute of the interval is <br>traveled per second</html>");
+
+            playPanel.add(questionRate);
+
+        }
+        catch (IOException e)
+        {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+
+        playbackRateTextField = new JTextField("1");
+        playbackRateTextField.setMaximumSize( new Dimension(Integer.MAX_VALUE, playbackRateTextField.getPreferredSize().height) );
+        playPanel.add(playbackRateTextField);
+        playbackRateTextField.setColumns(10);
 
         rewindButton = new JButton("");
         customizeButton(rewindButton, "/edu/jhuapl/sbmt/data/RewindButton.png", "Rewind");
@@ -270,12 +305,21 @@ public class StateHistoryIntervalPlaybackPanel extends JPanel
     }
 
     /**
-     * Returns the rate text field JTextField
-     * @return the rate text field JTextField
+     * Returns the time step text field JTextField
+     * @return the time step text field JTextField
      */
-    public JTextField getRateTextField()
+    public JTextField getTimeStepTextField()
     {
-        return rateTextField;
+        return timeStepTextField;
+    }
+
+    /**
+     * Returns the playback rate text field JTextField
+     * @return the playback rate text field JTextField
+     */
+    public JTextField getPlaybackRateTextField()
+    {
+        return playbackRateTextField;
     }
 
     /**
@@ -299,13 +343,13 @@ public class StateHistoryIntervalPlaybackPanel extends JPanel
     @Override
     public void setEnabled(boolean enabled)
     {
-    	rateTextField.setEnabled(enabled);
+    	timeStepTextField.setEnabled(enabled);
     	rewindButton.setEnabled(enabled);
     	playButton.setEnabled(enabled);
     	fastForwardButton.setEnabled(enabled);
     	timeBox.setEnabled(enabled);
     	setTimeButton.setEnabled(enabled);
-    	playSpeedLabel.setEnabled(enabled);
+    	timeStepLabel.setEnabled(enabled);
     	lblEnterUtcTime.setEnabled(enabled);
     	playPanel.setEnabled(enabled);
     	super.setEnabled(enabled);

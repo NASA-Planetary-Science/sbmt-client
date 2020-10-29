@@ -50,7 +50,8 @@ public class ObservationPlanningController
 
 	public ObservationPlanningController(final ModelManager modelManager, SmallBodyModel smallBodyModel, Renderer renderer, SmallBodyViewConfig config, ColoringDataManager coloringDataManager)
 	{
-		timeModel = new StateHistoryTimeModel();
+		timeModel = StateHistoryTimeModel.getInstance();
+//		LiveColorableManager.setStateHistoryTimeModel(timeModel);
 		stateHistoryController = new StateHistoryController(modelManager, renderer, timeModel);
 		viewControlsController = new ObservationPlanningViewControlsController(stateHistoryController.getHistoryModel(), modelManager, renderer, coloringDataManager);
 		this.intervalPlaybackController = new StateHistoryIntervalPlaybackController(stateHistoryController.getHistoryModel(), renderer, timeModel);
