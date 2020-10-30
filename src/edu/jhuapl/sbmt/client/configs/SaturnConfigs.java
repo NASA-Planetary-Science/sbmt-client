@@ -413,6 +413,36 @@ public class SaturnConfigs extends SmallBodyViewConfig
             c.defaultForMissions = new SbmtMultiMissionTool.Mission[] {};
 
             configArray.add(c);
+
+            c = new SaturnConfigs();
+            c.body = ShapeModelBody.CALYPSO;
+            c.type = BodyType.PLANETS_AND_SATELLITES;
+            c.population = ShapeModelPopulation.SATURN;
+            c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
+            c.author = ShapeModelType.THOMAS;
+            c.modelLabel = "Thomas et al. (2018)";
+            c.rootDirOnServer = "/calypso/thomas";
+            c.hasColoringData = false;
+            c.setResolution(ImmutableList.of(28269));
+            c.presentInMissions = new SbmtMultiMissionTool.Mission[] {SbmtMultiMissionTool.Mission.TEST_PUBLIC_RELEASE, SbmtMultiMissionTool.Mission.STAGE_PUBLIC_RELEASE, SbmtMultiMissionTool.Mission.STAGE_APL_INTERNAL, SbmtMultiMissionTool.Mission.APL_INTERNAL, SbmtMultiMissionTool.Mission.TEST_APL_INTERNAL};
+            c.defaultForMissions = new SbmtMultiMissionTool.Mission[] {};
+
+            configArray.add(c);
+
+            c = new SaturnConfigs();
+            c.body = ShapeModelBody.CALYPSO;
+            c.type = BodyType.PLANETS_AND_SATELLITES;
+            c.population = ShapeModelPopulation.SATURN;
+            c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
+            c.author = ShapeModelType.DALY;
+            c.modelLabel = "Daly et al. (in progress)";
+            c.rootDirOnServer = "/calypso/daly";
+            c.hasColoringData = false;
+            c.setResolution(ImmutableList.of(49152, 196608, 786432, 3145728));
+            c.presentInMissions = new SbmtMultiMissionTool.Mission[] {SbmtMultiMissionTool.Mission.PUBLIC_RELEASE, SbmtMultiMissionTool.Mission.TEST_PUBLIC_RELEASE, SbmtMultiMissionTool.Mission.STAGE_PUBLIC_RELEASE, SbmtMultiMissionTool.Mission.STAGE_APL_INTERNAL, SbmtMultiMissionTool.Mission.APL_INTERNAL, SbmtMultiMissionTool.Mission.TEST_APL_INTERNAL};
+            c.defaultForMissions = new SbmtMultiMissionTool.Mission[] {};
+
+            configArray.add(c);
         }
 
         {
