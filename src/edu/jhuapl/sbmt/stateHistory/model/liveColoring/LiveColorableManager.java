@@ -2,7 +2,6 @@ package edu.jhuapl.sbmt.stateHistory.model.liveColoring;
 
 import java.util.HashMap;
 
-import vtk.vtkDataArray;
 import vtk.vtkFloatArray;
 
 import edu.jhuapl.saavtk.util.NativeLibraryLoader;
@@ -62,7 +61,7 @@ public class LiveColorableManager
 			}
 
 			@Override
-			public vtkDataArray getPlateValuesForTime(double time)
+			public vtkFloatArray getPlateValuesForTime(double time)
 			{
 				values.InsertTuple1((int)time, 100+time);
 				return values;

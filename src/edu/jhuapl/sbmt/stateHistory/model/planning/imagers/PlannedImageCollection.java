@@ -125,6 +125,15 @@ public class PlannedImageCollection extends SaavtkItemManager<PlannedImage>
 //		coloringData.getData().SetValue(0, 500);
 		nameToColoringMap.put(dataName, coloringData);
 		LoadableColoringData loadableColorData = ColoringDataFactory.of(coloringData, "PlannedCoverageEmission");
+		try
+		{
+			loadableColorData.save();
+		}
+		catch (IOException e)
+		{
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		coloringDataManager.addCustom(loadableColorData);
 		return coloringData;
 
