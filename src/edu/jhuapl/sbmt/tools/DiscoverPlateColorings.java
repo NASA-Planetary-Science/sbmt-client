@@ -74,7 +74,7 @@ public class DiscoverPlateColorings
 				{
 					try
 					{
-						DataFileInfo fileInfo = DataFileReader.of().readFileInfo(colorFile);
+						DataFileInfo fileInfo = DataFileReader.multiFileFormatReader().readFileInfo(colorFile);
 						System.out.println(fileInfo);
 						System.out.flush();
 						extractColorings(fileInfo);
