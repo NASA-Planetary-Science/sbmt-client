@@ -1,6 +1,7 @@
 package edu.jhuapl.sbmt.client.configs;
 
 import java.util.GregorianCalendar;
+import java.util.LinkedHashSet;
 import java.util.List;
 
 import org.apache.commons.text.WordUtils;
@@ -52,6 +53,26 @@ public class DartConfigs
     };
 
     private static final DartConfigs DefaultInstance = new DartConfigs();
+
+    // Note: would strongly prefer *NOT TO DO IT THIS WAY* by hard-coding these
+    // values. Doing it this way because currently there is no way to inject
+    // special handling of keywords where the images are read in a mission-independent
+    // way. A better option may exist in the future, at which time this should be
+    // changed.
+    private static final LinkedHashSet<Float> FillValues = new LinkedHashSet<>();
+
+    static
+    {
+        // The DART ICD defines FITS keywords that should hold the special
+        // image values below.
+        // These are expressed as floats even though we're dealing with
+        // integer images. This is because the code that handles these
+        // values is hard-wired to use floats, so we don't have a better
+        // option right now. In principle this should work.
+        FillValues.add(-32768f); // MISPXVAL for 16-bit integer images.
+        FillValues.add(-32767f); // PXOUTWIN for 16-bit integer images.
+        FillValues.add(4095f); // SNAVFLAG for 16-bit integer images.
+    }
 
     public static DartConfigs instance()
     {
@@ -149,29 +170,38 @@ public class DartConfigs
                         new GenericPhpQuery(dracoDir, dracoTable, dracoTable, c.rootDirOnServer + "/draco/gallery"), //
                         ImageType.valueOf("DART_IMAGE"), //
                         InfoFiles, //
-                        Instrument.DRACO //
+                        Instrument.DRACO, //
+                        270., //
+                        "None", //
+                        FillValues //
                 ),
                 new ImagingInstrument( //
                         SpectralImageMode.MONO, //
                         new GenericPhpQuery(lukeDir, lukeTable, lukeTable, c.rootDirOnServer + "/luke/gallery"), //
                         ImageType.valueOf("LUKE_IMAGE"), //
                         InfoFiles, //
-                        Instrument.LUKE //
+                        Instrument.LUKE, //
+                        0., //
+                        "None", //
+                        FillValues //
                 ),
                 new ImagingInstrument( //
                         SpectralImageMode.MONO, //
                         new GenericPhpQuery(leiaDir, leiaTable, leiaTable, c.rootDirOnServer + "/leia/gallery"), //
                         ImageType.valueOf("LEIA_IMAGE"), //
                         InfoFiles, //
-                        Instrument.LEIA //
+                        Instrument.LEIA, //
+                        0., //
+                        "None", //
+                        FillValues //
                 ),
         };
 
-        c.imageSearchDefaultStartDate = new GregorianCalendar(2022, 10, 1, 0, 0, 0).getTime();
-        c.imageSearchDefaultEndDate = new GregorianCalendar(2022, 10, 2, 0, 0, 0).getTime();
+        c.imageSearchDefaultStartDate = new GregorianCalendar(2022, 9, 1, 0, 0, 0).getTime();
+        c.imageSearchDefaultEndDate = new GregorianCalendar(2022, 9, 2, 0, 0, 0).getTime();
         c.imageSearchFilterNames = new String[] {};
         c.imageSearchUserDefinedCheckBoxesNames = new String[] {};
-        c.imageSearchDefaultMaxSpacecraftDistance = 1.0e3;
+        c.imageSearchDefaultMaxSpacecraftDistance = 1.0e4;
         c.imageSearchDefaultMaxResolution = 1.0e3;
 
         c.databaseRunInfos = new DBRunInfo[] { //
