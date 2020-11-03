@@ -8,7 +8,6 @@ import edu.jhuapl.saavtk.gui.render.Renderer;
 import edu.jhuapl.saavtk.model.Graticule;
 import edu.jhuapl.saavtk.model.ShapeModelBody;
 import edu.jhuapl.saavtk.model.ShapeModelType;
-import edu.jhuapl.saavtk.util.SafeURLPaths;
 import edu.jhuapl.sbmt.dtm.model.DEM;
 import edu.jhuapl.sbmt.dtm.model.DEMKey;
 import edu.jhuapl.sbmt.gui.image.model.custom.CustomCylindricalImageKey;
@@ -31,11 +30,10 @@ import edu.jhuapl.sbmt.model.eros.LineamentModel;
 import edu.jhuapl.sbmt.model.eros.MSIImage;
 import edu.jhuapl.sbmt.model.gaspra.SSIGaspraImage;
 import edu.jhuapl.sbmt.model.ida.SSIIdaImage;
+import edu.jhuapl.sbmt.model.image.BasicPerspectiveImage;
 import edu.jhuapl.sbmt.model.image.CustomPerspectiveImage;
 import edu.jhuapl.sbmt.model.image.CylindricalImage;
 import edu.jhuapl.sbmt.model.image.Image;
-import edu.jhuapl.sbmt.model.image.ImageFactory;
-import edu.jhuapl.sbmt.model.image.ImageFactory.ImageCreationException;
 import edu.jhuapl.sbmt.model.image.ImageKeyInterface;
 import edu.jhuapl.sbmt.model.image.ImageSource;
 import edu.jhuapl.sbmt.model.image.ImageType;
@@ -242,28 +240,7 @@ public class SbmtModelFactory
             return new CylindricalImage((CustomCylindricalImageKey) key, smallBodyModel);
         }
 
-        // The factory below is a newer attempt to clean up and
-        // rationalize the creation of images. The idea would be to
-        // encode flips and rotations into the model metadata for the
-        // imager, then use those to correct the factory here before
-        // creating the image. Assuming the convention for ImageType
-        // will continue to be to name it "<IMAGER>_IMAGE" where
-        // <IMAGER> is the imager.
-        ImageType imageType = key.getInstrument().getType();
-        String imagerLabel = imageType.name().toUpperCase().replace("_IMAGE", "");
-        String imageDirectoryName = SafeURLPaths.instance().getString(config.getRootDirOnServer(), imagerLabel.toLowerCase());
-        ImageFactory factory = ImageFactory.of(imagerLabel, imageDirectoryName, imageType);
-        try
-        {
-            Image image = factory.createImage(key, smallBodyModel, loadPointingOnly);
-
-            return image;
-        }
-        catch (ImageCreationException e)
-        {
-            throw new RuntimeException(e);
-        }
-
+        return new BasicPerspectiveImage(key, smallBodyModel, loadPointingOnly);
     }
 
     static public SmallBodyModel createSmallBodyModel(SmallBodyViewConfig config)
