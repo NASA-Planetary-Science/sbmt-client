@@ -276,6 +276,9 @@ public class SbmtMultiMissionTool
 
         switch (mission)
         {
+        case DART_DEPLOY:
+            // TODO: set rootUrl when this is determined.
+            break;
         case STAGE_APL_INTERNAL:
         case STAGE_PUBLIC_RELEASE:
         case DART_STAGE:
@@ -345,7 +348,6 @@ public class SbmtMultiMissionTool
 				Configuration.setAppTitle(abbrTitle);
 			break;
 		case STAGE_APL_INTERNAL:
-            Configuration.setRootURL("http://sbmt.jhuapl.edu/internal/multi-mission/stage");
             Configuration.setAppName("sbmt-stage-apl");
             Configuration.setCacheVersion("2");
             Configuration.setAppTitle(fullTitle);
@@ -356,7 +358,6 @@ public class SbmtMultiMissionTool
 			Configuration.setAppTitle(fullTitle);
 			break;
 		case TEST_APL_INTERNAL:
-            Configuration.setRootURL("http://sbmt-web.jhuapl.edu/internal/multi-mission/test");
             Configuration.setAppName("sbmt-test-apl");
             Configuration.setCacheVersion("2");
             Configuration.setAppTitle(fullTitle);
