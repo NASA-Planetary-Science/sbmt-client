@@ -16,13 +16,13 @@
 # Options that require editing.
 #-------------------------------------------------------------------------------
 # The "mission", a.k.a. launch configuration identifies the client to build.
-# By default this is TEST_APL_INTERNAL, set in a variable here, so
+# By default this is APL_INTERNAL, set in a variable here, so
 # to pick a different client, modify this script before running it.
-# However, please note that when processing deliveries, TEST_APL_INTERNAL
+# However, please note that when processing deliveries, APL_INTERNAL
 # is the "universal" client, i.e., this is almost always the right client
 # to use for processing, even if the delivery is geared toward a release
 # of some other mission client.
-mission=TEST_APL_INTERNAL
+mission=APL_INTERNAL
 #
 # To force one or more previously-completed steps to be repeated, change any/all
 # of the below variables to true.
