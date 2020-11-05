@@ -100,6 +100,10 @@ public class DartConfigs
 
         c = createSingleResolutionConfig(ShapeModelBody.DIDYMOS, "ideal-impact1-20200629-v01", 1996);
         configList.add(c);
+
+        // Make this the default model.
+        final SmallBodyViewConfig defaultConfig = c;
+
         c = createSingleResolutionConfig(ShapeModelBody.DIDYMOS, "ideal-impact2-20200629-v01", 1996);
         configList.add(c);
         c = createSingleResolutionConfig(ShapeModelBody.DIDYMOS, "ideal-impact3-20200629-v01", 1996);
@@ -139,9 +143,6 @@ public class DartConfigs
         configList.add(c);
         c = createSingleResolutionConfig(ShapeModelBody.DIMORPHOS, "errors-impact5-20200629-v01", 3366134);
         configList.add(c);
-
-        // Move this line around as needed to select the current default model.
-        final SmallBodyViewConfig defaultConfig = c;
 
         defaultConfig.defaultForMissions = DartClients;
     }
