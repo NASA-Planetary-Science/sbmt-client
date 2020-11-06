@@ -94,7 +94,7 @@ check() {
 confirmSbmt() {
   (
     funcName=${FUNCNAME[0]}
-    
+
     isSbmt=$(checkIdentity sbmt)
     if test "$isSbmt" != true; then
       check 1 "$funcName: user name is not sbmt"
@@ -107,7 +107,7 @@ confirmSbmt() {
 confirmNotSbmt() {
   (
     funcName=${FUNCNAME[0]}
-    
+
     isSbmt=$(checkIdentity sbmt)
     if test "$isSbmt" != false; then
       check 1 "$funcName: user name is sbmt"
@@ -242,18 +242,18 @@ guessFileExtension() {
 # This function uses getDirPath to rationalize paths, so the supplied argument
 # must actually exist in the file system.
 guessRawDataParentDir() {
-  (  
+  (
     funcName=${FUNCNAME[0]}
 
     if test "$1" = ""; then
       check 1 "$funcName: no directory supplied as an argument"
     fi
-  
+
     dir=$(getDirPath "$1")
-  
+
     # Extract everything to the right of right-most rawdata/.
     suffix=`echo $dir | sed -n 's:.*/rawdata/::p'`
-  
+
     if test "$suffix" != ""; then
       result=`echo $dir | sed "s:/rawdata/$suffix$::"`
     elif test `echo $dir | grep -c '/rawdata$'` -gt 0; then
@@ -261,7 +261,7 @@ guessRawDataParentDir() {
     else
       check 1 "$funcName: can't guess rawdata location from $dir"
     fi
-  
+
     echo $result
   )
   check $?
@@ -273,7 +273,7 @@ createDir() {
     funcName=${FUNCNAME[0]}
 
     checkSkip $funcName "$*"
-    
+
     dir=$1
     if test "$dir" = ""; then
       check 1 "$funcName: missing/blank directory argument."
@@ -294,7 +294,7 @@ createParentDir() {
     funcName=${FUNCNAME[0]}
 
     checkSkip $funcName "$*"
-    
+
     dir=$1
     if test "$dir" = ""; then
       check 1 "$funcName: missing/blank directory argument."
@@ -359,7 +359,7 @@ doRsync() {
     funcName=${FUNCNAME[0]}
 
     checkSkip $funcName "$*"
-    
+
     src=$1
     dest=$2
     linkOptions=$3
@@ -389,7 +389,7 @@ doRsyncDir() {
     funcName=${FUNCNAME[0]}
 
     checkSkip $funcName "$*"
-    
+
     src=$1
     dest=$2
     if test ! -e $src; then
@@ -414,7 +414,7 @@ doRsyncOptionalDir() {
     funcName=${FUNCNAME[0]}
 
     checkSkip $funcName "$*"
-    
+
     src=$1
     dest=$2
     # Check only existence here. doRsyncDir will take care of
@@ -433,7 +433,7 @@ copyFile() {
     funcName=${FUNCNAME[0]}
 
     checkSkip $funcName "$*"
-    
+
     if test "$1" = ""; then
       check 1 "$funcName: source file name is not set"
     fi
@@ -475,7 +475,7 @@ copyDir() {
     fi
 
     if test "$srcTop" = ""; then
-      check 1 "$funcName: global variable srcTop is not set" 
+      check 1 "$funcName: global variable srcTop is not set"
     fi
     if test "$destTop" = ""; then
       check 1 "$funcName: global variable destTop is not set"
@@ -953,7 +953,7 @@ processStandardModelFiles() {
     checkSkip $funcName "$*"
 
     createDir $destTop
-  
+
     doRsyncOptionalDir "$srcTop/basemap" "$destTop/basemap"
     # DTMs and coloring files are copied during processing now.
   #  doRsyncOptionalDir "$srcTop/dtm" "$destTop/dtm"
@@ -961,7 +961,7 @@ processStandardModelFiles() {
     # Delete other files in the shape directory in case this is a re-start.
     doRsyncOptionalDir "$srcTop/shape" "$destTop/shape" "--delete --links --copy-unsafe-links --keep-dirlinks"
     doGzipOptionalDir "$destTop/shape"
-  
+
     if test -d "$destTop/shape"; then
       # First argument is directory, second is the prefix
       # for output file name(s).
@@ -1433,6 +1433,33 @@ generateModelMetadata() {
     $sbmtCodeTop/sbmt/bin/ModelMetadataGenerator.sh $destDir -pub >> $logFile 2>&1
     check $? "$funcName: problems generating published model metadata. For details, see file $logFile"
 
+  )
+  check $?
+}
+
+# This takes one argument, which gives the flavor of metadata (proprietary or public).
+deployModelMetadata() {
+  (
+    funcName=${FUNCNAME[0]}
+
+    checkSkip $funcName "$*"
+
+    flavor=$1
+    if test "$flavor" = ""; then
+      check 1 "$funcName: (missing) first argument must be flavor of metadata to deploy (proprietary or published)."
+    fi
+
+    srcTop="$processedTop/$flavor/$modelMetadataDir"
+    
+    if test -d $srcTop; then
+      destTop="$serverTop/$flavor/$modelMetadataDir-$processingId"
+    
+      copyDir .
+    
+      updateRelativeLink $destTop $serverTop/$flavor/$modelMetadataDir $processingId
+    else
+      echo "$funcName: did not find $flavor metadata to deploy under the directory $processedTop"
+    fi
   )
   check $?
 }
