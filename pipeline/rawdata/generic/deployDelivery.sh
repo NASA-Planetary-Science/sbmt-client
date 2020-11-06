@@ -53,14 +53,7 @@ copyDir .
 updateRelativeLink $destTop $deployedTop/$outputTop $processingId
 updateRelativeLink $destTop $serverTop/$outputTop $processingId
 
-# Install full set of metadata.
-srcTop="$processedTop/$modelMetadataDir"
-destTop="$serverTop/$modelMetadataDir-$processingId"
-
-# Copy model metadata to server area.
-copyDir .
-
-# Update the metadata symbolic links at the top level in the server area.
-updateRelativeLink $destTop $serverTop/$modelMetadataDir $processingId
-
+# Deploy proprietary and public metadata, if any.
+deployModelMetadata proprietary
+deployModelMetadata published
 #-------------------------------------------------------------------------------
