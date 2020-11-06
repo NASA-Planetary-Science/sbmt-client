@@ -688,7 +688,7 @@ updateLink() {
       check 1 "$funcName: target file/directory $target does not exist."
     fi
 
-    echo "$function: updating symbolic link to $target named $linkPath in $(pwd -P)"
+    echo "$funcName: updating symbolic link to $target named $linkPath in $(pwd -P)"
 
     # If linkPath already exists, back it up rather than removing it.
     if test -e $linkPath; then
@@ -1427,7 +1427,11 @@ generateModelMetadata() {
 
     echo "$sbmtCodeTop/sbmt/bin/ModelMetadataGenerator.sh $destDir"
     $sbmtCodeTop/sbmt/bin/ModelMetadataGenerator.sh $destDir >> $logFile 2>&1
-    check $? "$funcName: problems generating metadata. For details, see file $logFile"
+    check $? "$funcName: problems generating proprietary model metadata. For details, see file $logFile"
+
+    echo "$sbmtCodeTop/sbmt/bin/ModelMetadataGenerator.sh -pub $destDir"
+    $sbmtCodeTop/sbmt/bin/ModelMetadataGenerator.sh $destDir -pub >> $logFile 2>&1
+    check $? "$funcName: problems generating published model metadata. For details, see file $logFile"
 
   )
   check $?
