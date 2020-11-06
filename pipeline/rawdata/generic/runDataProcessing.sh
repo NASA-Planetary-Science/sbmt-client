@@ -193,7 +193,7 @@ modelMetadataDir=allBodies-9.0
 
 # Directory in which to unpack SPICE files. Should be as short as possible
 # due to SPICE path restrictions.
-tmpSpiceDir="/project/sbmt2/spice"
+tmpSpiceDir="/project/sbmt2/$processingId"
 
 # Environment variables:
 export SAAVTKROOT="$sbmtCodeTop/saavtk"
