@@ -1189,69 +1189,91 @@ extractFITSFileTimes() {
   check $?
 }
 
-# From the image list file specified by the argument, create a gallery list file that gives the name of each
-# image along with its thumbnail and its main gallery image, in that order.
+# For the imaging instrument directory specified by the argument, create a gallery list file that gives the name of each
+# main image along with its preview (thumbnail) and its  gallery image, in that order. This function
+# only pays attention to the image files and their corresponding gallery files; it has nothing to do
+# with pointing. It does not rely on any preexisting image list files.
 #
 # Assumptions:
-#   1. The image list file is in the same directory that contains the "images" and "gallery" subdirectories.
-#   2. The gallery subdirectory is laid out parallel to the images subdirectory, and the image list file specified
-#      by the argument gives each image's path relative to the images subdirectory.
-#   3. Each gallery image (both thumbnail and main image) includes its corresponding complete image file name
-#      in its own name. 
+#   1. Main images are under "images", gallery images are under "gallery".
+#   2. The gallery subdirectory is laid out parallel to the images subdirectory.
+#   3. For each main image, the gallery directory includes a preview image and a gallery image.
+#   4. The name of each preview and gallery image BEGINS WITH its corresponding complete image file name. (This could
+#      be generalized).
 #
-# @param imageListFile the full path to the file that contains images listed relative to the IMAGER's top-level directory.
-#            This is for example, "imagelist-info.txt", but not "imagelist-fullpath-info.txt"
+# Most of this function does not assume any particular layout under images, that is, it could be flat or
+# hierarchical. The exception is that this function starts by creating a flat list of images, so this step
+# would need to be generalized if a hierarchical layout were used.
+#
+# @param instrumentTop the full path to the top directory for the imaging instrument, e.g., dart/draco or didymos/ideal_impact1.../draco.
 createGalleryList() {
   (
     funcName=${FUNCNAME[0]}
 
     checkSkip $funcName "$*"
 
-    imageListFile=$1
+    instrumentTop=$1
 
-    if test "$imageListFile" = ""; then
-      check 1 "$funcName: missing/blank first argument must specify the full path to the image list file"
+    if test "$instrumentTop" = ""; then
+      check 1 "$funcName: missing/blank first argument must specify the full path to the imaging instrument top level directory"
     fi
 
-    if test ! -f "$imageListFile"; then
-      check 1 "$funcName: first argument $imageListFile is not a file"
+    if test ! -d "$instrumentTop"; then
+      check 1 "$funcName: first argument $instrumentTop is not a directory"
     fi
 
-    parentDir=$(getDirPath $imageListFile)
-    
-    galleryDir=$parentDir/gallery
-    if test ! -d "$galleryDir"; then
-      # This directory has no gallery; just exit here.
-      echo "$funcName: WARNING: no gallery files with these images"
+    imageDir=$instrumentTop/images
+    if test ! -d "$imageDir"; then
+      echo "$funcName: INFO: no images in $instrumentTop"
       exit;
     fi
 
-    cd $galleryDir
-    check $? "$funcName: unable to cd to $galleryDir"
+    galleryListFile=$instrumentTop/gallery-list.txt
+    rm -f $galleryListFile
 
-    galleryListFile=$parentDir/gallery-list.txt
-	rm -f $galleryListFile
-
-    for line in `cat $imageListFile`; do
-      image=`echo $line | sed 's: .*::'`
-      root=`echo "$image" | sed 's:\.[^\.]*$::'`
-      check $? "$funcName: unable to determine location of gallery image for $image"
-
-      galleryFiles=`ls -sL $root* 2> /dev/null | sort -n | sed 's:.* ::' | tr '\012' ' '`
-      check $? "$funcName: unable to find gallery images for $image"
-
-      if test `echo $galleryFiles | wc -w` -eq 2; then
-        echo "$image $galleryFiles" >> $galleryListFile
-      fi
-    done
-
-    if test ! -f "$galleryListFile"; then
-      echo "$funcName: WARNING: did not find ANY gallery files in $parentDir"
-      echo "$funcName: please examine $imageListFile and contents of $parentDir/gallery"
-    elif test `wc -l $imageListFile | sed 's: .*::'` -ne `wc -l $galleryListFile | sed 's: .*::'`; then
-      echo "$funcName: WARNING: did not find gallery files for every image in $parentDir"
-      echo "$funcName: please examine $imageListFile and $parentDir/$galleryListFile"
+    galleryDir=$instrumentTop/gallery
+    if test ! -d "$galleryDir"; then
+      # This directory has no gallery; just exit here.
+      echo "$funcName: WARNING: no gallery files with images in $imageDir"
+      exit;
     fi
+
+    cd $imageDir
+    check $? "$funcName: unable to cd to $imageDir"
+
+    tmpImageList=$instrumentTop/tmpImageList.txt
+    # Go one sub-shell deeper to ensure this tmp file gets cleaned up.
+    export tmpImageList funcName imageDir galleryDir galleryListFile instrumentTop
+    (
+      ls > $tmpImageList 2> /dev/null
+      check $? "$funcName: unable to list images in $imageDir"
+
+      cd $galleryDir
+      check $? "$funcName: unable to cd to $galleryDir"
+
+      for image in `cat $tmpImageList`; do
+        root=`echo "$image" | sed 's:\.[^\.]*$::'`
+        check $? "$funcName: unable to determine base name of gallery images for $image"
+
+        galleryFiles=`ls -sL $root* 2> /dev/null | sort -n | sed 's:.* ::' | tr '\012' ' '`
+        check $? "$funcName: unable to find gallery images for $image"
+
+        if test `echo $galleryFiles | wc -w` -eq 2; then
+          echo "$image $galleryFiles" >> $galleryListFile
+        fi
+      done
+
+      if test ! -f "$galleryListFile"; then
+        echo "$funcName: WARNING: did not find ANY gallery files in $galleryDir"
+        echo "$funcName: please examine $instrumentTop and its subdirectories"
+      elif test `wc -l $tmpImageList | sed 's: .*::'` -ne `wc -l $galleryListFile | sed 's: .*::'`; then
+        echo "$funcName: WARNING: did not find gallery files for every image in $imageDir"
+        echo "$funcName: please examine $instrumentTop and its subdirectories"
+      fi
+    )
+    status=$?
+    rm -f $tmpImageList
+    exit $status
   )
   check $?
 }
