@@ -199,7 +199,7 @@ createInfoFilesFromFITSImages $metakernel \
 #-------------------------------------------------------------------------------
 
 # Set up galleries (if present).
-createGalleryList $outputTop/$instrument
+createGalleryList $destTop/$instrument
 
 # Update database tables.
 # This symbolic link is needed because the database generator appends "/data"
@@ -249,7 +249,7 @@ createInfoFilesFromFITSImages $metakernel \
 #-------------------------------------------------------------------------------
 
 # Set up galleries (if present).
-createGalleryList $outputTop/$instrument
+createGalleryList $destTop/$instrument
 
 # Update database tables.
 # This symbolic link is needed because the database generator appends "/data"
@@ -299,7 +299,7 @@ createInfoFilesFromFITSImages $metakernel \
 #-------------------------------------------------------------------------------
 
 # Set up galleries (if present).
-createGalleryList $outputTop/$instrument
+createGalleryList $destTop/$instrument
 
 # Update database tables.
 # This symbolic link is needed because the database generator appends "/data"
