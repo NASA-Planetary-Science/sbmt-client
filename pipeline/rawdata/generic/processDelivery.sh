@@ -198,6 +198,9 @@ createInfoFilesFromFITSImages $metakernel \
   $processedTop $imageDir $infoFileDir
 #-------------------------------------------------------------------------------
 
+# Set up galleries (if present).
+createGalleryList $outputTop/$instrument
+
 # Update database tables.
 # This symbolic link is needed because the database generator appends "/data"
 # to the root URL, but this level of directory is not used in deliveries.
@@ -245,6 +248,9 @@ createInfoFilesFromFITSImages $metakernel \
   $processedTop $imageDir $infoFileDir
 #-------------------------------------------------------------------------------
 
+# Set up galleries (if present).
+createGalleryList $outputTop/$instrument
+
 # Update database tables.
 # This symbolic link is needed because the database generator appends "/data"
 # to the root URL, but this level of directory is not used in deliveries.
@@ -291,6 +297,9 @@ createInfoFilesFromFITSImages $metakernel \
   $bodyId $bodyFrame $scId $instrument $instFrame $timeKeyword \
   $processedTop $imageDir $infoFileDir
 #-------------------------------------------------------------------------------
+
+# Set up galleries (if present).
+createGalleryList $outputTop/$instrument
 
 # Update database tables.
 # This symbolic link is needed because the database generator appends "/data"
