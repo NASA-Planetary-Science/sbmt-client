@@ -69,7 +69,8 @@ public class ImageResultsTableController
     protected List<ImageKeyInterface> imageKeys;
     protected List<List<String>> imageRawResults;
     private ModelManager modelManager;
-    protected ImagingInstrument instrument;
+    protected final ImagingInstrument instrument;
+    protected final ImageGalleryGenerator galleryGenerator;
     protected Renderer renderer;
     protected StringRenderer stringRenderer;
     protected PropertyChangeListener propertyChangeListener;
@@ -103,6 +104,7 @@ public class ImageResultsTableController
         this.imageCollection = imageCollection;
         this.imageSearchModel = model;
         this.instrument = instrument;
+        this.galleryGenerator = ImageGalleryGenerator.of(instrument);
         this.renderer = renderer;
         model.addResultsChangedListener(new ImageSearchResultsListener() {
 
@@ -343,15 +345,12 @@ public class ImageResultsTableController
         // Check if image search results are valid and nonempty
         if (imageRawResults != null)
         {
-            String dataPath = instrument.searchQuery.getDataPath();
-            String galleryPath = instrument.searchQuery.getGalleryPath();
             // Create list of gallery and preview image names based on results
             List<ImageGalleryEntry> galleryEntries = new LinkedList<ImageGalleryEntry>();
             for (List<String> res : imageRawResults)
             {
-                String s = "/" + res.get(0).replace(dataPath, galleryPath);
-                // Create entry for image gallery
-                galleryEntries.add(new ImageGalleryEntry(res.get(0).substring(res.get(0).lastIndexOf("/") + 1), s + ".jpeg", s + "-small.jpeg"));
+                ImageGalleryEntry entry = galleryGenerator.getEntry(res.get(0));
+                galleryEntries.add(entry);
             }
 
             // Don't bother creating a gallery if empty
