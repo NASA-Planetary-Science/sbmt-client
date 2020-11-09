@@ -1287,7 +1287,7 @@ createInfoFilesFromFITSImages() {
     timeStampKeyword=$7
     topDir=$8
     imageDir=$9
-    infoDir="${10}" # Proof that Bourne shell is evil. $10 = "$1"0. Need the curly brace here.
+    infoDir="${10}" # Proof that Bourne shell is evil (yet we love it). $10 = "$1"0. Need the curly brace here.
 
     if test "$metakernel" = ""; then
       check 1 "$funcName: missing/blank first argument; must be path to metakernel valid in $tmpSpiceDir"
@@ -1346,6 +1346,73 @@ createInfoFilesFromFITSImages() {
 
     createInfoFilesFromImageTimeStamps $metakernel $body $bodyFrame $spacecraft $instrument $instrumentFrame \
       $imageTimeStampFile $topDir/$infoDir
+  )
+  check $?
+}
+
+# From the image list file specified by the argument, create a gallery list file that gives the name of each
+# image along with its thumbnail and its main gallery image, in that order.
+#
+# Assumptions:
+#   1. The image list file is in the same directory that contains the "images" and "gallery" subdirectories.
+#   2. The gallery subdirectory is laid out parallel to the images subdirectory, and the image list file specified
+#      by the argument gives each image's path relative to the images subdirectory.
+#   3. Each gallery image (both thumbnail and main image) includes its corresponding complete image file name
+#      in its own name. 
+#
+# @param imageListFile the full path to the file that contains images listed relative to the IMAGER's top-level directory.
+#            This is for example, "imagelist-info.txt", but not "imagelist-fullpath-info.txt"
+createGalleryList() {
+  (
+    funcName=${FUNCNAME[0]}
+
+    checkSkip $funcName "$*"
+
+    imageListFile=$1
+
+    if test "$imageListFile" = ""; then
+      check 1 "$funcName: missing/blank first argument must specify the full path to the image list file"
+    fi
+
+    if test ! -f "$imageListFile"; then
+      check 1 "$funcName: first argument $imageListFile is not a file"
+    fi
+
+    parentDir=$(getDirPath $imageListFile)
+    
+    galleryDir=$parentDir/gallery
+    if test ! -d "$galleryDir"; then
+      # This directory has no gallery; just exit here.
+      echo "$funcName: WARNING: no gallery files with these images"
+      exit;
+    fi
+
+    cd $galleryDir
+    check $? "$funcName: unable to cd to $galleryDir"
+
+    galleryListFile=$parentDir/gallery-list.txt
+	rm -f $galleryListFile
+
+    for line in `cat $imageListFile`; do
+      image=`echo $line | sed 's: .*::'`
+      root=`echo "$image" | sed 's:\.[^\.]*$::'`
+      check $? "$funcName: unable to determine location of gallery image for $image"
+
+      galleryFiles=`ls -sL $root* 2> /dev/null | sort -n | sed 's:.* ::' | tr '\012' ' '`
+      check $? "$funcName: unable to find gallery images for $image"
+
+      if test `echo $galleryFiles | wc -w` -eq 2; then
+        echo "$image $galleryFiles" >> $galleryListFile
+      fi
+    done
+
+    if test ! -f "$galleryListFile"; then
+      echo "$funcName: WARNING: did not find ANY gallery files in $parentDir"
+      echo "$funcName: please examine $imageListFile and contents of $parentDir/gallery"
+    elif test `wc -l $imageListFile | sed 's: .*::'` -ne `wc -l $galleryListFile | sed 's: .*::'`; then
+      echo "$funcName: WARNING: did not find gallery files for every image in $parentDir"
+      echo "$funcName: please examine $imageListFile and $parentDir/$galleryListFile"
+    fi
   )
   check $?
 }
@@ -1450,12 +1517,12 @@ deployModelMetadata() {
     fi
 
     srcTop="$processedTop/$flavor/$modelMetadataDir"
-    
+
     if test -d $srcTop; then
       destTop="$serverTop/$flavor/$modelMetadataDir-$processingId"
-    
+
       copyDir .
-    
+
       updateRelativeLink $destTop $serverTop/$flavor/$modelMetadataDir $processingId
     else
       echo "$funcName: did not find $flavor metadata to deploy under the directory $processedTop"
