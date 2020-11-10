@@ -434,7 +434,7 @@ public class SaturnConfigs extends SmallBodyViewConfig
             c.type = BodyType.PLANETS_AND_SATELLITES;
             c.population = ShapeModelPopulation.SATURN;
             c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
-            c.author = ShapeModelType.DALY;
+            c.author = ShapeModelType.provide("Daly");
             c.modelLabel = "Daly et al. (in progress)";
             c.rootDirOnServer = "/calypso/daly";
             c.hasColoringData = false;
