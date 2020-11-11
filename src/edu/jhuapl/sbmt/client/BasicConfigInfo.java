@@ -16,7 +16,7 @@ public class BasicConfigInfo implements MetadataManager
 
     // When this is changed, build-client.sh must also be changed to
     // remain consistent.
-    private static final String configInfoVersion = "9.0";
+    private static final String configInfoVersion = "9.1";
 
     public static String getConfigInfoVersion()
     {
