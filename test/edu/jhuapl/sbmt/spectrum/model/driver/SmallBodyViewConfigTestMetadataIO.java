@@ -59,6 +59,7 @@ public class SmallBodyViewConfigTestMetadataIO implements MetadataManager
         writeEnum(body, c.body, configMetadata);
         writeEnum(type, c.type, configMetadata);
         writeEnum(population, c.population, configMetadata);
+        writeEnum(system, c.system, configMetadata);
         writeEnum(dataUsed, c.dataUsed, configMetadata);
         write(author, c.author.name(), configMetadata);
         write(rootDirOnServer, c.rootDirOnServer, configMetadata);
@@ -194,8 +195,9 @@ public class SmallBodyViewConfigTestMetadataIO implements MetadataManager
         c.body = ShapeModelBody.valueOf(read(body, configMetadata));
         c.type = BodyType.valueOf(read(type, configMetadata));
         c.population = ShapeModelPopulation.valueOf(read(population, configMetadata));
+        c.system = ShapeModelBody.valueFor(read(system, configMetadata));
         c.dataUsed =ShapeModelDataUsed.valueOf(read(dataUsed, configMetadata));
-        c.author = ShapeModelType.valueOf(read(author, configMetadata));
+        c.author = ShapeModelType.provide(read(author, configMetadata));
         c.rootDirOnServer = read(rootDirOnServer, configMetadata);
         c.timeHistoryFile = read(timeHistoryFile, configMetadata);
         c.hasImageMap = read(hasImageMap, configMetadata);
@@ -286,6 +288,7 @@ public class SmallBodyViewConfigTestMetadataIO implements MetadataManager
     final Key<String> body = Key.of("body");
     final Key<String> type = Key.of("type");
     final Key<String> population = Key.of("population");
+    final Key<String> system = Key.of("system");
     final Key<String> dataUsed = Key.of("dataUsed");
     final Key<String> author = Key.of("author");
     final Key<String> modelLabel = Key.of("author");

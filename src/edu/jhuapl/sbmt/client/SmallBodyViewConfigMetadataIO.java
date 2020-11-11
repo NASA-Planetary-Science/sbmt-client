@@ -178,6 +178,7 @@ public class SmallBodyViewConfigMetadataIO implements MetadataManager
         writeEnum(type, c.type, configMetadata);
         write(version, c.version, configMetadata);
         writeEnum(population, c.population, configMetadata);
+        writeEnum(system, c.system, configMetadata);
         writeEnum(dataUsed, c.dataUsed, configMetadata);
         write(author, c.author.name(), configMetadata);
         write(modelLabel, c.modelLabel, configMetadata);
@@ -408,6 +409,7 @@ public class SmallBodyViewConfigMetadataIO implements MetadataManager
         c.type = BodyType.valueOf(read(type, configMetadata));
         c.version = read(version, configMetadata);
         c.population = ShapeModelPopulation.valueOf(read(population, configMetadata));
+        c.system = ShapeModelBody.valueFor(read(system, configMetadata));
         c.dataUsed =ShapeModelDataUsed.valueOf(read(dataUsed, configMetadata));
         c.author = ShapeModelType.provide(read(author, configMetadata));
         c.modelLabel = read(modelLabel, configMetadata);
@@ -627,6 +629,7 @@ public class SmallBodyViewConfigMetadataIO implements MetadataManager
     final Key<String> type = Key.of("type");
     final Key<String> version = Key.of("version");
     final Key<String> population = Key.of("population");
+    final Key<String> system = Key.of("system");
     final Key<String> dataUsed = Key.of("dataUsed");
     final Key<String> author = Key.of("author");
     final Key<String> modelLabel = Key.of("modelLabel");

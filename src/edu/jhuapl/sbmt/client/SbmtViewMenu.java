@@ -84,6 +84,8 @@ public class SbmtViewMenu extends ViewMenu
             tree.add(config.type.toString());
         if (config.population != null && config.population != ShapeModelPopulation.NA)
             tree.add(config.population.toString());
+        if (config.system != null)
+            tree.add(config.system.toString());
         if (config.body != null)
             tree.add(config.body.toString());
         if (config.dataUsed != null && config.dataUsed != ShapeModelDataUsed.NA)

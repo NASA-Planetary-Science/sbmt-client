@@ -453,6 +453,11 @@ public class SbmtTesterViewManager extends ViewManager
                 {
                     result = POPULATION_COMPARATOR.compare(body1.population, body2.population);
                 }
+
+                if (result == 0)
+                {
+                    result = SYSTEM_COMPARATOR.compare(body1.system, body2.system);
+                }
             }
 
             if (result == 0)
@@ -528,6 +533,10 @@ public class SbmtTesterViewManager extends ViewManager
             ShapeModelPopulation.NA,
             null
             ));
+
+    private static final Comparator<ShapeModelBody> SYSTEM_COMPARATOR = (system1, system2) -> {
+        return system1 == null ? (system2 == null ? 0 : -system2.compareTo(system1)) : system1.compareTo(system2);
+    };
 
     private static final ImmutableSet<ShapeModelBody> MARK_VISITED_BY_SPACECRAFT = ImmutableSet.of(
             ShapeModelBody.EROS,

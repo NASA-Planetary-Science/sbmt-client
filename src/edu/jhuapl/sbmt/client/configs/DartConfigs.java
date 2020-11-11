@@ -167,6 +167,7 @@ public class DartConfigs
         c.body = body;
         c.type = BodyType.ASTEROID;
         c.population = ShapeModelPopulation.NEO;
+        c.system = ShapeModelBody.DIDYMOS_SYSTEM;
         c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
         c.author = ShapeModelType.provide(modelId);
         c.modelLabel = createLabel(c.author);

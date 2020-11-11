@@ -507,6 +507,11 @@ public class SbmtViewManager extends ViewManager
 
             if (result == 0)
             {
+                result = SYSTEM_COMPARATOR.compare(config1.system, config2.system);
+            }
+
+            if (result == 0)
+            {
                 result = MARK_VISITED_BY_SPACECRAFT_COMPARATOR.compare(config1.body, config2.body);
             }
 
@@ -557,6 +562,10 @@ public class SbmtViewManager extends ViewManager
             ShapeModelPopulation.NA,
             null
             ));
+
+    private static final Comparator<ShapeModelBody> SYSTEM_COMPARATOR = (system1, system2) -> {
+        return system1 == null ? (system2 == null ? 0 : -system2.compareTo(system1)) : system1.compareTo(system2);
+    };
 
     private static final ImmutableSet<ShapeModelBody> MARK_VISITED_BY_SPACECRAFT = ImmutableSet.of(
             ShapeModelBody.EROS,
