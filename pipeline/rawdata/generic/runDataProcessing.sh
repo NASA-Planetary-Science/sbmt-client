@@ -189,7 +189,7 @@ sbmtCodeTop=$rawDataTop
 logTop=$rawDataTop/logs/$dateStamp
 
 # Bodies metadata directory name. Must be kept in sync with BodyViewConfig.getConfigInfoVersion().
-modelMetadataDir=allBodies-9.0
+modelMetadataDir=allBodies-9.1
 
 # Directory in which to unpack SPICE files. Should be as short as possible
 # due to SPICE path restrictions.
