@@ -122,7 +122,7 @@ public class BasicConfigInfo implements MetadataManager
 	{
 		SettableMetadata configMetadata = SettableMetadata.of(Version.of(1, 1));
         configMetadata.put(populationKey, population.toString());
-        configMetadata.put(systemKey, system.toString());
+        configMetadata.put(systemKey, system != null ? system.toString() : null);
         configMetadata.put(typeKey, type.toString());
         configMetadata.put(bodyKey, body.toString());
         configMetadata.put(dataUsedKey, dataUsed.toString());
