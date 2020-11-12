@@ -636,6 +636,8 @@ public class DatabaseGeneratorSql
         // basic default configuration, most of these will be overwritten by the configureMission() method
         Configuration.setAPLVersion(aplVersion);
 
+        Configuration.clearCache();
+
         // authentication
         Configuration.authenticate();
 
