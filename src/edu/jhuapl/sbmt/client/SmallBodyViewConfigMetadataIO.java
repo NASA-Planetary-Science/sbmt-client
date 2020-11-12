@@ -409,7 +409,8 @@ public class SmallBodyViewConfigMetadataIO implements MetadataManager
         c.type = BodyType.valueOf(read(type, configMetadata));
         c.version = read(version, configMetadata);
         c.population = ShapeModelPopulation.valueOf(read(population, configMetadata));
-        c.system = ShapeModelBody.valueFor(read(system, configMetadata));
+        String systemString = read(system, configMetadata);
+        c.system = systemString != null ? ShapeModelBody.valueOf(systemString) : null;
         c.dataUsed =ShapeModelDataUsed.valueOf(read(dataUsed, configMetadata));
         c.author = ShapeModelType.provide(read(author, configMetadata));
         c.modelLabel = read(modelLabel, configMetadata);

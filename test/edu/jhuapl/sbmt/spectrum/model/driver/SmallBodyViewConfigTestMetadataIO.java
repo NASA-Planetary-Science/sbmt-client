@@ -195,7 +195,7 @@ public class SmallBodyViewConfigTestMetadataIO implements MetadataManager
         c.body = ShapeModelBody.valueOf(read(body, configMetadata));
         c.type = BodyType.valueOf(read(type, configMetadata));
         c.population = ShapeModelPopulation.valueOf(read(population, configMetadata));
-        c.system = ShapeModelBody.valueFor(read(system, configMetadata));
+        c.system = ShapeModelBody.valueOf(read(system, configMetadata));
         c.dataUsed =ShapeModelDataUsed.valueOf(read(dataUsed, configMetadata));
         c.author = ShapeModelType.provide(read(author, configMetadata));
         c.rootDirOnServer = read(rootDirOnServer, configMetadata);
