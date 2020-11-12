@@ -564,7 +564,20 @@ public class SbmtViewManager extends ViewManager
             ));
 
     private static final Comparator<ShapeModelBody> SYSTEM_COMPARATOR = (system1, system2) -> {
-        return system1 == null ? (system2 == null ? 0 : -system2.compareTo(system1)) : system1.compareTo(system2);
+        if (system1 == system2)
+        {
+            return 0;
+        }
+        if (system1 == null)
+        {
+            return -1;
+        }
+        if (system2 == null)
+        {
+            return +1;
+        }
+
+        return system1.compareTo(system2);
     };
 
     private static final ImmutableSet<ShapeModelBody> MARK_VISITED_BY_SPACECRAFT = ImmutableSet.of(
