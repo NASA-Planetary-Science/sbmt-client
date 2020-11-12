@@ -453,18 +453,12 @@ public class SbmtTesterViewManager extends ViewManager
                 {
                     result = POPULATION_COMPARATOR.compare(body1.population, body2.population);
                 }
-
-                if (result == 0)
-                {
-                    result = SYSTEM_COMPARATOR.compare(body1.system, body2.system);
-                }
             }
 
             if (result == 0)
             {
                 result = MARK_VISITED_BY_SPACECRAFT_COMPARATOR.compare(config1.body, config2.body);
             }
-
 
             if (result == 0)
             {
@@ -534,26 +528,12 @@ public class SbmtTesterViewManager extends ViewManager
             null
             ));
 
-    private static final Comparator<ShapeModelBody> SYSTEM_COMPARATOR = (system1, system2) -> {
-        if (system1 == system2)
-        {
-            return 0;
-        }
-        if (system1 == null)
-        {
-            return -1;
-        }
-        if (system2 == null)
-        {
-            return +1;
-        }
-
-        return system1.compareTo(system2);
-    };
-
     private static final ImmutableSet<ShapeModelBody> MARK_VISITED_BY_SPACECRAFT = ImmutableSet.of(
             ShapeModelBody.EROS,
             ShapeModelBody.ITOKAWA,
+            ShapeModelBody.DIDYMOS_SYSTEM,
+            ShapeModelBody.DIDYMOS,
+            ShapeModelBody.DIMORPHOS,
             ShapeModelBody.RQ36,
             ShapeModelBody.RYUGU,
             ShapeModelBody.CERES,
@@ -590,6 +570,9 @@ public class SbmtTesterViewManager extends ViewManager
             // Asteroids -> NEO (visited)
             ShapeModelBody.EROS,
             ShapeModelBody.ITOKAWA,
+            ShapeModelBody.DIDYMOS_SYSTEM,
+            ShapeModelBody.DIDYMOS,
+            ShapeModelBody.DIMORPHOS,
             ShapeModelBody.RQ36,
             ShapeModelBody.RYUGU,
             // Asteroids -> NEO (not visited)
