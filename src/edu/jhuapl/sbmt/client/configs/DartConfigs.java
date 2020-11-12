@@ -168,7 +168,7 @@ public class DartConfigs
         c.type = BodyType.ASTEROID;
         c.population = ShapeModelPopulation.NEO;
         c.system = ShapeModelBody.DIDYMOS_SYSTEM;
-        c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
+        c.dataUsed = ShapeModelDataUsed.SIMULATED;
         c.author = ShapeModelType.provide(modelId);
         c.modelLabel = createLabel(c.author);
         c.rootDirOnServer = ("/" + body.name() + "/" + modelId.replaceAll("_", "-")).toLowerCase();
