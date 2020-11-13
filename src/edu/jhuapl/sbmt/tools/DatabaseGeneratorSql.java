@@ -392,7 +392,7 @@ public class DatabaseGeneratorSql
         }
     }
 
-    public void run(String fileList, ImageSource source, String diffFileList) throws IOException
+    public void run(String fileList, ImageSource source, String diffFileList) throws Exception
     {
         smallBodyModel = SbmtModelFactory.createSmallBodyModel(smallBodyConfig);
 
@@ -466,27 +466,27 @@ public class DatabaseGeneratorSql
             return;
         }
 
-        String imagesTable = getImagesTableNames(source);
-        String cubesTable = getCubesTableNames(source);
-
-        createTables(imagesTable);
-        createTablesCubes(cubesTable);
-
         try
         {
+            String imagesTable = getImagesTableNames(source);
+            String cubesTable = getCubesTableNames(source);
+
+            createTables(imagesTable);
+            createTablesCubes(cubesTable);
+
             populateTables(lines, imagesTable, cubesTable, source);
         }
-        catch (Exception e1) {
-            e1.printStackTrace();
+        finally
+        {
+            try
+            {
+                db.shutdown();
+            }
+            catch (SQLException e) {
+                e.printStackTrace();
+            }
         }
 
-        try
-        {
-            db.shutdown();
-        }
-        catch (SQLException e) {
-            e.printStackTrace();
-        }
     }
 
     private static void usage()
