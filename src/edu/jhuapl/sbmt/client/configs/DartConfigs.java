@@ -204,7 +204,7 @@ public class DartConfigs
                         ImageType.valueOf("LEIA_IMAGE"), //
                         InfoFiles, //
                         Instrument.LEIA, //
-                        0., //
+                        270., //
                         "None", //
                         FillValues //
                 ),
@@ -214,7 +214,7 @@ public class DartConfigs
                         ImageType.valueOf("LUKE_IMAGE"), //
                         InfoFiles, //
                         Instrument.LUKE, //
-                        0., //
+                        270., //
                         "None", //
                         FillValues //
                 ),
