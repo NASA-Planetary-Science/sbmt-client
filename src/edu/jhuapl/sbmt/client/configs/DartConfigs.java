@@ -200,20 +200,20 @@ public class DartConfigs
                 ),
                 new ImagingInstrument( //
                         SpectralImageMode.MONO, //
-                        new GenericPhpQuery(lukeDir, lukeTable, lukeTable, c.rootDirOnServer + "/luke/gallery"), //
-                        ImageType.valueOf("LUKE_IMAGE"), //
+                        new GenericPhpQuery(leiaDir, leiaTable, leiaTable, c.rootDirOnServer + "/leia/gallery"), //
+                        ImageType.valueOf("LEIA_IMAGE"), //
                         InfoFiles, //
-                        Instrument.LUKE, //
+                        Instrument.LEIA, //
                         0., //
                         "None", //
                         FillValues //
                 ),
                 new ImagingInstrument( //
                         SpectralImageMode.MONO, //
-                        new GenericPhpQuery(leiaDir, leiaTable, leiaTable, c.rootDirOnServer + "/leia/gallery"), //
-                        ImageType.valueOf("LEIA_IMAGE"), //
+                        new GenericPhpQuery(lukeDir, lukeTable, lukeTable, c.rootDirOnServer + "/luke/gallery"), //
+                        ImageType.valueOf("LUKE_IMAGE"), //
                         InfoFiles, //
-                        Instrument.LEIA, //
+                        Instrument.LUKE, //
                         0., //
                         "None", //
                         FillValues //
