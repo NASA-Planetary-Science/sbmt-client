@@ -155,6 +155,7 @@ destTop="$processedTop/$outputTop"
 # delivery.
 bodyId="${bodyId^^}" # usually this is same as used for coloring, but all caps.
 bodyFrame="920065803_FIXED" # Didymos-specific.
+#bodyFrame="120065803_FIXED" # Dimorphos-specific.
 
 # End common (all-instrument) header/setup
 #-------------------------------------------------------------------------------
