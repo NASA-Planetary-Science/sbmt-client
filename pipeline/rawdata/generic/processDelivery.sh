@@ -71,9 +71,10 @@ bodyId="Didymos"
 # deployed, need to reprocess it first, then update that processed model.
 # areaToUpdate="$pipelineProcessed/didymos/redmine-2197"
 
-# Uncomment and edit this as needed if generating INFO files from SPICE
+# Uncomment and edit these as needed if generating INFO files from SPICE
 # kernels. Only used in this case.
 # spiceKernelTop="$pipelineProcessed/dart/redmine-2200/dart/spice"
+# correctedSpiceKernelTop="$pipelineProcessed/dart/redmine-2282/dart/spice"
 
 #-------------------------------------------------------------------------------
 
@@ -247,6 +248,24 @@ createLink $spiceKernelTop/$instrument $tmpSpiceDir
 createInfoFilesFromFITSImages $metakernel \
   $bodyId $bodyFrame $scId $instrument $instFrame $timeKeyword \
   $processedTop $imageDir $infoFileDir
+
+# Handle CORRECTED_SPICE pointings here. Put them in the place the
+# client class BaiscPerspectiveImage expects to find them.  
+infoFileDir="$outputTop/$instrument/infofiles-corrected"
+
+# Make SPICE kernels available in the temporary SPICE directory. This is so
+# that any absolute paths in the metakernel may be edited to be as short
+# as possible. Note there is only one temporary directory, so cannot
+# simulateously process two deliveries that use SPICE kernels.
+createLink $correctedSpiceKernelTop/$instrument $tmpSpiceDir
+
+# Generate the info files for the images from the SPICE kernels using times in
+# FITS images. If the images don't have time stamps, can use
+# createInfoFilesFromTimeStamps instead.
+createInfoFilesFromFITSImages $metakernel \
+  $bodyId $bodyFrame $scId $instrument $instFrame $timeKeyword \
+  $processedTop $imageDir $infoFileDir
+
 #-------------------------------------------------------------------------------
 
 # Update database tables.
@@ -255,6 +274,7 @@ createInfoFilesFromFITSImages $metakernel \
 createRelativeLink $processedTop $processedTop/data
 
 generateDatabaseTable ${instrument^^} SPICE
+generateDatabaseTable ${instrument^^} CORRECTED_SPICE
 
 # Set up galleries (if present).
 createGalleryList $destTop/$instrument
