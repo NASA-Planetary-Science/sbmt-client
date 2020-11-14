@@ -216,7 +216,8 @@ public class DartConfigs
                         SpectralImageMode.MONO, //
                         new GenericPhpQuery(lukeDir, lukeTable, lukeTable, c.rootDirOnServer + "/luke/gallery"), //
                         ImageType.valueOf("LUKE_IMAGE"), //
-                        InfoFilesAndCorrectedInfoFiles, //
+//                        InfoFilesAndCorrectedInfoFiles, //
+                        InfoFiles, //
                         Instrument.LUKE, //
                         270., //
                         "None", //
