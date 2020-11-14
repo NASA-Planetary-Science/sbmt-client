@@ -59,7 +59,7 @@ public class DartConfigs
     // special handling of keywords where the images are read in a mission-independent
     // way. A better option may exist in the future, at which time this should be
     // changed.
-    private static final LinkedHashSet<Float> FillValues = new LinkedHashSet<>();
+    private static final LinkedHashSet<Float> DracoFillValues = new LinkedHashSet<>();
 
     static
     {
@@ -69,9 +69,9 @@ public class DartConfigs
         // integer images. This is because the code that handles these
         // values is hard-wired to use floats, so we don't have a better
         // option right now. In principle this should work.
-        FillValues.add(-32768f); // MISPXVAL for 16-bit integer images.
-        FillValues.add(-32767f); // PXOUTWIN for 16-bit integer images.
-        FillValues.add(4095f); // SNAVFLAG for 16-bit integer images.
+        DracoFillValues.add(-32768f); // MISPXVAL for 16-bit integer images.
+        DracoFillValues.add(-32767f); // PXOUTWIN for 16-bit integer images.
+        DracoFillValues.add(4095f); // SNAVFLAG for 16-bit integer images.
     }
 
     public static DartConfigs instance()
@@ -198,7 +198,7 @@ public class DartConfigs
                         Instrument.DRACO, //
                         270., //
                         "None", //
-                        FillValues //
+                        DracoFillValues //
                 ),
                 new ImagingInstrument( //
                         SpectralImageMode.MONO, //
@@ -207,8 +207,7 @@ public class DartConfigs
                         InfoFilesAndCorrectedInfoFiles, //
                         Instrument.LEIA, //
                         270., //
-                        "None", //
-                        FillValues //
+                        "None" //
                 ),
                 new ImagingInstrument( //
                         SpectralImageMode.MONO, //
@@ -217,8 +216,7 @@ public class DartConfigs
                         InfoFiles, //
                         Instrument.LUKE, //
                         270., //
-                        "None", //
-                        FillValues //
+                        "None" //
                 ),
         };
 
