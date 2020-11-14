@@ -60,6 +60,8 @@ public class DartConfigs
     // way. A better option may exist in the future, at which time this should be
     // changed.
     private static final LinkedHashSet<Float> DracoFillValues = new LinkedHashSet<>();
+    private static final LinkedHashSet<Float> LeiaFillValues = null;
+    private static final LinkedHashSet<Float> LukeFillValues = null;
 
     static
     {
@@ -207,7 +209,8 @@ public class DartConfigs
                         InfoFilesAndCorrectedInfoFiles, //
                         Instrument.LEIA, //
                         270., //
-                        "None" //
+                        "None", //
+                        LeiaFillValues //
                 ),
                 new ImagingInstrument( //
                         SpectralImageMode.MONO, //
@@ -216,7 +219,8 @@ public class DartConfigs
                         InfoFiles, //
                         Instrument.LUKE, //
                         270., //
-                        "None" //
+                        "None", //
+                        LukeFillValues //
                 ),
         };
 
