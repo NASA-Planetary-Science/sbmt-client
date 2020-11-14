@@ -81,6 +81,8 @@ public class DartConfigs
 
     protected static final ImageSource[] InfoFiles = new ImageSource[] { ImageSource.SPICE };
 
+    protected static final ImageSource[] InfoFilesAndCorrectedInfoFiles = new ImageSource[] { ImageSource.CORRECTED_SPICE, ImageSource.SPICE };
+
     protected DartConfigs()
     {
         super();
@@ -202,7 +204,7 @@ public class DartConfigs
                         SpectralImageMode.MONO, //
                         new GenericPhpQuery(leiaDir, leiaTable, leiaTable, c.rootDirOnServer + "/leia/gallery"), //
                         ImageType.valueOf("LEIA_IMAGE"), //
-                        InfoFiles, //
+                        InfoFilesAndCorrectedInfoFiles, //
                         Instrument.LEIA, //
                         270., //
                         "None", //
@@ -232,6 +234,8 @@ public class DartConfigs
                         dracoDir + "/imagelist-fullpath-info.txt", dracoTable), //
                 new DBRunInfo(ImageSource.SPICE, Instrument.LUKE, body.toString(), //
                         lukeDir + "/imagelist-fullpath-info.txt", lukeTable), //
+                new DBRunInfo(ImageSource.CORRECTED_SPICE, Instrument.LEIA, body.toString(), //
+                        leiaDir + "/imagelist-fullpath-info.txt", leiaTable), //
                 new DBRunInfo(ImageSource.SPICE, Instrument.LEIA, body.toString(), //
                         leiaDir + "/imagelist-fullpath-info.txt", leiaTable) //
         };
