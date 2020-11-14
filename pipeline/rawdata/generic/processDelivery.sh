@@ -199,15 +199,15 @@ createInfoFilesFromFITSImages $metakernel \
   $processedTop $imageDir $infoFileDir
 #-------------------------------------------------------------------------------
 
-# Set up galleries (if present).
-createGalleryList $destTop/$instrument
-
 # Update database tables.
 # This symbolic link is needed because the database generator appends "/data"
 # to the root URL, but this level of directory is not used in deliveries.
 createRelativeLink $processedTop $processedTop/data
 
 generateDatabaseTable ${instrument^^} SPICE
+
+# Set up galleries (if present).
+createGalleryList $destTop/$instrument
 
 # End Instrument sub-block (DRACO).
 #-------------------------------------------------------------------------------
@@ -249,15 +249,15 @@ createInfoFilesFromFITSImages $metakernel \
   $processedTop $imageDir $infoFileDir
 #-------------------------------------------------------------------------------
 
-# Set up galleries (if present).
-createGalleryList $destTop/$instrument
-
 # Update database tables.
 # This symbolic link is needed because the database generator appends "/data"
 # to the root URL, but this level of directory is not used in deliveries.
 createRelativeLink $processedTop $processedTop/data
 
 generateDatabaseTable ${instrument^^} SPICE
+
+# Set up galleries (if present).
+createGalleryList $destTop/$instrument
 
 # End Instrument sub-block (LEIA).
 #-------------------------------------------------------------------------------
@@ -299,15 +299,15 @@ createInfoFilesFromFITSImages $metakernel \
   $processedTop $imageDir $infoFileDir
 #-------------------------------------------------------------------------------
 
-# Set up galleries (if present).
-createGalleryList $destTop/$instrument
-
 # Update database tables.
 # This symbolic link is needed because the database generator appends "/data"
 # to the root URL, but this level of directory is not used in deliveries.
 createRelativeLink $processedTop $processedTop/data
 
 generateDatabaseTable ${instrument^^} SPICE
+
+# Set up galleries (if present).
+createGalleryList $destTop/$instrument
 
 # End Instrument sub-block (LUKE).
 #-------------------------------------------------------------------------------
