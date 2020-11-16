@@ -974,7 +974,7 @@ processStandardModelFiles() {
 # This made a "deployed" model directory with no info about
 # the processing ID in the name, but containing links to each
 # specific part of the model in the delivered real directory
-# (that does include processing Id(.
+# (that does include processing Id).
 # Deprecated. Only one top-level link is ever made.
 linkStandardModelFiles() {
   (
