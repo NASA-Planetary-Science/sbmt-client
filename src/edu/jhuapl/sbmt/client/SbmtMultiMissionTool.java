@@ -448,7 +448,7 @@ public class SbmtMultiMissionTool
             Colormaps.setDefaultColormapName("Spectral_lowBlue");
             break;
 		default:
-			throw new AssertionError();
+            throw new AssertionError("Unhandled case for setting up launch configuration " + mission);
 		}
 
 		missionConfigured = true;
@@ -525,6 +525,8 @@ public class SbmtMultiMissionTool
                 case NH_DEPLOY:
                 case DART_DEV:
                 case DART_DEPLOY:
+                case DART_STAGE:
+                case DART_TEST:
                     splash = new SbmtSplash("resources", "splashLogo.png");
                     break;
                 case HAYABUSA2_DEV:
@@ -544,7 +546,7 @@ public class SbmtMultiMissionTool
                     splash = new SbmtSplash("resources", "splashLogoOrex.png");
                     break;
                 default:
-                    throw new AssertionError();
+                    throw new AssertionError("Unhandled splash screen case for launch configuration " + mission);
                 }
 
                 splash.validate();

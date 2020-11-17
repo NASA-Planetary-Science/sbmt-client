@@ -145,11 +145,7 @@ public class AsteroidConfigs extends SmallBodyViewConfig
 
         c.defaultForMissions = new SbmtMultiMissionTool.Mission[] {SbmtMultiMissionTool.Mission.PUBLIC_RELEASE, SbmtMultiMissionTool.Mission.TEST_PUBLIC_RELEASE,
         														SbmtMultiMissionTool.Mission.STAGE_APL_INTERNAL, SbmtMultiMissionTool.Mission.APL_INTERNAL,
-        														SbmtMultiMissionTool.Mission.TEST_APL_INTERNAL,
-                                                                SbmtMultiMissionTool.Mission.DART_DEV,
-                                                                SbmtMultiMissionTool.Mission.DART_DEPLOY,
-                                                                SbmtMultiMissionTool.Mission.DART_TEST,
-                                                                SbmtMultiMissionTool.Mission.DART_STAGE};
+        														SbmtMultiMissionTool.Mission.TEST_APL_INTERNAL};
 
         configArray.add(c);
 
