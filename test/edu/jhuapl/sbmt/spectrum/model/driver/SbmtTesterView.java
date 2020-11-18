@@ -121,7 +121,8 @@ public class SbmtTesterView extends View implements PropertyChangeListener
 		ShapeModelType author = config.author;
 		String modelLabel = config.modelLabel;
 		BodyType type = config.type;
-		ShapeModelPopulation population = config.population;
+        ShapeModelPopulation population = config.population;
+        ShapeModelBody system = config.system;
 		ShapeModelDataUsed dataUsed = config.dataUsed;
 		ShapeModelBody body = config.body;
 		if (ShapeModelType.CUSTOM == author)
@@ -133,6 +134,8 @@ public class SbmtTesterView extends View implements PropertyChangeListener
 			String path = type.str;
 			if (population != null && population != ShapeModelPopulation.NA)
 				path += " > " + population;
+			if (system != null)
+			    path += " > " + system;
 			path += " > " + body;
 			if (dataUsed != null && dataUsed != ShapeModelDataUsed.NA)
 				path += " > " + dataUsed;

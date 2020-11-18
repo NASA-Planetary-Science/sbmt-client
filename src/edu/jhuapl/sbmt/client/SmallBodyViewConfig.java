@@ -28,6 +28,7 @@ import edu.jhuapl.saavtk.util.UnauthorizedAccessException;
 import edu.jhuapl.sbmt.client.configs.AsteroidConfigs;
 import edu.jhuapl.sbmt.client.configs.BennuConfigs;
 import edu.jhuapl.sbmt.client.configs.CometConfigs;
+import edu.jhuapl.sbmt.client.configs.DartConfigs;
 import edu.jhuapl.sbmt.client.configs.MarsConfigs;
 import edu.jhuapl.sbmt.client.configs.NewHorizonsConfigs;
 import edu.jhuapl.sbmt.client.configs.RyuguConfigs;
@@ -263,6 +264,7 @@ public class SmallBodyViewConfig extends BodyViewConfig implements ISmallBodyVie
     	ConfigArrayList configArray = getBuiltInConfigs();
 		AsteroidConfigs.initialize(configArray);
 		BennuConfigs.initialize(configArray, publicOnly);
+		DartConfigs.instance().initialize(configArray);
 		CometConfigs.initialize(configArray);
 		MarsConfigs.initialize(configArray);
 		NewHorizonsConfigs.initialize(configArray);
@@ -572,7 +574,7 @@ public class SmallBodyViewConfig extends BodyViewConfig implements ISmallBodyVie
 				+ lidarSearchDefaultEndDate + ", presentInMissions=" + Arrays.toString(presentInMissions)
 				+ ", defaultForMissions=" + Arrays.toString(defaultForMissions) + ", dtmBrowseDataSourceMap="
 				+ dtmBrowseDataSourceMap + ", dtmSearchDataSourceMap=" + dtmSearchDataSourceMap + ", type=" + type
-				+ ", population=" + population + ", dataUsed=" + dataUsed + ", imagingInstruments="
+				+ ", population=" + population + ", system=" + system + ", dataUsed=" + dataUsed + ", imagingInstruments="
 				+ Arrays.toString(imagingInstruments) + ", lidarInstrumentName=" + lidarInstrumentName
 				+ ", spectralInstruments=" + spectralInstruments + ", databaseRunInfos="
 				+ Arrays.toString(databaseRunInfos) + ", modelLabel=" + modelLabel + ", customTemporary="
