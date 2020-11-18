@@ -3,9 +3,9 @@ package edu.jhuapl.sbmt.spectrum.model.driver;
 import javax.swing.ImageIcon;
 
 import edu.jhuapl.saavtk.gui.MainWindow;
-import edu.jhuapl.saavtk.gui.StatusBar;
 import edu.jhuapl.saavtk.gui.ViewManager;
 import edu.jhuapl.saavtk.gui.menu.FileMenu;
+import edu.jhuapl.saavtk.status.StatusNotifier;
 
 
 
@@ -34,9 +34,9 @@ public class SbmtTesterMainWindow extends MainWindow
     }
 
     @Override
-    protected ViewManager createViewManager(StatusBar statusBar, String tempCustomShapeModelPath)
+    protected ViewManager createViewManager(StatusNotifier aStatusNotifier, String tempCustomShapeModelPath)
     {
-        return new SbmtTesterViewManager(statusBar, this, tempCustomShapeModelPath);
+        return new SbmtTesterViewManager(aStatusNotifier, this, tempCustomShapeModelPath);
     }
 
     @Override
