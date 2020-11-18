@@ -422,9 +422,10 @@ public class SaturnConfigs extends SmallBodyViewConfig
             c.author = ShapeModelType.THOMAS;
             c.modelLabel = "Thomas et al. (2018)";
             c.rootDirOnServer = "/calypso/thomas";
+            c.shapeModelFileExtension = ".obj";
             c.hasColoringData = false;
             c.setResolution(ImmutableList.of(28269));
-            c.presentInMissions = new SbmtMultiMissionTool.Mission[] {SbmtMultiMissionTool.Mission.TEST_PUBLIC_RELEASE, SbmtMultiMissionTool.Mission.STAGE_PUBLIC_RELEASE, SbmtMultiMissionTool.Mission.STAGE_APL_INTERNAL, SbmtMultiMissionTool.Mission.APL_INTERNAL, SbmtMultiMissionTool.Mission.TEST_APL_INTERNAL};
+            c.presentInMissions = new SbmtMultiMissionTool.Mission[] {SbmtMultiMissionTool.Mission.STAGE_APL_INTERNAL, SbmtMultiMissionTool.Mission.APL_INTERNAL, SbmtMultiMissionTool.Mission.TEST_APL_INTERNAL};
             c.defaultForMissions = new SbmtMultiMissionTool.Mission[] {};
 
             configArray.add(c);
