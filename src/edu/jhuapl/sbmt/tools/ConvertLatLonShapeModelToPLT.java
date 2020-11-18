@@ -1,5 +1,7 @@
 package edu.jhuapl.sbmt.tools;
 
+import java.io.File;
+
 import vtk.vtkPolyData;
 
 import edu.jhuapl.saavtk.util.NativeLibraryLoader;
@@ -40,7 +42,7 @@ public class ConvertLatLonShapeModelToPLT
         }
 
         String infile = args[i];
-        String outfile = args[i+1];
+        File outfile = new File(args[i+1]);
 
         vtkPolyData polydata = PolyDataUtil.loadLLRShapeModel(infile, westLongitude);
 
