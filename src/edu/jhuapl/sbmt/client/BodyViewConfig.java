@@ -10,6 +10,7 @@ import java.util.Map;
 import com.google.common.collect.Maps;
 
 import edu.jhuapl.saavtk.config.ViewConfig;
+import edu.jhuapl.saavtk.model.ShapeModelBody;
 import edu.jhuapl.saavtk.model.ShapeModelType;
 import edu.jhuapl.saavtk.util.SafeURLPaths;
 import edu.jhuapl.sbmt.model.image.ImageKeyInterface;
@@ -157,6 +158,7 @@ public abstract class BodyViewConfig extends ViewConfig
 
     public BodyType type; // e.g. asteroid, comet, satellite
     public ShapeModelPopulation population = ShapeModelPopulation.NA; // e.g. Mars for satellites or main belt for asteroids
+    public ShapeModelBody system = null;
     public ShapeModelDataUsed dataUsed = ShapeModelDataUsed.NA; // e.g. images, radar, lidar, or enhanced
 
     public ImagingInstrument[] imagingInstruments = {};
@@ -256,6 +258,7 @@ public abstract class BodyViewConfig extends ViewConfig
         c.body = this.body;
         c.type = this.type;
         c.population = this.population;
+        c.system = this.system;
         c.dataUsed = this.dataUsed;
 
         // deep clone imaging instruments
@@ -542,6 +545,7 @@ public abstract class BodyViewConfig extends ViewConfig
 		result = prime * result + ((lidarSearchDefaultStartDate == null) ? 0 : lidarSearchDefaultStartDate.hashCode());
 		result = prime * result + ((orexSearchTimeMap == null) ? 0 : orexSearchTimeMap.hashCode());
 		result = prime * result + ((population == null) ? 0 : population.hashCode());
+		result = prime * result + ((system == null) ? 0 : system.hashCode());
 		result = prime * result + Arrays.hashCode(presentInMissions);
 		result = prime * result + ((rootDirOnServer == null) ? 0 : rootDirOnServer.hashCode());
 		temp = Double.doubleToLongBits(rotationRate);
@@ -890,6 +894,8 @@ public abstract class BodyViewConfig extends ViewConfig
 			return false;
 		if (population != other.population)
 			return false;
+		if (system != other.system)
+		    return false;
 		if (!Arrays.equals(presentInMissions, other.presentInMissions))
 			return false;
 		if (rootDirOnServer == null)
