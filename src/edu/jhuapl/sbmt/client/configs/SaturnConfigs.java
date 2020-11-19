@@ -413,7 +413,7 @@ public class SaturnConfigs extends SmallBodyViewConfig
             c.presentInMissions = new SbmtMultiMissionTool.Mission[] {SbmtMultiMissionTool.Mission.PUBLIC_RELEASE, SbmtMultiMissionTool.Mission.TEST_PUBLIC_RELEASE, SbmtMultiMissionTool.Mission.STAGE_PUBLIC_RELEASE, SbmtMultiMissionTool.Mission.STAGE_APL_INTERNAL, SbmtMultiMissionTool.Mission.APL_INTERNAL, SbmtMultiMissionTool.Mission.TEST_APL_INTERNAL};
             c.defaultForMissions = new SbmtMultiMissionTool.Mission[] {};
 
-            configArray.add(c);
+//            configArray.add(c);
 
             c = new SaturnConfigs();
             c.body = ShapeModelBody.CALYPSO;
@@ -422,7 +422,7 @@ public class SaturnConfigs extends SmallBodyViewConfig
             c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
             c.author = ShapeModelType.THOMAS;
             c.modelLabel = "Thomas et al. (2018)";
-            c.rootDirOnServer = "/calypso/thomas";
+            c.rootDirOnServer = "/calypso/thomas-2018";
             c.shapeModelFileExtension = ".obj";
             c.hasColoringData = false;
             c.setResolution(ImmutableList.of(28269));
@@ -438,7 +438,7 @@ public class SaturnConfigs extends SmallBodyViewConfig
             c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
             c.author = ShapeModelType.provide("Daly");
             c.modelLabel = "Daly et al. (in progress)";
-            c.rootDirOnServer = "/calypso/daly";
+            c.rootDirOnServer = "/calypso/daly-2020";
             c.shapeModelFileExtension = ".obj";
             c.hasColoringData = false;
             c.setResolution(ImmutableList.of(49152, 196608, 786432, 3145728));
@@ -446,11 +446,12 @@ public class SaturnConfigs extends SmallBodyViewConfig
             String tableBaseName = (c.body.name() + "_" + c.author.toString() + "_").replaceAll("[\\s-]", "_").toLowerCase();
 
             String issTable = tableBaseName + "iss";
+            String issDir = "/cassini/iss";
 
-           c.imagingInstruments = new ImagingInstrument[] {
+            c.imagingInstruments = new ImagingInstrument[] {
                     new ImagingInstrument( //
                             SpectralImageMode.MONO, //
-                            new GenericPhpQuery("/cassini/iss", issTable, issTable, "/cassini/iss/gallery"), //
+                            new GenericPhpQuery(issDir, issTable, issTable, issDir + "/gallery"), //
                             ImageType.valueOf("ISS_IMAGE"), //
                             SumFiles, //
                             Instrument.ISS, //
@@ -464,6 +465,11 @@ public class SaturnConfigs extends SmallBodyViewConfig
             c.imageSearchUserDefinedCheckBoxesNames = new String[] {};
             c.imageSearchDefaultMaxSpacecraftDistance = 1.0e4;
             c.imageSearchDefaultMaxResolution = 1.0e3;
+
+            c.databaseRunInfos = new DBRunInfo[] { //
+                    new DBRunInfo(ImageSource.GASKELL, Instrument.ISS, c.body.toString(), //
+                            issDir + "/imagelist-fullpath-sum.txt", issTable) //
+            };
 
             c.presentInMissions = new SbmtMultiMissionTool.Mission[] {SbmtMultiMissionTool.Mission.PUBLIC_RELEASE, SbmtMultiMissionTool.Mission.TEST_PUBLIC_RELEASE, SbmtMultiMissionTool.Mission.STAGE_PUBLIC_RELEASE, SbmtMultiMissionTool.Mission.STAGE_APL_INTERNAL, SbmtMultiMissionTool.Mission.APL_INTERNAL, SbmtMultiMissionTool.Mission.TEST_APL_INTERNAL};
             c.defaultForMissions = new SbmtMultiMissionTool.Mission[] {};
