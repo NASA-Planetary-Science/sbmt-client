@@ -446,7 +446,7 @@ public class SaturnConfigs extends SmallBodyViewConfig
             String tableBaseName = (c.body.name() + "_" + c.author.toString() + "_").replaceAll("[\\s-]", "_").toLowerCase();
 
             String issTable = tableBaseName + "iss";
-            String issDir = "/cassini/iss";
+            String issDir = c.rootDirOnServer + "/iss";
 
             c.imagingInstruments = new ImagingInstrument[] {
                     new ImagingInstrument( //
