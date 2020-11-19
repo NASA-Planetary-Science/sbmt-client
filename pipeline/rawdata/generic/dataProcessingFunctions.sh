@@ -1521,8 +1521,8 @@ processMakeSumFiles() {
       check 1 "$funcName: input file $imagerDir/make_sumfiles.in does not exist"
     fi
   
-    # Make sure the prefix starts with a slash:
-    prefix=`echo $2 | sed 's:^/*:/:'`
+    # Make sure the prefix starts and ends with a single slash:
+    prefix=`echo $2 | sed 's:^/*:/:' | sed 's:/*$:/:'`
     if test "$prefix" = ""; then
       check 1 "$funcName: missing second argument, which is the partial path prefix to be written to the output file"
     fi
