@@ -1530,18 +1530,34 @@ processMakeSumFiles() {
     rm -f $imagerDir/imagelist-sum.txt $imagerDir/imagelist-fullpath-sum.txt
 
     # Create imagelist-fullpath-sum.txt.
-    awk '{print $8}' $makeSumFiles | sed "s:^:$prefix:" > $imagerDir/imagelist-fullpath-sum.txt
+    cat $makeSumFiles | sed -e 's:.*[ 	]::' | sed "s:^:$prefix:" > $imagerDir/imagelist-fullpath-sum.txt
     check $? "$funcName: unable to create $imagerDir/imagelist-fullpath-sum.txt"
 
     # Create imagelist-sum.txt.
-    fileNames=`awk '{print $8" "}' $makeSumFiles`
-    check $? "$funcName: unable to create list of SUM file names for $imagerDir/imagelist-fullpath-sum.txt"
-
-    for line in $fileNames; do
-       # Extract the time from the file name. This is probably brittle, needs tweaking. Could read the time from the sum file instead?
-       fileTime=`echo $line | sed 's/[^0-9]*\([0-9]\{4\}\)-\?\([0-9]\{2\}\)-\?\([0-9]\{2\}\)T\?\([0-9]\{2\}\)-\?\([0-9]\{2\}\)-\?\([0-9]\{2\}\).*/\1-\2-\3T\4:\5:\6/i'`
-       echo "$line $fileTime" >> $imagerDir/imagelist-sum.txt
+    for sumFile in `sed 's: .*::' $makeSumFiles`; do
+      imageFile=`sed -n "s:^$sumFile .* ::p" $makeSumFiles`
+      sumFile="${sumFile}.SUM"
+      timeStamp=`head -2 $imagerDir/sumfiles/$sumFile | tail -1 | \
+        sed 's:^  *::' | sed 's:  *$::' | \
+        sed 's:jan:01:i' | \
+        sed 's:feb:02:i' | \
+        sed 's:mar:03:i' | \
+        sed 's:apr:04:i' | \
+        sed 's:may:05:i' | \
+        sed 's:jun:06:i' | \
+        sed 's:jul:07:i' | \
+        sed 's:aug:08:i' | \
+        sed 's:sep:09:i' | \
+        sed 's:oct:10:i' | \
+        sed 's:nov:11:i' | \
+        sed 's:dec:12:i' | \
+        sed 's:  *:-:' | \
+        sed 's:  *:-:' | \
+        sed 's:  *:T:' | \
+        sed 's:  *:-:g'`
+      echo "$imageFile $timeStamp" >> $imagerDir/imagelist-sum.txt
     done
+    check $? "$funcName: unable to create $imagerDir/imagelist-sum.txt"
   )
   check $?
 }
