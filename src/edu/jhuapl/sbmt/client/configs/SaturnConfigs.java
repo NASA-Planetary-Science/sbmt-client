@@ -35,8 +35,9 @@ import edu.jhuapl.sbmt.tools.DBRunInfo;
 
 public class SaturnConfigs extends SmallBodyViewConfig
 {
+	private static final ImageSource[] SumFiles = new ImageSource[] { ImageSource.GASKELL };
 
-	public SaturnConfigs()
+    public SaturnConfigs()
 	{
 		super(ImmutableList.<String>copyOf(DEFAULT_GASKELL_LABELS_PER_RESOLUTION), ImmutableList.<Integer>copyOf(DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION));
 	}
@@ -441,6 +442,29 @@ public class SaturnConfigs extends SmallBodyViewConfig
             c.shapeModelFileExtension = ".obj";
             c.hasColoringData = false;
             c.setResolution(ImmutableList.of(49152, 196608, 786432, 3145728));
+
+            String tableBaseName = (c.body.name() + "_" + c.author.toString() + "_").replaceAll("[\\s-]", "_").toLowerCase();
+
+            String issTable = tableBaseName + "iss";
+
+           c.imagingInstruments = new ImagingInstrument[] {
+                    new ImagingInstrument( //
+                            SpectralImageMode.MONO, //
+                            new GenericPhpQuery("/cassini/iss", issTable, issTable, "/cassini/iss/gallery"), //
+                            ImageType.valueOf("ISS_IMAGE"), //
+                            SumFiles, //
+                            Instrument.ISS, //
+                            0., //
+                            "None" //
+                    )
+            };
+            c.imageSearchDefaultStartDate = new GregorianCalendar(2005, 8, 23, 0, 0, 0).getTime();
+            c.imageSearchDefaultEndDate = new GregorianCalendar(2010, 1, 14, 0, 0, 0).getTime();
+            c.imageSearchFilterNames = new String[] {};
+            c.imageSearchUserDefinedCheckBoxesNames = new String[] {};
+            c.imageSearchDefaultMaxSpacecraftDistance = 1.0e4;
+            c.imageSearchDefaultMaxResolution = 1.0e3;
+
             c.presentInMissions = new SbmtMultiMissionTool.Mission[] {SbmtMultiMissionTool.Mission.PUBLIC_RELEASE, SbmtMultiMissionTool.Mission.TEST_PUBLIC_RELEASE, SbmtMultiMissionTool.Mission.STAGE_PUBLIC_RELEASE, SbmtMultiMissionTool.Mission.STAGE_APL_INTERNAL, SbmtMultiMissionTool.Mission.APL_INTERNAL, SbmtMultiMissionTool.Mission.TEST_APL_INTERNAL};
             c.defaultForMissions = new SbmtMultiMissionTool.Mission[] {};
 
