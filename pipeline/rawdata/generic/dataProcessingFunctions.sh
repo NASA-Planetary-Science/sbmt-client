@@ -1495,6 +1495,57 @@ checkSumFiles() {
   check $?
 }
 
+# Adapted from a similar function in sbmt->pipeline->rawdata->bennu->modelRawdata2processed-bennu.sh.
+# This generates the imagelist-sum.txt and imagelist-fullpath-sum.txt needed for database and fixed-list queries
+# starting from an input make_sumfiles.in file. The output files are placed parallel to the input file
+# in the imager directory.
+#
+# @param imagerDir full path to directory containing input file make_sumfiles.in; also this is the location of
+#        the output files.
+# @param prefix the partial path prefix used in the output imagelist-fullpath-sum to create the full path
+#        relative to the top of the server directory.
+processMakeSumFiles() {
+  (
+    funcName=${FUNCNAME[0]}
+
+    checkSkip $funcName "$*"
+
+    imagerDir="$1"
+    makeSumFiles="$imagerDir/make_sumfiles.in"
+
+    if test "$imagerDir" = ""; then
+      check 1 "$funcName: missing first argument, which is the full path to where the instrument files are located"
+    elif test ! -d "$imagerDir"; then
+      check 1 "$funcName: first argument $imagerDir does not identify an imager directory"
+    elif test ! -f "$makeSumFiles"; then
+      check 1 "$funcName: input file $imagerDir/make_sumfiles.in does not exist"
+    fi
+  
+    # Make sure the prefix starts with a slash:
+    prefix=`echo $2 | sed 's:^/*:/:'`
+    if test "$prefix" = ""; then
+      check 1 "$funcName: missing second argument, which is the partial path prefix to be written to the output file"
+    fi
+
+    rm -f $imagerDir/imagelist-sum.txt $imagerDir/imagelist-fullpath-sum.txt
+
+    # Create imagelist-fullpath-sum.txt.
+    awk '{print $8}' $makeSumFiles | sed "s:^:$prefix:" > $imagerDir/imagelist-fullpath-sum.txt
+    check $? "$funcName: unable to create $imagerDir/imagelist-fullpath-sum.txt"
+
+    # Create imagelist-sum.txt.
+    fileNames=`awk '{print $8" "}' $makeSumFiles`
+    check $? "$funcName: unable to create list of SUM file names for $imagerDir/imagelist-fullpath-sum.txt"
+
+    for line in $fileNames; do
+       # Extract the time from the file name. This is probably brittle, needs tweaking. Could read the time from the sum file instead?
+       fileTime=`echo $line | sed 's/[^0-9]*\([0-9]\{4\}\)-\?\([0-9]\{2\}\)-\?\([0-9]\{2\}\)T\?\([0-9]\{2\}\)-\?\([0-9]\{2\}\)-\?\([0-9]\{2\}\).*/\1-\2-\3T\4:\5:\6/i'`
+       echo "$line $fileTime" >> $imagerDir/imagelist-sum.txt
+    done
+  )
+  check $?
+}
+
 # Generate a full set of model metadata files using the client distribution associated with this
 # delivery.
 #
