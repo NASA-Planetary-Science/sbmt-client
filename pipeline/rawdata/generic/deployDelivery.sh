@@ -47,6 +47,11 @@ destTop="$deployedTop/$outputTop-$processingId"
 # Copy the processed data area to the deployed area.
 copyDir .
 
+# To deliver Calypso/Daly 2020, it's got the wrong path to the FITS image
+# file -- still looking under the model rather than under the mission.
+# So when deploying issue #2058, uncomment the line below to create 
+# createRelativeLink $deployedTop/cassini/iss/images $destTop/iss/images
+
 # To deliver Calypso/Thomas 2018, would need to uncomment the line below while
 # deploying the model in issue #2057. This would only work after #2058 is
 # correctly deployed. If this works correctly, at the end there would be
