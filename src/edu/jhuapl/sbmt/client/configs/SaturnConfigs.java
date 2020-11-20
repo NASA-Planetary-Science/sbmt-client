@@ -425,7 +425,8 @@ public class SaturnConfigs extends SmallBodyViewConfig
             c.rootDirOnServer = "/calypso/thomas-2018";
             c.shapeModelFileExtension = ".obj";
             c.hasColoringData = false;
-            c.setResolution(ImmutableList.of(28269));
+            int numberPlates = 28269;
+            c.setResolution(ImmutableList.of(numberPlates + " plates"), ImmutableList.of(numberPlates));
             c.presentInMissions = new SbmtMultiMissionTool.Mission[] {SbmtMultiMissionTool.Mission.STAGE_APL_INTERNAL, SbmtMultiMissionTool.Mission.APL_INTERNAL, SbmtMultiMissionTool.Mission.TEST_APL_INTERNAL};
             c.defaultForMissions = new SbmtMultiMissionTool.Mission[] {};
 
@@ -441,7 +442,8 @@ public class SaturnConfigs extends SmallBodyViewConfig
             c.rootDirOnServer = "/calypso/daly-2020";
             c.shapeModelFileExtension = ".obj";
             c.hasColoringData = false;
-            c.setResolution(ImmutableList.of(49152, 196608, 786432, 3145728));
+            // This is actaully correct by default for a 4-resolution model:
+            // c.setResolution(ImmutableList.copyOf(DEFAULT_GASKELL_LABELS_PER_RESOLUTION), ImmutableList.copyOf(DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION));
 
             String tableBaseName = (c.body.name() + "_" + c.author.toString() + "_").replaceAll("[\\s-]", "_").toLowerCase();
 
@@ -463,7 +465,7 @@ public class SaturnConfigs extends SmallBodyViewConfig
             c.imageSearchDefaultEndDate = new GregorianCalendar(2010, 1, 14, 0, 0, 0).getTime();
             c.imageSearchFilterNames = new String[] {};
             c.imageSearchUserDefinedCheckBoxesNames = new String[] {};
-            c.imageSearchDefaultMaxSpacecraftDistance = 1.0e4;
+            c.imageSearchDefaultMaxSpacecraftDistance = 1.0e6;
             c.imageSearchDefaultMaxResolution = 1.0e3;
 
             c.databaseRunInfos = new DBRunInfo[] { //
