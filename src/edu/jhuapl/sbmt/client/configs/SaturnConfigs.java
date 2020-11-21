@@ -448,12 +448,13 @@ public class SaturnConfigs extends SmallBodyViewConfig
             String tableBaseName = (c.body.name() + "_" + c.author.toString() + "_").replaceAll("[\\s-]", "_").toLowerCase();
 
             String issTable = tableBaseName + "iss";
-            String issDir = c.rootDirOnServer + "/iss";
+            String issRootDir = c.rootDirOnServer + "/iss";
+            String issDataDir = "cassini/iss";
 
             c.imagingInstruments = new ImagingInstrument[] {
                     new ImagingInstrument( //
                             SpectralImageMode.MONO, //
-                            new GenericPhpQuery(issDir, issTable, issTable, issDir + "/gallery"), //
+                            new GenericPhpQuery(issRootDir, issTable, issTable, issRootDir + "/gallery", issDataDir), //
                             ImageType.valueOf("ISS_IMAGE"), //
                             SumFiles, //
                             Instrument.ISS, //
@@ -470,7 +471,7 @@ public class SaturnConfigs extends SmallBodyViewConfig
 
             c.databaseRunInfos = new DBRunInfo[] { //
                     new DBRunInfo(ImageSource.GASKELL, Instrument.ISS, c.body.toString(), //
-                            issDir + "/imagelist-fullpath-sum.txt", issTable) //
+                            issRootDir + "/imagelist-fullpath-sum.txt", issTable) //
             };
 
             c.presentInMissions = new SbmtMultiMissionTool.Mission[] {SbmtMultiMissionTool.Mission.PUBLIC_RELEASE, SbmtMultiMissionTool.Mission.TEST_PUBLIC_RELEASE, SbmtMultiMissionTool.Mission.STAGE_PUBLIC_RELEASE, SbmtMultiMissionTool.Mission.STAGE_APL_INTERNAL, SbmtMultiMissionTool.Mission.APL_INTERNAL, SbmtMultiMissionTool.Mission.TEST_APL_INTERNAL};
