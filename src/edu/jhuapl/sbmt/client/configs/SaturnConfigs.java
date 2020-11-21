@@ -449,7 +449,7 @@ public class SaturnConfigs extends SmallBodyViewConfig
 
             String issTable = tableBaseName + "iss";
             String issRootDir = c.rootDirOnServer + "/iss";
-            String issDataDir = "cassini/iss";
+            String issDataDir = "/cassini/iss/images";
 
             c.imagingInstruments = new ImagingInstrument[] {
                     new ImagingInstrument( //
