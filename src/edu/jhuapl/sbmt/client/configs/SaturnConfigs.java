@@ -420,23 +420,6 @@ public class SaturnConfigs extends SmallBodyViewConfig
             c.type = BodyType.PLANETS_AND_SATELLITES;
             c.population = ShapeModelPopulation.SATURN;
             c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
-            c.author = ShapeModelType.THOMAS;
-            c.modelLabel = "Thomas et al. (2018)";
-            c.rootDirOnServer = "/calypso/thomas-2018";
-            c.shapeModelFileExtension = ".obj";
-            c.hasColoringData = false;
-            int numberPlates = 28269;
-            c.setResolution(ImmutableList.of(numberPlates + " plates"), ImmutableList.of(numberPlates));
-            c.presentInMissions = new SbmtMultiMissionTool.Mission[] {SbmtMultiMissionTool.Mission.STAGE_APL_INTERNAL, SbmtMultiMissionTool.Mission.APL_INTERNAL, SbmtMultiMissionTool.Mission.TEST_APL_INTERNAL};
-            c.defaultForMissions = new SbmtMultiMissionTool.Mission[] {};
-
-            configArray.add(c);
-
-            c = new SaturnConfigs();
-            c.body = ShapeModelBody.CALYPSO;
-            c.type = BodyType.PLANETS_AND_SATELLITES;
-            c.population = ShapeModelPopulation.SATURN;
-            c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
             c.author = ShapeModelType.provide("Daly");
             c.modelLabel = "Daly et al. (in progress)";
             c.rootDirOnServer = "/calypso/daly-2020";
@@ -451,7 +434,7 @@ public class SaturnConfigs extends SmallBodyViewConfig
             String issRootDir = c.rootDirOnServer + "/iss";
             String issDataDir = "/cassini/iss/images";
 
-            c.imagingInstruments = new ImagingInstrument[] {
+            ImagingInstrument[] imagingInstruments_Daly = c.imagingInstruments = new ImagingInstrument[] {
                     new ImagingInstrument( //
                             SpectralImageMode.MONO, //
                             new GenericPhpQuery(issRootDir, issTable, issTable, issRootDir + "/gallery", issDataDir), //
@@ -469,12 +452,37 @@ public class SaturnConfigs extends SmallBodyViewConfig
             c.imageSearchDefaultMaxSpacecraftDistance = 1.0e6;
             c.imageSearchDefaultMaxResolution = 1.0e3;
 
-            c.databaseRunInfos = new DBRunInfo[] { //
+            DBRunInfo[] databaseRunInfos_Daly = c.databaseRunInfos = new DBRunInfo[] { //
                     new DBRunInfo(ImageSource.GASKELL, Instrument.ISS, c.body.toString(), //
                             issRootDir + "/imagelist-fullpath-sum.txt", issTable) //
             };
 
             c.presentInMissions = new SbmtMultiMissionTool.Mission[] {SbmtMultiMissionTool.Mission.PUBLIC_RELEASE, SbmtMultiMissionTool.Mission.TEST_PUBLIC_RELEASE, SbmtMultiMissionTool.Mission.STAGE_PUBLIC_RELEASE, SbmtMultiMissionTool.Mission.STAGE_APL_INTERNAL, SbmtMultiMissionTool.Mission.APL_INTERNAL, SbmtMultiMissionTool.Mission.TEST_APL_INTERNAL};
+            c.defaultForMissions = new SbmtMultiMissionTool.Mission[] {};
+
+            configArray.add(c);
+
+            c = new SaturnConfigs();
+            c.body = ShapeModelBody.CALYPSO;
+            c.type = BodyType.PLANETS_AND_SATELLITES;
+            c.population = ShapeModelPopulation.SATURN;
+            c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
+            c.author = ShapeModelType.THOMAS;
+            c.modelLabel = "Thomas et al. (2018)";
+            c.rootDirOnServer = "/calypso/thomas-2018";
+            c.shapeModelFileExtension = ".obj";
+            c.hasColoringData = false;
+            int numberPlates = 28269;
+            c.setResolution(ImmutableList.of(numberPlates + " plates"), ImmutableList.of(numberPlates));
+            c.imagingInstruments = imagingInstruments_Daly;
+            c.imageSearchDefaultStartDate = new GregorianCalendar(2005, 8, 23, 0, 0, 0).getTime();
+            c.imageSearchDefaultEndDate = new GregorianCalendar(2010, 1, 14, 0, 0, 0).getTime();
+            c.imageSearchFilterNames = new String[] {};
+            c.imageSearchUserDefinedCheckBoxesNames = new String[] {};
+            c.imageSearchDefaultMaxSpacecraftDistance = 1.0e6;
+            c.imageSearchDefaultMaxResolution = 1.0e3;
+            c.databaseRunInfos = databaseRunInfos_Daly;
+            c.presentInMissions = new SbmtMultiMissionTool.Mission[] {SbmtMultiMissionTool.Mission.STAGE_APL_INTERNAL, SbmtMultiMissionTool.Mission.APL_INTERNAL, SbmtMultiMissionTool.Mission.TEST_APL_INTERNAL};
             c.defaultForMissions = new SbmtMultiMissionTool.Mission[] {};
 
             configArray.add(c);
