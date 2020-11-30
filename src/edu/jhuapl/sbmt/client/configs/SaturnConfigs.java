@@ -482,7 +482,7 @@ public class SaturnConfigs extends SmallBodyViewConfig
             c.imageSearchDefaultMaxSpacecraftDistance = 1.0e6;
             c.imageSearchDefaultMaxResolution = 1.0e3;
             c.databaseRunInfos = databaseRunInfos_Daly;
-            c.presentInMissions = new SbmtMultiMissionTool.Mission[] {SbmtMultiMissionTool.Mission.STAGE_APL_INTERNAL, SbmtMultiMissionTool.Mission.APL_INTERNAL, SbmtMultiMissionTool.Mission.TEST_APL_INTERNAL};
+            c.presentInMissions = new SbmtMultiMissionTool.Mission[] {SbmtMultiMissionTool.Mission.PUBLIC_RELEASE, SbmtMultiMissionTool.Mission.TEST_PUBLIC_RELEASE, SbmtMultiMissionTool.Mission.STAGE_PUBLIC_RELEASE, SbmtMultiMissionTool.Mission.STAGE_APL_INTERNAL, SbmtMultiMissionTool.Mission.APL_INTERNAL, SbmtMultiMissionTool.Mission.TEST_APL_INTERNAL};
             c.defaultForMissions = new SbmtMultiMissionTool.Mission[] {};
 
             configArray.add(c);
