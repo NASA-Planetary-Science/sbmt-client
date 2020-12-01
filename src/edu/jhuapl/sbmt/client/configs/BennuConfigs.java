@@ -1569,7 +1569,6 @@ public class BennuConfigs extends SmallBodyViewConfig
 	private ImagingInstrument generatePolycamInstrument(String spcNamePrefix, String spiceNamePrefix, boolean includeSPC, boolean includeSPICE, boolean publicOnly)
 	{
 		String gallery = "/polycam/gallery";
-		if (publicOnly) gallery = "/polycam/gallery/public";
 		ImageSource[] imageSources = {};
 		ArrayList<ImageSource> imageSourceArray = new ArrayList<ImageSource>();
 		if (includeSPC) imageSourceArray.add(ImageSource.GASKELL);
@@ -1596,7 +1595,6 @@ public class BennuConfigs extends SmallBodyViewConfig
 	private ImagingInstrument generateMapcamInstrument(String spcNamePrefix, String spiceNamePrefix, boolean includeSPC, boolean includeSPICE, boolean publicOnly)
 	{
 		String gallery = "/mapcam/gallery";
-		if (publicOnly) gallery = "/mapcam/gallery/public";
 		ImageSource[] imageSources = {};
 		ArrayList<ImageSource> imageSourceArray = new ArrayList<ImageSource>();
 		if (includeSPC) imageSourceArray.add(ImageSource.GASKELL);
@@ -1622,7 +1620,6 @@ public class BennuConfigs extends SmallBodyViewConfig
 	private ImagingInstrument generateNavcamInstrument(String spcNamePrefix, String spiceNamePrefix, boolean publicOnly)
 	{
 		String gallery = "/navcam/gallery";
-		if (publicOnly) gallery = "/navcam/gallery/public";
 		GenericPhpQuery phpQuery = new GenericPhpQuery(rootDirOnServer + "/navcam", spcNamePrefix, spiceNamePrefix, rootDirOnServer + gallery);
 		phpQuery.setPublicOnly(publicOnly);
 		phpQuery.setImageNameTable("bennu_navcam_images");
