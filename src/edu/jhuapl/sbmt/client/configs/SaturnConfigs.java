@@ -433,11 +433,12 @@ public class SaturnConfigs extends SmallBodyViewConfig
             String issTable = tableBaseName + "iss";
             String issRootDir = c.rootDirOnServer + "/iss";
             String issDataDir = "/cassini/iss/images";
+            String issGalleryDir = "/cassini/iss/gallery";
 
             ImagingInstrument[] imagingInstruments_Daly = c.imagingInstruments = new ImagingInstrument[] {
                     new ImagingInstrument( //
                             SpectralImageMode.MONO, //
-                            new GenericPhpQuery(issRootDir, issTable, issTable, issRootDir + "/gallery", issDataDir), //
+                            new GenericPhpQuery(issRootDir, issTable, issTable, issGalleryDir, issDataDir), //
                             ImageType.valueOf("ISS_IMAGE"), //
                             SumFiles, //
                             Instrument.ISS, //
