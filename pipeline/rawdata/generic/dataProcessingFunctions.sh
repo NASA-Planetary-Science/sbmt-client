@@ -1194,6 +1194,10 @@ extractFITSFileTimes() {
 # only pays attention to the image files and their corresponding gallery files; it has nothing to do
 # with pointing. It does not rely on any preexisting image list files.
 #
+# This function also creates a zip file that holds the gallery files to allow more efficient gallery access
+# by the client. Note that if there are a very large number of gallery files, this may result in a very
+# large zip file. Because of this, in future, may need/want an option to disable this.
+#
 # Assumptions:
 #   1. Main images are under "images", gallery images are under "gallery".
 #   2. The gallery subdirectory is laid out parallel to the images subdirectory.
@@ -1239,7 +1243,7 @@ createGalleryList() {
     fi
 
     cd $imageDir
-    check $? "$funcName: unable to cd to $imageDir"
+    check $? "$funcName: unable to cd to image directory $imageDir"
 
     tmpImageList=$instrumentTop/tmpImageList.txt
     # Go one sub-shell deeper to ensure this tmp file gets cleaned up.
@@ -1249,12 +1253,13 @@ createGalleryList() {
       check $? "$funcName: unable to list images in $imageDir"
 
       cd $galleryDir
-      check $? "$funcName: unable to cd to $galleryDir"
+      check $? "$funcName: unable to cd to gallery directory $galleryDir"
 
       for image in `cat $tmpImageList`; do
         root=`echo "$image" | sed 's:\.[^\.]*$::'`
         check $? "$funcName: unable to determine base name of gallery images for $image"
 
+        # Sort matching gallery file names by size so the thumbnail is listed first.
         galleryFiles=`ls -sL $root* 2> /dev/null | sort -n | sed 's:.* ::' | tr '\012' ' '`
         check $? "$funcName: unable to find gallery images for $image"
 
@@ -1270,6 +1275,14 @@ createGalleryList() {
         echo "$funcName: WARNING: did not find gallery files for every image in $imageDir"
         echo "$funcName: please examine $instrumentTop and its subdirectories"
       fi
+      
+      # This does not involve the tmp file, but it is convenient just to do this
+      # here, in the sub-shell.
+      cd $instrumentTop
+      check $? "$funcName: unable to cd to $instrumentTop to create zip file"
+      
+      zip -qr gallery.zip gallery
+      check $? "$funcName: unable to zip directory gallery in $instrumentTop"
     )
     status=$?
     rm -f $tmpImageList
