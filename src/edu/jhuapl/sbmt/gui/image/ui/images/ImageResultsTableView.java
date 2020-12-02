@@ -28,7 +28,6 @@ public class ImageResultsTableView extends JPanel
     private JButton saveSelectedImageListButton;
     private JButton viewResultsGalleryButton;
     private ImagePopupMenu imagePopupMenu;
-    private boolean enableGallery;
     String[] columnNames;
     protected ImageResultsTable resultList;
     private JLabel resultsLabel;
@@ -195,16 +194,6 @@ public class ImageResultsTableView extends JPanel
     public ImagePopupMenu getImagePopupMenu()
     {
         return imagePopupMenu;
-    }
-
-    public boolean isEnableGallery()
-    {
-        return enableGallery;
-    }
-
-    public void setEnableGallery(boolean enableGallery)
-    {
-        this.enableGallery = enableGallery;
     }
 
     public void setNumberOfBoundariesComboBox(JComboBox<Integer> numberOfBoundariesComboBox)
