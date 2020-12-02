@@ -13,7 +13,6 @@ public class OfflimbImageResultsTableView extends ImageResultsTableView
     public OfflimbImageResultsTableView(ImagingInstrument instrument, ImageCollection imageCollection, ImagePopupMenu imagePopupMenu)
     {
         super(instrument, imageCollection, imagePopupMenu);
-        init();
         resultList = new OfflimbImageResultsTable();
     }
 
