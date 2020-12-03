@@ -38,6 +38,9 @@ fi
 # delivery.
 check 1 "Tailor this script first for the specific delivery being processed."
 
+# Work live in the server with no safety net!
+processedTop=$deployedTop
+
 #-------------------------------------------------------------------------------
 # Update this block for each delivery. All information below should be
 # included in the redmine issue and/or the delivery aamanifest.txt file.
@@ -47,7 +50,7 @@ check 1 "Tailor this script first for the specific delivery being processed."
 
 # This is the full path to the delivery as provided by a scientist. This may
 # or may not fully comply with all SBMT guidelines for layout and naming.
-deliveryTop="/project/sbmtpipeline/deliveries-dart/ideal_impact1-20200629-v01/didymos/SMv01A-truth"
+deliveryTop="/project/sbmtpipeline/deliveries/cassini/iss/20201202"
 
 # The identifier of the SBMT model, which should match how the model is or
 # will be identified with a ShapeModelType object. For a given body, this
@@ -55,14 +58,14 @@ deliveryTop="/project/sbmtpipeline/deliveries-dart/ideal_impact1-20200629-v01/di
 # items being processed are associated with a specific model, this may be set
 # to an empty string but it should not be removed. This is used to process
 # plate colorings and images.
-modelId="ideal-impact1-20200629-v01"
+modelId=""
 
 # The identifier of the body as it appears in the SBMT, which should match how
 # the body is or will be identified with a ShapeModelBody object. If no items
 # being processed are associated with a specific body, this may be set to an
 # empty string, but it should not be removed. This is used for processing
 # plate colorings and images.
-bodyId="Didymos"
+bodyId=""
 
 # Uncomment and edit this as needed if updating an already-processed model as
 # part of a delivery sequence. Because this in-effect changes files that
@@ -164,7 +167,7 @@ bodyFrame="920065803_FIXED" # Didymos-specific.
 # Need an Instrument sub-block like below for each instrument in this delivery.
 
 
-skipSection="true"
+skipSection="false"
 
 # Instrument sub-block (ISS).
 #-------------------------------------------------------------------------------
@@ -172,8 +175,10 @@ scId="cassini"
 instrument="iss"
 
 # Copy all delivered instrument files.
-copyDir $instrument
+# copyDir $instrument
+copyDir .
 
+skipSection="true"
 #-------------------------------------------------------------------------------
 # Process SUM files
 checkSumFiles $destTop/$instrument
@@ -192,8 +197,10 @@ createLink "$serverTop/$scId" "$processedTop/$scId"
 # in the ImageSource class.
 generateDatabaseTable ${instrument^^} GASKELL
 
+skipSection="false"
 # Set up galleries (if present).
-createGalleryList $destTop/$instrument
+createGalleryList $destTop
+skipSection="true"
 
 # End Instrument sub-block (ISS).
 #-------------------------------------------------------------------------------
