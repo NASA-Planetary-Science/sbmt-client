@@ -24,10 +24,11 @@ import edu.jhuapl.saavtk.gui.util.ToolTipUtil;
 import edu.jhuapl.sbmt.gui.table.EphemerisTimeRenderer;
 import edu.jhuapl.sbmt.stateHistory.model.interfaces.StateHistory;
 import edu.jhuapl.sbmt.stateHistory.model.stateHistory.StateHistoryCollection;
+import edu.jhuapl.sbmt.stateHistory.rendering.model.StateHistoryRendererManager;
 import edu.jhuapl.sbmt.stateHistory.ui.state.popup.StateHistoryGuiUtil;
-import edu.jhuapl.sbmt.stateHistory.ui.state.popup.StateHistoryPopupMenu;
 
 import glum.gui.GuiUtil;
+import glum.gui.action.PopupMenu;
 import glum.gui.misc.BooleanCellEditor;
 import glum.gui.misc.BooleanCellRenderer;
 import glum.gui.panel.itemList.ItemHandler;
@@ -51,7 +52,7 @@ public class StateHistoryTableView extends JPanel
 	/**
 	 * JButton to remove state history from table
 	 */
-	private JButton removeStateHistoryButton;
+	private JButton hideStateHistoryButton;
 
 	/**
 	 * JButton to show state history in renderer
@@ -100,29 +101,26 @@ public class StateHistoryTableView extends JPanel
 	/**
 	 * @param stateHistoryCollection
 	 */
-	public StateHistoryTableView(StateHistoryCollection stateHistoryCollection/*
-																				 * ,
-																				 * SpectrumPopupMenu
-																				 * spectrumPopupMenu
-																				 */)
+	public StateHistoryTableView(StateHistoryRendererManager rendererManager)
 	{
-		this.stateHistoryCollection = stateHistoryCollection;
-		init();
+		this.stateHistoryCollection = rendererManager.getRuns();
+		init(rendererManager);
 	}
 
 	/**
 	 * Initializes UI elements
 	 */
-	protected void init()
+	protected void init(StateHistoryRendererManager rendererManager)
 	{
-		resultList = buildTable();
-		removeStateHistoryButton = new JButton("Hide State History");
+		resultList = buildTable(rendererManager);
+		hideStateHistoryButton = new JButton("Hide State History");
 		showStateHistoryButton = new JButton("Show State History");
-		removeStateHistoryButton.setEnabled(false);
+		hideStateHistoryButton.setEnabled(false);
 		showStateHistoryButton.setEnabled(false);
 		loadStateHistoryButton = new JButton("Load...");
 		saveStateHistoryButton = new JButton("Save...");
 		deleteStateHistoryButton = new JButton("Delete...");
+		deleteStateHistoryButton.setEnabled(false);
 		saveStateHistoryButton.setEnabled(false);
 	}
 
@@ -150,7 +148,7 @@ public class StateHistoryTableView extends JPanel
 		add(panel_1);
 		panel_1.setLayout(new BoxLayout(panel_1, BoxLayout.X_AXIS));
 		panel_1.add(showStateHistoryButton);
-		panel_1.add(removeStateHistoryButton);
+		panel_1.add(hideStateHistoryButton);
 
 		JPanel panel_2 = new JPanel();
 		add(panel_2);
@@ -165,25 +163,25 @@ public class StateHistoryTableView extends JPanel
 	 *
 	 * @return
 	 */
-	private JTable buildTable()
+	private JTable buildTable(StateHistoryRendererManager rendererManager)
 	{
 		ActionListener listener = e ->
 		{
 			Object source = e.getSource();
 
 			if (source == selectAllB)
-				ItemManagerUtil.selectAll(stateHistoryCollection);
+				ItemManagerUtil.selectAll(rendererManager);
 			else if (source == selectNoneB)
-				ItemManagerUtil.selectNone(stateHistoryCollection);
+				ItemManagerUtil.selectNone(rendererManager);
 			else if (source == selectInvertB)
 			{
-				ItemManagerUtil.selectInvert(stateHistoryCollection);
+				ItemManagerUtil.selectInvert(rendererManager);
 			}
 		};
 
 		// Popup menu
-		StateHistoryPopupMenu stateHistoryPopupMenu = StateHistoryGuiUtil
-				.formStateHistoryFileSpecPopupMenu(stateHistoryCollection, this);
+		PopupMenu stateHistoryPopupMenu = StateHistoryGuiUtil
+				.formStateHistoryFileSpecPopupMenu(rendererManager, this);
 
 		// Table header
 		selectInvertB = GuiUtil.formButton(listener, IconUtil.getSelectInvert());
@@ -229,14 +227,14 @@ public class StateHistoryTableView extends JPanel
 		tmpComposer.setRenderer(StateHistoryColumnLookup.StartTime, tmpTimeRenderer);
 		tmpComposer.setRenderer(StateHistoryColumnLookup.EndTime, tmpTimeRenderer);
 
-		stateHistoryTableHandler = new StateHistoryItemHandler(stateHistoryCollection, tmpComposer);
-		ItemProcessor<StateHistory> tmpIP = stateHistoryCollection;
+		stateHistoryTableHandler = new StateHistoryItemHandler(rendererManager, tmpComposer);
+		ItemProcessor<StateHistory> tmpIP = rendererManager;
 		stateHistoryILP = new ItemListPanel<>(stateHistoryTableHandler, tmpIP, true);
 		stateHistoryILP.setSortingEnabled(true);
 		configureColumnWidths();
 		JTable stateHistoryTable = stateHistoryILP.getTable();
 		stateHistoryTable.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
-		stateHistoryTable.addMouseListener(new TablePopupHandler(stateHistoryCollection, stateHistoryPopupMenu));
+		stateHistoryTable.addMouseListener(new TablePopupHandler(rendererManager, stateHistoryPopupMenu));
 
 		return stateHistoryTable;
 	}
@@ -276,9 +274,9 @@ public class StateHistoryTableView extends JPanel
 	 *
 	 * @return the remove state history button
 	 */
-	public JButton getRemoveStateHistoryButton()
+	public JButton getHideStateHistoryButton()
 	{
-		return removeStateHistoryButton;
+		return hideStateHistoryButton;
 	}
 
 	/**

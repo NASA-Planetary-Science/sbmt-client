@@ -18,12 +18,12 @@ public class DefaultStateHistoryModelChangedListener implements StateHistoryMode
 		// TODO Auto-generated constructor stub
 	}
 
-	@Override
-	public void timeChanged(Double t)
-	{
-		// TODO Auto-generated method stub
-
-	}
+//	@Override
+//	public void timeChanged(Double t)
+//	{
+//		// TODO Auto-generated method stub
+//
+//	}
 
 	@Override
 	public void trajectoryColorChanged(double[] color)

@@ -1,7 +1,12 @@
 package edu.jhuapl.sbmt.stateHistory.model.stateHistory;
 
+import java.awt.Color;
+import java.io.File;
+import java.io.IOException;
 import java.util.Map.Entry;
 import java.util.Set;
+
+import org.apache.commons.io.FilenameUtils;
 
 import edu.jhuapl.sbmt.pointing.IPointingProvider;
 import edu.jhuapl.sbmt.pointing.spice.SpiceInfo;
@@ -9,18 +14,23 @@ import edu.jhuapl.sbmt.stateHistory.model.StateHistorySourceType;
 import edu.jhuapl.sbmt.stateHistory.model.interfaces.State;
 import edu.jhuapl.sbmt.stateHistory.model.interfaces.StateHistory;
 import edu.jhuapl.sbmt.stateHistory.model.interfaces.Trajectory;
+import edu.jhuapl.sbmt.stateHistory.model.io.StateHistoryIOException;
 import edu.jhuapl.sbmt.stateHistory.model.io.StateHistoryInvalidTimeException;
 import edu.jhuapl.sbmt.stateHistory.model.scState.SpiceState;
-import edu.jhuapl.sbmt.util.TimeUtil;
 
 import crucible.core.math.vectorspace.UnwritableVectorIJK;
 import crucible.crust.metadata.api.Key;
+import crucible.crust.metadata.api.Metadata;
 import crucible.crust.metadata.api.Version;
+import crucible.crust.metadata.impl.FixedMetadata;
 import crucible.crust.metadata.impl.InstanceGetter;
 import crucible.crust.metadata.impl.SettableMetadata;
+import crucible.crust.metadata.impl.gson.Serializers;
 
 public class SpiceStateHistory implements StateHistory
 {
+
+	boolean visible = false, mapped = false;
 
 	/**
 	*
@@ -60,7 +70,7 @@ public class SpiceStateHistory implements StateHistory
 	/**
 	 *
 	 */
-	private Double[] color;
+	private Color color;
 
 	private StateHistorySourceType type;
 
@@ -89,7 +99,6 @@ public class SpiceStateHistory implements StateHistory
 	{
 		InstanceGetter.defaultInstanceGetter().register(SPICE_STATE_HISTORY_KEY, (source) ->
 		{
-
 			StateHistoryKey key = source.get(STATEHISTORY_KEY_KEY);
 			Double currentTime = source.get(CURRENT_TIME_KEY);
 			Double startTime = source.get(START_TIME_KEY);
@@ -105,9 +114,12 @@ public class SpiceStateHistory implements StateHistory
 			catch (IllegalArgumentException iae)
 			{
 			}
-			if (name == null)
-				name = "";
-			Double[] color = source.get(COLOR_KEY);
+			if ((name == null) || (name.equals("")))
+				name = "Segment_" + key.getValue();
+			Double[] colorAsDouble = source.get(COLOR_KEY);
+
+			Color color = new Color(colorAsDouble[0].intValue(), colorAsDouble[1].intValue(), colorAsDouble[2].intValue(), colorAsDouble[3].intValue());
+
 			SpiceInfo spiceInfo = null;
 			if (source.hasKey(SPICE_INFO_KEY))
 				spiceInfo = source.get(SPICE_INFO_KEY);
@@ -130,10 +142,10 @@ public class SpiceStateHistory implements StateHistory
 			result.put(TYPE_KEY, stateHistory.getType().toString());
 			result.put(SOURCE_FILE, stateHistory.getSourceFile());
 			result.put(COLOR_KEY, new Double[]
-			{ stateHistory.getTrajectory().getColor()[0],
-					stateHistory.getTrajectory().getColor()[1],
-					stateHistory.getTrajectory().getColor()[2],
-					stateHistory.getTrajectory().getColor()[3] });
+			{ (float)stateHistory.getTrajectory().getColor().getRed()/255.0,
+				(float)stateHistory.getTrajectory().getColor().getGreen()/255.0,
+				(float)stateHistory.getTrajectory().getColor().getBlue()/255.0,
+				(float)stateHistory.getTrajectory().getColor().getAlpha()/255.0 });
 			result.put(SPICE_INFO_KEY, stateHistory.getSpiceInfo());
 			return result;
 		});
@@ -153,7 +165,7 @@ public class SpiceStateHistory implements StateHistory
 	 * @param color
 	 */
 	public SpiceStateHistory(StateHistoryKey key, Double currentTime, Double startTime, Double endTime, String name,
-			String description, Double[] color, StateHistorySourceType type, String sourceFile)
+			String description, Color color, StateHistorySourceType type, String sourceFile)
 	{
 		this.key = key;
 		this.currentTime = currentTime;
@@ -184,30 +196,9 @@ public class SpiceStateHistory implements StateHistory
 		return getEndTime() - getStartTime();
 	}
 
-//	@Override
-//	public Double getTimeFraction()
-//	{
-//		double min = getMinTime() + trajectory.getMinDisplayFraction()*(getMaxTime() - getMinTime());
-//        double max = getMaxTime() - (1-trajectory.getMaxDisplayFraction())*(getMaxTime()-getMinTime());
-//        double time = getCurrentTime();
-//        double result = (time - min) / (max - min);
-//        return result;
-//	}
-//
-//	@Override
-//	public void setTimeFraction(Double timeFraction) throws StateHistoryInvalidTimeException
-//	{
-//		double min = getMinTime() + trajectory.getMinDisplayFraction()*(getMaxTime() - getMinTime());
-//        double max = getMaxTime() - (1-trajectory.getMaxDisplayFraction())*(getMaxTime()-getMinTime());
-//        double time = min + timeFraction * (max - min);
-////        System.out.println("SpiceStateHistory: setTimeFraction: srtting time " + time);
-//        setCurrentTime(time);
-//	}
-
 	@Override
 	public Double getCurrentTime()
 	{
-//		System.out.println("SpiceStateHistory: getCurrentTime: returning " + currentTime);
 		return currentTime;
 	}
 
@@ -216,11 +207,7 @@ public class SpiceStateHistory implements StateHistory
 	{
 		if( time < getStartTime() || time > getEndTime())
         {
-			System.out.println("SpiceStateHistory: setCurrentTime: time is " + TimeUtil.et2str(time));
-			System.out.println("SpiceStateHistory: setCurrentTime: min time is " + TimeUtil.et2str(getStartTime()));
-			System.out.println("SpiceStateHistory: setCurrentTime: max time is " + TimeUtil.et2str(getEndTime()));
         	throw new StateHistoryInvalidTimeException("Entered time is outside the range of the selected interval.");
-
         }
 		this.currentTime = time;
 		state.setEphemerisTime(time);
@@ -394,13 +381,6 @@ public class SpiceStateHistory implements StateHistory
 	}
 
 	@Override
-	public void setTrajectoryColor(Double[] color)
-	{
-		this.color = color;
-		this.trajectory.setColor(new double[] {color[0], color[1], color[2], color[3]});
-	}
-
-	@Override
 	public void setType(StateHistorySourceType type)
 	{
 		this.type = type;
@@ -441,16 +421,51 @@ public class SpiceStateHistory implements StateHistory
 		this.spiceInfo = spiceInfo;
 	}
 
-//	@Override
-//	public double getCurrentMinValue()
-//    {
-//    	return getMinTime() + trajectory.getMinDisplayFraction()*(getMaxTime() - getMinTime());
-//    }
-//
-//	@Override
-//    public double getCurrentMaxValue()
-//    {
-//    	return getMaxTime() - (1-trajectory.getMaxDisplayFraction())*(getMaxTime()-getMinTime());
-//    }
+	public boolean isMapped() { return mapped; }
 
+	public void setMapped(boolean mapped) { this.mapped = mapped; }
+
+	public boolean isVisible() { return visible; }
+
+	public void setVisible(boolean visible) { this.visible = visible; }
+
+	@Override
+	public void setTrajectoryColor(Color color)
+	{
+		this.color = color;
+		this.trajectory.setColor(color);
+	}
+
+
+	public void saveStateToFile(String shapeModelName, String fileName) throws StateHistoryIOException
+	{
+		Metadata metadata = InstanceGetter.defaultInstanceGetter().providesMetadataFromGenericObject(SpiceStateHistory.class).provide(this);
+		try
+		{
+			System.out.println("SpiceStateHistory: saveStateToFile: filename is " + fileName);
+			Serializers.serialize("SpiceStateHistory", metadata, new File(fileName + ".spicestate"));
+		}
+		catch (IOException e)
+		{
+			throw new StateHistoryIOException("Error saving state to file " + fileName, e);
+		}
+	}
+
+	public StateHistory loadStateHistoryFromFile(File file, String shapeModelName, StateHistoryKey key) throws StateHistoryIOException
+    {
+		String extension = FilenameUtils.getExtension(file.getAbsolutePath());
+		if (!extension.equals("spicestate")) throw new StateHistoryIOException("Invalid file format");
+		FixedMetadata metadata;
+		try
+		{
+			metadata = Serializers.deserialize(file, "SpiceStateHistory");
+		}
+		catch (IOException e)
+		{
+			throw new StateHistoryIOException("Problem loading state history from file " + file, e);
+		}
+		SpiceStateHistory stateHistory = InstanceGetter.defaultInstanceGetter().providesGenericObjectFromMetadata(SPICE_STATE_HISTORY_KEY).provide(metadata);
+		return stateHistory;
+
+    }
 }

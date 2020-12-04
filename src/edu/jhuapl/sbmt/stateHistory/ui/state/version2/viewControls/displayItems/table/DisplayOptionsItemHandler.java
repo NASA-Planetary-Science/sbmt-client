@@ -5,8 +5,8 @@ import java.beans.PropertyChangeEvent;
 
 import edu.jhuapl.saavtk.color.provider.ConstColorProvider;
 import edu.jhuapl.saavtk.util.Properties;
-import edu.jhuapl.sbmt.stateHistory.model.stateHistory.StateHistoryCollection;
 import edu.jhuapl.sbmt.stateHistory.rendering.DisplayableItem;
+import edu.jhuapl.sbmt.stateHistory.rendering.model.StateHistoryRendererManager;
 
 import glum.gui.panel.itemList.BasicItemHandler;
 import glum.gui.panel.itemList.query.QueryComposer;
@@ -17,17 +17,16 @@ public class DisplayOptionsItemHandler extends BasicItemHandler<DisplayableItem,
 	/**
 	 *
 	 */
-	private final StateHistoryCollection stateHistoryCollection;
+	private final StateHistoryRendererManager stateHistoryRendererManager;
 
 	/**
 	 * @param aManager
 	 * @param aComposer
 	 */
-	public DisplayOptionsItemHandler(StateHistoryCollection stateHistoryCollection, QueryComposer<DisplayOptionsColumnLookup> aComposer)
+	public DisplayOptionsItemHandler(StateHistoryRendererManager rendererManager, QueryComposer<DisplayOptionsColumnLookup> aComposer)
 	{
 		super(aComposer);
-
-		this.stateHistoryCollection = stateHistoryCollection;
+		this.stateHistoryRendererManager = rendererManager;
 	}
 
 	/**
@@ -65,23 +64,23 @@ public class DisplayOptionsItemHandler extends BasicItemHandler<DisplayableItem,
 		if (aEnum == DisplayOptionsColumnLookup.Show)
 		{
 			item.setVisible((boolean) aValue);
-			stateHistoryCollection.propertyChange(new PropertyChangeEvent(this, Properties.MODEL_CHANGED, null, item));
+			stateHistoryRendererManager.propertyChange(new PropertyChangeEvent(this, Properties.MODEL_CHANGED, null, item));
 		}
 		else if (aEnum == DisplayOptionsColumnLookup.Size)
 		{
 			item.setPointerRadius((double)aValue);
-			stateHistoryCollection.propertyChange(new PropertyChangeEvent(this, Properties.MODEL_CHANGED, null, item));
+			stateHistoryRendererManager.propertyChange(new PropertyChangeEvent(this, Properties.MODEL_CHANGED, null, item));
 		}
 		else if (aEnum == DisplayOptionsColumnLookup.Label)
 		{
 			item.setLabel((String)aValue);
-			stateHistoryCollection.propertyChange(new PropertyChangeEvent(this, Properties.MODEL_CHANGED, null, item));
+			stateHistoryRendererManager.propertyChange(new PropertyChangeEvent(this, Properties.MODEL_CHANGED, null, item));
 
 		}
 		else if (aEnum == DisplayOptionsColumnLookup.Color)
 		{
 			item.setColor(((ConstColorProvider)aValue).getBaseColor());
-			stateHistoryCollection.propertyChange(new PropertyChangeEvent(this, Properties.MODEL_CHANGED, null, item));
+			stateHistoryRendererManager.propertyChange(new PropertyChangeEvent(this, Properties.MODEL_CHANGED, null, item));
 
 		}
 		else

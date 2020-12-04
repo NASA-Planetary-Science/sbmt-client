@@ -1,7 +1,5 @@
 package edu.jhuapl.sbmt.stateHistory.ui.state.version2.table;
 
-import java.awt.Color;
-
 import org.joda.time.DateTimeZone;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
@@ -9,6 +7,7 @@ import org.joda.time.format.DateTimeFormatter;
 import edu.jhuapl.saavtk.color.provider.ConstColorProvider;
 import edu.jhuapl.sbmt.stateHistory.model.interfaces.StateHistory;
 import edu.jhuapl.sbmt.stateHistory.model.stateHistory.StateHistoryCollection;
+import edu.jhuapl.sbmt.stateHistory.rendering.model.StateHistoryRendererManager;
 import edu.jhuapl.sbmt.util.TimeUtil;
 
 import glum.gui.panel.itemList.BasicItemHandler;
@@ -24,16 +23,17 @@ public class StateHistoryItemHandler extends BasicItemHandler<StateHistory, Stat
 	 *
 	 */
 	private final StateHistoryCollection stateHistoryCollection;
+	private StateHistoryRendererManager rendererManager;
 
 	/**
 	 * @param aManager
 	 * @param aComposer
 	 */
-	public StateHistoryItemHandler(StateHistoryCollection aManager, QueryComposer<StateHistoryColumnLookup> aComposer)
+	public StateHistoryItemHandler(StateHistoryRendererManager rendererManager, QueryComposer<StateHistoryColumnLookup> aComposer)
 	{
 		super(aComposer);
-
-		stateHistoryCollection = aManager;
+		this.rendererManager = rendererManager;
+		stateHistoryCollection = rendererManager.getRuns();
 	}
 
 	/**
@@ -47,14 +47,11 @@ public class StateHistoryItemHandler extends BasicItemHandler<StateHistory, Stat
 		switch (aEnum)
 		{
 			case Map:
-				return stateHistoryCollection.isStateHistoryMapped(stateHistory);
+				return stateHistory.isMapped();
 			case Show:
-				return stateHistoryCollection.getVisibility(stateHistory);
+				return stateHistory.isVisible();
 			case Color:
-				return new ConstColorProvider(new Color((int)(stateHistory.getTrajectory().getColor()[0]),
-											(int)(stateHistory.getTrajectory().getColor()[1]),
-											(int)(stateHistory.getTrajectory().getColor()[2]),
-											(int)(stateHistory.getTrajectory().getColor()[3])));
+				return new ConstColorProvider(stateHistory.getTrajectory().getColor());
 			case Name:
 				if (stateHistory.getStateHistoryName().equals("")) return "Segment " + stateHistory.getKey().getValue();
 				return stateHistory.getStateHistoryName();
@@ -85,19 +82,20 @@ public class StateHistoryItemHandler extends BasicItemHandler<StateHistory, Stat
 	{
 		if (aEnum == StateHistoryColumnLookup.Map)
 		{
-			if (!stateHistoryCollection.isStateHistoryMapped(history))
-				stateHistoryCollection.addRun(history);
+			if (!history.isMapped())
+			{
+				rendererManager.addRun(history);
+				rendererManager.setVisibility(history, true);
+			}
 			else
 			{
-				stateHistoryCollection.removeRun(history.getKey());
+				rendererManager.removeRun(history);
 			}
 		}
 		else if (aEnum == StateHistoryColumnLookup.Show)
 		{
-			if (stateHistoryCollection.isStateHistoryMapped(history))
-			{
-				stateHistoryCollection.setVisibility(history, (boolean) aValue);
-			}
+			if (history.isMapped()) rendererManager.setVisibility(history, (boolean) aValue);
+
 		}
 		else if (aEnum == StateHistoryColumnLookup.Name)
 		{
@@ -111,7 +109,7 @@ public class StateHistoryItemHandler extends BasicItemHandler<StateHistory, Stat
 		}
 		else if (aEnum == StateHistoryColumnLookup.Color)
 		{
-			stateHistoryCollection.setTrajectoryColor(history, ((ConstColorProvider)aValue).getBaseColor());
+			history.setTrajectoryColor(((ConstColorProvider)aValue).getBaseColor());
 		}
 		else
 			throw new UnsupportedOperationException("Column is not supported. Enum: " + aEnum);

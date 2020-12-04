@@ -16,10 +16,11 @@ import vtk.vtkUnsignedCharArray;
 
 import edu.jhuapl.saavtk.color.provider.ColorProvider;
 import edu.jhuapl.saavtk.colormap.Colormap;
+import edu.jhuapl.saavtk.feature.FeatureAttr;
 import edu.jhuapl.saavtk.feature.FeatureType;
 import edu.jhuapl.sbmt.pointing.InstrumentPointing;
 import edu.jhuapl.sbmt.stateHistory.model.interfaces.Trajectory;
-import edu.jhuapl.sbmt.stateHistory.ui.state.color.StateHistoryFeatureType;
+import edu.jhuapl.sbmt.stateHistory.rendering.model.StateHistoryRendererManager;
 
 import crucible.core.math.vectorspace.UnwritableVectorIJK;
 
@@ -48,7 +49,7 @@ public class TrajectoryActor extends vtkActor
     /**
      *
      */
-    private double[] trajectoryColor = {0, 255, 255, 255};
+    private Color trajectoryColor = new Color (0, 255, 255, 255);
 
     /**
      *
@@ -155,7 +156,7 @@ public class TrajectoryActor extends vtkActor
         }
 
         polylines.InsertNextCell(polyline);
-        colors.InsertNextTuple4(trajectoryColor[0], trajectoryColor[1], trajectoryColor[2], 0.0);	//last one is alpha
+        colors.InsertNextTuple4((double)trajectoryColor.getRed()/255.0, (double)trajectoryColor.getGreen()/255.0, (double)trajectoryColor.getBlue()/255.0, 0.0);	//last one is alpha
         for (int i=(int)(minFraction*size);i<maxFraction*size;i++)
         {
         	vtkLine edge = new vtkLine();
@@ -239,27 +240,18 @@ public class TrajectoryActor extends vtkActor
 		double time = trajectory.getStartTime() + index*trajectory.getTimeStep();
 		if (gcp == null)
 		{
-			if (coloringFunction == null) return new Color((int)trajectoryColor[0], (int)trajectoryColor[1], (int)trajectoryColor[2], (int)trajectoryColor[3]);
+			if (coloringFunction == null) return trajectoryColor;
 			double valueAtTime = coloringFunction.apply(trajectory, time);
 			Color color = colormap.getColor(valueAtTime);
-			color = new Color(color.getRed(), color.getGreen(), color.getBlue(), (int)trajectoryColor[3]);
+			color = new Color(color.getRed(), color.getGreen(), color.getBlue(), trajectoryColor.getAlpha());
 			return color;
 		}
 		else
 		{
 			FeatureType featureType = gcp.getFeatureType();
-			if (featureType == StateHistoryFeatureType.Time)
-			{
-				return gcp.getColor(trajectory.getStartTime(), trajectory.getStopTime(), time);
-			}
-			else if (featureType == StateHistoryFeatureType.Distance)
-			{
-				double valueAtTime = trajectory.getPointingProvider().provide(time).getScPosition().getLength();
-//				double valueAtTime = StateHistoryColoringFunctions.DISTANCE.getColoringFunction().apply(trajectory, time);
-				return gcp.getColor(0.859, 9.66, valueAtTime);
-			}
-			else
-				return gcp.getColor(0.0, 1.0, 0.7);
+			FeatureAttr tmpFA = StateHistoryRendererManager.getFeatureAttrFor(trajectory.getHistory(), featureType, index);
+			if (tmpFA == null) return gcp.getColor(0.0, 1.0, 0.7);
+			return gcp.getColor(tmpFA.getMinVal(), tmpFA.getMaxVal(), tmpFA.getValAt(0));
 		}
 	}
 
@@ -280,7 +272,7 @@ public class TrajectoryActor extends vtkActor
      * Sets the trajectory color
      * @param color the trajectory color as a double array with values from 0.0 to 1.0
      */
-    public void setTrajectoryColor(double[] color)
+    public void setTrajectoryColor(Color color)
     {
         this.trajectoryColor = color;
         // recreate poly data with new color
@@ -313,7 +305,7 @@ public class TrajectoryActor extends vtkActor
 	/**
 	 * @return the trajectoryColor
 	 */
-	public double[] getTrajectoryColor()
+	public Color getTrajectoryColor()
 	{
 		return trajectoryColor;
 	}

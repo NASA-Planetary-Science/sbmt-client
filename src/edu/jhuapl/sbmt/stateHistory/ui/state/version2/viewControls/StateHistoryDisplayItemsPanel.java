@@ -4,7 +4,7 @@ import javax.swing.BoxLayout;
 import javax.swing.JPanel;
 import javax.swing.border.TitledBorder;
 
-import edu.jhuapl.sbmt.stateHistory.model.stateHistory.StateHistoryCollection;
+import edu.jhuapl.sbmt.stateHistory.rendering.model.StateHistoryRendererManager;
 import edu.jhuapl.sbmt.stateHistory.ui.state.version2.viewControls.displayItems.table.DisplayOptionsTableView;
 
 public class StateHistoryDisplayItemsPanel extends JPanel
@@ -23,9 +23,9 @@ public class StateHistoryDisplayItemsPanel extends JPanel
 		setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
 	}
 
-	public void setStateHistoryCollection(StateHistoryCollection runs)
+	public void setStateHistoryCollection(StateHistoryRendererManager rendererManager)
 	{
-		DisplayOptionsTableView tableView = new DisplayOptionsTableView(runs);
+		DisplayOptionsTableView tableView = new DisplayOptionsTableView(rendererManager);
 		tableView.setup();
 		add(tableView);
 	}

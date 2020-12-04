@@ -62,8 +62,6 @@ import edu.jhuapl.sbmt.spectrum.model.hypertree.SpectraSearchDataCollection;
 import edu.jhuapl.sbmt.spectrum.rendering.SpectraCollection;
 import edu.jhuapl.sbmt.spectrum.rendering.SpectrumBoundaryCollection;
 import edu.jhuapl.sbmt.spectrum.ui.SpectrumPopupMenu;
-import edu.jhuapl.sbmt.stateHistory.controllers.StateHistoryController;
-import edu.jhuapl.sbmt.stateHistory.model.time.StateHistoryTimeModel;
 
 import crucible.crust.metadata.api.Key;
 import crucible.crust.metadata.api.Metadata;
@@ -618,8 +616,8 @@ public abstract class AbstractBodyView extends View implements PropertyChangeLis
     {
         if (getPolyhedralModelConfig().hasStateHistory)
         {
-            StateHistoryController controller = new StateHistoryController(getModelManager(), getRenderer(), StateHistoryTimeModel.getInstance());
-            addTab("Observing Conditions", controller.getView());
+//            StateHistoryController controller = new StateHistoryController(getModelManager(), getRenderer(), StateHistoryTimeModel.getInstance());
+//            addTab("Observing Conditions", controller.getView());
         }
     }
 

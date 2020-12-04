@@ -17,7 +17,7 @@ import edu.jhuapl.saavtk.feature.FeatureAttr;
 import edu.jhuapl.saavtk.feature.FeatureType;
 import edu.jhuapl.saavtk.gui.render.Renderer;
 import edu.jhuapl.sbmt.stateHistory.model.interfaces.StateHistory;
-import edu.jhuapl.sbmt.stateHistory.model.stateHistory.StateHistoryCollection;
+import edu.jhuapl.sbmt.stateHistory.rendering.model.StateHistoryRendererManager;
 
 import glum.item.ItemEventListener;
 import glum.item.ItemEventType;
@@ -33,37 +33,39 @@ public class StateHistoryColorBarPanel extends ColorBarPanel
 		implements ItemEventListener, EditGroupColorPanel
 {
 	// Ref vars
-	private final StateHistoryCollection refManager;
 	private final Renderer refRenderer;
 
 	// State vars
 	private ColorBarPainter colorBar;
-	private boolean isActive;
+
+	private StateHistoryRendererManager rendererManager;
 
 	/**
 	 * Standard Constructor
 	 */
-	public StateHistoryColorBarPanel(ActionListener aListener, StateHistoryCollection aManager, Renderer aRenderer,
+	public StateHistoryColorBarPanel(ActionListener aListener, StateHistoryRendererManager rendererManager,
 			ColorBarPainter colorBarPainter)
 	{
 		super(colorBarPainter, true);
-
-		refManager = aManager;
-		refRenderer = aRenderer;
+		this.rendererManager = rendererManager;
+		refRenderer = rendererManager.getRenderer();
 
 		colorBar = colorBarPainter;
-		isActive = false;
 
-//		addFeatureType(StateHistoryFeatureType.Radius, "Radius");
 		addFeatureType(StateHistoryFeatureType.Distance, "S/C Distance (km)");
 		addFeatureType(StateHistoryFeatureType.Time, "Time (Sec)");
+		addFeatureType(StateHistoryFeatureType.Range, "S/C Range to Surface (km)");
+		addFeatureType(StateHistoryFeatureType.SubSCIncidence, "S/C Incidence Angle (deg)");
+		addFeatureType(StateHistoryFeatureType.SubSCEmission, "S/C Emission Angle (deg)");
+		addFeatureType(StateHistoryFeatureType.SubSCPhase, "S/C Phase Angle (deg)");
+
 
 		// Auto register the provided ActionListener
 		addActionListener(aListener);
 
 		// Register for events of interest
 		addActionListener((aEvent) -> updateColorBar());
-		refManager.addListener(this);
+		rendererManager.addListener(this);
 	}
 
 	@Override
@@ -143,10 +145,11 @@ public class StateHistoryColorBarPanel extends ColorBarPanel
 	private Range<Double> calcRangeForFeature(FeatureType aFeatureType)
 	{
 		Range<Double> fullRange = null;
-		for (StateHistory aItem : refManager.getAllItems())
+		for (StateHistory aItem : rendererManager.getAllItems())
 		{
 			// Skip to next if the lidar object is not rendered
-			if (refManager.getVisibility(aItem) == false)
+//			if (refManager.getVisibility(aItem) == false)
+			if (!aItem.isVisible())
 				continue;
 
 			fullRange = updateRange(aItem, aFeatureType, fullRange);
@@ -191,7 +194,7 @@ public class StateHistoryColorBarPanel extends ColorBarPanel
 	private Range<Double> updateRange(StateHistory aItem, FeatureType aFeatureType, Range<Double> aFullRange)
 	{
 		// Bail if there are no values associated with the feature
-		FeatureAttr tmpFA = refManager.getFeatureAttrFor(aItem, aFeatureType);
+		FeatureAttr tmpFA = StateHistoryRendererManager.getFeatureAttrFor(aItem.getTrajectory(), aFeatureType);
 		if (tmpFA == null || tmpFA.getNumVals() == 0)
 			return aFullRange;
 

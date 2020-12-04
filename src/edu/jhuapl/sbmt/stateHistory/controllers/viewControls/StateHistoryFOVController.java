@@ -1,6 +1,7 @@
 package edu.jhuapl.sbmt.stateHistory.controllers.viewControls;
 
 import edu.jhuapl.sbmt.stateHistory.model.stateHistory.StateHistoryCollection;
+import edu.jhuapl.sbmt.stateHistory.rendering.model.StateHistoryRendererManager;
 import edu.jhuapl.sbmt.stateHistory.ui.state.version2.viewControls.StateHistoryFOVPanel;
 import edu.jhuapl.sbmt.stateHistory.ui.state.version2.viewControls.viewOptions.table.ViewOptionsTableView;
 
@@ -27,27 +28,27 @@ public class StateHistoryFOVController
 	 * @param runs
 	 * @param renderer
 	 */
-	public StateHistoryFOVController(StateHistoryCollection runs)
+	public StateHistoryFOVController(StateHistoryRendererManager rendererManager)
 	{
-		this.runs = runs;
-		initializeViewControlPanel();
+		this.runs = rendererManager.getRuns();
+		initializeViewControlPanel(rendererManager);
 	}
 
 	/**
 	 * Initializes the view control panel, sets action listeners, etc
 	 */
-	private void initializeViewControlPanel()
+	private void initializeViewControlPanel(StateHistoryRendererManager rendererManager)
 	{
 		view = new StateHistoryFOVPanel();
 		view.setAvailableFOVs(runs.getAvailableFOVs());
 
-        runs.addListener((aSource, aEventType) ->
+        rendererManager.addListener((aSource, aEventType) ->
 		{
 			if (aEventType != ItemEventType.ItemsChanged) return;
 			view.setAvailableFOVs(runs.getAvailableFOVs());
 		});
 
-		ViewOptionsTableView tableView = new ViewOptionsTableView(runs);
+		ViewOptionsTableView tableView = new ViewOptionsTableView(rendererManager);
 		tableView.setup();
 		view.setTableView(tableView);
 	}

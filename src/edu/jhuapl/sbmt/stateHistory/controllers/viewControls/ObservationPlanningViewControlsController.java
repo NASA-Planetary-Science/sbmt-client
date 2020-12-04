@@ -3,13 +3,13 @@ package edu.jhuapl.sbmt.stateHistory.controllers.viewControls;
 import javax.swing.BoxLayout;
 import javax.swing.JPanel;
 
-import edu.jhuapl.saavtk.gui.render.Renderer;
 import edu.jhuapl.saavtk.model.ModelManager;
 import edu.jhuapl.saavtk.model.ModelNames;
 import edu.jhuapl.saavtk.model.plateColoring.ColoringDataManager;
 import edu.jhuapl.sbmt.stateHistory.controllers.StateHistoryViewControlsController;
 import edu.jhuapl.sbmt.stateHistory.model.StateHistoryModel;
 import edu.jhuapl.sbmt.stateHistory.model.stateHistory.StateHistoryCollection;
+import edu.jhuapl.sbmt.stateHistory.rendering.model.StateHistoryRendererManager;
 
 import glum.item.ItemEventType;
 
@@ -20,15 +20,15 @@ public class ObservationPlanningViewControlsController
      */
     private StateHistoryViewControlsController viewControlsController;
 
-	public ObservationPlanningViewControlsController(StateHistoryModel historyModel, final ModelManager modelManager, Renderer renderer, ColoringDataManager coloringDataManager)
+	public ObservationPlanningViewControlsController(StateHistoryModel historyModel, final ModelManager modelManager, StateHistoryRendererManager rendererManager, ColoringDataManager coloringDataManager)
 	{
 		StateHistoryCollection runs = (StateHistoryCollection)modelManager.getModel(ModelNames.STATE_HISTORY_COLLECTION);
-		this.viewControlsController = new StateHistoryViewControlsController(historyModel, renderer, coloringDataManager);
+		this.viewControlsController = new StateHistoryViewControlsController(historyModel, rendererManager, coloringDataManager);
 		viewControlsController.getView().setEnabled(false);
 
-		runs.addListener((aSource, aEventType) -> {
+		rendererManager.addListener((aSource, aEventType) -> {
 			if (aEventType != ItemEventType.ItemsSelected) return;
-			viewControlsController.setEnabled(runs.getSelectedItems().size() > 0);
+			viewControlsController.setEnabled(rendererManager.getSelectedItems().size() > 0);
 		});
 	}
 

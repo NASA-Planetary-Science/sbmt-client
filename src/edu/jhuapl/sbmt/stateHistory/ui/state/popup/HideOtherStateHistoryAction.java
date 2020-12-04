@@ -3,7 +3,9 @@ package edu.jhuapl.sbmt.stateHistory.ui.state.popup;
 import java.util.List;
 
 import edu.jhuapl.sbmt.stateHistory.model.interfaces.StateHistory;
-import edu.jhuapl.sbmt.stateHistory.model.stateHistory.StateHistoryCollection;
+import edu.jhuapl.sbmt.stateHistory.rendering.model.StateHistoryRendererManager;
+
+import glum.gui.action.PopAction;
 
 /**
  * Object that defines the action: "Hide Other Items". (based on code from lopeznr1)
@@ -14,13 +16,13 @@ import edu.jhuapl.sbmt.stateHistory.model.stateHistory.StateHistoryCollection;
  * @author steelrj1
  *
  */
-class HideOtherStateHistoryAction extends StateHistoryPopAction<StateHistory>
+class HideOtherStateHistoryAction extends PopAction<StateHistory>
 {
 	// Ref vars
 	/**
 	 *
 	 */
-	private final StateHistoryCollection refManager;
+	private final StateHistoryRendererManager refManager;
 
 	/**
 	 * Standard Constructor
@@ -28,7 +30,7 @@ class HideOtherStateHistoryAction extends StateHistoryPopAction<StateHistory>
 	/**
 	 * @param aManager
 	 */
-	public HideOtherStateHistoryAction(StateHistoryCollection aManager)
+	public HideOtherStateHistoryAction(StateHistoryRendererManager aManager)
 	{
 		refManager = aManager;
 	}

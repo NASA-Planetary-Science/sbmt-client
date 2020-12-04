@@ -120,8 +120,8 @@ public class SpiceStateHistoryIntervalGenerator implements IStateHistoryInterval
 		if (pointingProvider == null) return null;
 		StateHistory history = tempHistory;
 		// creates the trajectory
-		Trajectory trajectory = new StandardTrajectory();
 		if (tempHistory == null) history = new SpiceStateHistory(key);
+		Trajectory trajectory = new StandardTrajectory(history);
 
 		SimpleDateFormat dateFormatter = new SimpleDateFormat("yyyy-D'T'HH:mm:ss.SSS");	//generates Year-DOY date format
 
@@ -145,7 +145,6 @@ public class SpiceStateHistoryIntervalGenerator implements IStateHistoryInterval
 		history.setCurrentTime(TimeUtil.str2et(startEpoch.toString()));
 		history.setTrajectory(trajectory);
 		history.setType(StateHistorySourceType.SPICE);
-		System.out.println("SpiceStateHistoryIntervalGenerator: createNewTimeInterval: source file " + sourceFile);
 		history.setSourceFile(sourceFile);
 		history.setPointingProvider(pointingProvider);
 		((SpiceStateHistory)history).setSpiceInfo(spiceInfo);

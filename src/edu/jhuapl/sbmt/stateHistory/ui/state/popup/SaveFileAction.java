@@ -14,6 +14,9 @@ import edu.jhuapl.saavtk.gui.util.MessageUtil;
 import edu.jhuapl.sbmt.stateHistory.model.interfaces.StateHistory;
 import edu.jhuapl.sbmt.stateHistory.model.io.StateHistoryModelIOHelper;
 import edu.jhuapl.sbmt.stateHistory.model.stateHistory.StateHistoryCollection;
+import edu.jhuapl.sbmt.stateHistory.rendering.model.StateHistoryRendererManager;
+
+import glum.gui.action.PopAction;
 
 /**
  * Object that defines the action: "Save Tracks". (based on code from lopeznr1)
@@ -24,13 +27,16 @@ import edu.jhuapl.sbmt.stateHistory.model.stateHistory.StateHistoryCollection;
  * @author steelrj1
  *
  */
-class SaveFileAction extends StateHistoryPopAction<StateHistory>
+class SaveFileAction extends PopAction<StateHistory>
 {
 	// Ref vars
 	/**
 	 *
 	 */
 	private final StateHistoryCollection refManager;
+
+	private StateHistoryRendererManager rendererManager;
+
 	/**
 	 *
 	 */
@@ -43,9 +49,10 @@ class SaveFileAction extends StateHistoryPopAction<StateHistory>
 	 * @param aManager
 	 * @param aParent
 	 */
-	public SaveFileAction(StateHistoryCollection aManager, Component aParent)
+	public SaveFileAction(StateHistoryRendererManager rendererManager, Component aParent)
 	{
-		refManager = aManager;
+		this.rendererManager = rendererManager;
+		refManager = rendererManager.getRuns();
 		refParent = aParent;
 	}
 
@@ -56,7 +63,7 @@ class SaveFileAction extends StateHistoryPopAction<StateHistory>
 	public void executeAction(List<StateHistory> aItemL)
 	{
 		Component rootComp = JOptionPane.getFrameForComponent(refParent);
-		Set<StateHistory> workS = refManager.getSelectedItems();
+		Set<StateHistory> workS = rendererManager.getSelectedItems();
 
 		// Prompt the user for the save folder
 		String title = "Specify the folder to save " + workS.size() + " state history files";

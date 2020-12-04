@@ -2,15 +2,19 @@ package edu.jhuapl.sbmt.stateHistory.rendering.model;
 
 import java.awt.Color;
 import java.awt.Font;
-import java.beans.PropertyChangeSupport;
+import java.beans.PropertyChangeEvent;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Vector;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
+import org.apache.commons.math3.geometry.euclidean.threed.Vector3D;
+
+import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Range;
 
 import vtk.vtkDoubleArray;
@@ -25,6 +29,10 @@ import edu.jhuapl.saavtk.colormap.Colormaps;
 import edu.jhuapl.saavtk.feature.FeatureAttr;
 import edu.jhuapl.saavtk.feature.FeatureType;
 import edu.jhuapl.saavtk.feature.VtkFeatureAttr;
+import edu.jhuapl.saavtk.gui.render.RenderPanel;
+import edu.jhuapl.saavtk.gui.render.Renderer;
+import edu.jhuapl.saavtk.gui.render.Renderer.LightingType;
+import edu.jhuapl.saavtk.model.SaavtkItemManager;
 import edu.jhuapl.saavtk.util.BoundingBox;
 import edu.jhuapl.saavtk.util.Configuration;
 import edu.jhuapl.saavtk.util.ConvertResourceToFile;
@@ -35,7 +43,10 @@ import edu.jhuapl.sbmt.model.image.perspectiveImage.PerspectiveImageFrustum;
 import edu.jhuapl.sbmt.pointing.InstrumentPointing;
 import edu.jhuapl.sbmt.stateHistory.model.StateHistoryColoringFunctions;
 import edu.jhuapl.sbmt.stateHistory.model.interfaces.StateHistory;
+import edu.jhuapl.sbmt.stateHistory.model.interfaces.Trajectory;
 import edu.jhuapl.sbmt.stateHistory.model.liveColoring.LiveColorableManager;
+import edu.jhuapl.sbmt.stateHistory.model.stateHistory.StateHistoryCollection;
+import edu.jhuapl.sbmt.stateHistory.model.time.StateHistoryTimeModel;
 import edu.jhuapl.sbmt.stateHistory.model.viewOptions.RendererLookDirection;
 import edu.jhuapl.sbmt.stateHistory.rendering.DisplayableItem;
 import edu.jhuapl.sbmt.stateHistory.rendering.SpacecraftBody;
@@ -46,13 +57,15 @@ import edu.jhuapl.sbmt.stateHistory.rendering.directionMarkers.SunDirectionMarke
 import edu.jhuapl.sbmt.stateHistory.rendering.text.SpacecraftLabel;
 import edu.jhuapl.sbmt.stateHistory.rendering.text.StatusBarTextActor;
 import edu.jhuapl.sbmt.stateHistory.rendering.text.TimeBarTextActor;
-import edu.jhuapl.sbmt.stateHistory.rendering.vtk.VtkStateHistoryPainter;
 import edu.jhuapl.sbmt.stateHistory.ui.state.color.StateHistoryFeatureType;
 
+import glum.gui.panel.itemList.ItemProcessor;
 import glum.item.IdGenerator;
 import glum.item.IncrIdGenerator;
+import glum.item.ItemEventListener;
+import glum.item.ItemEventType;
 
-public class StateHistoryRendererManager
+public class StateHistoryRendererManager extends SaavtkItemManager<StateHistory>
 {
 	/**
 	*
@@ -86,9 +99,15 @@ public class StateHistoryRendererManager
 	private SpacecraftLabel spacecraftLabelActor;
 
 	// FOV Actors
-	private PerspectiveImageFrustum[] spacecraftFov;
+	/**
+	 *
+	 */
+	private HashMap<StateHistory, ArrayList<PerspectiveImageFrustum>> historySpacecraftFovMap;
 
-	private PerspectiveImageFootprint[] footprint;
+	/**
+	 *
+	 */
+	private HashMap<StateHistory, ArrayList<PerspectiveImageFootprint>> historyFootprintMap;
 
 	// Direction markers
 	/**
@@ -109,11 +128,6 @@ public class StateHistoryRendererManager
 	/**
 	 *
 	 */
-	private PropertyChangeSupport pcs;
-
-	/**
-	 *
-	 */
 	double markerRadius, markerHeight;
 
     /**
@@ -126,30 +140,52 @@ public class StateHistoryRendererManager
 	private HashMap<String, PerspectiveImageFootprint> instrumentNameToFootprintMap = new HashMap<String, PerspectiveImageFootprint>();
 	private HashMap<String, PerspectiveImageFrustum> instrumentNameToFovMap = new HashMap<String, PerspectiveImageFrustum>();
 
-	private boolean displayFootprints = true, displayBoundaries = true, displayFrusta = true;
 	private Vector<String> selectedFOVs = new Vector<String>();
 
 	private List<vtkProp> plannedScienceActors = new ArrayList<vtkProp>();
 
 	private GroupColorProvider sourceGCP;
 
-//	private double begPercent;
-//	private double endPercent;
-//	private final BodyViewConfig refBodyViewConfig;
-
-	private GroupColorProvider colorProvider;
-
 	IdGenerator indexGen = new IncrIdGenerator(-1);
-
 
 	private IStateHistoryPositionCalculator positionCalculator;
 
 	private SmallBodyModel smallBodyModel;
 
+	private StateHistoryCollection runs;
 
-	public StateHistoryRendererManager(SmallBodyModel smallBodyModel, PropertyChangeSupport pcs)
+	private Renderer renderer;
+
+	private double currentTimeFraction = -1;
+
+	private RendererLookDirection lookDirection = RendererLookDirection.FREE_VIEW;
+
+	public void setRendererLookDirection(RendererLookDirection rendererLookDirection)
+	{
+		this.lookDirection = rendererLookDirection;
+	}
+
+	public Renderer getRenderer()
+	{
+		return renderer;
+	}
+
+	public void setRenderer(Renderer renderer)
+	{
+		this.renderer = renderer;
+	}
+
+	public StateHistoryCollection getRuns()
+	{
+		return runs;
+	}
+
+	public StateHistoryRendererManager(SmallBodyModel smallBodyModel, StateHistoryCollection runs, Renderer renderer)
 	{
 		this.smallBodyModel = smallBodyModel;
+		this.runs = runs;
+		this.renderer = renderer;
+		StateHistoryTimeModel.getInstance().setPcs(pcs);
 		this.positionCalculator = new StateHistoryPositionCalculator(smallBodyModel);
 		BoundingBox bb = smallBodyModel.getBoundingBox();
 		diagonalLength = smallBodyModel.getBoundingBoxDiagonalLength();
@@ -177,525 +213,102 @@ public class StateHistoryRendererManager
 
 		this.statusBarTextActor = new StatusBarTextActor();
 
-		footprint = new PerspectiveImageFootprint[] {};
-		spacecraftFov = new PerspectiveImageFrustum[] {};
-		this.pcs = pcs;
+		historyFootprintMap = new HashMap<StateHistory, ArrayList<PerspectiveImageFootprint>>();
+		historySpacecraftFovMap = new HashMap<StateHistory, ArrayList<PerspectiveImageFrustum>>();
 
-//		refBodyViewConfig = (SmallBodyViewConfig) smallBodyModel.getSmallBodyConfig();
 		sourceGCP = new ConstGroupColorProvider(new ConstColorProvider(Color.GREEN));
-//		begPercent = 0.0;
-//		endPercent = 1.0;
+
 		propM = new HashMap<>();
-//		vAuxM = new HashMap<>();
-		vPainterM = new HashMap<>();
-		vActorToPainterM = new HashMap<>();
-	}
-
-	public void addPlannedScienceActors(List<vtkProp> actors)
-	{
-		plannedScienceActors.addAll(actors);
-	}
-
-	public void clearPlannedScience()
-	{
-		plannedScienceActors.clear();
-	}
-
-	public Vector<DisplayableItem> getDisplayableItems()
-	{
-		Vector<DisplayableItem> items = new Vector<DisplayableItem>();
-		items.add(earthDirectionMarker);
-		items.add(sunDirectionMarker);
-		items.add(scDirectionMarker);
-		items.add(spacecraft);
-
-		return items;
-	}
-
-	/**
-	 * @param run
-	 * @return
-	 */
-	public TrajectoryActor addRun(StateHistory run)
-	{
-		updateFovs(run);
-		if (stateHistoryToRendererMap.get(run) != null)
+//		vPainterM = new HashMap<>();
+//		vActorToPainterM = new HashMap<>();
+		addListener((aSource, aEventType) ->
 		{
-			TrajectoryActor trajActor = stateHistoryToRendererMap.get(run);
-			trajActor.SetVisibility(1);
-			return trajActor;
-		}
-
-		// Get the trajectory actor the state history segment
-		TrajectoryActor trajectoryActor = new TrajectoryActor(run.getTrajectory());
-		stateHistoryToRendererMap.put(run, trajectoryActor);
-
-		ColorProvider tmpSrcCP = sourceGCP.getColorProviderFor(run, indexGen.getNextId(), stateHistoryToRendererMap.size());
-
-		StateHistoryRenderProperties tmpProp = new StateHistoryRenderProperties();
-		tmpProp.isVisible = false;
-		tmpProp.srcCP = tmpSrcCP;
-		propM.put(run, tmpProp);
-
-		trajectoryActor.setColoringFunction(StateHistoryColoringFunctions.PER_TABLE.getColoringFunction(),
-				Colormaps.getNewInstanceOfBuiltInColormap("Rainbow"));
-
-		trajectoryActor.setMinMaxFraction(run.getTrajectory().getMinDisplayFraction(), run.getTrajectory().getMaxDisplayFraction());
-		trajectoryActor.VisibilityOn();
-		trajectoryActor.GetMapper().Update();
-
-
-
-		boolean instrumentPointingAvailable = run.getTrajectory().isHasInstrumentPointingInfo();
-//		Arrays.stream(this.spacecraftFov).filter(fov -> fov.getFrustumActor() != null).forEach(fov -> {
-////			fov.getFrustumActor().SetVisibility(instrumentPointingAvailable ? 1 : 0);
-//		});
-
-		Arrays.stream(this.footprint).filter(fprint -> fprint != null).filter(footprint -> footprint.getFootprintActor() != null).forEach(footprint -> {
-//			footprint.getFootprintActor().SetVisibility(instrumentPointingAvailable ? 1 : 0);
-			if (instrumentPointingAvailable) footprint.setFootprintColor();
-		});
-
-		this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
-		this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, trajectoryActor);
-//		updateVtkVars(stateHistoryToRendererMap.keySet());
-		return trajectoryActor;
-	}
-
-	/**
-	 * @param key
-	 */
-	public void removeRun(StateHistory run)
-	{
-		stateHistoryToRendererMap.remove(run);
-		Arrays.stream(this.spacecraftFov).forEach(fov -> fov.getFrustumActor().VisibilityOff());
-		Arrays.stream(this.footprint).forEach(footprint -> footprint.getFootprintActor().VisibilityOff());
-		this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
-		this.pcs.firePropertyChange(Properties.MODEL_REMOVED, null, run);
-	}
-
-	private void updateFovs(StateHistory run)
-	{
-//		if (footprint.length != 0) return;
-		int numberOfInstruments = run.getPointingProvider().getInstrumentNames().length;
-		if (numberOfInstruments > 0)
-		{
-			footprint = new PerspectiveImageFootprint[numberOfInstruments];
-			spacecraftFov = new PerspectiveImageFrustum[numberOfInstruments];
-			int i=0;
-			PerspectiveImageFrustum fov = null;
-			PerspectiveImageFootprint fprint = null;
-			for (String instName : run.getPointingProvider().getInstrumentNames())
-			{
-				Color color = new Color((int)(Math.random() * 0x1000000));
-				fov = instrumentNameToFovMap.get(instName);
-				if (fov == null)
+			try {
+				if (aEventType != ItemEventType.ItemsSelected) return;
+				for (StateHistory history : getAllItems())
 				{
-					fov = new PerspectiveImageFrustum(1, 0, 0, true, diagonalLength);
-					instrumentNameToFovMap.put(instName, fov);
-					fov.getFrustumActor().VisibilityOff();
-					fov.setColor(color);
-					fov.setInstrumentName(instName);
+					history.getTrajectory().setFaded(!getSelectedItems().contains(history));
+					refreshColoring(history);
 				}
-
-				spacecraftFov[i] = fov;
-//				if (spacecraftFov[i].getFrustumActor() != null)
-//					spacecraftFov[i].getFrustumActor().VisibilityOff();
-				fprint = instrumentNameToFootprintMap.get(instName);
-				if (fprint == null)
-				{
-					fprint = new PerspectiveImageFootprint();
-					System.out.println("StateHistoryRendererManager: updateFovs: made new footprint " + instName);
-					instrumentNameToFootprintMap.put(instName, fprint);
-					fprint.setBoundaryVisible(false);
-					fprint.setVisible(false);
-					fprint.setInstrumentName(instName);
-					fprint.setColor(color);
-					fprint.setSmallBodyModel(smallBodyModel);
-					LiveColorableManager.updateFootprint(fprint);
-				}
-
-				footprint[i] = fprint;
-//
-
-//				if (footprint[i].getFootprintActor() != null)
-//				{
-//					footprint[i].setBoundaryVisible(false);
-//					footprint[i].setVisible(false);
-//				}
-				i++;
+				updateTimeBarValue();
 			}
-		}
-
-	}
-
-	public void setFootprintPlateColoring(String name)
-	{
-		Arrays.stream(footprint).forEach(item -> {
-			if (name.equals("")) item.setPlateColoringName(null);
-			else item.setPlateColoringName(name);
-			this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, item);
-		});
-		updateVisibilities();
-	}
-
-	public void updateFOVVisibility(Vector<String> selectedFOVs)
-	{
-		this.selectedFOVs = selectedFOVs;
-		updateVisibilities();
-	}
-
-	public void updateFootprintBoundaryVisibility(Vector<String> selectedFOVs)
-	{
-		this.selectedFOVs = selectedFOVs;
-		updateVisibilities();
-	}
-
-	public void updateFootprintVisibility(Vector<String> selectedFOVs)
-	{
-		this.selectedFOVs = selectedFOVs;
-		updateVisibilities();
-	}
-
-	private void updateVisibilities()
-	{
-		Arrays.stream(spacecraftFov).filter(item -> item.getFrustumActor() != null).forEach(item -> {
-			item.getFrustumActor().SetVisibility(displayFrusta && selectedFOVs.contains(item.getInstrumentName()) ? 1 : 0);
-			this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, item);
-		});
-		Arrays.stream(footprint).filter(fprint -> fprint != null).forEach(item -> {
-			item.setBoundaryVisible(displayBoundaries && selectedFOVs.contains(item.getInstrumentName()));
-			this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, item);
-		});
-		Arrays.stream(footprint).filter(fprint -> fprint != null).forEach(item -> {
-			item.setVisible(displayFootprints && selectedFOVs.contains(item.getInstrumentName()));
-			this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, item);
+			catch (Exception e) {
+				e.printStackTrace();
+			}
 		});
 	}
 
+	//***************************************
+	//Sun related
+	//***************************************
 	/**
-	 * @param segment
-	 * @return
+	 * @param visible
 	 */
-	public boolean isStateHistoryMapped(StateHistory segment)
+	public void setSunDirectionMarkerVisibility(boolean visible)
 	{
-		return stateHistoryToRendererMap.get(segment) != null;
+		sunDirectionMarker.getActor().SetVisibility(visible == true ? 1 : 0);
+		this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, sunDirectionMarker);
 	}
 
 	/**
-	 * @param segment
-	 * @return
+	 * @param radius
 	 */
-	public boolean getVisibility(StateHistory segment)
+	public void setSunDirectionMarkerSize(int radius)
 	{
-		if (isStateHistoryMapped(segment) == false)
-			return false;
-		TrajectoryActor renderer = stateHistoryToRendererMap.get(segment);
-		if (renderer == null)
-			return false;
-		return (renderer.GetVisibility() == 1);
+		sunDirectionMarker.setPointerSize(radius);
+		this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, sunDirectionMarker);
 	}
 
 	/**
-	 * @param stateHistory
-	 * @param visibility
-	 */
-	public void setVisibility(StateHistory stateHistory, boolean visibility)
-	{
-		TrajectoryActor renderer = stateHistoryToRendererMap.get(stateHistory);
-		int isVisible = (visibility == true) ? 1 : 0;
-		renderer.SetVisibility(isVisible);
-		Arrays.stream(this.spacecraftFov).forEach(fov -> fov.getFrustumActor().SetVisibility(isVisible));
-		Arrays.stream(this.footprint).forEach(footprint -> footprint.getFootprintActor().SetVisibility(isVisible));
-		this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, renderer);
-
-//		StateHistoryRenderProperties tmpProp = propM.get(stateHistory);
-//		if (tmpProp == null)
-//			continue;
-//
-//		tmpProp.isVisible = visibility;
-//
-//		if (visibility)
-//			loadVtkPainter(stateHistory);
-	}
-
-	/**
-	 * @param segment
 	 * @param color
 	 */
-	public void setTrajectoryColor(StateHistory segment, Color color)
+	public void setSunDirectionMarkerColor(Color color)
 	{
-//		GroupColorProvider colorSource = colorProvider;
-
-		double[] colorAsIntArray = new double[]
-		{ color.getRed(), color.getGreen(), color.getBlue(), color.getAlpha() };
-		double[] colorAsDoubleArray = new double[]
-		{ color.getRed() / 255.0, color.getGreen() / 255.0, color.getBlue() / 255.0, color.getAlpha() / 255.0 };
-		segment.getTrajectory().setColor(colorAsIntArray);
-		TrajectoryActor renderer = stateHistoryToRendererMap.get(segment);
-		renderer.setColoringFunction(null, null);
-		renderer.setTrajectoryColor(colorAsDoubleArray);
-		refreshColoring(segment);
-		// this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null,
-		// renderer);
+		sunDirectionMarker.setColor(color);
+		this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, sunDirectionMarker);
 	}
 
+	//***************************************
+	//Earth related
+	//***************************************
 	/**
-	 * @param segment
+	 * @param color
 	 */
-	public void refreshColoring(StateHistory segment)
+	public void setEarthDirectionMarkerColor(Color color)
 	{
-		TrajectoryActor renderer = stateHistoryToRendererMap.get(segment);
-		if (renderer == null)
-			return;
-		StateHistoryRenderProperties tmpProp = propM.get(segment);
-//		Color color = tmpProp.srcCP.getBaseColor();
-//		renderer.setTrajectoryColor(new double[] {color.getRed(), color.getGreen(), color.getBlue(), color.getAlpha()});
-//		renderer.setTrajectoryColor(segment.getTrajectory().getTrajectoryColor());
-		renderer.setColoringProvider(tmpProp.srcCP);
-		this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, renderer);
+		earthDirectionMarker.setColor(color);
+		this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, earthDirectionMarker);
 	}
 
-	// time updates
 	/**
-	 * @param time
+	 * @param visible
 	 */
-	public void updateTimeBarValue(double time)
+	public void setEarthDirectionMarkerVisibility(boolean visible)
 	{
-		if (timeBarActor == null) return;
-		timeBarActor.updateTimeBarValue(time);
-        this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
-
+		earthDirectionMarker.getActor().SetVisibility(visible == true ? 1 : 0);
+		this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, earthDirectionMarker);
 	}
 
+
 	/**
-	 * @param time
+	 * @param radius
 	 */
-	public void updateTimeBarLocation(int width, int height)
+	public void setEarthDirectionMarkerSize(int radius)
 	{
-//		if (timeBarActor == null) return;
-//		timeBarActor.updateTimeBarPosition(width, height);
-//        this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
-
+		earthDirectionMarker.setPointerSize(radius);
+		this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, earthDirectionMarker);
 	}
 
-	//status bar updates
-	/**
-	 * @param time
-	 */
-	public void updateStatusBarValue(String text)
-	{
-		if (statusBarTextActor == null) return;
-		statusBarTextActor.updateStatusBarValue(text);
-        this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
 
-	}
-
-	/**
-	 * @param time
-	 */
-	public void updateStatusBarLocation(int width, int height)
-	{
-		if (statusBarTextActor == null) return;
-		statusBarTextActor.updateStatusBarPosition(width, height);
-        this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
-	}
-
-	/**
-	*
-	*/
-	public ArrayList<vtkProp> getProps()
-	{
-		ArrayList<vtkProp> props = new ArrayList<vtkProp>();
-		for (StateHistory history : stateHistoryToRendererMap.keySet())
-		{
-			props.add(stateHistoryToRendererMap.get(history));
-
-		}
-		if (spacecraftFov != null)
-		{
-//			if (this.spacecraftFov.length > 0)
-//				System.out.println("StateHistoryRendererManager: getProps: frustum actor " + this.spacecraftFov[0].getFrustumActor().GetClassName());
-			Arrays.stream(this.spacecraftFov).filter(fov -> fov.getFrustumActor() != null).forEach(fov -> props.add(fov.getFrustumActor()));
-			Arrays.stream(this.footprint).filter(fprint -> fprint != null).filter(fov -> fov.getFootprintActor() != null).forEach(footprint -> props.add(footprint.getFootprintActor()));
-			Arrays.stream(this.footprint).filter(fprint -> fprint != null).filter(fov -> fov.getFootprintActor() != null).forEach(footprint -> props.add(footprint.getFootprintBoundaryActor()));
-		}
-
-		props.add(spacecraft.getActor());
-		props.add(scDirectionMarker.getActor());
-		props.add(spacecraftLabelActor);
-		props.add(earthDirectionMarker.getActor());
-		props.add(sunDirectionMarker.getActor());
-		props.add(timeBarActor);
-		props.add(statusBarTextActor);
-//		System.out.println("StateHistoryRendererManager: getProps: adding planned science count " + plannedScienceActors.size());
-		props.addAll(plannedScienceActors);
-
-		return props;
-
-		// TODO fix
-		// if (currentRun != null)
-		// return currentRun.getProps();
-		// else
-		// return new ArrayList<vtkProp>();
-	}
-
-	/**
-	 * @param time
-	 */
-	private void updateLighting(double time)
-	{
-		// // toggle for lighting - Alex W
-		// if (timeFraction >= 0.0 && showLighting)
-		// {
-		// renderer.setFixedLightDirection(sunDirection);
-		// renderer.setLighting(LightingType.FIXEDLIGHT);
-		// updateActorVisibility();
-		// }
-		// else
-		// renderer.setLighting(LightingType.LIGHT_KIT);
-	}
-
-	/**
-	*
-	*/
-	public void setTimeFraction(Double timeFraction, StateHistory state)
-	{
-		// StateHistory state = getCurrentRun();
-		updateFovs(state);
-		if (state != null && spacecraft.getActor() != null )
-		{
-			positionCalculator.updateSpacecraftPosition(state, timeFraction, spacecraft, scDirectionMarker,
-														spacecraftLabelActor, spacecraftFov, footprint);
-			positionCalculator.updateEarthPosition(state, timeFraction, earthDirectionMarker);
-			positionCalculator.updateSunPosition(state, timeFraction, sunDirectionMarker);
-			this.pcs.firePropertyChange("POSITION_CHANGED", null, null);
-		}
-	}
-
+	//***************************************
+	//SC Related
+	//***************************************
 	/**
 	 * @param spacecraft
 	 */
 	public void setSpacecraft(SpacecraftBody spacecraft)
 	{
 		this.spacecraft = spacecraft;
-	}
-
-	/**
-	 * @param segment
-	 * @return
-	 */
-	public TrajectoryActor getTrajectoryActorForStateHistory(StateHistory segment)
-	{
-		return stateHistoryToRendererMap.get(segment);
-	}
-
-	/**
-	 * @param visible
-	 */
-	public void setInstrumentFootprintVisibility(boolean visible)
-	{
-		displayFootprints = visible;
-		updateVisibilities();
-		this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, spacecraft);
-	}
-
-	public void setInstrumentFootprintColor(String name, Color color)
-	{
-
-		Arrays.stream(footprint).filter(fprint -> fprint.getInstrumentName().equals(name)).forEach(item -> {
-			item.setBoundaryColor(color);
-			item.setColor(color);
-			this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, item);
-		});
-	}
-
-	public Color getInstrumentFootprintColor(String name)
-	{
-		List<PerspectiveImageFootprint> fp = Arrays.stream(footprint).filter(fprint -> fprint.getInstrumentName().equals(name)).collect(Collectors.toList());
-		return fp.get(0).getColor();
-	}
-
-
-	/**
-	 * @param visible
-	 */
-	public void setInstrumentFootprintBorderVisibility(boolean visible)
-	{
-		displayBoundaries = visible;
-		updateVisibilities();
-		this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, spacecraft);
-	}
-
-	public boolean getInstrumentFootprintVisibility(String name)
-	{
-		List<PerspectiveImageFootprint> fp = Arrays.stream(footprint).filter(fprint -> fprint.getInstrumentName().equals(name)).collect(Collectors.toList());
-		return fp.get(0).isVisible();
-	}
-
-	public void setInstrumentFootprintVisibility(String name, boolean isVisible)
-	{
-		List<PerspectiveImageFootprint> fp = Arrays.stream(footprint).filter(fprint -> fprint.getInstrumentName().equals(name)).collect(Collectors.toList());
-		fp.get(0).setVisible(isVisible);
-		LiveColorableManager.updateFootprint(fp.get(0));
-		this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, fp.get(0));
-	}
-
-	public boolean getInstrumentFootprintBorderVisibility(String name)
-	{
-		List<PerspectiveImageFootprint> fp = Arrays.stream(footprint).filter(fprint -> fprint.getInstrumentName().equals(name)).collect(Collectors.toList());
-		return fp.get(0).getFootprintBoundaryActor().GetVisibility() == 1 ? true : false;
-	}
-
-	public void setInstrumentFootprintBorderVisibility(String name, boolean isVisible)
-	{
-		List<PerspectiveImageFootprint> fp = Arrays.stream(footprint).filter(fprint -> fprint.getInstrumentName().equals(name)).collect(Collectors.toList());
-		fp.get(0).setBoundaryVisible(isVisible);
-		this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, fp.get(0));
-	}
-
-	public boolean getInstrumentFrustumVisibility(String name)
-	{
-		List<PerspectiveImageFrustum> fovs = Arrays.stream(spacecraftFov).filter(item -> item.getInstrumentName().equals(name)).collect(Collectors.toList());
-		return fovs.get(0).getFrustumActor().GetVisibility() == 1 ? true : false;
-	}
-
-	public void setInstrumentFrustumVisibility(String name, boolean isVisible)
-	{
-//		Arrays.stream(this.spacecraftFov).filter(fov -> fov.getFrustumActor() != null).forEach(fov -> {
-//			fov.getFrustumActor().SetVisibility(visible == true ? 1 : 0);
-//			setSpacecraftFOVFootprintVisibility(visible);
-//		});
-//		this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, spacecraftFov);
-
-		List<PerspectiveImageFrustum> fovs = Arrays.stream(spacecraftFov).filter(item -> item.getInstrumentName().equals(name)).collect(Collectors.toList());
-		System.out.println("StateHistoryRendererManager: setInstrumentFrustumVisibility: got a frustum for " + name);
-		fovs.get(0).getFrustumActor().SetVisibility(isVisible? 1: 0);
-		this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, spacecraftFov);
-	}
-
-	/**
-	 * @param visible
-	 */
-	public void setInstrumentFrustumVisibility(boolean visible)
-	{
-		displayFrusta = visible;
-		updateVisibilities();
-		this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
-	}
-
-	public Color getInstrumentFrustumColor(String name)
-	{
-		List<PerspectiveImageFrustum> fovs = Arrays.stream(spacecraftFov).filter(item -> item.getInstrumentName().equals(name)).collect(Collectors.toList());
-		return fovs.get(0).getColor();
-	}
-
-	public void setInstrumentFrustumColor(String name, Color color)
-	{
-		Arrays.stream(spacecraftFov).filter(item -> item.getInstrumentName().equals(name)).forEach(item -> {
-			item.setColor(color);
-			this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, item);
-		});
 	}
 
 	/**
@@ -744,12 +357,12 @@ public class StateHistoryRendererManager
 	}
 
 	/**
-	 * @param visible
+	 * @param color
 	 */
-	public void setEarthDirectionMarkerVisibility(boolean visible)
+	public void setScDirectionMarkerColor(Color color)
 	{
-		earthDirectionMarker.getActor().SetVisibility(visible == true ? 1 : 0);
-		this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, earthDirectionMarker);
+		scDirectionMarker.setColor(color);
+		this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, scDirectionMarker);
 	}
 
 	/**
@@ -759,33 +372,6 @@ public class StateHistoryRendererManager
 	{
 		spacecraft.setScale(scale);
 		this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, spacecraft);
-	}
-
-	/**
-	 * @param radius
-	 */
-	public void setEarthDirectionMarkerSize(int radius)
-	{
-		earthDirectionMarker.setPointerSize(radius);
-		this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, earthDirectionMarker);
-	}
-
-	/**
-	 * @param visible
-	 */
-	public void setSunDirectionMarkerVisibility(boolean visible)
-	{
-		sunDirectionMarker.getActor().SetVisibility(visible == true ? 1 : 0);
-		this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, sunDirectionMarker);
-	}
-
-	/**
-	 * @param radius
-	 */
-	public void setSunDirectionMarkerSize(int radius)
-	{
-		sunDirectionMarker.setPointerSize(radius);
-		this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, sunDirectionMarker);
 	}
 
 	/**
@@ -816,31 +402,137 @@ public class StateHistoryRendererManager
 		this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, spacecraftLabelActor);
 	}
 
+	//***************************************
+	//Trajectory Related
+	//***************************************
 	/**
-	 * @param color
+	 * @param run
+	 * @return
 	 */
-	public void setEarthDirectionMarkerColor(Color color)
+	public TrajectoryActor addRun(StateHistory run)
 	{
-		earthDirectionMarker.setColor(color);
-		this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, earthDirectionMarker);
+		if (stateHistoryToRendererMap.get(run) != null)
+		{
+			TrajectoryActor trajActor = stateHistoryToRendererMap.get(run);
+			trajActor.SetVisibility(1);
+			return trajActor;
+		}
+		run.setMapped(true);
+
+		runs.addRun(run);
+		updateFovs(run);
+
+		// Get the trajectory actor the state history segment
+		TrajectoryActor trajectoryActor = new TrajectoryActor(run.getTrajectory());
+		stateHistoryToRendererMap.put(run, trajectoryActor);
+
+		ColorProvider tmpSrcCP = sourceGCP.getColorProviderFor(run, indexGen.getNextId(), stateHistoryToRendererMap.size());
+
+		StateHistoryRenderProperties tmpProp = new StateHistoryRenderProperties();
+		tmpProp.isVisible = false;
+		tmpProp.srcCP = tmpSrcCP;
+		propM.put(run, tmpProp);
+
+		trajectoryActor.setColoringFunction(StateHistoryColoringFunctions.PER_TABLE.getColoringFunction(),
+				Colormaps.getNewInstanceOfBuiltInColormap("Rainbow"));
+
+		trajectoryActor.setMinMaxFraction(run.getTrajectory().getMinDisplayFraction(), run.getTrajectory().getMaxDisplayFraction());
+		trajectoryActor.VisibilityOn();
+		trajectoryActor.GetMapper().Update();
+
+		boolean instrumentPointingAvailable = run.getTrajectory().isHasInstrumentPointingInfo();
+
+		if (historyFootprintMap.get(runs.getCurrentRun()) != null)
+			historyFootprintMap.get(run).stream().filter(fprint -> fprint != null).filter(footprint -> footprint.getFootprintActor() != null).forEach(footprint -> {
+				if (instrumentPointingAvailable) footprint.setFootprintColor();
+			});
+		pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
+		pcs.firePropertyChange(Properties.MODEL_CHANGED, null, trajectoryActor);
+
+		notifyListeners(this, ItemEventType.ItemsChanged);
+		notifyListeners(this, ItemEventType.ItemsSelected);
+		return trajectoryActor;
 	}
 
 	/**
-	 * @param color
+	 * @param key
 	 */
-	public void setSunDirectionMarkerColor(Color color)
+	public void removeRun(StateHistory run)
 	{
-		sunDirectionMarker.setColor(color);
-		this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, sunDirectionMarker);
+		stateHistoryToRendererMap.remove(run);
+		historySpacecraftFovMap.get(run).forEach(fov -> fov.getFrustumActor().VisibilityOff());
+		historyFootprintMap.get(run).forEach(footprint -> footprint.getFootprintActor().VisibilityOff());
+		this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
+		this.pcs.firePropertyChange(Properties.MODEL_REMOVED, null, run);
+		run.setMapped(false);
+		run.setVisible(false);
 	}
 
 	/**
+	 * @param segment
+	 * @return
+	 */
+	public boolean isStateHistoryMapped(StateHistory segment)
+	{
+		return stateHistoryToRendererMap.get(segment) != null;
+	}
+
+	/**
+	 * @param segment
+	 * @return
+	 */
+	public boolean getVisibility(StateHistory segment)
+	{
+		if (isStateHistoryMapped(segment) == false)
+			return false;
+		TrajectoryActor renderer = stateHistoryToRendererMap.get(segment);
+		if (renderer == null)
+			return false;
+		return (renderer.GetVisibility() == 1);
+	}
+
+	/**
+	 * @param stateHistory
+	 * @param visibility
+	 */
+	public void setVisibility(StateHistory stateHistory, boolean visibility)
+	{
+		stateHistory.setVisible(visibility);
+		TrajectoryActor renderer = stateHistoryToRendererMap.get(stateHistory);
+		int isVisible = (visibility == true) ? 1 : 0;
+		renderer.SetVisibility(isVisible);
+		this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, renderer);
+	}
+
+	/**
+	 * @param segment
 	 * @param color
 	 */
-	public void setScDirectionMarkerColor(Color color)
+	public void setTrajectoryColor(StateHistory segment, Color color)
 	{
-		scDirectionMarker.setColor(color);
-		this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, scDirectionMarker);
+		segment.getTrajectory().setColor(color);
+		TrajectoryActor renderer = stateHistoryToRendererMap.get(segment);
+		renderer.setColoringFunction(null, null);
+		renderer.setTrajectoryColor(color);
+		refreshColoring(segment);
+	}
+
+	public void refreshColoring()
+	{
+		refreshColoring(runs.getCurrentRun());
+	}
+
+	/**
+	 * @param segment
+	 */
+	public void refreshColoring(StateHistory segment)
+	{
+		TrajectoryActor renderer = stateHistoryToRendererMap.get(segment);
+		if (renderer == null)
+			return;
+		StateHistoryRenderProperties tmpProp = propM.get(segment);
+		renderer.setColoringProvider(tmpProp.srcCP);
+		this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, renderer);
 	}
 
 	/**
@@ -860,80 +552,618 @@ public class StateHistoryRendererManager
 	}
 
 	/**
-	 * @param visible
-	 */
-	public void setSpacecraftFOVVisibility(boolean visible)
-	{
-		Arrays.stream(this.spacecraftFov).filter(fov -> fov.getFrustumActor() != null).forEach(fov -> {
-			fov.getFrustumActor().SetVisibility(visible == true ? 1 : 0);
-			setSpacecraftFOVFootprintVisibility(visible);
-		});
-		this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, spacecraftFov);
-	}
-
-	/**
-	 * @param visible
-	 */
-	public void setSpacecraftFOVFootprintVisibility(boolean visible)
-	{
-		Arrays.stream(this.footprint).filter(footprint -> footprint.getFootprintActor() != null).forEach(footprint -> {
-			footprint.getFootprintActor().SetVisibility(visible == true ? 1 : 0);
-		});
-
-		this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, footprint);
-	}
-
-	public double[] updateLookDirection(RendererLookDirection lookDirection)
-	{
-		return positionCalculator.updateLookDirection(lookDirection, scalingFactor);
-	}
-
-	/**
+	 * @param segment
 	 * @return
 	 */
-	public double[] getCurrentLookFromDirection()
+	public TrajectoryActor getTrajectoryActorForStateHistory(StateHistory segment)
 	{
-		return positionCalculator.getCurrentLookFromDirection();
+		return stateHistoryToRendererMap.get(segment);
 	}
 
-	public FeatureAttr getFeatureAttrFor(StateHistory item, FeatureType aFeatureType)
+	public void makeFrustum(StateHistory run, String instName)
 	{
-		int minValueToColor = (int)(item.getTrajectory().getMinDisplayFraction()*item.getTrajectory().getNumPoints());
-		int maxValueToColor = (int)(item.getTrajectory().getMaxDisplayFraction()*item.getTrajectory().getNumPoints());
-		Range<Integer> coloredRange = Range.closed(minValueToColor, maxValueToColor);
+		if (run.getPointingProvider() == null) return;
+		int numberOfInstruments = run.getPointingProvider().getInstrumentNames().length;
+		if (numberOfInstruments == 0) return;
+		Color color = new Color((int)(Math.random() * 0x1000000));
+		PerspectiveImageFrustum fov = instrumentNameToFovMap.get(instName);
+		if (fov == null)
+		{
+			fov = new PerspectiveImageFrustum(1, 0, 0, true, diagonalLength);
+			instrumentNameToFovMap.put(instName, fov);
+			fov.getFrustumActor().VisibilityOff();
+			fov.setColor(color);
+			fov.setInstrumentName(instName);
+			ArrayList<PerspectiveImageFrustum> frusta = historySpacecraftFovMap.get(run);
+			if (frusta == null) frusta = new ArrayList<PerspectiveImageFrustum>();
+			frusta.add(fov);
+			historySpacecraftFovMap.put(run, frusta);
+			positionCalculator.updateFOVLocations(run, historySpacecraftFovMap.get(runs.getCurrentRun()));
+		}
 
+	}
+
+	public void makeFootprint(StateHistory run, String instName)
+	{
+		if (run.getPointingProvider() == null) return;
+		int numberOfInstruments = run.getPointingProvider().getInstrumentNames().length;
+		if (numberOfInstruments == 0) return;
+		PerspectiveImageFootprint fprint = instrumentNameToFootprintMap.get(instName);
+		if (fprint == null)
+		{
+			Color color = historySpacecraftFovMap.get(run).stream().filter(fov -> fov.getInstrumentName().equals(instName)).collect(Collectors.toList()).get(0).getColor();
+			fprint = new PerspectiveImageFootprint();
+			System.out.println("StateHistoryRendererManager: updateFovs: made new footprint " + instName);
+			instrumentNameToFootprintMap.put(instName, fprint);
+			fprint.setBoundaryVisible(false);
+			fprint.setVisible(false);
+			fprint.setInstrumentName(instName);
+			fprint.setColor(color);
+			fprint.setSmallBodyModel(smallBodyModel);
+			ArrayList<PerspectiveImageFootprint> footprints = historyFootprintMap.get(run);
+			if (footprints == null) footprints = new ArrayList<PerspectiveImageFootprint>();
+			footprints.add(fprint);
+			historyFootprintMap.put(run, footprints);
+			positionCalculator.updateFootprintLocations(run, historyFootprintMap.get(runs.getCurrentRun()));
+			LiveColorableManager.updateFootprint(fprint);
+		}
+	}
+
+	//***************************************
+	//FOV/Frustum related
+	//***************************************
+	private void updateFovs(StateHistory run)
+	{
+		ArrayList<PerspectiveImageFootprint> footprints = historyFootprintMap.get(run);
+		if (footprints == null) return;
+		for (PerspectiveImageFootprint fp : footprints)
+		{
+			if (fp.isVisible())
+				LiveColorableManager.updateFootprint(fp);
+		}
+	}
+
+//	/**
+//	 * @param visible
+//	 */
+//	public void setSpacecraftFOVVisibility(boolean visible)
+//	{
+//		historySpacecraftFovMap.get(runs.getCurrentRun()).stream().filter(fov -> fov.getFrustumActor() != null).forEach(fov -> {
+//			fov.getFrustumActor().SetVisibility(visible == true ? 1 : 0);
+//			setSpacecraftFOVFootprintVisibility(visible);
+//		});
+//		this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, historySpacecraftFovMap.get(runs.getCurrentRun()));
+//	}
+//
+//	/**
+//	 * @param visible
+//	 */
+//	public void setSpacecraftFOVFootprintVisibility(boolean visible)
+//	{
+//		this.historyFootprintMap.get(runs.getCurrentRun()).stream().filter(footprint -> footprint.getFootprintActor() != null).forEach(footprint -> {
+//			footprint.getFootprintActor().SetVisibility(visible == true ? 1 : 0);
+//		});
+//
+//		this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, historyFootprintMap.get(runs.getCurrentRun()));
+//	}
+
+	public boolean getInstrumentFrustumVisibility(String name)
+	{
+		if (historySpacecraftFovMap.get(runs.getCurrentRun()) == null || historySpacecraftFovMap.get(runs.getCurrentRun()).isEmpty()) return false;
+		List<PerspectiveImageFrustum> fovs = historySpacecraftFovMap.get(runs.getCurrentRun()).stream().filter(item -> item.getInstrumentName().equals(name)).collect(Collectors.toList());
+		if (fovs.size() == 0) return false;
+		return fovs.get(0).getFrustumActor().GetVisibility() == 1 ? true : false;
+	}
+
+	public void setInstrumentFrustumVisibility(String name, boolean isVisible)
+	{
+		List<PerspectiveImageFrustum> fovs = historySpacecraftFovMap.get(runs.getCurrentRun()).stream().filter(item -> item.getInstrumentName().equals(name)).collect(Collectors.toList());
+		if (fovs.size() == 0) return;
+		fovs.get(0).getFrustumActor().SetVisibility(isVisible? 1: 0);
+		this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, historySpacecraftFovMap.get(runs.getCurrentRun()));
+	}
+
+//	/**
+//	 * @param visible
+//	 */
+//	public void setInstrumentFrustumVisibility(boolean visible)
+//	{
+//		updateVisibilities();
+//		this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
+//	}
+
+	public Color getInstrumentFrustumColor(String name)
+	{
+		if (historySpacecraftFovMap.get(runs.getCurrentRun()) == null || historySpacecraftFovMap.get(runs.getCurrentRun()).isEmpty()) return Color.white;
+		List<PerspectiveImageFrustum> fovs = historySpacecraftFovMap.get(runs.getCurrentRun()).stream().filter(item -> item.getInstrumentName().equals(name)).collect(Collectors.toList());
+		if (fovs.size() == 0) return Color.white;
+		return fovs.get(0).getColor();
+	}
+
+	public void setInstrumentFrustumColor(String name, Color color)
+	{
+		historySpacecraftFovMap.get(runs.getCurrentRun()).stream().filter(item -> item.getInstrumentName().equals(name)).forEach(item -> {
+			item.setColor(color);
+			this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, item);
+		});
+	}
+
+
+	//***************************************
+	//Footprint related
+	//***************************************
+	public void setFootprintPlateColoring(String name)
+	{
+		historyFootprintMap.get(runs.getCurrentRun()).forEach(item -> {
+			if (name.equals("")) item.setPlateColoringName(null);
+			else item.setPlateColoringName(name);
+			this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, item);
+		});
+		updateVisibilities();
+	}
+
+
+//	public void updateFootprintBoundaryVisibility(Vector<String> selectedFOVs)
+//	{
+//		this.selectedFOVs = selectedFOVs;
+//		updateVisibilities();
+//	}
+//
+//	public void updateFootprintVisibility(Vector<String> selectedFOVs)
+//	{
+//		this.selectedFOVs = selectedFOVs;
+//		updateVisibilities();
+//	}
+//
+//
+//	/**
+//	 * @param visible
+//	 */
+//	public void setInstrumentFootprintVisibility(boolean visible)
+//	{
+//		updateVisibilities();
+//		this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, spacecraft);
+//	}
+
+	public void setInstrumentFootprintColor(String name, Color color)
+	{
+
+		historyFootprintMap.get(runs.getCurrentRun()).stream().filter(fprint -> fprint.getInstrumentName().equals(name)).forEach(item -> {
+			item.setBoundaryColor(color);
+			item.setColor(color);
+			this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, item);
+		});
+	}
+//
+//	public Color getInstrumentFootprintColor(String name)
+//	{
+//		if (historyFootprintMap.get(runs.getCurrentRun()) == null || historyFootprintMap.get(runs.getCurrentRun()).isEmpty()) return Color.white;
+//		List<PerspectiveImageFootprint> fp = historyFootprintMap.get(runs.getCurrentRun()).stream().filter(fprint -> fprint.getInstrumentName().equals(name)).collect(Collectors.toList());
+//		if (fp.size() == 0) return Color.white;
+//		return fp.get(0).getColor();
+//	}
+//
+//
+//	/**
+//	 * @param visible
+//	 */
+//	public void setInstrumentFootprintBorderVisibility(boolean visible)
+//	{
+//		updateVisibilities();
+//		this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, spacecraft);
+//	}
+
+	public boolean getInstrumentFootprintVisibility(String name)
+	{
+		if (historyFootprintMap.get(runs.getCurrentRun()) == null || historyFootprintMap.get(runs.getCurrentRun()).isEmpty()) return false;
+		List<PerspectiveImageFootprint> fp = historyFootprintMap.get(runs.getCurrentRun()).stream().filter(fprint -> fprint.getInstrumentName().equals(name)).collect(Collectors.toList());
+		if (fp.size() == 0) return false;
+		return fp.get(0).isVisible();
+	}
+
+	public void setInstrumentFootprintVisibility(String name, boolean isVisible)
+	{
+		List<PerspectiveImageFootprint> fp = historyFootprintMap.get(runs.getCurrentRun()).stream().filter(fprint -> fprint.getInstrumentName().equals(name)).collect(Collectors.toList());
+		fp.get(0).setVisible(isVisible);
+		LiveColorableManager.updateFootprint(fp.get(0));
+		this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, fp.get(0));
+	}
+
+	public boolean getInstrumentFootprintBorderVisibility(String name)
+	{
+		if (historyFootprintMap.get(runs.getCurrentRun()) == null || historyFootprintMap.get(runs.getCurrentRun()).isEmpty()) return false;
+		List<PerspectiveImageFootprint> fp = historyFootprintMap.get(runs.getCurrentRun()).stream().filter(fprint -> fprint.getInstrumentName().equals(name)).collect(Collectors.toList());
+		if (fp.size() == 0) return false;
+		return fp.get(0).getFootprintBoundaryActor().GetVisibility() == 1 ? true : false;
+	}
+
+	public void setInstrumentFootprintBorderVisibility(String name, boolean isVisible)
+	{
+		System.out.println("StateHistoryRendererManager: setInstrumentFootprintBorderVisibility: setting border " + name + " to " + isVisible);
+		List<PerspectiveImageFootprint> fp = historyFootprintMap.get(runs.getCurrentRun()).stream().filter(fprint -> fprint.getInstrumentName().equals(name)).collect(Collectors.toList());
+		fp.get(0).setBoundaryVisible(isVisible);
+		this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, fp.get(0));
+	}
+
+	//***************************************
+	//Planned Science Related
+	//***************************************
+	public void addPlannedScienceActors(List<vtkProp> actors)
+	{
+		plannedScienceActors.addAll(actors);
+	}
+
+	public void clearPlannedScience()
+	{
+		plannedScienceActors.clear();
+	}
+
+	//***************************************
+	//Misc
+	//***************************************
+	public Vector<DisplayableItem> getDisplayableItems()
+	{
+		Vector<DisplayableItem> items = new Vector<DisplayableItem>();
+		items.add(earthDirectionMarker);
+		items.add(sunDirectionMarker);
+		items.add(scDirectionMarker);
+		items.add(spacecraft);
+
+		return items;
+	}
+
+
+	private void updateVisibilities()
+	{
+		System.out.println("StateHistoryRendererManager: updateVisibilities: updating visibilities " + selectedFOVs.get(0));
+		historySpacecraftFovMap.get(runs.getCurrentRun()).stream().filter(item -> item.getFrustumActor() != null).forEach(item -> {
+			item.getFrustumActor().SetVisibility(selectedFOVs.contains(item.getInstrumentName()) ? 1 : 0);
+			this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, item);
+		});
+		historyFootprintMap.get(runs.getCurrentRun()).stream().filter(fprint -> fprint != null).forEach(item -> {
+			item.setBoundaryVisible(selectedFOVs.contains(item.getInstrumentName()));
+			this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, item);
+		});
+		historyFootprintMap.get(runs.getCurrentRun()).stream().filter(fprint -> fprint != null).forEach(item -> {
+			item.setVisible(selectedFOVs.contains(item.getInstrumentName()));
+			this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, item);
+		});
+	}
+
+	//***************************************
+	// time updates
+	//***************************************
+	/**
+	 * @param time
+	 */
+	public void updateTimeBarValue()
+	{
+		if (runs.getCurrentRun() == null) return;
+		if (timeBarActor == null) return;
+		double time = runs.getCurrentRun().getCurrentTime();
+		timeBarActor.updateTimeBarValue(time);
+//        this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
+
+	}
+
+	/**
+	 * @param time
+	 */
+	public void updateTimeBarLocation(int width, int height)
+	{
+//		if (timeBarActor == null) return;
+//		timeBarActor.updateTimeBarPosition(width, height);
+//        this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
+
+	}
+
+	//***************************************
+	//status bar updates
+	//***************************************
+	/**
+	 * @param time
+	 */
+	public void updateStatusBarValue(String text)
+	{
+		if (statusBarTextActor == null) return;
+		statusBarTextActor.updateStatusBarValue(text);
+        this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
+
+	}
+
+	/**
+	 * @param time
+	 */
+	public void updateStatusBarLocation(int width, int height)
+	{
+		if (statusBarTextActor == null) return;
+		statusBarTextActor.updateStatusBarPosition(width, height);
+//        this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
+	}
+
+	/**
+	*
+	*/
+	public ArrayList<vtkProp> getProps()
+	{
+		ArrayList<vtkProp> props = new ArrayList<vtkProp>();
+		for (StateHistory history : stateHistoryToRendererMap.keySet())
+		{
+			props.add(stateHistoryToRendererMap.get(history));
+
+		}
+		if (!historySpacecraftFovMap.isEmpty())
+		{
+//			if (this.spacecraftFov.length > 0)
+//				System.out.println("StateHistoryRendererManager: getProps: frustum actor " + this.spacecraftFov[0].getFrustumActor().GetClassName());
+			historySpacecraftFovMap.get(runs.getCurrentRun()).stream().filter(fov -> fov.getFrustumActor() != null).forEach(fov -> props.add(fov.getFrustumActor()));
+			historySpacecraftFovMap.get(runs.getCurrentRun()).stream().filter(fov -> fov.getFrustumActor2() != null).forEach(fov -> props.add(fov.getFrustumActor2()));
+			historySpacecraftFovMap.get(runs.getCurrentRun()).stream().filter(fov -> fov.getFrustumActor3() != null).forEach(fov -> props.add(fov.getFrustumActor3()));
+			historySpacecraftFovMap.get(runs.getCurrentRun()).stream().filter(fov -> fov.getFrustumActor4() != null).forEach(fov -> props.add(fov.getFrustumActor4()));
+			historySpacecraftFovMap.get(runs.getCurrentRun()).stream().filter(fov -> fov.getFrustumActor5() != null).forEach(fov -> props.add(fov.getFrustumActor5()));
+			historySpacecraftFovMap.get(runs.getCurrentRun()).stream().filter(fov -> fov.getFrustumActor6() != null).forEach(fov -> props.add(fov.getFrustumActor6()));
+		}
+		if (!historyFootprintMap.isEmpty())
+		{
+			historyFootprintMap.get(runs.getCurrentRun()).stream().filter(fprint -> fprint != null).filter(fov -> fov.getFootprintActor() != null).forEach(footprint -> props.add(footprint.getFootprintActor()));
+			historyFootprintMap.get(runs.getCurrentRun()).stream().filter(fprint -> fprint != null).filter(fov -> fov.getFootprintActor() != null).forEach(footprint -> props.add(footprint.getFootprintBoundaryActor()));
+		}
+
+		props.add(spacecraft.getActor());
+		props.add(scDirectionMarker.getActor());
+		props.add(spacecraftLabelActor);
+		props.add(earthDirectionMarker.getActor());
+		props.add(sunDirectionMarker.getActor());
+		props.add(timeBarActor);
+		props.add(statusBarTextActor);
+//		System.out.println("StateHistoryRendererManager: getProps: adding planned science count " + plannedScienceActors.size());
+		props.addAll(plannedScienceActors);
+		return props;
+
+		// TODO fix
+		// if (currentRun != null)
+		// return currentRun.getProps();
+		// else
+		// return new ArrayList<vtkProp>();
+	}
+
+	/**
+	 * @param time
+	 */
+	private void updateLighting(double time)
+	{
+		// // toggle for lighting - Alex W
+		// if (timeFraction >= 0.0 && showLighting)
+		// {
+		// renderer.setFixedLightDirection(sunDirection);
+		// renderer.setLighting(LightingType.FIXEDLIGHT);
+		// updateActorVisibility();
+		// }
+		// else
+		// renderer.setLighting(LightingType.LIGHT_KIT);
+	}
+
+	/**
+	*
+	*/
+	public void setTimeFraction(Double timeFraction, StateHistory state)
+	{
+		if (Double.compare(currentTimeFraction, timeFraction) == 0) return;
+		this.currentTimeFraction = timeFraction;
+//		System.out.println("StateHistoryRendererManager: setTimeFraction: setting time fraction state is " + state + " and actor " + spacecraft.getActor());
+		// StateHistory state = getCurrentRun();
+		Logger.getAnonymousLogger().log(Level.INFO, "Updating FOVs for state " + state.getStateHistoryName());
+		updateFovs(state);
+		Logger.getAnonymousLogger().log(Level.INFO, "Updated FOVs");
+		if (state != null && spacecraft.getActor() != null )
+		{
+//			Logger.getAnonymousLogger().log(Level.INFO, "setting sc pos");
+			positionCalculator.updateSpacecraftPosition(state, timeFraction, spacecraft, scDirectionMarker,
+														spacecraftLabelActor);
+//			if (sunDirectionMarker.isVisible() == true)
+			{
+				Logger.getAnonymousLogger().log(Level.INFO, "setting earth pos");
+				positionCalculator.updateEarthPosition(state, timeFraction, earthDirectionMarker);
+			}
+//			if (sunDirectionMarker.isVisible() == true)
+			{
+				Logger.getAnonymousLogger().log(Level.INFO, "setting sun pos");
+				positionCalculator.updateSunPosition(state, timeFraction, sunDirectionMarker);
+			}
+			Logger.getAnonymousLogger().log(Level.INFO, "Updating FOV Position");
+			if (historySpacecraftFovMap.get(runs.getCurrentRun()) != null)
+				positionCalculator.updateFOVLocations(state, historySpacecraftFovMap.get(runs.getCurrentRun()));
+
+			Logger.getAnonymousLogger().log(Level.INFO, "Updating Footprint location");
+
+			if (historyFootprintMap.get(runs.getCurrentRun()) != null)
+				positionCalculator.updateFootprintLocations(state, historyFootprintMap.get(runs.getCurrentRun()));
+
+			updateLookDirection(lookDirection);
+			if ((renderer.getLighting() == LightingType.FIXEDLIGHT && runs.getCurrentRun() != null) == false) return;
+			renderer.setFixedLightDirection(runs.getCurrentRun().getSunPosition());
+			Logger.getAnonymousLogger().log(Level.INFO, "Position changed called");
+		}
+	}
+
+	/**
+	 * Updates the look direction based on the selected option in user interface
+	 *
+	 * @param runs			The collection of state history items
+	 * @param renderer		The renderer being manipulated
+	 * @param model			The model that contains information about the view options
+	 */
+	public void updateLookDirection(RendererLookDirection lookDirection)
+	{
+		this.lookDirection = lookDirection;
+		StateHistoryCollection runs = getRuns();
+		if (runs.getCurrentRun() == null) return; // can't do any view things if we don't have a trajectory / time history
+		Renderer renderer = getRenderer();
+		double[] upVector = { 0, 0, 1 };
+
+		Vector3D targOrig = new Vector3D(renderer.getCameraFocalPoint());
+		Vector3D targAxis = new Vector3D(positionCalculator.updateLookDirection(lookDirection, scalingFactor));
+		renderer.setCameraFocalPoint(new double[]{ 0, 0, 0 });
+		double[] lookFromDirection;
+		if (lookDirection == RendererLookDirection.FREE_VIEW)
+		{
+			lookFromDirection = renderer.getCamera().getPosition().toArray();
+			renderer.setCameraOrientation(lookFromDirection, renderer.getCameraFocalPoint(),
+					renderer.getCamera().getUpUnit().toArray(), renderer.getCameraViewAngle());
+			((RenderPanel) renderer.getRenderWindowPanel()).setZoomOnly(false, Vector3D.ZERO, targOrig);
+		}
+		else
+		{
+			lookFromDirection = positionCalculator.updateLookDirection(lookDirection, scalingFactor);
+			renderer.setCameraOrientation(lookFromDirection, renderer.getCameraFocalPoint(), upVector,
+					renderer.getCameraViewAngle());
+			((RenderPanel) renderer.getRenderWindowPanel()).setZoomOnly(true, targAxis, targOrig);
+		}
+		renderer.getRenderWindowPanel().resetCameraClippingRange();
+	}
+
+
+//	public double[] updateLookDirection(RendererLookDirection lookDirection)
+//	{
+//		return positionCalculator.updateLookDirection(lookDirection, scalingFactor);
+//	}
+
+//	/**
+//	 * @return
+//	 */
+//	public double[] getCurrentLookFromDirection()
+//	{
+//		return positionCalculator.getCurrentLookFromDirection();
+//	}
+//
+//	public static FeatureAttr getFeatureAttrFor(StateHistory history, FeatureType aFeatureType)
+//	{
+//		vtkDoubleArray dataArray = new vtkDoubleArray();
+//		for (int i=0; i<history.getTrajectory().getNumPoints(); i++)
+//		{
+//			FeatureAttr attr = getFeatureAttrFor(history, aFeatureType, i);
+//			dataArray.InsertNextValue(attr.getValAt(0));
+//		}
+//		return new VtkFeatureAttr(dataArray);
+//	}
+
+	public static FeatureAttr getFeatureAttrFor(Trajectory trajectory, FeatureType aFeatureType)
+	{
+		vtkDoubleArray dataArray = new vtkDoubleArray();
+		int start = (int)(trajectory.getMinDisplayFraction()*trajectory.getNumPoints());
+		int end = (int)(trajectory.getMaxDisplayFraction()*trajectory.getNumPoints());
+		for (int i=start; i<end; i++)
+		{
+			FeatureAttr attr = getFeatureAttrFor(trajectory, aFeatureType, i);
+			if (attr == null)
+				System.out.println("StateHistoryRendererManager: getFeatureAttrFor: NULLLLLL for type " + aFeatureType.getName());
+			dataArray.InsertNextValue(attr.getValAt(0));
+		}
+		return new VtkFeatureAttr(dataArray);
+	}
+
+	public static FeatureAttr getFeatureAttrFor(StateHistory history, FeatureType aFeatureType, int i)
+	{
+		return getFeatureAttrFor(history.getTrajectory(), aFeatureType, i);
+	}
+
+	public static FeatureAttr getFeatureAttrFor(Trajectory trajectory, FeatureType aFeatureType, int i)
+	{
+		int minValueToColor = (int)(trajectory.getMinDisplayFraction()*trajectory.getNumPoints());
+		int maxValueToColor = (int)(trajectory.getMaxDisplayFraction()*trajectory.getNumPoints());
+		Range<Integer> coloredRange = Range.closed(minValueToColor, maxValueToColor);
+		if (!coloredRange.contains(i)) return null;
+		double startTime = trajectory.getStartTime();
+		double nextTime = startTime + i*trajectory.getTimeStep();
+		String currentInstrument = trajectory.getPointingProvider().getCurrentInstFrameName();
+		InstrumentPointing instrumentPointing = trajectory.getPointingProvider().provide(nextTime);
+		vtkDoubleArray dataArray = new vtkDoubleArray();
 		if (aFeatureType == StateHistoryFeatureType.Time)
 		{
-			double startTime = item.getTrajectory().getStartTime();
-			vtkDoubleArray timeArray = new vtkDoubleArray();
-			for (int i=0; i<item.getTrajectory().getNumPoints(); i++)
-			{
-				if (!coloredRange.contains(i)) continue;
-				timeArray.InsertNextValue(startTime + i*item.getTrajectory().getTimeStep());
-			}
-			return new VtkFeatureAttr(timeArray);
+			dataArray.InsertNextValue(nextTime);
+			return new VtkFeatureAttr(dataArray);
 		}
 		else if (aFeatureType == StateHistoryFeatureType.Distance)
 		{
-			double startTime = item.getTrajectory().getStartTime();
-			vtkDoubleArray distanceArray = new vtkDoubleArray();
-			for (int i=0; i<item.getTrajectory().getNumPoints(); i++)
-			{
-				if (!coloredRange.contains(i)) continue;
-				double nextTime = startTime + i*item.getTrajectory().getTimeStep();
-				InstrumentPointing instrumentPointing = item.getTrajectory().getPointingProvider().provide(nextTime);
-				double distance = instrumentPointing.getScPosition().getLength();
-				distanceArray.InsertNextValue(distance);
-			}
-			return new VtkFeatureAttr(distanceArray);
+			double distance = instrumentPointing.getScPosition().getLength();
+			dataArray.InsertNextValue(distance);
+			return new VtkFeatureAttr(dataArray);
+		}
+		else if (aFeatureType == StateHistoryFeatureType.Range)
+		{
+			double range =
+					StateHistoryPositionCalculator.getSpacecraftRange(trajectory.getHistory(), currentInstrument, nextTime);
+			dataArray.InsertNextValue(range);
+			return new VtkFeatureAttr(dataArray);
+		}
+		else if (aFeatureType == StateHistoryFeatureType.SubSCIncidence)
+		{
+			double incidence =
+					StateHistoryPositionCalculator.getIncidenceAngle(trajectory.getHistory(), currentInstrument, nextTime);
+			dataArray.InsertNextValue(incidence);
+			return new VtkFeatureAttr(dataArray);
+		}
+		else if (aFeatureType == StateHistoryFeatureType.SubSCEmission)
+		{
+			double emission =
+					StateHistoryPositionCalculator.getEmissionAngle(trajectory.getHistory(), currentInstrument, nextTime);
+			dataArray.InsertNextValue(emission);
+			return new VtkFeatureAttr(dataArray);
+		}
+		else if (aFeatureType == StateHistoryFeatureType.SubSCPhase)
+		{
+			double phase =
+					StateHistoryPositionCalculator.getPhaseAngle(trajectory.getHistory(), currentInstrument, nextTime);
+			dataArray.InsertNextValue(phase);
+			return new VtkFeatureAttr(dataArray);
 		}
 		else return null;
 	}
 
-	private Map<StateHistory, VtkStateHistoryPainter<StateHistory>> vPainterM;
+	/**
+	 *
+	 */
+	public void propertyChange(PropertyChangeEvent evt)
+	{
+		if (Properties.MODEL_CHANGED.equals(evt.getPropertyName()))
+			this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
+	}
+
+	/**
+	 *
+	 */
+	@Override
+	public ImmutableList<StateHistory> getAllItems()
+	{
+		return ImmutableList.copyOf(runs.getSimRuns());
+	}
+
+	/**
+	 *
+	 */
+	@Override
+	public int getNumItems()
+	{
+		return runs.getSimRuns().size();
+	}
+
+	/**
+	 * @param history
+	 */
+	public void setOthersHiddenExcept(List<StateHistory> history)
+	{
+		for (StateHistory hist : getAllItems())
+		{
+//			hist.setVisible(history.contains(hist));
+			setVisibility(hist, history.contains(hist));
+		}
+	}
+
+
+//	private Map<StateHistory, VtkStateHistoryPainter<StateHistory>> vPainterM;
 	private Map<StateHistory, StateHistoryRenderProperties> propM;
 //	private Map<StateHistory, VtkStateHistoryPointProvider> vAuxM;
-	private Map<vtkProp, VtkStateHistoryPainter<StateHistory>> vActorToPainterM;
+//	private Map<vtkProp, VtkStateHistoryPainter<StateHistory>> vActorToPainterM;
 //
 //
 //	public void setAllItems(Collection<StateHistory> aItemC)
@@ -961,7 +1191,6 @@ public class StateHistoryRendererManager
 
 	public void installGroupColorProviders(GroupColorProvider aSrcGCP/*, StateHistoryCollection runs*/)
 	{
-		this.colorProvider = aSrcGCP;
 		int tmpIdx = -1;
 		int numItems = stateHistoryToRendererMap.size(); //runs.getNumItems();
 		for (StateHistory aItem : stateHistoryToRendererMap.keySet())
@@ -986,6 +1215,46 @@ public class StateHistoryRendererManager
 //		runs.notify(this, ItemEventType.ItemsMutated);
 //		updateVtkVars(stateHistoryToRendererMap.keySet());
 	}
+
+	public void notify(Object obj, ItemEventType type)
+	{
+		notifyListeners(obj, type);
+	}
+
+	public ItemProcessor<DisplayableItem> getDisplayItemsProcessor()
+	{
+		return new ItemProcessor<DisplayableItem>()
+		{
+
+			@Override
+			public void addListener(ItemEventListener aListener)
+			{
+				// TODO Auto-generated method stub
+
+			}
+
+			@Override
+			public void delListener(ItemEventListener aListener)
+			{
+				// TODO Auto-generated method stub
+
+			}
+
+			@Override
+			public ImmutableList<DisplayableItem> getAllItems()
+			{
+				return ImmutableList.copyOf(getDisplayableItems());
+			}
+
+			@Override
+			public int getNumItems()
+			{
+				return getDisplayableItems().size();
+			}
+		};
+	}
+
+
 
 	/**
 	 * Notification method that the lidar data associated with aFileSpec has been

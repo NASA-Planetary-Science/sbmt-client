@@ -1,10 +1,13 @@
 package edu.jhuapl.sbmt.stateHistory.model.interfaces;
 
+import java.awt.Color;
+import java.io.File;
 import java.util.Map.Entry;
 import java.util.Set;
 
 import edu.jhuapl.sbmt.pointing.IPointingProvider;
 import edu.jhuapl.sbmt.stateHistory.model.StateHistorySourceType;
+import edu.jhuapl.sbmt.stateHistory.model.io.StateHistoryIOException;
 import edu.jhuapl.sbmt.stateHistory.model.io.StateHistoryInvalidTimeException;
 import edu.jhuapl.sbmt.stateHistory.model.stateHistory.StateHistoryKey;
 
@@ -207,7 +210,9 @@ public interface StateHistory
 	 * Sets the color of the trajectory associated with this state history
 	 * @param color
 	 */
-	public void setTrajectoryColor(Double[] color);
+//	public void setTrajectoryColor(double[] color);
+
+	public void setTrajectoryColor(Color color);
 
 	/**
 	 * @param type
@@ -228,4 +233,16 @@ public interface StateHistory
 	 * @param pointingProvider
 	 */
 	public void setPointingProvider(IPointingProvider pointingProvider);
+
+	public boolean isMapped();
+
+	public void setMapped(boolean isMapped);
+
+	public boolean isVisible();
+
+	public void setVisible(boolean visible);
+
+	public void saveStateToFile(String shapeModelName, String fileName) throws StateHistoryIOException;
+
+	public StateHistory loadStateHistoryFromFile(File runFile, String shapeModelName, StateHistoryKey key) throws StateHistoryIOException;
 }

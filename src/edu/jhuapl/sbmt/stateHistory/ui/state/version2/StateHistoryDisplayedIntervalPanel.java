@@ -13,7 +13,7 @@ import edu.jhuapl.sbmt.stateHistory.ui.state.StateHistoryPercentIntervalChanger;
  * @author steelrj1
  *
  */
-public class StateHistoryDisplayedIntervalPanel extends JPanel //implements ActionListener
+public class StateHistoryDisplayedIntervalPanel extends JPanel
 {
 	/**
 	 * Control that allows the user to restrict the portion of the state history that is shown

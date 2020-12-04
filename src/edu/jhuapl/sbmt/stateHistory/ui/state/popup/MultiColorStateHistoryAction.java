@@ -13,6 +13,8 @@ import javax.swing.JMenuItem;
 import edu.jhuapl.saavtk.util.ColorUtil;
 import edu.jhuapl.sbmt.stateHistory.model.stateHistory.StateHistoryCollection;
 
+import glum.gui.action.PopAction;
+
 /**
  * Action corresponding to the lidar color menu item. This action does not
  * provide any color changing function but rather delegate to sub actions. (based on code from lopeznr1)
@@ -24,7 +26,7 @@ import edu.jhuapl.sbmt.stateHistory.model.stateHistory.StateHistoryCollection;
  *
  * @param <G1>
  */
-public class MultiColorStateHistoryAction<G1> extends StateHistoryPopAction<G1>
+public class MultiColorStateHistoryAction<G1> extends PopAction<G1>
 {
 	// Ref vars
 //	/**
@@ -36,7 +38,7 @@ public class MultiColorStateHistoryAction<G1> extends StateHistoryPopAction<G1>
 	/**
 	 *
 	 */
-	private Map<JMenuItem, StateHistoryPopAction<G1>> actionM;
+	private Map<JMenuItem, PopAction<G1>> actionM;
 
 	/**
 	 * Standard Constructor
@@ -55,7 +57,7 @@ public class MultiColorStateHistoryAction<G1> extends StateHistoryPopAction<G1>
 		// Form the static color menu items
 		for (ColorUtil.DefaultColor color : ColorUtil.DefaultColor.values())
 		{
-			StateHistoryPopAction<G1> tmpLPA = new FixedStateHistoryColorAction<G1>(aManager, color.color());
+			PopAction<G1> tmpLPA = new FixedStateHistoryColorAction<G1>(aManager, color.color());
 			JCheckBoxMenuItem tmpColorMI = new JCheckBoxMenuItem(tmpLPA);
 			tmpColorMI.setText(color.toString().toLowerCase().replace('_', ' '));
 			actionM.put(tmpColorMI, tmpLPA);
@@ -129,7 +131,7 @@ public class MultiColorStateHistoryAction<G1> extends StateHistoryPopAction<G1>
 	 * @param aTitle
 	 * @return
 	 */
-	private JMenuItem formMenuItem(StateHistoryPopAction<G1> aAction, String aTitle)
+	private JMenuItem formMenuItem(PopAction<G1> aAction, String aTitle)
 	{
 		JMenuItem retMI = new JMenuItem(aAction);
 		retMI.setText(aTitle);

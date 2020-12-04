@@ -9,12 +9,6 @@ package edu.jhuapl.sbmt.stateHistory.model.interfaces;
 public interface StateHistoryModelChangedListener
 {
 	/**
-	 * Notifies when the time has changed
-	 * @param t
-	 */
-	public void timeChanged(Double t);
-
-	/**
 	 * Notifies when the trajectory color has changed
 	 * @param color
 	 */

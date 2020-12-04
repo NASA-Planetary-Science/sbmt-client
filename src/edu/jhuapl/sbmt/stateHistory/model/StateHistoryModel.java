@@ -13,9 +13,6 @@ import javax.swing.SwingUtilities;
 
 import org.joda.time.DateTime;
 
-import edu.jhuapl.saavtk.gui.render.Renderer;
-import edu.jhuapl.saavtk.model.ModelManager;
-import edu.jhuapl.saavtk.model.ModelNames;
 import edu.jhuapl.sbmt.client.ISmallBodyViewConfig;
 import edu.jhuapl.sbmt.client.SmallBodyModel;
 import edu.jhuapl.sbmt.pointing.spice.SpiceInfo;
@@ -30,6 +27,7 @@ import edu.jhuapl.sbmt.stateHistory.model.io.StateHistoryModelIOHelper;
 import edu.jhuapl.sbmt.stateHistory.model.stateHistory.SpiceStateHistory;
 import edu.jhuapl.sbmt.stateHistory.model.stateHistory.StateHistoryCollection;
 import edu.jhuapl.sbmt.stateHistory.model.stateHistory.StateHistoryKey;
+import edu.jhuapl.sbmt.stateHistory.rendering.model.StateHistoryRendererManager;
 
 import crucible.crust.metadata.impl.FixedMetadata;
 import crucible.crust.metadata.impl.gson.Serializers;
@@ -50,20 +48,7 @@ public class StateHistoryModel
 	 */
 	List<StateHistoryModelChangedListener> listeners = new ArrayList<StateHistoryModelChangedListener>();
 
-	/**
-	 *
-	 */
-	private ModelManager modelManager;
-
-	/**
-	 * Start time of the available state history
-	 */
-	private DateTime startTime;
-
-	/**
-	 * End time of the available state history
-	 */
-	private DateTime endTime;
+	private String customDataFolder;
 
 	/**
 	 *
@@ -73,17 +58,12 @@ public class StateHistoryModel
 	/**
 	 *
 	 */
-	private int defaultSliderValue = 0;
+	public static int INITIAL_SLIDER_VALUE = 0;
 
 	/**
 	 *
 	 */
-	private int sliderFinalValue = 900;
-
-	/**
-	 *
-	 */
-	private String statusBarString;
+	public static int FINAL_SLIDER_VALUE = 900;
 
 	/**
 	 *
@@ -96,6 +76,8 @@ public class StateHistoryModel
 	private IStateHistoryIntervalGenerator activeIntervalGenerator;
 
 	private boolean initialized;
+
+	private StateHistoryRendererManager rendererManager;
 
 	/**
 	 * @param start
@@ -110,14 +92,12 @@ public class StateHistoryModel
 	 * @throws StateHistoryInputException
 	 * @throws IOException
 	 */
-	public StateHistoryModel(DateTime start, DateTime end, SmallBodyModel smallBodyModel, Renderer renderer,
-			ModelManager modelManager) throws IOException, StateHistoryInputException, StateHistoryInvalidTimeException
+	public StateHistoryModel(SmallBodyModel smallBodyModel, StateHistoryRendererManager rendererManager) throws IOException, StateHistoryInputException, StateHistoryInvalidTimeException
 	{
 		this.viewConfig = smallBodyModel.getSmallBodyConfig();
-		this.startTime = start;
-		this.endTime = end;
-		this.modelManager = modelManager;
-		this.runs = (StateHistoryCollection) modelManager.getModel(ModelNames.STATE_HISTORY_COLLECTION);
+		this.customDataFolder = smallBodyModel.getCustomDataFolder();
+		this.runs = rendererManager.getRuns();
+		this.rendererManager = rendererManager;
 		this.runs.addStateHistoryCollectionChangedListener(new StateHistoryCollectionChangedListener()
 		{
 
@@ -148,14 +128,6 @@ public class StateHistoryModel
 	/**
 	 * @param historySegment
 	 */
-	private void fireTimeChangeListener(double t)
-	{
-		listeners.forEach(listener -> listener.timeChanged(t));
-	}
-
-	/**
-	 * @param historySegment
-	 */
 	private void fireHistorySegmentCreatedListener(StateHistory historySegment)
 	{
 		listeners.forEach(listener -> listener.historySegmentCreated(historySegment));
@@ -171,8 +143,9 @@ public class StateHistoryModel
 
 	public void removeRun(StateHistory historySegment) throws IOException
 	{
-		runs.removeRun(historySegment.getKey());
+		rendererManager.removeRun(historySegment);
 		runs.removeRunFromList(historySegment);
+		rendererManager.setAllItems(runs.getSimRuns());
 		fireHistorySegmentRemovedListener(historySegment);
 		updateConfigFile();
 	}
@@ -207,6 +180,7 @@ public class StateHistoryModel
 			public void run()
 			{
 				runs.addRunToList(history);
+				rendererManager.setAllItems(runs.getSimRuns());
 				fireHistorySegmentCreatedListener(history);
 			}
 		});
@@ -233,6 +207,7 @@ public class StateHistoryModel
 		StateHistory newRow = StateHistoryModelIOHelper.loadStateHistoryFromFile(runFile,
 				viewConfig.getShapeModelName(), new StateHistoryKey(runs));
 		runs.addRunToList(newRow);
+		rendererManager.setAllItems(runs.getSimRuns());
 		fireHistorySegmentCreatedListener(newRow);
 		updateConfigFile();
 	}
@@ -248,16 +223,16 @@ public class StateHistoryModel
 
 		FixedMetadata metadata = Serializers.deserialize(new File(getConfigFilename()), "StateHistory");
 		runs.retrieve(metadata);
-		for (StateHistory history : runs.getAllItems())
+		for (StateHistory history : rendererManager.getAllItems())
 		{
 			setIntervalGenerator(history.getType());
 			SpiceInfo spice = null;
 			if (history instanceof SpiceStateHistory) spice = ((SpiceStateHistory)history).getSpiceInfo();
 			activeIntervalGenerator.setSourceFile(history.getSourceFile(), spice);
 			activeIntervalGenerator.createNewTimeInterval(history, null);
-			if (runs.getCurrentRun() == null) runs.setCurrentRun(history);
-			//TODO needs fixing?
-			runs.setTimeFraction(0.0);
+//			if (runs.getCurrentRun() == null) runs.setCurrentRun(history);
+//			//TODO needs fixing?
+//			rendererManager.setTimeFraction(0.0, runs.getCurrentRun());
 		}
 
 		initialized = true;
@@ -268,8 +243,7 @@ public class StateHistoryModel
 	 */
 	private String getConfigFilename()
 	{
-		String parentDirectory = modelManager.getPolyhedralModel().getCustomDataFolder();
-		File stateHistoryConfigFile = new File(parentDirectory, "stateHistory.txt");
+		File stateHistoryConfigFile = new File(customDataFolder, "stateHistory.txt");
 		return stateHistoryConfigFile.getAbsolutePath();
 	}
 
@@ -281,14 +255,14 @@ public class StateHistoryModel
 		Serializers.serialize("StateHistory", runs, new File(getConfigFilename()));
 	}
 
-	/**
-	 * @param statusBarString
-	 */
-	public void setStatusBarString(String statusBarString)
-	{
-		this.statusBarString = statusBarString;
-		// TODO fire something here?
-	}
+//	/**
+//	 * @param statusBarString
+//	 */
+//	public void setStatusBarString(String statusBarString)
+//	{
+//		this.statusBarString = statusBarString;
+//		// TODO fire something here?
+//	}
 
 	public void setIntervalGenerator(StateHistorySourceType generatorType)
 	{
@@ -300,27 +274,6 @@ public class StateHistoryModel
 		intervalGenerators.put(generatorType, generator);
 	}
 
-	public void setTime(double time)
-	{
-		fireTimeChangeListener(time);
-	}
-
-	/**
-	 * @return the startTime
-	 */
-	public DateTime getStartTime()
-	{
-		return startTime;
-	}
-
-	/**
-	 * @return the endTime
-	 */
-	public DateTime getEndTime()
-	{
-		return endTime;
-	}
-
 	/**
 	 * @return the runs
 	 */
@@ -329,29 +282,13 @@ public class StateHistoryModel
 		return runs;
 	}
 
-	/**
-	 * @return the defaultSliderValue
-	 */
-	public int getDefaultSliderValue()
-	{
-		return defaultSliderValue;
-	}
-
-	/**
-	 * @return the sliderFinalValue
-	 */
-	public int getSliderFinalValue()
-	{
-		return sliderFinalValue;
-	}
-
-	/**
-	 * @return the statusBarString
-	 */
-	public String getStatusBarString()
-	{
-		return statusBarString;
-	}
+//	/**
+//	 * @return the statusBarString
+//	 */
+//	public String getStatusBarString()
+//	{
+//		return statusBarString;
+//	}
 
 	/**
 	 * @return the activeIntervalGenerator

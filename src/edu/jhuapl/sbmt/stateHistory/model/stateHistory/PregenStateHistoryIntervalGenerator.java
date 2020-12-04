@@ -130,8 +130,8 @@ public class PregenStateHistoryIntervalGenerator implements IStateHistoryInterva
 		}
 
 		// creates the trajectory
-		Trajectory trajectory = new StandardTrajectory();
 		if (tempHistory == null) history = new StandardStateHistory(key);
+		Trajectory trajectory = new StandardTrajectory(history);
 
 		trajectory.setPointingProvider(pointingProvider);
 		trajectory.setStartTime(TimeUtil.str2et(startString));

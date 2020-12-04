@@ -1,7 +1,5 @@
 package edu.jhuapl.sbmt.stateHistory.ui.state.version2.viewControls;
 
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.util.Vector;
 
 import javax.swing.BoxLayout;
@@ -10,7 +8,7 @@ import javax.swing.JPanel;
 
 import edu.jhuapl.sbmt.stateHistory.ui.state.version2.viewControls.viewOptions.table.ViewOptionsTableView;
 
-public class StateHistoryFOVPanel extends JPanel implements ActionListener
+public class StateHistoryFOVPanel extends JPanel
 {
 	private JCheckBox[] fovCheckboxes;
 
@@ -36,7 +34,6 @@ public class StateHistoryFOVPanel extends JPanel implements ActionListener
 		// *********************
 		// View Options Panel
 		// *********************
-//		setBorder(new TitledBorder(null, "View Options", TitledBorder.LEADING, TitledBorder.TOP, null, null));
 		setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
 
 		// FOV panel
@@ -69,19 +66,5 @@ public class StateHistoryFOVPanel extends JPanel implements ActionListener
 	public JCheckBox[] getFovCheckBoxes()
 	{
 		return fovCheckboxes;
-	}
-
-	@Override
-	public void actionPerformed(ActionEvent e)
-	{
-		// TODO Auto-generated method stub
-
-	}
-
-	@Override
-	public void setEnabled(boolean enabled)
-	{
-
-		super.setEnabled(enabled);
 	}
 }

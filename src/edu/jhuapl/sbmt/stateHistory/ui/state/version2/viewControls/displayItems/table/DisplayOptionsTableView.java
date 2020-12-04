@@ -22,10 +22,8 @@ import edu.jhuapl.saavtk.color.provider.ConstColorProvider;
 import edu.jhuapl.saavtk.gui.util.IconUtil;
 import edu.jhuapl.saavtk.gui.util.ToolTipUtil;
 import edu.jhuapl.sbmt.stateHistory.model.interfaces.StateHistory;
-import edu.jhuapl.sbmt.stateHistory.model.stateHistory.StateHistoryCollection;
 import edu.jhuapl.sbmt.stateHistory.rendering.DisplayableItem;
-import edu.jhuapl.sbmt.stateHistory.ui.state.popup.StateHistoryGuiUtil;
-import edu.jhuapl.sbmt.stateHistory.ui.state.popup.StateHistoryPopupMenu;
+import edu.jhuapl.sbmt.stateHistory.rendering.model.StateHistoryRendererManager;
 
 import glum.gui.GuiUtil;
 import glum.gui.misc.BooleanCellEditor;
@@ -34,7 +32,6 @@ import glum.gui.panel.itemList.ItemHandler;
 import glum.gui.panel.itemList.ItemListPanel;
 import glum.gui.panel.itemList.ItemProcessor;
 import glum.gui.panel.itemList.query.QueryComposer;
-import glum.gui.table.TablePopupHandler;
 import glum.item.ItemManagerUtil;
 
 public class DisplayOptionsTableView extends JPanel
@@ -55,11 +52,6 @@ public class DisplayOptionsTableView extends JPanel
 	private JButton selectAllB, selectInvertB, selectNoneB;
 
 	/**
-	 * The collection of loaded state history objects
-	 */
-	private StateHistoryCollection stateHistoryCollection;
-
-	/**
 	 * The state history item list panel, used to help handle interactions with
 	 * the table
 	 */
@@ -76,18 +68,17 @@ public class DisplayOptionsTableView extends JPanel
 	/**
 	 * @param stateHistoryCollection
 	 */
-	public DisplayOptionsTableView(StateHistoryCollection stateHistoryCollection)
+	public DisplayOptionsTableView(StateHistoryRendererManager rendererManager)
 	{
-		this.stateHistoryCollection = stateHistoryCollection;
-		init();
+		init(rendererManager);
 	}
 
 	/**
 	 * Initializes UI elements
 	 */
-	protected void init()
+	protected void init(StateHistoryRendererManager rendererManager)
 	{
-		resultList = buildTable();
+		resultList = buildTable(rendererManager);
 		showStateHistoryButton = new JButton("Show State History");
 		showStateHistoryButton.setEnabled(false);
 	}
@@ -98,7 +89,6 @@ public class DisplayOptionsTableView extends JPanel
 	public void setup()
 	{
 		setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
-//		setBorder(new TitledBorder(null, "Available FOVs", TitledBorder.LEADING, TitledBorder.TOP, null, null));
 		JPanel panel_4 = new JPanel();
 		add(panel_4);
 		panel_4.setLayout(new BoxLayout(panel_4, BoxLayout.X_AXIS));
@@ -107,16 +97,10 @@ public class DisplayOptionsTableView extends JPanel
 		panel_4.add(horizontalGlue);
 
 		JScrollPane scrollPane = new JScrollPane();
-		scrollPane.setPreferredSize(new java.awt.Dimension(150, 150));
+		scrollPane.setPreferredSize(new java.awt.Dimension(150, 600));
 		add(scrollPane);
 
 		scrollPane.setViewportView(resultList);
-
-//		JPanel panel_1 = new JPanel();
-//		add(panel_1);
-//		panel_1.setLayout(new BoxLayout(panel_1, BoxLayout.X_AXIS));
-//		panel_1.add(showStateHistoryButton);
-
 	}
 
 	/**
@@ -124,25 +108,25 @@ public class DisplayOptionsTableView extends JPanel
 	 *
 	 * @return
 	 */
-	private JTable buildTable()
+	private JTable buildTable(StateHistoryRendererManager rendererManager)
 	{
 		ActionListener listener = e ->
 		{
 			Object source = e.getSource();
 
 			if (source == selectAllB)
-				ItemManagerUtil.selectAll(stateHistoryCollection);
+				ItemManagerUtil.selectAll(rendererManager);
 			else if (source == selectNoneB)
-				ItemManagerUtil.selectNone(stateHistoryCollection);
+				ItemManagerUtil.selectNone(rendererManager);
 			else if (source == selectInvertB)
 			{
-				ItemManagerUtil.selectInvert(stateHistoryCollection);
+				ItemManagerUtil.selectInvert(rendererManager);
 			}
 		};
 
 		// Popup menu
-		StateHistoryPopupMenu stateHistoryPopupMenu = StateHistoryGuiUtil
-				.formStateHistoryFileSpecPopupMenu(stateHistoryCollection, this);
+//		StateHistoryPopupMenu stateHistoryPopupMenu = StateHistoryGuiUtil
+//				.formStateHistoryFileSpecPopupMenu(rendererManager, this);
 
 		// Table header
 		selectInvertB = GuiUtil.formButton(listener, IconUtil.getSelectInvert());
@@ -182,14 +166,14 @@ public class DisplayOptionsTableView extends JPanel
 		tmpComposer.setRenderer(DisplayOptionsColumnLookup.Color, new ColorProviderCellRenderer(false));
 		tmpComposer.setEditor(DisplayOptionsColumnLookup.Name, new DefaultCellEditor(new JTextField()));
 
-		displayOptionsTableHandler = new DisplayOptionsItemHandler(stateHistoryCollection, tmpComposer);
-		ItemProcessor<DisplayableItem> tmpIP = stateHistoryCollection.getDisplayItemsProcessor();
+		displayOptionsTableHandler = new DisplayOptionsItemHandler(rendererManager, tmpComposer);
+		ItemProcessor<DisplayableItem> tmpIP = rendererManager.getDisplayItemsProcessor();
 		displayOptionsILP = new ItemListPanel<>(displayOptionsTableHandler, tmpIP, true);
 		displayOptionsILP.setSortingEnabled(true);
 		configureColumnWidths();
 		JTable stateHistoryTable = displayOptionsILP.getTable();
 		stateHistoryTable.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
-		stateHistoryTable.addMouseListener(new TablePopupHandler(stateHistoryCollection, stateHistoryPopupMenu));
+//		stateHistoryTable.addMouseListener(new TablePopupHandler(rendererManager, stateHistoryPopupMenu));
 
 		return stateHistoryTable;
 	}
@@ -235,5 +219,4 @@ public class DisplayOptionsTableView extends JPanel
 			tmpTable.getColumnModel().getColumn(aCol).setPreferredWidth(tmpW + 10);
 		}
 	}
-
 }

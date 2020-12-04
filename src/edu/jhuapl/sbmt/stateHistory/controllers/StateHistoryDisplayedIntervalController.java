@@ -1,9 +1,9 @@
 package edu.jhuapl.sbmt.stateHistory.controllers;
 
 import edu.jhuapl.sbmt.stateHistory.model.stateHistory.StateHistoryCollection;
-import edu.jhuapl.sbmt.stateHistory.model.time.BaseStateHistoryTimeModelChangedListener;
 import edu.jhuapl.sbmt.stateHistory.model.time.StateHistoryTimeModel;
 import edu.jhuapl.sbmt.stateHistory.model.time.TimeWindow;
+import edu.jhuapl.sbmt.stateHistory.rendering.model.StateHistoryRendererManager;
 import edu.jhuapl.sbmt.stateHistory.ui.state.StateHistoryPercentIntervalChanger;
 import edu.jhuapl.sbmt.stateHistory.ui.state.version2.StateHistoryDisplayedIntervalPanel;
 import edu.jhuapl.sbmt.util.TimeUtil;
@@ -35,24 +35,25 @@ public class StateHistoryDisplayedIntervalController
 	 *
 	 * @param interval			The current set of StateHistory intervals
 	 */
-	public StateHistoryDisplayedIntervalController(StateHistoryCollection intervalSet, StateHistoryTimeModel timeModel)
+	public StateHistoryDisplayedIntervalController(StateHistoryRendererManager rendererManager, StateHistoryTimeModel timeModel)
 	{
 		this.timeModel = timeModel;
 		view = new StateHistoryDisplayedIntervalPanel();
+		StateHistoryCollection intervalSet = rendererManager.getRuns();
 
 		//If the selected item is changed, update the current run, reset the time range, and the time interval label
-		intervalSet.addListener((aSource, aEventType) -> {
+		rendererManager.addListener((aSource, aEventType) -> {
 
 			if (aEventType != ItemEventType.ItemsSelected) return;
-			if (intervalSet.getSelectedItems().size() > 0)
+			if (rendererManager.getSelectedItems().size() > 0)
 			{
-				intervalSet.setCurrentRun(intervalSet.getSelectedItems().asList().get(0));
+				intervalSet.setCurrentRun(rendererManager.getSelectedItems().asList().get(0));
 				System.out
 				.println("StateHistoryDisplayedIntervalController: StateHistoryDisplayedIntervalController: updating dispalyed window");
 				timeModel.setTimeWindow(new TimeWindow(intervalSet.getCurrentRun().getStartTime(), intervalSet.getCurrentRun().getEndTime()));
 				updateDisplayedTimeRange(0.0, 1.0);
 			}
-			view.getTimeIntervalChanger().setEnabled(intervalSet.getSelectedItems().size() > 0);
+			view.getTimeIntervalChanger().setEnabled(rendererManager.getSelectedItems().size() > 0);
 
 		});
 
@@ -64,21 +65,22 @@ public class StateHistoryDisplayedIntervalController
 			double minValue = changer.getLowValue();
 			double maxValue = changer.getHighValue();
 			timeModel.setFractionDisplayed(minValue, maxValue);
+			updateDisplayedTimeRange(minValue, maxValue);
 
-			intervalSet.setTrajectoryMinMax(intervalSet.getCurrentRun(), minValue, maxValue);
+			rendererManager.setTrajectoryMinMax(intervalSet.getCurrentRun(), minValue, maxValue);
 			intervalSet.getCurrentRun().getTrajectory().setMinDisplayFraction(minValue);
 			intervalSet.getCurrentRun().getTrajectory().setMaxDisplayFraction(maxValue);
-			intervalSet.notify(intervalSet, ItemEventType.ItemsMutated);
+			rendererManager.notify(intervalSet, ItemEventType.ItemsMutated);
 		});
 
-		timeModel.addTimeModelChangeListener(new BaseStateHistoryTimeModelChangedListener() {
-			@Override
-			public void fractionDisplayedChanged(double minFractionDisplayed, double maxFractionDisplayed)
-			{
-				super.fractionDisplayedChanged(minFractionDisplayed, maxFractionDisplayed);
-				updateDisplayedTimeRange(minFractionDisplayed, minFractionDisplayed);
-			}
-		});
+//		timeModel.addTimeModelChangeListener(new BaseStateHistoryTimeModelChangedListener() {
+//			@Override
+//			public void fractionDisplayedChanged(double minFractionDisplayed, double maxFractionDisplayed)
+//			{
+//				super.fractionDisplayedChanged(minFractionDisplayed, maxFractionDisplayed);
+//				updateDisplayedTimeRange(minFractionDisplayed, minFractionDisplayed);
+//			}
+//		});
 	}
 
 	/**

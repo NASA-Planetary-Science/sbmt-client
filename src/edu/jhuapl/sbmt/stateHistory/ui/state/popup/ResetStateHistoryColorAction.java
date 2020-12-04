@@ -7,6 +7,8 @@ import javax.swing.JMenuItem;
 
 import edu.jhuapl.sbmt.stateHistory.model.stateHistory.StateHistoryCollection;
 
+import glum.gui.action.PopAction;
+
 /**
  * Object that defines the action: "Reset Colors". (based on code from lopeznr1)
  *
@@ -17,7 +19,7 @@ import edu.jhuapl.sbmt.stateHistory.model.stateHistory.StateHistoryCollection;
  *
  * @param <G1>
  */
-class ResetStateHistoryColorAction<G1> extends StateHistoryPopAction<G1>
+class ResetStateHistoryColorAction<G1> extends PopAction<G1>
 {
 	// Ref vars
 //	/**

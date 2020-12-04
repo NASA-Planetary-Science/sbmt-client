@@ -96,6 +96,7 @@ import edu.jhuapl.sbmt.spectrum.ui.SpectrumPopupMenu;
 import edu.jhuapl.sbmt.stateHistory.controllers.ObservationPlanningController;
 import edu.jhuapl.sbmt.stateHistory.model.interfaces.StateHistory;
 import edu.jhuapl.sbmt.stateHistory.model.stateHistory.StateHistoryCollection;
+import edu.jhuapl.sbmt.stateHistory.rendering.model.StateHistoryRendererManager;
 
 import crucible.crust.metadata.api.Key;
 import crucible.crust.metadata.api.Metadata;
@@ -122,6 +123,7 @@ public class SbmtView extends View implements PropertyChangeListener
 	private BasicConfigInfo configInfo;
 	private SmallBodyModel smallBodyModel;
 	private StateHistoryCollection historyCollection;
+	private StateHistoryRendererManager rendererManager;
 
 	public SbmtView(StatusBar statusBar, BasicConfigInfo configInfo)
 	{
@@ -361,8 +363,10 @@ public class SbmtView extends View implements PropertyChangeListener
 
         if (getPolyhedralModelConfig().hasStateHistory)
         {
-        	historyCollection = new StateHistoryCollection(smallBodyModel);
-            allModels.put(ModelNames.STATE_HISTORY_COLLECTION, historyCollection);
+//        	historyCollection = new StateHistoryCollection(smallBodyModel);
+//            allModels.put(ModelNames.STATE_HISTORY_COLLECTION, historyCollection);
+            rendererManager = new StateHistoryRendererManager(smallBodyModel, new StateHistoryCollection(smallBodyModel), getRenderer());
+            allModels.put(ModelNames.STATE_HISTORY_COLLECTION_ELEMENTS, rendererManager);
         }
 
 		allModels.put(ModelNames.LINE_STRUCTURES, new LineModel<>(smallBodyModel));
@@ -620,7 +624,7 @@ public class SbmtView extends View implements PropertyChangeListener
 			else if (displayName.equals("MEGANE"))
 			{
 				MEGANEController meganeController = new MEGANEController(smallBodyModel);
-				historyCollection.addListener(new ItemEventListener()
+				rendererManager.addListener(new ItemEventListener()
 				{
 
 					@Override
@@ -628,8 +632,7 @@ public class SbmtView extends View implements PropertyChangeListener
 					{
 						if (aEventType == ItemEventType.ItemsSelected)
 						{
-							StateHistoryCollection history = (StateHistoryCollection)aSource;
-							StateHistory currentRun = history.getCurrentRun();
+							StateHistory currentRun = rendererManager.getRuns().getCurrentRun();
 							System.out.println(
 									"SbmtView.setupTabs().new ItemEventListener() {...}: handleItemEvent: broadcasting change to megane controllers");
 							meganeController.propertyChange(new PropertyChangeEvent(meganeController, "SPICEPROVIDER", null, currentRun.getPointingProvider()));
@@ -739,7 +742,7 @@ public class SbmtView extends View implements PropertyChangeListener
             if (getPolyhedralModelConfig().hasStateHistory)
             {
 //                StateHistoryController controller = new StateHistoryController(getModelManager(), getRenderer());
-                ObservationPlanningController controller = new ObservationPlanningController(getModelManager(), smallBodyModel, getRenderer(), getPolyhedralModelConfig(), smallBodyModel.getColoringDataManager());
+                ObservationPlanningController controller = new ObservationPlanningController(getModelManager(), smallBodyModel, rendererManager, getPolyhedralModelConfig(), smallBodyModel.getColoringDataManager());
 //                if (getConfig().body == ShapeModelBody.EARTH)
 //                    controller = new StateHistoryController(getModelManager(), getRenderer(), false);
 //                else
@@ -797,6 +800,7 @@ public class SbmtView extends View implements PropertyChangeListener
     public void setRenderer(Renderer renderer)
     {
         this.renderer = renderer;
+        rendererManager.setRenderer(renderer);
     }
 
     private static final Version METADATA_VERSION = Version.of(1, 1); // Nested CURRENT_TAB stored as an array of strings.

@@ -1,18 +1,14 @@
 package edu.jhuapl.sbmt.stateHistory.ui.state.version2.viewControls;
 
 import java.awt.Component;
-import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.ItemListener;
 
 import javax.swing.Box;
 import javax.swing.BoxLayout;
-import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
-import javax.swing.JTextField;
 import javax.swing.border.TitledBorder;
 
 import edu.jhuapl.sbmt.stateHistory.model.viewOptions.RendererLookDirection;
@@ -20,20 +16,20 @@ import edu.jhuapl.sbmt.stateHistory.ui.state.version2.viewControls.displayItems.
 
 public class StateHistoryViewOptionsPanel extends JPanel implements ActionListener
 {
-	/**
-	 *
-	 */
-	private JTextField viewInputAngle;
+//	/**
+//	 *
+//	 */
+//	private JTextField viewInputAngle;
 
-	/**
-	 *
-	 */
-	private JButton btnResetCameraTo;
+//	/**
+//	 *
+//	 */
+//	private JButton btnResetCameraTo;
 
-	/**
-	 *
-	 */
-	private JButton setViewAngle;
+//	/**
+//	 *
+//	 */
+//	private JButton setViewAngle;
 
 	/**
 	 *
@@ -45,17 +41,17 @@ public class StateHistoryViewOptionsPanel extends JPanel implements ActionListen
 	 */
 	private JLabel lblSelectView;
 
-	/**
-	 *
-	 */
-	private JLabel lblVerticalFov;
+//	/**
+//	 *
+//	 */
+//	private JLabel lblVerticalFov;
 
-	private ItemListener checkboxItemListener;
+//	private ItemListener checkboxItemListener;
 
 	StateHistoryDisplayItemShowLightingPanel showLightingPanel;
 
 	private JPanel fovPanel = new JPanel();
-	private JPanel fovPanela = new JPanel();
+//	private JPanel fovPanela = new JPanel();
 
 
 
@@ -100,41 +96,41 @@ public class StateHistoryViewOptionsPanel extends JPanel implements ActionListen
 		Component horizontalStrut_4 = Box.createHorizontalStrut(50);
 		panel_2.add(horizontalStrut_4);
 
-		btnResetCameraTo = new JButton("Reset Camera to Nadir");
-		btnResetCameraTo.setEnabled(false);
-		btnResetCameraTo.setVisible(false);
-		panel_2.add(btnResetCameraTo);
+//		btnResetCameraTo = new JButton("Reset Camera to Nadir");
+//		btnResetCameraTo.setEnabled(false);
+//		btnResetCameraTo.setVisible(false);
+//		panel_2.add(btnResetCameraTo);
 
 		// FOV panel
-		add(updateFOVsPanel());
+//		add(updateFOVsPanel());
 		fovPanel.setLayout(new BoxLayout(fovPanel, BoxLayout.Y_AXIS));
 	}
 
-	private JPanel updateFOVsPanel()
-	{
-		fovPanel.removeAll();
-
-		fovPanela.removeAll();
-		fovPanela.setLayout(new BoxLayout(fovPanela, BoxLayout.X_AXIS));
-		lblVerticalFov = new JLabel("FOV (deg):");
-		lblVerticalFov.setEnabled(false);
-		fovPanela.add(lblVerticalFov);
-
-		viewInputAngle = new JTextField();
-		viewInputAngle.setMaximumSize(new Dimension(150, viewInputAngle.getPreferredSize().height));
-		viewInputAngle.setText("30.0");
-		viewInputAngle.setEnabled(false);
-		fovPanela.add(viewInputAngle);
-		viewInputAngle.setColumns(10);
-
-		setViewAngle = new JButton("Set");
-		setViewAngle.setEnabled(false);
-		fovPanela.add(setViewAngle);
-		fovPanela.add(Box.createHorizontalGlue());
-		fovPanel.add(fovPanela);
-
-		return fovPanel;
-	}
+//	private JPanel updateFOVsPanel()
+//	{
+//		fovPanel.removeAll();
+//
+//		fovPanela.removeAll();
+//		fovPanela.setLayout(new BoxLayout(fovPanela, BoxLayout.X_AXIS));
+//		lblVerticalFov = new JLabel("FOV (deg):");
+//		lblVerticalFov.setEnabled(false);
+//		fovPanela.add(lblVerticalFov);
+//
+//		viewInputAngle = new JTextField();
+//		viewInputAngle.setMaximumSize(new Dimension(150, viewInputAngle.getPreferredSize().height));
+//		viewInputAngle.setText("30.0");
+//		viewInputAngle.setEnabled(false);
+//		fovPanela.add(viewInputAngle);
+//		viewInputAngle.setColumns(10);
+//
+//		setViewAngle = new JButton("Set");
+//		setViewAngle.setEnabled(false);
+//		fovPanela.add(setViewAngle);
+//		fovPanela.add(Box.createHorizontalGlue());
+//		fovPanel.add(fovPanela);
+//
+//		return fovPanel;
+//	}
 
 	public StateHistoryDisplayItemShowLightingPanel getShowLightingPanel()
 	{
@@ -156,13 +152,13 @@ public class StateHistoryViewOptionsPanel extends JPanel implements ActionListen
 		return lblSelectView;
 	}
 
-	/**
-	 * @return
-	 */
-	public JLabel getLblVerticalFov()
-	{
-		return lblVerticalFov;
-	}
+//	/**
+//	 * @return
+//	 */
+//	public JLabel getLblVerticalFov()
+//	{
+//		return lblVerticalFov;
+//	}
 
 	/**
 	 * @return
@@ -172,49 +168,49 @@ public class StateHistoryViewOptionsPanel extends JPanel implements ActionListen
 		return viewOptions;
 	}
 
-	/**
-	 * @return
-	 */
-	public JButton getBtnResetCameraTo()
-	{
-		return btnResetCameraTo;
-	}
-
-	/**
-	 * @return
-	 */
-	public JButton getSetViewAngle()
-	{
-		return setViewAngle;
-	}
-
-	/**
-	 * @return
-	 */
-	public JTextField getViewInputAngle()
-	{
-		return viewInputAngle;
-	}
+//	/**
+//	 * @return
+//	 */
+//	public JButton getBtnResetCameraTo()
+//	{
+//		return btnResetCameraTo;
+//	}
+//
+//	/**
+//	 * @return
+//	 */
+//	public JButton getSetViewAngle()
+//	{
+//		return setViewAngle;
+//	}
+//
+//	/**
+//	 * @return
+//	 */
+//	public JTextField getViewInputAngle()
+//	{
+//		return viewInputAngle;
+//	}
 
 	@Override
 	public void setEnabled(boolean enabled)
 	{
 		viewOptions.setEnabled(enabled);
-    	btnResetCameraTo.setEnabled(enabled);
-    	setViewAngle.setEnabled(enabled);
+//    	btnResetCameraTo.setEnabled(enabled);
+//    	setViewAngle.setEnabled(enabled);
     	lblSelectView.setEnabled(enabled);
-    	lblVerticalFov.setEnabled(enabled);
-    	viewInputAngle.setEnabled(enabled);
+//    	lblVerticalFov.setEnabled(enabled);
+//    	viewInputAngle.setEnabled(enabled);
 		showLightingPanel.setEnabled(enabled);
 
 		super.setEnabled(enabled);
 	}
 
-	/**
-	 * @param checkboxItemListener the checkboxItemListener to set
-	 */
-	public void setCheckboxItemListener(ItemListener checkboxItemListener)
-	{
-		this.checkboxItemListener = checkboxItemListener;
-	}
+//	/**
+//	 * @param checkboxItemListener the checkboxItemListener to set
+//	 */
+//	public void setCheckboxItemListener(ItemListener checkboxItemListener)
+//	{
+//		this.checkboxItemListener = checkboxItemListener;
+//	}
 }

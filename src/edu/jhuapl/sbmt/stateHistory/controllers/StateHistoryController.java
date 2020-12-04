@@ -33,6 +33,7 @@ import edu.jhuapl.sbmt.stateHistory.model.stateHistory.SpiceStateHistoryInterval
 import edu.jhuapl.sbmt.stateHistory.model.stateHistory.StateHistoryCollection;
 import edu.jhuapl.sbmt.stateHistory.model.time.StateHistoryTimeModel;
 import edu.jhuapl.sbmt.stateHistory.model.time.TimeWindow;
+import edu.jhuapl.sbmt.stateHistory.rendering.model.StateHistoryRendererManager;
 import edu.jhuapl.sbmt.stateHistory.ui.state.version2.StateHistoryDisplayedIntervalPanel;
 import edu.jhuapl.sbmt.stateHistory.ui.state.version2.StateHistoryIntervalGenerationPanel;
 import edu.jhuapl.sbmt.stateHistory.ui.state.version2.table.StateHistoryTableView;
@@ -76,16 +77,19 @@ public class StateHistoryController
      */
     private StateHistoryTimeModel timeModel = null;
 
+    private StateHistoryRendererManager rendererManager;
+
     /**
      * Constructor.  Initializes properties, sets listeners, etc
      * @param modelManager
      * @param renderer
      */
-    public StateHistoryController(final ModelManager modelManager, Renderer renderer, StateHistoryTimeModel timeModel)
+    public StateHistoryController(final ModelManager modelManager, StateHistoryRendererManager rendererManager, StateHistoryTimeModel timeModel)
     {
     	File path = null;
     	int lineLength = 121;
-    	this.renderer = renderer;
+    	this.renderer = rendererManager.getRenderer();
+    	this.rendererManager = rendererManager;
     	this.timeModel = timeModel;
     	vtkJoglPanelComponent renWin = renderer.getRenderWindowPanel();
         SmallBodyModel bodyModel = (SmallBodyModel) modelManager.getPolyhedralModel();
@@ -106,7 +110,7 @@ public class StateHistoryController
 
 		try
 		{
-			historyModel = new StateHistoryModel(start, end, bodyModel, renderer, modelManager);
+			historyModel = new StateHistoryModel(bodyModel, rendererManager);
 			historyModel.registerIntervalGenerator(StateHistorySourceType.SPICE, new SpiceStateHistoryIntervalGenerator(.01));	//TODO update this to be a parameter in view config
 			historyModel.setIntervalGenerator(StateHistorySourceType.SPICE);
 			if (!config.timeHistoryFile.equals(""))
@@ -129,9 +133,9 @@ public class StateHistoryController
 		}
 
         this.intervalGenerationController = new StateHistoryIntervalGenerationController(historyModel, start, end);
-        this.intervalSelectionController = new StateHistoryIntervalSelectionController(historyModel, bodyModel, renderer);
+        this.intervalSelectionController = new StateHistoryIntervalSelectionController(historyModel, bodyModel, rendererManager);
 
-        this.intervalDisplayedController = new StateHistoryDisplayedIntervalController(historyModel.getRuns(), timeModel);
+        this.intervalDisplayedController = new StateHistoryDisplayedIntervalController(rendererManager, timeModel);
 
         intervalDisplayedController.getView().setEnabled(false);
 
@@ -141,15 +145,15 @@ public class StateHistoryController
             @Override
             public void componentResized(ComponentEvent e)
             {
-                runs.updateTimeBarValue();
-                runs.updateTimeBarLocation(e.getComponent().getWidth(), e.getComponent().getHeight());
-                runs.updateStatusBarLocation(e.getComponent().getWidth(), e.getComponent().getHeight());
+                rendererManager.updateTimeBarValue();
+                rendererManager.updateTimeBarLocation(e.getComponent().getWidth(), e.getComponent().getHeight());
+                rendererManager.updateStatusBarLocation(e.getComponent().getWidth(), e.getComponent().getHeight());
             }
         });
 
-        runs.addListener((aSource, aEventType) -> {
+        rendererManager.addListener((aSource, aEventType) -> {
 			if (aEventType != ItemEventType.ItemsSelected) return;
-			intervalDisplayedController.getView().setEnabled(runs.getSelectedItems().size() > 0);
+			intervalDisplayedController.getView().setEnabled(rendererManager.getSelectedItems().size() > 0);
 		});
     }
 
@@ -190,7 +194,7 @@ public class StateHistoryController
     @SuppressWarnings("unused")
 	private void updateTimeBarPosition()
     {
-    	historyModel.getRuns().updateTimeBarLocation(renderer.getRenderWindowPanel().getComponent().getWidth(), renderer.getRenderWindowPanel().getComponent().getHeight());
+    	rendererManager.updateTimeBarLocation(renderer.getRenderWindowPanel().getComponent().getWidth(), renderer.getRenderWindowPanel().getComponent().getHeight());
     }
 
 	/**

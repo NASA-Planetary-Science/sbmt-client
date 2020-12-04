@@ -1,5 +1,7 @@
 package edu.jhuapl.sbmt.stateHistory.model.interfaces;
 
+import java.awt.Color;
+
 import edu.jhuapl.sbmt.pointing.IPointingProvider;
 
 
@@ -83,17 +85,22 @@ public interface Trajectory
     /**
      * @return
      */
-    public double[] getColor();
+    public Color getColor();
 
     /**
      * @return
      */
     public double getThickness();
 
+//    /**
+//     * @param color
+//     */
+//    public void setColor(Color color);
+
     /**
      * @param color
      */
-    public void setColor(double[] color);
+    public void setColor(Color color);
 
     /**
      * @param desc
@@ -147,5 +154,7 @@ public interface Trajectory
 	 * @param maxDisplayFraction
 	 */
 	public void setMaxDisplayFraction(double maxDisplayFraction);
+
+	public StateHistory getHistory();
 
 }

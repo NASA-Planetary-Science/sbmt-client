@@ -10,8 +10,7 @@ import javax.swing.JPanel;
 import edu.jhuapl.saavtk.color.gui.EditGroupColorPanel;
 import edu.jhuapl.saavtk.color.painter.ColorBarPainter;
 import edu.jhuapl.saavtk.color.provider.GroupColorProvider;
-import edu.jhuapl.saavtk.gui.render.Renderer;
-import edu.jhuapl.sbmt.stateHistory.model.stateHistory.StateHistoryCollection;
+import edu.jhuapl.sbmt.stateHistory.rendering.model.StateHistoryRendererManager;
 
 import glum.gui.GuiExeUtil;
 import glum.gui.component.GComboBox;
@@ -39,7 +38,7 @@ public class StateHistoryColorConfigPanel extends JPanel implements ActionListen
 	/**
 	 * Standard Constructor
 	 */
-	public StateHistoryColorConfigPanel(ActionListener aListener, StateHistoryCollection aManager, Renderer aRenderer)
+	public StateHistoryColorConfigPanel(ActionListener aListener, StateHistoryRendererManager rendererManager)
 	{
 		refListener = aListener;
 
@@ -50,10 +49,9 @@ public class StateHistoryColorConfigPanel extends JPanel implements ActionListen
 		add(tmpL);
 		add(colorModeBox, "growx,wrap 2");
 
-		ColorBarPainter tmpCBP = new ColorBarPainter(aRenderer);
-		colorMapPanel = new StateHistoryColorBarPanel(this, aManager, aRenderer, tmpCBP);
+		ColorBarPainter tmpCBP = new ColorBarPainter(rendererManager.getRenderer());
+		colorMapPanel = new StateHistoryColorBarPanel(this, rendererManager, tmpCBP);
 		colorPanel = new CardPanel<>();
-//		colorPanel.addCard(ColorMode.AutoHue, new AutoColorPanel(this));
 		colorPanel.addCard(ColorMode.ColorMap, colorMapPanel);
 		colorPanel.addCard(ColorMode.Simple, new SimplePanel(this, new Color(0.0f, 1.0f, 1.0f)));
 
@@ -105,7 +103,6 @@ public class StateHistoryColorConfigPanel extends JPanel implements ActionListen
 	private void doUpdateColorPanel()
 	{
 		colorPanel.getActiveCard().activate(false);
-
 		ColorMode tmpCM = colorModeBox.getChosenItem();
 		colorPanel.switchToCard(tmpCM);
 		colorPanel.getActiveCard().activate(true);

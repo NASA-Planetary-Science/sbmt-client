@@ -1,19 +1,28 @@
 package edu.jhuapl.sbmt.stateHistory.model.time;
 
 import java.beans.PropertyChangeSupport;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.Vector;
 
+import org.joda.time.DateTime;
+import org.joda.time.format.ISODateTimeFormat;
+
 import edu.jhuapl.saavtk.util.Properties;
+import edu.jhuapl.sbmt.util.TimeUtil;
 
 public class StateHistoryTimeModel
 {
-	public TimeWindow twindow;
+	private TimeWindow twindow;
 
-	public double et;
+	private double et;
 
-	public double minFractionDisplayed = 0.0, maxFractionDisplayed = 1.0;
+	private double currentTimeFraction = 0;
 
-	public Vector<StateHistoryTimeModelChangedListener> changeListeners;
+	private double minFractionDisplayed = 0.0, maxFractionDisplayed = 1.0;
+
+	private Vector<StateHistoryTimeModelChangedListener> changeListeners;
 
 	private static StateHistoryTimeModel instance;
 
@@ -34,21 +43,16 @@ public class StateHistoryTimeModel
 		this.pcs = pcs;
 	}
 
-//	public StateHistoryTimeModel(TimeWindow twindow)
-//	{
-//		this.twindow = twindow;
-//		this.et = twindow.getStartTime();
-//		this.changeListeners = new Vector<StateHistoryTimeModelChangedListener>();
-//	}
-
 	public void setTime(double et)
 	{
+		if (Double.compare(this.et, et) == 0) return;
 		this.et = et;
 		fireTimeChangedListeners();
 	}
 
 	public void setTimeFraction(double fraction)
 	{
+		if (Double.compare(currentTimeFraction, fraction) == 0) return;
 		TimeWindow twindow = getDisplayedTimeWindow();
 		this.et = twindow.getStartTime() + fraction*(twindow.getStopTime() - twindow.getStartTime());
 		fireTimeChangedListeners();
@@ -57,7 +61,6 @@ public class StateHistoryTimeModel
 	public void setTimeWindow(TimeWindow twindow)
 	{
 		this.twindow = twindow;
-		System.out.println("StateHistoryTimeModel: setTimeWindow: setting time window to " + twindow);
 		fireTimeWindowChangedListeners();
 	}
 
@@ -84,7 +87,7 @@ public class StateHistoryTimeModel
 
 	private void fireTimeChangedListeners()
 	{
-		changeListeners.forEach( e -> e.timeChanged(et));
+		changeListeners.forEach( e -> { e.timeChanged(et);});
 		this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
 	}
 
@@ -130,4 +133,32 @@ public class StateHistoryTimeModel
 		return maxFractionDisplayed;
 	}
 
+    public Date getDateForET(double et)
+    {
+    	Date date = null;
+ 		try
+ 		{
+ 			date = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS").parse(TimeUtil.et2str(et).substring(0, 23));
+ 		} catch (ParseException pe)
+ 		{
+ 			// TODO Auto-generated catch block
+ 			pe.printStackTrace();
+ 		}
+ 		return date;
+    }
+
+    public DateTime getDateTimeForET(double et)
+    {
+    	Date date = getDateForET(et);
+    	DateTime dt = new DateTime(date);
+        DateTime dt1 = ISODateTimeFormat.dateTimeParser().parseDateTime(dt.toString());
+ 		return dt1;
+    }
+
+    public double getETForDate(Date dateTime)
+    {
+        DateTime dt = new DateTime(dateTime);
+        DateTime dt1 = ISODateTimeFormat.dateTimeParser().parseDateTime(dt.toString());
+        return new Double(dt1.toDate().getTime());
+    }
 }

@@ -5,6 +5,8 @@ import java.util.List;
 
 import edu.jhuapl.sbmt.stateHistory.model.stateHistory.StateHistoryCollection;
 
+import glum.gui.action.PopAction;
+
 /**
  * Object that defines the action: "Custom Color". (based on code from lopeznr1)
  *
@@ -15,7 +17,7 @@ import edu.jhuapl.sbmt.stateHistory.model.stateHistory.StateHistoryCollection;
  *
  * @param <G1>
  */
-class CustomStateHistoryColorAction<G1> extends StateHistoryPopAction<G1>
+class CustomStateHistoryColorAction<G1> extends PopAction<G1>
 {
 	// Ref vars
 //	/**

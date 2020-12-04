@@ -7,14 +7,17 @@ import javax.swing.JOptionPane;
 
 import org.apache.commons.io.FilenameUtils;
 
+import com.google.common.collect.ImmutableSet;
+
 import edu.jhuapl.saavtk.gui.dialog.CustomFileChooser;
-import edu.jhuapl.saavtk.gui.render.Renderer;
 import edu.jhuapl.sbmt.client.SmallBodyModel;
 import edu.jhuapl.sbmt.stateHistory.model.DefaultStateHistoryModelChangedListener;
 import edu.jhuapl.sbmt.stateHistory.model.StateHistoryModel;
 import edu.jhuapl.sbmt.stateHistory.model.interfaces.StateHistory;
 import edu.jhuapl.sbmt.stateHistory.model.io.StateHistoryIOException;
-import edu.jhuapl.sbmt.stateHistory.model.stateHistory.StateHistoryCollection;
+import edu.jhuapl.sbmt.stateHistory.model.io.StateHistoryModelIOHelper;
+import edu.jhuapl.sbmt.stateHistory.model.stateHistory.StateHistoryKey;
+import edu.jhuapl.sbmt.stateHistory.rendering.model.StateHistoryRendererManager;
 import edu.jhuapl.sbmt.stateHistory.ui.state.version2.table.StateHistoryTableView;
 
 import glum.item.ItemEventType;
@@ -33,18 +36,17 @@ public class StateHistoryIntervalSelectionController
 	 * @param bodyModel
 	 * @param renderer
 	 */
-	public StateHistoryIntervalSelectionController(StateHistoryModel historyModel, SmallBodyModel bodyModel, Renderer renderer)
+	public StateHistoryIntervalSelectionController(StateHistoryModel historyModel, SmallBodyModel bodyModel, StateHistoryRendererManager rendererManager)
 	{
-		initializeIntervalSelectionPanel(historyModel, bodyModel, renderer);
+		initializeIntervalSelectionPanel(historyModel, bodyModel, rendererManager);
 	}
 
 	/**
 	 * Sets up listeners for various UI components
 	 */
-	private void initializeIntervalSelectionPanel(StateHistoryModel historyModel, SmallBodyModel bodyModel, Renderer renderer)
+	private void initializeIntervalSelectionPanel(StateHistoryModel historyModel, SmallBodyModel bodyModel, StateHistoryRendererManager rendererManager)
     {
-		StateHistoryCollection runs = historyModel.getRuns();
-		view = new StateHistoryTableView(runs);
+		view = new StateHistoryTableView(rendererManager);
 
 		//Queries for a file to load history from, passing to the model for loading
         view.getLoadStateHistoryButton().addActionListener(e -> {
@@ -53,9 +55,10 @@ public class StateHistoryIntervalSelectionController
         	if (file == null) return;
         	try
 			{
-				historyModel.loadIntervalFromFile(file, bodyModel);
+        		StateHistoryModelIOHelper.loadStateHistoryFromFile(file, bodyModel.getModelName(), new StateHistoryKey(historyModel.getRuns()));
+//				historyModel.loadIntervalFromFile(file, bodyModel);
 			}
-        	catch (StateHistoryIOException | IOException e1)
+        	catch (StateHistoryIOException e1)
 			{
         		JOptionPane.showMessageDialog(null, e1.getMessage(), "Loading Error",
                         JOptionPane.ERROR_MESSAGE);
@@ -74,10 +77,10 @@ public class StateHistoryIntervalSelectionController
                     // remove the extension (if any) and replace it with ".csv"
                     file = new File(file.getParentFile(), FilenameUtils.getBaseName(file.getName())+".csv");
                 }
-                StateHistory history = runs.getSelectedItems().asList().get(0);
+                StateHistory history = rendererManager.getSelectedItems().asList().get(0);
                 try
 				{
-					historyModel.saveHistoryToFile(history, file);
+                	StateHistoryModelIOHelper.saveIntervalToFile(bodyModel.getModelName(), history, file.getAbsolutePath());
 				}
                 catch (StateHistoryIOException e1)
 				{
@@ -99,7 +102,7 @@ public class StateHistoryIntervalSelectionController
         	if (view.getTable().getSelectedRowCount() == 0) return;
         	int n = JOptionPane.showOptionDialog(view, "Delete selected trajectories?", "Confirm Deletion", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE, null, null, null);
         	if (n == JOptionPane.NO_OPTION) return;
-    		for (StateHistory history : runs.getSelectedItems())
+    		for (StateHistory history : rendererManager.getSelectedItems())
     		{
     			try
 				{
@@ -118,13 +121,13 @@ public class StateHistoryIntervalSelectionController
         //For each of the selected items, set their visiblity to true
         view.getShowStateHistoryButton().addActionListener(e ->
 		{
-			runs.getSelectedItems().forEach(history -> { runs.setVisibility(history, true); } );
+			rendererManager.getSelectedItems().forEach(history -> { rendererManager.setVisibility(history, true); } );
 		});
 
         //For each of the selected items, set the visibility to false
-        view.getRemoveStateHistoryButton().addActionListener(e ->
+        view.getHideStateHistoryButton().addActionListener(e ->
         {
-        	runs.getSelectedItems().forEach(history -> { runs.setVisibility(history, false); } );
+        	rendererManager.getSelectedItems().forEach(history -> { rendererManager.setVisibility(history, false); } );
         });
 
         //If a new state history segment is created, repaint the table
@@ -145,27 +148,31 @@ public class StateHistoryIntervalSelectionController
 
         //If the vtk properties of the state histories change, repaint the table and reset the clipping
         //range to ensure things are updated on the renderer
-        runs.addPropertyChangeListener(evt ->
+        rendererManager.addPropertyChangeListener(evt ->
 		{
 			view.getTable().repaint();
-			renderer.getRenderWindowPanel().resetCameraClippingRange();
+			rendererManager.getRenderer().getRenderWindowPanel().resetCameraClippingRange();
 		});
 
         //Responds to changes in item selection.  Enables/disables buttons, and fades displayed trajectories
         //in the renderer appropriately
-        runs.addListener((aSource, aEventType) ->
+        rendererManager.addListener((aSource, aEventType) ->
 		{
 			try {
 				if (aEventType != ItemEventType.ItemsSelected) return;
-				view.getRemoveStateHistoryButton().setEnabled(runs.getSelectedItems().size() > 0);
-				view.getShowStateHistoryButton().setEnabled(runs.getSelectedItems().size() > 0);
-				view.getSaveStateHistoryButton().setEnabled(runs.getSelectedItems().size() == 1);
-				for (StateHistory history : runs.getAllItems())
+				ImmutableSet<StateHistory> selectedItems = rendererManager.getSelectedItems();
+
+				view.getSaveStateHistoryButton().setEnabled(selectedItems.size() == 1);
+				boolean allMapped = true;
+				boolean allShown = true;
+				for (StateHistory history : selectedItems)
 				{
-					history.getTrajectory().setFaded(!runs.getSelectedItems().contains(history));
-					runs.refreshColoring(history);
+					if (history.isMapped() == false) allMapped = false;
+					if (history.isVisible() == false) allShown = false;
 				}
-				runs.updateTimeBarValue();
+				view.getHideStateHistoryButton().setEnabled((selectedItems.size() > 0) && allShown);
+				view.getShowStateHistoryButton().setEnabled((selectedItems.size() > 0) && allMapped);
+				view.getDeleteStateHistoryButton().setEnabled(selectedItems.size() > 0);
 			}
 			catch (Exception e) {
 				e.printStackTrace();

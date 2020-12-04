@@ -7,6 +7,8 @@ import edu.jhuapl.saavtk.color.provider.ColorProvider;
 import edu.jhuapl.saavtk.color.provider.ConstColorProvider;
 import edu.jhuapl.sbmt.stateHistory.model.stateHistory.StateHistoryCollection;
 
+import glum.gui.action.PopAction;
+
 /**
  * Object that defines the action: "Fixed Color" (based on code from lopeznr1)
  *
@@ -17,7 +19,7 @@ import edu.jhuapl.sbmt.stateHistory.model.stateHistory.StateHistoryCollection;
  *
  * @param <G1>
  */
-class FixedStateHistoryColorAction<G1> extends StateHistoryPopAction<G1>
+class FixedStateHistoryColorAction<G1> extends PopAction<G1>
 {
 	// Ref vars
 //	/**

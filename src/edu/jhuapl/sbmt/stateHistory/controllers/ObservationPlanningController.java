@@ -7,7 +7,6 @@ import javax.swing.JPanel;
 
 import edu.jhuapl.saavtk.gui.render.Renderer;
 import edu.jhuapl.saavtk.model.ModelManager;
-import edu.jhuapl.saavtk.model.ModelNames;
 import edu.jhuapl.saavtk.model.plateColoring.ColoringDataManager;
 import edu.jhuapl.sbmt.client.SmallBodyModel;
 import edu.jhuapl.sbmt.client.SmallBodyViewConfig;
@@ -15,14 +14,16 @@ import edu.jhuapl.sbmt.stateHistory.controllers.imagers.PlannedImageTableControl
 import edu.jhuapl.sbmt.stateHistory.controllers.lidars.PlannedLidarTableController;
 import edu.jhuapl.sbmt.stateHistory.controllers.spectrometers.PlannedSpectrumTableController;
 import edu.jhuapl.sbmt.stateHistory.controllers.viewControls.ObservationPlanningViewControlsController;
-import edu.jhuapl.sbmt.stateHistory.model.DefaultStateHistoryModelChangedListener;
+import edu.jhuapl.sbmt.stateHistory.model.io.StateHistoryInvalidTimeException;
 import edu.jhuapl.sbmt.stateHistory.model.planning.PlannedDataActorRegister;
 import edu.jhuapl.sbmt.stateHistory.model.planning.imagers.PlannedImageCollection;
 import edu.jhuapl.sbmt.stateHistory.model.planning.lidar.PlannedLidarTrackCollection;
 import edu.jhuapl.sbmt.stateHistory.model.planning.spectrometers.PlannedSpectrumCollection;
 import edu.jhuapl.sbmt.stateHistory.model.stateHistory.StateHistoryCollection;
+import edu.jhuapl.sbmt.stateHistory.model.time.BaseStateHistoryTimeModelChangedListener;
 import edu.jhuapl.sbmt.stateHistory.model.time.StateHistoryTimeModel;
 import edu.jhuapl.sbmt.stateHistory.rendering.PlannedDataProperties;
+import edu.jhuapl.sbmt.stateHistory.rendering.model.StateHistoryRendererManager;
 import edu.jhuapl.sbmt.stateHistory.ui.ObservationPlanningView;
 import edu.jhuapl.sbmt.stateHistory.ui.state.version2.StateHistoryIntervalPlaybackPanel;
 
@@ -48,31 +49,52 @@ public class ObservationPlanningController
      */
     private StateHistoryIntervalPlaybackController intervalPlaybackController;
 
-	public ObservationPlanningController(final ModelManager modelManager, SmallBodyModel smallBodyModel, Renderer renderer, SmallBodyViewConfig config, ColoringDataManager coloringDataManager)
+	public ObservationPlanningController(final ModelManager modelManager, SmallBodyModel smallBodyModel, StateHistoryRendererManager rendererManager, SmallBodyViewConfig config, ColoringDataManager coloringDataManager)
 	{
 		timeModel = StateHistoryTimeModel.getInstance();
-//		LiveColorableManager.setStateHistoryTimeModel(timeModel);
-		stateHistoryController = new StateHistoryController(modelManager, renderer, timeModel);
-		viewControlsController = new ObservationPlanningViewControlsController(stateHistoryController.getHistoryModel(), modelManager, renderer, coloringDataManager);
-		this.intervalPlaybackController = new StateHistoryIntervalPlaybackController(stateHistoryController.getHistoryModel(), renderer, timeModel);
+		StateHistoryCollection runs = rendererManager.getRuns();
+//		StateHistoryCollection runs = (StateHistoryCollection)modelManager.getModel(ModelNames.STATE_HISTORY_COLLECTION);
+//		StateHistoryRendererManager rendererManager = new StateHistoryRendererManager(smallBodyModel, runs, renderer);
+//		modelManager.getAllModels().put(ModelNames.STATE_HISTORY_COLLECTION_ELEMENTS, rendererManager)
+;		stateHistoryController = new StateHistoryController(modelManager, rendererManager, timeModel);
+		viewControlsController = new ObservationPlanningViewControlsController(stateHistoryController.getHistoryModel(), modelManager, rendererManager, coloringDataManager);
+		this.intervalPlaybackController = new StateHistoryIntervalPlaybackController(rendererManager, timeModel);
 
 
 		view.addTab("S/C Trajectory", stateHistoryController.getView());
 		intervalPlaybackController.getView().setEnabled(false);
 		registrar = new PlannedDataActorRegister();
 
-		stateHistoryController.getHistoryModel().addStateHistoryModelChangedListener(new DefaultStateHistoryModelChangedListener() {
+		timeModel.addTimeModelChangeListener(new BaseStateHistoryTimeModelChangedListener() {
 
 			@Override
-			public void timeChanged(Double t)
+			public void timeChanged(double et)
 			{
+//				Logger.getAnonymousLogger().log(Level.INFO, "time changed");
 				// TODO Auto-generated method stub
-				super.timeChanged(t);
-				imageCollection.propertyChange(new PropertyChangeEvent(this, PlannedDataProperties.TIME_CHANGED, null, t));
-				lidarTrackCollection.propertyChange(new PropertyChangeEvent(this, PlannedDataProperties.TIME_CHANGED, null, t));
+				super.timeChanged(et);
+				if (imageCollection.getNumItems() > 0)
+					imageCollection.propertyChange(new PropertyChangeEvent(this, PlannedDataProperties.TIME_CHANGED, null, et));
+				if (lidarTrackCollection.getNumItems() > 0)
+					lidarTrackCollection.propertyChange(new PropertyChangeEvent(this, PlannedDataProperties.TIME_CHANGED, null, et));
+
+//                Logger.getAnonymousLogger().log(Level.INFO, "Setting history model times");
+                try
+				{
+                	if (runs.getCurrentRun() != null)
+                		runs.getCurrentRun().setCurrentTime(et);
+				}
+				catch (StateHistoryInvalidTimeException e)
+				{
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+//                Logger.getAnonymousLogger().log(Level.INFO, "Set current time");
 			}
+
 		});
 
+		Renderer renderer = rendererManager.getRenderer();
 		imageCollection = new PlannedImageCollection(smallBodyModel);
 		imageTableController = new PlannedImageTableController(modelManager, renderer, imageCollection, config);
 		if (config.imagingInstruments.length > 0) view.addTab("Imagery", imageTableController.getView());
@@ -86,15 +108,14 @@ public class ObservationPlanningController
 		if (config.hasLidarData) view.addTab("LIDAR", lidarTableController.getView());
 		view.addTab("View Controls", viewControlsController.getView());
 
-		StateHistoryCollection runs = (StateHistoryCollection)modelManager.getModel(ModelNames.STATE_HISTORY_COLLECTION);
-        runs.addListener((aSource, aEventType) -> {
+        rendererManager.addListener((aSource, aEventType) -> {
 			if (aEventType != ItemEventType.ItemsSelected) return;
-			intervalPlaybackController.getView().setEnabled(runs.getSelectedItems().size() > 0);
+			intervalPlaybackController.getView().setEnabled(rendererManager.getSelectedItems().size() > 0);
 			imageCollection.updateStateHistorySource(runs.getCurrentRun());
 			lidarTrackCollection.updateStateHistorySource(runs.getCurrentRun());
-			runs.clearPlannedScience();
-			runs.addPlannedScience(imageCollection.getProps());
-			runs.addPlannedScience(lidarTrackCollection.getProps());
+			rendererManager.clearPlannedScience();
+//			runs.addPlannedScience(imageCollection.getProps());
+			rendererManager.addPlannedScienceActors(lidarTrackCollection.getProps());
 		});
 
         intervalPlaybackPanel = intervalPlaybackController.getView();

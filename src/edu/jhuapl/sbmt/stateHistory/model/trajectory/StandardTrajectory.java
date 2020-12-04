@@ -1,7 +1,10 @@
 package edu.jhuapl.sbmt.stateHistory.model.trajectory;
 
+import java.awt.Color;
+
 import edu.jhuapl.sbmt.pointing.IPointingProvider;
 import edu.jhuapl.sbmt.pointing.spice.SpicePointingProvider;
+import edu.jhuapl.sbmt.stateHistory.model.interfaces.StateHistory;
 import edu.jhuapl.sbmt.stateHistory.model.interfaces.Trajectory;
 
 public class StandardTrajectory implements Trajectory
@@ -35,7 +38,7 @@ public class StandardTrajectory implements Trajectory
 	/**
 	 *
 	 */
-	private double[] color;
+	private Color color;
 
 	/**
 	 *
@@ -52,14 +55,17 @@ public class StandardTrajectory implements Trajectory
 
 	private double timeStep;
 
+	private StateHistory history;
+
 	/**
 	 *
 	 */
-	public StandardTrajectory()
+	public StandardTrajectory(StateHistory history)
 	{
 		super();
 		trajectoryDescription = "";
-		this.color = new double[] { 0, 255, 255, 255 };
+		this.history = history;
+		this.color = new Color( 0, 255, 255, 255 );
 	}
 
 	/**
@@ -76,7 +82,7 @@ public class StandardTrajectory implements Trajectory
 	public void setFaded(boolean isFaded)
 	{
 		this.isFaded = isFaded;
-		this.color[3] = isFaded ? 50 : 255;
+		this.color = new Color(color.getRed(), color.getGreen(), color.getBlue(), isFaded ? 50 : 255);
 	}
 
 	/**
@@ -195,7 +201,7 @@ public class StandardTrajectory implements Trajectory
 	/**
 	 * @return the color
 	 */
-	public double[] getColor()
+	public Color getColor()
 	{
 		return color;
 	}
@@ -203,7 +209,7 @@ public class StandardTrajectory implements Trajectory
 	/**
 	 * @param color the color to set
 	 */
-	public void setColor(double[] color)
+	public void setColor(Color color)
 	{
 		this.color = color;
 	}
@@ -278,6 +284,14 @@ public class StandardTrajectory implements Trajectory
 	public double getTimeStep()
 	{
 		return timeStep;
+	}
+
+	/**
+	 * @return the history
+	 */
+	public StateHistory getHistory()
+	{
+		return history;
 	}
 
 }

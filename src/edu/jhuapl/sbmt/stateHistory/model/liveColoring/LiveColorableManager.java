@@ -23,24 +23,17 @@ public class LiveColorableManager
 		return plateValueCalculators.get(name);
 	}
 
-//	public static void setStateHistoryTimeModel(StateHistoryTimeModel timeModel)
-//	{
-//		LiveColorableManager.timeModel = timeModel;
-//	}
-
 	public static void updateFootprint(PerspectiveImageFootprint footprint)
 	{
 		for (String name : plateValueCalculators.keySet())
 		{
 			ICalculatedPlateValues plateValueCalculator = plateValueCalculators.get(name);
-			System.out.println("LiveColorableManager: updateFootprint: updating " + name);
 			if (plateValueCalculator instanceof IFootprintConfinedPlateValues)
 			{
 				((IFootprintConfinedPlateValues)plateValueCalculator).setFacetColoringDataForFootprint(footprint);
 			}
 		}
 	}
-
 
 	public static void main(String[] args)
 	{

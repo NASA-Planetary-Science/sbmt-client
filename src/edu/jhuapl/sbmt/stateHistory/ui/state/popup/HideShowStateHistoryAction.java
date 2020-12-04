@@ -7,7 +7,9 @@ import javax.swing.JMenuItem;
 
 import edu.jhuapl.saavtk.gui.util.MessageUtil;
 import edu.jhuapl.sbmt.stateHistory.model.interfaces.StateHistory;
-import edu.jhuapl.sbmt.stateHistory.model.stateHistory.StateHistoryCollection;
+import edu.jhuapl.sbmt.stateHistory.rendering.model.StateHistoryRendererManager;
+
+import glum.gui.action.PopAction;
 
 /**
  * Object that defines the action: "Hide/Show Items". (based on code from lopeznr1)
@@ -18,19 +20,15 @@ import edu.jhuapl.sbmt.stateHistory.model.stateHistory.StateHistoryCollection;
  * @author steelrj1
  *
  */
-class HideShowStateHistoryAction extends StateHistoryPopAction<StateHistory>
+class HideShowStateHistoryAction extends PopAction<StateHistory>
 {
-	// Ref vars
-	/**
-	 *
-	 */
-	private final StateHistoryCollection refManager;
-
 	// Attributes
 	/**
 	 *
 	 */
 	private final String itemLabelStr;
+
+	private StateHistoryRendererManager rendererManager;
 
 	/**
 	 * Standard Constructor
@@ -39,11 +37,10 @@ class HideShowStateHistoryAction extends StateHistoryPopAction<StateHistory>
 	 * @param aManager
 	 * @param aItemLabelStr
 	 */
-	public HideShowStateHistoryAction(StateHistoryCollection aManager, String aItemLabelStr)
+	public HideShowStateHistoryAction(StateHistoryRendererManager rendererManager, String aItemLabelStr)
 	{
-		refManager = aManager;
-
 		itemLabelStr = aItemLabelStr;
+		this.rendererManager = rendererManager;
 	}
 
 	/**
@@ -55,12 +52,13 @@ class HideShowStateHistoryAction extends StateHistoryPopAction<StateHistory>
 		// Determine if all tracks are shown
 		boolean isAllShown = true;
 		for (StateHistory aItem : aItemL)
-			isAllShown &= refManager.getVisibility(aItem) == true;
+			isAllShown &= aItem.isVisible() == true;
 
 		// Update the tracks visibility based on whether they are all shown
 		boolean tmpBool = isAllShown == false;
 		for (StateHistory history : aItemL)
-			refManager.setVisibility(history, tmpBool);
+			rendererManager.setVisibility(history, tmpBool);
+//			history.setVisible(tmpBool);
 	}
 
 	/**
@@ -74,7 +72,7 @@ class HideShowStateHistoryAction extends StateHistoryPopAction<StateHistory>
 		// Determine if all items are shown
 		boolean isAllShown = true;
 		for (StateHistory aItem : aItemC)
-			isAllShown &= refManager.getVisibility(aItem) == true;
+			isAllShown &= aItem.isVisible() == true;
 
 		// Determine the display string
 		String displayStr = "Hide " + itemLabelStr;
@@ -84,6 +82,5 @@ class HideShowStateHistoryAction extends StateHistoryPopAction<StateHistory>
 
 		// Update the text of the associated MenuItem
 		aAssocMI.setText(displayStr);
-
 	}
 }

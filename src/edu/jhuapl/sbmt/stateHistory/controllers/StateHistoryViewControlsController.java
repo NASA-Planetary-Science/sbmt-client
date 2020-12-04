@@ -3,7 +3,6 @@ package edu.jhuapl.sbmt.stateHistory.controllers;
 import javax.swing.BoxLayout;
 import javax.swing.JPanel;
 
-import edu.jhuapl.saavtk.gui.render.Renderer;
 import edu.jhuapl.saavtk.model.plateColoring.ColoringDataManager;
 import edu.jhuapl.sbmt.stateHistory.controllers.viewControls.StateHistoryColoringOptionsController;
 import edu.jhuapl.sbmt.stateHistory.controllers.viewControls.StateHistoryDisplayItemsController;
@@ -11,6 +10,9 @@ import edu.jhuapl.sbmt.stateHistory.controllers.viewControls.StateHistoryFOVCont
 import edu.jhuapl.sbmt.stateHistory.controllers.viewControls.StateHistoryViewOptionsController;
 import edu.jhuapl.sbmt.stateHistory.model.StateHistoryModel;
 import edu.jhuapl.sbmt.stateHistory.model.viewOptions.RendererLookDirection;
+import edu.jhuapl.sbmt.stateHistory.rendering.model.StateHistoryRendererManager;
+
+import glum.item.ItemEventType;
 
 /**
  * Controller that governs the "View Controls" panel in the StateHistory tab
@@ -40,26 +42,31 @@ public class StateHistoryViewControlsController
 	 */
 	private StateHistoryViewOptionsController viewControls;
 
+	private StateHistoryRendererManager rendererManager;
+
+	private JPanel view = new JPanel();
+
 	/**
 	 * Constructor.  Takes in a <pre>historyModel</pre> and <pre>renderer</pre> object to
 	 * help populate the user interface
 	 * @param historyModel
 	 * @param renderer
 	 */
-	public StateHistoryViewControlsController(StateHistoryModel historyModel, Renderer renderer, ColoringDataManager coloringDataManager)
+	public StateHistoryViewControlsController(StateHistoryModel historyModel, StateHistoryRendererManager rendererManager, ColoringDataManager coloringDataManager)
 	{
-		initUI(historyModel, renderer, coloringDataManager);
+		this.rendererManager = rendererManager;
+		initUI(historyModel, coloringDataManager);
 	}
 
 	/**
 	 * Initializes the user interface using the given <pre>historyModel</pre> and <pre>renderer</pre>
 	 */
-	private void initUI(StateHistoryModel historyModel, Renderer renderer, ColoringDataManager coloringDataManager)
+	private void initUI(StateHistoryModel historyModel, ColoringDataManager coloringDataManager)
 	{
-        viewControls = new StateHistoryViewOptionsController(historyModel.getRuns(), renderer);
-        coloringControls = new StateHistoryColoringOptionsController(historyModel.getRuns(), renderer, coloringDataManager);
-        displayItemsControls = new StateHistoryDisplayItemsController(historyModel.getRuns(), renderer);
-        fovControls = new StateHistoryFOVController(historyModel.getRuns());
+        viewControls = new StateHistoryViewOptionsController(rendererManager);
+        coloringControls = new StateHistoryColoringOptionsController(rendererManager, coloringDataManager);
+        displayItemsControls = new StateHistoryDisplayItemsController(rendererManager);
+        fovControls = new StateHistoryFOVController(rendererManager);
 
         //this is a cross panel listener action, so set it up here, above the 3 controllers
         viewControls.getView().getViewOptions().addActionListener(e ->
@@ -69,6 +76,12 @@ public class StateHistoryViewControlsController
         	RendererLookDirection selectedView = (RendererLookDirection) viewControls.getView().getViewOptions().getSelectedItem();
 			boolean scSelected = (selectedView == RendererLookDirection.SPACECRAFT);
         });
+
+        rendererManager.addListener((aSource, aEventType) ->
+		{
+			if (aEventType != ItemEventType.ItemsChanged) return;
+			renderView();
+		});
 	}
 
 	public void setEnabled(boolean enabled)
@@ -79,6 +92,27 @@ public class StateHistoryViewControlsController
 		fovControls.getView().setEnabled(enabled);
 	}
 
+	private void renderView()
+	{
+		view.removeAll();
+		view.setLayout(new BoxLayout(view, BoxLayout.Y_AXIS));
+        view.add(displayItemsControls.getView());
+
+        if (rendererManager.getRuns().getAvailableFOVs().size() > 0)
+        {
+        	view.add(viewControls.getView());
+	        view.add(fovControls.getView());
+	        view.add(coloringControls.getView());
+        }
+        else
+        {
+        	JPanel horizPanel = new JPanel();
+        	horizPanel.setLayout(new BoxLayout(horizPanel, BoxLayout.X_AXIS));
+        	horizPanel.add(viewControls.getView());
+        	horizPanel.add(coloringControls.getView());
+        	view.add(horizPanel);
+        }
+	}
 
 	/**
 	 * The panel associated with this controller
@@ -86,12 +120,6 @@ public class StateHistoryViewControlsController
 	 */
 	public JPanel getView()
 	{
-		JPanel view = new JPanel();
-        view.setLayout(new BoxLayout(view, BoxLayout.Y_AXIS));
-        view.add(displayItemsControls.getView());
-        view.add(viewControls.getView());
-        view.add(fovControls.getView());
-        view.add(coloringControls.getView());
 		return view;
 	}
 }

@@ -116,25 +116,26 @@ public class PlannedImageCollection extends SaavtkItemManager<PlannedImage>
 		columnNames.add("Emission Angle");
 		String unit = "degrees";
 		int numberElements = smallBodyModel.getCellNormals().GetNumberOfTuples();
-		System.out.println("PlannedImageCollection: createColoringData: number of elements " + numberElements);
 		boolean hasNulls = true;
 		vtkFloatArray values = new vtkFloatArray();
 		values.SetNumberOfValues(numberElements);
+		values.SetNumberOfComponents(1);
+		values.FillComponent(0, 0);
 		IndexableTuple indexableTuple = ColoringDataUtils.createIndexableFromVtkArray(values);
 		ColoringData coloringData = ColoringDataFactory.of(name, unit, numberElements, columnNames, hasNulls, indexableTuple);
 //		coloringData.getData().SetValue(0, 500);
 		nameToColoringMap.put(dataName, coloringData);
 		LoadableColoringData loadableColorData = ColoringDataFactory.of(coloringData, "PlannedCoverageEmission");
-		try
-		{
-			loadableColorData.save();
-		}
-		catch (IOException e)
-		{
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		coloringDataManager.addCustom(loadableColorData);
+//		try
+//		{
+//			loadableColorData.save();
+//		}
+//		catch (IOException e)
+//		{
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		}
+//		coloringDataManager.addCustom(loadableColorData);
 		return coloringData;
 
 	}

@@ -5,9 +5,8 @@ import java.awt.event.ItemListener;
 
 import javax.swing.DefaultComboBoxModel;
 
-import edu.jhuapl.saavtk.gui.render.Renderer;
-import edu.jhuapl.sbmt.stateHistory.model.interfaces.StateHistory;
 import edu.jhuapl.sbmt.stateHistory.model.stateHistory.StateHistoryCollection;
+import edu.jhuapl.sbmt.stateHistory.rendering.model.StateHistoryRendererManager;
 import edu.jhuapl.sbmt.stateHistory.ui.state.version2.viewControls.StateHistoryDisplayItemsPanel;
 
 /**
@@ -28,29 +27,23 @@ public class StateHistoryDisplayItemsController implements ItemListener
 	private StateHistoryCollection runs;
 
 	/**
-	 * The renderer that is being updated by the elements governed by this controller
-	 */
-	private Renderer renderer;
-
-	/**
 	 * Constructor.  Sets state properties and initializes view control panel
 	 * @param historyModel
 	 * @param renderer
 	 */
-	public StateHistoryDisplayItemsController(StateHistoryCollection runs, Renderer renderer)
+	public StateHistoryDisplayItemsController(StateHistoryRendererManager rendererManager)
 	{
-		this.runs = runs;
-		this.renderer = renderer;
-		initializeViewControlPanel();
+		this.runs = rendererManager.getRuns();
+		initializeViewControlPanel(rendererManager);
 	}
 
 	/**
 	 * Initializes the view control panel, and sets up action listeners, etc
 	 */
-	private void initializeViewControlPanel()
+	private void initializeViewControlPanel(StateHistoryRendererManager rendererManager)
 	{
 		view = new StateHistoryDisplayItemsPanel();
-		view.setStateHistoryCollection(runs);
+		view.setStateHistoryCollection(rendererManager);
 
 		String[] distanceChoices =
 		{ "Distance to Center", "Distance to Surface" };
@@ -60,8 +53,8 @@ public class StateHistoryDisplayItemsController implements ItemListener
 	@Override
 	public void itemStateChanged(ItemEvent e) throws NullPointerException
 	{
-		Object source = e.getItemSelectable();
-		StateHistory currentRun = runs.getCurrentRun();
+//		Object source = e.getItemSelectable();
+//		StateHistory currentRun = runs.getCurrentRun();
 	}
 
 	/**

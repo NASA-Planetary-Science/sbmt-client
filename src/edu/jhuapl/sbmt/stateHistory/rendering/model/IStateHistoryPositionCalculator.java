@@ -1,5 +1,7 @@
 package edu.jhuapl.sbmt.stateHistory.rendering.model;
 
+import java.util.ArrayList;
+
 import edu.jhuapl.sbmt.model.image.perspectiveImage.PerspectiveImageFootprint;
 import edu.jhuapl.sbmt.model.image.perspectiveImage.PerspectiveImageFrustum;
 import edu.jhuapl.sbmt.stateHistory.model.interfaces.StateHistory;
@@ -29,7 +31,7 @@ public interface IStateHistoryPositionCalculator
 	 * @param time
 	 */
 	public void updateSpacecraftPosition(StateHistory history, double time, SpacecraftBody spacecraft, SpacecraftDirectionMarker scDirectionMarker,
-			SpacecraftLabel spacecraftLabelActor, PerspectiveImageFrustum[] fov, PerspectiveImageFootprint[] footprint);
+			SpacecraftLabel spacecraftLabelActor);
 
 	/**
 	 * @param lookDirection
@@ -42,4 +44,8 @@ public interface IStateHistoryPositionCalculator
 	 * @return
 	 */
 	public double[] getCurrentLookFromDirection();
+
+	public void updateFOVLocations(StateHistory history, ArrayList<PerspectiveImageFrustum> fov);
+
+	public void updateFootprintLocations(StateHistory history, ArrayList<PerspectiveImageFootprint> footprint);
 }
