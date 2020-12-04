@@ -711,12 +711,12 @@ public class SaturnConfigs extends SmallBodyViewConfig
                             "None" //
                     )
             };
-            c.imageSearchDefaultStartDate = new GregorianCalendar(2005, 8, 23, 0, 0, 0).getTime();
-            c.imageSearchDefaultEndDate = new GregorianCalendar(2010, 1, 14, 0, 0, 0).getTime();
+            c.imageSearchDefaultStartDate = new GregorianCalendar(2005, 1, 17, 0, 0, 0).getTime();
+            c.imageSearchDefaultEndDate = new GregorianCalendar(2017, 3, 18, 0, 0, 0).getTime();
             c.imageSearchFilterNames = new String[] {};
             c.imageSearchUserDefinedCheckBoxesNames = new String[] {};
-            c.imageSearchDefaultMaxSpacecraftDistance = 1.0e6;
-            c.imageSearchDefaultMaxResolution = 1.0e3;
+            c.imageSearchDefaultMaxSpacecraftDistance = 1.0e7;
+            c.imageSearchDefaultMaxResolution = 1.0e6;
 
             DBRunInfo[] databaseRunInfos_Daly = c.databaseRunInfos = new DBRunInfo[] { //
                     new DBRunInfo(ImageSource.GASKELL, Instrument.ISS, c.body.toString(), //
@@ -741,12 +741,12 @@ public class SaturnConfigs extends SmallBodyViewConfig
             int numberPlates = 49152;
             c.setResolution(ImmutableList.of(numberPlates + " plates"), ImmutableList.of(numberPlates));
             c.imagingInstruments = imagingInstruments_Daly;
-            c.imageSearchDefaultStartDate = new GregorianCalendar(2005, 8, 23, 0, 0, 0).getTime();
-            c.imageSearchDefaultEndDate = new GregorianCalendar(2010, 1, 14, 0, 0, 0).getTime();
+            c.imageSearchDefaultStartDate = new GregorianCalendar(2005, 1, 17, 0, 0, 0).getTime();
+            c.imageSearchDefaultEndDate = new GregorianCalendar(2017, 3, 18, 0, 0, 0).getTime();
             c.imageSearchFilterNames = new String[] {};
             c.imageSearchUserDefinedCheckBoxesNames = new String[] {};
-            c.imageSearchDefaultMaxSpacecraftDistance = 1.0e6;
-            c.imageSearchDefaultMaxResolution = 1.0e3;
+            c.imageSearchDefaultMaxSpacecraftDistance = 1.0e7;
+            c.imageSearchDefaultMaxResolution = 1.0e6;
             c.databaseRunInfos = databaseRunInfos_Daly;
             c.presentInMissions = new SbmtMultiMissionTool.Mission[] {SbmtMultiMissionTool.Mission.PUBLIC_RELEASE, SbmtMultiMissionTool.Mission.TEST_PUBLIC_RELEASE, SbmtMultiMissionTool.Mission.STAGE_PUBLIC_RELEASE, SbmtMultiMissionTool.Mission.STAGE_APL_INTERNAL, SbmtMultiMissionTool.Mission.APL_INTERNAL, SbmtMultiMissionTool.Mission.TEST_APL_INTERNAL};
             c.defaultForMissions = new SbmtMultiMissionTool.Mission[] {};
