@@ -531,79 +531,6 @@ public class SaturnConfigs extends SmallBodyViewConfig
             c.presentInMissions = new SbmtMultiMissionTool.Mission[] {SbmtMultiMissionTool.Mission.PUBLIC_RELEASE, SbmtMultiMissionTool.Mission.TEST_PUBLIC_RELEASE, SbmtMultiMissionTool.Mission.STAGE_PUBLIC_RELEASE, SbmtMultiMissionTool.Mission.STAGE_APL_INTERNAL, SbmtMultiMissionTool.Mission.APL_INTERNAL, SbmtMultiMissionTool.Mission.TEST_APL_INTERNAL};
             c.defaultForMissions = new SbmtMultiMissionTool.Mission[] {};
 
-            //configArray.add(c);
-
-            c = new SaturnConfigs();
-            c.body = ShapeModelBody.EPIMETHEUS;
-            c.type = BodyType.PLANETS_AND_SATELLITES;
-            c.population = ShapeModelPopulation.SATURN;
-            c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
-            c.author = ShapeModelType.provide("Daly");
-            c.modelLabel = "Daly et al. (in progress)";
-            c.rootDirOnServer = "/janus/daly-2020";
-            c.shapeModelFileExtension = ".obj";
-            c.hasColoringData = false;
-            // This is actaully correct by default for a 4-resolution model:
-            // c.setResolution(ImmutableList.copyOf(DEFAULT_GASKELL_LABELS_PER_RESOLUTION), ImmutableList.copyOf(DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION));
-
-            String tableBaseName = (c.body.name() + "_" + c.author.toString() + "_").replaceAll("[\\s-]", "_").toLowerCase();
-
-            String issTable = tableBaseName + "iss";
-            String issRootDir = c.rootDirOnServer + "/iss";
-            String issDataDir = "/cassini/iss/images";
-            String issGalleryDir = "/cassini/iss/gallery";
-
-            ImagingInstrument[] imagingInstruments_Daly = c.imagingInstruments = new ImagingInstrument[] {
-                    new ImagingInstrument( //
-                            SpectralImageMode.MONO, //
-                            new GenericPhpQuery(issRootDir, issTable, issTable, issGalleryDir, issDataDir), //
-                            ImageType.valueOf("ISS_IMAGE"), //
-                            SumFiles, //
-                            Instrument.ISS, //
-                            0., //
-                            "None" //
-                    )
-            };
-            c.imageSearchDefaultStartDate = new GregorianCalendar(2005, 8, 23, 0, 0, 0).getTime();
-            c.imageSearchDefaultEndDate = new GregorianCalendar(2010, 1, 14, 0, 0, 0).getTime();
-            c.imageSearchFilterNames = new String[] {};
-            c.imageSearchUserDefinedCheckBoxesNames = new String[] {};
-            c.imageSearchDefaultMaxSpacecraftDistance = 1.0e6;
-            c.imageSearchDefaultMaxResolution = 1.0e3;
-
-            DBRunInfo[] databaseRunInfos_Daly = c.databaseRunInfos = new DBRunInfo[] { //
-                    new DBRunInfo(ImageSource.GASKELL, Instrument.ISS, c.body.toString(), //
-                            issRootDir + "/imagelist-fullpath-sum.txt", issTable) //
-            };
-
-            c.presentInMissions = new SbmtMultiMissionTool.Mission[] {SbmtMultiMissionTool.Mission.PUBLIC_RELEASE, SbmtMultiMissionTool.Mission.TEST_PUBLIC_RELEASE, SbmtMultiMissionTool.Mission.STAGE_PUBLIC_RELEASE, SbmtMultiMissionTool.Mission.STAGE_APL_INTERNAL, SbmtMultiMissionTool.Mission.APL_INTERNAL, SbmtMultiMissionTool.Mission.TEST_APL_INTERNAL};
-            c.defaultForMissions = new SbmtMultiMissionTool.Mission[] {};
-
-            configArray.add(c);
-
-            c = new SaturnConfigs();
-            c.body = ShapeModelBody.EPIMETHEUS;
-            c.type = BodyType.PLANETS_AND_SATELLITES;
-            c.population = ShapeModelPopulation.SATURN;
-            c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
-            c.author = ShapeModelType.THOMAS;
-            c.modelLabel = "Thomas et al. (2018)";
-            c.rootDirOnServer = "/janus/thomas-2018";
-            c.shapeModelFileExtension = ".obj";
-            c.hasColoringData = false;
-            int numberPlates = 49152;
-            c.setResolution(ImmutableList.of(numberPlates + " plates"), ImmutableList.of(numberPlates));
-            c.imagingInstruments = imagingInstruments_Daly;
-            c.imageSearchDefaultStartDate = new GregorianCalendar(2005, 8, 23, 0, 0, 0).getTime();
-            c.imageSearchDefaultEndDate = new GregorianCalendar(2010, 1, 14, 0, 0, 0).getTime();
-            c.imageSearchFilterNames = new String[] {};
-            c.imageSearchUserDefinedCheckBoxesNames = new String[] {};
-            c.imageSearchDefaultMaxSpacecraftDistance = 1.0e6;
-            c.imageSearchDefaultMaxResolution = 1.0e3;
-            c.databaseRunInfos = databaseRunInfos_Daly;
-            c.presentInMissions = new SbmtMultiMissionTool.Mission[] {SbmtMultiMissionTool.Mission.PUBLIC_RELEASE, SbmtMultiMissionTool.Mission.TEST_PUBLIC_RELEASE, SbmtMultiMissionTool.Mission.STAGE_PUBLIC_RELEASE, SbmtMultiMissionTool.Mission.STAGE_APL_INTERNAL, SbmtMultiMissionTool.Mission.APL_INTERNAL, SbmtMultiMissionTool.Mission.TEST_APL_INTERNAL};
-            c.defaultForMissions = new SbmtMultiMissionTool.Mission[] {};
-
             configArray.add(c);
         }
 
@@ -711,12 +638,12 @@ public class SaturnConfigs extends SmallBodyViewConfig
                             "None" //
                     )
             };
-            c.imageSearchDefaultStartDate = new GregorianCalendar(2005, 1, 17, 0, 0, 0).getTime();
-            c.imageSearchDefaultEndDate = new GregorianCalendar(2017, 3, 18, 0, 0, 0).getTime();
+            c.imageSearchDefaultStartDate = new GregorianCalendar(2005, 8, 23, 0, 0, 0).getTime();
+            c.imageSearchDefaultEndDate = new GregorianCalendar(2010, 1, 14, 0, 0, 0).getTime();
             c.imageSearchFilterNames = new String[] {};
             c.imageSearchUserDefinedCheckBoxesNames = new String[] {};
-            c.imageSearchDefaultMaxSpacecraftDistance = 1.0e7;
-            c.imageSearchDefaultMaxResolution = 1.0e6;
+            c.imageSearchDefaultMaxSpacecraftDistance = 1.0e6;
+            c.imageSearchDefaultMaxResolution = 1.0e3;
 
             DBRunInfo[] databaseRunInfos_Daly = c.databaseRunInfos = new DBRunInfo[] { //
                     new DBRunInfo(ImageSource.GASKELL, Instrument.ISS, c.body.toString(), //
@@ -741,12 +668,12 @@ public class SaturnConfigs extends SmallBodyViewConfig
             int numberPlates = 49152;
             c.setResolution(ImmutableList.of(numberPlates + " plates"), ImmutableList.of(numberPlates));
             c.imagingInstruments = imagingInstruments_Daly;
-            c.imageSearchDefaultStartDate = new GregorianCalendar(2005, 1, 17, 0, 0, 0).getTime();
-            c.imageSearchDefaultEndDate = new GregorianCalendar(2017, 3, 18, 0, 0, 0).getTime();
+            c.imageSearchDefaultStartDate = new GregorianCalendar(2005, 8, 23, 0, 0, 0).getTime();
+            c.imageSearchDefaultEndDate = new GregorianCalendar(2010, 1, 14, 0, 0, 0).getTime();
             c.imageSearchFilterNames = new String[] {};
             c.imageSearchUserDefinedCheckBoxesNames = new String[] {};
-            c.imageSearchDefaultMaxSpacecraftDistance = 1.0e7;
-            c.imageSearchDefaultMaxResolution = 1.0e6;
+            c.imageSearchDefaultMaxSpacecraftDistance = 1.0e6;
+            c.imageSearchDefaultMaxResolution = 1.0e3;
             c.databaseRunInfos = databaseRunInfos_Daly;
             c.presentInMissions = new SbmtMultiMissionTool.Mission[] {SbmtMultiMissionTool.Mission.PUBLIC_RELEASE, SbmtMultiMissionTool.Mission.TEST_PUBLIC_RELEASE, SbmtMultiMissionTool.Mission.STAGE_PUBLIC_RELEASE, SbmtMultiMissionTool.Mission.STAGE_APL_INTERNAL, SbmtMultiMissionTool.Mission.APL_INTERNAL, SbmtMultiMissionTool.Mission.TEST_APL_INTERNAL};
             c.defaultForMissions = new SbmtMultiMissionTool.Mission[] {};
