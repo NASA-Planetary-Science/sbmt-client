@@ -33,6 +33,7 @@ import edu.jhuapl.sbmt.model.image.ImageCollection;
 import edu.jhuapl.sbmt.model.image.ImageKeyInterface;
 import edu.jhuapl.sbmt.model.image.ImagingInstrument;
 import edu.jhuapl.sbmt.model.image.perspectiveImage.PerspectiveImage;
+import edu.jhuapl.sbmt.util.ImageGalleryGenerator;
 
 public class OfflimbImageResultsTableController extends ImageResultsTableController
 {
@@ -40,7 +41,7 @@ public class OfflimbImageResultsTableController extends ImageResultsTableControl
 
     public OfflimbImageResultsTableController(ImagingInstrument instrument, ImageCollection imageCollection, ImageSearchModel model, Renderer renderer, SbmtInfoWindowManager infoPanelManager, SbmtSpectrumWindowManager spectrumPanelManager)
     {
-        super(instrument, imageCollection, model, renderer, infoPanelManager, spectrumPanelManager);
+        super(instrument, ImageGalleryGenerator.of(instrument), imageCollection, model, renderer, infoPanelManager, spectrumPanelManager);
         if (this.propertyChangeListener != null)
         {
             this.imageCollection.removePropertyChangeListener(this.propertyChangeListener);

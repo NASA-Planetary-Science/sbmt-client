@@ -91,7 +91,7 @@ public class ImageResultsTableController
 
     int modifiedTableRow = -1;
 
-    public ImageResultsTableController(ImagingInstrument instrument, ImageCollection imageCollection, ImageSearchModel model, Renderer renderer, SbmtInfoWindowManager infoPanelManager, SbmtSpectrumWindowManager spectrumPanelManager)
+    public ImageResultsTableController(ImagingInstrument instrument, ImageGalleryGenerator galleryGenerator, ImageCollection imageCollection, ImageSearchModel model, Renderer renderer, SbmtInfoWindowManager infoPanelManager, SbmtSpectrumWindowManager spectrumPanelManager)
     {
         this.modelManager = model.getModelManager();
         this.imageKeys = new ArrayList<ImageKeyInterface>();
@@ -104,7 +104,7 @@ public class ImageResultsTableController
         this.imageCollection = imageCollection;
         this.imageSearchModel = model;
         this.instrument = instrument;
-        this.galleryGenerator = ImageGalleryGenerator.of(instrument);
+        this.galleryGenerator = galleryGenerator;
         this.renderer = renderer;
         model.addResultsChangedListener(new ImageSearchResultsListener() {
 
