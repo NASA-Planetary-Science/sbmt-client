@@ -32,6 +32,8 @@ public class BasicConfigInfo implements MetadataManager
         return (publishedDataOnly ? "published/" : "proprietary/") + "allBodies-" + configInfoVersion;
     }
 
+    private static final SbmtMultiMissionTool.Mission[] EmptyMissionArray = new SbmtMultiMissionTool.Mission[0];
+
     ShapeModelPopulation population;
     ShapeModelBody system;
 	String shapeModelName;
@@ -43,8 +45,8 @@ public class BasicConfigInfo implements MetadataManager
 	private String configURL;
 	String version;
 	String modelLabel;
-	SbmtMultiMissionTool.Mission[] presentInVersion = null;
-	SbmtMultiMissionTool.Mission[] defaultFor = null;
+	SbmtMultiMissionTool.Mission[] presentInVersion = EmptyMissionArray;
+	SbmtMultiMissionTool.Mission[] defaultFor = EmptyMissionArray;
 	boolean enabled;
 
 	public BasicConfigInfo() {}
