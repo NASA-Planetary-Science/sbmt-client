@@ -74,7 +74,6 @@ public class StateHistoryViewOptionsController
 
 		view.getViewOptions().addActionListener(e ->
 		{
-			System.out.println("StateHistoryViewOptionsController: initializeViewControlPanel: view dir combo box fire " + ((RendererLookDirection) view.getViewOptions().getSelectedItem()));
 			rendererManager.updateLookDirection((RendererLookDirection) view.getViewOptions().getSelectedItem());
 //			updateLookDirection(rendererManager, model);
 		});

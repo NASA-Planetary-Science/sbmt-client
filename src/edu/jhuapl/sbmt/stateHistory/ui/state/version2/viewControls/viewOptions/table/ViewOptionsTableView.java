@@ -12,13 +12,13 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.JTextField;
-import javax.swing.border.TitledBorder;
 import javax.swing.table.TableCellRenderer;
 
 import edu.jhuapl.saavtk.color.gui.ColorProviderCellEditor;
 import edu.jhuapl.saavtk.color.gui.ColorProviderCellRenderer;
 import edu.jhuapl.saavtk.color.provider.ColorProvider;
 import edu.jhuapl.saavtk.color.provider.ConstColorProvider;
+import edu.jhuapl.saavtk.gui.panel.JComboBoxWithItemState;
 import edu.jhuapl.saavtk.gui.util.IconUtil;
 import edu.jhuapl.saavtk.gui.util.ToolTipUtil;
 import edu.jhuapl.sbmt.gui.table.EphemerisTimeRenderer;
@@ -70,16 +70,19 @@ public class ViewOptionsTableView extends JPanel
 
 	private StateHistoryRendererManager rendererManager;
 
+	private JComboBoxWithItemState<String> plateColorings = new JComboBoxWithItemState<String>();
+
 	/**
 	 * @wbp.parser.constructor
 	 */
 	/**
 	 * @param stateHistoryCollection
 	 */
-	public ViewOptionsTableView(StateHistoryRendererManager rendererManager)
+	public ViewOptionsTableView(StateHistoryRendererManager rendererManager, JComboBoxWithItemState<String> plateColorings)
 	{
 		this.stateHistoryCollection = rendererManager.getRuns();
 		this.rendererManager = rendererManager;
+		this.plateColorings = plateColorings;
 		init();
 	}
 
@@ -99,7 +102,7 @@ public class ViewOptionsTableView extends JPanel
 	public void setup()
 	{
 		setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
-		setBorder(new TitledBorder(null, "Available FOVs", TitledBorder.LEADING, TitledBorder.TOP, null, null));
+//		setBorder(new TitledBorder(null, "Available FOVs", TitledBorder.LEADING, TitledBorder.TOP, null, null));
 		JPanel panel_4 = new JPanel();
 		add(panel_4);
 		panel_4.setLayout(new BoxLayout(panel_4, BoxLayout.X_AXIS));
@@ -165,7 +168,8 @@ public class ViewOptionsTableView extends JPanel
 		tmpComposer.addAttribute(ViewOptionsFOVColumnLookup.Footprint, Boolean.class, "Footprint", null);
 		tmpComposer.addAttribute(ViewOptionsFOVColumnLookup.Color, Color.class, "Color", null);
 		tmpComposer.addAttribute(ViewOptionsFOVColumnLookup.Name, String.class, "Name", null);
-		tmpComposer.addAttribute(ViewOptionsFOVColumnLookup.SetAsCurrent, Boolean.class, "Set As Current", null);
+		tmpComposer.addAttribute(ViewOptionsFOVColumnLookup.SetAsCurrent, Boolean.class, "Use for Traj Color", null);
+		tmpComposer.addAttribute(ViewOptionsFOVColumnLookup.FPPlateColoring, String.class, "Footprint Plate Coloring", null);
 
 		EphemerisTimeRenderer tmpTimeRenderer = new EphemerisTimeRenderer(false);
 		tmpComposer.setEditor(ViewOptionsFOVColumnLookup.Frustum, new BooleanCellEditor());
@@ -180,7 +184,11 @@ public class ViewOptionsTableView extends JPanel
 		tmpComposer.setEditor(ViewOptionsFOVColumnLookup.SetAsCurrent, new BooleanCellEditor());
 		tmpComposer.setRenderer(ViewOptionsFOVColumnLookup.SetAsCurrent, new BooleanCellRenderer());
 
-		viewOptionsFOVTableHandler = new ViewOptionsFOVItemHandler(rendererManager, tmpComposer);
+//		JComboBox<String> fpColoringCombo = new JComboBox<String>(new Double[] {0.0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0});
+		plateColorings.setSelectedIndex(0);
+		tmpComposer.setEditor(ViewOptionsFOVColumnLookup.FPPlateColoring, new DefaultCellEditor(plateColorings));
+
+		viewOptionsFOVTableHandler = new ViewOptionsFOVItemHandler(rendererManager, tmpComposer, plateColorings);
 		ItemProcessor<String> tmpIP = stateHistoryCollection.getAllFOVProcessor();
 		viewOptionsFOVILP = new ItemListPanel<>(viewOptionsFOVTableHandler, tmpIP, true);
 		viewOptionsFOVILP.setSortingEnabled(true);
@@ -223,7 +231,7 @@ public class ViewOptionsTableView extends JPanel
 
 		ColorProvider blackCP = new ConstColorProvider(Color.BLACK);
 		Object[] nomArr =
-		{ true, true, true, blackCP, "Segment000000000000000"};
+		{ true, true, true, blackCP, "Segment000000000000000", true, "Footprint Plate ColoringFootprint Plate Coloring"};
 		for (int aCol = 0; aCol < nomArr.length; aCol++)
 		{
 			TableCellRenderer tmpRenderer = tmpTable.getCellRenderer(0, aCol);
@@ -231,6 +239,15 @@ public class ViewOptionsTableView extends JPanel
 					aCol);
 			int tmpW = Math.max(minW, tmpComp.getPreferredSize().width + 1);
 			tmpTable.getColumnModel().getColumn(aCol).setPreferredWidth(tmpW + 10);
+			if (aCol == 5) tmpTable.getColumnModel().getColumn(aCol).setMinWidth(110);
 		}
+	}
+
+	/**
+	 * @param plateColorings the plateColorings to set
+	 */
+	public void setPlateColorings(JComboBoxWithItemState<String> plateColorings)
+	{
+		this.plateColorings = plateColorings;
 	}
 }

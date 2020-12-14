@@ -1,101 +1,51 @@
 package edu.jhuapl.sbmt.stateHistory.model.planning.imagers;
 
 import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
 
-import com.google.common.collect.ImmutableList;
-
-import vtk.vtkFloatArray;
-import vtk.vtkProp;
-
-import edu.jhuapl.saavtk.model.SaavtkItemManager;
-import edu.jhuapl.saavtk.model.plateColoring.ColoringData;
-import edu.jhuapl.saavtk.model.plateColoring.ColoringDataFactory;
-import edu.jhuapl.saavtk.model.plateColoring.ColoringDataUtils;
-import edu.jhuapl.saavtk.model.plateColoring.CustomizableColoringDataManager;
-import edu.jhuapl.saavtk.model.plateColoring.LoadableColoringData;
 import edu.jhuapl.saavtk.util.Properties;
-import edu.jhuapl.saavtk.util.file.IndexableTuple;
 import edu.jhuapl.sbmt.client.SmallBodyModel;
 import edu.jhuapl.sbmt.model.image.perspectiveImage.PerspectiveImageFootprint;
-import edu.jhuapl.sbmt.stateHistory.model.interfaces.StateHistory;
 import edu.jhuapl.sbmt.stateHistory.model.io.PlannedImageIOHelper;
+import edu.jhuapl.sbmt.stateHistory.model.planning.BasePlannedDataCollection;
 import edu.jhuapl.sbmt.stateHistory.rendering.PlannedDataProperties;
 import edu.jhuapl.sbmt.stateHistory.rendering.model.StateHistoryPositionCalculator;
 import edu.jhuapl.sbmt.stateHistory.rendering.planning.PlannedDataActor;
-import edu.jhuapl.sbmt.stateHistory.rendering.planning.PlannedInstrumentRendererManager;
 
-import crucible.crust.metadata.api.Metadata;
-import crucible.crust.metadata.api.MetadataManager;
-import glum.item.ItemEventType;
-
-public class PlannedImageCollection extends SaavtkItemManager<PlannedImage>
-		implements PropertyChangeListener, MetadataManager
+public class PlannedImageCollection extends BasePlannedDataCollection<PlannedImage> //SaavtkItemManager<PlannedImage>
+		//implements PropertyChangeListener
 {
 	/**
 	 *
 	 */
-	private List<PlannedImage> plannedImages = new ArrayList<PlannedImage>();
-	private List<vtkProp> footprintActors = new ArrayList<vtkProp>();
+//	private List<PlannedImage> plannedImages = new ArrayList<PlannedImage>();
+//	private List<vtkProp> footprintActors = new ArrayList<vtkProp>();
+//
+//	private List<PlannedDataActor> plannedDataActors = new ArrayList<PlannedDataActor>();
+//
+//	private PlannedInstrumentRendererManager renderManager;
+//
+//	private SmallBodyModel smallBodyModel;
+//
+//	private StateHistory stateHistorySource;
 
-	private List<PlannedDataActor> plannedDataActors = new ArrayList<PlannedDataActor>();
-
-	private HashMap<String, ColoringData> nameToColoringMap = new HashMap<String, ColoringData>();
-
-	private PlannedInstrumentRendererManager renderManager;
-
-	private SmallBodyModel smallBodyModel;
-
-	private StateHistory stateHistorySource;
-
-	private CustomizableColoringDataManager coloringDataManager;
+//	private CustomizableColoringDataManager coloringDataManager;
 
 	public PlannedImageCollection(SmallBodyModel smallBodyModel)
 	{
-		this.smallBodyModel = smallBodyModel;
-		this.coloringDataManager = smallBodyModel.getColoringDataManager();
-		renderManager = new PlannedInstrumentRendererManager(this.pcs);
-		createColoringData("Emission");
+		super(smallBodyModel);
+//		this.smallBodyModel = smallBodyModel;
+////		this.coloringDataManager = smallBodyModel.getColoringDataManager();
+//		renderManager = new PlannedInstrumentRendererManager(this.pcs);
+//		createColoringData("Emission");
 	}
 
-	@Override
-	public List<vtkProp> getProps()
-	{
-		if (!footprintActors.isEmpty()) return footprintActors;
-		for (PlannedDataActor actor : plannedDataActors)
-		{
-			footprintActors.add(actor.getFootprintBoundaryActor());
 
-		}
-		return footprintActors;
-	}
-
-	@Override
-	public void retrieve(Metadata arg0)
-	{
-		// TODO Auto-generated method stub
-
-	}
-
-	@Override
-	public Metadata store()
-	{
-		// TODO Auto-generated method stub
-		return null;
-	}
 
 	@Override
 	public void propertyChange(PropertyChangeEvent evt)
 	{
-		if (Properties.MODEL_CHANGED.equals(evt.getPropertyName()))
-		{
-			this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
-		}
-
+		super.propertyChange(evt);
 		if (PlannedDataProperties.TIME_CHANGED.equals(evt.getPropertyName()))
 		{
 			double time = (double)evt.getNewValue();
@@ -103,29 +53,36 @@ public class PlannedImageCollection extends SaavtkItemManager<PlannedImage>
 			for (PlannedDataActor actor : plannedDataActors)
 			{
 				if (((PerspectiveImageFootprint)actor).isStaticFootprintSet() == false)
+				{
+//					System.out.println("PlannedImageCollection: propertyChange: static footprint not set at time " + TimeUtil.et2str(actor.getTime()));
 					StateHistoryPositionCalculator.updateFootprintPointing(stateHistorySource, actor.getTime(), (PerspectiveImageFootprint)actor);
-				actor.getFootprintBoundaryActor().SetVisibility(time > actor.getTime() ? 1 : 0);
+				}
+//				if (time > actor.getTime() && actor.getFootprintBoundaryActor().GetVisibility() == 0)
+//					System.out.println("PlannedImageCollection: propertyChange: making visible for " + actor + " for time " + TimeUtil.et2str(time) + " at actor time " + TimeUtil.et2str(actor.getTime()));
+				actor.getFootprintBoundaryActor().SetVisibility(time >= actor.getTime() ? 1 : 0);
+				actor.getFootprintBoundaryActor().Modified();
+				this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
 			}
 		}
 	}
 
-	private ColoringData createColoringData(String dataName)
-	{
-		String name = "Planned Coverage - " + dataName;
-		List<String> columnNames = new ArrayList<String>();
-		columnNames.add("Emission Angle");
-		String unit = "degrees";
-		int numberElements = smallBodyModel.getCellNormals().GetNumberOfTuples();
-		boolean hasNulls = true;
-		vtkFloatArray values = new vtkFloatArray();
-		values.SetNumberOfValues(numberElements);
-		values.SetNumberOfComponents(1);
-		values.FillComponent(0, 0);
-		IndexableTuple indexableTuple = ColoringDataUtils.createIndexableFromVtkArray(values);
-		ColoringData coloringData = ColoringDataFactory.of(name, unit, numberElements, columnNames, hasNulls, indexableTuple);
-//		coloringData.getData().SetValue(0, 500);
-		nameToColoringMap.put(dataName, coloringData);
-		LoadableColoringData loadableColorData = ColoringDataFactory.of(coloringData, "PlannedCoverageEmission");
+//	private ColoringData createColoringData(String dataName)
+//	{
+//		String name = "Planned Coverage - " + dataName;
+//		List<String> columnNames = new ArrayList<String>();
+//		columnNames.add("Emission Angle");
+//		String unit = "degrees";
+//		int numberElements = smallBodyModel.getCellNormals().GetNumberOfTuples();
+//		boolean hasNulls = true;
+//		vtkFloatArray values = new vtkFloatArray();
+//		values.SetNumberOfValues(numberElements);
+//		values.SetNumberOfComponents(1);
+//		values.FillComponent(0, 0);
+//		IndexableTuple indexableTuple = ColoringDataUtils.createIndexableFromVtkArray(values);
+//		ColoringData coloringData = ColoringDataFactory.of(name, unit, numberElements, columnNames, hasNulls, indexableTuple);
+////		coloringData.getData().SetValue(0, 500);
+//		nameToColoringMap.put(dataName, coloringData);
+//		LoadableColoringData loadableColorData = ColoringDataFactory.of(coloringData, "PlannedCoverageEmission");
 //		try
 //		{
 //			loadableColorData.save();
@@ -136,9 +93,9 @@ public class PlannedImageCollection extends SaavtkItemManager<PlannedImage>
 //			e.printStackTrace();
 //		}
 //		coloringDataManager.addCustom(loadableColorData);
-		return coloringData;
-
-	}
+//		return coloringData;
+//
+//	}
 
 //	private void addDataToColoring(String dataName, int index, int value)
 //	{
@@ -151,73 +108,17 @@ public class PlannedImageCollection extends SaavtkItemManager<PlannedImage>
 	 */
 	public void addImageToList(PlannedImage image)
 	{
-		plannedImages.add(image);
-		PerspectiveImageFootprint actor = (PerspectiveImageFootprint)addImageToRenderer(image);
+		plannedData.add(image);
+		PerspectiveImageFootprint actor = (PerspectiveImageFootprint)addDataToRenderer(image);
 		actor.setStaticFootprint(true);
 		plannedDataActors.add(actor);
-		setAllItems(plannedImages);
-	}
-
-	public void notify(Object obj, ItemEventType type)
-	{
-		notifyListeners(obj, type);
-	}
-
-	/**
-	 * @param run
-	 * @return
-	 */
-	public PlannedDataActor addImageToRenderer(PlannedImage image)
-	{
-		return renderManager.addPlannedData(image, smallBodyModel);
-	}
-
-	/**
-	 * @param key
-	 */
-	public void removeImageFromRenderer(PlannedImage image)
-	{
-		renderManager.removePlannedData(image);
-	}
-
-	/**
-	 * @param keys
-	 */
-	public void removeRuns(PlannedImage[] keys)
-	{
-		for (PlannedImage key : keys)
+		if (this.stateHistorySource != null)
 		{
-			removeImageFromRenderer(key);
+			StateHistoryPositionCalculator.updateFootprintPointing(stateHistorySource, actor.getTime(), (PerspectiveImageFootprint)actor);
 		}
-	}
-
-	/**
-	 *
-	 */
-	@Override
-	public ImmutableList<PlannedImage> getAllItems()
-	{
-		return ImmutableList.copyOf(plannedImages);
-	}
-
-	/**
-	 *
-	 */
-	@Override
-	public int getNumItems()
-	{
-		return plannedImages.size();
-	}
-
-	/**
-	 * @param history
-	 */
-	public void setOthersHiddenExcept(List<PlannedImage> plannedImages)
-	{
-		for (PlannedImage image : getAllItems())
-		{
-			renderManager.setVisibility(image, plannedImages.contains(image));
-		}
+		footprintActors.add(actor.getFootprintBoundaryActor());
+		setAllItems(plannedData);
+		this.pcs.firePropertyChange("PLANNED_IMAGES_CHANGED", null, null);
 	}
 
 	public void loadPlannedImagesFromFileWithName(String filename) throws IOException
@@ -229,10 +130,4 @@ public class PlannedImageCollection extends SaavtkItemManager<PlannedImage>
 	{
 		PlannedImageIOHelper.savePlannedImagesToFileWithName(filename, this);
 	}
-
-	public void updateStateHistorySource(StateHistory stateHistory)
-	{
-		this.stateHistorySource = stateHistory;
-	}
-
 }

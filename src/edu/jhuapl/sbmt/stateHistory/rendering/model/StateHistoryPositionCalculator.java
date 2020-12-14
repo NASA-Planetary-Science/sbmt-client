@@ -4,8 +4,6 @@
 package edu.jhuapl.sbmt.stateHistory.rendering.model;
 
 import java.util.ArrayList;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import org.apache.commons.math3.geometry.euclidean.threed.Vector3D;
 
@@ -108,7 +106,7 @@ public class StateHistoryPositionCalculator implements IStateHistoryPositionCalc
 		}
 
 		sunDirectionMarker.updateSunPosition(sunPosition, sunMarkerPosition);
-		Logger.getAnonymousLogger ().log(Level.INFO, "Updated sun pos");
+//		Logger.getAnonymousLogger ().log(Level.INFO, "Updated sun pos");
 
 	}
 
@@ -155,6 +153,7 @@ public class StateHistoryPositionCalculator implements IStateHistoryPositionCalc
 	public static LidarPoint updateLidarFootprintPointing(StateHistory history, double time, SmallBodyModel smallBodyModel, String instrumentName)
 	{
 		double[] boresightInterceptPosition = getSpacecraftBoresightInterceptPosition(history, instrumentName, time);
+		if (boresightInterceptPosition == null) return null;
 		double[] spacecraftPosition = history.getSpacecraftPositionAtTime(time);
 		double[] rangeVector = new double[3];
 		MathUtil.vsub(spacecraftPosition, boresightInterceptPosition, rangeVector);
@@ -349,9 +348,9 @@ public class StateHistoryPositionCalculator implements IStateHistoryPositionCalc
 			double[] frus2 = new double[] { history.getFrustum(instrumentFrameID.getName(), 1).getI(), history.getFrustum(instrumentFrameID.getName(), 1).getJ(), history.getFrustum(instrumentFrameID.getName(), 1).getK()};
 			double[] frus3 = new double[] { history.getFrustum(instrumentFrameID.getName(), 2).getI(), history.getFrustum(instrumentFrameID.getName(), 2).getJ(), history.getFrustum(instrumentFrameID.getName(), 2).getK()};
 			double[] frus4 = new double[] { history.getFrustum(instrumentFrameID.getName(), 3).getI(), history.getFrustum(instrumentFrameID.getName(), 3).getJ(), history.getFrustum(instrumentFrameID.getName(), 3).getK()};
-			Logger.getAnonymousLogger().log(Level.INFO, "Updating footprint");
+//			Logger.getAnonymousLogger().log(Level.INFO, "Updating footprint");
 			fprint.updatePointing(spacecraftPosition, frus1, frus2, frus3, frus4, 1024, 1024, 1);
-			Logger.getAnonymousLogger().log(Level.INFO, "Updated footprint");
+//			Logger.getAnonymousLogger().log(Level.INFO, "Updated footprint");
 			fprint.getFootprintActor().Modified();
 			fprint.getFootprintBoundaryActor().Modified();
 		});

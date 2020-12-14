@@ -2,6 +2,7 @@ package edu.jhuapl.sbmt.stateHistory.controllers;
 
 import javax.swing.BoxLayout;
 import javax.swing.JPanel;
+import javax.swing.SwingUtilities;
 
 import edu.jhuapl.saavtk.model.plateColoring.ColoringDataManager;
 import edu.jhuapl.sbmt.stateHistory.controllers.viewControls.StateHistoryColoringOptionsController;
@@ -66,7 +67,7 @@ public class StateHistoryViewControlsController
         viewControls = new StateHistoryViewOptionsController(rendererManager);
         coloringControls = new StateHistoryColoringOptionsController(rendererManager, coloringDataManager);
         displayItemsControls = new StateHistoryDisplayItemsController(rendererManager);
-        fovControls = new StateHistoryFOVController(rendererManager);
+        fovControls = new StateHistoryFOVController(rendererManager, coloringDataManager);
 
         //this is a cross panel listener action, so set it up here, above the 3 controllers
         viewControls.getView().getViewOptions().addActionListener(e ->
@@ -79,39 +80,56 @@ public class StateHistoryViewControlsController
 
         rendererManager.addListener((aSource, aEventType) ->
 		{
+			System.out.println("StateHistoryViewControlsController: initUI: event type " + aEventType);
 			if (aEventType != ItemEventType.ItemsChanged) return;
-			renderView();
+			SwingUtilities.invokeLater(new Runnable()
+			{
+				@Override
+				public void run()
+				{
+//					renderView();
+					System.out
+							.println("StateHistoryViewControlsController.initUI(...).new Runnable() {...}: run: num mapped " + rendererManager.getNumMappedTrajectories());
+					if (rendererManager.getNumMappedTrajectories() == 0) fovControls.getView().clearTable();
+					fovControls.getView().repaint();
+					fovControls.getView().validate();
+					view.repaint();
+					view.validate();
+				}
+			});
+
 		});
+        renderView();
 	}
 
 	public void setEnabled(boolean enabled)
 	{
 		viewControls.getView().setEnabled(enabled);
-		coloringControls.setEnabled(enabled);
+//		coloringControls.setEnabled(enabled);
 		displayItemsControls.getView().setEnabled(enabled);
 		fovControls.getView().setEnabled(enabled);
 	}
 
 	private void renderView()
 	{
-		view.removeAll();
+//		view.removeAll();
 		view.setLayout(new BoxLayout(view, BoxLayout.Y_AXIS));
         view.add(displayItemsControls.getView());
 
-        if (rendererManager.getRuns().getAvailableFOVs().size() > 0)
-        {
+//        if (rendererManager.getRuns().getAvailableFOVs().size() > 0)
+//        {
         	view.add(viewControls.getView());
 	        view.add(fovControls.getView());
-	        view.add(coloringControls.getView());
-        }
-        else
-        {
-        	JPanel horizPanel = new JPanel();
-        	horizPanel.setLayout(new BoxLayout(horizPanel, BoxLayout.X_AXIS));
-        	horizPanel.add(viewControls.getView());
-        	horizPanel.add(coloringControls.getView());
-        	view.add(horizPanel);
-        }
+//	        view.add(coloringControls.getView());
+//        }
+//        else
+//        {
+//        	JPanel horizPanel = new JPanel();
+//        	horizPanel.setLayout(new BoxLayout(horizPanel, BoxLayout.X_AXIS));
+//        	horizPanel.add(viewControls.getView());
+//        	horizPanel.add(coloringControls.getView());
+//        	view.add(horizPanel);
+//        }
 	}
 
 	/**

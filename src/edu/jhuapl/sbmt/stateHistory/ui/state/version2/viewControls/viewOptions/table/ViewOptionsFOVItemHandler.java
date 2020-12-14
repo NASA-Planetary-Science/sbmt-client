@@ -3,6 +3,7 @@ package edu.jhuapl.sbmt.stateHistory.ui.state.version2.viewControls.viewOptions.
 import java.awt.Color;
 
 import edu.jhuapl.saavtk.color.provider.ConstColorProvider;
+import edu.jhuapl.saavtk.gui.panel.JComboBoxWithItemState;
 import edu.jhuapl.sbmt.stateHistory.rendering.model.StateHistoryRendererManager;
 
 import glum.gui.panel.itemList.BasicItemHandler;
@@ -16,15 +17,17 @@ public class ViewOptionsFOVItemHandler extends BasicItemHandler<String, ViewOpti
 	 */
 	private final StateHistoryRendererManager rendererManager;
 
+	private JComboBoxWithItemState<String> plateColorings;
+
 	/**
 	 * @param aManager
 	 * @param aComposer
 	 */
-	public ViewOptionsFOVItemHandler(StateHistoryRendererManager rendererManager, QueryComposer<ViewOptionsFOVColumnLookup> aComposer)
+	public ViewOptionsFOVItemHandler(StateHistoryRendererManager rendererManager, QueryComposer<ViewOptionsFOVColumnLookup> aComposer, JComboBoxWithItemState<String> plateColorings)
 	{
 		super(aComposer);
-
 		this.rendererManager = rendererManager;
+		this.plateColorings = plateColorings;
 	}
 
 	/**
@@ -48,6 +51,8 @@ public class ViewOptionsFOVItemHandler extends BasicItemHandler<String, ViewOpti
 				return fov;
 			case SetAsCurrent:
 				return rendererManager.getRuns().getCurrentRun().getPointingProvider().getCurrentInstFrameName().equals(fov);
+			case FPPlateColoring:
+				return rendererManager.getPlateColoringForInstrument(fov);
 			default:
 				break;
 		}
@@ -63,7 +68,6 @@ public class ViewOptionsFOVItemHandler extends BasicItemHandler<String, ViewOpti
 	{
 		if (aEnum == ViewOptionsFOVColumnLookup.Frustum)
 		{
-			System.out.println("ViewOptionsFOVItemHandler: setColumnValue: setting frustum for " + fov);
 			rendererManager.makeFrustum(rendererManager.getRuns().getCurrentRun(), fov);
 			rendererManager.setInstrumentFrustumVisibility(fov, (boolean) aValue);
 
@@ -90,6 +94,10 @@ public class ViewOptionsFOVItemHandler extends BasicItemHandler<String, ViewOpti
 			else
 				rendererManager.getRuns().getCurrentRun().getPointingProvider().setCurrentInstFrameName("");
 			rendererManager.refreshColoring();
+		}
+		else if (aEnum == ViewOptionsFOVColumnLookup.FPPlateColoring)
+		{
+			rendererManager.setPlateColoringForInstrument(fov, (String)(plateColorings.getSelectedItem()));
 		}
 		else
 			throw new UnsupportedOperationException("Column is not supported. Enum: " + aEnum);

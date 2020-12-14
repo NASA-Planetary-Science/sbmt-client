@@ -45,6 +45,7 @@ public class StateHistoryDisplayItemsController implements ItemListener
 		view = new StateHistoryDisplayItemsPanel();
 		view.setStateHistoryCollection(rendererManager);
 
+
 		String[] distanceChoices =
 		{ "Distance to Center", "Distance to Surface" };
 		DefaultComboBoxModel<String> comboModelDistance = new DefaultComboBoxModel<String>(distanceChoices);

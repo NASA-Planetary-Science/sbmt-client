@@ -298,7 +298,7 @@ public class OfflimbImageResultsTableController extends ImageResultsTableControl
         public boolean isCellEditable(int row, int column)
         {
             // Only allow editing the hide column if the image is mapped
-            if (column == offlimbTableView.getShowFootprintColumnIndex() || column == offlimbTableView.getOffLimbIndex() || column == offlimbTableView.getFrusColumnIndex())
+            if (column == offlimbTableView.getShowFootprintColumnIndex() || column == offlimbTableView.getOffLimbIndex() || column == offlimbTableView.getFrusColumnIndex() || column == offlimbTableView.getBndrColumnIndex())
             {
                 String name = imageRawResults.get(row).get(0);
                 ImageKeyInterface key = imageSearchModel.createImageKey(name.substring(0, name.length()-4), imageSearchModel.getImageSourceOfLastQuery(), instrument);
@@ -307,7 +307,7 @@ public class OfflimbImageResultsTableController extends ImageResultsTableControl
             }
             else
             {
-                return column == offlimbTableView.getMapColumnIndex() || column == offlimbTableView.getBndrColumnIndex();
+                return column == offlimbTableView.getMapColumnIndex() ;
             }
         }
 

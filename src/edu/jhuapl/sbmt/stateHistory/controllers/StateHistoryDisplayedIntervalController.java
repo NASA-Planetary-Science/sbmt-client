@@ -48,8 +48,6 @@ public class StateHistoryDisplayedIntervalController
 			if (rendererManager.getSelectedItems().size() > 0)
 			{
 				intervalSet.setCurrentRun(rendererManager.getSelectedItems().asList().get(0));
-				System.out
-				.println("StateHistoryDisplayedIntervalController: StateHistoryDisplayedIntervalController: updating dispalyed window");
 				timeModel.setTimeWindow(new TimeWindow(intervalSet.getCurrentRun().getStartTime(), intervalSet.getCurrentRun().getEndTime()));
 				updateDisplayedTimeRange(0.0, 1.0);
 			}

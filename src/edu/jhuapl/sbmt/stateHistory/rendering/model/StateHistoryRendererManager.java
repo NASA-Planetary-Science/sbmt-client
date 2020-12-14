@@ -8,8 +8,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Vector;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
 import org.apache.commons.math3.geometry.euclidean.threed.Vector3D;
@@ -45,6 +43,8 @@ import edu.jhuapl.sbmt.stateHistory.model.StateHistoryColoringFunctions;
 import edu.jhuapl.sbmt.stateHistory.model.interfaces.StateHistory;
 import edu.jhuapl.sbmt.stateHistory.model.interfaces.Trajectory;
 import edu.jhuapl.sbmt.stateHistory.model.liveColoring.LiveColorableManager;
+import edu.jhuapl.sbmt.stateHistory.model.stateHistory.SpiceStateHistory;
+import edu.jhuapl.sbmt.stateHistory.model.stateHistory.StandardStateHistory;
 import edu.jhuapl.sbmt.stateHistory.model.stateHistory.StateHistoryCollection;
 import edu.jhuapl.sbmt.stateHistory.model.time.StateHistoryTimeModel;
 import edu.jhuapl.sbmt.stateHistory.model.viewOptions.RendererLookDirection;
@@ -216,7 +216,7 @@ public class StateHistoryRendererManager extends SaavtkItemManager<StateHistory>
 		historyFootprintMap = new HashMap<StateHistory, ArrayList<PerspectiveImageFootprint>>();
 		historySpacecraftFovMap = new HashMap<StateHistory, ArrayList<PerspectiveImageFrustum>>();
 
-		sourceGCP = new ConstGroupColorProvider(new ConstColorProvider(Color.GREEN));
+		sourceGCP = new ConstGroupColorProvider(new ConstColorProvider(new Color(0, 255, 255)));
 
 		propM = new HashMap<>();
 //		vPainterM = new HashMap<>();
@@ -460,10 +460,14 @@ public class StateHistoryRendererManager extends SaavtkItemManager<StateHistory>
 	public void removeRun(StateHistory run)
 	{
 		stateHistoryToRendererMap.remove(run);
-		historySpacecraftFovMap.get(run).forEach(fov -> fov.getFrustumActor().VisibilityOff());
-		historyFootprintMap.get(run).forEach(footprint -> footprint.getFootprintActor().VisibilityOff());
+		if (historyFootprintMap.get(run) != null)
+		{
+			historySpacecraftFovMap.get(run).forEach(fov -> { if (fov.getFrustumActor() != null) fov.getFrustumActor().VisibilityOff(); } );
+			historyFootprintMap.get(run).forEach(footprint -> { if (footprint.getFootprintActor() != null)  footprint.getFootprintActor().VisibilityOff(); });
+		}
 		this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
 		this.pcs.firePropertyChange(Properties.MODEL_REMOVED, null, run);
+		notifyListeners(this, ItemEventType.ItemsChanged);
 		run.setMapped(false);
 		run.setVisible(false);
 	}
@@ -593,7 +597,6 @@ public class StateHistoryRendererManager extends SaavtkItemManager<StateHistory>
 		{
 			Color color = historySpacecraftFovMap.get(run).stream().filter(fov -> fov.getInstrumentName().equals(instName)).collect(Collectors.toList()).get(0).getColor();
 			fprint = new PerspectiveImageFootprint();
-			System.out.println("StateHistoryRendererManager: updateFovs: made new footprint " + instName);
 			instrumentNameToFootprintMap.put(instName, fprint);
 			fprint.setBoundaryVisible(false);
 			fprint.setVisible(false);
@@ -728,6 +731,8 @@ public class StateHistoryRendererManager extends SaavtkItemManager<StateHistory>
 	public void setInstrumentFootprintColor(String name, Color color)
 	{
 
+		System.out.println("StateHistoryRendererManager: setInstrumentFootprintColor: looking for name " + name);
+		System.out.println("StateHistoryRendererManager: setInstrumentFootprintColor: " + historyFootprintMap.get(runs.getCurrentRun()).get(0).getInstrumentName());
 		historyFootprintMap.get(runs.getCurrentRun()).stream().filter(fprint -> fprint.getInstrumentName().equals(name)).forEach(item -> {
 			item.setBoundaryColor(color);
 			item.setColor(color);
@@ -779,7 +784,6 @@ public class StateHistoryRendererManager extends SaavtkItemManager<StateHistory>
 
 	public void setInstrumentFootprintBorderVisibility(String name, boolean isVisible)
 	{
-		System.out.println("StateHistoryRendererManager: setInstrumentFootprintBorderVisibility: setting border " + name + " to " + isVisible);
 		List<PerspectiveImageFootprint> fp = historyFootprintMap.get(runs.getCurrentRun()).stream().filter(fprint -> fprint.getInstrumentName().equals(name)).collect(Collectors.toList());
 		fp.get(0).setBoundaryVisible(isVisible);
 		this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, fp.get(0));
@@ -815,7 +819,6 @@ public class StateHistoryRendererManager extends SaavtkItemManager<StateHistory>
 
 	private void updateVisibilities()
 	{
-		System.out.println("StateHistoryRendererManager: updateVisibilities: updating visibilities " + selectedFOVs.get(0));
 		historySpacecraftFovMap.get(runs.getCurrentRun()).stream().filter(item -> item.getFrustumActor() != null).forEach(item -> {
 			item.getFrustumActor().SetVisibility(selectedFOVs.contains(item.getInstrumentName()) ? 1 : 0);
 			this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, item);
@@ -916,7 +919,6 @@ public class StateHistoryRendererManager extends SaavtkItemManager<StateHistory>
 		props.add(sunDirectionMarker.getActor());
 		props.add(timeBarActor);
 		props.add(statusBarTextActor);
-//		System.out.println("StateHistoryRendererManager: getProps: adding planned science count " + plannedScienceActors.size());
 		props.addAll(plannedScienceActors);
 		return props;
 
@@ -952,9 +954,9 @@ public class StateHistoryRendererManager extends SaavtkItemManager<StateHistory>
 		this.currentTimeFraction = timeFraction;
 //		System.out.println("StateHistoryRendererManager: setTimeFraction: setting time fraction state is " + state + " and actor " + spacecraft.getActor());
 		// StateHistory state = getCurrentRun();
-		Logger.getAnonymousLogger().log(Level.INFO, "Updating FOVs for state " + state.getStateHistoryName());
+//		Logger.getAnonymousLogger().log(Level.INFO, "Updating FOVs for state " + state.getStateHistoryName());
 		updateFovs(state);
-		Logger.getAnonymousLogger().log(Level.INFO, "Updated FOVs");
+//		Logger.getAnonymousLogger().log(Level.INFO, "Updated FOVs");
 		if (state != null && spacecraft.getActor() != null )
 		{
 //			Logger.getAnonymousLogger().log(Level.INFO, "setting sc pos");
@@ -962,19 +964,19 @@ public class StateHistoryRendererManager extends SaavtkItemManager<StateHistory>
 														spacecraftLabelActor);
 //			if (sunDirectionMarker.isVisible() == true)
 			{
-				Logger.getAnonymousLogger().log(Level.INFO, "setting earth pos");
+//				Logger.getAnonymousLogger().log(Level.INFO, "setting earth pos");
 				positionCalculator.updateEarthPosition(state, timeFraction, earthDirectionMarker);
 			}
 //			if (sunDirectionMarker.isVisible() == true)
 			{
-				Logger.getAnonymousLogger().log(Level.INFO, "setting sun pos");
+//				Logger.getAnonymousLogger().log(Level.INFO, "setting sun pos");
 				positionCalculator.updateSunPosition(state, timeFraction, sunDirectionMarker);
 			}
-			Logger.getAnonymousLogger().log(Level.INFO, "Updating FOV Position");
+//			Logger.getAnonymousLogger().log(Level.INFO, "Updating FOV Position");
 			if (historySpacecraftFovMap.get(runs.getCurrentRun()) != null)
 				positionCalculator.updateFOVLocations(state, historySpacecraftFovMap.get(runs.getCurrentRun()));
 
-			Logger.getAnonymousLogger().log(Level.INFO, "Updating Footprint location");
+//			Logger.getAnonymousLogger().log(Level.INFO, "Updating Footprint location");
 
 			if (historyFootprintMap.get(runs.getCurrentRun()) != null)
 				positionCalculator.updateFootprintLocations(state, historyFootprintMap.get(runs.getCurrentRun()));
@@ -982,7 +984,7 @@ public class StateHistoryRendererManager extends SaavtkItemManager<StateHistory>
 			updateLookDirection(lookDirection);
 			if ((renderer.getLighting() == LightingType.FIXEDLIGHT && runs.getCurrentRun() != null) == false) return;
 			renderer.setFixedLightDirection(runs.getCurrentRun().getSunPosition());
-			Logger.getAnonymousLogger().log(Level.INFO, "Position changed called");
+//			Logger.getAnonymousLogger().log(Level.INFO, "Position changed called");
 		}
 	}
 
@@ -1193,28 +1195,86 @@ public class StateHistoryRendererManager extends SaavtkItemManager<StateHistory>
 	{
 		int tmpIdx = -1;
 		int numItems = stateHistoryToRendererMap.size(); //runs.getNumItems();
-		for (StateHistory aItem : stateHistoryToRendererMap.keySet())
-		{
+		StateHistory aItem = getSelectedItems().asList().get(0);
+//		for (StateHistory aItem : stateHistoryToRendererMap.keySet())
+//		{
 			tmpIdx++;
 
 			// Skip to next if no RenderProp
 			StateHistoryRenderProperties tmpProp = propM.get(aItem);
 			if (tmpProp == null)
-				continue;
+				return;
 
 			// Skip to next if custom
 			if (tmpProp.isCustomCP == true)
-				continue;
+				return;
 
 			tmpProp.srcCP = aSrcGCP.getColorProviderFor(aItem, tmpIdx, numItems);
 //			System.out.println("StateHistoryRendererManager: installGroupColorProviders: color provider " + tmpProp.srcCP.getBaseColor());
 			refreshColoring(aItem);
 
-		}
+//		}
 		//TODO fix this?
 //		runs.notify(this, ItemEventType.ItemsMutated);
 //		updateVtkVars(stateHistoryToRendererMap.keySet());
 	}
+
+	public ColorProvider getColorProviderForStateHistory(StateHistory history)
+	{
+		if (propM.get(history) == null) return new ConstColorProvider(history.getTrajectory().getColor());
+		return propM.get(history).srcCP;
+	}
+
+	public String getPlateColoringForInstrument(String fov)
+	{
+		if (runs.getCurrentRun() instanceof StandardStateHistory) return null;
+		return ((SpiceStateHistory)runs.getCurrentRun()).getPlateColoringForInstrument(fov);
+	}
+
+	public void setPlateColoringForInstrument(String instrument, String plateColoring)
+	{
+		if (runs.getCurrentRun() instanceof StandardStateHistory) return;
+		((SpiceStateHistory)runs.getCurrentRun()).setPlateColoringForInstrument(plateColoring, instrument);
+
+		historyFootprintMap.get(runs.getCurrentRun()).forEach(item -> {
+//			if (name.equals("")) item.setPlateColoringName(null);
+			if (item.getInstrumentName().equals(instrument)) item.setPlateColoringName(plateColoring);
+			this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, item);
+		});
+//		updateVisibilities();
+	}
+
+	public int getNumMappedTrajectories()
+	{
+		return (int)(stateHistoryToRendererMap.keySet().stream().filter(state -> state.isMapped()).count());
+	}
+
+//	public void installGroupColorProviders(GroupColorProvider aSrcGCP/*, StateHistoryCollection runs*/)
+//	{
+//		int tmpIdx = -1;
+//		int numItems = stateHistoryToRendererMap.size(); //runs.getNumItems();
+//		for (StateHistory aItem : stateHistoryToRendererMap.keySet())
+//		{
+//			tmpIdx++;
+//
+//			// Skip to next if no RenderProp
+//			StateHistoryRenderProperties tmpProp = propM.get(aItem);
+//			if (tmpProp == null)
+//				continue;
+//
+//			// Skip to next if custom
+//			if (tmpProp.isCustomCP == true)
+//				continue;
+//
+//			tmpProp.srcCP = aSrcGCP.getColorProviderFor(aItem, tmpIdx, numItems);
+////			System.out.println("StateHistoryRendererManager: installGroupColorProviders: color provider " + tmpProp.srcCP.getBaseColor());
+//			refreshColoring(aItem);
+//
+//		}
+//		//TODO fix this?
+////		runs.notify(this, ItemEventType.ItemsMutated);
+////		updateVtkVars(stateHistoryToRendererMap.keySet());
+//	}
 
 	public void notify(Object obj, ItemEventType type)
 	{

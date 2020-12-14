@@ -1,6 +1,5 @@
 package edu.jhuapl.sbmt.stateHistory.controllers.viewControls;
 
-import javax.swing.BoxLayout;
 import javax.swing.JPanel;
 
 import edu.jhuapl.saavtk.model.ModelManager;
@@ -38,10 +37,12 @@ public class ObservationPlanningViewControlsController
      */
     public JPanel getView()
     {
-    	JPanel viewControlsPanel = viewControlsController.getView();
-    	JPanel panel = new JPanel();
-    	panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
-    	panel.add(viewControlsPanel);
-    	return panel;
+    	System.out.println("ObservationPlanningViewControlsController: getView: getting controls");
+    	return viewControlsController.getView();
+//    	JPanel viewControlsPanel = viewControlsController.getView();
+//    	JPanel panel = new JPanel();
+//    	panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
+//    	panel.add(viewControlsPanel);
+//    	return panel;
     }
 }

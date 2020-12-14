@@ -61,6 +61,7 @@ public class StateHistoryTimeModel
 	public void setTimeWindow(TimeWindow twindow)
 	{
 		this.twindow = twindow;
+		this.et = twindow.getStartTime() + currentTimeFraction*(twindow.getStopTime() - twindow.getStartTime());
 		fireTimeWindowChangedListeners();
 	}
 
@@ -133,7 +134,7 @@ public class StateHistoryTimeModel
 		return maxFractionDisplayed;
 	}
 
-    public Date getDateForET(double et)
+    public static Date getDateForET(double et)
     {
     	Date date = null;
  		try
@@ -147,7 +148,7 @@ public class StateHistoryTimeModel
  		return date;
     }
 
-    public DateTime getDateTimeForET(double et)
+    public static DateTime getDateTimeForET(double et)
     {
     	Date date = getDateForET(et);
     	DateTime dt = new DateTime(date);
@@ -155,7 +156,7 @@ public class StateHistoryTimeModel
  		return dt1;
     }
 
-    public double getETForDate(Date dateTime)
+    public static double getETForDate(Date dateTime)
     {
         DateTime dt = new DateTime(dateTime);
         DateTime dt1 = ISODateTimeFormat.dateTimeParser().parseDateTime(dt.toString());

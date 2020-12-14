@@ -86,6 +86,7 @@ public class StateHistoryCollection /*extends SaavtkItemManager<StateHistory> im
 	{
 		simRuns.add(run);
 		keys.add(run.getKey());
+		this.currentRun = run;
 	}
 
 	/**

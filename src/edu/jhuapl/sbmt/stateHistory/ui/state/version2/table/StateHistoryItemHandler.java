@@ -4,7 +4,9 @@ import org.joda.time.DateTimeZone;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 
-import edu.jhuapl.saavtk.color.provider.ConstColorProvider;
+import edu.jhuapl.saavtk.color.provider.ColorBarColorProvider;
+import edu.jhuapl.saavtk.color.provider.ColorProvider;
+import edu.jhuapl.saavtk.color.provider.ConstGroupColorProvider;
 import edu.jhuapl.sbmt.stateHistory.model.interfaces.StateHistory;
 import edu.jhuapl.sbmt.stateHistory.model.stateHistory.StateHistoryCollection;
 import edu.jhuapl.sbmt.stateHistory.rendering.model.StateHistoryRendererManager;
@@ -44,6 +46,8 @@ public class StateHistoryItemHandler extends BasicItemHandler<StateHistory, Stat
 	{
 		DateTimeFormatter fmt = DateTimeFormat.forPattern("yyyy-MM-dd'T'HH:mm:ss");
 		String timeString;
+		ColorProvider colorProvider = rendererManager.getColorProviderForStateHistory(stateHistory);
+//		if (colorProvider instanceof ColorBarColorProvider) colorProvider = new ConstGroupColorProvider(colorProvider);
 		switch (aEnum)
 		{
 			case Map:
@@ -51,14 +55,16 @@ public class StateHistoryItemHandler extends BasicItemHandler<StateHistory, Stat
 			case Show:
 				return stateHistory.isVisible();
 			case Color:
-				return new ConstColorProvider(stateHistory.getTrajectory().getColor());
+				if (colorProvider instanceof ColorBarColorProvider) return new ConstGroupColorProvider(colorProvider);
+				return colorProvider;
+//				return new ConstColorProvider(stateHistory.getTrajectory().getColor());
 			case Name:
 				if (stateHistory.getStateHistoryName().equals("")) return "Segment " + stateHistory.getKey().getValue();
 				return stateHistory.getStateHistoryName();
 			case Description:
 				return stateHistory.getStateHistoryDescription();
 			case Source:
-				return "SOURCE-UPDATE";
+				return stateHistory.getType() + " (" + stateHistory.getSourceFile() + ")";
 			case StartTime:
 				fmt.withZone(DateTimeZone.UTC);
 				timeString = TimeUtil.et2str(stateHistory.getStartTime());
@@ -109,7 +115,7 @@ public class StateHistoryItemHandler extends BasicItemHandler<StateHistory, Stat
 		}
 		else if (aEnum == StateHistoryColumnLookup.Color)
 		{
-			history.setTrajectoryColor(((ConstColorProvider)aValue).getBaseColor());
+//			history.setTrajectoryColor(((ConstColorProvider)aValue).getBaseColor());
 		}
 		else
 			throw new UnsupportedOperationException("Column is not supported. Enum: " + aEnum);

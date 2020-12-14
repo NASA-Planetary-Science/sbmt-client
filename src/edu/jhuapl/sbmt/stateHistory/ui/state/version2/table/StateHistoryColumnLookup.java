@@ -43,5 +43,6 @@ public enum StateHistoryColumnLookup
 	/**
 	 *
 	 */
-	EndTime
+	EndTime,
+
 }

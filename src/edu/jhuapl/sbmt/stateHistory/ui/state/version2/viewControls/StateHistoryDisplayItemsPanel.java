@@ -28,6 +28,16 @@ public class StateHistoryDisplayItemsPanel extends JPanel
 		DisplayOptionsTableView tableView = new DisplayOptionsTableView(rendererManager);
 		tableView.setup();
 		add(tableView);
+//		rendererManager.getDisplayItemsProcessor().addListener(new ItemEventListener()
+//		{
+//
+//			@Override
+//			public void handleItemEvent(Object aSource, ItemEventType aEventType)
+//			{
+//				System.out.println(
+//						"StateHistoryDisplayItemsPanel.setStateHistoryCollection(...).new ItemEventListener() {...}: handleItemEvent: selecting display item");
+//			}
+//		});
 	}
 
 	@Override

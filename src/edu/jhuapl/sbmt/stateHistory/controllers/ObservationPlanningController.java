@@ -1,6 +1,7 @@
 package edu.jhuapl.sbmt.stateHistory.controllers;
 
 import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 
 import javax.swing.BoxLayout;
 import javax.swing.JPanel;
@@ -29,7 +30,7 @@ import edu.jhuapl.sbmt.stateHistory.ui.state.version2.StateHistoryIntervalPlayba
 
 import glum.item.ItemEventType;
 
-public class ObservationPlanningController
+public class ObservationPlanningController implements PropertyChangeListener
 {
 	StateHistoryController stateHistoryController;
 	ObservationPlanningView view = new ObservationPlanningView();
@@ -43,6 +44,7 @@ public class ObservationPlanningController
 	PlannedSpectrumCollection spectrumCollection;
 	PlannedLidarTrackCollection lidarTrackCollection;
 	StateHistoryTimeModel timeModel;
+	StateHistoryRendererManager rendererManager;
 
     /**
      * Controller for the interval playback panel
@@ -53,32 +55,29 @@ public class ObservationPlanningController
 	{
 		timeModel = StateHistoryTimeModel.getInstance();
 		StateHistoryCollection runs = rendererManager.getRuns();
-//		StateHistoryCollection runs = (StateHistoryCollection)modelManager.getModel(ModelNames.STATE_HISTORY_COLLECTION);
-//		StateHistoryRendererManager rendererManager = new StateHistoryRendererManager(smallBodyModel, runs, renderer);
-//		modelManager.getAllModels().put(ModelNames.STATE_HISTORY_COLLECTION_ELEMENTS, rendererManager)
-;		stateHistoryController = new StateHistoryController(modelManager, rendererManager, timeModel);
+		stateHistoryController = new StateHistoryController(modelManager, rendererManager, timeModel);
 		viewControlsController = new ObservationPlanningViewControlsController(stateHistoryController.getHistoryModel(), modelManager, rendererManager, coloringDataManager);
+		System.out.println("ObservationPlanningController: ObservationPlanningController: setting controls controller");
+		stateHistoryController.setViewControlsController(viewControlsController);
+		System.out.println("ObservationPlanningController: ObservationPlanningController: set");
 		this.intervalPlaybackController = new StateHistoryIntervalPlaybackController(rendererManager, timeModel);
-
-
+		this.rendererManager = rendererManager;
 		view.addTab("S/C Trajectory", stateHistoryController.getView());
 		intervalPlaybackController.getView().setEnabled(false);
 		registrar = new PlannedDataActorRegister();
+		this.rendererManager = rendererManager;
 
 		timeModel.addTimeModelChangeListener(new BaseStateHistoryTimeModelChangedListener() {
 
 			@Override
 			public void timeChanged(double et)
 			{
-//				Logger.getAnonymousLogger().log(Level.INFO, "time changed");
-				// TODO Auto-generated method stub
 				super.timeChanged(et);
 				if (imageCollection.getNumItems() > 0)
 					imageCollection.propertyChange(new PropertyChangeEvent(this, PlannedDataProperties.TIME_CHANGED, null, et));
 				if (lidarTrackCollection.getNumItems() > 0)
 					lidarTrackCollection.propertyChange(new PropertyChangeEvent(this, PlannedDataProperties.TIME_CHANGED, null, et));
 
-//                Logger.getAnonymousLogger().log(Level.INFO, "Setting history model times");
                 try
 				{
                 	if (runs.getCurrentRun() != null)
@@ -89,37 +88,53 @@ public class ObservationPlanningController
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
-//                Logger.getAnonymousLogger().log(Level.INFO, "Set current time");
 			}
-
 		});
 
 		Renderer renderer = rendererManager.getRenderer();
 		imageCollection = new PlannedImageCollection(smallBodyModel);
+		imageCollection.addPropertyChangeListener(this);
 		imageTableController = new PlannedImageTableController(modelManager, renderer, imageCollection, config);
 		if (config.imagingInstruments.length > 0) view.addTab("Imagery", imageTableController.getView());
 
-		spectrumCollection = new PlannedSpectrumCollection(smallBodyModel);
-		spectrumTableController = new PlannedSpectrumTableController(modelManager, renderer, spectrumCollection, config);
-		if (config.hasSpectralData) view.addTab("Spectra", spectrumTableController.getView());
+//		spectrumCollection = new PlannedSpectrumCollection(smallBodyModel);
+//		spectrumCollection.addPropertyChangeListener(this);
+//		spectrumTableController = new PlannedSpectrumTableController(modelManager, renderer, spectrumCollection, config);
+//		if (config.hasSpectralData) view.addTab("Spectra", spectrumTableController.getView());
 
 		lidarTrackCollection = new PlannedLidarTrackCollection(modelManager, smallBodyModel, renderer);
+		lidarTrackCollection.addPropertyChangeListener(this);
 		lidarTableController = new PlannedLidarTableController(modelManager, renderer, lidarTrackCollection, config);
 		if (config.hasLidarData) view.addTab("LIDAR", lidarTableController.getView());
-		view.addTab("View Controls", viewControlsController.getView());
+//		view.addTab("View Controls", viewControlsController.getView());
 
         rendererManager.addListener((aSource, aEventType) -> {
 			if (aEventType != ItemEventType.ItemsSelected) return;
 			intervalPlaybackController.getView().setEnabled(rendererManager.getSelectedItems().size() > 0);
 			imageCollection.updateStateHistorySource(runs.getCurrentRun());
 			lidarTrackCollection.updateStateHistorySource(runs.getCurrentRun());
-			rendererManager.clearPlannedScience();
-//			runs.addPlannedScience(imageCollection.getProps());
-			rendererManager.addPlannedScienceActors(lidarTrackCollection.getProps());
+			ObservationPlanningController.this.updatePlannedScience();
 		});
 
         intervalPlaybackPanel = intervalPlaybackController.getView();
 
+	}
+
+	@Override
+	public void propertyChange(PropertyChangeEvent evt)
+	{
+		if (evt.getPropertyName().equals("PLANNED_IMAGES_CHANGED") || evt.getPropertyName().equals("PLANNED_SPECTRA_CHANGED") || evt.getPropertyName().equals("PLANNED_LIDAR_CHANGED"))
+		{
+			updatePlannedScience();
+		}
+
+	}
+
+	private void updatePlannedScience()
+	{
+		rendererManager.clearPlannedScience();
+		rendererManager.addPlannedScienceActors(imageCollection.getProps());
+		rendererManager.addPlannedScienceActors(lidarTrackCollection.getProps());
 	}
 
 	public JPanel getView()

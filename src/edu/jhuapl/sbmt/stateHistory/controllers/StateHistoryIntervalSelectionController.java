@@ -3,6 +3,7 @@ package edu.jhuapl.sbmt.stateHistory.controllers;
 import java.io.File;
 import java.io.IOException;
 
+import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 
 import org.apache.commons.io.FilenameUtils;
@@ -18,9 +19,8 @@ import edu.jhuapl.sbmt.stateHistory.model.io.StateHistoryIOException;
 import edu.jhuapl.sbmt.stateHistory.model.io.StateHistoryModelIOHelper;
 import edu.jhuapl.sbmt.stateHistory.model.stateHistory.StateHistoryKey;
 import edu.jhuapl.sbmt.stateHistory.rendering.model.StateHistoryRendererManager;
+import edu.jhuapl.sbmt.stateHistory.ui.state.version2.StateHistoryIntervalGenerationPanel;
 import edu.jhuapl.sbmt.stateHistory.ui.state.version2.table.StateHistoryTableView;
-
-import glum.item.ItemEventType;
 
 /**
  * Controller that governs the "Available Files" panel for the StateHistory tab
@@ -30,6 +30,8 @@ import glum.item.ItemEventType;
 public class StateHistoryIntervalSelectionController
 {
     private StateHistoryTableView view;
+    private StateHistoryIntervalGenerationController intervalGenerationController;
+//    private ObservationPlanningViewControlsController viewControlsController;
 
 	/**
 	 * @param historyModel
@@ -99,6 +101,7 @@ public class StateHistoryIntervalSelectionController
 
         view.getDeleteStateHistoryButton().addActionListener(e -> {
 
+        	System.out.println("StateHistoryIntervalSelectionController: initializeIntervalSelectionPanel: delete button");
         	if (view.getTable().getSelectedRowCount() == 0) return;
         	int n = JOptionPane.showOptionDialog(view, "Delete selected trajectories?", "Confirm Deletion", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE, null, null, null);
         	if (n == JOptionPane.NO_OPTION) return;
@@ -130,6 +133,25 @@ public class StateHistoryIntervalSelectionController
         	rendererManager.getSelectedItems().forEach(history -> { rendererManager.setVisibility(history, false); } );
         });
 
+        view.getEditStateHistoryButton().addActionListener(e -> {
+
+        	StateHistory history = rendererManager.getSelectedItems().asList().get(0);
+        	JFrame frame = new JFrame("Generate New Interval...");
+        	frame.add(new StateHistoryIntervalGenerationPanel(history));
+        	frame.pack();
+        	frame.setVisible(true);
+
+        });
+
+        view.getAddStateHistoryButton().addActionListener(e ->
+        {
+        	JFrame frame = new JFrame("Generate New Interval...");
+        	frame.add(intervalGenerationController.getView());
+        	frame.pack();
+        	frame.setVisible(true);
+
+        });
+
         //If a new state history segment is created, repaint the table
         historyModel.addStateHistoryModelChangedListener(new DefaultStateHistoryModelChangedListener()
 		{
@@ -152,6 +174,7 @@ public class StateHistoryIntervalSelectionController
 		{
 			view.getTable().repaint();
 			rendererManager.getRenderer().getRenderWindowPanel().resetCameraClippingRange();
+			updateButtonState(rendererManager);
 		});
 
         //Responds to changes in item selection.  Enables/disables buttons, and fades displayed trajectories
@@ -159,26 +182,32 @@ public class StateHistoryIntervalSelectionController
         rendererManager.addListener((aSource, aEventType) ->
 		{
 			try {
-				if (aEventType != ItemEventType.ItemsSelected) return;
-				ImmutableSet<StateHistory> selectedItems = rendererManager.getSelectedItems();
+//				if (aEventType != ItemEventType.ItemsSelected) return;
+				updateButtonState(rendererManager);
 
-				view.getSaveStateHistoryButton().setEnabled(selectedItems.size() == 1);
-				boolean allMapped = true;
-				boolean allShown = true;
-				for (StateHistory history : selectedItems)
-				{
-					if (history.isMapped() == false) allMapped = false;
-					if (history.isVisible() == false) allShown = false;
-				}
-				view.getHideStateHistoryButton().setEnabled((selectedItems.size() > 0) && allShown);
-				view.getShowStateHistoryButton().setEnabled((selectedItems.size() > 0) && allMapped);
-				view.getDeleteStateHistoryButton().setEnabled(selectedItems.size() > 0);
 			}
 			catch (Exception e) {
 				e.printStackTrace();
 			}
 		});
     }
+
+	private void updateButtonState(StateHistoryRendererManager rendererManager)
+	{
+		ImmutableSet<StateHistory> selectedItems = rendererManager.getSelectedItems();
+		view.getSaveStateHistoryButton().setEnabled(selectedItems.size() == 1);
+		boolean allMapped = true;
+		boolean allShown = true;
+		for (StateHistory history : selectedItems)
+		{
+			if (history.isMapped() == false) allMapped = false;
+			if (history.isVisible() == false) allShown = false;
+		}
+		view.getHideStateHistoryButton().setEnabled((selectedItems.size() > 0) && allShown);
+		view.getShowStateHistoryButton().setEnabled((selectedItems.size() > 0) && !allShown);
+		view.getEditStateHistoryButton().setEnabled(selectedItems.size() == 1);
+		view.getDeleteStateHistoryButton().setEnabled(selectedItems.size() > 0);
+	}
 
 	/**
 	 * @return the view
@@ -187,4 +216,20 @@ public class StateHistoryIntervalSelectionController
 	{
 		return view;
 	}
+
+	/**
+	 * @param intervalGenerationController the intervalGenerationController to set
+	 */
+	public void setIntervalGenerationController(StateHistoryIntervalGenerationController intervalGenerationController)
+	{
+		this.intervalGenerationController = intervalGenerationController;
+	}
+
+//	/**
+//	 * @param viewControlsController the viewControlsController to set
+//	 */
+//	public void setViewControlsController(ObservationPlanningViewControlsController viewControlsController)
+//	{
+//		this.viewControlsController = viewControlsController;
+//	}
 }

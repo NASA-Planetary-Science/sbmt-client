@@ -149,16 +149,16 @@ public class SpiceState implements State
 		Preconditions.checkNotNull(ephemerisTime);
 		Preconditions.checkNotNull(pointing);
 		double[] xAxis = new double[3];
-//		try {
+		try {
 			xAxis[0] = pointing.getScRotation().getColumn(0).getI();
 			xAxis[1] = pointing.getScRotation().getColumn(0).getJ();
 			xAxis[2] = pointing.getScRotation().getColumn(0).getK();
 			return xAxis;
-//		}
-//		catch (LockableFrameLinkEvaluationException lflee)
-//		{
-//			return new double[] {1.0, 0.0, 0.0};
-//		}
+		}
+		catch (LockableFrameLinkEvaluationException lflee)
+		{
+			return new double[] {1.0, 0.0, 0.0};
+		}
 	}
 
 	@Override
@@ -167,16 +167,16 @@ public class SpiceState implements State
 		Preconditions.checkNotNull(ephemerisTime);
 		Preconditions.checkNotNull(pointing);
 		double[] yAxis = new double[3];
-//		try {
+		try {
 			yAxis[0] = pointing.getScRotation().getColumn(1).getI();
 			yAxis[1] = pointing.getScRotation().getColumn(1).getJ();
 			yAxis[2] = pointing.getScRotation().getColumn(1).getK();
 			return yAxis;
-//		}
-//		catch (LockableFrameLinkEvaluationException lflee)
-//		{
-//			return new double[] {0.0, 1.0, 0.0};
-//		}
+		}
+		catch (LockableFrameLinkEvaluationException lflee)
+		{
+			return new double[] {0.0, 1.0, 0.0};
+		}
 	}
 
 	@Override
@@ -185,16 +185,16 @@ public class SpiceState implements State
 		Preconditions.checkNotNull(ephemerisTime);
 		Preconditions.checkNotNull(pointing);
 		double[] zAxis = new double[3];
-//		try {
+		try {
 			zAxis[0] = pointing.getScRotation().getColumn(2).getI();
 			zAxis[1] = pointing.getScRotation().getColumn(2).getJ();
 			zAxis[2] = pointing.getScRotation().getColumn(2).getK();
 			return zAxis;
-//		}
-//		catch (LockableFrameLinkEvaluationException lflee)
-//		{
-//			return new double[] {0.0, 0.0, 1.0};
-//		}
+		}
+		catch (LockableFrameLinkEvaluationException lflee)
+		{
+			return new double[] {0.0, 0.0, 1.0};
+		}
 	}
 
 	/**

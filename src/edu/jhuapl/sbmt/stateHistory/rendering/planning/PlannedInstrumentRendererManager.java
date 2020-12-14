@@ -50,12 +50,11 @@ public class PlannedInstrumentRendererManager
 		}
 		plannedInstrumentDataToRendererMap.put(data, dataActor);
 
-		dataActor.SetVisibility(0);
+		dataActor.SetVisibility(1);
 //		dataActor.GetMapper().Update();
 
 		this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
 		this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, dataActor);
-
 		return dataActor;
 	}
 
@@ -66,6 +65,7 @@ public class PlannedInstrumentRendererManager
 
 	public void setVisibility(PlannedInstrumentData data, boolean isVisible)
 	{
+		System.out.println("PlannedInstrumentRendererManager: setVisibility: setting visibility to " + isVisible);
 		data.setShowing(isVisible);
 		plannedInstrumentDataToRendererMap.get(data).SetVisibility(isVisible ? 1: 0);
 	}

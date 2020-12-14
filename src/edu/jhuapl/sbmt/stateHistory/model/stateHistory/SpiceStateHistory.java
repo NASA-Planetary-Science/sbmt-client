@@ -3,6 +3,7 @@ package edu.jhuapl.sbmt.stateHistory.model.stateHistory;
 import java.awt.Color;
 import java.io.File;
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.Map.Entry;
 import java.util.Set;
 
@@ -81,6 +82,8 @@ public class SpiceStateHistory implements StateHistory
 	private SpiceState state;
 
 	private SpiceInfo spiceInfo;
+
+	private HashMap<String, String> plateColoringForInstrument = new HashMap<String, String>();
 
 	// Metadata Information
 	private static final Key<SpiceStateHistory> SPICE_STATE_HISTORY_KEY = Key.of("SpiceStateHistory");
@@ -468,4 +471,16 @@ public class SpiceStateHistory implements StateHistory
 		return stateHistory;
 
     }
+
+	public String getPlateColoringForInstrument(String fov)
+	{
+		return plateColoringForInstrument.get(fov);
+	}
+
+	public void setPlateColoringForInstrument(String plateColoring, String fov)
+	{
+		plateColoringForInstrument.put(fov, plateColoring);
+	}
+
+
 }

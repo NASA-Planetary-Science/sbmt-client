@@ -9,7 +9,10 @@ import javax.swing.JPanel;
 
 import edu.jhuapl.saavtk.color.gui.EditGroupColorPanel;
 import edu.jhuapl.saavtk.color.painter.ColorBarPainter;
+import edu.jhuapl.saavtk.color.provider.ColorProvider;
 import edu.jhuapl.saavtk.color.provider.GroupColorProvider;
+import edu.jhuapl.saavtk.color.provider.SimpleColorProvider;
+import edu.jhuapl.saavtk.feature.FeatureType;
 import edu.jhuapl.sbmt.stateHistory.rendering.model.StateHistoryRendererManager;
 
 import glum.gui.GuiExeUtil;
@@ -55,8 +58,19 @@ public class StateHistoryColorConfigPanel extends JPanel implements ActionListen
 		colorPanel.addCard(ColorMode.ColorMap, colorMapPanel);
 		colorPanel.addCard(ColorMode.Simple, new SimplePanel(this, new Color(0.0f, 1.0f, 1.0f)));
 
+		if (rendererManager.getRuns().getCurrentRun() != null)
+		{
+			ColorProvider colorProvider = rendererManager.getColorProviderForStateHistory(rendererManager.getRuns().getCurrentRun());
+			if (colorProvider instanceof SimpleColorProvider)
+				setActiveMode(ColorMode.Simple);
+			else
+			{
+				setActiveMode(ColorMode.ColorMap);
+				colorMapPanel.setFeatureType(colorProvider.getFeatureType());
+			}
+		}
+
 		add(colorPanel, "growx,growy,span");
-		setActiveMode(ColorMode.Simple);
 		// Custom initialization code
 		Runnable tmpRunnable = () -> {
 			colorPanel.getActiveCard().activate(true);
@@ -74,6 +88,14 @@ public class StateHistoryColorConfigPanel extends JPanel implements ActionListen
 		if (tmpPanel instanceof SimplePanel)
 			return ((SimplePanel) tmpPanel).getGroupColorProvider();
 		return tmpPanel.getGroupColorProvider();
+	}
+
+	public FeatureType getFeatureType()
+	{
+		EditGroupColorPanel tmpPanel = colorPanel.getActiveCard();
+		if (tmpPanel instanceof SimplePanel)
+			return null;
+		return ((StateHistoryColorBarPanel)tmpPanel).getFeatureType();
 	}
 
 	/**

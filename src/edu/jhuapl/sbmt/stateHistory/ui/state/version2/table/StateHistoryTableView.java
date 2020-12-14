@@ -2,6 +2,7 @@ package edu.jhuapl.sbmt.stateHistory.ui.state.version2.table;
 
 import java.awt.Color;
 import java.awt.Component;
+import java.awt.Dimension;
 import java.awt.event.ActionListener;
 
 import javax.swing.Box;
@@ -12,11 +13,10 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.JTextField;
+import javax.swing.UIManager;
 import javax.swing.border.TitledBorder;
 import javax.swing.table.TableCellRenderer;
 
-import edu.jhuapl.saavtk.color.gui.ColorProviderCellEditor;
-import edu.jhuapl.saavtk.color.gui.ColorProviderCellRenderer;
 import edu.jhuapl.saavtk.color.provider.ColorProvider;
 import edu.jhuapl.saavtk.color.provider.ConstColorProvider;
 import edu.jhuapl.saavtk.gui.util.IconUtil;
@@ -25,6 +25,8 @@ import edu.jhuapl.sbmt.gui.table.EphemerisTimeRenderer;
 import edu.jhuapl.sbmt.stateHistory.model.interfaces.StateHistory;
 import edu.jhuapl.sbmt.stateHistory.model.stateHistory.StateHistoryCollection;
 import edu.jhuapl.sbmt.stateHistory.rendering.model.StateHistoryRendererManager;
+import edu.jhuapl.sbmt.stateHistory.ui.state.color.StateHistoryColorProviderCellEditor;
+import edu.jhuapl.sbmt.stateHistory.ui.state.color.StateHistoryColorProviderCellRenderer;
 import edu.jhuapl.sbmt.stateHistory.ui.state.popup.StateHistoryGuiUtil;
 
 import glum.gui.GuiUtil;
@@ -64,10 +66,10 @@ public class StateHistoryTableView extends JPanel
 	 */
 	private JButton saveStateHistoryButton;
 
-	/**
-	 * JButton to delete the selected State History
-	 */
-	private JButton deleteStateHistoryButton;
+//	/**
+//	 * JButton to delete the selected State History
+//	 */
+//	private JButton deleteStateHistoryButton;
 
 	/**
 	 * JTable to display loaded state histories
@@ -77,7 +79,7 @@ public class StateHistoryTableView extends JPanel
 	/**
 	 * JButtons for selection in the table
 	 */
-	private JButton selectAllB, selectInvertB, selectNoneB;
+	private JButton selectAllB, selectInvertB, selectNoneB, deleteStateHistoryButton, itemAddB, itemEditB;
 
 	/**
 	 * The collection of loaded state history objects
@@ -113,15 +115,15 @@ public class StateHistoryTableView extends JPanel
 	protected void init(StateHistoryRendererManager rendererManager)
 	{
 		resultList = buildTable(rendererManager);
-		hideStateHistoryButton = new JButton("Hide State History");
-		showStateHistoryButton = new JButton("Show State History");
-		hideStateHistoryButton.setEnabled(false);
-		showStateHistoryButton.setEnabled(false);
-		loadStateHistoryButton = new JButton("Load...");
-		saveStateHistoryButton = new JButton("Save...");
-		deleteStateHistoryButton = new JButton("Delete...");
-		deleteStateHistoryButton.setEnabled(false);
-		saveStateHistoryButton.setEnabled(false);
+//		hideStateHistoryButton = new JButton("Hide State History");
+//		showStateHistoryButton = new JButton("Show State History");
+//		hideStateHistoryButton.setEnabled(false);
+//		showStateHistoryButton.setEnabled(false);
+//		loadStateHistoryButton = new JButton("Load...");
+//		saveStateHistoryButton = new JButton("Save...");
+//		deleteStateHistoryButton = new JButton("Delete...");
+//		deleteStateHistoryButton.setEnabled(false);
+//		saveStateHistoryButton.setEnabled(false);
 	}
 
 	/**
@@ -130,7 +132,7 @@ public class StateHistoryTableView extends JPanel
 	public void setup()
 	{
 		setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
-		setBorder(new TitledBorder(null, "Available Files", TitledBorder.LEADING, TitledBorder.TOP, null, null));
+		setBorder(new TitledBorder(null, "Loaded Trajectories", TitledBorder.LEADING, TitledBorder.TOP, null, null));
 		JPanel panel_4 = new JPanel();
 		add(panel_4);
 		panel_4.setLayout(new BoxLayout(panel_4, BoxLayout.X_AXIS));
@@ -144,18 +146,18 @@ public class StateHistoryTableView extends JPanel
 
 		scrollPane.setViewportView(resultList);
 
-		JPanel panel_1 = new JPanel();
-		add(panel_1);
-		panel_1.setLayout(new BoxLayout(panel_1, BoxLayout.X_AXIS));
-		panel_1.add(showStateHistoryButton);
-		panel_1.add(hideStateHistoryButton);
+//		JPanel panel_1 = new JPanel();
+//		add(panel_1);
+//		panel_1.setLayout(new BoxLayout(panel_1, BoxLayout.X_AXIS));
+//		panel_1.add(showStateHistoryButton);
+//		panel_1.add(hideStateHistoryButton);
 
-		JPanel panel_2 = new JPanel();
-		add(panel_2);
-		panel_2.setLayout(new BoxLayout(panel_2, BoxLayout.X_AXIS));
-		panel_2.add(loadStateHistoryButton);
-		panel_2.add(saveStateHistoryButton);
-		panel_2.add(deleteStateHistoryButton);
+//		JPanel panel_2 = new JPanel();
+//		add(panel_2);
+//		panel_2.setLayout(new BoxLayout(panel_2, BoxLayout.X_AXIS));
+//		panel_2.add(loadStateHistoryButton);
+//		panel_2.add(saveStateHistoryButton);
+//		panel_2.add(deleteStateHistoryButton);
 	}
 
 	/**
@@ -183,6 +185,32 @@ public class StateHistoryTableView extends JPanel
 		PopupMenu stateHistoryPopupMenu = StateHistoryGuiUtil
 				.formStateHistoryFileSpecPopupMenu(rendererManager, this);
 
+		loadStateHistoryButton = GuiUtil.formButton(listener, UIManager.getIcon("FileView.directoryIcon"));
+		loadStateHistoryButton.setToolTipText(ToolTipUtil.getItemLoad());
+
+		saveStateHistoryButton = GuiUtil.formButton(listener, UIManager.getIcon("FileView.floppyDriveIcon"));
+		saveStateHistoryButton.setToolTipText(ToolTipUtil.getItemSave());
+		saveStateHistoryButton.setEnabled(false);
+
+		showStateHistoryButton = GuiUtil.formButton(listener, IconUtil.getItemShow());
+		showStateHistoryButton.setToolTipText(ToolTipUtil.getItemShow());
+		showStateHistoryButton.setEnabled(false);
+
+		hideStateHistoryButton = GuiUtil.formButton(listener, IconUtil.getItemHide());
+		hideStateHistoryButton.setToolTipText(ToolTipUtil.getItemHide());
+		hideStateHistoryButton.setEnabled(false);
+
+		itemAddB = GuiUtil.formButton(listener, IconUtil.getItemAdd());
+		itemAddB.setToolTipText(ToolTipUtil.getItemAdd());
+
+		deleteStateHistoryButton = GuiUtil.formButton(listener, IconUtil.getItemDel());
+		deleteStateHistoryButton.setToolTipText(ToolTipUtil.getItemDel());
+		deleteStateHistoryButton.setEnabled(false);
+
+		itemEditB = GuiUtil.formButton(listener, IconUtil.getItemEdit());
+		itemEditB.setToolTipText(ToolTipUtil.getItemEdit());
+		itemEditB.setEnabled(false);
+
 		// Table header
 		selectInvertB = GuiUtil.formButton(listener, IconUtil.getSelectInvert());
 		selectInvertB.setToolTipText(ToolTipUtil.getSelectInvert());
@@ -196,7 +224,18 @@ public class StateHistoryTableView extends JPanel
 		JPanel buttonPanel = new JPanel();
 		buttonPanel.setLayout(new BoxLayout(buttonPanel, BoxLayout.X_AXIS));
 
+		buttonPanel.add(loadStateHistoryButton);
+		buttonPanel.add(saveStateHistoryButton);
 		buttonPanel.add(Box.createHorizontalGlue());
+		buttonPanel.add(showStateHistoryButton);
+		buttonPanel.add(hideStateHistoryButton);
+		buttonPanel.add(Box.createHorizontalGlue());
+		buttonPanel.add(itemAddB, "w 24!,h 24!");
+		buttonPanel.add(deleteStateHistoryButton, "w 24!,h 24!");
+		buttonPanel.add(itemEditB, "gapright 24,w 24!,h 24!");
+		Component horizontalStrut = Box.createHorizontalStrut(24);
+		horizontalStrut.setMaximumSize(new Dimension(24, 5));
+		buttonPanel.add(horizontalStrut);
 		buttonPanel.add(selectInvertB, "w 24!,h 24!");
 		buttonPanel.add(selectNoneB, "w 24!,h 24!");
 		buttonPanel.add(selectAllB, "w 24!,h 24!,wrap 2");
@@ -209,8 +248,9 @@ public class StateHistoryTableView extends JPanel
 		tmpComposer.addAttribute(StateHistoryColumnLookup.Color, Color.class, "Color", null);
 		tmpComposer.addAttribute(StateHistoryColumnLookup.Name, String.class, "Name", null);
 		tmpComposer.addAttribute(StateHistoryColumnLookup.Description, String.class, "Description", null);
-		tmpComposer.addAttribute(StateHistoryColumnLookup.StartTime, String.class, "Start Time", null);
-		tmpComposer.addAttribute(StateHistoryColumnLookup.EndTime, String.class, "End Time", null);
+		tmpComposer.addAttribute(StateHistoryColumnLookup.StartTime, String.class, "Start Time (UTC)", null);
+		tmpComposer.addAttribute(StateHistoryColumnLookup.EndTime, String.class, "End Time (UTC)", null);
+		tmpComposer.addAttribute(StateHistoryColumnLookup.Source, String.class, "Source", null);
 
 		EphemerisTimeRenderer tmpTimeRenderer = new EphemerisTimeRenderer(false);
 		tmpComposer.setEditor(StateHistoryColumnLookup.Map, new BooleanCellEditor());
@@ -219,8 +259,8 @@ public class StateHistoryTableView extends JPanel
 		tmpComposer.setRenderer(StateHistoryColumnLookup.Show, new BooleanCellRenderer());
 		tmpComposer.setEditor(StateHistoryColumnLookup.Show, new BooleanCellEditor());
 		tmpComposer.setRenderer(StateHistoryColumnLookup.Show, new BooleanCellRenderer());
-		tmpComposer.setEditor(StateHistoryColumnLookup.Color, new ColorProviderCellEditor<StateHistory>());
-		tmpComposer.setRenderer(StateHistoryColumnLookup.Color, new ColorProviderCellRenderer(false));
+		tmpComposer.setEditor(StateHistoryColumnLookup.Color, new StateHistoryColorProviderCellEditor(rendererManager));
+		tmpComposer.setRenderer(StateHistoryColumnLookup.Color, new StateHistoryColorProviderCellRenderer(false));
 		tmpComposer.setEditor(StateHistoryColumnLookup.Name, new DefaultCellEditor(new JTextField()));
 		tmpComposer.setRenderer(StateHistoryColumnLookup.Description, tmpTimeRenderer);
 		tmpComposer.setEditor(StateHistoryColumnLookup.Description, new DefaultCellEditor(new JTextField()));
@@ -247,6 +287,26 @@ public class StateHistoryTableView extends JPanel
 	public JTable getTable()
 	{
 		return resultList;
+	}
+
+	/**
+	 * Returns the load state history button
+	 *
+	 * @return the load state history button
+	 */
+	public JButton getAddStateHistoryButton()
+	{
+		return itemAddB;
+	}
+
+	/**
+	 * Returns the load state history button
+	 *
+	 * @return the load state history button
+	 */
+	public JButton getEditStateHistoryButton()
+	{
+		return itemEditB;
 	}
 
 	/**
@@ -304,12 +364,12 @@ public class StateHistoryTableView extends JPanel
 	private void configureColumnWidths()
 	{
 		JTable tmpTable = stateHistoryILP.getTable();
-		String dateTimeStr = "9999-88-88T00:00:00.000000";
+		String dateTimeStr = "9999-88-88T00:00:00.000";
 		int minW = 30;
 
 		ColorProvider blackCP = new ConstColorProvider(Color.BLACK);
 		Object[] nomArr =
-		{ true, true, blackCP, "Segment000", "Description", dateTimeStr, dateTimeStr };
+		{ true, true, blackCP, "Segment000", "Description", dateTimeStr, dateTimeStr, "TypePlusSourceName" };
 		for (int aCol = 0; aCol < nomArr.length; aCol++)
 		{
 			TableCellRenderer tmpRenderer = tmpTable.getCellRenderer(0, aCol);

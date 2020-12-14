@@ -5,8 +5,6 @@ import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.util.Calendar;
-import java.util.Date;
 
 import javax.swing.Box;
 import javax.swing.BoxLayout;
@@ -16,23 +14,17 @@ import javax.swing.JFileChooser;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JRadioButton;
-import javax.swing.JSpinner;
 import javax.swing.JTextPane;
-import javax.swing.SpinnerDateModel;
 import javax.swing.border.TitledBorder;
 
-import org.joda.time.DateTime;
-
 import edu.jhuapl.sbmt.stateHistory.model.StateHistorySourceType;
-import edu.jhuapl.sbmt.stateHistory.model.interfaces.StateHistory;
-import edu.jhuapl.sbmt.stateHistory.model.time.StateHistoryTimeModel;
 import edu.jhuapl.sbmt.stateHistory.ui.DateTimeSpinner;
 
 /**
  * @author steelrj1
  *
  */
-public class StateHistoryIntervalGenerationPanel extends JPanel
+public class StateHistoryIntervalEditPanel extends JPanel
 {
 	private static String PREGENDATASTRING = "Pregenerated Pointing";
 
@@ -89,46 +81,12 @@ public class StateHistoryIntervalGenerationPanel extends JPanel
      */
     private Dimension spinnerSize = new Dimension(400, 28);
 
-    private String buttonText = "Get Interval";
-
-    private boolean editMode;
-
-    private StateHistory history;
-
 	/**
 	 * Constructor.
 	 */
-	public StateHistoryIntervalGenerationPanel()
+	public StateHistoryIntervalEditPanel()
 	{
-		editMode = false;
 		initUI();
-	}
-
-	public StateHistoryIntervalGenerationPanel(StateHistory history)
-	{
-		editMode = true;
-		this.history = history;
-		buttonText = "Update Interval";
-		initUI();
-		stateHistorySourceType = history.getType();
-		if (stateHistorySourceType == StateHistorySourceType.SPICE) spiceDataRadioButton.setSelected(true);
-		else pregenDataRadioButton.setSelected(true);
-		Date startDate = StateHistoryTimeModel.getDateForET(history.getStartTime());
-		SpinnerDateModel spinnerDateModel = new SpinnerDateModel(startDate, null, null, Calendar.DAY_OF_MONTH);
-        startTimeSpinner.setModel(spinnerDateModel);
-
-		JSpinner.DateEditor dateEditor = new JSpinner.DateEditor(startTimeSpinner, "yyyy-MMM-dd HH:mm:ss.SSS");
-        startTimeSpinner.setEditor(dateEditor);
-        System.out.println("StateHistoryIntervalGenerationPanel: StateHistoryIntervalGenerationPanel: history start time " + new Date(history.getStartTime().longValue()));
-		startTimeSpinner.getModel().setValue(startDate);
-
-		Date stopDate = StateHistoryTimeModel.getDateForET(history.getEndTime());
-		spinnerDateModel = new SpinnerDateModel(stopDate, null, null, Calendar.DAY_OF_MONTH);
-        stopTimeSpinner.setModel(spinnerDateModel);
-
-		dateEditor = new JSpinner.DateEditor(stopTimeSpinner, "yyyy-MMM-dd HH:mm:ss.SSS");
-        stopTimeSpinner.setEditor(dateEditor);
-		stopTimeSpinner.getModel().setValue(stopDate);
 	}
 
 	/**
@@ -147,18 +105,10 @@ public class StateHistoryIntervalGenerationPanel extends JPanel
         repaint();
 	}
 
-	public void updateStateHistory()
-	{
-		history.setType(stateHistorySourceType);
-		DateTime startTime = startTimeSpinner.getISOFormattedTime();
-        DateTime endTime = stopTimeSpinner.getISOFormattedTime();
-		history.setStartTime(StateHistoryTimeModel.getETForDate(startTime.toDate()));
-		history.setEndTime(StateHistoryTimeModel.getETForDate(endTime.toDate()));
-	}
-
 	@Override
 	public void repaint()
 	{
+		// TODO Auto-generated method stub
 		super.repaint();
 		if (dataSourceCards == null) return;
 		dataSourceCards.setMinimumSize(new Dimension(this.getWidth(), 40));
@@ -202,6 +152,8 @@ public class StateHistoryIntervalGenerationPanel extends JPanel
 			stateHistorySourceType = StateHistorySourceType.SPICE;
 		});
 
+
+
 		return radioButtonPanel;
 	}
 
@@ -226,7 +178,7 @@ public class StateHistoryIntervalGenerationPanel extends JPanel
 			public void actionPerformed(ActionEvent e)
 			{
 				JFileChooser fileChooser = new JFileChooser();
-				int showOpenDialogResult = fileChooser.showOpenDialog(StateHistoryIntervalGenerationPanel.this);
+				int showOpenDialogResult = fileChooser.showOpenDialog(StateHistoryIntervalEditPanel.this);
 				if (showOpenDialogResult == JFileChooser.APPROVE_OPTION)
 				{
 					metakernelToLoad = fileChooser.getSelectedFile().getAbsolutePath();
@@ -307,7 +259,7 @@ public class StateHistoryIntervalGenerationPanel extends JPanel
         timeRangePanel.add(panel_4);
         panel_4.setLayout(new BoxLayout(panel_4, BoxLayout.X_AXIS));
 
-        getIntervalButton = new JButton(buttonText);
+        getIntervalButton = new JButton("Get Interval");
         panel_4.add(getIntervalButton);
 
         return timeRangePanel;
@@ -363,13 +315,5 @@ public class StateHistoryIntervalGenerationPanel extends JPanel
 	public StateHistorySourceType getStateHistorySourceType()
 	{
 		return stateHistorySourceType;
-	}
-
-	/**
-	 * @return the editMode
-	 */
-	public boolean isEditMode()
-	{
-		return editMode;
 	}
 }

@@ -1,6 +1,5 @@
 package edu.jhuapl.sbmt.stateHistory.controllers;
 
-import java.awt.Color;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 import java.io.File;
@@ -9,8 +8,6 @@ import java.io.IOException;
 import javax.swing.BoxLayout;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
-import javax.swing.border.EtchedBorder;
-import javax.swing.border.TitledBorder;
 
 import org.joda.time.DateTime;
 import org.joda.time.format.ISODateTimeFormat;
@@ -23,6 +20,7 @@ import edu.jhuapl.saavtk.model.ModelNames;
 import edu.jhuapl.saavtk.util.FileCache;
 import edu.jhuapl.sbmt.client.SmallBodyModel;
 import edu.jhuapl.sbmt.client.SmallBodyViewConfig;
+import edu.jhuapl.sbmt.stateHistory.controllers.viewControls.ObservationPlanningViewControlsController;
 import edu.jhuapl.sbmt.stateHistory.model.StateHistoryModel;
 import edu.jhuapl.sbmt.stateHistory.model.StateHistorySourceType;
 import edu.jhuapl.sbmt.stateHistory.model.StateHistoryUtil;
@@ -35,7 +33,6 @@ import edu.jhuapl.sbmt.stateHistory.model.time.StateHistoryTimeModel;
 import edu.jhuapl.sbmt.stateHistory.model.time.TimeWindow;
 import edu.jhuapl.sbmt.stateHistory.rendering.model.StateHistoryRendererManager;
 import edu.jhuapl.sbmt.stateHistory.ui.state.version2.StateHistoryDisplayedIntervalPanel;
-import edu.jhuapl.sbmt.stateHistory.ui.state.version2.StateHistoryIntervalGenerationPanel;
 import edu.jhuapl.sbmt.stateHistory.ui.state.version2.table.StateHistoryTableView;
 
 import glum.item.ItemEventType;
@@ -78,6 +75,8 @@ public class StateHistoryController
     private StateHistoryTimeModel timeModel = null;
 
     private StateHistoryRendererManager rendererManager;
+
+    private ObservationPlanningViewControlsController viewControlsController;
 
     /**
      * Constructor.  Initializes properties, sets listeners, etc
@@ -163,25 +162,28 @@ public class StateHistoryController
      */
     public JPanel getView()
     {
-    	JPanel timeControlsPanel = new JPanel();
-    	timeControlsPanel.setBorder(new TitledBorder(
-                new EtchedBorder(EtchedBorder.LOWERED, null, null),
-                "Time Controls", TitledBorder.LEADING, TitledBorder.TOP, null,
-                new Color(0, 0, 0)));
-    	timeControlsPanel.setLayout(new BoxLayout(timeControlsPanel, BoxLayout.Y_AXIS));
+//    	JPanel timeControlsPanel = new JPanel();
+//    	timeControlsPanel.setBorder(new TitledBorder(
+//                new EtchedBorder(EtchedBorder.LOWERED, null, null),
+//                "Time Controls", TitledBorder.LEADING, TitledBorder.TOP, null,
+//                new Color(0, 0, 0)));
+//    	timeControlsPanel.setLayout(new BoxLayout(timeControlsPanel, BoxLayout.Y_AXIS));
 
-    	StateHistoryIntervalGenerationPanel intervalGenerationPanel = intervalGenerationController.getView();
+//    	StateHistoryIntervalGenerationPanel intervalGenerationPanel = intervalGenerationController.getView();
+    	intervalSelectionController.setIntervalGenerationController(intervalGenerationController);
     	StateHistoryTableView intervalSelectionPanel = intervalSelectionController.getView();
+
     	intervalSelectionPanel.setup();
 
     	StateHistoryDisplayedIntervalPanel displayedPanel = intervalDisplayedController.getView();
 
-    	timeControlsPanel.add(intervalGenerationPanel);
-    	timeControlsPanel.add(intervalSelectionPanel);
+//    	timeControlsPanel.add(intervalGenerationPanel);
+//    	timeControlsPanel.add(intervalSelectionPanel);
 
     	JPanel panel = new JPanel();
     	panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
-    	panel.add(timeControlsPanel);
+    	panel.add(intervalSelectionPanel);
+    	panel.add(viewControlsController.getView());
     	panel.add(displayedPanel);
     	return panel;
     }
@@ -203,5 +205,13 @@ public class StateHistoryController
 	public StateHistoryModel getHistoryModel()
 	{
 		return historyModel;
+	}
+
+	/**
+	 * @param viewControlsController the viewControlsController to set
+	 */
+	public void setViewControlsController(ObservationPlanningViewControlsController viewControlsController)
+	{
+		this.viewControlsController = viewControlsController;
 	}
 }

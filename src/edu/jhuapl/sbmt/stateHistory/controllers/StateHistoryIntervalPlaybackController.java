@@ -10,8 +10,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import javax.imageio.ImageIO;
 import javax.swing.Icon;
@@ -36,6 +34,7 @@ import edu.jhuapl.sbmt.stateHistory.model.StateHistoryModel;
 import edu.jhuapl.sbmt.stateHistory.model.stateHistory.StateHistoryCollection;
 import edu.jhuapl.sbmt.stateHistory.model.time.BaseStateHistoryTimeModelChangedListener;
 import edu.jhuapl.sbmt.stateHistory.model.time.StateHistoryTimeModel;
+import edu.jhuapl.sbmt.stateHistory.model.time.TimeWindow;
 import edu.jhuapl.sbmt.stateHistory.rendering.model.StateHistoryRendererManager;
 import edu.jhuapl.sbmt.stateHistory.ui.AnimationFileDialog;
 import edu.jhuapl.sbmt.stateHistory.ui.state.version2.StateHistoryIntervalPlaybackPanel;
@@ -90,7 +89,7 @@ public class StateHistoryIntervalPlaybackController
 			public void timeChanged(double et)
 			{
 				if (rendererManager.getRuns().getCurrentRun() == null) return;
-				Logger.getAnonymousLogger().log(Level.INFO, "Starting in playback");
+//				Logger.getAnonymousLogger().log(Level.INFO, "Starting in playback");
 				//if needed, update the time entry box and the slider
 				Date date = timeModel.getDateForET(et);
 				if (date == (Date)view.getTimeBox().getModel().getValue()) return;
@@ -102,9 +101,9 @@ public class StateHistoryIntervalPlaybackController
 				int val = (int)Math.round((currentOffsetTime) * ((double)(view.getSlider().getMaximum() - view.getSlider().getMinimum())) + view.getSlider().getMinimum());
                 view.getSlider().setValue(val);
 
-                Logger.getAnonymousLogger().log(Level.INFO, "Setting history model times");
+//                Logger.getAnonymousLogger().log(Level.INFO, "Setting history model times");
                 rendererManager.setTimeFraction(currentOffsetTime, rendererManager.getRuns().getCurrentRun());
-                Logger.getAnonymousLogger().log(Level.INFO, "Ending in playback");
+//                Logger.getAnonymousLogger().log(Level.INFO, "Ending in playback");
 			}
 
 			@Override
@@ -182,11 +181,12 @@ public class StateHistoryIntervalPlaybackController
 //			// TODO Auto-generated catch block
 ////			e1.printStackTrace();
 //		}
+        timeModel.setTimeWindow(new TimeWindow(runs.getCurrentRun().getStartTime(), runs.getCurrentRun().getEndTime()));
         timeModel.setTimeFraction(currentOffsetTime);
+
 //        runs.setTimeFraction(currentOffsetTime);
 
         Date date = timeModel.getDateForET(timeModel.getEt());
-
         //TODO need this?
 //		historyModel.setTime(timeModel.getEt());
         view.getTimeBox().setValue(date);
@@ -286,6 +286,7 @@ public class StateHistoryIntervalPlaybackController
         	timer.setDelay(1000/Integer.parseInt(view.getPlaybackRateTextField().getText()));
 
         });
+
 
         rendererManager.addListener((aSource, aEventType) -> {
 //        	System.out.println("StateHistoryIntervalPlaybackController: initializeIntervalPlaybackPanel: event type " + aEventType);
@@ -430,9 +431,9 @@ public class StateHistoryIntervalPlaybackController
                 	timer.stop();
                     currentOffsetTime = 0.0;
                 }
-                Logger.getAnonymousLogger().log(Level.INFO, "setting time fraction");
+//                Logger.getAnonymousLogger().log(Level.INFO, "setting time fraction");
                 timeModel.setTimeFraction(deltaRealTime*currentOffsetTime);
-                Logger.getAnonymousLogger().log(Level.INFO, "set time fraction");
+//                Logger.getAnonymousLogger().log(Level.INFO, "set time fraction");
 
                 //Don't think I need these since they are handled elsewhere
 //				//Update the slider
