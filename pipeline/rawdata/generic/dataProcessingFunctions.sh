@@ -767,11 +767,11 @@ createRelativeLink() {
     # whether or not it exists yet.
     linkPathDir=$(dirname $linkPath)
 
+    # Make sure the linkPath directory exists. Must do this before using realpath.
+    createDir $linkPathDir
+
     reltarget=`realpath --relative-to=$linkPathDir $target`
     check $? "$funcName: cannot compute relative path to $target from $linkPathDir"
-
-    # Make sure the linkPath directory exists.
-    createDir $linkPathDir
 
     cd $linkPathDir
     check $? "$funcName: cannot cd to linkPath directory $linkPathDir"
@@ -800,12 +800,12 @@ updateRelativeLink() {
     # Use dirname here to get one level up from the linkPath link name,
     # whether or not it exists yet.
     linkPathDir=$(dirname $linkPath)
+    
+    # Make sure the linkPath directory exists. Must do this before using realpath.
+    createDir $linkPathDir
 
     reltarget=`realpath --relative-to=$linkPathDir $target`
     check $? "$funcName: cannot compute relative path to $target from $linkPathDir"
-
-    # Make sure the linkPath directory exists.
-    createDir $linkPathDir
 
     cd $linkPathDir
     check $? "$funcName: cannot cd to linkPath directory $linkPathDir"
