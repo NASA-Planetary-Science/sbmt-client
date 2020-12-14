@@ -563,6 +563,9 @@ public class SbmtViewManager extends ViewManager
     private static final ImmutableSet<ShapeModelBody> MARK_VISITED_BY_SPACECRAFT = ImmutableSet.of(
             ShapeModelBody.EROS,
             ShapeModelBody.ITOKAWA,
+            ShapeModelBody.DIDYMOS_SYSTEM,
+            ShapeModelBody.DIDYMOS,
+            ShapeModelBody.DIMORPHOS,
             ShapeModelBody.RQ36,
             ShapeModelBody.RYUGU,
             ShapeModelBody.CERES,
@@ -599,6 +602,9 @@ public class SbmtViewManager extends ViewManager
             // Asteroids -> NEO (visited)
             ShapeModelBody.EROS,
             ShapeModelBody.ITOKAWA,
+            ShapeModelBody.DIDYMOS_SYSTEM,
+            ShapeModelBody.DIDYMOS,
+            ShapeModelBody.DIMORPHOS,
             ShapeModelBody.RQ36,
             ShapeModelBody.RYUGU,
             // Asteroids -> NEO (not visited)

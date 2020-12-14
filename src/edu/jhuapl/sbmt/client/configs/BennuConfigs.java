@@ -289,7 +289,7 @@ public class BennuConfigs extends SmallBodyViewConfig
 
             c.presentInMissions = new SbmtMultiMissionTool.Mission[] {};
 
-            configArray.add(c);
+//            configArray.add(c);
         }
 
 

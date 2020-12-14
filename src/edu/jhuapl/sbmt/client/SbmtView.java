@@ -208,6 +208,7 @@ public class SbmtView extends View implements PropertyChangeListener
 		String modelLabel;
 		BodyType type;
 		ShapeModelPopulation population;
+		ShapeModelBody system;
 		ShapeModelDataUsed dataUsed;
 		ShapeModelBody body;
 		if (configInfo == null)
@@ -217,6 +218,7 @@ public class SbmtView extends View implements PropertyChangeListener
 			modelLabel = config.modelLabel;
 			type = config.type;
 			population = config.population;
+			system = config.system;
 			dataUsed = config.dataUsed;
 			body = config.body;
 		}
@@ -226,6 +228,7 @@ public class SbmtView extends View implements PropertyChangeListener
 			modelLabel = configInfo.modelLabel;
 			type = configInfo.type;
 			population = configInfo.population;
+			system = configInfo.system;
 			dataUsed = configInfo.dataUsed;
 			body = configInfo.body;
 		}
@@ -238,6 +241,8 @@ public class SbmtView extends View implements PropertyChangeListener
             String path = type.str;
             if (population != null && population != ShapeModelPopulation.NA)
                 path += " > " + population;
+			if (system != null)
+			    path += " > " + system;
             path += " > " + body;
             if (dataUsed != null && dataUsed != ShapeModelDataUsed.NA)
                 path += " > " + dataUsed;

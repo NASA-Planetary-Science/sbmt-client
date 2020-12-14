@@ -27,6 +27,7 @@ import edu.jhuapl.sbmt.model.eros.LineamentModel;
 import edu.jhuapl.sbmt.model.eros.MSIImage;
 import edu.jhuapl.sbmt.model.gaspra.SSIGaspraImage;
 import edu.jhuapl.sbmt.model.ida.SSIIdaImage;
+import edu.jhuapl.sbmt.model.image.BasicPerspectiveImage;
 import edu.jhuapl.sbmt.model.image.CustomPerspectiveImage;
 import edu.jhuapl.sbmt.model.image.CylindricalImage;
 import edu.jhuapl.sbmt.model.image.Image;
@@ -165,8 +166,6 @@ public class SbmtModelFactory
                     return new TIRImage(key, smallBodyModel, loadPointingOnly);
                 else if (key.getInstrument().getType() == ImageType.GENERIC_IMAGE)
                     return new CustomPerspectiveImage(key, smallBodyModel, loadPointingOnly);
-                else
-                    return null;
             }
         }
         else if (ImageSource.LOCAL_PERSPECTIVE.equals(key.getSource()))
@@ -231,15 +230,13 @@ public class SbmtModelFactory
                 return new ONCTruthImage(key, smallBodyModel, loadPointingOnly);
             else if (key.getImageType() == ImageType.TIR_IMAGE)
                 return new TIRImage(key, smallBodyModel, loadPointingOnly);
-            else
-                return null;
         }
         else if (key instanceof CustomCylindricalImageKey)
         {
             return new CylindricalImage((CustomCylindricalImageKey) key, smallBodyModel);
         }
 
-        return null;
+        return new BasicPerspectiveImage(key, smallBodyModel, loadPointingOnly);
     }
 
     static public SmallBodyModel createSmallBodyModel(SmallBodyViewConfig config)

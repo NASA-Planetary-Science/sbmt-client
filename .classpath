@@ -21,5 +21,12 @@
 	</classpathentry>
 	<classpathentry kind="lib" path="lib/jcodec-0.2.3.jar"/>
 	<classpathentry kind="lib" path="lib/jcodec-javase-0.2.3.jar"/>
+	<classpathentry kind="lib" path="/saavtk/lib/jafama-2.3.1.jar"/>
+	<classpathentry kind="lib" path="/saavtk/lib/jsr305.jar"/>
+	<classpathentry kind="lib" path="/saavtk/lib/crucible-core-20200730.jar"/>
+	<classpathentry kind="lib" path="/saavtk/lib/crucible-mantle-spice-20200730.jar"/>
+	<classpathentry kind="lib" path="/saavtk/lib/crucible-crust-metadata-20200730.jar"/>
+	<classpathentry kind="lib" path="/saavtk/lib/crucible-crust-settings-20200730.jar"/>
+	<classpathentry kind="lib" path="/saavtk/lib/crucible-crust-spice-20200730.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

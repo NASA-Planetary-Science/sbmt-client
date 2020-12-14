@@ -15,7 +15,6 @@ import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map.Entry;
-import java.util.regex.Pattern;
 
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
@@ -36,8 +35,6 @@ import nom.tam.fits.HeaderCard;
 public class ComputeSpicePointing
 {
     protected static final TimeSystems DefaultTimeSystems = TimeSystems.builder().build();
-
-    private static final Pattern MetaKernelPattern = Pattern.compile(".*\\.mk", Pattern.CASE_INSENSITIVE);
 
     public static ComputeSpicePointing of(String[] args) throws Exception
     {
@@ -62,15 +59,7 @@ public class ComputeSpicePointing
 
             String mkPathString = args[index++];
             ImmutableList<Path> mkPaths;
-            if (MetaKernelPattern.asPredicate().test(mkPathString))
-            {
-                mkPaths = ImmutableList.of(Paths.get(mkPathString));
-            }
-            else
-            {
-                System.err.println("Metakernel file path argument " + mkPathString + " must be a single metakernel file ending with .mk for now");
-                throw new UnsupportedOperationException("TODO: implement reader for a list of MK files");
-            }
+            mkPaths = ImmutableList.of(Paths.get(mkPathString));
 
             Path inputFilePath = Paths.get(args[index++]);
             Path inputDir = Paths.get(args[index++]);
@@ -214,7 +203,7 @@ public class ComputeSpicePointing
         UTCEpoch utcTime = getUTC(utcTimeString);
         double time = DefaultTimeSystems.getTDB().getTime(DefaultTimeSystems.getUTC().getTSEpoch(utcTime));
 
-        InstrumentPointing pointing = provider.provide(instFrame.getName(), time);
+        InstrumentPointing pointing = provider.provide(instFrame, time);
         DecimalFormat formatter = new DecimalFormat("0.0000000000000000E00");
         try (PrintWriter writer = new PrintWriter(new FileWriter(outputDir.resolve(fileName).toFile())))
         {

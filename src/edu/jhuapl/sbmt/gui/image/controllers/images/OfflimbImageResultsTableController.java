@@ -140,7 +140,7 @@ public class OfflimbImageResultsTableController extends ImageResultsTableControl
                 if (!e.getValueIsAdjusting())
                 {
                     imageSearchModel.setSelectedImageIndex(imageResultsTableView.getResultList().getSelectedRows());
-                    imageResultsTableView.getViewResultsGalleryButton().setEnabled(imageResultsTableView.isEnableGallery() && imageResultsTableView.getResultList().getSelectedRowCount() > 0);
+                    imageResultsTableView.getViewResultsGalleryButton().setEnabled(galleryGenerator != null && imageResultsTableView.isEnableGallery() && imageResultsTableView.getResultList().getSelectedRowCount() > 0);
                 }
             }
         });
