@@ -17,8 +17,8 @@
 #-------------------------------------------------------------------------------
 # Processing Info
 #-------------------------------------------------------------------------------
-# Developer:
-# Delivery: redmine-XXXX
+# Developer: James Peachey
+# Delivery: redmine-2316
 # Notes:
 # Information specific to this delivery and/or its processing should be
 # included here.
@@ -46,17 +46,17 @@ check 1 "Tailor this script first for the specific delivery being processed."
 #-------------------------------------------------------------------------------
 
 # The identifier of this processing run, typically "redmine-XXXX"
-processId="redmine-2315"
+processId="redmine-2316"
 
 # The identifier of the output path relative to the top of the
 # raw/processed/deployed/served directory. Typically this would
 # identify either a body/model, mission/instrument, or mission/spice, for
 # example, 'didymosa/didymosa-dra-v01a' or 'dart/draco'.
-outputTop="draco/spice"
+outputTop="dart/leia/ideal-impact6-ra-20201116-v01"
 
 # This is the full path to the delivery as provided by a scientist. This may
 # or may not fully comply with all SBMT guidelines for layout and naming.
-deliveryTop="/project/sbmtpipeline/deliveries-dart/ideal_impact6-RA-20201116-v01/spice"
+deliveryTop="/project/sbmtpipeline/deliveries-dart/ideal_impact6-RA-20201116-v01/didymos-dimorphos/leia"
 
 # The identifier of the SBMT model, which should match how the model is or
 # will be identified with a ShapeModelType object. For a given body, this
@@ -84,8 +84,7 @@ bodyId=""
 
 # Uncomment and edit these as needed if generating INFO files from SPICE
 # kernels. Only used in this case.
-# spiceKernelTop="$pipelineProcessed/dart/redmine-2200/dart/spice"
-# correctedSpiceKernelTop="$pipelineProcessed/dart/redmine-2282/dart/spice"
+# spiceKernelTop="$pipelineProcessed/dart/redmine-2315/dart/spice"
 
 #-------------------------------------------------------------------------------
 
@@ -140,10 +139,10 @@ srcTop="$rawDataTop/$outputTop"
 destTop="$processedTop/$outputTop"
 
 # Copy all delivered files.
-copyDir .
+# copyDir .
 
 # Unpack any archives that are present in the delivered files.
-unpackArchives $destTop
+# unpackArchives $destTop
 
 # End SPICE block.
 #-------------------------------------------------------------------------------
