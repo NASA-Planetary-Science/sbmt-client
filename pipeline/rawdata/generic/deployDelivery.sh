@@ -42,7 +42,7 @@ check 1 "Tailor this script first for the specific delivery being processed."
 #-------------------------------------------------------------------------------
 
 # The identifier of this processing run, typically "redmine-XXXX"
-processId="redmine-2316"
+processingId="redmine-2316"
 
 # The identifier of the output path relative to the top of the
 # raw/processed/deployed/served directory. Typically this would
