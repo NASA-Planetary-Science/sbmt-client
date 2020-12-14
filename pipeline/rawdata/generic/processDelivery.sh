@@ -45,9 +45,18 @@ check 1 "Tailor this script first for the specific delivery being processed."
 # to process this delivery.
 #-------------------------------------------------------------------------------
 
+# The identifier of this processing run, typically "redmine-XXXX"
+processId="redmine-2315"
+
+# The identifier of the output path relative to the top of the
+# raw/processed/deployed/served directory. Typically this would
+# identify either a body/model, mission/instrument, or mission/spice, for
+# example, 'didymosa/didymosa-dra-v01a' or 'dart/draco'.
+outputTop="draco/spice"
+
 # This is the full path to the delivery as provided by a scientist. This may
 # or may not fully comply with all SBMT guidelines for layout and naming.
-deliveryTop="/project/sbmtpipeline/deliveries-dart/ideal_impact1-20200629-v01/didymos/SMv01A-truth"
+deliveryTop="/project/sbmtpipeline/deliveries-dart/ideal_impact6-RA-20201116-v01/spice"
 
 # The identifier of the SBMT model, which should match how the model is or
 # will be identified with a ShapeModelType object. For a given body, this
@@ -55,14 +64,16 @@ deliveryTop="/project/sbmtpipeline/deliveries-dart/ideal_impact1-20200629-v01/di
 # items being processed are associated with a specific model, this may be set
 # to an empty string but it should not be removed. This is used to process
 # plate colorings and images.
-modelId="ideal-impact1-20200629-v01"
+# modelId="ideal-impact1-20200629-v01"
+modelId=
 
 # The identifier of the body as it appears in the SBMT, which should match how
 # the body is or will be identified with a ShapeModelBody object. If no items
 # being processed are associated with a specific body, this may be set to an
 # empty string, but it should not be removed. This is used for processing
 # plate colorings and images.
-bodyId="Didymos"
+# bodyId="Didymos"
+bodyId=""
 
 # Uncomment and edit this as needed if updating an already-processed model as
 # part of a delivery sequence. Because this in-effect changes files that
@@ -129,10 +140,10 @@ srcTop="$rawDataTop/$outputTop"
 destTop="$processedTop/$outputTop"
 
 # Copy all delivered files.
-# copyDir .
+copyDir .
 
 # Unpack any archives that are present in the delivered files.
-# unpackArchives $destTop
+unpackArchives $destTop
 
 # End SPICE block.
 #-------------------------------------------------------------------------------
@@ -154,9 +165,14 @@ destTop="$processedTop/$outputTop"
 # These variables are only used if this delivery generates INFO files from
 # SPICE kernels. These variables are valid for all instruments in this
 # delivery.
+#
+# Directory in which to unpack SPICE files. Should be as short as possible
+# due to SPICE path restrictions.
+tmpSpiceDir="/project/sbmt2/$processingId"
 bodyId="${bodyId^^}" # usually this is same as used for coloring, but all caps.
 bodyFrame="920065803_FIXED" # Didymos-specific.
 #bodyFrame="120065803_FIXED" # Dimorphos-specific.
+
 
 # End common (all-instrument) header/setup
 #-------------------------------------------------------------------------------
