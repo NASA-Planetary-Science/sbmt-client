@@ -56,8 +56,10 @@ public class DartConfigs
 
     // Note: would strongly prefer *NOT TO DO IT THIS WAY* by hard-coding these
     // values. Doing it this way because currently there is no way to inject
-    // special handling of keywords where the images are read in a mission-independent
-    // way. A better option may exist in the future, at which time this should be
+    // special handling of keywords where the images are read in a
+    // mission-independent
+    // way. A better option may exist in the future, at which time this should
+    // be
     // changed.
     private static final LinkedHashSet<Float> DracoFillValues = new LinkedHashSet<>();
     private static final LinkedHashSet<Float> LeiaFillValues = null;
@@ -102,50 +104,54 @@ public class DartConfigs
 
         SmallBodyViewConfig c;
 
-        c = createSingleResolutionConfig(ShapeModelBody.DIDYMOS, "ideal-impact1-20200629-v01", 1996);
+        c = createSingleResolutionConfig(ShapeModelBody.DIDYMOS, "ideal-impact1-20200629-v01", 1996, true);
         configList.add(c);
 
         // Make this the default model.
         final SmallBodyViewConfig defaultConfig = c;
 
-        c = createSingleResolutionConfig(ShapeModelBody.DIDYMOS, "ideal-impact2-20200629-v01", 1996);
+        c = createSingleResolutionConfig(ShapeModelBody.DIDYMOS, "ideal-impact2-20200629-v01", 1996, true);
         configList.add(c);
-        c = createSingleResolutionConfig(ShapeModelBody.DIDYMOS, "ideal-impact3-20200629-v01", 1996);
+        c = createSingleResolutionConfig(ShapeModelBody.DIDYMOS, "ideal-impact3-20200629-v01", 1996, true);
         configList.add(c);
-        c = createSingleResolutionConfig(ShapeModelBody.DIDYMOS, "ideal-impact4-20200629-v01", 3145728);
+        c = createSingleResolutionConfig(ShapeModelBody.DIDYMOS, "ideal-impact4-20200629-v01", 3145728, true);
         configList.add(c);
-        c = createSingleResolutionConfig(ShapeModelBody.DIDYMOS, "ideal-impact5-20200629-v01", 3145728);
+        c = createSingleResolutionConfig(ShapeModelBody.DIDYMOS, "ideal-impact5-20200629-v01", 3145728, true);
         configList.add(c);
-        c = createSingleResolutionConfig(ShapeModelBody.DIMORPHOS, "ideal-impact1-20200629-v01", 3072);
+        c = createSingleResolutionConfig(ShapeModelBody.DIDYMOS, "ideal-impact6-RA-20201116-v01", 3145728, false);
         configList.add(c);
-        c = createSingleResolutionConfig(ShapeModelBody.DIMORPHOS, "ideal-impact2-20200629-v01", 3145728);
+        c = createSingleResolutionConfig(ShapeModelBody.DIMORPHOS, "ideal-impact1-20200629-v01", 3072, true);
         configList.add(c);
-        c = createSingleResolutionConfig(ShapeModelBody.DIMORPHOS, "ideal-impact3-20200629-v01", 3366134);
+        c = createSingleResolutionConfig(ShapeModelBody.DIMORPHOS, "ideal-impact2-20200629-v01", 3145728, true);
         configList.add(c);
-        c = createSingleResolutionConfig(ShapeModelBody.DIMORPHOS, "ideal-impact4-20200629-v01", 3145728);
+        c = createSingleResolutionConfig(ShapeModelBody.DIMORPHOS, "ideal-impact3-20200629-v01", 3366134, true);
         configList.add(c);
-        c = createSingleResolutionConfig(ShapeModelBody.DIMORPHOS, "ideal-impact5-20200629-v01", 3366134);
+        c = createSingleResolutionConfig(ShapeModelBody.DIMORPHOS, "ideal-impact4-20200629-v01", 3145728, true);
+        configList.add(c);
+        c = createSingleResolutionConfig(ShapeModelBody.DIMORPHOS, "ideal-impact5-20200629-v01", 3366134, true);
+        configList.add(c);
+        c = createSingleResolutionConfig(ShapeModelBody.DIMORPHOS, "ideal-impact6-RA-20201116-v01", 3145728, false);
         configList.add(c);
 
-        c = createSingleResolutionConfig(ShapeModelBody.DIDYMOS, "errors-impact1-20200629-v01", 1996);
+        c = createSingleResolutionConfig(ShapeModelBody.DIDYMOS, "errors-impact1-20200629-v01", 1996, true);
         configList.add(c);
-        c = createSingleResolutionConfig(ShapeModelBody.DIDYMOS, "errors-impact2-20200629-v01", 1996);
+        c = createSingleResolutionConfig(ShapeModelBody.DIDYMOS, "errors-impact2-20200629-v01", 1996, true);
         configList.add(c);
-        c = createSingleResolutionConfig(ShapeModelBody.DIDYMOS, "errors-impact3-20200629-v01", 1996);
+        c = createSingleResolutionConfig(ShapeModelBody.DIDYMOS, "errors-impact3-20200629-v01", 1996, true);
         configList.add(c);
-        c = createSingleResolutionConfig(ShapeModelBody.DIDYMOS, "errors-impact4-20200629-v01", 3145728);
+        c = createSingleResolutionConfig(ShapeModelBody.DIDYMOS, "errors-impact4-20200629-v01", 3145728, true);
         configList.add(c);
-        c = createSingleResolutionConfig(ShapeModelBody.DIDYMOS, "errors-impact5-20200629-v01", 3145728);
+        c = createSingleResolutionConfig(ShapeModelBody.DIDYMOS, "errors-impact5-20200629-v01", 3145728, true);
         configList.add(c);
-        c = createSingleResolutionConfig(ShapeModelBody.DIMORPHOS, "errors-impact1-20200629-v01", 3072);
+        c = createSingleResolutionConfig(ShapeModelBody.DIMORPHOS, "errors-impact1-20200629-v01", 3072, true);
         configList.add(c);
-        c = createSingleResolutionConfig(ShapeModelBody.DIMORPHOS, "errors-impact2-20200629-v01", 3145728);
+        c = createSingleResolutionConfig(ShapeModelBody.DIMORPHOS, "errors-impact2-20200629-v01", 3145728, true);
         configList.add(c);
-        c = createSingleResolutionConfig(ShapeModelBody.DIMORPHOS, "errors-impact3-20200629-v01", 3366134);
+        c = createSingleResolutionConfig(ShapeModelBody.DIMORPHOS, "errors-impact3-20200629-v01", 3366134, true);
         configList.add(c);
-        c = createSingleResolutionConfig(ShapeModelBody.DIMORPHOS, "errors-impact4-20200629-v01", 3145728);
+        c = createSingleResolutionConfig(ShapeModelBody.DIMORPHOS, "errors-impact4-20200629-v01", 3145728, true);
         configList.add(c);
-        c = createSingleResolutionConfig(ShapeModelBody.DIMORPHOS, "errors-impact5-20200629-v01", 3366134);
+        c = createSingleResolutionConfig(ShapeModelBody.DIMORPHOS, "errors-impact5-20200629-v01", 3366134, true);
         configList.add(c);
 
         defaultConfig.defaultForMissions = DartClients;
@@ -158,12 +164,17 @@ public class DartConfigs
      * @param modelId the model identifier, which must be unique to this client,
      *            and may not contain any spaces
      * @param numberPlates the number of plates in the single resolution model
+     * @param includeLeiaCorrected if true, include the "corrected" SPICE
+     *            pointing set for LEIA. This should only be true for the
+     *            original 10 simulations: ideal impacts 1 - 5 and error impacts
+     *            1 - 5.
      * @return the config
      */
-    protected SmallBodyViewConfig createSingleResolutionConfig(ShapeModelBody body, String modelId, int numberPlates)
+    protected SmallBodyViewConfig createSingleResolutionConfig(ShapeModelBody body, String modelId, int numberPlates, boolean includeLeiaCorrected)
     {
         SmallBodyViewConfig c = new SmallBodyViewConfig(ImmutableList.of(numberPlates + " plates"), ImmutableList.of(numberPlates)) {
-            public SmallBodyViewConfig clone() {
+            public SmallBodyViewConfig clone()
+            {
                 throw new UnsupportedOperationException("This implementation does not support cloning");
             }
         };
@@ -206,7 +217,7 @@ public class DartConfigs
                         SpectralImageMode.MONO, //
                         new GenericPhpQuery(leiaDir, leiaTable, leiaTable, c.rootDirOnServer + "/leia/gallery"), //
                         ImageType.valueOf("LEIA_IMAGE"), //
-                        InfoFilesAndCorrectedInfoFiles, //
+                        includeLeiaCorrected ? InfoFilesAndCorrectedInfoFiles : InfoFiles, //
                         Instrument.LEIA, //
                         270., //
                         "None", //
