@@ -58,10 +58,10 @@ import vtk.vtkTransform;
 import vtk.rendering.jogl.vtkJoglPanelComponent;
 
 import edu.jhuapl.saavtk.gui.ModelInfoWindow;
-import edu.jhuapl.saavtk.gui.StatusBar;
 import edu.jhuapl.saavtk.gui.dialog.CustomFileChooser;
 import edu.jhuapl.saavtk.gui.render.RenderIoUtil;
 import edu.jhuapl.saavtk.model.Model;
+import edu.jhuapl.saavtk.status.LegacyStatusHandler;
 import edu.jhuapl.sbmt.gui.image.controllers.images.ContrastSlider;
 import edu.jhuapl.sbmt.gui.image.controllers.images.OfflimbControlsController;
 import edu.jhuapl.sbmt.model.image.Image;
@@ -82,20 +82,20 @@ public class ImageInfoPanel extends ModelInfoWindow implements MouseListener, Mo
     private vtkPropPicker imagePicker;
     private boolean initialized = false;
     private boolean centerFrustumMode = false;
-    private StatusBar statusBar;
+    private LegacyStatusHandler refStatusHandler;
 
     /** Creates new form ImageInfoPanel2 */
     public ImageInfoPanel(
             final Image image,
             ImageCollection imageCollection,
-            StatusBar statusBar)
+            LegacyStatusHandler aStatusHandler)
     {
         this.image = image;
 
         initComponents();
 
         this.imageCollection = imageCollection;
-        this.statusBar = statusBar;
+        refStatusHandler = aStatusHandler;
 
         renWin = new vtkJoglPanelComponent();
         renWin.getComponent().setPreferredSize(new Dimension(550, 550));
@@ -107,7 +107,7 @@ public class ImageInfoPanel extends ModelInfoWindow implements MouseListener, Mo
         renWin.getRenderWindow().GetInteractor().GetInteractorStyle().AddObserver("WindowLevelEvent",this,"levelsChanged");
 
 
-        vtkImageData displayedImage = (vtkImageData)image.getTexture().GetInput();
+        vtkImageData displayedImage = image.getTexture().GetInput();
 
         // Only allow contrast changing for images with exactly 1 channel
 //        if (image.getNumberOfComponentsOfOriginalImage() > 1)
@@ -271,6 +271,7 @@ public class ImageInfoPanel extends ModelInfoWindow implements MouseListener, Mo
 
         javax.swing.SwingUtilities.invokeLater(new Runnable()
         {
+            @Override
             public void run()
             {
                 renWin.resetCamera();
@@ -311,6 +312,7 @@ public class ImageInfoPanel extends ModelInfoWindow implements MouseListener, Mo
         JMenu fileMenu = new JMenu("File");
         JMenuItem mi = new JMenuItem(new AbstractAction("Export to Image...")
         {
+            @Override
             public void actionPerformed(ActionEvent e)
             {
                 File file = CustomFileChooser.showSaveDialog(renWin.getComponent(), "Export to PNG Image...", "image.png", "png");
@@ -352,11 +354,13 @@ public class ImageInfoPanel extends ModelInfoWindow implements MouseListener, Mo
         setJMenuBar(menuBar);
     }
 
+    @Override
     public Model getModel()
     {
         return image;
     }
 
+    @Override
     public Model getCollectionModel()
     {
         return imageCollection;
@@ -397,7 +401,7 @@ public class ImageInfoPanel extends ModelInfoWindow implements MouseListener, Mo
           System.out.println(p[1] + " " + p[0]);
 
           // Display status bar message upon being picked
-          statusBar.setLeftTextSource(image, null, 0, p);
+          refStatusHandler.setLeftTextSource(image, null, 0, p);
       }
     }
 

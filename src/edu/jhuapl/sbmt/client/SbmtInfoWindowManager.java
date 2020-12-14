@@ -7,7 +7,6 @@ import java.beans.PropertyChangeListener;
 import java.util.HashMap;
 
 import edu.jhuapl.saavtk.gui.ModelInfoWindow;
-import edu.jhuapl.saavtk.gui.StatusBar;
 import edu.jhuapl.saavtk.gui.WindowManager;
 import edu.jhuapl.saavtk.model.Model;
 import edu.jhuapl.saavtk.model.ModelManager;
@@ -27,15 +26,14 @@ public class SbmtInfoWindowManager implements WindowManager, PropertyChangeListe
     }
 
     ModelManager modelManager;
-    StatusBar statusBar;
 
-    public SbmtInfoWindowManager(ModelManager modelManager, StatusBar statusBar)
+    public SbmtInfoWindowManager(ModelManager modelManager)
     {
         this.modelManager = modelManager;
-        this.statusBar = statusBar;
     }
 
-    public void addData(final Model model) throws Exception
+    @Override
+	public void addData(final Model model) throws Exception
     {
         if (activatedInfoPanels.containsKey(model))
         {
@@ -59,7 +57,8 @@ public class SbmtInfoWindowManager implements WindowManager, PropertyChangeListe
 
             infoPanel.addWindowListener(new WindowAdapter()
             {
-                public void windowClosed(WindowEvent e)
+                @Override
+					public void windowClosed(WindowEvent e)
                 {
                     Model mod = infoPanel.getModel();
                     activatedInfoPanels.remove(mod);
@@ -72,7 +71,8 @@ public class SbmtInfoWindowManager implements WindowManager, PropertyChangeListe
         }
     }
 
-    public void propertyChange(PropertyChangeEvent e)
+    @Override
+	public void propertyChange(PropertyChangeEvent e)
     {
         if (e.getPropertyName().equals(Properties.MODEL_REMOVED))
         {

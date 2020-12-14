@@ -30,7 +30,6 @@ import edu.jhuapl.saavtk.gui.RecentlyViewed;
 import edu.jhuapl.saavtk.gui.ShapeModelImporter;
 import edu.jhuapl.saavtk.gui.ShapeModelImporter.FormatType;
 import edu.jhuapl.saavtk.gui.ShapeModelImporter.ShapeModelType;
-import edu.jhuapl.saavtk.gui.StatusBar;
 import edu.jhuapl.saavtk.gui.View;
 import edu.jhuapl.saavtk.gui.ViewManager;
 import edu.jhuapl.saavtk.gui.menu.FavoritesMenu;
@@ -38,6 +37,7 @@ import edu.jhuapl.saavtk.gui.menu.FileMenu;
 import edu.jhuapl.saavtk.gui.menu.PickToleranceAction;
 import edu.jhuapl.saavtk.model.ShapeModelBody;
 import edu.jhuapl.saavtk.scalebar.gui.ScaleBarAction;
+import edu.jhuapl.saavtk.status.StatusNotifier;
 import edu.jhuapl.saavtk.util.Configuration;
 import edu.jhuapl.saavtk.util.ConvertResourceToFile;
 import edu.jhuapl.saavtk.util.SafeURLPaths;
@@ -82,9 +82,9 @@ public class SbmtViewManager extends ViewManager
 
     private String defaultModelName;
 
-    public SbmtViewManager(StatusBar statusBar, Frame frame, String tempCustomShapeModelPath)
+    public SbmtViewManager(StatusNotifier aStatusNotifier, Frame frame, String tempCustomShapeModelPath)
     {
-        super(statusBar, frame, tempCustomShapeModelPath);
+        super(aStatusNotifier, frame, tempCustomShapeModelPath);
         this.menuEntries = Lists.newArrayList();
         this.configMap = Maps.newHashMap();
         this.stateManager = TrackedMetadataManager.of("ViewManager");
@@ -275,7 +275,7 @@ public class SbmtViewManager extends ViewManager
     }
 
     @Override
-    protected void addBuiltInViews(StatusBar statusBar)
+    protected void addBuiltInViews(StatusNotifier aStatusNotifier)
     {
 //        for (ViewConfig config: SmallBodyViewConfig.getBuiltInConfigs())
 //        {
@@ -287,7 +287,7 @@ public class SbmtViewManager extends ViewManager
         for (BasicConfigInfo configInfo: SmallBodyViewConfig.getConfigIdentifiers())
         {
         	if (configInfo.isEnabled())
-        		addBuiltInView(new SbmtView(statusBar, configInfo));
+        		addBuiltInView(new SbmtView(aStatusNotifier, configInfo));
         }
 //    	for (String configKey: SmallBodyViewConfig.getConfigIdentifiers().keySet())
 //    	{
@@ -305,11 +305,11 @@ public class SbmtViewManager extends ViewManager
 
 
     @Override
-    protected View createCustomView(StatusBar statusBar, String name, boolean temporary)
+    protected View createCustomView(StatusNotifier aStatusNotifier, String name, boolean temporary)
     {
         SmallBodyViewConfig customConfig = SmallBodyViewConfig.ofCustom(name, temporary);
 
-        return new SbmtView(statusBar, customConfig);
+        return new SbmtView(aStatusNotifier, customConfig);
     }
 
     @Override
@@ -324,7 +324,7 @@ public class SbmtViewManager extends ViewManager
         catch (NullPointerException | IllegalArgumentException iae)
         {
 //            System.err.println("Custom Model Import Error: Unable to read custom model metadata for " + name + " attempting older style");
-           	return new SbmtView(statusBar, customConfig);
+           	return new SbmtView(refStatusNotifier, customConfig);
 
         }
         catch (IOException e)
@@ -343,7 +343,7 @@ public class SbmtViewManager extends ViewManager
             // TODO Auto-generated catch block
             e.printStackTrace();
         }
-        return new SbmtView(statusBar, customConfig);
+        return new SbmtView(refStatusNotifier, customConfig);
     }
 
     @Override

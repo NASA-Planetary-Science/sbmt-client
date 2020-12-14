@@ -1,8 +1,8 @@
 package edu.jhuapl.sbmt.client;
 
-import edu.jhuapl.saavtk.gui.StatusBar;
 import edu.jhuapl.saavtk.model.ModelManager;
 import edu.jhuapl.saavtk.model.ModelNames;
+import edu.jhuapl.saavtk.status.LegacyStatusHandler;
 import edu.jhuapl.sbmt.gui.image.ui.color.ColorImageInfoPanel;
 import edu.jhuapl.sbmt.gui.image.ui.images.ImageInfoPanel;
 import edu.jhuapl.sbmt.model.bennu.spectra.otes.OTES;
@@ -27,19 +27,19 @@ import edu.jhuapl.sbmt.spectrum.ui.info.SpectrumStatisticsInfoPanel;
 
 public class SBMTInfoWindowManagerFactory
 {
-	public static <S extends BasicSpectrum> void initializeModels(ModelManager modelManager, StatusBar statusBar)
+	public static <S extends BasicSpectrum> void initializeModels(ModelManager modelManager, LegacyStatusHandler aStatusHandler)
 	{
 		SbmtInfoWindowManager.registerInfoWindowManager(ColorImage.class, m ->
 		{
 			ColorImageCollection images = (ColorImageCollection)modelManager.getModel(ModelNames.COLOR_IMAGES);
-            return new ColorImageInfoPanel((ColorImage)m, images, statusBar);
+            return new ColorImageInfoPanel((ColorImage)m, images, aStatusHandler);
 		});
 		SbmtInfoWindowManager.registerInfoWindowManager(Image.class, m ->
 		{
 			ImageCollection images = (ImageCollection)modelManager.getModel(ModelNames.IMAGES);
             if (m instanceof OsirisImage)
-                return new OsirisImageInfoPanel((Image)m, images, statusBar);
-            return new ImageInfoPanel((Image)m, images, statusBar);
+                return new OsirisImageInfoPanel((Image)m, images, aStatusHandler);
+            return new ImageInfoPanel((Image)m, images, aStatusHandler);
 		});
 		SbmtInfoWindowManager.registerInfoWindowManager(BasicSpectrumRenderer.class, m -> new SpectrumInfoPanel(((BasicSpectrumRenderer<S>)m).getSpectrum(), modelManager));
 		SbmtInfoWindowManager.registerInfoWindowManager(AdvancedSpectrumRenderer.class, m -> new SpectrumInfoPanel(((AdvancedSpectrumRenderer<S>)m).getSpectrum(), modelManager));
