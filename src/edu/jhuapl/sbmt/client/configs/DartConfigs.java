@@ -57,10 +57,8 @@ public class DartConfigs
     // Note: would strongly prefer *NOT TO DO IT THIS WAY* by hard-coding these
     // values. Doing it this way because currently there is no way to inject
     // special handling of keywords where the images are read in a
-    // mission-independent
-    // way. A better option may exist in the future, at which time this should
-    // be
-    // changed.
+    // mission-independent way. A better option may exist in the future, at
+    // which time this should be changed.
     private static final LinkedHashSet<Float> DracoFillValues = new LinkedHashSet<>();
     private static final LinkedHashSet<Float> LeiaFillValues = null;
     private static final LinkedHashSet<Float> LukeFillValues = null;
@@ -104,73 +102,82 @@ public class DartConfigs
 
         SmallBodyViewConfig c;
 
-        c = createSingleResolutionConfig(ShapeModelBody.DIDYMOS, "ideal-impact1-20200629-v01", 1996, true);
+        c = createSingleResolutionConfig_20200629_v01(ShapeModelBody.DIDYMOS, "ideal-impact1-20200629-v01", 1996);
         configList.add(c);
 
         // Make this the default model.
         final SmallBodyViewConfig defaultConfig = c;
 
-        c = createSingleResolutionConfig(ShapeModelBody.DIDYMOS, "ideal-impact2-20200629-v01", 1996, true);
+        c = createSingleResolutionConfig_20200629_v01(ShapeModelBody.DIDYMOS, "ideal-impact2-20200629-v01", 1996);
         configList.add(c);
-        c = createSingleResolutionConfig(ShapeModelBody.DIDYMOS, "ideal-impact3-20200629-v01", 1996, true);
+        c = createSingleResolutionConfig_20200629_v01(ShapeModelBody.DIDYMOS, "ideal-impact3-20200629-v01", 1996);
         configList.add(c);
-        c = createSingleResolutionConfig(ShapeModelBody.DIDYMOS, "ideal-impact4-20200629-v01", 3145728, true);
+        c = createSingleResolutionConfig_20200629_v01(ShapeModelBody.DIDYMOS, "ideal-impact4-20200629-v01", 3145728);
         configList.add(c);
-        c = createSingleResolutionConfig(ShapeModelBody.DIDYMOS, "ideal-impact5-20200629-v01", 3145728, true);
+        c = createSingleResolutionConfig_20200629_v01(ShapeModelBody.DIDYMOS, "ideal-impact5-20200629-v01", 3145728);
         configList.add(c);
-        c = createSingleResolutionConfig(ShapeModelBody.DIDYMOS, "ideal-impact6-RA-20201116-v01", 3145728, false);
+        c = createSingleResolutionConfig_20201116_v01(ShapeModelBody.DIDYMOS, "ideal-impact6-ra-20201116-v01", 3145728);
         configList.add(c);
-        c = createSingleResolutionConfig(ShapeModelBody.DIMORPHOS, "ideal-impact1-20200629-v01", 3072, true);
+        c = createSingleResolutionConfig_20200629_v01(ShapeModelBody.DIMORPHOS, "ideal-impact1-20200629-v01", 3072);
         configList.add(c);
-        c = createSingleResolutionConfig(ShapeModelBody.DIMORPHOS, "ideal-impact2-20200629-v01", 3145728, true);
+        c = createSingleResolutionConfig_20200629_v01(ShapeModelBody.DIMORPHOS, "ideal-impact2-20200629-v01", 3145728);
         configList.add(c);
-        c = createSingleResolutionConfig(ShapeModelBody.DIMORPHOS, "ideal-impact3-20200629-v01", 3366134, true);
+        c = createSingleResolutionConfig_20200629_v01(ShapeModelBody.DIMORPHOS, "ideal-impact3-20200629-v01", 3366134);
         configList.add(c);
-        c = createSingleResolutionConfig(ShapeModelBody.DIMORPHOS, "ideal-impact4-20200629-v01", 3145728, true);
+        c = createSingleResolutionConfig_20200629_v01(ShapeModelBody.DIMORPHOS, "ideal-impact4-20200629-v01", 3145728);
         configList.add(c);
-        c = createSingleResolutionConfig(ShapeModelBody.DIMORPHOS, "ideal-impact5-20200629-v01", 3366134, true);
+        c = createSingleResolutionConfig_20200629_v01(ShapeModelBody.DIMORPHOS, "ideal-impact5-20200629-v01", 3366134);
         configList.add(c);
-        c = createSingleResolutionConfig(ShapeModelBody.DIMORPHOS, "ideal-impact6-RA-20201116-v01", 3145728, false);
+        c = createSingleResolutionConfig_20201116_v01(ShapeModelBody.DIMORPHOS, "ideal-impact6-ra-20201116-v01", 3145728);
         configList.add(c);
 
-        c = createSingleResolutionConfig(ShapeModelBody.DIDYMOS, "errors-impact1-20200629-v01", 1996, true);
+        c = createSingleResolutionConfig_20200629_v01(ShapeModelBody.DIDYMOS, "errors-impact1-20200629-v01", 1996);
         configList.add(c);
-        c = createSingleResolutionConfig(ShapeModelBody.DIDYMOS, "errors-impact2-20200629-v01", 1996, true);
+        c = createSingleResolutionConfig_20200629_v01(ShapeModelBody.DIDYMOS, "errors-impact2-20200629-v01", 1996);
         configList.add(c);
-        c = createSingleResolutionConfig(ShapeModelBody.DIDYMOS, "errors-impact3-20200629-v01", 1996, true);
+        c = createSingleResolutionConfig_20200629_v01(ShapeModelBody.DIDYMOS, "errors-impact3-20200629-v01", 1996);
         configList.add(c);
-        c = createSingleResolutionConfig(ShapeModelBody.DIDYMOS, "errors-impact4-20200629-v01", 3145728, true);
+        c = createSingleResolutionConfig_20200629_v01(ShapeModelBody.DIDYMOS, "errors-impact4-20200629-v01", 3145728);
         configList.add(c);
-        c = createSingleResolutionConfig(ShapeModelBody.DIDYMOS, "errors-impact5-20200629-v01", 3145728, true);
+        c = createSingleResolutionConfig_20200629_v01(ShapeModelBody.DIDYMOS, "errors-impact5-20200629-v01", 3145728);
         configList.add(c);
-        c = createSingleResolutionConfig(ShapeModelBody.DIMORPHOS, "errors-impact1-20200629-v01", 3072, true);
+        c = createSingleResolutionConfig_20200629_v01(ShapeModelBody.DIMORPHOS, "errors-impact1-20200629-v01", 3072);
         configList.add(c);
-        c = createSingleResolutionConfig(ShapeModelBody.DIMORPHOS, "errors-impact2-20200629-v01", 3145728, true);
+        c = createSingleResolutionConfig_20200629_v01(ShapeModelBody.DIMORPHOS, "errors-impact2-20200629-v01", 3145728);
         configList.add(c);
-        c = createSingleResolutionConfig(ShapeModelBody.DIMORPHOS, "errors-impact3-20200629-v01", 3366134, true);
+        c = createSingleResolutionConfig_20200629_v01(ShapeModelBody.DIMORPHOS, "errors-impact3-20200629-v01", 3366134);
         configList.add(c);
-        c = createSingleResolutionConfig(ShapeModelBody.DIMORPHOS, "errors-impact4-20200629-v01", 3145728, true);
+        c = createSingleResolutionConfig_20200629_v01(ShapeModelBody.DIMORPHOS, "errors-impact4-20200629-v01", 3145728);
         configList.add(c);
-        c = createSingleResolutionConfig(ShapeModelBody.DIMORPHOS, "errors-impact5-20200629-v01", 3366134, true);
+        c = createSingleResolutionConfig_20200629_v01(ShapeModelBody.DIMORPHOS, "errors-impact5-20200629-v01", 3366134);
         configList.add(c);
 
         defaultConfig.defaultForMissions = DartClients;
     }
 
     /**
-     * Create a single-resolution model for the given input parameters.
+     * Create a single-resolution model for the given input parameters. This
+     * creates configurations that are consistent with the initial set of
+     * simulated models, images and SPICE files delivered starting in August,
+     * 2020, based on the DART simulations identified as 20200629-v01.
+     * <p>
+     * These deliveries were processed using versions of the scripts that were
+     * not yet set up to handle images under the mission/instrument directory.
+     * These were processed before the Saturnian moon models that were processed
+     * in October-Novebmer 2020.
+     * <p>
+     * For these deliveries, images were located under the models. Some images
+     * had one or the other or both of the bodies Didymos and Dimorphos in the
+     * FOV, but ALL the images were delivered, processed, archived and stored
+     * TWICE: once for each body.
      *
      * @param body the {@link ShapeModelBody} associated with this model
      * @param modelId the model identifier, which must be unique to this client,
      *            and may not contain any spaces
      * @param numberPlates the number of plates in the single resolution model
-     * @param includeLeiaCorrected if true, include the "corrected" SPICE
-     *            pointing set for LEIA. This should only be true for the
-     *            original 10 simulations: ideal impacts 1 - 5 and error impacts
-     *            1 - 5.
      * @return the config
      */
-    protected SmallBodyViewConfig createSingleResolutionConfig(ShapeModelBody body, String modelId, int numberPlates, boolean includeLeiaCorrected)
+    protected SmallBodyViewConfig createSingleResolutionConfig_20200629_v01(ShapeModelBody body, String modelId, int numberPlates)
     {
         SmallBodyViewConfig c = new SmallBodyViewConfig(ImmutableList.of(numberPlates + " plates"), ImmutableList.of(numberPlates)) {
             public SmallBodyViewConfig clone()
@@ -217,7 +224,7 @@ public class DartConfigs
                         SpectralImageMode.MONO, //
                         new GenericPhpQuery(leiaDir, leiaTable, leiaTable, c.rootDirOnServer + "/leia/gallery"), //
                         ImageType.valueOf("LEIA_IMAGE"), //
-                        includeLeiaCorrected ? InfoFilesAndCorrectedInfoFiles : InfoFiles, //
+                        InfoFilesAndCorrectedInfoFiles, //
                         Instrument.LEIA, //
                         270., //
                         "None", //
@@ -238,6 +245,123 @@ public class DartConfigs
 
         c.imageSearchDefaultStartDate = new GregorianCalendar(2022, 9, 1, 0, 0, 0).getTime();
         c.imageSearchDefaultEndDate = new GregorianCalendar(2022, 9, 2, 0, 0, 0).getTime();
+        c.imageSearchFilterNames = new String[] {};
+        c.imageSearchUserDefinedCheckBoxesNames = new String[] {};
+        c.imageSearchDefaultMaxSpacecraftDistance = 1.0e4;
+        c.imageSearchDefaultMaxResolution = 1.0e3;
+
+        c.databaseRunInfos = new DBRunInfo[] { //
+                new DBRunInfo(ImageSource.SPICE, Instrument.DRACO, body.toString(), //
+                        dracoDir + "/imagelist-fullpath-info.txt", dracoTable), //
+                new DBRunInfo(ImageSource.CORRECTED_SPICE, Instrument.LEIA, body.toString(), //
+                        leiaDir + "/imagelist-fullpath-info.txt", leiaTable), //
+                new DBRunInfo(ImageSource.SPICE, Instrument.LEIA, body.toString(), //
+                        leiaDir + "/imagelist-fullpath-info.txt", leiaTable), //
+                new DBRunInfo(ImageSource.CORRECTED_SPICE, Instrument.LUKE, body.toString(), //
+                        lukeDir + "/imagelist-fullpath-info.txt", lukeTable), //
+                new DBRunInfo(ImageSource.SPICE, Instrument.LUKE, body.toString(), //
+                        lukeDir + "/imagelist-fullpath-info.txt", lukeTable) //
+        };
+
+        return c;
+    }
+
+    /**
+     * Create a single-resolution model for the given input parameters. This
+     * creates configurations that are consistent with the initial set of
+     * simulated models, images and SPICE files delivered starting in December,
+     * 2020, based on the DART simulations identified as 20201116-v01.
+     * <p>
+     * These deliveries were processed using versions of the scripts that were
+     * set up to handle images under the mission/instrument directory. These
+     * were processed AFTER the Saturnian moon models that were processed in
+     * October-Novebmer 2020.
+     * <p>
+     * For these deliveries, images were located under the MISSION/INSTRUMENT
+     * hierarchy. Some images had one or the other or both of the bodies Didymos
+     * and Dimorphos in the FOV. Only one set of images for each instrument were
+     * delivered, processed etc. However, since these images are
+     * simulation-specific simulated images, needed to put them under one more
+     * level of subdirectory, i.e. mission/instrument/model (but note no body in
+     * this hierarchy).
+     *
+     * @param body the {@link ShapeModelBody} associated with this model
+     * @param modelId the model identifier, which must be unique to this client,
+     *            and may not contain any spaces
+     * @param numberPlates the number of plates in the single resolution model
+     * @return the config
+     */
+    protected SmallBodyViewConfig createSingleResolutionConfig_20201116_v01(ShapeModelBody body, String modelId, int numberPlates)
+    {
+        SmallBodyViewConfig c = new SmallBodyViewConfig(ImmutableList.of(numberPlates + " plates"), ImmutableList.of(numberPlates)) {
+            public SmallBodyViewConfig clone()
+            {
+                throw new UnsupportedOperationException("This implementation does not support cloning");
+            }
+        };
+
+        c.body = body;
+        c.type = BodyType.ASTEROID;
+        c.population = ShapeModelPopulation.NEO;
+        c.system = ShapeModelBody.DIDYMOS_SYSTEM;
+        c.dataUsed = ShapeModelDataUsed.SIMULATED;
+        c.author = ShapeModelType.provide(modelId);
+        c.modelLabel = createLabel(c.author);
+        c.rootDirOnServer = ("/" + body.name() + "/" + modelId.replaceAll("_", "-")).toLowerCase();
+        c.presentInMissions = ClientsWithDartModels;
+        // c.defaultForMissions = ...
+        c.setShapeModelFileExtension(".obj");
+
+        String tableBaseName = (body.name() + "_" + modelId + "_").replaceAll("[\\s-]", "_").toLowerCase();
+
+        String dracoDir = c.rootDirOnServer + "/draco";
+        String dracoTable = tableBaseName + "draco";
+        String dracoDataDir = "/dart/draco/" + modelId.replaceAll("_", "-").toLowerCase() + "/";
+
+        String leiaDir = c.rootDirOnServer + "/leia";
+        String leiaTable = tableBaseName + "leia";
+        String leiaDataDir = "/dart/leia/" + modelId.replaceAll("_", "-").toLowerCase() + "/";
+
+        String lukeDir = c.rootDirOnServer + "/luke";
+        String lukeTable = tableBaseName + "luke";
+        String lukeDataDir = "/dart/luke/" + modelId.replaceAll("_", "-").toLowerCase() + "/";
+
+        c.imagingInstruments = new ImagingInstrument[] {
+                new ImagingInstrument( //
+                        SpectralImageMode.MONO, //
+                        new GenericPhpQuery(dracoDir, dracoTable, dracoTable, dracoDataDir + "gallery", dracoDataDir + "images"), //
+                        ImageType.valueOf("DART_IMAGE"), //
+                        InfoFiles, //
+                        Instrument.DRACO, //
+                        270., //
+                        "None", //
+                        DracoFillValues //
+                ),
+                new ImagingInstrument( //
+                        SpectralImageMode.MONO, //
+                        new GenericPhpQuery(leiaDir, leiaTable, leiaTable, leiaDataDir + "gallery", leiaDataDir + "images"), //
+                        ImageType.valueOf("LEIA_IMAGE"), //
+                        InfoFiles, //
+                        Instrument.LEIA, //
+                        270., //
+                        "None", //
+                        LeiaFillValues //
+                ),
+                new ImagingInstrument( //
+                        SpectralImageMode.MONO, //
+                        new GenericPhpQuery(lukeDir, lukeTable, lukeTable, lukeDataDir + "gallery", lukeDataDir + "images"), //
+                        ImageType.valueOf("LUKE_IMAGE"), //
+//                        InfoFilesAndCorrectedInfoFiles, //
+                        InfoFiles, //
+                        Instrument.LUKE, //
+                        270., //
+                        "None", //
+                        LukeFillValues //
+                ),
+        };
+
+        c.imageSearchDefaultStartDate = new GregorianCalendar(2022, 8, 29, 0, 0, 0).getTime();
+        c.imageSearchDefaultEndDate = new GregorianCalendar(2022, 9, 1, 0, 0, 0).getTime();
         c.imageSearchFilterNames = new String[] {};
         c.imageSearchUserDefinedCheckBoxesNames = new String[] {};
         c.imageSearchDefaultMaxSpacecraftDistance = 1.0e4;
