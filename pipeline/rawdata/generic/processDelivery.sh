@@ -18,7 +18,7 @@
 # Processing Info
 #-------------------------------------------------------------------------------
 # Developer: James Peachey
-# Delivery: redmine-2316
+# Delivery: redmine-2317
 # Notes:
 # Information specific to this delivery and/or its processing should be
 # included here.
@@ -46,17 +46,17 @@ check 1 "Tailor this script first for the specific delivery being processed."
 #-------------------------------------------------------------------------------
 
 # The identifier of this processing run, typically "redmine-XXXX"
-processingId="redmine-2316"
+processingId="redmine-2317"
 
 # The identifier of the output path relative to the top of the
 # raw/processed/deployed/served directory. Typically this would
 # identify either a body/model, mission/instrument, or mission/spice, for
 # example, 'didymosa/didymosa-dra-v01a' or 'dart/draco'.
-outputTop="dart/leia/ideal-impact6-ra-20201116-v01"
+outputTop="didymos/ideal-impact6-ra-20201116-v01"
 
 # This is the full path to the delivery as provided by a scientist. This may
 # or may not fully comply with all SBMT guidelines for layout and naming.
-deliveryTop="/project/sbmtpipeline/deliveries-dart/ideal_impact6-RA-20201116-v01/didymos-dimorphos/leia"
+deliveryTop="/project/sbmtpipeline/deliveries-dart/ideal_impact6-RA-20201116-v01/didymos-dimorphos/shape-models/SMv01A-truth"
 
 # The identifier of the SBMT model, which should match how the model is or
 # will be identified with a ShapeModelType object. For a given body, this
@@ -64,16 +64,14 @@ deliveryTop="/project/sbmtpipeline/deliveries-dart/ideal_impact6-RA-20201116-v01
 # items being processed are associated with a specific model, this may be set
 # to an empty string but it should not be removed. This is used to process
 # plate colorings and images.
-# modelId="ideal-impact1-20200629-v01"
-modelId=
+modelId="ideal-impact6-RA-20201116-v01"
 
 # The identifier of the body as it appears in the SBMT, which should match how
 # the body is or will be identified with a ShapeModelBody object. If no items
 # being processed are associated with a specific body, this may be set to an
 # empty string, but it should not be removed. This is used for processing
 # plate colorings and images.
-# bodyId="Didymos"
-bodyId=""
+bodyId="Didymos"
 
 # Uncomment and edit this as needed if updating an already-processed model as
 # part of a delivery sequence. Because this in-effect changes files that
@@ -84,7 +82,7 @@ bodyId=""
 
 # Uncomment and edit these as needed if generating INFO files from SPICE
 # kernels. Only used in this case.
-# spiceKernelTop="$pipelineProcessed/dart/redmine-2315/dart/spice"
+spiceKernelTop="$pipelineProcessed/dart/redmine-2315/dart/spice"
 
 #-------------------------------------------------------------------------------
 
@@ -118,10 +116,10 @@ srcTop="$rawDataTop/$outputTop"
 destTop="$processedTop/$outputTop"
 
 # Generate complete set of model metadata.
-# generateModelMetadata $processedTop
+generateModelMetadata $processedTop
 
 # Process any/all standard model files.
-# processStandardModelFiles
+processStandardModelFiles
 
 # Process plate colorings.
 # discoverPlateColorings
@@ -179,44 +177,10 @@ bodyFrame="920065803_FIXED" # Didymos-specific.
 # Need an Instrument sub-block like below for each instrument in this delivery.
 
 
-skipSection="true"
-
-# Instrument sub-block (ISS).
-#-------------------------------------------------------------------------------
-scId="cassini"
-instrument="iss"
-
-# Copy all delivered instrument files.
-copyDir $instrument
-
-#-------------------------------------------------------------------------------
-# Process SUM files
-checkSumFiles $destTop/$instrument
-processMakeSumFiles $destTop/$instrument $scId/$instrument/images
-
-# Update database tables.
-# This symbolic link is needed because the database generator appends "/data"
-# to the root URL, but this level of directory is not used in deliveries.
-createRelativeLink $processedTop $processedTop/data
-
-# This symbolic link is needed because the images are separate from the rest
-# of this model's files. Spacecraft ID part of the path must be all lowercase.
-createLink "$serverTop/$scId" "$processedTop/$scId"
-
-# Second argument is the pointing type. Supported values are the enumerations
-# in the ImageSource class.
-generateDatabaseTable ${instrument^^} GASKELL
-
-# Set up galleries (if present).
-createGalleryList $destTop/$instrument
-
-# End Instrument sub-block (ISS).
-#-------------------------------------------------------------------------------
-
-
 skipSection="true" # THIS SHOULD ALWAYS BE true WHEN CHECKING THIS IN!!!
 
 # Instrument sub-block (DRACO).
+# This block has NOT YET been updated for redmine 2314.
 #-------------------------------------------------------------------------------
 scId="DART"
 instrument="draco"
@@ -272,7 +236,8 @@ scId="LICIA"
 instrument="leia"
 
 # Copy all delivered instrument files.
-copyDir $instrument
+# Unlike previous deliveries, no images came with this delivery.
+# copyDir $instrument
 
 #-------------------------------------------------------------------------------
 # Process SPICE inputs for this sub-block. This sub-section is only needed
@@ -281,9 +246,13 @@ copyDir $instrument
 # skipSection="true" THIS SHOULD ALWAYS BE true WHEN CHECKING THIS IN!!!
 
 metakernel="leia.tm" # relative to $tmpSpiceDir.
-instFrame="LICIA_PL-1" # THIS IS SPECIFIC TO LEIA.
-imageDir="$outputTop/$instrument/images"
-infoFileDir="$outputTop/$instrument/infofiles"
+instFrame="LICIA_PL1" # THIS IS SPECIFIC TO LEIA.
+# Get the images from the image delivery associated with this model.
+imageTopDir="$pipelineRawData/dart/redmine-2316"
+# Peculiar to DART SIMULATED models: images are in a model-specific directory
+# under the mission/instrument directory.
+imageDir="dart/$instrument/$modelId/images"
+infoFileDir="$processedTop/$outputTop/$instrument/infofiles"
 timeKeyword="IMG_UTC" # This is only used if extracting times from FITS files.
 
 # Make SPICE kernels available in the temporary SPICE directory. This is so
@@ -297,24 +266,7 @@ createLink $spiceKernelTop/$instrument $tmpSpiceDir
 # createInfoFilesFromTimeStamps instead.
 createInfoFilesFromFITSImages $metakernel \
   $bodyId $bodyFrame ${scId^^} $instrument $instFrame $timeKeyword \
-  $processedTop $imageDir $infoFileDir
-
-# Handle CORRECTED_SPICE pointings here. Put them in the place the
-# client class BaiscPerspectiveImage expects to find them.  
-infoFileDir="$outputTop/$instrument/infofiles-corrected"
-
-# Make SPICE kernels available in the temporary SPICE directory. This is so
-# that any absolute paths in the metakernel may be edited to be as short
-# as possible. Note there is only one temporary directory, so cannot
-# simulateously process two deliveries that use SPICE kernels.
-createLink $correctedSpiceKernelTop/$instrument $tmpSpiceDir
-
-# Generate the info files for the images from the SPICE kernels using times in
-# FITS images. If the images don't have time stamps, can use
-# createInfoFilesFromTimeStamps instead.
-createInfoFilesFromFITSImages $metakernel \
-  $bodyId $bodyFrame ${scId^^} $instrument $instFrame $timeKeyword \
-  $processedTop $imageDir $infoFileDir
+  $imageTopDir $imageDir $infoFileDir
 
 #-------------------------------------------------------------------------------
 
@@ -324,7 +276,6 @@ createInfoFilesFromFITSImages $metakernel \
 createRelativeLink $processedTop $processedTop/data
 
 generateDatabaseTable ${instrument^^} SPICE
-generateDatabaseTable ${instrument^^} CORRECTED_SPICE
 
 # Set up galleries (if present).
 createGalleryList $destTop/$instrument
@@ -336,6 +287,7 @@ createGalleryList $destTop/$instrument
 skipSection="true" # THIS SHOULD ALWAYS BE true WHEN CHECKING THIS IN!!!
 
 # Instrument sub-block (LUKE).
+# This block has NOT YET been updated for redmine 2314.
 #-------------------------------------------------------------------------------
 scId="LICIA"
 instrument="luke"

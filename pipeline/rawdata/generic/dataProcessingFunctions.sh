@@ -1373,7 +1373,7 @@ createInfoFilesFromImageTimeStamps() {
 }
 
 # Create INFO files from a SPICE metakernel plus a directory with FITS images that have time stamps associated with a keyword.
-# Note that infoDir in this function is a RELATIVE path to the output INFO file directory.
+# Note that infoDir in this function is now the ABSOLUTE path to the output INFO file directory.
 createInfoFilesFromFITSImages() {
   (
     funcName=${FUNCNAME[0]}
@@ -1432,7 +1432,7 @@ createInfoFilesFromFITSImages() {
     fi
 
     if test "$infoDir" = ""; then
-      check 1 "$funcName: missing/blank tenth argument must specify output INFO file directory relative to $topDir"
+      check 1 "$funcName: missing/blank tenth argument must specify the absolute path to the output INFO file directory"
     fi
 
     # Generate image list with time stamps from the content of the image directory.
@@ -1447,7 +1447,7 @@ createInfoFilesFromFITSImages() {
     fi
 
     createInfoFilesFromImageTimeStamps $metakernel $body $bodyFrame $spacecraft $instrument $instrumentFrame \
-      $imageTimeStampFile $topDir/$infoDir
+      $imageTimeStampFile $infoDir
   )
   check $?
 }
