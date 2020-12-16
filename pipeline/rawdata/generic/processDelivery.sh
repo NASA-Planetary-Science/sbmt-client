@@ -64,7 +64,7 @@ deliveryTop="/project/sbmtpipeline/deliveries-dart/ideal_impact6-RA-20201116-v01
 # items being processed are associated with a specific model, this may be set
 # to an empty string but it should not be removed. This is used to process
 # plate colorings and images.
-modelId="ideal-impact6-RA-20201116-v01"
+modelId="ideal-impact6-ra-20201116-v01"
 
 # The identifier of the body as it appears in the SBMT, which should match how
 # the body is or will be identified with a ShapeModelBody object. If no items
