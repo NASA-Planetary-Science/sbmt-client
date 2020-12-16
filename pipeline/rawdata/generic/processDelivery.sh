@@ -259,7 +259,7 @@ timeKeyword="IMG_UTC" # This is only used if extracting times from FITS files.
 # that any absolute paths in the metakernel may be edited to be as short
 # as possible. Note there is only one temporary directory, so cannot
 # simulateously process two deliveries that use SPICE kernels.
-createLink $spiceKernelTop/$instrument $tmpSpiceDir
+createLink $spiceKernelTop $tmpSpiceDir
 
 # Generate the info files for the images from the SPICE kernels using times in
 # FITS images. If the images don't have time stamps, can use
