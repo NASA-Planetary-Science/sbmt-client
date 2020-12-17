@@ -76,12 +76,6 @@ public class StateHistoryIntervalGenerationController
         //Adds an action listener to the "Get interval" button.
         view.getGetIntervalButton().addActionListener(e -> {
 
-        	if (view.isEditMode())
-        	{
-        		view.updateStateHistory();
-        		return;
-        	}
-
             view.setCursor(new Cursor(Cursor.WAIT_CURSOR));
             double totalDays = DateTimeSpinner.getDaysBetween(view.getStartTimeSpinner(), view.getStopTimeSpinner());
 

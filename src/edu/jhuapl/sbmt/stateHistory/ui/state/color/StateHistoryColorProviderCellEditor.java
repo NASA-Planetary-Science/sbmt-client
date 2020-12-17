@@ -10,9 +10,14 @@ import javax.swing.JTable;
 import javax.swing.table.TableCellEditor;
 
 import edu.jhuapl.saavtk.color.provider.GroupColorProvider;
-import edu.jhuapl.sbmt.stateHistory.model.interfaces.StateHistory;
 import edu.jhuapl.sbmt.stateHistory.rendering.model.StateHistoryRendererManager;
 
+/**
+ * Based on original for Lidar by lopeznr1
+ *
+ * @author steelrj1
+ *
+ */
 public class StateHistoryColorProviderCellEditor extends AbstractCellEditor implements TableCellEditor, ActionListener
 {
 	// Constants
@@ -23,8 +28,6 @@ public class StateHistoryColorProviderCellEditor extends AbstractCellEditor impl
 
 	// State vars
 	private GroupColorProvider currCP;
-
-	private StateHistory stateHistory;
 
 	private StateHistoryRendererManager rendererManager;
 
@@ -55,7 +58,6 @@ public class StateHistoryColorProviderCellEditor extends AbstractCellEditor impl
 	@Override
 	public Component getTableCellEditorComponent(JTable aTable, Object aValue, boolean aIsSelected, int aRow, int aCol)
 	{
-		System.out.println("StateHistoryColorProviderCellEditor: getTableCellEditorComponent: getting table components");
 		// Bail if we are not selected
 		if (aIsSelected == false)
 			return null;
@@ -76,36 +78,17 @@ public class StateHistoryColorProviderCellEditor extends AbstractCellEditor impl
 		frame.pack();
 		frame.setVisible(true);
 
-//		// Prompt the user to select a color
-//		Color oldColor = ((ColorProvider) aValue).getBaseColor();
-//		if (oldColor == null)
-//			oldColor = Color.BLACK;
-//		Color tmpColor = ColorChooser.showColorChooser(JOptionPane.getFrameForComponent(aTable), oldColor);
-//		if (tmpColor == null)
-//			return null;
-//
-//		// Update our internal renderer to display the user's selection
-//		currCP = new ConstColorProvider(tmpColor);
-//		dispComp.getTableCellRendererComponent(aTable, currCP, aIsSelected, false, aRow, aCol);
-//
-//		// There is no further editing since it occurs within the popup dialog
-//		// Note, stopCellEditing must be called after all pending AWT events
-//		SwingUtilities.invokeLater(() ->
-//		{
-//			stopCellEditing();
-//		});
-
 		return dispComp;
 	}
 
 	@Override
 	public void actionPerformed(ActionEvent e)
 	{
+		if (colorConfigPanel == null) return;
 		GroupColorProvider srcGCP = colorConfigPanel.getSourceGroupColorProvider();
 		rendererManager.installGroupColorProviders(srcGCP);
 		// Update our internal renderer to display the user's selection
 		currCP = srcGCP;
 		dispComp.getTableCellRendererComponent(aTable, currCP, aIsSelected, false, aRow, aCol);
 	}
-
 }

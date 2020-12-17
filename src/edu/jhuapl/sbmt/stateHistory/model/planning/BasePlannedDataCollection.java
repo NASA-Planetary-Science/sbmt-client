@@ -56,7 +56,6 @@ public class BasePlannedDataCollection<T extends PlannedInstrumentData> extends 
 		{
 			this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
 		}
-
 	}
 
 	/**
@@ -121,4 +120,8 @@ public class BasePlannedDataCollection<T extends PlannedInstrumentData> extends 
 		this.stateHistorySource = stateHistory;
 	}
 
+	public void setDataShowing(T plannedDataObject, boolean visible)
+	{
+		renderManager.setVisibility(plannedDataObject, visible);
+	}
 }

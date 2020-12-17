@@ -31,6 +31,7 @@ import edu.jhuapl.saavtk.animator.AnimatorFrameRunnable;
 import edu.jhuapl.saavtk.animator.MovieGenerator;
 import edu.jhuapl.saavtk.gui.render.Renderer;
 import edu.jhuapl.sbmt.stateHistory.model.StateHistoryModel;
+import edu.jhuapl.sbmt.stateHistory.model.io.StateHistoryInvalidTimeException;
 import edu.jhuapl.sbmt.stateHistory.model.stateHistory.StateHistoryCollection;
 import edu.jhuapl.sbmt.stateHistory.model.time.BaseStateHistoryTimeModelChangedListener;
 import edu.jhuapl.sbmt.stateHistory.model.time.StateHistoryTimeModel;
@@ -38,6 +39,8 @@ import edu.jhuapl.sbmt.stateHistory.model.time.TimeWindow;
 import edu.jhuapl.sbmt.stateHistory.rendering.model.StateHistoryRendererManager;
 import edu.jhuapl.sbmt.stateHistory.ui.AnimationFileDialog;
 import edu.jhuapl.sbmt.stateHistory.ui.state.version2.StateHistoryIntervalPlaybackPanel;
+
+import glum.item.ItemEventType;
 
 /**
  * Controller that governs the "Interval Playback" panel in the StateHistory tab
@@ -91,16 +94,25 @@ public class StateHistoryIntervalPlaybackController
 				if (rendererManager.getRuns().getCurrentRun() == null) return;
 //				Logger.getAnonymousLogger().log(Level.INFO, "Starting in playback");
 				//if needed, update the time entry box and the slider
-				Date date = timeModel.getDateForET(et);
+				Date date = StateHistoryTimeModel.getDateForET(et);
 				if (date == (Date)view.getTimeBox().getModel().getValue()) return;
 				//put on EDT?
 				view.getTimeBox().setValue(date);
+
+				try
+				{
+					runs.getCurrentRun().setCurrentTime(et);
+				}
+				catch (StateHistoryInvalidTimeException e)
+				{
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
 
 				//Update the slider
 				//put on EDT?
 				int val = (int)Math.round((currentOffsetTime) * ((double)(view.getSlider().getMaximum() - view.getSlider().getMinimum())) + view.getSlider().getMinimum());
                 view.getSlider().setValue(val);
-
 //                Logger.getAnonymousLogger().log(Level.INFO, "Setting history model times");
                 rendererManager.setTimeFraction(currentOffsetTime, rendererManager.getRuns().getCurrentRun());
 //                Logger.getAnonymousLogger().log(Level.INFO, "Ending in playback");
@@ -118,6 +130,11 @@ public class StateHistoryIntervalPlaybackController
 				rendererManager.setTimeFraction(fraction, rendererManager.getRuns().getCurrentRun());
 			}
 
+		});
+
+		rendererManager.addListener((aSource, aEventType) -> {
+			if (aEventType != ItemEventType.ItemsSelected) return;
+			updatePlaypanelValues(rendererManager.getRuns());
 		});
 	}
 
@@ -166,30 +183,8 @@ public class StateHistoryIntervalPlaybackController
         double deltaSimulationTime = deltaRealTime * playRate;
         double deltaOffsetTime = deltaSimulationTime / period;
         currentOffsetTime = (val*(period/playRate)/max)*deltaOffsetTime;
-//        System.out.println("StateHistoryIntervalPlaybackController: updatePlaypanelValues: current offset time " + currentOffsetTime);
-
-
-//        System.out.println("StateHistoryIntervalPlaybackController: updatePlaypanelValues: time window " + timeModel.getDisplayedTimeWindow() + " and time " + TimeUtil.et2str(timeModel.getEt()));
-        //TODO FIX ME - still needed?
-//        try
-//		{
-//			runs.getCurrentRun().setTimeFraction(currentOffsetTime);
-//		}
-//		catch (StateHistoryInvalidTimeException e1)
-//		{
-//			JOptionPane.showMessageDialog(null, e1.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
-//			// TODO Auto-generated catch block
-////			e1.printStackTrace();
-//		}
         timeModel.setTimeWindow(new TimeWindow(runs.getCurrentRun().getStartTime(), runs.getCurrentRun().getEndTime()));
         timeModel.setTimeFraction(currentOffsetTime);
-
-//        runs.setTimeFraction(currentOffsetTime);
-
-        Date date = timeModel.getDateForET(timeModel.getEt());
-        //TODO need this?
-//		historyModel.setTime(timeModel.getEt());
-        view.getTimeBox().setValue(date);
 	}
 
 	/**
@@ -212,7 +207,6 @@ public class StateHistoryIntervalPlaybackController
             slider.setValue(StateHistoryModel.INITIAL_SLIDER_VALUE);
             currentOffsetTime = 0.0;
             timeModel.setTimeFraction(currentOffsetTime);
-//            runs.setTimeFraction(currentOffsetTime);
         });
 
         view.getFastForwardButton().addActionListener(e -> {
@@ -221,7 +215,6 @@ public class StateHistoryIntervalPlaybackController
             slider.setValue(StateHistoryModel.FINAL_SLIDER_VALUE);
             currentOffsetTime = 1.0;
             timeModel.setTimeFraction(currentOffsetTime);
-//            runs.setTimeFraction(currentOffsetTime);
         });
 
         view.getPlayButton().addActionListener(e -> {
@@ -258,18 +251,6 @@ public class StateHistoryIntervalPlaybackController
         	Date enteredTime = (Date) view.getTimeBox().getModel().getValue();
             double et = timeModel.getETForDate(enteredTime);
             timeModel.setTime(et);
-
-            //TODO still needed?
-//            try
-//			{
-//				historyModel.getRuns().getCurrentRun().setCurrentTime(new Double(dt1.toDate().getTime()));
-//			}
-//			catch (StateHistoryInvalidTimeException e1)
-//			{
-//	            JOptionPane.showMessageDialog(null, e1.getMessage(), "Error",
-//	                    JOptionPane.ERROR_MESSAGE);
-////				e1.printStackTrace();
-//			}
         });
 
         view.getRecordButton().addActionListener(e -> {
@@ -289,14 +270,11 @@ public class StateHistoryIntervalPlaybackController
 
 
         rendererManager.addListener((aSource, aEventType) -> {
-//        	System.out.println("StateHistoryIntervalPlaybackController: initializeIntervalPlaybackPanel: event type " + aEventType);
-//			if (aEventType != ItemEventType.ItemsSelected) return;
 			if (rendererManager.getSelectedItems().size() > 0)
 			{
 				runs.setCurrentRun(rendererManager.getSelectedItems().asList().get(0));
 				updateTimeBarValue();
 			}
-//			System.out.println("StateHistoryIntervalPlaybackController: initializeIntervalPlaybackPanel: updating play panel to listener response");
 			updatePlaypanelValues(runs);
         });
 
@@ -320,7 +298,6 @@ public class StateHistoryIntervalPlaybackController
 	{
         view.getPlayButton().setIcon(pauseIcon);
         timer.start();
-//        timer2.scheduleAtFixedRate(timerTask, 0, 1);
         isPlaying = true;
 	}
 
@@ -336,7 +313,6 @@ public class StateHistoryIntervalPlaybackController
     private void setTimeSlider(double tf){
         setSliderValue(tf);
         currentOffsetTime = tf;
-//        historyModel.setTime(historyModel.getRuns().getCurrentRun().getCurrentTime());
     }
 
     /**

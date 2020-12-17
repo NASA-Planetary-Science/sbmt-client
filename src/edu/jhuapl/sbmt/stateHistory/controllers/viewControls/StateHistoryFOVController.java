@@ -1,8 +1,11 @@
 package edu.jhuapl.sbmt.stateHistory.controllers.viewControls;
 
 import java.awt.event.ItemListener;
+import java.beans.PropertyChangeEvent;
 import java.util.HashMap;
 import java.util.Map;
+
+import javax.swing.SwingUtilities;
 
 import com.google.common.collect.ImmutableList;
 
@@ -13,6 +16,7 @@ import edu.jhuapl.saavtk.model.plateColoring.LoadableColoringData;
 import edu.jhuapl.saavtk.util.DownloadableFileManager.StateListener;
 import edu.jhuapl.saavtk.util.FileCache;
 import edu.jhuapl.saavtk.util.FileStateListenerTracker;
+import edu.jhuapl.saavtk.util.Properties;
 import edu.jhuapl.sbmt.stateHistory.model.stateHistory.StateHistoryCollection;
 import edu.jhuapl.sbmt.stateHistory.rendering.model.StateHistoryRendererManager;
 import edu.jhuapl.sbmt.stateHistory.ui.state.version2.viewControls.StateHistoryFOVPanel;
@@ -46,7 +50,6 @@ public class StateHistoryFOVController
 
 	protected final Map<JComboBoxWithItemState<?>, FileStateListenerTracker> listenerTrackers = new HashMap<>();
 
-
 	/**
 	 * Constructor.  Sets properties and initializes the view control panel
 	 * @param runs
@@ -73,10 +76,24 @@ public class StateHistoryFOVController
 		{
 			if (aEventType != ItemEventType.ItemsChanged) return;
 			view.setAvailableFOVs(runs.getAvailableFOVs());
+
+		});
+
+        rendererManager.addListener((aSource, aEventType) -> {
+			if (aEventType != ItemEventType.ItemsSelected) return;
+			SwingUtilities.invokeLater(new Runnable()
+			{
+				@Override
+				public void run()
+				{
+					rendererManager.propertyChange(new PropertyChangeEvent(this, Properties.MODEL_CHANGED, null, null));
+					view.repaint();
+					view.validate();
+				}
+			});
 		});
 
 		ViewOptionsTableView tableView = new ViewOptionsTableView(rendererManager, plateColorings);
-//		tableView.setPlateColorings();
 		tableView.setup();
 		view.setTableView(tableView);
 	}

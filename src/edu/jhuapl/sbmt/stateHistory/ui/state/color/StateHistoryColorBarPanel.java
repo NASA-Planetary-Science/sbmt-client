@@ -59,7 +59,7 @@ public class StateHistoryColorBarPanel extends ColorBarPanel
 		addFeatureType(StateHistoryFeatureType.SubSCEmission, "S/C Emission Angle (deg)");
 		addFeatureType(StateHistoryFeatureType.SubSCPhase, "S/C Phase Angle (deg)");
 
-
+		setFeatureType(StateHistoryFeatureType.Distance);
 		// Auto register the provided ActionListener
 		addActionListener(aListener);
 
@@ -131,7 +131,6 @@ public class StateHistoryColorBarPanel extends ColorBarPanel
 				minVal = tmpRange.lowerEndpoint();
 				maxVal = tmpRange.upperEndpoint();
 			}
-
 			ColorMapAttr tmpCMA = new ColorMapAttr(getColorMapAttr().getColorTable(), minVal, maxVal, getColorMapAttr().getNumLevels(), getColorMapAttr().getIsLogScale());
 			colorBar.setColorMapAttr(tmpCMA);
 			setColorMapAttr(tmpCMA);

@@ -5,10 +5,12 @@ import java.beans.PropertyChangeListener;
 
 import javax.swing.BoxLayout;
 import javax.swing.JPanel;
+import javax.swing.SwingUtilities;
 
 import edu.jhuapl.saavtk.gui.render.Renderer;
 import edu.jhuapl.saavtk.model.ModelManager;
 import edu.jhuapl.saavtk.model.plateColoring.ColoringDataManager;
+import edu.jhuapl.saavtk.util.Properties;
 import edu.jhuapl.sbmt.client.SmallBodyModel;
 import edu.jhuapl.sbmt.client.SmallBodyViewConfig;
 import edu.jhuapl.sbmt.stateHistory.controllers.imagers.PlannedImageTableController;
@@ -57,9 +59,7 @@ public class ObservationPlanningController implements PropertyChangeListener
 		StateHistoryCollection runs = rendererManager.getRuns();
 		stateHistoryController = new StateHistoryController(modelManager, rendererManager, timeModel);
 		viewControlsController = new ObservationPlanningViewControlsController(stateHistoryController.getHistoryModel(), modelManager, rendererManager, coloringDataManager);
-		System.out.println("ObservationPlanningController: ObservationPlanningController: setting controls controller");
 		stateHistoryController.setViewControlsController(viewControlsController);
-		System.out.println("ObservationPlanningController: ObservationPlanningController: set");
 		this.intervalPlaybackController = new StateHistoryIntervalPlaybackController(rendererManager, timeModel);
 		this.rendererManager = rendererManager;
 		view.addTab("S/C Trajectory", stateHistoryController.getView());
@@ -73,9 +73,11 @@ public class ObservationPlanningController implements PropertyChangeListener
 			public void timeChanged(double et)
 			{
 				super.timeChanged(et);
-				if (imageCollection.getNumItems() > 0)
+				if (imageCollection.getNumItems() > 0 && rendererManager.isSyncImages())
 					imageCollection.propertyChange(new PropertyChangeEvent(this, PlannedDataProperties.TIME_CHANGED, null, et));
-				if (lidarTrackCollection.getNumItems() > 0)
+				if (spectrumCollection.getNumItems() > 0 && rendererManager.isSyncSpectra())
+					spectrumCollection.propertyChange(new PropertyChangeEvent(this, PlannedDataProperties.TIME_CHANGED, null, et));
+				if (lidarTrackCollection.getNumItems() > 0 && rendererManager.isSyncLidar())
 					lidarTrackCollection.propertyChange(new PropertyChangeEvent(this, PlannedDataProperties.TIME_CHANGED, null, et));
 
                 try
@@ -88,25 +90,34 @@ public class ObservationPlanningController implements PropertyChangeListener
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
+    			SwingUtilities.invokeLater(new Runnable()
+    			{
+
+    				@Override
+    				public void run()
+    				{
+    					view.repaint();
+    		            view.validate();
+    				}
+    			});
 			}
 		});
 
 		Renderer renderer = rendererManager.getRenderer();
 		imageCollection = new PlannedImageCollection(smallBodyModel);
 		imageCollection.addPropertyChangeListener(this);
-		imageTableController = new PlannedImageTableController(modelManager, renderer, imageCollection, config);
-		if (config.imagingInstruments.length > 0) view.addTab("Imagery", imageTableController.getView());
+		imageTableController = new PlannedImageTableController(modelManager, rendererManager, imageCollection, config);
+		if (config.imagingInstruments.length > 0) view.addTab("Images", imageTableController.getView());
 
-//		spectrumCollection = new PlannedSpectrumCollection(smallBodyModel);
-//		spectrumCollection.addPropertyChangeListener(this);
-//		spectrumTableController = new PlannedSpectrumTableController(modelManager, renderer, spectrumCollection, config);
-//		if (config.hasSpectralData) view.addTab("Spectra", spectrumTableController.getView());
+		spectrumCollection = new PlannedSpectrumCollection(smallBodyModel);
+		spectrumCollection.addPropertyChangeListener(this);
+		spectrumTableController = new PlannedSpectrumTableController(modelManager, rendererManager, spectrumCollection, config);
+		if (config.hasSpectralData) view.addTab("Spectra", spectrumTableController.getView());
 
 		lidarTrackCollection = new PlannedLidarTrackCollection(modelManager, smallBodyModel, renderer);
 		lidarTrackCollection.addPropertyChangeListener(this);
-		lidarTableController = new PlannedLidarTableController(modelManager, renderer, lidarTrackCollection, config);
+		lidarTableController = new PlannedLidarTableController(modelManager, rendererManager, lidarTrackCollection, config);
 		if (config.hasLidarData) view.addTab("LIDAR", lidarTableController.getView());
-//		view.addTab("View Controls", viewControlsController.getView());
 
         rendererManager.addListener((aSource, aEventType) -> {
 			if (aEventType != ItemEventType.ItemsSelected) return;
@@ -127,7 +138,6 @@ public class ObservationPlanningController implements PropertyChangeListener
 		{
 			updatePlannedScience();
 		}
-
 	}
 
 	private void updatePlannedScience()
@@ -135,6 +145,7 @@ public class ObservationPlanningController implements PropertyChangeListener
 		rendererManager.clearPlannedScience();
 		rendererManager.addPlannedScienceActors(imageCollection.getProps());
 		rendererManager.addPlannedScienceActors(lidarTrackCollection.getProps());
+		rendererManager.propertyChange(new PropertyChangeEvent(this, Properties.MODEL_CHANGED, null, null));
 	}
 
 	public JPanel getView()

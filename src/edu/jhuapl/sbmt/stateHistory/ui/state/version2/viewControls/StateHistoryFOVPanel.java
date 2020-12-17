@@ -55,7 +55,6 @@ public class StateHistoryFOVPanel extends JPanel
 	private JPanel updateFOVsPanel()
 	{
 		fovPanel.removeAll();
-		System.out.println("StateHistoryFOVPanel: updateFOVsPanel: table view is " + tableView);
 		if (tableView != null)
 		{
 			fovPanel.add(tableView);

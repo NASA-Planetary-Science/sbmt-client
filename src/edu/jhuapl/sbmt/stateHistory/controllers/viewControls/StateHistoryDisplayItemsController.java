@@ -3,9 +3,6 @@ package edu.jhuapl.sbmt.stateHistory.controllers.viewControls;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 
-import javax.swing.DefaultComboBoxModel;
-
-import edu.jhuapl.sbmt.stateHistory.model.stateHistory.StateHistoryCollection;
 import edu.jhuapl.sbmt.stateHistory.rendering.model.StateHistoryRendererManager;
 import edu.jhuapl.sbmt.stateHistory.ui.state.version2.viewControls.StateHistoryDisplayItemsPanel;
 
@@ -22,18 +19,12 @@ public class StateHistoryDisplayItemsController implements ItemListener
 	StateHistoryDisplayItemsPanel view;
 
 	/**
-	 * The collection of state history elements
-	 */
-	private StateHistoryCollection runs;
-
-	/**
 	 * Constructor.  Sets state properties and initializes view control panel
 	 * @param historyModel
 	 * @param renderer
 	 */
 	public StateHistoryDisplayItemsController(StateHistoryRendererManager rendererManager)
 	{
-		this.runs = rendererManager.getRuns();
 		initializeViewControlPanel(rendererManager);
 	}
 
@@ -44,11 +35,9 @@ public class StateHistoryDisplayItemsController implements ItemListener
 	{
 		view = new StateHistoryDisplayItemsPanel();
 		view.setStateHistoryCollection(rendererManager);
-
-
-		String[] distanceChoices =
-		{ "Distance to Center", "Distance to Surface" };
-		DefaultComboBoxModel<String> comboModelDistance = new DefaultComboBoxModel<String>(distanceChoices);
+//		String[] distanceChoices =
+//		{ "Distance to Center", "Distance to Surface" };
+//		DefaultComboBoxModel<String> comboModelDistance = new DefaultComboBoxModel<String>(distanceChoices);
 	}
 
 	@Override

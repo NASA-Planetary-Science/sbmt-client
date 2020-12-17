@@ -13,6 +13,7 @@ import vtk.vtkProp;
 
 import edu.jhuapl.saavtk.gui.render.Renderer;
 import edu.jhuapl.saavtk.model.ModelManager;
+import edu.jhuapl.saavtk.util.ProgressStatusListener;
 import edu.jhuapl.saavtk.util.Properties;
 import edu.jhuapl.sbmt.client.SmallBodyModel;
 import edu.jhuapl.sbmt.lidar.LidarPoint;
@@ -23,39 +24,24 @@ import edu.jhuapl.sbmt.stateHistory.model.io.PlannedLidarTrackIOHelper;
 import edu.jhuapl.sbmt.stateHistory.model.planning.BasePlannedDataCollection;
 import edu.jhuapl.sbmt.stateHistory.rendering.PlannedDataProperties;
 import edu.jhuapl.sbmt.stateHistory.rendering.model.StateHistoryPositionCalculator;
-import edu.jhuapl.sbmt.util.TimeUtil;
 
 import glum.item.IncrIdGenerator;
 
 public class PlannedLidarTrackCollection extends BasePlannedDataCollection<PlannedLidarTrack>
-//extends SaavtkItemManager<PlannedLidarTrack> implements PropertyChangeListener
 {
-	/**
-	*
-	*/
-//	private List<PlannedLidarTrack> plannedLidarTracks = new ArrayList<PlannedLidarTrack>();
-//	private List<vtkProp> footprintActors = new ArrayList<vtkProp>();
-
-//	private List<PlannedDataActor> plannedDataActors = new ArrayList<PlannedDataActor>();
-
-//	private PlannedInstrumentRendererManager renderManager;
-
-//	private SmallBodyModel smallBodyModel;
-
-//	private StateHistory stateHistorySource;
 
 	private LidarTrackManager trackManager;
 
 	private List<LidarTrack> currentTracks;
+
+	private double time;
 
 	private double minTime = Double.MAX_VALUE, maxTime = Double.MIN_VALUE;
 
 	public PlannedLidarTrackCollection(ModelManager modelManager, SmallBodyModel smallBodyModel, Renderer renderer)
 	{
 		super(smallBodyModel);
-//		this.smallBodyModel = smallBodyModel;
 		currentTracks = new ArrayList<LidarTrack>();
-//		renderManager = new PlannedInstrumentRendererManager(this.pcs);
 
 		trackManager = new LidarTrackManager(modelManager, smallBodyModel);
 		renderer.addVtkPropProvider(trackManager);
@@ -78,37 +64,25 @@ public class PlannedLidarTrackCollection extends BasePlannedDataCollection<Plann
 			this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
 		if (PlannedDataProperties.TIME_CHANGED.equals(evt.getPropertyName()))
 		{
-			double time = (double)evt.getNewValue();
-			double currentWindowDuration = maxTime - minTime;
-			double currentOffsetFromMin = time - minTime;
-			trackManager.setPercentageShown(0, currentOffsetFromMin/currentWindowDuration);
-			System.out.println("PlannedLidarTrackCollection: propertyChange: time tick: " + TimeUtil.et2str(time) + " and percentage " + (currentOffsetFromMin/currentWindowDuration));
-
-//			if (stateHistorySource == null) return;
-//			System.out.println("PlannedLidarTrackCollection: propertyChange: updating " + plannedDataActors.size());
-//			for (PlannedDataActor actor : plannedDataActors)
-//			{
-//				System.out.println("PlannedLidarTrackCollection: propertyChange: actor time " + TimeUtil.et2str(actor.getTime()) + " and time " + TimeUtil.et2str(time) + " for actor " + actor.getClass().getName() + '@' + Integer.toHexString(actor.hashCode()));
-////				if (actor.getTime() > time) break;
-//				if (((PerspectiveImageFootprint)actor).isStaticFootprintSet() == false)
-//				{
-//					StateHistoryPositionCalculator.updateFootprintPointing(stateHistorySource, actor.getTime(), (PerspectiveImageFootprint)actor);
-//
-////					StateHistoryPositionCalculator.updateLidarFootprintPointing(stateHistorySource, time, (PlannedLidarActor)actor, smallBodyModel);
-//				}
-//				System.out.println("PlannedLidarTrackCollection: propertyChange: time > actor time " + time + " actor time " + actor.getTime() + " " + (time > actor.getTime()));
-//				actor.getFootprintBoundaryActor().SetVisibility(time > actor.getTime() ? 1 : 0);
-//				actor.SetVisibility(1);
-//			}
-			this.pcs.firePropertyChange("PLANNED_LIDAR_CHANGED", null, null);
+			time = (double)evt.getNewValue();
+			updateFootprints();
 
 		}
+	}
+
+	public void updateFootprints()
+	{
+		if (time == 0) time = minTime;
+		double currentWindowDuration = maxTime - minTime;
+		double currentOffsetFromMin = time - minTime;
+		trackManager.setPercentageShown(0, currentOffsetFromMin/currentWindowDuration);
+		this.pcs.firePropertyChange("PLANNED_LIDAR_CHANGED", null, null);
 	}
 
 	/**
 	 * @param run
 	 */
-	public void addLidarTrackToList(PlannedLidarTrack track)
+	public void addLidarTrackToList(PlannedLidarTrack track, ProgressStatusListener listener)
 	{
 		if (stateHistorySource == null) return;
 
@@ -119,20 +93,24 @@ public class PlannedLidarTrackCollection extends BasePlannedDataCollection<Plann
 		double trackDuration = track.getStopTime() - track.getStartTime();
 		int numSteps = (int)((track.getStopTime() - track.getStartTime())*100.0/1.0);
 		double timeDelta = trackDuration/(double)numSteps;
-		System.out.println("PlannedLidarTrackCollection: addLidarTrackToList: number of steps " + numSteps);
-		System.out.println("PlannedLidarTrackCollection: addLidarTrackToList: trackDuration " + trackDuration);
 		double time = track.getStartTime();
 		List<LidarPoint> lidarPoints = new ArrayList<LidarPoint>();
 		Logger.getAnonymousLogger().log(Level.INFO, "Making points");
-//		lidarTimes.parallelStream().forEach(timeStep -> {lidarPoints.add(StateHistoryPositionCalculator.updateLidarFootprintPointing(stateHistorySource, timeStep, smallBodyModel, track.getInstrumentName()));});
-		while (time < track.getStopTime())
+		int numPoints = (int)((track.getStopTime() - time)/timeDelta);
+		int i=0;
+		listener.setProgressStatus("Track: " + plannedData.size(), 0);
+		while (time <= track.getStopTime())
 		{
 			LidarPoint point = StateHistoryPositionCalculator.updateLidarFootprintPointing(stateHistorySource, time, smallBodyModel, track.getInstrumentName());
 			if (point != null)
+			{
+				listener.setProgressStatus("Track: " + plannedData.size() + ": point " + (i+1) + " of " + numPoints, (i*100/numPoints));
 				lidarPoints.add(point);
+				i++;
+			}
 			time += timeDelta;
 		}
-		Logger.getAnonymousLogger().log(Level.INFO, "Done making points, number of lidar points " + lidarPoints.size());
+		listener.setProgressStatus("Ready", 0);
 
 		Set<String> tmpSourceS = new LinkedHashSet<>();
 		tmpSourceS.add("Planned track " + track.getStartTime() + " " + track.getStopTime());
@@ -140,7 +118,6 @@ public class PlannedLidarTrackCollection extends BasePlannedDataCollection<Plann
 		currentTracks.add(composedTrack);
 		trackManager.setAllItems(currentTracks);
 		setVisibility(track, true);
-		trackManager.setPercentageShown(0, 0);
 		setAllItems(plannedData);
 		this.pcs.firePropertyChange("PLANNED_LIDAR_CHANGED", null, null);
 	}
@@ -152,13 +129,17 @@ public class PlannedLidarTrackCollection extends BasePlannedDataCollection<Plann
 		List<LidarTrack> trackList = new ArrayList<LidarTrack>();
 		trackList.add(lidarTrack);
 		trackManager.setIsVisible(trackList, visibility);
-//
-//		renderManager.setVisibility(track, visibility);
 	}
 
-	public void loadPlannedLidarTracksFromFileWithName(String filename) throws IOException
+	public void setPercentageShown(double percShown)
 	{
-		PlannedLidarTrackIOHelper.loadPlannedLidarTracksFromFileWithName(filename, this);
+		trackManager.setPercentageShown(0, percShown);
+		this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
+	}
+
+	public void loadPlannedLidarTracksFromFileWithName(String filename, ProgressStatusListener listener, Runnable completion) throws IOException
+	{
+		PlannedLidarTrackIOHelper.loadPlannedLidarTracksFromFileWithName(filename, this, listener, completion);
 	}
 
 	public void savePlannedLidarTracksToFileWithName(String filename) throws IOException

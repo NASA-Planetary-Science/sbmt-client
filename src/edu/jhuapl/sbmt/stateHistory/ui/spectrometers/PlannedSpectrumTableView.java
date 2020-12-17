@@ -7,9 +7,12 @@ import java.awt.event.ActionListener;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
+import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
+import javax.swing.JToggleButton;
+import javax.swing.UIManager;
 import javax.swing.border.TitledBorder;
 import javax.swing.table.TableCellRenderer;
 
@@ -44,7 +47,7 @@ public class PlannedSpectrumTableView extends JPanel
     /**
      * JButton to remove state history from table
      */
-    private JButton removePlannedSpectrumButton;
+    private JButton hidePlannedSpectrumButton;
 
     /**
      * JButton to show state history in renderer
@@ -66,6 +69,8 @@ public class PlannedSpectrumTableView extends JPanel
      */
     private JButton selectAllB, selectInvertB, selectNoneB;
 
+    private JToggleButton syncWithTimelineButton;
+
     /**
      * The collection of loaded state history objects
      */
@@ -81,6 +86,8 @@ public class PlannedSpectrumTableView extends JPanel
      */
     private ItemHandler<PlannedSpectrum> plannedSpectrumTableHandler;
 
+    private JLabel processingLabel;
+
 	public PlannedSpectrumTableView(PlannedSpectrumCollection plannedSpectrumCollection)
 	{
 		this.plannedSpectrumCollection = plannedSpectrumCollection;
@@ -93,13 +100,6 @@ public class PlannedSpectrumTableView extends JPanel
     protected void init()
     {
         table = buildTable();
-        removePlannedSpectrumButton = new JButton("Hide Planned Spectrum");
-        showPlannedSpectrumButton = new JButton("Show Planned Spectrum");
-        removePlannedSpectrumButton.setEnabled(false);
-        showPlannedSpectrumButton.setEnabled(false);
-        loadPlannedSpectrumButton = new JButton("Load...");
-        savePlannedSpectrumButton = new JButton("Save...");
-        savePlannedSpectrumButton.setEnabled(false);
     }
 
     /**
@@ -121,18 +121,6 @@ public class PlannedSpectrumTableView extends JPanel
         add(scrollPane);
 
         scrollPane.setViewportView(table);
-
-        JPanel panel_1 = new JPanel();
-        add(panel_1);
-        panel_1.setLayout(new BoxLayout(panel_1, BoxLayout.X_AXIS));
-        panel_1.add(showPlannedSpectrumButton);
-        panel_1.add(removePlannedSpectrumButton);
-
-        JPanel panel_2 = new JPanel();
-        add(panel_2);
-        panel_2.setLayout(new BoxLayout(panel_2, BoxLayout.X_AXIS));
-        panel_2.add(loadPlannedSpectrumButton);
-        panel_2.add(savePlannedSpectrumButton);
     }
 
     /**
@@ -159,6 +147,26 @@ public class PlannedSpectrumTableView extends JPanel
 //		StateHistoryPopupMenu stateHistoryPopupMenu = StateHistoryGuiUtil.formStateHistoryFileSpecPopupMenu(plannedSpectrumCollection, this);
 
     	// Table header
+		loadPlannedSpectrumButton = GuiUtil.formButton(listener, UIManager.getIcon("FileView.directoryIcon"));
+		loadPlannedSpectrumButton.setToolTipText(ToolTipUtil.getItemLoad());
+
+		processingLabel = new JLabel("Ready.");
+
+		syncWithTimelineButton = GuiUtil.formToggleButton(listener, IconUtil.getItemSyncFalse(), IconUtil.getItemSyncTrue());
+		syncWithTimelineButton.setToolTipText("Sync Visibility with Time slider");
+
+//		saveStateHistoryButton = GuiUtil.formButton(listener, UIManager.getIcon("FileView.floppyDriveIcon"));
+//		saveStateHistoryButton.setToolTipText(ToolTipUtil.getItemSave());
+//		saveStateHistoryButton.setEnabled(false);
+
+		showPlannedSpectrumButton = GuiUtil.formButton(listener, IconUtil.getItemShow());
+		showPlannedSpectrumButton.setToolTipText(ToolTipUtil.getItemShow());
+		showPlannedSpectrumButton.setEnabled(false);
+
+		hidePlannedSpectrumButton = GuiUtil.formButton(listener, IconUtil.getItemHide());
+		hidePlannedSpectrumButton.setToolTipText(ToolTipUtil.getItemHide());
+		hidePlannedSpectrumButton.setEnabled(false);
+
 		selectInvertB = GuiUtil.formButton(listener, IconUtil.getSelectInvert());
 		selectInvertB.setToolTipText(ToolTipUtil.getSelectInvert());
 
@@ -171,6 +179,13 @@ public class PlannedSpectrumTableView extends JPanel
 		JPanel buttonPanel = new JPanel();
 		buttonPanel.setLayout(new BoxLayout(buttonPanel, BoxLayout.X_AXIS));
 
+		buttonPanel.add(loadPlannedSpectrumButton);
+		buttonPanel.add(processingLabel);
+		buttonPanel.add(Box.createHorizontalGlue());
+		buttonPanel.add(syncWithTimelineButton);
+		buttonPanel.add(Box.createHorizontalGlue());
+		buttonPanel.add(showPlannedSpectrumButton);
+		buttonPanel.add(hidePlannedSpectrumButton);
 		buttonPanel.add(Box.createHorizontalGlue());
 		buttonPanel.add(selectInvertB, "w 24!,h 24!");
 		buttonPanel.add(selectNoneB, "w 24!,h 24!");
@@ -180,7 +195,7 @@ public class PlannedSpectrumTableView extends JPanel
 		// Table Content
 		QueryComposer<PlannedSpectrumColumnLookup> tmpComposer = new QueryComposer<>();
 		tmpComposer.addAttribute(PlannedSpectrumColumnLookup.Show, Boolean.class, "Show", null);
-		tmpComposer.addAttribute(PlannedSpectrumColumnLookup.Frus, Boolean.class, "Frus", null);
+//		tmpComposer.addAttribute(PlannedSpectrumColumnLookup.Frus, Boolean.class, "Frus", null);
 		tmpComposer.addAttribute(PlannedSpectrumColumnLookup.Color, Color.class, "Color", null);
 		tmpComposer.addAttribute(PlannedSpectrumColumnLookup.Instrument, String.class, "Instrument", null);
 		tmpComposer.addAttribute(PlannedSpectrumColumnLookup.SpectrumTime, String.class, "Spectrum Time", null);
@@ -190,8 +205,8 @@ public class PlannedSpectrumTableView extends JPanel
 
 		tmpComposer.setEditor(PlannedSpectrumColumnLookup.Show, new BooleanCellEditor());
 		tmpComposer.setRenderer(PlannedSpectrumColumnLookup.Show, new BooleanCellRenderer());
-		tmpComposer.setEditor(PlannedSpectrumColumnLookup.Frus, new BooleanCellEditor());
-		tmpComposer.setRenderer(PlannedSpectrumColumnLookup.Frus, new BooleanCellRenderer());
+//		tmpComposer.setEditor(PlannedSpectrumColumnLookup.Frus, new BooleanCellEditor());
+//		tmpComposer.setRenderer(PlannedSpectrumColumnLookup.Frus, new BooleanCellRenderer());
 		tmpComposer.setEditor(PlannedSpectrumColumnLookup.Color, new ColorProviderCellEditor<StateHistory>());
 		tmpComposer.setRenderer(PlannedSpectrumColumnLookup.Color, new ColorProviderCellRenderer(false));
 		tmpComposer.setRenderer(PlannedSpectrumColumnLookup.SpectrumTime, tmpTimeRenderer);
@@ -219,7 +234,7 @@ public class PlannedSpectrumTableView extends JPanel
 		int minW = 30;
 
 		ColorProvider blackCP = new ConstColorProvider(Color.BLACK);
-		Object[] nomArr = { true, true, blackCP, dateTimeStr, dateTimeStr };
+		Object[] nomArr = { true, /*true,*/ blackCP, dateTimeStr, dateTimeStr };
 		for (int aCol = 0; aCol < nomArr.length; aCol++)
 		{
 			TableCellRenderer tmpRenderer = tmpTable.getCellRenderer(0, aCol);
@@ -240,9 +255,9 @@ public class PlannedSpectrumTableView extends JPanel
 	/**
 	 * @return the removePlannedSpectrumButton
 	 */
-	public JButton getRemovePlannedSpectrumButton()
+	public JButton getHidePlannedSpectrumButton()
 	{
-		return removePlannedSpectrumButton;
+		return hidePlannedSpectrumButton;
 	}
 
 	/**
@@ -259,6 +274,22 @@ public class PlannedSpectrumTableView extends JPanel
 	public JButton getSavePlannedSpectrumButton()
 	{
 		return savePlannedSpectrumButton;
+	}
+
+	/**
+	 * @return the syncWithTimelineButton
+	 */
+	public JToggleButton getSyncWithTimelineButton()
+	{
+		return syncWithTimelineButton;
+	}
+
+	/**
+	 * @return the processingLabel
+	 */
+	public JLabel getProcessingLabel()
+	{
+		return processingLabel;
 	}
 
 	/**

@@ -36,8 +36,8 @@ public class PlannedImageItemHandler extends BasicItemHandler<PlannedImage, Plan
 		{
 			case Show:
 				return image.isShowing();
-			case Frus:
-				return image.isFrustumShowing();
+//			case Frus:
+//				return image.isFrustumShowing();
 			case Color:
 				return new ConstColorProvider(image.getColor());
 			case Instrument:
@@ -62,11 +62,11 @@ public class PlannedImageItemHandler extends BasicItemHandler<PlannedImage, Plan
 		switch (aEnum)
 		{
 			case Show:
-				image.setShowing((Boolean)aValue);
+				plannedImageCollection.setDataShowing(image, (Boolean)aValue);
 				break;
-			case Frus:
-				image.setFrustumShowing((Boolean)aValue);
-				break;
+//			case Frus:
+//				image.setFrustumShowing((Boolean)aValue);
+//				break;
 			case Color:
 				image.setColor((Color)aValue);
 				break;

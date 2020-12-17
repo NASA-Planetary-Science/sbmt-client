@@ -52,8 +52,11 @@ public class StateHistoryTimeModel
 
 	public void setTimeFraction(double fraction)
 	{
-		if (Double.compare(currentTimeFraction, fraction) == 0) return;
+		if ((Double.compare(currentTimeFraction, fraction) == 0) && (fraction != 0.0))
+			return;
+
 		TimeWindow twindow = getDisplayedTimeWindow();
+		this.currentTimeFraction = fraction;
 		this.et = twindow.getStartTime() + fraction*(twindow.getStopTime() - twindow.getStartTime());
 		fireTimeChangedListeners();
 	}
@@ -156,10 +159,10 @@ public class StateHistoryTimeModel
  		return dt1;
     }
 
-    public static double getETForDate(Date dateTime)
+    public static double getETForDate(Date date)
     {
-        DateTime dt = new DateTime(dateTime);
-        DateTime dt1 = ISODateTimeFormat.dateTimeParser().parseDateTime(dt.toString());
-        return new Double(dt1.toDate().getTime());
+    	SimpleDateFormat dateFormatter = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS");
+    	String dateTimeString = dateFormatter.format(date);
+    	return TimeUtil.str2et(dateTimeString);
     }
 }

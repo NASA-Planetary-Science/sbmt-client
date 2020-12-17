@@ -174,6 +174,7 @@ public class DisplayOptionsTableView extends JPanel
 		tmpComposer.setEditor(DisplayOptionsColumnLookup.Color, new ColorProviderCellEditor<StateHistory>());
 		tmpComposer.setRenderer(DisplayOptionsColumnLookup.Color, new ColorProviderCellRenderer(false));
 		tmpComposer.setEditor(DisplayOptionsColumnLookup.Name, new DefaultCellEditor(new JTextField()));
+//		tmpComposer.setEditor(DisplayOptionsColumnLookup.Label, new SpinnerEditor());
 
 		displayOptionsTableHandler = new DisplayOptionsItemHandler(rendererManager, tmpComposer);
 		ItemProcessor<DisplayableItem> tmpIP = rendererManager.getDisplayItemsProcessor();

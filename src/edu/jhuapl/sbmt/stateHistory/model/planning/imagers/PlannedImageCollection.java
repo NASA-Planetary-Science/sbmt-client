@@ -3,6 +3,7 @@ package edu.jhuapl.sbmt.stateHistory.model.planning.imagers;
 import java.beans.PropertyChangeEvent;
 import java.io.IOException;
 
+import edu.jhuapl.saavtk.util.ProgressStatusListener;
 import edu.jhuapl.saavtk.util.Properties;
 import edu.jhuapl.sbmt.client.SmallBodyModel;
 import edu.jhuapl.sbmt.model.image.perspectiveImage.PerspectiveImageFootprint;
@@ -12,31 +13,17 @@ import edu.jhuapl.sbmt.stateHistory.rendering.PlannedDataProperties;
 import edu.jhuapl.sbmt.stateHistory.rendering.model.StateHistoryPositionCalculator;
 import edu.jhuapl.sbmt.stateHistory.rendering.planning.PlannedDataActor;
 
-public class PlannedImageCollection extends BasePlannedDataCollection<PlannedImage> //SaavtkItemManager<PlannedImage>
-		//implements PropertyChangeListener
+public class PlannedImageCollection extends BasePlannedDataCollection<PlannedImage>
 {
-	/**
-	 *
-	 */
-//	private List<PlannedImage> plannedImages = new ArrayList<PlannedImage>();
-//	private List<vtkProp> footprintActors = new ArrayList<vtkProp>();
-//
-//	private List<PlannedDataActor> plannedDataActors = new ArrayList<PlannedDataActor>();
-//
-//	private PlannedInstrumentRendererManager renderManager;
-//
-//	private SmallBodyModel smallBodyModel;
-//
-//	private StateHistory stateHistorySource;
 
 //	private CustomizableColoringDataManager coloringDataManager;
+
+	private double time;
 
 	public PlannedImageCollection(SmallBodyModel smallBodyModel)
 	{
 		super(smallBodyModel);
-//		this.smallBodyModel = smallBodyModel;
 ////		this.coloringDataManager = smallBodyModel.getColoringDataManager();
-//		renderManager = new PlannedInstrumentRendererManager(this.pcs);
 //		createColoringData("Emission");
 	}
 
@@ -48,21 +35,24 @@ public class PlannedImageCollection extends BasePlannedDataCollection<PlannedIma
 		super.propertyChange(evt);
 		if (PlannedDataProperties.TIME_CHANGED.equals(evt.getPropertyName()))
 		{
-			double time = (double)evt.getNewValue();
-			if (stateHistorySource == null) return;
-			for (PlannedDataActor actor : plannedDataActors)
+			time = (double)evt.getNewValue();
+			updateFootprints();
+		}
+	}
+
+	public void updateFootprints()
+	{
+		if (stateHistorySource == null) return;
+		for (PlannedDataActor actor : plannedDataActors)
+		{
+			if (((PerspectiveImageFootprint)actor).isStaticFootprintSet() == false)
 			{
-				if (((PerspectiveImageFootprint)actor).isStaticFootprintSet() == false)
-				{
-//					System.out.println("PlannedImageCollection: propertyChange: static footprint not set at time " + TimeUtil.et2str(actor.getTime()));
-					StateHistoryPositionCalculator.updateFootprintPointing(stateHistorySource, actor.getTime(), (PerspectiveImageFootprint)actor);
-				}
-//				if (time > actor.getTime() && actor.getFootprintBoundaryActor().GetVisibility() == 0)
-//					System.out.println("PlannedImageCollection: propertyChange: making visible for " + actor + " for time " + TimeUtil.et2str(time) + " at actor time " + TimeUtil.et2str(actor.getTime()));
-				actor.getFootprintBoundaryActor().SetVisibility(time >= actor.getTime() ? 1 : 0);
-				actor.getFootprintBoundaryActor().Modified();
-				this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
+				StateHistoryPositionCalculator.updateFootprintPointing(stateHistorySource, actor.getTime(), (PerspectiveImageFootprint)actor);
 			}
+			actor.getFootprintBoundaryActor().SetVisibility(time >= actor.getTime() ? 1 : 0);
+			plannedData.get(plannedDataActors.indexOf(actor)).setShowing(time >= actor.getTime());
+			actor.getFootprintBoundaryActor().Modified();
+			this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
 		}
 	}
 
@@ -106,7 +96,7 @@ public class PlannedImageCollection extends BasePlannedDataCollection<PlannedIma
 	/**
 	 * @param run
 	 */
-	public void addImageToList(PlannedImage image)
+	public void addImageToList(PlannedImage image, ProgressStatusListener listener)
 	{
 		plannedData.add(image);
 		PerspectiveImageFootprint actor = (PerspectiveImageFootprint)addDataToRenderer(image);
@@ -117,13 +107,14 @@ public class PlannedImageCollection extends BasePlannedDataCollection<PlannedIma
 			StateHistoryPositionCalculator.updateFootprintPointing(stateHistorySource, actor.getTime(), (PerspectiveImageFootprint)actor);
 		}
 		footprintActors.add(actor.getFootprintBoundaryActor());
+		listener.setProgressStatus("Adding image " + plannedData.size(), 0);
 		setAllItems(plannedData);
 		this.pcs.firePropertyChange("PLANNED_IMAGES_CHANGED", null, null);
 	}
 
-	public void loadPlannedImagesFromFileWithName(String filename) throws IOException
+	public void loadPlannedImagesFromFileWithName(String filename, ProgressStatusListener listener, Runnable completion) throws IOException
 	{
-		PlannedImageIOHelper.loadPlannedImagesFromFileWithName(filename, this);
+		PlannedImageIOHelper.loadPlannedImagesFromFileWithName(filename, this, listener, completion);
 	}
 
 	public void savePlannedImagesToFileWithName(String filename) throws IOException

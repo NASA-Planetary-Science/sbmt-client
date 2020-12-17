@@ -162,23 +162,12 @@ public class StateHistoryController
      */
     public JPanel getView()
     {
-//    	JPanel timeControlsPanel = new JPanel();
-//    	timeControlsPanel.setBorder(new TitledBorder(
-//                new EtchedBorder(EtchedBorder.LOWERED, null, null),
-//                "Time Controls", TitledBorder.LEADING, TitledBorder.TOP, null,
-//                new Color(0, 0, 0)));
-//    	timeControlsPanel.setLayout(new BoxLayout(timeControlsPanel, BoxLayout.Y_AXIS));
-
-//    	StateHistoryIntervalGenerationPanel intervalGenerationPanel = intervalGenerationController.getView();
     	intervalSelectionController.setIntervalGenerationController(intervalGenerationController);
     	StateHistoryTableView intervalSelectionPanel = intervalSelectionController.getView();
 
     	intervalSelectionPanel.setup();
 
     	StateHistoryDisplayedIntervalPanel displayedPanel = intervalDisplayedController.getView();
-
-//    	timeControlsPanel.add(intervalGenerationPanel);
-//    	timeControlsPanel.add(intervalSelectionPanel);
 
     	JPanel panel = new JPanel();
     	panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));

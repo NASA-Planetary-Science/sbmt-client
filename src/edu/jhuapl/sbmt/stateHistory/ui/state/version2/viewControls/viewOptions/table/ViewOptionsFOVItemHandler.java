@@ -8,6 +8,7 @@ import edu.jhuapl.sbmt.stateHistory.rendering.model.StateHistoryRendererManager;
 
 import glum.gui.panel.itemList.BasicItemHandler;
 import glum.gui.panel.itemList.query.QueryComposer;
+import glum.item.ItemEventType;
 
 public class ViewOptionsFOVItemHandler extends BasicItemHandler<String, ViewOptionsFOVColumnLookup>
 {
@@ -79,6 +80,11 @@ public class ViewOptionsFOVItemHandler extends BasicItemHandler<String, ViewOpti
 		}
 		else if (aEnum == ViewOptionsFOVColumnLookup.Footprint)
 		{
+			if (rendererManager.getInstrumentFrustumVisibility(fov) == false)
+			{
+				rendererManager.makeFrustum(rendererManager.getRuns().getCurrentRun(), fov);
+				rendererManager.setInstrumentFrustumVisibility(fov, (boolean) aValue);
+			}
 			rendererManager.makeFootprint(rendererManager.getRuns().getCurrentRun(), fov);
 			rendererManager.setInstrumentFootprintVisibility(fov, (boolean) aValue);
 		}
@@ -93,6 +99,7 @@ public class ViewOptionsFOVItemHandler extends BasicItemHandler<String, ViewOpti
 				rendererManager.getRuns().getCurrentRun().getPointingProvider().setCurrentInstFrameName(fov);
 			else
 				rendererManager.getRuns().getCurrentRun().getPointingProvider().setCurrentInstFrameName("");
+			rendererManager.notify(this, ItemEventType.ItemsChanged);
 			rendererManager.refreshColoring();
 		}
 		else if (aEnum == ViewOptionsFOVColumnLookup.FPPlateColoring)

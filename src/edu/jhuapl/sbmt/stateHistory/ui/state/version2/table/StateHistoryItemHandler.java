@@ -47,7 +47,6 @@ public class StateHistoryItemHandler extends BasicItemHandler<StateHistory, Stat
 		DateTimeFormatter fmt = DateTimeFormat.forPattern("yyyy-MM-dd'T'HH:mm:ss");
 		String timeString;
 		ColorProvider colorProvider = rendererManager.getColorProviderForStateHistory(stateHistory);
-//		if (colorProvider instanceof ColorBarColorProvider) colorProvider = new ConstGroupColorProvider(colorProvider);
 		switch (aEnum)
 		{
 			case Map:
@@ -57,7 +56,6 @@ public class StateHistoryItemHandler extends BasicItemHandler<StateHistory, Stat
 			case Color:
 				if (colorProvider instanceof ColorBarColorProvider) return new ConstGroupColorProvider(colorProvider);
 				return colorProvider;
-//				return new ConstColorProvider(stateHistory.getTrajectory().getColor());
 			case Name:
 				if (stateHistory.getStateHistoryName().equals("")) return "Segment " + stateHistory.getKey().getValue();
 				return stateHistory.getStateHistoryName();

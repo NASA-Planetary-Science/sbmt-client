@@ -81,12 +81,9 @@ public class StateHistoryPositionCalculator implements IStateHistoryPositionCalc
 		StateHistoryPositionCalculator.smallBodyModel = smallBodyModel;
 	}
 
-
-
 	@Override
 	public void updateSunPosition(StateHistory history, double time, SunDirectionMarker sunDirectionMarker)
 	{
-//		Logger.getAnonymousLogger ().log(Level.INFO, "Updating sun pos");
 		sunPosition = history.getSunPosition();
 		if (sunPosition == null) return;
 		vtkMatrix4x4 sunMarkerMatrix = new vtkMatrix4x4();
@@ -106,14 +103,11 @@ public class StateHistoryPositionCalculator implements IStateHistoryPositionCalc
 		}
 
 		sunDirectionMarker.updateSunPosition(sunPosition, sunMarkerPosition);
-//		Logger.getAnonymousLogger ().log(Level.INFO, "Updated sun pos");
-
 	}
 
 	@Override
 	public void updateEarthPosition(StateHistory history, double time, EarthDirectionMarker earthDirectionMarker)
 	{
-//		Logger.getAnonymousLogger ().log(Level.INFO, "Updating earth pos");
 		earthPosition = history.getEarthPosition();
 		if (earthPosition == null) return;
 		vtkMatrix4x4 earthMarkerMatrix = new vtkMatrix4x4();
@@ -133,8 +127,6 @@ public class StateHistoryPositionCalculator implements IStateHistoryPositionCalc
 		}
 
 		earthDirectionMarker.updateEarthPosition(earthPosition, earthMarkerPosition);
-//		Logger.getAnonymousLogger ().log(Level.INFO, "Updated earth pos");
-
 	}
 
 	public static void updateFootprintPointing(StateHistory history, double time, PerspectiveImageFootprint fprint)
@@ -147,7 +139,6 @@ public class StateHistoryPositionCalculator implements IStateHistoryPositionCalc
 		double[] frus4 = new double[] { history.getFrustumAtTime(instrumentFrameID.getName(), 3, time).getI(), history.getFrustumAtTime(instrumentFrameID.getName(), 3, time).getJ(), history.getFrustumAtTime(instrumentFrameID.getName(), 3, time).getK()};
 		fprint.setStaticFootprintSet(true);
 		fprint.updatePointing(spacecraftPosition, frus1, frus2, frus3, frus4, 1024, 1024, 1);
-
 	}
 
 	public static LidarPoint updateLidarFootprintPointing(StateHistory history, double time, SmallBodyModel smallBodyModel, String instrumentName)
@@ -161,22 +152,6 @@ public class StateHistoryPositionCalculator implements IStateHistoryPositionCalc
 		double intensity = 1.0;
 		return new BasicLidarPoint(boresightInterceptPosition, spacecraftPosition, time, range, intensity);
 	}
-
-//	private static double[] getSpacecraftDirection(UnwritableVectorIJK position)
-//	{
-//		double[] spacecraftPosition = new double[] { position.getI(), position.getJ(), position.getK() };
-//		double[] spacecraftDirection = new double[3];
-//		MathUtil.unorm(spacecraftPosition, spacecraftDirection);
-//		return spacecraftDirection;
-//	}
-
-//	private static double[] getSpacecraftViewPoint(UnwritableVectorIJK position)
-//	{
-//		double[] spacecraftViewpoint = new double[3];
-//		double[] spacecraftDirection = getSpacecraftDirection(position);
-//		MathUtil.vscl(JupiterScale, spacecraftDirection, spacecraftViewpoint);
-//		return spacecraftViewpoint;
-//	}
 
 	private static double[] getInstrumentLookDirAtTime(StateHistory history, String instrumentName, double time)
 	{
@@ -238,7 +213,7 @@ public class StateHistoryPositionCalculator implements IStateHistoryPositionCalc
 	public void updateSpacecraftPosition(StateHistory history, double time, SpacecraftBody spacecraft, SpacecraftDirectionMarker scDirectionMarker,
 			SpacecraftLabel spacecraftLabelActor)
 	{
-//		Logger.getAnonymousLogger ().log(Level.INFO, "Updating sc pos");
+//		Logger.getAnonymousLogger ().log(Level.INFO, "Updating sc pos at time " + time + " at history step " + TimeUtil.et2str(history.getCurrentTime()));
 		vtkMatrix4x4 spacecraftBodyMatrix = new vtkMatrix4x4();
 		vtkMatrix4x4 spacecraftIconMatrix = new vtkMatrix4x4();
 		vtkMatrix4x4 fovMatrix = new vtkMatrix4x4();
@@ -317,9 +292,6 @@ public class StateHistoryPositionCalculator implements IStateHistoryPositionCalc
 		spacecraft.getActor().Modified();
 		scDirectionMarker.getActor().Modified();
 		spacecraftLabelActor.Modified();
-
-//		Logger.getAnonymousLogger().log(Level.INFO, "Updated sc pos to " + spacecraftPosition[0] + " " + spacecraftPosition[1] + " " + spacecraftPosition[2]);
-
 	}
 
 	public void updateFOVLocations(StateHistory history, ArrayList<PerspectiveImageFrustum> fov)
@@ -348,9 +320,7 @@ public class StateHistoryPositionCalculator implements IStateHistoryPositionCalc
 			double[] frus2 = new double[] { history.getFrustum(instrumentFrameID.getName(), 1).getI(), history.getFrustum(instrumentFrameID.getName(), 1).getJ(), history.getFrustum(instrumentFrameID.getName(), 1).getK()};
 			double[] frus3 = new double[] { history.getFrustum(instrumentFrameID.getName(), 2).getI(), history.getFrustum(instrumentFrameID.getName(), 2).getJ(), history.getFrustum(instrumentFrameID.getName(), 2).getK()};
 			double[] frus4 = new double[] { history.getFrustum(instrumentFrameID.getName(), 3).getI(), history.getFrustum(instrumentFrameID.getName(), 3).getJ(), history.getFrustum(instrumentFrameID.getName(), 3).getK()};
-//			Logger.getAnonymousLogger().log(Level.INFO, "Updating footprint");
 			fprint.updatePointing(spacecraftPosition, frus1, frus2, frus3, frus4, 1024, 1024, 1);
-//			Logger.getAnonymousLogger().log(Level.INFO, "Updated footprint");
 			fprint.getFootprintActor().Modified();
 			fprint.getFootprintBoundaryActor().Modified();
 		});

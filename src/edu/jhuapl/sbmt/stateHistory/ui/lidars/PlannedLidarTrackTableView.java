@@ -7,9 +7,12 @@ import java.awt.event.ActionListener;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
+import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
+import javax.swing.JToggleButton;
+import javax.swing.UIManager;
 import javax.swing.border.TitledBorder;
 import javax.swing.table.TableCellRenderer;
 
@@ -44,7 +47,7 @@ public class PlannedLidarTrackTableView extends JPanel
     /**
      * JButton to remove planned LidarTrack from table
      */
-    private JButton removePlannedLidarTrackButton;
+    private JButton hidePlannedLidarTrackButton;
 
     /**
      * JButton to show planned LidarTrack in renderer
@@ -66,6 +69,8 @@ public class PlannedLidarTrackTableView extends JPanel
      */
     private JButton selectAllB, selectInvertB, selectNoneB;
 
+    private JToggleButton syncWithTimelineButton;
+
     /**
      * The collection of loaded planned LidarTrack objects
      */
@@ -75,6 +80,8 @@ public class PlannedLidarTrackTableView extends JPanel
      *	The planned LidarTrack item list panel, used to help handle interactions with the table
      */
     private ItemListPanel<PlannedLidarTrack> plannedLidarTrackILP;
+
+    private JLabel processingLabel;
 
     /**
      * The planned LidarTrack table handler, used to help populate the table
@@ -93,13 +100,6 @@ public class PlannedLidarTrackTableView extends JPanel
     protected void init()
     {
         table = buildTable();
-        removePlannedLidarTrackButton = new JButton("Hide Planned Lidar Track");
-        showPlannedLidarTrackButton = new JButton("Show Planned Lidar Track");
-        removePlannedLidarTrackButton.setEnabled(false);
-        showPlannedLidarTrackButton.setEnabled(false);
-        loadPlannedLidarTrackButton = new JButton("Load...");
-        savePlannedLidarTrackButton = new JButton("Save...");
-        savePlannedLidarTrackButton.setEnabled(false);
     }
 
     /**
@@ -121,18 +121,6 @@ public class PlannedLidarTrackTableView extends JPanel
         add(scrollPane);
 
         scrollPane.setViewportView(table);
-
-        JPanel panel_1 = new JPanel();
-        add(panel_1);
-        panel_1.setLayout(new BoxLayout(panel_1, BoxLayout.X_AXIS));
-        panel_1.add(showPlannedLidarTrackButton);
-        panel_1.add(removePlannedLidarTrackButton);
-
-        JPanel panel_2 = new JPanel();
-        add(panel_2);
-        panel_2.setLayout(new BoxLayout(panel_2, BoxLayout.X_AXIS));
-        panel_2.add(loadPlannedLidarTrackButton);
-        panel_2.add(savePlannedLidarTrackButton);
     }
 
     /**
@@ -159,6 +147,27 @@ public class PlannedLidarTrackTableView extends JPanel
 //		StateHistoryPopupMenu stateHistoryPopupMenu = StateHistoryGuiUtil.formStateHistoryFileSpecPopupMenu(plannedLidarTrackCollection, this);
 
     	// Table header
+		loadPlannedLidarTrackButton = GuiUtil.formButton(listener, UIManager.getIcon("FileView.directoryIcon"));
+		loadPlannedLidarTrackButton.setToolTipText(ToolTipUtil.getItemLoad());
+
+		processingLabel = new JLabel("Ready.");
+
+
+		syncWithTimelineButton = GuiUtil.formToggleButton(listener, IconUtil.getItemSyncFalse(), IconUtil.getItemSyncTrue());
+		syncWithTimelineButton.setToolTipText("Sync Visibility with Time slider");
+
+//		saveStateHistoryButton = GuiUtil.formButton(listener, UIManager.getIcon("FileView.floppyDriveIcon"));
+//		saveStateHistoryButton.setToolTipText(ToolTipUtil.getItemSave());
+//		saveStateHistoryButton.setEnabled(false);
+
+		showPlannedLidarTrackButton = GuiUtil.formButton(listener, IconUtil.getItemShow());
+		showPlannedLidarTrackButton.setToolTipText(ToolTipUtil.getItemShow());
+		showPlannedLidarTrackButton.setEnabled(false);
+
+		hidePlannedLidarTrackButton = GuiUtil.formButton(listener, IconUtil.getItemHide());
+		hidePlannedLidarTrackButton.setToolTipText(ToolTipUtil.getItemHide());
+		hidePlannedLidarTrackButton.setEnabled(false);
+
 		selectInvertB = GuiUtil.formButton(listener, IconUtil.getSelectInvert());
 		selectInvertB.setToolTipText(ToolTipUtil.getSelectInvert());
 
@@ -171,6 +180,13 @@ public class PlannedLidarTrackTableView extends JPanel
 		JPanel buttonPanel = new JPanel();
 		buttonPanel.setLayout(new BoxLayout(buttonPanel, BoxLayout.X_AXIS));
 
+		buttonPanel.add(loadPlannedLidarTrackButton);
+		buttonPanel.add(processingLabel);
+		buttonPanel.add(Box.createHorizontalGlue());
+		buttonPanel.add(syncWithTimelineButton);
+		buttonPanel.add(Box.createHorizontalGlue());
+		buttonPanel.add(showPlannedLidarTrackButton);
+		buttonPanel.add(hidePlannedLidarTrackButton);
 		buttonPanel.add(Box.createHorizontalGlue());
 		buttonPanel.add(selectInvertB, "w 24!,h 24!");
 		buttonPanel.add(selectNoneB, "w 24!,h 24!");
@@ -238,9 +254,9 @@ public class PlannedLidarTrackTableView extends JPanel
 	/**
 	 * @return the removePlannedLidarTrackButton
 	 */
-	public JButton getRemovePlannedLidarTrackButton()
+	public JButton getHidePlannedLidarTrackButton()
 	{
-		return removePlannedLidarTrackButton;
+		return hidePlannedLidarTrackButton;
 	}
 
 	/**
@@ -257,6 +273,22 @@ public class PlannedLidarTrackTableView extends JPanel
 	public JButton getSavePlannedLidarTrackButton()
 	{
 		return savePlannedLidarTrackButton;
+	}
+
+	/**
+	 * @return the syncWithTimelineButton
+	 */
+	public JToggleButton getSyncWithTimelineButton()
+	{
+		return syncWithTimelineButton;
+	}
+
+	/**
+	 * @return the processingLabel
+	 */
+	public JLabel getProcessingLabel()
+	{
+		return processingLabel;
 	}
 
 	/**

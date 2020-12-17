@@ -67,7 +67,6 @@ public class StateHistoryViewOptionsController
 		StateHistoryViewOptionsModel model = new StateHistoryViewOptionsModel();
 		StateHistoryCollection runs = rendererManager.getRuns();
 		Renderer renderer = rendererManager.getRenderer();
-//		view.getViewInputAngle().setText("30.0");
 
 		//set the model for the view options, and set the action listener
 		view.getViewOptions().setModel(comboModelView);
@@ -75,25 +74,7 @@ public class StateHistoryViewOptionsController
 		view.getViewOptions().addActionListener(e ->
 		{
 			rendererManager.updateLookDirection((RendererLookDirection) view.getViewOptions().getSelectedItem());
-//			updateLookDirection(rendererManager, model);
 		});
-
-//		//set the action listener for the reset to nadir button
-//        view.getBtnResetCameraTo().addActionListener(e -> {
-//            if( runs.getCurrentRun() == null) return;
-//            renderer.setCameraFocalPoint(new double[] {0,0,0});
-//        });
-
-//        //set the action listener for the set view angle button
-//        view.getSetViewAngle().addActionListener(e ->
-//		{
-//			if (e.getSource() != view.getSetViewAngle())
-//				return;
-//			double inputAngle = Double.parseDouble(view.getViewInputAngle().getText());
-//			model.setViewInputAngleForStateHistory(inputAngle, runs.getCurrentRun());
-//			view.getViewInputAngle().setText("" + model.getViewInputAngleForStateHistory(runs.getCurrentRun()));
-//			renderer.setCameraViewAngle(model.getViewInputAngleForStateHistory(runs.getCurrentRun()));
-//		});
 
         //Adds a property change listener for the StateHistoryCollection object to respond to POSITION_CHANGED events
         //This updates the lighting as well as the look direction
@@ -102,10 +83,6 @@ public class StateHistoryViewOptionsController
 			if (!evt.getPropertyName().equals("POSITION_CHANGED")) return;
 			RendererLookDirection selectedItem = (RendererLookDirection) view.getViewOptions().getSelectedItem();
 			model.setRendererLookDirectionForStateHistory(selectedItem, runs.getCurrentRun());
-
-//			updateLookDirection(rendererManager, model);
-//			if ((renderer.getLighting() == LightingType.FIXEDLIGHT && runs.getCurrentRun() != null) == false) return;
-//			renderer.setFixedLightDirection(runs.getCurrentRun().getSunPosition());
 		});
 
         //on a change in selection in the table, reset the time fraction and update the state history's look angle
@@ -116,31 +93,12 @@ public class StateHistoryViewOptionsController
 			rendererManager.setTimeFraction(0.0, runs.getCurrentRun());
 			RendererLookDirection lookDir = model.getRendererLookDirectionForStateHistory(runs.getCurrentRun());
 			if (lookDir == null) lookDir = RendererLookDirection.FREE_VIEW;
-			Double inputAngle = model.getViewInputAngleForStateHistory(runs.getCurrentRun());
 			view.getViewOptions().setSelectedItem(lookDir);
-
-//			if (inputAngle != null)
-//				view.getViewInputAngle().setText("" + inputAngle);
 		});
 
 		view.getViewOptions().setSelectedItem(RendererLookDirection.FREE_VIEW);
 		rendererManager.setRendererLookDirection(RendererLookDirection.FREE_VIEW);
-//		view.getViewOptions().setSelectedIndex(0);
-//		view.setCheckboxItemListener(e ->
-//		{
-//			JCheckBox fovCheckbox = (JCheckBox)e.getSource();
-//			if (fovCheckbox.isSelected())
-//			{
-//				runs.addSelectedFov(fovCheckbox.getText());
-//			}
-//			else
-//			{
-//				runs.removeSelectedFov(fovCheckbox.getText());
-//			}
-//		});
 	}
-
-
 
 	/**
 	 * @return the view

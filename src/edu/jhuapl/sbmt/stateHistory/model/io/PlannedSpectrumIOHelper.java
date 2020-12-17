@@ -8,6 +8,7 @@ import java.io.IOException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
+import edu.jhuapl.saavtk.util.ProgressStatusListener;
 import edu.jhuapl.sbmt.stateHistory.model.planning.spectrometers.PlannedSpectrum;
 import edu.jhuapl.sbmt.stateHistory.model.planning.spectrometers.PlannedSpectrumCollection;
 import edu.jhuapl.sbmt.util.TimeUtil;
@@ -23,7 +24,7 @@ public class PlannedSpectrumIOHelper
 	 * @param collection
 	 * @throws IOException
 	 */
-	public static void loadPlannedSpectraFromFileWithName(String filename, PlannedSpectrumCollection collection) throws IOException
+	public static void loadPlannedSpectraFromFileWithName(String filename, PlannedSpectrumCollection collection, ProgressStatusListener listener, Runnable completion) throws IOException
 	{
 		BufferedReader reader = new BufferedReader(new FileReader(filename));
 		String line;
@@ -38,9 +39,10 @@ public class PlannedSpectrumIOHelper
 			String instrumentName = parts[2];
 			Integer cadence = Integer.parseInt(parts[3]);
 			PlannedSpectrum plannedSpectrum = new PlannedSpectrum(etStart, etEnd, cadence, instrumentName);
-			collection.addSpectrumToList(plannedSpectrum);
+			collection.addSpectrumToList(plannedSpectrum, listener);
 		}
 		reader.close();
+		completion.run();
 	}
 
 	/**

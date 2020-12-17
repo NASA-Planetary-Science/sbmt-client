@@ -66,7 +66,8 @@ public class PlannedLidarTrackItemHandler extends BasicItemHandler<PlannedLidarT
 		{
 			case Show:
 				track.setShowing((Boolean)aValue);
-				plannedLidarTrackCollection.setVisibility(track, (Boolean)aValue);
+				if ((Boolean)aValue) plannedLidarTrackCollection.setPercentageShown(100);
+				else plannedLidarTrackCollection.setPercentageShown(0);
 				break;
 			case Color:
 				track.setColor((Color)aValue);

@@ -87,11 +87,7 @@ public class StateHistoryColoringOptionsController implements ActionListener
 	{
 		horizPanel.removeAll();
 		horizPanel.setLayout(new BoxLayout(horizPanel, BoxLayout.X_AXIS));
-//		this.colorConfigPanel.setBorder(BorderFactory.createTitledBorder("Trajectory Coloring"));
-//		this.colorConfigPanel.setAlignmentY(0.5f);
-//		horizPanel.add(this.colorConfigPanel);
-//		if (rendererManager.getRuns().getAvailableFOVs().size() > 0)
-			horizPanel.add(view);
+		horizPanel.add(view);
 	}
 
 	/**

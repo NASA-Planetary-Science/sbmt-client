@@ -10,6 +10,7 @@ import javax.swing.JPanel;
 import edu.jhuapl.saavtk.color.gui.EditGroupColorPanel;
 import edu.jhuapl.saavtk.color.painter.ColorBarPainter;
 import edu.jhuapl.saavtk.color.provider.ColorProvider;
+import edu.jhuapl.saavtk.color.provider.ConstColorProvider;
 import edu.jhuapl.saavtk.color.provider.GroupColorProvider;
 import edu.jhuapl.saavtk.color.provider.SimpleColorProvider;
 import edu.jhuapl.saavtk.feature.FeatureType;
@@ -61,11 +62,12 @@ public class StateHistoryColorConfigPanel extends JPanel implements ActionListen
 		if (rendererManager.getRuns().getCurrentRun() != null)
 		{
 			ColorProvider colorProvider = rendererManager.getColorProviderForStateHistory(rendererManager.getRuns().getCurrentRun());
-			if (colorProvider instanceof SimpleColorProvider)
+			if (colorProvider instanceof SimpleColorProvider || (colorProvider instanceof ConstColorProvider))
 				setActiveMode(ColorMode.Simple);
 			else
 			{
 				setActiveMode(ColorMode.ColorMap);
+				System.out.println("StateHistoryColorConfigPanel: StateHistoryColorConfigPanel: type " + colorProvider.getFeatureType());
 				colorMapPanel.setFeatureType(colorProvider.getFeatureType());
 			}
 		}

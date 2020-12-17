@@ -160,6 +160,8 @@ public class StateHistoryRendererManager extends SaavtkItemManager<StateHistory>
 
 	private RendererLookDirection lookDirection = RendererLookDirection.FREE_VIEW;
 
+	private boolean syncImages = false, syncSpectra = false, syncLidar = false;
+
 	public void setRendererLookDirection(RendererLookDirection rendererLookDirection)
 	{
 		this.lookDirection = rendererLookDirection;
@@ -427,7 +429,6 @@ public class StateHistoryRendererManager extends SaavtkItemManager<StateHistory>
 		stateHistoryToRendererMap.put(run, trajectoryActor);
 
 		ColorProvider tmpSrcCP = sourceGCP.getColorProviderFor(run, indexGen.getNextId(), stateHistoryToRendererMap.size());
-
 		StateHistoryRenderProperties tmpProp = new StateHistoryRenderProperties();
 		tmpProp.isVisible = false;
 		tmpProp.srcCP = tmpSrcCP;
@@ -597,6 +598,7 @@ public class StateHistoryRendererManager extends SaavtkItemManager<StateHistory>
 		{
 			Color color = historySpacecraftFovMap.get(run).stream().filter(fov -> fov.getInstrumentName().equals(instName)).collect(Collectors.toList()).get(0).getColor();
 			fprint = new PerspectiveImageFootprint();
+			fprint.setStaticFootprint(true);
 			instrumentNameToFootprintMap.put(instName, fprint);
 			fprint.setBoundaryVisible(false);
 			fprint.setVisible(false);
@@ -653,8 +655,10 @@ public class StateHistoryRendererManager extends SaavtkItemManager<StateHistory>
 	public boolean getInstrumentFrustumVisibility(String name)
 	{
 		if (historySpacecraftFovMap.get(runs.getCurrentRun()) == null || historySpacecraftFovMap.get(runs.getCurrentRun()).isEmpty()) return false;
+
 		List<PerspectiveImageFrustum> fovs = historySpacecraftFovMap.get(runs.getCurrentRun()).stream().filter(item -> item.getInstrumentName().equals(name)).collect(Collectors.toList());
 		if (fovs.size() == 0) return false;
+
 		return fovs.get(0).getFrustumActor().GetVisibility() == 1 ? true : false;
 	}
 
@@ -895,18 +899,19 @@ public class StateHistoryRendererManager extends SaavtkItemManager<StateHistory>
 			props.add(stateHistoryToRendererMap.get(history));
 
 		}
-		if (!historySpacecraftFovMap.isEmpty())
+		if (!historySpacecraftFovMap.isEmpty() && (historySpacecraftFovMap.get(runs.getCurrentRun()) != null))
 		{
 //			if (this.spacecraftFov.length > 0)
 //				System.out.println("StateHistoryRendererManager: getProps: frustum actor " + this.spacecraftFov[0].getFrustumActor().GetClassName());
-			historySpacecraftFovMap.get(runs.getCurrentRun()).stream().filter(fov -> fov.getFrustumActor() != null).forEach(fov -> props.add(fov.getFrustumActor()));
-			historySpacecraftFovMap.get(runs.getCurrentRun()).stream().filter(fov -> fov.getFrustumActor2() != null).forEach(fov -> props.add(fov.getFrustumActor2()));
-			historySpacecraftFovMap.get(runs.getCurrentRun()).stream().filter(fov -> fov.getFrustumActor3() != null).forEach(fov -> props.add(fov.getFrustumActor3()));
-			historySpacecraftFovMap.get(runs.getCurrentRun()).stream().filter(fov -> fov.getFrustumActor4() != null).forEach(fov -> props.add(fov.getFrustumActor4()));
-			historySpacecraftFovMap.get(runs.getCurrentRun()).stream().filter(fov -> fov.getFrustumActor5() != null).forEach(fov -> props.add(fov.getFrustumActor5()));
-			historySpacecraftFovMap.get(runs.getCurrentRun()).stream().filter(fov -> fov.getFrustumActor6() != null).forEach(fov -> props.add(fov.getFrustumActor6()));
+			ArrayList<PerspectiveImageFrustum> arrayList = historySpacecraftFovMap.get(runs.getCurrentRun());
+			historySpacecraftFovMap.get(runs.getCurrentRun()).stream().filter(fov -> fov != null && fov.getFrustumActor() != null).forEach(fov -> props.add(fov.getFrustumActor()));
+//			historySpacecraftFovMap.get(runs.getCurrentRun()).stream().filter(fov -> fov.getFrustumActor2() != null).forEach(fov -> props.add(fov.getFrustumActor2()));
+//			historySpacecraftFovMap.get(runs.getCurrentRun()).stream().filter(fov -> fov.getFrustumActor3() != null).forEach(fov -> props.add(fov.getFrustumActor3()));
+//			historySpacecraftFovMap.get(runs.getCurrentRun()).stream().filter(fov -> fov.getFrustumActor4() != null).forEach(fov -> props.add(fov.getFrustumActor4()));
+//			historySpacecraftFovMap.get(runs.getCurrentRun()).stream().filter(fov -> fov.getFrustumActor5() != null).forEach(fov -> props.add(fov.getFrustumActor5()));
+//			historySpacecraftFovMap.get(runs.getCurrentRun()).stream().filter(fov -> fov.getFrustumActor6() != null).forEach(fov -> props.add(fov.getFrustumActor6()));
 		}
-		if (!historyFootprintMap.isEmpty())
+		if (!historyFootprintMap.isEmpty() && historyFootprintMap.get(runs.getCurrentRun()) != null)
 		{
 			historyFootprintMap.get(runs.getCurrentRun()).stream().filter(fprint -> fprint != null).filter(fov -> fov.getFootprintActor() != null).forEach(footprint -> props.add(footprint.getFootprintActor()));
 			historyFootprintMap.get(runs.getCurrentRun()).stream().filter(fprint -> fprint != null).filter(fov -> fov.getFootprintActor() != null).forEach(footprint -> props.add(footprint.getFootprintBoundaryActor()));
@@ -984,6 +989,7 @@ public class StateHistoryRendererManager extends SaavtkItemManager<StateHistory>
 			updateLookDirection(lookDirection);
 			if ((renderer.getLighting() == LightingType.FIXEDLIGHT && runs.getCurrentRun() != null) == false) return;
 			renderer.setFixedLightDirection(runs.getCurrentRun().getSunPosition());
+			propertyChange(new PropertyChangeEvent(this, Properties.MODEL_CHANGED, null, null));
 //			Logger.getAnonymousLogger().log(Level.INFO, "Position changed called");
 		}
 	}
@@ -1057,8 +1063,6 @@ public class StateHistoryRendererManager extends SaavtkItemManager<StateHistory>
 		for (int i=start; i<end; i++)
 		{
 			FeatureAttr attr = getFeatureAttrFor(trajectory, aFeatureType, i);
-			if (attr == null)
-				System.out.println("StateHistoryRendererManager: getFeatureAttrFor: NULLLLLL for type " + aFeatureType.getName());
 			dataArray.InsertNextValue(attr.getValAt(0));
 		}
 		return new VtkFeatureAttr(dataArray);
@@ -1312,6 +1316,54 @@ public class StateHistoryRendererManager extends SaavtkItemManager<StateHistory>
 				return getDisplayableItems().size();
 			}
 		};
+	}
+
+	/**
+	 * @return the syncImages
+	 */
+	public boolean isSyncImages()
+	{
+		return syncImages;
+	}
+
+	/**
+	 * @param syncImages the syncImages to set
+	 */
+	public void setSyncImages(boolean syncImages)
+	{
+		this.syncImages = syncImages;
+	}
+
+	/**
+	 * @return the syncSpectra
+	 */
+	public boolean isSyncSpectra()
+	{
+		return syncSpectra;
+	}
+
+	/**
+	 * @param syncSpectra the syncSpectra to set
+	 */
+	public void setSyncSpectra(boolean syncSpectra)
+	{
+		this.syncSpectra = syncSpectra;
+	}
+
+	/**
+	 * @return the syncLidar
+	 */
+	public boolean isSyncLidar()
+	{
+		return syncLidar;
+	}
+
+	/**
+	 * @param syncLidar the syncLidar to set
+	 */
+	public void setSyncLidar(boolean syncLidar)
+	{
+		this.syncLidar = syncLidar;
 	}
 
 

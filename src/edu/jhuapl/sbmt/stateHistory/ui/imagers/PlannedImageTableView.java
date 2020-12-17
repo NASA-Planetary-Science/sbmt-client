@@ -7,9 +7,12 @@ import java.awt.event.ActionListener;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
+import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
+import javax.swing.JToggleButton;
+import javax.swing.UIManager;
 import javax.swing.border.TitledBorder;
 import javax.swing.table.TableCellRenderer;
 
@@ -44,7 +47,7 @@ public class PlannedImageTableView extends JPanel
     /**
      * JButton to remove planned image from table
      */
-    private JButton removePlannedImageButton;
+    private JButton hidePlannedImageButton;
 
     /**
      * JButton to show planned image in renderer
@@ -66,6 +69,8 @@ public class PlannedImageTableView extends JPanel
      */
     private JButton selectAllB, selectInvertB, selectNoneB;
 
+    private JToggleButton syncWithTimelineButton;
+
     /**
      * The collection of loaded planned image objects
      */
@@ -81,6 +86,8 @@ public class PlannedImageTableView extends JPanel
      */
     private ItemHandler<PlannedImage> plannedImageTableHandler;
 
+    private JLabel processingLabel;
+
 	public PlannedImageTableView(PlannedImageCollection plannedImageCollection)
 	{
 		this.plannedImageCollection = plannedImageCollection;
@@ -93,13 +100,6 @@ public class PlannedImageTableView extends JPanel
     protected void init()
     {
         table = buildTable();
-        removePlannedImageButton = new JButton("Hide Planned Image");
-        showPlannedImageButton = new JButton("Show Planned Image");
-        removePlannedImageButton.setEnabled(false);
-        showPlannedImageButton.setEnabled(false);
-        loadPlannedImageButton = new JButton("Load...");
-        savePlannedImageButton = new JButton("Save...");
-        savePlannedImageButton.setEnabled(false);
     }
 
     /**
@@ -121,18 +121,6 @@ public class PlannedImageTableView extends JPanel
         add(scrollPane);
 
         scrollPane.setViewportView(table);
-
-        JPanel panel_1 = new JPanel();
-        add(panel_1);
-        panel_1.setLayout(new BoxLayout(panel_1, BoxLayout.X_AXIS));
-        panel_1.add(showPlannedImageButton);
-        panel_1.add(removePlannedImageButton);
-
-        JPanel panel_2 = new JPanel();
-        add(panel_2);
-        panel_2.setLayout(new BoxLayout(panel_2, BoxLayout.X_AXIS));
-        panel_2.add(loadPlannedImageButton);
-        panel_2.add(savePlannedImageButton);
     }
 
     /**
@@ -159,6 +147,26 @@ public class PlannedImageTableView extends JPanel
 //		StateHistoryPopupMenu stateHistoryPopupMenu = StateHistoryGuiUtil.formStateHistoryFileSpecPopupMenu(plannedImageCollection, this);
 
     	// Table header
+		loadPlannedImageButton = GuiUtil.formButton(listener, UIManager.getIcon("FileView.directoryIcon"));
+		loadPlannedImageButton.setToolTipText(ToolTipUtil.getItemLoad());
+
+		processingLabel = new JLabel("Ready.");
+
+		syncWithTimelineButton = GuiUtil.formToggleButton(listener, IconUtil.getItemSyncFalse(), IconUtil.getItemSyncTrue());
+		syncWithTimelineButton.setToolTipText("Sync Visibility with Time slider");
+
+//		saveStateHistoryButton = GuiUtil.formButton(listener, UIManager.getIcon("FileView.floppyDriveIcon"));
+//		saveStateHistoryButton.setToolTipText(ToolTipUtil.getItemSave());
+//		saveStateHistoryButton.setEnabled(false);
+
+		showPlannedImageButton = GuiUtil.formButton(listener, IconUtil.getItemShow());
+		showPlannedImageButton.setToolTipText(ToolTipUtil.getItemShow());
+		showPlannedImageButton.setEnabled(false);
+
+		hidePlannedImageButton = GuiUtil.formButton(listener, IconUtil.getItemHide());
+		hidePlannedImageButton.setToolTipText(ToolTipUtil.getItemHide());
+		hidePlannedImageButton.setEnabled(false);
+
 		selectInvertB = GuiUtil.formButton(listener, IconUtil.getSelectInvert());
 		selectInvertB.setToolTipText(ToolTipUtil.getSelectInvert());
 
@@ -171,6 +179,13 @@ public class PlannedImageTableView extends JPanel
 		JPanel buttonPanel = new JPanel();
 		buttonPanel.setLayout(new BoxLayout(buttonPanel, BoxLayout.X_AXIS));
 
+		buttonPanel.add(loadPlannedImageButton);
+		buttonPanel.add(processingLabel);
+		buttonPanel.add(Box.createHorizontalGlue());
+		buttonPanel.add(syncWithTimelineButton);
+		buttonPanel.add(Box.createHorizontalGlue());
+		buttonPanel.add(showPlannedImageButton);
+		buttonPanel.add(hidePlannedImageButton);
 		buttonPanel.add(Box.createHorizontalGlue());
 		buttonPanel.add(selectInvertB, "w 24!,h 24!");
 		buttonPanel.add(selectNoneB, "w 24!,h 24!");
@@ -180,7 +195,7 @@ public class PlannedImageTableView extends JPanel
 		// Table Content
 		QueryComposer<PlannedImageColumnLookup> tmpComposer = new QueryComposer<>();
 		tmpComposer.addAttribute(PlannedImageColumnLookup.Show, Boolean.class, "Show", null);
-		tmpComposer.addAttribute(PlannedImageColumnLookup.Frus, Boolean.class, "Frus", null);
+//		tmpComposer.addAttribute(PlannedImageColumnLookup.Frus, Boolean.class, "Frus", null);
 		tmpComposer.addAttribute(PlannedImageColumnLookup.Color, Color.class, "Color", null);
 		tmpComposer.addAttribute(PlannedImageColumnLookup.Instrument, String.class, "Instrument", null);
 		tmpComposer.addAttribute(PlannedImageColumnLookup.ImageTime, String.class, "Image Time", null);
@@ -189,8 +204,8 @@ public class PlannedImageTableView extends JPanel
 
 		tmpComposer.setEditor(PlannedImageColumnLookup.Show, new BooleanCellEditor());
 		tmpComposer.setRenderer(PlannedImageColumnLookup.Show, new BooleanCellRenderer());
-		tmpComposer.setEditor(PlannedImageColumnLookup.Frus, new BooleanCellEditor());
-		tmpComposer.setRenderer(PlannedImageColumnLookup.Frus, new BooleanCellRenderer());
+//		tmpComposer.setEditor(PlannedImageColumnLookup.Frus, new BooleanCellEditor());
+//		tmpComposer.setRenderer(PlannedImageColumnLookup.Frus, new BooleanCellRenderer());
 		tmpComposer.setEditor(PlannedImageColumnLookup.Color, new ColorProviderCellEditor<StateHistory>());
 		tmpComposer.setRenderer(PlannedImageColumnLookup.Color, new ColorProviderCellRenderer(false));
 		tmpComposer.setRenderer(PlannedImageColumnLookup.ImageTime, tmpTimeRenderer);
@@ -218,7 +233,7 @@ public class PlannedImageTableView extends JPanel
 		int minW = 30;
 
 		ColorProvider blackCP = new ConstColorProvider(Color.BLACK);
-		Object[] nomArr = { true, true, blackCP, dateTimeStr, dateTimeStr };
+		Object[] nomArr = { true, /*true,*/ blackCP, dateTimeStr, dateTimeStr };
 		for (int aCol = 0; aCol < nomArr.length; aCol++)
 		{
 			TableCellRenderer tmpRenderer = tmpTable.getCellRenderer(0, aCol);
@@ -239,9 +254,9 @@ public class PlannedImageTableView extends JPanel
 	/**
 	 * @return the removePlannedImageButton
 	 */
-	public JButton getRemovePlannedImageButton()
+	public JButton getHidePlannedImageButton()
 	{
-		return removePlannedImageButton;
+		return hidePlannedImageButton;
 	}
 
 	/**
@@ -252,12 +267,28 @@ public class PlannedImageTableView extends JPanel
 		return showPlannedImageButton;
 	}
 
+//	/**
+//	 * @return the savePlannedImageButton
+//	 */
+//	public JButton getSavePlannedImageButton()
+//	{
+//		return savePlannedImageButton;
+//	}
+
 	/**
-	 * @return the savePlannedImageButton
+	 * @return the syncWithTimelineButton
 	 */
-	public JButton getSavePlannedImageButton()
+	public JToggleButton getSyncWithTimelineButton()
 	{
-		return savePlannedImageButton;
+		return syncWithTimelineButton;
+	}
+
+	/**
+	 * @return the processingLabel
+	 */
+	public JLabel getProcessingLabel()
+	{
+		return processingLabel;
 	}
 
 	/**

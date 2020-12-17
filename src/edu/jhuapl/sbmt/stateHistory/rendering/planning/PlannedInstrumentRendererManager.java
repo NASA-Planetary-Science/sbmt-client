@@ -24,19 +24,11 @@ public class PlannedInstrumentRendererManager
 
 	public PlannedInstrumentRendererManager(PropertyChangeSupport pcs)
 	{
-		// TODO Auto-generated constructor stub
 		this.pcs = pcs;
 	}
 
 	public PlannedDataActor addPlannedData(PlannedInstrumentData data, SmallBodyModel model)
 	{
-//		if (plannedInstrumentDataToRendererMap.get(data) != null)
-//		{
-//			PlannedDataActor dataActor = plannedInstrumentDataToRendererMap.get(data);
-//			dataActor.SetVisibility(1);
-//			return dataActor;
-//		}
-
 		// Get the actor for the planned data
 		PlannedDataActor dataActor = null;
 		try
@@ -51,7 +43,6 @@ public class PlannedInstrumentRendererManager
 		plannedInstrumentDataToRendererMap.put(data, dataActor);
 
 		dataActor.SetVisibility(1);
-//		dataActor.GetMapper().Update();
 
 		this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
 		this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, dataActor);
@@ -65,9 +56,11 @@ public class PlannedInstrumentRendererManager
 
 	public void setVisibility(PlannedInstrumentData data, boolean isVisible)
 	{
-		System.out.println("PlannedInstrumentRendererManager: setVisibility: setting visibility to " + isVisible);
 		data.setShowing(isVisible);
-		plannedInstrumentDataToRendererMap.get(data).SetVisibility(isVisible ? 1: 0);
+		PlannedDataActor actor = plannedInstrumentDataToRendererMap.get(data);
+		actor.getFootprintBoundaryActor().SetVisibility(isVisible ? 1: 0);
+		actor.getFootprintBoundaryActor().Modified();
+		this.pcs.firePropertyChange("PLANNED_IMAGES_CHANGED", null, actor);
 	}
 
 	public void setFrustumVisibility(PlannedInstrumentData data, boolean isVisible)

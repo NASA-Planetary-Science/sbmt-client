@@ -83,6 +83,7 @@ public class ViewOptionsTableView extends JPanel
 		this.stateHistoryCollection = rendererManager.getRuns();
 		this.rendererManager = rendererManager;
 		this.plateColorings = plateColorings;
+
 		init();
 	}
 

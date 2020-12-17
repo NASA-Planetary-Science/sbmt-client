@@ -5,6 +5,7 @@ import java.io.IOException;
 
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
+import javax.swing.SwingUtilities;
 
 import org.apache.commons.io.FilenameUtils;
 
@@ -58,7 +59,6 @@ public class StateHistoryIntervalSelectionController
         	try
 			{
         		StateHistoryModelIOHelper.loadStateHistoryFromFile(file, bodyModel.getModelName(), new StateHistoryKey(historyModel.getRuns()));
-//				historyModel.loadIntervalFromFile(file, bodyModel);
 			}
         	catch (StateHistoryIOException e1)
 			{
@@ -101,7 +101,6 @@ public class StateHistoryIntervalSelectionController
 
         view.getDeleteStateHistoryButton().addActionListener(e -> {
 
-        	System.out.println("StateHistoryIntervalSelectionController: initializeIntervalSelectionPanel: delete button");
         	if (view.getTable().getSelectedRowCount() == 0) return;
         	int n = JOptionPane.showOptionDialog(view, "Delete selected trajectories?", "Confirm Deletion", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE, null, null, null);
         	if (n == JOptionPane.NO_OPTION) return;
@@ -136,8 +135,28 @@ public class StateHistoryIntervalSelectionController
         view.getEditStateHistoryButton().addActionListener(e -> {
 
         	StateHistory history = rendererManager.getSelectedItems().asList().get(0);
-        	JFrame frame = new JFrame("Generate New Interval...");
-        	frame.add(new StateHistoryIntervalGenerationPanel(history));
+        	StateHistoryIntervalGenerationPanel genPanel = new StateHistoryIntervalGenerationPanel(history);
+        	final JFrame frame = new JFrame("Edit Existing Interval...");
+           	genPanel.getGetIntervalButton().addActionListener(e2 -> {
+           		if (genPanel.isEditMode())
+               	{
+	        		genPanel.updateStateHistory();
+	        		rendererManager.getRuns().fireHistorySegmentUpdatedListeners(history);
+	        		SwingUtilities.invokeLater(new Runnable()
+					{
+						@Override
+						public void run()
+						{
+							frame.setVisible(false);
+						}
+					});
+
+	        		return;
+               	}
+
+        	});
+
+        	frame.add(genPanel);
         	frame.pack();
         	frame.setVisible(true);
 
@@ -181,14 +200,7 @@ public class StateHistoryIntervalSelectionController
         //in the renderer appropriately
         rendererManager.addListener((aSource, aEventType) ->
 		{
-			try {
-//				if (aEventType != ItemEventType.ItemsSelected) return;
-				updateButtonState(rendererManager);
-
-			}
-			catch (Exception e) {
-				e.printStackTrace();
-			}
+			updateButtonState(rendererManager);
 		});
     }
 
@@ -203,8 +215,8 @@ public class StateHistoryIntervalSelectionController
 			if (history.isMapped() == false) allMapped = false;
 			if (history.isVisible() == false) allShown = false;
 		}
-		view.getHideStateHistoryButton().setEnabled((selectedItems.size() > 0) && allShown);
-		view.getShowStateHistoryButton().setEnabled((selectedItems.size() > 0) && !allShown);
+		view.getHideStateHistoryButton().setEnabled((selectedItems.size() > 0) && allShown && allMapped);
+		view.getShowStateHistoryButton().setEnabled((selectedItems.size() > 0) && !allShown && allMapped);
 		view.getEditStateHistoryButton().setEnabled(selectedItems.size() == 1);
 		view.getDeleteStateHistoryButton().setEnabled(selectedItems.size() > 0);
 	}
@@ -224,12 +236,4 @@ public class StateHistoryIntervalSelectionController
 	{
 		this.intervalGenerationController = intervalGenerationController;
 	}
-
-//	/**
-//	 * @param viewControlsController the viewControlsController to set
-//	 */
-//	public void setViewControlsController(ObservationPlanningViewControlsController viewControlsController)
-//	{
-//		this.viewControlsController = viewControlsController;
-//	}
 }

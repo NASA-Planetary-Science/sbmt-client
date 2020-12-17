@@ -66,19 +66,12 @@ public class StateHistoryDisplayedIntervalController
 			updateDisplayedTimeRange(minValue, maxValue);
 
 			rendererManager.setTrajectoryMinMax(intervalSet.getCurrentRun(), minValue, maxValue);
+			rendererManager.setTimeFraction(minValue, intervalSet.getCurrentRun());
 			intervalSet.getCurrentRun().getTrajectory().setMinDisplayFraction(minValue);
 			intervalSet.getCurrentRun().getTrajectory().setMaxDisplayFraction(maxValue);
 			rendererManager.notify(intervalSet, ItemEventType.ItemsMutated);
+			rendererManager.refreshColoring();
 		});
-
-//		timeModel.addTimeModelChangeListener(new BaseStateHistoryTimeModelChangedListener() {
-//			@Override
-//			public void fractionDisplayedChanged(double minFractionDisplayed, double maxFractionDisplayed)
-//			{
-//				super.fractionDisplayedChanged(minFractionDisplayed, maxFractionDisplayed);
-//				updateDisplayedTimeRange(minFractionDisplayed, minFractionDisplayed);
-//			}
-//		});
 	}
 
 	/**
