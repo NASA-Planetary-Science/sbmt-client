@@ -628,7 +628,7 @@
     <delete file="${rootlibDir}/commons-math3-3.2.jar"/>
   	<delete file="${rootlibDir}/commons-text-1.8.jar"/>
     <delete file="${rootlibDir}/gson-2.8.0.jar"/>
-    <delete file="${libDir}/jcodec-javase-0.2.3.jar"/>
+    <delete file="${rootlibDir}/jcodec-javase-0.2.3.jar"/>
     <delete file="${rootlibDir}/nom-tam-fits-1.13.1m0.jar"/>
     <delete file="${rootlibDir}/jafama-2.3.1.jar"/>
     <delete file="${rootlibDir}/jsr305.jar"/>
