@@ -58,7 +58,8 @@ public class StateHistoryIntervalSelectionController
         	if (file == null) return;
         	try
 			{
-        		StateHistoryModelIOHelper.loadStateHistoryFromFile(file, bodyModel.getModelName(), new StateHistoryKey(historyModel.getRuns()));
+        		StateHistory historyFromFile = StateHistoryModelIOHelper.loadStateHistoryFromFile(file, bodyModel.getModelName(), new StateHistoryKey(historyModel.getRuns()));
+        		historyModel.addInterval(historyFromFile);
 			}
         	catch (StateHistoryIOException e1)
 			{

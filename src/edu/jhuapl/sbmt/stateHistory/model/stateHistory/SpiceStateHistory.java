@@ -3,14 +3,20 @@ package edu.jhuapl.sbmt.stateHistory.model.stateHistory;
 import java.awt.Color;
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.text.SimpleDateFormat;
 import java.util.HashMap;
 import java.util.Map.Entry;
 import java.util.Set;
 
 import org.apache.commons.io.FilenameUtils;
 
+import com.google.common.collect.ImmutableList;
+
 import edu.jhuapl.sbmt.pointing.IPointingProvider;
 import edu.jhuapl.sbmt.pointing.spice.SpiceInfo;
+import edu.jhuapl.sbmt.pointing.spice.SpicePointingProvider;
 import edu.jhuapl.sbmt.stateHistory.model.StateHistorySourceType;
 import edu.jhuapl.sbmt.stateHistory.model.interfaces.State;
 import edu.jhuapl.sbmt.stateHistory.model.interfaces.StateHistory;
@@ -18,6 +24,7 @@ import edu.jhuapl.sbmt.stateHistory.model.interfaces.Trajectory;
 import edu.jhuapl.sbmt.stateHistory.model.io.StateHistoryIOException;
 import edu.jhuapl.sbmt.stateHistory.model.io.StateHistoryInvalidTimeException;
 import edu.jhuapl.sbmt.stateHistory.model.scState.SpiceState;
+import edu.jhuapl.sbmt.stateHistory.model.trajectory.StandardTrajectory;
 
 import crucible.core.math.vectorspace.UnwritableVectorIJK;
 import crucible.crust.metadata.api.Key;
@@ -123,13 +130,27 @@ public class SpiceStateHistory implements StateHistory
 
 			Color color = new Color(colorAsDouble[0].intValue(), colorAsDouble[1].intValue(), colorAsDouble[2].intValue(), colorAsDouble[3].intValue());
 
+
 			SpiceInfo spiceInfo = null;
 			if (source.hasKey(SPICE_INFO_KEY))
 				spiceInfo = source.get(SPICE_INFO_KEY);
 
 			SpiceStateHistory stateHistory = new SpiceStateHistory(key, currentTime, startTime, endTime, name,
 					description, color, type, sourceFile);
+
+
+
 			stateHistory.setSpiceInfo(spiceInfo);
+
+			try
+			{
+				stateHistory.setCurrentTime(startTime);
+			}
+			catch (StateHistoryInvalidTimeException e)
+			{
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 			return stateHistory;
 
 		}, SpiceStateHistory.class, stateHistory ->
@@ -422,6 +443,50 @@ public class SpiceStateHistory implements StateHistory
 	public void setSpiceInfo(SpiceInfo spiceInfo)
 	{
 		this.spiceInfo = spiceInfo;
+		Path mkPath = Paths.get(sourceFile);
+		try
+		{
+			SpicePointingProvider.Builder builder =
+					SpicePointingProvider.builder(ImmutableList.copyOf(new Path[] {mkPath}), spiceInfo.getBodyName(),
+							spiceInfo.getBodyFrameName(), spiceInfo.getScId(), spiceInfo.getScFrameName());
+
+			for (String bodyNameToBind : spiceInfo.getBodyNamesToBind()) builder.bindEphemeris(bodyNameToBind);
+			for (String instrumentFrameToBind : spiceInfo.getInstrumentFrameNamesToBind())
+			{
+				builder.bindFrame(instrumentFrameToBind);
+			}
+
+            pointingProvider = builder.build();
+		}
+		catch (Exception e)
+		{
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+		Trajectory trajectory = new StandardTrajectory(this);
+		trajectory.setPointingProvider(pointingProvider);
+		trajectory.setStartTime(getStartTime());
+		trajectory.setStopTime(getEndTime());
+		SimpleDateFormat dateFormatter = new SimpleDateFormat("yyyy-D'T'HH:mm:ss.SSS");	//generates Year-DOY date format
+
+//		UTCEpoch startEpoch = UTCEpoch.fromString(dateFormatter.format(startTime.toDate()));
+//		UTCEpoch endEpoch = UTCEpoch.fromString(dateFormatter.format(endTime.toDate()));
+//		double timeWindowDuration = TimeSystems.builder().build().getUTC().difference(startEpoch, endEpoch);
+		trajectory.setNumPoints(Math.abs((int)(getEndTime() - getStartTime())/60));
+
+		State state = new SpiceState((SpicePointingProvider)pointingProvider);
+		((SpiceState)state).setEphemerisTime(getStartTime());
+		// add to history
+		addState(state);
+//		setStartTime(TimeUtil.str2et(startEpoch.toString()));
+//		setEndTime(TimeUtil.str2et(endEpoch.toString()));
+//		setCurrentTime(TimeUtil.str2et(startEpoch.toString()));
+		setTrajectory(trajectory);
+		setType(StateHistorySourceType.SPICE);
+//		setSourceFile(sourceFile);
+//		setPointingProvider(pointingProvider);
+
 	}
 
 	public boolean isMapped() { return mapped; }

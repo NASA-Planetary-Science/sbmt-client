@@ -46,12 +46,12 @@ public class StateHistoryModelIOHelper
 		if (extension.equals("spicestate"))
 		{
 			history = new SpiceStateHistory(key);
-			history.loadStateHistoryFromFile(runFile, shapeModelName, key);
+			history = history.loadStateHistoryFromFile(runFile, shapeModelName, key);
 		}
 		else if (extension.equals("csvstate"))
 		{
 			history = new StandardStateHistory(key);
-			history.loadStateHistoryFromFile(runFile, shapeModelName, key);
+			history = history.loadStateHistoryFromFile(runFile, shapeModelName, key);
 		}
 		else
 			throw new StateHistoryIOException("Invalid file extension used; please load a .csvstate or .spicestate file");

@@ -212,6 +212,20 @@ public class StateHistoryModel
 		updateConfigFile();
 	}
 
+	public void addInterval(StateHistory history) throws StateHistoryIOException
+	{
+		runs.addRunToList(history);
+		rendererManager.setAllItems(runs.getSimRuns());
+		fireHistorySegmentCreatedListener(history);
+		try {
+			updateConfigFile();
+		}
+		catch (IOException e)
+		{
+			throw new StateHistoryIOException(e);
+		}
+	}
+
 	/**
 	 * @throws IOException
 	 */
