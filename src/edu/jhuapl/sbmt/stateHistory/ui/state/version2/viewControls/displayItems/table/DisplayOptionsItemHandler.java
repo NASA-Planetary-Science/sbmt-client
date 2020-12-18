@@ -39,9 +39,11 @@ public class DisplayOptionsItemHandler extends BasicItemHandler<DisplayableItem,
 		{
 			case Show:
 				return item.isVisible();
+			case Label:
+				return item.isLabelVisible();
 			case Size:
 				return item.getPointerRadius();
-			case Label:
+			case LabelString:
 				return item.getLabel();
 			case Color:
 				Color fovColor = item.getColor();
@@ -66,12 +68,17 @@ public class DisplayOptionsItemHandler extends BasicItemHandler<DisplayableItem,
 			item.setVisible((boolean) aValue);
 			stateHistoryRendererManager.propertyChange(new PropertyChangeEvent(this, Properties.MODEL_CHANGED, null, item));
 		}
+		else if (aEnum == DisplayOptionsColumnLookup.Label)
+		{
+			item.setLabelVisible((boolean) aValue);
+			stateHistoryRendererManager.propertyChange(new PropertyChangeEvent(this, Properties.MODEL_CHANGED, null, item));
+		}
 		else if (aEnum == DisplayOptionsColumnLookup.Size)
 		{
 			item.setPointerRadius((double)aValue);
 			stateHistoryRendererManager.propertyChange(new PropertyChangeEvent(this, Properties.MODEL_CHANGED, null, item));
 		}
-		else if (aEnum == DisplayOptionsColumnLookup.Label)
+		else if (aEnum == DisplayOptionsColumnLookup.LabelString)
 		{
 			item.setLabel((String)aValue);
 			stateHistoryRendererManager.propertyChange(new PropertyChangeEvent(this, Properties.MODEL_CHANGED, null, item));

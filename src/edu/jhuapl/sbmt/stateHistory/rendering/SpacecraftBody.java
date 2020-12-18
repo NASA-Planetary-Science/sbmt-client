@@ -1,12 +1,16 @@
 package edu.jhuapl.sbmt.stateHistory.rendering;
 
 import java.awt.Color;
+import java.util.ArrayList;
 
 import vtk.vtkActor;
+import vtk.vtkCubeSource;
+import vtk.vtkMatrix4x4;
 import vtk.vtkPolyData;
 import vtk.vtkPolyDataMapper;
+import vtk.vtkProp;
 
-import edu.jhuapl.saavtk.util.PolyDataUtil;
+import edu.jhuapl.sbmt.stateHistory.rendering.text.GenericVTKLabel;
 
 /**
  * @author steelrj1
@@ -31,6 +35,9 @@ public class SpacecraftBody extends vtkPolyData implements DisplayableItem
 
     private String label = "Spacecraft";
 
+    protected GenericVTKLabel labelActor;
+
+    protected ArrayList<vtkProp> props;
 
 	/**
 	 * Constructor.  Loads a shapemodel with the given filename and
@@ -40,15 +47,24 @@ public class SpacecraftBody extends vtkPolyData implements DisplayableItem
 	 */
 	public SpacecraftBody(String filename)
 	{
+		vtkCubeSource cube = new vtkCubeSource();
+		cube.SetXLength(.1);
+		cube.SetYLength(.1);
+		cube.SetZLength(.1);
+		cube.Update();
 		try
 		{
-			ShallowCopy(PolyDataUtil.loadShapeModel(filename));
+			ShallowCopy(cube.GetOutput());
+
+//			ShallowCopy(PolyDataUtil.loadShapeModel(filename));
 		}
 		catch (Exception e)
 		{
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+		labelActor = new GenericVTKLabel();
+        labelActor.setText(label);
 	}
 
 	/**
@@ -65,9 +81,12 @@ public class SpacecraftBody extends vtkPolyData implements DisplayableItem
 	 * Returns the vtkActor for this polydata
 	 * @return the vtkActor for this polydata
 	 */
-	public vtkActor getActor()
+	public ArrayList<vtkProp> getActor()
 	{
-		if (spacecraftBodyActor != null) return spacecraftBodyActor;
+		if (props != null)
+			return props;
+		props = new ArrayList<vtkProp>();
+
 		vtkPolyDataMapper spacecraftBodyMapper = new vtkPolyDataMapper();
         spacecraftBodyMapper.SetInputData(this);
         spacecraftBodyActor = new vtkActor();
@@ -78,8 +97,10 @@ public class SpacecraftBody extends vtkPolyData implements DisplayableItem
         spacecraftBodyActor.GetProperty().SetSpecularPower(80.0);
         spacecraftBodyActor.GetProperty().ShadingOn();
         spacecraftBodyActor.GetProperty().SetInterpolationToFlat();
-        spacecraftBodyActor.SetScale(0.01);
-        return spacecraftBodyActor;
+        spacecraftBodyActor.SetScale(0.5);
+        props.add(spacecraftBodyActor);
+		props.add(labelActor);
+		return props;
 	}
 
 	/**
@@ -122,6 +143,18 @@ public class SpacecraftBody extends vtkPolyData implements DisplayableItem
 	}
 
 	@Override
+	public boolean isLabelVisible()
+	{
+		return labelActor.GetVisibility() == 1 ? true : false;
+	}
+
+	@Override
+	public void setLabelVisible(boolean isVisible)
+	{
+		labelActor.SetVisibility(isVisible ? 1 : 0);
+	}
+
+	@Override
 	public Color getColor()
 	{
 		return new Color((float)spacecraftBodyActor.GetProperty().GetDiffuseColor()[0], (float)spacecraftBodyActor.GetProperty().GetDiffuseColor()[1], (float)spacecraftBodyActor.GetProperty().GetDiffuseColor()[2]);
@@ -154,6 +187,19 @@ public class SpacecraftBody extends vtkPolyData implements DisplayableItem
 	public void setLabel(String label)
 	{
 		this.label = label;
+		labelActor.setText(label);
+		labelActor.Modified();
+	}
+
+	public void setUserMatrix(vtkMatrix4x4 matrix)
+	{
+		spacecraftBodyActor.SetUserMatrix(matrix);
+	}
+
+	public void setLabelPosition(double[] position)
+	{
+		labelActor.SetAttachmentPoint(position);
+        labelActor.Modified();
 	}
 
 }

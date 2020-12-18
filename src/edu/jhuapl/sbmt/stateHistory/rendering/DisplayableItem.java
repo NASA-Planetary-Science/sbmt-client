@@ -17,6 +17,16 @@ public interface DisplayableItem
 	/**
 	 * @return
 	 */
+	public boolean isLabelVisible();
+
+	/**
+	 * @param isVisible
+	 */
+	public void setLabelVisible(boolean isVisible);
+
+	/**
+	 * @return
+	 */
 	public String getLabel();
 
 	/**

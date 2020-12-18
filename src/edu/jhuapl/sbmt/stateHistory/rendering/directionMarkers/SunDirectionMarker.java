@@ -2,7 +2,6 @@ package edu.jhuapl.sbmt.stateHistory.rendering.directionMarkers;
 
 import java.awt.Color;
 
-import vtk.vtkActor;
 import vtk.vtkTransform;
 
 import edu.jhuapl.saavtk.util.MathUtil;
@@ -36,17 +35,17 @@ public class SunDirectionMarker extends BaseDirectionMarker
 		super(id);
 	}
 
-	/**
-	 * @return
-	 */
-	public vtkActor getActor()
-	{
-		if (markerHeadActor != null) return markerHeadActor;
-		markerHeadActor = super.getActor();
-        markerHeadActor.GetProperty().SetInterpolationToFlat();
-        markerHeadActor.GetProperty().SetRepresentationToSurface();
-        return markerHeadActor;
-	}
+//	/**
+//	 * @return
+//	 */
+//	public vtkActor getActor()
+//	{
+//		if (markerHeadActor != null) return markerHeadActor;
+//		markerHeadActor = super.getActor();
+//        markerHeadActor.GetProperty().SetInterpolationToFlat();
+//        markerHeadActor.GetProperty().SetRepresentationToSurface();
+//        return markerHeadActor;
+//	}
 
 	/**
 	 * @param sunPos
@@ -66,6 +65,9 @@ public class SunDirectionMarker extends BaseDirectionMarker
         sunMarkerTransform.Translate(sunMarkerPosition);
         sunMarkerTransform.RotateWXYZ(-rotationAngleSun, rotationAxisSun[0], rotationAxisSun[1], rotationAxisSun[2]);
         markerHeadActor.SetUserTransform(sunMarkerTransform);
+
+        labelActor.SetAttachmentPoint(sunMarkerPosition);
+        labelActor.Modified();
 
 	}
 }

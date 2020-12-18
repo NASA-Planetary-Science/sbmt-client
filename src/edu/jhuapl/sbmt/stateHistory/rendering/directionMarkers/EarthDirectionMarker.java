@@ -54,7 +54,8 @@ public class EarthDirectionMarker extends BaseDirectionMarker
         earthMarkerTransform.Translate(earthMarkerPosition);
         earthMarkerTransform.RotateWXYZ(-rotationAngleEarth, rotationAxisEarth[0], rotationAxisEarth[1], rotationAxisEarth[2]);
         markerHeadActor.SetUserTransform(earthMarkerTransform);
-
+        labelActor.SetAttachmentPoint(earthMarkerPosition);
+        labelActor.Modified();
 	}
 
 }

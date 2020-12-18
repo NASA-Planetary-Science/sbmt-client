@@ -200,16 +200,16 @@ public class StateHistoryRendererManager extends SaavtkItemManager<StateHistory>
 
 		this.spacecraft = new SpacecraftBody(ConvertResourceToFile.convertResourceToRealFile(this,
 				"/edu/jhuapl/sbmt/data/cassini-9k.stl", Configuration.getApplicationDataDir()).getAbsolutePath());
-		this.spacecraft.getActor().VisibilityOff();
+		this.spacecraft.getActor().forEach(item -> item.VisibilityOff());
 
 		this.scDirectionMarker = new SpacecraftDirectionMarker(markerRadius, markerHeight, 0, 0, 0);
-		this.scDirectionMarker.getActor().VisibilityOff();
+		this.scDirectionMarker.getActor().forEach(item -> item.VisibilityOff());
 
 		this.earthDirectionMarker = new EarthDirectionMarker(markerRadius, markerHeight, 0, 0, 0);
-		this.earthDirectionMarker.getActor().VisibilityOff();
+		this.earthDirectionMarker.getActor().forEach(item -> item.VisibilityOff());
 
 		this.sunDirectionMarker = new SunDirectionMarker(markerRadius, markerHeight, 0, 0, 0);
-		this.sunDirectionMarker.getActor().VisibilityOff();
+		this.sunDirectionMarker.getActor().forEach(item -> item.VisibilityOff());
 
 		this.timeBarActor = new TimeBarTextActor();
 
@@ -248,7 +248,7 @@ public class StateHistoryRendererManager extends SaavtkItemManager<StateHistory>
 	 */
 	public void setSunDirectionMarkerVisibility(boolean visible)
 	{
-		sunDirectionMarker.getActor().SetVisibility(visible == true ? 1 : 0);
+		sunDirectionMarker.getActor().forEach(item -> item.SetVisibility(visible == true ? 1 : 0));
 		this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, sunDirectionMarker);
 	}
 
@@ -287,7 +287,11 @@ public class StateHistoryRendererManager extends SaavtkItemManager<StateHistory>
 	 */
 	public void setEarthDirectionMarkerVisibility(boolean visible)
 	{
-		earthDirectionMarker.getActor().SetVisibility(visible == true ? 1 : 0);
+		earthDirectionMarker.getActor().forEach(item ->
+		{
+			System.out.println("StateHistoryRendererManager: setEarthDirectionMarkerVisibility: setting vis to " + visible);
+			item.SetVisibility(visible == true ? 1 : 0);
+		});
 		this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, earthDirectionMarker);
 	}
 
@@ -327,7 +331,7 @@ public class StateHistoryRendererManager extends SaavtkItemManager<StateHistory>
 	 */
 	public void setSpacecraftVisibility(boolean visible)
 	{
-		spacecraft.getActor().SetVisibility(visible == true ? 1 : 0);
+		spacecraft.getActor().forEach(item -> item.SetVisibility(visible == true ? 1 : 0));
 		this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, spacecraft);
 	}
 
@@ -345,7 +349,7 @@ public class StateHistoryRendererManager extends SaavtkItemManager<StateHistory>
 	 */
 	public void setSpacecraftDirectionMarkerVisibility(boolean visible)
 	{
-		scDirectionMarker.getActor().SetVisibility(visible == true ? 1 : 0);
+		scDirectionMarker.getActor().forEach(item -> item.SetVisibility(visible == true ? 1 : 0));
 		this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, scDirectionMarker);
 	}
 
@@ -917,11 +921,11 @@ public class StateHistoryRendererManager extends SaavtkItemManager<StateHistory>
 			historyFootprintMap.get(runs.getCurrentRun()).stream().filter(fprint -> fprint != null).filter(fov -> fov.getFootprintActor() != null).forEach(footprint -> props.add(footprint.getFootprintBoundaryActor()));
 		}
 
-		props.add(spacecraft.getActor());
-		props.add(scDirectionMarker.getActor());
+		props.addAll(spacecraft.getActor());
+		props.addAll(scDirectionMarker.getActor());
 		props.add(spacecraftLabelActor);
-		props.add(earthDirectionMarker.getActor());
-		props.add(sunDirectionMarker.getActor());
+		props.addAll(earthDirectionMarker.getActor());
+		props.addAll(sunDirectionMarker.getActor());
 		props.add(timeBarActor);
 		props.add(statusBarTextActor);
 		props.addAll(plannedScienceActors);

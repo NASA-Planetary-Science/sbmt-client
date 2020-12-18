@@ -2,6 +2,8 @@ package edu.jhuapl.sbmt.stateHistory.rendering.directionMarkers;
 
 import java.awt.Color;
 
+import vtk.vtkTransform;
+
 /**
  * @author steelrj1
  *
@@ -29,5 +31,16 @@ public class SpacecraftDirectionMarker extends BaseDirectionMarker
 	public SpacecraftDirectionMarker(long id)
 	{
 		super(id);
+	}
+
+	public void setUserTransform(vtkTransform transform)
+	{
+		markerHeadActor.SetUserTransform(transform);
+	}
+
+	public void setLabelPosition(double[] position)
+	{
+		labelActor.SetAttachmentPoint(position);
+        labelActor.Modified();
 	}
 }

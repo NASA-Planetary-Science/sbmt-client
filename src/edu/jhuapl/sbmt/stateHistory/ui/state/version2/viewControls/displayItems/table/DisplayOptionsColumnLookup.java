@@ -26,6 +26,8 @@ public enum DisplayOptionsColumnLookup
 	/**
 	 *
 	 */
+	LabelString,
+
 	Label
 
 

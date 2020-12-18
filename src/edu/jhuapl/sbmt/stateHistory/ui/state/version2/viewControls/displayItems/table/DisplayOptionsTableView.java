@@ -159,21 +159,24 @@ public class DisplayOptionsTableView extends JPanel
 		// Table Content
 		QueryComposer<DisplayOptionsColumnLookup> tmpComposer = new QueryComposer<>();
 		tmpComposer.addAttribute(DisplayOptionsColumnLookup.Show, Boolean.class, "Show", null);
+		tmpComposer.addAttribute(DisplayOptionsColumnLookup.Label, Boolean.class, "Label", null);
 		tmpComposer.addAttribute(DisplayOptionsColumnLookup.Color, Color.class, "Color", null);
-		tmpComposer.addAttribute(DisplayOptionsColumnLookup.Name, String.class, "Name", null);
-		tmpComposer.addAttribute(DisplayOptionsColumnLookup.Label, String.class, "Label", null);
+//		tmpComposer.addAttribute(DisplayOptionsColumnLookup.Name, String.class, "Name", null);
+		tmpComposer.addAttribute(DisplayOptionsColumnLookup.LabelString, String.class, "Label Text", null);
 		tmpComposer.addAttribute(DisplayOptionsColumnLookup.Size, Double.class, "Size", null);
 
 		tmpComposer.setEditor(DisplayOptionsColumnLookup.Show, new BooleanCellEditor());
 		tmpComposer.setRenderer(DisplayOptionsColumnLookup.Show, new BooleanCellRenderer());
+		tmpComposer.setEditor(DisplayOptionsColumnLookup.Label, new BooleanCellEditor());
+		tmpComposer.setRenderer(DisplayOptionsColumnLookup.Label, new BooleanCellRenderer());
 		JComboBox<Double> sizeCombo = new JComboBox<Double>(new Double[] {0.0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0});
 		sizeCombo.setSelectedIndex(5);
 		tmpComposer.setEditor(DisplayOptionsColumnLookup.Size, new DefaultCellEditor(sizeCombo));
 
-		tmpComposer.setEditor(DisplayOptionsColumnLookup.Label, new DefaultCellEditor(new JTextField()));
+		tmpComposer.setEditor(DisplayOptionsColumnLookup.LabelString, new DefaultCellEditor(new JTextField()));
 		tmpComposer.setEditor(DisplayOptionsColumnLookup.Color, new ColorProviderCellEditor<StateHistory>());
 		tmpComposer.setRenderer(DisplayOptionsColumnLookup.Color, new ColorProviderCellRenderer(false));
-		tmpComposer.setEditor(DisplayOptionsColumnLookup.Name, new DefaultCellEditor(new JTextField()));
+//		tmpComposer.setEditor(DisplayOptionsColumnLookup.Name, new DefaultCellEditor(new JTextField()));
 //		tmpComposer.setEditor(DisplayOptionsColumnLookup.Label, new SpinnerEditor());
 
 		displayOptionsTableHandler = new DisplayOptionsItemHandler(rendererManager, tmpComposer);
@@ -225,7 +228,7 @@ public class DisplayOptionsTableView extends JPanel
 
 		ColorProvider blackCP = new ConstColorProvider(Color.BLACK);
 		Object[] nomArr =
-		{ true,  blackCP, "Segment000000000000000", "Segment000000000000000", 100000};
+		{ true,  true, blackCP, /*"Segment000000000000000",*/ "Segment000000000000000", 100000};
 		for (int aCol = 0; aCol < nomArr.length; aCol++)
 		{
 			TableCellRenderer tmpRenderer = tmpTable.getCellRenderer(0, aCol);

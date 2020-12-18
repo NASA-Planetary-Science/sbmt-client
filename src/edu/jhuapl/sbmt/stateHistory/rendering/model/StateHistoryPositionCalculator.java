@@ -3,6 +3,7 @@
  */
 package edu.jhuapl.sbmt.stateHistory.rendering.model;
 
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 
 import org.apache.commons.math3.geometry.euclidean.threed.Vector3D;
@@ -209,6 +210,11 @@ public class StateHistoryPositionCalculator implements IStateHistoryPositionCalc
 		return range;
 	}
 
+	public static double getSpacecraftDistance(StateHistory history, double time)
+	{
+		return new Vector3D(history.getSpacecraftPositionAtTime(time)).getNorm();
+	}
+
 	@Override
 	public void updateSpacecraftPosition(StateHistory history, double time, SpacecraftBody spacecraft, SpacecraftDirectionMarker scDirectionMarker,
 			SpacecraftLabel spacecraftLabelActor)
@@ -283,14 +289,21 @@ public class StateHistoryPositionCalculator implements IStateHistoryPositionCalc
 			fovMatrix.SetElement(i, 3, spacecraftPosition[i]);
 
 		}
-		spacecraft.getActor().SetUserMatrix(spacecraftIconMatrix);
+		spacecraft.setUserMatrix(spacecraftIconMatrix);
+		spacecraft.setLabelPosition(spacecraftPosition);
+		DecimalFormat formatter = new DecimalFormat();
+		formatter.setMaximumFractionDigits(2);
+		String rangeString = "Range: " + formatter.format(getSpacecraftRange(history, history.getPointingProvider().getCurrentInstFrameName(), history.getCurrentTime())) + " km";
+		String distString = "Dist: " + formatter.format(getSpacecraftDistance(history, history.getCurrentTime())) + " km";
+		spacecraft.setLabel(spacecraft.getLabel() + ":\n" /*+  rangeString*/ + "\n" + distString);
 
-		spacecraftLabelActor.SetAttachmentPoint(spacecraftPosition);
-		spacecraftLabelActor.setDistanceText(history.getCurrentState(), spacecraftPosition, smallBodyModel);
+//		spacecraftLabelActor.SetAttachmentPoint(spacecraftPosition);
+//		spacecraftLabelActor.setDistanceText(history.getCurrentState(), spacecraftPosition, smallBodyModel);
 
-		scDirectionMarker.getActor().SetUserTransform(spacecraftMarkerTransform);
-		spacecraft.getActor().Modified();
-		scDirectionMarker.getActor().Modified();
+		scDirectionMarker.setUserTransform(spacecraftMarkerTransform);
+		scDirectionMarker.setLabelPosition(spacecraftMarkerPosition);
+		spacecraft.getActor().forEach(item -> item.Modified());
+		scDirectionMarker.getActor().forEach(item -> item.Modified());
 		spacecraftLabelActor.Modified();
 	}
 

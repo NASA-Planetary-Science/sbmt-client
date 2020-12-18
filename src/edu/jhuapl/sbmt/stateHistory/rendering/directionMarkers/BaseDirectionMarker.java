@@ -1,12 +1,15 @@
 package edu.jhuapl.sbmt.stateHistory.rendering.directionMarkers;
 
 import java.awt.Color;
+import java.util.ArrayList;
 
 import vtk.vtkActor;
 import vtk.vtkConeSource;
 import vtk.vtkPolyDataMapper;
+import vtk.vtkProp;
 
 import edu.jhuapl.sbmt.stateHistory.rendering.DisplayableItem;
+import edu.jhuapl.sbmt.stateHistory.rendering.text.GenericVTKLabel;
 
 public abstract class BaseDirectionMarker extends vtkConeSource implements DisplayableItem
 {
@@ -63,6 +66,10 @@ public abstract class BaseDirectionMarker extends vtkConeSource implements Displ
 
 	protected double pointerRadius = 0.5;
 
+	protected GenericVTKLabel labelActor;
+
+	protected ArrayList<vtkProp> props;
+
 	public BaseDirectionMarker(long id)
 	{
 		super(id);
@@ -84,16 +91,20 @@ public abstract class BaseDirectionMarker extends vtkConeSource implements Displ
 		this.centerY = centerY;
 		this.centerZ = centerZ;
 		this.label = label;
+        labelActor = new GenericVTKLabel();
+        labelActor.setText(label);
 		updateSource();
 	}
 
 	/**
 	 * @return
 	 */
-	public vtkActor getActor()
+	public ArrayList<vtkProp> getActor()
 	{
-		if (markerHeadActor != null)
-			return markerHeadActor;
+		if (props != null)
+			return props;
+		props = new ArrayList<vtkProp>();
+
 		vtkPolyDataMapper markerHeadMapper = new vtkPolyDataMapper();
 		markerHeadMapper.SetInputData(GetOutput());
 		markerHeadActor = new vtkActor();
@@ -105,7 +116,9 @@ public abstract class BaseDirectionMarker extends vtkConeSource implements Displ
 		markerHeadActor.GetProperty().ShadingOn();
 		markerHeadActor.GetProperty().SetInterpolationToPhong();
 		markerHeadActor.SetScale(scale);
-		return markerHeadActor;
+		props.add(markerHeadActor);
+		props.add(labelActor);
+		return props;
 	}
 
 	/**
@@ -160,6 +173,18 @@ public abstract class BaseDirectionMarker extends vtkConeSource implements Displ
 	}
 
 	@Override
+	public boolean isLabelVisible()
+	{
+		return labelActor.GetVisibility() == 1 ? true : false;
+	}
+
+	@Override
+	public void setLabelVisible(boolean isVisible)
+	{
+		labelActor.SetVisibility(isVisible ? 1 : 0);
+	}
+
+	@Override
 	public void setPointerRadius(double radius)
 	{
 		this.pointerRadius = radius;
@@ -186,6 +211,8 @@ public abstract class BaseDirectionMarker extends vtkConeSource implements Displ
 	public void setLabel(String label)
 	{
 		this.label = label;
+		labelActor.setText(label);
+		labelActor.Modified();
 	}
 
 }
