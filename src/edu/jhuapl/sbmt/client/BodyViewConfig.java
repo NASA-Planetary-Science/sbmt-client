@@ -121,6 +121,17 @@ public abstract class BodyViewConfig extends ViewConfig
     public Map<String, String> dtmBrowseDataSourceMap = Maps.newHashMap();
     public Map<String, String> dtmSearchDataSourceMap = Maps.newHashMap();
 
+	/**
+	 * Returns true if this configuration has any remote DTMs.
+	 */
+	public boolean hasRemoteDtmData()
+	{
+		if (dtmBrowseDataSourceMap == null || dtmBrowseDataSourceMap.size() == 0)
+			return false;
+
+		return true;
+	}
+
     // Flag for beta mode
     public static boolean betaMode = false;
 
@@ -334,7 +345,8 @@ public abstract class BodyViewConfig extends ViewConfig
         return c;
     }
 
-    public String[] getShapeModelFileNames() {
+    @Override
+	public String[] getShapeModelFileNames() {
         if (shapeModelFileNames != null) {
             return shapeModelFileNames;
         }
