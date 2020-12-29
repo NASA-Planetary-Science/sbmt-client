@@ -1275,12 +1275,12 @@ createGalleryList() {
         echo "$funcName: WARNING: did not find gallery files for every image in $imageDir"
         echo "$funcName: please examine $instrumentTop and its subdirectories"
       fi
-      
+
       # This does not involve the tmp file, but it is convenient just to do this
       # here, in the sub-shell.
       cd $instrumentTop
       check $? "$funcName: unable to cd to $instrumentTop to create zip file"
-      
+
       zip -qr gallery.zip gallery
       check $? "$funcName: unable to zip directory gallery in $instrumentTop"
     )
@@ -1533,7 +1533,7 @@ processMakeSumFiles() {
     elif test ! -f "$makeSumFiles"; then
       check 1 "$funcName: input file $imagerDir/make_sumfiles.in does not exist"
     fi
-  
+
     # Make sure the prefix starts and ends with a single slash:
     prefix=`echo $2 | sed 's:^/*:/:' | sed 's:/*$:/:'`
     if test "$prefix" = ""; then
