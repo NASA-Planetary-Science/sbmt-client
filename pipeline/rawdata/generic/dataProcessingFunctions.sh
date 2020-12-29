@@ -1548,8 +1548,24 @@ processMakeSumFiles() {
 
     # Create imagelist-sum.txt.
     for sumFile in `sed 's: .*::' $makeSumFiles`; do
-      imageFile=`sed -n "s:^$sumFile .* ::p" $makeSumFiles`
-      sumFile="${sumFile}.SUM"
+      if test "$sumFile" = ""; then
+        check 1 "$funcName: unable to determine sum file names from $makeSumFiles"
+      fi
+
+      # Find the line that begins with this sum file base name.
+      # Strip out the sum file base name, then get rid of anything up to a final space.
+      # What remains should be the image name.
+      imageFile=`sed -n "s:^$sumFile ::p" $makeSumFiles | sed 's:.* ::'`
+      if test "$imageFile" = ""; then
+        check 1 "$funcName: unable to determine the image file that goes with $sumFile in $makeSumFiles"
+      fi
+
+      # Assume actual file name ends in .SUM if there is no explicit extension.
+      if test `echo $sumFile | grep -c '\..*$'` -eq 0; then
+        sumFile="${sumFile}.SUM"
+      fi
+
+      # Read the time stamp from the sumfile.
       timeStamp=`head -2 $imagerDir/sumfiles/$sumFile | tail -1 | \
         sed 's:^  *::' | sed 's:  *$::' | \
         sed 's:jan:01:i' | \
