@@ -87,6 +87,7 @@ public class StateHistoryFOVController
 				public void run()
 				{
 					rendererManager.propertyChange(new PropertyChangeEvent(this, Properties.MODEL_CHANGED, null, null));
+					if (rendererManager.getSelectedItems().size() > 0) view.setTableHidden(false);
 					view.repaint();
 					view.validate();
 				}

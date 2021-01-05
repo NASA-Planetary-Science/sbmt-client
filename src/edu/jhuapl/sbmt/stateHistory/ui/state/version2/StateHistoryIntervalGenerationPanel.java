@@ -95,12 +95,15 @@ public class StateHistoryIntervalGenerationPanel extends JPanel
 
     private StateHistory history;
 
+    private boolean hasSpiceInfo;
+
 	/**
 	 * Constructor.
 	 */
-	public StateHistoryIntervalGenerationPanel()
+	public StateHistoryIntervalGenerationPanel(boolean hasSpiceInfo)
 	{
 		editMode = false;
+		this.hasSpiceInfo = hasSpiceInfo;
 		initUI();
 	}
 
@@ -171,7 +174,8 @@ public class StateHistoryIntervalGenerationPanel extends JPanel
 		dataSourceCards = new JPanel(new CardLayout());
 
 		dataSourceCards.add(getPregenTimeRangePanel(), PREGENDATASTRING);
-		dataSourceCards.add(getSpiceTimeRangePanel(), SPICEDATASTRING);
+		if (hasSpiceInfo)
+			dataSourceCards.add(getSpiceTimeRangePanel(), SPICEDATASTRING);
 		dataSourceCards.setMinimumSize(new Dimension(this.getWidth(), 40));
 		dataSourceCards.setPreferredSize(new Dimension(this.getWidth(), 40));
 		dataSourceCards.setMaximumSize(new Dimension(this.getWidth(), 40));
@@ -181,25 +185,28 @@ public class StateHistoryIntervalGenerationPanel extends JPanel
 	private JPanel getRadioButtonPanel()
 	{
 		JPanel radioButtonPanel = new JPanel();
+		radioButtonPanel.setLayout(new BoxLayout(radioButtonPanel, BoxLayout.X_AXIS));
 		pregenDataRadioButton = new JRadioButton(PREGENDATASTRING);
-		spiceDataRadioButton = new JRadioButton(SPICEDATASTRING);
+		radioButtonPanel.add(pregenDataRadioButton);
 		dataSourceButtonGroup = new ButtonGroup();
 		dataSourceButtonGroup.add(pregenDataRadioButton);
-		dataSourceButtonGroup.add(spiceDataRadioButton);
-		radioButtonPanel.setLayout(new BoxLayout(radioButtonPanel, BoxLayout.X_AXIS));
-		radioButtonPanel.add(pregenDataRadioButton);
-		radioButtonPanel.add(spiceDataRadioButton);
+		if (hasSpiceInfo)
+		{
+			spiceDataRadioButton = new JRadioButton(SPICEDATASTRING);
+			radioButtonPanel.add(spiceDataRadioButton);
+			dataSourceButtonGroup.add(spiceDataRadioButton);
+			spiceDataRadioButton.addActionListener(e -> {
+				CardLayout cl = (CardLayout)(dataSourceCards.getLayout());
+				cl.show(dataSourceCards, SPICEDATASTRING);
+				stateHistorySourceType = StateHistorySourceType.SPICE;
+			});
+		}
+
 		pregenDataRadioButton.setSelected(true);
 		pregenDataRadioButton.addActionListener(e -> {
 			CardLayout cl = (CardLayout)(dataSourceCards.getLayout());
 			cl.show(dataSourceCards, PREGENDATASTRING);
 			stateHistorySourceType = StateHistorySourceType.PREGEN;
-		});
-
-		spiceDataRadioButton.addActionListener(e -> {
-			CardLayout cl = (CardLayout)(dataSourceCards.getLayout());
-			cl.show(dataSourceCards, SPICEDATASTRING);
-			stateHistorySourceType = StateHistorySourceType.SPICE;
 		});
 
 		return radioButtonPanel;

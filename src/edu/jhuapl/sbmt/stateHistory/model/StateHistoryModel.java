@@ -319,4 +319,12 @@ public class StateHistoryModel
 	{
 		this.activeIntervalGenerator = activeIntervalGenerator;
 	}
+
+	/**
+	 * @return the viewConfig
+	 */
+	public ISmallBodyViewConfig getViewConfig()
+	{
+		return viewConfig;
+	}
 }

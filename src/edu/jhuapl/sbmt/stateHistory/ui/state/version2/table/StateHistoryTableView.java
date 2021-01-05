@@ -188,7 +188,7 @@ public class StateHistoryTableView extends JPanel
 		loadStateHistoryButton = GuiUtil.formButton(listener, UIManager.getIcon("FileView.directoryIcon"));
 		loadStateHistoryButton.setToolTipText(ToolTipUtil.getItemLoad());
 
-		saveStateHistoryButton = GuiUtil.formButton(listener, UIManager.getIcon("FileView.floppyDriveIcon"));
+		saveStateHistoryButton = GuiUtil.formButton(listener, UIManager.getIcon("FileView.hardDriveIcon"));
 		saveStateHistoryButton.setToolTipText(ToolTipUtil.getItemSave());
 		saveStateHistoryButton.setEnabled(false);
 

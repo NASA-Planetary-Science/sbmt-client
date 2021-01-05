@@ -93,19 +93,21 @@ public class StateHistoryController
     	vtkJoglPanelComponent renWin = renderer.getRenderWindowPanel();
         SmallBodyModel bodyModel = (SmallBodyModel) modelManager.getPolyhedralModel();
         SmallBodyViewConfig config = (SmallBodyViewConfig) bodyModel.getConfig();
+        DateTime start, end;
         try {
             path = FileCache.getFileFromServer(config.timeHistoryFile);
+            //grab the min max times from the input
+            start = ISODateTimeFormat.dateTimeParser().parseDateTime(StateHistoryUtil.readString(lineLength, path));
+            end = ISODateTimeFormat.dateTimeParser().parseDateTime(StateHistoryUtil.readString((int)StateHistoryUtil.getBinaryFileLength(path, lineLength)*lineLength-lineLength, path));
+        	this.timeModel.setTimeWindow(new TimeWindow(start, end));
         } catch (Exception e) {
-            e.printStackTrace();
+            //attempt to grab the times from the config file
+        	start = new DateTime(config.getStateHistoryStartDate());
+        	end = new DateTime(config.getStateHistoryEndDate());
+        	this.timeModel.setTimeWindow(new TimeWindow(start, end));
         }
 
         StateHistoryCollection runs = (StateHistoryCollection)modelManager.getModel(ModelNames.STATE_HISTORY_COLLECTION);
-
-        //grab the min max times from the input
-        DateTime start = ISODateTimeFormat.dateTimeParser().parseDateTime(StateHistoryUtil.readString(lineLength, path));
-        DateTime end = ISODateTimeFormat.dateTimeParser().parseDateTime(StateHistoryUtil.readString((int)StateHistoryUtil.getBinaryFileLength(path, lineLength)*lineLength-lineLength, path));
-    	this.timeModel.setTimeWindow(new TimeWindow(start, end));
-
 
 		try
 		{

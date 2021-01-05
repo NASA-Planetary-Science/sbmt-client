@@ -9,10 +9,12 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.function.Function;
 
+import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.JSpinner;
 import javax.swing.ProgressMonitor;
 import javax.swing.SpinnerDateModel;
+import javax.swing.SwingUtilities;
 
 import org.joda.time.DateTime;
 
@@ -49,16 +51,16 @@ public class StateHistoryIntervalGenerationController
 	 */
 	public StateHistoryIntervalGenerationController(StateHistoryModel historyModel, DateTime newStart, DateTime newEnd)
 	{
-		initializeIntervalGenerationPanel(historyModel, newStart.toDate(), newEnd.toDate());
+			initializeIntervalGenerationPanel(historyModel, newStart.toDate(), newEnd.toDate());
 	}
 
 	/**
 	 * Initializes the panel.
 	 */
-	private void initializeIntervalGenerationPanel(StateHistoryModel historyModel, Date newStart, Date newEnd)
+	private void initializeIntervalGenerationPanel(StateHistoryModel historyModel, Date newStart, Date newEnd)// throws Exception
     {
 		SimpleDateFormat dateFormatter = new SimpleDateFormat("yyyy-MMM-dd HH:mm:ss.SSS");
-		view = new StateHistoryIntervalGenerationPanel();
+		view = new StateHistoryIntervalGenerationPanel(historyModel.getViewConfig().getSpiceInfo() != null);
 
         view.getAvailableTimeLabel().setText(dateFormatter.format(newStart)+ " to\n " + dateFormatter.format(newEnd));
 
@@ -100,13 +102,18 @@ public class StateHistoryIntervalGenerationController
             if (view.getStateHistorySourceType() == StateHistorySourceType.SPICE)
         	{
             	//TODO load this from the metadata
-            	SpiceInfo spice = new SpiceInfo("ORX", "IAU_BENNU", "ORX_SPACECRAFT", "BENNU",
-            			new String[] {"EARTH" , "SUN"}, new String[] {"ORX_OCAMS_POLYCAM", "ORX_OCAMS_MAPCAM",
-            															"ORX_OCAMS_SAMCAM", "ORX_NAVCAM1", "ORX_NAVCAM2",
-//            															"ORX_OTES", "ORX_OVIRS",
-            															"ORX_OLA_LOW", "ORX_OLA_HIGH"});
+//            	SpiceInfo spice = new SpiceInfo("ORX", "IAU_BENNU", "ORX_SPACECRAFT", "BENNU",
+//            			new String[] {"EARTH" , "SUN"}, new String[] {"ORX_OCAMS_POLYCAM", "ORX_OCAMS_MAPCAM",
+//            															"ORX_OCAMS_SAMCAM", "ORX_NAVCAM1", "ORX_NAVCAM2",
+////            															"ORX_OTES", "ORX_OVIRS",
+//            															"ORX_OLA_LOW", "ORX_OLA_HIGH"});
 //            	SpiceInfo spice = new SpiceInfo("MMX", "IAU_PHOBOS", "MMX_SPACECRAFT", "PHOBOS",
 //            			new String[] {"EARTH" , "SUN", "MARS"}, new String[] {"MMX_MEGANE"});
+            	SpiceInfo spice = historyModel.getViewConfig().getSpiceInfo();
+            	if (spice == null)
+            	{
+          			throw new RuntimeException("ERROR: SpiceInfo is not available for this model; please contact SBMT support.");
+            	}
             	((SpiceStateHistoryIntervalGenerator)historyModel.getActiveIntervalGenerator()).setMetaKernelFile(view.getMetakernelToLoad(), spice);
         	}
 
@@ -150,6 +157,7 @@ public class StateHistoryIntervalGenerationController
     		task.execute();
 
             view.setCursor(Cursor.getDefaultCursor());
+            ((JFrame) SwingUtilities.getRoot(view)).dispose();
         });
 
 

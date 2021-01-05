@@ -33,7 +33,9 @@ public class SpacecraftBody extends vtkPolyData implements DisplayableItem
      */
     private static double[] white = {1.0, 1.0, 1.0, 1.0};
 
-    private String label = "Spacecraft";
+    private String labelPrefix = "Spacecraft";
+
+    private String label;
 
     protected GenericVTKLabel labelActor;
 
@@ -48,9 +50,9 @@ public class SpacecraftBody extends vtkPolyData implements DisplayableItem
 	public SpacecraftBody(String filename)
 	{
 		vtkCubeSource cube = new vtkCubeSource();
-		cube.SetXLength(.1);
-		cube.SetYLength(.1);
-		cube.SetZLength(.1);
+		cube.SetXLength(.25);
+		cube.SetYLength(.25);
+		cube.SetZLength(.25);
 		cube.Update();
 		try
 		{
@@ -178,7 +180,7 @@ public class SpacecraftBody extends vtkPolyData implements DisplayableItem
 	 */
 	public String getLabel()
 	{
-		return label;
+		return labelPrefix;
 	}
 
 	/**
@@ -186,8 +188,8 @@ public class SpacecraftBody extends vtkPolyData implements DisplayableItem
 	 */
 	public void setLabel(String label)
 	{
-		this.label = label;
-		labelActor.setText(label);
+//		this.label = label;
+		labelActor.setText(labelPrefix + ":\n" + label);
 		labelActor.Modified();
 	}
 

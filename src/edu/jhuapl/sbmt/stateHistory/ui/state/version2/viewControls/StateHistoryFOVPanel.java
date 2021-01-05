@@ -20,6 +20,8 @@ public class StateHistoryFOVPanel extends JPanel
 
 	private ViewOptionsTableView tableView = null;
 
+	private boolean tableHidden = true;
+
 	public StateHistoryFOVPanel()
 	{
 		initUI();
@@ -33,7 +35,7 @@ public class StateHistoryFOVPanel extends JPanel
 
 	public void clearTable()
 	{
-		this.tableView = null;
+		this.tableHidden = true;
 		updateFOVsPanel();
 	}
 
@@ -55,7 +57,7 @@ public class StateHistoryFOVPanel extends JPanel
 	private JPanel updateFOVsPanel()
 	{
 		fovPanel.removeAll();
-		if (tableView != null)
+		if (tableHidden == false && tableView != null)
 		{
 			fovPanel.add(tableView);
 		}
@@ -74,6 +76,7 @@ public class StateHistoryFOVPanel extends JPanel
 	public void setTableView(ViewOptionsTableView tableView)
 	{
 		this.tableView = tableView;
+		tableHidden = false;
 	}
 
 	public void setAvailableFOVs(Vector<String> fovs)
@@ -84,5 +87,21 @@ public class StateHistoryFOVPanel extends JPanel
 	public JCheckBox[] getFovCheckBoxes()
 	{
 		return fovCheckboxes;
+	}
+
+	/**
+	 * @return the tableHidden
+	 */
+	public boolean isTableHidden()
+	{
+		return tableHidden;
+	}
+
+	/**
+	 * @param tableHidden the tableHidden to set
+	 */
+	public void setTableHidden(boolean tableHidden)
+	{
+		this.tableHidden = tableHidden;
 	}
 }

@@ -6,6 +6,7 @@ import java.util.Map;
 import edu.jhuapl.saavtk.model.ShapeModelType;
 import edu.jhuapl.sbmt.model.image.Instrument;
 import edu.jhuapl.sbmt.model.phobos.HierarchicalSearchSpecification;
+import edu.jhuapl.sbmt.pointing.spice.SpiceInfo;
 import edu.jhuapl.sbmt.spectrum.model.core.search.SpectraHierarchicalSearchSpecification;
 
 public interface ISmallBodyViewConfig
@@ -46,6 +47,9 @@ public interface ISmallBodyViewConfig
 	public boolean hasHierarchicalImageSearch();
 	public HierarchicalSearchSpecification getHierarchicalImageSearchSpecification();
 	public String getTimeHistoryFile();
+	public SpiceInfo getSpiceInfo();
+	public Date getStateHistoryStartDate();
+	public Date getStateHistoryEndDate();
 	public String getShapeModelName();
 
 	public ShapeModelType getAuthor();
