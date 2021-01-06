@@ -635,18 +635,15 @@ public class SbmtView extends View implements PropertyChangeListener
 				MEGANEController meganeController = new MEGANEController(smallBodyModel);
 				rendererManager.addListener(new ItemEventListener()
 				{
-
 					@Override
 					public void handleItemEvent(Object aSource, ItemEventType aEventType)
 					{
 						if (aEventType == ItemEventType.ItemsSelected)
 						{
 							StateHistory currentRun = rendererManager.getRuns().getCurrentRun();
-							System.out.println(
-									"SbmtView.setupTabs().new ItemEventListener() {...}: handleItemEvent: broadcasting change to megane controllers");
+							if (currentRun == null) return;
 							meganeController.propertyChange(new PropertyChangeEvent(meganeController, "SPICEPROVIDER", null, currentRun.getPointingProvider()));
 						}
-
 					}
 				});
 				addTab(instrument.getDisplayName(), meganeController.getPanel());
