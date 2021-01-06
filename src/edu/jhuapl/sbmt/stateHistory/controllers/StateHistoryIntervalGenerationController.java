@@ -60,7 +60,7 @@ public class StateHistoryIntervalGenerationController
 	private void initializeIntervalGenerationPanel(StateHistoryModel historyModel, Date newStart, Date newEnd)// throws Exception
     {
 		SimpleDateFormat dateFormatter = new SimpleDateFormat("yyyy-MMM-dd HH:mm:ss.SSS");
-		view = new StateHistoryIntervalGenerationPanel(historyModel.getViewConfig().getSpiceInfo() != null);
+		view = new StateHistoryIntervalGenerationPanel(historyModel);
 
         view.getAvailableTimeLabel().setText(dateFormatter.format(newStart)+ " to\n " + dateFormatter.format(newEnd));
 

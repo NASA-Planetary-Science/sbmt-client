@@ -321,6 +321,14 @@ public class StateHistoryModel
 	}
 
 	/**
+	 * @return the customDataFolder
+	 */
+	public String getCustomDataFolder()
+	{
+		return customDataFolder;
+	}
+
+	/**
 	 * @return the viewConfig
 	 */
 	public ISmallBodyViewConfig getViewConfig()

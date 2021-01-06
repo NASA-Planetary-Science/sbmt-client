@@ -3,15 +3,20 @@ package edu.jhuapl.sbmt.stateHistory.ui.state.version2;
 import java.awt.CardLayout;
 import java.awt.Component;
 import java.awt.Dimension;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
+import java.io.File;
+import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.ButtonGroup;
 import javax.swing.JButton;
+import javax.swing.JComboBox;
 import javax.swing.JFileChooser;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -21,10 +26,14 @@ import javax.swing.JTextPane;
 import javax.swing.SpinnerDateModel;
 import javax.swing.border.TitledBorder;
 
+import org.apache.commons.io.FilenameUtils;
 import org.joda.time.DateTime;
 
+import edu.jhuapl.sbmt.stateHistory.model.StateHistoryModel;
 import edu.jhuapl.sbmt.stateHistory.model.StateHistorySourceType;
 import edu.jhuapl.sbmt.stateHistory.model.interfaces.StateHistory;
+import edu.jhuapl.sbmt.stateHistory.model.io.SpiceKernelIngestor;
+import edu.jhuapl.sbmt.stateHistory.model.io.StateHistoryIOException;
 import edu.jhuapl.sbmt.stateHistory.model.time.StateHistoryTimeModel;
 import edu.jhuapl.sbmt.stateHistory.ui.DateTimeSpinner;
 
@@ -97,13 +106,16 @@ public class StateHistoryIntervalGenerationPanel extends JPanel
 
     private boolean hasSpiceInfo;
 
+    private SpiceKernelIngestor kernelIngestor;
+
 	/**
 	 * Constructor.
 	 */
-	public StateHistoryIntervalGenerationPanel(boolean hasSpiceInfo)
+	public StateHistoryIntervalGenerationPanel(StateHistoryModel historyModel)
 	{
 		editMode = false;
-		this.hasSpiceInfo = hasSpiceInfo;
+		this.hasSpiceInfo = historyModel.getViewConfig().getSpiceInfo() != null;
+		this.kernelIngestor = new SpiceKernelIngestor(historyModel.getCustomDataFolder());
 		initUI();
 	}
 
@@ -226,24 +238,67 @@ public class StateHistoryIntervalGenerationPanel extends JPanel
 	{
 		JPanel panel = new JPanel();
 		JLabel metaKernelNameLabel = new JLabel();
-		JButton fileLoadButton = new JButton("Metakernel to load");
-		fileLoadButton.addActionListener(new ActionListener()
-		{
-			@Override
-			public void actionPerformed(ActionEvent e)
+//		JButton fileLoadButton = new JButton("Metakernel to load");
+		List<String> loadedKernels = new ArrayList<String>();
+		if (kernelIngestor.getLoadedKernelsDirectory().listFiles() != null)
+			loadedKernels = Stream.of(kernelIngestor.getLoadedKernelsDirectory().listFiles()).filter(file -> file.isDirectory()).map(File::getName).collect(Collectors.toList());
+		loadedKernels.add("Load new kernel...");
+		String[] loadedKernelNamesArray = new String[loadedKernels.size()];
+		loadedKernels.toArray(loadedKernelNamesArray);
+		JComboBox<String> kernelComboBox = new JComboBox<String>(loadedKernelNamesArray);
+
+		kernelComboBox.addActionListener(e -> {
+
+			String selectedItem = (String)kernelComboBox.getSelectedItem();
+			File loadedKernelsDirectory = kernelIngestor.getLoadedKernelsDirectory();
+			if (selectedItem.equals("Load new kernel..."))
 			{
 				JFileChooser fileChooser = new JFileChooser();
 				int showOpenDialogResult = fileChooser.showOpenDialog(StateHistoryIntervalGenerationPanel.this);
 				if (showOpenDialogResult == JFileChooser.APPROVE_OPTION)
 				{
 					metakernelToLoad = fileChooser.getSelectedFile().getAbsolutePath();
-					metaKernelNameLabel.setText(metakernelToLoad);
+					try
+					{
+						kernelIngestor.ingestMetaKernelToCache(metakernelToLoad);
+					}
+					catch (StateHistoryIOException | IOException e1)
+					{
+						// TODO Auto-generated catch block
+						e1.printStackTrace();
+					}
+					String newComboItemName = FilenameUtils.getBaseName(new File(metakernelToLoad).getName());
+					kernelComboBox.addItem(newComboItemName);
+					kernelComboBox.setSelectedItem(newComboItemName);
 				}
-
 			}
+			else
+			{
+				File selectedKernelDirectory = new File(loadedKernelsDirectory, selectedItem);
+				metakernelToLoad = new File(selectedKernelDirectory, selectedItem + ".mk").getAbsolutePath();
+			}
+
 		});
+
+//		fileLoadButton.addActionListener(new ActionListener()
+//		{
+//			@Override
+//			public void actionPerformed(ActionEvent e)
+//			{
+//				JFileChooser fileChooser = new JFileChooser();
+//				int showOpenDialogResult = fileChooser.showOpenDialog(StateHistoryIntervalGenerationPanel.this);
+//				if (showOpenDialogResult == JFileChooser.APPROVE_OPTION)
+//				{
+//					metakernelToLoad = fileChooser.getSelectedFile().getAbsolutePath();
+//					metaKernelNameLabel.setText(metakernelToLoad);
+//				}
+//
+//			}
+//		});
 		panel.setLayout(new BoxLayout(panel, BoxLayout.X_AXIS));
-		panel.add(fileLoadButton);
+//		panel.add(fileLoadButton);
+		panel.add(new JLabel("Select Metakernel"));
+		panel.add(kernelComboBox);
 		panel.add(metaKernelNameLabel);
 		return panel;
 	}

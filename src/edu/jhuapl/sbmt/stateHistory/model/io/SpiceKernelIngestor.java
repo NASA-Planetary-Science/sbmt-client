@@ -1,0 +1,85 @@
+package edu.jhuapl.sbmt.stateHistory.model.io;
+
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.List;
+
+import org.apache.commons.io.FilenameUtils;
+
+import edu.jhuapl.saavtk.util.FileUtil;
+import edu.jhuapl.sbmt.pointing.spice.KernelProviderFromLocalMetakernel;
+
+public class SpiceKernelIngestor
+{
+	private String customDataFolder;
+
+	public SpiceKernelIngestor(String customDataFolderName)
+	{
+		this.customDataFolder = customDataFolderName;
+	}
+
+	public String ingestMetaKernelToCache(String metakernalFilename) throws StateHistoryIOException, IOException
+	{
+		String directoryNameForKernel = FilenameUtils.getBaseName(metakernalFilename);
+		String kernelFilename = FilenameUtils.getName(metakernalFilename);
+        boolean alreadyExists = checkIfExists(directoryNameForKernel);
+        if (alreadyExists)
+        {
+        	throw new StateHistoryIOException("This metakernel already exists in the cache; please choose another or rename the metakernel file");
+        }
+
+        //create a new folder for this metakernel, and copy the MK and associated kernels to that directory
+        File newDirectoryBase = new File(customDataFolder, "loadedKernels");
+        File newDirectory = new File(newDirectoryBase, directoryNameForKernel);
+        boolean directoryMade = newDirectory.mkdirs();
+        if (!directoryMade)
+        	throw new StateHistoryIOException("Problem saving kernel information; unable to make new directory in cache");
+
+        File destinationFilePath = new File(newDirectory, kernelFilename);
+        FileUtil.copyFile(new File(metakernalFilename), destinationFilePath);
+		KernelProviderFromLocalMetakernel provider = KernelProviderFromLocalMetakernel.of(Paths.get(metakernalFilename));
+        List<File> list = provider.get();
+        for (File file : list)
+        {
+        	FileUtil.copyFile(file, new File(newDirectory, file.getName()));
+        }
+
+        //update the PATH_VALUES line in the metakernel to match the new directory
+        File metaKernelCopy = new File(newDirectory, kernelFilename);
+        Path path = Paths.get(metaKernelCopy.getAbsolutePath());
+        List<String> lines = Files.readAllLines(path);
+        int lineNumber = -1;
+        for (String line : lines)
+        {
+        	if (!line.contains("PATH_VALUES")) continue;
+        	lineNumber = lines.indexOf(line);
+        	break;
+        }
+        System.out.println("SpiceKernelIngestor: ingestMetaKernelToCache: new path values dir " + newDirectory);
+        lines.set(lineNumber, "PATH_VALUES = ( \'" + newDirectory + "\' )");
+        Files.write(path, lines);
+
+        return kernelFilename;
+	}
+
+	public boolean checkIfExists(String folderName)
+	{
+		return new File(customDataFolder + File.pathSeparator + "loadedKernels", folderName).exists();
+	}
+
+	public File getLoadedKernelsDirectory()
+	{
+		return new File(customDataFolder, "loadedKernels");
+	}
+
+	public static void main(String[] args) throws StateHistoryIOException, IOException
+	{
+		SpiceKernelIngestor ingestor = new SpiceKernelIngestor("/Users/steelrj1/.sbmt-apl/custom-data/Experimental/Phobos (with MEGANE)");
+		String kernelNameLoaded = ingestor.ingestMetaKernelToCache("/Users/steelrj1/megane/spice3/meganeLBp.mk");
+		System.out.println("SpiceKernelIngestor: main: loaded kernels for " + kernelNameLoaded);
+	}
+
+}
