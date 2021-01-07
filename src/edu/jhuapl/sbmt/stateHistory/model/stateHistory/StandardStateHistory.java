@@ -96,6 +96,8 @@ public class StandardStateHistory implements StateHistory
 
     private IPointingProvider pointingProvider;
 
+    private boolean isValid = false;
+
 
     //Metadata Information
     private static final Key<StandardStateHistory> STANDARD_STATE_HISTORY_KEY = Key.of("StandardStateHistory");
@@ -700,4 +702,15 @@ public class StandardStateHistory implements StateHistory
             throw new StateHistoryIOException("There was a problem reading the state history file.  See the console for details, and please make sure it is the right format", e1);
         }
     }
+
+	public void validate()
+	{
+
+		isValid = true;
+	}
+
+	public boolean isValid()
+	{
+		return isValid;
+	}
 }

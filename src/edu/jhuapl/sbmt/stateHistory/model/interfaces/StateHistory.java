@@ -245,4 +245,8 @@ public interface StateHistory
 	public void saveStateToFile(String shapeModelName, String fileName) throws StateHistoryIOException;
 
 	public StateHistory loadStateHistoryFromFile(File runFile, String shapeModelName, StateHistoryKey key) throws StateHistoryIOException;
+
+	public void validate();
+
+	public boolean isValid();
 }

@@ -19,6 +19,7 @@ import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JFileChooser;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JRadioButton;
 import javax.swing.JSpinner;
@@ -134,7 +135,6 @@ public class StateHistoryIntervalGenerationPanel extends JPanel
 
 		JSpinner.DateEditor dateEditor = new JSpinner.DateEditor(startTimeSpinner, "yyyy-MMM-dd HH:mm:ss.SSS");
         startTimeSpinner.setEditor(dateEditor);
-        System.out.println("StateHistoryIntervalGenerationPanel: StateHistoryIntervalGenerationPanel: history start time " + new Date(history.getStartTime().longValue()));
 		startTimeSpinner.getModel().setValue(startDate);
 
 		Date stopDate = StateHistoryTimeModel.getDateForET(history.getEndTime());
@@ -242,7 +242,7 @@ public class StateHistoryIntervalGenerationPanel extends JPanel
 		List<String> loadedKernels = new ArrayList<String>();
 		if (kernelIngestor.getLoadedKernelsDirectory().listFiles() != null)
 			loadedKernels = Stream.of(kernelIngestor.getLoadedKernelsDirectory().listFiles()).filter(file -> file.isDirectory()).map(File::getName).collect(Collectors.toList());
-		loadedKernels.add("Load new kernel...");
+		loadedKernels.add(0, "Load new kernel...");
 		String[] loadedKernelNamesArray = new String[loadedKernels.size()];
 		loadedKernels.toArray(loadedKernelNamesArray);
 		JComboBox<String> kernelComboBox = new JComboBox<String>(loadedKernelNamesArray);
@@ -260,14 +260,15 @@ public class StateHistoryIntervalGenerationPanel extends JPanel
 					metakernelToLoad = fileChooser.getSelectedFile().getAbsolutePath();
 					try
 					{
-						kernelIngestor.ingestMetaKernelToCache(metakernelToLoad);
+						metakernelToLoad = kernelIngestor.ingestMetaKernelToCache(metakernelToLoad);
 					}
 					catch (StateHistoryIOException | IOException e1)
 					{
-						// TODO Auto-generated catch block
-						e1.printStackTrace();
+						JOptionPane.showMessageDialog(StateHistoryIntervalGenerationPanel.this, "Problem ingesting SPICE kernel.  Please check the file for correctness.",
+														"Ingestion Error", JOptionPane.ERROR_MESSAGE);
 					}
 					String newComboItemName = FilenameUtils.getBaseName(new File(metakernelToLoad).getName());
+
 					kernelComboBox.addItem(newComboItemName);
 					kernelComboBox.setSelectedItem(newComboItemName);
 				}

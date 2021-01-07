@@ -229,6 +229,7 @@ public class StateHistoryRendererManager extends SaavtkItemManager<StateHistory>
 				if (aEventType != ItemEventType.ItemsSelected) return;
 				for (StateHistory history : getAllItems())
 				{
+					if (history.getTrajectory() == null) continue;
 					history.getTrajectory().setFaded(!getSelectedItems().contains(history));
 					refreshColoring(history);
 				}

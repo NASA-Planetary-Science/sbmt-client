@@ -2,10 +2,10 @@ package edu.jhuapl.sbmt.stateHistory.model.stateHistory;
 
 import java.awt.Color;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.text.SimpleDateFormat;
 import java.util.HashMap;
 import java.util.Map.Entry;
 import java.util.Set;
@@ -21,6 +21,7 @@ import edu.jhuapl.sbmt.stateHistory.model.StateHistorySourceType;
 import edu.jhuapl.sbmt.stateHistory.model.interfaces.State;
 import edu.jhuapl.sbmt.stateHistory.model.interfaces.StateHistory;
 import edu.jhuapl.sbmt.stateHistory.model.interfaces.Trajectory;
+import edu.jhuapl.sbmt.stateHistory.model.io.SpiceKernelNotFoundException;
 import edu.jhuapl.sbmt.stateHistory.model.io.StateHistoryIOException;
 import edu.jhuapl.sbmt.stateHistory.model.io.StateHistoryInvalidTimeException;
 import edu.jhuapl.sbmt.stateHistory.model.scState.SpiceState;
@@ -34,6 +35,8 @@ import crucible.crust.metadata.impl.FixedMetadata;
 import crucible.crust.metadata.impl.InstanceGetter;
 import crucible.crust.metadata.impl.SettableMetadata;
 import crucible.crust.metadata.impl.gson.Serializers;
+import crucible.mantle.spice.adapters.AdapterInstantiationException;
+import crucible.mantle.spice.kernel.KernelInstantiationException;
 
 public class SpiceStateHistory implements StateHistory
 {
@@ -90,6 +93,8 @@ public class SpiceStateHistory implements StateHistory
 
 	private SpiceInfo spiceInfo;
 
+	private boolean isValid = false;
+
 	private HashMap<String, String> plateColoringForInstrument = new HashMap<String, String>();
 
 	// Metadata Information
@@ -138,10 +143,8 @@ public class SpiceStateHistory implements StateHistory
 			SpiceStateHistory stateHistory = new SpiceStateHistory(key, currentTime, startTime, endTime, name,
 					description, color, type, sourceFile);
 
-
-
 			stateHistory.setSpiceInfo(spiceInfo);
-
+			
 			try
 			{
 				stateHistory.setCurrentTime(startTime);
@@ -165,11 +168,19 @@ public class SpiceStateHistory implements StateHistory
 			result.put(STATE_HISTORY_DESCRIPTION_KEY, stateHistory.getStateHistoryDescription());
 			result.put(TYPE_KEY, stateHistory.getType().toString());
 			result.put(SOURCE_FILE, stateHistory.getSourceFile());
-			result.put(COLOR_KEY, new Double[]
-			{ (float)stateHistory.getTrajectory().getColor().getRed()/255.0,
-				(float)stateHistory.getTrajectory().getColor().getGreen()/255.0,
-				(float)stateHistory.getTrajectory().getColor().getBlue()/255.0,
-				(float)stateHistory.getTrajectory().getColor().getAlpha()/255.0 });
+			if (stateHistory.getTrajectory() != null)
+			{
+				result.put(COLOR_KEY, new Double[]
+				{ (float)stateHistory.getTrajectory().getColor().getRed()/255.0,
+					(float)stateHistory.getTrajectory().getColor().getGreen()/255.0,
+					(float)stateHistory.getTrajectory().getColor().getBlue()/255.0,
+					(float)stateHistory.getTrajectory().getColor().getAlpha()/255.0 });
+			}
+			else
+			{
+				result.put(COLOR_KEY, new Double[]
+						{ 0.0, 1.0, 1.0, 1.0 });
+			}
 			result.put(SPICE_INFO_KEY, stateHistory.getSpiceInfo());
 			return result;
 		});
@@ -234,7 +245,8 @@ public class SpiceStateHistory implements StateHistory
         	throw new StateHistoryInvalidTimeException("Entered time is outside the range of the selected interval.");
         }
 		this.currentTime = time;
-		state.setEphemerisTime(time);
+		if (state != null)
+			state.setEphemerisTime(time);
 	}
 
 	@Override
@@ -419,6 +431,16 @@ public class SpiceStateHistory implements StateHistory
 	@Override
 	public IPointingProvider getPointingProvider()
 	{
+		if (pointingProvider == null)
+			try
+			{
+				buildPointingProvider();
+			}
+			catch (StateHistoryIOException | SpiceKernelNotFoundException e)
+			{
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 		return pointingProvider;
 	}
 
@@ -443,7 +465,40 @@ public class SpiceStateHistory implements StateHistory
 	public void setSpiceInfo(SpiceInfo spiceInfo)
 	{
 		this.spiceInfo = spiceInfo;
+
+	}
+
+	public void validate()
+	{
+		if (spiceInfo == null) isValid = false;
+		else if (new File(sourceFile).exists() == false) isValid = false;
+		else isValid = true;
+	}
+
+	private void updateTrajectoryAndStateWithPointing(IPointingProvider pointingProvider)
+	{
+		Trajectory trajectory = new StandardTrajectory(this);
+		trajectory.setPointingProvider(pointingProvider);
+		trajectory.setStartTime(getStartTime());
+		trajectory.setStopTime(getEndTime());
+
+		trajectory.setNumPoints(Math.abs((int)(getEndTime() - getStartTime())/60));
+
+		State state = new SpiceState((SpicePointingProvider)pointingProvider);
+		((SpiceState)state).setEphemerisTime(getStartTime());
+		// add to history
+		addState(state);
+		setTrajectory(trajectory);
+		setType(StateHistorySourceType.SPICE);
+	}
+
+	private void buildPointingProvider() throws StateHistoryIOException, SpiceKernelNotFoundException
+	{
 		Path mkPath = Paths.get(sourceFile);
+		if (!mkPath.toFile().exists())
+		{
+			throw new SpiceKernelNotFoundException("Cannot find metakernel at specified location.");
+		}
 		try
 		{
 			SpicePointingProvider.Builder builder =
@@ -457,36 +512,24 @@ public class SpiceStateHistory implements StateHistory
 			}
 
             pointingProvider = builder.build();
+            updateTrajectoryAndStateWithPointing(pointingProvider);
 		}
-		catch (Exception e)
+		catch (FileNotFoundException fnfe)
 		{
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			throw new SpiceKernelNotFoundException("Cannot find metakernel at specified location.", fnfe);
 		}
-
-		Trajectory trajectory = new StandardTrajectory(this);
-		trajectory.setPointingProvider(pointingProvider);
-		trajectory.setStartTime(getStartTime());
-		trajectory.setStopTime(getEndTime());
-		SimpleDateFormat dateFormatter = new SimpleDateFormat("yyyy-D'T'HH:mm:ss.SSS");	//generates Year-DOY date format
-
-//		UTCEpoch startEpoch = UTCEpoch.fromString(dateFormatter.format(startTime.toDate()));
-//		UTCEpoch endEpoch = UTCEpoch.fromString(dateFormatter.format(endTime.toDate()));
-//		double timeWindowDuration = TimeSystems.builder().build().getUTC().difference(startEpoch, endEpoch);
-		trajectory.setNumPoints(Math.abs((int)(getEndTime() - getStartTime())/60));
-
-		State state = new SpiceState((SpicePointingProvider)pointingProvider);
-		((SpiceState)state).setEphemerisTime(getStartTime());
-		// add to history
-		addState(state);
-//		setStartTime(TimeUtil.str2et(startEpoch.toString()));
-//		setEndTime(TimeUtil.str2et(endEpoch.toString()));
-//		setCurrentTime(TimeUtil.str2et(startEpoch.toString()));
-		setTrajectory(trajectory);
-		setType(StateHistorySourceType.SPICE);
-//		setSourceFile(sourceFile);
-//		setPointingProvider(pointingProvider);
-
+		catch (AdapterInstantiationException aie)
+		{
+			aie.printStackTrace();
+		}
+		catch (KernelInstantiationException kie)
+		{
+			throw new StateHistoryIOException("Kernels are invalid; cannot instantiate Kernel environment", kie);
+		}
+		catch (IOException ioe)
+		{
+			throw new StateHistoryIOException("Error reading in SPICE related files; please check kernels", ioe);
+		}
 	}
 
 	public boolean isMapped() { return mapped; }
@@ -545,6 +588,14 @@ public class SpiceStateHistory implements StateHistory
 	public void setPlateColoringForInstrument(String plateColoring, String fov)
 	{
 		plateColoringForInstrument.put(fov, plateColoring);
+	}
+
+	/**
+	 * @return the isValid
+	 */
+	public boolean isValid()
+	{
+		return isValid;
 	}
 
 

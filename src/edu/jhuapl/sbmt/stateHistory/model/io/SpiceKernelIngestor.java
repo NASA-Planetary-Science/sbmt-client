@@ -58,11 +58,10 @@ public class SpiceKernelIngestor
         	lineNumber = lines.indexOf(line);
         	break;
         }
-        System.out.println("SpiceKernelIngestor: ingestMetaKernelToCache: new path values dir " + newDirectory);
         lines.set(lineNumber, "PATH_VALUES = ( \'" + newDirectory + "\' )");
         Files.write(path, lines);
 
-        return kernelFilename;
+        return metaKernelCopy.getAbsolutePath();
 	}
 
 	public boolean checkIfExists(String folderName)

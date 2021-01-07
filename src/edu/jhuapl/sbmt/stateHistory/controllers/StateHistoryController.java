@@ -4,11 +4,15 @@ import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 import java.io.File;
 import java.io.IOException;
+import java.util.Iterator;
+import java.util.List;
 
 import javax.swing.BoxLayout;
+import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 
+import org.apache.commons.io.FilenameUtils;
 import org.joda.time.DateTime;
 import org.joda.time.format.ISODateTimeFormat;
 
@@ -24,6 +28,9 @@ import edu.jhuapl.sbmt.stateHistory.controllers.viewControls.ObservationPlanning
 import edu.jhuapl.sbmt.stateHistory.model.StateHistoryModel;
 import edu.jhuapl.sbmt.stateHistory.model.StateHistorySourceType;
 import edu.jhuapl.sbmt.stateHistory.model.StateHistoryUtil;
+import edu.jhuapl.sbmt.stateHistory.model.interfaces.StateHistory;
+import edu.jhuapl.sbmt.stateHistory.model.io.SpiceKernelIngestor;
+import edu.jhuapl.sbmt.stateHistory.model.io.StateHistoryIOException;
 import edu.jhuapl.sbmt.stateHistory.model.io.StateHistoryInputException;
 import edu.jhuapl.sbmt.stateHistory.model.io.StateHistoryInvalidTimeException;
 import edu.jhuapl.sbmt.stateHistory.model.stateHistory.PregenStateHistoryIntervalGenerator;
@@ -120,6 +127,36 @@ public class StateHistoryController
 				historyModel.setIntervalGenerator(StateHistorySourceType.PREGEN);
 
 			}
+			List<StateHistory> invalidStateHistories = historyModel.loadRunList();
+			SpiceKernelIngestor kernelIngestor = new SpiceKernelIngestor(historyModel.getCustomDataFolder());
+			Iterator<StateHistory> iterator = invalidStateHistories.iterator();
+			while (iterator.hasNext())
+			{
+				StateHistory history = iterator.next();
+				String[] options = {"Yes", "No"};
+				int result = JOptionPane.showOptionDialog(null, "Cannot find metakernel " + FilenameUtils.getBaseName(history.getSourceFile())
+																+ " at specified location for state history " + history.getStateHistoryName()
+																+ ". Would you like to choose a new file?  Otherwise the state history will be removed.", "Metakernel not found",
+																JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE, null, options, options[0]);
+
+				if (result == 0)
+				{
+					JFileChooser chooser = new JFileChooser();
+					int fileResult = chooser.showOpenDialog(null);
+					if (fileResult == JFileChooser.APPROVE_OPTION)
+					{
+						File selectedMetakernel = chooser.getSelectedFile();
+						String newKernelLocationAfterIngestion = kernelIngestor.ingestMetaKernelToCache(selectedMetakernel.getAbsolutePath());
+						history.setSourceFile(newKernelLocationAfterIngestion);
+					}
+				}
+				else
+				{
+					historyModel.removeRun(history);
+					iterator.remove();
+				}
+			}
+
 			historyModel.initializeRunList();
 		}
 		catch (IOException | StateHistoryInputException e1)
@@ -130,6 +167,11 @@ public class StateHistoryController
 		catch (StateHistoryInvalidTimeException shie)
 		{
 			JOptionPane.showMessageDialog(null, shie.getMessage(), "Error",
+                    JOptionPane.ERROR_MESSAGE);
+		}
+		catch (StateHistoryIOException shioe)
+		{
+			JOptionPane.showMessageDialog(null, shioe.getMessage(), "Error",
                     JOptionPane.ERROR_MESSAGE);
 		}
 

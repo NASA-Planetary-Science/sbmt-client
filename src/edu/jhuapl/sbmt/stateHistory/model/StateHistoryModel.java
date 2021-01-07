@@ -226,17 +226,27 @@ public class StateHistoryModel
 		}
 	}
 
-	/**
-	 * @throws IOException
-	 */
-	public void initializeRunList() throws IOException, StateHistoryInputException, StateHistoryInvalidTimeException
+	public List<StateHistory> loadRunList() throws IOException, StateHistoryInputException, StateHistoryInvalidTimeException, StateHistoryIOException
 	{
-		if (initialized)
-			return;
-		if (!(new File(getConfigFilename()).exists())) return;
+		List<StateHistory> invalidHistories = new ArrayList<StateHistory>();
+		if (initialized) return invalidHistories;
+		if (!(new File(getConfigFilename()).exists())) return invalidHistories;
 
 		FixedMetadata metadata = Serializers.deserialize(new File(getConfigFilename()), "StateHistory");
 		runs.retrieve(metadata);
+		for (StateHistory history : runs.getSimRuns())
+		{
+			history.validate();
+			if (history.isValid() == false) invalidHistories.add(history);
+		}
+		return invalidHistories;
+	}
+
+	/**
+	 * @throws IOException
+	 */
+	public void initializeRunList() throws IOException, StateHistoryInputException, StateHistoryInvalidTimeException, StateHistoryIOException//, SpiceKernelNotFoundException
+	{
 		for (StateHistory history : rendererManager.getAllItems())
 		{
 			setIntervalGenerator(history.getType());
@@ -244,9 +254,6 @@ public class StateHistoryModel
 			if (history instanceof SpiceStateHistory) spice = ((SpiceStateHistory)history).getSpiceInfo();
 			activeIntervalGenerator.setSourceFile(history.getSourceFile(), spice);
 			activeIntervalGenerator.createNewTimeInterval(history, null);
-//			if (runs.getCurrentRun() == null) runs.setCurrentRun(history);
-//			//TODO needs fixing?
-//			rendererManager.setTimeFraction(0.0, runs.getCurrentRun());
 		}
 
 		initialized = true;
