@@ -167,8 +167,7 @@ bodyFrame="920065803_FIXED" # Didymos-specific.
 # Need an Instrument sub-block like below for each instrument in this delivery.
 
 
-skipSection="false"
-
+skipSection="true" # THIS SHOULD ALWAYS BE true WHEN CHECKING THIS IN!!!
 # Instrument sub-block (ISS).
 #-------------------------------------------------------------------------------
 scId="cassini"
@@ -178,7 +177,6 @@ instrument="iss"
 # copyDir $instrument
 copyDir .
 
-skipSection="true"
 #-------------------------------------------------------------------------------
 # Process SUM files
 checkSumFiles $destTop/$instrument
@@ -197,10 +195,8 @@ createLink "$serverTop/$scId" "$processedTop/$scId"
 # in the ImageSource class.
 generateDatabaseTable ${instrument^^} GASKELL
 
-skipSection="false"
 # Set up galleries (if present).
 createGalleryList $destTop
-skipSection="true"
 
 # End Instrument sub-block (ISS).
 #-------------------------------------------------------------------------------
