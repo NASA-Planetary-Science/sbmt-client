@@ -59,7 +59,7 @@ public class SaturnConfigs extends SmallBodyViewConfig
         c.imagingInstruments = new ImagingInstrument[] {
                 new ImagingInstrument( //
                         SpectralImageMode.MONO, //
-                        new FixedListQuery("/GASKELL/DIONE/IMAGING", "/GASKELL/DIONE/IMAGING/gallery"), //
+                        new FixedListQuery<Object>("/GASKELL/DIONE/IMAGING", "/GASKELL/DIONE/IMAGING/gallery"), //
                         ImageType.SATURN_MOON_IMAGE, //
                         new ImageSource[]{ImageSource.GASKELL}, //
                         Instrument.IMAGING_DATA //
@@ -189,7 +189,7 @@ public class SaturnConfigs extends SmallBodyViewConfig
         c.imagingInstruments = new ImagingInstrument[] {
                 new ImagingInstrument( //
                         SpectralImageMode.MONO, //
-                        new FixedListQuery("/GASKELL/MIMAS/IMAGING", "/GASKELL/MIMAS/IMAGING/gallery"), //
+                        new FixedListQuery<Object>("/GASKELL/MIMAS/IMAGING", "/GASKELL/MIMAS/IMAGING/gallery"), //
                         ImageType.SATURN_MOON_IMAGE, //
                         new ImageSource[]{ImageSource.GASKELL}, //
                         Instrument.IMAGING_DATA //
@@ -238,7 +238,7 @@ public class SaturnConfigs extends SmallBodyViewConfig
         c.imagingInstruments = new ImagingInstrument[] {
                 new ImagingInstrument( //
                         SpectralImageMode.MONO, //
-                        new FixedListQuery("/GASKELL/PHOEBE/IMAGING", "/GASKELL/PHOEBE/IMAGING/gallery"), //
+                        new FixedListQuery<Object>("/GASKELL/PHOEBE/IMAGING", "/GASKELL/PHOEBE/IMAGING/gallery"), //
                         ImageType.SATURN_MOON_IMAGE, //
                         new ImageSource[]{ImageSource.GASKELL}, //
                         Instrument.IMAGING_DATA //
@@ -319,7 +319,7 @@ public class SaturnConfigs extends SmallBodyViewConfig
         c.imagingInstruments = new ImagingInstrument[] {
                 new ImagingInstrument( //
                         SpectralImageMode.MONO, //
-                        new FixedListQuery("/GASKELL/TELESTO/IMAGING", "/GASKELL/TELESTO/IMAGING/gallery"), //
+                        new FixedListQuery<Object>("/GASKELL/TELESTO/IMAGING", "/GASKELL/TELESTO/IMAGING/gallery"), //
                         ImageType.SATURN_MOON_IMAGE, //
                         new ImageSource[]{ImageSource.GASKELL}, //
                         Instrument.IMAGING_DATA //
@@ -980,7 +980,7 @@ public class SaturnConfigs extends SmallBodyViewConfig
     private static ImagingInstrument setupImagingInstrument(SBMTBodyConfiguration bodyConfig, ShapeModelConfiguration modelConfig, Instrument instrument, ImageSource[] imageSources, ImageType imageType)
     {
         SBMTFileLocator fileLocator = SBMTFileLocators.of(bodyConfig, modelConfig, instrument, ".fits", ".INFO", ".SUM", ".jpeg");
-        QueryBase queryBase = new FixedListQuery(fileLocator.get(SBMTFileLocator.TOP_PATH).getLocation(""), fileLocator.get(SBMTFileLocator.GALLERY_FILE).getLocation(""));
+        QueryBase queryBase = new FixedListQuery<Object>(fileLocator.get(SBMTFileLocator.TOP_PATH).getLocation(""), fileLocator.get(SBMTFileLocator.GALLERY_FILE).getLocation(""));
         return setupImagingInstrument(fileLocator, bodyConfig, modelConfig, instrument, queryBase, imageSources, imageType);
     }
 
