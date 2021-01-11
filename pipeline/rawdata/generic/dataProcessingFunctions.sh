@@ -1194,6 +1194,10 @@ extractFITSFileTimes() {
 # only pays attention to the image files and their corresponding gallery files; it has nothing to do
 # with pointing. It does not rely on any preexisting image list files.
 #
+# This function also creates a zip file that holds the gallery files to allow more efficient gallery access
+# by the client. Note that if there are a very large number of gallery files, this may result in a very
+# large zip file. Because of this, in future, may need/want an option to disable this.
+#
 # Assumptions:
 #   1. Main images are under "images", gallery images are under "gallery".
 #   2. The gallery subdirectory is laid out parallel to the images subdirectory.
@@ -1239,7 +1243,7 @@ createGalleryList() {
     fi
 
     cd $imageDir
-    check $? "$funcName: unable to cd to $imageDir"
+    check $? "$funcName: unable to cd to image directory $imageDir"
 
     tmpImageList=$instrumentTop/tmpImageList.txt
     # Go one sub-shell deeper to ensure this tmp file gets cleaned up.
@@ -1249,12 +1253,13 @@ createGalleryList() {
       check $? "$funcName: unable to list images in $imageDir"
 
       cd $galleryDir
-      check $? "$funcName: unable to cd to $galleryDir"
+      check $? "$funcName: unable to cd to gallery directory $galleryDir"
 
       for image in `cat $tmpImageList`; do
         root=`echo "$image" | sed 's:\.[^\.]*$::'`
         check $? "$funcName: unable to determine base name of gallery images for $image"
 
+        # Sort matching gallery file names by size so the thumbnail is listed first.
         galleryFiles=`ls -sL $root* 2> /dev/null | sort -n | sed 's:.* ::' | tr '\012' ' '`
         check $? "$funcName: unable to find gallery images for $image"
 
@@ -1270,6 +1275,14 @@ createGalleryList() {
         echo "$funcName: WARNING: did not find gallery files for every image in $imageDir"
         echo "$funcName: please examine $instrumentTop and its subdirectories"
       fi
+      
+      # This does not involve the tmp file, but it is convenient just to do this
+      # here, in the sub-shell.
+      cd $instrumentTop
+      check $? "$funcName: unable to cd to $instrumentTop to create zip file"
+      
+      zip -qr gallery.zip gallery
+      check $? "$funcName: unable to zip directory gallery in $instrumentTop"
     )
     status=$?
     rm -f $tmpImageList
@@ -1491,6 +1504,73 @@ checkSumFiles() {
         rm -f $logFile
       fi
     fi
+  )
+  check $?
+}
+
+# Adapted from a similar function in sbmt->pipeline->rawdata->bennu->modelRawdata2processed-bennu.sh.
+# This generates the imagelist-sum.txt and imagelist-fullpath-sum.txt needed for database and fixed-list queries
+# starting from an input make_sumfiles.in file. The output files are placed parallel to the input file
+# in the imager directory.
+#
+# @param imagerDir full path to directory containing input file make_sumfiles.in; also this is the location of
+#        the output files.
+# @param prefix the partial path prefix used in the output imagelist-fullpath-sum to create the full path
+#        relative to the top of the server directory.
+processMakeSumFiles() {
+  (
+    funcName=${FUNCNAME[0]}
+
+    checkSkip $funcName "$*"
+
+    imagerDir="$1"
+    makeSumFiles="$imagerDir/make_sumfiles.in"
+
+    if test "$imagerDir" = ""; then
+      check 1 "$funcName: missing first argument, which is the full path to where the instrument files are located"
+    elif test ! -d "$imagerDir"; then
+      check 1 "$funcName: first argument $imagerDir does not identify an imager directory"
+    elif test ! -f "$makeSumFiles"; then
+      check 1 "$funcName: input file $imagerDir/make_sumfiles.in does not exist"
+    fi
+  
+    # Make sure the prefix starts and ends with a single slash:
+    prefix=`echo $2 | sed 's:^/*:/:' | sed 's:/*$:/:'`
+    if test "$prefix" = ""; then
+      check 1 "$funcName: missing second argument, which is the partial path prefix to be written to the output file"
+    fi
+
+    rm -f $imagerDir/imagelist-sum.txt $imagerDir/imagelist-fullpath-sum.txt
+
+    # Create imagelist-fullpath-sum.txt.
+    cat $makeSumFiles | sed -e 's:.*[ 	]::' | sed "s:^:$prefix:" > $imagerDir/imagelist-fullpath-sum.txt
+    check $? "$funcName: unable to create $imagerDir/imagelist-fullpath-sum.txt"
+
+    # Create imagelist-sum.txt.
+    for sumFile in `sed 's: .*::' $makeSumFiles`; do
+      imageFile=`sed -n "s:^$sumFile .* ::p" $makeSumFiles`
+      sumFile="${sumFile}.SUM"
+      timeStamp=`head -2 $imagerDir/sumfiles/$sumFile | tail -1 | \
+        sed 's:^  *::' | sed 's:  *$::' | \
+        sed 's:jan:01:i' | \
+        sed 's:feb:02:i' | \
+        sed 's:mar:03:i' | \
+        sed 's:apr:04:i' | \
+        sed 's:may:05:i' | \
+        sed 's:jun:06:i' | \
+        sed 's:jul:07:i' | \
+        sed 's:aug:08:i' | \
+        sed 's:sep:09:i' | \
+        sed 's:oct:10:i' | \
+        sed 's:nov:11:i' | \
+        sed 's:dec:12:i' | \
+        sed 's:  *:-:' | \
+        sed 's:  *:-:' | \
+        sed 's:  *:T:' | \
+        sed 's:  *:-:g'`
+      echo "$imageFile $timeStamp" >> $imagerDir/imagelist-sum.txt
+    done
+    check $? "$funcName: unable to create $imagerDir/imagelist-sum.txt"
   )
   check $?
 }

@@ -47,6 +47,18 @@ destTop="$deployedTop/$outputTop-$processingId"
 # Copy the processed data area to the deployed area.
 copyDir .
 
+# To deliver Calypso/Thomas 2018, would need to uncomment the line below while
+# deploying the model in issue #2057. This would only work after #2058 is
+# correctly deployed. If this works correctly, at the end there would be
+# a symbolic link named iss in the directory:
+# /project/sbmt2/sbmt/data/bodies/calypso/thomas-2018-redmine-2057
+# The symbolic link would point to ../daly-2020/iss. That will do exactly
+# what is written in redmine: future updates to daly-2020 will automatically
+# be mirrored in thomas-2018 without redelivering thomas-2018.
+# Note I didn't actually test this, so if it doesn't do the right thing,
+# you may need to tweak it and re-run it:
+# createRelativeLink $deployedTop/calypso/daly-2020/iss $destTop/iss
+
 # Update the data symbolic links at the top level in the deployed area, and
 # the server area.
 updateRelativeLink $destTop $deployedTop/$outputTop $processingId

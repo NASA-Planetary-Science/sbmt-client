@@ -164,6 +164,41 @@ bodyFrame="920065803_FIXED" # Didymos-specific.
 # Need an Instrument sub-block like below for each instrument in this delivery.
 
 
+skipSection="true"
+
+# Instrument sub-block (ISS).
+#-------------------------------------------------------------------------------
+scId="cassini"
+instrument="iss"
+
+# Copy all delivered instrument files.
+copyDir $instrument
+
+#-------------------------------------------------------------------------------
+# Process SUM files
+checkSumFiles $destTop/$instrument
+processMakeSumFiles $destTop/$instrument $scId/$instrument/images
+
+# Update database tables.
+# This symbolic link is needed because the database generator appends "/data"
+# to the root URL, but this level of directory is not used in deliveries.
+createRelativeLink $processedTop $processedTop/data
+
+# This symbolic link is needed because the images are separate from the rest
+# of this model's files. Spacecraft ID part of the path must be all lowercase.
+createLink "$serverTop/$scId" "$processedTop/$scId"
+
+# Second argument is the pointing type. Supported values are the enumerations
+# in the ImageSource class.
+generateDatabaseTable ${instrument^^} GASKELL
+
+# Set up galleries (if present).
+createGalleryList $destTop/$instrument
+
+# End Instrument sub-block (ISS).
+#-------------------------------------------------------------------------------
+
+
 skipSection="true" # THIS SHOULD ALWAYS BE true WHEN CHECKING THIS IN!!!
 
 # Instrument sub-block (DRACO).
@@ -196,7 +231,7 @@ createLink $spiceKernelTop/$instrument $tmpSpiceDir
 # FITS images. If the images don't have time stamps, can use
 # createInfoFilesFromTimeStamps instead.
 createInfoFilesFromFITSImages $metakernel \
-  $bodyId $bodyFrame $scId $instrument $instFrame $timeKeyword \
+  $bodyId $bodyFrame ${scId^^} $instrument $instFrame $timeKeyword \
   $processedTop $imageDir $infoFileDir
 #-------------------------------------------------------------------------------
 
@@ -246,7 +281,7 @@ createLink $spiceKernelTop/$instrument $tmpSpiceDir
 # FITS images. If the images don't have time stamps, can use
 # createInfoFilesFromTimeStamps instead.
 createInfoFilesFromFITSImages $metakernel \
-  $bodyId $bodyFrame $scId $instrument $instFrame $timeKeyword \
+  $bodyId $bodyFrame ${scId^^} $instrument $instFrame $timeKeyword \
   $processedTop $imageDir $infoFileDir
 
 # Handle CORRECTED_SPICE pointings here. Put them in the place the
@@ -263,7 +298,7 @@ createLink $correctedSpiceKernelTop/$instrument $tmpSpiceDir
 # FITS images. If the images don't have time stamps, can use
 # createInfoFilesFromTimeStamps instead.
 createInfoFilesFromFITSImages $metakernel \
-  $bodyId $bodyFrame $scId $instrument $instFrame $timeKeyword \
+  $bodyId $bodyFrame ${scId^^} $instrument $instFrame $timeKeyword \
   $processedTop $imageDir $infoFileDir
 
 #-------------------------------------------------------------------------------
@@ -315,7 +350,7 @@ createLink $spiceKernelTop/$instrument $tmpSpiceDir
 # FITS images. If the images don't have time stamps, can use
 # createInfoFilesFromTimeStamps instead.
 createInfoFilesFromFITSImages $metakernel \
-  $bodyId $bodyFrame $scId $instrument $instFrame $timeKeyword \
+  $bodyId $bodyFrame ${scId^^} $instrument $instFrame $timeKeyword \
   $processedTop $imageDir $infoFileDir
 #-------------------------------------------------------------------------------
 
