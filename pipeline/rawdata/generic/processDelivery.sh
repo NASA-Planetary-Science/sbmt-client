@@ -38,8 +38,8 @@ fi
 # delivery.
 check 1 "Tailor this script first for the specific delivery being processed."
 
-# Work live in the server with no safety net!
-processedTop=$deployedTop
+# Work live in the server with no safety net. Only use this for special cases.
+# processedTop=$deployedTop
 
 #-------------------------------------------------------------------------------
 # Update this block for each delivery. All information below should be
