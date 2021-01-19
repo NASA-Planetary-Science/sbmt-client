@@ -621,7 +621,7 @@ public class SaturnConfigs extends SmallBodyViewConfig
                         )
                 };
                 c.imageSearchDefaultStartDate = new GregorianCalendar(2005, 1, 17, 0, 0, 0).getTime();
-                c.imageSearchDefaultEndDate = new GregorianCalendar(2017, 4, 3, 0, 0, 0).getTime();
+                c.imageSearchDefaultEndDate = new GregorianCalendar(2017, 4, 4, 0, 0, 0).getTime();
                 c.imageSearchFilterNames = new String[] {};
                 c.imageSearchUserDefinedCheckBoxesNames = new String[] {};
                 c.imageSearchDefaultMaxSpacecraftDistance = 1.0e7;
@@ -678,7 +678,7 @@ public class SaturnConfigs extends SmallBodyViewConfig
                         )
                 };
                 c.imageSearchDefaultStartDate = new GregorianCalendar(2005, 1, 17, 0, 0, 0).getTime();
-                c.imageSearchDefaultEndDate = new GregorianCalendar(2017, 4, 3, 0, 0, 0).getTime();
+                c.imageSearchDefaultEndDate = new GregorianCalendar(2017, 4, 4, 0, 0, 0).getTime();
                 c.imageSearchFilterNames = new String[] {};
                 c.imageSearchUserDefinedCheckBoxesNames = new String[] {};
                 c.imageSearchDefaultMaxSpacecraftDistance = 1.0e7;
