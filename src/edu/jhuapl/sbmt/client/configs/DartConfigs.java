@@ -4,8 +4,6 @@ import java.util.GregorianCalendar;
 import java.util.LinkedHashSet;
 import java.util.List;
 
-import org.apache.commons.text.WordUtils;
-
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
 
@@ -102,54 +100,54 @@ public class DartConfigs
 
         SmallBodyViewConfig c;
 
-        c = createSingleResolutionConfig_20200629_v01(ShapeModelBody.DIDYMOS, "ideal-impact1-20200629-v01", 1996);
+        c = createSingleResolutionConfig_20200629_v01(ShapeModelBody.DIDYMOS, "Ideal Impact 1 20200629 v01", 1996);
         configList.add(c);
 
         // Make this the default model.
         final SmallBodyViewConfig defaultConfig = c;
 
-        c = createSingleResolutionConfig_20200629_v01(ShapeModelBody.DIDYMOS, "ideal-impact2-20200629-v01", 1996);
+        c = createSingleResolutionConfig_20200629_v01(ShapeModelBody.DIDYMOS, "Ideal Impact 2 20200629 v01", 1996);
         configList.add(c);
-        c = createSingleResolutionConfig_20200629_v01(ShapeModelBody.DIDYMOS, "ideal-impact3-20200629-v01", 1996);
+        c = createSingleResolutionConfig_20200629_v01(ShapeModelBody.DIDYMOS, "Ideal Impact 3 20200629 v01", 1996);
         configList.add(c);
-        c = createSingleResolutionConfig_20200629_v01(ShapeModelBody.DIDYMOS, "ideal-impact4-20200629-v01", 3145728);
+        c = createSingleResolutionConfig_20200629_v01(ShapeModelBody.DIDYMOS, "Ideal Impact 4 20200629 v01", 3145728);
         configList.add(c);
-        c = createSingleResolutionConfig_20200629_v01(ShapeModelBody.DIDYMOS, "ideal-impact5-20200629-v01", 3145728);
+        c = createSingleResolutionConfig_20200629_v01(ShapeModelBody.DIDYMOS, "Ideal Impact 5 20200629 v01", 3145728);
         configList.add(c);
-        c = createSingleResolutionConfig_20201116_v01(ShapeModelBody.DIDYMOS, "ideal-impact6-ra-20201116-v01", 3145728);
+        c = createSingleResolutionConfig_20201116_v01(ShapeModelBody.DIDYMOS, "Ideal Impact 6 RA 20201116 v01", 3145728);
         configList.add(c);
-        c = createSingleResolutionConfig_20200629_v01(ShapeModelBody.DIMORPHOS, "ideal-impact1-20200629-v01", 3072);
+        c = createSingleResolutionConfig_20200629_v01(ShapeModelBody.DIMORPHOS, "Ideal Impact 1 20200629 v01", 3072);
         configList.add(c);
-        c = createSingleResolutionConfig_20200629_v01(ShapeModelBody.DIMORPHOS, "ideal-impact2-20200629-v01", 3145728);
+        c = createSingleResolutionConfig_20200629_v01(ShapeModelBody.DIMORPHOS, "Ideal Impact 2 20200629 v01", 3145728);
         configList.add(c);
-        c = createSingleResolutionConfig_20200629_v01(ShapeModelBody.DIMORPHOS, "ideal-impact3-20200629-v01", 3366134);
+        c = createSingleResolutionConfig_20200629_v01(ShapeModelBody.DIMORPHOS, "Ideal Impact 3 20200629 v01", 3366134);
         configList.add(c);
-        c = createSingleResolutionConfig_20200629_v01(ShapeModelBody.DIMORPHOS, "ideal-impact4-20200629-v01", 3145728);
+        c = createSingleResolutionConfig_20200629_v01(ShapeModelBody.DIMORPHOS, "Ideal Impact 4 20200629 v01", 3145728);
         configList.add(c);
-        c = createSingleResolutionConfig_20200629_v01(ShapeModelBody.DIMORPHOS, "ideal-impact5-20200629-v01", 3366134);
+        c = createSingleResolutionConfig_20200629_v01(ShapeModelBody.DIMORPHOS, "Ideal Impact 5 20200629 v01", 3366134);
         configList.add(c);
-        c = createSingleResolutionConfig_20201116_v01(ShapeModelBody.DIMORPHOS, "ideal-impact6-ra-20201116-v01", 3145728);
+        c = createSingleResolutionConfig_20201116_v01(ShapeModelBody.DIMORPHOS, "Ideal Impact 6 RA 20201116 v01", 3145728);
         configList.add(c);
 
-        c = createSingleResolutionConfig_20200629_v01(ShapeModelBody.DIDYMOS, "errors-impact1-20200629-v01", 1996);
+        c = createSingleResolutionConfig_20200629_v01(ShapeModelBody.DIDYMOS, "Errors Impact 1 20200629 v01", 1996);
         configList.add(c);
-        c = createSingleResolutionConfig_20200629_v01(ShapeModelBody.DIDYMOS, "errors-impact2-20200629-v01", 1996);
+        c = createSingleResolutionConfig_20200629_v01(ShapeModelBody.DIDYMOS, "Errors Impact 2 20200629 v01", 1996);
         configList.add(c);
-        c = createSingleResolutionConfig_20200629_v01(ShapeModelBody.DIDYMOS, "errors-impact3-20200629-v01", 1996);
+        c = createSingleResolutionConfig_20200629_v01(ShapeModelBody.DIDYMOS, "Errors Impact 3 20200629 v01", 1996);
         configList.add(c);
-        c = createSingleResolutionConfig_20200629_v01(ShapeModelBody.DIDYMOS, "errors-impact4-20200629-v01", 3145728);
+        c = createSingleResolutionConfig_20200629_v01(ShapeModelBody.DIDYMOS, "Errors Impact 4 20200629 v01", 3145728);
         configList.add(c);
-        c = createSingleResolutionConfig_20200629_v01(ShapeModelBody.DIDYMOS, "errors-impact5-20200629-v01", 3145728);
+        c = createSingleResolutionConfig_20200629_v01(ShapeModelBody.DIDYMOS, "Errors Impact 5 20200629 v01", 3145728);
         configList.add(c);
-        c = createSingleResolutionConfig_20200629_v01(ShapeModelBody.DIMORPHOS, "errors-impact1-20200629-v01", 3072);
+        c = createSingleResolutionConfig_20200629_v01(ShapeModelBody.DIMORPHOS, "Errors Impact 1 20200629 v01", 3072);
         configList.add(c);
-        c = createSingleResolutionConfig_20200629_v01(ShapeModelBody.DIMORPHOS, "errors-impact2-20200629-v01", 3145728);
+        c = createSingleResolutionConfig_20200629_v01(ShapeModelBody.DIMORPHOS, "Errors Impact 2 20200629 v01", 3145728);
         configList.add(c);
-        c = createSingleResolutionConfig_20200629_v01(ShapeModelBody.DIMORPHOS, "errors-impact3-20200629-v01", 3366134);
+        c = createSingleResolutionConfig_20200629_v01(ShapeModelBody.DIMORPHOS, "Errors Impact 3 20200629 v01", 3366134);
         configList.add(c);
-        c = createSingleResolutionConfig_20200629_v01(ShapeModelBody.DIMORPHOS, "errors-impact4-20200629-v01", 3145728);
+        c = createSingleResolutionConfig_20200629_v01(ShapeModelBody.DIMORPHOS, "Errors Impact 4 20200629 v01", 3145728);
         configList.add(c);
-        c = createSingleResolutionConfig_20200629_v01(ShapeModelBody.DIMORPHOS, "errors-impact5-20200629-v01", 3366134);
+        c = createSingleResolutionConfig_20200629_v01(ShapeModelBody.DIMORPHOS, "Errors Impact 5 20200629 v01", 3366134);
         configList.add(c);
 
         defaultConfig.defaultForMissions = DartClients;
@@ -172,12 +170,11 @@ public class DartConfigs
      * TWICE: once for each body.
      *
      * @param body the {@link ShapeModelBody} associated with this model
-     * @param modelId the model identifier, which must be unique to this client,
-     *            and may not contain any spaces
+     * @param label the label exactly as the model should appear in the menu.
      * @param numberPlates the number of plates in the single resolution model
      * @return the config
      */
-    protected SmallBodyViewConfig createSingleResolutionConfig_20200629_v01(ShapeModelBody body, String modelId, int numberPlates)
+    protected SmallBodyViewConfig createSingleResolutionConfig_20200629_v01(ShapeModelBody body, String label, int numberPlates)
     {
         SmallBodyViewConfig c = new SmallBodyViewConfig(ImmutableList.of(numberPlates + " plates"), ImmutableList.of(numberPlates)) {
             public SmallBodyViewConfig clone()
@@ -186,19 +183,36 @@ public class DartConfigs
             }
         };
 
+        // ShapeModelType rules: no spaces (replace with underscores). Mixed
+        // case, underscores and dashes are all OK. Includes a DART-specific
+        // hack to remove one dash that was not present in the early models.
+        ShapeModelType author = ShapeModelType.provide(label.replaceAll("\\s+", "-").toLowerCase().replace("impact-", "impact"));
+
+        // Model identifier string rules: lowercase, no spaces nor underscores
+        // (replace with dashes). Single dashes are OK. Valid for building
+        // server-side paths.
+        String modelId = author.name().replaceAll("[\\s-_]+", "-").toLowerCase();
+
+        // Body identifier string rules: lowercase, no spaces nor underscores.
+        // (replace with dashes). Single dashes are OK. Valid for building
+        // server-side paths.
+        String bodyId = body.name().replaceAll("[\\s-_]+", "-").toLowerCase();
+
         c.body = body;
         c.type = BodyType.ASTEROID;
         c.population = ShapeModelPopulation.NEO;
         c.system = ShapeModelBody.DIDYMOS_SYSTEM;
         c.dataUsed = ShapeModelDataUsed.SIMULATED;
-        c.author = ShapeModelType.provide(modelId);
-        c.modelLabel = createLabel(c.author);
-        c.rootDirOnServer = ("/" + body.name() + "/" + modelId.replaceAll("_", "-")).toLowerCase();
+        c.author = author;
+        c.modelLabel = label;
+        c.rootDirOnServer = "/" + bodyId + "/" + modelId;
         c.presentInMissions = ClientsWithDartModels;
         // c.defaultForMissions = ...
         c.setShapeModelFileExtension(".obj");
 
-        String tableBaseName = (body.name() + "_" + modelId + "_").replaceAll("[\\s-]", "_").toLowerCase();
+        // Database table rules: lowercase, no dashes (replace with
+        // underscores). Underscores are OK.
+        String tableBaseName = (bodyId + "_" + modelId + "_").replaceAll("-", "_").toLowerCase();
 
         String dracoDir = c.rootDirOnServer + "/draco";
         String dracoTable = tableBaseName + "draco";
@@ -286,12 +300,11 @@ public class DartConfigs
      * this hierarchy).
      *
      * @param body the {@link ShapeModelBody} associated with this model
-     * @param modelId the model identifier, which must be unique to this client,
-     *            and may not contain any spaces
+     * @param label the label exactly as the model should appear in the menu.
      * @param numberPlates the number of plates in the single resolution model
      * @return the config
      */
-    protected SmallBodyViewConfig createSingleResolutionConfig_20201116_v01(ShapeModelBody body, String modelId, int numberPlates)
+    protected SmallBodyViewConfig createSingleResolutionConfig_20201116_v01(ShapeModelBody body, String label, int numberPlates)
     {
         SmallBodyViewConfig c = new SmallBodyViewConfig(ImmutableList.of(numberPlates + " plates"), ImmutableList.of(numberPlates)) {
             public SmallBodyViewConfig clone()
@@ -300,31 +313,48 @@ public class DartConfigs
             }
         };
 
+        // ShapeModelType rules: no spaces (replace with underscores). Mixed
+        // case, underscores and dashes are all OK. Includes a DART-specific
+        // hack to remove one dash that was not present in the early models.
+        ShapeModelType author = ShapeModelType.provide(label.replaceAll("\\s+", "-").toLowerCase().replace("impact-", "impact"));
+
+        // Model identifier string rules: lowercase, no spaces nor underscores
+        // (replace with dashes). Single dashes are OK. Valid for building
+        // server-side paths.
+        String modelId = author.name().replaceAll("[\\s-_]+", "-").toLowerCase();
+
+        // Body identifier string rules: lowercase, no spaces nor underscores.
+        // (replace with dashes). Single dashes are OK. Valid for building
+        // server-side paths.
+        String bodyId = body.name().replaceAll("[\\s-_]+", "-").toLowerCase();
+
         c.body = body;
         c.type = BodyType.ASTEROID;
         c.population = ShapeModelPopulation.NEO;
         c.system = ShapeModelBody.DIDYMOS_SYSTEM;
         c.dataUsed = ShapeModelDataUsed.SIMULATED;
-        c.author = ShapeModelType.provide(modelId);
-        c.modelLabel = createLabel(c.author);
-        c.rootDirOnServer = ("/" + body.name() + "/" + modelId.replaceAll("_", "-")).toLowerCase();
+        c.author = author;
+        c.modelLabel = label;
+        c.rootDirOnServer = "/" + bodyId + "/" + modelId;
         c.presentInMissions = ClientsWithDartModels;
         // c.defaultForMissions = ...
         c.setShapeModelFileExtension(".obj");
 
-        String tableBaseName = (body.name() + "_" + modelId + "_").replaceAll("[\\s-]", "_").toLowerCase();
+        // Database table rules: lowercase, no dashes (replace with
+        // underscores). Underscores are OK.
+        String tableBaseName = (bodyId + "_" + modelId + "_").replaceAll("-", "_").toLowerCase();
 
         String dracoDir = c.rootDirOnServer + "/draco";
         String dracoTable = tableBaseName + "draco";
-        String dracoDataDir = "/dart/draco/" + modelId.replaceAll("_", "-").toLowerCase() + "/";
+        String dracoDataDir = "/dart/draco/" + modelId + "/";
 
         String leiaDir = c.rootDirOnServer + "/leia";
         String leiaTable = tableBaseName + "leia";
-        String leiaDataDir = "/dart/leia/" + modelId.replaceAll("_", "-").toLowerCase() + "/";
+        String leiaDataDir = "/dart/leia/" + modelId + "/";
 
         String lukeDir = c.rootDirOnServer + "/luke";
         String lukeTable = tableBaseName + "luke";
-        String lukeDataDir = "/dart/luke/" + modelId.replaceAll("_", "-").toLowerCase() + "/";
+        String lukeDataDir = "/dart/luke/" + modelId + "/";
 
         c.imagingInstruments = new ImagingInstrument[] {
                 new ImagingInstrument( //
@@ -383,31 +413,4 @@ public class DartConfigs
         return c;
     }
 
-    /**
-     * Create a cosmetically improved version of the shape model author for
-     * displaying in the tool.
-     *
-     * @param author the {@link ShapeModelType}
-     * @return the label
-     */
-    protected String createLabel(ShapeModelType author)
-    {
-        // Replace all separators with a single space.
-        String label = author.toString().replaceAll("[-_\\s]+", " ");
-
-        // Capitalize the first letter of every word.
-        label = WordUtils.capitalizeFully(label);
-
-        // DART-specific corrections: version should be lowercase v, dash after
-        // word "impact":
-        label = label.replaceAll("V(\\d)", "v$1").replaceAll("Impact", "Impact ");
-
-        return label;
-    }
-
-    public static void main(String[] args)
-    {
-        DartConfigs configs = new DartConfigs();
-        System.err.println(configs.createLabel(ShapeModelType.provide("ideal_impact1-20200629-v01")));
-    }
 }
