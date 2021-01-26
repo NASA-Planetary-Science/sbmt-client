@@ -535,6 +535,12 @@ public class StandardStateHistory implements StateHistory
 		this.pointingProvider = pointingProvider;
 	}
 
+	@Override
+	public void reloadPointingProvider() throws StateHistoryIOException {
+		// TODO Auto-generated method stub
+
+	}
+
 	public boolean isMapped() { return mapped; }
 
 	public void setMapped(boolean mapped) { this.mapped = mapped; }

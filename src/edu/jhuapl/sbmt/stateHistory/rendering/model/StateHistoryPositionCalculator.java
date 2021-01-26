@@ -293,10 +293,12 @@ public class StateHistoryPositionCalculator implements IStateHistoryPositionCalc
 		spacecraft.setLabelPosition(spacecraftPosition);
 		DecimalFormat formatter = new DecimalFormat();
 		formatter.setMaximumFractionDigits(2);
-		String rangeString = "Range: " + formatter.format(getSpacecraftRange(history, history.getPointingProvider().getCurrentInstFrameName(), history.getCurrentTime())) + " km";
-		String distString = "Dist: " + formatter.format(getSpacecraftDistance(history, history.getCurrentTime())) + " km";
-		spacecraft.setLabel(distString);
-
+		if (history.getPointingProvider() != null)
+		{
+			String rangeString = "Range: " + formatter.format(getSpacecraftRange(history, history.getPointingProvider().getCurrentInstFrameName(), history.getCurrentTime())) + " km";
+			String distString = "Dist: " + formatter.format(getSpacecraftDistance(history, history.getCurrentTime())) + " km";
+			spacecraft.setLabel(distString);
+		}
 //		spacecraftLabelActor.SetAttachmentPoint(spacecraftPosition);
 //		spacecraftLabelActor.setDistanceText(history.getCurrentState(), spacecraftPosition, smallBodyModel);
 

@@ -144,7 +144,7 @@ public class SpiceStateHistory implements StateHistory
 					description, color, type, sourceFile);
 
 			stateHistory.setSpiceInfo(spiceInfo);
-			
+
 			try
 			{
 				stateHistory.setCurrentTime(startTime);
@@ -436,7 +436,7 @@ public class SpiceStateHistory implements StateHistory
 			{
 				buildPointingProvider();
 			}
-			catch (StateHistoryIOException | SpiceKernelNotFoundException e)
+			catch (StateHistoryIOException e)
 			{
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -449,6 +449,12 @@ public class SpiceStateHistory implements StateHistory
 	{
 		this.pointingProvider = pointingProvider;
 
+	}
+
+	@Override
+	public void reloadPointingProvider() throws StateHistoryIOException
+	{
+		buildPointingProvider();
 	}
 
 	/**
@@ -492,12 +498,12 @@ public class SpiceStateHistory implements StateHistory
 		setType(StateHistorySourceType.SPICE);
 	}
 
-	private void buildPointingProvider() throws StateHistoryIOException, SpiceKernelNotFoundException
+	private void buildPointingProvider() throws StateHistoryIOException
 	{
 		Path mkPath = Paths.get(sourceFile);
 		if (!mkPath.toFile().exists())
 		{
-			throw new SpiceKernelNotFoundException("Cannot find metakernel at specified location.");
+			throw new StateHistoryIOException(new SpiceKernelNotFoundException("Cannot find metakernel at specified location."));
 		}
 		try
 		{
@@ -516,7 +522,7 @@ public class SpiceStateHistory implements StateHistory
 		}
 		catch (FileNotFoundException fnfe)
 		{
-			throw new SpiceKernelNotFoundException("Cannot find metakernel at specified location.", fnfe);
+			throw new StateHistoryIOException("Cannot find metakernel at specified location.", new SpiceKernelNotFoundException("Cannot find metakernel at specified location.", fnfe));
 		}
 		catch (AdapterInstantiationException aie)
 		{

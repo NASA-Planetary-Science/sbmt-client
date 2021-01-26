@@ -7,6 +7,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
 
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 
 import edu.jhuapl.saavtk.util.FileUtil;
@@ -44,7 +45,7 @@ public class SpiceKernelIngestor
         List<File> list = provider.get();
         for (File file : list)
         {
-        	FileUtil.copyFile(file, new File(newDirectory, file.getName()));
+        	FileUtils.copyDirectoryToDirectory(file.getParentFile(), newDirectory);
         }
 
         //update the PATH_VALUES line in the metakernel to match the new directory

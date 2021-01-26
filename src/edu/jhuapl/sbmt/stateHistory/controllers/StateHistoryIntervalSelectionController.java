@@ -16,6 +16,8 @@ import edu.jhuapl.sbmt.client.SmallBodyModel;
 import edu.jhuapl.sbmt.stateHistory.model.DefaultStateHistoryModelChangedListener;
 import edu.jhuapl.sbmt.stateHistory.model.StateHistoryModel;
 import edu.jhuapl.sbmt.stateHistory.model.interfaces.StateHistory;
+import edu.jhuapl.sbmt.stateHistory.model.io.SpiceKernelIngestor;
+import edu.jhuapl.sbmt.stateHistory.model.io.SpiceKernelNotFoundException;
 import edu.jhuapl.sbmt.stateHistory.model.io.StateHistoryIOException;
 import edu.jhuapl.sbmt.stateHistory.model.io.StateHistoryModelIOHelper;
 import edu.jhuapl.sbmt.stateHistory.model.stateHistory.StateHistoryKey;
@@ -54,19 +56,51 @@ public class StateHistoryIntervalSelectionController
 		//Queries for a file to load history from, passing to the model for loading
         view.getLoadStateHistoryButton().addActionListener(e -> {
 
+        	StateHistory historyFromFile = null;
         	File file = CustomFileChooser.showOpenDialog(view, "Select File");
         	if (file == null) return;
         	try
 			{
-        		StateHistory historyFromFile = StateHistoryModelIOHelper.loadStateHistoryFromFile(file, bodyModel.getModelName(), new StateHistoryKey(historyModel.getRuns()));
+        		historyFromFile = StateHistoryModelIOHelper.loadStateHistoryFromFile(file, bodyModel.getModelName(), new StateHistoryKey(historyModel.getRuns()));
+        		historyFromFile.reloadPointingProvider();
         		historyModel.addInterval(historyFromFile);
 			}
-        	catch (StateHistoryIOException e1)
-			{
-        		JOptionPane.showMessageDialog(null, e1.getMessage(), "Loading Error",
-                        JOptionPane.ERROR_MESSAGE);
-                return;
-			}
+        	catch (StateHistoryIOException shioe)
+        	{
+        		if (shioe.getCause() instanceof SpiceKernelNotFoundException)
+        		{
+					String[] options = {"Yes", "No"};
+					int result = JOptionPane.showOptionDialog(null, "Cannot find metakernel " + FilenameUtils.getBaseName(historyFromFile.getSourceFile())
+																	+ " at specified location for state history " + historyFromFile.getStateHistoryName()
+																	+ ". Would you like to choose a new file?  Otherwise the state history will be removed.", "Metakernel not found",
+																	JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE, null, options, options[0]);
+
+					if (result == 0)
+					{
+						File newFile = CustomFileChooser.showOpenDialog(view, "Select Metakernel");
+						if (newFile == null) return;
+						File selectedMetakernel = newFile;
+						SpiceKernelIngestor kernelIngestor = new SpiceKernelIngestor(historyModel.getCustomDataFolder());
+						String newKernelLocationAfterIngestion;
+						try {
+							newKernelLocationAfterIngestion = kernelIngestor.ingestMetaKernelToCache(selectedMetakernel.getAbsolutePath());
+							historyFromFile.setSourceFile(newKernelLocationAfterIngestion);
+							historyFromFile.reloadPointingProvider();
+			        		historyModel.addInterval(historyFromFile);
+						} catch (StateHistoryIOException | IOException e1) {
+							// TODO Auto-generated catch block
+							e1.printStackTrace();
+						}
+					}
+        		}
+				else
+				{
+					JOptionPane.showMessageDialog(null, shioe.getMessage(), "Loading Error, see console for details.",
+	                        JOptionPane.ERROR_MESSAGE);
+					shioe.printStackTrace();
+	                return;
+				}
+        	}
         });
 
         //Gets a file to save the history to, and passes that onto the model for saving

@@ -234,6 +234,8 @@ public interface StateHistory
 	 */
 	public void setPointingProvider(IPointingProvider pointingProvider);
 
+	public void reloadPointingProvider() throws StateHistoryIOException;
+
 	public boolean isMapped();
 
 	public void setMapped(boolean isMapped);
