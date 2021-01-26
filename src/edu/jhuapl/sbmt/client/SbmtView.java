@@ -806,6 +806,7 @@ public class SbmtView extends View implements PropertyChangeListener
     public void setRenderer(Renderer renderer)
     {
         this.renderer = renderer;
+        if (rendererManager == null) return;
         rendererManager.setRenderer(renderer);
     }
 
