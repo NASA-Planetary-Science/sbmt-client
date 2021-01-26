@@ -16,16 +16,14 @@ import com.google.common.collect.ImmutableList;
 
 import vtk.vtkCamera;
 
-import edu.jhuapl.saavtk.color.painter.ColorBarPainter;
-import edu.jhuapl.saavtk.gui.StatusBar;
 import edu.jhuapl.saavtk.gui.View;
+import edu.jhuapl.saavtk.gui.render.ConfigurableSceneNotifier;
 import edu.jhuapl.saavtk.gui.render.RenderPanel;
 import edu.jhuapl.saavtk.gui.render.Renderer;
 import edu.jhuapl.saavtk.model.Graticule;
 import edu.jhuapl.saavtk.model.Model;
 import edu.jhuapl.saavtk.model.ModelManager;
 import edu.jhuapl.saavtk.model.ModelNames;
-import edu.jhuapl.saavtk.model.PolyhedralModel;
 import edu.jhuapl.saavtk.model.ShapeModelBody;
 import edu.jhuapl.saavtk.model.ShapeModelType;
 import edu.jhuapl.saavtk.model.structure.CircleModel;
@@ -35,8 +33,8 @@ import edu.jhuapl.saavtk.model.structure.LineModel;
 import edu.jhuapl.saavtk.model.structure.PointModel;
 import edu.jhuapl.saavtk.model.structure.PolygonModel;
 import edu.jhuapl.saavtk.pick.PickManager;
-import edu.jhuapl.saavtk.pick.PickUtil;
 import edu.jhuapl.saavtk.popup.PopupMenu;
+import edu.jhuapl.saavtk.status.StatusNotifier;
 import edu.jhuapl.saavtk.util.Configuration;
 import edu.jhuapl.saavtk.util.Properties;
 import edu.jhuapl.sbmt.client.BodyType;
@@ -95,7 +93,6 @@ public class SbmtTesterView extends View implements PropertyChangeListener
 	private static final long serialVersionUID = 1L;
 	private final TrackedMetadataManager stateManager;
 	private final Map<String, MetadataManager> metadataManagers;
-	private ColorBarPainter smallBodyCBP;
 
 	/**
 	 * By default a view should be created empty. Only when the user requests to
@@ -103,9 +100,9 @@ public class SbmtTesterView extends View implements PropertyChangeListener
 	 * reduce memory and startup time. Therefore, this function should be called
 	 * prior to first time the View is shown in order to cause it
 	 */
-	public SbmtTesterView(StatusBar statusBar, SmallBodyViewConfigTest smallBodyConfig)
+	public SbmtTesterView(StatusNotifier aStatusNotifier, SmallBodyViewConfigTest smallBodyConfig)
 	{
-		super(statusBar, smallBodyConfig);
+		super(aStatusNotifier, smallBodyConfig);
 		this.stateManager = TrackedMetadataManager.of("View " + getUniqueName());
 		this.metadataManagers = new HashMap<>();
 		initializeStateManager();
@@ -123,7 +120,8 @@ public class SbmtTesterView extends View implements PropertyChangeListener
 		ShapeModelType author = config.author;
 		String modelLabel = config.modelLabel;
 		BodyType type = config.type;
-		ShapeModelPopulation population = config.population;
+        ShapeModelPopulation population = config.population;
+        ShapeModelBody system = config.system;
 		ShapeModelDataUsed dataUsed = config.dataUsed;
 		ShapeModelBody body = config.body;
 		if (ShapeModelType.CUSTOM == author)
@@ -135,6 +133,8 @@ public class SbmtTesterView extends View implements PropertyChangeListener
 			String path = type.str;
 			if (population != null && population != ShapeModelPopulation.NA)
 				path += " > " + population;
+			if (system != null)
+			    path += " > " + system;
 			path += " > " + body;
 			if (dataUsed != null && dataUsed != ShapeModelDataUsed.NA)
 				path += " > " + dataUsed;
@@ -254,12 +254,14 @@ public class SbmtTesterView extends View implements PropertyChangeListener
 			allModels.put(ModelNames.STATE_HISTORY_COLLECTION, new StateHistoryCollection(smallBodyModel));
 		}
 
-		allModels.put(ModelNames.LINE_STRUCTURES, new LineModel(smallBodyModel));
-		allModels.put(ModelNames.POLYGON_STRUCTURES, new PolygonModel(smallBodyModel));
-		allModels.put(ModelNames.CIRCLE_STRUCTURES, new CircleModel(smallBodyModel));
-		allModels.put(ModelNames.ELLIPSE_STRUCTURES, new EllipseModel(smallBodyModel));
-		allModels.put(ModelNames.POINT_STRUCTURES, new PointModel(smallBodyModel));
-		allModels.put(ModelNames.CIRCLE_SELECTION, new CircleSelectionModel(smallBodyModel));
+		ConfigurableSceneNotifier tmpSceneChangeNotifier = new ConfigurableSceneNotifier();
+		StatusNotifier tmpStatusNotifier = getStatusNotifier();
+		allModels.put(ModelNames.LINE_STRUCTURES, new LineModel<>(tmpSceneChangeNotifier, tmpStatusNotifier, smallBodyModel));
+		allModels.put(ModelNames.POLYGON_STRUCTURES, new PolygonModel(tmpSceneChangeNotifier, tmpStatusNotifier, smallBodyModel));
+		allModels.put(ModelNames.CIRCLE_STRUCTURES, new CircleModel(tmpSceneChangeNotifier, tmpStatusNotifier, smallBodyModel));
+		allModels.put(ModelNames.ELLIPSE_STRUCTURES, new EllipseModel(tmpSceneChangeNotifier, tmpStatusNotifier, smallBodyModel));
+		allModels.put(ModelNames.POINT_STRUCTURES, new PointModel(tmpSceneChangeNotifier, tmpStatusNotifier, smallBodyModel));
+		allModels.put(ModelNames.CIRCLE_SELECTION, new CircleSelectionModel(tmpSceneChangeNotifier, tmpStatusNotifier, smallBodyModel));
 		DEMCollection demCollection = new DEMCollection(smallBodyModel, getModelManager());
 		allModels.put(ModelNames.DEM, demCollection);
 		DEMBoundaryCollection demBoundaryCollection = new DEMBoundaryCollection(smallBodyModel, getModelManager());
@@ -272,10 +274,11 @@ public class SbmtTesterView extends View implements PropertyChangeListener
 		customCubeCollection.setModelManager(getModelManager());
 		demCollection.setModelManager(getModelManager());
 		demBoundaryCollection.setModelManager(getModelManager());
+		tmpSceneChangeNotifier.setTarget(getModelManager());
 
 		getModelManager().addPropertyChangeListener(this);
 
-		SBMTInfoWindowManagerFactory.initializeModels(getModelManager(), getStatusBar());
+		SBMTInfoWindowManagerFactory.initializeModels(getModelManager(), getLegacyStatusHandler());
 	}
 
 	@Override
@@ -369,7 +372,7 @@ public class SbmtTesterView extends View implements PropertyChangeListener
 	@Override
 	protected void setupTabs()
 	{
-		addTab(getPolyhedralModelConfig().getShapeModelName(), new SmallBodyControlPanel(getModelManager(), getPolyhedralModelConfig().getShapeModelName()));
+		addTab(getPolyhedralModelConfig().getShapeModelName(), new SmallBodyControlPanel(getRenderer(), getModelManager(), getPolyhedralModelConfig().getShapeModelName()));
 
 		if (getConfig().hasFlybyData)
 		{
@@ -433,7 +436,6 @@ public class SbmtTesterView extends View implements PropertyChangeListener
 	protected void setupPickManager()
 	{
 		PickManager tmpPickManager = new PickManager(getRenderer(), getModelManager());
-		PickUtil.installDefaultPickHandler(tmpPickManager, getStatusBar(), getRenderer(), getModelManager());
 		setPickManager(tmpPickManager);
 
 		// Manually register the PopupManager with the PickManager
@@ -445,7 +447,7 @@ public class SbmtTesterView extends View implements PropertyChangeListener
 	@Override
 	protected void setupInfoPanelManager()
 	{
-		setInfoPanelManager(new SbmtInfoWindowManager(getModelManager(), getStatusBar()));
+		setInfoPanelManager(new SbmtInfoWindowManager(getModelManager()));
 	}
 
 	@Override
@@ -463,42 +465,15 @@ public class SbmtTesterView extends View implements PropertyChangeListener
 	public void propertyChange(PropertyChangeEvent e)
 	{
 		if (e.getPropertyName().equals(Properties.MODEL_CHANGED))
-		{
 			renderer.notifySceneChange();
-
-			if (smallBodyCBP == null)
-				return;
-
-			PolyhedralModel sbModel = (PolyhedralModel) getModelManager().getModel(ModelNames.SMALL_BODY);
-			if (sbModel.isColoringDataAvailable() && sbModel.getColoringIndex() >= 0)
-			{
-				smallBodyCBP.setColorMapAttr(sbModel.getColormap().getColorMapAttr());
-				smallBodyCBP.setNumberOfLabels(sbModel.getColormap().getNumberOfLabels());
-
-				int index = sbModel.getColoringIndex();
-				String title = sbModel.getColoringName(index).trim();
-				String units = sbModel.getColoringUnits(index).trim();
-				if (units.isEmpty() == false)
-					title += " (" + units + ")";
-				smallBodyCBP.setTitle(title);
-
-				renderer.addVtkPropProvider(smallBodyCBP);
-			}
-			else
-				renderer.delVtkPropProvider(smallBodyCBP);
-		}
 		else
-		{
 			renderer.getRenderWindowPanel().Render();
-		}
 	}
 
 	@Override
 	public void setRenderer(Renderer renderer)
 	{
 		this.renderer = renderer;
-
-		smallBodyCBP = new ColorBarPainter(renderer);
 	}
 
 	private static final Version METADATA_VERSION = Version.of(1, 1); // Nested CURRENT_TAB stored as an array of strings.

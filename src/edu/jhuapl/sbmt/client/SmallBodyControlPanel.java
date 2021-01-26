@@ -25,6 +25,7 @@ import javax.swing.text.html.HTMLDocument;
 import javax.swing.text.html.HTMLEditorKit;
 
 import edu.jhuapl.saavtk.gui.panel.PolyhedralModelControlPanel;
+import edu.jhuapl.saavtk.gui.render.Renderer;
 import edu.jhuapl.saavtk.model.ModelManager;
 import edu.jhuapl.saavtk.model.ModelNames;
 import edu.jhuapl.saavtk.model.PolyhedralModel;
@@ -49,9 +50,9 @@ public class SmallBodyControlPanel extends PolyhedralModelControlPanel
     private final JLabel opacityLabel;
     private final List<OpacityChangeListener> imageChangeListeners;
 
-    public SmallBodyControlPanel(ModelManager modelManager, String bodyName)
+    public SmallBodyControlPanel(Renderer aRenderer, ModelManager modelManager, String bodyName)
     {
-        super(modelManager, bodyName);
+        super(aRenderer, modelManager, bodyName);
         this.imageMapKeys = new HashMap<>();
         this.imageChangeListeners = new ArrayList<>();
 
@@ -74,7 +75,8 @@ public class SmallBodyControlPanel extends PolyhedralModelControlPanel
         initialize();
     }
 
-    protected void addCustomControls(JPanel panel)
+    @Override
+	protected void addCustomControls(JPanel panel)
     {
         SmallBodyModel smallBodyModel = (SmallBodyModel) getModelManager().getPolyhedralModel();
 

@@ -28,6 +28,8 @@ public class GenericPhpQuery extends DatabaseQueryBase implements MetadataManage
 
     String tablePrefixSpc;
     String tablePrefixSpice;
+    boolean publicOnly = false;
+    String imageNameTable = null;
 
     @Override
     public GenericPhpQuery clone()
@@ -61,6 +63,16 @@ public class GenericPhpQuery extends DatabaseQueryBase implements MetadataManage
         this.tablePrefixSpice = tablePrefixSpice.toLowerCase();
     }
 
+    public void setPublicOnly(boolean publicOnly)
+    {
+    	this.publicOnly = publicOnly;
+
+    }
+
+    public void setImageNameTable(String imageNameTable)
+    {
+    	this.imageNameTable = imageNameTable;
+    }
 
 
     @Override
@@ -102,12 +114,12 @@ public class GenericPhpQuery extends DatabaseQueryBase implements MetadataManage
                     rootPath + "/images/", galleryPath, searchString);
             return SearchResultsMetadata.of("", resultsFromFileListOnServer);   //"" should really be a query name here, if applicable
         }
-        else if (imageSource == ImageSource.CORRECTED_SPICE)
-        {
-            List<List<String>> resultsFromFileListOnServer = getResultsFromFileListOnServer(rootPath + "/infofiles-corrected/imagelist.txt",
-                    rootPath + "/images/", galleryPath, searchString);
-            return SearchResultsMetadata.of("", resultsFromFileListOnServer);   //"" should really be a query name here, if applicable
-        }
+//        else if (imageSource == ImageSource.CORRECTED_SPICE)
+//        {
+//            List<List<String>> resultsFromFileListOnServer = getResultsFromFileListOnServer(rootPath + "/infofiles-corrected/imagelist.txt",
+//                    rootPath + "/images/", galleryPath, searchString);
+//            return SearchResultsMetadata.of("", resultsFromFileListOnServer);   //"" should really be a query name here, if applicable
+//        }
         /*else if (imageSource == ImageSource.GASKELL_UPDATED)
         {
             return getResultsFromFileListOnServer(rootPath + "/sumfiles_to_be_delivered/imagelist.txt",
@@ -148,7 +160,19 @@ public class GenericPhpQuery extends DatabaseQueryBase implements MetadataManage
                 args.put("imagesDatabase", imagesDatabase);
                 args.put("searchString", searchString);
 
-                results = doQuery("searchimages.php", constructUrlArguments(args));
+                if (imageNameTable != null)
+                {
+                	String visibilityStr = publicOnly ? "public" : "public,private";
+                	args.put("imageLocationDatabase", imagesDatabase);
+                	args.put("visibilityStr", visibilityStr);
+                	results = doQuery("searchimages2.php", constructUrlArguments(args));
+                }
+                else
+                {
+                	results = doQuery("searchimages.php", constructUrlArguments(args));
+                }
+
+
 
                 return SearchResultsMetadata.of("", results);   //"" should really be a query name here, if applicable
             }
@@ -222,7 +246,19 @@ public class GenericPhpQuery extends DatabaseQueryBase implements MetadataManage
                 args.put("cubes", cubes);
             }
 
-            results = doQuery("searchimages.php", constructUrlArguments(args));
+            if (imageNameTable != null)
+            {
+//            	System.out.println("GenericPhpQuery: runQuery: image name table " + imageNameTable);
+            	String visibilityStr = publicOnly ? "public" : "public,private";
+            	args.put("imageLocationDatabase", imageNameTable);
+            	args.put("visibilityStr", visibilityStr);
+            	results = doQuery("searchimages2.php", constructUrlArguments(args), true);
+            }
+            else
+            {
+            	results = doQuery("searchimages.php", constructUrlArguments(args));
+            }
+//            results = doQuery("searchimages.php", constructUrlArguments(args));
 
         }
         catch (RuntimeException e)
@@ -240,7 +276,7 @@ public class GenericPhpQuery extends DatabaseQueryBase implements MetadataManage
         }
         catch (IOException e)
         {
-//            e.printStackTrace();
+            e.printStackTrace();
             System.err.println("GenericPhpQuery: runQuery: Can't reach database server, or some other database access failure; falling back to cached results");
             results = getCachedResults(getDataPath(), searchString);
         }
@@ -421,6 +457,8 @@ public class GenericPhpQuery extends DatabaseQueryBase implements MetadataManage
     Key<String> tablePrefixSpcKey = Key.of("tablePrefixSpc");
     Key<String> tablePrefixSpiceKey = Key.of("tablePrefixSpice");
     Key<String> galleryPathKey = Key.of("galleryPath");
+    Key<String> imageNameTableKey = Key.of("imageNameTable");
+    Key<Boolean> publicOnlyKey = Key.of("publicOnly");
 
     @Override
     public Metadata store()
@@ -430,6 +468,9 @@ public class GenericPhpQuery extends DatabaseQueryBase implements MetadataManage
         write(tablePrefixSpcKey, tablePrefixSpc, configMetadata);
         write(tablePrefixSpiceKey, tablePrefixSpice, configMetadata);
         write(galleryPathKey, galleryPath, configMetadata);
+        if (imageNameTable != null)
+        	write(imageNameTableKey, imageNameTable, configMetadata);
+        write(publicOnlyKey, publicOnly, configMetadata);
         return configMetadata;
     }
 
@@ -439,14 +480,9 @@ public class GenericPhpQuery extends DatabaseQueryBase implements MetadataManage
         rootPath = read(rootPathKey, source);
         tablePrefixSpc = read(tablePrefixSpcKey, source);
         tablePrefixSpice = read(tablePrefixSpiceKey, source);
-        try
-        {
-            galleryPath = read(galleryPathKey, source);
-        }
-        catch (IllegalArgumentException iae)
-        {
-
-        }
+        if (source.hasKey(galleryPathKey)) galleryPath = read(galleryPathKey, source);
+        if (source.hasKey(imageNameTableKey)) imageNameTable = read(imageNameTableKey, source);
+        if (source.hasKey(publicOnlyKey)) publicOnly = read(publicOnlyKey, source);
     }
 
 

@@ -50,16 +50,17 @@ import vtk.vtkRenderer;
 
 import edu.jhuapl.saavtk.camera.gui.CameraQuaternionPanel;
 import edu.jhuapl.saavtk.camera.gui.CameraRegularPanel;
+import edu.jhuapl.saavtk.color.gui.ColorBarConfigPanel;
 import edu.jhuapl.saavtk.color.gui.ColorTableListCellRenderer;
+import edu.jhuapl.saavtk.color.painter.ColorBarChangeListener;
+import edu.jhuapl.saavtk.color.painter.ColorBarChangeType;
 import edu.jhuapl.saavtk.color.painter.ColorBarPainter;
 import edu.jhuapl.saavtk.color.table.ColorMapAttr;
 import edu.jhuapl.saavtk.color.table.ColorTable;
 import edu.jhuapl.saavtk.color.table.ColorTableUtil;
-import edu.jhuapl.saavtk.colormap.Colormap;
-import edu.jhuapl.saavtk.colormap.Colormaps;
-import edu.jhuapl.saavtk.gui.StatusBar;
 import edu.jhuapl.saavtk.gui.dialog.CustomFileChooser;
 import edu.jhuapl.saavtk.gui.dialog.ScaleDataRangeDialog;
+import edu.jhuapl.saavtk.gui.render.ConfigurableSceneNotifier;
 import edu.jhuapl.saavtk.gui.render.RenderIoUtil;
 import edu.jhuapl.saavtk.gui.render.Renderer;
 import edu.jhuapl.saavtk.model.Model;
@@ -76,10 +77,13 @@ import edu.jhuapl.saavtk.pick.PickUtil;
 import edu.jhuapl.saavtk.pick.Picker;
 import edu.jhuapl.saavtk.scalebar.ScaleBarPainter;
 import edu.jhuapl.saavtk.scalebar.gui.ScaleBarPanel;
+import edu.jhuapl.saavtk.status.LocationStatusHandler;
+import edu.jhuapl.saavtk.status.gui.StatusBarPanel;
 import edu.jhuapl.saavtk.structure.PolyLine;
 import edu.jhuapl.saavtk.structure.PolyLineMode;
 import edu.jhuapl.saavtk.structure.io.StructureMiscUtil;
 import edu.jhuapl.saavtk.util.LatLon;
+import edu.jhuapl.saavtk.util.PolyDataUtil;
 import edu.jhuapl.saavtk.util.Properties;
 import edu.jhuapl.saavtk.view.lod.LodStatusPainter;
 import edu.jhuapl.saavtk.view.lod.gui.LodPanel;
@@ -92,7 +96,8 @@ import glum.gui.action.PopupMenu;
 import glum.gui.component.GComboBox;
 import net.miginfocom.swing.MigLayout;
 
-public class DEMView extends JFrame implements ActionListener, PickListener, PropertyChangeListener, WindowListener
+public class DEMView extends JFrame
+		implements ActionListener, ColorBarChangeListener, PickListener, PropertyChangeListener, WindowListener
 {
 	// Constants
 	private static final String Profile = "Profile";
@@ -117,9 +122,11 @@ public class DEMView extends JFrame implements ActionListener, PickListener, Pro
 	private final ColorBarPainter demColorBarPainter;
 
 	// Gui vars
+	private final ColorBarConfigPanel demCBCP;
 	private ScaleDataRangeDialog scaleDataDialog;
 	private GComboBox<ColorTable> colorTableBox;
 	private JLabel colorTableL;
+	private JButton editColorBarB;
 
 	private JComboBox<?> coloringTypeBox;
 	private JButton scaleColoringButton;
@@ -148,8 +155,8 @@ public class DEMView extends JFrame implements ActionListener, PickListener, Pro
 
 		setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 
-		StatusBar statusBar = new StatusBar(true);
-		add(statusBar, BorderLayout.PAGE_END);
+		StatusBarPanel tmpStatusBarPanel = new StatusBarPanel();
+		add(tmpStatusBarPanel, BorderLayout.PAGE_END);
 
 		// Look up dem object in main view
 		DEM secDEM = demCollection.getDEM(key);
@@ -167,13 +174,15 @@ public class DEMView extends JFrame implements ActionListener, PickListener, Pro
 		}
 		priDEM.setColoringIndex(secDEM.getColoringIndex());
 
-		lineModel = new LineModel<>(priDEM, PolyLineMode.PROFILE);
+		ConfigurableSceneNotifier tmpSceneChangeNotifier = new ConfigurableSceneNotifier();
+		lineModel = new LineModel<>(tmpSceneChangeNotifier, tmpStatusBarPanel, priDEM, PolyLineMode.PROFILE);
 		lineModel.setMaximumVerticesPerLine(2);
 		HashMap<ModelNames, Model> allModels = new HashMap<ModelNames, Model>();
 		allModels.put(ModelNames.SMALL_BODY, priDEM);
 		allModels.put(ModelNames.LINE_STRUCTURES, lineModel);
 
 		modelManager = new ModelManager(priDEM, allModels);
+		tmpSceneChangeNotifier.setTarget(modelManager);
 
 		renderer = new Renderer(priDEM);
 		renderer.addVtkPropProvider(modelManager);
@@ -186,10 +195,15 @@ public class DEMView extends JFrame implements ActionListener, PickListener, Pro
 
 		pickManager = new PickManager(renderer, modelManager);
 		pickManager.getDefaultPicker().addListener(renderer);
-		PickUtil.installDefaultPickHandler(pickManager, statusBar, renderer, modelManager);
+
+  		LocationStatusHandler tmpLocationStatusHandler = new LocationStatusHandler(tmpStatusBarPanel, renderer);
+  		pickManager.getDefaultPicker().addListener(tmpLocationStatusHandler);
+
 		priPicker = new ControlPointsPicker<>(renderer, pickManager, priDEM, lineModel);
 
 		demColorBarPainter = new ColorBarPainter(renderer);
+		demCBCP = new ColorBarConfigPanel(this, demColorBarPainter);
+		demCBCP.addActionListener(this);
 
 		plot = new DEMPlot(lineModel, priDEM, secDEM.getColoringIndex());
 
@@ -235,6 +249,7 @@ public class DEMView extends JFrame implements ActionListener, PickListener, Pro
 		setSize(800, 450);
 
 		// Register for events of interest
+		demColorBarPainter.addListener(this);
 		priDEM.addPropertyChangeListener(this);
 		lineModel.addPropertyChangeListener(this);
 		modelManager.addPropertyChangeListener(this);
@@ -255,13 +270,21 @@ public class DEMView extends JFrame implements ActionListener, PickListener, Pro
 		// ColorMap ComboBox UI
 		if (source == colorTableBox)
 		{
-			doUpdateColoringConfig();
+			ColorMapAttr tmpCMA = demColorBarPainter.getColorMapAttr();
+			tmpCMA = new ColorMapAttr(colorTableBox.getChosenItem(), tmpCMA.getMinVal(), tmpCMA.getMaxVal(),
+					tmpCMA.getNumLevels(), tmpCMA.getIsLogScale());
+
+			demColorBarPainter.setColorMapAttr(tmpCMA);
 			updateControlPanel(source);
 		}
 		else if (source == coloringTypeBox)
 		{
-			doUpdateColoringConfig();
+			doUpdateFeatureType();
 			updateControlPanel(source);
+		}
+		else if (source == editColorBarB)
+		{
+			demCBCP.setVisibleAsModal();
 		}
 		else if (source == loadButton)
 		{
@@ -336,6 +359,13 @@ public class DEMView extends JFrame implements ActionListener, PickListener, Pro
 	}
 
 	@Override
+	public void handleColorBarChanged(Object aSource, ColorBarChangeType aType)
+	{
+		if (aType == ColorBarChangeType.ColorMap)
+			doUpdateColorMapAttr();
+	}
+
+	@Override
 	public void handlePickAction(InputEvent aEvent, PickMode aMode, PickTarget aPrimaryTarg, PickTarget aSurfaceTarg)
 	{
 		// Bail if no picked target
@@ -392,7 +422,10 @@ public class DEMView extends JFrame implements ActionListener, PickListener, Pro
 		colorTableBox = new GComboBox<>(this, ColorTableUtil.getSystemColorTableList());
 		colorTableBox.setRenderer(new ColorTableListCellRenderer(colorTableBox));
 		colorTableBox.setChosenItem(ColorTableUtil.getSystemColorTableDefault());
-		retPanel.add(colorTableBox, "w 0:0:,wrap 20");
+		retPanel.add(colorTableBox, "w 0:0:,wrap");
+
+		editColorBarB = GuiUtil.formButton(this, "Edit Color Bar");
+		retPanel.add(editColorBarB, "sg 2,wrap 20");
 
 		// Profile edit area
 		newButton = new JButton("New Profile");
@@ -481,50 +514,6 @@ public class DEMView extends JFrame implements ActionListener, PickListener, Pro
 	}
 
 	/**
-	 * Helper method that will synchronize the DEM(s) to reflect the coloring as
-	 * specified on the GUI.
-	 */
-	private void doUpdateColoringConfig()
-	{
-		// Update the primary DEM's ColorMap if necessary
-		String name = colorTableBox.getChosenItem().getName();
-		if (name.equals(priDEM.getColormap().getName()) == false)
-		{
-			Colormap tmpColormap = Colormaps.getNewInstanceOfBuiltInColormap(name);
-			priDEM.setColormap(tmpColormap);
-		}
-
-		try
-		{
-			int index = coloringTypeBox.getSelectedIndex();
-			if (index == coloringTypeBox.getItemCount() - 1)
-			{
-				// No coloring
-				priDEM.setColoringIndex(-1);
-				plot.setColoringIndex(-1);
-			}
-			else
-			{
-				// Coloring
-				priDEM.setColoringIndex(index);
-				plot.setColoringIndex(index);
-
-				// Reset the primary model's coloring range to the defaults
-				double[] tmpArr = priDEM.getDefaultColoringRange(index);
-				priDEM.setCurrentColoringRange(index, tmpArr);
-			}
-
-			// Synchronize the coloring
-			if (syncColoringCB.isSelected() == true)
-				doSynchronizeColoring();
-		}
-		catch (IOException aExp)
-		{
-			aExp.printStackTrace();
-		}
-	}
-
-	/**
 	 * Helper method to configure the Colorbar.
 	 */
 	private void doConfigureColorbar()
@@ -537,9 +526,7 @@ public class DEMView extends JFrame implements ActionListener, PickListener, Pro
 		}
 
 		// Customize the Colorbar to reflect the dem model
-		Colormap tmpColormap = priDEM.getColormap();
-		ColorMapAttr tmpCMA = tmpColormap.getColorMapAttr();
-		demColorBarPainter.setColorMapAttr(tmpCMA);
+		demColorBarPainter.setColorMapAttr(priDEM.getColorMapAttr());
 
 		int index = priDEM.getColoringIndex();
 		String title = priDEM.getColoringName(index).trim();
@@ -548,7 +535,6 @@ public class DEMView extends JFrame implements ActionListener, PickListener, Pro
 			title += " (" + units + ")";
 		demColorBarPainter.setTitle(title);
 
-		demColorBarPainter.setNumberOfLabels(priDEM.getColormap().getNumberOfLabels());
 		renderer.addVtkPropProvider(demColorBarPainter);
 
 		renderer.notifySceneChange();
@@ -573,33 +559,15 @@ public class DEMView extends JFrame implements ActionListener, PickListener, Pro
 		if (syncColoringCB.isSelected() == false)
 			return;
 
-		// Get the secondary DEM
+		// Update the secondary dem
 		DEM secDEM = demCollection.getDEM(key);
-
-		// Update the ColorMap to reflect the primary DEM
-		Colormap priColorMap = priDEM.getColormap();
-		Colormap secColorMap = secDEM.getColormap();
-		if (secColorMap == null || priColorMap.getName().equals(secColorMap.getName()) == false)
-		{
-			Colormap tmpColorMap = Colormaps.getNewInstanceOfBuiltInColormap(priColorMap.getName());
-			secDEM.setColormap(tmpColorMap);
-		}
+		secDEM.setColorMapAttr(demColorBarPainter.getColorMapAttr());
 
 		try
 		{
 			// Update the secondary DEM's coloring index to match the primary DEM
 			int coloringIndex = priDEM.getColoringIndex();
 			secDEM.setColoringIndex(coloringIndex);
-			if (coloringIndex == -1)
-				return;
-
-			// Synchronize coloring ranges
-			for (int i = 0; i < priDEM.getNumberOfColors(); i++)
-				secDEM.setCurrentColoringRange(i, priDEM.getCurrentColoringRange(i));
-
-			// Reset the primary model's coloring range to the defaults
-			double[] tmpArr = priDEM.getDefaultColoringRange(coloringIndex);
-			secDEM.setCurrentColoringRange(coloringIndex, tmpArr);
 		}
 		catch (Exception aExp)
 		{
@@ -607,6 +575,60 @@ public class DEMView extends JFrame implements ActionListener, PickListener, Pro
 			JOptionPane.showMessageDialog(null, "An error occurred synchronizing macro view DEM coloring with micro view.",
 					"Error", JOptionPane.ERROR_MESSAGE);
 		}
+	}
+
+	/**
+	 * Helper method that will synchronize the DEM(s) to reflect the installed
+	 * {@link ColorMapAttr}.
+	 */
+	private void doUpdateColorMapAttr()
+	{
+		// Update the primary DEM's ColorMap
+		priDEM.setColorMapAttr(demColorBarPainter.getColorMapAttr());
+
+		// Synchronize the coloring
+		if (syncColoringCB.isSelected() == true)
+			doSynchronizeColoring();
+	}
+
+	/**
+	 * Helper method that handles a feature type change
+	 */
+	private void doUpdateFeatureType()
+	{
+		try
+		{
+			int index = coloringTypeBox.getSelectedIndex();
+			if (index == coloringTypeBox.getItemCount() - 1)
+			{
+				// No coloring
+				priDEM.setColoringIndex(-1);
+				plot.setColoringIndex(-1);
+			}
+			else
+			{
+				// Coloring
+				priDEM.setColoringIndex(index);
+				plot.setColoringIndex(index);
+
+				// Reset the primary model's coloring range to the defaults
+				double[] tmpArr = priDEM.getDefaultColoringRange(index);
+
+				ColorMapAttr tmpCMA = demColorBarPainter.getColorMapAttr();
+				tmpCMA = new ColorMapAttr(colorTableBox.getChosenItem(), tmpArr[0], tmpArr[1], tmpCMA.getNumLevels(),
+						tmpCMA.getIsLogScale());
+
+				demColorBarPainter.setColorMapAttr(tmpCMA);
+			}
+		}
+		catch (IOException aExp)
+		{
+			aExp.printStackTrace();
+		}
+
+		// Synchronize the coloring
+		if (syncColoringCB.isSelected() == true)
+			doSynchronizeColoring();
 	}
 
 	/**
@@ -780,6 +802,7 @@ public class DEMView extends JFrame implements ActionListener, PickListener, Pro
 		scaleColoringButton.setEnabled(isEnabled);
 		colorTableBox.setEnabled(isEnabled);
 		colorTableL.setEnabled(isEnabled);
+		editColorBarB.setEnabled(isEnabled);
 	}
 
 	private class SaveImageAction extends AbstractAction
@@ -814,7 +837,7 @@ public class DEMView extends JFrame implements ActionListener, PickListener, Pro
 			try
 			{
 				if (file != null)
-					priDEM.saveAsPLT(file);
+					PolyDataUtil.saveShapeModelAsPLT(priDEM.getSmallBodyPolyData(), file);
 			}
 			catch (Exception e1)
 			{
@@ -841,7 +864,7 @@ public class DEMView extends JFrame implements ActionListener, PickListener, Pro
 			try
 			{
 				if (file != null)
-					priDEM.saveAsOBJ(file);
+					PolyDataUtil.saveShapeModelAsOBJ(priDEM.getSmallBodyPolyData(), file);
 			}
 			catch (Exception e1)
 			{
@@ -868,7 +891,7 @@ public class DEMView extends JFrame implements ActionListener, PickListener, Pro
 			try
 			{
 				if (file != null)
-					priDEM.saveAsSTL(file);
+					PolyDataUtil.saveShapeModelAsSTL(priDEM.getSmallBodyPolyData(), file);
 			}
 			catch (Exception e1)
 			{

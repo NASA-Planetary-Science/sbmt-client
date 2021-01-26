@@ -192,8 +192,10 @@ int main(int argc, char** argv)
     string imageListFullPathFile = argv[++argIndex];
     string missingInfoList = argv[++argIndex];
 
+    cout << "Initializing SPICE with metakernel " << metakernel << endl;
     furnsh_c(metakernel.c_str());
     cout << "Furnished SPICE files" << endl;
+    // Do ignore errors because otherwise we don't get back much information.
     erract_c("SET", 1, (char*)"RETURN");
 
     vector< pair<string, string> > fitfiles;
@@ -219,9 +221,9 @@ int main(int argc, char** argv)
         return 1;
     }
 
-    ofstream foutFullPath(imageListFile.c_str());
+    ofstream foutFullPath(imageListFullPathFile.c_str());
     if (!foutFullPath.is_open()) {
-        cerr << "Error: Unable to open file " << imageListFile << " for writing" << endl;
+        cerr << "Error: Unable to open file " << imageListFullPathFile << " for writing" << endl;
         return 1;
     }
 
@@ -280,6 +282,11 @@ int main(int argc, char** argv)
 	}
     cout << "done." << endl;
     missingInfoStream.close();
+
+    // If errors did occur, at least exit with a non-0 status.
+    if (failed_c()) {
+    	return 1;
+    }
 
     return 0;
 }

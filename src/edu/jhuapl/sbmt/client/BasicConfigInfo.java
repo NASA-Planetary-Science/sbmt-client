@@ -13,26 +13,49 @@ import crucible.crust.metadata.impl.SettableMetadata;
 
 public class BasicConfigInfo implements MetadataManager
 {
-	ShapeModelPopulation population;
+
+    // ******************************************************
+    // HEY! HEADS-UP! IF THIS CHANGES, CHANGE:
+    //      pipeline->rawdata->generic->runDataProcessing.sh
+    // TO MATCH!!!!!!!!!!!!!!!!!!!
+    // *******************************************************************************
+    private static final String configInfoVersion = "9.1"; // READ THE COMMENT ABOVE.
+    // *******************************************************************************
+
+    public static String getConfigInfoVersion()
+    {
+        return configInfoVersion;
+    }
+
+    public static String getConfigPathPrefix(boolean publishedDataOnly)
+    {
+        return (publishedDataOnly ? "published/" : "proprietary/") + "allBodies-" + configInfoVersion;
+    }
+
+    private static final SbmtMultiMissionTool.Mission[] EmptyMissionArray = new SbmtMultiMissionTool.Mission[0];
+
+    ShapeModelPopulation population;
+    ShapeModelBody system;
 	String shapeModelName;
 	String uniqueName;
 	ShapeModelType author;
 	BodyType type;
 	ShapeModelBody body;
 	ShapeModelDataUsed dataUsed;
-	String configURL;
+	private String configURL;
 	String version;
 	String modelLabel;
-	SbmtMultiMissionTool.Mission[] presentInVersion = null;
-	SbmtMultiMissionTool.Mission[] defaultFor = null;
+	SbmtMultiMissionTool.Mission[] presentInVersion = EmptyMissionArray;
+	SbmtMultiMissionTool.Mission[] defaultFor = EmptyMissionArray;
 	boolean enabled;
 
 	public BasicConfigInfo() {}
 
-	public BasicConfigInfo(BodyViewConfig config)
+	public BasicConfigInfo(BodyViewConfig config, boolean publishedDataOnly)
 	{
 		this.type = config.type;
-		this.population = config.population;
+        this.population = config.population;
+        this.system = config.system;
 		this.body = config.body;
 		this.dataUsed = config.dataUsed;
 		this.author = config.author;
@@ -45,7 +68,7 @@ public class BasicConfigInfo implements MetadataManager
 
 		if (author != ShapeModelType.CUSTOM)
 		{
-			System.out.println("BasicConfigInfo: BasicConfigInfo: unique name " + uniqueName);
+//			System.out.println("BasicConfigInfo: unique name " + uniqueName);
 			for (SbmtMultiMissionTool.Mission presentMission : presentInVersion)
 			{
 				//allow the body if the "present in Mission" value equals the tool's preset mission value OR if the tool's present mission value is the apl internal nightly
@@ -69,14 +92,21 @@ public class BasicConfigInfo implements MetadataManager
                 }
             }
 
-			if (config.version != null)
-				this.configURL = ((SmallBodyViewConfig)config).rootDirOnServer + "/" + config.author +  "_" + config.body.toString().replaceAll(" ", "_") + config.version.replaceAll(" ", "_") + "_v" + SmallBodyViewConfigMetadataIO.metadataVersion + ".json";
-			else
-				this.configURL = ((SmallBodyViewConfig)config).rootDirOnServer + "/" + config.author +  "_" + config.body.toString().replaceAll(" ", "_") + "_v" + SmallBodyViewConfigMetadataIO.metadataVersion + ".json";
+            // Note: config.version is for when a model intrinsically has a
+            // version as part of its name. It has nothing to do with the
+            // metadata version. For most models config.version is null, so
+            // modelVersion will add nothing.
+            String modelVersion = config.version != null ? config.version.replaceAll(" ", "_") : "";
+
+            this.configURL = "/" + getConfigPathPrefix(publishedDataOnly) + ((SmallBodyViewConfig) config).rootDirOnServer + //
+                    "/" + config.author + "_" + //
+                    config.body.toString().replaceAll(" ", "_") + modelVersion + //
+                    "_v" + getConfigInfoVersion() + ".json";
 		}
 	}
 
-	Key<String> populationKey = Key.of("population");
+    Key<String> populationKey = Key.of("population");
+    Key<String> systemKey = Key.of("system");
 	Key<String> typeKey = Key.of("type");
 	Key<String> bodyKey = Key.of("body");
 	Key<String> dataUsedKey = Key.of("dataUsed");
@@ -92,8 +122,9 @@ public class BasicConfigInfo implements MetadataManager
 	@Override
 	public Metadata store()
 	{
-		SettableMetadata configMetadata = SettableMetadata.of(Version.of(1, 0));
+		SettableMetadata configMetadata = SettableMetadata.of(Version.of(1, 1));
         configMetadata.put(populationKey, population.toString());
+        configMetadata.put(systemKey, system != null ? system.toString() : null);
         configMetadata.put(typeKey, type.toString());
         configMetadata.put(bodyKey, body.toString());
         configMetadata.put(dataUsedKey, dataUsed.toString());
@@ -128,6 +159,7 @@ public class BasicConfigInfo implements MetadataManager
 	{
 		type = BodyType.valueFor(source.get(typeKey));
 		population = ShapeModelPopulation.valueFor(source.get(populationKey));
+		system = source.hasKey(systemKey) ? ShapeModelBody.valueFor(source.get(systemKey)) : null;
 		body = ShapeModelBody.valueFor(source.get(bodyKey));
 		dataUsed = ShapeModelDataUsed.valueFor(source.get(dataUsedKey));
 		author = ShapeModelType.provide(source.get(authorKey)); // creates if necessary.
@@ -232,9 +264,9 @@ public class BasicConfigInfo implements MetadataManager
 	@Override
 	public String toString()
 	{
-		return "BasicConfigInfo [population=" + population + ", shapeModelName=" + shapeModelName + ", uniqueName="
+		return "BasicConfigInfo [population=" + population + ", system=" + system + ", shapeModelName=" + shapeModelName + ", uniqueName="
 				+ uniqueName + ", author=" + author + ", type=" + type + ", body=" + body + ", dataUsed=" + dataUsed
-				+ ", configURL=" + configURL + ", version=" + version + ", modelLabel=" + modelLabel
+				+ ", configURL=" + getConfigURL() + ", version=" + version + ", modelLabel=" + modelLabel
 				+ ", presentInVersion=" + Arrays.toString(presentInVersion) + ", defaultFor="
 				+ Arrays.toString(defaultFor) + ", enabled=" + enabled + "]";
 	}

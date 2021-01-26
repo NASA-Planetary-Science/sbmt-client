@@ -146,7 +146,7 @@ public class CustomImageResultsTableController extends ImageResultsTableControll
                 if (!e.getValueIsAdjusting())
                 {
                     model.setSelectedImageIndex(imageResultsTableView.getResultList().getSelectedRows());
-                    imageResultsTableView.getViewResultsGalleryButton().setEnabled(imageResultsTableView.isEnableGallery() && imageResultsTableView.getResultList().getSelectedRowCount() > 0);
+                    imageResultsTableView.getViewResultsGalleryButton().setEnabled(galleryGenerator != null && imageResultsTableView.isEnableGallery() && imageResultsTableView.getResultList().getSelectedRowCount() > 0);
                 }
             }
         });
