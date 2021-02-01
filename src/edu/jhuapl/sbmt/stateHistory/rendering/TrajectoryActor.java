@@ -141,8 +141,8 @@ public class TrajectoryActor extends vtkActor
         for (int i=(int)(minFraction*size);i<maxFraction*size;i++)
         {
     		double time = trajectory.getStartTime() + stepSize*i;
+    		if (trajectory.getPointingProvider() == null) continue;
     		InstrumentPointing pointing = trajectory.getPointingProvider().provide(time);
-    		if (pointing == null) continue;
     		UnwritableVectorIJK scPosition = pointing.getScPosition();
     		double x = scPosition.getI();
     		double y = scPosition.getJ();
