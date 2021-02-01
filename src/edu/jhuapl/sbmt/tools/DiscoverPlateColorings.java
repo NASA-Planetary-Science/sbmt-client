@@ -167,7 +167,7 @@ public class DiscoverPlateColorings
 			String units = getUnits(name, tableInfo, columnNumber);
 
 			file = new File(file.getAbsolutePath().replace(topDirectory.getAbsolutePath(), coloringDirectory));
-			coloringDataManager.add(ColoringDataFactory.of(name, units, tableInfo.getNumberRows(), ImmutableList.of(name), false, file.toString()));
+			coloringDataManager.add(ColoringDataFactory.of(name, units, tableInfo.getNumberRows(), ImmutableList.of(name), false, file.toString(), ImmutableList.of(columnNumber)));
 		}
 		catch (Exception e)
 		{
@@ -202,7 +202,7 @@ public class DiscoverPlateColorings
 				units = "";
 			}
 			file = new File(file.getAbsolutePath().replace(topDirectory.getAbsolutePath(), coloringDirectory));
-			coloringDataManager.add(ColoringDataFactory.of(name, units, tableInfo.getNumberRows(), ImmutableList.of(name + " X", name + " Y", name + " Z"), false,file.toString()));
+			coloringDataManager.add(ColoringDataFactory.of(name, units, tableInfo.getNumberRows(), ImmutableList.of(name + " X", name + " Y", name + " Z"), false,file.toString(), ImmutableList.of(xColumn, yColumn, zColumn)));
 		}
 		catch (Exception e)
 		{
