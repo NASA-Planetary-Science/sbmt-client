@@ -358,9 +358,9 @@ public class CustomImageResultsTableController extends ImageResultsTableControll
                     	image.setBoundaryVisibility(true);
                     else
                     {
-                    	imageCollection.addImage(key);
-                    	imageCollection.getImage(key).setVisible(false);
-                    	imageCollection.getImage(key).setBoundaryVisibility(true);
+                    	imageCollection.addImage(info);
+                    	imageCollection.getImage(info).setVisible(false);
+                    	imageCollection.getImage(info).setBoundaryVisibility(true);
                     }
         		}
         		else
