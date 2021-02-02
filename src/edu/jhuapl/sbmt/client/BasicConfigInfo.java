@@ -29,7 +29,7 @@ public class BasicConfigInfo implements MetadataManager
 
     public static String getConfigPathPrefix(boolean publishedDataOnly)
     {
-        return (publishedDataOnly ? "published/" : "proprietary/") + "allBodies-" + configInfoVersion;
+        return (publishedDataOnly ? "published/" : "proprietary/") + "allBodies-" + configInfoVersion + "-1930";
     }
 
     private static final SbmtMultiMissionTool.Mission[] EmptyMissionArray = new SbmtMultiMissionTool.Mission[0];
@@ -259,6 +259,26 @@ public class BasicConfigInfo implements MetadataManager
 	public String getShapeModelName()
 	{
 		return shapeModelName;
+	}
+
+	public BodyType getType()
+	{
+		return type;
+	}
+
+	public ShapeModelDataUsed getDataUsed()
+	{
+		return dataUsed;
+	}
+
+	public String getModelLabel()
+	{
+		return modelLabel;
+	}
+
+	public ShapeModelPopulation getPopulation()
+	{
+		return population;
 	}
 
 	@Override

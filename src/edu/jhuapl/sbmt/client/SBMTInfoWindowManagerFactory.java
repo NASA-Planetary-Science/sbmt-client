@@ -15,7 +15,6 @@ import edu.jhuapl.sbmt.model.image.ColorImage;
 import edu.jhuapl.sbmt.model.image.ColorImageCollection;
 import edu.jhuapl.sbmt.model.image.Image;
 import edu.jhuapl.sbmt.model.image.ImageCollection;
-import edu.jhuapl.sbmt.model.image.PerspectiveImageBoundaryCollection;
 import edu.jhuapl.sbmt.model.rosetta.OsirisImage;
 import edu.jhuapl.sbmt.model.rosetta.OsirisImageInfoPanel;
 import edu.jhuapl.sbmt.model.ryugu.nirs3.atRyugu.NIRS3Spectrum;
@@ -38,10 +37,9 @@ public class SBMTInfoWindowManagerFactory
 		SbmtInfoWindowManager.registerInfoWindowManager(Image.class, m ->
 		{
 			ImageCollection images = (ImageCollection)modelManager.getModel(ModelNames.IMAGES);
-            PerspectiveImageBoundaryCollection boundaries = (PerspectiveImageBoundaryCollection)modelManager.getModel(ModelNames.PERSPECTIVE_IMAGE_BOUNDARIES);
             if (m instanceof OsirisImage)
-                return new OsirisImageInfoPanel((Image)m, images, boundaries, aStatusHandler);
-            return new ImageInfoPanel((Image)m, images, boundaries, aStatusHandler);
+                return new OsirisImageInfoPanel((Image)m, images, aStatusHandler);
+            return new ImageInfoPanel((Image)m, images, aStatusHandler);
 		});
 		SbmtInfoWindowManager.registerInfoWindowManager(BasicSpectrumRenderer.class, m -> new SpectrumInfoPanel(((BasicSpectrumRenderer<S>)m).getSpectrum(), modelManager));
 		SbmtInfoWindowManager.registerInfoWindowManager(AdvancedSpectrumRenderer.class, m -> new SpectrumInfoPanel(((AdvancedSpectrumRenderer<S>)m).getSpectrum(), modelManager));

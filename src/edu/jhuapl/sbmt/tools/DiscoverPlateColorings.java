@@ -10,10 +10,9 @@ import java.util.List;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
 
-import edu.jhuapl.saavtk.model.BasicColoringDataManager;
-import edu.jhuapl.saavtk.model.ColoringData;
-import edu.jhuapl.saavtk.model.ColoringDataManager;
 import edu.jhuapl.saavtk.model.GenericPolyhedralModel;
+import edu.jhuapl.saavtk.model.plateColoring.BasicColoringDataManager;
+import edu.jhuapl.saavtk.model.plateColoring.ColoringDataFactory;
 import edu.jhuapl.saavtk.util.SafeURLPaths;
 import edu.jhuapl.saavtk.util.file.DataFileInfo;
 import edu.jhuapl.saavtk.util.file.DataFileReader;
@@ -75,7 +74,7 @@ public class DiscoverPlateColorings
 				{
 					try
 					{
-						DataFileInfo fileInfo = DataFileReader.of().readFileInfo(colorFile);
+						DataFileInfo fileInfo = DataFileReader.multiFileFormatReader().readFileInfo(colorFile);
 						System.out.println(fileInfo);
 						System.out.flush();
 						extractColorings(fileInfo);
@@ -92,11 +91,6 @@ public class DiscoverPlateColorings
 			Serializers.serialize("Coloring Metadata", coloringDataManager.getMetadataManager(), metadataFile);
 			System.out.println("Wrote metadata for " + numberColoringFiles + " file(s) to the coloring metadata file " + metadataFile);
 		}
-	}
-
-	public ColoringDataManager getColoringDataManager()
-	{
-		return coloringDataManager.copy();
 	}
 
 	protected void extractColorings(DataFileInfo fileInfo)
@@ -173,7 +167,7 @@ public class DiscoverPlateColorings
 			String units = getUnits(name, tableInfo, columnNumber);
 
 			file = new File(file.getAbsolutePath().replace(topDirectory.getAbsolutePath(), coloringDirectory));
-			coloringDataManager.add(ColoringData.of(name, file.toString(), ImmutableList.of(name), units, tableInfo.getNumberRows(), false));
+			coloringDataManager.add(ColoringDataFactory.of(name, units, tableInfo.getNumberRows(), ImmutableList.of(name), false, file.toString()));
 		}
 		catch (Exception e)
 		{
@@ -208,7 +202,7 @@ public class DiscoverPlateColorings
 				units = "";
 			}
 			file = new File(file.getAbsolutePath().replace(topDirectory.getAbsolutePath(), coloringDirectory));
-			coloringDataManager.add(ColoringData.of(name, file.toString(), ImmutableList.of(name + " X", name + " Y", name + " Z"), units, tableInfo.getNumberRows(), false));
+			coloringDataManager.add(ColoringDataFactory.of(name, units, tableInfo.getNumberRows(), ImmutableList.of(name + " X", name + " Y", name + " Z"), false,file.toString()));
 		}
 		catch (Exception e)
 		{

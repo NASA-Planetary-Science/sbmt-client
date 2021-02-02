@@ -20,7 +20,7 @@ import java.util.Vector;
 
 import org.apache.commons.io.FilenameUtils;
 
-import edu.jhuapl.sbmt.model.time.FileUtils;
+import edu.jhuapl.sbmt.util.FileUtils;
 
 import altwg.util.FileUtil;
 import nom.tam.fits.BasicHDU;

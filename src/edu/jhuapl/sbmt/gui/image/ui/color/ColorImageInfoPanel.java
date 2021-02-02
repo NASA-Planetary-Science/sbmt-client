@@ -38,7 +38,6 @@ import edu.jhuapl.saavtk.util.IntensityRange;
 import edu.jhuapl.sbmt.model.image.ColorImage;
 import edu.jhuapl.sbmt.model.image.ColorImage.Chromatism;
 import edu.jhuapl.sbmt.model.image.ColorImageCollection;
-import edu.jhuapl.sbmt.model.image.PerspectiveImageBoundaryCollection;
 
 
 public class ColorImageInfoPanel extends ModelInfoWindow implements PropertyChangeListener
@@ -47,7 +46,6 @@ public class ColorImageInfoPanel extends ModelInfoWindow implements PropertyChan
     private ColorImageCollection imageCollection;
 
     private vtkJoglPanelComponent renWin;
-    private PerspectiveImageBoundaryCollection imageBoundaryCollection;
     private vtkImageSlice actor;
     private vtkImageReslice reslice;
     private vtkPropPicker imagePicker;

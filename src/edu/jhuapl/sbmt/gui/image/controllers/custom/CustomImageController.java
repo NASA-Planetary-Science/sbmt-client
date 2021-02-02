@@ -25,7 +25,6 @@ import edu.jhuapl.sbmt.gui.image.ui.search.ImagingSearchPanel;
 import edu.jhuapl.sbmt.model.image.ImageCollection;
 import edu.jhuapl.sbmt.model.image.ImageCubeCollection;
 import edu.jhuapl.sbmt.model.image.ImagingInstrument;
-import edu.jhuapl.sbmt.model.image.PerspectiveImageBoundaryCollection;
 
 public class CustomImageController
 {
@@ -53,7 +52,6 @@ public class CustomImageController
 
         ImageSearchModel imageSearchModel = new ImageSearchModel(smallBodyConfig, modelManager, renderer, instrument);
         ImageCollection imageCollection = (ImageCollection)modelManager.getModel(imageSearchModel.getImageCollectionModelName());
-        PerspectiveImageBoundaryCollection imageBoundaryCollection = (PerspectiveImageBoundaryCollection)modelManager.getModel(imageSearchModel.getImageBoundaryCollectionModelName());
 
         customImageModel = new CustomImagesModel(imageSearchModel);
         customImageModel.addResultsChangedListener(new CustomImageResultsListener()
@@ -81,7 +79,7 @@ public class CustomImageController
         ImageCubeCollection imageCubeCollection = (ImageCubeCollection)customImageModel.getModelManager().getModel(customCubeModel.getImageCubeCollectionModelName());
         customCubeModel.setImageSearchModel(customImageModel);
         customCubeModel.setColorImageCollection(imageCubeCollection);
-        ImageCubePopupMenu imageCubePopupMenu = new ImageCubePopupMenu(imageCubeCollection, imageBoundaryCollection, infoPanelManager, spectrumPanelManager, renderer, getPanel());
+        ImageCubePopupMenu imageCubePopupMenu = new ImageCubePopupMenu(imageCubeCollection, infoPanelManager, spectrumPanelManager, renderer, getPanel());
         this.imageCubeController = new SpectralImageCubeController(customImageModel, customCubeModel, infoPanelManager, imageCubePopupMenu, spectrumPanelManager, renderer);
         CustomColorImageModel colorModel = new CustomColorImageModel();
         this.colorImageController = new ColorImageController(customImageModel, colorModel, infoPanelManager, renderer);

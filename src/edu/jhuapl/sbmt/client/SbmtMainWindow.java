@@ -1,5 +1,6 @@
 package edu.jhuapl.sbmt.client;
 
+import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.io.File;
 
@@ -12,6 +13,7 @@ import edu.jhuapl.saavtk.gui.ViewManager;
 import edu.jhuapl.saavtk.gui.dialog.DirectoryChooser;
 import edu.jhuapl.saavtk.gui.menu.FileMenu;
 import edu.jhuapl.saavtk.model.ModelNames;
+import edu.jhuapl.saavtk.util.Preferences;
 import edu.jhuapl.saavtk.status.StatusNotifier;
 import edu.jhuapl.sbmt.model.image.Image;
 import edu.jhuapl.sbmt.model.image.ImageCollection;
@@ -27,6 +29,10 @@ public class SbmtMainWindow extends MainWindow
     public SbmtMainWindow(String tempCustomShapeModelPath)
     {
         super(tempCustomShapeModelPath);
+
+        int height = (int) Preferences.getInstance().getAsLong(Preferences.RENDERER_PANEL_HEIGHT, 800L) + (int) Preferences.getInstance().getAsLong(Preferences.CONTROL_PANEL_HEIGHT, 800L);
+        int width = (int) Preferences.getInstance().getAsLong(Preferences.RENDERER_PANEL_WIDTH, 800L) + (int) Preferences.getInstance().getAsLong(Preferences.CONTROL_PANEL_WIDTH, 800L);
+        setPreferredSize(new Dimension(width, height));
     }
 
     @Override

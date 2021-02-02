@@ -44,7 +44,6 @@ public class OfflimbImageResultsTableController extends ImageResultsTableControl
         if (this.propertyChangeListener != null)
         {
             this.imageCollection.removePropertyChangeListener(this.propertyChangeListener);
-            this.boundaries.removePropertyChangeListener(this.propertyChangeListener);
             this.propertyChangeListener = new OfflimbImageResultsPropertyChangeListener();
         }
     }
@@ -225,7 +224,7 @@ public class OfflimbImageResultsTableController extends ImageResultsTableControl
                 tableModel.setValueAt(false, index, offlimbTableView.getOffLimbIndex());
             }
 
-            tableModel.setValueAt(boundaries.containsBoundary(key), index, imageResultsTableView.getBndrColumnIndex());
+            tableModel.setValueAt(imageCollection.getImage(key).isBoundaryVisible(), index, imageResultsTableView.getBndrColumnIndex());
         }
 
     }
@@ -299,7 +298,7 @@ public class OfflimbImageResultsTableController extends ImageResultsTableControl
         public boolean isCellEditable(int row, int column)
         {
             // Only allow editing the hide column if the image is mapped
-            if (column == offlimbTableView.getShowFootprintColumnIndex() || column == offlimbTableView.getOffLimbIndex() || column == offlimbTableView.getFrusColumnIndex())
+            if (column == offlimbTableView.getShowFootprintColumnIndex() || column == offlimbTableView.getOffLimbIndex() || column == offlimbTableView.getFrusColumnIndex() || column == offlimbTableView.getBndrColumnIndex())
             {
                 String name = imageRawResults.get(row).get(0);
                 ImageKeyInterface key = imageSearchModel.createImageKey(name.substring(0, name.length()-4), imageSearchModel.getImageSourceOfLastQuery(), instrument);
@@ -308,7 +307,7 @@ public class OfflimbImageResultsTableController extends ImageResultsTableControl
             }
             else
             {
-                return column == offlimbTableView.getMapColumnIndex() || column == offlimbTableView.getBndrColumnIndex();
+                return column == offlimbTableView.getMapColumnIndex() ;
             }
         }
 

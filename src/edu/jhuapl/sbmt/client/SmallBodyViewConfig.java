@@ -266,7 +266,7 @@ public class SmallBodyViewConfig extends BodyViewConfig implements ISmallBodyVie
 		BennuConfigs.initialize(configArray, publicOnly);
 		DartConfigs.instance().initialize(configArray);
 		CometConfigs.initialize(configArray);
-		MarsConfigs.initialize(configArray);
+		MarsConfigs.initialize(configArray, publicOnly);
 		NewHorizonsConfigs.initialize(configArray);
 		RyuguConfigs.initialize(configArray);
 		SaturnConfigs.initialize(configArray);
