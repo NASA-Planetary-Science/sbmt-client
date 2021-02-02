@@ -61,7 +61,7 @@ public class SpectrumSearchParametersPanel  extends JPanel
     private JFormattedTextField fromIncidenceTextField;
     private JLabel fromPhaseLabel;
     private JFormattedTextField fromPhaseTextField;
-    private JLabel hasLimbLabel;
+    private JLabel dataTypesLabel;
     protected JScrollPane hierarchicalSearchScrollPane;
     private JButton clearRegionButton;
     private JTextField textField;
@@ -76,10 +76,15 @@ public class SpectrumSearchParametersPanel  extends JPanel
     private JPanel parametersPanel;
     private JPanel filenamePanel;
 
+    private String[] dataTypes;
+    private JRadioButton[] dataTypeRadioButtons;
+    private ButtonGroup dataTypeGroup;
+
     private boolean isFixedListSearch = false;
 
-    public SpectrumSearchParametersPanel(boolean isHierarchical)
+    public SpectrumSearchParametersPanel(boolean isHierarchical, String[] dataTypes)
     {
+    	this.dataTypes = dataTypes;
         setBorder(new TitledBorder(null, "Search Parameters",
                 TitledBorder.LEADING, TitledBorder.TOP, null, null));
         setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
@@ -115,9 +120,6 @@ public class SpectrumSearchParametersPanel  extends JPanel
 
     private void initParameterSearch()
     {
-//        Component verticalStrut_10 = Box.createVerticalStrut(5);
-//        add(verticalStrut_10);
-
         JPanel choicePanel = new JPanel();
         add(choicePanel);
 
@@ -136,10 +138,6 @@ public class SpectrumSearchParametersPanel  extends JPanel
         searchByGroup.add(filenameRadioButton);
         searchByGroup.add(parametersRadioButton);
         parametersRadioButton.setSelected(true);
-
-
-//        Component verticalStrut_9 = Box.createVerticalStrut(20);
-//        add(verticalStrut_9);
 
         filenamePanel = new JPanel();
         filenamePanel.setVisible(false);
@@ -173,8 +171,6 @@ public class SpectrumSearchParametersPanel  extends JPanel
             {
                 parametersPanel.setVisible(true);
                 filenamePanel.setVisible(false);
-//                selectRegionButton.setVisible(true);
-//                clearRegionButton.setVisible(true);
             }
         });
 
@@ -186,8 +182,6 @@ public class SpectrumSearchParametersPanel  extends JPanel
             {
                 parametersPanel.setVisible(false);
                 filenamePanel.setVisible(true);
-//                selectRegionButton.setVisible(false);
-//                clearRegionButton.setVisible(false);
             }
         });
 
@@ -243,17 +237,33 @@ public class SpectrumSearchParametersPanel  extends JPanel
         parametersPanel.add(panel_3);
         panel_3.setLayout(new BoxLayout(panel_3, BoxLayout.X_AXIS));
 
-        hasLimbLabel = new JLabel("Field of View Polygon Type:");
-        panel_3.add(hasLimbLabel);
+        dataTypesLabel = new JLabel("Data Types:");
+        panel_3.add(dataTypesLabel);
 
-        fullCheckBox = new JCheckBox("Full");
-        panel_3.add(fullCheckBox);
+        dataTypeRadioButtons = new JRadioButton[dataTypes.length];
+        dataTypeGroup = new ButtonGroup();
+        int i=0;
+        for (String dataType : dataTypes)
+        {
+        	dataTypeRadioButtons[i] = new JRadioButton(dataType);
+        	panel_3.add(dataTypeRadioButtons[i]);
+        	dataTypeGroup.add(dataTypeRadioButtons[i]);
+        	i++;
+        }
+        dataTypeRadioButtons[0].setSelected(true);
+        dataTypeGroup.setSelected(dataTypeRadioButtons[0].getModel(), true);
 
-        partialCheckBox = new JCheckBox("Partial");
-        panel_3.add(partialCheckBox);
+//        hasLimbLabel = new JLabel("Field of View Polygon Type:");
+//        panel_3.add(hasLimbLabel);
+//
+//        fullCheckBox = new JCheckBox("Full");
+//        panel_3.add(fullCheckBox);
+//
+//        partialCheckBox = new JCheckBox("Partial");
+//        panel_3.add(partialCheckBox);
 
-        degenerateCheckBox = new JCheckBox("Degenerate");
-        panel_3.add(degenerateCheckBox);
+//        degenerateCheckBox = new JCheckBox("Degenerate");
+//        panel_3.add(degenerateCheckBox);
 
         Component horizontalGlue_6 = Box.createHorizontalGlue();
         panel_3.add(horizontalGlue_6);
@@ -389,11 +399,6 @@ public class SpectrumSearchParametersPanel  extends JPanel
         auxPanel = new JPanel();
         parametersPanel.add(auxPanel);
         auxPanel.setLayout(new BoxLayout(auxPanel, BoxLayout.Y_AXIS));
-
-//        Component verticalStrut = Box.createVerticalStrut(20);
-//        add(verticalStrut);
-
-
     }
 
     protected List<BasicSpectrum> processResults(List<BasicSpectrum> input)
@@ -550,7 +555,7 @@ public class SpectrumSearchParametersPanel  extends JPanel
 
     public JLabel getHasLimbLabel()
     {
-        return hasLimbLabel;
+        return dataTypesLabel;
     }
 
     public JScrollPane getHierarchicalSearchScrollPane()
@@ -646,6 +651,15 @@ public class SpectrumSearchParametersPanel  extends JPanel
             parametersRadioButton.setVisible(true);
             filenameRadioButton.setVisible(true);
 		}
+	}
+
+	public String getSelectedDataTypes()
+	{
+		for (JRadioButton button : dataTypeRadioButtons)
+		{
+			if (button.isSelected()) return button.getText().toLowerCase();
+		}
+		return "";
 	}
 
 }

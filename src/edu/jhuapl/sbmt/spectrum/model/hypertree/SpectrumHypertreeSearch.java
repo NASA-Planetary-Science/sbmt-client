@@ -247,7 +247,7 @@ public class SpectrumHypertreeSearch<S extends BasicSpectrum>
             	IBasicSpectrumRenderer<S> spectrumRenderer = null;
                 try
                 {
-                	spectrumRenderer = SbmtSpectrumModelFactory.createSpectrumRenderer(file, instrument);
+                	spectrumRenderer = SbmtSpectrumModelFactory.createSpectrumRenderer(file, instrument, false);
                 }
                 catch (Exception e) {
                     e.printStackTrace();

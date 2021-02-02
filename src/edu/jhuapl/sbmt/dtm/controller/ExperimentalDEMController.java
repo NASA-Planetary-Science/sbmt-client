@@ -38,7 +38,10 @@ public class ExperimentalDEMController
 		panel.add(tabbedPane);
         tabbedPane.addTab("Create", creationController.getPanel());
         if (!config.dtmBrowseDataSourceMap.isEmpty())
+        {
         	tabbedPane.addTab("Browse", browseController.getPanel());
+        	tabbedPane.setSelectedIndex(1);
+        }
         if (!config.dtmSearchDataSourceMap.isEmpty())
         	tabbedPane.addTab("Search", searchController.getPanel());
     }

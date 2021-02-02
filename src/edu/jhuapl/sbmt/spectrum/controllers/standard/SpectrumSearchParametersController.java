@@ -11,6 +11,7 @@ import java.util.Date;
 import java.util.TreeSet;
 
 import javax.swing.JFormattedTextField;
+import javax.swing.JOptionPane;
 import javax.swing.JSpinner;
 import javax.swing.ProgressMonitor;
 import javax.swing.SpinnerDateModel;
@@ -33,6 +34,7 @@ import edu.jhuapl.saavtk.structure.Ellipse;
 import edu.jhuapl.sbmt.client.SmallBodyModel;
 import edu.jhuapl.sbmt.core.listeners.SearchProgressListener;
 import edu.jhuapl.sbmt.spectrum.model.core.BasicSpectrum;
+import edu.jhuapl.sbmt.spectrum.model.core.SpectrumIOException;
 import edu.jhuapl.sbmt.spectrum.model.core.search.BaseSpectrumSearchModel;
 import edu.jhuapl.sbmt.spectrum.model.core.search.SpectraHierarchicalSearchSpecification;
 import edu.jhuapl.sbmt.spectrum.model.core.search.SpectrumSearchParametersModel;
@@ -59,6 +61,8 @@ public class SpectrumSearchParametersController<S extends BasicSpectrum>
     private ProgressMonitor searchProgressMonitor;
     private TreeSet<Integer> cubeList = null;
     private boolean isFixedListSearch = false;
+    private String[] dataTypes;
+    private boolean hasHypertreeSpectralSearch;
 
     /**
      * @param imageSearchDefaultStartDate				The search start date
@@ -70,18 +74,23 @@ public class SpectrumSearchParametersController<S extends BasicSpectrum>
      * @param pickManager								The System pick manager
      * @param modelManager								The system model manager
      */
-    public SpectrumSearchParametersController(Date imageSearchDefaultStartDate, Date imageSearchDefaultEndDate, boolean hasHierarchicalSpectraSearch, double imageSearchDefaultMaxSpacecraftDistance, SpectraHierarchicalSearchSpecification<SpectrumSearchSpec> spectraSpec, BaseSpectrumSearchModel<S> model, PickManager pickManager, ModelManager modelManager)
+    public SpectrumSearchParametersController(Date imageSearchDefaultStartDate, Date imageSearchDefaultEndDate, String[] dataTypes,
+    											boolean hasHierarchicalSpectraSearch, boolean hasHypertreeSpectralSearch,
+    											double imageSearchDefaultMaxSpacecraftDistance,
+    											SpectraHierarchicalSearchSpecification<SpectrumSearchSpec> spectraSpec,
+    											BaseSpectrumSearchModel<S> model, PickManager pickManager, ModelManager modelManager)
     {
         this.model = model;
         searchParameters = new SpectrumSearchParametersModel();
         this.modelManager = modelManager;
         this.spectraSpec = spectraSpec;
-        this.panel = new SpectrumSearchParametersPanel(hasHierarchicalSpectraSearch);
+        this.panel = new SpectrumSearchParametersPanel(hasHierarchicalSpectraSearch, dataTypes);
         this.pickManager = pickManager;
         this.hasHierarchicalSpectraSearch = hasHierarchicalSpectraSearch;
         this.imageSearchDefaultMaxSpacecraftDistance = imageSearchDefaultMaxSpacecraftDistance;
         this.imageSearchDefaultEndDate = imageSearchDefaultEndDate;
         this.imageSearchDefaultStartDate = imageSearchDefaultStartDate;
+        this.hasHypertreeSpectralSearch = hasHypertreeSpectralSearch;
     }
 
     /**
@@ -179,11 +188,11 @@ public class SpectrumSearchParametersController<S extends BasicSpectrum>
             searchParameters.setEndDate(imageSearchDefaultEndDate);
             ((SpinnerDateModel)endSpinner.getModel()).setValue(searchParameters.getEndDate());
 
-            panel.getFullCheckBox().addActionListener(evt -> searchParameters.addToPolygonsSelected(0));
-
-            panel.getPartialCheckBox().addActionListener(evt -> searchParameters.addToPolygonsSelected(0));
-
-            panel.getDegenerateCheckBox().addActionListener(evt -> searchParameters.addToPolygonsSelected(0));
+//            panel.getFullCheckBox().addActionListener(evt -> searchParameters.addToPolygonsSelected(0));
+//
+//            panel.getPartialCheckBox().addActionListener(evt -> searchParameters.addToPolygonsSelected(0));
+//
+//            panel.getDegenerateCheckBox().addActionListener(evt -> searchParameters.addToPolygonsSelected(0));
 
             panel.getFromDistanceTextField().getDocument().addDocumentListener(new DocumentListener()
             {
@@ -272,6 +281,8 @@ public class SpectrumSearchParametersController<S extends BasicSpectrum>
                     // Always use the lowest resolution model for getting the intersection cubes list.
                     // Therefore, if the selection region was created using a higher resolution model,
                     // we need to recompute the selection region using the low res model.
+                    if (hasHypertreeSpectralSearch)
+                    	bodyModel.calculateCubeSize(true, 10.0);	//TODO This is a HACK until we can get all databases built with smaller cubes
                     if (bodyModel.getModelResolution() > 0)
                     {
                         vtkPolyData interiorPoly = new vtkPolyData();
@@ -282,53 +293,74 @@ public class SpectrumSearchParametersController<S extends BasicSpectrum>
                     {
                         cubeList = bodyModel.getIntersectingCubes(selectionModel.getVtkInteriorPolyDataFor(region));
                     }
+                    bodyModel.setCubeVisibility(cubeList);
+                    if (hasHypertreeSpectralSearch)
+                    	bodyModel.calculateCubeSize(false, 0.0);
+                    bodyModel.clearCubes();
+                }
+                else
+                {
+                	cubeList = null;
                 }
 
                 SwingWorker<Void, Void> searchTask = new SwingWorker<Void, Void>()
 				{
 
 					@Override
-					protected Void doInBackground() throws Exception
+					protected Void doInBackground() //throws Exception
 					{
-						model.performSearch(searchParameters, cubeList, hasHierarchicalSpectraSearch, spectraSpec, model.getSelectedPath(), new SearchProgressListener()
+						try
 						{
-							@Override
-							public void searchStarted()
+							model.performSearch(searchParameters, cubeList, hasHierarchicalSpectraSearch, spectraSpec, model.getSelectedPath(), new SearchProgressListener()
 							{
-								 searchProgressMonitor = new ProgressMonitor(null, "Performing Spectra Search...", "", 0, 100);
-								 searchProgressMonitor.setMillisToDecideToPopup(0);
-								 searchProgressMonitor.setMillisToPopup(0);
-							     searchProgressMonitor.setProgress(0);
-							}
+								@Override
+								public void searchStarted()
+								{
+									setSearchParameters();
+									 searchProgressMonitor = new ProgressMonitor(null, "Performing Spectra Search...", "", 0, 100);
+									 searchProgressMonitor.setMillisToDecideToPopup(0);
+									 searchProgressMonitor.setMillisToPopup(0);
+								     searchProgressMonitor.setProgress(0);
+								}
 
-							public void searchNoteUpdated(String note)
-							{
-								searchProgressMonitor.setNote(note);
-							}
+								public void searchNoteUpdated(String note)
+								{
+									searchProgressMonitor.setNote(note);
+								}
 
-							@Override
-							public void searchProgressChanged(int percentComplete)
-							{
-								searchProgressMonitor.setProgress(percentComplete);
-							}
+								@Override
+								public void searchProgressChanged(int percentComplete)
+								{
+									searchProgressMonitor.setProgress(percentComplete);
+								}
 
-							@Override
-							public void searchEnded()
-							{
-								searchProgressMonitor.setProgress(100);
-							}
+								@Override
+								public void searchEnded()
+								{
+									searchProgressMonitor.setProgress(100);
+								}
 
-							@Override
-							public void searchIndeterminate()
-							{
-								searchProgressMonitor = new ProgressMonitor(null, "Performing Spectra Search...", "", 0, 100);
-								searchProgressMonitor.setMillisToDecideToPopup(0);
-								searchProgressMonitor.setMillisToPopup(0);
-								searchProgressMonitor.setProgress(99);
-								searchProgressMonitor.setNote("Waiting for results");
-							}
-						});
-						return null;
+								@Override
+								public void searchIndeterminate()
+								{
+									searchProgressMonitor = new ProgressMonitor(null, "Performing Spectra Search...", "", 0, 100);
+									searchProgressMonitor.setMillisToDecideToPopup(0);
+									searchProgressMonitor.setMillisToPopup(0);
+									searchProgressMonitor.setProgress(99);
+									searchProgressMonitor.setNote("Waiting for results");
+								}
+							});
+							return null;
+						}
+						catch (SpectrumIOException sioe)
+						{
+							 JOptionPane.showMessageDialog(JOptionPane.getFrameForComponent(panel),
+				                     sioe.getMessage(),
+				                     "Error",
+				                     JOptionPane.ERROR_MESSAGE);
+							 searchProgressMonitor.setProgress(100);
+							 return null;
+						}
 					}
 				};
 				searchTask.addPropertyChangeListener(new PropertyChangeListener()
@@ -368,6 +400,11 @@ public class SpectrumSearchParametersController<S extends BasicSpectrum>
         searchParameters.setMaxEmissionQuery(Integer.parseInt(panel.getToEmissionTextField().getText()));
         searchParameters.setMinPhaseQuery(Integer.parseInt(panel.getFromPhaseTextField().getText()));
         searchParameters.setMaxPhaseQuery(Integer.parseInt(panel.getToPhaseTextField().getText()));
+
+        SmallBodyModel bodyModel = (SmallBodyModel)modelManager.getModel(ModelNames.SMALL_BODY);
+        searchParameters.setModelName(bodyModel.getConfig().author.toString().toLowerCase().replace("-", ""));
+        searchParameters.setDataType(panel.getSelectedDataTypes());
+//        searchParameters.setDataType(panel.getDataType());
     }
 
     /**
@@ -438,4 +475,9 @@ public class SpectrumSearchParametersController<S extends BasicSpectrum>
     	this.isFixedListSearch = isFixedListSearch;
     	panel.setFixedListSearch(isFixedListSearch);
     }
+
+	public void setDataTypes(String[] dataTypes)
+	{
+		this.dataTypes = dataTypes;
+	}
 }

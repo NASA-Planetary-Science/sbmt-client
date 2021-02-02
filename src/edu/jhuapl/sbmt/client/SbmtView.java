@@ -21,9 +21,8 @@ import com.google.common.collect.ImmutableList;
 
 import vtk.vtkCamera;
 
-import edu.jhuapl.saavtk.colormap.Colorbar;
-import edu.jhuapl.saavtk.gui.StatusBar;
 import edu.jhuapl.saavtk.gui.View;
+import edu.jhuapl.saavtk.gui.render.ConfigurableSceneNotifier;
 import edu.jhuapl.saavtk.gui.render.RenderPanel;
 import edu.jhuapl.saavtk.gui.render.Renderer;
 import edu.jhuapl.saavtk.model.Controller;
@@ -31,7 +30,6 @@ import edu.jhuapl.saavtk.model.Graticule;
 import edu.jhuapl.saavtk.model.Model;
 import edu.jhuapl.saavtk.model.ModelManager;
 import edu.jhuapl.saavtk.model.ModelNames;
-import edu.jhuapl.saavtk.model.PolyhedralModel;
 import edu.jhuapl.saavtk.model.ShapeModelBody;
 import edu.jhuapl.saavtk.model.ShapeModelType;
 import edu.jhuapl.saavtk.model.structure.CircleModel;
@@ -41,12 +39,13 @@ import edu.jhuapl.saavtk.model.structure.LineModel;
 import edu.jhuapl.saavtk.model.structure.PointModel;
 import edu.jhuapl.saavtk.model.structure.PolygonModel;
 import edu.jhuapl.saavtk.pick.PickManager;
-import edu.jhuapl.saavtk.pick.PickUtil;
 import edu.jhuapl.saavtk.popup.PopupMenu;
+import edu.jhuapl.saavtk.status.StatusNotifier;
 import edu.jhuapl.saavtk.structure.gui.StructureMainPanel;
 import edu.jhuapl.saavtk.util.Configuration;
 import edu.jhuapl.saavtk.util.FileCache;
 import edu.jhuapl.saavtk.util.Properties;
+import edu.jhuapl.sbmt.dem.gui.DemMainPanel;
 import edu.jhuapl.sbmt.dtm.controller.DEMPopupMenuActionListener;
 import edu.jhuapl.sbmt.dtm.controller.ExperimentalDEMController;
 import edu.jhuapl.sbmt.dtm.model.DEMBoundaryCollection;
@@ -69,11 +68,8 @@ import edu.jhuapl.sbmt.gui.image.ui.cubes.ImageCubePopupMenu;
 import edu.jhuapl.sbmt.gui.image.ui.images.ImageDefaultPickHandler;
 import edu.jhuapl.sbmt.gui.image.ui.images.ImagePopupManager;
 import edu.jhuapl.sbmt.gui.image.ui.images.ImagePopupMenu;
-import edu.jhuapl.sbmt.gui.lidar.LidarLoadPanel;
-import edu.jhuapl.sbmt.gui.lidar.LidarPanel;
-import edu.jhuapl.sbmt.gui.lidar.LidarTrackPanel;
-import edu.jhuapl.sbmt.gui.lidar.popup.LidarGuiUtil;
 import edu.jhuapl.sbmt.gui.time.version2.StateHistoryController;
+import edu.jhuapl.sbmt.lidar.gui.LidarPanel;
 import edu.jhuapl.sbmt.model.bennu.spectra.OREXSpectraFactory;
 import edu.jhuapl.sbmt.model.bennu.spectra.OREXSpectrumSearchController;
 import edu.jhuapl.sbmt.model.bennu.spectra.OREXSpectrumTabbedPane;
@@ -90,8 +86,6 @@ import edu.jhuapl.sbmt.model.image.ImageCubeCollection;
 import edu.jhuapl.sbmt.model.image.ImagingInstrument;
 import edu.jhuapl.sbmt.model.image.PerspectiveImageBoundaryCollection;
 import edu.jhuapl.sbmt.model.image.SpectralImageMode;
-import edu.jhuapl.sbmt.model.lidar.LidarFileSpecManager;
-import edu.jhuapl.sbmt.model.lidar.LidarTrackManager;
 import edu.jhuapl.sbmt.model.ryugu.nirs3.H2SpectraFactory;
 import edu.jhuapl.sbmt.model.ryugu.nirs3.NIRS3SearchModel;
 import edu.jhuapl.sbmt.model.ryugu.nirs3.atRyugu.NIRS3Spectrum;
@@ -112,7 +106,6 @@ import crucible.crust.metadata.impl.EmptyMetadata;
 import crucible.crust.metadata.impl.SettableMetadata;
 import crucible.crust.metadata.impl.TrackedMetadataManager;
 import crucible.crust.metadata.impl.Utilities;
-import net.miginfocom.swing.MigLayout;
 
 /**
  * A view is a container which contains a control panel and renderer as well as
@@ -125,19 +118,18 @@ public class SbmtView extends View implements PropertyChangeListener
 	private static final long serialVersionUID = 1L;
 	private final TrackedMetadataManager stateManager;
 	private final Map<String, MetadataManager> metadataManagers;
-	private Colorbar smallBodyColorbar;
 	private BasicConfigInfo configInfo;
 	private SmallBodyModel smallBodyModel;
 
-	public SbmtView(StatusBar statusBar, BasicConfigInfo configInfo)
+	public SbmtView(StatusNotifier aStatusNotifier, BasicConfigInfo configInfo)
 	{
-		super(statusBar, null);
+		super(aStatusNotifier, null);
 		this.configInfo = configInfo;
 		uniqueName = configInfo.uniqueName;
 		shapeModelName = configInfo.shapeModelName;
     	this.stateManager = TrackedMetadataManager.of("View " + configInfo.uniqueName);
 		this.metadataManagers = new HashMap<>();
-		this.configURL = configInfo.configURL;
+		this.configURL = configInfo.getConfigURL();
 		initializeStateManager();
 	}
 
@@ -147,15 +139,15 @@ public class SbmtView extends View implements PropertyChangeListener
 	 * reduce memory and startup time. Therefore, this function should be called
 	 * prior to first time the View is shown in order to cause it
 	 */
-	public SbmtView(StatusBar statusBar, SmallBodyViewConfig smallBodyConfig)
+	public SbmtView(StatusNotifier aStatusNotifier, SmallBodyViewConfig smallBodyConfig)
 	{
-		super(statusBar, smallBodyConfig);
-		this.configInfo = new BasicConfigInfo(smallBodyConfig);
+		super(aStatusNotifier, smallBodyConfig);
+		this.configInfo = new BasicConfigInfo(smallBodyConfig, SbmtMultiMissionTool.getMission().isPublishedDataOnly());
 		uniqueName = configInfo.uniqueName;
 		shapeModelName = configInfo.shapeModelName;
 		this.stateManager = TrackedMetadataManager.of("View " + getUniqueName());
 		this.metadataManagers = new HashMap<>();
-		this.configURL = configInfo.configURL;
+		this.configURL = configInfo.getConfigURL();
 
 		initializeStateManager();
 	}
@@ -212,6 +204,7 @@ public class SbmtView extends View implements PropertyChangeListener
 		String modelLabel;
 		BodyType type;
 		ShapeModelPopulation population;
+		ShapeModelBody system;
 		ShapeModelDataUsed dataUsed;
 		ShapeModelBody body;
 		if (configInfo == null)
@@ -221,6 +214,7 @@ public class SbmtView extends View implements PropertyChangeListener
 			modelLabel = config.modelLabel;
 			type = config.type;
 			population = config.population;
+			system = config.system;
 			dataUsed = config.dataUsed;
 			body = config.body;
 		}
@@ -230,6 +224,7 @@ public class SbmtView extends View implements PropertyChangeListener
 			modelLabel = configInfo.modelLabel;
 			type = configInfo.type;
 			population = configInfo.population;
+			system = configInfo.system;
 			dataUsed = configInfo.dataUsed;
 			body = configInfo.body;
 		}
@@ -242,6 +237,8 @@ public class SbmtView extends View implements PropertyChangeListener
 			String path = type.str;
 			if (population != null && population != ShapeModelPopulation.NA)
 				path += " > " + population;
+			if (system != null)
+			    path += " > " + system;
 			path += " > " + body;
 			if (dataUsed != null && dataUsed != ShapeModelDataUsed.NA)
 				path += " > " + dataUsed;
@@ -355,11 +352,6 @@ public class SbmtView extends View implements PropertyChangeListener
 			allModels.put(ModelNames.CUSTOM_SPECTRA_BOUNDARIES, new SpectrumBoundaryCollection(smallBodyModel, (SpectraCollection)allModels.get(ModelNames.CUSTOM_SPECTRA)));
 		}
 
-		if (getPolyhedralModelConfig().hasLidarData)
-		{
-			allModels.putAll(createLidarModels(smallBodyModel));
-		}
-
 		if (getPolyhedralModelConfig().hasLineamentData)
 		{
 			allModels.put(ModelNames.LINEAMENT, createLineament());
@@ -376,29 +368,31 @@ public class SbmtView extends View implements PropertyChangeListener
 			allModels.put(ModelNames.STATE_HISTORY_COLLECTION, new StateHistoryCollection(smallBodyModel));
 		}
 
-		allModels.put(ModelNames.LINE_STRUCTURES, new LineModel<>(smallBodyModel));
-		allModels.put(ModelNames.POLYGON_STRUCTURES, new PolygonModel(smallBodyModel));
-		allModels.put(ModelNames.CIRCLE_STRUCTURES, new CircleModel(smallBodyModel));
-		allModels.put(ModelNames.ELLIPSE_STRUCTURES, new EllipseModel(smallBodyModel));
-		allModels.put(ModelNames.POINT_STRUCTURES, new PointModel(smallBodyModel));
-		allModels.put(ModelNames.CIRCLE_SELECTION, new CircleSelectionModel(smallBodyModel));
-		allModels.put(ModelNames.TRACKS, new LidarTrackManager(smallBodyModel));
+		ConfigurableSceneNotifier tmpSceneChangeNotifier = new ConfigurableSceneNotifier();
+		StatusNotifier tmpStatusNotifier = getStatusNotifier();
+		allModels.put(ModelNames.LINE_STRUCTURES, new LineModel<>(tmpSceneChangeNotifier, tmpStatusNotifier, smallBodyModel));
+		allModels.put(ModelNames.POLYGON_STRUCTURES, new PolygonModel(tmpSceneChangeNotifier,tmpStatusNotifier, smallBodyModel));
+		allModels.put(ModelNames.CIRCLE_STRUCTURES, new CircleModel(tmpSceneChangeNotifier, tmpStatusNotifier, smallBodyModel));
+		allModels.put(ModelNames.ELLIPSE_STRUCTURES, new EllipseModel(tmpSceneChangeNotifier, tmpStatusNotifier, smallBodyModel));
+		allModels.put(ModelNames.POINT_STRUCTURES, new PointModel(tmpSceneChangeNotifier, tmpStatusNotifier, smallBodyModel));
+		allModels.put(ModelNames.CIRCLE_SELECTION, new CircleSelectionModel(tmpSceneChangeNotifier, tmpStatusNotifier, smallBodyModel));
 		DEMCollection demCollection = new DEMCollection(smallBodyModel, getModelManager());
 		allModels.put(ModelNames.DEM, demCollection);
 		DEMBoundaryCollection demBoundaryCollection = new DEMBoundaryCollection(smallBodyModel, getModelManager());
 		allModels.put(ModelNames.DEM_BOUNDARY, demBoundaryCollection);
 
-		setModelManager(new SbmtModelManager(smallBodyModel, allModels));
+		setModelManager(new ModelManager(smallBodyModel, allModels));
 		colorImageCollection.setModelManager(getModelManager());
 		cubeCollection.setModelManager(getModelManager());
 		customColorImageCollection.setModelManager(getModelManager());
 		customCubeCollection.setModelManager(getModelManager());
 		demCollection.setModelManager(getModelManager());
 		demBoundaryCollection.setModelManager(getModelManager());
+		tmpSceneChangeNotifier.setTarget(getModelManager());
 
 		getModelManager().addPropertyChangeListener(this);
 
-		SBMTInfoWindowManagerFactory.initializeModels(getModelManager(), getStatusBar());
+		SBMTInfoWindowManagerFactory.initializeModels(getModelManager(), getLegacyStatusHandler());
 	}
 
 	@Override
@@ -477,13 +471,6 @@ public class SbmtView extends View implements PropertyChangeListener
 			}
 		}
 
-		if (getPolyhedralModelConfig().hasLidarData)
-		{
-			LidarTrackManager tmpTrackManager = (LidarTrackManager)getModel(ModelNames.LIDAR_SEARCH);
-			PopupMenu popupMenu = LidarGuiUtil.formLidarTrackPopupMenu(tmpTrackManager, getRenderer());
-			registerPopup(tmpTrackManager, popupMenu);
-		}
-
 		if (getPolyhedralModelConfig().hasLineamentData)
 		{
 			PopupMenu popupMenu = new LineamentPopupMenu(getModelManager());
@@ -500,7 +487,7 @@ public class SbmtView extends View implements PropertyChangeListener
 	@Override
 	protected void setupTabs()
 	{
-		addTab(getPolyhedralModelConfig().getShapeModelName(), new SmallBodyControlPanel(getModelManager(), getPolyhedralModelConfig().getShapeModelName()));
+		addTab(getPolyhedralModelConfig().getShapeModelName(), new SmallBodyControlPanel(getRenderer(), getModelManager(), getPolyhedralModelConfig().getShapeModelName()));
 
 		if (getConfig().hasFlybyData)
 		{
@@ -584,7 +571,9 @@ public class SbmtView extends View implements PropertyChangeListener
 //				double[] rgbMaxVals = new double[] {0.05, 0.05, 0.05};
 //	            int[] rgbIndices = new int[] { 1, 25, 50 };
 				JComponent component = new OREXSpectrumSearchController<NISSpectrum>(getPolyhedralModelConfig().imageSearchDefaultStartDate, getPolyhedralModelConfig().imageSearchDefaultEndDate,
-						getPolyhedralModelConfig().hasHierarchicalSpectraSearch, getPolyhedralModelConfig().imageSearchDefaultMaxSpacecraftDistance, getPolyhedralModelConfig().hierarchicalSpectraSearchSpecification,
+						getPolyhedralModelConfig().hasHierarchicalSpectraSearch, getPolyhedralModelConfig().hasHypertreeBasedSpectraSearch,
+						getPolyhedralModelConfig().imageSearchDefaultMaxSpacecraftDistance, new String[] {"L2"},
+						getPolyhedralModelConfig().hierarchicalSpectraSearchSpecification,
 						getModelManager(), (SbmtInfoWindowManager) getInfoPanelManager(), getPickManager(), getRenderer(), instrument, model).getPanel();
 				addTab(instrument.getDisplayName(), component);
 
@@ -599,6 +588,11 @@ public class SbmtView extends View implements PropertyChangeListener
 
 				OREXSpectraFactory.initializeModels(smallBodyModel);
 				JComponent component = new OREXSpectrumTabbedPane<OTESSpectrum>(getPolyhedralModelConfig(), getModelManager(), (SbmtInfoWindowManager) getInfoPanelManager(), getPickManager(), getRenderer(), instrument, spectrumCollection);
+
+//				OTESSearchModel model = new OTESSearchModel(getModelManager(), instrument);
+//				JComponent component = new OREXSpectrumSearchController<OTESSpectrum>(getPolyhedralModelConfig().imageSearchDefaultStartDate, getPolyhedralModelConfig().imageSearchDefaultEndDate,
+//						/*getPolyhedralModelConfig().hasHierarchicalSpectraSearch*/ false, getPolyhedralModelConfig().imageSearchDefaultMaxSpacecraftDistance, getPolyhedralModelConfig().hierarchicalSpectraSearchSpecification,
+//						getModelManager(), (SbmtInfoWindowManager) getInfoPanelManager(), getPickManager(), getRenderer(), instrument, model).getPanel();
 				addTab(instrument.getDisplayName(), component);
 
 
@@ -623,7 +617,9 @@ public class SbmtView extends View implements PropertyChangeListener
 //				double[] rgbMaxVals = new double[] {0.00005, 0.0001, 0.002};
 //	            int[] rgbIndices = new int[] { 100, 70, 40 };
 				JComponent component = new OREXSpectrumSearchController<NIRS3Spectrum>(getPolyhedralModelConfig().imageSearchDefaultStartDate, getPolyhedralModelConfig().imageSearchDefaultEndDate,
-						getPolyhedralModelConfig().hasHierarchicalSpectraSearch, getPolyhedralModelConfig().imageSearchDefaultMaxSpacecraftDistance, getPolyhedralModelConfig().hierarchicalSpectraSearchSpecification,
+						getPolyhedralModelConfig().hasHierarchicalSpectraSearch, getPolyhedralModelConfig().hasHypertreeBasedSpectraSearch,
+						getPolyhedralModelConfig().imageSearchDefaultMaxSpacecraftDistance, new String[] {"L2"},
+						getPolyhedralModelConfig().hierarchicalSpectraSearchSpecification,
 						getModelManager(), (SbmtInfoWindowManager) getInfoPanelManager(), getPickManager(), getRenderer(), instrument, model).getPanel();
 				addTab(instrument.getDisplayName(), component);
 				PopupMenu popupMenu = new SpectrumPopupMenu(spectrumCollection, boundaryCollection, getModelManager(), (SbmtInfoWindowManager) getInfoPanelManager(), getRenderer());
@@ -636,11 +632,14 @@ public class SbmtView extends View implements PropertyChangeListener
 
 		}
 
-		if (getPolyhedralModelConfig().hasLidarData)
-		{
-			JComponent component = new LidarPanel(getPolyhedralModelConfig(), getModelManager(), getPickManager(), getRenderer());
-			addTab(getPolyhedralModelConfig().lidarInstrumentName.toString(), component);
-		}
+		// Lidar tab
+		SmallBodyViewConfig tmpSmallBodyConfig = getPolyhedralModelConfig();
+		String lidarInstrName = "Tracks";
+		if (tmpSmallBodyConfig.hasLidarData == true)
+			lidarInstrName = tmpSmallBodyConfig.lidarInstrumentName.toString();
+
+		JComponent lidarPanel = new LidarPanel(getModelManager(), getPickManager(), getRenderer(), tmpSmallBodyConfig);
+		addTab(lidarInstrName, lidarPanel);
 
 		if (Configuration.isAPLVersion())
 		{
@@ -650,7 +649,7 @@ public class SbmtView extends View implements PropertyChangeListener
 				addTab("Lineament", component);
 			}
 
-			addTab("Structures", new StructureMainPanel(getModelManager(), getPickManager(), getRenderer(), getStatusBar(), getPopupManager()));
+			addTab("Structures", new StructureMainPanel(getPickManager(), getRenderer(), getStatusNotifier(), getModelManager()));
 
 			JTabbedPane customDataPane = new JTabbedPane();
 			customDataPane.setBorder(BorderFactory.createEmptyBorder());
@@ -677,18 +676,14 @@ public class SbmtView extends View implements PropertyChangeListener
 //				if (i.getDisplayName().equals("NIS"))
 //					continue; //we can't properly handle NIS custom data for now without info files, which we don't have.
 				customDataPane.addTab(i.getDisplayName() + " Spectra", new CustomSpectraSearchController(getModelManager(), (SbmtInfoWindowManager) getInfoPanelManager(), getPickManager(), getRenderer(), getPolyhedralModelConfig().hierarchicalSpectraSearchSpecification, i).getPanel());
-//				break;
-			}
+//
+				SpectraCollection spectrumCollection = (SpectraCollection)getModel(ModelNames.CUSTOM_SPECTRA);
+				SpectrumBoundaryCollection boundaryCollection = (SpectrumBoundaryCollection)getModel(ModelNames.CUSTOM_SPECTRA_BOUNDARIES);
+				PopupMenu popupMenu = new SpectrumPopupMenu(spectrumCollection, boundaryCollection, getModelManager(), (SbmtInfoWindowManager) getInfoPanelManager(), getRenderer());
+				registerPopup(spectrumCollection, popupMenu);
 
-			// Add the "lidar tracks" tab
-			ModelManager tmpModelManager = getModelManager();
-			LidarTrackManager tmpTrackManager = (LidarTrackManager)tmpModelManager.getModel(ModelNames.TRACKS);
-			LidarLoadPanel tmpLidarLoadPanel = new LidarLoadPanel(tmpTrackManager);
-			LidarTrackPanel tmpLidarListPanel = new LidarTrackPanel(tmpTrackManager, tmpModelManager, getPolyhedralModelConfig(), getPickManager(), getRenderer());
-			JPanel tmpPanel = new JPanel(new MigLayout("", "", "0[]0"));
-			tmpPanel.add(tmpLidarLoadPanel, "growx,wrap");
-			tmpPanel.add(tmpLidarListPanel, "growx,growy,pushx,pushy");
-			customDataPane.addTab("Tracks", tmpPanel);
+				//break;
+			}
 
 			//            JComponent component = new CustomDEMPanel(getModelManager(), getPickManager(), getPolyhedralModelConfig().rootDirOnServer,
 			//                    getPolyhedralModelConfig().hasMapmaker, getPolyhedralModelConfig().hasBigmap, renderer);
@@ -714,6 +709,7 @@ public class SbmtView extends View implements PropertyChangeListener
             }
 
         	addTab("Regional DTMs", new ExperimentalDEMController(getModelManager(), getPickManager(), creationTool, getPolyhedralModelConfig(), getRenderer()).getPanel());
+        	addTab("Regional DEMs", new DemMainPanel(getRenderer(), getModelManager().getPolyhedralModel(), getStatusNotifier(), getPickManager(), getPolyhedralModelConfig()));
 
 
 //            if ( getPolyhedralModelConfig().rootDirOnServer != null)
@@ -747,18 +743,23 @@ public class SbmtView extends View implements PropertyChangeListener
 	@Override
 	protected void setupPickManager()
 	{
-		PickManager tmpPickManager = new PickManager(getRenderer(), getModelManager(), getPopupManager());
-		PickUtil.installDefaultPickHandler(tmpPickManager, getStatusBar(), getRenderer(), getModelManager());
+		PickManager tmpPickManager = new PickManager(getRenderer(), getModelManager());
 		setPickManager(tmpPickManager);
 
+		// Manually register the Renderer with the DefaultPicker
+		tmpPickManager.getDefaultPicker().addListener(getRenderer());
+
+		// Manually register the PopupManager with the DefaultPicker
+		tmpPickManager.getDefaultPicker().addListener(getPopupManager());
+
 		// TODO: This should be moved out of here to a logical relevant location
-		tmpPickManager.getDefaultPicker().addListener(new ImageDefaultPickHandler());
+		tmpPickManager.getDefaultPicker().addListener(new ImageDefaultPickHandler(getModelManager()));
 	}
 
 	@Override
 	protected void setupInfoPanelManager()
 	{
-		setInfoPanelManager(new SbmtInfoWindowManager(getModelManager(), getStatusBar()));
+		setInfoPanelManager(new SbmtInfoWindowManager(getModelManager()));
 	}
 
 	@Override
@@ -776,45 +777,15 @@ public class SbmtView extends View implements PropertyChangeListener
 	public void propertyChange(PropertyChangeEvent e)
 	{
 		if (e.getPropertyName().equals(Properties.MODEL_CHANGED))
-		{
-			renderer.setProps(getModelManager().getProps());
-
-			if (smallBodyColorbar == null)
-				return;
-
-			PolyhedralModel sbModel = (PolyhedralModel) getModelManager().getModel(ModelNames.SMALL_BODY);
-			if (sbModel.isColoringDataAvailable() && sbModel.getColoringIndex() >= 0)
-			{
-				if (!smallBodyColorbar.isVisible())
-					smallBodyColorbar.setVisible(true);
-				smallBodyColorbar.setColormap(sbModel.getColormap());
-				int index = sbModel.getColoringIndex();
-				String title = sbModel.getColoringName(index).trim();
-				String units = sbModel.getColoringUnits(index).trim();
-				if (units != null && !units.isEmpty())
-				{
-					title += " (" + units + ")";
-				}
-				smallBodyColorbar.setTitle(title);
-				if (renderer.getRenderWindowPanel().getRenderer().HasViewProp(smallBodyColorbar.getActor()) == 0)
-					renderer.getRenderWindowPanel().getRenderer().AddActor(smallBodyColorbar.getActor());
-				smallBodyColorbar.getActor().SetNumberOfLabels(sbModel.getColormap().getNumberOfLabels());
-			}
-			else
-				smallBodyColorbar.setVisible(false);
-
-		}
+			renderer.notifySceneChange();
 		else
-		{
 			renderer.getRenderWindowPanel().Render();
-		}
 	}
 
 	@Override
 	public void setRenderer(Renderer renderer)
 	{
 		this.renderer = renderer;
-		smallBodyColorbar = new Colorbar(renderer);
 	}
 
 	private static final Version METADATA_VERSION = Version.of(1, 1); // Nested CURRENT_TAB stored as an array of strings.
@@ -849,7 +820,7 @@ public class SbmtView extends View implements PropertyChangeListener
 					Renderer localRenderer = SbmtView.this.getRenderer();
 					if (localRenderer != null)
 					{
-						RenderPanel panel = (RenderPanel) localRenderer.getRenderWindowPanel();
+						RenderPanel panel = localRenderer.getRenderWindowPanel();
 						vtkCamera camera = panel.getActiveCamera();
 						result.put(POSITION_KEY, camera.GetPosition());
 						result.put(UP_KEY, camera.GetViewUp());
@@ -918,7 +889,7 @@ public class SbmtView extends View implements PropertyChangeListener
                     Renderer localRenderer = SbmtView.this.getRenderer();
                     if (localRenderer != null)
                     {
-                        RenderPanel panel = (RenderPanel) localRenderer.getRenderWindowPanel();
+                        RenderPanel panel = localRenderer.getRenderWindowPanel();
                         vtkCamera camera = panel.getActiveCamera();
                             camera.SetPosition(state.get(POSITION_KEY));
                             camera.SetViewUp(state.get(UP_KEY));
@@ -1026,35 +997,6 @@ public class SbmtView extends View implements PropertyChangeListener
         SpectraCollection collection = new SpectraCollection(smallBodyModel);
 
         models.put(ModelNames.SPECTRA, collection);
-        return models;
-    }
-
-    static public HashMap<ModelNames, Model> createLidarModels(SmallBodyModel smallBodyModel)
-    {
-        HashMap<ModelNames, Model> models = new HashMap<ModelNames, Model>();
-
-        models.put(ModelNames.LIDAR_BROWSE, new LidarFileSpecManager(smallBodyModel));
-        models.put(ModelNames.LIDAR_SEARCH, new LidarTrackManager(smallBodyModel));
-        if (smallBodyModel.getSmallBodyConfig().hasHypertreeLidarSearch())
-        {
-            switch (smallBodyModel.getSmallBodyConfig().getLidarInstrument())
-            {
-            case MOLA:
-                models.put(ModelNames.LIDAR_HYPERTREE_SEARCH, new LidarTrackManager(smallBodyModel));
-                break;
-            case OLA:
-                models.put(ModelNames.LIDAR_HYPERTREE_SEARCH, new LidarTrackManager(smallBodyModel));
-                break;
-            case LASER:
-                models.put(ModelNames.LIDAR_HYPERTREE_SEARCH, new LidarTrackManager(smallBodyModel));
-                break;
-                default:
-                	throw new AssertionError();
-            }
-
-
-        }
-
         return models;
     }
 

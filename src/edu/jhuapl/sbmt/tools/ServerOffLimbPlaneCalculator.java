@@ -47,7 +47,7 @@ public class ServerOffLimbPlaneCalculator
 
     public ServerOffLimbPlaneCalculator(PerspectiveImage img)
     {
-        sw = new Stopwatch();
+        sw = Stopwatch.createUnstarted();
         sw.start();
         setupParameters(img);
     }
@@ -212,7 +212,7 @@ public class ServerOffLimbPlaneCalculator
         SbmtMultiMissionTool.configureMission();
 
          // authentication
-        Authenticator.authenticate();
+        Configuration.authenticate();
         NativeLibraryLoader.loadVtkLibraries();
          // initialize view config
         SmallBodyViewConfig.initialize();

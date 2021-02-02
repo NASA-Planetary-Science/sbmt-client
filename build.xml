@@ -38,25 +38,30 @@
  	 	  </fileset>
  	</copy>
 
- 	<echo>Copying ColorMaps.xml explicitly into release code base - this is a HACK!!!! </echo>
- 	<copy file="${rootSAAVTKdir}/src/edu/jhuapl/saavtk/colormap/ColorMaps.xml" tofile="${rootdir}/build/classes/edu/jhuapl/saavtk/colormap/ColorMaps.xml"/>
+ 	<copy file="${rootSAAVTKdir}/src/resources/colors/ColorMaps.xml" tofile="${rootdir}/build/classes/resources/colors/ColorMaps.xml"/>
 
 
     <javac srcdir="${rootSAAVTKdir}/src"
            destdir="${rootSAAVTKdir}/build/classes"
            debug="off" >
       <classpath>
-      	<pathelement location="${libDir}/crucible-metadata-4.3.jar"/>
-      	<pathelement location="${libDir}/crucible-settings-4.0.jar"/>
+      	<pathelement location="${libDir}/crucible-core-20200730.jar"/>
+      	<pathelement location="${libDir}/crucible-mantle-spice-20200730.jar"/>
+      	<pathelement location="${libDir}/crucible-crust-metadata-20200730.jar"/>
+      	<pathelement location="${libDir}/crucible-crust-settings-20200730.jar"/>
+        <pathelement location="${libDir}/crucible-crust-spice-20200730.jar"/>
         <pathelement location="${libDir}/commons-io-2.0.jar"/>
         <pathelement location="${libDir}/commons-math3-3.6.1.jar"/>
         <pathelement location="${libDir}/commons-math3-3.2.jar"/>
       	<pathelement location="${libDir}/commons-text-1.8.jar"/>
         <pathelement location="${libDir}/gson-2.8.0.jar"/>
         <pathelement location="${libDir}/nom-tam-fits-1.13.1m0.jar"/>
-        <pathelement location="${libDir}/guava-13.0.1.jar"/>
+        <pathelement location="${libDir}/jafama-2.3.1.jar"/>
+        <pathelement location="${libDir}/jsr305.jar"/>
+        <pathelement location="${libDir}/guava-28.2.jar"/>
       	<pathelement location="${libDir}/guava-mini-0.1.jar"/>
-        <pathelement location="${libDir}/glum-1.2.jar"/>
+        <pathelement location="${libDir}/glum-1.3.6.jar"/>
+        <pathelement location="${libDir}/plotkit-2020.10.01.jar"/>
         <pathelement location="${libDir}/Jama-1.0.2.jar"/>
         <pathelement location="${libDir}/jcommon-1.0.16.jar"/>
         <pathelement location="${libDir}/jfreechart-1.0.13.jar"/>
@@ -172,17 +177,23 @@
         <fileset dir="${rootdir}/lib">
           <include name="*.jar" />
         </fileset>
+        <pathelement location="${libDir}/crucible-core-20200730.jar"/>
+        <pathelement location="${libDir}/crucible-mantle-spice-20200730.jar"/>
+        <pathelement location="${libDir}/crucible-crust-metadata-20200730.jar"/>
+        <pathelement location="${libDir}/crucible-crust-settings-20200730.jar"/>
+        <pathelement location="${libDir}/crucible-crust-spice-20200730.jar"/>
         <pathelement location="${libDir}/commons-math3-3.6.1.jar"/>
-      	<pathelement location="${libDir}/crucible-metadata-4.3.jar"/>
-      	<pathelement location="${libDir}/crucible-settings-4.0.jar"/>
         <pathelement location="${libDir}/commons-io-2.0.jar"/>
         <pathelement location="${libDir}/commons-math3-3.2.jar"/>
       	<pathelement location="${libDir}/commons-text-1.8.jar"/>
         <pathelement location="${libDir}/gson-2.8.0.jar"/>
         <pathelement location="${libDir}/nom-tam-fits-1.13.1m0.jar"/>
-        <pathelement location="${libDir}/guava-13.0.1.jar"/>
+        <pathelement location="${libDir}/jafama-2.3.1.jar"/>
+        <pathelement location="${libDir}/jsr305.jar"/>
+        <pathelement location="${libDir}/guava-28.2.jar"/>
       	<pathelement location="${libDir}/guava-mini-0.1.jar"/>
-        <pathelement location="${libDir}/glum-1.2.jar"/>
+        <pathelement location="${libDir}/glum-1.3.6.jar"/>
+        <pathelement location="${libDir}/plotkit-2020.10.01.jar"/>
         <pathelement location="${libDir}/Jama-1.0.2.jar"/>
         <pathelement location="${libDir}/jcommon-1.0.16.jar"/>
         <pathelement location="${libDir}/jfreechart-1.0.13.jar"/>
@@ -226,16 +237,22 @@
       <manifest>
         <attribute name="Class-Path" value="netcdfAll-4.3.jar
         	commons-io-2.0.jar
-        	crucible-metadata-4.3.jar
-        	crucible-settings-4.0.jar
+            crucible-core-20200730.jar
+            crucible-mantle-spice-20200730.jar
+            crucible-crust-metadata-20200730.jar
+            crucible-crust-settings-20200730.jar
+            crucible-crust-spice-20200730.jar
         	commons-math3-3.6.1.jar
             commons-math3-3.2.jar
           	commons-text-1.8.jar
             gson-2.8.0.jar
             nom-tam-fits-1.13.1m0.jar
-            guava-13.0.1.jar
+        	jafama-2.3.1.jar
+        	jsr305.jar
+            guava-28.2.jar
         	guava-mini-0.1.jar
-            glum-1.2.jar
+            glum-1.3.6.jar
+            plotkit-2020.10.01.jar
             Jama-1.0.2.jar
             jcommon-1.0.16.jar
             jfreechart-1.0.13.jar
@@ -344,17 +361,23 @@
 
       <manifest>
         <attribute name="Class-Path" value="netcdfAll-4.3.jar
-        	commons-io-2.0.jar
-        	crucible-settings-4.0.jar
-        	crucible-metadata-4.3.jar
+            crucible-core-20200730.jar
+            crucible-mantle-spice-20200730.jar
+            crucible-crust-metadata-20200730.jar
+            crucible-crust-settings-20200730.jar
+            crucible-crust-spice-20200730.jar
+        	  commons-io-2.0.jar
             commons-math3-3.6.1.jar
             commons-math3-3.2.jar
           	commons-text-1.8.jar
         	gson-2.8.0.jar
             nom-tam-fits-1.13.1m0.jar
-            guava-13.0.1.jar
+        	jafama-2.3.1.jar
+        	jsr305.jar
+            guava-28.2.jar
         	guava-mini-0.1.jar
-            glum-1.2.jar
+            glum-1.3.6.jar
+            plotkit-2020.10.01.jar
             Jama-1.0.2.jar
             jcommon-1.0.16.jar
             jfreechart-1.0.13.jar
@@ -449,17 +472,22 @@
     <mkdir dir="${rootSAAVTKdir}/build/jar"/>
     <jar destfile="${rootSAAVTKdir}/build/jar/saavtk.jar" basedir="${rootSAAVTKdir}/build/classes">
       <manifest>
-        <attribute name="Class-Path" value="commons-io-2.0.jar
-        									crucible-settings-4.0.jar
-        									crucible-metadata-4.3.jar
+        <attribute name="Class-Path" value="crucible-core-20200730.jar
+        									crucible-mantle-spice-20200730.jar
+        									crucible-crust-metadata-20200730.jar
+        									crucible-crust-settings-20200730.jar
+        									crucible-crust-spice-20200730.jar
         									commons-math3-3.6.1.jar
                                             commons-math3-3.2.jar
                                             commons-text-1.8.jar
                                             gson-2.8.0.jar
                                             nom-tam-fits-1.13.1m0.jar
-                                            guava-13.0.1.jar
+        									jafama-2.3.1.jar
+        									jsr305.jar
+                                            guava-28.2.jar
 											guava-mini-0.1.jar
-                                            glum-1.2.jar
+                                            glum-1.3.6.jar
+                                            plotkit-2020.10.01.jar
                                             Jama-1.0.2.jar
                                             jcommon-1.0.16.jar
                                             jfreechart-1.0.13.jar
@@ -585,17 +613,23 @@
   <target name="clean">
     <delete dir="${rootdir}/build"/>
     <delete dir="${rootSAAVTKdir}/build"/>
-  	<delete file="${rootlibDir}/crucible-settings-4.0.jar"/>
-   	<delete file="${rootlibDir}/crucible-metadata-4.3.jar"/>
+  	<delete file="${rootlibDir}/crucible-core-20200730.jar"/>
+  	<delete file="${rootlibDir}/crucible-mantle-spice-20200730.jar"/>
+  	<delete file="${rootlibDir}/crucible-crust-settings-20200730.jar"/>
+   	<delete file="${rootlibDir}/crucible-crust-metadata-20200730.jar"/>
+    <delete file="${rootlibDir}/crucible-crust-spice-20200730.jar"/>
     <delete file="${rootlibDir}/commons-io-2.0.jar"/>
     <delete file="${rootlibDir}/commons-math3-3.6.1.jar"/>
     <delete file="${rootlibDir}/commons-math3-3.2.jar"/>
   	<delete file="${rootlibDir}/commons-text-1.8.jar"/>
     <delete file="${rootlibDir}/gson-2.8.0.jar"/>
     <delete file="${rootlibDir}/nom-tam-fits-1.13.1m0.jar"/>
-    <delete file="${rootlibDir}/guava-13.0.1.jar"/>
+    <delete file="${rootlibDir}/jafama-2.3.1.jar"/>
+    <delete file="${rootlibDir}/jsr305.jar"/>
+    <delete file="${rootlibDir}/guava-28.2.jar"/>
   	<delete file="${rootlibDir}/guava-mini-0.1.jar"/>
-    <delete file="${rootlibDir}/glum-1.2.jar"/>
+    <delete file="${rootlibDir}/glum-1.3.6.jar"/>
+    <delete file="${rootlibDir}/plotkit-2020.10.01.jar"/>
     <delete file="${rootlibDir}/Jama-1.0.2.jar"/>
     <delete file="${rootlibDir}/jcommon-1.0.16.jar"/>
     <delete file="${rootlibDir}/jfreechart-1.0.13.jar"/>
@@ -631,13 +665,21 @@
       <jvmarg value="-Dcom.apple.mrj.application.apple.menu.about.name=SBMT Test"/>
       <classpath>
 <!--
+        <pathelement location="${libDir}/crucible-core-20200730.jar"/>
+        <pathelement location="${libDir}/crucible-mantle-spice-20200730.jar"/>
+        <pathelement location="${libDir}/crucible-crust-metadata-20200730.jar"/>
+        <pathelement location="${libDir}/crucible-crust-settings-20200730.jar"/>
+        <pathelement location="${libDir}/crucible-crust-spice-20200730.jar"/>
         <pathelement location="${libDir}/commons-io-2.0.jar"/>
         <pathelement location="${libDir}/commons-math3-3.2.jar"/>
         <pathelement location="${libDir}/commons-text-1.8.jar"/>
         <pathelement location="${libDir}/gson-2.8.0.jar"/>
         <pathelement location="${libDir}/nom-tam-fits-1.13.1m0.jar"/>
-        <pathelement location="${libDir}/guava-13.0.1.jar"/>
-        <pathelement location="${libDir}/glum-1.2.jar"/>
+        <pathelement location="${libDir}/jafama-2.3.1.jar"/>
+        <pathelement location="${libDir}/jsr305.jar"/>
+        <pathelement location="${libDir}/guava-28.2.jar"/>
+        <pathelement location="${libDir}/glum-1.3.6.jar"/>
+        <pathelement location="${libDir}/plotkit-2020.10.01.jar"/>
         <pathelement location="${libDir}/Jama-1.0.2.jar"/>
         <pathelement location="${libDir}/jcommon-1.0.16.jar"/>
         <pathelement location="${libDir}/jfreechart-1.0.13.jar"/>
@@ -656,17 +698,23 @@
         <pathelement location="${rootdir}/build/jar/near.jar"/>
         <pathelement location="${rootSAAVTKdir}/build/jar/saavtk.jar"/>
 -->
-      	<pathelement location="${libDir}/crucible-settings-4.0.jar"/>
-      	<pathelement location="${libDir}/crucible-metadata-4.3.jar"/>
+        <pathelement location="${libDir}/crucible-core-20200730.jar"/>
+        <pathelement location="${libDir}/crucible-mantle-spice-20200730.jar"/>
+        <pathelement location="${libDir}/crucible-crust-metadata-20200730.jar"/>
+        <pathelement location="${libDir}/crucible-crust-settings-20200730.jar"/>
+        <pathelement location="${libDir}/crucible-crust-spice-20200730.jar"/>
         <pathelement location="${libDir}/commons-io-2.0.jar"/>
         <pathelement location="${libDir}/commons-math3-3.6.1.jar"/>
         <pathelement location="${libDir}/commons-math3-3.2.jar"/>
         <pathelement location="${libDir}/commons-text-1.8.jar"/>
         <pathelement location="${libDir}/gson-2.8.0.jar"/>
         <pathelement location="${libDir}/nom-tam-fits-1.13.1m0.jar"/>
-        <pathelement location="${libDir}/guava-13.0.1.jar"/>
+        <pathelement location="${libDir}/jafama-2.3.1.jar"/>
+        <pathelement location="${libDir}/jsr305.jar"/>
+        <pathelement location="${libDir}/guava-28.2.jar"/>
       	<pathelement location="${libDir}/guava-mini-0.1.jar"/>
-        <pathelement location="${libDir}/glum-1.2.jar"/>
+        <pathelement location="${libDir}/glum-1.3.6.jar"/>
+        <pathelement location="${libDir}/plotkit-2020.10.01.jar"/>
         <pathelement location="${libDir}/Jama-1.0.2.jar"/>
         <pathelement location="${libDir}/jcommon-1.0.16.jar"/>
         <pathelement location="${libDir}/jfreechart-1.0.13.jar"/>

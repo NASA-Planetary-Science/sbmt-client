@@ -212,8 +212,8 @@ public class RyuguConfigs extends SmallBodyViewConfig
             c.spectralInstruments = new ArrayList<BasicSpectrumInstrument>();
             c.spectralInstruments.add(new NIRS3());
 
-            c.presentInMissions = new SbmtMultiMissionTool.Mission[] {SbmtMultiMissionTool.Mission.APL_INTERNAL, SbmtMultiMissionTool.Mission.TEST_APL_INTERNAL,SbmtMultiMissionTool.Mission.STAGE_APL_INTERNAL,
-					SbmtMultiMissionTool.Mission.HAYABUSA2_DEPLOY, SbmtMultiMissionTool.Mission.HAYABUSA2_DEV};
+            c.presentInMissions = new SbmtMultiMissionTool.Mission[] {/*SbmtMultiMissionTool.Mission.APL_INTERNAL, SbmtMultiMissionTool.Mission.TEST_APL_INTERNAL,SbmtMultiMissionTool.Mission.STAGE_APL_INTERNAL,
+					SbmtMultiMissionTool.Mission.HAYABUSA2_DEPLOY, SbmtMultiMissionTool.Mission.HAYABUSA2_DEV*/};
             c.defaultForMissions = new SbmtMultiMissionTool.Mission[] {};
 
             configArray.add(c);

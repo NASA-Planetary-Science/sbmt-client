@@ -62,7 +62,7 @@ import org.joda.time.DateTimeZone;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSortedMap;
 import com.google.common.collect.ImmutableSortedSet;
-import com.google.common.collect.Ranges;
+import com.google.common.collect.Range;
 import com.jidesoft.swing.CheckBoxTree;
 
 import vtk.vtkActor;
@@ -144,7 +144,8 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
     private JCheckBox[] userDefinedCheckBoxes;
     protected CheckBoxTree checkBoxTree;
 
-    protected ImagingInstrument instrument = new ImagingInstrument();
+    protected final ImagingInstrument instrument;
+    protected final ImageGalleryGenerator galleryGenerator;
 
     // The source of the images of the most recently executed query
     protected ImageSource sourceOfLastQuery = ImageSource.SPICE;
@@ -185,6 +186,7 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
         this.pickManager = pickManager;
 
         this.instrument = instrument;
+        this.galleryGenerator = ImageGalleryGenerator.of(instrument);
         this.stateManager = null;
     }
 
@@ -2668,13 +2670,13 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
             {
                 // Run queries based on user specifications
                 ImageDatabaseSearchMetadata searchMetadata = ImageDatabaseSearchMetadata.of("", startDateJoda, endDateJoda,
-                        Ranges.closed(Double.valueOf(fromDistanceTextField.getText()), Double.valueOf(toDistanceTextField.getText())),
+                        Range.closed(Double.valueOf(fromDistanceTextField.getText()), Double.valueOf(toDistanceTextField.getText())),
                         searchField, null,
-                        Ranges.closed(Double.valueOf(fromIncidenceTextField.getText()), Double.valueOf(toIncidenceTextField.getText())),
-                        Ranges.closed(Double.valueOf(fromEmissionTextField.getText()), Double.valueOf(toEmissionTextField.getText())),
-                        Ranges.closed(Double.valueOf(fromPhaseTextField.getText()), Double.valueOf(toPhaseTextField.getText())),
+                        Range.closed(Double.valueOf(fromIncidenceTextField.getText()), Double.valueOf(toIncidenceTextField.getText())),
+                        Range.closed(Double.valueOf(fromEmissionTextField.getText()), Double.valueOf(toEmissionTextField.getText())),
+                        Range.closed(Double.valueOf(fromPhaseTextField.getText()), Double.valueOf(toPhaseTextField.getText())),
                         sumOfProductsSearch, camerasSelected, filtersSelected,
-                        Ranges.closed(Double.valueOf(fromResolutionTextField.getText()), Double.valueOf(toResolutionTextField.getText())),
+                        Range.closed(Double.valueOf(fromResolutionTextField.getText()), Double.valueOf(toResolutionTextField.getText())),
                         cubeList, imageSource, hasLimbComboBox.getSelectedIndex());
 
                 results = instrument.searchQuery.runQuery(searchMetadata).getResultlist();
@@ -2790,13 +2792,13 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
                 {
 
                     ImageDatabaseSearchMetadata searchMetadataOther = ImageDatabaseSearchMetadata.of("", startDateJoda, endDateJoda,
-                            Ranges.closed(Double.valueOf(fromDistanceTextField.getText()), Double.valueOf(toDistanceTextField.getText())),
+                            Range.closed(Double.valueOf(fromDistanceTextField.getText()), Double.valueOf(toDistanceTextField.getText())),
                             searchField, null,
-                            Ranges.closed(Double.valueOf(fromIncidenceTextField.getText()), Double.valueOf(toIncidenceTextField.getText())),
-                            Ranges.closed(Double.valueOf(fromEmissionTextField.getText()), Double.valueOf(toEmissionTextField.getText())),
-                            Ranges.closed(Double.valueOf(fromPhaseTextField.getText()), Double.valueOf(toPhaseTextField.getText())),
+                            Range.closed(Double.valueOf(fromIncidenceTextField.getText()), Double.valueOf(toIncidenceTextField.getText())),
+                            Range.closed(Double.valueOf(fromEmissionTextField.getText()), Double.valueOf(toEmissionTextField.getText())),
+                            Range.closed(Double.valueOf(fromPhaseTextField.getText()), Double.valueOf(toPhaseTextField.getText())),
                             sumOfProductsSearch, camerasSelected, filtersSelected,
-                            Ranges.closed(Double.valueOf(fromResolutionTextField.getText()), Double.valueOf(toResolutionTextField.getText())),
+                            Range.closed(Double.valueOf(fromResolutionTextField.getText()), Double.valueOf(toResolutionTextField.getText())),
                             cubeList, imageSource == ImageSource.SPICE ? ImageSource.GASKELL_UPDATED : ImageSource.SPICE, hasLimbComboBox.getSelectedIndex());
 
                     resultsOtherSource = instrument.searchQuery.runQuery(searchMetadataOther).getResultlist();
@@ -3018,17 +3020,12 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
         // Check if image search results are valid and nonempty
         if(imageRawResults != null)
         {
-            String dataPath = instrument.searchQuery.getDataPath();
-            String galleryPath = instrument.searchQuery.getGalleryPath();
             // Create list of gallery and preview image names based on results
             List<ImageGalleryEntry> galleryEntries = new LinkedList<ImageGalleryEntry>();
             for(List<String> res : imageRawResults)
             {
-                String s = "/" + res.get(0).replace(dataPath, galleryPath);
-                // Create entry for image gallery
-                galleryEntries.add(new ImageGalleryEntry(
-                        res.get(0).substring(res.get(0).lastIndexOf("/") + 1),
-                        s+".jpeg", s+"-small.jpeg"));
+                ImageGalleryEntry entry = galleryGenerator.getEntry(res.get(0));
+                galleryEntries.add(entry);
             }
 
             // Don't bother creating a gallery if empty
@@ -3042,7 +3039,7 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
             }
 
             // Create preview gallery based on search results
-            String galleryURL = ImageGalleryGenerator.generateGallery(galleryEntries);
+            String galleryURL = galleryGenerator.generateGallery(galleryEntries);
 
             // Show gallery preview in browser
             try

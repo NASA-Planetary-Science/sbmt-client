@@ -24,7 +24,8 @@ public class SpectrumSearchParametersModel
     protected Date endDate = new GregorianCalendar(2000, 4, 14, 0, 0, 0).getTime();
     private List<Integer> polygonTypesChecked = new ArrayList<Integer>();
     private String searchByFilename;
-
+    private String modelName;
+    private String dataType;
 
 	public SpectrumSearchParametersModel()
 	{
@@ -165,5 +166,25 @@ public class SpectrumSearchParametersModel
 	public String getSearchByFilename()
 	{
 		return searchByFilename;
+	}
+
+	public String getModelName()
+	{
+		return modelName;
+	}
+
+	public void setModelName(String modelName)
+	{
+		this.modelName = modelName;
+	}
+
+	public String getDataType()
+	{
+		return dataType;
+	}
+
+	public void setDataType(String dataType)
+	{
+		this.dataType = dataType;
 	}
 }

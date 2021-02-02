@@ -3,23 +3,26 @@ package edu.jhuapl.sbmt.client;
 import java.awt.EventQueue;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.PrintStream;
 import java.lang.reflect.InvocationTargetException;
 import java.net.CookieHandler;
 import java.net.CookieManager;
 import java.net.CookiePolicy;
+import java.net.JarURLConnection;
 import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 import javax.swing.ImageIcon;
+import javax.swing.JDialog;
 import javax.swing.JOptionPane;
+import javax.swing.SwingWorker;
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
 
-import com.google.common.collect.ImmutableList;
 import com.jgoodies.looks.LookUtils;
 
 import edu.jhuapl.saavtk.colormap.Colormaps;
@@ -29,12 +32,15 @@ import edu.jhuapl.saavtk.model.structure.EllipsePolygon;
 import edu.jhuapl.saavtk.model.structure.Line;
 import edu.jhuapl.saavtk.model.structure.Polygon;
 import edu.jhuapl.saavtk.util.Configuration;
+import edu.jhuapl.saavtk.util.Configuration.ReleaseType;
 import edu.jhuapl.saavtk.util.Debug;
 import edu.jhuapl.saavtk.util.DownloadableFileState;
 import edu.jhuapl.saavtk.util.FileCache;
 import edu.jhuapl.saavtk.util.LatLon;
 import edu.jhuapl.saavtk.util.SafeURLPaths;
-import edu.jhuapl.saavtk.util.UrlInfo.UrlStatus;
+import edu.jhuapl.saavtk.util.ServerSettingsManager;
+import edu.jhuapl.saavtk.util.ServerSettingsManager.ServerSettings;
+import edu.jhuapl.saavtk.util.UrlStatus;
 import edu.jhuapl.sbmt.dtm.model.DEMKey;
 import edu.jhuapl.sbmt.gui.image.model.custom.CustomCylindricalImageKey;
 import edu.jhuapl.sbmt.gui.image.model.custom.CustomPerspectiveImageKey;
@@ -65,32 +71,44 @@ public class SbmtMultiMissionTool
 
     public enum Mission
 	{
-    	APL_INTERNAL_NIGHTLY("b1bc7ec"),
-		APL_INTERNAL("b1bc7ed"),
-		PUBLIC_RELEASE("3ee38f0"),
-		TEST_APL_INTERNAL("fb404a7"),
-		TEST_PUBLIC_RELEASE("a1a32b4"),
-		HAYABUSA2_DEV("133314b"),
-//		HAYABUSA2_STAGE("244425c"),
-		HAYABUSA2_DEPLOY("355536d"),
-		OSIRIS_REX("7cd84586"),
-//		OSIRIS_REX_STAGE("7cd84587"),
-		OSIRIS_REX_DEPLOY("7cd84588"),
-		OSIRIS_REX_MIRROR_DEPLOY("7cd84589"),
-		NH_DEPLOY("8ff86312"),
-		STAGE_APL_INTERNAL("f7e441b"),
-		STAGE_PUBLIC_RELEASE("8cc8e12");
+    	APL_INTERNAL_NIGHTLY("b1bc7ec", false),
+		APL_INTERNAL("b1bc7ed", false),
+		PUBLIC_RELEASE("3ee38f0", true),
+		TEST_APL_INTERNAL("fb404a7", false),
+		TEST_PUBLIC_RELEASE("a1a32b4", true),
+		HAYABUSA2_DEV("133314b", false),
+//		HAYABUSA2_STAGE("244425c", false),
+		HAYABUSA2_DEPLOY("355536d", false),
+		OSIRIS_REX("7cd84586", false),
+//		OSIRIS_REX_STAGE("7cd84587", false),
+        OSIRIS_REX_DEPLOY("7cd84588", false),
+        OSIRIS_REX_TEST("h887aa63", false),
+		OSIRIS_REX_MIRROR_DEPLOY("7cd84589", false),
+		NH_DEPLOY("8ff86312", false),
+		DART_DEV("9da75292", false),
+		DART_DEPLOY("9da75293", false),
+        DART_TEST("8f449edc", false),
+        DART_STAGE("afac11cb", false),
+		STAGE_APL_INTERNAL("f7e441b", false),
+		STAGE_PUBLIC_RELEASE("8cc8e12", true);
 
 		private final String hashedName;
+        private final boolean publishedDataOnly;
 
-		Mission(String hashedName)
+		Mission(String hashedName, boolean publishedDataOnly)
 		{
 			this.hashedName = hashedName;
+            this.publishedDataOnly = publishedDataOnly;
 		}
 
-		String getHashedName()
+		public String getHashedName()
 		{
 			return hashedName;
+		}
+
+		public boolean isPublishedDataOnly()
+		{
+		    return publishedDataOnly;
 		}
 
 		public static Mission getMissionForName(String name)
@@ -116,8 +134,12 @@ public class SbmtMultiMissionTool
 
 	private static Mission mission = RELEASED_MISSION;
 	private static boolean missionConfigured = false;
+    private static volatile JDialog offlinePopup = null;
 
 	private static boolean enableAuthentication;
+
+	public static Date compileDate = null;
+	public static String versionString = "\n";
 
 	static
 	{
@@ -203,98 +225,234 @@ public class SbmtMultiMissionTool
 		return mission;
 	}
 
-	public static Mission configureMission()
+	private static void generateCompileDateAndVersionString(Object sbmtClass) {
+
+
+		if (compileDate != null && !versionString.equals("\n")) return;
+        try
+        {
+        	Class<?> classToLoad = sbmtClass.getClass();
+        	ClassLoader classLoader = classToLoad.getClassLoader();
+        	String classNameToLoad = sbmtClass.getClass().getCanonicalName().replace('.', '/').substring(0, sbmtClass.getClass().getCanonicalName().length()-8);
+        	URL classURL = classLoader.getResource(classNameToLoad + ".class");
+        	File file = new File(classURL.toURI());
+            compileDate = new Date(file.lastModified());
+        }
+        catch (@SuppressWarnings("unused") Exception e)
+        {
+            try {
+                String rn = sbmtClass.getClass().getName().replace('.', '/') + ".class";
+                JarURLConnection j = (JarURLConnection) ClassLoader.getSystemResource(rn).openConnection();
+                long time =  j.getJarFile().getEntry("META-INF/MANIFEST.MF").getTime();
+                compileDate = new Date(time);
+            } catch (@SuppressWarnings("unused") Exception e1) {
+            }
+        }
+
+        try
+        {
+            InputStream is = sbmtClass.getClass().getResourceAsStream("/edu/jhuapl/sbmt/data/release.version");
+            byte[] data = new byte[256];
+            is.read(data, 0, data.length);
+            versionString = new String(data).trim();
+        }
+        catch (Exception e)
+        {
+        	e.printStackTrace();
+	    	System.out.println("exception = " + e.toString());
+        }
+	}
+
+    public static Mission configureMission()
+    {
+        if (missionConfigured)
+        {
+            return mission;
+        }
+
+        Mission mission = getMission();
+
+        String rootUrl = "http://sbmt.jhuapl.edu/sbmt/prod";
+
+        switch (mission)
+        {
+        case DART_DEPLOY:
+            // TODO: set rootUrl when this is determined.
+            break;
+        case STAGE_APL_INTERNAL:
+        case STAGE_PUBLIC_RELEASE:
+        case DART_STAGE:
+            rootUrl = "http://sbmt-web.jhuapl.edu/internal/multi-mission/stage";
+            break;
+        case TEST_APL_INTERNAL:
+        case TEST_PUBLIC_RELEASE:
+        case DART_TEST:
+        case OSIRIS_REX_TEST:
+            rootUrl = "http://sbmt-web.jhuapl.edu/internal/multi-mission/test";
+            break;
+        case HAYABUSA2_DEPLOY:
+            rootUrl = "http://hyb2sbmt.u-aizu.ac.jp/sbmt";
+            break;
+        case OSIRIS_REX_DEPLOY:
+            rootUrl = "https://uasbmt.lpl.arizona.edu/sbmt";
+            break;
+        default:
+            break;
+        }
+
+        return configureMission(rootUrl);
+    }
+
+    public static Mission configureMission(String rootUrl)
 	{
 		if (missionConfigured)
 		{
 			return mission;
 		}
-		Mission mission = getMission();
 
+		Mission mission = getMission();
+        generateCompileDateAndVersionString(mission);
+	    SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("yyyy.MM.dd");
+
+	    String compileDateString = DATE_FORMAT.format(compileDate);
+	    String fullTitle = "SBMT " + versionString + " (" + compileDateString + ")";
+	    String abbrTitle = "SBMT " + "(" + compileDateString + ")";
+	    fullTitle = "SBMT";
+	    abbrTitle = "SBMT";
+
+        Configuration.setRootURL(rootUrl);
+
+        // DO NOT SET ROOT URL IN THE SWITCH BELOW ANYMORE!!!
 		switch (mission)
 		{
 		case APL_INTERNAL_NIGHTLY:
 			Configuration.setAppName("sbmt-internal-nightly");
 			Configuration.setCacheVersion("2");
-			Configuration.setAppTitle("SBMT");
+			Configuration.setAppTitle(abbrTitle);
+			Configuration.setReleaseType(ReleaseType.DEVELOPMENT);
 			break;
 		case APL_INTERNAL:
+            Configuration.setAppName("sbmt-apl");
+            Configuration.setCacheVersion("2");
+            if (!versionString.contentEquals(""))
+                Configuration.setAppTitle(fullTitle);
+            else
+                Configuration.setAppTitle(abbrTitle);
+            break;
 		case PUBLIC_RELEASE:
 			Configuration.setAppName("sbmt");
 			Configuration.setCacheVersion("2");
-			Configuration.setAppTitle("SBMT");
+			if (!versionString.contentEquals(""))
+				Configuration.setAppTitle(fullTitle);
+			else
+				Configuration.setAppTitle(abbrTitle);
 			break;
 		case STAGE_APL_INTERNAL:
+            Configuration.setAppName("sbmt-stage-apl");
+            Configuration.setCacheVersion("2");
+            Configuration.setAppTitle(fullTitle);
+            break;
 		case STAGE_PUBLIC_RELEASE:
-			Configuration.setRootURL("http://sbmt.jhuapl.edu/internal/multi-mission/stage");
 			Configuration.setAppName("sbmt-stage");
 			Configuration.setCacheVersion("2");
-			Configuration.setAppTitle("SBMT");
+			Configuration.setAppTitle(fullTitle);
 			break;
 		case TEST_APL_INTERNAL:
+            Configuration.setAppName("sbmt-test-apl");
+            Configuration.setCacheVersion("2");
+            Configuration.setAppTitle(fullTitle);
+            // Configuration.setDatabaseSuffix("_test");
+            break;
 		case TEST_PUBLIC_RELEASE:
-			Configuration.setRootURL("http://sbmt.jhuapl.edu/internal/multi-mission/test");
 			Configuration.setAppName("sbmt-test");
 			Configuration.setCacheVersion("2");
-			Configuration.setAppTitle("SBMT");
+			Configuration.setAppTitle(fullTitle);
             // Configuration.setDatabaseSuffix("_test");
 			break;
 		case HAYABUSA2_DEV:
-//			 Configuration.setRootURL("http://sbmt.jhuapl.edu/internal/sbmt");
-//			Configuration.setRootURL("http://sbmt.jhuapl.edu/internal/multi-mission/test");
 			Configuration.setAppName("sbmthyb2-dev");
 			Configuration.setCacheVersion("");
-			Configuration.setAppTitle("SBMT/Hayabusa2-Dev");
+			Configuration.setReleaseType(ReleaseType.DEVELOPMENT);
+			Configuration.setAppTitle("SBMT/Hayabusa2-Dev"/* + "(" + compileDateString + ")"*/);
             // Configuration.setDatabaseSuffix("_test");
 			break;
 //		case HAYABUSA2_STAGE:
-//			Configuration.setRootURL("http://hyb2sbmt.jhuapl.edu/sbmt");
 //			Configuration.setAppName("sbmthyb2-stage");
 //			Configuration.setCacheVersion("");
 //			Configuration.setAppTitle("SBMT/Hayabusa2-Stage");
 //			break;
 		case HAYABUSA2_DEPLOY:
-			Configuration.setRootURL("http://hyb2sbmt.u-aizu.ac.jp/sbmt");
 			Configuration.setAppName("sbmthyb2");
 			Configuration.setCacheVersion("");
-			Configuration.setAppTitle("SBMT/Hayabusa2");
+			Configuration.setAppTitle("SBMT/Hayabusa2" /*+ versionString + " (" + compileDateString + ")"*/);
 			break;
-		case OSIRIS_REX:
-			//                Configuration.setRootURL("http://sbmt.jhuapl.edu/internal/sbmt");
-			Configuration.setAppName("sbmt1orex-dev");
-			Configuration.setCacheVersion("");
-			Configuration.setAppTitle("SBMT/OSIRIS REx-Dev");
-			Colormaps.setDefaultColormapName("Spectral_lowBlue");
-			break;
+        case OSIRIS_REX:
+            Configuration.setAppName("sbmt1orex-dev");
+            Configuration.setCacheVersion("");
+            Configuration.setAppTitle("SBMT/OSIRIS REx-Dev" /*+ "(" + compileDateString + ")"*/);
+            Colormaps.setDefaultColormapName("Spectral_lowBlue");
+            break;
+        case OSIRIS_REX_TEST:
+            Configuration.setAppName("sbmt1orex-test");
+            Configuration.setCacheVersion("");
+            Configuration.setAppTitle("SBMT/OSIRIS REx-Test" /*+ versionString + " (" + compileDateString + ")"*/);
+            Colormaps.setDefaultColormapName("Spectral_lowBlue");
+            break;
 //		case OSIRIS_REX_STAGE:
-//			Configuration.setRootURL("http://orexsbmt.jhuapl.edu/sbmt");
 //			Configuration.setAppName("sbmt1orex-stage");
 //			Configuration.setCacheVersion("");
 //			Configuration.setAppTitle("SBMT/OSIRIS REx-Stage");
 //			break;
 		case OSIRIS_REX_MIRROR_DEPLOY:
-			//                Configuration.setRootURL("http://sbmt.jhuapl.edu/sbmt");
 			Configuration.setAppName("sbmt1orex-mirror");
 			Configuration.setCacheVersion("");
-			Configuration.setAppTitle("SBMT/OSIRIS REx APL Mirror");
+			Configuration.setAppTitle("SBMT/OSIRIS REx APL Mirror" /*+ versionString + " (" + compileDateString + ")"*/);
             Colormaps.setDefaultColormapName("Spectral_lowBlue");
 			break;
 		case OSIRIS_REX_DEPLOY:
-			Configuration.setRootURL("https://uasbmt.lpl.arizona.edu/sbmt");
 			Configuration.setAppName("sbmt1orex");
 			Configuration.setCacheVersion("");
-			Configuration.setAppTitle("SBMT/OSIRIS REx");
+			Configuration.setAppTitle("SBMT/OSIRIS REx"/* + versionString + " (" + compileDateString + ")"*/);
             Colormaps.setDefaultColormapName("Spectral_lowBlue");
 			break;
 		case NH_DEPLOY:
 			Configuration.setAppName("sbmtnh");
 			Configuration.setCacheVersion("");
-			Configuration.setAppTitle("SBMT/New Horizons");
+			Configuration.setAppTitle("SBMT/New Horizons" /*+ versionString + " (" + compileDateString + ")"*/);
 			break;
+		case DART_DEV:
+			Configuration.setAppName("sbmt1dart-dev");
+			Configuration.setCacheVersion("");
+			Configuration.setReleaseType(ReleaseType.DEVELOPMENT);
+			Configuration.setAppTitle("SBMT/DART (Development Version)" /*+ "(" + compileDateString + ")"*/);
+            Colormaps.setDefaultColormapName("Spectral_lowBlue");
+			break;
+		case DART_DEPLOY:
+			Configuration.setAppName("sbmt1dart");
+			Configuration.setCacheVersion("");
+			Configuration.setAppTitle("SBMT/DART" /*+ versionString + " (" + compileDateString + ")"*/);
+            Colormaps.setDefaultColormapName("Spectral_lowBlue");
+			break;
+        case DART_STAGE:
+            Configuration.setAppName("sbmt1dart-stage");
+            Configuration.setCacheVersion("");
+            Configuration.setReleaseType(ReleaseType.DEVELOPMENT);
+            Configuration.setAppTitle("SBMT/DART (Stage Version)" /*+ "(" + compileDateString + ")"*/);
+            Colormaps.setDefaultColormapName("Spectral_lowBlue");
+            break;
+        case DART_TEST:
+            Configuration.setAppName("sbmt1dart-test");
+            Configuration.setCacheVersion("");
+            Configuration.setReleaseType(ReleaseType.DEVELOPMENT);
+            Configuration.setAppTitle("SBMT/DART (Test Version)" /*+ "(" + compileDateString + ")"*/);
+            Colormaps.setDefaultColormapName("Spectral_lowBlue");
+            break;
 		default:
-			throw new AssertionError();
+            throw new AssertionError("Unhandled case for setting up launch configuration " + mission);
 		}
+
 		missionConfigured = true;
+
 		return mission;
 	}
 
@@ -365,6 +523,10 @@ public class SbmtMultiMissionTool
                 case TEST_APL_INTERNAL:
                 case TEST_PUBLIC_RELEASE:
                 case NH_DEPLOY:
+                case DART_DEV:
+                case DART_DEPLOY:
+                case DART_STAGE:
+                case DART_TEST:
                     splash = new SbmtSplash("resources", "splashLogo.png");
                     break;
                 case HAYABUSA2_DEV:
@@ -377,44 +539,57 @@ public class SbmtMultiMissionTool
                     splash = new SbmtSplash("resources", "splashLogoHb2.png");
                     break;
                 case OSIRIS_REX:
+                case OSIRIS_REX_TEST:
                 case OSIRIS_REX_DEPLOY:
                 case OSIRIS_REX_MIRROR_DEPLOY:
 //                case OSIRIS_REX_STAGE:
                     splash = new SbmtSplash("resources", "splashLogoOrex.png");
                     break;
                 default:
-                    throw new AssertionError();
+                    throw new AssertionError("Unhandled splash screen case for launch configuration " + mission);
                 }
 
-                splash.setAlwaysOnTop(true);
                 splash.validate();
                 splash.setVisible(true);
-
                 if (Console.isEnabled())
                 {
                     Console.showStandaloneConsole();
                 }
+                splash.toFront();
+
+                if (offlinePopup != null)
+                {
+                    offlinePopup.toFront();
+                }
 
                 final SbmtSplash finalSplash = splash;
-                ExecutorService executor = Executors.newSingleThreadExecutor();
-                executor.execute(() -> {
-                    // Kill the splash screen after a suitable pause.
-                    try
+
+                SwingWorker<Void, Void> timeOut = new SwingWorker<Void, Void>() {
+
+                    @Override
+                    protected Void doInBackground() throws Exception
                     {
-                        Thread.sleep(3500);
+                        // Kill the splash screen after a suitable pause.
+                        try
+                        {
+                            Thread.sleep(4000);
+                        }
+                        catch (InterruptedException e)
+                        {
+                            // Ignore this one.
+                        }
+                        finally
+                        {
+                            EventQueue.invokeLater(() -> {
+                                finalSplash.setVisible(false);
+                            });
+                        }
+
+                        return null;
                     }
-                    catch (InterruptedException e)
-                    {
-                        // Ignore this one.
-                    }
-                    finally
-                    {
-                        EventQueue.invokeLater(() -> {
-                            finalSplash.setVisible(false);
-                        });
-                    }
-                });
-                executor.shutdown();
+
+                };
+                timeOut.execute();
             });
         }
         catch (Exception e)
@@ -469,12 +644,12 @@ public class SbmtMultiMissionTool
 
 		setUpStreams();
 
+		// Display splash screen.
+		displaySplash(mission);
+
 		setUpAuthentication();
 
 		clearCache();
-
-		// Display splash screen.
-		displaySplash(mission);
 
 		// Start up the client.
 		new SbmtRunnable(initialShapeModelPath).run();
@@ -535,45 +710,51 @@ public class SbmtMultiMissionTool
 		}
 	}
 
-	protected void setUpAuthentication()
-	{
-	    if (enableAuthentication)
-	    {
-	        URL dataRootUrl = Configuration.getDataRootURL();
-	        // Set up two locations to check for passwords: in the installed location or in the user's home directory.
-	        String jarLocation = SbmtMultiMissionTool.class.getProtectionDomain().getCodeSource().getLocation().getPath();
-	        String parent = new File(jarLocation).getParentFile().getParent();
-	        ImmutableList<Path> passwordFilesToTry = ImmutableList.of(SAFE_URL_PATHS.get(Configuration.getApplicationDataDir(), "password.txt"), SAFE_URL_PATHS.get(parent, "password.txt"));
+    protected void setUpAuthentication()
+    {
+        if (enableAuthentication)
+        {
+            ServerSettings serverSettings = ServerSettingsManager.instance().get();
 
-	        Configuration.setupPasswordAuthentication(dataRootUrl, passwordFilesToTry);
-	        FileCache.addServerUrlPropertyChangeListener(e -> {
-	            if (e.getPropertyName().equals(DownloadableFileState.STATE_PROPERTY))
-	            {
-	                DownloadableFileState rootState = (DownloadableFileState) e.getNewValue();
-	                if (rootState.getUrlState().getStatus() == UrlStatus.NOT_AUTHORIZED)
-	                {
-	                    Configuration.setupPasswordAuthentication(dataRootUrl, passwordFilesToTry);
-	                    FileCache.instance().queryAllInBackground(true);
-	                }
-	            }
-	        });
-	        if (!FileCache.instance().getRootState().isAccessible())
-	        {
-	            FileCache.setOfflineMode(true, Configuration.getCacheDir());
-	            String message = "Unable to find server " + dataRootUrl + ". Starting in offline mode. See console log for more information.";
-	            if (Configuration.isHeadless())
-	            {
-	                System.err.println(message);
-	            }
-	            else
-	            {
-	                Configuration.runOnEDT(() -> {
-	                    JOptionPane.showMessageDialog(null, message, "No internet access", JOptionPane.INFORMATION_MESSAGE);
-	                });
-	            }
-	        }
-	    }
-	}
+            if (serverSettings.isServerAccessible())
+            {
+                Configuration.getSwingAuthorizor().setUpAuthorization();
+            }
+            else
+            {
+                FileCache.setOfflineMode(true, Configuration.getCacheDir());
+                String message = "Unable to connect to server " + Configuration.getDataRootURL() + ". Starting in offline mode. See console log for more information.";
+                if (Configuration.isHeadless())
+                {
+                    System.err.println(message);
+                }
+                else
+                {
+                    Configuration.runOnEDT(() -> {
+                        JOptionPane pane = new JOptionPane(message, JOptionPane.INFORMATION_MESSAGE);
+                        offlinePopup = pane.createDialog("No internet access");
+                        offlinePopup.setVisible(true);
+                        offlinePopup.dispose();
+                    });
+                }
+            }
+            FileCache.instance().queryAllInBackground(true);
+
+            FileCache.addServerUrlPropertyChangeListener(e -> {
+                if (e.getPropertyName().equals(DownloadableFileState.STATE_PROPERTY))
+                {
+                    DownloadableFileState rootState = (DownloadableFileState) e.getNewValue();
+                    if (rootState.getUrlState().getStatus() == UrlStatus.NOT_AUTHORIZED)
+                    {
+                        if (Configuration.getSwingAuthorizor().setUpAuthorization())
+                        {
+                            FileCache.instance().queryAllInBackground(true);
+                        }
+                    }
+                }
+            });
+        }
+    }
 
 	public static void main(String[] args)
 	{

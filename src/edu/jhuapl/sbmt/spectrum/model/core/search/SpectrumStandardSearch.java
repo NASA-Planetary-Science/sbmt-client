@@ -11,9 +11,8 @@ import javax.swing.tree.TreePath;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 
-import com.google.common.collect.Ranges;
+import com.google.common.collect.Range;
 
-import edu.jhuapl.sbmt.client.SbmtSpectrumModelFactory;
 import edu.jhuapl.sbmt.core.listeners.SearchProgressListener;
 import edu.jhuapl.sbmt.model.image.ImageSource;
 import edu.jhuapl.sbmt.query.IQueryBase;
@@ -23,6 +22,7 @@ import edu.jhuapl.sbmt.query.fixedlist.FixedListQuery;
 import edu.jhuapl.sbmt.query.fixedlist.FixedListSearchMetadata;
 import edu.jhuapl.sbmt.spectrum.model.core.BasicSpectrum;
 import edu.jhuapl.sbmt.spectrum.model.core.BasicSpectrumInstrument;
+import edu.jhuapl.sbmt.spectrum.model.core.SpectrumIOException;
 import edu.jhuapl.sbmt.spectrum.model.core.interfaces.InstrumentMetadata;
 import edu.jhuapl.sbmt.spectrum.model.core.interfaces.SearchSpec;
 
@@ -44,7 +44,7 @@ public class SpectrumStandardSearch<S extends BasicSpectrum>
 		this.spectraSpec = searchSpec;
 	}
 
-	public List<S> search(BasicSpectrumInstrument instrument, TreeSet<Integer> cubeList, TreePath[] selectedPaths, SearchProgressListener progressListener)
+	public List<S> search(BasicSpectrumInstrument instrument, TreeSet<Integer> cubeList, TreePath[] selectedPaths, SearchProgressListener progressListener) throws SpectrumIOException
 	{
 		List<S> tempResults = null;
         try
@@ -76,7 +76,6 @@ public class SpectrumStandardSearch<S extends BasicSpectrum>
             if(hasHierarchicalSpectraSearch)
             {
             	spectraSpec.readHierarchyForInstrument(instrument.getDisplayName());
-//                SpectraCollection collection = (SpectraCollection)getModelManager().getModel(ModelNames.SPECTRA);
                 // Process the user's selections
                 spectraSpec.processTreeSelections(selectedPaths);
 
@@ -95,28 +94,8 @@ public class SpectrumStandardSearch<S extends BasicSpectrum>
                                                                                         spec.getSource());
                     progressListener.searchIndeterminate();
                     progressListener.searchNoteUpdated("Getting results from server....");
-                    List<List<String>> thisResult = instrument.getQueryBase().runQuery(searchMetadata).getResultlist();
-                    int i=0;
-
-                    BasicSpectrum spectrum = null;
-                    List<S> choiceResults = new ArrayList<S>(thisResult.size());
-                    progressListener.searchNoteUpdated("Processing results....");
-                    for (List<String> str : thisResult)
-                    {
-                    	 try
-                         {
-                         	spectrum = SbmtSpectrumModelFactory.createSpectrum(str.get(0), instrument, str.get(1));
-                         	spectrum.setMetadata(spec);
-                         	choiceResults.add((S)spectrum);
-                         	i++;
-                         	progressListener.searchProgressChanged((int)((((double)i/(double)thisResult.size())*100)));
-                         }
-                         catch (Exception e) {
-                        	 System.out.println("SpectrumStandardSearch: search error when building spectrum: " + e.getLocalizedMessage());
-                        	 e.printStackTrace();
-                         }
-                    }
-                    tempResults.addAll(choiceResults);
+                    List<S> thisResult = instrument.getQueryBase().runQuery(searchMetadata).getResultlist();
+                    tempResults.addAll(thisResult);
                     progressListener.searchEnded();
                 }
             }
@@ -131,12 +110,12 @@ public class SpectrumStandardSearch<S extends BasicSpectrum>
                 else
                 {
                     SpectraDatabaseSearchMetadata searchMetadata = SpectraDatabaseSearchMetadata.of("", startDateJoda, endDateJoda,
-                            Ranges.closed(searchParameters.getMinDistanceQuery(), searchParameters.getMaxDistanceQuery()),
+                            Range.closed(searchParameters.getMinDistanceQuery(), searchParameters.getMaxDistanceQuery()),
                             searchParameters.getSearchByFilename(), searchParameters.getPolygonTypesChecked(),
-                            Ranges.closed(searchParameters.getMinIncidenceQuery(), searchParameters.getMaxIncidenceQuery()),
-                            Ranges.closed(searchParameters.getMinEmissionQuery(), searchParameters.getMaxEmissionQuery()),
-                            Ranges.closed(searchParameters.getMinPhaseQuery(), searchParameters.getMaxPhaseQuery()),
-                            cubeList);
+                            Range.closed(searchParameters.getMinIncidenceQuery(), searchParameters.getMaxIncidenceQuery()),
+                            Range.closed(searchParameters.getMinEmissionQuery(), searchParameters.getMaxEmissionQuery()),
+                            Range.closed(searchParameters.getMinPhaseQuery(), searchParameters.getMaxPhaseQuery()),
+                            cubeList, searchParameters.getModelName(), searchParameters.getDataType());
                     DatabaseQueryBase query = (DatabaseQueryBase)queryType;
                     progressListener.searchIndeterminate();
                     tempResults = query.runQuery(searchMetadata).getResultlist();
@@ -145,8 +124,14 @@ public class SpectrumStandardSearch<S extends BasicSpectrum>
             }
             return tempResults;
         }
+        catch (RuntimeException re)
+        {
+        	System.out.println("SpectrumStandardSearch: search: rethrow");
+        	throw new SpectrumIOException(re.getMessage());
+        }
         catch (Exception e)
         {
+        	System.out.println("SpectrumStandardSearch: search: exception");
             e.printStackTrace();
             System.out.println(e);
             return null;

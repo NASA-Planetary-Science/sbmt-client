@@ -23,14 +23,14 @@ import com.google.common.collect.Lists;
 
 import edu.jhuapl.saavtk.util.BoundingBox;
 import edu.jhuapl.saavtk.util.NativeLibraryLoader;
-import edu.jhuapl.sbmt.lidar.DataOutputStreamPool;
-import edu.jhuapl.sbmt.lidar.LidarInstrument;
 import edu.jhuapl.sbmt.lidar.LidarPoint;
-import edu.jhuapl.sbmt.lidar.RawLidarFile;
 import edu.jhuapl.sbmt.lidar.hyperoctree.hayabusa2.Hayabusa2HyperTreeGenerator;
 import edu.jhuapl.sbmt.lidar.hyperoctree.nlr.NlrFSHyperTreeGenerator;
 import edu.jhuapl.sbmt.lidar.hyperoctree.ola.OlaFSHyperTreeGenerator;
 import edu.jhuapl.sbmt.lidar.hyperoctree.ola.OlaFSHyperTreeNode;
+import edu.jhuapl.sbmt.lidar.misc.DataOutputStreamPool;
+import edu.jhuapl.sbmt.lidar.misc.LidarInstrument;
+import edu.jhuapl.sbmt.lidar.misc.RawLidarFile;
 import edu.jhuapl.sbmt.util.TimeUtil;
 
 public abstract class FSHyperTreeGenerator
@@ -82,11 +82,12 @@ public abstract class FSHyperTreeGenerator
     {
         if (node.getNumberOfPoints()>maxNumberOfPointsPerLeaf)
         {
+        	System.out.println("FSHyperTreeGenerator: expandNode: splitting, max num  "  + maxNumberOfPointsPerLeaf + " and this node has " + node.getNumberOfPoints());
             node.split();
             for (int i=0; i<node.getNumberOfChildren(); i++)
                 if (node.childExists(i))
                 {
-                    System.out.println(node.getChild(i).getPath());
+                    System.out.println("Expanding node: " + node.getChild(i).getPath());
                     expandNode((FSHyperTreeNode)node.getChild(i));
                 }
         }
@@ -164,7 +165,7 @@ public abstract class FSHyperTreeGenerator
 
     public static void main(String[] args) throws IOException, HyperException, ParseException
     {
-        if (args.length != 5)
+    	if (args.length < 5 || args.length > 6)
         {
             printUsage();
             return;
@@ -176,7 +177,9 @@ public abstract class FSHyperTreeGenerator
         double startDate = TimeUtil.str2et(args[3]);
         double stopDate  = TimeUtil.str2et(args[4]);
 
-        double dataFileMBLimit = .05;
+        double dataFileMBLimit = 1; //.05;
+        if (args.length == 6)
+        	dataFileMBLimit = Double.parseDouble(args[5]);
         int maxNumOpenOutputFiles = 32;
 
 
@@ -257,7 +260,7 @@ public abstract class FSHyperTreeGenerator
             break;
         }
 
-        Stopwatch sw=new Stopwatch();
+        Stopwatch sw=Stopwatch.createUnstarted();
         for (int i=0; i<numFiles; i++) {
             sw.reset();
             sw.start();
@@ -271,7 +274,7 @@ public abstract class FSHyperTreeGenerator
                     String filename = inputPath.getFileName().toString();
                     String[] toks = filename.split("_");
                     String date = toks[0];
-                    String strDate = String.format("20%s-%s-%sT00:00:00.000", date.substring(0,2), date.substring(2,4), date.substring(4,6));
+                    String strDate = String.format("20%s-%s-%sT00:00:00.000", date.substring(2,4), date.substring(4,6), date.substring(6,8));
                     double et = TimeUtil.str2et(strDate);
                     if (et >= tmin && et <= tmax) {
                         System.out.println("Searching for valid lidar points in file "+(i+1)+"/"+numFiles+" : "+inputPath);
@@ -287,7 +290,7 @@ public abstract class FSHyperTreeGenerator
             }
         }
 
-        System.out.println("  Elapsed time = "+sw.elapsedTime(TimeUnit.SECONDS)+" s");
+        System.out.println("  Elapsed time = "+sw.elapsed(TimeUnit.SECONDS)+" s");
         System.out.println("  Total points from all files = "+generator.getTotalPoints());
         System.out.println("  Total points written into master data file = "+generator.getTotalPointsWritten());
         System.out.println("  Total MB written into master data file = "+generator.convertBytesToMB(generator.getRoot().getDataFilePath().toFile().length()));
@@ -300,7 +303,7 @@ public abstract class FSHyperTreeGenerator
         System.out.println("Max # pts per leaf="+maxPointsPerLeaf);
         System.out.println("   ... equivalent to "+dataFileMBLimit+" MB max per file");
         generator.expand();
-        System.out.println("Done expanding tree. Time elapsed="+sw.elapsedTime(TimeUnit.SECONDS)+" s");
+        System.out.println("Done expanding tree. Time elapsed="+sw.elapsed(TimeUnit.SECONDS)+" s");
         System.out.println("Cleaning up.");
         System.out.println();
         generator.commit(); // clean up any empty or open data files

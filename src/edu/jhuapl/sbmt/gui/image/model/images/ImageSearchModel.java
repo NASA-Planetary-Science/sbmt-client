@@ -25,7 +25,7 @@ import org.joda.time.DateTimeZone;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSortedMap;
 import com.google.common.collect.ImmutableSortedSet;
-import com.google.common.collect.Ranges;
+import com.google.common.collect.Range;
 
 import vtk.vtkPolyData;
 
@@ -521,6 +521,9 @@ public class ImageSearchModel implements Controller.Model, MetadataManager
             {
                 cubeList = smallBodyModel.getIntersectingCubes(selectionModel.getVtkInteriorPolyDataFor(region));
             }
+            smallBodyModel.setCubeVisibility(cubeList);
+            smallBodyModel.calculateCubeSize(false, 0.0);
+            smallBodyModel.clearCubes();
         }
 
         ImageSource imageSource = getImageSourceOfLastQuery(); // ImageSource.valueOf(((Enum)panel.getSourceComboBox().getSelectedItem()).name());
@@ -584,13 +587,13 @@ public class ImageSearchModel implements Controller.Model, MetadataManager
         {
             // Run queries based on user specifications
             ImageDatabaseSearchMetadata searchMetadata = ImageDatabaseSearchMetadata.of("", startDateJoda, endDateJoda,
-                    Ranges.closed(minDistanceQuery, maxDistanceQuery),
+                    Range.closed(minDistanceQuery, maxDistanceQuery),
                     searchFilename, null,
-                    Ranges.closed(minIncidenceQuery, maxIncidenceQuery),
-                    Ranges.closed(minEmissionQuery, maxEmissionQuery),
-                    Ranges.closed(minPhaseQuery, maxPhaseQuery),
+                    Range.closed(minIncidenceQuery, maxIncidenceQuery),
+                    Range.closed(minEmissionQuery, maxEmissionQuery),
+                    Range.closed(minPhaseQuery, maxPhaseQuery),
                     sumOfProductsSearch, camerasSelected, filtersSelected,
-                    Ranges.closed(minResolutionQuery, maxResolutionQuery),
+                    Range.closed(minResolutionQuery, maxResolutionQuery),
                     cubeList, imageSource, selectedLimbIndex);
             results = getInstrument().getSearchQuery().runQuery(searchMetadata).getResultlist();
        }
@@ -616,13 +619,13 @@ public class ImageSearchModel implements Controller.Model, MetadataManager
             {
 
                 ImageDatabaseSearchMetadata searchMetadataOther = ImageDatabaseSearchMetadata.of("", startDateJoda, endDateJoda,
-                        Ranges.closed(minDistanceQuery, maxDistanceQuery),
+                        Range.closed(minDistanceQuery, maxDistanceQuery),
                         searchFilename, null,
-                        Ranges.closed(minIncidenceQuery, maxIncidenceQuery),
-                        Ranges.closed(minEmissionQuery, maxEmissionQuery),
-                        Ranges.closed(minPhaseQuery, maxPhaseQuery),
+                        Range.closed(minIncidenceQuery, maxIncidenceQuery),
+                        Range.closed(minEmissionQuery, maxEmissionQuery),
+                        Range.closed(minPhaseQuery, maxPhaseQuery),
                         sumOfProductsSearch, camerasSelected, filtersSelected,
-                        Ranges.closed(minResolutionQuery, maxResolutionQuery),
+                        Range.closed(minResolutionQuery, maxResolutionQuery),
                         cubeList, imageSource == ImageSource.SPICE ? ImageSource.GASKELL_UPDATED : ImageSource.SPICE, selectedLimbIndex);
 
                     resultsOtherSource = getInstrument().getSearchQuery().runQuery(searchMetadataOther).getResultlist();

@@ -9,9 +9,9 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-import edu.jhuapl.sbmt.lidar.DataOutputStreamPool;
 import edu.jhuapl.sbmt.lidar.hyperoctree.HyperBox;
 import edu.jhuapl.sbmt.lidar.hyperoctree.HyperException;
+import edu.jhuapl.sbmt.lidar.misc.DataOutputStreamPool;
 import edu.jhuapl.sbmt.model.boundedobject.hyperoctree.BoundedObjectHyperTreeGenerator;
 import edu.jhuapl.sbmt.model.boundedobject.hyperoctree.HyperBoundedObject;
 

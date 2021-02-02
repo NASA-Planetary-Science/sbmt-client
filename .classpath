@@ -2,6 +2,7 @@
 <classpath>
 	<classpathentry excluding="edu/jhuapl/sbmt/gui/time/StateHistoryPopupMenu.java" kind="src" path="src"/>
 	<classpathentry kind="src" path="test"/>
+	<classpathentry kind="lib" path="/saavtk/lib/guava-28.2.jar" sourcepath="/saavtk/lib/guava-28.2-src.zip"/>
 	<classpathentry kind="lib" path="lib/mysql-connector-java-5.1.10-bin.jar"/>
 	<classpathentry kind="lib" path="lib/spice-N0065.jar"/>
 	<classpathentry kind="lib" path="lib/jide-oss-3.6.9.jar"/>
@@ -18,5 +19,12 @@
 			<attribute name="javadoc_location" value="jar:platform:/resource/saavtk/lib/commons-text-1.8-javadoc.jar!/"/>
 		</attributes>
 	</classpathentry>
+	<classpathentry kind="lib" path="/saavtk/lib/jafama-2.3.1.jar"/>
+	<classpathentry kind="lib" path="/saavtk/lib/jsr305.jar"/>
+	<classpathentry kind="lib" path="/saavtk/lib/crucible-core-20200730.jar"/>
+	<classpathentry kind="lib" path="/saavtk/lib/crucible-mantle-spice-20200730.jar"/>
+	<classpathentry kind="lib" path="/saavtk/lib/crucible-crust-metadata-20200730.jar"/>
+	<classpathentry kind="lib" path="/saavtk/lib/crucible-crust-settings-20200730.jar"/>
+	<classpathentry kind="lib" path="/saavtk/lib/crucible-crust-spice-20200730.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

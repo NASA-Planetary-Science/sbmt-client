@@ -1,19 +1,19 @@
 package edu.jhuapl.sbmt.dtm.service.io;
 
 import java.io.BufferedReader;
-import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.net.URL;
 import java.util.Map;
 import java.util.Vector;
 
-import edu.jhuapl.saavtk.util.DownloadableFileState;
 import edu.jhuapl.saavtk.util.FileCache;
-import edu.jhuapl.saavtk.util.FileCache.NoInternetAccessException;
-import edu.jhuapl.saavtk.util.FileCache.UnauthorizedAccessException;
+import edu.jhuapl.saavtk.util.NoInternetAccessException;
+import edu.jhuapl.saavtk.util.SafeURLPaths;
+import edu.jhuapl.saavtk.util.UnauthorizedAccessException;
 import edu.jhuapl.sbmt.dtm.model.DEMKey;
 
 public class DEMBrowseIO
@@ -62,16 +62,15 @@ public class DEMBrowseIO
         InputStreamReader isr = new InputStreamReader(is);
         BufferedReader in = new BufferedReader(isr);
 
-        String line;
         try
         {
-        	String[] parts;
-        	DownloadableFileState fileInfoFromServer;
+            String line;
+            String[] parts;
             while ((line = in.readLine()) != null)
             {
             	parts = line.split(",");
-            	fileInfoFromServer = FileCache.getState(rootDir + File.separator + "dtm/browse" + File.separator + parts[0]);
-            	DEMKey key = new DEMKey(fileInfoFromServer.getUrlState().getUrl().toString(), parts[1], false);
+            	URL url = FileCache.instance().getUrl(SafeURLPaths.instance().getString(rootDir, "dtm", "browse", parts[0]));
+            	DEMKey key = new DEMKey(url.toString(), parts[1], false);
             	keys.add(key);
             }
             completionBlock.run();

@@ -168,9 +168,12 @@ public class BaseSpectrumSearchModel<S extends BasicSpectrum> implements ISpectr
      * @param file
      * @throws Exception
      */
-    public void loadSpectrumListFromFile(File file) throws SpectrumIOException, Exception
+    public void loadSpectrumListFromFile(File file, boolean append) throws SpectrumIOException, Exception
     {
-    	results.clear();
+    	if (append == false)
+    	{
+    		results.clear();
+    	}
 
     	Preconditions.checkNotNull(customDataFolder);
     	SpectrumListIO.loadSpectrumListButtonActionPerformed(file, results, instrument, new Runnable()
@@ -195,7 +198,7 @@ public class BaseSpectrumSearchModel<S extends BasicSpectrum> implements ISpectr
      */
     public void performSearch(SpectrumSearchParametersModel searchParameters, TreeSet<Integer> cubeList,
     							boolean hasHierarchicalSpectraSearch, SpectraHierarchicalSearchSpecification<?> hierarchicalSpectraSearchSpecification,
-    							TreePath[] selectedPath, SearchProgressListener progressListener)
+    							TreePath[] selectedPath, SearchProgressListener progressListener) throws SpectrumIOException
     {
         results.clear();
         SpectraHierarchicalSearchSpecification spectraSpec = null;

@@ -31,10 +31,10 @@ import edu.jhuapl.sbmt.client.SbmtModelFactory;
 import edu.jhuapl.sbmt.client.SmallBodyModel;
 import edu.jhuapl.sbmt.client.SmallBodyViewConfig;
 import edu.jhuapl.sbmt.gui.image.model.ImageKey;
+import edu.jhuapl.sbmt.lidar.LidarFileSpec;
+import edu.jhuapl.sbmt.lidar.util.LidarBrowseUtil;
 import edu.jhuapl.sbmt.model.eros.MSIImage;
 import edu.jhuapl.sbmt.model.image.ImageSource;
-import edu.jhuapl.sbmt.model.lidar.LidarBrowseUtil;
-import edu.jhuapl.sbmt.model.lidar.LidarFileSpec;
 import edu.jhuapl.sbmt.util.TimeUtil;
 
 import nom.tam.fits.FitsException;

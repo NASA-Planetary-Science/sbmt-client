@@ -36,12 +36,13 @@ import org.joda.time.DateTimeZone;
 
 import com.google.common.collect.Lists;
 
+import edu.jhuapl.saavtk.util.CloseableUrlConnection;
 import edu.jhuapl.saavtk.util.Configuration;
 import edu.jhuapl.saavtk.util.DownloadableFileState;
 import edu.jhuapl.saavtk.util.FileCache;
 import edu.jhuapl.saavtk.util.FileUtil;
 import edu.jhuapl.saavtk.util.SafeURLPaths;
-import edu.jhuapl.saavtk.util.UrlInfo.UrlStatus;
+import edu.jhuapl.saavtk.util.UnauthorizedAccessException;
 
 import crucible.crust.metadata.api.Key;
 import crucible.crust.metadata.api.Metadata;
@@ -111,12 +112,17 @@ public abstract class QueryBase implements Cloneable, MetadataManager, IQueryBas
 
     protected List<List<String>> doQuery(String phpScript, String data) throws IOException
     {
+    	return doQuery(phpScript, data, false);
+    }
+
+    protected List<List<String>> doQuery(String phpScript, String data, boolean forcePrepend) throws IOException
+    {
         List<List<String>> results = new ArrayList<>();
 
-        if (!checkAuthorizedAccess())
-        {
-            return results;
-        }
+//        if (!checkAuthorizedAccess())
+//        {
+//            return results;
+//        }
 
         URL u = new URL(Configuration.getQueryRootURL() + "/" + phpScript);
         URLConnection conn = u.openConnection();
@@ -133,11 +139,22 @@ public abstract class QueryBase implements Cloneable, MetadataManager, IQueryBas
 
         String line;
 
+        boolean firstLine = true;
+
         while ((line = in.readLine()) != null)
         {
             line = line.trim();
             if (line.length() == 0)
                 continue;
+
+            if (firstLine)
+            {
+                if (CloseableUrlConnection.detectRejectionMessages(line))
+                {
+                    throw new IOException("Server rejected query to URL " + u);
+                }
+            }
+            firstLine = false;
 
             String[] tokens = line.split("\\s+");
             List<String> words = new ArrayList<>();
@@ -149,7 +166,7 @@ public abstract class QueryBase implements Cloneable, MetadataManager, IQueryBas
         in.close();
         for (List<String> res : results)
         {
-            changeDataPathToFullPath(res);
+            changeDataPathToFullPath(res, forcePrepend);
         }
 
         updateDataInventory(results);
@@ -159,22 +176,26 @@ public abstract class QueryBase implements Cloneable, MetadataManager, IQueryBas
 
     protected boolean checkAuthorizedAccess()
     {
-        DownloadableFileState state = FileCache.instance().query(getDataPath(), false);
-
-        if (state.isAccessible())
+        try
         {
-            return true;
+        	if (getDataPath() != null)
+    		{
+        		boolean isGettable = FileCache.isFileGettable(getDataPath());
+        		if (isGettable == true) return true;
+        		else return FileCache.isFileGettable(getRootPath());
+    		}
+        	else return FileCache.isFileGettable(getRootPath());
         }
-        else if (state.isUrlUnauthorized())
+        catch (UnauthorizedAccessException e)
         {
             JOptionPane.showMessageDialog(null,
                     "You are not authorized to access these data.",
                     "Warning",
                     JOptionPane.WARNING_MESSAGE);
+            return false;
         }
-
-        return false;
     }
+
     protected String constructUrlArguments(HashMap<String, String> args)
     {
         String str = "";
@@ -233,7 +254,7 @@ public abstract class QueryBase implements Cloneable, MetadataManager, IQueryBas
             boolean showFixedListPrompt)
     {
     	DownloadableFileState state = FileCache.refreshStateInfo(pathToFileListOnServer);
-    	if (state.getUrlState().getStatus() != UrlStatus.ACCESSIBLE)
+    	if (!state.isAccessible())
     	{
     		return getCachedResults(getDataPath(), null);
     	}
@@ -580,8 +601,13 @@ public abstract class QueryBase implements Cloneable, MetadataManager, IQueryBas
     // a full path.
     protected void changeDataPathToFullPath(List<String> result)
     {
+    	changeDataPathToFullPath(result, false);
+    }
+
+    protected void changeDataPathToFullPath(List<String> result, boolean forcePrepend)
+    {
         String fullPath = result.get(0);
-        if (!fullPath.contains("/"))
+        if (!fullPath.contains("/") || forcePrepend)
         {
             result.set(0, getDataPath() + "/" + fullPath);
         }
