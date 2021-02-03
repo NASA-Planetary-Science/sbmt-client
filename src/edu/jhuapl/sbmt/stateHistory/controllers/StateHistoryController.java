@@ -30,6 +30,7 @@ import edu.jhuapl.sbmt.stateHistory.model.StateHistorySourceType;
 import edu.jhuapl.sbmt.stateHistory.model.StateHistoryUtil;
 import edu.jhuapl.sbmt.stateHistory.model.interfaces.StateHistory;
 import edu.jhuapl.sbmt.stateHistory.model.io.SpiceKernelIngestor;
+import edu.jhuapl.sbmt.stateHistory.model.io.SpiceKernelLoadStatusListener;
 import edu.jhuapl.sbmt.stateHistory.model.io.StateHistoryIOException;
 import edu.jhuapl.sbmt.stateHistory.model.io.StateHistoryInputException;
 import edu.jhuapl.sbmt.stateHistory.model.io.StateHistoryInvalidTimeException;
@@ -146,7 +147,14 @@ public class StateHistoryController
 					if (fileResult == JFileChooser.APPROVE_OPTION)
 					{
 						File selectedMetakernel = chooser.getSelectedFile();
-						String newKernelLocationAfterIngestion = kernelIngestor.ingestMetaKernelToCache(selectedMetakernel.getAbsolutePath());
+						String newKernelLocationAfterIngestion = kernelIngestor.ingestMetaKernelToCache(selectedMetakernel.getAbsolutePath(), new SpiceKernelLoadStatusListener() {
+
+							@Override
+							public void percentageLoaded(double percentage) {
+//								progressBar.setValue((int)percentage);
+
+							}
+						});
 						history.setSourceFile(newKernelLocationAfterIngestion);
 					}
 				}

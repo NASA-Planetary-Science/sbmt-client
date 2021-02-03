@@ -17,6 +17,7 @@ import edu.jhuapl.sbmt.stateHistory.model.DefaultStateHistoryModelChangedListene
 import edu.jhuapl.sbmt.stateHistory.model.StateHistoryModel;
 import edu.jhuapl.sbmt.stateHistory.model.interfaces.StateHistory;
 import edu.jhuapl.sbmt.stateHistory.model.io.SpiceKernelIngestor;
+import edu.jhuapl.sbmt.stateHistory.model.io.SpiceKernelLoadStatusListener;
 import edu.jhuapl.sbmt.stateHistory.model.io.SpiceKernelNotFoundException;
 import edu.jhuapl.sbmt.stateHistory.model.io.StateHistoryIOException;
 import edu.jhuapl.sbmt.stateHistory.model.io.StateHistoryModelIOHelper;
@@ -83,7 +84,14 @@ public class StateHistoryIntervalSelectionController
 						SpiceKernelIngestor kernelIngestor = new SpiceKernelIngestor(historyModel.getCustomDataFolder());
 						String newKernelLocationAfterIngestion;
 						try {
-							newKernelLocationAfterIngestion = kernelIngestor.ingestMetaKernelToCache(selectedMetakernel.getAbsolutePath());
+							newKernelLocationAfterIngestion = kernelIngestor.ingestMetaKernelToCache(selectedMetakernel.getAbsolutePath(), new SpiceKernelLoadStatusListener() {
+
+								@Override
+								public void percentageLoaded(double percentage) {
+//									progressBar.setValue((int)percentage);
+
+								}
+							});
 							historyFromFile.setSourceFile(newKernelLocationAfterIngestion);
 							historyFromFile.reloadPointingProvider();
 			        		historyModel.addInterval(historyFromFile);
