@@ -423,6 +423,7 @@ public class MarsConfigs extends SmallBodyViewConfig
             c.shapeModelFileExtension = ".obj";
             c.hasStateHistory = true;
             c.timeHistoryFile = c.rootDirOnServer + "/shared/history/timeHistory.bth";
+            c.hasImageMap = true;
 
             c.imagingInstruments = new ImagingInstrument[] {
                     new ImagingInstrument(
