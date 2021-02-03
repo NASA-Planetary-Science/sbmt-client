@@ -17,23 +17,26 @@ import javax.swing.BoxLayout;
 import javax.swing.ButtonGroup;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
-import javax.swing.JFileChooser;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.JProgressBar;
 import javax.swing.JRadioButton;
 import javax.swing.JSpinner;
 import javax.swing.JTextPane;
 import javax.swing.SpinnerDateModel;
+import javax.swing.SwingWorker;
 import javax.swing.border.TitledBorder;
 
 import org.apache.commons.io.FilenameUtils;
 import org.joda.time.DateTime;
 
+import edu.jhuapl.saavtk.gui.dialog.CustomFileChooser;
 import edu.jhuapl.sbmt.stateHistory.model.StateHistoryModel;
 import edu.jhuapl.sbmt.stateHistory.model.StateHistorySourceType;
 import edu.jhuapl.sbmt.stateHistory.model.interfaces.StateHistory;
 import edu.jhuapl.sbmt.stateHistory.model.io.SpiceKernelIngestor;
+import edu.jhuapl.sbmt.stateHistory.model.io.SpiceKernelLoadStatusListener;
 import edu.jhuapl.sbmt.stateHistory.model.io.StateHistoryIOException;
 import edu.jhuapl.sbmt.stateHistory.model.time.StateHistoryTimeModel;
 import edu.jhuapl.sbmt.stateHistory.ui.DateTimeSpinner;
@@ -238,6 +241,8 @@ public class StateHistoryIntervalGenerationPanel extends JPanel
 	{
 		JPanel panel = new JPanel();
 		JLabel metaKernelNameLabel = new JLabel();
+		JProgressBar progressBar = new JProgressBar();
+
 //		JButton fileLoadButton = new JButton("Metakernel to load");
 		List<String> loadedKernels = new ArrayList<String>();
 		if (kernelIngestor.getLoadedKernelsDirectory().listFiles() != null)
@@ -253,25 +258,10 @@ public class StateHistoryIntervalGenerationPanel extends JPanel
 			File loadedKernelsDirectory = kernelIngestor.getLoadedKernelsDirectory();
 			if (selectedItem.equals("Load new kernel..."))
 			{
-				JFileChooser fileChooser = new JFileChooser();
-				int showOpenDialogResult = fileChooser.showOpenDialog(StateHistoryIntervalGenerationPanel.this);
-				if (showOpenDialogResult == JFileChooser.APPROVE_OPTION)
-				{
-					metakernelToLoad = fileChooser.getSelectedFile().getAbsolutePath();
-					try
-					{
-						metakernelToLoad = kernelIngestor.ingestMetaKernelToCache(metakernelToLoad);
-					}
-					catch (StateHistoryIOException | IOException e1)
-					{
-						JOptionPane.showMessageDialog(StateHistoryIntervalGenerationPanel.this, "Problem ingesting SPICE kernel.  Please check the file for correctness.",
-														"Ingestion Error", JOptionPane.ERROR_MESSAGE);
-					}
-					String newComboItemName = FilenameUtils.getBaseName(new File(metakernelToLoad).getName());
-
-					kernelComboBox.addItem(newComboItemName);
-					kernelComboBox.setSelectedItem(newComboItemName);
-				}
+//				JFileChooser fileChooser = new JFileChooser();
+				metakernelToLoad = CustomFileChooser.showOpenDialog(this, "Select Metakernel").getAbsolutePath();
+				KernelIngestor ingestor = new KernelIngestor(progressBar, kernelComboBox);
+				ingestor.execute();
 			}
 			else
 			{
@@ -301,7 +291,54 @@ public class StateHistoryIntervalGenerationPanel extends JPanel
 		panel.add(new JLabel("Select Metakernel"));
 		panel.add(kernelComboBox);
 		panel.add(metaKernelNameLabel);
+		panel.add(progressBar);
 		return panel;
+	}
+
+	class KernelIngestor extends SwingWorker<Void, Void>
+	{
+		JProgressBar progressBar;
+		JComboBox<String> kernelComboBox;
+
+		public KernelIngestor(JProgressBar progressBar, JComboBox<String> kernelComboBox)
+		{
+			this.progressBar = progressBar;
+			this.kernelComboBox = kernelComboBox;
+		}
+
+		@Override
+		protected Void doInBackground() throws Exception
+		{
+			try
+			{
+				metakernelToLoad = kernelIngestor.ingestMetaKernelToCache(metakernelToLoad, new SpiceKernelLoadStatusListener() {
+
+					@Override
+					public void percentageLoaded(double percentage) {
+						progressBar.setValue((int)percentage);
+					}
+				});
+			}
+			catch (StateHistoryIOException | IOException e1)
+			{
+				JOptionPane.showMessageDialog(StateHistoryIntervalGenerationPanel.this, "Problem ingesting SPICE kernel.  Please check the file for correctness.",
+												"Ingestion Error", JOptionPane.ERROR_MESSAGE);
+			}
+			return null;
+		}
+
+		@Override
+		protected void done()
+		{
+
+			String newComboItemName = FilenameUtils.getBaseName(new File(metakernelToLoad).getName());
+
+			kernelComboBox.addItem(newComboItemName);
+			kernelComboBox.setSelectedItem(newComboItemName);
+			super.done();
+		}
+
+
 	}
 
 	private JPanel getTimeRangePanel()
