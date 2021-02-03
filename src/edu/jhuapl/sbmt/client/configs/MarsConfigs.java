@@ -476,8 +476,11 @@ public class MarsConfigs extends SmallBodyViewConfig
             c.stateHistoryEndDate = new GregorianCalendar(2026, 9, 30, 0, 0, 0).getTime();
             c.spiceInfo = new SpiceInfo("MMX", "IAU_PHOBOS", "MMX_SPACECRAFT", "PHOBOS", new String[] {"EARTH" , "SUN", "MARS"}, new String[] {"MMX_MEGANE"});
 
-            c.presentInMissions = new SbmtMultiMissionTool.Mission[] {SbmtMultiMissionTool.Mission.STAGE_APL_INTERNAL, SbmtMultiMissionTool.Mission.APL_INTERNAL, SbmtMultiMissionTool.Mission.TEST_APL_INTERNAL};
-            c.defaultForMissions = new SbmtMultiMissionTool.Mission[] {};
+            c.presentInMissions = new SbmtMultiMissionTool.Mission[] {SbmtMultiMissionTool.Mission.STAGE_APL_INTERNAL, SbmtMultiMissionTool.Mission.APL_INTERNAL, SbmtMultiMissionTool.Mission.TEST_APL_INTERNAL,
+            														  SbmtMultiMissionTool.Mission.MEGANE_DEPLOY, SbmtMultiMissionTool.Mission.MEGANE_DEV, SbmtMultiMissionTool.Mission.MEGANE_STAGE,
+            														  SbmtMultiMissionTool.Mission.MEGANE_TEST};
+            c.defaultForMissions = new SbmtMultiMissionTool.Mission[] {SbmtMultiMissionTool.Mission.MEGANE_DEPLOY, SbmtMultiMissionTool.Mission.MEGANE_DEV, SbmtMultiMissionTool.Mission.MEGANE_STAGE,
+					  													SbmtMultiMissionTool.Mission.MEGANE_TEST};
 
             if (!publicOnly)
             	configArray.add(c);

@@ -119,12 +119,22 @@ public class DiscoverPlateColorings
 					// One vector coloring, presumably from text file.
 					throw new UnsupportedOperationException("Code up this case");
 				}
+				else if (numberColumns == 5)
+				{
+					// One scalar coloring, presumably from text file.
+					addScalarColoring(mapName, file, tableInfo, 1);
+				}
 				else if (numberColumns == 6)
 				{
 					// While this could be a text file with vector + vector error, the more likely scenario is
 					// a FITS file with scalar coloring in column 4, sigma in column 5. Assume that to be true.
 					addScalarColoring(mapName, file, tableInfo, 4);
 					addScalarColoring(mapName, file, tableInfo, 5);
+				}
+				else if (numberColumns == 8)
+				{
+					// One scalar coloring, presumably from text file.
+					addScalarColoring(mapName, file, tableInfo, 7);
 				}
 				else if (numberColumns == 10)
 				{
