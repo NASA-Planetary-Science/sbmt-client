@@ -8,7 +8,6 @@ import java.util.Iterator;
 import java.util.List;
 
 import javax.swing.BoxLayout;
-import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 
@@ -18,6 +17,7 @@ import org.joda.time.format.ISODateTimeFormat;
 
 import vtk.rendering.jogl.vtkJoglPanelComponent;
 
+import edu.jhuapl.saavtk.gui.dialog.CustomFileChooser;
 import edu.jhuapl.saavtk.gui.render.Renderer;
 import edu.jhuapl.saavtk.model.ModelManager;
 import edu.jhuapl.saavtk.model.ModelNames;
@@ -142,21 +142,15 @@ public class StateHistoryController
 
 				if (result == 0)
 				{
-					JFileChooser chooser = new JFileChooser();
-					int fileResult = chooser.showOpenDialog(null);
-					if (fileResult == JFileChooser.APPROVE_OPTION)
-					{
-						File selectedMetakernel = chooser.getSelectedFile();
-						String newKernelLocationAfterIngestion = kernelIngestor.ingestMetaKernelToCache(selectedMetakernel.getAbsolutePath(), new SpiceKernelLoadStatusListener() {
+					File selectedMetakernel = CustomFileChooser.showOpenDialog(null, "Load Kernel File");
+					if (selectedMetakernel == null) return;
+					String newKernelLocationAfterIngestion = kernelIngestor.ingestMetaKernelToCache(selectedMetakernel.getAbsolutePath(), new SpiceKernelLoadStatusListener() {
 
-							@Override
-							public void percentageLoaded(double percentage) {
-//								progressBar.setValue((int)percentage);
-
-							}
-						});
-						history.setSourceFile(newKernelLocationAfterIngestion);
-					}
+						@Override
+						public void percentageLoaded(double percentage) {
+						}
+					});
+					history.setSourceFile(newKernelLocationAfterIngestion);
 				}
 				else
 				{
