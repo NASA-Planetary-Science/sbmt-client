@@ -56,7 +56,6 @@ public class PregenStateHistoryIntervalGenerator implements IStateHistoryInterva
 
 	public StateHistory createNewTimeInterval(StateHistory history, Function<Double, Void> progressFunction) throws StateHistoryInputException, StateHistoryInvalidTimeException
 	{
-
 		String startString = edu.jhuapl.sbmt.util.TimeUtil.et2str(history.getStartTime());
 		String endString = edu.jhuapl.sbmt.util.TimeUtil.et2str(history.getEndTime());
 		DateTimeFormatter formatter = DateTimeFormat.forPattern("yyyy-MM-dd'T'HH:mm:ss.SSS");
@@ -96,6 +95,11 @@ public class PregenStateHistoryIntervalGenerator implements IStateHistoryInterva
 		// removes the time zone from the time
 		String startString = startTime.toString().substring(0, 23);
 		String endString = endTime.toString().substring(0, 23);
+
+		DateTimeFormatter formatter = DateTimeFormat.forPattern("yyyy-MM-dd'T'HH:mm:ss.SSS");
+		DateTime start = formatter.parseDateTime(startString.substring(0, 23));
+		DateTime end = formatter.parseDateTime(endString.substring(0, 23));
+		pointingProvider = PregenPointingProvider.builder(sourceFile, start, end).build();
 
 		// searches the file for the specified times
 		String queryStart = StateHistoryUtil.readString(lineLength, path);
