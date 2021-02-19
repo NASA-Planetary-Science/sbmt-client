@@ -237,7 +237,12 @@ public class StateHistoryModel
 		for (StateHistory history : runs.getSimRuns())
 		{
 			history.validate();
-			if (history.isValid() == false) invalidHistories.add(history);
+			if (history.isValid() == false)
+			{
+				boolean invalidKernelAlreadyExists = invalidHistories.stream().filter(his -> his.getSourceFile().equals(history.getSourceFile())).count() > 0;
+				if (!invalidKernelAlreadyExists)
+					invalidHistories.add(history);
+			}
 		}
 		return invalidHistories;
 	}
