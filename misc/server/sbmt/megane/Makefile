@@ -1,3 +1,3 @@
 # Website version use "internal" or "public"
-WEBVERSION  := dart
+WEBVERSION  := megane
 include ${SBMTROOT}/config/Makefiles/Website.Targets
