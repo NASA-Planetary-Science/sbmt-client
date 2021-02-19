@@ -11,6 +11,48 @@ available. Other users that attempt to view these shape models will
 see a black screen. These datasets have been obtained directly
 from the people or teams producing them and are not listed below.
 
+## MEGANE/Phobos Plate Colorings
+
+- Viewable sky
+    - ViewableSky.csv, column 1
+    - Units – steradians
+    - Description – Solid angle of the viewable sky, accounting for both Phobos topography and the presence of Mars
+
+* Footprint – Integrated Signal – QSO-LB’
+    * Footprint_LBp_IntegratedSignal.sky.csv, column 7
+    * Units – none
+    * Description – Integrated signal from QSO-LB’ for 60 seconds on 01 April 2026 at an altitude of 0.7 body radius
+
+* Footprint – Integrated Signal – QSO-LC’
+    * Footprint_LCp_IntegratedSignal.sky.csv, column 7
+    * Units – none
+    * Description – Integrated signal from QSO-LC’ for 60 seconds on 01 June 2026 at an altitude of 0.5 body radius
+
+* Integrated Signal – QSO-LB’ <1 body radius altitude
+    * LBp_IntegratedSignal.maxalt1.sky.csv, column 7
+    * Units – none
+    * Description – Integrated signal from QSO-LB’ when at <1 body radius altitude, from 01 April – 30 May, 2026
+
+* Integrated Signal – QSO-LB’ <1.5 body radius altitude
+    * LBp_IntegratedSignal.maxalt1.5.sky.csv, column 7
+    * Units – none
+    * Description – Integrated signal from QSO-LB’ when at <1 body radius altitude, from 01 April – 30 May, 2026
+
+* Integrated Signal – QSO-LC’ <1 body radius altitude
+    * LCp_IntegratedSignal.maxalt1.sky.csv, column 7
+    * Units – none
+    * Description – Integrated signal from QSO-LC’ when at <1 body radius altitude, from 01 June – 15 July, 2026
+
+* Integrated Signal – QSO-LC’ <1.5 body radius altitude
+    * LCp_IntegratedSignal.maxalt1.5.sky.csv, column 7
+    * Units – none
+    * Description – Integrated signal from QSO-LC’ when at <1.5 body radius altitude, from 01 June – 15 July, 2026
+
+## MEGANE/Phobos Basemap
+
+* MRO Color Image
+    * PSP_007769_9010_IRB.png, PSP_007769_9010_IRB.info
+    * Description - https://www.nasa.gov/mission_pages/MRO/multimedia/pia10368.html
 
 ## Asteroids
 
