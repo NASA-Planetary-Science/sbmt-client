@@ -122,6 +122,8 @@ public class ObservationPlanningController implements PropertyChangeListener
         rendererManager.addListener((aSource, aEventType) -> {
 			if (aEventType != ItemEventType.ItemsSelected) return;
 			intervalPlaybackController.getView().setEnabled(rendererManager.getSelectedItems().size() > 0);
+			intervalPlaybackController.currentOffsetTime = 0.0;
+			timeModel.setTime(runs.getCurrentRun().getStartTime());
 			imageCollection.updateStateHistorySource(runs.getCurrentRun());
 			lidarTrackCollection.updateStateHistorySource(runs.getCurrentRun());
 			ObservationPlanningController.this.updatePlannedScience();

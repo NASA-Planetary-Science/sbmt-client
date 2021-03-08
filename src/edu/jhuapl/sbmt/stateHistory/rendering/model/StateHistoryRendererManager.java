@@ -584,12 +584,17 @@ public class StateHistoryRendererManager extends SaavtkItemManager<StateHistory>
 			fov.getFrustumActor().VisibilityOff();
 			fov.setColor(color);
 			fov.setInstrumentName(instName);
-			ArrayList<PerspectiveImageFrustum> frusta = historySpacecraftFovMap.get(run);
-			if (frusta == null) frusta = new ArrayList<PerspectiveImageFrustum>();
-			frusta.add(fov);
-			historySpacecraftFovMap.put(run, frusta);
-			positionCalculator.updateFOVLocations(run, historySpacecraftFovMap.get(runs.getCurrentRun()));
 		}
+
+		ArrayList<PerspectiveImageFrustum> frusta = historySpacecraftFovMap.get(run);
+		if (frusta == null)
+		{
+			frusta = new ArrayList<PerspectiveImageFrustum>();
+		}
+		frusta.add(fov);
+		historySpacecraftFovMap.put(run, frusta);
+		positionCalculator.updateFOVLocations(run, historySpacecraftFovMap.get(runs.getCurrentRun()));
+		this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, fov);
 
 	}
 
@@ -610,13 +615,15 @@ public class StateHistoryRendererManager extends SaavtkItemManager<StateHistory>
 			fprint.setInstrumentName(instName);
 			fprint.setColor(color);
 			fprint.setSmallBodyModel(smallBodyModel);
-			ArrayList<PerspectiveImageFootprint> footprints = historyFootprintMap.get(run);
-			if (footprints == null) footprints = new ArrayList<PerspectiveImageFootprint>();
-			footprints.add(fprint);
-			historyFootprintMap.put(run, footprints);
-			positionCalculator.updateFootprintLocations(run, historyFootprintMap.get(runs.getCurrentRun()));
-			LiveColorableManager.updateFootprint(fprint);
+
 		}
+		ArrayList<PerspectiveImageFootprint> footprints = historyFootprintMap.get(run);
+		if (footprints == null) footprints = new ArrayList<PerspectiveImageFootprint>();
+		footprints.add(fprint);
+		historyFootprintMap.put(run, footprints);
+		positionCalculator.updateFootprintLocations(run, historyFootprintMap.get(runs.getCurrentRun()));
+		LiveColorableManager.updateFootprint(fprint);
+//		this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, run);
 	}
 
 	//***************************************
@@ -669,6 +676,10 @@ public class StateHistoryRendererManager extends SaavtkItemManager<StateHistory>
 
 	public void setInstrumentFrustumVisibility(String name, boolean isVisible)
 	{
+		System.out.println("StateHistoryRendererManager: setInstrumentFrustumVisibility: name is " + name);
+		System.out.println("StateHistoryRendererManager: setInstrumentFrustumVisibility: fov map size " + historySpacecraftFovMap.size());
+		System.out.println("StateHistoryRendererManager: setInstrumentFrustumVisibility: fov map size " + historySpacecraftFovMap.get(runs.getCurrentRun()));
+		if (historySpacecraftFovMap.get(runs.getCurrentRun()) == null || historySpacecraftFovMap.get(runs.getCurrentRun()).isEmpty()) return;
 		List<PerspectiveImageFrustum> fovs = historySpacecraftFovMap.get(runs.getCurrentRun()).stream().filter(item -> item.getInstrumentName().equals(name)).collect(Collectors.toList());
 		if (fovs.size() == 0) return;
 		fovs.get(0).getFrustumActor().SetVisibility(isVisible? 1: 0);
@@ -740,8 +751,9 @@ public class StateHistoryRendererManager extends SaavtkItemManager<StateHistory>
 	public void setInstrumentFootprintColor(String name, Color color)
 	{
 
-		System.out.println("StateHistoryRendererManager: setInstrumentFootprintColor: looking for name " + name);
-		System.out.println("StateHistoryRendererManager: setInstrumentFootprintColor: " + historyFootprintMap.get(runs.getCurrentRun()).get(0).getInstrumentName());
+//		System.out.println("StateHistoryRendererManager: setInstrumentFootprintColor: looking for name " + name);
+//		System.out.println("StateHistoryRendererManager: setInstrumentFootprintColor: " + historyFootprintMap.get(runs.getCurrentRun()).get(0).getInstrumentName());
+		if (historyFootprintMap.get(runs.getCurrentRun()) == null || historyFootprintMap.get(runs.getCurrentRun()).isEmpty()) return;
 		historyFootprintMap.get(runs.getCurrentRun()).stream().filter(fprint -> fprint.getInstrumentName().equals(name)).forEach(item -> {
 			item.setBoundaryColor(color);
 			item.setColor(color);

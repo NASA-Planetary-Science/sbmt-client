@@ -36,7 +36,7 @@ public class StateHistoryFOVPanel extends JPanel
 	public void clearTable()
 	{
 		this.tableHidden = true;
-		updateFOVsPanel();
+		updateFOVsPanel(0);
 	}
 
 	/**
@@ -50,14 +50,14 @@ public class StateHistoryFOVPanel extends JPanel
 		setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
 
 		// FOV panel
-		add(updateFOVsPanel());
+		add(updateFOVsPanel(0));
 		fovPanel.setLayout(new BoxLayout(fovPanel, BoxLayout.Y_AXIS));
 	}
 
-	private JPanel updateFOVsPanel()
+	private JPanel updateFOVsPanel(int numFOVs)
 	{
 		fovPanel.removeAll();
-		if (tableHidden == false && tableView != null)
+		if ((tableHidden == false && tableView != null) && numFOVs != 0)
 		{
 			fovPanel.add(tableView);
 		}
@@ -81,7 +81,7 @@ public class StateHistoryFOVPanel extends JPanel
 
 	public void setAvailableFOVs(Vector<String> fovs)
 	{
-		updateFOVsPanel();
+		updateFOVsPanel(fovs.size());
 	}
 
 	public JCheckBox[] getFovCheckBoxes()

@@ -197,6 +197,9 @@ public class StateHistoryController
         rendererManager.addListener((aSource, aEventType) -> {
 			if (aEventType != ItemEventType.ItemsSelected) return;
 			intervalDisplayedController.getView().setEnabled(rendererManager.getSelectedItems().size() > 0);
+			timeModel.setFractionDisplayed(0.0, 1.0);
+			timeModel.setTimeFraction(0.0);
+
 		});
     }
 

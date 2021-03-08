@@ -51,7 +51,8 @@ public class ViewOptionsFOVItemHandler extends BasicItemHandler<String, ViewOpti
 			case Name:
 				return fov;
 			case SetAsCurrent:
-				return rendererManager.getRuns().getCurrentRun().getPointingProvider().getCurrentInstFrameName().equals(fov);
+				if (rendererManager.getRuns().getCurrentRun().getPointingProvider().getCurrentInstFrameName() == null) return false;
+ 				return rendererManager.getRuns().getCurrentRun().getPointingProvider().getCurrentInstFrameName().equals(fov);
 			case FPPlateColoring:
 				return rendererManager.getPlateColoringForInstrument(fov);
 			default:
@@ -69,13 +70,15 @@ public class ViewOptionsFOVItemHandler extends BasicItemHandler<String, ViewOpti
 	{
 		if (aEnum == ViewOptionsFOVColumnLookup.Frustum)
 		{
-			rendererManager.makeFrustum(rendererManager.getRuns().getCurrentRun(), fov);
+			if ((boolean)aValue == true)
+				rendererManager.makeFrustum(rendererManager.getRuns().getCurrentRun(), fov);
 			rendererManager.setInstrumentFrustumVisibility(fov, (boolean) aValue);
 
 		}
 		else if (aEnum == ViewOptionsFOVColumnLookup.Border)
 		{
-			rendererManager.makeFootprint(rendererManager.getRuns().getCurrentRun(), fov);
+			if ((boolean)aValue == true)
+				rendererManager.makeFootprint(rendererManager.getRuns().getCurrentRun(), fov);
 			rendererManager.setInstrumentFootprintBorderVisibility(fov, (boolean) aValue);
 		}
 		else if (aEnum == ViewOptionsFOVColumnLookup.Footprint)

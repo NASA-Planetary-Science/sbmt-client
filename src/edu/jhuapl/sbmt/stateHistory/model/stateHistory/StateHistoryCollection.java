@@ -104,10 +104,15 @@ public class StateHistoryCollection /*extends SaavtkItemManager<StateHistory> im
 	 */
 	public void addRun(StateHistory run)
 	{
+		updateCurrentFOVs(run);
+		this.currentRun = run;
+	}
+
+	private void updateCurrentFOVs(StateHistory run)
+	{
 		availableFOVs.clear();
 		if (run.getPointingProvider() != null)
 			Arrays.stream(run.getPointingProvider().getInstrumentNames()).forEach(inst -> availableFOVs.add(inst));
-		this.currentRun = run;
 	}
 
 
@@ -197,6 +202,7 @@ public class StateHistoryCollection /*extends SaavtkItemManager<StateHistory> im
 	public void setCurrentRun(StateHistory currentRun)
 	{
 		this.currentRun = currentRun;
+		updateCurrentFOVs(currentRun);
 	}
 
 	/**

@@ -113,9 +113,7 @@ public class StateHistoryIntervalPlaybackController
 				//put on EDT?
 				int val = (int)Math.round((currentOffsetTime) * ((double)(view.getSlider().getMaximum() - view.getSlider().getMinimum())) + view.getSlider().getMinimum());
                 view.getSlider().setValue(val);
-//                Logger.getAnonymousLogger().log(Level.INFO, "Setting history model times");
                 rendererManager.setTimeFraction(currentOffsetTime, rendererManager.getRuns().getCurrentRun());
-//                Logger.getAnonymousLogger().log(Level.INFO, "Ending in playback");
 			}
 
 			@Override
@@ -134,6 +132,7 @@ public class StateHistoryIntervalPlaybackController
 
 		rendererManager.addListener((aSource, aEventType) -> {
 			if (aEventType != ItemEventType.ItemsSelected) return;
+			currentOffsetTime = 0.0;
 			updatePlaypanelValues(rendererManager.getRuns());
 		});
 	}
