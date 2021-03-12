@@ -846,7 +846,7 @@ public class ImagePopupMenu<K extends ImageKeyInterface> extends PopupMenu
 
                     String defaultFileName = null;
                     if (imageFileName != null)
-                        defaultFileName = imageFileName.substring(0, imageFileName.length() - 3) + "INFO";
+                        defaultFileName = FilenameUtils.getBaseName(imageFileName) + ".INFO";
 
                     file = new File(outDir, defaultFileName);
                     String filename = file.getAbsolutePath();
