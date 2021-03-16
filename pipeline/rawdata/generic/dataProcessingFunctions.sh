@@ -1260,7 +1260,7 @@ createGalleryList() {
         check $? "$funcName: unable to determine base name of gallery images for $image"
 
         # Sort matching gallery file names by size so the thumbnail is listed first.
-        galleryFiles=`ls -sL $root* 2> /dev/null | sort -n | sed 's:.* ::' | tr '\012' ' '`
+        galleryFiles=`ls -Sr $root* 2> /dev/null`
         check $? "$funcName: unable to find gallery images for $image"
 
         if test `echo $galleryFiles | wc -w` -eq 2; then
