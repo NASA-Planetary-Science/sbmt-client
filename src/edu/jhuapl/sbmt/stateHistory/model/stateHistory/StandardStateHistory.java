@@ -13,9 +13,13 @@ import java.util.Set;
 import java.util.TreeMap;
 
 import org.apache.commons.io.FilenameUtils;
+import org.joda.time.DateTime;
+import org.joda.time.format.DateTimeFormat;
+import org.joda.time.format.DateTimeFormatter;
 
 import edu.jhuapl.saavtk.util.ColorUtil;
 import edu.jhuapl.sbmt.pointing.IPointingProvider;
+import edu.jhuapl.sbmt.pointing.pregen.PregenPointingProvider;
 import edu.jhuapl.sbmt.stateHistory.model.StateHistorySourceType;
 import edu.jhuapl.sbmt.stateHistory.model.interfaces.State;
 import edu.jhuapl.sbmt.stateHistory.model.interfaces.StateHistory;
@@ -421,6 +425,7 @@ public class StandardStateHistory implements StateHistory
 	public void setStartTime(Double startTime)
 	{
 		this.startTime = startTime;
+		trajectory.setStartTime(startTime);
 	}
 
 	/**
@@ -429,6 +434,7 @@ public class StandardStateHistory implements StateHistory
 	public void setEndTime(Double endTime)
 	{
 		this.endTime = endTime;
+		trajectory.setStopTime(endTime);
 	}
 
 	/**
@@ -561,6 +567,7 @@ public class StandardStateHistory implements StateHistory
             writer.append('\n');
 
             // Create header of name, description, color
+            writer.append(getSourceFile() + ",");
             writer.append(getStateHistoryName() + ',');
             writer.append(getTrajectory().getTrajectoryDescription() + ',');
             for (double colorElement : getTrajectory().getColor().getColorComponents(null)) {
@@ -626,7 +633,9 @@ public class StandardStateHistory implements StateHistory
 	public StateHistory loadStateHistoryFromFile(File file, String shapeModelName, StateHistoryKey key) throws StateHistoryIOException
     {
 		String extension = FilenameUtils.getExtension(file.getAbsolutePath());
-		if (!extension.equals("csvstate") || !extension.equals("csv")) throw new StateHistoryIOException("Invalid file format");
+
+
+		if (!(extension.equals("csvstate") || extension.equals("csv"))) throw new StateHistoryIOException("Invalid file format");
 		ArrayList<String[]> timeArray = new ArrayList<>(3);
         Integer firstIndex = null;
         String runDirName = file.getAbsolutePath();
@@ -635,7 +644,7 @@ public class StandardStateHistory implements StateHistory
         try
         {
             String runName = file.getName();
-            if (!runName.endsWith(".csv")) throw new StateHistoryIOException("File does not have a csv extension; please choose another file");
+//            if (!runName.endsWith(".csv")) throw new StateHistoryIOException("File does not have a csv extension; please choose another file");
 
             BufferedReader in = new BufferedReader(new FileReader(file));
             in.close();
@@ -663,8 +672,8 @@ public class StandardStateHistory implements StateHistory
             String info = in.readLine();
             String[] data = info.split(",");
 //            trajectory.setName(data[0]);
-            trajectory.setTrajectoryDescription(data[1]);
 
+            trajectory.setTrajectoryDescription(data[2]);
             // discard third line of headers
             in.readLine();
 
@@ -693,13 +702,23 @@ public class StandardStateHistory implements StateHistory
             }
             in.close();
 
-            history.setTrajectory(trajectory);
+            history.setSourceFile(data[0]);
 
+            String startString = edu.jhuapl.sbmt.util.TimeUtil.et2str(history.getStartTime());
+    		String endString = edu.jhuapl.sbmt.util.TimeUtil.et2str(history.getEndTime());
+    		DateTimeFormatter formatter = DateTimeFormat.forPattern("yyyy-MM-dd'T'HH:mm:ss.SSS");
+    		DateTime start = formatter.parseDateTime(startString.substring(0, 23));
+    		DateTime end = formatter.parseDateTime(endString.substring(0, 23));
+    		IPointingProvider pointingProvider = PregenPointingProvider.builder(history.getSourceFile(), start, end).build();
+
+            history.setTrajectory(trajectory);
+            history.setType(StateHistorySourceType.PREGEN);
             history.setCurrentTime(history.getStartTime());
+            history.setPointingProvider(pointingProvider);
             trajectory.setStartTime(history.getStartTime());
             trajectory.setStopTime(history.getEndTime());
             trajectory.setNumPoints(Math.abs((int)(history.getEndTime() - history.getStartTime())/60));
-
+            trajectory.setPointingProvider(pointingProvider);
             return history;
         }
         catch (Exception e1)

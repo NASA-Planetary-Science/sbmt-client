@@ -15,6 +15,7 @@ import edu.jhuapl.saavtk.gui.dialog.CustomFileChooser;
 import edu.jhuapl.sbmt.client.SmallBodyModel;
 import edu.jhuapl.sbmt.stateHistory.model.DefaultStateHistoryModelChangedListener;
 import edu.jhuapl.sbmt.stateHistory.model.StateHistoryModel;
+import edu.jhuapl.sbmt.stateHistory.model.StateHistorySourceType;
 import edu.jhuapl.sbmt.stateHistory.model.interfaces.StateHistory;
 import edu.jhuapl.sbmt.stateHistory.model.io.SpiceKernelIngestor;
 import edu.jhuapl.sbmt.stateHistory.model.io.SpiceKernelLoadStatusListener;
@@ -116,11 +117,11 @@ public class StateHistoryIntervalSelectionController
 
             if (view.getTable().getSelectedRowCount() == 1)
             {
-            	File file = CustomFileChooser.showSaveDialog(view, "Select File", "stateHistory.csv");
+            	File file = CustomFileChooser.showSaveDialog(view, "Select File", "stateHistory");
             	if (file == null) return;
                 if (!FilenameUtils.getExtension(file.getName()).equalsIgnoreCase("csv")) {
                     // remove the extension (if any) and replace it with ".csv"
-                    file = new File(file.getParentFile(), FilenameUtils.getBaseName(file.getName())+".csv");
+                    file = new File(file.getParentFile(), FilenameUtils.getBaseName(file.getName()));
                 }
                 StateHistory history = rendererManager.getSelectedItems().asList().get(0);
                 try
@@ -178,7 +179,7 @@ public class StateHistoryIntervalSelectionController
         view.getEditStateHistoryButton().addActionListener(e -> {
 
         	StateHistory history = rendererManager.getSelectedItems().asList().get(0);
-        	StateHistoryIntervalGenerationPanel genPanel = new StateHistoryIntervalGenerationPanel(history);
+        	StateHistoryIntervalGenerationPanel genPanel = new StateHistoryIntervalGenerationPanel(history, historyModel);
         	final JFrame frame = new JFrame("Edit Existing Interval...");
            	genPanel.getGetIntervalButton().addActionListener(e2 -> {
            		if (genPanel.isEditMode())
@@ -235,7 +236,7 @@ public class StateHistoryIntervalSelectionController
         rendererManager.addPropertyChangeListener(evt ->
 		{
 			view.getTable().repaint();
-			rendererManager.getRenderer().getRenderWindowPanel().resetCameraClippingRange();
+//			rendererManager.getRenderer().getRenderWindowPanel().resetCameraClippingRange();
 			updateButtonState(rendererManager);
 		});
 
@@ -257,10 +258,10 @@ public class StateHistoryIntervalSelectionController
 		{
 			if (history.isMapped() == false) allMapped = false;
 			if (history.isVisible() == false) allShown = false;
+			view.getEditStateHistoryButton().setEnabled((selectedItems.size() == 1) && (history.getType() != StateHistorySourceType.PREGEN));
 		}
 		view.getHideStateHistoryButton().setEnabled((selectedItems.size() > 0) && allShown && allMapped);
 		view.getShowStateHistoryButton().setEnabled((selectedItems.size() > 0) && !allShown && allMapped);
-		view.getEditStateHistoryButton().setEnabled(selectedItems.size() == 1);
 		view.getDeleteStateHistoryButton().setEnabled(selectedItems.size() > 0);
 	}
 

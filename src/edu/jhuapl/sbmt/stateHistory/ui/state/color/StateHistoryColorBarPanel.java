@@ -16,6 +16,7 @@ import edu.jhuapl.saavtk.color.table.ColorMapAttr;
 import edu.jhuapl.saavtk.feature.FeatureAttr;
 import edu.jhuapl.saavtk.feature.FeatureType;
 import edu.jhuapl.saavtk.gui.render.Renderer;
+import edu.jhuapl.sbmt.stateHistory.model.StateHistorySourceType;
 import edu.jhuapl.sbmt.stateHistory.model.interfaces.StateHistory;
 import edu.jhuapl.sbmt.stateHistory.rendering.model.StateHistoryRendererManager;
 
@@ -52,12 +53,15 @@ public class StateHistoryColorBarPanel extends ColorBarPanel
 
 		colorBar = colorBarPainter;
 
-		addFeatureType(StateHistoryFeatureType.Distance, "S/C Distance (km)");
+		addFeatureType(StateHistoryFeatureType.Distance, "S/C Distance to Center (km)");
 		addFeatureType(StateHistoryFeatureType.Time, "Time (Sec)");
-		addFeatureType(StateHistoryFeatureType.Range, "S/C Range to Surface (km)");
-		addFeatureType(StateHistoryFeatureType.SubSCIncidence, "S/C Incidence Angle (deg)");
-		addFeatureType(StateHistoryFeatureType.SubSCEmission, "S/C Emission Angle (deg)");
-		addFeatureType(StateHistoryFeatureType.SubSCPhase, "S/C Phase Angle (deg)");
+		if (rendererManager.getRuns().getCurrentRun().getType() == StateHistorySourceType.SPICE)
+		{
+			addFeatureType(StateHistoryFeatureType.Range, "S/C Range to Surface (km)");
+			addFeatureType(StateHistoryFeatureType.SubSCIncidence, "S/C Incidence Angle (deg)");
+			addFeatureType(StateHistoryFeatureType.SubSCEmission, "S/C Emission Angle (deg)");
+			addFeatureType(StateHistoryFeatureType.SubSCPhase, "S/C Phase Angle (deg)");
+		}
 
 		setFeatureType(StateHistoryFeatureType.Distance);
 		// Auto register the provided ActionListener

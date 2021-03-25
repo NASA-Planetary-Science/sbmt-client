@@ -19,6 +19,7 @@ import vtk.vtkDoubleArray;
 import vtk.vtkProp;
 import vtk.vtkScalarBarActor;
 
+import edu.jhuapl.saavtk.camera.CameraUtil;
 import edu.jhuapl.saavtk.color.provider.ColorProvider;
 import edu.jhuapl.saavtk.color.provider.ConstColorProvider;
 import edu.jhuapl.saavtk.color.provider.ConstGroupColorProvider;
@@ -34,6 +35,7 @@ import edu.jhuapl.saavtk.model.SaavtkItemManager;
 import edu.jhuapl.saavtk.util.BoundingBox;
 import edu.jhuapl.saavtk.util.Configuration;
 import edu.jhuapl.saavtk.util.ConvertResourceToFile;
+import edu.jhuapl.saavtk.util.MathUtil;
 import edu.jhuapl.saavtk.util.Properties;
 import edu.jhuapl.sbmt.client.SmallBodyModel;
 import edu.jhuapl.sbmt.model.image.perspectiveImage.PerspectiveImageFootprint;
@@ -41,6 +43,7 @@ import edu.jhuapl.sbmt.model.image.perspectiveImage.PerspectiveImageFrustum;
 import edu.jhuapl.sbmt.pointing.InstrumentPointing;
 import edu.jhuapl.sbmt.stateHistory.model.StateHistoryColoringFunctions;
 import edu.jhuapl.sbmt.stateHistory.model.interfaces.StateHistory;
+import edu.jhuapl.sbmt.stateHistory.model.interfaces.StateHistoryCollectionChangedListener;
 import edu.jhuapl.sbmt.stateHistory.model.interfaces.Trajectory;
 import edu.jhuapl.sbmt.stateHistory.model.liveColoring.LiveColorableManager;
 import edu.jhuapl.sbmt.stateHistory.model.stateHistory.SpiceStateHistory;
@@ -239,6 +242,19 @@ public class StateHistoryRendererManager extends SaavtkItemManager<StateHistory>
 				e.printStackTrace();
 			}
 		});
+
+		this.runs.addStateHistoryCollectionChangedListener(new StateHistoryCollectionChangedListener()
+		{
+
+			@Override
+			public void historySegmentUpdated(StateHistory history)
+			{
+				TrajectoryActor trajectoryActor = getTrajectoryActorForStateHistory(history);
+				trajectoryActor.setTrajectory(history.getTrajectory());
+				trajectoryActor.updateTrajectorySpan();
+				StateHistoryRendererManager.this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, sunDirectionMarker);
+			}
+		});
 	}
 
 	//***************************************
@@ -290,7 +306,6 @@ public class StateHistoryRendererManager extends SaavtkItemManager<StateHistory>
 	{
 		earthDirectionMarker.getActor().forEach(item ->
 		{
-			System.out.println("StateHistoryRendererManager: setEarthDirectionMarkerVisibility: setting vis to " + visible);
 			item.SetVisibility(visible == true ? 1 : 0);
 		});
 		this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, earthDirectionMarker);
@@ -1032,17 +1047,22 @@ public class StateHistoryRendererManager extends SaavtkItemManager<StateHistory>
 		double[] lookFromDirection;
 		if (lookDirection == RendererLookDirection.FREE_VIEW)
 		{
+			double previousDistance = CameraUtil.calcDistance(renderer.getCamera());
 			lookFromDirection = renderer.getCamera().getPosition().toArray();
+			MathUtil.vscl(previousDistance/new Vector3D(lookFromDirection).getNorm(), lookFromDirection, lookFromDirection);
 			renderer.setCameraOrientation(lookFromDirection, renderer.getCameraFocalPoint(),
 					renderer.getCamera().getUpUnit().toArray(), renderer.getCameraViewAngle());
 			((RenderPanel) renderer.getRenderWindowPanel()).setZoomOnly(false, Vector3D.ZERO, targOrig);
 		}
 		else
 		{
+			double previousDistance = CameraUtil.calcDistance(renderer.getCamera());
 			lookFromDirection = positionCalculator.updateLookDirection(lookDirection, scalingFactor);
+			MathUtil.vscl(previousDistance/new Vector3D(lookFromDirection).getNorm(), lookFromDirection, lookFromDirection);
 			renderer.setCameraOrientation(lookFromDirection, renderer.getCameraFocalPoint(), upVector,
 					renderer.getCameraViewAngle());
 			((RenderPanel) renderer.getRenderWindowPanel()).setZoomOnly(true, targAxis, targOrig);
+
 		}
 		renderer.getRenderWindowPanel().resetCameraClippingRange();
 	}

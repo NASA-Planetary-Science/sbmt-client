@@ -123,10 +123,12 @@ public class StateHistoryIntervalGenerationPanel extends JPanel
 		initUI();
 	}
 
-	public StateHistoryIntervalGenerationPanel(StateHistory history)
+	public StateHistoryIntervalGenerationPanel(StateHistory history, StateHistoryModel historyModel)
 	{
 		editMode = true;
 		this.history = history;
+		this.hasSpiceInfo = historyModel.getViewConfig().getSpiceInfo() != null;
+		this.kernelIngestor = new SpiceKernelIngestor(historyModel.getCustomDataFolder());
 		buttonText = "Update Interval";
 		initUI();
 		stateHistorySourceType = history.getType();

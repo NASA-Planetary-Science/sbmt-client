@@ -138,12 +138,12 @@ public class SpiceStateHistoryIntervalGenerator implements IStateHistoryInterval
 		State state = new SpiceState(pointingProvider);
 		// add to history
 		history.addState(state);
-
+		history.setTrajectory(trajectory);
 		if (progressFunction != null)  progressFunction.apply(100.0);
 		history.setStartTime(TimeUtil.str2et(startEpoch.toString()));
 		history.setEndTime(TimeUtil.str2et(endEpoch.toString()));
 		history.setCurrentTime(TimeUtil.str2et(startEpoch.toString()));
-		history.setTrajectory(trajectory);
+
 		history.setType(StateHistorySourceType.SPICE);
 		history.setSourceFile(sourceFile);
 		history.setPointingProvider(pointingProvider);

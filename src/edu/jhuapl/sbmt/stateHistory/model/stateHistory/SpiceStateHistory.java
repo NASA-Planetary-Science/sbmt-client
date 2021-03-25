@@ -267,6 +267,7 @@ public class SpiceStateHistory implements StateHistory
 	public void setStartTime(Double startTime)
 	{
 		this.startTime = startTime;
+		trajectory.setStartTime(startTime);
 	}
 
 	/**
@@ -275,6 +276,7 @@ public class SpiceStateHistory implements StateHistory
 	public void setEndTime(Double endTime)
 	{
 		this.endTime = endTime;
+		trajectory.setStopTime(endTime);
 	}
 
 	@Override

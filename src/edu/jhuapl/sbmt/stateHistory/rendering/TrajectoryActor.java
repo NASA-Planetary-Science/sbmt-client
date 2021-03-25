@@ -119,6 +119,12 @@ public class TrajectoryActor extends vtkActor
 		SetVisibility(1);
 	}
 
+	public void setTrajectory(Trajectory trajectory)
+	{
+		this.trajectory = trajectory;
+	}
+
+
 	/**
 	 *	Creates the polydata for this actor.
 	 */
@@ -201,7 +207,7 @@ public class TrajectoryActor extends vtkActor
         	edge.GetPointIds().SetId(1, (i+1));
         	edges.InsertNextCell(edge);
         	Color colorAtIndex = getColorAtIndex(i);
-        	colors.SetTuple4(i+1, colorAtIndex.getRed(), colorAtIndex.getGreen(), colorAtIndex.getBlue(), colorAtIndex.getAlpha());
+        	colors.SetTuple4(i+1, colorAtIndex.getRed(), colorAtIndex.getGreen(), colorAtIndex.getBlue(), trajectory.isFaded() ? 50 : colorAtIndex.getAlpha());
         }
 		trajectoryPolyline.SetLines(edges);
 		trajectoryMapper.Modified();
@@ -278,6 +284,12 @@ public class TrajectoryActor extends vtkActor
         // recreate poly data with new color
         createTrajectoryPolyData();
         updateShownSegments();
+    }
+
+    public void updateTrajectorySpan()
+    {
+    	createTrajectoryPolyData();
+    	updateShownSegments();
     }
 
 	/**
