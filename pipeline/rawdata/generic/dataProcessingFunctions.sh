@@ -800,7 +800,7 @@ updateRelativeLink() {
     # Use dirname here to get one level up from the linkPath link name,
     # whether or not it exists yet.
     linkPathDir=$(dirname $linkPath)
-    
+
     # Make sure the linkPath directory exists. Must do this before using realpath.
     createDir $linkPathDir
 
@@ -831,6 +831,39 @@ updateOptionalLink() {
       updateLink $target $2 $3
       check $?
     fi
+  )
+  check $?
+}
+
+createHardLinks() {
+  (
+    funcName=${FUNCNAME[0]}
+
+    checkSkip $funcName "$*"
+
+    src=$1
+    dest=$2
+
+    if test "$src" = ""; then
+      check 1 "$funcName: first argument (source) is missing or blank"
+    fi
+
+    if test "$dest" = ""; then
+      check 1 "$funcName: second argument (destination) is missing or blank"
+    fi
+
+    if test ! -e "$src"; then
+      check 1 "$funcName: source file/directory does not exist: $src"
+    fi
+
+    if test -e "$dest"; then
+      check 1 "$funcName: destination file/directory already exists: $dest"
+    fi
+
+    createParentDir $dest
+
+    cp -al $src $dest
+    check $? "$funcName: unable to link $src to $dest"
   )
   check $?
 }
