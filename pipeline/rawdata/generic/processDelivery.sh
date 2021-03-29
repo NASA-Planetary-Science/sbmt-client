@@ -18,7 +18,7 @@
 # Processing Info
 #-------------------------------------------------------------------------------
 # Developer: James Peachey
-# Delivery: redmine-2317
+# Delivery: redmine-2331
 # Notes:
 # Information specific to this delivery and/or its processing should be
 # included here.
@@ -38,9 +38,6 @@ fi
 # delivery.
 check 1 "Tailor this script first for the specific delivery being processed."
 
-# Work live in the server with no safety net. Only use this for special cases.
-# processedTop=$deployedTop
-
 #-------------------------------------------------------------------------------
 # Update this block for each delivery. All information below should be
 # included in the redmine issue and/or the delivery aamanifest.txt file.
@@ -49,17 +46,17 @@ check 1 "Tailor this script first for the specific delivery being processed."
 #-------------------------------------------------------------------------------
 
 # The identifier of this processing run, typically "redmine-XXXX"
-processingId="redmine-2317"
+processingId="redmine-2331"
 
 # The identifier of the output path relative to the top of the
 # raw/processed/deployed/served directory. Typically this would
 # identify either a body/model, mission/instrument, or mission/spice, for
 # example, 'didymosa/didymosa-dra-v01a' or 'dart/draco'.
-outputTop="didymos/ideal-impact6-ra-20201116-v01"
+outputTop="didymos/ideal-impact4-ra-20210211-v01"
 
 # This is the full path to the delivery as provided by a scientist. This may
 # or may not fully comply with all SBMT guidelines for layout and naming.
-deliveryTop="/project/sbmtpipeline/deliveries/cassini/iss/20201202"
+deliveryTop="/project/sbmtpipeline/deliveries-dart/ideal_impact4-RA-20210211-v01"
 
 # The identifier of the SBMT model, which should match how the model is or
 # will be identified with a ShapeModelType object. For a given body, this
@@ -67,14 +64,14 @@ deliveryTop="/project/sbmtpipeline/deliveries/cassini/iss/20201202"
 # items being processed are associated with a specific model, this may be set
 # to an empty string but it should not be removed. This is used to process
 # plate colorings and images.
-modelId=""
+modelId="ideal-impact4-ra-20210211-v01"
 
 # The identifier of the body as it appears in the SBMT, which should match how
 # the body is or will be identified with a ShapeModelBody object. If no items
 # being processed are associated with a specific body, this may be set to an
 # empty string, but it should not be removed. This is used for processing
 # plate colorings and images.
-bodyId=""
+bodyId="Didymos"
 
 # Uncomment and edit this as needed if updating an already-processed model as
 # part of a delivery sequence. Because this in-effect changes files that
@@ -85,9 +82,19 @@ bodyId=""
 
 # Uncomment and edit these as needed if generating INFO files from SPICE
 # kernels. Only used in this case.
-spiceKernelTop="$pipelineProcessed/dart/redmine-2315/dart/spice"
+spiceKernelTop="$pipelineProcessed/dart/redmine-2336/dart/spice"
 
 #-------------------------------------------------------------------------------
+
+
+skipSection="true"
+#-------------------------------------------------------------------------------
+# This block is for updating or reusing a previously delivered or processed
+# model.
+#-------------------------------------------------------------------------------
+createHardLink $piplineRawData/didymos/redmine-2212/didymos/ideal-impact4-20200629-v01 $rawDataTop/$outputTop
+#-------------------------------------------------------------------------------
+
 
 #-------------------------------------------------------------------------------
 # Delivery to Raw-data.
@@ -95,8 +102,9 @@ spiceKernelTop="$pipelineProcessed/dart/redmine-2315/dart/spice"
 srcTop="$deliveryTop"
 destTop="$rawDataTop/$outputTop"
 
-# Copying the delivery to raw data should suffice for most deliveries.
-# Copy all delivered files.
+# Copying all delivered files to raw data should suffice for self-contained
+# deliveries. For other cases, change variables above and/or do not copy all
+# of "dot". copyDir has optional second argument to (re)name destination.
 copyDir .
 
 #-------------------------------------------------------------------------------
@@ -125,9 +133,9 @@ generateModelMetadata $processedTop
 processStandardModelFiles
 
 # Process plate colorings.
-# discoverPlateColorings
+discoverPlateColorings
 
-# processDTMs
+processDTMs
 
 # End standard model block.
 #-------------------------------------------------------------------------------
