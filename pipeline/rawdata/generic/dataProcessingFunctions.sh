@@ -862,6 +862,7 @@ createHardLinks() {
 
     createParentDir $dest
 
+    echo "cp -al $src $dest"
     cp -al $src $dest
     check $? "$funcName: unable to link $src to $dest"
   )
