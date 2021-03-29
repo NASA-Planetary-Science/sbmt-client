@@ -1260,7 +1260,7 @@ createGalleryList() {
         check $? "$funcName: unable to determine base name of gallery images for $image"
 
         # Sort matching gallery file names by size so the thumbnail is listed first.
-        galleryFiles=`ls -sL $root* 2> /dev/null | sort -n | sed 's:.* ::' | tr '\012' ' '`
+        galleryFiles=`ls -Sr $root* 2> /dev/null`
         check $? "$funcName: unable to find gallery images for $image"
 
         if test `echo $galleryFiles | wc -w` -eq 2; then
@@ -1275,12 +1275,12 @@ createGalleryList() {
         echo "$funcName: WARNING: did not find gallery files for every image in $imageDir"
         echo "$funcName: please examine $instrumentTop and its subdirectories"
       fi
-      
+
       # This does not involve the tmp file, but it is convenient just to do this
       # here, in the sub-shell.
       cd $instrumentTop
       check $? "$funcName: unable to cd to $instrumentTop to create zip file"
-      
+
       zip -qr gallery.zip gallery
       check $? "$funcName: unable to zip directory gallery in $instrumentTop"
     )
@@ -1533,7 +1533,7 @@ processMakeSumFiles() {
     elif test ! -f "$makeSumFiles"; then
       check 1 "$funcName: input file $imagerDir/make_sumfiles.in does not exist"
     fi
-  
+
     # Make sure the prefix starts and ends with a single slash:
     prefix=`echo $2 | sed 's:^/*:/:' | sed 's:/*$:/:'`
     if test "$prefix" = ""; then
@@ -1548,8 +1548,24 @@ processMakeSumFiles() {
 
     # Create imagelist-sum.txt.
     for sumFile in `sed 's: .*::' $makeSumFiles`; do
-      imageFile=`sed -n "s:^$sumFile .* ::p" $makeSumFiles`
-      sumFile="${sumFile}.SUM"
+      if test "$sumFile" = ""; then
+        check 1 "$funcName: unable to determine sum file names from $makeSumFiles"
+      fi
+
+      # Find the line that begins with this sum file base name.
+      # Strip out the sum file base name, then get rid of anything up to a final space.
+      # What remains should be the image name.
+      imageFile=`sed -n "s:^$sumFile ::p" $makeSumFiles | sed 's:.* ::'`
+      if test "$imageFile" = ""; then
+        check 1 "$funcName: unable to determine the image file that goes with $sumFile in $makeSumFiles"
+      fi
+
+      # Assume actual file name ends in .SUM if there is no explicit extension.
+      if test `echo $sumFile | grep -c '\..*$'` -eq 0; then
+        sumFile="${sumFile}.SUM"
+      fi
+
+      # Read the time stamp from the sumfile.
       timeStamp=`head -2 $imagerDir/sumfiles/$sumFile | tail -1 | \
         sed 's:^  *::' | sed 's:  *$::' | \
         sed 's:jan:01:i' | \
