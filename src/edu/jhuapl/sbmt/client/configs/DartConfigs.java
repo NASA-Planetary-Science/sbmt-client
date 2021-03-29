@@ -112,10 +112,17 @@ public class DartConfigs
         configList.add(c);
         c = createSingleResolutionConfig_20200629_v01(ShapeModelBody.DIDYMOS, "Ideal Impact 4 20200629 v01", 3145728);
         configList.add(c);
+        c = createSingleResMissionImagesConfig(ShapeModelBody.DIDYMOS, "Ideal Impact 4 RA 20210211 v01", 3145728);
+        configList.add(c);
         c = createSingleResolutionConfig_20200629_v01(ShapeModelBody.DIDYMOS, "Ideal Impact 5 20200629 v01", 3145728);
         configList.add(c);
-        c = createSingleResolutionConfig_20201116_v01(ShapeModelBody.DIDYMOS, "Ideal Impact 6 RA 20201116 v01", 3145728);
-        configList.add(c);
+
+        // This one was only partially delivered; problems were uncovered with
+        // the SPICE pointings. It was abandoned in favor of "Ideal Impact 4 RA
+        // 20210211 v01" above.
+        c = createSingleResMissionImagesConfig(ShapeModelBody.DIDYMOS, "Ideal Impact 6 RA 20201116 v01", 3145728);
+//        configList.add(c);
+
         c = createSingleResolutionConfig_20200629_v01(ShapeModelBody.DIMORPHOS, "Ideal Impact 1 20200629 v01", 3072);
         configList.add(c);
         c = createSingleResolutionConfig_20200629_v01(ShapeModelBody.DIMORPHOS, "Ideal Impact 2 20200629 v01", 3145728);
@@ -124,10 +131,16 @@ public class DartConfigs
         configList.add(c);
         c = createSingleResolutionConfig_20200629_v01(ShapeModelBody.DIMORPHOS, "Ideal Impact 4 20200629 v01", 3145728);
         configList.add(c);
+        c = createSingleResMissionImagesConfig(ShapeModelBody.DIMORPHOS, "Ideal Impact 4 RA 20210211 v01", 3145728);
+        configList.add(c);
         c = createSingleResolutionConfig_20200629_v01(ShapeModelBody.DIMORPHOS, "Ideal Impact 5 20200629 v01", 3366134);
         configList.add(c);
-        c = createSingleResolutionConfig_20201116_v01(ShapeModelBody.DIMORPHOS, "Ideal Impact 6 RA 20201116 v01", 3145728);
-        configList.add(c);
+
+        // This one was only partially delivered; problems were uncovered with
+        // the SPICE pointings. It was abandoned in favor of "Ideal Impact 4 RA
+        // 20210211 v01" above.
+        c = createSingleResMissionImagesConfig(ShapeModelBody.DIMORPHOS, "Ideal Impact 6 RA 20201116 v01", 3145728);
+//        configList.add(c);
 
         c = createSingleResolutionConfig_20200629_v01(ShapeModelBody.DIDYMOS, "Errors Impact 1 20200629 v01", 1996);
         configList.add(c);
@@ -284,7 +297,8 @@ public class DartConfigs
      * Create a single-resolution model for the given input parameters. This
      * creates configurations that are consistent with the initial set of
      * simulated models, images and SPICE files delivered starting in December,
-     * 2020, based on the DART simulations identified as 20201116-v01.
+     * 2020 through March, 2021, based on the DART simulations identified as
+     * 20201116-v01 and 20210211-v01.
      * <p>
      * These deliveries were processed using versions of the scripts that were
      * set up to handle images under the mission/instrument directory. These
@@ -304,7 +318,7 @@ public class DartConfigs
      * @param numberPlates the number of plates in the single resolution model
      * @return the config
      */
-    protected SmallBodyViewConfig createSingleResolutionConfig_20201116_v01(ShapeModelBody body, String label, int numberPlates)
+    protected SmallBodyViewConfig createSingleResMissionImagesConfig(ShapeModelBody body, String label, int numberPlates)
     {
         SmallBodyViewConfig c = new SmallBodyViewConfig(ImmutableList.of(numberPlates + " plates"), ImmutableList.of(numberPlates)) {
             public SmallBodyViewConfig clone()
@@ -381,7 +395,6 @@ public class DartConfigs
                         SpectralImageMode.MONO, //
                         new GenericPhpQuery(lukeDir, lukeTable, lukeTable, lukeDataDir + "gallery", lukeDataDir + "images"), //
                         ImageType.valueOf("LUKE_IMAGE"), //
-//                        InfoFilesAndCorrectedInfoFiles, //
                         InfoFiles, //
                         Instrument.LUKE, //
                         270., //
@@ -390,7 +403,7 @@ public class DartConfigs
                 ),
         };
 
-        c.imageSearchDefaultStartDate = new GregorianCalendar(2022, 8, 29, 0, 0, 0).getTime();
+        c.imageSearchDefaultStartDate = new GregorianCalendar(2022, 8, 30, 0, 0, 0).getTime();
         c.imageSearchDefaultEndDate = new GregorianCalendar(2022, 9, 1, 0, 0, 0).getTime();
         c.imageSearchFilterNames = new String[] {};
         c.imageSearchUserDefinedCheckBoxesNames = new String[] {};
