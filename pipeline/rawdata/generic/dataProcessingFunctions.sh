@@ -536,8 +536,8 @@ moveDirectory() {
       destParent=`echo $dest | sed 's:/[^/][^/]*/*$::'`
       createDir $destParent
 
-      echo "mv $src $dest"
-      mv -f $src $dest
+      echo "nice mv $src $dest"
+      nice mv -f $src $dest
       check $?
 
       # Prune an orphaned parent directory, but ignore failures.
@@ -572,8 +572,8 @@ moveFile() {
       destParent=`echo $dest | sed 's:/[^/][^/]*/*$::'`
       createDir $destParent
 
-      echo "mv $src $dest"
-      mv $src $dest
+      echo "nice mv $src $dest"
+      nice mv $src $dest
       check $?
 
       # Prune an orphaned parent directory, but ignore failures.
@@ -731,6 +731,7 @@ updateLink() {
       check 1 "$funcName encountered existing item at $linkPath that could not be moved aside or deleted."
     fi
 
+    echo "ln -s $target $linkPath"
     ln -s $target $linkPath
     status=$?
     if test $status -ne 0; then
@@ -862,8 +863,8 @@ createHardLinks() {
 
     createParentDir $dest
 
-    echo "cp -al $src $dest"
-    cp -al $src $dest
+    echo "nice cp -al $src $dest"
+    nice cp -al $src $dest
     check $? "$funcName: unable to link $src to $dest"
   )
   check $?
@@ -885,7 +886,8 @@ doGzipDir() {
     for file in $dir/*; do
       if test -f $file; then
         if test `file $file 2>&1 | grep -ic gzip` -eq 0; then
-          gzip -cf $file > $file.gz
+          echo "nice gzip -cf $file > $file.gz"
+          nice gzip -cf $file > $file.gz
           check $? "$funcName: problem gzipping file $file"
           rm -f $file
         fi
@@ -1117,7 +1119,8 @@ discoverPlateColorings() {
         listPlateColoringFiles $dest $dest/$coloringList
 
         if test -s $dest/$coloringList; then
-          $sbmtCodeTop/sbmt/bin/DiscoverPlateColorings.sh "$dest" "$outputTop/coloring" "$modelId/$bodyId" "$coloringList"
+          echo "nice $sbmtCodeTop/sbmt/bin/DiscoverPlateColorings.sh $dest $outputTop/coloring $modelId/$bodyId $coloringList"
+          nice $sbmtCodeTop/sbmt/bin/DiscoverPlateColorings.sh "$dest" "$outputTop/coloring" "$modelId/$bodyId" "$coloringList"
           check $? "$funcName: failed to generate plate coloring metadata"
         else
           echo "$funcName: no coloring files found in $dest"
@@ -1204,7 +1207,7 @@ extractFITSFileTimes() {
         # keyname = 'value' / comment
         # In general the comment and the single quotes are not guaranteed to be present, so try to be bullet-proof
         # with the seds. Also the output should have a T rather than space separating the date from the time.
-        value=`ftlist "infile=$dir/$file" option=k include=$timeStampKeyword 2> /dev/null | head -1 | \
+        value=`nice ftlist "infile=$dir/$file" option=k include=$timeStampKeyword 2> /dev/null | head -1 | \
           sed 's:[^=]*=[  ]*::' | sed 's:[  ]*/.*$::' | sed "s:^''*::" | sed "s:''*$::" | sed 's: :T:'`
         check $? "$funcName: ftlist command failed to extract time from file $dir/$file"
 
@@ -1315,7 +1318,8 @@ createGalleryList() {
       cd $instrumentTop
       check $? "$funcName: unable to cd to $instrumentTop to create zip file"
 
-      zip -qr gallery.zip gallery
+      echo "nice zip -qr gallery.zip gallery"
+      nice zip -qr gallery.zip gallery
       check $? "$funcName: unable to zip directory gallery in $instrumentTop"
     )
     status=$?
@@ -1395,10 +1399,10 @@ createInfoFilesFromImageTimeStamps() {
 
     createDir $logTop
 
-    echo $createInfoFilesDir/createInfoFiles $metakernel $body $bodyFrame $spacecraft $instrumentFrame \
+    echo nice $createInfoFilesDir/createInfoFiles $metakernel $body $bodyFrame $spacecraft $instrumentFrame \
       $imageTimeStampFile "$infoDir" $imageListFile $imageListFullPathFile $missingInfoList
 
-    $createInfoFilesDir/createInfoFiles $metakernel $body $bodyFrame $spacecraft $instrumentFrame \
+    nice $createInfoFilesDir/createInfoFiles $metakernel $body $bodyFrame $spacecraft $instrumentFrame \
       $imageTimeStampFile "$infoDir" $imageListFile $imageListFullPathFile $missingInfoList > \
       $logTop/createInfoFiles-$instrument.txt 2>&1
     check $? "$funcName: creating info files failed. See log file $logTop/createInfoFiles-$instrument.txt"
@@ -1761,7 +1765,8 @@ unpackArchives() {
     # Use . to ensure for loop has at least one match.
     for file in `ls *.tar 2> /dev/null` .; do
       if test "$file" != .; then
-        tar xf $file
+        echo nice tar xf $file
+        nice tar xf $file
         check $? "$funcName: unable to untar file $file"
       fi
     done
@@ -1769,7 +1774,8 @@ unpackArchives() {
     # Use . to ensure for loop has at least one match.
     for file in `ls *.tgz *.tar.gz 2> /dev/null` .; do
       if test "$file" != .; then
-        tar zxf $file
+        echo nice tar zxf $file
+        nice tar zxf $file
         check $? "$funcName: unable to untar gzipped file $file"
       fi
     done
@@ -1810,7 +1816,7 @@ editMetakernels() {
     for file in `ls *.mk *.tm 2> /dev/null` .; do
       if test "$file" != .; then
         if test ! -f "$file.bak"; then
-          sed -i bak -e "s:$regEx:$tmpSpiceDir:" $file
+          nice sed -i bak -e "s:$regEx:$tmpSpiceDir:" $file
           check $? "$funcName: unable to edit file $file"
         else
           echo "$funcName: $file.bak already exists -- not re-editing metakernel file $srcDir/$file"
@@ -1853,9 +1859,9 @@ generateDatabaseTable() {
 
     createDir $logTop
 
-    echo $pathToTool --root-url file://$processedTop --body "${bodyId^^}" --author "$modelId" --instrument "$instrument" $pointing | \
+    echo nice $pathToTool --root-url file://$processedTop --body "${bodyId^^}" --author "$modelId" --instrument "$instrument" $pointing | \
       tee -ai $logFile
-    $pathToTool --root-url file://$processedTop --body "${bodyId^^}" --author "$modelId" --instrument "$instrument" $pointing \
+    nice $pathToTool --root-url file://$processedTop --body "${bodyId^^}" --author "$modelId" --instrument "$instrument" $pointing \
       >> $logFile 2>&1
     check $? "$funcName: $tool had an error. See log file $logFile"
 
