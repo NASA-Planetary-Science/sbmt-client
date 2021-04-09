@@ -22,8 +22,10 @@ import javax.swing.JTextField;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
+import org.apache.commons.math3.geometry.euclidean.threed.Vector3D;
+
 import edu.jhuapl.saavtk.gui.render.Renderer;
-import edu.jhuapl.saavtk.gui.render.Renderer.LightingType;
+import edu.jhuapl.saavtk.view.light.LightUtil;
 import edu.jhuapl.sbmt.model.time.StateHistoryCollection;
 import edu.jhuapl.sbmt.model.time.StateHistoryModel;
 
@@ -485,8 +487,7 @@ public class ViewOptionsPanel extends JPanel implements ItemListener
                     currentRun.setActorVisibility("Spacecraft", true);
                 } else if(source == showLighting){
                     currentRun.setActorVisibility("Lighting", true);
-                    renderer.setFixedLightDirection(currentRun.getSunPosition());
-                    renderer.setLighting(LightingType.FIXEDLIGHT);
+                    renderer.setLightCfgToFixedLightAtDirection(new Vector3D(currentRun.getSunPosition()));
                 }
 
             }
@@ -508,7 +509,7 @@ public class ViewOptionsPanel extends JPanel implements ItemListener
                     currentRun.setActorVisibility("Spacecraft", false);
                 } else if(source == showLighting){
                     currentRun.setActorVisibility("Lighting", false);
-                    renderer.setLighting(LightingType.LIGHT_KIT);
+                    LightUtil.switchToLightKit(renderer);
                 }
             }
             currentRun.updateActorVisibility();

@@ -58,7 +58,6 @@ import vtk.vtkPolyDataNormals;
 
 import edu.jhuapl.saavtk.gui.dialog.CustomFileChooser;
 import edu.jhuapl.saavtk.gui.render.Renderer;
-import edu.jhuapl.saavtk.gui.render.Renderer.LightingType;
 import edu.jhuapl.saavtk.model.Model;
 import edu.jhuapl.saavtk.model.ModelManager;
 import edu.jhuapl.saavtk.model.ModelNames;
@@ -408,11 +407,10 @@ public abstract class AbstractSpectrumSearchPanel extends JPanel implements Mous
                 return;
             }
             IBasicSpectrumRenderer spectrum=selection.get(0);
-            renderer.setLighting(LightingType.FIXEDLIGHT);
             Path fullPath=Paths.get(spectrum.getSpectrum().getFullPath());
             Path relativePath=fullPath.subpath(fullPath.getNameCount()-2, fullPath.getNameCount());
             //Vector3D toSunVector=getToSunUnitVector(relativePath.toString());
-            renderer.setFixedLightDirection(spectrum.getSpectrum().getToSunUnitVector()); // the fixed light direction points to the light
+            renderer.setLightCfgToFixedLightAtDirection(new Vector3D(spectrum.getSpectrum().getToSunUnitVector())); // the fixed light direction points to the light
             if (e.getKeyChar()=='v')
             {
                 Vector3D footprintCenter=new Vector3D(spectrum.getShiftedFootprint().GetCenter());
