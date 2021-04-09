@@ -36,6 +36,7 @@ import edu.jhuapl.saavtk.model.ShapeModelBody;
 import edu.jhuapl.saavtk.model.ShapeModelType;
 import edu.jhuapl.saavtk.scalebar.gui.ScaleBarAction;
 import edu.jhuapl.saavtk.status.StatusNotifier;
+import edu.jhuapl.saavtk.view.light.gui.LightingConfigAction;
 import edu.jhuapl.saavtk.view.lod.gui.LodAction;
 import edu.jhuapl.sbmt.client.BodyType;
 import edu.jhuapl.sbmt.client.BodyViewConfig;
@@ -120,6 +121,7 @@ public class SbmtTesterViewManager extends ViewManager
         viewMenu.setMnemonic('V');
         viewMenu.add(new JMenuItem(new CameraRegularAction(this)));
         viewMenu.add(new JMenuItem(new CameraQuaternionAction(this)));
+        viewMenu.add(new JMenuItem(new LightingConfigAction(this)));
         viewMenu.add(new JMenuItem(new ScaleBarAction(this)));
 
         viewMenu.addSeparator();
