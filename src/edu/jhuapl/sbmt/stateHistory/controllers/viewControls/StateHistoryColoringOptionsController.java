@@ -55,6 +55,7 @@ public class StateHistoryColoringOptionsController implements ActionListener
         rendererManager.addListener((aSource, aEventType) ->
 		{
 			if (aEventType != ItemEventType.ItemsChanged) return;
+			if (rendererManager.getRuns().getCurrentRun() == null) return;
 			renderView();
 		});
 

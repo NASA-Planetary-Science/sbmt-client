@@ -1,4 +1,4 @@
-package edu.jhuapl.sbmt.stateHistory.model.stateHistory;
+package edu.jhuapl.sbmt.stateHistory.model.stateHistory.spice;
 
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -15,12 +15,17 @@ import edu.jhuapl.sbmt.pointing.spice.SpiceInfo;
 import edu.jhuapl.sbmt.pointing.spice.SpicePointingProvider;
 import edu.jhuapl.sbmt.stateHistory.model.StateHistorySourceType;
 import edu.jhuapl.sbmt.stateHistory.model.interfaces.IStateHistoryIntervalGenerator;
+import edu.jhuapl.sbmt.stateHistory.model.interfaces.IStateHistoryLocationProvider;
+import edu.jhuapl.sbmt.stateHistory.model.interfaces.IStateHistoryMetadata;
+import edu.jhuapl.sbmt.stateHistory.model.interfaces.IStateHistoryTrajectoryMetadata;
 import edu.jhuapl.sbmt.stateHistory.model.interfaces.State;
 import edu.jhuapl.sbmt.stateHistory.model.interfaces.StateHistory;
 import edu.jhuapl.sbmt.stateHistory.model.interfaces.Trajectory;
 import edu.jhuapl.sbmt.stateHistory.model.io.StateHistoryInputException;
 import edu.jhuapl.sbmt.stateHistory.model.io.StateHistoryInvalidTimeException;
 import edu.jhuapl.sbmt.stateHistory.model.scState.SpiceState;
+import edu.jhuapl.sbmt.stateHistory.model.stateHistory.StateHistoryKey;
+import edu.jhuapl.sbmt.stateHistory.model.stateHistory.StateHistoryMetadata;
 import edu.jhuapl.sbmt.stateHistory.model.trajectory.StandardTrajectory;
 import edu.jhuapl.sbmt.util.TimeUtil;
 
@@ -86,13 +91,14 @@ public class SpiceStateHistoryIntervalGenerator implements IStateHistoryInterval
 	public StateHistory createNewTimeInterval(StateHistory history, Function<Double, Void> progressFunction)
 			throws StateHistoryInputException, StateHistoryInvalidTimeException
 	{
-		String startString = edu.jhuapl.sbmt.util.TimeUtil.et2str(history.getStartTime());
-		String endString = edu.jhuapl.sbmt.util.TimeUtil.et2str(history.getEndTime());
+		IStateHistoryMetadata metadata = history.getMetadata();
+		String startString = edu.jhuapl.sbmt.util.TimeUtil.et2str(metadata.getStartTime());
+		String endString = edu.jhuapl.sbmt.util.TimeUtil.et2str(metadata.getEndTime());
 		DateTimeFormatter formatter = DateTimeFormat.forPattern("yyyy-MM-dd'T'HH:mm:ss.SSS");
 		DateTime start = formatter.parseDateTime(startString.substring(0, 23));
 		DateTime end = formatter.parseDateTime(endString.substring(0, 23));
-		return createNewTimeInterval(history, history.getKey(), start, end,
-										history.getTimeWindow()/(24.0 * 60.0 * 60.0 * 1000.0), history.getStateHistoryName(), progressFunction);
+		return createNewTimeInterval(history, metadata.getKey(), start, end,
+										metadata.getTimeWindow()/(24.0 * 60.0 * 60.0 * 1000.0), metadata.getStateHistoryName(), progressFunction);
 	}
 
 	public StateHistory createNewTimeInterval(StateHistoryKey key, DateTime startTime, DateTime endTime, double duration,
@@ -119,15 +125,19 @@ public class SpiceStateHistoryIntervalGenerator implements IStateHistoryInterval
 	{
 		if (pointingProvider == null) return null;
 		StateHistory history = tempHistory;
-		// creates the trajectory
-		if (tempHistory == null) history = new SpiceStateHistory(key);
-		Trajectory trajectory = new StandardTrajectory(history);
-
 		SimpleDateFormat dateFormatter = new SimpleDateFormat("yyyy-D'T'HH:mm:ss.SSS");	//generates Year-DOY date format
 
 		UTCEpoch startEpoch = UTCEpoch.fromString(dateFormatter.format(startTime.toDate()));
 		UTCEpoch endEpoch = UTCEpoch.fromString(dateFormatter.format(endTime.toDate()));
 		double timeWindowDuration = utcTs.difference(startEpoch, endEpoch);
+		// creates the trajectory
+		StateHistoryMetadata metadata = new StateHistoryMetadata(key, TimeUtil.str2et(startEpoch.toString()),
+				TimeUtil.str2et(startEpoch.toString()), TimeUtil.str2et(endEpoch.toString()),
+				name, "", StateHistorySourceType.SPICE);
+		if (tempHistory == null) history = new SpiceStateHistory(metadata, sourceFile);
+		Trajectory trajectory = new StandardTrajectory(history);
+		IStateHistoryTrajectoryMetadata trajectoryMetadata = history.getTrajectoryMetadata();
+		IStateHistoryLocationProvider locationProvider = history.getLocationProvider();
 
 		//add the pointing provider to the history and trajectory objects
 		trajectory.setPointingProvider(pointingProvider);
@@ -137,17 +147,13 @@ public class SpiceStateHistoryIntervalGenerator implements IStateHistoryInterval
 
 		State state = new SpiceState(pointingProvider);
 		// add to history
-		history.addState(state);
-		history.setTrajectory(trajectory);
-		if (progressFunction != null)  progressFunction.apply(100.0);
-		history.setStartTime(TimeUtil.str2et(startEpoch.toString()));
-		history.setEndTime(TimeUtil.str2et(endEpoch.toString()));
-		history.setCurrentTime(TimeUtil.str2et(startEpoch.toString()));
+		locationProvider.addState(state);
 
-		history.setType(StateHistorySourceType.SPICE);
-		history.setSourceFile(sourceFile);
-		history.setPointingProvider(pointingProvider);
-		((SpiceStateHistory)history).setSpiceInfo(spiceInfo);
+		if (progressFunction != null)  progressFunction.apply(100.0);
+		trajectoryMetadata.setTrajectory(trajectory);
+		locationProvider.setSourceFile(sourceFile);
+		locationProvider.setPointingProvider(pointingProvider);
+		((SpiceStateHistoryLocationProvider)(history.getLocationProvider())).setSpiceInfo(spiceInfo);
 		return history;
 	}
 }

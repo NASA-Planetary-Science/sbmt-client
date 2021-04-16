@@ -1,5 +1,7 @@
 package edu.jhuapl.sbmt.stateHistory.controllers;
 
+import edu.jhuapl.sbmt.stateHistory.model.interfaces.IStateHistoryMetadata;
+import edu.jhuapl.sbmt.stateHistory.model.interfaces.IStateHistoryTrajectoryMetadata;
 import edu.jhuapl.sbmt.stateHistory.model.stateHistory.StateHistoryCollection;
 import edu.jhuapl.sbmt.stateHistory.model.time.StateHistoryTimeModel;
 import edu.jhuapl.sbmt.stateHistory.model.time.TimeWindow;
@@ -41,14 +43,18 @@ public class StateHistoryDisplayedIntervalController
 		view = new StateHistoryDisplayedIntervalPanel();
 		StateHistoryCollection intervalSet = rendererManager.getRuns();
 
+
 		//If the selected item is changed, update the current run, reset the time range, and the time interval label
 		rendererManager.addListener((aSource, aEventType) -> {
 
 			if (aEventType != ItemEventType.ItemsSelected) return;
+			if (rendererManager.getRuns().getCurrentRun() == null) return;
+//			if (intervalSet.getCurrentRun() == null) return;
 			if (rendererManager.getSelectedItems().size() > 0)
 			{
+				IStateHistoryMetadata metadata = intervalSet.getCurrentRun().getMetadata();
 				intervalSet.setCurrentRun(rendererManager.getSelectedItems().asList().get(0));
-				timeModel.setTimeWindow(new TimeWindow(intervalSet.getCurrentRun().getStartTime(), intervalSet.getCurrentRun().getEndTime()));
+				timeModel.setTimeWindow(new TimeWindow(metadata.getStartTime(), metadata.getEndTime()));
 				updateDisplayedTimeRange(0.0, 1.0);
 			}
 			view.getTimeIntervalChanger().setEnabled(rendererManager.getSelectedItems().size() > 0);
@@ -59,6 +65,7 @@ public class StateHistoryDisplayedIntervalController
 		//and passes them onto the current run so the display can properly update
 		view.getTimeIntervalChanger().addActionListener(e -> {
 
+			IStateHistoryTrajectoryMetadata trajectoryMetadata = intervalSet.getCurrentRun().getTrajectoryMetadata();
 			StateHistoryPercentIntervalChanger changer = view.getTimeIntervalChanger();
 			double minValue = changer.getLowValue();
 			double maxValue = changer.getHighValue();
@@ -67,8 +74,8 @@ public class StateHistoryDisplayedIntervalController
 
 			rendererManager.setTrajectoryMinMax(intervalSet.getCurrentRun(), minValue, maxValue);
 			rendererManager.setTimeFraction(minValue, intervalSet.getCurrentRun());
-			intervalSet.getCurrentRun().getTrajectory().setMinDisplayFraction(minValue);
-			intervalSet.getCurrentRun().getTrajectory().setMaxDisplayFraction(maxValue);
+			trajectoryMetadata.getTrajectory().setMinDisplayFraction(minValue);
+			trajectoryMetadata.getTrajectory().setMaxDisplayFraction(maxValue);
 			rendererManager.notify(intervalSet, ItemEventType.ItemsMutated);
 			rendererManager.refreshColoring();
 		});

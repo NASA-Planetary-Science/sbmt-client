@@ -74,6 +74,7 @@ public class StateHistoryViewControlsController
         rendererManager.addListener((aSource, aEventType) ->
 		{
 			if (aEventType != ItemEventType.ItemsChanged) return;
+			if (rendererManager.getRuns().getCurrentRun() == null) return;
 			SwingUtilities.invokeLater(new Runnable()
 			{
 				@Override

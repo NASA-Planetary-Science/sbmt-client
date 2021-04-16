@@ -42,7 +42,7 @@ public class StateHistoryViewOptionsController
 				boolean selected = (e.getStateChange() == ItemEvent.SELECTED);
 				if (selected)
 				{
-					rendererManager.getRenderer().setFixedLightDirection(rendererManager.getRuns().getCurrentRun().getSunPosition());
+					rendererManager.getRenderer().setFixedLightDirection(rendererManager.getRuns().getCurrentRun().getLocationProvider().getSunPosition());
 					rendererManager.getRenderer().setLighting(LightingType.FIXEDLIGHT);
 				}
 				else
@@ -90,6 +90,7 @@ public class StateHistoryViewOptionsController
         rendererManager.addListener((aSource, aEventType) ->
 		{
 			if (aEventType != ItemEventType.ItemsSelected) return;
+			if (rendererManager.getRuns().getCurrentRun() == null) return;
 			rendererManager.setTimeFraction(0.0, runs.getCurrentRun());
 			RendererLookDirection lookDir = model.getRendererLookDirectionForStateHistory(runs.getCurrentRun());
 			if (lookDir == null) lookDir = RendererLookDirection.FREE_VIEW;

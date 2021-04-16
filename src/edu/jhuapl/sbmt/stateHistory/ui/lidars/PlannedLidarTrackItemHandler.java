@@ -49,6 +49,8 @@ public class PlannedLidarTrackItemHandler extends BasicItemHandler<PlannedLidarT
 				fmt.withZone(DateTimeZone.UTC);
 				timeString = TimeUtil.et2str(track.getStopTime());
 				return timeString.substring(0, 23);
+			case StateHistory:
+				return track.getStateHistoryMetadata().getStateHistoryName();
 			default:
 				break;
 		}

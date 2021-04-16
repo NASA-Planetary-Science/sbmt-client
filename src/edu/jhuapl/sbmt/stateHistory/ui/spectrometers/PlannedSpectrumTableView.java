@@ -108,7 +108,7 @@ public class PlannedSpectrumTableView extends JPanel
     public void setup()
     {
         setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
-        setBorder(new TitledBorder(null, "Planned Spectrums", TitledBorder.LEADING, TitledBorder.TOP, null, null));
+        setBorder(new TitledBorder(null, "Planned Spectra", TitledBorder.LEADING, TitledBorder.TOP, null, null));
         JPanel panel_4 = new JPanel();
         add(panel_4);
         panel_4.setLayout(new BoxLayout(panel_4, BoxLayout.X_AXIS));
@@ -231,7 +231,7 @@ public class PlannedSpectrumTableView extends JPanel
 	{
 		JTable tmpTable = plannedSpectrumILP.getTable();
 		String dateTimeStr = "9999-88-88T00:00:00.000000";
-		int minW = 30;
+		int minW = 40;
 
 		ColorProvider blackCP = new ConstColorProvider(Color.BLACK);
 		Object[] nomArr = { true, /*true,*/ blackCP, dateTimeStr, dateTimeStr };

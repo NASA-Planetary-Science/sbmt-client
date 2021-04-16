@@ -1,7 +1,7 @@
 package edu.jhuapl.sbmt.stateHistory.model.planning.lidar;
 
+import java.awt.Color;
 import java.beans.PropertyChangeEvent;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -20,7 +20,7 @@ import edu.jhuapl.sbmt.lidar.LidarPoint;
 import edu.jhuapl.sbmt.lidar.LidarTrack;
 import edu.jhuapl.sbmt.lidar.LidarTrackManager;
 import edu.jhuapl.sbmt.lidar.util.LidarTrackUtil;
-import edu.jhuapl.sbmt.stateHistory.model.io.PlannedLidarTrackIOHelper;
+import edu.jhuapl.sbmt.stateHistory.model.interfaces.IStateHistoryMetadata;
 import edu.jhuapl.sbmt.stateHistory.model.planning.BasePlannedDataCollection;
 import edu.jhuapl.sbmt.stateHistory.rendering.PlannedDataProperties;
 import edu.jhuapl.sbmt.stateHistory.rendering.model.StateHistoryPositionCalculator;
@@ -35,14 +35,19 @@ public class PlannedLidarTrackCollection extends BasePlannedDataCollection<Plann
 	private List<LidarTrack> currentTracks;
 
 	private double time;
+	private String filename;
+	private IStateHistoryMetadata stateHistoryMetadata;
 
 	private double minTime = Double.MAX_VALUE, maxTime = Double.MIN_VALUE;
+	private Color color = Color.blue;
+	private boolean showing = false;
+	private boolean displayingDetails = false;
 
-	public PlannedLidarTrackCollection(ModelManager modelManager, SmallBodyModel smallBodyModel, Renderer renderer)
+	public PlannedLidarTrackCollection(String filename, ModelManager modelManager, SmallBodyModel smallBodyModel, Renderer renderer)
 	{
 		super(smallBodyModel);
 		currentTracks = new ArrayList<LidarTrack>();
-
+		this.filename = filename;
 		trackManager = new LidarTrackManager(modelManager, smallBodyModel);
 		renderer.addVtkPropProvider(trackManager);
 
@@ -55,6 +60,14 @@ public class PlannedLidarTrackCollection extends BasePlannedDataCollection<Plann
 	public List<vtkProp> getProps()
 	{
 		return trackManager.getProps();
+	}
+
+	/**
+	 * @return the filename
+	 */
+	public String getFilename()
+	{
+		return filename;
 	}
 
 	@Override
@@ -137,13 +150,69 @@ public class PlannedLidarTrackCollection extends BasePlannedDataCollection<Plann
 		this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
 	}
 
-	public void loadPlannedLidarTracksFromFileWithName(String filename, ProgressStatusListener listener, Runnable completion) throws IOException
+	/**
+	 * @return the showing
+	 */
+	public boolean isShowing()
 	{
-		PlannedLidarTrackIOHelper.loadPlannedLidarTracksFromFileWithName(filename, this, listener, completion);
+		return showing;
 	}
 
-	public void savePlannedLidarTracksToFileWithName(String filename) throws IOException
+	/**
+	 * @param showing the showing to set
+	 */
+	public void setShowing(boolean showing)
 	{
-		PlannedLidarTrackIOHelper.savePlannedLidarTracksToFileWithName(filename, this);
+		this.showing = showing;
 	}
+
+	/**
+	 * @return the displayingDetails
+	 */
+	public boolean isDisplayingDetails()
+	{
+		return displayingDetails;
+	}
+
+	/**
+	 * @param displayingDetails the displayingDetails to set
+	 */
+	public void setDisplayingDetails(boolean displayingDetails)
+	{
+		this.displayingDetails = displayingDetails;
+	}
+
+	/**
+	 * @return the color
+	 */
+	public Color getColor()
+	{
+		return color;
+	}
+
+	/**
+	 * @param color the color to set
+	 */
+	public void setColor(Color color)
+	{
+		this.color = color;
+	}
+
+	/**
+	 * @return the stateHistoryMetadata
+	 */
+	public IStateHistoryMetadata getStateHistoryMetadata()
+	{
+		return stateHistoryMetadata;
+	}
+
+	/**
+	 * @param stateHistoryMetadata the stateHistoryMetadata to set
+	 */
+	public void setStateHistoryMetadata(IStateHistoryMetadata stateHistoryMetadata)
+	{
+		System.out.println("PlannedLidarTrackCollection: setStateHistoryMetadata: metadata name " + stateHistoryMetadata.getStateHistoryName());
+		this.stateHistoryMetadata = stateHistoryMetadata;
+	}
+
 }

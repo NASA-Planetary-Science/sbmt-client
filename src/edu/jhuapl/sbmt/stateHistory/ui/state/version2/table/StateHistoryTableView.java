@@ -365,7 +365,7 @@ public class StateHistoryTableView extends JPanel
 	{
 		JTable tmpTable = stateHistoryILP.getTable();
 		String dateTimeStr = "9999-88-88T00:00:00.000";
-		int minW = 30;
+		int minW = 40;
 
 		ColorProvider blackCP = new ConstColorProvider(Color.BLACK);
 		Object[] nomArr =

@@ -46,6 +46,8 @@ public class PlannedSpectrumItemHandler extends BasicItemHandler<PlannedSpectrum
 				fmt.withZone(DateTimeZone.UTC);
 				timeString = TimeUtil.et2str(spectrum.getTime());
 				return timeString.substring(0, 23);
+			case StateHistory:
+				return spectrum.getStateHistoryMetadata().getStateHistoryName();
 			default:
 				break;
 		}

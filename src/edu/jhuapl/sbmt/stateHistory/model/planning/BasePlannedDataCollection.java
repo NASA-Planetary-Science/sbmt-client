@@ -124,4 +124,12 @@ public class BasePlannedDataCollection<T extends PlannedInstrumentData> extends 
 	{
 		renderManager.setVisibility(plannedDataObject, visible);
 	}
+
+	/**
+	 * @return the stateHistorySource
+	 */
+	public StateHistory getStateHistorySource()
+	{
+		return stateHistorySource;
+	}
 }

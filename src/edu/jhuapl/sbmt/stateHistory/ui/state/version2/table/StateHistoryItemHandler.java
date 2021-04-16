@@ -7,6 +7,8 @@ import org.joda.time.format.DateTimeFormatter;
 import edu.jhuapl.saavtk.color.provider.ColorBarColorProvider;
 import edu.jhuapl.saavtk.color.provider.ColorProvider;
 import edu.jhuapl.saavtk.color.provider.ConstGroupColorProvider;
+import edu.jhuapl.sbmt.stateHistory.model.interfaces.IStateHistoryLocationProvider;
+import edu.jhuapl.sbmt.stateHistory.model.interfaces.IStateHistoryMetadata;
 import edu.jhuapl.sbmt.stateHistory.model.interfaces.StateHistory;
 import edu.jhuapl.sbmt.stateHistory.model.stateHistory.StateHistoryCollection;
 import edu.jhuapl.sbmt.stateHistory.rendering.model.StateHistoryRendererManager;
@@ -47,29 +49,31 @@ public class StateHistoryItemHandler extends BasicItemHandler<StateHistory, Stat
 		DateTimeFormatter fmt = DateTimeFormat.forPattern("yyyy-MM-dd'T'HH:mm:ss");
 		String timeString;
 		ColorProvider colorProvider = rendererManager.getColorProviderForStateHistory(stateHistory);
+		IStateHistoryMetadata metadata = stateHistory.getMetadata();
+		IStateHistoryLocationProvider locationProvider = stateHistory.getLocationProvider();
 		switch (aEnum)
 		{
 			case Map:
-				return stateHistory.isMapped();
+				return metadata.isMapped();
 			case Show:
-				return stateHistory.isVisible();
+				return metadata.isVisible();
 			case Color:
 				if (colorProvider instanceof ColorBarColorProvider) return new ConstGroupColorProvider(colorProvider);
 				return colorProvider;
 			case Name:
-				if (stateHistory.getStateHistoryName().equals("")) return "Segment " + stateHistory.getKey().getValue();
-				return stateHistory.getStateHistoryName();
+				if (metadata.getStateHistoryName().equals("")) return "Segment " + metadata.getKey().getValue();
+				return metadata.getStateHistoryName();
 			case Description:
-				return stateHistory.getStateHistoryDescription();
+				return metadata.getStateHistoryDescription();
 			case Source:
-				return stateHistory.getType() + " (" + stateHistory.getSourceFile() + ")";
+				return metadata.getType() + " (" + locationProvider.getSourceFile() + ")";
 			case StartTime:
 				fmt.withZone(DateTimeZone.UTC);
-				timeString = TimeUtil.et2str(stateHistory.getStartTime());
+				timeString = TimeUtil.et2str(metadata.getStartTime());
 				return timeString.substring(0, 23);
 			case EndTime:
 				fmt.withZone(DateTimeZone.UTC);
-				timeString = TimeUtil.et2str(stateHistory.getEndTime());
+				timeString = TimeUtil.et2str(metadata.getEndTime());
 				return timeString.substring(0, 23);
 			default:
 				break;
@@ -84,9 +88,10 @@ public class StateHistoryItemHandler extends BasicItemHandler<StateHistory, Stat
 	@Override
 	public void setColumnValue(StateHistory history, StateHistoryColumnLookup aEnum, Object aValue)
 	{
+		IStateHistoryMetadata metadata = history.getMetadata();
 		if (aEnum == StateHistoryColumnLookup.Map)
 		{
-			if (!history.isMapped())
+			if (!metadata.isMapped())
 			{
 				rendererManager.addRun(history);
 				rendererManager.setVisibility(history, true);
@@ -98,17 +103,17 @@ public class StateHistoryItemHandler extends BasicItemHandler<StateHistory, Stat
 		}
 		else if (aEnum == StateHistoryColumnLookup.Show)
 		{
-			if (history.isMapped()) rendererManager.setVisibility(history, (boolean) aValue);
+			if (metadata.isMapped()) rendererManager.setVisibility(history, (boolean) aValue);
 
 		}
 		else if (aEnum == StateHistoryColumnLookup.Name)
 		{
-			history.setStateHistoryName((String)aValue);
+			metadata.setStateHistoryName((String)aValue);
 			stateHistoryCollection.fireHistorySegmentUpdatedListeners(history);
 		}
 		else if (aEnum == StateHistoryColumnLookup.Description)
 		{
-			history.setStateHistoryDescription((String)aValue);
+			metadata.setStateHistoryDescription((String)aValue);
 			stateHistoryCollection.fireHistorySegmentUpdatedListeners(history);
 		}
 		else if (aEnum == StateHistoryColumnLookup.Color)

@@ -1,87 +1,25 @@
 package edu.jhuapl.sbmt.stateHistory.controllers.imagers;
 
-import java.beans.PropertyChangeEvent;
-import java.io.File;
-import java.io.IOException;
-
 import javax.swing.SwingUtilities;
 
 import com.google.common.collect.ImmutableSet;
 
-import edu.jhuapl.saavtk.gui.dialog.CustomFileChooser;
-import edu.jhuapl.saavtk.model.ModelManager;
-import edu.jhuapl.saavtk.util.ProgressStatusListener;
-import edu.jhuapl.saavtk.util.Properties;
-import edu.jhuapl.sbmt.client.SmallBodyViewConfig;
+import edu.jhuapl.sbmt.stateHistory.controllers.IPlannedDataController;
+import edu.jhuapl.sbmt.stateHistory.model.interfaces.IStateHistoryMetadata;
 import edu.jhuapl.sbmt.stateHistory.model.planning.imagers.PlannedImage;
 import edu.jhuapl.sbmt.stateHistory.model.planning.imagers.PlannedImageCollection;
-import edu.jhuapl.sbmt.stateHistory.rendering.model.StateHistoryRendererManager;
 import edu.jhuapl.sbmt.stateHistory.ui.imagers.PlannedImageView;
 
-public class PlannedImageTableController
+public class PlannedImageTableController implements IPlannedDataController<PlannedImageView>
 {
 	PlannedImageView view;
 	PlannedImageCollection collection;
-	StateHistoryRendererManager rendererManager;
+	IStateHistoryMetadata historyMetadata = null;
 
-	public PlannedImageTableController(final ModelManager modelManager, StateHistoryRendererManager rendererManager, PlannedImageCollection collection, SmallBodyViewConfig config)
+	public PlannedImageTableController(PlannedImageCollection collection)
 	{
 		this.collection = collection;
-		this.rendererManager = rendererManager;
-		view = new PlannedImageView(collection, config);
-		view.getTable().getLoadPlannedImageButton().addActionListener(e -> {
-
-			File file = CustomFileChooser.showOpenDialog(view, "Select File");
-        	if (file == null) return;
-        	Runnable runner = new Runnable()
-			{
-				@Override
-				public void run()
-				{
-					try
-					{
-						collection.loadPlannedImagesFromFileWithName(file.getAbsolutePath(), new ProgressStatusListener()
-						{
-
-							@Override
-							public void setProgressStatus(String status, int progress)
-							{
-								if (progress == 0) view.getTable().getProcessingLabel().setText(status);
-								else view.getTable().getProcessingLabel().setText(status);
-								view.getTable().repaint();
-								view.getTable().validate();
-							}
-						},
-						() -> {
-							SwingUtilities.invokeLater(new Runnable()
-							{
-								@Override
-								public void run()
-								{
-									view.getTable().getProcessingLabel().setText("Ready.");
-									refreshView();
-								}
-							});
-						});
-					}
-					catch (IOException e)
-					{
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					}
-				}
-			};
-			Thread thread = new Thread(runner);
-			thread.start();
-		});
-
-
-		view.getTable().getSyncWithTimelineButton().addActionListener(e -> {
-			rendererManager.setSyncImages(view.getTable().getSyncWithTimelineButton().isSelected());
-			collection.updateFootprints();
-			rendererManager.propertyChange(new PropertyChangeEvent(this, Properties.MODEL_CHANGED, null, null));
-			refreshView();
-		});
+		view = new PlannedImageView(collection);
 
 		view.getTable().getShowPlannedImageButton().addActionListener(e -> {
 
@@ -102,7 +40,7 @@ public class PlannedImageTableController
 
 	private void refreshView()
 	{
-		updateButtonState(rendererManager);
+		updateButtonState();
 		SwingUtilities.invokeLater(new Runnable()
 		{
 
@@ -115,7 +53,7 @@ public class PlannedImageTableController
 		});
 	}
 
-	private void updateButtonState(StateHistoryRendererManager rendererManager)
+	private void updateButtonState()
 	{
 		ImmutableSet<PlannedImage> selectedItems = collection.getSelectedItems();
 		boolean allMapped = true;

@@ -34,6 +34,7 @@ import org.joda.time.DateTime;
 import edu.jhuapl.saavtk.gui.dialog.CustomFileChooser;
 import edu.jhuapl.sbmt.stateHistory.model.StateHistoryModel;
 import edu.jhuapl.sbmt.stateHistory.model.StateHistorySourceType;
+import edu.jhuapl.sbmt.stateHistory.model.interfaces.IStateHistoryMetadata;
 import edu.jhuapl.sbmt.stateHistory.model.interfaces.StateHistory;
 import edu.jhuapl.sbmt.stateHistory.model.io.SpiceKernelIngestor;
 import edu.jhuapl.sbmt.stateHistory.model.io.SpiceKernelLoadStatusListener;
@@ -123,18 +124,17 @@ public class StateHistoryIntervalGenerationPanel extends JPanel
 		initUI();
 	}
 
-	public StateHistoryIntervalGenerationPanel(StateHistory history, StateHistoryModel historyModel)
+	public StateHistoryIntervalGenerationPanel(StateHistory history)
 	{
 		editMode = true;
 		this.history = history;
-		this.hasSpiceInfo = historyModel.getViewConfig().getSpiceInfo() != null;
-		this.kernelIngestor = new SpiceKernelIngestor(historyModel.getCustomDataFolder());
 		buttonText = "Update Interval";
 		initUI();
-		stateHistorySourceType = history.getType();
+		IStateHistoryMetadata metadata = history.getMetadata();
+		stateHistorySourceType = metadata.getType();
 		if (stateHistorySourceType == StateHistorySourceType.SPICE) spiceDataRadioButton.setSelected(true);
 		else pregenDataRadioButton.setSelected(true);
-		Date startDate = StateHistoryTimeModel.getDateForET(history.getStartTime());
+		Date startDate = StateHistoryTimeModel.getDateForET(metadata.getStartTime());
 		SpinnerDateModel spinnerDateModel = new SpinnerDateModel(startDate, null, null, Calendar.DAY_OF_MONTH);
         startTimeSpinner.setModel(spinnerDateModel);
 
@@ -142,7 +142,7 @@ public class StateHistoryIntervalGenerationPanel extends JPanel
         startTimeSpinner.setEditor(dateEditor);
 		startTimeSpinner.getModel().setValue(startDate);
 
-		Date stopDate = StateHistoryTimeModel.getDateForET(history.getEndTime());
+		Date stopDate = StateHistoryTimeModel.getDateForET(metadata.getEndTime());
 		spinnerDateModel = new SpinnerDateModel(stopDate, null, null, Calendar.DAY_OF_MONTH);
         stopTimeSpinner.setModel(spinnerDateModel);
 
@@ -169,11 +169,12 @@ public class StateHistoryIntervalGenerationPanel extends JPanel
 
 	public void updateStateHistory()
 	{
-		history.setType(stateHistorySourceType);
+		IStateHistoryMetadata metadata = history.getMetadata();
+		metadata.setType(stateHistorySourceType);
 		DateTime startTime = startTimeSpinner.getISOFormattedTime();
         DateTime endTime = stopTimeSpinner.getISOFormattedTime();
-		history.setStartTime(StateHistoryTimeModel.getETForDate(startTime.toDate()));
-		history.setEndTime(StateHistoryTimeModel.getETForDate(endTime.toDate()));
+		metadata.setStartTime(StateHistoryTimeModel.getETForDate(startTime.toDate()));
+		metadata.setEndTime(StateHistoryTimeModel.getETForDate(endTime.toDate()));
 	}
 
 	@Override

@@ -24,9 +24,10 @@ import edu.jhuapl.sbmt.stateHistory.model.io.StateHistoryIOException;
 import edu.jhuapl.sbmt.stateHistory.model.io.StateHistoryInputException;
 import edu.jhuapl.sbmt.stateHistory.model.io.StateHistoryInvalidTimeException;
 import edu.jhuapl.sbmt.stateHistory.model.io.StateHistoryModelIOHelper;
-import edu.jhuapl.sbmt.stateHistory.model.stateHistory.SpiceStateHistory;
 import edu.jhuapl.sbmt.stateHistory.model.stateHistory.StateHistoryCollection;
 import edu.jhuapl.sbmt.stateHistory.model.stateHistory.StateHistoryKey;
+import edu.jhuapl.sbmt.stateHistory.model.stateHistory.spice.SpiceStateHistory;
+import edu.jhuapl.sbmt.stateHistory.model.stateHistory.spice.SpiceStateHistoryLocationProvider;
 import edu.jhuapl.sbmt.stateHistory.rendering.model.StateHistoryRendererManager;
 
 import crucible.crust.metadata.impl.FixedMetadata;
@@ -239,7 +240,7 @@ public class StateHistoryModel
 			history.validate();
 			if (history.isValid() == false)
 			{
-				boolean invalidKernelAlreadyExists = invalidHistories.stream().filter(his -> his.getSourceFile().equals(history.getSourceFile())).count() > 0;
+				boolean invalidKernelAlreadyExists = invalidHistories.stream().filter(his -> his.getLocationProvider().getSourceFile().equals(history.getLocationProvider().getSourceFile())).count() > 0;
 				if (!invalidKernelAlreadyExists)
 					invalidHistories.add(history);
 			}
@@ -254,10 +255,10 @@ public class StateHistoryModel
 	{
 		for (StateHistory history : rendererManager.getAllItems())
 		{
-			setIntervalGenerator(history.getType());
+			setIntervalGenerator(history.getMetadata().getType());
 			SpiceInfo spice = null;
-			if (history instanceof SpiceStateHistory) spice = ((SpiceStateHistory)history).getSpiceInfo();
-			activeIntervalGenerator.setSourceFile(history.getSourceFile(), spice);
+			if (history instanceof SpiceStateHistory) spice = ((SpiceStateHistoryLocationProvider)history.getLocationProvider()).getSpiceInfo();
+			activeIntervalGenerator.setSourceFile(history.getLocationProvider().getSourceFile(), spice);
 			activeIntervalGenerator.createNewTimeInterval(history, null);
 		}
 

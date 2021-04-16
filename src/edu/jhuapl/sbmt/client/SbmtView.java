@@ -642,7 +642,7 @@ public class SbmtView extends View implements PropertyChangeListener
 						{
 							StateHistory currentRun = rendererManager.getRuns().getCurrentRun();
 							if (currentRun == null) return;
-							meganeController.propertyChange(new PropertyChangeEvent(meganeController, "SPICEPROVIDER", null, currentRun.getPointingProvider()));
+							meganeController.propertyChange(new PropertyChangeEvent(meganeController, "SPICEPROVIDER", null, currentRun.getLocationProvider().getPointingProvider()));
 						}
 					}
 				});

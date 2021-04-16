@@ -1,13 +1,13 @@
 package edu.jhuapl.sbmt.stateHistory.model.planning.spectrometers;
 
+import java.awt.Color;
 import java.beans.PropertyChangeEvent;
-import java.io.IOException;
 
 import edu.jhuapl.saavtk.util.ProgressStatusListener;
 import edu.jhuapl.saavtk.util.Properties;
 import edu.jhuapl.sbmt.client.SmallBodyModel;
 import edu.jhuapl.sbmt.model.image.perspectiveImage.PerspectiveImageFootprint;
-import edu.jhuapl.sbmt.stateHistory.model.io.PlannedSpectrumIOHelper;
+import edu.jhuapl.sbmt.stateHistory.model.interfaces.IStateHistoryMetadata;
 import edu.jhuapl.sbmt.stateHistory.model.planning.BasePlannedDataCollection;
 import edu.jhuapl.sbmt.stateHistory.rendering.PlannedDataProperties;
 import edu.jhuapl.sbmt.stateHistory.rendering.model.StateHistoryPositionCalculator;
@@ -16,10 +16,16 @@ import edu.jhuapl.sbmt.stateHistory.rendering.planning.PlannedDataActor;
 public class PlannedSpectrumCollection  extends BasePlannedDataCollection<PlannedSpectrum>
 {
 	private double time;
+	private String filename;
+	private IStateHistoryMetadata stateHistoryMetadata;
+	private Color color = Color.blue;
+	private boolean showing = false;
+	private boolean displayingDetails = false;
 
-	public PlannedSpectrumCollection(SmallBodyModel smallBodyModel)
+	public PlannedSpectrumCollection(String filename, SmallBodyModel smallBodyModel)
 	{
 		super(smallBodyModel);
+		this.filename = filename;
 	}
 
 	@Override
@@ -62,13 +68,75 @@ public class PlannedSpectrumCollection  extends BasePlannedDataCollection<Planne
 		this.pcs.firePropertyChange("PLANNED_SPECTRA_CHANGED", null, null);
 	}
 
-	public void loadPlannedSpectraFromFileWithName(String filename, ProgressStatusListener listener, Runnable completion) throws IOException
+	/**
+	 * @return the stateHistoryMetadata
+	 */
+	public IStateHistoryMetadata getStateHistoryMetadata()
 	{
-		PlannedSpectrumIOHelper.loadPlannedSpectraFromFileWithName(filename, this, listener, completion);
+		return stateHistoryMetadata;
 	}
 
-	public void savePlannedSpectraToFileWithName(String filename) throws IOException
+	/**
+	 * @param stateHistoryMetadata the stateHistoryMetadata to set
+	 */
+	public void setStateHistoryMetadata(IStateHistoryMetadata stateHistoryMetadata)
 	{
-		PlannedSpectrumIOHelper.savePlannedSpectraToFileWithName(filename, this);
+		this.stateHistoryMetadata = stateHistoryMetadata;
+	}
+
+	/**
+	 * @return the color
+	 */
+	public Color getColor()
+	{
+		return color;
+	}
+
+	/**
+	 * @param color the color to set
+	 */
+	public void setColor(Color color)
+	{
+		this.color = color;
+	}
+
+	/**
+	 * @return the showing
+	 */
+	public boolean isShowing()
+	{
+		return showing;
+	}
+
+	/**
+	 * @param showing the showing to set
+	 */
+	public void setShowing(boolean showing)
+	{
+		this.showing = showing;
+	}
+
+	/**
+	 * @return the displayingDetails
+	 */
+	public boolean isDisplayingDetails()
+	{
+		return displayingDetails;
+	}
+
+	/**
+	 * @param displayingDetails the displayingDetails to set
+	 */
+	public void setDisplayingDetails(boolean displayingDetails)
+	{
+		this.displayingDetails = displayingDetails;
+	}
+
+	/**
+	 * @return the filename
+	 */
+	public String getFilename()
+	{
+		return filename;
 	}
 }

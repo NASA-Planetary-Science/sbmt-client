@@ -44,7 +44,38 @@ public class PlannedDataActorRegister
 				PerspectiveImageFootprint footprint = new PerspectiveImageFootprint();
 				footprint.setTime(data.getTime());
 				footprint.setInstrumentName(data.getInstrumentName());
-				footprint.setColor(Color.blue);
+				Color fadedBlue = new Color(0.0f, 0.0f, 1.0f, 0.5f);
+				footprint.setColor(fadedBlue);
+				footprint.setSmallBodyModel(model);
+				return footprint;
+			}
+		});
+
+		PlannedDataActorFactory.registerModel("MAPCAM", new IPlanningDataActorBuilder<PlannedInstrumentData>()
+		{
+
+			@Override
+			public PlannedDataActor buildActorForPlanningData(PlannedInstrumentData data, SmallBodyModel model)
+			{
+				PerspectiveImageFootprint footprint = new PerspectiveImageFootprint();
+				footprint.setTime(data.getTime());
+				footprint.setInstrumentName(data.getInstrumentName());
+				footprint.setColor(Color.green);
+				footprint.setSmallBodyModel(model);
+				return footprint;
+			}
+		});
+
+		PlannedDataActorFactory.registerModel("NAVCAM", new IPlanningDataActorBuilder<PlannedInstrumentData>()
+		{
+
+			@Override
+			public PlannedDataActor buildActorForPlanningData(PlannedInstrumentData data, SmallBodyModel model)
+			{
+				PerspectiveImageFootprint footprint = new PerspectiveImageFootprint();
+				footprint.setTime(data.getTime());
+				footprint.setInstrumentName(data.getInstrumentName());
+				footprint.setColor(Color.orange);
 				footprint.setSmallBodyModel(model);
 				return footprint;
 			}

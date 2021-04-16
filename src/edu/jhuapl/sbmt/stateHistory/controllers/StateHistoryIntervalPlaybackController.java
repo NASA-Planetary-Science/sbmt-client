@@ -95,13 +95,15 @@ public class StateHistoryIntervalPlaybackController
 //				Logger.getAnonymousLogger().log(Level.INFO, "Starting in playback");
 				//if needed, update the time entry box and the slider
 				Date date = StateHistoryTimeModel.getDateForET(et);
+//				System.out.println(
+//						"StateHistoryIntervalPlaybackController.StateHistoryIntervalPlaybackController(...).new BaseStateHistoryTimeModelChangedListener() {...}: timeChanged: date is " + date);
 				if (date == (Date)view.getTimeBox().getModel().getValue()) return;
 				//put on EDT?
 				view.getTimeBox().setValue(date);
 
 				try
 				{
-					runs.getCurrentRun().setCurrentTime(et);
+					runs.getCurrentRun().getMetadata().setCurrentTime(et);
 				}
 				catch (StateHistoryInvalidTimeException e)
 				{
@@ -132,9 +134,24 @@ public class StateHistoryIntervalPlaybackController
 
 		rendererManager.addListener((aSource, aEventType) -> {
 			if (aEventType != ItemEventType.ItemsSelected) return;
-			currentOffsetTime = 0.0;
-			updatePlaypanelValues(rendererManager.getRuns());
+//			System.out.println("StateHistoryIntervalPlaybackController: StateHistoryIntervalPlaybackController: current run is " + rendererManager.getRuns().getCurrentRun());
+			if (rendererManager.getRuns().getCurrentRun() == null) return;
+//			currentOffsetTime = 0.0;
+			restorePlayPanelValues(rendererManager.getRuns());
+
+//			updateTimeBarValue();
+//			updatePlaypanelValues(rendererManager.getRuns());
 		});
+
+//        rendererManager.addListener((aSource, aEventType) -> {
+//			if (rendererManager.getSelectedItems().size() > 0)
+//			{
+//				if (rendererManager.getRuns().getCurrentRun() == null) return;
+//				runs.setCurrentRun(rendererManager.getSelectedItems().asList().get(0));
+//				updateTimeBarValue();
+//			}
+//			updatePlaypanelValues(runs);
+//        });
 	}
 
 	/**
@@ -163,6 +180,34 @@ public class StateHistoryIntervalPlaybackController
         pauseIcon = new ImageIcon(pause);
 	}
 
+	private void restorePlayPanelValues(StateHistoryCollection runs)
+	{
+//		System.out.println("StateHistoryIntervalPlaybackController: restorePlayPanelValues: restoring play values");
+		runs.setCurrentRun(rendererManager.getSelectedItems().asList().get(0));
+		final JSlider slider = view.getSlider();
+//		int val = slider.getValue();
+        int max = slider.getMaximum();
+
+        double period = runs.getPeriod();
+        double deltaRealTime = 1; //timer.getDelay() / 1000.0;
+        double playRate = 1.0;
+        try {
+           playRate = Double.parseDouble(view.getTimeStepTextField().getText());
+        } catch (Exception ex) { ex.printStackTrace(); playRate = 1.0; }
+
+        double deltaSimulationTime = deltaRealTime * playRate;
+        double deltaOffsetTime = deltaSimulationTime / period;
+        TimeWindow twindow = new TimeWindow(runs.getCurrentRun().getMetadata().getStartTime(), runs.getCurrentRun().getMetadata().getEndTime());
+        double et = runs.getCurrentRun().getMetadata().getCurrentTime();
+        double currentOffsetTime = (et - twindow.getStartTime())/(twindow.getStopTime() - twindow.getStartTime());
+        int val = (int)(currentOffsetTime/((period/playRate)/max*deltaOffsetTime));
+//        System.out.println("StateHistoryIntervalPlaybackController: restorePlayPanelValues: val is " + val + " current offset is " + currentOffsetTime);
+        slider.setValue(val);
+        timeModel.setTimeWindow(twindow);
+//        timeModel.setTime(et);
+        timeModel.setTimeFraction(currentOffsetTime);
+	}
+
 	/**
 	 * Updates the time fraction and date values as the slider gets updated
 	 */
@@ -182,7 +227,8 @@ public class StateHistoryIntervalPlaybackController
         double deltaSimulationTime = deltaRealTime * playRate;
         double deltaOffsetTime = deltaSimulationTime / period;
         currentOffsetTime = (val*(period/playRate)/max)*deltaOffsetTime;
-        timeModel.setTimeWindow(new TimeWindow(runs.getCurrentRun().getStartTime(), runs.getCurrentRun().getEndTime()));
+        timeModel.setTimeWindow(new TimeWindow(runs.getCurrentRun().getMetadata().getStartTime(), runs.getCurrentRun().getMetadata().getEndTime()));
+//        timeModel.setTime(runs.getCurrentRun().getMetadata().getCurrentTime());
         timeModel.setTimeFraction(currentOffsetTime);
 	}
 
@@ -255,8 +301,8 @@ public class StateHistoryIntervalPlaybackController
         view.getRecordButton().addActionListener(e -> {
             view.setCursor(new Cursor(Cursor.WAIT_CURSOR));
 
-            DateTime startTime = timeModel.getDateTimeForET(runs.getCurrentRun().getStartTime());
-            DateTime endTime = timeModel.getDateTimeForET(runs.getCurrentRun().getEndTime());
+            DateTime startTime = StateHistoryTimeModel.getDateTimeForET(runs.getCurrentRun().getMetadata().getStartTime());
+            DateTime endTime = StateHistoryTimeModel.getDateTimeForET(runs.getCurrentRun().getMetadata().getEndTime());
             saveAnimation(startTime, endTime, renderer, runs);
             view.setCursor(Cursor.getDefaultCursor());
         });
@@ -271,6 +317,7 @@ public class StateHistoryIntervalPlaybackController
         rendererManager.addListener((aSource, aEventType) -> {
 			if (rendererManager.getSelectedItems().size() > 0)
 			{
+				if (rendererManager.getRuns().getCurrentRun() == null) return;
 				runs.setCurrentRun(rendererManager.getSelectedItems().asList().get(0));
 				updateTimeBarValue();
 			}

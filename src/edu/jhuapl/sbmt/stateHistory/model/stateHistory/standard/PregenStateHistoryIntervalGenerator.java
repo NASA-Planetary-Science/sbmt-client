@@ -1,7 +1,7 @@
 /**
  *
  */
-package edu.jhuapl.sbmt.stateHistory.model.stateHistory;
+package edu.jhuapl.sbmt.stateHistory.model.stateHistory.standard;
 
 import java.io.File;
 import java.util.function.Function;
@@ -18,12 +18,17 @@ import edu.jhuapl.sbmt.pointing.spice.SpiceInfo;
 import edu.jhuapl.sbmt.stateHistory.model.StateHistorySourceType;
 import edu.jhuapl.sbmt.stateHistory.model.StateHistoryUtil;
 import edu.jhuapl.sbmt.stateHistory.model.interfaces.IStateHistoryIntervalGenerator;
+import edu.jhuapl.sbmt.stateHistory.model.interfaces.IStateHistoryLocationProvider;
+import edu.jhuapl.sbmt.stateHistory.model.interfaces.IStateHistoryMetadata;
+import edu.jhuapl.sbmt.stateHistory.model.interfaces.IStateHistoryTrajectoryMetadata;
 import edu.jhuapl.sbmt.stateHistory.model.interfaces.State;
 import edu.jhuapl.sbmt.stateHistory.model.interfaces.StateHistory;
 import edu.jhuapl.sbmt.stateHistory.model.interfaces.Trajectory;
 import edu.jhuapl.sbmt.stateHistory.model.io.StateHistoryInputException;
 import edu.jhuapl.sbmt.stateHistory.model.io.StateHistoryInvalidTimeException;
 import edu.jhuapl.sbmt.stateHistory.model.scState.CsvState;
+import edu.jhuapl.sbmt.stateHistory.model.stateHistory.StateHistoryKey;
+import edu.jhuapl.sbmt.stateHistory.model.stateHistory.StateHistoryMetadata;
 import edu.jhuapl.sbmt.stateHistory.model.trajectory.StandardTrajectory;
 import edu.jhuapl.sbmt.util.TimeUtil;
 
@@ -56,16 +61,17 @@ public class PregenStateHistoryIntervalGenerator implements IStateHistoryInterva
 
 	public StateHistory createNewTimeInterval(StateHistory history, Function<Double, Void> progressFunction) throws StateHistoryInputException, StateHistoryInvalidTimeException
 	{
-		String startString = edu.jhuapl.sbmt.util.TimeUtil.et2str(history.getStartTime());
-		String endString = edu.jhuapl.sbmt.util.TimeUtil.et2str(history.getEndTime());
+		IStateHistoryMetadata metadata = history.getMetadata();
+		String startString = edu.jhuapl.sbmt.util.TimeUtil.et2str(metadata.getStartTime());
+		String endString = edu.jhuapl.sbmt.util.TimeUtil.et2str(metadata.getEndTime());
 		DateTimeFormatter formatter = DateTimeFormat.forPattern("yyyy-MM-dd'T'HH:mm:ss.SSS");
 		DateTime start = formatter.parseDateTime(startString.substring(0, 23));
 		DateTime end = formatter.parseDateTime(endString.substring(0, 23));
 		pointingProvider = PregenPointingProvider.builder(sourceFile, start, end).build();
 
 
-		return createNewTimeInterval(history, history.getKey(), start, end,
-										history.getTimeWindow()/(24.0 * 60.0 * 60.0 * 1000.0), history.getStateHistoryName(), progressFunction);
+		return createNewTimeInterval(history, metadata.getKey(), start, end,
+										metadata.getTimeWindow()/(24.0 * 60.0 * 60.0 * 1000.0), metadata.getStateHistoryName(), progressFunction);
 	}
 
 	public StateHistory createNewTimeInterval(StateHistoryKey key, DateTime startTime, DateTime endTime, double duration,
@@ -134,8 +140,13 @@ public class PregenStateHistoryIntervalGenerator implements IStateHistoryInterva
 		}
 
 		// creates the trajectory
-		if (tempHistory == null) history = new StandardStateHistory(key);
+		StateHistoryMetadata metadata = new StateHistoryMetadata(key, TimeUtil.str2et(startString),
+				TimeUtil.str2et(startString), TimeUtil.str2et(endString),
+				name, "", StateHistorySourceType.PREGEN);
+		if (tempHistory == null) history = new StandardStateHistory(metadata, sourceFile);
 		Trajectory trajectory = new StandardTrajectory(history);
+		IStateHistoryLocationProvider locationProvider = history.getLocationProvider();
+		IStateHistoryTrajectoryMetadata trajectoryMetadata = history.getTrajectoryMetadata();
 
 		trajectory.setPointingProvider(pointingProvider);
 		trajectory.setStartTime(TimeUtil.str2et(startString));
@@ -156,17 +167,17 @@ public class PregenStateHistoryIntervalGenerator implements IStateHistoryInterva
 			State state = new CsvState(i, path, position);
 
 			// add to history
-			history.addState(state);
+			locationProvider.addState(state);
 //			trajectory.addPositionAtTime(flybyState.getSpacecraftPosition(), flybyState.getEphemerisTime());
 
 			double completion = 100 * ((double) (i - positionStart)) / (double) (positionEnd - positionStart);
 			if (progressFunction != null) progressFunction.apply(completion);
 		}
-		history.setCurrentTime(history.getStartTime());
-		history.setTrajectory(trajectory);
-		history.setType(StateHistorySourceType.PREGEN);
-		history.setSourceFile(sourceFile);
-		history.setPointingProvider(pointingProvider);
+		metadata.setCurrentTime(metadata.getStartTime());
+		trajectoryMetadata.setTrajectory(trajectory);
+		metadata.setType(StateHistorySourceType.PREGEN);
+		locationProvider.setSourceFile(sourceFile);
+		locationProvider.setPointingProvider(pointingProvider);
 		return history;
 	}
 

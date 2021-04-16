@@ -1,17 +1,15 @@
 package edu.jhuapl.sbmt.stateHistory.model.planning.imagers;
 
+import java.awt.Color;
 import java.beans.PropertyChangeEvent;
-import java.io.IOException;
 
 import edu.jhuapl.saavtk.util.ProgressStatusListener;
-import edu.jhuapl.saavtk.util.Properties;
 import edu.jhuapl.sbmt.client.SmallBodyModel;
 import edu.jhuapl.sbmt.model.image.perspectiveImage.PerspectiveImageFootprint;
-import edu.jhuapl.sbmt.stateHistory.model.io.PlannedImageIOHelper;
+import edu.jhuapl.sbmt.stateHistory.model.interfaces.IStateHistoryMetadata;
 import edu.jhuapl.sbmt.stateHistory.model.planning.BasePlannedDataCollection;
 import edu.jhuapl.sbmt.stateHistory.rendering.PlannedDataProperties;
 import edu.jhuapl.sbmt.stateHistory.rendering.model.StateHistoryPositionCalculator;
-import edu.jhuapl.sbmt.stateHistory.rendering.planning.PlannedDataActor;
 
 public class PlannedImageCollection extends BasePlannedDataCollection<PlannedImage>
 {
@@ -19,41 +17,130 @@ public class PlannedImageCollection extends BasePlannedDataCollection<PlannedIma
 //	private CustomizableColoringDataManager coloringDataManager;
 
 	private double time;
+	private String filename;
+	private IStateHistoryMetadata stateHistoryMetadata;
+	private Color color = Color.blue;
+	private boolean showing = false;
+	private boolean displayingDetails = false;
 
-	public PlannedImageCollection(SmallBodyModel smallBodyModel)
+	public PlannedImageCollection(String filename, SmallBodyModel smallBodyModel)
 	{
 		super(smallBodyModel);
+		this.filename = filename;
 ////		this.coloringDataManager = smallBodyModel.getColoringDataManager();
 //		createColoringData("Emission");
 	}
 
-
+	public String getFilename()
+	{
+		return filename;
+	}
 
 	@Override
 	public void propertyChange(PropertyChangeEvent evt)
 	{
 		super.propertyChange(evt);
-		if (PlannedDataProperties.TIME_CHANGED.equals(evt.getPropertyName()))
-		{
-			time = (double)evt.getNewValue();
-			updateFootprints();
-		}
+		if (!PlannedDataProperties.TIME_CHANGED.equals(evt.getPropertyName())) return;
+		time = (double)evt.getNewValue();
+		updateFootprints();
 	}
 
 	public void updateFootprints()
 	{
 		if (stateHistorySource == null) return;
-		for (PlannedDataActor actor : plannedDataActors)
+		for (PlannedImage data : plannedData)
 		{
+			PerspectiveImageFootprint actor = (PerspectiveImageFootprint)plannedDataActors.get(plannedData.indexOf(data));
 			if (((PerspectiveImageFootprint)actor).isStaticFootprintSet() == false)
 			{
 				StateHistoryPositionCalculator.updateFootprintPointing(stateHistorySource, actor.getTime(), (PerspectiveImageFootprint)actor);
 			}
-			actor.getFootprintBoundaryActor().SetVisibility(time >= actor.getTime() ? 1 : 0);
-			plannedData.get(plannedDataActors.indexOf(actor)).setShowing(time >= actor.getTime());
-			actor.getFootprintBoundaryActor().Modified();
-			this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
+			setDataShowing(data, (time >= actor.getTime()) && (showing));
 		}
+	}
+
+	/**
+	 * @param run
+	 */
+	public void addImageToList(PlannedImage image, ProgressStatusListener listener)
+	{
+		plannedData.add(image);
+		PerspectiveImageFootprint actor = (PerspectiveImageFootprint)addDataToRenderer(image);
+		actor.setStaticFootprint(true);
+		plannedDataActors.add(actor);
+		if (this.stateHistorySource != null)
+		{
+			StateHistoryPositionCalculator.updateFootprintPointing(stateHistorySource, actor.getTime(), (PerspectiveImageFootprint)actor);
+		}
+		footprintActors.add(actor.getFootprintBoundaryActor());
+		listener.setProgressStatus("Adding image " + plannedData.size(), 0);
+		setAllItems(plannedData);
+		this.pcs.firePropertyChange("PLANNED_IMAGES_CHANGED", null, null);
+	}
+
+	/**
+	 * @return the stateHistoryMetadata
+	 */
+	public IStateHistoryMetadata getStateHistoryMetadata()
+	{
+		return stateHistoryMetadata;
+	}
+
+	/**
+	 * @param stateHistoryMetadata the stateHistoryMetadata to set
+	 */
+	public void setStateHistoryMetadata(IStateHistoryMetadata stateHistoryMetadata)
+	{
+		this.stateHistoryMetadata = stateHistoryMetadata;
+	}
+
+	/**
+	 * @return the color
+	 */
+	public Color getColor()
+	{
+		return color;
+	}
+
+	/**
+	 * @param color the color to set
+	 */
+	public void setColor(Color color)
+	{
+		this.color = color;
+	}
+
+	/**
+	 * @return the showing
+	 */
+	public boolean isShowing()
+	{
+		return showing;
+	}
+
+	/**
+	 * @param showing the showing to set
+	 */
+	public void setShowing(boolean showing)
+	{
+		this.showing = showing;
+		updateFootprints();
+	}
+
+	/**
+	 * @return the displayingDetails
+	 */
+	public boolean isDisplayingDetails()
+	{
+		return displayingDetails;
+	}
+
+	/**
+	 * @param displayingDetails the displayingDetails to set
+	 */
+	public void setDisplayingDetails(boolean displayingDetails)
+	{
+		this.displayingDetails = displayingDetails;
 	}
 
 //	private ColoringData createColoringData(String dataName)
@@ -93,32 +180,4 @@ public class PlannedImageCollection extends BasePlannedDataCollection<PlannedIma
 //		data.getData().SetValue(index, value);
 //	}
 
-	/**
-	 * @param run
-	 */
-	public void addImageToList(PlannedImage image, ProgressStatusListener listener)
-	{
-		plannedData.add(image);
-		PerspectiveImageFootprint actor = (PerspectiveImageFootprint)addDataToRenderer(image);
-		actor.setStaticFootprint(true);
-		plannedDataActors.add(actor);
-		if (this.stateHistorySource != null)
-		{
-			StateHistoryPositionCalculator.updateFootprintPointing(stateHistorySource, actor.getTime(), (PerspectiveImageFootprint)actor);
-		}
-		footprintActors.add(actor.getFootprintBoundaryActor());
-		listener.setProgressStatus("Adding image " + plannedData.size(), 0);
-		setAllItems(plannedData);
-		this.pcs.firePropertyChange("PLANNED_IMAGES_CHANGED", null, null);
-	}
-
-	public void loadPlannedImagesFromFileWithName(String filename, ProgressStatusListener listener, Runnable completion) throws IOException
-	{
-		PlannedImageIOHelper.loadPlannedImagesFromFileWithName(filename, this, listener, completion);
-	}
-
-	public void savePlannedImagesToFileWithName(String filename) throws IOException
-	{
-		PlannedImageIOHelper.savePlannedImagesToFileWithName(filename, this);
-	}
 }

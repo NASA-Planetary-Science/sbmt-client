@@ -85,7 +85,7 @@ public class StateHistoryCollection /*extends SaavtkItemManager<StateHistory> im
 	public void addRunToList(StateHistory run)
 	{
 		simRuns.add(run);
-		keys.add(run.getKey());
+		keys.add(run.getMetadata().getKey());
 		this.currentRun = run;
 	}
 
@@ -95,7 +95,7 @@ public class StateHistoryCollection /*extends SaavtkItemManager<StateHistory> im
 	public void removeRunFromList(StateHistory run)
 	{
 		simRuns.remove(run);
-		keys.remove(run.getKey());
+		keys.remove(run.getMetadata().getKey());
 	}
 
 	/**
@@ -111,8 +111,8 @@ public class StateHistoryCollection /*extends SaavtkItemManager<StateHistory> im
 	private void updateCurrentFOVs(StateHistory run)
 	{
 		availableFOVs.clear();
-		if (run.getPointingProvider() != null)
-			Arrays.stream(run.getPointingProvider().getInstrumentNames()).forEach(inst -> availableFOVs.add(inst));
+		if (run.getLocationProvider().getPointingProvider() != null)
+			Arrays.stream(run.getLocationProvider().getPointingProvider().getInstrumentNames()).forEach(inst -> availableFOVs.add(inst));
 	}
 
 
@@ -122,7 +122,7 @@ public class StateHistoryCollection /*extends SaavtkItemManager<StateHistory> im
 	public Double getPeriod()
 	{
 		if (currentRun != null)
-			return currentRun.getTimeWindow();
+			return currentRun.getMetadata().getTimeWindow();
 		else
 			return 0.0;
 	}

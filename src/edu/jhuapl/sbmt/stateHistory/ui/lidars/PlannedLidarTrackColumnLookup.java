@@ -25,6 +25,10 @@ public enum PlannedLidarTrackColumnLookup
 	/**
 	 *
 	 */
-	TrackStopTime
+	TrackStopTime,
 
+	/**
+	 *
+	 */
+	StateHistory;
 }

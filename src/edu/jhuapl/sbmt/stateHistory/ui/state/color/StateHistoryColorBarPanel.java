@@ -55,7 +55,7 @@ public class StateHistoryColorBarPanel extends ColorBarPanel
 
 		addFeatureType(StateHistoryFeatureType.Distance, "S/C Distance to Center (km)");
 		addFeatureType(StateHistoryFeatureType.Time, "Time (Sec)");
-		if (rendererManager.getRuns().getCurrentRun().getType() == StateHistorySourceType.SPICE)
+		if (rendererManager.getRuns().getCurrentRun().getMetadata().getType() == StateHistorySourceType.SPICE)
 		{
 			addFeatureType(StateHistoryFeatureType.Range, "S/C Range to Surface (km)");
 			addFeatureType(StateHistoryFeatureType.SubSCIncidence, "S/C Incidence Angle (deg)");
@@ -152,7 +152,7 @@ public class StateHistoryColorBarPanel extends ColorBarPanel
 		{
 			// Skip to next if the lidar object is not rendered
 //			if (refManager.getVisibility(aItem) == false)
-			if (!aItem.isVisible())
+			if (!aItem.getMetadata().isVisible())
 				continue;
 
 			fullRange = updateRange(aItem, aFeatureType, fullRange);
@@ -197,7 +197,7 @@ public class StateHistoryColorBarPanel extends ColorBarPanel
 	private Range<Double> updateRange(StateHistory aItem, FeatureType aFeatureType, Range<Double> aFullRange)
 	{
 		// Bail if there are no values associated with the feature
-		FeatureAttr tmpFA = StateHistoryRendererManager.getFeatureAttrFor(aItem.getTrajectory(), aFeatureType);
+		FeatureAttr tmpFA = StateHistoryRendererManager.getFeatureAttrFor(aItem.getTrajectoryMetadata().getTrajectory(), aFeatureType);
 		if (tmpFA == null || tmpFA.getNumVals() == 0)
 			return aFullRange;
 

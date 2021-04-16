@@ -50,10 +50,10 @@ public class SpiceKernelIngestor
         {
         	if (kernelParentDirectory == null) kernelParentDirectory = file.getParentFile().getName();
         	currentFile++;
-        	listener.percentageLoaded((int)(100*(currentFile/numberOfFiles)));
+        	if (listener != null) listener.percentageLoaded((int)(100*(currentFile/numberOfFiles)));
         	FileUtils.copyDirectoryToDirectory(file.getParentFile(), newDirectory);
         }
-        listener.percentageLoaded(0);
+        if (listener != null) listener.percentageLoaded(0);
         //update the PATH_VALUES line in the metakernel to match the new directory
         File metaKernelCopy = new File(newDirectory, kernelFilename);
         Path path = Paths.get(metaKernelCopy.getAbsolutePath());

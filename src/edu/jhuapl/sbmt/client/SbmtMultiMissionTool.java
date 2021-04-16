@@ -55,9 +55,9 @@ import edu.jhuapl.sbmt.spectrum.model.core.SpectrumInstrumentMetadata;
 import edu.jhuapl.sbmt.spectrum.model.core.search.SpectrumSearchSpec;
 import edu.jhuapl.sbmt.spectrum.model.io.SpectrumInstrumentMetadataIO;
 import edu.jhuapl.sbmt.spectrum.model.key.CustomSpectrumKey;
-import edu.jhuapl.sbmt.stateHistory.model.stateHistory.SpiceStateHistory;
-import edu.jhuapl.sbmt.stateHistory.model.stateHistory.StandardStateHistory;
 import edu.jhuapl.sbmt.stateHistory.model.stateHistory.StateHistoryKey;
+import edu.jhuapl.sbmt.stateHistory.model.stateHistory.spice.SpiceStateHistory;
+import edu.jhuapl.sbmt.stateHistory.model.stateHistory.standard.StandardStateHistory;
 import edu.jhuapl.sbmt.tools.SbmtRunnable;
 
 /**

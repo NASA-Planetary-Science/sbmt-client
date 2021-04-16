@@ -228,7 +228,7 @@ public class ViewOptionsTableView extends JPanel
 	private void configureColumnWidths()
 	{
 		JTable tmpTable = viewOptionsFOVILP.getTable();
-		int minW = 30;
+		int minW = 50;
 
 		ColorProvider blackCP = new ConstColorProvider(Color.BLACK);
 		Object[] nomArr =

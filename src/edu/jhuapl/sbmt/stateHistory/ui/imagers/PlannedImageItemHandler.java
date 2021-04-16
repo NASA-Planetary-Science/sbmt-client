@@ -36,8 +36,6 @@ public class PlannedImageItemHandler extends BasicItemHandler<PlannedImage, Plan
 		{
 			case Show:
 				return image.isShowing();
-//			case Frus:
-//				return image.isFrustumShowing();
 			case Color:
 				return new ConstColorProvider(image.getColor());
 			case Instrument:
@@ -46,6 +44,8 @@ public class PlannedImageItemHandler extends BasicItemHandler<PlannedImage, Plan
 				fmt.withZone(DateTimeZone.UTC);
 				timeString = TimeUtil.et2str(image.getTime());
 				return timeString.substring(0, 23);
+			case StateHistory:
+				return image.getStateHistoryMetadata().getStateHistoryName();
 			default:
 				break;
 		}
@@ -64,9 +64,6 @@ public class PlannedImageItemHandler extends BasicItemHandler<PlannedImage, Plan
 			case Show:
 				plannedImageCollection.setDataShowing(image, (Boolean)aValue);
 				break;
-//			case Frus:
-//				image.setFrustumShowing((Boolean)aValue);
-//				break;
 			case Color:
 				image.setColor((Color)aValue);
 				break;

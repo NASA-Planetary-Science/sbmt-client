@@ -75,12 +75,14 @@ public class StateHistoryFOVController
         rendererManager.addListener((aSource, aEventType) ->
 		{
 			if (aEventType != ItemEventType.ItemsChanged) return;
+			if (rendererManager.getRuns().getCurrentRun() == null) return;
 			view.setAvailableFOVs(runs.getAvailableFOVs());
 
 		});
 
         rendererManager.addListener((aSource, aEventType) -> {
 			if (aEventType != ItemEventType.ItemsSelected) return;
+			if (rendererManager.getRuns().getCurrentRun() == null) return;
 			SwingUtilities.invokeLater(new Runnable()
 			{
 				@Override

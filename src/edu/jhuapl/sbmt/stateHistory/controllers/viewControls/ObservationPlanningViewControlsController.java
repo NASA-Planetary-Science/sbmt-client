@@ -24,6 +24,7 @@ public class ObservationPlanningViewControlsController
 
 		rendererManager.addListener((aSource, aEventType) -> {
 			if (aEventType != ItemEventType.ItemsSelected) return;
+			if (rendererManager.getRuns().getCurrentRun() == null) return;
 			viewControlsController.setEnabled(rendererManager.getSelectedItems().size() > 0);
 		});
 	}

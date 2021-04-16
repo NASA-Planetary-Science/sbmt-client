@@ -8,6 +8,7 @@ import java.util.Iterator;
 import java.util.List;
 
 import javax.swing.BoxLayout;
+import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 
@@ -17,7 +18,6 @@ import org.joda.time.format.ISODateTimeFormat;
 
 import vtk.rendering.jogl.vtkJoglPanelComponent;
 
-import edu.jhuapl.saavtk.gui.dialog.CustomFileChooser;
 import edu.jhuapl.saavtk.gui.render.Renderer;
 import edu.jhuapl.saavtk.model.ModelManager;
 import edu.jhuapl.saavtk.model.ModelNames;
@@ -30,13 +30,12 @@ import edu.jhuapl.sbmt.stateHistory.model.StateHistorySourceType;
 import edu.jhuapl.sbmt.stateHistory.model.StateHistoryUtil;
 import edu.jhuapl.sbmt.stateHistory.model.interfaces.StateHistory;
 import edu.jhuapl.sbmt.stateHistory.model.io.SpiceKernelIngestor;
-import edu.jhuapl.sbmt.stateHistory.model.io.SpiceKernelLoadStatusListener;
 import edu.jhuapl.sbmt.stateHistory.model.io.StateHistoryIOException;
 import edu.jhuapl.sbmt.stateHistory.model.io.StateHistoryInputException;
 import edu.jhuapl.sbmt.stateHistory.model.io.StateHistoryInvalidTimeException;
-import edu.jhuapl.sbmt.stateHistory.model.stateHistory.PregenStateHistoryIntervalGenerator;
-import edu.jhuapl.sbmt.stateHistory.model.stateHistory.SpiceStateHistoryIntervalGenerator;
 import edu.jhuapl.sbmt.stateHistory.model.stateHistory.StateHistoryCollection;
+import edu.jhuapl.sbmt.stateHistory.model.stateHistory.spice.SpiceStateHistoryIntervalGenerator;
+import edu.jhuapl.sbmt.stateHistory.model.stateHistory.standard.PregenStateHistoryIntervalGenerator;
 import edu.jhuapl.sbmt.stateHistory.model.time.StateHistoryTimeModel;
 import edu.jhuapl.sbmt.stateHistory.model.time.TimeWindow;
 import edu.jhuapl.sbmt.stateHistory.rendering.model.StateHistoryRendererManager;
@@ -135,22 +134,21 @@ public class StateHistoryController
 			{
 				StateHistory history = iterator.next();
 				String[] options = {"Yes", "No"};
-				int result = JOptionPane.showOptionDialog(null, "Cannot find metakernel " + FilenameUtils.getBaseName(history.getSourceFile())
-																+ " at specified location for state history " + history.getStateHistoryName()
+				int result = JOptionPane.showOptionDialog(null, "Cannot find metakernel " + FilenameUtils.getBaseName(history.getLocationProvider().getSourceFile())
+																+ " at specified location for state history " + history.getMetadata().getStateHistoryName()
 																+ ". Would you like to choose a new file?  Otherwise the state history will be removed.", "Metakernel not found",
 																JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE, null, options, options[0]);
 
 				if (result == 0)
 				{
-					File selectedMetakernel = CustomFileChooser.showOpenDialog(null, "Load Kernel File");
-					if (selectedMetakernel == null) return;
-					String newKernelLocationAfterIngestion = kernelIngestor.ingestMetaKernelToCache(selectedMetakernel.getAbsolutePath(), new SpiceKernelLoadStatusListener() {
-
-						@Override
-						public void percentageLoaded(double percentage) {
+					JFileChooser chooser = new JFileChooser();
+					int fileResult = chooser.showOpenDialog(null);
+					if (fileResult == JFileChooser.APPROVE_OPTION)
+					{
+						File selectedMetakernel = chooser.getSelectedFile();
+						String newKernelLocationAfterIngestion = kernelIngestor.ingestMetaKernelToCache(selectedMetakernel.getAbsolutePath(), null);
+						history.getLocationProvider().setSourceFile(newKernelLocationAfterIngestion);
 						}
-					});
-					history.setSourceFile(newKernelLocationAfterIngestion);
 				}
 				else
 				{
@@ -180,9 +178,7 @@ public class StateHistoryController
         this.intervalGenerationController = new StateHistoryIntervalGenerationController(historyModel, start, end);
         this.intervalSelectionController = new StateHistoryIntervalSelectionController(historyModel, bodyModel, rendererManager);
 
-        this.intervalDisplayedController = new StateHistoryDisplayedIntervalController(rendererManager, timeModel);
 
-        intervalDisplayedController.getView().setEnabled(false);
 
         renWin.getRenderWindow().AddObserver("EndEvent", this, "updateTimeBarPosition");
         renWin.getComponent().addComponentListener(new ComponentAdapter()
@@ -198,11 +194,17 @@ public class StateHistoryController
 
         rendererManager.addListener((aSource, aEventType) -> {
 			if (aEventType != ItemEventType.ItemsSelected) return;
+			System.out.println("StateHistoryController: StateHistoryController: current " + rendererManager.getRuns().getCurrentRun());
+			if (rendererManager.getRuns().getCurrentRun() == null) return;
 			intervalDisplayedController.getView().setEnabled(rendererManager.getSelectedItems().size() > 0);
 			timeModel.setFractionDisplayed(0.0, 1.0);
 			timeModel.setTimeFraction(0.0);
 
 		});
+
+        this.intervalDisplayedController = new StateHistoryDisplayedIntervalController(rendererManager, timeModel);
+
+        intervalDisplayedController.getView().setEnabled(false);
     }
 
     /**

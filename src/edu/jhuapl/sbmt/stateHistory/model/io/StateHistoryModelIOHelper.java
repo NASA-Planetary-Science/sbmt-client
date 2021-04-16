@@ -5,9 +5,10 @@ import java.io.File;
 import org.apache.commons.io.FilenameUtils;
 
 import edu.jhuapl.sbmt.stateHistory.model.interfaces.StateHistory;
-import edu.jhuapl.sbmt.stateHistory.model.stateHistory.SpiceStateHistory;
-import edu.jhuapl.sbmt.stateHistory.model.stateHistory.StandardStateHistory;
 import edu.jhuapl.sbmt.stateHistory.model.stateHistory.StateHistoryKey;
+import edu.jhuapl.sbmt.stateHistory.model.stateHistory.StateHistoryMetadata;
+import edu.jhuapl.sbmt.stateHistory.model.stateHistory.spice.SpiceStateHistory;
+import edu.jhuapl.sbmt.stateHistory.model.stateHistory.standard.StandardStateHistory;
 
 /**
  * Helper class for saving/loading state history intervals to the filesystem.
@@ -43,14 +44,15 @@ public class StateHistoryModelIOHelper
     {
 		String extension = FilenameUtils.getExtension(runFile.getAbsolutePath());
 		StateHistory history = null;
+		StateHistoryMetadata metadata = new StateHistoryMetadata(key);
 		if (extension.equals("spicestate"))
 		{
-			history = new SpiceStateHistory(key);
+			history = new SpiceStateHistory(metadata);
 			history = history.loadStateHistoryFromFile(runFile, shapeModelName, key);
 		}
 		else if (extension.equals("csvstate"))
 		{
-			history = new StandardStateHistory(key);
+			history = new StandardStateHistory(metadata);
 			history = history.loadStateHistoryFromFile(runFile, shapeModelName, key);
 		}
 		else

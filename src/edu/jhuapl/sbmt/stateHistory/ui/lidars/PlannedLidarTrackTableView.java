@@ -230,10 +230,10 @@ public class PlannedLidarTrackTableView extends JPanel
 	{
 		JTable tmpTable = plannedLidarTrackILP.getTable();
 		String dateTimeStr = "9999-88-88T00:00:00.000000";
-		int minW = 30;
+		int minW = 40;
 
 		ColorProvider blackCP = new ConstColorProvider(Color.BLACK);
-		Object[] nomArr = { true, blackCP, "", dateTimeStr, dateTimeStr };
+		Object[] nomArr = { true, blackCP, "Instrument", dateTimeStr, dateTimeStr };
 		for (int aCol = 0; aCol < nomArr.length; aCol++)
 		{
 			TableCellRenderer tmpRenderer = tmpTable.getCellRenderer(0, aCol);

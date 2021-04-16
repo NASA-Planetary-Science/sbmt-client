@@ -3,6 +3,7 @@ package edu.jhuapl.sbmt.stateHistory.model.planning.imagers;
 import java.awt.Color;
 
 import edu.jhuapl.sbmt.model.image.Instrument;
+import edu.jhuapl.sbmt.stateHistory.model.interfaces.IStateHistoryMetadata;
 import edu.jhuapl.sbmt.stateHistory.model.planning.PlannedInstrumentData;
 
 public class PlannedImage implements PlannedInstrumentData
@@ -17,10 +18,7 @@ public class PlannedImage implements PlannedInstrumentData
 
 	private boolean isFrustumShowing = false;
 
-	public PlannedImage()
-	{
-
-	}
+	private IStateHistoryMetadata stateHistoryMetadata;
 
 	public PlannedImage(Double time, String instrumentName)
 	{
@@ -111,5 +109,21 @@ public class PlannedImage implements PlannedInstrumentData
 	public void setFrustumShowing(boolean isFrustumShowing)
 	{
 		this.isFrustumShowing = isFrustumShowing;
+	}
+
+	/**
+	 * @return the stateHistoryMetadata
+	 */
+	public IStateHistoryMetadata getStateHistoryMetadata()
+	{
+		return stateHistoryMetadata;
+	}
+
+	/**
+	 * @param stateHistoryMetadata the stateHistoryMetadata to set
+	 */
+	public void setStateHistoryMetadata(IStateHistoryMetadata stateHistoryMetadata)
+	{
+		this.stateHistoryMetadata = stateHistoryMetadata;
 	}
 }

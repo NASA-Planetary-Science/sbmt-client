@@ -1,85 +1,78 @@
 package edu.jhuapl.sbmt.stateHistory.controllers.lidars;
 
-import java.beans.PropertyChangeEvent;
-import java.io.File;
-import java.io.IOException;
-
 import javax.swing.SwingUtilities;
 
 import com.google.common.collect.ImmutableSet;
 
-import edu.jhuapl.saavtk.gui.dialog.CustomFileChooser;
-import edu.jhuapl.saavtk.model.ModelManager;
-import edu.jhuapl.saavtk.util.ProgressStatusListener;
-import edu.jhuapl.saavtk.util.Properties;
-import edu.jhuapl.sbmt.client.SmallBodyViewConfig;
+import edu.jhuapl.sbmt.stateHistory.controllers.IPlannedDataController;
+import edu.jhuapl.sbmt.stateHistory.model.interfaces.IStateHistoryMetadata;
 import edu.jhuapl.sbmt.stateHistory.model.planning.lidar.PlannedLidarTrack;
 import edu.jhuapl.sbmt.stateHistory.model.planning.lidar.PlannedLidarTrackCollection;
-import edu.jhuapl.sbmt.stateHistory.rendering.model.StateHistoryRendererManager;
 import edu.jhuapl.sbmt.stateHistory.ui.lidars.PlannedLidarTrackView;
 
-public class PlannedLidarTableController
+public class PlannedLidarTableController implements IPlannedDataController<PlannedLidarTrackView>
 {
 	PlannedLidarTrackView view;
 	final PlannedLidarTrackCollection collection;
-	StateHistoryRendererManager rendererManager;
+	IStateHistoryMetadata historyMetadata = null;
 
-	public PlannedLidarTableController(final ModelManager modelManager, StateHistoryRendererManager rendererManager, PlannedLidarTrackCollection collection, SmallBodyViewConfig config)
+	public PlannedLidarTableController(PlannedLidarTrackCollection collection)
 	{
 		this.collection = collection;
-		this.rendererManager = rendererManager;
-		view = new PlannedLidarTrackView(collection, config);
-		view.getTable().getLoadPlannedLidarTrackButton().addActionListener(e -> {
 
-			File file = CustomFileChooser.showOpenDialog(view, "Select File");
-        	if (file == null) return;
-    		Runnable runner = new Runnable()
-			{
-				@Override
-				public void run()
-				{
-					try
-					{
-						collection.loadPlannedLidarTracksFromFileWithName(file.getAbsolutePath(), new ProgressStatusListener()
-						{
+		view = new PlannedLidarTrackView(collection);
+//		view.getTable().getLoadPlannedLidarTrackButton().addActionListener(e -> {
+//
+//			File file = CustomFileChooser.showOpenDialog(view, "Select File");
+//        	if (file == null) return;
+//    		Runnable runner = new Runnable()
+//			{
+//				@Override
+//				public void run()
+//				{
+//					try
+//					{
+//						if (rendererManager.getSelectedItems().size() > 0) historyMetadata = rendererManager.getSelectedItems().asList().get(0).getMetadata();
+//						PlannedLidarTrackIOHelper.loadPlannedLidarTracksFromFileWithName(file.getAbsolutePath(), historyMetadata, collection, new ProgressStatusListener()
+//						{
+//
+//							@Override
+//							public void setProgressStatus(String status, int progress)
+//							{
+//								if (progress == 0) view.getTable().getProcessingLabel().setText(status);
+//								else view.getTable().getProcessingLabel().setText(status + " (" + progress +"%)");
+//								view.getTable().repaint();
+//								view.getTable().validate();
+//							}
+//						},
+//						() -> {
+//							SwingUtilities.invokeLater(new Runnable()
+//							{
+//								@Override
+//								public void run()
+//								{
+//									collection.setPercentageShown(0);
+//								}
+//							});
+//						});
+//					}
+//					catch (IOException e)
+//					{
+//						// TODO Auto-generated catch block
+//						e.printStackTrace();
+//					}
+//				}
+//			};
+//			Thread thread = new Thread(runner);
+//			thread.start();
+//		});
 
-							@Override
-							public void setProgressStatus(String status, int progress)
-							{
-								if (progress == 0) view.getTable().getProcessingLabel().setText(status);
-								else view.getTable().getProcessingLabel().setText(status + " (" + progress +"%)");
-								view.getTable().repaint();
-								view.getTable().validate();
-							}
-						},
-						() -> {
-							SwingUtilities.invokeLater(new Runnable()
-							{
-								@Override
-								public void run()
-								{
-									collection.setPercentageShown(0);
-								}
-							});
-						});
-					}
-					catch (IOException e)
-					{
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					}
-				}
-			};
-			Thread thread = new Thread(runner);
-			thread.start();
-		});
-
-		view.getTable().getSyncWithTimelineButton().addActionListener(e -> {
-			rendererManager.setSyncLidar(view.getTable().getSyncWithTimelineButton().isSelected());
-			collection.updateFootprints();
-			rendererManager.propertyChange(new PropertyChangeEvent(this, Properties.MODEL_CHANGED, null, null));
-			refreshView();
-		});
+//		view.getTable().getSyncWithTimelineButton().addActionListener(e -> {
+//			rendererManager.setSyncLidar(view.getTable().getSyncWithTimelineButton().isSelected());
+//			collection.updateFootprints();
+//			rendererManager.propertyChange(new PropertyChangeEvent(this, Properties.MODEL_CHANGED, null, null));
+//			refreshView();
+//		});
 
 		view.getTable().getShowPlannedLidarTrackButton().addActionListener(e -> {
 
@@ -100,7 +93,7 @@ public class PlannedLidarTableController
 
 	private void refreshView()
 	{
-		updateButtonState(rendererManager);
+		updateButtonState();
 		SwingUtilities.invokeLater(new Runnable()
 		{
 
@@ -113,7 +106,7 @@ public class PlannedLidarTableController
 		});
 	}
 
-	private void updateButtonState(StateHistoryRendererManager rendererManager)
+	private void updateButtonState()
 	{
 		ImmutableSet<PlannedLidarTrack> selectedItems = collection.getSelectedItems();
 		boolean allMapped = true;
