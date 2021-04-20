@@ -41,18 +41,19 @@ import javax.swing.JTextField;
 import javax.swing.JTextPane;
 import javax.swing.table.DefaultTableModel;
 
+import org.apache.commons.math3.geometry.euclidean.threed.Vector3D;
 import org.joda.time.DateTime;
 import org.joda.time.format.ISODateTimeFormat;
 
 import vtk.rendering.jogl.vtkJoglPanelComponent;
 
 import edu.jhuapl.saavtk.gui.render.Renderer;
-import edu.jhuapl.saavtk.gui.render.Renderer.LightingType;
 import edu.jhuapl.saavtk.model.ModelManager;
 import edu.jhuapl.saavtk.model.ModelNames;
 import edu.jhuapl.saavtk.pick.PickManager;
 import edu.jhuapl.saavtk.util.FileCache;
 import edu.jhuapl.saavtk.util.MapUtil;
+import edu.jhuapl.saavtk.view.light.LightUtil;
 import edu.jhuapl.sbmt.client.SbmtInfoWindowManager;
 import edu.jhuapl.sbmt.client.SmallBodyModel;
 import edu.jhuapl.sbmt.client.SmallBodyViewConfig;
@@ -510,8 +511,7 @@ public class StateHistoryPanel extends javax.swing.JPanel implements ItemListene
                     currentRun.setActorVisibility("SpacecraftMarker", true);
                 } else if(source == showLighting){
                     currentRun.setActorVisibility("Lighting", true);
-                    renderer.setFixedLightDirection(currentRun.getSunPosition());
-                    renderer.setLighting(LightingType.FIXEDLIGHT);
+                    renderer.setLightCfgToFixedLightAtDirection(new Vector3D(currentRun.getSunPosition()));
                 } else if(source == showSpacecraftView){
                     currentRun.setSpacecraftMovement(true);
                     currentRun.setActorVisibility("SpacecraftMarker", false);
@@ -557,7 +557,7 @@ public class StateHistoryPanel extends javax.swing.JPanel implements ItemListene
                     currentRun.setActorVisibility("SpacecraftMarker", false);
                 } else if(source == showLighting){
                     currentRun.setActorVisibility("Lighting", false);
-                    renderer.setLighting(LightingType.LIGHT_KIT);
+                    LightUtil.switchToLightKit(renderer);
                 } else if(source == showSpacecraftView){
                     currentRun.setSpacecraftMovement(false);
                     showSpacecraftMarker.setSelected(false);

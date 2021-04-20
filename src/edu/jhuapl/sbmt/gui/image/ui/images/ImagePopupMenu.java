@@ -20,6 +20,7 @@ import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 
 import org.apache.commons.io.FilenameUtils;
+import org.apache.commons.math3.geometry.euclidean.threed.Vector3D;
 
 import vtk.vtkActor;
 import vtk.vtkProp;
@@ -30,14 +31,14 @@ import edu.jhuapl.saavtk.gui.dialog.DirectoryChooser;
 import edu.jhuapl.saavtk.gui.dialog.NormalOffsetChangerDialog;
 import edu.jhuapl.saavtk.gui.dialog.OpacityChanger;
 import edu.jhuapl.saavtk.gui.render.Renderer;
-import edu.jhuapl.saavtk.gui.render.Renderer.LightingType;
 import edu.jhuapl.saavtk.model.ModelManager;
 import edu.jhuapl.saavtk.model.ModelNames;
 import edu.jhuapl.saavtk.popup.PopupMenu;
 import edu.jhuapl.saavtk.util.ColorUtil;
 import edu.jhuapl.saavtk.util.FileCache;
 import edu.jhuapl.saavtk.util.FileUtil;
-import edu.jhuapl.saavtk.util.LatLon;
+import edu.jhuapl.saavtk.view.light.LightCfg;
+import edu.jhuapl.saavtk.view.light.LightUtil;
 import edu.jhuapl.sbmt.client.SbmtInfoWindowManager;
 import edu.jhuapl.sbmt.client.SbmtSpectrumWindowManager;
 import edu.jhuapl.sbmt.model.image.Image;
@@ -888,9 +889,7 @@ public class ImagePopupMenu<K extends ImageKeyInterface> extends PopupMenu
         }
     }
 
-    private LightingType origLightingType;
-    private Double origLightIntensity;
-    private LatLon origLightPosition;
+    private LightCfg origLightCfg;
 
     private class SimulateLightingAction extends AbstractAction
     {
@@ -907,13 +906,10 @@ public class ImagePopupMenu<K extends ImageKeyInterface> extends PopupMenu
                 {
                     System.out.println("Simulate Lighting On");
                     // store original lighting parameters
-                    origLightingType = renderer.getLighting();
-                    origLightIntensity = renderer.getLightIntensity();
-                    origLightPosition = renderer.getFixedLightPosition();
+                    origLightCfg = renderer.getLightCfg();
 
                     double[] sunDir = image.getSunVector();
-                    renderer.setFixedLightDirection(sunDir);
-                    renderer.setLighting(LightingType.FIXEDLIGHT);
+                    renderer.setLightCfgToFixedLightAtDirection(new Vector3D(sunDir));
 
                     // uncheck simulate lighting for all mapped images
                     PerspectiveImage pImage;
@@ -929,10 +925,8 @@ public class ImagePopupMenu<K extends ImageKeyInterface> extends PopupMenu
                 else
                 {
                     System.out.println("Simulate Lighting Off");
-                    renderer.setLighting(LightingType.LIGHT_KIT);
-//                    renderer.setLighting(origLightingType);
-//                    renderer.setLightIntensity(origLightIntensity);
-//                    renderer.setFixedLightPosition(origLightPosition);
+                    LightUtil.switchToLightKit(renderer);
+//                    renderer.setLightCfg(origLightCfg);
                 }
             }
             image.setSimulateLighting(simulateLightingMenuItem.isSelected());
