@@ -56,7 +56,7 @@ outputTop="didymos/ideal-impact4-ra-20210211-v01"
 
 # This is the full path to the delivery as provided by a scientist. This may
 # or may not fully comply with all SBMT guidelines for layout and naming.
-deliveryTop="/project/sbmtpipeline/deliveries-dart/ideal_impact4-RA-20210211-v01"
+deliveryTop="/project/sbmtpipeline/deliveries-dart/ideal_impact4-RA-20210211-v01/didymos-dimorphos"
 
 # The identifier of the SBMT model, which should match how the model is or
 # will be identified with a ShapeModelType object. For a given body, this
@@ -82,7 +82,7 @@ bodyId="Didymos"
 
 # Uncomment and edit these as needed if generating INFO files from SPICE
 # kernels. Only used in this case.
-spiceKernelTop="$pipelineProcessed/dart/redmine-2336/dart/spice"
+spiceKernelTop="$pipelineProcessed/dart/redmine-2336/liciacube/spice"
 
 #-------------------------------------------------------------------------------
 
@@ -92,7 +92,7 @@ skipSection="true"
 # This block is for updating or reusing a previously delivered or processed
 # model.
 #-------------------------------------------------------------------------------
-createHardLink $piplineRawData/didymos/redmine-2212/didymos/ideal-impact4-20200629-v01 $rawDataTop/$outputTop
+createHardLinks $piplineRawData/didymos/redmine-2212/didymos/ideal-impact4-20200629-v01 $rawDataTop/$outputTop
 #-------------------------------------------------------------------------------
 
 
@@ -100,13 +100,14 @@ createHardLink $piplineRawData/didymos/redmine-2212/didymos/ideal-impact4-202006
 # Delivery to Raw-data.
 #-------------------------------------------------------------------------------
 srcTop="$deliveryTop"
-destTop="$rawDataTop/$outputTop"
+destTop="$rawDataTop/dart"
 
 # Copying all delivered files to raw data should suffice for self-contained
 # deliveries. For other cases, change variables above and/or do not copy all
 # of "dot". copyDir has optional second argument to (re)name destination.
-copyDir .
-
+# copyDir .
+copyDir leia "leia/$modelId"
+copyDir luke "luke/$modelId"
 #-------------------------------------------------------------------------------
 
 #-------------------------------------------------------------------------------
@@ -148,10 +149,10 @@ srcTop="$rawDataTop/$outputTop"
 destTop="$processedTop/$outputTop"
 
 # Copy all delivered files.
-# copyDir .
+copyDir .
 
 # Unpack any archives that are present in the delivered files.
-# unpackArchives $destTop
+unpackArchives $destTop
 
 # End SPICE block.
 #-------------------------------------------------------------------------------
@@ -282,7 +283,6 @@ scId="LICIA"
 instrument="leia"
 
 # Copy all delivered instrument files.
-# Unlike previous deliveries, no images came with this delivery.
 # copyDir $instrument
 
 #-------------------------------------------------------------------------------
@@ -291,10 +291,10 @@ instrument="leia"
 # for this instrument. Otherwise, recommend uncommenting the following line:
 # skipSection="true" THIS SHOULD ALWAYS BE true WHEN CHECKING THIS IN!!!
 
-metakernel="leia.tm" # relative to $tmpSpiceDir.
+metakernel="kernels.tm" # relative to $tmpSpiceDir.
 instFrame="LICIA_PL1" # THIS IS SPECIFIC TO LEIA.
 # Get the images from the image delivery associated with this model.
-imageTopDir="$pipelineRawData/dart/redmine-2316"
+imageTopDir="$pipelineRawData/dart/redmine-2335"
 # Peculiar to DART SIMULATED models: images are in a model-specific directory
 # under the mission/instrument directory.
 imageDir="dart/$instrument/$modelId/images"
@@ -333,13 +333,13 @@ createGalleryList $destTop/$instrument
 skipSection="true" # THIS SHOULD ALWAYS BE true WHEN CHECKING THIS IN!!!
 
 # Instrument sub-block (LUKE).
-# This block has NOT YET been updated for redmine 2314.
 #-------------------------------------------------------------------------------
 scId="LICIA"
 instrument="luke"
 
 # Copy all delivered instrument files.
-copyDir $instrument
+# Unlike previous deliveries, no images came with this delivery.
+# copyDir $instrument
 
 #-------------------------------------------------------------------------------
 # Process SPICE inputs for this sub-block. This sub-section is only needed
@@ -347,24 +347,29 @@ copyDir $instrument
 # for this instrument. Otherwise, recommend uncommenting the following line:
 # skipSection="true" THIS SHOULD ALWAYS BE true WHEN CHECKING THIS IN!!!
 
-metakernel="luke.tm" # relative to $tmpSpiceDir.
-instFrame="LICIA_PL-2" # THIS IS SPECIFIC TO LUKE.
-imageDir="$outputTop/$instrument/images"
-infoFileDir="$outputTop/$instrument/infofiles"
+metakernel="kernels.tm" # relative to $tmpSpiceDir.
+instFrame="LICIA_PL2" # THIS IS SPECIFIC TO LUKE.
+# Get the images from the image delivery associated with this model.
+imageTopDir="$pipelineRawData/dart/redmine-2335"
+# Peculiar to DART SIMULATED models: images are in a model-specific directory
+# under the mission/instrument directory.
+imageDir="dart/$instrument/$modelId/images"
+infoFileDir="$processedTop/$outputTop/$instrument/infofiles"
 timeKeyword="IMG_UTC" # This is only used if extracting times from FITS files.
 
 # Make SPICE kernels available in the temporary SPICE directory. This is so
 # that any absolute paths in the metakernel may be edited to be as short
 # as possible. Note there is only one temporary directory, so cannot
 # simulateously process two deliveries that use SPICE kernels.
-createLink $spiceKernelTop/$instrument $tmpSpiceDir
+createLink $spiceKernelTop $tmpSpiceDir
 
 # Generate the info files for the images from the SPICE kernels using times in
 # FITS images. If the images don't have time stamps, can use
 # createInfoFilesFromTimeStamps instead.
 createInfoFilesFromFITSImages $metakernel \
   $bodyId $bodyFrame ${scId^^} $instrument $instFrame $timeKeyword \
-  $processedTop $imageDir $infoFileDir
+  $imageTopDir $imageDir $infoFileDir
+
 #-------------------------------------------------------------------------------
 
 # Update database tables.
