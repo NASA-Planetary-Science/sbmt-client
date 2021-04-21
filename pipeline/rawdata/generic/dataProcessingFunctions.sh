@@ -1490,6 +1490,7 @@ createInfoFilesFromFITSImages() {
     imageTimeStampFile="$imageTimeStampDir/imagelist-with-time.txt"
 
     if test ! -f $imageTimeStampFile; then
+      echo extractFITSFileTimes $timeStampKeyword $topDir "$topDir/$imageDir" $imageTimeStampFile
       extractFITSFileTimes $timeStampKeyword $topDir "$topDir/$imageDir" $imageTimeStampFile
     else
       echo "$funcName: file $imageTimeStampFile already exists -- skipping extracting times from FITS images"
