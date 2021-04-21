@@ -1246,6 +1246,9 @@ createGalleryList() {
     check $? "$funcName: unable to cd to image directory $imageDir"
 
     tmpImageList=$instrumentTop/tmpImageList.txt
+    # Temporary file to list just the thumbnail images.
+    tmpThumbnailList=$instrumentTop/tmpThumbnailList.txt
+
     # Go one sub-shell deeper to ensure this tmp file gets cleaned up.
     export tmpImageList funcName imageDir galleryDir galleryListFile instrumentTop
     (
@@ -1260,11 +1263,14 @@ createGalleryList() {
         check $? "$funcName: unable to determine base name of gallery images for $image"
 
         # Sort matching gallery file names by size so the thumbnail is listed first.
+        # Hope there is one thumbnail and one gallery image matching each file name.
         galleryFiles=`ls -Sr $root* 2> /dev/null`
         check $? "$funcName: unable to find gallery images for $image"
 
         if test `echo $galleryFiles | wc -w` -eq 2; then
           echo "$image $galleryFiles" >> $galleryListFile
+          # First image in list is the name of the thumbnail. Add it to the thumbnail list file.
+          echo "$galleryFiles" | sed 's:[  ].*::' >> $tmpThumbnailList
         fi
       done
 
@@ -1281,11 +1287,16 @@ createGalleryList() {
       cd $instrumentTop
       check $? "$funcName: unable to cd to $instrumentTop to create zip file"
 
-      zip -qr gallery.zip gallery
-      check $? "$funcName: unable to zip directory gallery in $instrumentTop"
+      if test -f $tmpThumbnailList; then
+        # Zip up images in the gallery directory that match any of the files listed in the thumbnail list file
+        zip -qr gallery.zip gallery -i@$tmpThumbnailList
+        check $? "$funcName: unable to zip gallery files in $galleryDir"
+      fi
+        
     )
     status=$?
     rm -f $tmpImageList
+    rm -f $tmpThumbnailList
     exit $status
   )
   check $?
