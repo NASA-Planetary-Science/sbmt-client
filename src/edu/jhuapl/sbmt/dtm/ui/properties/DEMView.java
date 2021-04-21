@@ -58,9 +58,9 @@ import edu.jhuapl.saavtk.color.painter.ColorBarPainter;
 import edu.jhuapl.saavtk.color.table.ColorMapAttr;
 import edu.jhuapl.saavtk.color.table.ColorTable;
 import edu.jhuapl.saavtk.color.table.ColorTableUtil;
-import edu.jhuapl.saavtk.gui.StatusBar;
 import edu.jhuapl.saavtk.gui.dialog.CustomFileChooser;
 import edu.jhuapl.saavtk.gui.dialog.ScaleDataRangeDialog;
+import edu.jhuapl.saavtk.gui.render.ConfigurableSceneNotifier;
 import edu.jhuapl.saavtk.gui.render.RenderIoUtil;
 import edu.jhuapl.saavtk.gui.render.Renderer;
 import edu.jhuapl.saavtk.model.Model;
@@ -77,10 +77,13 @@ import edu.jhuapl.saavtk.pick.PickUtil;
 import edu.jhuapl.saavtk.pick.Picker;
 import edu.jhuapl.saavtk.scalebar.ScaleBarPainter;
 import edu.jhuapl.saavtk.scalebar.gui.ScaleBarPanel;
+import edu.jhuapl.saavtk.status.LocationStatusHandler;
+import edu.jhuapl.saavtk.status.gui.StatusBarPanel;
 import edu.jhuapl.saavtk.structure.PolyLine;
 import edu.jhuapl.saavtk.structure.PolyLineMode;
 import edu.jhuapl.saavtk.structure.io.StructureMiscUtil;
 import edu.jhuapl.saavtk.util.LatLon;
+import edu.jhuapl.saavtk.util.PolyDataUtil;
 import edu.jhuapl.saavtk.util.Properties;
 import edu.jhuapl.saavtk.view.lod.LodStatusPainter;
 import edu.jhuapl.saavtk.view.lod.gui.LodPanel;
@@ -152,8 +155,8 @@ public class DEMView extends JFrame
 
 		setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 
-		StatusBar statusBar = new StatusBar(true);
-		add(statusBar, BorderLayout.PAGE_END);
+		StatusBarPanel tmpStatusBarPanel = new StatusBarPanel();
+		add(tmpStatusBarPanel, BorderLayout.PAGE_END);
 
 		// Look up dem object in main view
 		DEM secDEM = demCollection.getDEM(key);
@@ -171,13 +174,15 @@ public class DEMView extends JFrame
 		}
 		priDEM.setColoringIndex(secDEM.getColoringIndex());
 
-		lineModel = new LineModel<>(priDEM, PolyLineMode.PROFILE);
+		ConfigurableSceneNotifier tmpSceneChangeNotifier = new ConfigurableSceneNotifier();
+		lineModel = new LineModel<>(tmpSceneChangeNotifier, tmpStatusBarPanel, priDEM, PolyLineMode.PROFILE);
 		lineModel.setMaximumVerticesPerLine(2);
 		HashMap<ModelNames, Model> allModels = new HashMap<ModelNames, Model>();
 		allModels.put(ModelNames.SMALL_BODY, priDEM);
 		allModels.put(ModelNames.LINE_STRUCTURES, lineModel);
 
 		modelManager = new ModelManager(priDEM, allModels);
+		tmpSceneChangeNotifier.setTarget(modelManager);
 
 		renderer = new Renderer(priDEM);
 		renderer.addVtkPropProvider(modelManager);
@@ -190,7 +195,10 @@ public class DEMView extends JFrame
 
 		pickManager = new PickManager(renderer, modelManager);
 		pickManager.getDefaultPicker().addListener(renderer);
-		PickUtil.installDefaultPickHandler(pickManager, statusBar, renderer, modelManager);
+
+  		LocationStatusHandler tmpLocationStatusHandler = new LocationStatusHandler(tmpStatusBarPanel, renderer);
+  		pickManager.getDefaultPicker().addListener(tmpLocationStatusHandler);
+
 		priPicker = new ControlPointsPicker<>(renderer, pickManager, priDEM, lineModel);
 
 		demColorBarPainter = new ColorBarPainter(renderer);
@@ -681,8 +689,8 @@ public class DEMView extends JFrame
 
 		String line;
 
-		double[] llBegArr = new LatLon().get();
-		double[] llEndArr = new LatLon().get();
+		double[] llBegArr = new LatLon(0.0, 0.0, 1.0).get();
+		double[] llEndArr = new LatLon(0.0, 0.0, 1.0).get();
 		int lineId = 0;
 
 		List<PolyLine> itemL = new ArrayList<>();
@@ -829,7 +837,7 @@ public class DEMView extends JFrame
 			try
 			{
 				if (file != null)
-					priDEM.saveAsPLT(file);
+					PolyDataUtil.saveShapeModelAsPLT(priDEM.getSmallBodyPolyData(), file);
 			}
 			catch (Exception e1)
 			{
@@ -856,7 +864,7 @@ public class DEMView extends JFrame
 			try
 			{
 				if (file != null)
-					priDEM.saveAsOBJ(file);
+					PolyDataUtil.saveShapeModelAsOBJ(priDEM.getSmallBodyPolyData(), file);
 			}
 			catch (Exception e1)
 			{
@@ -883,7 +891,7 @@ public class DEMView extends JFrame
 			try
 			{
 				if (file != null)
-					priDEM.saveAsSTL(file);
+					PolyDataUtil.saveShapeModelAsSTL(priDEM.getSmallBodyPolyData(), file);
 			}
 			catch (Exception e1)
 			{

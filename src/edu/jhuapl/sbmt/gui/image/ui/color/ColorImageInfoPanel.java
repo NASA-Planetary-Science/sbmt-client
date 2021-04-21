@@ -32,8 +32,8 @@ import vtk.vtkTransform;
 import vtk.rendering.jogl.vtkJoglPanelComponent;
 
 import edu.jhuapl.saavtk.gui.ModelInfoWindow;
-import edu.jhuapl.saavtk.gui.StatusBar;
 import edu.jhuapl.saavtk.model.Model;
+import edu.jhuapl.saavtk.status.LegacyStatusHandler;
 import edu.jhuapl.saavtk.util.IntensityRange;
 import edu.jhuapl.sbmt.model.image.ColorImage;
 import edu.jhuapl.sbmt.model.image.ColorImage.Chromatism;
@@ -52,7 +52,7 @@ public class ColorImageInfoPanel extends ModelInfoWindow implements PropertyChan
     private vtkImageReslice reslice;
     private vtkPropPicker imagePicker;
     private boolean initialized = false;
-    private StatusBar statusBar;
+    private LegacyStatusHandler refStatusHandler;
 
     private class MouseListener extends MouseAdapter
     {
@@ -68,7 +68,7 @@ public class ColorImageInfoPanel extends ModelInfoWindow implements PropertyChan
                 System.out.println(p[1] + " " + p[0]);
 
                 // Display status bar message upon being picked
-                statusBar.setLeftTextSource(image, null, 0, p);
+                refStatusHandler.setLeftTextSource(image, null, 0, p);
             }
         }
     }
@@ -76,13 +76,13 @@ public class ColorImageInfoPanel extends ModelInfoWindow implements PropertyChan
     public ColorImageInfoPanel(
             final ColorImage image,
             ColorImageCollection imageCollection,
-            StatusBar statusBar)
+            LegacyStatusHandler aStatusHandler)
     {
         initComponents();
 
         this.image = image;
         this.imageCollection = imageCollection;
-        this.statusBar = statusBar;
+        refStatusHandler = aStatusHandler;
 
         renWin = new vtkJoglPanelComponent();
         renWin.getComponent().setPreferredSize(new Dimension(550, 550));
@@ -90,7 +90,7 @@ public class ColorImageInfoPanel extends ModelInfoWindow implements PropertyChan
         vtkInteractorStyleImage style = new vtkInteractorStyleImage();
         renWin.setInteractorStyle(style);
 
-        vtkImageData displayedImage = (vtkImageData)image.getTexture().GetInput();
+        vtkImageData displayedImage = image.getTexture().GetInput();
 
         // Only allow contrast changing for images with exactly 1 channel
         if (image.getNumberOfComponentsOfOriginalImage() > 1)

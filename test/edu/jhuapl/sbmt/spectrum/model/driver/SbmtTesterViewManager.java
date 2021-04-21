@@ -27,7 +27,6 @@ import edu.jhuapl.saavtk.camera.gui.CameraRegularAction;
 import edu.jhuapl.saavtk.config.ViewConfig;
 import edu.jhuapl.saavtk.gui.Console;
 import edu.jhuapl.saavtk.gui.RecentlyViewed;
-import edu.jhuapl.saavtk.gui.StatusBar;
 import edu.jhuapl.saavtk.gui.View;
 import edu.jhuapl.saavtk.gui.ViewManager;
 import edu.jhuapl.saavtk.gui.menu.FavoritesMenu;
@@ -36,6 +35,8 @@ import edu.jhuapl.saavtk.gui.menu.PickToleranceAction;
 import edu.jhuapl.saavtk.model.ShapeModelBody;
 import edu.jhuapl.saavtk.model.ShapeModelType;
 import edu.jhuapl.saavtk.scalebar.gui.ScaleBarAction;
+import edu.jhuapl.saavtk.status.StatusNotifier;
+import edu.jhuapl.saavtk.view.light.gui.LightingConfigAction;
 import edu.jhuapl.saavtk.view.lod.gui.LodAction;
 import edu.jhuapl.sbmt.client.BodyType;
 import edu.jhuapl.sbmt.client.BodyViewConfig;
@@ -86,9 +87,9 @@ public class SbmtTesterViewManager extends ViewManager
 
     private final TrackedMetadataManager stateManager;
 
-    public SbmtTesterViewManager(StatusBar statusBar, Frame frame, String tempCustomShapeModelPath)
+    public SbmtTesterViewManager(StatusNotifier aStatusNotifier, Frame frame, String tempCustomShapeModelPath)
     {
-        super(statusBar, frame, tempCustomShapeModelPath);
+        super(aStatusNotifier, frame, tempCustomShapeModelPath);
         this.menuEntries = Lists.newArrayList();
         this.configMap = Maps.newHashMap();
         this.stateManager = TrackedMetadataManager.of("ViewManager");
@@ -120,6 +121,7 @@ public class SbmtTesterViewManager extends ViewManager
         viewMenu.setMnemonic('V');
         viewMenu.add(new JMenuItem(new CameraRegularAction(this)));
         viewMenu.add(new JMenuItem(new CameraQuaternionAction(this)));
+        viewMenu.add(new JMenuItem(new LightingConfigAction(this)));
         viewMenu.add(new JMenuItem(new ScaleBarAction(this)));
 
         viewMenu.addSeparator();
@@ -190,22 +192,22 @@ public class SbmtTesterViewManager extends ViewManager
     }
 
     @Override
-    protected void addBuiltInViews(StatusBar statusBar)
+    protected void addBuiltInViews(StatusNotifier aStatusNotifier)
     {
         for (ViewConfig config: SmallBodyViewConfigTest.getBuiltInConfigs())
         {
 //            System.out.println(config.getUniqueName());
             //if (config.getUniqueName().equals("Gaskell/25143 Itokawa"))
-                addBuiltInView(new SbmtTesterView(statusBar, (SmallBodyViewConfigTest)config));
+                addBuiltInView(new SbmtTesterView(aStatusNotifier, (SmallBodyViewConfigTest)config));
         }
     }
 
     @Override
-    protected View createCustomView(StatusBar statusBar, String name, boolean temporary)
+    protected View createCustomView(StatusNotifier aStatusNotifier, String name, boolean temporary)
     {
         SmallBodyViewConfigTest customConfig = SmallBodyViewConfigTest.ofCustom(name, temporary);
 
-        return new SbmtTesterView(statusBar, customConfig);
+        return new SbmtTesterView(aStatusNotifier, customConfig);
     }
 
     @Override
@@ -238,7 +240,7 @@ public class SbmtTesterViewManager extends ViewManager
             // TODO Auto-generated catch block
             e.printStackTrace();
         }
-        return new SbmtTesterView(statusBar, customConfig);
+        return new SbmtTesterView(refStatusNotifier, customConfig);
     }
 
     @Override

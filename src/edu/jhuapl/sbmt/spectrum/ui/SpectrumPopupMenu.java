@@ -31,7 +31,6 @@ import vtk.vtkProp;
 import edu.jhuapl.saavtk.gui.dialog.CustomFileChooser;
 import edu.jhuapl.saavtk.gui.dialog.DirectoryChooser;
 import edu.jhuapl.saavtk.gui.render.Renderer;
-import edu.jhuapl.saavtk.gui.render.Renderer.LightingType;
 import edu.jhuapl.saavtk.illum.IlluminationField;
 import edu.jhuapl.saavtk.illum.PolyhedralModelIlluminator;
 import edu.jhuapl.saavtk.illum.UniformIlluminationField;
@@ -40,6 +39,9 @@ import edu.jhuapl.saavtk.model.ModelManager;
 import edu.jhuapl.saavtk.model.ModelNames;
 import edu.jhuapl.saavtk.popup.PopupMenu;
 import edu.jhuapl.saavtk.util.FileUtil;
+import edu.jhuapl.saavtk.view.light.LightCfg;
+import edu.jhuapl.saavtk.view.light.LightUtil;
+import edu.jhuapl.saavtk.view.light.LightingType;
 import edu.jhuapl.sbmt.client.SbmtInfoWindowManager;
 import edu.jhuapl.sbmt.client.SmallBodyModel;
 import edu.jhuapl.sbmt.spectrum.model.EnabledState;
@@ -183,7 +185,7 @@ public class SpectrumPopupMenu<S extends BasicSpectrum> extends PopupMenu implem
             {
             	showToSunVectorMenuItem.setSelected(spectrumRenderer.isToSunVectorShowing());
             	showToSunVectorMenuItem.setEnabled(isMapped);
-            	if ((renderer.getLighting() == LightingType.FIXEDLIGHT) && (currentIlluminationVector.equals(new Vector3D(selectedSpectrum.getToSunUnitVector())))) setIlluminationMenuItem.setSelected(true);
+            	if ((renderer.getLightCfg().getType() == LightingType.FIXEDLIGHT) && (currentIlluminationVector.equals(new Vector3D(selectedSpectrum.getToSunUnitVector())))) setIlluminationMenuItem.setSelected(true);
                 else setIlluminationMenuItem.setSelected(false);
                 setIlluminationMenuItem.setEnabled(isMapped);
             }
@@ -486,14 +488,13 @@ public class SpectrumPopupMenu<S extends BasicSpectrum> extends PopupMenu implem
 	        	if (menuItem.isSelected()) currentIlluminationVector = new Vector3D(spectrumRenderer.getSpectrum().getToSunUnitVector());
 	            try
 	            {
-	                if (renderer.getLighting() == LightingType.FIXEDLIGHT && currentIlluminationVector == null)
+	                if (renderer.getLightCfg().getType() == LightingType.FIXEDLIGHT && currentIlluminationVector == null)
 	                {
-	                    renderer.setLighting(LightingType.LIGHT_KIT);
+	                    LightUtil.switchToLightKit(renderer);
 	                }
 	                else
 	                {
-	                    renderer.setLighting(LightingType.FIXEDLIGHT);
-	                    renderer.setFixedLightDirection(currentIlluminationVector.toArray()); // the fixed light direction points to the light
+	                    renderer.setLightCfgToFixedLightAtDirection(currentIlluminationVector); // the fixed light direction points to the light
 	                }
 
 
