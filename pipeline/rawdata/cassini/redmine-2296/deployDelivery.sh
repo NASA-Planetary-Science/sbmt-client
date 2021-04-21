@@ -17,8 +17,8 @@
 #-------------------------------------------------------------------------------
 # Processing Info
 #-------------------------------------------------------------------------------
-# Developer: James Peachey
-# Delivery: redmine-2316
+# Developer:
+# Delivery: redmine-XXXX
 # Notes:
 #
 #-------------------------------------------------------------------------------
@@ -40,18 +40,8 @@ check 1 "Tailor this script first for the specific delivery being processed."
 #-------------------------------------------------------------------------------
 # Processed data to deployed.
 #-------------------------------------------------------------------------------
-
-# The identifier of this processing run, typically "redmine-XXXX"
-processingId="redmine-2316"
-
-# The identifier of the output path relative to the top of the
-# raw/processed/deployed/served directory. Typically this would
-# identify either a body/model, mission/instrument, or mission/spice, for
-# example, 'didymosa/didymosa-dra-v01a' or 'dart/draco'.
-outputTop="dart/leia/ideal-impact6-ra-20201116-v01"
-
 # Install first into processing-specific directory.
-srcTop="$rawDataTop/$outputTop"
+srcTop="$processedTop/$outputTop"
 destTop="$deployedTop/$outputTop-$processingId"
 
 # Copy the processed data area to the deployed area.

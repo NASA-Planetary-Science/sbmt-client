@@ -536,8 +536,8 @@ moveDirectory() {
       destParent=`echo $dest | sed 's:/[^/][^/]*/*$::'`
       createDir $destParent
 
-      echo "nice mv $src $dest"
-      nice mv -f $src $dest
+      echo "mv $src $dest"
+      mv -f $src $dest
       check $?
 
       # Prune an orphaned parent directory, but ignore failures.
@@ -572,8 +572,8 @@ moveFile() {
       destParent=`echo $dest | sed 's:/[^/][^/]*/*$::'`
       createDir $destParent
 
-      echo "nice mv $src $dest"
-      nice mv $src $dest
+      echo "mv $src $dest"
+      mv $src $dest
       check $?
 
       # Prune an orphaned parent directory, but ignore failures.
@@ -731,7 +731,6 @@ updateLink() {
       check 1 "$funcName encountered existing item at $linkPath that could not be moved aside or deleted."
     fi
 
-    echo "ln -s $target $linkPath"
     ln -s $target $linkPath
     status=$?
     if test $status -ne 0; then
@@ -768,11 +767,11 @@ createRelativeLink() {
     # whether or not it exists yet.
     linkPathDir=$(dirname $linkPath)
 
-    # Make sure the linkPath directory exists. Must do this before using realpath.
-    createDir $linkPathDir
-
     reltarget=`realpath --relative-to=$linkPathDir $target`
     check $? "$funcName: cannot compute relative path to $target from $linkPathDir"
+
+    # Make sure the linkPath directory exists.
+    createDir $linkPathDir
 
     cd $linkPathDir
     check $? "$funcName: cannot cd to linkPath directory $linkPathDir"
@@ -802,11 +801,11 @@ updateRelativeLink() {
     # whether or not it exists yet.
     linkPathDir=$(dirname $linkPath)
 
-    # Make sure the linkPath directory exists. Must do this before using realpath.
-    createDir $linkPathDir
-
     reltarget=`realpath --relative-to=$linkPathDir $target`
     check $? "$funcName: cannot compute relative path to $target from $linkPathDir"
+
+    # Make sure the linkPath directory exists.
+    createDir $linkPathDir
 
     cd $linkPathDir
     check $? "$funcName: cannot cd to linkPath directory $linkPathDir"
@@ -836,40 +835,6 @@ updateOptionalLink() {
   check $?
 }
 
-createHardLinks() {
-  (
-    funcName=${FUNCNAME[0]}
-
-    checkSkip $funcName "$*"
-
-    src=$1
-    dest=$2
-
-    if test "$src" = ""; then
-      check 1 "$funcName: first argument (source) is missing or blank"
-    fi
-
-    if test "$dest" = ""; then
-      check 1 "$funcName: second argument (destination) is missing or blank"
-    fi
-
-    if test ! -e "$src"; then
-      check 1 "$funcName: source file/directory does not exist: $src"
-    fi
-
-    if test -e "$dest"; then
-      check 1 "$funcName: destination file/directory already exists: $dest"
-    fi
-
-    createParentDir $dest
-
-    echo "nice cp -al $src $dest"
-    nice cp -al $src $dest
-    check $? "$funcName: unable to link $src to $dest"
-  )
-  check $?
-}
-
 doGzipDir() {
   (
     funcName=${FUNCNAME[0]}
@@ -886,8 +851,7 @@ doGzipDir() {
     for file in $dir/*; do
       if test -f $file; then
         if test `file $file 2>&1 | grep -ic gzip` -eq 0; then
-          echo "nice gzip -cf $file > $file.gz"
-          nice gzip -cf $file > $file.gz
+          gzip -cf $file > $file.gz
           check $? "$funcName: problem gzipping file $file"
           rm -f $file
         fi
@@ -1119,8 +1083,7 @@ discoverPlateColorings() {
         listPlateColoringFiles $dest $dest/$coloringList
 
         if test -s $dest/$coloringList; then
-          echo "nice $sbmtCodeTop/sbmt/bin/DiscoverPlateColorings.sh $dest $outputTop/coloring $modelId/$bodyId $coloringList"
-          nice $sbmtCodeTop/sbmt/bin/DiscoverPlateColorings.sh "$dest" "$outputTop/coloring" "$modelId/$bodyId" "$coloringList"
+          $sbmtCodeTop/sbmt/bin/DiscoverPlateColorings.sh "$dest" "$outputTop/coloring" "$modelId/$bodyId" "$coloringList"
           check $? "$funcName: failed to generate plate coloring metadata"
         else
           echo "$funcName: no coloring files found in $dest"
@@ -1207,7 +1170,7 @@ extractFITSFileTimes() {
         # keyname = 'value' / comment
         # In general the comment and the single quotes are not guaranteed to be present, so try to be bullet-proof
         # with the seds. Also the output should have a T rather than space separating the date from the time.
-        value=`nice ftlist "infile=$dir/$file" option=k include=$timeStampKeyword 2> /dev/null | head -1 | \
+        value=`ftlist "infile=$dir/$file" option=k include=$timeStampKeyword 2> /dev/null | head -1 | \
           sed 's:[^=]*=[  ]*::' | sed 's:[  ]*/.*$::' | sed "s:^''*::" | sed "s:''*$::" | sed 's: :T:'`
         check $? "$funcName: ftlist command failed to extract time from file $dir/$file"
 
@@ -1283,9 +1246,6 @@ createGalleryList() {
     check $? "$funcName: unable to cd to image directory $imageDir"
 
     tmpImageList=$instrumentTop/tmpImageList.txt
-    # Temporary file to list just the thumbnail images.
-    tmpThumbnailList=$instrumentTop/tmpThumbnailList.txt
-
     # Go one sub-shell deeper to ensure this tmp file gets cleaned up.
     export tmpImageList funcName imageDir galleryDir galleryListFile instrumentTop
     (
@@ -1300,15 +1260,11 @@ createGalleryList() {
         check $? "$funcName: unable to determine base name of gallery images for $image"
 
         # Sort matching gallery file names by size so the thumbnail is listed first.
-        # Hope there is one thumbnail and one gallery image matching each file name.
-        galleryFiles=`ls -Sr $root* 2> /dev/null | tr '\012' ' '`
+        galleryFiles=`ls -sL $root* 2> /dev/null | sort -n | sed 's:.* ::' | tr '\012' ' '`
         check $? "$funcName: unable to find gallery images for $image"
 
         if test `echo $galleryFiles | wc -w` -eq 2; then
           echo "$image $galleryFiles" >> $galleryListFile
-          # First image in list is the name of the thumbnail, including the gallery/ subdirectory
-          # prefix. Add it to the thumbnail list file.
-          echo "gallery/$galleryFiles" | sed 's:[  ].*::' >> $tmpThumbnailList
         fi
       done
 
@@ -1319,23 +1275,17 @@ createGalleryList() {
         echo "$funcName: WARNING: did not find gallery files for every image in $imageDir"
         echo "$funcName: please examine $instrumentTop and its subdirectories"
       fi
-
+      
       # This does not involve the tmp file, but it is convenient just to do this
       # here, in the sub-shell.
       cd $instrumentTop
       check $? "$funcName: unable to cd to $instrumentTop to create zip file"
-
-      if test -f $tmpThumbnailList; then
-        # Zip up images in the gallery directory that match any of the files listed in the thumbnail list file
-        echo "nice zip -qr gallery.zip gallery -i@$tmpThumbnailList"
-        nice zip -qr gallery.zip gallery -i@$tmpThumbnailList
-        check $? "$funcName: unable to zip gallery files in $galleryDir"
-      fi
-        
+      
+      zip -qr gallery.zip gallery
+      check $? "$funcName: unable to zip directory gallery in $instrumentTop"
     )
     status=$?
     rm -f $tmpImageList
-    rm -f $tmpThumbnailList
     exit $status
   )
   check $?
@@ -1411,10 +1361,10 @@ createInfoFilesFromImageTimeStamps() {
 
     createDir $logTop
 
-    echo nice $createInfoFilesDir/createInfoFiles $metakernel $body $bodyFrame $spacecraft $instrumentFrame \
+    echo $createInfoFilesDir/createInfoFiles $metakernel $body $bodyFrame $spacecraft $instrumentFrame \
       $imageTimeStampFile "$infoDir" $imageListFile $imageListFullPathFile $missingInfoList
 
-    nice $createInfoFilesDir/createInfoFiles $metakernel $body $bodyFrame $spacecraft $instrumentFrame \
+    $createInfoFilesDir/createInfoFiles $metakernel $body $bodyFrame $spacecraft $instrumentFrame \
       $imageTimeStampFile "$infoDir" $imageListFile $imageListFullPathFile $missingInfoList > \
       $logTop/createInfoFiles-$instrument.txt 2>&1
     check $? "$funcName: creating info files failed. See log file $logTop/createInfoFiles-$instrument.txt"
@@ -1423,7 +1373,7 @@ createInfoFilesFromImageTimeStamps() {
 }
 
 # Create INFO files from a SPICE metakernel plus a directory with FITS images that have time stamps associated with a keyword.
-# Note that infoDir in this function is now the ABSOLUTE path to the output INFO file directory.
+# Note that infoDir in this function is a RELATIVE path to the output INFO file directory.
 createInfoFilesFromFITSImages() {
   (
     funcName=${FUNCNAME[0]}
@@ -1482,7 +1432,7 @@ createInfoFilesFromFITSImages() {
     fi
 
     if test "$infoDir" = ""; then
-      check 1 "$funcName: missing/blank tenth argument must specify the absolute path to the output INFO file directory"
+      check 1 "$funcName: missing/blank tenth argument must specify output INFO file directory relative to $topDir"
     fi
 
     # Generate image list with time stamps from the content of the image directory.
@@ -1491,14 +1441,13 @@ createInfoFilesFromFITSImages() {
     imageTimeStampFile="$imageTimeStampDir/imagelist-with-time.txt"
 
     if test ! -f $imageTimeStampFile; then
-      echo extractFITSFileTimes $timeStampKeyword $topDir "$topDir/$imageDir" $imageTimeStampFile
       extractFITSFileTimes $timeStampKeyword $topDir "$topDir/$imageDir" $imageTimeStampFile
     else
       echo "$funcName: file $imageTimeStampFile already exists -- skipping extracting times from FITS images"
     fi
 
     createInfoFilesFromImageTimeStamps $metakernel $body $bodyFrame $spacecraft $instrument $instrumentFrame \
-      $imageTimeStampFile $infoDir
+      $imageTimeStampFile $topDir/$infoDir
   )
   check $?
 }
@@ -1584,7 +1533,7 @@ processMakeSumFiles() {
     elif test ! -f "$makeSumFiles"; then
       check 1 "$funcName: input file $imagerDir/make_sumfiles.in does not exist"
     fi
-
+  
     # Make sure the prefix starts and ends with a single slash:
     prefix=`echo $2 | sed 's:^/*:/:' | sed 's:/*$:/:'`
     if test "$prefix" = ""; then
@@ -1594,29 +1543,13 @@ processMakeSumFiles() {
     rm -f $imagerDir/imagelist-sum.txt $imagerDir/imagelist-fullpath-sum.txt
 
     # Create imagelist-fullpath-sum.txt.
-    cat $makeSumFiles | sed -e 's:.*[ 	]::' | sed "s:^:$prefix:" > $imagerDir/imagelist-fullpath-sum.txt
+    cat $makeSumFiles | sed -e 's:.*[   ]::' | sed "s:^:$prefix:" > $imagerDir/imagelist-fullpath-sum.txt
     check $? "$funcName: unable to create $imagerDir/imagelist-fullpath-sum.txt"
 
     # Create imagelist-sum.txt.
     for sumFile in `sed 's: .*::' $makeSumFiles`; do
-      if test "$sumFile" = ""; then
-        check 1 "$funcName: unable to determine sum file names from $makeSumFiles"
-      fi
-
-      # Find the line that begins with this sum file base name.
-      # Strip out the sum file base name, then get rid of anything up to a final space.
-      # What remains should be the image name.
-      imageFile=`sed -n "s:^$sumFile ::p" $makeSumFiles | sed 's:.* ::'`
-      if test "$imageFile" = ""; then
-        check 1 "$funcName: unable to determine the image file that goes with $sumFile in $makeSumFiles"
-      fi
-
-      # Assume actual file name ends in .SUM if there is no explicit extension.
-      if test `echo $sumFile | grep -c '\..*$'` -eq 0; then
-        sumFile="${sumFile}.SUM"
-      fi
-
-      # Read the time stamp from the sumfile.
+      imageFile=`sed -n "s:^$sumFile .* ::p" $makeSumFiles`
+      sumFile="${sumFile}.SUM"
       timeStamp=`head -2 $imagerDir/sumfiles/$sumFile | tail -1 | \
         sed 's:^  *::' | sed 's:  *$::' | \
         sed 's:jan:01:i' | \
@@ -1778,8 +1711,7 @@ unpackArchives() {
     # Use . to ensure for loop has at least one match.
     for file in `ls *.tar 2> /dev/null` .; do
       if test "$file" != .; then
-        echo nice tar xf $file
-        nice tar xf $file
+        tar xf $file
         check $? "$funcName: unable to untar file $file"
       fi
     done
@@ -1787,8 +1719,7 @@ unpackArchives() {
     # Use . to ensure for loop has at least one match.
     for file in `ls *.tgz *.tar.gz 2> /dev/null` .; do
       if test "$file" != .; then
-        echo nice tar zxf $file
-        nice tar zxf $file
+        tar zxf $file
         check $? "$funcName: unable to untar gzipped file $file"
       fi
     done
@@ -1829,7 +1760,7 @@ editMetakernels() {
     for file in `ls *.mk *.tm 2> /dev/null` .; do
       if test "$file" != .; then
         if test ! -f "$file.bak"; then
-          nice sed -i bak -e "s:$regEx:$tmpSpiceDir:" $file
+          sed -i bak -e "s:$regEx:$tmpSpiceDir:" $file
           check $? "$funcName: unable to edit file $file"
         else
           echo "$funcName: $file.bak already exists -- not re-editing metakernel file $srcDir/$file"
@@ -1872,9 +1803,9 @@ generateDatabaseTable() {
 
     createDir $logTop
 
-    echo nice $pathToTool --root-url file://$processedTop --body "${bodyId^^}" --author "$modelId" --instrument "$instrument" $pointing | \
+    echo $pathToTool --root-url file://$processedTop --body "${bodyId^^}" --author "$modelId" --instrument "$instrument" $pointing | \
       tee -ai $logFile
-    nice $pathToTool --root-url file://$processedTop --body "${bodyId^^}" --author "$modelId" --instrument "$instrument" $pointing \
+    $pathToTool --root-url file://$processedTop --body "${bodyId^^}" --author "$modelId" --instrument "$instrument" $pointing \
       >> $logFile 2>&1
     check $? "$funcName: $tool had an error. See log file $logFile"
 
