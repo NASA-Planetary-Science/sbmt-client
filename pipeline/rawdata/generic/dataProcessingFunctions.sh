@@ -1301,13 +1301,14 @@ createGalleryList() {
 
         # Sort matching gallery file names by size so the thumbnail is listed first.
         # Hope there is one thumbnail and one gallery image matching each file name.
-        galleryFiles=`ls -Sr $root* 2> /dev/null`
+        galleryFiles=`ls -Sr $root* 2> /dev/null | tr '\012' ' '`
         check $? "$funcName: unable to find gallery images for $image"
 
         if test `echo $galleryFiles | wc -w` -eq 2; then
           echo "$image $galleryFiles" >> $galleryListFile
-          # First image in list is the name of the thumbnail. Add it to the thumbnail list file.
-          echo "$galleryFiles" | sed 's:[  ].*::' >> $tmpThumbnailList
+          # First image in list is the name of the thumbnail, including the gallery/ subdirectory
+          # prefix. Add it to the thumbnail list file.
+          echo "gallery/$galleryFiles" | sed 's:[  ].*::' >> $tmpThumbnailList
         fi
       done
 
