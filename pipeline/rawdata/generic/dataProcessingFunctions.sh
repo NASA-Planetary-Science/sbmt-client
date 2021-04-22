@@ -1330,8 +1330,8 @@ createGalleryList() {
 
       if test -f $tmpThumbnailList; then
         # Zip up images in the gallery directory that match any of the files listed in the thumbnail list file
-        echo "nice cat $tmpThumbnailList | zip -q gallery.zip gallery -@"
-        nice cat $tmpThumbnailList | zip -q gallery.zip gallery -@
+        echo "nice cat $tmpThumbnailList | zip -q gallery.zip -@"
+        nice cat $tmpThumbnailList | zip -q gallery.zip -@
         check $? "$funcName: unable to zip gallery files in $galleryDir"
       fi
         
