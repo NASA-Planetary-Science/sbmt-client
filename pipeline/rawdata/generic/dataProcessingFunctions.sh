@@ -1325,10 +1325,13 @@ createGalleryList() {
       cd $instrumentTop
       check $? "$funcName: unable to cd to $instrumentTop to create zip file"
 
+      # Get rid of any previous zip file.
+      rm -f gallery.zip
+
       if test -f $tmpThumbnailList; then
         # Zip up images in the gallery directory that match any of the files listed in the thumbnail list file
-        echo "nice echo $tmpThumbnailList | zip gallery.zip gallery -@"
-        nice echo $tmpThumbnailList | zip gallery.zip gallery -@
+        echo "nice echo $tmpThumbnailList | zip -q gallery.zip gallery -@"
+        nice echo $tmpThumbnailList | zip -q gallery.zip gallery -@
         check $? "$funcName: unable to zip gallery files in $galleryDir"
       fi
         
