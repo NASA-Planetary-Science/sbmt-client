@@ -269,7 +269,7 @@ createRelativeLink $processedTop $processedTop/data
 generateDatabaseTable ${instrument^^} SPICE
 
 # Set up galleries (if present).
-createGalleryList $destTop/$instrument
+createGalleryList "$imageTopDir/dart/$instrument/$modelId"
 
 # End Instrument sub-block (DRACO).
 #-------------------------------------------------------------------------------
@@ -324,7 +324,7 @@ createRelativeLink $processedTop $processedTop/data
 generateDatabaseTable ${instrument^^} SPICE
 
 # Set up galleries (if present).
-createGalleryList $destTop/$instrument
+createGalleryList "$imageTopDir/dart/$instrument/$modelId"
 
 # End Instrument sub-block (LEIA).
 #-------------------------------------------------------------------------------
@@ -380,7 +380,7 @@ createRelativeLink $processedTop $processedTop/data
 generateDatabaseTable ${instrument^^} SPICE
 
 # Set up galleries (if present).
-createGalleryList $destTop/$instrument
+createGalleryList "$imageTopDir/dart/$instrument/$modelId"
 
 # End Instrument sub-block (LUKE).
 #-------------------------------------------------------------------------------
