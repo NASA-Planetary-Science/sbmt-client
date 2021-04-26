@@ -12,7 +12,6 @@ import javax.swing.JComboBox;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
-import javax.swing.JTextField;
 import javax.swing.table.TableCellRenderer;
 
 import edu.jhuapl.saavtk.color.gui.ColorProviderCellEditor;
@@ -173,7 +172,7 @@ public class DisplayOptionsTableView extends JPanel
 		sizeCombo.setSelectedIndex(5);
 		tmpComposer.setEditor(DisplayOptionsColumnLookup.Size, new DefaultCellEditor(sizeCombo));
 
-		tmpComposer.setEditor(DisplayOptionsColumnLookup.LabelString, new DefaultCellEditor(new JTextField()));
+//		tmpComposer.setEditor(DisplayOptionsColumnLookup.LabelString, new DefaultCellEditor(new JTextField()));
 		tmpComposer.setEditor(DisplayOptionsColumnLookup.Color, new ColorProviderCellEditor<StateHistory>());
 		tmpComposer.setRenderer(DisplayOptionsColumnLookup.Color, new ColorProviderCellRenderer(false));
 //		tmpComposer.setEditor(DisplayOptionsColumnLookup.Name, new DefaultCellEditor(new JTextField()));
