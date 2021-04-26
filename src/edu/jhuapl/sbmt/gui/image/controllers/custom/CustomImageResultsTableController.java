@@ -67,7 +67,6 @@ public class CustomImageResultsTableController extends ImageResultsTableControll
         imageResultsTableView.getNumberOfBoundariesComboBox().setVisible(false);
         imageResultsTableView.getLblNumberBoundaries().setVisible(false);
 
-        imageResultsTableView.getViewResultsGalleryButton().setVisible(false);
         imageResultsTableView.getResultList().setUI(new CustomDragDropRowTableUI());
 
         imageResultsTableView.getResultList().getModel().removeTableModelListener(tableModelListener);
@@ -142,7 +141,7 @@ public class CustomImageResultsTableController extends ImageResultsTableControll
                 if (!e.getValueIsAdjusting())
                 {
                     model.setSelectedImageIndex(imageResultsTableView.getResultList().getSelectedRows());
-                    imageResultsTableView.getViewResultsGalleryButton().setEnabled(galleryGenerator != null && imageResultsTableView.isEnableGallery() && imageResultsTableView.getResultList().getSelectedRowCount() > 0);
+                    updateSearchResultsControls();
                 }
             }
         });

@@ -140,7 +140,7 @@ public class OfflimbImageResultsTableController extends ImageResultsTableControl
                 if (!e.getValueIsAdjusting())
                 {
                     imageSearchModel.setSelectedImageIndex(imageResultsTableView.getResultList().getSelectedRows());
-                    imageResultsTableView.getViewResultsGalleryButton().setEnabled(galleryGenerator != null && imageResultsTableView.isEnableGallery() && imageResultsTableView.getResultList().getSelectedRowCount() > 0);
+                    updateSearchResultsControls();
                 }
             }
         });
@@ -244,6 +244,7 @@ public class OfflimbImageResultsTableController extends ImageResultsTableControl
                 super.tableChanged(e);
                 offlimbTableView.getResultList().setValueAt(false, actualRow, offlimbTableView.getOffLimbIndex());
                 setOffLimbFootprintVisibility(namePrefix, false);   // set visibility to false if we are mapping or unmapping the image
+                return; // Don't fall through to call super.tableChanged again.
             }
             else if (e.getColumn() == offlimbTableView.getOffLimbIndex())
             {

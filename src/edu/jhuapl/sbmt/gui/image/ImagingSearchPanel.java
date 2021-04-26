@@ -67,7 +67,6 @@ import vtk.vtkPolyData;
 
 import edu.jhuapl.saavtk.gui.dialog.CustomFileChooser;
 import edu.jhuapl.saavtk.gui.render.Renderer;
-import edu.jhuapl.saavtk.gui.render.Renderer.LightingType;
 import edu.jhuapl.saavtk.model.ModelManager;
 import edu.jhuapl.saavtk.model.ModelNames;
 import edu.jhuapl.saavtk.model.structure.AbstractEllipsePolygonModel;
@@ -77,6 +76,7 @@ import edu.jhuapl.saavtk.structure.Ellipse;
 import edu.jhuapl.saavtk.util.Configuration;
 import edu.jhuapl.saavtk.util.FileUtil;
 import edu.jhuapl.saavtk.util.IdPair;
+import edu.jhuapl.saavtk.view.light.LightUtil;
 import edu.jhuapl.sbmt.client.SbmtInfoWindowManager;
 import edu.jhuapl.sbmt.client.SbmtSpectrumWindowManager;
 import edu.jhuapl.sbmt.client.SmallBodyModel;
@@ -3133,7 +3133,7 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
             else
             {
                 unloadImages(namePrefix);
-                renderer.setLighting(LightingType.LIGHT_KIT);
+                LightUtil.switchToLightKit(renderer);
             }
         }
         else if (e.getColumn() == showFootprintColumnIndex)

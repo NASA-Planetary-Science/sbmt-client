@@ -689,8 +689,8 @@ public class DEMView extends JFrame
 
 		String line;
 
-		double[] llBegArr = new LatLon().get();
-		double[] llEndArr = new LatLon().get();
+		double[] llBegArr = new LatLon(0.0, 0.0, 1.0).get();
+		double[] llEndArr = new LatLon(0.0, 0.0, 1.0).get();
 		int lineId = 0;
 
 		List<PolyLine> itemL = new ArrayList<>();

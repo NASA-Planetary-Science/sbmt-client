@@ -5,8 +5,10 @@ import java.awt.event.ItemListener;
 
 import javax.swing.DefaultComboBoxModel;
 
+import org.apache.commons.math3.geometry.euclidean.threed.Vector3D;
+
 import edu.jhuapl.saavtk.gui.render.Renderer;
-import edu.jhuapl.saavtk.gui.render.Renderer.LightingType;
+import edu.jhuapl.saavtk.view.light.LightUtil;
 import edu.jhuapl.sbmt.stateHistory.model.stateHistory.StateHistoryCollection;
 import edu.jhuapl.sbmt.stateHistory.model.viewOptions.RendererLookDirection;
 import edu.jhuapl.sbmt.stateHistory.model.viewOptions.StateHistoryViewOptionsModel;
@@ -42,12 +44,11 @@ public class StateHistoryViewOptionsController
 				boolean selected = (e.getStateChange() == ItemEvent.SELECTED);
 				if (selected)
 				{
-					rendererManager.getRenderer().setFixedLightDirection(rendererManager.getRuns().getCurrentRun().getLocationProvider().getSunPosition());
-					rendererManager.getRenderer().setLighting(LightingType.FIXEDLIGHT);
+					rendererManager.getRenderer().setLightCfgToFixedLightAtDirection(new Vector3D(rendererManager.getRuns().getCurrentRun().getLocationProvider().getSunPosition()));
 				}
 				else
 				{
-					rendererManager.getRenderer().setLighting(LightingType.LIGHT_KIT);
+					LightUtil.switchToLightKit(rendererManager.getRenderer());
 				}
 			}
 		});

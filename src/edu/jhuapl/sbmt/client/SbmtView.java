@@ -727,8 +727,8 @@ public class SbmtView extends View implements PropertyChangeListener
             	creationTool=new MapmakerDEMCreator(Paths.get(getPolyhedralModelConfig().rootDirOnServer + File.separator + "mapmaker.zip"), Paths.get(getModelManager().getPolyhedralModel().getCustomDataFolder()));
             }
 
-        	addTab("Regional DTMs", new ExperimentalDEMController(getModelManager(), getPickManager(), creationTool, getPolyhedralModelConfig(), getRenderer()).getPanel());
-        	addTab("Regional DEMs", new DemMainPanel(getRenderer(), getModelManager().getPolyhedralModel(), getStatusNotifier(), getPickManager(), getPolyhedralModelConfig()));
+//        	addTab("Regional DTMs (old)", new ExperimentalDEMController(getModelManager(), getPickManager(), creationTool, getPolyhedralModelConfig(), getRenderer()).getPanel());
+        	addTab("Regional DTMs", new DemMainPanel(getRenderer(), getModelManager().getPolyhedralModel(), getStatusNotifier(), getPickManager(), getPolyhedralModelConfig()));
 
 
 //            if ( getPolyhedralModelConfig().rootDirOnServer != null)

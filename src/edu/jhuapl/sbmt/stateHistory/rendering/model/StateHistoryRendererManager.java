@@ -30,13 +30,13 @@ import edu.jhuapl.saavtk.feature.FeatureType;
 import edu.jhuapl.saavtk.feature.VtkFeatureAttr;
 import edu.jhuapl.saavtk.gui.render.RenderPanel;
 import edu.jhuapl.saavtk.gui.render.Renderer;
-import edu.jhuapl.saavtk.gui.render.Renderer.LightingType;
 import edu.jhuapl.saavtk.model.SaavtkItemManager;
 import edu.jhuapl.saavtk.util.BoundingBox;
 import edu.jhuapl.saavtk.util.Configuration;
 import edu.jhuapl.saavtk.util.ConvertResourceToFile;
 import edu.jhuapl.saavtk.util.MathUtil;
 import edu.jhuapl.saavtk.util.Properties;
+import edu.jhuapl.saavtk.view.light.LightingType;
 import edu.jhuapl.sbmt.client.SmallBodyModel;
 import edu.jhuapl.sbmt.model.image.perspectiveImage.PerspectiveImageFootprint;
 import edu.jhuapl.sbmt.model.image.perspectiveImage.PerspectiveImageFrustum;
@@ -1020,8 +1020,8 @@ public class StateHistoryRendererManager extends SaavtkItemManager<StateHistory>
 				positionCalculator.updateFootprintLocations(state, historyFootprintMap.get(runs.getCurrentRun()));
 
 			updateLookDirection(lookDirection);
-			if ((renderer.getLighting() == LightingType.FIXEDLIGHT && runs.getCurrentRun() != null) == false) return;
-			renderer.setFixedLightDirection(runs.getCurrentRun().getLocationProvider().getSunPosition());
+			if ((renderer.getLightCfg().getType() == LightingType.FIXEDLIGHT && runs.getCurrentRun() != null) == false) return;
+			renderer.setLightCfgToFixedLightAtDirection(new Vector3D(runs.getCurrentRun().getLocationProvider().getSunPosition()));
 			propertyChange(new PropertyChangeEvent(this, Properties.MODEL_CHANGED, null, null));
 //			Logger.getAnonymousLogger().log(Level.INFO, "Position changed called");
 		}
