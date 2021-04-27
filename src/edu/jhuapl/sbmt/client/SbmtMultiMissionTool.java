@@ -1,6 +1,7 @@
 package edu.jhuapl.sbmt.client;
 
 import java.awt.EventQueue;
+import java.awt.Taskbar;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -148,7 +149,7 @@ public class SbmtMultiMissionTool
 			ImageIcon erosIcon = new ImageIcon(SbmtMultiMissionTool.class.getResource("/edu/jhuapl/sbmt/data/erosMacDock.png"));
 			if (!Configuration.isHeadless())
 			{
-			    java.awt.Taskbar.getTaskbar().setIconImage(erosIcon.getImage());
+			    Taskbar.getTaskbar().setIconImage(erosIcon.getImage());
 			}
 		}
 
