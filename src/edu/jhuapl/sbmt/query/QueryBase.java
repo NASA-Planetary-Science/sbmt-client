@@ -54,32 +54,18 @@ import crucible.crust.metadata.impl.SettableMetadata;
  * This class represents a database storing information about all the
  * data. It also provides functions for querying the database.
  */
-public abstract class QueryBase implements Cloneable, MetadataManager, IQueryBase
+public abstract class QueryBase implements MetadataManager, IQueryBase
 {
     protected String galleryPath;
-    private boolean headless = false;
+    private final boolean headless;
 
     protected QueryBase(String galleryPath)
     {
         this.galleryPath = galleryPath;
-        if (System.getProperty("java.awt.headless") != null && System.getProperty("java.awt.headless").equalsIgnoreCase("true"))
-            headless = true;
+        this.headless = System.getProperty("java.awt.headless") != null && System.getProperty("java.awt.headless").equalsIgnoreCase("true");
     }
 
-
-    @Override
-    public QueryBase clone()
-    {
-        try
-        {
-            return (QueryBase) super.clone();
-        }
-        catch (CloneNotSupportedException e)
-        {
-            // Can't happen.
-            throw new AssertionError(e);
-        }
-    }
+    public abstract QueryBase copy();
 
     public static boolean checkForDatabaseTable(String tableName) throws IOException
     {
@@ -112,12 +98,17 @@ public abstract class QueryBase implements Cloneable, MetadataManager, IQueryBas
 
     protected List<List<String>> doQuery(String phpScript, String data) throws IOException
     {
+    	return doQuery(phpScript, data, false);
+    }
+
+    protected List<List<String>> doQuery(String phpScript, String data, boolean forcePrepend) throws IOException
+    {
         List<List<String>> results = new ArrayList<>();
 
-        if (!checkAuthorizedAccess())
-        {
-            return results;
-        }
+//        if (!checkAuthorizedAccess())
+//        {
+//            return results;
+//        }
 
         URL u = new URL(Configuration.getQueryRootURL() + "/" + phpScript);
         URLConnection conn = u.openConnection();
@@ -161,7 +152,7 @@ public abstract class QueryBase implements Cloneable, MetadataManager, IQueryBas
         in.close();
         for (List<String> res : results)
         {
-            changeDataPathToFullPath(res);
+            changeDataPathToFullPath(res, forcePrepend);
         }
 
         updateDataInventory(results);
@@ -588,7 +579,7 @@ public abstract class QueryBase implements Cloneable, MetadataManager, IQueryBas
 
     public String getGalleryPath()
     {
-        return galleryPath != null && FileCache.instance().isAccessible(galleryPath) ? galleryPath : null;
+        return galleryPath;
     }
 
     // Convert the 0th element of the result (the path to the data)
@@ -596,8 +587,13 @@ public abstract class QueryBase implements Cloneable, MetadataManager, IQueryBas
     // a full path.
     protected void changeDataPathToFullPath(List<String> result)
     {
+    	changeDataPathToFullPath(result, false);
+    }
+
+    protected void changeDataPathToFullPath(List<String> result, boolean forcePrepend)
+    {
         String fullPath = result.get(0);
-        if (!fullPath.contains("/"))
+        if (!fullPath.contains("/") || forcePrepend)
         {
             result.set(0, getDataPath() + "/" + fullPath);
         }
@@ -613,10 +609,7 @@ public abstract class QueryBase implements Cloneable, MetadataManager, IQueryBas
 
     protected <T> T read(Key<T> key, Metadata configMetadata)
     {
-        T value = configMetadata.get(key);
-        if (value != null)
-            return value;
-        return null;
+        return configMetadata.hasKey(key) ? configMetadata.get(key) : null;
     }
 
 

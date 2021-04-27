@@ -48,7 +48,7 @@ fi
 prev_time_stamp=`ls -l $zip_file`
 
 # Download the app if newer
-curl -R -u "${username}:${password}" -z "$zip_file" -O http://sbmt.jhuapl.edu/internal/releases/$zip_file
+curl -R -u "${username}:${password}" -z "$zip_file" -O https://sbmt.jhuapl.edu/internal/releases/$zip_file
 
 new_time_stamp=`ls -l $zip_file`
 

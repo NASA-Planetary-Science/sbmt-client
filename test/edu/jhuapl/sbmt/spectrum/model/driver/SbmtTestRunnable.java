@@ -168,7 +168,7 @@ public class SbmtTestRunnable implements Runnable
 			else
 			{
 				System.out.println("\nNo user name and password entered. Some models may not be available.");
-				System.out.println("You may update your user name and pasword on the Body -> Update Password menu.");
+				System.out.println("You may update your user name and password on the Body -> Update Password menu.");
 			}
 		}
 		if (Console.isConfigured())

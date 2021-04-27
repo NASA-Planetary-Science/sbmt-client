@@ -70,7 +70,6 @@ import vtk.vtkPolyData;
 
 import edu.jhuapl.saavtk.gui.dialog.CustomFileChooser;
 import edu.jhuapl.saavtk.gui.render.Renderer;
-import edu.jhuapl.saavtk.gui.render.Renderer.LightingType;
 import edu.jhuapl.saavtk.model.Model;
 import edu.jhuapl.saavtk.model.ModelManager;
 import edu.jhuapl.saavtk.model.ModelNames;
@@ -83,6 +82,7 @@ import edu.jhuapl.saavtk.util.Configuration;
 import edu.jhuapl.saavtk.util.FileUtil;
 import edu.jhuapl.saavtk.util.IdPair;
 import edu.jhuapl.saavtk.util.Properties;
+import edu.jhuapl.saavtk.view.light.LightUtil;
 import edu.jhuapl.sbmt.client.SbmtInfoWindowManager;
 import edu.jhuapl.sbmt.client.SbmtSpectrumWindowManager;
 import edu.jhuapl.sbmt.client.SmallBodyModel;
@@ -144,7 +144,8 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
     private JCheckBox[] userDefinedCheckBoxes;
     protected CheckBoxTree checkBoxTree;
 
-    protected ImagingInstrument instrument = new ImagingInstrument();
+    protected final ImagingInstrument instrument;
+    protected final ImageGalleryGenerator galleryGenerator;
 
     // The source of the images of the most recently executed query
     protected ImageSource sourceOfLastQuery = ImageSource.SPICE;
@@ -185,6 +186,7 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
         this.pickManager = pickManager;
 
         this.instrument = instrument;
+        this.galleryGenerator = ImageGalleryGenerator.of(instrument);
         this.stateManager = null;
     }
 
@@ -3018,17 +3020,12 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
         // Check if image search results are valid and nonempty
         if(imageRawResults != null)
         {
-            String dataPath = instrument.searchQuery.getDataPath();
-            String galleryPath = instrument.searchQuery.getGalleryPath();
             // Create list of gallery and preview image names based on results
             List<ImageGalleryEntry> galleryEntries = new LinkedList<ImageGalleryEntry>();
             for(List<String> res : imageRawResults)
             {
-                String s = "/" + res.get(0).replace(dataPath, galleryPath);
-                // Create entry for image gallery
-                galleryEntries.add(new ImageGalleryEntry(
-                        res.get(0).substring(res.get(0).lastIndexOf("/") + 1),
-                        s+".jpeg", s+"-small.jpeg"));
+                ImageGalleryEntry entry = galleryGenerator.getEntry(res.get(0));
+                galleryEntries.add(entry);
             }
 
             // Don't bother creating a gallery if empty
@@ -3042,7 +3039,7 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
             }
 
             // Create preview gallery based on search results
-            String galleryURL = ImageGalleryGenerator.generateGallery(galleryEntries);
+            String galleryURL = galleryGenerator.generateGallery(galleryEntries);
 
             // Show gallery preview in browser
             try
@@ -3144,7 +3141,7 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
             else
             {
                 unloadImages(namePrefix);
-                renderer.setLighting(LightingType.LIGHT_KIT);
+                LightUtil.switchToLightKit(renderer);
             }
         }
         else if (e.getColumn() == showFootprintColumnIndex)

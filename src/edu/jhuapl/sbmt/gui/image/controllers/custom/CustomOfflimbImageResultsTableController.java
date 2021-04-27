@@ -146,7 +146,7 @@ public class CustomOfflimbImageResultsTableController extends CustomImageResults
                 if (!e.getValueIsAdjusting())
                 {
                     imageSearchModel.setSelectedImageIndex(imageResultsTableView.getResultList().getSelectedRows());
-                    imageResultsTableView.getViewResultsGalleryButton().setEnabled(imageResultsTableView.isEnableGallery() && imageResultsTableView.getResultList().getSelectedRowCount() > 0);
+                    updateSearchResultsControls();
                 }
             }
         });

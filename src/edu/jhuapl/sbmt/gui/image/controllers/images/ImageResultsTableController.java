@@ -69,7 +69,8 @@ public class ImageResultsTableController
     protected List<ImageKeyInterface> imageKeys;
     protected List<List<String>> imageRawResults;
     private ModelManager modelManager;
-    protected ImagingInstrument instrument;
+    protected final ImagingInstrument instrument;
+    protected final ImageGalleryGenerator galleryGenerator;
     protected Renderer renderer;
     protected StringRenderer stringRenderer;
     protected PropertyChangeListener propertyChangeListener;
@@ -103,6 +104,7 @@ public class ImageResultsTableController
         this.imageCollection = imageCollection;
         this.imageSearchModel = model;
         this.instrument = instrument;
+        this.galleryGenerator = ImageGalleryGenerator.of(instrument);
         this.renderer = renderer;
         model.addResultsChangedListener(new ImageSearchResultsListener() {
 
@@ -149,9 +151,6 @@ public class ImageResultsTableController
 
     protected void setupWidgets()
     {
-        if (instrument != null)
-            imageResultsTableView.setEnableGallery(instrument.searchQuery.getGalleryPath() != null);
-
         // setup Image Results Table view components
         imageResultsTableView.getNumberOfBoundariesComboBox().setModel(new javax.swing.DefaultComboBoxModel(new String[] { "10", "20", "30", "40", "50", "60", "70", "80", "90", "100", "110", "120", "130", "140", "150", "160", "170", "180", "190", "200",
                 "210", "220", "230", "240", "250", " " }));
@@ -201,6 +200,7 @@ public class ImageResultsTableController
                 saveImageListButtonActionPerformed(evt);
             }
         });
+        imageResultsTableView.getSaveImageListButton().setEnabled(false);
 
         imageResultsTableView.getSaveSelectedImageListButton().setText("Save Selected List...");
         imageResultsTableView.getSaveSelectedImageListButton().addActionListener(new java.awt.event.ActionListener() {
@@ -209,6 +209,7 @@ public class ImageResultsTableController
                 saveSelectedImageListButtonActionPerformed(evt);
             }
         });
+        imageResultsTableView.getSaveSelectedImageListButton().setEnabled(false);
 
         imageResultsTableView.getLoadImageListButton().setText("Load List...");
         imageResultsTableView.getLoadImageListButton().addActionListener(new java.awt.event.ActionListener() {
@@ -225,6 +226,7 @@ public class ImageResultsTableController
                 viewResultsGalleryButtonActionPerformed(evt);
             }
         });
+        imageResultsTableView.getViewResultsGalleryButton().setEnabled(false);
     }
 
     protected void setupTable()
@@ -259,7 +261,7 @@ public class ImageResultsTableController
                 if (!e.getValueIsAdjusting())
                 {
                     imageSearchModel.setSelectedImageIndex(imageResultsTableView.getResultList().getSelectedRows());
-                    imageResultsTableView.getViewResultsGalleryButton().setEnabled(imageResultsTableView.isEnableGallery() && imageResultsTableView.getResultList().getSelectedRowCount() > 0);
+                    updateSearchResultsControls();
                 }
             }
         });
@@ -274,7 +276,8 @@ public class ImageResultsTableController
         imageResultsTableView.getResultList().getColumnModel().getColumn(imageResultsTableView.getShowFootprintColumnIndex()).setResizable(true);
         imageResultsTableView.getResultList().getColumnModel().getColumn(imageResultsTableView.getFrusColumnIndex()).setResizable(true);
         imageResultsTableView.getResultList().getColumnModel().getColumn(imageResultsTableView.getBndrColumnIndex()).setResizable(true);
-        imageResultsTableView.getViewResultsGalleryButton().setVisible(true);
+
+        updateSearchResultsControls();
 
         imageResultsTableView.getResultList().getRowSorter().addRowSorterListener(new RowSorterListener() {
 
@@ -341,17 +344,14 @@ public class ImageResultsTableController
     private void viewResultsGalleryButtonActionPerformed(ActionEvent evt)
     {
         // Check if image search results are valid and nonempty
-        if (imageRawResults != null)
+        if (imageRawResults != null && galleryGenerator != null)
         {
-            String dataPath = instrument.searchQuery.getDataPath();
-            String galleryPath = instrument.searchQuery.getGalleryPath();
             // Create list of gallery and preview image names based on results
             List<ImageGalleryEntry> galleryEntries = new LinkedList<ImageGalleryEntry>();
             for (List<String> res : imageRawResults)
             {
-                String s = "/" + res.get(0).replace(dataPath, galleryPath);
-                // Create entry for image gallery
-                galleryEntries.add(new ImageGalleryEntry(res.get(0).substring(res.get(0).lastIndexOf("/") + 1), s + ".jpeg", s + "-small.jpeg"));
+                ImageGalleryEntry entry = galleryGenerator.getEntry(res.get(0));
+                galleryEntries.add(entry);
             }
 
             // Don't bother creating a gallery if empty
@@ -362,7 +362,7 @@ public class ImageResultsTableController
             }
 
             // Create preview gallery based on search results
-            String galleryURL = ImageGalleryGenerator.generateGallery(galleryEntries);
+            String galleryURL = galleryGenerator.generateGallery(galleryEntries);
 
             // Show gallery preview in browser
             try
@@ -714,16 +714,14 @@ public class ImageResultsTableController
             for (int j : columnsNeedingARenderer)
                 imageResultsTableView.getResultList().getColumnModel().getColumn(j).setPreferredWidth(widths[j] + 5);
 
-            boolean enablePostSearchButtons = resultTable.getModel().getRowCount() > 0;
-            imageResultsTableView.getSaveImageListButton().setEnabled(enablePostSearchButtons);
-            imageResultsTableView.getSaveSelectedImageListButton().setEnabled(resultTable.getSelectedRowCount() > 0);
-            imageResultsTableView.getViewResultsGalleryButton().setEnabled(imageResultsTableView.isEnableGallery() && enablePostSearchButtons);
         }
         finally
         {
             imageResultsTableView.getResultList().getModel().addTableModelListener(tableModelListener);
             imageCollection.addPropertyChangeListener(propertyChangeListener);
             boundaries.addPropertyChangeListener(propertyChangeListener);
+
+            updateSearchResultsControls();
         }
 
         // Show the first set of boundaries
@@ -731,9 +729,31 @@ public class ImageResultsTableController
         //        if (boundaries.getProps().size() > 0)
         this.showImageBoundaries(imageSearchModel.getResultIntervalCurrentlyShown());
 
-        // Enable or disable the image gallery button
-        imageResultsTableView.getViewResultsGalleryButton().setEnabled(imageResultsTableView.isEnableGallery() && !results.isEmpty());
         modifiedTableRow = -1;
+    }
+
+    /**
+     * Method called to update the state of controls that depend on the content
+     * of the image results table. This should be called whenever the content
+     * changes, for example after a search returns results or all results are
+     * cleared, etc.
+     */
+    protected void updateSearchResultsControls()
+    {
+        JTable resultTable = imageResultsTableView.getResultList();
+        boolean enablePostSearchButtons = resultTable.getModel().getRowCount() > 0;
+
+        imageResultsTableView.getSaveImageListButton().setEnabled(enablePostSearchButtons);
+        imageResultsTableView.getSaveSelectedImageListButton().setEnabled(resultTable.getSelectedRowCount() > 0);
+
+        if (galleryGenerator != null)
+        {
+            imageResultsTableView.getViewResultsGalleryButton().setEnabled(enablePostSearchButtons);
+        }
+        else
+        {
+            imageResultsTableView.getViewResultsGalleryButton().setVisible(false);
+        }
     }
 
     protected void removeImageBoundaries(IdPair idPair)

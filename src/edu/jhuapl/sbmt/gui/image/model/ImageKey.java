@@ -236,16 +236,15 @@ public class ImageKey implements ImageKeyInterface, StorableAsMetadata<ImageKey>
 	}
 
 	@Override
-	public String getFlip()
+	public final String getFlip()
 	{
-		return "None";
+		return getInstrument().getFlip();
 	}
 
 	@Override
-	public double getRotation()
+	public final double getRotation()
 	{
-		// TODO Auto-generated method stub
-		return 0;
+		return getInstrument().getRotation();
 	}
 
 }
