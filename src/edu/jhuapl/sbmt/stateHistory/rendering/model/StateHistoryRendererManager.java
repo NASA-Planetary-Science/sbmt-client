@@ -1127,13 +1127,23 @@ public class StateHistoryRendererManager extends SaavtkItemManager<StateHistory>
 			ColorProvider provider = aSrcGCP.getColorProviderFor(aItem, tmpIdx, getNumItems());
 			if (provider instanceof SimpleColorProvider)
 			{
-				if (tmpProp.simpleCP == null) tmpProp.simpleCP = provider;
-				tmpProp.activeCP = tmpProp.simpleCP;
+				tmpProp.simpleCP = provider;
+
+				if (tmpProp.customCP == null)
+				{
+					tmpProp.activeCP = tmpProp.simpleCP;
+				}
+				else
+				{
+					tmpProp.activeCP = tmpProp.customCP;
+				}
+
 			}
 			else
 			{
 				tmpProp.featureCP =  provider;
 				tmpProp.activeCP = tmpProp.featureCP;
+//				tmpProp.lastActive = tmpProp.featureCP;
 			}
 			refreshColoring(aItem);
 
