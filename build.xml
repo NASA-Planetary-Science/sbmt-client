@@ -52,7 +52,7 @@
         <pathelement location="${libDir}/commons-math3-3.6.1.jar"/>
         <pathelement location="${libDir}/commons-math3-3.2.jar"/>
       	<pathelement location="${libDir}/commons-text-1.8.jar"/>
-        <pathelement location="${libDir}/gson-2.8.0.jar"/>
+        <pathelement location="${libDir}/gson-2.8.6.jar"/>
         <pathelement location="${libDir}/jcodec-0.2.3.jar"/>
         <pathelement location="${libDir}/jcodec-javase-0.2.3.jar"/>
         <pathelement location="${libDir}/nom-tam-fits-1.13.1m0.jar"/>
@@ -184,7 +184,7 @@
         <pathelement location="${libDir}/commons-io-2.0.jar"/>
         <pathelement location="${libDir}/commons-math3-3.2.jar"/>
       	<pathelement location="${libDir}/commons-text-1.8.jar"/>
-        <pathelement location="${libDir}/gson-2.8.0.jar"/>
+        <pathelement location="${libDir}/gson-2.8.6.jar"/>
         <pathelement location="${libDir}/jcodec-0.2.3.jar"/>
         <pathelement location="${libDir}/jcodec-javase-0.2.3.jar"/>
         <pathelement location="${libDir}/nom-tam-fits-1.13.1m0.jar"/>
@@ -243,7 +243,7 @@
         	commons-math3-3.6.1.jar
             commons-math3-3.2.jar
           	commons-text-1.8.jar
-            gson-2.8.0.jar
+            gson-2.8.6.jar
             jcodec-0.2.3.jar
             jcodec-javase-0.2.3.jar
             nom-tam-fits-1.13.1m0.jar
@@ -368,7 +368,7 @@
             commons-math3-3.6.1.jar
             commons-math3-3.2.jar
           	commons-text-1.8.jar
-        	gson-2.8.0.jar
+        	gson-2.8.6.jar
         	jcodec-0.2.3.jar
         	jcodec-javase-0.2.3.jar
             nom-tam-fits-1.13.1m0.jar
@@ -478,7 +478,7 @@
         									commons-math3-3.6.1.jar
                                             commons-math3-3.2.jar
                                             commons-text-1.8.jar
-                                            gson-2.8.0.jar
+                                            gson-2.8.6.jar
                                             jcodec-0.2.3.jar
                                             jcodec-javase-0.2.3.jar
                                             nom-tam-fits-1.13.1m0.jar
@@ -620,7 +620,7 @@
     <delete file="${rootlibDir}/commons-math3-3.6.1.jar"/>
     <delete file="${rootlibDir}/commons-math3-3.2.jar"/>
   	<delete file="${rootlibDir}/commons-text-1.8.jar"/>
-    <delete file="${rootlibDir}/gson-2.8.0.jar"/>
+    <delete file="${rootlibDir}/gson-2.8.6.jar"/>
     <delete file="${rootlibDir}/jcodec-0.2.3.jar"/>
     <delete file="${rootlibDir}/jcodec-javase-0.2.3.jar"/>
     <delete file="${rootlibDir}/nom-tam-fits-1.13.1m0.jar"/>
@@ -671,7 +671,7 @@
         <pathelement location="${libDir}/commons-io-2.0.jar"/>
         <pathelement location="${libDir}/commons-math3-3.2.jar"/>
         <pathelement location="${libDir}/commons-text-1.8.jar"/>
-        <pathelement location="${libDir}/gson-2.8.0.jar"/>
+        <pathelement location="${libDir}/gson-2.8.6.jar"/>
         <pathelement location="${libDir}/jcodec-javase-0.2.3.jar"/>
         <pathelement location="${libDir}/jcodec-javase-0.2.3.jar"/>
         <pathelement location="${libDir}/nom-tam-fits-1.13.1m0.jar"/>
@@ -705,7 +705,7 @@
         <pathelement location="${libDir}/commons-math3-3.6.1.jar"/>
         <pathelement location="${libDir}/commons-math3-3.2.jar"/>
         <pathelement location="${libDir}/commons-text-1.8.jar"/>
-        <pathelement location="${libDir}/gson-2.8.0.jar"/>
+        <pathelement location="${libDir}/gson-2.8.6.jar"/>
         <pathelement location="${libDir}/jcodec-javase-0.2.3.jar"/>
         <pathelement location="${libDir}/jcodec-javase-0.2.3.jar"/>
         <pathelement location="${libDir}/nom-tam-fits-1.13.1m0.jar"/>
