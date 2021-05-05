@@ -38,8 +38,6 @@ public class SpiceState implements State
      */
     private double ephemerisTime;
 
-    private EphemerisID bodyId;
-
     private SpicePointingProvider pointingProvider;
 
     private String currentInstrumentFrameName = null;
@@ -50,7 +48,6 @@ public class SpiceState implements State
 	public SpiceState(SpicePointingProvider pointingProvider)
 	{
 		this.pointingProvider = pointingProvider;
-		this.bodyId = pointingProvider.getTargetId();
 		this.currentInstrumentFrameName = pointingProvider.getInstrumentNames()[0];
 	}
 
@@ -205,7 +202,6 @@ public class SpiceState implements State
 		this.ephemerisTime = ephemerisTime;
 		this.utc = TimeUtil.et2str(ephemerisTime);
 		this.pointing = pointingProvider.provide(currentInstrumentFrameName, ephemerisTime);
-
 	}
 
 	/**
@@ -275,5 +271,4 @@ public class SpiceState implements State
 	{
 		return "SPICE State:  SC Position: " + getSpacecraftPosition()[0] + "," + getSpacecraftPosition()[1] + "," + getSpacecraftPosition()[2];
 	}
-
 }

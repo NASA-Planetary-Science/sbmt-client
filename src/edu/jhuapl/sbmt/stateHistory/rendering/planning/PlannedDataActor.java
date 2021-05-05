@@ -1,5 +1,7 @@
 package edu.jhuapl.sbmt.stateHistory.rendering.planning;
 
+import java.awt.Color;
+
 import vtk.vtkActor;
 
 public interface PlannedDataActor
@@ -36,4 +38,8 @@ public interface PlannedDataActor
 	 * @return
 	 */
 	public double getTime();
+
+	public Color getColor();
+
+	public void setColor(Color color);
 }

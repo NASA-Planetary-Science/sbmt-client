@@ -6,8 +6,8 @@ import edu.jhuapl.sbmt.stateHistory.model.stateHistory.StateHistoryCollection;
 import edu.jhuapl.sbmt.stateHistory.model.time.StateHistoryTimeModel;
 import edu.jhuapl.sbmt.stateHistory.model.time.TimeWindow;
 import edu.jhuapl.sbmt.stateHistory.rendering.model.StateHistoryRendererManager;
-import edu.jhuapl.sbmt.stateHistory.ui.state.StateHistoryPercentIntervalChanger;
-import edu.jhuapl.sbmt.stateHistory.ui.state.version2.StateHistoryDisplayedIntervalPanel;
+import edu.jhuapl.sbmt.stateHistory.ui.state.displayedInterval.StateHistoryDisplayedIntervalPanel;
+import edu.jhuapl.sbmt.stateHistory.ui.state.displayedInterval.StateHistoryPercentIntervalChanger;
 import edu.jhuapl.sbmt.util.TimeUtil;
 
 import glum.item.ItemEventType;
@@ -25,7 +25,7 @@ public class StateHistoryDisplayedIntervalController
 	private StateHistoryDisplayedIntervalPanel view;
 
 	/**
-	 *
+	 * State History time model object
 	 */
 	private StateHistoryTimeModel timeModel;
 
@@ -41,15 +41,13 @@ public class StateHistoryDisplayedIntervalController
 	{
 		this.timeModel = timeModel;
 		view = new StateHistoryDisplayedIntervalPanel();
-		StateHistoryCollection intervalSet = rendererManager.getRuns();
-
+		StateHistoryCollection intervalSet = rendererManager.getHistoryCollection();
 
 		//If the selected item is changed, update the current run, reset the time range, and the time interval label
 		rendererManager.addListener((aSource, aEventType) -> {
 
 			if (aEventType != ItemEventType.ItemsSelected) return;
-			if (rendererManager.getRuns().getCurrentRun() == null) return;
-//			if (intervalSet.getCurrentRun() == null) return;
+			if (rendererManager.getHistoryCollection().getCurrentRun() == null) return;
 			if (rendererManager.getSelectedItems().size() > 0)
 			{
 				IStateHistoryMetadata metadata = intervalSet.getCurrentRun().getMetadata();

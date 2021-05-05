@@ -1,13 +1,11 @@
 package edu.jhuapl.sbmt.stateHistory.model.planning.spectrometers;
 
-import java.awt.Color;
 import java.beans.PropertyChangeEvent;
 
 import edu.jhuapl.saavtk.util.ProgressStatusListener;
 import edu.jhuapl.saavtk.util.Properties;
 import edu.jhuapl.sbmt.client.SmallBodyModel;
 import edu.jhuapl.sbmt.model.image.perspectiveImage.PerspectiveImageFootprint;
-import edu.jhuapl.sbmt.stateHistory.model.interfaces.IStateHistoryMetadata;
 import edu.jhuapl.sbmt.stateHistory.model.planning.BasePlannedDataCollection;
 import edu.jhuapl.sbmt.stateHistory.rendering.PlannedDataProperties;
 import edu.jhuapl.sbmt.stateHistory.rendering.model.StateHistoryPositionCalculator;
@@ -15,12 +13,6 @@ import edu.jhuapl.sbmt.stateHistory.rendering.planning.PlannedDataActor;
 
 public class PlannedSpectrumCollection  extends BasePlannedDataCollection<PlannedSpectrum>
 {
-	private double time;
-	private String filename;
-	private IStateHistoryMetadata stateHistoryMetadata;
-	private Color color = Color.blue;
-	private boolean showing = false;
-	private boolean displayingDetails = false;
 
 	public PlannedSpectrumCollection(String filename, SmallBodyModel smallBodyModel)
 	{
@@ -39,6 +31,7 @@ public class PlannedSpectrumCollection  extends BasePlannedDataCollection<Planne
 		}
 	}
 
+	@Override
 	public void updateFootprints()
 	{
 		if (stateHistorySource == null) return;
@@ -66,77 +59,5 @@ public class PlannedSpectrumCollection  extends BasePlannedDataCollection<Planne
 		listener.setProgressStatus("Adding spectrum " + plannedData.size(), 0);
 		setAllItems(plannedData);
 		this.pcs.firePropertyChange("PLANNED_SPECTRA_CHANGED", null, null);
-	}
-
-	/**
-	 * @return the stateHistoryMetadata
-	 */
-	public IStateHistoryMetadata getStateHistoryMetadata()
-	{
-		return stateHistoryMetadata;
-	}
-
-	/**
-	 * @param stateHistoryMetadata the stateHistoryMetadata to set
-	 */
-	public void setStateHistoryMetadata(IStateHistoryMetadata stateHistoryMetadata)
-	{
-		this.stateHistoryMetadata = stateHistoryMetadata;
-	}
-
-	/**
-	 * @return the color
-	 */
-	public Color getColor()
-	{
-		return color;
-	}
-
-	/**
-	 * @param color the color to set
-	 */
-	public void setColor(Color color)
-	{
-		this.color = color;
-	}
-
-	/**
-	 * @return the showing
-	 */
-	public boolean isShowing()
-	{
-		return showing;
-	}
-
-	/**
-	 * @param showing the showing to set
-	 */
-	public void setShowing(boolean showing)
-	{
-		this.showing = showing;
-	}
-
-	/**
-	 * @return the displayingDetails
-	 */
-	public boolean isDisplayingDetails()
-	{
-		return displayingDetails;
-	}
-
-	/**
-	 * @param displayingDetails the displayingDetails to set
-	 */
-	public void setDisplayingDetails(boolean displayingDetails)
-	{
-		this.displayingDetails = displayingDetails;
-	}
-
-	/**
-	 * @return the filename
-	 */
-	public String getFilename()
-	{
-		return filename;
 	}
 }

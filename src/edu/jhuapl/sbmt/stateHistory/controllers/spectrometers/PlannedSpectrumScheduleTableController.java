@@ -22,6 +22,11 @@ import edu.jhuapl.sbmt.stateHistory.model.planning.spectrometers.PlannedSpectrum
 import edu.jhuapl.sbmt.stateHistory.rendering.model.StateHistoryRendererManager;
 import edu.jhuapl.sbmt.stateHistory.ui.spectrometers.schedule.PlannedSpectrumScheduleView;
 
+/**
+ * Controls the UI forthe planned spectrum schedules
+ * @author steelrj1
+ *
+ */
 public class PlannedSpectrumScheduleTableController implements IPlannedDataController<PlannedSpectrumScheduleView>
 {
 	PlannedSpectrumScheduleView view;
@@ -36,6 +41,8 @@ public class PlannedSpectrumScheduleTableController implements IPlannedDataContr
 		collection = new PlannedSpectrumScheduleCollection();
 
 		this.view = new PlannedSpectrumScheduleView(collection);
+
+		//creates a new spectrum collection for each schedule and loads it into the tool
 		view.getTable().getLoadPlannedSpectrumButton().addActionListener(e -> {
 
 			File file = CustomFileChooser.showOpenDialog(view, "Select File");
@@ -51,8 +58,9 @@ public class PlannedSpectrumScheduleTableController implements IPlannedDataContr
 						PlannedSpectrumCollection spectrumCollection = new PlannedSpectrumCollection(file.getAbsolutePath(), smallBodyModel);
 			        	if (rendererManager.getSelectedItems().size() > 0) historyMetadata = rendererManager.getSelectedItems().asList().get(0).getMetadata();
 			        		spectrumCollection.setStateHistoryMetadata(historyMetadata);
-			        	spectrumCollection.updateStateHistorySource(rendererManager.getRuns().getCurrentRun());
+			        	spectrumCollection.updateStateHistorySource(rendererManager.getHistoryCollection().getCurrentRun());
 			        	pcls.forEach(listener -> spectrumCollection.addPropertyChangeListener(listener));
+			        	spectrumCollection.addListener((aSource, aEventType) -> { refreshView(); });
 			        	collection.addCollection(spectrumCollection);
 
 						PlannedSpectrumIOHelper.loadPlannedSpectraFromFileWithName(file.getAbsolutePath(), historyMetadata, spectrumCollection, new ProgressStatusListener()
@@ -92,20 +100,17 @@ public class PlannedSpectrumScheduleTableController implements IPlannedDataContr
 
 
 		view.getTable().getSyncWithTimelineButton().addActionListener(e -> {
-			rendererManager.setSyncSpectra(view.getTable().getSyncWithTimelineButton().isSelected());
-			collection.getAllItems().forEach( coll -> coll.updateFootprints() );
-			rendererManager.propertyChange(new PropertyChangeEvent(this, Properties.MODEL_CHANGED, null, null));
-			refreshView();
+			updateSyncState();
 		});
 
 		view.getTable().getShowPlannedSpectrumButton().addActionListener(e -> {
 
-			collection.getAllItems().forEach( coll -> coll.getSelectedItems().forEach(item -> coll.setDataShowing(item, true)));
+			collection.getSelectedItems().forEach( coll -> coll.setShowing(true));
 			refreshView();
 		});
 
 		view.getTable().getHidePlannedSpectrumButton().addActionListener(e -> {
-			collection.getAllItems().forEach( coll -> coll.getSelectedItems().forEach(item -> coll.setDataShowing(item, false)));
+			collection.getSelectedItems().forEach( coll -> coll.setShowing(false));
 			refreshView();
 		});
 
@@ -113,6 +118,14 @@ public class PlannedSpectrumScheduleTableController implements IPlannedDataContr
 		{
 			refreshView();
 		});
+	}
+
+	private void updateSyncState()
+	{
+		rendererManager.setSyncImages(view.getTable().getSyncWithTimelineButton().isSelected());
+		collection.getAllItems().forEach( coll -> coll.updateFootprints() );
+		rendererManager.propertyChange(new PropertyChangeEvent(this, Properties.MODEL_CHANGED, null, null));
+		refreshView();
 	}
 
 	public void addPropertyChangeListener(PropertyChangeListener listener)
@@ -153,11 +166,11 @@ public class PlannedSpectrumScheduleTableController implements IPlannedDataContr
 	}
 
 	/**
+	 * Returns the collection for this controller
 	 * @return the collection
 	 */
 	public PlannedSpectrumScheduleCollection getCollection()
 	{
 		return collection;
 	}
-
 }

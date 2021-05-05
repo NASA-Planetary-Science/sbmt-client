@@ -153,9 +153,6 @@ public class TrajectoryActor extends vtkActor
     		double x = scPosition.getI();
     		double y = scPosition.getJ();
     		double z = scPosition.getK();
-//        	Double x = traj.getX().get(i);
-//            Double y = traj.getY().get(i);
-//            Double z = traj.getZ().get(i);
 
             points.InsertNextPoint(x, y, z);
             polyline.GetPointIds().InsertNextId(i);

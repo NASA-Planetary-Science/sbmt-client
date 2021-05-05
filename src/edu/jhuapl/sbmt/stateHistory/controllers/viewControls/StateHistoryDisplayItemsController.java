@@ -1,22 +1,28 @@
 package edu.jhuapl.sbmt.stateHistory.controllers.viewControls;
 
-import java.awt.event.ItemEvent;
-import java.awt.event.ItemListener;
+import java.awt.Font;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+
+import javax.swing.JFrame;
+import javax.swing.border.TitledBorder;
+
+import org.jfree.ui.FontChooserDialog;
 
 import edu.jhuapl.sbmt.stateHistory.rendering.model.StateHistoryRendererManager;
-import edu.jhuapl.sbmt.stateHistory.ui.state.version2.viewControls.StateHistoryDisplayItemsPanel;
+import edu.jhuapl.sbmt.stateHistory.ui.state.displayItems.table.DisplayOptionsTableView;
 
 /**
  * Controllers that governs the view which contains controls for which items to display in the renderer
  * @author steelrj1
  *
  */
-public class StateHistoryDisplayItemsController implements ItemListener
+public class StateHistoryDisplayItemsController
 {
 	/**
 	 * The view that this controller governs
 	 */
-	StateHistoryDisplayItemsPanel view;
+	DisplayOptionsTableView view;
 
 	/**
 	 * Constructor.  Sets state properties and initializes view control panel
@@ -25,33 +31,39 @@ public class StateHistoryDisplayItemsController implements ItemListener
 	 */
 	public StateHistoryDisplayItemsController(StateHistoryRendererManager rendererManager)
 	{
-		initializeViewControlPanel(rendererManager);
-	}
+		view = new DisplayOptionsTableView(rendererManager);
+		view.setup();
+		view.setBorder(new TitledBorder(null, "Display Items", TitledBorder.LEADING, TitledBorder.TOP, null, null));
+		view.getFontButton().addActionListener(new ActionListener()
+		{
 
-	/**
-	 * Initializes the view control panel, and sets up action listeners, etc
-	 */
-	private void initializeViewControlPanel(StateHistoryRendererManager rendererManager)
-	{
-		view = new StateHistoryDisplayItemsPanel();
-		view.setStateHistoryCollection(rendererManager);
-//		String[] distanceChoices =
-//		{ "Distance to Center", "Distance to Surface" };
-//		DefaultComboBoxModel<String> comboModelDistance = new DefaultComboBoxModel<String>(distanceChoices);
-	}
+			@Override
+			public void actionPerformed(ActionEvent e)
+			{
+				//show a font dialog
+				JFrame fontFrame = new JFrame();
+	        	FontChooserDialog fontDialog = new FontChooserDialog(fontFrame, "Choose Font", true, rendererManager.getSpacecraftTextFont());
+	        	fontDialog.setSize(400, 300);
+	        	fontDialog.setVisible(true);
+	        	if (fontDialog.getSelectedFont() != null)
+	        	{
+	        		Font font = fontDialog.getSelectedFont();
+	        		rendererManager.setDistanceTextFont(font);
+	        		rendererManager.setEarthTextFont(font);
+	        		rendererManager.setSunTextFont(font);
+	        		rendererManager.setSpacecraftTextFont(font);
+	        		rendererManager.setSpacecraftLabelTextFont(font);
+	        	}
+			}
+		});
 
-	@Override
-	public void itemStateChanged(ItemEvent e) throws NullPointerException
-	{
-//		Object source = e.getItemSelectable();
-//		StateHistory currentRun = runs.getCurrentRun();
 	}
 
 	/**
 	 * The panel associated with this controller
 	 * @return
 	 */
-	public StateHistoryDisplayItemsPanel getView()
+	public DisplayOptionsTableView getView()
 	{
 		return view;
 	}

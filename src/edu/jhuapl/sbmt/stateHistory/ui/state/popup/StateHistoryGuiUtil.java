@@ -2,8 +2,9 @@ package edu.jhuapl.sbmt.stateHistory.ui.state.popup;
 
 import java.awt.Component;
 
+import javax.swing.JMenu;
+
 import edu.jhuapl.sbmt.stateHistory.model.interfaces.StateHistory;
-import edu.jhuapl.sbmt.stateHistory.model.stateHistory.StateHistoryCollection;
 import edu.jhuapl.sbmt.stateHistory.rendering.model.StateHistoryRendererManager;
 
 import glum.gui.action.PopupMenu;
@@ -30,14 +31,16 @@ public class StateHistoryGuiUtil
 	public static PopupMenu<StateHistory> formStateHistoryFileSpecPopupMenu(StateHistoryRendererManager rendererManager,
 			Component aParent)
 	{
-		StateHistoryCollection aManager = rendererManager.getRuns();
-		PopupMenu<StateHistory> retLPM = new PopupMenu<>(rendererManager);
+		PopupMenu<StateHistory> menu = new PopupMenu<>(rendererManager);
 
-		retLPM.installPopAction(new SaveFileAction(rendererManager, aParent), "Save Trajectory");
-		retLPM.installPopAction(new HideShowStateHistoryAction(rendererManager, "Trajectory"), "Show Trajectory");
+		JMenu colorMenu = new JMenu("Trajectory Color");
+		menu.installPopAction(new MultiColorStateHistoryAction(rendererManager, aParent, colorMenu), colorMenu);
+
+		menu.installPopAction(new SaveFileAction(rendererManager, aParent), "Save Trajectory");
+		menu.installPopAction(new HideShowStateHistoryAction(rendererManager, "Trajectory"), "Show Trajectory");
 		if (rendererManager.getNumItems() > 1)
-			retLPM.installPopAction(new HideOtherStateHistoryAction(rendererManager), "Hide Other Trajectories");
+			menu.installPopAction(new HideOtherStateHistoryAction(rendererManager), "Hide Other Trajectories");
 
-		return retLPM;
+		return menu;
 	}
 }

@@ -23,6 +23,11 @@ import edu.jhuapl.sbmt.stateHistory.model.planning.lidar.PlannedLidarTrackSchedu
 import edu.jhuapl.sbmt.stateHistory.rendering.model.StateHistoryRendererManager;
 import edu.jhuapl.sbmt.stateHistory.ui.lidars.schedule.PlannedLidarTrackScheduleView;
 
+/**
+ * Controls the UI for the planned Lidar schedules
+ * @author steelrj1
+ *
+ */
 public class PlannedLidarScheduleTableController implements IPlannedDataController<PlannedLidarTrackScheduleView>
 {
 	PlannedLidarTrackScheduleView view;
@@ -37,6 +42,8 @@ public class PlannedLidarScheduleTableController implements IPlannedDataControll
 		collection = new PlannedLidarTrackScheduleCollection();
 
 		this.view = new PlannedLidarTrackScheduleView(collection);
+
+		//creates a new lidar collection for each schedule and loads it into the tool
 		view.getTable().getLoadPlannedLidarTrackButton().addActionListener(e -> {
 
 			File file = CustomFileChooser.showOpenDialog(view, "Select File");
@@ -52,9 +59,10 @@ public class PlannedLidarScheduleTableController implements IPlannedDataControll
 						PlannedLidarTrackCollection lidarTrackCollection = new PlannedLidarTrackCollection(file.getAbsolutePath(), modelManager, smallBodyModel, rendererManager.getRenderer());
 			        	if (rendererManager.getSelectedItems().size() > 0) historyMetadata = rendererManager.getSelectedItems().asList().get(0).getMetadata();
 			        		lidarTrackCollection.setStateHistoryMetadata(historyMetadata);
-			        	lidarTrackCollection.updateStateHistorySource(rendererManager.getRuns().getCurrentRun());
+			        	lidarTrackCollection.updateStateHistorySource(rendererManager.getHistoryCollection().getCurrentRun());
 			        	lidarTrackCollection.setPercentageShown(0);
 			        	pcls.forEach(listener -> lidarTrackCollection.addPropertyChangeListener(listener));
+			        	lidarTrackCollection.addListener((aSource, aEventType) -> { refreshView(); });
 			        	collection.addCollection(lidarTrackCollection);
 
 						PlannedLidarTrackIOHelper.loadPlannedLidarTracksFromFileWithName(file.getAbsolutePath(), historyMetadata, lidarTrackCollection, new ProgressStatusListener()
@@ -94,20 +102,17 @@ public class PlannedLidarScheduleTableController implements IPlannedDataControll
 
 
 		view.getTable().getSyncWithTimelineButton().addActionListener(e -> {
-			rendererManager.setSyncLidar(view.getTable().getSyncWithTimelineButton().isSelected());
-			collection.getAllItems().forEach( coll -> coll.updateFootprints() );
-			rendererManager.propertyChange(new PropertyChangeEvent(this, Properties.MODEL_CHANGED, null, null));
-			refreshView();
+			updateSyncState();
 		});
 
 		view.getTable().getShowPlannedLidarTrackButton().addActionListener(e -> {
 
-			collection.getAllItems().forEach( coll -> coll.getSelectedItems().forEach(item -> coll.setDataShowing(item, true)));
+			collection.getSelectedItems().forEach( coll -> coll.setShowing(true));
 			refreshView();
 		});
 
 		view.getTable().getHidePlannedLidarTrackButton().addActionListener(e -> {
-			collection.getAllItems().forEach( coll -> coll.getSelectedItems().forEach(item -> coll.setDataShowing(item, false)));
+			collection.getSelectedItems().forEach( coll -> coll.setShowing(false));
 			refreshView();
 		});
 
@@ -117,6 +122,18 @@ public class PlannedLidarScheduleTableController implements IPlannedDataControll
 		});
 	}
 
+	private void updateSyncState()
+	{
+		rendererManager.setSyncImages(view.getTable().getSyncWithTimelineButton().isSelected());
+		collection.getAllItems().forEach( coll -> coll.updateFootprints() );
+		rendererManager.propertyChange(new PropertyChangeEvent(this, Properties.MODEL_CHANGED, null, null));
+		refreshView();
+	}
+
+	/**
+	 * Adds a property change listener to this controller
+	 * @param listener
+	 */
 	public void addPropertyChangeListener(PropertyChangeListener listener)
 	{
 		pcls.add(listener);
@@ -155,6 +172,7 @@ public class PlannedLidarScheduleTableController implements IPlannedDataControll
 	}
 
 	/**
+	 * Returns the p
 	 * @return the collection
 	 */
 	public PlannedLidarTrackScheduleCollection getCollection()

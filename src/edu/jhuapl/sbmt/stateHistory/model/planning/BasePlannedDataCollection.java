@@ -1,5 +1,6 @@
 package edu.jhuapl.sbmt.stateHistory.model.planning;
 
+import java.awt.Color;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.util.ArrayList;
@@ -12,13 +13,14 @@ import vtk.vtkProp;
 import edu.jhuapl.saavtk.model.SaavtkItemManager;
 import edu.jhuapl.saavtk.util.Properties;
 import edu.jhuapl.sbmt.client.SmallBodyModel;
+import edu.jhuapl.sbmt.stateHistory.model.interfaces.IStateHistoryMetadata;
 import edu.jhuapl.sbmt.stateHistory.model.interfaces.StateHistory;
 import edu.jhuapl.sbmt.stateHistory.rendering.planning.PlannedDataActor;
 import edu.jhuapl.sbmt.stateHistory.rendering.planning.PlannedInstrumentRendererManager;
 
 import glum.item.ItemEventType;
 
-public class BasePlannedDataCollection<T extends PlannedInstrumentData> extends SaavtkItemManager<T> implements PropertyChangeListener
+public abstract class BasePlannedDataCollection<T extends PlannedInstrumentData> extends SaavtkItemManager<T> implements PropertyChangeListener
 {
 
 	protected List<T> plannedData = new ArrayList<T>();
@@ -31,6 +33,13 @@ public class BasePlannedDataCollection<T extends PlannedInstrumentData> extends 
 	protected SmallBodyModel smallBodyModel;
 
 	protected StateHistory stateHistorySource;
+
+	protected double time;
+	protected String filename;
+	protected IStateHistoryMetadata stateHistoryMetadata;
+	protected Color color = Color.blue;
+	protected boolean showing = false;
+	protected boolean displayingDetails = false;
 
 	public BasePlannedDataCollection(SmallBodyModel smallBodyModel)
 	{
@@ -132,4 +141,79 @@ public class BasePlannedDataCollection<T extends PlannedInstrumentData> extends 
 	{
 		return stateHistorySource;
 	}
+
+	public String getFilename()
+	{
+		return filename;
+	}
+
+	/**
+	 * @return the stateHistoryMetadata
+	 */
+	public IStateHistoryMetadata getStateHistoryMetadata()
+	{
+		return stateHistoryMetadata;
+	}
+
+	/**
+	 * @param stateHistoryMetadata the stateHistoryMetadata to set
+	 */
+	public void setStateHistoryMetadata(IStateHistoryMetadata stateHistoryMetadata)
+	{
+		this.stateHistoryMetadata = stateHistoryMetadata;
+	}
+
+	/**
+	 * @return the color
+	 */
+	public Color getColor()
+	{
+		return color;
+	}
+
+	/**
+	 * @param color the color to set
+	 */
+	public void setColor(Color color)
+	{
+		this.color = color;
+		notifyListeners(this, ItemEventType.ItemsChanged);
+	}
+
+	/**
+	 * @return the showing
+	 */
+	public boolean isShowing()
+	{
+		return showing;
+	}
+
+	/**
+	 * @param showing the showing to set
+	 */
+	public void setShowing(boolean showing)
+	{
+		this.showing = showing;
+		notifyListeners(this, ItemEventType.ItemsChanged);
+		updateFootprints();
+	}
+
+	/**
+	 * @return the displayingDetails
+	 */
+	public boolean isDisplayingDetails()
+	{
+		return displayingDetails;
+	}
+
+	/**
+	 * @param displayingDetails the displayingDetails to set
+	 */
+	public void setDisplayingDetails(boolean displayingDetails)
+	{
+		this.displayingDetails = displayingDetails;
+		notifyListeners(this, ItemEventType.ItemsChanged);
+	}
+
+	public abstract void updateFootprints();
 }

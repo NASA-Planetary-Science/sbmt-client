@@ -43,7 +43,6 @@ public class StandardStateHistoryLocationProvider implements IStateHistoryLocati
 	@Override
 	public double[] getSpacecraftPosition()
 	{
-		System.out.println("StandardStateHistoryLocationProvider: getSpacecraftPosition: returning ");
 		return getSpacecraftPositionAtTime(stateHistory.getMetadata().getCurrentTime());
 	}
 

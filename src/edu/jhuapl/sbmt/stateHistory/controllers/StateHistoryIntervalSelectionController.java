@@ -23,8 +23,8 @@ import edu.jhuapl.sbmt.stateHistory.model.io.StateHistoryIOException;
 import edu.jhuapl.sbmt.stateHistory.model.io.StateHistoryModelIOHelper;
 import edu.jhuapl.sbmt.stateHistory.model.stateHistory.StateHistoryKey;
 import edu.jhuapl.sbmt.stateHistory.rendering.model.StateHistoryRendererManager;
-import edu.jhuapl.sbmt.stateHistory.ui.state.version2.StateHistoryIntervalGenerationPanel;
-import edu.jhuapl.sbmt.stateHistory.ui.state.version2.table.StateHistoryTableView;
+import edu.jhuapl.sbmt.stateHistory.ui.state.intervalGeneration.StateHistoryIntervalGenerationPanel;
+import edu.jhuapl.sbmt.stateHistory.ui.state.intervalSelection.table.StateHistoryTableView;
 
 /**
  * Controller that governs the "Available Files" panel for the StateHistory tab
@@ -35,7 +35,6 @@ public class StateHistoryIntervalSelectionController
 {
     private StateHistoryTableView view;
     private StateHistoryIntervalGenerationController intervalGenerationController;
-//    private ObservationPlanningViewControlsController viewControlsController;
 
 	/**
 	 * @param historyModel
@@ -62,7 +61,7 @@ public class StateHistoryIntervalSelectionController
         	if (file == null) return;
         	try
 			{
-        		historyFromFile = StateHistoryModelIOHelper.loadStateHistoryFromFile(file, bodyModel.getModelName(), new StateHistoryKey(historyModel.getRuns()));
+        		historyFromFile = StateHistoryModelIOHelper.loadStateHistoryFromFile(file, bodyModel.getModelName(), new StateHistoryKey(historyModel.getHistoryCollection()));
         		historyFromFile.getLocationProvider().reloadPointingProvider();
         		historyModel.addInterval(historyFromFile);
 			}
@@ -177,7 +176,7 @@ public class StateHistoryIntervalSelectionController
            		if (genPanel.isEditMode())
                	{
 	        		genPanel.updateStateHistory();
-	        		rendererManager.getRuns().fireHistorySegmentUpdatedListeners(history);
+	        		rendererManager.getHistoryCollection().fireHistorySegmentUpdatedListeners(history);
 	        		SwingUtilities.invokeLater(new Runnable()
 					{
 						@Override
@@ -228,7 +227,6 @@ public class StateHistoryIntervalSelectionController
         rendererManager.addPropertyChangeListener(evt ->
 		{
 			view.getTable().repaint();
-//			rendererManager.getRenderer().getRenderWindowPanel().resetCameraClippingRange();
 			updateButtonState(rendererManager);
 		});
 

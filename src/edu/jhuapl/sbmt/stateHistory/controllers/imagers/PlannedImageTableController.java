@@ -1,19 +1,18 @@
 package edu.jhuapl.sbmt.stateHistory.controllers.imagers;
 
-import javax.swing.SwingUtilities;
-
-import com.google.common.collect.ImmutableSet;
-
-import edu.jhuapl.sbmt.stateHistory.controllers.IPlannedDataController;
+import edu.jhuapl.sbmt.stateHistory.controllers.PlannedDataTableController;
 import edu.jhuapl.sbmt.stateHistory.model.interfaces.IStateHistoryMetadata;
 import edu.jhuapl.sbmt.stateHistory.model.planning.imagers.PlannedImage;
 import edu.jhuapl.sbmt.stateHistory.model.planning.imagers.PlannedImageCollection;
 import edu.jhuapl.sbmt.stateHistory.ui.imagers.PlannedImageView;
 
-public class PlannedImageTableController implements IPlannedDataController<PlannedImageView>
+/**
+ * Class that controls the UI for an individual planned image schedule
+ * @author steelrj1
+ *
+ */
+public class PlannedImageTableController extends PlannedDataTableController<PlannedImageView, PlannedImage>
 {
-	PlannedImageView view;
-	PlannedImageCollection collection;
 	IStateHistoryMetadata historyMetadata = null;
 
 	public PlannedImageTableController(PlannedImageCollection collection)
@@ -22,7 +21,6 @@ public class PlannedImageTableController implements IPlannedDataController<Plann
 		view = new PlannedImageView(collection);
 
 		view.getTable().getShowPlannedImageButton().addActionListener(e -> {
-
 			collection.getSelectedItems().forEach(item -> collection.setDataShowing(item, true));
 			refreshView();
 		});
@@ -38,38 +36,12 @@ public class PlannedImageTableController implements IPlannedDataController<Plann
 		});
 	}
 
-	private void refreshView()
+	@Override
+	protected void updateButtonState()
 	{
-		updateButtonState();
-		SwingUtilities.invokeLater(new Runnable()
-		{
-
-			@Override
-			public void run()
-			{
-				view.repaint();
-	            view.validate();
-			}
-		});
-	}
-
-	private void updateButtonState()
-	{
-		ImmutableSet<PlannedImage> selectedItems = collection.getSelectedItems();
-		boolean allMapped = true;
-		for (PlannedImage history : selectedItems)
-		{
-			if (history.isShowing() == false) allMapped = false;
-		}
-		view.getTable().getHidePlannedImageButton().setEnabled((selectedItems.size() > 0) && allMapped);
-		view.getTable().getShowPlannedImageButton().setEnabled((selectedItems.size() > 0) && !allMapped);
-	}
-
-	/**
-	 * @return the view
-	 */
-	public PlannedImageView getView()
-	{
-		return view;
+		super.updateButtonState();
+		int selectedSize = collection.getSelectedItems().size();
+		view.getTable().getHidePlannedImageButton().setEnabled((selectedSize > 0) && allMapped);
+		view.getTable().getShowPlannedImageButton().setEnabled((selectedSize > 0) && !allMapped);
 	}
 }

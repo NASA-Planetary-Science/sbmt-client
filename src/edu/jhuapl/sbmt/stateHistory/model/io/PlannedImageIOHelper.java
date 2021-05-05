@@ -26,7 +26,6 @@ public class PlannedImageIOHelper
 	 */
 	public static void loadPlannedImagesFromFileWithName(String filename, IStateHistoryMetadata metadata, PlannedImageCollection collection, ProgressStatusListener listener, Runnable completion) throws IOException
 	{
-		System.out.println("PlannedImageIOHelper: loadPlannedImagesFromFileWithName: metadata is " + metadata);
 		BufferedReader reader = new BufferedReader(new FileReader(filename));
 		String line;
 		while ((line = reader.readLine()) != null)

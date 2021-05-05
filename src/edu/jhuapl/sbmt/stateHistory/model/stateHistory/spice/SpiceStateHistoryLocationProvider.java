@@ -55,7 +55,6 @@ public class SpiceStateHistoryLocationProvider implements IStateHistoryLocationP
 	@Override
 	public double[] getSpacecraftPosition()
 	{
-//		System.out.println("SpiceStateHistoryLocationProvider: getSpacecraftPosition: state is " + state);
 		return state.getSpacecraftPosition();
 	}
 
@@ -269,5 +268,4 @@ public class SpiceStateHistoryLocationProvider implements IStateHistoryLocationP
 			throw new StateHistoryIOException("Error reading in SPICE related files; please check kernels", ioe);
 		}
 	}
-
 }

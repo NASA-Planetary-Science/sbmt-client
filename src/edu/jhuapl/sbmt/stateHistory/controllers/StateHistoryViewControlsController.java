@@ -1,10 +1,16 @@
 package edu.jhuapl.sbmt.stateHistory.controllers;
 
-import javax.swing.BoxLayout;
 import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
 
+import edu.cmu.relativelayout.Binding;
+import edu.cmu.relativelayout.BindingFactory;
+import edu.cmu.relativelayout.Direction;
+import edu.cmu.relativelayout.Edge;
+import edu.cmu.relativelayout.RelativeConstraints;
+import edu.cmu.relativelayout.RelativeLayout;
 import edu.jhuapl.saavtk.model.plateColoring.ColoringDataManager;
+import edu.jhuapl.sbmt.stateHistory.controllers.viewControls.StateHistoryColoringOptionsController;
 import edu.jhuapl.sbmt.stateHistory.controllers.viewControls.StateHistoryDisplayItemsController;
 import edu.jhuapl.sbmt.stateHistory.controllers.viewControls.StateHistoryFOVController;
 import edu.jhuapl.sbmt.stateHistory.controllers.viewControls.StateHistoryViewOptionsController;
@@ -37,6 +43,8 @@ public class StateHistoryViewControlsController
 	 */
 	private StateHistoryViewOptionsController viewControls;
 
+	private StateHistoryColoringOptionsController coloringControls;
+
 	private StateHistoryRendererManager rendererManager;
 
 	private JPanel view = new JPanel();
@@ -61,6 +69,7 @@ public class StateHistoryViewControlsController
         viewControls = new StateHistoryViewOptionsController(rendererManager);
         displayItemsControls = new StateHistoryDisplayItemsController(rendererManager);
         fovControls = new StateHistoryFOVController(rendererManager, coloringDataManager);
+        coloringControls = new StateHistoryColoringOptionsController(rendererManager);
 
         //this is a cross panel listener action, so set it up here, above the 3 controllers
         viewControls.getView().getViewOptions().addActionListener(e ->
@@ -74,7 +83,7 @@ public class StateHistoryViewControlsController
         rendererManager.addListener((aSource, aEventType) ->
 		{
 			if (aEventType != ItemEventType.ItemsChanged) return;
-			if (rendererManager.getRuns().getCurrentRun() == null) return;
+			if (rendererManager.getHistoryCollection().getCurrentRun() == null) return;
 			SwingUtilities.invokeLater(new Runnable()
 			{
 				@Override
@@ -97,14 +106,22 @@ public class StateHistoryViewControlsController
 		viewControls.getView().setEnabled(enabled);
 		displayItemsControls.getView().setEnabled(enabled);
 		fovControls.getView().setEnabled(enabled);
+		coloringControls.getView().setEnabled(enabled);
 	}
 
 	private void renderView()
 	{
-		view.setLayout(new BoxLayout(view, BoxLayout.Y_AXIS));
-        view.add(displayItemsControls.getView());
-    	view.add(viewControls.getView());
-        view.add(fovControls.getView());
+		view.setLayout(new RelativeLayout());
+		BindingFactory factory = new BindingFactory();
+		factory.setLeftMargin(0);
+		factory.setRightMargin(0);
+        view.add(displayItemsControls.getView(), new RelativeConstraints(factory.leftEdge(), factory.leftOf(coloringControls.getView()),
+        																 factory.topEdge(), new Binding(Edge.BOTTOM, 300, Direction.BELOW, Edge.TOP, view)));
+    	view.add(coloringControls.getView(), new RelativeConstraints(factory.rightEdge(), factory.topEdge(), new Binding(Edge.LEFT, 275, Direction.LEFT, Edge.RIGHT, view),
+    																 new Binding(Edge.BOTTOM, 300, Direction.BELOW, Edge.TOP, view)));
+        view.add(viewControls.getView(), new RelativeConstraints(factory.leftEdge(), factory.rightEdge(), factory.below(displayItemsControls.getView())));
+        view.add(fovControls.getView(), new RelativeConstraints(factory.leftEdge(), factory.rightEdge(),
+        														new Binding(Edge.BOTTOM, 250, Direction.BELOW, Edge.BOTTOM, viewControls.getView()), factory.below(viewControls.getView())));
 	}
 
 	/**

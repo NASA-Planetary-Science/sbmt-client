@@ -145,6 +145,7 @@ public class PlannedSpectrumScheduleTableView extends JPanel
 
 		syncWithTimelineButton = GuiUtil.formToggleButton(listener, IconUtil.getItemSyncFalse(), IconUtil.getItemSyncTrue());
 		syncWithTimelineButton.setToolTipText("Sync Visibility with Time slider");
+		syncWithTimelineButton.setSelected(true);
 
 		showPlannedSpectrumButton = GuiUtil.formButton(listener, IconUtil.getItemShow());
 		showPlannedSpectrumButton.setToolTipText(ToolTipUtil.getItemShow());

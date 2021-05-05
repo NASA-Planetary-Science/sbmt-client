@@ -8,6 +8,7 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 
 import edu.jhuapl.saavtk.color.gui.EditGroupColorPanel;
+import edu.jhuapl.saavtk.color.gui.SimplePanel;
 import edu.jhuapl.saavtk.color.painter.ColorBarPainter;
 import edu.jhuapl.saavtk.color.provider.ColorProvider;
 import edu.jhuapl.saavtk.color.provider.ConstColorProvider;
@@ -39,13 +40,15 @@ public class StateHistoryColorConfigPanel extends JPanel implements ActionListen
 	private CardPanel<EditGroupColorPanel> colorPanel;
 	private GComboBox<ColorMode> colorModeBox;
 
+	private StateHistoryRendererManager rendererManager;
+
 	/**
 	 * Standard Constructor
 	 */
 	public StateHistoryColorConfigPanel(ActionListener aListener, StateHistoryRendererManager rendererManager)
 	{
 		refListener = aListener;
-
+		this.rendererManager = rendererManager;
 		setLayout(new MigLayout("", "0[][]0", "0[][]0"));
 
 		JLabel tmpL = new JLabel("Colorize:");
@@ -57,17 +60,16 @@ public class StateHistoryColorConfigPanel extends JPanel implements ActionListen
 		colorMapPanel = new StateHistoryColorBarPanel(this, rendererManager, tmpCBP);
 		colorPanel = new CardPanel<>();
 		colorPanel.addCard(ColorMode.ColorMap, colorMapPanel);
-		colorPanel.addCard(ColorMode.Simple, new SimplePanel(this, new Color(0.0f, 1.0f, 1.0f)));
+		colorPanel.addCard(ColorMode.Simple, new SimplePanel(this, "Trajectory", new Color(0.0f, 1.0f, 1.0f)));
 
-		if (rendererManager.getRuns().getCurrentRun() != null)
+		if (rendererManager.getHistoryCollection().getCurrentRun() != null)
 		{
-			ColorProvider colorProvider = rendererManager.getColorProviderForStateHistory(rendererManager.getRuns().getCurrentRun());
+			ColorProvider colorProvider = rendererManager.getColorProviderForStateHistory(rendererManager.getHistoryCollection().getCurrentRun());
 			if (colorProvider instanceof SimpleColorProvider || (colorProvider instanceof ConstColorProvider))
 				setActiveMode(ColorMode.Simple);
 			else
 			{
 				setActiveMode(ColorMode.ColorMap);
-				System.out.println("StateHistoryColorConfigPanel: StateHistoryColorConfigPanel: type " + colorProvider.getFeatureType());
 				colorMapPanel.setFeatureType(colorProvider.getFeatureType());
 			}
 		}
@@ -88,7 +90,9 @@ public class StateHistoryColorConfigPanel extends JPanel implements ActionListen
 	{
 		EditGroupColorPanel tmpPanel = colorPanel.getActiveCard();
 		if (tmpPanel instanceof SimplePanel)
+		{
 			return ((SimplePanel) tmpPanel).getGroupColorProvider();
+		}
 		return tmpPanel.getGroupColorProvider();
 	}
 
@@ -109,6 +113,7 @@ public class StateHistoryColorConfigPanel extends JPanel implements ActionListen
 		colorModeBox.setChosenItem(aMode);
 		colorPanel.switchToCard(aMode);
 		colorPanel.getActiveCard().activate(true);
+
 	}
 
 	@Override
@@ -129,6 +134,10 @@ public class StateHistoryColorConfigPanel extends JPanel implements ActionListen
 		colorPanel.getActiveCard().activate(false);
 		ColorMode tmpCM = colorModeBox.getChosenItem();
 		colorPanel.switchToCard(tmpCM);
+		if (tmpCM == ColorMode.ColorMap)
+			rendererManager.addListener(colorMapPanel);
+		else
+			rendererManager.delListener(colorMapPanel);
 		colorPanel.getActiveCard().activate(true);
 	}
 }

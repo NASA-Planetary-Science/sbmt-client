@@ -1,6 +1,7 @@
 package edu.jhuapl.sbmt.stateHistory.rendering;
 
 import java.awt.Color;
+import java.awt.Font;
 import java.util.ArrayList;
 
 import vtk.vtkActor;
@@ -191,6 +192,18 @@ public class SpacecraftBody extends vtkPolyData implements DisplayableItem
 //		this.label = label;
 		labelActor.setText(labelPrefix + ":\n" + label);
 		labelActor.Modified();
+	}
+
+	/**
+	 * Sets the font for the displayed string
+	 * @param font
+	 */
+	public void setStringFont(Font font)
+	{
+		labelActor.GetCaptionTextProperty().SetFontSize(font.getSize());
+		labelActor.GetCaptionTextProperty().SetFontFamilyAsString(font.getFamily());
+		if (font.isBold()) labelActor.GetCaptionTextProperty().BoldOn(); else labelActor.GetCaptionTextProperty().BoldOff();
+		if (font.isItalic()) labelActor.GetCaptionTextProperty().ItalicOn(); else labelActor.GetCaptionTextProperty().ItalicOff();
 	}
 
 	public void setUserMatrix(vtkMatrix4x4 matrix)

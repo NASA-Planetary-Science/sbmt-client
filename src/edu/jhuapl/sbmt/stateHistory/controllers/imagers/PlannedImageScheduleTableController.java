@@ -22,6 +22,11 @@ import edu.jhuapl.sbmt.stateHistory.model.planning.imagers.PlannedImageScheduleC
 import edu.jhuapl.sbmt.stateHistory.rendering.model.StateHistoryRendererManager;
 import edu.jhuapl.sbmt.stateHistory.ui.imagers.schedule.PlannedImageScheduleView;
 
+/**
+ * Class that controls the UI for the planned image schedules
+ * @author steelrj1
+ *
+ */
 public class PlannedImageScheduleTableController implements IPlannedDataController<PlannedImageScheduleView>
 {
 	PlannedImageScheduleView view;
@@ -36,6 +41,8 @@ public class PlannedImageScheduleTableController implements IPlannedDataControll
 		collection = new PlannedImageScheduleCollection();
 
 		this.view = new PlannedImageScheduleView(collection);
+
+		//creates a new image collection for each schedule and loads it into the tool
 		view.getTable().getLoadPlannedImageButton().addActionListener(e -> {
 
 			File file = CustomFileChooser.showOpenDialog(view, "Select File");
@@ -51,8 +58,9 @@ public class PlannedImageScheduleTableController implements IPlannedDataControll
 						PlannedImageCollection imageCollection = new PlannedImageCollection(file.getAbsolutePath(), smallBodyModel);
 			        	if (rendererManager.getSelectedItems().size() > 0) historyMetadata = rendererManager.getSelectedItems().asList().get(0).getMetadata();
 			        		imageCollection.setStateHistoryMetadata(historyMetadata);
-			        	imageCollection.updateStateHistorySource(rendererManager.getRuns().getCurrentRun());
+			        	imageCollection.updateStateHistorySource(rendererManager.getHistoryCollection().getCurrentRun());
 			        	pcls.forEach(listener -> imageCollection.addPropertyChangeListener(listener));
+			        	imageCollection.addListener((aSource, aEventType) -> { refreshView(); });
 			        	collection.addCollection(imageCollection);
 
 						PlannedImageIOHelper.loadPlannedImagesFromFileWithName(file.getAbsolutePath(), historyMetadata, imageCollection, new ProgressStatusListener()
@@ -74,7 +82,7 @@ public class PlannedImageScheduleTableController implements IPlannedDataControll
 								public void run()
 								{
 									view.getTable().getProcessingLabel().setText("Ready.");
-									refreshView();
+									updateSyncState();
 								}
 							});
 						});
@@ -92,20 +100,17 @@ public class PlannedImageScheduleTableController implements IPlannedDataControll
 
 
 		view.getTable().getSyncWithTimelineButton().addActionListener(e -> {
-			rendererManager.setSyncImages(view.getTable().getSyncWithTimelineButton().isSelected());
-			collection.getAllItems().forEach( coll -> coll.updateFootprints() );
-			rendererManager.propertyChange(new PropertyChangeEvent(this, Properties.MODEL_CHANGED, null, null));
-			refreshView();
+			updateSyncState();
 		});
 
 		view.getTable().getShowPlannedImageButton().addActionListener(e -> {
 
-			collection.getAllItems().forEach( coll -> coll.getSelectedItems().forEach(item -> coll.setDataShowing(item, true)));
+			collection.getSelectedItems().forEach( coll -> coll.setShowing(true));
 			refreshView();
 		});
 
 		view.getTable().getHidePlannedImageButton().addActionListener(e -> {
-			collection.getAllItems().forEach( coll -> coll.getSelectedItems().forEach(item -> coll.setDataShowing(item, false)));
+			collection.getSelectedItems().forEach( coll -> coll.setShowing(false));
 			refreshView();
 		});
 
@@ -115,6 +120,17 @@ public class PlannedImageScheduleTableController implements IPlannedDataControll
 		});
 	}
 
+	private void updateSyncState()
+	{
+		rendererManager.setSyncImages(view.getTable().getSyncWithTimelineButton().isSelected());
+		collection.getAllItems().forEach( coll -> coll.updateFootprints() );
+		rendererManager.propertyChange(new PropertyChangeEvent(this, Properties.MODEL_CHANGED, null, null));
+		refreshView();
+	}
+
+	/**
+	 * @param listener
+	 */
 	public void addPropertyChangeListener(PropertyChangeListener listener)
 	{
 		pcls.add(listener);

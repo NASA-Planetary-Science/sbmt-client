@@ -154,45 +154,6 @@ public class SpiceStateHistory extends AbstractStateHistory
 		this.locationProvider.setSourceFile(sourceFile);
 	}
 
-//	public SpiceStateHistory(StateHistoryKey key)
-//	{
-//		this.key = key;
-//	}
-//
-//	/**
-//	 * @param key
-//	 * @param currentTime
-//	 * @param startTime
-//	 * @param endTime
-//	 * @param name
-//	 * @param color
-//	 */
-//	public SpiceStateHistory(StateHistoryKey key, Double currentTime, Double startTime, Double endTime, String name,
-//			String description, Color color, StateHistorySourceType type, String sourceFile)
-//	{
-//		this.key = key;
-//		this.currentTime = currentTime;
-//		this.startTime = startTime;
-//		this.endTime = endTime;
-//		this.color = color;
-//		this.name = name;
-//		this.description = description;
-//		this.type = type;
-//		this.sourceFile = sourceFile;
-//	}
-
-//	@Override
-//	public void setCurrentTime(Double time) throws StateHistoryInvalidTimeException
-//	{
-//		if( time < getStartTime() || time > getEndTime())
-//        {
-//        	throw new StateHistoryInvalidTimeException("Entered time is outside the range of the selected interval.");
-//        }
-//		this.currentTime = time;
-//		if (state != null)
-//			state.setEphemerisTime(time);
-//	}
-
 	public void validate()
 	{
 		isValid = locationProvider.validate();
@@ -239,7 +200,4 @@ public class SpiceStateHistory extends AbstractStateHistory
 	{
 		plateColoringForInstrument.put(fov, plateColoring);
 	}
-
-
-
 }

@@ -27,7 +27,7 @@ import edu.jhuapl.sbmt.stateHistory.model.io.StateHistoryInputException;
 import edu.jhuapl.sbmt.stateHistory.model.stateHistory.StateHistoryKey;
 import edu.jhuapl.sbmt.stateHistory.model.stateHistory.spice.SpiceStateHistoryIntervalGenerator;
 import edu.jhuapl.sbmt.stateHistory.ui.DateTimeSpinner;
-import edu.jhuapl.sbmt.stateHistory.ui.state.version2.StateHistoryIntervalGenerationPanel;
+import edu.jhuapl.sbmt.stateHistory.ui.state.intervalGeneration.StateHistoryIntervalGenerationPanel;
 
 /**
  * Controller that governs the "Interval Generation" panel of the State History tab
@@ -95,20 +95,12 @@ public class StateHistoryIntervalGenerationController
 
             // TODO check key generation
             // generate random stateHistoryKey to use for this interval
-            StateHistoryKey key = new StateHistoryKey(historyModel.getRuns());
+            StateHistoryKey key = new StateHistoryKey(historyModel.getHistoryCollection());
 
             historyModel.setIntervalGenerator(view.getStateHistorySourceType());
 
             if (view.getStateHistorySourceType() == StateHistorySourceType.SPICE)
         	{
-            	//TODO load this from the metadata
-//            	SpiceInfo spice = new SpiceInfo("ORX", "IAU_BENNU", "ORX_SPACECRAFT", "BENNU",
-//            			new String[] {"EARTH" , "SUN"}, new String[] {"ORX_OCAMS_POLYCAM", "ORX_OCAMS_MAPCAM",
-//            															"ORX_OCAMS_SAMCAM", "ORX_NAVCAM1", "ORX_NAVCAM2",
-////            															"ORX_OTES", "ORX_OVIRS",
-//            															"ORX_OLA_LOW", "ORX_OLA_HIGH"});
-//            	SpiceInfo spice = new SpiceInfo("MMX", "IAU_PHOBOS", "MMX_SPACECRAFT", "PHOBOS",
-//            			new String[] {"EARTH" , "SUN", "MARS"}, new String[] {"MMX_MEGANE"});
             	SpiceInfo spice = historyModel.getViewConfig().getSpiceInfo();
             	if (spice == null)
             	{

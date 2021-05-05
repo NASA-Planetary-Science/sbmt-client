@@ -5,7 +5,8 @@ import java.util.List;
 
 import edu.jhuapl.saavtk.color.provider.ColorProvider;
 import edu.jhuapl.saavtk.color.provider.ConstColorProvider;
-import edu.jhuapl.sbmt.stateHistory.model.stateHistory.StateHistoryCollection;
+import edu.jhuapl.sbmt.stateHistory.model.interfaces.StateHistory;
+import edu.jhuapl.sbmt.stateHistory.rendering.model.StateHistoryRendererManager;
 
 import glum.gui.action.PopAction;
 
@@ -14,18 +15,13 @@ import glum.gui.action.PopAction;
  *
  * @author steelrj1
  */
-/**
- * @author steelrj1
- *
- * @param <G1>
- */
-class FixedStateHistoryColorAction<G1> extends PopAction<G1>
+class FixedStateHistoryColorAction extends PopAction<StateHistory>
 {
 	// Ref vars
-//	/**
-//	 *
-//	 */
-//	private final StateHistoryCollection refManager;
+	/**
+	 *
+	 */
+	private final StateHistoryRendererManager refManager;
 	/**
 	 *
 	 */
@@ -38,9 +34,9 @@ class FixedStateHistoryColorAction<G1> extends PopAction<G1>
 	 * @param aManager
 	 * @param aColor
 	 */
-	public FixedStateHistoryColorAction(StateHistoryCollection aManager, Color aColor)
+	public FixedStateHistoryColorAction(StateHistoryRendererManager aManager, Color aColor)
 	{
-//		refManager = aManager;
+		refManager = aManager;
 		refCP = new ConstColorProvider(aColor);
 	}
 
@@ -59,9 +55,10 @@ class FixedStateHistoryColorAction<G1> extends PopAction<G1>
 	 *
 	 */
 	@Override
-	public void executeAction(List<G1> aItemL)
+	public void executeAction(List<StateHistory> aItemL)
 	{
-//		refManager.installCustomColorProviders(aItemL, refCP, refCP);
+		System.out.println("FixedStateHistoryColorAction: executeAction: fixed color " + aItemL.size());
+		refManager.installCustomColorProvider(aItemL, refCP);
 	}
 
 }

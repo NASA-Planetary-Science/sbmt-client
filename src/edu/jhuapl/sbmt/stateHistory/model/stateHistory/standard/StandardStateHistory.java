@@ -1,6 +1,5 @@
 package edu.jhuapl.sbmt.stateHistory.model.stateHistory.standard;
 
-import java.awt.Color;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
@@ -43,11 +42,6 @@ import crucible.crust.metadata.impl.SettableMetadata;
  */
 public class StandardStateHistory extends AbstractStateHistory
 {
-
-    /**
-     *
-     */
-    private Color color;
 
     //Metadata Information
     private static final Key<StandardStateHistory> STANDARD_STATE_HISTORY_KEY = Key.of("StandardStateHistory");
@@ -148,77 +142,6 @@ public class StandardStateHistory extends AbstractStateHistory
     	locationProvider.setSourceFile(sourceFile);
     }
 
-//    /**
-//     * @param key
-//     */
-//    public StandardStateHistory(StateHistoryKey key)
-//    {
-//    	this.key = key;
-//    }
-//
-//    /**
-//     * @param key
-//     * @param currentTime
-//     * @param startTime
-//     * @param endTime
-//     * @param name
-//     * @param color
-//     */
-//    public StandardStateHistory(StateHistoryKey key, Double currentTime, Double startTime, Double endTime, String name, String description, Color color, StateHistorySourceType type, String sourceFile)
-//    {
-//    	this.key = key;
-//    	this.currentTime = currentTime;
-//    	this.startTime = startTime;
-//    	this.endTime = endTime;
-//    	this.color = color;
-//    	this.stateHistoryName = name;
-//    	this.stateHistoryDescription = description;
-//    	this.type = type;
-//    	this.sourceFile = sourceFile;
-//    }
-
-//    /**
-//     *
-//     */
-//    public void setCurrentTime(Double dt) throws StateHistoryInvalidTimeException
-//    {
-//        if( dt < getStartTime() || dt > getEndTime())
-//        {
-//        	throw new StateHistoryInvalidTimeException("Entered time (" + dt + ") is outside the range of the selected interval (" + getStartTime() + "-" + getEndTime() + ").");
-////            JOptionPane.showMessageDialog(null, "Entered time is outside the range of the selected interval.", "Error",
-////                    JOptionPane.ERROR_MESSAGE);
-////            return;
-//        }
-////        Interval interval1 = new Interval(getMinTime().longValue(), dt.longValue());
-////        Interval interval2 = new Interval(getMinTime().longValue(), getMaxTime().longValue());
-//
-////        org.joda.time.Duration duration1 = interval1.toDuration();
-////        org.joda.time.Duration duration2 = interval2.toDuration();
-//
-////        BigDecimal num1 = new BigDecimal(duration1.getMillis());
-////        BigDecimal num2 = new BigDecimal(duration2.getMillis());
-////        BigDecimal tf = num1.divide(num2,50,RoundingMode.UP);
-//        this.currentTime = dt;
-////        this.time = Double.parseDouble(tf.toString());
-//    }
-//
-//    /**
-//     *
-//     */
-//    public Double getStartTime()
-//    {
-//    	if (startTime != null) return startTime;
-//        return timeToStateMap.firstKey();
-//    }
-//
-//
-//    public Double getEndTime()
-//    {
-//    	if (endTime != null) return endTime;
-//        return timeToStateMap.lastKey();
-//    }
-
-
 	public void saveStateToFile(String shapeModelName, String fileName) throws StateHistoryIOException
 	{
 		String fileNameWithExtension = fileName + ".csvstate";
@@ -226,7 +149,6 @@ public class StandardStateHistory extends AbstractStateHistory
 		try
         {
             FileWriter writer = new FileWriter(fileNameWithExtension);
-//		            writer.append(config.getShapeModelName());
             writer.append(',');
             writer.append('\n');
 
@@ -331,7 +253,6 @@ public class StandardStateHistory extends AbstractStateHistory
             // get name, desc, color form second line
             String info = in.readLine();
             String[] data = info.split(",");
-//            trajectory.setName(data[0]);
             trajectory.setTrajectoryDescription(data[1]);
 
             // discard third line of headers

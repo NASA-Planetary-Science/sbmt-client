@@ -5,6 +5,7 @@ import java.awt.Color;
 import edu.jhuapl.sbmt.model.image.Instrument;
 import edu.jhuapl.sbmt.stateHistory.model.interfaces.IStateHistoryMetadata;
 import edu.jhuapl.sbmt.stateHistory.model.planning.PlannedInstrumentData;
+import edu.jhuapl.sbmt.stateHistory.rendering.planning.PlannedDataActorFactory;
 
 public class PlannedImage implements PlannedInstrumentData
 {
@@ -24,6 +25,7 @@ public class PlannedImage implements PlannedInstrumentData
 	{
 		this.time = time;
 		this.instrument = Instrument.valueFor(instrumentName);
+		this.color = PlannedDataActorFactory.getColorForInstrument(instrumentName);
 	}
 
 	public String getInstrumentName()

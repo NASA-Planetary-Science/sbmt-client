@@ -23,7 +23,6 @@ import edu.jhuapl.sbmt.stateHistory.model.interfaces.StateHistoryModelChangedLis
 import edu.jhuapl.sbmt.stateHistory.model.io.StateHistoryIOException;
 import edu.jhuapl.sbmt.stateHistory.model.io.StateHistoryInputException;
 import edu.jhuapl.sbmt.stateHistory.model.io.StateHistoryInvalidTimeException;
-import edu.jhuapl.sbmt.stateHistory.model.io.StateHistoryModelIOHelper;
 import edu.jhuapl.sbmt.stateHistory.model.stateHistory.StateHistoryCollection;
 import edu.jhuapl.sbmt.stateHistory.model.stateHistory.StateHistoryKey;
 import edu.jhuapl.sbmt.stateHistory.model.stateHistory.spice.SpiceStateHistory;
@@ -54,7 +53,7 @@ public class StateHistoryModel
 	/**
 	 *
 	 */
-	private StateHistoryCollection runs;
+	private StateHistoryCollection collection;
 
 	/**
 	 *
@@ -97,9 +96,9 @@ public class StateHistoryModel
 	{
 		this.viewConfig = smallBodyModel.getSmallBodyConfig();
 		this.customDataFolder = smallBodyModel.getCustomDataFolder();
-		this.runs = rendererManager.getRuns();
+		this.collection = rendererManager.getHistoryCollection();
 		this.rendererManager = rendererManager;
-		this.runs.addStateHistoryCollectionChangedListener(new StateHistoryCollectionChangedListener()
+		this.collection.addStateHistoryCollectionChangedListener(new StateHistoryCollectionChangedListener()
 		{
 
 			@Override
@@ -145,8 +144,8 @@ public class StateHistoryModel
 	public void removeRun(StateHistory historySegment) throws IOException
 	{
 		rendererManager.removeRun(historySegment);
-		runs.removeRunFromList(historySegment);
-		rendererManager.setAllItems(runs.getSimRuns());
+		collection.removeRunFromList(historySegment);
+		rendererManager.setAllItems(collection.getSimRuns());
 		fireHistorySegmentRemovedListener(historySegment);
 		updateConfigFile();
 	}
@@ -180,43 +179,43 @@ public class StateHistoryModel
 			@Override
 			public void run()
 			{
-				runs.addRunToList(history);
-				rendererManager.setAllItems(runs.getSimRuns());
+				collection.addRunToList(history);
+				rendererManager.setAllItems(collection.getSimRuns());
 				fireHistorySegmentCreatedListener(history);
 			}
 		});
 		updateConfigFile();
 	}
 
-	/**
-	 * @param history
-	 * @param file
-	 * @throws StateHistoryIOException
-	 */
-	public void saveHistoryToFile(StateHistory history, File file) throws StateHistoryIOException
-	{
-		StateHistoryModelIOHelper.saveIntervalToFile(viewConfig.getShapeModelName(), history, file.getAbsolutePath());
-	}
+//	/**
+//	 * @param history
+//	 * @param file
+//	 * @throws StateHistoryIOException
+//	 */
+//	public void saveHistoryToFile(StateHistory history, File file) throws StateHistoryIOException
+//	{
+//		StateHistoryModelIOHelper.saveIntervalToFile(viewConfig.getShapeModelName(), history, file.getAbsolutePath());
+//	}
 
-	/**
-	 * @param runFile
-	 * @param bodyModel
-	 * @throws StateHistoryIOException
-	 */
-	public void loadIntervalFromFile(File runFile, SmallBodyModel bodyModel) throws StateHistoryIOException, IOException
-	{
-		StateHistory newRow = StateHistoryModelIOHelper.loadStateHistoryFromFile(runFile,
-				viewConfig.getShapeModelName(), new StateHistoryKey(runs));
-		runs.addRunToList(newRow);
-		rendererManager.setAllItems(runs.getSimRuns());
-		fireHistorySegmentCreatedListener(newRow);
-		updateConfigFile();
-	}
+//	/**
+//	 * @param runFile
+//	 * @param bodyModel
+//	 * @throws StateHistoryIOException
+//	 */
+//	public void loadIntervalFromFile(File runFile, SmallBodyModel bodyModel) throws StateHistoryIOException, IOException
+//	{
+//		StateHistory newRow = StateHistoryModelIOHelper.loadStateHistoryFromFile(runFile,
+//				viewConfig.getShapeModelName(), new StateHistoryKey(collection));
+//		collection.addRunToList(newRow);
+//		rendererManager.setAllItems(collection.getSimRuns());
+//		fireHistorySegmentCreatedListener(newRow);
+//		updateConfigFile();
+//	}
 
 	public void addInterval(StateHistory history) throws StateHistoryIOException
 	{
-		runs.addRunToList(history);
-		rendererManager.setAllItems(runs.getSimRuns());
+		collection.addRunToList(history);
+		rendererManager.setAllItems(collection.getSimRuns());
 		fireHistorySegmentCreatedListener(history);
 		try {
 			updateConfigFile();
@@ -234,8 +233,8 @@ public class StateHistoryModel
 		if (!(new File(getConfigFilename()).exists())) return invalidHistories;
 
 		FixedMetadata metadata = Serializers.deserialize(new File(getConfigFilename()), "StateHistory");
-		runs.retrieve(metadata);
-		for (StateHistory history : runs.getSimRuns())
+		collection.retrieve(metadata);
+		for (StateHistory history : collection.getSimRuns())
 		{
 			history.validate();
 			if (history.isValid() == false)
@@ -261,7 +260,7 @@ public class StateHistoryModel
 			activeIntervalGenerator.setSourceFile(history.getLocationProvider().getSourceFile(), spice);
 			activeIntervalGenerator.createNewTimeInterval(history, null);
 		}
-
+		rendererManager.setAllItems(rendererManager.getHistoryCollection().getSimRuns());
 		initialized = true;
 	}
 
@@ -279,17 +278,8 @@ public class StateHistoryModel
 	*/
 	private void updateConfigFile() throws IOException
 	{
-		Serializers.serialize("StateHistory", runs, new File(getConfigFilename()));
+		Serializers.serialize("StateHistory", collection, new File(getConfigFilename()));
 	}
-
-//	/**
-//	 * @param statusBarString
-//	 */
-//	public void setStatusBarString(String statusBarString)
-//	{
-//		this.statusBarString = statusBarString;
-//		// TODO fire something here?
-//	}
 
 	public void setIntervalGenerator(StateHistorySourceType generatorType)
 	{
@@ -304,18 +294,10 @@ public class StateHistoryModel
 	/**
 	 * @return the runs
 	 */
-	public StateHistoryCollection getRuns()
+	public StateHistoryCollection getHistoryCollection()
 	{
-		return runs;
+		return collection;
 	}
-
-//	/**
-//	 * @return the statusBarString
-//	 */
-//	public String getStatusBarString()
-//	{
-//		return statusBarString;
-//	}
 
 	/**
 	 * @return the activeIntervalGenerator
@@ -325,13 +307,13 @@ public class StateHistoryModel
 		return activeIntervalGenerator;
 	}
 
-	/**
-	 * @param activeIntervalGenerator the activeIntervalGenerator to set
-	 */
-	public void setActiveIntervalGenerator(IStateHistoryIntervalGenerator activeIntervalGenerator)
-	{
-		this.activeIntervalGenerator = activeIntervalGenerator;
-	}
+//	/**
+//	 * @param activeIntervalGenerator the activeIntervalGenerator to set
+//	 */
+//	public void setActiveIntervalGenerator(IStateHistoryIntervalGenerator activeIntervalGenerator)
+//	{
+//		this.activeIntervalGenerator = activeIntervalGenerator;
+//	}
 
 	/**
 	 * @return the customDataFolder

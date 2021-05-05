@@ -52,7 +52,7 @@ class SaveFileAction extends PopAction<StateHistory>
 	public SaveFileAction(StateHistoryRendererManager rendererManager, Component aParent)
 	{
 		this.rendererManager = rendererManager;
-		refManager = rendererManager.getRuns();
+		refManager = rendererManager.getHistoryCollection();
 		refParent = aParent;
 	}
 

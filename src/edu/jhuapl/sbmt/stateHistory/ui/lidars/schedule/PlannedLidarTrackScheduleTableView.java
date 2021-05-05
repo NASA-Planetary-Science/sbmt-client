@@ -145,6 +145,7 @@ public class PlannedLidarTrackScheduleTableView extends JPanel
 
 		syncWithTimelineButton = GuiUtil.formToggleButton(listener, IconUtil.getItemSyncFalse(), IconUtil.getItemSyncTrue());
 		syncWithTimelineButton.setToolTipText("Sync Visibility with Time slider");
+		syncWithTimelineButton.setSelected(true);
 
 		showPlannedLidarTrackButton = GuiUtil.formButton(listener, IconUtil.getItemShow());
 		showPlannedLidarTrackButton.setToolTipText(ToolTipUtil.getItemShow());

@@ -12,11 +12,6 @@ public class StateHistoryTrajectoryMetadata implements IStateHistoryTrajectoryMe
 	 */
 	private Trajectory trajectory;
 
-	/**
-	 *
-	 */
-	private Color color;
-
 	public StateHistoryTrajectoryMetadata()
 	{
 		// TODO Auto-generated constructor stub
@@ -37,7 +32,6 @@ public class StateHistoryTrajectoryMetadata implements IStateHistoryTrajectoryMe
 	@Override
 	public void setTrajectoryColor(Color color)
 	{
-		this.color = color;
 		this.trajectory.setColor(color);
 	}
 

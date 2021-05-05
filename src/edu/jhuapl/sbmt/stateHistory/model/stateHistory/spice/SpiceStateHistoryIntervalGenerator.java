@@ -41,17 +41,14 @@ import crucible.core.time.UTCEpoch;
  */
 public class SpiceStateHistoryIntervalGenerator implements IStateHistoryIntervalGenerator
 {
-	private double cadence;
 	private SpicePointingProvider pointingProvider;
     protected static final TimeSystems DefaultTimeSystems = TimeSystems.builder().build();
-    private TimeSystem<Double> tdbTs = DefaultTimeSystems.getTDB();
     private TimeSystem<UTCEpoch> utcTs = DefaultTimeSystems.getUTC();
     private String sourceFile;
     private SpiceInfo spiceInfo;
 
-	public SpiceStateHistoryIntervalGenerator(double cadence)
+	public SpiceStateHistoryIntervalGenerator()
 	{
-		this.cadence = cadence;
 	}
 
 	public void setSourceFile(String sourceFile, SpiceInfo spiceInfo)

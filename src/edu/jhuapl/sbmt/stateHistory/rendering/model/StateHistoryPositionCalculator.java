@@ -244,6 +244,8 @@ public class StateHistoryPositionCalculator implements IStateHistoryPositionCalc
 		IStateHistoryMetadata metadata = history.getMetadata();
 		IStateHistoryLocationProvider locationProvider = history.getLocationProvider();
 		State state = locationProvider.getCurrentState();
+		if (state == null) return;
+		state.setEphemerisTime(history.getMetadata().getCurrentTime());
 		double[] xaxis = state.getSpacecraftXAxis();
 		double[] yaxis = state.getSpacecraftYAxis();
 		double[] zaxis = state.getSpacecraftZAxis();

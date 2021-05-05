@@ -1,6 +1,7 @@
 package edu.jhuapl.sbmt.stateHistory.rendering.directionMarkers;
 
 import java.awt.Color;
+import java.awt.Font;
 import java.util.ArrayList;
 
 import vtk.vtkActor;
@@ -70,6 +71,8 @@ public abstract class BaseDirectionMarker extends vtkConeSource implements Displ
 
 	protected ArrayList<vtkProp> props;
 
+	private Font font;
+
 	public BaseDirectionMarker(long id)
 	{
 		super(id);
@@ -119,6 +122,24 @@ public abstract class BaseDirectionMarker extends vtkConeSource implements Displ
 		props.add(markerHeadActor);
 		props.add(labelActor);
 		return props;
+	}
+
+	/**
+	 * Sets the font for the displayed string
+	 * @param font
+	 */
+	public void setStringFont(Font font)
+	{
+		this.font = font;
+		labelActor.GetCaptionTextProperty().SetFontSize(font.getSize());
+		labelActor.GetCaptionTextProperty().SetFontFamilyAsString(font.getFamily());
+		if (font.isBold()) labelActor.GetCaptionTextProperty().BoldOn(); else labelActor.GetCaptionTextProperty().BoldOff();
+		if (font.isItalic()) labelActor.GetCaptionTextProperty().ItalicOn(); else labelActor.GetCaptionTextProperty().ItalicOff();
+	}
+
+	public Font getStringFont()
+	{
+		return font;
 	}
 
 	/**

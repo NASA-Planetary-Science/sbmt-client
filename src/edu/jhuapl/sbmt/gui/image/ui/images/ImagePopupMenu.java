@@ -198,7 +198,7 @@ public class ImagePopupMenu<K extends ImageKeyInterface> extends PopupMenu
         imageKeys.clear();
         imageKeys.add(key);
 
-        updateMenuItems();
+//        updateMenuItems();
     }
 
     public void setCurrentImages(List<ImageKeyInterface> keys)

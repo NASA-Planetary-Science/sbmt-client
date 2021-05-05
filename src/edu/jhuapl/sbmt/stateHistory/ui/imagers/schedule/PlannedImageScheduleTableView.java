@@ -145,6 +145,7 @@ public class PlannedImageScheduleTableView extends JPanel
 
 		syncWithTimelineButton = GuiUtil.formToggleButton(listener, IconUtil.getItemSyncFalse(), IconUtil.getItemSyncTrue());
 		syncWithTimelineButton.setToolTipText("Sync Visibility with Time slider");
+		syncWithTimelineButton.setSelected(true);
 
 		showPlannedImageButton = GuiUtil.formButton(listener, IconUtil.getItemShow());
 		showPlannedImageButton.setToolTipText(ToolTipUtil.getItemShow());
@@ -183,7 +184,6 @@ public class PlannedImageScheduleTableView extends JPanel
 		QueryComposer<PlannedImageScheduleColumnLookup> tmpComposer = new QueryComposer<>();
 		tmpComposer.addAttribute(PlannedImageScheduleColumnLookup.Show, Boolean.class, "Show", null);
 		tmpComposer.addAttribute(PlannedImageScheduleColumnLookup.Details, Boolean.class, "Details", null);
-//		tmpComposer.addAttribute(PlannedImageScheduleColumnLookup.Color, Color.class, "Color", null);
 		tmpComposer.addAttribute(PlannedImageScheduleColumnLookup.Filename, String.class, "Filename", null);
 		tmpComposer.addAttribute(PlannedImageScheduleColumnLookup.StateHistory, String.class, "History Segment", null);
 
@@ -191,9 +191,6 @@ public class PlannedImageScheduleTableView extends JPanel
 		tmpComposer.setRenderer(PlannedImageScheduleColumnLookup.Show, new BooleanCellRenderer());
 		tmpComposer.setEditor(PlannedImageScheduleColumnLookup.Details, new BooleanCellEditor());
 		tmpComposer.setRenderer(PlannedImageScheduleColumnLookup.Details, new BooleanCellRenderer());
-//		tmpComposer.setEditor(PlannedImageScheduleColumnLookup.Color, new ColorProviderCellEditor<StateHistory>());
-//		tmpComposer.setRenderer(PlannedImageScheduleColumnLookup.Color, new ColorProviderCellRenderer(false));
-
 
 		plannedImageScheduleTableHandler = new PlannedImageScheduleItemHandler(plannedImageScheduleCollection, tmpComposer);
 		ItemProcessor<PlannedImageCollection> tmpIP = plannedImageScheduleCollection;
