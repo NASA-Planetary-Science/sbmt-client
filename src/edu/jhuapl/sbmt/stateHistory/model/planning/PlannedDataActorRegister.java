@@ -116,7 +116,7 @@ public class PlannedDataActorRegister
 			}
 		}, Color.blue);
 
-//		PlannedDataActorFactory.registerModel("OTES", new IPlanningDataActorBuilder<PlannedInstrumentData>()
+//		PlannedDataActorFactory.registerInstrument(new String[]{"OTES"}, new IPlanningDataActorBuilder<PlannedInstrumentData>()
 //		{
 //
 //			@Override
@@ -125,11 +125,10 @@ public class PlannedDataActorRegister
 //				PerspectiveImageFootprint footprint = new PerspectiveImageFootprint();
 //				footprint.setTime(data.getTime());
 //				footprint.setInstrumentName(data.getInstrumentName());
-//				footprint.setColor(Color.blue);
 //				footprint.setSmallBodyModel(model);
 //				return footprint;
 //			}
-//		});
+//		}, Color.green);
 
 		PlannedDataActorFactory.registerInstrument(new String[]{"OLAHIGH", "ORX_OLA_HIGH"}, new IPlanningDataActorBuilder<PlannedInstrumentData>()
 		{
