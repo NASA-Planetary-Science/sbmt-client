@@ -24,5 +24,6 @@
 	<classpathentry kind="lib" path="/saavtk/lib/crucible-core-1.0.0-b23-b505c84b.jar" sourcepath="/saavtk/lib/crucible-core-1.0.0-b23-b505c84b-sources.jar"/>
 	<classpathentry kind="lib" path="/saavtk/lib/crucible-crust-1.0.0-b23-b505c84b.jar" sourcepath="/saavtk/lib/crucible-crust-1.0.0-b23-b505c84b-sources.jar"/>
 	<classpathentry kind="lib" path="/saavtk/lib/crucible-mantle-1.0.0-b23-b505c84b.jar" sourcepath="/saavtk/lib/crucible-mantle-1.0.0-b23-b505c84b-sources.jar"/>
+	<classpathentry kind="lib" path="lib/gdal-3.2.0.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
