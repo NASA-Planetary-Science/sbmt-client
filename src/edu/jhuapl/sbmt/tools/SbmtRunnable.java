@@ -19,7 +19,6 @@ import edu.jhuapl.saavtk.util.Configuration.ReleaseType;
 import edu.jhuapl.saavtk.util.Debug;
 import edu.jhuapl.saavtk.util.FileCache;
 import edu.jhuapl.saavtk.util.NativeLibraryLoader;
-import edu.jhuapl.saavtk.util.Profiler;
 import edu.jhuapl.sbmt.client.SbmtMainWindow;
 import edu.jhuapl.sbmt.client.SbmtMultiMissionTool;
 import edu.jhuapl.sbmt.client.SbmtMultiMissionTool.Mission;
@@ -27,8 +26,6 @@ import edu.jhuapl.sbmt.client.SmallBodyViewConfig;
 
 public class SbmtRunnable implements Runnable
 {
-    private static final Profiler StartUpProfiler = Profiler.of();
-
 	private final String initialShapeModelPath;
 
 	public SbmtRunnable(String initialShapeModelPath)
@@ -41,13 +38,6 @@ public class SbmtRunnable implements Runnable
 	{
 		try
 		{
-		    StartUpProfiler.start();
-
-            Runtime.getRuntime().addShutdownHook(new Thread(() -> {
-              StartUpProfiler.summarizeAllPerformance();
-              StartUpProfiler.deleteProfileArea();
-           }));
-
 			Mission mission = SbmtMultiMissionTool.getMission();
 			writeStartupMessage(mission);
 
@@ -98,7 +88,6 @@ public class SbmtRunnable implements Runnable
                             frame.pack();
                             frame.setVisible(true);
                             System.out.println("\nSBMT Ready");
-                            StartUpProfiler.reportElapsedTime(System.nanoTime());
 
                             Console.hideConsole();
                             Console.setDefaultLocation(frame);
