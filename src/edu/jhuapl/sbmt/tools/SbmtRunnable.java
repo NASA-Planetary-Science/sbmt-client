@@ -20,7 +20,6 @@ import edu.jhuapl.saavtk.util.Debug;
 import edu.jhuapl.saavtk.util.DownloadableFileManager;
 import edu.jhuapl.saavtk.util.FileCache;
 import edu.jhuapl.saavtk.util.NativeLibraryLoader;
-import edu.jhuapl.saavtk.util.Profiler;
 import edu.jhuapl.sbmt.client.SbmtMainWindow;
 import edu.jhuapl.sbmt.client.SbmtMultiMissionTool;
 import edu.jhuapl.sbmt.client.SbmtMultiMissionTool.Mission;
@@ -61,8 +60,9 @@ public class SbmtRunnable implements Runnable
 			    MainWindow frame = new SbmtMainWindow(initialShapeModelPath);
 			    MainWindow.setMainWindow(frame);
 
+                // Set this before starting the access monitor, whether or not
+                // profiling will be enabled.
 			    DownloadableFileManager.setProfileAreaPrefix("baseline");
-			    Profiler.globalEnableProfiling(false);
 
 			    FileCache.instance().startAccessMonitor();
 
@@ -90,6 +90,13 @@ public class SbmtRunnable implements Runnable
                     {
                         if (!isCancelled())
                         {
+                            // Uncomment this line to enable profiling. Because
+                            // this clears out the profiling results area, it
+                            // will naturally sync up all clients running on the
+                            // same host to start profiling after the last copy
+                            // of the client starts.
+                            // FileCache.instance().startProfiling();
+
                             frame.pack();
                             frame.setVisible(true);
                             System.out.println("\nSBMT Ready");
