@@ -323,9 +323,9 @@ public class CheckUserAccess implements Callable<Integer>
                 int selfDestructCode = 0;
                 try
                 {
-                    // Two minutes is at least 20 times longer than this script
-                    // should ever need.
-                    Thread.sleep(120000);
+                    // 12 s is about twice the maximum run-time. Not sure why it
+                    // takes even that long to run.
+                    Thread.sleep(12000);
                     selfDestructCode = 1;
                 }
                 catch (Exception e)
