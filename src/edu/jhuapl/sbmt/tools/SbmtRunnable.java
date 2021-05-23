@@ -62,7 +62,7 @@ public class SbmtRunnable implements Runnable
 			    MainWindow.setMainWindow(frame);
 
 			    DownloadableFileManager.setProfileAreaPrefix("baseline");
-			    Profiler.globalEnableProfiling(true);
+			    Profiler.globalEnableProfiling(false);
 
 			    FileCache.instance().startAccessMonitor();
 
