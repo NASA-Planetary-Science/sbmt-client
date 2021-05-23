@@ -183,6 +183,7 @@ public class CheckUserAccess implements Callable<Integer>
         }
 
         System.out.println(urlString + "," + status + "," + length + "," + lastModified);
+        System.out.flush();
     }
 
     protected boolean isAuthorized(String urlString, Map<String, Set<String>> urlToGroupMap, UserCollection userCollection)
