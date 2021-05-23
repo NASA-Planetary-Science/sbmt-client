@@ -17,8 +17,10 @@ import edu.jhuapl.saavtk.gui.MainWindow;
 import edu.jhuapl.saavtk.util.Configuration;
 import edu.jhuapl.saavtk.util.Configuration.ReleaseType;
 import edu.jhuapl.saavtk.util.Debug;
+import edu.jhuapl.saavtk.util.DownloadableFileManager;
 import edu.jhuapl.saavtk.util.FileCache;
 import edu.jhuapl.saavtk.util.NativeLibraryLoader;
+import edu.jhuapl.saavtk.util.Profiler;
 import edu.jhuapl.sbmt.client.SbmtMainWindow;
 import edu.jhuapl.sbmt.client.SbmtMultiMissionTool;
 import edu.jhuapl.sbmt.client.SbmtMultiMissionTool.Mission;
@@ -58,6 +60,9 @@ public class SbmtRunnable implements Runnable
 
 			    MainWindow frame = new SbmtMainWindow(initialShapeModelPath);
 			    MainWindow.setMainWindow(frame);
+
+			    DownloadableFileManager.setProfileAreaPrefix("baseline");
+			    Profiler.globalEnableProfiling(true);
 
 			    FileCache.instance().startAccessMonitor();
 
