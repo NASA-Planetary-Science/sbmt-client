@@ -318,15 +318,19 @@ public class CheckUserAccess implements Callable<Integer>
         {
             System.setProperty("java.awt.headless", "true");
 
-            // Start a self-destruct thread to ensure this doesn't linger if the
-            // process hangs.
+            // Start a self-destruct thread to ensure this doesn't linger
+            // forever if the PHP script that calls this does not close the pipes
+            // cleanly. Have observed zombie processes accumulating
+            // over time on the running server. Note that this explicit
+            // self-destruct is entirely for the benefit of the server and is
+            // not at all related to tuning query/cache performance.
             Executors.newSingleThreadExecutor().execute(() -> {
                 int selfDestructCode = 0;
                 try
                 {
-                    // 12 s is about twice the maximum run-time. Not sure why it
-                    // takes even that long to run.
-                    Thread.sleep(12000);
+                    // One minute is at least 10 times longer than this script
+                    // should ever need.
+                    Thread.sleep(60000);
                     selfDestructCode = 1;
                 }
                 catch (Exception e)
