@@ -64,6 +64,13 @@ public class SbmtRunnable implements Runnable
                 // profiling will be enabled.
 			    DownloadableFileManager.setProfileAreaPrefix("baseline");
 
+                // Uncomment this line to enable profiling. Because this clears
+                // out the profiling results area, it will naturally sync up all
+                // clients running on the same host to start profiling after the
+                // last copy of the client starts. Need to call this before
+                // starting access monitor to profile all transitions.
+                // FileCache.instance().enableProfiling();
+
 			    FileCache.instance().startAccessMonitor();
 
                 SwingWorker<Void, Void> swingWorker = new SwingWorker<Void, Void>() {
@@ -90,12 +97,6 @@ public class SbmtRunnable implements Runnable
                     {
                         if (!isCancelled())
                         {
-                            // Uncomment this line to enable profiling. Because
-                            // this clears out the profiling results area, it
-                            // will naturally sync up all clients running on the
-                            // same host to start profiling after the last copy
-                            // of the client starts.
-                            // FileCache.instance().startProfiling();
 
                             frame.pack();
                             frame.setVisible(true);
