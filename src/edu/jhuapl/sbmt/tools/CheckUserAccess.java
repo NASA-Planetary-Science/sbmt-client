@@ -328,8 +328,8 @@ public class CheckUserAccess implements Callable<Integer>
                 int selfDestructCode = 0;
                 try
                 {
-                    // 30 s is ~5 times longer than this tool should take.
-                    Thread.sleep(30000);
+                    // 28 s is ~5 times longer than this tool should take.
+                    Thread.sleep(28000);
                     selfDestructCode = 1;
                 }
                 catch (Exception e)
@@ -338,6 +338,8 @@ public class CheckUserAccess implements Callable<Integer>
                 }
                 finally
                 {
+                    System.out.flush();
+                    System.err.flush();
                     System.exit(selfDestructCode);
                 }
             });
@@ -350,6 +352,8 @@ public class CheckUserAccess implements Callable<Integer>
         }
         finally
         {
+            System.out.flush();
+            System.err.flush();
             System.exit(exitCode);
         }
     }
