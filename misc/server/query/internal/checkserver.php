@@ -7,10 +7,10 @@ $maximumQuerySize = 10000;
 $minimumWaitTime = 5000.;
 
 // Under no circumstance tell a client to wait longer than this to check again.
-$maximumWaitTime = 30000.;
+$maximumWaitTime = 40000.;
 
 // Reference load average when server is not very active.
-$idleLoadAverage = 0.2; // Empirically determined.
+$idleLoadAverage = 0.3; // Empirically determined.
 
 // Use w command to get load average, to compute wait time until next server check.
 $waitTime = 1000.;
