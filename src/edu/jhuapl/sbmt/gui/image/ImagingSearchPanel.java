@@ -145,7 +145,6 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
     protected CheckBoxTree checkBoxTree;
 
     protected final ImagingInstrument instrument;
-    protected final ImageGalleryGenerator galleryGenerator;
 
     // The source of the images of the most recently executed query
     protected ImageSource sourceOfLastQuery = ImageSource.SPICE;
@@ -186,7 +185,6 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
         this.pickManager = pickManager;
 
         this.instrument = instrument;
-        this.galleryGenerator = ImageGalleryGenerator.of(instrument);
         this.stateManager = null;
     }
 
@@ -3017,8 +3015,11 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
     }//GEN-LAST:event_imageCubesDisplayedListMouseReleased
 
     private void viewResultsGalleryButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_viewResultsGalleryButtonActionPerformed
+        // Each time gallery results are viewed, try to get a gallery generator.
+        ImageGalleryGenerator galleryGenerator = ImageGalleryGenerator.of(instrument);
+
         // Check if image search results are valid and nonempty
-        if(imageRawResults != null)
+        if(imageRawResults != null && galleryGenerator != null)
         {
             // Create list of gallery and preview image names based on results
             List<ImageGalleryEntry> galleryEntries = new LinkedList<ImageGalleryEntry>();
