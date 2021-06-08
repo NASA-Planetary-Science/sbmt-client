@@ -56,6 +56,9 @@
 #  modelMetadataDir: directory name under which generated model metadata files
 #                    are located.
 #
+#       tmpSpiceDir: directory name under which spice files are temporarily
+#                    unpacked during processing.
+#
 # Functions defined in the common functions library dataProcessingFunctions.sh
 # are available in the payload script. These functions will try when possible to
 # avoid repeating expensive operations that were completed successfully
@@ -87,12 +90,18 @@ dateStamp=`date '+%Y-%m-%dT%H%M%S'`
 
 usage() {
   echo "--------------------------------------------------------------------------------"
-  echo "Usage: $runnerScript processDeliveryScript"
+  echo "Usage: $runnerScript processDeliveryScript processingID outputTop"
   echo ""
   echo "       processDeliveryScript is a Bourne shell script containing specific"
   echo "           commands to be used for this processing action, typically a locally"
   echo "           tailored processing or deployment script."
   echo ""
+  echo "        processingID identifies the processing run, typically 'redmine-XXXX'"
+  echo ""
+  echo "        outputTop identifies the output path relative to the top of"
+  echo "            the raw/processed/deployed/served directory. Typically this would"
+  echo "            identify either a body/model or mission/instrument, for"
+  echo "            example, 'didymosa/didymosa-dra-v01a' or 'dart/draco'."
   echo ""
   echo "        Read the top block of $runnerScript for further details about how"
   echo "        it works."
@@ -102,7 +111,7 @@ usage() {
 if test "$1" = "-h"; then
   usage
   exit 0
-elif test $# -lt 1; then
+elif test $# -lt 3; then
   (usage >&2)
   exit 1
 fi
@@ -125,6 +134,8 @@ fi
 confirmSbmt "$runnerScript: you must be logged into the sbmt account to process deliveries"
 
 processingScript=$1
+processingId=$2
+outputTop=$3
 
 if test ! -f $processingScript; then
   (usage >&2)
@@ -180,6 +191,10 @@ logTop=$rawDataTop/logs/$dateStamp
 # Bodies metadata directory name. Must be kept in sync with BodyViewConfig.getConfigInfoVersion().
 modelMetadataDir=allBodies-9.1
 
+# Directory in which to unpack SPICE files. Should be as short as possible
+# due to SPICE path restrictions.
+tmpSpiceDir="/project/sbmt2/$processingId"
+
 # Environment variables:
 export SAAVTKROOT="$sbmtCodeTop/saavtk"
 export SBMTROOT="$sbmtCodeTop/sbmt"
@@ -188,6 +203,8 @@ export PATH="$PATH:/project/sbmtpipeline/software/heasoft/bin"
 echo "--------------------------------------------------------------------------------"
 echo "Variable settings:"
 echo "--------------------------------------------------------------------------------"
+echo "processingId is $processingId"
+echo "outputTop is $outputTop"
 echo "scriptName is $scriptName"
 echo "sbmtCodeTop is $sbmtCodeTop"
 echo "logTop is $logTop"
@@ -198,6 +215,7 @@ echo "processedTop is $processedTop"
 echo "deployedTop is $deployedTop"
 echo "serverTop is $serverTop"
 echo "modelMetadataDir is $modelMetadataDir"
+echo "tmpSpiceDir is $tmpSpiceDir"
 echo "HEASoft/Ftools installation is in /project/sbmtpipeline/software/heasoft/bin"
 echo "--------------------------------------------------------------------------------"
 echo "Executing $processingScript"
