@@ -51,7 +51,7 @@ processingId="redmine-2316"
 outputTop="dart/leia/ideal-impact6-ra-20201116-v01"
 
 # Install first into processing-specific directory.
-srcTop="$rawDataTop/$outputTop"
+srcTop="$processedTop/$outputTop"
 destTop="$deployedTop/$outputTop-$processingId"
 
 # Copy the processed data area to the deployed area.
