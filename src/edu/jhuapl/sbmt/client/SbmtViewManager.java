@@ -570,6 +570,7 @@ public class SbmtViewManager extends ViewManager
             ShapeModelBody.RYUGU,
             ShapeModelBody.CERES,
             ShapeModelBody.VESTA,
+            ShapeModelBody.PSYCHE,
             ShapeModelBody.LUTETIA,
             ShapeModelBody.IDA,
             ShapeModelBody.MATHILDE,
@@ -633,6 +634,7 @@ public class SbmtViewManager extends ViewManager
             // Asteroids -> Main Belt (visited)
             ShapeModelBody.CERES,
             ShapeModelBody.VESTA,
+            ShapeModelBody.PSYCHE,
             ShapeModelBody.LUTETIA,
             ShapeModelBody.IDA,
             ShapeModelBody.MATHILDE,

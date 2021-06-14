@@ -4,6 +4,34 @@
 
 # Release Notes
 
+## Jun 7, 2021 (SBMT-0.8.1)
+
+### New:
+- Completed an overhaul of the Regional DTM tab with updates to the table, right click options, and analyze window
+- Header information from FITS files will be displayed when DTM is uploaded
+- User can sort items in the custom DTM table
+- Lighting can be customized for individual DTMs
+- The configuration of the Regional DTM tab can be restored after a restart
+- The boundary color for Regional DTMs can be configured
+- An Analyze panel now provides a means for investigating individual DTMs
+- The Regional DTM tab can now import obj files
+- Added the ability to add and delete individual profiles on a DTM
+- Reinstated the ability to offset an individual DTM from the body
+- Clicking on an individual DTM mapped on the body now prints the name of that DTM to the status bar
+- Made upgrades to the lighting mechanism and moved it under the View menu
+- Status bar now performs better when the window is resized
+- Preliminary SPC-derived shape models of Epimetheus, Janus, and Calypso are now available, including searchable Cassini ISS images (Daly et al in progress)
+- Thomas et al shape models of Epimetheus, Janus, and Calypso from the PDS are now available
+
+### Bug Fixes:
+- Fixed a bug that did not allow the tool to start properly if offline
+- Fixed a bug that caused a crash for Windows users when mapping custom images
+- Fixed a bug that prevented the value of the displayed plate coloring to be printed to the status bar when clicking on the body
+- Fixed various bugs caused when mapping and unmapping DTMs
+- Fixed a bug that caused the reported min/max incidence and emission angles to show identical values
+- Fixed a bug that caused the mapping of custom images to be slow and not update with model resolution
+
+
 ## November 17, 2020 (SBMT-0.8.0.3)
 
 ### New:

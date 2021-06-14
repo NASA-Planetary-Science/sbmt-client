@@ -183,6 +183,7 @@ public class CheckUserAccess implements Callable<Integer>
         }
 
         System.out.println(urlString + "," + status + "," + length + "," + lastModified);
+        System.out.flush();
     }
 
     protected boolean isAuthorized(String urlString, Map<String, Set<String>> urlToGroupMap, UserCollection userCollection)
@@ -317,15 +318,18 @@ public class CheckUserAccess implements Callable<Integer>
         {
             System.setProperty("java.awt.headless", "true");
 
-            // Start a self-destruct thread to ensure this doesn't linger if the
-            // process hangs.
+            // Start a self-destruct thread to ensure this doesn't linger
+            // forever if the PHP script that calls this does not close the pipes
+            // cleanly. Have observed zombie processes accumulating
+            // over time on the running server. Note that this explicit
+            // self-destruct is entirely for the benefit of the server and is
+            // not at all related to tuning query/cache performance.
             Executors.newSingleThreadExecutor().execute(() -> {
                 int selfDestructCode = 0;
                 try
                 {
-                    // Two minutes is at least 20 times longer than this script
-                    // should ever need.
-                    Thread.sleep(120000);
+                    // 28 s is ~5 times longer than this tool should take.
+                    Thread.sleep(28000);
                     selfDestructCode = 1;
                 }
                 catch (Exception e)
@@ -334,6 +338,8 @@ public class CheckUserAccess implements Callable<Integer>
                 }
                 finally
                 {
+                    System.out.flush();
+                    System.err.flush();
                     System.exit(selfDestructCode);
                 }
             });
@@ -346,6 +352,8 @@ public class CheckUserAccess implements Callable<Integer>
         }
         finally
         {
+            System.out.flush();
+            System.err.flush();
             System.exit(exitCode);
         }
     }

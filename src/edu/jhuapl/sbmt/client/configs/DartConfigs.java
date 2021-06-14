@@ -4,8 +4,6 @@ import java.util.GregorianCalendar;
 import java.util.LinkedHashSet;
 import java.util.List;
 
-import org.apache.commons.text.WordUtils;
-
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
 
@@ -56,9 +54,9 @@ public class DartConfigs
 
     // Note: would strongly prefer *NOT TO DO IT THIS WAY* by hard-coding these
     // values. Doing it this way because currently there is no way to inject
-    // special handling of keywords where the images are read in a mission-independent
-    // way. A better option may exist in the future, at which time this should be
-    // changed.
+    // special handling of keywords where the images are read in a
+    // mission-independent way. A better option may exist in the future, at
+    // which time this should be changed.
     private static final LinkedHashSet<Float> DracoFillValues = new LinkedHashSet<>();
     private static final LinkedHashSet<Float> LeiaFillValues = null;
     private static final LinkedHashSet<Float> LukeFillValues = null;
@@ -102,85 +100,132 @@ public class DartConfigs
 
         SmallBodyViewConfig c;
 
-        c = createSingleResolutionConfig(ShapeModelBody.DIDYMOS, "ideal-impact1-20200629-v01", 1996);
+        c = createSingleResolutionConfig_20200629_v01(ShapeModelBody.DIDYMOS, "Ideal Impact 1 20200629 v01", 1996);
         configList.add(c);
 
         // Make this the default model.
         final SmallBodyViewConfig defaultConfig = c;
 
-        c = createSingleResolutionConfig(ShapeModelBody.DIDYMOS, "ideal-impact2-20200629-v01", 1996);
+        c = createSingleResolutionConfig_20200629_v01(ShapeModelBody.DIDYMOS, "Ideal Impact 2 20200629 v01", 1996);
         configList.add(c);
-        c = createSingleResolutionConfig(ShapeModelBody.DIDYMOS, "ideal-impact3-20200629-v01", 1996);
+        c = createSingleResolutionConfig_20200629_v01(ShapeModelBody.DIDYMOS, "Ideal Impact 3 20200629 v01", 1996);
         configList.add(c);
-        c = createSingleResolutionConfig(ShapeModelBody.DIDYMOS, "ideal-impact4-20200629-v01", 3145728);
+        c = createSingleResolutionConfig_20200629_v01(ShapeModelBody.DIDYMOS, "Ideal Impact 4 20200629 v01", 3145728);
         configList.add(c);
-        c = createSingleResolutionConfig(ShapeModelBody.DIDYMOS, "ideal-impact5-20200629-v01", 3145728);
+        c = createSingleResMissionImagesConfig(ShapeModelBody.DIDYMOS, "Ideal Impact 4 RA 20210211 v01", 3145728);
         configList.add(c);
-        c = createSingleResolutionConfig(ShapeModelBody.DIMORPHOS, "ideal-impact1-20200629-v01", 3072);
-        configList.add(c);
-        c = createSingleResolutionConfig(ShapeModelBody.DIMORPHOS, "ideal-impact2-20200629-v01", 3145728);
-        configList.add(c);
-        c = createSingleResolutionConfig(ShapeModelBody.DIMORPHOS, "ideal-impact3-20200629-v01", 3366134);
-        configList.add(c);
-        c = createSingleResolutionConfig(ShapeModelBody.DIMORPHOS, "ideal-impact4-20200629-v01", 3145728);
-        configList.add(c);
-        c = createSingleResolutionConfig(ShapeModelBody.DIMORPHOS, "ideal-impact5-20200629-v01", 3366134);
+        c = createSingleResolutionConfig_20200629_v01(ShapeModelBody.DIDYMOS, "Ideal Impact 5 20200629 v01", 3145728);
         configList.add(c);
 
-        c = createSingleResolutionConfig(ShapeModelBody.DIDYMOS, "errors-impact1-20200629-v01", 1996);
+        // This one was only partially delivered; problems were uncovered with
+        // the SPICE pointings. It was abandoned in favor of "Ideal Impact 4 RA
+        // 20210211 v01" above.
+        c = createSingleResMissionImagesConfig(ShapeModelBody.DIDYMOS, "Ideal Impact 6 RA 20201116 v01", 3145728);
+//        configList.add(c);
+
+        c = createSingleResolutionConfig_20200629_v01(ShapeModelBody.DIMORPHOS, "Ideal Impact 1 20200629 v01", 3072);
         configList.add(c);
-        c = createSingleResolutionConfig(ShapeModelBody.DIDYMOS, "errors-impact2-20200629-v01", 1996);
+        c = createSingleResolutionConfig_20200629_v01(ShapeModelBody.DIMORPHOS, "Ideal Impact 2 20200629 v01", 3145728);
         configList.add(c);
-        c = createSingleResolutionConfig(ShapeModelBody.DIDYMOS, "errors-impact3-20200629-v01", 1996);
+        c = createSingleResolutionConfig_20200629_v01(ShapeModelBody.DIMORPHOS, "Ideal Impact 3 20200629 v01", 3366134);
         configList.add(c);
-        c = createSingleResolutionConfig(ShapeModelBody.DIDYMOS, "errors-impact4-20200629-v01", 3145728);
+        c = createSingleResolutionConfig_20200629_v01(ShapeModelBody.DIMORPHOS, "Ideal Impact 4 20200629 v01", 3145728);
         configList.add(c);
-        c = createSingleResolutionConfig(ShapeModelBody.DIDYMOS, "errors-impact5-20200629-v01", 3145728);
+        c = createSingleResMissionImagesConfig(ShapeModelBody.DIMORPHOS, "Ideal Impact 4 RA 20210211 v01", 3145728);
         configList.add(c);
-        c = createSingleResolutionConfig(ShapeModelBody.DIMORPHOS, "errors-impact1-20200629-v01", 3072);
+        c = createSingleResolutionConfig_20200629_v01(ShapeModelBody.DIMORPHOS, "Ideal Impact 5 20200629 v01", 3366134);
         configList.add(c);
-        c = createSingleResolutionConfig(ShapeModelBody.DIMORPHOS, "errors-impact2-20200629-v01", 3145728);
+
+        // This one was only partially delivered; problems were uncovered with
+        // the SPICE pointings. It was abandoned in favor of "Ideal Impact 4 RA
+        // 20210211 v01" above.
+        c = createSingleResMissionImagesConfig(ShapeModelBody.DIMORPHOS, "Ideal Impact 6 RA 20201116 v01", 3145728);
+//        configList.add(c);
+
+        c = createSingleResolutionConfig_20200629_v01(ShapeModelBody.DIDYMOS, "Errors Impact 1 20200629 v01", 1996);
         configList.add(c);
-        c = createSingleResolutionConfig(ShapeModelBody.DIMORPHOS, "errors-impact3-20200629-v01", 3366134);
+        c = createSingleResolutionConfig_20200629_v01(ShapeModelBody.DIDYMOS, "Errors Impact 2 20200629 v01", 1996);
         configList.add(c);
-        c = createSingleResolutionConfig(ShapeModelBody.DIMORPHOS, "errors-impact4-20200629-v01", 3145728);
+        c = createSingleResolutionConfig_20200629_v01(ShapeModelBody.DIDYMOS, "Errors Impact 3 20200629 v01", 1996);
         configList.add(c);
-        c = createSingleResolutionConfig(ShapeModelBody.DIMORPHOS, "errors-impact5-20200629-v01", 3366134);
+        c = createSingleResolutionConfig_20200629_v01(ShapeModelBody.DIDYMOS, "Errors Impact 4 20200629 v01", 3145728);
+        configList.add(c);
+        c = createSingleResolutionConfig_20200629_v01(ShapeModelBody.DIDYMOS, "Errors Impact 5 20200629 v01", 3145728);
+        configList.add(c);
+        c = createSingleResolutionConfig_20200629_v01(ShapeModelBody.DIMORPHOS, "Errors Impact 1 20200629 v01", 3072);
+        configList.add(c);
+        c = createSingleResolutionConfig_20200629_v01(ShapeModelBody.DIMORPHOS, "Errors Impact 2 20200629 v01", 3145728);
+        configList.add(c);
+        c = createSingleResolutionConfig_20200629_v01(ShapeModelBody.DIMORPHOS, "Errors Impact 3 20200629 v01", 3366134);
+        configList.add(c);
+        c = createSingleResolutionConfig_20200629_v01(ShapeModelBody.DIMORPHOS, "Errors Impact 4 20200629 v01", 3145728);
+        configList.add(c);
+        c = createSingleResolutionConfig_20200629_v01(ShapeModelBody.DIMORPHOS, "Errors Impact 5 20200629 v01", 3366134);
         configList.add(c);
 
         defaultConfig.defaultForMissions = DartClients;
     }
 
     /**
-     * Create a single-resolution model for the given input parameters.
+     * Create a single-resolution model for the given input parameters. This
+     * creates configurations that are consistent with the initial set of
+     * simulated models, images and SPICE files delivered starting in August,
+     * 2020, based on the DART simulations identified as 20200629-v01.
+     * <p>
+     * These deliveries were processed using versions of the scripts that were
+     * not yet set up to handle images under the mission/instrument directory.
+     * These were processed before the Saturnian moon models that were processed
+     * in October-Novebmer 2020.
+     * <p>
+     * For these deliveries, images were located under the models. Some images
+     * had one or the other or both of the bodies Didymos and Dimorphos in the
+     * FOV, but ALL the images were delivered, processed, archived and stored
+     * TWICE: once for each body.
      *
      * @param body the {@link ShapeModelBody} associated with this model
-     * @param modelId the model identifier, which must be unique to this client,
-     *            and may not contain any spaces
+     * @param label the label exactly as the model should appear in the menu.
      * @param numberPlates the number of plates in the single resolution model
      * @return the config
      */
-    protected SmallBodyViewConfig createSingleResolutionConfig(ShapeModelBody body, String modelId, int numberPlates)
+    protected SmallBodyViewConfig createSingleResolutionConfig_20200629_v01(ShapeModelBody body, String label, int numberPlates)
     {
         SmallBodyViewConfig c = new SmallBodyViewConfig(ImmutableList.of(numberPlates + " plates"), ImmutableList.of(numberPlates)) {
-            public SmallBodyViewConfig clone() {
+            public SmallBodyViewConfig clone()
+            {
                 throw new UnsupportedOperationException("This implementation does not support cloning");
             }
         };
+
+        // ShapeModelType rules: no spaces (replace with underscores). Mixed
+        // case, underscores and dashes are all OK. Includes a DART-specific
+        // hack to remove one dash that was not present in the early models.
+        ShapeModelType author = ShapeModelType.provide(label.replaceAll("\\s+", "-").toLowerCase().replace("impact-", "impact"));
+
+        // Model identifier string rules: lowercase, no spaces nor underscores
+        // (replace with dashes). Single dashes are OK. Valid for building
+        // server-side paths.
+        String modelId = author.name().replaceAll("[\\s-_]+", "-").toLowerCase();
+
+        // Body identifier string rules: lowercase, no spaces nor underscores.
+        // (replace with dashes). Single dashes are OK. Valid for building
+        // server-side paths.
+        String bodyId = body.name().replaceAll("[\\s-_]+", "-").toLowerCase();
 
         c.body = body;
         c.type = BodyType.ASTEROID;
         c.population = ShapeModelPopulation.NEO;
         c.system = ShapeModelBody.DIDYMOS_SYSTEM;
         c.dataUsed = ShapeModelDataUsed.SIMULATED;
-        c.author = ShapeModelType.provide(modelId);
-        c.modelLabel = createLabel(c.author);
-        c.rootDirOnServer = ("/" + body.name() + "/" + modelId.replaceAll("_", "-")).toLowerCase();
+        c.author = author;
+        c.modelLabel = label;
+        c.rootDirOnServer = "/" + bodyId + "/" + modelId;
         c.presentInMissions = ClientsWithDartModels;
         // c.defaultForMissions = ...
         c.setShapeModelFileExtension(".obj");
 
-        String tableBaseName = (body.name() + "_" + modelId + "_").replaceAll("[\\s-]", "_").toLowerCase();
+        // Database table rules: lowercase, no dashes (replace with
+        // underscores). Underscores are OK.
+        String tableBaseName = (bodyId + "_" + modelId + "_").replaceAll("-", "_").toLowerCase();
 
         String dracoDir = c.rootDirOnServer + "/draco";
         String dracoTable = tableBaseName + "draco";
@@ -249,30 +294,136 @@ public class DartConfigs
     }
 
     /**
-     * Create a cosmetically improved version of the shape model author for
-     * displaying in the tool.
+     * Create a single-resolution model for the given input parameters. This
+     * creates configurations that are consistent with the initial set of
+     * simulated models, images and SPICE files delivered starting in December,
+     * 2020 through March, 2021, based on the DART simulations identified as
+     * 20201116-v01 and 20210211-v01.
+     * <p>
+     * These deliveries were processed using versions of the scripts that were
+     * set up to handle images under the mission/instrument directory. These
+     * were processed AFTER the Saturnian moon models that were processed in
+     * October-Novebmer 2020.
+     * <p>
+     * For these deliveries, images were located under the MISSION/INSTRUMENT
+     * hierarchy. Some images had one or the other or both of the bodies Didymos
+     * and Dimorphos in the FOV. Only one set of images for each instrument were
+     * delivered, processed etc. However, since these images are
+     * simulation-specific simulated images, needed to put them under one more
+     * level of subdirectory, i.e. mission/instrument/model (but note no body in
+     * this hierarchy).
      *
-     * @param author the {@link ShapeModelType}
-     * @return the label
+     * @param body the {@link ShapeModelBody} associated with this model
+     * @param label the label exactly as the model should appear in the menu.
+     * @param numberPlates the number of plates in the single resolution model
+     * @return the config
      */
-    protected String createLabel(ShapeModelType author)
+    protected SmallBodyViewConfig createSingleResMissionImagesConfig(ShapeModelBody body, String label, int numberPlates)
     {
-        // Replace all separators with a single space.
-        String label = author.toString().replaceAll("[-_\\s]+", " ");
+        SmallBodyViewConfig c = new SmallBodyViewConfig(ImmutableList.of(numberPlates + " plates"), ImmutableList.of(numberPlates)) {
+            public SmallBodyViewConfig clone()
+            {
+                throw new UnsupportedOperationException("This implementation does not support cloning");
+            }
+        };
 
-        // Capitalize the first letter of every word.
-        label = WordUtils.capitalizeFully(label);
+        // ShapeModelType rules: no spaces (replace with underscores). Mixed
+        // case, underscores and dashes are all OK. Includes a DART-specific
+        // hack to remove one dash that was not present in the early models.
+        ShapeModelType author = ShapeModelType.provide(label.replaceAll("\\s+", "-").toLowerCase().replace("impact-", "impact"));
 
-        // DART-specific corrections: version should be lowercase v, dash after
-        // word "impact":
-        label = label.replaceAll("V(\\d)", "v$1").replaceAll("Impact", "Impact ");
+        // Model identifier string rules: lowercase, no spaces nor underscores
+        // (replace with dashes). Single dashes are OK. Valid for building
+        // server-side paths.
+        String modelId = author.name().replaceAll("[\\s-_]+", "-").toLowerCase();
 
-        return label;
+        // Body identifier string rules: lowercase, no spaces nor underscores.
+        // (replace with dashes). Single dashes are OK. Valid for building
+        // server-side paths.
+        String bodyId = body.name().replaceAll("[\\s-_]+", "-").toLowerCase();
+
+        c.body = body;
+        c.type = BodyType.ASTEROID;
+        c.population = ShapeModelPopulation.NEO;
+        c.system = ShapeModelBody.DIDYMOS_SYSTEM;
+        c.dataUsed = ShapeModelDataUsed.SIMULATED;
+        c.author = author;
+        c.modelLabel = label;
+        c.rootDirOnServer = "/" + bodyId + "/" + modelId;
+        c.presentInMissions = ClientsWithDartModels;
+        // c.defaultForMissions = ...
+        c.setShapeModelFileExtension(".obj");
+
+        // Database table rules: lowercase, no dashes (replace with
+        // underscores). Underscores are OK.
+        String tableBaseName = (bodyId + "_" + modelId + "_").replaceAll("-", "_").toLowerCase();
+
+        String dracoDir = c.rootDirOnServer + "/draco";
+        String dracoTable = tableBaseName + "draco";
+        String dracoDataDir = "/dart/draco/" + modelId + "/";
+
+        String leiaDir = c.rootDirOnServer + "/leia";
+        String leiaTable = tableBaseName + "leia";
+        String leiaDataDir = "/dart/leia/" + modelId + "/";
+
+        String lukeDir = c.rootDirOnServer + "/luke";
+        String lukeTable = tableBaseName + "luke";
+        String lukeDataDir = "/dart/luke/" + modelId + "/";
+
+        c.imagingInstruments = new ImagingInstrument[] {
+                new ImagingInstrument( //
+                        SpectralImageMode.MONO, //
+                        new GenericPhpQuery(dracoDir, dracoTable, dracoTable, dracoDataDir + "gallery", dracoDataDir + "images"), //
+                        ImageType.valueOf("DART_IMAGE"), //
+                        InfoFiles, //
+                        Instrument.DRACO, //
+                        270., //
+                        "None", //
+                        DracoFillValues //
+                ),
+                new ImagingInstrument( //
+                        SpectralImageMode.MONO, //
+                        new GenericPhpQuery(leiaDir, leiaTable, leiaTable, leiaDataDir + "gallery", leiaDataDir + "images"), //
+                        ImageType.valueOf("LEIA_IMAGE"), //
+                        InfoFiles, //
+                        Instrument.LEIA, //
+                        0., //
+                        "None", //
+                        LeiaFillValues //
+                ),
+                new ImagingInstrument( //
+                        SpectralImageMode.MONO, //
+                        new GenericPhpQuery(lukeDir, lukeTable, lukeTable, lukeDataDir + "gallery", lukeDataDir + "images"), //
+                        ImageType.valueOf("LUKE_IMAGE"), //
+                        InfoFiles, //
+                        Instrument.LUKE, //
+                        0., //
+                        "None", //
+                        LukeFillValues //
+                ),
+        };
+
+        c.imageSearchDefaultStartDate = new GregorianCalendar(2022, 8, 30, 0, 0, 0).getTime();
+        c.imageSearchDefaultEndDate = new GregorianCalendar(2022, 9, 1, 0, 0, 0).getTime();
+        c.imageSearchFilterNames = new String[] {};
+        c.imageSearchUserDefinedCheckBoxesNames = new String[] {};
+        c.imageSearchDefaultMaxSpacecraftDistance = 1.0e4;
+        c.imageSearchDefaultMaxResolution = 1.0e3;
+
+        c.databaseRunInfos = new DBRunInfo[] { //
+                new DBRunInfo(ImageSource.SPICE, Instrument.DRACO, body.toString(), //
+                        dracoDir + "/imagelist-fullpath-info.txt", dracoTable), //
+                new DBRunInfo(ImageSource.CORRECTED_SPICE, Instrument.LEIA, body.toString(), //
+                        leiaDir + "/imagelist-fullpath-info.txt", leiaTable), //
+                new DBRunInfo(ImageSource.SPICE, Instrument.LEIA, body.toString(), //
+                        leiaDir + "/imagelist-fullpath-info.txt", leiaTable), //
+                new DBRunInfo(ImageSource.CORRECTED_SPICE, Instrument.LUKE, body.toString(), //
+                        lukeDir + "/imagelist-fullpath-info.txt", lukeTable), //
+                new DBRunInfo(ImageSource.SPICE, Instrument.LUKE, body.toString(), //
+                        lukeDir + "/imagelist-fullpath-info.txt", lukeTable) //
+        };
+
+        return c;
     }
 
-    public static void main(String[] args)
-    {
-        DartConfigs configs = new DartConfigs();
-        System.err.println(configs.createLabel(ShapeModelType.provide("ideal_impact1-20200629-v01")));
-    }
 }
