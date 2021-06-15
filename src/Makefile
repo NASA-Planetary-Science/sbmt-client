@@ -20,7 +20,7 @@ saavtk_dir = ${SAAVTKROOT}
 saavtk_lib_dir = ${SAAVTKROOT}/lib
 vtk_dir = ${saavtk_lib_dir}/${VTK_VERSION}
 jogl_dir = ${saavtk_lib_dir}/jogl
-jre_dir = /project/nearsdc/software/java/jre16
+jre_dir = /project/nearsdc/software/java/jdk16
 
 # Environment variables needed for 'ant' to run 
 # setenv ANT_HOME /project/nearsdc/software/apache-ant/latest
