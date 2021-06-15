@@ -6,10 +6,10 @@ include ${SBMTROOT}/config/Makefiles/Variables
 # deploy = put the zip files out on the web server
 # clean = delete the 'build' directory.
 
-PUBLIC_VERSION := public
+# PUBLIC_VERSION := public
 INTERNAL_VERSION := internal
 VTK_VERSION := vtk6.3
-PUBLIC_OUTPUT_DIR := ${SBMTROOT}/build/dist/public
+# PUBLIC_OUTPUT_DIR := ${SBMTROOT}/build/dist/public
 INTERNAL_OUTPUT_DIR := ${SBMTROOT}/build/dist/internal
 
 MYCLASSPATH = ${CLASSPATH}
@@ -29,12 +29,12 @@ jre_dir = /project/nearsdc/software/java/jre16
 
 build_dir     := ${SBMTROOT}/build
 BUILD_JAR_DIR := ${build_dir}/jar
-NEARJAR       := ${BUILD_JAR_DIR}/near.jar
+#NEARJAR       := ${BUILD_JAR_DIR}/near.jar
 NEARAPLJAR    := ${BUILD_JAR_DIR}/near-apl.jar
 SAAVTKJAR    := ${SAAVTKROOT}/build/jar/saavtk.jar
 
 int_dist_dir := ${SBMTROOT}/build/dist/internal
-pub_dist_dir := ${SBMTROOT}/build/dist/public
+# pub_dist_dir := ${SBMTROOT}/build/dist/public
 
 int_mac_dir   := ${int_dist_dir}/mac64
 int_linux_dir := ${int_dist_dir}/linux64
@@ -54,24 +54,24 @@ int_linux64_jar :=  ${int_linux_sbmt_lib_dir}/near.jar
 int_win64_jar   :=  ${int_win_sbmt_lib_dir}/near.jar
 int_jars        := ${int_mac64_jar} ${int_linux64_jar} ${int_win64_jar}
 
-pub_mac_dir   := ${pub_dist_dir}/mac64
-pub_linux_dir := ${pub_dist_dir}/linux64
-pub_win_dir   := ${pub_dist_dir}/win64
+# pub_mac_dir   := ${pub_dist_dir}/mac64
+# pub_linux_dir := ${pub_dist_dir}/linux64
+# pub_win_dir   := ${pub_dist_dir}/win64
 
-pub_mac_sbmt_dir   := ${pub_mac_dir}/${RELEASE}
-pub_linux_sbmt_dir := ${pub_linux_dir}/${RELEASE}
-pub_win_sbmt_dir   := ${pub_win_dir}/${RELEASE}
+# pub_mac_sbmt_dir   := ${pub_mac_dir}/${RELEASE}
+# pub_linux_sbmt_dir := ${pub_linux_dir}/${RELEASE}
+# pub_win_sbmt_dir   := ${pub_win_dir}/${RELEASE}
 
-pub_mac_sbmt_lib_dir   := ${pub_mac_sbmt_dir}/lib
-pub_linux_sbmt_lib_dir := ${pub_linux_sbmt_dir}/lib
-pub_win_sbmt_lib_dir   := ${pub_win_sbmt_dir}/lib
+# pub_mac_sbmt_lib_dir   := ${pub_mac_sbmt_dir}/lib
+# pub_linux_sbmt_lib_dir := ${pub_linux_sbmt_dir}/lib
+# pub_win_sbmt_lib_dir   := ${pub_win_sbmt_dir}/lib
 
-pub_mac64_jar   :=  ${pub_mac_sbmt_lib_dir}/near.jar
-pub_linux64_jar :=  ${pub_linux_sbmt_lib_dir}/near.jar
-pub_win64_jar   :=  ${pub_win_sbmt_lib_dir}/near.jar
+# pub_mac64_jar   :=  ${pub_mac_sbmt_lib_dir}/near.jar
+# pub_linux64_jar :=  ${pub_linux_sbmt_lib_dir}/near.jar
+# pub_win64_jar   :=  ${pub_win_sbmt_lib_dir}/near.jar
 
 int_jars        := ${int_mac64_jar} ${int_linux64_jar} ${int_win64_jar}
-pub_jars        := ${pub_mac64_jar} ${pub_linux64_jar} ${pub_win64_jar}
+# pub_jars        := ${pub_mac64_jar} ${pub_linux64_jar} ${pub_win64_jar}
 
 mac_zip   :=  ${RELEASE}-macosx-x64.zip
 linux_zip :=  ${RELEASE}-linux-x64.zip
@@ -81,12 +81,12 @@ int_mac_zip   :=  ${int_mac_dir}/${mac_zip}
 int_linux_zip :=  ${int_linux_dir}/${linux_zip}
 int_win_zip   :=  ${int_win_dir}/${win_zip}
 
-pub_mac_zip   :=  ${pub_mac_dir}/${mac_zip}
-pub_linux_zip :=  ${pub_linux_dir}/${linux_zip}
-pub_win_zip   :=  ${pub_win_dir}/${win_zip}
+# pub_mac_zip   :=  ${pub_mac_dir}/${mac_zip}
+# pub_linux_zip :=  ${pub_linux_dir}/${linux_zip}
+# pub_win_zip   :=  ${pub_win_dir}/${win_zip}
 
 int_zips      := ${int_mac_zip} ${int_linux_zip} ${int_win_zip}
-pub_zips      := ${pub_mac_zip} ${pub_linux_zip} ${pub_win_zip}
+# pub_zips      := ${pub_mac_zip} ${pub_linux_zip} ${pub_win_zip}
 
 all_java_files := ${SBMTROOT}/src/edu/jhuapl/sbmt/*/*.java
 
@@ -95,7 +95,8 @@ all_java_files := ${SBMTROOT}/src/edu/jhuapl/sbmt/*/*.java
 
 ${most_supported_targets} :
 
-all : ${NEARJAR} ${NEARAPLJAR}
+#all : ${NEARJAR} ${NEARAPLJAR}
+all : ${NEARAPLJAR}
 
 install : ${NEARAPLJAR} tools
 		@echo $@: "Installing near-apl.jar to ${LIBROOT} as near.jar" 
@@ -115,17 +116,17 @@ ifeq (,$(findstring,SNAPSHOT,${RELEASE}))
 		@chmod 664 ${int_mac_zip}
 		@chmod 664 ${int_linux_zip}
 		@chmod 664 ${int_win_zip}
-		@chmod 664 ${pub_mac_zip}
-		@chmod 664 ${pub_linux_zip}
-		@chmod 664 ${pub_win_zip}
+		# @chmod 664 ${pub_mac_zip}
+		# @chmod 664 ${pub_linux_zip}
+		# @chmod 664 ${pub_win_zip}
 		@mkdir -p ${INTERNAL_DEPLOY_RELEASE_DIR}
 		@mkdir -p ${PUBLIC_DEPLOY_RELEASE_DIR}
 		cp ${int_mac_zip} ${INTERNAL_DEPLOY_RELEASE_DIR}
 		cp ${int_linux_zip} ${INTERNAL_DEPLOY_RELEASE_DIR}
 		cp ${int_win_zip} ${INTERNAL_DEPLOY_RELEASE_DIR}
-		cp ${pub_mac_zip} ${PUBLIC_DEPLOY_RELEASE_DIR}
-		cp ${pub_linux_zip} ${PUBLIC_DEPLOY_RELEASE_DIR}
-		cp ${pub_win_zip} ${PUBLIC_DEPLOY_RELEASE_DIR}
+		# cp ${pub_mac_zip} ${PUBLIC_DEPLOY_RELEASE_DIR}
+		# cp ${pub_linux_zip} ${PUBLIC_DEPLOY_RELEASE_DIR}
+		# cp ${pub_win_zip} ${PUBLIC_DEPLOY_RELEASE_DIR}
 else
 		@echo "Current release is just a SNAPSHOT and can not be deployed."
 endif
@@ -135,8 +136,8 @@ clean :
 
 bare : clean
 
-${NEARJAR} : ${all_java_files}
-	ant -f ${SBMTROOT}/build.xml -DRELEASE="${RELEASE}" -DMISSION=${MISSION} jar
+# ${NEARJAR} : ${all_java_files}
+#	ant -f ${SBMTROOT}/build.xml -DRELEASE="${RELEASE}" -DMISSION=${MISSION} jar
 
 ${NEARAPLJAR} : ${all_java_files}
 	ant -f ${SBMTROOT}/build.xml -DRELEASE="${RELEASE}" -DMISSION=${MISSION} jarapl
@@ -220,70 +221,69 @@ ${int_win_zip} : ${NEARAPLJAR}
  
 # Note this uses near.jar, and creating 'runsbmt' is same as linux64 but different than win64
 # and generate_runsbmt.sh takes the PUBLIC parameters.
-${pub_mac_zip} : ${NEARAPLJAR}
-		@echo "Making $@"
-		@mkdir -p ${pub_mac_sbmt_lib_dir}
-		cp ${top_level_dir}/lib/*.jar ${pub_mac_sbmt_lib_dir}
-		cp ${saavtk_dir}/lib/*.jar ${pub_mac_sbmt_lib_dir}
-		cp ${saavtk_dir}/lib/geotools/*.jar ${pub_mac_sbmt_lib_dir}
-		cp ${vtk_dir}/*.jar ${pub_mac_sbmt_lib_dir}
-		cp ${jogl_dir}/gluegen-rt.jar ${pub_mac_sbmt_lib_dir}
-		cp ${jogl_dir}/jogl-all.jar ${pub_mac_sbmt_lib_dir}
-		cp ${SAAVTKJAR} ${pub_mac_sbmt_lib_dir}
-		cp ${NEARAPLJAR} ${pub_mac_sbmt_lib_dir}
-		cp -R ${vtk_dir}/mac64 ${pub_mac_sbmt_lib_dir}
-		cp -R ${jre_dir}/mac64 ${pub_mac_sbmt_dir}
-		rm -rf ${pub_mac_sbmt_dir}/jre
-		mv ${pub_mac_sbmt_dir}/mac64 ${pub_mac_sbmt_dir}/jre
-		cp ${top_level_dir}/src/edu/jhuapl/sbmt/data/license.txt ${pub_mac_sbmt_lib_dir}
-		${SBMTROOT}/config/generate_runsbmt.sh ${PUBLIC_OUTPUT_DIR}
-		cp ${pub_mac_dir}/sbmt/runsbmt ${pub_mac_dir}/${RELEASE}
-		(cd ${pub_mac_dir} ; zip -q -r ${mac_zip} ${RELEASE})
+# ${pub_mac_zip} : ${NEARAPLJAR}
+#		@echo "Making $@"
+#		@mkdir -p ${pub_mac_sbmt_lib_dir}
+#		cp ${top_level_dir}/lib/*.jar ${pub_mac_sbmt_lib_dir}
+#		cp ${saavtk_dir}/lib/*.jar ${pub_mac_sbmt_lib_dir}
+#		cp ${saavtk_dir}/lib/geotools/*.jar ${pub_mac_sbmt_lib_dir}
+#		cp ${vtk_dir}/*.jar ${pub_mac_sbmt_lib_dir}
+#		cp ${jogl_dir}/gluegen-rt.jar ${pub_mac_sbmt_lib_dir}
+#		cp ${jogl_dir}/jogl-all.jar ${pub_mac_sbmt_lib_dir}
+#		cp ${SAAVTKJAR} ${pub_mac_sbmt_lib_dir}
+#		cp ${NEARAPLJAR} ${pub_mac_sbmt_lib_dir}
+#		cp -R ${vtk_dir}/mac64 ${pub_mac_sbmt_lib_dir}
+#		cp -R ${jre_dir}/mac64 ${pub_mac_sbmt_dir}
+#		rm -rf ${pub_mac_sbmt_dir}/jre
+#		mv ${pub_mac_sbmt_dir}/mac64 ${pub_mac_sbmt_dir}/jre
+#		cp ${top_level_dir}/src/edu/jhuapl/sbmt/data/license.txt ${pub_mac_sbmt_lib_dir}
+#		${SBMTROOT}/config/generate_runsbmt.sh ${PUBLIC_OUTPUT_DIR}
+#		cp ${pub_mac_dir}/sbmt/runsbmt ${pub_mac_dir}/${RELEASE}
+#		(cd ${pub_mac_dir} ; zip -q -r ${mac_zip} ${RELEASE})
 
 # Note this uses near.jar, and creating 'runsbmt' is same as mac64 but different than win64
 # and generate_runsbmt.sh takes the PUBLIC parameters.
-${pub_linux_zip} : ${NEARAPLJAR} 
-		@echo "Making $@"
-		@mkdir -p ${pub_linux_sbmt_lib_dir}
-		cp ${top_level_dir}/lib/*.jar ${pub_linux_sbmt_lib_dir}
-		cp ${saavtk_dir}/lib/*.jar ${pub_linux_sbmt_lib_dir}
-		cp ${saavtk_dir}/lib/geotools/*.jar ${pub_linux_sbmt_lib_dir}
-		cp ${vtk_dir}/*.jar ${pub_linux_sbmt_lib_dir}
-		cp ${jogl_dir}/gluegen-rt.jar ${pub_linux_sbmt_lib_dir}
-		cp ${jogl_dir}/jogl-all.jar ${pub_linux_sbmt_lib_dir}
-		cp ${jogl_dir}/gluegen-rt-natives-linux-amd64.jar ${pub_linux_sbmt_lib_dir}
-		cp ${jogl_dir}/jogl-all-natives-linux-amd64.jar ${pub_linux_sbmt_lib_dir}
-		cp ${SAAVTKJAR} ${pub_linux_sbmt_lib_dir}
-		cp ${NEARAPLJAR} ${pub_linux_sbmt_lib_dir}
-		cp -R ${vtk_dir}/linux64 ${pub_linux_sbmt_lib_dir}
-		cp -R ${jre_dir}/linux64 ${pub_linux_sbmt_dir}
-		rm -rf ${pub_linux_sbmt_dir}/jre
-		mv ${pub_linux_sbmt_dir}/linux64 ${pub_linux_sbmt_dir}/jre
-		cp ${top_level_dir}/src/edu/jhuapl/sbmt/data/license.txt ${pub_linux_sbmt_lib_dir}
-		${SBMTROOT}/config/generate_runsbmt.sh ${PUBLIC_OUTPUT_DIR}
-		cp ${pub_linux_dir}/sbmt/runsbmt ${pub_linux_dir}/${RELEASE}
-		(cd ${pub_linux_dir} ; zip -q -r ${linux_zip} ${RELEASE})
+# ${pub_linux_zip} : ${NEARAPLJAR} 
+#		@echo "Making $@"
+#		@mkdir -p ${pub_linux_sbmt_lib_dir}
+#		cp ${top_level_dir}/lib/*.jar ${pub_linux_sbmt_lib_dir}
+#		cp ${saavtk_dir}/lib/*.jar ${pub_linux_sbmt_lib_dir}
+#		cp ${saavtk_dir}/lib/geotools/*.jar ${pub_linux_sbmt_lib_dir}
+#		cp ${vtk_dir}/*.jar ${pub_linux_sbmt_lib_dir}
+#		cp ${jogl_dir}/gluegen-rt.jar ${pub_linux_sbmt_lib_dir}
+#		cp ${jogl_dir}/jogl-all.jar ${pub_linux_sbmt_lib_dir}
+#		cp ${jogl_dir}/gluegen-rt-natives-linux-amd64.jar ${pub_linux_sbmt_lib_dir}
+#		cp ${jogl_dir}/jogl-all-natives-linux-amd64.jar ${pub_linux_sbmt_lib_dir}
+#		cp ${SAAVTKJAR} ${pub_linux_sbmt_lib_dir}
+#		cp ${NEARAPLJAR} ${pub_linux_sbmt_lib_dir}
+#		cp -R ${vtk_dir}/linux64 ${pub_linux_sbmt_lib_dir}
+#		cp -R ${jre_dir}/linux64 ${pub_linux_sbmt_dir}
+#		rm -rf ${pub_linux_sbmt_dir}/jre
+#		mv ${pub_linux_sbmt_dir}/linux64 ${pub_linux_sbmt_dir}/jre
+#		cp ${top_level_dir}/src/edu/jhuapl/sbmt/data/license.txt ${pub_linux_sbmt_lib_dir}
+#		${SBMTROOT}/config/generate_runsbmt.sh ${PUBLIC_OUTPUT_DIR}
+#		cp ${pub_linux_dir}/sbmt/runsbmt ${pub_linux_dir}/${RELEASE}
+#		(cd ${pub_linux_dir} ; zip -q -r ${linux_zip} ${RELEASE})
 
 # Note this uses near.jar, and creating the 'runsbmt' script is different here.
-${pub_win_zip} : ${NEARAPLJAR}
-		@echo "Making $@"
-		@mkdir -p ${pub_win_sbmt_lib_dir}
-		cp ${top_level_dir}/lib/*.jar ${pub_win_sbmt_lib_dir}
-		cp ${saavtk_dir}/lib/geotools/*.jar ${pub_win_sbmt_lib_dir}
-		cp ${saavtk_dir}/lib/*.jar ${pub_win_sbmt_lib_dir}
-		cp ${vtk_dir}/*.jar ${pub_win_sbmt_lib_dir}
-		cp ${jogl_dir}/gluegen-rt.jar ${pub_win_sbmt_lib_dir}
-		cp ${jogl_dir}/jogl-all.jar ${pub_win_sbmt_lib_dir}
-		cp ${SAAVTKJAR} ${pub_win_sbmt_lib_dir}
-		cp ${NEARAPLJAR} ${pub_win_sbmt_lib_dir}
-		cp -R ${vtk_dir}/win64 ${pub_win_sbmt_lib_dir}
-		cp -R ${jre_dir}/win64 ${pub_win_sbmt_dir}
-		rm -rf ${pub_win_sbmt_dir}/jre
-		mv ${pub_win_sbmt_dir}/win64 ${pub_win_sbmt_dir}/jre
-		cp ${top_level_dir}/src/edu/jhuapl/sbmt/data/license.txt ${pub_win_sbmt_lib_dir}
-		cp ${jre_dir}/runsbmt.exe ${pub_win_sbmt_dir}
-		@chmod +x ${pub_win_sbmt_dir}/runsbmt.exe
-#		cp ${pub_win_sbmt_dir}/runsbmt.exe ${pub_win_dir}/${RELEASE}
-		(cd ${pub_win_dir} ; zip -q -r ${win_zip} ${RELEASE})
+# ${pub_win_zip} : ${NEARAPLJAR}
+#		@echo "Making $@"
+#		@mkdir -p ${pub_win_sbmt_lib_dir}
+#		cp ${top_level_dir}/lib/*.jar ${pub_win_sbmt_lib_dir}
+#		cp ${saavtk_dir}/lib/geotools/*.jar ${pub_win_sbmt_lib_dir}
+#		cp ${saavtk_dir}/lib/*.jar ${pub_win_sbmt_lib_dir}
+#		cp ${vtk_dir}/*.jar ${pub_win_sbmt_lib_dir}
+#		cp ${jogl_dir}/gluegen-rt.jar ${pub_win_sbmt_lib_dir}
+#		cp ${jogl_dir}/jogl-all.jar ${pub_win_sbmt_lib_dir}
+#		cp ${SAAVTKJAR} ${pub_win_sbmt_lib_dir}
+#		cp ${NEARAPLJAR} ${pub_win_sbmt_lib_dir}
+#		cp -R ${vtk_dir}/win64 ${pub_win_sbmt_lib_dir}
+#		cp -R ${jre_dir}/win64 ${pub_win_sbmt_dir}
+#		rm -rf ${pub_win_sbmt_dir}/jre
+#		mv ${pub_win_sbmt_dir}/win64 ${pub_win_sbmt_dir}/jre
+#		cp ${jre_dir}/runsbmt.exe ${pub_win_sbmt_dir}
+#		@chmod +x ${pub_win_sbmt_dir}/runsbmt.exe
+##		cp ${pub_win_sbmt_dir}/runsbmt.exe ${pub_win_dir}/${RELEASE}
+#		(cd ${pub_win_dir} ; zip -q -r ${win_zip} ${RELEASE})
 
 include ${SBMTROOT}/config/Makefiles/Master
