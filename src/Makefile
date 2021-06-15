@@ -26,6 +26,7 @@ jre_dir = /project/nearsdc/software/java/jre16
 # setenv ANT_HOME /project/nearsdc/software/apache-ant/latest
 # setenv JAVA_HOME /project/nearsdc/software/java/x86_64/latest
 #
+setenv JAVA_HOME /software/jdk-11.0.2
 
 build_dir     := ${SBMTROOT}/build
 BUILD_JAR_DIR := ${build_dir}/jar
