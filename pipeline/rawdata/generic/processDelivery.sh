@@ -18,7 +18,7 @@
 # Processing Info
 #-------------------------------------------------------------------------------
 # Developer: James Peachey
-# Delivery: redmine-2331
+# Delivery: redmine-XXXX
 # Notes:
 # Information specific to this delivery and/or its processing should be
 # included here.
@@ -46,12 +46,14 @@ check 1 "Tailor this script first for the specific delivery being processed."
 #-------------------------------------------------------------------------------
 
 # The identifier of this processing run, typically "redmine-XXXX"
-processingId="redmine-2331"
+processingId="redmine-XXXX"
 
 # The identifier of the output path relative to the top of the
 # raw/processed/deployed/served directory. Typically this would
 # identify either a body/model, mission/instrument, or mission/spice, for
 # example, 'didymosa/didymosa-dra-v01a' or 'dart/draco'.
+# For a model-based delivery, this is the same as
+# SmallBodyViewConfig.rootDirOnServer without the leading slash.
 outputTop="didymos/ideal-impact4-ra-20210211-v01"
 
 # This is the full path to the delivery as provided by a scientist. This may
@@ -63,7 +65,7 @@ deliveryTop="/project/sbmtpipeline/deliveries-dart/ideal_impact4-RA-20210211-v01
 # uniquely identifies the model. This may not include any whitespace. If no
 # items being processed are associated with a specific model, this may be set
 # to an empty string but it should not be removed. This is used to process
-# plate colorings and images.
+# plate colorings and images. This is the same as SmallBodyViewConfig.modelId.
 modelId="ideal-impact4-ra-20210211-v01"
 
 # The identifier of the body as it appears in the SBMT, which should match how
@@ -78,11 +80,11 @@ bodyId="Didymos"
 # have already been processed, this should only be done to update
 # models that have not been deployed yet. To update a model that was already
 # deployed, need to reprocess it first, then update that processed model.
-# areaToUpdate="$pipelineProcessed/didymos/redmine-2197"
+# areaToUpdate="$pipelineProcessed/didymos/redmine-YYYY"
 
 # Uncomment and edit these as needed if generating INFO files from SPICE
 # kernels. Only used in this case.
-spiceKernelTop="$pipelineProcessed/dart/redmine-2336/liciacube/spice"
+spiceKernelTop="$pipelineProcessed/dart/redmine-XXXX/liciacube/spice"
 
 #-------------------------------------------------------------------------------
 
@@ -92,7 +94,7 @@ skipSection="true"
 # This block is for updating or reusing a previously delivered or processed
 # model.
 #-------------------------------------------------------------------------------
-createHardLinks $piplineRawData/didymos/redmine-2212/didymos/ideal-impact4-20200629-v01 $rawDataTop/$outputTop
+createHardLinks $piplineRawData/didymos/redmine-XXXX/didymos/ideal-impact4-20200629-v01 $rawDataTop/$outputTop
 #-------------------------------------------------------------------------------
 
 
@@ -100,14 +102,12 @@ createHardLinks $piplineRawData/didymos/redmine-2212/didymos/ideal-impact4-20200
 # Delivery to Raw-data.
 #-------------------------------------------------------------------------------
 srcTop="$deliveryTop"
-destTop="$rawDataTop/dart"
+destTop="$rawDataTop"
 
 # Copying all delivered files to raw data should suffice for self-contained
 # deliveries. For other cases, change variables above and/or do not copy all
 # of "dot". copyDir has optional second argument to (re)name destination.
-# copyDir .
-copyDir leia "leia/$modelId"
-copyDir luke "luke/$modelId"
+copyDir .
 #-------------------------------------------------------------------------------
 
 #-------------------------------------------------------------------------------
@@ -199,6 +199,9 @@ instrument="iss"
 # copyDir $instrument
 copyDir .
 
+# Set up galleries (if present).
+createGalleryList $destTop
+
 #-------------------------------------------------------------------------------
 # Process SUM files
 checkSumFiles $destTop/$instrument
@@ -211,14 +214,11 @@ createRelativeLink $processedTop $processedTop/data
 
 # This symbolic link is needed because the images are separate from the rest
 # of this model's files. Spacecraft ID part of the path must be all lowercase.
-createLink "$serverTop/$scId" "$processedTop/$scId"
+createLink "$deployedTop/$scId" "$processedTop/$scId"
 
 # Second argument is the pointing type. Supported values are the enumerations
 # in the ImageSource class.
 generateDatabaseTable ${instrument^^} GASKELL
-
-# Set up galleries (if present).
-createGalleryList $destTop
 
 # End Instrument sub-block (ISS).
 #-------------------------------------------------------------------------------
@@ -227,7 +227,6 @@ createGalleryList $destTop
 skipSection="true" # THIS SHOULD ALWAYS BE true WHEN CHECKING THIS IN!!!
 
 # Instrument sub-block (DRACO).
-# This block has NOT YET been updated for redmine 2314.
 #-------------------------------------------------------------------------------
 scId="DART"
 instrument="draco"
@@ -294,7 +293,7 @@ instrument="leia"
 metakernel="kernels.tm" # relative to $tmpSpiceDir.
 instFrame="LICIA_PL1" # THIS IS SPECIFIC TO LEIA.
 # Get the images from the image delivery associated with this model.
-imageTopDir="$pipelineRawData/dart/redmine-2335"
+imageTopDir="$pipelineRawData/dart/redmine-XXXX"
 # Peculiar to DART SIMULATED models: images are in a model-specific directory
 # under the mission/instrument directory.
 imageDir="dart/$instrument/$modelId/images"
@@ -350,7 +349,7 @@ instrument="luke"
 metakernel="kernels.tm" # relative to $tmpSpiceDir.
 instFrame="LICIA_PL2" # THIS IS SPECIFIC TO LUKE.
 # Get the images from the image delivery associated with this model.
-imageTopDir="$pipelineRawData/dart/redmine-2335"
+imageTopDir="$pipelineRawData/dart/redmine-XXXX"
 # Peculiar to DART SIMULATED models: images are in a model-specific directory
 # under the mission/instrument directory.
 imageDir="dart/$instrument/$modelId/images"
