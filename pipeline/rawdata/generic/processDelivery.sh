@@ -337,7 +337,6 @@ scId="LICIA"
 instrument="luke"
 
 # Copy all delivered instrument files.
-# Unlike previous deliveries, no images came with this delivery.
 # copyDir $instrument
 
 #-------------------------------------------------------------------------------
