@@ -268,7 +268,7 @@
             saavtk.jar
         	altwg.jar
         	jcommander-1.72.jar
-            jide-oss-3.6.9.jar
+            jide-oss-java11.jar
             mysql-connector-java-5.1.10-bin.jar
             spice-N0065.jar
         	GeographicLib-Java-1.44.jar
@@ -391,7 +391,7 @@
             saavtk.jar
         	altwg.jar
         	jcommander-1.72.jar
-            jide-oss-3.6.9.jar
+            jide-oss-java11.jar
             mysql-connector-java-5.1.10-bin.jar
             spice-N0065.jar
         	GeographicLib-Java-1.44.jar
