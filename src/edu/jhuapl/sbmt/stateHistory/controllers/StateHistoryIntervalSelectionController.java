@@ -212,13 +212,13 @@ public class StateHistoryIntervalSelectionController
 			@Override
 			public void historySegmentCreated(StateHistory historySegment)
 			{
-				view.getTable().repaint();
+				SwingUtilities.invokeLater(() -> { view.getTable().repaint(); view.getTable().validate(); });
 			}
 
 			@Override
 			public void historySegmentRemoved(StateHistory historySegment)
 			{
-				view.getTable().repaint();
+				SwingUtilities.invokeLater(() -> { view.getTable().repaint(); view.getTable().validate(); });
 			}
 		});
 
@@ -227,6 +227,7 @@ public class StateHistoryIntervalSelectionController
         rendererManager.addPropertyChangeListener(evt ->
 		{
 			view.getTable().repaint();
+			view.getTable().validate();
 			updateButtonState(rendererManager);
 		});
 

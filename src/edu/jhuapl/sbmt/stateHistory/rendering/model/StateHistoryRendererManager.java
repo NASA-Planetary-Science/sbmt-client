@@ -1093,6 +1093,9 @@ public class StateHistoryRendererManager extends SaavtkItemManager<StateHistory>
 
 			propM.put(aItem, tmpProp);
 		}
+		notifyListeners(this, ItemEventType.ItemsChanged);
+		notifyListeners(this, ItemEventType.ItemsSelected);
+
 	}
 
 	public void installCustomColorProvider(Collection<StateHistory> aItemC, ColorProvider colorProvider)

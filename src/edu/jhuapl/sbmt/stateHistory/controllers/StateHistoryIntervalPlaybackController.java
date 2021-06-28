@@ -172,6 +172,7 @@ public class StateHistoryIntervalPlaybackController
 
 	private void restorePlayPanelValues(StateHistoryCollection runs)
 	{
+		if (rendererManager.getSelectedItems().size() == 0) return;
 		runs.setCurrentRun(rendererManager.getSelectedItems().asList().get(0));
 		final JSlider slider = view.getSlider();
         int max = slider.getMaximum();
