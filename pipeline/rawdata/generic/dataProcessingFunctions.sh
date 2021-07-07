@@ -1007,6 +1007,23 @@ processStandardModelFiles() {
   check $?
 }
 
+processShapeModels() {
+  (
+    funcName=${FUNCNAME[0]}
+
+    checkSkip $funcName "$*"
+
+    if test -d "$destTop/shape"; then
+      doGzipDir "$destTop/shape"
+
+      # First argument is directory, second is the prefix
+      # for output file name(s).
+      createFileSymLinks "$destTop/shape" shape
+    fi
+  )
+  check $?
+}
+
 # This made a "deployed" model directory with no info about
 # the processing ID in the name, but containing links to each
 # specific part of the model in the delivered real directory
@@ -1334,7 +1351,7 @@ createGalleryList() {
         nice cat $tmpThumbnailList | zip -q gallery.zip -@
         check $? "$funcName: unable to zip gallery files in $galleryDir"
       fi
-        
+
     )
     status=$?
     rm -f $tmpImageList
@@ -1885,6 +1902,11 @@ generateDatabaseTable() {
   check $?
 }
 
+# Create a link from one processed area to another on the same disk. This was (and
+# could be again) used when one scientist delivery has been split into multiple redmine
+# issues that need to be processed in sequence into the a single output area.
+# Really this provides no value or new functionality beyond what createRelativeLink
+# already does, and it may eventually be phased out in favor of other utilities.
 linkToProcessedArea() {
   (
     funcName=${FUNCNAME[0]}
@@ -1918,6 +1940,87 @@ linkToProcessedArea() {
     fi
 
     createRelativeLink $target $linkName
+  )
+  check $?
+}
+
+# Make the destination directory look exactly like the source directory. If destination
+# and source are on the same partition, the destination will first be deleted, then
+# re-created using hard links. If the destination and source are on different partitions,
+# rsync is used to copy the directory.
+#
+# The parent directory of dest is created before the final sync, so even if this function
+# fails to execute, it may have succeeded in creating the parent.
+#
+# @param src the source directory (must exist)
+# @param dest the destination directory
+#
+# Errors will be thrown if any of the following occur: src or dest are missing/blank,
+# src does not identify an existing directory, dest identifies a file, dest is a subdirectory
+# of src. 
+syncDir() {
+  (
+    funcName=${FUNCNAME[0]}
+
+    checkSkip $funcName "$*"
+
+    if test "$1" = ""; then
+      check 1 "$funcName: missing first argument, which must be the full path to source directory"
+    fi
+
+    if test "$2" = ""; then
+      check 1 "$funcName: missing second argument, which must be the full path to destination directory"
+    fi
+
+    src="$1"
+    dest="$2"
+     
+    if test ! -d "$src"; then
+      check 1 "$funcName: source path is not a directory: $src"
+    fi
+      
+    if test -f "$dest"; then
+      check 1 "$funcName: destination path is a file: $dest"
+    fi
+      
+    destParent=$(dirname "$dest")"/.." 2> /dev/null
+    createDir "$destParent"
+
+    srcPart=`df "$src" | tail -1 | sed 's: .*::'`
+    destPart=`df "$destParent" | tail -1 | sed 's: .*::'`
+    if test "$srcPart" = "$destPart"; then
+      # Partitions are the same. Check to make sure dest does not include source.
+      # Use realpath to thwart any redirections/logical path discrepancies.
+      realSrc=`realpath "$src"`
+      check $? "$funcName: realpath $src failed"
+      realDest=`realpath "$dest"`
+      check $? "$funcName: realpath $dest failed"
+      if test `echo "$realDest" | grep -c "^$realSrc"` -gt 0; then
+        check 1 "$funcName: destination $dest is a subdirectory of source $src" 
+      fi
+    
+      rm -rf $dest
+      check $? "$funcName: unable to remove destination prior to sync: $dest"
+
+      echo cp -al "$src" "$dest"
+      cp -al "$src" "$dest"
+      check $? "$funcName: unable to hard link files in source $src to destination $dest" 
+    else
+      doRsyncDir "$src" "$dest" "--delete --links --copy-unsafe-links --keep-dirlinks"
+    fi
+  )
+  check $?
+}
+
+syncAreaToUpdate() {
+  (
+    funcName=${FUNCNAME[0]}
+
+    checkSkip $funcName "$*"
+
+    if test "$areaToUpdate" != ""; then
+      syncDir "$areaToUpdate" "$destTop/$areaToUpdate"
+    fi
   )
   check $?
 }
