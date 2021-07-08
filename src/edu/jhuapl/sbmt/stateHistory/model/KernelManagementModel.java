@@ -17,6 +17,7 @@ public class KernelManagementModel extends BaseItemManager<KernelInfo>
 	public KernelManagementModel(String loadedKernelsDirectory) throws IOException
 	{
 		File[] loadedKernelSets = new File(loadedKernelsDirectory).listFiles();
+		if (loadedKernelSets == null) return;
 		List<KernelInfo> allSets = new ArrayList<KernelInfo>();
 		for (File directory : loadedKernelSets)
 		{
