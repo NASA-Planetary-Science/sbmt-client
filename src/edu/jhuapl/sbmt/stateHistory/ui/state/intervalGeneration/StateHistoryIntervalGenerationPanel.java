@@ -17,6 +17,7 @@ import javax.swing.BoxLayout;
 import javax.swing.ButtonGroup;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
+import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
@@ -24,14 +25,17 @@ import javax.swing.JProgressBar;
 import javax.swing.JRadioButton;
 import javax.swing.JSpinner;
 import javax.swing.JTextPane;
+import javax.swing.JToolBar;
 import javax.swing.SpinnerDateModel;
 import javax.swing.SwingWorker;
 import javax.swing.border.TitledBorder;
 
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.joda.time.DateTime;
 
 import edu.jhuapl.saavtk.gui.dialog.CustomFileChooser;
+import edu.jhuapl.sbmt.stateHistory.controllers.KernelManagementController;
 import edu.jhuapl.sbmt.stateHistory.model.StateHistoryModel;
 import edu.jhuapl.sbmt.stateHistory.model.StateHistorySourceType;
 import edu.jhuapl.sbmt.stateHistory.model.interfaces.IStateHistoryMetadata;
@@ -98,6 +102,8 @@ public class StateHistoryIntervalGenerationPanel extends JPanel
      */
     private JButton getIntervalButton;
 
+    private JButton cancelButton;
+
     /**
      * Internal value for spinner size
      */
@@ -113,6 +119,11 @@ public class StateHistoryIntervalGenerationPanel extends JPanel
 
     private SpiceKernelIngestor kernelIngestor;
 
+    private KernelIngestor ingestor;
+
+    private KernelManagementController kernelManagementController;
+
+
 	/**
 	 * Constructor.
 	 */
@@ -121,6 +132,7 @@ public class StateHistoryIntervalGenerationPanel extends JPanel
 		editMode = false;
 		this.hasSpiceInfo = historyModel.getViewConfig().getSpiceInfo() != null;
 		this.kernelIngestor = new SpiceKernelIngestor(historyModel.getCustomDataFolder());
+		kernelManagementController = new KernelManagementController(kernelIngestor.getLoadedKernelsDirectory());
 		initUI();
 	}
 
@@ -245,6 +257,8 @@ public class StateHistoryIntervalGenerationPanel extends JPanel
 		JPanel panel = new JPanel();
 		JLabel metaKernelNameLabel = new JLabel();
 		JProgressBar progressBar = new JProgressBar();
+		cancelButton = new JButton("Cancel");
+		cancelButton.setEnabled(false);
 
 		List<String> loadedKernels = new ArrayList<String>();
 		if (kernelIngestor.getLoadedKernelsDirectory().listFiles() != null)
@@ -256,17 +270,14 @@ public class StateHistoryIntervalGenerationPanel extends JPanel
 
 		kernelComboBox.addActionListener(e -> {
 
+
 			String selectedItem = (String)kernelComboBox.getSelectedItem();
 			File loadedKernelsDirectory = kernelIngestor.getLoadedKernelsDirectory();
 			if (selectedItem.equals("Load new kernel..."))
 			{
-				File file = CustomFileChooser.showOpenDialog(this, "Select Metakernel");
-				if (file != null)
-				{
-					metakernelToLoad = file.getAbsolutePath();
-					KernelIngestor ingestor = new KernelIngestor(progressBar, kernelComboBox);
-					ingestor.execute();
-				}
+				metakernelToLoad = CustomFileChooser.showOpenDialog(this, "Select Metakernel").getAbsolutePath();
+				ingestor  = new KernelIngestor(progressBar, kernelComboBox);
+				ingestor.execute();
 			}
 			else
 			{
@@ -276,12 +287,40 @@ public class StateHistoryIntervalGenerationPanel extends JPanel
 
 		});
 
+		cancelButton.addActionListener( l -> {
+			ingestor.cancel(true);
+			File loadedKernelsDirectory = kernelIngestor.getLoadedKernelsDirectory();
+			File selectedKernelDirectory = new File(loadedKernelsDirectory, FilenameUtils.getBaseName(metakernelToLoad));
+			try {
+				FileUtils.deleteDirectory(selectedKernelDirectory);
+			}
+			catch (IOException ioe)
+			{
+				ioe.printStackTrace();
+			}
+		});
+
 		panel.setLayout(new BoxLayout(panel, BoxLayout.X_AXIS));
 		panel.add(new JLabel("Select Metakernel"));
 		panel.add(kernelComboBox);
 		panel.add(metaKernelNameLabel);
 		panel.add(progressBar);
+		panel.add(cancelButton);
 		return panel;
+	}
+
+	public JToolBar getToolbar()
+	{
+		JToolBar toolbar = new JToolBar();
+    	JButton manageKernels = new JButton("Manage Kernels");
+    	toolbar.add(manageKernels);
+    	manageKernels.addActionListener(l -> {
+    		JFrame frame2 = new JFrame("Manage Kernels");
+    		frame2.add(kernelManagementController.getView());
+        	frame2.pack();
+        	frame2.setVisible(true);
+    	});
+    	return toolbar;
 	}
 
 	class KernelIngestor extends SwingWorker<Void, Void>
@@ -300,6 +339,7 @@ public class StateHistoryIntervalGenerationPanel extends JPanel
 		{
 			try
 			{
+				cancelButton.setEnabled(true);
 				metakernelToLoad = kernelIngestor.ingestMetaKernelToCache(metakernelToLoad, new SpiceKernelLoadStatusListener() {
 
 					@Override
@@ -310,8 +350,13 @@ public class StateHistoryIntervalGenerationPanel extends JPanel
 			}
 			catch (StateHistoryIOException | IOException e1)
 			{
-				JOptionPane.showMessageDialog(StateHistoryIntervalGenerationPanel.this, "Problem ingesting SPICE kernel.  Please check the file for correctness.",
+				if (!isCancelled())
+					JOptionPane.showMessageDialog(StateHistoryIntervalGenerationPanel.this, "Problem ingesting SPICE kernel.  Please check the file for correctness.",
 												"Ingestion Error", JOptionPane.ERROR_MESSAGE);
+			}
+			finally {
+				progressBar.setValue(0);
+				cancelButton.setEnabled(false);
 			}
 			return null;
 		}
@@ -319,12 +364,16 @@ public class StateHistoryIntervalGenerationPanel extends JPanel
 		@Override
 		protected void done()
 		{
-			String newComboItemName = FilenameUtils.getBaseName(new File(metakernelToLoad).getName());
+			if (!isCancelled())
+			{
+				String newComboItemName = FilenameUtils.getBaseName(new File(metakernelToLoad).getName());
 
-			kernelComboBox.addItem(newComboItemName);
-			kernelComboBox.setSelectedItem(newComboItemName);
+				kernelComboBox.addItem(newComboItemName);
+				kernelComboBox.setSelectedItem(newComboItemName);
+			}
 			super.done();
 		}
+
 	}
 
 	private JPanel getTimeRangePanel()

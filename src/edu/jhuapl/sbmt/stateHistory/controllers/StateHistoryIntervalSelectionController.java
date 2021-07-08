@@ -200,6 +200,7 @@ public class StateHistoryIntervalSelectionController
         view.getAddStateHistoryButton().addActionListener(e ->
         {
         	JFrame frame = new JFrame("Generate New Interval...");
+//        	frame.add(intervalGenerationController.getView().getToolbar(), BorderLayout.NORTH);
         	frame.add(intervalGenerationController.getView());
         	frame.pack();
         	frame.setVisible(true);
@@ -212,13 +213,13 @@ public class StateHistoryIntervalSelectionController
 			@Override
 			public void historySegmentCreated(StateHistory historySegment)
 			{
-				SwingUtilities.invokeLater(() -> { view.getTable().repaint(); view.getTable().validate(); });
+				view.getTable().repaint();
 			}
 
 			@Override
 			public void historySegmentRemoved(StateHistory historySegment)
 			{
-				SwingUtilities.invokeLater(() -> { view.getTable().repaint(); view.getTable().validate(); });
+				view.getTable().repaint();
 			}
 		});
 
@@ -227,7 +228,6 @@ public class StateHistoryIntervalSelectionController
         rendererManager.addPropertyChangeListener(evt ->
 		{
 			view.getTable().repaint();
-			view.getTable().validate();
 			updateButtonState(rendererManager);
 		});
 
