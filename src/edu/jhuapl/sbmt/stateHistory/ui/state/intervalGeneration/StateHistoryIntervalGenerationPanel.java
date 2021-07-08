@@ -260,9 +260,13 @@ public class StateHistoryIntervalGenerationPanel extends JPanel
 			File loadedKernelsDirectory = kernelIngestor.getLoadedKernelsDirectory();
 			if (selectedItem.equals("Load new kernel..."))
 			{
-				metakernelToLoad = CustomFileChooser.showOpenDialog(this, "Select Metakernel").getAbsolutePath();
-				KernelIngestor ingestor = new KernelIngestor(progressBar, kernelComboBox);
-				ingestor.execute();
+				File file = CustomFileChooser.showOpenDialog(this, "Select Metakernel");
+				if (file != null)
+				{
+					metakernelToLoad = file.getAbsolutePath();
+					KernelIngestor ingestor = new KernelIngestor(progressBar, kernelComboBox);
+					ingestor.execute();
+				}
 			}
 			else
 			{

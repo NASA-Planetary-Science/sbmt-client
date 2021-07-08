@@ -48,7 +48,8 @@ public class SpiceKernelIngestor
         double currentFile = 0;
         for (File file : list)
         {
-        	if (kernelParentDirectory == null) kernelParentDirectory = file.getParentFile().getName();
+//        	System.out.println("SpiceKernelIngestor: ingestMetaKernelToCache: getting file " + file.getCanonicalFile());
+//        	if (kernelParentDirectory == null) kernelParentDirectory = file.getCanonicalFile().getParentFile().getParentFile().getName();
         	currentFile++;
         	if (listener != null) listener.percentageLoaded((int)(100*(currentFile/numberOfFiles)));
         	FileUtils.copyDirectoryToDirectory(file.getParentFile(), newDirectory);
@@ -65,7 +66,9 @@ public class SpiceKernelIngestor
         	lineNumber = lines.indexOf(line);
         	break;
         }
-        lines.set(lineNumber, "PATH_VALUES = ( \'" + newDirectory + File.separator + kernelParentDirectory + "\' )");
+        lines.set(lineNumber, "PATH_VALUES = ( \'" + newDirectory + File.separator + "\' )");
+
+//        lines.set(lineNumber, "PATH_VALUES = ( \'" + newDirectory + File.separator + destinationFilePath + "\' )");
         Files.write(path, lines);
 
         return metaKernelCopy.getAbsolutePath();
