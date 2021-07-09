@@ -117,9 +117,9 @@ public class DartConfigs
         c = createSingleResolutionConfig_20200629_v01(ShapeModelBody.DIDYMOS, "Ideal Impact 5 20200629 v01", 3145728);
         configList.add(c);
 
-        // This one was only partially delivered; problems were uncovered with
-        // the SPICE pointings. It was abandoned in favor of "Ideal Impact 4 RA
-        // 20210211 v01" above.
+        // This one was only partially delivered. It was put on hold when
+        // problems surfaced with the SPICE pointings. Leaving it here but not
+        // adding it to configList.
         c = createSingleResMissionImagesConfig(ShapeModelBody.DIDYMOS, "Ideal Impact 6 RA 20201116 v01", 3145728);
 //        configList.add(c);
 
@@ -136,9 +136,9 @@ public class DartConfigs
         c = createSingleResolutionConfig_20200629_v01(ShapeModelBody.DIMORPHOS, "Ideal Impact 5 20200629 v01", 3366134);
         configList.add(c);
 
-        // This one was only partially delivered; problems were uncovered with
-        // the SPICE pointings. It was abandoned in favor of "Ideal Impact 4 RA
-        // 20210211 v01" above.
+        // This one was only partially delivered. It was put on hold when
+        // problems surfaced with the SPICE pointings. Leaving it here but not
+        // adding it to configList.
         c = createSingleResMissionImagesConfig(ShapeModelBody.DIMORPHOS, "Ideal Impact 6 RA 20201116 v01", 3145728);
 //        configList.add(c);
 
