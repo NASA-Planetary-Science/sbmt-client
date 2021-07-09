@@ -234,6 +234,7 @@ public class StateHistoryModel
 
 		FixedMetadata metadata = Serializers.deserialize(new File(getConfigFilename()), "StateHistory");
 		collection.retrieve(metadata);
+		updateConfigFile();
 		for (StateHistory history : collection.getSimRuns())
 		{
 			history.validate();

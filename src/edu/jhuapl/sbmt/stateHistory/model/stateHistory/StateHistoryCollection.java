@@ -3,7 +3,9 @@ package edu.jhuapl.sbmt.stateHistory.model.stateHistory;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 import java.util.Vector;
+import java.util.stream.Collectors;
 
 import com.google.common.collect.ImmutableList;
 
@@ -178,6 +180,7 @@ public class StateHistoryCollection /*extends SaavtkItemManager<StateHistory> im
 	public void retrieve(Metadata source)
 	{
 		simRuns = source.get(stateHistoryKey);
+		simRuns = simRuns.stream().filter(Objects::nonNull).collect(Collectors.toList());
 	}
 
 	/**
