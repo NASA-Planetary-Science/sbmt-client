@@ -2011,16 +2011,3 @@ syncDir() {
   )
   check $?
 }
-
-syncAreaToUpdate() {
-  (
-    funcName=${FUNCNAME[0]}
-
-    checkSkip $funcName "$*"
-
-    if test "$areaToUpdate" != ""; then
-      syncDir "$areaToUpdate" "$destTop/$areaToUpdate"
-    fi
-  )
-  check $?
-}
