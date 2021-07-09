@@ -12,10 +12,10 @@ import edu.jhuapl.saavtk.model.ShapeModelBody;
 import edu.jhuapl.saavtk.model.ShapeModelType;
 import edu.jhuapl.sbmt.client.BodyType;
 import edu.jhuapl.sbmt.client.SbmtMultiMissionTool;
+import edu.jhuapl.sbmt.client.SbmtMultiMissionTool.Mission;
 import edu.jhuapl.sbmt.client.ShapeModelDataUsed;
 import edu.jhuapl.sbmt.client.ShapeModelPopulation;
 import edu.jhuapl.sbmt.client.SmallBodyViewConfig;
-import edu.jhuapl.sbmt.client.SbmtMultiMissionTool.Mission;
 import edu.jhuapl.sbmt.model.image.ImageSource;
 import edu.jhuapl.sbmt.model.image.ImageType;
 import edu.jhuapl.sbmt.model.image.ImagingInstrument;
@@ -229,18 +229,21 @@ public class DartConfigs
 
         String dracoDir = c.rootDirOnServer + "/draco";
         String dracoTable = tableBaseName + "draco";
-
-        String lukeDir = c.rootDirOnServer + "/luke";
-        String lukeTable = tableBaseName + "luke";
+        String dracoDataDir = "/dart/draco/" + modelId + "/";
 
         String leiaDir = c.rootDirOnServer + "/leia";
         String leiaTable = tableBaseName + "leia";
+        String leiaDataDir = "/dart/leia/" + modelId + "/";
+
+        String lukeDir = c.rootDirOnServer + "/luke";
+        String lukeTable = tableBaseName + "luke";
+        String lukeDataDir = "/dart/luke/" + modelId + "/";
 
         c.imagingInstruments = new ImagingInstrument[] {
                 new ImagingInstrument( //
                         SpectralImageMode.MONO, //
-                        new GenericPhpQuery(dracoDir, dracoTable, dracoTable, c.rootDirOnServer + "/draco/gallery"), //
-                        ImageType.valueOf("DART_IMAGE"), //
+                        new GenericPhpQuery(dracoDir, dracoTable, dracoTable, dracoDataDir + "gallery", dracoDataDir + "images"), //
+                        ImageType.valueOf("DRACO_IMAGE"), //
                         InfoFiles, //
                         Instrument.DRACO, //
                         270., //
@@ -249,9 +252,9 @@ public class DartConfigs
                 ),
                 new ImagingInstrument( //
                         SpectralImageMode.MONO, //
-                        new GenericPhpQuery(leiaDir, leiaTable, leiaTable, c.rootDirOnServer + "/leia/gallery"), //
+                        new GenericPhpQuery(leiaDir, leiaTable, leiaTable, leiaDataDir + "gallery", leiaDataDir + "images"), //
                         ImageType.valueOf("LEIA_IMAGE"), //
-                        InfoFilesAndCorrectedInfoFiles, //
+                        InfoFiles, //
                         Instrument.LEIA, //
                         270., //
                         "None", //
@@ -259,9 +262,8 @@ public class DartConfigs
                 ),
                 new ImagingInstrument( //
                         SpectralImageMode.MONO, //
-                        new GenericPhpQuery(lukeDir, lukeTable, lukeTable, c.rootDirOnServer + "/luke/gallery"), //
+                        new GenericPhpQuery(lukeDir, lukeTable, lukeTable, lukeDataDir + "gallery", lukeDataDir + "images"), //
                         ImageType.valueOf("LUKE_IMAGE"), //
-//                        InfoFilesAndCorrectedInfoFiles, //
                         InfoFiles, //
                         Instrument.LUKE, //
                         270., //
@@ -280,12 +282,8 @@ public class DartConfigs
         c.databaseRunInfos = new DBRunInfo[] { //
                 new DBRunInfo(ImageSource.SPICE, Instrument.DRACO, body.toString(), //
                         dracoDir + "/imagelist-fullpath-info.txt", dracoTable), //
-                new DBRunInfo(ImageSource.CORRECTED_SPICE, Instrument.LEIA, body.toString(), //
-                        leiaDir + "/imagelist-fullpath-info.txt", leiaTable), //
                 new DBRunInfo(ImageSource.SPICE, Instrument.LEIA, body.toString(), //
                         leiaDir + "/imagelist-fullpath-info.txt", leiaTable), //
-                new DBRunInfo(ImageSource.CORRECTED_SPICE, Instrument.LUKE, body.toString(), //
-                        lukeDir + "/imagelist-fullpath-info.txt", lukeTable), //
                 new DBRunInfo(ImageSource.SPICE, Instrument.LUKE, body.toString(), //
                         lukeDir + "/imagelist-fullpath-info.txt", lukeTable) //
         };
@@ -374,7 +372,7 @@ public class DartConfigs
                 new ImagingInstrument( //
                         SpectralImageMode.MONO, //
                         new GenericPhpQuery(dracoDir, dracoTable, dracoTable, dracoDataDir + "gallery", dracoDataDir + "images"), //
-                        ImageType.valueOf("DART_IMAGE"), //
+                        ImageType.valueOf("DRACO_IMAGE"), //
                         InfoFiles, //
                         Instrument.DRACO, //
                         270., //
@@ -414,12 +412,8 @@ public class DartConfigs
         c.databaseRunInfos = new DBRunInfo[] { //
                 new DBRunInfo(ImageSource.SPICE, Instrument.DRACO, body.toString(), //
                         dracoDir + "/imagelist-fullpath-info.txt", dracoTable), //
-                new DBRunInfo(ImageSource.CORRECTED_SPICE, Instrument.LEIA, body.toString(), //
-                        leiaDir + "/imagelist-fullpath-info.txt", leiaTable), //
                 new DBRunInfo(ImageSource.SPICE, Instrument.LEIA, body.toString(), //
                         leiaDir + "/imagelist-fullpath-info.txt", leiaTable), //
-                new DBRunInfo(ImageSource.CORRECTED_SPICE, Instrument.LUKE, body.toString(), //
-                        lukeDir + "/imagelist-fullpath-info.txt", lukeTable), //
                 new DBRunInfo(ImageSource.SPICE, Instrument.LUKE, body.toString(), //
                         lukeDir + "/imagelist-fullpath-info.txt", lukeTable) //
         };
