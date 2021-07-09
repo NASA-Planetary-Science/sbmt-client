@@ -234,17 +234,17 @@ public class StateHistoryModel
 
 		FixedMetadata metadata = Serializers.deserialize(new File(getConfigFilename()), "StateHistory");
 		collection.retrieve(metadata);
-		updateConfigFile();
 		for (StateHistory history : collection.getSimRuns())
 		{
 			history.validate();
 			if (history.isValid() == false)
 			{
-				boolean invalidKernelAlreadyExists = invalidHistories.stream().filter(his -> his.getLocationProvider().getSourceFile().equals(history.getLocationProvider().getSourceFile())).count() > 0;
-				if (!invalidKernelAlreadyExists)
+//				boolean invalidKernelAlreadyExists = invalidHistories.stream().filter(his -> his.getLocationProvider().getSourceFile().equals(history.getLocationProvider().getSourceFile())).count() > 0;
+//				if (!invalidKernelAlreadyExists)
 					invalidHistories.add(history);
 			}
 		}
+		updateConfigFile();
 		return invalidHistories;
 	}
 
