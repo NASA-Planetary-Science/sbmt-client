@@ -254,7 +254,7 @@ public class DartConfigs
                         SpectralImageMode.MONO, //
                         new GenericPhpQuery(leiaDir, leiaTable, leiaTable, leiaDataDir + "gallery", leiaDataDir + "images"), //
                         ImageType.valueOf("LEIA_IMAGE"), //
-                        InfoFiles, //
+                        InfoFilesAndCorrectedInfoFiles, //
                         Instrument.LEIA, //
                         270., //
                         "None", //
@@ -282,6 +282,8 @@ public class DartConfigs
         c.databaseRunInfos = new DBRunInfo[] { //
                 new DBRunInfo(ImageSource.SPICE, Instrument.DRACO, body.toString(), //
                         dracoDir + "/imagelist-fullpath-info.txt", dracoTable), //
+                new DBRunInfo(ImageSource.CORRECTED_SPICE, Instrument.LEIA, body.toString(), //
+                        leiaDir + "/imagelist-fullpath-info.txt", leiaTable), //
                 new DBRunInfo(ImageSource.SPICE, Instrument.LEIA, body.toString(), //
                         leiaDir + "/imagelist-fullpath-info.txt", leiaTable), //
                 new DBRunInfo(ImageSource.SPICE, Instrument.LUKE, body.toString(), //
