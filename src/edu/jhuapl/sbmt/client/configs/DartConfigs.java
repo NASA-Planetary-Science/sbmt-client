@@ -168,9 +168,9 @@ public class DartConfigs
 
     /**
      * Create a single-resolution model for the given input parameters. This
-     * creates configurations that are consistent with the initial set of
-     * simulated models, images and SPICE files delivered starting in August,
-     * 2020, based on the DART simulations identified as 20200629-v01.
+     * creates configurations that are consistent with the set of simulated
+     * models, images and SPICE files delivered starting in August, 2020, based
+     * on the DART simulations identified as 20200629-v01.
      * <p>
      * These deliveries were initially processed under redmine-2271, using
      * versions of the scripts that located images in the model hierarchy
@@ -178,10 +178,10 @@ public class DartConfigs
      * bodies Didymos and Dimorphos in the FOV, but ALL the images were
      * delivered, processed, archived and stored TWICE: once for each body.
      * <p>
-     * Later, under redmine-2361,  this method was modified to continue to work for the
-     * 20200629-v01 simulations regarding flips and rotations etc., but to use
-     * the more modern mission hierarchy (<mission>/<imager>/images) to lay out
-     * the directories.
+     * Later, under redmine-2361, this method was modified to continue to work
+     * for the 20200629-v01 simulations regarding flips and rotations etc., but
+     * to use the more modern mission hierarchy (<mission>/<imager>/images) to
+     * lay out the directories.
      *
      * @param body the {@link ShapeModelBody} associated with this model
      * @param label the label exactly as the model should appear in the menu.
@@ -296,9 +296,9 @@ public class DartConfigs
 
     /**
      * Create a single-resolution model for the given input parameters. This
-     * creates configurations that are consistent with the initial set of
-     * simulated models, images and SPICE files delivered starting in December,
-     * 2020 through March, 2021, based on the DART simulations identified as
+     * creates configurations that are consistent with the set of simulated
+     * models, images and SPICE files delivered starting in December, 2020
+     * through March, 2021, based on the DART simulations identified as
      * 20201116-v01 and 20210211-v01.
      * <p>
      * These deliveries were processed using versions of the scripts that were
@@ -306,20 +306,71 @@ public class DartConfigs
      * were processed AFTER the Saturnian moon models that were processed in
      * October-Novebmer 2020.
      * <p>
-     * For these deliveries, images were located under the MISSION/INSTRUMENT
-     * hierarchy. Some images had one or the other or both of the bodies Didymos
-     * and Dimorphos in the FOV. Only one set of images for each instrument were
-     * delivered, processed etc. However, since these images are
-     * simulation-specific simulated images, needed to put them under one more
-     * level of subdirectory, i.e. mission/instrument/model (but note no body in
-     * this hierarchy).
+     * For these deliveries, images were located under the
+     * <mission>/<instrument>/<model> hierarchy. Some images had one or the
+     * other or both of the bodies Didymos and Dimorphos in the FOV. Only one
+     * set of images for each instrument were delivered, processed etc. However,
+     * since these images are simulation-specific simulated images, needed to
+     * put them under one more level of subdirectory, i.e.
+     * mission/instrument/model (but note no body in this hierarchy).
+     * <p>
+     * This method derives the author from the label in a DART simulated
+     * model-specific way, then derives the modelId from the author. The same
+     * modelId is used for the model and also to locate images for all three
+     * imagers (DRACO, LEIA, LUKE).
      *
      * @param body the {@link ShapeModelBody} associated with this model
-     * @param label the label exactly as the model should appear in the menu.
+     * @param label the label exactly as the model should appear in the menu
      * @param numberPlates the number of plates in the single resolution model
      * @return the config
      */
     protected SmallBodyViewConfig createSingleResMissionImagesConfig(ShapeModelBody body, String label, int numberPlates)
+    {
+        return createSingleResMissionImagesConfig(body, label, numberPlates, null, null, null);
+    }
+
+    /**
+     * /** Create a single-resolution model for the given input parameters. This
+     * creates configurations that are consistent with the set of simulated
+     * models, images and SPICE files delivered starting in December, 2020
+     * through March, 2021, based on the DART simulations identified as
+     * 20201116-v01 and 20210211-v01.
+     * <p>
+     * These deliveries were processed using versions of the scripts that were
+     * set up to handle images under the mission/instrument directory. These
+     * were processed AFTER the Saturnian moon models that were processed in
+     * October-Novebmer 2020.
+     * <p>
+     * For these deliveries, images were located under the
+     * <mission>/<instrument>/<model> hierarchy. Some images had one or the
+     * other or both of the bodies Didymos and Dimorphos in the FOV. Only one
+     * set of images for each instrument were delivered, processed etc. However,
+     * since these images are simulation-specific simulated images, needed to
+     * put them under one more level of subdirectory, i.e.
+     * mission/instrument/model (but note no body in this hierarchy).
+     * <p>
+     * This method derives the author from the label in a DART simulated
+     * model-specific way, then derives the modelId from the author. Separate
+     * modelIds are explicitly specified to allow this model to use images from
+     * any other DART simulated model. If null is passed for any/all of these
+     * parameters, the main modelId is used to locate those images.
+     *
+     * @param body the {@link ShapeModelBody} associated with this model
+     * @param label the label exactly as the model should appear in the menu
+     * @param numberPlates the number of plates in the single resolution model
+     * @param dracoModelId the model used to locate DRACO images, or null
+     * @param leiaModelId the model used to locate LEIA images, or null
+     * @param lukeModelId the model used to locate LUKE images, or null
+     * @return the config
+     */
+    protected SmallBodyViewConfig createSingleResMissionImagesConfig( //
+            ShapeModelBody body, //
+            String label, //
+            int numberPlates, //
+            String dracoModelId, //
+            String leiaModelId, //
+            String lukeModelId //
+    )
     {
         SmallBodyViewConfig c = new SmallBodyViewConfig(ImmutableList.of(numberPlates + " plates"), ImmutableList.of(numberPlates)) {
             public SmallBodyViewConfig clone()
@@ -361,15 +412,15 @@ public class DartConfigs
 
         String dracoDir = c.rootDirOnServer + "/draco";
         String dracoTable = tableBaseName + "draco";
-        String dracoDataDir = "/dart/draco/" + modelId + "/";
+        String dracoDataDir = "/dart/draco/" + (dracoModelId != null ? dracoModelId : modelId) + "/";
 
         String leiaDir = c.rootDirOnServer + "/leia";
         String leiaTable = tableBaseName + "leia";
-        String leiaDataDir = "/dart/leia/" + modelId + "/";
+        String leiaDataDir = "/dart/leia/" + (leiaModelId != null ? leiaModelId : modelId) + "/";
 
         String lukeDir = c.rootDirOnServer + "/luke";
         String lukeTable = tableBaseName + "luke";
-        String lukeDataDir = "/dart/luke/" + modelId + "/";
+        String lukeDataDir = "/dart/luke/" + (lukeModelId != null ? lukeModelId : modelId) + "/";
 
         c.imagingInstruments = new ImagingInstrument[] {
                 new ImagingInstrument( //
