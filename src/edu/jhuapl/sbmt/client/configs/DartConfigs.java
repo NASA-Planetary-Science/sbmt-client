@@ -172,15 +172,16 @@ public class DartConfigs
      * simulated models, images and SPICE files delivered starting in August,
      * 2020, based on the DART simulations identified as 20200629-v01.
      * <p>
-     * These deliveries were processed using versions of the scripts that were
-     * not yet set up to handle images under the mission/instrument directory.
-     * These were processed before the Saturnian moon models that were processed
-     * in October-Novebmer 2020.
+     * These deliveries were initially processed under redmine-2271, using
+     * versions of the scripts that located images in the model hierarchy
+     * (model/<imager>/images). Some images had one or the other or both of the
+     * bodies Didymos and Dimorphos in the FOV, but ALL the images were
+     * delivered, processed, archived and stored TWICE: once for each body.
      * <p>
-     * For these deliveries, images were located under the models. Some images
-     * had one or the other or both of the bodies Didymos and Dimorphos in the
-     * FOV, but ALL the images were delivered, processed, archived and stored
-     * TWICE: once for each body.
+     * Later, under redmine-2361,  this method was modified to continue to work for the
+     * 20200629-v01 simulations regarding flips and rotations etc., but to use
+     * the more modern mission hierarchy (<mission>/<imager>/images) to lay out
+     * the directories.
      *
      * @param body the {@link ShapeModelBody} associated with this model
      * @param label the label exactly as the model should appear in the menu.
