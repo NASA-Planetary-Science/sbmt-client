@@ -193,9 +193,10 @@ public class StateHistoryController
         rendererManager.addListener((aSource, aEventType) -> {
 			if (aEventType != ItemEventType.ItemsSelected) return;
 			if (rendererManager.getHistoryCollection().getCurrentRun() == null) return;
-			intervalDisplayedController.getView().setEnabled(rendererManager.getSelectedItems().size() > 0);
-			timeModel.setFractionDisplayed(0.0, 1.0);
-			timeModel.setTimeFraction(0.0);
+				intervalDisplayedController.getView().setEnabled(rendererManager.getSelectedItems().size() > 0);
+				timeModel.setTime(rendererManager.getHistoryCollection().getCurrentRun().getMetadata().getStartTime());
+				timeModel.setFractionDisplayed(0.0, 1.0);
+				timeModel.setTimeFraction(0.0);
 
 		});
 
@@ -220,7 +221,7 @@ public class StateHistoryController
     	JPanel panel = new JPanel();
     	BindingFactory factory = new BindingFactory();
     	panel.setLayout(new RelativeLayout());
-    	panel.add(intervalSelectionPanel, new RelativeConstraints(factory.leftEdge(), factory.rightEdge(), factory.topEdge(), new Binding(Edge.BOTTOM, 200, Direction.BELOW, Edge.TOP, panel)));
+    	panel.add(intervalSelectionPanel, new RelativeConstraints(factory.leftEdge(), factory.rightEdge(), factory.topEdge(), new Binding(Edge.BOTTOM, 150, Direction.BELOW, Edge.TOP, panel)));
     	panel.add(viewControlsController.getView(), new RelativeConstraints(factory.leftEdge(), factory.rightEdge(), factory.below(intervalSelectionPanel), factory.above(displayedPanel)));
     	panel.add(displayedPanel, new RelativeConstraints(factory.leftEdge(), factory.rightEdge(), factory.bottomEdge()));
     	return panel;

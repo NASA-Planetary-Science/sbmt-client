@@ -205,6 +205,7 @@ public class StateHistoryCollection /*extends SaavtkItemManager<StateHistory> im
 	public void setCurrentRun(StateHistory currentRun)
 	{
 		this.currentRun = currentRun;
+		if (currentRun == null) return;
 		updateCurrentFOVs(currentRun);
 	}
 

@@ -320,8 +320,9 @@ public class StateHistoryIntervalPlaybackController
 				if (rendererManager.getHistoryCollection().getCurrentRun() == null) return;
 				runs.setCurrentRun(rendererManager.getSelectedItems().asList().get(0));
 				updateTimeBarValue();
+				updatePlaypanelValues(runs);
 			}
-			updatePlaypanelValues(runs);
+
         });
 
     }

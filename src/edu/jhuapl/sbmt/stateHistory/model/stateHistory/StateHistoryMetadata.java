@@ -173,7 +173,8 @@ public class StateHistoryMetadata implements IStateHistoryMetadata
 	@Override
 	public void setCurrentTime(Double time) throws StateHistoryInvalidTimeException
 	{
-		this.currentTime = time;
+		if (currentTime < startTime) { currentTime = startTime; }
+		else this.currentTime = time;
 	}
 
 	@Override

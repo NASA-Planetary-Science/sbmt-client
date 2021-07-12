@@ -64,7 +64,7 @@ public class StateHistoryFOVPanel extends JPanel
 		else
 		{
 			fovPanel.setLayout(new BoxLayout(fovPanel, BoxLayout.X_AXIS));
-			fovPanel.setPreferredSize(new Dimension(fovPanel.getWidth(), 200));
+			fovPanel.setPreferredSize(new Dimension(fovPanel.getWidth(), 100));
 			fovPanel.add(Box.createGlue());
 			fovPanel.add(new JLabel("Please select a trajectory to show Fields of View"));
 			fovPanel.add(Box.createGlue());

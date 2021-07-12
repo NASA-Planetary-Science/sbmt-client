@@ -29,6 +29,8 @@ import edu.jhuapl.sbmt.stateHistory.model.stateHistory.spice.SpiceStateHistoryIn
 import edu.jhuapl.sbmt.stateHistory.ui.DateTimeSpinner;
 import edu.jhuapl.sbmt.stateHistory.ui.state.intervalGeneration.StateHistoryIntervalGenerationPanel;
 
+import crucible.core.mechanics.providers.lockable.LockableEphemerisLinkEvaluationException;
+
 /**
  * Controller that governs the "Interval Generation" panel of the State History tab
  * @author steelrj1
@@ -130,15 +132,28 @@ public class StateHistoryIntervalGenerationController
 							}
 						});
     				}
+    				catch (LockableEphemerisLinkEvaluationException lelee)
+    				{
+    					JOptionPane.showMessageDialog(null, "This time is not valid for this kernel set; please check the ranges and try again", "Error",
+    		                    JOptionPane.ERROR_MESSAGE);
+    				}
     				catch (StateHistoryInputException shie)
     				{
     					JOptionPane.showMessageDialog(null, shie.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
     				}
     				catch (InvocationTargetException | InterruptedException ie)
     				{
-    					JOptionPane.showMessageDialog(null, "Error adding state history; see console for details", "Error", JOptionPane.ERROR_MESSAGE);
-    					ie.printStackTrace();
+    					if (ie.getCause().getClass() == LockableEphemerisLinkEvaluationException.class)
+    					{
+    						JOptionPane.showMessageDialog(null, "This time is not valid for this kernel set; please check the ranges and try again", "Error",
+        		                    JOptionPane.ERROR_MESSAGE);
+    					}
+    					else {
+	    					JOptionPane.showMessageDialog(null, "Error adding state history; see console for details", "Error", JOptionPane.ERROR_MESSAGE);
+	    					ie.printStackTrace();
+    					}
     				}
+
     				catch (Exception e)
     				{
     					e.printStackTrace();

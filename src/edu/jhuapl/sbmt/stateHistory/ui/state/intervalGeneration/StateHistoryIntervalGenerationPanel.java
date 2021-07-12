@@ -176,6 +176,9 @@ public class StateHistoryIntervalGenerationPanel extends JPanel
         add(getDataSouceCardsPanel());
 
         add(timeRangePanel);
+        startTimeSpinner.setEnabled(true);
+		stopTimeSpinner.setEnabled(true);
+		getIntervalButton.setEnabled(true);
         repaint();
 	}
 
@@ -222,6 +225,7 @@ public class StateHistoryIntervalGenerationPanel extends JPanel
 		dataSourceButtonGroup.add(pregenDataRadioButton);
 		if (hasSpiceInfo)
 		{
+
 			spiceDataRadioButton = new JRadioButton(SPICEDATASTRING);
 			radioButtonPanel.add(spiceDataRadioButton);
 			dataSourceButtonGroup.add(spiceDataRadioButton);
@@ -229,11 +233,16 @@ public class StateHistoryIntervalGenerationPanel extends JPanel
 				CardLayout cl = (CardLayout)(dataSourceCards.getLayout());
 				cl.show(dataSourceCards, SPICEDATASTRING);
 				stateHistorySourceType = StateHistorySourceType.SPICE;
+				startTimeSpinner.setEnabled(false);
+				stopTimeSpinner.setEnabled(false);
+				getIntervalButton.setEnabled(false);
 			});
 		}
 
 		pregenDataRadioButton.setSelected(true);
 		pregenDataRadioButton.addActionListener(e -> {
+			startTimeSpinner.setEnabled(true);
+			stopTimeSpinner.setEnabled(true);
 			CardLayout cl = (CardLayout)(dataSourceCards.getLayout());
 			cl.show(dataSourceCards, PREGENDATASTRING);
 			stateHistorySourceType = StateHistorySourceType.PREGEN;
@@ -259,6 +268,8 @@ public class StateHistoryIntervalGenerationPanel extends JPanel
 		JProgressBar progressBar = new JProgressBar();
 		cancelButton = new JButton("Cancel");
 		cancelButton.setEnabled(false);
+		getIntervalButton.setEnabled(false);
+
 
 		List<String> loadedKernels = new ArrayList<String>();
 		if (kernelIngestor.getLoadedKernelsDirectory().listFiles() != null)
@@ -281,6 +292,9 @@ public class StateHistoryIntervalGenerationPanel extends JPanel
 			}
 			else
 			{
+				getIntervalButton.setEnabled(true);
+				startTimeSpinner.setEnabled(true);
+				stopTimeSpinner.setEnabled(true);
 				File selectedKernelDirectory = new File(loadedKernelsDirectory, selectedItem);
 				metakernelToLoad = new File(selectedKernelDirectory, selectedItem + ".mk").getAbsolutePath();
 			}

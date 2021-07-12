@@ -63,6 +63,7 @@ import edu.jhuapl.sbmt.stateHistory.rendering.text.StatusBarTextActor;
 import edu.jhuapl.sbmt.stateHistory.rendering.text.TimeBarTextActor;
 import edu.jhuapl.sbmt.stateHistory.ui.state.color.StateHistoryFeatureType;
 
+import crucible.core.mechanics.providers.lockable.LockableEphemerisLinkEvaluationException;
 import glum.gui.panel.itemList.ItemProcessor;
 import glum.item.IdGenerator;
 import glum.item.IncrIdGenerator;
@@ -901,7 +902,7 @@ public class StateHistoryRendererManager extends SaavtkItemManager<StateHistory>
 	/**
 	*
 	*/
-	public void setTimeFraction(Double timeFraction, StateHistory state)
+	public void setTimeFraction(Double timeFraction, StateHistory state) throws LockableEphemerisLinkEvaluationException
 	{
 		updateFovs(state);
 		if (state != null && spacecraft.getActor() != null )

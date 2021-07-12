@@ -29,6 +29,7 @@ import edu.jhuapl.sbmt.stateHistory.model.stateHistory.spice.SpiceStateHistory;
 import edu.jhuapl.sbmt.stateHistory.model.stateHistory.spice.SpiceStateHistoryLocationProvider;
 import edu.jhuapl.sbmt.stateHistory.rendering.model.StateHistoryRendererManager;
 
+import crucible.core.mechanics.providers.lockable.LockableEphemerisLinkEvaluationException;
 import crucible.crust.metadata.impl.FixedMetadata;
 import crucible.crust.metadata.impl.gson.Serializers;
 
@@ -78,6 +79,8 @@ public class StateHistoryModel
 	private boolean initialized;
 
 	private StateHistoryRendererManager rendererManager;
+
+	private StateHistory newTimeInterval = null;
 
 	/**
 	 * @param start
@@ -145,6 +148,8 @@ public class StateHistoryModel
 	{
 		rendererManager.removeRun(historySegment);
 		collection.removeRunFromList(historySegment);
+		rendererManager.setSelectedItems(new ArrayList<StateHistory>());
+		if (collection.getSimRuns().isEmpty()) { collection.setCurrentRun(null); }
 		rendererManager.setAllItems(collection.getSimRuns());
 		fireHistorySegmentRemovedListener(historySegment);
 		updateConfigFile();
@@ -169,22 +174,53 @@ public class StateHistoryModel
 	 * @return StateHistory object if successful; null otherwise
 	 */
 	public void createNewTimeInterval(StateHistoryKey key, DateTime startTime, DateTime endTime, double duration,
-			String name, Function<Double, Void> progressFunction) throws StateHistoryInputException, StateHistoryInvalidTimeException, IOException, InvocationTargetException, InterruptedException
+			String name, Function<Double, Void> progressFunction) throws StateHistoryInputException, StateHistoryInvalidTimeException, IOException,
+																		  InvocationTargetException, InterruptedException,
+																		  LockableEphemerisLinkEvaluationException
 	{
-		StateHistory history = activeIntervalGenerator.createNewTimeInterval(key, startTime, endTime, duration, name,
-				progressFunction);
 
-		SwingUtilities.invokeAndWait(new Runnable()
+		try
 		{
-			@Override
-			public void run()
+			newTimeInterval = activeIntervalGenerator.createNewTimeInterval(key, startTime, endTime, duration, name,
+					progressFunction);
+		}
+		catch (LockableEphemerisLinkEvaluationException lelee)
+		{
+			throw lelee;
+		}
+		finally
+		{
+			if (newTimeInterval != null)
 			{
-				collection.addRunToList(history);
-				rendererManager.setAllItems(collection.getSimRuns());
-				fireHistorySegmentCreatedListener(history);
+				SwingUtilities.invokeAndWait(new Runnable()
+				{
+					@Override
+					public void run()
+					{
+						try
+						{
+							collection.addRunToList(newTimeInterval);
+							rendererManager.setAllItems(collection.getSimRuns());
+							fireHistorySegmentCreatedListener(newTimeInterval);
+						}
+						catch  (LockableEphemerisLinkEvaluationException lelee)
+						{
+							try
+							{
+								removeRun(newTimeInterval);
+							}
+							catch (IOException e)
+							{
+								// TODO Auto-generated catch block
+								e.printStackTrace();
+							}
+							throw lelee;
+						}
+					}
+				});
+				updateConfigFile();
 			}
-		});
-		updateConfigFile();
+		}
 	}
 
 //	/**

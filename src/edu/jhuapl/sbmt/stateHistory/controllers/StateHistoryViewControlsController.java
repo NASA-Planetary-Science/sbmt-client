@@ -1,6 +1,7 @@
 package edu.jhuapl.sbmt.stateHistory.controllers;
 
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
 import javax.swing.SwingUtilities;
 
 import edu.cmu.relativelayout.Binding;
@@ -116,12 +117,15 @@ public class StateHistoryViewControlsController
 		factory.setLeftMargin(0);
 		factory.setRightMargin(0);
         view.add(displayItemsControls.getView(), new RelativeConstraints(factory.leftEdge(), factory.leftOf(coloringControls.getView()),
-        																 factory.topEdge(), new Binding(Edge.BOTTOM, 300, Direction.BELOW, Edge.TOP, view)));
+        																 factory.topEdge(), new Binding(Edge.BOTTOM, 200, Direction.BELOW, Edge.TOP, view)));
     	view.add(coloringControls.getView(), new RelativeConstraints(factory.rightEdge(), factory.topEdge(), new Binding(Edge.LEFT, 275, Direction.LEFT, Edge.RIGHT, view),
-    																 new Binding(Edge.BOTTOM, 300, Direction.BELOW, Edge.TOP, view)));
+    																 new Binding(Edge.BOTTOM, 200, Direction.BELOW, Edge.TOP, view)));
         view.add(viewControls.getView(), new RelativeConstraints(factory.leftEdge(), factory.rightEdge(), factory.below(displayItemsControls.getView())));
-        view.add(fovControls.getView(), new RelativeConstraints(factory.leftEdge(), factory.rightEdge(),
-        														new Binding(Edge.BOTTOM, 250, Direction.BELOW, Edge.BOTTOM, viewControls.getView()), factory.below(viewControls.getView())));
+
+        JScrollPane fovScroll = new JScrollPane();
+        fovScroll.setViewportView(fovControls.getView());
+        view.add(fovScroll, new RelativeConstraints(factory.leftEdge(), factory.rightEdge(), factory.bottomEdge(), factory.below(viewControls.getView())));
+//        														new Binding(Edge.BOTTOM, 250, Direction.BELOW, Edge.BOTTOM, viewControls.getView()), factory.below(viewControls.getView())));
 	}
 
 	/**
