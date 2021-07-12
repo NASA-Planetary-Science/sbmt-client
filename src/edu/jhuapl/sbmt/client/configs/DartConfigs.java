@@ -112,7 +112,8 @@ public class DartConfigs
         configList.add(c);
         c = createSingleResolutionConfig_20200629_v01(ShapeModelBody.DIDYMOS, "Ideal Impact 4 20200629 v01", 3145728);
         configList.add(c);
-        c = createSingleResMissionImagesConfig(ShapeModelBody.DIDYMOS, "Ideal Impact 4 RA 20210211 v01", 3145728);
+        c = createSingleResMissionImagesConfig(ShapeModelBody.DIDYMOS, "Ideal Impact 4 RA 20210211 v01", 3145728, //
+                "ideal-impact4-20200629-v01", null, null );
         configList.add(c);
         c = createSingleResolutionConfig_20200629_v01(ShapeModelBody.DIDYMOS, "Ideal Impact 5 20200629 v01", 3145728);
         configList.add(c);
@@ -131,7 +132,8 @@ public class DartConfigs
         configList.add(c);
         c = createSingleResolutionConfig_20200629_v01(ShapeModelBody.DIMORPHOS, "Ideal Impact 4 20200629 v01", 3145728);
         configList.add(c);
-        c = createSingleResMissionImagesConfig(ShapeModelBody.DIMORPHOS, "Ideal Impact 4 RA 20210211 v01", 3145728);
+        c = createSingleResMissionImagesConfig(ShapeModelBody.DIMORPHOS, "Ideal Impact 4 RA 20210211 v01", 3145728, //
+                "ideal-impact4-20200629-v01", null, null );
         configList.add(c);
         c = createSingleResolutionConfig_20200629_v01(ShapeModelBody.DIMORPHOS, "Ideal Impact 5 20200629 v01", 3366134);
         configList.add(c);
