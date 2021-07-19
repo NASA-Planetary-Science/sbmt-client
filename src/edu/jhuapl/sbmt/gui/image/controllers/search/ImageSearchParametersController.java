@@ -578,7 +578,7 @@ public class ImageSearchParametersController
 
     private void clearRegionButtonActionPerformed(ActionEvent evt)
     {
-        AbstractEllipsePolygonModel selectionModel = (AbstractEllipsePolygonModel)model.getModelManager().getModel(ModelNames.CIRCLE_SELECTION);
+        AbstractEllipsePolygonModel selectionModel = (AbstractEllipsePolygonModel)model.getModelManager().getModel(ModelNames.CIRCLE_SELECTION).get(0);
         selectionModel.removeAllStructures();
     }
 

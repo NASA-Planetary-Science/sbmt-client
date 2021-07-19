@@ -109,7 +109,7 @@ public class StateHistoryController implements TableModelListener, ItemListener,
     {
         view = new StateHistoryPanel2();
         this.earthEnabled = earthEnabled;
-        stateHistoryCollection = (StateHistoryCollection)modelManager.getModel(ModelNames.STATE_HISTORY_COLLECTION);
+        stateHistoryCollection = (StateHistoryCollection)modelManager.getModel(ModelNames.STATE_HISTORY_COLLECTION).get(0);
 
         this.modelManager = modelManager;
         this.renderer = renderer;
@@ -117,7 +117,7 @@ public class StateHistoryController implements TableModelListener, ItemListener,
         bodyModel = (SmallBodyModel) modelManager.getPolyhedralModel();
         config = (SmallBodyViewConfig) bodyModel.getConfig();
         this.model = stateHistoryCollection;
-        runs = (StateHistoryCollection)modelManager.getModel(ModelNames.STATE_HISTORY_COLLECTION);
+        runs = (StateHistoryCollection)modelManager.getModel(ModelNames.STATE_HISTORY_COLLECTION).get(0);
 
         try {
             path = FileCache.getFileFromServer(config.timeHistoryFile);
@@ -734,7 +734,7 @@ public class StateHistoryController implements TableModelListener, ItemListener,
     {
         if (runs != null)
         {
-            StateHistoryCollection runs = (StateHistoryCollection)modelManager.getModel(ModelNames.STATE_HISTORY_COLLECTION);
+            StateHistoryCollection runs = (StateHistoryCollection)modelManager.getModel(ModelNames.STATE_HISTORY_COLLECTION).get(0);
             StateHistoryModel currentRun = runs.getCurrentRun();
             if (currentRun != null)
                 currentRun.updateTimeBarPosition(renWin.getComponent().getWidth(), renWin.getComponent().getHeight());

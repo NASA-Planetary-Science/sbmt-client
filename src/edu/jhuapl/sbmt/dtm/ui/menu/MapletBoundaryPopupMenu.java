@@ -31,7 +31,7 @@ public class MapletBoundaryPopupMenu extends PopupMenu
     public MapletBoundaryPopupMenu(ModelManager modelManager,
             Component invoker)
     {
-        this.boundaryCollection = (DEMBoundaryCollection)modelManager.getModel(ModelNames.DEM_BOUNDARY);
+        this.boundaryCollection = (DEMBoundaryCollection)modelManager.getModel(ModelNames.DEM_BOUNDARY).get(0);
         this.invoker = invoker;
 
         colorMenuItem = new JMenuItem(new ChangeColorAction());

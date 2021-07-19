@@ -122,9 +122,9 @@ public abstract class AbstractSpectrumSearchPanel extends JPanel implements Mous
         this.instrument=instrument;
         this.hierarchicalSpectraSearchSpecification = hierarchicalSpectraSearchSpecification;
         this.hasHierarchicalSpectraSearch = hasHierarchicalSpectraSearch;
-		SpectrumBoundaryCollection spectrumBoundaryCollection = (SpectrumBoundaryCollection)modelManager.getModel(ModelNames.SPECTRA_BOUNDARIES);
+		SpectrumBoundaryCollection spectrumBoundaryCollection = (SpectrumBoundaryCollection)modelManager.getModel(ModelNames.SPECTRA_BOUNDARIES).get(0);
 
-        spectrumPopupMenu = new SpectrumPopupMenu((SpectraCollection)modelManager.getModel(ModelNames.SPECTRA), spectrumBoundaryCollection, this.modelManager, infoPanelManager, renderer);
+        spectrumPopupMenu = new SpectrumPopupMenu((SpectraCollection)modelManager.getModel(ModelNames.SPECTRA).get(0), spectrumBoundaryCollection, this.modelManager, infoPanelManager, renderer);
         spectrumPopupMenu.addPropertyChangeListener(this);
 
         // Setup hierarchical image search
@@ -388,7 +388,7 @@ public abstract class AbstractSpectrumSearchPanel extends JPanel implements Mous
 
         if (e.getKeyChar()=='a')
         {
-            SpectraCollection model = (SpectraCollection)modelManager.getModel(ModelNames.SPECTRA);
+            SpectraCollection model = (SpectraCollection)modelManager.getModel(ModelNames.SPECTRA).get(0);
             renderer.removeKeyListener(this);
             model.toggleSelectAll();
             renderer.addKeyListener(this);
@@ -399,7 +399,7 @@ public abstract class AbstractSpectrumSearchPanel extends JPanel implements Mous
         }
         else if (e.getKeyChar()=='i' || e.getKeyChar()=='v')    // 'i' sets the lighting direction based on time of a single NIS spectrum, and 'v' looks from just above the footprint toward the sun
         {
-            SpectraCollection model = (SpectraCollection)modelManager.getModel(ModelNames.SPECTRA);
+            SpectraCollection model = (SpectraCollection)modelManager.getModel(ModelNames.SPECTRA).get(0);
             List<IBasicSpectrumRenderer> selection=model.getSelectedSpectra();
             if (selection.size()!=1)
             {
@@ -414,7 +414,7 @@ public abstract class AbstractSpectrumSearchPanel extends JPanel implements Mous
             if (e.getKeyChar()=='v')
             {
                 Vector3D footprintCenter=new Vector3D(spectrum.getShiftedFootprint().GetCenter());
-                SmallBodyModel smallBodyModel=(SmallBodyModel)modelManager.getModel(ModelNames.SMALL_BODY);
+                SmallBodyModel smallBodyModel=(SmallBodyModel)modelManager.getModel(ModelNames.SMALL_BODY).get(0);
                 //
                 vtkPolyDataNormals normalsFilter = new vtkPolyDataNormals();
                 normalsFilter.SetInputData(spectrum.getUnshiftedFootprint());
@@ -433,24 +433,24 @@ public abstract class AbstractSpectrumSearchPanel extends JPanel implements Mous
         }
         else if (e.getKeyChar()=='h')
         {
-            SpectraCollection model = (SpectraCollection)modelManager.getModel(ModelNames.SPECTRA);
+            SpectraCollection model = (SpectraCollection)modelManager.getModel(ModelNames.SPECTRA).get(0);
             model.decreaseFootprintSeparation(0.001);
         }
         else if (e.getKeyChar()=='H')
         {
-            SpectraCollection model = (SpectraCollection)modelManager.getModel(ModelNames.SPECTRA);
+            SpectraCollection model = (SpectraCollection)modelManager.getModel(ModelNames.SPECTRA).get(0);
             model.increaseFootprintSeparation(0.001);
         }
         else if (e.getKeyChar()=='+')
         {
-            SpectraCollection model = (SpectraCollection)modelManager.getModel(ModelNames.SPECTRA);
-            SmallBodyModel body=(SmallBodyModel)modelManager.getModel(ModelNames.SMALL_BODY);
+            SpectraCollection model = (SpectraCollection)modelManager.getModel(ModelNames.SPECTRA).get(0);
+            SmallBodyModel body=(SmallBodyModel)modelManager.getModel(ModelNames.SMALL_BODY).get(0);
             model.setOffset(model.getOffset()+body.getBoundingBoxDiagonalLength()/50);
         }
         else if (e.getKeyChar()=='-')
         {
-            SpectraCollection model = (SpectraCollection)modelManager.getModel(ModelNames.SPECTRA);
-            SmallBodyModel body=(SmallBodyModel)modelManager.getModel(ModelNames.SMALL_BODY);
+            SpectraCollection model = (SpectraCollection)modelManager.getModel(ModelNames.SPECTRA).get(0);
+            SmallBodyModel body=(SmallBodyModel)modelManager.getModel(ModelNames.SMALL_BODY).get(0);
             model.setOffset(model.getOffset()-body.getBoundingBoxDiagonalLength()/50);
         }
     }
@@ -467,7 +467,7 @@ public abstract class AbstractSpectrumSearchPanel extends JPanel implements Mous
         int startId = idPair.id1;
         int endId = idPair.id2;
 
-        SpectraCollection model = (SpectraCollection)modelManager.getModel(ModelNames.SPECTRA);
+        SpectraCollection model = (SpectraCollection)modelManager.getModel(ModelNames.SPECTRA).get(0);
 //        model.removeAllSpectra();
 
         for (int i=startId; i<endId; ++i)
@@ -557,7 +557,7 @@ public abstract class AbstractSpectrumSearchPanel extends JPanel implements Mous
         Double blueMinVal = (Double)blueMinSpinner.getValue();
         Double blueMaxVal = (Double)blueMaxSpinner.getValue();
 
-        SpectraCollection model = (SpectraCollection)modelManager.getModel(ModelNames.SPECTRA);
+        SpectraCollection model = (SpectraCollection)modelManager.getModel(ModelNames.SPECTRA).get(0);
 //        if (grayscaleCheckBox.isSelected())
 //        {
 //            model.setChannelColoring(
@@ -1659,7 +1659,7 @@ public abstract class AbstractSpectrumSearchPanel extends JPanel implements Mous
 
     private void clearRegionButtonActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_clearRegionButtonActionPerformed
     {//GEN-HEADEREND:event_clearRegionButtonActionPerformed
-        AbstractEllipsePolygonModel selectionModel = (AbstractEllipsePolygonModel)modelManager.getModel(ModelNames.CIRCLE_SELECTION);
+        AbstractEllipsePolygonModel selectionModel = (AbstractEllipsePolygonModel)modelManager.getModel(ModelNames.CIRCLE_SELECTION).get(0);
         selectionModel.removeAllStructures();
     }//GEN-LAST:event_clearRegionButtonActionPerformed
 
@@ -1696,7 +1696,7 @@ public abstract class AbstractSpectrumSearchPanel extends JPanel implements Mous
 
     private void removeAllFootprintsButtonActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_removeAllFootprintsButtonActionPerformed
     {//GEN-HEADEREND:event_removeAllFootprintsButtonActionPerformed
-        SpectraCollection model = (SpectraCollection)modelManager.getModel(ModelNames.SPECTRA);
+        SpectraCollection model = (SpectraCollection)modelManager.getModel(ModelNames.SPECTRA).get(0);
         model.removeAllSpectra();
         resultIntervalCurrentlyShown = null;
     }//GEN-LAST:event_removeAllFootprintsButtonActionPerformed
@@ -1747,8 +1747,8 @@ public abstract class AbstractSpectrumSearchPanel extends JPanel implements Mous
 //            TreeSet<Integer> cubeList = null;
             if (cubeList != null)
                 cubeList.clear();
-            AbstractEllipsePolygonModel selectionModel = (AbstractEllipsePolygonModel)modelManager.getModel(ModelNames.CIRCLE_SELECTION);
-            SmallBodyModel erosModel = (SmallBodyModel)modelManager.getModel(ModelNames.SMALL_BODY);
+            AbstractEllipsePolygonModel selectionModel = (AbstractEllipsePolygonModel)modelManager.getModel(ModelNames.CIRCLE_SELECTION).get(0);
+            SmallBodyModel erosModel = (SmallBodyModel)modelManager.getModel(ModelNames.SMALL_BODY).get(0);
             if (selectionModel.getAllItems().size() > 0)
             {
                 int numberOfSides = selectionModel.getNumberOfSides();

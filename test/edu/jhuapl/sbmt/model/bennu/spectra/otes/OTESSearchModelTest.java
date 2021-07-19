@@ -5,6 +5,7 @@ import static org.junit.jupiter.api.Assertions.fail;
 
 import java.util.Calendar;
 import java.util.HashMap;
+import java.util.List;
 
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.TreeModel;
@@ -14,6 +15,7 @@ import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
+import com.google.common.collect.ImmutableList;
 import com.jidesoft.swing.CheckBoxTree;
 
 import edu.jhuapl.saavtk.gui.render.ConfigurableSceneNotifier;
@@ -84,26 +86,26 @@ class OTESSearchModelTest
 		checkBoxTree = new CheckBoxTree(treeModel);
 		orexNode = new DefaultMutableTreeNode("OREX");
 
-		HashMap<ModelNames, Model> allModels = new HashMap<>();
+		HashMap<ModelNames, List<Model>> allModels = new HashMap<>();
         SpectraCollection collection = new SpectraCollection(smallBodyModel);
 
-		allModels.put(ModelNames.SMALL_BODY, smallBodyModel);
-		allModels.put(ModelNames.SPECTRA_BOUNDARIES, new SpectrumBoundaryCollection(smallBodyModel, collection));
+		allModels.put(ModelNames.SMALL_BODY, ImmutableList.of(smallBodyModel));
+		allModels.put(ModelNames.SPECTRA_BOUNDARIES, ImmutableList.of(new SpectrumBoundaryCollection(smallBodyModel, collection)));
 
-		allModels.put(ModelNames.SPECTRA_HYPERTREE_SEARCH, new SpectraSearchDataCollection(smallBodyModel));
+		allModels.put(ModelNames.SPECTRA_HYPERTREE_SEARCH, ImmutableList.of(new SpectraSearchDataCollection(smallBodyModel)));
 
 
-        allModels.put(ModelNames.SPECTRA, collection);
+        allModels.put(ModelNames.SPECTRA, ImmutableList.of(collection));
 
 		ConfigurableSceneNotifier tmpSceneChangeNotifier = new ConfigurableSceneNotifier();
 		StatusNotifier tmpStatusNotifier = QuietStatusNotifier.Instance;
-		allModels.put(ModelNames.STATISTICS, new SpectrumStatisticsCollection());
-		allModels.put(ModelNames.LINE_STRUCTURES, new LineModel<>(tmpSceneChangeNotifier, tmpStatusNotifier, smallBodyModel));
-		allModels.put(ModelNames.POLYGON_STRUCTURES, new PolygonModel(tmpSceneChangeNotifier, tmpStatusNotifier, smallBodyModel));
-		allModels.put(ModelNames.CIRCLE_STRUCTURES, new CircleModel(tmpSceneChangeNotifier, tmpStatusNotifier, smallBodyModel));
-		allModels.put(ModelNames.ELLIPSE_STRUCTURES, new EllipseModel(tmpSceneChangeNotifier, tmpStatusNotifier, smallBodyModel));
-		allModels.put(ModelNames.POINT_STRUCTURES, new PointModel(tmpSceneChangeNotifier, tmpStatusNotifier, smallBodyModel));
-		allModels.put(ModelNames.CIRCLE_SELECTION, new CircleSelectionModel(tmpSceneChangeNotifier, tmpStatusNotifier, smallBodyModel));
+		allModels.put(ModelNames.STATISTICS, ImmutableList.of(new SpectrumStatisticsCollection()));
+		allModels.put(ModelNames.LINE_STRUCTURES, ImmutableList.of(new LineModel<>(tmpSceneChangeNotifier, tmpStatusNotifier, smallBodyModel)));
+		allModels.put(ModelNames.POLYGON_STRUCTURES, ImmutableList.of(new PolygonModel(tmpSceneChangeNotifier, tmpStatusNotifier, smallBodyModel)));
+		allModels.put(ModelNames.CIRCLE_STRUCTURES, ImmutableList.of(new CircleModel(tmpSceneChangeNotifier, tmpStatusNotifier, smallBodyModel)));
+		allModels.put(ModelNames.ELLIPSE_STRUCTURES, ImmutableList.of(new EllipseModel(tmpSceneChangeNotifier, tmpStatusNotifier, smallBodyModel)));
+		allModels.put(ModelNames.POINT_STRUCTURES, ImmutableList.of(new PointModel(tmpSceneChangeNotifier, tmpStatusNotifier, smallBodyModel)));
+		allModels.put(ModelNames.CIRCLE_SELECTION, ImmutableList.of(new CircleSelectionModel(tmpSceneChangeNotifier, tmpStatusNotifier, smallBodyModel)));
 
 		ModelManager modelManager = new ModelManager(smallBodyModel, allModels);
 		tmpSceneChangeNotifier.setTarget(modelManager);

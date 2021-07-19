@@ -38,8 +38,8 @@ public class DEMResultsTableController
 
 	public DEMResultsTableController(ModelManager modelManager, PickManager pickManager, Renderer renderer)
 	{
-		this.dems = (DEMCollection) modelManager.getModel(ModelNames.DEM);
-        this.boundaries = (DEMBoundaryCollection) modelManager.getModel(ModelNames.DEM_BOUNDARY);
+		this.dems = (DEMCollection) modelManager.getModel(ModelNames.DEM).get(0);
+        this.boundaries = (DEMBoundaryCollection) modelManager.getModel(ModelNames.DEM_BOUNDARY).get(0);
 		table = new DEMTable();
         table.addListener(dems);		//dems contains the handle method for the table
         table.addListener(boundaries);	//boundaries contains the handle method for the table

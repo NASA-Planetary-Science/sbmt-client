@@ -160,7 +160,7 @@ public class SpectrumInfoPanel extends ModelInfoWindow implements PropertyChange
 
     public Model getCollectionModel()
     {
-        return modelManager.getModel(ModelNames.SPECTRA);
+        return modelManager.getModel(ModelNames.SPECTRA).get(0);
     }
 
 
@@ -172,7 +172,7 @@ public class SpectrumInfoPanel extends ModelInfoWindow implements PropertyChange
      */
     private void createMenus()
     {
-		SpectrumBoundaryCollection spectrumBoundaryCollection = (SpectrumBoundaryCollection)modelManager.getModel(ModelNames.SPECTRA_BOUNDARIES);
+		SpectrumBoundaryCollection spectrumBoundaryCollection = (SpectrumBoundaryCollection)modelManager.getModel(ModelNames.SPECTRA_BOUNDARIES).get(0);
 
         SpectrumPopupMenu msiImagesPopupMenu =
             new SpectrumPopupMenu((SpectraCollection)getCollectionModel(), spectrumBoundaryCollection, modelManager, null, null );

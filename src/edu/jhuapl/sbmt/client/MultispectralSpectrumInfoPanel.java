@@ -160,7 +160,7 @@ public class MultispectralSpectrumInfoPanel extends ModelInfoWindow implements P
 
     public Model getCollectionModel()
     {
-        return modelManager.getModel(ModelNames.IMAGES);
+        return modelManager.getModel(ModelNames.IMAGES).get(0);
     }
 
 

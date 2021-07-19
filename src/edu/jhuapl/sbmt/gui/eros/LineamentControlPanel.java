@@ -12,12 +12,12 @@ import javax.swing.SpinnerNumberModel;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
-import net.miginfocom.swing.MigLayout;
-
 import edu.jhuapl.saavtk.gui.RadialOffsetChanger;
 import edu.jhuapl.saavtk.model.ModelManager;
 import edu.jhuapl.saavtk.model.ModelNames;
 import edu.jhuapl.sbmt.model.eros.LineamentModel;
+
+import net.miginfocom.swing.MigLayout;
 
 public class LineamentControlPanel extends JPanel implements ItemListener, ChangeListener
 {
@@ -33,7 +33,7 @@ public class LineamentControlPanel extends JPanel implements ItemListener, Chang
                 "",
                 ""));
 
-        lineamentModel = (LineamentModel)modelManager.getModel(ModelNames.LINEAMENT);
+        lineamentModel = (LineamentModel)modelManager.getModel(ModelNames.LINEAMENT).get(0);
 
         lineamentCheckBox = new JCheckBox();
         lineamentCheckBox.setText("Show Lineaments");

@@ -80,7 +80,7 @@ public class ImageCubeController
         this.imageCubePopupMenu = imageCubePopupMenu;
         this.spectrumPanelManager = spectrumPanelManager;
         this.renderer = renderer;
-        ImageCollection imageCollection = (ImageCollection)model.getModelManager().getModel(model.getImageCollectionModelName());
+        ImageCollection imageCollection = (ImageCollection)model.getModelManager().getModel(model.getImageCollectionModelName()).get(0);
         this.cubeModel.setImageCollection(imageCollection);
         this.cubeModel.setImageSearchModel(model);
         this.panel = new SpectralImageCubeGenerationPanel();
@@ -137,8 +137,8 @@ public class ImageCubeController
 
     protected void setupPanel()
     {
-        boundaries = (PerspectiveImageBoundaryCollection)model.getModelManager().getModel(cubeModel.getImageBoundaryCollectionModelName());
-        imageCubes = (ImageCubeCollection)model.getModelManager().getModel(cubeModel.getImageCubeCollectionModelName());
+        boundaries = (PerspectiveImageBoundaryCollection)model.getModelManager().getModel(cubeModel.getImageBoundaryCollectionModelName()).get(0);
+        imageCubes = (ImageCubeCollection)model.getModelManager().getModel(cubeModel.getImageCubeCollectionModelName()).get(0);
         imageCubePopupMenu = new ImageCubePopupMenu(imageCubes, boundaries, infoPanelManager, spectrumPanelManager, renderer, panel);
 
         panel.getRemoveImageCubeButton().setText("Remove Image Cube");

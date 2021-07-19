@@ -162,7 +162,7 @@ public class DEMBoundaryCollection extends AbstractModel implements PropertyChan
         DEMBoundary boundary;
 
         // If the DEM already exists in the DEM collection, use that instead of creating a new one
-        DEMCollection demCollection = (DEMCollection)modelManager.getModel(ModelNames.DEM);
+        DEMCollection demCollection = (DEMCollection)modelManager.getModel(ModelNames.DEM).get(0);
         DEM dem = demCollection.getDEM(key);
         if(dem != null)
         {

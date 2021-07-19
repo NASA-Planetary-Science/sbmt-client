@@ -262,7 +262,7 @@ public class OfflimbImageResultsTableController extends ImageResultsTableControl
     protected void setOffLimbFootprintVisibility(String name, boolean visible)
     {
         List<ImageKeyInterface> keys = imageSearchModel.createImageKeys(name, imageSearchModel.getImageSourceOfLastQuery(), instrument);
-        ImageCollection images = (ImageCollection)imageSearchModel.getModelManager().getModel(imageSearchModel.getImageCollectionModelName());
+        ImageCollection images = (ImageCollection)imageSearchModel.getModelManager().getModel(imageSearchModel.getImageCollectionModelName()).get(0);
         for (ImageKeyInterface key : keys)
         {
             if (images.containsImage(key))
@@ -304,7 +304,7 @@ public class OfflimbImageResultsTableController extends ImageResultsTableControl
             {
                 String name = imageRawResults.get(row).get(0);
                 ImageKeyInterface key = imageSearchModel.createImageKey(name.substring(0, name.length()-4), imageSearchModel.getImageSourceOfLastQuery(), instrument);
-                ImageCollection images = (ImageCollection)imageSearchModel.getModelManager().getModel(imageSearchModel.getImageCollectionModelName());
+                ImageCollection images = (ImageCollection)imageSearchModel.getModelManager().getModel(imageSearchModel.getImageCollectionModelName()).get(0);
                 return images.containsImage(key);
             }
             else

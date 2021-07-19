@@ -19,7 +19,7 @@ public class SurfacePatchOffsetPane extends JPanel implements ItemListener
 
     public SurfacePatchOffsetPane(ModelManager modelManager)
     {
-        stateHistoryCollection = (StateHistoryCollection)modelManager.getModel(ModelNames.STATE_HISTORY_COLLECTION);
+        stateHistoryCollection = (StateHistoryCollection)modelManager.getModel(ModelNames.STATE_HISTORY_COLLECTION).get(0);
 
         SurfacePatchOffsetChanger radialChanger = new SurfacePatchOffsetChanger(0.02, 540);
         radialChanger.setModel(stateHistoryCollection);

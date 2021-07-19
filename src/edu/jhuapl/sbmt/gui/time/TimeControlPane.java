@@ -43,7 +43,7 @@ public class TimeControlPane extends JPanel implements ItemListener
 
     public TimeControlPane(ModelManager modelManager, final StateHistoryPanel panel)
     {
-        stateHistoryCollection = (StateHistoryCollection)modelManager.getModel(ModelNames.STATE_HISTORY_COLLECTION);
+        stateHistoryCollection = (StateHistoryCollection)modelManager.getModel(ModelNames.STATE_HISTORY_COLLECTION).get(0);
 
         radialChanger = new TimeChanger();
         playChecked = radialChanger.playButtonChecked();

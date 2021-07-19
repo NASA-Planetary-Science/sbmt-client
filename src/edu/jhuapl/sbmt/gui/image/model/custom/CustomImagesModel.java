@@ -81,8 +81,8 @@ public class CustomImagesModel extends ImageSearchModel
         this.customImages = new Vector<CustomImageKeyInterface>();
         this.customImageListeners = new Vector<CustomImageResultsListener>();
 
-        this.imageCollection = (ImageCollection)modelManager.getModel(getImageCollectionModelName());
-        this.boundaries = (PerspectiveImageBoundaryCollection)modelManager.getModel(getImageBoundaryCollectionModelName());
+        this.imageCollection = (ImageCollection)modelManager.getModel(getImageCollectionModelName()).get(0);
+        this.boundaries = (PerspectiveImageBoundaryCollection)modelManager.getModel(getImageBoundaryCollectionModelName()).get(0);
     }
 
     public CustomImagesModel(ImageSearchModel model)
@@ -143,7 +143,7 @@ public class CustomImagesModel extends ImageSearchModel
 //        {
             try
             {
-                ImageCollection images = (ImageCollection)modelManager.getModel(getImageCollectionModelName());
+                ImageCollection images = (ImageCollection)modelManager.getModel(getImageCollectionModelName()).get(0);
                 if (!images.containsImage(key))
                 {
                 	key.setImagefilename(getCustomDataFolder() + File.separator + key.getImageFilename());
@@ -214,7 +214,7 @@ public class CustomImagesModel extends ImageSearchModel
     	ImageKeyInterface key = createImageKey(name, imageSourceOfLastQuery, instrument);
 //        for (ImageKeyInterface key : keys)
         {
-            ImageCollection images = (ImageCollection)modelManager.getModel(getImageCollectionModelName());
+            ImageCollection images = (ImageCollection)modelManager.getModel(getImageCollectionModelName()).get(0);
             unloadImage(key, images);
         }
    }

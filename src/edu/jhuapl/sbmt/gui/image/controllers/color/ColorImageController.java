@@ -71,7 +71,7 @@ public class ColorImageController
             }
         });
         this.colorModel = colorModel;
-        colorImages = (ColorImageCollection)model.getModelManager().getModel(colorModel.getImageCollectionModelName());
+        colorImages = (ColorImageCollection)model.getModelManager().getModel(colorModel.getImageCollectionModelName()).get(0);
         colorModel.setImages(colorImages);
         panel = new ColorImageGenerationPanel();
         this.infoPanelManager = infoPanelManager;
@@ -109,7 +109,7 @@ public class ColorImageController
 
     private void setupPanel()
     {
-        boundaries = (PerspectiveImageBoundaryCollection)model.getModelManager().getModel(colorModel.getImageBoundaryCollectionModelName());
+        boundaries = (PerspectiveImageBoundaryCollection)model.getModelManager().getModel(colorModel.getImageBoundaryCollectionModelName()).get(0);
 
         ColorImagePopupMenu colorImagePopupMenu = new ColorImagePopupMenu(colorImages, boundaries, infoPanelManager, model.getModelManager(), renderer, panel);
         panel.setColorImagePopupMenu(colorImagePopupMenu);

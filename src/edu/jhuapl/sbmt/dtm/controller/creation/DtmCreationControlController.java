@@ -110,7 +110,7 @@ public class DtmCreationControlController implements ActionListener, PropertyCha
 				@Override
 				public void actionPerformed(ActionEvent e)
 				{
-					 AbstractEllipsePolygonModel selectionModel = (AbstractEllipsePolygonModel)model.getModelManager().getModel(ModelNames.CIRCLE_SELECTION);
+					 AbstractEllipsePolygonModel selectionModel = (AbstractEllipsePolygonModel)model.getModelManager().getModel(ModelNames.CIRCLE_SELECTION).get(0);
 		             selectionModel.removeAllStructures();
 				}
 			});
@@ -161,7 +161,7 @@ public class DtmCreationControlController implements ActionListener, PropertyCha
 
         if (!panel.getSetSpecifyRegionManuallyCheckbox().isSelected())
         {
-            AbstractEllipsePolygonModel selectionModel = (AbstractEllipsePolygonModel)model.getModelManager().getModel(ModelNames.CIRCLE_SELECTION);
+            AbstractEllipsePolygonModel selectionModel = (AbstractEllipsePolygonModel)model.getModelManager().getModel(ModelNames.CIRCLE_SELECTION).get(0);
             if (selectionModel.getNumItems() > 0)
             {
                 Ellipse region = selectionModel.getItem(0);

@@ -32,13 +32,13 @@ public class SBMTInfoWindowManagerFactory
 	{
 		SbmtInfoWindowManager.registerInfoWindowManager(ColorImage.class, m ->
 		{
-			ColorImageCollection images = (ColorImageCollection)modelManager.getModel(ModelNames.COLOR_IMAGES);
+			ColorImageCollection images = (ColorImageCollection)modelManager.getModel(ModelNames.COLOR_IMAGES).get(0);
             return new ColorImageInfoPanel((ColorImage)m, images, aStatusHandler);
 		});
 		SbmtInfoWindowManager.registerInfoWindowManager(Image.class, m ->
 		{
-			ImageCollection images = (ImageCollection)modelManager.getModel(ModelNames.IMAGES);
-            PerspectiveImageBoundaryCollection boundaries = (PerspectiveImageBoundaryCollection)modelManager.getModel(ModelNames.PERSPECTIVE_IMAGE_BOUNDARIES);
+			ImageCollection images = (ImageCollection)modelManager.getModel(ModelNames.IMAGES).get(0);
+            PerspectiveImageBoundaryCollection boundaries = (PerspectiveImageBoundaryCollection)modelManager.getModel(ModelNames.PERSPECTIVE_IMAGE_BOUNDARIES).get(0);
             if (m instanceof OsirisImage)
                 return new OsirisImageInfoPanel((Image)m, images, boundaries, aStatusHandler);
             return new ImageInfoPanel((Image)m, images, boundaries, aStatusHandler);

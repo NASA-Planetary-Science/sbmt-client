@@ -113,7 +113,7 @@ public class CubicalImagingSearchPanel extends ImagingSearchPanel implements Pro
         if (Properties.MODEL_CHANGED.equals(evt.getPropertyName()))
         {
             // If an image was added/removed, then
-        	ImageCubeCollection images = (ImageCubeCollection)getModelManager().getModel(getImageCubeCollectionModelName());
+        	ImageCubeCollection images = (ImageCubeCollection)getModelManager().getModel(getImageCubeCollectionModelName()).get(0);
             int currImagesInCollection = images.getImages().size();
 
             if(currImagesInCollection != numImagesInCollection)
@@ -146,7 +146,7 @@ public class CubicalImagingSearchPanel extends ImagingSearchPanel implements Pro
         currentSlice = (int)source.getValue();
         bandValue.setText(Integer.toString(currentSlice));
 
-        ImageCubeCollection images = (ImageCubeCollection)getModelManager().getModel(getImageCubeCollectionModelName());
+        ImageCubeCollection images = (ImageCubeCollection)getModelManager().getModel(getImageCubeCollectionModelName()).get(0);
 
         Set<ImageCube> imageSet = images.getImages();
         for (ImageCube image : imageSet)
@@ -186,7 +186,7 @@ public class CubicalImagingSearchPanel extends ImagingSearchPanel implements Pro
         String imagename = tokens[0].trim();
 //        System.out.println("Image: " + index + ", " + imagename);
 
-        ImageCubeCollection images = (ImageCubeCollection)getModelManager().getModel(getImageCubeCollectionModelName());
+        ImageCubeCollection images = (ImageCubeCollection)getModelManager().getModel(getImageCubeCollectionModelName()).get(0);
 
         Set<ImageCube> imageSet = images.getImages();
         for (ImageCube image : imageSet)

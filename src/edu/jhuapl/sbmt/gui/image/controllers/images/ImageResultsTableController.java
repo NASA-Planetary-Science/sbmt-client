@@ -94,7 +94,7 @@ public class ImageResultsTableController
     {
         this.modelManager = model.getModelManager();
         this.imageKeys = new ArrayList<ImageKeyInterface>();
-        boundaries = (PerspectiveImageBoundaryCollection) modelManager.getModel(model.getImageBoundaryCollectionModelName());
+        boundaries = (PerspectiveImageBoundaryCollection) modelManager.getModel(model.getImageBoundaryCollectionModelName()).get(0);
         imagePopupMenu = new ImagePopupMenu(modelManager, imageCollection, boundaries, infoPanelManager, spectrumPanelManager, renderer, imageResultsTableView);
         imageResultsTableView = new ImageResultsTableView(instrument, imageCollection, imagePopupMenu);
         imageResultsTableView.setup();
@@ -536,7 +536,7 @@ public class ImageResultsTableController
     {
         IdPair originalInterval = imageSearchModel.getResultIntervalCurrentlyShown();
         imageSearchModel.setResultIntervalCurrentlyShown(new IdPair(0, imageRawResults.size()));
-        PerspectiveImageBoundaryCollection model = (PerspectiveImageBoundaryCollection) modelManager.getModel(imageSearchModel.getImageBoundaryCollectionModelName());
+        PerspectiveImageBoundaryCollection model = (PerspectiveImageBoundaryCollection) modelManager.getModel(imageSearchModel.getImageBoundaryCollectionModelName()).get(0);
         for (ImageKeyInterface key : imageKeys)
         {
             boundaries.removeBoundary(key);
@@ -835,7 +835,7 @@ public class ImageResultsTableController
             {
                 String name = imageRawResults.get(row).get(0);
                 ImageKeyInterface key = imageSearchModel.createImageKey(FileUtil.removeExtension(name), imageSearchModel.getImageSourceOfLastQuery(), imageSearchModel.getInstrument());
-                ImageCollection imageCollection = (ImageCollection) modelManager.getModel(imageSearchModel.getImageCollectionModelName());
+                ImageCollection imageCollection = (ImageCollection) modelManager.getModel(imageSearchModel.getImageCollectionModelName()).get(0);
                 return imageCollection.containsImage(key);
             }
             else
@@ -1071,7 +1071,7 @@ public class ImageResultsTableController
                 //                int row = e.getFirstRow();
                 String name = imageRawResults.get(row).get(0);
                 ImageKeyInterface key = imageSearchModel.createImageKey(FileUtil.removeExtension(name), sourceOfLastQuery, imageSearchModel.getInstrument());
-                ImageCollection images = (ImageCollection) modelManager.getModel(imageSearchModel.getImageCollectionModelName());
+                ImageCollection images = (ImageCollection) modelManager.getModel(imageSearchModel.getImageCollectionModelName()).get(0);
                 if (images.containsImage(key))
                 {
                     PerspectiveImage image = (PerspectiveImage) images.getImage(key);

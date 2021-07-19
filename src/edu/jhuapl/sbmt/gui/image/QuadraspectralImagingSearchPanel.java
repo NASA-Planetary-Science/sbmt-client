@@ -163,7 +163,7 @@ public class QuadraspectralImagingSearchPanel extends ImagingSearchPanel impleme
 
     private void defaultFrustumActionPerformed(java.awt.event.ActionEvent evt)
     {
-        ImageCollection images = (ImageCollection)getModelManager().getModel(getImageCollectionModelName());
+        ImageCollection images = (ImageCollection)getModelManager().getModel(getImageCollectionModelName()).get(0);
 
         Set<Image> imageSet = images.getImages();
         for (Image i : imageSet)
@@ -188,7 +188,7 @@ public class QuadraspectralImagingSearchPanel extends ImagingSearchPanel impleme
         int newBandIndex = bandNamesToPrefixes.get(newBandName);
         currentBandIndex = newBandIndex;
 
-        ImageCollection images = (ImageCollection)getModelManager().getModel(getImageCollectionModelName());
+        ImageCollection images = (ImageCollection)getModelManager().getModel(getImageCollectionModelName()).get(0);
         Set<Image> imageSet = images.getImages();
 
         for (Image i : imageSet)

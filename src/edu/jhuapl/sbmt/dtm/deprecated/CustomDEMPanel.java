@@ -146,8 +146,8 @@ public class CustomDEMPanel extends JPanel implements PropertyChangeListener, Ac
         initExtraComponents(hasMapmaker, hasBigmap);
 
         // Get collections
-        DEMCollection dems = (DEMCollection)modelManager.getModel(ModelNames.DEM);
-        DEMBoundaryCollection boundaries = (DEMBoundaryCollection)modelManager.getModel(ModelNames.DEM_BOUNDARY);
+        DEMCollection dems = (DEMCollection)modelManager.getModel(ModelNames.DEM).get(0);
+        DEMBoundaryCollection boundaries = (DEMBoundaryCollection)modelManager.getModel(ModelNames.DEM_BOUNDARY).get(0);
 
         // Construct popup menu (right click action)
         demPopupMenu = new DEMPopupMenu(modelManager.getPolyhedralModel(), dems, boundaries, renderer, this, new DEMPopupMenuActionListener(dems, boundaries));
@@ -220,7 +220,7 @@ public class CustomDEMPanel extends JPanel implements PropertyChangeListener, Ac
         {
             public void actionPerformed(ActionEvent e)
             {
-                AbstractEllipsePolygonModel selectionModel = (AbstractEllipsePolygonModel)modelManager.getModel(ModelNames.CIRCLE_SELECTION);
+                AbstractEllipsePolygonModel selectionModel = (AbstractEllipsePolygonModel)modelManager.getModel(ModelNames.CIRCLE_SELECTION).get(0);
                 selectionModel.removeAllStructures();
             }
         });
@@ -383,7 +383,7 @@ public class CustomDEMPanel extends JPanel implements PropertyChangeListener, Ac
     // Removes all DEMs
     private void removeAllDEMsFromRenderer()
     {
-        DEMCollection demCollection = (DEMCollection)modelManager.getModel(ModelNames.DEM);
+        DEMCollection demCollection = (DEMCollection)modelManager.getModel(ModelNames.DEM).get(0);
         demCollection.removeDEMs();
     }
 
@@ -398,14 +398,14 @@ public class CustomDEMPanel extends JPanel implements PropertyChangeListener, Ac
         new File(name).delete();
 
         // Remove the DEM from the renderer
-        DEMCollection demCollection = (DEMCollection)modelManager.getModel(ModelNames.DEM);
+        DEMCollection demCollection = (DEMCollection)modelManager.getModel(ModelNames.DEM).get(0);
         DEMKey demKey = new DEMKey(name, demInfo.name, false);
         demCollection.removeDEM(demKey);
 
         // Remove from the list
         ((DefaultListModel)imageList.getModel()).remove(index);
         DEMBoundaryCollection boundaries =
-                (DEMBoundaryCollection)modelManager.getModel(getDEMBoundaryCollectionModelName());
+                (DEMBoundaryCollection)modelManager.getModel(getDEMBoundaryCollectionModelName()).get(0);
         boundaries.removeBoundary(demKey);
     }
 
@@ -483,7 +483,7 @@ public class CustomDEMPanel extends JPanel implements PropertyChangeListener, Ac
     // Popup menu for when using right clicks
     private void imageListMaybeShowPopup(MouseEvent e)
     {
-        for (DEM dem : ((DEMCollection)modelManager.getModel(ModelNames.DEM)).getImages())
+        for (DEM dem : ((DEMCollection)modelManager.getModel(ModelNames.DEM).get(0)).getImages())
         {
             DEMKey demkey = dem.getKey();
         }
@@ -881,7 +881,7 @@ public class CustomDEMPanel extends JPanel implements PropertyChangeListener, Ac
 
         if (!setSpecifyRegionManuallyCheckbox.isSelected())
         {
-            AbstractEllipsePolygonModel selectionModel = (AbstractEllipsePolygonModel)modelManager.getModel(ModelNames.CIRCLE_SELECTION);
+            AbstractEllipsePolygonModel selectionModel = (AbstractEllipsePolygonModel)modelManager.getModel(ModelNames.CIRCLE_SELECTION).get(0);
             if (selectionModel.getNumItems() > 0)
             {
                 Ellipse region = selectionModel.getItem(0);

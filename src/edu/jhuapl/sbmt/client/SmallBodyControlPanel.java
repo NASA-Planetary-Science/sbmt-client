@@ -212,7 +212,7 @@ public class SmallBodyControlPanel extends PolyhedralModelControlPanel
 
         try
         {
-            ImageCollection imageCollection = (ImageCollection) getModelManager().getModel(ModelNames.IMAGES);
+            ImageCollection imageCollection = (ImageCollection) getModelManager().getModel(ModelNames.IMAGES).get(0);
             Image image = imageCollection.getImage(key);
 
             if (show && image == null)
@@ -247,7 +247,7 @@ public class SmallBodyControlPanel extends PolyhedralModelControlPanel
     public void stateChanged(@SuppressWarnings("unused") ChangeEvent e)
     {
         ImageCollection imageCollection =
-                (ImageCollection)getModelManager().getModel(ModelNames.IMAGES);
+                (ImageCollection)getModelManager().getModel(ModelNames.IMAGES).get(0);
 
         double val = (Double)getImageMapOpacitySpinner().getValue();
 

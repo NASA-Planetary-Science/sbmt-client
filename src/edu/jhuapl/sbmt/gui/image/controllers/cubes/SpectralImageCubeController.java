@@ -82,7 +82,7 @@ public class SpectralImageCubeController extends ImageCubeController
                 currentSlice = (int)source.getValue();
                 ((SpectralImageCubeGenerationPanel)panel).getLayerValue().setText(Integer.toString(currentSlice+1));
 
-                ImageCubeCollection images = (ImageCubeCollection)model.getModelManager().getModel(cubeModel.getImageCubeCollectionModelName());
+                ImageCubeCollection images = (ImageCubeCollection)model.getModelManager().getModel(cubeModel.getImageCubeCollectionModelName()).get(0);
 
                 Set<ImageCube> imageSet = images.getImages();
                 for (ImageCube image : imageSet)

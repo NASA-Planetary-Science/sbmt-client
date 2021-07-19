@@ -27,19 +27,19 @@ public class ImagePopupManager extends PopupManager
 		try
 		{
 			PopupMenu popupMenu = new GraticulePopupMenu(modelManager, renderer);
-			registerPopup(modelManager.getModel(ModelNames.GRATICULE), popupMenu);
+			modelManager.getModel(ModelNames.GRATICULE).forEach(model -> registerPopup(model, popupMenu));
 		}
 		catch (AWTException e)
 		{
 			e.printStackTrace();
 		}
 
-		ImageCollection imageCollection = (ImageCollection) modelManager.getModel(ModelNames.IMAGES);
+		ImageCollection imageCollection = (ImageCollection) modelManager.getModel(ModelNames.IMAGES).get(0);
 		PerspectiveImageBoundaryCollection imageBoundaries = (PerspectiveImageBoundaryCollection) modelManager
-				.getModel(ModelNames.PERSPECTIVE_IMAGE_BOUNDARIES);
+				.getModel(ModelNames.PERSPECTIVE_IMAGE_BOUNDARIES).get(0);
 		PopupMenu popupMenu = new ImagePopupMenu(modelManager, imageCollection, imageBoundaries, infoPanelManager,
 				spectrumPanelManager, renderer, renderer);
-		registerPopup(modelManager.getModel(ModelNames.IMAGES), popupMenu);
+		modelManager.getModel(ModelNames.IMAGES).forEach(model -> registerPopup(model, popupMenu));
 	}
 
 }

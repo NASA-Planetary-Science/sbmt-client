@@ -118,7 +118,7 @@ public class StateHistoryPanel extends javax.swing.JPanel implements ItemListene
         bodyModel = (SmallBodyModel) modelManager.getPolyhedralModel();
         config = (SmallBodyViewConfig) bodyModel.getConfig();
 
-        runs = (StateHistoryCollection)modelManager.getModel(ModelNames.STATE_HISTORY_COLLECTION);
+        runs = (StateHistoryCollection)modelManager.getModel(ModelNames.STATE_HISTORY_COLLECTION).get(0);
 
         initComponents();
 
@@ -174,7 +174,7 @@ public class StateHistoryPanel extends javax.swing.JPanel implements ItemListene
     {
         if (runs != null)
         {
-            StateHistoryCollection runs = (StateHistoryCollection)modelManager.getModel(ModelNames.STATE_HISTORY_COLLECTION);
+            StateHistoryCollection runs = (StateHistoryCollection)modelManager.getModel(ModelNames.STATE_HISTORY_COLLECTION).get(0);
             StateHistoryModel currentRun = runs.getCurrentRun();
             if (currentRun != null)
                 currentRun.updateTimeBarPosition(renWin.getComponent().getWidth(), renWin.getComponent().getHeight());

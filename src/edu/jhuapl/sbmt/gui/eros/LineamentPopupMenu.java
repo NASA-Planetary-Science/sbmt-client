@@ -31,7 +31,7 @@ public class LineamentPopupMenu extends PopupMenu
 
     public LineamentPopupMenu(ModelManager modelManager)
     {
-        this.model = (LineamentModel)modelManager.getModel(ModelNames.LINEAMENT);
+        this.model = (LineamentModel)modelManager.getModel(ModelNames.LINEAMENT).get(0);
 
         JMenuItem mi;
         mi = new JMenuItem(new ChangeLineamentColorAction(ColoringType.ONE_LINEAMENT));

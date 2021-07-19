@@ -23,7 +23,7 @@ public class StringRenderer extends DefaultTableCellRenderer
     {
         this.imageSearchModel = imageSearchModel;
         this.imageRawResults = imageRawResults;
-        model = (PerspectiveImageBoundaryCollection)imageSearchModel.getModelManager().getModel(imageSearchModel.getImageBoundaryCollectionModelName());
+        model = (PerspectiveImageBoundaryCollection)imageSearchModel.getModelManager().getModel(imageSearchModel.getImageBoundaryCollectionModelName()).get(0);
 
     }
 

@@ -2432,7 +2432,7 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
 
     private void clearRegionButtonActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_clearRegionButtonActionPerformed
     {//GEN-HEADEREND:event_clearRegionButtonActionPerformed
-        AbstractEllipsePolygonModel selectionModel = (AbstractEllipsePolygonModel)modelManager.getModel(ModelNames.CIRCLE_SELECTION);
+        AbstractEllipsePolygonModel selectionModel = (AbstractEllipsePolygonModel)modelManager.getModel(ModelNames.CIRCLE_SELECTION).get(0);
         selectionModel.removeAllStructures();
     }//GEN-LAST:event_clearRegionButtonActionPerformed
 
@@ -2588,8 +2588,8 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
                     DateTimeZone.UTC);
 
             TreeSet<Integer> cubeList = null;
-            AbstractEllipsePolygonModel selectionModel = (AbstractEllipsePolygonModel)modelManager.getModel(ModelNames.CIRCLE_SELECTION);
-            SmallBodyModel smallBodyModel = (SmallBodyModel)modelManager.getModel(ModelNames.SMALL_BODY);
+            AbstractEllipsePolygonModel selectionModel = (AbstractEllipsePolygonModel)modelManager.getModel(ModelNames.CIRCLE_SELECTION).get(0);
+            SmallBodyModel smallBodyModel = (SmallBodyModel)modelManager.getModel(ModelNames.SMALL_BODY).get(0);
             if (selectionModel.getNumItems() > 0)
             {
                 int numberOfSides = selectionModel.getNumberOfSides();
@@ -3414,7 +3414,7 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
                     }
 
                     // Save region selected.
-                    AbstractEllipsePolygonModel selectionModel = (AbstractEllipsePolygonModel)modelManager.getModel(ModelNames.CIRCLE_SELECTION);
+                    AbstractEllipsePolygonModel selectionModel = (AbstractEllipsePolygonModel)modelManager.getModel(ModelNames.CIRCLE_SELECTION).get(0);
                     result.put(circleSelectionKey, selectionModel.store());
 
                     // Save list of images.
@@ -3538,7 +3538,7 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
                     }
 
                     // Restore region selected.
-                    AbstractEllipsePolygonModel selectionModel = (AbstractEllipsePolygonModel)modelManager.getModel(ModelNames.CIRCLE_SELECTION);
+                    AbstractEllipsePolygonModel selectionModel = (AbstractEllipsePolygonModel)modelManager.getModel(ModelNames.CIRCLE_SELECTION).get(0);
                     PerspectiveImageBoundaryCollection boundaries = (PerspectiveImageBoundaryCollection)modelManager.getModel(getImageBoundaryCollectionModelName());
 
                     selectionModel.retrieve(source.get(circleSelectionKey));

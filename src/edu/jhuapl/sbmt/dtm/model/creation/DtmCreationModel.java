@@ -52,8 +52,8 @@ public class DtmCreationModel implements MetadataManager
 	{
 		this.modelManager = modelManager;
 		 // Get collections
-        dems = (DEMCollection)modelManager.getModel(ModelNames.DEM);
-        boundaries = (DEMBoundaryCollection)modelManager.getModel(ModelNames.DEM_BOUNDARY);
+        dems = (DEMCollection)modelManager.getModel(ModelNames.DEM).get(0);
+        boundaries = (DEMBoundaryCollection)modelManager.getModel(ModelNames.DEM_BOUNDARY).get(0);
         infoList = new ArrayList<DEMKey>();
         this.listeners = new Vector<DEMCreationModelChangedListener>();
 	}

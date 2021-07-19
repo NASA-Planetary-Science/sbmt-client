@@ -52,8 +52,8 @@ public class CustomImageController
         this.renderer = renderer;
 
         ImageSearchModel imageSearchModel = new ImageSearchModel(smallBodyConfig, modelManager, renderer, instrument);
-        ImageCollection imageCollection = (ImageCollection)modelManager.getModel(imageSearchModel.getImageCollectionModelName());
-        PerspectiveImageBoundaryCollection imageBoundaryCollection = (PerspectiveImageBoundaryCollection)modelManager.getModel(imageSearchModel.getImageBoundaryCollectionModelName());
+        ImageCollection imageCollection = (ImageCollection)modelManager.getModel(imageSearchModel.getImageCollectionModelName()).get(0);
+        PerspectiveImageBoundaryCollection imageBoundaryCollection = (PerspectiveImageBoundaryCollection)modelManager.getModel(imageSearchModel.getImageBoundaryCollectionModelName()).get(0);
 
         customImageModel = new CustomImagesModel(imageSearchModel);
         customImageModel.addResultsChangedListener(new CustomImageResultsListener()
@@ -78,7 +78,7 @@ public class CustomImageController
         this.controlController = new CustomImagesControlController(customImageModel);
 
         CustomImageCubeModel customCubeModel = new CustomImageCubeModel();
-        ImageCubeCollection imageCubeCollection = (ImageCubeCollection)customImageModel.getModelManager().getModel(customCubeModel.getImageCubeCollectionModelName());
+        ImageCubeCollection imageCubeCollection = (ImageCubeCollection)customImageModel.getModelManager().getModel(customCubeModel.getImageCubeCollectionModelName()).get(0);
         customCubeModel.setImageSearchModel(customImageModel);
         customCubeModel.setColorImageCollection(imageCubeCollection);
         ImageCubePopupMenu imageCubePopupMenu = new ImageCubePopupMenu(imageCubeCollection, imageBoundaryCollection, infoPanelManager, spectrumPanelManager, renderer, getPanel());

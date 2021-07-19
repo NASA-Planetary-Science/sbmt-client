@@ -147,7 +147,7 @@ public class ImageSearchModel implements Controller.Model, MetadataManager
         this.resultsListeners = new Vector<ImageSearchResultsListener>();
         this.modelListeners = new Vector<ImageSearchModelListener>();
         this.instrument = instrument;
-        this.imageCollection = (ImageCollection)modelManager.getModel(getImageCollectionModelName());
+        this.imageCollection = (ImageCollection)modelManager.getModel(getImageCollectionModelName()).get(0);
         this.startDate = smallBodyConfig.imageSearchDefaultStartDate;
         this.endDate = smallBodyConfig.imageSearchDefaultEndDate;
         camerasSelected = new LinkedList<Integer>();
@@ -184,7 +184,7 @@ public class ImageSearchModel implements Controller.Model, MetadataManager
         {
             try
             {
-                ImageCollection images = (ImageCollection)modelManager.getModel(getImageCollectionModelName());
+                ImageCollection images = (ImageCollection)modelManager.getModel(getImageCollectionModelName()).get(0);
                 if (!images.containsImage(key))
                 {
                     loadImage(key, images);
@@ -213,7 +213,7 @@ public class ImageSearchModel implements Controller.Model, MetadataManager
         List<ImageKeyInterface> keys = createImageKeys(name, imageSourceOfLastQuery, instrument);
         for (ImageKeyInterface key : keys)
         {
-            ImageCollection images = (ImageCollection)modelManager.getModel(getImageCollectionModelName());
+            ImageCollection images = (ImageCollection)modelManager.getModel(getImageCollectionModelName()).get(0);
             unloadImage(key, images);
         }
    }
@@ -221,7 +221,7 @@ public class ImageSearchModel implements Controller.Model, MetadataManager
     public void setImageVisibility(String name, boolean visible)
     {
         List<ImageKeyInterface> keys = createImageKeys(name, imageSourceOfLastQuery, instrument);
-        ImageCollection images = (ImageCollection)modelManager.getModel(getImageCollectionModelName());
+        ImageCollection images = (ImageCollection)modelManager.getModel(getImageCollectionModelName()).get(0);
         for (ImageKeyInterface key : keys)
         {
             if (images.containsImage(key))
@@ -501,8 +501,8 @@ public class ImageSearchModel implements Controller.Model, MetadataManager
                 DateTimeZone.UTC);
 
         TreeSet<Integer> cubeList = null;
-        AbstractEllipsePolygonModel selectionModel = (AbstractEllipsePolygonModel)getModelManager().getModel(ModelNames.CIRCLE_SELECTION);
-        SmallBodyModel smallBodyModel = (SmallBodyModel)getModelManager().getModel(ModelNames.SMALL_BODY);
+        AbstractEllipsePolygonModel selectionModel = (AbstractEllipsePolygonModel)getModelManager().getModel(ModelNames.CIRCLE_SELECTION).get(0);
+        SmallBodyModel smallBodyModel = (SmallBodyModel)getModelManager().getModel(ModelNames.SMALL_BODY).get(0);
         if (selectionModel.getNumItems() > 0)
         {
             int numberOfSides = selectionModel.getNumberOfSides();
@@ -1365,7 +1365,7 @@ public class ImageSearchModel implements Controller.Model, MetadataManager
         }
 
         // Save region selected.
-        AbstractEllipsePolygonModel selectionModel = (AbstractEllipsePolygonModel)modelManager.getModel(ModelNames.CIRCLE_SELECTION);
+        AbstractEllipsePolygonModel selectionModel = (AbstractEllipsePolygonModel)modelManager.getModel(ModelNames.CIRCLE_SELECTION).get(0);
         result.put(circleSelectionKey, selectionModel.store());
 
         // Save list of images.
@@ -1382,7 +1382,7 @@ public class ImageSearchModel implements Controller.Model, MetadataManager
         result.put(selectedImagesKey, selected.build());
 
         // Save boundary info.
-        PerspectiveImageBoundaryCollection boundaries = (PerspectiveImageBoundaryCollection)modelManager.getModel(getImageBoundaryCollectionModelName());
+        PerspectiveImageBoundaryCollection boundaries = (PerspectiveImageBoundaryCollection)modelManager.getModel(getImageBoundaryCollectionModelName()).get(0);
         ImmutableSortedMap.Builder<String, Boolean> bndr = ImmutableSortedMap.naturalOrder();
         for (ImageKeyInterface key : boundaries.getImageKeys())
         {
@@ -1397,7 +1397,7 @@ public class ImageSearchModel implements Controller.Model, MetadataManager
         result.put(isBoundaryShowingKey, bndr.build());
 
         // Save mapped image information.
-        ImageCollection imageCollection = (ImageCollection) modelManager.getModel(getImageCollectionModelName());
+        ImageCollection imageCollection = (ImageCollection) modelManager.getModel(getImageCollectionModelName()).get(0);
         ImmutableSortedMap.Builder<String, Boolean> showing = ImmutableSortedMap.naturalOrder();
         ImmutableSortedMap.Builder<String, Boolean> offLimb = ImmutableSortedMap.naturalOrder();
         ImmutableSortedMap.Builder<String, Boolean> frus = ImmutableSortedMap.naturalOrder();
@@ -1499,8 +1499,8 @@ public class ImageSearchModel implements Controller.Model, MetadataManager
         }
 
         // Restore region selected.
-        AbstractEllipsePolygonModel selectionModel = (AbstractEllipsePolygonModel)modelManager.getModel(ModelNames.CIRCLE_SELECTION);
-        PerspectiveImageBoundaryCollection boundaries = (PerspectiveImageBoundaryCollection)modelManager.getModel(getImageBoundaryCollectionModelName());
+        AbstractEllipsePolygonModel selectionModel = (AbstractEllipsePolygonModel)modelManager.getModel(ModelNames.CIRCLE_SELECTION).get(0);
+        PerspectiveImageBoundaryCollection boundaries = (PerspectiveImageBoundaryCollection)modelManager.getModel(getImageBoundaryCollectionModelName()).get(0);
 
         selectionModel.retrieve(source.get(circleSelectionKey));
 
@@ -1546,7 +1546,7 @@ public class ImageSearchModel implements Controller.Model, MetadataManager
         }
 
         // Restore mapped image information.
-        ImageCollection imageCollection = (ImageCollection) modelManager.getModel(getImageCollectionModelName());
+        ImageCollection imageCollection = (ImageCollection) modelManager.getModel(getImageCollectionModelName()).get(0);
         Map<String, Boolean> showing = source.get(isShowingKey);
         Map<String, Boolean> offLimb = source.hasKey(isOffLimbShowingKey) ? source.get(isOffLimbShowingKey) : ImmutableMap.of();
         Map<String, Boolean> frus = source.get(isFrustrumShowingKey);

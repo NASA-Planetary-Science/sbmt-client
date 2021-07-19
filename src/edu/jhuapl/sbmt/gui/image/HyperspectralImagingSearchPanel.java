@@ -138,7 +138,7 @@ public class HyperspectralImagingSearchPanel extends ImagingSearchPanel implemen
 
     private void defaultFrustumActionPerformed(java.awt.event.ActionEvent evt)
     {
-        ImageCollection images = (ImageCollection)getModelManager().getModel(getImageCollectionModelName());
+        ImageCollection images = (ImageCollection)getModelManager().getModel(getImageCollectionModelName()).get(0);
 
         Set<Image> imageSet = images.getImages();
         for (Image i : imageSet)
@@ -163,7 +163,7 @@ public class HyperspectralImagingSearchPanel extends ImagingSearchPanel implemen
         currentSlice = (int)source.getValue();
         bandValue.setText(Integer.toString(currentSlice));
 
-        ImageCollection images = (ImageCollection)getModelManager().getModel(getImageCollectionModelName());
+        ImageCollection images = (ImageCollection)getModelManager().getModel(getImageCollectionModelName()).get(0);
 
         Set<Image> imageSet = images.getImages();
         for (Image i : imageSet)

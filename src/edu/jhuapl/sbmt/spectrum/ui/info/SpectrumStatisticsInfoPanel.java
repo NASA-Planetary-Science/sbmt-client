@@ -170,7 +170,7 @@ public class SpectrumStatisticsInfoPanel extends ModelInfoWindow implements Prop
             public void actionPerformed(ActionEvent e)
             {
                 Map<IBasicSpectrumRenderer,Integer> stackingOrder = stats.orderSpectraByMeanEmergenceAngle();
-                SpectraCollection model = (SpectraCollection)modelManager.getModel(ModelNames.SPECTRA);
+                SpectraCollection model = (SpectraCollection)modelManager.getModel(ModelNames.SPECTRA).get(0);
                 model.clearOrdinals();
                 for (IBasicSpectrumRenderer spectrum: stackingOrder.keySet())  // only stack the ones that stats knows about
                 {

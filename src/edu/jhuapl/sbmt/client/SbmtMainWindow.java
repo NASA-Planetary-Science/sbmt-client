@@ -72,7 +72,7 @@ public class SbmtMainWindow extends MainWindow
                         "SbmtMainWindow.SaveImagesAsSTLAction: actionPerformed: file " + file);
                 if (file != null)
                 {
-                    ImageCollection collection = (ImageCollection)rootPanel.getCurrentView().getModelManager().getModel(ModelNames.IMAGES);
+                    ImageCollection collection = (ImageCollection)rootPanel.getCurrentView().getModelManager().getModel(ModelNames.IMAGES).get(0);
                     System.out.println(
                             "SbmtMainWindow.SaveImagesAsSTLAction: actionPerformed: number of images " + collection.getImages().size());
                     for (Image image : collection.getImages())
