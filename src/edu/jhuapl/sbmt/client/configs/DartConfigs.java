@@ -458,8 +458,8 @@ public class DartConfigs
                 ),
         };
 
-        c.imageSearchDefaultStartDate = new GregorianCalendar(2022, 8, 30, 0, 0, 0).getTime();
-        c.imageSearchDefaultEndDate = new GregorianCalendar(2022, 9, 1, 0, 0, 0).getTime();
+        c.imageSearchDefaultStartDate = new GregorianCalendar(2022, 9, 1, 0, 0, 0).getTime();
+        c.imageSearchDefaultEndDate = new GregorianCalendar(2022, 9, 2, 0, 0, 0).getTime();
         c.imageSearchFilterNames = new String[] {};
         c.imageSearchUserDefinedCheckBoxesNames = new String[] {};
         c.imageSearchDefaultMaxSpacecraftDistance = 1.0e4;
