@@ -1,5 +1,6 @@
 package edu.jhuapl.sbmt.client.configs;
 
+import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -60,6 +61,11 @@ public class DartConfigs
     private static final LinkedHashSet<Float> DracoFillValues = new LinkedHashSet<>();
     private static final LinkedHashSet<Float> LeiaFillValues = null;
     private static final LinkedHashSet<Float> LukeFillValues = null;
+
+    // Months are 0-based: SEPTEMBER 20 is 8, 20, not 9, 20.
+    private static final Date ImageSearchDefaultStartDate = new GregorianCalendar(2022, 8, 20, 0, 0, 0).getTime();
+    // Months are 0-based: OCTOBER 5 is 9, 5 not 10, 5.
+    private static final Date ImageSearchDefaultEndDate = new GregorianCalendar(2022, 9, 5, 0, 0, 0).getTime();
 
     static
     {
@@ -275,8 +281,8 @@ public class DartConfigs
                 ),
         };
 
-        c.imageSearchDefaultStartDate = new GregorianCalendar(2022, 9, 1, 0, 0, 0).getTime();
-        c.imageSearchDefaultEndDate = new GregorianCalendar(2022, 9, 2, 0, 0, 0).getTime();
+        c.imageSearchDefaultStartDate = ImageSearchDefaultStartDate;
+        c.imageSearchDefaultEndDate = ImageSearchDefaultEndDate;
         c.imageSearchFilterNames = new String[] {};
         c.imageSearchUserDefinedCheckBoxesNames = new String[] {};
         c.imageSearchDefaultMaxSpacecraftDistance = 1.0e4;
@@ -458,8 +464,8 @@ public class DartConfigs
                 ),
         };
 
-        c.imageSearchDefaultStartDate = new GregorianCalendar(2022, 9, 1, 0, 0, 0).getTime();
-        c.imageSearchDefaultEndDate = new GregorianCalendar(2022, 9, 2, 0, 0, 0).getTime();
+        c.imageSearchDefaultStartDate = ImageSearchDefaultStartDate;
+        c.imageSearchDefaultEndDate = ImageSearchDefaultEndDate;
         c.imageSearchFilterNames = new String[] {};
         c.imageSearchUserDefinedCheckBoxesNames = new String[] {};
         c.imageSearchDefaultMaxSpacecraftDistance = 1.0e4;
