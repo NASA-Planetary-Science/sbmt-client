@@ -28,6 +28,7 @@ import edu.jhuapl.sbmt.stateHistory.rendering.directionMarkers.SpacecraftDirecti
 import edu.jhuapl.sbmt.stateHistory.rendering.directionMarkers.SunDirectionMarker;
 import edu.jhuapl.sbmt.stateHistory.rendering.text.SpacecraftLabel;
 
+import crucible.core.math.vectorspace.UnwritableVectorIJK;
 import crucible.core.mechanics.FrameID;
 import crucible.core.mechanics.utilities.SimpleFrameID;
 
@@ -142,6 +143,8 @@ public class StateHistoryPositionCalculator implements IStateHistoryPositionCalc
 		double[] frus2 = new double[] { locationProvider.getFrustumAtTime(instrumentFrameID.getName(), 1, time).getI(), locationProvider.getFrustumAtTime(instrumentFrameID.getName(), 1, time).getJ(), locationProvider.getFrustumAtTime(instrumentFrameID.getName(), 1, time).getK()};
 		double[] frus3 = new double[] { locationProvider.getFrustumAtTime(instrumentFrameID.getName(), 2, time).getI(), locationProvider.getFrustumAtTime(instrumentFrameID.getName(), 2, time).getJ(), locationProvider.getFrustumAtTime(instrumentFrameID.getName(), 2, time).getK()};
 		double[] frus4 = new double[] { locationProvider.getFrustumAtTime(instrumentFrameID.getName(), 3, time).getI(), locationProvider.getFrustumAtTime(instrumentFrameID.getName(), 3, time).getJ(), locationProvider.getFrustumAtTime(instrumentFrameID.getName(), 3, time).getK()};
+
+
 		fprint.setStaticFootprintSet(true);
 		fprint.updatePointing(spacecraftPosition, frus1, frus2, frus3, frus4, 1024, 1024, 1);
 	}
@@ -325,10 +328,21 @@ public class StateHistoryPositionCalculator implements IStateHistoryPositionCalc
 		fov.forEach(fieldOfView ->
 		{
 			FrameID instrumentFrameID = new SimpleFrameID(fieldOfView.getInstrumentName());
+			UnwritableVectorIJK frus1Vec = locationProvider.getFrustum(instrumentFrameID.getName(), 0);
+			UnwritableVectorIJK frus2Vec = locationProvider.getFrustum(instrumentFrameID.getName(), 1);
+			UnwritableVectorIJK frus3Vec = locationProvider.getFrustum(instrumentFrameID.getName(), 2);
+			UnwritableVectorIJK frus4Vec = locationProvider.getFrustum(instrumentFrameID.getName(), 3);
+			if (frus1Vec.equals(new UnwritableVectorIJK(0, 0, 0)) || frus2Vec.equals(new UnwritableVectorIJK(0, 0, 0)) || frus3Vec.equals(new UnwritableVectorIJK(0, 0, 0)) || frus4Vec.equals(new UnwritableVectorIJK(0, 0, 0)))
+			{
+				return;
+			}
+
 			double[] frus1 = new double[] { locationProvider.getFrustum(instrumentFrameID.getName(), 0).getI(), locationProvider.getFrustum(instrumentFrameID.getName(), 0).getJ(), locationProvider.getFrustum(instrumentFrameID.getName(), 0).getK()};
 			double[] frus2 = new double[] { locationProvider.getFrustum(instrumentFrameID.getName(), 1).getI(), locationProvider.getFrustum(instrumentFrameID.getName(), 1).getJ(), locationProvider.getFrustum(instrumentFrameID.getName(), 1).getK()};
 			double[] frus3 = new double[] { locationProvider.getFrustum(instrumentFrameID.getName(), 2).getI(), locationProvider.getFrustum(instrumentFrameID.getName(), 2).getJ(), locationProvider.getFrustum(instrumentFrameID.getName(), 2).getK()};
 			double[] frus4 = new double[] { locationProvider.getFrustum(instrumentFrameID.getName(), 3).getI(), locationProvider.getFrustum(instrumentFrameID.getName(), 3).getJ(), locationProvider.getFrustum(instrumentFrameID.getName(), 3).getK()};
+
+
 			fieldOfView.updatePointing(spacecraftPosition, frus1, frus2, frus3, frus4);
 			fieldOfView.getFrustumActor().Modified();
 		});
@@ -340,17 +354,28 @@ public class StateHistoryPositionCalculator implements IStateHistoryPositionCalc
 		if (footprint != null)
 			footprint.stream().filter(fprint -> fprint != null).forEach(fprint -> fprint.setSmallBodyModel(smallBodyModel));
 
-		footprint.stream().filter(fprint -> fprint != null).forEach(fprint ->
-		{
-			FrameID instrumentFrameID = new SimpleFrameID(fprint.getInstrumentName());
-			double[] frus1 = new double[] { locationProvider.getFrustum(instrumentFrameID.getName(), 0).getI(), locationProvider.getFrustum(instrumentFrameID.getName(), 0).getJ(), locationProvider.getFrustum(instrumentFrameID.getName(), 0).getK()};
-			double[] frus2 = new double[] { locationProvider.getFrustum(instrumentFrameID.getName(), 1).getI(), locationProvider.getFrustum(instrumentFrameID.getName(), 1).getJ(), locationProvider.getFrustum(instrumentFrameID.getName(), 1).getK()};
-			double[] frus3 = new double[] { locationProvider.getFrustum(instrumentFrameID.getName(), 2).getI(), locationProvider.getFrustum(instrumentFrameID.getName(), 2).getJ(), locationProvider.getFrustum(instrumentFrameID.getName(), 2).getK()};
-			double[] frus4 = new double[] { locationProvider.getFrustum(instrumentFrameID.getName(), 3).getI(), locationProvider.getFrustum(instrumentFrameID.getName(), 3).getJ(), locationProvider.getFrustum(instrumentFrameID.getName(), 3).getK()};
-			fprint.updatePointing(spacecraftPosition, frus1, frus2, frus3, frus4, 1024, 1024, 1);
-			fprint.getFootprintActor().Modified();
-			fprint.getFootprintBoundaryActor().Modified();
-		});
+
+			footprint.stream().filter(fprint -> fprint != null).forEach(fprint ->
+			{
+				FrameID instrumentFrameID = new SimpleFrameID(fprint.getInstrumentName());
+				UnwritableVectorIJK frus1Vec = locationProvider.getFrustum(instrumentFrameID.getName(), 0);
+				UnwritableVectorIJK frus2Vec = locationProvider.getFrustum(instrumentFrameID.getName(), 1);
+				UnwritableVectorIJK frus3Vec = locationProvider.getFrustum(instrumentFrameID.getName(), 2);
+				UnwritableVectorIJK frus4Vec = locationProvider.getFrustum(instrumentFrameID.getName(), 3);
+				if (frus1Vec.equals(new UnwritableVectorIJK(0, 0, 0)) || frus2Vec.equals(new UnwritableVectorIJK(0, 0, 0)) || frus3Vec.equals(new UnwritableVectorIJK(0, 0, 0)) || frus4Vec.equals(new UnwritableVectorIJK(0, 0, 0)))
+				{
+					return;
+				}
+
+				double[] frus1 = new double[] { locationProvider.getFrustum(instrumentFrameID.getName(), 0).getI(), locationProvider.getFrustum(instrumentFrameID.getName(), 0).getJ(), locationProvider.getFrustum(instrumentFrameID.getName(), 0).getK()};
+				double[] frus2 = new double[] { locationProvider.getFrustum(instrumentFrameID.getName(), 1).getI(), locationProvider.getFrustum(instrumentFrameID.getName(), 1).getJ(), locationProvider.getFrustum(instrumentFrameID.getName(), 1).getK()};
+				double[] frus3 = new double[] { locationProvider.getFrustum(instrumentFrameID.getName(), 2).getI(), locationProvider.getFrustum(instrumentFrameID.getName(), 2).getJ(), locationProvider.getFrustum(instrumentFrameID.getName(), 2).getK()};
+				double[] frus4 = new double[] { locationProvider.getFrustum(instrumentFrameID.getName(), 3).getI(), locationProvider.getFrustum(instrumentFrameID.getName(), 3).getJ(), locationProvider.getFrustum(instrumentFrameID.getName(), 3).getK()};
+				fprint.updatePointing(spacecraftPosition, frus1, frus2, frus3, frus4, 1024, 1024, 1);
+				fprint.getFootprintActor().Modified();
+				fprint.getFootprintBoundaryActor().Modified();
+			});
+
 	}
 
 	@Override

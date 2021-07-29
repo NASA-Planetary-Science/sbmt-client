@@ -1,11 +1,11 @@
 package edu.jhuapl.sbmt.stateHistory.model.stateHistory;
 
-import java.util.Random;
-
 import crucible.crust.metadata.api.Key;
 import crucible.crust.metadata.api.Version;
 import crucible.crust.metadata.impl.InstanceGetter;
 import crucible.crust.metadata.impl.SettableMetadata;
+import glum.item.IdGenerator;
+import glum.item.IncrIdGenerator;
 
 /**
  * A StateHistoryKey should be used to uniquely distinguish one trajectory from another.
@@ -16,7 +16,8 @@ public class StateHistoryKey
     /**
      *
      */
-    private static final Random RAND = new Random();
+//    private static final Random RAND = new Random();
+    private static IdGenerator RAND = new IncrIdGenerator(0);
 
     /**
      *
@@ -33,10 +34,12 @@ public class StateHistoryKey
      */
     public StateHistoryKey(StateHistoryCollection runs)
     {
-        value = RAND.nextInt(1000);
-        while (runs.getKeys().contains(value)) {
-            value = RAND.nextInt(1000);
-        }
+//        value = RAND.nextInt(1000);
+    	RAND = new IncrIdGenerator(runs.getSimRuns().get(runs.getSimRuns().size()-1).getMetadata().getKey().getValue() + 1);
+    	value = RAND.getNextId();
+//        while (runs.getKeys().contains(value)) {
+//            value = RAND.nextInt(1000);
+//        }
     }
 
     public StateHistoryKey(Integer value)

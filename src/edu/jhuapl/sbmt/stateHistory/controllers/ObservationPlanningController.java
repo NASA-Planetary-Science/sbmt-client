@@ -83,7 +83,7 @@ public class ObservationPlanningController implements PropertyChangeListener
 				catch (StateHistoryInvalidTimeException e)
 				{
 					// TODO Auto-generated catch block
-					e.printStackTrace();
+//					e.printStackTrace();
 				}
     			SwingUtilities.invokeLater(new Runnable()
     			{

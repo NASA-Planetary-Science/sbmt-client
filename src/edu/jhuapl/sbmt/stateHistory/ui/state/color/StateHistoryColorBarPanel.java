@@ -64,18 +64,19 @@ public class StateHistoryColorBarPanel extends ColorBarPanel
 //		rendererManager.addListener(this);
 
 		if (rendererManager.getHistoryCollection().getCurrentRun() == null) return;
-		if (rendererManager.getHistoryCollection().getCurrentRun().getMetadata().getType() == StateHistorySourceType.SPICE)
+	}
+
+	@Override
+	public void activate(boolean aIsActive)
+	{
+		if (rendererManager.getHistoryCollection().getCurrentRun() != null && rendererManager.getHistoryCollection().getCurrentRun().getMetadata().getType() == StateHistorySourceType.SPICE)
 		{
 			addFeatureType(StateHistoryFeatureType.Range, "S/C Range to Surface (km)");
 			addFeatureType(StateHistoryFeatureType.SubSCIncidence, "S/C Incidence Angle (deg)");
 			addFeatureType(StateHistoryFeatureType.SubSCEmission, "S/C Emission Angle (deg)");
 			addFeatureType(StateHistoryFeatureType.SubSCPhase, "S/C Phase Angle (deg)");
 		}
-	}
 
-	@Override
-	public void activate(boolean aIsActive)
-	{
 		// Ensure our default range is in sync
 		updateDefaultRange();
 

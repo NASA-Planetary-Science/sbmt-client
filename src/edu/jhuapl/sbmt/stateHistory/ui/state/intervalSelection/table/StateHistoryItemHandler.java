@@ -60,7 +60,7 @@ public class StateHistoryItemHandler extends BasicItemHandler<StateHistory, Stat
 			case Color:
 				return colorProvider;
 			case Name:
-				if (metadata.getStateHistoryName().equals("")) return "Segment " + metadata.getKey().getValue();
+				if (metadata.getStateHistoryName().equals("")) return "Segment_" + metadata.getKey().getValue();
 				return metadata.getStateHistoryName();
 			case Description:
 				return metadata.getStateHistoryDescription();

@@ -50,10 +50,16 @@ public class StateHistoryDisplayedIntervalController
 			if (rendererManager.getHistoryCollection().getCurrentRun() == null) return;
 			if (rendererManager.getSelectedItems().size() > 0)
 			{
-				IStateHistoryMetadata metadata = intervalSet.getCurrentRun().getMetadata();
+				IStateHistoryMetadata metadata = rendererManager.getSelectedItems().asList().get(0).getMetadata();
 				intervalSet.setCurrentRun(rendererManager.getSelectedItems().asList().get(0));
+				IStateHistoryTrajectoryMetadata trajectoryMetadata = intervalSet.getCurrentRun().getTrajectoryMetadata();
+
 				timeModel.setTimeWindow(new TimeWindow(metadata.getStartTime(), metadata.getEndTime()));
-				updateDisplayedTimeRange(0.0, 1.0);
+				timeModel.setFractionDisplayed((trajectoryMetadata.getTrajectory().getMinDisplayFraction()), (trajectoryMetadata.getTrajectory().getMaxDisplayFraction()));
+
+				updateDisplayedTimeRange();
+				view.getTimeIntervalChanger().getSlider().setLowValue((int)(trajectoryMetadata.getTrajectory().getMinDisplayFraction()*255));
+				view.getTimeIntervalChanger().getSlider().setHighValue((int)(trajectoryMetadata.getTrajectory().getMaxDisplayFraction()*255));
 			}
 			view.getTimeIntervalChanger().setEnabled(rendererManager.getSelectedItems().size() > 0);
 
@@ -68,8 +74,7 @@ public class StateHistoryDisplayedIntervalController
 			double minValue = changer.getLowValue();
 			double maxValue = changer.getHighValue();
 			timeModel.setFractionDisplayed(minValue, maxValue);
-			updateDisplayedTimeRange(minValue, maxValue);
-
+			updateDisplayedTimeRange();
 			rendererManager.setTrajectoryMinMax(intervalSet.getCurrentRun(), minValue, maxValue);
 			rendererManager.setTimeFraction(minValue, intervalSet.getCurrentRun());
 			trajectoryMetadata.getTrajectory().setMinDisplayFraction(minValue);
@@ -81,17 +86,15 @@ public class StateHistoryDisplayedIntervalController
 
 	/**
 	 * Updates the displayed start/stop time label
-	 * @param minValue the minimum fraction (between 0 and 1) of the entire interval being displayed
-	 * @param maxValue the maximum fraction (between 0 and 1) of the entire interval being displayed
 	 */
-	private void updateDisplayedTimeRange(double minValue, double maxValue)
+	private void updateDisplayedTimeRange()
 	{
 		TimeWindow window = timeModel.getDisplayedTimeWindow();
 		String minTime = TimeUtil.et2str(window.getStartTime());
 		String maxTime = TimeUtil.et2str(window.getStopTime());
-
 		view.getDisplayedStartTimeLabel().setText(minTime.substring(0, minTime.length()-3));
 		view.getDisplayedStopTimeLabel().setText(maxTime.substring(0, maxTime.length()-3));
+
 	}
 
 	/**

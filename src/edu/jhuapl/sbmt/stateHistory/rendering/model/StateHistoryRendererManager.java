@@ -661,7 +661,7 @@ public class StateHistoryRendererManager extends SaavtkItemManager<StateHistory>
 		}
 		ArrayList<PerspectiveImageFootprint> footprints = historyFootprintMap.get(run);
 		if (footprints == null) footprints = new ArrayList<PerspectiveImageFootprint>();
-		footprints.add(fprint);
+		if (!footprints.contains(fprint)) footprints.add(fprint);
 		historyFootprintMap.put(run, footprints);
 		positionCalculator.updateFootprintLocations(run, historyFootprintMap.get(historyCollection.getCurrentRun()));
 		LiveColorableManager.updateFootprint(fprint);

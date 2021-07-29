@@ -87,7 +87,7 @@ public class SpiceState implements State
 			return pointing.getFrustum().get(index);
 		}
 		catch (LockableFrameLinkEvaluationException le) {
-			return new UnwritableVectorIJK(0, 0, 1);
+			return new UnwritableVectorIJK(0, 0, 0);
 		}
 
 	}

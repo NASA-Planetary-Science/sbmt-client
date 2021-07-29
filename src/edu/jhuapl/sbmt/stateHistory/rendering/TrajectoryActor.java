@@ -198,13 +198,14 @@ public class TrajectoryActor extends vtkActor
 		vtkCellArray edges = new vtkCellArray();
 		for (int i=0; i<size-1; i++)
         {
+        	Color colorAtIndex = getColorAtIndex(i);
+        	colors.SetTuple4(i+1, colorAtIndex.getRed(), colorAtIndex.getGreen(), colorAtIndex.getBlue(), trajectory.isFaded() ? 50 : colorAtIndex.getAlpha());
 			if (!coloredRange.contains(i)) continue;
 			vtkLine edge = new vtkLine();
         	edge.GetPointIds().SetId(0, i);
         	edge.GetPointIds().SetId(1, (i+1));
         	edges.InsertNextCell(edge);
-        	Color colorAtIndex = getColorAtIndex(i);
-        	colors.SetTuple4(i+1, colorAtIndex.getRed(), colorAtIndex.getGreen(), colorAtIndex.getBlue(), trajectory.isFaded() ? 50 : colorAtIndex.getAlpha());
+
         }
 		trajectoryPolyline.SetLines(edges);
 		trajectoryMapper.Modified();

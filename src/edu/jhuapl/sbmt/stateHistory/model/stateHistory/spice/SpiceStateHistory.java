@@ -164,7 +164,6 @@ public class SpiceStateHistory extends AbstractStateHistory
 		Metadata metadata = InstanceGetter.defaultInstanceGetter().providesMetadataFromGenericObject(SpiceStateHistory.class).provide(this);
 		try
 		{
-			System.out.println("SpiceStateHistory: saveStateToFile: filename is " + fileName);
 			Serializers.serialize("SpiceStateHistory", metadata, new File(fileName + ".spicestate"));
 		}
 		catch (IOException e)

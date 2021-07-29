@@ -221,7 +221,7 @@ public class StateHistoryController
     	JPanel panel = new JPanel();
     	BindingFactory factory = new BindingFactory();
     	panel.setLayout(new RelativeLayout());
-    	panel.add(intervalSelectionPanel, new RelativeConstraints(factory.leftEdge(), factory.rightEdge(), factory.topEdge(), new Binding(Edge.BOTTOM, 150, Direction.BELOW, Edge.TOP, panel)));
+    	panel.add(intervalSelectionPanel, new RelativeConstraints(factory.leftEdge(), factory.rightEdge(), factory.topEdge(), new Binding(Edge.BOTTOM, 300, Direction.BELOW, Edge.TOP, panel)));
     	panel.add(viewControlsController.getView(), new RelativeConstraints(factory.leftEdge(), factory.rightEdge(), factory.below(intervalSelectionPanel), factory.above(displayedPanel)));
     	panel.add(displayedPanel, new RelativeConstraints(factory.leftEdge(), factory.rightEdge(), factory.bottomEdge()));
     	return panel;

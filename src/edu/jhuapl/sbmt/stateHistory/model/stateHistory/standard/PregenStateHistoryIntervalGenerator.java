@@ -135,8 +135,9 @@ public class PregenStateHistoryIntervalGenerator implements IStateHistoryInterva
 		// sets the default name to "startTime_endTime"
 		if (name == null || name.equals(""))
 		{
-			name = StateHistoryUtil.readString(positionStart, path) + "_"
-					+ StateHistoryUtil.readString(positionEnd, path);
+//			name = StateHistoryUtil.readString(positionStart, path) + "_"
+//					+ StateHistoryUtil.readString(positionEnd, path);
+			name = "Segment_" + key.getValue();
 		}
 
 		// creates the trajectory
