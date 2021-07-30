@@ -3,11 +3,14 @@
 // Hard-wired for now. Get this from Apache configuration somehow?
 $maximumQuerySize = 10000;
 
-// Under no circumstances tell a client to call back sooner than 2 seconds from now.
-$minimumWaitTime = 8000.;
+// Under no circumstance tell a client to check again sooner than this.
+$minimumWaitTime = 5000.;
+
+// Under no circumstance tell a client to wait longer than this to check again.
+$maximumWaitTime = 40000.;
 
 // Reference load average when server is not very active.
-$idleLoadAverage = 0.13; // Empirically determined.
+$idleLoadAverage = 0.3; // Empirically determined.
 
 // Use w command to get load average, to compute wait time until next server check.
 $waitTime = 1000.;
@@ -36,12 +39,14 @@ if (is_resource($process)) {
     $return_value = proc_close($process);
 
     if ($normLoadAverage > 0.) {
-        // Time to wait before another query = 5 s * normLoadAverage^2
-        $waitTime *= $normLoadAverage * $normLoadAverage;
+        // Time to wait before another query = base-wait-time * normLoadAverage
+        $waitTime *= $normLoadAverage;
     }
 
     if ($waitTime < $minimumWaitTime) {
         $waitTime = $minimumWaitTime;
+    } else if ($waitTime > $maximumWaitTime) {
+        $waitTime = $maximumWaitTime;
     }
 
     header('Content-type: text/plain');

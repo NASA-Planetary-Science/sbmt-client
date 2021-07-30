@@ -70,7 +70,6 @@ public class ImageResultsTableController
     protected List<List<String>> imageRawResults;
     private ModelManager modelManager;
     protected final ImagingInstrument instrument;
-    protected final ImageGalleryGenerator galleryGenerator;
     protected Renderer renderer;
     protected StringRenderer stringRenderer;
     protected PropertyChangeListener propertyChangeListener;
@@ -102,7 +101,6 @@ public class ImageResultsTableController
         this.imageCollection = imageCollection;
         this.imageSearchModel = model;
         this.instrument = instrument;
-        this.galleryGenerator = ImageGalleryGenerator.of(instrument);
         this.renderer = renderer;
         model.addResultsChangedListener(new ImageSearchResultsListener() {
 
@@ -336,6 +334,8 @@ public class ImageResultsTableController
 
     private void viewResultsGalleryButtonActionPerformed(ActionEvent evt)
     {
+        ImageGalleryGenerator galleryGenerator = ImageGalleryGenerator.of(instrument);
+
         // Check if image search results are valid and nonempty
         if (imageRawResults != null && galleryGenerator != null)
         {
@@ -717,9 +717,12 @@ public class ImageResultsTableController
         imageResultsTableView.getSaveImageListButton().setEnabled(enablePostSearchButtons);
         imageResultsTableView.getSaveSelectedImageListButton().setEnabled(resultTable.getSelectedRowCount() > 0);
 
+        ImageGalleryGenerator galleryGenerator = ImageGalleryGenerator.of(instrument);
+
         if (galleryGenerator != null)
         {
             imageResultsTableView.getViewResultsGalleryButton().setEnabled(enablePostSearchButtons);
+            imageResultsTableView.getViewResultsGalleryButton().setVisible(true);
         }
         else
         {
