@@ -35,7 +35,7 @@ import org.apache.commons.io.FilenameUtils;
 import org.joda.time.DateTime;
 
 import edu.jhuapl.saavtk.gui.dialog.CustomFileChooser;
-import edu.jhuapl.sbmt.stateHistory.controllers.KernelManagementController;
+import edu.jhuapl.sbmt.stateHistory.controllers.kernel.KernelManagementController;
 import edu.jhuapl.sbmt.stateHistory.model.StateHistoryModel;
 import edu.jhuapl.sbmt.stateHistory.model.StateHistorySourceType;
 import edu.jhuapl.sbmt.stateHistory.model.interfaces.IStateHistoryMetadata;
@@ -176,9 +176,6 @@ public class StateHistoryIntervalGenerationPanel extends JPanel
         add(getDataSouceCardsPanel());
 
         add(timeRangePanel);
-        startTimeSpinner.setEnabled(true);
-		stopTimeSpinner.setEnabled(true);
-		getIntervalButton.setEnabled(true);
         repaint();
 	}
 
@@ -225,7 +222,6 @@ public class StateHistoryIntervalGenerationPanel extends JPanel
 		dataSourceButtonGroup.add(pregenDataRadioButton);
 		if (hasSpiceInfo)
 		{
-
 			spiceDataRadioButton = new JRadioButton(SPICEDATASTRING);
 			radioButtonPanel.add(spiceDataRadioButton);
 			dataSourceButtonGroup.add(spiceDataRadioButton);
@@ -233,16 +229,11 @@ public class StateHistoryIntervalGenerationPanel extends JPanel
 				CardLayout cl = (CardLayout)(dataSourceCards.getLayout());
 				cl.show(dataSourceCards, SPICEDATASTRING);
 				stateHistorySourceType = StateHistorySourceType.SPICE;
-				startTimeSpinner.setEnabled(false);
-				stopTimeSpinner.setEnabled(false);
-				getIntervalButton.setEnabled(false);
 			});
 		}
 
 		pregenDataRadioButton.setSelected(true);
 		pregenDataRadioButton.addActionListener(e -> {
-			startTimeSpinner.setEnabled(true);
-			stopTimeSpinner.setEnabled(true);
 			CardLayout cl = (CardLayout)(dataSourceCards.getLayout());
 			cl.show(dataSourceCards, PREGENDATASTRING);
 			stateHistorySourceType = StateHistorySourceType.PREGEN;
@@ -268,8 +259,6 @@ public class StateHistoryIntervalGenerationPanel extends JPanel
 		JProgressBar progressBar = new JProgressBar();
 		cancelButton = new JButton("Cancel");
 		cancelButton.setEnabled(false);
-		getIntervalButton.setEnabled(false);
-
 
 		List<String> loadedKernels = new ArrayList<String>();
 		if (kernelIngestor.getLoadedKernelsDirectory().listFiles() != null)
@@ -292,9 +281,6 @@ public class StateHistoryIntervalGenerationPanel extends JPanel
 			}
 			else
 			{
-				getIntervalButton.setEnabled(true);
-				startTimeSpinner.setEnabled(true);
-				stopTimeSpinner.setEnabled(true);
 				File selectedKernelDirectory = new File(loadedKernelsDirectory, selectedItem);
 				metakernelToLoad = new File(selectedKernelDirectory, selectedItem + ".mk").getAbsolutePath();
 			}
@@ -331,6 +317,7 @@ public class StateHistoryIntervalGenerationPanel extends JPanel
     	manageKernels.addActionListener(l -> {
     		JFrame frame2 = new JFrame("Manage Kernels");
     		frame2.add(kernelManagementController.getView());
+    		frame2.setMinimumSize(new Dimension(800, frame2.getHeight()));
         	frame2.pack();
         	frame2.setVisible(true);
     	});

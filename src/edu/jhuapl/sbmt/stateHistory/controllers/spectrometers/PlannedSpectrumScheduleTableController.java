@@ -114,6 +114,11 @@ public class PlannedSpectrumScheduleTableController implements IPlannedDataContr
 			refreshView();
 		});
 
+		view.getTable().getDeleteScheduleButton().addActionListener(e -> {
+			collection.getSelectedItems().forEach( coll -> collection.removeCollection(coll));
+			refreshView();
+		});
+
 		collection.addListener((aSource, aEventType) ->
 		{
 			refreshView();
@@ -157,6 +162,7 @@ public class PlannedSpectrumScheduleTableController implements IPlannedDataContr
 		}
 		view.getTable().getHidePlannedSpectrumButton().setEnabled((selectedItems.size() > 0) && allMapped);
 		view.getTable().getShowPlannedSpectrumButton().setEnabled((selectedItems.size() > 0) && !allMapped);
+		view.getTable().getDeleteScheduleButton().setEnabled(selectedItems.size() > 0);
 	}
 
 	@Override

@@ -1,4 +1,4 @@
-package edu.jhuapl.sbmt.stateHistory.model;
+package edu.jhuapl.sbmt.stateHistory.model.kernel;
 
 import java.io.File;
 import java.io.IOException;
@@ -7,6 +7,8 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
+
+import org.apache.commons.io.FileUtils;
 
 import glum.item.BaseItemManager;
 
@@ -17,7 +19,6 @@ public class KernelManagementModel extends BaseItemManager<KernelInfo>
 	public KernelManagementModel(String loadedKernelsDirectory) throws IOException
 	{
 		File[] loadedKernelSets = new File(loadedKernelsDirectory).listFiles();
-		if (loadedKernelSets == null) return;
 		List<KernelInfo> allSets = new ArrayList<KernelInfo>();
 		for (File directory : loadedKernelSets)
 		{
@@ -26,19 +27,27 @@ public class KernelManagementModel extends BaseItemManager<KernelInfo>
 		}
 		setAllItems(allSets);
 	}
-}
 
-
-class KernelInfo
-{
-	String kernelName;
-	String kernelDirectory;
-	List<String> kernelListing;
-
-	public KernelInfo(String name, String directory, List<String> listing)
+	public void deleteKernelSet(String directoryName, boolean deleteFromDisk)
 	{
-		this.kernelName = name;
-		this.kernelDirectory = directory;
-		this.kernelListing = listing;
+		List<KernelInfo> allItems = new ArrayList<KernelInfo>(getAllItems());
+		boolean anyRemoved = allItems.removeIf(entry -> {
+
+        	return entry.getKernelDirectory().equals(directoryName);
+        });
+		if (anyRemoved && deleteFromDisk)
+		{
+			File directory = new File(directoryName);
+			try
+			{
+				FileUtils.deleteDirectory(directory);
+			}
+			catch (IOException e)
+			{
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+		setAllItems(allItems);
 	}
 }

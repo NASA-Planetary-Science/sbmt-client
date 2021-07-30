@@ -2,6 +2,7 @@ package edu.jhuapl.sbmt.stateHistory.ui.lidars.schedule;
 
 import java.awt.Color;
 import java.awt.Component;
+import java.awt.Dimension;
 import java.awt.event.ActionListener;
 
 import javax.swing.Box;
@@ -30,7 +31,6 @@ import glum.gui.panel.itemList.ItemHandler;
 import glum.gui.panel.itemList.ItemListPanel;
 import glum.gui.panel.itemList.ItemProcessor;
 import glum.gui.panel.itemList.query.QueryComposer;
-import glum.gui.table.TablePopupHandler;
 import glum.item.ItemManagerUtil;
 
 public class PlannedLidarTrackScheduleTableView extends JPanel
@@ -58,7 +58,7 @@ public class PlannedLidarTrackScheduleTableView extends JPanel
     /**
      * JButtons for selection in the table
      */
-    private JButton selectAllB, selectInvertB, selectNoneB;
+    private JButton selectAllB, selectInvertB, selectNoneB, deleteScheduleButton;
 
     private JToggleButton syncWithTimelineButton;
 
@@ -155,6 +155,10 @@ public class PlannedLidarTrackScheduleTableView extends JPanel
 		hidePlannedLidarTrackButton.setToolTipText(ToolTipUtil.getItemHide());
 		hidePlannedLidarTrackButton.setEnabled(false);
 
+		deleteScheduleButton = GuiUtil.formButton(listener, IconUtil.getItemDel());
+		deleteScheduleButton.setToolTipText(ToolTipUtil.getItemDel());
+		deleteScheduleButton.setEnabled(false);
+
 		selectInvertB = GuiUtil.formButton(listener, IconUtil.getSelectInvert());
 		selectInvertB.setToolTipText(ToolTipUtil.getSelectInvert());
 
@@ -171,10 +175,11 @@ public class PlannedLidarTrackScheduleTableView extends JPanel
 		buttonPanel.add(processingLabel);
 		buttonPanel.add(Box.createHorizontalGlue());
 		buttonPanel.add(syncWithTimelineButton);
-		buttonPanel.add(Box.createHorizontalGlue());
+		buttonPanel.add(Box.createRigidArea(new Dimension(10, buttonPanel.getHeight())));
 		buttonPanel.add(showPlannedLidarTrackButton);
 		buttonPanel.add(hidePlannedLidarTrackButton);
-		buttonPanel.add(Box.createHorizontalGlue());
+		buttonPanel.add(deleteScheduleButton);
+		buttonPanel.add(Box.createRigidArea(new Dimension(10, buttonPanel.getHeight())));
 		buttonPanel.add(selectInvertB, "w 24!,h 24!");
 		buttonPanel.add(selectNoneB, "w 24!,h 24!");
 		buttonPanel.add(selectAllB, "w 24!,h 24!,wrap 2");
@@ -183,7 +188,7 @@ public class PlannedLidarTrackScheduleTableView extends JPanel
 		// Table Content
 		QueryComposer<PlannedLidarTrackScheduleColumnLookup> tmpComposer = new QueryComposer<>();
 		tmpComposer.addAttribute(PlannedLidarTrackScheduleColumnLookup.Show, Boolean.class, "Show", null);
-		tmpComposer.addAttribute(PlannedLidarTrackScheduleColumnLookup.Details, Boolean.class, "Details", null);
+		tmpComposer.addAttribute(PlannedLidarTrackScheduleColumnLookup.Details, Boolean.class, "Schedule Details", null);
 //		tmpComposer.addAttribute(PlannedLidarTrackScheduleColumnLookup.Color, Color.class, "Color", null);
 		tmpComposer.addAttribute(PlannedLidarTrackScheduleColumnLookup.Filename, String.class, "Filename", null);
 		tmpComposer.addAttribute(PlannedLidarTrackScheduleColumnLookup.StateHistory, String.class, "History Segment", null);
@@ -195,16 +200,18 @@ public class PlannedLidarTrackScheduleTableView extends JPanel
 //		tmpComposer.setEditor(PlannedLidarTrackScheduleColumnLookup.Color, new ColorProviderCellEditor<StateHistory>());
 //		tmpComposer.setRenderer(PlannedLidarTrackScheduleColumnLookup.Color, new ColorProviderCellRenderer(false));
 
+		tmpComposer.getItem(PlannedLidarTrackScheduleColumnLookup.Details).defaultSize *= 1;
+		tmpComposer.getItem(PlannedLidarTrackScheduleColumnLookup.Filename).defaultSize *= 3;
 
 		plannedLidarTrackScheduleTableHandler = new PlannedLidarTrackScheduleItemHandler(plannedLidarTrackScheduleCollection, tmpComposer);
 		ItemProcessor<PlannedLidarTrackCollection> tmpIP = plannedLidarTrackScheduleCollection;
 		plannedLidarTrackILP = new ItemListPanel<>(plannedLidarTrackScheduleTableHandler, tmpIP, true);
 		plannedLidarTrackILP.setSortingEnabled(true);
-		configureColumnWidths();
+//		configureColumnWidths();
 		JTable plannedLidarTrackTable = plannedLidarTrackILP.getTable();
 		plannedLidarTrackTable.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
 		//TODO: Fix the popup menu
-		plannedLidarTrackTable.addMouseListener(new TablePopupHandler(plannedLidarTrackScheduleCollection, null));
+//		plannedLidarTrackTable.addMouseListener(new TablePopupHandler(plannedLidarTrackScheduleCollection, null));
 
 		return plannedLidarTrackTable;
     }
@@ -260,6 +267,11 @@ public class PlannedLidarTrackScheduleTableView extends JPanel
 	public JToggleButton getSyncWithTimelineButton()
 	{
 		return syncWithTimelineButton;
+	}
+
+	public JButton getDeleteScheduleButton()
+	{
+		return deleteScheduleButton;
 	}
 
 	/**

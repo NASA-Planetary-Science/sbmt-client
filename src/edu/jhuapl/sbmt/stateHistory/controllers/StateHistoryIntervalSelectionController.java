@@ -1,5 +1,6 @@
 package edu.jhuapl.sbmt.stateHistory.controllers;
 
+import java.awt.BorderLayout;
 import java.io.File;
 import java.io.IOException;
 
@@ -200,7 +201,7 @@ public class StateHistoryIntervalSelectionController
         view.getAddStateHistoryButton().addActionListener(e ->
         {
         	JFrame frame = new JFrame("Generate New Interval...");
-//        	frame.add(intervalGenerationController.getView().getToolbar(), BorderLayout.NORTH);
+        	frame.add(intervalGenerationController.getView().getToolbar(), BorderLayout.NORTH);
         	frame.add(intervalGenerationController.getView());
         	frame.pack();
         	frame.setVisible(true);

@@ -116,6 +116,11 @@ public class PlannedLidarScheduleTableController implements IPlannedDataControll
 			refreshView();
 		});
 
+		view.getTable().getDeleteScheduleButton().addActionListener(e -> {
+			collection.getSelectedItems().forEach( coll -> collection.removeCollection(coll));
+			refreshView();
+		});
+
 		collection.addListener((aSource, aEventType) ->
 		{
 			refreshView();
@@ -163,6 +168,7 @@ public class PlannedLidarScheduleTableController implements IPlannedDataControll
 		}
 		view.getTable().getHidePlannedLidarTrackButton().setEnabled((selectedItems.size() > 0) && allMapped);
 		view.getTable().getShowPlannedLidarTrackButton().setEnabled((selectedItems.size() > 0) && !allMapped);
+		view.getTable().getDeleteScheduleButton().setEnabled(selectedItems.size() > 0);
 	}
 
 	@Override

@@ -34,7 +34,6 @@ import glum.gui.panel.itemList.ItemHandler;
 import glum.gui.panel.itemList.ItemListPanel;
 import glum.gui.panel.itemList.ItemProcessor;
 import glum.gui.panel.itemList.query.QueryComposer;
-import glum.gui.table.TablePopupHandler;
 import glum.item.ItemManagerUtil;
 
 public class PlannedLidarTrackTableView extends JPanel
@@ -218,7 +217,7 @@ public class PlannedLidarTrackTableView extends JPanel
 		JTable plannedLidarTrackTable = plannedLidarTrackILP.getTable();
 		plannedLidarTrackTable.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
 		//TODO: Fix the popup menu
-		plannedLidarTrackTable.addMouseListener(new TablePopupHandler(plannedLidarTrackCollection, null));
+//		plannedLidarTrackTable.addMouseListener(new TablePopupHandler(plannedLidarTrackCollection, null));
 
 		return plannedLidarTrackTable;
     }

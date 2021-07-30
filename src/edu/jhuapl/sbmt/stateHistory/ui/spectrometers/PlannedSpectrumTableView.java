@@ -34,7 +34,6 @@ import glum.gui.panel.itemList.ItemHandler;
 import glum.gui.panel.itemList.ItemListPanel;
 import glum.gui.panel.itemList.ItemProcessor;
 import glum.gui.panel.itemList.query.QueryComposer;
-import glum.gui.table.TablePopupHandler;
 import glum.item.ItemManagerUtil;
 
 public class PlannedSpectrumTableView extends JPanel
@@ -219,7 +218,7 @@ public class PlannedSpectrumTableView extends JPanel
 		JTable plannedSpectrumTable = plannedSpectrumILP.getTable();
 		plannedSpectrumTable.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
 		//TODO: Fix the popup menu
-		plannedSpectrumTable.addMouseListener(new TablePopupHandler(plannedSpectrumCollection, null));
+//		plannedSpectrumTable.addMouseListener(new TablePopupHandler(plannedSpectrumCollection, null));
 
 		return plannedSpectrumTable;
     }

@@ -32,7 +32,6 @@ import glum.gui.panel.itemList.ItemHandler;
 import glum.gui.panel.itemList.ItemListPanel;
 import glum.gui.panel.itemList.ItemProcessor;
 import glum.gui.panel.itemList.query.QueryComposer;
-import glum.gui.table.TablePopupHandler;
 import glum.item.ItemManagerUtil;
 
 public class PlannedImageTableView extends JPanel
@@ -196,7 +195,7 @@ public class PlannedImageTableView extends JPanel
 		JTable plannedImageTable = plannedImageILP.getTable();
 		plannedImageTable.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
 		//TODO: Fix the popup menu
-		plannedImageTable.addMouseListener(new TablePopupHandler(plannedImageCollection, null));
+//		plannedImageTable.addMouseListener(new TablePopupHandler(plannedImageCollection, null));
 
 		return plannedImageTable;
     }

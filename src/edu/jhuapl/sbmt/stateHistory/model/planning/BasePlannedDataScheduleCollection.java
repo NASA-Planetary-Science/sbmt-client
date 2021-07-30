@@ -52,6 +52,12 @@ public abstract class BasePlannedDataScheduleCollection<C extends BasePlannedDat
 		setAllItems(plannedData);
 	}
 
+	public void removeCollection(C data)
+	{
+		plannedData.remove(data);
+		setAllItems(plannedData);
+	}
+
 	/**
 	 *
 	 */

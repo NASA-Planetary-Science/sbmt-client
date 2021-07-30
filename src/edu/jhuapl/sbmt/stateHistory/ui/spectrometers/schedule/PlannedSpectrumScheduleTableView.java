@@ -2,6 +2,7 @@ package edu.jhuapl.sbmt.stateHistory.ui.spectrometers.schedule;
 
 import java.awt.Color;
 import java.awt.Component;
+import java.awt.Dimension;
 import java.awt.event.ActionListener;
 
 import javax.swing.Box;
@@ -30,7 +31,6 @@ import glum.gui.panel.itemList.ItemHandler;
 import glum.gui.panel.itemList.ItemListPanel;
 import glum.gui.panel.itemList.ItemProcessor;
 import glum.gui.panel.itemList.query.QueryComposer;
-import glum.gui.table.TablePopupHandler;
 import glum.item.ItemManagerUtil;
 
 public class PlannedSpectrumScheduleTableView extends JPanel
@@ -58,7 +58,7 @@ public class PlannedSpectrumScheduleTableView extends JPanel
     /**
      * JButtons for selection in the table
      */
-    private JButton selectAllB, selectInvertB, selectNoneB;
+    private JButton selectAllB, selectInvertB, selectNoneB, deleteScheduleButton;
 
     private JToggleButton syncWithTimelineButton;
 
@@ -155,6 +155,10 @@ public class PlannedSpectrumScheduleTableView extends JPanel
 		hidePlannedSpectrumButton.setToolTipText(ToolTipUtil.getItemHide());
 		hidePlannedSpectrumButton.setEnabled(false);
 
+		deleteScheduleButton = GuiUtil.formButton(listener, IconUtil.getItemDel());
+		deleteScheduleButton.setToolTipText(ToolTipUtil.getItemDel());
+		deleteScheduleButton.setEnabled(false);
+
 		selectInvertB = GuiUtil.formButton(listener, IconUtil.getSelectInvert());
 		selectInvertB.setToolTipText(ToolTipUtil.getSelectInvert());
 
@@ -171,10 +175,11 @@ public class PlannedSpectrumScheduleTableView extends JPanel
 		buttonPanel.add(processingLabel);
 		buttonPanel.add(Box.createHorizontalGlue());
 		buttonPanel.add(syncWithTimelineButton);
-		buttonPanel.add(Box.createHorizontalGlue());
+		buttonPanel.add(Box.createRigidArea(new Dimension(10, buttonPanel.getHeight())));
 		buttonPanel.add(showPlannedSpectrumButton);
 		buttonPanel.add(hidePlannedSpectrumButton);
-		buttonPanel.add(Box.createHorizontalGlue());
+		buttonPanel.add(deleteScheduleButton);
+		buttonPanel.add(Box.createRigidArea(new Dimension(10, buttonPanel.getHeight())));
 		buttonPanel.add(selectInvertB, "w 24!,h 24!");
 		buttonPanel.add(selectNoneB, "w 24!,h 24!");
 		buttonPanel.add(selectAllB, "w 24!,h 24!,wrap 2");
@@ -183,10 +188,11 @@ public class PlannedSpectrumScheduleTableView extends JPanel
 		// Table Content
 		QueryComposer<PlannedSpectrumScheduleColumnLookup> tmpComposer = new QueryComposer<>();
 		tmpComposer.addAttribute(PlannedSpectrumScheduleColumnLookup.Show, Boolean.class, "Show", null);
-		tmpComposer.addAttribute(PlannedSpectrumScheduleColumnLookup.Details, Boolean.class, "Details", null);
+		tmpComposer.addAttribute(PlannedSpectrumScheduleColumnLookup.Details, Boolean.class, "Schedule Details", null);
 //		tmpComposer.addAttribute(PlannedSpectrumScheduleColumnLookup.Color, Color.class, "Color", null);
 		tmpComposer.addAttribute(PlannedSpectrumScheduleColumnLookup.Filename, String.class, "Filename", null);
 		tmpComposer.addAttribute(PlannedSpectrumScheduleColumnLookup.StateHistory, String.class, "History Segment", null);
+
 
 		tmpComposer.setEditor(PlannedSpectrumScheduleColumnLookup.Show, new BooleanCellEditor());
 		tmpComposer.setRenderer(PlannedSpectrumScheduleColumnLookup.Show, new BooleanCellRenderer());
@@ -195,16 +201,18 @@ public class PlannedSpectrumScheduleTableView extends JPanel
 //		tmpComposer.setEditor(PlannedSpectrumScheduleColumnLookup.Color, new ColorProviderCellEditor<StateHistory>());
 //		tmpComposer.setRenderer(PlannedSpectrumScheduleColumnLookup.Color, new ColorProviderCellRenderer(false));
 
+		tmpComposer.getItem(PlannedSpectrumScheduleColumnLookup.Details).defaultSize *= 1;
+		tmpComposer.getItem(PlannedSpectrumScheduleColumnLookup.Filename).defaultSize *= 3;
 
 		plannedSpectrumScheduleTableHandler = new PlannedSpectrumScheduleItemHandler(plannedSpectrumScheduleCollection, tmpComposer);
 		ItemProcessor<PlannedSpectrumCollection> tmpIP = plannedSpectrumScheduleCollection;
 		plannedSpectrumILP = new ItemListPanel<>(plannedSpectrumScheduleTableHandler, tmpIP, true);
 		plannedSpectrumILP.setSortingEnabled(true);
-		configureColumnWidths();
+//		configureColumnWidths();
 		JTable plannedSpectrumTable = plannedSpectrumILP.getTable();
 		plannedSpectrumTable.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
 		//TODO: Fix the popup menu
-		plannedSpectrumTable.addMouseListener(new TablePopupHandler(plannedSpectrumScheduleCollection, null));
+//		plannedSpectrumTable.addMouseListener(new TablePopupHandler(plannedSpectrumScheduleCollection, null));
 
 		return plannedSpectrumTable;
     }
@@ -260,6 +268,11 @@ public class PlannedSpectrumScheduleTableView extends JPanel
 	public JToggleButton getSyncWithTimelineButton()
 	{
 		return syncWithTimelineButton;
+	}
+
+	public JButton getDeleteScheduleButton()
+	{
+		return deleteScheduleButton;
 	}
 
 	/**

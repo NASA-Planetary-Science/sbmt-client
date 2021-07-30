@@ -2,6 +2,7 @@ package edu.jhuapl.sbmt.stateHistory.ui.imagers.schedule;
 
 import java.awt.Color;
 import java.awt.Component;
+import java.awt.Dimension;
 import java.awt.event.ActionListener;
 
 import javax.swing.Box;
@@ -30,7 +31,6 @@ import glum.gui.panel.itemList.ItemHandler;
 import glum.gui.panel.itemList.ItemListPanel;
 import glum.gui.panel.itemList.ItemProcessor;
 import glum.gui.panel.itemList.query.QueryComposer;
-import glum.gui.table.TablePopupHandler;
 import glum.item.ItemManagerUtil;
 
 public class PlannedImageScheduleTableView extends JPanel
@@ -58,7 +58,7 @@ public class PlannedImageScheduleTableView extends JPanel
     /**
      * JButtons for selection in the table
      */
-    private JButton selectAllB, selectInvertB, selectNoneB;
+    private JButton selectAllB, selectInvertB, selectNoneB, deleteScheduleButton;
 
     private JToggleButton syncWithTimelineButton;
 
@@ -155,6 +155,10 @@ public class PlannedImageScheduleTableView extends JPanel
 		hidePlannedImageButton.setToolTipText(ToolTipUtil.getItemHide());
 		hidePlannedImageButton.setEnabled(false);
 
+		deleteScheduleButton = GuiUtil.formButton(listener, IconUtil.getItemDel());
+		deleteScheduleButton.setToolTipText(ToolTipUtil.getItemDel());
+		deleteScheduleButton.setEnabled(false);
+
 		selectInvertB = GuiUtil.formButton(listener, IconUtil.getSelectInvert());
 		selectInvertB.setToolTipText(ToolTipUtil.getSelectInvert());
 
@@ -171,10 +175,11 @@ public class PlannedImageScheduleTableView extends JPanel
 		buttonPanel.add(processingLabel);
 		buttonPanel.add(Box.createHorizontalGlue());
 		buttonPanel.add(syncWithTimelineButton);
-		buttonPanel.add(Box.createHorizontalGlue());
+		buttonPanel.add(Box.createRigidArea(new Dimension(10, buttonPanel.getHeight())));
 		buttonPanel.add(showPlannedImageButton);
 		buttonPanel.add(hidePlannedImageButton);
-		buttonPanel.add(Box.createHorizontalGlue());
+		buttonPanel.add(deleteScheduleButton);
+		buttonPanel.add(Box.createRigidArea(new Dimension(10, buttonPanel.getHeight())));
 		buttonPanel.add(selectInvertB, "w 24!,h 24!");
 		buttonPanel.add(selectNoneB, "w 24!,h 24!");
 		buttonPanel.add(selectAllB, "w 24!,h 24!,wrap 2");
@@ -183,9 +188,13 @@ public class PlannedImageScheduleTableView extends JPanel
 		// Table Content
 		QueryComposer<PlannedImageScheduleColumnLookup> tmpComposer = new QueryComposer<>();
 		tmpComposer.addAttribute(PlannedImageScheduleColumnLookup.Show, Boolean.class, "Show", null);
-		tmpComposer.addAttribute(PlannedImageScheduleColumnLookup.Details, Boolean.class, "Details", null);
+		tmpComposer.addAttribute(PlannedImageScheduleColumnLookup.Details, Boolean.class, "Schedule Details", null);
 		tmpComposer.addAttribute(PlannedImageScheduleColumnLookup.Filename, String.class, "Filename", null);
 		tmpComposer.addAttribute(PlannedImageScheduleColumnLookup.StateHistory, String.class, "History Segment", null);
+
+		tmpComposer.getItem(PlannedImageScheduleColumnLookup.Details).defaultSize *= 1;
+		tmpComposer.getItem(PlannedImageScheduleColumnLookup.Filename).defaultSize *= 3;
+
 
 		tmpComposer.setEditor(PlannedImageScheduleColumnLookup.Show, new BooleanCellEditor());
 		tmpComposer.setRenderer(PlannedImageScheduleColumnLookup.Show, new BooleanCellRenderer());
@@ -196,11 +205,11 @@ public class PlannedImageScheduleTableView extends JPanel
 		ItemProcessor<PlannedImageCollection> tmpIP = plannedImageScheduleCollection;
 		plannedImageILP = new ItemListPanel<>(plannedImageScheduleTableHandler, tmpIP, true);
 		plannedImageILP.setSortingEnabled(true);
-		configureColumnWidths();
+//		configureColumnWidths();
 		JTable plannedImageTable = plannedImageILP.getTable();
 		plannedImageTable.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
 		//TODO: Fix the popup menu
-		plannedImageTable.addMouseListener(new TablePopupHandler(plannedImageScheduleCollection, null));
+//		plannedImageTable.addMouseListener(new TablePopupHandler(plannedImageScheduleCollection, null));
 
 		return plannedImageTable;
     }
@@ -256,6 +265,11 @@ public class PlannedImageScheduleTableView extends JPanel
 	public JToggleButton getSyncWithTimelineButton()
 	{
 		return syncWithTimelineButton;
+	}
+
+	public JButton getDeleteScheduleButton()
+	{
+		return deleteScheduleButton;
 	}
 
 	/**
