@@ -206,7 +206,11 @@ ${int_win_zip} : ${NEARAPLJAR}
 		cp ${saavtk_dir}/lib/geotools/*.jar ${int_win_sbmt_lib_dir}
 		cp ${vtk_dir}/*.jar ${int_win_sbmt_lib_dir}
 		cp ${jogl_dir}/gluegen-rt.jar ${int_win_sbmt_lib_dir}
+		cp ${jogl_dir}/gluegen-rt-natives-windows-amd64.jar ${int_win_sbmt_lib_dir}
+		cp ${jogl_dir}/gluegen-rt-natives-windows-i586.jar ${int_win_sbmt_lib_dir}
 		cp ${jogl_dir}/jogl-all.jar ${int_win_sbmt_lib_dir}
+		cp ${jogl_dir}/jogl-all-natives-windows-amd64.jar ${int_win_sbmt_lib_dir}
+		cp ${jogl_dir}/jogl-all-natives-windows-i586.jar ${int_win_sbmt_lib_dir}
 		cp ${SAAVTKJAR} ${int_win_sbmt_lib_dir}
 		cp ${NEARAPLJAR} ${int_win_sbmt_lib_dir}/near.jar
 		cp -R ${vtk_dir}/win64 ${int_win_sbmt_lib_dir}
