@@ -105,7 +105,7 @@ public class StateHistoryIntervalPlaybackController
 				if (date == (Date)view.getTimeBox().getModel().getValue()) return;
 				//put on EDT?
 				view.getTimeBox().setValue(date);
-
+				if( et < runs.getCurrentRun().getMetadata().getStartTime() || et > runs.getCurrentRun().getMetadata().getEndTime()) return;
 				try
 				{
 					runs.getCurrentRun().getMetadata().setCurrentTime(et);

@@ -18,8 +18,19 @@ public class KernelManagementModel extends BaseItemManager<KernelInfo>
 
 	public KernelManagementModel(String loadedKernelsDirectory) throws IOException
 	{
+		this.loadedKernelsDirectory = loadedKernelsDirectory;
+		refreshModel();
+	}
+
+	public void refreshModel() throws IOException
+	{
 		File[] loadedKernelSets = new File(loadedKernelsDirectory).listFiles();
 		List<KernelInfo> allSets = new ArrayList<KernelInfo>();
+		if (loadedKernelSets == null)
+		{
+			setAllItems(allSets);
+			return;
+		}
 		for (File directory : loadedKernelSets)
 		{
 			List<String> allFiles = Files.walk(Paths.get(directory.toURI())).filter(Files::isRegularFile).map(f -> f.toString()).collect(Collectors.toList());

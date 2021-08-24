@@ -35,7 +35,8 @@ public class StateHistoryKey
     public StateHistoryKey(StateHistoryCollection runs)
     {
 //        value = RAND.nextInt(1000);
-    	RAND = new IncrIdGenerator(runs.getSimRuns().get(runs.getSimRuns().size()-1).getMetadata().getKey().getValue() + 1);
+    	if (runs.getSimRuns().size() == 0) RAND = new IncrIdGenerator(1);
+    	else RAND = new IncrIdGenerator(runs.getSimRuns().get(runs.getSimRuns().size()-1).getMetadata().getKey().getValue() + 1);
     	value = RAND.getNextId();
 //        while (runs.getKeys().contains(value)) {
 //            value = RAND.nextInt(1000);

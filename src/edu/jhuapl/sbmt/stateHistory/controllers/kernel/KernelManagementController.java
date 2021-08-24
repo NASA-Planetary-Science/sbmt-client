@@ -44,6 +44,16 @@ public class KernelManagementController
 
 	public KernelManagementPanel getView()
 	{
+		try
+		{
+			model.refreshModel();
+			view.setKernelSet(model);
+		}
+		catch (IOException e)
+		{
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		return view;
 	}
 
