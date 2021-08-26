@@ -1,4 +1,4 @@
-package edu.jhuapl.sbmt.stateHistory.ui.state.intervalSelection;
+package edu.jhuapl.sbmt.stateHistory.deprecated;
 //package edu.jhuapl.sbmt.stateHistory.ui.state.version2;
 //
 //import java.awt.CardLayout;

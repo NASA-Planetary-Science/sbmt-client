@@ -1,7 +1,6 @@
 package edu.jhuapl.sbmt.stateHistory.controllers.imagers;
 
 import edu.jhuapl.sbmt.stateHistory.controllers.PlannedDataTableController;
-import edu.jhuapl.sbmt.stateHistory.model.interfaces.IStateHistoryMetadata;
 import edu.jhuapl.sbmt.stateHistory.model.planning.imagers.PlannedImage;
 import edu.jhuapl.sbmt.stateHistory.model.planning.imagers.PlannedImageCollection;
 import edu.jhuapl.sbmt.stateHistory.ui.imagers.PlannedImageView;
@@ -13,8 +12,6 @@ import edu.jhuapl.sbmt.stateHistory.ui.imagers.PlannedImageView;
  */
 public class PlannedImageTableController extends PlannedDataTableController<PlannedImageView, PlannedImage>
 {
-	IStateHistoryMetadata historyMetadata = null;
-
 	public PlannedImageTableController(PlannedImageCollection collection)
 	{
 		this.collection = collection;

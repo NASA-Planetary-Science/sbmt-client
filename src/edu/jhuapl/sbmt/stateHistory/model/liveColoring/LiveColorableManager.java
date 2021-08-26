@@ -6,6 +6,9 @@ import vtk.vtkFloatArray;
 
 import edu.jhuapl.saavtk.util.NativeLibraryLoader;
 import edu.jhuapl.sbmt.model.image.perspectiveImage.PerspectiveImageFootprint;
+import edu.jhuapl.sbmt.stateHistory.model.interfaces.ICalculatedPlateValues;
+import edu.jhuapl.sbmt.stateHistory.model.interfaces.IFootprintConfinedPlateValues;
+import edu.jhuapl.sbmt.stateHistory.model.interfaces.ITimeCalculatedPlateValues;
 import edu.jhuapl.sbmt.stateHistory.model.time.StateHistoryTimeModel;
 
 public class LiveColorableManager

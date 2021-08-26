@@ -17,7 +17,6 @@ public class KernelManagementController
 		{
 			model = new KernelManagementModel(loadedKernelsDirectory.getAbsolutePath());
 			view = new KernelManagementPanel(model);
-//			view.setKernelSet(model);
 		}
 		catch (IOException e)
 		{
@@ -31,8 +30,6 @@ public class KernelManagementController
 					model.deleteKernelSet(kernelSet.getKernelDirectory(), true);
 				}
 			);
-
-
 		});
 
 		view.getItemEditB().addActionListener(e -> {
@@ -41,7 +38,10 @@ public class KernelManagementController
 	}
 
 
-
+	/**
+	 * Returns the view associated with this controller
+	 * @return
+	 */
 	public KernelManagementPanel getView()
 	{
 		try

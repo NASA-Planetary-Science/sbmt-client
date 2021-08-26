@@ -1,4 +1,4 @@
-package edu.jhuapl.sbmt.stateHistory.model.io;
+package edu.jhuapl.sbmt.stateHistory.model.interfaces;
 
 public interface SpiceKernelLoadStatusListener
 {

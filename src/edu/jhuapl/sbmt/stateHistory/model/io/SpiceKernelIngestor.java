@@ -12,6 +12,7 @@ import org.apache.commons.io.FilenameUtils;
 
 import edu.jhuapl.saavtk.util.FileUtil;
 import edu.jhuapl.sbmt.pointing.spice.KernelProviderFromLocalMetakernel;
+import edu.jhuapl.sbmt.stateHistory.model.interfaces.SpiceKernelLoadStatusListener;
 
 public class SpiceKernelIngestor
 {
@@ -43,13 +44,10 @@ public class SpiceKernelIngestor
         FileUtil.copyFile(new File(metakernalFilename), destinationFilePath);
 		KernelProviderFromLocalMetakernel provider = KernelProviderFromLocalMetakernel.of(Paths.get(metakernalFilename));
         List<File> list = provider.get();
-        String kernelParentDirectory = null;
         double numberOfFiles = list.size();
         double currentFile = 0;
         for (File file : list)
         {
-//        	System.out.println("SpiceKernelIngestor: ingestMetaKernelToCache: getting file " + file.getCanonicalFile());
-//        	if (kernelParentDirectory == null) kernelParentDirectory = file.getCanonicalFile().getParentFile().getParentFile().getName();
         	currentFile++;
         	if (listener != null) listener.percentageLoaded((int)(100*(currentFile/numberOfFiles)));
         	FileUtils.copyDirectoryToDirectory(file.getParentFile(), newDirectory);
@@ -68,13 +66,12 @@ public class SpiceKernelIngestor
         }
         lines.set(lineNumber, "PATH_VALUES = ( \'" + newDirectory + File.separator + "\' )");
 
-//        lines.set(lineNumber, "PATH_VALUES = ( \'" + newDirectory + File.separator + destinationFilePath + "\' )");
         Files.write(path, lines);
 
         return metaKernelCopy.getAbsolutePath();
 	}
 
-	public boolean checkIfExists(String folderName)
+	private boolean checkIfExists(String folderName)
 	{
 		return new File(customDataFolder + File.pathSeparator + "loadedKernels", folderName).exists();
 	}
@@ -97,5 +94,4 @@ public class SpiceKernelIngestor
 		});
 		System.out.println("SpiceKernelIngestor: main: loaded kernels for " + kernelNameLoaded);
 	}
-
 }

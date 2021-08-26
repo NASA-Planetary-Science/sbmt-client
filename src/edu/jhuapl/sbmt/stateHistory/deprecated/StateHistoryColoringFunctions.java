@@ -1,3 +1,4 @@
+package edu.jhuapl.sbmt.stateHistory.deprecated;
 //package edu.jhuapl.sbmt.stateHistory.model;
 //
 //import java.util.function.BiFunction;

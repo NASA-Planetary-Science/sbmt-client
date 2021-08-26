@@ -1,7 +1,6 @@
 package edu.jhuapl.sbmt.stateHistory.controllers.spectrometers;
 
 import edu.jhuapl.sbmt.stateHistory.controllers.PlannedDataTableController;
-import edu.jhuapl.sbmt.stateHistory.model.interfaces.IStateHistoryMetadata;
 import edu.jhuapl.sbmt.stateHistory.model.planning.spectrometers.PlannedSpectrum;
 import edu.jhuapl.sbmt.stateHistory.model.planning.spectrometers.PlannedSpectrumCollection;
 import edu.jhuapl.sbmt.stateHistory.ui.spectrometers.PlannedSpectrumView;
@@ -13,8 +12,6 @@ import edu.jhuapl.sbmt.stateHistory.ui.spectrometers.PlannedSpectrumView;
  */
 public class PlannedSpectrumTableController extends PlannedDataTableController<PlannedSpectrumView, PlannedSpectrum>
 {
-	IStateHistoryMetadata historyMetadata = null;
-
 	public PlannedSpectrumTableController(PlannedSpectrumCollection collection)
 	{
 		this.collection = collection;

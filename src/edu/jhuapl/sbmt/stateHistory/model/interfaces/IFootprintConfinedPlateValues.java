@@ -1,4 +1,4 @@
-package edu.jhuapl.sbmt.stateHistory.model.liveColoring;
+package edu.jhuapl.sbmt.stateHistory.model.interfaces;
 
 import edu.jhuapl.sbmt.model.image.perspectiveImage.PerspectiveImageFootprint;
 

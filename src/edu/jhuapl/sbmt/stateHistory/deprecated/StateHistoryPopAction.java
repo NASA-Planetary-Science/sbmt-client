@@ -1,3 +1,4 @@
+package edu.jhuapl.sbmt.stateHistory.deprecated;
 //package edu.jhuapl.sbmt.stateHistory.ui.state.popup;
 //
 //import java.awt.event.ActionEvent;

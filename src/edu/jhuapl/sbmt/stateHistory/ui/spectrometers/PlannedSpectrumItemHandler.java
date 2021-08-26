@@ -36,8 +36,6 @@ public class PlannedSpectrumItemHandler extends BasicItemHandler<PlannedSpectrum
 		{
 			case Show:
 				return spectrum.isShowing();
-//			case Frus:
-//				return spectrum.isFrustumShowing();
 			case Color:
 				return new ConstColorProvider(spectrum.getColor());
 			case Instrument:
@@ -66,9 +64,6 @@ public class PlannedSpectrumItemHandler extends BasicItemHandler<PlannedSpectrum
 			case Show:
 				spectrum.setShowing((Boolean)aValue);
 				break;
-//			case Frus:
-//				spectrum.setFrustumShowing((Boolean)aValue);
-//				break;
 			case Color:
 				spectrum.setColor((Color)aValue);
 				break;

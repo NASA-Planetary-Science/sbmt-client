@@ -1,4 +1,4 @@
-package edu.jhuapl.sbmt.stateHistory.controllers.viewControls;
+package edu.jhuapl.sbmt.stateHistory.deprecated;
 
 //public class ObservationPlanningViewControlsController
 //{

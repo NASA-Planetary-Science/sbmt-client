@@ -236,14 +236,6 @@ public class PlannedImageTableView extends JPanel
 		return showPlannedImageButton;
 	}
 
-//	/**
-//	 * @return the syncWithTimelineButton
-//	 */
-//	public JToggleButton getSyncWithTimelineButton()
-//	{
-//		return syncWithTimelineButton;
-//	}
-
 	/**
 	 * @return the processingLabel
 	 */
