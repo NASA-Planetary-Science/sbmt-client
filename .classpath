@@ -3,7 +3,7 @@
 	<classpathentry excluding="edu/jhuapl/sbmt/gui/time/StateHistoryPopupMenu.java" kind="src" path="src"/>
 	<classpathentry kind="src" path="test"/>
 	<classpathentry kind="lib" path="/saavtk/lib/guava-28.2.jar" sourcepath="/saavtk/lib/guava-28.2-src.zip"/>
-	<classpathentry kind="lib" path="lib/mysql-connector-java-5.1.10-bin.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/mysql-connector-java-5.1.10-bin.jar"/>
 	<classpathentry kind="lib" path="lib/spice-N0065.jar"/>
 	<classpathentry kind="lib" path="lib/jide-oss-3.6.9.jar"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/saavtk"/>
@@ -12,7 +12,7 @@
 	<classpathentry kind="lib" path="lib/jcommander-1.72.jar"/>
 	<classpathentry kind="lib" path="lib/netcdfAll-4.3.jar"/>
 	<classpathentry kind="lib" path="lib/drmaa.jar"/>
-	<classpathentry kind="lib" path="lib/altwg.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/altwg.jar"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.junit.JUNIT_CONTAINER/5"/>
 	<classpathentry kind="lib" path="/saavtk/lib/commons-text-1.8.jar" sourcepath="/saavtk/lib/commons-text-1.8-sources.jar">
 		<attributes>
