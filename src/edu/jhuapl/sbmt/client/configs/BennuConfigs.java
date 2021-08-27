@@ -738,7 +738,7 @@ public class BennuConfigs extends SmallBodyViewConfig
             };
 
             c.setSpectrumParameters();
-
+            c.hasHypertreeBasedSpectraSearch = true;
             c.generateStateHistoryParameters();
 
             c.hasMapmaker = false;
@@ -796,7 +796,7 @@ public class BennuConfigs extends SmallBodyViewConfig
             };
 
             c.setSpectrumParameters();
-
+            c.hasHypertreeBasedSpectraSearch = true;
             c.generateStateHistoryParameters();
 
             c.hasMapmaker = false;
@@ -993,7 +993,7 @@ public class BennuConfigs extends SmallBodyViewConfig
             };
 
             c.setSpectrumParameters();
-
+            c.hasHypertreeBasedSpectraSearch = true;
             c.generateStateHistoryParameters();
 
             c.hasMapmaker = false;
@@ -1150,7 +1150,7 @@ public class BennuConfigs extends SmallBodyViewConfig
             };
 
             c.setSpectrumParameters();
-
+            c.hasHypertreeBasedSpectraSearch = true;
             c.generateStateHistoryParameters();
 
             c.hasMapmaker = false;
@@ -1216,7 +1216,7 @@ public class BennuConfigs extends SmallBodyViewConfig
             };
 
             c.setSpectrumParameters();
-
+            c.hasHypertreeBasedSpectraSearch = true;
             c.generateStateHistoryParameters();
 
             c.hasMapmaker = false;
@@ -1281,7 +1281,7 @@ public class BennuConfigs extends SmallBodyViewConfig
             };
 
             c.setSpectrumParameters();
-
+            c.hasHypertreeBasedSpectraSearch = true;
             c.generateStateHistoryParameters();
 
             c.hasMapmaker = false;
@@ -1396,7 +1396,7 @@ public class BennuConfigs extends SmallBodyViewConfig
             };
 
             c.setSpectrumParameters();
-
+            c.hasHypertreeBasedSpectraSearch = true;
             c.generateStateHistoryParameters();
 
             c.hasMapmaker = false;
@@ -1443,7 +1443,7 @@ public class BennuConfigs extends SmallBodyViewConfig
 					 publicOLA.generateMapcamInstrument("bennu_olav20_mapcam", "bennu_olav20_mapcam", false, true, true),
 					 publicOLA.generateNavcamInstrument("bennu_olav20_navcam", "bennu_olav20_navcam", true)
             };
-
+            publicOLA.hasHypertreeBasedSpectraSearch = false;
             publicOLA.lidarBrowseDataSourceMap.put("Default", publicOLA.rootDirOnServer + "/ola/l2a/fileListL2A.txt");
             publicOLA.lidarBrowseFileListResourcePath = publicOLA.rootDirOnServer + "/ola/l2a/fileListL2A.txt";
             publicOLA.lidarBrowseWithPointsDataSourceMap.put("Default", publicOLA.rootDirOnServer + "/ola/l2a/fileListL2A.txt");
@@ -1481,6 +1481,7 @@ public class BennuConfigs extends SmallBodyViewConfig
             c.generateStateHistoryParameters();
 
             c.setSpectrumParameters();
+            c.hasHypertreeBasedSpectraSearch = true;
 
             c.setLidarParameters(true);
             ArrayList<Date> startStop = new ArrayList<Date>();
@@ -1524,7 +1525,7 @@ public class BennuConfigs extends SmallBodyViewConfig
             		publicOLAptm.generateMapcamInstrument("bennu_olav20ptm_mapcam", "bennu_olav20ptm_mapcam", false, true, true),
             		publicOLAptm.generateNavcamInstrument("bennu_olav20ptm_navcam", "bennu_olav20ptm_navcam", true)
             };
-
+            publicOLAptm.hasHypertreeBasedSpectraSearch = false;
             publicOLAptm.lidarBrowseDataSourceMap.put("Default", publicOLAptm.rootDirOnServer + "/ola/l2a/fileListL2A.txt");
             publicOLAptm.lidarBrowseFileListResourcePath = publicOLAptm.rootDirOnServer + "/ola/l2a/fileListL2A.txt";
             publicOLAptm.lidarBrowseWithPointsDataSourceMap.put("Default", publicOLAptm.rootDirOnServer + "/ola/l2a/fileListL2A.txt");
@@ -1559,7 +1560,6 @@ public class BennuConfigs extends SmallBodyViewConfig
 	private ImagingInstrument generatePolycamInstrument(String spcNamePrefix, String spiceNamePrefix, boolean includeSPC, boolean includeSPICE, boolean publicOnly)
 	{
 		String gallery = "/polycam/gallery";
-		if (publicOnly) gallery = "/polycam/gallery/public";
 		ImageSource[] imageSources = {};
 		ArrayList<ImageSource> imageSourceArray = new ArrayList<ImageSource>();
 		if (includeSPC) imageSourceArray.add(ImageSource.GASKELL);
@@ -1586,7 +1586,6 @@ public class BennuConfigs extends SmallBodyViewConfig
 	private ImagingInstrument generateMapcamInstrument(String spcNamePrefix, String spiceNamePrefix, boolean includeSPC, boolean includeSPICE, boolean publicOnly)
 	{
 		String gallery = "/mapcam/gallery";
-		if (publicOnly) gallery = "/mapcam/gallery/public";
 		ImageSource[] imageSources = {};
 		ArrayList<ImageSource> imageSourceArray = new ArrayList<ImageSource>();
 		if (includeSPC) imageSourceArray.add(ImageSource.GASKELL);
@@ -1612,7 +1611,6 @@ public class BennuConfigs extends SmallBodyViewConfig
 	private ImagingInstrument generateNavcamInstrument(String spcNamePrefix, String spiceNamePrefix, boolean publicOnly)
 	{
 		String gallery = "/navcam/gallery";
-		if (publicOnly) gallery = "/navcam/gallery/public";
 		GenericPhpQuery phpQuery = new GenericPhpQuery(rootDirOnServer + "/navcam", spcNamePrefix, spiceNamePrefix, rootDirOnServer + gallery);
 		phpQuery.setPublicOnly(publicOnly);
 		phpQuery.setImageNameTable("bennu_navcam_images");

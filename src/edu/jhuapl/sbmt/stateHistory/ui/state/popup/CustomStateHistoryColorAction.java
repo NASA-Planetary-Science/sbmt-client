@@ -1,9 +1,14 @@
 package edu.jhuapl.sbmt.stateHistory.ui.state.popup;
 
+import java.awt.Color;
 import java.awt.Component;
 import java.util.List;
 
-import edu.jhuapl.sbmt.stateHistory.model.stateHistory.StateHistoryCollection;
+import edu.jhuapl.saavtk.color.provider.ColorProvider;
+import edu.jhuapl.saavtk.color.provider.ConstColorProvider;
+import edu.jhuapl.saavtk.gui.dialog.ColorChooser;
+import edu.jhuapl.sbmt.stateHistory.model.interfaces.StateHistory;
+import edu.jhuapl.sbmt.stateHistory.rendering.model.StateHistoryRendererManager;
 
 import glum.gui.action.PopAction;
 
@@ -12,22 +17,17 @@ import glum.gui.action.PopAction;
  *
  * @author steelrj1
  */
-/**
- * @author steelrj1
- *
- * @param <G1>
- */
-class CustomStateHistoryColorAction<G1> extends PopAction<G1>
+class CustomStateHistoryColorAction extends PopAction<StateHistory>
 {
 	// Ref vars
-//	/**
-//	 *
-//	 */
-//	private final StateHistoryCollection refManager;
-//	/**
-//	 *
-//	 */
-//	private final Component refParent;
+	/**
+	 *
+	 */
+	private final StateHistoryRendererManager refManager;
+	/**
+	 *
+	 */
+	private final Component refParent;
 
 	/**
 	 * Standard Constructor
@@ -36,24 +36,24 @@ class CustomStateHistoryColorAction<G1> extends PopAction<G1>
 	 * @param aManager
 	 * @param aParent
 	 */
-	public CustomStateHistoryColorAction(StateHistoryCollection aManager, Component aParent)
+	public CustomStateHistoryColorAction(StateHistoryRendererManager aManager, Component aParent)
 	{
-//		refManager = aManager;
-//		refParent = aParent;
+		refManager = aManager;
+		refParent = aParent;
 	}
 
 	/**
 	 *
 	 */
 	@Override
-	public void executeAction(List<G1> aItemL)
+	public void executeAction(List<StateHistory> aItemL)
 	{
-//		Color tmpColor = refManager.getColorProviderTarget(aItemL.get(0)).getBaseColor();
-//		Color newColor = ColorChooser.showColorChooser(refParent, tmpColor);
-//		if (newColor == null)
-//			return;
-//
-//		ColorProvider tmpCP = new ConstColorProvider(newColor);
-//		refManager.installCustomColorProviders(aItemL, tmpCP, tmpCP);
+		Color tmpColor = refManager.getColorProviderForStateHistory(aItemL.get(0)).getBaseColor();
+		Color newColor = ColorChooser.showColorChooser(refParent, tmpColor);
+		if (newColor == null)
+			return;
+
+		ColorProvider tmpCP = new ConstColorProvider(newColor);
+		refManager.installCustomColorProvider(aItemL, tmpCP);
 	}
 }

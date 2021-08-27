@@ -1,21 +1,17 @@
 package edu.jhuapl.sbmt.stateHistory.controllers.viewControls;
 
-import java.awt.event.ItemEvent;
-import java.awt.event.ItemListener;
-
 import javax.swing.DefaultComboBoxModel;
 
-import edu.jhuapl.saavtk.gui.render.Renderer;
-import edu.jhuapl.saavtk.gui.render.Renderer.LightingType;
 import edu.jhuapl.sbmt.stateHistory.model.stateHistory.StateHistoryCollection;
 import edu.jhuapl.sbmt.stateHistory.model.viewOptions.RendererLookDirection;
 import edu.jhuapl.sbmt.stateHistory.model.viewOptions.StateHistoryViewOptionsModel;
 import edu.jhuapl.sbmt.stateHistory.rendering.model.StateHistoryRendererManager;
-import edu.jhuapl.sbmt.stateHistory.ui.state.version2.viewControls.StateHistoryViewOptionsPanel;
+import edu.jhuapl.sbmt.stateHistory.ui.state.viewOptions.StateHistoryViewOptionsPanel;
 
 import glum.item.ItemEventType;
 
 /**
+ * Controls the UI for the view options (look direction, lighting)
  * @author steelrj1
  *
  */
@@ -34,23 +30,6 @@ public class StateHistoryViewOptionsController
 	public StateHistoryViewOptionsController(StateHistoryRendererManager rendererManager)
 	{
 		initializeViewControlPanel(rendererManager);
-		view.getShowLightingPanel().getShowLighting().addItemListener(new ItemListener()
-		{
-			@Override
-			public void itemStateChanged(ItemEvent e)
-			{
-				boolean selected = (e.getStateChange() == ItemEvent.SELECTED);
-				if (selected)
-				{
-					rendererManager.getRenderer().setFixedLightDirection(rendererManager.getRuns().getCurrentRun().getSunPosition());
-					rendererManager.getRenderer().setLighting(LightingType.FIXEDLIGHT);
-				}
-				else
-				{
-					rendererManager.getRenderer().setLighting(LightingType.LIGHT_KIT);
-				}
-			}
-		});
 	}
 
 	/**
@@ -65,8 +44,7 @@ public class StateHistoryViewOptionsController
 				RendererLookDirection.values());
 		view = new StateHistoryViewOptionsPanel();
 		StateHistoryViewOptionsModel model = new StateHistoryViewOptionsModel();
-		StateHistoryCollection runs = rendererManager.getRuns();
-		Renderer renderer = rendererManager.getRenderer();
+		StateHistoryCollection runs = rendererManager.getHistoryCollection();
 
 		//set the model for the view options, and set the action listener
 		view.getViewOptions().setModel(comboModelView);
@@ -90,6 +68,7 @@ public class StateHistoryViewOptionsController
         rendererManager.addListener((aSource, aEventType) ->
 		{
 			if (aEventType != ItemEventType.ItemsSelected) return;
+			if (rendererManager.getHistoryCollection().getCurrentRun() == null) return;
 			rendererManager.setTimeFraction(0.0, runs.getCurrentRun());
 			RendererLookDirection lookDir = model.getRendererLookDirectionForStateHistory(runs.getCurrentRun());
 			if (lookDir == null) lookDir = RendererLookDirection.FREE_VIEW;

@@ -36,8 +36,6 @@ public class PlannedSpectrumItemHandler extends BasicItemHandler<PlannedSpectrum
 		{
 			case Show:
 				return spectrum.isShowing();
-//			case Frus:
-//				return spectrum.isFrustumShowing();
 			case Color:
 				return new ConstColorProvider(spectrum.getColor());
 			case Instrument:
@@ -46,6 +44,8 @@ public class PlannedSpectrumItemHandler extends BasicItemHandler<PlannedSpectrum
 				fmt.withZone(DateTimeZone.UTC);
 				timeString = TimeUtil.et2str(spectrum.getTime());
 				return timeString.substring(0, 23);
+			case StateHistory:
+				return spectrum.getStateHistoryMetadata().getStateHistoryName();
 			default:
 				break;
 		}
@@ -64,9 +64,6 @@ public class PlannedSpectrumItemHandler extends BasicItemHandler<PlannedSpectrum
 			case Show:
 				spectrum.setShowing((Boolean)aValue);
 				break;
-//			case Frus:
-//				spectrum.setFrustumShowing((Boolean)aValue);
-//				break;
 			case Color:
 				spectrum.setColor((Color)aValue);
 				break;

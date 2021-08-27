@@ -3,6 +3,7 @@ package edu.jhuapl.sbmt.stateHistory.model.planning.spectrometers;
 import java.awt.Color;
 
 import edu.jhuapl.sbmt.model.image.Instrument;
+import edu.jhuapl.sbmt.stateHistory.model.interfaces.IStateHistoryMetadata;
 import edu.jhuapl.sbmt.stateHistory.model.planning.PlannedInstrumentData;
 
 public class PlannedSpectrum implements PlannedInstrumentData
@@ -18,6 +19,8 @@ public class PlannedSpectrum implements PlannedInstrumentData
 	private boolean isShowing;
 
 	private boolean isFrustumShowing;
+
+	private IStateHistoryMetadata stateHistoryMetadata;
 
 	public PlannedSpectrum()
 	{
@@ -145,5 +148,21 @@ public class PlannedSpectrum implements PlannedInstrumentData
 	public Integer getCadence()
 	{
 		return cadence;
+	}
+
+	/**
+	 * @return the stateHistoryMetadata
+	 */
+	public IStateHistoryMetadata getStateHistoryMetadata()
+	{
+		return stateHistoryMetadata;
+	}
+
+	/**
+	 * @param stateHistoryMetadata the stateHistoryMetadata to set
+	 */
+	public void setStateHistoryMetadata(IStateHistoryMetadata stateHistoryMetadata)
+	{
+		this.stateHistoryMetadata = stateHistoryMetadata;
 	}
 }

@@ -11,8 +11,6 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
-import javax.swing.JToggleButton;
-import javax.swing.UIManager;
 import javax.swing.border.TitledBorder;
 import javax.swing.table.TableCellRenderer;
 
@@ -34,16 +32,10 @@ import glum.gui.panel.itemList.ItemHandler;
 import glum.gui.panel.itemList.ItemListPanel;
 import glum.gui.panel.itemList.ItemProcessor;
 import glum.gui.panel.itemList.query.QueryComposer;
-import glum.gui.table.TablePopupHandler;
 import glum.item.ItemManagerUtil;
 
 public class PlannedImageTableView extends JPanel
 {
-	/**
-	 * JButton to load planned image from file
-	 */
-	private JButton loadPlannedImageButton;
-
     /**
      * JButton to remove planned image from table
      */
@@ -55,11 +47,6 @@ public class PlannedImageTableView extends JPanel
     private JButton showPlannedImageButton;
 
     /**
-     * JButton to save planned image to file
-     */
-    private JButton savePlannedImageButton;
-
-    /**
      *	JTable to display loaded state histories
      */
     protected JTable table;
@@ -69,7 +56,7 @@ public class PlannedImageTableView extends JPanel
      */
     private JButton selectAllB, selectInvertB, selectNoneB;
 
-    private JToggleButton syncWithTimelineButton;
+//    private JToggleButton syncWithTimelineButton;
 
     /**
      * The collection of loaded planned image objects
@@ -147,17 +134,10 @@ public class PlannedImageTableView extends JPanel
 //		StateHistoryPopupMenu stateHistoryPopupMenu = StateHistoryGuiUtil.formStateHistoryFileSpecPopupMenu(plannedImageCollection, this);
 
     	// Table header
-		loadPlannedImageButton = GuiUtil.formButton(listener, UIManager.getIcon("FileView.directoryIcon"));
-		loadPlannedImageButton.setToolTipText(ToolTipUtil.getItemLoad());
-
 		processingLabel = new JLabel("Ready.");
 
-		syncWithTimelineButton = GuiUtil.formToggleButton(listener, IconUtil.getItemSyncFalse(), IconUtil.getItemSyncTrue());
-		syncWithTimelineButton.setToolTipText("Sync Visibility with Time slider");
-
-//		saveStateHistoryButton = GuiUtil.formButton(listener, UIManager.getIcon("FileView.floppyDriveIcon"));
-//		saveStateHistoryButton.setToolTipText(ToolTipUtil.getItemSave());
-//		saveStateHistoryButton.setEnabled(false);
+//		syncWithTimelineButton = GuiUtil.formToggleButton(listener, IconUtil.getItemSyncFalse(), IconUtil.getItemSyncTrue());
+//		syncWithTimelineButton.setToolTipText("Sync Visibility with Time slider");
 
 		showPlannedImageButton = GuiUtil.formButton(listener, IconUtil.getItemShow());
 		showPlannedImageButton.setToolTipText(ToolTipUtil.getItemShow());
@@ -179,10 +159,9 @@ public class PlannedImageTableView extends JPanel
 		JPanel buttonPanel = new JPanel();
 		buttonPanel.setLayout(new BoxLayout(buttonPanel, BoxLayout.X_AXIS));
 
-		buttonPanel.add(loadPlannedImageButton);
 		buttonPanel.add(processingLabel);
 		buttonPanel.add(Box.createHorizontalGlue());
-		buttonPanel.add(syncWithTimelineButton);
+//		buttonPanel.add(syncWithTimelineButton);
 		buttonPanel.add(Box.createHorizontalGlue());
 		buttonPanel.add(showPlannedImageButton);
 		buttonPanel.add(hidePlannedImageButton);
@@ -195,20 +174,18 @@ public class PlannedImageTableView extends JPanel
 		// Table Content
 		QueryComposer<PlannedImageColumnLookup> tmpComposer = new QueryComposer<>();
 		tmpComposer.addAttribute(PlannedImageColumnLookup.Show, Boolean.class, "Show", null);
-//		tmpComposer.addAttribute(PlannedImageColumnLookup.Frus, Boolean.class, "Frus", null);
 		tmpComposer.addAttribute(PlannedImageColumnLookup.Color, Color.class, "Color", null);
 		tmpComposer.addAttribute(PlannedImageColumnLookup.Instrument, String.class, "Instrument", null);
 		tmpComposer.addAttribute(PlannedImageColumnLookup.ImageTime, String.class, "Image Time", null);
-
+		tmpComposer.addAttribute(PlannedImageColumnLookup.StateHistory, String.class, "History Segment", null);
 		EphemerisTimeRenderer tmpTimeRenderer = new EphemerisTimeRenderer(false);
 
 		tmpComposer.setEditor(PlannedImageColumnLookup.Show, new BooleanCellEditor());
 		tmpComposer.setRenderer(PlannedImageColumnLookup.Show, new BooleanCellRenderer());
-//		tmpComposer.setEditor(PlannedImageColumnLookup.Frus, new BooleanCellEditor());
-//		tmpComposer.setRenderer(PlannedImageColumnLookup.Frus, new BooleanCellRenderer());
 		tmpComposer.setEditor(PlannedImageColumnLookup.Color, new ColorProviderCellEditor<StateHistory>());
 		tmpComposer.setRenderer(PlannedImageColumnLookup.Color, new ColorProviderCellRenderer(false));
 		tmpComposer.setRenderer(PlannedImageColumnLookup.ImageTime, tmpTimeRenderer);
+
 
 		plannedImageTableHandler = new PlannedImageItemHandler(plannedImageCollection, tmpComposer);
 		ItemProcessor<PlannedImage> tmpIP = plannedImageCollection;
@@ -218,7 +195,7 @@ public class PlannedImageTableView extends JPanel
 		JTable plannedImageTable = plannedImageILP.getTable();
 		plannedImageTable.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
 		//TODO: Fix the popup menu
-		plannedImageTable.addMouseListener(new TablePopupHandler(plannedImageCollection, null));
+//		plannedImageTable.addMouseListener(new TablePopupHandler(plannedImageCollection, null));
 
 		return plannedImageTable;
     }
@@ -230,7 +207,7 @@ public class PlannedImageTableView extends JPanel
 	{
 		JTable tmpTable = plannedImageILP.getTable();
 		String dateTimeStr = "9999-88-88T00:00:00.000000";
-		int minW = 30;
+		int minW = 40;
 
 		ColorProvider blackCP = new ConstColorProvider(Color.BLACK);
 		Object[] nomArr = { true, /*true,*/ blackCP, dateTimeStr, dateTimeStr };
@@ -241,14 +218,6 @@ public class PlannedImageTableView extends JPanel
 			int tmpW = Math.max(minW, tmpComp.getPreferredSize().width + 1);
 			tmpTable.getColumnModel().getColumn(aCol).setPreferredWidth(tmpW + 10);
 		}
-	}
-
-	/**
-	 * @return the loadPlannedImageButton
-	 */
-	public JButton getLoadPlannedImageButton()
-	{
-		return loadPlannedImageButton;
 	}
 
 	/**
@@ -265,22 +234,6 @@ public class PlannedImageTableView extends JPanel
 	public JButton getShowPlannedImageButton()
 	{
 		return showPlannedImageButton;
-	}
-
-//	/**
-//	 * @return the savePlannedImageButton
-//	 */
-//	public JButton getSavePlannedImageButton()
-//	{
-//		return savePlannedImageButton;
-//	}
-
-	/**
-	 * @return the syncWithTimelineButton
-	 */
-	public JToggleButton getSyncWithTimelineButton()
-	{
-		return syncWithTimelineButton;
 	}
 
 	/**

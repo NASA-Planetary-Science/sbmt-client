@@ -3,6 +3,7 @@ package edu.jhuapl.sbmt.stateHistory.model.planning.lidar;
 import java.awt.Color;
 
 import edu.jhuapl.sbmt.model.image.Instrument;
+import edu.jhuapl.sbmt.stateHistory.model.interfaces.IStateHistoryMetadata;
 import edu.jhuapl.sbmt.stateHistory.model.planning.PlannedInstrumentData;
 
 public class PlannedLidarTrack implements PlannedInstrumentData
@@ -18,6 +19,8 @@ public class PlannedLidarTrack implements PlannedInstrumentData
 	private boolean isShowing = false;
 
 	private boolean isFrustumShowing = false;
+
+	private IStateHistoryMetadata stateHistoryMetadata;
 
 	public PlannedLidarTrack()
 	{
@@ -135,6 +138,22 @@ public class PlannedLidarTrack implements PlannedInstrumentData
 	public void setFrustumShowing(boolean isFrustumShowing)
 	{
 		this.isFrustumShowing = isFrustumShowing;
+	}
+
+	/**
+	 * @return the stateHistoryMetadata
+	 */
+	public IStateHistoryMetadata getStateHistoryMetadata()
+	{
+		return stateHistoryMetadata;
+	}
+
+	/**
+	 * @param stateHistoryMetadata the stateHistoryMetadata to set
+	 */
+	public void setStateHistoryMetadata(IStateHistoryMetadata stateHistoryMetadata)
+	{
+		this.stateHistoryMetadata = stateHistoryMetadata;
 	}
 
 }

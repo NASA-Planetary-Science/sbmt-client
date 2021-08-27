@@ -52,7 +52,7 @@ class SaveFileAction extends PopAction<StateHistory>
 	public SaveFileAction(StateHistoryRendererManager rendererManager, Component aParent)
 	{
 		this.rendererManager = rendererManager;
-		refManager = rendererManager.getRuns();
+		refManager = rendererManager.getHistoryCollection();
 		refParent = aParent;
 	}
 
@@ -79,14 +79,14 @@ class SaveFileAction extends PopAction<StateHistory>
 			for (StateHistory stateHistory : workS)
 			{
 				history = stateHistory;
-				StateHistoryModelIOHelper.saveIntervalToFile(refManager.getBodyName(), stateHistory, new File(targPath, stateHistory.getStateHistoryName()).getAbsolutePath());
+				StateHistoryModelIOHelper.saveIntervalToFile(refManager.getBodyName(), stateHistory, new File(targPath, stateHistory.getMetadata().getStateHistoryName()).getAbsolutePath());
 				passCnt++;
 			}
 		}
 		catch (Exception aExp)
 		{
 			String errMsg = "Failed to save " + (workS.size() - passCnt) + "files. Failed on state history file: ";
-			errMsg += history.getStateHistoryName();
+			errMsg += history.getMetadata().getStateHistoryName();
 			JOptionPane.showMessageDialog(rootComp, errMsg, "Error Saving State History Files", JOptionPane.ERROR_MESSAGE);
 			aExp.printStackTrace();
 		}

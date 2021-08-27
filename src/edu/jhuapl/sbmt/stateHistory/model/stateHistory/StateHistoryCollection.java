@@ -3,7 +3,9 @@ package edu.jhuapl.sbmt.stateHistory.model.stateHistory;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 import java.util.Vector;
+import java.util.stream.Collectors;
 
 import com.google.common.collect.ImmutableList;
 
@@ -85,7 +87,7 @@ public class StateHistoryCollection /*extends SaavtkItemManager<StateHistory> im
 	public void addRunToList(StateHistory run)
 	{
 		simRuns.add(run);
-		keys.add(run.getKey());
+		keys.add(run.getMetadata().getKey());
 		this.currentRun = run;
 	}
 
@@ -95,7 +97,7 @@ public class StateHistoryCollection /*extends SaavtkItemManager<StateHistory> im
 	public void removeRunFromList(StateHistory run)
 	{
 		simRuns.remove(run);
-		keys.remove(run.getKey());
+		keys.remove(run.getMetadata().getKey());
 	}
 
 	/**
@@ -104,10 +106,15 @@ public class StateHistoryCollection /*extends SaavtkItemManager<StateHistory> im
 	 */
 	public void addRun(StateHistory run)
 	{
-		availableFOVs.clear();
-		if (run.getPointingProvider() != null)
-			Arrays.stream(run.getPointingProvider().getInstrumentNames()).forEach(inst -> availableFOVs.add(inst));
+		updateCurrentFOVs(run);
 		this.currentRun = run;
+	}
+
+	private void updateCurrentFOVs(StateHistory run)
+	{
+		availableFOVs.clear();
+		if (run.getLocationProvider().getPointingProvider() != null)
+			Arrays.stream(run.getLocationProvider().getPointingProvider().getInstrumentNames()).forEach(inst -> availableFOVs.add(inst));
 	}
 
 
@@ -117,7 +124,7 @@ public class StateHistoryCollection /*extends SaavtkItemManager<StateHistory> im
 	public Double getPeriod()
 	{
 		if (currentRun != null)
-			return currentRun.getTimeWindow();
+			return currentRun.getMetadata().getTimeWindow();
 		else
 			return 0.0;
 	}
@@ -173,6 +180,7 @@ public class StateHistoryCollection /*extends SaavtkItemManager<StateHistory> im
 	public void retrieve(Metadata source)
 	{
 		simRuns = source.get(stateHistoryKey);
+		simRuns = simRuns.stream().filter(Objects::nonNull).collect(Collectors.toList());
 	}
 
 	/**
@@ -197,6 +205,8 @@ public class StateHistoryCollection /*extends SaavtkItemManager<StateHistory> im
 	public void setCurrentRun(StateHistory currentRun)
 	{
 		this.currentRun = currentRun;
+		if (currentRun == null) return;
+		updateCurrentFOVs(currentRun);
 	}
 
 	/**

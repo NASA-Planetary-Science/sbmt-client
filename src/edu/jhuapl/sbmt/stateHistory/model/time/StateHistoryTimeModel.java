@@ -50,6 +50,11 @@ public class StateHistoryTimeModel
 		fireTimeChangedListeners();
 	}
 
+	public double getTimeFraction()
+	{
+		return currentTimeFraction;
+	}
+
 	public void setTimeFraction(double fraction)
 	{
 		if ((Double.compare(currentTimeFraction, fraction) == 0) && (fraction != 0.0))

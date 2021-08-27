@@ -25,8 +25,14 @@ class StateHistoryRenderProperties
 	boolean isVisible;
 	/** Defines whether the installed ColorProvider is a custom ColorProvider */
 	boolean isCustomCP;
-	/** Defines the ColorProvider associated with a source points. */
-	ColorProvider srcCP;
+	/** Defines the Simple ColorProvider associated with a state history */
+	ColorProvider simpleCP;
+	/** Defines the Feature based ColorProvider associated with a state history */
+	ColorProvider featureCP;
+	/** Defines the active ColorProvider associated with a state history */
+	ColorProvider activeCP;
+	ColorProvider lastActive;
+	ColorProvider customCP;
 
 	/**
 	 * Standard Constructor
@@ -35,6 +41,7 @@ class StateHistoryRenderProperties
 	{
 		isVisible = true;
 		isCustomCP = false;
-		srcCP = new ConstColorProvider(new Color(0.0f, 1.0f, 1.0f));
+		activeCP = new ConstColorProvider(new Color(0.0f, 1.0f, 1.0f));
+		simpleCP = new ConstColorProvider(new Color(0.0f, 1.0f, 1.0f));
 	}
 }

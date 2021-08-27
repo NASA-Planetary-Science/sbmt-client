@@ -5,7 +5,8 @@ import java.util.List;
 
 import javax.swing.JMenuItem;
 
-import edu.jhuapl.sbmt.stateHistory.model.stateHistory.StateHistoryCollection;
+import edu.jhuapl.sbmt.stateHistory.model.interfaces.StateHistory;
+import edu.jhuapl.sbmt.stateHistory.rendering.model.StateHistoryRendererManager;
 
 import glum.gui.action.PopAction;
 
@@ -14,18 +15,13 @@ import glum.gui.action.PopAction;
  *
  * @author steelrj1
  */
-/**
- * @author steelrj1
- *
- * @param <G1>
- */
-class ResetStateHistoryColorAction<G1> extends PopAction<G1>
+class ResetStateHistoryColorAction extends PopAction<StateHistory>
 {
 	// Ref vars
-//	/**
-//	 *
-//	 */
-//	private final StateHistoryCollection refManager;
+	/**
+	 *
+	 */
+	private final StateHistoryRendererManager refManager;
 
 	/**
 	 * Standard Constructor
@@ -33,33 +29,33 @@ class ResetStateHistoryColorAction<G1> extends PopAction<G1>
 	/**
 	 * @param aManager
 	 */
-	public ResetStateHistoryColorAction(StateHistoryCollection aManager)
+	public ResetStateHistoryColorAction(StateHistoryRendererManager aManager)
 	{
-//		refManager = aManager;
+		refManager = aManager;
 	}
 
 	/**
 	 *
 	 */
 	@Override
-	public void executeAction(List<G1> aItemL)
+	public void executeAction(List<StateHistory> aItemL)
 	{
-//		refManager.clearCustomColorProvider(aItemL);
+		refManager.clearCustomColor(aItemL);
 	}
 
 	/**
 	 *
 	 */
 	@Override
-	public void setChosenItems(Collection<G1> aItemC, JMenuItem aAssocMI)
+	public void setChosenItems(Collection<StateHistory> aItemC, JMenuItem aAssocMI)
 	{
 		super.setChosenItems(aItemC, aAssocMI);
 
-//		// Determine if any of the lidar colors can be reset
-//		boolean isResetAvail = false;
-//		for (G1 aItem : aItemC)
-//			isResetAvail |= refManager.hasCustomColorProvider(aItem) == true;
-//
-//		aAssocMI.setEnabled(isResetAvail);
+//		// Determine if any of the state history colors can be reset
+		boolean isResetAvail = false;
+		for (StateHistory aItem : aItemC)
+			isResetAvail |= refManager.hasCustomColor(aItem) == true;
+
+		aAssocMI.setEnabled(isResetAvail);
 	}
 }

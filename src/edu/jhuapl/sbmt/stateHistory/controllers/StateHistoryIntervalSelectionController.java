@@ -1,5 +1,6 @@
 package edu.jhuapl.sbmt.stateHistory.controllers;
 
+import java.awt.BorderLayout;
 import java.io.File;
 import java.io.IOException;
 
@@ -15,16 +16,16 @@ import edu.jhuapl.saavtk.gui.dialog.CustomFileChooser;
 import edu.jhuapl.sbmt.client.SmallBodyModel;
 import edu.jhuapl.sbmt.stateHistory.model.DefaultStateHistoryModelChangedListener;
 import edu.jhuapl.sbmt.stateHistory.model.StateHistoryModel;
+import edu.jhuapl.sbmt.stateHistory.model.StateHistorySourceType;
 import edu.jhuapl.sbmt.stateHistory.model.interfaces.StateHistory;
 import edu.jhuapl.sbmt.stateHistory.model.io.SpiceKernelIngestor;
-import edu.jhuapl.sbmt.stateHistory.model.io.SpiceKernelLoadStatusListener;
 import edu.jhuapl.sbmt.stateHistory.model.io.SpiceKernelNotFoundException;
 import edu.jhuapl.sbmt.stateHistory.model.io.StateHistoryIOException;
 import edu.jhuapl.sbmt.stateHistory.model.io.StateHistoryModelIOHelper;
 import edu.jhuapl.sbmt.stateHistory.model.stateHistory.StateHistoryKey;
 import edu.jhuapl.sbmt.stateHistory.rendering.model.StateHistoryRendererManager;
-import edu.jhuapl.sbmt.stateHistory.ui.state.version2.StateHistoryIntervalGenerationPanel;
-import edu.jhuapl.sbmt.stateHistory.ui.state.version2.table.StateHistoryTableView;
+import edu.jhuapl.sbmt.stateHistory.ui.state.intervalGeneration.StateHistoryIntervalGenerationPanel;
+import edu.jhuapl.sbmt.stateHistory.ui.state.intervalSelection.table.StateHistoryTableView;
 
 /**
  * Controller that governs the "Available Files" panel for the StateHistory tab
@@ -35,7 +36,6 @@ public class StateHistoryIntervalSelectionController
 {
     private StateHistoryTableView view;
     private StateHistoryIntervalGenerationController intervalGenerationController;
-//    private ObservationPlanningViewControlsController viewControlsController;
 
 	/**
 	 * @param historyModel
@@ -62,8 +62,8 @@ public class StateHistoryIntervalSelectionController
         	if (file == null) return;
         	try
 			{
-        		historyFromFile = StateHistoryModelIOHelper.loadStateHistoryFromFile(file, bodyModel.getModelName(), new StateHistoryKey(historyModel.getRuns()));
-        		historyFromFile.reloadPointingProvider();
+        		historyFromFile = StateHistoryModelIOHelper.loadStateHistoryFromFile(file, bodyModel.getModelName(), new StateHistoryKey(historyModel.getHistoryCollection()));
+        		historyFromFile.getLocationProvider().reloadPointingProvider();
         		historyModel.addInterval(historyFromFile);
 			}
         	catch (StateHistoryIOException shioe)
@@ -71,8 +71,8 @@ public class StateHistoryIntervalSelectionController
         		if (shioe.getCause() instanceof SpiceKernelNotFoundException)
         		{
 					String[] options = {"Yes", "No"};
-					int result = JOptionPane.showOptionDialog(null, "Cannot find metakernel " + FilenameUtils.getBaseName(historyFromFile.getSourceFile())
-																	+ " at specified location for state history " + historyFromFile.getStateHistoryName()
+					int result = JOptionPane.showOptionDialog(null, "Cannot find metakernel " + FilenameUtils.getBaseName(historyFromFile.getLocationProvider().getSourceFile())
+																	+ " at specified location for state history " + historyFromFile.getMetadata().getStateHistoryName()
 																	+ ". Would you like to choose a new file?  Otherwise the state history will be removed.", "Metakernel not found",
 																	JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE, null, options, options[0]);
 
@@ -84,16 +84,9 @@ public class StateHistoryIntervalSelectionController
 						SpiceKernelIngestor kernelIngestor = new SpiceKernelIngestor(historyModel.getCustomDataFolder());
 						String newKernelLocationAfterIngestion;
 						try {
-							newKernelLocationAfterIngestion = kernelIngestor.ingestMetaKernelToCache(selectedMetakernel.getAbsolutePath(), new SpiceKernelLoadStatusListener() {
-
-								@Override
-								public void percentageLoaded(double percentage) {
-//									progressBar.setValue((int)percentage);
-
-								}
-							});
-							historyFromFile.setSourceFile(newKernelLocationAfterIngestion);
-							historyFromFile.reloadPointingProvider();
+							newKernelLocationAfterIngestion = kernelIngestor.ingestMetaKernelToCache(selectedMetakernel.getAbsolutePath(), null);
+							historyFromFile.getLocationProvider().setSourceFile(newKernelLocationAfterIngestion);
+							historyFromFile.getLocationProvider().reloadPointingProvider();
 			        		historyModel.addInterval(historyFromFile);
 						} catch (StateHistoryIOException | IOException e1) {
 							// TODO Auto-generated catch block
@@ -184,7 +177,7 @@ public class StateHistoryIntervalSelectionController
            		if (genPanel.isEditMode())
                	{
 	        		genPanel.updateStateHistory();
-	        		rendererManager.getRuns().fireHistorySegmentUpdatedListeners(history);
+	        		rendererManager.getHistoryCollection().fireHistorySegmentUpdatedListeners(history);
 	        		SwingUtilities.invokeLater(new Runnable()
 					{
 						@Override
@@ -208,6 +201,7 @@ public class StateHistoryIntervalSelectionController
         view.getAddStateHistoryButton().addActionListener(e ->
         {
         	JFrame frame = new JFrame("Generate New Interval...");
+        	frame.add(intervalGenerationController.getView().getToolbar(), BorderLayout.NORTH);
         	frame.add(intervalGenerationController.getView());
         	frame.pack();
         	frame.setVisible(true);
@@ -235,7 +229,6 @@ public class StateHistoryIntervalSelectionController
         rendererManager.addPropertyChangeListener(evt ->
 		{
 			view.getTable().repaint();
-			rendererManager.getRenderer().getRenderWindowPanel().resetCameraClippingRange();
 			updateButtonState(rendererManager);
 		});
 
@@ -255,12 +248,12 @@ public class StateHistoryIntervalSelectionController
 		boolean allShown = true;
 		for (StateHistory history : selectedItems)
 		{
-			if (history.isMapped() == false) allMapped = false;
-			if (history.isVisible() == false) allShown = false;
+			if (history.getMetadata().isMapped() == false) allMapped = false;
+			if (history.getMetadata().isVisible() == false) allShown = false;
+			view.getEditStateHistoryButton().setEnabled((selectedItems.size() == 1) && (history.getMetadata().getType() != StateHistorySourceType.PREGEN));
 		}
 		view.getHideStateHistoryButton().setEnabled((selectedItems.size() > 0) && allShown && allMapped);
 		view.getShowStateHistoryButton().setEnabled((selectedItems.size() > 0) && !allShown && allMapped);
-		view.getEditStateHistoryButton().setEnabled(selectedItems.size() == 1);
 		view.getDeleteStateHistoryButton().setEnabled(selectedItems.size() > 0);
 	}
 

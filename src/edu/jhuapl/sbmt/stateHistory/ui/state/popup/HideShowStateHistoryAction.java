@@ -52,7 +52,7 @@ class HideShowStateHistoryAction extends PopAction<StateHistory>
 		// Determine if all tracks are shown
 		boolean isAllShown = true;
 		for (StateHistory aItem : aItemL)
-			isAllShown &= aItem.isVisible() == true;
+			isAllShown &= aItem.getMetadata().isVisible() == true;
 
 		// Update the tracks visibility based on whether they are all shown
 		boolean tmpBool = isAllShown == false;
@@ -72,7 +72,7 @@ class HideShowStateHistoryAction extends PopAction<StateHistory>
 		// Determine if all items are shown
 		boolean isAllShown = true;
 		for (StateHistory aItem : aItemC)
-			isAllShown &= aItem.isVisible() == true;
+			isAllShown &= aItem.getMetadata().isVisible() == true;
 
 		// Determine the display string
 		String displayStr = "Hide " + itemLabelStr;

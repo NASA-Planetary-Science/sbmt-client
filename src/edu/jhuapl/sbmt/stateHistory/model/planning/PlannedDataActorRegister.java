@@ -17,7 +17,7 @@ public class PlannedDataActorRegister
 
 	public PlannedDataActorRegister()
 	{
-		PlannedDataActorFactory.registerModel("MSI", new IPlanningDataActorBuilder<PlannedInstrumentData>()
+		PlannedDataActorFactory.registerInstrument(new String[]{"MSI"}, new IPlanningDataActorBuilder<PlannedInstrumentData>()
 		{
 
 			@Override
@@ -26,16 +26,15 @@ public class PlannedDataActorRegister
 				PerspectiveImageFootprint footprint = new PerspectiveImageFootprint();
 				footprint.setTime(data.getTime());
 				footprint.setInstrumentName(data.getInstrumentName());
-				footprint.setColor(Color.blue);
 				footprint.setSmallBodyModel(model);
 				footprint.setBoundaryVisible(true);
-
 				return footprint;
 
 			}
-		});
+		},
+		Color.blue);
 
-		PlannedDataActorFactory.registerModel("POLYCAM", new IPlanningDataActorBuilder<PlannedInstrumentData>()
+		PlannedDataActorFactory.registerInstrument(new String[]{"ORX_OCAMS_POLYCAM", "POLYCAM"}, new IPlanningDataActorBuilder<PlannedInstrumentData>()
 		{
 
 			@Override
@@ -44,13 +43,68 @@ public class PlannedDataActorRegister
 				PerspectiveImageFootprint footprint = new PerspectiveImageFootprint();
 				footprint.setTime(data.getTime());
 				footprint.setInstrumentName(data.getInstrumentName());
-				footprint.setColor(Color.blue);
 				footprint.setSmallBodyModel(model);
 				return footprint;
 			}
-		});
+		}, Color.blue);
 
-		PlannedDataActorFactory.registerModel("NIS", new IPlanningDataActorBuilder<PlannedInstrumentData>()
+		PlannedDataActorFactory.registerInstrument(new String[]{"ORX_OCAMS_MAPCAM", "MAPCAM"}, new IPlanningDataActorBuilder<PlannedInstrumentData>()
+		{
+
+			@Override
+			public PlannedDataActor buildActorForPlanningData(PlannedInstrumentData data, SmallBodyModel model)
+			{
+				PerspectiveImageFootprint footprint = new PerspectiveImageFootprint();
+				footprint.setTime(data.getTime());
+				footprint.setInstrumentName(data.getInstrumentName());
+				footprint.setSmallBodyModel(model);
+				return footprint;
+			}
+		}, Color.green);
+
+		PlannedDataActorFactory.registerInstrument(new String[]{"ORX_NAVCAM1", "NAVCAM1"}, new IPlanningDataActorBuilder<PlannedInstrumentData>()
+		{
+
+			@Override
+			public PlannedDataActor buildActorForPlanningData(PlannedInstrumentData data, SmallBodyModel model)
+			{
+				PerspectiveImageFootprint footprint = new PerspectiveImageFootprint();
+				footprint.setTime(data.getTime());
+				footprint.setInstrumentName(data.getInstrumentName());
+				footprint.setSmallBodyModel(model);
+				return footprint;
+			}
+		}, Color.orange);
+
+		PlannedDataActorFactory.registerInstrument(new String[]{"ORX_NAVCAM2", "NAVCAM2"}, new IPlanningDataActorBuilder<PlannedInstrumentData>()
+		{
+
+			@Override
+			public PlannedDataActor buildActorForPlanningData(PlannedInstrumentData data, SmallBodyModel model)
+			{
+				PerspectiveImageFootprint footprint = new PerspectiveImageFootprint();
+				footprint.setTime(data.getTime());
+				footprint.setInstrumentName(data.getInstrumentName());
+				footprint.setSmallBodyModel(model);
+				return footprint;
+			}
+		}, Color.orange);
+
+		PlannedDataActorFactory.registerInstrument(new String[]{"ORX_OCAMS_SAMCAM", "SAMCAM"}, new IPlanningDataActorBuilder<PlannedInstrumentData>()
+		{
+
+			@Override
+			public PlannedDataActor buildActorForPlanningData(PlannedInstrumentData data, SmallBodyModel model)
+			{
+				PerspectiveImageFootprint footprint = new PerspectiveImageFootprint();
+				footprint.setTime(data.getTime());
+				footprint.setInstrumentName(data.getInstrumentName());
+				footprint.setSmallBodyModel(model);
+				return footprint;
+			}
+		}, Color.green);
+
+		PlannedDataActorFactory.registerInstrument(new String[]{"NIS"}, new IPlanningDataActorBuilder<PlannedInstrumentData>()
 		{
 
 			@Override
@@ -60,9 +114,9 @@ public class PlannedDataActorRegister
 //				PlannedSpectrumActor actor = new PlannedSpectrumActor(data, model/*, positionOrientationManager*/);
 //				return actor;
 			}
-		});
+		}, Color.blue);
 
-//		PlannedDataActorFactory.registerModel("OTES", new IPlanningDataActorBuilder<PlannedInstrumentData>()
+//		PlannedDataActorFactory.registerInstrument(new String[]{"OTES"}, new IPlanningDataActorBuilder<PlannedInstrumentData>()
 //		{
 //
 //			@Override
@@ -71,13 +125,12 @@ public class PlannedDataActorRegister
 //				PerspectiveImageFootprint footprint = new PerspectiveImageFootprint();
 //				footprint.setTime(data.getTime());
 //				footprint.setInstrumentName(data.getInstrumentName());
-//				footprint.setColor(Color.blue);
 //				footprint.setSmallBodyModel(model);
 //				return footprint;
 //			}
-//		});
+//		}, Color.green);
 
-		PlannedDataActorFactory.registerModel("OLAHIGH", new IPlanningDataActorBuilder<PlannedInstrumentData>()
+		PlannedDataActorFactory.registerInstrument(new String[]{"OLAHIGH", "ORX_OLA_HIGH"}, new IPlanningDataActorBuilder<PlannedInstrumentData>()
 		{
 
 			@Override
@@ -89,15 +142,23 @@ public class PlannedDataActorRegister
 				footprint.setColor(Color.blue);
 				footprint.setSmallBodyModel(model);
 				return footprint;
-//				PlannedLidarActor lidarActor = new PlannedLidarActor((PlannedLidarTrack)data);
-//				lidarActor.setInstrumentName(data.getInstrumentName());
-////				lidarActor.setTime(data.getTime());
-//				return lidarActor;
-////				return null;
-////				PlannedSpectrumActor actor = new PlannedSpectrumActor(data, model/*, positionOrientationManager*/);
-////				return actor;
 			}
-		});
+		}, Color.blue);
+
+		PlannedDataActorFactory.registerInstrument(new String[]{"OLALOW", "ORX_OLA_LOW"}, new IPlanningDataActorBuilder<PlannedInstrumentData>()
+		{
+
+			@Override
+			public PlannedDataActor buildActorForPlanningData(PlannedInstrumentData data, SmallBodyModel model)
+			{
+				PerspectiveImageFootprint footprint = new PerspectiveImageFootprint();
+				footprint.setTime(data.getTime());
+				footprint.setInstrumentName(data.getInstrumentName());
+				footprint.setColor(Color.blue);
+				footprint.setSmallBodyModel(model);
+				return footprint;
+			}
+		}, Color.blue);
 	}
 
 //	public void setPositionOrientationManager(IPositionOrientation positionOrientationManager)

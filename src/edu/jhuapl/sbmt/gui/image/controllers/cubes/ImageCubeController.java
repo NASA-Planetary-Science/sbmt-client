@@ -17,8 +17,8 @@ import javax.swing.event.TableModelListener;
 import javax.swing.table.DefaultTableModel;
 
 import edu.jhuapl.saavtk.gui.render.Renderer;
-import edu.jhuapl.saavtk.gui.render.Renderer.LightingType;
 import edu.jhuapl.saavtk.util.Properties;
+import edu.jhuapl.saavtk.view.light.LightUtil;
 import edu.jhuapl.sbmt.client.SbmtInfoWindowManager;
 import edu.jhuapl.sbmt.client.SbmtSpectrumWindowManager;
 import edu.jhuapl.sbmt.gui.image.controllers.StringRenderer;
@@ -304,7 +304,7 @@ public class ImageCubeController
                 else
                 {
                     cubeModel.unloadImage(key);
-                    model.getRenderer().setLighting(LightingType.LIGHT_KIT);
+                    LightUtil.switchToLightKit(model.getRenderer());
                 }
             }
             else if (e.getColumn() == panel.getShowFootprintColumnIndex())

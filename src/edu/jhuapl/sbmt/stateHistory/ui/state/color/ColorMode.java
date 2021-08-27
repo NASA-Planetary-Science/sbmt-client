@@ -11,10 +11,12 @@ public enum ColorMode
 {
 //	AutoHue,
 
+	Simple,
+
 	ColorMap,
 
 //	Randomize,
 
-	Simple,
+
 
 }

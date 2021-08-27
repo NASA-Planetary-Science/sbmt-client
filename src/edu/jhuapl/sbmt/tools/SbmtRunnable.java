@@ -17,6 +17,7 @@ import edu.jhuapl.saavtk.gui.MainWindow;
 import edu.jhuapl.saavtk.util.Configuration;
 import edu.jhuapl.saavtk.util.Configuration.ReleaseType;
 import edu.jhuapl.saavtk.util.Debug;
+import edu.jhuapl.saavtk.util.DownloadableFileManager;
 import edu.jhuapl.saavtk.util.FileCache;
 import edu.jhuapl.saavtk.util.NativeLibraryLoader;
 import edu.jhuapl.sbmt.client.SbmtMainWindow;
@@ -59,6 +60,17 @@ public class SbmtRunnable implements Runnable
 			    MainWindow frame = new SbmtMainWindow(initialShapeModelPath);
 			    MainWindow.setMainWindow(frame);
 
+                // Set this before starting the access monitor, whether or not
+                // profiling will be enabled.
+			    DownloadableFileManager.setProfileAreaPrefix("baseline");
+
+                // Uncomment this line to enable profiling. Because this clears
+                // out the profiling results area, it will naturally sync up all
+                // clients running on the same host to start profiling after the
+                // last copy of the client starts. Need to call this before
+                // starting access monitor to profile all transitions.
+                // FileCache.instance().enableProfiling();
+
 			    FileCache.instance().startAccessMonitor();
 
                 SwingWorker<Void, Void> swingWorker = new SwingWorker<Void, Void>() {
@@ -85,6 +97,7 @@ public class SbmtRunnable implements Runnable
                     {
                         if (!isCancelled())
                         {
+
                             frame.pack();
                             frame.setVisible(true);
                             System.out.println("\nSBMT Ready");
@@ -155,7 +168,7 @@ public class SbmtRunnable implements Runnable
 			else
 			{
 				System.out.println("\nNo user name and password entered. Some models may not be available.");
-				System.out.println("You may update your user name and pasword on the Body -> Update Password menu.");
+				System.out.println("You may update your user name and password on the Body -> Update Password menu.");
 			}
 		}
 		System.out.println("\nStoring application data in " + Configuration.getApplicationDataDir());

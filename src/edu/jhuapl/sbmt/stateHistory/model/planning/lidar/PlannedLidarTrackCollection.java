@@ -1,7 +1,6 @@
 package edu.jhuapl.sbmt.stateHistory.model.planning.lidar;
 
 import java.beans.PropertyChangeEvent;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -20,7 +19,6 @@ import edu.jhuapl.sbmt.lidar.LidarPoint;
 import edu.jhuapl.sbmt.lidar.LidarTrack;
 import edu.jhuapl.sbmt.lidar.LidarTrackManager;
 import edu.jhuapl.sbmt.lidar.util.LidarTrackUtil;
-import edu.jhuapl.sbmt.stateHistory.model.io.PlannedLidarTrackIOHelper;
 import edu.jhuapl.sbmt.stateHistory.model.planning.BasePlannedDataCollection;
 import edu.jhuapl.sbmt.stateHistory.rendering.PlannedDataProperties;
 import edu.jhuapl.sbmt.stateHistory.rendering.model.StateHistoryPositionCalculator;
@@ -34,15 +32,14 @@ public class PlannedLidarTrackCollection extends BasePlannedDataCollection<Plann
 
 	private List<LidarTrack> currentTracks;
 
-	private double time;
-
 	private double minTime = Double.MAX_VALUE, maxTime = Double.MIN_VALUE;
 
-	public PlannedLidarTrackCollection(ModelManager modelManager, SmallBodyModel smallBodyModel, Renderer renderer)
+
+	public PlannedLidarTrackCollection(String filename, ModelManager modelManager, SmallBodyModel smallBodyModel, Renderer renderer)
 	{
 		super(smallBodyModel);
 		currentTracks = new ArrayList<LidarTrack>();
-
+		this.filename = filename;
 		trackManager = new LidarTrackManager(modelManager, smallBodyModel);
 		renderer.addVtkPropProvider(trackManager);
 
@@ -57,6 +54,7 @@ public class PlannedLidarTrackCollection extends BasePlannedDataCollection<Plann
 		return trackManager.getProps();
 	}
 
+
 	@Override
 	public void propertyChange(PropertyChangeEvent evt)
 	{
@@ -70,6 +68,7 @@ public class PlannedLidarTrackCollection extends BasePlannedDataCollection<Plann
 		}
 	}
 
+	@Override
 	public void updateFootprints()
 	{
 		if (time == 0) time = minTime;
@@ -122,7 +121,7 @@ public class PlannedLidarTrackCollection extends BasePlannedDataCollection<Plann
 		this.pcs.firePropertyChange("PLANNED_LIDAR_CHANGED", null, null);
 	}
 
-	public void setVisibility(PlannedLidarTrack track, boolean visibility)
+	private void setVisibility(PlannedLidarTrack track, boolean visibility)
 	{
 		int index = plannedData.indexOf(track);
 		LidarTrack lidarTrack = currentTracks.get(index);
@@ -137,13 +136,4 @@ public class PlannedLidarTrackCollection extends BasePlannedDataCollection<Plann
 		this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
 	}
 
-	public void loadPlannedLidarTracksFromFileWithName(String filename, ProgressStatusListener listener, Runnable completion) throws IOException
-	{
-		PlannedLidarTrackIOHelper.loadPlannedLidarTracksFromFileWithName(filename, this, listener, completion);
-	}
-
-	public void savePlannedLidarTracksToFileWithName(String filename) throws IOException
-	{
-		PlannedLidarTrackIOHelper.savePlannedLidarTracksToFileWithName(filename, this);
-	}
 }

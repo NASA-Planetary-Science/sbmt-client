@@ -55,9 +55,9 @@ import edu.jhuapl.sbmt.spectrum.model.core.SpectrumInstrumentMetadata;
 import edu.jhuapl.sbmt.spectrum.model.core.search.SpectrumSearchSpec;
 import edu.jhuapl.sbmt.spectrum.model.io.SpectrumInstrumentMetadataIO;
 import edu.jhuapl.sbmt.spectrum.model.key.CustomSpectrumKey;
-import edu.jhuapl.sbmt.stateHistory.model.stateHistory.SpiceStateHistory;
-import edu.jhuapl.sbmt.stateHistory.model.stateHistory.StandardStateHistory;
 import edu.jhuapl.sbmt.stateHistory.model.stateHistory.StateHistoryKey;
+import edu.jhuapl.sbmt.stateHistory.model.stateHistory.spice.SpiceStateHistory;
+import edu.jhuapl.sbmt.stateHistory.model.stateHistory.standard.StandardStateHistory;
 import edu.jhuapl.sbmt.tools.SbmtRunnable;
 
 /**
@@ -284,7 +284,7 @@ public class SbmtMultiMissionTool
 
         Mission mission = getMission();
 
-        String rootUrl = "http://sbmt.jhuapl.edu/sbmt/prod";
+        String rootUrl = "https://sbmt.jhuapl.edu/sbmt/prod";
 
         switch (mission)
         {
@@ -294,7 +294,7 @@ public class SbmtMultiMissionTool
         case STAGE_APL_INTERNAL:
         case STAGE_PUBLIC_RELEASE:
         case DART_STAGE:
-            rootUrl = "http://sbmt-web.jhuapl.edu/internal/multi-mission/stage";
+            rootUrl = "https://sbmt.jhuapl.edu/internal/multi-mission/stage";
             break;
         case TEST_APL_INTERNAL:
         case TEST_PUBLIC_RELEASE:
@@ -388,7 +388,6 @@ public class SbmtMultiMissionTool
 			Configuration.setAppTitle("SBMT/Hayabusa2-Dev"/* + "(" + compileDateString + ")"*/);
             // Configuration.setDatabaseSuffix("_test");
 			break;
-//		case HAYABUSA2_STAGE:
 //			Configuration.setAppName("sbmthyb2-stage");
 //			Configuration.setCacheVersion("");
 //			Configuration.setAppTitle("SBMT/Hayabusa2-Stage");

@@ -25,6 +25,11 @@ public enum PlannedImageColumnLookup
 	/**
 	 *
 	 */
-	ImageTime
+	ImageTime,
+
+	/**
+	 *
+	 */
+	StateHistory;
 
 }

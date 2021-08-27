@@ -1,7 +1,6 @@
 package edu.jhuapl.sbmt.gui.image.ui.images;
 
 import java.awt.Component;
-import java.awt.LayoutManager;
 
 import javax.swing.Box;
 import javax.swing.BoxLayout;
@@ -28,20 +27,24 @@ public class ImageResultsTableView extends JPanel
     private JButton saveSelectedImageListButton;
     private JButton viewResultsGalleryButton;
     private ImagePopupMenu imagePopupMenu;
-    private boolean enableGallery;
     String[] columnNames;
     protected ImageResultsTable resultList;
     private JLabel resultsLabel;
     private JLabel lblNumberBoundaries;
     protected JPanel buttonPanel3;
+    private final boolean enableGallery;
 
     /**
      * @wbp.parser.constructor
      */
     public ImageResultsTableView(ImagingInstrument instrument, ImageCollection imageCollection, ImagePopupMenu imagePopupMenu)
     {
+        super();
+
         this.imagePopupMenu = imagePopupMenu;
         setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
+
+        this.enableGallery = instrument != null && instrument.getSearchQuery().getGalleryPath() != null;
 
         init();
     }
@@ -114,22 +117,11 @@ public class ImageResultsTableView extends JPanel
 
         buttonPanel3 = new JPanel();
         add(buttonPanel3);
-        buttonPanel3.add(viewResultsGalleryButton);
-    }
 
-    public ImageResultsTableView(LayoutManager layout)
-    {
-        super(layout);
-    }
-
-    public ImageResultsTableView(boolean isDoubleBuffered)
-    {
-        super(isDoubleBuffered);
-    }
-
-    public ImageResultsTableView(LayoutManager layout, boolean isDoubleBuffered)
-    {
-        super(layout, isDoubleBuffered);
+        if (enableGallery)
+        {
+            buttonPanel3.add(viewResultsGalleryButton);
+        }
     }
 
     public JTable getResultList()
@@ -195,16 +187,6 @@ public class ImageResultsTableView extends JPanel
     public ImagePopupMenu getImagePopupMenu()
     {
         return imagePopupMenu;
-    }
-
-    public boolean isEnableGallery()
-    {
-        return enableGallery;
-    }
-
-    public void setEnableGallery(boolean enableGallery)
-    {
-        this.enableGallery = enableGallery;
     }
 
     public void setNumberOfBoundariesComboBox(JComboBox<Integer> numberOfBoundariesComboBox)

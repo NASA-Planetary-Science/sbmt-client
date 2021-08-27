@@ -9,6 +9,7 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
 import edu.jhuapl.saavtk.util.ProgressStatusListener;
+import edu.jhuapl.sbmt.stateHistory.model.interfaces.IStateHistoryMetadata;
 import edu.jhuapl.sbmt.stateHistory.model.planning.lidar.PlannedLidarTrack;
 import edu.jhuapl.sbmt.stateHistory.model.planning.lidar.PlannedLidarTrackCollection;
 import edu.jhuapl.sbmt.util.TimeUtil;
@@ -23,7 +24,7 @@ public class PlannedLidarTrackIOHelper
 	 * @param collection
 	 * @throws IOException
 	 */
-	public static void loadPlannedLidarTracksFromFileWithName(String filename, PlannedLidarTrackCollection collection, ProgressStatusListener listener, Runnable completion) throws IOException
+	public static void loadPlannedLidarTracksFromFileWithName(String filename, IStateHistoryMetadata metadata, PlannedLidarTrackCollection collection, ProgressStatusListener listener, Runnable completion) throws IOException
 	{
 		BufferedReader reader = new BufferedReader(new FileReader(filename));
 		String line;
@@ -37,6 +38,7 @@ public class PlannedLidarTrackIOHelper
 			double etStart = TimeUtil.str2et(parts[0]);
 			double etStop = TimeUtil.str2et(parts[1]);
 			PlannedLidarTrack plannedLidarTrack = new PlannedLidarTrack(etStart, etStop, instrumentName.toUpperCase());
+			plannedLidarTrack.setStateHistoryMetadata(metadata);
 			collection.addLidarTrackToList(plannedLidarTrack, listener);
 		}
 		reader.close();

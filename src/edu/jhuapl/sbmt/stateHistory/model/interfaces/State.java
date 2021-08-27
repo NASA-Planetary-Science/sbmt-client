@@ -76,6 +76,11 @@ public interface State
      */
     public double[] getSpacecraftZAxis();
 
+    /**
+     * @param ephemerisTime
+     */
+    public void setEphemerisTime(double ephemerisTime);
+
 //  /**
 //  * @return
 //  */

@@ -20,6 +20,7 @@ import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 
 import org.apache.commons.io.FilenameUtils;
+import org.apache.commons.math3.geometry.euclidean.threed.Vector3D;
 
 import vtk.vtkActor;
 import vtk.vtkProp;
@@ -29,7 +30,6 @@ import edu.jhuapl.saavtk.gui.dialog.CustomFileChooser;
 import edu.jhuapl.saavtk.gui.dialog.NormalOffsetChangerDialog;
 import edu.jhuapl.saavtk.gui.dialog.OpacityChanger;
 import edu.jhuapl.saavtk.gui.render.Renderer;
-import edu.jhuapl.saavtk.gui.render.Renderer.LightingType;
 import edu.jhuapl.saavtk.popup.PopupMenu;
 import edu.jhuapl.saavtk.util.ColorUtil;
 import edu.jhuapl.saavtk.util.FileCache;
@@ -731,8 +731,7 @@ public class ImageCubePopupMenu extends PopupMenu
             if (image != null)
             {
                 double[] sunDir = image.getSunVector();
-                renderer.setFixedLightDirection(sunDir);
-                renderer.setLighting(LightingType.FIXEDLIGHT);
+                renderer.setLightCfgToFixedLightAtDirection(new Vector3D(sunDir));
             }
         }
     }

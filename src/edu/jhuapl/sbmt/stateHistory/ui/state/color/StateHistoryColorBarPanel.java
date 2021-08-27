@@ -1,6 +1,5 @@
 package edu.jhuapl.sbmt.stateHistory.ui.state.color;
 
-import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 import com.google.common.collect.Range;
@@ -16,6 +15,7 @@ import edu.jhuapl.saavtk.color.table.ColorMapAttr;
 import edu.jhuapl.saavtk.feature.FeatureAttr;
 import edu.jhuapl.saavtk.feature.FeatureType;
 import edu.jhuapl.saavtk.gui.render.Renderer;
+import edu.jhuapl.sbmt.stateHistory.model.StateHistorySourceType;
 import edu.jhuapl.sbmt.stateHistory.model.interfaces.StateHistory;
 import edu.jhuapl.sbmt.stateHistory.rendering.model.StateHistoryRendererManager;
 
@@ -23,7 +23,7 @@ import glum.item.ItemEventListener;
 import glum.item.ItemEventType;
 
 /**
- * Custom {@link ColorBarPanel} that adds support for lidar color configuration.
+ * Custom {@link ColorBarPanel} that adds support for state history color configuration.
  *
  * Originally made for Lidar by lopeznr1
  *
@@ -52,12 +52,8 @@ public class StateHistoryColorBarPanel extends ColorBarPanel
 
 		colorBar = colorBarPainter;
 
-		addFeatureType(StateHistoryFeatureType.Distance, "S/C Distance (km)");
+		addFeatureType(StateHistoryFeatureType.Distance, "S/C Distance to Center (km)");
 		addFeatureType(StateHistoryFeatureType.Time, "Time (Sec)");
-		addFeatureType(StateHistoryFeatureType.Range, "S/C Range to Surface (km)");
-		addFeatureType(StateHistoryFeatureType.SubSCIncidence, "S/C Incidence Angle (deg)");
-		addFeatureType(StateHistoryFeatureType.SubSCEmission, "S/C Emission Angle (deg)");
-		addFeatureType(StateHistoryFeatureType.SubSCPhase, "S/C Phase Angle (deg)");
 
 		setFeatureType(StateHistoryFeatureType.Distance);
 		// Auto register the provided ActionListener
@@ -65,20 +61,22 @@ public class StateHistoryColorBarPanel extends ColorBarPanel
 
 		// Register for events of interest
 		addActionListener((aEvent) -> updateColorBar());
-		rendererManager.addListener(this);
-	}
+//		rendererManager.addListener(this);
 
-	@Override
-	public void actionPerformed(ActionEvent aEvent)
-	{
-		updateColorBar();
-
-		super.actionPerformed(aEvent);
+		if (rendererManager.getHistoryCollection().getCurrentRun() == null) return;
 	}
 
 	@Override
 	public void activate(boolean aIsActive)
 	{
+		if (rendererManager.getHistoryCollection().getCurrentRun() != null && rendererManager.getHistoryCollection().getCurrentRun().getMetadata().getType() == StateHistorySourceType.SPICE)
+		{
+			addFeatureType(StateHistoryFeatureType.Range, "S/C Range to Surface (km)");
+			addFeatureType(StateHistoryFeatureType.SubSCIncidence, "S/C Incidence Angle (deg)");
+			addFeatureType(StateHistoryFeatureType.SubSCEmission, "S/C Emission Angle (deg)");
+			addFeatureType(StateHistoryFeatureType.SubSCPhase, "S/C Phase Angle (deg)");
+		}
+
 		// Ensure our default range is in sync
 		updateDefaultRange();
 
@@ -146,9 +144,7 @@ public class StateHistoryColorBarPanel extends ColorBarPanel
 		Range<Double> fullRange = null;
 		for (StateHistory aItem : rendererManager.getAllItems())
 		{
-			// Skip to next if the lidar object is not rendered
-//			if (refManager.getVisibility(aItem) == false)
-			if (!aItem.isVisible())
+			if (!aItem.getMetadata().isVisible())
 				continue;
 
 			fullRange = updateRange(aItem, aFeatureType, fullRange);
@@ -193,7 +189,7 @@ public class StateHistoryColorBarPanel extends ColorBarPanel
 	private Range<Double> updateRange(StateHistory aItem, FeatureType aFeatureType, Range<Double> aFullRange)
 	{
 		// Bail if there are no values associated with the feature
-		FeatureAttr tmpFA = StateHistoryRendererManager.getFeatureAttrFor(aItem.getTrajectory(), aFeatureType);
+		FeatureAttr tmpFA = StateHistoryRendererManager.getFeatureAttrFor(aItem.getTrajectoryMetadata().getTrajectory(), aFeatureType);
 		if (tmpFA == null || tmpFA.getNumVals() == 0)
 			return aFullRange;
 

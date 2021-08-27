@@ -35,18 +35,6 @@ public class SunDirectionMarker extends BaseDirectionMarker
 		super(id);
 	}
 
-//	/**
-//	 * @return
-//	 */
-//	public vtkActor getActor()
-//	{
-//		if (markerHeadActor != null) return markerHeadActor;
-//		markerHeadActor = super.getActor();
-//        markerHeadActor.GetProperty().SetInterpolationToFlat();
-//        markerHeadActor.GetProperty().SetRepresentationToSurface();
-//        return markerHeadActor;
-//	}
-
 	/**
 	 * @param sunPos
 	 * @param sunMarkerPosition

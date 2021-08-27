@@ -11,7 +11,8 @@ import javax.swing.JMenu;
 import javax.swing.JMenuItem;
 
 import edu.jhuapl.saavtk.util.ColorUtil;
-import edu.jhuapl.sbmt.stateHistory.model.stateHistory.StateHistoryCollection;
+import edu.jhuapl.sbmt.stateHistory.model.interfaces.StateHistory;
+import edu.jhuapl.sbmt.stateHistory.rendering.model.StateHistoryRendererManager;
 
 import glum.gui.action.PopAction;
 
@@ -26,19 +27,19 @@ import glum.gui.action.PopAction;
  *
  * @param <G1>
  */
-public class MultiColorStateHistoryAction<G1> extends PopAction<G1>
+public class MultiColorStateHistoryAction extends PopAction<StateHistory>
 {
 	// Ref vars
-//	/**
-//	 *
-//	 */
-//	private final StateHistoryCollection refManager;
+	/**
+	 *
+	 */
+	private final StateHistoryRendererManager refManager;
 
 	// State vars
 	/**
 	 *
 	 */
-	private Map<JMenuItem, PopAction<G1>> actionM;
+	private Map<JMenuItem, PopAction<StateHistory>> actionM;
 
 	/**
 	 * Standard Constructor
@@ -48,16 +49,16 @@ public class MultiColorStateHistoryAction<G1> extends PopAction<G1>
 	 * @param aParent
 	 * @param aMenu
 	 */
-	public MultiColorStateHistoryAction(StateHistoryCollection aManager, Component aParent, JMenu aMenu)
+	public MultiColorStateHistoryAction(StateHistoryRendererManager aManager, Component aParent, JMenu aMenu)
 	{
-//		refManager = aManager;
+		refManager = aManager;
 
 		actionM = new HashMap<>();
 
 		// Form the static color menu items
 		for (ColorUtil.DefaultColor color : ColorUtil.DefaultColor.values())
 		{
-			PopAction<G1> tmpLPA = new FixedStateHistoryColorAction<G1>(aManager, color.color());
+			PopAction<StateHistory> tmpLPA = new FixedStateHistoryColorAction(aManager, color.color());
 			JCheckBoxMenuItem tmpColorMI = new JCheckBoxMenuItem(tmpLPA);
 			tmpColorMI.setText(color.toString().toLowerCase().replace('_', ' '));
 			actionM.put(tmpColorMI, tmpLPA);
@@ -66,11 +67,11 @@ public class MultiColorStateHistoryAction<G1> extends PopAction<G1>
 		}
 		aMenu.addSeparator();
 
-		JMenuItem customColorMI = formMenuItem(new CustomStateHistoryColorAction<G1>(aManager, aParent), "Custom...");
+		JMenuItem customColorMI = formMenuItem(new CustomStateHistoryColorAction(aManager, aParent), "Custom...");
 		aMenu.add(customColorMI);
 		aMenu.addSeparator();
 
-		JMenuItem resetColorMI = formMenuItem(new ResetStateHistoryColorAction<G1>(aManager), "Reset");
+		JMenuItem resetColorMI = formMenuItem(new ResetStateHistoryColorAction(aManager), "Reset");
 		aMenu.add(resetColorMI);
 	}
 
@@ -78,19 +79,17 @@ public class MultiColorStateHistoryAction<G1> extends PopAction<G1>
 	 *
 	 */
 	@Override
-	public void executeAction(List<G1> aItemL)
+	public void executeAction(List<StateHistory> aItemL)
 	{
-		; // Nothing to do
 	}
 
 	/**
 	 *
 	 */
 	@Override
-	public void setChosenItems(Collection<G1> aItemC, JMenuItem aAssocMI)
+	public void setChosenItems(Collection<StateHistory> aItemC, JMenuItem aAssocMI)
 	{
 		super.setChosenItems(aItemC, aAssocMI);
-
 //		// Determine if all selected items have the same (custom) color
 //		Color initColor = refManager.getColorProviderTarget(aItemC.iterator().next()).getBaseColor();
 //		boolean isSameCustomColor = true;
@@ -101,12 +100,12 @@ public class MultiColorStateHistoryAction<G1> extends PopAction<G1>
 //			isSameCustomColor &= refManager.hasCustomColorProvider(aItem) == true;
 //		}
 //
-//		// Update our child LidarPopActions
-//		for (JMenuItem aMI : actionM.keySet())
-//		{
-//			StateHistoryPopAction<G1> tmpLPA = actionM.get(aMI);
-//			tmpLPA.setChosenItems(aItemC, aMI);
-//
+		// Update our child StateHistoryPopActions
+		for (JMenuItem aMI : actionM.keySet())
+		{
+			PopAction tmpLPA = actionM.get(aMI);
+			tmpLPA.setChosenItems(aItemC, aMI);
+
 //			// If all items have the same custom color and match one of the
 //			// predefined colors then update the corresponding menu item.
 //			if (tmpLPA instanceof FixedStateHistoryColorAction)
@@ -115,7 +114,7 @@ public class MultiColorStateHistoryAction<G1> extends PopAction<G1>
 //				isSelected &= ((FixedStateHistoryColorAction) tmpLPA).getColor().equals(initColor) == true;
 //				aMI.setSelected(isSelected);
 //			}
-//		}
+		}
 	}
 
 	/**
@@ -131,7 +130,7 @@ public class MultiColorStateHistoryAction<G1> extends PopAction<G1>
 	 * @param aTitle
 	 * @return
 	 */
-	private JMenuItem formMenuItem(PopAction<G1> aAction, String aTitle)
+	private JMenuItem formMenuItem(PopAction<StateHistory> aAction, String aTitle)
 	{
 		JMenuItem retMI = new JMenuItem(aAction);
 		retMI.setText(aTitle);

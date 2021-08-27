@@ -19,12 +19,13 @@ import edu.jhuapl.saavtk.util.FileStateListenerTracker;
 import edu.jhuapl.saavtk.util.Properties;
 import edu.jhuapl.sbmt.stateHistory.model.stateHistory.StateHistoryCollection;
 import edu.jhuapl.sbmt.stateHistory.rendering.model.StateHistoryRendererManager;
-import edu.jhuapl.sbmt.stateHistory.ui.state.version2.viewControls.StateHistoryFOVPanel;
-import edu.jhuapl.sbmt.stateHistory.ui.state.version2.viewControls.viewOptions.table.ViewOptionsTableView;
+import edu.jhuapl.sbmt.stateHistory.ui.state.fov.StateHistoryFOVPanel;
+import edu.jhuapl.sbmt.stateHistory.ui.state.fov.table.ViewOptionsFOVTableView;
 
 import glum.item.ItemEventType;
 
 /**
+ * Controls the UI for the FOV selection panel
  * @author steelrj1
  *
  */
@@ -58,7 +59,7 @@ public class StateHistoryFOVController
 	public StateHistoryFOVController(StateHistoryRendererManager rendererManager, ColoringDataManager coloringDataManager)
 	{
 		this.rendererManager = rendererManager;
-		this.runs = rendererManager.getRuns();
+		this.runs = rendererManager.getHistoryCollection();
 		this.coloringDataManager = coloringDataManager;
 		initializeViewControlPanel(rendererManager);
 	}
@@ -75,26 +76,33 @@ public class StateHistoryFOVController
         rendererManager.addListener((aSource, aEventType) ->
 		{
 			if (aEventType != ItemEventType.ItemsChanged) return;
+			if (rendererManager.getHistoryCollection().getCurrentRun() == null) return;
 			view.setAvailableFOVs(runs.getAvailableFOVs());
 
 		});
 
         rendererManager.addListener((aSource, aEventType) -> {
 			if (aEventType != ItemEventType.ItemsSelected) return;
+			if (rendererManager.getHistoryCollection().getCurrentRun() == null) return;
 			SwingUtilities.invokeLater(new Runnable()
 			{
 				@Override
 				public void run()
 				{
 					rendererManager.propertyChange(new PropertyChangeEvent(this, Properties.MODEL_CHANGED, null, null));
-					if (rendererManager.getSelectedItems().size() > 0) view.setTableHidden(false);
+					if (rendererManager.getSelectedItems().size() > 0) {
+						view.setTableHidden(false);
+						runs.setCurrentRun(rendererManager.getSelectedItems().asList().get(0));
+					}
+
+					view.setAvailableFOVs(runs.getAvailableFOVs());
 					view.repaint();
 					view.validate();
 				}
 			});
 		});
 
-		ViewOptionsTableView tableView = new ViewOptionsTableView(rendererManager, plateColorings);
+		ViewOptionsFOVTableView tableView = new ViewOptionsFOVTableView(rendererManager, plateColorings);
 		tableView.setup();
 		view.setTableView(tableView);
 	}

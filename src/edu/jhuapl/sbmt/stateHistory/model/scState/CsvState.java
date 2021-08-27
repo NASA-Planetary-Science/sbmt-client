@@ -230,6 +230,11 @@ public class CsvState implements State
         return ephemerisTime;
     }
 
+    public void setEphemerisTime(double ephemerisTime)
+	{
+		this.ephemerisTime = ephemerisTime;
+	}
+
     @Override
     public String getUtc()
     {

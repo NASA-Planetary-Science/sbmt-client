@@ -1,13 +1,11 @@
 package edu.jhuapl.sbmt.stateHistory.model.planning.spectrometers;
 
 import java.beans.PropertyChangeEvent;
-import java.io.IOException;
 
 import edu.jhuapl.saavtk.util.ProgressStatusListener;
 import edu.jhuapl.saavtk.util.Properties;
 import edu.jhuapl.sbmt.client.SmallBodyModel;
 import edu.jhuapl.sbmt.model.image.perspectiveImage.PerspectiveImageFootprint;
-import edu.jhuapl.sbmt.stateHistory.model.io.PlannedSpectrumIOHelper;
 import edu.jhuapl.sbmt.stateHistory.model.planning.BasePlannedDataCollection;
 import edu.jhuapl.sbmt.stateHistory.rendering.PlannedDataProperties;
 import edu.jhuapl.sbmt.stateHistory.rendering.model.StateHistoryPositionCalculator;
@@ -15,11 +13,11 @@ import edu.jhuapl.sbmt.stateHistory.rendering.planning.PlannedDataActor;
 
 public class PlannedSpectrumCollection  extends BasePlannedDataCollection<PlannedSpectrum>
 {
-	private double time;
 
-	public PlannedSpectrumCollection(SmallBodyModel smallBodyModel)
+	public PlannedSpectrumCollection(String filename, SmallBodyModel smallBodyModel)
 	{
 		super(smallBodyModel);
+		this.filename = filename;
 	}
 
 	@Override
@@ -33,6 +31,7 @@ public class PlannedSpectrumCollection  extends BasePlannedDataCollection<Planne
 		}
 	}
 
+	@Override
 	public void updateFootprints()
 	{
 		if (stateHistorySource == null) return;
@@ -60,15 +59,5 @@ public class PlannedSpectrumCollection  extends BasePlannedDataCollection<Planne
 		listener.setProgressStatus("Adding spectrum " + plannedData.size(), 0);
 		setAllItems(plannedData);
 		this.pcs.firePropertyChange("PLANNED_SPECTRA_CHANGED", null, null);
-	}
-
-	public void loadPlannedSpectraFromFileWithName(String filename, ProgressStatusListener listener, Runnable completion) throws IOException
-	{
-		PlannedSpectrumIOHelper.loadPlannedSpectraFromFileWithName(filename, this, listener, completion);
-	}
-
-	public void savePlannedSpectraToFileWithName(String filename) throws IOException
-	{
-		PlannedSpectrumIOHelper.savePlannedSpectraToFileWithName(filename, this);
 	}
 }

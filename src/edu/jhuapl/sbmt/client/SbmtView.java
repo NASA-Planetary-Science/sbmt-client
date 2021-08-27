@@ -46,7 +46,6 @@ import edu.jhuapl.saavtk.util.FileCache;
 import edu.jhuapl.saavtk.util.Properties;
 import edu.jhuapl.sbmt.dem.gui.DemMainPanel;
 import edu.jhuapl.sbmt.dtm.controller.DEMPopupMenuActionListener;
-import edu.jhuapl.sbmt.dtm.controller.ExperimentalDEMController;
 import edu.jhuapl.sbmt.dtm.model.DEMBoundaryCollection;
 import edu.jhuapl.sbmt.dtm.model.DEMCollection;
 import edu.jhuapl.sbmt.dtm.model.creation.DEMCreator;
@@ -640,9 +639,9 @@ public class SbmtView extends View implements PropertyChangeListener
 					{
 						if (aEventType == ItemEventType.ItemsSelected)
 						{
-							StateHistory currentRun = rendererManager.getRuns().getCurrentRun();
+							StateHistory currentRun = rendererManager.getHistoryCollection().getCurrentRun();
 							if (currentRun == null) return;
-							meganeController.propertyChange(new PropertyChangeEvent(meganeController, "SPICEPROVIDER", null, currentRun.getPointingProvider()));
+							meganeController.propertyChange(new PropertyChangeEvent(meganeController, "SPICEPROVIDER", null, currentRun.getLocationProvider().getPointingProvider()));
 						}
 					}
 				});
@@ -727,8 +726,8 @@ public class SbmtView extends View implements PropertyChangeListener
             	creationTool=new MapmakerDEMCreator(Paths.get(getPolyhedralModelConfig().rootDirOnServer + File.separator + "mapmaker.zip"), Paths.get(getModelManager().getPolyhedralModel().getCustomDataFolder()));
             }
 
-        	addTab("Regional DTMs", new ExperimentalDEMController(getModelManager(), getPickManager(), creationTool, getPolyhedralModelConfig(), getRenderer()).getPanel());
-        	addTab("Regional DEMs", new DemMainPanel(getRenderer(), getModelManager().getPolyhedralModel(), getStatusNotifier(), getPickManager(), getPolyhedralModelConfig()));
+//        	addTab("Regional DTMs (old)", new ExperimentalDEMController(getModelManager(), getPickManager(), creationTool, getPolyhedralModelConfig(), getRenderer()).getPanel());
+        	addTab("Regional DTMs", new DemMainPanel(getRenderer(), getModelManager().getPolyhedralModel(), getStatusNotifier(), getPickManager(), getPolyhedralModelConfig()));
 
 
 //            if ( getPolyhedralModelConfig().rootDirOnServer != null)
@@ -749,7 +748,7 @@ public class SbmtView extends View implements PropertyChangeListener
             if (getPolyhedralModelConfig().hasStateHistory)
             {
 //                StateHistoryController controller = new StateHistoryController(getModelManager(), getRenderer());
-                ObservationPlanningController controller = new ObservationPlanningController(getModelManager(), smallBodyModel, rendererManager, getPolyhedralModelConfig(), smallBodyModel.getColoringDataManager());
+                ObservationPlanningController controller = new ObservationPlanningController(getModelManager(), smallBodyModel, rendererManager, getPolyhedralModelConfig(), smallBodyModel.getColoringDataManager(), getStatusNotifier());
 //                if (getConfig().body == ShapeModelBody.EARTH)
 //                    controller = new StateHistoryController(getModelManager(), getRenderer(), false);
 //                else

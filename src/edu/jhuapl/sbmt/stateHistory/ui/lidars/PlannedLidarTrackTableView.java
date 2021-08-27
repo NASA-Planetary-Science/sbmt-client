@@ -34,7 +34,6 @@ import glum.gui.panel.itemList.ItemHandler;
 import glum.gui.panel.itemList.ItemListPanel;
 import glum.gui.panel.itemList.ItemProcessor;
 import glum.gui.panel.itemList.query.QueryComposer;
-import glum.gui.table.TablePopupHandler;
 import glum.item.ItemManagerUtil;
 
 public class PlannedLidarTrackTableView extends JPanel
@@ -218,7 +217,7 @@ public class PlannedLidarTrackTableView extends JPanel
 		JTable plannedLidarTrackTable = plannedLidarTrackILP.getTable();
 		plannedLidarTrackTable.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
 		//TODO: Fix the popup menu
-		plannedLidarTrackTable.addMouseListener(new TablePopupHandler(plannedLidarTrackCollection, null));
+//		plannedLidarTrackTable.addMouseListener(new TablePopupHandler(plannedLidarTrackCollection, null));
 
 		return plannedLidarTrackTable;
     }
@@ -230,10 +229,10 @@ public class PlannedLidarTrackTableView extends JPanel
 	{
 		JTable tmpTable = plannedLidarTrackILP.getTable();
 		String dateTimeStr = "9999-88-88T00:00:00.000000";
-		int minW = 30;
+		int minW = 40;
 
 		ColorProvider blackCP = new ConstColorProvider(Color.BLACK);
-		Object[] nomArr = { true, blackCP, "", dateTimeStr, dateTimeStr };
+		Object[] nomArr = { true, blackCP, "Instrument", dateTimeStr, dateTimeStr };
 		for (int aCol = 0; aCol < nomArr.length; aCol++)
 		{
 			TableCellRenderer tmpRenderer = tmpTable.getCellRenderer(0, aCol);

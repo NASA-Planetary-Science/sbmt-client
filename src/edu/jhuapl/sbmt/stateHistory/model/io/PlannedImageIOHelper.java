@@ -9,6 +9,7 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
 import edu.jhuapl.saavtk.util.ProgressStatusListener;
+import edu.jhuapl.sbmt.stateHistory.model.interfaces.IStateHistoryMetadata;
 import edu.jhuapl.sbmt.stateHistory.model.planning.imagers.PlannedImage;
 import edu.jhuapl.sbmt.stateHistory.model.planning.imagers.PlannedImageCollection;
 import edu.jhuapl.sbmt.util.TimeUtil;
@@ -23,7 +24,7 @@ public class PlannedImageIOHelper
 	 * @param collection
 	 * @throws IOException
 	 */
-	public static void loadPlannedImagesFromFileWithName(String filename, PlannedImageCollection collection, ProgressStatusListener listener, Runnable completion) throws IOException
+	public static void loadPlannedImagesFromFileWithName(String filename, IStateHistoryMetadata metadata, PlannedImageCollection collection, ProgressStatusListener listener, Runnable completion) throws IOException
 	{
 		BufferedReader reader = new BufferedReader(new FileReader(filename));
 		String line;
@@ -37,6 +38,7 @@ public class PlannedImageIOHelper
 			String instrumentName = parts[1];
 			double et = TimeUtil.str2et(parts[2]);
 			PlannedImage plannedImage = new PlannedImage(et, instrumentName.toUpperCase());
+			plannedImage.setStateHistoryMetadata(metadata);
 			collection.addImageToList(plannedImage, listener);
 		}
 		reader.close();

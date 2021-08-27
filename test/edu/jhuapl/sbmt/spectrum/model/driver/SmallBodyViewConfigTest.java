@@ -158,7 +158,7 @@ public class SmallBodyViewConfigTest extends BodyViewConfig implements ISmallBod
     private static ViewConfig fetchRemoteConfig(String name, String url, boolean fromServer)
     {
     	if (fromServer)
-    		url = url.replaceFirst("http://sbmt.jhuapl.edu", "file:///disks/d0180/htdocs-sbmt");
+    		url = url.replaceFirst("https?://sbmt.jhuapl.edu", "file:///disks/d0180/htdocs-sbmt");
 
     	ConfigArrayList ioConfigs = new ConfigArrayList();
         ioConfigs.add(new SmallBodyViewConfig(ImmutableList.<String> copyOf(DEFAULT_GASKELL_LABELS_PER_RESOLUTION), ImmutableList.<Integer> copyOf(DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION)));
