@@ -92,11 +92,11 @@ if test $# -eq 0; then
   # No argument form. Require both saavtk and sbmt to already be checked out.
   needCheckout=false
   if test ! -f .git-clone-saavtk-succeeded -o "$forceSaavtkCheckout" = true; then
-    echo "No checked-out copy of SAAVTK: specify branch on the command line" >&2
+    echo "No checked-out copy of SAAVTK; specify branch on the command line" >&2
     needCheckout=true
   fi
   if test ! -f .git-clone-sbmt-succeeded -o "$forceSbmtCheckout" = true; then
-    echo "No checked-out copy of SBMT: specify branch on the command line" >&2
+    echo "No checked-out copy of SBMT; specify branch on the command line" >&2
     needCheckout=true
   fi
   if test "$needCheckout" = true; then
@@ -107,11 +107,11 @@ else
   # Arguments specify the branch. Require no packages already checked out.
   checkedOut=false
   if test -f .git-clone-saavtk-succeeded -a "$forceSaavtkCheckout" != true; then
-    echo "SAAVTK was already checked out: cannot specify branch on the command line" >&2
+    echo "SAAVTK was already checked out; cannot specify branch on the command line" >&2
     checkedOut=true
   fi
   if test -f .git-clone-sbmt-succeeded -a "$forceSbmtCheckout" != true; then
-    echo "SBMT was already checked out: cannot specify branch on the command line" >&2
+    echo "SBMT was already checked out; cannot specify branch on the command line" >&2
     checkedOut=true
   fi
   if test "$checkedOut" = true; then
@@ -130,7 +130,7 @@ elif test $# -eq 2; then
   sbmtBranch=$2
 fi
 
-if test "#saavktBranch" != ""; then
+if test "$sbmtBranch" != ""; then
   echo "Attempting to check out and build $mission client with branches $saavtkBranch and $sbmtBranch"
 else
   echo "Attempting to build $mission client in already checked-out sbmt/saavtk directories"
@@ -188,7 +188,7 @@ else
 
   echo "nice git clone http://hardin:8080/scm/git/vtk/saavtk --branch $saavtkBranch 2>&1 | cat > $logDir/git-clone-saavtk.txt 2>&1"
   nice git clone http://hardin:8080/scm/git/vtk/saavtk --branch $saavtkBranch 2>&1 | cat > $logDir/git-clone-saavtk.txt 2>&1
-  if test $? -ne 0; then
+  if test $? -ne 0 -o ! -d saavtk; then
     echo "Problem with git saavtk checkout. See $logDir/git-clone-saavtk.txt" >&2
     exit 1
   fi
@@ -204,7 +204,7 @@ else
 
   echo "nice git clone http://hardin:8080/scm/git/sbmt --branch $sbmtBranch 2>&1 | cat > $logDir/git-clone-sbmt.txt 2>&1"
   nice git clone http://hardin:8080/scm/git/sbmt --branch $sbmtBranch 2>&1 | cat > $logDir/git-clone-sbmt.txt 2>&1
-  if test $? -ne 0; then
+  if test $? -ne 0 -o ! -d sbmt; then
     echo "Problem with git sbmt checkout. See $logDir/git-clone-sbmt.txt" >&2
     exit 1
   fi
