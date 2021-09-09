@@ -106,6 +106,9 @@ public class DartConfigs
 
         SmallBodyViewConfig c;
 
+
+
+        // Ideal Didymos models.
         c = createSingleResolutionConfig_20200629_v01(ShapeModelBody.DIDYMOS, "Ideal Impact 1 20200629 v01", 1996);
         configList.add(c);
 
@@ -130,6 +133,12 @@ public class DartConfigs
         c = createSingleResMissionImagesConfig(ShapeModelBody.DIDYMOS, "Ideal Impact 6 RA 20201116 v01", 3145728);
 //        configList.add(c);
 
+        c = createSingleResolutionConfig_20210630_v01(ShapeModelBody.DIDYMOS, "Ideal Impact 9 20210630 v01", 1996);
+        configList.add(c);
+
+
+
+        // Ideal Dimorphos models.
         c = createSingleResolutionConfig_20200629_v01(ShapeModelBody.DIMORPHOS, "Ideal Impact 1 20200629 v01", 3072);
         configList.add(c);
         c = createSingleResolutionConfig_20200629_v01(ShapeModelBody.DIMORPHOS, "Ideal Impact 2 20200629 v01", 3145728);
@@ -150,6 +159,12 @@ public class DartConfigs
         c = createSingleResMissionImagesConfig(ShapeModelBody.DIMORPHOS, "Ideal Impact 6 RA 20201116 v01", 3145728);
 //        configList.add(c);
 
+        c = createSingleResolutionConfig_20210630_v01(ShapeModelBody.DIMORPHOS, "Ideal Impact 9 20210630 v01", 3072);
+        configList.add(c);
+
+
+
+        // Errors Didymos models.
         c = createSingleResolutionConfig_20200629_v01(ShapeModelBody.DIDYMOS, "Errors Impact 1 20200629 v01", 1996);
         configList.add(c);
         c = createSingleResolutionConfig_20200629_v01(ShapeModelBody.DIDYMOS, "Errors Impact 2 20200629 v01", 1996);
@@ -160,6 +175,12 @@ public class DartConfigs
         configList.add(c);
         c = createSingleResolutionConfig_20200629_v01(ShapeModelBody.DIDYMOS, "Errors Impact 5 20200629 v01", 3145728);
         configList.add(c);
+        c = createSingleResolutionConfig_20210630_v01(ShapeModelBody.DIDYMOS, "Errors Impact 9 20210630 v01", 3072);
+        configList.add(c);
+
+
+
+        // Errors Dimorphos models.
         c = createSingleResolutionConfig_20200629_v01(ShapeModelBody.DIMORPHOS, "Errors Impact 1 20200629 v01", 3072);
         configList.add(c);
         c = createSingleResolutionConfig_20200629_v01(ShapeModelBody.DIMORPHOS, "Errors Impact 2 20200629 v01", 3145728);
@@ -170,8 +191,17 @@ public class DartConfigs
         configList.add(c);
         c = createSingleResolutionConfig_20200629_v01(ShapeModelBody.DIMORPHOS, "Errors Impact 5 20200629 v01", 3366134);
         configList.add(c);
+        c = createSingleResolutionConfig_20210630_v01(ShapeModelBody.DIMORPHOS, "Errors Impact 9 20210630 v01", 3072);
+        configList.add(c);
+
+
 
         defaultConfig.defaultForMissions = DartClients;
+    }
+
+    protected SmallBodyViewConfig createSingleResolutionConfig_20210630_v01(ShapeModelBody body, String label, int numberPlates)
+    {
+        return createSingleResolutionConfig_20200629_v01(body, label, numberPlates);
     }
 
     /**
