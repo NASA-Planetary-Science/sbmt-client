@@ -428,7 +428,6 @@ public class StateHistoryIntervalPlaybackController
 
 		if (result == JFileChooser.CANCEL_OPTION || result == JFileChooser.ERROR_OPTION)
 		{
-			System.out.println("StateHistoryIntervalPlaybackController: saveAnimation: cancelling ");
 			view.setRecordingInProgress(false);
 	        view.getRecordButton().setIcon(IconUtil.getRecord());
       		view.getRecordButton().setToolTipText(ToolTipUtil.getRecord());
@@ -444,7 +443,6 @@ public class StateHistoryIntervalPlaybackController
 			});
 			return;
 		}
-		System.out.println("StateHistoryIntervalPlaybackController: saveAnimation: ok");
 		File file = dialog.getSelectedFile();
 
 		int frameNum = (Integer) dialog.getNumFrames().getValue();

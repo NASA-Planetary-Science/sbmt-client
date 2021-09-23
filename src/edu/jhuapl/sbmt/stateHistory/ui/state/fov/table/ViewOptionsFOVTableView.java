@@ -170,7 +170,7 @@ public class ViewOptionsFOVTableView extends JPanel
 		tmpComposer.addAttribute(ViewOptionsFOVColumnLookup.Color, Color.class, "Color", null);
 		tmpComposer.addAttribute(ViewOptionsFOVColumnLookup.Name, String.class, "Name", null);
 		tmpComposer.addAttribute(ViewOptionsFOVColumnLookup.SetAsCurrent, Boolean.class, "Use for Traj Color", null);
-//		tmpComposer.addAttribute(ViewOptionsFOVColumnLookup.FPPlateColoring, String.class, "Footprint Plate Coloring", null);
+		tmpComposer.addAttribute(ViewOptionsFOVColumnLookup.FPPlateColoring, String.class, "Footprint Plate Coloring", null);
 
 		EphemerisTimeRenderer tmpTimeRenderer = new EphemerisTimeRenderer(false);
 		tmpComposer.setEditor(ViewOptionsFOVColumnLookup.Frustum, new BooleanCellEditor());
@@ -186,8 +186,8 @@ public class ViewOptionsFOVTableView extends JPanel
 		tmpComposer.setRenderer(ViewOptionsFOVColumnLookup.SetAsCurrent, new BooleanCellRenderer());
 
 //		JComboBox<String> fpColoringCombo = new JComboBox<String>(new Double[] {0.0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0});
-//		plateColorings.setSelectedIndex(0);
-//		tmpComposer.setEditor(ViewOptionsFOVColumnLookup.FPPlateColoring, new DefaultCellEditor(plateColorings));
+		plateColorings.setSelectedIndex(0);
+		tmpComposer.setEditor(ViewOptionsFOVColumnLookup.FPPlateColoring, new DefaultCellEditor(plateColorings));
 
 		viewOptionsFOVTableHandler = new ViewOptionsFOVItemHandler(rendererManager, tmpComposer, plateColorings);
 		ItemProcessor<String> tmpIP = stateHistoryCollection.getAllFOVProcessor();
@@ -232,7 +232,7 @@ public class ViewOptionsFOVTableView extends JPanel
 
 		ColorProvider blackCP = new ConstColorProvider(Color.BLACK);
 		Object[] nomArr =
-		{ true, true, true, blackCP, "Segment000000000000000", true/*, "Footprint Plate ColoringFootprint Plate Coloring"*/};
+		{ true, true, true, blackCP, "Segment000000000000000", true, "Footprint Plate ColoringFootprint Plate Coloring"};
 		for (int aCol = 0; aCol < nomArr.length; aCol++)
 		{
 			TableCellRenderer tmpRenderer = tmpTable.getCellRenderer(0, aCol);

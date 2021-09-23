@@ -159,6 +159,21 @@ public class PlannedDataActorRegister
 				return footprint;
 			}
 		}, Color.blue);
+
+		PlannedDataActorFactory.registerInstrument(new String[]{"MMX_MEGANE", "MEGANE"}, new IPlanningDataActorBuilder<PlannedInstrumentData>()
+		{
+
+			@Override
+			public PlannedDataActor buildActorForPlanningData(PlannedInstrumentData data, SmallBodyModel model)
+			{
+				PerspectiveImageFootprint footprint = new PerspectiveImageFootprint();
+				footprint.setTime(data.getTime());
+				footprint.setInstrumentName(data.getInstrumentName());
+				footprint.setColor(Color.green);
+				footprint.setSmallBodyModel(model);
+				return footprint;
+			}
+		}, Color.blue);
 	}
 
 //	public void setPositionOrientationManager(IPositionOrientation positionOrientationManager)

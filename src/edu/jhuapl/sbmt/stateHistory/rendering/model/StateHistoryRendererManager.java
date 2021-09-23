@@ -1184,7 +1184,7 @@ public class StateHistoryRendererManager extends SaavtkItemManager<StateHistory>
 	{
 		if (historyCollection.getCurrentRun() instanceof StandardStateHistory) return;
 		((SpiceStateHistory)historyCollection.getCurrentRun()).setPlateColoringForInstrument(plateColoring, instrument);
-
+		if (historyFootprintMap.get(historyCollection.getCurrentRun()) == null) return;
 		historyFootprintMap.get(historyCollection.getCurrentRun()).forEach(item -> {
 //			if (name.equals("")) item.setPlateColoringName(null);
 			if (item.getInstrumentName().equals(instrument)) item.setPlateColoringName(plateColoring);
