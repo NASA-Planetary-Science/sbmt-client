@@ -3,6 +3,7 @@ package edu.jhuapl.sbmt.tools;
 import edu.jhuapl.saavtk.gui.render.QuietSceneChangeNotifier;
 import edu.jhuapl.saavtk.model.ShapeModelBody;
 import edu.jhuapl.saavtk.model.ShapeModelType;
+import edu.jhuapl.saavtk.status.QuietStatusNotifier;
 import edu.jhuapl.saavtk.util.NativeLibraryLoader;
 import edu.jhuapl.sbmt.client.SbmtModelFactory;
 import edu.jhuapl.sbmt.client.SmallBodyModel;
@@ -41,7 +42,7 @@ public class ReprojectLidarTrackToFittedPlane
 
         SmallBodyViewConfig config = SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.EROS, ShapeModelType.GASKELL);
         SmallBodyModel smallBodyModel = SbmtModelFactory.createSmallBodyModel(config);
-        LidarTrackManager trackManager = new LidarTrackManager(QuietSceneChangeNotifier.Instance, smallBodyModel);
+        LidarTrackManager trackManager = new LidarTrackManager(QuietSceneChangeNotifier.Instance, QuietStatusNotifier.Instance, smallBodyModel);
 
 //        try
 //        {
