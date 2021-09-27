@@ -319,8 +319,8 @@ public class CustomOfflimbImageResultsTableController extends CustomImageResults
                 resultList.setValueAt(false, i, imageResultsTableView.getFrusColumnIndex());
                 resultList.setValueAt(false, i, offlimbTableView.getOffLimbIndex());
             }
-
-            resultList.setValueAt(imageCollection.getImage(info).isBoundaryVisible(), i, imageResultsTableView.getBndrColumnIndex());
+            if (imageCollection.getImage(info) != null)
+            	resultList.setValueAt(imageCollection.getImage(info).isBoundaryVisible(), i, imageResultsTableView.getBndrColumnIndex());
         }
 
         imageResultsTableView.getResultList().getModel().addTableModelListener(tableModelListener);
