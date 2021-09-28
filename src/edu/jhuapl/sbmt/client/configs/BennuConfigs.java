@@ -330,7 +330,7 @@ public class BennuConfigs extends SmallBodyViewConfig
             c.shapeModelFileNames = prepend(c.rootDirOnServer, "ver64q.vtk.gz", "ver128q.vtk.gz", "ver256q.vtk.gz", "ver512q.vtk.gz");
             c.density = 1.0;
             c.rotationRate = 0.000407026411379;
-
+            c.presentInMissions = AllBennuClients;
 
             c.hasMapmaker = true;
 
@@ -415,7 +415,7 @@ public class BennuConfigs extends SmallBodyViewConfig
             c.setResolution(ImmutableList.of("Very Low (12288 plates)", DEFAULT_GASKELL_LABELS_PER_RESOLUTION[0], DEFAULT_GASKELL_LABELS_PER_RESOLUTION[1], DEFAULT_GASKELL_LABELS_PER_RESOLUTION[2], DEFAULT_GASKELL_LABELS_PER_RESOLUTION[3]), ImmutableList.of(12288, DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[0], DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[1], DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[2], DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[3]));
             c.density = 1.26;
             c.rotationRate = 0.0004061303295118512;
-
+            c.presentInMissions = AllBennuClients;
             if(Configuration.isMac()) c.hasBigmap = false;  // Right now bigmap only works on Macs
 
             c.hasMapmaker = false;
