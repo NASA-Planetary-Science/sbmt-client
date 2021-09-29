@@ -392,8 +392,11 @@ public class StateHistoryIntervalGenerationPanel extends JPanel
 			catch (StateHistoryIOException | IOException e1)
 			{
 				if (!isCancelled())
+				{
 					JOptionPane.showMessageDialog(StateHistoryIntervalGenerationPanel.this, "Problem ingesting SPICE kernel.  Please check the file for correctness.",
 												"Ingestion Error", JOptionPane.ERROR_MESSAGE);
+					e1.printStackTrace();
+				}
 			}
 			finally {
 				progressBar.setValue(0);
