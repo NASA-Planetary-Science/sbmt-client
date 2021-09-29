@@ -227,7 +227,6 @@ public class SmallBodyViewConfig extends BodyViewConfig implements ISmallBodyVie
         catch (IOException e)
         {
             // TODO Auto-generated catch block
-        	System.out.println("SmallBodyViewConfig: fetchRemoteConfig: IO exception ");
             e.printStackTrace();
             return null;
         }
@@ -369,6 +368,7 @@ public class SmallBodyViewConfig extends BodyViewConfig implements ISmallBodyVie
                 {
                     // This file is optional.
                     metadataFile = null;
+                    return ImmutableList.of();
                 }
 
                 if (metadataFile != null && metadataFile.isFile())

@@ -117,6 +117,8 @@ public class StateHistoryIntervalGenerationPanel extends JPanel
 
     private boolean hasSpiceInfo;
 
+    private boolean hasPregenInfo;
+
     private SpiceKernelIngestor kernelIngestor;
 
     private KernelIngestor ingestor;
@@ -131,16 +133,21 @@ public class StateHistoryIntervalGenerationPanel extends JPanel
 	{
 		editMode = false;
 		this.hasSpiceInfo = historyModel.getViewConfig().getSpiceInfo() != null;
+		this.hasPregenInfo = historyModel.getViewConfig().getTimeHistoryFile() != null;
 		this.kernelIngestor = new SpiceKernelIngestor(historyModel.getCustomDataFolder());
 		kernelManagementController = new KernelManagementController(kernelIngestor.getLoadedKernelsDirectory());
 		initUI();
 	}
 
-	public StateHistoryIntervalGenerationPanel(StateHistory history)
+	public StateHistoryIntervalGenerationPanel(StateHistoryModel historyModel, StateHistory history)
 	{
 		editMode = true;
 		this.history = history;
 		buttonText = "Update Interval";
+		this.hasSpiceInfo = historyModel.getViewConfig().getSpiceInfo() != null;
+		this.hasPregenInfo = historyModel.getViewConfig().getTimeHistoryFile() != null;
+		this.kernelIngestor = new SpiceKernelIngestor(historyModel.getCustomDataFolder());
+		kernelManagementController = new KernelManagementController(kernelIngestor.getLoadedKernelsDirectory());
 		initUI();
 		IStateHistoryMetadata metadata = history.getMetadata();
 		stateHistorySourceType = metadata.getType();
@@ -187,6 +194,8 @@ public class StateHistoryIntervalGenerationPanel extends JPanel
         DateTime endTime = stopTimeSpinner.getISOFormattedTime();
 		metadata.setStartTime(StateHistoryTimeModel.getETForDate(startTime.toDate()));
 		metadata.setEndTime(StateHistoryTimeModel.getETForDate(endTime.toDate()));
+		history.getTrajectoryMetadata().getTrajectory().setStartTime(StateHistoryTimeModel.getETForDate(startTime.toDate()));
+		history.getTrajectoryMetadata().getTrajectory().setStopTime(StateHistoryTimeModel.getETForDate(endTime.toDate()));
 	}
 
 	@Override
@@ -203,7 +212,8 @@ public class StateHistoryIntervalGenerationPanel extends JPanel
 	{
 		dataSourceCards = new JPanel(new CardLayout());
 
-		dataSourceCards.add(getPregenTimeRangePanel(), PREGENDATASTRING);
+		if (hasPregenInfo)
+			dataSourceCards.add(getPregenTimeRangePanel(), PREGENDATASTRING);
 		if (hasSpiceInfo)
 			dataSourceCards.add(getSpiceTimeRangePanel(), SPICEDATASTRING);
 		dataSourceCards.setMinimumSize(new Dimension(this.getWidth(), 40));
@@ -275,7 +285,9 @@ public class StateHistoryIntervalGenerationPanel extends JPanel
 			File loadedKernelsDirectory = kernelIngestor.getLoadedKernelsDirectory();
 			if (selectedItem.equals("Load new kernel..."))
 			{
-				metakernelToLoad = CustomFileChooser.showOpenDialog(this, "Select Metakernel").getAbsolutePath();
+				File file = CustomFileChooser.showOpenDialog(this, "Select Metakernel");
+				if (file == null) return;
+				metakernelToLoad = file.getAbsolutePath();
 				ingestor  = new KernelIngestor(progressBar, kernelComboBox);
 				ingestor.execute();
 			}
