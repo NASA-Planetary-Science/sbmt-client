@@ -92,7 +92,17 @@ public class StateHistoryItemHandler extends BasicItemHandler<StateHistory, Stat
 		{
 			if (!metadata.isMapped())
 			{
-				rendererManager.addRun(history);
+				Thread thread = new Thread(new Runnable()
+				{
+
+					@Override
+					public void run()
+					{
+						rendererManager.addRun(history);
+					}
+				});
+				thread.start();
+
 			}
 			else
 			{
