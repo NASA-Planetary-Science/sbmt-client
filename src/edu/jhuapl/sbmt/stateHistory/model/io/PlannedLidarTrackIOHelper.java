@@ -2,38 +2,19 @@ package edu.jhuapl.sbmt.stateHistory.model.io;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
-import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
-import javax.swing.SwingUtilities;
 
 import org.apache.commons.io.FilenameUtils;
 
-import edu.jhuapl.saavtk.model.ShapeModelBody;
-import edu.jhuapl.saavtk.model.ShapeModelType;
-import edu.jhuapl.saavtk.util.Configuration;
-import edu.jhuapl.saavtk.util.NativeLibraryLoader;
 import edu.jhuapl.saavtk.util.ProgressStatusListener;
-import edu.jhuapl.saavtk.util.SafeURLPaths;
-import edu.jhuapl.sbmt.client.SbmtModelFactory;
-import edu.jhuapl.sbmt.client.SbmtMultiMissionTool;
-import edu.jhuapl.sbmt.client.SmallBodyModel;
-import edu.jhuapl.sbmt.client.SmallBodyViewConfig;
-import edu.jhuapl.sbmt.lidar.LidarTrack;
 import edu.jhuapl.sbmt.stateHistory.model.interfaces.IStateHistoryMetadata;
-import edu.jhuapl.sbmt.stateHistory.model.interfaces.StateHistory;
 import edu.jhuapl.sbmt.stateHistory.model.planning.lidar.PlannedLidarTrack;
 import edu.jhuapl.sbmt.stateHistory.model.planning.lidar.PlannedLidarTrackCollection;
-import edu.jhuapl.sbmt.stateHistory.model.planning.lidar.PlannedLidarTrackCollectionListener;
 import edu.jhuapl.sbmt.stateHistory.model.planning.lidar.PlannedLidarTrackVtkCollection;
-import edu.jhuapl.sbmt.stateHistory.model.stateHistory.StateHistoryKey;
-import edu.jhuapl.sbmt.stateHistory.rendering.model.StateHistoryPositionCalculator;
 import edu.jhuapl.sbmt.util.ThreadService;
 import edu.jhuapl.sbmt.util.TimeUtil;
 
@@ -43,60 +24,60 @@ public class PlannedLidarTrackIOHelper
 	public static void main(String[] args) throws Exception
 	{
 		ThreadService.initialize(100);
-    	ShapeModelBody body = ShapeModelBody.APOPHIS;
-        ShapeModelType type = ShapeModelType.provide("Apophis");
-    	boolean aplVersion = true;
-        final SafeURLPaths safeUrlPaths = SafeURLPaths.instance();
-        String rootURL = safeUrlPaths.getUrl("https://sbmt.jhuapl.edu/sbmt/prod/");
-    	Configuration.setAPLVersion(aplVersion);
-        Configuration.setRootURL(rootURL);
-
-        SbmtMultiMissionTool.configureMission();
-
-         // authentication
-        Configuration.authenticate();
-        NativeLibraryLoader.loadVtkLibraries();
-         // initialize view config
-        SmallBodyViewConfig.initialize();
-    	SmallBodyViewConfig config = SmallBodyViewConfig.getSmallBodyConfig(body, type);
-    	SmallBodyModel smallBodyModel = SbmtModelFactory.createSmallBodyModel(config);
-		StateHistoryPositionCalculator posCalc = new StateHistoryPositionCalculator(smallBodyModel);
-//		SpiceInfo.initializeSerializationProxy();
-//		SpiceStateHistory.initializeSerializationProxy();
-		StateHistoryKey key = new StateHistoryKey(1);
-		StateHistory stateHistory = StateHistoryModelIOHelper.loadStateHistoryFromFile(new File("/Users/steelrj1/Desktop/Segment_1.spicestate"), null, key);
-		stateHistory.getLocationProvider().reloadPointingProvider();
-		PlannedLidarTrackCollection trackCollection = new PlannedLidarTrackCollection("/Users/steelrj1/Downloads/ApophisSimKernels/OLAScanReport1629828638774-1.csv", stateHistory);
-		trackCollection.setListener(new PlannedLidarTrackCollectionListener()
-		{
-
-			@Override
-			public void trackAdded(LidarTrack track, PlannedLidarTrack plannedTrack)
-			{
-//				lidarTrackCollection.addTrack(track, plannedTrack);
-			}
-		});
-		PlannedLidarTrackIOHelper.loadPlannedLidarTracksFromFileWithName("/Users/steelrj1/Downloads/ApophisSimKernels/OLAScanReport1629828638774-1.csv", stateHistory.getMetadata(), trackCollection, new ProgressStatusListener()
-		{
-
-			@Override
-			public void setProgressStatus(String status, int progress)
-			{
-				System.out.println(
-						"PlannedLidarTrackIOHelper.main(...).new ProgressStatusListener() {...}: setProgressStatus: status " + status + " progress " + progress);
-			}
-		},
-		() -> {
-			SwingUtilities.invokeLater(new Runnable()
-			{
-				@Override
-				public void run()
-				{
-					System.out.println("PlannedLidarTrackIOHelper.main(...).new Runnable() {...}: run: Ready.");
-				}
-			});
-		});
-		Logger.getAnonymousLogger().log(Level.INFO, "DONE");
+//    	ShapeModelBody body = ShapeModelBody.APOPHIS;
+//        ShapeModelType type = ShapeModelType.provide("Apophis");
+//    	boolean aplVersion = true;
+//        final SafeURLPaths safeUrlPaths = SafeURLPaths.instance();
+//        String rootURL = safeUrlPaths.getUrl("https://sbmt.jhuapl.edu/sbmt/prod/");
+//    	Configuration.setAPLVersion(aplVersion);
+//        Configuration.setRootURL(rootURL);
+//
+//        SbmtMultiMissionTool.configureMission();
+//
+//         // authentication
+//        Configuration.authenticate();
+//        NativeLibraryLoader.loadVtkLibraries();
+//         // initialize view config
+//        SmallBodyViewConfig.initialize();
+//    	SmallBodyViewConfig config = SmallBodyViewConfig.getSmallBodyConfig(body, type);
+//    	SmallBodyModel smallBodyModel = SbmtModelFactory.createSmallBodyModel(config);
+//		StateHistoryPositionCalculator posCalc = new StateHistoryPositionCalculator(smallBodyModel);
+////		SpiceInfo.initializeSerializationProxy();
+////		SpiceStateHistory.initializeSerializationProxy();
+//		StateHistoryKey key = new StateHistoryKey(1);
+//		StateHistory stateHistory = StateHistoryModelIOHelper.loadStateHistoryFromFile(new File("/Users/steelrj1/Desktop/Segment_1.spicestate"), null, key);
+//		stateHistory.getLocationProvider().reloadPointingProvider();
+//		PlannedLidarTrackCollection trackCollection = new PlannedLidarTrackCollection("/Users/steelrj1/Downloads/ApophisSimKernels/OLAScanReport1629828638774-1.csv", stateHistory);
+//		trackCollection.setListener(new PlannedLidarTrackCollectionListener()
+//		{
+//
+//			@Override
+//			public void trackAdded(LidarTrack track, PlannedLidarTrack plannedTrack)
+//			{
+////				lidarTrackCollection.addTrack(track, plannedTrack);
+//			}
+//		});
+//		PlannedLidarTrackIOHelper.loadPlannedLidarTracksFromFileWithName("/Users/steelrj1/Downloads/ApophisSimKernels/OLAScanReport1629828638774-1.csv", stateHistory.getMetadata(), trackCollection, new ProgressStatusListener()
+//		{
+//
+//			@Override
+//			public void setProgressStatus(String status, int progress)
+//			{
+//				System.out.println(
+//						"PlannedLidarTrackIOHelper.main(...).new ProgressStatusListener() {...}: setProgressStatus: status " + status + " progress " + progress);
+//			}
+//		},
+//		() -> {
+//			SwingUtilities.invokeLater(new Runnable()
+//			{
+//				@Override
+//				public void run()
+//				{
+//					System.out.println("PlannedLidarTrackIOHelper.main(...).new Runnable() {...}: run: Ready.");
+//				}
+//			});
+//		});
+//		Logger.getAnonymousLogger().log(Level.INFO, "DONE");
 
 	}
 
