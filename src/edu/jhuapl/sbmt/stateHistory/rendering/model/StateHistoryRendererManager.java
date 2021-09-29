@@ -579,7 +579,9 @@ public class StateHistoryRendererManager extends SaavtkItemManager<StateHistory>
 		TrajectoryActor renderer = stateHistoryToRendererMap.get(stateHistory);
 		int isVisible = (visibility == true) ? 1 : 0;
 		renderer.SetVisibility(isVisible);
-		this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, renderer);
+		SwingUtilities.invokeLater(() -> {
+			this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, renderer);
+		});
 	}
 
 	/**
@@ -610,7 +612,9 @@ public class StateHistoryRendererManager extends SaavtkItemManager<StateHistory>
 			return;
 		StateHistoryRenderProperties tmpProp = propM.get(segment);
 		renderer.setColoringProvider(tmpProp.activeCP);
-		this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, renderer);
+		SwingUtilities.invokeLater(() -> {
+			this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, renderer);
+		});
 	}
 
 	/**

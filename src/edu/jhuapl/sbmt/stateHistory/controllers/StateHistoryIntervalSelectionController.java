@@ -13,7 +13,6 @@ import org.apache.commons.io.FilenameUtils;
 import com.google.common.collect.ImmutableSet;
 
 import edu.jhuapl.saavtk.gui.dialog.CustomFileChooser;
-import edu.jhuapl.saavtk.gui.dialog.DirectoryChooser;
 import edu.jhuapl.sbmt.client.SmallBodyModel;
 import edu.jhuapl.sbmt.stateHistory.model.DefaultStateHistoryModelChangedListener;
 import edu.jhuapl.sbmt.stateHistory.model.StateHistoryModel;
@@ -112,16 +111,17 @@ public class StateHistoryIntervalSelectionController
             {
             	StateHistory stateHistory = rendererManager.getSelectedItems().asList().get(0);
         		String title = "Specify the folder to save this state history file";
-        		File targPath = DirectoryChooser.showOpenDialog(view, title);
-        		if (targPath == null)
+//        		File targPath = DirectoryChooser.showOpenDialog(view, title);
+        		File targetFile = CustomFileChooser.showSaveDialog(view, title, stateHistory.getMetadata().getStateHistoryName());
+        		if (targetFile == null)
         			return;
 
         		// Save all of the selected items into the target folder
         		int passCnt = 0;
         		try
         		{
-    				StateHistoryModelIOHelper.saveIntervalToFile(bodyModel.getModelName(), stateHistory,
-    															new File(targPath, stateHistory.getMetadata().getStateHistoryName()).getAbsolutePath());
+    				StateHistoryModelIOHelper.saveIntervalToFile(bodyModel.getModelName(), stateHistory, targetFile.getAbsolutePath());
+//    															new File(targPath, stateHistory.getMetadata().getStateHistoryName()).getAbsolutePath());
     				passCnt++;
 
         		}

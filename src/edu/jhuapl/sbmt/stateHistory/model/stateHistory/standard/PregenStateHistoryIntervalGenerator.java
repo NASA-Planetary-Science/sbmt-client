@@ -4,6 +4,8 @@
 package edu.jhuapl.sbmt.stateHistory.model.stateHistory.standard;
 
 import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.function.Function;
 
 import org.joda.time.DateTime;
@@ -18,18 +20,14 @@ import edu.jhuapl.sbmt.pointing.spice.SpiceInfo;
 import edu.jhuapl.sbmt.stateHistory.model.StateHistorySourceType;
 import edu.jhuapl.sbmt.stateHistory.model.StateHistoryUtil;
 import edu.jhuapl.sbmt.stateHistory.model.interfaces.IStateHistoryIntervalGenerator;
-import edu.jhuapl.sbmt.stateHistory.model.interfaces.IStateHistoryLocationProvider;
 import edu.jhuapl.sbmt.stateHistory.model.interfaces.IStateHistoryMetadata;
-import edu.jhuapl.sbmt.stateHistory.model.interfaces.IStateHistoryTrajectoryMetadata;
 import edu.jhuapl.sbmt.stateHistory.model.interfaces.State;
 import edu.jhuapl.sbmt.stateHistory.model.interfaces.StateHistory;
-import edu.jhuapl.sbmt.stateHistory.model.interfaces.Trajectory;
 import edu.jhuapl.sbmt.stateHistory.model.io.StateHistoryInputException;
 import edu.jhuapl.sbmt.stateHistory.model.io.StateHistoryInvalidTimeException;
 import edu.jhuapl.sbmt.stateHistory.model.scState.CsvState;
 import edu.jhuapl.sbmt.stateHistory.model.stateHistory.StateHistoryKey;
 import edu.jhuapl.sbmt.stateHistory.model.stateHistory.StateHistoryMetadata;
-import edu.jhuapl.sbmt.stateHistory.model.trajectory.StandardTrajectory;
 import edu.jhuapl.sbmt.util.TimeUtil;
 
 /**
@@ -67,7 +65,10 @@ public class PregenStateHistoryIntervalGenerator implements IStateHistoryInterva
 		DateTimeFormatter formatter = DateTimeFormat.forPattern("yyyy-MM-dd'T'HH:mm:ss.SSS");
 		DateTime start = formatter.parseDateTime(startString.substring(0, 23));
 		DateTime end = formatter.parseDateTime(endString.substring(0, 23));
-		pointingProvider = PregenPointingProvider.builder(sourceFile, start, end).build();
+		if (sourceFile.endsWith("csvstate"))
+			pointingProvider = PregenPointingProvider.builder(sourceFile, metadata.getStartTime(), metadata.getEndTime()).build();
+		else
+			pointingProvider = PregenPointingProvider.builder(sourceFile, start, end).build();
 
 
 		return createNewTimeInterval(history, metadata.getKey(), start, end,
@@ -93,7 +94,7 @@ public class PregenStateHistoryIntervalGenerator implements IStateHistoryInterva
 	public StateHistory createNewTimeInterval(StateHistory tempHistory, StateHistoryKey key, DateTime startTime, DateTime endTime, double duration,
 			String name, Function<Double, Void> progressFunction) throws StateHistoryInputException, StateHistoryInvalidTimeException
 	{
-		StateHistory history = tempHistory;
+		StandardStateHistory history = (StandardStateHistory)tempHistory;
 		File path = null;
 		final int lineLength = 121;
 		// gets the history file from the server
@@ -105,7 +106,10 @@ public class PregenStateHistoryIntervalGenerator implements IStateHistoryInterva
 		DateTimeFormatter formatter = DateTimeFormat.forPattern("yyyy-MM-dd'T'HH:mm:ss.SSS");
 		DateTime start = formatter.parseDateTime(startString.substring(0, 23));
 		DateTime end = formatter.parseDateTime(endString.substring(0, 23));
-		pointingProvider = PregenPointingProvider.builder(sourceFile, start, end).build();
+		if (sourceFile.endsWith("csvstate"))
+			pointingProvider = PregenPointingProvider.builder(sourceFile, TimeUtil.str2et(startString),  TimeUtil.str2et(endString)).build();
+		else
+			pointingProvider = PregenPointingProvider.builder(sourceFile, start, end).build();
 
 		// searches the file for the specified times
 		String queryStart = StateHistoryUtil.readString(lineLength, path);
@@ -145,15 +149,16 @@ public class PregenStateHistoryIntervalGenerator implements IStateHistoryInterva
 				TimeUtil.str2et(startString), TimeUtil.str2et(endString),
 				name, "", StateHistorySourceType.PREGEN);
 		if (tempHistory == null) history = new StandardStateHistory(metadata, sourceFile);
-		Trajectory trajectory = new StandardTrajectory(history);
-		IStateHistoryLocationProvider locationProvider = history.getLocationProvider();
-		IStateHistoryTrajectoryMetadata trajectoryMetadata = history.getTrajectoryMetadata();
-
-		trajectory.setPointingProvider(pointingProvider);
-		trajectory.setStartTime(TimeUtil.str2et(startString));
-		trajectory.setStopTime(TimeUtil.str2et(endString));
-		trajectory.setNumPoints(1000);
-
+//		Trajectory trajectory = new StandardTrajectory(history);
+//		IStateHistoryLocationProvider locationProvider = history.getLocationProvider();
+//		IStateHistoryTrajectoryMetadata trajectoryMetadata = history.getTrajectoryMetadata();
+//
+//		trajectory.setPointingProvider(pointingProvider);
+//		trajectory.setStartTime(TimeUtil.str2et(startString));
+//		trajectory.setStopTime(TimeUtil.str2et(endString));
+//		trajectory.setNumPoints(1000);
+//
+		List<State> segments = new ArrayList<State>();
 		// reads the binary file and writes the data to a CSV file
 		for (int i = positionStart; i <= positionEnd; i += lineLength)
 		{
@@ -168,17 +173,17 @@ public class PregenStateHistoryIntervalGenerator implements IStateHistoryInterva
 			State state = new CsvState(i, path, position);
 
 			// add to history
-			locationProvider.addState(state);
-//			trajectory.addPositionAtTime(flybyState.getSpacecraftPosition(), flybyState.getEphemerisTime());
+			segments.add(state);
 
 			double completion = 100 * ((double) (i - positionStart)) / (double) (positionEnd - positionStart);
 			if (progressFunction != null) progressFunction.apply(completion);
 		}
-		metadata.setCurrentTime(metadata.getStartTime());
-		trajectoryMetadata.setTrajectory(trajectory);
-		metadata.setType(StateHistorySourceType.PREGEN);
-		locationProvider.setSourceFile(sourceFile);
-		locationProvider.setPointingProvider(pointingProvider);
+		history.buildHistory(segments, pointingProvider, TimeUtil.str2et(startString), TimeUtil.str2et(endString));
+//		metadata.setCurrentTime(metadata.getStartTime());
+//		trajectoryMetadata.setTrajectory(trajectory);
+//		metadata.setType(StateHistorySourceType.PREGEN);
+//		locationProvider.setSourceFile(sourceFile);
+//		locationProvider.setPointingProvider(pointingProvider);
 		return history;
 	}
 
