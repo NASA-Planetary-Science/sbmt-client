@@ -15,6 +15,7 @@ import java.util.stream.Stream;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.ButtonGroup;
+import javax.swing.DefaultComboBoxModel;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JFrame;
@@ -36,6 +37,7 @@ import org.joda.time.DateTime;
 
 import edu.jhuapl.saavtk.gui.dialog.CustomFileChooser;
 import edu.jhuapl.sbmt.stateHistory.controllers.kernel.KernelManagementController;
+import edu.jhuapl.sbmt.stateHistory.controllers.kernel.KernelSetChangedListener;
 import edu.jhuapl.sbmt.stateHistory.model.StateHistoryModel;
 import edu.jhuapl.sbmt.stateHistory.model.StateHistorySourceType;
 import edu.jhuapl.sbmt.stateHistory.model.interfaces.IStateHistoryMetadata;
@@ -125,6 +127,8 @@ public class StateHistoryIntervalGenerationPanel extends JPanel
 
     private KernelManagementController kernelManagementController;
 
+    private JComboBox<String> kernelComboBox;
+
 
 	/**
 	 * Constructor.
@@ -135,7 +139,16 @@ public class StateHistoryIntervalGenerationPanel extends JPanel
 		this.hasSpiceInfo = historyModel.getViewConfig().getSpiceInfo() != null;
 		this.hasPregenInfo = historyModel.getViewConfig().getTimeHistoryFile() != null;
 		this.kernelIngestor = new SpiceKernelIngestor(historyModel.getCustomDataFolder());
-		kernelManagementController = new KernelManagementController(kernelIngestor.getLoadedKernelsDirectory());
+		kernelManagementController = new KernelManagementController(kernelIngestor.getLoadedKernelsDirectory(), new KernelSetChangedListener()
+		{
+
+			@Override
+			public void kernelDeleted(String kernelName)
+			{
+				DefaultComboBoxModel<String> model = new DefaultComboBoxModel<String>(getAvailableKernels());
+				kernelComboBox.setModel(model);
+			}
+		});
 		initUI();
 	}
 
@@ -147,7 +160,16 @@ public class StateHistoryIntervalGenerationPanel extends JPanel
 		this.hasSpiceInfo = historyModel.getViewConfig().getSpiceInfo() != null;
 		this.hasPregenInfo = historyModel.getViewConfig().getTimeHistoryFile() != null;
 		this.kernelIngestor = new SpiceKernelIngestor(historyModel.getCustomDataFolder());
-		kernelManagementController = new KernelManagementController(kernelIngestor.getLoadedKernelsDirectory());
+		kernelManagementController = new KernelManagementController(kernelIngestor.getLoadedKernelsDirectory(), new KernelSetChangedListener()
+		{
+
+			@Override
+			public void kernelDeleted(String kernelName)
+			{
+				DefaultComboBoxModel<String> model = new DefaultComboBoxModel<String>(getAvailableKernels());
+				kernelComboBox.setModel(model);
+			}
+		});
 		initUI();
 		IStateHistoryMetadata metadata = history.getMetadata();
 		stateHistorySourceType = metadata.getType();
@@ -262,6 +284,17 @@ public class StateHistoryIntervalGenerationPanel extends JPanel
 		return panel;
 	}
 
+	private String[] getAvailableKernels()
+	{
+		List<String> loadedKernels = new ArrayList<String>();
+		if (kernelIngestor.getLoadedKernelsDirectory().listFiles() != null)
+			loadedKernels = Stream.of(kernelIngestor.getLoadedKernelsDirectory().listFiles()).filter(file -> file.isDirectory()).map(File::getName).collect(Collectors.toList());
+		loadedKernels.add(0, "Load new kernel...");
+		String[] loadedKernelNamesArray = new String[loadedKernels.size()];
+		loadedKernels.toArray(loadedKernelNamesArray);
+		return loadedKernelNamesArray;
+	}
+
 	private JPanel getSpiceTimeRangePanel()
 	{
 		JPanel panel = new JPanel();
@@ -270,13 +303,8 @@ public class StateHistoryIntervalGenerationPanel extends JPanel
 		cancelButton = new JButton("Cancel");
 		cancelButton.setEnabled(false);
 
-		List<String> loadedKernels = new ArrayList<String>();
-		if (kernelIngestor.getLoadedKernelsDirectory().listFiles() != null)
-			loadedKernels = Stream.of(kernelIngestor.getLoadedKernelsDirectory().listFiles()).filter(file -> file.isDirectory()).map(File::getName).collect(Collectors.toList());
-		loadedKernels.add(0, "Load new kernel...");
-		String[] loadedKernelNamesArray = new String[loadedKernels.size()];
-		loadedKernels.toArray(loadedKernelNamesArray);
-		JComboBox<String> kernelComboBox = new JComboBox<String>(loadedKernelNamesArray);
+
+		kernelComboBox = new JComboBox<String>(getAvailableKernels());
 
 		kernelComboBox.addActionListener(e -> {
 

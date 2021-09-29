@@ -6,12 +6,14 @@ import java.io.IOException;
 import edu.jhuapl.sbmt.stateHistory.model.kernel.KernelManagementModel;
 import edu.jhuapl.sbmt.stateHistory.ui.state.kernel.KernelManagementPanel;
 
+
+
 public class KernelManagementController
 {
 	private KernelManagementPanel view;
 	private KernelManagementModel model;
 
-	public KernelManagementController(File loadedKernelsDirectory)
+	public KernelManagementController(File loadedKernelsDirectory, KernelSetChangedListener listener)
 	{
 		try
 		{
@@ -28,6 +30,7 @@ public class KernelManagementController
 			model.getSelectedItems().forEach( kernelSet ->
 				{
 					model.deleteKernelSet(kernelSet.getKernelDirectory(), true);
+					listener.kernelDeleted(kernelSet.getKernelDirectory());
 				}
 			);
 		});
