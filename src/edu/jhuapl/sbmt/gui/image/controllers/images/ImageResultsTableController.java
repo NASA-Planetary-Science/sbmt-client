@@ -950,7 +950,8 @@ public class ImageResultsTableController
                 tableModel.setValueAt(false, index, imageResultsTableView.getFrusColumnIndex());
             }
 
-            tableModel.setValueAt(imageCollection.getImage(key).isBoundaryVisible(), index, imageResultsTableView.getBndrColumnIndex());
+            if (imageCollection.getImage(key) != null)
+            	tableModel.setValueAt(imageCollection.getImage(key).isBoundaryVisible(), index, imageResultsTableView.getBndrColumnIndex());
         }
 
     }
