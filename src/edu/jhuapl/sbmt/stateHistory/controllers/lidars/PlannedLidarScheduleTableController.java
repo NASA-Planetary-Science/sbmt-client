@@ -15,13 +15,18 @@ import edu.jhuapl.saavtk.model.ModelManager;
 import edu.jhuapl.saavtk.util.ProgressStatusListener;
 import edu.jhuapl.saavtk.util.Properties;
 import edu.jhuapl.sbmt.client.SmallBodyModel;
+import edu.jhuapl.sbmt.lidar.LidarTrack;
 import edu.jhuapl.sbmt.stateHistory.controllers.IPlannedDataController;
 import edu.jhuapl.sbmt.stateHistory.model.interfaces.IStateHistoryMetadata;
 import edu.jhuapl.sbmt.stateHistory.model.io.PlannedLidarTrackIOHelper;
+import edu.jhuapl.sbmt.stateHistory.model.planning.lidar.PlannedLidarTrack;
 import edu.jhuapl.sbmt.stateHistory.model.planning.lidar.PlannedLidarTrackCollection;
+import edu.jhuapl.sbmt.stateHistory.model.planning.lidar.PlannedLidarTrackCollectionListener;
 import edu.jhuapl.sbmt.stateHistory.model.planning.lidar.PlannedLidarTrackScheduleCollection;
+import edu.jhuapl.sbmt.stateHistory.model.planning.lidar.PlannedLidarTrackVtkCollection;
 import edu.jhuapl.sbmt.stateHistory.rendering.model.StateHistoryRendererManager;
 import edu.jhuapl.sbmt.stateHistory.ui.lidars.schedule.PlannedLidarTrackScheduleView;
+import edu.jhuapl.sbmt.util.ThreadService;
 
 /**
  * Controls the UI for the planned Lidar schedules
@@ -42,6 +47,7 @@ public class PlannedLidarScheduleTableController implements IPlannedDataControll
 		collection = new PlannedLidarTrackScheduleCollection();
 
 		this.view = new PlannedLidarTrackScheduleView(collection);
+		ThreadService.initialize(600);
 
 		//creates a new lidar collection for each schedule and loads it into the tool
 		view.getTable().getLoadPlannedLidarTrackButton().addActionListener(e -> {
@@ -56,8 +62,18 @@ public class PlannedLidarScheduleTableController implements IPlannedDataControll
 				{
 					try
 					{
-						PlannedLidarTrackCollection lidarTrackCollection = new PlannedLidarTrackCollection(file.getAbsolutePath(), modelManager, smallBodyModel, rendererManager.getRenderer());
-			        	if (rendererManager.getSelectedItems().size() > 0) historyMetadata = rendererManager.getSelectedItems().asList().get(0).getMetadata();
+						PlannedLidarTrackCollection trackCollection = new PlannedLidarTrackCollection(file.getAbsolutePath(), rendererManager.getSelectedItems().asList().get(0));
+						PlannedLidarTrackVtkCollection lidarTrackCollection = new PlannedLidarTrackVtkCollection(file.getAbsolutePath(), trackCollection, modelManager, smallBodyModel, rendererManager.getRenderer());
+			        	trackCollection.setListener(new PlannedLidarTrackCollectionListener()
+						{
+
+							@Override
+							public void trackAdded(LidarTrack track, PlannedLidarTrack plannedTrack)
+							{
+								lidarTrackCollection.addTrack(track, plannedTrack);
+							}
+						});
+						if (rendererManager.getSelectedItems().size() > 0) historyMetadata = rendererManager.getSelectedItems().asList().get(0).getMetadata();
 			        		lidarTrackCollection.setStateHistoryMetadata(historyMetadata);
 			        	lidarTrackCollection.updateStateHistorySource(rendererManager.getHistoryCollection().getCurrentRun());
 			        	lidarTrackCollection.setPercentageShown(0);
@@ -65,7 +81,7 @@ public class PlannedLidarScheduleTableController implements IPlannedDataControll
 			        	lidarTrackCollection.addListener((aSource, aEventType) -> { refreshView(); });
 			        	collection.addCollection(lidarTrackCollection);
 
-						PlannedLidarTrackIOHelper.loadPlannedLidarTracksFromFileWithName(file.getAbsolutePath(), historyMetadata, lidarTrackCollection, new ProgressStatusListener()
+						PlannedLidarTrackIOHelper.loadPlannedLidarTracksFromFileWithName(file.getAbsolutePath(), historyMetadata, trackCollection, new ProgressStatusListener()
 						{
 
 							@Override
@@ -88,6 +104,7 @@ public class PlannedLidarScheduleTableController implements IPlannedDataControll
 								}
 							});
 						});
+						lidarTrackCollection.renderFootprints();
 					}
 					catch (IOException e)
 					{
@@ -160,9 +177,9 @@ public class PlannedLidarScheduleTableController implements IPlannedDataControll
 
 	private void updateButtonState()
 	{
-		ImmutableSet<PlannedLidarTrackCollection> selectedItems = collection.getSelectedItems();
+		ImmutableSet<PlannedLidarTrackVtkCollection> selectedItems = collection.getSelectedItems();
 		boolean allMapped = true;
-		for (PlannedLidarTrackCollection LidarTrackCollection : selectedItems)
+		for (PlannedLidarTrackVtkCollection LidarTrackCollection : selectedItems)
 		{
 			if (LidarTrackCollection.isShowing() == false) allMapped = false;
 		}

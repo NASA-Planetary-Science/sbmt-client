@@ -61,6 +61,8 @@ public interface State
     public double[] getSunPosition();
 
 
+    public double[][] getSpacecraftAxes();
+
     /**
      * @return
      */

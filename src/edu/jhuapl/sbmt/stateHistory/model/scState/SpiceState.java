@@ -15,6 +15,7 @@ import edu.jhuapl.sbmt.pointing.spice.SpicePointingProvider;
 import edu.jhuapl.sbmt.stateHistory.model.interfaces.State;
 import edu.jhuapl.sbmt.util.TimeUtil;
 
+import crucible.core.math.vectorspace.UnwritableMatrixIJK;
 import crucible.core.math.vectorspace.UnwritableVectorIJK;
 import crucible.core.mechanics.EphemerisID;
 import crucible.core.mechanics.providers.lockable.LockableFrameLinkEvaluationException;
@@ -48,7 +49,7 @@ public class SpiceState implements State
 	public SpiceState(SpicePointingProvider pointingProvider)
 	{
 		this.pointingProvider = pointingProvider;
-		this.currentInstrumentFrameName = pointingProvider.getInstrumentNames()[0];
+		this.currentInstrumentFrameName = pointingProvider.getInstrumentNames()[pointingProvider.getInstrumentNames().length-2];
 	}
 
 	@Override
@@ -139,6 +140,26 @@ public class SpiceState implements State
 
 		};
 	}
+
+	@Override
+	public double[][] getSpacecraftAxes()
+	{
+		Preconditions.checkNotNull(ephemerisTime);
+		Preconditions.checkNotNull(pointing);
+		double[][] scAxes = new double[3][3];
+		try {
+			UnwritableMatrixIJK scRotation = pointing.getScRotation();
+			scAxes[0] = new double[] { scRotation.getColumn(0).getI(), scRotation.getColumn(0).getJ(), scRotation.getColumn(0).getK()};
+			scAxes[1] = new double[] { scRotation.getColumn(1).getI(), scRotation.getColumn(1).getJ(), scRotation.getColumn(1).getK()};
+			scAxes[2] = new double[] { scRotation.getColumn(2).getI(), scRotation.getColumn(2).getJ(), scRotation.getColumn(2).getK()};
+			return scAxes;
+		}
+		catch (LockableFrameLinkEvaluationException lflee)
+		{
+			return new double[][] {{1.0, 0.0, 0.0}, {0.0, 1.0, 0.0}, {0.0, 0.0, 1.0}};
+		}
+	}
+
 
 	@Override
 	public double[] getSpacecraftXAxis()

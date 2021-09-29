@@ -364,6 +364,12 @@ public class CsvState implements State
     }
 
     @Override
+    public double[][] getSpacecraftAxes()
+    {
+        return new double[][]{spacecraftXAxis, spacecraftYAxis, spacecraftZAxis};
+    }
+
+    @Override
     public double[] getSpacecraftXAxis()
     {
         return spacecraftXAxis;

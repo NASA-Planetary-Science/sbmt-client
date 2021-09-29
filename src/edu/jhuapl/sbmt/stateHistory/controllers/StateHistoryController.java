@@ -121,7 +121,7 @@ public class StateHistoryController
 			historyModel = new StateHistoryModel(bodyModel, rendererManager);
 			historyModel.registerIntervalGenerator(StateHistorySourceType.SPICE, new SpiceStateHistoryIntervalGenerator());	//TODO update this to be a parameter in view config
 			historyModel.setIntervalGenerator(StateHistorySourceType.SPICE);
-			if (!config.timeHistoryFile.equals(""))
+			if (config.timeHistoryFile != null && !config.timeHistoryFile.equals(""))
 			{
 				historyModel.registerIntervalGenerator(StateHistorySourceType.PREGEN, new PregenStateHistoryIntervalGenerator(config));
 				historyModel.setIntervalGenerator(StateHistorySourceType.PREGEN);
