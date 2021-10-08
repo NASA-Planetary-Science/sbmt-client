@@ -1,5 +1,7 @@
 package edu.jhuapl.sbmt.client;
 
+import java.awt.Desktop;
+import java.awt.desktop.AboutEvent;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -21,6 +23,23 @@ public class SbmtHelpMenu extends HelpMenu
     {
         super(rootPanel);
         dataSourceMenuItem.setText("SBMT Data Sources");
+
+     // On macs the about action is in the Application menu not the help menu
+        if (Configuration.isMac())
+        {
+            try
+            {
+                Desktop.getDesktop().setAboutHandler(new java.awt.desktop.AboutHandler() {
+                    public void handleAbout(AboutEvent e) {
+                    	showAbout();
+                    }
+                });
+            }
+            catch (SecurityException e)
+            {
+                e.printStackTrace();
+            }
+        }
      }
 
     public void showAbout()
