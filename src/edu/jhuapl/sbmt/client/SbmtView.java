@@ -643,7 +643,7 @@ public class SbmtView extends View implements PropertyChangeListener
 		if (tmpSmallBodyConfig.hasLidarData == true)
 			lidarInstrName = tmpSmallBodyConfig.lidarInstrumentName.toString();
 
-		JComponent lidarPanel = new LidarPanel(getModelManager(), getPickManager(), getRenderer(), tmpSmallBodyConfig);
+		JComponent lidarPanel = new LidarPanel(getRenderer(), getStatusNotifier(), getPickManager(), tmpSmallBodyConfig, getModelManager().getPolyhedralModel(), getModelManager());
 		addTab(lidarInstrName, lidarPanel);
 
 		if (Configuration.isAPLVersion())
