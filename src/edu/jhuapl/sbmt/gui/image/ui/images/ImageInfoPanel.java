@@ -192,6 +192,7 @@ public class ImageInfoPanel extends ModelInfoWindow implements MouseListener, Mo
         renWin.getRenderer().AddActor(actor);
 
         renWin.setSize(550, 550);
+        renWin.getRenderer().SetBackground(new double[] {0.5f, 0.5f, 0.5f});
 
         imagePicker = new vtkPropPicker();
         imagePicker.PickFromListOn();
