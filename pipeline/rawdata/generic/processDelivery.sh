@@ -24,6 +24,10 @@
 # included here.
 #
 #-------------------------------------------------------------------------------
+# DON'T USE THIS ANYMORE! Superseded by scripts under the scripts/
+# subdirectory.
+check 1 "This script is deprecated; prefer the ones under scripts/."
+#-------------------------------------------------------------------------------
 
 #-------------------------------------------------------------------------------
 # Do not remove or comment out this block. It prevents direct invocation.
