@@ -47,7 +47,6 @@ import edu.jhuapl.saavtk.util.FileCache;
 import edu.jhuapl.saavtk.util.Properties;
 import edu.jhuapl.sbmt.dem.gui.DemMainPanel;
 import edu.jhuapl.sbmt.dtm.controller.DEMPopupMenuActionListener;
-import edu.jhuapl.sbmt.dtm.controller.ExperimentalDEMController;
 import edu.jhuapl.sbmt.dtm.model.DEMBoundaryCollection;
 import edu.jhuapl.sbmt.dtm.model.DEMCollection;
 import edu.jhuapl.sbmt.dtm.model.creation.DEMCreator;
@@ -638,7 +637,7 @@ public class SbmtView extends View implements PropertyChangeListener
 		if (tmpSmallBodyConfig.hasLidarData == true)
 			lidarInstrName = tmpSmallBodyConfig.lidarInstrumentName.toString();
 
-		JComponent lidarPanel = new LidarPanel(getModelManager(), getPickManager(), getRenderer(), tmpSmallBodyConfig);
+		JComponent lidarPanel = new LidarPanel(getRenderer(), getStatusNotifier(), getPickManager(), tmpSmallBodyConfig, getModelManager().getPolyhedralModel(), getModelManager());
 		addTab(lidarInstrName, lidarPanel);
 
 		if (Configuration.isAPLVersion())

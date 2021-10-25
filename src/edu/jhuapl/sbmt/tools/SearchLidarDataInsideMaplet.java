@@ -111,7 +111,7 @@ public class SearchLidarDataInsideMaplet
 
         SmallBodyViewConfig config = SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.EROS, ShapeModelType.GASKELL);
         SmallBodyModel smallBodyModel = SbmtModelFactory.createSmallBodyModel(config);
-        LidarTrackManager trackManager = new LidarTrackManager(QuietSceneChangeNotifier.Instance, smallBodyModel);
+        LidarTrackManager trackManager = new LidarTrackManager(QuietSceneChangeNotifier.Instance, QuietStatusNotifier.Instance, smallBodyModel);
         AbstractEllipsePolygonModel selectionModel = new CircleSelectionModel(QuietSceneChangeNotifier.Instance, QuietStatusNotifier.Instance, smallBodyModel);
 
         Vector3D center = new Vector3D(dem.getCenter());
