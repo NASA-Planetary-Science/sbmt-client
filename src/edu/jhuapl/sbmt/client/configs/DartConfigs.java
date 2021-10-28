@@ -4,6 +4,7 @@ import java.util.GregorianCalendar;
 import java.util.LinkedHashSet;
 import java.util.List;
 
+import com.beust.jcommander.internal.Lists;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
 
@@ -21,6 +22,7 @@ import edu.jhuapl.sbmt.model.image.ImageType;
 import edu.jhuapl.sbmt.model.image.ImagingInstrument;
 import edu.jhuapl.sbmt.model.image.Instrument;
 import edu.jhuapl.sbmt.model.image.SpectralImageMode;
+import edu.jhuapl.sbmt.pointing.spice.SpiceInfo;
 import edu.jhuapl.sbmt.query.database.GenericPhpQuery;
 import edu.jhuapl.sbmt.tools.DBRunInfo;
 
@@ -87,6 +89,25 @@ public class DartConfigs
     {
         super();
     }
+
+//    public List<SystemConfigInfo> getSystemConfigs()
+//    {
+//    	List<SystemConfigInfo> systemConfigs = new ArrayList<SystemConfigInfo>();
+//    	systemConfigs.add(new SystemConfigInfo("Ideal Impact 1 20200629 v01",
+//    			new String[] { "ideal-impact1-20200629-v01/Didymos", "ideal-impact1-20200629-v01/Dimorphos"}, false));
+//    	systemConfigs.add(new SystemConfigInfo("Ideal Impact 2 20200629 v01",
+//    	    	new String[] { "ideal-impact2-20200629-v01/Didymos", "ideal-impact2-20200629-v01/Dimorphos"}, false));
+//    	systemConfigs.add(new SystemConfigInfo("Ideal Impact 3 20200629 v01",
+//    	    	new String[] { "ideal-impact3-20200629-v01/Didymos", "ideal-impact3-20200629-v01/Dimorphos"}, false));
+//    	systemConfigs.add(new SystemConfigInfo("Ideal Impact 4 RA 20210211 v01",
+//    	    	new String[] { "ideal-impact4-ra-20210211-v01/Didymos", "ideal-impact4-ra-20210211-v01/Dimorphos"}, false));
+//    	systemConfigs.add(new SystemConfigInfo("Ideal Impact 5 20200629 v01",
+//    	    	new String[] { "ideal-impact5-20200629-v01/Didymos", "ideal-impact5-20200629-v01/Dimorphos"}, false));
+//    	systemConfigs.add(new SystemConfigInfo("Ideal Impact 6 RA 20201116 v01",
+//    	    	new String[] { "ideal-impact6-ra-20200629-v01/Didymos", "ideal-impact6-ra-20200629-v01/Dimorphos"}, false));
+//
+//    	return systemConfigs;
+//    }
 
     /**
      * Initialize all DART-specific models, adding them all to the supplied
@@ -162,8 +183,26 @@ public class DartConfigs
         configList.add(c);
         c = createSingleResolutionConfig_20200629_v01(ShapeModelBody.DIMORPHOS, "Errors Impact 5 20200629 v01", 3366134);
         configList.add(c);
+        c = createSingleResolutionSystemConfig_20200629_v01(new ShapeModelBody[] { ShapeModelBody.DIDYMOS, ShapeModelBody.DIMORPHOS }, "Ideal Impact 1 20200629 v01 System", 1996);
+        configList.add(c);
 
         defaultConfig.defaultForMissions = DartClients;
+    }
+
+    protected SmallBodyViewConfig createSingleResolutionSystemConfig_20200629_v01(ShapeModelBody[] body, String label, int numberPlates)
+    {
+    	SmallBodyViewConfig config = createSingleResolutionConfig_20200629_v01(body[0], label, numberPlates);
+//    	config.modelLabel = label + " - System";
+    	List<SmallBodyViewConfig> systemConfigs = Lists.newArrayList();
+    	for (int i=1; i<body.length; i++)
+    	{
+    		systemConfigs.add(createSingleResolutionConfig_20200629_v01(body[i], label, numberPlates));
+    	};
+    	config.systemConfigs = systemConfigs;
+    	config.hasSystemBodies = true;
+    	config.body = ShapeModelBody.DIDYMOS_SYSTEM;
+    	config.rootDirOnServer = "/" + body[0].name().replaceAll("[\\s-_]+", "-").toLowerCase() + "/" + config.author.name().replaceAll("[\\s-_]+", "-").toLowerCase();
+    	return config;
     }
 
     /**
@@ -199,7 +238,7 @@ public class DartConfigs
         // ShapeModelType rules: no spaces (replace with underscores). Mixed
         // case, underscores and dashes are all OK. Includes a DART-specific
         // hack to remove one dash that was not present in the early models.
-        ShapeModelType author = ShapeModelType.provide(label.replaceAll("\\s+", "-").toLowerCase().replace("impact-", "impact"));
+        ShapeModelType author = ShapeModelType.provide(label.replaceAll(" System", "").replaceAll("\\s+", "-").toLowerCase().replace("impact-", "impact"));
 
         // Model identifier string rules: lowercase, no spaces nor underscores
         // (replace with dashes). Single dashes are OK. Valid for building
@@ -289,7 +328,7 @@ public class DartConfigs
                 new DBRunInfo(ImageSource.SPICE, Instrument.LUKE, body.toString(), //
                         lukeDir + "/imagelist-fullpath-info.txt", lukeTable) //
         };
-
+        generateStateHistoryParameters(c);
         return c;
     }
 
@@ -425,5 +464,18 @@ public class DartConfigs
 
         return c;
     }
+
+    private void generateStateHistoryParameters(SmallBodyViewConfig c)
+	{
+        c.hasStateHistory = false;
+        c.timeHistoryFile = c.rootDirOnServer + "/history/timeHistory.bth";
+        c.stateHistoryStartDate = new GregorianCalendar(2022, 9, 1, 10, 25, 0).getTime();
+        c.stateHistoryEndDate = new GregorianCalendar(2022, 9, 1, 10, 28, 0).getTime();
+        SpiceInfo spiceInfo1 = new SpiceInfo("DART", "920065803_FIXED", "DART_SPACECRAFT", "DIDYMOS", new String[] {"DIMORPHOS"}, new String[] {"DART_DRACO_2X2", "120065803_FIXED"});
+		SpiceInfo spiceInfo2 = new SpiceInfo("DART", "120065803_FIXED", "DART_SPACECRAFT", "DIMORPHOS", new String[] {"DIDYMOS"}, new String[] {"DART_DRACO_2X2", "920065803_FIXED"});
+		SpiceInfo[] spiceInfos = new SpiceInfo[] {spiceInfo1, spiceInfo2};
+
+        c.spiceInfo = spiceInfo1;
+	}
 
 }

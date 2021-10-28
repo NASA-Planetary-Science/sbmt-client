@@ -16,6 +16,7 @@ import com.google.common.collect.ImmutableList;
 
 import vtk.vtkCamera;
 
+import edu.jhuapl.saavtk.config.ViewConfig;
 import edu.jhuapl.saavtk.gui.View;
 import edu.jhuapl.saavtk.gui.render.ConfigurableSceneNotifier;
 import edu.jhuapl.saavtk.gui.render.RenderPanel;
@@ -165,7 +166,7 @@ public class SbmtTesterView extends View implements PropertyChangeListener
 	@Override
 	public String getModelDisplayName()
 	{
-		ShapeModelBody body = getConfig().body;
+		ShapeModelBody body = ((ViewConfig)getConfig()).body;
 		return body != null ? body + " / " + getDisplayName() : getDisplayName();
 	}
 
@@ -380,7 +381,7 @@ public class SbmtTesterView extends View implements PropertyChangeListener
 	{
 		addTab(getPolyhedralModelConfig().getShapeModelName(), new SmallBodyControlPanel(getRenderer(), getModelManager(), getPolyhedralModelConfig().getShapeModelName()));
 
-		if (getConfig().hasFlybyData)
+		if (((ViewConfig)getConfig()).hasFlybyData)
 		{
 			//            addTab("Runs", new SimulationRunsPanel(getModelManager(), (SbmtInfoWindowManager)getInfoPanelManager(), getPickManager(), getRenderer()));
 		}
@@ -715,5 +716,11 @@ public class SbmtTesterView extends View implements PropertyChangeListener
 
         return new Graticule(smallBodyModel);
     }
+
+    @Override
+	protected void setupPositionOrientationManager()
+	{
+
+	}
 
 }

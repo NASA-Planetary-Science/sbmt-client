@@ -30,6 +30,7 @@ import edu.jhuapl.sbmt.gui.image.model.ImageKey;
 import edu.jhuapl.sbmt.model.image.ImageKeyInterface;
 import edu.jhuapl.sbmt.model.image.ImageSource;
 import edu.jhuapl.sbmt.model.image.ImagingInstrument;
+import edu.jhuapl.sbmt.model.image.SbmtImageModelFactory;
 import edu.jhuapl.sbmt.model.image.perspectiveImage.PerspectiveImage;
 
 import nom.tam.fits.FitsException;
@@ -182,7 +183,7 @@ public class PerspectiveImagePreRenderer
         }
         Arrays.sort(fileList);
         ArrayList<File> imagesWithPointing = new ArrayList<File>();
-        SmallBodyModel smallBodyModel = SbmtModelFactory.createSmallBodyModel(config);
+        SmallBodyModel smallBodyModel = SbmtModelFactory.createSmallBodyModel(config).get(0);
         PerspectiveImage image;
         PerspectiveImagePreRenderer preRenderer;
         ImageKeyInterface key;
@@ -203,7 +204,7 @@ public class PerspectiveImagePreRenderer
                     System.out.println("PerspectiveImagePreRenderer: main: filename is " + basename);
                     try
                     {
-                        image = (PerspectiveImage)SbmtModelFactory.createImage(key, smallBodyModel, false);
+                        image = (PerspectiveImage)SbmtImageModelFactory.createImage(key, smallBodyModel, false);
                         String pointingFileString = "";
                         if (source == ImageSource.SPICE)
                         {
@@ -231,7 +232,7 @@ public class PerspectiveImagePreRenderer
                 String basename = filename.getParent() + File.separator + FilenameUtils.getBaseName(filename.getAbsolutePath());
                 basename = basename.substring(basename.indexOf("prod/") + 4);
                 key = new ImageKey(basename, source, instrument);
-                image = (PerspectiveImage)SbmtModelFactory.createImage(key, smallBodyModel, false);
+                image = (PerspectiveImage)SbmtImageModelFactory.createImage(key, smallBodyModel, false);
                 preRenderer = new PerspectiveImagePreRenderer(image, outputDirectory, reprocess);
             }
         }

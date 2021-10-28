@@ -31,6 +31,7 @@ import edu.jhuapl.sbmt.model.image.ImageKeyInterface;
 import edu.jhuapl.sbmt.model.image.ImageSource;
 import edu.jhuapl.sbmt.model.image.ImagingInstrument;
 import edu.jhuapl.sbmt.model.image.Instrument;
+import edu.jhuapl.sbmt.model.image.SbmtImageModelFactory;
 import edu.jhuapl.sbmt.model.image.perspectiveImage.PerspectiveImage;
 
 public class OCAMSDatabaseGeneratorSql
@@ -141,7 +142,7 @@ public class OCAMSDatabaseGeneratorSql
 
             try
             {
-                image = (PerspectiveImage)SbmtModelFactory.createImage(key, smallBodyModel, false);
+                image = (PerspectiveImage)SbmtImageModelFactory.createImage(key, smallBodyModel, false);
                 boolean filesExist = checkIfAllFilesExist(image, ImageSource.SPICE);
                 if (filesExist == false)
                 {
@@ -225,7 +226,7 @@ public class OCAMSDatabaseGeneratorSql
 
     public void run(String body, String fileList, String publicTimeString) throws SQLException, IOException, Exception
     {
-        smallBodyModel = SbmtModelFactory.createSmallBodyModel(smallBodyConfig);
+        smallBodyModel = SbmtModelFactory.createSmallBodyModel(smallBodyConfig).get(0);
         SimpleDateFormat dateFormatter = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
         Date publicCutoffDate = dateFormatter.parse(publicTimeString);
         String imagesTable = getImagesTableNames(body);

@@ -7,6 +7,7 @@ import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.nio.file.Paths;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -17,10 +18,12 @@ import javax.swing.JComponent;
 import javax.swing.JPanel;
 import javax.swing.JTabbedPane;
 
+import com.beust.jcommander.internal.Lists;
 import com.google.common.collect.ImmutableList;
 
 import vtk.vtkCamera;
 
+import edu.jhuapl.saavtk.config.ViewConfig;
 import edu.jhuapl.saavtk.gui.View;
 import edu.jhuapl.saavtk.gui.render.ConfigurableSceneNotifier;
 import edu.jhuapl.saavtk.gui.render.RenderPanel;
@@ -89,6 +92,8 @@ import edu.jhuapl.sbmt.model.ryugu.nirs3.H2SpectraFactory;
 import edu.jhuapl.sbmt.model.ryugu.nirs3.NIRS3SearchModel;
 import edu.jhuapl.sbmt.model.ryugu.nirs3.atRyugu.NIRS3Spectrum;
 import edu.jhuapl.sbmt.model.time.StateHistoryCollection;
+import edu.jhuapl.sbmt.pointing.PositionOrientationManager;
+import edu.jhuapl.sbmt.pointing.spice.SpiceInfo;
 import edu.jhuapl.sbmt.spectrum.controllers.custom.CustomSpectraSearchController;
 import edu.jhuapl.sbmt.spectrum.model.core.BasicSpectrumInstrument;
 import edu.jhuapl.sbmt.spectrum.model.hypertree.SpectraSearchDataCollection;
@@ -96,6 +101,7 @@ import edu.jhuapl.sbmt.spectrum.model.statistics.SpectrumStatisticsCollection;
 import edu.jhuapl.sbmt.spectrum.rendering.SpectraCollection;
 import edu.jhuapl.sbmt.spectrum.rendering.SpectrumBoundaryCollection;
 import edu.jhuapl.sbmt.spectrum.ui.SpectrumPopupMenu;
+import edu.jhuapl.sbmt.util.TimeUtil;
 
 import crucible.crust.metadata.api.Key;
 import crucible.crust.metadata.api.Metadata;
@@ -118,7 +124,7 @@ public class SbmtView extends View implements PropertyChangeListener
 	private final TrackedMetadataManager stateManager;
 	private final Map<String, MetadataManager> metadataManagers;
 	private BasicConfigInfo configInfo;
-	private SmallBodyModel smallBodyModel;
+	private List<SmallBodyModel> smallBodyModels;
 
 	public SbmtView(StatusNotifier aStatusNotifier, BasicConfigInfo configInfo)
 	{
@@ -286,37 +292,41 @@ public class SbmtView extends View implements PropertyChangeListener
 	public String getModelDisplayName()
 	{
 		ShapeModelBody body = null;
-		body = configInfo == null ?  getConfig().body : configInfo.body;
+		body = configInfo == null ?  ((ViewConfig)getConfig()).body : configInfo.body;
 		return body != null ? body + " / " + getDisplayName() : getDisplayName();
 	}
 
 	@Override
 	protected void setupModelManager()
 	{
-		smallBodyModel = SbmtModelFactory.createSmallBodyModel(getPolyhedralModelConfig());
-		SBMTModelBootstrap.initialize(smallBodyModel);
+		smallBodyModels = SbmtModelFactory.createSmallBodyModel(getPolyhedralModelConfig());
+		System.out.println("SbmtView: setupModelManager: number of small bodies " + smallBodyModels.size());
+		SmallBodyModel smallBodyModel = smallBodyModels.get(0);
+//		SBMTModelBootstrap.initialize(smallBodyModel);
 //		BasicSpectrumInstrument.initializeSerializationProxy();
 		Graticule graticule = createGraticule(smallBodyModel);
 
-		HashMap<ModelNames, List<Model>> allModels = new HashMap<>();
-		allModels.put(ModelNames.SMALL_BODY, ImmutableList.of(smallBodyModel));
-		allModels.put(ModelNames.GRATICULE, ImmutableList.of(graticule));
-		allModels.put(ModelNames.IMAGES, ImmutableList.of(new ImageCollection(smallBodyModel)));
-		allModels.put(ModelNames.CUSTOM_IMAGES, ImmutableList.of(new ImageCollection(smallBodyModel)));
+		HashMap<ModelNames, List<Model>> allModels = new HashMap<ModelNames, List<Model>>();
+		List<Model> allBodies = Lists.newArrayList();
+		allBodies.addAll(smallBodyModels);
+		allModels.put(ModelNames.SMALL_BODY, allBodies);
+		allModels.put(ModelNames.GRATICULE, List.of(graticule));
+		allModels.put(ModelNames.IMAGES, List.of(new ImageCollection(smallBodyModel)));
+		allModels.put(ModelNames.CUSTOM_IMAGES, List.of(new ImageCollection(smallBodyModel)));
 		ImageCubeCollection customCubeCollection = new ImageCubeCollection(smallBodyModel, getModelManager());
 		ColorImageCollection customColorImageCollection = new ColorImageCollection(smallBodyModel, getModelManager());
-		allModels.put(ModelNames.CUSTOM_CUBE_IMAGES, ImmutableList.of(customCubeCollection));
-		allModels.put(ModelNames.CUSTOM_COLOR_IMAGES, ImmutableList.of(customColorImageCollection));
+		allModels.put(ModelNames.CUSTOM_CUBE_IMAGES, List.of(customCubeCollection));
+		allModels.put(ModelNames.CUSTOM_COLOR_IMAGES, List.of(customColorImageCollection));
 
 		//all bodies can potentially have at least custom images, color images, and cubes, so these models must exist for everything.  Same will happen for spectra when it gets enabled.
-		allModels.put(ModelNames.PERSPECTIVE_IMAGE_BOUNDARIES, ImmutableList.of(new PerspectiveImageBoundaryCollection(smallBodyModel)));
-		allModels.put(ModelNames.PERSPECTIVE_CUSTOM_IMAGE_BOUNDARIES, ImmutableList.of(new PerspectiveImageBoundaryCollection(smallBodyModel)));
-        allModels.put(ModelNames.PERSPECTIVE_COLOR_IMAGE_BOUNDARIES, ImmutableList.of(new PerspectiveImageBoundaryCollection(smallBodyModel)));
-        allModels.put(ModelNames.PERSPECTIVE_IMAGE_CUBE_BOUNDARIES, ImmutableList.of(new PerspectiveImageBoundaryCollection(smallBodyModel)));
+		allModels.put(ModelNames.PERSPECTIVE_IMAGE_BOUNDARIES, List.of(new PerspectiveImageBoundaryCollection(smallBodyModel)));
+		allModels.put(ModelNames.PERSPECTIVE_CUSTOM_IMAGE_BOUNDARIES, List.of(new PerspectiveImageBoundaryCollection(smallBodyModel)));
+        allModels.put(ModelNames.PERSPECTIVE_COLOR_IMAGE_BOUNDARIES, List.of(new PerspectiveImageBoundaryCollection(smallBodyModel)));
+        allModels.put(ModelNames.PERSPECTIVE_IMAGE_CUBE_BOUNDARIES, List.of(new PerspectiveImageBoundaryCollection(smallBodyModel)));
 		ImageCubeCollection cubeCollection = new ImageCubeCollection(smallBodyModel, getModelManager());
 		ColorImageCollection colorImageCollection = new ColorImageCollection(smallBodyModel, getModelManager());
-		allModels.put(ModelNames.COLOR_IMAGES, ImmutableList.of(colorImageCollection));
-		allModels.put(ModelNames.CUBE_IMAGES, ImmutableList.of(cubeCollection));
+		allModels.put(ModelNames.COLOR_IMAGES, List.of(colorImageCollection));
+		allModels.put(ModelNames.CUBE_IMAGES, List.of(cubeCollection));
 
 		//        for (ImagingInstrument instrument : getPolyhedralModelConfig().imagingInstruments)
 		//        {
@@ -342,18 +352,18 @@ public class SbmtView extends View implements PropertyChangeListener
 		if (getPolyhedralModelConfig().hasSpectralData)
 		{
 			allModels.putAll(createSpectralModels(smallBodyModel));
-			allModels.put(ModelNames.SPECTRA_BOUNDARIES, ImmutableList.of(new SpectrumBoundaryCollection(smallBodyModel, (SpectraCollection)allModels.get(ModelNames.SPECTRA).get(0))));
+			allModels.put(ModelNames.SPECTRA_BOUNDARIES, List.of(new SpectrumBoundaryCollection(smallBodyModel, (SpectraCollection)allModels.get(ModelNames.SPECTRA).get(0))));
 			//if (getPolyhedralModelConfig().body == ShapeModelBody.EROS)
-			allModels.put(ModelNames.STATISTICS, ImmutableList.of(new SpectrumStatisticsCollection()));
+			allModels.put(ModelNames.STATISTICS, List.of(new SpectrumStatisticsCollection()));
 
 			SpectraCollection customCollection = new SpectraCollection(smallBodyModel);
-			allModels.put(ModelNames.CUSTOM_SPECTRA, ImmutableList.of(customCollection));
-			allModels.put(ModelNames.CUSTOM_SPECTRA_BOUNDARIES, ImmutableList.of(new SpectrumBoundaryCollection(smallBodyModel, (SpectraCollection)allModels.get(ModelNames.CUSTOM_SPECTRA).get(0))));
+			allModels.put(ModelNames.CUSTOM_SPECTRA, List.of(customCollection));
+			allModels.put(ModelNames.CUSTOM_SPECTRA_BOUNDARIES, List.of(new SpectrumBoundaryCollection(smallBodyModel, (SpectraCollection)allModels.get(ModelNames.CUSTOM_SPECTRA).get(0))));
 		}
 
 		if (getPolyhedralModelConfig().hasLineamentData)
 		{
-			allModels.put(ModelNames.LINEAMENT, ImmutableList.of(createLineament()));
+			allModels.put(ModelNames.LINEAMENT, List.of(createLineament()));
 		}
 
 		if (getPolyhedralModelConfig().hasFlybyData)
@@ -364,21 +374,21 @@ public class SbmtView extends View implements PropertyChangeListener
 
 		if (getPolyhedralModelConfig().hasStateHistory)
 		{
-			allModels.put(ModelNames.STATE_HISTORY_COLLECTION, ImmutableList.of(new StateHistoryCollection(smallBodyModel)));
+			allModels.put(ModelNames.STATE_HISTORY_COLLECTION, List.of(new StateHistoryCollection(smallBodyModel)));
 		}
 
 		ConfigurableSceneNotifier tmpSceneChangeNotifier = new ConfigurableSceneNotifier();
 		StatusNotifier tmpStatusNotifier = getStatusNotifier();
-		allModels.put(ModelNames.LINE_STRUCTURES, ImmutableList.of(new LineModel<>(tmpSceneChangeNotifier, tmpStatusNotifier, smallBodyModel)));
-		allModels.put(ModelNames.POLYGON_STRUCTURES, ImmutableList.of(new PolygonModel(tmpSceneChangeNotifier,tmpStatusNotifier, smallBodyModel)));
-		allModels.put(ModelNames.CIRCLE_STRUCTURES, ImmutableList.of(new CircleModel(tmpSceneChangeNotifier, tmpStatusNotifier, smallBodyModel)));
-		allModels.put(ModelNames.ELLIPSE_STRUCTURES, ImmutableList.of(new EllipseModel(tmpSceneChangeNotifier, tmpStatusNotifier, smallBodyModel)));
-		allModels.put(ModelNames.POINT_STRUCTURES, ImmutableList.of(new PointModel(tmpSceneChangeNotifier, tmpStatusNotifier, smallBodyModel)));
-		allModels.put(ModelNames.CIRCLE_SELECTION, ImmutableList.of(new CircleSelectionModel(tmpSceneChangeNotifier, tmpStatusNotifier, smallBodyModel)));
+		allModels.put(ModelNames.LINE_STRUCTURES, List.of(new LineModel<>(tmpSceneChangeNotifier, tmpStatusNotifier, smallBodyModel)));
+		allModels.put(ModelNames.POLYGON_STRUCTURES, List.of(new PolygonModel(tmpSceneChangeNotifier,tmpStatusNotifier, smallBodyModel)));
+		allModels.put(ModelNames.CIRCLE_STRUCTURES, List.of(new CircleModel(tmpSceneChangeNotifier, tmpStatusNotifier, smallBodyModel)));
+		allModels.put(ModelNames.ELLIPSE_STRUCTURES, List.of(new EllipseModel(tmpSceneChangeNotifier, tmpStatusNotifier, smallBodyModel)));
+		allModels.put(ModelNames.POINT_STRUCTURES, List.of(new PointModel(tmpSceneChangeNotifier, tmpStatusNotifier, smallBodyModel)));
+		allModels.put(ModelNames.CIRCLE_SELECTION, List.of(new CircleSelectionModel(tmpSceneChangeNotifier, tmpStatusNotifier, smallBodyModel)));
 		DEMCollection demCollection = new DEMCollection(smallBodyModel, getModelManager());
-		allModels.put(ModelNames.DEM, ImmutableList.of(demCollection));
+		allModels.put(ModelNames.DEM, List.of(demCollection));
 		DEMBoundaryCollection demBoundaryCollection = new DEMBoundaryCollection(smallBodyModel, getModelManager());
-		allModels.put(ModelNames.DEM_BOUNDARY, ImmutableList.of(demBoundaryCollection));
+		allModels.put(ModelNames.DEM_BOUNDARY, List.of(demBoundaryCollection));
 
 		setModelManager(new ModelManager(smallBodyModel, allModels));
 		colorImageCollection.setModelManager(getModelManager());
@@ -494,7 +504,7 @@ public class SbmtView extends View implements PropertyChangeListener
 	{
 		addTab(getPolyhedralModelConfig().getShapeModelName(), new SmallBodyControlPanel(getRenderer(), getModelManager(), getPolyhedralModelConfig().getShapeModelName()));
 
-		if (getConfig().hasFlybyData)
+		if (((ViewConfig)getConfig()).hasFlybyData)
 		{
 			//            addTab("Runs", new SimulationRunsPanel(getModelManager(), (SbmtInfoWindowManager)getInfoPanelManager(), getPickManager(), getRenderer()));
 		}
@@ -569,7 +579,7 @@ public class SbmtView extends View implements PropertyChangeListener
 //			if (displayName.equals(SpectraType.NIS_SPECTRA.getDisplayName()))
 			if (displayName.equals("NIS"))
 			{
-				NEARSpectraFactory.initializeModels(smallBodyModel);
+				NEARSpectraFactory.initializeModels(smallBodyModels.get(0));
 				NISSearchModel model = new NISSearchModel(getModelManager(), instrument);
 //				SpectraCollection<NISSpectrum> nisSpectrumCollection = new SpectraCollection<>(smallBodyModel);
 //				SpectrumBoundaryCollection<NISSpectrum> boundaryCollection = new SpectrumBoundaryCollection(smallBodyModel, nisSpectrumCollection);
@@ -591,7 +601,7 @@ public class SbmtView extends View implements PropertyChangeListener
 //				SpectraCollection<OTESSpectrum> otesSpectrumCollection = new SpectraCollection<>(smallBodyModel);
 //				SpectrumBoundaryCollection<OTESSpectrum> boundaryCollection = new SpectrumBoundaryCollection(smallBodyModel, otesSpectrumCollection);
 
-				OREXSpectraFactory.initializeModels(smallBodyModel);
+				OREXSpectraFactory.initializeModels(smallBodyModels.get(0));
 				JComponent component = new OREXSpectrumTabbedPane<OTESSpectrum>(getPolyhedralModelConfig(), getModelManager(), (SbmtInfoWindowManager) getInfoPanelManager(), getPickManager(), getRenderer(), instrument, spectrumCollection);
 
 //				OTESSearchModel model = new OTESSearchModel(getModelManager(), instrument);
@@ -615,7 +625,7 @@ public class SbmtView extends View implements PropertyChangeListener
 			}
 			else if (displayName.equals("NIRS3"))
 			{
-				H2SpectraFactory.initializeModels(smallBodyModel);
+				H2SpectraFactory.initializeModels(smallBodyModels.get(0));
 				NIRS3SearchModel model = new NIRS3SearchModel(getModelManager(), instrument);
 //				SpectraCollection<NIRS3Spectrum> nirs3SpectrumCollection = new SpectraCollection<>(smallBodyModel);
 //				SpectrumBoundaryCollection<NIRS3Spectrum> boundaryCollection = new SpectrumBoundaryCollection(smallBodyModel, nirs3SpectrumCollection);
@@ -737,7 +747,7 @@ public class SbmtView extends View implements PropertyChangeListener
             if (getPolyhedralModelConfig().hasStateHistory)
             {
                 StateHistoryController controller = null;
-                if (getConfig().body == ShapeModelBody.EARTH)
+                if (((ViewConfig)getConfig()).body == ShapeModelBody.EARTH)
                     controller = new StateHistoryController(getModelManager(), getRenderer(), false);
                 else
                     controller = new StateHistoryController(getModelManager(), getRenderer(), true);
@@ -772,12 +782,32 @@ public class SbmtView extends View implements PropertyChangeListener
 	@Override
 	protected void setupSpectrumPanelManager()
 	{
+		if (!getPolyhedralModelConfig().hasSpectralData) return;
 		SpectraCollection spectrumCollection = (SpectraCollection)getModel(ModelNames.SPECTRA).get(0);
 		SpectrumBoundaryCollection spectrumBoundaryCollection = (SpectrumBoundaryCollection)getModel(ModelNames.SPECTRA_BOUNDARIES).get(0);
 
 		PopupMenu spectralImagesPopupMenu =
     	        new SpectrumPopupMenu(spectrumCollection, spectrumBoundaryCollection, getModelManager(), null, null);
 		setSpectrumPanelManager(new SbmtSpectrumWindowManager(getModelManager(), spectralImagesPopupMenu));
+	}
+
+	@Override
+	protected void setupPositionOrientationManager()
+	{
+		SpiceInfo spiceInfo = getPolyhedralModelConfig().spiceInfo;
+		List<SmallBodyModel> bodies = getModelManager().getModel(ModelNames.SMALL_BODY).stream().map(body -> { return (SmallBodyModel)body; }).toList();
+		System.out.println("SbmtView: setupPositionOrientationManager: number of small bodies " + bodies.size());
+		SpiceInfo firstSpiceInfo = spiceInfo;
+		SimpleDateFormat dateFormatter = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS");
+    	String dateTimeString = dateFormatter.format(getPolyhedralModelConfig().stateHistoryStartDate);
+    	double time = TimeUtil.str2et(dateTimeString);
+		positionOrientationManager = new PositionOrientationManager(bodies, "/Users/steelrj1/dartspice/draco/impact.tm", firstSpiceInfo, firstSpiceInfo.getInstrumentFrameNamesToBind()[0],
+																	bodies.get(0).getModelName(), time);
+		System.out.println("SbmtView: setupPositionOrientationManager: number of updated models " + positionOrientationManager.getUpdatedBodies().size());
+		HashMap<ModelNames, List<Model>> allModels = new HashMap(getModelManager().getAllModels());
+		allModels.put(ModelNames.SMALL_BODY, positionOrientationManager.getUpdatedBodies());
+		setModelManager(new ModelManager(bodies.get(0), allModels));
+		System.out.println("SbmtView: setupPositionOrientationManager: number of models " + getModelManager().getModel(ModelNames.SMALL_BODY).size());
 	}
 
 	@Override
@@ -999,11 +1029,11 @@ public class SbmtView extends View implements PropertyChangeListener
         ShapeModelType author=((SmallBodyViewConfig)smallBodyModel.getConfig()).author;
         String version=((SmallBodyViewConfig)smallBodyModel.getConfig()).version;
 
-        models.put(ModelNames.SPECTRA_HYPERTREE_SEARCH, ImmutableList.of(new SpectraSearchDataCollection(smallBodyModel)));
+        models.put(ModelNames.SPECTRA_HYPERTREE_SEARCH, List.of(new SpectraSearchDataCollection(smallBodyModel)));
 
         SpectraCollection collection = new SpectraCollection(smallBodyModel);
 
-        models.put(ModelNames.SPECTRA, ImmutableList.of(collection));
+        models.put(ModelNames.SPECTRA, List.of(collection));
         return models;
     }
 

@@ -431,7 +431,7 @@ public class CompareGaskellAndNLR
             ) throws Exception
     {
         SmallBodyViewConfig config = SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.EROS, ShapeModelType.GASKELL);
-        SmallBodyModel lowResSmallBodyModel = SbmtModelFactory.createSmallBodyModel(config);
+        SmallBodyModel lowResSmallBodyModel = SbmtModelFactory.createSmallBodyModel(config).get(0);
         lowResSmallBodyModel.setModelResolution(0);
 
         HashMap<Integer, PlateStatistics> plateMap = new LinkedHashMap<Integer, PlateStatistics>();
@@ -553,7 +553,7 @@ public class CompareGaskellAndNLR
 
 
         SmallBodyViewConfig config = SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.EROS, ShapeModelType.GASKELL);
-        SmallBodyModel smallBodyModel = SbmtModelFactory.createSmallBodyModel(config);
+        SmallBodyModel smallBodyModel = SbmtModelFactory.createSmallBodyModel(config).get(0);
         smallBodyModel.setModelResolution(3);
 
         // Load lidar data

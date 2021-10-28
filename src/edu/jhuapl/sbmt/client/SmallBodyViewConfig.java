@@ -13,11 +13,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.Scanner;
 
+import com.beust.jcommander.internal.Lists;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
 
 import edu.jhuapl.saavtk.config.ConfigArrayList;
 import edu.jhuapl.saavtk.config.ExtensibleTypedLookup.Builder;
+import edu.jhuapl.saavtk.config.IBodyViewConfig;
 import edu.jhuapl.saavtk.config.ViewConfig;
 import edu.jhuapl.saavtk.model.ShapeModelBody;
 import edu.jhuapl.saavtk.model.ShapeModelType;
@@ -71,10 +73,15 @@ public class SmallBodyViewConfig extends BodyViewConfig implements ISmallBodyVie
 
     protected static final SbmtMultiMissionTool.Mission[] DefaultForNoMissions = new SbmtMultiMissionTool.Mission[] {};
 
+    //system bodies
+    public List<SmallBodyViewConfig> systemConfigs = Lists.newArrayList();
+    public boolean hasSystemBodies = false;
+
+
     static public boolean fromServer = false;
 	private static final List<BasicConfigInfo> CONFIG_INFO = new ArrayList<>();
     private static final Map<String, BasicConfigInfo> VIEWCONFIG_IDENTIFIERS = new HashMap<>();
-    private static final Map<String, ViewConfig> LOADED_VIEWCONFIGS = new HashMap<>();
+    private static final Map<String, IBodyViewConfig> LOADED_VIEWCONFIGS = new HashMap<>();
 
     protected String baseMapConfigName = "config.txt";
 
@@ -111,7 +118,7 @@ public class SmallBodyViewConfig extends BodyViewConfig implements ISmallBodyVie
     	    Preconditions.checkArgument(VIEWCONFIG_IDENTIFIERS.containsKey(configID), "No configuration available for model " + configID);
 
     		BasicConfigInfo info = VIEWCONFIG_IDENTIFIERS.get(configID);
-    		ViewConfig fetchedConfig = fetchRemoteConfig(configID, info.getConfigURL(), fromServer);
+    		IBodyViewConfig fetchedConfig = fetchRemoteConfig(configID, info.getConfigURL(), fromServer);
     		LOADED_VIEWCONFIGS.put(configID, fetchedConfig);
 
     		return (SmallBodyViewConfig)fetchedConfig;
@@ -128,7 +135,7 @@ public class SmallBodyViewConfig extends BodyViewConfig implements ISmallBodyVie
     	{
             Preconditions.checkArgument(VIEWCONFIG_IDENTIFIERS.containsKey(configID), "No configuration available for model " + configID);
 
-    		ViewConfig fetchedConfig = fetchRemoteConfig(configID, VIEWCONFIG_IDENTIFIERS.get(configID).getConfigURL(), fromServer);
+    		IBodyViewConfig fetchedConfig = fetchRemoteConfig(configID, VIEWCONFIG_IDENTIFIERS.get(configID).getConfigURL(), fromServer);
     		LOADED_VIEWCONFIGS.put(configID, fetchedConfig);
     		return (SmallBodyViewConfig)fetchedConfig;
     	}
@@ -211,7 +218,7 @@ public class SmallBodyViewConfig extends BodyViewConfig implements ISmallBodyVie
 
     }
 
-    private static ViewConfig fetchRemoteConfig(String name, String url, boolean fromServer)
+    private static IBodyViewConfig fetchRemoteConfig(String name, String url, boolean fromServer)
     {
     	ConfigArrayList ioConfigs = new ConfigArrayList();
         ioConfigs.add(new SmallBodyViewConfig(ImmutableList.<String> copyOf(DEFAULT_GASKELL_LABELS_PER_RESOLUTION), ImmutableList.<Integer> copyOf(DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION)));
@@ -271,6 +278,11 @@ public class SmallBodyViewConfig extends BodyViewConfig implements ISmallBodyVie
 		RyuguConfigs.initialize(configArray);
 		SaturnConfigs.initialize(configArray);
     }
+
+//    static List<SystemConfigInfo> getSystemConfigs()
+//    {
+//    	return DartConfigs.instance().getSystemConfigs();
+//    }
 
 
 
@@ -489,8 +501,13 @@ public class SmallBodyViewConfig extends BodyViewConfig implements ISmallBodyVie
 	@Override
 	public boolean isCustomTemporary()
 	{
-		return isCustomTemporary();
+		return super.isCustomTemporary();
 	}
+
+	public boolean hasSystemBodies()
+	{
+		return hasSystemBodies;
+	};
 
 	@Override
 	public int hashCode()

@@ -29,7 +29,7 @@ public class BasicConfigInfo implements MetadataManager
 
     public static String getConfigPathPrefix(boolean publishedDataOnly)
     {
-        return (publishedDataOnly ? "published/" : "proprietary/") + "allBodies-" + configInfoVersion;
+        return (publishedDataOnly ? "published/" : "proprietary/") + "allBodies-" + configInfoVersion + "-1215";
     }
 
     private static final SbmtMultiMissionTool.Mission[] EmptyMissionArray = new SbmtMultiMissionTool.Mission[0];
@@ -98,10 +98,19 @@ public class BasicConfigInfo implements MetadataManager
             // modelVersion will add nothing.
             String modelVersion = config.version != null ? config.version.replaceAll(" ", "_") : "";
 
-            this.configURL = "/" + getConfigPathPrefix(publishedDataOnly) + ((SmallBodyViewConfig) config).rootDirOnServer + //
+            if (!config.hasSystemBodies())
+            	this.configURL = "/" + getConfigPathPrefix(publishedDataOnly) + ((SmallBodyViewConfig) config).rootDirOnServer + //
                     "/" + config.author + "_" + //
                     config.body.toString().replaceAll(" ", "_") + modelVersion + //
                     "_v" + getConfigInfoVersion() + ".json";
+            else
+            {
+            	String systemRoot = ((SmallBodyViewConfig) config).rootDirOnServer.substring(1).replaceFirst("/", "-system/");
+            	this.configURL = "/" + getConfigPathPrefix(publishedDataOnly) + "/" + systemRoot + //
+	                "/" + config.author + "_" + //
+	                config.body.toString().replaceAll(" ", "_") + modelVersion + "_System" + //
+	                "_v" + getConfigInfoVersion() + ".json";
+            }
 		}
 	}
 
@@ -259,6 +268,30 @@ public class BasicConfigInfo implements MetadataManager
 	public String getShapeModelName()
 	{
 		return shapeModelName;
+	}
+
+	/**
+	 * @return the type
+	 */
+	public BodyType getType()
+	{
+		return type;
+	}
+
+	/**
+	 * @return the population
+	 */
+	public ShapeModelPopulation getPopulation()
+	{
+		return population;
+	}
+
+	/**
+	 * @return the dataUsed
+	 */
+	public ShapeModelDataUsed getDataUsed()
+	{
+		return dataUsed;
 	}
 
 	@Override

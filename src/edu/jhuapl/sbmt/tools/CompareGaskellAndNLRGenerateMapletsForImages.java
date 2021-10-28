@@ -121,7 +121,7 @@ public class CompareGaskellAndNLRGenerateMapletsForImages
         NativeLibraryLoader.loadHeadlessVtkLibraries();
 
         SmallBodyViewConfig config = SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.EROS, ShapeModelType.GASKELL);
-        SmallBodyModel smallBodyModel = SbmtModelFactory.createSmallBodyModel(config);
+        SmallBodyModel smallBodyModel = SbmtModelFactory.createSmallBodyModel(config).get(0);
         smallBodyModel.setModelResolution(3);
 
         FileCache.setOfflineMode(true, Configuration.getCacheDir());

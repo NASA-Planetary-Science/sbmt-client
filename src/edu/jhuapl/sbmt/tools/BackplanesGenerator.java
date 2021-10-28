@@ -25,6 +25,7 @@ import edu.jhuapl.sbmt.gui.image.model.ImageKey;
 import edu.jhuapl.sbmt.model.image.ImageSource;
 import edu.jhuapl.sbmt.model.image.ImagingInstrument;
 import edu.jhuapl.sbmt.model.image.Instrument;
+import edu.jhuapl.sbmt.model.image.SbmtImageModelFactory;
 import edu.jhuapl.sbmt.model.image.perspectiveImage.PerspectiveImage;
 import edu.jhuapl.sbmt.util.BackplanesFileFormat;
 
@@ -117,7 +118,7 @@ public class BackplanesGenerator
                     key = new ImageKey(filename.replace("." + ext, ""), ptg, imager);
                     System.setOut(noop);
                     System.setErr(noop);
-                    image = (PerspectiveImage)SbmtModelFactory.createImage(key, smallBodyModel, false);
+                    image = (PerspectiveImage)SbmtImageModelFactory.createImage(key, smallBodyModel, false);
                 }
                 catch (Exception e)
                 {
@@ -138,7 +139,7 @@ public class BackplanesGenerator
                     key = new ImageKey(filename.replace("." + ext, ""), ImageSource.GASKELL, imager);
                     System.setOut(noop);
                     System.setErr(noop);
-                    image = (PerspectiveImage)SbmtModelFactory.createImage(key, smallBodyModel, false);
+                    image = (PerspectiveImage)SbmtImageModelFactory.createImage(key, smallBodyModel, false);
                 }
                 catch (Exception e)
                 {
@@ -149,7 +150,7 @@ public class BackplanesGenerator
                         key = new ImageKey(filename.replace("." + ext, ""), ImageSource.CORRECTED, imager);
                         System.setOut(noop);
                         System.setErr(noop);
-                        image = (PerspectiveImage)SbmtModelFactory.createImage(key, smallBodyModel, false);
+                        image = (PerspectiveImage)SbmtImageModelFactory.createImage(key, smallBodyModel, false);
                     }
                     catch (Exception e1)
                     {
@@ -160,7 +161,7 @@ public class BackplanesGenerator
                             key = new ImageKey(filename.replace("." + ext, ""), ImageSource.SPICE, imager);
                             System.setOut(noop);
                             System.setErr(noop);
-                            image = (PerspectiveImage)SbmtModelFactory.createImage(key, smallBodyModel, false);
+                            image = (PerspectiveImage)SbmtImageModelFactory.createImage(key, smallBodyModel, false);
                         }
                         catch (Exception e2)
                         {
@@ -171,7 +172,7 @@ public class BackplanesGenerator
                                 key = new ImageKey(filename.replace("." + ext, ""), ImageSource.CORRECTED_SPICE, imager);
                                 System.setOut(noop);
                                 System.setErr(noop);
-                                image = (PerspectiveImage)SbmtModelFactory.createImage(key, smallBodyModel, false);
+                                image = (PerspectiveImage)SbmtImageModelFactory.createImage(key, smallBodyModel, false);
                             }
                             catch (Exception e3)
                             {
@@ -423,7 +424,7 @@ public class BackplanesGenerator
             System.err.println("Instrument " + camera + " for body " + body + " not found, exiting.");
             System.exit(0);
         }
-        smallBodyModel = SbmtModelFactory.createSmallBodyModel(SmallBodyViewConfig.getSmallBodyConfig(body, ShapeModelType.GASKELL, version));
+        smallBodyModel = SbmtModelFactory.createSmallBodyModel(SmallBodyViewConfig.getSmallBodyConfig(body, ShapeModelType.GASKELL, version)).get(0);
         if (instr == null)
         {
             instr = ((SmallBodyViewConfig)smallBodyModel.getSmallBodyConfig()).imagingInstruments[0].instrumentName;

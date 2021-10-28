@@ -79,7 +79,7 @@ class OTESSearchModelTest
 
         SmallBodyViewConfig.initialize();
         smallBodyConfig = SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.RQ36, ShapeModelType.ALTWG_SPC_v20190414);
-        SmallBodyModel smallBodyModel = SbmtModelFactory.createSmallBodyModel(smallBodyConfig);
+        SmallBodyModel smallBodyModel = SbmtModelFactory.createSmallBodyModel(smallBodyConfig).get(0);
         SBMTModelBootstrap.initialize(smallBodyModel);
 
         treeModel = smallBodyConfig.hierarchicalSpectraSearchSpecification.getTreeModel();

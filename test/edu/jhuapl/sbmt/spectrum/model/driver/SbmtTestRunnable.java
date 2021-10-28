@@ -13,7 +13,7 @@ import javax.swing.ToolTipManager;
 
 import vtk.vtkJavaGarbageCollector;
 
-import edu.jhuapl.saavtk.config.ViewConfig;
+import edu.jhuapl.saavtk.config.IBodyViewConfig;
 import edu.jhuapl.saavtk.gui.Console;
 import edu.jhuapl.saavtk.gui.MainWindow;
 import edu.jhuapl.saavtk.model.ShapeModelBody;
@@ -193,7 +193,7 @@ public class SbmtTestRunnable implements Runnable
 
 	protected void disableAllBodies()
 	{
-		for (ViewConfig each: SmallBodyViewConfigTest.getBuiltInConfigs())
+		for (IBodyViewConfig each: SmallBodyViewConfigTest.getBuiltInConfigs())
 		{
 			each.enable(false);
 		}
@@ -201,7 +201,7 @@ public class SbmtTestRunnable implements Runnable
 
 	protected void enableMissionBodies(Mission mission)
 	{
-		for (ViewConfig each: SmallBodyViewConfigTest.getBuiltInConfigs())
+		for (IBodyViewConfig each: SmallBodyViewConfigTest.getBuiltInConfigs())
 		{
 			if (each instanceof SmallBodyViewConfigTest)
 			{

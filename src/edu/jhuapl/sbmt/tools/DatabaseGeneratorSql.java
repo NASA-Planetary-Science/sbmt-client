@@ -32,6 +32,7 @@ import edu.jhuapl.sbmt.model.image.ImageKeyInterface;
 import edu.jhuapl.sbmt.model.image.ImageSource;
 import edu.jhuapl.sbmt.model.image.ImagingInstrument;
 import edu.jhuapl.sbmt.model.image.Instrument;
+import edu.jhuapl.sbmt.model.image.SbmtImageModelFactory;
 import edu.jhuapl.sbmt.model.image.perspectiveImage.PerspectiveImage;
 
 public class DatabaseGeneratorSql
@@ -221,7 +222,7 @@ public class DatabaseGeneratorSql
 
             try
             {
-                image = (PerspectiveImage)SbmtModelFactory.createImage(key, smallBodyModel, false);
+                image = (PerspectiveImage)SbmtImageModelFactory.createImage(key, smallBodyModel, false);
                 boolean filesExist = checkIfAllFilesExist(image, imageSource);
                 if (filesExist == false)
                 {
@@ -394,7 +395,7 @@ public class DatabaseGeneratorSql
 
     public void run(String fileList, ImageSource source, String diffFileList) throws Exception
     {
-        smallBodyModel = SbmtModelFactory.createSmallBodyModel(smallBodyConfig);
+        smallBodyModel = SbmtModelFactory.createSmallBodyModel(smallBodyConfig).get(0);
 
         if (!fileList.endsWith(".txt"))
         {

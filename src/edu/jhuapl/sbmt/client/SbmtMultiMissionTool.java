@@ -50,6 +50,7 @@ import edu.jhuapl.sbmt.model.eros.nis.NIS;
 import edu.jhuapl.sbmt.model.image.ImageFactory;
 import edu.jhuapl.sbmt.model.phobos.MEGANE;
 import edu.jhuapl.sbmt.model.ryugu.nirs3.NIRS3;
+import edu.jhuapl.sbmt.pointing.spice.SpiceInfo;
 import edu.jhuapl.sbmt.spectrum.model.core.SpectrumInstrumentMetadata;
 import edu.jhuapl.sbmt.spectrum.model.core.search.SpectrumSearchSpec;
 import edu.jhuapl.sbmt.spectrum.model.io.SpectrumInstrumentMetadataIO;
@@ -179,6 +180,7 @@ public class SbmtMultiMissionTool
 		NIRS3.initializeSerializationProxy();
 		MEGANE.initializeSerializationProxy();
 		ImageFactory.initializeSerializationProxy();
+		SpiceInfo.initializeSerializationProxy();
 	}
 
 	public static void setEnableAuthentication(boolean enableAuthentication)

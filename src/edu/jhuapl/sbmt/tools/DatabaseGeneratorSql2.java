@@ -29,6 +29,7 @@ import edu.jhuapl.sbmt.client.SmallBodyViewConfig;
 import edu.jhuapl.sbmt.gui.image.model.ImageKey;
 import edu.jhuapl.sbmt.model.image.ImageKeyInterface;
 import edu.jhuapl.sbmt.model.image.ImageSource;
+import edu.jhuapl.sbmt.model.image.SbmtImageModelFactory;
 import edu.jhuapl.sbmt.model.image.perspectiveImage.PerspectiveImage;
 
 import nom.tam.fits.FitsException;
@@ -209,7 +210,7 @@ public class DatabaseGeneratorSql2
 
             try
             {
-                image = (PerspectiveImage)SbmtModelFactory.createImage(key, smallBodyModel, false);
+                image = (PerspectiveImage)SbmtImageModelFactory.createImage(key, smallBodyModel, false);
                 boolean filesExist = checkIfAllFilesExist(image, imageSource);
                 if (filesExist == false)
                 {
@@ -382,7 +383,7 @@ public class DatabaseGeneratorSql2
 
     public void run(String fileList, ImageSource source) throws IOException
     {
-        smallBodyModel = SbmtModelFactory.createSmallBodyModel(smallBodyConfig);
+        smallBodyModel = SbmtModelFactory.createSmallBodyModel(smallBodyConfig).get(0);
 
         if (!fileList.endsWith(".txt"))
         {

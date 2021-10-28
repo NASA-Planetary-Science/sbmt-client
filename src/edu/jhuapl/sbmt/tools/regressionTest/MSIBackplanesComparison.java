@@ -61,7 +61,7 @@ public class MSIBackplanesComparison
         NativeLibraryLoader.loadHeadlessVtkLibraries();
         Configuration.authenticate();
 
-        smallBodyModel = SbmtModelFactory.createSmallBodyModel(SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.EROS, ShapeModelType.GASKELL, null));
+        smallBodyModel = SbmtModelFactory.createSmallBodyModel(SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.EROS, ShapeModelType.GASKELL, null)).get(0);
 
         runComparisonTest(workingDir);
 //        dumpLatLonValues(workingDir);

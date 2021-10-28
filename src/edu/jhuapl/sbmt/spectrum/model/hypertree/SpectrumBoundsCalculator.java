@@ -80,7 +80,7 @@ public class SpectrumBoundsCalculator
             System.err.println("No support for body named " + bodyName);
             return;
         }
-        SmallBodyModel body = SbmtModelFactory.createSmallBodyModel(config);
+        SmallBodyModel body = SbmtModelFactory.createSmallBodyModel(config).get(0);
 
         BasicSpectrumInstrument instrument;
         String instName = args[0];

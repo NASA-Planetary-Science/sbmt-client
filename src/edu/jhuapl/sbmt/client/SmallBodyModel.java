@@ -5,6 +5,7 @@ import java.util.List;
 import com.google.common.collect.ImmutableList;
 
 import vtk.vtkPolyData;
+import vtk.vtkTransformFilter;
 
 import edu.jhuapl.saavtk.model.GenericPolyhedralModel;
 import edu.jhuapl.sbmt.model.image.ImageKeyInterface;
@@ -136,6 +137,12 @@ public class SmallBodyModel extends GenericPolyhedralModel implements ISmallBody
                 coloringHasNulls,
                 config.hasColoringData ? DEFAULT_COLORING_VALUE_TYPE : null,
                 lowestResolutionModelStoredInResource);
+    }
+
+    public void transformBody(vtkTransformFilter transformFilter)
+    {
+    	vtkPolyData polydata = transformFilter.GetPolyDataOutput();
+    	setSmallBodyPolyData(polydata);
     }
 
 }
