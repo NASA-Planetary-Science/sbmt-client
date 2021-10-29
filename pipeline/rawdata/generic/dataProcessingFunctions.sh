@@ -1013,12 +1013,22 @@ processShapeModels() {
 
     checkSkip $funcName "$*"
 
-    if test -d "$destTop/shape"; then
-      doGzipDir "$destTop/shape"
+    src=$1
+    
+    if test "$src" = ""; then
+      check 1 "$funcName: first argument (model directory) is missing or blank"
+    fi
+
+    if test ! -d "$src"; then
+      check 1 "$funcName: source file/directory does not exist: $src"
+    fi
+
+    if test -d "$destTop/$src/shape"; then
+      doGzipDir "$destTop/$src/shape"
 
       # First argument is directory, second is the prefix
       # for output file name(s).
-      createFileSymLinks "$destTop/shape" shape
+      createFileSymLinks "$destTop/$src/shape" shape
     fi
   )
   check $?
