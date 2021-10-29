@@ -1863,6 +1863,7 @@ editMetakernels() {
 
 # Run the database generator to create a table for a particular instrument.
 #
+# param modelId the model identifier
 # param instrument the instrument identifier, as it is or will be referred to in a Java Instrument object
 # param pointing the type of pointing, usually either GASKELL or SPICE
 generateDatabaseTable() {
@@ -1871,15 +1872,20 @@ generateDatabaseTable() {
 
     checkSkip $funcName "$*"
 
-    instrument=$1
-    pointing=$2
+    modelId=$1
+    instrument=$2
+    pointing=$3
+
+    if test "$modelId" = ""; then
+      check 1 "$funcName: missing/blank first argument, which must be the name of a body model"
+    fi
 
     if test "$instrument" = ""; then
-      check 1 "$funcName: missing/blank first argument, which must be the name of an instrument"
+      check 1 "$funcName: missing/blank second argument, which must be the name of an instrument"
     fi
 
     if test "$pointing" = ""; then
-      check 1 "$funcName: missing/blank second argument, which must be the pointing type"
+      check 1 "$funcName: missing/blank third argument, which must be the pointing type"
     fi
 
     tool=DatabaseGeneratorSql.sh

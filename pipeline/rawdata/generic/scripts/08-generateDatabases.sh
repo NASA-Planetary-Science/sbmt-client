@@ -20,7 +20,7 @@ for modelId in \
     ; do
 
     instrument=draco
-    generateDatabaseTable ${instrument^^} SPICE
+    generateDatabaseTable $modelId ${instrument^^} SPICE
   done
 done
 #-------------------------------------------------------------------------------
