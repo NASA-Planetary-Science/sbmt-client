@@ -222,7 +222,7 @@ public class DatabaseGeneratorSql
 
             try
             {
-                image = (PerspectiveImage)SbmtImageModelFactory.createImage(key, smallBodyModel, false);
+                image = (PerspectiveImage)SbmtImageModelFactory.createImage(key, List.of(smallBodyModel), false);
                 boolean filesExist = checkIfAllFilesExist(image, imageSource);
                 if (filesExist == false)
                 {

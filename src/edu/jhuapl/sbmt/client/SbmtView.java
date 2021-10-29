@@ -311,20 +311,21 @@ public class SbmtView extends View implements PropertyChangeListener
 		allBodies.addAll(smallBodyModels);
 		allModels.put(ModelNames.SMALL_BODY, allBodies);
 		allModels.put(ModelNames.GRATICULE, List.of(graticule));
-		allModels.put(ModelNames.IMAGES, List.of(new ImageCollection(smallBodyModel)));
-		allModels.put(ModelNames.CUSTOM_IMAGES, List.of(new ImageCollection(smallBodyModel)));
-		ImageCubeCollection customCubeCollection = new ImageCubeCollection(smallBodyModel, getModelManager());
-		ColorImageCollection customColorImageCollection = new ColorImageCollection(smallBodyModel, getModelManager());
+		ImageCollection imageCollection = new ImageCollection(smallBodyModels);
+		allModels.put(ModelNames.IMAGES, List.of(imageCollection));
+		allModels.put(ModelNames.CUSTOM_IMAGES, List.of(imageCollection));
+		ImageCubeCollection customCubeCollection = new ImageCubeCollection(smallBodyModels, imageCollection);
+		ColorImageCollection customColorImageCollection = new ColorImageCollection(smallBodyModels, getModelManager());
 		allModels.put(ModelNames.CUSTOM_CUBE_IMAGES, List.of(customCubeCollection));
 		allModels.put(ModelNames.CUSTOM_COLOR_IMAGES, List.of(customColorImageCollection));
 
 		//all bodies can potentially have at least custom images, color images, and cubes, so these models must exist for everything.  Same will happen for spectra when it gets enabled.
-		allModels.put(ModelNames.PERSPECTIVE_IMAGE_BOUNDARIES, List.of(new PerspectiveImageBoundaryCollection(smallBodyModel)));
-		allModels.put(ModelNames.PERSPECTIVE_CUSTOM_IMAGE_BOUNDARIES, List.of(new PerspectiveImageBoundaryCollection(smallBodyModel)));
-        allModels.put(ModelNames.PERSPECTIVE_COLOR_IMAGE_BOUNDARIES, List.of(new PerspectiveImageBoundaryCollection(smallBodyModel)));
-        allModels.put(ModelNames.PERSPECTIVE_IMAGE_CUBE_BOUNDARIES, List.of(new PerspectiveImageBoundaryCollection(smallBodyModel)));
-		ImageCubeCollection cubeCollection = new ImageCubeCollection(smallBodyModel, getModelManager());
-		ColorImageCollection colorImageCollection = new ColorImageCollection(smallBodyModel, getModelManager());
+		allModels.put(ModelNames.PERSPECTIVE_IMAGE_BOUNDARIES, List.of(new PerspectiveImageBoundaryCollection(smallBodyModels)));
+		allModels.put(ModelNames.PERSPECTIVE_CUSTOM_IMAGE_BOUNDARIES, List.of(new PerspectiveImageBoundaryCollection(smallBodyModels)));
+        allModels.put(ModelNames.PERSPECTIVE_COLOR_IMAGE_BOUNDARIES, List.of(new PerspectiveImageBoundaryCollection(smallBodyModels)));
+        allModels.put(ModelNames.PERSPECTIVE_IMAGE_CUBE_BOUNDARIES, List.of(new PerspectiveImageBoundaryCollection(smallBodyModels)));
+		ImageCubeCollection cubeCollection = new ImageCubeCollection(smallBodyModels, imageCollection);
+		ColorImageCollection colorImageCollection = new ColorImageCollection(smallBodyModels, getModelManager());
 		allModels.put(ModelNames.COLOR_IMAGES, List.of(colorImageCollection));
 		allModels.put(ModelNames.CUBE_IMAGES, List.of(cubeCollection));
 
@@ -392,9 +393,9 @@ public class SbmtView extends View implements PropertyChangeListener
 
 		setModelManager(new ModelManager(smallBodyModel, allModels));
 		colorImageCollection.setModelManager(getModelManager());
-		cubeCollection.setModelManager(getModelManager());
+//		cubeCollection.setModelManager(getModelManager());
 		customColorImageCollection.setModelManager(getModelManager());
-		customCubeCollection.setModelManager(getModelManager());
+//		customCubeCollection.setModelManager(getModelManager());
 		demCollection.setModelManager(getModelManager());
 		demBoundaryCollection.setModelManager(getModelManager());
 		tmpSceneChangeNotifier.setTarget(getModelManager());

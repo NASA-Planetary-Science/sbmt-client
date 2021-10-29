@@ -230,7 +230,7 @@ public class AmicaBackplanesGenerator
             String keyName = origFile.getAbsolutePath().replace(rootFolder.getAbsolutePath(), "");
             keyName = keyName.replace(".fit", "");
             ImageKey key = new ImageKey(keyName, amicaSource);
-            AmicaImage image = new AmicaImage(key, itokawaModel, false);
+            AmicaImage image = new AmicaImage(key, List.of(itokawaModel), false);
             int[] croppedSize = image.getCroppedSize();
             currentCroppedWidth = croppedSize[1];
             currentCroppedHeight = croppedSize[0];
@@ -286,7 +286,7 @@ public class AmicaBackplanesGenerator
                 itokawaModel.setModelResolution(res);
             }
 
-            AmicaImage image = new AmicaImage(key, itokawaModel, false);
+            AmicaImage image = new AmicaImage(key, List.of(itokawaModel), false);
             int[] croppedSize = image.getCroppedSize();
             currentCroppedWidth = croppedSize[1];
             currentCroppedHeight = croppedSize[0];

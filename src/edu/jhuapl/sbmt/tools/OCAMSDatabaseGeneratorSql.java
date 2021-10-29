@@ -142,7 +142,7 @@ public class OCAMSDatabaseGeneratorSql
 
             try
             {
-                image = (PerspectiveImage)SbmtImageModelFactory.createImage(key, smallBodyModel, false);
+                image = (PerspectiveImage)SbmtImageModelFactory.createImage(key, List.of(smallBodyModel), false);
                 boolean filesExist = checkIfAllFilesExist(image, ImageSource.SPICE);
                 if (filesExist == false)
                 {

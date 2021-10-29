@@ -118,7 +118,7 @@ public class BackplanesGenerator
                     key = new ImageKey(filename.replace("." + ext, ""), ptg, imager);
                     System.setOut(noop);
                     System.setErr(noop);
-                    image = (PerspectiveImage)SbmtImageModelFactory.createImage(key, smallBodyModel, false);
+                    image = (PerspectiveImage)SbmtImageModelFactory.createImage(key, List.of(smallBodyModel), false);
                 }
                 catch (Exception e)
                 {
@@ -139,7 +139,7 @@ public class BackplanesGenerator
                     key = new ImageKey(filename.replace("." + ext, ""), ImageSource.GASKELL, imager);
                     System.setOut(noop);
                     System.setErr(noop);
-                    image = (PerspectiveImage)SbmtImageModelFactory.createImage(key, smallBodyModel, false);
+                    image = (PerspectiveImage)SbmtImageModelFactory.createImage(key, List.of(smallBodyModel), false);
                 }
                 catch (Exception e)
                 {
@@ -150,7 +150,7 @@ public class BackplanesGenerator
                         key = new ImageKey(filename.replace("." + ext, ""), ImageSource.CORRECTED, imager);
                         System.setOut(noop);
                         System.setErr(noop);
-                        image = (PerspectiveImage)SbmtImageModelFactory.createImage(key, smallBodyModel, false);
+                        image = (PerspectiveImage)SbmtImageModelFactory.createImage(key, List.of(smallBodyModel), false);
                     }
                     catch (Exception e1)
                     {
@@ -161,7 +161,7 @@ public class BackplanesGenerator
                             key = new ImageKey(filename.replace("." + ext, ""), ImageSource.SPICE, imager);
                             System.setOut(noop);
                             System.setErr(noop);
-                            image = (PerspectiveImage)SbmtImageModelFactory.createImage(key, smallBodyModel, false);
+                            image = (PerspectiveImage)SbmtImageModelFactory.createImage(key, List.of(smallBodyModel), false);
                         }
                         catch (Exception e2)
                         {
@@ -172,7 +172,7 @@ public class BackplanesGenerator
                                 key = new ImageKey(filename.replace("." + ext, ""), ImageSource.CORRECTED_SPICE, imager);
                                 System.setOut(noop);
                                 System.setErr(noop);
-                                image = (PerspectiveImage)SbmtImageModelFactory.createImage(key, smallBodyModel, false);
+                                image = (PerspectiveImage)SbmtImageModelFactory.createImage(key, List.of(smallBodyModel), false);
                             }
                             catch (Exception e3)
                             {

@@ -182,20 +182,20 @@ public class SbmtTesterView extends View implements PropertyChangeListener
 		HashMap<ModelNames, List<Model>> allModels = new HashMap<>();
 		allModels.put(ModelNames.SMALL_BODY, ImmutableList.of(smallBodyModel));
 		allModels.put(ModelNames.GRATICULE, ImmutableList.of(graticule));
-		allModels.put(ModelNames.IMAGES, ImmutableList.of(new ImageCollection(smallBodyModel, getModelManager())));
-		allModels.put(ModelNames.CUSTOM_IMAGES, ImmutableList.of(new ImageCollection(smallBodyModel, getModelManager())));
-		ImageCubeCollection customCubeCollection = new ImageCubeCollection(smallBodyModel,  new ImageCollection(smallBodyModel, getModelManager()));
-		ColorImageCollection customColorImageCollection = new ColorImageCollection(smallBodyModel, getModelManager());
-		allModels.put(ModelNames.CUSTOM_CUBE_IMAGES, ImmutableList.of(customCubeCollection));
-		allModels.put(ModelNames.CUSTOM_COLOR_IMAGES, ImmutableList.of(customColorImageCollection));
-
-		//all bodies can potentially have at least custom images, color images, and cubes, so these models must exist for everything.  Same will happen for spectra when it gets enabled.
-		allModels.put(ModelNames.PERSPECTIVE_IMAGE_BOUNDARIES, ImmutableList.of(new PerspectiveImageBoundaryCollection(smallBodyModel)));
-		allModels.put(ModelNames.PERSPECTIVE_CUSTOM_IMAGE_BOUNDARIES, ImmutableList.of(new PerspectiveImageBoundaryCollection(smallBodyModel)));
-		ImageCubeCollection cubeCollection = new ImageCubeCollection(smallBodyModel, new ImageCollection(smallBodyModel, getModelManager()));
-		ColorImageCollection colorImageCollection = new ColorImageCollection(smallBodyModel, getModelManager());
-		allModels.put(ModelNames.COLOR_IMAGES, ImmutableList.of(colorImageCollection));
-		allModels.put(ModelNames.CUBE_IMAGES, ImmutableList.of(cubeCollection));
+//		allModels.put(ModelNames.IMAGES, ImmutableList.of(new ImageCollection(smallBodyModel, getModelManager())));
+//		allModels.put(ModelNames.CUSTOM_IMAGES, ImmutableList.of(new ImageCollection(smallBodyModel, getModelManager())));
+//		ImageCubeCollection customCubeCollection = new ImageCubeCollection(smallBodyModel,  new ImageCollection(smallBodyModel, getModelManager()));
+//		ColorImageCollection customColorImageCollection = new ColorImageCollection(smallBodyModel, getModelManager());
+//		allModels.put(ModelNames.CUSTOM_CUBE_IMAGES, ImmutableList.of(customCubeCollection));
+//		allModels.put(ModelNames.CUSTOM_COLOR_IMAGES, ImmutableList.of(customColorImageCollection));
+//
+//		//all bodies can potentially have at least custom images, color images, and cubes, so these models must exist for everything.  Same will happen for spectra when it gets enabled.
+//		allModels.put(ModelNames.PERSPECTIVE_IMAGE_BOUNDARIES, ImmutableList.of(new PerspectiveImageBoundaryCollection(smallBodyModel)));
+//		allModels.put(ModelNames.PERSPECTIVE_CUSTOM_IMAGE_BOUNDARIES, ImmutableList.of(new PerspectiveImageBoundaryCollection(smallBodyModel)));
+//		ImageCubeCollection cubeCollection = new ImageCubeCollection(smallBodyModel, new ImageCollection(smallBodyModel, getModelManager()));
+//		ColorImageCollection colorImageCollection = new ColorImageCollection(smallBodyModel, getModelManager());
+//		allModels.put(ModelNames.COLOR_IMAGES, ImmutableList.of(colorImageCollection));
+//		allModels.put(ModelNames.CUBE_IMAGES, ImmutableList.of(cubeCollection));
 
 		//        for (ImagingInstrument instrument : getPolyhedralModelConfig().imagingInstruments)
 		//        {
@@ -270,9 +270,9 @@ public class SbmtTesterView extends View implements PropertyChangeListener
 		allModels.put(ModelNames.DEM_BOUNDARY, ImmutableList.of(demBoundaryCollection));
 
 		setModelManager(new ModelManager(smallBodyModel, allModels));
-		colorImageCollection.setModelManager(getModelManager());
-//		cubeCollection.setModelManager(getModelManager());
-		customColorImageCollection.setModelManager(getModelManager());
+//		colorImageCollection.setModelManager(getModelManager());
+////		cubeCollection.setModelManager(getModelManager());
+//		customColorImageCollection.setModelManager(getModelManager());
 //		customCubeCollection.setModelManager(getModelManager());
 		demCollection.setModelManager(getModelManager());
 		demBoundaryCollection.setModelManager(getModelManager());

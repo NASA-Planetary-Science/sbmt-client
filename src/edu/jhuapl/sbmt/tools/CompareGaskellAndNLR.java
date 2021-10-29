@@ -363,7 +363,7 @@ public class CompareGaskellAndNLR
 
             keyName = keyName.replace(".FIT", "");
             ImageKey key = new ImageKey(keyName, ImageSource.GASKELL);
-            MSIImage image = new MSIImage(key, smallBodyModel, true);
+            MSIImage image = new MSIImage(key, List.of(smallBodyModel), true);
 
             // If the sumfile has no landmarks, then ignore it. Sumfiles that have no landmarks
             // are 1153 bytes long or less
@@ -461,7 +461,7 @@ public class CompareGaskellAndNLR
             vtkPolyData smallBodyPolyData = PolyDataUtil.loadShapeModel(smallBodyFile);
             SmallBodyModel smallBodyModel = new SmallBodyModel(key.name, smallBodyPolyData);
 
-            MSIImage image = new MSIImage(key, smallBodyModel, true);
+            MSIImage image = new MSIImage(key, List.of(smallBodyModel), true);
 
             // If the sumfile has no landmarks, then ignore it. Sumfiles that have no landmarks
             // are 1153 bytes long or less

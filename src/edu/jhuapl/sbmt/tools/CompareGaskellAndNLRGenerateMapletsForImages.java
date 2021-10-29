@@ -43,7 +43,7 @@ public class CompareGaskellAndNLRGenerateMapletsForImages
         vtkPolyData smallBodyPolyData = PolyDataUtil.loadShapeModel(mapletFile);
         SmallBodyModel smallBodyModel = new SmallBodyModel(key.name, smallBodyPolyData);
 
-        MSIImage image = new MSIImage(key, smallBodyModel, true);
+        MSIImage image = new MSIImage(key, List.of(smallBodyModel), true);
 
         double[] imageSurfacePoint = image.getPixelSurfaceIntercept(259 + sampleOffset, 411 - (219 + lineOffset));
         if (imageSurfacePoint == null)
@@ -77,7 +77,7 @@ public class CompareGaskellAndNLRGenerateMapletsForImages
 
             keyName = keyName.replace(".FIT", "");
             ImageKey key = new ImageKey(keyName, ImageSource.GASKELL);
-            MSIImage image = new MSIImage(key, smallBodyModel, true);
+            MSIImage image = new MSIImage(key, List.of(smallBodyModel), true);
 
             // If the sumfile has no landmarks, then ignore it. Sumfiles that have no landmarks
             // are 1153 bytes long or less
