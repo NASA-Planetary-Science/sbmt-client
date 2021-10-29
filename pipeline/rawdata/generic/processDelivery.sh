@@ -222,7 +222,7 @@ createLink "$deployedTop/$scId" "$processedTop/$scId"
 
 # Second argument is the pointing type. Supported values are the enumerations
 # in the ImageSource class.
-generateDatabaseTable $modelId ${instrument^^} GASKELL
+generateDatabaseTable $modelId $bodyId ${instrument^^} GASKELL
 
 # End Instrument sub-block (ISS).
 #-------------------------------------------------------------------------------
@@ -269,7 +269,7 @@ createInfoFilesFromFITSImages $metakernel \
 # to the root URL, but this level of directory is not used in deliveries.
 createRelativeLink $processedTop $processedTop/data
 
-generateDatabaseTable $modelId ${instrument^^} SPICE
+generateDatabaseTable $modelId $bodyId ${instrument^^} SPICE
 
 # Set up galleries (if present).
 createGalleryList "$imageTopDir/dart/$instrument/$modelId"
@@ -324,7 +324,7 @@ createInfoFilesFromFITSImages $metakernel \
 # to the root URL, but this level of directory is not used in deliveries.
 createRelativeLink $processedTop $processedTop/data
 
-generateDatabaseTable $modelId ${instrument^^} SPICE
+generateDatabaseTable $modelId $bodyId ${instrument^^} SPICE
 
 # Set up galleries (if present).
 createGalleryList "$imageTopDir/dart/$instrument/$modelId"
@@ -379,7 +379,7 @@ createInfoFilesFromFITSImages $metakernel \
 # to the root URL, but this level of directory is not used in deliveries.
 createRelativeLink $processedTop $processedTop/data
 
-generateDatabaseTable $modelId ${instrument^^} SPICE
+zgenerateDatabaseTable $modelId $bodyId ${instrument^^} SPICE
 
 # Set up galleries (if present).
 createGalleryList "$imageTopDir/dart/$instrument/$modelId"

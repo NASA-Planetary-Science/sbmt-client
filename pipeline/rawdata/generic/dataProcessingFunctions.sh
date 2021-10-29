@@ -1887,19 +1887,24 @@ generateDatabaseTable() {
     checkSkip $funcName "$*"
 
     modelId=$1
-    instrument=$2
-    pointing=$3
+    bodyId=$2
+    instrument=$3
+    pointing=$4
 
     if test "$modelId" = ""; then
-      check 1 "$funcName: missing/blank first argument, which must be the name of a body model"
+      check 1 "$funcName: missing/blank first argument, which must be the name of a model"
+    fi
+
+    if test "$bodyId" = ""; then
+      check 1 "$funcName: missing/blank second argument, which must be the name of a body"
     fi
 
     if test "$instrument" = ""; then
-      check 1 "$funcName: missing/blank second argument, which must be the name of an instrument"
+      check 1 "$funcName: missing/blank third argument, which must be the name of an instrument"
     fi
 
     if test "$pointing" = ""; then
-      check 1 "$funcName: missing/blank third argument, which must be the pointing type"
+      check 1 "$funcName: missing/blank fourth argument, which must be the pointing type"
     fi
 
     tool=DatabaseGeneratorSql.sh
