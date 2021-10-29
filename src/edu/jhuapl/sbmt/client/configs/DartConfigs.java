@@ -467,7 +467,7 @@ public class DartConfigs
                         ImageType.valueOf("DRACO_IMAGE"), //
                         InfoFiles, //
                         Instrument.DRACO, //
-                        270., //
+                        0., //
                         "None", //
                         DracoFillValues //
                 ),
