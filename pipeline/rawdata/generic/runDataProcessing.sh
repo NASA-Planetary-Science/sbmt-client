@@ -87,15 +87,22 @@ dateStamp=`date '+%Y-%m-%dT%H%M%S'`
 
 usage() {
   echo "--------------------------------------------------------------------------------"
-  echo "Usage: $runnerScript processDeliveryScript"
+  echo "Usage: $runnerScript [ processDeliveryScript ]"
   echo ""
-  echo "       processDeliveryScript is a Bourne shell script containing specific"
-  echo "           commands to be used for this processing action, typically a locally"
-  echo "           tailored processing or deployment script."
+  echo "       processDeliveryScript is an optional argument giving the name/path of"
+  echo "           a Bourne shell script containing specific commands to be used"
+  echo "           for this processing action, typically a standard processing or"
+  echo "           deployment script that has been edited for a specific delvery."
+  echo "           $runnerScript figures out where the rawdata and processed areas"
+  echo "           are based on this script's location."
   echo ""
+  echo "       If no script argument is provided, $runnerScript looks in the" 
+  echo "       current working directory for scripts whose names begin 2-digits"
+  echo "       and end with .sh (e.g., 00-init.sh), and executes these in" 
+  echo "       numerical/lexical order within the current shell." 
   echo ""
-  echo "        Read the top block of $runnerScript for further details about how"
-  echo "        it works."
+  echo "       Read the top block of $runnerScript for further details about how"
+  echo "       it works."
   echo "--------------------------------------------------------------------------------"
 }
 
@@ -103,8 +110,17 @@ if test "$1" = "-h"; then
   usage
   exit 0
 elif test $# -lt 1; then
-  (usage >&2)
-  exit 1
+  scripts=`ls *.sh | grep '^[0-9][0-9]-' 2> /dev/null`
+  if test "$scripts" = ""; then
+    (usage >&2)
+    exit 1
+  fi
+else
+  scripts=$1
+  if test ! -f "$scripts"; then
+    (usage >&2)
+    check 1 "Script $scripts is not a file"
+  fi
 fi
 
 echo
@@ -124,19 +140,8 @@ fi
 
 confirmSbmt "$runnerScript: you must be logged into the sbmt account to process deliveries"
 
-processingScript=$1
-
-if test ! -f $processingScript; then
-  (usage >&2)
-  check 1 "Script $processingScript is not a file"
-fi
-
-# Extract the name of the processing script, which may be used in
-# output messages etc.
-scriptName=`echo $processingScript | sed 's:.*/::'`
-
 #-------------------------------------------------------------------------------
-# Assume the absolute path to the processing script is:
+# Suppose the absolute path to the processing script is:
 # /project/sbmtpipeline/rawdata/arbitrary/path/to/model/or/instrument/redmine-1234/processDelivery.sh
 # The next block of code extracts these variables:
 #     pipelineTop = /project/sbmtpipeline
@@ -146,11 +151,15 @@ scriptName=`echo $processingScript | sed 's:.*/::'`
 # Locate it based on the processing script location.
 # This is probably several levels up from the supplied payload script.
 # Interpret this to be the location of the pipeline as a whole.
-pipelineTop=$(guessRawDataParentDir "$processingScript")
+for script in $scripts; do
+  pipelineTop=$(guessRawDataParentDir "$script")
 
-# Top of the raw data is just the directory containing the processing script.
-rawDataTop=$(getDirPath "$processingScript")
+  # Top of the raw data is just the directory containing the processing script.
+  rawDataTop=$(getDirPath "$script")
 
+  # This loop executes just once, uses these guesses from the first script for all the scripts.
+  break
+done
 # Processing path is the part of rawDataTop that is below pipelineTop/rawdata.
 processingPath=`echo $rawDataTop | sed "s:$pipelineTop/[^/][^/]*/*::"`
 #-------------------------------------------------------------------------------
@@ -188,7 +197,6 @@ export PATH="$PATH:/project/sbmtpipeline/software/heasoft/bin"
 echo "--------------------------------------------------------------------------------"
 echo "Variable settings:"
 echo "--------------------------------------------------------------------------------"
-echo "scriptName is $scriptName"
 echo "sbmtCodeTop is $sbmtCodeTop"
 echo "logTop is $logTop"
 echo "pipelineRawData is $pipelineRawData"
@@ -199,17 +207,27 @@ echo "deployedTop is $deployedTop"
 echo "serverTop is $serverTop"
 echo "modelMetadataDir is $modelMetadataDir"
 echo "HEASoft/Ftools installation is in /project/sbmtpipeline/software/heasoft/bin"
-echo "--------------------------------------------------------------------------------"
-echo "Executing $processingScript"
-echo "--------------------------------------------------------------------------------"
 
 # This variable is set so that scripts can tell whether they were run by this runner
 # script, as opposed to being run directly.
 invokedByRunner=true
 
-. "$rawDataTop/$(basename $processingScript)"
+for script in $scripts; do
+  # Extract the name of the processing script, which may be used in
+  # output messages etc.
+  scriptName=`echo $script | sed 's:.*/::'`
 
-echo "--------------------------------------------------------------------------------"
+  echo "--------------------------------------------------------------------------------"
+  echo "scriptName is $scriptName"
+  echo "Executing $script"
+  echo "--------------------------------------------------------------------------------"
+
+  . "$rawDataTop/$(basename $script)"
+  echo "Finished $script"
+  echo "--------------------------------------------------------------------------------"
+  echo
+done
+
 echo "Done with processing that started at $dateStamp"
 echo "Logs from this run are in $logTop"
 date '+%Y-%m-%dT%H%M%S'

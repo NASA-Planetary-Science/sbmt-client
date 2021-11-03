@@ -94,7 +94,7 @@ skipSection="true"
 # This block is for updating or reusing a previously delivered or processed
 # model.
 #-------------------------------------------------------------------------------
-createHardLinks $piplineRawData/didymos/redmine-XXXX/didymos/ideal-impact4-20200629-v01 $rawDataTop/$outputTop
+createHardLinks $pipelineRawData/didymos/redmine-XXXX/didymos/ideal-impact4-20200629-v01 $rawDataTop/$outputTop
 #-------------------------------------------------------------------------------
 
 
@@ -337,7 +337,6 @@ scId="LICIA"
 instrument="luke"
 
 # Copy all delivered instrument files.
-# Unlike previous deliveries, no images came with this delivery.
 # copyDir $instrument
 
 #-------------------------------------------------------------------------------
