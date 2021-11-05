@@ -107,8 +107,8 @@ else
   # Arguments specify the branch. Require no packages already checked out.
   checkedOut=false
   if test -f .git-clone-saavtk-succeeded -a "$forceSaavtkCheckout" != true; then
-    echo "SAAVTK was already checked out; cannot specify branch on the command line" >&2
-    checkedOut=true
+    echo "IGNORED: SAAVTK was already checked out; cannot specify branch on the command line" >&2
+#    checkedOut=true
   fi
   if test -f .git-clone-sbmt-succeeded -a "$forceSbmtCheckout" != true; then
     echo "SBMT was already checked out; cannot specify branch on the command line" >&2
@@ -130,6 +130,14 @@ elif test $# -eq 2; then
   sbmtBranch=$2
 fi
 
+if test "$saavtkBranch" = "-skip"; then
+  saavtkBranch=
+fi
+
+if test "$sbmtBranch" = "-skip"; then
+  sbmtBranch=
+fi
+
 if test "$sbmtBranch" != ""; then
   echo "Attempting to check out and build $mission client with branches $saavtkBranch and $sbmtBranch"
 else
@@ -139,6 +147,7 @@ fi
 rootDir=`pwd -L`
 export SAAVTKROOT=$rootDir/saavtk
 export SBMTROOT=$rootDir/sbmt
+export JAVA_HOME="/project/nearsdc/software/java/jdk16/linux64"
 
 didSomething=false
 
