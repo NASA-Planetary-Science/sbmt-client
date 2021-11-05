@@ -20,7 +20,6 @@ import edu.jhuapl.saavtk.gui.View;
 import edu.jhuapl.saavtk.gui.render.ConfigurableSceneNotifier;
 import edu.jhuapl.saavtk.gui.render.RenderPanel;
 import edu.jhuapl.saavtk.gui.render.Renderer;
-import edu.jhuapl.saavtk.model.Graticule;
 import edu.jhuapl.saavtk.model.Model;
 import edu.jhuapl.saavtk.model.ModelManager;
 import edu.jhuapl.saavtk.model.ModelNames;
@@ -39,7 +38,6 @@ import edu.jhuapl.saavtk.util.Configuration;
 import edu.jhuapl.saavtk.util.Properties;
 import edu.jhuapl.sbmt.client.BodyType;
 import edu.jhuapl.sbmt.client.BodyViewConfig;
-import edu.jhuapl.sbmt.client.ISmallBodyViewConfig;
 import edu.jhuapl.sbmt.client.SBMTInfoWindowManagerFactory;
 import edu.jhuapl.sbmt.client.SBMTModelBootstrap;
 import edu.jhuapl.sbmt.client.SbmtInfoWindowManager;
@@ -58,7 +56,6 @@ import edu.jhuapl.sbmt.gui.image.ui.images.ImageDefaultPickHandler;
 import edu.jhuapl.sbmt.gui.image.ui.images.ImagePopupManager;
 import edu.jhuapl.sbmt.gui.image.ui.images.ImagePopupMenu;
 import edu.jhuapl.sbmt.model.bennu.shapeModel.BennuV4;
-import edu.jhuapl.sbmt.model.custom.CustomGraticule;
 import edu.jhuapl.sbmt.model.eros.LineamentModel;
 import edu.jhuapl.sbmt.model.image.ColorImageCollection;
 import edu.jhuapl.sbmt.model.image.IImagingInstrument;
@@ -176,11 +173,8 @@ public class SbmtTesterView extends View implements PropertyChangeListener
 		SmallBodyModel smallBodyModel = new BennuV4(getPolyhedralModelConfig());
 		SBMTModelBootstrap.initialize(smallBodyModel);
 
-		Graticule graticule = createGraticule(smallBodyModel);
-
 		HashMap<ModelNames, Model> allModels = new HashMap<>();
 		allModels.put(ModelNames.SMALL_BODY, smallBodyModel);
-		allModels.put(ModelNames.GRATICULE, graticule);
 		allModels.put(ModelNames.IMAGES, new ImageCollection(smallBodyModel));
 		allModels.put(ModelNames.CUSTOM_IMAGES, new ImageCollection(smallBodyModel));
 		ImageCubeCollection customCubeCollection = new ImageCubeCollection(smallBodyModel, getModelManager());
@@ -685,30 +679,6 @@ public class SbmtTesterView extends View implements PropertyChangeListener
 
         models.put(ModelNames.SPECTRA, new SpectraCollection(smallBodyModel));
         return models;
-    }
-
-    static public Graticule createGraticule(SmallBodyModel smallBodyModel)
-    {
-        ISmallBodyViewConfig config = smallBodyModel.getSmallBodyConfig();
-        ShapeModelType author = config.getAuthor();
-
-        if (ShapeModelType.GASKELL == author && smallBodyModel.getNumberResolutionLevels() == 4)
-        {
-            String[] graticulePaths = new String[]{
-                    config.getRootDirOnServer() + "/coordinate_grid_res0.vtk.gz",
-                    config.getRootDirOnServer() + "/coordinate_grid_res1.vtk.gz",
-                    config.getRootDirOnServer() + "/coordinate_grid_res2.vtk.gz",
-                    config.getRootDirOnServer() + "/coordinate_grid_res3.vtk.gz"
-            };
-
-            return new Graticule(smallBodyModel, graticulePaths);
-        }
-        else if (ShapeModelType.CUSTOM == author && !config.isCustomTemporary())
-        {
-            return new CustomGraticule(smallBodyModel);
-        }
-
-        return new Graticule(smallBodyModel);
     }
 
 }

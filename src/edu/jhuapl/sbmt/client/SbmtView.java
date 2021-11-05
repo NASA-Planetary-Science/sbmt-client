@@ -26,7 +26,6 @@ import edu.jhuapl.saavtk.gui.render.ConfigurableSceneNotifier;
 import edu.jhuapl.saavtk.gui.render.RenderPanel;
 import edu.jhuapl.saavtk.gui.render.Renderer;
 import edu.jhuapl.saavtk.model.Controller;
-import edu.jhuapl.saavtk.model.Graticule;
 import edu.jhuapl.saavtk.model.Model;
 import edu.jhuapl.saavtk.model.ModelManager;
 import edu.jhuapl.saavtk.model.ModelNames;
@@ -47,7 +46,6 @@ import edu.jhuapl.saavtk.util.FileCache;
 import edu.jhuapl.saavtk.util.Properties;
 import edu.jhuapl.sbmt.dem.gui.DemMainPanel;
 import edu.jhuapl.sbmt.dtm.controller.DEMPopupMenuActionListener;
-import edu.jhuapl.sbmt.dtm.controller.ExperimentalDEMController;
 import edu.jhuapl.sbmt.dtm.model.DEMBoundaryCollection;
 import edu.jhuapl.sbmt.dtm.model.DEMCollection;
 import edu.jhuapl.sbmt.dtm.model.creation.DEMCreator;
@@ -75,7 +73,6 @@ import edu.jhuapl.sbmt.model.bennu.spectra.OREXSpectrumSearchController;
 import edu.jhuapl.sbmt.model.bennu.spectra.OREXSpectrumTabbedPane;
 import edu.jhuapl.sbmt.model.bennu.spectra.otes.OTESSpectrum;
 import edu.jhuapl.sbmt.model.bennu.spectra.ovirs.OVIRSSpectrum;
-import edu.jhuapl.sbmt.model.custom.CustomGraticule;
 import edu.jhuapl.sbmt.model.eros.LineamentModel;
 import edu.jhuapl.sbmt.model.eros.nis.NEARSpectraFactory;
 import edu.jhuapl.sbmt.model.eros.nis.NISSearchModel;
@@ -297,11 +294,9 @@ public class SbmtView extends View implements PropertyChangeListener
 		smallBodyModel = SbmtModelFactory.createSmallBodyModel(getPolyhedralModelConfig());
 		SBMTModelBootstrap.initialize(smallBodyModel);
 //		BasicSpectrumInstrument.initializeSerializationProxy();
-		Graticule graticule = createGraticule(smallBodyModel);
 
 		HashMap<ModelNames, Model> allModels = new HashMap<>();
 		allModels.put(ModelNames.SMALL_BODY, smallBodyModel);
-		allModels.put(ModelNames.GRATICULE, graticule);
 		allModels.put(ModelNames.IMAGES, new ImageCollection(smallBodyModel));
 		allModels.put(ModelNames.CUSTOM_IMAGES, new ImageCollection(smallBodyModel));
 		ImageCubeCollection customCubeCollection = new ImageCubeCollection(smallBodyModel, getModelManager());
@@ -638,7 +633,7 @@ public class SbmtView extends View implements PropertyChangeListener
 		if (tmpSmallBodyConfig.hasLidarData == true)
 			lidarInstrName = tmpSmallBodyConfig.lidarInstrumentName.toString();
 
-		JComponent lidarPanel = new LidarPanel(getModelManager(), getPickManager(), getRenderer(), tmpSmallBodyConfig);
+		JComponent lidarPanel = new LidarPanel(getRenderer(), getStatusNotifier(), getPickManager(), tmpSmallBodyConfig, getModelManager().getPolyhedralModel(), getModelManager());
 		addTab(lidarInstrName, lidarPanel);
 
 		if (Configuration.isAPLVersion())
@@ -998,30 +993,6 @@ public class SbmtView extends View implements PropertyChangeListener
 
         models.put(ModelNames.SPECTRA, collection);
         return models;
-    }
-
-    static public Graticule createGraticule(SmallBodyModel smallBodyModel)
-    {
-        SmallBodyViewConfig config = (SmallBodyViewConfig)smallBodyModel.getSmallBodyConfig();
-        ShapeModelType author = config.author;
-
-        if (ShapeModelType.GASKELL == author && smallBodyModel.getNumberResolutionLevels() == 4)
-        {
-            String[] graticulePaths = new String[]{
-                    config.rootDirOnServer + "/coordinate_grid_res0.vtk.gz",
-                    config.rootDirOnServer + "/coordinate_grid_res1.vtk.gz",
-                    config.rootDirOnServer + "/coordinate_grid_res2.vtk.gz",
-                    config.rootDirOnServer + "/coordinate_grid_res3.vtk.gz"
-            };
-
-            return new Graticule(smallBodyModel, graticulePaths);
-        }
-        else if (ShapeModelType.CUSTOM == author && !config.customTemporary)
-        {
-            return new CustomGraticule(smallBodyModel);
-        }
-
-        return new Graticule(smallBodyModel);
     }
 
 	public BasicConfigInfo getConfigInfo()
