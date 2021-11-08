@@ -14,6 +14,7 @@ import edu.jhuapl.saavtk.config.IBodyViewConfig;
 import edu.jhuapl.saavtk.model.ShapeModelBody;
 import edu.jhuapl.saavtk.model.ShapeModelType;
 import edu.jhuapl.saavtk.util.Configuration;
+import edu.jhuapl.sbmt.image.core.ImagingInstrument;
 import edu.jhuapl.sbmt.model.bennu.spectra.otes.OTES;
 import edu.jhuapl.sbmt.model.bennu.spectra.otes.OTESQuery;
 import edu.jhuapl.sbmt.model.bennu.spectra.otes.OTESSpectrumMath;
@@ -23,7 +24,6 @@ import edu.jhuapl.sbmt.model.bennu.spectra.ovirs.OVIRSSpectrumMath;
 import edu.jhuapl.sbmt.model.eros.nis.NIS;
 import edu.jhuapl.sbmt.model.eros.nis.NISSpectrumMath;
 import edu.jhuapl.sbmt.model.eros.nis.NisQuery;
-import edu.jhuapl.sbmt.model.image.ImagingInstrument;
 import edu.jhuapl.sbmt.model.image.Instrument;
 import edu.jhuapl.sbmt.model.phobos.MEGANE;
 import edu.jhuapl.sbmt.model.phobos.MEGANEQuery;
@@ -107,10 +107,20 @@ public class SmallBodyViewConfigMetadataIO implements MetadataManager
                 	file = new File(rootDir + ((SmallBodyViewConfig) config).rootDirOnServer + "/" + config.getAuthor() + "_" + config.getBody().toString().replaceAll(" ", "_") + version.replaceAll(" ", "_") + "_v" + configInfoVersion + ".json");
                 else
                 {
-                	String systemRoot = ((SmallBodyViewConfig) config).rootDirOnServer.substring(1).replaceFirst("/", "-system/");
-                	file = new File(rootDir + "/" + systemRoot + "/" + config.getAuthor() + "_" + config.getBody().toString().replaceAll(" ", "_") + "_System" + version.replaceAll(" ", "_") + "_v" + configInfoVersion + ".json");
+                	String bodyName = config.getBody().toString();
+                	bodyName = bodyName.replaceAll(" ", "_");
+//                	bodyName = bodyName.replaceAll("\\(", "");
+//                	bodyName = bodyName.replaceAll("\\)", "");
+                	String centerNameReplacement = "-system_" + bodyName.toLowerCase() + "_center/";
+                	String systemRoot = ((SmallBodyViewConfig) config).rootDirOnServer.substring(1).replaceFirst("/", centerNameReplacement);
+//                	systemRoot = systemRoot.replaceAll("\\(", "");
+//                	systemRoot = systemRoot.replaceAll("\\)", "");
+                	System.out.println("SmallBodyViewConfigMetadataIO: main: system root " + systemRoot);
+                	String fileNameString = rootDir + "/" + systemRoot + "/" + config.getAuthor() + "_" + config.getBody().toString().replaceAll(" ", "_") + "_System_"  + bodyName.toLowerCase() + "center" + version.replaceAll(" ", "_") + "_v" + configInfoVersion + ".json";
+                	fileNameString = fileNameString.replaceAll("\\(", "");
+                	fileNameString = fileNameString.replaceAll("\\)", "");
+                	file = new File(fileNameString);
                 }
-                System.out.println("SmallBodyViewConfigMetadataIO: main: filename " + file.getAbsolutePath());
                 BasicConfigInfo configInfo = new BasicConfigInfo((BodyViewConfig)config, publishedDataOnly);
                 allBodiesMetadata.put(Key.of(config.getUniqueName()), configInfo.store());
 
@@ -290,6 +300,7 @@ public class SmallBodyViewConfigMetadataIO implements MetadataManager
         }
 
         //dtm
+      	write(hasDTM, c.hasDTMs, configMetadata);
         if (c.dtmBrowseDataSourceMap.size() > 0 )
         	write(dtmBrowseDataSourceMap, c.dtmBrowseDataSourceMap, configMetadata);
         if (c.dtmSearchDataSourceMap.size() > 0 )
@@ -565,6 +576,7 @@ public class SmallBodyViewConfigMetadataIO implements MetadataManager
         if (configMetadata.hasKey(dtmBrowseDataSourceMap))
         	c.dtmBrowseDataSourceMap = read(dtmBrowseDataSourceMap, configMetadata);
         c.hasBigmap = read(hasBigmap, configMetadata);
+        c.hasDTMs = read(hasDTM, configMetadata);
 
         if (c.hasLidarData)
         {
@@ -665,25 +677,22 @@ public class SmallBodyViewConfigMetadataIO implements MetadataManager
         if (configMetadata.hasKey(systemBodyConfigs))
         {
         	List<String> systemBodyConfigStrings = read(systemBodyConfigs, configMetadata);
-        	System.out.println("SmallBodyViewConfigMetadataIO: retrieve: number of stored configs " + systemBodyConfigStrings.size());
         	c.systemConfigs = systemBodyConfigStrings
         		.stream()
         		.map( x -> {
         		String[] splits = x.split(",");
+        		String modelTypeAdjusted = splits[1].replaceAll("-\\w*-center", "");
         		if ((splits.length == 2) || ((splits.length == 3) && (splits[2].equals("null"))))
         		{
-        			SmallBodyViewConfig config = SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.valueFor(splits[0]), ShapeModelType.provide(splits[1]));
-        			System.out.println("SmallBodyViewConfigMetadataIO: retrieve: config is " + config);
+        			SmallBodyViewConfig config = SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.valueFor(splits[0]), ShapeModelType.provide(modelTypeAdjusted));
         			return config;
         		}
         		else
         		{
-        			SmallBodyViewConfig config = SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.valueFor(splits[0]), ShapeModelType.provide(splits[1]), splits[2]);
-        			System.out.println("SmallBodyViewConfigMetadataIO: retrieve: config is " + config);
+        			SmallBodyViewConfig config = SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.valueFor(splits[0]), ShapeModelType.provide(modelTypeAdjusted), splits[2]);
         			return config;
         		}
         	}).toList();
-        	System.out.println("SmallBodyViewConfigMetadataIO: retrieve: number of converted configs " + c.systemConfigs.size());
         }
     }
 
@@ -738,6 +747,7 @@ public class SmallBodyViewConfigMetadataIO implements MetadataManager
     final Key<Map> dtmSearchDataSourceMap = Key.of("dtmSearchDataSourceMap");
     final Key<Map> dtmBrowseDataSourceMap = Key.of("dtmBrowseDataSourceMap");
     final Key<Boolean> hasBigmap = Key.of("hasBigmap");
+    final Key<Boolean> hasDTM = Key.of("hasDTM");
 
 
     final Key<Boolean> hasLidarData = Key.of("hasLidarData");

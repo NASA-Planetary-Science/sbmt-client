@@ -59,18 +59,27 @@ import edu.jhuapl.sbmt.dtm.ui.menu.DEMPopupMenu;
 import edu.jhuapl.sbmt.dtm.ui.menu.MapletBoundaryPopupMenu;
 import edu.jhuapl.sbmt.gui.eros.LineamentControlPanel;
 import edu.jhuapl.sbmt.gui.eros.LineamentPopupMenu;
-import edu.jhuapl.sbmt.gui.image.HyperspectralImagingSearchPanel;
-import edu.jhuapl.sbmt.gui.image.controllers.custom.CustomImageController;
-import edu.jhuapl.sbmt.gui.image.controllers.images.ImagingSearchController;
-import edu.jhuapl.sbmt.gui.image.controllers.quadspectral.QuadSpectralImagingSearchController;
-import edu.jhuapl.sbmt.gui.image.controllers.spectral.SpectralImagingSearchController;
-import edu.jhuapl.sbmt.gui.image.model.images.ImageSearchModel;
-import edu.jhuapl.sbmt.gui.image.ui.color.ColorImagePopupMenu;
-import edu.jhuapl.sbmt.gui.image.ui.cubes.ImageCubePopupMenu;
-import edu.jhuapl.sbmt.gui.image.ui.images.ImageDefaultPickHandler;
-import edu.jhuapl.sbmt.gui.image.ui.images.ImagePopupManager;
-import edu.jhuapl.sbmt.gui.image.ui.images.ImagePopupMenu;
 import edu.jhuapl.sbmt.gui.time.version2.StateHistoryController;
+import edu.jhuapl.sbmt.image.SBMTInfoWindowManagerFactory;
+import edu.jhuapl.sbmt.image.SbmtInfoWindowManager;
+import edu.jhuapl.sbmt.image.SbmtSpectrumWindowManager;
+import edu.jhuapl.sbmt.image.common.SpectralImageMode;
+import edu.jhuapl.sbmt.image.controllers.custom.CustomImageController;
+import edu.jhuapl.sbmt.image.controllers.images.ImagingSearchController;
+import edu.jhuapl.sbmt.image.controllers.quadspectral.QuadSpectralImagingSearchController;
+import edu.jhuapl.sbmt.image.controllers.spectral.SpectralImagingSearchController;
+import edu.jhuapl.sbmt.image.core.ImagingInstrument;
+import edu.jhuapl.sbmt.image.gui.HyperspectralImagingSearchPanel;
+import edu.jhuapl.sbmt.image.gui.color.ColorImagePopupMenu;
+import edu.jhuapl.sbmt.image.gui.cubes.ImageCubePopupMenu;
+import edu.jhuapl.sbmt.image.gui.images.ImageDefaultPickHandler;
+import edu.jhuapl.sbmt.image.gui.images.ImagePopupManager;
+import edu.jhuapl.sbmt.image.gui.images.ImagePopupMenu;
+import edu.jhuapl.sbmt.image.types.ImageCollection;
+import edu.jhuapl.sbmt.image.types.ImageSearchModel;
+import edu.jhuapl.sbmt.image.types.colorImage.ColorImageCollection;
+import edu.jhuapl.sbmt.image.types.imageCube.ImageCubeCollection;
+import edu.jhuapl.sbmt.image.types.perspectiveImage.PerspectiveImageBoundaryCollection;
 import edu.jhuapl.sbmt.lidar.gui.LidarPanel;
 import edu.jhuapl.sbmt.model.bennu.spectra.OREXSpectraFactory;
 import edu.jhuapl.sbmt.model.bennu.spectra.OREXSpectrumSearchController;
@@ -82,12 +91,6 @@ import edu.jhuapl.sbmt.model.eros.LineamentModel;
 import edu.jhuapl.sbmt.model.eros.nis.NEARSpectraFactory;
 import edu.jhuapl.sbmt.model.eros.nis.NISSearchModel;
 import edu.jhuapl.sbmt.model.eros.nis.NISSpectrum;
-import edu.jhuapl.sbmt.model.image.ColorImageCollection;
-import edu.jhuapl.sbmt.model.image.ImageCollection;
-import edu.jhuapl.sbmt.model.image.ImageCubeCollection;
-import edu.jhuapl.sbmt.model.image.ImagingInstrument;
-import edu.jhuapl.sbmt.model.image.PerspectiveImageBoundaryCollection;
-import edu.jhuapl.sbmt.model.image.SpectralImageMode;
 import edu.jhuapl.sbmt.model.ryugu.nirs3.H2SpectraFactory;
 import edu.jhuapl.sbmt.model.ryugu.nirs3.NIRS3SearchModel;
 import edu.jhuapl.sbmt.model.ryugu.nirs3.atRyugu.NIRS3Spectrum;
@@ -300,7 +303,6 @@ public class SbmtView extends View implements PropertyChangeListener
 	protected void setupModelManager()
 	{
 		smallBodyModels = SbmtModelFactory.createSmallBodyModel(getPolyhedralModelConfig());
-		System.out.println("SbmtView: setupModelManager: number of small bodies " + smallBodyModels.size());
 		SmallBodyModel smallBodyModel = smallBodyModels.get(0);
 //		SBMTModelBootstrap.initialize(smallBodyModel);
 //		BasicSpectrumInstrument.initializeSerializationProxy();
@@ -536,7 +538,7 @@ public class SbmtView extends View implements PropertyChangeListener
 					{
 						//                        JComponent component = new ImagingSearchPanel(getPolyhedralModelConfig(), getModelManager(), (SbmtInfoWindowManager)getInfoPanelManager(), (SbmtSpectrumWindowManager)getSpectrumPanelManager(), getPickManager(), getRenderer(), instrument).init();
 						controller =
-								new ImagingSearchController(getPolyhedralModelConfig(), getModelManager(), (SbmtInfoWindowManager) getInfoPanelManager(), (SbmtSpectrumWindowManager) getSpectrumPanelManager(), getPickManager(), getRenderer(), instrument);
+								new ImagingSearchController(getPolyhedralModelConfig(), getModelManager(), (SbmtInfoWindowManager) getInfoPanelManager(), (SbmtSpectrumWindowManager) getSpectrumPanelManager(), getPickManager(), getRenderer(), instrument, positionOrientationManager);
 					}
 				}
 
@@ -727,7 +729,8 @@ public class SbmtView extends View implements PropertyChangeListener
             }
 
 //        	addTab("Regional DTMs (old)", new ExperimentalDEMController(getModelManager(), getPickManager(), creationTool, getPolyhedralModelConfig(), getRenderer()).getPanel());
-        	addTab("Regional DTMs", new DemMainPanel(getRenderer(), getModelManager().getPolyhedralModel(), getStatusNotifier(), getPickManager(), getPolyhedralModelConfig()));
+        	if (getPolyhedralModelConfig().hasDTMs)
+        		addTab("Regional DTMs", new DemMainPanel(getRenderer(), getModelManager().getPolyhedralModel(), getStatusNotifier(), getPickManager(), getPolyhedralModelConfig()));
 
 
 //            if ( getPolyhedralModelConfig().rootDirOnServer != null)
@@ -795,20 +798,18 @@ public class SbmtView extends View implements PropertyChangeListener
 	@Override
 	protected void setupPositionOrientationManager()
 	{
+		if (getPolyhedralModelConfig().spiceInfo == null) return;
 		SpiceInfo spiceInfo = getPolyhedralModelConfig().spiceInfo;
 		List<SmallBodyModel> bodies = getModelManager().getModel(ModelNames.SMALL_BODY).stream().map(body -> { return (SmallBodyModel)body; }).toList();
-		System.out.println("SbmtView: setupPositionOrientationManager: number of small bodies " + bodies.size());
 		SpiceInfo firstSpiceInfo = spiceInfo;
 		SimpleDateFormat dateFormatter = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS");
     	String dateTimeString = dateFormatter.format(getPolyhedralModelConfig().stateHistoryStartDate);
     	double time = TimeUtil.str2et(dateTimeString);
 		positionOrientationManager = new PositionOrientationManager(bodies, "/Users/steelrj1/dartspice/draco/impact.tm", firstSpiceInfo, firstSpiceInfo.getInstrumentFrameNamesToBind()[0],
-																	bodies.get(0).getModelName(), time);
-		System.out.println("SbmtView: setupPositionOrientationManager: number of updated models " + positionOrientationManager.getUpdatedBodies().size());
+																	spiceInfo.getBodyName(), time);
 		HashMap<ModelNames, List<Model>> allModels = new HashMap(getModelManager().getAllModels());
 		allModels.put(ModelNames.SMALL_BODY, positionOrientationManager.getUpdatedBodies());
 		setModelManager(new ModelManager(bodies.get(0), allModels));
-		System.out.println("SbmtView: setupPositionOrientationManager: number of models " + getModelManager().getModel(ModelNames.SMALL_BODY).size());
 	}
 
 	@Override

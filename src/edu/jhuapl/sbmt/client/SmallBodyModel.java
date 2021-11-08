@@ -8,7 +8,7 @@ import vtk.vtkPolyData;
 import vtk.vtkTransformFilter;
 
 import edu.jhuapl.saavtk.model.GenericPolyhedralModel;
-import edu.jhuapl.sbmt.model.image.ImageKeyInterface;
+import edu.jhuapl.sbmt.image.common.ImageKeyInterface;
 import edu.jhuapl.sbmt.model.image.Instrument;
 
 public class SmallBodyModel extends GenericPolyhedralModel implements ISmallBodyModel
@@ -142,7 +142,7 @@ public class SmallBodyModel extends GenericPolyhedralModel implements ISmallBody
     public void transformBody(vtkTransformFilter transformFilter)
     {
     	vtkPolyData polydata = transformFilter.GetPolyDataOutput();
-    	setSmallBodyPolyData(polydata);
+    	setSmallBodyPolyDataAtPosition(polydata);
     }
 
 }
