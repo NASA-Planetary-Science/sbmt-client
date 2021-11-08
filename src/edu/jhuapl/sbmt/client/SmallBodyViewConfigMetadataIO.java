@@ -576,7 +576,8 @@ public class SmallBodyViewConfigMetadataIO implements MetadataManager
         if (configMetadata.hasKey(dtmBrowseDataSourceMap))
         	c.dtmBrowseDataSourceMap = read(dtmBrowseDataSourceMap, configMetadata);
         c.hasBigmap = read(hasBigmap, configMetadata);
-        c.hasDTMs = read(hasDTM, configMetadata);
+        if (configMetadata.hasKey(hasDTM))
+        	c.hasDTMs = read(hasDTM, configMetadata);
 
         if (c.hasLidarData)
         {
