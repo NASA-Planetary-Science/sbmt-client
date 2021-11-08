@@ -13,8 +13,8 @@ import edu.jhuapl.saavtk.config.ViewConfig;
 import edu.jhuapl.saavtk.model.ShapeModelBody;
 import edu.jhuapl.saavtk.model.ShapeModelType;
 import edu.jhuapl.saavtk.util.SafeURLPaths;
-import edu.jhuapl.sbmt.model.image.ImageKeyInterface;
-import edu.jhuapl.sbmt.model.image.ImagingInstrument;
+import edu.jhuapl.sbmt.image.common.ImageKeyInterface;
+import edu.jhuapl.sbmt.image.core.ImagingInstrument;
 import edu.jhuapl.sbmt.model.image.Instrument;
 import edu.jhuapl.sbmt.model.phobos.HierarchicalSearchSpecification;
 import edu.jhuapl.sbmt.pointing.spice.SpiceInfo;
@@ -47,6 +47,7 @@ public abstract class BodyViewConfig extends ViewConfig
     public boolean hasColoringData = true;
     public boolean hasImageMap = false;
 
+    public boolean hasDTMs = true;
     public boolean hasMapmaker = false;
     public boolean hasRemoteMapmaker = false;
 //    public double bodyDensity = 0.0;

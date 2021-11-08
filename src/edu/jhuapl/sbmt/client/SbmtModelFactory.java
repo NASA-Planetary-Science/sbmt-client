@@ -135,10 +135,8 @@ public class SbmtModelFactory
         //check for other bodies in the sytem
         List<SmallBodyModel> allBodies = Lists.newArrayList();
         allBodies.add(result);
-        System.out.println("SbmtModelFactory: createSmallBodyModel: has system bodies " + config.hasSystemBodies);
         if (config.hasSystemBodies)
         {
-        	System.out.println("SbmtModelFactory: createSmallBodyModel: number of system configs " + config.systemConfigs.size());
         	for (SmallBodyViewConfig extra : config.systemConfigs)
         	{
         		allBodies.addAll(createSmallBodyModel(extra));

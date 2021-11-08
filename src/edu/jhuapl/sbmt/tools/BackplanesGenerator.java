@@ -21,12 +21,12 @@ import edu.jhuapl.saavtk.util.NativeLibraryLoader;
 import edu.jhuapl.sbmt.client.SbmtModelFactory;
 import edu.jhuapl.sbmt.client.SmallBodyModel;
 import edu.jhuapl.sbmt.client.SmallBodyViewConfig;
-import edu.jhuapl.sbmt.gui.image.model.ImageKey;
+import edu.jhuapl.sbmt.image.core.ImagingInstrument;
+import edu.jhuapl.sbmt.image.core.keys.ImageKey;
+import edu.jhuapl.sbmt.image.services.SbmtImageModelFactory;
+import edu.jhuapl.sbmt.image.types.perspectiveImage.PerspectiveImage;
 import edu.jhuapl.sbmt.model.image.ImageSource;
-import edu.jhuapl.sbmt.model.image.ImagingInstrument;
 import edu.jhuapl.sbmt.model.image.Instrument;
-import edu.jhuapl.sbmt.model.image.SbmtImageModelFactory;
-import edu.jhuapl.sbmt.model.image.perspectiveImage.PerspectiveImage;
 import edu.jhuapl.sbmt.util.BackplanesFileFormat;
 
 
