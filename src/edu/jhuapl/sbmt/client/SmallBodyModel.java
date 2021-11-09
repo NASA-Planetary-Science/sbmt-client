@@ -5,6 +5,7 @@ import java.util.List;
 import com.google.common.collect.ImmutableList;
 
 import vtk.vtkPolyData;
+import vtk.vtkTransform;
 import vtk.vtkTransformFilter;
 
 import edu.jhuapl.saavtk.model.GenericPolyhedralModel;
@@ -45,6 +46,8 @@ public class SmallBodyModel extends GenericPolyhedralModel implements ISmallBody
     {
         super(uniqueModelId);
         this.imageMapKeys = ImmutableList.of();
+        this.currentTransform = new vtkTransform();
+        this.currentTransform.Identity();
     }
 
     /**
@@ -55,12 +58,16 @@ public class SmallBodyModel extends GenericPolyhedralModel implements ISmallBody
     {
         super(uniqueModelId, polyData);
         this.imageMapKeys = ImmutableList.of();
+        this.currentTransform = new vtkTransform();
+        this.currentTransform.Identity();
     }
 
     public SmallBodyModel(BodyViewConfig config)
     {
         super(config);
         this.imageMapKeys = config.getImageMapKeys();
+        this.currentTransform = new vtkTransform();
+        this.currentTransform.Identity();
     }
 
     protected SmallBodyModel(
@@ -139,8 +146,14 @@ public class SmallBodyModel extends GenericPolyhedralModel implements ISmallBody
                 lowestResolutionModelStoredInResource);
     }
 
-    public void transformBody(vtkTransformFilter transformFilter)
+    public void transformBody(vtkTransform transform)
     {
+    	this.currentTransform = transform;
+		vtkTransformFilter transformFilter=new vtkTransformFilter();
+		transformFilter.SetInputData(getSmallBodyPolyData());
+		transformFilter.SetTransform(transform);
+		transformFilter.Update();
+
     	vtkPolyData polydata = transformFilter.GetPolyDataOutput();
     	setSmallBodyPolyDataAtPosition(polydata);
     }
