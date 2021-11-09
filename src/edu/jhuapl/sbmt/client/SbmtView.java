@@ -29,7 +29,6 @@ import edu.jhuapl.saavtk.gui.render.ConfigurableSceneNotifier;
 import edu.jhuapl.saavtk.gui.render.RenderPanel;
 import edu.jhuapl.saavtk.gui.render.Renderer;
 import edu.jhuapl.saavtk.model.Controller;
-import edu.jhuapl.saavtk.model.Graticule;
 import edu.jhuapl.saavtk.model.Model;
 import edu.jhuapl.saavtk.model.ModelManager;
 import edu.jhuapl.saavtk.model.ModelNames;
@@ -86,7 +85,6 @@ import edu.jhuapl.sbmt.model.bennu.spectra.OREXSpectrumSearchController;
 import edu.jhuapl.sbmt.model.bennu.spectra.OREXSpectrumTabbedPane;
 import edu.jhuapl.sbmt.model.bennu.spectra.otes.OTESSpectrum;
 import edu.jhuapl.sbmt.model.bennu.spectra.ovirs.OVIRSSpectrum;
-import edu.jhuapl.sbmt.model.custom.CustomGraticule;
 import edu.jhuapl.sbmt.model.eros.LineamentModel;
 import edu.jhuapl.sbmt.model.eros.nis.NEARSpectraFactory;
 import edu.jhuapl.sbmt.model.eros.nis.NISSearchModel;
@@ -306,13 +304,12 @@ public class SbmtView extends View implements PropertyChangeListener
 		SmallBodyModel smallBodyModel = smallBodyModels.get(0);
 //		SBMTModelBootstrap.initialize(smallBodyModel);
 //		BasicSpectrumInstrument.initializeSerializationProxy();
-		Graticule graticule = createGraticule(smallBodyModel);
 
 		HashMap<ModelNames, List<Model>> allModels = new HashMap<ModelNames, List<Model>>();
 		List<Model> allBodies = Lists.newArrayList();
 		allBodies.addAll(smallBodyModels);
 		allModels.put(ModelNames.SMALL_BODY, allBodies);
-		allModels.put(ModelNames.GRATICULE, List.of(graticule));
+//		allModels.put(ModelNames.GRATICULE, List.of(graticule));
 		ImageCollection imageCollection = new ImageCollection(smallBodyModels);
 		allModels.put(ModelNames.IMAGES, List.of(imageCollection));
 		allModels.put(ModelNames.CUSTOM_IMAGES, List.of(imageCollection));
@@ -1037,30 +1034,6 @@ public class SbmtView extends View implements PropertyChangeListener
 
         models.put(ModelNames.SPECTRA, List.of(collection));
         return models;
-    }
-
-    static public Graticule createGraticule(SmallBodyModel smallBodyModel)
-    {
-        SmallBodyViewConfig config = (SmallBodyViewConfig)smallBodyModel.getSmallBodyConfig();
-        ShapeModelType author = config.author;
-
-        if (ShapeModelType.GASKELL == author && smallBodyModel.getNumberResolutionLevels() == 4)
-        {
-            String[] graticulePaths = new String[]{
-                    config.rootDirOnServer + "/coordinate_grid_res0.vtk.gz",
-                    config.rootDirOnServer + "/coordinate_grid_res1.vtk.gz",
-                    config.rootDirOnServer + "/coordinate_grid_res2.vtk.gz",
-                    config.rootDirOnServer + "/coordinate_grid_res3.vtk.gz"
-            };
-
-            return new Graticule(smallBodyModel, graticulePaths);
-        }
-        else if (ShapeModelType.CUSTOM == author && !config.customTemporary)
-        {
-            return new CustomGraticule(smallBodyModel);
-        }
-
-        return new Graticule(smallBodyModel);
     }
 
 	public BasicConfigInfo getConfigInfo()

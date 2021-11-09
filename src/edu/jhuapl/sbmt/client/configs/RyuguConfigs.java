@@ -139,7 +139,7 @@ public class RyuguConfigs extends SmallBodyViewConfig
           {
               // Set up images.
               SBMTFileLocator fileLocator = SBMTFileLocators.of(bodyConfig, modelConfig, Instrument.TIR, ".fit", ".INFO", null, ".jpeg");
-              QueryBase queryBase = new FixedListQuery(fileLocator.get(SBMTFileLocator.TOP_PATH).getLocation(""), fileLocator.get(SBMTFileLocator.GALLERY_FILE).getLocation(""));
+              QueryBase queryBase = new FixedListQuery<>(fileLocator.get(SBMTFileLocator.TOP_PATH).getLocation(""), fileLocator.get(SBMTFileLocator.GALLERY_FILE).getLocation(""));
               Builder<ImagingInstrumentConfiguration> imagingInstBuilder = ImagingInstrumentConfiguration.builder(
                       Instrument.TIR,
                       SpectralImageMode.MONO,
@@ -147,6 +147,8 @@ public class RyuguConfigs extends SmallBodyViewConfig
                       new ImageSource[] { ImageSource.SPICE },
                       fileLocator,
                       ImageType.TIR_IMAGE);
+
+                imagingInstBuilder.put(ImagingInstrumentConfiguration.TRANSPOSE, Boolean.FALSE);
 
                 // Put it all together in a session.
                 Builder<SessionConfiguration> builder = SessionConfiguration.builder(bodyConfig, modelConfig, fileLocator);
@@ -344,11 +346,6 @@ public class RyuguConfigs extends SmallBodyViewConfig
 
             QueryBase queryBase = new GenericPhpQuery("/ryugu/gaskell/onc", "ryugu_sim", "/ryugu/gaskell/onc/gallery");
             ImagingInstrument oncCam = setupImagingInstrument(bodyConfig, modelConfig, Instrument.ONC, queryBase, new ImageSource[] { ImageSource.GASKELL }, ImageType.ONC_IMAGE);
-
-            SBMTFileLocator fileLocatorTir = SBMTFileLocators.of(bodyConfig, modelConfig, Instrument.TIR, ".fit", ".INFO", null, ".jpeg");
-//            QueryBase queryBaseTir = new FixedListQuery(fileLocatorTir.get(SBMTFileLocator.TOP_PATH).getLocation(""), fileLocatorTir.get(SBMTFileLocator.GALLERY_FILE).getLocation(""));
-            QueryBase queryBaseTir = new GenericPhpQuery("/ryugu/gaskell/tir", "ryugu_nasa002_tir", "/ryugu/gaskell/tir/gallery");
-            ImagingInstrument tir = setupImagingInstrument(bodyConfig, modelConfig, Instrument.TIR, queryBaseTir, new ImageSource[] { ImageSource.GASKELL, ImageSource.SPICE }, ImageType.TIR_IMAGE);
 
             c = new RyuguConfigs();
             c.body = ShapeModelBody.RYUGU;
@@ -1606,9 +1603,6 @@ public class RyuguConfigs extends SmallBodyViewConfig
             QueryBase queryBase = new GenericPhpQuery("/ryugu/nasa-001/onc", "ryugu_flight", "/ryugu/nasa-001/onc/gallery");
             ImagingInstrument oncCam = setupImagingInstrument(bodyConfig, modelConfig, Instrument.ONC, queryBase, new ImageSource[] { ImageSource.GASKELL }, ImageType.ONC_IMAGE);
 
-            QueryBase tirQueryBase = new GenericPhpQuery("/ryugu/nasa-001/tir", "", "ryugu_nasa002_tir", "/ryugu/nasa-001/tir/gallery");
-            ImagingInstrument tirCam = setupImagingInstrument(bodyConfig, modelConfig, Instrument.TIR, tirQueryBase, new ImageSource[] { ImageSource.SPICE }, ImageType.TIR_IMAGE);
-
             c = new RyuguConfigs();
             c.body = ShapeModelBody.RYUGU;
             c.type = BodyType.ASTEROID;
@@ -2128,10 +2122,10 @@ public class RyuguConfigs extends SmallBodyViewConfig
         }
     }
 
-	 private static ImagingInstrument setupImagingInstrument(SBMTBodyConfiguration bodyConfig, ShapeModelConfiguration modelConfig, Instrument instrument, ImageSource[] imageSources, ImageType imageType)
+	private static ImagingInstrument setupImagingInstrument(SBMTBodyConfiguration bodyConfig, ShapeModelConfiguration modelConfig, Instrument instrument, ImageSource[] imageSources, ImageType imageType)
     {
         SBMTFileLocator fileLocator = SBMTFileLocators.of(bodyConfig, modelConfig, instrument, ".fits", ".INFO", ".SUM", ".jpeg");
-        QueryBase queryBase = new FixedListQuery(fileLocator.get(SBMTFileLocator.TOP_PATH).getLocation(""), fileLocator.get(SBMTFileLocator.GALLERY_FILE).getLocation(""));
+        QueryBase queryBase = new FixedListQuery<>(fileLocator.get(SBMTFileLocator.TOP_PATH).getLocation(""), fileLocator.get(SBMTFileLocator.GALLERY_FILE).getLocation(""));
         return setupImagingInstrument(fileLocator, bodyConfig, modelConfig, instrument, queryBase, imageSources, imageType);
     }
 
@@ -2144,6 +2138,9 @@ public class RyuguConfigs extends SmallBodyViewConfig
     private static ImagingInstrument setupImagingInstrument(SBMTFileLocator fileLocator, SBMTBodyConfiguration bodyConfig, ShapeModelConfiguration modelConfig, Instrument instrument, QueryBase queryBase, ImageSource[] imageSources, ImageType imageType)
     {
         Builder<ImagingInstrumentConfiguration> imagingInstBuilder = ImagingInstrumentConfiguration.builder(instrument, SpectralImageMode.MONO, queryBase, imageSources, fileLocator, imageType);
+
+        boolean isTranspose = !ImageType.TIR_IMAGE.equals(imageType);
+        imagingInstBuilder.put(ImagingInstrumentConfiguration.TRANSPOSE, Boolean.valueOf(isTranspose));
 
         // Put it all together in a session.
         Builder<SessionConfiguration> builder = SessionConfiguration.builder(bodyConfig, modelConfig, fileLocator);

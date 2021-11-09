@@ -41,50 +41,113 @@ dataPermissions=/project/sbmt2/sbmt/scripts/data-permissions.pl
 # Script begins here.
 thisScript=`echo $0 | sed 's:.*/::'`
 
-if test $# -lt 1 -o $# -gt 2; then
-  echo "Usage: $thisScript branch-suffix" >&2
-  echo "           or" >&2
-  echo "       $thisScript saavtk-branch sbmt-branch" >&2
-  echo >&2
-  echo "       In the first (single-argument) form, the branch-suffix will be used" >&2
-  echo "       to construct both branch names." >&2
-  echo "       Example: $thisScript redmine-2177" >&2
-  echo "       would check out and build branches saavtk1dev-redmine-2177 and" >&2
-  echo "       sbmt1dev-redmine-2177, respectively." >&2
-  echo >&2
-  echo "       In the second (two-argument) form, each branch name is explicitly given" >&2
-  echo "       verbatim on the command line." >&2
-  echo "       Example: $thisScript saavtk1dev sbmt1dev-redmine-2177" >&2
-  echo "       would check out and build branches saavtk1dev and" >&2
-  echo "       sbmt1dev-redmine-2177, respectively." >&2
-  echo >&2
-  echo "       This script builds for the TEST_APL_INTERNAL client by default." >&2
-  echo "       This script will skip completed steps if it is re-started." >&2
-  echo "       Both these behaviors may be overridden by editing the script." >&2
-  echo "       For details, see the comments at the top of $thisScript." >&2
+usage() {
+  (
+  echo "Usage: $thisScript branch-suffix"
+  echo "           or"
+  echo "       $thisScript saavtk-branch sbmt-branch"
+  echo "           or"
+  echo "       $thisScript"
+  echo
+  echo "       Checks out and builds saavtk and sbmt."
+  echo
+  echo "       In the single-argument form, the branch-suffix will be used"
+  echo "       to construct both branch names."
+  echo "       Example: $thisScript redmine-2177"
+  echo "       would check out and build branches saavtk1dev-redmine-2177 and"
+  echo "       sbmt1dev-redmine-2177, respectively."
+  echo
+  echo "       In the two-argument form, each branch name is explicitly given"
+  echo "       verbatim on the command line."
+  echo "       Example: $thisScript saavtk1dev sbmt1dev-redmine-2177"
+  echo "       would check out and build branches saavtk1dev and"
+  echo "       sbmt1dev-redmine-2177, respectively."
+  echo
+  echo "       The no-argument form works if and only if the code was already"
+  echo "       checked out. It is an error to provide branch information in this case,"
+  echo "       because this script only sets the branch when it does a checkout."
+  echo
+  echo "       This script builds for the APL_INTERNAL client by default."
+  echo "       This script will skip completed steps if it is re-started."
+  echo "       Both these behaviors may be overridden by editing the script."
+  echo "       For details, see the comments at the top of $thisScript."
+  echo
+  )
+}
+
+if test $# -gt 2; then
+  usage >&2
   exit 1
+elif test "$1" = "-h"; then
+  usage
+  exit 0
 fi
 
 # Date stamp to be used in log files.
 dateStamp=`date '+%Y-%m-%dT%H%M%S'`
 logDir="logs/$dateStamp"
 
-# Interpret command line.
+# Interpret command line, and check for inconsistent arguments.
+if test $# -eq 0; then
+  # No argument form. Require both saavtk and sbmt to already be checked out.
+  needCheckout=false
+  if test ! -f .git-clone-saavtk-succeeded -o "$forceSaavtkCheckout" = true; then
+    echo "No checked-out copy of SAAVTK; specify branch on the command line" >&2
+    needCheckout=true
+  fi
+  if test ! -f .git-clone-sbmt-succeeded -o "$forceSbmtCheckout" = true; then
+    echo "No checked-out copy of SBMT; specify branch on the command line" >&2
+    needCheckout=true
+  fi
+  if test "$needCheckout" = true; then
+    usage >&2
+    exit 1
+  fi
+else
+  # Arguments specify the branch. Require no packages already checked out.
+  checkedOut=false
+  if test -f .git-clone-saavtk-succeeded -a "$forceSaavtkCheckout" != true; then
+    echo "IGNORED: SAAVTK was already checked out; cannot specify branch on the command line" >&2
+#    checkedOut=true
+  fi
+  if test -f .git-clone-sbmt-succeeded -a "$forceSbmtCheckout" != true; then
+    echo "SBMT was already checked out; cannot specify branch on the command line" >&2
+    checkedOut=true
+  fi
+  if test "$checkedOut" = true; then
+    usage >&2
+    exit 1
+  fi  
+fi
+
 if test $# -eq 1; then
   # Single-argument form: tack the suffix onto the dev branches.
   saavtkBranch="saavtk1dev-$1"
   sbmtBranch="sbmt1dev-$1"
-else
+elif test $# -eq 2; then
   # Two-argument form: assign arguments to branch names.
   saavtkBranch=$1
   sbmtBranch=$2
 fi
 
-echo "Attempting to check out and build $mission client with branches $saavtkBranch $sbmtBranch"
+if test "$saavtkBranch" = "-skip"; then
+  saavtkBranch=
+fi
+
+if test "$sbmtBranch" = "-skip"; then
+  sbmtBranch=
+fi
+
+if test "$sbmtBranch" != ""; then
+  echo "Attempting to check out and build $mission client with branches $saavtkBranch and $sbmtBranch"
+else
+  echo "Attempting to build $mission client in already checked-out sbmt/saavtk directories"
+fi
 
 rootDir=`pwd -L`
 export SAAVTKROOT=$rootDir/saavtk
 export SBMTROOT=$rootDir/sbmt
+export JAVA_HOME="/project/nearsdc/software/java/jdk16/linux64"
 
 didSomething=false
 
@@ -134,7 +197,7 @@ else
 
   echo "nice git clone http://hardin:8080/scm/git/vtk/saavtk --branch $saavtkBranch 2>&1 | cat > $logDir/git-clone-saavtk.txt 2>&1"
   nice git clone http://hardin:8080/scm/git/vtk/saavtk --branch $saavtkBranch 2>&1 | cat > $logDir/git-clone-saavtk.txt 2>&1
-  if test $? -ne 0; then
+  if test $? -ne 0 -o ! -d saavtk; then
     echo "Problem with git saavtk checkout. See $logDir/git-clone-saavtk.txt" >&2
     exit 1
   fi
@@ -150,7 +213,7 @@ else
 
   echo "nice git clone http://hardin:8080/scm/git/sbmt --branch $sbmtBranch 2>&1 | cat > $logDir/git-clone-sbmt.txt 2>&1"
   nice git clone http://hardin:8080/scm/git/sbmt --branch $sbmtBranch 2>&1 | cat > $logDir/git-clone-sbmt.txt 2>&1
-  if test $? -ne 0; then
+  if test $? -ne 0 -o ! -d sbmt; then
     echo "Problem with git sbmt checkout. See $logDir/git-clone-sbmt.txt" >&2
     exit 1
   fi
