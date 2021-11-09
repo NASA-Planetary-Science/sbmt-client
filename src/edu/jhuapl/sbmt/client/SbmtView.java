@@ -795,7 +795,7 @@ public class SbmtView extends View implements PropertyChangeListener
 	@Override
 	protected void setupPositionOrientationManager()
 	{
-		if (getPolyhedralModelConfig().spiceInfo == null) return;
+		if (getPolyhedralModelConfig().spiceInfo == null || (getModelManager().getModel(ModelNames.SMALL_BODY).size() == 1)) return;
 		SpiceInfo spiceInfo = getPolyhedralModelConfig().spiceInfo;
 		List<SmallBodyModel> bodies = getModelManager().getModel(ModelNames.SMALL_BODY).stream().map(body -> { return (SmallBodyModel)body; }).toList();
 		SpiceInfo firstSpiceInfo = spiceInfo;
