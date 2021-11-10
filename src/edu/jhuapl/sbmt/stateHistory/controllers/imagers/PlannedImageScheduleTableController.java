@@ -115,6 +115,7 @@ public class PlannedImageScheduleTableController implements IPlannedDataControll
 		});
 
 		view.getTable().getDeleteScheduleButton().addActionListener(e -> {
+			collection.getSelectedItems().forEach( coll -> coll.setShowing(false));
 			collection.getSelectedItems().forEach( coll -> collection.removeCollection(coll));
 			refreshView();
 		});

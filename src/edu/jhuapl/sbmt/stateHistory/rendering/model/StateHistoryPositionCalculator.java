@@ -349,13 +349,14 @@ public class StateHistoryPositionCalculator implements IStateHistoryPositionCalc
 			UnwritableVectorIJK frus4Vec = locationProvider.getFrustum(instrumentFrameID.getName(), 3);
 			if (frus1Vec.equals(new UnwritableVectorIJK(0, 0, 0)) || frus2Vec.equals(new UnwritableVectorIJK(0, 0, 0)) || frus3Vec.equals(new UnwritableVectorIJK(0, 0, 0)) || frus4Vec.equals(new UnwritableVectorIJK(0, 0, 0)))
 			{
+				fieldOfView.setHasIntercept(false);
 				return;
 			}
 			double[] frus1 = new double[] { frus1Vec.getI(), frus1Vec.getJ(), frus1Vec.getK()};
 			double[] frus2 = new double[] { frus2Vec.getI(), frus2Vec.getJ(), frus2Vec.getK()};
 			double[] frus3 = new double[] { frus3Vec.getI(), frus3Vec.getJ(), frus3Vec.getK()};
 			double[] frus4 = new double[] { frus4Vec.getI(), frus4Vec.getJ(), frus4Vec.getK()};
-
+			fieldOfView.setHasIntercept(true);
 			fieldOfView.updatePointing(spacecraftPosition, frus1, frus2, frus3, frus4);
 			fieldOfView.getFrustumActor().Modified();
 		});
@@ -378,6 +379,7 @@ public class StateHistoryPositionCalculator implements IStateHistoryPositionCalc
 				UnwritableVectorIJK frus4Vec = locationProvider.getFrustum(instrumentFrameID.getName(), 3);
 				if (frus1Vec.equals(new UnwritableVectorIJK(0, 0, 0)) || frus2Vec.equals(new UnwritableVectorIJK(0, 0, 0)) || frus3Vec.equals(new UnwritableVectorIJK(0, 0, 0)) || frus4Vec.equals(new UnwritableVectorIJK(0, 0, 0)))
 				{
+					fprint.setHasIntercept(false);
 					return;
 				}
 
@@ -386,6 +388,7 @@ public class StateHistoryPositionCalculator implements IStateHistoryPositionCalc
 				double[] frus3 = new double[] { frus3Vec.getI(), frus3Vec.getJ(), frus3Vec.getK()};
 				double[] frus4 = new double[] { frus4Vec.getI(), frus4Vec.getJ(), frus4Vec.getK()};
 				fprint.updatePointing(spacecraftPosition, frus1, frus2, frus3, frus4, 1024, 1024, 1);
+				fprint.setHasIntercept(true);
 				fprint.getFootprintActor().Modified();
 				fprint.getFootprintBoundaryActor().Modified();
 			});
