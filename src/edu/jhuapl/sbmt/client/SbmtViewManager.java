@@ -165,7 +165,7 @@ public class SbmtViewManager extends ViewManager
             failsafeModelInitialized = true;
 
             String failsafeParent = SafeURLPaths.instance().getString(Configuration.getApplicationDataDir(), "failsafeErosModel");
-            File failsafeModel = ConvertResourceToFile.convertResourceToRealFile(this, "/edu/jhuapl/sbmt/data/Eros_ver64q.vtk", failsafeParent);
+            File failsafeModel = ConvertResourceToFile.convertResourceToRealFile(this.getClass(), "/edu/jhuapl/sbmt/data/Eros_ver64q.vtk", failsafeParent);
 
             if (failsafeModel != null && failsafeModel.exists())
             {

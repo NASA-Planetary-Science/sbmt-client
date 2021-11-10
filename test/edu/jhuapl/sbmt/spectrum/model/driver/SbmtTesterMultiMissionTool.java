@@ -1,6 +1,7 @@
 package edu.jhuapl.sbmt.spectrum.model.driver;
 
 import java.awt.EventQueue;
+import java.awt.Taskbar;
 import java.io.IOException;
 import java.io.PrintStream;
 import java.lang.reflect.InvocationTargetException;
@@ -21,7 +22,6 @@ import javax.swing.UnsupportedLookAndFeelException;
 import com.jgoodies.looks.LookUtils;
 
 import edu.jhuapl.saavtk.gui.Console;
-import edu.jhuapl.saavtk.gui.OSXAdapter;
 import edu.jhuapl.saavtk.model.structure.EllipsePolygon;
 import edu.jhuapl.saavtk.model.structure.Line;
 import edu.jhuapl.saavtk.model.structure.Polygon;
@@ -111,7 +111,7 @@ public class SbmtTesterMultiMissionTool
 			ImageIcon erosIcon = new ImageIcon(SbmtTesterMultiMissionTool.class.getResource("/edu/jhuapl/sbmt/data/erosMacDock.png"));
 			if (!Configuration.isHeadless())
 			{
-			    OSXAdapter.setDockIconImage(erosIcon.getImage());
+			    Taskbar.getTaskbar().setIconImage(erosIcon.getImage());
 			}
 		}
 
