@@ -104,7 +104,7 @@ public class ObservationPlanningController implements PropertyChangeListener
 		spectrumScheduleTableController = new PlannedSpectrumScheduleTableController(rendererManager, smallBodyModel);
 		spectrumScheduleTableController.addPropertyChangeListener(this);
 
-		lidarScheduleTableController = new PlannedLidarScheduleTableController(modelManager, rendererManager, smallBodyModel);
+		lidarScheduleTableController = new PlannedLidarScheduleTableController(modelManager, rendererManager, smallBodyModel, statusNotifier);
 		lidarScheduleTableController.addPropertyChangeListener(this);
 
 		plannedDataController = new PlannedDataController();
