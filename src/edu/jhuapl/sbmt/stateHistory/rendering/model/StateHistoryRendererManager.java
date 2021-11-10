@@ -718,7 +718,8 @@ public class StateHistoryRendererManager extends SaavtkItemManager<StateHistory>
 		List<PerspectiveImageFrustum> fovs = historySpacecraftFovMap.get(historyCollection.getCurrentRun()).stream().filter(item -> item.getInstrumentName().equals(name)).collect(Collectors.toList());
 		if (fovs.size() == 0) return false;
 
-		return fovs.get(0).getFrustumActor().GetVisibility() == 1 ? true : false;
+		return fovs.get(0).isShowFrustum();
+//		return fovs.get(0).getFrustumActor().GetVisibility() == 1 ? true : false;
 	}
 
 	public void setInstrumentFrustumVisibility(String name, boolean isVisible)
@@ -726,7 +727,8 @@ public class StateHistoryRendererManager extends SaavtkItemManager<StateHistory>
 		if (historySpacecraftFovMap.get(historyCollection.getCurrentRun()) == null || historySpacecraftFovMap.get(historyCollection.getCurrentRun()).isEmpty()) return;
 		List<PerspectiveImageFrustum> fovs = historySpacecraftFovMap.get(historyCollection.getCurrentRun()).stream().filter(item -> item.getInstrumentName().equals(name)).collect(Collectors.toList());
 		if (fovs.size() == 0) return;
-		fovs.get(0).getFrustumActor().SetVisibility(isVisible? 1: 0);
+		fovs.get(0).setShowFrustum(isVisible);
+//		fovs.get(0).getFrustumActor().SetVisibility(isVisible? 1: 0);
 		this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, historySpacecraftFovMap.get(historyCollection.getCurrentRun()));
 	}
 
@@ -775,14 +777,16 @@ public class StateHistoryRendererManager extends SaavtkItemManager<StateHistory>
 		if (historyFootprintMap.get(historyCollection.getCurrentRun()) == null || historyFootprintMap.get(historyCollection.getCurrentRun()).isEmpty()) return false;
 		List<PerspectiveImageFootprint> fp = historyFootprintMap.get(historyCollection.getCurrentRun()).stream().filter(fprint -> fprint.getInstrumentName().equals(name)).collect(Collectors.toList());
 		if (fp.size() == 0) return false;
-		return fp.get(0).isVisible();
+		return fp.get(0).isShowFootprint();
+//		return fp.get(0).isVisible();
 	}
 
 	public void setInstrumentFootprintVisibility(String name, boolean isVisible)
 	{
 		List<PerspectiveImageFootprint> fp = historyFootprintMap.get(historyCollection.getCurrentRun()).stream().filter(fprint -> fprint.getInstrumentName().equals(name)).collect(Collectors.toList());
-		fp.get(0).setVisible(isVisible);
+//		fp.get(0).setVisible(isVisible);
 		LiveColorableManager.updateFootprint(fp.get(0));
+		fp.get(0).setShowFootprint(isVisible);
 		this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, fp.get(0));
 	}
 

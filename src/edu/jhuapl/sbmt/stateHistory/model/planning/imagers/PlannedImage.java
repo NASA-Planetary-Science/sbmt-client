@@ -84,16 +84,20 @@ public class PlannedImage implements PlannedInstrumentData
 	/**
 	 * @return the isShowing
 	 */
+	@Override
 	public boolean isShowing()
 	{
+		System.out.println("PlannedImage: isShowing: is showing is " + isShowing);
 		return isShowing;
 	}
 
 	/**
 	 * @param isShowing the isShowing to set
 	 */
+	@Override
 	public void setShowing(boolean isShowing)
 	{
+		System.out.println("PlannedImage: setShowing: setting isShowing to " + isShowing);
 		this.isShowing = isShowing;
 	}
 
