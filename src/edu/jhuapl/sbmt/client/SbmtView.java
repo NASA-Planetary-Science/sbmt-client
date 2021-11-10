@@ -12,6 +12,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Function;
 
 import javax.swing.BorderFactory;
 import javax.swing.JComponent;
@@ -29,6 +30,7 @@ import edu.jhuapl.saavtk.gui.render.ConfigurableSceneNotifier;
 import edu.jhuapl.saavtk.gui.render.RenderPanel;
 import edu.jhuapl.saavtk.gui.render.Renderer;
 import edu.jhuapl.saavtk.model.Controller;
+import edu.jhuapl.saavtk.model.IPositionOrientationManager;
 import edu.jhuapl.saavtk.model.Model;
 import edu.jhuapl.saavtk.model.ModelManager;
 import edu.jhuapl.saavtk.model.ModelNames;
@@ -94,7 +96,9 @@ import edu.jhuapl.sbmt.model.ryugu.nirs3.NIRS3SearchModel;
 import edu.jhuapl.sbmt.model.ryugu.nirs3.atRyugu.NIRS3Spectrum;
 import edu.jhuapl.sbmt.model.time.StateHistoryCollection;
 import edu.jhuapl.sbmt.pointing.PositionOrientationManager;
+import edu.jhuapl.sbmt.pointing.spice.PositionOrientationManagerListener;
 import edu.jhuapl.sbmt.pointing.spice.SpiceInfo;
+import edu.jhuapl.sbmt.pointing.spice.ingestion.controller.KernelSelectionFrame;
 import edu.jhuapl.sbmt.spectrum.controllers.custom.CustomSpectraSearchController;
 import edu.jhuapl.sbmt.spectrum.model.core.BasicSpectrumInstrument;
 import edu.jhuapl.sbmt.spectrum.model.hypertree.SpectraSearchDataCollection;
@@ -126,6 +130,7 @@ public class SbmtView extends View implements PropertyChangeListener
 	private final Map<String, MetadataManager> metadataManagers;
 	private BasicConfigInfo configInfo;
 	private List<SmallBodyModel> smallBodyModels;
+	private List<PositionOrientationManagerListener> pomListeners;
 
 	public SbmtView(StatusNotifier aStatusNotifier, BasicConfigInfo configInfo)
 	{
@@ -136,6 +141,7 @@ public class SbmtView extends View implements PropertyChangeListener
     	this.stateManager = TrackedMetadataManager.of("View " + configInfo.uniqueName);
 		this.metadataManagers = new HashMap<>();
 		this.configURL = configInfo.getConfigURL();
+		this.pomListeners = Lists.newArrayList();
 		initializeStateManager();
 	}
 
@@ -154,7 +160,7 @@ public class SbmtView extends View implements PropertyChangeListener
 		this.stateManager = TrackedMetadataManager.of("View " + getUniqueName());
 		this.metadataManagers = new HashMap<>();
 		this.configURL = configInfo.getConfigURL();
-
+		this.pomListeners = Lists.newArrayList();
 		initializeStateManager();
 	}
 
@@ -508,10 +514,10 @@ public class SbmtView extends View implements PropertyChangeListener
 		{
 			//            addTab("Runs", new SimulationRunsPanel(getModelManager(), (SbmtInfoWindowManager)getInfoPanelManager(), getPickManager(), getRenderer()));
 		}
-
+		Controller<ImageSearchModel, ?> controller = null;
 		for (ImagingInstrument instrument : getPolyhedralModelConfig().imagingInstruments)
 		{
-			Controller<ImageSearchModel, ?> controller = null;
+
 			if (instrument.spectralMode == SpectralImageMode.MONO)
 			{
 				// For the public version, only include image tab for Eros (all) and Gaskell's Itokawa shape models.
@@ -535,7 +541,17 @@ public class SbmtView extends View implements PropertyChangeListener
 					{
 						//                        JComponent component = new ImagingSearchPanel(getPolyhedralModelConfig(), getModelManager(), (SbmtInfoWindowManager)getInfoPanelManager(), (SbmtSpectrumWindowManager)getSpectrumPanelManager(), getPickManager(), getRenderer(), instrument).init();
 						controller =
-								new ImagingSearchController(getPolyhedralModelConfig(), getModelManager(), (SbmtInfoWindowManager) getInfoPanelManager(), (SbmtSpectrumWindowManager) getSpectrumPanelManager(), getPickManager(), getRenderer(), instrument, positionOrientationManager);
+								new ImagingSearchController(getPolyhedralModelConfig(), getModelManager(), (SbmtInfoWindowManager) getInfoPanelManager(), (SbmtSpectrumWindowManager) getSpectrumPanelManager(), getPickManager(), getRenderer(), instrument);
+						final Controller<ImageSearchModel, ?> cont = controller;
+
+						pomListeners.add(new PositionOrientationManagerListener()
+						{
+							@Override
+							public void managerUpdated(IPositionOrientationManager manager)
+							{
+								((ImagingSearchController)cont).setPositionOrientationManager(manager);
+							}
+						});
 					}
 				}
 
@@ -747,12 +763,12 @@ public class SbmtView extends View implements PropertyChangeListener
 ////			}
             if (getPolyhedralModelConfig().hasStateHistory)
             {
-                StateHistoryController controller = null;
+                StateHistoryController shController = null;
                 if (((ViewConfig)getConfig()).body == ShapeModelBody.EARTH)
-                    controller = new StateHistoryController(getModelManager(), getRenderer(), false);
+                    shController = new StateHistoryController(getModelManager(), getRenderer(), false);
                 else
-                    controller = new StateHistoryController(getModelManager(), getRenderer(), true);
-                addTab("Observing Conditions", controller.getView());
+                    shController = new StateHistoryController(getModelManager(), getRenderer(), true);
+                addTab("Observing Conditions", shController.getView());
 
 			}
 		}
@@ -796,17 +812,31 @@ public class SbmtView extends View implements PropertyChangeListener
 	protected void setupPositionOrientationManager()
 	{
 		if (getPolyhedralModelConfig().spiceInfo == null || (getModelManager().getModel(ModelNames.SMALL_BODY).size() == 1)) return;
-		SpiceInfo spiceInfo = getPolyhedralModelConfig().spiceInfo;
-		List<SmallBodyModel> bodies = getModelManager().getModel(ModelNames.SMALL_BODY).stream().map(body -> { return (SmallBodyModel)body; }).toList();
-		SpiceInfo firstSpiceInfo = spiceInfo;
-		SimpleDateFormat dateFormatter = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS");
-    	String dateTimeString = dateFormatter.format(getPolyhedralModelConfig().stateHistoryStartDate);
-    	double time = TimeUtil.str2et(dateTimeString);
-		positionOrientationManager = new PositionOrientationManager(bodies, "/Users/steelrj1/dartspice/draco/impact.tm", firstSpiceInfo, firstSpiceInfo.getInstrumentFrameNamesToBind()[0],
-																	spiceInfo.getBodyName(), time);
-		HashMap<ModelNames, List<Model>> allModels = new HashMap(getModelManager().getAllModels());
-		allModels.put(ModelNames.SMALL_BODY, positionOrientationManager.getUpdatedBodies());
-		setModelManager(new ModelManager(bodies.get(0), allModels));
+
+		KernelSelectionFrame kernelSelectionFrame = new KernelSelectionFrame(getModelManager(), new Function<String, Void>()
+		{
+
+			@Override
+			public Void apply(String arg0)
+			{
+				SpiceInfo spiceInfo = getPolyhedralModelConfig().spiceInfo;
+				List<SmallBodyModel> bodies = getModelManager().getModel(ModelNames.SMALL_BODY).stream().map(body -> { return (SmallBodyModel)body; }).toList();
+				SpiceInfo firstSpiceInfo = spiceInfo;
+				SimpleDateFormat dateFormatter = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS");
+		    	String dateTimeString = dateFormatter.format(getPolyhedralModelConfig().stateHistoryStartDate);
+		    	double time = TimeUtil.str2et(dateTimeString);
+				positionOrientationManager = new PositionOrientationManager(bodies, arg0, firstSpiceInfo, firstSpiceInfo.getInstrumentFrameNamesToBind()[0],
+																			spiceInfo.getBodyName(), time);
+				HashMap<ModelNames, List<Model>> allModels = new HashMap(getModelManager().getAllModels());
+				allModels.put(ModelNames.SMALL_BODY, positionOrientationManager.getUpdatedBodies());
+				setModelManager(new ModelManager(bodies.get(0), allModels));
+				pomListeners.forEach(listener -> listener.managerUpdated(positionOrientationManager));
+				return null;
+			}
+		});
+
+
+
 	}
 
 	@Override
