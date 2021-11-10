@@ -279,13 +279,6 @@ public class SmallBodyViewConfig extends BodyViewConfig implements ISmallBodyVie
 		SaturnConfigs.initialize(configArray);
     }
 
-//    static List<SystemConfigInfo> getSystemConfigs()
-//    {
-//    	return DartConfigs.instance().getSystemConfigs();
-//    }
-
-
-
     public static void initialize()
     {
     	ConfigArrayList configArray = getBuiltInConfigs();

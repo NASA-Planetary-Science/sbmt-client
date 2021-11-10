@@ -109,13 +109,8 @@ public class SmallBodyViewConfigMetadataIO implements MetadataManager
                 {
                 	String bodyName = config.getBody().toString();
                 	bodyName = bodyName.replaceAll(" ", "_");
-//                	bodyName = bodyName.replaceAll("\\(", "");
-//                	bodyName = bodyName.replaceAll("\\)", "");
                 	String centerNameReplacement = "-system_" + bodyName.toLowerCase() + "_center/";
                 	String systemRoot = ((SmallBodyViewConfig) config).rootDirOnServer.substring(1).replaceFirst("/", centerNameReplacement);
-//                	systemRoot = systemRoot.replaceAll("\\(", "");
-//                	systemRoot = systemRoot.replaceAll("\\)", "");
-                	System.out.println("SmallBodyViewConfigMetadataIO: main: system root " + systemRoot);
                 	String fileNameString = rootDir + "/" + systemRoot + "/" + config.getAuthor() + "_" + config.getBody().toString().replaceAll(" ", "_") + "_System_"  + bodyName.toLowerCase() + "center" + version.replaceAll(" ", "_") + "_v" + configInfoVersion + ".json";
                 	fileNameString = fileNameString.replaceAll("\\(", "");
                 	fileNameString = fileNameString.replaceAll("\\)", "");
@@ -675,7 +670,7 @@ public class SmallBodyViewConfigMetadataIO implements MetadataManager
         }
 
         c.hasSystemBodies = read(systemBodies, configMetadata);
-        if (configMetadata.hasKey(systemBodyConfigs))
+        if (configMetadata.hasKey(systemBodyConfigs) && SmallBodyViewConfig.getConfigIdentifiers().size() != 0)
         {
         	List<String> systemBodyConfigStrings = read(systemBodyConfigs, configMetadata);
         	c.systemConfigs = systemBodyConfigStrings

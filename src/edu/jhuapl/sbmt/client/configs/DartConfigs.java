@@ -193,6 +193,11 @@ public class DartConfigs
         configList.add(c);
         c = createSingleResolutionConfig_20200629_v01(ShapeModelBody.DIMORPHOS, "Errors Impact 5 20200629 v01", 3366134);
         configList.add(c);
+        c = createSingleResMissionImagesConfig(ShapeModelBody.DIMORPHOS, "Errors Impact 9 20210630 v01", 3072);
+        configList.add(c);
+
+
+        //System configs
         c = createSingleResolutionSystemConfig_20200629_v01(new ShapeModelBody[] { ShapeModelBody.DIDYMOS, ShapeModelBody.DIMORPHOS }, "Ideal Impact 1 20200629 v01 System Didymos Center", 1996);
         configList.add(c);
         c = createSingleResolutionSystemConfig_20200629_v01(new ShapeModelBody[] { ShapeModelBody.DIMORPHOS, ShapeModelBody.DIDYMOS }, "Ideal Impact 1 20200629 v01 System Dimorphos Center", 3072);
@@ -221,6 +226,14 @@ public class DartConfigs
         configList.add(c);
         c = createSingleResolutionSystemConfig_20200629_v01(new ShapeModelBody[] { ShapeModelBody.DIMORPHOS, ShapeModelBody.DIDYMOS }, "Ideal Impact 6 20200629 v01 System Dimorphos Center", 3145728);
         configList.add(c);
+
+        c = createSingleResMissionImagesSystemConfig(new ShapeModelBody[] { ShapeModelBody.DIDYMOS, ShapeModelBody.DIMORPHOS }, "Ideal Impact 9 20210630 v01 System Didymos Center", 1996);
+        configList.add(c);
+
+        c = createSingleResMissionImagesSystemConfig(new ShapeModelBody[] { ShapeModelBody.DIMORPHOS, ShapeModelBody.DIDYMOS }, "Ideal Impact 9 20210630 v01 System Dimorphos Center", 3072);
+        configList.add(c);
+
+
 //
         c = createSingleResolutionSystemConfig_20200629_v01(new ShapeModelBody[] { ShapeModelBody.DIDYMOS, ShapeModelBody.DIMORPHOS }, "Errors Impact 1 20200629 v01 System Didymos Center", 1996);
         configList.add(c);
@@ -242,6 +255,10 @@ public class DartConfigs
         configList.add(c);
         c = createSingleResolutionSystemConfig_20200629_v01(new ShapeModelBody[] { ShapeModelBody.DIMORPHOS, ShapeModelBody.DIDYMOS }, "Errors Impact 5 20200629 v01 System Dimorphos Center", 3366134);
         configList.add(c);
+        c = createSingleResMissionImagesSystemConfig(new ShapeModelBody[] { ShapeModelBody.DIDYMOS, ShapeModelBody.DIMORPHOS }, "Error Impact 9 20210630 v01 System Didymos Center", 3072);
+        configList.add(c);
+        c = createSingleResMissionImagesSystemConfig(new ShapeModelBody[] { ShapeModelBody.DIMORPHOS, ShapeModelBody.DIDYMOS }, "Error Impact 9 20210630 v01 System Dimorphos Center", 3072);
+        configList.add(c);
 
         defaultConfig.defaultForMissions = DartClients;
     }
@@ -249,7 +266,6 @@ public class DartConfigs
     protected SmallBodyViewConfig createSingleResolutionSystemConfig_20200629_v01(ShapeModelBody[] body, String label, int numberPlates)
     {
     	SmallBodyViewConfig config = createSingleResolutionConfig_20200629_v01(body[0], label, numberPlates);
-//    	config.modelLabel = label + " - System";
     	List<SmallBodyViewConfig> systemConfigs = Lists.newArrayList();
     	for (int i=1; i<body.length; i++)
     	{
@@ -262,7 +278,24 @@ public class DartConfigs
     	config.rootDirOnServer = config.rootDirOnServer.replaceAll("\\(", "");
     	config.rootDirOnServer = config.rootDirOnServer.replaceAll("\\)", "");
     	config.rootDirOnServer = config.rootDirOnServer.replaceAll("-\\w*-center", "");
+    	return config;
+    }
 
+    protected SmallBodyViewConfig createSingleResMissionImagesSystemConfig(ShapeModelBody[] body, String label, int numberPlates)
+    {
+    	SmallBodyViewConfig config = createSingleResMissionImagesConfig(body[0], label, numberPlates);
+    	List<SmallBodyViewConfig> systemConfigs = Lists.newArrayList();
+    	for (int i=1; i<body.length; i++)
+    	{
+    		systemConfigs.add(createSingleResMissionImagesConfig(body[i], label, numberPlates));
+    	};
+    	config.systemConfigs = systemConfigs;
+    	config.hasSystemBodies = true;
+    	config.body = ShapeModelBody.DIDYMOS_SYSTEM;
+    	config.rootDirOnServer = "/" + body[0].name().replaceAll("[\\s-_]+", "-").toLowerCase() + "/" + config.author.name().replaceAll("[\\s-_]+", "-").toLowerCase();
+    	config.rootDirOnServer = config.rootDirOnServer.replaceAll("\\(", "");
+    	config.rootDirOnServer = config.rootDirOnServer.replaceAll("\\)", "");
+    	config.rootDirOnServer = config.rootDirOnServer.replaceAll("-\\w*-center", "");
     	return config;
     }
 
@@ -484,12 +517,13 @@ public class DartConfigs
         // ShapeModelType rules: no spaces (replace with underscores). Mixed
         // case, underscores and dashes are all OK. Includes a DART-specific
         // hack to remove one dash that was not present in the early models.
-        ShapeModelType author = ShapeModelType.provide(label.replaceAll("\\s+", "-").toLowerCase().replace("impact-", "impact"));
+        ShapeModelType author = ShapeModelType.provide(label.replaceAll(" System", "").replaceAll("\\s+", "-").toLowerCase().replace("impact-", "impact"));
 
         // Model identifier string rules: lowercase, no spaces nor underscores
         // (replace with dashes). Single dashes are OK. Valid for building
         // server-side paths.
         String modelId = author.name().replaceAll("[\\s-_]+", "-").toLowerCase();
+        modelId = modelId.replaceAll("-\\w*-center", "");
 
         // Body identifier string rules: lowercase, no spaces nor underscores.
         // (replace with dashes). Single dashes are OK. Valid for building
@@ -586,7 +620,6 @@ public class DartConfigs
         SpiceInfo spiceInfo1 = new SpiceInfo("DART", "920065803_FIXED", "DART_SPACECRAFT", "DIDYMOS", new String[] {"DIMORPHOS"}, new String[] {"DART_DRACO_2X2", "120065803_FIXED"});
 		SpiceInfo spiceInfo2 = new SpiceInfo("DART", "120065803_FIXED", "DART_SPACECRAFT", "DIMORPHOS", new String[] {"DIDYMOS"}, new String[] {"DART_DRACO_2X2", "920065803_FIXED"});
 		SpiceInfo[] spiceInfos = new SpiceInfo[] {spiceInfo1, spiceInfo2};
-		System.out.println("DartConfigs: generateStateHistoryParameters: center body name " + centerBodyName);
         c.spiceInfo = List.of(spiceInfos).stream().filter(info -> info.getBodyName().equals(centerBodyName)).toList().get(0);
 	}
 
