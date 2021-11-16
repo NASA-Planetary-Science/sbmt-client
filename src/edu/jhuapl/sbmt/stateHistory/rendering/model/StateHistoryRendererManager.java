@@ -999,7 +999,8 @@ public class StateHistoryRendererManager extends SaavtkItemManager<StateHistory>
 		{
 			double previousDistance = CameraUtil.calcDistance(renderer.getCamera());
 			lookFromDirection = positionCalculator.updateLookDirection(lookDirection, scalingFactor);
-			MathUtil.vscl(previousDistance/new Vector3D(lookFromDirection).getNorm(), lookFromDirection, lookFromDirection);
+			if (lookDirection != RendererLookDirection.SPACECRAFT_THIRD)
+				MathUtil.vscl(previousDistance/new Vector3D(lookFromDirection).getNorm(), lookFromDirection, lookFromDirection);
 			renderer.setCameraOrientation(lookFromDirection, renderer.getCameraFocalPoint(), upVector,
 					renderer.getCameraViewAngle());
 			((RenderPanel) renderer.getRenderWindowPanel()).setZoomOnly(true, targAxis, targOrig);

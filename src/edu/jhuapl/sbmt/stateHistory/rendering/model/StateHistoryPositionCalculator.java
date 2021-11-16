@@ -423,7 +423,7 @@ public class StateHistoryPositionCalculator implements IStateHistoryPositionCalc
 		else if (lookDirection == RendererLookDirection.SPACECRAFT_THIRD)
 		{
 			double[] thirdPerson = new double[]
-			{ spacecraftPosition[0] * 1.1, spacecraftPosition[1] * 1.1, spacecraftPosition[2] * 1.1 };
+			{ spacecraftPosition[0] * 1.3, spacecraftPosition[1] * 1.3, spacecraftPosition[2] * 1.3 };
 			currentLookFromDirection = thirdPerson;
 		}
 		else // free view mode

@@ -148,7 +148,8 @@ public class StateHistoryController
 						File selectedMetakernel = chooser.getSelectedFile();
 						String newKernelLocationAfterIngestion = kernelIngestor.ingestMetaKernelToCache(selectedMetakernel.getAbsolutePath(), null);
 						history.getLocationProvider().setSourceFile(newKernelLocationAfterIngestion);
-						}
+					}
+					if (historyModel.loadRunList().isEmpty()) break;
 				}
 				else
 				{

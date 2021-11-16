@@ -90,7 +90,11 @@ public class StateHistoryViewControlsController
 				@Override
 				public void run()
 				{
-					if (rendererManager.getNumMappedTrajectories() == 0) fovControls.getView().clearTable();
+					if (rendererManager.getNumMappedTrajectories() == 0)
+					{
+						fovControls.getView().clearTable();
+						displayItemsControls.clearAll();
+					}
 					fovControls.getView().repaint();
 					fovControls.getView().validate();
 					view.repaint();

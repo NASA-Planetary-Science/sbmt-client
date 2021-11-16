@@ -87,7 +87,6 @@ public class PlannedImage implements PlannedInstrumentData
 	@Override
 	public boolean isShowing()
 	{
-		System.out.println("PlannedImage: isShowing: is showing is " + isShowing);
 		return isShowing;
 	}
 
@@ -97,7 +96,6 @@ public class PlannedImage implements PlannedInstrumentData
 	@Override
 	public void setShowing(boolean isShowing)
 	{
-		System.out.println("PlannedImage: setShowing: setting isShowing to " + isShowing);
 		this.isShowing = isShowing;
 	}
 

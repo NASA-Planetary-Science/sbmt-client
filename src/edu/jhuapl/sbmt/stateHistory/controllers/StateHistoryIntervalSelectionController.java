@@ -23,6 +23,7 @@ import edu.jhuapl.sbmt.stateHistory.model.io.SpiceKernelNotFoundException;
 import edu.jhuapl.sbmt.stateHistory.model.io.StateHistoryIOException;
 import edu.jhuapl.sbmt.stateHistory.model.io.StateHistoryModelIOHelper;
 import edu.jhuapl.sbmt.stateHistory.model.stateHistory.StateHistoryKey;
+import edu.jhuapl.sbmt.stateHistory.model.stateHistory.spice.SpiceStateHistory;
 import edu.jhuapl.sbmt.stateHistory.rendering.model.StateHistoryRendererManager;
 import edu.jhuapl.sbmt.stateHistory.ui.state.intervalGeneration.StateHistoryIntervalGenerationPanel;
 import edu.jhuapl.sbmt.stateHistory.ui.state.intervalSelection.table.StateHistoryTableView;
@@ -110,9 +111,10 @@ public class StateHistoryIntervalSelectionController
             if (view.getTable().getSelectedRowCount() == 1)
             {
             	StateHistory stateHistory = rendererManager.getSelectedItems().asList().get(0);
-        		String title = "Specify the folder to save this state history file";
+        		String title = "Save state history file";
 //        		File targPath = DirectoryChooser.showOpenDialog(view, title);
-        		File targetFile = CustomFileChooser.showSaveDialog(view, title, stateHistory.getMetadata().getStateHistoryName());
+        		String extension = stateHistory instanceof SpiceStateHistory ? "spicestate" : "csvstate";
+        		File targetFile = CustomFileChooser.showSaveDialog(view, title, stateHistory.getMetadata().getStateHistoryName() + "." + extension);
         		if (targetFile == null)
         			return;
 

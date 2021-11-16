@@ -183,7 +183,7 @@ public class StandardStateHistory extends AbstractStateHistory
 
 	public void saveStateToFile(String shapeModelName, String fileName) throws StateHistoryIOException
 	{
-		String fileNameWithExtension = fileName + ".csvstate";
+		String fileNameWithExtension = fileName;
 		// writes the header for the new history
 		try
         {
@@ -193,7 +193,7 @@ public class StandardStateHistory extends AbstractStateHistory
 
             // Create header of name, description, color
             writer.append(getMetadata().getStateHistoryName() + ',');
-            writer.append(trajectoryMetadata.getTrajectory().getTrajectoryDescription() + ',');
+            writer.append(getMetadata().getStateHistoryDescription() + ',');
             for (double colorElement : trajectoryMetadata.getTrajectory().getColor().getColorComponents(null)) {
                 writer.append(Double.toString(colorElement));
                 writer.append(',');
@@ -311,6 +311,8 @@ public class StandardStateHistory extends AbstractStateHistory
             history.buildHistory(segments, pointingProvider, TimeUtil.str2et(timeArray.get(0)[0]), TimeUtil.str2et(timeArray.get(0)[1]));
             trajectory = history.getTrajectoryMetadata().getTrajectory();
             trajectory.setTrajectoryDescription(data[1]);
+            history.getMetadata().setStateHistoryName(data[0]);
+            history.getMetadata().setStateHistoryDescription(data[1]);
 //            history = new StandardStateHistory(metadata, file.getAbsolutePath());
 //            Trajectory trajectory = new StandardTrajectory(history);
 //    		IStateHistoryLocationProvider locationProvider = history.getLocationProvider();
