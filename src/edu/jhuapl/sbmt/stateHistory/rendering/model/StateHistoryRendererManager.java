@@ -205,7 +205,7 @@ public class StateHistoryRendererManager extends SaavtkItemManager<StateHistory>
 		this.spacecraftLabelActor = new SpacecraftLabel();
 		this.spacecraftLabelActor.VisibilityOff();
 
-		this.spacecraft = new SpacecraftBody(ConvertResourceToFile.convertResourceToRealFile(this,
+		this.spacecraft = new SpacecraftBody(ConvertResourceToFile.convertResourceToRealFile(this.getClass(),
 				"/edu/jhuapl/sbmt/data/cassini-9k.stl", Configuration.getApplicationDataDir()).getAbsolutePath());
 		this.spacecraft.getActor().forEach(item -> item.VisibilityOff());
 

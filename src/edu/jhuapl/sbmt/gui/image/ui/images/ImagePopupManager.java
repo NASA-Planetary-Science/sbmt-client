@@ -1,11 +1,8 @@
 package edu.jhuapl.sbmt.gui.image.ui.images;
 
-import java.awt.AWTException;
-
 import edu.jhuapl.saavtk.gui.render.Renderer;
 import edu.jhuapl.saavtk.model.ModelManager;
 import edu.jhuapl.saavtk.model.ModelNames;
-import edu.jhuapl.saavtk.popup.GraticulePopupMenu;
 import edu.jhuapl.saavtk.popup.PopupManager;
 import edu.jhuapl.saavtk.popup.PopupMenu;
 import edu.jhuapl.sbmt.client.SbmtInfoWindowManager;
@@ -22,16 +19,6 @@ public class ImagePopupManager extends PopupManager
 			SbmtSpectrumWindowManager spectrumPanelManager, Renderer renderer)
 	{
 		super(modelManager);
-
-		try
-		{
-			PopupMenu popupMenu = new GraticulePopupMenu(modelManager, renderer);
-			registerPopup(modelManager.getModel(ModelNames.GRATICULE), popupMenu);
-		}
-		catch (AWTException e)
-		{
-			e.printStackTrace();
-		}
 
 		ImageCollection imageCollection = (ImageCollection) modelManager.getModel(ModelNames.IMAGES);
 		PopupMenu popupMenu = new ImagePopupMenu(modelManager, imageCollection, infoPanelManager,

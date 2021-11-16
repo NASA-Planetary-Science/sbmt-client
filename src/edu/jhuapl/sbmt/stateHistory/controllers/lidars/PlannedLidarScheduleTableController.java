@@ -12,6 +12,7 @@ import com.google.common.collect.ImmutableSet;
 
 import edu.jhuapl.saavtk.gui.dialog.CustomFileChooser;
 import edu.jhuapl.saavtk.model.ModelManager;
+import edu.jhuapl.saavtk.status.StatusNotifier;
 import edu.jhuapl.saavtk.util.ProgressStatusListener;
 import edu.jhuapl.saavtk.util.Properties;
 import edu.jhuapl.sbmt.client.SmallBodyModel;
@@ -41,7 +42,7 @@ public class PlannedLidarScheduleTableController implements IPlannedDataControll
 	IStateHistoryMetadata historyMetadata = null;
 	ArrayList<PropertyChangeListener> pcls = new ArrayList<PropertyChangeListener>();
 
-	public PlannedLidarScheduleTableController(ModelManager modelManager, StateHistoryRendererManager rendererManager, SmallBodyModel smallBodyModel)
+	public PlannedLidarScheduleTableController(ModelManager modelManager, StateHistoryRendererManager rendererManager, SmallBodyModel smallBodyModel, StatusNotifier statusNotifier)
 	{
 		this.rendererManager = rendererManager;
 		collection = new PlannedLidarTrackScheduleCollection();
@@ -63,7 +64,7 @@ public class PlannedLidarScheduleTableController implements IPlannedDataControll
 					try
 					{
 						PlannedLidarTrackCollection trackCollection = new PlannedLidarTrackCollection(file.getAbsolutePath(), rendererManager.getSelectedItems().asList().get(0));
-						PlannedLidarTrackVtkCollection lidarTrackCollection = new PlannedLidarTrackVtkCollection(file.getAbsolutePath(), trackCollection, modelManager, smallBodyModel, rendererManager.getRenderer());
+						PlannedLidarTrackVtkCollection lidarTrackCollection = new PlannedLidarTrackVtkCollection(file.getAbsolutePath(), trackCollection, modelManager, smallBodyModel, rendererManager.getRenderer(), statusNotifier);
 			        	trackCollection.setListener(new PlannedLidarTrackCollectionListener()
 						{
 

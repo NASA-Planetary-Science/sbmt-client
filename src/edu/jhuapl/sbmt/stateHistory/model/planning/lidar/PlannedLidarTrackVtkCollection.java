@@ -12,6 +12,7 @@ import vtk.vtkProp;
 
 import edu.jhuapl.saavtk.gui.render.Renderer;
 import edu.jhuapl.saavtk.model.ModelManager;
+import edu.jhuapl.saavtk.status.StatusNotifier;
 import edu.jhuapl.saavtk.util.Properties;
 import edu.jhuapl.sbmt.client.SmallBodyModel;
 import edu.jhuapl.sbmt.lidar.LidarTrack;
@@ -27,14 +28,14 @@ public class PlannedLidarTrackVtkCollection extends BasePlannedDataCollection<Pl
 	private List<LidarTrack> currentTracks;
 	private PlannedLidarTrackCollection currentTracksCollection;
 
-	public PlannedLidarTrackVtkCollection(String filename, PlannedLidarTrackCollection currentTracksCollection, ModelManager modelManager, SmallBodyModel smallBodyModel, Renderer renderer)
+	public PlannedLidarTrackVtkCollection(String filename, PlannedLidarTrackCollection currentTracksCollection, ModelManager modelManager, SmallBodyModel smallBodyModel, Renderer renderer, StatusNotifier statusNotifier)
 	{
 		super(smallBodyModel);
 		this.currentTracks = new ArrayList<LidarTrack>();
 //		this.currentTracks = currentTracksCollection.getCurrentTracks();
 		this.currentTracksCollection = currentTracksCollection;
 		this.filename = filename;
-		trackManager = new LidarTrackManager(modelManager, smallBodyModel);
+		trackManager = new LidarTrackManager(renderer, statusNotifier, smallBodyModel);
 		renderer.addVtkPropProvider(trackManager);
 
 //		// Manually register for events of interest

@@ -2,7 +2,6 @@ package edu.jhuapl.sbmt.client;
 
 import java.io.IOException;
 
-import edu.jhuapl.saavtk.model.Graticule;
 import edu.jhuapl.saavtk.model.ShapeModelBody;
 import edu.jhuapl.saavtk.model.ShapeModelType;
 import edu.jhuapl.sbmt.dtm.model.DEM;
@@ -19,7 +18,6 @@ import edu.jhuapl.sbmt.model.bennu.imaging.SamCamEarthImage;
 import edu.jhuapl.sbmt.model.bennu.shapeModel.Bennu;
 import edu.jhuapl.sbmt.model.bennu.shapeModel.BennuV4;
 import edu.jhuapl.sbmt.model.ceres.FcCeresImage;
-import edu.jhuapl.sbmt.model.custom.CustomGraticule;
 import edu.jhuapl.sbmt.model.custom.CustomShapeModel;
 import edu.jhuapl.sbmt.model.eros.Eros;
 import edu.jhuapl.sbmt.model.eros.ErosThomas;
@@ -333,30 +331,6 @@ public class SbmtModelFactory
             }
         }
         return result;
-    }
-
-    static public Graticule createGraticule(SmallBodyModel smallBodyModel)
-    {
-        SmallBodyViewConfig config = (SmallBodyViewConfig)smallBodyModel.getSmallBodyConfig();
-        ShapeModelType author = config.author;
-
-        if (ShapeModelType.GASKELL == author && smallBodyModel.getNumberResolutionLevels() == 4)
-        {
-            String[] graticulePaths = new String[]{
-                    config.rootDirOnServer + "/coordinate_grid_res0.vtk.gz",
-                    config.rootDirOnServer + "/coordinate_grid_res1.vtk.gz",
-                    config.rootDirOnServer + "/coordinate_grid_res2.vtk.gz",
-                    config.rootDirOnServer + "/coordinate_grid_res3.vtk.gz"
-            };
-
-            return new Graticule(smallBodyModel, graticulePaths);
-        }
-        else if (ShapeModelType.CUSTOM == author && !config.customTemporary)
-        {
-            return new CustomGraticule(smallBodyModel);
-        }
-
-        return new Graticule(smallBodyModel);
     }
 
     static public LineamentModel createLineament()
