@@ -227,10 +227,10 @@ public class DartConfigs
         c = createSingleResolutionSystemConfig_20200629_v01(new ShapeModelBody[] { ShapeModelBody.DIMORPHOS, ShapeModelBody.DIDYMOS }, "Ideal Impact 6 RA 20201116 v01 System Dimorphos Center", 3145728);
 //        configList.add(c);
 
-        c = createSingleResMissionImagesSystemConfig(new ShapeModelBody[] { ShapeModelBody.DIDYMOS, ShapeModelBody.DIMORPHOS }, "Ideal Impact 9 20210630 v01 System Didymos Center", 1996);
+        c = createSingleResMissionImagesSystemConfig(new ShapeModelBody[] { ShapeModelBody.DIDYMOS, ShapeModelBody.DIMORPHOS }, "Ideal Impact 9 20210630 v01 System Didymos Center", 1996, true);
         configList.add(c);
 
-        c = createSingleResMissionImagesSystemConfig(new ShapeModelBody[] { ShapeModelBody.DIMORPHOS, ShapeModelBody.DIDYMOS }, "Ideal Impact 9 20210630 v01 System Dimorphos Center", 3072);
+        c = createSingleResMissionImagesSystemConfig(new ShapeModelBody[] { ShapeModelBody.DIMORPHOS, ShapeModelBody.DIDYMOS }, "Ideal Impact 9 20210630 v01 System Dimorphos Center", 3072, true);
         configList.add(c);
 
 
@@ -255,9 +255,9 @@ public class DartConfigs
         configList.add(c);
         c = createSingleResolutionSystemConfig_20200629_v01(new ShapeModelBody[] { ShapeModelBody.DIMORPHOS, ShapeModelBody.DIDYMOS }, "Errors Impact 5 20200629 v01 System Dimorphos Center", 3366134);
         configList.add(c);
-        c = createSingleResMissionImagesSystemConfig(new ShapeModelBody[] { ShapeModelBody.DIDYMOS, ShapeModelBody.DIMORPHOS }, "Errors Impact 9 20210630 v01 System Didymos Center", 3072);
+        c = createSingleResMissionImagesSystemConfig(new ShapeModelBody[] { ShapeModelBody.DIDYMOS, ShapeModelBody.DIMORPHOS }, "Errors Impact 9 20210630 v01 System Didymos Center", 3072, true);
         configList.add(c);
-        c = createSingleResMissionImagesSystemConfig(new ShapeModelBody[] { ShapeModelBody.DIMORPHOS, ShapeModelBody.DIDYMOS }, "Errors Impact 9 20210630 v01 System Dimorphos Center", 3072);
+        c = createSingleResMissionImagesSystemConfig(new ShapeModelBody[] { ShapeModelBody.DIMORPHOS, ShapeModelBody.DIDYMOS }, "Errors Impact 9 20210630 v01 System Dimorphos Center", 3072, true);
         configList.add(c);
 
         defaultConfig.defaultForMissions = DartClients;
@@ -284,11 +284,16 @@ public class DartConfigs
 
     protected SmallBodyViewConfig createSingleResMissionImagesSystemConfig(ShapeModelBody[] body, String label, int numberPlates)
     {
-    	SmallBodyViewConfig config = createSingleResMissionImagesConfig(body[0], label, numberPlates);
+    	return createSingleResMissionImagesSystemConfig(body, label, numberPlates, false);
+    }
+
+    protected SmallBodyViewConfig createSingleResMissionImagesSystemConfig(ShapeModelBody[] body, String label, int numberPlates, boolean useUpdatedFrameNames)
+    {
+    	SmallBodyViewConfig config = createSingleResMissionImagesConfig(body[0], label, numberPlates, useUpdatedFrameNames);
     	List<SmallBodyViewConfig> systemConfigs = Lists.newArrayList();
     	for (int i=1; i<body.length; i++)
     	{
-    		systemConfigs.add(createSingleResMissionImagesConfig(body[i], label, numberPlates));
+    		systemConfigs.add(createSingleResMissionImagesConfig(body[i], label, numberPlates, useUpdatedFrameNames));
     	};
     	config.systemConfigs = systemConfigs;
     	config.hasSystemBodies = true;
@@ -462,7 +467,24 @@ public class DartConfigs
      */
     protected SmallBodyViewConfig createSingleResMissionImagesConfig(ShapeModelBody body, String label, int numberPlates)
     {
-        return createSingleResMissionImagesConfig(body, label, numberPlates, null, null, null);
+        return createSingleResMissionImagesConfig(body, label, numberPlates, null, null, null, false);
+    }
+
+    protected SmallBodyViewConfig createSingleResMissionImagesConfig(ShapeModelBody body, String label, int numberPlates, boolean useUpdatedFrameNames)
+    {
+        return createSingleResMissionImagesConfig(body, label, numberPlates, null, null, null, useUpdatedFrameNames);
+    }
+
+    protected SmallBodyViewConfig createSingleResMissionImagesConfig( //
+            ShapeModelBody body, //
+            String label, //
+            int numberPlates, //
+            String dracoModelId, //
+            String leiaModelId, //
+            String lukeModelId //
+    )
+    {
+    	return createSingleResMissionImagesConfig(body, label, numberPlates, dracoModelId, leiaModelId, lukeModelId, false);
     }
 
     /**
@@ -505,7 +527,8 @@ public class DartConfigs
             int numberPlates, //
             String dracoModelId, //
             String leiaModelId, //
-            String lukeModelId //
+            String lukeModelId, //
+            boolean useUpdatedFrameNames
     )
     {
         SmallBodyViewConfig c = new SmallBodyViewConfig(ImmutableList.of(numberPlates + " plates"), ImmutableList.of(numberPlates)) {
@@ -608,7 +631,10 @@ public class DartConfigs
                 new DBRunInfo(ImageSource.SPICE, Instrument.LUKE, body.toString(), //
                         lukeDir + "/imagelist-fullpath-info.txt", lukeTable) //
         };
-        generateStateHistoryParameters(c,  body.name());
+        if (useUpdatedFrameNames)
+        	generateUpdatedStateHistoryParameters(c,  body.name());
+        else
+        	generateStateHistoryParameters(c,  body.name());
         return c;
     }
 
@@ -620,6 +646,18 @@ public class DartConfigs
         c.stateHistoryEndDate = new GregorianCalendar(2022, 9, 1, 10, 28, 0).getTime();
         SpiceInfo spiceInfo1 = new SpiceInfo("DART", "920065803_FIXED", "DART_SPACECRAFT", "DIDYMOS", new String[] {"DIMORPHOS"}, new String[] {"DART_DRACO_2X2", "120065803_FIXED"});
 		SpiceInfo spiceInfo2 = new SpiceInfo("DART", "120065803_FIXED", "DART_SPACECRAFT", "DIMORPHOS", new String[] {"DIDYMOS"}, new String[] {"DART_DRACO_2X2", "920065803_FIXED"});
+		SpiceInfo[] spiceInfos = new SpiceInfo[] {spiceInfo1, spiceInfo2};
+        c.spiceInfo = List.of(spiceInfos).stream().filter(info -> info.getBodyName().equals(centerBodyName)).toList().get(0);
+	}
+
+    private void generateUpdatedStateHistoryParameters(SmallBodyViewConfig c, String centerBodyName)
+	{
+        c.hasStateHistory = false;
+        c.timeHistoryFile = c.rootDirOnServer + "/history/timeHistory.bth";
+        c.stateHistoryStartDate = new GregorianCalendar(2022, 8, 26, 23, 10, 18).getTime();
+        c.stateHistoryEndDate = new GregorianCalendar(2022, 8, 26, 23, 13, 30).getTime();
+        SpiceInfo spiceInfo1 = new SpiceInfo("DART", "DIDYMOS_FIXED", "DART_SPACECRAFT", "DIDYMOS", new String[] {"DIMORPHOS"}, new String[] {"DART_DRACO_2X2", "DIMORPHOS_FIXED"});
+		SpiceInfo spiceInfo2 = new SpiceInfo("DART", "DIMORPHOS_FIXED", "DART_SPACECRAFT", "DIMORPHOS", new String[] {"DIDYMOS"}, new String[] {"DART_DRACO_2X2", "DIDYMOS_FIXED"});
 		SpiceInfo[] spiceInfos = new SpiceInfo[] {spiceInfo1, spiceInfo2};
         c.spiceInfo = List.of(spiceInfos).stream().filter(info -> info.getBodyName().equals(centerBodyName)).toList().get(0);
 	}
