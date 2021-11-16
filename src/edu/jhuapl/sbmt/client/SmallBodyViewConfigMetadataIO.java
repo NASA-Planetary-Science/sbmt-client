@@ -669,7 +669,7 @@ public class SmallBodyViewConfigMetadataIO implements MetadataManager
         	c.modelLabel = metadataID;
         }
 
-        c.hasSystemBodies = read(systemBodies, configMetadata);
+        if (configMetadata.hasKey(systemBodies)) c.hasSystemBodies = read(systemBodies, configMetadata);
         if (configMetadata.hasKey(systemBodyConfigs) && SmallBodyViewConfig.getConfigIdentifiers().size() != 0)
         {
         	List<String> systemBodyConfigStrings = read(systemBodyConfigs, configMetadata);
