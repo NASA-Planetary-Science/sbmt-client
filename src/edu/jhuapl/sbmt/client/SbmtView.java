@@ -700,7 +700,16 @@ public class SbmtView extends View implements PropertyChangeListener
 				PopupMenu popupMenu = new ImagePopupMenu<>(getModelManager(), images, boundaries, (SbmtInfoWindowManager) getInfoPanelManager(), (SbmtSpectrumWindowManager) getSpectrumPanelManager(), getRenderer(), getRenderer());
 				registerPopupMenuForModels(getModel(ModelNames.CUSTOM_IMAGES), popupMenu);
 
-				customDataPane.addTab("Images", new CustomImageController(getPolyhedralModelConfig(), getModelManager(), (SbmtInfoWindowManager) getInfoPanelManager(), (SbmtSpectrumWindowManager) getSpectrumPanelManager(), getPickManager(), getRenderer(), instrument).getPanel());
+				CustomImageController customImageController = new CustomImageController(getPolyhedralModelConfig(), getModelManager(), (SbmtInfoWindowManager) getInfoPanelManager(), (SbmtSpectrumWindowManager) getSpectrumPanelManager(), getPickManager(), getRenderer(), instrument);
+				pomListeners.add(new PositionOrientationManagerListener()
+				{
+					@Override
+					public void managerUpdated(IPositionOrientationManager manager)
+					{
+						customImageController.setPositionOrientationManager(manager);
+					}
+				});
+				customDataPane.addTab("Images", customImageController.getPanel());
 			}
 
 			for (BasicSpectrumInstrument i : getPolyhedralModelConfig().spectralInstruments)

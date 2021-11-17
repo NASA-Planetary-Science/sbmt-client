@@ -29,7 +29,7 @@ public class BasicConfigInfo implements MetadataManager
 
     public static String getConfigPathPrefix(boolean publishedDataOnly)
     {
-        return (publishedDataOnly ? "published/" : "proprietary/") + "allBodies-" + configInfoVersion + "-redmine-1215";
+        return (publishedDataOnly ? "published/" : "proprietary/") + "allBodies-" + configInfoVersion;
     }
 
     private static final SbmtMultiMissionTool.Mission[] EmptyMissionArray = new SbmtMultiMissionTool.Mission[0];
