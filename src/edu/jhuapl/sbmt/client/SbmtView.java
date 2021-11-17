@@ -81,6 +81,7 @@ import edu.jhuapl.sbmt.model.image.ImageCubeCollection;
 import edu.jhuapl.sbmt.model.image.ImagingInstrument;
 import edu.jhuapl.sbmt.model.image.SpectralImageMode;
 import edu.jhuapl.sbmt.model.phobos.controllers.MEGANEController;
+import edu.jhuapl.sbmt.model.phobos.model.MEGANECollection;
 import edu.jhuapl.sbmt.model.ryugu.nirs3.H2SpectraFactory;
 import edu.jhuapl.sbmt.model.ryugu.nirs3.NIRS3SearchModel;
 import edu.jhuapl.sbmt.model.ryugu.nirs3.atRyugu.NIRS3Spectrum;
@@ -627,7 +628,8 @@ public class SbmtView extends View implements PropertyChangeListener
 			}
 			else if (displayName.equals("MEGANE"))
 			{
-				MEGANEController meganeController = new MEGANEController(smallBodyModel);
+				MEGANECollection collection = new MEGANECollection();
+				MEGANEController meganeController = new MEGANEController(collection, smallBodyModel);
 				rendererManager.addListener(new ItemEventListener()
 				{
 					@Override
@@ -643,7 +645,7 @@ public class SbmtView extends View implements PropertyChangeListener
 				});
 				addTab(instrument.getDisplayName(), meganeController.getPanel());
             }
- 
+
         }
 
 		// Lidar tab
