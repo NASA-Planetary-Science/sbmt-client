@@ -350,6 +350,12 @@ public class SbmtView extends View implements PropertyChangeListener
 			SpectraCollection customCollection = new SpectraCollection(smallBodyModel);
 			allModels.put(ModelNames.CUSTOM_SPECTRA, customCollection);
 			allModels.put(ModelNames.CUSTOM_SPECTRA_BOUNDARIES, new SpectrumBoundaryCollection(smallBodyModel, (SpectraCollection)allModels.get(ModelNames.CUSTOM_SPECTRA)));
+
+			if (!getPolyhedralModelConfig().spectralInstruments.stream().filter(inst -> inst.getDisplayName().equals("MEGANE")).toList().isEmpty())
+			{
+				MEGANECollection collection = new MEGANECollection(smallBodyModel);
+				allModels.put(ModelNames.GRNS_SPECTRA, collection);
+			}
         }
 
         if (getPolyhedralModelConfig().hasLineamentData)
@@ -628,8 +634,9 @@ public class SbmtView extends View implements PropertyChangeListener
 			}
 			else if (displayName.equals("MEGANE"))
 			{
-				MEGANECollection collection = new MEGANECollection();
-				MEGANEController meganeController = new MEGANEController(collection, smallBodyModel);
+//				MEGANECollection collection = new MEGANECollection();
+				MEGANECollection collection = (MEGANECollection)getModelManager().getModel(ModelNames.GRNS_SPECTRA);
+				MEGANEController meganeController = new MEGANEController(collection, smallBodyModel, getModelManager(), getPickManager());
 				rendererManager.addListener(new ItemEventListener()
 				{
 					@Override
