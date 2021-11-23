@@ -68,6 +68,8 @@ import edu.jhuapl.sbmt.gui.image.ui.images.ImageDefaultPickHandler;
 import edu.jhuapl.sbmt.gui.image.ui.images.ImagePopupManager;
 import edu.jhuapl.sbmt.gui.image.ui.images.ImagePopupMenu;
 import edu.jhuapl.sbmt.gui.time.version2.StateHistoryController;
+import edu.jhuapl.sbmt.image2.controllers.ImageSearchController;
+import edu.jhuapl.sbmt.image2.model.PerspectiveImageCollection;
 import edu.jhuapl.sbmt.lidar.gui.LidarPanel;
 import edu.jhuapl.sbmt.model.bennu.spectra.OREXSpectraFactory;
 import edu.jhuapl.sbmt.model.bennu.spectra.OREXSpectrumSearchController;
@@ -551,6 +553,9 @@ public class SbmtView extends View implements PropertyChangeListener
 				metadataManagers.put(instrument.instrumentName.toString(), controller.getModel());
 				addTab(instrument.instrumentName.toString(), controller.getView().getComponent());
 			}
+
+			PerspectiveImageCollection collection = new PerspectiveImageCollection(List.of(smallBodyModel));
+			addTab(instrument.instrumentName.toString() + "2", new ImageSearchController(getPolyhedralModelConfig(), collection, instrument, getModelManager(), getRenderer(), getPickManager()).getView());
 
 		}
 
