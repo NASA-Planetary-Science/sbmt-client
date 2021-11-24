@@ -320,6 +320,9 @@ public class SbmtView extends View implements PropertyChangeListener
 		allModels.put(ModelNames.COLOR_IMAGES, colorImageCollection);
 		allModels.put(ModelNames.CUBE_IMAGES, cubeCollection);
 
+		//new version of images
+		allModels.put(ModelNames.IMAGES_V2, new PerspectiveImageCollection(List.of(smallBodyModel)));
+
 		//        for (ImagingInstrument instrument : getPolyhedralModelConfig().imagingInstruments)
 		//        {
 		//            if (instrument.spectralMode == SpectralMode.MONO)
@@ -414,6 +417,7 @@ public class SbmtView extends View implements PropertyChangeListener
 
 				PopupMenu popupMenu = new ImagePopupMenu<>(getModelManager(), images, boundaries, (SbmtInfoWindowManager) getInfoPanelManager(), (SbmtSpectrumWindowManager) getSpectrumPanelManager(), getRenderer(), getRenderer());
 				registerPopup(getModel(ModelNames.PERSPECTIVE_IMAGE_BOUNDARIES), popupMenu);
+				registerPopup(getModel(ModelNames.IMAGES_V2), popupMenu);
 
                 //color perspective images
                 ColorImageCollection colorImages = (ColorImageCollection)getModelManager().getModel(ModelNames.COLOR_IMAGES);
@@ -554,8 +558,9 @@ public class SbmtView extends View implements PropertyChangeListener
 				addTab(instrument.instrumentName.toString(), controller.getView().getComponent());
 			}
 
-			PerspectiveImageCollection collection = new PerspectiveImageCollection(List.of(smallBodyModel));
-			addTab(instrument.instrumentName.toString() + "2", new ImageSearchController(getPolyhedralModelConfig(), collection, instrument, getModelManager(), getRenderer(), getPickManager()).getView());
+			PerspectiveImageCollection collection = (PerspectiveImageCollection)getModelManager().getModel(ModelNames.IMAGES_V2);
+//			PerspectiveImageCollection collection = new PerspectiveImageCollection(List.of(smallBodyModel));
+			addTab(instrument.instrumentName.toString() + "2", new ImageSearchController(getPolyhedralModelConfig(), collection, instrument, getModelManager(), getRenderer(), getPickManager(), (SbmtInfoWindowManager) getInfoPanelManager(), (SbmtSpectrumWindowManager) getSpectrumPanelManager()).getView());
 
 		}
 

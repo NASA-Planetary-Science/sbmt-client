@@ -21,6 +21,7 @@ import edu.jhuapl.saavtk.model.structure.AbstractEllipsePolygonModel;
 import edu.jhuapl.saavtk.structure.Ellipse;
 import edu.jhuapl.sbmt.client.SmallBodyModel;
 import edu.jhuapl.sbmt.client.SmallBodyViewConfig;
+import edu.jhuapl.sbmt.image2.model.ImageOrigin;
 import edu.jhuapl.sbmt.image2.model.ImageSearchParametersModel;
 import edu.jhuapl.sbmt.image2.model.PerspectiveImage;
 import edu.jhuapl.sbmt.image2.pipeline.operator.BasePipelineOperator;
@@ -207,14 +208,23 @@ public class ImageSearchOperator extends BasePipelineOperator<ImageSearchParamet
         }
 
         outputs = new ArrayList<PerspectiveImage>();
+        int i=0;
         for (List<String> imageInfo : results)
         {
         	HashMap<ImageSource, String> pointingSources = new HashMap<ImageSource, String>();
-        	pointingSources.put(ImageSource.SPICE, FilenameUtils.getBaseName(imageInfo.get(0)) + ".INFO");
-        	pointingSources.put(ImageSource.GASKELL, FilenameUtils.getBaseName(imageInfo.get(0)) + ".SUM");
-        	pointingSources.put(ImageSource.LABEL, FilenameUtils.getBaseName(imageInfo.get(0)) + ".LBL");
+        	//TODO make this generic to handle the available server directory structures
+        	pointingSources.put(ImageSource.SPICE, FilenameUtils.removeExtension(imageInfo.get(0)).replace("images/public", "infofiles") + ".INFO");
+        	pointingSources.put(ImageSource.GASKELL, FilenameUtils.removeExtension(imageInfo.get(0)).replace("images/public", "sumfiles") + ".SUM");
+        	pointingSources.put(ImageSource.LABEL, FilenameUtils.removeExtension(imageInfo.get(0)).replace("images/public", "labelfiles") + ".LBL");
         	PerspectiveImage image = new PerspectiveImage(imageInfo.get(0), pointingSources, new double[] {});
+        	image.setFlip(instrument.getFlip());
+        	image.setFlip("Y");
+        	image.setRotation(instrument.getRotation());
+        	image.setRotation(90.0);
+        	image.setImageOrigin(ImageOrigin.SERVER);
+//        	image.setFillValues(instrument.getFillDetector(image));
         	image.setLongTime(Long.parseLong(imageInfo.get(1)));
+        	image.setIndex(i++);
         	outputs.add(image);
         }
 	}

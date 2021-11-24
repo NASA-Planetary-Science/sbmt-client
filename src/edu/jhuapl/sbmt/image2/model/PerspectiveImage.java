@@ -31,6 +31,13 @@ public class PerspectiveImage
 	//fill values
 	private double[] fillValues = new double[] {};
 
+	//flip and rotation
+    private double rotation;
+    private String flip;
+
+    //source of image
+    ImageOrigin imageOrigin;
+
 	//needs: adjusted pointing (load and save), rendering, header/metadata
 
 	private boolean mapped = false;
@@ -41,6 +48,7 @@ public class PerspectiveImage
 	private int index;
 	private double et;
 	private Long longTime;
+	private boolean simulateLigting;
 
 	public PerspectiveImage(String filename, HashMap<ImageSource, String> pointingSources, double[] fillValues)
 	{
@@ -187,5 +195,45 @@ public class PerspectiveImage
 	public void setLongTime(Long longTime)
 	{
 		this.longTime = longTime;
+	}
+
+	public double getRotation()
+	{
+		return rotation;
+	}
+
+	public void setRotation(double rotation)
+	{
+		this.rotation = rotation;
+	}
+
+	public String getFlip()
+	{
+		return flip;
+	}
+
+	public void setFlip(String flip)
+	{
+		this.flip = flip;
+	}
+
+	public String getImageOrigin()
+	{
+		return imageOrigin.getFullName();
+	}
+
+	public void setImageOrigin(ImageOrigin imageOrigin)
+	{
+		this.imageOrigin = imageOrigin;
+	}
+
+	public boolean isSimulateLigting()
+	{
+		return simulateLigting;
+	}
+
+	public void setSimulateLigting(boolean simulateLigting)
+	{
+		this.simulateLigting = simulateLigting;
 	}
 }

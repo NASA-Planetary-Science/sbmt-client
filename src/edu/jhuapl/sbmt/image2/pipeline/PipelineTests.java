@@ -8,8 +8,6 @@ import org.apache.commons.lang3.tuple.Triple;
 
 import com.google.common.collect.Lists;
 
-import vtk.vtkActor;
-
 import edu.jhuapl.saavtk.util.NativeLibraryLoader;
 import edu.jhuapl.sbmt.client.SmallBodyModel;
 import edu.jhuapl.sbmt.image2.api.Layer;
@@ -21,13 +19,11 @@ import edu.jhuapl.sbmt.image2.modules.pointing.InfofileReaderPublisher;
 import edu.jhuapl.sbmt.image2.modules.pointing.SpiceBodyOperator;
 import edu.jhuapl.sbmt.image2.modules.pointing.SpiceReaderPublisher;
 import edu.jhuapl.sbmt.image2.modules.preview.VtkImagePreview;
-import edu.jhuapl.sbmt.image2.modules.preview.VtkRendererPreview;
 import edu.jhuapl.sbmt.image2.modules.preview.VtkRendererPreview2;
 import edu.jhuapl.sbmt.image2.modules.rendering.LayerLinearInterpolaterOperator;
 import edu.jhuapl.sbmt.image2.modules.rendering.LayerRotationOperator;
 import edu.jhuapl.sbmt.image2.modules.rendering.RenderableImage;
 import edu.jhuapl.sbmt.image2.modules.rendering.RenderableImageGenerator;
-import edu.jhuapl.sbmt.image2.modules.rendering.SceneBuilderOperator;
 import edu.jhuapl.sbmt.image2.pipeline.operator.IPipelineOperator;
 import edu.jhuapl.sbmt.image2.pipeline.publisher.IPipelinePublisher;
 import edu.jhuapl.sbmt.image2.pipeline.publisher.Just;
@@ -124,20 +120,20 @@ public class PipelineTests
 //		IPipelinePublisher<List<Object>> sceneObjects = Publishers.mergeLists(vtkReader, new Just<RenderableImage>(renderableImages.get(0)));
 		IPipelinePublisher<Pair<List<SmallBodyModel>, List<RenderableImage>>> sceneObjects = Publishers.formPair(Just.of(vtkReader.getOutputs()), Just.of(renderableImages));
 
-		//***************************************************************************
-		//Pass them into the scene builder to perform intersection calculations
-		//***************************************************************************
-		IPipelineOperator<Pair<List<SmallBodyModel>, List<RenderableImage>>, vtkActor> sceneBuilder = new SceneBuilderOperator();
-
-		//*******************************
-		//Throw them to the preview tool
-		//*******************************
-		VtkRendererPreview preview = new VtkRendererPreview(vtkReader.getOutputs().get(0));
-
-		sceneObjects
-			.operate(sceneBuilder) 	//feed the zipped sources to scene builder operator
-			.subscribe(preview)		//subscribe to the scene builder with the preview
-			.run();
+//		//***************************************************************************
+//		//Pass them into the scene builder to perform intersection calculations
+//		//***************************************************************************
+//		IPipelineOperator<Pair<List<SmallBodyModel>, List<RenderableImage>>, vtkActor> sceneBuilder = new SceneBuilderOperator();
+//
+//		//*******************************
+//		//Throw them to the preview tool
+//		//*******************************
+//		VtkRendererPreview preview = new VtkRendererPreview(vtkReader.getOutputs().get(0));
+//
+//		sceneObjects
+//			.operate(sceneBuilder) 	//feed the zipped sources to scene builder operator
+//			.subscribe(preview)		//subscribe to the scene builder with the preview
+//			.run();
 	}
 
 	private void test3() throws Exception
@@ -146,7 +142,7 @@ public class PipelineTests
 		//generate image layer
 		//***********************
 		IPipelinePublisher<Layer> reader = new BuiltInFitsReader("/Users/steelrj1/Desktop/dart_717891977_782_01.fits", new double[] {-32768.0, -32767.0, 4095.0});
-		LayerRotationOperator rotationOperator = new LayerRotationOperator();
+		LayerRotationOperator rotationOperator = new LayerRotationOperator(270);
 
 		List<Layer> updatedLayers = Lists.newArrayList();
 		reader
@@ -204,20 +200,20 @@ public class PipelineTests
 //		IPipelinePublisher<List<Object>> sceneObjects = Publishers.mergeLists(Just.of(updatedBodies), Just.of(renderableImages.get(0)));
 		IPipelinePublisher<Pair<List<SmallBodyModel>, List<RenderableImage>>> sceneObjects = Publishers.formPair(Just.of(updatedBodies), Just.of(renderableImages));
 
-		//***************************************************************************
-		//Pass them into the scene builder to perform intersection calculations
-		//***************************************************************************
-		IPipelineOperator<Pair<List<SmallBodyModel>, List<RenderableImage>>, vtkActor> sceneBuilder = new SceneBuilderOperator();
-
-		//*******************************
-		//Throw them to the preview tool
-		//*******************************
-		VtkRendererPreview preview = new VtkRendererPreview(vtkReader.getOutputs().get(0));
-
-		sceneObjects
-			.operate(sceneBuilder) 	//feed the zipped sources to scene builder operator
-			.subscribe(preview)		//subscribe to the scene builder with the preview
-			.run();
+//		//***************************************************************************
+//		//Pass them into the scene builder to perform intersection calculations
+//		//***************************************************************************
+//		IPipelineOperator<Pair<List<SmallBodyModel>, List<RenderableImage>>, vtkActor> sceneBuilder = new SceneBuilderOperator();
+//
+//		//*******************************
+//		//Throw them to the preview tool
+//		//*******************************
+//		VtkRendererPreview preview = new VtkRendererPreview(vtkReader.getOutputs().get(0));
+//
+//		sceneObjects
+//			.operate(sceneBuilder) 	//feed the zipped sources to scene builder operator
+//			.subscribe(preview)		//subscribe to the scene builder with the preview
+//			.run();
 	}
 
 	private void test4() throws Exception

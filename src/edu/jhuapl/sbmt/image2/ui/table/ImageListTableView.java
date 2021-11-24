@@ -24,12 +24,14 @@ import edu.jhuapl.sbmt.image2.model.PerspectiveImage;
 import edu.jhuapl.sbmt.image2.model.PerspectiveImageCollection;
 
 import glum.gui.GuiUtil;
+import glum.gui.action.PopupMenu;
 import glum.gui.misc.BooleanCellEditor;
 import glum.gui.misc.BooleanCellRenderer;
 import glum.gui.panel.itemList.ItemHandler;
 import glum.gui.panel.itemList.ItemListPanel;
 import glum.gui.panel.itemList.ItemProcessor;
 import glum.gui.panel.itemList.query.QueryComposer;
+import glum.gui.table.TablePopupHandler;
 import glum.item.ItemManagerUtil;
 
 public class ImageListTableView extends JPanel
@@ -54,6 +56,10 @@ public class ImageListTableView extends JPanel
 	 */
 	private JButton saveImageButton;
 
+	private JButton colorImageButton;
+
+	private JButton imageCubeButton;
+
     protected JTable resultList;
     private JLabel resultsLabel;
 
@@ -63,10 +69,13 @@ public class ImageListTableView extends JPanel
     private ItemListPanel<PerspectiveImage> imageILP;
     private ItemHandler<PerspectiveImage> imageItemHandler;
 
+    private PopupMenu popupMenu;
 
-	public ImageListTableView(PerspectiveImageCollection collection)
+
+	public ImageListTableView(PerspectiveImageCollection collection, PopupMenu popupMenu)
 	{
 		this.imageCollection = collection;
+		this.popupMenu = popupMenu;
 		collection.addPropertyChangeListener(new PropertyChangeListener()
 		{
 
@@ -90,7 +99,7 @@ public class ImageListTableView extends JPanel
     public void setup()
     {
         setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
-        setBorder(new TitledBorder(null, "Available Spectra", TitledBorder.LEADING, TitledBorder.TOP, null, null));
+        setBorder(new TitledBorder(null, "Available Images", TitledBorder.LEADING, TitledBorder.TOP, null, null));
         JPanel panel_4 = new JPanel();
         add(panel_4);
         panel_4.setLayout(new BoxLayout(panel_4, BoxLayout.X_AXIS));
@@ -155,15 +164,23 @@ public class ImageListTableView extends JPanel
 		selectAllB = GuiUtil.formButton(listener, IconUtil.getSelectAll());
 		selectAllB.setToolTipText(ToolTipUtil.getSelectAll());
 
+		colorImageButton = GuiUtil.formButton(listener, "Color");
+		colorImageButton.setToolTipText("Generate a Color Image");
+
+		imageCubeButton = GuiUtil.formButton(listener, "Cube");
+		imageCubeButton.setToolTipText("Generate an Image Cube");
+
 		JPanel buttonPanel = new JPanel();
 		buttonPanel.setLayout(new BoxLayout(buttonPanel, BoxLayout.X_AXIS));
-//		titleL = new JLabel("Spectra: ---");
-//		buttonPanel.add(titleL, "growx,span,split");
+
 		buttonPanel.add(loadImageButton);
 		buttonPanel.add(saveImageButton);
 		buttonPanel.add(Box.createHorizontalGlue());
 		buttonPanel.add(showImageButton);
 		buttonPanel.add(hideImageButton);
+		buttonPanel.add(Box.createHorizontalGlue());
+		buttonPanel.add(colorImageButton);
+		buttonPanel.add(imageCubeButton);
 		buttonPanel.add(Box.createHorizontalGlue());
 		buttonPanel.add(selectInvertB, "w 24!,h 24!");
 		buttonPanel.add(selectNoneB, "w 24!,h 24!");
@@ -173,12 +190,15 @@ public class ImageListTableView extends JPanel
 		// Table Content
 		QueryComposer<ImageColumnLookup> tmpComposer = new QueryComposer<>();
 		tmpComposer.addAttribute(ImageColumnLookup.Map, Boolean.class, "Map", null);
-		tmpComposer.addAttribute(ImageColumnLookup.Offlimb, Boolean.class, "Offlimb", null);
-		tmpComposer.addAttribute(ImageColumnLookup.Frustum, Boolean.class, "Frustum", null);
-		tmpComposer.addAttribute(ImageColumnLookup.Boundary, Boolean.class, "Boundary", null);
+		tmpComposer.addAttribute(ImageColumnLookup.Status, String.class, "Status", null);
+		tmpComposer.addAttribute(ImageColumnLookup.Offlimb, Boolean.class, "Off", null);
+		tmpComposer.addAttribute(ImageColumnLookup.Frustum, Boolean.class, "Frus", null);
+		tmpComposer.addAttribute(ImageColumnLookup.Boundary, Boolean.class, "Bndr", null);
 		tmpComposer.addAttribute(ImageColumnLookup.Id, Integer.class, "ID", null);
-		tmpComposer.addAttribute(ImageColumnLookup.Filename, String.class, "Filename", null);
+		tmpComposer.addAttribute(ImageColumnLookup.Filename, String.class, "Name", null);
+		tmpComposer.addAttribute(ImageColumnLookup.Dimension, Integer.class, "Dim.", null);
 		tmpComposer.addAttribute(ImageColumnLookup.Date, Date.class, "Date (UTC)", null);
+		tmpComposer.addAttribute(ImageColumnLookup.Source, String.class, "Source", null);
 
 		tmpComposer.setEditor(ImageColumnLookup.Map, new BooleanCellEditor());
 		tmpComposer.setRenderer(ImageColumnLookup.Map, new BooleanCellRenderer());
@@ -190,17 +210,18 @@ public class ImageListTableView extends JPanel
 		tmpComposer.setRenderer(ImageColumnLookup.Boundary, new BooleanCellRenderer());
 
 
-		tmpComposer.getItem(ImageColumnLookup.Filename).defaultSize *= 7;
+		tmpComposer.getItem(ImageColumnLookup.Status).defaultSize *= 2;
+		tmpComposer.getItem(ImageColumnLookup.Filename).defaultSize *= 4;
+		tmpComposer.getItem(ImageColumnLookup.Date).defaultSize *= 2;
 
 		ImageListItemHandler imageItemHandler = new ImageListItemHandler(imageCollection, tmpComposer);
 		ItemProcessor<PerspectiveImage> tmpIP = imageCollection;
 		imageILP = new ItemListPanel<>(imageItemHandler, tmpIP, true);
 		imageILP.setSortingEnabled(true);
-		JTable spectrumTable = imageILP.getTable();
-		spectrumTable.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
-//		spectrumTable.addMouseListener(new ImageTablePopupListener<>(spectrumCollection, boundaryCollection, spectrumPopupMenu, spectrumTable));
-
-		return spectrumTable;
+		JTable imageTable = imageILP.getTable();
+		imageTable.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
+		imageTable.addMouseListener(new TablePopupHandler(imageCollection, popupMenu));
+		return imageTable;
     }
 
     public JTable getResultList()
@@ -256,5 +277,17 @@ public class ImageListTableView extends JPanel
 	public JButton getSaveImageButton()
 	{
 		return saveImageButton;
+	}
+
+
+	public JButton getColorImageButton()
+	{
+		return colorImageButton;
+	}
+
+
+	public JButton getImageCubeButton()
+	{
+		return imageCubeButton;
 	}
 }

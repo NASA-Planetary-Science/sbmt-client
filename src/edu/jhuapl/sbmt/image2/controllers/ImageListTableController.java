@@ -1,22 +1,22 @@
 package edu.jhuapl.sbmt.image2.controllers;
 
-import javax.swing.JPanel;
-
 import edu.jhuapl.sbmt.image2.model.PerspectiveImageCollection;
 import edu.jhuapl.sbmt.image2.ui.table.ImageListTableView;
+
+import glum.gui.action.PopupMenu;
 
 public class ImageListTableController
 {
 	ImageListTableView tablePanel;
 
-	public ImageListTableController(PerspectiveImageCollection collection)
+	public ImageListTableController(PerspectiveImageCollection collection, PopupMenu popupMenu)
 	{
-		this.tablePanel = new ImageListTableView(collection);
+		this.tablePanel = new ImageListTableView(collection, popupMenu);
 		this.tablePanel.setup();
 	}
 
 
-	public JPanel getPanel()
+	public ImageListTableView getPanel()
 	{
 		return tablePanel;
 	}

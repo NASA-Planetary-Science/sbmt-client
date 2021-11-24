@@ -29,6 +29,8 @@ public class ImageListItemHandler extends BasicItemHandler<PerspectiveImage, Ima
 		{
 			case Map:
 				return imageCollection.getImageMapped(image);
+			case Status:
+				return imageCollection.getImageStatus(image);
 			case Offlimb:
 				return imageCollection.getImageOfflimbShowing(image);
 			case Frustum:
@@ -41,6 +43,10 @@ public class ImageListItemHandler extends BasicItemHandler<PerspectiveImage, Ima
 				return FilenameUtils.getName(image.getFilename());
 			case Date:	//this is till LONG coming from the server, so Date is right here
 				return image.getDate().toInstant().toString();
+			case Source:
+				return imageCollection.getImageOrigin(image);
+			case Dimension:
+				return imageCollection.getImageNumberOfLayers(image);
 			default:
 				break;
 		}

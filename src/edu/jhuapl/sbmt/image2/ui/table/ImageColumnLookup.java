@@ -8,5 +8,8 @@ public enum ImageColumnLookup
 	Boundary,
 	Id,
 	Filename,
-	Date;
+	Date,
+	Status,
+	Source,
+	Dimension;
 }

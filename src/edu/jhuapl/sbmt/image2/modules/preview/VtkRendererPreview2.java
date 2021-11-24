@@ -52,7 +52,6 @@ import edu.jhuapl.sbmt.image2.modules.preview.VtkRendererPreview2.RenderableImag
 import edu.jhuapl.sbmt.image2.modules.rendering.LayerRotationOperator;
 import edu.jhuapl.sbmt.image2.modules.rendering.RenderableImage;
 import edu.jhuapl.sbmt.image2.modules.rendering.RenderableImageGenerator;
-import edu.jhuapl.sbmt.image2.modules.rendering.SceneBuilderOperator;
 import edu.jhuapl.sbmt.image2.pipeline.IPipeline;
 import edu.jhuapl.sbmt.image2.pipeline.operator.IPipelineOperator;
 import edu.jhuapl.sbmt.image2.pipeline.publisher.IPipelinePublisher;
@@ -83,7 +82,7 @@ public class VtkRendererPreview2 extends BasePipelineSubscriber<vtkActor>
 		public RenderableImagesPipeline(String[] imageFiles, String[] pointingFiles) throws Exception
 		{
 			IPipelinePublisher<Layer> reader = new BuiltInFitsReader("/Users/steelrj1/Desktop/dart_717891977_782_01.fits", new double[] {-32768.0, -32767.0, 4095.0});
-			LayerRotationOperator rotationOperator = new LayerRotationOperator();
+			LayerRotationOperator rotationOperator = new LayerRotationOperator(270);
 
 			List<Layer> updatedLayers = Lists.newArrayList();
 			reader
@@ -343,18 +342,18 @@ class RendererPreviewPanel2 extends ModelInfoWindow implements MouseListener, Mo
 		//*************************
 		IPipelinePublisher<Pair<List<SmallBodyModel>, List<RenderableImage>>> sceneObjects = Publishers.formPair(Just.of(updatedBodies), Just.of(renderableImages));
 
-		//***************************************************************************
-		//Pass them into the scene builder to perform intersection calculations
-		//***************************************************************************
-		IPipelineOperator<Pair<List<SmallBodyModel>, List<RenderableImage>>, vtkActor> sceneBuilder = new SceneBuilderOperator();
-
-		//*****************************************
-		//Throw them to inputs for the preview tool
-		//*****************************************
-		sceneObjects
-			.operate(sceneBuilder) 	//feed the zipped sources to scene builder operator
-			.subscribe(Sink.of(inputs))		//subscribe to the scene builder with the preview
-			.run();
+//		//***************************************************************************
+//		//Pass them into the scene builder to perform intersection calculations
+//		//***************************************************************************
+//		IPipelineOperator<Pair<List<SmallBodyModel>, List<RenderableImage>>, vtkActor> sceneBuilder = new SceneBuilderOperator();
+//
+//		//*****************************************
+//		//Throw them to inputs for the preview tool
+//		//*****************************************
+//		sceneObjects
+//			.operate(sceneBuilder) 	//feed the zipped sources to scene builder operator
+//			.subscribe(Sink.of(inputs))		//subscribe to the scene builder with the preview
+//			.run();
 	}
 
 //	private void runBodyPositionUpdate(double time, List<vtkActor> inputs) throws Exception
