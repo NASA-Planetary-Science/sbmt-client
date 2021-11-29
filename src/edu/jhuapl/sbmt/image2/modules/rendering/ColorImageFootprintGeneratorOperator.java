@@ -4,6 +4,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.beust.jcommander.internal.Lists;
+
 import vtk.vtkGenericCell;
 import vtk.vtkImageData;
 import vtk.vtkPolyData;
@@ -16,12 +18,13 @@ import edu.jhuapl.saavtk.util.MathUtil;
 import edu.jhuapl.saavtk.util.PolyDataUtil;
 import edu.jhuapl.saavtk.util.VtkDataTypes;
 import edu.jhuapl.sbmt.client.SmallBodyModel;
-import edu.jhuapl.sbmt.image2.model.PerspectiveImage;
 import edu.jhuapl.sbmt.image2.pipeline.operator.BasePipelineOperator;
+import edu.jhuapl.sbmt.image2.pipeline.publisher.Just;
+import edu.jhuapl.sbmt.image2.pipeline.subscriber.Sink;
 import edu.jhuapl.sbmt.model.image.ColorImage.Chromatism;
 import edu.jhuapl.sbmt.model.image.ColorImage.NoOverlapException;
 
-public class ColorImageFootprintGeneratorOperator extends BasePipelineOperator<PerspectiveImage, vtkImageData>
+public class ColorImageFootprintGeneratorOperator extends BasePipelineOperator<RenderableImage, vtkImageData>
 {
 	private List<SmallBodyModel> smallBodyModels;
 
@@ -42,9 +45,25 @@ public class ColorImageFootprintGeneratorOperator extends BasePipelineOperator<P
 	    double greenScale = 1.0;
 	    double blueScale = 1.0;
 
-		PerspectiveImage redImage = inputs.get(0);
-		PerspectiveImage greenImage = inputs.get(1);
-		PerspectiveImage blueImage = inputs.get(2);
+		RenderableImage redImage = inputs.get(0);
+		RenderableImage greenImage = inputs.get(1);
+		RenderableImage blueImage = inputs.get(2);
+
+		List<vtkImageData> imageDatas = Lists.newArrayList();
+		for (RenderableImage image : inputs)
+		{
+			List<vtkImageData> imageData = Lists.newArrayList();
+			Just.of(image.getLayer())
+				.operate(new VtkImageRendererOperator())
+				.subscribe(Sink.of(imageData))
+				.run();
+			imageDatas.addAll(imageData);
+		}
+
+		float[][] redPixelData = ImageDataUtil.vtkImageDataToArray2D(imageDatas.get(0), 0);
+		float[][] greenPixelData = ImageDataUtil.vtkImageDataToArray2D(imageDatas.get(1), 0);
+		float[][] bluePixelData = ImageDataUtil.vtkImageDataToArray2D(imageDatas.get(2), 0);
+
 
 		vtkImageData colorImage = new vtkImageData();
         int imageWidth = redImage.getImageWidth();
@@ -54,13 +73,42 @@ public class ColorImageFootprintGeneratorOperator extends BasePipelineOperator<P
         colorImage.SetOrigin(0.0, 0.0, 0.0);
         colorImage.AllocateScalars(VtkDataTypes.VTK_UNSIGNED_CHAR, 3);
 
-		Frustum redFrustum = redImage.getFrustum(redImageSlice);
-        Frustum greenFrustum = greenImage.getFrustum(greenImageSlice);
-        Frustum blueFrustum = blueImage.getFrustum(blueImageSlice);
+        double[] spacecraftPositionAdjustedRed = redImage.getPointing().getSpacecraftPosition();
+    	double[] frustum1AdjustedRed = redImage.getPointing().getFrustum1();
+    	double[] frustum2AdjustedRed = redImage.getPointing().getFrustum2();
+    	double[] frustum3AdjustedRed = redImage.getPointing().getFrustum3();
+    	double[] frustum4AdjustedRed = redImage.getPointing().getFrustum4();
+    	Frustum redFrustum = new Frustum(spacecraftPositionAdjustedRed,
+						    			frustum1AdjustedRed,
+						    			frustum3AdjustedRed,
+						    			frustum4AdjustedRed,
+						    			frustum2AdjustedRed);
 
-        double[] redRange = redImage.getScalarRange(redImageSlice);
-        double[] greenRange = greenImage.getScalarRange(greenImageSlice);
-        double[] blueRange = blueImage.getScalarRange(blueImageSlice);
+    	double[] spacecraftPositionAdjustedGreen = greenImage.getPointing().getSpacecraftPosition();
+    	double[] frustum1AdjustedGreen = greenImage.getPointing().getFrustum1();
+    	double[] frustum2AdjustedGreen = greenImage.getPointing().getFrustum2();
+    	double[] frustum3AdjustedGreen = greenImage.getPointing().getFrustum3();
+    	double[] frustum4AdjustedGreen = greenImage.getPointing().getFrustum4();
+    	Frustum greenFrustum = new Frustum(spacecraftPositionAdjustedGreen,
+						    			frustum1AdjustedGreen,
+						    			frustum3AdjustedGreen,
+						    			frustum4AdjustedGreen,
+						    			frustum2AdjustedGreen);
+
+    	double[] spacecraftPositionAdjustedBlue = blueImage.getPointing().getSpacecraftPosition();
+    	double[] frustum1AdjustedBlue = blueImage.getPointing().getFrustum1();
+    	double[] frustum2AdjustedBlue = blueImage.getPointing().getFrustum2();
+    	double[] frustum3AdjustedBlue = blueImage.getPointing().getFrustum3();
+    	double[] frustum4AdjustedBlue = blueImage.getPointing().getFrustum4();
+    	Frustum blueFrustum = new Frustum(spacecraftPositionAdjustedBlue,
+						    			frustum1AdjustedBlue,
+						    			frustum3AdjustedBlue,
+						    			frustum4AdjustedBlue,
+						    			frustum2AdjustedBlue);
+
+        double[] redRange = imageDatas.get(0).GetScalarRange();
+        double[] greenRange = imageDatas.get(1).GetScalarRange();
+        double[] blueRange = imageDatas.get(2).GetScalarRange();
 
         double redfullRange = redRange[1] - redRange[0];
         double reddx = redfullRange / 255.0;
@@ -85,8 +133,10 @@ public class ColorImageFootprintGeneratorOperator extends BasePipelineOperator<P
         frustums.add(greenFrustum);
         frustums.add(blueFrustum);
 
+        vtkPolyData shiftedFootprint;
         for (SmallBodyModel smallBodyModel : smallBodyModels)
         {
+        	shiftedFootprint = new vtkPolyData();
 	        vtkPolyData footprint = smallBodyModel.computeMultipleFrustumIntersection(frustums);
 
 	        if (footprint == null)
@@ -103,7 +153,7 @@ public class ColorImageFootprintGeneratorOperator extends BasePipelineOperator<P
 	        PolyDataUtil.generateTextureCoordinates(redFrustum, IMAGE_WIDTH, IMAGE_HEIGHT, footprint);
 
 	        shiftedFootprint.DeepCopy(footprint);
-	        PolyDataUtil.shiftPolyDataInNormalDirection(shiftedFootprint, getOffset());
+	        PolyDataUtil.shiftPolyDataInNormalDirection(shiftedFootprint, 0.0001);	//TODO: was getOffset()
 
 	        // Now compute a color image with each channel one of these images.
 	        // To do that go through each pixel of the red image, and intersect a ray into the asteroid in

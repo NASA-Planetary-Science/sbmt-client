@@ -11,13 +11,13 @@ import edu.jhuapl.sbmt.image2.api.PixelDouble;
 import edu.jhuapl.sbmt.image2.impl.PixelDoubleFactory;
 import edu.jhuapl.sbmt.image2.pipeline.operator.BasePipelineOperator;
 
-public class VtkImageRenderer//<InputType extends Layer, OutputType extends vtkImageData>
+public class VtkImageRendererOperator
 		extends BasePipelineOperator<Layer, vtkImageData>
 {
 	vtkImageData output;
 	PixelDoubleFactory pixelDoubleFactory;
 
-	public VtkImageRenderer()
+	public VtkImageRendererOperator()
 	{
 		pixelDoubleFactory = new PixelDoubleFactory();
 	}

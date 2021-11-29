@@ -41,7 +41,7 @@ import edu.jhuapl.saavtk.util.IntensityRange;
 import edu.jhuapl.sbmt.image2.api.Layer;
 import edu.jhuapl.sbmt.image2.modules.rendering.VtkImageContrastPipeline;
 import edu.jhuapl.sbmt.image2.modules.rendering.VtkImageMaskingPipeline;
-import edu.jhuapl.sbmt.image2.modules.rendering.VtkImageRenderer;
+import edu.jhuapl.sbmt.image2.modules.rendering.VtkImageRendererOperator;
 import edu.jhuapl.sbmt.image2.pipeline.publisher.IPipelinePublisher;
 import edu.jhuapl.sbmt.image2.pipeline.publisher.Just;
 import edu.jhuapl.sbmt.image2.pipeline.subscriber.IPipelineSubscriber;
@@ -252,7 +252,7 @@ class ImagePreviewPanel extends ModelInfoWindow implements MouseListener, MouseM
 		List<vtkImageData> displayedImages = new ArrayList<vtkImageData>();
 		IPipelinePublisher<Layer> reader = new Just<Layer>(layer);
 		reader.
-			operate(new VtkImageRenderer()).
+			operate(new VtkImageRendererOperator()).
 			subscribe(new Sink<vtkImageData>(displayedImages)).run();
 		displayedImage = displayedImages.get(0);
 		contrastController.setImageData(displayedImage);

@@ -47,7 +47,7 @@ public class RenderableImageFootprintOperator extends BasePipelineOperator<Rende
 						    			frustum2Adjusted);
 
 
-        VtkImageRenderer imageRenderer = new VtkImageRenderer();
+        VtkImageRendererOperator imageRenderer = new VtkImageRendererOperator();
         List<vtkImageData> imageData = Lists.newArrayList();
         Just.of(renderableImage.getLayer())
         	.operate(imageRenderer)
