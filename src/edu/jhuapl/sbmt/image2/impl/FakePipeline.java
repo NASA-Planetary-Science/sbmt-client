@@ -1,13 +1,20 @@
 package edu.jhuapl.sbmt.image2.impl;
 
+import java.io.PrintStream;
 import java.util.List;
 import java.util.function.Function;
 
 import edu.jhuapl.sbmt.image2.api.Layer;
 import edu.jhuapl.sbmt.image2.api.Pixel;
+import edu.jhuapl.sbmt.image2.api.PixelDouble;
 import edu.jhuapl.sbmt.image2.api.PixelVector;
-import edu.jhuapl.sbmt.image2.impl.LayerDoubleFactory.DoubleGetter2d;
-import edu.jhuapl.sbmt.image2.impl.LayerDoubleFactory.DoubleGetter3d;
+import edu.jhuapl.sbmt.image2.impl.BuilderBase.VectorRangeGetter;
+import edu.jhuapl.sbmt.image2.impl.DoubleBuilderBase.DoubleGetter2d;
+import edu.jhuapl.sbmt.image2.impl.DoubleBuilderBase.DoubleGetter3d;
+import edu.jhuapl.sbmt.image2.impl.DoubleBuilderBase.DoubleRangeGetter;
+import edu.jhuapl.sbmt.image2.impl.DoubleBuilderBase.ScalarValidityChecker;
+import edu.jhuapl.sbmt.image2.impl.DoubleBuilderBase.VectorValidityChecker;
+import edu.jhuapl.sbmt.image2.impl.DoubleGetterAdaptor.IJtoSingleIndex;
 import edu.jhuapl.sbmt.image2.impl.LayerTransformFactory.ForwardingLayer;
 
 /**
@@ -23,11 +30,11 @@ public abstract class FakePipeline
     /**
      * Factories for layers, pixels, and transforms.
      */
-    protected static final LayerDoubleFactory LayerFactory = new LayerDoubleFactory();
     protected static final PixelDoubleFactory PixelScalarFactory = new PixelDoubleFactory();
     protected static final PixelVectorDoubleFactory PixelVectorFactory = new PixelVectorDoubleFactory();
     protected static final LayerTransformFactory TransformFactory = new LayerTransformFactory();
     protected static final LayerDoubleTransformFactory DoubleTransformFactory = new LayerDoubleTransformFactory();
+    protected static final DoubleGetterAdaptor DoubleGetters = new DoubleGetterAdaptor();
 
     private final String pipelineTitle;
     private Function<Layer, Layer> transform;
@@ -98,12 +105,12 @@ public abstract class FakePipeline
 
     protected Layer createScalarLayer()
     {
-        return ofScalar(TestISize, TestJSize, testScalarChecker(TestISize));
+        return ofScalar(TestISize, TestJSize, testScalarChecker(TestISize, TestJSize), null);
     }
 
     protected Layer createVectorLayer()
     {
-        return ofVector(TestISize, TestJSize, TestKSize, testVectorChecker(TestISize, TestJSize));
+        return ofVector(TestISize, TestJSize, TestKSize, testVectorChecker(TestISize, TestJSize), null);
     }
 
     /**
@@ -120,17 +127,44 @@ public abstract class FakePipeline
      * @param iSize number of in-bounds I index values
      * @param jSize number of in-bounds J index values
      * @param checker validity checker, or null for all in-bound data valid
+     * @param rangeGetter range getter or null for no range getter added
      * @return the layer
      */
-    protected Layer ofScalar(int iSize, int jSize, ValidityCheckerDoubleFactory.ScalarValidityChecker checker)
+    protected Layer ofScalar(int iSize, int jSize, DoubleBuilderBase.ScalarValidityChecker checker, DoubleRangeGetter rangeGetter)
     {
-        DoubleGetter2d doubleGetter = (i, j) -> {
-            return LayerFromDoubleCollection1dFactory.ColumnIRowJ.getIndex(i, j, iSize, jSize);
-        };
+        DoubleGetter2d doubleGetter = dataGenerator(iSize);
 
-        return checker != null ? //
-                LayerFactory.ofScalar(doubleGetter, iSize, jSize, checker) : //
-                LayerFactory.ofScalar(doubleGetter, iSize, jSize);
+        LayerDoubleBuilder builder = new LayerDoubleBuilder().doubleGetter(doubleGetter, iSize, jSize);
+
+        if (checker != null)
+        {
+            builder.checker(checker);
+        }
+
+        if (rangeGetter != null)
+        {
+            builder.rangeGetter(rangeGetter);
+        }
+
+        return builder.build();
+    }
+
+    protected DoubleGetter2d dataGenerator(int iSize)
+    {
+        IJtoSingleIndex dataGenerator = DoubleGetters.columnIrowJ(iSize);
+
+        return (i, j) -> {
+            return dataGenerator.getIndex(i, j);
+        };
+    }
+
+    protected DoubleGetter3d dataGenerator(int iSize, int jSize)
+    {
+        IJtoSingleIndex dataGenerator = DoubleGetters.columnIrowJ(iSize);
+
+        return (i, j, k) -> {
+            return k * iSize * jSize + dataGenerator.getIndex(i, j);
+        };
     }
 
     /**
@@ -149,28 +183,26 @@ public abstract class FakePipeline
      * @param jSize number of in-bounds J index values
      * @param kSize number of in-bounds K index values
      * @param checker validity checker, or null for all in-bound data valid
+     * @param rangeGetter range getter, or null for no range checking
      * @return the layer
      */
-    protected Layer ofVector(int iSize, int jSize, int kSize, ValidityCheckerDoubleFactory.ScalarValidityChecker checker)
+    protected Layer ofVector(int iSize, int jSize, int kSize, VectorValidityChecker checker, VectorRangeGetter rangeGetter)
     {
-        DoubleGetter3d doubleGetter = (i, j, k) -> {
-            return kSize * LayerFromDoubleCollection1dFactory.ColumnIRowJ.getIndex(i, j, iSize, jSize) + k;
-        };
+        DoubleGetter3d doubleGetter = dataGenerator(iSize, jSize);
 
-        return checker != null ? //
-                LayerFactory.ofVector(doubleGetter, iSize, jSize, kSize, checker) : //
-                LayerFactory.ofVector(doubleGetter, iSize, jSize, kSize);
-    }
+        LayerDoubleBuilder builder = new LayerDoubleBuilder().doubleGetter(doubleGetter, iSize, jSize, kSize);
 
-    protected Layer ofVector(int iSize, int jSize, int kSize, ValidityCheckerDoubleFactory.VectorValidityChecker checker)
-    {
-        DoubleGetter3d doubleGetter = (i, j, k) -> {
-            return kSize * LayerFromDoubleCollection1dFactory.ColumnIRowJ.getIndex(i, j, iSize, jSize) + k;
-        };
+        if (checker != null)
+        {
+            builder.checker(checker);
+        }
 
-        return checker != null ? //
-                LayerFactory.ofVector(doubleGetter, iSize, jSize, kSize, checker) : //
-                LayerFactory.ofVector(doubleGetter, iSize, jSize, kSize);
+        if (rangeGetter != null)
+        {
+            builder.rangeGetter(rangeGetter);
+        }
+
+        return builder.build();
     }
 
     protected abstract void displayCreatedLayer(Layer layer);
@@ -179,16 +211,21 @@ public abstract class FakePipeline
 
     protected void displayLayer(String message, Layer layer, int displayKsize, Double invalidValueSubstitute)
     {
-        System.out.println("************************************************");
-        System.out.println(message);
-        System.out.println(getPipelineTitle(layer));
-        System.out.println("************************************************");
+        displayLayer(System.out, message, layer, displayKsize, invalidValueSubstitute);
+    }
+
+    protected void displayLayer(PrintStream s, String message, Layer layer, int displayKsize, Double invalidValueSubstitute)
+    {
+        s.println("************************************************");
+        s.println(message);
+        s.println(getPipelineTitle(layer));
+        s.println("************************************************");
 
         Pixel pixel = displayKsize == 0 ? //
                 PixelScalarFactory.of(0.0, TestOOBValue, invalidValueSubstitute) : //
                 PixelVectorFactory.of(displayKsize, TestOOBValue, invalidValueSubstitute);
         display("Loaded layer:", layer, pixel);
-        System.out.println();
+        s.println();
     }
 
     /**
@@ -202,6 +239,7 @@ public abstract class FakePipeline
     protected final void display(String message, Layer layer, Pixel pixel)
     {
         System.out.println(message);
+        System.out.println(layer);
         for (int row = -1; row <= layer.jSize(); ++row)
         {
             StringBuilder builder = new StringBuilder();
@@ -252,12 +290,17 @@ public abstract class FakePipeline
 
     /**
      * Arbitrary scalar validity checker -- mark every 5th position "invalid",
-     * starting with column 4.
+     * starting with column 4. Also mark the last (largest) item invalid.
+     *
+     * @param iSize the i size.
+     * @param jSize the j size.
      */
-    protected ValidityCheckerDoubleFactory.ScalarValidityChecker testScalarChecker(int iSize)
+    protected DoubleBuilderBase.ScalarValidityChecker testScalarChecker(int iSize, int jSize)
     {
         return (i, j, value) -> {
-            boolean isValid = (j * iSize + i + 1) % 5 != 0;
+            boolean isValid = (j * iSize + i + 1) % 5 != 0 // Multiple of 5.
+                    && (i + 1) * (j + 1) != iSize * jSize; // Last item.
+
             return isValid;
         };
     };
@@ -266,9 +309,9 @@ public abstract class FakePipeline
      * Arbitrary vector validity checker. Use the scalar checker but also
      * invalidate every value that is a multiple of 5.
      */
-    protected ValidityCheckerDoubleFactory.VectorValidityChecker testVectorChecker(int iSize, int jSize)
+    protected DoubleBuilderBase.VectorValidityChecker testVectorChecker(int iSize, int jSize)
     {
-        ValidityCheckerDoubleFactory.ScalarValidityChecker scalarChecker = testScalarChecker(iSize);
+        DoubleBuilderBase.ScalarValidityChecker scalarChecker = testScalarChecker(iSize, jSize);
 
         return (i, j, k, value) -> {
             // Return false if the scalar checker returns false.
@@ -528,6 +571,243 @@ public abstract class FakePipeline
     }
 
     /**
+     * Test creating a layer using the inputs to control how to get ranges.
+     *
+     * @param min minimum value to set in the range getter; may be null for no
+     *            minimum
+     * @param max maximum value to set in the range getter; may be null for no
+     *            maximum
+     * @param checkLayerValues if true, compute range using values from the
+     *            layer
+     * @param checkValidity if true (and if using layer values to compute
+     *            ranges), ignore pixels with isValid false case.
+     * @param expectedMin the expected minimum value the layer should return via
+     *            the {@link Layer#getRange(Pixel, Pixel)} method, taking into
+     *            account all the other specified parameters
+     * @param expectedMax the expected maximum value the layer should return via
+     *            the {@link Layer#getRange(Pixel, Pixel)} method, taking into
+     *            account all the other specified parameters
+     * @return the pipeline
+     */
+    protected static FakePipeline testScalarRange(Double min, Double max, boolean checkLayerValues, boolean checkValidity, double expectedMin, double expectedMax)
+    {
+        return new FakePipeline("Use input range [" + min + ", " + max + "] to create an output layer whose range shoiuld be [" + expectedMin + ", " + expectedMax + "]", TransformFactory.identity()) {
+
+            @Override
+            protected Layer createLayer()
+            {
+                RangeGetterDoubleBuilder b = new RangeGetterDoubleBuilder();
+
+                DoubleGetter2d dataGenerator = dataGenerator(TestISize);
+
+                if (checkLayerValues)
+                {
+                    b.getter(dataGenerator, TestISize, TestJSize);
+                }
+
+                ScalarValidityChecker checker = checkValidity ? testScalarChecker(TestISize, TestJSize) : null;
+
+                if (checker != null)
+                {
+                    b.checker(checker);
+                }
+
+                if (min != null)
+                {
+                    b.min(min);
+                }
+
+                if (max != null)
+                {
+                    b.max(max);
+                }
+
+                return ofScalar(TestISize, TestJSize, checker, b.build());
+            }
+
+            @Override
+            protected void displayCreatedLayer(Layer layer)
+            {
+
+            }
+
+            @Override
+            protected void displayProcessedLayer(Layer layer)
+            {
+                try
+                {
+                    PixelDouble pMin = PixelScalarFactory.of(Double.NaN, Double.NaN, null);
+                    PixelDouble pMax = PixelScalarFactory.of(Double.NaN, Double.NaN, null);
+                    layer.getRange(pMin, pMax);
+
+                    boolean displayDetails = false;
+                    double dMin = pMin.get();
+                    if (Double.compare(dMin, expectedMin) != 0)
+                    {
+                        System.err.println("Minimum was " + dMin + ", not " + expectedMin);
+                        displayDetails = true;
+                    }
+
+                    double dMax = pMax.get();
+                    if (Double.compare(dMax, expectedMax) != 0)
+                    {
+                        System.err.println("Maximum was " + dMax + ", not " + expectedMax);
+                        displayDetails = true;
+                    }
+                    if (displayDetails)
+                    {
+                        displayLayer(System.err, "Invalid range reported for scalar layer:", layer, 1, null);
+                    }
+                    else
+                    {
+                        System.out.println(layer);
+                    }
+                }
+                catch (Exception e)
+                {
+                    displayLayer(System.err, "Unexpected exception trying to get/check range for scalar layer:", layer, 1, null);
+                    e.printStackTrace();
+                }
+
+            }
+
+        };
+    }
+
+    /**
+     * Test creating a layer using the inputs to control how to get ranges.
+     *
+     * @param min minimum value to set in the range getter; may be null for no
+     *            minimum
+     * @param max maximum value to set in the range getter; may be null for no
+     *            maximum
+     * @param checkLayerValues if true, compute range using values from the
+     *            layer
+     * @param checkValidity if true (and if using layer values to compute
+     *            ranges), ignore pixels with isValid false case.
+     * @param expectedMin the expected minimum value the layer should return via
+     *            the {@link Layer#getRange(Pixel, Pixel)} method, taking into
+     *            account all the other specified parameters
+     * @param expectedMax the expected maximum value the layer should return via
+     *            the {@link Layer#getRange(Pixel, Pixel)} method, taking into
+     *            account all the other specified parameters
+     * @return the pipeline
+     */
+    protected static FakePipeline testVectorRange(Double min, Double max, boolean checkLayerValues, boolean checkValidity, double[] expectedMin, double[] expectedMax)
+    {
+        StringBuilder title = new StringBuilder();
+        title.append("Use input range [");
+        title.append(min);
+        title.append(", ");
+        title.append(max);
+        title.append("] to create an output vector layer whose range should be [");
+        appendArray(title, expectedMin);
+        title.append(", ");
+        appendArray(title, expectedMax);
+        title.append("]");
+
+        return new FakePipeline(title.toString(), TransformFactory.identity()) {
+
+            @Override
+            protected Layer createLayer()
+            {
+                RangeGetterVectorDoubleFactory f = new RangeGetterVectorDoubleFactory();
+
+                DoubleGetter3d dataGenerator = dataGenerator(TestISize, TestJSize);
+
+                VectorValidityChecker checker = checkValidity ? testVectorChecker(TestISize, TestJSize) : null;
+
+                DoubleRangeGetter overallRange = null;
+                if ( min != null || max != null) {
+                    RangeGetterDoubleBuilder b = new RangeGetterDoubleBuilder();
+                    if (min != null) {
+                        b.min(min);
+                    }
+                    if (max != null) {
+                        b.max(max);
+                    }
+
+                    overallRange = b.build();
+                }
+
+                return ofVector(TestISize, TestJSize, TestKSize, checker, f.of(dataGenerator, checker, overallRange, TestISize, TestJSize, TestKSize));
+            }
+
+            @Override
+            protected void displayCreatedLayer(Layer layer)
+            {
+
+            }
+
+            @Override
+            protected void displayProcessedLayer(Layer layer)
+            {
+                List<Integer> sizes = layer.dataSizes();
+
+                try
+                {
+                    PixelVector pMin = PixelVectorFactory.of(sizes.get(0), TestOOBValue, TestInvalidValueSubstitute);
+                    PixelVector pMax = PixelVectorFactory.of(sizes.get(0), TestOOBValue, TestInvalidValueSubstitute);
+                    layer.getRange(pMin, pMax);
+
+                    boolean displayDetails = false;
+                    for (int k = 0; k < sizes.get(0); ++k)
+                    {
+                        double dMin = ((PixelDouble) pMin.get(k)).get();
+                        if (Double.compare(dMin, expectedMin[k]) != 0)
+                        {
+                            System.err.println("Minimum[" + k + "] was " + dMin + ", not " + expectedMin[k]);
+                            displayDetails = true;
+                        }
+                        double dMax = ((PixelDouble) pMax.get(k)).get();
+                        if (Double.compare(dMax, expectedMax[k]) != 0)
+                        {
+                            System.err.println("Maximum [" + k + "] was " + dMax + ", not " + expectedMax[k]);
+                            displayDetails = true;
+                        }
+                    }
+                    if (displayDetails)
+                    {
+                        displayLayer(System.err, "Invalid range reported for vector layer:", layer, sizes.get(0), null);
+                    }
+                    else
+                    {
+                        System.out.println(layer);
+                    }
+                }
+                catch (Exception e)
+                {
+                    displayLayer(System.err, "Unexpected exception trying to get/check range for vector layer:", layer, sizes.get(0), null);
+                    e.printStackTrace();
+                }
+
+            }
+
+        };
+    }
+
+    protected static void appendArray(StringBuilder b, double[] array)
+    {
+        if (array != null)
+        {
+            b.append("(");
+            String delim = "";
+            for (double d : array)
+            {
+                b.append(delim);
+                delim = ", ";
+                b.append(d);
+            }
+            b.append(")");
+        }
+        else
+        {
+            b.append("null");
+        }
+
+    }
+
+    /**
      * Show a start-up message for the overall pipeline (same for each run).
      */
     protected static void displayStartupMessage()
@@ -539,7 +819,8 @@ public abstract class FakePipeline
         System.out.println();
         System.out.println("The elements themselves are a ramp of values from 0 through iSize * jSize * kSize - 1,");
         System.out.println("where iSize, jSize, kSize are the X, Y, and Z dimensions. kSize == 1 for a scalar, > 1 for a vector.");
-        System.out.println("Every 5th element in each layer, starting with i = 4, j = 0, should be marked invalid \"(I)\".");
+        System.out.println("Every 5th element in each scalar layer, starting with i = 4, j = 0, should be marked invalid \"(I)\".");
+        System.out.println("Also the last element in each scalar layer should be marked invalid \"(I)\".");
         System.out.println();
         System.out.println("      x(i) ->");
         System.out.println(" y(j)");
@@ -644,6 +925,41 @@ public abstract class FakePipeline
 
         System.out.println("Show what happens when a scalar layer is resampled from 6x4 to 6x12, using linear interpolation.");
         scalarToScalar(null, DoubleTransformFactory.linearInterpolate(6, 12)).run();
+
+        // Range tests.
+        System.out.println("Show what happens with a fixed null range (treated as NaN).");
+        testScalarRange(null, null, false, true, Double.NaN, Double.NaN).run();
+
+        System.out.println("Show what happens with a fixed NaN range (same effect).");
+        testScalarRange(Double.NaN, Double.NaN, false, true, Double.NaN, Double.NaN).run();
+
+        System.out.println("Show what happens with a fixed, specified range.");
+        testScalarRange(9.5, 10.5, false, true, 9.5, 10.5).run();
+
+        System.out.println("Show what happens with a fixed minimum only.");
+        testScalarRange(9.5, null, false, true, 9.5, Double.NaN).run();
+
+        System.out.println("Show what happens with a fixed maximum only.");
+        testScalarRange(null, 10.5, false, true, Double.NaN, 10.5).run();
+
+        System.out.println("Show what happens computing the range only from valid entries.");
+        testScalarRange(null, null, true, true, 0.0, 22.0).run();
+
+        System.out.println("Show what happens computing the range only from ALL entries, valid or invalid.");
+        testScalarRange(null, null, true, false, 0.0, 23.0).run();
+
+        System.out.println("Show what happens when using both valid entries and specified range, when specified max exceeds maximum entry.");
+        testScalarRange(9.5, 22.5, true, true, 0.0, 22.5).run();
+
+        System.out.println("Show what happens when using both valid entries and specified range, when specified min falls short of minimum entry.");
+        testScalarRange(-0.5, 10.5, true, true, -0.5, 22.0).run();
+
+        System.out.println("Show what happens when using both valid entries and specified range, when specified range uses NaNs");
+        testScalarRange(Double.NaN, Double.NaN, true, true, 0.0, 22.0).run();
+
+        System.out.println("Show what happens when using all entries and specified range, when specified range uses NaNs");
+        testVectorRange(11.5, 35.5, true, true, new double[] { 1.0, 11.5, 11.5 }, new double[] { 35.5, 46.0, 69.0 }).run();
+
     }
 
 }

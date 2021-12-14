@@ -53,6 +53,14 @@ public abstract class BasicLayer implements Layer
             throw new IllegalArgumentException();
         }
 
+        @Override
+        public void getRange(Pixel pMin, Pixel pMax)
+        {
+            Preconditions.checkNotNull(pMin);
+            Preconditions.checkNotNull(pMax);
+            throw new IllegalArgumentException();
+        }
+
     };
 
     /**
@@ -172,7 +180,7 @@ public abstract class BasicLayer implements Layer
      * pair. If the output vector is too large, the extra elements shall be set
      * to have the out-of-bounds value, and shall be marked as out-of-bounds. If
      * the output vector is too small, implementations shall not attempt to fill
-     * elements outside its defined range.
+     * elements outside its defined index range.
      *
      * @param i the I index
      * @param j the J index
@@ -226,7 +234,7 @@ public abstract class BasicLayer implements Layer
 
     /**
      * Return a flag that indicates whether the specified index is in the
-     * half-open range [minValue, maxValue).
+     * half-open index range [minValue, maxValue).
      *
      * @param index the index value to check
      * @param minValid the minimum value for the index

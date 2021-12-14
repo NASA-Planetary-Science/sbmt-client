@@ -1,34 +1,20 @@
 package edu.jhuapl.sbmt.image2.impl;
 
+import edu.jhuapl.sbmt.image2.impl.DoubleBuilderBase.ScalarValidityChecker;
+
 public class ValidityCheckerDoubleFactory
 {
 
-    /**
-     * Checker for validity of scalar double values, based on the location
-     * and/or the value at that location.
-     */
-    @FunctionalInterface
-    public interface ScalarValidityChecker extends ValidityChecker
-    {
-        boolean test(int i, int j, double value);
-    }
-
-    /**
-     * Checker for validity of vector double values, based on the location
-     * and/or the value at that location.
-     */
-    @FunctionalInterface
-    public interface VectorValidityChecker extends ValidityChecker
-    {
-        boolean test(int i, int j, int k, double value);
-    }
+    private static final ScalarValidityChecker AllValid = (i, j, value) -> {
+        return true;
+    };;
 
     public ValidityCheckerDoubleFactory()
     {
         super();
     }
 
-    public ScalarValidityChecker of(double... invalidValues)
+    public ScalarValidityChecker scalar(double... invalidValues)
     {
 
         return (i, j, value) -> {
@@ -43,6 +29,10 @@ public class ValidityCheckerDoubleFactory
             return true;
         };
 
+    }
+
+    public ScalarValidityChecker allValid() {
+        return AllValid;
     }
 
 }

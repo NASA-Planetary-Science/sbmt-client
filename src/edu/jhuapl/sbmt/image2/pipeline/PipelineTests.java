@@ -45,16 +45,16 @@ public class PipelineTests
 
 	public PipelineTests() throws Exception
 	{
-//		test1();
+		test1();
 //		test2();
 //		test3();
 //		test4();
-		test5();
+//		test5();
 	}
 
 	private void test1() throws Exception
 	{
-		IPipelinePublisher<Layer> reader = new BuiltInFitsReader("/Users/steelrj1/Desktop/M0125990473F4_2P_IOF_DBL.FIT", new double[] {});
+		IPipelinePublisher<Layer> reader = new BuiltInFitsReader("/Users/peachjm1/jhuapl/data/eros-images/M0126013209F4_2P_IOF_DBL.FIT", new double[] {});
 		LayerLinearInterpolaterOperator linearInterpolator = new LayerLinearInterpolaterOperator(537, 412);
 //		LayerMaskOperator maskOperator = new LayerMaskOperator(14, 14, 2, 2);
 //		LayerTrimOperator trimOperator = new LayerTrimOperator(14, 14, 2, 2);
