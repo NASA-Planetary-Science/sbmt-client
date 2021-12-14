@@ -49,12 +49,14 @@ public class StateHistoryColorConfigPanel extends JPanel implements ActionListen
 	{
 		refListener = aListener;
 		this.rendererManager = rendererManager;
-		setLayout(new MigLayout("", "0[][]0", "0[][]0"));
+//		setLayout(new MigLayout("", "0[][]0", "0[][]0"));
+		setLayout(new MigLayout("", "", ""));
 
 		JLabel tmpL = new JLabel("Colorize:");
 		colorModeBox = new GComboBox<>(this, ColorMode.values());
 		add(tmpL);
-		add(colorModeBox, "growx,wrap 2");
+//		add(colorModeBox, "growx,wrap 2");
+		add(colorModeBox, "pushx,wrap");
 
 		ColorBarPainter tmpCBP = new ColorBarPainter(rendererManager.getRenderer());
 		colorMapPanel = new StateHistoryColorBarPanel(this, rendererManager, tmpCBP);
@@ -74,7 +76,8 @@ public class StateHistoryColorConfigPanel extends JPanel implements ActionListen
 			}
 		}
 
-		add(colorPanel, "growx,growy,span");
+//		add(colorPanel, "growx,growy,span");
+		add(colorPanel, "growx,span,w 50::,wrap 0");
 		// Custom initialization code
 		Runnable tmpRunnable = () -> {
 			colorPanel.getActiveCard().activate(true);

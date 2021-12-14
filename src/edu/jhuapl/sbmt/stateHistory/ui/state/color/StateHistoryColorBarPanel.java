@@ -25,7 +25,7 @@ import glum.item.ItemEventType;
 /**
  * Custom {@link ColorBarPanel} that adds support for state history color configuration.
  *
- * Originally made for Lidar by lopeznr1
+ * Originally made for Lidar by lopeznr1, customized for State History
  *
  * @author steelrj1
  */
