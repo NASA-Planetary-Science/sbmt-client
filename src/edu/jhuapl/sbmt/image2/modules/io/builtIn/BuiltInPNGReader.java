@@ -9,12 +9,14 @@ import vtk.vtkPNGReader;
 import edu.jhuapl.saavtk.util.NativeLibraryLoader;
 import edu.jhuapl.sbmt.image2.api.Layer;
 import edu.jhuapl.sbmt.image2.api.Pixel;
-import edu.jhuapl.sbmt.image2.impl.LayerDoubleFactory;
-import edu.jhuapl.sbmt.image2.impl.LayerDoubleFactory.DoubleGetter2d;
+import edu.jhuapl.sbmt.image2.impl.DoubleBuilderBase.DoubleGetter2d;
+import edu.jhuapl.sbmt.image2.impl.DoubleBuilderBase.ScalarValidityChecker;
+import edu.jhuapl.sbmt.image2.impl.LayerDoubleBuilder;
 import edu.jhuapl.sbmt.image2.impl.LayerDoubleTransformFactory;
 import edu.jhuapl.sbmt.image2.impl.LayerTransformFactory;
 import edu.jhuapl.sbmt.image2.impl.PixelDoubleFactory;
 import edu.jhuapl.sbmt.image2.impl.PixelVectorDoubleFactory;
+import edu.jhuapl.sbmt.image2.impl.RangeGetterDoubleBuilder;
 import edu.jhuapl.sbmt.image2.impl.ValidityCheckerDoubleFactory;
 import edu.jhuapl.sbmt.image2.pipeline.publisher.BasePipelinePublisher;
 
@@ -27,7 +29,7 @@ public class BuiltInPNGReader extends BasePipelinePublisher<Layer>
 
 	private String filename;
 
-	protected static final LayerDoubleFactory LayerFactory = new LayerDoubleFactory();
+//	protected static final LayerDoubleFactory LayerFactory = new LayerDoubleFactory();
 	protected static final PixelDoubleFactory PixelScalarFactory = new PixelDoubleFactory();
 	protected static final PixelVectorDoubleFactory PixelVectorFactory = new PixelVectorDoubleFactory();
 	protected static final LayerTransformFactory TransformFactory = new LayerTransformFactory();
@@ -37,7 +39,7 @@ public class BuiltInPNGReader extends BasePipelinePublisher<Layer>
 
 	int imageHeight = 0;
 	int imageWidth = 0;
-
+	private double[] fill;
 	private double[][] array2D = null;
 
 	public static void main(String[] args) throws FitsException, IOException, Exception
@@ -52,7 +54,7 @@ public class BuiltInPNGReader extends BasePipelinePublisher<Layer>
 
         loadData();
         Layer layer;
-        layer = ofScalar(imageWidth, imageHeight, null);
+        layer = ofScalar(imageWidth, imageHeight);
 //        layer = TransformFactory.rotateCCW().apply(layer);
         // layer = DoubleTransformFactory.linearInterpolate(537,
         // 412).apply(layer);
@@ -83,16 +85,39 @@ public class BuiltInPNGReader extends BasePipelinePublisher<Layer>
 
 	}
 
-	protected Layer ofScalar(int iSize, int jSize, ValidityCheckerDoubleFactory.ScalarValidityChecker checker)
+	protected Layer ofScalar(int iSize, int jSize)
 	{
+		// Make builders for both the layer and the range checker. Use the
+        // dimensions from the fits file to set I, J sizes...
+        LayerDoubleBuilder layerBuilder = new LayerDoubleBuilder();
+        RangeGetterDoubleBuilder rangeBuilder = new RangeGetterDoubleBuilder();
+
 		DoubleGetter2d doubleGetter = (i, j) ->
 		{
 			return array2D[i][j];
 		};
 
-		return checker != null ? //
-				LayerFactory.ofScalar(doubleGetter, iSize, jSize, checker) : //
-				LayerFactory.ofScalar(doubleGetter, iSize, jSize);
+		layerBuilder.doubleGetter(doubleGetter, iSize, jSize);
+	    rangeBuilder.getter(doubleGetter, iSize, jSize);
+
+	 // Both builders need to know how to check for validity as well.
+        if (fill != null && fill.length > 0)
+        {
+            ScalarValidityChecker checker = new ValidityCheckerDoubleFactory().scalar(fill);
+
+            layerBuilder.checker(checker);
+            rangeBuilder.checker(checker);
+        }
+
+        // Here's the trick: build the range getter first and inject it into the
+        // layer builder just before building the layer.
+        layerBuilder.rangeGetter(rangeBuilder.build());
+
+        return layerBuilder.build();
+
+//		return checker != null ? //
+//				LayerFactory.ofScalar(doubleGetter, iSize, jSize, checker) : //
+//				LayerFactory.ofScalar(doubleGetter, iSize, jSize);
 	}
 
 	protected void displayLayer(String message, Layer layer, int displayKsize, Double invalidValueSubstitute)
