@@ -1,12 +1,12 @@
 package edu.jhuapl.sbmt.stateHistory.ui.lidars.schedule;
 
-import edu.jhuapl.sbmt.stateHistory.model.planning.lidar.PlannedLidarTrackCollection;
+import edu.jhuapl.sbmt.stateHistory.model.planning.lidar.PlannedLidarTrackVtkCollection;
 import edu.jhuapl.sbmt.stateHistory.model.planning.lidar.PlannedLidarTrackScheduleCollection;
 
 import glum.gui.panel.itemList.BasicItemHandler;
 import glum.gui.panel.itemList.query.QueryComposer;
 
-public class PlannedLidarTrackScheduleItemHandler extends BasicItemHandler<PlannedLidarTrackCollection, PlannedLidarTrackScheduleColumnLookup>
+public class PlannedLidarTrackScheduleItemHandler extends BasicItemHandler<PlannedLidarTrackVtkCollection, PlannedLidarTrackScheduleColumnLookup>
 {
 	PlannedLidarTrackScheduleCollection plannedLidarTrackCollection;
 
@@ -20,7 +20,7 @@ public class PlannedLidarTrackScheduleItemHandler extends BasicItemHandler<Plann
 	 *
 	 */
 	@Override
-	public Object getColumnValue(PlannedLidarTrackCollection lidarTrackCollection, PlannedLidarTrackScheduleColumnLookup aEnum)
+	public Object getColumnValue(PlannedLidarTrackVtkCollection lidarTrackCollection, PlannedLidarTrackScheduleColumnLookup aEnum)
 	{
 		switch (aEnum)
 		{
@@ -45,7 +45,7 @@ public class PlannedLidarTrackScheduleItemHandler extends BasicItemHandler<Plann
 	 *
 	 */
 	@Override
-	public void setColumnValue(PlannedLidarTrackCollection lidarTrackCollection, PlannedLidarTrackScheduleColumnLookup aEnum, Object aValue)
+	public void setColumnValue(PlannedLidarTrackVtkCollection lidarTrackCollection, PlannedLidarTrackScheduleColumnLookup aEnum, Object aValue)
 	{
 		switch (aEnum)
 		{

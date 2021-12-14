@@ -111,7 +111,7 @@ public class ObservationPlanningController implements PropertyChangeListener
 		plannedDataController.addChildController(imageScheduleTableController);
 		plannedDataController.addChildController(spectrumScheduleTableController);
 		plannedDataController.addChildController(lidarScheduleTableController);
-		view.addTab("Planned Data", plannedDataController.getView());
+//		view.addTab("Planned Data", plannedDataController.getView());
 
         rendererManager.addListener((aSource, aEventType) -> {
 			if (aEventType != ItemEventType.ItemsSelected) return;

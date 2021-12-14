@@ -23,6 +23,7 @@ import edu.jhuapl.sbmt.stateHistory.model.io.SpiceKernelNotFoundException;
 import edu.jhuapl.sbmt.stateHistory.model.io.StateHistoryIOException;
 import edu.jhuapl.sbmt.stateHistory.model.io.StateHistoryModelIOHelper;
 import edu.jhuapl.sbmt.stateHistory.model.stateHistory.StateHistoryKey;
+import edu.jhuapl.sbmt.stateHistory.model.stateHistory.spice.SpiceStateHistory;
 import edu.jhuapl.sbmt.stateHistory.rendering.model.StateHistoryRendererManager;
 import edu.jhuapl.sbmt.stateHistory.ui.state.intervalGeneration.StateHistoryIntervalGenerationPanel;
 import edu.jhuapl.sbmt.stateHistory.ui.state.intervalSelection.table.StateHistoryTableView;
@@ -109,23 +110,30 @@ public class StateHistoryIntervalSelectionController
 
             if (view.getTable().getSelectedRowCount() == 1)
             {
-            	File file = CustomFileChooser.showSaveDialog(view, "Select File", "stateHistory.csv");
-            	if (file == null) return;
-                if (!FilenameUtils.getExtension(file.getName()).equalsIgnoreCase("csv")) {
-                    // remove the extension (if any) and replace it with ".csv"
-                    file = new File(file.getParentFile(), FilenameUtils.getBaseName(file.getName())+".csv");
-                }
-                StateHistory history = rendererManager.getSelectedItems().asList().get(0);
-                try
-				{
-                	StateHistoryModelIOHelper.saveIntervalToFile(bodyModel.getModelName(), history, file.getAbsolutePath());
-				}
-                catch (StateHistoryIOException e1)
-				{
-                	JOptionPane.showMessageDialog(null, e1.getMessage(), "Loading Error",
-                            JOptionPane.ERROR_MESSAGE);
-                    return;
-				}
+            	StateHistory stateHistory = rendererManager.getSelectedItems().asList().get(0);
+        		String title = "Save state history file";
+//        		File targPath = DirectoryChooser.showOpenDialog(view, title);
+        		String extension = stateHistory instanceof SpiceStateHistory ? "spicestate" : "csvstate";
+        		File targetFile = CustomFileChooser.showSaveDialog(view, title, stateHistory.getMetadata().getStateHistoryName() + "." + extension);
+        		if (targetFile == null)
+        			return;
+
+        		// Save all of the selected items into the target folder
+        		int passCnt = 0;
+        		try
+        		{
+    				StateHistoryModelIOHelper.saveIntervalToFile(bodyModel.getModelName(), stateHistory, targetFile.getAbsolutePath());
+//    															new File(targPath, stateHistory.getMetadata().getStateHistoryName()).getAbsolutePath());
+    				passCnt++;
+
+        		}
+        		catch (Exception aExp)
+        		{
+        			String errMsg = "Failed to save state history file. Failed on state history file: ";
+        			errMsg += stateHistory.getMetadata().getStateHistoryName();
+        			JOptionPane.showMessageDialog(view, errMsg, "Error Saving State History Files", JOptionPane.ERROR_MESSAGE);
+        			aExp.printStackTrace();
+        		}
             }
             else {
                 JOptionPane.showMessageDialog(null, "You must have exactly one row of the table selected to save an interval", "Error",
@@ -171,7 +179,7 @@ public class StateHistoryIntervalSelectionController
         view.getEditStateHistoryButton().addActionListener(e -> {
 
         	StateHistory history = rendererManager.getSelectedItems().asList().get(0);
-        	StateHistoryIntervalGenerationPanel genPanel = new StateHistoryIntervalGenerationPanel(history);
+        	StateHistoryIntervalGenerationPanel genPanel = new StateHistoryIntervalGenerationPanel(historyModel, history);
         	final JFrame frame = new JFrame("Edit Existing Interval...");
            	genPanel.getGetIntervalButton().addActionListener(e2 -> {
            		if (genPanel.isEditMode())

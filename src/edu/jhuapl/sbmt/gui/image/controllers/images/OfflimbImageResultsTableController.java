@@ -224,7 +224,8 @@ public class OfflimbImageResultsTableController extends ImageResultsTableControl
                 tableModel.setValueAt(false, index, offlimbTableView.getOffLimbIndex());
             }
 
-            tableModel.setValueAt(imageCollection.getImage(key).isBoundaryVisible(), index, imageResultsTableView.getBndrColumnIndex());
+            if (imageCollection.getImage(key) != null)
+            	tableModel.setValueAt(imageCollection.getImage(key).isBoundaryVisible(), index, imageResultsTableView.getBndrColumnIndex());
         }
 
     }

@@ -24,6 +24,8 @@ public class StateHistoryDisplayItemsController
 	 */
 	DisplayOptionsTableView view;
 
+	StateHistoryRendererManager rendererManager;
+
 	/**
 	 * Constructor.  Sets state properties and initializes view control panel
 	 * @param historyModel
@@ -31,6 +33,7 @@ public class StateHistoryDisplayItemsController
 	 */
 	public StateHistoryDisplayItemsController(StateHistoryRendererManager rendererManager)
 	{
+		this.rendererManager = rendererManager;
 		view = new DisplayOptionsTableView(rendererManager);
 		view.setup();
 		view.setBorder(new TitledBorder(null, "Display Items", TitledBorder.LEADING, TitledBorder.TOP, null, null));
@@ -56,6 +59,11 @@ public class StateHistoryDisplayItemsController
 	        	}
 			}
 		});
+	}
+
+	public void clearAll()
+	{
+		rendererManager.getDisplayableItems().forEach(item -> item.setVisible(false));
 	}
 
 	/**

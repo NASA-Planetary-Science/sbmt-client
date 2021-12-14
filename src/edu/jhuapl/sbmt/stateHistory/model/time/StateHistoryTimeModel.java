@@ -16,9 +16,9 @@ public class StateHistoryTimeModel
 {
 	private TimeWindow twindow;
 
-	private double et;
+	private double et = -1;
 
-	private double currentTimeFraction = 0;
+	private double currentTimeFraction = -1;
 
 	private double minFractionDisplayed = 0.0, maxFractionDisplayed = 1.0;
 

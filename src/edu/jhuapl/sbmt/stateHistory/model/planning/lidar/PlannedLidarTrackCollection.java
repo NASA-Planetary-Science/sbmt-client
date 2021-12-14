@@ -1,141 +1,179 @@
 package edu.jhuapl.sbmt.stateHistory.model.planning.lidar;
 
-import java.beans.PropertyChangeEvent;
 import java.util.ArrayList;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Future;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import vtk.vtkProp;
+import javax.swing.SwingUtilities;
 
-import edu.jhuapl.saavtk.gui.render.Renderer;
-import edu.jhuapl.saavtk.model.ModelManager;
-import edu.jhuapl.saavtk.status.StatusNotifier;
 import edu.jhuapl.saavtk.util.ProgressStatusListener;
-import edu.jhuapl.saavtk.util.Properties;
-import edu.jhuapl.sbmt.client.SmallBodyModel;
 import edu.jhuapl.sbmt.lidar.LidarPoint;
 import edu.jhuapl.sbmt.lidar.LidarTrack;
-import edu.jhuapl.sbmt.lidar.LidarTrackManager;
 import edu.jhuapl.sbmt.lidar.util.LidarTrackUtil;
-import edu.jhuapl.sbmt.stateHistory.model.planning.BasePlannedDataCollection;
-import edu.jhuapl.sbmt.stateHistory.rendering.PlannedDataProperties;
+import edu.jhuapl.sbmt.stateHistory.model.interfaces.StateHistory;
 import edu.jhuapl.sbmt.stateHistory.rendering.model.StateHistoryPositionCalculator;
+import edu.jhuapl.sbmt.util.ThreadService;
+import edu.jhuapl.sbmt.util.TimeUtil;
 
 import glum.item.IncrIdGenerator;
 
-public class PlannedLidarTrackCollection extends BasePlannedDataCollection<PlannedLidarTrack>
+public class PlannedLidarTrackCollection
 {
-
-	private LidarTrackManager trackManager;
-
-	private List<LidarTrack> currentTracks;
-
+//	private List<LidarTrack> currentTracks;
+//	private List<PlannedLidarTrack> plannedTracks;
 	private double minTime = Double.MAX_VALUE, maxTime = Double.MIN_VALUE;
+	private String filename;
+	private StateHistory stateHistory;
+	private PlannedLidarTrackCollectionListener listener;
 
-
-	public PlannedLidarTrackCollection(String filename, ModelManager modelManager, SmallBodyModel smallBodyModel, Renderer renderer, StatusNotifier statusNotifier)
+	public PlannedLidarTrackCollection(String filename, StateHistory stateHistory)
 	{
-		super(smallBodyModel);
-		currentTracks = new ArrayList<LidarTrack>();
+//		currentTracks = new ArrayList<LidarTrack>();
+//		plannedTracks = new ArrayList<PlannedLidarTrack>();
 		this.filename = filename;
-//		trackManager = new LidarTrackManager(modelManager, smallBodyModel);
-		trackManager = new LidarTrackManager(renderer, statusNotifier, smallBodyModel);
-		renderer.addVtkPropProvider(trackManager);
-
-//		// Manually register for events of interest
-//		aPickManager.getDefaultPicker().addListener(tmpTrackManager);
-//		aPickManager.getDefaultPicker().addPropProvider(tmpTrackManager);
+		this.stateHistory = stateHistory;
 	}
 
-	@Override
-	public List<vtkProp> getProps()
+	public void setListener(PlannedLidarTrackCollectionListener listener)
 	{
-		return trackManager.getProps();
+		this.listener = listener;
 	}
 
-
-	@Override
-	public void propertyChange(PropertyChangeEvent evt)
-	{
-		if (Properties.MODEL_CHANGED.equals(evt.getPropertyName()))
-			this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
-		if (PlannedDataProperties.TIME_CHANGED.equals(evt.getPropertyName()))
-		{
-			time = (double)evt.getNewValue();
-			updateFootprints();
-
-		}
-	}
-
-	@Override
-	public void updateFootprints()
-	{
-		if (time == 0) time = minTime;
-		double currentWindowDuration = maxTime - minTime;
-		double currentOffsetFromMin = time - minTime;
-		trackManager.setPercentageShown(0, currentOffsetFromMin/currentWindowDuration);
-		this.pcs.firePropertyChange("PLANNED_LIDAR_CHANGED", null, null);
-	}
+//	public List<LidarTrack> getCurrentTracks()
+//	{
+//		return currentTracks;
+//	}
+//
+//	public List<PlannedLidarTrack> getCurrentPlannedTracks()
+//	{
+//		return plannedTracks;
+//	}
 
 	/**
 	 * @param run
 	 */
 	public void addLidarTrackToList(PlannedLidarTrack track, ProgressStatusListener listener)
 	{
-		if (stateHistorySource == null) return;
-
 		IncrIdGenerator idGenerator = new IncrIdGenerator(0);
-		plannedData.add(track);
 		minTime = Math.min(minTime, track.getStartTime());
 		maxTime = Math.max(maxTime, track.getStopTime());
 		double trackDuration = track.getStopTime() - track.getStartTime();
-		int numSteps = (int)((track.getStopTime() - track.getStartTime())*100.0/1.0);
+		int numSteps = (int)((track.getStopTime() - track.getStartTime())*100.0/200.0);
 		double timeDelta = trackDuration/(double)numSteps;
 		double time = track.getStartTime();
-		List<LidarPoint> lidarPoints = new ArrayList<LidarPoint>();
-		Logger.getAnonymousLogger().log(Level.INFO, "Making points");
+//		Logger.getAnonymousLogger().log(Level.INFO, "Making points");
 		int numPoints = (int)((track.getStopTime() - time)/timeDelta);
+		List<LidarPoint> lidarPoints = new ArrayList<LidarPoint>(numPoints);
 		int i=0;
-		listener.setProgressStatus("Track: " + plannedData.size(), 0);
-		while (time <= track.getStopTime())
+//		SwingUtilities.invokeLater(() -> {
+//			listener.setProgressStatus("Track: " + plannedData.size(), 0);
+//		});
+		try
 		{
-			LidarPoint point = StateHistoryPositionCalculator.updateLidarFootprintPointing(stateHistorySource, time, smallBodyModel, track.getInstrumentName());
-			if (point != null)
-			{
-				listener.setProgressStatus("Track: " + plannedData.size() + ": point " + (i+1) + " of " + numPoints, (i*100/numPoints));
-				lidarPoints.add(point);
-				i++;
-			}
-			time += timeDelta;
+			Logger.getAnonymousLogger().log(Level.INFO, "generating points");
+			lidarPoints = generatePoints(stateHistory, track, timeDelta, listener);
 		}
-		listener.setProgressStatus("Ready", 0);
-
+		catch (InterruptedException | ExecutionException e)
+		{
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+//		while (time <= track.getStopTime())
+//		{
+//			LidarPoint point = StateHistoryPositionCalculator.updateLidarFootprintPointing(stateHistory, time, track.getInstrumentName());
+//			if (point != null)
+//			{
+//				int index=i;
+//				Logger.getAnonymousLogger().log(Level.INFO, "Making points index " + i + " for " + TimeUtil.et2str(track.getStartTime()));
+////				SwingUtilities.invokeLater(() -> {
+////					listener.setProgressStatus("Track: " + plannedData.size() + ": point " + (index+1) + " of " + numPoints, (index*100/numPoints));
+////				});
+//				lidarPoints.add(point);
+//				i++;
+//			}
+//			time += timeDelta;
+//		}
+		SwingUtilities.invokeLater(() -> {
+			listener.setProgressStatus("Ready", 0);
+		});
 		Set<String> tmpSourceS = new LinkedHashSet<>();
 		tmpSourceS.add("Planned track " + track.getStartTime() + " " + track.getStopTime());
 		LidarTrack composedTrack = LidarTrackUtil.formTrack(idGenerator, lidarPoints, tmpSourceS, 1);
-		currentTracks.add(composedTrack);
-		trackManager.setAllItems(currentTracks);
-		setVisibility(track, true);
-		setAllItems(plannedData);
-		this.pcs.firePropertyChange("PLANNED_LIDAR_CHANGED", null, null);
+//		currentTracks.add(composedTrack);
+//		plannedTracks.add(track);
+		this.listener.trackAdded(composedTrack, track);
+		Logger.getAnonymousLogger().log(Level.INFO, "Added track");
 	}
 
-	private void setVisibility(PlannedLidarTrack track, boolean visibility)
+	private List<LidarPoint> generatePoints(StateHistory stateHistorySource, PlannedLidarTrack track, double timeDelta, ProgressStatusListener listener) throws InterruptedException, ExecutionException
 	{
-		int index = plannedData.indexOf(track);
-		LidarTrack lidarTrack = currentTracks.get(index);
-		List<LidarTrack> trackList = new ArrayList<LidarTrack>();
-		trackList.add(lidarTrack);
-		trackManager.setIsVisible(trackList, visibility);
+//		ThreadService.initialize(100);
+		List<LidarPoint> outputs = new ArrayList<LidarPoint>();
+		final List<Future<LidarPoint>> resultList;
+		List<Callable<LidarPoint>> taskList = new ArrayList<>();
+		double time = track.getStartTime();
+		SwingUtilities.invokeLater(() -> {
+			listener.setProgressStatus("Track: processing start " + TimeUtil.et2str(track.getStartTime()), 0);
+		});
+//		SwingUtilities.invokeLater(() -> {
+//			listener.setProgressStatus("Track: " + plannedData.size() + ": point " + (index+1) + " of " + resultList.size(), (index*100/resultList.size()));
+//		});
+//		System.out.println("PlannedLidarTrackCollection: generatePoints: track stop time is " + track.getStopTime() + " time is " + time + " time delta " + timeDelta);
+		while (time <= track.getStopTime())
+		{
+			Callable<LidarPoint> task = new LidarPointTask(stateHistorySource, time, track.getInstrumentName());
+			taskList.add(task);
+			time += timeDelta;
+		}
+//		System.out.println("PlannedLidarTrackCollection: generatePoints: getting result list, task list size " + taskList.size());
+		resultList = ThreadService.submitAll(taskList);
+		Logger.getAnonymousLogger().log(Level.INFO, "Submitted all tasks");
+
+//		System.out.println("PlannedLidarTrackCollection: generatePoints: got result list");
+		for (int i = 0; i < resultList.size(); i++)
+		{
+//			System.out.println("PlannedLidarTrackCollection: generatePoints: getting back results " + i);
+			int index = i;
+//			SwingUtilities.invokeLater(() -> {
+//				listener.setProgressStatus("Track: " + plannedData.size() + ": point " + (index+1) + " of " + resultList.size(), (index*100/resultList.size()));
+//			});
+			Future<LidarPoint> future = resultList.get(i);
+			LidarPoint lidarPoint = future.get();
+//			System.out.println("PlannedLidarTrackCollection: generatePoints: returning " + lidarPoint);
+			if (lidarPoint != null)
+				outputs.add(lidarPoint);
+		}
+		Logger.getAnonymousLogger().log(Level.INFO, "Got outputs, size " + outputs.size());
+//		System.out.println("PlannedLidarTrackCollection: generatePoints: returning outputs size " + outputs.size());
+		return outputs;
 	}
 
-	public void setPercentageShown(double percShown)
+	private class LidarPointTask implements Callable<LidarPoint>
 	{
-		trackManager.setPercentageShown(0, percShown);
-		this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
-	}
 
+		private StateHistory stateHistorySource;
+		private double time;
+		private String instrumentName;
+
+		public LidarPointTask(StateHistory stateHistorySource, double time, String instrumentName)
+		{
+			this.stateHistorySource = stateHistorySource;
+			this.time = time;
+			this.instrumentName = instrumentName;
+		}
+
+		@Override
+		public LidarPoint call() throws Exception
+		{
+			LidarPoint point = StateHistoryPositionCalculator.updateLidarFootprintPointing(stateHistorySource, time, instrumentName);
+//			System.out.println("PlannedLidarTrackCollection.LidarPointTask: call: returning " + point);
+			return point;
+		}
+	}
 }

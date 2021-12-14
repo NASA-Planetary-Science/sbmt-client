@@ -6,17 +6,21 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Set;
 
 import org.apache.commons.io.FilenameUtils;
 
 import edu.jhuapl.saavtk.util.ColorUtil;
+import edu.jhuapl.sbmt.pointing.IPointingProvider;
+import edu.jhuapl.sbmt.pointing.pregen.PregenPointingProvider;
 import edu.jhuapl.sbmt.stateHistory.model.StateHistorySourceType;
 import edu.jhuapl.sbmt.stateHistory.model.interfaces.IStateHistoryLocationProvider;
 import edu.jhuapl.sbmt.stateHistory.model.interfaces.IStateHistoryMetadata;
 import edu.jhuapl.sbmt.stateHistory.model.interfaces.IStateHistoryTrajectoryMetadata;
 import edu.jhuapl.sbmt.stateHistory.model.interfaces.State;
 import edu.jhuapl.sbmt.stateHistory.model.interfaces.StateHistory;
+import edu.jhuapl.sbmt.stateHistory.model.interfaces.Trajectory;
 import edu.jhuapl.sbmt.stateHistory.model.io.StateHistoryIOException;
 import edu.jhuapl.sbmt.stateHistory.model.io.StateHistoryInvalidTimeException;
 import edu.jhuapl.sbmt.stateHistory.model.scState.CsvState;
@@ -25,6 +29,7 @@ import edu.jhuapl.sbmt.stateHistory.model.stateHistory.StateHistoryKey;
 import edu.jhuapl.sbmt.stateHistory.model.stateHistory.StateHistoryMetadata;
 import edu.jhuapl.sbmt.stateHistory.model.stateHistory.StateHistoryTrajectoryMetadata;
 import edu.jhuapl.sbmt.stateHistory.model.trajectory.StandardTrajectory;
+import edu.jhuapl.sbmt.util.TimeUtil;
 
 import crucible.crust.metadata.api.Key;
 import crucible.crust.metadata.api.Version;
@@ -94,7 +99,10 @@ public class StandardStateHistory extends AbstractStateHistory
     		result.put(END_TIME_KEY, metadata.getEndTime());
     		result.put(STATE_HISTORY_NAME_KEY, metadata.getStateHistoryName());
     		result.put(STATE_HISTORY_DESCRIPTION_KEY, metadata.getStateHistoryDescription());
-    		result.put(TYPE_KEY, metadata.getType().toString());
+    		if (metadata.getType() != null)
+    			result.put(TYPE_KEY, metadata.getType().toString());
+    		else
+    			result.put(TYPE_KEY, StateHistorySourceType.PREGEN.toString());
     		result.put(SOURCE_FILE, locationProvider.getSourceFile());
     		result.put(COLOR_KEY, new Double[] { (double)colorComponents[0], (double)colorComponents[1], (double)colorComponents[2], (double)trajectoryMetadata.getTrajectory().getColor().getAlpha()/255.0});
     		return result;
@@ -142,9 +150,40 @@ public class StandardStateHistory extends AbstractStateHistory
     	locationProvider.setSourceFile(sourceFile);
     }
 
+    public void buildHistory(List<State> stateSegments, IPointingProvider pointingProvider, double startTime, double stopTime)
+    {
+    	Trajectory trajectory = new StandardTrajectory(this);
+		IStateHistoryLocationProvider locationProvider = getLocationProvider();
+		IStateHistoryTrajectoryMetadata trajectoryMetadata = getTrajectoryMetadata();
+
+		trajectory.setPointingProvider(pointingProvider);
+		trajectory.setStartTime(startTime);
+		trajectory.setStopTime(stopTime);
+		trajectory.setNumPoints(1000);
+
+		for (State state : stateSegments)
+		{
+			locationProvider.addState(state);
+		}
+
+		try
+		{
+			metadata.setCurrentTime(startTime);
+		}
+		catch (StateHistoryInvalidTimeException e)
+		{
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		trajectoryMetadata.setTrajectory(trajectory);
+		metadata.setType(StateHistorySourceType.PREGEN);
+		locationProvider.setPointingProvider(pointingProvider);
+
+    }
+
 	public void saveStateToFile(String shapeModelName, String fileName) throws StateHistoryIOException
 	{
-		String fileNameWithExtension = fileName + ".csvstate";
+		String fileNameWithExtension = fileName;
 		// writes the header for the new history
 		try
         {
@@ -154,7 +193,7 @@ public class StandardStateHistory extends AbstractStateHistory
 
             // Create header of name, description, color
             writer.append(getMetadata().getStateHistoryName() + ',');
-            writer.append(trajectoryMetadata.getTrajectory().getTrajectoryDescription() + ',');
+            writer.append(getMetadata().getStateHistoryDescription() + ',');
             for (double colorElement : trajectoryMetadata.getTrajectory().getColor().getColorComponents(null)) {
                 writer.append(Double.toString(colorElement));
                 writer.append(',');
@@ -218,23 +257,18 @@ public class StandardStateHistory extends AbstractStateHistory
 	public StateHistory loadStateHistoryFromFile(File file, String shapeModelName, StateHistoryKey key) throws StateHistoryIOException
     {
 		String extension = FilenameUtils.getExtension(file.getAbsolutePath());
-		if (!extension.equals("csvstate") || !extension.equals("csv")) throw new StateHistoryIOException("Invalid file format");
+		if (!(extension.equals("csvstate") || extension.equals("csv"))) throw new StateHistoryIOException("Invalid file format");
 		ArrayList<String[]> timeArray = new ArrayList<>(3);
         Integer firstIndex = null;
         String runDirName = file.getAbsolutePath();
-        StandardTrajectory trajectory;
-
+        Trajectory trajectory;
         try
         {
             String runName = file.getName();
-            if (!runName.endsWith(".csv")) throw new StateHistoryIOException("File does not have a csv extension; please choose another file");
+//            if (!runName.endsWith(".csv")) throw new StateHistoryIOException("File does not have a csv extension; please choose another file");
 
-            BufferedReader in = new BufferedReader(new FileReader(file));
-            in.close();
-
-
-            StateHistory history = null;
-            in = new BufferedReader(new FileReader(runDirName));
+            StandardStateHistory history = null;
+            BufferedReader in = new BufferedReader(new FileReader(runDirName));
 
             if (firstIndex == null)
                 firstIndex = 0;
@@ -242,18 +276,15 @@ public class StandardStateHistory extends AbstractStateHistory
          // create a new history instance and add it to the Map
             StateHistoryMetadata metadata = new StateHistoryMetadata(key);
             history = new StandardStateHistory(metadata, file.getAbsolutePath());
+            history.getMetadata().setStateHistoryName(runName);
+            List<State> segments = new ArrayList<State>();
 
-            trajectory = new StandardTrajectory(history);
-            // fill in the Trajectory parameters
-            trajectory.setId(0);
-
-            // discard first line of body name
             in.readLine();
 
             // get name, desc, color form second line
             String info = in.readLine();
             String[] data = info.split(",");
-            trajectory.setTrajectoryDescription(data[1]);
+
 
             // discard third line of headers
             in.readLine();
@@ -261,20 +292,14 @@ public class StandardStateHistory extends AbstractStateHistory
             String line;
             String[] timeSet = new String[2];
             timeArray.add(timeSet);
+
             while ((line = in.readLine()) != null)
             {
                 // parse line of file
                 State flybyState = new CsvState(line);
 
                 // add to history
-                history.getLocationProvider().addState(flybyState);
-
-                double[] spacecraftPosition = flybyState.getSpacecraftPosition();
-
-                //TODO go back and look at this once pointing provider implementation in place - needed?
-//                trajectory.getX().add(spacecraftPosition[0]);
-//                trajectory.getY().add(spacecraftPosition[1]);
-//                trajectory.getZ().add(spacecraftPosition[2]);
+                segments.add(flybyState);
 
                 if(com.mysql.jdbc.StringUtils.isNullOrEmpty(timeArray.get(0)[0])){
                     timeArray.get(0)[0] = flybyState.getUtc();
@@ -282,13 +307,125 @@ public class StandardStateHistory extends AbstractStateHistory
                 timeArray.get(0)[1] = flybyState.getUtc();
             }
             in.close();
+            IPointingProvider pointingProvider = PregenPointingProvider.builder(file.getAbsolutePath(), TimeUtil.str2et(timeArray.get(0)[0]), TimeUtil.str2et(timeArray.get(0)[1])).build();
+            history.buildHistory(segments, pointingProvider, TimeUtil.str2et(timeArray.get(0)[0]), TimeUtil.str2et(timeArray.get(0)[1]));
+            trajectory = history.getTrajectoryMetadata().getTrajectory();
+            trajectory.setTrajectoryDescription(data[1]);
+            history.getMetadata().setStateHistoryName(data[0]);
+            history.getMetadata().setStateHistoryDescription(data[1]);
+//            history = new StandardStateHistory(metadata, file.getAbsolutePath());
+//            Trajectory trajectory = new StandardTrajectory(history);
+//    		IStateHistoryLocationProvider locationProvider = history.getLocationProvider();
+//    		IStateHistoryTrajectoryMetadata trajectoryMetadata = history.getTrajectoryMetadata();
+//
+//    		trajectory.setPointingProvider(locationProvider.getPointingProvider());
+////    		trajectory.setStartTime(TimeUtil.str2et(startString));
+////    		trajectory.setStopTime(TimeUtil.str2et(endString));
+//    		trajectory.setNumPoints(1000);
+//
+//            // discard first line of body name
+//            in.readLine();
+//
+//            // get name, desc, color form second line
+//            String info = in.readLine();
+//            String[] data = info.split(",");
+//            trajectory.setTrajectoryDescription(data[1]);
+//
+//            // discard third line of headers
+//            in.readLine();
+//
+//            String line;
+//            String[] timeSet = new String[2];
+//            timeArray.add(timeSet);
+//            while ((line = in.readLine()) != null)
+//            {
+//                // parse line of file
+//                State flybyState = new CsvState(line);
+//
+//                // add to history
+//                history.getLocationProvider().addState(flybyState);
+//
+////                double[] spacecraftPosition = flybyState.getSpacecraftPosition();
+//
+//                //TODO go back and look at this once pointing provider implementation in place - needed?
+////                trajectory.getX().add(spacecraftPosition[0]);
+////                trajectory.getY().add(spacecraftPosition[1]);
+////                trajectory.getZ().add(spacecraftPosition[2]);
+//
+//                if(com.mysql.jdbc.StringUtils.isNullOrEmpty(timeArray.get(0)[0])){
+//                    timeArray.get(0)[0] = flybyState.getUtc();
+//                }
+//                timeArray.get(0)[1] = flybyState.getUtc();
+//            }
+//            in.close();
+//
+//            System.out.println("StandardStateHistory: loadStateHistoryFromFile: traj is " + trajectory + " metadata start " + metadata.getStartTime());
+//            trajectory.setStartTime(metadata.getStartTime());
+//    		trajectory.setStopTime(metadata.getEndTime());
+//    		metadata.setCurrentTime(metadata.getStartTime());
+//    		trajectoryMetadata.setTrajectory(trajectory);
+//    		metadata.setType(StateHistorySourceType.PREGEN);
 
-            history.getTrajectoryMetadata().setTrajectory(trajectory);
-
-            history.getMetadata().setCurrentTime(history.getMetadata().getStartTime());
-            trajectory.setStartTime(history.getMetadata().getStartTime());
-            trajectory.setStopTime(history.getMetadata().getEndTime());
-            trajectory.setNumPoints(Math.abs((int)(history.getMetadata().getEndTime() - history.getMetadata().getStartTime())/60));
+    		//OLD WAY
+//    		locationProvider.setSourceFile(sourceFile);
+//    		locationProvider.setPointingProvider(pointingProvider);
+//            history = new StandardStateHistory(metadata, file.getAbsolutePath());
+//            history.getMetadata().setStateHistoryName(runName);
+//            System.out.println("StandardStateHistory: loadStateHistoryFromFile: metadata " + metadata);
+//            System.out.println("StandardStateHistory: loadStateHistoryFromFile: location prov " + history.getLocationProvider());
+//            System.out.println("StandardStateHistory: loadStateHistoryFromFile: traj metadata " + history.getTrajectoryMetadata());
+//
+//
+//            trajectory = new StandardTrajectory(history);
+//            trajectory.setPointingProvider(locationProvider.getPointingProvider());
+//            // fill in the Trajectory parameters
+//            trajectory.setId(0);
+//
+//            // discard first line of body name
+//            in.readLine();
+//
+//            // get name, desc, color form second line
+//            String info = in.readLine();
+//            String[] data = info.split(",");
+//            trajectory.setTrajectoryDescription(data[1]);
+//
+//            // discard third line of headers
+//            in.readLine();
+//
+//            String line;
+//            String[] timeSet = new String[2];
+//            timeArray.add(timeSet);
+//
+//            while ((line = in.readLine()) != null)
+//            {
+//                // parse line of file
+//                State flybyState = new CsvState(line);
+//
+//                // add to history
+//                history.getLocationProvider().addState(flybyState);
+//
+////                double[] spacecraftPosition = flybyState.getSpacecraftPosition();
+//
+//                //TODO go back and look at this once pointing provider implementation in place - needed?
+////                trajectory.getX().add(spacecraftPosition[0]);
+////                trajectory.getY().add(spacecraftPosition[1]);
+////                trajectory.getZ().add(spacecraftPosition[2]);
+//
+//                if(com.mysql.jdbc.StringUtils.isNullOrEmpty(timeArray.get(0)[0])){
+//                    timeArray.get(0)[0] = flybyState.getUtc();
+//                }
+//                timeArray.get(0)[1] = flybyState.getUtc();
+//            }
+//            in.close();
+//            System.out.println("StandardStateHistory: loadStateHistoryFromFile: metadata start " + history.getMetadata().getStartTime());
+//
+//            history.getTrajectoryMetadata().setTrajectory(trajectory);
+//            history.getMetadata().setType(StateHistorySourceType.PREGEN);
+//            System.out.println("StandardStateHistory: loadStateHistoryFromFile: metadata start " + history.getMetadata().getStartTime());
+//            history.getMetadata().setCurrentTime(history.getMetadata().getStartTime());
+//            trajectory.setStartTime(history.getMetadata().getStartTime());
+//            trajectory.setStopTime(history.getMetadata().getEndTime());
+//            trajectory.setNumPoints(Math.abs((int)(history.getMetadata().getEndTime() - history.getMetadata().getStartTime())/60));
 
             return history;
         }

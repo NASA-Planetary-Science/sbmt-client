@@ -25,7 +25,7 @@ import edu.jhuapl.saavtk.gui.util.ToolTipUtil;
 import edu.jhuapl.sbmt.gui.table.EphemerisTimeRenderer;
 import edu.jhuapl.sbmt.stateHistory.model.interfaces.StateHistory;
 import edu.jhuapl.sbmt.stateHistory.model.planning.lidar.PlannedLidarTrack;
-import edu.jhuapl.sbmt.stateHistory.model.planning.lidar.PlannedLidarTrackCollection;
+import edu.jhuapl.sbmt.stateHistory.model.planning.lidar.PlannedLidarTrackVtkCollection;
 
 import glum.gui.GuiUtil;
 import glum.gui.misc.BooleanCellEditor;
@@ -73,7 +73,7 @@ public class PlannedLidarTrackTableView extends JPanel
     /**
      * The collection of loaded planned LidarTrack objects
      */
-    private PlannedLidarTrackCollection plannedLidarTrackCollection;
+    private PlannedLidarTrackVtkCollection plannedLidarTrackCollection;
 
     /**
      *	The planned LidarTrack item list panel, used to help handle interactions with the table
@@ -87,7 +87,7 @@ public class PlannedLidarTrackTableView extends JPanel
      */
     private ItemHandler<PlannedLidarTrack> plannedLidarTrackTableHandler;
 
-	public PlannedLidarTrackTableView(PlannedLidarTrackCollection plannedLidarTrackCollection)
+	public PlannedLidarTrackTableView(PlannedLidarTrackVtkCollection plannedLidarTrackCollection)
 	{
 		this.plannedLidarTrackCollection = plannedLidarTrackCollection;
 		init();

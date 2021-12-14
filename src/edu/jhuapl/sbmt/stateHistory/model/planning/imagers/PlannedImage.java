@@ -84,6 +84,7 @@ public class PlannedImage implements PlannedInstrumentData
 	/**
 	 * @return the isShowing
 	 */
+	@Override
 	public boolean isShowing()
 	{
 		return isShowing;
@@ -92,6 +93,7 @@ public class PlannedImage implements PlannedInstrumentData
 	/**
 	 * @param isShowing the isShowing to set
 	 */
+	@Override
 	public void setShowing(boolean isShowing)
 	{
 		this.isShowing = isShowing;

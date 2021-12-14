@@ -2,7 +2,6 @@ package edu.jhuapl.sbmt.client;
 
 import java.io.IOException;
 
-import edu.jhuapl.saavtk.model.Graticule;
 import edu.jhuapl.saavtk.model.ShapeModelBody;
 import edu.jhuapl.saavtk.model.ShapeModelType;
 import edu.jhuapl.sbmt.dtm.model.DEM;

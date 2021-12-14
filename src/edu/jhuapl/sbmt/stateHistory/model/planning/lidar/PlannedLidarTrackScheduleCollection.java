@@ -8,7 +8,7 @@ import javax.swing.JFrame;
 import edu.jhuapl.sbmt.stateHistory.controllers.lidars.PlannedLidarTableController;
 import edu.jhuapl.sbmt.stateHistory.model.planning.BasePlannedDataScheduleCollection;
 
-public class PlannedLidarTrackScheduleCollection extends BasePlannedDataScheduleCollection<PlannedLidarTrackCollection>
+public class PlannedLidarTrackScheduleCollection extends BasePlannedDataScheduleCollection<PlannedLidarTrackVtkCollection>
 {
 
 	public PlannedLidarTrackScheduleCollection()
@@ -16,7 +16,7 @@ public class PlannedLidarTrackScheduleCollection extends BasePlannedDataSchedule
 
 	}
 
-	public void showDetailedScheduleFor(PlannedLidarTrackCollection collection)
+	public void showDetailedScheduleFor(PlannedLidarTrackVtkCollection collection)
 	{
 		JFrame frame = fullScheduleFrames.get(collection);
 		if (frame == null)

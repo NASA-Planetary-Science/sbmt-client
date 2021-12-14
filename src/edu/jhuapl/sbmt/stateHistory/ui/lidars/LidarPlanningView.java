@@ -3,13 +3,13 @@ package edu.jhuapl.sbmt.stateHistory.ui.lidars;
 import javax.swing.JPanel;
 
 import edu.jhuapl.sbmt.client.SmallBodyViewConfig;
-import edu.jhuapl.sbmt.stateHistory.model.planning.lidar.PlannedLidarTrackCollection;
+import edu.jhuapl.sbmt.stateHistory.model.planning.lidar.PlannedLidarTrackVtkCollection;
 
 public class LidarPlanningView extends JPanel
 {
-	PlannedLidarTrackCollection collection;
+	PlannedLidarTrackVtkCollection collection;
 
-	public LidarPlanningView(PlannedLidarTrackCollection collection, SmallBodyViewConfig config)
+	public LidarPlanningView(PlannedLidarTrackVtkCollection collection, SmallBodyViewConfig config)
 	{
 		this.collection = collection;
 	}

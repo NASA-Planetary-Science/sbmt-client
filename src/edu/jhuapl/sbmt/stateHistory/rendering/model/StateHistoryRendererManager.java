@@ -11,6 +11,8 @@ import java.util.Map;
 import java.util.Vector;
 import java.util.stream.Collectors;
 
+import javax.swing.SwingUtilities;
+
 import org.apache.commons.math3.geometry.euclidean.threed.Vector3D;
 
 import com.google.common.collect.ImmutableList;
@@ -474,15 +476,12 @@ public class StateHistoryRendererManager extends SaavtkItemManager<StateHistory>
 			return trajActor;
 		}
 		run.getMetadata().setMapped(true);
-
 		historyCollection.addRun(run);
 		updateFovs(run);
-
 		IStateHistoryTrajectoryMetadata trajectoryMetadata = run.getTrajectoryMetadata();
 		// Get the trajectory actor the state history segment
 		TrajectoryActor trajectoryActor = new TrajectoryActor(trajectoryMetadata.getTrajectory());
 		stateHistoryToRendererMap.put(run, trajectoryActor);
-
 		setVisibility(run, true);
 
 		trajectoryActor.setMinMaxFraction(trajectoryMetadata.getTrajectory().getMinDisplayFraction(), trajectoryMetadata.getTrajectory().getMaxDisplayFraction());
@@ -490,16 +489,42 @@ public class StateHistoryRendererManager extends SaavtkItemManager<StateHistory>
 		trajectoryActor.GetMapper().Update();
 
 		boolean instrumentPointingAvailable = trajectoryMetadata.getTrajectory().isHasInstrumentPointingInfo();
-
 		if (historyFootprintMap.get(historyCollection.getCurrentRun()) != null)
 			historyFootprintMap.get(run).stream().filter(fprint -> fprint != null).filter(footprint -> footprint.getFootprintActor() != null).forEach(footprint -> {
 				if (instrumentPointingAvailable) footprint.setFootprintColor();
 			});
-		pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
-		pcs.firePropertyChange(Properties.MODEL_CHANGED, null, trajectoryActor);
+		SwingUtilities.invokeLater(() -> {
+			pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
+			pcs.firePropertyChange(Properties.MODEL_CHANGED, null, trajectoryActor);
+			notifyListeners(this, ItemEventType.ItemsChanged);
+			notifyListeners(this, ItemEventType.ItemsSelected);
+		});
 
-		notifyListeners(this, ItemEventType.ItemsChanged);
-		notifyListeners(this, ItemEventType.ItemsSelected);
+		return trajectoryActor;
+	}
+
+	public TrajectoryActor updateRun(StateHistory run)
+	{
+		IStateHistoryTrajectoryMetadata trajectoryMetadata = run.getTrajectoryMetadata();
+		// Get the trajectory actor the state history segment
+		TrajectoryActor trajectoryActor = new TrajectoryActor(trajectoryMetadata.getTrajectory());
+		stateHistoryToRendererMap.put(run, trajectoryActor);
+		setVisibility(run, true);
+		trajectoryActor.setMinMaxFraction(trajectoryMetadata.getTrajectory().getMinDisplayFraction(), trajectoryMetadata.getTrajectory().getMaxDisplayFraction());
+		trajectoryActor.VisibilityOn();
+		trajectoryActor.GetMapper().Update();
+		boolean instrumentPointingAvailable = trajectoryMetadata.getTrajectory().isHasInstrumentPointingInfo();
+		if (historyFootprintMap.get(historyCollection.getCurrentRun()) != null)
+			historyFootprintMap.get(run).stream().filter(fprint -> fprint != null).filter(footprint -> footprint.getFootprintActor() != null).forEach(footprint -> {
+				if (instrumentPointingAvailable) footprint.setFootprintColor();
+			});
+		SwingUtilities.invokeLater(() -> {
+			pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
+			pcs.firePropertyChange(Properties.MODEL_CHANGED, null, trajectoryActor);
+			notifyListeners(this, ItemEventType.ItemsChanged);
+			notifyListeners(this, ItemEventType.ItemsSelected);
+		});
+
 		return trajectoryActor;
 	}
 
@@ -554,7 +579,9 @@ public class StateHistoryRendererManager extends SaavtkItemManager<StateHistory>
 		TrajectoryActor renderer = stateHistoryToRendererMap.get(stateHistory);
 		int isVisible = (visibility == true) ? 1 : 0;
 		renderer.SetVisibility(isVisible);
-		this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, renderer);
+		SwingUtilities.invokeLater(() -> {
+			this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, renderer);
+		});
 	}
 
 	/**
@@ -585,7 +612,9 @@ public class StateHistoryRendererManager extends SaavtkItemManager<StateHistory>
 			return;
 		StateHistoryRenderProperties tmpProp = propM.get(segment);
 		renderer.setColoringProvider(tmpProp.activeCP);
-		this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, renderer);
+		SwingUtilities.invokeLater(() -> {
+			this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, renderer);
+		});
 	}
 
 	/**
@@ -689,7 +718,8 @@ public class StateHistoryRendererManager extends SaavtkItemManager<StateHistory>
 		List<PerspectiveImageFrustum> fovs = historySpacecraftFovMap.get(historyCollection.getCurrentRun()).stream().filter(item -> item.getInstrumentName().equals(name)).collect(Collectors.toList());
 		if (fovs.size() == 0) return false;
 
-		return fovs.get(0).getFrustumActor().GetVisibility() == 1 ? true : false;
+		return fovs.get(0).isShowFrustum();
+//		return fovs.get(0).getFrustumActor().GetVisibility() == 1 ? true : false;
 	}
 
 	public void setInstrumentFrustumVisibility(String name, boolean isVisible)
@@ -697,7 +727,8 @@ public class StateHistoryRendererManager extends SaavtkItemManager<StateHistory>
 		if (historySpacecraftFovMap.get(historyCollection.getCurrentRun()) == null || historySpacecraftFovMap.get(historyCollection.getCurrentRun()).isEmpty()) return;
 		List<PerspectiveImageFrustum> fovs = historySpacecraftFovMap.get(historyCollection.getCurrentRun()).stream().filter(item -> item.getInstrumentName().equals(name)).collect(Collectors.toList());
 		if (fovs.size() == 0) return;
-		fovs.get(0).getFrustumActor().SetVisibility(isVisible? 1: 0);
+		fovs.get(0).setShowFrustum(isVisible);
+//		fovs.get(0).getFrustumActor().SetVisibility(isVisible? 1: 0);
 		this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, historySpacecraftFovMap.get(historyCollection.getCurrentRun()));
 	}
 
@@ -746,14 +777,16 @@ public class StateHistoryRendererManager extends SaavtkItemManager<StateHistory>
 		if (historyFootprintMap.get(historyCollection.getCurrentRun()) == null || historyFootprintMap.get(historyCollection.getCurrentRun()).isEmpty()) return false;
 		List<PerspectiveImageFootprint> fp = historyFootprintMap.get(historyCollection.getCurrentRun()).stream().filter(fprint -> fprint.getInstrumentName().equals(name)).collect(Collectors.toList());
 		if (fp.size() == 0) return false;
-		return fp.get(0).isVisible();
+		return fp.get(0).isShowFootprint();
+//		return fp.get(0).isVisible();
 	}
 
 	public void setInstrumentFootprintVisibility(String name, boolean isVisible)
 	{
 		List<PerspectiveImageFootprint> fp = historyFootprintMap.get(historyCollection.getCurrentRun()).stream().filter(fprint -> fprint.getInstrumentName().equals(name)).collect(Collectors.toList());
-		fp.get(0).setVisible(isVisible);
+//		fp.get(0).setVisible(isVisible);
 		LiveColorableManager.updateFootprint(fp.get(0));
+		fp.get(0).setShowFootprint(isVisible);
 		this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, fp.get(0));
 	}
 
@@ -911,7 +944,6 @@ public class StateHistoryRendererManager extends SaavtkItemManager<StateHistory>
 														spacecraftLabelActor);
 			positionCalculator.updateEarthPosition(state, timeFraction, earthDirectionMarker);
 			positionCalculator.updateSunPosition(state, timeFraction, sunDirectionMarker);
-
 			if (historySpacecraftFovMap.get(historyCollection.getCurrentRun()) != null)
 				positionCalculator.updateFOVLocations(state, historySpacecraftFovMap.get(historyCollection.getCurrentRun()));
 
@@ -919,10 +951,20 @@ public class StateHistoryRendererManager extends SaavtkItemManager<StateHistory>
 				positionCalculator.updateFootprintLocations(state, historyFootprintMap.get(historyCollection.getCurrentRun()));
 
 			updateLookDirection(lookDirection);
-			if ((renderer.getLightCfg().getType() == LightingType.FIXEDLIGHT && historyCollection.getCurrentRun() != null) == false) return;
+			if ((renderer.getLightCfg().getType() == LightingType.FIXEDLIGHT && historyCollection.getCurrentRun() != null) == false)
+			{
+				SwingUtilities.invokeLater(() -> {
+					propertyChange(new PropertyChangeEvent(this, Properties.MODEL_CHANGED, null, null));
+				});
+				return;
+			}
 			renderer.setLightCfgToFixedLightAtDirection(new Vector3D(historyCollection.getCurrentRun().getLocationProvider().getSunPosition()));
-			propertyChange(new PropertyChangeEvent(this, Properties.MODEL_CHANGED, null, null));
+			SwingUtilities.invokeLater(() -> {
+				propertyChange(new PropertyChangeEvent(this, Properties.MODEL_CHANGED, null, null));
+			});
+
 		}
+//		Logger.getAnonymousLogger().log(Level.INFO, "!!!!!!!!!!!!!!!!!Set time fraction");
 	}
 
 	/**
@@ -957,7 +999,8 @@ public class StateHistoryRendererManager extends SaavtkItemManager<StateHistory>
 		{
 			double previousDistance = CameraUtil.calcDistance(renderer.getCamera());
 			lookFromDirection = positionCalculator.updateLookDirection(lookDirection, scalingFactor);
-			MathUtil.vscl(previousDistance/new Vector3D(lookFromDirection).getNorm(), lookFromDirection, lookFromDirection);
+			if (lookDirection != RendererLookDirection.SPACECRAFT_THIRD)
+				MathUtil.vscl(previousDistance/new Vector3D(lookFromDirection).getNorm(), lookFromDirection, lookFromDirection);
 			renderer.setCameraOrientation(lookFromDirection, renderer.getCameraFocalPoint(), upVector,
 					renderer.getCameraViewAngle());
 			((RenderPanel) renderer.getRenderWindowPanel()).setZoomOnly(true, targAxis, targOrig);
@@ -994,6 +1037,7 @@ public class StateHistoryRendererManager extends SaavtkItemManager<StateHistory>
 		double nextTime = startTime + i*trajectory.getTimeStep();
 		String currentInstrument = trajectory.getPointingProvider().getCurrentInstFrameName();
 		InstrumentPointing instrumentPointing = trajectory.getPointingProvider().provide(nextTime);
+
 		vtkDoubleArray dataArray = new vtkDoubleArray();
 		if (aFeatureType == StateHistoryFeatureType.Time)
 		{
@@ -1009,28 +1053,28 @@ public class StateHistoryRendererManager extends SaavtkItemManager<StateHistory>
 		else if (aFeatureType == StateHistoryFeatureType.Range)
 		{
 			double range =
-					StateHistoryPositionCalculator.getSpacecraftRange(trajectory.getHistory(), currentInstrument, nextTime);
+					StateHistoryPositionCalculator.getSpacecraftRange(trajectory.getHistory(), currentInstrument, null, nextTime);
 			dataArray.InsertNextValue(range);
 			return new VtkFeatureAttr(dataArray);
 		}
 		else if (aFeatureType == StateHistoryFeatureType.SubSCIncidence)
 		{
 			double incidence =
-					StateHistoryPositionCalculator.getIncidenceAngle(trajectory.getHistory(), currentInstrument, nextTime);
+					StateHistoryPositionCalculator.getIncidenceAngle(trajectory.getHistory(), currentInstrument, null, nextTime);
 			dataArray.InsertNextValue(incidence);
 			return new VtkFeatureAttr(dataArray);
 		}
 		else if (aFeatureType == StateHistoryFeatureType.SubSCEmission)
 		{
 			double emission =
-					StateHistoryPositionCalculator.getEmissionAngle(trajectory.getHistory(), currentInstrument, nextTime);
+					StateHistoryPositionCalculator.getEmissionAngle(trajectory.getHistory(), currentInstrument, null, nextTime);
 			dataArray.InsertNextValue(emission);
 			return new VtkFeatureAttr(dataArray);
 		}
 		else if (aFeatureType == StateHistoryFeatureType.SubSCPhase)
 		{
 			double phase =
-					StateHistoryPositionCalculator.getPhaseAngle(trajectory.getHistory(), currentInstrument, nextTime);
+					StateHistoryPositionCalculator.getPhaseAngle(trajectory.getHistory(), currentInstrument, null, nextTime);
 			dataArray.InsertNextValue(phase);
 			return new VtkFeatureAttr(dataArray);
 		}

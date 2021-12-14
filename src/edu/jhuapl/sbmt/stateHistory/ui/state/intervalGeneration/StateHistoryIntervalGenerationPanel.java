@@ -15,6 +15,7 @@ import java.util.stream.Stream;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.ButtonGroup;
+import javax.swing.DefaultComboBoxModel;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JFrame;
@@ -36,6 +37,7 @@ import org.joda.time.DateTime;
 
 import edu.jhuapl.saavtk.gui.dialog.CustomFileChooser;
 import edu.jhuapl.sbmt.stateHistory.controllers.kernel.KernelManagementController;
+import edu.jhuapl.sbmt.stateHistory.controllers.kernel.KernelSetChangedListener;
 import edu.jhuapl.sbmt.stateHistory.model.StateHistoryModel;
 import edu.jhuapl.sbmt.stateHistory.model.StateHistorySourceType;
 import edu.jhuapl.sbmt.stateHistory.model.interfaces.IStateHistoryMetadata;
@@ -117,11 +119,15 @@ public class StateHistoryIntervalGenerationPanel extends JPanel
 
     private boolean hasSpiceInfo;
 
+    private boolean hasPregenInfo;
+
     private SpiceKernelIngestor kernelIngestor;
 
     private KernelIngestor ingestor;
 
     private KernelManagementController kernelManagementController;
+
+    private JComboBox<String> kernelComboBox;
 
 
 	/**
@@ -131,16 +137,39 @@ public class StateHistoryIntervalGenerationPanel extends JPanel
 	{
 		editMode = false;
 		this.hasSpiceInfo = historyModel.getViewConfig().getSpiceInfo() != null;
+		this.hasPregenInfo = historyModel.getViewConfig().getTimeHistoryFile() != null;
 		this.kernelIngestor = new SpiceKernelIngestor(historyModel.getCustomDataFolder());
-		kernelManagementController = new KernelManagementController(kernelIngestor.getLoadedKernelsDirectory());
+		kernelManagementController = new KernelManagementController(kernelIngestor.getLoadedKernelsDirectory(), new KernelSetChangedListener()
+		{
+
+			@Override
+			public void kernelDeleted(String kernelName)
+			{
+				DefaultComboBoxModel<String> model = new DefaultComboBoxModel<String>(getAvailableKernels());
+				kernelComboBox.setModel(model);
+			}
+		});
 		initUI();
 	}
 
-	public StateHistoryIntervalGenerationPanel(StateHistory history)
+	public StateHistoryIntervalGenerationPanel(StateHistoryModel historyModel, StateHistory history)
 	{
 		editMode = true;
 		this.history = history;
 		buttonText = "Update Interval";
+		this.hasSpiceInfo = historyModel.getViewConfig().getSpiceInfo() != null;
+		this.hasPregenInfo = historyModel.getViewConfig().getTimeHistoryFile() != null;
+		this.kernelIngestor = new SpiceKernelIngestor(historyModel.getCustomDataFolder());
+		kernelManagementController = new KernelManagementController(kernelIngestor.getLoadedKernelsDirectory(), new KernelSetChangedListener()
+		{
+
+			@Override
+			public void kernelDeleted(String kernelName)
+			{
+				DefaultComboBoxModel<String> model = new DefaultComboBoxModel<String>(getAvailableKernels());
+				kernelComboBox.setModel(model);
+			}
+		});
 		initUI();
 		IStateHistoryMetadata metadata = history.getMetadata();
 		stateHistorySourceType = metadata.getType();
@@ -187,6 +216,8 @@ public class StateHistoryIntervalGenerationPanel extends JPanel
         DateTime endTime = stopTimeSpinner.getISOFormattedTime();
 		metadata.setStartTime(StateHistoryTimeModel.getETForDate(startTime.toDate()));
 		metadata.setEndTime(StateHistoryTimeModel.getETForDate(endTime.toDate()));
+		history.getTrajectoryMetadata().getTrajectory().setStartTime(StateHistoryTimeModel.getETForDate(startTime.toDate()));
+		history.getTrajectoryMetadata().getTrajectory().setStopTime(StateHistoryTimeModel.getETForDate(endTime.toDate()));
 	}
 
 	@Override
@@ -203,7 +234,8 @@ public class StateHistoryIntervalGenerationPanel extends JPanel
 	{
 		dataSourceCards = new JPanel(new CardLayout());
 
-		dataSourceCards.add(getPregenTimeRangePanel(), PREGENDATASTRING);
+		if (hasPregenInfo)
+			dataSourceCards.add(getPregenTimeRangePanel(), PREGENDATASTRING);
 		if (hasSpiceInfo)
 			dataSourceCards.add(getSpiceTimeRangePanel(), SPICEDATASTRING);
 		dataSourceCards.setMinimumSize(new Dimension(this.getWidth(), 40));
@@ -252,6 +284,17 @@ public class StateHistoryIntervalGenerationPanel extends JPanel
 		return panel;
 	}
 
+	private String[] getAvailableKernels()
+	{
+		List<String> loadedKernels = new ArrayList<String>();
+		if (kernelIngestor.getLoadedKernelsDirectory().listFiles() != null)
+			loadedKernels = Stream.of(kernelIngestor.getLoadedKernelsDirectory().listFiles()).filter(file -> file.isDirectory()).map(File::getName).collect(Collectors.toList());
+		loadedKernels.add(0, "Load new kernel...");
+		String[] loadedKernelNamesArray = new String[loadedKernels.size()];
+		loadedKernels.toArray(loadedKernelNamesArray);
+		return loadedKernelNamesArray;
+	}
+
 	private JPanel getSpiceTimeRangePanel()
 	{
 		JPanel panel = new JPanel();
@@ -260,13 +303,8 @@ public class StateHistoryIntervalGenerationPanel extends JPanel
 		cancelButton = new JButton("Cancel");
 		cancelButton.setEnabled(false);
 
-		List<String> loadedKernels = new ArrayList<String>();
-		if (kernelIngestor.getLoadedKernelsDirectory().listFiles() != null)
-			loadedKernels = Stream.of(kernelIngestor.getLoadedKernelsDirectory().listFiles()).filter(file -> file.isDirectory()).map(File::getName).collect(Collectors.toList());
-		loadedKernels.add(0, "Load new kernel...");
-		String[] loadedKernelNamesArray = new String[loadedKernels.size()];
-		loadedKernels.toArray(loadedKernelNamesArray);
-		JComboBox<String> kernelComboBox = new JComboBox<String>(loadedKernelNamesArray);
+
+		kernelComboBox = new JComboBox<String>(getAvailableKernels());
 
 		kernelComboBox.addActionListener(e -> {
 
@@ -275,7 +313,9 @@ public class StateHistoryIntervalGenerationPanel extends JPanel
 			File loadedKernelsDirectory = kernelIngestor.getLoadedKernelsDirectory();
 			if (selectedItem.equals("Load new kernel..."))
 			{
-				metakernelToLoad = CustomFileChooser.showOpenDialog(this, "Select Metakernel").getAbsolutePath();
+				File file = CustomFileChooser.showOpenDialog(this, "Select Metakernel");
+				if (file == null) return;
+				metakernelToLoad = file.getAbsolutePath();
 				ingestor  = new KernelIngestor(progressBar, kernelComboBox);
 				ingestor.execute();
 			}
@@ -352,8 +392,11 @@ public class StateHistoryIntervalGenerationPanel extends JPanel
 			catch (StateHistoryIOException | IOException e1)
 			{
 				if (!isCancelled())
+				{
 					JOptionPane.showMessageDialog(StateHistoryIntervalGenerationPanel.this, "Problem ingesting SPICE kernel.  Please check the file for correctness.",
 												"Ingestion Error", JOptionPane.ERROR_MESSAGE);
+					e1.printStackTrace();
+				}
 			}
 			finally {
 				progressBar.setValue(0);

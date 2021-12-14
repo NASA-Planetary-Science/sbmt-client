@@ -796,7 +796,7 @@
         <pathelement location="${rootdir}/build/jar/near.jar"/>
 
       </classpath>
-    </java>
+    </java> 
   </target>
 
 

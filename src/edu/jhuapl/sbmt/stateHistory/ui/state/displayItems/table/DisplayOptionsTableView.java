@@ -12,12 +12,9 @@ import javax.swing.JComboBox;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
-import javax.swing.table.TableCellRenderer;
 
 import edu.jhuapl.saavtk.color.gui.ColorProviderCellEditor;
 import edu.jhuapl.saavtk.color.gui.ColorProviderCellRenderer;
-import edu.jhuapl.saavtk.color.provider.ColorProvider;
-import edu.jhuapl.saavtk.color.provider.ConstColorProvider;
 import edu.jhuapl.saavtk.gui.util.IconUtil;
 import edu.jhuapl.saavtk.gui.util.ToolTipUtil;
 import edu.jhuapl.sbmt.stateHistory.model.interfaces.StateHistory;
@@ -164,6 +161,8 @@ public class DisplayOptionsTableView extends JPanel
 		tmpComposer.addAttribute(DisplayOptionsColumnLookup.LabelString, String.class, "Label Text", null);
 		tmpComposer.addAttribute(DisplayOptionsColumnLookup.Size, Double.class, "Marker Size", null);
 
+		tmpComposer.getItem(DisplayOptionsColumnLookup.LabelString).defaultSize *= 2;
+
 		tmpComposer.setEditor(DisplayOptionsColumnLookup.Show, new BooleanCellEditor());
 		tmpComposer.setRenderer(DisplayOptionsColumnLookup.Show, new BooleanCellRenderer());
 		tmpComposer.setEditor(DisplayOptionsColumnLookup.Label, new BooleanCellEditor());
@@ -179,7 +178,7 @@ public class DisplayOptionsTableView extends JPanel
 		ItemProcessor<DisplayableItem> tmpIP = rendererManager.getDisplayItemsProcessor();
 		displayOptionsILP = new ItemListPanel<>(displayOptionsTableHandler, tmpIP, true);
 		displayOptionsILP.setSortingEnabled(true);
-		configureColumnWidths();
+//		configureColumnWidths();
 		JTable stateHistoryTable = displayOptionsILP.getTable();
 		stateHistoryTable.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
 //		stateHistoryTable.addMouseListener(new TablePopupHandler(rendererManager, stateHistoryPopupMenu));
@@ -221,25 +220,25 @@ public class DisplayOptionsTableView extends JPanel
 		return fontButton;
 	}
 
-	/**
-	 * Configures the appropriate table colun width for the given expected type
-	 * of data
-	 */
-	private void configureColumnWidths()
-	{
-		JTable tmpTable = displayOptionsILP.getTable();
-		int minW = 30;
-
-		ColorProvider blackCP = new ConstColorProvider(Color.BLACK);
-		Object[] nomArr =
-		{ true,  true, blackCP, /*"Segment000000000000000",*/ "Segment000000000000000", 100000};
-		for (int aCol = 0; aCol < nomArr.length; aCol++)
-		{
-			TableCellRenderer tmpRenderer = tmpTable.getCellRenderer(0, aCol);
-			Component tmpComp = tmpRenderer.getTableCellRendererComponent(tmpTable, nomArr[aCol], false, false, 0,
-					aCol);
-			int tmpW = Math.max(minW, tmpComp.getPreferredSize().width + 1);
-			tmpTable.getColumnModel().getColumn(aCol).setPreferredWidth(tmpW + 10);
-		}
-	}
+//	/**
+//	 * Configures the appropriate table colun width for the given expected type
+//	 * of data
+//	 */
+//	private void configureColumnWidths()
+//	{
+//		JTable tmpTable = displayOptionsILP.getTable();
+//		int minW = 30;
+//
+//		ColorProvider blackCP = new ConstColorProvider(Color.BLACK);
+//		Object[] nomArr =
+//		{ true,  true, blackCP, /*"Segment000000000000000",*/ "Segment000000000000000", 100000};
+//		for (int aCol = 0; aCol < nomArr.length; aCol++)
+//		{
+//			TableCellRenderer tmpRenderer = tmpTable.getCellRenderer(0, aCol);
+//			Component tmpComp = tmpRenderer.getTableCellRendererComponent(tmpTable, nomArr[aCol], false, false, 0,
+//					aCol);
+//			int tmpW = Math.max(minW, tmpComp.getPreferredSize().width + 1);
+//			tmpTable.getColumnModel().getColumn(aCol).setPreferredWidth(tmpW + 10);
+//		}
+//	}
 }

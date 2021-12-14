@@ -2,7 +2,7 @@ package edu.jhuapl.sbmt.stateHistory.controllers.lidars;
 
 import edu.jhuapl.sbmt.stateHistory.controllers.PlannedDataTableController;
 import edu.jhuapl.sbmt.stateHistory.model.planning.lidar.PlannedLidarTrack;
-import edu.jhuapl.sbmt.stateHistory.model.planning.lidar.PlannedLidarTrackCollection;
+import edu.jhuapl.sbmt.stateHistory.model.planning.lidar.PlannedLidarTrackVtkCollection;
 import edu.jhuapl.sbmt.stateHistory.ui.lidars.PlannedLidarTrackView;
 
 /**
@@ -12,7 +12,7 @@ import edu.jhuapl.sbmt.stateHistory.ui.lidars.PlannedLidarTrackView;
  */
 public class PlannedLidarTableController extends PlannedDataTableController<PlannedLidarTrackView, PlannedLidarTrack>
 {
-	public PlannedLidarTableController(PlannedLidarTrackCollection collection)
+	public PlannedLidarTableController(PlannedLidarTrackVtkCollection collection)
 	{
 		this.collection = collection;
 		view = new PlannedLidarTrackView(collection);

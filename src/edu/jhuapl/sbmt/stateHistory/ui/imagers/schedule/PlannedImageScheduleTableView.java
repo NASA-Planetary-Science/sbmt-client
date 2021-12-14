@@ -1,6 +1,5 @@
 package edu.jhuapl.sbmt.stateHistory.ui.imagers.schedule;
 
-import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.event.ActionListener;
@@ -15,10 +14,7 @@ import javax.swing.JTable;
 import javax.swing.JToggleButton;
 import javax.swing.UIManager;
 import javax.swing.border.TitledBorder;
-import javax.swing.table.TableCellRenderer;
 
-import edu.jhuapl.saavtk.color.provider.ColorProvider;
-import edu.jhuapl.saavtk.color.provider.ConstColorProvider;
 import edu.jhuapl.saavtk.gui.util.IconUtil;
 import edu.jhuapl.saavtk.gui.util.ToolTipUtil;
 import edu.jhuapl.sbmt.stateHistory.model.planning.imagers.PlannedImageCollection;
@@ -214,26 +210,26 @@ public class PlannedImageScheduleTableView extends JPanel
 		return plannedImageTable;
     }
 
-	/**
-	 * Configures the appropriate table colun width for the given expected type of data
-	 */
-	private void configureColumnWidths()
-	{
-		JTable tmpTable = plannedImageILP.getTable();
-		String dateTimeStr = "9999-88-88T00:00:00.000000";
-		String fileStr = "9999-88-88T00:00:00.0000009999-88-88T00:00:00.000000";
-		int minW = 40;
-
-		ColorProvider blackCP = new ConstColorProvider(Color.BLACK);
-		Object[] nomArr = { true, true, /*blackCP,*/ fileStr, dateTimeStr };
-		for (int aCol = 0; aCol < nomArr.length; aCol++)
-		{
-			TableCellRenderer tmpRenderer = tmpTable.getCellRenderer(0, aCol);
-			Component tmpComp = tmpRenderer.getTableCellRendererComponent(tmpTable, nomArr[aCol], false, false, 0, aCol);
-			int tmpW = Math.max(minW, tmpComp.getPreferredSize().width + 1);
-			tmpTable.getColumnModel().getColumn(aCol).setPreferredWidth(tmpW + 10);
-		}
-	}
+//	/**
+//	 * Configures the appropriate table colun width for the given expected type of data
+//	 */
+//	private void configureColumnWidths()
+//	{
+//		JTable tmpTable = plannedImageILP.getTable();
+//		String dateTimeStr = "9999-88-88T00:00:00.000000";
+//		String fileStr = "9999-88-88T00:00:00.0000009999-88-88T00:00:00.000000";
+//		int minW = 40;
+//
+//		ColorProvider blackCP = new ConstColorProvider(Color.BLACK);
+//		Object[] nomArr = { true, true, /*blackCP,*/ fileStr, dateTimeStr };
+//		for (int aCol = 0; aCol < nomArr.length; aCol++)
+//		{
+//			TableCellRenderer tmpRenderer = tmpTable.getCellRenderer(0, aCol);
+//			Component tmpComp = tmpRenderer.getTableCellRendererComponent(tmpTable, nomArr[aCol], false, false, 0, aCol);
+//			int tmpW = Math.max(minW, tmpComp.getPreferredSize().width + 1);
+//			tmpTable.getColumnModel().getColumn(aCol).setPreferredWidth(tmpW + 10);
+//		}
+//	}
 
 	/**
 	 * @return the loadPlannedImageButton

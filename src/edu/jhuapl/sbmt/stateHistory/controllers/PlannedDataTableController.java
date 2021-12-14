@@ -32,8 +32,8 @@ public class PlannedDataTableController<P extends JPanel, D extends PlannedInstr
 
 	protected void updateButtonState()
 	{
+		allMapped = true;
 		ImmutableSet<D> selectedItems = collection.getSelectedItems();
-
 		for (D history : selectedItems)
 		{
 			if (history.isShowing() == false) allMapped = false;

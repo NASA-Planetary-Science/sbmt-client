@@ -21,7 +21,7 @@ import edu.jhuapl.saavtk.color.provider.ColorProvider;
 import edu.jhuapl.saavtk.color.provider.ConstColorProvider;
 import edu.jhuapl.saavtk.gui.util.IconUtil;
 import edu.jhuapl.saavtk.gui.util.ToolTipUtil;
-import edu.jhuapl.sbmt.stateHistory.model.planning.lidar.PlannedLidarTrackCollection;
+import edu.jhuapl.sbmt.stateHistory.model.planning.lidar.PlannedLidarTrackVtkCollection;
 import edu.jhuapl.sbmt.stateHistory.model.planning.lidar.PlannedLidarTrackScheduleCollection;
 
 import glum.gui.GuiUtil;
@@ -70,12 +70,12 @@ public class PlannedLidarTrackScheduleTableView extends JPanel
     /**
      *	The planned LidarTrack item list panel, used to help handle interactions with the table
      */
-    private ItemListPanel<PlannedLidarTrackCollection> plannedLidarTrackILP;
+    private ItemListPanel<PlannedLidarTrackVtkCollection> plannedLidarTrackILP;
 
     /**
      * The planned LidarTrack table handler, used to help populate the table
      */
-    private ItemHandler<PlannedLidarTrackCollection> plannedLidarTrackScheduleTableHandler;
+    private ItemHandler<PlannedLidarTrackVtkCollection> plannedLidarTrackScheduleTableHandler;
 
     private JLabel processingLabel;
 
@@ -204,7 +204,7 @@ public class PlannedLidarTrackScheduleTableView extends JPanel
 		tmpComposer.getItem(PlannedLidarTrackScheduleColumnLookup.Filename).defaultSize *= 3;
 
 		plannedLidarTrackScheduleTableHandler = new PlannedLidarTrackScheduleItemHandler(plannedLidarTrackScheduleCollection, tmpComposer);
-		ItemProcessor<PlannedLidarTrackCollection> tmpIP = plannedLidarTrackScheduleCollection;
+		ItemProcessor<PlannedLidarTrackVtkCollection> tmpIP = plannedLidarTrackScheduleCollection;
 		plannedLidarTrackILP = new ItemListPanel<>(plannedLidarTrackScheduleTableHandler, tmpIP, true);
 		plannedLidarTrackILP.setSortingEnabled(true);
 //		configureColumnWidths();

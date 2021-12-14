@@ -90,7 +90,11 @@ public class StateHistoryViewControlsController
 				@Override
 				public void run()
 				{
-					if (rendererManager.getNumMappedTrajectories() == 0) fovControls.getView().clearTable();
+					if (rendererManager.getNumMappedTrajectories() == 0)
+					{
+						fovControls.getView().clearTable();
+						displayItemsControls.clearAll();
+					}
 					fovControls.getView().repaint();
 					fovControls.getView().validate();
 					view.repaint();
@@ -116,9 +120,9 @@ public class StateHistoryViewControlsController
 		BindingFactory factory = new BindingFactory();
 		factory.setLeftMargin(0);
 		factory.setRightMargin(0);
-        view.add(displayItemsControls.getView(), new RelativeConstraints(factory.leftEdge(), factory.leftOf(coloringControls.getView()),
+        view.add(displayItemsControls.getView(), new RelativeConstraints(factory.leftEdge(), new Binding(Edge.RIGHT, 300, Direction.RIGHT, Edge.LEFT, view),
         																 factory.topEdge(), new Binding(Edge.BOTTOM, 300, Direction.BELOW, Edge.TOP, view)));
-    	view.add(coloringControls.getView(), new RelativeConstraints(factory.rightEdge(), factory.topEdge(), new Binding(Edge.LEFT, 275, Direction.LEFT, Edge.RIGHT, view),
+    	view.add(coloringControls.getView(), new RelativeConstraints(factory.rightEdge(), factory.topEdge(), new Binding(Edge.LEFT, 0, Direction.LEFT, Edge.RIGHT, displayItemsControls.getView()),
     																 new Binding(Edge.BOTTOM, 300, Direction.BELOW, Edge.TOP, view)));
         view.add(viewControls.getView(), new RelativeConstraints(factory.leftEdge(), factory.rightEdge(), factory.below(displayItemsControls.getView())));
 

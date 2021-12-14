@@ -62,7 +62,7 @@ public class PlannedImageCollection extends BasePlannedDataCollection<PlannedIma
 		footprintActors.add(actor.getFootprintBoundaryActor());
 		listener.setProgressStatus("Adding image " + plannedData.size(), 0);
 		setAllItems(plannedData);
-		this.pcs.firePropertyChange("PLANNED_IMAGES_CHANGED", null, null);
+//		this.pcs.firePropertyChange("PLANNED_IMAGES_CHANGED", null, null);
 	}
 
 

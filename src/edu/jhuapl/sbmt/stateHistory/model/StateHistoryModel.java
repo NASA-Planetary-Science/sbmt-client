@@ -110,6 +110,7 @@ public class StateHistoryModel
 				try
 				{
 					updateConfigFile();
+					rendererManager.updateRun(history);
 				}
 				catch (IOException e)
 				{

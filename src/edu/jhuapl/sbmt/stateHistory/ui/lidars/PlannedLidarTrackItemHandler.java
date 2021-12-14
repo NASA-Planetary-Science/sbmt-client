@@ -8,7 +8,7 @@ import org.joda.time.format.DateTimeFormatter;
 
 import edu.jhuapl.saavtk.color.provider.ConstColorProvider;
 import edu.jhuapl.sbmt.stateHistory.model.planning.lidar.PlannedLidarTrack;
-import edu.jhuapl.sbmt.stateHistory.model.planning.lidar.PlannedLidarTrackCollection;
+import edu.jhuapl.sbmt.stateHistory.model.planning.lidar.PlannedLidarTrackVtkCollection;
 import edu.jhuapl.sbmt.util.TimeUtil;
 
 import glum.gui.panel.itemList.BasicItemHandler;
@@ -16,9 +16,9 @@ import glum.gui.panel.itemList.query.QueryComposer;
 
 public class PlannedLidarTrackItemHandler extends BasicItemHandler<PlannedLidarTrack, PlannedLidarTrackColumnLookup>
 {
-	PlannedLidarTrackCollection plannedLidarTrackCollection;
+	PlannedLidarTrackVtkCollection plannedLidarTrackCollection;
 
-	public PlannedLidarTrackItemHandler(PlannedLidarTrackCollection aManager, QueryComposer<PlannedLidarTrackColumnLookup> aComposer)
+	public PlannedLidarTrackItemHandler(PlannedLidarTrackVtkCollection aManager, QueryComposer<PlannedLidarTrackColumnLookup> aComposer)
 	{
 		super(aComposer);
 		plannedLidarTrackCollection = aManager;

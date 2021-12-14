@@ -9,7 +9,7 @@ import java.util.Set;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 
-import edu.jhuapl.saavtk.gui.dialog.DirectoryChooser;
+import edu.jhuapl.saavtk.gui.dialog.CustomFileChooser;
 import edu.jhuapl.saavtk.gui.util.MessageUtil;
 import edu.jhuapl.sbmt.stateHistory.model.interfaces.StateHistory;
 import edu.jhuapl.sbmt.stateHistory.model.io.StateHistoryModelIOHelper;
@@ -67,9 +67,8 @@ class SaveFileAction extends PopAction<StateHistory>
 
 		// Prompt the user for the save folder
 		String title = "Specify the folder to save " + workS.size() + " state history files";
-		File targPath = DirectoryChooser.showOpenDialog(rootComp, title);
-		if (targPath == null)
-			return;
+//		File targPath = DirectoryChooser.showOpenDialog(rootComp, title);
+
 
 		// Save all of the selected items into the target folder
 		StateHistory history = null;
@@ -79,7 +78,10 @@ class SaveFileAction extends PopAction<StateHistory>
 			for (StateHistory stateHistory : workS)
 			{
 				history = stateHistory;
-				StateHistoryModelIOHelper.saveIntervalToFile(refManager.getBodyName(), stateHistory, new File(targPath, stateHistory.getMetadata().getStateHistoryName()).getAbsolutePath());
+				File targetFile = CustomFileChooser.showSaveDialog(rootComp, title, stateHistory.getMetadata().getStateHistoryName());
+				if (targetFile == null)
+					return;
+				StateHistoryModelIOHelper.saveIntervalToFile(refManager.getBodyName(), stateHistory, targetFile.getAbsolutePath());
 				passCnt++;
 			}
 		}
