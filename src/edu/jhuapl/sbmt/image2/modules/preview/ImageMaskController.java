@@ -15,7 +15,7 @@ import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
 import edu.jhuapl.sbmt.image2.api.Layer;
-import edu.jhuapl.sbmt.image2.modules.rendering.VtkImageMaskPipeline;
+import edu.jhuapl.sbmt.image2.modules.rendering.vtk.VtkImageMaskPipeline;
 
 public class ImageMaskController
 {

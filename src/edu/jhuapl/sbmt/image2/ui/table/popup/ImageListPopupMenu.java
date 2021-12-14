@@ -1,16 +1,30 @@
 package edu.jhuapl.sbmt.image2.ui.table.popup;
 
 import java.awt.Component;
+import java.util.List;
 
 import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JMenu;
 
 import edu.jhuapl.saavtk.gui.render.Renderer;
 import edu.jhuapl.saavtk.model.ModelManager;
+import edu.jhuapl.saavtk.model.ModelNames;
 import edu.jhuapl.sbmt.client.SbmtInfoWindowManager;
 import edu.jhuapl.sbmt.client.SbmtSpectrumWindowManager;
+import edu.jhuapl.sbmt.client.SmallBodyModel;
 import edu.jhuapl.sbmt.image2.model.PerspectiveImage;
 import edu.jhuapl.sbmt.image2.model.PerspectiveImageCollection;
+import edu.jhuapl.sbmt.image2.ui.table.popup.boundaryColor.BoundaryColorAction;
+import edu.jhuapl.sbmt.image2.ui.table.popup.export.ExportAction;
+import edu.jhuapl.sbmt.image2.ui.table.popup.properties.ShowInfoAction;
+import edu.jhuapl.sbmt.image2.ui.table.popup.properties.ShowSpectrumAction;
+import edu.jhuapl.sbmt.image2.ui.table.popup.rendering.CenterImageAction;
+import edu.jhuapl.sbmt.image2.ui.table.popup.rendering.ChangeNormalOffsetAction;
+import edu.jhuapl.sbmt.image2.ui.table.popup.rendering.ChangeOpacityAction;
+import edu.jhuapl.sbmt.image2.ui.table.popup.rendering.MapBoundaryAction;
+import edu.jhuapl.sbmt.image2.ui.table.popup.rendering.MapImageAction;
+import edu.jhuapl.sbmt.image2.ui.table.popup.rendering.ShowFrustumAction;
+import edu.jhuapl.sbmt.image2.ui.table.popup.rendering.SimulateLightingAction;
 import edu.jhuapl.sbmt.model.image.PerspectiveImageBoundaryCollection;
 
 import glum.gui.action.PopupMenu;
@@ -49,10 +63,11 @@ public class ImageListPopupMenu extends PopupMenu<PerspectiveImage>
 			installPopAction(showInfoAction, "Spectrum...");
 		}
 
-		SaveBackplanesAction<PerspectiveImage> showBackplanesAction = new SaveBackplanesAction<PerspectiveImage>(aManager);
-		installPopAction(showBackplanesAction, "Generate Backplanes...");
+//		SaveBackplanesAction<PerspectiveImage> showBackplanesAction = new SaveBackplanesAction<PerspectiveImage>(aManager);
+//		installPopAction(showBackplanesAction, "Generate Backplanes...");
 
-		CenterImageAction<PerspectiveImage> centerImageAction = new CenterImageAction<PerspectiveImage>(aManager, renderer);
+		SmallBodyModel smallBodyModel = (SmallBodyModel)modelManager.getModel(ModelNames.SMALL_BODY);
+		CenterImageAction<PerspectiveImage> centerImageAction = new CenterImageAction<PerspectiveImage>(aManager, renderer, List.of(smallBodyModel));
 		installPopAction(centerImageAction, "Center in Window");
 
 		ShowFrustumAction<PerspectiveImage> showFrustumAction = new ShowFrustumAction<PerspectiveImage>(aManager);
@@ -60,27 +75,31 @@ public class ImageListPopupMenu extends PopupMenu<PerspectiveImage>
 		showHideFrustumCBMI.setText("Show Frustum");
 		installPopAction(showFrustumAction, showHideFrustumCBMI);
 
-		ExportENVIImageAction<PerspectiveImage> exportENVIAction = new ExportENVIImageAction<PerspectiveImage>(aManager);
-		installPopAction(exportENVIAction, "Export ENVI Image...");
+		JMenu exportMenu = new JMenu("Export as...");
+		ExportAction<PerspectiveImage> exportAction = new ExportAction<>(aManager, invoker, exportMenu);
+		installPopAction(exportAction, exportMenu);
 
-		SaveImageAction<PerspectiveImage> saveImageAction = new SaveImageAction<PerspectiveImage>(aManager);
-		installPopAction(saveImageAction, "Export FITS Image...");
-
-		ExportInfofileAction<PerspectiveImage> exportInfofileAction = new ExportInfofileAction<PerspectiveImage>(aManager);
-		installPopAction(exportInfofileAction, "Export INFO File...");
-
-		ExportFitsInfoPairsAction<PerspectiveImage> exportFitsInfoPairsAction = new ExportFitsInfoPairsAction<PerspectiveImage>(aManager);
-		installPopAction(exportFitsInfoPairsAction, "Export FITS/Info File(s)...");
+//		ExportENVIImageAction<PerspectiveImage> exportENVIAction = new ExportENVIImageAction<PerspectiveImage>(aManager);
+//		installPopAction(exportENVIAction, "Export ENVI Image...");
+//
+//		SaveImageAction<PerspectiveImage> saveImageAction = new SaveImageAction<PerspectiveImage>(aManager);
+//		installPopAction(saveImageAction, "Export FITS Image...");
+//
+//		ExportInfofileAction<PerspectiveImage> exportInfofileAction = new ExportInfofileAction<PerspectiveImage>(aManager);
+//		installPopAction(exportInfofileAction, "Export INFO File...");
+//
+//		ExportFitsInfoPairsAction<PerspectiveImage> exportFitsInfoPairsAction = new ExportFitsInfoPairsAction<PerspectiveImage>(aManager);
+//		installPopAction(exportFitsInfoPairsAction, "Export FITS/Info File(s)...");
 
 		ChangeNormalOffsetAction<PerspectiveImage> changeNormalOffsetAction = new ChangeNormalOffsetAction<PerspectiveImage>(aManager);
 		installPopAction(changeNormalOffsetAction, "Change Normal Offset...");
 
-		SimulateLightingAction<PerspectiveImage> simulateLightingAction = new SimulateLightingAction<PerspectiveImage>(aManager);
+		SimulateLightingAction<PerspectiveImage> simulateLightingAction = new SimulateLightingAction<PerspectiveImage>(aManager, renderer);
 		JCheckBoxMenuItem simulateLightingCBMI = new JCheckBoxMenuItem(simulateLightingAction);
 		simulateLightingCBMI.setText("Simulate Lighting");
 		installPopAction(simulateLightingAction, simulateLightingCBMI);
 
-		ChangeOpacityAction<PerspectiveImage> changeOpacityAction = new ChangeOpacityAction<PerspectiveImage>(aManager);
+		ChangeOpacityAction<PerspectiveImage> changeOpacityAction = new ChangeOpacityAction<PerspectiveImage>(aManager, renderer);
 		installPopAction(changeOpacityAction, "Change Opacity...");
 
 		JMenu colorMenu = new JMenu("Boundary Color");

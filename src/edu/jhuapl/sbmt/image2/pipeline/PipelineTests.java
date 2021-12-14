@@ -18,18 +18,20 @@ import edu.jhuapl.sbmt.image2.modules.io.builtIn.BuiltInVTKReader;
 import edu.jhuapl.sbmt.image2.modules.pointing.InfofileReaderPublisher;
 import edu.jhuapl.sbmt.image2.modules.pointing.SpiceBodyOperator;
 import edu.jhuapl.sbmt.image2.modules.pointing.SpiceReaderPublisher;
-import edu.jhuapl.sbmt.image2.modules.preview.VtkImagePreview;
+import edu.jhuapl.sbmt.image2.modules.preview.VtkLayerPreview;
 import edu.jhuapl.sbmt.image2.modules.preview.VtkRendererPreview2;
-import edu.jhuapl.sbmt.image2.modules.rendering.LayerLinearInterpolaterOperator;
-import edu.jhuapl.sbmt.image2.modules.rendering.LayerRotationOperator;
-import edu.jhuapl.sbmt.image2.modules.rendering.RenderableImage;
-import edu.jhuapl.sbmt.image2.modules.rendering.RenderableImageGenerator;
+import edu.jhuapl.sbmt.image2.modules.rendering.layer.LayerLinearInterpolaterOperator;
+import edu.jhuapl.sbmt.image2.modules.rendering.layer.LayerMaskOperator;
+import edu.jhuapl.sbmt.image2.modules.rendering.layer.LayerRotationOperator;
+import edu.jhuapl.sbmt.image2.modules.rendering.layer.LayerTrimOperator;
+import edu.jhuapl.sbmt.image2.modules.rendering.pointedImage.RenderablePointedImage;
+import edu.jhuapl.sbmt.image2.modules.rendering.pointedImage.RenderablePointedImageGenerator;
 import edu.jhuapl.sbmt.image2.pipeline.operator.IPipelineOperator;
 import edu.jhuapl.sbmt.image2.pipeline.publisher.IPipelinePublisher;
 import edu.jhuapl.sbmt.image2.pipeline.publisher.Just;
 import edu.jhuapl.sbmt.image2.pipeline.publisher.Publishers;
 import edu.jhuapl.sbmt.image2.pipeline.subscriber.Sink;
-import edu.jhuapl.sbmt.model.image.InfoFileReader;
+import edu.jhuapl.sbmt.model.image.PointingFileReader;
 import edu.jhuapl.sbmt.pointing.spice.SpiceInfo;
 import edu.jhuapl.sbmt.pointing.spice.SpicePointingProvider;
 import edu.jhuapl.sbmt.util.TimeUtil;
@@ -45,28 +47,28 @@ public class PipelineTests
 
 	public PipelineTests() throws Exception
 	{
-//		test1();
+		test1();
 //		test2();
 //		test3();
 //		test4();
-		test5();
+//		test5();
 	}
 
 	private void test1() throws Exception
 	{
-		IPipelinePublisher<Layer> reader = new BuiltInFitsReader("/Users/steelrj1/Desktop/M0125990473F4_2P_IOF_DBL.FIT", new double[] {});
+		IPipelinePublisher<Layer> reader = new BuiltInFitsReader("/Users/steelrj1/Desktop/M0125990619F4_2P_IOF_DBL.FIT", new double[] {});
 		LayerLinearInterpolaterOperator linearInterpolator = new LayerLinearInterpolaterOperator(537, 412);
-//		LayerMaskOperator maskOperator = new LayerMaskOperator(14, 14, 2, 2);
-//		LayerTrimOperator trimOperator = new LayerTrimOperator(14, 14, 2, 2);
+		LayerMaskOperator maskOperator = new LayerMaskOperator(14, 14, 2, 2);
+		LayerTrimOperator trimOperator = new LayerTrimOperator(14, 14, 2, 2);
 //		VtkImageRenderer renderer = new VtkImageRenderer();
 //		VtkImageContrastOperator contrastOperator = new VtkImageContrastOperator(null);
 //		VtkImageVtkMaskingOperator maskingOperator = new VtkImageVtkMaskingOperator(new int[] {0,0,0,0});
-		VtkImagePreview preview = new VtkImagePreview();
+		VtkLayerPreview preview = new VtkLayerPreview();
 
 		reader
 			.operate(linearInterpolator)
-//			.operate(maskOperator)
-//			.operate(trimOperator)
+			.operate(maskOperator)
+			.operate(trimOperator)
 //			.operate(renderer)
 //			.operate(contrastOperator)
 //			.operate(maskingOperator)
@@ -88,7 +90,7 @@ public class PipelineTests
 			.subscribe(Sink.of(updatedLayers)).run();
 
 		//generate image pointing (in: filename, out: ImagePointing)
-		IPipelinePublisher<InfoFileReader> pointingPublisher = new InfofileReaderPublisher("/Users/steelrj1/Desktop/M0125990473F4_2P_IOF_DBL.INFO");
+		IPipelinePublisher<PointingFileReader> pointingPublisher = new InfofileReaderPublisher("/Users/steelrj1/Desktop/M0125990473F4_2P_IOF_DBL.INFO");
 
 		//generate metadata (in: filename, out: ImageMetadata)
 		IPipelinePublisher<HashMap<String, String>> metadataReader = new BuiltInFitsHeaderReader("/Users/steelrj1/Desktop/M0125990473F4_2P_IOF_DBL.FIT");
@@ -96,15 +98,15 @@ public class PipelineTests
 		//combine image source (in: Layer+ImageMetadata+ImagePointing, out: RenderableImage)
 		IPipelinePublisher<Layer> layerPublisher = new Just<Layer>(updatedLayers.get(0));
 //		IPipelinePublisher<Object> imageComponents = Publishers.zip(layerPublisher, metadataReader, pointingPublisher);
-		IPipelinePublisher<Triple<Layer, HashMap<String, String>, InfoFileReader>> imageComponents = Publishers.formTriple(layerPublisher, metadataReader, pointingPublisher);
+		IPipelinePublisher<Triple<Layer, HashMap<String, String>, PointingFileReader>> imageComponents = Publishers.formTriple(layerPublisher, metadataReader, pointingPublisher);
 
-		IPipelineOperator<Triple<Layer, HashMap<String, String>, InfoFileReader>, RenderableImage> renderableImageGenerator = new RenderableImageGenerator();
+		IPipelineOperator<Triple<Layer, HashMap<String, String>, PointingFileReader>, RenderablePointedImage> renderableImageGenerator = new RenderablePointedImageGenerator();
 
 
 		//***************************************************************************************
 		//generate image polydata with texture coords (in: RenderableImage, out: vtkPolydata)
 		//***************************************************************************************
-		List<RenderableImage> renderableImages = Lists.newArrayList();
+		List<RenderablePointedImage> renderableImages = Lists.newArrayList();
 		imageComponents
 			.operate(renderableImageGenerator)
 			.subscribe(Sink.of(renderableImages)).run();
@@ -118,7 +120,7 @@ public class PipelineTests
 		//zip the sources together
 		//*************************
 //		IPipelinePublisher<List<Object>> sceneObjects = Publishers.mergeLists(vtkReader, new Just<RenderableImage>(renderableImages.get(0)));
-		IPipelinePublisher<Pair<List<SmallBodyModel>, List<RenderableImage>>> sceneObjects = Publishers.formPair(Just.of(vtkReader.getOutputs()), Just.of(renderableImages));
+		IPipelinePublisher<Pair<List<SmallBodyModel>, List<RenderablePointedImage>>> sceneObjects = Publishers.formPair(Just.of(vtkReader.getOutputs()), Just.of(renderableImages));
 
 //		//***************************************************************************
 //		//Pass them into the scene builder to perform intersection calculations
@@ -151,7 +153,7 @@ public class PipelineTests
 			.run();
 
 		//generate image pointing (in: filename, out: ImagePointing)
-		IPipelinePublisher<InfoFileReader> pointingPublisher = new InfofileReaderPublisher("/Users/steelrj1/Desktop/dart_717891977_782_01.INFO");
+		IPipelinePublisher<PointingFileReader> pointingPublisher = new InfofileReaderPublisher("/Users/steelrj1/Desktop/dart_717891977_782_01.INFO");
 
 		//generate metadata (in: filename, out: ImageMetadata)
 		IPipelinePublisher<HashMap<String, String>> metadataReader = new BuiltInFitsHeaderReader("/Users/steelrj1/Desktop/dart_717891977_782_01.fits");
@@ -159,16 +161,16 @@ public class PipelineTests
 		//combine image source (in: Layer+ImageMetadata+ImagePointing, out: RenderableImage)
 		IPipelinePublisher<Layer> layerPublisher = new Just<Layer>(updatedLayers.get(0));
 //		IPipelinePublisher<Object> imageComponents = Publishers.zip(layerPublisher, metadataReader, pointingPublisher);
-		IPipelinePublisher<Triple<Layer, HashMap<String, String>, InfoFileReader>> imageComponents = Publishers.formTriple(layerPublisher, metadataReader, pointingPublisher);
+		IPipelinePublisher<Triple<Layer, HashMap<String, String>, PointingFileReader>> imageComponents = Publishers.formTriple(layerPublisher, metadataReader, pointingPublisher);
 //		System.out.println("PipelineTests: test3: number of image components " + imageComponents.getOutputs().size());
-		IPipelineOperator<Triple<Layer, HashMap<String, String>, InfoFileReader>, RenderableImage> renderableImageGenerator = new RenderableImageGenerator();
+		IPipelineOperator<Triple<Layer, HashMap<String, String>, PointingFileReader>, RenderablePointedImage> renderableImageGenerator = new RenderablePointedImageGenerator();
 
 
 		//***************************************************************************************
 		//generate image polydata with texture coords (in: RenderableImage, out: vtkPolydata)
 		//***************************************************************************************
 
-		List<RenderableImage> renderableImages = Lists.newArrayList();
+		List<RenderablePointedImage> renderableImages = Lists.newArrayList();
 		imageComponents
 			.operate(renderableImageGenerator)
 			.subscribe(Sink.of(renderableImages))
@@ -198,7 +200,7 @@ public class PipelineTests
 		//zip the sources together
 		//*************************
 //		IPipelinePublisher<List<Object>> sceneObjects = Publishers.mergeLists(Just.of(updatedBodies), Just.of(renderableImages.get(0)));
-		IPipelinePublisher<Pair<List<SmallBodyModel>, List<RenderableImage>>> sceneObjects = Publishers.formPair(Just.of(updatedBodies), Just.of(renderableImages));
+		IPipelinePublisher<Pair<List<SmallBodyModel>, List<RenderablePointedImage>>> sceneObjects = Publishers.formPair(Just.of(updatedBodies), Just.of(renderableImages));
 
 //		//***************************************************************************
 //		//Pass them into the scene builder to perform intersection calculations
@@ -219,7 +221,7 @@ public class PipelineTests
 	private void test4() throws Exception
 	{
 		IPipelinePublisher<Layer> reader = new BuiltInFitsReader("/Users/steelrj1/Desktop/dart_717891977_782_01.fits", new double[] {-32768.0, -32767.0, 4095.0});
-		VtkImagePreview preview = new VtkImagePreview();
+		VtkLayerPreview preview = new VtkLayerPreview();
 		reader
 			.subscribe(preview)
 			.run();

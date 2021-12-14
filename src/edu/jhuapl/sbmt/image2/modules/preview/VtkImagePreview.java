@@ -38,18 +38,14 @@ import edu.jhuapl.saavtk.gui.dialog.CustomFileChooser;
 import edu.jhuapl.saavtk.gui.render.RenderIoUtil;
 import edu.jhuapl.saavtk.model.Model;
 import edu.jhuapl.saavtk.util.IntensityRange;
-import edu.jhuapl.sbmt.image2.api.Layer;
-import edu.jhuapl.sbmt.image2.modules.rendering.VtkImageContrastPipeline;
-import edu.jhuapl.sbmt.image2.modules.rendering.VtkImageMaskingPipeline;
-import edu.jhuapl.sbmt.image2.modules.rendering.VtkImageRendererOperator;
+import edu.jhuapl.sbmt.image2.modules.rendering.vtk.VtkImageContrastPipeline;
+import edu.jhuapl.sbmt.image2.modules.rendering.vtk.VtkImageMaskingPipeline;
 import edu.jhuapl.sbmt.image2.pipeline.publisher.IPipelinePublisher;
-import edu.jhuapl.sbmt.image2.pipeline.publisher.Just;
 import edu.jhuapl.sbmt.image2.pipeline.subscriber.IPipelineSubscriber;
-import edu.jhuapl.sbmt.image2.pipeline.subscriber.Sink;
 
-public class VtkImagePreview implements IPipelineSubscriber<Layer>
+public class VtkImagePreview implements IPipelineSubscriber<vtkImageData>
 {
-	private IPipelinePublisher<Layer> publisher;
+	private IPipelinePublisher<vtkImageData> publisher;
 
 	public VtkImagePreview()
 	{
@@ -57,7 +53,7 @@ public class VtkImagePreview implements IPipelineSubscriber<Layer>
 	}
 
 	@Override
-	public void receive(List<Layer> items)
+	public void receive(List<vtkImageData> items)
 	{
 		try
 		{
@@ -92,7 +88,7 @@ class ImagePreviewPanel extends ModelInfoWindow implements MouseListener, MouseM
 	ImageTrimController trimController;
 	ImageMaskController maskController;
 	ImageContrastController contrastController;
-	private Layer layer;
+	private vtkImageData imageData;
 	private vtkJoglPanelComponent renWin;
 //	private Image image;
 	private vtkImageSlice actor = new vtkImageSlice();
@@ -132,16 +128,18 @@ class ImagePreviewPanel extends ModelInfoWindow implements MouseListener, MouseM
 //	private OfflimbControlsController offlimbController;
 	vtkImageData displayedImage;
 
-	public ImagePreviewPanel(final Layer layer) throws IOException, Exception
+	public ImagePreviewPanel(final vtkImageData imageData) throws IOException, Exception
 	{
 
 		this.maskPipeline = new VtkImageMaskingPipeline();
-		this.layer = layer;
+		this.imageData = imageData;
 		initComponents();
-		renderLayer(layer);
+		displayedImage = imageData;
+		contrastController.setImageData(displayedImage);
+		prepareRenderer();
 //		refStatusHandler = aStatusHandler;
 
-		setIntensity(null);
+		setIntensity(new IntensityRange(0, 255));
 
 
 		// Add a text box for showing information about the image
@@ -242,26 +240,13 @@ class ImagePreviewPanel extends ModelInfoWindow implements MouseListener, MouseM
 
 	private void setIntensity(IntensityRange range) throws IOException, Exception
 	{
-		VtkImageContrastPipeline pipeline = new VtkImageContrastPipeline(displayedImage, null);
+		VtkImageContrastPipeline pipeline = new VtkImageContrastPipeline(displayedImage, new IntensityRange(0, 255));
 		displayedImage = pipeline.getUpdatedData().get(0);
 		updateImage(displayedImage);
 	}
 
-	private void generateVtkImageData(Layer layer) throws IOException, Exception
+	private void prepareRenderer() throws IOException, Exception
 	{
-		List<vtkImageData> displayedImages = new ArrayList<vtkImageData>();
-		IPipelinePublisher<Layer> reader = new Just<Layer>(layer);
-		reader.
-			operate(new VtkImageRendererOperator()).
-			subscribe(new Sink<vtkImageData>(displayedImages)).run();
-		displayedImage = displayedImages.get(0);
-		contrastController.setImageData(displayedImage);
-	}
-
-	private void renderLayer(Layer layer) throws IOException, Exception
-	{
-		generateVtkImageData(layer);
-
 		renWin = new vtkJoglPanelComponent();
 		renWin.getComponent().setPreferredSize(new Dimension(550, 550));
 
@@ -499,33 +484,33 @@ class ImagePreviewPanel extends ModelInfoWindow implements MouseListener, MouseM
 		gridBagConstraints.gridy = 2;
 		gridBagConstraints.fill = GridBagConstraints.HORIZONTAL;
 		gridBagConstraints.insets = new Insets(3, 6, 3, 0);
-		trimController = new ImageTrimController(layer, new Function<Layer, Void>()
-		{
-
-			@Override
-			public Void apply(Layer t)
-			{
-				try
-				{
-					generateVtkImageData(t);
-					updateImage(displayedImage);
-					setIntensity(null);
-					renWin.Render();
-					layer = t;
-//					maskController.setLayer(t);
-//					trimController.setLayer(t);
-				}
-				catch (Exception e)
-				{
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-
-				return null;
-			}
-		});
-
-		getContentPane().add(trimController.getView(), gridBagConstraints);
+//		trimController = new ImageTrimController(layer, new Function<Layer, Void>()
+//		{
+//
+//			@Override
+//			public Void apply(Layer t)
+//			{
+//				try
+//				{
+//					generateVtkImageData(t);
+//					updateImage(displayedImage);
+//					setIntensity(null);
+//					renWin.Render();
+//					layer = t;
+////					maskController.setLayer(t);
+////					trimController.setLayer(t);
+//				}
+//				catch (Exception e)
+//				{
+//					// TODO Auto-generated catch block
+//					e.printStackTrace();
+//				}
+//
+//				return null;
+//			}
+//		});
+//
+//		getContentPane().add(trimController.getView(), gridBagConstraints);
 
 //		gridBagConstraints = new GridBagConstraints();
 //		gridBagConstraints.gridx = 0;

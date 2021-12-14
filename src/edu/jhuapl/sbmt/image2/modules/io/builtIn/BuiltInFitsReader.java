@@ -6,12 +6,12 @@ import java.util.ArrayList;
 import edu.jhuapl.sbmt.image2.api.Layer;
 import edu.jhuapl.sbmt.image2.api.Pixel;
 import edu.jhuapl.sbmt.image2.impl.LayerDoubleFactory;
+import edu.jhuapl.sbmt.image2.impl.LayerDoubleFactory.DoubleGetter2d;
 import edu.jhuapl.sbmt.image2.impl.LayerDoubleTransformFactory;
 import edu.jhuapl.sbmt.image2.impl.LayerTransformFactory;
 import edu.jhuapl.sbmt.image2.impl.PixelDoubleFactory;
 import edu.jhuapl.sbmt.image2.impl.PixelVectorDoubleFactory;
 import edu.jhuapl.sbmt.image2.impl.ValidityCheckerDoubleFactory;
-import edu.jhuapl.sbmt.image2.impl.LayerDoubleFactory.DoubleGetter2d;
 import edu.jhuapl.sbmt.image2.pipeline.publisher.BasePipelinePublisher;
 
 import nom.tam.fits.BasicHDU;
@@ -57,7 +57,7 @@ public class BuiltInFitsReader extends BasePipelinePublisher<Layer>
         layer = TransformFactory.rotateCCW().apply(layer);
         // layer = DoubleTransformFactory.linearInterpolate(537,
         // 412).apply(layer);
-        // displayLayer("FITS 1D Layer", layer, 0, null);
+//         displayLayer("FITS 1D Layer", layer, 0, null);
         outputs = new ArrayList<Layer>();
         outputs.add(layer);
     }

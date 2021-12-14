@@ -1,6 +1,7 @@
 package edu.jhuapl.sbmt.image2.ui.table;
 
 import java.awt.Component;
+import java.awt.datatransfer.Transferable;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.beans.PropertyChangeEvent;
@@ -11,10 +12,12 @@ import java.util.List;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
+import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
+import javax.swing.TransferHandler;
 import javax.swing.UIManager;
 import javax.swing.border.TitledBorder;
 
@@ -22,6 +25,7 @@ import edu.jhuapl.saavtk.gui.util.IconUtil;
 import edu.jhuapl.saavtk.gui.util.ToolTipUtil;
 import edu.jhuapl.sbmt.image2.model.PerspectiveImage;
 import edu.jhuapl.sbmt.image2.model.PerspectiveImageCollection;
+import edu.jhuapl.sbmt.image2.ui.color.SingleImagePreviewPanel.PerspectiveImageTransferable;
 
 import glum.gui.GuiUtil;
 import glum.gui.action.PopupMenu;
@@ -36,23 +40,25 @@ import glum.item.ItemManagerUtil;
 
 public class ImageListTableView extends JPanel
 {
+	private JButton newImageButton;
+
 	/**
-	 * JButton to load spectra from file
+	 * JButton to load image listfrom file
 	 */
 	private JButton loadImageButton;
 
 	/**
-	 * JButton to remove spectra from table
+	 * JButton to remove image from table
 	 */
 	private JButton hideImageButton;
 
 	/**
-	 * JButton to show spectra in renderer
+	 * JButton to show image in renderer
 	 */
 	private JButton showImageButton;
 
 	/**
-	 * JButton to save spectra to file
+	 * JButton to save image list to file
 	 */
 	private JButton saveImageButton;
 
@@ -60,17 +66,16 @@ public class ImageListTableView extends JPanel
 
 	private JButton imageCubeButton;
 
-    protected JTable resultList;
-    private JLabel resultsLabel;
+	protected JTable resultList;
+	private JLabel resultsLabel;
 
-    //for table
-    private JButton selectAllB, selectInvertB, selectNoneB;
-    private PerspectiveImageCollection imageCollection;
-    private ItemListPanel<PerspectiveImage> imageILP;
-    private ItemHandler<PerspectiveImage> imageItemHandler;
+	// for table
+	private JButton selectAllB, selectInvertB, selectNoneB;
+	private PerspectiveImageCollection imageCollection;
+	private ItemListPanel<PerspectiveImage> imageILP;
+	private ItemHandler<PerspectiveImage> imageItemHandler;
 
-    private PopupMenu popupMenu;
-
+	private PopupMenu popupMenu;
 
 	public ImageListTableView(PerspectiveImageCollection collection, PopupMenu popupMenu)
 	{
@@ -89,36 +94,35 @@ public class ImageListTableView extends JPanel
 		init();
 	}
 
+	protected void init()
+	{
+		resultsLabel = new JLabel(imageCollection.size() + " Result(s)");
+		resultList = buildTable();
+	}
 
-    protected void init()
-    {
-        resultsLabel = new JLabel(imageCollection.size() + " Results");
-        resultList = buildTable();
-    }
+	public void setup()
+	{
+		setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
+		setBorder(new TitledBorder(null, "Available Images", TitledBorder.LEADING, TitledBorder.TOP, null, null));
+		JPanel panel_4 = new JPanel();
+		add(panel_4);
+		panel_4.setLayout(new BoxLayout(panel_4, BoxLayout.X_AXIS));
 
-    public void setup()
-    {
-        setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
-        setBorder(new TitledBorder(null, "Available Images", TitledBorder.LEADING, TitledBorder.TOP, null, null));
-        JPanel panel_4 = new JPanel();
-        add(panel_4);
-        panel_4.setLayout(new BoxLayout(panel_4, BoxLayout.X_AXIS));
+		panel_4.add(resultsLabel);
 
-        panel_4.add(resultsLabel);
+		Component horizontalGlue = Box.createHorizontalGlue();
+		panel_4.add(horizontalGlue);
 
-        Component horizontalGlue = Box.createHorizontalGlue();
-        panel_4.add(horizontalGlue);
+		JScrollPane scrollPane = new JScrollPane();
+//        scrollPane.setPreferredSize(new java.awt.Dimension(150, 250));
+		add(scrollPane);
 
-        JScrollPane scrollPane = new JScrollPane();
-        scrollPane.setPreferredSize(new java.awt.Dimension(150, 750));
-        add(scrollPane);
+		scrollPane.setViewportView(resultList);
+	}
 
-        scrollPane.setViewportView(resultList);
-    }
-
-    private JTable buildTable()
-    {
-    	ActionListener listener = new ActionListener()
+	private JTable buildTable()
+	{
+		ActionListener listener = new ActionListener()
 		{
 
 			@Override
@@ -138,7 +142,10 @@ public class ImageListTableView extends JPanel
 			}
 		};
 
-    	// Table header
+		// Table header
+
+		newImageButton = GuiUtil.formButton(listener, UIManager.getIcon("FileView.fileIcon"));
+		newImageButton.setToolTipText(ToolTipUtil.getCustomImage());
 
 		loadImageButton = GuiUtil.formButton(listener, UIManager.getIcon("FileView.directoryIcon"));
 		loadImageButton.setToolTipText(ToolTipUtil.getItemLoad());
@@ -164,15 +171,16 @@ public class ImageListTableView extends JPanel
 		selectAllB = GuiUtil.formButton(listener, IconUtil.getSelectAll());
 		selectAllB.setToolTipText(ToolTipUtil.getSelectAll());
 
-		colorImageButton = GuiUtil.formButton(listener, "Color");
-		colorImageButton.setToolTipText("Generate a Color Image");
+		colorImageButton = GuiUtil.formButton(listener, IconUtil.getColor());
+		colorImageButton.setToolTipText(ToolTipUtil.getColorImage());
 
-		imageCubeButton = GuiUtil.formButton(listener, "Cube");
-		imageCubeButton.setToolTipText("Generate an Image Cube");
+		imageCubeButton = GuiUtil.formButton(listener, IconUtil.getLayers());
+		imageCubeButton.setToolTipText(ToolTipUtil.getImageCube());
 
 		JPanel buttonPanel = new JPanel();
 		buttonPanel.setLayout(new BoxLayout(buttonPanel, BoxLayout.X_AXIS));
 
+		buttonPanel.add(newImageButton);
 		buttonPanel.add(loadImageButton);
 		buttonPanel.add(saveImageButton);
 		buttonPanel.add(Box.createHorizontalGlue());
@@ -209,7 +217,6 @@ public class ImageListTableView extends JPanel
 		tmpComposer.setEditor(ImageColumnLookup.Boundary, new BooleanCellEditor());
 		tmpComposer.setRenderer(ImageColumnLookup.Boundary, new BooleanCellRenderer());
 
-
 		tmpComposer.getItem(ImageColumnLookup.Status).defaultSize *= 2;
 		tmpComposer.getItem(ImageColumnLookup.Filename).defaultSize *= 4;
 		tmpComposer.getItem(ImageColumnLookup.Date).defaultSize *= 2;
@@ -219,27 +226,29 @@ public class ImageListTableView extends JPanel
 		imageILP = new ItemListPanel<>(imageItemHandler, tmpIP, true);
 		imageILP.setSortingEnabled(true);
 		JTable imageTable = imageILP.getTable();
+		imageTable.setDragEnabled(true);
+		imageTable.setTransferHandler(new PerspectiveImageTransferHandler());
 		imageTable.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
 		imageTable.addMouseListener(new TablePopupHandler(imageCollection, popupMenu));
 		return imageTable;
-    }
+	}
 
-    public JTable getResultList()
-    {
-        return resultList;
-    }
+	public JTable getResultList()
+	{
+		return resultList;
+	}
 
-    public JLabel getResultsLabel()
-    {
-        return resultsLabel;
-    }
+	public JLabel getResultsLabel()
+	{
+		return resultsLabel;
+	}
 
-    public void setResultsLabel(JLabel resultsLabel)
-    {
-        this.resultsLabel = resultsLabel;
-    }
+	public void setResultsLabel(JLabel resultsLabel)
+	{
+		this.resultsLabel = resultsLabel;
+	}
 
-	public ItemHandler<PerspectiveImage> getMEGANETableHandler()
+	public ItemHandler<PerspectiveImage> getTableHandler()
 	{
 		return imageItemHandler;
 	}
@@ -252,7 +261,6 @@ public class ImageListTableView extends JPanel
 		return loadImageButton;
 	}
 
-
 	/**
 	 * @return the hideImageButton
 	 */
@@ -260,7 +268,6 @@ public class ImageListTableView extends JPanel
 	{
 		return hideImageButton;
 	}
-
 
 	/**
 	 * @return the showImageButton
@@ -270,7 +277,6 @@ public class ImageListTableView extends JPanel
 		return showImageButton;
 	}
 
-
 	/**
 	 * @return the saveImageButton
 	 */
@@ -279,15 +285,201 @@ public class ImageListTableView extends JPanel
 		return saveImageButton;
 	}
 
-
 	public JButton getColorImageButton()
 	{
 		return colorImageButton;
 	}
 
-
 	public JButton getImageCubeButton()
 	{
 		return imageCubeButton;
 	}
+
+	public JButton getNewImageButton()
+	{
+		return newImageButton;
+	}
+
+	public class PerspectiveImageTransferHandler extends TransferHandler
+	{
+
+		@Override
+		protected void exportDone(JComponent arg0, Transferable arg1, int arg2)
+		{
+			// TODO Auto-generated method stub
+			super.exportDone(arg0, arg1, arg2);
+		}
+
+		@Override
+        protected Transferable createTransferable(JComponent c) {
+			return new PerspectiveImageTransferable(imageCollection.getSelectedItems().asList().get(0));
+        }
+
+		public int getSourceActions(JComponent c)
+		{
+			return COPY_OR_MOVE;
+		}
+
+		protected void cleanup(JComponent c, boolean remove)
+		{
+
+		}
+	}
+
+//	abstract class StringTransferHandler extends TransferHandler
+//	{
+//
+//		protected abstract String exportString(JComponent c);
+//
+//		protected abstract void importString(JComponent c, String str);
+//
+//		protected abstract void cleanup(JComponent c, boolean remove);
+//
+//		protected Transferable createTransferable(JComponent c)
+//		{
+//			return new StringSelection(exportString(c));
+//		}
+//
+//		public int getSourceActions(JComponent c)
+//		{
+//			return COPY_OR_MOVE;
+//		}
+//
+//		public boolean importData(JComponent c, Transferable t)
+//		{
+//			if (canImport(c, t.getTransferDataFlavors()))
+//			{
+//				try
+//				{
+//					String str = (String) t.getTransferData(DataFlavor.stringFlavor);
+//					importString(c, str);
+//					return true;
+//				} catch (UnsupportedFlavorException ufe)
+//				{
+//				} catch (IOException ioe)
+//				{
+//				}
+//			}
+//
+//			return false;
+//		}
+//
+//		protected void exportDone(JComponent c, Transferable data, int action)
+//		{
+//			cleanup(c, action == MOVE);
+//		}
+//
+//		public boolean canImport(JComponent c, DataFlavor[] flavors)
+//		{
+//			for (int i = 0; i < flavors.length; i++)
+//			{
+//				if (DataFlavor.stringFlavor.equals(flavors[i]))
+//				{
+//					return true;
+//				}
+//			}
+//			return false;
+//		}
+//
+//
+//	}
+//
+//	class TableTransferHandler extends StringTransferHandler
+//	{
+//		private int[] rows = null;
+//
+//		private int addIndex = -1; // Location where items were added
+//
+//		private int addCount = 0; // Number of items added.
+//
+//		protected String exportString(JComponent c)
+//		{
+//			JTable table = (JTable) c;
+//			rows = table.getSelectedRows();
+//			String filename = imageCollection.getSelectedItems().asList().get(0).getFilename();
+//			return filename;
+////		    int colCount = table.getColumnCount();
+////
+////		    StringBuffer buff = new StringBuffer();
+////
+////		    for (int i = 0; i < rows.length; i++) {
+//////		      for (int j = 0; j < colCount; j++) {
+////		        Object val = table.getValueAt(rows[i], 6);
+////		        buff.append(val == null ? "" : val.toString());
+//////		        if (j != colCount - 1) {
+//////		          buff.append(",");
+//////		        }
+//////		      }
+////		      if (i != rows.length - 1) {
+////		        buff.append("\n");
+////		      }
+////		    }
+////
+////		    return buff.toString();
+//		}
+//
+//		protected void importString(JComponent c, String str)
+//		{
+//			JTable target = (JTable) c;
+//			DefaultTableModel model = (DefaultTableModel) target.getModel();
+//			int index = target.getSelectedRow();
+//
+//			// Prevent the user from dropping data back on itself.
+//			// For example, if the user is moving rows #4,#5,#6 and #7 and
+//			// attempts to insert the rows after row #5, this would
+//			// be problematic when removing the original rows.
+//			// So this is not allowed.
+//			if (rows != null && index >= rows[0] - 1 && index <= rows[rows.length - 1])
+//			{
+//				rows = null;
+//				return;
+//			}
+//
+//			int max = model.getRowCount();
+//			if (index < 0)
+//			{
+//				index = max;
+//			} else
+//			{
+//				index++;
+//				if (index > max)
+//				{
+//					index = max;
+//				}
+//			}
+//			addIndex = index;
+//			String[] values = str.split("\n");
+//			addCount = values.length;
+//			int colCount = target.getColumnCount();
+//			for (int i = 0; i < values.length && i < colCount; i++)
+//			{
+//				model.insertRow(index++, values[i].split(","));
+//			}
+//		}
+//
+//		protected void cleanup(JComponent c, boolean remove)
+//		{
+////		    JTable source = (JTable) c;
+////		    if (remove && rows != null) {
+////		      DefaultTableModel model = (DefaultTableModel) source.getModel();
+////
+////		      //If we are moving items around in the same table, we
+////		      //need to adjust the rows accordingly, since those
+////		      //after the insertion point have moved.
+////		      if (addCount > 0) {
+////		        for (int i = 0; i < rows.length; i++) {
+////		          if (rows[i] > addIndex) {
+////		            rows[i] += addCount;
+////		          }
+////		        }
+////		      }
+////		      for (int i = rows.length - 1; i >= 0; i--) {
+////		        model.removeRow(rows[i]);
+////		      }
+////		    }
+////		    rows = null;
+////		    addCount = 0;
+////		    addIndex = -1;
+//		}
+//	}
 }

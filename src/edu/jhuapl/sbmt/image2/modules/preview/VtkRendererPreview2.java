@@ -49,9 +49,9 @@ import edu.jhuapl.sbmt.image2.modules.pointing.SpiceBodyOperator;
 import edu.jhuapl.sbmt.image2.modules.pointing.SpiceReaderPublisher;
 import edu.jhuapl.sbmt.image2.modules.preview.VtkRendererPreview2.BodyPositionPipeline;
 import edu.jhuapl.sbmt.image2.modules.preview.VtkRendererPreview2.RenderableImagesPipeline;
-import edu.jhuapl.sbmt.image2.modules.rendering.LayerRotationOperator;
-import edu.jhuapl.sbmt.image2.modules.rendering.RenderableImage;
-import edu.jhuapl.sbmt.image2.modules.rendering.RenderableImageGenerator;
+import edu.jhuapl.sbmt.image2.modules.rendering.layer.LayerRotationOperator;
+import edu.jhuapl.sbmt.image2.modules.rendering.pointedImage.RenderablePointedImage;
+import edu.jhuapl.sbmt.image2.modules.rendering.pointedImage.RenderablePointedImageGenerator;
 import edu.jhuapl.sbmt.image2.pipeline.IPipeline;
 import edu.jhuapl.sbmt.image2.pipeline.operator.IPipelineOperator;
 import edu.jhuapl.sbmt.image2.pipeline.publisher.IPipelinePublisher;
@@ -59,7 +59,7 @@ import edu.jhuapl.sbmt.image2.pipeline.publisher.Just;
 import edu.jhuapl.sbmt.image2.pipeline.publisher.Publishers;
 import edu.jhuapl.sbmt.image2.pipeline.subscriber.BasePipelineSubscriber;
 import edu.jhuapl.sbmt.image2.pipeline.subscriber.Sink;
-import edu.jhuapl.sbmt.model.image.InfoFileReader;
+import edu.jhuapl.sbmt.model.image.PointingFileReader;
 import edu.jhuapl.sbmt.pointing.spice.SpiceInfo;
 import edu.jhuapl.sbmt.pointing.spice.SpicePointingProvider;
 import edu.jhuapl.sbmt.util.TimeUtil;
@@ -68,16 +68,16 @@ public class VtkRendererPreview2 extends BasePipelineSubscriber<vtkActor>
 {
 	private IPipelinePublisher<vtkActor> publisher;
 	private SmallBodyModel smallBodyModel;
-	IPipelinePublisher<Pair<List<SmallBodyModel>, List<RenderableImage>>> sceneObjects;
+	IPipelinePublisher<Pair<List<SmallBodyModel>, List<RenderablePointedImage>>> sceneObjects;
 	RenderableImagesPipeline renderableImagesPipeline;
 	BodyPositionPipeline bodyPositionPipeline;
 	double startTime;
 
-	class RenderableImagesPipeline implements IPipeline<RenderableImage>
+	class RenderableImagesPipeline implements IPipeline<RenderablePointedImage>
 	{
-		List<RenderableImage> renderableImages = Lists.newArrayList();
-		IPipelinePublisher<Triple<Layer, HashMap<String, String>, InfoFileReader>> imageComponents;
-		IPipelineOperator<Triple<Layer, HashMap<String, String>, InfoFileReader>, RenderableImage> renderableImageGenerator;
+		List<RenderablePointedImage> renderableImages = Lists.newArrayList();
+		IPipelinePublisher<Triple<Layer, HashMap<String, String>, PointingFileReader>> imageComponents;
+		IPipelineOperator<Triple<Layer, HashMap<String, String>, PointingFileReader>, RenderablePointedImage> renderableImageGenerator;
 
 		public RenderableImagesPipeline(String[] imageFiles, String[] pointingFiles) throws Exception
 		{
@@ -91,7 +91,7 @@ public class VtkRendererPreview2 extends BasePipelineSubscriber<vtkActor>
 				.run();
 
 			//generate image pointing (in: filename, out: ImagePointing)
-			IPipelinePublisher<InfoFileReader> pointingPublisher = new InfofileReaderPublisher("/Users/steelrj1/Desktop/dart_717891977_782_01.INFO");
+			IPipelinePublisher<PointingFileReader> pointingPublisher = new InfofileReaderPublisher("/Users/steelrj1/Desktop/dart_717891977_782_01.INFO");
 
 			//generate metadata (in: filename, out: ImageMetadata)
 			IPipelinePublisher<HashMap<String, String>> metadataReader = new BuiltInFitsHeaderReader("/Users/steelrj1/Desktop/dart_717891977_782_01.fits");
@@ -99,7 +99,7 @@ public class VtkRendererPreview2 extends BasePipelineSubscriber<vtkActor>
 			//combine image source (in: Layer+ImageMetadata+ImagePointing, out: RenderableImage)
 			IPipelinePublisher<Layer> layerPublisher = new Just<Layer>(updatedLayers.get(0));
 			imageComponents = Publishers.formTriple(layerPublisher, metadataReader, pointingPublisher);
-			renderableImageGenerator = new RenderableImageGenerator();
+			renderableImageGenerator = new RenderablePointedImageGenerator();
 		}
 
 		public void run() throws Exception
@@ -114,7 +114,7 @@ public class VtkRendererPreview2 extends BasePipelineSubscriber<vtkActor>
 				.run();
 		}
 
-		public List<RenderableImage> getOutput()
+		public List<RenderablePointedImage> getOutput()
 		{
 			return renderableImages;
 		}
@@ -332,7 +332,7 @@ class RendererPreviewPanel2 extends ModelInfoWindow implements MouseListener, Mo
 	{
 		//run the pipelines
 		renderableImagesPipeline.run();
-		List<RenderableImage> renderableImages = renderableImagesPipeline.getOutput();
+		List<RenderablePointedImage> renderableImages = renderableImagesPipeline.getOutput();
 
 		bodyPositionPipeline.run();
 		List<SmallBodyModel> updatedBodies = bodyPositionPipeline.getOutput();
@@ -340,7 +340,7 @@ class RendererPreviewPanel2 extends ModelInfoWindow implements MouseListener, Mo
 		//*************************
 		//zip the sources together
 		//*************************
-		IPipelinePublisher<Pair<List<SmallBodyModel>, List<RenderableImage>>> sceneObjects = Publishers.formPair(Just.of(updatedBodies), Just.of(renderableImages));
+		IPipelinePublisher<Pair<List<SmallBodyModel>, List<RenderablePointedImage>>> sceneObjects = Publishers.formPair(Just.of(updatedBodies), Just.of(renderableImages));
 
 //		//***************************************************************************
 //		//Pass them into the scene builder to perform intersection calculations

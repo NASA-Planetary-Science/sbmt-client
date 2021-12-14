@@ -1,5 +1,6 @@
 package edu.jhuapl.sbmt.image2.modules.preview;
 
+import java.awt.Container;
 import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
@@ -40,6 +41,7 @@ public class VtkRendererPreview implements IPipelineSubscriber<vtkActor>
 {
 	private IPipelinePublisher<vtkActor> publisher;
 	private SmallBodyModel smallBodyModel;
+	private RendererPreviewPanel preview;
 
 	public VtkRendererPreview(SmallBodyModel smallBodyModel)
 	{
@@ -51,13 +53,18 @@ public class VtkRendererPreview implements IPipelineSubscriber<vtkActor>
 	{
 		try
 		{
-			RendererPreviewPanel preview = new RendererPreviewPanel(smallBodyModel, items);
+			preview = new RendererPreviewPanel(smallBodyModel, items);
 		}
 		catch (Exception e)
 		{
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+	}
+
+	public Container getPanel()
+	{
+		return preview.getContentPane();
 	}
 
 	@Override
@@ -93,7 +100,7 @@ class RendererPreviewPanel extends ModelInfoWindow implements MouseListener, Mou
 		setTitle("Renderer Preview");
 
 		pack();
-		setVisible(true);
+//		setVisible(true);
 
 //		initialized = true;
 

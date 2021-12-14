@@ -34,6 +34,7 @@ import edu.jhuapl.saavtk.pick.PickManager.PickMode;
 import edu.jhuapl.sbmt.client.SmallBodyViewConfig;
 import edu.jhuapl.sbmt.gui.image.model.ImageSearchModelListener;
 import edu.jhuapl.sbmt.gui.image.ui.search.ImageSearchParametersPanel;
+import edu.jhuapl.sbmt.gui.image.ui.search.SpectralImageSearchParametersPanel;
 import edu.jhuapl.sbmt.image2.model.ImageSearchParametersModel;
 import edu.jhuapl.sbmt.image2.model.PerspectiveImage;
 import edu.jhuapl.sbmt.image2.model.PerspectiveImageCollection;
@@ -42,7 +43,7 @@ import edu.jhuapl.sbmt.model.image.ImageSource;
 
 public class ImageSearchParametersController
 {
-	protected ImageSearchParametersPanel panel;
+	protected SpectralImageSearchParametersPanel panel;
     protected ImageSearchParametersModel model;
     private PickManager pickManager;
     private JPanel auxPanel;
@@ -55,7 +56,7 @@ public class ImageSearchParametersController
     public ImageSearchParametersController(SmallBodyViewConfig viewConfig, PerspectiveImageCollection collection,  ImageSearchParametersModel model, ModelManager modelManager, PickManager pickManager)
     {
         this.model = model;
-        this.panel = new ImageSearchParametersPanel();
+        this.panel = new SpectralImageSearchParametersPanel();
         this.pickManager = pickManager;
         this.modelManager = modelManager;
         this.viewConfig = viewConfig;
@@ -425,7 +426,7 @@ public class ImageSearchParametersController
         return panel;
     }
 
-    public void setPanel(ImageSearchParametersPanel panel)
+    public void setPanel(SpectralImageSearchParametersPanel panel)
     {
         this.panel = panel;
     }

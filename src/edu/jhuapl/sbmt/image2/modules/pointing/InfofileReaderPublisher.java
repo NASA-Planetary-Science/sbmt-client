@@ -4,8 +4,10 @@ import java.util.List;
 
 import edu.jhuapl.sbmt.image2.pipeline.publisher.BasePipelinePublisher;
 import edu.jhuapl.sbmt.model.image.InfoFileReader;
+import edu.jhuapl.sbmt.model.image.PointingFileReader;
+import edu.jhuapl.sbmt.model.image.PointingFileReader;
 
-public class InfofileReaderPublisher extends BasePipelinePublisher<InfoFileReader>
+public class InfofileReaderPublisher extends BasePipelinePublisher<PointingFileReader>
 {
 
 	public InfofileReaderPublisher(String filename)

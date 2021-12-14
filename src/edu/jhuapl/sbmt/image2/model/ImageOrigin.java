@@ -16,4 +16,16 @@ public enum ImageOrigin {
 	{
 		return name;
 	}
+
+	public static ImageOrigin valueFor(String description)
+    {
+        for (ImageOrigin source : values())
+        {
+            if (source.getFullName().equals(description))
+            {
+                return source;
+            }
+        }
+        return null;
+    }
 }

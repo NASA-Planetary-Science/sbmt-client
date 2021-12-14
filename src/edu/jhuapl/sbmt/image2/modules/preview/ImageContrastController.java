@@ -12,7 +12,7 @@ import com.jidesoft.swing.RangeSlider;
 import vtk.vtkImageData;
 
 import edu.jhuapl.saavtk.util.IntensityRange;
-import edu.jhuapl.sbmt.image2.modules.rendering.VtkImageContrastPipeline;
+import edu.jhuapl.sbmt.image2.modules.rendering.vtk.VtkImageContrastPipeline;
 
 public class ImageContrastController
 {

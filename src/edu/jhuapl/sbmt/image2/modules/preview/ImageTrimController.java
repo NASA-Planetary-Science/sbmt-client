@@ -15,7 +15,7 @@ import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
 import edu.jhuapl.sbmt.image2.api.Layer;
-import edu.jhuapl.sbmt.image2.modules.rendering.VtkImageTrimPipeline;
+import edu.jhuapl.sbmt.image2.modules.rendering.vtk.VtkImageTrimPipeline;
 
 public class ImageTrimController
 {

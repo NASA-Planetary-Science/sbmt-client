@@ -44,6 +44,8 @@ import edu.jhuapl.saavtk.util.UrlStatus;
 import edu.jhuapl.sbmt.dtm.model.DEMKey;
 import edu.jhuapl.sbmt.gui.image.model.custom.CustomCylindricalImageKey;
 import edu.jhuapl.sbmt.gui.image.model.custom.CustomPerspectiveImageKey;
+import edu.jhuapl.sbmt.image2.model.PerspectiveImage;
+import edu.jhuapl.sbmt.image2.modules.rendering.cylindricalImage.CylindricalBounds;
 import edu.jhuapl.sbmt.model.bennu.spectra.otes.OTES;
 import edu.jhuapl.sbmt.model.bennu.spectra.ovirs.OVIRS;
 import edu.jhuapl.sbmt.model.eros.nis.NIS;
@@ -163,6 +165,8 @@ public class SbmtMultiMissionTool
 		Line.initializeSerializationProxy();
 
 		// Images.
+		CylindricalBounds.initializeSerializationProxy();
+		PerspectiveImage.initializeSerializationProxy();
 		CustomCylindricalImageKey.initializeSerializationProxy();
 		CustomPerspectiveImageKey.initializeSerializationProxy();
 //		SpectrumKey.initializeSerializationProxy();

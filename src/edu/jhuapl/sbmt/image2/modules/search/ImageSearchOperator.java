@@ -3,7 +3,6 @@ package edu.jhuapl.sbmt.image2.modules.search;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.GregorianCalendar;
-import java.util.HashMap;
 import java.util.List;
 import java.util.TreeSet;
 
@@ -123,7 +122,6 @@ public class ImageSearchOperator extends BasePipelineOperator<ImageSearchParamet
         }
 
         ImageSource imageSource = searchParameterModel.getImageSourceOfLastQuery(); // ImageSource.valueOf(((Enum)panel.getSourceComboBox().getSelectedItem()).name());
-
         // Populate camera and filter list differently based on if we are doing sum-of-products or product-of-sums search
         boolean sumOfProductsSearch;
 //        List<Integer> camerasSelected;
@@ -211,17 +209,47 @@ public class ImageSearchOperator extends BasePipelineOperator<ImageSearchParamet
         int i=0;
         for (List<String> imageInfo : results)
         {
-        	HashMap<ImageSource, String> pointingSources = new HashMap<ImageSource, String>();
+//        	HashMap<ImageSource, String> pointingSources = new HashMap<ImageSource, String>();
         	//TODO make this generic to handle the available server directory structures
-        	pointingSources.put(ImageSource.SPICE, FilenameUtils.removeExtension(imageInfo.get(0)).replace("images/public", "infofiles") + ".INFO");
-        	pointingSources.put(ImageSource.GASKELL, FilenameUtils.removeExtension(imageInfo.get(0)).replace("images/public", "sumfiles") + ".SUM");
-        	pointingSources.put(ImageSource.LABEL, FilenameUtils.removeExtension(imageInfo.get(0)).replace("images/public", "labelfiles") + ".LBL");
-        	PerspectiveImage image = new PerspectiveImage(imageInfo.get(0), pointingSources, new double[] {});
+//        	pointingSources.put(ImageSource.SPICE, FilenameUtils.removeExtension(imageInfo.get(0)).replace("images/public", "infofiles") + ".INFO");
+//        	pointingSources.put(ImageSource.GASKELL, FilenameUtils.removeExtension(imageInfo.get(0)).replace("images/public", "sumfiles") + ".SUM");
+//        	pointingSources.put(ImageSource.LABEL, FilenameUtils.removeExtension(imageInfo.get(0)).replace("images/public", "labelfiles") + ".LBL");
+
+
+        	String extension = ".INFO";
+        	String pointingDir = "infofiles";
+        	if (imageSource == ImageSource.GASKELL || imageSource == ImageSource.GASKELL_UPDATED)
+    		{
+        		extension = ".SUM";
+        		pointingDir = "sumfiles";
+        		if (viewConfig.getUniqueName().contains("Eros")) pointingDir = "sumfiles_to_be_delivered";
+    		}
+        	if (imageSource == ImageSource.LABEL)
+    		{
+        		extension = ".LBL";
+        		pointingDir = "labels";
+    		}
+
+        	String imagePath = "images";
+        	if (viewConfig.getUniqueName().contains("Bennu")) imagePath = "images/public";
+
+        	String infoBaseName = FilenameUtils.removeExtension(imageInfo.get(0)).replace(imagePath, pointingDir);
+        	if (viewConfig.getUniqueName().contains("Eros"))
+    		{
+        		String filename = FilenameUtils.getBaseName(imageInfo.get(0).substring(imageInfo.get(0).lastIndexOf("/")));
+            	String filenamePrefix = filename.substring(0, filename.indexOf("_"));
+        		infoBaseName = infoBaseName.replace(filename, filenamePrefix.substring(0, filenamePrefix.length()-2));
+    		}
+
+        	PerspectiveImage image = new PerspectiveImage(imageInfo.get(0), instrument.getType(), imageSource, infoBaseName + extension, new double[] {});
         	image.setFlip(instrument.getFlip());
-        	image.setFlip("Y");
+//        	image.setFlip("Y");
         	image.setRotation(instrument.getRotation());
-        	image.setRotation(90.0);
+//        	image.setRotation(90.0);
         	image.setImageOrigin(ImageOrigin.SERVER);
+        	//TODO should be replaced with parameters from ImagingInstrument
+        	image.setLinearInterpolatorDims(new int[] {537, 412});
+        	image.setMaskValues(new int[] {2, 14, 2, 14});
 //        	image.setFillValues(instrument.getFillDetector(image));
         	image.setLongTime(Long.parseLong(imageInfo.get(1)));
         	image.setIndex(i++);
