@@ -7,7 +7,7 @@ import java.util.Set;
  * A collection of arbitrarily complex data whose elements are indexed in two
  * dimensions, I and J. Beyond this 2-index look-up, implementations are free to
  * structure and store their data in any desired form. Callers may obtain the
- * data using an instance of {@link Pixel}.
+ * data associated with an (I, J) pair using an instance of {@link Pixel}.
  *
  * @see Pixel
  *
@@ -97,16 +97,54 @@ public interface Layer
      * always attempt to set all the values in the pixel, even if
      * {@link #isValid(int, int)} returns false for any reason.
      * <p>
-     * If an implementation cannot or does not know how to set the values of the
-     * specified {@link Pixel} instance using its data, it shall throw an
-     * {@link IllegalArgumentException}.
+     * If the specified pixel argument is null, implementations shall throw a
+     * {@link NullPointerException}. If an implementation cannot or does not
+     * know how to set the values of the specified {@link Pixel} instance using
+     * its data, it shall throw an {@link IllegalArgumentException}.
      *
      * @param i the I index
      * @param j the J index
      * @param p the pixel, which will be mutated by this method
+     * @param throws NullPointerException if p is null
      * @param throws IllegalArgumentException if the layer implementation does
      *            not know how to handle the specified instance of the pixel
      */
     void get(int i, int j, Pixel p);
+
+    /**
+     * Retrieve the smallest and largest values in the layer, and use them to
+     * set the specified {@link Pixel} instances.
+     * <p>
+     * The default implementation assumes no range is defined, and simply calls
+     * {@link Pixel#setIsValid(boolean)} passing a value of false, for both the
+     * minimum and maximum pixel.
+     * <p>
+     * If either argument is null, implementations shall throw a
+     * {@link NullPointerException}. If an implementation cannot or does not
+     * know how to set values of the specified {@link Pixel} sub-type instance
+     * using its data for either argument, it shall throw an
+     * {@link IllegalArgumentException}.
+     *
+     * @param pMin the pixel used to return the minimum value in the layer
+     * @param pMax the pixel used to return the maximum value in the layer
+     * @param throws NullPointerException if pMin or pMax is null
+     * @param throws IllegalArgumentException if the layer implementation does
+     *            not know how to handle the specified instance of the pixel for
+     *            either pMin or pMax
+     */
+    default void getRange(Pixel pMin, Pixel pMax)
+    {
+        if (pMin == null)
+        {
+            throw new NullPointerException();
+        }
+        if (pMax == null)
+        {
+            throw new NullPointerException();
+        }
+
+        pMin.setIsValid(false);
+        pMax.setIsValid(false);
+    }
 
 }

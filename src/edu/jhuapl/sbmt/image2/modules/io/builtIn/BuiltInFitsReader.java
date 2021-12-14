@@ -5,18 +5,22 @@ import java.util.ArrayList;
 
 import edu.jhuapl.sbmt.image2.api.Layer;
 import edu.jhuapl.sbmt.image2.api.Pixel;
-import edu.jhuapl.sbmt.image2.impl.LayerDoubleFactory;
-import edu.jhuapl.sbmt.image2.impl.LayerDoubleFactory.DoubleGetter2d;
+import edu.jhuapl.sbmt.image2.impl.DoubleBuilderBase.DoubleGetter2d;
+import edu.jhuapl.sbmt.image2.impl.DoubleBuilderBase.ScalarValidityChecker;
+import edu.jhuapl.sbmt.image2.impl.LayerDoubleBuilder;
 import edu.jhuapl.sbmt.image2.impl.LayerDoubleTransformFactory;
 import edu.jhuapl.sbmt.image2.impl.LayerTransformFactory;
 import edu.jhuapl.sbmt.image2.impl.PixelDoubleFactory;
 import edu.jhuapl.sbmt.image2.impl.PixelVectorDoubleFactory;
+import edu.jhuapl.sbmt.image2.impl.RangeGetterDoubleBuilder;
 import edu.jhuapl.sbmt.image2.impl.ValidityCheckerDoubleFactory;
 import edu.jhuapl.sbmt.image2.pipeline.publisher.BasePipelinePublisher;
 
 import nom.tam.fits.BasicHDU;
 import nom.tam.fits.Fits;
 import nom.tam.fits.FitsException;
+import nom.tam.fits.Header;
+import nom.tam.fits.header.Standard;
 
 public class BuiltInFitsReader extends BasePipelinePublisher<Layer>
 {
@@ -27,8 +31,8 @@ public class BuiltInFitsReader extends BasePipelinePublisher<Layer>
     }
 
     private String filename;
+    private double[] fill;
 
-    protected static final LayerDoubleFactory LayerFactory = new LayerDoubleFactory();
     protected static final PixelDoubleFactory PixelScalarFactory = new PixelDoubleFactory();
     protected static final PixelVectorDoubleFactory PixelVectorFactory = new PixelVectorDoubleFactory();
     protected static final LayerTransformFactory TransformFactory = new LayerTransformFactory();
@@ -38,22 +42,24 @@ public class BuiltInFitsReader extends BasePipelinePublisher<Layer>
 
     private float[][] array2D = null;
     // height is axis 0
-    int fitsHeight = 0;
+    private int fitsHeight = 0;
     // for 2D pixel arrays, width is axis 1, for 3D pixel arrays, width axis is
     // 2
-    int fitsWidth = 0;
+    private int fitsWidth = 0;
+    // for 2D pixel arrays, depth is 0, for 3D pixel arrays, depth axis is 1
+    private int fitsDepth = 0;
+
+    private Double dataMin = null;
+    private Double dataMax = null;
 
     public BuiltInFitsReader(String filename, double[] fill) throws FitsException, IOException
     {
         this.filename = filename;
+        this.fill = fill;
         loadData();
-        Layer layer;
-        if (fill.length == 0)
-            layer = ofScalar(fitsHeight, fitsWidth, null);
-        else
-        {
-            layer = ofScalar(fitsHeight, fitsWidth, new ValidityCheckerDoubleFactory().of(fill));
-        }
+
+        Layer layer = ofScalar();
+
         layer = TransformFactory.rotateCCW().apply(layer);
         // layer = DoubleTransformFactory.linearInterpolate(537,
         // 412).apply(layer);
@@ -67,21 +73,25 @@ public class BuiltInFitsReader extends BasePipelinePublisher<Layer>
         int[] fitsAxes = null;
         int fitsNAxes = 0;
 
-        // for 2D pixel arrays, depth is 0, for 3D pixel arrays, depth axis is 1
-        int fitsDepth = 0;
-
         // single file images (e.g. LORRI and LEISA)
         try (Fits f = new Fits(filename))
         {
-            BasicHDU<?> h = f.getHDU(0);
+            BasicHDU<?> hdu = f.getHDU(0);
 
-            fitsAxes = h.getAxes();
+            fitsAxes = hdu.getAxes();
             fitsNAxes = fitsAxes.length;
             fitsHeight = fitsAxes[0];
             fitsWidth = fitsNAxes == 3 ? fitsAxes[2] : fitsAxes[1];
             fitsDepth = fitsNAxes == 3 ? fitsAxes[1] : 1;
 
-            Object data = h.getData().getData();
+            // Do not use BasicHDU to get these optional keywords. BasicHDU
+            // would return a value of 0. for missing keywords. We need to SKIP
+            // missing DATAMIN/DATAMAX. Use the Header interface instead.
+            Header h = hdu.getHeader();
+            dataMin = h.findCard(Standard.DATAMIN) != null ? h.getDoubleValue(Standard.DATAMIN) : null;
+            dataMax = h.findCard(Standard.DATAMAX) != null ? h.getDoubleValue(Standard.DATAMAX) : null;
+
+            Object data = hdu.getData().getData();
 
             if (data instanceof float[][])
             {
@@ -154,15 +164,48 @@ public class BuiltInFitsReader extends BasePipelinePublisher<Layer>
 
     }
 
-    protected Layer ofScalar(int iSize, int jSize, ValidityCheckerDoubleFactory.ScalarValidityChecker checker)
+    protected Layer ofScalar()
     {
+        // Make builders for both the layer and the range checker. Use the
+        // dimensions from the fits file to set I, J sizes...
+        LayerDoubleBuilder layerBuilder = new LayerDoubleBuilder();
+        RangeGetterDoubleBuilder rangeBuilder = new RangeGetterDoubleBuilder();
+
+        // Adapt the array to the appropriate getter interface. Both builders
+        // need this.
         DoubleGetter2d doubleGetter = (i, j) -> {
             return array2D[i][j];
         };
 
-        return checker != null ? //
-                LayerFactory.ofScalar(doubleGetter, iSize, jSize, checker) : //
-                LayerFactory.ofScalar(doubleGetter, iSize, jSize);
+        layerBuilder.doubleGetter(doubleGetter, fitsHeight, fitsWidth);
+        rangeBuilder.getter(doubleGetter, fitsHeight, fitsWidth);
+
+        // Also tell the range builder (only) any min or max values that were
+        // defined
+        // by keywords.
+        if (dataMin != null)
+        {
+            rangeBuilder.min(dataMin);
+        }
+        if (dataMax != null)
+        {
+            rangeBuilder.max(dataMax);
+        }
+
+        // Both builders need to know how to check for validity as well.
+        if (fill != null && fill.length > 0)
+        {
+            ScalarValidityChecker checker = new ValidityCheckerDoubleFactory().scalar(fill);
+
+            layerBuilder.checker(checker);
+            rangeBuilder.checker(checker);
+        }
+
+        // Here's the trick: build the range getter first and inject it into the
+        // layer builder just before building the layer.
+        layerBuilder.rangeGetter(rangeBuilder.build());
+
+        return layerBuilder.build();
     }
 
     protected void displayLayer(String message, Layer layer, int displayKsize, Double invalidValueSubstitute)

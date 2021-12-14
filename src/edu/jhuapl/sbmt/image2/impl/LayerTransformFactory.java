@@ -27,6 +27,12 @@ import edu.jhuapl.sbmt.image2.api.PixelVector;
 public class LayerTransformFactory
 {
 
+    private static final Function<Layer, Layer> Identity = layer -> {
+        Preconditions.checkNotNull(layer);
+
+        return layer;
+    };
+
     /**
      * Invert indices in the Ith dimension.
      */
@@ -121,6 +127,11 @@ public class LayerTransformFactory
     public LayerTransformFactory()
     {
         super();
+    }
+
+    public Function<Layer, Layer> identity()
+    {
+        return Identity;
     }
 
     /**
@@ -633,6 +644,10 @@ public class LayerTransformFactory
      * This method just removes pixels from the layer, as in a crop/subset/trim
      * operation; it does not change (interpolate, expand, etc.) any of the
      * remaining pixels.
+     * <p>
+     * The minimum and maximum pixels are unaffected by this utility, i.e.,
+     * calling {@link Layer#getRange(Pixel, Pixel) on the subset layer will
+     * behave the same as calling it on the original layer.
      *
      * @param layer input target layer to be resized
      * @param iMin the minimum index in the original layer's I-th dimension
@@ -806,6 +821,12 @@ public class LayerTransformFactory
         public void get(int i, int j, Pixel p)
         {
             target.get(i, j, p);
+        }
+
+        @Override
+        public void getRange(Pixel pMin, Pixel pMax)
+        {
+            target.getRange(pMin, pMax);
         }
 
         @Override

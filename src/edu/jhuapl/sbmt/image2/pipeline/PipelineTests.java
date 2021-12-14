@@ -30,7 +30,7 @@ import edu.jhuapl.sbmt.image2.pipeline.operator.IPipelineOperator;
 import edu.jhuapl.sbmt.image2.pipeline.publisher.IPipelinePublisher;
 import edu.jhuapl.sbmt.image2.pipeline.publisher.Just;
 import edu.jhuapl.sbmt.image2.pipeline.publisher.Publishers;
-import edu.jhuapl.sbmt.image2.pipeline.subscriber.Sink;
+import edu.jhuapl.sbmt.image2.pipeline.subscriber.Sink; 
 import edu.jhuapl.sbmt.model.image.PointingFileReader;
 import edu.jhuapl.sbmt.pointing.spice.SpiceInfo;
 import edu.jhuapl.sbmt.pointing.spice.SpicePointingProvider;
