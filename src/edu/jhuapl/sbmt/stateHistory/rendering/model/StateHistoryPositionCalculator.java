@@ -356,7 +356,6 @@ public class StateHistoryPositionCalculator implements IStateHistoryPositionCalc
 			double[] frus2 = new double[] { frus2Vec.getI(), frus2Vec.getJ(), frus2Vec.getK()};
 			double[] frus3 = new double[] { frus3Vec.getI(), frus3Vec.getJ(), frus3Vec.getK()};
 			double[] frus4 = new double[] { frus4Vec.getI(), frus4Vec.getJ(), frus4Vec.getK()};
-			System.out.println("StateHistoryPositionCalculator: updateFOVLocations: setting FOV has intercept to true");
 			fieldOfView.setHasIntercept(true);
 			fieldOfView.updatePointing(spacecraftPosition, frus1, frus2, frus3, frus4);
 			fieldOfView.getFrustumActor().Modified();
