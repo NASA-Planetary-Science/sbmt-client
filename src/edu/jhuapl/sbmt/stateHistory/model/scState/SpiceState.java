@@ -49,7 +49,7 @@ public class SpiceState implements State
 	public SpiceState(SpicePointingProvider pointingProvider)
 	{
 		this.pointingProvider = pointingProvider;
-		this.currentInstrumentFrameName = pointingProvider.getInstrumentNames()[pointingProvider.getInstrumentNames().length-2];
+		this.currentInstrumentFrameName = pointingProvider.getInstrumentNames()[0];
 	}
 
 	@Override
