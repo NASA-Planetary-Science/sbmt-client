@@ -174,6 +174,21 @@ public class PlannedDataActorRegister
 				return footprint;
 			}
 		}, Color.blue);
+
+		PlannedDataActorFactory.registerInstrument(new String[]{"DART_DRACO_2X2", "DRACO"}, new IPlanningDataActorBuilder<PlannedInstrumentData>()
+		{
+
+			@Override
+			public PlannedDataActor buildActorForPlanningData(PlannedInstrumentData data, SmallBodyModel model)
+			{
+				PerspectiveImageFootprint footprint = new PerspectiveImageFootprint();
+				footprint.setTime(data.getTime());
+				footprint.setInstrumentName(data.getInstrumentName());
+				footprint.setColor(Color.blue);
+				footprint.setSmallBodyModel(model);
+				return footprint;
+			}
+		}, Color.blue);
 	}
 
 //	public void setPositionOrientationManager(IPositionOrientation positionOrientationManager)
