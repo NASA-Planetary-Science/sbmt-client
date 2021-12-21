@@ -640,24 +640,24 @@ public class DartConfigs
 
     private void generateStateHistoryParameters(SmallBodyViewConfig c, String centerBodyName)
 	{
-        c.hasStateHistory = false;
+        c.hasStateHistory = true;
         c.timeHistoryFile = c.rootDirOnServer + "/history/timeHistory.bth";
         c.stateHistoryStartDate = new GregorianCalendar(2022, 9, 1, 10, 25, 8).getTime();
-        c.stateHistoryEndDate = new GregorianCalendar(2022, 9, 1, 10, 28, 0).getTime();
-        SpiceInfo spiceInfo1 = new SpiceInfo("DART", "920065803_FIXED", "DART_SPACECRAFT", "DIDYMOS", new String[] {"DIMORPHOS"}, new String[] {"DART_DRACO_2X2", "120065803_FIXED"});
-		SpiceInfo spiceInfo2 = new SpiceInfo("DART", "120065803_FIXED", "DART_SPACECRAFT", "DIMORPHOS", new String[] {"DIDYMOS"}, new String[] {"DART_DRACO_2X2", "920065803_FIXED"});
+        c.stateHistoryEndDate = new GregorianCalendar(2022, 9, 1, 10, 28, 36).getTime();
+        SpiceInfo spiceInfo1 = new SpiceInfo("DART", "920065803_FIXED", "DART_SPACECRAFT", "DIDYMOS", new String[] {"EARTH", "SUN", "DIMORPHOS"}, new String[] {"DART_DRACO_2X2", "120065803_FIXED"});
+		SpiceInfo spiceInfo2 = new SpiceInfo("DART", "120065803_FIXED", "DART_SPACECRAFT", "DIMORPHOS", new String[] {"EARTH", "SUN", "DIDYMOS"}, new String[] {"DART_DRACO_2X2", "920065803_FIXED"});
 		SpiceInfo[] spiceInfos = new SpiceInfo[] {spiceInfo1, spiceInfo2};
         c.spiceInfo = List.of(spiceInfos).stream().filter(info -> info.getBodyName().equals(centerBodyName)).toList().get(0);
 	}
 
     private void generateUpdatedStateHistoryParameters(SmallBodyViewConfig c, String centerBodyName)
 	{
-        c.hasStateHistory = false;
+        c.hasStateHistory = true;
         c.timeHistoryFile = c.rootDirOnServer + "/history/timeHistory.bth";
         c.stateHistoryStartDate = new GregorianCalendar(2022, 8, 26, 23, 10, 18).getTime();
         c.stateHistoryEndDate = new GregorianCalendar(2022, 8, 26, 23, 13, 30).getTime();
-        SpiceInfo spiceInfo1 = new SpiceInfo("DART", "DIDYMOS_FIXED", "DART_SPACECRAFT", "DIDYMOS", new String[] {"DIMORPHOS"}, new String[] {"DART_DRACO_2X2", "DIMORPHOS_FIXED"});
-		SpiceInfo spiceInfo2 = new SpiceInfo("DART", "DIMORPHOS_FIXED", "DART_SPACECRAFT", "DIMORPHOS", new String[] {"DIDYMOS"}, new String[] {"DART_DRACO_2X2", "DIDYMOS_FIXED"});
+        SpiceInfo spiceInfo1 = new SpiceInfo("DART", "DIDYMOS_FIXED", "DART_SPACECRAFT", "DIDYMOS", new String[] {"EARTH", "SUN", "DIMORPHOS"}, new String[] {"DART_DRACO_2X2", "DIMORPHOS_FIXED"});
+		SpiceInfo spiceInfo2 = new SpiceInfo("DART", "DIMORPHOS_FIXED", "DART_SPACECRAFT", "DIMORPHOS", new String[] {"EARTH", "SUN", "DIDYMOS"}, new String[] {"DART_DRACO_2X2", "DIDYMOS_FIXED"});
 		SpiceInfo[] spiceInfos = new SpiceInfo[] {spiceInfo1, spiceInfo2};
         c.spiceInfo = List.of(spiceInfos).stream().filter(info -> info.getBodyName().equals(centerBodyName)).toList().get(0);
 	}
