@@ -24,6 +24,7 @@ import edu.jhuapl.sbmt.model.image.ImageSource;
 import edu.jhuapl.sbmt.model.image.Instrument;
 import edu.jhuapl.sbmt.model.phobos.MEGANE;
 import edu.jhuapl.sbmt.model.phobos.PhobosExperimentalSearchSpecification;
+import edu.jhuapl.sbmt.pointing.spice.SpiceInfo;
 import edu.jhuapl.sbmt.query.database.GenericPhpQuery;
 import edu.jhuapl.sbmt.query.fixedlist.FixedListQuery;
 import edu.jhuapl.sbmt.spectrum.model.core.BasicSpectrumInstrument;
@@ -39,7 +40,7 @@ public class MarsConfigs extends SmallBodyViewConfig
 	}
 
 
-	public static void initialize(ConfigArrayList configArray)
+	public static void initialize(ConfigArrayList configArray, boolean publicOnly)
     {
         MarsConfigs c = new MarsConfigs();
 
@@ -196,6 +197,8 @@ public class MarsConfigs extends SmallBodyViewConfig
             };
 
 
+
+
 //            configArray.add(c);
         }
 
@@ -281,6 +284,8 @@ public class MarsConfigs extends SmallBodyViewConfig
             {
             	new DBRunInfo(ImageSource.GASKELL, Instrument.IMAGING_DATA, ShapeModelBody.PHOBOS.toString(), "/project/sbmt2/sbmt/data/bodies/phobos/ernst2018/imaging/imagelist-fullpath.txt", "phobos_ernst_2018"),
             };
+
+
 
             c.presentInMissions = new SbmtMultiMissionTool.Mission[] {SbmtMultiMissionTool.Mission.PUBLIC_RELEASE, SbmtMultiMissionTool.Mission.TEST_PUBLIC_RELEASE, SbmtMultiMissionTool.Mission.STAGE_PUBLIC_RELEASE, SbmtMultiMissionTool.Mission.STAGE_APL_INTERNAL, SbmtMultiMissionTool.Mission.APL_INTERNAL, SbmtMultiMissionTool.Mission.TEST_APL_INTERNAL};
             c.defaultForMissions = new SbmtMultiMissionTool.Mission[] {};
@@ -418,6 +423,7 @@ public class MarsConfigs extends SmallBodyViewConfig
             c.shapeModelFileExtension = ".obj";
             c.hasStateHistory = true;
             c.timeHistoryFile = c.rootDirOnServer + "/shared/history/timeHistory.bth";
+            c.hasImageMap = true;
 
             c.imagingInstruments = new ImagingInstrument[] {
                     new ImagingInstrument(
@@ -465,12 +471,20 @@ public class MarsConfigs extends SmallBodyViewConfig
             c.lidarSearchDataSourceMap = new LinkedHashMap<>();
             c.lidarSearchDataSourceMap.put("Default", "/GASKELL/PHOBOS/MOLA/tree/dataSource.lidar");
 
-            c.presentInMissions = new SbmtMultiMissionTool.Mission[] {SbmtMultiMissionTool.Mission.STAGE_APL_INTERNAL, SbmtMultiMissionTool.Mission.APL_INTERNAL, SbmtMultiMissionTool.Mission.TEST_APL_INTERNAL};
-            c.defaultForMissions = new SbmtMultiMissionTool.Mission[] {};
+            c.hasStateHistory = true;
+            c.timeHistoryFile = c.rootDirOnServer + "/history/timeHistory.bth";
+            c.stateHistoryStartDate = new GregorianCalendar(2026, 1, 1, 0, 0, 0).getTime();
+            c.stateHistoryEndDate = new GregorianCalendar(2026, 9, 30, 0, 0, 0).getTime();
+            c.spiceInfo = new SpiceInfo("MMX", "IAU_PHOBOS", "MMX_SPACECRAFT", "PHOBOS", new String[] {"EARTH" , "SUN", "MARS"}, new String[] {"MMX_MEGANE"});
 
+            c.presentInMissions = new SbmtMultiMissionTool.Mission[] {SbmtMultiMissionTool.Mission.STAGE_APL_INTERNAL, SbmtMultiMissionTool.Mission.APL_INTERNAL, SbmtMultiMissionTool.Mission.TEST_APL_INTERNAL,
+            														  SbmtMultiMissionTool.Mission.MEGANE_DEPLOY, SbmtMultiMissionTool.Mission.MEGANE_DEV, SbmtMultiMissionTool.Mission.MEGANE_STAGE,
+            														  SbmtMultiMissionTool.Mission.MEGANE_TEST};
+            c.defaultForMissions = new SbmtMultiMissionTool.Mission[] {SbmtMultiMissionTool.Mission.MEGANE_DEPLOY, SbmtMultiMissionTool.Mission.MEGANE_DEV, SbmtMultiMissionTool.Mission.MEGANE_STAGE,
+					  													SbmtMultiMissionTool.Mission.MEGANE_TEST};
 
-            configArray.add(c);
-
+            if (!publicOnly)
+            	configArray.add(c);
 
         }
     }

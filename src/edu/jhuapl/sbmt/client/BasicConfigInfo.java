@@ -29,7 +29,7 @@ public class BasicConfigInfo implements MetadataManager
 
     public static String getConfigPathPrefix(boolean publishedDataOnly)
     {
-        return (publishedDataOnly ? "published/" : "proprietary/") + "allBodies-" + configInfoVersion;
+        return (publishedDataOnly ? "published/" : "proprietary/") + "allBodies-" + configInfoVersion + "-2320";
     }
 
     private static final SbmtMultiMissionTool.Mission[] EmptyMissionArray = new SbmtMultiMissionTool.Mission[0];
@@ -65,7 +65,7 @@ public class BasicConfigInfo implements MetadataManager
 		this.modelLabel = config.modelLabel;
 		this.presentInVersion = config.presentInMissions;
 		this.defaultFor = config.defaultForMissions;
-
+		if (defaultFor == null) defaultFor = new SbmtMultiMissionTool.Mission[] {};
 		if (author != ShapeModelType.CUSTOM)
 		{
 //			System.out.println("BasicConfigInfo: unique name " + uniqueName);
@@ -293,6 +293,11 @@ public class BasicConfigInfo implements MetadataManager
 	public ShapeModelPopulation getPopulation()
 	{
 		return population;
+	}
+	
+	public String getModelLabel()
+	{
+		return modelLabel;
 	}
 
 	/**

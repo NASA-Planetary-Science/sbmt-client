@@ -221,7 +221,7 @@ public class SmallBodyViewConfigMetadataIO implements MetadataManager
 //	        write(spiceInfo, infoStrings, configMetadata);
 //        }
 
-        if (c.spiceInfo != null)
+        if (c.spiceInfo != null) 
         	write(spiceInfo, c.spiceInfo, configMetadata);
         if (c.stateHistoryStartDate != null)
         {
@@ -666,7 +666,7 @@ public class SmallBodyViewConfigMetadataIO implements MetadataManager
 
         if (c.author == ShapeModelType.CUSTOM)
         {
-        	c.modelLabel = metadataID;
+        	c.modelLabel = metadataID; 
         }
 
         if (configMetadata.hasKey(systemBodies)) c.hasSystemBodies = read(systemBodies, configMetadata);

@@ -478,6 +478,30 @@ public abstract class BodyViewConfig extends ViewConfig
 		this.shapeModelFileNames = shapeModelFileNames;
 	}
 
+	/**
+	 * @return the spiceInfo
+	 */
+	public SpiceInfo getSpiceInfo()
+	{
+		return spiceInfo;
+	}
+
+	/**
+	 * @return the stateHistoryStartDate
+	 */
+	public Date getStateHistoryStartDate()
+	{
+		return stateHistoryStartDate;
+	}
+
+	/**
+	 * @return the stateHistoryEndDate
+	 */
+	public Date getStateHistoryEndDate()
+	{
+		return stateHistoryEndDate;
+	}
+
 	@Override
 	public int hashCode()
 	{

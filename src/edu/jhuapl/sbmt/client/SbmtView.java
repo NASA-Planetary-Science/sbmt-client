@@ -16,7 +16,6 @@ import java.util.function.Function;
 
 import javax.swing.BorderFactory;
 import javax.swing.JComponent;
-import javax.swing.JPanel;
 import javax.swing.JTabbedPane;
 
 import com.beust.jcommander.internal.Lists;
@@ -60,7 +59,6 @@ import edu.jhuapl.sbmt.dtm.ui.menu.DEMPopupMenu;
 import edu.jhuapl.sbmt.dtm.ui.menu.MapletBoundaryPopupMenu;
 import edu.jhuapl.sbmt.gui.eros.LineamentControlPanel;
 import edu.jhuapl.sbmt.gui.eros.LineamentPopupMenu;
-import edu.jhuapl.sbmt.gui.time.version2.StateHistoryController;
 import edu.jhuapl.sbmt.image.SBMTInfoWindowManagerFactory;
 import edu.jhuapl.sbmt.image.SbmtInfoWindowManager;
 import edu.jhuapl.sbmt.image.SbmtSpectrumWindowManager;
@@ -91,10 +89,11 @@ import edu.jhuapl.sbmt.model.eros.LineamentModel;
 import edu.jhuapl.sbmt.model.eros.nis.NEARSpectraFactory;
 import edu.jhuapl.sbmt.model.eros.nis.NISSearchModel;
 import edu.jhuapl.sbmt.model.eros.nis.NISSpectrum;
+import edu.jhuapl.sbmt.model.phobos.controllers.MEGANEController;
+import edu.jhuapl.sbmt.model.phobos.model.MEGANECollection;
 import edu.jhuapl.sbmt.model.ryugu.nirs3.H2SpectraFactory;
 import edu.jhuapl.sbmt.model.ryugu.nirs3.NIRS3SearchModel;
 import edu.jhuapl.sbmt.model.ryugu.nirs3.atRyugu.NIRS3Spectrum;
-import edu.jhuapl.sbmt.model.time.StateHistoryCollection;
 import edu.jhuapl.sbmt.pointing.PositionOrientationManager;
 import edu.jhuapl.sbmt.pointing.spice.PositionOrientationManagerListener;
 import edu.jhuapl.sbmt.pointing.spice.SpiceInfo;
@@ -106,6 +105,10 @@ import edu.jhuapl.sbmt.spectrum.model.statistics.SpectrumStatisticsCollection;
 import edu.jhuapl.sbmt.spectrum.rendering.SpectraCollection;
 import edu.jhuapl.sbmt.spectrum.rendering.SpectrumBoundaryCollection;
 import edu.jhuapl.sbmt.spectrum.ui.SpectrumPopupMenu;
+import edu.jhuapl.sbmt.stateHistory.controllers.ObservationPlanningController;
+import edu.jhuapl.sbmt.stateHistory.model.interfaces.StateHistory;
+import edu.jhuapl.sbmt.stateHistory.model.stateHistory.StateHistoryCollection;
+import edu.jhuapl.sbmt.stateHistory.rendering.model.StateHistoryRendererManager;
 import edu.jhuapl.sbmt.util.TimeUtil;
 
 import crucible.crust.metadata.api.Key;
@@ -116,6 +119,8 @@ import crucible.crust.metadata.impl.EmptyMetadata;
 import crucible.crust.metadata.impl.SettableMetadata;
 import crucible.crust.metadata.impl.TrackedMetadataManager;
 import crucible.crust.metadata.impl.Utilities;
+import glum.item.ItemEventListener;
+import glum.item.ItemEventType;
 
 /**
  * A view is a container which contains a control panel and renderer as well as
@@ -125,12 +130,14 @@ import crucible.crust.metadata.impl.Utilities;
  */
 public class SbmtView extends View implements PropertyChangeListener
 {
-	private static final long serialVersionUID = 1L;
-	private final TrackedMetadataManager stateManager;
-	private final Map<String, MetadataManager> metadataManagers;
+    private static final long serialVersionUID = 1L;
+    private final TrackedMetadataManager stateManager;
+    private final Map<String, MetadataManager> metadataManagers;
 	private BasicConfigInfo configInfo;
 	private List<SmallBodyModel> smallBodyModels;
 	private List<PositionOrientationManagerListener> pomListeners;
+	private StateHistoryCollection historyCollection;
+	private StateHistoryRendererManager rendererManager;
 
 	public SbmtView(StatusNotifier aStatusNotifier, BasicConfigInfo configInfo)
 	{
@@ -145,20 +152,20 @@ public class SbmtView extends View implements PropertyChangeListener
 		initializeStateManager();
 	}
 
-	/**
+    /**
 	 * By default a view should be created empty. Only when the user requests to
 	 * show a particular View, should the View's contents be created in order to
 	 * reduce memory and startup time. Therefore, this function should be called
 	 * prior to first time the View is shown in order to cause it
-	 */
+     */
 	public SbmtView(StatusNotifier aStatusNotifier, SmallBodyViewConfig smallBodyConfig)
-	{
+    {
 		super(aStatusNotifier, smallBodyConfig);
 		this.configInfo = new BasicConfigInfo(smallBodyConfig, SbmtMultiMissionTool.getMission().isPublishedDataOnly());
 		uniqueName = configInfo.uniqueName;
 		shapeModelName = configInfo.shapeModelName;
-		this.stateManager = TrackedMetadataManager.of("View " + getUniqueName());
-		this.metadataManagers = new HashMap<>();
+        this.stateManager = TrackedMetadataManager.of("View " + getUniqueName());
+        this.metadataManagers = new HashMap<>();
 		this.configURL = configInfo.getConfigURL();
 		this.pomListeners = Lists.newArrayList();
 		initializeStateManager();
@@ -204,14 +211,14 @@ public class SbmtView extends View implements PropertyChangeListener
 		return super.getShapeModelName();
 	}
 
-	public SmallBodyViewConfig getPolyhedralModelConfig()
-	{
-		return (SmallBodyViewConfig) super.getConfig();
-	}
+    public SmallBodyViewConfig getPolyhedralModelConfig()
+    {
+        return (SmallBodyViewConfig)super.getConfig();
+    }
 
-	@Override
-	public String getPathRepresentation()
-	{
+    @Override
+    public String getPathRepresentation()
+    {
 		ShapeModelType author;
 		String modelLabel;
 		BodyType type;
@@ -221,7 +228,7 @@ public class SbmtView extends View implements PropertyChangeListener
 		ShapeModelBody body;
 		if (configInfo == null)
 		{
-			SmallBodyViewConfig config = getPolyhedralModelConfig();
+        SmallBodyViewConfig config = getPolyhedralModelConfig();
 			author = config.author;
 			modelLabel = config.modelLabel;
 			type = config.type;
@@ -240,42 +247,41 @@ public class SbmtView extends View implements PropertyChangeListener
 			dataUsed = configInfo.dataUsed;
 			body = configInfo.body;
 		}
-		if (ShapeModelType.CUSTOM == author)
-		{
-			return Configuration.getAppTitle() + " - " + ShapeModelType.CUSTOM + " > " + modelLabel;
-		}
-		else
-		{
-			String path = type.str;
-			if (population != null && population != ShapeModelPopulation.NA)
-				path += " > " + population;
+        if (ShapeModelType.CUSTOM == author)
+        {
+            return Configuration.getAppTitle() + " - " + ShapeModelType.CUSTOM + " > " + modelLabel;
+        }
+        else
+        {
+            String path = type.str;
+            if (population != null && population != ShapeModelPopulation.NA)
+                path += " > " + population;
 			if (system != null)
 			    path += " > " + system;
-			path += " > " + body;
-			if (dataUsed != null && dataUsed != ShapeModelDataUsed.NA)
-				path += " > " + dataUsed;
-			path += " > " + getDisplayName();
-			return Configuration.getAppTitle() + " - " + path;
-		}
-	}
+            path += " > " + body;
+            if (dataUsed != null && dataUsed != ShapeModelDataUsed.NA)
+                path += " > " + dataUsed;
+            path += " > " + getDisplayName();
+            return Configuration.getAppTitle() + " - " + path;
+        }
+    }
 
-	@Override
-	public String getDisplayName()
-	{
-		String result = "";
+    @Override
+    public String getDisplayName()
+    {
+    	String result = "";
 		if (configInfo == null)
 		{
-			SmallBodyViewConfig config = getPolyhedralModelConfig();
+    	SmallBodyViewConfig config = getPolyhedralModelConfig();
+    	if (config.modelLabel != null)
+    	    result = config.modelLabel;
+    	else if (config.author == null)
+    	    result = config.body.toString();
+    	else
+    	    result = config.author.toString();
 
-			if (config.modelLabel != null)
-				result = config.modelLabel;
-			else if (config.author == null)
-				result = config.body.toString();
-			else
-				result = config.author.toString();
-
-			if (config.version != null)
-				result = result + " (" + config.version + ")";
+    	if (config.version != null)
+    	    result = result + " (" + config.version + ")";
 
 		}
 		else
@@ -292,12 +298,12 @@ public class SbmtView extends View implements PropertyChangeListener
 		}
 
 
-		return result;
-	}
+    	return result;
+    }
 
-	@Override
-	public String getModelDisplayName()
-	{
+    @Override
+    public String getModelDisplayName()
+    {
 		ShapeModelBody body = null;
 		body = configInfo == null ?  ((ViewConfig)getConfig()).body : configInfo.body;
 		return body != null ? body + " / " + getDisplayName() : getDisplayName();
@@ -334,29 +340,29 @@ public class SbmtView extends View implements PropertyChangeListener
 		allModels.put(ModelNames.COLOR_IMAGES, List.of(colorImageCollection));
 		allModels.put(ModelNames.CUBE_IMAGES, List.of(cubeCollection));
 
-		//        for (ImagingInstrument instrument : getPolyhedralModelConfig().imagingInstruments)
-		//        {
-		//            if (instrument.spectralMode == SpectralMode.MONO)
-		//            {
-		//                allModels.put(ModelNames.COLOR_IMAGES, new ColorImageCollection(smallBodyModel, getModelManager()));
-		//                allModels.put(ModelNames.CUBE_IMAGES, new ImageCubeCollection(smallBodyModel, getModelManager()));
-		////                allModels.put(ModelNames.PERSPECTIVE_IMAGE_BOUNDARIES, new PerspectiveImageBoundaryCollection(smallBodyModel));
-		//            }
-		//
-		//            else if (instrument.spectralMode == SpectralMode.MULTI)
-		//            {
-		//                allModels.put(ModelNames.COLOR_IMAGES, new ColorImageCollection(smallBodyModel, getModelManager()));
-		////                allModels.put(ModelNames.PERSPECTIVE_IMAGE_BOUNDARIES, new PerspectiveImageBoundaryCollection(smallBodyModel));
-		//            }
-		//            else if (instrument.spectralMode == SpectralMode.HYPER)
-		//            {
-		//                allModels.put(ModelNames.COLOR_IMAGES, new ColorImageCollection(smallBodyModel, getModelManager()));
-		////                allModels.put(ModelNames.PERSPECTIVE_IMAGE_BOUNDARIES, new PerspectiveImageBoundaryCollection(smallBodyModel));
-		//            }
-		//        }
+//        for (ImagingInstrument instrument : getPolyhedralModelConfig().imagingInstruments)
+//        {
+//            if (instrument.spectralMode == SpectralMode.MONO)
+//            {
+//                allModels.put(ModelNames.COLOR_IMAGES, new ColorImageCollection(smallBodyModel, getModelManager()));
+//                allModels.put(ModelNames.CUBE_IMAGES, new ImageCubeCollection(smallBodyModel, getModelManager()));
+////                allModels.put(ModelNames.PERSPECTIVE_IMAGE_BOUNDARIES, new PerspectiveImageBoundaryCollection(smallBodyModel));
+//            }
+//
+//            else if (instrument.spectralMode == SpectralMode.MULTI)
+//            {
+//                allModels.put(ModelNames.COLOR_IMAGES, new ColorImageCollection(smallBodyModel, getModelManager()));
+////                allModels.put(ModelNames.PERSPECTIVE_IMAGE_BOUNDARIES, new PerspectiveImageBoundaryCollection(smallBodyModel));
+//            }
+//            else if (instrument.spectralMode == SpectralMode.HYPER)
+//            {
+//                allModels.put(ModelNames.COLOR_IMAGES, new ColorImageCollection(smallBodyModel, getModelManager()));
+////                allModels.put(ModelNames.PERSPECTIVE_IMAGE_BOUNDARIES, new PerspectiveImageBoundaryCollection(smallBodyModel));
+//            }
+//        }
 
-		if (getPolyhedralModelConfig().hasSpectralData)
-		{
+        if (getPolyhedralModelConfig().hasSpectralData)
+        {
 			allModels.putAll(createSpectralModels(smallBodyModel));
 			allModels.put(ModelNames.SPECTRA_BOUNDARIES, List.of(new SpectrumBoundaryCollection(smallBodyModel, (SpectraCollection)allModels.get(ModelNames.SPECTRA).get(0))));
 			//if (getPolyhedralModelConfig().body == ShapeModelBody.EROS)
@@ -365,6 +371,12 @@ public class SbmtView extends View implements PropertyChangeListener
 			SpectraCollection customCollection = new SpectraCollection(smallBodyModel);
 			allModels.put(ModelNames.CUSTOM_SPECTRA, List.of(customCollection));
 			allModels.put(ModelNames.CUSTOM_SPECTRA_BOUNDARIES, List.of(new SpectrumBoundaryCollection(smallBodyModel, (SpectraCollection)allModels.get(ModelNames.CUSTOM_SPECTRA).get(0))));
+
+			if (!getPolyhedralModelConfig().spectralInstruments.stream().filter(inst -> inst.getDisplayName().equals("MEGANE")).toList().isEmpty())
+			{
+				MEGANECollection collection = new MEGANECollection(smallBodyModel);
+				allModels.put(ModelNames.GRNS_SPECTRA, List.of(collection));
+			}
 		}
 
 		if (getPolyhedralModelConfig().hasLineamentData)
@@ -372,15 +384,17 @@ public class SbmtView extends View implements PropertyChangeListener
 			allModels.put(ModelNames.LINEAMENT, List.of(createLineament()));
 		}
 
-		if (getPolyhedralModelConfig().hasFlybyData)
-		{
-			//            allModels.put(ModelNames.FLYBY, ModelFactory.createFlyby(smallBodyModel));
-			//            allModels.put(ModelNames.SIMULATION_RUN_COLLECTION, new SimulationRunCollection(smallBodyModel));
-		}
+        if (getPolyhedralModelConfig().hasFlybyData)
+        {
+//            allModels.put(ModelNames.FLYBY, ModelFactory.createFlyby(smallBodyModel));
+//            allModels.put(ModelNames.SIMULATION_RUN_COLLECTION, new SimulationRunCollection(smallBodyModel));
+        }
 
 		if (getPolyhedralModelConfig().hasStateHistory)
 		{
-			allModels.put(ModelNames.STATE_HISTORY_COLLECTION, List.of(new StateHistoryCollection(smallBodyModel)));
+			rendererManager = new StateHistoryRendererManager(smallBodyModel, new StateHistoryCollection(smallBodyModel), getRenderer());
+            allModels.put(ModelNames.STATE_HISTORY_COLLECTION_ELEMENTS, List.of(rendererManager));
+//			allModels.put(ModelNames.STATE_HISTORY_COLLECTION, List.of(new StateHistoryCollection(smallBodyModel)));
 		}
 
 		ConfigurableSceneNotifier tmpSceneChangeNotifier = new ConfigurableSceneNotifier();
@@ -405,10 +419,10 @@ public class SbmtView extends View implements PropertyChangeListener
 		demBoundaryCollection.setModelManager(getModelManager());
 		tmpSceneChangeNotifier.setTarget(getModelManager());
 
-		getModelManager().addPropertyChangeListener(this);
+        getModelManager().addPropertyChangeListener(this);
 
 		SBMTInfoWindowManagerFactory.initializeModels(getModelManager(), getLegacyStatusHandler());
-	}
+    }
 
 	private void registerPopupMenuForModels(List<Model> models, PopupMenu popupMenu)
 	{
@@ -426,26 +440,26 @@ public class SbmtView extends View implements PropertyChangeListener
 			PerspectiveImageBoundaryCollection imageCubeBoundaries = (PerspectiveImageBoundaryCollection) getModelManager().getModel(ModelNames.PERSPECTIVE_IMAGE_CUBE_BOUNDARIES).get(0);
 
 			if (instrument.spectralMode == SpectralImageMode.MONO)
-			{
+            {
             	//regular perspective images
 				ImageCollection images = (ImageCollection) getModelManager().getModel(ModelNames.IMAGES).get(0);
 				PerspectiveImageBoundaryCollection boundaries = (PerspectiveImageBoundaryCollection) getModelManager().getModel(ModelNames.PERSPECTIVE_IMAGE_BOUNDARIES).get(0);
 
-				PopupMenu popupMenu = new ImagePopupMenu<>(getModelManager(), images, boundaries, (SbmtInfoWindowManager) getInfoPanelManager(), (SbmtSpectrumWindowManager) getSpectrumPanelManager(), getRenderer(), getRenderer());
+				PopupMenu popupMenu = new ImagePopupMenu<>(getModelManager(), images, /*boundaries,*/ (SbmtInfoWindowManager) getInfoPanelManager(), (SbmtSpectrumWindowManager) getSpectrumPanelManager(), getRenderer(), getRenderer());
 				registerPopupMenuForModels(getModel(ModelNames.PERSPECTIVE_IMAGE_BOUNDARIES), popupMenu);
 
                 //color perspective images
                 ColorImageCollection colorImages = (ColorImageCollection)getModelManager().getModel(ModelNames.COLOR_IMAGES).get(0);
-				popupMenu = new ColorImagePopupMenu(colorImages, colorImageBoundaries, (SbmtInfoWindowManager) getInfoPanelManager(), getModelManager(), getRenderer(), getRenderer());
+				popupMenu = new ColorImagePopupMenu(colorImages, /*colorImageBoundaries,*/ (SbmtInfoWindowManager) getInfoPanelManager(), getModelManager(), getRenderer(), getRenderer());
 //                PerspectiveImageBoundaryCollection colorImageBoundaries = (PerspectiveImageBoundaryCollection)getModelManager().getModel(ModelNames.PERSPECTIVE_COLOR_IMAGE_BOUNDARIES);
-                PopupMenu colorImagePopupMenu = new ImagePopupMenu(getModelManager(), images, colorImageBoundaries, (SbmtInfoWindowManager)getInfoPanelManager(), (SbmtSpectrumWindowManager)getSpectrumPanelManager(), getRenderer(), getRenderer());
+                PopupMenu colorImagePopupMenu = new ImagePopupMenu(getModelManager(), images, /*colorImageBoundaries,*/ (SbmtInfoWindowManager)getInfoPanelManager(), (SbmtSpectrumWindowManager)getSpectrumPanelManager(), getRenderer(), getRenderer());
 				registerPopupMenuForModels(getModel(ModelNames.PERSPECTIVE_COLOR_IMAGE_BOUNDARIES), colorImagePopupMenu);
 
                 //perspective image cubes
                 ImageCubeCollection imageCubes = (ImageCubeCollection)getModelManager().getModel(ModelNames.CUBE_IMAGES).get(0);
-				popupMenu = new ImageCubePopupMenu(imageCubes, imageCubeBoundaries, (SbmtInfoWindowManager) getInfoPanelManager(), (SbmtSpectrumWindowManager) getSpectrumPanelManager(), getRenderer(), getRenderer());
+				popupMenu = new ImageCubePopupMenu(imageCubes, /*imageCubeBoundaries,*/ (SbmtInfoWindowManager) getInfoPanelManager(), (SbmtSpectrumWindowManager) getSpectrumPanelManager(), getRenderer(), getRenderer());
 //                PerspectiveImageBoundaryCollection imageCubeBoundaries = (PerspectiveImageBoundaryCollection)getModelManager().getModel(ModelNames.PERSPECTIVE_IMAGE_CUBE_BOUNDARIES);
-                PopupMenu imageCubePopupMenu = new ImagePopupMenu(getModelManager(), images, imageCubeBoundaries, (SbmtInfoWindowManager)getInfoPanelManager(), (SbmtSpectrumWindowManager)getSpectrumPanelManager(), getRenderer(), getRenderer());
+                PopupMenu imageCubePopupMenu = new ImagePopupMenu(getModelManager(), images, /*imageCubeBoundaries,*/ (SbmtInfoWindowManager)getInfoPanelManager(), (SbmtSpectrumWindowManager)getSpectrumPanelManager(), getRenderer(), getRenderer());
 				registerPopupMenuForModels(getModel(ModelNames.PERSPECTIVE_IMAGE_CUBE_BOUNDARIES), imageCubePopupMenu);
 			}
 
@@ -455,10 +469,10 @@ public class SbmtView extends View implements PropertyChangeListener
 				PerspectiveImageBoundaryCollection boundaries = (PerspectiveImageBoundaryCollection) getModel(ModelNames.PERSPECTIVE_IMAGE_BOUNDARIES).get(0);
 				ColorImageCollection colorImages = (ColorImageCollection) getModel(ModelNames.COLOR_IMAGES).get(0);
 
-				PopupMenu popupMenu = new ImagePopupMenu<>(getModelManager(), images, boundaries, (SbmtInfoWindowManager) getInfoPanelManager(), (SbmtSpectrumWindowManager) getSpectrumPanelManager(), getRenderer(), getRenderer());
+				PopupMenu popupMenu = new ImagePopupMenu<>(getModelManager(), images, /*boundaries,*/ (SbmtInfoWindowManager) getInfoPanelManager(), (SbmtSpectrumWindowManager) getSpectrumPanelManager(), getRenderer(), getRenderer());
 				registerPopupMenuForModels(getModel(ModelNames.PERSPECTIVE_IMAGE_BOUNDARIES), popupMenu);
 
-				popupMenu = new ColorImagePopupMenu(colorImages, colorImageBoundaries, (SbmtInfoWindowManager) getInfoPanelManager(), getModelManager(), getRenderer(), getRenderer());
+				popupMenu = new ColorImagePopupMenu(colorImages, /*colorImageBoundaries,*/ (SbmtInfoWindowManager) getInfoPanelManager(), getModelManager(), getRenderer(), getRenderer());
 				registerPopupMenuForModels(getModel(ModelNames.COLOR_IMAGES), popupMenu);
 			}
 			else if (instrument.spectralMode == SpectralImageMode.HYPER)
@@ -468,13 +482,13 @@ public class SbmtView extends View implements PropertyChangeListener
 				ColorImageCollection colorImages = (ColorImageCollection) getModel(ModelNames.COLOR_IMAGES).get(0);
 				ImageCubeCollection imageCubes = (ImageCubeCollection) getModel(ModelNames.CUBE_IMAGES).get(0);
 
-				PopupMenu popupMenu = new ImagePopupMenu<>(getModelManager(), images, boundaries, (SbmtInfoWindowManager) getInfoPanelManager(), (SbmtSpectrumWindowManager) getSpectrumPanelManager(), getRenderer(), getRenderer());
+				PopupMenu popupMenu = new ImagePopupMenu<>(getModelManager(), images, /*boundaries,*/ (SbmtInfoWindowManager) getInfoPanelManager(), (SbmtSpectrumWindowManager) getSpectrumPanelManager(), getRenderer(), getRenderer());
 				registerPopupMenuForModels(getModel(ModelNames.PERSPECTIVE_IMAGE_BOUNDARIES), popupMenu);
 
-				popupMenu = new ColorImagePopupMenu(colorImages, colorImageBoundaries, (SbmtInfoWindowManager) getInfoPanelManager(), getModelManager(), getRenderer(), getRenderer());
+				popupMenu = new ColorImagePopupMenu(colorImages, /*colorImageBoundaries,*/ (SbmtInfoWindowManager) getInfoPanelManager(), getModelManager(), getRenderer(), getRenderer());
 				registerPopupMenuForModels(getModel(ModelNames.COLOR_IMAGES), popupMenu);
 
-				popupMenu = new ImageCubePopupMenu(imageCubes, imageCubeBoundaries, (SbmtInfoWindowManager) getInfoPanelManager(), (SbmtSpectrumWindowManager) getSpectrumPanelManager(), getRenderer(), getRenderer());
+				popupMenu = new ImageCubePopupMenu(imageCubes, /*imageCubeBoundaries,*/ (SbmtInfoWindowManager) getInfoPanelManager(), (SbmtSpectrumWindowManager) getSpectrumPanelManager(), getRenderer(), getRenderer());
 				registerPopupMenuForModels(getModel(ModelNames.CUBE_IMAGES), popupMenu);
 			}
 		}
@@ -505,9 +519,9 @@ public class SbmtView extends View implements PropertyChangeListener
 		}
 	}
 
-	@Override
-	protected void setupTabs()
-	{
+    @Override
+    protected void setupTabs()
+    {
 		addTab(getPolyhedralModelConfig().getShapeModelName(), new SmallBodyControlPanel(getRenderer(), getModelManager(), getPolyhedralModelConfig().getShapeModelName()));
 
 		if (((ViewConfig)getConfig()).hasFlybyData)
@@ -519,27 +533,27 @@ public class SbmtView extends View implements PropertyChangeListener
 		{
 
 			if (instrument.spectralMode == SpectralImageMode.MONO)
-			{
-				// For the public version, only include image tab for Eros (all) and Gaskell's Itokawa shape models.
-				//                if (getPolyhedralModelConfig().body == ShapeModelBody.EROS || getPolyhedralModelConfig().body == ShapeModelBody.ITOKAWA || getPolyhedralModelConfig().body == ShapeModelBody.CERES || getPolyhedralModelConfig().body == ShapeModelBody.VESTA)
-				if (getPolyhedralModelConfig().imageSearchFilterNames != null && getPolyhedralModelConfig().imageSearchFilterNames.length > 0 && !(getPolyhedralModelConfig().body == ShapeModelBody._67P))
-				{
+            {
+                // For the public version, only include image tab for Eros (all) and Gaskell's Itokawa shape models.
+//                if (getPolyhedralModelConfig().body == ShapeModelBody.EROS || getPolyhedralModelConfig().body == ShapeModelBody.ITOKAWA || getPolyhedralModelConfig().body == ShapeModelBody.CERES || getPolyhedralModelConfig().body == ShapeModelBody.VESTA)
+                if (getPolyhedralModelConfig().imageSearchFilterNames != null && getPolyhedralModelConfig().imageSearchFilterNames.length > 0 && !(getPolyhedralModelConfig().body == ShapeModelBody._67P))
+                {
 					controller =
 							new SpectralImagingSearchController(getPolyhedralModelConfig(), getModelManager(), (SbmtInfoWindowManager) getInfoPanelManager(), (SbmtSpectrumWindowManager) getSpectrumPanelManager(), getPickManager(), getRenderer(), instrument);
 
-				}
-				else if (Configuration.isAPLVersion() || (getPolyhedralModelConfig().body == ShapeModelBody.ITOKAWA && ShapeModelType.GASKELL == getPolyhedralModelConfig().author))
-				{
-					if (getPolyhedralModelConfig().body == ShapeModelBody._67P)
-					{
+                }
+                else if (Configuration.isAPLVersion() || (getPolyhedralModelConfig().body == ShapeModelBody.ITOKAWA && ShapeModelType.GASKELL == getPolyhedralModelConfig().author))
+                {
+                    if (getPolyhedralModelConfig().body == ShapeModelBody._67P)
+                    {
 
-						//                        JComponent component = new OsirisImagingSearchPanel(getPolyhedralModelConfig(), getModelManager(), (SbmtInfoWindowManager)getInfoPanelManager(), (SbmtSpectrumWindowManager)getSpectrumPanelManager(), getPickManager(), getRenderer(), instrument).init();
+//                        JComponent component = new OsirisImagingSearchPanel(getPolyhedralModelConfig(), getModelManager(), (SbmtInfoWindowManager)getInfoPanelManager(), (SbmtSpectrumWindowManager)getSpectrumPanelManager(), getPickManager(), getRenderer(), instrument).init();
 						controller =
 								new SpectralImagingSearchController(getPolyhedralModelConfig(), getModelManager(), (SbmtInfoWindowManager) getInfoPanelManager(), (SbmtSpectrumWindowManager) getSpectrumPanelManager(), getPickManager(), getRenderer(), instrument);
-					}
-					else
-					{
-						//                        JComponent component = new ImagingSearchPanel(getPolyhedralModelConfig(), getModelManager(), (SbmtInfoWindowManager)getInfoPanelManager(), (SbmtSpectrumWindowManager)getSpectrumPanelManager(), getPickManager(), getRenderer(), instrument).init();
+                    }
+                    else
+                    {
+//                        JComponent component = new ImagingSearchPanel(getPolyhedralModelConfig(), getModelManager(), (SbmtInfoWindowManager)getInfoPanelManager(), (SbmtSpectrumWindowManager)getSpectrumPanelManager(), getPickManager(), getRenderer(), instrument).init();
 						controller =
 								new ImagingSearchController(getPolyhedralModelConfig(), getModelManager(), (SbmtInfoWindowManager) getInfoPanelManager(), (SbmtSpectrumWindowManager) getSpectrumPanelManager(), getPickManager(), getRenderer(), instrument);
 						final Controller<ImageSearchModel, ?> cont = controller;
@@ -558,31 +572,31 @@ public class SbmtView extends View implements PropertyChangeListener
 			}
 
 			else if (instrument.spectralMode == SpectralImageMode.MULTI)
-			{
-				if (Configuration.isAPLVersion())
-				{
-					//                    JComponent component = new QuadraspectralImagingSearchPanel(getPolyhedralModelConfig(), getModelManager(), (SbmtInfoWindowManager)getInfoPanelManager(), (SbmtSpectrumWindowManager)getSpectrumPanelManager(), getPickManager(), getRenderer(), instrument).init();
+            {
+                if (Configuration.isAPLVersion())
+                {
+//                    JComponent component = new QuadraspectralImagingSearchPanel(getPolyhedralModelConfig(), getModelManager(), (SbmtInfoWindowManager)getInfoPanelManager(), (SbmtSpectrumWindowManager)getSpectrumPanelManager(), getPickManager(), getRenderer(), instrument).init();
 					JComponent component =
 							new QuadSpectralImagingSearchController(getPolyhedralModelConfig(), getModelManager(), (SbmtInfoWindowManager) getInfoPanelManager(), (SbmtSpectrumWindowManager) getSpectrumPanelManager(), getPickManager(), getRenderer(), instrument).getPanel();
-					addTab(instrument.instrumentName.toString(), component);
-				}
-			}
+                    addTab(instrument.instrumentName.toString(), component);
+                }
+            }
 			else if (instrument.spectralMode == SpectralImageMode.HYPER)
-			{
-				if (Configuration.isAPLVersion())
-				{
+            {
+                if (Configuration.isAPLVersion())
+                {
 					JComponent component =
 							new HyperspectralImagingSearchPanel(getPolyhedralModelConfig(), getModelManager(), (SbmtInfoWindowManager) getInfoPanelManager(), (SbmtSpectrumWindowManager) getSpectrumPanelManager(), getPickManager(), getRenderer(), instrument, SmallBodyViewConfig.LEISA_NBANDS).init();
-					//                    JComponent component = new HyperspectralImagingSearchController(getPolyhedralModelConfig(), getModelManager(), (SbmtInfoWindowManager)getInfoPanelManager(), (SbmtSpectrumWindowManager)getSpectrumPanelManager(), getPickManager(), getRenderer(), instrument, SmallBodyViewConfig.LEISA_NBANDS).getPanel();
-					addTab(instrument.instrumentName.toString(), component);
-				}
-			}
+//                    JComponent component = new HyperspectralImagingSearchController(getPolyhedralModelConfig(), getModelManager(), (SbmtInfoWindowManager)getInfoPanelManager(), (SbmtSpectrumWindowManager)getSpectrumPanelManager(), getPickManager(), getRenderer(), instrument, SmallBodyViewConfig.LEISA_NBANDS).getPanel();
+                    addTab(instrument.instrumentName.toString(), component);
+                }
+            }
 
 			if (controller != null)
 			{
 				metadataManagers.put(instrument.instrumentName.toString(), controller.getModel());
 				addTab(instrument.instrumentName.toString(), controller.getView().getComponent());
-			}
+        }
 
 		}
 
@@ -591,7 +605,7 @@ public class SbmtView extends View implements PropertyChangeListener
 	        SpectraCollection spectrumCollection = (SpectraCollection)getModel(ModelNames.SPECTRA).get(0);
 	        SpectrumBoundaryCollection boundaryCollection = (SpectrumBoundaryCollection)getModel(ModelNames.SPECTRA_BOUNDARIES).get(0);
 
-			String displayName = instrument.getDisplayName();
+            String displayName = instrument.getDisplayName();
 //			if (displayName.equals(SpectraType.NIS_SPECTRA.getDisplayName()))
 			if (displayName.equals("NIS"))
 			{
@@ -606,14 +620,14 @@ public class SbmtView extends View implements PropertyChangeListener
 						getPolyhedralModelConfig().imageSearchDefaultMaxSpacecraftDistance, new String[] {"L2"},
 						getPolyhedralModelConfig().hierarchicalSpectraSearchSpecification,
 						getModelManager(), (SbmtInfoWindowManager) getInfoPanelManager(), getPickManager(), getRenderer(), instrument, model).getPanel();
-				addTab(instrument.getDisplayName(), component);
+                addTab(instrument.getDisplayName(), component);
 
 				PopupMenu popupMenu = new SpectrumPopupMenu(spectrumCollection, boundaryCollection, getModelManager(), (SbmtInfoWindowManager) getInfoPanelManager(), getRenderer());
 				registerPopup(spectrumCollection, popupMenu);
 
-			}
+            }
 			else if (displayName.equals("OTES"))
-			{
+            {
 //				SpectraCollection<OTESSpectrum> otesSpectrumCollection = new SpectraCollection<>(smallBodyModel);
 //				SpectrumBoundaryCollection<OTESSpectrum> boundaryCollection = new SpectrumBoundaryCollection(smallBodyModel, otesSpectrumCollection);
 
@@ -624,21 +638,21 @@ public class SbmtView extends View implements PropertyChangeListener
 //				JComponent component = new OREXSpectrumSearchController<OTESSpectrum>(getPolyhedralModelConfig().imageSearchDefaultStartDate, getPolyhedralModelConfig().imageSearchDefaultEndDate,
 //						/*getPolyhedralModelConfig().hasHierarchicalSpectraSearch*/ false, getPolyhedralModelConfig().imageSearchDefaultMaxSpacecraftDistance, getPolyhedralModelConfig().hierarchicalSpectraSearchSpecification,
 //						getModelManager(), (SbmtInfoWindowManager) getInfoPanelManager(), getPickManager(), getRenderer(), instrument, model).getPanel();
-				addTab(instrument.getDisplayName(), component);
+                addTab(instrument.getDisplayName(), component);
 
 
 				PopupMenu popupMenu = new SpectrumPopupMenu(spectrumCollection, boundaryCollection, getModelManager(), (SbmtInfoWindowManager) getInfoPanelManager(), getRenderer());
 				registerPopup(spectrumCollection, popupMenu);
-			}
+            }
 			else if (displayName.equals("OVIRS"))
-			{
+            {
 //				SpectraCollection<OVIRSSpectrum> ovirsSpectrumCollection = new SpectraCollection<>(smallBodyModel);
 //				SpectrumBoundaryCollection<OVIRSSpectrum> boundaryCollection = new SpectrumBoundaryCollection(smallBodyModel, ovirsSpectrumCollection);
 				JComponent component = new OREXSpectrumTabbedPane<OVIRSSpectrum>(getPolyhedralModelConfig(), getModelManager(), (SbmtInfoWindowManager) getInfoPanelManager(), getPickManager(), getRenderer(), instrument, spectrumCollection);
-				addTab(instrument.getDisplayName(), component);
+                addTab(instrument.getDisplayName(), component);
 				PopupMenu popupMenu = new SpectrumPopupMenu(spectrumCollection, boundaryCollection, getModelManager(), (SbmtInfoWindowManager) getInfoPanelManager(), getRenderer());
 				registerPopup(spectrumCollection, popupMenu);
-			}
+            }
 			else if (displayName.equals("NIRS3"))
 			{
 				H2SpectraFactory.initializeModels(smallBodyModels.get(0));
@@ -652,16 +666,32 @@ public class SbmtView extends View implements PropertyChangeListener
 						getPolyhedralModelConfig().imageSearchDefaultMaxSpacecraftDistance, new String[] {"L2"},
 						getPolyhedralModelConfig().hierarchicalSpectraSearchSpecification,
 						getModelManager(), (SbmtInfoWindowManager) getInfoPanelManager(), getPickManager(), getRenderer(), instrument, model).getPanel();
-				addTab(instrument.getDisplayName(), component);
+                addTab(instrument.getDisplayName(), component);
 				PopupMenu popupMenu = new SpectrumPopupMenu(spectrumCollection, boundaryCollection, getModelManager(), (SbmtInfoWindowManager) getInfoPanelManager(), getRenderer());
 				registerPopup(spectrumCollection, popupMenu);
 			}
 			else if (displayName.equals("MEGANE"))
 			{
-				addTab(instrument.getDisplayName(), new JPanel());
-			}
+//				MEGANECollection collection = new MEGANECollection();
+				MEGANECollection collection = (MEGANECollection)getModelManager().getModel(ModelNames.GRNS_SPECTRA);
+				MEGANEController meganeController = new MEGANEController(collection, smallBodyModels.get(0), getModelManager(), getPickManager());
+				rendererManager.addListener(new ItemEventListener()
+				{
+					@Override
+					public void handleItemEvent(Object aSource, ItemEventType aEventType)
+					{
+						if (aEventType == ItemEventType.ItemsSelected)
+						{
+							StateHistory currentRun = rendererManager.getHistoryCollection().getCurrentRun();
+							if (currentRun == null) return;
+							meganeController.propertyChange(new PropertyChangeEvent(meganeController, "SPICEPROVIDER", null, currentRun.getLocationProvider().getPointingProvider()));
+						}
+					}
+				});
+				addTab(instrument.getDisplayName(), meganeController.getPanel());
+            }
 
-		}
+        }
 
 		// Lidar tab
 		SmallBodyViewConfig tmpSmallBodyConfig = getPolyhedralModelConfig();
@@ -672,32 +702,32 @@ public class SbmtView extends View implements PropertyChangeListener
 		JComponent lidarPanel = new LidarPanel(getRenderer(), getStatusNotifier(), getPickManager(), tmpSmallBodyConfig, getModelManager().getPolyhedralModel(), getModelManager());
 		addTab(lidarInstrName, lidarPanel);
 
-		if (Configuration.isAPLVersion())
-		{
-			if (getPolyhedralModelConfig().hasLineamentData)
-			{
-				JComponent component = new LineamentControlPanel(getModelManager());
-				addTab("Lineament", component);
-			}
+        if (Configuration.isAPLVersion())
+        {
+            if (getPolyhedralModelConfig().hasLineamentData)
+            {
+                JComponent component = new LineamentControlPanel(getModelManager());
+                addTab("Lineament", component);
+            }
 
 			addTab("Structures", new StructureMainPanel(getPickManager(), getRenderer(), getStatusNotifier(), getModelManager()));
 
-			JTabbedPane customDataPane = new JTabbedPane();
-			customDataPane.setBorder(BorderFactory.createEmptyBorder());
-			addTab("Custom Data", customDataPane);
+            JTabbedPane customDataPane=new JTabbedPane();
+            customDataPane.setBorder(BorderFactory.createEmptyBorder());
+            addTab("Custom Data", customDataPane);
 
-			//            if (!getPolyhedralModelConfig().customTemporary)
-			{
-				ImagingInstrument instrument = null;
-				for (ImagingInstrument i : getPolyhedralModelConfig().imagingInstruments)
-				{
-					instrument = i;
-					break;
-				}
+//            if (!getPolyhedralModelConfig().customTemporary)
+            {
+                ImagingInstrument instrument = null;
+                for (ImagingInstrument i : getPolyhedralModelConfig().imagingInstruments)
+                {
+                    instrument = i;
+                    break;
+                }
 
 				ImageCollection images = (ImageCollection) getModel(ModelNames.CUSTOM_IMAGES).get(0);
 				PerspectiveImageBoundaryCollection boundaries = (PerspectiveImageBoundaryCollection) getModel(ModelNames.PERSPECTIVE_CUSTOM_IMAGE_BOUNDARIES).get(0);
-				PopupMenu popupMenu = new ImagePopupMenu<>(getModelManager(), images, boundaries, (SbmtInfoWindowManager) getInfoPanelManager(), (SbmtSpectrumWindowManager) getSpectrumPanelManager(), getRenderer(), getRenderer());
+				PopupMenu popupMenu = new ImagePopupMenu<>(getModelManager(), images, /*boundaries,*/ (SbmtInfoWindowManager) getInfoPanelManager(), (SbmtSpectrumWindowManager) getSpectrumPanelManager(), getRenderer(), getRenderer());
 				registerPopupMenuForModels(getModel(ModelNames.CUSTOM_IMAGES), popupMenu);
 
 				CustomImageController customImageController = new CustomImageController(getPolyhedralModelConfig(), getModelManager(), (SbmtInfoWindowManager) getInfoPanelManager(), (SbmtSpectrumWindowManager) getSpectrumPanelManager(), getPickManager(), getRenderer(), instrument);
@@ -726,9 +756,9 @@ public class SbmtView extends View implements PropertyChangeListener
 				//break;
 			}
 
-			//            JComponent component = new CustomDEMPanel(getModelManager(), getPickManager(), getPolyhedralModelConfig().rootDirOnServer,
-			//                    getPolyhedralModelConfig().hasMapmaker, getPolyhedralModelConfig().hasBigmap, renderer);
-			//            addTab("Regional DTMs", component);
+//            JComponent component = new CustomDEMPanel(getModelManager(), getPickManager(), getPolyhedralModelConfig().rootDirOnServer,
+//                    getPolyhedralModelConfig().hasMapmaker, getPolyhedralModelConfig().hasBigmap, renderer);
+//            addTab("Regional DTMs", component);
 
             DEMCollection dems = (DEMCollection)getModel(ModelNames.DEM).get(0);
             DEMBoundaryCollection demBoundaries = (DEMBoundaryCollection)getModel(ModelNames.DEM_BOUNDARY).get(0);
@@ -772,20 +802,21 @@ public class SbmtView extends View implements PropertyChangeListener
 ////			}
             if (getPolyhedralModelConfig().hasStateHistory)
             {
-                StateHistoryController shController = null;
-                if (((ViewConfig)getConfig()).body == ShapeModelBody.EARTH)
-                    shController = new StateHistoryController(getModelManager(), getRenderer(), false);
-                else
-                    shController = new StateHistoryController(getModelManager(), getRenderer(), true);
-                addTab("Observing Conditions", shController.getView());
+//              StateHistoryController controller = new StateHistoryController(getModelManager(), getRenderer());
+              ObservationPlanningController controller2 = new ObservationPlanningController(getModelManager(), smallBodyModels.get(0), rendererManager, getPolyhedralModelConfig(), smallBodyModels.get(0).getColoringDataManager(), getStatusNotifier());
+//              if (getConfig().body == ShapeModelBody.EARTH)
+//                  controller = new StateHistoryController(getModelManager(), getRenderer(), false);
+//              else
+//                  controller = new StateHistoryController(getModelManager(), getRenderer(), true);
+              addTab("Observing Conditions", controller2.getView());
 
-			}
-		}
-	}
+            }
+        }
+    }
 
-	@Override
-	protected void setupPickManager()
-	{
+    @Override
+    protected void setupPickManager()
+    {
 		PickManager tmpPickManager = new PickManager(getRenderer(), getModelManager());
 		setPickManager(tmpPickManager);
 
@@ -797,13 +828,13 @@ public class SbmtView extends View implements PropertyChangeListener
 
 		// TODO: This should be moved out of here to a logical relevant location
 		tmpPickManager.getDefaultPicker().addListener(new ImageDefaultPickHandler(getModelManager()));
-	}
+    }
 
-	@Override
-	protected void setupInfoPanelManager()
-	{
+    @Override
+    protected void setupInfoPanelManager()
+    {
 		setInfoPanelManager(new SbmtInfoWindowManager(getModelManager()));
-	}
+    }
 
 	@Override
 	protected void setupSpectrumPanelManager()
@@ -815,7 +846,7 @@ public class SbmtView extends View implements PropertyChangeListener
 		PopupMenu spectralImagesPopupMenu =
     	        new SpectrumPopupMenu(spectrumCollection, spectrumBoundaryCollection, getModelManager(), null, null);
 		setSpectrumPanelManager(new SbmtSpectrumWindowManager(getModelManager(), spectralImagesPopupMenu));
-	}
+    }
 
 	@Override
 	protected void setupPositionOrientationManager()
@@ -853,93 +884,95 @@ public class SbmtView extends View implements PropertyChangeListener
 	{
 		if (e.getPropertyName().equals(Properties.MODEL_CHANGED))
 			renderer.notifySceneChange();
-		else
-			renderer.getRenderWindowPanel().Render();
-	}
+        else
+            renderer.getRenderWindowPanel().Render();
+    }
 
-	@Override
-	public void setRenderer(Renderer renderer)
-	{
-		this.renderer = renderer;
-	}
+    @Override
+    public void setRenderer(Renderer renderer)
+    {
+        this.renderer = renderer;
+        if (rendererManager == null) return;
+        rendererManager.setRenderer(renderer);
+    }
 
-	private static final Version METADATA_VERSION = Version.of(1, 1); // Nested CURRENT_TAB stored as an array of strings.
-	private static final Version METADATA_VERSION_1_0 = Version.of(1, 0); // Top level CURRENT_TAB only stored as a single string.
-	private static final Key<Map<String, Metadata>> METADATA_MANAGERS_KEY = Key.of("metadataManagers");
-	private static final Key<Metadata> MODEL_MANAGER_KEY = Key.of("modelState");
-	private static final Key<Integer> RESOLUTION_LEVEL_KEY = Key.of("resolutionLevel");
-	private static final Key<double[]> POSITION_KEY = Key.of("cameraPosition");
-	private static final Key<double[]> UP_KEY = Key.of("cameraUp");
-	private static final Key<List<String>> CURRENT_TAB_KEY = Key.of("currentTab");
-	private static final Key<String> CURRENT_TAB_KEY_1_0 = Key.of("currentTab");
+    private static final Version METADATA_VERSION = Version.of(1, 1); // Nested CURRENT_TAB stored as an array of strings.
+    private static final Version METADATA_VERSION_1_0 = Version.of(1, 0); // Top level CURRENT_TAB only stored as a single string.
+    private static final Key<Map<String, Metadata>> METADATA_MANAGERS_KEY = Key.of("metadataManagers");
+    private static final Key<Metadata> MODEL_MANAGER_KEY = Key.of("modelState");
+    private static final Key<Integer> RESOLUTION_LEVEL_KEY = Key.of("resolutionLevel");
+    private static final Key<double[]> POSITION_KEY = Key.of("cameraPosition");
+    private static final Key<double[]> UP_KEY = Key.of("cameraUp");
+    private static final Key<List<String>> CURRENT_TAB_KEY = Key.of("currentTab");
+    private static final Key<String> CURRENT_TAB_KEY_1_0 = Key.of("currentTab");
 
-	@Override
-	public void initializeStateManager()
-	{
+    @Override
+    public void initializeStateManager()
+    {
 		if (!stateManager.isRegistered())
 		{
-			stateManager.register(new MetadataManager() {
+            stateManager.register(new MetadataManager() {
 
-				@Override
-				public Metadata store()
-				{
-					if (!isInitialized())
-					{
-						return EmptyMetadata.instance();
-					}
+                @Override
+                public Metadata store()
+                {
+                    if (!isInitialized())
+                    {
+                        return EmptyMetadata.instance();
+                    }
 
-					SettableMetadata result = SettableMetadata.of(METADATA_VERSION);
+                    SettableMetadata result = SettableMetadata.of(METADATA_VERSION);
 
-					result.put(RESOLUTION_LEVEL_KEY, getModelManager().getPolyhedralModel().getModelResolution());
+                    result.put(RESOLUTION_LEVEL_KEY, getModelManager().getPolyhedralModel().getModelResolution());
 
-					Renderer localRenderer = SbmtView.this.getRenderer();
+                    Renderer localRenderer = SbmtView.this.getRenderer();
 					if (localRenderer != null)
 					{
 						RenderPanel panel = localRenderer.getRenderWindowPanel();
-						vtkCamera camera = panel.getActiveCamera();
-						result.put(POSITION_KEY, camera.GetPosition());
-						result.put(UP_KEY, camera.GetViewUp());
-					}
+                        vtkCamera camera = panel.getActiveCamera();
+                        result.put(POSITION_KEY, camera.GetPosition());
+                        result.put(UP_KEY, camera.GetViewUp());
+                    }
 
-					// Redmine #1320/1439: this is what used to be here to save the state of imaging search panels.
-					//                    if (!searchPanelMap.isEmpty())
-					//                    {
-					//                        ImmutableSortedMap.Builder<String, Metadata> builder = ImmutableSortedMap.naturalOrder();
-					//                        for (Entry<String, ImagingSearchPanel> entry : searchPanelMap.entrySet())
-					//                        {
-					//                            MetadataManager imagingStateManager = entry.getValue().getMetadataManager();
-					//                            if (imagingStateManager != null)
-					//                            {
-					//                                builder.put(entry.getKey(), imagingStateManager.store());
-					//                            }
-					//                        }
-					//                        result.put(imagingKey, builder.build());
-					//                    }
-					Map<String, Metadata> metadata = Utilities.bulkStore(metadataManagers);
-					result.put(METADATA_MANAGERS_KEY, metadata);
+                    // Redmine #1320/1439: this is what used to be here to save the state of imaging search panels.
+//                    if (!searchPanelMap.isEmpty())
+//                    {
+//                        ImmutableSortedMap.Builder<String, Metadata> builder = ImmutableSortedMap.naturalOrder();
+//                        for (Entry<String, ImagingSearchPanel> entry : searchPanelMap.entrySet())
+//                        {
+//                            MetadataManager imagingStateManager = entry.getValue().getMetadataManager();
+//                            if (imagingStateManager != null)
+//                            {
+//                                builder.put(entry.getKey(), imagingStateManager.store());
+//                            }
+//                        }
+//                        result.put(imagingKey, builder.build());
+//                    }
+                    Map<String, Metadata> metadata = Utilities.bulkStore(metadataManagers);
+                    result.put(METADATA_MANAGERS_KEY, metadata);
 
-					ModelManager modelManager = getModelManager();
-					if (modelManager instanceof MetadataManager)
-					{
-						result.put(MODEL_MANAGER_KEY, ((MetadataManager) modelManager).store());
-					}
+                    ModelManager modelManager = getModelManager();
+                    if (modelManager instanceof MetadataManager)
+                    {
+                    	result.put(MODEL_MANAGER_KEY, ((MetadataManager) modelManager).store());
+                    }
 
-					JTabbedPane controlPanel = getControlPanel();
-					if (controlPanel != null)
-					{
-						List<String> currentTabs = new ArrayList<>();
-						compileCurrentTabs(controlPanel, currentTabs);
-						result.put(CURRENT_TAB_KEY, currentTabs);
-					}
-					return result;
-				}
+                    JTabbedPane controlPanel = getControlPanel();
+                    if (controlPanel != null)
+                    {
+                    	List<String> currentTabs = new ArrayList<>();
+                    	compileCurrentTabs(controlPanel, currentTabs);
+                        result.put(CURRENT_TAB_KEY, currentTabs);
+                    }
+                    return result;
+                }
 
-				@Override
-				public void retrieve(Metadata state)
-				{
+                @Override
+                public void retrieve(Metadata state)
+                {
 					try
                     {
-                        initialize();
+                    initialize();
                     }
                     catch (Exception e)
                     {
@@ -947,7 +980,7 @@ public class SbmtView extends View implements PropertyChangeListener
                         return;
                     }
 
-					Version serializedVersion = state.getVersion();
+                    Version serializedVersion = state.getVersion();
 
                     if (state.hasKey(RESOLUTION_LEVEL_KEY))
                     {
@@ -961,98 +994,98 @@ public class SbmtView extends View implements PropertyChangeListener
                             e.printStackTrace();
                         }
                     }
-                    Renderer localRenderer = SbmtView.this.getRenderer();
-                    if (localRenderer != null)
-                    {
+                        Renderer localRenderer = SbmtView.this.getRenderer();
+                        if (localRenderer != null)
+                        {
                         RenderPanel panel = localRenderer.getRenderWindowPanel();
-                        vtkCamera camera = panel.getActiveCamera();
+                            vtkCamera camera = panel.getActiveCamera();
                             camera.SetPosition(state.get(POSITION_KEY));
                             camera.SetViewUp(state.get(UP_KEY));
-                        panel.resetCameraClippingRange();
-                        panel.Render();
-                    }
+                            panel.resetCameraClippingRange();
+                            panel.Render();
+                        }
 
-					// Redmine #1320/1439: this is what used to be here to retrieve the state of imaging search panels.
-					//                    if (!searchPanelMap.isEmpty())
-					//                    {
-					//                        SortedMap<String, Metadata> metadataMap = state.get(imagingKey);
-					//                        for (Entry<String, ImagingSearchPanel> entry : searchPanelMap.entrySet())
-					//                        {
-					//                            Metadata imagingMetadata = metadataMap.get(entry.getKey());
-					//                            if (imagingMetadata != null)
-					//                            {
-					//                                MetadataManager imagingStateManager = entry.getValue().getMetadataManager();
-					//                                imagingStateManager.retrieve(imagingMetadata);
-					//                            }
-					//                        }
-					//                    }
-					Map<String, Metadata> metadata = state.get(METADATA_MANAGERS_KEY);
-					Utilities.bulkRetrieve(metadataManagers, metadata);
+                    // Redmine #1320/1439: this is what used to be here to retrieve the state of imaging search panels.
+//                    if (!searchPanelMap.isEmpty())
+//                    {
+//                        SortedMap<String, Metadata> metadataMap = state.get(imagingKey);
+//                        for (Entry<String, ImagingSearchPanel> entry : searchPanelMap.entrySet())
+//                        {
+//                            Metadata imagingMetadata = metadataMap.get(entry.getKey());
+//                            if (imagingMetadata != null)
+//                            {
+//                                MetadataManager imagingStateManager = entry.getValue().getMetadataManager();
+//                                imagingStateManager.retrieve(imagingMetadata);
+//                            }
+//                        }
+//                    }
+                    Map<String, Metadata> metadata = state.get(METADATA_MANAGERS_KEY);
+                    Utilities.bulkRetrieve(metadataManagers, metadata);
 
 					if (state.hasKey(MODEL_MANAGER_KEY))
 					{
-						ModelManager modelManager = getModelManager();
-						if (modelManager instanceof MetadataManager)
-						{
-							((MetadataManager) modelManager).retrieve(state.get(MODEL_MANAGER_KEY));
-						}
-					}
+                    	ModelManager modelManager = getModelManager();
+                    	if (modelManager instanceof MetadataManager)
+                    	{
+                    		((MetadataManager) modelManager).retrieve(state.get(MODEL_MANAGER_KEY));
+                    	}
+                    }
 
-					List<String> currentTabs = ImmutableList.of();
-					if (serializedVersion.compareTo(METADATA_VERSION_1_0) > 0)
-					{
-						currentTabs = state.get(CURRENT_TAB_KEY);
-					}
-					else if (state.hasKey(CURRENT_TAB_KEY_1_0))
-					{
-						currentTabs = ImmutableList.of(state.get(CURRENT_TAB_KEY_1_0));
-					}
+                    List<String> currentTabs = ImmutableList.of();
+                    if (serializedVersion.compareTo(METADATA_VERSION_1_0) > 0)
+                    {
+                    	currentTabs = state.get(CURRENT_TAB_KEY);
+                    }
+                    else if (state.hasKey(CURRENT_TAB_KEY_1_0))
+                    {
+                    	currentTabs = ImmutableList.of(state.get(CURRENT_TAB_KEY_1_0));
+                    }
 
-					restoreCurrentTabs(getControlPanel(), currentTabs);
-				}
+                    restoreCurrentTabs(getControlPanel(), currentTabs);
+                }
 
-				private void compileCurrentTabs(JTabbedPane tabbedPane, List<String> tabs)
-				{
-					int selectedIndex = tabbedPane.getSelectedIndex();
-					if (selectedIndex >= 0)
-					{
-						tabs.add(tabbedPane.getTitleAt(selectedIndex));
-						Component component = tabbedPane.getSelectedComponent();
+                private void compileCurrentTabs(JTabbedPane tabbedPane, List<String> tabs)
+                {
+                	int selectedIndex = tabbedPane.getSelectedIndex();
+                	if (selectedIndex >= 0)
+                	{
+                		tabs.add(tabbedPane.getTitleAt(selectedIndex));
+                		Component component = tabbedPane.getSelectedComponent();
 						if (component instanceof JTabbedPane)
 						{
-							compileCurrentTabs((JTabbedPane) component, tabs);
-						}
-					}
-				}
+                			compileCurrentTabs((JTabbedPane) component, tabs);
+                		}
+                	}
+                }
 
 				private void restoreCurrentTabs(JTabbedPane tabbedPane, List<String> tabTitles)
 				{
-					if (tabbedPane != null)
-					{
-						if (!tabTitles.isEmpty())
-						{
-							String title = tabTitles.get(0);
-							for (int index = 0; index < tabbedPane.getTabCount(); ++index)
-							{
-								String tabTitle = tabbedPane.getTitleAt(index);
-								if (title.equalsIgnoreCase(tabTitle))
-								{
-									tabbedPane.setSelectedIndex(index);
-									Component component = tabbedPane.getSelectedComponent();
-									if (component instanceof JTabbedPane)
-									{
-										restoreCurrentTabs((JTabbedPane) component, tabTitles.subList(1, tabTitles.size()));
-									}
-									break;
-								}
-							}
-						}
-					}
-				}
+                	if (tabbedPane != null)
+                	{
+                		if (!tabTitles.isEmpty())
+                		{
+                			String title = tabTitles.get(0);
+                			for (int index = 0; index < tabbedPane.getTabCount(); ++index)
+                			{
+                				String tabTitle = tabbedPane.getTitleAt(index);
+                				if (title.equalsIgnoreCase(tabTitle))
+                				{
+                					tabbedPane.setSelectedIndex(index);
+                					Component component = tabbedPane.getSelectedComponent();
+                					if (component instanceof JTabbedPane)
+                					{
+                						restoreCurrentTabs((JTabbedPane) component, tabTitles.subList(1, tabTitles.size()));
+                					}
+                					break;
+                				}
+                			}
+                		}
+                	}
+                }
 
-			});
-		}
-	}
+            });
+        }
+    }
 
 	static public LineamentModel createLineament()
     {

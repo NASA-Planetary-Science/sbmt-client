@@ -47,6 +47,7 @@ import edu.jhuapl.sbmt.image.core.BasicImagingInstrument;
 import edu.jhuapl.sbmt.image.core.ImagingInstrument;
 import edu.jhuapl.sbmt.image.core.ImagingInstrumentConfiguration;
 import edu.jhuapl.sbmt.image.types.customImage.CustomCylindricalImageKey;
+import edu.jhuapl.sbmt.image.types.customImage.CustomPerspectiveImageKey;
 import edu.jhuapl.sbmt.model.image.ImageSource;
 import edu.jhuapl.sbmt.model.image.Instrument;
 import edu.jhuapl.sbmt.model.phobos.HierarchicalSearchSpecification;
@@ -233,7 +234,6 @@ public class SmallBodyViewConfig extends BodyViewConfig implements ISmallBodyVie
         catch (IOException e)
         {
             // TODO Auto-generated catch block
-        	System.out.println("SmallBodyViewConfig: fetchRemoteConfig: IO exception ");
             e.printStackTrace();
             return null;
         }
@@ -273,7 +273,7 @@ public class SmallBodyViewConfig extends BodyViewConfig implements ISmallBodyVie
 		BennuConfigs.initialize(configArray, publicOnly);
 		DartConfigs.instance().initialize(configArray);
 		CometConfigs.initialize(configArray);
-		MarsConfigs.initialize(configArray);
+		MarsConfigs.initialize(configArray, publicOnly);
 		NewHorizonsConfigs.initialize(configArray);
 		RyuguConfigs.initialize(configArray);
 		SaturnConfigs.initialize(configArray);
@@ -360,7 +360,7 @@ public class SmallBodyViewConfig extends BodyViewConfig implements ISmallBodyVie
 
             if (imageMapKeys == null)
             {
-                List<CustomCylindricalImageKey> imageMapKeys = ImmutableList.of();
+                List<ImageKeyInterface> imageMapKeys = ImmutableList.of();
 
                 // Newest/best way to specify maps is with metadata, if this model has it.
                 String metadataFileName = SafeURLPaths.instance().getString(serverPath("basemap"), baseMapConfigName);
@@ -373,6 +373,7 @@ public class SmallBodyViewConfig extends BodyViewConfig implements ISmallBodyVie
                 {
                     // This file is optional.
                     metadataFile = null;
+                    return ImmutableList.of();
                 }
 
                 if (metadataFile != null && metadataFile.isFile())
@@ -403,7 +404,7 @@ public class SmallBodyViewConfig extends BodyViewConfig implements ISmallBodyVie
                     }
                 }
 
-                this.imageMapKeys = correctMapKeys(imageMapKeys);
+                this.imageMapKeys = correctMapKeys(imageMapKeys, metadataFile.getParent());
             }
 
         return imageMapKeys;
@@ -423,21 +424,38 @@ public class SmallBodyViewConfig extends BodyViewConfig implements ISmallBodyVie
      * @param keys the input (shorter) keys
      * @return the output (full-fledged) keys
      */
-    private List<ImageKeyInterface> correctMapKeys(List<CustomCylindricalImageKey> keys)
+    private List<ImageKeyInterface> correctMapKeys(List<ImageKeyInterface> keys, String metadataDir)
     {
         ImmutableList.Builder<ImageKeyInterface> builder = ImmutableList.builder();
-        for (CustomCylindricalImageKey key : keys)
+        for (ImageKeyInterface k : keys)
         {
-            String fileName = serverPath(key.getImageFilename());
+        	if (k instanceof CustomCylindricalImageKey)
+        	{
+        		CustomCylindricalImageKey key = (CustomCylindricalImageKey)k;
+	            String fileName = serverPath(key.getImageFilename());
 
-            CustomCylindricalImageKey correctedKey = new CustomCylindricalImageKey(fileName, fileName, ImageType.GENERIC_IMAGE, ImageSource.IMAGE_MAP, new Date(), key.getOriginalName());
+	            CustomCylindricalImageKey correctedKey = new CustomCylindricalImageKey(fileName, fileName, ImageType.GENERIC_IMAGE, ImageSource.IMAGE_MAP, new Date(), key.getOriginalName());
 
-            correctedKey.setLllat(key.getLllat());
-            correctedKey.setLllon(key.getLllon());
-            correctedKey.setUrlat(key.getUrlat());
-            correctedKey.setUrlon(key.getUrlon());
+	            correctedKey.setLllat(key.getLllat());
+	            correctedKey.setLllon(key.getLllon());
+	            correctedKey.setUrlat(key.getUrlat());
+	            correctedKey.setUrlon(key.getUrlon());
 
-            builder.add(correctedKey);
+	            builder.add(correctedKey);
+	        }
+        	else
+        	{
+        		CustomPerspectiveImageKey key = (CustomPerspectiveImageKey)k;
+        		String imageFileName = SafeURLPaths.instance().getString(serverPath("basemap"), key.getImageFilename());
+        		String infoFileName = SafeURLPaths.instance().getString(serverPath("basemap"), key.getPointingFile());
+        		FileCache.getFileFromServer(imageFileName);
+        		FileCache.getFileFromServer(infoFileName);
+        		String fileName = SafeURLPaths.instance().getUrl(metadataDir + File.separator + key.getImageFilename());
+        		CustomPerspectiveImageKey correctedKey = new CustomPerspectiveImageKey(fileName, fileName, key.getSource(), key.getImageType(), key.getRotation(), key.getFlip(), key.getFileType(), key.getPointingFile(),
+        				key.getDate(), key.getOriginalName());
+
+        		builder.add(correctedKey);
+        	}
         }
 
         return builder.build();

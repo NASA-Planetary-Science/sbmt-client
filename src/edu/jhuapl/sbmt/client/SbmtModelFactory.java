@@ -18,7 +18,7 @@ import edu.jhuapl.sbmt.model.simple.Sbmt2SimpleSmallBody;
 import edu.jhuapl.sbmt.model.simple.SimpleSmallBody;
 import edu.jhuapl.sbmt.model.vesta_old.VestaOld;
 
-public class SbmtModelFactory
+public class SbmtModelFactory 
 {
 //    static public StateHistoryModel createStateHistory(
 //            StateHistoryKey key,

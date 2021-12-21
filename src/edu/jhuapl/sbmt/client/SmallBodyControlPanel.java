@@ -58,6 +58,7 @@ public class SmallBodyControlPanel extends PolyhedralModelControlPanel implement
         this.imageChangeListeners = new ArrayList<>();
 
         SmallBodyModel smallBodyModel = (SmallBodyModel) modelManager.getPolyhedralModel();
+
         if ((smallBodyModel.getImageMapKeys() != null) && !smallBodyModel.getImageMapKeys().isEmpty())
         {
             imageMapCheckBox = configureImageMapCheckBox(smallBodyModel);
