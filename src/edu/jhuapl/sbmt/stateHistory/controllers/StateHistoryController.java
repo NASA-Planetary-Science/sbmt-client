@@ -1,5 +1,6 @@
 package edu.jhuapl.sbmt.stateHistory.controllers;
 
+import java.awt.Dimension;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 import java.io.File;
@@ -7,9 +8,11 @@ import java.io.IOException;
 import java.util.Iterator;
 import java.util.List;
 
+import javax.swing.JComponent;
 import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
 
 import org.apache.commons.io.FilenameUtils;
 import org.joda.time.DateTime;
@@ -210,7 +213,7 @@ public class StateHistoryController
      * Returns a JPanel made of the child views that comprise this parent view
      * @return
      */
-    public JPanel getView()
+    public JComponent getView()
     {
     	intervalSelectionController.setIntervalGenerationController(intervalGenerationController);
     	StateHistoryTableView intervalSelectionPanel = intervalSelectionController.getView();
@@ -220,12 +223,22 @@ public class StateHistoryController
     	StateHistoryDisplayedIntervalPanel displayedPanel = intervalDisplayedController.getView();
 
     	JPanel panel = new JPanel();
+    	panel.setPreferredSize(new Dimension(200, 850));
+    	panel.setMaximumSize(new Dimension(200, 1100));
+
     	BindingFactory factory = new BindingFactory();
     	panel.setLayout(new RelativeLayout());
     	panel.add(intervalSelectionPanel, new RelativeConstraints(factory.leftEdge(), factory.rightEdge(), factory.topEdge(), new Binding(Edge.BOTTOM, 300, Direction.BELOW, Edge.TOP, panel)));
     	panel.add(viewControlsController.getView(), new RelativeConstraints(factory.leftEdge(), factory.rightEdge(), factory.below(intervalSelectionPanel), factory.above(displayedPanel)));
     	panel.add(displayedPanel, new RelativeConstraints(factory.leftEdge(), factory.rightEdge(), factory.bottomEdge()));
-    	return panel;
+    	JScrollPane scrollPane = new JScrollPane();
+
+		scrollPane.setPreferredSize(new Dimension(200, 200));
+		scrollPane.setMaximumSize(new Dimension(200, 200));
+
+		scrollPane.setViewportView(panel);
+
+		return scrollPane;
     }
 
 
