@@ -142,7 +142,7 @@ public class TrajectoryActor extends vtkActor
         Trajectory traj =  trajectory;
         traj.setCellId(cellId);
 
-        size = traj.getNumPoints();
+        size = traj.getNumPoints()+1;
 		double stepSize = ((trajectory.getStopTime() - trajectory.getStartTime())/(double)(trajectory.getNumPoints()));
         for (int i=(int)(minFraction*size);i<maxFraction*size;i++)
         {
