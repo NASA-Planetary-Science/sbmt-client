@@ -223,7 +223,7 @@ public class StateHistoryController
     	StateHistoryDisplayedIntervalPanel displayedPanel = intervalDisplayedController.getView();
 
     	JPanel panel = new JPanel();
-    	panel.setPreferredSize(new Dimension(200, 850));
+    	panel.setPreferredSize(new Dimension(200, 950));
     	panel.setMaximumSize(new Dimension(200, 1100));
 
     	BindingFactory factory = new BindingFactory();

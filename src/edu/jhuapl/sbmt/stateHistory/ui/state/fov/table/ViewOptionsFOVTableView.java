@@ -101,7 +101,7 @@ public class ViewOptionsFOVTableView extends JPanel
 		scrollPane.setMinimumSize(new Dimension(150, 200));
 		scrollPane.setPreferredSize(new Dimension(150, 200));
 		add(scrollPane);
-
+		resultList.setPreferredSize(new Dimension(400, 200));
 		scrollPane.setViewportView(resultList);
 	}
 
