@@ -29,7 +29,7 @@ public class BasicConfigInfo implements MetadataManager
 
     public static String getConfigPathPrefix(boolean publishedDataOnly)
     {
-        return (publishedDataOnly ? "published/" : "proprietary/") + "allBodies-" + configInfoVersion + "-2320";
+        return (publishedDataOnly ? "published/" : "proprietary/") + "allBodies-" + configInfoVersion + "-1215";
     }
 
     private static final SbmtMultiMissionTool.Mission[] EmptyMissionArray = new SbmtMultiMissionTool.Mission[0];
@@ -294,7 +294,7 @@ public class BasicConfigInfo implements MetadataManager
 	{
 		return population;
 	}
-	
+
 	public String getModelLabel()
 	{
 		return modelLabel;
