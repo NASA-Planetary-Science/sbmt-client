@@ -126,7 +126,7 @@ public class StateHistoryViewControlsController
         view.add(viewControls.getView(), new RelativeConstraints(factory.leftEdge(), factory.rightEdge(), factory.below(displayItemsControls.getView())));
 
         view.add(fovControls.getView(), new RelativeConstraints(factory.leftEdge(), factory.rightEdge(), factory.below(viewControls.getView()),
-        														new Binding(Edge.BOTTOM, 200, Direction.BELOW, Edge.TOP, fovControls.getView())));
+        														new Binding(Edge.BOTTOM, 300, Direction.BELOW, Edge.TOP, fovControls.getView())));
 
 //        JScrollPane fovScroll = new JScrollPane();
 //        fovScroll.setViewportView(fovControls.getView());
