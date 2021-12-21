@@ -30,6 +30,9 @@ public class StateHistoryFOVPanel extends JPanel
 	private void initUI()
 	{
 		fovPanel.setBorder(new TitledBorder(null, "Available FOVs", TitledBorder.LEADING, TitledBorder.TOP, null, null));
+		fovPanel.setMinimumSize(new Dimension(Integer.MAX_VALUE, 100));
+		fovPanel.setPreferredSize(new Dimension(Integer.MAX_VALUE, 100));
+		fovPanel.setMaximumSize(new Dimension(Integer.MAX_VALUE, 100));
 		configureViewOptionsPanel();
 	}
 
