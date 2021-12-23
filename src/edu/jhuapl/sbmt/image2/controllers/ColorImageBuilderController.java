@@ -1,6 +1,7 @@
 package edu.jhuapl.sbmt.image2.controllers;
 
 import java.util.List;
+import java.util.Optional;
 
 import javax.swing.JPanel;
 
@@ -28,11 +29,12 @@ public class ColorImageBuilderController
 	ColorImageBuilderPanel panel;
 	ColorImageBuilderModel model;
 	PerspectiveImageCollection imageCollection;
+	Optional<IPerspectiveImage> existingImage;
 
-	public ColorImageBuilderController(List<SmallBodyModel> smallBodyModels, PerspectiveImageCollection imageCollection)
+	public ColorImageBuilderController(List<SmallBodyModel> smallBodyModels, PerspectiveImageCollection imageCollection, Optional<IPerspectiveImage> existingImage)
 	{
 		this.model = new ColorImageBuilderModel();
-
+		this.existingImage = existingImage;
 		this.panel = new ColorImageBuilderPanel(smallBodyModels);
 		this.imageCollection = imageCollection;
 		initGUI(smallBodyModels);
@@ -65,12 +67,19 @@ public class ColorImageBuilderController
 		});
 
 		panel.getSaveAndCloseButton().addActionListener(e -> {
+
+			existingImage.ifPresent(image -> imageCollection.removeUserImage(image));
+
 			CompositePerspectiveImage colorImage = new CompositePerspectiveImage(panel.getImages());
 			imageCollection.addUserImage(colorImage);
+			panel.getParent().setVisible(false);
 		});
 	}
 
-
+	public void setImages(List<IPerspectiveImage> images)
+	{
+		this.panel.setImages(images);
+	}
 
 	public JPanel getView()
 	{

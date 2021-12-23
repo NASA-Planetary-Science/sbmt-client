@@ -72,9 +72,10 @@ public class PerspectiveImageCollection<G1 extends IPerspectiveImage & IPerspect
 
 	public void addUserImage(G1 image)
 	{
-		System.out.println("PerspectiveImageCollection: addUserImage: adding user image");
 		userImages.add(image);
 		PerspectiveImageRenderingState state = new PerspectiveImageRenderingState();
+		Color color = ColorUtil.generateColor(userImages.indexOf(image)%100, 100);
+		state.boundaryColor = color;
 		renderingStates.put(image,state);
 		updateUserList();	//update the user created list, stored in metadata
 		//TODO merge with searched for images, which will cause a refresh.  Put custom images at top?
@@ -135,6 +136,14 @@ public class PerspectiveImageCollection<G1 extends IPerspectiveImage & IPerspect
 //            // TODO Auto-generated catch block
 //            e.printStackTrace();
 //        }
+	}
+
+	public void removeUserImage(G1 image)
+	{
+		setImageMapped(image, false);
+		setImageBoundaryShowing(image, false);
+		userImages.remove(image);
+		setAllItems(userImages);
 	}
 
 	protected <T> void write(Key<T> key, T value, SettableMetadata configMetadata)
@@ -440,6 +449,7 @@ public class PerspectiveImageCollection<G1 extends IPerspectiveImage & IPerspect
 		image.setOfflimbShowing(showing);
 //		this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
 		List<vtkActor> actors = offLimbRenderers.get(image);
+
 		if (actors == null)
 		{
 			Thread thread = new Thread(new Runnable()
@@ -475,6 +485,7 @@ public class PerspectiveImageCollection<G1 extends IPerspectiveImage & IPerspect
 		}
 		else
 		{
+			System.out.println("PerspectiveImageCollection: setImageOfflimbShowing: actor size " + actors.size());
 			for (vtkActor actor : actors)
 			{
 				actor.SetVisibility(showing ? 1 : 0);
@@ -603,6 +614,11 @@ public class PerspectiveImageCollection<G1 extends IPerspectiveImage & IPerspect
 	public List<SmallBodyModel> getSmallBodyModels()
 	{
 		return smallBodyModels;
+	}
+
+	public IImagingInstrument getInstrument()
+	{
+		return this.imagingInstrument;
 	}
 
 	public void setImagingInstrument(IImagingInstrument imagingInstrument)

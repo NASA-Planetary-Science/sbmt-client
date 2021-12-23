@@ -8,7 +8,7 @@
  *
  * Created on Jul 21, 2011, 9:00:24 PM
  */
-package edu.jhuapl.sbmt.image2.ui.custom;
+package edu.jhuapl.sbmt.image2.ui.custom.importer;
 
 import java.awt.CardLayout;
 import java.awt.Dialog;
@@ -17,8 +17,7 @@ import java.awt.Window;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.io.File;
-import java.util.Date;
-import java.util.List;
+import java.util.Optional;
 
 import javax.swing.Box;
 import javax.swing.BoxLayout;
@@ -36,18 +35,16 @@ import vtk.vtkImageReader2;
 import vtk.vtkImageReader2Factory;
 
 import edu.jhuapl.saavtk.gui.dialog.CustomFileChooser;
-import edu.jhuapl.sbmt.image2.model.CompositePerspectiveImage;
-import edu.jhuapl.sbmt.image2.model.ImageOrigin;
-import edu.jhuapl.sbmt.image2.model.PerspectiveImage;
+import edu.jhuapl.sbmt.image2.interfaces.IPerspectiveImage;
+import edu.jhuapl.sbmt.image2.interfaces.IPerspectiveImageTableRepresentable;
 import edu.jhuapl.sbmt.image2.model.PerspectiveImageCollection;
 import edu.jhuapl.sbmt.image2.modules.rendering.cylindricalImage.CylindricalBounds;
 import edu.jhuapl.sbmt.model.image.IImagingInstrument;
-import edu.jhuapl.sbmt.model.image.ImageSource;
 import edu.jhuapl.sbmt.model.image.ImageType;
 import edu.jhuapl.sbmt.util.VtkENVIReader;
 
 
-public class CustomImageImporterDialog extends JDialog
+public class CustomImageImporterDialog<G1 extends IPerspectiveImage & IPerspectiveImageTableRepresentable> extends JDialog
 {
 	private IImagingInstrument instrument;
 	private JTextField imagePathTextField;
@@ -57,21 +54,25 @@ public class CustomImageImporterDialog extends JDialog
 	private JTextField maxLatitudeTextField;
 	private JTextField minLongitudeTextField;
 	private JTextField maxLongitudeTextField;
-	private JComboBox<ImageType> imageTypeComboBox;
+//	private JComboBox<ImageType> imageTypeComboBox;
 	private JComboBox<String> imageFlipComboBox;
 	private JComboBox<String> imageRotationComboBox;
 	private JComboBox<String> pointingTypeComboBox;
 	private boolean isEditMode;
 	private boolean isEllipsoid;
-	private PerspectiveImageCollection imageCollection;
+	private PerspectiveImageCollection<G1> imageCollection;
+	private Optional<G1> existingImage;
+	private ImageType imageType = null;
 
-	public CustomImageImporterDialog(Window parent, boolean isEditMode, IImagingInstrument instrument, boolean isEllipsoid, PerspectiveImageCollection imageCollection)
+	public CustomImageImporterDialog(Window parent, boolean isEditMode, IImagingInstrument instrument, boolean isEllipsoid,
+									PerspectiveImageCollection<G1> imageCollection, Optional<G1> existingImage)
 	{
 		 super(parent, isEditMode ? "Edit Image" : "Import New Image", Dialog.ModalityType.APPLICATION_MODAL);
 		 this.instrument = instrument;
 		 this.isEditMode = isEditMode;
 		 this.isEllipsoid = isEllipsoid;
 		 this.imageCollection = imageCollection;
+		 this.existingImage = existingImage;
 		 initGUI();
 		 setSize(550, 400);
 	}
@@ -81,10 +82,43 @@ public class CustomImageImporterDialog extends JDialog
 		getContentPane().setLayout(new BoxLayout(getContentPane(), BoxLayout.Y_AXIS));
 		getContentPane().add(buildImagePathInput());
 		getContentPane().add(buildImageNameInput());
-		getContentPane().add(buildImageTypeInput());
+//		getContentPane().add(buildImageTypeInput());
 
 		getContentPane().add(buildPointingInput());
 		getContentPane().add(buildSubmitCancelPanel());
+
+		existingImage.ifPresent(image -> {
+
+			imagePathTextField.setText(image.getFilename());
+			imageNameTextField.setText(image.getName());
+			if (image.getImageType() != ImageType.GENERIC_IMAGE)
+			{
+				if (!image.getPointingSource().isEmpty())
+				{
+					pointingTypeComboBox.setSelectedIndex(0);
+					pointingFilenameTextField.setText(image.getPointingSource());
+					imageFlipComboBox.setSelectedItem(image.getFlip());
+					imageRotationComboBox.setSelectedItem(image.getRotation());
+				}
+				else
+				{
+					pointingTypeComboBox.setSelectedIndex(1);
+					minLatitudeTextField.setText(""+image.getBounds().getMinLatitude());
+					maxLatitudeTextField.setText(""+image.getBounds().getMaxLatitude());
+					minLongitudeTextField.setText(""+image.getBounds().getMinLongitude());
+					maxLongitudeTextField.setText(""+image.getBounds().getMaxLongitude());
+				}
+			}
+			else	//cylindrical
+			{
+				pointingTypeComboBox.setSelectedIndex(1);
+				minLatitudeTextField.setText(""+image.getBounds().getMinLatitude());
+				maxLatitudeTextField.setText(""+image.getBounds().getMaxLatitude());
+				minLongitudeTextField.setText(""+image.getBounds().getMinLongitude());
+				maxLongitudeTextField.setText(""+image.getBounds().getMaxLongitude());
+			}
+
+		});
 	}
 
 	private JPanel buildImagePathInput()
@@ -113,15 +147,15 @@ public class CustomImageImporterDialog extends JDialog
 	        imagePathTextField.setText(filename);
 	        String imageFileName = file.getName();
 	        String extension = FilenameUtils.getExtension(imageFileName).toLowerCase();
-	        if (extension.equals("fits") || extension.equals("fit"))
-	        {
-	        	imageTypeComboBox.setSelectedItem(instrument.getType());
-	        }
-	        else
-	        {
-	        	imageTypeComboBox.setSelectedItem(ImageType.GENERIC_IMAGE);
-	        	pointingTypeComboBox.setSelectedItem("Simple Cylindrical Projection");
-	        }
+//	        if (extension.equals("fits") || extension.equals("fit"))
+//	        {
+//	        	imageTypeComboBox.setSelectedItem(instrument.getType());
+//	        }
+//	        else
+//	        {
+//	        	imageTypeComboBox.setSelectedItem(ImageType.GENERIC_IMAGE);
+//	        	pointingTypeComboBox.setSelectedItem("Simple Cylindrical Projection");
+//	        }
 
 	        imageNameTextField.setText(imageFileName);
 		});
@@ -148,19 +182,19 @@ public class CustomImageImporterDialog extends JDialog
 		return panel;
 	}
 
-	private JPanel buildImageTypeInput()
-	{
-		JPanel panel = new JPanel();
-		panel.setLayout(new BoxLayout(panel, BoxLayout.X_AXIS));
-		panel.add(new JLabel("Image Type:"));
-
-		imageTypeComboBox = new JComboBox<ImageType>(new ImageType[] {instrument.getType(), ImageType.GENERIC_IMAGE});
-		imageTypeComboBox.setMaximumSize(new Dimension(350, 30));
-		panel.add(Box.createHorizontalStrut(10));
-		panel.add(imageTypeComboBox);
-		panel.add(Box.createHorizontalStrut(100));
-		return panel;
-	}
+//	private JPanel buildImageTypeInput()
+//	{
+//		JPanel panel = new JPanel();
+//		panel.setLayout(new BoxLayout(panel, BoxLayout.X_AXIS));
+//		panel.add(new JLabel("Image Type:"));
+//
+//		imageTypeComboBox = new JComboBox<ImageType>(new ImageType[] {instrument.getType(), ImageType.GENERIC_IMAGE});
+//		imageTypeComboBox.setMaximumSize(new Dimension(350, 30));
+//		panel.add(Box.createHorizontalStrut(10));
+//		panel.add(imageTypeComboBox);
+//		panel.add(Box.createHorizontalStrut(100));
+//		return panel;
+//	}
 
 	private JPanel buildImageRotationInput()
 	{
@@ -168,10 +202,10 @@ public class CustomImageImporterDialog extends JDialog
 		panel.setLayout(new BoxLayout(panel, BoxLayout.X_AXIS));
 		panel.add(new JLabel("Image Rotation:"));
 
-		JComboBox<String> comboBox = new JComboBox<String>(new String[] { "0", "90", "180", "270" });
-		comboBox.setMaximumSize(new Dimension(350, 30));
+		imageRotationComboBox = new JComboBox<String>(new String[] { "0", "90", "180", "270" });
+		imageRotationComboBox.setMaximumSize(new Dimension(350, 30));
 		panel.add(Box.createHorizontalStrut(10));
-		panel.add(comboBox);
+		panel.add(imageRotationComboBox);
 		panel.add(Box.createHorizontalStrut(100));
 		return panel;
 	}
@@ -182,10 +216,10 @@ public class CustomImageImporterDialog extends JDialog
 		panel.setLayout(new BoxLayout(panel, BoxLayout.X_AXIS));
 		panel.add(new JLabel("Image Flip:"));
 		panel.add(Box.createHorizontalStrut(30));
-		JComboBox<String> comboBox = new JComboBox<String>(new String[] { "None", "X", "Y" });
-		comboBox.setMaximumSize(new Dimension(350, 30));
+		imageFlipComboBox = new JComboBox<String>(new String[] { "None", "X", "Y" });
+		imageFlipComboBox.setMaximumSize(new Dimension(350, 30));
 		panel.add(Box.createHorizontalStrut(10));
-		panel.add(comboBox);
+		panel.add(imageFlipComboBox);
 		panel.add(Box.createHorizontalStrut(100));
 		return panel;
 	}
@@ -276,7 +310,14 @@ public class CustomImageImporterDialog extends JDialog
 		JButton browseButton = new JButton("Browse");
 
 		browseButton.addActionListener(e -> {
+			File file = CustomFileChooser.showOpenDialog(this, "Select Pointing File...");
+	        if (file == null)
+	        {
+	            return;
+	        }
 
+	        String filename = file.getAbsolutePath();
+	        pointingFilenameTextField.setText(filename);
 		});
 
 		fileInputPanel.add(browseButton);
@@ -346,30 +387,54 @@ public class CustomImageImporterDialog extends JDialog
 	private void storeImage()
 	{
 		String filename = imagePathTextField.getText();
-		ImageType imageType = (ImageType)imageTypeComboBox.getSelectedItem();
-		String pointingSource = pointingFilenameTextField.getText();
-		ImageSource pointingSourceType = ImageSource.LOCAL_CYLINDRICAL;
 
-		if (!pointingSource.isEmpty())
-		{
-			String extension = FilenameUtils.getExtension(pointingSource).toLowerCase();
-			pointingSourceType = extension.equals("sum") ? ImageSource.GASKELL : ImageSource.SPICE;
-		}
-		//TODO FIX THIS
-		double[] fillValues = new double[] {};
-		PerspectiveImage image = new PerspectiveImage(filename, imageType, pointingSourceType, pointingSource, fillValues);
-		image.setName(getName());
-		image.setImageOrigin(ImageOrigin.LOCAL);
-		image.setLongTime(new Date().getTime());
-		if (pointingSourceType == ImageSource.LOCAL_CYLINDRICAL)
-		{
-			Double minLat = Double.parseDouble(minLatitudeTextField.getText());
-			Double maxLat = Double.parseDouble(maxLatitudeTextField.getText());
-			Double minLon = Double.parseDouble(minLongitudeTextField.getText());
-			Double maxLon = Double.parseDouble(maxLongitudeTextField.getText());
-			image.setBounds(new CylindricalBounds(minLat, maxLat, minLon, maxLon));
-		}
-		imageCollection.addUserImage(new CompositePerspectiveImage(List.of(image)));
+		existingImage.ifPresent(image -> {
+
+			imageType = image.getImageType();
+			image.setName(imageNameTextField.getText());
+			if (pointingTypeComboBox.getSelectedItem().equals("Perspective Projection"))
+			{
+				image.setPointingSource(pointingFilenameTextField.getText());
+				image.setFlip((String)imageFlipComboBox.getSelectedItem());
+				image.setRotation(Double.parseDouble((String)imageRotationComboBox.getSelectedItem()));
+			}
+			else
+			{
+				Double minLat = Double.parseDouble(minLatitudeTextField.getText());
+				Double maxLat = Double.parseDouble(maxLatitudeTextField.getText());
+				Double minLon = Double.parseDouble(minLongitudeTextField.getText());
+				Double maxLon = Double.parseDouble(maxLongitudeTextField.getText());
+				image.setBounds(new CylindricalBounds(minLat, maxLat, minLon, maxLon));
+			}
+
+		});
+//		ImageType imageType = (ImageType)imageTypeComboBox.getSelectedItem();
+//		String pointingSource = pointingFilenameTextField.getText();
+//		ImageSource pointingSourceType = ImageSource.LOCAL_CYLINDRICAL;
+//
+//		if (!pointingSource.isEmpty())
+//		{
+//			String extension = FilenameUtils.getExtension(pointingSource).toLowerCase();
+//			pointingSourceType = extension.equals("sum") ? ImageSource.GASKELL : ImageSource.SPICE;
+//		}
+//		//TODO FIX THIS
+//		double[] fillValues = new double[] {};
+//		PerspectiveImage image = new PerspectiveImage(filename, imageType, pointingSourceType, pointingSource, fillValues);
+//		image.setName(getName());
+//		image.setImageOrigin(ImageOrigin.LOCAL);
+//		image.setLongTime(new Date().getTime());
+//		if (pointingSourceType == ImageSource.LOCAL_CYLINDRICAL)
+//		{
+//			Double minLat = Double.parseDouble(minLatitudeTextField.getText());
+//			Double maxLat = Double.parseDouble(maxLatitudeTextField.getText());
+//			Double minLon = Double.parseDouble(minLongitudeTextField.getText());
+//			Double maxLon = Double.parseDouble(maxLongitudeTextField.getText());
+//			image.setBounds(new CylindricalBounds(minLat, maxLat, minLon, maxLon));
+//		}
+//		CompositePerspectiveImage compImage = new CompositePerspectiveImage(List.of(image));
+//		compImage.setName(imageNameTextField.getText());
+//		imageCollection.addUserImage(compImage);
+//		imageCollection.setImagingInstrument(null);
 	}
 
 	private String validateInput()
@@ -405,10 +470,10 @@ public class CustomImageImporterDialog extends JDialog
 //        	return "Name for custom image already exists.";
 //        }
 
-        if (imageTypeComboBox.getSelectedItem().toString().equals("<CHOOSE IMAGE TYPE>"))
-        {
-        	return "Select an image type.";
-        }
+//        if (imageTypeComboBox.getSelectedItem().toString().equals("<CHOOSE IMAGE TYPE>"))
+//        {
+//        	return "Select an image type.";
+//        }
 
 
         if (pointingTypeComboBox.getSelectedItem().equals("Simple Cylindrical Projection"))

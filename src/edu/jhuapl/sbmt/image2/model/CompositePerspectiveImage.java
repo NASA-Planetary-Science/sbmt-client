@@ -175,7 +175,13 @@ public class CompositePerspectiveImage implements IPerspectiveImage, IPerspectiv
 
 	public String getName()
 	{
+		if (name != null) return name;
 		return images.get(0).getName().isEmpty() ? FilenameUtils.getBaseName(images.get(0).getFilename()) : images.get(0).getName();
+	}
+
+	public void setName(String name)
+	{
+		this.name = name;
 	}
 
 	public CylindricalBounds getBounds()
@@ -275,5 +281,12 @@ public class CompositePerspectiveImage implements IPerspectiveImage, IPerspectiv
 	public List<IPerspectiveImage> getImages()
 	{
 		return images;
+	}
+
+
+	@Override
+	public void setPointingSource(String pointingSource)
+	{
+		this.images.get(0).setPointingSource(pointingSource);
 	}
 }

@@ -69,7 +69,7 @@ public class CustomImageListTableView extends JPanel
 //	private JLabel resultsLabel;
 
 	// for table
-	private JButton selectAllB, selectInvertB, selectNoneB;
+	private JButton selectAllB, selectInvertB, selectNoneB, deleteImageButton, editImageButton;
 	private PerspectiveImageCollection imageCollection;
 	private ItemListPanel<IPerspectiveImage> imageILP;
 	private ItemHandler<IPerspectiveImage> imageItemHandler;
@@ -146,6 +146,14 @@ public class CustomImageListTableView extends JPanel
 		newImageButton = GuiUtil.formButton(listener, UIManager.getIcon("FileView.fileIcon"));
 		newImageButton.setToolTipText(ToolTipUtil.getCustomImage());
 
+		deleteImageButton = GuiUtil.formButton(listener, IconUtil.getItemDel());
+		deleteImageButton.setToolTipText(ToolTipUtil.getItemDel());
+		deleteImageButton.setEnabled(false);
+
+		editImageButton = GuiUtil.formButton(listener, IconUtil.getItemEdit());
+		editImageButton.setToolTipText(ToolTipUtil.getItemEdit());
+		editImageButton.setEnabled(false);
+
 		loadImageButton = GuiUtil.formButton(listener, UIManager.getIcon("FileView.directoryIcon"));
 		loadImageButton.setToolTipText(ToolTipUtil.getItemLoad());
 
@@ -185,7 +193,9 @@ public class CustomImageListTableView extends JPanel
 		buttonPanel.add(Box.createHorizontalGlue());
 		buttonPanel.add(showImageButton);
 		buttonPanel.add(hideImageButton);
-//		buttonPanel.add(Box.createHorizontalGlue());
+		buttonPanel.add(Box.createHorizontalGlue());
+		buttonPanel.add(editImageButton);
+		buttonPanel.add(deleteImageButton);
 //		buttonPanel.add(colorImageButton);
 //		buttonPanel.add(imageCubeButton);
 		buttonPanel.add(Box.createHorizontalGlue());
@@ -297,6 +307,22 @@ public class CustomImageListTableView extends JPanel
 	public JButton getNewImageButton()
 	{
 		return newImageButton;
+	}
+
+	/**
+	 * @return the deleteImageButton
+	 */
+	public JButton getDeleteImageButton()
+	{
+		return deleteImageButton;
+	}
+
+	/**
+	 * @return the editImageButton
+	 */
+	public JButton getEditImageButton()
+	{
+		return editImageButton;
 	}
 
 	public class CustomImageTransferHandler extends TransferHandler

@@ -54,6 +54,13 @@ public class SingleImagePreviewPanel extends JPanel
 		return perspectiveImage;
 	}
 
+	public void setPerspectiveImage(IPerspectiveImage image)
+	{
+		this.perspectiveImage = image;
+		imageTextField.setText(image.getFilename());
+		runPreviewPipeline();
+	}
+
 	private void makeImagePanel()
 	{
 		JPanel labelPanel = new JPanel();

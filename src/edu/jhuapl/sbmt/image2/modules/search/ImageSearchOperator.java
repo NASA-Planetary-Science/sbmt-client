@@ -208,7 +208,7 @@ public class ImageSearchOperator extends BasePipelineOperator<ImageSearchParamet
         }
 
         outputs = new ArrayList<IPerspectiveImage>();
-        int i=0;
+        int i=1;
         for (List<String> imageInfo : results)
         {
 //        	HashMap<ImageSource, String> pointingSources = new HashMap<ImageSource, String>();

@@ -17,6 +17,8 @@ public interface IPerspectiveImage
 
 	public String getPointingSource();
 
+	public void setPointingSource(String pointingSource);
+
 	public boolean isSimulateLighting();
 
 	public void setSimulateLighting(boolean simulateLighting);
@@ -32,6 +34,8 @@ public interface IPerspectiveImage
 	public int getNumberOfLayers();
 
 	public String getName();
+
+	public void setName(String name);
 
 	public CylindricalBounds getBounds();
 

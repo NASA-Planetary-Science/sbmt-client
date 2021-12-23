@@ -216,7 +216,11 @@ public class PointedImageRenderables
 //	    if (offLimbTexture == null)
 //        { // if offlimbtexture is null, initialize it.
 //            vtkImageData imageData = new vtkImageData();
-//            imageData.DeepCopy(renderableImage.getDisplayedImage());
+//            Just.of(renderableImage.getLayer())
+//            	.operate(new VtkImageRendererOperator())
+//            	.subscribe(Sink.of(List.of(imageData)))
+//            	.run();
+////            imageData.DeepCopy(renderableImage.getDisplayedImage());
 //            offLimbTexture = new vtkTexture();
 //            offLimbTexture.SetInputData(imageData);
 //            offLimbTexture.Modified();

@@ -87,6 +87,13 @@ public class ColorImageBuilderPanel extends JPanel
 		return List.of(redPreview.getPerspectiveImage(), greenPreview.getPerspectiveImage(), bluePreview.getPerspectiveImage());
 	}
 
+	public void setImages(List<IPerspectiveImage> images)
+	{
+		redPreview.setPerspectiveImage(images.get(0));
+		greenPreview.setPerspectiveImage(images.get(1));
+		bluePreview.setPerspectiveImage(images.get(2));
+	}
+
 	/**
 	 * @return the saveAndCloseButton
 	 */
