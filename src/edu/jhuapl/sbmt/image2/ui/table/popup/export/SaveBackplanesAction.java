@@ -2,12 +2,12 @@ package edu.jhuapl.sbmt.image2.ui.table.popup.export;
 
 import java.util.List;
 
-import edu.jhuapl.sbmt.image2.model.PerspectiveImage;
+import edu.jhuapl.sbmt.image2.interfaces.IPerspectiveImage;
 import edu.jhuapl.sbmt.image2.model.PerspectiveImageCollection;
 
 import glum.gui.action.PopAction;
 
-public class SaveBackplanesAction<G1 extends PerspectiveImage> extends PopAction<G1>
+public class SaveBackplanesAction<G1 extends IPerspectiveImage> extends PopAction<G1>
 {
 	/**
 	 *
@@ -29,7 +29,7 @@ public class SaveBackplanesAction<G1 extends PerspectiveImage> extends PopAction
 		if (aItemL.size() == 0)
 			return;
 
-		for (PerspectiveImage aItem : aItemL)
+		for (G1 aItem : aItemL)
 		{
 
 		}

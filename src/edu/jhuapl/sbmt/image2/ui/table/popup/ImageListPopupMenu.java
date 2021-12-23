@@ -12,7 +12,8 @@ import edu.jhuapl.saavtk.model.ModelNames;
 import edu.jhuapl.sbmt.client.SbmtInfoWindowManager;
 import edu.jhuapl.sbmt.client.SbmtSpectrumWindowManager;
 import edu.jhuapl.sbmt.client.SmallBodyModel;
-import edu.jhuapl.sbmt.image2.model.PerspectiveImage;
+import edu.jhuapl.sbmt.image2.interfaces.IPerspectiveImage;
+import edu.jhuapl.sbmt.image2.interfaces.IPerspectiveImageTableRepresentable;
 import edu.jhuapl.sbmt.image2.model.PerspectiveImageCollection;
 import edu.jhuapl.sbmt.image2.ui.table.popup.boundaryColor.BoundaryColorAction;
 import edu.jhuapl.sbmt.image2.ui.table.popup.export.ExportAction;
@@ -29,7 +30,7 @@ import edu.jhuapl.sbmt.model.image.PerspectiveImageBoundaryCollection;
 
 import glum.gui.action.PopupMenu;
 
-public class ImageListPopupMenu extends PopupMenu<PerspectiveImage>
+public class ImageListPopupMenu<G1 extends IPerspectiveImage  & IPerspectiveImageTableRepresentable> extends PopupMenu<G1>
 {
 
 	public ImageListPopupMenu(
@@ -54,29 +55,29 @@ public class ImageListPopupMenu extends PopupMenu<PerspectiveImage>
 		showHideBoundaryCBMI.setText("Show Boundary");
 		installPopAction(mapBoundaryAction, showHideBoundaryCBMI);
 
-		ShowInfoAction<PerspectiveImage> showInfoAction = new ShowInfoAction<PerspectiveImage>(aManager, infoPanelManager);
+		ShowInfoAction<G1> showInfoAction = new ShowInfoAction<G1>(aManager, infoPanelManager);
 		installPopAction(showInfoAction, "Properties...");
 
 		if (spectrumPanelManager != null)
 		{
-			ShowSpectrumAction<PerspectiveImage> showSpectrumAction = new ShowSpectrumAction<PerspectiveImage>(aManager, spectrumPanelManager);
-			installPopAction(showInfoAction, "Spectrum...");
+			ShowSpectrumAction<G1> showSpectrumAction = new ShowSpectrumAction<G1>(aManager, spectrumPanelManager);
+			installPopAction(showSpectrumAction, "Spectrum...");
 		}
 
 //		SaveBackplanesAction<PerspectiveImage> showBackplanesAction = new SaveBackplanesAction<PerspectiveImage>(aManager);
 //		installPopAction(showBackplanesAction, "Generate Backplanes...");
 
 		SmallBodyModel smallBodyModel = (SmallBodyModel)modelManager.getModel(ModelNames.SMALL_BODY);
-		CenterImageAction<PerspectiveImage> centerImageAction = new CenterImageAction<PerspectiveImage>(aManager, renderer, List.of(smallBodyModel));
+		CenterImageAction<G1> centerImageAction = new CenterImageAction<G1>(aManager, renderer, List.of(smallBodyModel));
 		installPopAction(centerImageAction, "Center in Window");
 
-		ShowFrustumAction<PerspectiveImage> showFrustumAction = new ShowFrustumAction<PerspectiveImage>(aManager);
+		ShowFrustumAction<G1> showFrustumAction = new ShowFrustumAction<G1>(aManager);
 		JCheckBoxMenuItem showHideFrustumCBMI = new JCheckBoxMenuItem(showFrustumAction);
 		showHideFrustumCBMI.setText("Show Frustum");
 		installPopAction(showFrustumAction, showHideFrustumCBMI);
 
 		JMenu exportMenu = new JMenu("Export as...");
-		ExportAction<PerspectiveImage> exportAction = new ExportAction<>(aManager, invoker, exportMenu);
+		ExportAction<G1> exportAction = new ExportAction<>(aManager, invoker, exportMenu);
 		installPopAction(exportAction, exportMenu);
 
 //		ExportENVIImageAction<PerspectiveImage> exportENVIAction = new ExportENVIImageAction<PerspectiveImage>(aManager);
@@ -91,19 +92,19 @@ public class ImageListPopupMenu extends PopupMenu<PerspectiveImage>
 //		ExportFitsInfoPairsAction<PerspectiveImage> exportFitsInfoPairsAction = new ExportFitsInfoPairsAction<PerspectiveImage>(aManager);
 //		installPopAction(exportFitsInfoPairsAction, "Export FITS/Info File(s)...");
 
-		ChangeNormalOffsetAction<PerspectiveImage> changeNormalOffsetAction = new ChangeNormalOffsetAction<PerspectiveImage>(aManager);
+		ChangeNormalOffsetAction<G1> changeNormalOffsetAction = new ChangeNormalOffsetAction<G1>(aManager);
 		installPopAction(changeNormalOffsetAction, "Change Normal Offset...");
 
-		SimulateLightingAction<PerspectiveImage> simulateLightingAction = new SimulateLightingAction<PerspectiveImage>(aManager, renderer);
+		SimulateLightingAction<G1> simulateLightingAction = new SimulateLightingAction<G1>(aManager, renderer);
 		JCheckBoxMenuItem simulateLightingCBMI = new JCheckBoxMenuItem(simulateLightingAction);
 		simulateLightingCBMI.setText("Simulate Lighting");
 		installPopAction(simulateLightingAction, simulateLightingCBMI);
 
-		ChangeOpacityAction<PerspectiveImage> changeOpacityAction = new ChangeOpacityAction<PerspectiveImage>(aManager, renderer);
+		ChangeOpacityAction<G1> changeOpacityAction = new ChangeOpacityAction<G1>(aManager, renderer);
 		installPopAction(changeOpacityAction, "Change Opacity...");
 
 		JMenu colorMenu = new JMenu("Boundary Color");
-		BoundaryColorAction<PerspectiveImage> boundaryColorAction = new BoundaryColorAction<>(aManager, invoker, colorMenu);
+		BoundaryColorAction<G1> boundaryColorAction = new BoundaryColorAction<>(aManager, invoker, colorMenu);
 		installPopAction(boundaryColorAction, colorMenu);
 
 //		SaveBackplanesAction<PerspectiveImage> showBackplanesAction = new SaveBackplanesAction<PerspectiveImage>(aManager);

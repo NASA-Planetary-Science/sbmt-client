@@ -7,10 +7,15 @@ import org.apache.commons.lang3.tuple.Pair;
 import com.beust.jcommander.internal.Lists;
 
 import vtk.vtkActor;
+import vtk.vtkFeatureEdges;
 import vtk.vtkImageData;
+import vtk.vtkPolyData;
+import vtk.vtkPolyDataMapper;
 
 import edu.jhuapl.saavtk.util.NativeLibraryLoader;
 import edu.jhuapl.sbmt.client.SmallBodyModel;
+import edu.jhuapl.sbmt.image2.interfaces.IPerspectiveImage;
+import edu.jhuapl.sbmt.image2.model.CompositePerspectiveImage;
 import edu.jhuapl.sbmt.image2.model.PerspectiveImage;
 import edu.jhuapl.sbmt.image2.modules.io.builtIn.BuiltInVTKReader;
 import edu.jhuapl.sbmt.image2.modules.preview.VtkRendererPreview;
@@ -22,20 +27,27 @@ import edu.jhuapl.sbmt.image2.pipeline.operator.IPipelineOperator;
 import edu.jhuapl.sbmt.image2.pipeline.publisher.IPipelinePublisher;
 import edu.jhuapl.sbmt.image2.pipeline.publisher.Just;
 import edu.jhuapl.sbmt.image2.pipeline.publisher.Publishers;
+import edu.jhuapl.sbmt.image2.pipeline.subscriber.PairSink;
 import edu.jhuapl.sbmt.image2.pipeline.subscriber.Sink;
 import edu.jhuapl.sbmt.model.image.ImageSource;
 import edu.jhuapl.sbmt.model.image.ImageType;
 
-public class ColorImageGeneratorPipeline
+public class ColorImageGeneratorPipeline implements RenderableImageActorPipeline
 {
 	List<vtkActor> imageActors = Lists.newArrayList();
 	List<vtkImageData> imageDatas = Lists.newArrayList();
-
-	public ColorImageGeneratorPipeline(List<PerspectiveImage> images, List<SmallBodyModel> smallBodyModels) throws Exception
+	Pair<vtkImageData, vtkPolyData>[] imageAndPolyData = new Pair[1];
+	 List<SmallBodyModel> smallBodyModels;
+	public ColorImageGeneratorPipeline(List<IPerspectiveImage> images, List<SmallBodyModel> smallBodyModels) throws Exception
 	{
+		this.smallBodyModels = smallBodyModels;
 		Just.of(images)
 			.operate(new ColorImageGeneratorOperator())
 			.operate(new ColorImageFootprintGeneratorOperator(smallBodyModels))
+			.subscribe(PairSink.of(imageAndPolyData))
+			.run();
+
+		Just.of(imageAndPolyData[0])
 			.operate(new VTKImagePolyDataRenderer())
 			.subscribe(Sink.of(imageActors))
 			.run();
@@ -44,6 +56,63 @@ public class ColorImageGeneratorPipeline
 	public List<vtkActor> getImageActors()
 	{
 		return imageActors;
+	}
+
+	@Override
+	public List<vtkActor> getRenderableImageActors()
+	{
+		return imageActors;
+	}
+
+	@Override
+	public List<vtkActor> getRenderableImageBoundaryActors()
+	{
+		vtkPolyData polyData = imageAndPolyData[0].getRight();
+		vtkPolyData boundary;
+		vtkFeatureEdges edgeExtracter = new vtkFeatureEdges();
+		vtkActor boundaryActor = new vtkActor();
+		vtkPolyDataMapper boundaryMapper = new vtkPolyDataMapper();
+		List<vtkActor> boundaryActors = Lists.newArrayList();
+		edgeExtracter.SetInputData(polyData);
+		edgeExtracter.BoundaryEdgesOn();
+		edgeExtracter.FeatureEdgesOff();
+		edgeExtracter.NonManifoldEdgesOff();
+		edgeExtracter.ManifoldEdgesOff();
+		edgeExtracter.ColoringOff();
+		edgeExtracter.Update();
+
+		for (SmallBodyModel smallBody : smallBodyModels)
+    	{
+			boundary = new vtkPolyData();
+			vtkPolyData edgeExtracterOutput = edgeExtracter.GetOutput();
+//			polyData.DeepCopy(edgeExtracterOutput);
+			if (boundaryMapper != null)
+			{
+		        boundaryMapper.SetInputData(edgeExtracterOutput);
+		        boundaryMapper.Update();
+		        boundaryActor.SetMapper(boundaryMapper);
+		        boundaryActors.add(boundaryActor);
+			}
+    	}
+		return boundaryActors;
+	}
+
+	@Override
+	public List<vtkActor> getRenderableImageFrustumActors()
+	{
+		return Lists.newArrayList();
+	}
+
+	@Override
+	public List<vtkActor> getRenderableOfflimbImageActors()
+	{
+		return Lists.newArrayList();
+	}
+
+	@Override
+	public List<vtkActor> getSmallBodyActors()
+	{
+		return Lists.newArrayList();
 	}
 
 	public static void main(String[] args) throws Exception
@@ -62,7 +131,7 @@ public class ColorImageGeneratorPipeline
 		image3.setLinearInterpolatorDims(new int[] { 537, 412 });
 		image3.setMaskValues(new int[] {2, 14, 2, 14});
 
-		List<PerspectiveImage> images = List.of(image1, image2, image3);
+		List<IPerspectiveImage> images = List.of(new CompositePerspectiveImage(List.of(image1)), new CompositePerspectiveImage(List.of(image2)), new CompositePerspectiveImage(List.of(image3)));
 
 		IPipelinePublisher<SmallBodyModel> vtkReader = new BuiltInVTKReader("/Users/steelrj1/.sbmt/cache/2/EROS/ver64q.vtk");
 		List<SmallBodyModel> smallBodyModels = Lists.newArrayList();
@@ -84,4 +153,6 @@ public class ColorImageGeneratorPipeline
 			.run();
 
 	}
+
+
 }

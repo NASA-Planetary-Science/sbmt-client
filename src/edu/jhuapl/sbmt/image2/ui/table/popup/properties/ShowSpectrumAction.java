@@ -3,12 +3,12 @@ package edu.jhuapl.sbmt.image2.ui.table.popup.properties;
 import java.util.List;
 
 import edu.jhuapl.sbmt.client.SbmtSpectrumWindowManager;
-import edu.jhuapl.sbmt.image2.model.PerspectiveImage;
+import edu.jhuapl.sbmt.image2.interfaces.IPerspectiveImage;
 import edu.jhuapl.sbmt.image2.model.PerspectiveImageCollection;
 
 import glum.gui.action.PopAction;
 
-public class ShowSpectrumAction<G1 extends PerspectiveImage> extends PopAction<G1>
+public class ShowSpectrumAction<G1 extends IPerspectiveImage> extends PopAction<G1>
 {
     /**
 	 *
@@ -33,7 +33,7 @@ public class ShowSpectrumAction<G1 extends PerspectiveImage> extends PopAction<G
 		if (aItemL.size() != 1)
 			return;
 
-		for (PerspectiveImage aItem : aItemL)
+		for (IPerspectiveImage aItem : aItemL)
 		{
 			//TODO make only valid for images with nLayers > 1 (spectra-type)
 			//TODO update to accept new PerspectiveImage class

@@ -7,13 +7,14 @@ import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JMenuItem;
 
 import edu.jhuapl.saavtk.gui.render.Renderer;
-import edu.jhuapl.sbmt.image2.model.PerspectiveImage;
+import edu.jhuapl.sbmt.image2.interfaces.IPerspectiveImage;
+import edu.jhuapl.sbmt.image2.interfaces.IPerspectiveImageTableRepresentable;
 import edu.jhuapl.sbmt.image2.model.PerspectiveImageCollection;
 import edu.jhuapl.sbmt.image2.pipeline.active.rendering.PerspectiveImageSimulateLightingPipeline;
 
 import glum.gui.action.PopAction;
 
-public class SimulateLightingAction<G1 extends PerspectiveImage> extends PopAction<G1>
+public class SimulateLightingAction<G1 extends IPerspectiveImage & IPerspectiveImageTableRepresentable> extends PopAction<G1>
 {
 	/**
 	 *
@@ -39,7 +40,7 @@ public class SimulateLightingAction<G1 extends PerspectiveImage> extends PopActi
 			return;
 
 		//TODO fix this
-		PerspectiveImage aItem = aItemL.get(0);
+		IPerspectiveImage aItem = aItemL.get(0);
 		try
 		{
 			PerspectiveImageSimulateLightingPipeline.of(aItem, renderer, !aItem.isSimulateLighting());
@@ -49,10 +50,12 @@ public class SimulateLightingAction<G1 extends PerspectiveImage> extends PopActi
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		for (PerspectiveImage tempImage : aManager.getAllItems())
-		{
-			tempImage.setSimulateLighting(false);
-		}
+		aManager.getAllItems().forEach(item -> ((G1)item).setSimulateLighting(false));
+
+//		for (G1 tempImage : aManager.getAllItems())
+//		{
+//			tempImage.setSimulateLighting(false);
+//		}
 		aItem.setSimulateLighting(!aItem.isSimulateLighting());
 	}
 

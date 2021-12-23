@@ -4,13 +4,13 @@ import java.util.List;
 
 import edu.jhuapl.saavtk.gui.render.Renderer;
 import edu.jhuapl.sbmt.client.SmallBodyModel;
-import edu.jhuapl.sbmt.image2.model.PerspectiveImage;
+import edu.jhuapl.sbmt.image2.interfaces.IPerspectiveImage;
 import edu.jhuapl.sbmt.image2.model.PerspectiveImageCollection;
 import edu.jhuapl.sbmt.image2.pipeline.active.rendering.PerspectiveImageCenterImagePipeline;
 
 import glum.gui.action.PopAction;
 
-public class CenterImageAction<G1 extends PerspectiveImage> extends PopAction<G1>
+public class CenterImageAction<G1 extends IPerspectiveImage> extends PopAction<G1>
 {
 	private final PerspectiveImageCollection aManager;
 	private final Renderer renderer;

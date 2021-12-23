@@ -11,15 +11,15 @@ import java.nio.ByteOrder;
 import java.nio.channels.FileChannel;
 import java.util.List;
 
-import edu.jhuapl.sbmt.image2.model.PerspectiveImage;
+import edu.jhuapl.sbmt.image2.interfaces.IPerspectiveImage;
 import edu.jhuapl.sbmt.image2.modules.rendering.pointedImage.RenderablePointedImage;
 import edu.jhuapl.sbmt.image2.pipeline.active.PerspectiveImageToRenderableImagePipeline;
 import edu.jhuapl.sbmt.image2.pipeline.operator.BasePipelineOperator;
 
 //TODO This can eventually get replaced with a GDAL call, since it handles ENVI
-public class SaveImageToENVIOperator extends BasePipelineOperator<PerspectiveImage, File>
+public class SaveImageToENVIOperator extends BasePipelineOperator<IPerspectiveImage, File>
 {
-	private PerspectiveImage image;
+	private IPerspectiveImage image;
 	private int imageDepth;
 	private final String filename;
 

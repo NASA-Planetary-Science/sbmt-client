@@ -6,12 +6,13 @@ import java.util.List;
 import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JMenuItem;
 
-import edu.jhuapl.sbmt.image2.model.PerspectiveImage;
+import edu.jhuapl.sbmt.image2.interfaces.IPerspectiveImage;
+import edu.jhuapl.sbmt.image2.interfaces.IPerspectiveImageTableRepresentable;
 import edu.jhuapl.sbmt.image2.model.PerspectiveImageCollection;
 
 import glum.gui.action.PopAction;
 
-public class ShowFrustumAction<G1 extends PerspectiveImage> extends PopAction<G1>
+public class ShowFrustumAction<G1 extends IPerspectiveImage & IPerspectiveImageTableRepresentable> extends PopAction<G1>
 {
     /**
 	 *
@@ -33,7 +34,7 @@ public class ShowFrustumAction<G1 extends PerspectiveImage> extends PopAction<G1
 		if (aItemL.size() == 0)
 			return;
 
-		for (PerspectiveImage aItem : aItemL)
+		for (G1 aItem : aItemL)
 		{
 			aManager.setImageFrustumVisible(aItem, !aItem.isFrustumShowing());
 		}

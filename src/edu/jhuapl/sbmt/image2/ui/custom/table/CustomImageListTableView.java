@@ -1,6 +1,5 @@
-package edu.jhuapl.sbmt.image2.ui.table;
+package edu.jhuapl.sbmt.image2.ui.custom.table;
 
-import java.awt.Component;
 import java.awt.datatransfer.Transferable;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -13,7 +12,6 @@ import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JComponent;
-import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
@@ -24,9 +22,9 @@ import javax.swing.border.TitledBorder;
 import edu.jhuapl.saavtk.gui.util.IconUtil;
 import edu.jhuapl.saavtk.gui.util.ToolTipUtil;
 import edu.jhuapl.sbmt.image2.interfaces.IPerspectiveImage;
-import edu.jhuapl.sbmt.image2.interfaces.IPerspectiveImageTableRepresentable;
 import edu.jhuapl.sbmt.image2.model.PerspectiveImageCollection;
-import edu.jhuapl.sbmt.image2.ui.color.SingleImagePreviewPanel.PerspectiveImageTransferable;
+import edu.jhuapl.sbmt.image2.ui.table.ImageColumnLookup;
+import edu.jhuapl.sbmt.image2.ui.table.ImageListItemHandler;
 
 import glum.gui.GuiUtil;
 import glum.gui.action.PopupMenu;
@@ -37,11 +35,9 @@ import glum.gui.panel.itemList.ItemListPanel;
 import glum.gui.panel.itemList.ItemProcessor;
 import glum.gui.panel.itemList.query.QueryComposer;
 import glum.gui.table.TablePopupHandler;
-import glum.item.ItemEventListener;
-import glum.item.ItemEventType;
 import glum.item.ItemManagerUtil;
 
-public class ImageListTableView extends JPanel
+public class CustomImageListTableView extends JPanel
 {
 	private JButton newImageButton;
 
@@ -70,7 +66,7 @@ public class ImageListTableView extends JPanel
 	private JButton imageCubeButton;
 
 	protected JTable resultList;
-	private JLabel resultsLabel;
+//	private JLabel resultsLabel;
 
 	// for table
 	private JButton selectAllB, selectInvertB, selectNoneB;
@@ -80,26 +76,17 @@ public class ImageListTableView extends JPanel
 
 	private PopupMenu popupMenu;
 
-	public ImageListTableView(PerspectiveImageCollection collection, PopupMenu popupMenu)
+	public CustomImageListTableView(PerspectiveImageCollection collection, PopupMenu popupMenu)
 	{
 		this.imageCollection = collection;
 		this.popupMenu = popupMenu;
-		this.imageCollection.addPropertyChangeListener(new PropertyChangeListener()
+		collection.addPropertyChangeListener(new PropertyChangeListener()
 		{
 
 			@Override
 			public void propertyChange(PropertyChangeEvent evt)
 			{
-				resultsLabel.setText(imageCollection.getNumItems() + " Results");
-				resultList.repaint();
-			}
-		});
-		this.imageCollection.addListener(new ItemEventListener()
-		{
-
-			@Override
-			public void handleItemEvent(Object aSource, ItemEventType aEventType)
-			{
+//				resultsLabel.setText(imageCollection.size() + " Results");
 				resultList.repaint();
 			}
 		});
@@ -108,22 +95,22 @@ public class ImageListTableView extends JPanel
 
 	protected void init()
 	{
-		resultsLabel = new JLabel(imageCollection.size() + " Result(s)");
+//		resultsLabel = new JLabel(imageCollection.size() + " Result(s)");
 		resultList = buildTable();
 	}
 
 	public void setup()
 	{
 		setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
-		setBorder(new TitledBorder(null, "Available Images", TitledBorder.LEADING, TitledBorder.TOP, null, null));
-		JPanel panel_4 = new JPanel();
-		add(panel_4);
-		panel_4.setLayout(new BoxLayout(panel_4, BoxLayout.X_AXIS));
-
-		panel_4.add(resultsLabel);
-
-		Component horizontalGlue = Box.createHorizontalGlue();
-		panel_4.add(horizontalGlue);
+		setBorder(new TitledBorder(null, "Custom Images", TitledBorder.LEADING, TitledBorder.TOP, null, null));
+//		JPanel panel_4 = new JPanel();
+//		add(panel_4);
+//		panel_4.setLayout(new BoxLayout(panel_4, BoxLayout.X_AXIS));
+//
+//		panel_4.add(resultsLabel);
+//
+//		Component horizontalGlue = Box.createHorizontalGlue();
+//		panel_4.add(horizontalGlue);
 
 		JScrollPane scrollPane = new JScrollPane();
 //        scrollPane.setPreferredSize(new java.awt.Dimension(150, 250));
@@ -192,15 +179,15 @@ public class ImageListTableView extends JPanel
 		JPanel buttonPanel = new JPanel();
 		buttonPanel.setLayout(new BoxLayout(buttonPanel, BoxLayout.X_AXIS));
 
-//		buttonPanel.add(newImageButton);
+		buttonPanel.add(newImageButton);
 		buttonPanel.add(loadImageButton);
 		buttonPanel.add(saveImageButton);
 		buttonPanel.add(Box.createHorizontalGlue());
 		buttonPanel.add(showImageButton);
 		buttonPanel.add(hideImageButton);
-		buttonPanel.add(Box.createHorizontalGlue());
-		buttonPanel.add(colorImageButton);
-		buttonPanel.add(imageCubeButton);
+//		buttonPanel.add(Box.createHorizontalGlue());
+//		buttonPanel.add(colorImageButton);
+//		buttonPanel.add(imageCubeButton);
 		buttonPanel.add(Box.createHorizontalGlue());
 		buttonPanel.add(selectInvertB, "w 24!,h 24!");
 		buttonPanel.add(selectNoneB, "w 24!,h 24!");
@@ -239,7 +226,7 @@ public class ImageListTableView extends JPanel
 		imageILP.setSortingEnabled(true);
 		JTable imageTable = imageILP.getTable();
 		imageTable.setDragEnabled(true);
-		imageTable.setTransferHandler(new PerspectiveImageTransferHandler());
+		imageTable.setTransferHandler(new CustomImageTransferHandler());
 		imageTable.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
 		imageTable.addMouseListener(new TablePopupHandler(imageCollection, popupMenu));
 		return imageTable;
@@ -250,15 +237,15 @@ public class ImageListTableView extends JPanel
 		return resultList;
 	}
 
-	public JLabel getResultsLabel()
-	{
-		return resultsLabel;
-	}
-
-	public void setResultsLabel(JLabel resultsLabel)
-	{
-		this.resultsLabel = resultsLabel;
-	}
+//	public JLabel getResultsLabel()
+//	{
+//		return resultsLabel;
+//	}
+//
+//	public void setResultsLabel(JLabel resultsLabel)
+//	{
+//		this.resultsLabel = resultsLabel;
+//	}
 
 	public ItemHandler<IPerspectiveImage> getTableHandler()
 	{
@@ -312,7 +299,7 @@ public class ImageListTableView extends JPanel
 		return newImageButton;
 	}
 
-	public class PerspectiveImageTransferHandler<G1 extends IPerspectiveImage & IPerspectiveImageTableRepresentable> extends TransferHandler
+	public class CustomImageTransferHandler extends TransferHandler
 	{
 
 		@Override
@@ -324,7 +311,8 @@ public class ImageListTableView extends JPanel
 
 		@Override
         protected Transferable createTransferable(JComponent c) {
-			return new PerspectiveImageTransferable((G1)imageCollection.getSelectedItems().asList().get(0));
+			return null;
+//			return new CustomImageTransferable(imageCollection.getSelectedItems().asList().get(0));
         }
 
 		public int getSourceActions(JComponent c)

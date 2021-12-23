@@ -1,0 +1,75 @@
+package edu.jhuapl.sbmt.image2.interfaces;
+
+import java.util.Date;
+import java.util.List;
+
+import edu.jhuapl.sbmt.image2.modules.rendering.cylindricalImage.CylindricalBounds;
+import edu.jhuapl.sbmt.model.image.ImageSource;
+import edu.jhuapl.sbmt.model.image.ImageType;
+
+public interface IPerspectiveImage
+{
+	public String getFilename();
+
+	public void setImageType(ImageType imageType);
+
+	public ImageType getImageType();
+
+	public String getPointingSource();
+
+	public boolean isSimulateLighting();
+
+	public void setSimulateLighting(boolean simulateLighting);
+
+	public double getOffset();
+
+	public void setOffset(double offset);
+
+	public double getDefaultOffset();
+
+	public void setDefaultOffset(double defaultOffset);
+
+	public int getNumberOfLayers();
+
+	public String getName();
+
+	public CylindricalBounds getBounds();
+
+	public void setBounds(CylindricalBounds bounds);
+
+	public int[] getMaskValues();
+
+	public void setMaskValues(int[] maskValues);
+
+	public int[] getLinearInterpolatorDims();
+
+	public void setLinearInterpolatorDims(int[] linearInterpolatorDims);
+
+	public double getRotation();
+
+	public void setRotation(double rotation);
+
+	public String getFlip();
+
+	public void setFlip(String flip);
+
+	public ImageSource getPointingSourceType();
+
+	public void setPointingSourceType(ImageSource pointingSourceType);
+
+	public double[] getFillValues();
+
+	public void setFillValues(double[] fillValues);
+
+	public double getEt();
+
+	public void setEt(double et);
+
+	public Date getDate();
+
+	public Long getLongTime();
+
+	public void setLongTime(Long longTime);
+
+	public List<IPerspectiveImage> getImages();
+}

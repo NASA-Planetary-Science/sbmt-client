@@ -6,7 +6,7 @@ import java.util.List;
 import javax.swing.JOptionPane;
 
 import edu.jhuapl.saavtk.gui.dialog.CustomFileChooser;
-import edu.jhuapl.sbmt.image2.model.PerspectiveImage;
+import edu.jhuapl.sbmt.image2.interfaces.IPerspectiveImage;
 import edu.jhuapl.sbmt.image2.model.PerspectiveImageCollection;
 import edu.jhuapl.sbmt.image2.modules.io.export.SaveImageToENVIOperator;
 import edu.jhuapl.sbmt.image2.pipeline.publisher.Just;
@@ -14,7 +14,7 @@ import edu.jhuapl.sbmt.image2.pipeline.subscriber.Sink;
 
 import glum.gui.action.PopAction;
 
-public class ExportENVIImageAction<G1 extends PerspectiveImage> extends PopAction<G1>
+public class ExportENVIImageAction<G1 extends IPerspectiveImage> extends PopAction<G1>
 {
 	private PerspectiveImageCollection aManager;
 
@@ -33,7 +33,7 @@ public class ExportENVIImageAction<G1 extends PerspectiveImage> extends PopActio
 		if (aItemL.size() != 1)
 			return;
 
-		for (PerspectiveImage aItem : aItemL)
+		for (IPerspectiveImage aItem : aItemL)
 		{
 			File file = null;
 	        try

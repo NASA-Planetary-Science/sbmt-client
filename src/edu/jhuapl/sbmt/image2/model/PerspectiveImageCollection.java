@@ -3,8 +3,6 @@ package edu.jhuapl.sbmt.image2.model;
 import java.awt.Color;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
-import java.io.File;
-import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Optional;
@@ -13,7 +11,6 @@ import javax.swing.SwingUtilities;
 
 import com.beust.jcommander.internal.Lists;
 import com.google.common.collect.ImmutableList;
-import com.google.common.collect.ImmutableSet;
 
 import vtk.vtkActor;
 import vtk.vtkProp;
@@ -23,6 +20,9 @@ import edu.jhuapl.saavtk.model.SaavtkItemManager;
 import edu.jhuapl.saavtk.util.ColorUtil;
 import edu.jhuapl.saavtk.util.Properties;
 import edu.jhuapl.sbmt.client.SmallBodyModel;
+import edu.jhuapl.sbmt.image2.interfaces.IPerspectiveImage;
+import edu.jhuapl.sbmt.image2.interfaces.IPerspectiveImageTableRepresentable;
+import edu.jhuapl.sbmt.image2.pipeline.active.ColorImageGeneratorPipeline;
 import edu.jhuapl.sbmt.image2.pipeline.active.RenderableImageActorPipeline;
 import edu.jhuapl.sbmt.image2.pipeline.active.cylindricalImages.RenderableCylindricalImageActorPipeline;
 import edu.jhuapl.sbmt.image2.pipeline.active.pointedImages.RenderablePointedImageActorPipeline;
@@ -32,21 +32,18 @@ import edu.jhuapl.sbmt.model.image.ImageType;
 import crucible.crust.logging.SimpleLogger;
 import crucible.crust.metadata.api.Key;
 import crucible.crust.metadata.api.Metadata;
-import crucible.crust.metadata.api.Version;
-import crucible.crust.metadata.impl.FixedMetadata;
 import crucible.crust.metadata.impl.SettableMetadata;
-import crucible.crust.metadata.impl.gson.Serializers;
 
-public class PerspectiveImageCollection extends SaavtkItemManager<PerspectiveImage> implements PropertyChangeListener
+public class PerspectiveImageCollection<G1 extends IPerspectiveImage & IPerspectiveImageTableRepresentable> extends SaavtkItemManager<G1> implements PropertyChangeListener
 {
-	private List<PerspectiveImage> images;
-	private List<PerspectiveImage> userImages;
+	private HashMap<IImagingInstrument, List<G1>> imagesByInstrument;
+	private List<G1> userImages;
 	private List<SmallBodyModel> smallBodyModels;
-	private HashMap<PerspectiveImage, List<vtkActor>> imageRenderers;
-	private HashMap<PerspectiveImage, List<vtkActor>> boundaryRenderers;
-	private HashMap<PerspectiveImage, List<vtkActor>> frustumRenderers;
-	private HashMap<PerspectiveImage, List<vtkActor>> offLimbRenderers;
-	private HashMap<PerspectiveImage, PerspectiveImageRenderingState> renderingStates;
+	private HashMap<G1, List<vtkActor>> imageRenderers;
+	private HashMap<G1, List<vtkActor>> boundaryRenderers;
+	private HashMap<G1, List<vtkActor>> frustumRenderers;
+	private HashMap<G1, List<vtkActor>> offLimbRenderers;
+	private HashMap<G1, PerspectiveImageRenderingState> renderingStates;
 	private SimpleLogger logger = SimpleLogger.getInstance();
 	private IImagingInstrument imagingInstrument;
 
@@ -63,78 +60,81 @@ public class PerspectiveImageCollection extends SaavtkItemManager<PerspectiveIma
 
 	public PerspectiveImageCollection(List<SmallBodyModel> smallBodyModels)
 	{
-		this.images = Lists.newArrayList();
+		this.imagesByInstrument = new HashMap<IImagingInstrument, List<G1>>();
 		this.userImages = Lists.newArrayList();
-		this.imageRenderers = new HashMap<PerspectiveImage, List<vtkActor>>();
-		this.boundaryRenderers = new HashMap<PerspectiveImage, List<vtkActor>>();
-		this.frustumRenderers = new HashMap<PerspectiveImage, List<vtkActor>>();
-		this.offLimbRenderers = new HashMap<PerspectiveImage, List<vtkActor>>();
-		this.renderingStates = new HashMap<PerspectiveImage, PerspectiveImageRenderingState>();
+		this.imageRenderers = new HashMap<G1, List<vtkActor>>();
+		this.boundaryRenderers = new HashMap<G1, List<vtkActor>>();
+		this.frustumRenderers = new HashMap<G1, List<vtkActor>>();
+		this.offLimbRenderers = new HashMap<G1, List<vtkActor>>();
+		this.renderingStates = new HashMap<G1, PerspectiveImageRenderingState>();
 		this.smallBodyModels = smallBodyModels;
 	}
 
-	public void addUserImage(PerspectiveImage image)
+	public void addUserImage(G1 image)
 	{
+		System.out.println("PerspectiveImageCollection: addUserImage: adding user image");
 		userImages.add(image);
 		PerspectiveImageRenderingState state = new PerspectiveImageRenderingState();
 		renderingStates.put(image,state);
 		updateUserList();	//update the user created list, stored in metadata
 		//TODO merge with searched for images, which will cause a refresh.  Put custom images at top?
-		List<PerspectiveImage> combined = Lists.newArrayList();
-		combined.addAll(userImages);
-		combined.addAll(images);
-		setAllItems(combined);
+//		List<PerspectiveImage> combined = Lists.newArrayList();
+//		combined.addAll(userImages);
+//		for (List<PerspectiveImage> imgs : imagesByInstrument.values())
+//			combined.addAll(imgs);
+//		setAllItems(userImages);
 
 	}
 
 	private void loadUserList()
 	{
-		String filename = smallBodyModels.get(0).getCustomDataFolder() + File.separator + "userImages" + imagingInstrument.getType() + ".txt";
-        if (!new File(filename).exists()) return;
-		FixedMetadata metadata;
-        try
-        {
-        	final Key<List<PerspectiveImage>> userImagesKey = Key.of("UserImages");
-            metadata = Serializers.deserialize(new File(filename), "UserImages");
-            userImages = read(userImagesKey, metadata);
-            for (PerspectiveImage image : userImages)
-            {
-            	PerspectiveImageRenderingState state = new PerspectiveImageRenderingState();
-            	state.isMapped = image.isMapped();
-            	if (image.isMapped()) image.setStatus("Loaded");
-            	state.isFrustumShowing = image.isFrustumShowing();
-            	state.isBoundaryShowing = image.isBoundaryShowing();
-            	state.isOfflimbShowing = image.isOfflimbShowing();
-        		renderingStates.put(image,state);
-        		updateImage(image);
-            }
-            List<PerspectiveImage> combined = Lists.newArrayList();
-    		combined.addAll(userImages);
-    		combined.addAll(images);
-    		setAllItems(combined);
-        }
-        catch (IOException e)
-        {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
+//		String filename = smallBodyModels.get(0).getCustomDataFolder() + File.separator + "userImages" + imagingInstrument.getType() + ".txt";
+//        if (!new File(filename).exists()) return;
+//		FixedMetadata metadata;
+//        try
+//        {
+//        	final Key<List<PerspectiveImage>> userImagesKey = Key.of("UserImages");
+//            metadata = Serializers.deserialize(new File(filename), "UserImages");
+//            userImages = read(userImagesKey, metadata);
+//            for (PerspectiveImage image : userImages)
+//            {
+//            	PerspectiveImageRenderingState state = new PerspectiveImageRenderingState();
+//            	state.isMapped = image.isMapped();
+//            	if (image.isMapped()) image.setStatus("Loaded");
+//            	state.isFrustumShowing = image.isFrustumShowing();
+//            	state.isBoundaryShowing = image.isBoundaryShowing();
+//            	state.isOfflimbShowing = image.isOfflimbShowing();
+//        		renderingStates.put(image,state);
+//        		updateImage(image);
+//            }
+//            List<PerspectiveImage> combined = Lists.newArrayList();
+//    		combined.addAll(userImages);
+////    		for (List<PerspectiveImage> imgs : imagesByInstrument.values())
+////    			combined.addAll(imgs);
+//    		setAllItems(combined);
+//        }
+//        catch (IOException e)
+//        {
+//            // TODO Auto-generated catch block
+//            e.printStackTrace();
+//        }
 	}
 
 	private void updateUserList()
 	{
-		String filename = smallBodyModels.get(0).getCustomDataFolder() + File.separator + "userImages" + imagingInstrument.getType() + ".txt";
-		SettableMetadata configMetadata = SettableMetadata.of(Version.of(1, 0));
-        final Key<List<PerspectiveImage>> userImagesKey = Key.of("UserImages");
-        write(userImagesKey, userImages, configMetadata);
-        try
-        {
-            Serializers.serialize("UserImages", configMetadata, new File(filename));
-        }
-        catch (IOException e)
-        {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
+//		String filename = smallBodyModels.get(0).getCustomDataFolder() + File.separator + "userImages" + imagingInstrument.getType() + ".txt";
+//		SettableMetadata configMetadata = SettableMetadata.of(Version.of(1, 0));
+//        final Key<List<PerspectiveImage>> userImagesKey = Key.of("UserImages");
+//        write(userImagesKey, userImages, configMetadata);
+//        try
+//        {
+//            Serializers.serialize("UserImages", configMetadata, new File(filename));
+//        }
+//        catch (IOException e)
+//        {
+//            // TODO Auto-generated catch block
+//            e.printStackTrace();
+//        }
 	}
 
 	protected <T> void write(Key<T> key, T value, SettableMetadata configMetadata)
@@ -153,13 +153,14 @@ public class PerspectiveImageCollection extends SaavtkItemManager<PerspectiveIma
         return null;
     }
 
-	public void setImages(List<PerspectiveImage> images)
+	public void setImages(List<G1> images)
 	{
-		List<PerspectiveImage> combined = Lists.newArrayList();
-		combined.addAll(userImages);
-		combined.addAll(images);
-		setAllItems(combined);
-		for (PerspectiveImage image : images)
+//		List<G1> combined = Lists.newArrayList();
+////		combined.addAll(userImages);
+//		combined.addAll(images);
+		setAllItems(images);
+		this.imagesByInstrument.put(imagingInstrument, images);
+		for (G1 image : images)
 		{
 			if (renderingStates.get(image) != null) continue;
 			PerspectiveImageRenderingState state = new PerspectiveImageRenderingState();
@@ -168,22 +169,10 @@ public class PerspectiveImageCollection extends SaavtkItemManager<PerspectiveIma
 	}
 
 	@Override
-	public ImmutableList<PerspectiveImage> getAllItems()
-	{
-		return ImmutableList.copyOf(super.getAllItems().stream().filter(image -> image.getImageType() == imagingInstrument.getType() || image.getImageType() == ImageType.GENERIC_IMAGE).toList());
-	}
-
-	@Override
-	public ImmutableSet<PerspectiveImage> getSelectedItems()
-	{
-		return ImmutableSet.copyOf(super.getSelectedItems().stream().filter(image -> image.getImageType() == imagingInstrument.getType() || image.getImageType() == ImageType.GENERIC_IMAGE).toList());
-	}
-
-	@Override
 	public List<vtkProp> getProps()
 	{
 		List<vtkProp> props = Lists.newArrayList();
-		if (images == null) return props;
+		if (imagesByInstrument.isEmpty() && userImages.isEmpty()) return props;
 		for (List<vtkActor> actors : imageRenderers.values())
 		{
 			props.addAll(actors);
@@ -215,7 +204,7 @@ public class PerspectiveImageCollection extends SaavtkItemManager<PerspectiveIma
 				(double) color.getBlue() / 255. };
 	}
 
-	private void updatePipeline(PerspectiveImage image, RenderableImageActorPipeline pipeline)
+	private void updatePipeline(G1 image, RenderableImageActorPipeline pipeline)
 	{
 		imageRenderers.put(image, pipeline.getRenderableImageActors());
 		imageRenderers.get(image).forEach(actor -> actor.SetVisibility(renderingStates.get(image).isMapped ? 1 : 0));
@@ -233,14 +222,15 @@ public class PerspectiveImageCollection extends SaavtkItemManager<PerspectiveIma
 			actor.SetVisibility(renderingStates.get(image).isBoundaryShowing ? 1 : 0);
 			if (renderingStates.get(image).boundaryColor == null)
 			{
-				Color color = ColorUtil.generateColor(images.indexOf(image)%100, 100);
+				if (imagesByInstrument.get(imagingInstrument) == null) return;
+				Color color = ColorUtil.generateColor(imagesByInstrument.get(imagingInstrument).indexOf(image)%100, 100);
 				renderingStates.get(image).boundaryColor = color;
 			}
 			actor.GetProperty().SetColor(colorToDoubleArray(renderingStates.get(image).boundaryColor));
 		});
 	}
 
-	public void updateImage(PerspectiveImage image)
+	public void updateImage(G1 image)
 	{
 		Thread thread = new Thread(new Runnable()
 		{
@@ -279,7 +269,7 @@ public class PerspectiveImageCollection extends SaavtkItemManager<PerspectiveIma
 		pcs.firePropertyChange(Properties.MODEL_CHANGED, null, image);
 	}
 
-	public void updateUserImage(PerspectiveImage image)
+	public void updateUserImage(G1 image)
 	{
 		RenderablePointedImageActorPipeline pipeline = null;
 		try
@@ -295,12 +285,14 @@ public class PerspectiveImageCollection extends SaavtkItemManager<PerspectiveIma
 		pcs.firePropertyChange(Properties.MODEL_CHANGED, null, image);
 	}
 
-	public void setImageMapped(PerspectiveImage image, boolean mapped)
+	public void setImageMapped(G1 image, boolean mapped)
 	{
+		System.out.println("PerspectiveImageCollection: setImageMapped: mapping image");
 		image.setMapped(mapped);
 		List<vtkActor> actors = imageRenderers.get(image);
 		if (actors == null)
 		{
+			System.out.println("PerspectiveImageCollection: setImageMapped: actors null");
 			Thread thread = new Thread(new Runnable()
 			{
 
@@ -313,7 +305,18 @@ public class PerspectiveImageCollection extends SaavtkItemManager<PerspectiveIma
 					{
 						if (image.getImageType() != ImageType.GENERIC_IMAGE)
 						{
-							pipeline = new RenderablePointedImageActorPipeline(image, smallBodyModels);
+							System.out.println(
+									"PerspectiveImageCollection.setImageMapped(...).new Runnable() {...}: run: making pipeline");
+							if (image.getNumberOfLayers() == 1)
+								pipeline = new RenderablePointedImageActorPipeline(image, smallBodyModels);
+							else if (image.getNumberOfLayers() == 3)
+							{
+								pipeline = new ColorImageGeneratorPipeline(image.getImages(), smallBodyModels);
+							}
+							else
+							{
+
+							}
 
 						}
 						else
@@ -331,6 +334,8 @@ public class PerspectiveImageCollection extends SaavtkItemManager<PerspectiveIma
 					updatePipeline(image, pipeline);
 					for (vtkActor actor : imageRenderers.get(image))
 					{
+						System.out.println(
+								"PerspectiveImageCollection.setImageMapped(...).new Runnable() {...}: run: setting visibility to " + mapped);
 						actor.SetVisibility(mapped ? 1 : 0);
 					}
 					image.setStatus("Loaded");
@@ -344,6 +349,8 @@ public class PerspectiveImageCollection extends SaavtkItemManager<PerspectiveIma
 		}
 		else
 		{
+			System.out.println("PerspectiveImageCollection: setImageMapped: actor not null");
+			System.out.println("PerspectiveImageCollection: setImageMapped: " + imageRenderers.get(image).size());
 			for (vtkActor actor : actors)
 			{
 				actor.SetVisibility(mapped ? 1 : 0);
@@ -354,27 +361,27 @@ public class PerspectiveImageCollection extends SaavtkItemManager<PerspectiveIma
 		this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
 	}
 
-	public boolean getImageMapped(PerspectiveImage image)
+	public boolean getImageMapped(G1 image)
 	{
 		return image.isMapped();
 	}
 
-	public String getImageStatus(PerspectiveImage image)
+	public String getImageStatus(G1 image)
 	{
 		return image.getStatus();
 	}
 
-	public String getImageOrigin(PerspectiveImage image)
-	{
-		return image.getImageOrigin();
-	}
+//	public String getImageOrigin(PerspectiveImage image)
+//	{
+//		return image.getImageOrigin();
+//	}
 
-	public int getImageNumberOfLayers(PerspectiveImage image)
+	public int getImageNumberOfLayers(G1 image)
 	{
 		return image.getNumberOfLayers();
 	}
 
-	public void setImageFrustumVisible(PerspectiveImage image, boolean visible)
+	public void setImageFrustumVisible(G1 image, boolean visible)
 	{
 		image.setFrustumShowing(visible);
 //		this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
@@ -423,12 +430,12 @@ public class PerspectiveImageCollection extends SaavtkItemManager<PerspectiveIma
 		renderingStates.get(image).isFrustumShowing = visible;
 	}
 
-	public boolean getFrustumShowing(PerspectiveImage image)
+	public boolean getFrustumShowing(G1 image)
 	{
 		return image.isFrustumShowing();
 	}
 
-	public void setImageOfflimbShowing(PerspectiveImage image, boolean showing)
+	public void setImageOfflimbShowing(G1 image, boolean showing)
 	{
 		image.setOfflimbShowing(showing);
 //		this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
@@ -477,12 +484,12 @@ public class PerspectiveImageCollection extends SaavtkItemManager<PerspectiveIma
 		renderingStates.get(image).isOfflimbShowing = showing;
 	}
 
-	public boolean getImageOfflimbShowing(PerspectiveImage image)
+	public boolean getImageOfflimbShowing(G1 image)
 	{
 		return image.isOfflimbShowing();
 	}
 
-	public void setImageBoundaryShowing(PerspectiveImage image, boolean showing)
+	public void setImageBoundaryShowing(G1 image, boolean showing)
 	{
 		image.setBoundaryShowing(showing);
 //		this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
@@ -541,12 +548,12 @@ public class PerspectiveImageCollection extends SaavtkItemManager<PerspectiveIma
 		renderingStates.get(image).isBoundaryShowing = showing;
 	}
 
-	public boolean getImageBoundaryShowing(PerspectiveImage image)
+	public boolean getImageBoundaryShowing(G1 image)
 	{
 		return image.isBoundaryShowing();
 	}
 
-	public void setImageStatus(PerspectiveImage image, String status)
+	public void setImageStatus(G1 image, String status)
 	{
 		image.setStatus(status);
 		this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
@@ -557,10 +564,10 @@ public class PerspectiveImageCollection extends SaavtkItemManager<PerspectiveIma
 		return getAllItems().size();
 	}
 
-	public Optional<PerspectiveImage> getImage(vtkActor actor)
+	public Optional<IPerspectiveImage> getImage(vtkActor actor)
 	{
-		Optional<PerspectiveImage> matchingImage = Optional.empty();
-		for (PerspectiveImage image : imageRenderers.keySet())
+		Optional<IPerspectiveImage> matchingImage = Optional.empty();
+		for (IPerspectiveImage image : imageRenderers.keySet())
 		{
 			List<vtkActor> actors = imageRenderers.get(image);
 			if (actors.contains(actor))
@@ -601,6 +608,17 @@ public class PerspectiveImageCollection extends SaavtkItemManager<PerspectiveIma
 	public void setImagingInstrument(IImagingInstrument imagingInstrument)
 	{
 		this.imagingInstrument = imagingInstrument;
+		if (imagingInstrument == null)
+			setAllItems(userImages);
+		else if (imagesByInstrument.get(imagingInstrument) == null)
+		{
+			setAllItems(Lists.newArrayList());
+		}
+		else
+		{
+			ImmutableList<G1> filteredImages = ImmutableList.copyOf(imagesByInstrument.get(imagingInstrument).stream().filter(image -> image.getImageType() == imagingInstrument.getType()).toList());
+			setAllItems(filteredImages);
+		}
 		loadUserList();
 	}
 

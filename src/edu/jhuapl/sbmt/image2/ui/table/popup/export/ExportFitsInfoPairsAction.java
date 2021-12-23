@@ -11,7 +11,7 @@ import com.beust.jcommander.internal.Lists;
 
 import edu.jhuapl.saavtk.gui.dialog.CustomFileChooser;
 import edu.jhuapl.saavtk.gui.dialog.DirectoryChooser;
-import edu.jhuapl.sbmt.image2.model.PerspectiveImage;
+import edu.jhuapl.sbmt.image2.interfaces.IPerspectiveImage;
 import edu.jhuapl.sbmt.image2.model.PerspectiveImageCollection;
 import edu.jhuapl.sbmt.image2.modules.io.export.SaveImageFileFromCacheOperator;
 import edu.jhuapl.sbmt.image2.pipeline.active.PerspectiveImageToRenderableImagePipeline;
@@ -21,7 +21,7 @@ import edu.jhuapl.sbmt.model.image.InfoFileWriter;
 
 import glum.gui.action.PopAction;
 
-public class ExportFitsInfoPairsAction<G1 extends PerspectiveImage> extends PopAction<G1>
+public class ExportFitsInfoPairsAction<G1 extends IPerspectiveImage> extends PopAction<G1>
 {
 	private PerspectiveImageCollection aManager;
 
@@ -41,7 +41,7 @@ public class ExportFitsInfoPairsAction<G1 extends PerspectiveImage> extends PopA
 		if (outDir == null)
 			return;
 
-		for (PerspectiveImage aItem : aItemL)
+		for (IPerspectiveImage aItem : aItemL)
 		{
 			List<File> files = Lists.newArrayList();
 

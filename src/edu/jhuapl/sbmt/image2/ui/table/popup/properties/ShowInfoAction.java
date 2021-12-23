@@ -3,7 +3,7 @@ package edu.jhuapl.sbmt.image2.ui.table.popup.properties;
 import java.util.List;
 
 import edu.jhuapl.sbmt.client.SbmtInfoWindowManager;
-import edu.jhuapl.sbmt.image2.model.PerspectiveImage;
+import edu.jhuapl.sbmt.image2.interfaces.IPerspectiveImage;
 import edu.jhuapl.sbmt.image2.model.PerspectiveImageCollection;
 import edu.jhuapl.sbmt.image2.modules.preview.VtkLayerPreview;
 import edu.jhuapl.sbmt.image2.modules.rendering.pointedImage.RenderablePointedImage;
@@ -12,7 +12,7 @@ import edu.jhuapl.sbmt.image2.pipeline.publisher.Just;
 
 import glum.gui.action.PopAction;
 
-public class ShowInfoAction<G1 extends PerspectiveImage> extends PopAction<G1>
+public class ShowInfoAction<G1 extends IPerspectiveImage> extends PopAction<G1>
 {
     /**
 	 *
@@ -51,7 +51,7 @@ public class ShowInfoAction<G1 extends PerspectiveImage> extends PopAction<G1>
 			e.printStackTrace();
 		}
 
-		for (PerspectiveImage aItem : aItemL)
+		for (IPerspectiveImage aItem : aItemL)
 		{
 			//TODO fix this
 //			this.infoPanel.addData(aItem);

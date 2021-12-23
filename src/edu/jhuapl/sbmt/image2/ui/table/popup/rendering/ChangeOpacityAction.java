@@ -17,13 +17,13 @@ import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
 import edu.jhuapl.saavtk.gui.render.Renderer;
-import edu.jhuapl.sbmt.image2.model.PerspectiveImage;
+import edu.jhuapl.sbmt.image2.interfaces.IPerspectiveImage;
 import edu.jhuapl.sbmt.image2.model.PerspectiveImageCollection;
 
 import glum.gui.action.PopAction;
 import net.miginfocom.swing.MigLayout;
 
-public class ChangeOpacityAction<G1 extends PerspectiveImage> extends PopAction<G1>
+public class ChangeOpacityAction<G1 extends IPerspectiveImage> extends PopAction<G1>
 {
     private PerspectiveImageCollection aManager;
     private final Renderer renderer;

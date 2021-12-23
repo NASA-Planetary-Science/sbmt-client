@@ -14,7 +14,7 @@ import vtk.vtkActor;
 import edu.jhuapl.saavtk.util.FileCache;
 import edu.jhuapl.sbmt.client.SmallBodyModel;
 import edu.jhuapl.sbmt.image2.api.Layer;
-import edu.jhuapl.sbmt.image2.model.PerspectiveImage;
+import edu.jhuapl.sbmt.image2.interfaces.IPerspectiveImage;
 import edu.jhuapl.sbmt.image2.modules.io.builtIn.BuiltInFitsHeaderReader;
 import edu.jhuapl.sbmt.image2.modules.io.builtIn.BuiltInFitsReader;
 import edu.jhuapl.sbmt.image2.modules.pointing.InfofileReaderPublisher;
@@ -45,7 +45,7 @@ public class RenderablePointedImageActorPipeline implements RenderableImageActor
 	List<vtkActor> renderableImageActors = Lists.newArrayList();
 	Pair<List<vtkActor>, List<PointedImageRenderables>>[] sceneOutputs = new Pair[1];
 
-	public RenderablePointedImageActorPipeline(PerspectiveImage image, List<SmallBodyModel> smallBodyModel) throws Exception
+	public RenderablePointedImageActorPipeline(IPerspectiveImage image, List<SmallBodyModel> smallBodyModel) throws Exception
 	{
 		String filename = image.getFilename();
 		String pointingFile = image.getPointingSource();

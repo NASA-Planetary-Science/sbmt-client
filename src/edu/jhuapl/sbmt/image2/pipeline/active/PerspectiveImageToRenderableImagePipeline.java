@@ -10,7 +10,7 @@ import com.google.common.collect.Lists;
 
 import edu.jhuapl.saavtk.util.FileCache;
 import edu.jhuapl.sbmt.image2.api.Layer;
-import edu.jhuapl.sbmt.image2.model.PerspectiveImage;
+import edu.jhuapl.sbmt.image2.interfaces.IPerspectiveImage;
 import edu.jhuapl.sbmt.image2.modules.io.builtIn.BuiltInFitsHeaderReader;
 import edu.jhuapl.sbmt.image2.modules.io.builtIn.BuiltInFitsReader;
 import edu.jhuapl.sbmt.image2.modules.pointing.InfofileReaderPublisher;
@@ -31,9 +31,9 @@ public class PerspectiveImageToRenderableImagePipeline
 {
 	List<RenderablePointedImage> renderableImages = Lists.newArrayList();
 
-	public PerspectiveImageToRenderableImagePipeline(List<PerspectiveImage> images) throws Exception
+	public PerspectiveImageToRenderableImagePipeline(List<IPerspectiveImage> images) throws Exception
 	{
-		for (PerspectiveImage image : images)
+		for (IPerspectiveImage image : images)
 		{
 			String filename = image.getFilename();
 			String pointingFile = image.getPointingSource();

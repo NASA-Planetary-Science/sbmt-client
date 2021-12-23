@@ -8,7 +8,7 @@
  *
  * Created on Jul 21, 2011, 9:00:24 PM
  */
-package edu.jhuapl.sbmt.image2.ui;
+package edu.jhuapl.sbmt.image2.ui.custom;
 
 import java.awt.CardLayout;
 import java.awt.Dialog;
@@ -18,6 +18,7 @@ import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.io.File;
 import java.util.Date;
+import java.util.List;
 
 import javax.swing.Box;
 import javax.swing.BoxLayout;
@@ -35,6 +36,7 @@ import vtk.vtkImageReader2;
 import vtk.vtkImageReader2Factory;
 
 import edu.jhuapl.saavtk.gui.dialog.CustomFileChooser;
+import edu.jhuapl.sbmt.image2.model.CompositePerspectiveImage;
 import edu.jhuapl.sbmt.image2.model.ImageOrigin;
 import edu.jhuapl.sbmt.image2.model.PerspectiveImage;
 import edu.jhuapl.sbmt.image2.model.PerspectiveImageCollection;
@@ -231,7 +233,7 @@ public class CustomImageImporterDialog extends JDialog
 
 		JPanel longitudePanel = new JPanel();
 		longitudePanel.setLayout(new BoxLayout(longitudePanel, BoxLayout.X_AXIS));
-		longitudePanel.add(new JLabel("Longitude Range (deg):"));
+		longitudePanel.add(new JLabel("Longitude Range (deg east):"));
 		minLongitudeTextField = new JTextField("0.0");
 		minLongitudeTextField.setMinimumSize(new Dimension(100, 30));
 		minLongitudeTextField.setPreferredSize(new Dimension(100, 30));
@@ -367,7 +369,7 @@ public class CustomImageImporterDialog extends JDialog
 			Double maxLon = Double.parseDouble(maxLongitudeTextField.getText());
 			image.setBounds(new CylindricalBounds(minLat, maxLat, minLon, maxLon));
 		}
-		imageCollection.addUserImage(image);
+		imageCollection.addUserImage(new CompositePerspectiveImage(List.of(image)));
 	}
 
 	private String validateInput()

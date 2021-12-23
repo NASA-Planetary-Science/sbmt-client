@@ -5,7 +5,8 @@ import java.util.List;
 
 import com.beust.jcommander.internal.Lists;
 
-import edu.jhuapl.sbmt.image2.model.PerspectiveImage;
+import edu.jhuapl.sbmt.image2.interfaces.IPerspectiveImage;
+import edu.jhuapl.sbmt.image2.interfaces.IPerspectiveImageTableRepresentable;
 import edu.jhuapl.sbmt.image2.model.PerspectiveImageCollection;
 import edu.jhuapl.sbmt.image2.modules.io.export.SaveImagePointingFileFromCacheOperator;
 import edu.jhuapl.sbmt.image2.pipeline.publisher.Just;
@@ -13,7 +14,7 @@ import edu.jhuapl.sbmt.image2.pipeline.subscriber.Sink;
 
 import glum.gui.action.PopAction;
 
-public class ExportInfofileAction<G1 extends PerspectiveImage> extends PopAction<G1>
+public class ExportInfofileAction<G1 extends IPerspectiveImage & IPerspectiveImageTableRepresentable> extends PopAction<G1>
 {
 	/**
 	 *
@@ -31,7 +32,7 @@ public class ExportInfofileAction<G1 extends PerspectiveImage> extends PopAction
 	@Override
 	public void executeAction(List<G1> aItemL)
 	{
-		PerspectiveImage aItem = aManager.getSelectedItems().asList().get(0);
+		G1 aItem = (G1)aManager.getSelectedItems().asList().get(0);
 		List<File> files = Lists.newArrayList();
 		try
 		{

@@ -10,10 +10,11 @@ import org.apache.commons.io.FilenameUtils;
 import edu.jhuapl.saavtk.gui.dialog.CustomFileChooser;
 import edu.jhuapl.saavtk.util.FileCache;
 import edu.jhuapl.saavtk.util.FileUtil;
-import edu.jhuapl.sbmt.image2.model.PerspectiveImage;
+import edu.jhuapl.sbmt.image2.interfaces.IPerspectiveImage;
+import edu.jhuapl.sbmt.image2.interfaces.IPerspectiveImageTableRepresentable;
 import edu.jhuapl.sbmt.image2.pipeline.operator.BasePipelineOperator;
 
-public class SaveImageFileFromCacheOperator extends BasePipelineOperator<PerspectiveImage, File>
+public class SaveImageFileFromCacheOperator<G1 extends IPerspectiveImage & IPerspectiveImageTableRepresentable> extends BasePipelineOperator<G1, File>
 {
 	@Override
 	public void processData() throws IOException, Exception

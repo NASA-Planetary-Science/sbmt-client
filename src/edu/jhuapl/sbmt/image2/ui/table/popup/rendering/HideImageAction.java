@@ -2,12 +2,13 @@ package edu.jhuapl.sbmt.image2.ui.table.popup.rendering;
 
 import java.util.List;
 
-import edu.jhuapl.sbmt.image2.model.PerspectiveImage;
+import edu.jhuapl.sbmt.image2.interfaces.IPerspectiveImage;
+import edu.jhuapl.sbmt.image2.interfaces.IPerspectiveImageTableRepresentable;
 import edu.jhuapl.sbmt.image2.model.PerspectiveImageCollection;
 
 import glum.gui.action.PopAction;
 
-public class HideImageAction<G1 extends PerspectiveImage> extends PopAction<G1>
+public class HideImageAction<G1 extends IPerspectiveImage & IPerspectiveImageTableRepresentable> extends PopAction<G1>
 {
     /**
 	 *
@@ -29,7 +30,7 @@ public class HideImageAction<G1 extends PerspectiveImage> extends PopAction<G1>
 		if (aItemL.size() == 0)
 			return;
 
-		for (PerspectiveImage aItem : aItemL)
+		for (G1 aItem : aItemL)
 		{
 			aManager.setImageMapped(aItem, !aItem.isMapped());
 		}

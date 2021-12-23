@@ -18,14 +18,14 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 
-import edu.jhuapl.sbmt.image2.model.PerspectiveImage;
+import edu.jhuapl.sbmt.image2.interfaces.IPerspectiveImage;
 import edu.jhuapl.sbmt.image2.model.PerspectiveImageCollection;
 import edu.jhuapl.sbmt.image2.pipeline.active.rendering.PerspectiveImageOffsetUpdatePipeline;
 
 import glum.gui.action.PopAction;
 import net.miginfocom.swing.MigLayout;
 
-public class ChangeNormalOffsetAction<G1 extends PerspectiveImage> extends PopAction<G1>
+public class ChangeNormalOffsetAction<G1 extends IPerspectiveImage> extends PopAction<G1>
 {
 	private PerspectiveImageCollection aManager;
 
@@ -68,9 +68,9 @@ public class ChangeNormalOffsetAction<G1 extends PerspectiveImage> extends PopAc
 	    private JFormattedTextField offsetField;
 	    private String lastGood = "";
 	    private PerspectiveImageCollection collection;
-	    private PerspectiveImage image;
+	    private IPerspectiveImage image;
 
-	    public ImageNormalOffsetChangerDialog(PerspectiveImageCollection collection, PerspectiveImage image)
+	    public ImageNormalOffsetChangerDialog(PerspectiveImageCollection collection, IPerspectiveImage image)
 	    {
 	    	this.collection = collection;
 	    	this.image = image;

@@ -11,12 +11,12 @@ import javax.swing.JMenu;
 import javax.swing.JMenuItem;
 
 import edu.jhuapl.saavtk.util.ColorUtil;
-import edu.jhuapl.sbmt.image2.model.PerspectiveImage;
+import edu.jhuapl.sbmt.image2.interfaces.IPerspectiveImage;
 import edu.jhuapl.sbmt.image2.model.PerspectiveImageCollection;
 
 import glum.gui.action.PopAction;
 
-public class BoundaryColorAction<G1 extends PerspectiveImage> extends PopAction<G1>
+public class BoundaryColorAction<G1 extends IPerspectiveImage> extends PopAction<G1>
 {
 
 	private PerspectiveImageCollection aManager;
@@ -58,7 +58,7 @@ public class BoundaryColorAction<G1 extends PerspectiveImage> extends PopAction<
 		if (aItemL.size() == 0)
 			return;
 
-		for (PerspectiveImage aItem : aItemL)
+		for (IPerspectiveImage aItem : aItemL)
 		{
 			//TODO FIX THIS
 //			PerspectiveImageBoundary boundary = this.imagePopupMenu.imageBoundaryCollection.getBoundary(imageKey);

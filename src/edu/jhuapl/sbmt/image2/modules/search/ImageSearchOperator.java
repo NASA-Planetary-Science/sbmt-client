@@ -20,6 +20,8 @@ import edu.jhuapl.saavtk.model.structure.AbstractEllipsePolygonModel;
 import edu.jhuapl.saavtk.structure.Ellipse;
 import edu.jhuapl.sbmt.client.SmallBodyModel;
 import edu.jhuapl.sbmt.client.SmallBodyViewConfig;
+import edu.jhuapl.sbmt.image2.interfaces.IPerspectiveImage;
+import edu.jhuapl.sbmt.image2.model.CompositePerspectiveImage;
 import edu.jhuapl.sbmt.image2.model.ImageOrigin;
 import edu.jhuapl.sbmt.image2.model.ImageSearchParametersModel;
 import edu.jhuapl.sbmt.image2.model.PerspectiveImage;
@@ -31,7 +33,7 @@ import edu.jhuapl.sbmt.query.database.ImageDatabaseSearchMetadata;
 import edu.jhuapl.sbmt.query.fixedlist.FixedListQuery;
 import edu.jhuapl.sbmt.query.fixedlist.FixedListSearchMetadata;
 
-public class ImageSearchOperator extends BasePipelineOperator<ImageSearchParametersModel, PerspectiveImage>
+public class ImageSearchOperator extends BasePipelineOperator<ImageSearchParametersModel, IPerspectiveImage>
 {
 	private ImageSearchParametersModel searchParameterModel;
 	private SmallBodyViewConfig viewConfig;
@@ -205,7 +207,7 @@ public class ImageSearchOperator extends BasePipelineOperator<ImageSearchParamet
             }
         }
 
-        outputs = new ArrayList<PerspectiveImage>();
+        outputs = new ArrayList<IPerspectiveImage>();
         int i=0;
         for (List<String> imageInfo : results)
         {
@@ -252,8 +254,10 @@ public class ImageSearchOperator extends BasePipelineOperator<ImageSearchParamet
         	image.setMaskValues(new int[] {2, 14, 2, 14});
 //        	image.setFillValues(instrument.getFillDetector(image));
         	image.setLongTime(Long.parseLong(imageInfo.get(1)));
-        	image.setIndex(i++);
-        	outputs.add(image);
+//        	image.setIndex(i++);
+        	CompositePerspectiveImage compImage = new CompositePerspectiveImage(List.of(image));
+        	compImage.setIndex(i++);
+        	outputs.add(compImage);
         }
 	}
 }

@@ -9,27 +9,19 @@ import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 
-import org.apache.commons.lang3.tuple.Pair;
-
-import vtk.vtkActor;
-
 import edu.jhuapl.sbmt.client.SmallBodyModel;
-import edu.jhuapl.sbmt.image2.model.PerspectiveImage;
+import edu.jhuapl.sbmt.image2.interfaces.IPerspectiveImage;
 import edu.jhuapl.sbmt.image2.modules.preview.VtkRendererPreview;
-import edu.jhuapl.sbmt.image2.modules.rendering.SceneActorBuilderOperator;
-import edu.jhuapl.sbmt.image2.pipeline.active.ColorImageGeneratorPipeline;
-import edu.jhuapl.sbmt.image2.pipeline.operator.IPipelineOperator;
-import edu.jhuapl.sbmt.image2.pipeline.publisher.IPipelinePublisher;
-import edu.jhuapl.sbmt.image2.pipeline.publisher.Just;
-import edu.jhuapl.sbmt.image2.pipeline.publisher.Publishers;
 
 public class ColorImageBuilderPanel extends JPanel
 {
 	private List<SmallBodyModel> smallBodyModels;
 	private JPanel previewPanel;
-	SingleImagePreviewPanel redPreview;
-	SingleImagePreviewPanel greenPreview;
-	SingleImagePreviewPanel bluePreview;
+	private SingleImagePreviewPanel redPreview;
+	private SingleImagePreviewPanel greenPreview;
+	private SingleImagePreviewPanel bluePreview;
+	private JButton saveAndCloseButton;
+	private JButton previewButton;
 
 	public ColorImageBuilderPanel(List<SmallBodyModel> smallBodyModels)
 	{
@@ -80,46 +72,55 @@ public class ColorImageBuilderPanel extends JPanel
 		JPanel panel = new JPanel();
 		panel.setLayout(new BoxLayout(panel, BoxLayout.X_AXIS));
 
-		JButton previewButton = new JButton("Preview");
-		previewButton.addActionListener(e -> {
+		previewButton = new JButton("Preview");
 
-			try {
-				List<PerspectiveImage> images = List.of(redPreview.getPerspectiveImage(), greenPreview.getPerspectiveImage(), bluePreview.getPerspectiveImage());
-				ColorImageGeneratorPipeline pipeline = new ColorImageGeneratorPipeline(images, smallBodyModels);
-				List<vtkActor> actors = pipeline.getImageActors();
-
-				IPipelinePublisher<Pair<List<SmallBodyModel>, List<vtkActor>>> sceneObjects = Publishers.formPair(Just.of(smallBodyModels), Just.of(actors));
-				IPipelineOperator<Pair<List<SmallBodyModel>, List<vtkActor>>, vtkActor> sceneBuilder = new SceneActorBuilderOperator();
-
-				VtkRendererPreview preview = new VtkRendererPreview(smallBodyModels.get(0));
-
-				sceneObjects
-					.operate(sceneBuilder) 	//feed the zipped sources to scene builder operator
-					.subscribe(preview)		//subscribe to the scene builder with the preview
-					.run();
-
-				previewPanel.removeAll();
-				JPanel renderPanel = (JPanel)preview.getPanel();
-				renderPanel.setMinimumSize(new Dimension(750, 650));
-				renderPanel.setPreferredSize(new Dimension(750, 650));
-				renderPanel.setMaximumSize(new Dimension(750, 650));
-				previewPanel.add(renderPanel);
-				previewPanel.repaint();
-				previewPanel.validate();
-				add(previewPanel);
-			}
-			catch (Exception ex)
-			{
-				ex.printStackTrace();
-			}
-
-		});
-
-		JButton saveAndCloseButton = new JButton("Save and Close");
+		saveAndCloseButton = new JButton("Save and Close");
 		panel.add(previewButton);
 		panel.add(saveAndCloseButton);
 
 		return panel;
 
+	}
+
+	public List<IPerspectiveImage> getImages()
+	{
+		return List.of(redPreview.getPerspectiveImage(), greenPreview.getPerspectiveImage(), bluePreview.getPerspectiveImage());
+	}
+
+	/**
+	 * @return the saveAndCloseButton
+	 */
+	public JButton getSaveAndCloseButton()
+	{
+		return saveAndCloseButton;
+	}
+
+	/**
+	 * @return the previewButton
+	 */
+	public JButton getPreviewButton()
+	{
+		return previewButton;
+	}
+
+	/**
+	 * @return the previewPanel
+	 */
+	public JPanel getPreviewPanel()
+	{
+		return previewPanel;
+	}
+
+	public void updatePreviewPanel(VtkRendererPreview preview)
+	{
+		previewPanel.removeAll();
+		JPanel renderPanel = (JPanel)preview.getPanel();
+		renderPanel.setMinimumSize(new Dimension(750, 650));
+		renderPanel.setPreferredSize(new Dimension(750, 650));
+		renderPanel.setMaximumSize(new Dimension(750, 650));
+		previewPanel.add(renderPanel);
+		previewPanel.repaint();
+		previewPanel.validate();
+		add(previewPanel);
 	}
 }

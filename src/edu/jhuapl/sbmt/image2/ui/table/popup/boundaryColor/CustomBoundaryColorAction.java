@@ -3,12 +3,12 @@ package edu.jhuapl.sbmt.image2.ui.table.popup.boundaryColor;
 import java.awt.Component;
 import java.util.List;
 
-import edu.jhuapl.sbmt.image2.model.PerspectiveImage;
+import edu.jhuapl.sbmt.image2.interfaces.IPerspectiveImage;
 import edu.jhuapl.sbmt.image2.model.PerspectiveImageCollection;
 
 import glum.gui.action.PopAction;
 
-class CustomBoundaryColorAction<G1 extends PerspectiveImage> extends PopAction<G1>
+class CustomBoundaryColorAction<G1 extends IPerspectiveImage> extends PopAction<G1>
 {
    private PerspectiveImageCollection aManager;
    private final Component refParent;

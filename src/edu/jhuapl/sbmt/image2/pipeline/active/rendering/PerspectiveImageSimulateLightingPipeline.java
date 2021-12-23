@@ -7,7 +7,7 @@ import org.apache.commons.math3.geometry.euclidean.threed.Vector3D;
 import edu.jhuapl.saavtk.gui.render.Renderer;
 import edu.jhuapl.saavtk.view.light.LightCfg;
 import edu.jhuapl.saavtk.view.light.LightUtil;
-import edu.jhuapl.sbmt.image2.model.PerspectiveImage;
+import edu.jhuapl.sbmt.image2.interfaces.IPerspectiveImage;
 import edu.jhuapl.sbmt.image2.modules.rendering.pointedImage.RenderablePointedImage;
 import edu.jhuapl.sbmt.image2.pipeline.active.PerspectiveImageToRenderableImagePipeline;
 
@@ -15,7 +15,7 @@ public class PerspectiveImageSimulateLightingPipeline
 {
 	static LightCfg currentLightCfg;
 
-	public PerspectiveImageSimulateLightingPipeline(PerspectiveImage image, Renderer renderer, boolean currentlySimulateLighting) throws Exception
+	public PerspectiveImageSimulateLightingPipeline(IPerspectiveImage image, Renderer renderer, boolean currentlySimulateLighting) throws Exception
 	{
 		PerspectiveImageToRenderableImagePipeline pipeline1 = new PerspectiveImageToRenderableImagePipeline(List.of(image));
 		List<RenderablePointedImage> renderableImages = pipeline1.getRenderableImages();
@@ -34,7 +34,7 @@ public class PerspectiveImageSimulateLightingPipeline
 
 	}
 
-	public static void of(PerspectiveImage image, Renderer renderer, boolean simulateLighting) throws Exception
+	public static void of(IPerspectiveImage image, Renderer renderer, boolean simulateLighting) throws Exception
 	{
 		new PerspectiveImageSimulateLightingPipeline(image, renderer, simulateLighting);
 	}

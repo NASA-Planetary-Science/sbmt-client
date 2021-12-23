@@ -9,12 +9,13 @@ import javax.swing.JOptionPane;
 import org.apache.commons.io.FilenameUtils;
 
 import edu.jhuapl.saavtk.gui.dialog.CustomFileChooser;
-import edu.jhuapl.sbmt.image2.model.PerspectiveImage;
+import edu.jhuapl.sbmt.image2.interfaces.IPerspectiveImage;
+import edu.jhuapl.sbmt.image2.interfaces.IPerspectiveImageTableRepresentable;
 import edu.jhuapl.sbmt.image2.pipeline.active.PerspectiveImageToRenderableImagePipeline;
 import edu.jhuapl.sbmt.image2.pipeline.operator.BasePipelineOperator;
 import edu.jhuapl.sbmt.model.image.InfoFileWriter;
 
-public class SaveImagePointingFileFromCacheOperator extends BasePipelineOperator<PerspectiveImage, File>
+public class SaveImagePointingFileFromCacheOperator<G1 extends IPerspectiveImage & IPerspectiveImageTableRepresentable> extends BasePipelineOperator<G1, File>
 {
 
 	@Override

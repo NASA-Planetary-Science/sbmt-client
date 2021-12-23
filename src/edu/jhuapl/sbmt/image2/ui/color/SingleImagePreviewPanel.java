@@ -18,17 +18,20 @@ import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.TransferHandler;
 
+import edu.jhuapl.sbmt.image2.interfaces.IPerspectiveImage;
+import edu.jhuapl.sbmt.image2.interfaces.IPerspectiveImageTableRepresentable;
 import edu.jhuapl.sbmt.image2.model.PerspectiveImage;
 import edu.jhuapl.sbmt.image2.modules.preview.VtkLayerRenderer;
 import edu.jhuapl.sbmt.image2.modules.rendering.pointedImage.RenderablePointedImage;
 import edu.jhuapl.sbmt.image2.pipeline.active.PerspectiveImageToRenderableImagePipeline;
 import edu.jhuapl.sbmt.image2.pipeline.publisher.Just;
+import edu.jhuapl.sbmt.model.image.Image;
 
 public class SingleImagePreviewPanel extends JPanel
 {
 	JTextField imageTextField;
 	String title;
-	PerspectiveImage perspectiveImage;
+	IPerspectiveImage perspectiveImage;
 	JPanel previewPanel;
 
 	public SingleImagePreviewPanel(String title)
@@ -46,7 +49,7 @@ public class SingleImagePreviewPanel extends JPanel
         makeImagePanel();
 	}
 
-	public PerspectiveImage getPerspectiveImage()
+	public IPerspectiveImage getPerspectiveImage()
 	{
 		return perspectiveImage;
 	}
@@ -107,7 +110,7 @@ public class SingleImagePreviewPanel extends JPanel
 		previewPanel.validate();
 	}
 
-	public class PerspectiveImageTransferHandler extends TransferHandler {
+	public class PerspectiveImageTransferHandler<G1 extends IPerspectiveImage & IPerspectiveImageTableRepresentable> extends TransferHandler {
 
         @Override
         public boolean canImport(TransferSupport support) {
@@ -120,11 +123,11 @@ public class SingleImagePreviewPanel extends JPanel
             if (canImport(support)) {
                 try {
                     Transferable t = support.getTransferable();
-                    Object value = t.getTransferData(PerspectiveImageTransferable.PERSPECTIVE_IMAGE_DATA_FLAVOR);
-                    if (value instanceof PerspectiveImage) {
+                    G1 value = (G1)t.getTransferData(PerspectiveImageTransferable.PERSPECTIVE_IMAGE_DATA_FLAVOR);
+                    if (value instanceof G1) {
                         Component component = support.getComponent();
                         if (component instanceof JTextField) {
-                        	PerspectiveImage image = (PerspectiveImage)value;
+                        	G1 image = (G1)value;
                         	JTextField field = ((JTextField)component);
                             field.setText(image.getFilename());
                             perspectiveImage = image;
@@ -152,7 +155,7 @@ public class SingleImagePreviewPanel extends JPanel
                 JList<PerspectiveImage> list = (JList<PerspectiveImage>) c;
                 Object value = list.getSelectedValue();
                 if (value instanceof PerspectiveImage) {
-                	PerspectiveImage li = (PerspectiveImage) value;
+                	IPerspectiveImage li = (IPerspectiveImage) value;
                     t = new PerspectiveImageTransferable(li);
                 }
             }
@@ -170,9 +173,9 @@ public class SingleImagePreviewPanel extends JPanel
     public static class PerspectiveImageTransferable implements Transferable {
 
         public static final DataFlavor PERSPECTIVE_IMAGE_DATA_FLAVOR = new DataFlavor(PerspectiveImage.class, "sbmt/PerspectiveImage");
-        private PerspectiveImage image;
+        private IPerspectiveImage image;
 
-        public PerspectiveImageTransferable(PerspectiveImage image) {
+        public PerspectiveImageTransferable(IPerspectiveImage image) {
             this.image = image;
         }
 
@@ -184,6 +187,33 @@ public class SingleImagePreviewPanel extends JPanel
         @Override
         public boolean isDataFlavorSupported(DataFlavor flavor) {
             return flavor.equals(PERSPECTIVE_IMAGE_DATA_FLAVOR);
+        }
+
+        @Override
+        public Object getTransferData(DataFlavor flavor) throws UnsupportedFlavorException, IOException {
+
+            return image;
+
+        }
+    }
+
+    public static class CustomImageTransferable implements Transferable {
+
+        public static final DataFlavor CUSTOM_IMAGE_DATA_FLAVOR = new DataFlavor(PerspectiveImage.class, "sbmt/CustomImage");
+        private Image image;
+
+        public CustomImageTransferable(Image image) {
+            this.image = image;
+        }
+
+        @Override
+        public DataFlavor[] getTransferDataFlavors() {
+            return new DataFlavor[]{CUSTOM_IMAGE_DATA_FLAVOR};
+        }
+
+        @Override
+        public boolean isDataFlavorSupported(DataFlavor flavor) {
+            return flavor.equals(CUSTOM_IMAGE_DATA_FLAVOR);
         }
 
         @Override

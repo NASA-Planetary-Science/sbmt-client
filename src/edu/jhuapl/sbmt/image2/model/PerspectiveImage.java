@@ -1,8 +1,10 @@
 package edu.jhuapl.sbmt.image2.model;
 
 import java.util.Date;
+import java.util.List;
 
 import edu.jhuapl.saavtk.util.IntensityRange;
+import edu.jhuapl.sbmt.image2.interfaces.IPerspectiveImage;
 import edu.jhuapl.sbmt.image2.modules.rendering.cylindricalImage.CylindricalBounds;
 import edu.jhuapl.sbmt.model.image.ImageSource;
 import edu.jhuapl.sbmt.model.image.ImageType;
@@ -12,7 +14,7 @@ import crucible.crust.metadata.api.Version;
 import crucible.crust.metadata.impl.InstanceGetter;
 import crucible.crust.metadata.impl.SettableMetadata;
 
-public class PerspectiveImage
+public class PerspectiveImage implements IPerspectiveImage
 {
 	private static final  Key<String> nameKey = Key.of("name");
     private static final  Key<String> imageFileNameKey = Key.of("imagefilename");
@@ -37,14 +39,7 @@ public class PerspectiveImage
     private static final  Key<CylindricalBounds> boundsKey = Key.of("cylindricalBounds");
     private static final Key<PerspectiveImage> PERSPECTIVE_IMAGE_KEY = Key.of("perspectiveImage");
 
-//    private static final  Key<String> sourceKey = Key.of("source");
-//    private static final  Key<Double> lllatKey = Key.of("lllat");
-//    private static final  Key<Double> lllonKey = Key.of("lllon");
-//    private static final  Key<Double> urlatKey = Key.of("urlat");
-//    private static final  Key<Double> urlonKey = Key.of("urlon");
-//    private static final  Key<Date> dateKey = Key.of("date");
-
-	private String name;
+	private String name = "";
 
 	private String filename;
 
@@ -79,12 +74,7 @@ public class PerspectiveImage
 
 	//needs: adjusted pointing (load and save), rendering, header/metadata
 
-	private boolean mapped = false;
-	private boolean frustumShowing = false;
-	private boolean offlimbShowing = false;
-	private boolean boundaryShowing = false;
-	private String status = "Unloaded";
-	private int index;
+    private int index;
 	private double et;
 	private Long longTime;
 	private boolean simulateLighting = false;
@@ -100,6 +90,16 @@ public class PerspectiveImage
 		this.pointingSourceType = pointingSourceType;
 		this.pointingSource = pointingSource;
 		this.fillValues = fillValues;
+	}
+
+	public int getIndex()
+	{
+		return index;
+	}
+
+	public void setIndex(int index)
+	{
+		this.index = index;
 	}
 
 	public int[] getMaskValues()
@@ -157,65 +157,7 @@ public class PerspectiveImage
 		return fillValues;
 	}
 
-	public boolean isMapped()
-	{
-		return mapped;
-	}
 
-	public void setMapped(boolean mapped)
-	{
-		this.mapped = mapped;
-	}
-
-	public boolean isFrustumShowing()
-	{
-		return frustumShowing;
-	}
-
-	public void setFrustumShowing(boolean frustumShowing)
-	{
-		this.frustumShowing = frustumShowing;
-	}
-
-	public boolean isOfflimbShowing()
-	{
-		return offlimbShowing;
-	}
-
-	public void setOfflimbShowing(boolean offlimbShowing)
-	{
-		this.offlimbShowing = offlimbShowing;
-	}
-
-	public boolean isBoundaryShowing()
-	{
-		return boundaryShowing;
-	}
-
-	public void setBoundaryShowing(boolean boundaryShowing)
-	{
-		this.boundaryShowing = boundaryShowing;
-	}
-
-	public String getStatus()
-	{
-		return status;
-	}
-
-	public void setStatus(String status)
-	{
-		this.status = status;
-	}
-
-	public int getIndex()
-	{
-		return index;
-	}
-
-	public void setIndex(int index)
-	{
-		this.index = index;
-	}
 
 	public double getEt()
 	{
@@ -401,12 +343,12 @@ public class PerspectiveImage
 	        result.setFlip(flip);
 	        result.setRotation(rotation);
 	        result.setImageOrigin(ImageOrigin.valueFor(imageOrigin));
-	        result.setMapped(mapped);
-	        result.setFrustumShowing(frustum);
-	        result.setBoundaryShowing(boundary);
-	        result.setOfflimbShowing(offlimb);
+//	        result.setMapped(mapped);
+//	        result.setFrustumShowing(frustum);
+//	        result.setBoundaryShowing(boundary);
+//	        result.setOfflimbShowing(offlimb);
 	        result.setSimulateLighting(simulateLighting);
-	        result.setIndex(index);
+//	        result.setIndex(index);
 	        result.setEt(et);
 	        result.setLongTime(longTime);
 	        result.setOffset(offset);
@@ -429,12 +371,12 @@ public class PerspectiveImage
 	        result.put(flipKey, image.getFlip());
 	        result.put(rotationKey, image.getRotation());
 	        result.put(imageOriginKey, image.getImageOrigin());
-	        result.put(mappedKey, image.isMapped());
-	        result.put(frustumKey, image.isFrustumShowing());
-	        result.put(boundaryKey, image.isBoundaryShowing());
-	        result.put(offLimbKey, image.isOfflimbShowing());
+//	        result.put(mappedKey, image.isMapped());
+//	        result.put(frustumKey, image.isFrustumShowing());
+//	        result.put(boundaryKey, image.isBoundaryShowing());
+//	        result.put(offLimbKey, image.isOfflimbShowing());
 	        result.put(simulateLightingKey, image.isSimulateLighting());
-	        result.put(indexKey, image.getIndex());
+//	        result.put(indexKey, image.getIndex());
 	        result.put(etKey, image.getEt());
 	        result.put(longTimeKey, image.getLongTime());
 	        result.put(offsetKey, image.getOffset());
@@ -442,6 +384,12 @@ public class PerspectiveImage
 	        if (image.getBounds() != null) result.put(boundsKey, image.getBounds());
 	        return result;
 		});
+	}
+
+	@Override
+	public List<IPerspectiveImage> getImages()
+	{
+		return List.of(this);
 	}
 
 }
