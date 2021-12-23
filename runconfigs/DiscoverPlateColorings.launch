@@ -1,19 +1,22 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <launchConfiguration type="org.eclipse.jdt.launching.localJavaApplication">
-<stringAttribute key="bad_container_name" value="/sbmt/runcon"/>
-<listAttribute key="org.eclipse.debug.core.MAPPED_RESOURCE_PATHS">
-<listEntry value="/sbmt/src/edu/jhuapl/sbmt/tools/DiscoverPlateColorings.java"/>
-</listAttribute>
-<listAttribute key="org.eclipse.debug.core.MAPPED_RESOURCE_TYPES">
-<listEntry value="1"/>
-</listAttribute>
-<listAttribute key="org.eclipse.debug.ui.favoriteGroups">
-<listEntry value="org.eclipse.debug.ui.launchGroup.debug"/>
-<listEntry value="org.eclipse.debug.ui.launchGroup.run"/>
-</listAttribute>
-<booleanAttribute key="org.eclipse.jdt.launching.ATTR_USE_START_ON_FIRST_THREAD" value="true"/>
-<stringAttribute key="org.eclipse.jdt.launching.MAIN_TYPE" value="edu.jhuapl.sbmt.tools.DiscoverPlateColorings"/>
-<stringAttribute key="org.eclipse.jdt.launching.PROGRAM_ARGUMENTS" value="/project/sbmt2/test/ryugu/jaxa-sfm-v20180714/coloring ryugu/jaxa-sfm-v20180714/coloring &quot;JAXA-SFM-V20180714/162173 Ryugu&quot;"/>
-<stringAttribute key="org.eclipse.jdt.launching.PROJECT_ATTR" value="sbmt"/>
-<stringAttribute key="org.eclipse.jdt.launching.VM_ARGUMENTS" value="-Xmx6g"/>
+    <stringAttribute key="bad_container_name" value="/sbmt/runcon"/>
+    <listAttribute key="org.eclipse.debug.core.MAPPED_RESOURCE_PATHS">
+        <listEntry value="/sbmt/src/edu/jhuapl/sbmt/tools/DiscoverPlateColorings.java"/>
+    </listAttribute>
+    <listAttribute key="org.eclipse.debug.core.MAPPED_RESOURCE_TYPES">
+        <listEntry value="1"/>
+    </listAttribute>
+    <mapAttribute key="org.eclipse.debug.core.environmentVariables">
+        <mapEntry key="DYLD_LIBRARY_PATH" value="../saavtk/lib/vtk6.3/mac64"/>
+    </mapAttribute>
+    <listAttribute key="org.eclipse.debug.ui.favoriteGroups">
+        <listEntry value="org.eclipse.debug.ui.launchGroup.debug"/>
+        <listEntry value="org.eclipse.debug.ui.launchGroup.run"/>
+    </listAttribute>
+    <booleanAttribute key="org.eclipse.jdt.launching.ATTR_USE_START_ON_FIRST_THREAD" value="true"/>
+    <stringAttribute key="org.eclipse.jdt.launching.MAIN_TYPE" value="edu.jhuapl.sbmt.tools.DiscoverPlateColorings"/>
+    <stringAttribute key="org.eclipse.jdt.launching.PROGRAM_ARGUMENTS" value="/Users/steelrj1/Downloads/SBMT_layers_Dec2020/plates phobos/ernst2018-megane/coloring &quot;Experimental/Phobos (with MEGANE)&quot;"/>
+    <stringAttribute key="org.eclipse.jdt.launching.PROJECT_ATTR" value="sbmt"/>
+    <stringAttribute key="org.eclipse.jdt.launching.VM_ARGUMENTS" value="-Djava.library.path=../saavtk/lib/vtk6.3/mac64 -Xmx6g"/>
 </launchConfiguration>

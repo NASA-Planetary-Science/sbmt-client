@@ -10,7 +10,6 @@
  */
 package edu.jhuapl.sbmt.gui.image;
 
-import java.awt.Color;
 import java.awt.Component;
 import java.awt.Cursor;
 import java.awt.Rectangle;
@@ -32,7 +31,6 @@ import java.util.GregorianCalendar;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Set;
 import java.util.TimeZone;
 import java.util.TreeSet;
@@ -65,23 +63,19 @@ import com.google.common.collect.ImmutableSortedSet;
 import com.google.common.collect.Range;
 import com.jidesoft.swing.CheckBoxTree;
 
-import vtk.vtkActor;
 import vtk.vtkPolyData;
 
 import edu.jhuapl.saavtk.gui.dialog.CustomFileChooser;
 import edu.jhuapl.saavtk.gui.render.Renderer;
-import edu.jhuapl.saavtk.model.Model;
 import edu.jhuapl.saavtk.model.ModelManager;
 import edu.jhuapl.saavtk.model.ModelNames;
 import edu.jhuapl.saavtk.model.structure.AbstractEllipsePolygonModel;
-import edu.jhuapl.saavtk.pick.PickEvent;
 import edu.jhuapl.saavtk.pick.PickManager;
 import edu.jhuapl.saavtk.pick.PickManager.PickMode;
 import edu.jhuapl.saavtk.structure.Ellipse;
 import edu.jhuapl.saavtk.util.Configuration;
 import edu.jhuapl.saavtk.util.FileUtil;
 import edu.jhuapl.saavtk.util.IdPair;
-import edu.jhuapl.saavtk.util.Properties;
 import edu.jhuapl.saavtk.view.light.LightUtil;
 import edu.jhuapl.sbmt.client.SbmtInfoWindowManager;
 import edu.jhuapl.sbmt.client.SbmtSpectrumWindowManager;
@@ -102,8 +96,6 @@ import edu.jhuapl.sbmt.model.image.ImageCubeCollection;
 import edu.jhuapl.sbmt.model.image.ImageKeyInterface;
 import edu.jhuapl.sbmt.model.image.ImageSource;
 import edu.jhuapl.sbmt.model.image.ImagingInstrument;
-import edu.jhuapl.sbmt.model.image.PerspectiveImageBoundary;
-import edu.jhuapl.sbmt.model.image.PerspectiveImageBoundaryCollection;
 import edu.jhuapl.sbmt.model.image.perspectiveImage.PerspectiveImage;
 import edu.jhuapl.sbmt.model.phobos.HierarchicalSearchSpecification.Selection;
 import edu.jhuapl.sbmt.query.database.ImageDatabaseSearchMetadata;
@@ -201,18 +193,18 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
         postInitComponents(instrument);
 
         ImageCollection images = (ImageCollection)modelManager.getModel(getImageCollectionModelName());
-        PerspectiveImageBoundaryCollection boundaries = (PerspectiveImageBoundaryCollection)modelManager.getModel(getImageBoundaryCollectionModelName());
-        imagePopupMenu = new ImagePopupMenu(modelManager, images, boundaries, infoPanelManager, spectrumPanelManager, renderer, this);
-        boundaries.addPropertyChangeListener(this);
-        images.addPropertyChangeListener(this);
+//        PerspectiveImageBoundaryCollection boundaries = (PerspectiveImageBoundaryCollection)modelManager.getModel(getImageBoundaryCollectionModelName());
+//        imagePopupMenu = new ImagePopupMenu(modelManager, images, boundaries, infoPanelManager, spectrumPanelManager, renderer, this);
+//        boundaries.addPropertyChangeListener(this);
+//        images.addPropertyChangeListener(this);
+//
+//        ColorImageCollection colorImages = (ColorImageCollection)modelManager.getModel(getColorImageCollectionModelName());
+////        colorImagePopupMenu = new ColorImagePopupMenu(colorImages, infoPanelManager, modelManager, this);
+//
+//        ImageCubeCollection imageCubes = (ImageCubeCollection)modelManager.getModel(getImageCubeCollectionModelName());
+//        imageCubePopupMenu = new ImageCubePopupMenu(imageCubes, boundaries, infoPanelManager, spectrumPanelManager, renderer, this);
 
-        ColorImageCollection colorImages = (ColorImageCollection)modelManager.getModel(getColorImageCollectionModelName());
-//        colorImagePopupMenu = new ColorImagePopupMenu(colorImages, infoPanelManager, modelManager, this);
-
-        ImageCubeCollection imageCubes = (ImageCubeCollection)modelManager.getModel(getImageCubeCollectionModelName());
-        imageCubePopupMenu = new ImageCubePopupMenu(imageCubes, boundaries, infoPanelManager, spectrumPanelManager, renderer, this);
-
-        imageCubes.addPropertyChangeListener(this);
+//        imageCubes.addPropertyChangeListener(this);
 
         imageCubesDisplayedList.addListSelectionListener(this);
 
@@ -598,11 +590,11 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
         sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
 
         ImageCollection images = (ImageCollection)modelManager.getModel(getImageCollectionModelName());
-        PerspectiveImageBoundaryCollection boundaries = (PerspectiveImageBoundaryCollection)modelManager.getModel(getImageBoundaryCollectionModelName());
+//        PerspectiveImageBoundaryCollection boundaries = (PerspectiveImageBoundaryCollection)modelManager.getModel(getImageBoundaryCollectionModelName());
 
         resultList.getModel().removeTableModelListener(this);
         images.removePropertyChangeListener(this);
-        boundaries.removePropertyChangeListener(this);
+//        boundaries.removePropertyChangeListener(this);
 
         try
         {
@@ -634,9 +626,9 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
                 }
 
 
-                if (boundaries.containsBoundary(key))
+//                if (boundaries.containsBoundary(key))
                     resultList.setValueAt(true, i, bndrColumnIndex);
-                else
+//                else
                     resultList.setValueAt(false, i, bndrColumnIndex);
 
                 resultList.setValueAt(i+1, i, idColumnIndex);
@@ -665,7 +657,7 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
         {
             resultList.getModel().addTableModelListener(this);
             images.addPropertyChangeListener(this);
-            boundaries.addPropertyChangeListener(this);
+//            boundaries.addPropertyChangeListener(this);
         }
 
 
@@ -697,8 +689,8 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
         int startId = idPair.id1;
         int endId = idPair.id2;
 
-        PerspectiveImageBoundaryCollection model = (PerspectiveImageBoundaryCollection)modelManager.getModel(getImageBoundaryCollectionModelName());
-        model.removeAllBoundaries();
+//        PerspectiveImageBoundaryCollection model = (PerspectiveImageBoundaryCollection)modelManager.getModel(getImageBoundaryCollectionModelName());
+//        model.removeAllBoundaries();
 
         for (int i=startId; i<endId; ++i)
         {
@@ -717,7 +709,7 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
                 //                ImageKey key = new ImageKey(boundaryName, sourceOfLastQuery, instrument);
 
                 ImageKey key = createImageKey(boundaryName, sourceOfLastQuery, instrument);
-                model.addBoundary(key);
+//                model.addBoundary(key);
 
                 //                List<ImageKey> keys = createImageKeys(boundaryName, sourceOfLastQuery, instrument);
                 //                for (ImageKey key : keys)
@@ -976,77 +968,77 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
 
     public void propertyChange(PropertyChangeEvent evt)
     {
-        if (Properties.MODEL_PICKED.equals(evt.getPropertyName()))
-        {
-            PickEvent e = (PickEvent)evt.getNewValue();
-            Model model = modelManager.getModel(e.getPickedProp());
-            if (model instanceof ImageCollection || model instanceof PerspectiveImageBoundaryCollection)
-            {
-                String name = null;
-
-                if (model instanceof ImageCollection)
-                    name = ((ImageCollection)model).getImageName((vtkActor)e.getPickedProp());
-                else if (model instanceof PerspectiveImageBoundaryCollection)
-                    name = ((PerspectiveImageBoundaryCollection)model).getBoundaryName((vtkActor)e.getPickedProp());
-
-                int idx = -1;
-                int size = imageRawResults.size();
-                for (int i=0; i<size; ++i)
-                {
-                    // Ignore extension (The name returned from getImageName or getBoundary
-                    // is the same as the first element of each list with the imageRawResults
-                    // but without the extension).
-                    String imagePath = imageRawResults.get(i).get(0);
-                    imagePath = imagePath.substring(0, imagePath.lastIndexOf("."));
-                    if (name.equals(imagePath))
-                    {
-                        idx = i;
-                        break;
-                    }
-                }
-
-                if (idx >= 0)
-                {
-                    resultList.setRowSelectionInterval(idx, idx);
-                    Rectangle cellBounds = resultList.getCellRect(idx, 0, true);
-                    if (cellBounds != null)
-                        resultList.scrollRectToVisible(cellBounds);
-                }
-            }
-        }
-        else if (Properties.MODEL_CHANGED.equals(evt.getPropertyName()))
-        {
-            resultList.getModel().removeTableModelListener(this);
-            int size = imageRawResults.size();
-            ImageCollection images = (ImageCollection)modelManager.getModel(getImageCollectionModelName());
-            PerspectiveImageBoundaryCollection boundaries = (PerspectiveImageBoundaryCollection)modelManager.getModel(getImageBoundaryCollectionModelName());
-            for (int i=0; i<size; ++i)
-            {
-                String name = imageRawResults.get(i).get(0);
-                //                ImageKey key = new ImageKey(name.substring(0, name.length()-4), sourceOfLastQuery, instrument);
-                ImageKeyInterface key = createImageKey(name.substring(0, name.length()-4), sourceOfLastQuery, instrument);
-                if (images.containsImage(key))
-                {
-                    resultList.setValueAt(true, i, mapColumnIndex);
-                    PerspectiveImage image = (PerspectiveImage) images.getImage(key);
-                    resultList.setValueAt(image.isVisible(), i, showFootprintColumnIndex);
-                    resultList.setValueAt(image.isFrustumShowing(), i, frusColumnIndex);
-                }
-                else
-                {
-                    resultList.setValueAt(false, i, mapColumnIndex);
-                    resultList.setValueAt(false, i, showFootprintColumnIndex);
-                    resultList.setValueAt(false, i, frusColumnIndex);
-                }
-                if (boundaries.containsBoundary(key))
-                    resultList.setValueAt(true, i, bndrColumnIndex);
-                else
-                    resultList.setValueAt(false, i, bndrColumnIndex);
-            }
-            resultList.getModel().addTableModelListener(this);
-            // Repaint the list in case the boundary colors has changed
-            resultList.repaint();
-        }
+//        if (Properties.MODEL_PICKED.equals(evt.getPropertyName()))
+//        {
+//            PickEvent e = (PickEvent)evt.getNewValue();
+//            Model model = modelManager.getModel(e.getPickedProp());
+//            if (model instanceof ImageCollection || model instanceof PerspectiveImageBoundaryCollection)
+//            {
+//                String name = null;
+//
+//                if (model instanceof ImageCollection)
+//                    name = ((ImageCollection)model).getImageName((vtkActor)e.getPickedProp());
+//                else if (model instanceof PerspectiveImageBoundaryCollection)
+//                    name = ((PerspectiveImageBoundaryCollection)model).getBoundaryName((vtkActor)e.getPickedProp());
+//
+//                int idx = -1;
+//                int size = imageRawResults.size();
+//                for (int i=0; i<size; ++i)
+//                {
+//                    // Ignore extension (The name returned from getImageName or getBoundary
+//                    // is the same as the first element of each list with the imageRawResults
+//                    // but without the extension).
+//                    String imagePath = imageRawResults.get(i).get(0);
+//                    imagePath = imagePath.substring(0, imagePath.lastIndexOf("."));
+//                    if (name.equals(imagePath))
+//                    {
+//                        idx = i;
+//                        break;
+//                    }
+//                }
+//
+//                if (idx >= 0)
+//                {
+//                    resultList.setRowSelectionInterval(idx, idx);
+//                    Rectangle cellBounds = resultList.getCellRect(idx, 0, true);
+//                    if (cellBounds != null)
+//                        resultList.scrollRectToVisible(cellBounds);
+//                }
+//            }
+//        }
+//        else if (Properties.MODEL_CHANGED.equals(evt.getPropertyName()))
+//        {
+//            resultList.getModel().removeTableModelListener(this);
+//            int size = imageRawResults.size();
+//            ImageCollection images = (ImageCollection)modelManager.getModel(getImageCollectionModelName());
+////            PerspectiveImageBoundaryCollection boundaries = (PerspectiveImageBoundaryCollection)modelManager.getModel(getImageBoundaryCollectionModelName());
+//            for (int i=0; i<size; ++i)
+//            {
+//                String name = imageRawResults.get(i).get(0);
+//                //                ImageKey key = new ImageKey(name.substring(0, name.length()-4), sourceOfLastQuery, instrument);
+//                ImageKeyInterface key = createImageKey(name.substring(0, name.length()-4), sourceOfLastQuery, instrument);
+//                if (images.containsImage(key))
+//                {
+//                    resultList.setValueAt(true, i, mapColumnIndex);
+//                    PerspectiveImage image = (PerspectiveImage) images.getImage(key);
+//                    resultList.setValueAt(image.isVisible(), i, showFootprintColumnIndex);
+//                    resultList.setValueAt(image.isFrustumShowing(), i, frusColumnIndex);
+//                }
+//                else
+//                {
+//                    resultList.setValueAt(false, i, mapColumnIndex);
+//                    resultList.setValueAt(false, i, showFootprintColumnIndex);
+//                    resultList.setValueAt(false, i, frusColumnIndex);
+//                }
+////                if (boundaries.containsBoundary(key))
+//                    resultList.setValueAt(true, i, bndrColumnIndex);
+////                else
+//                    resultList.setValueAt(false, i, bndrColumnIndex);
+//            }
+//            resultList.getModel().addTableModelListener(this);
+//            // Repaint the list in case the boundary colors has changed
+//            resultList.repaint();
+//        }
     }
 
     /** This method is called from within the constructor to
@@ -2537,8 +2529,8 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
 
     private void removeAllButtonActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_removeAllButtonActionPerformed
     {//GEN-HEADEREND:event_removeAllButtonActionPerformed
-        PerspectiveImageBoundaryCollection model = (PerspectiveImageBoundaryCollection)modelManager.getModel(getImageBoundaryCollectionModelName());
-        model.removeAllBoundaries();
+//        PerspectiveImageBoundaryCollection model = (PerspectiveImageBoundaryCollection)modelManager.getModel(getImageBoundaryCollectionModelName());
+//        model.removeAllBoundaries();
         resultIntervalCurrentlyShown = null;
     }//GEN-LAST:event_removeAllButtonActionPerformed
 
@@ -3170,69 +3162,69 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
             int row = e.getFirstRow();
             String name = imageRawResults.get(row).get(0);
             ImageKey key = createImageKey(name.substring(0, name.length()-4), sourceOfLastQuery, instrument);
-            try
-            {
-                PerspectiveImageBoundaryCollection boundaries = (PerspectiveImageBoundaryCollection)modelManager.getModel(getImageBoundaryCollectionModelName());
-                if (!boundaries.containsBoundary(key))
-                    boundaries.addBoundary(key);
-                else
-                    boundaries.removeBoundary(key);
-            }
-            catch (Exception e1) {
-                JOptionPane.showMessageDialog(JOptionPane.getFrameForComponent(this),
-                        "There was an error mapping the boundary.",
-                        "Error",
-                        JOptionPane.ERROR_MESSAGE);
-
-                e1.printStackTrace();
-            }
+//            try
+//            {
+//                PerspectiveImageBoundaryCollection boundaries = (PerspectiveImageBoundaryCollection)modelManager.getModel(getImageBoundaryCollectionModelName());
+//                if (!boundaries.containsBoundary(key))
+//                    boundaries.addBoundary(key);
+//                else
+//                    boundaries.removeBoundary(key);
+//            }
+//            catch (Exception e1) {
+//                JOptionPane.showMessageDialog(JOptionPane.getFrameForComponent(this),
+//                        "There was an error mapping the boundary.",
+//                        "Error",
+//                        JOptionPane.ERROR_MESSAGE);
+//
+//                e1.printStackTrace();
+//            }
         }
     }
 
     public class StringRenderer extends DefaultTableCellRenderer
     {
-        PerspectiveImageBoundaryCollection model = (PerspectiveImageBoundaryCollection)modelManager.getModel(getImageBoundaryCollectionModelName());
-
-        public Component getTableCellRendererComponent(
-                JTable table, Object value,
-                boolean isSelected, boolean hasFocus,
-                int row, int column)
-        {
-            Component co = super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
-
-            String name = imageRawResults.get(row).get(0);
-            //            ImageKey key = new ImageKey(name.substring(0, name.length()-4), sourceOfLastQuery, instrument);
-            ImageKeyInterface key = createImageKey(name.substring(0, name.length()-4), sourceOfLastQuery, instrument);
-            if (model.containsBoundary(key))
-            {
-                int[] c = model.getBoundary(key).getBoundaryColor();
-                if (isSelected)
-                {
-                    co.setForeground(new Color(c[0], c[1], c[2]));
-                    co.setBackground(table.getSelectionBackground());
-                }
-                else
-                {
-                    co.setForeground(new Color(c[0], c[1], c[2]));
-                    co.setBackground(table.getBackground());
-                }
-            }
-            else
-            {
-                if (isSelected)
-                {
-                    co.setForeground(table.getSelectionForeground());
-                    co.setBackground(table.getSelectionBackground());
-                }
-                else
-                {
-                    co.setForeground(table.getForeground());
-                    co.setBackground(table.getBackground());
-                }
-            }
-
-            return co;
-        }
+//        PerspectiveImageBoundaryCollection model = (PerspectiveImageBoundaryCollection)modelManager.getModel(getImageBoundaryCollectionModelName());
+//
+//        public Component getTableCellRendererComponent(
+//                JTable table, Object value,
+//                boolean isSelected, boolean hasFocus,
+//                int row, int column)
+//        {
+//            Component co = super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
+//
+//            String name = imageRawResults.get(row).get(0);
+//            //            ImageKey key = new ImageKey(name.substring(0, name.length()-4), sourceOfLastQuery, instrument);
+//            ImageKeyInterface key = createImageKey(name.substring(0, name.length()-4), sourceOfLastQuery, instrument);
+//            if (model.containsBoundary(key))
+//            {
+//                int[] c = model.getBoundary(key).getBoundaryColor();
+//                if (isSelected)
+//                {
+//                    co.setForeground(new Color(c[0], c[1], c[2]));
+//                    co.setBackground(table.getSelectionBackground());
+//                }
+//                else
+//                {
+//                    co.setForeground(new Color(c[0], c[1], c[2]));
+//                    co.setBackground(table.getBackground());
+//                }
+//            }
+//            else
+//            {
+//                if (isSelected)
+//                {
+//                    co.setForeground(table.getSelectionForeground());
+//                    co.setBackground(table.getSelectionBackground());
+//                }
+//                else
+//                {
+//                    co.setForeground(table.getForeground());
+//                    co.setBackground(table.getBackground());
+//                }
+//            }
+//
+//            return co;
+//        }
     }
 
     public class StructuresTableModel extends DefaultTableModel
@@ -3430,20 +3422,20 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
                     }
                     result.put(selectedImagesKey, selected.build());
 
-                    // Save boundary info.
-                    PerspectiveImageBoundaryCollection boundaries = (PerspectiveImageBoundaryCollection)modelManager.getModel(getImageBoundaryCollectionModelName());
-                    ImmutableSortedMap.Builder<String, Boolean> bndr = ImmutableSortedMap.naturalOrder();
-                    for (ImageKeyInterface key : boundaries.getImageKeys())
-                    {
-                        if (instrument.equals(key.getInstrument()) && pointing.equals(key.getSource()))
-                        {
-                            PerspectiveImageBoundary boundary = boundaries.getBoundary(key);
-                            String fullName = key.getName();
-                            String name = new File(fullName).getName();
-                            bndr.put(name, boundary.isVisible());
-                        }
-                    }
-                    result.put(isBoundaryShowingKey, bndr.build());
+//                    // Save boundary info.
+//                    PerspectiveImageBoundaryCollection boundaries = (PerspectiveImageBoundaryCollection)modelManager.getModel(getImageBoundaryCollectionModelName());
+//                    ImmutableSortedMap.Builder<String, Boolean> bndr = ImmutableSortedMap.naturalOrder();
+//                    for (ImageKeyInterface key : boundaries.getImageKeys())
+//                    {
+//                        if (instrument.equals(key.getInstrument()) && pointing.equals(key.getSource()))
+//                        {
+//                            PerspectiveImageBoundary boundary = boundaries.getBoundary(key);
+//                            String fullName = key.getName();
+//                            String name = new File(fullName).getName();
+//                            bndr.put(name, boundary.isVisible());
+//                        }
+//                    }
+//                    result.put(isBoundaryShowingKey, bndr.build());
 
                     // Save mapped image information.
                     ImageCollection imageCollection = (ImageCollection) modelManager.getModel(getImageCollectionModelName());
@@ -3539,7 +3531,7 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
 
                     // Restore region selected.
                     AbstractEllipsePolygonModel selectionModel = (AbstractEllipsePolygonModel)modelManager.getModel(ModelNames.CIRCLE_SELECTION);
-                    PerspectiveImageBoundaryCollection boundaries = (PerspectiveImageBoundaryCollection)modelManager.getModel(getImageBoundaryCollectionModelName());
+//                    PerspectiveImageBoundaryCollection boundaries = (PerspectiveImageBoundaryCollection)modelManager.getModel(getImageBoundaryCollectionModelName());
 
                     selectionModel.retrieve(source.get(circleSelectionKey));
 
@@ -3559,28 +3551,28 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
                     }
 
                     // Restore boundaries. First clear any associated with this model.
-                    for (ImageKeyInterface key : boundaries.getImageKeys())
-                    {
-                        if (instrument.equals(key.getInstrument()) && pointing.equals(key.getSource()))
-                        {
-                            boundaries.removeBoundary(key);
-                        }
-                    }
-                    Map<String, Boolean> bndr = source.get(isBoundaryShowingKey);
-                    for (Entry<String, Boolean> entry : bndr.entrySet())
-                    {
-                        try
-                        {
-                            String fullName = instrument.searchQuery.getDataPath() + "/" + entry.getKey();
-                            ImageKey imageKey = createImageKey(fullName, pointing, instrument);
-                            boundaries.addBoundary(imageKey);
-                            boundaries.getBoundary(imageKey).setVisible(entry.getValue());
-                        }
-                        catch (Exception e)
-                        {
-                            e.printStackTrace();
-                        }
-                    }
+//                    for (ImageKeyInterface key : boundaries.getImageKeys())
+//                    {
+//                        if (instrument.equals(key.getInstrument()) && pointing.equals(key.getSource()))
+//                        {
+//                            boundaries.removeBoundary(key);
+//                        }
+//                    }
+//                    Map<String, Boolean> bndr = source.get(isBoundaryShowingKey);
+//                    for (Entry<String, Boolean> entry : bndr.entrySet())
+//                    {
+//                        try
+//                        {
+//                            String fullName = instrument.searchQuery.getDataPath() + "/" + entry.getKey();
+//                            ImageKey imageKey = createImageKey(fullName, pointing, instrument);
+//                            boundaries.addBoundary(imageKey);
+//                            boundaries.getBoundary(imageKey).setVisible(entry.getValue());
+//                        }
+//                        catch (Exception e)
+//                        {
+//                            e.printStackTrace();
+//                        }
+//                    }
 
                     // Restore mapped image information.
                     ImageCollection imageCollection = (ImageCollection) modelManager.getModel(getImageCollectionModelName());

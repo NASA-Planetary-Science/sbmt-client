@@ -30,6 +30,7 @@ import edu.jhuapl.sbmt.model.phobos.MEGANESpectrumMath;
 import edu.jhuapl.sbmt.model.ryugu.nirs3.NIRS3;
 import edu.jhuapl.sbmt.model.ryugu.nirs3.NIRS3Query;
 import edu.jhuapl.sbmt.model.ryugu.nirs3.NIRS3SpectrumMath;
+import edu.jhuapl.sbmt.pointing.spice.SpiceInfo;
 import edu.jhuapl.sbmt.spectrum.model.core.BasicSpectrumInstrument;
 import edu.jhuapl.sbmt.spectrum.model.core.SpectraTypeFactory;
 import edu.jhuapl.sbmt.spectrum.model.core.SpectrumInstrumentFactory;
@@ -194,6 +195,13 @@ public class SmallBodyViewConfigMetadataIO implements MetadataManager
         write(timeHistoryFile, c.timeHistoryFile, configMetadata);
         write(hasImageMap, c.hasImageMap, configMetadata);
         write(hasStateHistory, c.hasStateHistory, configMetadata);
+        if (c.spiceInfo != null)
+        	write(spiceInfo, c.spiceInfo, configMetadata);
+        if (c.stateHistoryStartDate != null)
+        {
+        	writeDate(stateHistoryStartDate, c.stateHistoryStartDate, configMetadata);
+        	writeDate(stateHistoryEndDate, c.stateHistoryEndDate, configMetadata);
+        }
         write(baseMapConfig, c.baseMapConfigName, configMetadata);
 
         write(density, c.density, configMetadata);
@@ -426,6 +434,13 @@ public class SmallBodyViewConfigMetadataIO implements MetadataManager
         c.timeHistoryFile = read(timeHistoryFile, configMetadata);
         c.hasImageMap = read(hasImageMap, configMetadata);
         c.hasStateHistory = read(hasStateHistory, configMetadata);
+        if (configMetadata.hasKey(spiceInfo))
+        	c.spiceInfo = read(spiceInfo, configMetadata);
+        if (configMetadata.hasKey(stateHistoryStartDate))
+        {
+        	c.stateHistoryStartDate = new Date(read(stateHistoryStartDate, configMetadata));
+        	c.stateHistoryEndDate = new Date(read(stateHistoryEndDate, configMetadata));
+        }
         c.baseMapConfigName = read(baseMapConfig, configMetadata);
 
         c.density = read(density, configMetadata);
@@ -644,6 +659,9 @@ public class SmallBodyViewConfigMetadataIO implements MetadataManager
     final Key<String> timeHistoryFile = Key.of("timeHistoryFile");
     final Key<Boolean> hasImageMap = Key.of("hasImageMap");
     final Key<Boolean> hasStateHistory = Key.of("hasStateHistory");
+    final Key<SpiceInfo> spiceInfo = Key.of("spiceInfo");
+    final Key<Long> stateHistoryStartDate = Key.of("stateHistoryStartDate");
+    final Key<Long> stateHistoryEndDate = Key.of("stateHistoryEndDate");
     final Key<String[]> presentInMissions = Key.of("presentInMissions");
     final Key<String[]> defaultForMissions = Key.of("defaultForMissions");
     final Key<String> baseMapConfig = Key.of("baseMapConfig");

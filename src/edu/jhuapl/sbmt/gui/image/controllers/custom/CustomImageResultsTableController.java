@@ -39,10 +39,10 @@ import edu.jhuapl.sbmt.gui.image.model.custom.CustomCylindricalImageKey;
 import edu.jhuapl.sbmt.gui.image.model.custom.CustomImagesModel;
 import edu.jhuapl.sbmt.gui.image.model.custom.CustomPerspectiveImageKey;
 import edu.jhuapl.sbmt.gui.image.ui.custom.CustomImageImporterDialog.ProjectionType;
+import edu.jhuapl.sbmt.model.image.Image;
 import edu.jhuapl.sbmt.model.image.ImageCollection;
 import edu.jhuapl.sbmt.model.image.ImageKeyInterface;
 import edu.jhuapl.sbmt.model.image.ImagingInstrument;
-import edu.jhuapl.sbmt.model.image.PerspectiveImageBoundaryCollection;
 import edu.jhuapl.sbmt.model.image.perspectiveImage.PerspectiveImage;
 
 public class CustomImageResultsTableController extends ImageResultsTableController
@@ -56,7 +56,6 @@ public class CustomImageResultsTableController extends ImageResultsTableControll
         super(instrument, imageCollection, model, renderer, infoPanelManager, spectrumPanelManager);
         this.model = model;
         this.results = model.getCustomImages();
-        this.boundaries = (PerspectiveImageBoundaryCollection)model.getModelManager().getModel(model.getImageBoundaryCollectionModelName());
     }
 
     @Override
@@ -74,7 +73,6 @@ public class CustomImageResultsTableController extends ImageResultsTableControll
         tableModelListener = new CustomImageResultsTableModeListener();
         imageResultsTableView.getResultList().getModel().addTableModelListener(tableModelListener);
         this.imageCollection.removePropertyChangeListener(propertyChangeListener);
-        boundaries.removePropertyChangeListener(propertyChangeListener);
         propertyChangeListener = new CustomImageResultsPropertyChangeListener();
 
         this.imageResultsTableView.addComponentListener(new ComponentListener()
@@ -84,7 +82,6 @@ public class CustomImageResultsTableController extends ImageResultsTableControll
 			public void componentShown(ComponentEvent e)
 			{
 				imageCollection.addPropertyChangeListener(propertyChangeListener);
-				boundaries.addPropertyChangeListener(propertyChangeListener);
 			}
 
 			@Override
@@ -105,7 +102,6 @@ public class CustomImageResultsTableController extends ImageResultsTableControll
 			public void componentHidden(ComponentEvent e)
 			{
 				imageCollection.removePropertyChangeListener(propertyChangeListener);
-		        boundaries.removePropertyChangeListener(propertyChangeListener);
 			}
 		});
 
@@ -333,12 +329,10 @@ public class CustomImageResultsTableController extends ImageResultsTableControll
     {
         if (idPair == null)
         {
-            boundaries.removeAllBoundaries();
             return;
         }
         int startId = idPair.id1;
         int endId = idPair.id2;
-        boundaries.removeAllBoundaries();
         model.setResultIntervalCurrentlyShown(idPair);
         for (int i=startId; i<endId; ++i)
         {
@@ -358,8 +352,15 @@ public class CustomImageResultsTableController extends ImageResultsTableControll
         			        key.getImageFilename(), key.getSource(), key.getImageType(), //
         			        ((CustomPerspectiveImageKey)key).getRotation(), ((CustomPerspectiveImageKey)key).getFlip(), //
         			        key.getFileType(), key.getPointingFile(), key.getDate(), key.getOriginalName());
-                    boundaries.addBoundary(info);
-
+        			Image image = imageCollection.getImage(key);
+                    if (image != null)
+                    	image.setBoundaryVisibility(true);
+                    else
+                    {
+                    	imageCollection.addImage(info);
+                    	imageCollection.getImage(info).setVisible(false);
+                    	imageCollection.getImage(info).setBoundaryVisibility(true);
+                    }
         		}
         		else
         		{
@@ -451,15 +452,7 @@ public class CustomImageResultsTableController extends ImageResultsTableControll
                 resultList.setValueAt(false, i, imageResultsTableView.getShowFootprintColumnIndex());
                 resultList.setValueAt(false, i, imageResultsTableView.getFrusColumnIndex());
             }
-
-            if (boundaries.containsBoundary(info))
-            {
-                resultList.setValueAt(true, i, imageResultsTableView.getBndrColumnIndex());
-            }
-            else
-            {
-                resultList.setValueAt(false, i, imageResultsTableView.getBndrColumnIndex());
-            }
+            resultList.setValueAt(imageCollection.getImage(info).isBoundaryVisible(), i, imageResultsTableView.getBndrColumnIndex());
         }
         imageResultsTableView.getResultList().getModel().addTableModelListener(tableModelListener);
         // Repaint the list in case the boundary colors has changed
@@ -592,10 +585,9 @@ public class CustomImageResultsTableController extends ImageResultsTableControll
                     {
                         throw new AssertionError("Image type mismatch");
                     }
-                    if (!boundaries.containsBoundary(key))
-                        boundaries.addBoundary(key);
-                    else
-                        boundaries.removeBoundary(key);
+                	boolean visible = (Boolean) imageResultsTableView.getResultList().getValueAt(row, imageResultsTableView.getBndrColumnIndex());
+                	Image image = imageCollection.getImage(key);
+                	image.setBoundaryVisibility(visible);
                 }
                 catch (Exception e1) {
                     JOptionPane.showMessageDialog(JOptionPane.getFrameForComponent(imageResultsTableView),
@@ -606,7 +598,6 @@ public class CustomImageResultsTableController extends ImageResultsTableControll
                     e1.printStackTrace();
                 }
             }
-
         }
     }
 

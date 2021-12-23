@@ -66,7 +66,6 @@ import edu.jhuapl.sbmt.gui.image.controllers.images.ContrastSlider;
 import edu.jhuapl.sbmt.gui.image.controllers.images.OfflimbControlsController;
 import edu.jhuapl.sbmt.model.image.Image;
 import edu.jhuapl.sbmt.model.image.ImageCollection;
-import edu.jhuapl.sbmt.model.image.PerspectiveImageBoundaryCollection;
 import edu.jhuapl.sbmt.model.image.perspectiveImage.PerspectiveImage;
 
 
@@ -78,7 +77,6 @@ public class ImageInfoPanel extends ModelInfoWindow implements MouseListener, Mo
     private vtkJoglPanelComponent renWin;
     private Image image;
     private ImageCollection imageCollection;
-    private PerspectiveImageBoundaryCollection imageBoundaryCollection;
     private vtkImageSlice actor;
     private vtkImageReslice reslice;
     private vtkPropPicker imagePicker;
@@ -90,7 +88,6 @@ public class ImageInfoPanel extends ModelInfoWindow implements MouseListener, Mo
     public ImageInfoPanel(
             final Image image,
             ImageCollection imageCollection,
-            PerspectiveImageBoundaryCollection imageBoundaryCollection,
             LegacyStatusHandler aStatusHandler)
     {
         this.image = image;
@@ -98,7 +95,6 @@ public class ImageInfoPanel extends ModelInfoWindow implements MouseListener, Mo
         initComponents();
 
         this.imageCollection = imageCollection;
-        this.imageBoundaryCollection = imageBoundaryCollection;
         refStatusHandler = aStatusHandler;
 
         renWin = new vtkJoglPanelComponent();
@@ -335,7 +331,7 @@ public class ImageInfoPanel extends ModelInfoWindow implements MouseListener, Mo
          * from that class and put these in our new JMenu.
          */
         ImagePopupMenu imagesPopupMenu =
-            new ImagePopupMenu(null, imageCollection, imageBoundaryCollection, null, null, null, this);
+            new ImagePopupMenu(null, imageCollection, null, null, null, this);
 
         imagesPopupMenu.setCurrentImage(image.getKey());
 

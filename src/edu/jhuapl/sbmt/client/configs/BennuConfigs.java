@@ -34,6 +34,7 @@ import edu.jhuapl.sbmt.model.image.ImageType;
 import edu.jhuapl.sbmt.model.image.ImagingInstrument;
 import edu.jhuapl.sbmt.model.image.Instrument;
 import edu.jhuapl.sbmt.model.image.SpectralImageMode;
+import edu.jhuapl.sbmt.pointing.spice.SpiceInfo;
 import edu.jhuapl.sbmt.query.QueryBase;
 import edu.jhuapl.sbmt.query.database.GenericPhpQuery;
 import edu.jhuapl.sbmt.query.fixedlist.FixedListQuery;
@@ -462,8 +463,7 @@ public class BennuConfigs extends SmallBodyViewConfig
             c.lidarBrowseBinaryRecordSize = 186;
             c.lidarOffsetScale = 0.0005;
 
-            c.hasStateHistory = true;
-            c.timeHistoryFile = c.rootDirOnServer + "/history/timeHistory.bth";
+            c.generateStateHistoryParameters();
 
             c.dtmBrowseDataSourceMap.put("Default", "bennu/bennu-simulated-v4/dtm/browse/fileList.txt");
 
@@ -495,8 +495,7 @@ public class BennuConfigs extends SmallBodyViewConfig
             c.imagingInstruments = new ImagingInstrument[] { c.generatePolycamInstrument("bennu_altwgspcv20181109b_polycam", "bennu_altwgspcv20181109b_polycam", true, false, true),
             												 c.generateMapcamInstrument("bennu_altwgspcv20181109b_mapcam", "bennu_altwgspcv20181109b_mapcam", true, false, true)
             };
-            c.hasStateHistory = true;
-            c.timeHistoryFile = c.rootDirOnServer + "/history/timeHistory.bth";
+            c.generateStateHistoryParameters();
 
             c.hasMapmaker = false;
             c.dtmBrowseDataSourceMap.put("Default", "bennu/bennu-simulated-v4/dtm/browse/fileList.txt");
@@ -539,16 +538,12 @@ public class BennuConfigs extends SmallBodyViewConfig
                             )
             };
 
-            c.hasStateHistory = true;
-            c.timeHistoryFile = c.rootDirOnServer + "/history/timeHistory.bth";
+            c.generateStateHistoryParameters();
 
             c.hasMapmaker = false;
 
             c.setSpectrumParameters();
             c.setLidarParameters(true);
-
-            c.hasStateHistory = true;
-            c.timeHistoryFile = c.rootDirOnServer + "/history/timeHistory.bth";
 
             c.hasMapmaker = false;
         	c.presentInMissions = new SbmtMultiMissionTool.Mission[] {};
@@ -587,8 +582,7 @@ public class BennuConfigs extends SmallBodyViewConfig
                             Instrument.MAPCAM
                             )
             };
-            c.hasStateHistory = true;
-            c.timeHistoryFile = c.rootDirOnServer + "/history/timeHistory.bth";
+            c.generateStateHistoryParameters();
 
             c.hasMapmaker = false;
             c.setSpectrumParameters();
@@ -631,8 +625,7 @@ public class BennuConfigs extends SmallBodyViewConfig
             };
 
             c.setSpectrumParameters();
-            c.hasStateHistory = true;
-            c.timeHistoryFile = c.rootDirOnServer + "/history/timeHistory.bth";
+            c.generateStateHistoryParameters();
             c.hasMapmaker = false;
             c.setLidarParameters(true);
 			c.presentInMissions = new SbmtMultiMissionTool.Mission[] {};
@@ -672,8 +665,7 @@ public class BennuConfigs extends SmallBodyViewConfig
             };
 
             c.setSpectrumParameters();
-      		c.hasStateHistory = true;
-      		c.timeHistoryFile = c.rootDirOnServer + "/history/timeHistory.bth";
+            c.generateStateHistoryParameters();
 
       		c.hasMapmaker = false;
 
@@ -715,8 +707,7 @@ public class BennuConfigs extends SmallBodyViewConfig
             };
 
             c.setSpectrumParameters();
-      		c.hasStateHistory = true;
-      		c.timeHistoryFile = c.rootDirOnServer + "/history/timeHistory.bth";
+            c.generateStateHistoryParameters();
       		c.hasMapmaker = false;
             c.setLidarParameters(false);
 			c.presentInMissions = new SbmtMultiMissionTool.Mission[] {};
@@ -748,8 +739,7 @@ public class BennuConfigs extends SmallBodyViewConfig
 
             c.setSpectrumParameters();
             c.hasHypertreeBasedSpectraSearch = true;
-            c.hasStateHistory = true;
-            c.timeHistoryFile = c.rootDirOnServer + "/history/timeHistory.bth";
+            c.generateStateHistoryParameters();
 
             c.hasMapmaker = false;
 
@@ -807,8 +797,7 @@ public class BennuConfigs extends SmallBodyViewConfig
 
             c.setSpectrumParameters();
             c.hasHypertreeBasedSpectraSearch = true;
-            c.hasStateHistory = true;
-            c.timeHistoryFile = c.rootDirOnServer + "/history/timeHistory.bth";
+            c.generateStateHistoryParameters();
 
             c.hasMapmaker = false;
 
@@ -863,8 +852,7 @@ public class BennuConfigs extends SmallBodyViewConfig
 
             c.dtmBrowseDataSourceMap.put("Default", "bennu/altwg-spc-v20190105/dtm/browse/fileList.txt");
 
-            c.hasStateHistory = true;
-            c.timeHistoryFile = c.rootDirOnServer + "/history/timeHistory.bth";
+            c.generateStateHistoryParameters();
 
             c.hasMapmaker = false;
 
@@ -909,8 +897,7 @@ public class BennuConfigs extends SmallBodyViewConfig
 
             c.setSpectrumParameters();
 
-            c.hasStateHistory = true;
-            c.timeHistoryFile = c.rootDirOnServer + "/history/timeHistory.bth";
+            c.generateStateHistoryParameters();
 
             c.hasMapmaker = false;
 
@@ -957,8 +944,7 @@ public class BennuConfigs extends SmallBodyViewConfig
 
             c.setSpectrumParameters();
 
-            c.hasStateHistory = true;
-            c.timeHistoryFile = c.rootDirOnServer + "/history/timeHistory.bth";
+            c.generateStateHistoryParameters();
 
             c.hasMapmaker = false;
 
@@ -1008,8 +994,7 @@ public class BennuConfigs extends SmallBodyViewConfig
 
             c.setSpectrumParameters();
             c.hasHypertreeBasedSpectraSearch = true;
-            c.hasStateHistory = true;
-            c.timeHistoryFile = c.rootDirOnServer + "/history/timeHistory.bth";
+            c.generateStateHistoryParameters();
 
             c.hasMapmaker = false;
 
@@ -1074,8 +1059,7 @@ public class BennuConfigs extends SmallBodyViewConfig
 
             c.setSpectrumParameters();
 
-            c.hasStateHistory = true;
-            c.timeHistoryFile = c.rootDirOnServer + "/history/timeHistory.bth";
+            c.generateStateHistoryParameters();
 
             c.hasMapmaker = false;
 
@@ -1121,8 +1105,7 @@ public class BennuConfigs extends SmallBodyViewConfig
 
             c.setSpectrumParameters();
 
-            c.hasStateHistory = true;
-            c.timeHistoryFile = c.rootDirOnServer + "/history/timeHistory.bth";
+            c.generateStateHistoryParameters();
 
             c.hasMapmaker = false;
 
@@ -1168,8 +1151,7 @@ public class BennuConfigs extends SmallBodyViewConfig
 
             c.setSpectrumParameters();
             c.hasHypertreeBasedSpectraSearch = true;
-            c.hasStateHistory = true;
-            c.timeHistoryFile = c.rootDirOnServer + "/history/timeHistory.bth";
+            c.generateStateHistoryParameters();
 
             c.hasMapmaker = false;
 
@@ -1235,8 +1217,7 @@ public class BennuConfigs extends SmallBodyViewConfig
 
             c.setSpectrumParameters();
             c.hasHypertreeBasedSpectraSearch = true;
-            c.hasStateHistory = true;
-            c.timeHistoryFile = c.rootDirOnServer + "/history/timeHistory.bth";
+            c.generateStateHistoryParameters();
 
             c.hasMapmaker = false;
 
@@ -1301,8 +1282,7 @@ public class BennuConfigs extends SmallBodyViewConfig
 
             c.setSpectrumParameters();
             c.hasHypertreeBasedSpectraSearch = true;
-            c.hasStateHistory = true;
-            c.timeHistoryFile = c.rootDirOnServer + "/history/timeHistory.bth";
+            c.generateStateHistoryParameters();
 
             c.hasMapmaker = false;
 
@@ -1371,8 +1351,7 @@ public class BennuConfigs extends SmallBodyViewConfig
             c.setSpectrumParameters();
             c.hasHypertreeBasedSpectraSearch = true;
 
-            c.hasStateHistory = true;
-            c.timeHistoryFile = c.rootDirOnServer + "/history/timeHistory.bth";
+            c.generateStateHistoryParameters();
 
             c.hasMapmaker = false;
 
@@ -1418,8 +1397,7 @@ public class BennuConfigs extends SmallBodyViewConfig
 
             c.setSpectrumParameters();
             c.hasHypertreeBasedSpectraSearch = true;
-            c.hasStateHistory = true;
-            c.timeHistoryFile = c.rootDirOnServer + "/history/timeHistory.bth";
+            c.generateStateHistoryParameters();
 
             c.hasMapmaker = false;
 
@@ -1500,8 +1478,7 @@ public class BennuConfigs extends SmallBodyViewConfig
             												 c.generateNavcamInstrument("bennu_olav20ptm_navcam", "bennu_olav20ptm_navcam")
             };
 
-            c.hasStateHistory = true;
-            c.timeHistoryFile = c.rootDirOnServer + "/history/timeHistory.bth";
+            c.generateStateHistoryParameters();
 
             c.setSpectrumParameters();
             c.hasHypertreeBasedSpectraSearch = true;
@@ -1561,6 +1538,19 @@ public class BennuConfigs extends SmallBodyViewConfig
         }
 
     }
+
+	private void generateStateHistoryParameters()
+	{
+        hasStateHistory = true;
+        timeHistoryFile = rootDirOnServer + "/history/timeHistory.bth";
+        stateHistoryStartDate = new GregorianCalendar(2018, 10, 25, 0, 0, 0).getTime();
+        stateHistoryEndDate = new GregorianCalendar(2025, 1, 1, 0, 0, 0).getTime();
+        spiceInfo = new SpiceInfo("ORX", "IAU_BENNU", "ORX_SPACECRAFT", "BENNU",
+    			new String[] {"EARTH" , "SUN"}, new String[] {"ORX_OCAMS_POLYCAM", "ORX_OCAMS_MAPCAM",
+    															"ORX_OCAMS_SAMCAM", "ORX_NAVCAM1", "ORX_NAVCAM2",
+//    															"ORX_OTES", "ORX_OVIRS",
+    															"ORX_OLA_LOW", "ORX_OLA_HIGH"});
+	}
 
 	private ImagingInstrument generatePolycamInstrument(String spcNamePrefix, String spiceNamePrefix, boolean includeSPC, boolean includeSPICE)
 	{

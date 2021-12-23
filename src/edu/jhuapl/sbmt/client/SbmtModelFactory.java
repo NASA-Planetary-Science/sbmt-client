@@ -2,9 +2,6 @@ package edu.jhuapl.sbmt.client;
 
 import java.io.IOException;
 
-import org.joda.time.DateTime;
-
-import edu.jhuapl.saavtk.gui.render.Renderer;
 import edu.jhuapl.saavtk.model.ShapeModelBody;
 import edu.jhuapl.saavtk.model.ShapeModelType;
 import edu.jhuapl.sbmt.dtm.model.DEM;
@@ -52,8 +49,6 @@ import edu.jhuapl.sbmt.model.ryugu.tir.TIRImage;
 import edu.jhuapl.sbmt.model.saturnmoon.SaturnMoonImage;
 import edu.jhuapl.sbmt.model.simple.Sbmt2SimpleSmallBody;
 import edu.jhuapl.sbmt.model.simple.SimpleSmallBody;
-import edu.jhuapl.sbmt.model.time.StateHistoryModel;
-import edu.jhuapl.sbmt.model.time.StateHistoryModel.StateHistoryKey;
 import edu.jhuapl.sbmt.model.vesta.FcImage;
 import edu.jhuapl.sbmt.model.vesta_old.VestaOld;
 
@@ -70,17 +65,18 @@ public class SbmtModelFactory
 //        return new SimulationRun(key, smallBodyModel);
 //    }
 
-    static public StateHistoryModel createStateHistory(
-            StateHistoryKey key,
-            DateTime start,
-            DateTime end,
-            SmallBodyModel smallBodyModel,
-            Renderer renderer,
-            boolean loadPointingOnly) throws FitsException, IOException
-    {
-        SmallBodyViewConfig config = (SmallBodyViewConfig)smallBodyModel.getSmallBodyConfig();
-        return new StateHistoryModel(key, start, end, smallBodyModel, renderer);
-    }
+//    static public StateHistoryModel createStateHistory(
+//            StateHistoryKey key,
+//            SmallBodyModel smallBodyModel,
+//            ModelManager modelManager,
+//            Renderer renderer,
+//            boolean loadPointingOnly) throws FitsException, IOException, StateHistoryInputException, StateHistoryInvalidTimeException
+//    {
+//        SmallBodyViewConfig config = (SmallBodyViewConfig)smallBodyModel.getSmallBodyConfig();
+//		StateHistoryCollection runs = (StateHistoryCollection) modelManager.getModel(ModelNames.STATE_HISTORY_COLLECTION);
+//
+//        return new StateHistoryModel(smallBodyModel, renderer, runs);
+//    }
 
     static public Image createImage(
             ImageKeyInterface key,
@@ -109,7 +105,7 @@ public class SbmtModelFactory
                     return new LEISAJupiterImage(key, smallBodyModel, loadPointingOnly);
                 else
                     return null;
-            }
+            } 
             else // SpectralMode.MONO
             {
                 if (key.getInstrument().getType() == ImageType.MSI_IMAGE)
@@ -138,7 +134,7 @@ public class SbmtModelFactory
                     return new MSIMathildeImage(key, smallBodyModel, loadPointingOnly);
                 else if (key.getInstrument().getType() == ImageType.LORRI_IMAGE)
                     return new LorriImage(key, smallBodyModel, loadPointingOnly);
-                else if (key.getInstrument().getType() == ImageType.POLYCAM_V3_IMAGE)
+                else if (key.getInstrument().getType() == ImageType.POLYCAM_V3_IMAGE) 
                     return new PolyCamImage(key, smallBodyModel, loadPointingOnly);
                 else if (key.getInstrument().getType() == ImageType.MAPCAM_V3_IMAGE)
                     return new MapCamImage(key, smallBodyModel, loadPointingOnly);

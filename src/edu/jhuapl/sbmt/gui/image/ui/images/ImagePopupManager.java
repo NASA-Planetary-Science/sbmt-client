@@ -8,7 +8,6 @@ import edu.jhuapl.saavtk.popup.PopupMenu;
 import edu.jhuapl.sbmt.client.SbmtInfoWindowManager;
 import edu.jhuapl.sbmt.client.SbmtSpectrumWindowManager;
 import edu.jhuapl.sbmt.model.image.ImageCollection;
-import edu.jhuapl.sbmt.model.image.PerspectiveImageBoundaryCollection;
 
 /**
  * This class is responsible for the creation of popups and for the routing of
@@ -22,9 +21,7 @@ public class ImagePopupManager extends PopupManager
 		super(modelManager);
 
 		ImageCollection imageCollection = (ImageCollection) modelManager.getModel(ModelNames.IMAGES);
-		PerspectiveImageBoundaryCollection imageBoundaries = (PerspectiveImageBoundaryCollection) modelManager
-				.getModel(ModelNames.PERSPECTIVE_IMAGE_BOUNDARIES);
-		PopupMenu popupMenu = new ImagePopupMenu(modelManager, imageCollection, imageBoundaries, infoPanelManager,
+		PopupMenu popupMenu = new ImagePopupMenu(modelManager, imageCollection, infoPanelManager,
 				spectrumPanelManager, renderer, renderer);
 		registerPopup(modelManager.getModel(ModelNames.IMAGES), popupMenu);
 	}

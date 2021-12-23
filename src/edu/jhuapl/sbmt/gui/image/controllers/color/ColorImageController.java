@@ -34,7 +34,6 @@ import edu.jhuapl.sbmt.model.image.ColorImage.ColorImageKey;
 import edu.jhuapl.sbmt.model.image.ColorImage.NoOverlapException;
 import edu.jhuapl.sbmt.model.image.ColorImageCollection;
 import edu.jhuapl.sbmt.model.image.ImageKeyInterface;
-import edu.jhuapl.sbmt.model.image.PerspectiveImageBoundaryCollection;
 
 import nom.tam.fits.FitsException;
 
@@ -45,7 +44,7 @@ public class ColorImageController
     private ColorImageGenerationPanel panel;
     private SbmtInfoWindowManager infoPanelManager;
     private StringRenderer stringRenderer;
-    private PerspectiveImageBoundaryCollection boundaries;
+//    private PerspectiveImageBoundaryCollection boundaries;
     private ColorImageResultsTableModeListener tableModelListener;
     private ColorImageResultsPropertyChangeListener propertyChangeListener;
     private ColorImageCollection colorImages;
@@ -109,13 +108,10 @@ public class ColorImageController
 
     private void setupPanel()
     {
-        boundaries = (PerspectiveImageBoundaryCollection)model.getModelManager().getModel(colorModel.getImageBoundaryCollectionModelName());
-
-        ColorImagePopupMenu colorImagePopupMenu = new ColorImagePopupMenu(colorImages, boundaries, infoPanelManager, model.getModelManager(), renderer, panel);
+        ColorImagePopupMenu colorImagePopupMenu = new ColorImagePopupMenu(colorImages, /*boundaries,*/ infoPanelManager, model.getModelManager(), renderer, panel);
         panel.setColorImagePopupMenu(colorImagePopupMenu);
 
         colorImages.addPropertyChangeListener(propertyChangeListener);
-        boundaries.addPropertyChangeListener(propertyChangeListener);
 
         panel.getRemoveColorImageButton().setText("Remove Color Image");
         panel.getRemoveColorImageButton().addActionListener(new java.awt.event.ActionListener() {

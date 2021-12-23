@@ -34,7 +34,6 @@ import edu.jhuapl.sbmt.model.image.ImageCollection;
 import edu.jhuapl.sbmt.model.image.ImageCube;
 import edu.jhuapl.sbmt.model.image.ImageCube.ImageCubeKey;
 import edu.jhuapl.sbmt.model.image.ImageCubeCollection;
-import edu.jhuapl.sbmt.model.image.PerspectiveImageBoundaryCollection;
 
 import nom.tam.fits.FitsException;
 
@@ -51,7 +50,6 @@ public class ImageCubeController
     private StringRenderer stringRenderer;
     private ImageCubeResultsTableModeListener tableModelListener;
     private ImageCubeResultsPropertyChangeListener propertyChangeListener;
-    private PerspectiveImageBoundaryCollection boundaries;
 
     public ImageCubeController(ImageSearchModel model,
             ImageCubeModel cubeModel,
@@ -137,9 +135,8 @@ public class ImageCubeController
 
     protected void setupPanel()
     {
-        boundaries = (PerspectiveImageBoundaryCollection)model.getModelManager().getModel(cubeModel.getImageBoundaryCollectionModelName());
         imageCubes = (ImageCubeCollection)model.getModelManager().getModel(cubeModel.getImageCubeCollectionModelName());
-        imageCubePopupMenu = new ImageCubePopupMenu(imageCubes, boundaries, infoPanelManager, spectrumPanelManager, renderer, panel);
+        imageCubePopupMenu = new ImageCubePopupMenu(imageCubes, infoPanelManager, spectrumPanelManager, renderer, panel);
 
         panel.getRemoveImageCubeButton().setText("Remove Image Cube");
         panel.getRemoveImageCubeButton().addActionListener(new ActionListener() {
