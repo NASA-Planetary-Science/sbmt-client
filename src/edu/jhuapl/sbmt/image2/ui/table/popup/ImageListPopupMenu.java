@@ -26,7 +26,6 @@ import edu.jhuapl.sbmt.image2.ui.table.popup.rendering.MapBoundaryAction;
 import edu.jhuapl.sbmt.image2.ui.table.popup.rendering.MapImageAction;
 import edu.jhuapl.sbmt.image2.ui.table.popup.rendering.ShowFrustumAction;
 import edu.jhuapl.sbmt.image2.ui.table.popup.rendering.SimulateLightingAction;
-import edu.jhuapl.sbmt.model.image.PerspectiveImageBoundaryCollection;
 
 import glum.gui.action.PopupMenu;
 
@@ -36,7 +35,7 @@ public class ImageListPopupMenu<G1 extends IPerspectiveImage  & IPerspectiveImag
 	public ImageListPopupMenu(
             ModelManager modelManager,
             PerspectiveImageCollection aManager,
-            PerspectiveImageBoundaryCollection imageBoundaryCollection,
+//            PerspectiveImageBoundaryCollection imageBoundaryCollection,
             SbmtInfoWindowManager infoPanelManager,
             SbmtSpectrumWindowManager spectrumPanelManager,
             Renderer renderer,

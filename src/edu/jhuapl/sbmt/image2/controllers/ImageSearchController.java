@@ -28,7 +28,6 @@ import edu.jhuapl.sbmt.image2.model.PerspectiveImageCollection;
 import edu.jhuapl.sbmt.image2.ui.custom.CustomImageImporterDialog;
 import edu.jhuapl.sbmt.image2.ui.table.popup.ImageListPopupMenu;
 import edu.jhuapl.sbmt.model.image.IImagingInstrument;
-import edu.jhuapl.sbmt.model.image.PerspectiveImageBoundaryCollection;
 
 import glum.gui.action.PopupMenu;
 
@@ -61,11 +60,11 @@ public class ImageSearchController implements PickListener //implements Controll
         this.searchParametersController.setupSearchParametersPanel();
         pane = new JTabbedPane();
         //TODO update this
-        PerspectiveImageBoundaryCollection boundaries = (PerspectiveImageBoundaryCollection) modelManager.getModel(ModelNames.PERSPECTIVE_IMAGE_BOUNDARIES);
+//        PerspectiveImageBoundaryCollection boundaries = (PerspectiveImageBoundaryCollection) modelManager.getModel(ModelNames.PERSPECTIVE_IMAGE_BOUNDARIES);
         SmallBodyModel smallBodyModel = (SmallBodyModel)modelManager.getModel(ModelNames.SMALL_BODY);
         smallBodyModels = List.of(smallBodyModel);
         popupMenu =
-        		new ImageListPopupMenu(modelManager, collection, boundaries, infoPanelManager,
+        		new ImageListPopupMenu(modelManager, collection, infoPanelManager,
         							spectrumPanelManager, renderer, panel);
         this.imageListTableController = new ImageListTableController(collection, popupMenu);
         this.customImageListTableController = new CustomImageListTableController(collection, popupMenu);
