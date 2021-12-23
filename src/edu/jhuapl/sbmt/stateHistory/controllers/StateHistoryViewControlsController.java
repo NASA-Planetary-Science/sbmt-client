@@ -1,7 +1,6 @@
 package edu.jhuapl.sbmt.stateHistory.controllers;
 
 import javax.swing.JPanel;
-import javax.swing.JScrollPane;
 import javax.swing.SwingUtilities;
 
 import edu.cmu.relativelayout.Binding;
@@ -126,9 +125,12 @@ public class StateHistoryViewControlsController
     																 new Binding(Edge.BOTTOM, 300, Direction.BELOW, Edge.TOP, view)));
         view.add(viewControls.getView(), new RelativeConstraints(factory.leftEdge(), factory.rightEdge(), factory.below(displayItemsControls.getView())));
 
-        JScrollPane fovScroll = new JScrollPane();
-        fovScroll.setViewportView(fovControls.getView());
-        view.add(fovScroll, new RelativeConstraints(factory.leftEdge(), factory.rightEdge(), factory.bottomEdge(), factory.below(viewControls.getView())));
+        view.add(fovControls.getView(), new RelativeConstraints(factory.leftEdge(), factory.rightEdge(), factory.below(viewControls.getView()),
+        														new Binding(Edge.BOTTOM, 300, Direction.BELOW, Edge.TOP, fovControls.getView())));
+
+//        JScrollPane fovScroll = new JScrollPane();
+//        fovScroll.setViewportView(fovControls.getView());
+//        view.add(fovScroll, new RelativeConstraints(factory.leftEdge(), factory.rightEdge(), factory.bottomEdge(), factory.below(viewControls.getView())));
 //        														new Binding(Edge.BOTTOM, 250, Direction.BELOW, Edge.BOTTOM, viewControls.getView()), factory.below(viewControls.getView())));
 	}
 

@@ -106,7 +106,7 @@ public class StateHistoryTableView extends JPanel
 		setBorder(new TitledBorder(null, "Loaded Trajectories", TitledBorder.LEADING, TitledBorder.TOP, null, null));
 
 		JScrollPane scrollPane = new JScrollPane();
-		scrollPane.setPreferredSize(new java.awt.Dimension(150, 150));
+		scrollPane.setPreferredSize(new Dimension(150, 150));
 		add(scrollPane);
 
 		scrollPane.setViewportView(table);

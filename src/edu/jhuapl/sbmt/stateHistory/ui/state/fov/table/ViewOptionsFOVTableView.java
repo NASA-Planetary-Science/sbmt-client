@@ -2,9 +2,9 @@ package edu.jhuapl.sbmt.stateHistory.ui.state.fov.table;
 
 import java.awt.Color;
 import java.awt.Component;
+import java.awt.Dimension;
 import java.awt.event.ActionListener;
 
-import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.DefaultCellEditor;
 import javax.swing.JButton;
@@ -37,10 +37,6 @@ import glum.item.ItemManagerUtil;
 
 public class ViewOptionsFOVTableView extends JPanel
 {
-	/**
-	 * JButton to show state history in renderer
-	 */
-	private JButton showStateHistoryButton;
 
 	/**
 	 * JTable to display loaded state histories
@@ -93,8 +89,6 @@ public class ViewOptionsFOVTableView extends JPanel
 	protected void init()
 	{
 		resultList = buildTable();
-		showStateHistoryButton = new JButton("Show State History");
-		showStateHistoryButton.setEnabled(false);
 	}
 
 	/**
@@ -103,18 +97,11 @@ public class ViewOptionsFOVTableView extends JPanel
 	public void setup()
 	{
 		setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
-//		setBorder(new TitledBorder(null, "Available FOVs", TitledBorder.LEADING, TitledBorder.TOP, null, null));
-		JPanel panel_4 = new JPanel();
-		add(panel_4);
-		panel_4.setLayout(new BoxLayout(panel_4, BoxLayout.X_AXIS));
-
-		Component horizontalGlue = Box.createHorizontalGlue();
-		panel_4.add(horizontalGlue);
-
 		JScrollPane scrollPane = new JScrollPane();
-		scrollPane.setPreferredSize(new java.awt.Dimension(150, 150));
+		scrollPane.setMinimumSize(new Dimension(150, 200));
+		scrollPane.setPreferredSize(new Dimension(150, 200));
 		add(scrollPane);
-
+		resultList.setPreferredSize(new Dimension(400, 200));
 		scrollPane.setViewportView(resultList);
 	}
 
@@ -211,15 +198,6 @@ public class ViewOptionsFOVTableView extends JPanel
 		return resultList;
 	}
 
-	/**
-	 * Returns the show state history button
-	 *
-	 * @return the show state history button
-	 */
-	public JButton getShowStateHistoryButton()
-	{
-		return showStateHistoryButton;
-	}
 
 	/**
 	 * Configures the appropriate table colun width for the given expected type
