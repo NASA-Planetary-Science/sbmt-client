@@ -179,7 +179,7 @@ public class StateHistoryIntervalPlaybackPanel extends JPanel
         }
 
         timeStepTextField = new JTextField("60.0");
-        timeStepTextField.setMaximumSize( new Dimension(Integer.MAX_VALUE, timeStepTextField.getPreferredSize().height) );
+        timeStepTextField.setMaximumSize( new Dimension(100, timeStepTextField.getPreferredSize().height) );
         playPanel.add(timeStepTextField);
         timeStepTextField.setColumns(10);
 
@@ -204,7 +204,7 @@ public class StateHistoryIntervalPlaybackPanel extends JPanel
         }
 
         playbackRateTextField = new JTextField("1");
-        playbackRateTextField.setMaximumSize( new Dimension(Integer.MAX_VALUE, playbackRateTextField.getPreferredSize().height) );
+        playbackRateTextField.setMaximumSize( new Dimension(100, playbackRateTextField.getPreferredSize().height) );
         playPanel.add(playbackRateTextField);
         playbackRateTextField.setColumns(10);
 
@@ -235,7 +235,7 @@ public class StateHistoryIntervalPlaybackPanel extends JPanel
 
         timeBox = new JSpinner();
 
-        Dimension spinnerSize = new Dimension(400, 28);
+        Dimension spinnerSize = new Dimension(300, 28);
         timeBox.setMinimumSize(spinnerSize);
         timeBox.setPreferredSize(spinnerSize);
         timeBox.setMaximumSize(spinnerSize);
