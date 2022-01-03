@@ -8,7 +8,7 @@ import edu.jhuapl.sbmt.image2.model.PerspectiveImageCollection;
 
 import glum.gui.action.PopAction;
 
-public class ShowSpectrumAction<G1 extends IPerspectiveImage> extends PopAction<G1>
+public class ShowSpectralPropertiesAction<G1 extends IPerspectiveImage> extends PopAction<G1>
 {
     /**
 	 *
@@ -20,7 +20,7 @@ public class ShowSpectrumAction<G1 extends IPerspectiveImage> extends PopAction<
 	/**
 	 * @param imagePopupMenu
 	 */
-	public ShowSpectrumAction(PerspectiveImageCollection aManager, SbmtSpectrumWindowManager spectrumPanelManager)
+	public ShowSpectralPropertiesAction(PerspectiveImageCollection aManager, SbmtSpectrumWindowManager spectrumPanelManager)
 	{
 		this.aManager = aManager;
 		this.spectrumPanelManager = spectrumPanelManager;

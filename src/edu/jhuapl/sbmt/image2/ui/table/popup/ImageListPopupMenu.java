@@ -17,8 +17,10 @@ import edu.jhuapl.sbmt.image2.interfaces.IPerspectiveImageTableRepresentable;
 import edu.jhuapl.sbmt.image2.model.PerspectiveImageCollection;
 import edu.jhuapl.sbmt.image2.ui.table.popup.boundaryColor.BoundaryColorAction;
 import edu.jhuapl.sbmt.image2.ui.table.popup.export.ExportAction;
-import edu.jhuapl.sbmt.image2.ui.table.popup.properties.ShowInfoAction;
-import edu.jhuapl.sbmt.image2.ui.table.popup.properties.ShowSpectrumAction;
+import edu.jhuapl.sbmt.image2.ui.table.popup.properties.EditPointingAction;
+import edu.jhuapl.sbmt.image2.ui.table.popup.properties.ShowImagePropertiesAction;
+import edu.jhuapl.sbmt.image2.ui.table.popup.properties.ShowOffLimbSettingsAction;
+import edu.jhuapl.sbmt.image2.ui.table.popup.properties.ShowSpectralPropertiesAction;
 import edu.jhuapl.sbmt.image2.ui.table.popup.rendering.CenterImageAction;
 import edu.jhuapl.sbmt.image2.ui.table.popup.rendering.ChangeNormalOffsetAction;
 import edu.jhuapl.sbmt.image2.ui.table.popup.rendering.ChangeOpacityAction;
@@ -34,7 +36,7 @@ public class ImageListPopupMenu<G1 extends IPerspectiveImage  & IPerspectiveImag
 
 	public ImageListPopupMenu(
             ModelManager modelManager,
-            PerspectiveImageCollection aManager,
+            PerspectiveImageCollection<G1> aManager,
 //            PerspectiveImageBoundaryCollection imageBoundaryCollection,
             SbmtInfoWindowManager infoPanelManager,
             SbmtSpectrumWindowManager spectrumPanelManager,
@@ -54,14 +56,20 @@ public class ImageListPopupMenu<G1 extends IPerspectiveImage  & IPerspectiveImag
 		showHideBoundaryCBMI.setText("Show Boundary");
 		installPopAction(mapBoundaryAction, showHideBoundaryCBMI);
 
-		ShowInfoAction<G1> showInfoAction = new ShowInfoAction<G1>(aManager, infoPanelManager);
+		ShowImagePropertiesAction<G1> showInfoAction = new ShowImagePropertiesAction<G1>(aManager, infoPanelManager);
 		installPopAction(showInfoAction, "Properties...");
 
 		if (spectrumPanelManager != null)
 		{
-			ShowSpectrumAction<G1> showSpectrumAction = new ShowSpectrumAction<G1>(aManager, spectrumPanelManager);
+			ShowSpectralPropertiesAction<G1> showSpectrumAction = new ShowSpectralPropertiesAction<G1>(aManager, spectrumPanelManager);
 			installPopAction(showSpectrumAction, "Spectrum...");
 		}
+
+		EditPointingAction<G1> editPointingAction = new EditPointingAction<G1>(aManager);
+		installPopAction(editPointingAction, "Edit Image Pointing...");
+
+		ShowOffLimbSettingsAction<G1> offlimbSettingsAction = new ShowOffLimbSettingsAction<G1>(aManager);
+		installPopAction(offlimbSettingsAction, "Offlimb Settings...");
 
 //		SaveBackplanesAction<PerspectiveImage> showBackplanesAction = new SaveBackplanesAction<PerspectiveImage>(aManager);
 //		installPopAction(showBackplanesAction, "Generate Backplanes...");

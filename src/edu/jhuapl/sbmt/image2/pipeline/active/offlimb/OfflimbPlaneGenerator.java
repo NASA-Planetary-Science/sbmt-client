@@ -3,6 +3,7 @@ package edu.jhuapl.sbmt.image2.pipeline.active.offlimb;
 import java.io.IOException;
 import java.util.List;
 
+import org.apache.commons.lang3.tuple.Pair;
 import org.apache.commons.math3.geometry.euclidean.threed.Rotation;
 import org.apache.commons.math3.geometry.euclidean.threed.Vector3D;
 
@@ -14,7 +15,6 @@ import vtk.vtkImageData;
 import vtk.vtkImageToPolyDataFilter;
 import vtk.vtkPolyData;
 
-import edu.jhuapl.saavtk.util.Frustum;
 import edu.jhuapl.saavtk.util.MathUtil;
 import edu.jhuapl.sbmt.client.SmallBodyModel;
 import edu.jhuapl.sbmt.image2.modules.rendering.pointedImage.RenderablePointedImage;
@@ -23,10 +23,25 @@ import edu.jhuapl.sbmt.image2.pipeline.active.rendering.CameraOrientationPipelin
 import edu.jhuapl.sbmt.image2.pipeline.operator.BasePipelineOperator;
 import edu.jhuapl.sbmt.model.image.PointingFileReader;
 
-public class OfflimbPlaneGenerator extends BasePipelineOperator<RenderablePointedImage, vtkPolyData>
+public class OfflimbPlaneGenerator extends BasePipelineOperator<RenderablePointedImage, Pair<RenderablePointedImage, vtkPolyData>>
 {
 	double offLimbFootprintDepth;
 	private SmallBodyModel smallBodyModel;
+	private RenderablePointedImage renderableImage;
+	private vtkPolyData imagePolyData;
+	private double[] spacecraftPosition;
+    private double[] focalPoint;
+    private double[] upVector;
+    private double minFrustumRayLength;
+    private double maxFrustumRayLength;
+    private double fovx;
+    private double fovy;
+    private int szW;
+    private int szH;
+    private vtkImageData imageData;
+    private Rotation lookRot;
+    private Rotation upRot;
+    private Vector3D scPosVector;
 
 	public OfflimbPlaneGenerator(double offLimbFootprintDepth, SmallBodyModel smallBodyModel)
 	{
@@ -37,28 +52,44 @@ public class OfflimbPlaneGenerator extends BasePipelineOperator<RenderablePointe
 	@Override
 	public void processData() throws IOException, Exception
 	{
-		RenderablePointedImage renderableImage = inputs.get(0);
+		renderableImage = inputs.get(0);
+		imagePolyData=new vtkPolyData();
+		processStep1();
+		processStep2();
+		processStep3();
+
+
+       //TODO this used to write to local disk for an existing footprint - need to reimplement this with pipeline methodology
+//        String offLimbImageDataFileName = img.getPrerenderingFileNameBase() + "_offLimbImageData.vtk.gz";
+//        saveToDisk(FileCache.instance().getFile(offLimbImageDataFileName).getPath());
+
+//        makeActors(img);
+        outputs.add(Pair.of(renderableImage, imagePolyData));
+	}
+
+	private void processStep1() throws IOException, Exception
+	{
 		PointingFileReader infoReader = renderableImage.getPointing();
 		double[] scPos = infoReader.getSpacecraftPosition();
-    	double[] frustum1Adjusted = infoReader.getFrustum1();
-    	double[] frustum2Adjusted = infoReader.getFrustum2();
-    	double[] frustum3Adjusted = infoReader.getFrustum3();
-    	double[] frustum4Adjusted = infoReader.getFrustum4();
-    	Frustum frustum = new Frustum(scPos,
-						    			frustum1Adjusted,
-						    			frustum3Adjusted,
-						    			frustum4Adjusted,
-						    			frustum2Adjusted);
-    	double minFrustumRayLength = MathUtil.vnorm(scPos)
+//    	double[] frustum1Adjusted = infoReader.getFrustum1();
+//    	double[] frustum2Adjusted = infoReader.getFrustum2();
+//    	double[] frustum3Adjusted = infoReader.getFrustum3();
+//    	double[] frustum4Adjusted = infoReader.getFrustum4();
+//    	Frustum frustum = new Frustum(scPos,
+//						    			frustum1Adjusted,
+//						    			frustum3Adjusted,
+//						    			frustum4Adjusted,
+//						    			frustum2Adjusted);
+    	minFrustumRayLength = MathUtil.vnorm(scPos)
 				- smallBodyModel.getBoundingBoxDiagonalLength();
-    	double maxFrustumRayLength = MathUtil.vnorm(scPos)
+    	maxFrustumRayLength = MathUtil.vnorm(scPos)
 				+ smallBodyModel.getBoundingBoxDiagonalLength();
 
         // Step (1): Discretize the view frustum into macro-pixels, from which geometry will later be derived
         // (1a) get camera parameters
-		double[] spacecraftPosition = new double[3];
-        double[] focalPoint = new double[3];
-        double[] upVector = new double[3];
+		spacecraftPosition = new double[3];
+        focalPoint = new double[3];
+        upVector = new double[3];
 
 		CameraOrientationPipeline pipeline = CameraOrientationPipeline.of(renderableImage, List.of(smallBodyModel));
 		spacecraftPosition = pipeline.getSpacecraftPosition();
@@ -66,23 +97,26 @@ public class OfflimbPlaneGenerator extends BasePipelineOperator<RenderablePointe
 		upVector = pipeline.getUpVector();
 
 //        renderableImage.getCameraOrientation(spacecraftPosition, focalPoint, upVector);
-        final double fovx = renderableImage.getHorizontalFovAngle();
-        final double fovy = renderableImage.getVerticalFovAngle();
+        fovx = renderableImage.getHorizontalFovAngle();
+        fovy = renderableImage.getVerticalFovAngle();
 
         // (1b) guess at a resolution for the macro-pixels; these will be used to create quadrilateral cells (i.e. what will eventually be the off-limb geometry) in the camera view-plane
         RenderablePointedImageFootprintGeneratorPipeline pipeline2 =
         		new RenderablePointedImageFootprintGeneratorPipeline(renderableImage, List.of(smallBodyModel));
-        int res = (int)Math.sqrt(pipeline2.getFootprintPolyData().get(0).GetNumberOfPoints());
+        int res = (int)Math.sqrt(pipeline2.getFootprintPolyData().get(0).GetNumberOfPoints())*3;
 
 //        int res=(int)Math.sqrt(renderableImage.getFootprint(renderableImage.getDefaultSlice()).GetNumberOfPoints());    // for now just grab the number of points in the on-body footprint; assuming img is roughly planar we apply sqrt to get an approximate number of points on a "side" of the on-body geometry, within the rectangular frustuma
         int[] resolution = new int[]{res,res};    // cast to int and store s- and t- resolutions; NOTE: s and t can be thought of as respectively "horizontal" and "vertical" when viewing the image in the "Properties..." pane (t-hat cross s-hat = look direction in a righthanded coordinate system)
         // allow for later possibility of unequal macro-pixel resolutions; take the highest resolution
-        int szW = resolution[0];
-        int szH = resolution[1];
+        szW = resolution[0];
+        szH = resolution[1];
+	}
 
-        // Step (2): Shoot rays from the camera position toward each macro-pixel & record which ones don't hit the body (these will comprise the off-limb geometry)
+	private void processStep2() throws Exception
+	{
+		// Step (2): Shoot rays from the camera position toward each macro-pixel & record which ones don't hit the body (these will comprise the off-limb geometry)
         // (2a) determine ray-cast depth; currently implemented as camera-to-origin distance plus body bounding-box diagonal length -- that way rays will always extend from the camera position past the entire body
-        Vector3D scPosVector = new Vector3D(spacecraftPosition);
+        scPosVector = new Vector3D(spacecraftPosition);
 //        int currentSlice = img.getCurrentSlice();
 //        if (frustum.getMinFrustumDepth(currentSlice)==0)
 //        	renderableImage.setMinFrustumDepth(currentSlice, 0);
@@ -101,8 +135,8 @@ public class OfflimbPlaneGenerator extends BasePipelineOperator<RenderablePointe
         // NOTE: given two scalar values -1<=s<=1 and -1<=t<=1, the corresponding ray extends (in 3D space) from the camera position to upRot*lookRot*
         Vector3D lookVec=new Vector3D(focalPoint).subtract(new Vector3D(spacecraftPosition));
         Vector3D upVec=new Vector3D(upVector);
-        Rotation lookRot=new Rotation(Vector3D.MINUS_K, lookVec.normalize());
-        Rotation upRot=new Rotation(lookRot.applyTo(Vector3D.PLUS_J), upVec.normalize());
+        lookRot=new Rotation(Vector3D.MINUS_K, lookVec.normalize());
+        upRot=new Rotation(lookRot.applyTo(Vector3D.PLUS_J), upVec.normalize());
 
 
         //TODO this used to check local disk for an existing footprint - need to reimplement this with pipeline methodology
@@ -142,9 +176,13 @@ public class OfflimbPlaneGenerator extends BasePipelineOperator<RenderablePointe
                 imageSource.DrawPoint(i, j);
             }
         imageSource.Update();
-        vtkImageData imageData=imageSource.GetOutput();
+        imageData=imageSource.GetOutput();
+//        VTKDebug.previewVtkImageData(imageData);
+	}
 
-        // (3) process the resulting black & white 2D image, which captures the "shadow" of the body against the sky, from the viewpoint of the camera
+	private void processStep3()
+	{
+		// (3) process the resulting black & white 2D image, which captures the "shadow" of the body against the sky, from the viewpoint of the camera
 
         // (3a) Actually create some polydata from the imagedata... pixels in the image-data become pairs of triangles (each pair forming a quad)
         vtkImageToPolyDataFilter imageConverter=new vtkImageToPolyDataFilter();
@@ -166,7 +204,7 @@ public class OfflimbPlaneGenerator extends BasePipelineOperator<RenderablePointe
         }
 
         // (3c) assemble a "final" polydata from the new cell array and points of the temporary silhouette (img could eventually be run through some sort of cleaning filter to get rid of orphaned points)
-        vtkPolyData imagePolyData=new vtkPolyData();
+
         imagePolyData.SetPoints(tempImagePolyData.GetPoints());
         imagePolyData.SetPolys(cells);
         double sfacx=offLimbFootprintDepth*Math.tan(Math.toRadians(fovx/2)); // scaling factor that "fits" the polydata into the frustum at the given footprintDepth (in the s,t plane perpendicular to the boresight)
@@ -180,13 +218,6 @@ public class OfflimbPlaneGenerator extends BasePipelineOperator<RenderablePointe
             pt=scPosVector.add(upRot.applyTo(lookRot.applyTo(pt)));               // transform from (s,t) coordinates into the implied 3D direction vector, with origin at the camera's position in space; depth along the boresight was enforced on the previous line
             imagePolyData.GetPoints().SetPoint(i, pt.toArray());        // overwrite the old (pixel-coordinate) point with the new (3D cartesian) point
         }
-
-
-       //TODO this used to write to local disk for an existing footprint - need to reimplement this with pipeline methodology
-//        String offLimbImageDataFileName = img.getPrerenderingFileNameBase() + "_offLimbImageData.vtk.gz";
-//        saveToDisk(FileCache.instance().getFile(offLimbImageDataFileName).getPath());
-
-//        makeActors(img);
-        outputs.add(imagePolyData);
+//        VTKDebug.writePolyDataToFile(imagePolyData, "/Users/steelrj1/Desktop/offlimbtest.vtk");
 	}
 }

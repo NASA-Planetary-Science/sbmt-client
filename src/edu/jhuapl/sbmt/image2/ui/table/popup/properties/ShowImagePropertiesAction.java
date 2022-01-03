@@ -4,6 +4,7 @@ import java.util.List;
 
 import edu.jhuapl.sbmt.client.SbmtInfoWindowManager;
 import edu.jhuapl.sbmt.image2.interfaces.IPerspectiveImage;
+import edu.jhuapl.sbmt.image2.interfaces.IPerspectiveImageTableRepresentable;
 import edu.jhuapl.sbmt.image2.model.PerspectiveImageCollection;
 import edu.jhuapl.sbmt.image2.modules.preview.VtkLayerPreview;
 import edu.jhuapl.sbmt.image2.modules.rendering.pointedImage.RenderablePointedImage;
@@ -12,18 +13,18 @@ import edu.jhuapl.sbmt.image2.pipeline.publisher.Just;
 
 import glum.gui.action.PopAction;
 
-public class ShowInfoAction<G1 extends IPerspectiveImage> extends PopAction<G1>
+public class ShowImagePropertiesAction<G1 extends IPerspectiveImage & IPerspectiveImageTableRepresentable> extends PopAction<G1>
 {
     /**
 	 *
 	 */
-	private final PerspectiveImageCollection aManager;
+	private final PerspectiveImageCollection<G1> aManager;
 	private final SbmtInfoWindowManager infoPanel;
 
 	/**
 	 * @param imagePopupMenu
 	 */
-	public ShowInfoAction(PerspectiveImageCollection aManager, SbmtInfoWindowManager infoPanel)
+	public ShowImagePropertiesAction(PerspectiveImageCollection<G1> aManager, SbmtInfoWindowManager infoPanel)
 	{
 		this.aManager = aManager;
 		this.infoPanel = infoPanel;
@@ -45,6 +46,8 @@ public class ShowInfoAction<G1 extends IPerspectiveImage> extends PopAction<G1>
 			Just.of(renderableImages.get(0).getLayer())
 				.subscribe(preview)
 				.run();
+
+			preview.getPanel().setVisible(true);
 		} catch (Exception e)
 		{
 			// TODO Auto-generated catch block

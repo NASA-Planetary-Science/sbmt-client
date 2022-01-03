@@ -1,4 +1,4 @@
-package edu.jhuapl.sbmt.gui.image.controllers.images;
+package edu.jhuapl.sbmt.image2.ui.offlimb;
 
 import java.awt.Color;
 import java.awt.event.ActionEvent;
@@ -11,17 +11,16 @@ import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
 import edu.jhuapl.saavtk.gui.dialog.ColorChooser;
-import edu.jhuapl.sbmt.gui.image.model.OfflimbModelChangedListener;
-import edu.jhuapl.sbmt.gui.image.model.images.OfflimbControlsModel;
-import edu.jhuapl.sbmt.gui.image.ui.images.OfflimbImageControlPanel;
 import edu.jhuapl.sbmt.image2.interfaces.IPerspectiveImage;
-import edu.jhuapl.sbmt.model.image.perspectiveImage.PerspectiveImage;
+import edu.jhuapl.sbmt.image2.interfaces.OfflimbModelChangedListener;
+import edu.jhuapl.sbmt.image2.model.OfflimbControlsModel;
+import edu.jhuapl.sbmt.image2.ui.ContrastSlider;
 
-public class OfflimbControlsController<G1 extends IPerspectiveImage>
+public class OfflimbControlsController
 {
 	OfflimbImageControlPanel controlsPanel;
 	OfflimbControlsModel controlsModel;
-	PerspectiveImage image;
+	IPerspectiveImage image;
 	DepthSlider depthSlider;
 	AlphaSlider alphaSlider;
 	ContrastSlider contrastSlider;
@@ -30,13 +29,11 @@ public class OfflimbControlsController<G1 extends IPerspectiveImage>
 	JButton resetButton;
 
 	// reference to image slider in case they are synced
-	ContrastSlider imageContrastSlider;
 	private JButton boundaryColorBtn;
 
-	public OfflimbControlsController(PerspectiveImage image, int currentSlice, ContrastSlider imgContrastSlider)
+	public OfflimbControlsController(IPerspectiveImage image, int currentSlice)
 	{
 		this.image = image;
-		this.imageContrastSlider = imgContrastSlider;
 
 		controlsModel = new OfflimbControlsModel(image, currentSlice);
 
@@ -124,9 +121,10 @@ public class OfflimbControlsController<G1 extends IPerspectiveImage>
 						controlsModel.setContrastHigh(contrastSlider.getHighValue());
 					}
 					if (image.isContrastSynced()) {
+						//TODO fix this
 						// adjust image contrast slider also
-						imageContrastSlider.setHighValue(contrastSlider.getHighValue());
-						imageContrastSlider.setLowValue(contrastSlider.getLowValue());
+//						imageContrastSlider.setHighValue(contrastSlider.getHighValue());
+//						imageContrastSlider.setLowValue(contrastSlider.getLowValue());
 					}
 				}
 				else if (e.getSource() == controlsPanel.getShowBoundaryButton())
@@ -141,8 +139,9 @@ public class OfflimbControlsController<G1 extends IPerspectiveImage>
 					controlsModel.setSyncContrast(syncButton.isSelected());
 					if (controlsPanel.getSyncContrastButton().isSelected()) {
 						// if we're syncing, set the slider values to that of the img slider
-						contrastSlider.setLowValue(imageContrastSlider.getLowValue());
-						contrastSlider.setHighValue(imageContrastSlider.getHighValue());
+						//TODO fix this
+//						contrastSlider.setLowValue(imageContrastSlider.getLowValue());
+//						contrastSlider.setHighValue(imageContrastSlider.getHighValue());
 						controlsModel.setContrastLow(contrastSlider.getLowValue());
 						controlsModel.setContrastHigh(contrastSlider.getHighValue());
 					}

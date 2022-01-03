@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.util.List;
 
 import org.apache.commons.lang3.tuple.Pair;
+import org.apache.commons.math3.geometry.euclidean.threed.Vector3D;
 
 import com.beust.jcommander.internal.Lists;
 
@@ -27,6 +28,8 @@ import edu.jhuapl.sbmt.image2.modules.rendering.vtk.VTKImagePolyDataRenderer;
 import edu.jhuapl.sbmt.image2.modules.rendering.vtk.VtkImageContrastOperator;
 import edu.jhuapl.sbmt.image2.modules.rendering.vtk.VtkImageRendererOperator;
 import edu.jhuapl.sbmt.image2.modules.rendering.vtk.VtkImageVtkMaskingOperator;
+import edu.jhuapl.sbmt.image2.pipeline.active.offlimb.OfflimbActorOperator;
+import edu.jhuapl.sbmt.image2.pipeline.active.offlimb.OfflimbPlaneGenerator;
 import edu.jhuapl.sbmt.image2.pipeline.active.pointedImages.RenderablePointedImageFootprintGeneratorPipeline;
 import edu.jhuapl.sbmt.image2.pipeline.publisher.Just;
 import edu.jhuapl.sbmt.image2.pipeline.subscriber.Sink;
@@ -43,8 +46,9 @@ public class PointedImageRenderables
 	private List<SmallBodyModel> smallBodyModels;
 	public double maxFrustumDepth;
 	public double minFrustumDepth;
-	private boolean offLimbVisibility;
-    private boolean offLimbBoundaryVisibility;
+	private boolean offLimbVisibility = false;
+    private boolean offLimbBoundaryVisibility = false;
+    private double offLimbFootprintDepth;
 
 	public PointedImageRenderables(RenderablePointedImage image, List<SmallBodyModel> smallBodyModels) throws IOException, Exception
 	{
@@ -109,7 +113,7 @@ public class PointedImageRenderables
 		PointingFileReader infoReader = renderableImage.getPointing();
 		double diagonalLength = smallBodyModels.get(0).getBoundingBoxDiagonalLength();
 		double[] scPos = infoReader.getSpacecraftPosition();
-
+		offLimbFootprintDepth = new Vector3D(scPos).getNorm();
     	double[] frus1 = infoReader.getFrustum1();
     	double[] frus2 = infoReader.getFrustum2();
     	double[] frus3 = infoReader.getFrustum3();
@@ -185,46 +189,20 @@ public class PointedImageRenderables
 
 	}
 
-	private void processOfflimb(RenderablePointedImage renderableImage)
+	private void processOfflimb(RenderablePointedImage renderableImage) throws IOException, Exception
 	{
-//		OffLimbPlaneCalculator calculator = new OffLimbPlaneCalculator();
-//		vtkPolyData offLimbPlane = null;
-//	    vtkTexture offLimbTexture;
-//	    vtkPolyData offLimbBoundary = null;
-//	    double offLimbFootprintDepth;
-//		double[] spacecraftPosition = new double[3];
-//		double[] focalPoint = new double[3];
-//		double[] upVector = new double[3];
-//		CameraOrientationPipeline cameraOrientationPipeline =
-//				new CameraOrientationPipeline(null, smallBodyModels);
-//		focalPoint = cameraOrientationPipeline.getCameraOrientation();
-//
-////		image.getCameraOrientation(spacecraftPosition, focalPoint, upVector);
-//		//TODO not sure what this was supposed to do here
-//		offLimbFootprintDepth = new Vector3D(spacecraftPosition).getNorm();
-//		calculator.loadOffLimbPlane(renderableImage, offLimbFootprintDepth);
-//		offLimbActor = calculator.getOffLimbActor();
-//		offLimbBoundaryActor = calculator.getOffLimbBoundaryActor();
-//		offLimbTexture = calculator.getOffLimbTexture();
-//		// set initial visibilities
-//		if (offLimbActor != null) {
-//			offLimbActor.SetVisibility(offLimbVisibility ? 1 : 0);
-//			offLimbBoundaryActor.SetVisibility(offLimbBoundaryVisibility ? 1 : 0);
-//		}
-//
-//
-//	    if (offLimbTexture == null)
-//        { // if offlimbtexture is null, initialize it.
-//            vtkImageData imageData = new vtkImageData();
-//            Just.of(renderableImage.getLayer())
-//            	.operate(new VtkImageRendererOperator())
-//            	.subscribe(Sink.of(List.of(imageData)))
-//            	.run();
-////            imageData.DeepCopy(renderableImage.getDisplayedImage());
-//            offLimbTexture = new vtkTexture();
-//            offLimbTexture.SetInputData(imageData);
-//            offLimbTexture.Modified();
-//        }
+		List<vtkActor> actors = Lists.newArrayList();
+		Just.of(renderableImage)
+			.operate(new OfflimbPlaneGenerator(offLimbFootprintDepth, smallBodyModels.get(0)))
+			.operate(new OfflimbActorOperator())
+			.subscribe(Sink.of(actors))
+			.run();
+
+		offLimbActor = actors.get(0);
+		offLimbBoundaryActor = actors.get(1);
+
+		offLimbActor.SetVisibility(offLimbVisibility ? 1 : 0);
+		offLimbBoundaryActor.SetVisibility(offLimbBoundaryVisibility ? 1 : 0);
 	}
 
 	private void processBoundaries(RenderablePointedImage renderableImage) throws IOException, Exception

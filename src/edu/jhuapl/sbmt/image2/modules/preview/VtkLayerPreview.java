@@ -208,7 +208,7 @@ class LayerPreviewPanel extends ModelInfoWindow implements MouseListener, MouseM
 		setTitle("Image Properties");
 
 		pack();
-//		setVisible(true);
+		setVisible(true);
 
 		initialized = true;
 
