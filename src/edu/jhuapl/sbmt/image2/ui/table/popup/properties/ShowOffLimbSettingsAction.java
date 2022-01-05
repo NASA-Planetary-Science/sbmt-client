@@ -1,10 +1,10 @@
 package edu.jhuapl.sbmt.image2.ui.table.popup.properties;
 
+import java.awt.Dimension;
 import java.util.List;
 
-import javax.swing.BorderFactory;
+import javax.swing.JFrame;
 import javax.swing.JPanel;
-import javax.swing.border.TitledBorder;
 
 import edu.jhuapl.sbmt.image2.interfaces.IPerspectiveImage;
 import edu.jhuapl.sbmt.image2.interfaces.IPerspectiveImageTableRepresentable;
@@ -22,10 +22,6 @@ public class ShowOffLimbSettingsAction<G1 extends IPerspectiveImage & IPerspecti
 	public ShowOffLimbSettingsAction(PerspectiveImageCollection<G1> aManager)
 	{
 		this.aManager = aManager;
-
-
-
-
 	}
 
 	@Override
@@ -34,7 +30,15 @@ public class ShowOffLimbSettingsAction<G1 extends IPerspectiveImage & IPerspecti
 		if (aItemL.size() != 1)
 			return;
 
-		offlimbController = new OfflimbControlsController(aItemL.get(0), 0);
+		try
+		{
+			offlimbController = new OfflimbControlsController(aManager, aItemL.get(0));
+		}
+		catch (Exception e)
+		{
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 //		GridBagConstraints gridBagConstraints = new GridBagConstraints();
 //      gridBagConstraints.gridx = 0;
 //      gridBagConstraints.gridy = 5;
@@ -42,12 +46,17 @@ public class ShowOffLimbSettingsAction<G1 extends IPerspectiveImage & IPerspecti
 //      gridBagConstraints.fill = GridBagConstraints.HORIZONTAL;
 //      gridBagConstraints.anchor = GridBagConstraints.LINE_START;
 //      gridBagConstraints.weightx = 1.0;
-
-      TitledBorder titledBorder = BorderFactory.createTitledBorder("Offlimb Settings");
-      titledBorder.setTitleJustification(TitledBorder.CENTER);
-      offLimbPanel.setBorder(titledBorder);
+//		OfflimbImageControlPanel offLimbPanel = offlimbController.getControlsPanel();
+//      TitledBorder titledBorder = BorderFactory.createTitledBorder("Offlimb Settings");
+//      titledBorder.setTitleJustification(TitledBorder.CENTER);
+      JPanel offLimbPanel = new JPanel();
+//      offLimbPanel.setBorder(titledBorder);
       offLimbPanel.add(offlimbController.getControlsPanel());
-//      getContentPane().add(offLimbPanel, gridBagConstraints);
+      JFrame frame = new JFrame();
+      frame.setTitle("Offlimb Settings");
+      frame.getContentPane().add(offLimbPanel);
+      frame.setSize(new Dimension(775, 150));
+      frame.setVisible(true);
 	}
 
 }

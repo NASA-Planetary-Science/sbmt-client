@@ -77,11 +77,26 @@ public class PerspectiveImageToRenderableImagePipeline
 				.subscribe(Sink.of(renderableImage)).run();
 			renderableImages.addAll(renderableImage);
 
+			System.out.println(
+					"PerspectiveImageToRenderableImagePipeline: PerspectiveImageToRenderableImagePipeline: image off depth " + image.getOfflimbDepth());
+			System.out.println(
+					"PerspectiveImageToRenderableImagePipeline: PerspectiveImageToRenderableImagePipeline: image min frus " + image.getMinFrustumLength());
+			System.out.println(
+					"PerspectiveImageToRenderableImagePipeline: PerspectiveImageToRenderableImagePipeline: image max frus " + image.getMaxFrustumLength());
+
 			for (RenderablePointedImage renderableImg : renderableImages)
 			{
 				renderableImg.setMasking(new LayerMasking(image.getMaskValues()));
 				renderableImg.setOffset(image.getOffset());
 				renderableImg.setDefaultOffset(image.getDefaultOffset());
+				renderableImg.setIntensityRange(image.getIntensityRange());
+				renderableImg.setOfflimbIntensityRange(image.getOfflimbIntensityRange());
+//				double diagonalLength = smallBodyModel.get(0).getBoundingBoxDiagonalLength();
+//				System.out.println("RenderablePointedImageActorPipeline: RenderablePointedImageActorPipeline: diag length " + diagonalLength);
+//				double[] scPos = renderableImages.get(0).getPointing().getSpacecraftPosition();
+				renderableImg.setMinFrustumLength(image.getMinFrustumLength());
+				renderableImg.setMaxFrustumLength(image.getMaxFrustumLength());
+				renderableImg.setOfflimbDepth(image.getOfflimbDepth());
 			}
 		}
 	}

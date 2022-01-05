@@ -15,6 +15,8 @@ public interface RenderableImageActorPipeline
 
 	List<vtkActor> getRenderableOfflimbImageActors();
 
+	List<vtkActor> getRenderableOffLimbBoundaryActors();
+
 	List<vtkActor> getSmallBodyActors();
 
 }

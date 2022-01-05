@@ -12,6 +12,7 @@ import com.google.common.collect.Lists;
 import vtk.vtkActor;
 
 import edu.jhuapl.saavtk.util.FileCache;
+import edu.jhuapl.saavtk.util.MathUtil;
 import edu.jhuapl.sbmt.client.SmallBodyModel;
 import edu.jhuapl.sbmt.image2.api.Layer;
 import edu.jhuapl.sbmt.image2.interfaces.IPerspectiveImage;
@@ -77,6 +78,7 @@ public class RenderablePointedImageActorPipeline implements RenderableImageActor
 		else if (flip.equals("Y"))
 			flipOperator = new LayerYFlipOperator();
 
+
 		List<Layer> updatedLayers = Lists.newArrayList();
 		reader
 			.operate(linearInterpolator)
@@ -113,12 +115,31 @@ public class RenderablePointedImageActorPipeline implements RenderableImageActor
 		image.setDefaultOffset(3.0 * smallBodyModel.get(0).getMinShiftAmount());
 		if (image.getOffset() == -1) image.setOffset(image.getDefaultOffset());
 
+		double diagonalLength = smallBodyModel.get(0).getBoundingBoxDiagonalLength();
+		System.out.println("RenderablePointedImageActorPipeline: RenderablePointedImageActorPipeline: diag length " + diagonalLength);
+		double[] scPos = renderableImages.get(0).getPointing().getSpacecraftPosition();
+
 		for (RenderablePointedImage renderableImage : renderableImages)
 		{
 			renderableImage.setMasking(new LayerMasking(image.getMaskValues()));
 			renderableImage.setOffset(image.getOffset());
 			renderableImage.setDefaultOffset(image.getDefaultOffset());
+			renderableImage.setIntensityRange(image.getIntensityRange());
+			renderableImage.setOfflimbIntensityRange(image.getOfflimbIntensityRange());
+			renderableImage.setMinFrustumLength(MathUtil.vnorm(scPos) - diagonalLength);
+			renderableImage.setMaxFrustumLength(MathUtil.vnorm(scPos) + diagonalLength);
+//			if (renderableImage.getOfflimbDepth() == 0)
+//				renderableImage.setOfflimbDepth(MathUtil.vnorm(scPos));
+//			else
+				renderableImage.setOfflimbDepth(image.getOfflimbDepth());
+			image.setMinFrustumLength(MathUtil.vnorm(scPos) - diagonalLength);
+			image.setMaxFrustumLength(MathUtil.vnorm(scPos) + diagonalLength);
+			if (image.getOfflimbDepth() == 0)
+				image.setOfflimbDepth(MathUtil.vnorm(scPos));
 		}
+		System.out.println("RenderablePointedImageActorPipeline: RenderablePointedImageActorPipeline: renderImg off depth " + renderableImages.get(0).getOfflimbDepth());
+		System.out.println("RenderablePointedImageActorPipeline: RenderablePointedImageActorPipeline: image " + image.getOfflimbDepth());
+//		image.setOfflimbDepth(MathUtil.vnorm(scPos) - diagonalLength);
 
 		//*************************
 		//zip the sources together
@@ -178,7 +199,7 @@ public class RenderablePointedImageActorPipeline implements RenderableImageActor
 		{
 			if (renderable.getOffLimb() == null) continue;
 			offLimbActors.add(renderable.getOffLimb());
-			offLimbActors.add(renderable.getOffLimbBoundary());
+//			offLimbActors.add(renderable.getOffLimbBoundary());
 		}
 		return offLimbActors;
 	}
@@ -187,5 +208,19 @@ public class RenderablePointedImageActorPipeline implements RenderableImageActor
 	public List<vtkActor> getSmallBodyActors()
 	{
 		return sceneOutputs[0].getLeft();
+	}
+
+
+	@Override
+	public List<vtkActor> getRenderableOffLimbBoundaryActors()
+	{
+		List<vtkActor> offLimbActors = Lists.newArrayList();
+		for (PointedImageRenderables renderable : sceneOutputs[0].getRight())
+		{
+			if (renderable.getOffLimb() == null) continue;
+//			offLimbActors.add(renderable.getOffLimb());
+			offLimbActors.add(renderable.getOffLimbBoundary());
+		}
+		return offLimbActors;
 	}
 }

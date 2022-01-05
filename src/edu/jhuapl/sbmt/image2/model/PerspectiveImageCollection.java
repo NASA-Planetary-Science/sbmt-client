@@ -6,6 +6,7 @@ import java.beans.PropertyChangeListener;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Optional;
+import java.util.function.Function;
 
 import javax.swing.SwingUtilities;
 
@@ -18,6 +19,7 @@ import vtk.vtkProperty;
 
 import edu.jhuapl.saavtk.model.SaavtkItemManager;
 import edu.jhuapl.saavtk.util.ColorUtil;
+import edu.jhuapl.saavtk.util.IntensityRange;
 import edu.jhuapl.saavtk.util.Properties;
 import edu.jhuapl.sbmt.client.SmallBodyModel;
 import edu.jhuapl.sbmt.image2.interfaces.IPerspectiveImage;
@@ -43,6 +45,7 @@ public class PerspectiveImageCollection<G1 extends IPerspectiveImage & IPerspect
 	private HashMap<G1, List<vtkActor>> boundaryRenderers;
 	private HashMap<G1, List<vtkActor>> frustumRenderers;
 	private HashMap<G1, List<vtkActor>> offLimbRenderers;
+	private HashMap<G1, List<vtkActor>> offLimbBoundaryRenderers;
 	private HashMap<G1, PerspectiveImageRenderingState> renderingStates;
 	private SimpleLogger logger = SimpleLogger.getInstance();
 	private IImagingInstrument imagingInstrument;
@@ -53,8 +56,14 @@ public class PerspectiveImageCollection<G1 extends IPerspectiveImage & IPerspect
 		boolean isFrustumShowing = false;
 		boolean isBoundaryShowing = false;
 		boolean isOfflimbShowing = false;
+		boolean isOffLimbBoundaryShowing = false;
 		Color boundaryColor;
+		Color offLimbBoundaryColor = Color.red;
 		Color frustumColor = Color.green;
+		double offLimbFootprintDepth;
+		boolean contrastSynced = false;
+		IntensityRange imageContrastRange;
+		IntensityRange offLimbContrastRange;
 	}
 
 
@@ -66,6 +75,7 @@ public class PerspectiveImageCollection<G1 extends IPerspectiveImage & IPerspect
 		this.boundaryRenderers = new HashMap<G1, List<vtkActor>>();
 		this.frustumRenderers = new HashMap<G1, List<vtkActor>>();
 		this.offLimbRenderers = new HashMap<G1, List<vtkActor>>();
+		this.offLimbBoundaryRenderers = new HashMap<G1, List<vtkActor>>();
 		this.renderingStates = new HashMap<G1, PerspectiveImageRenderingState>();
 		this.smallBodyModels = smallBodyModels;
 	}
@@ -198,6 +208,10 @@ public class PerspectiveImageCollection<G1 extends IPerspectiveImage & IPerspect
 		{
 			props.addAll(actors);
 		}
+		for (List<vtkActor> actors : offLimbBoundaryRenderers.values())
+		{
+			props.addAll(actors);
+		}
 		return props;
 	}
 
@@ -237,42 +251,59 @@ public class PerspectiveImageCollection<G1 extends IPerspectiveImage & IPerspect
 			}
 			actor.GetProperty().SetColor(colorToDoubleArray(renderingStates.get(image).boundaryColor));
 		});
+
+		offLimbBoundaryRenderers.put(image, pipeline.getRenderableOffLimbBoundaryActors());
+		offLimbBoundaryRenderers.get(image).forEach(actor -> {
+			actor.SetVisibility(renderingStates.get(image).isOffLimbBoundaryShowing ? 1 : 0);
+			if (renderingStates.get(image).offLimbBoundaryColor == null)
+			{
+				if (imagesByInstrument.get(imagingInstrument) == null) return;
+				Color color = ColorUtil.generateColor(imagesByInstrument.get(imagingInstrument).indexOf(image)%100, 100);
+				renderingStates.get(image).offLimbBoundaryColor = color;
+			}
+			actor.GetProperty().SetColor(colorToDoubleArray(renderingStates.get(image).offLimbBoundaryColor));
+		});
 	}
 
 	public void updateImage(G1 image)
 	{
-		Thread thread = new Thread(new Runnable()
-		{
-
-			@Override
-			public void run()
-			{
-				RenderableImageActorPipeline pipeline = null;
-				image.setStatus("Loading...");
-				try
-				{
-					if (image.getImageType() != ImageType.GENERIC_IMAGE)
-					{
-						pipeline = new RenderablePointedImageActorPipeline(image, smallBodyModels);
-
-					}
-					else
-					{
-						pipeline = new RenderableCylindricalImageActorPipeline(image.getFilename(), image.getBounds(), smallBodyModels);
-
-					}
-				}
-				catch (Exception e)
-				{
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-				if (pipeline == null) return;
-				updatePipeline(image, pipeline);
-				image.setStatus("Loaded");
-				SwingUtilities.invokeLater(() -> { pcs.firePropertyChange(Properties.MODEL_CHANGED, null, image); });
-			}
+		Thread thread = getPipelineThread(image, (Void v) -> {
+			image.setStatus("Loaded");
+			return null;
 		});
+
+//		Thread thread = new Thread(new Runnable()
+//		{
+//
+//			@Override
+//			public void run()
+//			{
+//				RenderableImageActorPipeline pipeline = null;
+//				image.setStatus("Loading...");
+//				try
+//				{
+//					if (image.getImageType() != ImageType.GENERIC_IMAGE)
+//					{
+//						pipeline = new RenderablePointedImageActorPipeline(image, smallBodyModels);
+//
+//					}
+//					else
+//					{
+//						pipeline = new RenderableCylindricalImageActorPipeline(image.getFilename(), image.getBounds(), smallBodyModels);
+//
+//					}
+//				}
+//				catch (Exception e)
+//				{
+//					// TODO Auto-generated catch block
+//					e.printStackTrace();
+//				}
+//				if (pipeline == null) return;
+//				updatePipeline(image, pipeline);
+//				image.setStatus("Loaded");
+//				SwingUtilities.invokeLater(() -> { pcs.firePropertyChange(Properties.MODEL_CHANGED, null, image); });
+//			}
+//		});
 		thread.start();
 
 		pcs.firePropertyChange(Properties.MODEL_CHANGED, null, image);
@@ -397,35 +428,43 @@ public class PerspectiveImageCollection<G1 extends IPerspectiveImage & IPerspect
 		List<vtkActor> actors = frustumRenderers.get(image);
 		if (actors == null)
 		{
-			Thread thread = new Thread(new Runnable()
-			{
-
-				@Override
-				public void run()
+			Thread thread = getPipelineThread(image, (Void v) -> {
+				for (vtkActor actor : frustumRenderers.get(image))
 				{
-//					image.setStatus("Loading...");
-					RenderablePointedImageActorPipeline pipeline = null;
-					try
-					{
-						pipeline = new RenderablePointedImageActorPipeline(image, smallBodyModels);
-					} catch (Exception e)
-					{
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					}
-					if (pipeline == null) return;
-					updatePipeline(image, pipeline);
-					for (vtkActor actor : frustumRenderers.get(image))
-					{
-						actor.SetVisibility(visible? 1 : 0);
-					}
-//					image.setStatus("Loaded");
-					SwingUtilities.invokeLater( () -> {
-//						renderer.shiftFootprint();
-						pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
-					});
+					actor.SetVisibility(visible? 1 : 0);
 				}
+				return null;
 			});
+
+//			Thread thread = new Thread(new Runnable()
+//			{
+//
+//				@Override
+//				public void run()
+//				{
+////					image.setStatus("Loading...");
+//					RenderablePointedImageActorPipeline pipeline = null;
+//					try
+//					{
+//						pipeline = new RenderablePointedImageActorPipeline(image, smallBodyModels);
+//					} catch (Exception e)
+//					{
+//						// TODO Auto-generated catch block
+//						e.printStackTrace();
+//					}
+//					if (pipeline == null) return;
+//					updatePipeline(image, pipeline);
+//					for (vtkActor actor : frustumRenderers.get(image))
+//					{
+//						actor.SetVisibility(visible? 1 : 0);
+//					}
+////					image.setStatus("Loaded");
+//					SwingUtilities.invokeLater( () -> {
+////						renderer.shiftFootprint();
+//						pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
+//					});
+//				}
+//			});
 			thread.start();
 		}
 		else
@@ -452,40 +491,47 @@ public class PerspectiveImageCollection<G1 extends IPerspectiveImage & IPerspect
 
 		if (actors == null)
 		{
-			Thread thread = new Thread(new Runnable()
-			{
-
-				@Override
-				public void run()
+			Thread thread = getPipelineThread(image, (Void v) -> {
+				for (vtkActor actor : offLimbRenderers.get(image))
 				{
-//					image.setStatus("Loading...");
-					RenderablePointedImageActorPipeline pipeline = null;
-					try
-					{
-						pipeline = new RenderablePointedImageActorPipeline(image, smallBodyModels);
-					} catch (Exception e)
-					{
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					}
-					if (pipeline == null) return;
-					updatePipeline(image, pipeline);
-					for (vtkActor actor : offLimbRenderers.get(image))
-					{
-						actor.SetVisibility(showing? 1 : 0);
-					}
-//					image.setStatus("Loaded");
-					SwingUtilities.invokeLater( () -> {
-//						renderer.shiftFootprint();
-						pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
-					});
+					actor.SetVisibility(showing? 1 : 0);
 				}
+				return null;
 			});
+
+//			Thread thread = new Thread(new Runnable()
+//			{
+//
+//				@Override
+//				public void run()
+//				{
+////					image.setStatus("Loading...");
+//					RenderablePointedImageActorPipeline pipeline = null;
+//					try
+//					{
+//						pipeline = new RenderablePointedImageActorPipeline(image, smallBodyModels);
+//					} catch (Exception e)
+//					{
+//						// TODO Auto-generated catch block
+//						e.printStackTrace();
+//					}
+//					if (pipeline == null) return;
+//					updatePipeline(image, pipeline);
+//					for (vtkActor actor : offLimbRenderers.get(image))
+//					{
+//						actor.SetVisibility(showing? 1 : 0);
+//					}
+////					image.setStatus("Loaded");
+//					SwingUtilities.invokeLater( () -> {
+////						renderer.shiftFootprint();
+//						pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
+//					});
+//				}
+//			});
 			thread.start();
 		}
 		else
 		{
-			System.out.println("PerspectiveImageCollection: setImageOfflimbShowing: actor size " + actors.size());
 			for (vtkActor actor : actors)
 			{
 				actor.SetVisibility(showing ? 1 : 0);
@@ -500,6 +546,78 @@ public class PerspectiveImageCollection<G1 extends IPerspectiveImage & IPerspect
 		return image.isOfflimbShowing();
 	}
 
+	public void setOffLimbBoundaryShowing(G1 image, boolean showing)
+	{
+		image.setOfflimbBoundaryShowing(showing);
+//		this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
+		List<vtkActor> actors = offLimbBoundaryRenderers.get(image);
+		if (actors == null)
+		{
+			Thread thread = getPipelineThread(image, (Void v) -> {
+				for (vtkActor actor : offLimbBoundaryRenderers.get(image))
+				{
+					actor.SetVisibility(showing? 1 : 0);
+				}
+				return null;
+			});
+
+//			Thread thread = new Thread(new Runnable()
+//			{
+//
+//				@Override
+//				public void run()
+//				{
+////					image.setStatus("Loading...");
+//					RenderableImageActorPipeline pipeline = null;
+//					try
+//					{
+//						if (image.getImageType() != ImageType.GENERIC_IMAGE)
+//						{
+//							pipeline = new RenderablePointedImageActorPipeline(image, smallBodyModels);
+//
+//						}
+//						else
+//						{
+//							pipeline = new RenderableCylindricalImageActorPipeline(image.getFilename(), image.getBounds(), smallBodyModels);
+//
+//						}
+//					}
+//					catch (Exception e)
+//					{
+//						// TODO Auto-generated catch block
+//						e.printStackTrace();
+//					}
+//					if (pipeline == null) return;
+//					updatePipeline(image, pipeline);
+//					for (vtkActor actor : offLimbBoundaryRenderers.get(image))
+//					{
+//						actor.SetVisibility(showing? 1 : 0);
+//					}
+////					image.setStatus("Loaded");
+//					SwingUtilities.invokeLater( () -> {
+////						renderer.shiftFootprint();
+//						pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
+//					});
+//				}
+//			});
+			thread.start();
+		}
+		else
+		{
+			for (vtkActor actor : actors)
+			{
+				actor.SetVisibility(showing ? 1 : 0);
+			}
+			this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
+		}
+		renderingStates.get(image).isOffLimbBoundaryShowing = showing;
+	}
+
+	public boolean getOffLimbBoundaryShowing(G1 image)
+	{
+		return image.isOfflimbBoundaryShowing();
+	}
+
 	public void setImageBoundaryShowing(G1 image, boolean showing)
 	{
 		image.setBoundaryShowing(showing);
@@ -507,45 +625,53 @@ public class PerspectiveImageCollection<G1 extends IPerspectiveImage & IPerspect
 		List<vtkActor> actors = boundaryRenderers.get(image);
 		if (actors == null)
 		{
-			Thread thread = new Thread(new Runnable()
-			{
-
-				@Override
-				public void run()
+			Thread thread = getPipelineThread(image, (Void v) -> {
+				for (vtkActor actor : boundaryRenderers.get(image))
 				{
-//					image.setStatus("Loading...");
-					RenderableImageActorPipeline pipeline = null;
-					try
-					{
-						if (image.getImageType() != ImageType.GENERIC_IMAGE)
-						{
-							pipeline = new RenderablePointedImageActorPipeline(image, smallBodyModels);
-
-						}
-						else
-						{
-							pipeline = new RenderableCylindricalImageActorPipeline(image.getFilename(), image.getBounds(), smallBodyModels);
-
-						}
-					}
-					catch (Exception e)
-					{
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					}
-					if (pipeline == null) return;
-					updatePipeline(image, pipeline);
-					for (vtkActor actor : boundaryRenderers.get(image))
-					{
-						actor.SetVisibility(showing? 1 : 0);
-					}
-//					image.setStatus("Loaded");
-					SwingUtilities.invokeLater( () -> {
-//						renderer.shiftFootprint();
-						pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
-					});
+					actor.SetVisibility(showing? 1 : 0);
 				}
+				return null;
 			});
+
+//			Thread thread = new Thread(new Runnable()
+//			{
+//
+//				@Override
+//				public void run()
+//				{
+////					image.setStatus("Loading...");
+//					RenderableImageActorPipeline pipeline = null;
+//					try
+//					{
+//						if (image.getImageType() != ImageType.GENERIC_IMAGE)
+//						{
+//							pipeline = new RenderablePointedImageActorPipeline(image, smallBodyModels);
+//
+//						}
+//						else
+//						{
+//							pipeline = new RenderableCylindricalImageActorPipeline(image.getFilename(), image.getBounds(), smallBodyModels);
+//
+//						}
+//					}
+//					catch (Exception e)
+//					{
+//						// TODO Auto-generated catch block
+//						e.printStackTrace();
+//					}
+//					if (pipeline == null) return;
+//					updatePipeline(image, pipeline);
+//					for (vtkActor actor : boundaryRenderers.get(image))
+//					{
+//						actor.SetVisibility(showing? 1 : 0);
+//					}
+////					image.setStatus("Loaded");
+//					SwingUtilities.invokeLater( () -> {
+////						renderer.shiftFootprint();
+//						pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
+//					});
+//				}
+//			});
 			thread.start();
 		}
 		else
@@ -611,6 +737,150 @@ public class PerspectiveImageCollection<G1 extends IPerspectiveImage & IPerspect
 
 	}
 
+	public void setOfflimbOpacity(G1 image, double opacity)
+	{
+		List<vtkActor> actors = offLimbRenderers.get(image);
+		actors.forEach(actor -> {
+			vtkProperty interiorProperty = actor.GetProperty();
+			interiorProperty.SetOpacity(opacity);
+		});
+		this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
+	}
+
+	public double getOfflimbOpacity(G1 image)
+	{
+		List<vtkActor> actors = offLimbRenderers.get(image);
+		vtkActor actor = actors.get(0);
+		vtkProperty interiorProperty = actor.GetProperty();
+		return interiorProperty.GetOpacity();
+	}
+
+	public void setOffLimbDepth(G1 image, double depth)
+	{
+		PerspectiveImageRenderingState renderingState = renderingStates.get(image);
+		renderingState.offLimbFootprintDepth = depth;
+		image.setOfflimbDepth(depth);
+		System.out.println("PerspectiveImageCollection: setOffLimbDepth: depth set to " + depth);
+		Thread thread = getPipelineThread(image, (Void v) -> { return null; });
+		thread.start();
+		this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
+	}
+
+	public double getOffLimbDepth(G1 image)
+	{
+		PerspectiveImageRenderingState renderingState = renderingStates.get(image);
+		return renderingState.offLimbFootprintDepth;
+	}
+
+	public Color getOffLimbBoundaryColor(G1 image)
+	{
+		return renderingStates.get(image).offLimbBoundaryColor;
+	}
+
+	public void setOffLimbBoundaryColor(G1 image, Color color)
+	{
+		renderingStates.get(image).offLimbBoundaryColor = color;
+	}
+
+	public void setImageContrastRange(G1 image, IntensityRange intensityRange)
+	{
+		renderingStates.get(image).imageContrastRange = intensityRange;
+		Thread thread = getPipelineThread(image, (Void v) -> { return null; });
+//		Thread thread = new Thread(new Runnable()
+//		{
+//
+//			@Override
+//			public void run()
+//			{
+//				RenderableImageActorPipeline pipeline = null;
+//				try
+//				{
+//					if (image.getImageType() != ImageType.GENERIC_IMAGE)
+//					{
+//						pipeline = new RenderablePointedImageActorPipeline(image, smallBodyModels);
+//
+//					}
+//					else
+//					{
+//						pipeline = new RenderableCylindricalImageActorPipeline(image.getFilename(), image.getBounds(), smallBodyModels);
+//					}
+//				}
+//				catch (Exception e)
+//				{
+//					// TODO Auto-generated catch block
+//					e.printStackTrace();
+//				}
+//				if (pipeline == null) return;
+//				updatePipeline(image, pipeline);
+//				SwingUtilities.invokeLater( () -> {
+////					renderer.shiftFootprint();
+//					pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
+//				});
+//			}
+//		});
+		thread.start();
+	}
+
+	public IntensityRange getImageContrastRange(G1 image)
+	{
+		return renderingStates.get(image).imageContrastRange;
+	}
+
+	public void setOffLimbContrastRange(G1 image, IntensityRange intensityRange)
+	{
+		renderingStates.get(image).offLimbContrastRange = intensityRange;
+		image.setOfflimbIntensityRange(intensityRange);
+		Thread thread = getPipelineThread(image, (Void v) -> { return null; });
+
+//		Thread thread = new Thread(new Runnable()
+//		{
+//
+//			@Override
+//			public void run()
+//			{
+//				RenderableImageActorPipeline pipeline = null;
+//				try
+//				{
+//					if (image.getImageType() != ImageType.GENERIC_IMAGE)
+//					{
+//						pipeline = new RenderablePointedImageActorPipeline(image, smallBodyModels);
+//
+//					}
+//					else
+//					{
+//						pipeline = new RenderableCylindricalImageActorPipeline(image.getFilename(), image.getBounds(), smallBodyModels);
+//					}
+//				}
+//				catch (Exception e)
+//				{
+//					// TODO Auto-generated catch block
+//					e.printStackTrace();
+//				}
+//				if (pipeline == null) return;
+//				updatePipeline(image, pipeline);
+//				SwingUtilities.invokeLater( () -> {
+//					pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
+//				});
+//			}
+//		});
+		thread.start();
+	}
+
+	public IntensityRange getOffLimbContrastRange(G1 image)
+	{
+		return renderingStates.get(image).offLimbContrastRange;
+	}
+
+	public void setContrastSynced(G1 image, boolean contrastSynced)
+	{
+		renderingStates.get(image).contrastSynced = contrastSynced;
+	}
+
+	public boolean getContrastSynced(G1 image)
+	{
+		return renderingStates.get(image).contrastSynced;
+	}
+
 	public List<SmallBodyModel> getSmallBodyModels()
 	{
 		return smallBodyModels;
@@ -638,4 +908,55 @@ public class PerspectiveImageCollection<G1 extends IPerspectiveImage & IPerspect
 		loadUserList();
 	}
 
+	private Thread getPipelineThread(G1 image, Function<Void, Void> completionBlock)
+	{
+		return new PipelineThread(image, completionBlock);
+	}
+
+	class PipelineThread extends Thread
+	{
+		G1 image;
+		Function<Void, Void> completionBlock;
+
+		public PipelineThread(G1 image, Function<Void, Void> completionBlock)
+		{
+			this.image = image;
+			this.completionBlock = completionBlock;
+//			Thread thread = new Thread(new Runnable()
+//			{
+//
+//
+//			});
+		}
+
+		@Override
+		public void run()
+		{
+			RenderableImageActorPipeline pipeline = null;
+			try
+			{
+				if (image.getImageType() != ImageType.GENERIC_IMAGE)
+				{
+					pipeline = new RenderablePointedImageActorPipeline(image, smallBodyModels);
+
+				}
+				else
+				{
+					pipeline = new RenderableCylindricalImageActorPipeline(image.getFilename(), image.getBounds(), smallBodyModels);
+
+				}
+			}
+			catch (Exception e)
+			{
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			if (pipeline == null) return;
+			updatePipeline(image, pipeline);
+			completionBlock.apply(null);
+			SwingUtilities.invokeLater( () -> {
+				pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
+			});
+		}
+	}
 }

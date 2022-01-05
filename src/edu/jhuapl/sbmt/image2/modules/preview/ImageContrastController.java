@@ -37,6 +37,21 @@ public class ImageContrastController
 	{
 		slider.setImageData(imageData);
 	}
+
+	public int getLowValue()
+	{
+		return slider.getLowValue();
+	}
+
+	public int getHighValue()
+	{
+		return slider.getHighValue();
+	}
+
+	public IntensityRange getIntensityRange()
+	{
+		return new IntensityRange(getLowValue(), getHighValue());
+	}
 }
 
 class ImageContrastSlider extends RangeSlider
@@ -75,6 +90,7 @@ class ImageContrastSlider extends RangeSlider
 		try
 		{
 			intensityRange = new IntensityRange(getLowValue(), getHighValue());
+//			System.out.println("ImageContrastSlider: applyContrastToImage: intensity range "+ intensityRange);
 			pipeline = new VtkImageContrastPipeline(imageData, intensityRange);
 			completionBlock.apply(pipeline.getUpdatedData().get(0));
 		}

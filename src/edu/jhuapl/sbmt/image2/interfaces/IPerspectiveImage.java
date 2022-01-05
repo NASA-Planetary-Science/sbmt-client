@@ -3,6 +3,7 @@ package edu.jhuapl.sbmt.image2.interfaces;
 import java.util.Date;
 import java.util.List;
 
+import edu.jhuapl.saavtk.util.IntensityRange;
 import edu.jhuapl.sbmt.image2.modules.rendering.cylindricalImage.CylindricalBounds;
 import edu.jhuapl.sbmt.model.image.ImageSource;
 import edu.jhuapl.sbmt.model.image.ImageType;
@@ -76,4 +77,24 @@ public interface IPerspectiveImage
 	public void setLongTime(Long longTime);
 
 	public List<IPerspectiveImage> getImages();
+
+	public IntensityRange getIntensityRange();
+
+	public void setIntensityRange(IntensityRange intensityRange);
+
+	public IntensityRange getOfflimbIntensityRange();
+
+	public void setOfflimbIntensityRange(IntensityRange intensityRange);
+
+	public double getOfflimbDepth();
+
+	public void setOfflimbDepth(double depth);
+
+	public double getMinFrustumLength();
+
+	public void setMinFrustumLength(double minFrustumLength);
+
+	public double getMaxFrustumLength();
+
+	public void setMaxFrustumLength(double maxFrustumLength);
 }

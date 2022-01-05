@@ -115,6 +115,12 @@ public class ColorImageGeneratorPipeline implements RenderableImageActorPipeline
 		return Lists.newArrayList();
 	}
 
+	@Override
+	public List<vtkActor> getRenderableOffLimbBoundaryActors()
+	{
+		return Lists.newArrayList();
+	}
+
 	public static void main(String[] args) throws Exception
 	{
 		NativeLibraryLoader.loadAllVtkLibraries();
@@ -153,6 +159,8 @@ public class ColorImageGeneratorPipeline implements RenderableImageActorPipeline
 			.run();
 
 	}
+
+
 
 
 }

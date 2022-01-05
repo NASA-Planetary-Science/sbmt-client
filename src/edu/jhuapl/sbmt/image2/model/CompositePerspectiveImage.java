@@ -5,6 +5,7 @@ import java.util.List;
 
 import org.apache.commons.io.FilenameUtils;
 
+import edu.jhuapl.saavtk.util.IntensityRange;
 import edu.jhuapl.sbmt.image2.interfaces.IPerspectiveImage;
 import edu.jhuapl.sbmt.image2.interfaces.IPerspectiveImageTableRepresentable;
 import edu.jhuapl.sbmt.image2.modules.rendering.cylindricalImage.CylindricalBounds;
@@ -16,6 +17,7 @@ public class CompositePerspectiveImage implements IPerspectiveImage, IPerspectiv
 	private boolean mapped = false;
 	private boolean frustumShowing = false;
 	private boolean offlimbShowing = false;
+	private boolean offlimbBoundaryShowing = false;
 	private boolean boundaryShowing = false;
 	private String status = "Unloaded";
 	private int index;
@@ -288,5 +290,83 @@ public class CompositePerspectiveImage implements IPerspectiveImage, IPerspectiv
 	public void setPointingSource(String pointingSource)
 	{
 		this.images.get(0).setPointingSource(pointingSource);
+	}
+
+
+	@Override
+	public boolean isOfflimbBoundaryShowing()
+	{
+		return offlimbBoundaryShowing;
+	}
+
+
+	@Override
+	public void setOfflimbBoundaryShowing(boolean offlimbShowing)
+	{
+		this.offlimbBoundaryShowing = offlimbShowing;
+	}
+
+
+	@Override
+	public IntensityRange getIntensityRange()
+	{
+		return images.get(0).getIntensityRange();
+	}
+
+
+	@Override
+	public void setIntensityRange(IntensityRange intensityRange)
+	{
+		this.images.get(0).setIntensityRange(intensityRange);
+	}
+
+	@Override
+	public IntensityRange getOfflimbIntensityRange()
+	{
+		return images.get(0).getOfflimbIntensityRange();
+	}
+
+
+	@Override
+	public void setOfflimbIntensityRange(IntensityRange intensityRange)
+	{
+		this.images.get(0).setOfflimbIntensityRange(intensityRange);
+	}
+
+
+	@Override
+	public double getOfflimbDepth()
+	{
+		return images.get(0).getOfflimbDepth();
+	}
+
+
+	@Override
+	public void setOfflimbDepth(double depth)
+	{
+		this.images.get(0).setOfflimbDepth(depth);
+	}
+
+	public double getMinFrustumLength()
+	{
+		return images.get(0).getMinFrustumLength();
+	}
+
+
+	public void setMinFrustumLength(double minFrustumLength)
+	{
+		this.images.get(0).setMinFrustumLength(minFrustumLength);
+	}
+
+
+	public double getMaxFrustumLength()
+	{
+		return images.get(0).getMaxFrustumLength();
+	}
+
+
+	public void setMaxFrustumLength(double maxFrustumLength)
+	{
+		this.images.get(0).setMaxFrustumLength(maxFrustumLength);
 	}
 }

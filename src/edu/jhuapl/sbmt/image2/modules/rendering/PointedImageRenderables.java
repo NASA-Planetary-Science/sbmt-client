@@ -84,7 +84,7 @@ public class PointedImageRenderables
         List<vtkImageData> imageData = Lists.newArrayList();
         Just.of(renderableImage.getLayer())
         	.operate(imageRenderer)
-        	.operate(new VtkImageContrastOperator(null))
+        	.operate(new VtkImageContrastOperator(renderableImage.getIntensityRange()))
         	.operate(new VtkImageVtkMaskingOperator(renderableImage.getMasking().getMask()))
         	.subscribe(Sink.of(imageData)).run();
 
@@ -191,6 +191,8 @@ public class PointedImageRenderables
 
 	private void processOfflimb(RenderablePointedImage renderableImage) throws IOException, Exception
 	{
+		offLimbFootprintDepth = renderableImage.getOfflimbDepth();
+		System.out.println("PointedImageRenderables: processOfflimb: depth is " + offLimbFootprintDepth);
 		List<vtkActor> actors = Lists.newArrayList();
 		Just.of(renderableImage)
 			.operate(new OfflimbPlaneGenerator(offLimbFootprintDepth, smallBodyModels.get(0)))

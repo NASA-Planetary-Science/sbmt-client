@@ -45,7 +45,7 @@ public class OfflimbPlaneGenerator extends BasePipelineOperator<RenderablePointe
 
 	public OfflimbPlaneGenerator(double offLimbFootprintDepth, SmallBodyModel smallBodyModel)
 	{
-		this.offLimbFootprintDepth = offLimbFootprintDepth;
+//		this.offLimbFootprintDepth = offLimbFootprintDepth;
 		this.smallBodyModel = smallBodyModel;
 	}
 
@@ -53,6 +53,7 @@ public class OfflimbPlaneGenerator extends BasePipelineOperator<RenderablePointe
 	public void processData() throws IOException, Exception
 	{
 		renderableImage = inputs.get(0);
+		this.offLimbFootprintDepth = renderableImage.getOfflimbDepth();
 		imagePolyData=new vtkPolyData();
 		processStep1();
 		processStep2();

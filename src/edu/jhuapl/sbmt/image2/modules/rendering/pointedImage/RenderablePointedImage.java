@@ -2,6 +2,7 @@ package edu.jhuapl.sbmt.image2.modules.rendering.pointedImage;
 
 import java.util.HashMap;
 
+import edu.jhuapl.saavtk.util.IntensityRange;
 import edu.jhuapl.saavtk.util.MathUtil;
 import edu.jhuapl.sbmt.image2.api.Layer;
 import edu.jhuapl.sbmt.image2.modules.rendering.layer.LayerMasking;
@@ -16,6 +17,10 @@ public class RenderablePointedImage
 	private LayerMasking masking;
 	private double offset;
 	private double defaultOffset;
+	private IntensityRange intensityRange;
+	private IntensityRange offlimbIntensityRange;
+	private double minFrustumLength, maxFrustumLength;
+	private double offlimbDepth;
 
 	public RenderablePointedImage(Layer layer, HashMap<String, String> metadata, PointingFileReader pointing)
 	{
@@ -124,5 +129,64 @@ public class RenderablePointedImage
         double fovVert = MathUtil.vsep(pointing.getFrustum1(), pointing.getFrustum2()) * 180.0 / Math.PI;
         return fovVert;
     }
+
+
+	public IntensityRange getIntensityRange()
+	{
+		return intensityRange;
+	}
+
+
+	public void setIntensityRange(IntensityRange intensityRange)
+	{
+		this.intensityRange = intensityRange;
+	}
+
+	public IntensityRange getOfflimbIntensityRange()
+	{
+		return offlimbIntensityRange;
+	}
+
+
+	public void setOfflimbIntensityRange(IntensityRange intensityRange)
+	{
+		this.offlimbIntensityRange = intensityRange;
+	}
+
+
+	public double getMinFrustumLength()
+	{
+		return minFrustumLength;
+	}
+
+
+	public void setMinFrustumLength(double minFrustumLength)
+	{
+		this.minFrustumLength = minFrustumLength;
+	}
+
+
+	public double getMaxFrustumLength()
+	{
+		return maxFrustumLength;
+	}
+
+
+	public void setMaxFrustumLength(double maxFrustumLength)
+	{
+		this.maxFrustumLength = maxFrustumLength;
+	}
+
+
+	public double getOfflimbDepth()
+	{
+		return offlimbDepth;
+	}
+
+
+	public void setOfflimbDepth(double offlimbDepth)
+	{
+		this.offlimbDepth = offlimbDepth;
+	}
 
 }

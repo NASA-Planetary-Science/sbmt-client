@@ -38,6 +38,7 @@ public class OfflimbActorOperator extends BasePipelineOperator<Pair<RenderablePo
 	@Override
 	public void processData() throws IOException, Exception
 	{
+		System.out.println("OfflimbActorOperator: processData: regenerating offlimb actors");
 		RenderablePointedImage renderableImage = inputs.get(0).getLeft();
 		vtkPolyData imagePolyData = inputs.get(0).getRight();
 		PointingFileReader infoReader = renderableImage.getPointing();
@@ -51,12 +52,12 @@ public class OfflimbActorOperator extends BasePipelineOperator<Pair<RenderablePo
 						    			frustum3Adjusted,
 						    			frustum4Adjusted,
 						    			frustum2Adjusted);
-
+    	System.out.println("OfflimbActorOperator: processData: intensty " + renderableImage.getIntensityRange());
     	 VtkImageRendererOperator imageRenderer = new VtkImageRendererOperator();
          List<vtkImageData> imageData = Lists.newArrayList();
          Just.of(renderableImage.getLayer())
          	.operate(imageRenderer)
-         	.operate(new VtkImageContrastOperator(null))
+         	.operate(new VtkImageContrastOperator(renderableImage.getOfflimbIntensityRange()))
          	.operate(new VtkImageVtkMaskingOperator(renderableImage.getMasking().getMask()))
          	.subscribe(Sink.of(imageData)).run();
 

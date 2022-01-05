@@ -17,6 +17,10 @@ public interface IPerspectiveImageTableRepresentable
 
 	public void setBoundaryShowing(boolean boundaryShowing);
 
+	public boolean isOfflimbBoundaryShowing();
+
+	public void setOfflimbBoundaryShowing(boolean offlimbShowing);
+
 	public String getStatus();
 
 	public void setStatus(String status);

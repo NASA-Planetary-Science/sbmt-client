@@ -59,6 +59,12 @@ public class PerspectiveImage implements IPerspectiveImage
 	//default contrast stretch
 	private IntensityRange intensityRange = new IntensityRange(0, 255);
 
+	//default offlimb contrast stretch
+	private IntensityRange offlimbIntensityRange = new IntensityRange(0, 255);
+
+	private double offlimbDepth;
+	private double minFrustumLength, maxFrustumLength;
+
 	//number of layers
 	private int numberOfLayers = 1;
 
@@ -140,6 +146,16 @@ public class PerspectiveImage implements IPerspectiveImage
 	public void setIntensityRange(IntensityRange intensityRange)
 	{
 		this.intensityRange = intensityRange;
+	}
+
+	public IntensityRange getOfflimbIntensityRange()
+	{
+		return offlimbIntensityRange;
+	}
+
+	public void setOfflimbIntensityRange(IntensityRange intensityRange)
+	{
+		this.offlimbIntensityRange = intensityRange;
 	}
 
 	public String getFilename()
@@ -390,6 +406,41 @@ public class PerspectiveImage implements IPerspectiveImage
 	public List<IPerspectiveImage> getImages()
 	{
 		return List.of(this);
+	}
+
+	@Override
+	public double getOfflimbDepth()
+	{
+		return offlimbDepth;
+	}
+
+	@Override
+	public void setOfflimbDepth(double depth)
+	{
+		this.offlimbDepth = depth;
+	}
+
+	public double getMinFrustumLength()
+	{
+		return minFrustumLength;
+	}
+
+
+	public void setMinFrustumLength(double minFrustumLength)
+	{
+		this.minFrustumLength = minFrustumLength;
+	}
+
+
+	public double getMaxFrustumLength()
+	{
+		return maxFrustumLength;
+	}
+
+
+	public void setMaxFrustumLength(double maxFrustumLength)
+	{
+		this.maxFrustumLength = maxFrustumLength;
 	}
 
 }
