@@ -15,9 +15,11 @@ import edu.jhuapl.sbmt.image2.pipeline.operator.BasePipelineOperator;
 
 public class VTKImagePolyDataRenderer extends BasePipelineOperator<Pair<vtkImageData, vtkPolyData>, vtkActor>
 {
-	public VTKImagePolyDataRenderer()
-	{
+	boolean isLinearInterpolation;
 
+	public VTKImagePolyDataRenderer(boolean interpolationState)
+	{
+		this.isLinearInterpolation = interpolationState;
 	}
 
 	@Override
@@ -26,7 +28,8 @@ public class VTKImagePolyDataRenderer extends BasePipelineOperator<Pair<vtkImage
 		vtkPolyData footprint = inputs.get(0).getRight();
 
 		vtkTexture imageTexture = new vtkTexture();
-        imageTexture.InterpolateOn();
+//        imageTexture.InterpolateOn();
+		imageTexture.SetInterpolate(isLinearInterpolation ? 1 : 0);
         imageTexture.RepeatOff();
         imageTexture.EdgeClampOn();
         imageTexture.SetInputData(inputs.get(0).getLeft());

@@ -2,6 +2,7 @@ package edu.jhuapl.sbmt.image2.interfaces;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 
 import edu.jhuapl.saavtk.util.IntensityRange;
 import edu.jhuapl.sbmt.image2.modules.rendering.cylindricalImage.CylindricalBounds;
@@ -19,6 +20,10 @@ public interface IPerspectiveImage
 	public String getPointingSource();
 
 	public void setPointingSource(String pointingSource);
+
+	public Optional<String> getModifiedPointingSource();
+
+	public void setModifiedPointingSource(Optional<String> modifiedPointingSource);
 
 	public boolean isSimulateLighting();
 
@@ -97,4 +102,8 @@ public interface IPerspectiveImage
 	public double getMaxFrustumLength();
 
 	public void setMaxFrustumLength(double maxFrustumLength);
+
+	public boolean getInterpolateState();
+
+	public void setInterpolateState(boolean isLinear);
 }

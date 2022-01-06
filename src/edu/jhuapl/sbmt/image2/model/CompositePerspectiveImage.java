@@ -2,6 +2,7 @@ package edu.jhuapl.sbmt.image2.model;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 
 import org.apache.commons.io.FilenameUtils;
 
@@ -128,13 +129,11 @@ public class CompositePerspectiveImage implements IPerspectiveImage, IPerspectiv
 
 	public ImageSource getPointingSourceType()
 	{
-		System.out.println("CompositePerspectiveImage: getPointingSourceType: pointing type " + images.get(0).getPointingSourceType());
 		return images.get(0).getPointingSourceType();
 	}
 
 	public String getPointingSource()
 	{
-		System.out.println("CompositePerspectiveImage: getPointingSource: pointing source " + images.get(0).getPointingSource());
 		return images.get(0).getPointingSource();
 	}
 
@@ -368,5 +367,31 @@ public class CompositePerspectiveImage implements IPerspectiveImage, IPerspectiv
 	public void setMaxFrustumLength(double maxFrustumLength)
 	{
 		this.images.get(0).setMaxFrustumLength(maxFrustumLength);
+	}
+
+	@Override
+	public Optional<String> getModifiedPointingSource()
+	{
+		return this.images.get(0).getModifiedPointingSource();
+	}
+
+	@Override
+	public void setModifiedPointingSource(Optional<String> modifiedPointingSource)
+	{
+		this.images.get(0).setModifiedPointingSource(modifiedPointingSource);
+	}
+
+
+	@Override
+	public boolean getInterpolateState()
+	{
+		return this.images.get(0).getInterpolateState();
+	}
+
+
+	@Override
+	public void setInterpolateState(boolean isLinear)
+	{
+		this.images.get(0).setInterpolateState(isLinear);
 	}
 }

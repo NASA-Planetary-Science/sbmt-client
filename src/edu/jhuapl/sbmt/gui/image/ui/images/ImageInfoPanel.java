@@ -374,11 +374,12 @@ public class ImageInfoPanel extends ModelInfoWindow implements MouseListener, Mo
         {
             if (e.isAltDown())
             {
-//                System.out.println("Resetting pointing...");
+                System.out.println("Resetting pointing...");
 //                ((PerspectiveImage)image).resetSpacecraftState();
             }
             else
             {
+            	System.out.println("ImageInfoPanel: mouseClicked: centering on pixel");
                 centerFrustumOnPixel(e);
 
                 ((PerspectiveImage)image).loadFootprint();

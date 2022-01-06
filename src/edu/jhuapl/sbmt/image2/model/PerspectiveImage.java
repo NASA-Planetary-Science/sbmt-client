@@ -2,6 +2,7 @@ package edu.jhuapl.sbmt.image2.model;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 
 import edu.jhuapl.saavtk.util.IntensityRange;
 import edu.jhuapl.sbmt.image2.interfaces.IPerspectiveImage;
@@ -44,6 +45,7 @@ public class PerspectiveImage implements IPerspectiveImage
 	private String filename;
 
 	String pointingSource;
+	Optional<String> modifiedPointingSource = Optional.ofNullable(null);
 
 	ImageSource pointingSourceType = ImageSource.SPICE;
 
@@ -55,6 +57,8 @@ public class PerspectiveImage implements IPerspectiveImage
 
 	//Linear interpolation dimensions
 	private int[] linearInterpolatorDims = null;
+
+	private boolean isLinearInterpolation = true;
 
 	//default contrast stretch
 	private IntensityRange intensityRange = new IntensityRange(0, 255);
@@ -441,6 +445,31 @@ public class PerspectiveImage implements IPerspectiveImage
 	public void setMaxFrustumLength(double maxFrustumLength)
 	{
 		this.maxFrustumLength = maxFrustumLength;
+	}
+
+	@Override
+	public Optional<String> getModifiedPointingSource()
+	{
+		return modifiedPointingSource;
+	}
+
+	@Override
+	public void setModifiedPointingSource(Optional<String> modifiedPointingSource)
+	{
+		this.modifiedPointingSource = modifiedPointingSource;
+	}
+
+	@Override
+	public boolean getInterpolateState()
+	{
+		return isLinearInterpolation;
+	}
+
+
+	@Override
+	public void setInterpolateState(boolean isLinear)
+	{
+		this.isLinearInterpolation = isLinear;
 	}
 
 }

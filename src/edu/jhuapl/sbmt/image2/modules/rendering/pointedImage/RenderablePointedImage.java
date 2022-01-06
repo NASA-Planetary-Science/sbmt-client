@@ -1,6 +1,7 @@
 package edu.jhuapl.sbmt.image2.modules.rendering.pointedImage;
 
 import java.util.HashMap;
+import java.util.Optional;
 
 import edu.jhuapl.saavtk.util.IntensityRange;
 import edu.jhuapl.saavtk.util.MathUtil;
@@ -11,6 +12,7 @@ import edu.jhuapl.sbmt.model.image.PointingFileReader;
 public class RenderablePointedImage
 {
 	private PointingFileReader pointing;
+	private Optional<PointingFileReader> modifiedPointing = Optional.ofNullable(null);
 	private Layer layer;
 	private HashMap<String, String> metadata;
 	private int imageWidth, imageHeight;
@@ -21,6 +23,7 @@ public class RenderablePointedImage
 	private IntensityRange offlimbIntensityRange;
 	private double minFrustumLength, maxFrustumLength;
 	private double offlimbDepth;
+	private boolean isLinearInterpolation = true;
 
 	public RenderablePointedImage(Layer layer, HashMap<String, String> metadata, PointingFileReader pointing)
 	{
@@ -187,6 +190,42 @@ public class RenderablePointedImage
 	public void setOfflimbDepth(double offlimbDepth)
 	{
 		this.offlimbDepth = offlimbDepth;
+	}
+
+
+	/**
+	 * @return the modifiedPointing
+	 */
+	public Optional<PointingFileReader> getModifiedPointing()
+	{
+		return modifiedPointing;
+	}
+
+
+	/**
+	 * @param modifiedPointing the modifiedPointing to set
+	 */
+	public void setModifiedPointing(Optional<PointingFileReader> modifiedPointing)
+	{
+		this.modifiedPointing = modifiedPointing;
+	}
+
+
+	/**
+	 * @return the isLinearInterpolation
+	 */
+	public boolean isLinearInterpolation()
+	{
+		return isLinearInterpolation;
+	}
+
+
+	/**
+	 * @param isLinearInterpolation the isLinearInterpolation to set
+	 */
+	public void setLinearInterpolation(boolean isLinearInterpolation)
+	{
+		this.isLinearInterpolation = isLinearInterpolation;
 	}
 
 }

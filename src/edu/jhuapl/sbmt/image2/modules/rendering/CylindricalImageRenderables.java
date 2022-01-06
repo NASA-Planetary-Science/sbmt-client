@@ -63,7 +63,7 @@ public class CylindricalImageRenderables
 	        footprintPolyData.add(footprint);
 	        List<vtkActor> actors = Lists.newArrayList();
 	        Just.of(Pair.of(imageData.get(0), footprint))
-	        	.operate(new VTKImagePolyDataRenderer())
+	        	.operate(new VTKImagePolyDataRenderer(true))
 	        	.subscribe(Sink.of(actors))
 	        	.run();
 	        footprintActors.addAll(actors);

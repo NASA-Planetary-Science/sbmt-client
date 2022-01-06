@@ -36,6 +36,7 @@ import edu.jhuapl.saavtk.util.Configuration.ReleaseType;
 import edu.jhuapl.saavtk.util.Debug;
 import edu.jhuapl.saavtk.util.DownloadableFileState;
 import edu.jhuapl.saavtk.util.FileCache;
+import edu.jhuapl.saavtk.util.FileCacheMessageUtil;
 import edu.jhuapl.saavtk.util.LatLon;
 import edu.jhuapl.saavtk.util.SafeURLPaths;
 import edu.jhuapl.saavtk.util.ServerSettingsManager;
@@ -711,6 +712,11 @@ public class SbmtMultiMissionTool
         if (getOption(args, "--debug") != null)
         {
             Debug.setEnabled(true);
+        }
+
+        if (getOption(args, "--info") == null)
+        {
+            FileCacheMessageUtil.enableInfoMessages(false);
         }
 
         // Use --debug-cache to control both the debug and informational messages.

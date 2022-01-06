@@ -5,6 +5,7 @@ import java.util.List;
 import edu.jhuapl.sbmt.image2.interfaces.IPerspectiveImage;
 import edu.jhuapl.sbmt.image2.interfaces.IPerspectiveImageTableRepresentable;
 import edu.jhuapl.sbmt.image2.model.PerspectiveImageCollection;
+import edu.jhuapl.sbmt.image2.pipeline.active.PointedRenderableImageEditingPipeline;
 
 import glum.gui.action.PopAction;
 
@@ -20,8 +21,28 @@ public class EditPointingAction<G1 extends IPerspectiveImage & IPerspectiveImage
 	@Override
 	public void executeAction(List<G1> aItemL)
 	{
-		// TODO Auto-generated method stub
+		// Bail if no items are selected
+		if (aItemL.size() != 1)
+			return;
 
+		try
+		{
+			PointedRenderableImageEditingPipeline pipeline =
+					new PointedRenderableImageEditingPipeline(aItemL.get(0), aManager.getSmallBodyModels());
+//			PerspectiveImageToRenderableImagePipeline pipeline = new PerspectiveImageToRenderableImagePipeline(List.of(aItemL.get(0)));
+//			List<RenderablePointedImage> renderableImages = pipeline.getRenderableImages();
+//			VtkLayerPreview preview = new VtkLayerPreview();
+//
+//			Just.of(renderableImages.get(0).getLayer())
+//				.subscribe(preview)
+//				.run();
+
+//			preview.getPanel().setVisible(true);
+		} catch (Exception e)
+		{
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 
 }

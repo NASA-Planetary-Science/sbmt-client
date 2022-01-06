@@ -48,7 +48,7 @@ public class ColorImageGeneratorPipeline implements RenderableImageActorPipeline
 			.run();
 
 		Just.of(imageAndPolyData[0])
-			.operate(new VTKImagePolyDataRenderer())
+			.operate(new VTKImagePolyDataRenderer(images.get(0).getInterpolateState()))
 			.subscribe(Sink.of(imageActors))
 			.run();
 	}
@@ -62,6 +62,12 @@ public class ColorImageGeneratorPipeline implements RenderableImageActorPipeline
 	public List<vtkActor> getRenderableImageActors()
 	{
 		return imageActors;
+	}
+
+	@Override
+	public List<vtkActor> getRenderableModifiedImageActors()
+	{
+		return Lists.newArrayList();
 	}
 
 	@Override
@@ -98,7 +104,19 @@ public class ColorImageGeneratorPipeline implements RenderableImageActorPipeline
 	}
 
 	@Override
+	public List<vtkActor> getRenderableModifiedImageBoundaryActors()
+	{
+		return Lists.newArrayList();
+	}
+
+	@Override
 	public List<vtkActor> getRenderableImageFrustumActors()
+	{
+		return Lists.newArrayList();
+	}
+
+	@Override
+	public List<vtkActor> getRenderableModifiedImageFrustumActors()
 	{
 		return Lists.newArrayList();
 	}
@@ -159,6 +177,8 @@ public class ColorImageGeneratorPipeline implements RenderableImageActorPipeline
 			.run();
 
 	}
+
+
 
 
 

@@ -38,11 +38,14 @@ import edu.jhuapl.sbmt.model.image.PointingFileReader;
 public class PointedImageRenderables
 {
 	private List<vtkActor> footprintActors = Lists.newArrayList();
+	private List<vtkActor> modifiedFootprintActors = Lists.newArrayList();
 	private List<vtkPolyData> footprintPolyData = Lists.newArrayList();
 	private vtkActor frustumActor;
+	private vtkActor modifiedFrustumActor;
 	private vtkActor offLimbActor;
 	private vtkActor offLimbBoundaryActor;
 	private List<vtkActor> boundaryActors = Lists.newArrayList();
+	private List<vtkActor> modifiedBoundaryActors = Lists.newArrayList();
 	private List<SmallBodyModel> smallBodyModels;
 	public double maxFrustumDepth;
 	public double minFrustumDepth;
@@ -53,27 +56,44 @@ public class PointedImageRenderables
 	public PointedImageRenderables(RenderablePointedImage image, List<SmallBodyModel> smallBodyModels) throws IOException, Exception
 	{
 		this.smallBodyModels = smallBodyModels;
-		processFootprints(image);
-		processFrustum(image);
-		processOfflimb(image);
-		processBoundaries(image);
+		footprintActors = processFootprints(image, image.getPointing());
+		frustumActor = processFrustum(image, image.getPointing());
+		boundaryActors = processBoundaries(image, image.getPointing());
+		Pair<vtkActor, vtkActor> offLimbActors = processOfflimb(image);
+		offLimbActor = offLimbActors.getLeft();
+		offLimbBoundaryActor = offLimbActors.getRight();
+
+		image.getModifiedPointing().ifPresent(pointing -> {
+			try
+			{
+				modifiedFootprintActors = processFootprints(image, pointing);
+				modifiedFrustumActor = processFrustum(image, pointing);
+				modifiedBoundaryActors = processBoundaries(image, pointing);
+			}
+			catch (Exception e)
+			{
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+
+		});
 	}
 
-	private void processFootprints(RenderablePointedImage renderableImage) throws IOException, Exception
+	private List<vtkActor> processFootprints(RenderablePointedImage renderableImage, PointingFileReader pointing) throws IOException, Exception
 	{
+		List<vtkActor> footprintActors = Lists.newArrayList();
 		RenderablePointedImageFootprintGeneratorPipeline pipeline =
 				new RenderablePointedImageFootprintGeneratorPipeline(renderableImage, smallBodyModels);
 		List<vtkPolyData> footprints = pipeline.getFootprintPolyData();
 
-		PointingFileReader infoReader = renderableImage.getPointing();
+//		PointingFileReader infoReader = renderableImage.getPointing();
 
-		double[] spacecraftPositionAdjusted = infoReader.getSpacecraftPosition();
-
-    	double[] frustum1Adjusted = infoReader.getFrustum1();
-    	double[] frustum2Adjusted = infoReader.getFrustum2();
-    	double[] frustum3Adjusted = infoReader.getFrustum3();
-    	double[] frustum4Adjusted = infoReader.getFrustum4();
-
+		double[] spacecraftPositionAdjusted = pointing.getSpacecraftPosition();
+//		System.out.println("PointedImageRenderables: processFootprints: sc pos " + new Vector3D(spacecraftPositionAdjusted));
+    	double[] frustum1Adjusted = pointing.getFrustum1();
+    	double[] frustum2Adjusted = pointing.getFrustum2();
+    	double[] frustum3Adjusted = pointing.getFrustum3();
+    	double[] frustum4Adjusted = pointing.getFrustum4();
     	Frustum frustum = new Frustum(spacecraftPositionAdjusted,
 						    			frustum1Adjusted,
 						    			frustum3Adjusted,
@@ -101,23 +121,25 @@ public class PointedImageRenderables
 	        footprintPolyData.add(footprint);
 	        List<vtkActor> actors = Lists.newArrayList();
 	        Just.of(Pair.of(imageData.get(0), footprint))
-	        	.operate(new VTKImagePolyDataRenderer())
+	        	.operate(new VTKImagePolyDataRenderer(renderableImage.isLinearInterpolation()))
 	        	.subscribe(Sink.of(actors))
 	        	.run();
 	        footprintActors.addAll(actors);
     	}
+    	return footprintActors;
 	}
 
-	private void processFrustum(RenderablePointedImage renderableImage)
+	private vtkActor processFrustum(RenderablePointedImage renderableImage, PointingFileReader pointing)
 	{
-		PointingFileReader infoReader = renderableImage.getPointing();
+		vtkActor frustumActor;
+//		PointingFileReader infoReader = renderableImage.getPointing();
 		double diagonalLength = smallBodyModels.get(0).getBoundingBoxDiagonalLength();
-		double[] scPos = infoReader.getSpacecraftPosition();
+		double[] scPos = pointing.getSpacecraftPosition();
 		offLimbFootprintDepth = new Vector3D(scPos).getNorm();
-    	double[] frus1 = infoReader.getFrustum1();
-    	double[] frus2 = infoReader.getFrustum2();
-    	double[] frus3 = infoReader.getFrustum3();
-    	double[] frus4 = infoReader.getFrustum4();
+    	double[] frus1 = pointing.getFrustum1();
+    	double[] frus2 = pointing.getFrustum2();
+    	double[] frus3 = pointing.getFrustum3();
+    	double[] frus4 = pointing.getFrustum4();
     	Frustum frustum = new Frustum(scPos,
 						    			frus1,
 						    			frus2,
@@ -186,13 +208,14 @@ public class PointedImageRenderables
 		frusMapper.SetInputData(frustumPolyData);
 
 		frustumActor.SetMapper(frusMapper);
-
+		return frustumActor;
 	}
 
-	private void processOfflimb(RenderablePointedImage renderableImage) throws IOException, Exception
+	private Pair<vtkActor, vtkActor> processOfflimb(RenderablePointedImage renderableImage) throws IOException, Exception
 	{
+		vtkActor offLimbActor;
+		vtkActor offLimbBoundaryActor;
 		offLimbFootprintDepth = renderableImage.getOfflimbDepth();
-		System.out.println("PointedImageRenderables: processOfflimb: depth is " + offLimbFootprintDepth);
 		List<vtkActor> actors = Lists.newArrayList();
 		Just.of(renderableImage)
 			.operate(new OfflimbPlaneGenerator(offLimbFootprintDepth, smallBodyModels.get(0)))
@@ -205,19 +228,21 @@ public class PointedImageRenderables
 
 		offLimbActor.SetVisibility(offLimbVisibility ? 1 : 0);
 		offLimbBoundaryActor.SetVisibility(offLimbBoundaryVisibility ? 1 : 0);
+		return Pair.of(offLimbActor, offLimbBoundaryActor);
 	}
 
-	private void processBoundaries(RenderablePointedImage renderableImage) throws IOException, Exception
+	private List<vtkActor> processBoundaries(RenderablePointedImage renderableImage, PointingFileReader pointing) throws IOException, Exception
 	{
-		PointingFileReader infoReader = renderableImage.getPointing();
+		List<vtkActor> boundaryActors = Lists.newArrayList();
+//		PointingFileReader infoReader = renderableImage.getPointing();
 		vtkPolyData boundary;
 		vtkPolyDataMapper boundaryMapper = new vtkPolyDataMapper();
 		vtkActor boundaryActor = new vtkActor();
-		double[] spacecraftPositionAdjusted = infoReader.getSpacecraftPosition();
-    	double[] frustum1Adjusted = infoReader.getFrustum1();
-    	double[] frustum2Adjusted = infoReader.getFrustum2();
-    	double[] frustum3Adjusted = infoReader.getFrustum3();
-    	double[] frustum4Adjusted = infoReader.getFrustum4();
+		double[] spacecraftPositionAdjusted = pointing.getSpacecraftPosition();
+    	double[] frustum1Adjusted = pointing.getFrustum1();
+    	double[] frustum2Adjusted = pointing.getFrustum2();
+    	double[] frustum3Adjusted = pointing.getFrustum3();
+    	double[] frustum4Adjusted = pointing.getFrustum4();
     	Frustum frustum = new Frustum(spacecraftPositionAdjusted,
 						    			frustum1Adjusted,
 						    			frustum3Adjusted,
@@ -265,11 +290,11 @@ public class PointedImageRenderables
 			        boundaryMapper.Update();
 			        boundaryActor.SetMapper(boundaryMapper);
 			        boundaryActors.add(boundaryActor);
-					return;
+			        return boundaryActors;
 				}
 	    	}
     	}
-
+    	return boundaryActors;
 
 	}
 
@@ -296,5 +321,29 @@ public class PointedImageRenderables
 	public List<vtkActor> getBoundaries()
 	{
 		return boundaryActors;
+	}
+
+	/**
+	 * @return the modifiedFootprintActors
+	 */
+	public List<vtkActor> getModifiedFootprintActors()
+	{
+		return modifiedFootprintActors;
+	}
+
+	/**
+	 * @return the modifiedFrustumActor
+	 */
+	public vtkActor getModifiedFrustumActor()
+	{
+		return modifiedFrustumActor;
+	}
+
+	/**
+	 * @return the modifiedBoundaryActors
+	 */
+	public List<vtkActor> getModifiedBoundaryActors()
+	{
+		return modifiedBoundaryActors;
 	}
 }

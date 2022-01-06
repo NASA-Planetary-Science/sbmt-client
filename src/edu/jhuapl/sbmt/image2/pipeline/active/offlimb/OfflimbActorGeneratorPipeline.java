@@ -105,7 +105,6 @@ public class OfflimbActorGeneratorPipeline
 		VtkRendererPreview preview = new VtkRendererPreview(vtkReader.getOutputs().get(0));
 
 
-		System.out.println("OfflimbActorGeneratorPipeline: OfflimbActorGeneratorPipeline: running preview pipeline");
 		sceneObjects
 			.operate(sceneBuilder)
 			.subscribe(preview)

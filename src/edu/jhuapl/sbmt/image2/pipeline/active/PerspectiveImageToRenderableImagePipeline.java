@@ -77,12 +77,12 @@ public class PerspectiveImageToRenderableImagePipeline
 				.subscribe(Sink.of(renderableImage)).run();
 			renderableImages.addAll(renderableImage);
 
-			System.out.println(
-					"PerspectiveImageToRenderableImagePipeline: PerspectiveImageToRenderableImagePipeline: image off depth " + image.getOfflimbDepth());
-			System.out.println(
-					"PerspectiveImageToRenderableImagePipeline: PerspectiveImageToRenderableImagePipeline: image min frus " + image.getMinFrustumLength());
-			System.out.println(
-					"PerspectiveImageToRenderableImagePipeline: PerspectiveImageToRenderableImagePipeline: image max frus " + image.getMaxFrustumLength());
+//			System.out.println(
+//					"PerspectiveImageToRenderableImagePipeline: PerspectiveImageToRenderableImagePipeline: image off depth " + image.getOfflimbDepth());
+//			System.out.println(
+//					"PerspectiveImageToRenderableImagePipeline: PerspectiveImageToRenderableImagePipeline: image min frus " + image.getMinFrustumLength());
+//			System.out.println(
+//					"PerspectiveImageToRenderableImagePipeline: PerspectiveImageToRenderableImagePipeline: image max frus " + image.getMaxFrustumLength());
 
 			for (RenderablePointedImage renderableImg : renderableImages)
 			{
@@ -97,6 +97,7 @@ public class PerspectiveImageToRenderableImagePipeline
 				renderableImg.setMinFrustumLength(image.getMinFrustumLength());
 				renderableImg.setMaxFrustumLength(image.getMaxFrustumLength());
 				renderableImg.setOfflimbDepth(image.getOfflimbDepth());
+				renderableImg.setLinearInterpolation(image.getInterpolateState());
 			}
 		}
 	}

@@ -44,7 +44,7 @@ public class OfflimbImageControlPanel extends JPanel
         footprintDepthLabel = new JLabel("Off-limb footprint depth:");
         depthPanel.add(footprintDepthLabel);
 
-        footprintDepthValue = new JLabel("0");
+        footprintDepthValue = new JLabel(" 0");
         depthPanel.add(footprintDepthValue);
 
         footprintDepthSlider = new DepthSlider();
@@ -58,7 +58,7 @@ public class OfflimbImageControlPanel extends JPanel
                 "Off-limb footprint opacity:"); // changed to opacity because of the way it works (opposite of transparency)
         transparencyPanel.add(footprintTransparencyLabel);
 
-        footprintTransparencyValue = new JLabel("50");
+        footprintTransparencyValue = new JLabel(" 50%");
         transparencyPanel.add(footprintTransparencyValue);
 
         footprintTransparencySlider = new AlphaSlider();

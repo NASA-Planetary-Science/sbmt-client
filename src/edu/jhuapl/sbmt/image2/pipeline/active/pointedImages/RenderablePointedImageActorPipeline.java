@@ -1,8 +1,10 @@
 package edu.jhuapl.sbmt.image2.pipeline.active.pointedImages;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Optional;
 
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.commons.lang3.tuple.Triple;
@@ -16,6 +18,7 @@ import edu.jhuapl.saavtk.util.MathUtil;
 import edu.jhuapl.sbmt.client.SmallBodyModel;
 import edu.jhuapl.sbmt.image2.api.Layer;
 import edu.jhuapl.sbmt.image2.interfaces.IPerspectiveImage;
+import edu.jhuapl.sbmt.image2.interfaces.IPerspectiveImageTableRepresentable;
 import edu.jhuapl.sbmt.image2.modules.io.builtIn.BuiltInFitsHeaderReader;
 import edu.jhuapl.sbmt.image2.modules.io.builtIn.BuiltInFitsReader;
 import edu.jhuapl.sbmt.image2.modules.pointing.InfofileReaderPublisher;
@@ -41,27 +44,68 @@ import edu.jhuapl.sbmt.image2.pipeline.subscriber.Sink;
 import edu.jhuapl.sbmt.model.image.ImageSource;
 import edu.jhuapl.sbmt.model.image.PointingFileReader;
 
-public class RenderablePointedImageActorPipeline implements RenderableImageActorPipeline
+public class RenderablePointedImageActorPipeline<G1 extends IPerspectiveImage & IPerspectiveImageTableRepresentable> implements RenderableImageActorPipeline
 {
-	List<vtkActor> renderableImageActors = Lists.newArrayList();
-	Pair<List<vtkActor>, List<PointedImageRenderables>>[] sceneOutputs = new Pair[1];
+	private List<vtkActor> renderableImageActors = Lists.newArrayList();
+	private Pair<List<vtkActor>, List<PointedImageRenderables>>[] sceneOutputs = new Pair[1];
+	private G1 image;
+	private List<SmallBodyModel> smallBodyModels;
+	private String filename, pointingFile;
+	private Optional<String> modifiedPointingFile;
+	private String flip;
+	private double rotation;
+	private List<Layer> updatedLayers = Lists.newArrayList();
+	private IPipelinePublisher<HashMap<String, String>> metadataReader;
+	private IPipelinePublisher<PointingFileReader> pointingPublisher = null;
+	private IPipelinePublisher<PointingFileReader> modifiedPointingPublisher = null;
+	List<RenderablePointedImage> renderableImages = Lists.newArrayList();
 
-	public RenderablePointedImageActorPipeline(IPerspectiveImage image, List<SmallBodyModel> smallBodyModel) throws Exception
+	public RenderablePointedImageActorPipeline(G1 image, List<SmallBodyModel> smallBodyModels) throws Exception
 	{
-		String filename = image.getFilename();
-		String pointingFile = image.getPointingSource();
+		this.image = image;
+		this.smallBodyModels = smallBodyModels;
+
+		loadFiles();
+		generateImageLayer();
+		pointingPublisher = generatePointing(pointingFile);
+		modifiedPointingFile.ifPresent(file -> {
+			try
+			{
+				modifiedPointingPublisher = generatePointing(file);
+			}
+			catch (IOException e)
+			{
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		});
+		generateRenderableImages();
+		buildScene();
+	}
+
+	private void loadFiles()
+	{
+		filename = image.getFilename();
+		pointingFile = image.getPointingSource();
+		modifiedPointingFile = Optional.ofNullable(null);
+		if (image.getModifiedPointingSource().isPresent()) modifiedPointingFile = image.getModifiedPointingSource();
 
 		if (!new File(filename).exists())
 		{
 			filename = FileCache.getFileFromServer(image.getFilename()).getAbsolutePath();
 			pointingFile = FileCache.getFileFromServer(image.getPointingSource()).getAbsolutePath();
+//			if (image.getModifiedPointingSource().isPresent())
+//			{
+//				modifiedPointingFile = Optional.of(FileCache.getFileFromServer(image.getModifiedPointingSource().get()).getAbsolutePath());
+//			}
 		}
 
-//		String filename = FileCache.getFileFromServer(image.getFilename()).getAbsolutePath();
-//		String pointingFile = FileCache.getFileFromServer(image.getPointingSource()).getAbsolutePath();
-		String flip = image.getFlip();
-		double rotation = image.getRotation();
+		flip = image.getFlip();
+		rotation = image.getRotation();
+	}
 
+	private void generateImageLayer() throws Exception
+	{
 		//***********************
 		//generate image layer
 		//***********************
@@ -78,23 +122,29 @@ public class RenderablePointedImageActorPipeline implements RenderableImageActor
 		else if (flip.equals("Y"))
 			flipOperator = new LayerYFlipOperator();
 
-
-		List<Layer> updatedLayers = Lists.newArrayList();
 		reader
 			.operate(linearInterpolator)
 			.operate(rotationOperator)
 			.operate(flipOperator)
 			.subscribe(Sink.of(updatedLayers)).run();
 
+		//generate metadata (in: filename, out: ImageMetadata)
+		metadataReader = new BuiltInFitsHeaderReader(filename);
+
+	}
+
+	private IPipelinePublisher<PointingFileReader> generatePointing(String pointingFile) throws IOException
+	{
 		IPipelinePublisher<PointingFileReader> pointingPublisher = null;
-		if (image.getPointingSourceType() == ImageSource.SPICE)
+		if (image.getPointingSourceType() == ImageSource.SPICE || pointingFile.endsWith(".adjusted"))
 			pointingPublisher = new InfofileReaderPublisher(pointingFile);
 		else
 			pointingPublisher = new SumfileReaderPublisher(pointingFile);
+		return pointingPublisher;
+	}
 
-		//generate metadata (in: filename, out: ImageMetadata)
-		IPipelinePublisher<HashMap<String, String>> metadataReader = new BuiltInFitsHeaderReader(filename);
-
+	private void generateRenderableImages() throws IOException, Exception
+	{
 		//combine image source (in: Layer+ImageMetadata+ImagePointing, out: RenderableImage)
 		IPipelinePublisher<Layer> layerPublisher = new Just<Layer>(updatedLayers.get(0));
 		IPipelinePublisher<Triple<Layer, HashMap<String, String>, PointingFileReader>> imageComponents =
@@ -107,20 +157,20 @@ public class RenderablePointedImageActorPipeline implements RenderableImageActor
 		//***************************************************************************************
 		//generate image polydata with texture coords (in: RenderableImage, out: vtkPolydata)
 		//***************************************************************************************
-		List<RenderablePointedImage> renderableImages = Lists.newArrayList();
+
 		imageComponents
 			.operate(renderableImageGenerator)
 			.subscribe(Sink.of(renderableImages)).run();
 
-		image.setDefaultOffset(3.0 * smallBodyModel.get(0).getMinShiftAmount());
+		image.setDefaultOffset(3.0 * smallBodyModels.get(0).getMinShiftAmount());
 		if (image.getOffset() == -1) image.setOffset(image.getDefaultOffset());
 
-		double diagonalLength = smallBodyModel.get(0).getBoundingBoxDiagonalLength();
-		System.out.println("RenderablePointedImageActorPipeline: RenderablePointedImageActorPipeline: diag length " + diagonalLength);
+		double diagonalLength = smallBodyModels.get(0).getBoundingBoxDiagonalLength();
 		double[] scPos = renderableImages.get(0).getPointing().getSpacecraftPosition();
 
 		for (RenderablePointedImage renderableImage : renderableImages)
 		{
+			if (modifiedPointingPublisher != null) renderableImage.setModifiedPointing(Optional.of(modifiedPointingPublisher.getOutputs().get(0)));
 			renderableImage.setMasking(new LayerMasking(image.getMaskValues()));
 			renderableImage.setOffset(image.getOffset());
 			renderableImage.setDefaultOffset(image.getDefaultOffset());
@@ -128,24 +178,22 @@ public class RenderablePointedImageActorPipeline implements RenderableImageActor
 			renderableImage.setOfflimbIntensityRange(image.getOfflimbIntensityRange());
 			renderableImage.setMinFrustumLength(MathUtil.vnorm(scPos) - diagonalLength);
 			renderableImage.setMaxFrustumLength(MathUtil.vnorm(scPos) + diagonalLength);
-//			if (renderableImage.getOfflimbDepth() == 0)
-//				renderableImage.setOfflimbDepth(MathUtil.vnorm(scPos));
-//			else
-				renderableImage.setOfflimbDepth(image.getOfflimbDepth());
 			image.setMinFrustumLength(MathUtil.vnorm(scPos) - diagonalLength);
 			image.setMaxFrustumLength(MathUtil.vnorm(scPos) + diagonalLength);
 			if (image.getOfflimbDepth() == 0)
 				image.setOfflimbDepth(MathUtil.vnorm(scPos));
+			renderableImage.setOfflimbDepth(image.getOfflimbDepth());
+			renderableImage.setLinearInterpolation(image.getInterpolateState());
 		}
-		System.out.println("RenderablePointedImageActorPipeline: RenderablePointedImageActorPipeline: renderImg off depth " + renderableImages.get(0).getOfflimbDepth());
-		System.out.println("RenderablePointedImageActorPipeline: RenderablePointedImageActorPipeline: image " + image.getOfflimbDepth());
-//		image.setOfflimbDepth(MathUtil.vnorm(scPos) - diagonalLength);
+	}
 
+	private void buildScene() throws IOException, Exception
+	{
 		//*************************
 		//zip the sources together
 		//*************************
 		IPipelinePublisher<Pair<List<SmallBodyModel>, List<RenderablePointedImage>>> sceneObjects =
-				Publishers.formPair(Just.of(smallBodyModel), Just.of(renderableImages));
+				Publishers.formPair(Just.of(smallBodyModels), Just.of(renderableImages));
 
 		//*****************************************************************************************************
 		//Pass them into the scene builder to perform intersection calculations, and send actors to List
@@ -172,6 +220,17 @@ public class RenderablePointedImageActorPipeline implements RenderableImageActor
 	}
 
 	@Override
+	public List<vtkActor> getRenderableModifiedImageActors()
+	{
+		List<vtkActor> imageActors = Lists.newArrayList();
+		for (PointedImageRenderables renderable : sceneOutputs[0].getRight())
+		{
+			imageActors.addAll(renderable.getModifiedFootprintActors());
+		}
+		return imageActors;
+	}
+
+	@Override
 	public List<vtkActor> getRenderableImageBoundaryActors()
 	{
 		List<vtkActor> imageBoundaryActors = Lists.newArrayList();
@@ -182,12 +241,33 @@ public class RenderablePointedImageActorPipeline implements RenderableImageActor
 		return imageBoundaryActors;
 	}
 
+	@Override
+	public List<vtkActor> getRenderableModifiedImageBoundaryActors()
+	{
+		List<vtkActor> imageBoundaryActors = Lists.newArrayList();
+		for (PointedImageRenderables renderable : sceneOutputs[0].getRight())
+		{
+			imageBoundaryActors.addAll(renderable.getModifiedBoundaryActors());
+		}
+		return imageBoundaryActors;
+	}
+
 	public List<vtkActor> getRenderableImageFrustumActors()
 	{
 		List<vtkActor> frustumActors = Lists.newArrayList();
 		for (PointedImageRenderables renderable : sceneOutputs[0].getRight())
 		{
 			frustumActors.add(renderable.getFrustum());
+		}
+		return frustumActors;
+	}
+
+	public List<vtkActor> getRenderableModifiedImageFrustumActors()
+	{
+		List<vtkActor> frustumActors = Lists.newArrayList();
+		for (PointedImageRenderables renderable : sceneOutputs[0].getRight())
+		{
+			frustumActors.add(renderable.getModifiedFrustumActor());
 		}
 		return frustumActors;
 	}

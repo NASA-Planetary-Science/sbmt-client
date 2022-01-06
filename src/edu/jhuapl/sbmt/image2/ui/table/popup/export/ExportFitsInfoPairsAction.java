@@ -68,7 +68,7 @@ public class ExportFitsInfoPairsAction<G1 extends IPerspectiveImage> extends Pop
 
 				PerspectiveImageToRenderableImagePipeline pipeline = new PerspectiveImageToRenderableImagePipeline(List.of(aItem));
 
-				InfoFileWriter writer = new InfoFileWriter(defaultFileName, pipeline.getRenderableImages().get(0).getPointing());
+				InfoFileWriter writer = new InfoFileWriter(defaultFileName, pipeline.getRenderableImages().get(0).getPointing(), false);
 				writer.write();
 			}
 			catch (Exception ex)

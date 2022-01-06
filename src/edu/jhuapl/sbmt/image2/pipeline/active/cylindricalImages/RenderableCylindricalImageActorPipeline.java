@@ -166,4 +166,25 @@ public class RenderableCylindricalImageActorPipeline implements RenderableImageA
 	{
 		return Lists.newArrayList();
 	}
+
+
+	@Override
+	public List<vtkActor> getRenderableModifiedImageActors()
+	{
+		return Lists.newArrayList();
+	}
+
+
+	@Override
+	public List<vtkActor> getRenderableModifiedImageBoundaryActors()
+	{
+		return Lists.newArrayList();
+	}
+
+
+	@Override
+	public List<vtkActor> getRenderableModifiedImageFrustumActors()
+	{
+		return Lists.newArrayList();
+	}
 }

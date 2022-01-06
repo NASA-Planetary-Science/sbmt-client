@@ -32,7 +32,7 @@ public class SaveImagePointingFileFromCacheOperator<G1 extends IPerspectiveImage
 
 			PerspectiveImageToRenderableImagePipeline pipeline = new PerspectiveImageToRenderableImagePipeline(List.of(inputs.get(0)));
 
-			InfoFileWriter writer = new InfoFileWriter(defaultFileName, pipeline.getRenderableImages().get(0).getPointing());
+			InfoFileWriter writer = new InfoFileWriter(defaultFileName, pipeline.getRenderableImages().get(0).getPointing(), false);
 			writer.write();
 		}
 		catch (Exception ex)

@@ -166,20 +166,17 @@ public class OfflimbControlsController<G1 extends IPerspectiveImage & IPerspecti
 			{
 				if (e.getSource() == controlsPanel.getFootprintDepthSlider() && !controlsPanel.getFootprintDepthSlider().getValueIsAdjusting())
 				{
-
-//					double minFrustumRayLength =
-//					double maxFrustumRayLength = MathUtil.vnorm(scPos)
-//							+ diagonalLength;
 					DepthSlider<G1> depthSlider = controlsPanel.getFootprintDepthSlider();
-//					depthSlider.applyDepthToImage(controlsModel.getCurrentSlice());
-//					controlsModel.setCurrentDepth(depthSlider.getValue());
-					collection.setOffLimbDepth(image, depthSlider.getDepthValue(renderableImages.get(0).getMinFrustumLength(), renderableImages.get(0).getMaxFrustumLength()));
-//					controlsModel.getImage().firePropertyChange();
+					double depthValue = depthSlider.getDepthValue(renderableImages.get(0).getMinFrustumLength(), renderableImages.get(0).getMaxFrustumLength());
+					collection.setOffLimbDepth(image, depthValue);
+					controlsPanel.getFootprintDepthValue().setText(" " + depthValue);
 				}
 				else if (e.getSource() == controlsPanel.getFootprintTransparencySlider() && !controlsPanel.getFootprintTransparencySlider().getValueIsAdjusting())
 				{
 					AlphaSlider<G1> alphaSlider = controlsPanel.getFootprintTransparencySlider();
-					collection.setOfflimbOpacity(image, alphaSlider.getAlphaValue());
+					double alphaValue = alphaSlider.getAlphaValue();
+					collection.setOfflimbOpacity(image, alphaValue);
+					controlsPanel.getFootprintTransparencyValue().setText(" " + alphaValue*100 + "%");
 				}
 //				else if (e.getSource() == controlsPanel.getImageContrastSlider())
 //				{
@@ -208,7 +205,6 @@ public class OfflimbControlsController<G1 extends IPerspectiveImage & IPerspecti
 					// let everyone know that we're syncing or unsyncing
 					SyncContrastSlidersButton<G1> syncButton = controlsPanel.getSyncContrastButton();
 //					ContrastSlider contrastSlider = controlsPanel.getImageContrastSlider();
-//					contrastController.get
 //					syncButton.syncContrast(syncButton.isSelected());
 //					controlsModel.setSyncContrast(syncButton.isSelected());
 					collection.setContrastSynced(image, syncButton.isSelected());
@@ -248,8 +244,8 @@ public class OfflimbControlsController<G1 extends IPerspectiveImage & IPerspecti
 				Color currColor =  collection.getOffLimbBoundaryColor(image);
 				//image.getOfflimbBoundaryColor();
 				Color color = ColorChooser.showColorChooser(
-	                    getControlsPanel(), //new int[] {0,0});
-	                    new int[]{currColor.getRed(), currColor.getGreen(), currColor.getBlue()});
+	                    null, new int[] {0,0});
+//	                    new int[]{currColor.getRed(), currColor.getGreen(), currColor.getBlue()});
 //				 image.setOfflimbBoundaryColor(color);
 				 collection.setOffLimbBoundaryColor(image, color);
 			}
