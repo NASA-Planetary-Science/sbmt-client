@@ -144,7 +144,7 @@ public class CompositePerspectiveImage implements IPerspectiveImage, IPerspectiv
 
 	public void setSimulateLighting(boolean simulateLighting)
 	{
-		this.simulateLighting = simulateLighting;
+		this.images.get(0).setSimulateLighting(simulateLighting);
 	}
 
 	public double getOffset()

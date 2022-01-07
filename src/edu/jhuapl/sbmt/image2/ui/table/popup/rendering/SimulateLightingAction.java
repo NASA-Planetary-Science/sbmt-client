@@ -19,14 +19,16 @@ public class SimulateLightingAction<G1 extends IPerspectiveImage & IPerspectiveI
 	/**
 	 *
 	 */
-	private final PerspectiveImageCollection aManager;
+	private final PerspectiveImageCollection<G1> aManager;
 
 	private final Renderer renderer;
+
+	private boolean newSelectedState = false;
 
 	/**
 	 * @param imagePopupMenu
 	 */
-	public SimulateLightingAction(PerspectiveImageCollection aManager, Renderer renderer)
+	public SimulateLightingAction(PerspectiveImageCollection<G1> aManager, Renderer renderer)
 	{
 		this.aManager = aManager;
 		this.renderer = renderer;
@@ -39,24 +41,23 @@ public class SimulateLightingAction<G1 extends IPerspectiveImage & IPerspectiveI
 		if (aItemL.size() != 1)
 			return;
 
-		//TODO fix this
-		IPerspectiveImage aItem = aItemL.get(0);
+		G1 aItem = aItemL.get(0);
 		try
 		{
-			PerspectiveImageSimulateLightingPipeline.of(aItem, renderer, !aItem.isSimulateLighting());
+			newSelectedState = !aItem.isSimulateLighting();
+			PerspectiveImageSimulateLightingPipeline.of(aItem, renderer, newSelectedState);
+			aManager.setSimulateLighting(aItem, newSelectedState);
 		}
 		catch (Exception e)
 		{
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		aManager.getAllItems().forEach(item -> ((G1)item).setSimulateLighting(false));
-
-//		for (G1 tempImage : aManager.getAllItems())
-//		{
-//			tempImage.setSimulateLighting(false);
-//		}
-		aItem.setSimulateLighting(!aItem.isSimulateLighting());
+		for (G1 tempImage : aManager.getAllItems())
+		{
+			aManager.setSimulateLighting(tempImage, false);
+		}
+		aItem.setSimulateLighting(newSelectedState);
 	}
 
 	@Override
@@ -64,11 +65,7 @@ public class SimulateLightingAction<G1 extends IPerspectiveImage & IPerspectiveI
 	{
 		super.setChosenItems(aItemC, aAssocMI);
 
-		// If any items are not visible then set checkbox to unselected
-		// in order to allow all chosen items to be toggled on
-		boolean isSelected = true;
-		for (G1 aItem : aItemC)
-			isSelected &= aItem.isSimulateLighting() == true;
+		boolean isSelected = aManager.isSimulateLighting(aManager.getSelectedItems().asList().get(0));
 		((JCheckBoxMenuItem) aAssocMI).setSelected(isSelected);
 	}
 }

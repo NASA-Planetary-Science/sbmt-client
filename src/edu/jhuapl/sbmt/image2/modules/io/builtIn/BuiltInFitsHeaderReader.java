@@ -27,7 +27,6 @@ public class BuiltInFitsHeaderReader extends BasePipelinePublisher<HashMap<Strin
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-
 	}
 
 	private HashMap<String, String> loadHeaders(String filename) throws IOException, FitsException

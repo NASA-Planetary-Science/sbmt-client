@@ -26,7 +26,9 @@ import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.JPanel;
+import javax.swing.JSlider;
 import javax.swing.JTextField;
+import javax.swing.SwingConstants;
 import javax.swing.WindowConstants;
 import javax.swing.border.TitledBorder;
 
@@ -37,6 +39,7 @@ import com.beust.jcommander.internal.Lists;
 
 import vtk.vtkActor;
 import vtk.vtkProp;
+import vtk.vtkProperty;
 
 import edu.jhuapl.saavtk.gui.ModelInfoWindow;
 import edu.jhuapl.saavtk.gui.dialog.CustomFileChooser;
@@ -141,6 +144,11 @@ class PointedImageEditingPanel<G1 extends IPerspectiveImage & IPerspectiveImageT
 	List<vtkProp> props = Lists.newArrayList();
 	VtkPropProvider propProvider;
 	List<vtkActor> inputs;
+	private SpacecraftPointingDelta delta = new SpacecraftPointingDelta();
+	private JLabel currentRotationDeltaLabel;
+	private JLabel currentSampleDeltaLabel;
+	private JLabel currentLineDeltaLabel;
+	private JLabel currentZoomDeltaLabel;
 
 	public PointedImageEditingPanel(G1 image, SmallBodyModel smallBodyModel, List<vtkActor> inputs)
 	{
@@ -186,7 +194,6 @@ class PointedImageEditingPanel<G1 extends IPerspectiveImage & IPerspectiveImageT
 		props.clear();
 		for (vtkActor actor : inputs)
 		{
-			if (inputs.indexOf(actor) == 1) actor.SetVisibility(0);
 			props.add(actor);
 		}
 		if (renderer.hasVtkPropProvider(propProvider))
@@ -531,43 +538,29 @@ class PointedImageEditingPanel<G1 extends IPerspectiveImage & IPerspectiveImageT
 
 		getContentPane().add(pointingPanel, gridBagConstraints);
 
+		gridBagConstraints = new GridBagConstraints();
+		gridBagConstraints.gridx = 0;
+		gridBagConstraints.gridy = 5;
+		gridBagConstraints.gridwidth = 1;
+		gridBagConstraints.fill = GridBagConstraints.HORIZONTAL;
+		gridBagConstraints.anchor = GridBagConstraints.LINE_START;
+		gridBagConstraints.weightx = 1.0;
+		getContentPane().add(getImageSettingsPanel(), gridBagConstraints);
+
+		gridBagConstraints = new GridBagConstraints();
+		gridBagConstraints.gridx = 1;
+		gridBagConstraints.gridy = 5;
+		gridBagConstraints.gridwidth = 1;
+		gridBagConstraints.fill = GridBagConstraints.HORIZONTAL;
+		gridBagConstraints.anchor = GridBagConstraints.LINE_START;
+		gridBagConstraints.weightx = 1.0;
+		getContentPane().add(getCurrentPointingDeltaPanel(), gridBagConstraints);
+
 		pack();
 	}
 
 	private void initRenderer()
 	{
-		// renWin = new vtkJoglPanelComponent();
-		// renWin.getComponent().setPreferredSize(new Dimension(550, 550));
-		//
-		// vtkInteractorStyleImage style = new vtkInteractorStyleImage();
-		// renWin.setInteractorStyle(style);
-		//
-		//// renWin.getRenderWindow().GetInteractor().GetInteractorStyle().AddObserver("WindowLevelEvent",
-		// this,
-		//// "levelsChanged");
-		//
-		//// updateImage(displayedImage);
-		//
-		//
-		//// renWin.getRenderer().AddActor(actor);
-		//
-		// renWin.setSize(550, 550);
-		//// renWin.getRenderer().SetBackground(new double[] {0.5f, 0.5f,
-		// 0.5f});
-		//
-		//// imagePicker = new vtkPropPicker();
-		//// imagePicker.PickFromListOn();
-		//// imagePicker.InitializePickList();
-		//// vtkPropCollection smallBodyPickList = imagePicker.GetPickList();
-		//// smallBodyPickList.RemoveAllItems();
-		//// imagePicker.AddPickList(actor);
-		// renWin.getComponent().addMouseListener(this);
-		// renWin.getComponent().addMouseMotionListener(this);
-		// renWin.getRenderer().GetActiveCamera().Dolly(0.2);
-		// renWin.addKeyListener(this);
-
-		// Trying to add a vtksbmtJoglCanvasComponent in the netbeans gui
-		// does not seem to work so instead add it here.
 		GridBagConstraints gridBagConstraints = new GridBagConstraints();
 		gridBagConstraints.gridx = 0;
 		gridBagConstraints.gridy = 0;
@@ -640,7 +633,7 @@ class PointedImageEditingPanel<G1 extends IPerspectiveImage & IPerspectiveImageT
 		renderableImages = pipeline.getRenderableImages();
 		SpacecraftPointingState origState =
 				new SpacecraftPointingState(renderableImages.get(0).getPointing(), renderableImages.get(0).getImageWidth(), renderableImages.get(0).getImageHeight());
-		SpacecraftPointingDelta delta = generateDelta();
+		delta = generateDelta();
 
 		PointedImageEditingPipeline editingPipeline =
 				new PointedImageEditingPipeline(origState, delta);
@@ -690,6 +683,12 @@ class PointedImageEditingPanel<G1 extends IPerspectiveImage & IPerspectiveImageT
 			currentRotationAngle = 0.0;
 			currentZoomFactor = 1.0;
 			resetOnNextUpdate = false;
+
+			currentZoomDeltaLabel.setText("" + delta.getZoomFactor());
+			currentSampleDeltaLabel.setText("" + delta.getSampleOffset());
+			currentLineDeltaLabel.setText("" + delta.getLineOffset());
+			currentRotationDeltaLabel.setText("" + delta.getRotationOffset());
+
 			return delta;
 		}
 		delta.setLineOffset(currentLineOffset);
@@ -698,6 +697,11 @@ class PointedImageEditingPanel<G1 extends IPerspectiveImage & IPerspectiveImageT
 		delta.setSampleOffset(currentSampleOffset);
 //		delta.setYawOffset(ROTATION_DELTA);
 		delta.setZoomFactor(currentZoomFactor);
+
+		currentZoomDeltaLabel.setText("" + delta.getZoomFactor());
+		currentSampleDeltaLabel.setText("" + delta.getSampleOffset());
+		currentLineDeltaLabel.setText("" + delta.getLineOffset());
+		currentRotationDeltaLabel.setText("" + delta.getRotationOffset());
 
 		return delta;
 	}
@@ -893,6 +897,209 @@ class PointedImageEditingPanel<G1 extends IPerspectiveImage & IPerspectiveImageT
 		// }
 		// else
 		// updateSpectrumRegion(e);
+	}
+
+	private JPanel getImageSettingsPanel()
+	{
+		JPanel panel = new JPanel();
+		panel.setLayout(new GridBagLayout());
+		panel.setBorder(BorderFactory.createTitledBorder("Image Settings"));
+		GridBagConstraints gridBagConstraints = new GridBagConstraints();
+		gridBagConstraints.gridx = 0;
+		gridBagConstraints.gridy = 0;
+		gridBagConstraints.ipadx = 50;
+		gridBagConstraints.weightx = 1.0;
+		gridBagConstraints.weighty = 1.0;
+		gridBagConstraints.anchor = GridBagConstraints.WEST;
+		JCheckBox originalEnabled = new JCheckBox("Original Image");
+		originalEnabled.setSelected(true);
+		originalEnabled.addActionListener(e -> {
+			JCheckBox checkBox = (JCheckBox)e.getSource();
+			props.get(1).SetVisibility(checkBox.isSelected() ? 1 : 0);
+			renderer.notifySceneChange();
+		});
+		panel.add(originalEnabled, gridBagConstraints);
+
+		JLabel originalAlphaSliderLabel = new JLabel("Alpha");
+		gridBagConstraints = new GridBagConstraints();
+		gridBagConstraints.gridx = 1;
+		gridBagConstraints.gridy = 0;
+//		gridBagConstraints.ipadx = 50;
+		gridBagConstraints.weightx = 1.0;
+		gridBagConstraints.weighty = 1.0;
+		gridBagConstraints.anchor = GridBagConstraints.EAST;
+		panel.add(originalAlphaSliderLabel, gridBagConstraints);
+
+		JSlider originalAlphaSlider = new JSlider();
+		originalAlphaSlider.setValue(100);
+		JLabel originalAlphaSliderValueLabel = new JLabel(""+originalAlphaSlider.getValue());
+
+		originalAlphaSlider.addChangeListener(e -> {
+			JSlider source = (JSlider)e.getSource();
+			originalAlphaSliderValueLabel.setText(""+source.getValue());
+			vtkProperty interiorProperty = ((vtkActor)(props.get(1))).GetProperty();
+			interiorProperty.SetOpacity(source.getValue()/100.0);
+			renderer.notifySceneChange();
+		});
+		gridBagConstraints = new GridBagConstraints();
+		gridBagConstraints.gridx = 2;
+		gridBagConstraints.gridy = 0;
+		gridBagConstraints.ipadx = 100;
+		gridBagConstraints.weightx = 1.0;
+		gridBagConstraints.weighty = 1.0;
+		gridBagConstraints.gridwidth = 2;
+		gridBagConstraints.anchor = GridBagConstraints.WEST;
+		panel.add(originalAlphaSlider, gridBagConstraints);
+
+		gridBagConstraints = new GridBagConstraints();
+		gridBagConstraints.gridx = 3;
+		gridBagConstraints.gridy = 0;
+		gridBagConstraints.weightx = 1.0;
+		gridBagConstraints.weighty = 1.0;
+		gridBagConstraints.anchor = GridBagConstraints.WEST;
+		panel.add(originalAlphaSliderValueLabel, gridBagConstraints);
+
+		JCheckBox modifiedEnabled = new JCheckBox("Modified Image");
+		modifiedEnabled.addActionListener(e -> {
+			JCheckBox checkBox = (JCheckBox)e.getSource();
+			props.get(2).SetVisibility(checkBox.isSelected() ? 1 : 0);
+			renderer.notifySceneChange();
+		});
+		gridBagConstraints = new GridBagConstraints();
+		gridBagConstraints.gridx = 0;
+		gridBagConstraints.gridy = 1;
+		gridBagConstraints.ipadx = 50;
+		gridBagConstraints.weightx = 1.0;
+		gridBagConstraints.weighty = 1.0;
+		gridBagConstraints.anchor = GridBagConstraints.WEST;
+		panel.add(modifiedEnabled, gridBagConstraints);
+
+		JLabel modifiedAlphaSliderLabel = new JLabel("Alpha");
+		gridBagConstraints = new GridBagConstraints();
+		gridBagConstraints.gridx = 1;
+		gridBagConstraints.gridy = 1;
+		gridBagConstraints.weightx = 1.0;
+		gridBagConstraints.weighty = 1.0;
+		gridBagConstraints.anchor = GridBagConstraints.EAST;
+		panel.add(modifiedAlphaSliderLabel, gridBagConstraints);
+
+		JSlider modifiedAlphaSlider = new JSlider();
+		modifiedAlphaSlider.setValue(100);
+		JLabel modifiedAlphaSliderValueLabel = new JLabel(""+modifiedAlphaSlider.getValue());
+		modifiedAlphaSlider.addChangeListener(e -> {
+			JSlider source = (JSlider)e.getSource();
+			modifiedAlphaSliderValueLabel.setText(""+source.getValue());
+			vtkProperty interiorProperty = ((vtkActor)(props.get(2))).GetProperty();
+			interiorProperty.SetOpacity(source.getValue()/100.0);
+			renderer.notifySceneChange();
+		});
+		gridBagConstraints = new GridBagConstraints();
+		gridBagConstraints.gridx = 2;
+		gridBagConstraints.gridy = 1;
+		gridBagConstraints.ipadx = 100;
+		gridBagConstraints.weightx = 1.0;
+		gridBagConstraints.weighty = 1.0;
+		gridBagConstraints.anchor = GridBagConstraints.WEST;
+		panel.add(modifiedAlphaSlider, gridBagConstraints);
+
+
+		gridBagConstraints = new GridBagConstraints();
+		gridBagConstraints.gridx = 3;
+		gridBagConstraints.gridy = 1;
+		gridBagConstraints.weightx = 1.0;
+		gridBagConstraints.weighty = 1.0;
+		gridBagConstraints.anchor = GridBagConstraints.WEST;
+		panel.add(modifiedAlphaSliderValueLabel, gridBagConstraints);
+
+		return panel;
+	}
+
+	private JPanel getCurrentPointingDeltaPanel()
+	{
+		JPanel panel = new JPanel();
+		panel.setLayout(new GridBagLayout());
+		panel.setBorder(BorderFactory.createTitledBorder("Current Delta Values"));
+		JLabel currentRotationLabel = new JLabel("Rotation Angle (deg):", SwingConstants.LEFT);
+		GridBagConstraints gridBagConstraints = new GridBagConstraints();
+		gridBagConstraints.gridx = 0;
+		gridBagConstraints.gridy = 0;
+		gridBagConstraints.ipadx = 50;
+		gridBagConstraints.weightx = 1.0;
+		gridBagConstraints.weighty = 1.0;
+		gridBagConstraints.anchor = GridBagConstraints.WEST;
+		panel.add(currentRotationLabel, gridBagConstraints);
+
+		currentRotationDeltaLabel = new JLabel(""+delta.getRotationOffset(), SwingConstants.RIGHT);
+		gridBagConstraints = new GridBagConstraints();
+		gridBagConstraints.gridx = 1;
+		gridBagConstraints.gridy = 0;
+		gridBagConstraints.ipadx = 50;
+		gridBagConstraints.weightx = 1.0;
+		gridBagConstraints.weighty = 1.0;
+		gridBagConstraints.anchor = GridBagConstraints.EAST;
+		panel.add(currentRotationDeltaLabel, gridBagConstraints);
+
+		JLabel currentSampleLabel = new JLabel("Sample (km):", SwingConstants.LEFT);
+		gridBagConstraints = new GridBagConstraints();
+		gridBagConstraints.gridx = 0;
+		gridBagConstraints.gridy = 1;
+		gridBagConstraints.ipadx = 50;
+		gridBagConstraints.weightx = 1.0;
+		gridBagConstraints.weighty = 1.0;
+		gridBagConstraints.anchor = GridBagConstraints.WEST;
+		panel.add(currentSampleLabel, gridBagConstraints);
+
+		currentSampleDeltaLabel = new JLabel(""+delta.getSampleOffset(), SwingConstants.RIGHT);
+		gridBagConstraints = new GridBagConstraints();
+		gridBagConstraints.gridx = 1;
+		gridBagConstraints.gridy = 1;
+		gridBagConstraints.ipadx = 50;
+		gridBagConstraints.weightx = 1.0;
+		gridBagConstraints.weighty = 1.0;
+		gridBagConstraints.anchor = GridBagConstraints.EAST;
+		panel.add(currentSampleDeltaLabel, gridBagConstraints);
+
+		JLabel currentLineLabel = new JLabel("Line (km):", SwingConstants.LEFT);
+		gridBagConstraints = new GridBagConstraints();
+		gridBagConstraints.gridx = 0;
+		gridBagConstraints.gridy = 2;
+		gridBagConstraints.ipadx = 50;
+		gridBagConstraints.weightx = 1.0;
+		gridBagConstraints.weighty = 1.0;
+		gridBagConstraints.anchor = GridBagConstraints.WEST;
+		panel.add(currentLineLabel, gridBagConstraints);
+
+		currentLineDeltaLabel = new JLabel(""+delta.getLineOffset(), SwingConstants.RIGHT);
+		gridBagConstraints = new GridBagConstraints();
+		gridBagConstraints.gridx = 1;
+		gridBagConstraints.gridy = 2;
+		gridBagConstraints.ipadx = 50;
+		gridBagConstraints.weightx = 1.0;
+		gridBagConstraints.weighty = 1.0;
+		gridBagConstraints.anchor = GridBagConstraints.EAST;
+		panel.add(currentLineDeltaLabel, gridBagConstraints);
+
+		JLabel currentZoomLabel = new JLabel("Zoom :", SwingConstants.LEFT);
+		gridBagConstraints = new GridBagConstraints();
+		gridBagConstraints.gridx = 0;
+		gridBagConstraints.gridy = 3;
+		gridBagConstraints.ipadx = 50;
+		gridBagConstraints.weightx = 1.0;
+		gridBagConstraints.weighty = 1.0;
+		gridBagConstraints.anchor = GridBagConstraints.WEST;
+		panel.add(currentZoomLabel, gridBagConstraints);
+
+		currentZoomDeltaLabel = new JLabel(""+delta.getZoomFactor(), SwingConstants.RIGHT);
+		gridBagConstraints = new GridBagConstraints();
+		gridBagConstraints.gridx = 1;
+		gridBagConstraints.gridy = 3;
+		gridBagConstraints.ipadx = 50;
+		gridBagConstraints.weightx = 1.0;
+		gridBagConstraints.weighty = 1.0;
+		gridBagConstraints.anchor = GridBagConstraints.EAST;
+		panel.add(currentZoomDeltaLabel, gridBagConstraints);
+
+		return panel;
 	}
 
 }

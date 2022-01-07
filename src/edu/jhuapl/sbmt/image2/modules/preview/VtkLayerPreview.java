@@ -14,6 +14,7 @@ import java.beans.PropertyChangeListener;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.function.Function;
 
@@ -24,6 +25,8 @@ import javax.swing.JMenuItem;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.WindowConstants;
+
+import org.apache.commons.lang3.tuple.Pair;
 
 import vtk.vtkImageData;
 import vtk.vtkImageReslice;
@@ -48,9 +51,9 @@ import edu.jhuapl.sbmt.image2.pipeline.publisher.Just;
 import edu.jhuapl.sbmt.image2.pipeline.subscriber.IPipelineSubscriber;
 import edu.jhuapl.sbmt.image2.pipeline.subscriber.Sink;
 
-public class VtkLayerPreview implements IPipelineSubscriber<Layer>
+public class VtkLayerPreview implements IPipelineSubscriber<Pair<Layer, HashMap<String, String>>>
 {
-	private IPipelinePublisher<Layer> publisher;
+	private IPipelinePublisher<Pair<Layer, HashMap<String, String>>> publisher;
 	private LayerPreviewPanel preview;
 
 	public VtkLayerPreview()
@@ -59,11 +62,11 @@ public class VtkLayerPreview implements IPipelineSubscriber<Layer>
 	}
 
 	@Override
-	public void receive(List<Layer> items)
+	public void receive(List<Pair<Layer, HashMap<String, String>>> items)
 	{
 		try
 		{
-			preview = new LayerPreviewPanel(items.get(0));
+			preview = new LayerPreviewPanel(items.get(0).getLeft(), items.get(0).getRight());
 		}
 		catch (Exception e)
 		{
@@ -137,11 +140,12 @@ class LayerPreviewPanel extends ModelInfoWindow implements MouseListener, MouseM
 	private int[] previousLevels = null;
 //	private JPanel offLimbPanel;
 //	private OfflimbControlsController offlimbController;
-	vtkImageData displayedImage;
+	private vtkImageData displayedImage;
+	private HashMap<String, String> metadata;
 
-	public LayerPreviewPanel(final Layer layer) throws IOException, Exception
+	public LayerPreviewPanel(final Layer layer, HashMap<String, String> metadata) throws IOException, Exception
 	{
-
+		this.metadata = metadata;
 		this.maskPipeline = new VtkImageMaskingPipeline();
 		this.layer = layer;
 		initComponents();
@@ -362,7 +366,8 @@ class LayerPreviewPanel extends ModelInfoWindow implements MouseListener, MouseM
 		GridBagConstraints gridBagConstraints;
 //		LinkedHashMap<String, String> properties = new LinkedHashMap<String, String>();
 		List<ImageProperty> properties = new ArrayList<ImageProperty>();
-		properties.add(new ImageProperty("Prop1", "Val1"));
+		for (String str : metadata.keySet())
+			properties.add(new ImageProperty(str, metadata.get(str)));
 		ImagePropertiesController propertiesController = new ImagePropertiesController(properties);
 		tablePanel = propertiesController.getView();
 //		factorLabel = new JLabel();
@@ -946,10 +951,10 @@ class LayerPreviewPanel extends ModelInfoWindow implements MouseListener, MouseM
 //		}
 //	}// GEN-LAST:event_zoomOutButtonActionPerformed
 
-	private void factorTextField1ActionPerformed(ActionEvent evt)
-	{// GEN-FIRST:event_factorTextField1ActionPerformed
-		// TODO add your handling code here:
-	}// GEN-LAST:event_factorTextField1ActionPerformed
+//	private void factorTextField1ActionPerformed(ActionEvent evt)
+//	{// GEN-FIRST:event_factorTextField1ActionPerformed
+//		// TODO add your handling code here:
+//	}// GEN-LAST:event_factorTextField1ActionPerformed
 
 	// private void applyAdjustmentsButton1ActionPerformed(ActionEvent evt)
 	// {//GEN-FIRST:event_applyAdjustmentsButton1ActionPerformed

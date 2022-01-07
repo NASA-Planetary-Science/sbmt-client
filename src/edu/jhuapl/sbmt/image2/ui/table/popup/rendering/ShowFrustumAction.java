@@ -17,12 +17,12 @@ public class ShowFrustumAction<G1 extends IPerspectiveImage & IPerspectiveImageT
     /**
 	 *
 	 */
-	private final PerspectiveImageCollection aManager;
+	private final PerspectiveImageCollection<G1> aManager;
 
 	/**
 	 * @param imagePopupMenu
 	 */
-	public ShowFrustumAction(PerspectiveImageCollection aManager)
+	public ShowFrustumAction(PerspectiveImageCollection<G1> aManager)
 	{
 		this.aManager = aManager;
 	}

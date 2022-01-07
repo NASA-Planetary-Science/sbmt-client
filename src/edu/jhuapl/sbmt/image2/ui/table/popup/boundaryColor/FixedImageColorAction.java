@@ -5,6 +5,8 @@ import java.util.List;
 
 import edu.jhuapl.saavtk.color.provider.ColorProvider;
 import edu.jhuapl.saavtk.color.provider.ConstColorProvider;
+import edu.jhuapl.sbmt.image2.interfaces.IPerspectiveImage;
+import edu.jhuapl.sbmt.image2.interfaces.IPerspectiveImageTableRepresentable;
 import edu.jhuapl.sbmt.image2.model.PerspectiveImageCollection;
 
 import glum.gui.action.PopAction;
@@ -14,16 +16,16 @@ import glum.gui.action.PopAction;
  *
  * @author lopeznr1
  */
-class FixedImageColorAction<G1> extends PopAction<G1>
+class FixedImageColorAction<G1 extends IPerspectiveImage & IPerspectiveImageTableRepresentable> extends PopAction<G1>
 {
 	// Ref vars
-	private final PerspectiveImageCollection refManager;
+	private final PerspectiveImageCollection<G1> refManager;
 	private final ColorProvider refCP;
 
 	/**
 	 * Standard Constructor
 	 */
-	public FixedImageColorAction(PerspectiveImageCollection aManager, Color aColor)
+	public FixedImageColorAction(PerspectiveImageCollection<G1> aManager, Color aColor)
 	{
 		refManager = aManager;
 		refCP = new ConstColorProvider(aColor);
@@ -40,8 +42,8 @@ class FixedImageColorAction<G1> extends PopAction<G1>
 	@Override
 	public void executeAction(List<G1> aItemL)
 	{
-		//TODO fix this
-//		refManager.installCustomColorProviders(aItemL, refCP, refCP);
+		for (G1 item : refManager.getSelectedItems())
+			refManager.setImageBoundaryColor(item, refCP.getBaseColor());
 	}
 
 }

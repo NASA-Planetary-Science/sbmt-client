@@ -30,6 +30,7 @@ import edu.jhuapl.sbmt.model.image.PointingFileReader;
 public class PerspectiveImageToRenderableImagePipeline
 {
 	List<RenderablePointedImage> renderableImages = Lists.newArrayList();
+	List<HashMap<String, String>> metadata = Lists.newArrayList();
 
 	public PerspectiveImageToRenderableImagePipeline(List<IPerspectiveImage> images) throws Exception
 	{
@@ -60,6 +61,8 @@ public class PerspectiveImageToRenderableImagePipeline
 
 			//generate metadata (in: filename, out: ImageMetadata)
 			IPipelinePublisher<HashMap<String, String>> metadataReader = new BuiltInFitsHeaderReader(filename);
+
+			metadataReader.subscribe(Sink.of(metadata)).run();
 
 			//combine image source (in: Layer+ImageMetadata+ImagePointing, out: RenderableImage)
 			IPipelinePublisher<Layer> layerPublisher = new Just<Layer>(updatedLayers.get(0));
@@ -105,5 +108,10 @@ public class PerspectiveImageToRenderableImagePipeline
 	public List<RenderablePointedImage> getRenderableImages()
 	{
 		return renderableImages;
+	}
+
+	public List<HashMap<String, String>> getMetadata()
+	{
+		return metadata;
 	}
 }

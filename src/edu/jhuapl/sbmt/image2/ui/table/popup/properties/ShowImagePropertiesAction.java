@@ -1,8 +1,12 @@
 package edu.jhuapl.sbmt.image2.ui.table.popup.properties;
 
+import java.util.HashMap;
 import java.util.List;
 
+import org.apache.commons.lang3.tuple.Pair;
+
 import edu.jhuapl.sbmt.client.SbmtInfoWindowManager;
+import edu.jhuapl.sbmt.image2.api.Layer;
 import edu.jhuapl.sbmt.image2.interfaces.IPerspectiveImage;
 import edu.jhuapl.sbmt.image2.interfaces.IPerspectiveImageTableRepresentable;
 import edu.jhuapl.sbmt.image2.model.PerspectiveImageCollection;
@@ -40,10 +44,11 @@ public class ShowImagePropertiesAction<G1 extends IPerspectiveImage & IPerspecti
 		try
 		{
 			PerspectiveImageToRenderableImagePipeline pipeline = new PerspectiveImageToRenderableImagePipeline(List.of(aItemL.get(0)));
+			List<HashMap<String, String>> metadata = pipeline.getMetadata();
 			List<RenderablePointedImage> renderableImages = pipeline.getRenderableImages();
 			VtkLayerPreview preview = new VtkLayerPreview();
-
-			Just.of(renderableImages.get(0).getLayer())
+			Pair<Layer, HashMap<String, String>> inputs = Pair.of(renderableImages.get(0).getLayer(), metadata.get(0));
+			Just.of(inputs)
 				.subscribe(preview)
 				.run();
 

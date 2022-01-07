@@ -1,22 +1,27 @@
 package edu.jhuapl.sbmt.image2.ui.table.popup.boundaryColor;
 
+import java.awt.Color;
 import java.awt.Component;
 import java.util.List;
 
+import edu.jhuapl.saavtk.color.provider.ColorProvider;
+import edu.jhuapl.saavtk.color.provider.ConstColorProvider;
+import edu.jhuapl.saavtk.gui.dialog.ColorChooser;
 import edu.jhuapl.sbmt.image2.interfaces.IPerspectiveImage;
+import edu.jhuapl.sbmt.image2.interfaces.IPerspectiveImageTableRepresentable;
 import edu.jhuapl.sbmt.image2.model.PerspectiveImageCollection;
 
 import glum.gui.action.PopAction;
 
-class CustomBoundaryColorAction<G1 extends IPerspectiveImage> extends PopAction<G1>
+class CustomBoundaryColorAction<G1 extends IPerspectiveImage & IPerspectiveImageTableRepresentable> extends PopAction<G1>
 {
-   private PerspectiveImageCollection aManager;
+   private PerspectiveImageCollection<G1> aManager;
    private final Component refParent;
 
 	/**
 	 * @param imagePopupMenu
 	 */
-	CustomBoundaryColorAction(PerspectiveImageCollection aManager, Component aParent)
+	CustomBoundaryColorAction(PerspectiveImageCollection<G1> aManager, Component aParent)
 	{
 		this.aManager = aManager;
 		this.refParent = aParent;
@@ -25,13 +30,16 @@ class CustomBoundaryColorAction<G1 extends IPerspectiveImage> extends PopAction<
 	@Override
 	public void executeAction(List<G1> aItemL)
 	{
+
 		//TODO fix this
 //		Color tmpColor = refManager.getColorProviderTarget(aItemL.get(0)).getBaseColor();
-//		Color newColor = ColorChooser.showColorChooser(refParent, tmpColor);
-//		if (newColor == null)
-//			return;
-//
-//		ColorProvider tmpCP = new ConstColorProvider(newColor);
+		Color newColor = ColorChooser.showColorChooser(refParent, Color.red);
+		if (newColor == null)
+			return;
+
+		ColorProvider tmpCP = new ConstColorProvider(newColor);
+		for (G1 item : aManager.getSelectedItems())
+			aManager.setImageBoundaryColor(item, tmpCP.getBaseColor());
 //		refManager.installCustomColorProviders(aItemL, tmpCP, tmpCP);
 
 	}

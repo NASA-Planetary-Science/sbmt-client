@@ -1,5 +1,9 @@
 package edu.jhuapl.sbmt.image2.pipeline.active;
 
+import java.util.HashMap;
+
+import org.apache.commons.lang3.tuple.Pair;
+
 import vtk.vtkImageData;
 import vtk.vtkPolyData;
 import vtk.vtkPolyDataWriter;
@@ -22,7 +26,8 @@ public class VTKDebug
 
 	public static void previewLayer(Layer layer) throws Exception
 	{
-		Just.of(layer)
+		Pair<Layer, HashMap<String, String>> inputs = Pair.of(layer, new HashMap<String, String>());
+		Just.of(inputs)
 			.subscribe(new VtkLayerPreview())
 			.run();
 	}

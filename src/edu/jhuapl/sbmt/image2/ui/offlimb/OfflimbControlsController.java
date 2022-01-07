@@ -178,23 +178,6 @@ public class OfflimbControlsController<G1 extends IPerspectiveImage & IPerspecti
 					collection.setOfflimbOpacity(image, alphaValue);
 					controlsPanel.getFootprintTransparencyValue().setText(" " + alphaValue*100 + "%");
 				}
-//				else if (e.getSource() == controlsPanel.getImageContrastSlider())
-//				{
-//					ContrastSlider contrastSlider = controlsPanel.getImageContrastSlider();
-//					if(!controlsPanel.getImageContrastSlider().getValueIsAdjusting()) {
-//						contrastSlider.sliderStateChanged(e);
-//						collection.setOffLimbContrastRange(image, new IntensityRange(contrastSlider.getLowValue(), contrastSlider.getHighValue()));
-////						controlsModel.setContrastLow(contrastSlider.getLowValue());
-////						controlsModel.setContrastHigh(contrastSlider.getHighValue());
-//					}
-//					if (collection.getContrastSynced(image)) {
-//						// adjust image contrast slider also
-//						collection.setImageContrastRange(image, new IntensityRange(contrastSlider.getLowValue(), contrastSlider.getHighValue()));
-//
-////						imageContrastSlider.setHighValue(contrastSlider.getHighValue());
-////						imageContrastSlider.setLowValue(contrastSlider.getLowValue());
-//					}
-//				}
 				else if (e.getSource() == controlsPanel.getShowBoundaryButton())
 				{
 					ShowBoundaryButton<G1> showBoundaryButton = controlsPanel.getShowBoundaryButton();
@@ -204,19 +187,11 @@ public class OfflimbControlsController<G1 extends IPerspectiveImage & IPerspecti
 				{
 					// let everyone know that we're syncing or unsyncing
 					SyncContrastSlidersButton<G1> syncButton = controlsPanel.getSyncContrastButton();
-//					ContrastSlider contrastSlider = controlsPanel.getImageContrastSlider();
-//					syncButton.syncContrast(syncButton.isSelected());
-//					controlsModel.setSyncContrast(syncButton.isSelected());
 					collection.setContrastSynced(image, syncButton.isSelected());
 					if (controlsPanel.getSyncContrastButton().isSelected()) {
 						// if we're syncing, set the slider values to that of the img slider
 						collection.setOffLimbContrastRange(image, new IntensityRange(contrastController.getLowValue(), contrastController.getHighValue()));
 						collection.setImageContrastRange(image, new IntensityRange(contrastController.getLowValue(), contrastController.getHighValue()));
-
-//						contrastSlider.setLowValue(imageContrastSlider.getLowValue());
-//						contrastSlider.setHighValue(imageContrastSlider.getHighValue());
-//						controlsModel.setContrastLow(contrastSlider.getLowValue());
-//						controlsModel.setContrastHigh(contrastSlider.getHighValue());
 					}
 				}
 				else if (e.getSource() == controlsPanel.getResetButton())
@@ -232,7 +207,6 @@ public class OfflimbControlsController<G1 extends IPerspectiveImage & IPerspecti
 
 		controlsPanel.getFootprintDepthSlider().addChangeListener(changeListener);
 		controlsPanel.getFootprintTransparencySlider().addChangeListener(changeListener);
-//		controlsPanel.getImageContrastSlider().addChangeListener(changeListener);
 		controlsPanel.getShowBoundaryButton().addChangeListener(changeListener);
 		controlsPanel.getSyncContrastButton().addChangeListener(changeListener);
 		controlsPanel.getResetButton().addChangeListener(changeListener);
@@ -242,17 +216,10 @@ public class OfflimbControlsController<G1 extends IPerspectiveImage & IPerspecti
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				Color currColor =  collection.getOffLimbBoundaryColor(image);
-				//image.getOfflimbBoundaryColor();
-				Color color = ColorChooser.showColorChooser(
-	                    null, new int[] {0,0});
-//	                    new int[]{currColor.getRed(), currColor.getGreen(), currColor.getBlue()});
-//				 image.setOfflimbBoundaryColor(color);
-				 collection.setOffLimbBoundaryColor(image, color);
+				Color color = ColorChooser.showColorChooser(null, new int[] {0,0});
+				collection.setOffLimbBoundaryColor(image, color);
 			}
-
 		});
-
-
 	}
 
 	public JPanel getControlsPanel()
@@ -262,14 +229,5 @@ public class OfflimbControlsController<G1 extends IPerspectiveImage & IPerspecti
 		panel.add(contrastController.getView());
 		panel.add(controlsPanel);
 		return panel;
-//		return controlsPanel;
 	}
-
-//	public OfflimbControlsModel getControlsModel()
-//	{
-//		return controlsModel;
-//	}
-
-
-
 }

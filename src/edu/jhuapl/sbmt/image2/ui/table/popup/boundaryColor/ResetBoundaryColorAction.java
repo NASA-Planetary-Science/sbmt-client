@@ -1,10 +1,13 @@
 package edu.jhuapl.sbmt.image2.ui.table.popup.boundaryColor;
 
+import java.awt.Color;
 import java.util.Collection;
 import java.util.List;
 
 import javax.swing.JMenuItem;
 
+import edu.jhuapl.sbmt.image2.interfaces.IPerspectiveImage;
+import edu.jhuapl.sbmt.image2.interfaces.IPerspectiveImageTableRepresentable;
 import edu.jhuapl.sbmt.image2.model.PerspectiveImageCollection;
 
 import glum.gui.action.PopAction;
@@ -14,15 +17,15 @@ import glum.gui.action.PopAction;
  *
  * @author lopeznr1
  */
-class ResetBoundaryColorAction<G1> extends PopAction<G1>
+class ResetBoundaryColorAction<G1 extends IPerspectiveImage & IPerspectiveImageTableRepresentable> extends PopAction<G1>
 {
 	// Ref vars
-	private final PerspectiveImageCollection refManager;
+	private final PerspectiveImageCollection<G1> refManager;
 
 	/**
 	 * Standard Constructor
 	 */
-	public ResetBoundaryColorAction(PerspectiveImageCollection aManager)
+	public ResetBoundaryColorAction(PerspectiveImageCollection<G1> aManager)
 	{
 		refManager = aManager;
 	}
@@ -30,6 +33,8 @@ class ResetBoundaryColorAction<G1> extends PopAction<G1>
 	@Override
 	public void executeAction(List<G1> aItemL)
 	{
+		for (G1 item : refManager.getSelectedItems())
+			refManager.setImageBoundaryColor(item, Color.red);
 		//TODO FIX THIS
 //		refManager.clearCustomColorProvider(aItemL);
 	}

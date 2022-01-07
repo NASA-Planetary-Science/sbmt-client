@@ -100,6 +100,7 @@ public class ImageListTableView extends JPanel
 			@Override
 			public void handleItemEvent(Object aSource, ItemEventType aEventType)
 			{
+				resultsLabel.setText(imageCollection.getNumItems() + " Results");
 				resultList.repaint();
 			}
 		});

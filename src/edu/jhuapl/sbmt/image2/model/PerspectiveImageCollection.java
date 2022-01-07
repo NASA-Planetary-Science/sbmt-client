@@ -517,6 +517,22 @@ public class PerspectiveImageCollection<G1 extends IPerspectiveImage & IPerspect
 		return image.isBoundaryShowing();
 	}
 
+	public Color getImageBoundaryColor(G1 image)
+	{
+		return renderingStates.get(image).boundaryColor;
+	}
+
+	public void setImageBoundaryColor(G1 image, Color color)
+	{
+		renderingStates.get(image).boundaryColor = color;
+		for (vtkActor actor : boundaryRenderers.get(image))
+		{
+			actor.GetProperty().SetColor(color.getRed() / 255., color.getGreen() / 255., color.getBlue() / 255.);
+	        actor.Modified();
+		}
+		this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
+	}
+
 	public void setImageStatus(G1 image, String status)
 	{
 		image.setStatus(status);
@@ -661,6 +677,16 @@ public class PerspectiveImageCollection<G1 extends IPerspectiveImage & IPerspect
 	public boolean getContrastSynced(G1 image)
 	{
 		return renderingStates.get(image).contrastSynced;
+	}
+
+	public boolean isSimulateLighting(G1 image)
+	{
+		return image.isSimulateLighting();
+	}
+
+	public void setSimulateLighting(G1 image, boolean simulating)
+	{
+		image.setSimulateLighting(simulating);
 	}
 
 	public List<SmallBodyModel> getSmallBodyModels()

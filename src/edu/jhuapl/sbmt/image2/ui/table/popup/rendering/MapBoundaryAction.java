@@ -17,12 +17,12 @@ public class MapBoundaryAction<G1 extends IPerspectiveImage & IPerspectiveImageT
 	/**
 	 *
 	 */
-	private PerspectiveImageCollection aManager;
+	private PerspectiveImageCollection<G1> aManager;
 
 	/**
 	 * @param imagePopupMenu
 	 */
-	public MapBoundaryAction(PerspectiveImageCollection aManager)
+	public MapBoundaryAction(PerspectiveImageCollection<G1> aManager)
 	{
 		this.aManager = aManager;
 	}

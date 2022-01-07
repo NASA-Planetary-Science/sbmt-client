@@ -65,15 +65,15 @@ public class PipelineTests
 //		VtkImageVtkMaskingOperator maskingOperator = new VtkImageVtkMaskingOperator(new int[] {0,0,0,0});
 		VtkLayerPreview preview = new VtkLayerPreview();
 
-		reader
-			.operate(linearInterpolator)
-			.operate(maskOperator)
-			.operate(trimOperator)
-//			.operate(renderer)
-//			.operate(contrastOperator)
-//			.operate(maskingOperator)
-			.subscribe(preview)
-			.run();
+//		reader
+//			.operate(linearInterpolator)
+//			.operate(maskOperator)
+//			.operate(trimOperator)
+////			.operate(renderer)
+////			.operate(contrastOperator)
+////			.operate(maskingOperator)
+//			.subscribe(preview)
+//			.run();
 	}
 
 	private void test2() throws Exception
@@ -220,11 +220,11 @@ public class PipelineTests
 
 	private void test4() throws Exception
 	{
-		IPipelinePublisher<Layer> reader = new BuiltInFitsReader("/Users/steelrj1/Desktop/dart_717891977_782_01.fits", new double[] {-32768.0, -32767.0, 4095.0});
-		VtkLayerPreview preview = new VtkLayerPreview();
-		reader
-			.subscribe(preview)
-			.run();
+//		IPipelinePublisher<Layer> reader = new BuiltInFitsReader("/Users/steelrj1/Desktop/dart_717891977_782_01.fits", new double[] {-32768.0, -32767.0, 4095.0});
+//		VtkLayerPreview preview = new VtkLayerPreview();
+//		reader
+//			.subscribe(preview)
+//			.run();
 	}
 
 	private void test5() throws Exception
