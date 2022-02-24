@@ -58,7 +58,7 @@ public class AnimationFileDialog extends JFileChooser
 			}
 		});
         numFrames.setModel(model);
-        setDialogTitle("Export Movie Frames as MP4");
+        setDialogTitle("Export Displayed Track as MP4");
         setDialogType(JFileChooser.SAVE_DIALOG);
         setApproveButtonText("Export");
 

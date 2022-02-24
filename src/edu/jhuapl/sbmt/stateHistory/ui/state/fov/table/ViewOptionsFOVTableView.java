@@ -98,10 +98,10 @@ public class ViewOptionsFOVTableView extends JPanel
 	{
 		setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
 		JScrollPane scrollPane = new JScrollPane();
-		scrollPane.setMinimumSize(new Dimension(150, 200));
+//		scrollPane.setMinimumSize(new Dimension(150, 200));
 		scrollPane.setPreferredSize(new Dimension(150, 200));
 		add(scrollPane);
-		resultList.setPreferredSize(new Dimension(400, 200));
+//		resultList.setPreferredSize(new Dimension(400, 200));
 		scrollPane.setViewportView(resultList);
 	}
 
@@ -152,12 +152,14 @@ public class ViewOptionsFOVTableView extends JPanel
 		// Table Content
 		QueryComposer<ViewOptionsFOVColumnLookup> tmpComposer = new QueryComposer<>();
 		tmpComposer.addAttribute(ViewOptionsFOVColumnLookup.Frustum, Boolean.class, "Frustum", null);
-		tmpComposer.addAttribute(ViewOptionsFOVColumnLookup.Border, Boolean.class, "Border", null);
+		tmpComposer.addAttribute(ViewOptionsFOVColumnLookup.Border, Boolean.class, "Boundry", null);
 		tmpComposer.addAttribute(ViewOptionsFOVColumnLookup.Footprint, Boolean.class, "Footprint", null);
 		tmpComposer.addAttribute(ViewOptionsFOVColumnLookup.Color, Color.class, "Color", null);
 		tmpComposer.addAttribute(ViewOptionsFOVColumnLookup.Name, String.class, "Name", null);
-		tmpComposer.addAttribute(ViewOptionsFOVColumnLookup.SetAsCurrent, Boolean.class, "Use for Traj Color", null);
-		tmpComposer.addAttribute(ViewOptionsFOVColumnLookup.FPPlateColoring, String.class, "Footprint Plate Coloring", null);
+		tmpComposer.addAttribute(ViewOptionsFOVColumnLookup.SetAsCurrent, Boolean.class, "Traj Color", null);
+		tmpComposer.addAttribute(ViewOptionsFOVColumnLookup.FPPlateColoring, String.class, "Fprint Coloring", null);
+
+		tmpComposer.getItem(ViewOptionsFOVColumnLookup.Name).defaultSize *= 3;
 
 		EphemerisTimeRenderer tmpTimeRenderer = new EphemerisTimeRenderer(false);
 		tmpComposer.setEditor(ViewOptionsFOVColumnLookup.Frustum, new BooleanCellEditor());
@@ -180,7 +182,7 @@ public class ViewOptionsFOVTableView extends JPanel
 		ItemProcessor<String> tmpIP = stateHistoryCollection.getAllFOVProcessor();
 		viewOptionsFOVILP = new ItemListPanel<>(viewOptionsFOVTableHandler, tmpIP, true);
 		viewOptionsFOVILP.setSortingEnabled(true);
-		configureColumnWidths();
+//		configureColumnWidths();
 		JTable stateHistoryTable = viewOptionsFOVILP.getTable();
 		stateHistoryTable.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
 //		stateHistoryTable.addMouseListener(new TablePopupHandler(rendererManager, stateHistoryPopupMenu));

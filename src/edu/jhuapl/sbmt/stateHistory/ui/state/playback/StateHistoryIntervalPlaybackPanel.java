@@ -167,7 +167,7 @@ public class StateHistoryIntervalPlaybackPanel extends JPanel
             questionMark = ImageIO.read(getClass().getResource("/edu/jhuapl/sbmt/data/questionMark.png"));
             Icon question = new ImageIcon(questionMark);
             JLabel questionRate = new JLabel(question);
-            questionRate.setToolTipText("<html>The speed of the animation is X times <br>faster than 1 second of real time. Ex. <br>60 means 1 minute of the interval is <br>traveled per second</html>");
+            questionRate.setToolTipText("<html>The number of seconds in one step of the playback <br/>For example: '60.0' means 1 minute of the interval is <br/>traveled per tick</html>");
 
             playPanel.add(questionRate);
 
@@ -192,7 +192,7 @@ public class StateHistoryIntervalPlaybackPanel extends JPanel
             questionMark2 = ImageIO.read(getClass().getResource("/edu/jhuapl/sbmt/data/questionMark.png"));
             Icon question = new ImageIcon(questionMark2);
             JLabel questionRate = new JLabel(question);
-            questionRate.setToolTipText("<html>The speed of the animation is X times <br>faster than 1 second of real time. Ex. <br>60 means 1 minute of the interval is <br>traveled per second</html>");
+            questionRate.setToolTipText("<html>Rate of playback faster than real time. <br/> For example: 5 means 5 ticks of playback per second</html>");
 
             playPanel.add(questionRate);
 

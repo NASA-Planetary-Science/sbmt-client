@@ -1,7 +1,6 @@
 package edu.jhuapl.sbmt.stateHistory.ui.state.displayItems.table;
 
 import java.awt.Color;
-import java.awt.Component;
 import java.awt.event.ActionListener;
 
 import javax.swing.Box;
@@ -77,12 +76,12 @@ public class DisplayOptionsTableView extends JPanel
 	public void setup()
 	{
 		setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
-		JPanel panel_4 = new JPanel();
-		add(panel_4);
-		panel_4.setLayout(new BoxLayout(panel_4, BoxLayout.X_AXIS));
-
-		Component horizontalGlue = Box.createHorizontalGlue();
-		panel_4.add(horizontalGlue);
+//		JPanel panel_4 = new JPanel();
+//		add(panel_4);
+//		panel_4.setLayout(new BoxLayout(panel_4, BoxLayout.X_AXIS));
+//
+//		Component horizontalGlue = Box.createHorizontalGlue();
+//		panel_4.add(horizontalGlue);
 
 		JScrollPane scrollPane = new JScrollPane();
 		scrollPane.setPreferredSize(new java.awt.Dimension(150, 200));

@@ -14,6 +14,7 @@ import edu.jhuapl.saavtk.gui.util.MessageUtil;
 import edu.jhuapl.sbmt.stateHistory.model.interfaces.StateHistory;
 import edu.jhuapl.sbmt.stateHistory.model.io.StateHistoryModelIOHelper;
 import edu.jhuapl.sbmt.stateHistory.model.stateHistory.StateHistoryCollection;
+import edu.jhuapl.sbmt.stateHistory.model.stateHistory.spice.SpiceStateHistory;
 import edu.jhuapl.sbmt.stateHistory.rendering.model.StateHistoryRendererManager;
 
 import glum.gui.action.PopAction;
@@ -77,8 +78,9 @@ class SaveFileAction extends PopAction<StateHistory>
 		{
 			for (StateHistory stateHistory : workS)
 			{
+				String extension = stateHistory instanceof SpiceStateHistory ? "spicestate" : "csvstate";
 				history = stateHistory;
-				File targetFile = CustomFileChooser.showSaveDialog(rootComp, title, stateHistory.getMetadata().getStateHistoryName());
+				File targetFile = CustomFileChooser.showSaveDialog(rootComp, title, stateHistory.getMetadata().getStateHistoryName() + "." + extension);
 				if (targetFile == null)
 					return;
 				StateHistoryModelIOHelper.saveIntervalToFile(refManager.getBodyName(), stateHistory, targetFile.getAbsolutePath());
