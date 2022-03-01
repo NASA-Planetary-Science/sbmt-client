@@ -29,6 +29,7 @@ import edu.jhuapl.sbmt.image2.pipeline.active.RenderableImageActorPipeline;
 import edu.jhuapl.sbmt.image2.pipeline.active.cylindricalImages.RenderableCylindricalImageActorPipeline;
 import edu.jhuapl.sbmt.image2.pipeline.active.pointedImages.RenderablePointedImageActorPipeline;
 import edu.jhuapl.sbmt.model.image.IImagingInstrument;
+import edu.jhuapl.sbmt.model.image.ImageSource;
 import edu.jhuapl.sbmt.model.image.ImageType;
 
 import crucible.crust.logging.SimpleLogger;
@@ -324,7 +325,14 @@ public class PerspectiveImageCollection<G1 extends IPerspectiveImage & IPerspect
 						}
 						else
 						{
-							pipeline = new RenderableCylindricalImageActorPipeline(image.getFilename(), image.getBounds(), smallBodyModels);
+							if (image.getPointingSourceType() == ImageSource.LOCAL_CYLINDRICAL)
+							{
+								pipeline = new RenderableCylindricalImageActorPipeline(image.getFilename(), image.getBounds(), smallBodyModels);
+							}
+							else
+							{
+								pipeline = new RenderablePointedImageActorPipeline(image, smallBodyModels);
+							}
 
 						}
 					}

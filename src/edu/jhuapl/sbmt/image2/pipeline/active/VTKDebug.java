@@ -24,18 +24,18 @@ public class VTKDebug
         imageWriter.Write();
 	}
 
-	public static void previewLayer(Layer layer) throws Exception
+	public static void previewLayer(Layer layer, String title) throws Exception
 	{
 		Pair<Layer, HashMap<String, String>> inputs = Pair.of(layer, new HashMap<String, String>());
 		Just.of(inputs)
-			.subscribe(new VtkLayerPreview())
+			.subscribe(new VtkLayerPreview(title))
 			.run();
 	}
 
-	public static void previewVtkImageData(vtkImageData imageData) throws Exception
+	public static void previewVtkImageData(vtkImageData imageData, String title) throws Exception
 	{
 		Just.of(imageData)
-			.subscribe(new VtkImagePreview())
+			.subscribe(new VtkImagePreview(title))
 			.run();
 	}
 }

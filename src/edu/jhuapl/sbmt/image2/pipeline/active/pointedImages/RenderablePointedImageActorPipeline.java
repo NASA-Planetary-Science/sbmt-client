@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Optional;
 
+import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.commons.lang3.tuple.Triple;
 
@@ -21,6 +22,8 @@ import edu.jhuapl.sbmt.image2.interfaces.IPerspectiveImage;
 import edu.jhuapl.sbmt.image2.interfaces.IPerspectiveImageTableRepresentable;
 import edu.jhuapl.sbmt.image2.modules.io.builtIn.BuiltInFitsHeaderReader;
 import edu.jhuapl.sbmt.image2.modules.io.builtIn.BuiltInFitsReader;
+import edu.jhuapl.sbmt.image2.modules.io.builtIn.BuiltInPNGHeaderReader;
+import edu.jhuapl.sbmt.image2.modules.io.builtIn.BuiltInPNGReader;
 import edu.jhuapl.sbmt.image2.modules.pointing.InfofileReaderPublisher;
 import edu.jhuapl.sbmt.image2.modules.pointing.SumfileReaderPublisher;
 import edu.jhuapl.sbmt.image2.modules.rendering.PointedImageRenderables;
@@ -110,26 +113,37 @@ public class RenderablePointedImageActorPipeline<G1 extends IPerspectiveImage & 
 		//generate image layer
 		//***********************
 		//TODO: eventually replace this with a GDAL call to read in the data
-		IPipelinePublisher<Layer> reader = new BuiltInFitsReader(filename, image.getFillValues());
-		int[] interpolationDims = new int[] { reader.getOutputs().get(0).iSize(), reader.getOutputs().get(0).jSize()};
-		if (image.getLinearInterpolatorDims() != null) interpolationDims = image.getLinearInterpolatorDims();
-		LayerLinearInterpolaterOperator linearInterpolator = new LayerLinearInterpolaterOperator(interpolationDims[0], interpolationDims[1]);
-		LayerRotationOperator rotationOperator = new LayerRotationOperator(rotation);
+		IPipelinePublisher<Layer> reader = null;
+		if (FilenameUtils.getExtension(filename).toLowerCase().equals("fit") || FilenameUtils.getExtension(filename).toLowerCase().equals("fits"))
+		{
+			reader = new BuiltInFitsReader(filename, image.getFillValues());
+			int[] interpolationDims = new int[] { reader.getOutputs().get(0).iSize(), reader.getOutputs().get(0).jSize()};
+			if (image.getLinearInterpolatorDims() != null) interpolationDims = image.getLinearInterpolatorDims();
+			LayerLinearInterpolaterOperator linearInterpolator = new LayerLinearInterpolaterOperator(interpolationDims[0], interpolationDims[1]);
+			LayerRotationOperator rotationOperator = new LayerRotationOperator(rotation);
 
-		BasePipelineOperator<Layer, Layer> flipOperator = new PassthroughOperator<Layer>();
-		if (flip.equals("X"))
-			flipOperator = new LayerXFlipOperator();
-		else if (flip.equals("Y"))
-			flipOperator = new LayerYFlipOperator();
+			BasePipelineOperator<Layer, Layer> flipOperator = new PassthroughOperator<Layer>();
+			if (flip.equals("X"))
+				flipOperator = new LayerXFlipOperator();
+			else if (flip.equals("Y"))
+				flipOperator = new LayerYFlipOperator();
 
-		reader
-			.operate(linearInterpolator)
-			.operate(rotationOperator)
-			.operate(flipOperator)
-			.subscribe(Sink.of(updatedLayers)).run();
+			reader
+				.operate(linearInterpolator)
+				.operate(rotationOperator)
+				.operate(flipOperator)
+				.subscribe(Sink.of(updatedLayers)).run();
 
-		//generate metadata (in: filename, out: ImageMetadata)
-		metadataReader = new BuiltInFitsHeaderReader(filename);
+			//generate metadata (in: filename, out: ImageMetadata)
+			metadataReader = new BuiltInFitsHeaderReader(filename);
+		}
+		else if (FilenameUtils.getExtension(filename).toLowerCase().equals("png"))
+		{
+			reader = new BuiltInPNGReader(filename);
+			metadataReader = new BuiltInPNGHeaderReader(filename);
+			reader
+				.subscribe(Sink.of(updatedLayers)).run();
+		}
 
 	}
 

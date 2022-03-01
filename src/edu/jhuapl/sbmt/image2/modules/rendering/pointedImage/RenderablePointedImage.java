@@ -16,7 +16,7 @@ public class RenderablePointedImage
 	private Layer layer;
 	private HashMap<String, String> metadata;
 	private int imageWidth, imageHeight;
-	private LayerMasking masking;
+	private LayerMasking masking = new LayerMasking(0, 0, 0, 0);
 	private double offset;
 	private double defaultOffset;
 	private IntensityRange intensityRange;

@@ -55,10 +55,11 @@ public class VtkLayerPreview implements IPipelineSubscriber<Pair<Layer, HashMap<
 {
 	private IPipelinePublisher<Pair<Layer, HashMap<String, String>>> publisher;
 	private LayerPreviewPanel preview;
+	private String title;
 
-	public VtkLayerPreview()
+	public VtkLayerPreview(String title)
 	{
-		// TODO Auto-generated constructor stub
+		this.title = title;
 	}
 
 	@Override
@@ -66,7 +67,7 @@ public class VtkLayerPreview implements IPipelineSubscriber<Pair<Layer, HashMap<
 	{
 		try
 		{
-			preview = new LayerPreviewPanel(items.get(0).getLeft(), items.get(0).getRight());
+			preview = new LayerPreviewPanel(title, items.get(0).getLeft(), items.get(0).getRight());
 		}
 		catch (Exception e)
 		{
@@ -143,7 +144,7 @@ class LayerPreviewPanel extends ModelInfoWindow implements MouseListener, MouseM
 	private vtkImageData displayedImage;
 	private HashMap<String, String> metadata;
 
-	public LayerPreviewPanel(final Layer layer, HashMap<String, String> metadata) throws IOException, Exception
+	public LayerPreviewPanel(String title, final Layer layer, HashMap<String, String> metadata) throws IOException, Exception
 	{
 		this.metadata = metadata;
 		this.maskPipeline = new VtkImageMaskingPipeline();
@@ -153,7 +154,6 @@ class LayerPreviewPanel extends ModelInfoWindow implements MouseListener, MouseM
 //		refStatusHandler = aStatusHandler;
 
 		setIntensity(null);
-
 
 		// Add a text box for showing information about the image
 //		String[] columnNames =
@@ -209,7 +209,7 @@ class LayerPreviewPanel extends ModelInfoWindow implements MouseListener, MouseM
 //				name = band + ":" + name;
 //			}
 //		}
-		setTitle("Image Properties");
+		setTitle(title);
 
 		pack();
 		setVisible(true);
@@ -253,7 +253,7 @@ class LayerPreviewPanel extends ModelInfoWindow implements MouseListener, MouseM
 
 	private void setIntensity(IntensityRange range) throws IOException, Exception
 	{
-		VtkImageContrastPipeline pipeline = new VtkImageContrastPipeline(displayedImage, null);
+		VtkImageContrastPipeline pipeline = new VtkImageContrastPipeline(displayedImage, range);
 		displayedImage = pipeline.getUpdatedData().get(0);
 		updateImage(displayedImage);
 	}
@@ -329,7 +329,7 @@ class LayerPreviewPanel extends ModelInfoWindow implements MouseListener, MouseM
 		reslice.SetInterpolationModeToNearestNeighbor();
 		reslice.SetOutputSpacing(1.0, 1.0, 1.0);
 		reslice.SetOutputOrigin(0.0, 0.0, 0.0);
-		reslice.SetOutputExtent(0, dims[1] - 1, 0, dims[0] - 1, 0, 0);
+		reslice.SetOutputExtent(0, dims[1] - 1, 0, dims[0] - 1, 0, dims[2]);
 		reslice.Update();
 
 		vtkImageSliceMapper imageSliceMapper = new vtkImageSliceMapper();

@@ -34,6 +34,7 @@ public class VtkImageContrastOperator//<InputType extends vtkImageData, OutputTy
 
 	vtkImageData getImageWithDisplayedRange()
 	{
+		if (inputs.get(0).GetNumberOfScalarComponents() > 1 ) return inputs.get(0);
 		double dx = (maxValue - minValue) / 255.0f;
 
 		double min = minValue;

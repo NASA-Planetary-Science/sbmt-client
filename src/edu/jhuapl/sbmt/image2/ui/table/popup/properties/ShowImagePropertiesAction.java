@@ -46,7 +46,7 @@ public class ShowImagePropertiesAction<G1 extends IPerspectiveImage & IPerspecti
 			PerspectiveImageToRenderableImagePipeline pipeline = new PerspectiveImageToRenderableImagePipeline(List.of(aItemL.get(0)));
 			List<HashMap<String, String>> metadata = pipeline.getMetadata();
 			List<RenderablePointedImage> renderableImages = pipeline.getRenderableImages();
-			VtkLayerPreview preview = new VtkLayerPreview();
+			VtkLayerPreview preview = new VtkLayerPreview("Image Properites");
 			Pair<Layer, HashMap<String, String>> inputs = Pair.of(renderableImages.get(0).getLayer(), metadata.get(0));
 			Just.of(inputs)
 				.subscribe(preview)

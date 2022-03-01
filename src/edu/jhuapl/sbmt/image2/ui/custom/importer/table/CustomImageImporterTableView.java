@@ -64,8 +64,7 @@ public class CustomImageImporterTableView extends JPanel
 			@Override
 			public void handleItemEvent(Object aSource, ItemEventType aEventType)
 			{
-				System.out.println(
-						"CustomImageImporterTableView.CustomImageImporterTableView(...).new ItemEventListener() {...}: handleItemEvent: repainting");
+				editImageButton.setEnabled(imageCollection.getSelectedItems().size() == 1);
 				resultList.repaint();
 			}
 		});

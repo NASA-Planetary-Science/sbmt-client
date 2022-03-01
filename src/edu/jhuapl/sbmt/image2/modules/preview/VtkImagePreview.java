@@ -46,10 +46,11 @@ import edu.jhuapl.sbmt.image2.pipeline.subscriber.IPipelineSubscriber;
 public class VtkImagePreview implements IPipelineSubscriber<vtkImageData>
 {
 	private IPipelinePublisher<vtkImageData> publisher;
+	private String title;
 
-	public VtkImagePreview()
+	public VtkImagePreview(String title)
 	{
-		// TODO Auto-generated constructor stub
+		this.title = title;
 	}
 
 	@Override
@@ -57,7 +58,7 @@ public class VtkImagePreview implements IPipelineSubscriber<vtkImageData>
 	{
 		try
 		{
-			ImagePreviewPanel preview = new ImagePreviewPanel(items.get(0));
+			ImagePreviewPanel preview = new ImagePreviewPanel(title, items.get(0));
 		}
 		catch (Exception e)
 		{
@@ -128,7 +129,7 @@ class ImagePreviewPanel extends ModelInfoWindow implements MouseListener, MouseM
 //	private OfflimbControlsController offlimbController;
 	vtkImageData displayedImage;
 
-	public ImagePreviewPanel(final vtkImageData imageData) throws IOException, Exception
+	public ImagePreviewPanel(String title, final vtkImageData imageData) throws IOException, Exception
 	{
 
 		this.maskPipeline = new VtkImageMaskingPipeline();
@@ -196,7 +197,7 @@ class ImagePreviewPanel extends ModelInfoWindow implements MouseListener, MouseM
 //				name = band + ":" + name;
 //			}
 //		}
-		setTitle("Image Properties");
+		setTitle(title);
 
 		pack();
 		setVisible(true);
