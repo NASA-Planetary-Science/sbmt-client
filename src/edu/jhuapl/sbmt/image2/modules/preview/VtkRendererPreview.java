@@ -100,7 +100,7 @@ class RendererPreviewPanel extends ModelInfoWindow implements MouseListener, Mou
 		setTitle("Renderer Preview");
 
 		pack();
-		setVisible(true);
+//		setVisible(true);
 
 //		initialized = true;
 

@@ -310,7 +310,7 @@ class RendererPreviewPanel2 extends ModelInfoWindow implements MouseListener, Mo
 
 		createMenus();
 
-		setTitle("Renderer Preview");
+		setTitle("Renderer Preview2");
 
 		pack();
 		setVisible(true);

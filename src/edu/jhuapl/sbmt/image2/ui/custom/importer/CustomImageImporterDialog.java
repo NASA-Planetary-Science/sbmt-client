@@ -37,7 +37,6 @@ import vtk.vtkImageReader2Factory;
 import edu.jhuapl.saavtk.gui.dialog.CustomFileChooser;
 import edu.jhuapl.sbmt.image2.interfaces.IPerspectiveImage;
 import edu.jhuapl.sbmt.image2.interfaces.IPerspectiveImageTableRepresentable;
-import edu.jhuapl.sbmt.image2.model.PerspectiveImageCollection;
 import edu.jhuapl.sbmt.image2.modules.rendering.cylindricalImage.CylindricalBounds;
 import edu.jhuapl.sbmt.model.image.IImagingInstrument;
 import edu.jhuapl.sbmt.model.image.ImageType;
@@ -60,18 +59,18 @@ public class CustomImageImporterDialog<G1 extends IPerspectiveImage & IPerspecti
 	private JComboBox<String> pointingTypeComboBox;
 	private boolean isEditMode;
 	private boolean isEllipsoid;
-	private PerspectiveImageCollection<G1> imageCollection;
+//	private BaseItemManager<G1> imageCollection;
 	private Optional<G1> existingImage;
 	private ImageType imageType = null;
 
 	public CustomImageImporterDialog(Window parent, boolean isEditMode, IImagingInstrument instrument, boolean isEllipsoid,
-									PerspectiveImageCollection<G1> imageCollection, Optional<G1> existingImage)
+			/*BaseItemManager<G1> imageCollection,*/ Optional<G1> existingImage)
 	{
 		 super(parent, isEditMode ? "Edit Image" : "Import New Image", Dialog.ModalityType.APPLICATION_MODAL);
 		 this.instrument = instrument;
 		 this.isEditMode = isEditMode;
 		 this.isEllipsoid = isEllipsoid;
-		 this.imageCollection = imageCollection;
+//		 this.imageCollection = imageCollection;
 		 this.existingImage = existingImage;
 		 initGUI();
 		 setSize(550, 400);
@@ -98,7 +97,8 @@ public class CustomImageImporterDialog<G1 extends IPerspectiveImage & IPerspecti
 					pointingTypeComboBox.setSelectedIndex(0);
 					pointingFilenameTextField.setText(image.getPointingSource());
 					imageFlipComboBox.setSelectedItem(image.getFlip());
-					imageRotationComboBox.setSelectedItem(image.getRotation());
+					System.out.println("CustomImageImporterDialog: initGUI: " + image.getRotation());
+					imageRotationComboBox.setSelectedItem(""+ (int)(image.getRotation()));
 				}
 				else
 				{
@@ -391,22 +391,24 @@ public class CustomImageImporterDialog<G1 extends IPerspectiveImage & IPerspecti
 		existingImage.ifPresent(image -> {
 
 			imageType = image.getImageType();
-			image.setName(imageNameTextField.getText());
+			existingImage.get().setName(imageNameTextField.getText());
 			if (pointingTypeComboBox.getSelectedItem().equals("Perspective Projection"))
 			{
-				image.setPointingSource(pointingFilenameTextField.getText());
-				image.setFlip((String)imageFlipComboBox.getSelectedItem());
-				image.setRotation(Double.parseDouble((String)imageRotationComboBox.getSelectedItem()));
+				existingImage.get().setPointingSource(pointingFilenameTextField.getText());
+				existingImage.get().setFlip((String)imageFlipComboBox.getSelectedItem());
+				existingImage.get().setRotation(Double.parseDouble((String)imageRotationComboBox.getSelectedItem()));
 			}
 			else
 			{
 				Double minLat = Double.parseDouble(minLatitudeTextField.getText());
 				Double maxLat = Double.parseDouble(maxLatitudeTextField.getText());
+				System.out.println("CustomImageImporterDialog: storeImage: max lat is " + maxLat);
 				Double minLon = Double.parseDouble(minLongitudeTextField.getText());
 				Double maxLon = Double.parseDouble(maxLongitudeTextField.getText());
-				image.setBounds(new CylindricalBounds(minLat, maxLat, minLon, maxLon));
-			}
+				existingImage.get().setBounds(new CylindricalBounds(minLat, maxLat, minLon, maxLon));
+				System.out.println("CustomImageImporterDialog: storeImage: existing image bounds " + existingImage.get().getBounds());
 
+			}
 		});
 //		ImageType imageType = (ImageType)imageTypeComboBox.getSelectedItem();
 //		String pointingSource = pointingFilenameTextField.getText();

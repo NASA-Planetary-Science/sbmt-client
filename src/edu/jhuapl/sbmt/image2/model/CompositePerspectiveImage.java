@@ -192,7 +192,8 @@ public class CompositePerspectiveImage implements IPerspectiveImage, IPerspectiv
 
 	public void setBounds(CylindricalBounds bounds)
 	{
-		this.bounds = bounds;
+		images.get(0).setBounds(bounds);
+//		this.bounds = bounds;
 	}
 
 	public int[] getMaskValues()
@@ -222,7 +223,8 @@ public class CompositePerspectiveImage implements IPerspectiveImage, IPerspectiv
 
 	public void setRotation(double rotation)
 	{
-		this.rotation = rotation;
+//		this.rotation = rotation;
+		images.get(0).setRotation(rotation);
 	}
 
 	public String getFlip()
@@ -232,11 +234,13 @@ public class CompositePerspectiveImage implements IPerspectiveImage, IPerspectiv
 
 	public void setFlip(String flip)
 	{
-		this.flip = flip;
+		images.get(0).setFlip(flip);
+//		this.flip = flip;
 	}
 
 	public void setPointingSourceType(ImageSource pointingSourceType)
 	{
+		images.get(0).setPointingSourceType(pointingSourceType);
 		this.pointingSourceType = pointingSourceType;
 	}
 

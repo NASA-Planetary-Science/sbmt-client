@@ -297,7 +297,7 @@ public class PerspectiveImageCollection<G1 extends IPerspectiveImage & IPerspect
 	{
 		image.setMapped(mapped);
 		List<vtkActor> actors = imageRenderers.get(image);
-		if (actors == null)
+		if (actors == null && mapped == true)
 		{
 			Thread thread = new Thread(new Runnable()
 			{
@@ -312,7 +312,14 @@ public class PerspectiveImageCollection<G1 extends IPerspectiveImage & IPerspect
 						if (image.getImageType() != ImageType.GENERIC_IMAGE)
 						{
 							if (image.getNumberOfLayers() == 1)
-								pipeline = new RenderablePointedImageActorPipeline(image, smallBodyModels);
+								if (image.getPointingSourceType() == ImageSource.LOCAL_CYLINDRICAL)
+								{
+									pipeline = new RenderableCylindricalImageActorPipeline(image.getFilename(), image.getBounds(), smallBodyModels);
+								}
+								else
+								{
+									pipeline = new RenderablePointedImageActorPipeline(image, smallBodyModels);
+								}
 							else if (image.getNumberOfLayers() == 3)
 							{
 								pipeline = new ColorImageGeneratorPipeline(image.getImages(), smallBodyModels);
@@ -358,11 +365,14 @@ public class PerspectiveImageCollection<G1 extends IPerspectiveImage & IPerspect
 		}
 		else
 		{
-			for (vtkActor actor : actors)
+			if (actors != null)
 			{
-				actor.SetVisibility(mapped ? 1 : 0);
+				for (vtkActor actor : actors)
+				{
+					actor.SetVisibility(mapped ? 1 : 0);
+				}
 			}
-			this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
+//			this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
 		}
 		renderingStates.get(image).isMapped = mapped;
 		this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
@@ -393,7 +403,7 @@ public class PerspectiveImageCollection<G1 extends IPerspectiveImage & IPerspect
 		image.setFrustumShowing(visible);
 //		this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
 		List<vtkActor> actors = frustumRenderers.get(image);
-		if (actors == null)
+		if (actors == null && visible == true)
 		{
 			Thread thread = getPipelineThread(image, (Void v) -> {
 				for (vtkActor actor : frustumRenderers.get(image))
@@ -406,11 +416,14 @@ public class PerspectiveImageCollection<G1 extends IPerspectiveImage & IPerspect
 		}
 		else
 		{
-			for (vtkActor actor : actors)
+			if (actors != null)
 			{
-				actor.SetVisibility(visible ? 1 : 0);
+				for (vtkActor actor : actors)
+				{
+					actor.SetVisibility(visible ? 1 : 0);
+				}
+				this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
 			}
-			this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
 		}
 		renderingStates.get(image).isFrustumShowing = visible;
 	}
@@ -427,7 +440,7 @@ public class PerspectiveImageCollection<G1 extends IPerspectiveImage & IPerspect
 		renderingStates.get(image).isOffLimbBoundaryShowing = showing;
 		renderingStates.get(image).isOfflimbShowing = showing;
 		List<vtkActor> actors = offLimbRenderers.get(image);
-		if (actors == null)
+		if (actors == null && showing == true)
 		{
 			Thread thread = getPipelineThread(image, (Void v) -> {
 				for (vtkActor actor : offLimbRenderers.get(image))
@@ -444,13 +457,19 @@ public class PerspectiveImageCollection<G1 extends IPerspectiveImage & IPerspect
 		}
 		else
 		{
-			for (vtkActor actor : actors)
+			if (actors != null)
 			{
-				actor.SetVisibility(showing ? 1 : 0);
+				for (vtkActor actor : actors)
+				{
+					actor.SetVisibility(showing ? 1 : 0);
+				}
 			}
-			for (vtkActor actor : offLimbBoundaryRenderers.get(image))
+			if (offLimbBoundaryRenderers.get(image) != null)
 			{
-				actor.SetVisibility(showing? 1 : 0);
+				for (vtkActor actor : offLimbBoundaryRenderers.get(image))
+				{
+					actor.SetVisibility(showing? 1 : 0);
+				}
 			}
 			this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
 		}
@@ -498,7 +517,7 @@ public class PerspectiveImageCollection<G1 extends IPerspectiveImage & IPerspect
 	{
 		image.setBoundaryShowing(showing);
 		List<vtkActor> actors = boundaryRenderers.get(image);
-		if (actors == null)
+		if (actors == null && showing == true)
 		{
 			Thread thread = getPipelineThread(image, (Void v) -> {
 				for (vtkActor actor : boundaryRenderers.get(image))
@@ -511,11 +530,14 @@ public class PerspectiveImageCollection<G1 extends IPerspectiveImage & IPerspect
 		}
 		else
 		{
-			for (vtkActor actor : actors)
+			if (actors != null)
 			{
-				actor.SetVisibility(showing ? 1 : 0);
+				for (vtkActor actor : actors)
+				{
+					actor.SetVisibility(showing ? 1 : 0);
+				}
+				this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
 			}
-			this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
 		}
 		renderingStates.get(image).isBoundaryShowing = showing;
 	}
@@ -736,6 +758,7 @@ public class PerspectiveImageCollection<G1 extends IPerspectiveImage & IPerspect
 
 		public PipelineThread(G1 image, Function<Void, Void> completionBlock)
 		{
+			System.out.println("PerspectiveImageCollection.PipelineThread: PipelineThread: making pipeline thread ");
 			this.image = image;
 			this.completionBlock = completionBlock;
 		}

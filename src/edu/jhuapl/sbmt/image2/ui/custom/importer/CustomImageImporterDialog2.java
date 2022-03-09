@@ -9,6 +9,7 @@ import java.awt.event.ItemListener;
 import java.io.File;
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 
 import javax.swing.Box;
 import javax.swing.BoxLayout;
@@ -21,6 +22,7 @@ import javax.swing.JPanel;
 import org.apache.commons.io.FilenameUtils;
 
 import com.beust.jcommander.internal.Lists;
+import com.google.common.collect.ImmutableSet;
 
 import edu.jhuapl.saavtk.gui.dialog.CustomFileChooser;
 import edu.jhuapl.sbmt.image2.interfaces.IPerspectiveImage;
@@ -35,6 +37,9 @@ import edu.jhuapl.sbmt.image2.ui.custom.importer.table.CustomImageImporterTableV
 import edu.jhuapl.sbmt.model.image.IImagingInstrument;
 import edu.jhuapl.sbmt.model.image.ImageSource;
 import edu.jhuapl.sbmt.model.image.ImageType;
+
+import glum.item.ItemEventListener;
+import glum.item.ItemEventType;
 
 
 
@@ -56,16 +61,18 @@ public class CustomImageImporterDialog2<G1 extends IPerspectiveImage & IPerspect
 		 this.isEditMode = isEditMode;
 		 this.isEllipsoid = isEllipsoid;
 		 this.imageCollection = imageCollection;
+		 System.out.println("CustomImageImporterDialog2: CustomImageImporterDialog2: image collection size " + imageCollection.size());
 		 this.tempCollection = new CustomPerspectiveImageCollection<G1>();
-//		 tempCollection.addListener(new ItemEventListener()
-//		{
-//
-//			@Override
-//			public void handleItemEvent(Object aSource, ItemEventType aEventType)
-//			{
-//				table.repaint();
-//			}
-//		});
+		 tempCollection.addListener(new ItemEventListener()
+		 {
+
+			@Override
+			public void handleItemEvent(Object aSource, ItemEventType aEventType)
+			{
+				table.getDeleteImageButton().setEnabled(tempCollection.getSelectedItems().size() > 0);
+				table.getEditImageButton().setEnabled(tempCollection.getSelectedItems().size() == 1);
+			}
+		 });
 		 initGUI();
 		 setSize(700, 400);
 	}
@@ -77,7 +84,7 @@ public class CustomImageImporterDialog2<G1 extends IPerspectiveImage & IPerspect
 
 		table.getLoadImageButton().addActionListener(e -> {
 			File[] files = CustomFileChooser.showOpenDialog(table, "Select images...", null, true);
-			if (files.length == 0)
+			if (files == null || files.length == 0)
 	        {
 	            return;
 	        }
@@ -92,6 +99,42 @@ public class CustomImageImporterDialog2<G1 extends IPerspectiveImage & IPerspect
 			}
  			tempCollection.setAllItems(tempImages);
  			System.out.println("CustomImageImporterDialog2: initGUI: number of tempImages " + tempImages.size());
+		});
+
+		table.getDeleteImageButton().addActionListener(e -> {
+			tempCollection.removeItems(tempCollection.getSelectedItems());
+		});
+
+		table.getEditImageButton().addActionListener(e -> {
+			ImmutableSet<G1> selectedItems = tempCollection.getSelectedItems();
+			System.out.println("ImageSearchController: initCustomGUI: num selected items " + selectedItems.size());
+			if (selectedItems.size() != 1) return;
+			G1 image = selectedItems.asList().get(0);
+			System.out.println("ImageSearchController: initCustomGUI: number of layers " + image.getNumberOfLayers());
+//			if (image.getImageType() == ImageType.GENERIC_IMAGE) return;
+			if (image.getNumberOfLayers() == 1)	//editing custom single layer image
+			{
+				System.out.println("ImageSearchController: initCustomGUI: single layer edit");
+				CustomImageImporterDialog<G1> dialog = new CustomImageImporterDialog<G1>(null, true, instrument,
+						isEllipsoid, /*tempCollection,*/ Optional.of(image));
+		        dialog.setLocationRelativeTo(getContentPane());
+		        dialog.setVisible(true);
+			}
+//			else if (image.getNumberOfLayers() == 3) //editing custom color image
+//			{
+//				ColorImageBuilderController controller = new ColorImageBuilderController(smallBodyModels, tempCollection, Optional.of(image));
+//				controller.setImages(image.getImages());
+//				BasicFrame frame = new BasicFrame();
+//				frame.add(controller.getView());
+//				frame.setSize(775, 900);
+//				frame.setTitle("Edit Color Image");
+//				frame.setVisible(true);
+//				frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+//			}
+//			else //editing custom n > 1, n!=3 spectral image
+//			{
+//
+//			}
 		});
 
 
@@ -313,6 +356,8 @@ public class CustomImageImporterDialog2<G1 extends IPerspectiveImage & IPerspect
 	private void saveImagesToCollection()
 	{
 		List<G1> images = tempCollection.getAllItems();
+		System.out.println("CustomImageImporterDialog2: saveImagesToCollection: number of images to save to collection " + images.size());
+		System.out.println("CustomImageImporterDialog2: saveImagesToCollection: image collection size " + imageCollection.size());
 		for (G1 image : images)
 		{
 			imageCollection.addUserImage(image);
@@ -326,21 +371,27 @@ public class CustomImageImporterDialog2<G1 extends IPerspectiveImage & IPerspect
 		String withoutExtension = FilenameUtils.removeExtension(filename);
 		String pointingSource = "";
 		ImageSource pointingSourceType = null;
-		if (new File(withoutExtension + ".SUM").exists())
+		if (pointingTypeComboBox.getSelectedItem() == "Perspective Projection")
 		{
-			pointingSource = new File(withoutExtension + ".SUM").getAbsolutePath();
-			pointingSourceType = ImageSource.GASKELL;
-		}
-		else if (new File(withoutExtension + ".INFO").exists())
-		{
-			pointingSource = new File(withoutExtension + ".INFO").getAbsolutePath();
-			pointingSourceType = ImageSource.SPICE;
+			if (new File(withoutExtension + ".SUM").exists())
+			{
+				pointingSource = new File(withoutExtension + ".SUM").getAbsolutePath();
+				pointingSourceType = ImageSource.GASKELL;
+			}
+			else if (new File(withoutExtension + ".INFO").exists())
+			{
+				pointingSource = new File(withoutExtension + ".INFO").getAbsolutePath();
+				pointingSourceType = ImageSource.SPICE;
+			}
+			else
+			{
+				pointingSource = new File(withoutExtension + ".LBL").getAbsolutePath();
+				pointingSourceType = ImageSource.LABEL;
+			}
 		}
 		else
-		{
-			pointingSource = new File(withoutExtension + ".LBL").getAbsolutePath();
-			pointingSourceType = ImageSource.LABEL;
-		}
+			pointingSourceType = ImageSource.LOCAL_CYLINDRICAL;
+		System.out.println("CustomImageImporterDialog2: storeImage: pointing source type " + pointingSourceType);
 //		String pointingSource = pointingFilenameTextField.getText();
 //		ImageSource pointingSourceType = ImageSource.LOCAL_CYLINDRICAL;
 
@@ -361,7 +412,7 @@ public class CustomImageImporterDialog2<G1 extends IPerspectiveImage & IPerspect
 //			Double maxLat = Double.parseDouble(maxLatitudeTextField.getText());
 //			Double minLon = Double.parseDouble(minLongitudeTextField.getText());
 //			Double maxLon = Double.parseDouble(maxLongitudeTextField.getText());
-			image.setBounds(new CylindricalBounds(0,0,0,0));
+			image.setBounds(new CylindricalBounds(-90,90,0,360));
 		}
 		CompositePerspectiveImage compImage = new CompositePerspectiveImage(List.of(image));
 		compImage.setName(FilenameUtils.getBaseName(filename));

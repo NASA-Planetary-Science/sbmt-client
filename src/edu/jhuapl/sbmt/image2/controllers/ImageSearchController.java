@@ -35,7 +35,6 @@ import edu.jhuapl.sbmt.image2.ui.custom.importer.CustomImageImporterDialog;
 import edu.jhuapl.sbmt.image2.ui.custom.importer.CustomImageImporterDialog2;
 import edu.jhuapl.sbmt.image2.ui.table.popup.ImageListPopupMenu;
 import edu.jhuapl.sbmt.model.image.IImagingInstrument;
-import edu.jhuapl.sbmt.model.image.ImageType;
 
 import glum.gui.action.PopupMenu;
 
@@ -79,15 +78,16 @@ public class ImageSearchController<G1 extends IPerspectiveImage & IPerspectiveIm
 //		popupMenu = new ImageListPopupMenu<>(modelManager, collection, null, infoPanelManager, spectrumPanelManager, renderer, renderer);
 		pickManager.getDefaultPicker().addListener(this);
 
-		collection.addPropertyChangeListener(evt ->
+		this.collection.addPropertyChangeListener(evt ->
 		{
 			imageListTableController.getPanel().getResultList().repaint();
 			customImageListTableController.getPanel().getResultList().repaint();
 			updateButtonState();
 		});
 
-		collection.addListener((aSource, aEventType) ->
+		this.collection.addListener((aSource, aEventType) ->
 		{
+			System.out.println("ImageSearchController: ImageSearchController: number of images " + this.collection.size());
 //			imageListTableController.getPanel().getResultList().repaint();
 //			customImageListTableController.getPanel().getResultList().repaint();
 			updateButtonState();
@@ -287,15 +287,19 @@ public class ImageSearchController<G1 extends IPerspectiveImage & IPerspectiveIm
 
 		customImageListTableController.getPanel().getEditImageButton().addActionListener(e -> {
 			ImmutableSet<G1> selectedItems = collection.getSelectedItems();
+			System.out.println("ImageSearchController: initCustomGUI: num selected items " + selectedItems.size());
 			if (selectedItems.size() != 1) return;
-			IPerspectiveImage image = selectedItems.asList().get(0);
-			if (image.getImageType() == ImageType.GENERIC_IMAGE) return;
+			G1 image = selectedItems.asList().get(0);
+			System.out.println("ImageSearchController: initCustomGUI: number of layers " + image.getNumberOfLayers());
+//			if (image.getImageType() == ImageType.GENERIC_IMAGE) return;
 			if (image.getNumberOfLayers() == 1)	//editing custom single layer image
 			{
+				System.out.println("ImageSearchController: initCustomGUI: single layer edit");
 				CustomImageImporterDialog dialog = new CustomImageImporterDialog(null, true, instrument,
-						modelManager.getPolyhedralModel().isEllipsoid(), collection, Optional.of(image));
+						modelManager.getPolyhedralModel().isEllipsoid(), /*collection,*/ Optional.of(image));
 		        dialog.setLocationRelativeTo(imageListTableController.getPanel());
 		        dialog.setVisible(true);
+		        collection.updateUserImage(image);
 			}
 			else if (image.getNumberOfLayers() == 3) //editing custom color image
 			{
@@ -317,12 +321,16 @@ public class ImageSearchController<G1 extends IPerspectiveImage & IPerspectiveIm
 		customImageListTableController.getPanel().getDeleteImageButton().addActionListener(e -> {
 			for (G1 image : collection.getSelectedItems())
 			{
-				collection.setImageMapped(image, false);
 				collection.setImageBoundaryShowing(image, false);
 				collection.setImageFrustumVisible(image, false);
 				collection.setImageOfflimbShowing(image, false);
+				collection.setImageMapped(image, false);
+				collection.removeUserImage(image);
 			}
+			System.out.println("ImageSearchController: initCustomGUI: deleting number " + collection.getSelectedItems().size());
 			collection.removeItems(collection.getSelectedItems());
+
+			System.out.println("ImageSearchController: initCustomGUI: size now " + collection.size());
 		});
 
 

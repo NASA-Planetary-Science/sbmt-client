@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Optional;
 
 import javax.swing.JPanel;
+import javax.swing.SwingUtilities;
 
 import org.apache.commons.lang3.tuple.Pair;
 
@@ -72,7 +73,8 @@ public class ColorImageBuilderController
 
 			CompositePerspectiveImage colorImage = new CompositePerspectiveImage(panel.getImages());
 			imageCollection.addUserImage(colorImage);
-			panel.getParent().setVisible(false);
+			SwingUtilities.getWindowAncestor(panel).setVisible(false);
+//			panel.getParent().setVisible(false);
 		});
 	}
 

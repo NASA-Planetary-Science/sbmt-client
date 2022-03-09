@@ -1,11 +1,5 @@
 package edu.jhuapl.sbmt.image2.modules.rendering.cylindricalImage;
 
-import edu.jhuapl.saavtk.util.IntensityRange;
-import edu.jhuapl.sbmt.image2.model.ImageOrigin;
-import edu.jhuapl.sbmt.image2.model.PerspectiveImage;
-import edu.jhuapl.sbmt.model.image.ImageSource;
-import edu.jhuapl.sbmt.model.image.ImageType;
-
 import crucible.crust.metadata.api.Key;
 import crucible.crust.metadata.api.Version;
 import crucible.crust.metadata.impl.InstanceGetter;
@@ -98,5 +92,12 @@ public class CylindricalBounds
 	        result.put(maxLongitudeKey, bounds.maxLongitude);
 	        return result;
 		});
+	}
+
+	@Override
+	public String toString()
+	{
+		return "CylindricalBounds [minLatitude=" + minLatitude + ", maxLatitude=" + maxLatitude + ", minLongitude="
+				+ minLongitude + ", maxLongitude=" + maxLongitude + "]";
 	}
 }

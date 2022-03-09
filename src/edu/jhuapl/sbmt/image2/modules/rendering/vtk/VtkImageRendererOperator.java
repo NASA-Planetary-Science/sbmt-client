@@ -7,6 +7,7 @@ import vtk.vtkImageData;
 
 import edu.jhuapl.saavtk.util.VtkDataTypes;
 import edu.jhuapl.sbmt.image2.api.Layer;
+import edu.jhuapl.sbmt.image2.api.PixelDouble;
 import edu.jhuapl.sbmt.image2.api.PixelVector;
 import edu.jhuapl.sbmt.image2.impl.BasicPixelVectorDouble.ScalarPixel;
 import edu.jhuapl.sbmt.image2.impl.PixelDoubleFactory;
@@ -28,31 +29,76 @@ public class VtkImageRendererOperator
 	public void processData() throws IOException, Exception
 	{
 		outputs = new ArrayList<vtkImageData>();
-		PixelVector pixel = new PixelVectorDoubleFactory().of(3, -Double.NaN, -Double.NaN);
 		int layerWidth = inputs.get(0).iSize();
 		int layerHeight = inputs.get(0).jSize();
 		int layerDepth = inputs.get(0).dataSizes().get(0);
 		output = new vtkImageData();
-//		 if (transpose)
-        output.SetDimensions(layerWidth, layerHeight, layerDepth);
-//	        else
-//        output.SetDimensions(layerHeight, layerWidth, 1);
-        output.SetSpacing(1.0, 1.0, 1.0);
+		output.SetSpacing(1.0, 1.0, 1.0);
         output.SetOrigin(0.0, 0.0, 0.0);
-        output.AllocateScalars(VtkDataTypes.VTK_UNSIGNED_CHAR, layerDepth);
+        output.SetDimensions(layerWidth, layerHeight, layerDepth);
 
-		for (int i = 0; i < layerWidth; i++)
-		{
-			for (int j = 0; j < layerHeight; j++)
+        if (layerDepth == 1)
+        {
+			PixelDouble pixel = pixelDoubleFactory.of(0, -Double.NaN, -Double.NaN);
+	        output.AllocateScalars(VtkDataTypes.VTK_FLOAT, 1);
+
+			for (int i = 0; i < layerWidth; i++)
 			{
-				inputs.get(0).get(i, j, pixel);
-				for (int k = 0; k < layerDepth; k++)
+				for (int j = 0; j < layerHeight; j++)
 				{
-					ScalarPixel vecPixel = (ScalarPixel)pixel.get(k);
-					output.SetScalarComponentFromFloat(i, j, 0, k, vecPixel.get());
+					inputs.get(0).get(i, j, pixel);
+					output.SetScalarComponentFromDouble(i, j, 0, 0, pixel.get());
 				}
 			}
-		}
+        }
+        else if (layerDepth == 3)
+        {
+        	PixelVector pixel = new PixelVectorDoubleFactory().of(3, -Double.NaN, -Double.NaN);
+        	output.AllocateScalars(VtkDataTypes.VTK_UNSIGNED_CHAR, layerDepth);
+    		for (int i = 0; i < layerWidth; i++)
+    		{
+    			for (int j = 0; j < layerHeight; j++)
+    			{
+    				inputs.get(0).get(i, j, pixel);
+    				for (int k = 0; k < layerDepth; k++)
+    				{
+    					ScalarPixel vecPixel = (ScalarPixel)pixel.get(k);
+    					output.SetScalarComponentFromFloat(i, j, 0, k, vecPixel.get());
+    				}
+    			}
+    		}
+        }
+
 		outputs.add(output);
+
+
+
+//		outputs = new ArrayList<vtkImageData>();
+//		PixelVector pixel = new PixelVectorDoubleFactory().of(3, -Double.NaN, -Double.NaN);
+//		int layerWidth = inputs.get(0).iSize();
+//		int layerHeight = inputs.get(0).jSize();
+//		int layerDepth = inputs.get(0).dataSizes().get(0);
+//		output = new vtkImageData();
+////		 if (transpose)
+//        output.SetDimensions(layerWidth, layerHeight, layerDepth);
+////	        else
+////        output.SetDimensions(layerHeight, layerWidth, 1);
+//        output.SetSpacing(1.0, 1.0, 1.0);
+//        output.SetOrigin(0.0, 0.0, 0.0);
+//        output.AllocateScalars(VtkDataTypes.VTK_UNSIGNED_CHAR, layerDepth);
+//
+//		for (int i = 0; i < layerWidth; i++)
+//		{
+//			for (int j = 0; j < layerHeight; j++)
+//			{
+//				inputs.get(0).get(i, j, pixel);
+//				for (int k = 0; k < layerDepth; k++)
+//				{
+//					ScalarPixel vecPixel = (ScalarPixel)pixel.get(k);
+//					output.SetScalarComponentFromFloat(i, j, 0, k, vecPixel.get());
+//				}
+//			}
+//		}
+//		outputs.add(output);
 	}
 }
