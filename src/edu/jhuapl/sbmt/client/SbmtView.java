@@ -81,6 +81,7 @@ import edu.jhuapl.sbmt.model.image.ImageCubeCollection;
 import edu.jhuapl.sbmt.model.image.ImagingInstrument;
 import edu.jhuapl.sbmt.model.image.SpectralImageMode;
 import edu.jhuapl.sbmt.model.phobos.controllers.MEGANEController;
+import edu.jhuapl.sbmt.model.phobos.model.CumulativeMEGANECollection;
 import edu.jhuapl.sbmt.model.phobos.model.MEGANECollection;
 import edu.jhuapl.sbmt.model.ryugu.nirs3.H2SpectraFactory;
 import edu.jhuapl.sbmt.model.ryugu.nirs3.NIRS3SearchModel;
@@ -123,6 +124,8 @@ public class SbmtView extends View implements PropertyChangeListener
 	private SmallBodyModel smallBodyModel;
 	private StateHistoryCollection historyCollection;
 	private StateHistoryRendererManager rendererManager;
+	private MEGANECollection meganeCollection;
+	private CumulativeMEGANECollection cumulativeMeganeCollection;
 
 	public SbmtView(StatusNotifier aStatusNotifier, BasicConfigInfo configInfo)
 	{
@@ -353,8 +356,10 @@ public class SbmtView extends View implements PropertyChangeListener
 
 			if (!getPolyhedralModelConfig().spectralInstruments.stream().filter(inst -> inst.getDisplayName().equals("MEGANE")).toList().isEmpty())
 			{
-				MEGANECollection collection = new MEGANECollection(smallBodyModel);
-				allModels.put(ModelNames.GRNS_SPECTRA, collection);
+				meganeCollection = new MEGANECollection(smallBodyModel);
+				allModels.put(ModelNames.GRNS_SPECTRA, meganeCollection);
+				cumulativeMeganeCollection = new CumulativeMEGANECollection(smallBodyModel);
+				allModels.put(ModelNames.GRNS_CUSTOM_SPECTRA, cumulativeMeganeCollection);
 			}
         }
 
@@ -636,7 +641,8 @@ public class SbmtView extends View implements PropertyChangeListener
 			{
 //				MEGANECollection collection = new MEGANECollection();
 				MEGANECollection collection = (MEGANECollection)getModelManager().getModel(ModelNames.GRNS_SPECTRA);
-				MEGANEController meganeController = new MEGANEController(collection, smallBodyModel, getModelManager(), getPickManager());
+				CumulativeMEGANECollection cumulativeCollection = (CumulativeMEGANECollection)getModelManager().getModel(ModelNames.GRNS_CUSTOM_SPECTRA);
+				MEGANEController meganeController = new MEGANEController(collection, cumulativeCollection, smallBodyModel, getModelManager(), getPickManager());
 				rendererManager.addListener(new ItemEventListener()
 				{
 					@Override
@@ -812,6 +818,8 @@ public class SbmtView extends View implements PropertyChangeListener
         this.renderer = renderer;
         if (rendererManager == null) return;
         rendererManager.setRenderer(renderer);
+        meganeCollection.setRenderer(renderer);
+        cumulativeMeganeCollection.setRenderer(renderer);
     }
 
     private static final Version METADATA_VERSION = Version.of(1, 1); // Nested CURRENT_TAB stored as an array of strings.
