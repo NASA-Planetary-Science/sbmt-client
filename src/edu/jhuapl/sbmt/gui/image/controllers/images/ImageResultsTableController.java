@@ -24,7 +24,6 @@ import java.util.TimeZone;
 import javax.swing.JOptionPane;
 import javax.swing.JTable;
 import javax.swing.ListSelectionModel;
-import javax.swing.SwingUtilities;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.event.RowSorterEvent;
@@ -61,8 +60,6 @@ import edu.jhuapl.sbmt.model.image.ImagingInstrument;
 import edu.jhuapl.sbmt.model.image.perspectiveImage.PerspectiveImage;
 import edu.jhuapl.sbmt.util.ImageGalleryGenerator;
 import edu.jhuapl.sbmt.util.ImageGalleryGenerator.ImageGalleryEntry;
-
-import nom.tam.fits.FitsException;
 
 public class ImageResultsTableController
 {
@@ -700,27 +697,8 @@ public class ImageResultsTableController
         }
 
         // Show the first set of boundaries
-        Thread thread = new Thread(new Runnable()
-		{
-
-			@Override
-			public void run()
-			{
-				imageSearchModel.setResultIntervalCurrentlyShown(new IdPair(0, Integer.parseInt((String) imageResultsTableView.getNumberOfBoundariesComboBox().getSelectedItem())));
-				SwingUtilities.invokeLater(new Runnable()
-				{
-
-					@Override
-					public void run()
-					{
-						ImageResultsTableController.this.showImageBoundaries(imageSearchModel.getResultIntervalCurrentlyShown());
-					}
-				});
-
-
-			}
-		});
-        thread.start();
+        imageSearchModel.setResultIntervalCurrentlyShown(new IdPair(0, Integer.parseInt((String) imageResultsTableView.getNumberOfBoundariesComboBox().getSelectedItem())));
+        this.showImageBoundaries(imageSearchModel.getResultIntervalCurrentlyShown());
 
         modifiedTableRow = -1;
     }
@@ -805,34 +783,9 @@ public class ImageResultsTableController
                 	image.setBoundaryVisibility(true);
                 else
                 {
-                	Thread thread = new Thread(new Runnable()
-            		{
-
-            			@Override
-            			public void run()
-            			{
-		                	try
-							{
-								imageCollection.addImage(key);
-							} catch (FitsException | IOException e)
-							{
-								// TODO Auto-generated catch block
-								e.printStackTrace();
-							}
-		                	SwingUtilities.invokeLater(new Runnable()
-							{
-
-								@Override
-								public void run()
-								{
-									imageCollection.getImage(key).setVisible(false);
-				                	imageCollection.getImage(key).setBoundaryVisibility(true);
-								}
-							});
-
-            			}
-            		});
-                	thread.start();
+                	imageCollection.addImage(key);
+                	imageCollection.getImage(key).setVisible(false);
+                	imageCollection.getImage(key).setBoundaryVisibility(true);
                 }
             }
             catch (Exception e1)
@@ -1020,16 +973,15 @@ public class ImageResultsTableController
             {
                 String name = imageRawResults.get(row).get(0);
                 String namePrefix = FileUtil.removeExtension(name);
-                ImageKeyInterface key = imageSearchModel.createImageKey(FileUtil.removeExtension(name), sourceOfLastQuery, imageSearchModel.getInstrument());
                 if ((Boolean) imageResultsTableView.getResultList().getValueAt(actualRow, imageResultsTableView.getMapColumnIndex()))
                 {
                     imageSearchModel.loadImage(namePrefix);
-                    imageSearchModel.setImageVisibility(namePrefix, true);
+//                    imageSearchModel.setImageVisibility(namePrefix, true);
                 }
                 else
                 {
                     imageSearchModel.unloadImage(namePrefix);
-                    imageSearchModel.setImageVisibility(namePrefix, false);
+//                    imageSearchModel.setImageVisibility(namePrefix, false);
                 }
             }
             else if (e.getColumn() == imageResultsTableView.getShowFootprintColumnIndex())
