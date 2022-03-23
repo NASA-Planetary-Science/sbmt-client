@@ -463,27 +463,31 @@ public class SbmtMultiMissionTool
 			Configuration.setCacheVersion("");
 			Configuration.setReleaseType(ReleaseType.DEVELOPMENT);
 			Configuration.setAppTitle("SBMT/MEGANE (Development Version)");
-            Colormaps.setDefaultColormapName("Rainbow Blended White");
+//            Colormaps.setDefaultColormapName("Rainbow Blended White");
+            Colormaps.setDefaultColormapName("Spectral_lowBlue");
 			break;
 		case MEGANE_DEPLOY:
 			Configuration.setAppName("sbmt1megane");
 			Configuration.setCacheVersion("");
 			Configuration.setAppTitle("SBMT/MEGANE");
-            Colormaps.setDefaultColormapName("Rainbow Blended White");
+//            Colormaps.setDefaultColormapName("Rainbow Blended White");
+            Colormaps.setDefaultColormapName("Spectral_lowBlue");
 			break;
         case MEGANE_STAGE:
             Configuration.setAppName("sbmt1megane-stage");
             Configuration.setCacheVersion("");
             Configuration.setReleaseType(ReleaseType.DEVELOPMENT);
             Configuration.setAppTitle("SBMT/MEGANE (Stage Version)");
-            Colormaps.setDefaultColormapName("Rainbow Blended White");
+//            Colormaps.setDefaultColormapName("Rainbow Blended White");
+            Colormaps.setDefaultColormapName("Spectral_lowBlue");
             break;
         case MEGANE_TEST:
             Configuration.setAppName("sbmt1megane-test");
             Configuration.setCacheVersion("");
             Configuration.setReleaseType(ReleaseType.DEVELOPMENT);
             Configuration.setAppTitle("SBMT/MEGANE (Test Version)" );
-            Colormaps.setDefaultColormapName("Rainbow Blended White");
+//            Colormaps.setDefaultColormapName("Rainbow Blended White");
+            Colormaps.setDefaultColormapName("Spectral_lowBlue");
             break;
 		default:
             throw new AssertionError("Unhandled case for setting up launch configuration " + mission);
