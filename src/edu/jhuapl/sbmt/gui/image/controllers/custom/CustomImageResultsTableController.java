@@ -444,6 +444,7 @@ public class CustomImageResultsTableController extends ImageResultsTableControll
                 {
                     PerspectiveImage image = (PerspectiveImage)imageCollection.getImage(model.getImageKeyForIndex(i));
                     resultList.setValueAt(image.isFrustumShowing(), i, imageResultsTableView.getFrusColumnIndex());
+                    resultList.setValueAt(image.isVisible(), i, imageResultsTableView.getShowFootprintColumnIndex());
                 }
             }
             else
@@ -529,6 +530,7 @@ public class CustomImageResultsTableController extends ImageResultsTableControll
                 if ((Boolean)imageResultsTableView.getResultList().getValueAt(row, imageResultsTableView.getMapColumnIndex()))
                 {
                     model.loadImages(results.get(row));
+                    model.setImageVisibility(getConvertedKey(results.get(row)), true);
                 }
                 else
                 {
