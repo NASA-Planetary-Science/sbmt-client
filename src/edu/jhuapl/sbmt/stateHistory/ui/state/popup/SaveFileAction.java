@@ -9,6 +9,8 @@ import java.util.Set;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 
+import org.apache.commons.io.FilenameUtils;
+
 import edu.jhuapl.saavtk.gui.dialog.CustomFileChooser;
 import edu.jhuapl.saavtk.gui.util.MessageUtil;
 import edu.jhuapl.sbmt.stateHistory.model.interfaces.StateHistory;
@@ -81,8 +83,9 @@ class SaveFileAction extends PopAction<StateHistory>
 				String extension = stateHistory instanceof SpiceStateHistory ? "spicestate" : "csvstate";
 				history = stateHistory;
 				File targetFile = CustomFileChooser.showSaveDialog(rootComp, title, stateHistory.getMetadata().getStateHistoryName() + "." + extension);
-				if (targetFile == null)
-					return;
+				if (targetFile == null) continue;
+				if (!FilenameUtils.isExtension(targetFile.getAbsolutePath(), extension))
+					targetFile = new File(targetFile.getAbsolutePath() + "." + extension);
 				StateHistoryModelIOHelper.saveIntervalToFile(refManager.getBodyName(), stateHistory, targetFile.getAbsolutePath());
 				passCnt++;
 			}
