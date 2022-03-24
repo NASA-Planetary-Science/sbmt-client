@@ -246,10 +246,12 @@ public class SmallBodyViewConfigMetadataIO implements MetadataManager
             write(hierarchicalImageSearchSpecification, c.hierarchicalImageSearchSpecification.getMetadataManager().store(), configMetadata);
 
         if (c.hasSpectralData && c.spectralInstruments.size() > 0)
+        {
         	write(hasHierarchicalSpectraSearch, c.hasHierarchicalSpectraSearch, configMetadata);
-        write(hasHypertreeBasedSpectraSearch, c.hasHypertreeBasedSpectraSearch, configMetadata);
-        write(spectraSearchDataSourceMap, c.spectraSearchDataSourceMap, configMetadata);
-        write(spectrumMetadataFile, c.spectrumMetadataFile, configMetadata);
+        	write(hasHypertreeBasedSpectraSearch, c.hasHypertreeBasedSpectraSearch, configMetadata);
+        	write(spectraSearchDataSourceMap, c.spectraSearchDataSourceMap, configMetadata);
+        	write(spectrumMetadataFile, c.spectrumMetadataFile, configMetadata);
+        }
 
 //        if (c.hasHierarchicalSpectraSearch && c.hierarchicalSpectraSearchSpecification != null)
       	if (c.hierarchicalSpectraSearchSpecification != null)
