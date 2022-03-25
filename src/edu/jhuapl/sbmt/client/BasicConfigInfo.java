@@ -31,7 +31,7 @@ public class BasicConfigInfo implements MetadataManager
     {
         return (publishedDataOnly ? "published/" : "proprietary/") + "allBodies-" + configInfoVersion + "-redmine-1215";
     }
-
+ 
     private static final SbmtMultiMissionTool.Mission[] EmptyMissionArray = new SbmtMultiMissionTool.Mission[0];
 
     ShapeModelPopulation population;

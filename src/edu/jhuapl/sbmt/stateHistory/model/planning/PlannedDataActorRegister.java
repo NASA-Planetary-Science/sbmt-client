@@ -9,7 +9,7 @@ import edu.jhuapl.sbmt.stateHistory.rendering.planning.PlannedDataActor;
 import edu.jhuapl.sbmt.stateHistory.rendering.planning.PlannedDataActorFactory;
 
 //NOTE: this - or the individual components thereof - should go into the separate packages for the instruments
-//It is here for testing purposes
+//It is here for testing purposes 
 
 public class PlannedDataActorRegister
 {
