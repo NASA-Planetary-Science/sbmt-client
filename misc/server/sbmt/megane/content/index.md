@@ -27,6 +27,20 @@ NOTE: On a Mac, built in Apple security measures may cause you to see an error m
 
 ## Resources
 
+### Databases
+
+Under the MEGANE -> Search tab you can load a datbase.  Please use this one (as of 3.25.22):
+
+[MEGANE Database](resources/Phobos_small_ernst_08.db)
+
+With this database loaded, the filter in the table below become	enabled.  You can then add filters to narrow down the search.
+
+![Search Filters](resources/searchFilters.png)
+
+If you load in a structures file (see below) and add a Structures filter, you can select which one you want to search against. 	Composite structure search is coming soon.
+
+![Structure Filter](resources/structureFilter.png)
+
 ### SPICE Files
 
 If you with to use the observing conditions pane to look at trajectories you will need these files:
