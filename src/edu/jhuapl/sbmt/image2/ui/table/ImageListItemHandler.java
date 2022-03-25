@@ -13,9 +13,9 @@ import glum.gui.panel.itemList.query.QueryComposer;
 
 public class ImageListItemHandler<G1 extends IPerspectiveImage  & IPerspectiveImageTableRepresentable > extends BasicItemHandler<G1, ImageColumnLookup>
 {
-	private final PerspectiveImageCollection imageCollection;
+	private final PerspectiveImageCollection<G1> imageCollection;
 
-	public ImageListItemHandler(PerspectiveImageCollection aManager, QueryComposer<ImageColumnLookup> aComposer)
+	public ImageListItemHandler(PerspectiveImageCollection<G1> aManager, QueryComposer<ImageColumnLookup> aComposer)
 	{
 		super(aComposer);
 
@@ -56,7 +56,7 @@ public class ImageListItemHandler<G1 extends IPerspectiveImage  & IPerspectiveIm
 	}
 
 	@Override
-	public void setColumnValue(IPerspectiveImage image, ImageColumnLookup aEnum, Object aValue)
+	public void setColumnValue(G1 image, ImageColumnLookup aEnum, Object aValue)
 	{
 		if (aEnum == ImageColumnLookup.Map)
 		{

@@ -47,7 +47,6 @@ public class RenderableCylindricalImageActorPipeline implements RenderableImageA
 		//TODO: eventually replace this with a GDAL call to read in the data
 		IPipelinePublisher<Layer> reader = null;
 		IPipelinePublisher<HashMap<String, String>> metadataReader = null;
-		System.out.println("RenderableCylindricalImageActorPipeline: RenderableCylindricalImageActorPipeline: extension is " + FilenameUtils.getExtension(fileName));
 		if (FilenameUtils.getExtension(fileName).toLowerCase().equals("fit") || FilenameUtils.getExtension(fileName).toLowerCase().equals("fits"))
 		{
 			reader = new BuiltInFitsReader(fileName, new double[] {});

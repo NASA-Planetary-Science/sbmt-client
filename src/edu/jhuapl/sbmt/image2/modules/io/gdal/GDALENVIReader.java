@@ -1,6 +1,9 @@
 package edu.jhuapl.sbmt.image2.modules.io.gdal;
 
-public class GDALENVIReader
+import edu.jhuapl.sbmt.image2.api.Layer;
+import edu.jhuapl.sbmt.image2.pipeline.publisher.BasePipelinePublisher;
+
+public class GDALENVIReader extends BasePipelinePublisher<Layer>
 {
 
 	public GDALENVIReader()

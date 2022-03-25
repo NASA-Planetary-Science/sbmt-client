@@ -4,6 +4,7 @@ import java.io.File;
 import java.util.HashMap;
 import java.util.List;
 
+import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.tuple.Triple;
 
 import com.google.common.collect.Lists;
@@ -13,6 +14,8 @@ import edu.jhuapl.sbmt.image2.api.Layer;
 import edu.jhuapl.sbmt.image2.interfaces.IPerspectiveImage;
 import edu.jhuapl.sbmt.image2.modules.io.builtIn.BuiltInFitsHeaderReader;
 import edu.jhuapl.sbmt.image2.modules.io.builtIn.BuiltInFitsReader;
+import edu.jhuapl.sbmt.image2.modules.io.builtIn.BuiltInPNGHeaderReader;
+import edu.jhuapl.sbmt.image2.modules.io.builtIn.BuiltInPNGReader;
 import edu.jhuapl.sbmt.image2.modules.pointing.InfofileReaderPublisher;
 import edu.jhuapl.sbmt.image2.modules.pointing.SumfileReaderPublisher;
 import edu.jhuapl.sbmt.image2.modules.rendering.layer.LayerLinearInterpolaterOperator;
@@ -20,6 +23,7 @@ import edu.jhuapl.sbmt.image2.modules.rendering.layer.LayerMasking;
 import edu.jhuapl.sbmt.image2.modules.rendering.pointedImage.RenderablePointedImage;
 import edu.jhuapl.sbmt.image2.modules.rendering.pointedImage.RenderablePointedImageGenerator;
 import edu.jhuapl.sbmt.image2.pipeline.operator.IPipelineOperator;
+import edu.jhuapl.sbmt.image2.pipeline.operator.PassthroughOperator;
 import edu.jhuapl.sbmt.image2.pipeline.publisher.IPipelinePublisher;
 import edu.jhuapl.sbmt.image2.pipeline.publisher.Just;
 import edu.jhuapl.sbmt.image2.pipeline.publisher.Publishers;
@@ -45,8 +49,27 @@ public class PerspectiveImageToRenderableImagePipeline
 				pointingFile = FileCache.getFileFromServer(image.getPointingSource()).getAbsolutePath();
 			}
 
-			IPipelinePublisher<Layer> reader = new BuiltInFitsReader(filename, new double[] {});
-			LayerLinearInterpolaterOperator linearInterpolator = new LayerLinearInterpolaterOperator(image.getLinearInterpolatorDims()[0], image.getLinearInterpolatorDims()[1]);
+//			IPipelinePublisher<Layer> reader = new BuiltInFitsReader(filename, new double[] {});
+
+			IPipelinePublisher<Layer> reader = null;
+			IPipelinePublisher<HashMap<String, String>> metadataReader = null;
+			System.out.println("RenderableCylindricalImageActorPipeline: RenderableCylindricalImageActorPipeline: extension is " + FilenameUtils.getExtension(filename));
+			if (FilenameUtils.getExtension(filename).toLowerCase().equals("fit") || FilenameUtils.getExtension(filename).toLowerCase().equals("fits"))
+			{
+				reader = new BuiltInFitsReader(filename, new double[] {});
+				metadataReader = new BuiltInFitsHeaderReader(filename);
+			}
+			else if (FilenameUtils.getExtension(filename).toLowerCase().equals("png"))
+			{
+				reader = new BuiltInPNGReader(filename);
+				metadataReader = new BuiltInPNGHeaderReader(filename);
+			}
+
+			IPipelineOperator<Layer, Layer> linearInterpolator = null;
+			if (image.getLinearInterpolatorDims() == null)
+				linearInterpolator = new PassthroughOperator<>();
+			else
+				linearInterpolator = new LayerLinearInterpolaterOperator(image.getLinearInterpolatorDims()[0], image.getLinearInterpolatorDims()[1]);
 
 			List<Layer> updatedLayers = Lists.newArrayList();
 			reader
@@ -60,7 +83,7 @@ public class PerspectiveImageToRenderableImagePipeline
 				pointingPublisher = new SumfileReaderPublisher(pointingFile);
 
 			//generate metadata (in: filename, out: ImageMetadata)
-			IPipelinePublisher<HashMap<String, String>> metadataReader = new BuiltInFitsHeaderReader(filename);
+//			IPipelinePublisher<HashMap<String, String>> metadataReader = new BuiltInFitsHeaderReader(filename);
 
 			metadataReader.subscribe(Sink.of(metadata)).run();
 

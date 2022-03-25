@@ -11,9 +11,12 @@ import edu.jhuapl.sbmt.image2.interfaces.IPerspectiveImage;
 import edu.jhuapl.sbmt.image2.interfaces.IPerspectiveImageTableRepresentable;
 import edu.jhuapl.sbmt.image2.model.PerspectiveImageCollection;
 import edu.jhuapl.sbmt.image2.modules.preview.VtkLayerPreview;
+import edu.jhuapl.sbmt.image2.modules.rendering.cylindricalImage.RenderableCylindricalImage;
 import edu.jhuapl.sbmt.image2.modules.rendering.pointedImage.RenderablePointedImage;
+import edu.jhuapl.sbmt.image2.pipeline.active.CylindricalImageToRenderableImagePipeline;
 import edu.jhuapl.sbmt.image2.pipeline.active.PerspectiveImageToRenderableImagePipeline;
 import edu.jhuapl.sbmt.image2.pipeline.publisher.Just;
+import edu.jhuapl.sbmt.model.image.ImageSource;
 
 import glum.gui.action.PopAction;
 
@@ -43,16 +46,35 @@ public class ShowImagePropertiesAction<G1 extends IPerspectiveImage & IPerspecti
 
 		try
 		{
-			PerspectiveImageToRenderableImagePipeline pipeline = new PerspectiveImageToRenderableImagePipeline(List.of(aItemL.get(0)));
-			List<HashMap<String, String>> metadata = pipeline.getMetadata();
-			List<RenderablePointedImage> renderableImages = pipeline.getRenderableImages();
-			VtkLayerPreview preview = new VtkLayerPreview("Image Properites");
-			Pair<Layer, HashMap<String, String>> inputs = Pair.of(renderableImages.get(0).getLayer(), metadata.get(0));
-			Just.of(inputs)
-				.subscribe(preview)
-				.run();
+			G1 image = aItemL.get(0);
+			System.out.println("ShowImagePropertiesAction: executeAction: pointing type " + image.getPointingSourceType());
+			if (image.getPointingSourceType() == ImageSource.LOCAL_CYLINDRICAL)
+			{
 
-			preview.getPanel().setVisible(true);
+				CylindricalImageToRenderableImagePipeline pipeline = new  CylindricalImageToRenderableImagePipeline(List.of(aItemL.get(0)));
+				List<HashMap<String, String>> metadata = pipeline.getMetadata();
+				List<RenderableCylindricalImage> renderableImages = pipeline.getRenderableImages();
+				VtkLayerPreview preview = new VtkLayerPreview("Image Properties");
+				Pair<Layer, HashMap<String, String>> inputs = Pair.of(renderableImages.get(0).getLayer(), metadata.get(0));
+				Just.of(inputs)
+					.subscribe(preview)
+					.run();
+
+				preview.getPanel().setVisible(true);
+			}
+			else
+			{
+				PerspectiveImageToRenderableImagePipeline pipeline = new PerspectiveImageToRenderableImagePipeline(List.of(aItemL.get(0)));
+				List<HashMap<String, String>> metadata = pipeline.getMetadata();
+				List<RenderablePointedImage> renderableImages = pipeline.getRenderableImages();
+				VtkLayerPreview preview = new VtkLayerPreview("Image Properties");
+				Pair<Layer, HashMap<String, String>> inputs = Pair.of(renderableImages.get(0).getLayer(), metadata.get(0));
+				Just.of(inputs)
+					.subscribe(preview)
+					.run();
+
+				preview.getPanel().setVisible(true);
+			}
 		} catch (Exception e)
 		{
 			// TODO Auto-generated catch block

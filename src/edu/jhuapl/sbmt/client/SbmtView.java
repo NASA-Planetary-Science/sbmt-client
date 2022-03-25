@@ -359,7 +359,7 @@ public class SbmtView extends View implements PropertyChangeListener
 			if (!getPolyhedralModelConfig().spectralInstruments.stream().filter(inst -> inst.getDisplayName().equals("MEGANE")).toList().isEmpty())
 			{
 				MEGANECollection collection = new MEGANECollection(smallBodyModel);
-				allModels.put(ModelNames.GRNS_SPECTRA, collection); 
+				allModels.put(ModelNames.GRNS_SPECTRA, collection);
 			}
         }
 
@@ -567,7 +567,7 @@ public class SbmtView extends View implements PropertyChangeListener
 
 			PerspectiveImageCollection collection = (PerspectiveImageCollection)getModelManager().getModel(ModelNames.IMAGES_V2);
 //			PerspectiveImageCollection collection = new PerspectiveImageCollection(List.of(smallBodyModel));
-			addTab(instrument.instrumentName.toString() + "2", new ImageSearchController(getPolyhedralModelConfig(), collection, instrument, getModelManager(), getRenderer(), getPickManager(), (SbmtInfoWindowManager) getInfoPanelManager(), (SbmtSpectrumWindowManager) getSpectrumPanelManager()).getView());
+			addTab(instrument.instrumentName.toString() + "2", new ImageSearchController(getPolyhedralModelConfig(), collection, instrument, getModelManager(), getPopupManager(), getRenderer(), getPickManager(), (SbmtInfoWindowManager) getInfoPanelManager(), (SbmtSpectrumWindowManager) getSpectrumPanelManager()).getView());
 
 		}
 

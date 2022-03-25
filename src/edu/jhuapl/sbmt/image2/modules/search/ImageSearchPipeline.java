@@ -19,6 +19,7 @@ public class ImageSearchPipeline
 	{
 		Just.of(searchParamatersModel)
 			.operate(new ImageSearchOperator(viewConfig, modelManager))
+			.operate(new CreateImageFromSearchResultOperator(viewConfig))
 			.subscribe(Sink.of(images))
 			.run();
 	}

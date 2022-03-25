@@ -358,6 +358,7 @@ public class CustomImageImporterDialog2<G1 extends IPerspectiveImage & IPerspect
 		List<G1> images = tempCollection.getAllItems();
 		System.out.println("CustomImageImporterDialog2: saveImagesToCollection: number of images to save to collection " + images.size());
 		System.out.println("CustomImageImporterDialog2: saveImagesToCollection: image collection size " + imageCollection.size());
+		System.out.println("CustomImageImporterDialog2: saveImagesToCollection: type flip " + instrument.getFlip() + " and rotation " + instrument.getRotation());
 		for (G1 image : images)
 		{
 			imageCollection.addUserImage(image);
@@ -403,6 +404,8 @@ public class CustomImageImporterDialog2<G1 extends IPerspectiveImage & IPerspect
 		//TODO FIX THIS
 		double[] fillValues = new double[] {};
 		PerspectiveImage image = new PerspectiveImage(filename, imageType, pointingSourceType, pointingSource, fillValues);
+		image.setFlip(instrument.getFlip());
+		image.setRotation(instrument.getRotation());
 		image.setName(getName());
 		image.setImageOrigin(ImageOrigin.LOCAL);
 		image.setLongTime(new Date().getTime());

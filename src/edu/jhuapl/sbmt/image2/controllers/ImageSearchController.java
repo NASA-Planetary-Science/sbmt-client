@@ -3,6 +3,7 @@ package edu.jhuapl.sbmt.image2.controllers;
 import java.awt.Component;
 import java.awt.event.InputEvent;
 import java.awt.event.MouseEvent;
+import java.io.File;
 import java.util.List;
 import java.util.Optional;
 
@@ -13,6 +14,9 @@ import javax.swing.event.AncestorListener;
 
 import com.google.common.collect.ImmutableSet;
 
+import vtk.vtkProp;
+
+import edu.jhuapl.saavtk.gui.dialog.CustomFileChooser;
 import edu.jhuapl.saavtk.gui.render.Renderer;
 import edu.jhuapl.saavtk.model.ModelManager;
 import edu.jhuapl.saavtk.model.ModelNames;
@@ -21,6 +25,7 @@ import edu.jhuapl.saavtk.pick.PickManager;
 import edu.jhuapl.saavtk.pick.PickMode;
 import edu.jhuapl.saavtk.pick.PickTarget;
 import edu.jhuapl.saavtk.pick.PickUtil;
+import edu.jhuapl.saavtk.popup.PopupManager;
 import edu.jhuapl.saavtk2.gui.BasicFrame;
 import edu.jhuapl.sbmt.client.SbmtInfoWindowManager;
 import edu.jhuapl.sbmt.client.SbmtSpectrumWindowManager;
@@ -31,6 +36,8 @@ import edu.jhuapl.sbmt.image2.interfaces.IPerspectiveImage;
 import edu.jhuapl.sbmt.image2.interfaces.IPerspectiveImageTableRepresentable;
 import edu.jhuapl.sbmt.image2.model.ImageSearchParametersModel;
 import edu.jhuapl.sbmt.image2.model.PerspectiveImageCollection;
+import edu.jhuapl.sbmt.image2.modules.search.LoadImagesFromSavedFilePipeline;
+import edu.jhuapl.sbmt.image2.modules.search.SaveImagesToSavedFilePipeline;
 import edu.jhuapl.sbmt.image2.ui.custom.importer.CustomImageImporterDialog;
 import edu.jhuapl.sbmt.image2.ui.custom.importer.CustomImageImporterDialog2;
 import edu.jhuapl.sbmt.image2.ui.table.popup.ImageListPopupMenu;
@@ -51,13 +58,16 @@ public class ImageSearchController<G1 extends IPerspectiveImage & IPerspectiveIm
 	private ModelManager modelManager;
 	private List<SmallBodyModel> smallBodyModels;
 	private JTabbedPane pane;
-	private PopupMenu popupMenu;
+	private PopupMenu<G1> popupMenu;
+	private SmallBodyViewConfig config;
 
 	public ImageSearchController(SmallBodyViewConfig config, PerspectiveImageCollection<G1> collection,
-								IImagingInstrument instrument, ModelManager modelManager, Renderer renderer,
+								IImagingInstrument instrument, ModelManager modelManager,
+								PopupManager popupManager, Renderer renderer,
 								PickManager pickManager, SbmtInfoWindowManager infoPanelManager,
 					            SbmtSpectrumWindowManager spectrumPanelManager)
 	{
+		this.config = config;
 		this.instrument = instrument;
 		this.collection = collection;
 		this.collection.setImagingInstrument(instrument);
@@ -71,7 +81,7 @@ public class ImageSearchController<G1 extends IPerspectiveImage & IPerspectiveIm
         SmallBodyModel smallBodyModel = (SmallBodyModel)modelManager.getModel(ModelNames.SMALL_BODY);
         smallBodyModels = List.of(smallBodyModel);
         popupMenu =
-        		new ImageListPopupMenu(modelManager, collection, infoPanelManager,
+        		new ImageListPopupMenu<G1>(modelManager, collection, infoPanelManager,
         							spectrumPanelManager, renderer, panel);
         this.imageListTableController = new ImageListTableController(collection, popupMenu);
         this.customImageListTableController = new CustomImageListTableController(collection, popupMenu);
@@ -87,12 +97,20 @@ public class ImageSearchController<G1 extends IPerspectiveImage & IPerspectiveIm
 
 		this.collection.addListener((aSource, aEventType) ->
 		{
-			System.out.println("ImageSearchController: ImageSearchController: number of images " + this.collection.size());
+//			System.out.println("ImageSearchController: ImageSearchController: number of images " + this.collection.size());
 //			imageListTableController.getPanel().getResultList().repaint();
 //			customImageListTableController.getPanel().getResultList().repaint();
 			updateButtonState();
 		});
+		popupManager.registerPopup(modelManager.getAllModels().get(ModelNames.IMAGES_V2), new edu.jhuapl.saavtk.popup.PopupMenu()
+		{
 
+			@Override
+			public void showPopup(MouseEvent e, vtkProp pickedProp, int pickedCellId, double[] pickedPosition)
+			{
+                popupMenu.show(e.getComponent(), e.getX(), e.getY());
+			}
+		});
         initGUI();
 	}
 
@@ -145,8 +163,6 @@ public class ImageSearchController<G1 extends IPerspectiveImage & IPerspectiveIm
 			@Override
 			public void ancestorAdded(AncestorEvent event)
 			{
-				System.out
-						.println("ImageSearchController.initGUI().new AncestorListener() {...}: ancestorAdded: added custom panel");
 				collection.setImagingInstrument(null);
 			}
 		});
@@ -216,10 +232,29 @@ public class ImageSearchController<G1 extends IPerspectiveImage & IPerspectiveIm
 
 		imageListTableController.getPanel().getLoadImageButton().addActionListener(e -> {
 
+	        File file = CustomFileChooser.showOpenDialog(panel, "Select File");
+			try
+			{
+				LoadImagesFromSavedFilePipeline<G1> pipeline = new LoadImagesFromSavedFilePipeline<G1>(config, file.getAbsolutePath(), instrument);
+				collection.setImages(pipeline.getImages());
+			} catch (Exception e1)
+			{
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
 		});
 
 		imageListTableController.getPanel().getSaveImageButton().addActionListener(e -> {
 
+			ImmutableSet<G1> selectedImages = collection.getSelectedItems();
+			try
+			{
+				SaveImagesToSavedFilePipeline<G1> pipeline = new SaveImagesToSavedFilePipeline<>(selectedImages);
+			} catch (Exception e1)
+			{
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
 		});
 
 //		imageListTableController.getPanel().getNewImageButton().addActionListener(e -> {

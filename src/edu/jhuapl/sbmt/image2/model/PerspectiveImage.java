@@ -91,7 +91,7 @@ public class PerspectiveImage implements IPerspectiveImage
 	private double offset = -1.0;
 	private double defaultOffset = -1.0;
 	private ImageType imageType;
-	private CylindricalBounds bounds = null;
+	private CylindricalBounds bounds = new CylindricalBounds(0, 0, 0, 0);
 
 	public PerspectiveImage(String filename, ImageType imageType, ImageSource pointingSourceType, String pointingSource, double[] fillValues)
 	{

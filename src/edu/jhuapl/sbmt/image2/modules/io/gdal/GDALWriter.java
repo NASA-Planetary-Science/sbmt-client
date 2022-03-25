@@ -4,12 +4,7 @@ import java.io.File;
 
 import edu.jhuapl.sbmt.image2.pipeline.subscriber.BasePipelineSubscriber;
 
-public class GDALFitsWriter extends BasePipelineSubscriber<File>
+public class GDALWriter extends BasePipelineSubscriber<File>
 {
-
-	public GDALFitsWriter()
-	{
-		// TODO Auto-generated constructor stub
-	}
 
 }

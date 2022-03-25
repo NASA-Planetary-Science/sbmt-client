@@ -119,7 +119,11 @@ public class RenderablePointedImageActorPipeline<G1 extends IPerspectiveImage & 
 			reader = new BuiltInFitsReader(filename, image.getFillValues());
 			int[] interpolationDims = new int[] { reader.getOutputs().get(0).iSize(), reader.getOutputs().get(0).jSize()};
 			if (image.getLinearInterpolatorDims() != null) interpolationDims = image.getLinearInterpolatorDims();
-			LayerLinearInterpolaterOperator linearInterpolator = new LayerLinearInterpolaterOperator(interpolationDims[0], interpolationDims[1]);
+			IPipelineOperator<Layer, Layer> linearInterpolator = null;
+			if (image.getLinearInterpolatorDims() == null)
+				linearInterpolator = new PassthroughOperator<>();
+			else
+				linearInterpolator = new LayerLinearInterpolaterOperator(interpolationDims[0], interpolationDims[1]);
 			LayerRotationOperator rotationOperator = new LayerRotationOperator(rotation);
 
 			BasePipelineOperator<Layer, Layer> flipOperator = new PassthroughOperator<Layer>();
@@ -149,6 +153,7 @@ public class RenderablePointedImageActorPipeline<G1 extends IPerspectiveImage & 
 
 	private IPipelinePublisher<PointingFileReader> generatePointing(String pointingFile) throws IOException
 	{
+		System.out.println("RenderablePointedImageActorPipeline: generatePointing: pointing file " + pointingFile);
 		IPipelinePublisher<PointingFileReader> pointingPublisher = null;
 		if (image.getPointingSourceType() == ImageSource.SPICE || pointingFile.endsWith(".adjusted"))
 			pointingPublisher = new InfofileReaderPublisher(pointingFile);

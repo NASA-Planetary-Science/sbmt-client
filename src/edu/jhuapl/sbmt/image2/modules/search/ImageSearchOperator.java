@@ -1,12 +1,11 @@
 package edu.jhuapl.sbmt.image2.modules.search;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.GregorianCalendar;
 import java.util.List;
 import java.util.TreeSet;
 
-import org.apache.commons.io.FilenameUtils;
+import org.apache.commons.lang3.tuple.Triple;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 
@@ -20,11 +19,7 @@ import edu.jhuapl.saavtk.model.structure.AbstractEllipsePolygonModel;
 import edu.jhuapl.saavtk.structure.Ellipse;
 import edu.jhuapl.sbmt.client.SmallBodyModel;
 import edu.jhuapl.sbmt.client.SmallBodyViewConfig;
-import edu.jhuapl.sbmt.image2.interfaces.IPerspectiveImage;
-import edu.jhuapl.sbmt.image2.model.CompositePerspectiveImage;
-import edu.jhuapl.sbmt.image2.model.ImageOrigin;
 import edu.jhuapl.sbmt.image2.model.ImageSearchParametersModel;
-import edu.jhuapl.sbmt.image2.model.PerspectiveImage;
 import edu.jhuapl.sbmt.image2.pipeline.operator.BasePipelineOperator;
 import edu.jhuapl.sbmt.model.image.IImagingInstrument;
 import edu.jhuapl.sbmt.model.image.ImageSource;
@@ -33,20 +28,17 @@ import edu.jhuapl.sbmt.query.database.ImageDatabaseSearchMetadata;
 import edu.jhuapl.sbmt.query.fixedlist.FixedListQuery;
 import edu.jhuapl.sbmt.query.fixedlist.FixedListSearchMetadata;
 
-public class ImageSearchOperator extends BasePipelineOperator<ImageSearchParametersModel, IPerspectiveImage>
+public class ImageSearchOperator extends BasePipelineOperator<ImageSearchParametersModel, Triple<List<List<String>>, IImagingInstrument, ImageSource>>
 {
 	private ImageSearchParametersModel searchParameterModel;
 	private SmallBodyViewConfig viewConfig;
 	private ModelManager modelManager;
-//	private List<PerspectiveImage> images = Lists.newArrayList();
 
 	public ImageSearchOperator(SmallBodyViewConfig viewConfig, ModelManager modelManager)
 	{
-
 		this.modelManager = modelManager;
 		this.viewConfig = viewConfig;
 	}
-
 
 	@Override
 	public void processData() throws IOException, Exception
@@ -207,57 +199,6 @@ public class ImageSearchOperator extends BasePipelineOperator<ImageSearchParamet
             }
         }
 
-        outputs = new ArrayList<IPerspectiveImage>();
-        int i=1;
-        for (List<String> imageInfo : results)
-        {
-//        	HashMap<ImageSource, String> pointingSources = new HashMap<ImageSource, String>();
-        	//TODO make this generic to handle the available server directory structures
-//        	pointingSources.put(ImageSource.SPICE, FilenameUtils.removeExtension(imageInfo.get(0)).replace("images/public", "infofiles") + ".INFO");
-//        	pointingSources.put(ImageSource.GASKELL, FilenameUtils.removeExtension(imageInfo.get(0)).replace("images/public", "sumfiles") + ".SUM");
-//        	pointingSources.put(ImageSource.LABEL, FilenameUtils.removeExtension(imageInfo.get(0)).replace("images/public", "labelfiles") + ".LBL");
-
-
-        	String extension = ".INFO";
-        	String pointingDir = "infofiles";
-        	if (imageSource == ImageSource.GASKELL || imageSource == ImageSource.GASKELL_UPDATED)
-    		{
-        		extension = ".SUM";
-        		pointingDir = "sumfiles";
-        		if (viewConfig.getUniqueName().contains("Eros")) pointingDir = "sumfiles_to_be_delivered";
-    		}
-        	if (imageSource == ImageSource.LABEL)
-    		{
-        		extension = ".LBL";
-        		pointingDir = "labels";
-    		}
-
-        	String imagePath = "images";
-        	if (viewConfig.getUniqueName().contains("Bennu")) imagePath = "images/public";
-
-        	String infoBaseName = FilenameUtils.removeExtension(imageInfo.get(0)).replace(imagePath, pointingDir);
-        	if (viewConfig.getUniqueName().contains("Eros"))
-    		{
-        		String filename = FilenameUtils.getBaseName(imageInfo.get(0).substring(imageInfo.get(0).lastIndexOf("/")));
-            	String filenamePrefix = filename.substring(0, filename.indexOf("_"));
-        		infoBaseName = infoBaseName.replace(filename, filenamePrefix.substring(0, filenamePrefix.length()-2));
-    		}
-
-        	PerspectiveImage image = new PerspectiveImage(imageInfo.get(0), instrument.getType(), imageSource, infoBaseName + extension, new double[] {});
-        	image.setFlip(instrument.getFlip());
-//        	image.setFlip("Y");
-        	image.setRotation(instrument.getRotation());
-//        	image.setRotation(90.0);
-        	image.setImageOrigin(ImageOrigin.SERVER);
-        	//TODO should be replaced with parameters from ImagingInstrument
-        	image.setLinearInterpolatorDims(new int[] {537, 412});
-        	image.setMaskValues(new int[] {2, 14, 2, 14});
-//        	image.setFillValues(instrument.getFillDetector(image));
-        	image.setLongTime(Long.parseLong(imageInfo.get(1)));
-//        	image.setIndex(i++);
-        	CompositePerspectiveImage compImage = new CompositePerspectiveImage(List.of(image));
-        	compImage.setIndex(i++);
-        	outputs.add(compImage);
-        }
+        outputs = List.of(Triple.of(results, instrument, imageSource));
 	}
 }

@@ -1573,7 +1573,9 @@ public class BennuConfigs extends SmallBodyViewConfig
                 phpQuery,
                 ImageType.POLYCAM_FLIGHT_IMAGE,
                 imageSources,
-                Instrument.POLYCAM
+                Instrument.POLYCAM,
+                0,
+                "X"
                 );
 		return instrument;
 	}
@@ -1599,7 +1601,9 @@ public class BennuConfigs extends SmallBodyViewConfig
                 phpQuery,
                 ImageType.MAPCAM_FLIGHT_IMAGE,
                 imageSources,
-                Instrument.MAPCAM
+                Instrument.MAPCAM,
+                0,
+                "X"
                 );
 	}
 
@@ -1619,7 +1623,9 @@ public class BennuConfigs extends SmallBodyViewConfig
                 phpQuery,
                 ImageType.NAVCAM_FLIGHT_IMAGE,
                 new ImageSource[]{ImageSource.SPICE},
-                Instrument.NAVCAM
+                Instrument.NAVCAM,
+                90,
+                "Y"
                 );
 	}
 
