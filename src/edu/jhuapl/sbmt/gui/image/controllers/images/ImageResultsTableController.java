@@ -33,6 +33,8 @@ import javax.swing.event.TableModelListener;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableCellRenderer;
 
+import org.apache.commons.io.FilenameUtils;
+
 import vtk.vtkActor;
 
 import edu.jhuapl.saavtk.gui.dialog.CustomFileChooser;
@@ -786,8 +788,9 @@ public class ImageResultsTableController
                  else
                  {
                  	imageCollection.addImage(key);
-//                 	imageCollection.getImage(key).setVisible(false);
-//                 	imageCollection.getImage(key).setBoundaryVisibility(true);
+                 	image = imageCollection.getImage(key);
+                	imageCollection.getImage(key).setVisible(false);
+                	imageCollection.getImage(key).setBoundaryVisibility(true);
                  }
             }
             catch (Exception e1)
@@ -1000,9 +1003,10 @@ public class ImageResultsTableController
                 String name = imageRawResults.get(row).get(0);
                 ImageKeyInterface key = imageSearchModel.createImageKey(FileUtil.removeExtension(name), sourceOfLastQuery, imageSearchModel.getInstrument());
                 ImageCollection images = (ImageCollection) modelManager.getModel(imageSearchModel.getImageCollectionModelName());
-                if (images.containsImage(key))
-                {
+                boolean visible = (Boolean) imageResultsTableView.getResultList().getValueAt(actualRow, imageResultsTableView.getFrusColumnIndex());
                     PerspectiveImage image = (PerspectiveImage) images.getImage(key);
+                if (images.containsImage(key) && visible != image.isFrustumShowing())
+                {
                     image.setShowFrustum(!image.isFrustumShowing());
                 }
             }
@@ -1010,7 +1014,7 @@ public class ImageResultsTableController
             {
                 //                int row = e.getFirstRow();
                 String name = imageRawResults.get(row).get(0);
-                ImageKeyInterface key = imageSearchModel.createImageKey(FileUtil.removeExtension(name), sourceOfLastQuery, imageSearchModel.getInstrument());
+                ImageKeyInterface key = imageSearchModel.createImageKey(FilenameUtils.getBaseName(FileUtil.removeExtension(name)), sourceOfLastQuery, imageSearchModel.getInstrument());
                 try
                 {
                 	boolean visible = (Boolean) imageResultsTableView.getResultList().getValueAt(actualRow, imageResultsTableView.getBndrColumnIndex());
@@ -1024,7 +1028,7 @@ public class ImageResultsTableController
                     e1.printStackTrace();
                 }
             }
-
+            renderer.getRenderWindowPanel().resetCameraClippingRange();
         }
     }
 

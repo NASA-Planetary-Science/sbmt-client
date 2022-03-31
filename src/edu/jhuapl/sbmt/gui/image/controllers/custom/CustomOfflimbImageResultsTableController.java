@@ -308,7 +308,7 @@ public class CustomOfflimbImageResultsTableController extends CustomImageResults
             if (imageCollection.containsImage(info))
             {
                 resultList.setValueAt(true, i, imageResultsTableView.getMapColumnIndex());
-                resultList.setValueAt(true, i, imageResultsTableView.getShowFootprintColumnIndex());
+                resultList.setValueAt(imageCollection.getImage(info).isVisible(), i, imageResultsTableView.getShowFootprintColumnIndex());
                 if (imageCollection.getImage(info) instanceof PerspectiveImage)
                 {
                     PerspectiveImage image = (PerspectiveImage)imageCollection.getImage(model.getImageKeyForIndex(i));

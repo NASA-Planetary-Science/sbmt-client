@@ -219,19 +219,6 @@ public class SmallBodyViewConfigMetadataIO implements MetadataManager
         write(timeHistoryFile, c.timeHistoryFile, configMetadata);
         write(hasImageMap, c.hasImageMap, configMetadata);
         write(hasStateHistory, c.hasStateHistory, configMetadata);
-
-        int i;
-//        if (c.spiceInfo != null)
-//        {
-//	        String[] infoStrings = new String[c.spiceInfo.length];
-//	        i=0;
-//	        for (SpiceInfo info : c.spiceInfo)
-//	        {
-//	        	infoStrings[i++] = InstanceGetter.defaultInstanceGetter().providesMetadataFromGenericObject(SpiceInfo.class).provide(info);
-//	        }
-//	        write(spiceInfo, infoStrings, configMetadata);
-//        }
-
         if (c.spiceInfo != null) 
         	write(spiceInfo, c.spiceInfo, configMetadata);
         if (c.stateHistoryStartDate != null)
@@ -347,6 +334,7 @@ public class SmallBodyViewConfigMetadataIO implements MetadataManager
         write(lidarOffsetScale, c.lidarOffsetScale, configMetadata);
         writeEnum(lidarInstrumentName, c.lidarInstrumentName, configMetadata);
 
+        int i;
         if (c.defaultForMissions != null)
         {
 	        String[] defaultStrings = new String[c.defaultForMissions.length];
