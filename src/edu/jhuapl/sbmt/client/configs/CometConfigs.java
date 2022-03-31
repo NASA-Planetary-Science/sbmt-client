@@ -1,4 +1,4 @@
- package edu.jhuapl.sbmt.client.configs;
+package edu.jhuapl.sbmt.client.configs;
 
 import java.util.Date;
 import java.util.GregorianCalendar;
@@ -40,8 +40,7 @@ public class CometConfigs extends SmallBodyViewConfig
 		super(ImmutableList.<String>copyOf(DEFAULT_GASKELL_LABELS_PER_RESOLUTION), ImmutableList.<Integer>copyOf(DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION));
 	}
 
-
-	public static void initialize(ConfigArrayList configArray)
+    public static void initialize(ConfigArrayList configArray)
     {
         CometConfigs c = new CometConfigs();
 
@@ -65,16 +64,7 @@ public class CometConfigs extends SmallBodyViewConfig
                 new SbmtMultiMissionTool.Mission[] { SbmtMultiMissionTool.Mission.PUBLIC_RELEASE, SbmtMultiMissionTool.Mission.TEST_PUBLIC_RELEASE, SbmtMultiMissionTool.Mission.STAGE_PUBLIC_RELEASE, SbmtMultiMissionTool.Mission.STAGE_APL_INTERNAL, SbmtMultiMissionTool.Mission.APL_INTERNAL, SbmtMultiMissionTool.Mission.TEST_APL_INTERNAL };
         c.defaultForMissions = new SbmtMultiMissionTool.Mission[] {};
 
-
         configArray.add(c);
-
-
-
-
-
-
-
-
 
         if (Configuration.isAPLVersion())
         {
@@ -286,9 +276,9 @@ public class CometConfigs extends SmallBodyViewConfig
             c.setResolution(ImmutableList.of( //
                     "17442 plates ", "72770 plates ", "298442 plates ", "1214922 plates ", //
                     "4895631 plates ", "16745283 plates " //
-                ), ImmutableList.of( //
+            ), ImmutableList.of( //
                     17442, 72770, 298442, 1214922, 4895631, 16745283 //
-                )); //
+            )); //
             c.hasColoringData = false;
 
             c.databaseRunInfos = new DBRunInfo[] { new DBRunInfo(ImageSource.GASKELL, Instrument.OSIRIS, ShapeModelBody._67P.toString(), "/project/nearsdc/data/DLR/67P/IMAGING/imagelist-fullpath.txt", "67p_dlr"),
@@ -458,7 +448,7 @@ public class CometConfigs extends SmallBodyViewConfig
         return c;
     }
 
-	@Override
+    @Override
     public boolean isAccessible()
     {
         return FileCache.instance().isAccessible(getShapeModelFileNames()[0]);

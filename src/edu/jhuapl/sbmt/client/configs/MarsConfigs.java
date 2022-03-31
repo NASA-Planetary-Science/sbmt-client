@@ -146,8 +146,8 @@ public class MarsConfigs extends SmallBodyViewConfig
             c.type = BodyType.PLANETS_AND_SATELLITES;
             c.population = ShapeModelPopulation.MARS;
             c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
-            c.author = ShapeModelType.BLENDER;
-            c.modelLabel = "OLD Ernst et al. (in progress)";
+            c.author = ShapeModelType.provide("Ernst-hierarchical");
+            c.modelLabel = "Ernst et al. (hierarchical)";
             c.rootDirOnServer = "/GASKELL/PHOBOSEXPERIMENTAL";
 
             c.imagingInstruments = new ImagingInstrument[] {
@@ -186,19 +186,21 @@ public class MarsConfigs extends SmallBodyViewConfig
             };
             c.hasHierarchicalImageSearch = true;
             c.hierarchicalImageSearchSpecification = new PhobosExperimentalSearchSpecification();
+            c.hierarchicalImageSearchSpecification.setSelectionModel(new CheckBoxTree(c.hierarchicalImageSearchSpecification.getTreeModel()).getSelectionModel());
             c.imageSearchDefaultMaxSpacecraftDistance = 12000.0;
             c.imageSearchDefaultMaxResolution = 300.0;
-
             c.lidarSearchDataSourceMap = Maps.newHashMap();
-            c.lidarSearchDataSourceMap.put("Default", "/GASKELL/PHOBOS/MOLA/tree/dataSource.lidar");
+            // This was causing the "cfg does not equal config" type errors when the generator runs.
+            // Just commenting it out for now.
+//            c.lidarSearchDataSourceMap.put("Default", "/GASKELL/PHOBOS/MOLA/tree/dataSource.lidar");
 
             c.databaseRunInfos = new DBRunInfo[]
             {
             	new DBRunInfo(ImageSource.GASKELL, Instrument.IMAGING_DATA, ShapeModelBody.PHOBOS.toString(), "/project/nearsdc/data/GASKELL/PHOBOSEXPERIMENTAL/IMAGING/imagelist.txt", "phobosexp"),
             };
 
-
-
+            c.presentInMissions = new SbmtMultiMissionTool.Mission[] {SbmtMultiMissionTool.Mission.PUBLIC_RELEASE, SbmtMultiMissionTool.Mission.TEST_PUBLIC_RELEASE, SbmtMultiMissionTool.Mission.STAGE_PUBLIC_RELEASE, SbmtMultiMissionTool.Mission.STAGE_APL_INTERNAL, SbmtMultiMissionTool.Mission.APL_INTERNAL, SbmtMultiMissionTool.Mission.TEST_APL_INTERNAL};
+            c.defaultForMissions = new SbmtMultiMissionTool.Mission[] {};
 
 //            configArray.add(c);
         }

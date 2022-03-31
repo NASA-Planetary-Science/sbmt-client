@@ -809,7 +809,7 @@ public class SmallBodyViewConfigMetadataIO implements MetadataManager
     final Key<Boolean> lidarBrowseIsTimeInET = Key.of("lidarBrowseIsTimeInET");
     final Key<Integer> lidarBrowseRangeIndex = Key.of("lidarBrowseRangeIndex");
 
-    final Key<Integer> lidarBrowseTimeIndex = Key.of("lidarBrowseTimeIndex");
+    final Key<Integer> lidarBrowseTimeIndex = Key.of("lidarBrowseTimeIndex"); 
     final Key<Integer> lidarBrowseNoiseIndex = Key.of("lidarBrowseNoiseIndex");
     final Key<Integer> lidarBrowseOutgoingIntensityIndex = Key.of("lidarBrowseOutgoingIntensityIndex");
     final Key<Integer> lidarBrowseReceivedIntensityIndex = Key.of("lidarBrowseReceivedIntensityIndex");
