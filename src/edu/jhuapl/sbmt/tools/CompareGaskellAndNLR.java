@@ -30,7 +30,7 @@ import edu.jhuapl.sbmt.client.BodyViewConfig;
 import edu.jhuapl.sbmt.client.SbmtModelFactory;
 import edu.jhuapl.sbmt.client.SmallBodyModel;
 import edu.jhuapl.sbmt.client.SmallBodyViewConfig;
-import edu.jhuapl.sbmt.image.core.keys.ImageKey;
+import edu.jhuapl.sbmt.gui.image.model.ImageKey;
 import edu.jhuapl.sbmt.lidar.LidarFileSpec;
 import edu.jhuapl.sbmt.lidar.util.LidarBrowseUtil;
 import edu.jhuapl.sbmt.model.eros.MSIImage;
@@ -363,7 +363,7 @@ public class CompareGaskellAndNLR
 
             keyName = keyName.replace(".FIT", "");
             ImageKey key = new ImageKey(keyName, ImageSource.GASKELL);
-            MSIImage image = new MSIImage(key, List.of(smallBodyModel), true);
+            MSIImage image = new MSIImage(key, smallBodyModel, true);
 
             // If the sumfile has no landmarks, then ignore it. Sumfiles that have no landmarks
             // are 1153 bytes long or less
@@ -431,7 +431,7 @@ public class CompareGaskellAndNLR
             ) throws Exception
     {
         SmallBodyViewConfig config = SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.EROS, ShapeModelType.GASKELL);
-        SmallBodyModel lowResSmallBodyModel = SbmtModelFactory.createSmallBodyModel(config).get(0);
+        SmallBodyModel lowResSmallBodyModel = SbmtModelFactory.createSmallBodyModel(config);
         lowResSmallBodyModel.setModelResolution(0);
 
         HashMap<Integer, PlateStatistics> plateMap = new LinkedHashMap<Integer, PlateStatistics>();
@@ -461,7 +461,7 @@ public class CompareGaskellAndNLR
             vtkPolyData smallBodyPolyData = PolyDataUtil.loadShapeModel(smallBodyFile);
             SmallBodyModel smallBodyModel = new SmallBodyModel(key.name, smallBodyPolyData);
 
-            MSIImage image = new MSIImage(key, List.of(smallBodyModel), true);
+            MSIImage image = new MSIImage(key, smallBodyModel, true);
 
             // If the sumfile has no landmarks, then ignore it. Sumfiles that have no landmarks
             // are 1153 bytes long or less
@@ -553,7 +553,7 @@ public class CompareGaskellAndNLR
 
 
         SmallBodyViewConfig config = SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.EROS, ShapeModelType.GASKELL);
-        SmallBodyModel smallBodyModel = SbmtModelFactory.createSmallBodyModel(config).get(0);
+        SmallBodyModel smallBodyModel = SbmtModelFactory.createSmallBodyModel(config);
         smallBodyModel.setModelResolution(3);
 
         // Load lidar data

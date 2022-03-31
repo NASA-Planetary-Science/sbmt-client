@@ -14,8 +14,8 @@ import org.apache.commons.io.FilenameUtils;
 import edu.jhuapl.saavtk.gui.render.Renderer;
 import edu.jhuapl.saavtk.model.ModelManager;
 import edu.jhuapl.saavtk.pick.PickManager;
+import edu.jhuapl.sbmt.client.SbmtInfoWindowManager;
 import edu.jhuapl.sbmt.client.SbmtSpectrumModelFactory;
-import edu.jhuapl.sbmt.image.SbmtInfoWindowManager;
 import edu.jhuapl.sbmt.spectrum.controllers.standard.SpectrumColoringController;
 import edu.jhuapl.sbmt.spectrum.model.core.BasicSpectrum;
 import edu.jhuapl.sbmt.spectrum.model.core.BasicSpectrumInstrument;
@@ -63,8 +63,8 @@ public class CustomSpectraSearchController<S extends BasicSpectrum>
         this.spectrumSearchModel =  new CustomSpectraSearchModel<S>(modelManager, instrument);
         this.spectrumSearchModel.setCustomDataFolder(modelManager.getPolyhedralModel().getCustomDataFolder());
 
-        spectrumCollection = (SpectraCollection<S>)modelManager.getModel(spectrumSearchModel.getSpectrumCollectionModelName()).get(0);
-        SpectrumBoundaryCollection<S> boundaries = (SpectrumBoundaryCollection<S>)modelManager.getModel(spectrumSearchModel.getSpectrumBoundaryCollectionModelName()).get(0);
+        spectrumCollection = (SpectraCollection<S>)modelManager.getModel(spectrumSearchModel.getSpectrumCollectionModelName());
+        SpectrumBoundaryCollection<S> boundaries = (SpectrumBoundaryCollection<S>)modelManager.getModel(spectrumSearchModel.getSpectrumBoundaryCollectionModelName());
 
         this.spectrumResultsTableController = new CustomSpectrumResultsTableController<S>(instrument, spectrumCollection, modelManager, boundaries, spectrumSearchModel, renderer, infoPanelManager);
         this.spectrumSearchModel.removeAllResultsChangedListeners();

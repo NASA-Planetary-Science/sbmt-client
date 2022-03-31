@@ -24,8 +24,8 @@ public class DtmBrowseModel
 
 	public DtmBrowseModel(ModelManager modelManager, PickManager pickManager, SmallBodyViewConfig smallBodyViewConfig)
 	{
-		this.dems = (DEMCollection) modelManager.getModel(ModelNames.DEM).get(0);
-        this.boundaries = (DEMBoundaryCollection) modelManager.getModel(ModelNames.DEM_BOUNDARY).get(0);
+		this.dems = (DEMCollection) modelManager.getModel(ModelNames.DEM);
+        this.boundaries = (DEMBoundaryCollection) modelManager.getModel(ModelNames.DEM_BOUNDARY);
         this.smallBodyViewConfig = smallBodyViewConfig;
         this.keys = new Vector<DEMKey>();
         this.listeners = new Vector<DEMBrowseModelChangedListener>();

@@ -41,7 +41,7 @@ public class MapmakerLinesPopupMenu extends PopupMenu
 
 	public MapmakerLinesPopupMenu(ModelManager aModelManager, PolyhedralModel aPolyhedralModel, Renderer aRenderer)
 	{
-		refLineManager = (LineModel<PolyLine>) aModelManager.getModel(ModelNames.LINE_STRUCTURES).get(0);
+		refLineManager = (LineModel<PolyLine>) aModelManager.getModel(ModelNames.LINE_STRUCTURES);
 		refPolyhedralModel = aPolyhedralModel;
 
 		saveProfileAction = new JMenuItem(new SaveProfileAction());

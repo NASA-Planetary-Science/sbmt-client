@@ -124,10 +124,10 @@ public class DEMCreationPanel extends JPanel implements ActionListener
 
     public DEMCreationPanel(ModelManager modelManager, PickManager pickManager, DEMCreator creationTool)
     {
-        this.dems = (DEMCollection) modelManager.getModel(ModelNames.DEM).get(0);
-        this.boundaries = (DEMBoundaryCollection) modelManager.getModel(ModelNames.DEM_BOUNDARY).get(0);
+        this.dems = (DEMCollection) modelManager.getModel(ModelNames.DEM);
+        this.boundaries = (DEMBoundaryCollection) modelManager.getModel(ModelNames.DEM_BOUNDARY);
         this.creationTool = creationTool;
-        this.regionSelectionModel = (AbstractEllipsePolygonModel) modelManager.getModel(ModelNames.CIRCLE_SELECTION).get(0);
+        this.regionSelectionModel = (AbstractEllipsePolygonModel) modelManager.getModel(ModelNames.CIRCLE_SELECTION);
         this.pickManager = pickManager;
 
         table = new DEMTable();

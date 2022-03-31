@@ -13,8 +13,8 @@ import edu.jhuapl.saavtk.gui.dialog.DirectoryChooser;
 import edu.jhuapl.saavtk.gui.menu.FileMenu;
 import edu.jhuapl.saavtk.model.ModelNames;
 import edu.jhuapl.saavtk.status.StatusNotifier;
-import edu.jhuapl.sbmt.image.core.Image;
-import edu.jhuapl.sbmt.image.types.ImageCollection;
+import edu.jhuapl.sbmt.model.image.Image;
+import edu.jhuapl.sbmt.model.image.ImageCollection;
 
 
 
@@ -72,7 +72,7 @@ public class SbmtMainWindow extends MainWindow
                         "SbmtMainWindow.SaveImagesAsSTLAction: actionPerformed: file " + file);
                 if (file != null)
                 {
-                    ImageCollection collection = (ImageCollection)rootPanel.getCurrentView().getModelManager().getModel(ModelNames.IMAGES).get(0);
+                    ImageCollection collection = (ImageCollection)rootPanel.getCurrentView().getModelManager().getModel(ModelNames.IMAGES);
                     System.out.println(
                             "SbmtMainWindow.SaveImagesAsSTLAction: actionPerformed: number of images " + collection.getImages().size());
                     for (Image image : collection.getImages())

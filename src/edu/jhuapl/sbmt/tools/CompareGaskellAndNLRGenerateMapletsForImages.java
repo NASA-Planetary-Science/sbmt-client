@@ -20,7 +20,7 @@ import edu.jhuapl.saavtk.util.PolyDataUtil;
 import edu.jhuapl.sbmt.client.SbmtModelFactory;
 import edu.jhuapl.sbmt.client.SmallBodyModel;
 import edu.jhuapl.sbmt.client.SmallBodyViewConfig;
-import edu.jhuapl.sbmt.image.core.keys.ImageKey;
+import edu.jhuapl.sbmt.gui.image.model.ImageKey;
 import edu.jhuapl.sbmt.model.eros.MSIImage;
 import edu.jhuapl.sbmt.model.image.ImageSource;
 import edu.jhuapl.sbmt.util.BatchSubmission;
@@ -43,7 +43,7 @@ public class CompareGaskellAndNLRGenerateMapletsForImages
         vtkPolyData smallBodyPolyData = PolyDataUtil.loadShapeModel(mapletFile);
         SmallBodyModel smallBodyModel = new SmallBodyModel(key.name, smallBodyPolyData);
 
-        MSIImage image = new MSIImage(key, List.of(smallBodyModel), true);
+        MSIImage image = new MSIImage(key, smallBodyModel, true);
 
         double[] imageSurfacePoint = image.getPixelSurfaceIntercept(259 + sampleOffset, 411 - (219 + lineOffset));
         if (imageSurfacePoint == null)
@@ -77,7 +77,7 @@ public class CompareGaskellAndNLRGenerateMapletsForImages
 
             keyName = keyName.replace(".FIT", "");
             ImageKey key = new ImageKey(keyName, ImageSource.GASKELL);
-            MSIImage image = new MSIImage(key, List.of(smallBodyModel), true);
+            MSIImage image = new MSIImage(key, smallBodyModel, true);
 
             // If the sumfile has no landmarks, then ignore it. Sumfiles that have no landmarks
             // are 1153 bytes long or less
@@ -121,7 +121,7 @@ public class CompareGaskellAndNLRGenerateMapletsForImages
         NativeLibraryLoader.loadHeadlessVtkLibraries();
 
         SmallBodyViewConfig config = SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.EROS, ShapeModelType.GASKELL);
-        SmallBodyModel smallBodyModel = SbmtModelFactory.createSmallBodyModel(config).get(0);
+        SmallBodyModel smallBodyModel = SbmtModelFactory.createSmallBodyModel(config);
         smallBodyModel.setModelResolution(3);
 
         FileCache.setOfflineMode(true, Configuration.getCacheDir());

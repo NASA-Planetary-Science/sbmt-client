@@ -39,10 +39,11 @@ import edu.jhuapl.saavtk.model.ModelManager;
 import edu.jhuapl.saavtk.model.ModelNames;
 import edu.jhuapl.saavtk.popup.PopupMenu;
 import edu.jhuapl.saavtk.util.FileUtil;
+import edu.jhuapl.saavtk.view.light.LightCfg;
 import edu.jhuapl.saavtk.view.light.LightUtil;
 import edu.jhuapl.saavtk.view.light.LightingType;
+import edu.jhuapl.sbmt.client.SbmtInfoWindowManager;
 import edu.jhuapl.sbmt.client.SmallBodyModel;
-import edu.jhuapl.sbmt.image.SbmtInfoWindowManager;
 import edu.jhuapl.sbmt.spectrum.model.EnabledState;
 import edu.jhuapl.sbmt.spectrum.model.core.BasicSpectrum;
 import edu.jhuapl.sbmt.spectrum.model.core.SpectrumIOException;
@@ -327,7 +328,7 @@ public class SpectrumPopupMenu<S extends BasicSpectrum> extends PopupMenu implem
     public double[] simulateLighting(Vector3D toSunUnitVector, List<Integer> faces)
     {
         IlluminationField illumField=new UniformIlluminationField(toSunUnitVector.negate());
-        SmallBodyModel smallBodyModel=(SmallBodyModel)modelManager.getModel(ModelNames.SMALL_BODY).get(0);
+        SmallBodyModel smallBodyModel=(SmallBodyModel)modelManager.getModel(ModelNames.SMALL_BODY);
         PolyhedralModelIlluminator illuminator=new PolyhedralModelIlluminator(smallBodyModel);
         return illuminator.illuminate(illumField, faces);
     }
@@ -393,7 +394,7 @@ public class SpectrumPopupMenu<S extends BasicSpectrum> extends PopupMenu implem
         {
 
             SpectrumStatistics<S> stats=new SpectrumStatistics<S>(emergenceAngle, incidenceAngle, phaseAngle, irradiation, spectra);
-            SpectrumStatisticsCollection<S> statsModel=(SpectrumStatisticsCollection<S>)modelManager.getModel(ModelNames.STATISTICS).get(0);
+            SpectrumStatisticsCollection<S> statsModel=(SpectrumStatisticsCollection<S>)modelManager.getModel(ModelNames.STATISTICS);
             statsModel.addStatistics(stats);
 
             try

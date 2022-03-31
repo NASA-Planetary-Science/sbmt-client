@@ -51,7 +51,7 @@ public class DEMCollection extends AbstractModel implements PropertyChangeListen
     protected DEM createDEM(DEMKey key, SmallBodyModel smallBodyModel) //throws IOException
     {
         // Check to see if we've already created the DEM through its boundary
-        DEMBoundaryCollection demBoundaryCollection = (DEMBoundaryCollection)modelManager.getModel(ModelNames.DEM_BOUNDARY).get(0);
+        DEMBoundaryCollection demBoundaryCollection = (DEMBoundaryCollection)modelManager.getModel(ModelNames.DEM_BOUNDARY);
         DEMBoundary demBoundary = demBoundaryCollection.getBoundary(key);
         if(demBoundary != null)
         {

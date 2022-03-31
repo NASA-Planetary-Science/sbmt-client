@@ -14,7 +14,6 @@ import edu.jhuapl.saavtk.config.IBodyViewConfig;
 import edu.jhuapl.saavtk.model.ShapeModelBody;
 import edu.jhuapl.saavtk.model.ShapeModelType;
 import edu.jhuapl.saavtk.util.Configuration;
-import edu.jhuapl.sbmt.image.core.ImagingInstrument;
 import edu.jhuapl.sbmt.model.bennu.spectra.otes.OTES;
 import edu.jhuapl.sbmt.model.bennu.spectra.otes.OTESQuery;
 import edu.jhuapl.sbmt.model.bennu.spectra.otes.OTESSpectrumMath;
@@ -24,7 +23,9 @@ import edu.jhuapl.sbmt.model.bennu.spectra.ovirs.OVIRSSpectrumMath;
 import edu.jhuapl.sbmt.model.eros.nis.NIS;
 import edu.jhuapl.sbmt.model.eros.nis.NISSpectrumMath;
 import edu.jhuapl.sbmt.model.eros.nis.NisQuery;
+import edu.jhuapl.sbmt.model.image.ImagingInstrument;
 import edu.jhuapl.sbmt.model.image.Instrument;
+import edu.jhuapl.sbmt.model.phobos.HierarchicalSearchSpecification;
 import edu.jhuapl.sbmt.model.phobos.MEGANE;
 import edu.jhuapl.sbmt.model.phobos.MEGANEQuery;
 import edu.jhuapl.sbmt.model.phobos.MEGANESpectrumMath;
@@ -129,8 +130,7 @@ public class SmallBodyViewConfigMetadataIO implements MetadataManager
                 FixedMetadata metadata = Serializers.deserialize(file, config.getUniqueName());
                 io2.metadataID = config.getUniqueName();
                 io2.retrieve(metadata);
-                if (!cfg.equals(config))
-                	System.err.println("SmallBodyViewConfigMetadataIO: main: cfg equals config is " + (cfg.equals(config) + " for " + config.getUniqueName()));
+                checkEquality(cfg, config);
 
             }
             catch (Exception e)
@@ -143,6 +143,17 @@ public class SmallBodyViewConfigMetadataIO implements MetadataManager
         Serializers.serialize("AllBodies", allBodiesMetadata, new File(rootDir + "allBodies_v" + configInfoVersion + ".json"));
 
 
+    }
+
+    /**
+     * Perform the equality check in its own method so that one can more easily
+     * debug. Set a breakpoint at the println, then drop-to-frame and re-run the
+     * call to equals.
+     */
+    private static void checkEquality(IBodyViewConfig cfg, IBodyViewConfig config)
+    {
+        if (!cfg.equals(config))
+            System.err.println("SmallBodyViewConfigMetadataIO: main: cfg equals config is " + (cfg.equals(config) + " for " + config.getUniqueName()));
     }
 
     private List<IBodyViewConfig> configs;
@@ -272,10 +283,12 @@ public class SmallBodyViewConfigMetadataIO implements MetadataManager
             write(hierarchicalImageSearchSpecification, c.hierarchicalImageSearchSpecification.getMetadataManager().store(), configMetadata);
 
         if (c.hasSpectralData && c.spectralInstruments.size() > 0)
+        {
         	write(hasHierarchicalSpectraSearch, c.hasHierarchicalSpectraSearch, configMetadata);
         write(hasHypertreeBasedSpectraSearch, c.hasHypertreeBasedSpectraSearch, configMetadata);
         write(spectraSearchDataSourceMap, c.spectraSearchDataSourceMap, configMetadata);
         write(spectrumMetadataFile, c.spectrumMetadataFile, configMetadata);
+        }
 
 //        if (c.hasHierarchicalSpectraSearch && c.hierarchicalSpectraSearchSpecification != null)
       	if (c.hierarchicalSpectraSearchSpecification != null)
@@ -533,7 +546,15 @@ public class SmallBodyViewConfigMetadataIO implements MetadataManager
 	        c.imageSearchDefaultMaxSpacecraftDistance = read(imageSearchDefaultMaxSpacecraftDistance, configMetadata);
 	        c.imageSearchDefaultMaxResolution = read(imageSearchDefaultMaxResolution, configMetadata);
 	        if (configMetadata.hasKey(hasHierarchicalImageSearch))
+	        {
 	        	c.hasHierarchicalImageSearch = read(hasHierarchicalImageSearch, configMetadata);
+	        	if (c.hasHierarchicalImageSearch)
+	        	{
+	        	    Metadata md = read(hierarchicalImageSearchSpecification, configMetadata);
+	        	    c.hierarchicalImageSearchSpecification = new HierarchicalSearchSpecification();
+	        	    c.hierarchicalImageSearchSpecification.getMetadataManager().retrieve(md);
+	        	}
+	        }
 
 //        	c.hierarchicalImageSearchSpecification.getMetadataManager().retrieve(read(hierarchicalImageSearchSpecification, configMetadata));
 

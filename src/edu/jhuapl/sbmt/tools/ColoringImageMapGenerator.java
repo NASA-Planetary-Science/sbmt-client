@@ -24,7 +24,7 @@ public class ColoringImageMapGenerator
         NativeLibraryLoader.loadVtkLibraries();
 
         SmallBodyViewConfig smallBodyConfig = SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.DEIMOS, ShapeModelType.THOMAS);
-        SmallBodyModel model = SbmtModelFactory.createSmallBodyModel(smallBodyConfig).get(0);
+        SmallBodyModel model = SbmtModelFactory.createSmallBodyModel(smallBodyConfig);
 
         vtkImageData slopeImage = new vtkImageData();
         slopeImage.SetDimensions(3600, 1800, 1);

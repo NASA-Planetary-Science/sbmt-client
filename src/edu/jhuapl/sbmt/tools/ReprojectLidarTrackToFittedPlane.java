@@ -41,7 +41,7 @@ public class ReprojectLidarTrackToFittedPlane
         String outputFile = args[1];
 
         SmallBodyViewConfig config = SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.EROS, ShapeModelType.GASKELL);
-        SmallBodyModel smallBodyModel = SbmtModelFactory.createSmallBodyModel(config).get(0);
+        SmallBodyModel smallBodyModel = SbmtModelFactory.createSmallBodyModel(config);
         LidarTrackManager trackManager = new LidarTrackManager(QuietSceneChangeNotifier.Instance, QuietStatusNotifier.Instance, smallBodyModel);
 
 //        try

@@ -31,10 +31,10 @@ import edu.jhuapl.saavtk.model.ModelManager;
 import edu.jhuapl.saavtk.model.ModelNames;
 import edu.jhuapl.saavtk.model.PolyhedralModel;
 import edu.jhuapl.saavtk.pick.PickUtil;
-import edu.jhuapl.sbmt.image.common.ImageKeyInterface;
-import edu.jhuapl.sbmt.image.core.Image;
-import edu.jhuapl.sbmt.image.types.ImageCollection;
-import edu.jhuapl.sbmt.image.types.cylindricalImage.CylindricalImage;
+import edu.jhuapl.sbmt.model.image.CylindricalImage;
+import edu.jhuapl.sbmt.model.image.Image;
+import edu.jhuapl.sbmt.model.image.ImageCollection;
+import edu.jhuapl.sbmt.model.image.ImageKeyInterface;
 import edu.jhuapl.sbmt.util.PolyDataUtil2;
 import edu.jhuapl.sbmt.util.PolyDataUtil2.PolyDataStatistics;
 
@@ -212,7 +212,7 @@ public class SmallBodyControlPanel extends PolyhedralModelControlPanel implement
 
         try
         {
-            ImageCollection imageCollection = (ImageCollection) getModelManager().getModel(ModelNames.IMAGES).get(0);
+            ImageCollection imageCollection = (ImageCollection) getModelManager().getModel(ModelNames.IMAGES);
             Image image = imageCollection.getImage(key);
 
             if (show && image == null)
@@ -247,7 +247,7 @@ public class SmallBodyControlPanel extends PolyhedralModelControlPanel implement
     public void stateChanged(@SuppressWarnings("unused") ChangeEvent e)
     {
         ImageCollection imageCollection =
-                (ImageCollection)getModelManager().getModel(ModelNames.IMAGES).get(0);
+                (ImageCollection)getModelManager().getModel(ModelNames.IMAGES);
 
         double val = (Double)getImageMapOpacitySpinner().getValue();
 

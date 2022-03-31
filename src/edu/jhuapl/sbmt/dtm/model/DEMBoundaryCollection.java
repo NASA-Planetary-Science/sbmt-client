@@ -20,6 +20,7 @@ import edu.jhuapl.saavtk.util.PolyDataUtil;
 import edu.jhuapl.saavtk.util.Properties;
 import edu.jhuapl.saavtk2.event.Event;
 import edu.jhuapl.saavtk2.event.EventListener;
+import edu.jhuapl.sbmt.client.SbmtModelFactory;
 import edu.jhuapl.sbmt.client.SmallBodyModel;
 import edu.jhuapl.sbmt.dtm.service.events.HideDEMBoundaryEvent;
 import edu.jhuapl.sbmt.dtm.service.events.ShowDEMBoundaryEvent;
@@ -161,7 +162,7 @@ public class DEMBoundaryCollection extends AbstractModel implements PropertyChan
         DEMBoundary boundary;
 
         // If the DEM already exists in the DEM collection, use that instead of creating a new one
-        DEMCollection demCollection = (DEMCollection)modelManager.getModel(ModelNames.DEM).get(0);
+        DEMCollection demCollection = (DEMCollection)modelManager.getModel(ModelNames.DEM);
         DEM dem = demCollection.getDEM(key);
         if(dem != null)
         {
@@ -169,7 +170,7 @@ public class DEMBoundaryCollection extends AbstractModel implements PropertyChan
         }
         else
         {
-            boundary = new DEMBoundary(new DEM(key));
+            boundary = new DEMBoundary((DEM)SbmtModelFactory.createDEM(key, smallBodyModel));
         }
 
         boundary.setBoundaryColor(initialColors[initialColorIndex++]);

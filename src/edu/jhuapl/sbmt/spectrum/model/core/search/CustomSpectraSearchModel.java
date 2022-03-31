@@ -20,7 +20,7 @@ import edu.jhuapl.saavtk.util.IdPair;
 import edu.jhuapl.saavtk.util.MapUtil;
 import edu.jhuapl.sbmt.client.SbmtSpectrumModelFactory;
 import edu.jhuapl.sbmt.config.Strings;
-import edu.jhuapl.sbmt.image.common.ImageType;
+import edu.jhuapl.sbmt.model.image.ImageType;
 import edu.jhuapl.sbmt.spectrum.model.core.BasicSpectrum;
 import edu.jhuapl.sbmt.spectrum.model.core.BasicSpectrumInstrument;
 import edu.jhuapl.sbmt.spectrum.model.core.SpectrumIOException;

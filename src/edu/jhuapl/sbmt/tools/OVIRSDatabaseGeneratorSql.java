@@ -369,7 +369,7 @@ public class OVIRSDatabaseGeneratorSql
 			config = SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.valueOf(bodyName),
 					ShapeModelType.provide(authorName));
 
-		bodyModel = SbmtModelFactory.createSmallBodyModel(config).get(0);
+		bodyModel = SbmtModelFactory.createSmallBodyModel(config);
 
 		logger.log(Level.INFO, "Body Model initialized");
 

@@ -23,9 +23,9 @@ import edu.jhuapl.saavtk.util.NativeLibraryLoader;
 import edu.jhuapl.sbmt.client.SbmtModelFactory;
 import edu.jhuapl.sbmt.client.SmallBodyModel;
 import edu.jhuapl.sbmt.client.SmallBodyViewConfig;
-import edu.jhuapl.sbmt.image.core.ImagingInstrument;
-import edu.jhuapl.sbmt.image.core.keys.ImageKey;
+import edu.jhuapl.sbmt.gui.image.model.ImageKey;
 import edu.jhuapl.sbmt.model.image.ImageSource;
+import edu.jhuapl.sbmt.model.image.ImagingInstrument;
 import edu.jhuapl.sbmt.model.image.Instrument;
 import edu.jhuapl.sbmt.util.BackplanesFileFormat;
 
@@ -155,7 +155,7 @@ public class MSIBackplanesGenerator
         ShapeModelType author = ShapeModelType.GASKELL;
         ShapeModelBody body = ShapeModelBody.EROS;
         BackplanesFileFormat fmt = BackplanesFileFormat.FITS;
-        SmallBodyModel smallBodyModel = SbmtModelFactory.createSmallBodyModel(SmallBodyViewConfig.getSmallBodyConfig(body, author, null)).get(0);
+        SmallBodyModel smallBodyModel = SbmtModelFactory.createSmallBodyModel(SmallBodyViewConfig.getSmallBodyConfig(body, author, null));
         ImagingInstrument instr = ((SmallBodyViewConfig)smallBodyModel.getSmallBodyConfig()).imagingInstruments[0];
 
         //Read each line in the input image list and form the command line

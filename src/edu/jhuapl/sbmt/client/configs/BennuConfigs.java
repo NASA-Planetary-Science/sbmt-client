@@ -24,16 +24,16 @@ import edu.jhuapl.sbmt.config.SBMTFileLocator;
 import edu.jhuapl.sbmt.config.SBMTFileLocators;
 import edu.jhuapl.sbmt.config.SessionConfiguration;
 import edu.jhuapl.sbmt.config.ShapeModelConfiguration;
-import edu.jhuapl.sbmt.image.common.ImageType;
-import edu.jhuapl.sbmt.image.common.SpectralImageMode;
-import edu.jhuapl.sbmt.image.core.BasicImagingInstrument;
-import edu.jhuapl.sbmt.image.core.ImagingInstrument;
-import edu.jhuapl.sbmt.image.core.ImagingInstrumentConfiguration;
+import edu.jhuapl.sbmt.imaging.instruments.ImagingInstrumentConfiguration;
 import edu.jhuapl.sbmt.model.bennu.lidar.old.OlaCubesGenerator;
 import edu.jhuapl.sbmt.model.bennu.spectra.otes.OTES;
 import edu.jhuapl.sbmt.model.bennu.spectra.ovirs.OVIRS;
+import edu.jhuapl.sbmt.model.image.BasicImagingInstrument;
 import edu.jhuapl.sbmt.model.image.ImageSource;
+import edu.jhuapl.sbmt.model.image.ImageType;
+import edu.jhuapl.sbmt.model.image.ImagingInstrument;
 import edu.jhuapl.sbmt.model.image.Instrument;
+import edu.jhuapl.sbmt.model.image.SpectralImageMode;
 import edu.jhuapl.sbmt.pointing.spice.SpiceInfo;
 import edu.jhuapl.sbmt.query.QueryBase;
 import edu.jhuapl.sbmt.query.database.GenericPhpQuery;
@@ -72,7 +72,7 @@ public class BennuConfigs extends SmallBodyViewConfig
     private static final SbmtMultiMissionTool.Mission[] PublicOnly = new SbmtMultiMissionTool.Mission[] {
     		SbmtMultiMissionTool.Mission.PUBLIC_RELEASE, SbmtMultiMissionTool.Mission.TEST_PUBLIC_RELEASE, SbmtMultiMissionTool.Mission.STAGE_PUBLIC_RELEASE
     };
- 
+
 
 	List<SpectrumInstrumentMetadata<SpectrumSearchSpec>> instrumentSearchSpecs = new ArrayList<SpectrumInstrumentMetadata<SpectrumSearchSpec>>();
 
@@ -1390,8 +1390,8 @@ public class BennuConfigs extends SmallBodyViewConfig
 
             if(Configuration.isMac()) c.hasBigmap = true;  // Right now bigmap only works on Macs
 
-            c.imagingInstruments = new ImagingInstrument[] { c.generatePolycamInstrument("bennu_olav20_polycam", "bennu_olav20_polycam", false, true),
-															 c.generateMapcamInstrument("bennu_olav20_mapcam", "bennu_olav20_mapcam", false, true),
+            c.imagingInstruments = new ImagingInstrument[] { c.generatePolycamInstrument("bennu_olav20_polycam", "bennu_olav20_polycam", true, true),
+															 c.generateMapcamInstrument("bennu_olav20_mapcam", "bennu_olav20_mapcam", true, true),
 															 c.generateNavcamInstrument("bennu_olav20_navcam", "bennu_olav20_navcam")
             };
 
@@ -1439,8 +1439,8 @@ public class BennuConfigs extends SmallBodyViewConfig
             publicOLA.presentInMissions = PublicOnly;
             publicOLA.baseMapConfigName = "config_public.txt";
 
-            publicOLA.imagingInstruments = new ImagingInstrument[] { publicOLA.generatePolycamInstrument("bennu_olav20_polycam", "bennu_olav20_polycam", false, true, true),
-					 publicOLA.generateMapcamInstrument("bennu_olav20_mapcam", "bennu_olav20_mapcam", false, true, true),
+            publicOLA.imagingInstruments = new ImagingInstrument[] { publicOLA.generatePolycamInstrument("bennu_olav20_polycam", "bennu_olav20_polycam", true, true, true),
+					 publicOLA.generateMapcamInstrument("bennu_olav20_mapcam", "bennu_olav20_mapcam", true, true, true),
 					 publicOLA.generateNavcamInstrument("bennu_olav20_navcam", "bennu_olav20_navcam", true)
             };
             publicOLA.hasHypertreeBasedSpectraSearch = false;
@@ -1473,8 +1473,8 @@ public class BennuConfigs extends SmallBodyViewConfig
 
             if(Configuration.isMac()) c.hasBigmap = true;  // Right now bigmap only works on Macs
 
-            c.imagingInstruments = new ImagingInstrument[] { c.generatePolycamInstrument("bennu_olav20ptm_polycam", "bennu_olav20ptm_polycam", false, true),
-            												 c.generateMapcamInstrument("bennu_olav20ptm_mapcam", "bennu_olav20ptm_mapcam", false, true),
+            c.imagingInstruments = new ImagingInstrument[] { c.generatePolycamInstrument("bennu_olav20ptm_polycam", "bennu_olav20ptm_polycam", true, true),
+            												 c.generateMapcamInstrument("bennu_olav20ptm_mapcam", "bennu_olav20ptm_mapcam", true, true),
             												 c.generateNavcamInstrument("bennu_olav20ptm_navcam", "bennu_olav20ptm_navcam")
             };
 
@@ -1521,8 +1521,8 @@ public class BennuConfigs extends SmallBodyViewConfig
             publicOLAptm.baseMapConfigName = "config_public.txt";
 
             publicOLAptm.presentInMissions = PublicOnly;
-            publicOLAptm.imagingInstruments = new ImagingInstrument[] { publicOLAptm.generatePolycamInstrument("bennu_olav20ptm_polycam", "bennu_olav20ptm_polycam", false, true, true),
-            		publicOLAptm.generateMapcamInstrument("bennu_olav20ptm_mapcam", "bennu_olav20ptm_mapcam", false, true, true),
+            publicOLAptm.imagingInstruments = new ImagingInstrument[] { publicOLAptm.generatePolycamInstrument("bennu_olav20ptm_polycam", "bennu_olav20ptm_polycam", true, true, true),
+            		publicOLAptm.generateMapcamInstrument("bennu_olav20ptm_mapcam", "bennu_olav20ptm_mapcam", true, true, true),
             		publicOLAptm.generateNavcamInstrument("bennu_olav20ptm_navcam", "bennu_olav20ptm_navcam", true)
             };
             publicOLAptm.hasHypertreeBasedSpectraSearch = false;
@@ -1642,6 +1642,7 @@ public class BennuConfigs extends SmallBodyViewConfig
 	{
 		hasSpectralData = false;
         hasHierarchicalSpectraSearch = false;
+        hasHypertreeBasedSpectraSearch = false;
         spectraSearchDataSourceMap.clear();
         spectralInstruments.clear();
 	}

@@ -22,7 +22,7 @@ import edu.jhuapl.saavtk.util.MathUtil;
 import edu.jhuapl.saavtk.util.NativeLibraryLoader;
 import edu.jhuapl.sbmt.client.SmallBodyModel;
 import edu.jhuapl.sbmt.client.SmallBodyViewConfig;
-import edu.jhuapl.sbmt.image.core.keys.ImageKey;
+import edu.jhuapl.sbmt.gui.image.model.ImageKey;
 import edu.jhuapl.sbmt.model.eros.Eros;
 import edu.jhuapl.sbmt.model.eros.MSIImage;
 import edu.jhuapl.sbmt.model.image.ImageSource;
@@ -138,7 +138,7 @@ public class MSIBestResolutionPerPlate
             String keyName = origFile.getAbsolutePath().replace(rootFolder.getAbsolutePath(), "");
             keyName = keyName.replace(".FIT", "");
             ImageKey key = new ImageKey(keyName, msiSource);
-            MSIImage image = new MSIImage(key, List.of(erosModel), false);
+            MSIImage image = new MSIImage(key, erosModel, false);
 
 
             //System.out.println("id: " + Integer.parseInt(origFile.getName().substring(2, 11)));

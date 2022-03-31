@@ -271,8 +271,8 @@ public class SpectrumSearchParametersController<S extends BasicSpectrum>
                 model.clearSpectraFromDisplay();
                 pickManager.setActivePicker(pickManager.getPickerForPickMode(PickMode.DEFAULT));
 
-                AbstractEllipsePolygonModel selectionModel = (AbstractEllipsePolygonModel)modelManager.getModel(ModelNames.CIRCLE_SELECTION).get(0);
-                SmallBodyModel bodyModel = (SmallBodyModel)modelManager.getModel(ModelNames.SMALL_BODY).get(0);
+                AbstractEllipsePolygonModel selectionModel = (AbstractEllipsePolygonModel)modelManager.getModel(ModelNames.CIRCLE_SELECTION);
+                SmallBodyModel bodyModel = (SmallBodyModel)modelManager.getModel(ModelNames.SMALL_BODY);
                 if (selectionModel.getAllItems().size() > 0)
                 {
                	  int numberOfSides = selectionModel.getNumberOfSides();
@@ -401,7 +401,7 @@ public class SpectrumSearchParametersController<S extends BasicSpectrum>
         searchParameters.setMinPhaseQuery(Integer.parseInt(panel.getFromPhaseTextField().getText()));
         searchParameters.setMaxPhaseQuery(Integer.parseInt(panel.getToPhaseTextField().getText()));
 
-        SmallBodyModel bodyModel = (SmallBodyModel)modelManager.getModel(ModelNames.SMALL_BODY).get(0);
+        SmallBodyModel bodyModel = (SmallBodyModel)modelManager.getModel(ModelNames.SMALL_BODY);
         searchParameters.setModelName(bodyModel.getConfig().getAuthor().toString().toLowerCase().replace("-", ""));
         searchParameters.setDataType(panel.getSelectedDataTypes());
 //        searchParameters.setDataType(panel.getDataType());
@@ -451,7 +451,7 @@ public class SpectrumSearchParametersController<S extends BasicSpectrum>
      */
     private void clearRegionButtonActionPerformed()
     {
-        AbstractEllipsePolygonModel selectionModel = (AbstractEllipsePolygonModel)modelManager.getModel(ModelNames.CIRCLE_SELECTION).get(0);
+        AbstractEllipsePolygonModel selectionModel = (AbstractEllipsePolygonModel)modelManager.getModel(ModelNames.CIRCLE_SELECTION);
         selectionModel.removeAllStructures();
     }
 

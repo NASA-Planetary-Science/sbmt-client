@@ -59,26 +59,16 @@ import edu.jhuapl.sbmt.dtm.ui.menu.DEMPopupMenu;
 import edu.jhuapl.sbmt.dtm.ui.menu.MapletBoundaryPopupMenu;
 import edu.jhuapl.sbmt.gui.eros.LineamentControlPanel;
 import edu.jhuapl.sbmt.gui.eros.LineamentPopupMenu;
-import edu.jhuapl.sbmt.image.SBMTInfoWindowManagerFactory;
-import edu.jhuapl.sbmt.image.SbmtInfoWindowManager;
-import edu.jhuapl.sbmt.image.SbmtSpectrumWindowManager;
-import edu.jhuapl.sbmt.image.common.SpectralImageMode;
-import edu.jhuapl.sbmt.image.controllers.custom.CustomImageController;
-import edu.jhuapl.sbmt.image.controllers.images.ImagingSearchController;
-import edu.jhuapl.sbmt.image.controllers.quadspectral.QuadSpectralImagingSearchController;
-import edu.jhuapl.sbmt.image.controllers.spectral.SpectralImagingSearchController;
-import edu.jhuapl.sbmt.image.core.ImagingInstrument;
-import edu.jhuapl.sbmt.image.gui.HyperspectralImagingSearchPanel;
-import edu.jhuapl.sbmt.image.gui.color.ColorImagePopupMenu;
-import edu.jhuapl.sbmt.image.gui.cubes.ImageCubePopupMenu;
-import edu.jhuapl.sbmt.image.gui.images.ImageDefaultPickHandler;
-import edu.jhuapl.sbmt.image.gui.images.ImagePopupManager;
-import edu.jhuapl.sbmt.image.gui.images.ImagePopupMenu;
-import edu.jhuapl.sbmt.image.types.ImageCollection;
-import edu.jhuapl.sbmt.image.types.ImageSearchModel;
-import edu.jhuapl.sbmt.image.types.colorImage.ColorImageCollection;
-import edu.jhuapl.sbmt.image.types.imageCube.ImageCubeCollection;
-import edu.jhuapl.sbmt.image.types.perspectiveImage.PerspectiveImageBoundaryCollection;
+import edu.jhuapl.sbmt.gui.image.controllers.custom.CustomImageController;
+import edu.jhuapl.sbmt.gui.image.controllers.images.ImagingSearchController;
+import edu.jhuapl.sbmt.gui.image.controllers.quadspectral.QuadSpectralImagingSearchController;
+import edu.jhuapl.sbmt.gui.image.controllers.spectral.SpectralImagingSearchController;
+import edu.jhuapl.sbmt.gui.image.model.images.ImageSearchModel;
+import edu.jhuapl.sbmt.gui.image.ui.color.ColorImagePopupMenu;
+import edu.jhuapl.sbmt.gui.image.ui.cubes.ImageCubePopupMenu;
+import edu.jhuapl.sbmt.gui.image.ui.images.ImageDefaultPickHandler;
+import edu.jhuapl.sbmt.gui.image.ui.images.ImagePopupManager;
+import edu.jhuapl.sbmt.gui.image.ui.images.ImagePopupMenu;
 import edu.jhuapl.sbmt.lidar.gui.LidarPanel;
 import edu.jhuapl.sbmt.model.bennu.spectra.OREXSpectraFactory;
 import edu.jhuapl.sbmt.model.bennu.spectra.OREXSpectrumSearchController;
@@ -89,6 +79,11 @@ import edu.jhuapl.sbmt.model.eros.LineamentModel;
 import edu.jhuapl.sbmt.model.eros.nis.NEARSpectraFactory;
 import edu.jhuapl.sbmt.model.eros.nis.NISSearchModel;
 import edu.jhuapl.sbmt.model.eros.nis.NISSpectrum;
+import edu.jhuapl.sbmt.model.image.ColorImageCollection;
+import edu.jhuapl.sbmt.model.image.ImageCollection;
+import edu.jhuapl.sbmt.model.image.ImageCubeCollection;
+import edu.jhuapl.sbmt.model.image.ImagingInstrument;
+import edu.jhuapl.sbmt.model.image.SpectralImageMode;
 import edu.jhuapl.sbmt.model.phobos.controllers.MEGANEController;
 import edu.jhuapl.sbmt.model.phobos.model.MEGANECollection;
 import edu.jhuapl.sbmt.model.ryugu.nirs3.H2SpectraFactory;
@@ -312,7 +307,7 @@ public class SbmtView extends View implements PropertyChangeListener
 	@Override
 	protected void setupModelManager()
 	{
-		smallBodyModels = SbmtModelFactory.createSmallBodyModel(getPolyhedralModelConfig());
+		smallBodyModels = SbmtModelFactory.createSmallBodyModels(getPolyhedralModelConfig());
 		SmallBodyModel smallBodyModel = smallBodyModels.get(0);
 //		SBMTModelBootstrap.initialize(smallBodyModel);
 //		BasicSpectrumInstrument.initializeSerializationProxy();
@@ -331,10 +326,10 @@ public class SbmtView extends View implements PropertyChangeListener
 		allModels.put(ModelNames.CUSTOM_COLOR_IMAGES, List.of(customColorImageCollection));
 
 		//all bodies can potentially have at least custom images, color images, and cubes, so these models must exist for everything.  Same will happen for spectra when it gets enabled.
-		allModels.put(ModelNames.PERSPECTIVE_IMAGE_BOUNDARIES, List.of(new PerspectiveImageBoundaryCollection(smallBodyModels)));
-		allModels.put(ModelNames.PERSPECTIVE_CUSTOM_IMAGE_BOUNDARIES, List.of(new PerspectiveImageBoundaryCollection(smallBodyModels)));
-        allModels.put(ModelNames.PERSPECTIVE_COLOR_IMAGE_BOUNDARIES, List.of(new PerspectiveImageBoundaryCollection(smallBodyModels)));
-        allModels.put(ModelNames.PERSPECTIVE_IMAGE_CUBE_BOUNDARIES, List.of(new PerspectiveImageBoundaryCollection(smallBodyModels)));
+//		allModels.put(ModelNames.PERSPECTIVE_IMAGE_BOUNDARIES, List.of(new PerspectiveImageBoundaryCollection(smallBodyModels)));
+//		allModels.put(ModelNames.PERSPECTIVE_CUSTOM_IMAGE_BOUNDARIES, List.of(new PerspectiveImageBoundaryCollection(smallBodyModels)));
+//        allModels.put(ModelNames.PERSPECTIVE_COLOR_IMAGE_BOUNDARIES, List.of(new PerspectiveImageBoundaryCollection(smallBodyModels)));
+//        allModels.put(ModelNames.PERSPECTIVE_IMAGE_CUBE_BOUNDARIES, List.of(new PerspectiveImageBoundaryCollection(smallBodyModels)));
 		ImageCubeCollection cubeCollection = new ImageCubeCollection(smallBodyModels, imageCollection);
 		ColorImageCollection colorImageCollection = new ColorImageCollection(smallBodyModels, getModelManager());
 		allModels.put(ModelNames.COLOR_IMAGES, List.of(colorImageCollection));
@@ -426,6 +421,7 @@ public class SbmtView extends View implements PropertyChangeListener
 
 	private void registerPopupMenuForModels(List<Model> models, PopupMenu popupMenu)
 	{
+		if (models == null) return;
 		models.forEach(model -> registerPopup(model, popupMenu));
 	}
 
@@ -436,60 +432,60 @@ public class SbmtView extends View implements PropertyChangeListener
 
 		for (ImagingInstrument instrument : getPolyhedralModelConfig().imagingInstruments)
 		{
-			PerspectiveImageBoundaryCollection colorImageBoundaries = (PerspectiveImageBoundaryCollection) getModelManager().getModel(ModelNames.PERSPECTIVE_COLOR_IMAGE_BOUNDARIES).get(0);
-			PerspectiveImageBoundaryCollection imageCubeBoundaries = (PerspectiveImageBoundaryCollection) getModelManager().getModel(ModelNames.PERSPECTIVE_IMAGE_CUBE_BOUNDARIES).get(0);
+//			PerspectiveImageBoundaryCollection colorImageBoundaries = (PerspectiveImageBoundaryCollection) getModelManager().getModel(ModelNames.PERSPECTIVE_COLOR_IMAGE_BOUNDARIES);
+//			PerspectiveImageBoundaryCollection imageCubeBoundaries = (PerspectiveImageBoundaryCollection) getModelManager().getModel(ModelNames.PERSPECTIVE_IMAGE_CUBE_BOUNDARIES);
 
 			if (instrument.spectralMode == SpectralImageMode.MONO)
             {
             	//regular perspective images
-				ImageCollection images = (ImageCollection) getModelManager().getModel(ModelNames.IMAGES).get(0);
-				PerspectiveImageBoundaryCollection boundaries = (PerspectiveImageBoundaryCollection) getModelManager().getModel(ModelNames.PERSPECTIVE_IMAGE_BOUNDARIES).get(0);
+				ImageCollection images = (ImageCollection) getModelManager().getModel(ModelNames.IMAGES);
+//				PerspectiveImageBoundaryCollection boundaries = (PerspectiveImageBoundaryCollection) getModelManager().getModel(ModelNames.PERSPECTIVE_IMAGE_BOUNDARIES);
 
 				PopupMenu popupMenu = new ImagePopupMenu<>(getModelManager(), images, /*boundaries,*/ (SbmtInfoWindowManager) getInfoPanelManager(), (SbmtSpectrumWindowManager) getSpectrumPanelManager(), getRenderer(), getRenderer());
-				registerPopupMenuForModels(getModel(ModelNames.PERSPECTIVE_IMAGE_BOUNDARIES), popupMenu);
+				registerPopupMenuForModels(getModels(ModelNames.PERSPECTIVE_IMAGE_BOUNDARIES), popupMenu);
 
                 //color perspective images
-                ColorImageCollection colorImages = (ColorImageCollection)getModelManager().getModel(ModelNames.COLOR_IMAGES).get(0);
+                ColorImageCollection colorImages = (ColorImageCollection)getModelManager().getModel(ModelNames.COLOR_IMAGES);
 				popupMenu = new ColorImagePopupMenu(colorImages, /*colorImageBoundaries,*/ (SbmtInfoWindowManager) getInfoPanelManager(), getModelManager(), getRenderer(), getRenderer());
 //                PerspectiveImageBoundaryCollection colorImageBoundaries = (PerspectiveImageBoundaryCollection)getModelManager().getModel(ModelNames.PERSPECTIVE_COLOR_IMAGE_BOUNDARIES);
                 PopupMenu colorImagePopupMenu = new ImagePopupMenu(getModelManager(), images, /*colorImageBoundaries,*/ (SbmtInfoWindowManager)getInfoPanelManager(), (SbmtSpectrumWindowManager)getSpectrumPanelManager(), getRenderer(), getRenderer());
-				registerPopupMenuForModels(getModel(ModelNames.PERSPECTIVE_COLOR_IMAGE_BOUNDARIES), colorImagePopupMenu);
+				registerPopupMenuForModels(getModels(ModelNames.PERSPECTIVE_COLOR_IMAGE_BOUNDARIES), colorImagePopupMenu);
 
                 //perspective image cubes
-                ImageCubeCollection imageCubes = (ImageCubeCollection)getModelManager().getModel(ModelNames.CUBE_IMAGES).get(0);
+                ImageCubeCollection imageCubes = (ImageCubeCollection)getModelManager().getModel(ModelNames.CUBE_IMAGES);
 				popupMenu = new ImageCubePopupMenu(imageCubes, /*imageCubeBoundaries,*/ (SbmtInfoWindowManager) getInfoPanelManager(), (SbmtSpectrumWindowManager) getSpectrumPanelManager(), getRenderer(), getRenderer());
 //                PerspectiveImageBoundaryCollection imageCubeBoundaries = (PerspectiveImageBoundaryCollection)getModelManager().getModel(ModelNames.PERSPECTIVE_IMAGE_CUBE_BOUNDARIES);
                 PopupMenu imageCubePopupMenu = new ImagePopupMenu(getModelManager(), images, /*imageCubeBoundaries,*/ (SbmtInfoWindowManager)getInfoPanelManager(), (SbmtSpectrumWindowManager)getSpectrumPanelManager(), getRenderer(), getRenderer());
-				registerPopupMenuForModels(getModel(ModelNames.PERSPECTIVE_IMAGE_CUBE_BOUNDARIES), imageCubePopupMenu);
+				registerPopupMenuForModels(getModels(ModelNames.PERSPECTIVE_IMAGE_CUBE_BOUNDARIES), imageCubePopupMenu);
 			}
 
 			else if (instrument.spectralMode == SpectralImageMode.MULTI)
 			{
-				ImageCollection images = (ImageCollection) getModel(ModelNames.IMAGES).get(0);
-				PerspectiveImageBoundaryCollection boundaries = (PerspectiveImageBoundaryCollection) getModel(ModelNames.PERSPECTIVE_IMAGE_BOUNDARIES).get(0);
-				ColorImageCollection colorImages = (ColorImageCollection) getModel(ModelNames.COLOR_IMAGES).get(0);
+				ImageCollection images = (ImageCollection) getModel(ModelNames.IMAGES);
+//				PerspectiveImageBoundaryCollection boundaries = (PerspectiveImageBoundaryCollection) getModel(ModelNames.PERSPECTIVE_IMAGE_BOUNDARIES);
+				ColorImageCollection colorImages = (ColorImageCollection) getModel(ModelNames.COLOR_IMAGES);
 
 				PopupMenu popupMenu = new ImagePopupMenu<>(getModelManager(), images, /*boundaries,*/ (SbmtInfoWindowManager) getInfoPanelManager(), (SbmtSpectrumWindowManager) getSpectrumPanelManager(), getRenderer(), getRenderer());
-				registerPopupMenuForModels(getModel(ModelNames.PERSPECTIVE_IMAGE_BOUNDARIES), popupMenu);
+				registerPopupMenuForModels(getModels(ModelNames.PERSPECTIVE_IMAGE_BOUNDARIES), popupMenu);
 
 				popupMenu = new ColorImagePopupMenu(colorImages, /*colorImageBoundaries,*/ (SbmtInfoWindowManager) getInfoPanelManager(), getModelManager(), getRenderer(), getRenderer());
-				registerPopupMenuForModels(getModel(ModelNames.COLOR_IMAGES), popupMenu);
+				registerPopupMenuForModels(getModels(ModelNames.COLOR_IMAGES), popupMenu);
 			}
 			else if (instrument.spectralMode == SpectralImageMode.HYPER)
 			{
-				ImageCollection images = (ImageCollection) getModel(ModelNames.IMAGES).get(0);
-				PerspectiveImageBoundaryCollection boundaries = (PerspectiveImageBoundaryCollection) getModel(ModelNames.PERSPECTIVE_IMAGE_BOUNDARIES).get(0);
-				ColorImageCollection colorImages = (ColorImageCollection) getModel(ModelNames.COLOR_IMAGES).get(0);
-				ImageCubeCollection imageCubes = (ImageCubeCollection) getModel(ModelNames.CUBE_IMAGES).get(0);
+				ImageCollection images = (ImageCollection) getModel(ModelNames.IMAGES);
+//				PerspectiveImageBoundaryCollection boundaries = (PerspectiveImageBoundaryCollection) getModel(ModelNames.PERSPECTIVE_IMAGE_BOUNDARIES);
+				ColorImageCollection colorImages = (ColorImageCollection) getModel(ModelNames.COLOR_IMAGES);
+				ImageCubeCollection imageCubes = (ImageCubeCollection) getModel(ModelNames.CUBE_IMAGES);
 
 				PopupMenu popupMenu = new ImagePopupMenu<>(getModelManager(), images, /*boundaries,*/ (SbmtInfoWindowManager) getInfoPanelManager(), (SbmtSpectrumWindowManager) getSpectrumPanelManager(), getRenderer(), getRenderer());
-				registerPopupMenuForModels(getModel(ModelNames.PERSPECTIVE_IMAGE_BOUNDARIES), popupMenu);
+				registerPopupMenuForModels(getModels(ModelNames.PERSPECTIVE_IMAGE_BOUNDARIES), popupMenu);
 
 				popupMenu = new ColorImagePopupMenu(colorImages, /*colorImageBoundaries,*/ (SbmtInfoWindowManager) getInfoPanelManager(), getModelManager(), getRenderer(), getRenderer());
-				registerPopupMenuForModels(getModel(ModelNames.COLOR_IMAGES), popupMenu);
+				registerPopupMenuForModels(getModels(ModelNames.COLOR_IMAGES), popupMenu);
 
 				popupMenu = new ImageCubePopupMenu(imageCubes, /*imageCubeBoundaries,*/ (SbmtInfoWindowManager) getInfoPanelManager(), (SbmtSpectrumWindowManager) getSpectrumPanelManager(), getRenderer(), getRenderer());
-				registerPopupMenuForModels(getModel(ModelNames.CUBE_IMAGES), popupMenu);
+				registerPopupMenuForModels(getModels(ModelNames.CUBE_IMAGES), popupMenu);
 			}
 		}
 
@@ -498,10 +494,10 @@ public class SbmtView extends View implements PropertyChangeListener
 			//This needs to be updated to handle the multiple Spectral Instruments that can exist on screen at the same time....
 			//            for (SpectralInstrument instrument : getPolyhedralModelConfig().spectralInstruments)
 			{
-				SpectraCollection spectrumCollection = (SpectraCollection)getModel(ModelNames.SPECTRA).get(0);
-				SpectrumBoundaryCollection spectrumBoundaryCollection = (SpectrumBoundaryCollection)getModel(ModelNames.SPECTRA_BOUNDARIES).get(0);
+				SpectraCollection spectrumCollection = (SpectraCollection)getModel(ModelNames.SPECTRA);
+				SpectrumBoundaryCollection spectrumBoundaryCollection = (SpectrumBoundaryCollection)getModel(ModelNames.SPECTRA_BOUNDARIES);
 				PopupMenu popupMenu = new SpectrumPopupMenu(spectrumCollection, spectrumBoundaryCollection, getModelManager(), (SbmtInfoWindowManager) getInfoPanelManager(), getRenderer());
-				registerPopupMenuForModels(getModel(ModelNames.SPECTRA), popupMenu);
+				registerPopupMenuForModels(getModels(ModelNames.SPECTRA), popupMenu);
 
 			}
 		}
@@ -509,13 +505,13 @@ public class SbmtView extends View implements PropertyChangeListener
 		if (getPolyhedralModelConfig().hasLineamentData)
 		{
 			PopupMenu popupMenu = new LineamentPopupMenu(getModelManager());
-			registerPopupMenuForModels(getModel(ModelNames.LINEAMENT), popupMenu);
+			registerPopupMenuForModels(getModels(ModelNames.LINEAMENT), popupMenu);
 		}
 
 		if (getPolyhedralModelConfig().hasMapmaker || getPolyhedralModelConfig().hasBigmap)
 		{
 			PopupMenu popupMenu = new MapletBoundaryPopupMenu(getModelManager(), getRenderer());
-			registerPopupMenuForModels(getModel(ModelNames.DEM_BOUNDARY), popupMenu);
+			registerPopupMenuForModels(getModels(ModelNames.DEM_BOUNDARY), popupMenu);
 		}
 	}
 
@@ -585,10 +581,10 @@ public class SbmtView extends View implements PropertyChangeListener
             {
                 if (Configuration.isAPLVersion())
                 {
-					JComponent component =
-							new HyperspectralImagingSearchPanel(getPolyhedralModelConfig(), getModelManager(), (SbmtInfoWindowManager) getInfoPanelManager(), (SbmtSpectrumWindowManager) getSpectrumPanelManager(), getPickManager(), getRenderer(), instrument, SmallBodyViewConfig.LEISA_NBANDS).init();
+//					JComponent component =
+//							new HyperspectralImagingSearchPanel(getPolyhedralModelConfig(), getModelManager(), (SbmtInfoWindowManager) getInfoPanelManager(), (SbmtSpectrumWindowManager) getSpectrumPanelManager(), getPickManager(), getRenderer(), instrument, SmallBodyViewConfig.LEISA_NBANDS).init();
 //                    JComponent component = new HyperspectralImagingSearchController(getPolyhedralModelConfig(), getModelManager(), (SbmtInfoWindowManager)getInfoPanelManager(), (SbmtSpectrumWindowManager)getSpectrumPanelManager(), getPickManager(), getRenderer(), instrument, SmallBodyViewConfig.LEISA_NBANDS).getPanel();
-                    addTab(instrument.instrumentName.toString(), component);
+//                    addTab(instrument.instrumentName.toString(), component);
                 }
             }
 
@@ -602,8 +598,8 @@ public class SbmtView extends View implements PropertyChangeListener
 
 		for (BasicSpectrumInstrument instrument : getPolyhedralModelConfig().spectralInstruments)
 		{
-	        SpectraCollection spectrumCollection = (SpectraCollection)getModel(ModelNames.SPECTRA).get(0);
-	        SpectrumBoundaryCollection boundaryCollection = (SpectrumBoundaryCollection)getModel(ModelNames.SPECTRA_BOUNDARIES).get(0);
+	        SpectraCollection spectrumCollection = (SpectraCollection)getModel(ModelNames.SPECTRA);
+	        SpectrumBoundaryCollection boundaryCollection = (SpectrumBoundaryCollection)getModel(ModelNames.SPECTRA_BOUNDARIES);
 
             String displayName = instrument.getDisplayName();
 //			if (displayName.equals(SpectraType.NIS_SPECTRA.getDisplayName()))
@@ -725,10 +721,10 @@ public class SbmtView extends View implements PropertyChangeListener
                     break;
                 }
 
-				ImageCollection images = (ImageCollection) getModel(ModelNames.CUSTOM_IMAGES).get(0);
-				PerspectiveImageBoundaryCollection boundaries = (PerspectiveImageBoundaryCollection) getModel(ModelNames.PERSPECTIVE_CUSTOM_IMAGE_BOUNDARIES).get(0);
+				ImageCollection images = (ImageCollection) getModel(ModelNames.CUSTOM_IMAGES);
+//				PerspectiveImageBoundaryCollection boundaries = (PerspectiveImageBoundaryCollection) getModel(ModelNames.PERSPECTIVE_CUSTOM_IMAGE_BOUNDARIES);
 				PopupMenu popupMenu = new ImagePopupMenu<>(getModelManager(), images, /*boundaries,*/ (SbmtInfoWindowManager) getInfoPanelManager(), (SbmtSpectrumWindowManager) getSpectrumPanelManager(), getRenderer(), getRenderer());
-				registerPopupMenuForModels(getModel(ModelNames.CUSTOM_IMAGES), popupMenu);
+				registerPopupMenuForModels(getModels(ModelNames.CUSTOM_IMAGES), popupMenu);
 
 				CustomImageController customImageController = new CustomImageController(getPolyhedralModelConfig(), getModelManager(), (SbmtInfoWindowManager) getInfoPanelManager(), (SbmtSpectrumWindowManager) getSpectrumPanelManager(), getPickManager(), getRenderer(), instrument);
 				pomListeners.add(new PositionOrientationManagerListener()
@@ -748,8 +744,8 @@ public class SbmtView extends View implements PropertyChangeListener
 //					continue; //we can't properly handle NIS custom data for now without info files, which we don't have.
 				customDataPane.addTab(i.getDisplayName() + " Spectra", new CustomSpectraSearchController(getModelManager(), (SbmtInfoWindowManager) getInfoPanelManager(), getPickManager(), getRenderer(), getPolyhedralModelConfig().hierarchicalSpectraSearchSpecification, i).getPanel());
 //
-				SpectraCollection spectrumCollection = (SpectraCollection)getModel(ModelNames.CUSTOM_SPECTRA).get(0);
-				SpectrumBoundaryCollection boundaryCollection = (SpectrumBoundaryCollection)getModel(ModelNames.CUSTOM_SPECTRA_BOUNDARIES).get(0);
+				SpectraCollection spectrumCollection = (SpectraCollection)getModel(ModelNames.CUSTOM_SPECTRA);
+				SpectrumBoundaryCollection boundaryCollection = (SpectrumBoundaryCollection)getModel(ModelNames.CUSTOM_SPECTRA_BOUNDARIES);
 				PopupMenu popupMenu = new SpectrumPopupMenu(spectrumCollection, boundaryCollection, getModelManager(), (SbmtInfoWindowManager) getInfoPanelManager(), getRenderer());
 				registerPopup(spectrumCollection, popupMenu);
 
@@ -760,11 +756,11 @@ public class SbmtView extends View implements PropertyChangeListener
 //                    getPolyhedralModelConfig().hasMapmaker, getPolyhedralModelConfig().hasBigmap, renderer);
 //            addTab("Regional DTMs", component);
 
-            DEMCollection dems = (DEMCollection)getModel(ModelNames.DEM).get(0);
-            DEMBoundaryCollection demBoundaries = (DEMBoundaryCollection)getModel(ModelNames.DEM_BOUNDARY).get(0);
+            DEMCollection dems = (DEMCollection)getModel(ModelNames.DEM);
+            DEMBoundaryCollection demBoundaries = (DEMBoundaryCollection)getModel(ModelNames.DEM_BOUNDARY);
         	DEMPopupMenu demPopupMenu = new DEMPopupMenu(getModelManager().getPolyhedralModel(), dems, demBoundaries, renderer, getRenderer(), new DEMPopupMenuActionListener(dems, demBoundaries));
-			registerPopupMenuForModels(getModel(ModelNames.DEM), demPopupMenu);
-			registerPopupMenuForModels(getModel(ModelNames.DEM_BOUNDARY), demPopupMenu);
+			registerPopupMenuForModels(getModels(ModelNames.DEM), demPopupMenu);
+			registerPopupMenuForModels(getModels(ModelNames.DEM_BOUNDARY), demPopupMenu);
 
 
             DEMCreator creationTool = null;
@@ -840,8 +836,8 @@ public class SbmtView extends View implements PropertyChangeListener
 	protected void setupSpectrumPanelManager()
 	{
 		if (!getPolyhedralModelConfig().hasSpectralData) return;
-		SpectraCollection spectrumCollection = (SpectraCollection)getModel(ModelNames.SPECTRA).get(0);
-		SpectrumBoundaryCollection spectrumBoundaryCollection = (SpectrumBoundaryCollection)getModel(ModelNames.SPECTRA_BOUNDARIES).get(0);
+		SpectraCollection spectrumCollection = (SpectraCollection)getModel(ModelNames.SPECTRA);
+		SpectrumBoundaryCollection spectrumBoundaryCollection = (SpectrumBoundaryCollection)getModel(ModelNames.SPECTRA_BOUNDARIES);
 
 		PopupMenu spectralImagesPopupMenu =
     	        new SpectrumPopupMenu(spectrumCollection, spectrumBoundaryCollection, getModelManager(), null, null);
@@ -851,7 +847,7 @@ public class SbmtView extends View implements PropertyChangeListener
 	@Override
 	protected void setupPositionOrientationManager()
 	{
-		if (getPolyhedralModelConfig().spiceInfo == null || (getModelManager().getModel(ModelNames.SMALL_BODY).size() == 1)) return;
+		if (getPolyhedralModelConfig().spiceInfo == null || (getModelManager().getModels(ModelNames.SMALL_BODY).size() == 1)) return;
 
 		KernelSelectionFrame kernelSelectionFrame = new KernelSelectionFrame(getModelManager(), new Function<String, Void>()
 		{
@@ -860,7 +856,7 @@ public class SbmtView extends View implements PropertyChangeListener
 			public Void apply(String arg0)
 			{
 				SpiceInfo spiceInfo = getPolyhedralModelConfig().spiceInfo;
-				List<SmallBodyModel> bodies = getModelManager().getModel(ModelNames.SMALL_BODY).stream().map(body -> { return (SmallBodyModel)body; }).toList();
+				List<SmallBodyModel> bodies = getModelManager().getModels(ModelNames.SMALL_BODY).stream().map(body -> { return (SmallBodyModel)body; }).toList();
 				SpiceInfo firstSpiceInfo = spiceInfo;
 				SimpleDateFormat dateFormatter = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS");
 		    	String dateTimeString = dateFormatter.format(getPolyhedralModelConfig().stateHistoryStartDate);

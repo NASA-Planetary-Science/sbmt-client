@@ -25,15 +25,14 @@ import edu.jhuapl.saavtk.util.SafeURLPaths;
 import edu.jhuapl.sbmt.client.SbmtModelFactory;
 import edu.jhuapl.sbmt.client.SbmtMultiMissionTool;
 import edu.jhuapl.sbmt.client.SbmtMultiMissionTool.Mission;
-import edu.jhuapl.sbmt.image.common.ImageKeyInterface;
-import edu.jhuapl.sbmt.image.core.ImagingInstrument;
-import edu.jhuapl.sbmt.image.core.keys.ImageKey;
-import edu.jhuapl.sbmt.image.services.SbmtImageModelFactory;
-import edu.jhuapl.sbmt.image.types.perspectiveImage.PerspectiveImage;
 import edu.jhuapl.sbmt.client.SmallBodyModel;
 import edu.jhuapl.sbmt.client.SmallBodyViewConfig;
+import edu.jhuapl.sbmt.gui.image.model.ImageKey;
+import edu.jhuapl.sbmt.model.image.ImageKeyInterface;
 import edu.jhuapl.sbmt.model.image.ImageSource;
+import edu.jhuapl.sbmt.model.image.ImagingInstrument;
 import edu.jhuapl.sbmt.model.image.Instrument;
+import edu.jhuapl.sbmt.model.image.perspectiveImage.PerspectiveImage;
 
 public class DatabaseGeneratorSql
 {
@@ -222,7 +221,7 @@ public class DatabaseGeneratorSql
 
             try
             {
-                image = (PerspectiveImage)SbmtImageModelFactory.createImage(key, List.of(smallBodyModel), false);
+                image = (PerspectiveImage)SbmtModelFactory.createImage(key, smallBodyModel, false);
                 boolean filesExist = checkIfAllFilesExist(image, imageSource);
                 if (filesExist == false)
                 {
@@ -395,7 +394,7 @@ public class DatabaseGeneratorSql
 
     public void run(String fileList, ImageSource source, String diffFileList) throws Exception
     {
-        smallBodyModel = SbmtModelFactory.createSmallBodyModel(smallBodyConfig).get(0);
+        smallBodyModel = SbmtModelFactory.createSmallBodyModel(smallBodyConfig);
 
         if (!fileList.endsWith(".txt"))
         {
