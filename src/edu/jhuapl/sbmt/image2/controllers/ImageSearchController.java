@@ -87,7 +87,7 @@ public class ImageSearchController<G1 extends IPerspectiveImage & IPerspectiveIm
 
 		this.collection.addListener((aSource, aEventType) ->
 		{
-			System.out.println("ImageSearchController: ImageSearchController: number of images " + this.collection.size());
+//			System.out.println("ImageSearchController: ImageSearchController: number of images " + this.collection.size());
 //			imageListTableController.getPanel().getResultList().repaint();
 //			customImageListTableController.getPanel().getResultList().repaint();
 			updateButtonState();
@@ -145,8 +145,8 @@ public class ImageSearchController<G1 extends IPerspectiveImage & IPerspectiveIm
 			@Override
 			public void ancestorAdded(AncestorEvent event)
 			{
-				System.out
-						.println("ImageSearchController.initGUI().new AncestorListener() {...}: ancestorAdded: added custom panel");
+//				System.out
+//						.println("ImageSearchController.initGUI().new AncestorListener() {...}: ancestorAdded: added custom panel");
 				collection.setImagingInstrument(null);
 			}
 		});
