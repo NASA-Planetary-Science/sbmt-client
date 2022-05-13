@@ -158,7 +158,7 @@ public class StateHistoryIntervalPlaybackPanel extends JPanel
         add(playPanel);
         playPanel.setLayout(new BoxLayout(playPanel, BoxLayout.X_AXIS));
 
-        timeStepLabel = new JLabel("Time Step:");
+        timeStepLabel = new JLabel("Time Step (s):");
         playPanel.add(timeStepLabel);
 
         Image questionMark;
@@ -183,7 +183,7 @@ public class StateHistoryIntervalPlaybackPanel extends JPanel
         playPanel.add(timeStepTextField);
         timeStepTextField.setColumns(10);
 
-        playbackRateLabel = new JLabel("Playback Rate:");
+        playbackRateLabel = new JLabel("Playback Rate (ticks/sec):");
         playPanel.add(playbackRateLabel);
 
         Image questionMark2;

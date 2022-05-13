@@ -63,7 +63,7 @@ import edu.jhuapl.sbmt.util.ImageGalleryGenerator.ImageGalleryEntry;
 
 public class ImageResultsTableController
 {
-
+	private boolean highResolutionWarningIssued = false;
     protected ImageResultsTableView imageResultsTableView;
     protected ImageSearchModel imageSearchModel;
     protected List<ImageKeyInterface> imageKeys;
@@ -698,7 +698,18 @@ public class ImageResultsTableController
 
         // Show the first set of boundaries
         imageSearchModel.setResultIntervalCurrentlyShown(new IdPair(0, Integer.parseInt((String) imageResultsTableView.getNumberOfBoundariesComboBox().getSelectedItem())));
-        this.showImageBoundaries(imageSearchModel.getResultIntervalCurrentlyShown());
+        if (imageCollection.getSmallBodyModel().getSmallBodyPolyData().GetNumberOfCells() < 500000)
+        	this.showImageBoundaries(imageSearchModel.getResultIntervalCurrentlyShown());
+        else
+        {
+        	if (highResolutionWarningIssued == false)
+        	{
+        		JOptionPane.showMessageDialog(getPanel(), "Due to the high resolution of this model, \nimages and boundary sets will not get automatically rendered. \nPlease choose which images you wish to map\n "
+        				+ "using the the Map checkbox in the table. \n Individual rendering will also take longer than usual.", "Warning", JOptionPane.WARNING_MESSAGE);
+        		highResolutionWarningIssued = true;
+        	}
+        }
+
 
         modifiedTableRow = -1;
     }
@@ -976,12 +987,12 @@ public class ImageResultsTableController
                 if ((Boolean) imageResultsTableView.getResultList().getValueAt(actualRow, imageResultsTableView.getMapColumnIndex()))
                 {
                     imageSearchModel.loadImage(namePrefix);
-//                    imageSearchModel.setImageVisibility(namePrefix, true);
+                    imageSearchModel.setImageVisibility(namePrefix, true);
                 }
                 else
                 {
                     imageSearchModel.unloadImage(namePrefix);
-//                    imageSearchModel.setImageVisibility(namePrefix, false);
+                    imageSearchModel.setImageVisibility(namePrefix, false);
                 }
             }
             else if (e.getColumn() == imageResultsTableView.getShowFootprintColumnIndex())
