@@ -708,6 +708,7 @@ public class CustomImagesModel extends ImageSearchModel
                 Image image = imageCollection.getImage(key);
                 image.setVisible(visible);
             }
+            propertyChange(new PropertyChangeEvent(this, Properties.MODEL_CHANGED, null, null));
 //        }
     }
 

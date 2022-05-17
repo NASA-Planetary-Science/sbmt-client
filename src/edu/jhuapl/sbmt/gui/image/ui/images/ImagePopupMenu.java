@@ -333,28 +333,34 @@ public class ImagePopupMenu<K extends ImageKeyInterface> extends PopupMenu
             HashSet<String> colors = new HashSet<String>();
             for (ImageKeyInterface imageKey : imageKeys)
             {
-                Color c = imageCollection.getImage(imageKey).getBoundaryColor();
-                colors.add(c.getRed() + " " + c.getGreen() + " " + c.getBlue());
+            	if (imageCollection.containsImage(imageKey))
+            	{
+	                Color c = imageCollection.getImage(imageKey).getBoundaryColor();
+	                colors.add(c.getRed() + " " + c.getGreen() + " " + c.getBlue());
+            	}
             }
 
             // If the boundary color equals one of the predefined colors, then check
             // the corresponding menu item.
-            Color currentColor = imageCollection.getImage(imageKeys.get(0)).getBoundaryColor();
-            for (JCheckBoxMenuItem item : colorMenuItems)
+            if (imageCollection.containsImage(imageKeys.get(0)))
             {
-                BoundaryColorAction action = (BoundaryColorAction)item.getAction();
-                Color color = action.color;
-                if (colors.size() == 1 &&
-                        currentColor.getRed() == color.getRed() &&
-                        currentColor.getGreen() == color.getGreen() &&
-                        currentColor.getBlue() == color.getBlue())
-                {
-                    item.setSelected(true);
-                }
-                else
-                {
-                    item.setSelected(false);
-                }
+	            Color currentColor = imageCollection.getImage(imageKeys.get(0)).getBoundaryColor();
+	            for (JCheckBoxMenuItem item : colorMenuItems)
+	            {
+	                BoundaryColorAction action = (BoundaryColorAction)item.getAction();
+	                Color color = action.color;
+	                if (colors.size() == 1 &&
+	                        currentColor.getRed() == color.getRed() &&
+	                        currentColor.getGreen() == color.getGreen() &&
+	                        currentColor.getBlue() == color.getBlue())
+	                {
+	                    item.setSelected(true);
+	                }
+	                else
+	                {
+	                    item.setSelected(false);
+	                }
+	            }
             }
         }
 

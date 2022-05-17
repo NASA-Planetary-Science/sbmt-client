@@ -870,9 +870,9 @@ public class StateHistoryRendererManager extends SaavtkItemManager<StateHistory>
 	 */
 	public void updateTimeBarLocation(int width, int height)
 	{
-//		if (timeBarActor == null) return;
-//		timeBarActor.updateTimeBarPosition(width, height);
-//        this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
+		if (timeBarActor == null) return;
+		timeBarActor.updateTimeBarPosition(width, height);
+        this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
 
 	}
 

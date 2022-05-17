@@ -142,7 +142,7 @@ public class TrajectoryActor extends vtkActor
         Trajectory traj =  trajectory;
         traj.setCellId(cellId);
 
-        size = traj.getNumPoints();
+        size = traj.getNumPoints()+1;
 		double stepSize = ((trajectory.getStopTime() - trajectory.getStartTime())/(double)(trajectory.getNumPoints()));
         for (int i=(int)(minFraction*size);i<maxFraction*size;i++)
         {
@@ -153,7 +153,6 @@ public class TrajectoryActor extends vtkActor
     		double x = scPosition.getI();
     		double y = scPosition.getJ();
     		double z = scPosition.getK();
-
             points.InsertNextPoint(x, y, z);
             polyline.GetPointIds().InsertNextId(i);
         }
@@ -165,6 +164,7 @@ public class TrajectoryActor extends vtkActor
         	vtkLine edge = new vtkLine();
         	edge.GetPointIds().SetId(0, i);
         	edge.GetPointIds().SetId(1, (i+1));
+        	if (i+1 == maxFraction*size) edge.GetPointIds().SetId(1, i);
         	edges.InsertNextCell(edge);
         	Color colorAtIndex = getColorAtIndex(i);
         	colors.InsertNextTuple4(colorAtIndex.getRed(), colorAtIndex.getGreen(), colorAtIndex.getBlue(), colorAtIndex.getAlpha());

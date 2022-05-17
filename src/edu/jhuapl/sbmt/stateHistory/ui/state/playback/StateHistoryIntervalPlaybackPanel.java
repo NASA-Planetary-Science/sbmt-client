@@ -158,7 +158,7 @@ public class StateHistoryIntervalPlaybackPanel extends JPanel
         add(playPanel);
         playPanel.setLayout(new BoxLayout(playPanel, BoxLayout.X_AXIS));
 
-        timeStepLabel = new JLabel("Time Step:");
+        timeStepLabel = new JLabel("Time Step (s):");
         playPanel.add(timeStepLabel);
 
         Image questionMark;
@@ -167,7 +167,7 @@ public class StateHistoryIntervalPlaybackPanel extends JPanel
             questionMark = ImageIO.read(getClass().getResource("/edu/jhuapl/sbmt/data/questionMark.png"));
             Icon question = new ImageIcon(questionMark);
             JLabel questionRate = new JLabel(question);
-            questionRate.setToolTipText("<html>The speed of the animation is X times <br>faster than 1 second of real time. Ex. <br>60 means 1 minute of the interval is <br>traveled per second</html>");
+            questionRate.setToolTipText("<html>The number of seconds in one step of the playback <br/>For example: '60.0' means 1 minute of the interval is <br/>traveled per tick</html>");
 
             playPanel.add(questionRate);
 
@@ -179,11 +179,11 @@ public class StateHistoryIntervalPlaybackPanel extends JPanel
         }
 
         timeStepTextField = new JTextField("60.0");
-        timeStepTextField.setMaximumSize( new Dimension(Integer.MAX_VALUE, timeStepTextField.getPreferredSize().height) );
+        timeStepTextField.setMaximumSize( new Dimension(100, timeStepTextField.getPreferredSize().height) );
         playPanel.add(timeStepTextField);
         timeStepTextField.setColumns(10);
 
-        playbackRateLabel = new JLabel("Playback Rate:");
+        playbackRateLabel = new JLabel("Playback Rate (ticks/sec):");
         playPanel.add(playbackRateLabel);
 
         Image questionMark2;
@@ -192,7 +192,7 @@ public class StateHistoryIntervalPlaybackPanel extends JPanel
             questionMark2 = ImageIO.read(getClass().getResource("/edu/jhuapl/sbmt/data/questionMark.png"));
             Icon question = new ImageIcon(questionMark2);
             JLabel questionRate = new JLabel(question);
-            questionRate.setToolTipText("<html>The speed of the animation is X times <br>faster than 1 second of real time. Ex. <br>60 means 1 minute of the interval is <br>traveled per second</html>");
+            questionRate.setToolTipText("<html>Rate of playback faster than real time. <br/> For example: 5 means 5 ticks of playback per second</html>");
 
             playPanel.add(questionRate);
 
@@ -204,7 +204,7 @@ public class StateHistoryIntervalPlaybackPanel extends JPanel
         }
 
         playbackRateTextField = new JTextField("1");
-        playbackRateTextField.setMaximumSize( new Dimension(Integer.MAX_VALUE, playbackRateTextField.getPreferredSize().height) );
+        playbackRateTextField.setMaximumSize( new Dimension(100, playbackRateTextField.getPreferredSize().height) );
         playPanel.add(playbackRateTextField);
         playbackRateTextField.setColumns(10);
 
@@ -235,7 +235,7 @@ public class StateHistoryIntervalPlaybackPanel extends JPanel
 
         timeBox = new JSpinner();
 
-        Dimension spinnerSize = new Dimension(400, 28);
+        Dimension spinnerSize = new Dimension(300, 28);
         timeBox.setMinimumSize(spinnerSize);
         timeBox.setPreferredSize(spinnerSize);
         timeBox.setMaximumSize(spinnerSize);
