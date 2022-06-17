@@ -37,8 +37,8 @@ destTop="$serverTop"
 
 skipSection="false"
 for dir in \
-  proprietary/allBodies-9.1 \
-  published/allBodies-9.1 \
+  proprietary/allBodies-9.2 \
+  published/allBodies-9.2 \
   ; do
 
     copyDir "$dir" "$dir-$processingId"
