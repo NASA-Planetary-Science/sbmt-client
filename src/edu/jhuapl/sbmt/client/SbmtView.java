@@ -818,6 +818,7 @@ public class SbmtView extends View implements PropertyChangeListener
         this.renderer = renderer;
         if (rendererManager == null) return;
         rendererManager.setRenderer(renderer);
+        if (meganeCollection == null) return;
         meganeCollection.setRenderer(renderer);
         cumulativeMeganeCollection.setRenderer(renderer);
     }
