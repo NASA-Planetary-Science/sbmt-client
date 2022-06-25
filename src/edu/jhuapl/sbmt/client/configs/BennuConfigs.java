@@ -469,8 +469,8 @@ public class BennuConfigs extends SmallBodyViewConfig
 
             c.databaseRunInfos = new DBRunInfo[]
             {
-            	new DBRunInfo(ImageSource.GASKELL, Instrument.MAPCAM, ShapeModelBody.RQ36.toString(), "/project/sbmt2/sbmt/nearsdc/data/bennu/bennu-simulated-v4/mapcam/imagelist-fullpath.txt", "RQ36V4_MAP"),
-            	new DBRunInfo(ImageSource.GASKELL, Instrument.POLYCAM, ShapeModelBody.RQ36.toString(), "/project/sbmt2/sbmt/nearsdc/data/bennu/bennu-simulated-v4/polycam/imagelist-fullpath.txt", "RQ36V4_POLY"),
+            	new DBRunInfo(ImageSource.GASKELL, Instrument.MAPCAM, ShapeModelBody.RQ36.toString(), "/bennu/bennu-simulated-v4/mapcam/imagelist-fullpath.txt", "RQ36V4_MAP"),
+            	new DBRunInfo(ImageSource.GASKELL, Instrument.POLYCAM, ShapeModelBody.RQ36.toString(), "/bennu/bennu-simulated-v4/polycam/imagelist-fullpath.txt", "RQ36V4_POLY"),
             };
 
 
