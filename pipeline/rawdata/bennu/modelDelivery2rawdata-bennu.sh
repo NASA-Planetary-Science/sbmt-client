@@ -52,8 +52,8 @@ log="$logDir/delivery2rawdata.log"
 # MAIN SCRIPT STARTS HERE.
 #-------------------------------------------------------------------------------
 
-if test `whoami` = sbmt; then
-  echo "Run this script while logged in as yourself." >&2
+if test `whoami` != sbmt; then
+  echo "Run this script while logged into the sbmt account." >&2
   exit 1
 fi
 
@@ -118,19 +118,23 @@ doRsyncDir $srcTop/$deliveredModelName/shape $destTop/$processingModelName/shape
 
 for dir in ${dirsToCopy[@]}
 do
-  if [ -d "$srcTop/$deliveredModelName/$dir" -a `ls "$srcTop/$deliveredModelName/$dir/" | wc -l` -gt 0 ]
+  thisSrc=`echo $dir | sed 's:sumfiles:SUMFILES:'`
+  thisDest=`echo $dir | sed 's:imaging/::'`
+  if [ -d "$srcTop/$deliveredModelName/$thisSrc" -a `ls "$srcTop/$deliveredModelName/$thisSrc/" | wc -l 2> /dev/null` -gt 0 ]
   then
-    # copy the files
-    doRsyncDir $srcTop/$deliveredModelName/$dir $destTop/$processingModelName/$dir
+    # copy the directory
+    doRsyncDir $srcTop/$deliveredModelName/$thisSrc $destTop/$processingModelName/$thisDest
   fi
 done
 
 for file in ${filesToCopy[@]}
 do
-  if [ -f "$srcTop/$deliveredModelName/$file" ]
+  thisSrc=$file
+  thisDest=`echo $file | sed 's:imaging/::'`
+  if [ -f "$srcTop/$deliveredModelName/$thisSrc" ]
   then
     # copy the files
-    doRsync $srcTop/$deliveredModelName/$file $destTop/$processingModelName/$file
+    doRsync $srcTop/$deliveredModelName/$thisSrc $destTop/$processingModelName/$thisDest
   fi
 done
 
