@@ -860,12 +860,12 @@ public class BennuConfigs extends SmallBodyViewConfig
 
             c.databaseRunInfos = new DBRunInfo[]
             {
-            	new DBRunInfo(ImageSource.GASKELL, Instrument.MAPCAM, ShapeModelBody.RQ36.toString(), "/project/sbmt2/sbmt/data/bodies/bennu/altwg-spc-v20190105/mapcam/imagelist-fullpath-sum.txt", "bennu_altwgspcv20190105_mapcam"),
-            	new DBRunInfo(ImageSource.GASKELL, Instrument.POLYCAM, ShapeModelBody.RQ36.toString(), "/project/sbmt2/sbmt/data/bodies/bennu/altwg-spc-v20190105/polycam/imagelist-fullpath-sum.txt", "bennu_altwgspcv20190105_polycam"),
+            	new DBRunInfo(ImageSource.GASKELL, Instrument.MAPCAM, ShapeModelBody.RQ36.toString(), "/bennu/altwg-spc-v20190105/mapcam/imagelist-fullpath-sum.txt", "bennu_altwgspcv20190105_mapcam"),
+            	new DBRunInfo(ImageSource.GASKELL, Instrument.POLYCAM, ShapeModelBody.RQ36.toString(), "/bennu/altwg-spc-v20190105/polycam/imagelist-fullpath-sum.txt", "bennu_altwgspcv20190105_polycam"),
 
-            	new DBRunInfo(ImageSource.SPICE, Instrument.MAPCAM, ShapeModelBody.RQ36.toString(), "/project/sbmt2/sbmt/data/bodies/bennu/altwg-spc-v20190105/mapcam/imagelist-fullpath-info.txt", "bennu_altwgspcv20190105_mapcam"),
-            	new DBRunInfo(ImageSource.SPICE, Instrument.POLYCAM, ShapeModelBody.RQ36.toString(), "/project/sbmt2/sbmt/data/bodies/bennu/altwg-spc-v20190105/polycam/imagelist-fullpath-info.txt", "bennu_altwgspcv20190105_polycam"),
-            	new DBRunInfo(ImageSource.SPICE, Instrument.NAVCAM, ShapeModelBody.RQ36.toString(), "/project/sbmt2/sbmt/data/bodies/bennu/altwg-spc-v20190105/navcam/imagelist-fullpath-info.txt", "bennu_altwgspcv20190105_navcam")
+            	new DBRunInfo(ImageSource.SPICE, Instrument.MAPCAM, ShapeModelBody.RQ36.toString(), "/bennu/altwg-spc-v20190105/mapcam/imagelist-fullpath-info.txt", "bennu_altwgspcv20190105_mapcam"),
+            	new DBRunInfo(ImageSource.SPICE, Instrument.POLYCAM, ShapeModelBody.RQ36.toString(), "/bennu/altwg-spc-v20190105/polycam/imagelist-fullpath-info.txt", "bennu_altwgspcv20190105_polycam"),
+            	new DBRunInfo(ImageSource.SPICE, Instrument.NAVCAM, ShapeModelBody.RQ36.toString(), "/bennu/altwg-spc-v20190105/navcam/imagelist-fullpath-info.txt", "bennu_altwgspcv20190105_navcam")
             };
             c.presentInMissions = InternalOnly;
             configArray.add(c);
@@ -907,12 +907,12 @@ public class BennuConfigs extends SmallBodyViewConfig
 
             c.databaseRunInfos = new DBRunInfo[]
             {
-            	new DBRunInfo(ImageSource.GASKELL, Instrument.MAPCAM, ShapeModelBody.RQ36.toString(), "/project/sbmt2/sbmt/data/bodies/bennu/altwg-spc-v20190114/mapcam/imagelist-fullpath-sum.txt", "bennu_altwgspcv20190114_mapcam"),
-            	new DBRunInfo(ImageSource.GASKELL, Instrument.POLYCAM, ShapeModelBody.RQ36.toString(), "/project/sbmt2/sbmt/data/bodies/bennu/altwg-spc-v20190114/polycam/imagelist-fullpath-sum.txt", "bennu_altwgspcv20190114_polycam"),
+            	new DBRunInfo(ImageSource.GASKELL, Instrument.MAPCAM, ShapeModelBody.RQ36.toString(), "/bennu/altwg-spc-v20190114/mapcam/imagelist-fullpath-sum.txt", "bennu_altwgspcv20190114_mapcam"),
+            	new DBRunInfo(ImageSource.GASKELL, Instrument.POLYCAM, ShapeModelBody.RQ36.toString(), "/bennu/altwg-spc-v20190114/polycam/imagelist-fullpath-sum.txt", "bennu_altwgspcv20190114_polycam"),
 
-            	new DBRunInfo(ImageSource.SPICE, Instrument.MAPCAM, ShapeModelBody.RQ36.toString(), "/project/sbmt2/sbmt/data/bodies/bennu/altwg-spc-v20190114/mapcam/imagelist-fullpath-info.txt", "bennu_altwgspcv20190114_mapcam"),
-            	new DBRunInfo(ImageSource.SPICE, Instrument.POLYCAM, ShapeModelBody.RQ36.toString(), "/project/sbmt2/sbmt/data/bodies/bennu/altwg-spc-v20190114/polycam/imagelist-fullpath-info.txt", "bennu_altwgspcv20190114_polycam"),
-            	new DBRunInfo(ImageSource.SPICE, Instrument.NAVCAM, ShapeModelBody.RQ36.toString(), "/project/sbmt2/sbmt/data/bodies/bennu/altwg-spc-v20190114/navcam/imagelist-fullpath-info.txt", "bennu_altwgspcv20190114_navcam")
+            	new DBRunInfo(ImageSource.SPICE, Instrument.MAPCAM, ShapeModelBody.RQ36.toString(), "/bennu/altwg-spc-v20190114/mapcam/imagelist-fullpath-info.txt", "bennu_altwgspcv20190114_mapcam"),
+            	new DBRunInfo(ImageSource.SPICE, Instrument.POLYCAM, ShapeModelBody.RQ36.toString(), "/bennu/altwg-spc-v20190114/polycam/imagelist-fullpath-info.txt", "bennu_altwgspcv20190114_polycam"),
+            	new DBRunInfo(ImageSource.SPICE, Instrument.NAVCAM, ShapeModelBody.RQ36.toString(), "/bennu/altwg-spc-v20190114/navcam/imagelist-fullpath-info.txt", "bennu_altwgspcv20190114_navcam")
             };
             c.presentInMissions = InternalOnly;
             configArray.add(c);
@@ -954,12 +954,12 @@ public class BennuConfigs extends SmallBodyViewConfig
 
             c.databaseRunInfos = new DBRunInfo[]
             {
-            	new DBRunInfo(ImageSource.GASKELL, Instrument.MAPCAM, ShapeModelBody.RQ36.toString(), "/project/sbmt2/sbmt/data/bodies/bennu/altwg-spc-v20190117/mapcam/imagelist-fullpath-sum.txt", "bennu_altwgspcv20190117_mapcam"),
-            	new DBRunInfo(ImageSource.GASKELL, Instrument.POLYCAM, ShapeModelBody.RQ36.toString(), "/project/sbmt2/sbmt/data/bodies/bennu/altwg-spc-v20190117/polycam/imagelist-fullpath-sum.txt", "bennu_altwgspcv20190117_polycam"),
+            	new DBRunInfo(ImageSource.GASKELL, Instrument.MAPCAM, ShapeModelBody.RQ36.toString(), "/bennu/altwg-spc-v20190117/mapcam/imagelist-fullpath-sum.txt", "bennu_altwgspcv20190117_mapcam"),
+            	new DBRunInfo(ImageSource.GASKELL, Instrument.POLYCAM, ShapeModelBody.RQ36.toString(), "/bennu/altwg-spc-v20190117/polycam/imagelist-fullpath-sum.txt", "bennu_altwgspcv20190117_polycam"),
 
-            	new DBRunInfo(ImageSource.SPICE, Instrument.MAPCAM, ShapeModelBody.RQ36.toString(), "/project/sbmt2/sbmt/data/bodies/bennu/altwg-spc-v20190117/mapcam/imagelist-fullpath-info.txt", "bennu_altwgspcv20190117_mapcam"),
-            	new DBRunInfo(ImageSource.SPICE, Instrument.POLYCAM, ShapeModelBody.RQ36.toString(), "/project/sbmt2/sbmt/data/bodies/bennu/altwg-spc-v20190117/polycam/imagelist-fullpath-info.txt", "bennu_altwgspcv20190117_polycam"),
-            	new DBRunInfo(ImageSource.SPICE, Instrument.NAVCAM, ShapeModelBody.RQ36.toString(), "/project/sbmt2/sbmt/data/bodies/bennu/altwg-spc-v20190117/navcam/imagelist-fullpath-info.txt", "bennu_altwgspcv20190117_navcam")
+            	new DBRunInfo(ImageSource.SPICE, Instrument.MAPCAM, ShapeModelBody.RQ36.toString(), "/bennu/altwg-spc-v20190117/mapcam/imagelist-fullpath-info.txt", "bennu_altwgspcv20190117_mapcam"),
+            	new DBRunInfo(ImageSource.SPICE, Instrument.POLYCAM, ShapeModelBody.RQ36.toString(), "/bennu/altwg-spc-v20190117/polycam/imagelist-fullpath-info.txt", "bennu_altwgspcv20190117_polycam"),
+            	new DBRunInfo(ImageSource.SPICE, Instrument.NAVCAM, ShapeModelBody.RQ36.toString(), "/bennu/altwg-spc-v20190117/navcam/imagelist-fullpath-info.txt", "bennu_altwgspcv20190117_navcam")
             };
             c.presentInMissions = InternalOnly;
             configArray.add(c);
@@ -1004,12 +1004,12 @@ public class BennuConfigs extends SmallBodyViewConfig
 
             c.databaseRunInfos = new DBRunInfo[]
             {
-            	new DBRunInfo(ImageSource.GASKELL, Instrument.MAPCAM, ShapeModelBody.RQ36.toString(), "/project/sbmt2/sbmt/data/bodies/bennu/altwg-spc-v20190121/mapcam/imagelist-fullpath-sum.txt", "bennu_altwgspcv20190121_mapcam"),
-            	new DBRunInfo(ImageSource.GASKELL, Instrument.POLYCAM, ShapeModelBody.RQ36.toString(), "/project/sbmt2/sbmt/data/bodies/bennu/altwg-spc-v20190121/polycam/imagelist-fullpath-sum.txt", "bennu_altwgspcv20190121_polycam"),
+            	new DBRunInfo(ImageSource.GASKELL, Instrument.MAPCAM, ShapeModelBody.RQ36.toString(), "/bennu/altwg-spc-v20190121/mapcam/imagelist-fullpath-sum.txt", "bennu_altwgspcv20190121_mapcam"),
+            	new DBRunInfo(ImageSource.GASKELL, Instrument.POLYCAM, ShapeModelBody.RQ36.toString(), "/bennu/altwg-spc-v20190121/polycam/imagelist-fullpath-sum.txt", "bennu_altwgspcv20190121_polycam"),
 
-            	new DBRunInfo(ImageSource.SPICE, Instrument.MAPCAM, ShapeModelBody.RQ36.toString(), "/project/sbmt2/sbmt/data/bodies/bennu/altwg-spc-v20190121/mapcam/imagelist-fullpath-info.txt", "bennu_altwgspcv20190121_mapcam"),
-            	new DBRunInfo(ImageSource.SPICE, Instrument.POLYCAM, ShapeModelBody.RQ36.toString(), "/project/sbmt2/sbmt/data/bodies/bennu/altwg-spc-v20190121/polycam/imagelist-fullpath-info.txt", "bennu_altwgspcv20190121_polycam"),
-            	new DBRunInfo(ImageSource.SPICE, Instrument.NAVCAM, ShapeModelBody.RQ36.toString(), "/project/sbmt2/sbmt/data/bodies/bennu/altwg-spc-v20190121/navcam/imagelist-fullpath-info.txt", "bennu_altwgspcv20190121_navcam")
+            	new DBRunInfo(ImageSource.SPICE, Instrument.MAPCAM, ShapeModelBody.RQ36.toString(), "/bennu/altwg-spc-v20190121/mapcam/imagelist-fullpath-info.txt", "bennu_altwgspcv20190121_mapcam"),
+            	new DBRunInfo(ImageSource.SPICE, Instrument.POLYCAM, ShapeModelBody.RQ36.toString(), "/bennu/altwg-spc-v20190121/polycam/imagelist-fullpath-info.txt", "bennu_altwgspcv20190121_polycam"),
+            	new DBRunInfo(ImageSource.SPICE, Instrument.NAVCAM, ShapeModelBody.RQ36.toString(), "/bennu/altwg-spc-v20190121/navcam/imagelist-fullpath-info.txt", "bennu_altwgspcv20190121_navcam")
             };
             if (!publicOnly)
             	configArray.add(c);
@@ -1069,12 +1069,12 @@ public class BennuConfigs extends SmallBodyViewConfig
 
             c.databaseRunInfos = new DBRunInfo[]
             {
-            	new DBRunInfo(ImageSource.GASKELL, Instrument.MAPCAM, ShapeModelBody.RQ36.toString(), "/project/sbmt2/sbmt/data/bodies/bennu/altwg-spc-v20190207a/mapcam/imagelist-fullpath-sum.txt", "bennu_altwgspcv20190207a_mapcam"),
-            	new DBRunInfo(ImageSource.GASKELL, Instrument.POLYCAM, ShapeModelBody.RQ36.toString(), "/project/sbmt2/sbmt/data/bodies/bennu/altwg-spc-v20190207a/polycam/imagelist-fullpath-sum.txt", "bennu_altwgspcv20190207a_polycam"),
+            	new DBRunInfo(ImageSource.GASKELL, Instrument.MAPCAM, ShapeModelBody.RQ36.toString(), "/bennu/altwg-spc-v20190207a/mapcam/imagelist-fullpath-sum.txt", "bennu_altwgspcv20190207a_mapcam"),
+            	new DBRunInfo(ImageSource.GASKELL, Instrument.POLYCAM, ShapeModelBody.RQ36.toString(), "/bennu/altwg-spc-v20190207a/polycam/imagelist-fullpath-sum.txt", "bennu_altwgspcv20190207a_polycam"),
 
-            	new DBRunInfo(ImageSource.SPICE, Instrument.MAPCAM, ShapeModelBody.RQ36.toString(), "/project/sbmt2/sbmt/data/bodies/bennu/altwg-spc-v20190207a/mapcam/imagelist-fullpath-info.txt", "bennu_altwgspcv20190207a_mapcam"),
-            	new DBRunInfo(ImageSource.SPICE, Instrument.POLYCAM, ShapeModelBody.RQ36.toString(), "/project/sbmt2/sbmt/data/bodies/bennu/altwg-spc-v20190207a/polycam/imagelist-fullpath-info.txt", "bennu_altwgspcv20190207a_polycam"),
-            	new DBRunInfo(ImageSource.SPICE, Instrument.NAVCAM, ShapeModelBody.RQ36.toString(), "/project/sbmt2/sbmt/data/bodies/bennu/altwg-spc-v20190207a/navcam/imagelist-fullpath-info.txt", "bennu_altwgspcv20190207a_navcam")
+            	new DBRunInfo(ImageSource.SPICE, Instrument.MAPCAM, ShapeModelBody.RQ36.toString(), "/bennu/altwg-spc-v20190207a/mapcam/imagelist-fullpath-info.txt", "bennu_altwgspcv20190207a_mapcam"),
+            	new DBRunInfo(ImageSource.SPICE, Instrument.POLYCAM, ShapeModelBody.RQ36.toString(), "/bennu/altwg-spc-v20190207a/polycam/imagelist-fullpath-info.txt", "bennu_altwgspcv20190207a_polycam"),
+            	new DBRunInfo(ImageSource.SPICE, Instrument.NAVCAM, ShapeModelBody.RQ36.toString(), "/bennu/altwg-spc-v20190207a/navcam/imagelist-fullpath-info.txt", "bennu_altwgspcv20190207a_navcam")
             };
             c.presentInMissions = InternalOnly;
             configArray.add(c);
@@ -1115,12 +1115,12 @@ public class BennuConfigs extends SmallBodyViewConfig
 
             c.databaseRunInfos = new DBRunInfo[]
             {
-            	new DBRunInfo(ImageSource.GASKELL, Instrument.MAPCAM, ShapeModelBody.RQ36.toString(), "/project/sbmt2/sbmt/data/bodies/bennu/altwg-spc-v20190207b/mapcam/imagelist-fullpath-sum.txt", "bennu_altwgspcv20190207b_mapcam"),
-            	new DBRunInfo(ImageSource.GASKELL, Instrument.POLYCAM, ShapeModelBody.RQ36.toString(), "/project/sbmt2/sbmt/data/bodies/bennu/altwg-spc-v20190207b/polycam/imagelist-fullpath-sum.txt", "bennu_altwgspcv20190207b_polycam"),
+            	new DBRunInfo(ImageSource.GASKELL, Instrument.MAPCAM, ShapeModelBody.RQ36.toString(), "/bennu/altwg-spc-v20190207b/mapcam/imagelist-fullpath-sum.txt", "bennu_altwgspcv20190207b_mapcam"),
+            	new DBRunInfo(ImageSource.GASKELL, Instrument.POLYCAM, ShapeModelBody.RQ36.toString(), "/bennu/altwg-spc-v20190207b/polycam/imagelist-fullpath-sum.txt", "bennu_altwgspcv20190207b_polycam"),
 
-            	new DBRunInfo(ImageSource.SPICE, Instrument.MAPCAM, ShapeModelBody.RQ36.toString(), "/project/sbmt2/sbmt/data/bodies/bennu/altwg-spc-v20190207b/mapcam/imagelist-fullpath-info.txt", "bennu_altwgspcv20190207b_mapcam"),
-            	new DBRunInfo(ImageSource.SPICE, Instrument.POLYCAM, ShapeModelBody.RQ36.toString(), "/project/sbmt2/sbmt/data/bodies/bennu/altwg-spc-v20190207b/polycam/imagelist-fullpath-info.txt", "bennu_altwgspcv20190207b_polycam"),
-            	new DBRunInfo(ImageSource.SPICE, Instrument.NAVCAM, ShapeModelBody.RQ36.toString(), "/project/sbmt2/sbmt/data/bodies/bennu/altwg-spc-v20190207b/navcam/imagelist-fullpath-info.txt", "bennu_altwgspcv20190207b_navcam")
+            	new DBRunInfo(ImageSource.SPICE, Instrument.MAPCAM, ShapeModelBody.RQ36.toString(), "/bennu/altwg-spc-v20190207b/mapcam/imagelist-fullpath-info.txt", "bennu_altwgspcv20190207b_mapcam"),
+            	new DBRunInfo(ImageSource.SPICE, Instrument.POLYCAM, ShapeModelBody.RQ36.toString(), "/bennu/altwg-spc-v20190207b/polycam/imagelist-fullpath-info.txt", "bennu_altwgspcv20190207b_polycam"),
+            	new DBRunInfo(ImageSource.SPICE, Instrument.NAVCAM, ShapeModelBody.RQ36.toString(), "/bennu/altwg-spc-v20190207b/navcam/imagelist-fullpath-info.txt", "bennu_altwgspcv20190207b_navcam")
             };
             c.presentInMissions = InternalOnly;
             configArray.add(c);
@@ -1161,12 +1161,12 @@ public class BennuConfigs extends SmallBodyViewConfig
 
             c.databaseRunInfos = new DBRunInfo[]
             {
-            	new DBRunInfo(ImageSource.GASKELL, Instrument.MAPCAM, ShapeModelBody.RQ36.toString(), "/project/sbmt2/sbmt/data/bodies/bennu/altwg-spc-v20190414/mapcam/imagelist-fullpath-sum.txt", "bennu_altwgspcv20190414_mapcam"),
-            	new DBRunInfo(ImageSource.GASKELL, Instrument.POLYCAM, ShapeModelBody.RQ36.toString(), "/project/sbmt2/sbmt/data/bodies/bennu/altwg-spc-v20190414/polycam/imagelist-fullpath-sum.txt", "bennu_altwgspcv20190414_polycam"),
+            	new DBRunInfo(ImageSource.GASKELL, Instrument.MAPCAM, ShapeModelBody.RQ36.toString(), "/bennu/altwg-spc-v20190414/mapcam/imagelist-fullpath-sum.txt", "bennu_altwgspcv20190414_mapcam"),
+            	new DBRunInfo(ImageSource.GASKELL, Instrument.POLYCAM, ShapeModelBody.RQ36.toString(), "/bennu/altwg-spc-v20190414/polycam/imagelist-fullpath-sum.txt", "bennu_altwgspcv20190414_polycam"),
 
-            	new DBRunInfo(ImageSource.SPICE, Instrument.MAPCAM, ShapeModelBody.RQ36.toString(), "/project/sbmt2/sbmt/data/bodies/bennu/altwg-spc-v20190414/mapcam/imagelist-fullpath-info.txt", "bennu_altwgspcv20190414_mapcam"),
-            	new DBRunInfo(ImageSource.SPICE, Instrument.POLYCAM, ShapeModelBody.RQ36.toString(), "/project/sbmt2/sbmt/data/bodies/bennu/altwg-spc-v20190414/polycam/imagelist-fullpath-info.txt", "bennu_altwgspcv20190414_polycam"),
-            	new DBRunInfo(ImageSource.SPICE, Instrument.NAVCAM, ShapeModelBody.RQ36.toString(), "/project/sbmt2/sbmt/data/bodies/bennu/altwg-spc-v20190414/navcam/imagelist-fullpath-info.txt", "bennu_altwgspcv20190414_navcam")
+            	new DBRunInfo(ImageSource.SPICE, Instrument.MAPCAM, ShapeModelBody.RQ36.toString(), "/bennu/altwg-spc-v20190414/mapcam/imagelist-fullpath-info.txt", "bennu_altwgspcv20190414_mapcam"),
+            	new DBRunInfo(ImageSource.SPICE, Instrument.POLYCAM, ShapeModelBody.RQ36.toString(), "/bennu/altwg-spc-v20190414/polycam/imagelist-fullpath-info.txt", "bennu_altwgspcv20190414_polycam"),
+            	new DBRunInfo(ImageSource.SPICE, Instrument.NAVCAM, ShapeModelBody.RQ36.toString(), "/bennu/altwg-spc-v20190414/navcam/imagelist-fullpath-info.txt", "bennu_altwgspcv20190414_navcam")
             };
             c.presentInMissions = InternalOnly;
             if (!publicOnly)
@@ -1227,12 +1227,12 @@ public class BennuConfigs extends SmallBodyViewConfig
 
             c.databaseRunInfos = new DBRunInfo[]
             {
-                new DBRunInfo(ImageSource.GASKELL, Instrument.MAPCAM, ShapeModelBody.RQ36.toString(), "/project/sbmt2/sbmt/data/bodies/bennu/altwg-spo-v20190612/mapcam/imagelist-fullpath-sum.txt", "bennu_altwgspov20190612_mapcam"),
-                new DBRunInfo(ImageSource.GASKELL, Instrument.POLYCAM, ShapeModelBody.RQ36.toString(), "/project/sbmt2/sbmt/data/bodies/bennu/altwg-spo-v20190612/polycam/imagelist-fullpath-sum.txt", "bennu_altwgspov20190612_polycam"),
+                new DBRunInfo(ImageSource.GASKELL, Instrument.MAPCAM, ShapeModelBody.RQ36.toString(), "/bennu/altwg-spo-v20190612/mapcam/imagelist-fullpath-sum.txt", "bennu_altwgspov20190612_mapcam"),
+                new DBRunInfo(ImageSource.GASKELL, Instrument.POLYCAM, ShapeModelBody.RQ36.toString(), "/bennu/altwg-spo-v20190612/polycam/imagelist-fullpath-sum.txt", "bennu_altwgspov20190612_polycam"),
 
-                new DBRunInfo(ImageSource.SPICE, Instrument.MAPCAM, ShapeModelBody.RQ36.toString(), "/project/sbmt2/sbmt/data/bodies/bennu/altwg-spo-v20190612/mapcam/imagelist-fullpath-info.txt", "bennu_altwgspov20190612_mapcam"),
-                new DBRunInfo(ImageSource.SPICE, Instrument.POLYCAM, ShapeModelBody.RQ36.toString(), "/project/sbmt2/sbmt/data/bodies/bennu/altwg-spo-v20190612/polycam/imagelist-fullpath-info.txt", "bennu_altwgspov20190612_polycam"),
-                new DBRunInfo(ImageSource.SPICE, Instrument.NAVCAM, ShapeModelBody.RQ36.toString(), "/project/sbmt2/sbmt/data/bodies/bennu/altwg-spo-v20190612/navcam/imagelist-fullpath-info.txt", "bennu_altwgspov20190612_navcam")
+                new DBRunInfo(ImageSource.SPICE, Instrument.MAPCAM, ShapeModelBody.RQ36.toString(), "/bennu/altwg-spo-v20190612/mapcam/imagelist-fullpath-info.txt", "bennu_altwgspov20190612_mapcam"),
+                new DBRunInfo(ImageSource.SPICE, Instrument.POLYCAM, ShapeModelBody.RQ36.toString(), "/bennu/altwg-spo-v20190612/polycam/imagelist-fullpath-info.txt", "bennu_altwgspov20190612_polycam"),
+                new DBRunInfo(ImageSource.SPICE, Instrument.NAVCAM, ShapeModelBody.RQ36.toString(), "/bennu/altwg-spo-v20190612/navcam/imagelist-fullpath-info.txt", "bennu_altwgspov20190612_navcam")
             };
             if (!publicOnly)
             	configArray.add(c);
@@ -1292,12 +1292,12 @@ public class BennuConfigs extends SmallBodyViewConfig
 
             c.databaseRunInfos = new DBRunInfo[]
             {
-                new DBRunInfo(ImageSource.GASKELL, Instrument.MAPCAM, ShapeModelBody.RQ36.toString(), "/project/sbmt2/sbmt/data/bodies/bennu/altwg-spc-v20190828/mapcam/imagelist-fullpath-sum.txt", "bennu_altwgspcv20190828_mapcam"),
-                new DBRunInfo(ImageSource.GASKELL, Instrument.POLYCAM, ShapeModelBody.RQ36.toString(), "/project/sbmt2/sbmt/data/bodies/bennu/altwg-spc-v20190828/polycam/imagelist-fullpath-sum.txt", "bennu_altwgspcv20190828_polycam"),
+                new DBRunInfo(ImageSource.GASKELL, Instrument.MAPCAM, ShapeModelBody.RQ36.toString(), "/bennu/altwg-spc-v20190828/mapcam/imagelist-fullpath-sum.txt", "bennu_altwgspcv20190828_mapcam"),
+                new DBRunInfo(ImageSource.GASKELL, Instrument.POLYCAM, ShapeModelBody.RQ36.toString(), "/bennu/altwg-spc-v20190828/polycam/imagelist-fullpath-sum.txt", "bennu_altwgspcv20190828_polycam"),
 
-                new DBRunInfo(ImageSource.SPICE, Instrument.MAPCAM, ShapeModelBody.RQ36.toString(), "/project/sbmt2/sbmt/data/bodies/bennu/altwg-spc-v20190828/mapcam/imagelist-fullpath-info.txt", "bennu_altwgspcv20190828_mapcam"),
-                new DBRunInfo(ImageSource.SPICE, Instrument.POLYCAM, ShapeModelBody.RQ36.toString(), "/project/sbmt2/sbmt/data/bodies/bennu/altwg-spc-v20190828/polycam/imagelist-fullpath-info.txt", "bennu_altwgspcv20190828_polycam"),
-                new DBRunInfo(ImageSource.SPICE, Instrument.NAVCAM, ShapeModelBody.RQ36.toString(), "/project/sbmt2/sbmt/data/bodies/bennu/altwg-spc-v20190828/navcam/imagelist-fullpath-info.txt", "bennu_altwgspcv20190828_navcam")
+                new DBRunInfo(ImageSource.SPICE, Instrument.MAPCAM, ShapeModelBody.RQ36.toString(), "/bennu/altwg-spc-v20190828/mapcam/imagelist-fullpath-info.txt", "bennu_altwgspcv20190828_mapcam"),
+                new DBRunInfo(ImageSource.SPICE, Instrument.POLYCAM, ShapeModelBody.RQ36.toString(), "/bennu/altwg-spc-v20190828/polycam/imagelist-fullpath-info.txt", "bennu_altwgspcv20190828_polycam"),
+                new DBRunInfo(ImageSource.SPICE, Instrument.NAVCAM, ShapeModelBody.RQ36.toString(), "/bennu/altwg-spc-v20190828/navcam/imagelist-fullpath-info.txt", "bennu_altwgspcv20190828_navcam")
             };
             if (!publicOnly)
             	configArray.add(c);
@@ -1361,12 +1361,12 @@ public class BennuConfigs extends SmallBodyViewConfig
 
             c.databaseRunInfos = new DBRunInfo[]
             {
-                new DBRunInfo(ImageSource.GASKELL, Instrument.MAPCAM, ShapeModelBody.RQ36.toString(), "/project/sbmt2/sbmt/data/bodies/bennu/altwg-spc-v20191027/mapcam/imagelist-fullpath-sum.txt", "bennu_altwgspcv20191027_mapcam"),
-                new DBRunInfo(ImageSource.GASKELL, Instrument.POLYCAM, ShapeModelBody.RQ36.toString(), "/project/sbmt2/sbmt/data/bodies/bennu/altwg-spc-v20191027/polycam/imagelist-fullpath-sum.txt", "bennu_altwgspcv20191027_polycam"),
+                new DBRunInfo(ImageSource.GASKELL, Instrument.MAPCAM, ShapeModelBody.RQ36.toString(), "/bennu/altwg-spc-v20191027/mapcam/imagelist-fullpath-sum.txt", "bennu_altwgspcv20191027_mapcam"),
+                new DBRunInfo(ImageSource.GASKELL, Instrument.POLYCAM, ShapeModelBody.RQ36.toString(), "/bennu/altwg-spc-v20191027/polycam/imagelist-fullpath-sum.txt", "bennu_altwgspcv20191027_polycam"),
 
-                new DBRunInfo(ImageSource.SPICE, Instrument.MAPCAM, ShapeModelBody.RQ36.toString(), "/project/sbmt2/sbmt/data/bodies/bennu/altwg-spc-v20191027/mapcam/imagelist-fullpath-info.txt", "bennu_altwgspcv20191027_mapcam"),
-                new DBRunInfo(ImageSource.SPICE, Instrument.POLYCAM, ShapeModelBody.RQ36.toString(), "/project/sbmt2/sbmt/data/bodies/bennu/altwg-spc-v20191027/polycam/imagelist-fullpath-info.txt", "bennu_altwgspcv20191027_polycam"),
-                new DBRunInfo(ImageSource.SPICE, Instrument.NAVCAM, ShapeModelBody.RQ36.toString(), "/project/sbmt2/sbmt/data/bodies/bennu/altwg-spc-v20191027/navcam/imagelist-fullpath-info.txt", "bennu_altwgspcv20191027_navcam")
+                new DBRunInfo(ImageSource.SPICE, Instrument.MAPCAM, ShapeModelBody.RQ36.toString(), "/bennu/altwg-spc-v20191027/mapcam/imagelist-fullpath-info.txt", "bennu_altwgspcv20191027_mapcam"),
+                new DBRunInfo(ImageSource.SPICE, Instrument.POLYCAM, ShapeModelBody.RQ36.toString(), "/bennu/altwg-spc-v20191027/polycam/imagelist-fullpath-info.txt", "bennu_altwgspcv20191027_polycam"),
+                new DBRunInfo(ImageSource.SPICE, Instrument.NAVCAM, ShapeModelBody.RQ36.toString(), "/bennu/altwg-spc-v20191027/navcam/imagelist-fullpath-info.txt", "bennu_altwgspcv20191027_navcam")
             };
 
             configArray.add(c);
@@ -1418,12 +1418,12 @@ public class BennuConfigs extends SmallBodyViewConfig
 
             c.databaseRunInfos = new DBRunInfo[]
             {
-                new DBRunInfo(ImageSource.GASKELL, Instrument.MAPCAM, ShapeModelBody.RQ36.toString(), "/project/sbmt2/sbmt/data/bodies/bennu/ola-v20-spc/mapcam/imagelist-fullpath-sum.txt", "bennu_olav20_mapcam"),
-                new DBRunInfo(ImageSource.GASKELL, Instrument.POLYCAM, ShapeModelBody.RQ36.toString(), "/project/sbmt2/sbmt/data/bodies/bennu/ola-v20-spc/polycam/imagelist-fullpath-sum.txt", "bennu_olav20_polycam"),
+                new DBRunInfo(ImageSource.GASKELL, Instrument.MAPCAM, ShapeModelBody.RQ36.toString(), "/bennu/ola-v20-spc/mapcam/imagelist-fullpath-sum.txt", "bennu_olav20_mapcam"),
+                new DBRunInfo(ImageSource.GASKELL, Instrument.POLYCAM, ShapeModelBody.RQ36.toString(), "/bennu/ola-v20-spc/polycam/imagelist-fullpath-sum.txt", "bennu_olav20_polycam"),
 
-                new DBRunInfo(ImageSource.SPICE, Instrument.MAPCAM, ShapeModelBody.RQ36.toString(), "/project/sbmt2/sbmt/data/bodies/bennu/ola-v20-spc/mapcam/imagelist-fullpath-info.txt", "bennu_olav20_mapcam"),
-                new DBRunInfo(ImageSource.SPICE, Instrument.POLYCAM, ShapeModelBody.RQ36.toString(), "/project/sbmt2/sbmt/data/bodies/bennu/ola-v20-spc/polycam/imagelist-fullpath-info.txt", "bennu_olav20_polycam"),
-                new DBRunInfo(ImageSource.SPICE, Instrument.NAVCAM, ShapeModelBody.RQ36.toString(), "/project/sbmt2/sbmt/data/bodies/bennu/ola-v20-spc/navcam/imagelist-fullpath-info.txt", "bennu_olav20_navcam")
+                new DBRunInfo(ImageSource.SPICE, Instrument.MAPCAM, ShapeModelBody.RQ36.toString(), "/bennu/ola-v20-spc/mapcam/imagelist-fullpath-info.txt", "bennu_olav20_mapcam"),
+                new DBRunInfo(ImageSource.SPICE, Instrument.POLYCAM, ShapeModelBody.RQ36.toString(), "/bennu/ola-v20-spc/polycam/imagelist-fullpath-info.txt", "bennu_olav20_polycam"),
+                new DBRunInfo(ImageSource.SPICE, Instrument.NAVCAM, ShapeModelBody.RQ36.toString(), "/bennu/ola-v20-spc/navcam/imagelist-fullpath-info.txt", "bennu_olav20_navcam")
             };
 
             c.defaultForMissions = OREXClients;
@@ -1501,12 +1501,12 @@ public class BennuConfigs extends SmallBodyViewConfig
 
             c.databaseRunInfos = new DBRunInfo[]
             {
-                new DBRunInfo(ImageSource.GASKELL, Instrument.MAPCAM, ShapeModelBody.RQ36.toString(), "/project/sbmt2/sbmt/data/bodies/bennu/ola-v20-ptm/mapcam/imagelist-fullpath-sum.txt", "bennu_olav20ptm_mapcam"),
-                new DBRunInfo(ImageSource.GASKELL, Instrument.POLYCAM, ShapeModelBody.RQ36.toString(), "/project/sbmt2/sbmt/data/bodies/bennu/ola-v20-ptm/polycam/imagelist-fullpath-sum.txt", "bennu_olav20ptm_polycam"),
+                new DBRunInfo(ImageSource.GASKELL, Instrument.MAPCAM, ShapeModelBody.RQ36.toString(), "/bennu/ola-v20-ptm/mapcam/imagelist-fullpath-sum.txt", "bennu_olav20ptm_mapcam"),
+                new DBRunInfo(ImageSource.GASKELL, Instrument.POLYCAM, ShapeModelBody.RQ36.toString(), "/bennu/ola-v20-ptm/polycam/imagelist-fullpath-sum.txt", "bennu_olav20ptm_polycam"),
 
-                new DBRunInfo(ImageSource.SPICE, Instrument.MAPCAM, ShapeModelBody.RQ36.toString(), "/project/sbmt2/sbmt/data/bodies/bennu/ola-v20-ptm/mapcam/imagelist-fullpath-info.txt", "bennu_olav20ptm_mapcam"),
-                new DBRunInfo(ImageSource.SPICE, Instrument.POLYCAM, ShapeModelBody.RQ36.toString(), "/project/sbmt2/sbmt/data/bodies/bennu/ola-v20-ptm/polycam/imagelist-fullpath-info.txt", "bennu_olav20ptm_polycam"),
-                new DBRunInfo(ImageSource.SPICE, Instrument.NAVCAM, ShapeModelBody.RQ36.toString(), "/project/sbmt2/sbmt/data/bodies/bennu/ola-v20-ptm/navcam/imagelist-fullpath-info.txt", "bennu_olav20ptm_navcam")
+                new DBRunInfo(ImageSource.SPICE, Instrument.MAPCAM, ShapeModelBody.RQ36.toString(), "/bennu/ola-v20-ptm/mapcam/imagelist-fullpath-info.txt", "bennu_olav20ptm_mapcam"),
+                new DBRunInfo(ImageSource.SPICE, Instrument.POLYCAM, ShapeModelBody.RQ36.toString(), "/bennu/ola-v20-ptm/polycam/imagelist-fullpath-info.txt", "bennu_olav20ptm_polycam"),
+                new DBRunInfo(ImageSource.SPICE, Instrument.NAVCAM, ShapeModelBody.RQ36.toString(), "/bennu/ola-v20-ptm/navcam/imagelist-fullpath-info.txt", "bennu_olav20ptm_navcam")
             };
             if (!publicOnly)
             	configArray.add(c);
@@ -1583,12 +1583,12 @@ public class BennuConfigs extends SmallBodyViewConfig
 
             c.databaseRunInfos = new DBRunInfo[]
             {
-                new DBRunInfo(ImageSource.GASKELL, Instrument.MAPCAM, ShapeModelBody.RQ36.toString(), "/project/sbmt2/sbmt/data/bodies/bennu/ola-v21-spc/mapcam/imagelist-fullpath-sum.txt", "bennu_olav21_mapcam"),
-                new DBRunInfo(ImageSource.GASKELL, Instrument.POLYCAM, ShapeModelBody.RQ36.toString(), "/project/sbmt2/sbmt/data/bodies/bennu/ola-v21-spc/polycam/imagelist-fullpath-sum.txt", "bennu_olav21_polycam"),
+                new DBRunInfo(ImageSource.GASKELL, Instrument.MAPCAM, ShapeModelBody.RQ36.toString(), "/bennu/ola-v21-spc/mapcam/imagelist-fullpath-sum.txt", "bennu_olav21_mapcam"),
+                new DBRunInfo(ImageSource.GASKELL, Instrument.POLYCAM, ShapeModelBody.RQ36.toString(), "/bennu/ola-v21-spc/polycam/imagelist-fullpath-sum.txt", "bennu_olav21_polycam"),
 
-                new DBRunInfo(ImageSource.SPICE, Instrument.MAPCAM, ShapeModelBody.RQ36.toString(), "/project/sbmt2/sbmt/data/bodies/bennu/ola-v21-spc/mapcam/imagelist-fullpath-info.txt", "bennu_olav21_mapcam"),
-                new DBRunInfo(ImageSource.SPICE, Instrument.POLYCAM, ShapeModelBody.RQ36.toString(), "/project/sbmt2/sbmt/data/bodies/bennu/ola-v21-spc/polycam/imagelist-fullpath-info.txt", "bennu_olav21_polycam"),
-                new DBRunInfo(ImageSource.SPICE, Instrument.NAVCAM, ShapeModelBody.RQ36.toString(), "/project/sbmt2/sbmt/data/bodies/bennu/ola-v21-spc/navcam/imagelist-fullpath-info.txt", "bennu_olav21_navcam")
+                new DBRunInfo(ImageSource.SPICE, Instrument.MAPCAM, ShapeModelBody.RQ36.toString(), "/bennu/ola-v21-spc/mapcam/imagelist-fullpath-info.txt", "bennu_olav21_mapcam"),
+                new DBRunInfo(ImageSource.SPICE, Instrument.POLYCAM, ShapeModelBody.RQ36.toString(), "/bennu/ola-v21-spc/polycam/imagelist-fullpath-info.txt", "bennu_olav21_polycam"),
+                new DBRunInfo(ImageSource.SPICE, Instrument.NAVCAM, ShapeModelBody.RQ36.toString(), "/bennu/ola-v21-spc/navcam/imagelist-fullpath-info.txt", "bennu_olav21_navcam")
             };
 
             c.defaultForMissions = OREXClients;
