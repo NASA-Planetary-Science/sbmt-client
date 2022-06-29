@@ -126,7 +126,7 @@ else
 
 fi
 
-if test x = y; then
+# if test x = y; then
 
 # Deploy.
 cd /project/sbmtpipeline/rawdata/bennu/$processingVersion
@@ -154,7 +154,7 @@ rm -f $processingModelDirectory; ln -s ../../../../bodies/bennu/$processingModel
 cd /project/sbmt2/sbmt/data/bodies/bennu
 rm -f $processingModelDirectory; ln -s $processingModelDirectory-$processingVersion $processingModelDirectory
 
-fi
+# fi
 
 # Update database tables.
 cd /project/sbmtpipeline/rawdata/bennu/$processingVersion
