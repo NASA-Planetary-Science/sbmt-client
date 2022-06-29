@@ -1426,7 +1426,6 @@ public class BennuConfigs extends SmallBodyViewConfig
                 new DBRunInfo(ImageSource.SPICE, Instrument.NAVCAM, ShapeModelBody.RQ36.toString(), "/bennu/ola-v20-spc/navcam/imagelist-fullpath-info.txt", "bennu_olav20_navcam")
             };
 
-            c.defaultForMissions = OREXClients;
             if (!publicOnly)
             	configArray.add(c);
 
