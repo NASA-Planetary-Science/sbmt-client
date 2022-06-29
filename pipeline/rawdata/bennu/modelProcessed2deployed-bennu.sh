@@ -134,11 +134,29 @@ else
   ln -s ../shared/lidar/ $destTop/$processingModelName-$processingVersion/lidar
 fi
 
+# if there are sum files make the following links, else (no images delivered) make links to
+if [ -d "$srcTop/$processingVersion/$processingModelName/navcam" ]; then
+  # James to Josh: these should be checked for success. Probably need a new function for
+  # doMakeLink or some such.
+  # set the soft link to the shared navcam directory
+  ln -s ../../shared/navcam/images $destTop/$processingModelName-$processingVersion/navcam/images
+  ln -s ../../shared/navcam/gallery $destTop/$processingModelName-$processingVersion/navcam/gallery
+  ln -s ../../shared/navcam/imagelist-info.txt $destTop/$processingModelName-$processingVersion/navcam/imagelist-info.txt
+  ln -s ../../shared/navcam/imagelist-fullpath-info.txt $destTop/$processingModelName-$processingVersion/navcam/imagelist-fullpath-info.txt
+  ln -s ../../shared/navcam/infofiles $destTop/$processingModelName-$processingVersion/navcam/infofiles
+  ln -s ../shared/"history" $destTop/$processingModelName-$processingVersion/"history"
+  ln -s ../shared/lidar/ $destTop/$processingModelName-$processingVersion/lidar
+else
+  ln -s ../shared/navcam $destTop/$processingModelName-$processingVersion/navcam
+  ln -s ../shared/"history" $destTop/$processingModelName-$processingVersion/"history"
+  ln -s ../shared/lidar/ $destTop/$processingModelName-$processingVersion/lidar
+fi
+
 # THIS BLOCK WAS NOT YET TESTED!
 if [ -d "$srcTop/$processingVersion/$processingModelName/otes" ]; then
   # James to Josh: these should be checked for success. Probably need a new function for
   # doMakeLink or some such.
-  # set the soft link to the shared polycam directory
+  # set the soft link to the shared otes directory
   echo "Need to write this section of modelProcessed2Deployed script!" >&2
   exit 1
 else
