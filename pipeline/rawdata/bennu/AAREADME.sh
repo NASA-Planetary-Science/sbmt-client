@@ -177,11 +177,4 @@ mv logs/DatabaseGeneratorSql.log logs/DatabaseGeneratorSql-polycam.log
 
 # fi
 
-$SBMTROOT/pipeline/rawdata/bennu/runDBGenerator-bennu.sh navcam $processingModelName $processingModelDirectory $processingVersion GASKELL >> logs/runDBGenerator-bennu-navcam-log 2>&1
-if test $? -ne 0; then
-  echo "Problem with creating NAVCAM database table." >&2
-  exit 1
-fi
-mv logs/DatabaseGeneratorSql.log logs/DatabaseGeneratorSql-navcam.log
-
 # Ready to test using a client launched with a test config.
