@@ -156,10 +156,10 @@ rm -f $processingModelDirectory; ln -s $processingModelDirectory-$processingVers
 
 fi
 
-if test x = y; then
-
 # Update database tables.
 cd /project/sbmtpipeline/rawdata/bennu/$processingVersion
+
+# if test x = y; then
 
 $SBMTROOT/pipeline/rawdata/bennu/runDBGenerator-bennu.sh mapcam $processingModelName $processingModelDirectory $processingVersion GASKELL >> logs/runDBGenerator-bennu-mapcam-log 2>&1
 if test $? -ne 0; then
@@ -175,7 +175,7 @@ if test $? -ne 0; then
 fi
 mv logs/DatabaseGeneratorSql.log logs/DatabaseGeneratorSql-polycam.log
 
-fi
+# fi
 
 $SBMTROOT/pipeline/rawdata/bennu/runDBGenerator-bennu.sh navcam $processingModelName $processingModelDirectory $processingVersion GASKELL >> logs/runDBGenerator-bennu-navcam-log 2>&1
 if test $? -ne 0; then
