@@ -1625,6 +1625,88 @@ public class BennuConfigs extends SmallBodyViewConfig
             c.setBodyParameters();
 
             c.dataUsed = ShapeModelDataUsed.LIDAR_BASED;
+            c.author = ShapeModelType.provide("OLA-v21-PTM");
+            c.modelLabel = "OLA v21 PTM";
+            c.rootDirOnServer = "/bennu/ola-v21-ptm";
+            c.setResolution( //
+                    ImmutableList.of("Low (231870 plates)", "Medium (886400 plates)", "High (3365938 plates)", "Very High (17866836 plates)"),
+                    ImmutableList.of(231870, 886400, 3365938, 17866836));
+            c.density = 1.1953;
+            c.rotationRate = 4.0626E-4;
+            c.bodyReferencePotential = -0.02524469206484981;
+
+            if(Configuration.isMac()) c.hasBigmap = true;  // Right now bigmap only works on Macs
+
+            c.imagingInstruments = new ImagingInstrument[] { c.generatePolycamInstrument("bennu_olav21ptm_polycam", "bennu_olav21ptm_polycam", true, true),
+                                                             c.generateMapcamInstrument("bennu_olav21ptm_mapcam", "bennu_olav21ptm_mapcam", true, true),
+                                                             c.generateNavcamInstrument("bennu_olav21ptm_navcam", "bennu_olav21ptm_navcam")
+            };
+
+            c.generateStateHistoryParameters();
+
+            c.setSpectrumParameters();
+            c.hasHypertreeBasedSpectraSearch = true;
+
+            c.setLidarParameters(true);
+            ArrayList<Date> startStop = new ArrayList<Date>();
+            startStop.add(new GregorianCalendar(2019, 6, 1, 0, 0, 0).getTime());
+            startStop.add(new GregorianCalendar(2019, 7, 6, 0, 0, 0).getTime());
+            c.lidarSearchDataSourceMap.clear();
+            c.orexSearchTimeMap.clear();
+            c.orexSearchTimeMap.put("OLAv21", startStop);
+            c.lidarSearchDataSourceMap.put("OLAv21", c.rootDirOnServer + "/ola/search/olav21/dataSource.lidar");
+            c.lidarBrowseDataSourceMap.put("Default", c.rootDirOnServer + "/ola/l2a/fileListL2A.txt");
+            c.lidarBrowseFileListResourcePath = c.rootDirOnServer + "/ola/l2a/fileListL2A.txt";
+            c.lidarBrowseWithPointsDataSourceMap.put("Default", c.rootDirOnServer + "/ola/l2a/fileListL2A.txt");
+
+            c.hasMapmaker = false;
+
+            c.dtmBrowseDataSourceMap.put("Default", "bennu/ola-v21-ptm/dtm/browse/fileList.txt");
+
+            c.databaseRunInfos = new DBRunInfo[]
+            {
+                new DBRunInfo(ImageSource.GASKELL, Instrument.MAPCAM, ShapeModelBody.RQ36.toString(), "/bennu/ola-v21-ptm/mapcam/imagelist-fullpath-sum.txt", "bennu_olav21ptm_mapcam"),
+                new DBRunInfo(ImageSource.GASKELL, Instrument.POLYCAM, ShapeModelBody.RQ36.toString(), "/bennu/ola-v21-ptm/polycam/imagelist-fullpath-sum.txt", "bennu_olav21ptm_polycam"),
+
+                new DBRunInfo(ImageSource.SPICE, Instrument.MAPCAM, ShapeModelBody.RQ36.toString(), "/bennu/ola-v21-ptm/mapcam/imagelist-fullpath-info.txt", "bennu_olav21ptm_mapcam"),
+                new DBRunInfo(ImageSource.SPICE, Instrument.POLYCAM, ShapeModelBody.RQ36.toString(), "/bennu/ola-v21-ptm/polycam/imagelist-fullpath-info.txt", "bennu_olav21ptm_polycam"),
+                new DBRunInfo(ImageSource.SPICE, Instrument.NAVCAM, ShapeModelBody.RQ36.toString(), "/bennu/ola-v21-ptm/navcam/imagelist-fullpath-info.txt", "bennu_olav21ptm_navcam")
+            };
+            if (!publicOnly)
+                configArray.add(c);
+
+
+            //public version
+            BennuConfigs publicOLAptm = (BennuConfigs)c.clone();
+//            publicOLAptm.author = ShapeModelType.provide("OLA-v21-PTM_PUBLIC");
+            publicOLAptm.modelLabel = "OLA v21 PTM";
+            publicOLAptm.disableSpectra();
+            publicOLAptm.hasImageMap = true;
+            publicOLAptm.baseMapConfigName = "config_public.txt";
+
+            publicOLAptm.presentInMissions = PublicOnly;
+            publicOLAptm.imagingInstruments = new ImagingInstrument[] { publicOLAptm.generatePolycamInstrument("bennu_olav21ptm_polycam", "bennu_olav21ptm_polycam", true, true, true),
+                    publicOLAptm.generateMapcamInstrument("bennu_olav21ptm_mapcam", "bennu_olav21ptm_mapcam", true, true, true),
+                    publicOLAptm.generateNavcamInstrument("bennu_olav21ptm_navcam", "bennu_olav21ptm_navcam", true)
+            };
+            publicOLAptm.hasHypertreeBasedSpectraSearch = false;
+            publicOLAptm.lidarBrowseDataSourceMap.put("Default", publicOLAptm.rootDirOnServer + "/ola/l2a/fileListL2A.txt");
+            publicOLAptm.lidarBrowseFileListResourcePath = publicOLAptm.rootDirOnServer + "/ola/l2a/fileListL2A.txt";
+            publicOLAptm.lidarBrowseWithPointsDataSourceMap.put("Default", publicOLAptm.rootDirOnServer + "/ola/l2a/fileListL2A.txt");
+            publicOLAptm.lidarSearchDataSourceMap.clear();
+            publicOLAptm.orexSearchTimeMap.clear();
+            publicOLAptm.orexSearchTimeMap.put("OLAv21", startStop);
+            publicOLAptm.lidarSearchDataSourceMap.put("OLAv21", publicOLAptm.rootDirOnServer + "/ola/search/olav21/dataSource.lidar");
+            if (publicOnly)
+                configArray.add(publicOLAptm);
+        }
+
+       if (Configuration.isAPLVersion())
+        {
+            c = new BennuConfigs();
+            c.setBodyParameters();
+
+            c.dataUsed = ShapeModelDataUsed.LIDAR_BASED;
             c.author = ShapeModelType.provide("SPO-v54");
             c.modelLabel = "SPO v54";
             c.rootDirOnServer = "/bennu/spo-v54-spc";
