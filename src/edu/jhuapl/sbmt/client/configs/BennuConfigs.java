@@ -1624,7 +1624,7 @@ public class BennuConfigs extends SmallBodyViewConfig
             c = new BennuConfigs();
             c.setBodyParameters();
 
-            c.dataUsed = ShapeModelDataUsed.LIDAR_BASED;
+            c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
             c.author = ShapeModelType.provide("SPO-v54");
             c.modelLabel = "SPO v54";
             c.rootDirOnServer = "/bennu/spo-v54-spc";
