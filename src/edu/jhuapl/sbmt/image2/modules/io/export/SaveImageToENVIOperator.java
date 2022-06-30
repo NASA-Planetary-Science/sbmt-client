@@ -11,10 +11,21 @@ import java.nio.ByteOrder;
 import java.nio.channels.FileChannel;
 import java.util.List;
 
+import org.apache.commons.io.FilenameUtils;
+
+import com.beust.jcommander.internal.Lists;
+
+import vtk.vtkImageData;
+
+import edu.jhuapl.saavtk.util.ImageDataUtil;
 import edu.jhuapl.sbmt.image2.interfaces.IPerspectiveImage;
 import edu.jhuapl.sbmt.image2.modules.rendering.pointedImage.RenderablePointedImage;
+import edu.jhuapl.sbmt.image2.modules.rendering.vtk.VtkImageContrastOperator;
+import edu.jhuapl.sbmt.image2.modules.rendering.vtk.VtkImageRendererOperator;
 import edu.jhuapl.sbmt.image2.pipeline.active.PerspectiveImageToRenderableImagePipeline;
 import edu.jhuapl.sbmt.image2.pipeline.operator.BasePipelineOperator;
+import edu.jhuapl.sbmt.image2.pipeline.publisher.Just;
+import edu.jhuapl.sbmt.image2.pipeline.subscriber.Sink;
 
 //TODO This can eventually get replaced with a GDAL call, since it handles ENVI
 public class SaveImageToENVIOperator extends BasePipelineOperator<IPerspectiveImage, File>
@@ -35,6 +46,7 @@ public class SaveImageToENVIOperator extends BasePipelineOperator<IPerspectiveIm
 		PerspectiveImageToRenderableImagePipeline pipeline = new PerspectiveImageToRenderableImagePipeline(List.of(image));
 		RenderablePointedImage renderable = pipeline.getRenderableImages().get(0);
 		String enviFilename = image.getFilename();
+		enviFilename = filename;
 		String interleaveType = "bsq";
 		boolean hostByteOrder = true;
 		imageDepth = image.getNumberOfLayers();
@@ -56,7 +68,8 @@ public class SaveImageToENVIOperator extends BasePipelineOperator<IPerspectiveIm
 		FileOutputStream fs = null;
 		try
 		{
-			fs = new FileOutputStream(enviFilename + ".hdr");
+//			fs = new FileOutputStream(enviFilename + ".hdr");
+			fs = new FileOutputStream(enviFilename);
 		} catch (FileNotFoundException e)
 		{
 			e.printStackTrace();
@@ -113,8 +126,16 @@ public class SaveImageToENVIOperator extends BasePipelineOperator<IPerspectiveIm
 		// Remember, VTK origin is at bottom left while ENVI origin is at top
 		// left
 		//TODO FIX THIS
-		float[][][] imageData = null;
-//		float[][][] imageData = ImageDataUtil.vtkImageDataToArray3D(getRawImage());
+//		float[][][] imageData = null;
+
+		VtkImageRendererOperator imageRenderer = new VtkImageRendererOperator();
+        List<vtkImageData> imageRendererData = Lists.newArrayList();
+        Just.of(renderable.getLayer())
+        	.operate(imageRenderer)
+        	.operate(new VtkImageContrastOperator(null))
+        	.subscribe(Sink.of(imageRendererData)).run();
+
+		float[][][] imageData = ImageDataUtil.vtkImageDataToArray3D(imageRendererData.get(0));
 		switch (interleaveType)
 		{
 		case "bsq":
@@ -162,13 +183,14 @@ public class SaveImageToENVIOperator extends BasePipelineOperator<IPerspectiveIm
 		}
 
 		// Create output stream and write contents of byte buffer
-		try (FileOutputStream stream = new FileOutputStream(enviFilename))
+		try (FileOutputStream stream = new FileOutputStream(new File(new File(filename).getParentFile(), FilenameUtils.getBaseName(enviFilename))))
 		{
 			FileChannel fc = stream.getChannel();
 			bb.flip(); // flip() is a misleading name, nothing is being flipped.
 						// Buffer end is set to
 						// curr pos and curr pos set to beginning.
 			fc.write(bb);
+			fc.close();
 		} catch (FileNotFoundException e)
 		{
 			e.printStackTrace();
