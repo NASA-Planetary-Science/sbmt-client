@@ -6,6 +6,7 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.text.ParseException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -17,6 +18,7 @@ import com.google.common.collect.ImmutableMap;
 
 import edu.jhuapl.saavtk.util.FileCache;
 import edu.jhuapl.saavtk.util.SafeURLPaths;
+import edu.jhuapl.sbmt.client.SbmtMultiMissionTool;
 import edu.jhuapl.sbmt.client.SmallBodyViewConfig;
 import edu.jhuapl.sbmt.image2.interfaces.IPerspectiveImage;
 import edu.jhuapl.sbmt.image2.interfaces.IPerspectiveImageTableRepresentable;
@@ -50,7 +52,6 @@ public class CreateImageFromSavedListOperator<G1 extends IPerspectiveImage & IPe
 		int i=1;
         for (List<String> imageInfo : results)
         {
-        	System.out.println("CreateImageFromSavedListOperator: processData: image info " + imageInfo.get(0) + " " + imageInfo.get(1));
         	String extension = ".INFO";
         	String pointingDir = "infofiles";
         	ImageSource imageSource = ImageSource.valueFor(imageInfo.get(2));
@@ -67,8 +68,8 @@ public class CreateImageFromSavedListOperator<G1 extends IPerspectiveImage & IPe
     		}
 
         	String imagePath = "images";
-        	if (viewConfig.getUniqueName().contains("Bennu")) imagePath = "images/public";
 
+        	if (viewConfig.getUniqueName().contains("Bennu") && Arrays.asList(viewConfig.presentInMissions).contains(SbmtMultiMissionTool.Mission.PUBLIC_RELEASE)) imagePath = "images/public";
         	String infoBaseName = FilenameUtils.removeExtension(imageInfo.get(0)).replace(imagePath, pointingDir);
         	if (viewConfig.getUniqueName().contains("Eros"))
     		{
@@ -91,12 +92,9 @@ public class CreateImageFromSavedListOperator<G1 extends IPerspectiveImage & IPe
 						e.printStackTrace();
 					}
         	}
-
         	PerspectiveImage image = new PerspectiveImage(imageInfo.get(0), instrument.getType(), imageSource, infoBaseName + extension, new double[] {});
         	image.setFlip(instrument.getFlip());
-//        	image.setFlip("Y");
         	image.setRotation(instrument.getRotation());
-//        	image.setRotation(90.0);
         	image.setImageOrigin(ImageOrigin.SERVER);
         	//TODO should be replaced with parameters from ImagingInstrument
         	image.setLinearInterpolatorDims(new int[] {537, 412});
@@ -123,7 +121,6 @@ public class CreateImageFromSavedListOperator<G1 extends IPerspectiveImage & IPe
 
 	private String getSumFileName(String imagerDirectory, String imageFilename) throws IOException, ParseException
     {
-		System.out.println("ImageSearchOperator: getSumFileName: imager directory " + imagerDirectory);
         if (!SUM_FILE_MAP.containsKey(imagerDirectory))
         {
             ImmutableMap.Builder<String, String> builder = ImmutableMap.builder();
@@ -145,7 +142,6 @@ public class CreateImageFromSavedListOperator<G1 extends IPerspectiveImage & IPe
                     builder.put(imageFile, sumFile);
                 }
             }
-            System.out.println("ImageSearchOperator: getSumFileName: adding imager " + imagerDirectory);
             SUM_FILE_MAP.put(imagerDirectory, builder.build());
         }
 

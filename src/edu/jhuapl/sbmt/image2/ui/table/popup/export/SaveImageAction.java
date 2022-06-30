@@ -16,12 +16,12 @@ import glum.gui.action.PopAction;
 
 public class SaveImageAction<G1 extends IPerspectiveImage & IPerspectiveImageTableRepresentable> extends PopAction<G1>
 {
-	PerspectiveImageCollection collection;
+	PerspectiveImageCollection<G1> collection;
 
 	/**
 	 * @param imagePopupMenu
 	 */
-	public SaveImageAction(PerspectiveImageCollection collection)
+	public SaveImageAction(PerspectiveImageCollection<G1> collection)
 	{
 		this.collection = collection;
 	}

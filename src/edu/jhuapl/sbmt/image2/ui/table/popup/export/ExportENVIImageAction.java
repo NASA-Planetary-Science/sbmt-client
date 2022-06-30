@@ -5,23 +5,25 @@ import java.util.List;
 
 import javax.swing.JOptionPane;
 
+import com.google.common.collect.ImmutableSet;
+
 import edu.jhuapl.saavtk.gui.dialog.CustomFileChooser;
 import edu.jhuapl.sbmt.image2.interfaces.IPerspectiveImage;
+import edu.jhuapl.sbmt.image2.interfaces.IPerspectiveImageTableRepresentable;
 import edu.jhuapl.sbmt.image2.model.PerspectiveImageCollection;
 import edu.jhuapl.sbmt.image2.modules.io.export.SaveImageToENVIOperator;
 import edu.jhuapl.sbmt.image2.pipeline.publisher.Just;
-import edu.jhuapl.sbmt.image2.pipeline.subscriber.Sink;
 
 import glum.gui.action.PopAction;
 
-public class ExportENVIImageAction<G1 extends IPerspectiveImage> extends PopAction<G1>
+public class ExportENVIImageAction<G1 extends IPerspectiveImage & IPerspectiveImageTableRepresentable> extends PopAction<G1>
 {
-	private PerspectiveImageCollection aManager;
+	private PerspectiveImageCollection<G1> aManager;
 
 	/**
 	 * @param imagePopupMenu
 	 */
-	public ExportENVIImageAction(PerspectiveImageCollection aManager)
+	public ExportENVIImageAction(PerspectiveImageCollection<G1> aManager)
 	{
 		this.aManager = aManager;
 	}
@@ -29,11 +31,10 @@ public class ExportENVIImageAction<G1 extends IPerspectiveImage> extends PopActi
 	@Override
 	public void executeAction(List<G1> aItemL)
 	{
-		// Bail if no items are selected
-		if (aItemL.size() != 1)
+		ImmutableSet<G1> selectedItems = aManager.getSelectedItems();
+		if (selectedItems.size() != 1)
 			return;
-
-		for (IPerspectiveImage aItem : aItemL)
+		for (IPerspectiveImage aItem : selectedItems)
 		{
 			File file = null;
 	        try
@@ -47,13 +48,13 @@ public class ExportENVIImageAction<G1 extends IPerspectiveImage> extends PopActi
 	                defaultFileName = imageFileName.substring(0, imageFileName.length()-4);
 
 	            // Open save dialog
-	            file = CustomFileChooser.showSaveDialog(null, "Export ENVI image as", defaultFileName + ".hdr", "hdr");
+	            file = CustomFileChooser.showSaveDialog(null, "Export ENVI image as", defaultFileName + "hdr", "hdr");
 	            if (file != null)
 	            {
 	                String filename = file.getAbsolutePath();
 	                Just.of(aItem)
 	                	.operate(new SaveImageToENVIOperator(filename))
-	                	.subscribe(Sink.of(null))
+//	                	.subscribe(Sink.of(null))
 	                	.run();
 	            }
 	        }

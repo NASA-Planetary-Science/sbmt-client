@@ -21,7 +21,7 @@ public class LoadImagesFromSavedFilePipeline<G1 extends IPerspectiveImage & IPer
 	{
 		Just.of(Pair.of(filename, instrument))
 			.operate(new LoadImageListOperator())
-			.operate(new CreateImageFromSavedListOperator(viewConfig))
+			.operate(new CreateImageFromSavedListOperator<G1>(viewConfig))
 			.subscribe(Sink.of(images))
 			.run();
 	}

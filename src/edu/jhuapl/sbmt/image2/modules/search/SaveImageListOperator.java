@@ -11,22 +11,19 @@ import java.util.TimeZone;
 
 import javax.swing.JOptionPane;
 
+import com.google.common.collect.ImmutableSet;
+
 import edu.jhuapl.saavtk.gui.dialog.CustomFileChooser;
 import edu.jhuapl.sbmt.image2.interfaces.IPerspectiveImage;
 import edu.jhuapl.sbmt.image2.interfaces.IPerspectiveImageTableRepresentable;
 import edu.jhuapl.sbmt.image2.pipeline.operator.BasePipelineOperator;
 
-public class SaveImageListOperator<G1 extends IPerspectiveImage & IPerspectiveImageTableRepresentable> extends BasePipelineOperator<List<G1>, Void>
+public class SaveImageListOperator<G1 extends IPerspectiveImage & IPerspectiveImageTableRepresentable> extends BasePipelineOperator<ImmutableSet<G1>, Void>
 {
-	public SaveImageListOperator()
-	{
-		// TODO Auto-generated constructor stub
-	}
-
 	@Override
 	public void processData() throws IOException, Exception
 	{
-		List<G1> images = inputs.get(0);
+		List<G1> images = inputs.get(0).asList();
 		File file = CustomFileChooser.showSaveDialog(null, "Select File", "imagelist.txt");
 
         if (file != null)
@@ -44,16 +41,11 @@ public class SaveImageListOperator<G1 extends IPerspectiveImage & IPerspectiveIm
                 int size = images.size();
                 for (int i = 0; i < size; ++i)
                 {
-//                	int actualRow = imageResultsTableView.getResultList().getRowSorter().convertRowIndexToModel(i);
                 	String imageName = new File(images.get(0).getFilename()).getName();
                 	Date imageDate = images.get(i).getDate();
                 	String pointingSource = images.get(0).getPointingSourceType().toString();
                 	out.write(imageName + " " + sdf.format(imageDate) + " " + pointingSource);
-//                    String image = new File(imageRawResults.get(actualRow).get(0)).getName();
-//                    String dtStr = imageRawResults.get(actualRow).get(1);
-//                    Date dt = new Date(Long.parseLong(dtStr));
-
-//                    out.write(imageName + " " + sdf.format(imageDate) + " " + imageSearchModel.getImageSourceOfLastQuery().toString().replaceAll(" ", "_") + nl);
+                	out.newLine();
                 }
 
                 out.close();

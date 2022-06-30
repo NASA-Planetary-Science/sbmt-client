@@ -13,6 +13,7 @@ import edu.jhuapl.sbmt.image2.interfaces.IPerspectiveImage;
 import edu.jhuapl.sbmt.image2.interfaces.IPerspectiveImageTableRepresentable;
 import edu.jhuapl.sbmt.image2.pipeline.active.PerspectiveImageToRenderableImagePipeline;
 import edu.jhuapl.sbmt.image2.pipeline.operator.BasePipelineOperator;
+import edu.jhuapl.sbmt.model.image.ImageSource;
 import edu.jhuapl.sbmt.model.image.InfoFileWriter;
 
 public class SaveImagePointingFileFromCacheOperator<G1 extends IPerspectiveImage & IPerspectiveImageTableRepresentable> extends BasePipelineOperator<G1, File>
@@ -25,14 +26,14 @@ public class SaveImagePointingFileFromCacheOperator<G1 extends IPerspectiveImage
 		try
 		{
 			String defaultFileName = FilenameUtils.getBaseName(inputs.get(0).getPointingSource());
-			file = CustomFileChooser.showSaveDialog(null, "Save Pointing file as...", defaultFileName);
+			String defaultFileType = inputs.get(0).getPointingSourceType() == ImageSource.GASKELL ? "SUM" : "INFO";
+			file = CustomFileChooser.showSaveDialog(null, "Save Pointing file as...", defaultFileName + "." + defaultFileType);
 			if (file == null) return;
 
 			String filename = file.getAbsolutePath();
 
 			PerspectiveImageToRenderableImagePipeline pipeline = new PerspectiveImageToRenderableImagePipeline(List.of(inputs.get(0)));
-
-			InfoFileWriter writer = new InfoFileWriter(defaultFileName, pipeline.getRenderableImages().get(0).getPointing(), false);
+			InfoFileWriter writer = new InfoFileWriter(filename, pipeline.getRenderableImages().get(0).getPointing(), false);
 			writer.write();
 		}
 		catch (Exception ex)

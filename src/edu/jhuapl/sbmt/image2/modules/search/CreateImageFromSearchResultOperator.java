@@ -122,7 +122,7 @@ public class CreateImageFromSearchResultOperator extends BasePipelineOperator<Tr
 
 	private String getSumFileName(String imagerDirectory, String imageFilename) throws IOException, ParseException
     {
-		System.out.println("ImageSearchOperator: getSumFileName: imager directory " + imagerDirectory);
+//		System.out.println("ImageSearchOperator: getSumFileName: imager directory " + imagerDirectory);
         if (!SUM_FILE_MAP.containsKey(imagerDirectory))
         {
             ImmutableMap.Builder<String, String> builder = ImmutableMap.builder();
@@ -144,7 +144,7 @@ public class CreateImageFromSearchResultOperator extends BasePipelineOperator<Tr
                     builder.put(imageFile, sumFile);
                 }
             }
-            System.out.println("ImageSearchOperator: getSumFileName: adding imager " + imagerDirectory);
+//            System.out.println("ImageSearchOperator: getSumFileName: adding imager " + imagerDirectory);
             SUM_FILE_MAP.put(imagerDirectory, builder.build());
         }
 

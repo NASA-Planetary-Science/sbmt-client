@@ -16,9 +16,7 @@ public class SaveImagesToSavedFilePipeline<G1 extends IPerspectiveImage & IPersp
 	public SaveImagesToSavedFilePipeline(ImmutableSet<G1> images) throws Exception
 	{
 		Just.of(images)
-			.operate(new SaveImageListOperator())
-//			.operate(new CreateImageFromSavedListOperator(viewConfig))
-//			.subscribe(Sink.of(images))
+			.operate(new SaveImageListOperator<G1>())
 			.run();
 	}
 

@@ -92,7 +92,7 @@ public class RenderablePointedImageActorPipeline<G1 extends IPerspectiveImage & 
 		pointingFile = image.getPointingSource();
 		modifiedPointingFile = Optional.ofNullable(null);
 		if (image.getModifiedPointingSource().isPresent()) modifiedPointingFile = image.getModifiedPointingSource();
-
+		System.out.println("RenderablePointedImageActorPipeline: loadFiles: image pointing source " + image.getPointingSource());
 		if (!new File(filename).exists())
 		{
 			filename = FileCache.getFileFromServer(image.getFilename()).getAbsolutePath();
@@ -104,6 +104,7 @@ public class RenderablePointedImageActorPipeline<G1 extends IPerspectiveImage & 
 		}
 
 		flip = image.getFlip();
+		System.out.println("RenderablePointedImageActorPipeline: loadFiles: flip is " + flip + " for " + filename);
 		rotation = image.getRotation();
 	}
 

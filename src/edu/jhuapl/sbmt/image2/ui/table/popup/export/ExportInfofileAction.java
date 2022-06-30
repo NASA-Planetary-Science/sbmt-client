@@ -19,12 +19,12 @@ public class ExportInfofileAction<G1 extends IPerspectiveImage & IPerspectiveIma
 	/**
 	 *
 	 */
-	private PerspectiveImageCollection aManager;
+	private PerspectiveImageCollection<G1> aManager;
 
 	/**
 	 * @param imagePopupMenu
 	 */
-	public ExportInfofileAction(PerspectiveImageCollection aManager)
+	public ExportInfofileAction(PerspectiveImageCollection<G1> aManager)
 	{
 		this.aManager = aManager;
 	}

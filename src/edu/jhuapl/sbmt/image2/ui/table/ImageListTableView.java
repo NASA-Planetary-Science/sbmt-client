@@ -46,7 +46,7 @@ public class ImageListTableView extends JPanel
 	private JButton newImageButton;
 
 	/**
-	 * JButton to load image listfrom file
+	 * JButton to load image list from file
 	 */
 	private JButton loadImageButton;
 
@@ -165,7 +165,7 @@ public class ImageListTableView extends JPanel
 
 		saveImageButton = GuiUtil.formButton(listener, UIManager.getIcon("FileView.hardDriveIcon"));
 		saveImageButton.setToolTipText(ToolTipUtil.getItemSave());
-		saveImageButton.setEnabled(false);
+//		saveImageButton.setEnabled(false);
 
 		showImageButton = GuiUtil.formButton(listener, IconUtil.getItemShow());
 		showImageButton.setToolTipText(ToolTipUtil.getItemShow());

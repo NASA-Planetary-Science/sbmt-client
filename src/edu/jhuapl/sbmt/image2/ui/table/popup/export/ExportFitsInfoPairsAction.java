@@ -8,27 +8,30 @@ import javax.swing.JOptionPane;
 import org.apache.commons.io.FilenameUtils;
 
 import com.beust.jcommander.internal.Lists;
+import com.google.common.collect.ImmutableSet;
 
 import edu.jhuapl.saavtk.gui.dialog.CustomFileChooser;
 import edu.jhuapl.saavtk.gui.dialog.DirectoryChooser;
 import edu.jhuapl.sbmt.image2.interfaces.IPerspectiveImage;
+import edu.jhuapl.sbmt.image2.interfaces.IPerspectiveImageTableRepresentable;
 import edu.jhuapl.sbmt.image2.model.PerspectiveImageCollection;
 import edu.jhuapl.sbmt.image2.modules.io.export.SaveImageFileFromCacheOperator;
 import edu.jhuapl.sbmt.image2.pipeline.active.PerspectiveImageToRenderableImagePipeline;
 import edu.jhuapl.sbmt.image2.pipeline.publisher.Just;
 import edu.jhuapl.sbmt.image2.pipeline.subscriber.Sink;
+import edu.jhuapl.sbmt.model.image.ImageSource;
 import edu.jhuapl.sbmt.model.image.InfoFileWriter;
 
 import glum.gui.action.PopAction;
 
-public class ExportFitsInfoPairsAction<G1 extends IPerspectiveImage> extends PopAction<G1>
+public class ExportFitsInfoPairsAction<G1 extends IPerspectiveImage & IPerspectiveImageTableRepresentable> extends PopAction<G1>
 {
-	private PerspectiveImageCollection aManager;
+	private PerspectiveImageCollection<G1> aManager;
 
 	/**
 	 * @param imagePopupMenu
 	 */
-	public ExportFitsInfoPairsAction(PerspectiveImageCollection aManager)
+	public ExportFitsInfoPairsAction(PerspectiveImageCollection<G1> aManager)
 	{
 		this.aManager = aManager;
 	}
@@ -40,8 +43,9 @@ public class ExportFitsInfoPairsAction<G1 extends IPerspectiveImage> extends Pop
 		File outDir = DirectoryChooser.showOpenDialog(null, "Save FITS/Pointing Pair to Directory...");
 		if (outDir == null)
 			return;
-
-		for (IPerspectiveImage aItem : aItemL)
+		System.out.println("ExportFitsInfoPairsAction: executeAction: number of items " + aManager.getSelectedItems().size() + " going to " + outDir);
+		ImmutableSet<G1> selectedItems = aManager.getSelectedItems();
+		for (G1 aItem : selectedItems)
 		{
 			List<File> files = Lists.newArrayList();
 
@@ -61,14 +65,15 @@ public class ExportFitsInfoPairsAction<G1 extends IPerspectiveImage> extends Pop
 			try
 			{
 				String defaultFileName = FilenameUtils.getBaseName(aItem.getPointingSource());
-				file = CustomFileChooser.showSaveDialog(null, "Save Pointing file as...", defaultFileName);
+				String defaultFileType = aItem.getPointingSourceType() == ImageSource.GASKELL ? "SUM" : "INFO";
+				file = CustomFileChooser.showSaveDialog(null, "Save Pointing file as...", defaultFileName + "." + defaultFileType);
 				if (file == null) return;
 
 				String filename = file.getAbsolutePath();
 
 				PerspectiveImageToRenderableImagePipeline pipeline = new PerspectiveImageToRenderableImagePipeline(List.of(aItem));
 
-				InfoFileWriter writer = new InfoFileWriter(defaultFileName, pipeline.getRenderableImages().get(0).getPointing(), false);
+				InfoFileWriter writer = new InfoFileWriter(filename, pipeline.getRenderableImages().get(0).getPointing(), false);
 				writer.write();
 			}
 			catch (Exception ex)

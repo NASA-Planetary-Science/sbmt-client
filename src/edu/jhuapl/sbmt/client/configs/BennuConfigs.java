@@ -1574,8 +1574,8 @@ public class BennuConfigs extends SmallBodyViewConfig
                 ImageType.POLYCAM_FLIGHT_IMAGE,
                 imageSources,
                 Instrument.POLYCAM,
-                0,
-                "X"
+                90,
+                "Y"
                 );
 		return instrument;
 	}
@@ -1602,8 +1602,8 @@ public class BennuConfigs extends SmallBodyViewConfig
                 ImageType.MAPCAM_FLIGHT_IMAGE,
                 imageSources,
                 Instrument.MAPCAM,
-                0,
-                "X"
+                90,
+                "Y"
                 );
 	}
 
