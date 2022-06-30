@@ -16,7 +16,7 @@ import edu.jhuapl.sbmt.image2.modules.pointing.offset.SpacecraftPointingDelta;
 import edu.jhuapl.sbmt.image2.modules.pointing.offset.SpacecraftPointingState;
 import edu.jhuapl.sbmt.image2.pipeline.active.PerspectiveImageToRenderableImagePipeline;
 import edu.jhuapl.sbmt.image2.pipeline.operator.BasePipelineOperator;
-import edu.jhuapl.sbmt.model.image.ModifiedInfoFileWriter;
+import edu.jhuapl.sbmt.image2.util.ModifiedInfoFileWriter;
 
 public class SaveModifiedImagePointingFileToCacheOperator<G1 extends IPerspectiveImage & IPerspectiveImageTableRepresentable> extends BasePipelineOperator<Triple<G1, SpacecraftPointingState, SpacecraftPointingDelta>, File>
 {

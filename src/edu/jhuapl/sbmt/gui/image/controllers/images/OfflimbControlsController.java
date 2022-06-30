@@ -14,10 +14,9 @@ import edu.jhuapl.saavtk.gui.dialog.ColorChooser;
 import edu.jhuapl.sbmt.gui.image.model.OfflimbModelChangedListener;
 import edu.jhuapl.sbmt.gui.image.model.images.OfflimbControlsModel;
 import edu.jhuapl.sbmt.gui.image.ui.images.OfflimbImageControlPanel;
-import edu.jhuapl.sbmt.image2.interfaces.IPerspectiveImage;
 import edu.jhuapl.sbmt.model.image.perspectiveImage.PerspectiveImage;
 
-public class OfflimbControlsController<G1 extends IPerspectiveImage>
+public class OfflimbControlsController<G1>
 {
 	OfflimbImageControlPanel controlsPanel;
 	OfflimbControlsModel controlsModel;

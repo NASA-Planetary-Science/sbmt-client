@@ -1,4 +1,4 @@
-package edu.jhuapl.sbmt.model.image;
+package edu.jhuapl.sbmt.image2.util;
 
 import java.io.BufferedWriter;
 import java.io.FileNotFoundException;
@@ -10,6 +10,7 @@ import edu.jhuapl.sbmt.image2.interfaces.IPerspectiveImage;
 import edu.jhuapl.sbmt.image2.interfaces.IPerspectiveImageTableRepresentable;
 import edu.jhuapl.sbmt.image2.modules.pointing.offset.SpacecraftPointingDelta;
 import edu.jhuapl.sbmt.image2.modules.pointing.offset.SpacecraftPointingState;
+import edu.jhuapl.sbmt.model.image.BasicFileWriter;
 
 public class ModifiedInfoFileWriter<G1 extends IPerspectiveImage & IPerspectiveImageTableRepresentable> extends BasicFileWriter
 {
