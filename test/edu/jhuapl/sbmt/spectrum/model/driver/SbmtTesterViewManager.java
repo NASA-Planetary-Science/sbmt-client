@@ -26,7 +26,7 @@ import edu.jhuapl.saavtk.camera.gui.CameraQuaternionAction;
 import edu.jhuapl.saavtk.camera.gui.CameraRecorderAction;
 import edu.jhuapl.saavtk.camera.gui.CameraRegularAction;
 import edu.jhuapl.saavtk.config.ViewConfig;
-import edu.jhuapl.saavtk.gui.Console;
+import edu.jhuapl.saavtk.gui.TSConsole;
 import edu.jhuapl.saavtk.gui.RecentlyViewed;
 import edu.jhuapl.saavtk.gui.View;
 import edu.jhuapl.saavtk.gui.ViewManager;
@@ -133,7 +133,7 @@ public class SbmtTesterViewManager extends ViewManager
         menuBar.add(viewMenu);
 
         // Console menu
-        Console.addConsoleMenu(menuBar);
+        TSConsole.addConsoleMenu(menuBar);
 
         // Help menu
         helpMenu = new SbmtHelpMenu(this);

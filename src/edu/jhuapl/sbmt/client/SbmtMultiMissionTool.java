@@ -27,7 +27,7 @@ import javax.swing.UnsupportedLookAndFeelException;
 import com.jgoodies.looks.LookUtils;
 
 import edu.jhuapl.saavtk.colormap.Colormaps;
-import edu.jhuapl.saavtk.gui.Console;
+import edu.jhuapl.saavtk.gui.TSConsole;
 import edu.jhuapl.saavtk.model.structure.EllipsePolygon;
 import edu.jhuapl.saavtk.model.structure.Line;
 import edu.jhuapl.saavtk.model.structure.Polygon;
@@ -500,11 +500,11 @@ public class SbmtMultiMissionTool
 
 	public static void shutDown()
 	{
-		boolean showConsole = Console.isConfigured();
+		boolean showConsole = TSConsole.isConfigured();
 		if (showConsole)
 		{
 			System.err.println("Close this console window to exit.");
-			Console.showStandaloneConsole();
+			TSConsole.showStandaloneConsole();
 		}
 
 		restoreStreams();
@@ -597,9 +597,9 @@ public class SbmtMultiMissionTool
 
                 splash.validate();
                 splash.setVisible(true);
-                if (Console.isEnabled())
+                if (TSConsole.isEnabled())
                 {
-                    Console.showStandaloneConsole();
+                    TSConsole.showStandaloneConsole();
                 }
                 splash.toFront();
 
@@ -744,7 +744,7 @@ public class SbmtMultiMissionTool
 			outputStream = new PrintStream(Files.newOutputStream(outputFilePath));
 			System.setOut(outputStream);
 			System.setErr(outputStream);
-			Console.configure(true, outputStream);
+			TSConsole.configure(true, outputStream);
 		}
 	}
 
