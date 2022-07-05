@@ -744,7 +744,7 @@ public class SbmtMultiMissionTool
 			outputStream = new PrintStream(Files.newOutputStream(outputFilePath));
 			System.setOut(outputStream);
 			System.setErr(outputStream);
-			TSConsole.configure(true, outputStream);
+			TSConsole.configure(true, "Message Console", outputStream, outputStream);
 		}
 	}
 
