@@ -1735,10 +1735,10 @@ public class BennuConfigs extends SmallBodyViewConfig
             startStop = new ArrayList<Date>();
             startStop.add(new GregorianCalendar(2019, 6, 1, 0, 0, 0).getTime());
             startStop.add(new GregorianCalendar(2019, 7, 6, 0, 0, 0).getTime());
-            c.lidarSearchDataSourceMap.clear();
-            c.orexSearchTimeMap.clear();
-            c.orexSearchTimeMap.put("SPOv54", startStop);
-            c.lidarSearchDataSourceMap.put("SPOv54", c.rootDirOnServer + "/ola/search/olav54/dataSource.lidar");
+//            c.lidarSearchDataSourceMap.clear();
+//            c.orexSearchTimeMap.clear();
+//            c.orexSearchTimeMap.put("SPOv54", startStop);
+//            c.lidarSearchDataSourceMap.put("SPOv54", c.rootDirOnServer + "/ola/search/olav54/dataSource.lidar");
             c.lidarBrowseDataSourceMap.put("Default", c.rootDirOnServer + "/ola/l2a/fileListL2A.txt");
             c.lidarBrowseFileListResourcePath = c.rootDirOnServer + "/ola/l2a/fileListL2A.txt";
             c.lidarBrowseWithPointsDataSourceMap.put("Default", c.rootDirOnServer + "/ola/l2a/fileListL2A.txt");
