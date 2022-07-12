@@ -1653,8 +1653,8 @@ public class BennuConfigs extends SmallBodyViewConfig
             startStop.add(new GregorianCalendar(2019, 7, 6, 0, 0, 0).getTime());
             c.lidarSearchDataSourceMap.clear();
             c.orexSearchTimeMap.clear();
-            c.orexSearchTimeMap.put("OLAv21", startStop);
-            c.lidarSearchDataSourceMap.put("OLAv21", c.rootDirOnServer + "/ola/search/olav21/dataSource.lidar");
+            c.orexSearchTimeMap.put("OLAv21PTM", startStop);
+            c.lidarSearchDataSourceMap.put("OLAv21PTM", c.rootDirOnServer + "/ola/search/olav21ptm/dataSource.lidar");
             c.lidarBrowseDataSourceMap.put("Default", c.rootDirOnServer + "/ola/l2a/fileListL2A_OLAv21.txt");
             c.lidarBrowseFileListResourcePath = c.rootDirOnServer + "/ola/l2a/fileListL2A_OLAv21.txt";
             c.lidarBrowseWithPointsDataSourceMap.put("Default", c.rootDirOnServer + "/ola/l2a/fileListL2A_OLAv21.txt");
@@ -1695,8 +1695,8 @@ public class BennuConfigs extends SmallBodyViewConfig
             publicOLAptm.lidarBrowseWithPointsDataSourceMap.put("Default", publicOLAptm.rootDirOnServer + "/ola/l2a/fileListL2A_OLAv21.txt");
             publicOLAptm.lidarSearchDataSourceMap.clear();
             publicOLAptm.orexSearchTimeMap.clear();
-            publicOLAptm.orexSearchTimeMap.put("OLAv21", startStop);
-            publicOLAptm.lidarSearchDataSourceMap.put("OLAv21", publicOLAptm.rootDirOnServer + "/ola/search/olav21/dataSource.lidar");
+            publicOLAptm.orexSearchTimeMap.put("OLAv21PTM", startStop);
+            publicOLAptm.lidarSearchDataSourceMap.put("OLAv21PTM", publicOLAptm.rootDirOnServer + "/ola/search/olav21ptm/dataSource.lidar");
             if (publicOnly)
                 configArray.add(publicOLAptm);
         }
