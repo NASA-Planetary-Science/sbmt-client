@@ -176,6 +176,10 @@ public class DartConfigs
         c = createSingleResolutionConfig_20200629_v01(ShapeModelBody.DIDYMOS, "Errors Impact 5 20200629 v01", 3145728);
         configList.add(c);
         c = createSingleResMissionImagesConfig(ShapeModelBody.DIDYMOS, "Errors Impact 9 20210630 v01", 3072);
+
+        // As of initial delivery, no LEIA or LUKE images for this model, so suppress tabs for those imagers.
+        c.imagingInstruments = new ImagingInstrument[] { c.imagingInstruments[0] };
+
         configList.add(c);
 
 
@@ -192,6 +196,10 @@ public class DartConfigs
         c = createSingleResolutionConfig_20200629_v01(ShapeModelBody.DIMORPHOS, "Errors Impact 5 20200629 v01", 3366134);
         configList.add(c);
         c = createSingleResMissionImagesConfig(ShapeModelBody.DIMORPHOS, "Errors Impact 9 20210630 v01", 3072);
+
+        // As of initial delivery, no LEIA or LUKE images for this model, so suppress tabs for those imagers.
+        c.imagingInstruments = new ImagingInstrument[] { c.imagingInstruments[0] };
+
         configList.add(c);
 
 
