@@ -79,7 +79,7 @@ public class CometConfigs extends SmallBodyViewConfig
             c.shapeModelFileNames = prepend(c.rootDirOnServer, "ver64q.vtk.gz");
             c.setResolution(ImmutableList.of(DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[0]));
             c.presentInMissions =
-                    new SbmtMultiMissionTool.Mission[] { SbmtMultiMissionTool.Mission.PUBLIC_RELEASE, SbmtMultiMissionTool.Mission.TEST_PUBLIC_RELEASE, SbmtMultiMissionTool.Mission.STAGE_PUBLIC_RELEASE, SbmtMultiMissionTool.Mission.STAGE_APL_INTERNAL, SbmtMultiMissionTool.Mission.APL_INTERNAL, SbmtMultiMissionTool.Mission.TEST_APL_INTERNAL };
+                    new SbmtMultiMissionTool.Mission[] { SbmtMultiMissionTool.Mission.STAGE_APL_INTERNAL, SbmtMultiMissionTool.Mission.APL_INTERNAL, SbmtMultiMissionTool.Mission.TEST_APL_INTERNAL };
             c.defaultForMissions = new SbmtMultiMissionTool.Mission[] {};
 
             // Model identifier string rules: lowercase, no spaces nor
