@@ -15,7 +15,6 @@ import edu.jhuapl.saavtk.color.table.ColorMapAttr;
 import edu.jhuapl.saavtk.feature.FeatureAttr;
 import edu.jhuapl.saavtk.feature.FeatureType;
 import edu.jhuapl.saavtk.gui.render.Renderer;
-import edu.jhuapl.sbmt.stateHistory.model.StateHistorySourceType;
 import edu.jhuapl.sbmt.stateHistory.model.interfaces.StateHistory;
 import edu.jhuapl.sbmt.stateHistory.rendering.model.StateHistoryRendererManager;
 
@@ -69,13 +68,13 @@ public class StateHistoryColorBarPanel extends ColorBarPanel
 	@Override
 	public void activate(boolean aIsActive)
 	{
-		if (rendererManager.getHistoryCollection().getCurrentRun() != null && rendererManager.getHistoryCollection().getCurrentRun().getMetadata().getType() == StateHistorySourceType.SPICE)
-		{
-			addFeatureType(StateHistoryFeatureType.Range, "S/C Range to Surface (km)");
-			addFeatureType(StateHistoryFeatureType.SubSCIncidence, "S/C Incidence Angle (deg)");
-			addFeatureType(StateHistoryFeatureType.SubSCEmission, "S/C Emission Angle (deg)");
-			addFeatureType(StateHistoryFeatureType.SubSCPhase, "S/C Phase Angle (deg)");
-		}
+//		if (rendererManager.getHistoryCollection().getCurrentRun() != null && rendererManager.getHistoryCollection().getCurrentRun().getMetadata().getType() == StateHistorySourceType.SPICE)
+//		{
+//			addFeatureType(StateHistoryFeatureType.Range, "S/C Range to Surface (km)");
+//			addFeatureType(StateHistoryFeatureType.SubSCIncidence, "S/C Incidence Angle (deg)");
+//			addFeatureType(StateHistoryFeatureType.SubSCEmission, "S/C Emission Angle (deg)");
+//			addFeatureType(StateHistoryFeatureType.SubSCPhase, "S/C Phase Angle (deg)");
+//		}
 
 		// Ensure our default range is in sync
 		updateDefaultRange();
