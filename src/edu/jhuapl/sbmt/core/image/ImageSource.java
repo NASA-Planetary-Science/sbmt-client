@@ -1,4 +1,4 @@
-package edu.jhuapl.sbmt.model.image;
+package edu.jhuapl.sbmt.core.image;
 
 public enum ImageSource
 {

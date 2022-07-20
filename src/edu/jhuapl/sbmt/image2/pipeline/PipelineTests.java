@@ -12,6 +12,7 @@ import vtk.vtkActor;
 
 import edu.jhuapl.saavtk.util.NativeLibraryLoader;
 import edu.jhuapl.sbmt.client.SmallBodyModel;
+import edu.jhuapl.sbmt.core.image.PointingFileReader;
 import edu.jhuapl.sbmt.image2.api.Layer;
 import edu.jhuapl.sbmt.image2.modules.io.builtIn.BuiltInFitsHeaderReader;
 import edu.jhuapl.sbmt.image2.modules.io.builtIn.BuiltInFitsReader;
@@ -40,7 +41,6 @@ import edu.jhuapl.sbmt.image2.pipeline.publisher.Just;
 import edu.jhuapl.sbmt.image2.pipeline.publisher.Publishers;
 import edu.jhuapl.sbmt.image2.pipeline.subscriber.PairSink;
 import edu.jhuapl.sbmt.image2.pipeline.subscriber.Sink;
-import edu.jhuapl.sbmt.model.image.PointingFileReader;
 import edu.jhuapl.sbmt.pointing.spice.SpiceInfo;
 import edu.jhuapl.sbmt.pointing.spice.SpicePointingProvider;
 import edu.jhuapl.sbmt.util.TimeUtil;

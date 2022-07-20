@@ -1,4 +1,4 @@
-package edu.jhuapl.sbmt.model.image;
+package edu.jhuapl.sbmt.util;
 
 public abstract class BasicFileWriter implements FileWriter
 {

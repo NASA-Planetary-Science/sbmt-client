@@ -7,11 +7,11 @@ import java.util.Vector;
 
 import edu.jhuapl.saavtk.model.ModelNames;
 import edu.jhuapl.saavtk.util.SafeURLPaths;
+import edu.jhuapl.sbmt.core.image.NoOverlapException;
 import edu.jhuapl.sbmt.gui.image.model.ColorImageResultsListener;
-import edu.jhuapl.sbmt.gui.image.model.ImageKey;
 import edu.jhuapl.sbmt.gui.image.model.color.ColorImageModel;
 import edu.jhuapl.sbmt.model.image.ColorImage.ColorImageKey;
-import edu.jhuapl.sbmt.model.image.ColorImage.NoOverlapException;
+import edu.jhuapl.sbmt.model.image.keys.ImageKey;
 import edu.jhuapl.sbmt.model.image.ColorImageCollection;
 import edu.jhuapl.sbmt.model.image.ImageKeyInterface;
 

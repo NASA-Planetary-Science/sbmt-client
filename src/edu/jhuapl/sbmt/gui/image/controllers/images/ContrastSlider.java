@@ -3,7 +3,7 @@ package edu.jhuapl.sbmt.gui.image.controllers.images;
 import com.jidesoft.swing.RangeSlider;
 
 import edu.jhuapl.saavtk.util.IntensityRange;
-import edu.jhuapl.sbmt.model.image.Image;
+import edu.jhuapl.sbmt.core.image.Image;
 import edu.jhuapl.sbmt.model.image.perspectiveImage.PerspectiveImage;
 
 public class ContrastSlider extends RangeSlider

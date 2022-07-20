@@ -1,4 +1,4 @@
-package edu.jhuapl.sbmt.gui.image.model;
+package edu.jhuapl.sbmt.core.image;
 
 import java.util.List;
 

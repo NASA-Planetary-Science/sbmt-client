@@ -12,8 +12,8 @@ import javax.swing.ToolTipManager;
 
 import vtk.vtkJavaGarbageCollector;
 
-import edu.jhuapl.saavtk.gui.TSConsole;
 import edu.jhuapl.saavtk.gui.MainWindow;
+import edu.jhuapl.saavtk.gui.TSConsole;
 import edu.jhuapl.saavtk.util.Configuration;
 import edu.jhuapl.saavtk.util.Configuration.ReleaseType;
 import edu.jhuapl.saavtk.util.Debug;

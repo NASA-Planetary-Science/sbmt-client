@@ -18,6 +18,7 @@ import vtk.vtkTexture;
 
 import edu.jhuapl.saavtk.util.Frustum;
 import edu.jhuapl.saavtk.util.PolyDataUtil;
+import edu.jhuapl.sbmt.core.image.PointingFileReader;
 import edu.jhuapl.sbmt.image2.modules.rendering.pointedImage.RenderablePointedImage;
 import edu.jhuapl.sbmt.image2.modules.rendering.vtk.VtkImageContrastOperator;
 import edu.jhuapl.sbmt.image2.modules.rendering.vtk.VtkImageRendererOperator;
@@ -25,7 +26,6 @@ import edu.jhuapl.sbmt.image2.modules.rendering.vtk.VtkImageVtkMaskingOperator;
 import edu.jhuapl.sbmt.image2.pipeline.operator.BasePipelineOperator;
 import edu.jhuapl.sbmt.image2.pipeline.publisher.Just;
 import edu.jhuapl.sbmt.image2.pipeline.subscriber.Sink;
-import edu.jhuapl.sbmt.model.image.PointingFileReader;
 
 public class OfflimbActorOperator extends BasePipelineOperator<Pair<RenderablePointedImage, vtkPolyData>, vtkActor>
 {

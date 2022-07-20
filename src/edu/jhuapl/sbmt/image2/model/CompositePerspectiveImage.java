@@ -7,11 +7,11 @@ import java.util.Optional;
 import org.apache.commons.io.FilenameUtils;
 
 import edu.jhuapl.saavtk.util.IntensityRange;
+import edu.jhuapl.sbmt.core.image.ImageSource;
+import edu.jhuapl.sbmt.core.image.ImageType;
 import edu.jhuapl.sbmt.image2.interfaces.IPerspectiveImage;
 import edu.jhuapl.sbmt.image2.interfaces.IPerspectiveImageTableRepresentable;
 import edu.jhuapl.sbmt.image2.modules.rendering.cylindricalImage.CylindricalBounds;
-import edu.jhuapl.sbmt.model.image.ImageSource;
-import edu.jhuapl.sbmt.model.image.ImageType;
 
 public class CompositePerspectiveImage implements IPerspectiveImage, IPerspectiveImageTableRepresentable
 {

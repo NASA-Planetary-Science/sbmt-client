@@ -13,8 +13,8 @@ import org.joda.time.DateTimeZone;
 
 import com.google.common.collect.Range;
 
+import edu.jhuapl.sbmt.core.image.ImageSource;
 import edu.jhuapl.sbmt.core.listeners.SearchProgressListener;
-import edu.jhuapl.sbmt.model.image.ImageSource;
 import edu.jhuapl.sbmt.query.IQueryBase;
 import edu.jhuapl.sbmt.query.database.DatabaseQueryBase;
 import edu.jhuapl.sbmt.query.database.SpectraDatabaseSearchMetadata;

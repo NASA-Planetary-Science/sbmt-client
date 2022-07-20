@@ -1,4 +1,4 @@
-package edu.jhuapl.sbmt.model.image;
+package edu.jhuapl.sbmt.core.image;
 
 import java.io.BufferedReader;
 import java.io.FileInputStream;
@@ -7,6 +7,7 @@ import java.io.InputStreamReader;
 
 import edu.jhuapl.saavtk.util.DateTimeUtil;
 import edu.jhuapl.saavtk.util.MathUtil;
+import edu.jhuapl.sbmt.util.BasicFileReader;
 
 public class SumFileReader extends BasicFileReader<IOException> implements PointingFileReader
 {

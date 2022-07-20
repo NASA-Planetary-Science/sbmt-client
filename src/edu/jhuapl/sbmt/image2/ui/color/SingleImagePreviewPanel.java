@@ -18,6 +18,7 @@ import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.TransferHandler;
 
+import edu.jhuapl.sbmt.core.image.Image;
 import edu.jhuapl.sbmt.image2.interfaces.IPerspectiveImage;
 import edu.jhuapl.sbmt.image2.interfaces.IPerspectiveImageTableRepresentable;
 import edu.jhuapl.sbmt.image2.model.PerspectiveImage;
@@ -25,7 +26,6 @@ import edu.jhuapl.sbmt.image2.modules.preview.VtkLayerRenderer;
 import edu.jhuapl.sbmt.image2.modules.rendering.pointedImage.RenderablePointedImage;
 import edu.jhuapl.sbmt.image2.pipeline.active.PerspectiveImageToRenderableImagePipeline;
 import edu.jhuapl.sbmt.image2.pipeline.publisher.Just;
-import edu.jhuapl.sbmt.model.image.Image;
 
 public class SingleImagePreviewPanel extends JPanel
 {

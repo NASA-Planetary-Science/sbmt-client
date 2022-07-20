@@ -11,8 +11,8 @@ import edu.jhuapl.saavtk.gui.WindowManager;
 import edu.jhuapl.saavtk.model.Model;
 import edu.jhuapl.saavtk.model.ModelManager;
 import edu.jhuapl.saavtk.util.Properties;
+import edu.jhuapl.sbmt.core.image.Image;
 import edu.jhuapl.sbmt.model.image.ColorImage;
-import edu.jhuapl.sbmt.model.image.Image;
 
 public class SbmtInfoWindowManager implements WindowManager, PropertyChangeListener
 {

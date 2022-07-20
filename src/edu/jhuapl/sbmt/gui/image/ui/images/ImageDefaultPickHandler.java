@@ -10,7 +10,7 @@ import edu.jhuapl.saavtk.model.ModelManager;
 import edu.jhuapl.saavtk.pick.PickListener;
 import edu.jhuapl.saavtk.pick.PickMode;
 import edu.jhuapl.saavtk.pick.PickTarget;
-import edu.jhuapl.sbmt.model.image.Image;
+import edu.jhuapl.sbmt.core.image.Image;
 import edu.jhuapl.sbmt.model.image.ImageCollection;
 import edu.jhuapl.sbmt.model.image.perspectiveImage.PerspectiveImage;
 

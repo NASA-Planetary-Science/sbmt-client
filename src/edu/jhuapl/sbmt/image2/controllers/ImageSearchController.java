@@ -31,7 +31,8 @@ import edu.jhuapl.sbmt.client.SbmtInfoWindowManager;
 import edu.jhuapl.sbmt.client.SbmtSpectrumWindowManager;
 import edu.jhuapl.sbmt.client.SmallBodyModel;
 import edu.jhuapl.sbmt.client.SmallBodyViewConfig;
-import edu.jhuapl.sbmt.gui.image.ui.search.ImagingSearchPanel;
+import edu.jhuapl.sbmt.core.image.IImagingInstrument;
+import edu.jhuapl.sbmt.core.imageui.search.ImagingSearchPanel;
 import edu.jhuapl.sbmt.image2.interfaces.IPerspectiveImage;
 import edu.jhuapl.sbmt.image2.interfaces.IPerspectiveImageTableRepresentable;
 import edu.jhuapl.sbmt.image2.model.ImageSearchParametersModel;
@@ -41,7 +42,6 @@ import edu.jhuapl.sbmt.image2.modules.search.SaveImagesToSavedFilePipeline;
 import edu.jhuapl.sbmt.image2.ui.custom.importer.CustomImageImporterDialog;
 import edu.jhuapl.sbmt.image2.ui.custom.importer.CustomImageImporterDialog2;
 import edu.jhuapl.sbmt.image2.ui.table.popup.ImageListPopupMenu;
-import edu.jhuapl.sbmt.model.image.IImagingInstrument;
 
 import glum.gui.action.PopupMenu;
 

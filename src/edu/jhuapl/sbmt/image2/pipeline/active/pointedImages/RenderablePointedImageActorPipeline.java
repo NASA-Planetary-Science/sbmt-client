@@ -17,6 +17,8 @@ import vtk.vtkActor;
 import edu.jhuapl.saavtk.util.FileCache;
 import edu.jhuapl.saavtk.util.MathUtil;
 import edu.jhuapl.sbmt.client.SmallBodyModel;
+import edu.jhuapl.sbmt.core.image.ImageSource;
+import edu.jhuapl.sbmt.core.image.PointingFileReader;
 import edu.jhuapl.sbmt.image2.api.Layer;
 import edu.jhuapl.sbmt.image2.interfaces.IPerspectiveImage;
 import edu.jhuapl.sbmt.image2.interfaces.IPerspectiveImageTableRepresentable;
@@ -44,8 +46,6 @@ import edu.jhuapl.sbmt.image2.pipeline.publisher.Just;
 import edu.jhuapl.sbmt.image2.pipeline.publisher.Publishers;
 import edu.jhuapl.sbmt.image2.pipeline.subscriber.PairSink;
 import edu.jhuapl.sbmt.image2.pipeline.subscriber.Sink;
-import edu.jhuapl.sbmt.model.image.ImageSource;
-import edu.jhuapl.sbmt.model.image.PointingFileReader;
 
 public class RenderablePointedImageActorPipeline<G1 extends IPerspectiveImage & IPerspectiveImageTableRepresentable> implements RenderableImageActorPipeline
 {

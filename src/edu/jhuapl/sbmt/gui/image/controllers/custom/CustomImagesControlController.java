@@ -5,10 +5,10 @@ import java.awt.event.ActionListener;
 import java.io.IOException;
 import java.util.List;
 
-import edu.jhuapl.sbmt.gui.image.model.CustomImageKeyInterface;
 import edu.jhuapl.sbmt.gui.image.model.custom.CustomImagesModel;
 import edu.jhuapl.sbmt.gui.image.ui.custom.CustomImageImporterDialog;
 import edu.jhuapl.sbmt.gui.image.ui.custom.CustomImagesControlPanel;
+import edu.jhuapl.sbmt.model.image.keys.CustomImageKeyInterface;
 
 public class CustomImagesControlController
 {

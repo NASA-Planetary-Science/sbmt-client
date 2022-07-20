@@ -8,7 +8,7 @@ import javax.swing.table.DefaultTableModel;
 import edu.jhuapl.saavtk.model.ModelManager;
 import edu.jhuapl.saavtk.pick.PickManager;
 import edu.jhuapl.sbmt.client.SmallBodyViewConfig;
-import edu.jhuapl.sbmt.gui.image.ui.search.SpectralImageSearchParametersPanel;
+import edu.jhuapl.sbmt.core.imageui.search.SpectralImageSearchParametersPanel;
 import edu.jhuapl.sbmt.image2.model.ImageSearchParametersModel;
 import edu.jhuapl.sbmt.image2.model.PerspectiveImageCollection;
 

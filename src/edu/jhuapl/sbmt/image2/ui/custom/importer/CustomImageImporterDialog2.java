@@ -25,6 +25,9 @@ import com.beust.jcommander.internal.Lists;
 import com.google.common.collect.ImmutableSet;
 
 import edu.jhuapl.saavtk.gui.dialog.CustomFileChooser;
+import edu.jhuapl.sbmt.core.image.IImagingInstrument;
+import edu.jhuapl.sbmt.core.image.ImageSource;
+import edu.jhuapl.sbmt.core.image.ImageType;
 import edu.jhuapl.sbmt.image2.interfaces.IPerspectiveImage;
 import edu.jhuapl.sbmt.image2.interfaces.IPerspectiveImageTableRepresentable;
 import edu.jhuapl.sbmt.image2.model.CompositePerspectiveImage;
@@ -34,9 +37,6 @@ import edu.jhuapl.sbmt.image2.model.PerspectiveImage;
 import edu.jhuapl.sbmt.image2.model.PerspectiveImageCollection;
 import edu.jhuapl.sbmt.image2.modules.rendering.cylindricalImage.CylindricalBounds;
 import edu.jhuapl.sbmt.image2.ui.custom.importer.table.CustomImageImporterTableView;
-import edu.jhuapl.sbmt.model.image.IImagingInstrument;
-import edu.jhuapl.sbmt.model.image.ImageSource;
-import edu.jhuapl.sbmt.model.image.ImageType;
 
 import glum.item.ItemEventListener;
 import glum.item.ItemEventType;

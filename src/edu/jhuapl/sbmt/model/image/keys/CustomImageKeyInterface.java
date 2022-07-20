@@ -1,16 +1,14 @@
-package edu.jhuapl.sbmt.gui.image.model;
+package edu.jhuapl.sbmt.model.image.keys;
 
 import java.util.Date;
 import java.util.List;
 import java.util.Vector;
 
 import edu.jhuapl.saavtk.model.FileType;
-import edu.jhuapl.sbmt.gui.image.model.custom.CustomCylindricalImageKey;
-import edu.jhuapl.sbmt.gui.image.model.custom.CustomPerspectiveImageKey;
+import edu.jhuapl.sbmt.core.image.ImageSource;
+import edu.jhuapl.sbmt.core.image.ImageType;
 import edu.jhuapl.sbmt.gui.image.ui.custom.CustomImageImporterDialog.ProjectionType;
 import edu.jhuapl.sbmt.model.image.ImageKeyInterface;
-import edu.jhuapl.sbmt.model.image.ImageSource;
-import edu.jhuapl.sbmt.model.image.ImageType;
 
 import crucible.crust.metadata.api.Key;
 import crucible.crust.metadata.api.Metadata;

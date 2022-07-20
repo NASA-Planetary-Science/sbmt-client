@@ -8,11 +8,10 @@ import java.util.Vector;
 
 import edu.jhuapl.saavtk.model.Controller;
 import edu.jhuapl.saavtk.model.ModelNames;
+import edu.jhuapl.sbmt.core.image.NoOverlapException;
 import edu.jhuapl.sbmt.gui.image.model.ImageCubeResultsListener;
 import edu.jhuapl.sbmt.gui.image.model.images.ImageSearchModel;
-import edu.jhuapl.sbmt.model.image.ColorImage.NoOverlapException;
 import edu.jhuapl.sbmt.model.image.ImageCollection;
-import edu.jhuapl.sbmt.model.image.ImageCube;
 import edu.jhuapl.sbmt.model.image.ImageCube.ImageCubeKey;
 import edu.jhuapl.sbmt.model.image.ImageCubeCollection;
 import edu.jhuapl.sbmt.model.image.ImageKeyInterface;
@@ -217,7 +216,7 @@ public class ImageCubeModel implements Controller.Model, MetadataManager
                 fireErrorMessage("There was an error mapping the image.");
                 e1.printStackTrace();
             }
-            catch (ImageCube.NoOverlapException e1)
+            catch (NoOverlapException e1)
             {
                 fireErrorMessage("Cube Generation: The images you selected do not overlap.");
             }

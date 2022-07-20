@@ -5,9 +5,9 @@ import java.util.List;
 import java.util.Optional;
 
 import edu.jhuapl.saavtk.util.IntensityRange;
+import edu.jhuapl.sbmt.core.image.ImageSource;
+import edu.jhuapl.sbmt.core.image.ImageType;
 import edu.jhuapl.sbmt.image2.modules.rendering.cylindricalImage.CylindricalBounds;
-import edu.jhuapl.sbmt.model.image.ImageSource;
-import edu.jhuapl.sbmt.model.image.ImageType;
 
 public interface IPerspectiveImage
 {

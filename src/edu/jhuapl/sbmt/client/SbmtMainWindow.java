@@ -13,7 +13,7 @@ import edu.jhuapl.saavtk.gui.dialog.DirectoryChooser;
 import edu.jhuapl.saavtk.gui.menu.FileMenu;
 import edu.jhuapl.saavtk.model.ModelNames;
 import edu.jhuapl.saavtk.status.StatusNotifier;
-import edu.jhuapl.sbmt.model.image.Image;
+import edu.jhuapl.sbmt.core.image.Image;
 import edu.jhuapl.sbmt.model.image.ImageCollection;
 
 

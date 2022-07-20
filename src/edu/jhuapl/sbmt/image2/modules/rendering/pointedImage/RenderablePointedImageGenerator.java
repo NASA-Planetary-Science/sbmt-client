@@ -6,9 +6,9 @@ import java.util.HashMap;
 
 import org.apache.commons.lang3.tuple.Triple;
 
+import edu.jhuapl.sbmt.core.image.PointingFileReader;
 import edu.jhuapl.sbmt.image2.api.Layer;
 import edu.jhuapl.sbmt.image2.pipeline.operator.BasePipelineOperator;
-import edu.jhuapl.sbmt.model.image.PointingFileReader;
 
 public class RenderablePointedImageGenerator extends BasePipelineOperator<Triple<Layer, HashMap<String, String>, PointingFileReader>, RenderablePointedImage>
 {

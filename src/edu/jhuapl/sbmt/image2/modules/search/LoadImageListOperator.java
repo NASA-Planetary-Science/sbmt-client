@@ -10,9 +10,9 @@ import java.util.TimeZone;
 import org.apache.commons.lang3.tuple.Pair;
 
 import edu.jhuapl.saavtk.util.FileUtil;
+import edu.jhuapl.sbmt.core.image.IImagingInstrument;
+import edu.jhuapl.sbmt.core.image.ImagingInstrument;
 import edu.jhuapl.sbmt.image2.pipeline.operator.BasePipelineOperator;
-import edu.jhuapl.sbmt.model.image.IImagingInstrument;
-import edu.jhuapl.sbmt.model.image.ImagingInstrument;
 
 public class LoadImageListOperator extends BasePipelineOperator<Pair<String, IImagingInstrument>, Pair<List<List<String>>, IImagingInstrument>>
 {

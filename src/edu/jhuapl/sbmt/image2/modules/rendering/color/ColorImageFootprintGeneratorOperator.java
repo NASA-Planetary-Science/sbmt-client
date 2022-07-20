@@ -20,13 +20,13 @@ import edu.jhuapl.saavtk.util.MathUtil;
 import edu.jhuapl.saavtk.util.PolyDataUtil;
 import edu.jhuapl.saavtk.util.VtkDataTypes;
 import edu.jhuapl.sbmt.client.SmallBodyModel;
+import edu.jhuapl.sbmt.core.image.Chromatism;
+import edu.jhuapl.sbmt.core.image.NoOverlapException;
 import edu.jhuapl.sbmt.image2.modules.rendering.pointedImage.RenderablePointedImage;
 import edu.jhuapl.sbmt.image2.modules.rendering.vtk.VtkImageRendererOperator;
 import edu.jhuapl.sbmt.image2.pipeline.operator.BasePipelineOperator;
 import edu.jhuapl.sbmt.image2.pipeline.publisher.Just;
 import edu.jhuapl.sbmt.image2.pipeline.subscriber.Sink;
-import edu.jhuapl.sbmt.model.image.ColorImage.Chromatism;
-import edu.jhuapl.sbmt.model.image.ColorImage.NoOverlapException;
 
 public class ColorImageFootprintGeneratorOperator extends BasePipelineOperator<RenderablePointedImage, Pair<vtkImageData, vtkPolyData>>
 {

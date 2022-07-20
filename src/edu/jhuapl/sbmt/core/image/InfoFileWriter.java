@@ -1,10 +1,12 @@
-package edu.jhuapl.sbmt.model.image;
+package edu.jhuapl.sbmt.core.image;
 
 import java.io.BufferedWriter;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
+
+import edu.jhuapl.sbmt.util.BasicFileWriter;
 
 public class InfoFileWriter extends BasicFileWriter
 {

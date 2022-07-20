@@ -23,6 +23,7 @@ import edu.jhuapl.saavtk.util.Frustum;
 import edu.jhuapl.saavtk.util.MathUtil;
 import edu.jhuapl.saavtk.util.PolyDataUtil;
 import edu.jhuapl.sbmt.client.SmallBodyModel;
+import edu.jhuapl.sbmt.core.image.PointingFileReader;
 import edu.jhuapl.sbmt.image2.modules.rendering.pointedImage.RenderablePointedImage;
 import edu.jhuapl.sbmt.image2.modules.rendering.vtk.VTKImagePolyDataRenderer;
 import edu.jhuapl.sbmt.image2.modules.rendering.vtk.VtkImageContrastOperator;
@@ -33,7 +34,6 @@ import edu.jhuapl.sbmt.image2.pipeline.active.offlimb.OfflimbPlaneGenerator;
 import edu.jhuapl.sbmt.image2.pipeline.active.pointedImages.RenderablePointedImageFootprintGeneratorPipeline;
 import edu.jhuapl.sbmt.image2.pipeline.publisher.Just;
 import edu.jhuapl.sbmt.image2.pipeline.subscriber.Sink;
-import edu.jhuapl.sbmt.model.image.PointingFileReader;
 
 public class PointedImageRenderables
 {

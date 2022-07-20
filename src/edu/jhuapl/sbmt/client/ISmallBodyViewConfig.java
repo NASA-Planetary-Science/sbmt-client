@@ -4,7 +4,7 @@ import java.util.Date;
 import java.util.Map;
 
 import edu.jhuapl.saavtk.model.ShapeModelType;
-import edu.jhuapl.sbmt.model.image.Instrument;
+import edu.jhuapl.sbmt.config.Instrument;
 import edu.jhuapl.sbmt.model.phobos.HierarchicalSearchSpecification;
 import edu.jhuapl.sbmt.pointing.spice.SpiceInfo;
 import edu.jhuapl.sbmt.spectrum.model.core.search.SpectraHierarchicalSearchSpecification;

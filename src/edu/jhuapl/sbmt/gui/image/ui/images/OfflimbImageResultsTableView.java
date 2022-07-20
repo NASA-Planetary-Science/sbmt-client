@@ -1,7 +1,7 @@
 package edu.jhuapl.sbmt.gui.image.ui.images;
 
+import edu.jhuapl.sbmt.core.image.ImagingInstrument;
 import edu.jhuapl.sbmt.model.image.ImageCollection;
-import edu.jhuapl.sbmt.model.image.ImagingInstrument;
 
 public class OfflimbImageResultsTableView extends ImageResultsTableView
 {

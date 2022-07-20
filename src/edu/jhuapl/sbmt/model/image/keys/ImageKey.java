@@ -1,4 +1,4 @@
-package edu.jhuapl.sbmt.gui.image.model;
+package edu.jhuapl.sbmt.model.image.keys;
 
 
 import org.apache.commons.io.FilenameUtils;
@@ -7,11 +7,11 @@ import com.google.common.base.Preconditions;
 
 import edu.jhuapl.saavtk.model.FileType;
 import edu.jhuapl.saavtk.util.SafeURLPaths;
-import edu.jhuapl.sbmt.model.image.IImagingInstrument;
+import edu.jhuapl.sbmt.core.image.IImagingInstrument;
+import edu.jhuapl.sbmt.core.image.ImageSource;
+import edu.jhuapl.sbmt.core.image.ImageType;
+import edu.jhuapl.sbmt.core.image.ImagingInstrument;
 import edu.jhuapl.sbmt.model.image.ImageKeyInterface;
-import edu.jhuapl.sbmt.model.image.ImageSource;
-import edu.jhuapl.sbmt.model.image.ImageType;
-import edu.jhuapl.sbmt.model.image.ImagingInstrument;
 
 import crucible.crust.metadata.api.Key;
 import crucible.crust.metadata.api.Metadata;

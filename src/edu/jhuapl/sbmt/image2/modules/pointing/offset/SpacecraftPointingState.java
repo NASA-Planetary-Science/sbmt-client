@@ -2,7 +2,7 @@ package edu.jhuapl.sbmt.image2.modules.pointing.offset;
 
 import java.util.Arrays;
 
-import edu.jhuapl.sbmt.model.image.PointingFileReader;
+import edu.jhuapl.sbmt.core.image.PointingFileReader;
 
 public class SpacecraftPointingState
 {

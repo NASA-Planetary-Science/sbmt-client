@@ -1,4 +1,6 @@
-package edu.jhuapl.sbmt.model.image;
+package edu.jhuapl.sbmt.core.image;
+
+import edu.jhuapl.sbmt.util.BasicFileWriter;
 
 public class SumFileWriter extends BasicFileWriter
 {

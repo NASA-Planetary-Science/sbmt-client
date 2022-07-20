@@ -2,7 +2,7 @@ package edu.jhuapl.sbmt.stateHistory.model.planning.spectrometers;
 
 import java.awt.Color;
 
-import edu.jhuapl.sbmt.model.image.Instrument;
+import edu.jhuapl.sbmt.config.Instrument;
 import edu.jhuapl.sbmt.stateHistory.model.interfaces.IStateHistoryMetadata;
 import edu.jhuapl.sbmt.stateHistory.model.planning.PlannedInstrumentData;
 

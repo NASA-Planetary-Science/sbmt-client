@@ -9,12 +9,14 @@ import java.util.Vector;
 
 import edu.jhuapl.saavtk.model.ModelNames;
 import edu.jhuapl.saavtk.util.SafeURLPaths;
-import edu.jhuapl.sbmt.gui.image.model.CustomImageKeyInterface;
+import edu.jhuapl.sbmt.core.image.NoOverlapException;
 import edu.jhuapl.sbmt.gui.image.model.ImageCubeResultsListener;
 import edu.jhuapl.sbmt.gui.image.model.cubes.ImageCubeModel;
 import edu.jhuapl.sbmt.gui.image.ui.custom.CustomImageImporterDialog.ProjectionType;
-import edu.jhuapl.sbmt.model.image.ImageCube;
 import edu.jhuapl.sbmt.model.image.ImageCube.ImageCubeKey;
+import edu.jhuapl.sbmt.model.image.keys.CustomCylindricalImageKey;
+import edu.jhuapl.sbmt.model.image.keys.CustomImageKeyInterface;
+import edu.jhuapl.sbmt.model.image.keys.CustomPerspectiveImageKey;
 import edu.jhuapl.sbmt.model.image.perspectiveImage.PerspectiveImage;
 
 import nom.tam.fits.FitsException;
@@ -147,7 +149,7 @@ public class CustomImageCubeModel extends ImageCubeModel
                 fireErrorMessage("There was an error mapping the image.");
                 e1.printStackTrace();
             }
-            catch (ImageCube.NoOverlapException e1)
+            catch (NoOverlapException e1)
             {
                 fireErrorMessage("Cube Generation: The custom images you selected do not overlap.");
             }

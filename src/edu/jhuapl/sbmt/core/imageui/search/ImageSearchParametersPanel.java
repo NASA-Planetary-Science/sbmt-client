@@ -1,4 +1,4 @@
-package edu.jhuapl.sbmt.gui.image.ui.search;
+package edu.jhuapl.sbmt.core.imageui.search;
 
 import java.awt.Component;
 import java.awt.Dimension;

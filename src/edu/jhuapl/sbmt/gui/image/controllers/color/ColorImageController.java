@@ -22,16 +22,16 @@ import edu.jhuapl.saavtk.gui.render.Renderer;
 import edu.jhuapl.saavtk.util.Properties;
 import edu.jhuapl.saavtk.view.light.LightUtil;
 import edu.jhuapl.sbmt.client.SbmtInfoWindowManager;
+import edu.jhuapl.sbmt.core.image.ImageSearchResultsListener;
+import edu.jhuapl.sbmt.core.image.NoOverlapException;
 import edu.jhuapl.sbmt.gui.image.controllers.StringRenderer;
 import edu.jhuapl.sbmt.gui.image.model.ColorImageResultsListener;
-import edu.jhuapl.sbmt.gui.image.model.ImageSearchResultsListener;
 import edu.jhuapl.sbmt.gui.image.model.color.ColorImageModel;
 import edu.jhuapl.sbmt.gui.image.model.images.ImageSearchModel;
 import edu.jhuapl.sbmt.gui.image.ui.color.ColorImageGenerationPanel;
 import edu.jhuapl.sbmt.gui.image.ui.color.ColorImagePopupMenu;
 import edu.jhuapl.sbmt.model.image.ColorImage;
 import edu.jhuapl.sbmt.model.image.ColorImage.ColorImageKey;
-import edu.jhuapl.sbmt.model.image.ColorImage.NoOverlapException;
 import edu.jhuapl.sbmt.model.image.ColorImageCollection;
 import edu.jhuapl.sbmt.model.image.ImageKeyInterface;
 
@@ -227,7 +227,7 @@ public class ColorImageController
                     JOptionPane.ERROR_MESSAGE);
             e1.printStackTrace();
         }
-        catch (ColorImage.NoOverlapException e1)
+        catch (NoOverlapException e1)
         {
             JOptionPane.showMessageDialog(JOptionPane.getFrameForComponent(panel),
                     "Color Image Generation: The images you selected do not overlap.",

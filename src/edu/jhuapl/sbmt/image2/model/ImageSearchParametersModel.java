@@ -23,13 +23,10 @@ import edu.jhuapl.saavtk.model.ModelNames;
 import edu.jhuapl.saavtk.model.structure.AbstractEllipsePolygonModel;
 import edu.jhuapl.saavtk.util.IdPair;
 import edu.jhuapl.sbmt.client.SmallBodyViewConfig;
-import edu.jhuapl.sbmt.gui.image.model.ImageKey;
-import edu.jhuapl.sbmt.gui.image.model.ImageSearchModelListener;
-import edu.jhuapl.sbmt.gui.image.model.ImageSearchResultsListener;
-import edu.jhuapl.sbmt.model.image.IImagingInstrument;
-import edu.jhuapl.sbmt.model.image.ImageCollection;
-import edu.jhuapl.sbmt.model.image.ImageKeyInterface;
-import edu.jhuapl.sbmt.model.image.ImageSource;
+import edu.jhuapl.sbmt.core.image.IImagingInstrument;
+import edu.jhuapl.sbmt.core.image.ImageSearchModelListener;
+import edu.jhuapl.sbmt.core.image.ImageSearchResultsListener;
+import edu.jhuapl.sbmt.core.image.ImageSource;
 
 import crucible.crust.metadata.api.Key;
 import crucible.crust.metadata.api.Metadata;
@@ -72,7 +69,7 @@ public class ImageSearchParametersModel implements Model, MetadataManager
     protected ModelManager modelManager;
     protected IdPair resultIntervalCurrentlyShown = null;
     protected List<List<String>> imageResults = new ArrayList<List<String>>();
-    protected ImageCollection imageCollection;
+//    protected ImageCollection imageCollection;
     protected IImagingInstrument instrument;
     protected ImageSource imageSourceOfLastQuery = ImageSource.SPICE;
     private Date startDate = null;
@@ -145,16 +142,16 @@ public class ImageSearchParametersModel implements Model, MetadataManager
         fireResultsCountChanged(this.imageResults.size());
     }
 
-    public ImageCollection getImageCollection()
-    {
-        return imageCollection;
-    }
-
-
-    public void setImageCollection(ImageCollection imageCollection)
-    {
-        this.imageCollection = imageCollection;
-    }
+//    public ImageCollection getImageCollection()
+//    {
+//        return imageCollection;
+//    }
+//
+//
+//    public void setImageCollection(ImageCollection imageCollection)
+//    {
+//        this.imageCollection = imageCollection;
+//    }
 
 
     public IImagingInstrument getInstrument()
@@ -232,20 +229,20 @@ public class ImageSearchParametersModel implements Model, MetadataManager
         this.currentBand = currentBand;
     }
 
-    public List<ImageKeyInterface> createImageKeys(String boundaryName, ImageSource sourceOfLastQuery, IImagingInstrument instrument)
-    {
-        List<ImageKeyInterface> result = new ArrayList<ImageKeyInterface>();
-        result.add(createImageKey(boundaryName, sourceOfLastQuery, instrument));
-        return result;
-    }
-
-    public ImageKeyInterface createImageKey(String imagePathName, ImageSource sourceOfLastQuery, IImagingInstrument instrument)
-    {
-        int slice = this.getCurrentSlice();
-        String band = this.getCurrentBand();
-        ImageKeyInterface key = new ImageKey(imagePathName, sourceOfLastQuery, null, null, instrument, band, slice, null);
-        return key;
-    }
+//    public List<ImageKeyInterface> createImageKeys(String boundaryName, ImageSource sourceOfLastQuery, IImagingInstrument instrument)
+//    {
+//        List<ImageKeyInterface> result = new ArrayList<ImageKeyInterface>();
+//        result.add(createImageKey(boundaryName, sourceOfLastQuery, instrument));
+//        return result;
+//    }
+//
+//    public ImageKeyInterface createImageKey(String imagePathName, ImageSource sourceOfLastQuery, IImagingInstrument instrument)
+//    {
+//        int slice = this.getCurrentSlice();
+//        String band = this.getCurrentBand();
+//        ImageKeyInterface key = new ImageKey(imagePathName, sourceOfLastQuery, null, null, instrument, band, slice, null);
+//        return key;
+//    }
 
     public int getNumberOfFiltersActuallyUsed()
     {
@@ -326,26 +323,26 @@ public class ImageSearchParametersModel implements Model, MetadataManager
         modelListeners.removeAllElements();
     }
 
-    public ImageKeyInterface[] getSelectedImageKeys()
-    {
-        int[] indices = selectedImageIndices;
-        ImageKeyInterface[] selectedKeys = new ImageKeyInterface[indices.length];
-        if (indices.length > 0)
-        {
-            int i=0;
-            for (int index : indices)
-            {
-                String image = imageResults.get(index).get(0);
-                String name = new File(image).getName();
-                image = image.substring(0,image.length()-4);
-                ImageKeyInterface selectedKey = (ImageKeyInterface)createImageKey(image, imageSourceOfLastQuery, instrument);
-                if (!selectedKey.getBand().equals("0"))
-                    name = selectedKey.getBand() + ":" + name;
-                selectedKeys[i++] = selectedKey;
-            }
-        }
-        return selectedKeys;
-    }
+//    public ImageKeyInterface[] getSelectedImageKeys()
+//    {
+//        int[] indices = selectedImageIndices;
+//        ImageKeyInterface[] selectedKeys = new ImageKeyInterface[indices.length];
+//        if (indices.length > 0)
+//        {
+//            int i=0;
+//            for (int index : indices)
+//            {
+//                String image = imageResults.get(index).get(0);
+//                String name = new File(image).getName();
+//                image = image.substring(0,image.length()-4);
+//                ImageKeyInterface selectedKey = (ImageKeyInterface)createImageKey(image, imageSourceOfLastQuery, instrument);
+//                if (!selectedKey.getBand().equals("0"))
+//                    name = selectedKey.getBand() + ":" + name;
+//                selectedKeys[i++] = selectedKey;
+//            }
+//        }
+//        return selectedKeys;
+//    }
 
 
     public void setSelectedImageIndex(int[] selectedImageIndex)

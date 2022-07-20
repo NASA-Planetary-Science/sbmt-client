@@ -6,8 +6,8 @@ import javax.swing.event.TableModelListener;
 import javax.swing.table.DefaultTableModel;
 
 import edu.jhuapl.saavtk.pick.PickManager;
+import edu.jhuapl.sbmt.core.imageui.search.SpectralImageSearchParametersPanel;
 import edu.jhuapl.sbmt.gui.image.model.images.ImageSearchModel;
-import edu.jhuapl.sbmt.gui.image.ui.search.SpectralImageSearchParametersPanel;
 
 public class SpectralImageSearchParametersController
         extends ImageSearchParametersController

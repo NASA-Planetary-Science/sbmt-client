@@ -33,16 +33,16 @@ import edu.jhuapl.saavtk.util.Properties;
 import edu.jhuapl.saavtk.util.SafeURLPaths;
 import edu.jhuapl.sbmt.client.SbmtInfoWindowManager;
 import edu.jhuapl.sbmt.client.SbmtSpectrumWindowManager;
+import edu.jhuapl.sbmt.core.image.Image;
+import edu.jhuapl.sbmt.core.image.ImagingInstrument;
 import edu.jhuapl.sbmt.gui.image.controllers.images.ImageResultsTableController;
-import edu.jhuapl.sbmt.gui.image.model.CustomImageKeyInterface;
-import edu.jhuapl.sbmt.gui.image.model.custom.CustomCylindricalImageKey;
 import edu.jhuapl.sbmt.gui.image.model.custom.CustomImagesModel;
-import edu.jhuapl.sbmt.gui.image.model.custom.CustomPerspectiveImageKey;
 import edu.jhuapl.sbmt.gui.image.ui.custom.CustomImageImporterDialog.ProjectionType;
-import edu.jhuapl.sbmt.model.image.Image;
 import edu.jhuapl.sbmt.model.image.ImageCollection;
 import edu.jhuapl.sbmt.model.image.ImageKeyInterface;
-import edu.jhuapl.sbmt.model.image.ImagingInstrument;
+import edu.jhuapl.sbmt.model.image.keys.CustomCylindricalImageKey;
+import edu.jhuapl.sbmt.model.image.keys.CustomImageKeyInterface;
+import edu.jhuapl.sbmt.model.image.keys.CustomPerspectiveImageKey;
 import edu.jhuapl.sbmt.model.image.perspectiveImage.PerspectiveImage;
 
 public class CustomImageResultsTableController extends ImageResultsTableController

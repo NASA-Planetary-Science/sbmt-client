@@ -17,11 +17,11 @@ import vtk.vtkPolyData;
 
 import edu.jhuapl.saavtk.util.MathUtil;
 import edu.jhuapl.sbmt.client.SmallBodyModel;
+import edu.jhuapl.sbmt.core.image.PointingFileReader;
 import edu.jhuapl.sbmt.image2.modules.rendering.pointedImage.RenderablePointedImage;
 import edu.jhuapl.sbmt.image2.pipeline.active.pointedImages.RenderablePointedImageFootprintGeneratorPipeline;
 import edu.jhuapl.sbmt.image2.pipeline.active.rendering.CameraOrientationPipeline;
 import edu.jhuapl.sbmt.image2.pipeline.operator.BasePipelineOperator;
-import edu.jhuapl.sbmt.model.image.PointingFileReader;
 
 public class OfflimbPlaneGenerator extends BasePipelineOperator<RenderablePointedImage, Pair<RenderablePointedImage, vtkPolyData>>
 {

@@ -35,8 +35,8 @@ import edu.jhuapl.saavtk.gui.ModelInfoWindow;
 import edu.jhuapl.saavtk.model.Model;
 import edu.jhuapl.saavtk.status.LegacyStatusHandler;
 import edu.jhuapl.saavtk.util.IntensityRange;
+import edu.jhuapl.sbmt.core.image.Chromatism;
 import edu.jhuapl.sbmt.model.image.ColorImage;
-import edu.jhuapl.sbmt.model.image.ColorImage.Chromatism;
 import edu.jhuapl.sbmt.model.image.ColorImageCollection;
 
 

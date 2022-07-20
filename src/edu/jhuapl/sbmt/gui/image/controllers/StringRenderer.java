@@ -9,8 +9,8 @@ import javax.swing.table.DefaultTableCellRenderer;
 
 import org.apache.commons.io.FilenameUtils;
 
+import edu.jhuapl.sbmt.core.image.Image;
 import edu.jhuapl.sbmt.gui.image.model.images.ImageSearchModel;
-import edu.jhuapl.sbmt.model.image.Image;
 import edu.jhuapl.sbmt.model.image.ImageKeyInterface;
 
 public class StringRenderer extends DefaultTableCellRenderer

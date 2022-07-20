@@ -5,9 +5,9 @@ import java.util.Optional;
 
 import edu.jhuapl.saavtk.util.IntensityRange;
 import edu.jhuapl.saavtk.util.MathUtil;
+import edu.jhuapl.sbmt.core.image.PointingFileReader;
 import edu.jhuapl.sbmt.image2.api.Layer;
 import edu.jhuapl.sbmt.image2.modules.rendering.layer.LayerMasking;
-import edu.jhuapl.sbmt.model.image.PointingFileReader;
 
 public class RenderablePointedImage
 {

@@ -9,6 +9,8 @@ import edu.jhuapl.saavtk.pick.PickManager;
 import edu.jhuapl.sbmt.client.SbmtInfoWindowManager;
 import edu.jhuapl.sbmt.client.SbmtSpectrumWindowManager;
 import edu.jhuapl.sbmt.client.SmallBodyViewConfig;
+import edu.jhuapl.sbmt.core.image.ImagingInstrument;
+import edu.jhuapl.sbmt.core.imageui.search.ImagingSearchPanel;
 import edu.jhuapl.sbmt.gui.image.controllers.color.ColorImageController;
 import edu.jhuapl.sbmt.gui.image.controllers.cubes.SpectralImageCubeController;
 import edu.jhuapl.sbmt.gui.image.controllers.images.ImageResultsTableController;
@@ -18,10 +20,8 @@ import edu.jhuapl.sbmt.gui.image.model.color.ColorImageModel;
 import edu.jhuapl.sbmt.gui.image.model.cubes.ImageCubeModel;
 import edu.jhuapl.sbmt.gui.image.model.images.ImageSearchModel;
 import edu.jhuapl.sbmt.gui.image.ui.cubes.ImageCubePopupMenu;
-import edu.jhuapl.sbmt.gui.image.ui.search.ImagingSearchPanel;
 import edu.jhuapl.sbmt.model.image.ImageCollection;
 import edu.jhuapl.sbmt.model.image.ImageCubeCollection;
-import edu.jhuapl.sbmt.model.image.ImagingInstrument;
 
 
 public class SpectralImagingSearchController implements Controller<ImageSearchModel, ImagingSearchPanel>

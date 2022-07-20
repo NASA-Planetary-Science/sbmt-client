@@ -32,14 +32,14 @@ import edu.jhuapl.saavtk.model.structure.AbstractEllipsePolygonModel;
 import edu.jhuapl.saavtk.pick.PickManager;
 import edu.jhuapl.saavtk.pick.PickManager.PickMode;
 import edu.jhuapl.sbmt.client.SmallBodyViewConfig;
-import edu.jhuapl.sbmt.gui.image.model.ImageSearchModelListener;
-import edu.jhuapl.sbmt.gui.image.ui.search.ImageSearchParametersPanel;
-import edu.jhuapl.sbmt.gui.image.ui.search.SpectralImageSearchParametersPanel;
+import edu.jhuapl.sbmt.core.image.ImageSearchModelListener;
+import edu.jhuapl.sbmt.core.image.ImageSource;
+import edu.jhuapl.sbmt.core.imageui.search.ImageSearchParametersPanel;
+import edu.jhuapl.sbmt.core.imageui.search.SpectralImageSearchParametersPanel;
 import edu.jhuapl.sbmt.image2.interfaces.IPerspectiveImage;
 import edu.jhuapl.sbmt.image2.model.ImageSearchParametersModel;
 import edu.jhuapl.sbmt.image2.model.PerspectiveImageCollection;
 import edu.jhuapl.sbmt.image2.modules.search.ImageSearchPipeline;
-import edu.jhuapl.sbmt.model.image.ImageSource;
 
 public class ImageSearchParametersController
 {

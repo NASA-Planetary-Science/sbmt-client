@@ -11,7 +11,7 @@ import java.util.List;
 import javax.swing.JComponent;
 import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
-import javax.swing.JPanel; 
+import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 
 import org.apache.commons.io.FilenameUtils;
@@ -36,7 +36,6 @@ import edu.jhuapl.sbmt.stateHistory.model.StateHistorySourceType;
 import edu.jhuapl.sbmt.stateHistory.model.StateHistoryUtil;
 import edu.jhuapl.sbmt.stateHistory.model.interfaces.StateHistory;
 import edu.jhuapl.sbmt.stateHistory.model.io.SpiceKernelIngestor;
-import edu.jhuapl.sbmt.stateHistory.model.io.SpiceKernelLoadStatusListener;
 import edu.jhuapl.sbmt.stateHistory.model.io.StateHistoryIOException;
 import edu.jhuapl.sbmt.stateHistory.model.io.StateHistoryInputException;
 import edu.jhuapl.sbmt.stateHistory.model.io.StateHistoryInvalidTimeException;

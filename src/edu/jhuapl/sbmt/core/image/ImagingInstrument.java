@@ -1,4 +1,4 @@
-package edu.jhuapl.sbmt.model.image;
+package edu.jhuapl.sbmt.core.image;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -7,6 +7,8 @@ import java.util.Set;
 
 import edu.jhuapl.saavtk.util.FillDetector;
 import edu.jhuapl.saavtk.util.ImageDataUtil;
+import edu.jhuapl.sbmt.config.Instrument;
+import edu.jhuapl.sbmt.model.image.SpectralImageMode;
 import edu.jhuapl.sbmt.query.IQueryBase;
 import edu.jhuapl.sbmt.query.QueryBase;
 import edu.jhuapl.sbmt.query.database.GenericPhpQuery;
