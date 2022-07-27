@@ -25,11 +25,11 @@ import com.google.common.collect.Sets;
 import edu.jhuapl.saavtk.camera.gui.CameraQuaternionAction;
 import edu.jhuapl.saavtk.camera.gui.CameraRecorderAction;
 import edu.jhuapl.saavtk.camera.gui.CameraRegularAction;
-import edu.jhuapl.saavtk.gui.Console;
 import edu.jhuapl.saavtk.gui.RecentlyViewed;
 import edu.jhuapl.saavtk.gui.ShapeModelImporter;
 import edu.jhuapl.saavtk.gui.ShapeModelImporter.FormatType;
 import edu.jhuapl.saavtk.gui.ShapeModelImporter.ShapeModelType;
+import edu.jhuapl.saavtk.gui.TSConsole;
 import edu.jhuapl.saavtk.gui.View;
 import edu.jhuapl.saavtk.gui.ViewManager;
 import edu.jhuapl.saavtk.gui.menu.FavoritesMenu;
@@ -230,7 +230,7 @@ public class SbmtViewManager extends ViewManager
         menuBar.add(viewMenu);
 
         // Console menu
-        Console.addConsoleMenu(menuBar);
+        TSConsole.addConsoleMenu(menuBar);
 
         // Help menu
         helpMenu = new SbmtHelpMenu(this);

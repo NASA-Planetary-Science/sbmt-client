@@ -14,8 +14,8 @@ import javax.swing.ToolTipManager;
 import vtk.vtkJavaGarbageCollector;
 
 import edu.jhuapl.saavtk.config.IBodyViewConfig;
-import edu.jhuapl.saavtk.gui.Console;
 import edu.jhuapl.saavtk.gui.MainWindow;
+import edu.jhuapl.saavtk.gui.TSConsole;
 import edu.jhuapl.saavtk.model.ShapeModelBody;
 import edu.jhuapl.saavtk.model.ShapeModelType;
 import edu.jhuapl.saavtk.util.Configuration;
@@ -90,8 +90,8 @@ public class SbmtTestRunnable implements Runnable
                             frame.setVisible(true);
                             System.out.println("\nSBMT Ready");
 
-                            Console.hideConsole();
-                            Console.setDefaultLocation(frame);
+                            TSConsole.hideConsole();
+                            TSConsole.setDefaultLocation(frame);
                         }
                     }
                 };
@@ -171,7 +171,7 @@ public class SbmtTestRunnable implements Runnable
 				System.out.println("You may update your user name and password on the Body -> Update Password menu.");
 			}
 		}
-		if (Console.isConfigured())
+		if (TSConsole.isConfigured())
 		{
 			System.out.println("\nThis is the SBMT console. You can show or hide it on the Console menu.");
 			System.out.println("The console shows diagnostic information and other messages.");
