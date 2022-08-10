@@ -14,11 +14,14 @@ public class GDALTest
 //		{
 //			System.out.println("GDALTest: GDALTest: driver " + gdal.GetDriver(i).getLongName());
 //		}
-		loadAndDetail("/Users/steelrj1/Desktop/SBMT Example Data files/M0125956777F4_2P_IOF_DBL.FIT");
-		loadAndDetail("/Users/steelrj1/Desktop/SBMT Example Data files/Global_20181213_20181201_Shape14_NatureEd.png");
-		loadAndDetail("/Users/steelrj1/Desktop/SBMT Example Data files/M0145810520F6_2P_CIF_DBL");
-		loadAndDetail("/Users/steelrj1/Downloads/m0153784905f4_2p_iof_dbl_bp.fit");
-		loadAndDetailVector("/Users/steelrj1/Downloads/bulkunitlines_titan2000.shp");
+//		loadAndDetail("/Users/steelrj1/Desktop/SBMT Example Data files/M0125956777F4_2P_IOF_DBL.FIT");
+//		loadAndDetail("/Users/steelrj1/Desktop/SBMT Example Data files/Global_20181213_20181201_Shape14_NatureEd.png");
+		loadAndDetail("/Users/steelrj1/Desktop/SBMT Example Data files/M0145810520F6_2P_CIF_DBL.FIT");
+//		loadAndDetail("/Users/steelrj1/Downloads/m0153784905f4_2p_iof_dbl_bp.fit");
+//		loadAndDetailVector("/Users/steelrj1/Downloads/bulkunitlines_titan2000.shp");
+
+
+
 	}
 
 	private void loadAndDetailVector(String filename)
@@ -113,6 +116,13 @@ public class GDALTest
 //				System.out.println("GDALTest: loadAndDetail: values at " + j + " " + k + " "+ fitsData[j*dataset.getRasterYSize() + k]);
 //			}
 //		}
+
+		//This block can be used to export the layer a PNG - the Translate method can do this, we'll have to figure out which helper methods to create.
+//		Vector<String> options = new Vector<String>();
+//		options.add("-ot");
+//		options.add("Byte"); //was UInt16
+//		options.add("-scale");
+//		gdal.Translate("/Users/steelrj1/Desktop/test1.png", dataset, new TranslateOptions(options));
 	}
 
 	public static void main(String[] args)

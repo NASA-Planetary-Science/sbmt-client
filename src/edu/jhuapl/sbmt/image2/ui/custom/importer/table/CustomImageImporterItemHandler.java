@@ -2,16 +2,16 @@ package edu.jhuapl.sbmt.image2.ui.custom.importer.table;
 
 import edu.jhuapl.sbmt.image2.interfaces.IPerspectiveImage;
 import edu.jhuapl.sbmt.image2.interfaces.IPerspectiveImageTableRepresentable;
-import edu.jhuapl.sbmt.image2.model.CustomPerspectiveImageCollection;
 
 import glum.gui.panel.itemList.BasicItemHandler;
 import glum.gui.panel.itemList.query.QueryComposer;
+import glum.item.BaseItemManager;
 
 public class CustomImageImporterItemHandler<G1 extends IPerspectiveImage  & IPerspectiveImageTableRepresentable > extends BasicItemHandler<G1, CustomImageImporterColumnLookup>
 {
-	private final CustomPerspectiveImageCollection imageCollection;
+	private final BaseItemManager<G1> imageCollection;
 
-	public CustomImageImporterItemHandler(CustomPerspectiveImageCollection aManager, QueryComposer<CustomImageImporterColumnLookup> aComposer)
+	public CustomImageImporterItemHandler(BaseItemManager<G1> aManager, QueryComposer<CustomImageImporterColumnLookup> aComposer)
 	{
 		super(aComposer);
 
@@ -34,13 +34,13 @@ public class CustomImageImporterItemHandler<G1 extends IPerspectiveImage  & IPer
 			case IMAGE_FLIP:
 				return image.getFlip();
 			case LATITUDE_MIN:
-				return image.getBounds().getMinLatitude();
+				return image.getBounds().minLatitude();
 			case LATITUDE_MAX:
-				return image.getBounds().getMaxLatitude();
+				return image.getBounds().maxLatitude();
 			case LONGITUDE_MIN:
-				return image.getBounds().getMinLongitude();
+				return image.getBounds().minLongitude();
 			case LONGITUDE_MAX:
-				return image.getBounds().getMaxLongitude();
+				return image.getBounds().maxLongitude();
 			default:
 				break;
 		}

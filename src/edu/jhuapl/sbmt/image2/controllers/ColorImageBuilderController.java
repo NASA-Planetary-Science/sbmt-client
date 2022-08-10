@@ -10,31 +10,28 @@ import org.apache.commons.lang3.tuple.Pair;
 
 import vtk.vtkActor;
 
-import edu.jhuapl.sbmt.client.SmallBodyModel;
+import edu.jhuapl.sbmt.common.client.SmallBodyModel;
 import edu.jhuapl.sbmt.image2.interfaces.IPerspectiveImage;
-import edu.jhuapl.sbmt.image2.model.ColorImageBuilderModel;
+import edu.jhuapl.sbmt.image2.interfaces.IPerspectiveImageTableRepresentable;
 import edu.jhuapl.sbmt.image2.model.CompositePerspectiveImage;
 import edu.jhuapl.sbmt.image2.model.PerspectiveImageCollection;
-import edu.jhuapl.sbmt.image2.modules.preview.VtkRendererPreview;
-import edu.jhuapl.sbmt.image2.modules.rendering.SceneActorBuilderOperator;
-import edu.jhuapl.sbmt.image2.pipeline.active.ColorImageGeneratorPipeline;
-import edu.jhuapl.sbmt.image2.pipeline.operator.IPipelineOperator;
-import edu.jhuapl.sbmt.image2.pipeline.publisher.IPipelinePublisher;
-import edu.jhuapl.sbmt.image2.pipeline.publisher.Just;
-import edu.jhuapl.sbmt.image2.pipeline.publisher.Publishers;
+import edu.jhuapl.sbmt.image2.pipeline.ColorImageGeneratorPipeline;
+import edu.jhuapl.sbmt.image2.pipeline.preview.VtkRendererPreview;
+import edu.jhuapl.sbmt.image2.pipeline.rendering.SceneActorBuilderOperator;
 import edu.jhuapl.sbmt.image2.ui.color.ColorImageBuilderPanel;
+import edu.jhuapl.sbmt.pipeline.operator.IPipelineOperator;
+import edu.jhuapl.sbmt.pipeline.publisher.IPipelinePublisher;
+import edu.jhuapl.sbmt.pipeline.publisher.Just;
+import edu.jhuapl.sbmt.pipeline.publisher.Publishers;
 
-public class ColorImageBuilderController
+public class ColorImageBuilderController<G1 extends IPerspectiveImage & IPerspectiveImageTableRepresentable>
 {
-
 	ColorImageBuilderPanel panel;
-	ColorImageBuilderModel model;
-	PerspectiveImageCollection imageCollection;
-	Optional<IPerspectiveImage> existingImage;
+	PerspectiveImageCollection<G1> imageCollection;
+	Optional<G1> existingImage;
 
-	public ColorImageBuilderController(List<SmallBodyModel> smallBodyModels, PerspectiveImageCollection imageCollection, Optional<IPerspectiveImage> existingImage)
+	public ColorImageBuilderController(List<SmallBodyModel> smallBodyModels, PerspectiveImageCollection<G1> imageCollection, Optional<G1> existingImage)
 	{
-		this.model = new ColorImageBuilderModel();
 		this.existingImage = existingImage;
 		this.panel = new ColorImageBuilderPanel(smallBodyModels);
 		this.imageCollection = imageCollection;
@@ -72,9 +69,8 @@ public class ColorImageBuilderController
 			existingImage.ifPresent(image -> imageCollection.removeUserImage(image));
 
 			CompositePerspectiveImage colorImage = new CompositePerspectiveImage(panel.getImages());
-			imageCollection.addUserImage(colorImage);
+			imageCollection.addUserImage((G1)colorImage);
 			SwingUtilities.getWindowAncestor(panel).setVisible(false);
-//			panel.getParent().setVisible(false);
 		});
 	}
 

@@ -14,26 +14,26 @@ import edu.jhuapl.saavtk.model.ShapeModelBody;
 import edu.jhuapl.saavtk.model.ShapeModelType;
 import edu.jhuapl.saavtk.util.Configuration;
 import edu.jhuapl.saavtk.util.FileCache;
-import edu.jhuapl.sbmt.client.BodyType;
-import edu.jhuapl.sbmt.client.SbmtMultiMissionTool;
-import edu.jhuapl.sbmt.client.ShapeModelDataUsed;
-import edu.jhuapl.sbmt.client.ShapeModelPopulation;
-import edu.jhuapl.sbmt.client.SmallBodyViewConfig;
+import edu.jhuapl.sbmt.common.client.Mission;
+import edu.jhuapl.sbmt.common.client.SmallBodyViewConfig;
+import edu.jhuapl.sbmt.config.BodyType;
 import edu.jhuapl.sbmt.config.Instrument;
 import edu.jhuapl.sbmt.config.SBMTBodyConfiguration;
 import edu.jhuapl.sbmt.config.SBMTFileLocator;
 import edu.jhuapl.sbmt.config.SBMTFileLocators;
 import edu.jhuapl.sbmt.config.SessionConfiguration;
 import edu.jhuapl.sbmt.config.ShapeModelConfiguration;
+import edu.jhuapl.sbmt.config.ShapeModelDataUsed;
+import edu.jhuapl.sbmt.config.ShapeModelPopulation;
+import edu.jhuapl.sbmt.config.SpectralImageMode;
+import edu.jhuapl.sbmt.core.image.BasicImagingInstrument;
 import edu.jhuapl.sbmt.core.image.ImageSource;
 import edu.jhuapl.sbmt.core.image.ImageType;
 import edu.jhuapl.sbmt.core.image.ImagingInstrument;
-import edu.jhuapl.sbmt.imaging.instruments.ImagingInstrumentConfiguration;
+import edu.jhuapl.sbmt.core.image.ImagingInstrumentConfiguration;
 import edu.jhuapl.sbmt.model.bennu.lidar.old.OlaCubesGenerator;
 import edu.jhuapl.sbmt.model.bennu.spectra.otes.OTES;
 import edu.jhuapl.sbmt.model.bennu.spectra.ovirs.OVIRS;
-import edu.jhuapl.sbmt.model.image.BasicImagingInstrument;
-import edu.jhuapl.sbmt.model.image.SpectralImageMode;
 import edu.jhuapl.sbmt.pointing.spice.SpiceInfo;
 import edu.jhuapl.sbmt.query.QueryBase;
 import edu.jhuapl.sbmt.query.database.GenericPhpQuery;
@@ -47,30 +47,30 @@ import edu.jhuapl.sbmt.tools.DBRunInfo;
 
 public class BennuConfigs extends SmallBodyViewConfig
 {
-    private static final SbmtMultiMissionTool.Mission[] OREXClients = new SbmtMultiMissionTool.Mission[] { //
-            SbmtMultiMissionTool.Mission.OSIRIS_REX, SbmtMultiMissionTool.Mission.OSIRIS_REX_TEST, SbmtMultiMissionTool.Mission.OSIRIS_REX_DEPLOY, //
-            SbmtMultiMissionTool.Mission.OSIRIS_REX_MIRROR_DEPLOY
+    private static final Mission[] OREXClients = new Mission[] { //
+            Mission.OSIRIS_REX, Mission.OSIRIS_REX_TEST, Mission.OSIRIS_REX_DEPLOY, //
+            Mission.OSIRIS_REX_MIRROR_DEPLOY
     };
 
-    private static final SbmtMultiMissionTool.Mission[] ClientsWithOREXModels = new SbmtMultiMissionTool.Mission[] { //
-            SbmtMultiMissionTool.Mission.APL_INTERNAL, SbmtMultiMissionTool.Mission.TEST_APL_INTERNAL, SbmtMultiMissionTool.Mission.STAGE_APL_INTERNAL, //
-            SbmtMultiMissionTool.Mission.OSIRIS_REX, SbmtMultiMissionTool.Mission.OSIRIS_REX_TEST, SbmtMultiMissionTool.Mission.OSIRIS_REX_DEPLOY, //
-            SbmtMultiMissionTool.Mission.OSIRIS_REX_MIRROR_DEPLOY
+    private static final Mission[] ClientsWithOREXModels = new Mission[] { //
+            Mission.APL_INTERNAL, Mission.TEST_APL_INTERNAL, Mission.STAGE_APL_INTERNAL, //
+            Mission.OSIRIS_REX, Mission.OSIRIS_REX_TEST, Mission.OSIRIS_REX_DEPLOY, //
+            Mission.OSIRIS_REX_MIRROR_DEPLOY
     };
 
-    private static final SbmtMultiMissionTool.Mission[] AllBennuClients = new SbmtMultiMissionTool.Mission[] { //
-            SbmtMultiMissionTool.Mission.PUBLIC_RELEASE, SbmtMultiMissionTool.Mission.TEST_PUBLIC_RELEASE, SbmtMultiMissionTool.Mission.STAGE_PUBLIC_RELEASE, //
-            SbmtMultiMissionTool.Mission.APL_INTERNAL, SbmtMultiMissionTool.Mission.TEST_APL_INTERNAL, SbmtMultiMissionTool.Mission.STAGE_APL_INTERNAL, //
-            SbmtMultiMissionTool.Mission.OSIRIS_REX, SbmtMultiMissionTool.Mission.OSIRIS_REX_TEST, SbmtMultiMissionTool.Mission.OSIRIS_REX_DEPLOY, //
-            SbmtMultiMissionTool.Mission.OSIRIS_REX_MIRROR_DEPLOY
+    private static final Mission[] AllBennuClients = new Mission[] { //
+            Mission.PUBLIC_RELEASE, Mission.TEST_PUBLIC_RELEASE, Mission.STAGE_PUBLIC_RELEASE, //
+            Mission.APL_INTERNAL, Mission.TEST_APL_INTERNAL, Mission.STAGE_APL_INTERNAL, //
+            Mission.OSIRIS_REX, Mission.OSIRIS_REX_TEST, Mission.OSIRIS_REX_DEPLOY, //
+            Mission.OSIRIS_REX_MIRROR_DEPLOY
     };
 
-    private static final SbmtMultiMissionTool.Mission[] InternalOnly = new SbmtMultiMissionTool.Mission[] {
-    		SbmtMultiMissionTool.Mission.APL_INTERNAL, SbmtMultiMissionTool.Mission.TEST_APL_INTERNAL, SbmtMultiMissionTool.Mission.STAGE_APL_INTERNAL
+    private static final Mission[] InternalOnly = new Mission[] {
+    		Mission.APL_INTERNAL, Mission.TEST_APL_INTERNAL, Mission.STAGE_APL_INTERNAL
     };
 
-    private static final SbmtMultiMissionTool.Mission[] PublicOnly = new SbmtMultiMissionTool.Mission[] {
-    		SbmtMultiMissionTool.Mission.PUBLIC_RELEASE, SbmtMultiMissionTool.Mission.TEST_PUBLIC_RELEASE, SbmtMultiMissionTool.Mission.STAGE_PUBLIC_RELEASE
+    private static final Mission[] PublicOnly = new Mission[] {
+    		Mission.PUBLIC_RELEASE, Mission.TEST_PUBLIC_RELEASE, Mission.STAGE_PUBLIC_RELEASE
     };
 
 
@@ -288,7 +288,7 @@ public class BennuConfigs extends SmallBodyViewConfig
             c.spectraSearchDataSourceMap.put("OVIRS_IF", "/earth/osirisrex/ovirs/l3/if/hypertree/dataSource.spectra");
             c.spectraSearchDataSourceMap.put("OVIRS_REF", "/earth/osirisrex/ovirs/l3/reff/hypertree/dataSource.spectra");
 
-            c.presentInMissions = new SbmtMultiMissionTool.Mission[] {};
+            c.presentInMissions = new Mission[] {};
 
 //            configArray.add(c);
         }
@@ -502,7 +502,7 @@ public class BennuConfigs extends SmallBodyViewConfig
 
             c.setSpectrumParameters();
             c.setLidarParameters(true);
-        	c.presentInMissions  = new SbmtMultiMissionTool.Mission[] {};
+        	c.presentInMissions  = new Mission[] {};
             configArray.add(c);
         }
 
@@ -546,7 +546,7 @@ public class BennuConfigs extends SmallBodyViewConfig
             c.setLidarParameters(true);
 
             c.hasMapmaker = false;
-        	c.presentInMissions = new SbmtMultiMissionTool.Mission[] {};
+        	c.presentInMissions = new Mission[] {};
             configArray.add(c);
         }
 
@@ -588,7 +588,7 @@ public class BennuConfigs extends SmallBodyViewConfig
             c.setSpectrumParameters();
 
             c.setLidarParameters(true);
-			c.presentInMissions = new SbmtMultiMissionTool.Mission[] {};
+			c.presentInMissions = new Mission[] {};
             configArray.add(c);
         }
 
@@ -628,7 +628,7 @@ public class BennuConfigs extends SmallBodyViewConfig
             c.generateStateHistoryParameters();
             c.hasMapmaker = false;
             c.setLidarParameters(true);
-			c.presentInMissions = new SbmtMultiMissionTool.Mission[] {};
+			c.presentInMissions = new Mission[] {};
             configArray.add(c);
         }
 
@@ -670,7 +670,7 @@ public class BennuConfigs extends SmallBodyViewConfig
       		c.hasMapmaker = false;
 
             c.setLidarParameters(false);
-			c.presentInMissions = new SbmtMultiMissionTool.Mission[] {};
+			c.presentInMissions = new Mission[] {};
             configArray.add(c);
         }
 
@@ -710,7 +710,7 @@ public class BennuConfigs extends SmallBodyViewConfig
             c.generateStateHistoryParameters();
       		c.hasMapmaker = false;
             c.setLidarParameters(false);
-			c.presentInMissions = new SbmtMultiMissionTool.Mission[] {};
+			c.presentInMissions = new Mission[] {};
             configArray.add(c);
         }
 

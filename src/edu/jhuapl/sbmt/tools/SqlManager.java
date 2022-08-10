@@ -44,8 +44,8 @@ import java.util.List;
 
 import edu.jhuapl.saavtk.util.Configuration;
 import edu.jhuapl.saavtk.util.FileUtil;
-import edu.jhuapl.sbmt.client.SbmtMultiMissionTool;
-import edu.jhuapl.sbmt.client.SbmtMultiMissionTool.Mission;
+import edu.jhuapl.sbmt.client2.SbmtMultiMissionTool;
+import edu.jhuapl.sbmt.common.client.Mission;
 
 
 /**

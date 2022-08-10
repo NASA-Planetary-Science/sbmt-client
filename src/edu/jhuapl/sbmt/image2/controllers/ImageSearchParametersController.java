@@ -31,17 +31,18 @@ import edu.jhuapl.saavtk.model.ModelNames;
 import edu.jhuapl.saavtk.model.structure.AbstractEllipsePolygonModel;
 import edu.jhuapl.saavtk.pick.PickManager;
 import edu.jhuapl.saavtk.pick.PickManager.PickMode;
-import edu.jhuapl.sbmt.client.SmallBodyViewConfig;
+import edu.jhuapl.sbmt.common.client.SmallBodyViewConfig;
 import edu.jhuapl.sbmt.core.image.ImageSearchModelListener;
 import edu.jhuapl.sbmt.core.image.ImageSource;
 import edu.jhuapl.sbmt.core.imageui.search.ImageSearchParametersPanel;
 import edu.jhuapl.sbmt.core.imageui.search.SpectralImageSearchParametersPanel;
 import edu.jhuapl.sbmt.image2.interfaces.IPerspectiveImage;
+import edu.jhuapl.sbmt.image2.interfaces.IPerspectiveImageTableRepresentable;
 import edu.jhuapl.sbmt.image2.model.ImageSearchParametersModel;
 import edu.jhuapl.sbmt.image2.model.PerspectiveImageCollection;
-import edu.jhuapl.sbmt.image2.modules.search.ImageSearchPipeline;
+import edu.jhuapl.sbmt.image2.pipeline.search.ImageSearchPipeline;
 
-public class ImageSearchParametersController
+public class ImageSearchParametersController<G1 extends IPerspectiveImage & IPerspectiveImageTableRepresentable>
 {
 	protected SpectralImageSearchParametersPanel panel;
     protected ImageSearchParametersModel model;
@@ -51,9 +52,9 @@ public class ImageSearchParametersController
     private boolean isFixedListSearch = false;
     private ModelManager modelManager;
     private SmallBodyViewConfig viewConfig;
-    private PerspectiveImageCollection collection;
+    private PerspectiveImageCollection<G1> collection;
 
-    public ImageSearchParametersController(SmallBodyViewConfig viewConfig, PerspectiveImageCollection collection,  ImageSearchParametersModel model, ModelManager modelManager, PickManager pickManager)
+    public ImageSearchParametersController(SmallBodyViewConfig viewConfig, PerspectiveImageCollection<G1> collection,  ImageSearchParametersModel model, ModelManager modelManager, PickManager pickManager)
     {
         this.model = model;
         this.panel = new SpectralImageSearchParametersPanel();
@@ -63,14 +64,12 @@ public class ImageSearchParametersController
         this.collection = collection;
         model.addModelChangedListener(new ImageSearchModelListener()
         {
-
             @Override
             public void modelUpdated()
             {
                 pullFromModel();
             }
         });
-
     }
 
 
@@ -233,23 +232,21 @@ public class ImageSearchParametersController
                 panel.setCursor(new Cursor(Cursor.WAIT_CURSOR));
                 panel.getSelectRegionButton().setSelected(false);
                 pickManager.setPickMode(PickMode.DEFAULT);
-                ImageSearchPipeline pipeline = null;
+                ImageSearchPipeline<G1> pipeline = null;
 				try
 				{
-					pipeline = new ImageSearchPipeline(viewConfig, modelManager, model);
+					pipeline = new ImageSearchPipeline<G1>(viewConfig, modelManager, model);
 				} catch (Exception e)
 				{
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
 				if (pipeline == null) return;
-                List<IPerspectiveImage> images = pipeline.getImages();
+                List<G1> images = pipeline.getImages();
                 collection.setImages(images);
                 panel.setCursor(Cursor.getDefaultCursor());
             }
         });
-
-
 
         panel.getSelectRegionButton().setText("Select Region");
         panel.getSelectRegionButton().addActionListener(new ActionListener() {
@@ -260,7 +257,6 @@ public class ImageSearchParametersController
 
         panel.getExcludeGaskellCheckBox().addActionListener(new ActionListener()
         {
-
             @Override
             public void actionPerformed(ActionEvent e)
             {
@@ -274,8 +270,6 @@ public class ImageSearchParametersController
         toResolutionTextField.setValue(smallBodyConfig.imageSearchDefaultMaxResolution);
 
         initHierarchicalImageSearch();
-
-
     }
 
     // Sets up everything related to hierarchical image searches
@@ -309,7 +303,6 @@ public class ImageSearchParametersController
         }
     }
 
-
     protected void pullFromModel()
     {
         panel.getSourceComboBox().setSelectedItem(ImageSearchParametersController.this.model.getImageSourceOfLastQuery());
@@ -337,8 +330,6 @@ public class ImageSearchParametersController
         panel.getToPhaseTextField().setText(""+model.getMaxPhaseQuery());
         panel.getFromResolutionTextField().setText(""+model.getMinResolutionQuery());
         panel.getToResolutionTextField().setText(""+model.getMaxResolutionQuery());
-
-
     }
 
     protected void pushInputToModel()
@@ -364,8 +355,6 @@ public class ImageSearchParametersController
         model.setMaxPhaseQuery(Double.parseDouble(panel.getToPhaseTextField().getText()));
         model.setMinResolutionQuery(Double.parseDouble(panel.getFromResolutionTextField().getText()));
         model.setMaxResolutionQuery(Double.parseDouble(panel.getToResolutionTextField().getText()));
-
-
     }
 
     private void formComponentHidden(ComponentEvent evt)
@@ -388,16 +377,15 @@ public class ImageSearchParametersController
                 ((SpinnerDateModel)panel.getEndSpinner().getModel()).getDate();
         if (date != null)
             model.setEndDate(date);
-
     }
 
     private void sourceComboBoxItemStateChanged(ItemEvent evt)
     {
-        JComboBox sourceComboBox = panel.getSourceComboBox();
-        ImageSource imageSource = ImageSource.valueOf(((Enum)sourceComboBox.getSelectedItem()).name());
+        JComboBox<String> sourceComboBox = panel.getSourceComboBox();
+        ImageSource imageSource = ImageSource.valueOf((String)sourceComboBox.getSelectedItem());
         for (int i=0; i< sourceComboBox.getModel().getSize(); i++)
         {
-            ImageSource source = ImageSource.valueOf(((Enum)sourceComboBox.getItemAt(i)).name());
+            ImageSource source = ImageSource.valueOf((String)sourceComboBox.getItemAt(i));
             if (source == ImageSource.GASKELL_UPDATED)
             {
                 panel.getExcludeGaskellCheckBox().setVisible(imageSource == ImageSource.SPICE);
@@ -420,7 +408,6 @@ public class ImageSearchParametersController
         selectionModel.removeAllStructures();
     }
 
-
     public ImageSearchParametersPanel getPanel()
     {
         return panel;
@@ -430,7 +417,6 @@ public class ImageSearchParametersController
     {
         this.panel = panel;
     }
-
 
     public JPanel getAuxPanel()
     {
@@ -443,18 +429,14 @@ public class ImageSearchParametersController
         panel.setAuxPanel(auxPanel);
     }
 
-
 	public boolean isFixedListSearch()
 	{
 		return isFixedListSearch;
 	}
-
 
 	public void setFixedListSearch(boolean isFixedListSearch)
 	{
 		this.isFixedListSearch = isFixedListSearch;
 		panel.setFixedListSearch(isFixedListSearch);
 	}
-
 }
-

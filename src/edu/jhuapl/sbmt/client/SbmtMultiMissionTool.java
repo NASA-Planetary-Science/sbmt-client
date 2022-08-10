@@ -28,39 +28,19 @@ import com.jgoodies.looks.LookUtils;
 
 import edu.jhuapl.saavtk.colormap.Colormaps;
 import edu.jhuapl.saavtk.gui.TSConsole;
-import edu.jhuapl.saavtk.model.structure.EllipsePolygon;
-import edu.jhuapl.saavtk.model.structure.Line;
-import edu.jhuapl.saavtk.model.structure.Polygon;
 import edu.jhuapl.saavtk.util.Configuration;
 import edu.jhuapl.saavtk.util.Configuration.ReleaseType;
 import edu.jhuapl.saavtk.util.Debug;
 import edu.jhuapl.saavtk.util.DownloadableFileState;
 import edu.jhuapl.saavtk.util.FileCache;
 import edu.jhuapl.saavtk.util.FileCacheMessageUtil;
-import edu.jhuapl.saavtk.util.LatLon;
 import edu.jhuapl.saavtk.util.SafeURLPaths;
 import edu.jhuapl.saavtk.util.ServerSettingsManager;
 import edu.jhuapl.saavtk.util.ServerSettingsManager.ServerSettings;
 import edu.jhuapl.saavtk.util.UrlStatus;
-import edu.jhuapl.sbmt.dtm.model.DEMKey;
-import edu.jhuapl.sbmt.image2.model.PerspectiveImage;
-import edu.jhuapl.sbmt.image2.modules.rendering.cylindricalImage.CylindricalBounds;
-import edu.jhuapl.sbmt.model.bennu.spectra.otes.OTES;
-import edu.jhuapl.sbmt.model.bennu.spectra.ovirs.OVIRS;
-import edu.jhuapl.sbmt.model.eros.nis.NIS;
-import edu.jhuapl.sbmt.model.image.ImageFactory;
-import edu.jhuapl.sbmt.model.image.keys.CustomCylindricalImageKey;
-import edu.jhuapl.sbmt.model.image.keys.CustomPerspectiveImageKey;
-import edu.jhuapl.sbmt.model.phobos.MEGANE;
-import edu.jhuapl.sbmt.model.ryugu.nirs3.NIRS3;
-import edu.jhuapl.sbmt.pointing.spice.SpiceInfo;
-import edu.jhuapl.sbmt.spectrum.model.core.SpectrumInstrumentMetadata;
-import edu.jhuapl.sbmt.spectrum.model.core.search.SpectrumSearchSpec;
-import edu.jhuapl.sbmt.spectrum.model.io.SpectrumInstrumentMetadataIO;
-import edu.jhuapl.sbmt.spectrum.model.key.CustomSpectrumKey;
-import edu.jhuapl.sbmt.stateHistory.model.stateHistory.StateHistoryKey;
-import edu.jhuapl.sbmt.stateHistory.model.stateHistory.spice.SpiceStateHistory;
-import edu.jhuapl.sbmt.stateHistory.model.stateHistory.standard.StandardStateHistory;
+import edu.jhuapl.sbmt.common.client.Mission;
+import edu.jhuapl.sbmt.common.client.SbmtSplash;
+import edu.jhuapl.sbmt.common.client.SmallBodyViewConfig;
 import edu.jhuapl.sbmt.tools.SbmtRunnable;
 
 /**
@@ -76,64 +56,7 @@ public class SbmtMultiMissionTool
 {
     private static final SafeURLPaths SAFE_URL_PATHS = SafeURLPaths.instance();
 
-    public enum Mission
-	{
-    	APL_INTERNAL_NIGHTLY("b1bc7ec", false),
-		APL_INTERNAL("b1bc7ed", false),
-		PUBLIC_RELEASE("3ee38f0", true),
-		TEST_APL_INTERNAL("fb404a7", false),
-		TEST_PUBLIC_RELEASE("a1a32b4", true),
-		HAYABUSA2_DEV("133314b", false),
-//		HAYABUSA2_STAGE("244425c", false),
-		HAYABUSA2_DEPLOY("355536d", false),
-		OSIRIS_REX("7cd84586", false),
-//		OSIRIS_REX_STAGE("7cd84587", false),
-        OSIRIS_REX_DEPLOY("7cd84588", false),
-        OSIRIS_REX_TEST("h887aa63", false),
-		OSIRIS_REX_MIRROR_DEPLOY("7cd84589", false),
-		NH_DEPLOY("8ff86312", false),
-		DART_DEV("9da75292", false),
-		DART_DEPLOY("9da75293", false),
-        DART_TEST("8f449edc", false),
-        DART_STAGE("afac11cb", false),
-		STAGE_APL_INTERNAL("f7e441b", false),
-		STAGE_PUBLIC_RELEASE("8cc8e12", true),
-		MEGANE_DEV("9da85292", false),
-		MEGANE_DEPLOY("9da85293", false),
-        MEGANE_TEST("8f549edc", false),
-        MEGANE_STAGE("afad11cb", false),;
-
-		private final String hashedName;
-        private final boolean publishedDataOnly;
-
-		Mission(String hashedName, boolean publishedDataOnly)
-		{
-			this.hashedName = hashedName;
-            this.publishedDataOnly = publishedDataOnly;
-		}
-
-		public String getHashedName()
-		{
-			return hashedName;
-		}
-
-		public boolean isPublishedDataOnly()
-		{
-		    return publishedDataOnly;
-		}
-
-		public static Mission getMissionForName(String name)
-		{
-		    for (Mission msn : values())
-		    {
-		        if (name.equals(msn.hashedName))
-		            return msn;
-		    }
-		    return null;
-		}
-	}
-
-	private static final String OUTPUT_FILE_NAME = "sbmtLogFile.txt";
+    private static final String OUTPUT_FILE_NAME = "sbmtLogFile.txt";
 	private static final PrintStream SAVED_OUT = System.out;
 	private static final PrintStream SAVED_ERR = System.err;
 	private static PrintStream outputStream = null;
@@ -168,34 +91,34 @@ public class SbmtMultiMissionTool
 		// Initialize serialization proxies
 
 		// Structures.
-		LatLon.initializeSerializationProxy();
-		EllipsePolygon.initializeSerializationProxy();
-		Polygon.initializeSerializationProxy();
-		Line.initializeSerializationProxy();
-
-		// Images.
-		CylindricalBounds.initializeSerializationProxy();
-		PerspectiveImage.initializeSerializationProxy();
-		CustomCylindricalImageKey.initializeSerializationProxy();
-		CustomPerspectiveImageKey.initializeSerializationProxy();
-//		SpectrumKey.initializeSerializationProxy();
-		CustomSpectrumKey.initializeSerializationProxy();
-		DEMKey.initializeSerializationProxy();
-//		BasicSpectrumInstrument.initializeSerializationProxy();
-//		OTESSpectrum.initializeSerializationProxy();
-		SpectrumInstrumentMetadataIO.initializeSerializationProxy();
-		SpectrumInstrumentMetadata.initializeSerializationProxy();
-		SpectrumSearchSpec.initializeSerializationProxy();
-		OTES.initializeSerializationProxy();
-		OVIRS.initializeSerializationProxy();
-		NIS.initializeSerializationProxy();
-		NIRS3.initializeSerializationProxy();
-		MEGANE.initializeSerializationProxy();
-		ImageFactory.initializeSerializationProxy();
-		StandardStateHistory.initializeSerializationProxy();
-		SpiceStateHistory.initializeSerializationProxy();
-		StateHistoryKey.initializeSerializationProxy();
-		SpiceInfo.initializeSerializationProxy();
+//		LatLon.initializeSerializationProxy();
+//		EllipsePolygon.initializeSerializationProxy();
+//		Polygon.initializeSerializationProxy();
+//		Line.initializeSerializationProxy();
+//
+//		// Images.
+//		CylindricalBounds.initializeSerializationProxy();
+////		PerspectiveImage.initializeSerializationProxy();
+//		CustomCylindricalImageKey.initializeSerializationProxy();
+//		CustomPerspectiveImageKey.initializeSerializationProxy();
+////		SpectrumKey.initializeSerializationProxy();
+//		CustomSpectrumKey.initializeSerializationProxy();
+//		DEMKey.initializeSerializationProxy();
+////		BasicSpectrumInstrument.initializeSerializationProxy();
+////		OTESSpectrum.initializeSerializationProxy();
+//		SpectrumInstrumentMetadataIO.initializeSerializationProxy();
+//		SpectrumInstrumentMetadata.initializeSerializationProxy();
+//		SpectrumSearchSpec.initializeSerializationProxy();
+//		OTES.initializeSerializationProxy();
+//		OVIRS.initializeSerializationProxy();
+//		NIS.initializeSerializationProxy();
+//		NIRS3.initializeSerializationProxy();
+//		MEGANE.initializeSerializationProxy();
+//		ImageFactory.initializeSerializationProxy();
+//		StandardStateHistory.initializeSerializationProxy();
+//		SpiceStateHistory.initializeSerializationProxy();
+//		StateHistoryKey.initializeSerializationProxy();
+//		SpiceInfo.initializeSerializationProxy();
 	}
 
 	public static void setEnableAuthentication(boolean enableAuthentication)
@@ -250,7 +173,7 @@ public class SbmtMultiMissionTool
         {
         	Class<?> classToLoad = sbmtClass.getClass();
         	ClassLoader classLoader = classToLoad.getClassLoader();
-        	String classNameToLoad = sbmtClass.getClass().getCanonicalName().replace('.', '/').substring(0, sbmtClass.getClass().getCanonicalName().length()-8);
+        	String classNameToLoad = sbmtClass.getClass().getCanonicalName().replace('.', '/').substring(0, sbmtClass.getClass().getCanonicalName().length());
         	URL classURL = classLoader.getResource(classNameToLoad + ".class");
         	File file = new File(classURL.toURI());
             compileDate = new Date(file.lastModified());

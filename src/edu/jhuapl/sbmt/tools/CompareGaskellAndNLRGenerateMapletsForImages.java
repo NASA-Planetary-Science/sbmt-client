@@ -18,11 +18,11 @@ import edu.jhuapl.saavtk.util.MathUtil;
 import edu.jhuapl.saavtk.util.NativeLibraryLoader;
 import edu.jhuapl.saavtk.util.PolyDataUtil;
 import edu.jhuapl.sbmt.client.SbmtModelFactory;
-import edu.jhuapl.sbmt.client.SmallBodyModel;
-import edu.jhuapl.sbmt.client.SmallBodyViewConfig;
+import edu.jhuapl.sbmt.common.client.SmallBodyModel;
+import edu.jhuapl.sbmt.common.client.SmallBodyViewConfig;
 import edu.jhuapl.sbmt.core.image.ImageSource;
-import edu.jhuapl.sbmt.model.eros.MSIImage;
-import edu.jhuapl.sbmt.model.image.keys.ImageKey;
+import edu.jhuapl.sbmt.image.model.bodies.eros.MSIImage;
+import edu.jhuapl.sbmt.image.model.keys.ImageKey;
 import edu.jhuapl.sbmt.util.BatchSubmission;
 import edu.jhuapl.sbmt.util.BatchSubmission.BatchType;
 

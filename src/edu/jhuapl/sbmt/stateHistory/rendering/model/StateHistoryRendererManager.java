@@ -40,9 +40,9 @@ import edu.jhuapl.saavtk.util.ConvertResourceToFile;
 import edu.jhuapl.saavtk.util.MathUtil;
 import edu.jhuapl.saavtk.util.Properties;
 import edu.jhuapl.saavtk.view.light.LightingType;
-import edu.jhuapl.sbmt.client.SmallBodyModel;
-import edu.jhuapl.sbmt.model.image.perspectiveImage.PerspectiveImageFootprint;
-import edu.jhuapl.sbmt.model.image.perspectiveImage.PerspectiveImageFrustum;
+import edu.jhuapl.sbmt.common.client.SmallBodyModel;
+import edu.jhuapl.sbmt.core.rendering.PerspectiveFootprint;
+import edu.jhuapl.sbmt.core.rendering.PerspectiveFrustum;
 import edu.jhuapl.sbmt.pointing.InstrumentPointing;
 import edu.jhuapl.sbmt.stateHistory.model.interfaces.IStateHistoryTrajectoryMetadata;
 import edu.jhuapl.sbmt.stateHistory.model.interfaces.StateHistory;
@@ -109,12 +109,12 @@ public class StateHistoryRendererManager extends SaavtkItemManager<StateHistory>
 	/**
 	 *
 	 */
-	private HashMap<StateHistory, ArrayList<PerspectiveImageFrustum>> historySpacecraftFovMap;
+	private HashMap<StateHistory, ArrayList<PerspectiveFrustum>> historySpacecraftFovMap;
 
 	/**
 	 *
 	 */
-	private HashMap<StateHistory, ArrayList<PerspectiveImageFootprint>> historyFootprintMap;
+	private HashMap<StateHistory, ArrayList<PerspectiveFootprint>> historyFootprintMap;
 
 	// Direction markers
 	/**
@@ -146,8 +146,8 @@ public class StateHistoryRendererManager extends SaavtkItemManager<StateHistory>
 
 	private double diagonalLength;
 
-	private HashMap<String, PerspectiveImageFootprint> instrumentNameToFootprintMap = new HashMap<String, PerspectiveImageFootprint>();
-	private HashMap<String, PerspectiveImageFrustum> instrumentNameToFovMap = new HashMap<String, PerspectiveImageFrustum>();
+	private HashMap<String, PerspectiveFootprint> instrumentNameToFootprintMap = new HashMap<String, PerspectiveFootprint>();
+	private HashMap<String, PerspectiveFrustum> instrumentNameToFovMap = new HashMap<String, PerspectiveFrustum>();
 
 	private Vector<String> selectedFOVs = new Vector<String>();
 
@@ -222,8 +222,8 @@ public class StateHistoryRendererManager extends SaavtkItemManager<StateHistory>
 
 		this.statusBarTextActor = new StatusBarTextActor();
 
-		historyFootprintMap = new HashMap<StateHistory, ArrayList<PerspectiveImageFootprint>>();
-		historySpacecraftFovMap = new HashMap<StateHistory, ArrayList<PerspectiveImageFrustum>>();
+		historyFootprintMap = new HashMap<StateHistory, ArrayList<PerspectiveFootprint>>();
+		historySpacecraftFovMap = new HashMap<StateHistory, ArrayList<PerspectiveFrustum>>();
 
 		sourceGCP = new ConstGroupColorProvider(new ConstColorProvider(new Color(0, 255, 255)));
 
@@ -648,20 +648,20 @@ public class StateHistoryRendererManager extends SaavtkItemManager<StateHistory>
 		int numberOfInstruments = run.getLocationProvider().getPointingProvider().getInstrumentNames().length;
 		if (numberOfInstruments == 0) return;
 		Color color = PlannedDataActorFactory.getColorForInstrument(instName);
-		PerspectiveImageFrustum fov = instrumentNameToFovMap.get(instName);
+		PerspectiveFrustum fov = instrumentNameToFovMap.get(instName);
 		if (fov == null)
 		{
-			fov = new PerspectiveImageFrustum(1, 0, 0, true, diagonalLength);
+			fov = new PerspectiveFrustum(1, 0, 0, true, diagonalLength);
 			instrumentNameToFovMap.put(instName, fov);
 			fov.getFrustumActor().VisibilityOff();
 			fov.setColor(color);
 			fov.setInstrumentName(instName);
 		}
 
-		ArrayList<PerspectiveImageFrustum> frusta = historySpacecraftFovMap.get(run);
+		ArrayList<PerspectiveFrustum> frusta = historySpacecraftFovMap.get(run);
 		if (frusta == null)
 		{
-			frusta = new ArrayList<PerspectiveImageFrustum>();
+			frusta = new ArrayList<PerspectiveFrustum>();
 		}
 		frusta.add(fov);
 		historySpacecraftFovMap.put(run, frusta);
@@ -674,11 +674,11 @@ public class StateHistoryRendererManager extends SaavtkItemManager<StateHistory>
 		if (run.getLocationProvider().getPointingProvider() == null) return;
 		int numberOfInstruments = run.getLocationProvider().getPointingProvider().getInstrumentNames().length;
 		if (numberOfInstruments == 0) return;
-		PerspectiveImageFootprint fprint = instrumentNameToFootprintMap.get(instName);
+		PerspectiveFootprint fprint = instrumentNameToFootprintMap.get(instName);
 		if (fprint == null)
 		{
 			Color color = historySpacecraftFovMap.get(run).stream().filter(fov -> fov.getInstrumentName().equals(instName)).collect(Collectors.toList()).get(0).getColor();
-			fprint = new PerspectiveImageFootprint();
+			fprint = new PerspectiveFootprint();
 			fprint.setStaticFootprint(true);
 			instrumentNameToFootprintMap.put(instName, fprint);
 			fprint.setBoundaryVisible(false);
@@ -688,8 +688,8 @@ public class StateHistoryRendererManager extends SaavtkItemManager<StateHistory>
 			fprint.setSmallBodyModel(smallBodyModel);
 
 		}
-		ArrayList<PerspectiveImageFootprint> footprints = historyFootprintMap.get(run);
-		if (footprints == null) footprints = new ArrayList<PerspectiveImageFootprint>();
+		ArrayList<PerspectiveFootprint> footprints = historyFootprintMap.get(run);
+		if (footprints == null) footprints = new ArrayList<PerspectiveFootprint>();
 		if (!footprints.contains(fprint)) footprints.add(fprint);
 		historyFootprintMap.put(run, footprints);
 		positionCalculator.updateFootprintLocations(run, historyFootprintMap.get(historyCollection.getCurrentRun()));
@@ -702,9 +702,9 @@ public class StateHistoryRendererManager extends SaavtkItemManager<StateHistory>
 	//***************************************
 	private void updateFovs(StateHistory run)
 	{
-		ArrayList<PerspectiveImageFootprint> footprints = historyFootprintMap.get(run);
+		ArrayList<PerspectiveFootprint> footprints = historyFootprintMap.get(run);
 		if (footprints == null) return;
-		for (PerspectiveImageFootprint fp : footprints)
+		for (PerspectiveFootprint fp : footprints)
 		{
 			if (fp.isVisible())
 				LiveColorableManager.updateFootprint(fp);
@@ -715,7 +715,7 @@ public class StateHistoryRendererManager extends SaavtkItemManager<StateHistory>
 	{
 		if (historySpacecraftFovMap.get(historyCollection.getCurrentRun()) == null || historySpacecraftFovMap.get(historyCollection.getCurrentRun()).isEmpty()) return false;
 
-		List<PerspectiveImageFrustum> fovs = historySpacecraftFovMap.get(historyCollection.getCurrentRun()).stream().filter(item -> item.getInstrumentName().equals(name)).collect(Collectors.toList());
+		List<PerspectiveFrustum> fovs = historySpacecraftFovMap.get(historyCollection.getCurrentRun()).stream().filter(item -> item.getInstrumentName().equals(name)).collect(Collectors.toList());
 		if (fovs.size() == 0) return false;
 
 		return fovs.get(0).isShowFrustum();
@@ -725,7 +725,7 @@ public class StateHistoryRendererManager extends SaavtkItemManager<StateHistory>
 	public void setInstrumentFrustumVisibility(String name, boolean isVisible)
 	{
 		if (historySpacecraftFovMap.get(historyCollection.getCurrentRun()) == null || historySpacecraftFovMap.get(historyCollection.getCurrentRun()).isEmpty()) return;
-		List<PerspectiveImageFrustum> fovs = historySpacecraftFovMap.get(historyCollection.getCurrentRun()).stream().filter(item -> item.getInstrumentName().equals(name)).collect(Collectors.toList());
+		List<PerspectiveFrustum> fovs = historySpacecraftFovMap.get(historyCollection.getCurrentRun()).stream().filter(item -> item.getInstrumentName().equals(name)).collect(Collectors.toList());
 		if (fovs.size() == 0) return;
 		fovs.get(0).setShowFrustum(isVisible);
 //		fovs.get(0).getFrustumActor().SetVisibility(isVisible? 1: 0);
@@ -735,7 +735,7 @@ public class StateHistoryRendererManager extends SaavtkItemManager<StateHistory>
 	public Color getInstrumentFrustumColor(String name)
 	{
 		if (historySpacecraftFovMap.get(historyCollection.getCurrentRun()) == null || historySpacecraftFovMap.get(historyCollection.getCurrentRun()).isEmpty()) return Color.white;
-		List<PerspectiveImageFrustum> fovs = historySpacecraftFovMap.get(historyCollection.getCurrentRun()).stream().filter(item -> item.getInstrumentName().equals(name)).collect(Collectors.toList());
+		List<PerspectiveFrustum> fovs = historySpacecraftFovMap.get(historyCollection.getCurrentRun()).stream().filter(item -> item.getInstrumentName().equals(name)).collect(Collectors.toList());
 		if (fovs.size() == 0) return Color.white;
 		return fovs.get(0).getColor();
 	}
@@ -775,7 +775,7 @@ public class StateHistoryRendererManager extends SaavtkItemManager<StateHistory>
 	public boolean getInstrumentFootprintVisibility(String name)
 	{
 		if (historyFootprintMap.get(historyCollection.getCurrentRun()) == null || historyFootprintMap.get(historyCollection.getCurrentRun()).isEmpty()) return false;
-		List<PerspectiveImageFootprint> fp = historyFootprintMap.get(historyCollection.getCurrentRun()).stream().filter(fprint -> fprint.getInstrumentName().equals(name)).collect(Collectors.toList());
+		List<PerspectiveFootprint> fp = historyFootprintMap.get(historyCollection.getCurrentRun()).stream().filter(fprint -> fprint.getInstrumentName().equals(name)).collect(Collectors.toList());
 		if (fp.size() == 0) return false;
 		return fp.get(0).isShowFootprint();
 //		return fp.get(0).isVisible();
@@ -783,7 +783,7 @@ public class StateHistoryRendererManager extends SaavtkItemManager<StateHistory>
 
 	public void setInstrumentFootprintVisibility(String name, boolean isVisible)
 	{
-		List<PerspectiveImageFootprint> fp = historyFootprintMap.get(historyCollection.getCurrentRun()).stream().filter(fprint -> fprint.getInstrumentName().equals(name)).collect(Collectors.toList());
+		List<PerspectiveFootprint> fp = historyFootprintMap.get(historyCollection.getCurrentRun()).stream().filter(fprint -> fprint.getInstrumentName().equals(name)).collect(Collectors.toList());
 //		fp.get(0).setVisible(isVisible);
 		LiveColorableManager.updateFootprint(fp.get(0));
 		fp.get(0).setShowFootprint(isVisible);
@@ -793,14 +793,14 @@ public class StateHistoryRendererManager extends SaavtkItemManager<StateHistory>
 	public boolean getInstrumentFootprintBorderVisibility(String name)
 	{
 		if (historyFootprintMap.get(historyCollection.getCurrentRun()) == null || historyFootprintMap.get(historyCollection.getCurrentRun()).isEmpty()) return false;
-		List<PerspectiveImageFootprint> fp = historyFootprintMap.get(historyCollection.getCurrentRun()).stream().filter(fprint -> fprint.getInstrumentName().equals(name)).collect(Collectors.toList());
+		List<PerspectiveFootprint> fp = historyFootprintMap.get(historyCollection.getCurrentRun()).stream().filter(fprint -> fprint.getInstrumentName().equals(name)).collect(Collectors.toList());
 		if (fp.size() == 0) return false;
 		return fp.get(0).getFootprintBoundaryActor().GetVisibility() == 1 ? true : false;
 	}
 
 	public void setInstrumentFootprintBorderVisibility(String name, boolean isVisible)
 	{
-		List<PerspectiveImageFootprint> fp = historyFootprintMap.get(historyCollection.getCurrentRun()).stream().filter(fprint -> fprint.getInstrumentName().equals(name)).collect(Collectors.toList());
+		List<PerspectiveFootprint> fp = historyFootprintMap.get(historyCollection.getCurrentRun()).stream().filter(fprint -> fprint.getInstrumentName().equals(name)).collect(Collectors.toList());
 		fp.get(0).setBoundaryVisible(isVisible);
 		this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, fp.get(0));
 	}

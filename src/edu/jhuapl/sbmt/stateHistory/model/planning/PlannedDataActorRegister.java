@@ -2,10 +2,10 @@ package edu.jhuapl.sbmt.stateHistory.model.planning;
 
 import java.awt.Color;
 
-import edu.jhuapl.sbmt.client.SmallBodyModel;
-import edu.jhuapl.sbmt.model.image.perspectiveImage.PerspectiveImageFootprint;
+import edu.jhuapl.sbmt.common.client.SmallBodyModel;
+import edu.jhuapl.sbmt.core.rendering.DataActor;
+import edu.jhuapl.sbmt.core.rendering.PerspectiveFootprint;
 import edu.jhuapl.sbmt.stateHistory.rendering.planning.IPlanningDataActorBuilder;
-import edu.jhuapl.sbmt.stateHistory.rendering.planning.PlannedDataActor;
 import edu.jhuapl.sbmt.stateHistory.rendering.planning.PlannedDataActorFactory;
 
 //NOTE: this - or the individual components thereof - should go into the separate packages for the instruments
@@ -21,9 +21,9 @@ public class PlannedDataActorRegister
 		{
 
 			@Override
-			public PlannedDataActor buildActorForPlanningData(PlannedInstrumentData data, SmallBodyModel model)
+			public DataActor buildActorForPlanningData(PlannedInstrumentData data, SmallBodyModel model)
 			{
-				PerspectiveImageFootprint footprint = new PerspectiveImageFootprint();
+				PerspectiveFootprint footprint = new PerspectiveFootprint();
 				footprint.setTime(data.getTime());
 				footprint.setInstrumentName(data.getInstrumentName());
 				footprint.setSmallBodyModel(model);
@@ -38,9 +38,9 @@ public class PlannedDataActorRegister
 		{
 
 			@Override
-			public PlannedDataActor buildActorForPlanningData(PlannedInstrumentData data, SmallBodyModel model)
+			public DataActor buildActorForPlanningData(PlannedInstrumentData data, SmallBodyModel model)
 			{
-				PerspectiveImageFootprint footprint = new PerspectiveImageFootprint();
+				PerspectiveFootprint footprint = new PerspectiveFootprint();
 				footprint.setTime(data.getTime());
 				footprint.setInstrumentName(data.getInstrumentName());
 				footprint.setSmallBodyModel(model);
@@ -52,9 +52,9 @@ public class PlannedDataActorRegister
 		{
 
 			@Override
-			public PlannedDataActor buildActorForPlanningData(PlannedInstrumentData data, SmallBodyModel model)
+			public DataActor buildActorForPlanningData(PlannedInstrumentData data, SmallBodyModel model)
 			{
-				PerspectiveImageFootprint footprint = new PerspectiveImageFootprint();
+				PerspectiveFootprint footprint = new PerspectiveFootprint();
 				footprint.setTime(data.getTime());
 				footprint.setInstrumentName(data.getInstrumentName());
 				footprint.setSmallBodyModel(model);
@@ -66,9 +66,9 @@ public class PlannedDataActorRegister
 		{
 
 			@Override
-			public PlannedDataActor buildActorForPlanningData(PlannedInstrumentData data, SmallBodyModel model)
+			public DataActor buildActorForPlanningData(PlannedInstrumentData data, SmallBodyModel model)
 			{
-				PerspectiveImageFootprint footprint = new PerspectiveImageFootprint();
+				PerspectiveFootprint footprint = new PerspectiveFootprint();
 				footprint.setTime(data.getTime());
 				footprint.setInstrumentName(data.getInstrumentName());
 				footprint.setSmallBodyModel(model);
@@ -80,9 +80,9 @@ public class PlannedDataActorRegister
 		{
 
 			@Override
-			public PlannedDataActor buildActorForPlanningData(PlannedInstrumentData data, SmallBodyModel model)
+			public DataActor buildActorForPlanningData(PlannedInstrumentData data, SmallBodyModel model)
 			{
-				PerspectiveImageFootprint footprint = new PerspectiveImageFootprint();
+				PerspectiveFootprint footprint = new PerspectiveFootprint();
 				footprint.setTime(data.getTime());
 				footprint.setInstrumentName(data.getInstrumentName());
 				footprint.setSmallBodyModel(model);
@@ -94,9 +94,9 @@ public class PlannedDataActorRegister
 		{
 
 			@Override
-			public PlannedDataActor buildActorForPlanningData(PlannedInstrumentData data, SmallBodyModel model)
+			public DataActor buildActorForPlanningData(PlannedInstrumentData data, SmallBodyModel model)
 			{
-				PerspectiveImageFootprint footprint = new PerspectiveImageFootprint();
+				PerspectiveFootprint footprint = new PerspectiveFootprint();
 				footprint.setTime(data.getTime());
 				footprint.setInstrumentName(data.getInstrumentName());
 				footprint.setSmallBodyModel(model);
@@ -108,7 +108,7 @@ public class PlannedDataActorRegister
 		{
 
 			@Override
-			public PlannedDataActor buildActorForPlanningData(PlannedInstrumentData data, SmallBodyModel model)
+			public DataActor buildActorForPlanningData(PlannedInstrumentData data, SmallBodyModel model)
 			{
 				return null;
 //				PlannedSpectrumActor actor = new PlannedSpectrumActor(data, model/*, positionOrientationManager*/);
@@ -134,9 +134,9 @@ public class PlannedDataActorRegister
 		{
 
 			@Override
-			public PlannedDataActor buildActorForPlanningData(PlannedInstrumentData data, SmallBodyModel model)
+			public DataActor buildActorForPlanningData(PlannedInstrumentData data, SmallBodyModel model)
 			{
-				PerspectiveImageFootprint footprint = new PerspectiveImageFootprint();
+				PerspectiveFootprint footprint = new PerspectiveFootprint();
 				footprint.setTime(data.getTime());
 				footprint.setInstrumentName(data.getInstrumentName());
 				footprint.setColor(Color.blue);
@@ -149,9 +149,9 @@ public class PlannedDataActorRegister
 		{
 
 			@Override
-			public PlannedDataActor buildActorForPlanningData(PlannedInstrumentData data, SmallBodyModel model)
+			public DataActor buildActorForPlanningData(PlannedInstrumentData data, SmallBodyModel model)
 			{
-				PerspectiveImageFootprint footprint = new PerspectiveImageFootprint();
+				PerspectiveFootprint footprint = new PerspectiveFootprint();
 				footprint.setTime(data.getTime());
 				footprint.setInstrumentName(data.getInstrumentName());
 				footprint.setColor(Color.blue);
@@ -164,9 +164,9 @@ public class PlannedDataActorRegister
 		{
 
 			@Override
-			public PlannedDataActor buildActorForPlanningData(PlannedInstrumentData data, SmallBodyModel model)
+			public DataActor buildActorForPlanningData(PlannedInstrumentData data, SmallBodyModel model)
 			{
-				PerspectiveImageFootprint footprint = new PerspectiveImageFootprint();
+				PerspectiveFootprint footprint = new PerspectiveFootprint();
 				footprint.setTime(data.getTime());
 				footprint.setInstrumentName(data.getInstrumentName());
 				footprint.setColor(Color.green);
@@ -179,9 +179,9 @@ public class PlannedDataActorRegister
 		{
 
 			@Override
-			public PlannedDataActor buildActorForPlanningData(PlannedInstrumentData data, SmallBodyModel model)
+			public DataActor buildActorForPlanningData(PlannedInstrumentData data, SmallBodyModel model)
 			{
-				PerspectiveImageFootprint footprint = new PerspectiveImageFootprint();
+				PerspectiveFootprint footprint = new PerspectiveFootprint();
 				footprint.setTime(data.getTime());
 				footprint.setInstrumentName(data.getInstrumentName());
 				footprint.setColor(Color.blue);

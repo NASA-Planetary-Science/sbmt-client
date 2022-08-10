@@ -4,7 +4,8 @@ import java.awt.Color;
 import java.io.IOException;
 import java.util.HashMap;
 
-import edu.jhuapl.sbmt.client.SmallBodyModel;
+import edu.jhuapl.sbmt.common.client.SmallBodyModel;
+import edu.jhuapl.sbmt.core.rendering.DataActor;
 import edu.jhuapl.sbmt.stateHistory.model.planning.PlannedInstrumentData;
 
 import nom.tam.fits.FitsException;
@@ -26,11 +27,11 @@ public class PlannedDataActorFactory
 		}
 	}
 
-	static public PlannedDataActor createPlannedDataActorFor(PlannedInstrumentData data, SmallBodyModel model)
+	static public DataActor createPlannedDataActorFor(PlannedInstrumentData data, SmallBodyModel model)
 			throws FitsException, IOException
     {
     	IPlanningDataActorBuilder<PlannedInstrumentData> builder = registeredInstruments.get(data.getInstrumentName());
-    	PlannedDataActor actor = builder.buildActorForPlanningData(data, model);
+    	DataActor actor = builder.buildActorForPlanningData(data, model);
     	actor.setColor(registeredInstrumentColors.get(data.getInstrumentName()));
     	return actor;
     }

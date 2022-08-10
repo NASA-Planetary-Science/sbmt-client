@@ -11,17 +11,16 @@ import com.google.common.collect.ImmutableList;
 import edu.jhuapl.saavtk.config.ViewConfig;
 import edu.jhuapl.saavtk.model.ShapeModelBody;
 import edu.jhuapl.saavtk.model.ShapeModelType;
-import edu.jhuapl.sbmt.client.BodyType;
-import edu.jhuapl.sbmt.client.SbmtMultiMissionTool;
-import edu.jhuapl.sbmt.client.SbmtMultiMissionTool.Mission;
+import edu.jhuapl.sbmt.common.client.Mission;
+import edu.jhuapl.sbmt.common.client.SmallBodyViewConfig;
+import edu.jhuapl.sbmt.config.BodyType;
 import edu.jhuapl.sbmt.config.Instrument;
-import edu.jhuapl.sbmt.client.ShapeModelDataUsed;
-import edu.jhuapl.sbmt.client.ShapeModelPopulation;
-import edu.jhuapl.sbmt.client.SmallBodyViewConfig;
+import edu.jhuapl.sbmt.config.ShapeModelDataUsed;
+import edu.jhuapl.sbmt.config.ShapeModelPopulation;
+import edu.jhuapl.sbmt.config.SpectralImageMode;
 import edu.jhuapl.sbmt.core.image.ImageSource;
 import edu.jhuapl.sbmt.core.image.ImageType;
 import edu.jhuapl.sbmt.core.image.ImagingInstrument;
-import edu.jhuapl.sbmt.model.image.SpectralImageMode;
 import edu.jhuapl.sbmt.query.database.GenericPhpQuery;
 import edu.jhuapl.sbmt.tools.DBRunInfo;
 
@@ -34,21 +33,21 @@ import edu.jhuapl.sbmt.tools.DBRunInfo;
 public class DartConfigs
 {
 
-    private static final Mission[] DartClients = new SbmtMultiMissionTool.Mission[] { //
-            SbmtMultiMissionTool.Mission.DART_DEV, //
-            SbmtMultiMissionTool.Mission.DART_DEPLOY, //
-            SbmtMultiMissionTool.Mission.DART_TEST, //
-            SbmtMultiMissionTool.Mission.DART_STAGE, //
+    private static final Mission[] DartClients = new Mission[] { //
+            Mission.DART_DEV, //
+            Mission.DART_DEPLOY, //
+            Mission.DART_TEST, //
+            Mission.DART_STAGE, //
     };
 
-    private static final Mission[] ClientsWithDartModels = new SbmtMultiMissionTool.Mission[] { //
-            SbmtMultiMissionTool.Mission.APL_INTERNAL, //
-            SbmtMultiMissionTool.Mission.TEST_APL_INTERNAL, //
-            SbmtMultiMissionTool.Mission.STAGE_APL_INTERNAL, //
-            SbmtMultiMissionTool.Mission.DART_DEV, //
-            SbmtMultiMissionTool.Mission.DART_DEPLOY, //
-            SbmtMultiMissionTool.Mission.DART_TEST, //
-            SbmtMultiMissionTool.Mission.DART_STAGE, //
+    private static final Mission[] ClientsWithDartModels = new Mission[] { //
+            Mission.APL_INTERNAL, //
+            Mission.TEST_APL_INTERNAL, //
+            Mission.STAGE_APL_INTERNAL, //
+            Mission.DART_DEV, //
+            Mission.DART_DEPLOY, //
+            Mission.DART_TEST, //
+            Mission.DART_STAGE, //
     };
 
     private static final DartConfigs DefaultInstance = new DartConfigs();

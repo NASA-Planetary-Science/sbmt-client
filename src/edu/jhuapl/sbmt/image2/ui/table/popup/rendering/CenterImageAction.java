@@ -3,10 +3,10 @@ package edu.jhuapl.sbmt.image2.ui.table.popup.rendering;
 import java.util.List;
 
 import edu.jhuapl.saavtk.gui.render.Renderer;
-import edu.jhuapl.sbmt.client.SmallBodyModel;
+import edu.jhuapl.sbmt.common.client.SmallBodyModel;
 import edu.jhuapl.sbmt.image2.interfaces.IPerspectiveImage;
 import edu.jhuapl.sbmt.image2.model.PerspectiveImageCollection;
-import edu.jhuapl.sbmt.image2.pipeline.active.rendering.PerspectiveImageCenterImagePipeline;
+import edu.jhuapl.sbmt.image2.pipeline.rendering.PerspectiveImageCenterImagePipeline;
 
 import glum.gui.action.PopAction;
 

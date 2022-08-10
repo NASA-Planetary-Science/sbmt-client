@@ -3,6 +3,8 @@ package edu.jhuapl.sbmt.image2.model;
 import java.awt.Color;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
+import java.io.File;
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Optional;
@@ -21,21 +23,24 @@ import edu.jhuapl.saavtk.model.SaavtkItemManager;
 import edu.jhuapl.saavtk.util.ColorUtil;
 import edu.jhuapl.saavtk.util.IntensityRange;
 import edu.jhuapl.saavtk.util.Properties;
-import edu.jhuapl.sbmt.client.SmallBodyModel;
+import edu.jhuapl.sbmt.common.client.SmallBodyModel;
 import edu.jhuapl.sbmt.core.image.IImagingInstrument;
 import edu.jhuapl.sbmt.core.image.ImageSource;
 import edu.jhuapl.sbmt.core.image.ImageType;
 import edu.jhuapl.sbmt.image2.interfaces.IPerspectiveImage;
 import edu.jhuapl.sbmt.image2.interfaces.IPerspectiveImageTableRepresentable;
-import edu.jhuapl.sbmt.image2.pipeline.active.ColorImageGeneratorPipeline;
-import edu.jhuapl.sbmt.image2.pipeline.active.RenderableImageActorPipeline;
-import edu.jhuapl.sbmt.image2.pipeline.active.cylindricalImages.RenderableCylindricalImageActorPipeline;
-import edu.jhuapl.sbmt.image2.pipeline.active.pointedImages.RenderablePointedImageActorPipeline;
+import edu.jhuapl.sbmt.image2.pipeline.ColorImageGeneratorPipeline;
+import edu.jhuapl.sbmt.image2.pipeline.RenderableImageActorPipeline;
+import edu.jhuapl.sbmt.image2.pipeline.cylindricalImages.RenderCylindricalImageToScenePipeline;
+import edu.jhuapl.sbmt.image2.pipeline.pointedImages.RenderablePointedImageActorPipeline;
 
 import crucible.crust.logging.SimpleLogger;
 import crucible.crust.metadata.api.Key;
 import crucible.crust.metadata.api.Metadata;
+import crucible.crust.metadata.api.Version;
+import crucible.crust.metadata.impl.FixedMetadata;
 import crucible.crust.metadata.impl.SettableMetadata;
+import crucible.crust.metadata.impl.gson.Serializers;
 
 public class PerspectiveImageCollection<G1 extends IPerspectiveImage & IPerspectiveImageTableRepresentable> extends SaavtkItemManager<G1> implements PropertyChangeListener
 {
@@ -48,6 +53,7 @@ public class PerspectiveImageCollection<G1 extends IPerspectiveImage & IPerspect
 	private HashMap<G1, List<vtkActor>> offLimbRenderers;
 	private HashMap<G1, List<vtkActor>> offLimbBoundaryRenderers;
 	private HashMap<G1, PerspectiveImageRenderingState> renderingStates;
+	@SuppressWarnings("unused")
 	private SimpleLogger logger = SimpleLogger.getInstance();
 	private IImagingInstrument imagingInstrument;
 
@@ -89,64 +95,56 @@ public class PerspectiveImageCollection<G1 extends IPerspectiveImage & IPerspect
 		state.boundaryColor = color;
 		renderingStates.put(image,state);
 		updateUserList();	//update the user created list, stored in metadata
-		//TODO merge with searched for images, which will cause a refresh.  Put custom images at top?
-//		List<PerspectiveImage> combined = Lists.newArrayList();
-//		combined.addAll(userImages);
-//		for (List<PerspectiveImage> imgs : imagesByInstrument.values())
-//			combined.addAll(imgs);
-//		setAllItems(userImages);
-
 	}
 
 	private void loadUserList()
 	{
-//		String filename = smallBodyModels.get(0).getCustomDataFolder() + File.separator + "userImages" + imagingInstrument.getType() + ".txt";
-//        if (!new File(filename).exists()) return;
-//		FixedMetadata metadata;
-//        try
-//        {
-//        	final Key<List<PerspectiveImage>> userImagesKey = Key.of("UserImages");
-//            metadata = Serializers.deserialize(new File(filename), "UserImages");
-//            userImages = read(userImagesKey, metadata);
-//            for (PerspectiveImage image : userImages)
-//            {
-//            	PerspectiveImageRenderingState state = new PerspectiveImageRenderingState();
-//            	state.isMapped = image.isMapped();
-//            	if (image.isMapped()) image.setStatus("Loaded");
-//            	state.isFrustumShowing = image.isFrustumShowing();
-//            	state.isBoundaryShowing = image.isBoundaryShowing();
-//            	state.isOfflimbShowing = image.isOfflimbShowing();
-//        		renderingStates.put(image,state);
+		String instrumentName = imagingInstrument == null ? "" : imagingInstrument.getType().toString();
+		String filename = smallBodyModels.get(0).getCustomDataFolder() + File.separator + "userImages" + instrumentName + ".txt";
+        if (!new File(filename).exists()) return;
+		FixedMetadata metadata;
+        try
+        {
+        	final Key<List<G1>> userImagesKey = Key.of("UserImages");
+            metadata = Serializers.deserialize(new File(filename), "UserImages");
+            userImages = read(userImagesKey, metadata);
+            for (G1 image : userImages)
+            {
+            	PerspectiveImageRenderingState state = new PerspectiveImageRenderingState();
+            	state.isMapped = image.isMapped();
+            	if (image.isMapped()) image.setStatus("Loaded");
+            	state.isFrustumShowing = image.isFrustumShowing();
+            	state.isBoundaryShowing = image.isBoundaryShowing();
+            	state.isOfflimbShowing = image.isOfflimbShowing();
+        		renderingStates.put(image,state);
+        		//TODO leaving this here for now, in case I want to implement something like Nobes does for dtms
 //        		updateImage(image);
-//            }
-//            List<PerspectiveImage> combined = Lists.newArrayList();
-//    		combined.addAll(userImages);
-////    		for (List<PerspectiveImage> imgs : imagesByInstrument.values())
-////    			combined.addAll(imgs);
-//    		setAllItems(combined);
-//        }
-//        catch (IOException e)
-//        {
-//            // TODO Auto-generated catch block
-//            e.printStackTrace();
-//        }
+            }
+    		setAllItems(userImages);
+        }
+        catch (IOException e)
+        {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
 	}
 
 	private void updateUserList()
 	{
-//		String filename = smallBodyModels.get(0).getCustomDataFolder() + File.separator + "userImages" + imagingInstrument.getType() + ".txt";
-//		SettableMetadata configMetadata = SettableMetadata.of(Version.of(1, 0));
-//        final Key<List<PerspectiveImage>> userImagesKey = Key.of("UserImages");
-//        write(userImagesKey, userImages, configMetadata);
-//        try
-//        {
-//            Serializers.serialize("UserImages", configMetadata, new File(filename));
-//        }
-//        catch (IOException e)
-//        {
-//            // TODO Auto-generated catch block
-//            e.printStackTrace();
-//        }
+		String instrumentName = imagingInstrument == null ? "" : imagingInstrument.getType().toString();
+		String filename = smallBodyModels.get(0).getCustomDataFolder() + File.separator + "userImages" + instrumentName + ".txt";
+		SettableMetadata configMetadata = SettableMetadata.of(Version.of(1, 0));
+        final Key<List<G1>> userImagesKey = Key.of("UserImages");
+        write(userImagesKey, userImages, configMetadata);
+        try
+        {
+            Serializers.serialize("UserImages", configMetadata, new File(filename));
+        }
+        catch (IOException e)
+        {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
 	}
 
 	public void removeUserImage(G1 image)
@@ -175,9 +173,6 @@ public class PerspectiveImageCollection<G1 extends IPerspectiveImage & IPerspect
 
 	public void setImages(List<G1> images)
 	{
-//		List<G1> combined = Lists.newArrayList();
-////		combined.addAll(userImages);
-//		combined.addAll(images);
 		setAllItems(images);
 		this.imagesByInstrument.put(imagingInstrument, images);
 		for (G1 image : images)
@@ -220,7 +215,6 @@ public class PerspectiveImageCollection<G1 extends IPerspectiveImage & IPerspect
 	public void propertyChange(PropertyChangeEvent arg0)
 	{
 		// TODO Auto-generated method stub
-
 	}
 
 	public static double[] colorToDoubleArray(Color color) {
@@ -279,10 +273,10 @@ public class PerspectiveImageCollection<G1 extends IPerspectiveImage & IPerspect
 
 	public void updateUserImage(G1 image)
 	{
-		RenderablePointedImageActorPipeline pipeline = null;
+		RenderablePointedImageActorPipeline<G1> pipeline = null;
 		try
 		{
-			pipeline = new RenderablePointedImageActorPipeline(image, smallBodyModels);
+			pipeline = new RenderablePointedImageActorPipeline<G1>(image, smallBodyModels);
 		} catch (Exception e)
 		{
 			// TODO Auto-generated catch block
@@ -301,7 +295,6 @@ public class PerspectiveImageCollection<G1 extends IPerspectiveImage & IPerspect
 		{
 			Thread thread = new Thread(new Runnable()
 			{
-
 				@Override
 				public void run()
 				{
@@ -314,11 +307,11 @@ public class PerspectiveImageCollection<G1 extends IPerspectiveImage & IPerspect
 							if (image.getNumberOfLayers() == 1)
 								if (image.getPointingSourceType() == ImageSource.LOCAL_CYLINDRICAL)
 								{
-									pipeline = new RenderableCylindricalImageActorPipeline(image.getFilename(), image.getBounds(), smallBodyModels);
+									pipeline = new RenderCylindricalImageToScenePipeline(image.getFilename(), image.getBounds(), smallBodyModels);
 								}
 								else
 								{
-									pipeline = new RenderablePointedImageActorPipeline(image, smallBodyModels);
+									pipeline = new RenderablePointedImageActorPipeline<G1>(image, smallBodyModels);
 								}
 							else if (image.getNumberOfLayers() == 3)
 							{
@@ -328,17 +321,16 @@ public class PerspectiveImageCollection<G1 extends IPerspectiveImage & IPerspect
 							{
 
 							}
-
 						}
 						else
 						{
 							if (image.getPointingSourceType() == ImageSource.LOCAL_CYLINDRICAL)
 							{
-								pipeline = new RenderableCylindricalImageActorPipeline(image.getFilename(), image.getBounds(), smallBodyModels);
+								pipeline = new RenderCylindricalImageToScenePipeline(image.getFilename(), image.getBounds(), smallBodyModels);
 							}
 							else
 							{
-								pipeline = new RenderablePointedImageActorPipeline(image, smallBodyModels);
+								pipeline = new RenderablePointedImageActorPipeline<G1>(image, smallBodyModels);
 							}
 
 						}
@@ -372,7 +364,6 @@ public class PerspectiveImageCollection<G1 extends IPerspectiveImage & IPerspect
 					actor.SetVisibility(mapped ? 1 : 0);
 				}
 			}
-//			this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
 		}
 		renderingStates.get(image).isMapped = mapped;
 		this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
@@ -388,11 +379,6 @@ public class PerspectiveImageCollection<G1 extends IPerspectiveImage & IPerspect
 		return image.getStatus();
 	}
 
-//	public String getImageOrigin(PerspectiveImage image)
-//	{
-//		return image.getImageOrigin();
-//	}
-
 	public int getImageNumberOfLayers(G1 image)
 	{
 		return image.getNumberOfLayers();
@@ -401,7 +387,6 @@ public class PerspectiveImageCollection<G1 extends IPerspectiveImage & IPerspect
 	public void setImageFrustumVisible(G1 image, boolean visible)
 	{
 		image.setFrustumShowing(visible);
-//		this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
 		List<vtkActor> actors = frustumRenderers.get(image);
 		if (actors == null && visible == true)
 		{
@@ -563,6 +548,76 @@ public class PerspectiveImageCollection<G1 extends IPerspectiveImage & IPerspect
 		this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
 	}
 
+	public void setImageInterpolationState(G1 image, boolean interpolating)
+	{
+		image.setInterpolateState(interpolating);
+
+		Thread thread = new Thread(new Runnable()
+		{
+			@Override
+			public void run()
+			{
+				image.setStatus("Loading...");
+				RenderableImageActorPipeline pipeline = null;
+				try
+				{
+					if (image.getImageType() != ImageType.GENERIC_IMAGE)
+					{
+						if (image.getNumberOfLayers() == 1)
+							if (image.getPointingSourceType() == ImageSource.LOCAL_CYLINDRICAL)
+							{
+								pipeline = new RenderCylindricalImageToScenePipeline(image.getFilename(), image.getBounds(), smallBodyModels);
+							}
+							else
+							{
+								pipeline = new RenderablePointedImageActorPipeline<G1>(image, smallBodyModels);
+							}
+						else if (image.getNumberOfLayers() == 3)
+						{
+							pipeline = new ColorImageGeneratorPipeline(image.getImages(), smallBodyModels);
+						}
+						else
+						{
+
+						}
+
+					}
+					else
+					{
+						if (image.getPointingSourceType() == ImageSource.LOCAL_CYLINDRICAL)
+						{
+							pipeline = new RenderCylindricalImageToScenePipeline(image.getFilename(), image.getBounds(), smallBodyModels);
+						}
+						else
+						{
+							pipeline = new RenderablePointedImageActorPipeline<G1>(image, smallBodyModels);
+						}
+
+					}
+				}
+				catch (Exception e)
+				{
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				if (pipeline == null) return;
+				updatePipeline(image, pipeline);
+				image.setStatus("Loaded");
+				SwingUtilities.invokeLater( () -> {
+					pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
+				});
+			}
+		});
+		thread.start();
+		updateUserList();
+	}
+
+	public boolean getImageInterpolationState(G1 image)
+	{
+		return image.getInterpolateState();
+	}
+
+
 	public void setImageStatus(G1 image, String status)
 	{
 		image.setStatus(status);
@@ -574,10 +629,10 @@ public class PerspectiveImageCollection<G1 extends IPerspectiveImage & IPerspect
 		return getAllItems().size();
 	}
 
-	public Optional<IPerspectiveImage> getImage(vtkActor actor)
+	public Optional<G1> getImage(vtkActor actor)
 	{
-		Optional<IPerspectiveImage> matchingImage = Optional.empty();
-		for (IPerspectiveImage image : imageRenderers.keySet())
+		Optional<G1> matchingImage = Optional.empty();
+		for (G1 image : imageRenderers.keySet())
 		{
 			List<vtkActor> actors = imageRenderers.get(image);
 			if (actors.contains(actor))
@@ -607,7 +662,6 @@ public class PerspectiveImageCollection<G1 extends IPerspectiveImage & IPerspect
 		vtkActor actor = actors.get(0);
 		vtkProperty interiorProperty = actor.GetProperty();
 		return interiorProperty.GetOpacity();
-
 	}
 
 	public void setOfflimbOpacity(G1 image, double opacity)
@@ -633,7 +687,6 @@ public class PerspectiveImageCollection<G1 extends IPerspectiveImage & IPerspect
 		PerspectiveImageRenderingState renderingState = renderingStates.get(image);
 		renderingState.offLimbFootprintDepth = depth;
 		image.setOfflimbDepth(depth);
-		System.out.println("PerspectiveImageCollection: setOffLimbDepth: depth set to " + depth);
 		Thread thread = getPipelineThread(image, (Void v) -> { return null; });
 		thread.start();
 		this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
@@ -758,7 +811,6 @@ public class PerspectiveImageCollection<G1 extends IPerspectiveImage & IPerspect
 
 		public PipelineThread(G1 image, Function<Void, Void> completionBlock)
 		{
-			System.out.println("PerspectiveImageCollection.PipelineThread: PipelineThread: making pipeline thread ");
 			this.image = image;
 			this.completionBlock = completionBlock;
 		}
@@ -771,12 +823,12 @@ public class PerspectiveImageCollection<G1 extends IPerspectiveImage & IPerspect
 			{
 				if (image.getImageType() != ImageType.GENERIC_IMAGE)
 				{
-					pipeline = new RenderablePointedImageActorPipeline(image, smallBodyModels);
+					pipeline = new RenderablePointedImageActorPipeline<G1>(image, smallBodyModels);
 
 				}
 				else
 				{
-					pipeline = new RenderableCylindricalImageActorPipeline(image.getFilename(), image.getBounds(), smallBodyModels);
+					pipeline = new RenderCylindricalImageToScenePipeline(image.getFilename(), image.getBounds(), smallBodyModels);
 
 				}
 			}

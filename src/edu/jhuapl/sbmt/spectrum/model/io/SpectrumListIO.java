@@ -9,7 +9,7 @@ import java.util.List;
 import java.util.TimeZone;
 
 import edu.jhuapl.saavtk.util.FileUtil;
-import edu.jhuapl.sbmt.client.SbmtSpectrumModelFactory;
+import edu.jhuapl.sbmt.common.client.SbmtSpectrumModelFactory;
 import edu.jhuapl.sbmt.spectrum.model.core.BasicSpectrum;
 import edu.jhuapl.sbmt.spectrum.model.core.BasicSpectrumInstrument;
 import edu.jhuapl.sbmt.spectrum.model.core.SpectrumIOException;

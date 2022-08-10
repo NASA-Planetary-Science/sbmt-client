@@ -7,6 +7,7 @@ import java.awt.Window;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.io.File;
+import java.io.IOException;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
@@ -25,23 +26,22 @@ import com.beust.jcommander.internal.Lists;
 import com.google.common.collect.ImmutableSet;
 
 import edu.jhuapl.saavtk.gui.dialog.CustomFileChooser;
+import edu.jhuapl.saavtk.util.FileUtil;
 import edu.jhuapl.sbmt.core.image.IImagingInstrument;
 import edu.jhuapl.sbmt.core.image.ImageSource;
 import edu.jhuapl.sbmt.core.image.ImageType;
 import edu.jhuapl.sbmt.image2.interfaces.IPerspectiveImage;
 import edu.jhuapl.sbmt.image2.interfaces.IPerspectiveImageTableRepresentable;
 import edu.jhuapl.sbmt.image2.model.CompositePerspectiveImage;
-import edu.jhuapl.sbmt.image2.model.CustomPerspectiveImageCollection;
+import edu.jhuapl.sbmt.image2.model.CylindricalBounds;
 import edu.jhuapl.sbmt.image2.model.ImageOrigin;
 import edu.jhuapl.sbmt.image2.model.PerspectiveImage;
 import edu.jhuapl.sbmt.image2.model.PerspectiveImageCollection;
-import edu.jhuapl.sbmt.image2.modules.rendering.cylindricalImage.CylindricalBounds;
 import edu.jhuapl.sbmt.image2.ui.custom.importer.table.CustomImageImporterTableView;
 
+import glum.item.BaseItemManager;
 import glum.item.ItemEventListener;
 import glum.item.ItemEventType;
-
-
 
 public class CustomImageImporterDialog2<G1 extends IPerspectiveImage & IPerspectiveImageTableRepresentable> extends JDialog
 {
@@ -49,10 +49,10 @@ public class CustomImageImporterDialog2<G1 extends IPerspectiveImage & IPerspect
 	private boolean isEllipsoid;
 	private PerspectiveImageCollection<G1> imageCollection;
 	private IImagingInstrument instrument;
-	private CustomImageImporterTableView table;
+	private CustomImageImporterTableView<G1> table;
 	private JComboBox<ImageType> imageTypeComboBox;
 	private JComboBox<String> pointingTypeComboBox;
-	private CustomPerspectiveImageCollection<G1> tempCollection;
+	private BaseItemManager<G1> tempCollection;
 
 	public CustomImageImporterDialog2(Window parent, boolean isEditMode, IImagingInstrument instrument, boolean isEllipsoid, PerspectiveImageCollection<G1> imageCollection)
 	{
@@ -61,11 +61,9 @@ public class CustomImageImporterDialog2<G1 extends IPerspectiveImage & IPerspect
 		 this.isEditMode = isEditMode;
 		 this.isEllipsoid = isEllipsoid;
 		 this.imageCollection = imageCollection;
-		 System.out.println("CustomImageImporterDialog2: CustomImageImporterDialog2: image collection size " + imageCollection.size());
-		 this.tempCollection = new CustomPerspectiveImageCollection<G1>();
+		 this.tempCollection = new BaseItemManager<G1>();
 		 tempCollection.addListener(new ItemEventListener()
 		 {
-
 			@Override
 			public void handleItemEvent(Object aSource, ItemEventType aEventType)
 			{
@@ -79,7 +77,7 @@ public class CustomImageImporterDialog2<G1 extends IPerspectiveImage & IPerspect
 
 	private void initGUI()
 	{
-		table = new CustomImageImporterTableView(tempCollection, null);
+		table = new CustomImageImporterTableView<G1>(tempCollection, null);
 		table.setup();
 
 		table.getLoadImageButton().addActionListener(e -> {
@@ -88,7 +86,6 @@ public class CustomImageImporterDialog2<G1 extends IPerspectiveImage & IPerspect
 	        {
 	            return;
 	        }
-			System.out.println("CustomImageImporterDialog2: initGUI: number of files " + files.length);
 			List<G1> tempImages = Lists.newArrayList();
 			int index = 1;
  			for (File file : files)
@@ -98,7 +95,6 @@ public class CustomImageImporterDialog2<G1 extends IPerspectiveImage & IPerspect
 				tempImages.add(image);
 			}
  			tempCollection.setAllItems(tempImages);
- 			System.out.println("CustomImageImporterDialog2: initGUI: number of tempImages " + tempImages.size());
 		});
 
 		table.getDeleteImageButton().addActionListener(e -> {
@@ -107,14 +103,11 @@ public class CustomImageImporterDialog2<G1 extends IPerspectiveImage & IPerspect
 
 		table.getEditImageButton().addActionListener(e -> {
 			ImmutableSet<G1> selectedItems = tempCollection.getSelectedItems();
-			System.out.println("ImageSearchController: initCustomGUI: num selected items " + selectedItems.size());
 			if (selectedItems.size() != 1) return;
 			G1 image = selectedItems.asList().get(0);
-			System.out.println("ImageSearchController: initCustomGUI: number of layers " + image.getNumberOfLayers());
 //			if (image.getImageType() == ImageType.GENERIC_IMAGE) return;
 			if (image.getNumberOfLayers() == 1)	//editing custom single layer image
 			{
-				System.out.println("ImageSearchController: initCustomGUI: single layer edit");
 				CustomImageImporterDialog<G1> dialog = new CustomImageImporterDialog<G1>(null, true, instrument,
 						isEllipsoid, /*tempCollection,*/ Optional.of(image));
 		        dialog.setLocationRelativeTo(getContentPane());
@@ -356,9 +349,9 @@ public class CustomImageImporterDialog2<G1 extends IPerspectiveImage & IPerspect
 	private void saveImagesToCollection()
 	{
 		List<G1> images = tempCollection.getAllItems();
-		System.out.println("CustomImageImporterDialog2: saveImagesToCollection: number of images to save to collection " + images.size());
-		System.out.println("CustomImageImporterDialog2: saveImagesToCollection: image collection size " + imageCollection.size());
-		System.out.println("CustomImageImporterDialog2: saveImagesToCollection: type flip " + instrument.getFlip() + " and rotation " + instrument.getRotation());
+//		System.out.println("CustomImageImporterDialog2: saveImagesToCollection: number of images to save to collection " + images.size());
+//		System.out.println("CustomImageImporterDialog2: saveImagesToCollection: image collection size " + imageCollection.size());
+//		System.out.println("CustomImageImporterDialog2: saveImagesToCollection: type flip " + instrument.getFlip() + " and rotation " + instrument.getRotation());
 		for (G1 image : images)
 		{
 			imageCollection.addUserImage(image);
@@ -368,6 +361,17 @@ public class CustomImageImporterDialog2<G1 extends IPerspectiveImage & IPerspect
 
 	private G1 storeImage(String filename)
 	{
+		String newFilepath = imageCollection.getSmallBodyModels().get(0).getCustomDataFolder() + File.separator + new File(filename).getName();
+//		System.out.println("CustomImageImporterDialog2: storeImage: new file path " + newFilepath);
+        try
+		{
+			FileUtil.copyFile(filename,  newFilepath);
+		}
+        catch (IOException e)
+		{
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		ImageType imageType = (ImageType)imageTypeComboBox.getSelectedItem();
 		String withoutExtension = FilenameUtils.removeExtension(filename);
 		String pointingSource = "";
@@ -392,18 +396,29 @@ public class CustomImageImporterDialog2<G1 extends IPerspectiveImage & IPerspect
 		}
 		else
 			pointingSourceType = ImageSource.LOCAL_CYLINDRICAL;
-		System.out.println("CustomImageImporterDialog2: storeImage: pointing source type " + pointingSourceType);
 //		String pointingSource = pointingFilenameTextField.getText();
 //		ImageSource pointingSourceType = ImageSource.LOCAL_CYLINDRICAL;
 
+		String newPointingFilepath = "";
 		if (!pointingSource.isEmpty())
 		{
+			try
+			{
+				newPointingFilepath = imageCollection.getSmallBodyModels().get(0).getCustomDataFolder() + File.separator + new File(pointingSource).getName();
+//				System.out.println("CustomImageImporterDialog2: storeImage: new pointing file " + newPointingFilepath);
+				FileUtil.copyFile(pointingSource,  newPointingFilepath);
+			}
+	        catch (IOException e)
+			{
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 			String extension = FilenameUtils.getExtension(pointingSource).toLowerCase();
 			pointingSourceType = extension.equals("sum") ? ImageSource.GASKELL : ImageSource.SPICE;
 		}
 		//TODO FIX THIS
 		double[] fillValues = new double[] {};
-		PerspectiveImage image = new PerspectiveImage(filename, imageType, pointingSourceType, pointingSource, fillValues);
+		PerspectiveImage image = new PerspectiveImage(newFilepath, imageType, pointingSourceType, newPointingFilepath, fillValues);
 		image.setFlip(instrument.getFlip());
 		image.setRotation(instrument.getRotation());
 		image.setName(getName());

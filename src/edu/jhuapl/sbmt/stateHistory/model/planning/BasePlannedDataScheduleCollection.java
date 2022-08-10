@@ -14,7 +14,7 @@ import vtk.vtkProp;
 
 import edu.jhuapl.saavtk.model.SaavtkItemManager;
 import edu.jhuapl.saavtk.util.Properties;
-import edu.jhuapl.sbmt.stateHistory.rendering.planning.PlannedDataActor;
+import edu.jhuapl.sbmt.core.rendering.DataActor;
 
 import glum.item.ItemEventType;
 
@@ -24,7 +24,7 @@ public abstract class BasePlannedDataScheduleCollection<C extends BasePlannedDat
 	protected List<C> plannedData = new ArrayList<C>();
 	protected List<vtkProp> footprintActors = new ArrayList<vtkProp>();
 
-	protected List<PlannedDataActor> plannedDataActors = new ArrayList<PlannedDataActor>();
+	protected List<DataActor> plannedDataActors = new ArrayList<DataActor>();
 	protected Hashtable<C, JFrame> fullScheduleFrames = new Hashtable<C, JFrame>();
 
 

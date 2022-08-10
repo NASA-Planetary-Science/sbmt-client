@@ -3,7 +3,6 @@ package edu.jhuapl.sbmt.image2.ui.custom.importer.table;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.Date;
-import java.util.List;
 
 import javax.swing.Box;
 import javax.swing.BoxLayout;
@@ -17,7 +16,7 @@ import javax.swing.border.TitledBorder;
 import edu.jhuapl.saavtk.gui.util.IconUtil;
 import edu.jhuapl.saavtk.gui.util.ToolTipUtil;
 import edu.jhuapl.sbmt.image2.interfaces.IPerspectiveImage;
-import edu.jhuapl.sbmt.image2.model.CustomPerspectiveImageCollection;
+import edu.jhuapl.sbmt.image2.interfaces.IPerspectiveImageTableRepresentable;
 
 import glum.gui.GuiUtil;
 import glum.gui.action.PopupMenu;
@@ -26,25 +25,26 @@ import glum.gui.panel.itemList.ItemListPanel;
 import glum.gui.panel.itemList.ItemProcessor;
 import glum.gui.panel.itemList.query.QueryComposer;
 import glum.gui.table.TablePopupHandler;
+import glum.item.BaseItemManager;
 import glum.item.ItemEventListener;
 import glum.item.ItemEventType;
 import glum.item.ItemManagerUtil;
 
-public class CustomImageImporterTableView extends JPanel
+public class CustomImageImporterTableView<G1 extends IPerspectiveImage & IPerspectiveImageTableRepresentable> extends JPanel
 {
 	protected JTable resultList;
 
 	// for table
 	private JButton selectAllB, selectInvertB, selectNoneB, deleteImageButton, editImageButton, loadImageButton;
-	private CustomPerspectiveImageCollection imageCollection;
-	private ItemListPanel<IPerspectiveImage> imageILP;
-	private ItemHandler<IPerspectiveImage> imageItemHandler;
+	private BaseItemManager<G1> imageCollection;
+	private ItemListPanel<G1> imageILP;
+	private ItemHandler<G1> imageItemHandler;
 	private String type = "Perspective Projection";
 	private JScrollPane scrollPane;
 
-	private PopupMenu popupMenu;
+	private PopupMenu<G1> popupMenu;
 
-	public CustomImageImporterTableView(CustomPerspectiveImageCollection collection, PopupMenu popupMenu)
+	public CustomImageImporterTableView(BaseItemManager<G1> collection, PopupMenu<G1> popupMenu)
 	{
 		this.imageCollection = collection;
 		this.popupMenu = popupMenu;
@@ -99,7 +99,7 @@ public class CustomImageImporterTableView extends JPanel
 			{
 				Object source = e.getSource();
 
-				List<IPerspectiveImage> tmpL = imageCollection.getSelectedItems().asList();
+//				List<G1> tmpL = imageCollection.getSelectedItems().asList();
 				if (source == selectAllB)
 					ItemManagerUtil.selectAll(imageCollection);
 				else if (source == selectNoneB)
@@ -184,8 +184,8 @@ public class CustomImageImporterTableView extends JPanel
 		tmpComposer.getItem(CustomImageImporterColumnLookup.IMAGE_NAME).defaultSize *= 4;
 
 
-		CustomImageImporterItemHandler imageItemHandler = new CustomImageImporterItemHandler(imageCollection, tmpComposer);
-		ItemProcessor<IPerspectiveImage> tmpIP = imageCollection;
+		CustomImageImporterItemHandler<G1> imageItemHandler = new CustomImageImporterItemHandler<G1>(imageCollection, tmpComposer);
+		ItemProcessor<G1> tmpIP = imageCollection;
 		imageILP = new ItemListPanel<>(imageItemHandler, tmpIP, true);
 		imageILP.setSortingEnabled(true);
 		JTable imageTable = imageILP.getTable();
@@ -201,7 +201,7 @@ public class CustomImageImporterTableView extends JPanel
 		return resultList;
 	}
 
-	public ItemHandler<IPerspectiveImage> getTableHandler()
+	public ItemHandler<G1> getTableHandler()
 	{
 		return imageItemHandler;
 	}

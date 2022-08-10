@@ -2,25 +2,26 @@ package edu.jhuapl.sbmt.image2.ui.table.popup.properties;
 
 import java.util.List;
 
-import edu.jhuapl.sbmt.client.SbmtSpectrumWindowManager;
+import edu.jhuapl.sbmt.common.client.SbmtSpectrumWindowManager;
 import edu.jhuapl.sbmt.image2.interfaces.IPerspectiveImage;
+import edu.jhuapl.sbmt.image2.interfaces.IPerspectiveImageTableRepresentable;
 import edu.jhuapl.sbmt.image2.model.PerspectiveImageCollection;
 
 import glum.gui.action.PopAction;
 
-public class ShowSpectralPropertiesAction<G1 extends IPerspectiveImage> extends PopAction<G1>
+public class ShowSpectralPropertiesAction<G1 extends IPerspectiveImage & IPerspectiveImageTableRepresentable> extends PopAction<G1>
 {
     /**
 	 *
 	 */
-	private final PerspectiveImageCollection aManager;
+	private final PerspectiveImageCollection<G1> aManager;
 
 	private final SbmtSpectrumWindowManager spectrumPanelManager;
 
 	/**
 	 * @param imagePopupMenu
 	 */
-	public ShowSpectralPropertiesAction(PerspectiveImageCollection aManager, SbmtSpectrumWindowManager spectrumPanelManager)
+	public ShowSpectralPropertiesAction(PerspectiveImageCollection<G1> aManager, SbmtSpectrumWindowManager spectrumPanelManager)
 	{
 		this.aManager = aManager;
 		this.spectrumPanelManager = spectrumPanelManager;
@@ -36,7 +37,6 @@ public class ShowSpectralPropertiesAction<G1 extends IPerspectiveImage> extends 
 		for (IPerspectiveImage aItem : aItemL)
 		{
 			//TODO make only valid for images with nLayers > 1 (spectra-type)
-			//TODO update to accept new PerspectiveImage class
 //			spectrumPanelManager.addData(aItem);
 		}
 	}

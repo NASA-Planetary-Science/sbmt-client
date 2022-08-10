@@ -16,15 +16,15 @@ import vtk.vtkImageData;
 
 import edu.jhuapl.saavtk.gui.dialog.ColorChooser;
 import edu.jhuapl.saavtk.util.IntensityRange;
+import edu.jhuapl.sbmt.image2.controllers.preview.ImageContrastController;
 import edu.jhuapl.sbmt.image2.interfaces.IPerspectiveImage;
 import edu.jhuapl.sbmt.image2.interfaces.IPerspectiveImageTableRepresentable;
 import edu.jhuapl.sbmt.image2.model.PerspectiveImageCollection;
-import edu.jhuapl.sbmt.image2.modules.preview.ImageContrastController;
-import edu.jhuapl.sbmt.image2.modules.rendering.pointedImage.RenderablePointedImage;
-import edu.jhuapl.sbmt.image2.modules.rendering.vtk.VtkImageRendererOperator;
-import edu.jhuapl.sbmt.image2.pipeline.active.PerspectiveImageToRenderableImagePipeline;
-import edu.jhuapl.sbmt.image2.pipeline.publisher.Just;
-import edu.jhuapl.sbmt.image2.pipeline.subscriber.Sink;
+import edu.jhuapl.sbmt.image2.pipeline.PerspectiveImageToRenderableImagePipeline;
+import edu.jhuapl.sbmt.image2.pipeline.rendering.pointedImage.RenderablePointedImage;
+import edu.jhuapl.sbmt.image2.pipeline.rendering.vtk.VtkImageRendererOperator;
+import edu.jhuapl.sbmt.pipeline.publisher.Just;
+import edu.jhuapl.sbmt.pipeline.subscriber.Sink;
 
 public class OfflimbControlsController<G1 extends IPerspectiveImage & IPerspectiveImageTableRepresentable>
 {
@@ -46,10 +46,7 @@ public class OfflimbControlsController<G1 extends IPerspectiveImage & IPerspecti
 			.operate(new VtkImageRendererOperator())
 			.subscribe(Sink.of(displayedImages))
 			.run();
-		System.out.println("OfflimbControlsController: OfflimbControlsController: offlimb depth " + image.getOfflimbDepth());
-		System.out.println("OfflimbControlsController: OfflimbControlsController: renderable image depth " + renderableImages.get(0).getOfflimbDepth());
 		this.collection = collection;
-		//TODO need displayed image here
 
 		this.contrastController = new ImageContrastController(displayedImages.get(0), new IntensityRange(0, 255), new Function<vtkImageData, Void>() {
 

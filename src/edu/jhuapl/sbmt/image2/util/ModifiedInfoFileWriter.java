@@ -8,8 +8,8 @@ import java.io.OutputStreamWriter;
 
 import edu.jhuapl.sbmt.image2.interfaces.IPerspectiveImage;
 import edu.jhuapl.sbmt.image2.interfaces.IPerspectiveImageTableRepresentable;
-import edu.jhuapl.sbmt.image2.modules.pointing.offset.SpacecraftPointingDelta;
-import edu.jhuapl.sbmt.image2.modules.pointing.offset.SpacecraftPointingState;
+import edu.jhuapl.sbmt.image2.model.SpacecraftPointingDelta;
+import edu.jhuapl.sbmt.image2.model.SpacecraftPointingState;
 import edu.jhuapl.sbmt.util.BasicFileWriter;
 
 public class ModifiedInfoFileWriter<G1 extends IPerspectiveImage & IPerspectiveImageTableRepresentable> extends BasicFileWriter

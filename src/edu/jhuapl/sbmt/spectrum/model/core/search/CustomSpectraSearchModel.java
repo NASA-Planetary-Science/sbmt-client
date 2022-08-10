@@ -18,7 +18,7 @@ import edu.jhuapl.saavtk.model.ModelNames;
 import edu.jhuapl.saavtk.util.FileUtil;
 import edu.jhuapl.saavtk.util.IdPair;
 import edu.jhuapl.saavtk.util.MapUtil;
-import edu.jhuapl.sbmt.client.SbmtSpectrumModelFactory;
+import edu.jhuapl.sbmt.common.client.SbmtSpectrumModelFactory;
 import edu.jhuapl.sbmt.config.Strings;
 import edu.jhuapl.sbmt.core.image.ImageType;
 import edu.jhuapl.sbmt.spectrum.model.core.BasicSpectrum;

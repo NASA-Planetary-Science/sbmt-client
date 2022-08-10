@@ -19,8 +19,8 @@ import vtk.vtkProp;
 
 import edu.jhuapl.saavtk.model.SaavtkItemManager;
 import edu.jhuapl.saavtk.util.Properties;
-import edu.jhuapl.sbmt.client.ISmallBodyModel;
-import edu.jhuapl.sbmt.client.SbmtSpectrumModelFactory;
+import edu.jhuapl.sbmt.common.client.ISmallBodyModel;
+import edu.jhuapl.sbmt.common.client.SbmtSpectrumModelFactory;
 import edu.jhuapl.sbmt.spectrum.model.EnabledState;
 import edu.jhuapl.sbmt.spectrum.model.core.BasicSpectrum;
 import edu.jhuapl.sbmt.spectrum.model.core.SpectrumIOException;

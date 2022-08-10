@@ -11,7 +11,11 @@ import edu.jhuapl.sbmt.core.image.ImageSource;
 import edu.jhuapl.sbmt.core.image.ImageType;
 import edu.jhuapl.sbmt.image2.interfaces.IPerspectiveImage;
 import edu.jhuapl.sbmt.image2.interfaces.IPerspectiveImageTableRepresentable;
-import edu.jhuapl.sbmt.image2.modules.rendering.cylindricalImage.CylindricalBounds;
+
+import crucible.crust.metadata.api.Key;
+import crucible.crust.metadata.api.Version;
+import crucible.crust.metadata.impl.InstanceGetter;
+import crucible.crust.metadata.impl.SettableMetadata;
 
 public class CompositePerspectiveImage implements IPerspectiveImage, IPerspectiveImageTableRepresentable
 {
@@ -44,7 +48,15 @@ public class CompositePerspectiveImage implements IPerspectiveImage, IPerspectiv
 	private int[] maskValues = new int[] {0, 0, 0, 0};
 	private CylindricalBounds bounds = null;
 
+	private static final Key<List<IPerspectiveImage>> IMAGES_KEY = Key.of("images");
+	private static final Key<CompositePerspectiveImage> COMPOSITE_PERSPECTIVE_IMAGE_KEY = Key.of("compositePerspectiveImage");
+
 	List<IPerspectiveImage> images;
+
+	public CompositePerspectiveImage()
+	{
+
+	}
 
 	public CompositePerspectiveImage(List<IPerspectiveImage> images)
 	{
@@ -203,7 +215,17 @@ public class CompositePerspectiveImage implements IPerspectiveImage, IPerspectiv
 
 	public void setMaskValues(int[] maskValues)
 	{
-		this.maskValues = maskValues;
+		images.get(0).setMaskValues(maskValues);
+	}
+
+	public int[] getTrimValues()
+	{
+		return images.get(0).getTrimValues();
+	}
+
+	public void setTrimValues(int[] trimValues)
+	{
+		images.get(0).setTrimValues(trimValues);
 	}
 
 	public int[] getLinearInterpolatorDims()
@@ -286,6 +308,11 @@ public class CompositePerspectiveImage implements IPerspectiveImage, IPerspectiv
 	public List<IPerspectiveImage> getImages()
 	{
 		return images;
+	}
+
+	public void setImages(List<IPerspectiveImage> images)
+	{
+		this.images = images;
 	}
 
 
@@ -398,4 +425,20 @@ public class CompositePerspectiveImage implements IPerspectiveImage, IPerspectiv
 	{
 		this.images.get(0).setInterpolateState(isLinear);
 	}
+
+	public static void initializeSerializationProxy()
+	{
+		InstanceGetter.defaultInstanceGetter().register(COMPOSITE_PERSPECTIVE_IMAGE_KEY, (metadata) -> {
+		CompositePerspectiveImage compositeImage = new CompositePerspectiveImage();
+		List<IPerspectiveImage> images = metadata.get(IMAGES_KEY);
+		compositeImage.setImages(images);
+		return compositeImage;
+
+		}, CompositePerspectiveImage.class, image -> {
+			SettableMetadata result = SettableMetadata.of(Version.of(1, 0));
+			result.put(IMAGES_KEY, image.getImages());
+		    return result;
+		});
+	}
+
 }

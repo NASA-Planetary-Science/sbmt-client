@@ -22,7 +22,7 @@ import edu.jhuapl.saavtk.model.ModelManager;
 import edu.jhuapl.saavtk.model.ModelNames;
 import edu.jhuapl.saavtk.model.structure.AbstractEllipsePolygonModel;
 import edu.jhuapl.saavtk.util.IdPair;
-import edu.jhuapl.sbmt.client.SmallBodyViewConfig;
+import edu.jhuapl.sbmt.common.client.SmallBodyViewConfig;
 import edu.jhuapl.sbmt.core.image.IImagingInstrument;
 import edu.jhuapl.sbmt.core.image.ImageSearchModelListener;
 import edu.jhuapl.sbmt.core.image.ImageSearchResultsListener;
@@ -36,7 +36,6 @@ import crucible.crust.metadata.impl.SettableMetadata;
 
 public class ImageSearchParametersModel implements Model, MetadataManager
 {
-
 	final Key<String> pointingKey = Key.of("pointing");
     final Key<Boolean> excludeSPCKey = Key.of("excludeSPC");
     final Key<Date> startDateKey = Key.of("startDate");
@@ -69,7 +68,6 @@ public class ImageSearchParametersModel implements Model, MetadataManager
     protected ModelManager modelManager;
     protected IdPair resultIntervalCurrentlyShown = null;
     protected List<List<String>> imageResults = new ArrayList<List<String>>();
-//    protected ImageCollection imageCollection;
     protected IImagingInstrument instrument;
     protected ImageSource imageSourceOfLastQuery = ImageSource.SPICE;
     private Date startDate = null;
@@ -118,7 +116,6 @@ public class ImageSearchParametersModel implements Model, MetadataManager
         this.resultsListeners = new Vector<ImageSearchResultsListener>();
         this.modelListeners = new Vector<ImageSearchModelListener>();
         this.instrument = instrument;
-//        this.imageCollection = (ImageCollection)modelManager.getModel(getImageCollectionModelName());
         this.startDate = smallBodyConfig.imageSearchDefaultStartDate;
         this.endDate = smallBodyConfig.imageSearchDefaultEndDate;
         camerasSelected = new LinkedList<Integer>();
@@ -126,14 +123,10 @@ public class ImageSearchParametersModel implements Model, MetadataManager
         selectedImageIndices = new int[] {};
     }
 
-
-
-
     public List<List<String>> getImageResults()
     {
         return imageResults;
     }
-
 
     public void setImageResults(List<List<String>> imageRawResults)
     {
@@ -141,18 +134,6 @@ public class ImageSearchParametersModel implements Model, MetadataManager
         fireResultsChanged();
         fireResultsCountChanged(this.imageResults.size());
     }
-
-//    public ImageCollection getImageCollection()
-//    {
-//        return imageCollection;
-//    }
-//
-//
-//    public void setImageCollection(ImageCollection imageCollection)
-//    {
-//        this.imageCollection = imageCollection;
-//    }
-
 
     public IImagingInstrument getInstrument()
     {
@@ -174,30 +155,25 @@ public class ImageSearchParametersModel implements Model, MetadataManager
         this.imageSourceOfLastQuery = imageSourceOfLastQuery;
     }
 
-
     public Date getStartDate()
     {
         return startDate;
     }
-
 
     public void setStartDate(Date startDate)
     {
         this.startDate = startDate;
     }
 
-
     public Date getEndDate()
     {
         return endDate;
     }
 
-
     public void setEndDate(Date endDate)
     {
         this.endDate = endDate;
     }
-
 
     public void setModelManager(ModelManager modelManager)
     {
@@ -229,21 +205,6 @@ public class ImageSearchParametersModel implements Model, MetadataManager
         this.currentBand = currentBand;
     }
 
-//    public List<ImageKeyInterface> createImageKeys(String boundaryName, ImageSource sourceOfLastQuery, IImagingInstrument instrument)
-//    {
-//        List<ImageKeyInterface> result = new ArrayList<ImageKeyInterface>();
-//        result.add(createImageKey(boundaryName, sourceOfLastQuery, instrument));
-//        return result;
-//    }
-//
-//    public ImageKeyInterface createImageKey(String imagePathName, ImageSource sourceOfLastQuery, IImagingInstrument instrument)
-//    {
-//        int slice = this.getCurrentSlice();
-//        String band = this.getCurrentBand();
-//        ImageKeyInterface key = new ImageKey(imagePathName, sourceOfLastQuery, null, null, instrument, band, slice, null);
-//        return key;
-//    }
-
     public int getNumberOfFiltersActuallyUsed()
     {
         String[] names = smallBodyConfig.imageSearchFilterNames;
@@ -261,13 +222,6 @@ public class ImageSearchParametersModel implements Model, MetadataManager
         else
             return names.length;
     }
-
-//    public List<List<String>> processResults(List<List<String>> input)
-//    {
-//        imageResults.addAll(input);
-//        setResultIntervalCurrentlyShown(new IdPair(0, imageResults.size()));
-//        return imageResults;
-//    }
 
     private void fireResultsChanged()
     {
@@ -323,28 +277,6 @@ public class ImageSearchParametersModel implements Model, MetadataManager
         modelListeners.removeAllElements();
     }
 
-//    public ImageKeyInterface[] getSelectedImageKeys()
-//    {
-//        int[] indices = selectedImageIndices;
-//        ImageKeyInterface[] selectedKeys = new ImageKeyInterface[indices.length];
-//        if (indices.length > 0)
-//        {
-//            int i=0;
-//            for (int index : indices)
-//            {
-//                String image = imageResults.get(index).get(0);
-//                String name = new File(image).getName();
-//                image = image.substring(0,image.length()-4);
-//                ImageKeyInterface selectedKey = (ImageKeyInterface)createImageKey(image, imageSourceOfLastQuery, instrument);
-//                if (!selectedKey.getBand().equals("0"))
-//                    name = selectedKey.getBand() + ":" + name;
-//                selectedKeys[i++] = selectedKey;
-//            }
-//        }
-//        return selectedKeys;
-//    }
-
-
     public void setSelectedImageIndex(int[] selectedImageIndex)
     {
         this.selectedImageIndices = selectedImageIndex;
@@ -355,205 +287,170 @@ public class ImageSearchParametersModel implements Model, MetadataManager
         return selectedImageIndices;
     }
 
-
-
     public List<Integer> getCamerasSelected()
     {
         return camerasSelected;
     }
-
 
     public List<Integer> getFiltersSelected()
     {
         return filtersSelected;
     }
 
-
     public double getMinDistanceQuery()
     {
         return minDistanceQuery;
     }
-
 
     public void setMinDistanceQuery(double minDistanceQuery)
     {
         this.minDistanceQuery = minDistanceQuery;
     }
 
-
     public double getMaxDistanceQuery()
     {
         return maxDistanceQuery;
     }
-
 
     public void setMaxDistanceQuery(double maxDistanceQuery)
     {
         this.maxDistanceQuery = maxDistanceQuery;
     }
 
-
     public double getMinIncidenceQuery()
     {
         return minIncidenceQuery;
     }
-
 
     public void setMinIncidenceQuery(double minIncidenceQuery)
     {
         this.minIncidenceQuery = minIncidenceQuery;
     }
 
-
     public double getMaxIncidenceQuery()
     {
         return maxIncidenceQuery;
     }
-
 
     public void setMaxIncidenceQuery(double maxIncidenceQuery)
     {
         this.maxIncidenceQuery = maxIncidenceQuery;
     }
 
-
     public double getMinEmissionQuery()
     {
         return minEmissionQuery;
     }
-
 
     public void setMinEmissionQuery(double minEmissionQuery)
     {
         this.minEmissionQuery = minEmissionQuery;
     }
 
-
     public double getMaxEmissionQuery()
     {
         return maxEmissionQuery;
     }
-
 
     public void setMaxEmissionQuery(double maxEmissionQuery)
     {
         this.maxEmissionQuery = maxEmissionQuery;
     }
 
-
     public double getMinPhaseQuery()
     {
         return minPhaseQuery;
     }
-
 
     public void setMinPhaseQuery(double minPhaseQuery)
     {
         this.minPhaseQuery = minPhaseQuery;
     }
 
-
     public double getMaxPhaseQuery()
     {
         return maxPhaseQuery;
     }
-
 
     public void setMaxPhaseQuery(double maxPhaseQuery)
     {
         this.maxPhaseQuery = maxPhaseQuery;
     }
 
-
     public double getMinResolutionQuery()
     {
         return minResolutionQuery;
     }
-
 
     public void setMinResolutionQuery(double minResolutionQuery)
     {
         this.minResolutionQuery = minResolutionQuery;
     }
 
-
     public double getMaxResolutionQuery()
     {
         return maxResolutionQuery;
     }
-
 
     public void setMaxResolutionQuery(double maxResolutionQuery)
     {
         this.maxResolutionQuery = maxResolutionQuery;
     }
 
-
     public int getSelectedLimbIndex()
     {
         return selectedLimbIndex;
     }
-
 
     public void setSelectedLimbIndex(int selectedLimbIndex)
     {
         this.selectedLimbIndex = selectedLimbIndex;
     }
 
-
     public String getSelectedLimbString()
     {
         return selectedLimbString;
     }
-
 
     public void setSelectedLimbString(String selectedLimbString)
     {
         this.selectedLimbString = selectedLimbString;
     }
 
-
     public boolean isSearchByFilename()
     {
         return searchByFilename;
     }
-
 
     public void setSearchByFilename(boolean searchByFilename)
     {
         this.searchByFilename = searchByFilename;
     }
 
-
     public String getSearchFilename()
     {
         return searchFilename;
     }
-
 
     public void setSearchFilename(String searchFilename)
     {
         this.searchFilename = searchFilename;
     }
 
-
     public boolean isExcludeGaskell()
     {
         return excludeGaskell;
     }
-
 
     public void setExcludeGaskell(boolean excludeGaskell)
     {
         this.excludeGaskell = excludeGaskell;
     }
 
-
     public boolean isExcludeGaskellEnabled()
     {
         return excludeGaskellEnabled;
     }
-
 
     public void setExcludeGaskellEnabled(boolean excludeGaskellEnabled)
     {
@@ -565,24 +462,20 @@ public class ImageSearchParametersModel implements Model, MetadataManager
         return selectedFilenames;
     }
 
-
     public void setSelectedFilenames(Set<String> selectedFilenames)
     {
         this.selectedFilenames = selectedFilenames;
     }
-
 
     public void setCamerasSelected(List<Integer> camerasSelected)
     {
         this.camerasSelected = camerasSelected;
     }
 
-
     public void setFiltersSelected(List<Integer> filtersSelected)
     {
         this.filtersSelected = filtersSelected;
     }
-
 
     private List<String[]> listToOutputFormat(List<List<String>> inputListList)
     {

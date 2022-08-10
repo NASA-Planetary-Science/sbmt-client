@@ -23,12 +23,12 @@ import edu.jhuapl.saavtk.model.ShapeModelBody;
 import edu.jhuapl.saavtk.model.ShapeModelType;
 import edu.jhuapl.saavtk.util.FileUtil;
 import edu.jhuapl.saavtk.util.NativeLibraryLoader;
-import edu.jhuapl.sbmt.client.SmallBodyModel;
-import edu.jhuapl.sbmt.client.SmallBodyViewConfig;
+import edu.jhuapl.sbmt.common.client.SmallBodyModel;
+import edu.jhuapl.sbmt.common.client.SmallBodyViewConfig;
 import edu.jhuapl.sbmt.core.image.ImageSource;
-import edu.jhuapl.sbmt.model.image.keys.ImageKey;
-import edu.jhuapl.sbmt.model.image.perspectiveImage.PerspectiveImage;
-import edu.jhuapl.sbmt.model.itokawa.AmicaImage;
+import edu.jhuapl.sbmt.core.rendering.PerspectiveImage;
+import edu.jhuapl.sbmt.image.model.bodies.itokawa.AmicaImage;
+import edu.jhuapl.sbmt.image.model.keys.ImageKey;
 import edu.jhuapl.sbmt.model.itokawa.Itokawa;
 
 import nom.tam.fits.FitsException;

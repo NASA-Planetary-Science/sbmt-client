@@ -9,9 +9,9 @@ import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 
-import edu.jhuapl.sbmt.client.SmallBodyModel;
+import edu.jhuapl.sbmt.common.client.SmallBodyModel;
 import edu.jhuapl.sbmt.image2.interfaces.IPerspectiveImage;
-import edu.jhuapl.sbmt.image2.modules.preview.VtkRendererPreview;
+import edu.jhuapl.sbmt.image2.pipeline.preview.VtkRendererPreview;
 
 public class ColorImageBuilderPanel extends JPanel
 {

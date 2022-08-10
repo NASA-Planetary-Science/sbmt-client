@@ -39,7 +39,7 @@ import edu.jhuapl.sbmt.core.image.IImagingInstrument;
 import edu.jhuapl.sbmt.core.image.ImageType;
 import edu.jhuapl.sbmt.image2.interfaces.IPerspectiveImage;
 import edu.jhuapl.sbmt.image2.interfaces.IPerspectiveImageTableRepresentable;
-import edu.jhuapl.sbmt.image2.modules.rendering.cylindricalImage.CylindricalBounds;
+import edu.jhuapl.sbmt.image2.model.CylindricalBounds;
 import edu.jhuapl.sbmt.util.VtkENVIReader;
 
 
@@ -103,19 +103,19 @@ public class CustomImageImporterDialog<G1 extends IPerspectiveImage & IPerspecti
 				else
 				{
 					pointingTypeComboBox.setSelectedIndex(1);
-					minLatitudeTextField.setText(""+image.getBounds().getMinLatitude());
-					maxLatitudeTextField.setText(""+image.getBounds().getMaxLatitude());
-					minLongitudeTextField.setText(""+image.getBounds().getMinLongitude());
-					maxLongitudeTextField.setText(""+image.getBounds().getMaxLongitude());
+					minLatitudeTextField.setText(""+image.getBounds().minLatitude());
+					maxLatitudeTextField.setText(""+image.getBounds().maxLatitude());
+					minLongitudeTextField.setText(""+image.getBounds().minLongitude());
+					maxLongitudeTextField.setText(""+image.getBounds().maxLongitude());
 				}
 			}
 			else	//cylindrical
 			{
 				pointingTypeComboBox.setSelectedIndex(1);
-				minLatitudeTextField.setText(""+image.getBounds().getMinLatitude());
-				maxLatitudeTextField.setText(""+image.getBounds().getMaxLatitude());
-				minLongitudeTextField.setText(""+image.getBounds().getMinLongitude());
-				maxLongitudeTextField.setText(""+image.getBounds().getMaxLongitude());
+				minLatitudeTextField.setText(""+image.getBounds().minLatitude());
+				maxLatitudeTextField.setText(""+image.getBounds().maxLatitude());
+				minLongitudeTextField.setText(""+image.getBounds().minLongitude());
+				maxLongitudeTextField.setText(""+image.getBounds().maxLongitude());
 			}
 
 		});

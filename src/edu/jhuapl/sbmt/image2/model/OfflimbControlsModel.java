@@ -99,7 +99,6 @@ public class OfflimbControlsModel implements Controller.Model, MetadataManager
         return contrastHigh;
     }
 
-
     public boolean getShowBoundary()
     {
         return showBoundary;
@@ -149,8 +148,6 @@ public class OfflimbControlsModel implements Controller.Model, MetadataManager
         result.put(currentSliceKey, currentSlice);
         result.put(contrastLowKey, contrastLow);
         result.put(contrastHighKey, contrastHigh);
-
-
         return result;
     }
 
@@ -163,7 +160,4 @@ public class OfflimbControlsModel implements Controller.Model, MetadataManager
         contrastLow = source.get(contrastLowKey);
         contrastHigh = source.get(contrastHighKey);
     }
-
-
-
 }

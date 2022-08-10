@@ -1,6 +1,7 @@
 package edu.jhuapl.sbmt.stateHistory.rendering.planning;
 
-import edu.jhuapl.sbmt.client.SmallBodyModel;
+import edu.jhuapl.sbmt.common.client.SmallBodyModel;
+import edu.jhuapl.sbmt.core.rendering.DataActor;
 
 @FunctionalInterface
 public interface IPlanningDataActorBuilder<PlannedInstrumentData>
@@ -10,5 +11,5 @@ public interface IPlanningDataActorBuilder<PlannedInstrumentData>
 	 * @param model
 	 * @return
 	 */
-	PlannedDataActor buildActorForPlanningData(PlannedInstrumentData data, SmallBodyModel model);
+	DataActor buildActorForPlanningData(PlannedInstrumentData data, SmallBodyModel model);
 }

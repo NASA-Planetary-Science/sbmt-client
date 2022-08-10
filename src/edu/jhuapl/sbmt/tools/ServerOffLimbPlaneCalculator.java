@@ -23,14 +23,14 @@ import edu.jhuapl.saavtk.util.Configuration;
 import edu.jhuapl.saavtk.util.NativeLibraryLoader;
 import edu.jhuapl.saavtk.util.SafeURLPaths;
 import edu.jhuapl.sbmt.client.SbmtModelFactory;
-import edu.jhuapl.sbmt.client.SbmtMultiMissionTool;
-import edu.jhuapl.sbmt.client.SmallBodyModel;
-import edu.jhuapl.sbmt.client.SmallBodyViewConfig;
+import edu.jhuapl.sbmt.client2.SbmtMultiMissionTool;
+import edu.jhuapl.sbmt.common.client.SmallBodyModel;
+import edu.jhuapl.sbmt.common.client.SmallBodyViewConfig;
+import edu.jhuapl.sbmt.core.image.ImageKeyInterface;
 import edu.jhuapl.sbmt.core.image.ImageSource;
-import edu.jhuapl.sbmt.model.bennu.imaging.OcamsFlightImage;
-import edu.jhuapl.sbmt.model.image.ImageKeyInterface;
-import edu.jhuapl.sbmt.model.image.keys.ImageKey;
-import edu.jhuapl.sbmt.model.image.perspectiveImage.PerspectiveImage;
+import edu.jhuapl.sbmt.core.rendering.PerspectiveImage;
+import edu.jhuapl.sbmt.image.model.bodies.bennu.OcamsFlightImage;
+import edu.jhuapl.sbmt.image.model.keys.ImageKey;
 
 public class ServerOffLimbPlaneCalculator
 {

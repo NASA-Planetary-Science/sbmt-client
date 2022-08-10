@@ -12,10 +12,10 @@ import vtk.vtkProp;
 
 import edu.jhuapl.saavtk.model.SaavtkItemManager;
 import edu.jhuapl.saavtk.util.Properties;
-import edu.jhuapl.sbmt.client.SmallBodyModel;
+import edu.jhuapl.sbmt.common.client.SmallBodyModel;
+import edu.jhuapl.sbmt.core.rendering.DataActor;
 import edu.jhuapl.sbmt.stateHistory.model.interfaces.IStateHistoryMetadata;
 import edu.jhuapl.sbmt.stateHistory.model.interfaces.StateHistory;
-import edu.jhuapl.sbmt.stateHistory.rendering.planning.PlannedDataActor;
 import edu.jhuapl.sbmt.stateHistory.rendering.planning.PlannedInstrumentRendererManager;
 
 import glum.item.ItemEventType;
@@ -26,7 +26,7 @@ public abstract class BasePlannedDataCollection<T extends PlannedInstrumentData>
 	protected List<T> plannedData = new ArrayList<T>();
 	protected List<vtkProp> footprintActors = new ArrayList<vtkProp>();
 
-	protected List<PlannedDataActor> plannedDataActors = new ArrayList<PlannedDataActor>();
+	protected List<DataActor> plannedDataActors = new ArrayList<DataActor>();
 
 	protected PlannedInstrumentRendererManager renderManager;
 
@@ -71,7 +71,7 @@ public abstract class BasePlannedDataCollection<T extends PlannedInstrumentData>
 	 * @param run
 	 * @return
 	 */
-	public PlannedDataActor addDataToRenderer(T data)
+	public DataActor addDataToRenderer(T data)
 	{
 		return renderManager.addPlannedData(data, smallBodyModel);
 	}

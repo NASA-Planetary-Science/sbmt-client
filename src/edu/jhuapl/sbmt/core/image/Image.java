@@ -16,7 +16,6 @@ import edu.jhuapl.saavtk.model.AbstractModel;
 import edu.jhuapl.saavtk.util.IntensityRange;
 import edu.jhuapl.saavtk.util.PolyDataUtil;
 import edu.jhuapl.saavtk.util.Properties;
-import edu.jhuapl.sbmt.model.image.ImageKeyInterface;
 
 
 public abstract class Image extends AbstractModel implements PropertyChangeListener

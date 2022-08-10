@@ -43,6 +43,13 @@ import edu.jhuapl.saavtk.util.ConvertResourceToFile;
 import edu.jhuapl.saavtk.util.SafeURLPaths;
 import edu.jhuapl.saavtk.view.light.gui.LightingConfigAction;
 import edu.jhuapl.saavtk.view.lod.gui.LodAction;
+import edu.jhuapl.sbmt.common.client.SbmtHelpMenu;
+import edu.jhuapl.sbmt.common.client.SmallBodyViewConfig;
+import edu.jhuapl.sbmt.common.client.SmallBodyViewConfigMetadataIO;
+import edu.jhuapl.sbmt.config.BasicConfigInfo;
+import edu.jhuapl.sbmt.config.BodyType;
+import edu.jhuapl.sbmt.config.ShapeModelDataUsed;
+import edu.jhuapl.sbmt.config.ShapeModelPopulation;
 
 import crucible.crust.metadata.api.Key;
 import crucible.crust.metadata.api.Metadata;
@@ -427,7 +434,7 @@ public class SbmtViewManager extends ViewManager
     public boolean isAddSeparator(BasicConfigInfo config, String menuItem)
     {
         boolean result = false;
-        if (config.shapeModelName.equals(menuItem) && configMap.containsKey(config))
+        if (config.getShapeModelName().equals(menuItem) && configMap.containsKey(config))
         {
             int index = configMap.get(config);
             result = index > 0 && menuEntries.get(index - 1) instanceof SeparatorEntry;
@@ -502,25 +509,25 @@ public class SbmtViewManager extends ViewManager
             // If we get to here, equality is not an option -- two ViewConfigs must differ
             // in one of their significant fields. From here on down is a series of tie-breakers.
 
-            result = TYPE_COMPARATOR.compare(config1.type, config2.type);
+            result = TYPE_COMPARATOR.compare(config1.getType(), config2.getType());
 
             if (result == 0)
             {
-                result = POPULATION_COMPARATOR.compare(config1.population, config2.population);
+                result = POPULATION_COMPARATOR.compare(config1.getPopulation(), config2.getPopulation());
             }
 
             if (result == 0)
             {
-                result = MARK_VISITED_BY_SPACECRAFT_COMPARATOR.compare(config1.body, config2.body);
+                result = MARK_VISITED_BY_SPACECRAFT_COMPARATOR.compare(config1.getBody(), config2.getBody());
             }
 
             if (result == 0)
             {
-                result = BODY_COMPARATOR.compare(config1.body, config2.body);
+                result = BODY_COMPARATOR.compare(config1.getBody(), config2.getBody());
             }
 
             if (result == 0) {
-                result = DATA_USED_COMPARATOR.compare(config1.dataUsed, config2.dataUsed);
+                result = DATA_USED_COMPARATOR.compare(config1.getDataUsed(), config2.getDataUsed());
             }
 
             if (result == 0)

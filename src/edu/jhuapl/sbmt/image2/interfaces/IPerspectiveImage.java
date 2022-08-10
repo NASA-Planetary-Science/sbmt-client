@@ -7,7 +7,7 @@ import java.util.Optional;
 import edu.jhuapl.saavtk.util.IntensityRange;
 import edu.jhuapl.sbmt.core.image.ImageSource;
 import edu.jhuapl.sbmt.core.image.ImageType;
-import edu.jhuapl.sbmt.image2.modules.rendering.cylindricalImage.CylindricalBounds;
+import edu.jhuapl.sbmt.image2.model.CylindricalBounds;
 
 public interface IPerspectiveImage
 {
@@ -50,6 +50,10 @@ public interface IPerspectiveImage
 	public int[] getMaskValues();
 
 	public void setMaskValues(int[] maskValues);
+
+	public int[] getTrimValues();
+
+	public void setTrimValues(int[] trimValues);
 
 	public int[] getLinearInterpolatorDims();
 

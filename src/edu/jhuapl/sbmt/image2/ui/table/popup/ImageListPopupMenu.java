@@ -9,9 +9,9 @@ import javax.swing.JMenu;
 import edu.jhuapl.saavtk.gui.render.Renderer;
 import edu.jhuapl.saavtk.model.ModelManager;
 import edu.jhuapl.saavtk.model.ModelNames;
-import edu.jhuapl.sbmt.client.SbmtInfoWindowManager;
-import edu.jhuapl.sbmt.client.SbmtSpectrumWindowManager;
-import edu.jhuapl.sbmt.client.SmallBodyModel;
+import edu.jhuapl.sbmt.common.client.SbmtInfoWindowManager;
+import edu.jhuapl.sbmt.common.client.SbmtSpectrumWindowManager;
+import edu.jhuapl.sbmt.common.client.SmallBodyModel;
 import edu.jhuapl.sbmt.image2.interfaces.IPerspectiveImage;
 import edu.jhuapl.sbmt.image2.interfaces.IPerspectiveImageTableRepresentable;
 import edu.jhuapl.sbmt.image2.model.PerspectiveImageCollection;
@@ -20,10 +20,10 @@ import edu.jhuapl.sbmt.image2.ui.table.popup.export.ExportAction;
 import edu.jhuapl.sbmt.image2.ui.table.popup.properties.EditPointingAction;
 import edu.jhuapl.sbmt.image2.ui.table.popup.properties.ShowImagePropertiesAction;
 import edu.jhuapl.sbmt.image2.ui.table.popup.properties.ShowOffLimbSettingsAction;
-import edu.jhuapl.sbmt.image2.ui.table.popup.properties.ShowSpectralPropertiesAction;
 import edu.jhuapl.sbmt.image2.ui.table.popup.rendering.CenterImageAction;
 import edu.jhuapl.sbmt.image2.ui.table.popup.rendering.ChangeNormalOffsetAction;
 import edu.jhuapl.sbmt.image2.ui.table.popup.rendering.ChangeOpacityAction;
+import edu.jhuapl.sbmt.image2.ui.table.popup.rendering.InterpolatePixelsAction;
 import edu.jhuapl.sbmt.image2.ui.table.popup.rendering.MapBoundaryAction;
 import edu.jhuapl.sbmt.image2.ui.table.popup.rendering.MapImageAction;
 import edu.jhuapl.sbmt.image2.ui.table.popup.rendering.ShowFrustumAction;
@@ -56,17 +56,23 @@ public class ImageListPopupMenu<G1 extends IPerspectiveImage  & IPerspectiveImag
 		showHideBoundaryCBMI.setText("Show Boundary");
 		installPopAction(mapBoundaryAction, showHideBoundaryCBMI);
 
-		ShowImagePropertiesAction<G1> showInfoAction = new ShowImagePropertiesAction<G1>(aManager, infoPanelManager);
+		SmallBodyModel smallBodyModel = (SmallBodyModel)modelManager.getModel(ModelNames.SMALL_BODY);
+		ShowImagePropertiesAction<G1> showInfoAction = new ShowImagePropertiesAction<G1>(smallBodyModel);
 		installPopAction(showInfoAction, "Properties...");
 
-		if (spectrumPanelManager != null)
-		{
-			ShowSpectralPropertiesAction<G1> showSpectrumAction = new ShowSpectralPropertiesAction<G1>(aManager, spectrumPanelManager);
-			installPopAction(showSpectrumAction, "Spectrum...");
-		}
+//		if (spectrumPanelManager != null)
+//		{
+//			ShowSpectralPropertiesAction<G1> showSpectrumAction = new ShowSpectralPropertiesAction<G1>(aManager, spectrumPanelManager);
+//			installPopAction(showSpectrumAction, "Spectrum...");
+//		}
 
 		EditPointingAction<G1> editPointingAction = new EditPointingAction<G1>(aManager);
 		installPopAction(editPointingAction, "Edit Image Pointing...");
+
+		InterpolatePixelsAction<G1> interpolatePixelsAction = new InterpolatePixelsAction<G1>(aManager);
+		JCheckBoxMenuItem interpolatePixelsCBMI = new JCheckBoxMenuItem(interpolatePixelsAction);
+		interpolatePixelsCBMI.setText("Interpolate Pixels");
+		installPopAction(interpolatePixelsAction, interpolatePixelsCBMI);
 
 		ShowOffLimbSettingsAction<G1> offlimbSettingsAction = new ShowOffLimbSettingsAction<G1>(aManager);
 		installPopAction(offlimbSettingsAction, "Offlimb Settings...");
@@ -74,7 +80,6 @@ public class ImageListPopupMenu<G1 extends IPerspectiveImage  & IPerspectiveImag
 //		SaveBackplanesAction<PerspectiveImage> showBackplanesAction = new SaveBackplanesAction<PerspectiveImage>(aManager);
 //		installPopAction(showBackplanesAction, "Generate Backplanes...");
 
-		SmallBodyModel smallBodyModel = (SmallBodyModel)modelManager.getModel(ModelNames.SMALL_BODY);
 		CenterImageAction<G1> centerImageAction = new CenterImageAction<G1>(aManager, renderer, List.of(smallBodyModel));
 		installPopAction(centerImageAction, "Center in Window");
 

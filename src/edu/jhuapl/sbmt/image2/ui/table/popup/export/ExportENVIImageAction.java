@@ -11,8 +11,8 @@ import edu.jhuapl.saavtk.gui.dialog.CustomFileChooser;
 import edu.jhuapl.sbmt.image2.interfaces.IPerspectiveImage;
 import edu.jhuapl.sbmt.image2.interfaces.IPerspectiveImageTableRepresentable;
 import edu.jhuapl.sbmt.image2.model.PerspectiveImageCollection;
-import edu.jhuapl.sbmt.image2.modules.io.export.SaveImageToENVIOperator;
-import edu.jhuapl.sbmt.image2.pipeline.publisher.Just;
+import edu.jhuapl.sbmt.image2.pipeline.io.export.SaveImageToENVIOperator;
+import edu.jhuapl.sbmt.pipeline.publisher.Just;
 
 import glum.gui.action.PopAction;
 

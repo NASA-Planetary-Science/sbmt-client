@@ -27,18 +27,19 @@ import edu.jhuapl.saavtk.pick.PickTarget;
 import edu.jhuapl.saavtk.pick.PickUtil;
 import edu.jhuapl.saavtk.popup.PopupManager;
 import edu.jhuapl.saavtk2.gui.BasicFrame;
-import edu.jhuapl.sbmt.client.SbmtInfoWindowManager;
-import edu.jhuapl.sbmt.client.SbmtSpectrumWindowManager;
-import edu.jhuapl.sbmt.client.SmallBodyModel;
-import edu.jhuapl.sbmt.client.SmallBodyViewConfig;
+import edu.jhuapl.sbmt.common.client.SbmtInfoWindowManager;
+import edu.jhuapl.sbmt.common.client.SbmtSpectrumWindowManager;
+import edu.jhuapl.sbmt.common.client.SmallBodyModel;
+import edu.jhuapl.sbmt.common.client.SmallBodyViewConfig;
 import edu.jhuapl.sbmt.core.image.IImagingInstrument;
+import edu.jhuapl.sbmt.core.image.ImagingInstrument;
 import edu.jhuapl.sbmt.core.imageui.search.ImagingSearchPanel;
 import edu.jhuapl.sbmt.image2.interfaces.IPerspectiveImage;
 import edu.jhuapl.sbmt.image2.interfaces.IPerspectiveImageTableRepresentable;
 import edu.jhuapl.sbmt.image2.model.ImageSearchParametersModel;
 import edu.jhuapl.sbmt.image2.model.PerspectiveImageCollection;
-import edu.jhuapl.sbmt.image2.modules.search.LoadImagesFromSavedFilePipeline;
-import edu.jhuapl.sbmt.image2.modules.search.SaveImagesToSavedFilePipeline;
+import edu.jhuapl.sbmt.image2.pipeline.search.LoadImagesFromSavedFilePipeline;
+import edu.jhuapl.sbmt.image2.pipeline.search.SaveImagesToSavedFilePipeline;
 import edu.jhuapl.sbmt.image2.ui.custom.importer.CustomImageImporterDialog;
 import edu.jhuapl.sbmt.image2.ui.custom.importer.CustomImageImporterDialog2;
 import edu.jhuapl.sbmt.image2.ui.table.popup.ImageListPopupMenu;
@@ -47,9 +48,9 @@ import glum.gui.action.PopupMenu;
 
 public class ImageSearchController<G1 extends IPerspectiveImage & IPerspectiveImageTableRepresentable> implements PickListener //implements Controller<ImageSearchParametersModel, JTabbedPane>
 {
-	private ImageListTableController imageListTableController;
-	private CustomImageListTableController customImageListTableController;
-	private SpectralImageSearchParametersController searchParametersController;
+	private ImageListTableController<G1> imageListTableController;
+	private CustomImageListTableController<G1> customImageListTableController;
+	private SpectralImageSearchParametersController<G1> searchParametersController;
 	private ImagingSearchPanel panel;
 	private ImagingSearchPanel customPanel;
 	private ImageSearchParametersModel imageSearchModel;
@@ -76,16 +77,12 @@ public class ImageSearchController<G1 extends IPerspectiveImage & IPerspectiveIm
         this.searchParametersController = new SpectralImageSearchParametersController(config, collection, imageSearchModel, modelManager, pickManager);
         this.searchParametersController.setupSearchParametersPanel();
         pane = new JTabbedPane();
-        //TODO update this
-//        PerspectiveImageBoundaryCollection boundaries = (PerspectiveImageBoundaryCollection) modelManager.getModel(ModelNames.PERSPECTIVE_IMAGE_BOUNDARIES);
         SmallBodyModel smallBodyModel = (SmallBodyModel)modelManager.getModel(ModelNames.SMALL_BODY);
         smallBodyModels = List.of(smallBodyModel);
-        popupMenu =
-        		new ImageListPopupMenu<G1>(modelManager, collection, infoPanelManager,
-        							spectrumPanelManager, renderer, panel);
-        this.imageListTableController = new ImageListTableController(collection, popupMenu);
-        this.customImageListTableController = new CustomImageListTableController(collection, popupMenu);
-//		popupMenu = new ImageListPopupMenu<>(modelManager, collection, null, infoPanelManager, spectrumPanelManager, renderer, renderer);
+        popupMenu = new ImageListPopupMenu<G1>(modelManager, collection, infoPanelManager,
+        										spectrumPanelManager, renderer, panel);
+        this.imageListTableController = new ImageListTableController<G1>(collection, popupMenu);
+        this.customImageListTableController = new CustomImageListTableController<G1>(collection, popupMenu);
 		pickManager.getDefaultPicker().addListener(this);
 
 		this.collection.addPropertyChangeListener(evt ->
@@ -95,16 +92,9 @@ public class ImageSearchController<G1 extends IPerspectiveImage & IPerspectiveIm
 			updateButtonState();
 		});
 
-		this.collection.addListener((aSource, aEventType) ->
-		{
-//			System.out.println("ImageSearchController: ImageSearchController: number of images " + this.collection.size());
-//			imageListTableController.getPanel().getResultList().repaint();
-//			customImageListTableController.getPanel().getResultList().repaint();
-			updateButtonState();
-		});
+		this.collection.addListener((aSource, aEventType) -> { updateButtonState(); });
 		popupManager.registerPopup(modelManager.getAllModels().get(ModelNames.IMAGES_V2), new edu.jhuapl.saavtk.popup.PopupMenu()
 		{
-
 			@Override
 			public void showPopup(MouseEvent e, vtkProp pickedProp, int pickedCellId, double[] pickedPosition)
 			{
@@ -200,7 +190,7 @@ public class ImageSearchController<G1 extends IPerspectiveImage & IPerspectiveIm
 
 		imageListTableController.getPanel().getColorImageButton().addActionListener(e -> {
 
-			ColorImageBuilderController controller = new ColorImageBuilderController(smallBodyModels, collection, Optional.empty());
+			ColorImageBuilderController<G1> controller = new ColorImageBuilderController<G1>(smallBodyModels, collection, Optional.empty());
 			BasicFrame frame = new BasicFrame();
 			frame.add(controller.getView());
 			frame.setSize(775, 900);
@@ -210,7 +200,7 @@ public class ImageSearchController<G1 extends IPerspectiveImage & IPerspectiveIm
 		});
 
 		imageListTableController.getPanel().getImageCubeButton().addActionListener(e -> {
-
+			System.err.print("NOT IMPLEMENTED YET");
 		});
 
 		imageListTableController.getPanel().getShowImageButton().addActionListener(e -> {
@@ -235,9 +225,10 @@ public class ImageSearchController<G1 extends IPerspectiveImage & IPerspectiveIm
 	        File file = CustomFileChooser.showOpenDialog(panel, "Select File");
 			try
 			{
-				LoadImagesFromSavedFilePipeline<G1> pipeline = new LoadImagesFromSavedFilePipeline<G1>(config, file.getAbsolutePath(), instrument);
+				LoadImagesFromSavedFilePipeline<G1> pipeline = new LoadImagesFromSavedFilePipeline<G1>(config, file.getAbsolutePath(), (ImagingInstrument)instrument);
 				collection.setImages(pipeline.getImages());
-			} catch (Exception e1)
+			}
+			catch (Exception e1)
 			{
 				// TODO Auto-generated catch block
 				e1.printStackTrace();
@@ -249,8 +240,9 @@ public class ImageSearchController<G1 extends IPerspectiveImage & IPerspectiveIm
 			ImmutableSet<G1> selectedImages = collection.getSelectedItems();
 			try
 			{
-				SaveImagesToSavedFilePipeline<G1> pipeline = new SaveImagesToSavedFilePipeline<>(selectedImages);
-			} catch (Exception e1)
+				new SaveImagesToSavedFilePipeline<>(selectedImages);
+			}
+			catch (Exception e1)
 			{
 				// TODO Auto-generated catch block
 				e1.printStackTrace();
@@ -312,33 +304,27 @@ public class ImageSearchController<G1 extends IPerspectiveImage & IPerspectiveIm
 		});
 
 		customImageListTableController.getPanel().getNewImageButton().addActionListener(e -> {
-			CustomImageImporterDialog2 dialog = new CustomImageImporterDialog2(null, false, instrument,
+			CustomImageImporterDialog2<G1> dialog = new CustomImageImporterDialog2<G1>(null, false, instrument,
 					modelManager.getPolyhedralModel().isEllipsoid(), collection);
-//			dialog.setCurrentImageNames(model.getCustomImageNames());
-//	        dialog.setImageInfo(null, model.getModelManager().getPolyhedralModel().isEllipsoid());
 	        dialog.setLocationRelativeTo(imageListTableController.getPanel());
 	        dialog.setVisible(true);
 		});
 
 		customImageListTableController.getPanel().getEditImageButton().addActionListener(e -> {
 			ImmutableSet<G1> selectedItems = collection.getSelectedItems();
-			System.out.println("ImageSearchController: initCustomGUI: num selected items " + selectedItems.size());
 			if (selectedItems.size() != 1) return;
 			G1 image = selectedItems.asList().get(0);
-			System.out.println("ImageSearchController: initCustomGUI: number of layers " + image.getNumberOfLayers());
-//			if (image.getImageType() == ImageType.GENERIC_IMAGE) return;
 			if (image.getNumberOfLayers() == 1)	//editing custom single layer image
 			{
-				System.out.println("ImageSearchController: initCustomGUI: single layer edit");
-				CustomImageImporterDialog dialog = new CustomImageImporterDialog(null, true, instrument,
-						modelManager.getPolyhedralModel().isEllipsoid(), /*collection,*/ Optional.of(image));
+				CustomImageImporterDialog<G1> dialog = new CustomImageImporterDialog<G1>(null, true, instrument,
+						modelManager.getPolyhedralModel().isEllipsoid(), Optional.of(image));
 		        dialog.setLocationRelativeTo(imageListTableController.getPanel());
 		        dialog.setVisible(true);
 		        collection.updateUserImage(image);
 			}
 			else if (image.getNumberOfLayers() == 3) //editing custom color image
 			{
-				ColorImageBuilderController controller = new ColorImageBuilderController(smallBodyModels, collection, Optional.of(image));
+				ColorImageBuilderController<G1> controller = new ColorImageBuilderController<G1>(smallBodyModels, collection, Optional.of(image));
 				controller.setImages(image.getImages());
 				BasicFrame frame = new BasicFrame();
 				frame.add(controller.getView());
@@ -362,13 +348,8 @@ public class ImageSearchController<G1 extends IPerspectiveImage & IPerspectiveIm
 				collection.setImageMapped(image, false);
 				collection.removeUserImage(image);
 			}
-			System.out.println("ImageSearchController: initCustomGUI: deleting number " + collection.getSelectedItems().size());
 			collection.removeItems(collection.getSelectedItems());
-
-			System.out.println("ImageSearchController: initCustomGUI: size now " + collection.size());
 		});
-
-
 	}
 
 	private void updateButtonState()
@@ -412,16 +393,13 @@ public class ImageSearchController<G1 extends IPerspectiveImage & IPerspectiveIm
 		popupMenu.show(tmpComp, posX, posY);
 	}
 
-//	@Override
 	public ImageSearchParametersModel getModel()
 	{
 		return imageSearchModel;
 	}
 
-//	@Override
 	public JTabbedPane getView()
 	{
-
 		pane.add(panel, "Server");
 		pane.add(customPanel, "Custom");
 		return pane;

@@ -7,20 +7,21 @@ import javax.swing.table.DefaultTableModel;
 
 import edu.jhuapl.saavtk.model.ModelManager;
 import edu.jhuapl.saavtk.pick.PickManager;
-import edu.jhuapl.sbmt.client.SmallBodyViewConfig;
+import edu.jhuapl.sbmt.common.client.SmallBodyViewConfig;
 import edu.jhuapl.sbmt.core.imageui.search.SpectralImageSearchParametersPanel;
+import edu.jhuapl.sbmt.image2.interfaces.IPerspectiveImage;
+import edu.jhuapl.sbmt.image2.interfaces.IPerspectiveImageTableRepresentable;
 import edu.jhuapl.sbmt.image2.model.ImageSearchParametersModel;
 import edu.jhuapl.sbmt.image2.model.PerspectiveImageCollection;
 
-public class SpectralImageSearchParametersController
-        extends ImageSearchParametersController
+public class SpectralImageSearchParametersController<G1 extends IPerspectiveImage & IPerspectiveImageTableRepresentable>
+        extends ImageSearchParametersController<G1>
 {
     SpectralImageSearchParametersPanel specPanel = new SpectralImageSearchParametersPanel();
 
-    public SpectralImageSearchParametersController(SmallBodyViewConfig viewConfig, PerspectiveImageCollection collection,  ImageSearchParametersModel model, ModelManager modelManager, PickManager pickManager)
+    public SpectralImageSearchParametersController(SmallBodyViewConfig viewConfig, PerspectiveImageCollection<G1> collection,  ImageSearchParametersModel model, ModelManager modelManager, PickManager pickManager)
     {
         super(viewConfig, collection, model, modelManager, pickManager);
-        // TODO Auto-generated constructor stub
     }
 
     @Override
@@ -54,7 +55,6 @@ public class SpectralImageSearchParametersController
 
         specPanel.getFilterTable().getModel().addTableModelListener(new TableModelListener()
         {
-
             @Override
             public void tableChanged(TableModelEvent e)
             {
@@ -72,7 +72,6 @@ public class SpectralImageSearchParametersController
 
         specPanel.getUserParamTable().getModel().addTableModelListener(new TableModelListener()
         {
-
             @Override
             public void tableChanged(TableModelEvent e)
             {
@@ -102,7 +101,6 @@ public class SpectralImageSearchParametersController
         {
             specPanel.getUserParamTable().getValueAt(i, 0);
         }
-
     }
 
     @Override
@@ -128,5 +126,4 @@ public class SpectralImageSearchParametersController
             }
         }
     }
-
 }

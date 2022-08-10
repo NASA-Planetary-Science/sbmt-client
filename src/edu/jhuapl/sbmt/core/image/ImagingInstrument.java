@@ -8,7 +8,7 @@ import java.util.Set;
 import edu.jhuapl.saavtk.util.FillDetector;
 import edu.jhuapl.saavtk.util.ImageDataUtil;
 import edu.jhuapl.sbmt.config.Instrument;
-import edu.jhuapl.sbmt.model.image.SpectralImageMode;
+import edu.jhuapl.sbmt.config.SpectralImageMode;
 import edu.jhuapl.sbmt.query.IQueryBase;
 import edu.jhuapl.sbmt.query.QueryBase;
 import edu.jhuapl.sbmt.query.database.GenericPhpQuery;
@@ -31,15 +31,16 @@ public class ImagingInstrument implements MetadataManager, IImagingInstrument
     private String flip;
     private Set<Float> fillValues;
     private boolean isTranspose;
-
+    private int[] linearInterpolationDims;
+    private int[] maskValues = new int[] {0,0,0,0};
 
     public ImagingInstrument()
     {
-        this(SpectralImageMode.MONO, null, null, null, null, 0.0, "None", null, true);
+        this(SpectralImageMode.MONO, null, null, null, null, 0.0, "None", null, null, null, true);
     }
     public ImagingInstrument(double rotation, String flip)
     {
-        this(SpectralImageMode.MONO, null, ImageType.GENERIC_IMAGE, null, null, rotation, flip, null, true);
+        this(SpectralImageMode.MONO, null, ImageType.GENERIC_IMAGE, null, null, rotation, flip, null, null, null, true);
     }
 
 //    public ImagingInstrument(ImageType type, Instrument instrumentName)
@@ -54,20 +55,30 @@ public class ImagingInstrument implements MetadataManager, IImagingInstrument
 
     public ImagingInstrument(SpectralImageMode spectralMode, QueryBase searchQuery, ImageType type, ImageSource[] searchImageSources, Instrument instrumentName)
     {
-        this(spectralMode, searchQuery, type, searchImageSources, instrumentName, 0.0, "None", null, true);
+        this(spectralMode, searchQuery, type, searchImageSources, instrumentName, 0.0, "None", null, null, null, true);
     }
 
     public ImagingInstrument(SpectralImageMode spectralMode, QueryBase searchQuery, ImageType type, ImageSource[] searchImageSources, Instrument instrumentName, double rotation, String flip)
     {
-        this(spectralMode, searchQuery, type, searchImageSources, instrumentName, rotation, flip, null, true);
+        this(spectralMode, searchQuery, type, searchImageSources, instrumentName, rotation, flip, null, null, null, true);
     }
 
     public ImagingInstrument(SpectralImageMode spectralMode, QueryBase searchQuery, ImageType type, ImageSource[] searchImageSources, Instrument instrumentName, double rotation, String flip, Collection<Float> fillValues)
     {
-        this(spectralMode, searchQuery, type, searchImageSources, instrumentName, rotation, flip, fillValues, true);
+        this(spectralMode, searchQuery, type, searchImageSources, instrumentName, rotation, flip, fillValues, null, null, true);
+    }
+
+    public ImagingInstrument(SpectralImageMode spectralMode, QueryBase searchQuery, ImageType type, ImageSource[] searchImageSources, Instrument instrumentName, double rotation, String flip, Collection<Float> fillValues, int[] linearInterpDims, int[] maskValues)
+    {
+        this(spectralMode, searchQuery, type, searchImageSources, instrumentName, rotation, flip, fillValues, linearInterpDims, maskValues, true);
     }
 
     public ImagingInstrument(SpectralImageMode spectralMode, QueryBase searchQuery, ImageType type, ImageSource[] searchImageSources, Instrument instrumentName, double rotation, String flip, Collection<Float> fillValues, boolean isTranspose)
+    {
+        this(spectralMode, searchQuery, type, searchImageSources, instrumentName, rotation, flip, fillValues, null, null, true);
+    }
+
+    public ImagingInstrument(SpectralImageMode spectralMode, QueryBase searchQuery, ImageType type, ImageSource[] searchImageSources, Instrument instrumentName, double rotation, String flip, Collection<Float> fillValues, int[] linearInterpDims, int[] maskValues, boolean isTranspose)
     {
         this.spectralMode = spectralMode;
         this.searchQuery = searchQuery;
@@ -77,6 +88,8 @@ public class ImagingInstrument implements MetadataManager, IImagingInstrument
         this.rotation = rotation;
         this.flip = flip;
         this.fillValues = fillValues != null ? new LinkedHashSet<>(fillValues) : null;
+        this.linearInterpolationDims = linearInterpDims != null ? linearInterpDims : new int[] {0,0,0,0};
+        this.maskValues = maskValues != null ? maskValues : new int[] {0,0,0,0};
         this.isTranspose = isTranspose;
     }
 
@@ -92,7 +105,7 @@ public class ImagingInstrument implements MetadataManager, IImagingInstrument
 
     public ImagingInstrument clone()
     {
-        return new ImagingInstrument(spectralMode, searchQuery.copy(), type, searchImageSources.clone(), instrumentName, rotation, flip, fillValues, isTranspose);
+        return new ImagingInstrument(spectralMode, searchQuery.copy(), type, searchImageSources.clone(), instrumentName, rotation, flip, fillValues, linearInterpolationDims, maskValues, isTranspose);
     }
 
     public ImageType getType()
@@ -123,6 +136,8 @@ public class ImagingInstrument implements MetadataManager, IImagingInstrument
     Key<Double> rotationKey = Key.of("rotation");
     Key<Set<Float>> fillValuesKey = Key.of("fillValues");
     Key<Boolean> isTransposeKey = Key.of("isTranspose");
+    Key<int[]> linearInterpolationDimsKey = Key.of("linearInterpolationDims");
+    Key<int[]> maskValuesKey = Key.of("maskValues");
 
     @Override
     public void retrieve(Metadata source)
@@ -150,6 +165,8 @@ public class ImagingInstrument implements MetadataManager, IImagingInstrument
 
         Boolean isTranspose = read(isTransposeKey, source);
         this.isTranspose = isTranspose != null ? isTranspose.booleanValue() : true;
+        linearInterpolationDims = read(linearInterpolationDimsKey, source);
+        maskValues = read(maskValuesKey, source);
     }
 
     @Override
@@ -184,6 +201,8 @@ public class ImagingInstrument implements MetadataManager, IImagingInstrument
         write(rotationKey, rotation, configMetadata);
         write(fillValuesKey, fillValues, configMetadata);
         write(isTransposeKey, isTranspose, configMetadata);
+        write(linearInterpolationDimsKey, linearInterpolationDims, configMetadata);
+        write(maskValuesKey, maskValues, configMetadata);
         return configMetadata;
     }
 
@@ -280,6 +299,7 @@ public class ImagingInstrument implements MetadataManager, IImagingInstrument
         result = prime * result + ((fillValues == null) ? 0 : fillValues.hashCode());
 		return result;
 	}
+
 	@Override
 	public boolean equals(Object obj)
 	{
@@ -329,7 +349,7 @@ public class ImagingInstrument implements MetadataManager, IImagingInstrument
 		}
 		if (!Arrays.equals(searchImageSources, other.searchImageSources))
 		{
-			System.err.println("ImagingInstrument: equals: search images sources unequal");
+//			System.err.println("ImagingInstrument: equals: search images sources unequal for instrumentName " + instrumentName +" " + Arrays.toString(searchImageSources) + " " + Arrays.toString(other.searchImageSources));
 			return false;
 		}
 		if (searchQuery == null)
@@ -338,7 +358,7 @@ public class ImagingInstrument implements MetadataManager, IImagingInstrument
 				return false;
 		} else if (!searchQuery.equals(other.searchQuery))
 		{
-			System.err.println("ImagingInstrument: equals: search query unequal");
+//			System.err.println("ImagingInstrument: equals: search query unequal");
 			return false;
 		}
 		if (spectralMode != other.spectralMode)
@@ -362,7 +382,28 @@ public class ImagingInstrument implements MetadataManager, IImagingInstrument
         }
 		return true;
 	}
+	@Override
+	public int[] getLinearInterpolationDims()
+	{
+		return linearInterpolationDims;
+	}
+	@Override
+	public int[] getMaskValues()
+	{
+		return maskValues;
+	}
 
+	public double[] getFillValues()
+	{
+		if (fillValues == null) return new double[] {};
+		double[] fillValuesArray = new double[fillValues.size()];
+		int i=0;
+		for (Float val : fillValues)
+		{
+			fillValuesArray[i++] = val.doubleValue();
+		}
+		return fillValuesArray;
+	}
 
 }
 

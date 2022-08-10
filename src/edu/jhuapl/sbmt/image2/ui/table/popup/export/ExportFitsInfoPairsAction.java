@@ -17,10 +17,10 @@ import edu.jhuapl.sbmt.core.image.InfoFileWriter;
 import edu.jhuapl.sbmt.image2.interfaces.IPerspectiveImage;
 import edu.jhuapl.sbmt.image2.interfaces.IPerspectiveImageTableRepresentable;
 import edu.jhuapl.sbmt.image2.model.PerspectiveImageCollection;
-import edu.jhuapl.sbmt.image2.modules.io.export.SaveImageFileFromCacheOperator;
-import edu.jhuapl.sbmt.image2.pipeline.active.PerspectiveImageToRenderableImagePipeline;
-import edu.jhuapl.sbmt.image2.pipeline.publisher.Just;
-import edu.jhuapl.sbmt.image2.pipeline.subscriber.Sink;
+import edu.jhuapl.sbmt.image2.pipeline.PerspectiveImageToRenderableImagePipeline;
+import edu.jhuapl.sbmt.image2.pipeline.io.export.SaveImageFileFromCacheOperator;
+import edu.jhuapl.sbmt.pipeline.publisher.Just;
+import edu.jhuapl.sbmt.pipeline.subscriber.Sink;
 
 import glum.gui.action.PopAction;
 

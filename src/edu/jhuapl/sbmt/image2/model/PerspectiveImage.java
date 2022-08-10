@@ -8,7 +8,6 @@ import edu.jhuapl.saavtk.util.IntensityRange;
 import edu.jhuapl.sbmt.core.image.ImageSource;
 import edu.jhuapl.sbmt.core.image.ImageType;
 import edu.jhuapl.sbmt.image2.interfaces.IPerspectiveImage;
-import edu.jhuapl.sbmt.image2.modules.rendering.cylindricalImage.CylindricalBounds;
 
 import crucible.crust.metadata.api.Key;
 import crucible.crust.metadata.api.Version;
@@ -22,15 +21,12 @@ public class PerspectiveImage implements IPerspectiveImage
     private static final  Key<String> pointingSourceKey = Key.of("pointingSource");
     private static final  Key<String> pointingSourceTypeKey = Key.of("pointingSourceType");
     private static final  Key<Integer[]> intensityRangeKey = Key.of("intensityRange");
+    private static final  Key<int[]> maskValuesKey = Key.of("masks");
+    private static final  Key<int[]> trimValuesKey = Key.of("trims");
     private static final  Key<Integer> numberOfLayersKey = Key.of("numberOfLayers");
     private static final  Key<String> flipKey = Key.of("flip");
     private static final  Key<Double> rotationKey = Key.of("rotation");
     private static final  Key<String> imageOriginKey = Key.of("imageOrigin");
-    private static final  Key<Boolean> mappedKey = Key.of("mapped");
-    private static final  Key<Boolean> frustumKey = Key.of("frustum");
-    private static final  Key<Boolean> boundaryKey = Key.of("boundary");
-    private static final  Key<Boolean> offLimbKey = Key.of("offLimb");
-    private static final  Key<Integer> indexKey = Key.of("index");
     private static final  Key<Double> etKey = Key.of("et");
     private static final  Key<Long> longTimeKey = Key.of("longTime");
     private static final  Key<Boolean> simulateLightingKey = Key.of("simulateLighting");
@@ -39,6 +35,7 @@ public class PerspectiveImage implements IPerspectiveImage
     private static final  Key<String> imageTypeKey = Key.of("imageType");
     private static final  Key<CylindricalBounds> boundsKey = Key.of("cylindricalBounds");
     private static final Key<PerspectiveImage> PERSPECTIVE_IMAGE_KEY = Key.of("perspectiveImage");
+    private static final Key<Boolean> interpolationKey = Key.of("interpolation");
 
 	private String name = "";
 
@@ -176,8 +173,6 @@ public class PerspectiveImage implements IPerspectiveImage
 	{
 		return fillValues;
 	}
-
-
 
 	public double getEt()
 	{
@@ -343,17 +338,12 @@ public class PerspectiveImage implements IPerspectiveImage
 	        String flip = metadata.get(flipKey);
 	        Double rotation = metadata.get(rotationKey);
 	        String imageOrigin = metadata.get(imageOriginKey);
-	        boolean mapped = metadata.get(mappedKey);
-	        boolean frustum = metadata.get(frustumKey);
-	        boolean boundary = metadata.get(boundaryKey);
-	        boolean offlimb = metadata.get(offLimbKey);
 	        boolean simulateLighting = metadata.get(simulateLightingKey);
-	        Integer index = metadata.get(indexKey);
 	        Double et = metadata.get(etKey);
 	        Long longTime = metadata.get(longTimeKey);
 	        Double offset = metadata.get(offsetKey);
 	        Double defaultOffset = metadata.get(defaultOffsetKey);
-
+	        boolean interpolate = metadata.get(interpolationKey);
 
 	        double[] fillValues = new double[] {};
 	        PerspectiveImage result = new PerspectiveImage(imagefilename, imageType, pointingSourceType, pointingSource, fillValues);
@@ -363,12 +353,10 @@ public class PerspectiveImage implements IPerspectiveImage
 	        result.setFlip(flip);
 	        result.setRotation(rotation);
 	        result.setImageOrigin(ImageOrigin.valueFor(imageOrigin));
-//	        result.setMapped(mapped);
-//	        result.setFrustumShowing(frustum);
-//	        result.setBoundaryShowing(boundary);
-//	        result.setOfflimbShowing(offlimb);
+	        result.setMaskValues(metadata.get(maskValuesKey));
+	        result.setTrimValues(metadata.get(trimValuesKey));
 	        result.setSimulateLighting(simulateLighting);
-//	        result.setIndex(index);
+	        result.setInterpolateState(interpolate);
 	        result.setEt(et);
 	        result.setLongTime(longTime);
 	        result.setOffset(offset);
@@ -391,12 +379,10 @@ public class PerspectiveImage implements IPerspectiveImage
 	        result.put(flipKey, image.getFlip());
 	        result.put(rotationKey, image.getRotation());
 	        result.put(imageOriginKey, image.getImageOrigin());
-//	        result.put(mappedKey, image.isMapped());
-//	        result.put(frustumKey, image.isFrustumShowing());
-//	        result.put(boundaryKey, image.isBoundaryShowing());
-//	        result.put(offLimbKey, image.isOfflimbShowing());
+	        result.put(maskValuesKey, image.getMaskValues());
+	        result.put(trimValuesKey, image.getTrimValues());
 	        result.put(simulateLightingKey, image.isSimulateLighting());
-//	        result.put(indexKey, image.getIndex());
+	        result.put(interpolationKey, image.getInterpolateState());
 	        result.put(etKey, image.getEt());
 	        result.put(longTimeKey, image.getLongTime());
 	        result.put(offsetKey, image.getOffset());
@@ -429,18 +415,15 @@ public class PerspectiveImage implements IPerspectiveImage
 		return minFrustumLength;
 	}
 
-
 	public void setMinFrustumLength(double minFrustumLength)
 	{
 		this.minFrustumLength = minFrustumLength;
 	}
 
-
 	public double getMaxFrustumLength()
 	{
 		return maxFrustumLength;
 	}
-
 
 	public void setMaxFrustumLength(double maxFrustumLength)
 	{
@@ -465,11 +448,9 @@ public class PerspectiveImage implements IPerspectiveImage
 		return isLinearInterpolation;
 	}
 
-
 	@Override
 	public void setInterpolateState(boolean isLinear)
 	{
 		this.isLinearInterpolation = isLinear;
 	}
-
 }
