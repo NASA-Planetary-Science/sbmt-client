@@ -3,6 +3,7 @@ package gdaltest;
 import org.gdal.gdal.Dataset;
 import org.gdal.gdal.gdal;
 import org.gdal.ogr.DataSource;
+import org.gdal.ogr.Layer;
 import org.gdal.ogr.ogr;
 
 public class GDALTest
@@ -16,9 +17,9 @@ public class GDALTest
 //		}
 //		loadAndDetail("/Users/steelrj1/Desktop/SBMT Example Data files/M0125956777F4_2P_IOF_DBL.FIT");
 //		loadAndDetail("/Users/steelrj1/Desktop/SBMT Example Data files/Global_20181213_20181201_Shape14_NatureEd.png");
-		loadAndDetail("/Users/steelrj1/Desktop/SBMT Example Data files/M0145810520F6_2P_CIF_DBL.FIT");
+//		loadAndDetail("/Users/steelrj1/Desktop/SBMT Example Data files/M0145810520F6_2P_CIF_DBL.FIT");
 //		loadAndDetail("/Users/steelrj1/Downloads/m0153784905f4_2p_iof_dbl_bp.fit");
-//		loadAndDetailVector("/Users/steelrj1/Downloads/bulkunitlines_titan2000.shp");
+		loadAndDetailVector("/Users/steelrj1/Downloads/bulkunitlines_titan2000.shp");
 
 
 
@@ -41,28 +42,31 @@ public class GDALTest
 //		System.out.println("GDALTest: loadAndDetail: band 1 description " + dataset.GetRasterBand(1).GetDescription());
 
 		System.out.println("GDALTest: loadAndDetailVector: number of metadata items " + dataset.GetLayer(0).GetMetadataDomainList().size());
-
-		for (int i=0; i<dataset.GetLayer(0).GetMetadataDomainList().size(); i++)
+		for (int layerIdx = 0; layerIdx < dataset.GetLayerCount(); layerIdx++)
 		{
-			int size = dataset.GetLayer(0).GetMetadata_List(""+dataset.GetLayer(0).GetMetadataDomainList().get(i)).size();
-			for (int j=0; j<size; j++)
+			Layer layer = dataset.GetLayer(layerIdx);
+			for (int i=0; i < layer.GetMetadataDomainList().size(); i++)
 			{
-				System.out.println("GDALTest: loadAndDetailVector: metadata for " + dataset.GetLayer(0).GetMetadataDomainList().get(i) + " : " + dataset.GetLayer(0).GetMetadata_List(""+dataset.GetLayer(0).GetMetadataDomainList().get(i)).get(j));
+				int size = layer.GetMetadata_List(""+layer.GetMetadataDomainList().get(i)).size();
+				for (int j=0; j < size; j++)
+				{
+					System.out.println("GDALTest: loadAndDetailVector: metadata for " + layer.GetMetadataDomainList().get(i) + " : " + layer.GetMetadata_List(""+layer.GetMetadataDomainList().get(i)).get(j));
+				}
 			}
-		}
 
-		for (int i=0; i<dataset.GetLayer(0).GetFeatureCount(); i++)
-		{
-			int fieldCount = dataset.GetLayer(0).GetFeature(i).GetFieldCount();
-			for (int j=0; j<fieldCount; j++)
+			for (int i=0; i < layer.GetFeatureCount(); i++)
 			{
-				System.out.println("GDALTest: loadAndDetailVector: feature " + i + " " + dataset.GetLayer(0).GetFeature(i).GetFieldDefnRef(j).GetName());
-				System.out.println("GDALTest: loadAndDetailVector: feature " + i + " " + dataset.GetLayer(0).GetFeature(i).GetFieldAsDouble(j));
+				int fieldCount = layer.GetFeature(i).GetFieldCount();
+				for (int j=0; j<fieldCount; j++)
+				{
+					System.out.println("GDALTest: loadAndDetailVector: feature " + i + " " + layer.GetFeature(i).GetFieldDefnRef(j).GetName());
+					System.out.println("GDALTest: loadAndDetailVector: feature " + i + " " + layer.GetFeature(i).GetFieldAsDouble(j));
+				}
 			}
-		}
 
-		System.out.println("GDALTest: loadAndDetailVector: geom field count for layer 0, feature 0: " +dataset.GetLayer(0).GetFeature(0).GetGeomFieldCount());
-		System.out.println("GDALTest: loadAndDetailVector: geom field count for layer 0, feature 0, area: " +dataset.GetLayer(0).GetFeature(0).GetGeomFieldRef(0).Area());
+			System.out.println("GDALTest: loadAndDetailVector: geom field count for layer 0, feature 0: " + layer.GetFeature(0).GetGeomFieldCount());
+			System.out.println("GDALTest: loadAndDetailVector: geom field count for layer 0, feature 0, area: " + layer.GetFeature(0).GetGeomFieldRef(0).Area());
+		}
 	}
 
 	private void loadAndDetail(String filename)
