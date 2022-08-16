@@ -26,7 +26,7 @@ NOTE: On a Mac, built in Apple security measures may cause you to see an error m
 * Java 8 1.8.0_101 or above
 * Windows 7 or higher (64-bit)
 * Linux, recent distributions (64-bit)
-* Mac OS X version 10.10 or higher (64-bit Intel-based Macs only)
+* Mac OS X version 10.10 or higher (64-bit Intel-based Macs OR Apple Silicon (M1/M2 or greater) processors)
 
 ## Release Notes
 Release notes of the SBMT can be found [here](releasenotes.html).

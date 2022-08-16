@@ -4,6 +4,29 @@
 
 # Release Notes
 
+## July 14, 2022 (SBMT-0.8.2)
+
+### CRITICAL:
+- Fixed a launching problem on macOS Mojave and above.
+
+### New:
+- Updates to the Graticule (lat lon grid)
+- Color bar configuration panel now standardized
+- SBMT now runs in Java 16
+- Various updates to the Observing Conditions tab
+- User Interface updates to the main body pane (UI redesign, movie outputs)
+- New Bennu models (OLAv21, OLAv21PTM, SPOv54); other Bennu data updates
+- Internal: MEGANE and DART updates
+
+
+### Bug Fixes:
+- FIXED: Lat/lon structure center sometimes does not allow values to be added
+- FIXED: Restored status bar to utilize fixed width font
+- FIXED: Correct popup logic in structures/lidar
+- FIXED: Improved point diameter UI
+- FIXED: SBMT window size maintained between launches
+
+
 ## Jun 7, 2021 (SBMT-0.8.1)
 
 ### New:
