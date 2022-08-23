@@ -7,8 +7,6 @@ import vtk.vtkImageData;
 import vtk.vtkImageMapToColors;
 import vtk.vtkLookupTable;
 
-import edu.jhuapl.saavtk.colormap.Colormap;
-import edu.jhuapl.saavtk.colormap.Colormaps;
 import edu.jhuapl.saavtk.util.IntensityRange;
 import edu.jhuapl.sbmt.pipeline.operator.BasePipelineOperator;
 
@@ -49,17 +47,17 @@ public class VtkImageContrastOperator//<InputType extends vtkImageData, OutputTy
 		max = minValue + displayedRange.max * dx;
 //		System.out.println("VtkImageContrastOperator: getImageWithDisplayedRange: min max " + min + " " + max);
  		// Update the displayed image
-//		vtkLookupTable lut = new vtkLookupTable();
-//		lut.SetTableRange(min, max);
-//		lut.SetValueRange(0.0, 1.0);
-//		lut.SetHueRange(0.0, 0.0);
-//		lut.SetSaturationRange(0.0, 0.0);
-//		lut.SetRampToLinear();
-//		lut.Build();
-
-		Colormap colormap = Colormaps.getNewInstanceOfBuiltInColormap(Colormaps.getDefaultColormapName());
-		vtkLookupTable lut = colormap.getLookupTable();
+		vtkLookupTable lut = new vtkLookupTable();
 		lut.SetTableRange(min, max);
+		lut.SetValueRange(0.0, 1.0);
+		lut.SetHueRange(0.0, 0.0);
+		lut.SetSaturationRange(0.0, 0.0);
+		lut.SetRampToLinear();
+		lut.Build();
+
+//		Colormap colormap = Colormaps.getNewInstanceOfBuiltInColormap(Colormaps.getDefaultColormapName());
+//		vtkLookupTable lut = colormap.getLookupTable();
+//		lut.SetTableRange(min, max);
 
 		vtkImageMapToColors mapToColors = new vtkImageMapToColors();
 		mapToColors.SetInputData(inputs.get(0));
