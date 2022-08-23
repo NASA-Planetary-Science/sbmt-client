@@ -99,6 +99,7 @@ public class PerspectiveImageCollection<G1 extends IPerspectiveImage & IPerspect
 
 	private void loadUserList()
 	{
+		if (userImages.size() != 0) return;
 		String instrumentName = imagingInstrument == null ? "" : imagingInstrument.getType().toString();
 		String filename = smallBodyModels.get(0).getCustomDataFolder() + File.separator + "userImages" + instrumentName + ".txt";
         if (!new File(filename).exists()) return;
@@ -153,6 +154,7 @@ public class PerspectiveImageCollection<G1 extends IPerspectiveImage & IPerspect
 		setImageBoundaryShowing(image, false);
 		userImages.remove(image);
 		setAllItems(userImages);
+		updateUserList();
 	}
 
 	protected <T> void write(Key<T> key, T value, SettableMetadata configMetadata)
@@ -307,7 +309,7 @@ public class PerspectiveImageCollection<G1 extends IPerspectiveImage & IPerspect
 							if (image.getNumberOfLayers() == 1)
 								if (image.getPointingSourceType() == ImageSource.LOCAL_CYLINDRICAL)
 								{
-									pipeline = new RenderCylindricalImageToScenePipeline(image.getFilename(), image.getBounds(), smallBodyModels);
+									pipeline = new RenderCylindricalImageToScenePipeline(image, /*image.getFilename(), image.getBounds(),*/ smallBodyModels);
 								}
 								else
 								{
@@ -319,14 +321,21 @@ public class PerspectiveImageCollection<G1 extends IPerspectiveImage & IPerspect
 							}
 							else
 							{
-
+								if (image.getPointingSourceType() == ImageSource.LOCAL_CYLINDRICAL)
+								{
+									pipeline = new RenderCylindricalImageToScenePipeline(image, /*image.getFilename(), image.getBounds(),*/ smallBodyModels);
+								}
+								else
+								{
+									pipeline = new RenderablePointedImageActorPipeline<G1>(image, smallBodyModels);
+								}
 							}
 						}
 						else
 						{
 							if (image.getPointingSourceType() == ImageSource.LOCAL_CYLINDRICAL)
 							{
-								pipeline = new RenderCylindricalImageToScenePipeline(image.getFilename(), image.getBounds(), smallBodyModels);
+								pipeline = new RenderCylindricalImageToScenePipeline(image, /*image.getFilename(), image.getBounds(),*/ smallBodyModels);
 							}
 							else
 							{
@@ -566,7 +575,7 @@ public class PerspectiveImageCollection<G1 extends IPerspectiveImage & IPerspect
 						if (image.getNumberOfLayers() == 1)
 							if (image.getPointingSourceType() == ImageSource.LOCAL_CYLINDRICAL)
 							{
-								pipeline = new RenderCylindricalImageToScenePipeline(image.getFilename(), image.getBounds(), smallBodyModels);
+								pipeline = new RenderCylindricalImageToScenePipeline(image, /*image.getFilename(), image.getBounds(),*/ smallBodyModels);
 							}
 							else
 							{
@@ -586,7 +595,7 @@ public class PerspectiveImageCollection<G1 extends IPerspectiveImage & IPerspect
 					{
 						if (image.getPointingSourceType() == ImageSource.LOCAL_CYLINDRICAL)
 						{
-							pipeline = new RenderCylindricalImageToScenePipeline(image.getFilename(), image.getBounds(), smallBodyModels);
+							pipeline = new RenderCylindricalImageToScenePipeline(image, /*image.getFilename(), image.getBounds(),*/ smallBodyModels);
 						}
 						else
 						{
@@ -784,9 +793,12 @@ public class PerspectiveImageCollection<G1 extends IPerspectiveImage & IPerspect
 
 	public void setImagingInstrument(IImagingInstrument imagingInstrument)
 	{
+		if (this.imagingInstrument == imagingInstrument) return;
 		this.imagingInstrument = imagingInstrument;
 		if (imagingInstrument == null)
+		{
 			setAllItems(userImages);
+		}
 		else if (imagesByInstrument.get(imagingInstrument) == null)
 		{
 			setAllItems(Lists.newArrayList());
@@ -828,7 +840,7 @@ public class PerspectiveImageCollection<G1 extends IPerspectiveImage & IPerspect
 				}
 				else
 				{
-					pipeline = new RenderCylindricalImageToScenePipeline(image.getFilename(), image.getBounds(), smallBodyModels);
+					pipeline = new RenderCylindricalImageToScenePipeline(image, /*image.getFilename(), image.getBounds(),*/ smallBodyModels);
 
 				}
 			}

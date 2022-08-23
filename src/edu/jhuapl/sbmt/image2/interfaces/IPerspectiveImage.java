@@ -39,6 +39,10 @@ public interface IPerspectiveImage
 
 	public int getNumberOfLayers();
 
+	public int getCurrentLayer();
+
+	public void setCurrentLayer(int index);
+
 	public String getName();
 
 	public void setName(String name);

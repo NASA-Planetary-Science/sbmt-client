@@ -46,8 +46,8 @@ public class ColorImageBuilderController<G1 extends IPerspectiveImage & IPerspec
 				ColorImageGeneratorPipeline pipeline = new ColorImageGeneratorPipeline(images, smallBodyModels);
 				List<vtkActor> actors = pipeline.getImageActors();
 
-				IPipelinePublisher<Pair<List<SmallBodyModel>, List<vtkActor>>> sceneObjects = Publishers.formPair(Just.of(smallBodyModels), Just.of(actors));
-				IPipelineOperator<Pair<List<SmallBodyModel>, List<vtkActor>>, vtkActor> sceneBuilder = new SceneActorBuilderOperator();
+				IPipelinePublisher<Pair<SmallBodyModel, vtkActor>> sceneObjects = Publishers.formPair(Just.of(smallBodyModels), Just.of(actors));
+				IPipelineOperator<Pair<SmallBodyModel, vtkActor>, vtkActor> sceneBuilder = new SceneActorBuilderOperator();
 
 				VtkRendererPreview preview = new VtkRendererPreview(smallBodyModels.get(0));
 

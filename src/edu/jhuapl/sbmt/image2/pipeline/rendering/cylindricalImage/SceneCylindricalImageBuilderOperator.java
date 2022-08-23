@@ -19,7 +19,7 @@ import edu.jhuapl.sbmt.image2.model.RenderableCylindricalImage;
 import edu.jhuapl.sbmt.pipeline.operator.BasePipelineOperator;
 
 
-public class SceneCylindricalImageBuilderOperator extends BasePipelineOperator<Pair<List<SmallBodyModel>, List<RenderableCylindricalImage>>, Pair<List<vtkActor>, List<CylindricalImageRenderables>>>
+public class SceneCylindricalImageBuilderOperator extends BasePipelineOperator<Pair<SmallBodyModel, RenderableCylindricalImage>, Pair<List<vtkActor>, List<CylindricalImageRenderables>>>
 {
 
 	List<SmallBodyModel> smallBodyModels;
@@ -32,8 +32,10 @@ public class SceneCylindricalImageBuilderOperator extends BasePipelineOperator<P
 	@Override
 	public void processData() throws IOException, Exception
 	{
-		smallBodyModels = inputs.get(0).getLeft();
-		renderableImages = inputs.get(0).getRight();
+		smallBodyModels = inputs.stream().map( item -> item.getLeft()).toList();
+		renderableImages = inputs.stream().map( item -> item.getRight()).toList();
+//		smallBodyModels = inputs.get(0).getLeft();
+//		renderableImages = inputs.get(0).getRight();
 		processImages();
 	}
 
@@ -42,12 +44,22 @@ public class SceneCylindricalImageBuilderOperator extends BasePipelineOperator<P
 	{
         try
 		{
-        	outputs.add(Pair.of(Lists.newArrayList(), Lists.newArrayList()));
-        	outputs.get(0).getLeft().addAll(generateBodyModelActor(smallBodyModels));
+
         	List<CylindricalImageRenderables> renderables = Lists.newArrayList();
+        	List<vtkActor> smallBodyActors = generateBodyModelActor(smallBodyModels);
         	for (RenderableCylindricalImage image : renderableImages)
-        		renderables.add(new CylindricalImageRenderables(image, smallBodyModels));
-        	outputs.get(0).getRight().addAll(renderables);
+        	{
+        		CylindricalImageRenderables cylImgRenderable = new CylindricalImageRenderables(image, smallBodyModels);
+        		renderables.add(cylImgRenderable);
+//        		System.out.println("SceneCylindricalImageBuilderOperator: processImages: adding pair with image " + cylImgRenderable);
+//        		System.out.println("SceneCylindricalImageBuilderOperator: processImages: adding " + Pair.of(smallBodyActors, List.of(cylImgRenderable)));
+        		outputs.add(Pair.of(smallBodyActors, List.of(cylImgRenderable)));
+        	}
+//        	System.out.println("SceneCylindricalImageBuilderOperator: processImages: number of outputs " + outputs.size());
+//        	System.out.println("SceneCylindricalImageBuilderOperator: processImages: output 15 " + outputs.get(15));
+//        	outputs.add(Pair.of(Lists.newArrayList(), Lists.newArrayList()));
+//        	outputs.get(0).getLeft().addAll(generateBodyModelActor(smallBodyModels));
+//        	outputs.get(0).getRight().addAll(renderables);
 		}
 		catch (Exception e)
 		{

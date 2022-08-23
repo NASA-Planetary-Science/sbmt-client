@@ -22,8 +22,11 @@ public class LayerTrimOperator extends BasePipelineOperator<Layer, Layer>
 	@Override
 	public void processData() throws IOException, Exception
 	{
-		Layer outputLayer = (TransformFactory.trim(iLowerOffset, iUpperOffset, jLowerOffset, jUpperOffset).apply(inputs.get(0)));
-		outputs.add(outputLayer);
+		for (Layer layer : inputs)
+		{
+			Layer outputLayer = (TransformFactory.trim(iLowerOffset, iUpperOffset, jLowerOffset, jUpperOffset).apply(layer));
+			outputs.add(outputLayer);
+		}
 	}
 
 }

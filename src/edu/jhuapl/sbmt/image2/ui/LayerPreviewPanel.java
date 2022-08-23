@@ -5,6 +5,7 @@ import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
@@ -18,6 +19,7 @@ import java.util.List;
 import java.util.function.Function;
 
 import javax.swing.AbstractAction;
+import javax.swing.JComboBox;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
@@ -61,6 +63,7 @@ public class LayerPreviewPanel extends ModelInfoWindow implements MouseListener,
 	ImageTrimController trimController;
 	ImageMaskController maskController;
 	ImageContrastController contrastController;
+	private List<Layer> layers;
 	private Layer layer;
 	private vtkJoglPanelComponent renWin;
 	private vtkImageSlice actor = new vtkImageSlice();
@@ -73,13 +76,17 @@ public class LayerPreviewPanel extends ModelInfoWindow implements MouseListener,
 	private int[] previousLevels = null;
 	private vtkImageData displayedImage;
 	private HashMap<String, String> metadata;
+	private List<HashMap<String, String>> metadatas;
 	private Runnable completionBlock;
+	private JComboBox<String> layerComboBox;
 
-	public LayerPreviewPanel(String title, final Layer layer, HashMap<String, String> metadata, Runnable completionBlock) throws IOException, Exception
+	public LayerPreviewPanel(String title, final List<Layer> layers, List<HashMap<String, String>> metadatas, Runnable completionBlock) throws IOException, Exception
 	{
-		this.metadata = metadata;
+		this.layers = layers;
+		this.layer = layers.get(0);
+		this.metadatas = metadatas;
+		this.metadata = metadatas.get(0);
 		this.maskPipeline = new VtkImageMaskingPipeline();
-		this.layer = layer;
 		this.completionBlock = completionBlock;
 		initComponents();
 		renderLayer(layer);
@@ -192,16 +199,16 @@ public class LayerPreviewPanel extends ModelInfoWindow implements MouseListener,
 		// use the Center in Image option.
 		vtkTransform imageTransform = new vtkTransform();
 		imageTransform.Translate(center[0], center[1], 0.0);
-		imageTransform.RotateZ(-90.0);
+		imageTransform.RotateZ(0.0);
 		imageTransform.Translate(-center[1], -center[0], 0.0);
 
 		reslice = new vtkImageReslice();
 		reslice.SetInputData(displayedImage);
-		reslice.SetResliceTransform(imageTransform);
+//		reslice.SetResliceTransform(imageTransform);
 		reslice.SetInterpolationModeToNearestNeighbor();
 		reslice.SetOutputSpacing(1.0, 1.0, 1.0);
 		reslice.SetOutputOrigin(0.0, 0.0, 0.0);
-		reslice.SetOutputExtent(0, dims[1] - 1, 0, dims[0] - 1, 0, dims[2]);
+		reslice.SetOutputExtent(0, dims[0] - 1, 0, dims[1] - 1, 0, dims[2]);
 		reslice.Update();
 
 		vtkImageSliceMapper imageSliceMapper = new vtkImageSliceMapper();
@@ -248,9 +255,47 @@ public class LayerPreviewPanel extends ModelInfoWindow implements MouseListener,
 		setPreferredSize(new Dimension(775, 900));
 		getContentPane().setLayout(new GridBagLayout());
 
+		if (layers.size() > 1)
+		{
+			String[] layerNames = new String[layers.size()];
+			metadatas.get(0).keySet().stream().filter(item -> item.contains("PLANE")).map(key  -> key + " - " + metadatas.get(0).get(key)).sorted().toList().toArray(layerNames);
+
+			layerComboBox = new JComboBox<String>(layerNames);
+			layerComboBox.addActionListener(new ActionListener()
+			{
+
+				@Override
+				public void actionPerformed(ActionEvent arg0)
+				{
+					String title = (String)layerComboBox.getSelectedItem();
+					int index = Integer.parseInt(title.split(" ")[0].replace("PLANE", "")) - 1;
+					try
+					{
+						generateVtkImageData(layers.get(index));
+						updateImage(displayedImage);
+						setIntensity(null);
+						renWin.Render();
+					}
+					catch (Exception e)
+					{
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+				}
+			});
+			gridBagConstraints = new GridBagConstraints();
+			gridBagConstraints.gridx = 0;
+			gridBagConstraints.gridy = 1;
+			gridBagConstraints.gridwidth = 2;
+			gridBagConstraints.fill = GridBagConstraints.HORIZONTAL;
+			gridBagConstraints.anchor = GridBagConstraints.WEST;
+			gridBagConstraints.weightx = 1.0;
+			getContentPane().add(layerComboBox, gridBagConstraints);
+		}
+
 		gridBagConstraints = new GridBagConstraints();
 		gridBagConstraints.gridx = 0;
-		gridBagConstraints.gridy = 6;
+		gridBagConstraints.gridy = 4;
 		gridBagConstraints.gridwidth = 2;
 		gridBagConstraints.fill = GridBagConstraints.HORIZONTAL;
 		gridBagConstraints.anchor = GridBagConstraints.WEST;
@@ -259,7 +304,7 @@ public class LayerPreviewPanel extends ModelInfoWindow implements MouseListener,
 
 		gridBagConstraints = new GridBagConstraints();
 		gridBagConstraints.gridx = 0;
-		gridBagConstraints.gridy = 1;
+		gridBagConstraints.gridy = 2;
 		gridBagConstraints.gridwidth = getContentPane().getWidth();
 		gridBagConstraints.weightx = 1;
 		gridBagConstraints.fill = GridBagConstraints.HORIZONTAL;
@@ -290,7 +335,7 @@ public class LayerPreviewPanel extends ModelInfoWindow implements MouseListener,
 
 		gridBagConstraints = new GridBagConstraints();
 		gridBagConstraints.gridx = 0;
-		gridBagConstraints.gridy = 2;
+		gridBagConstraints.gridy = 3;
 		gridBagConstraints.fill = GridBagConstraints.HORIZONTAL;
 		gridBagConstraints.insets = new Insets(3, 6, 3, 0);
 		trimController = new ImageTrimController(layer, new Function<Layer, Void>()

@@ -25,7 +25,11 @@ public class PairSink<L extends Object, R extends Object, O extends Object> impl
 	@Override
 	public void receive(List<Pair<L, R>> items)
 	{
-		this.outputs[0] = Pair.of(items.get(0).getLeft(), items.get(0).getRight());
+		int i=0;
+		for (Pair<L,R> pair : items)
+		{
+			this.outputs[i++] = Pair.of(pair.getLeft(), pair.getRight());
+		}
 	}
 
 	@Override

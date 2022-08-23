@@ -118,7 +118,7 @@ public class RenderablePointedImageActorPipeline<G1 extends IPerspectiveImage & 
 			int[] interpolationDims = new int[] { reader.getOutputs().get(0).iSize(), reader.getOutputs().get(0).jSize()};
 			if (image.getLinearInterpolatorDims() != null) interpolationDims = image.getLinearInterpolatorDims();
 			IPipelineOperator<Layer, Layer> linearInterpolator = null;
-			if (image.getLinearInterpolatorDims() == null)
+			if (image.getLinearInterpolatorDims() == null || (image.getLinearInterpolatorDims()[0] == 0 && image.getLinearInterpolatorDims()[1] == 0))
 				linearInterpolator = new PassthroughOperator<>();
 			else
 				linearInterpolator = new LayerLinearInterpolaterOperator(interpolationDims[0], interpolationDims[1]);
@@ -208,13 +208,13 @@ public class RenderablePointedImageActorPipeline<G1 extends IPerspectiveImage & 
 		//*************************
 		//zip the sources together
 		//*************************
-		IPipelinePublisher<Pair<List<SmallBodyModel>, List<RenderablePointedImage>>> sceneObjects =
+		IPipelinePublisher<Pair<SmallBodyModel, RenderablePointedImage>> sceneObjects =
 				Publishers.formPair(Just.of(smallBodyModels), Just.of(renderableImages));
 
 		//*****************************************************************************************************
 		//Pass them into the scene builder to perform intersection calculations, and send actors to List
 		//*****************************************************************************************************
-		IPipelineOperator<Pair<List<SmallBodyModel>, List<RenderablePointedImage>>, Pair<List<vtkActor>, List<PointedImageRenderables>>> sceneBuilder =
+		IPipelineOperator<Pair<SmallBodyModel, RenderablePointedImage>, Pair<List<vtkActor>, List<PointedImageRenderables>>> sceneBuilder =
 				new ScenePointedImageBuilderOperator();
 
 		sceneObjects

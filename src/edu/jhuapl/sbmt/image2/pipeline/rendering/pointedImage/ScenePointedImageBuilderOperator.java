@@ -17,7 +17,7 @@ import edu.jhuapl.sbmt.common.client.SmallBodyModel;
 import edu.jhuapl.sbmt.pipeline.operator.BasePipelineOperator;
 
 
-public class ScenePointedImageBuilderOperator extends BasePipelineOperator<Pair<List<SmallBodyModel>, List<RenderablePointedImage>>, Pair<List<vtkActor>, List<PointedImageRenderables>>>
+public class ScenePointedImageBuilderOperator extends BasePipelineOperator<Pair<SmallBodyModel, RenderablePointedImage>, Pair<List<vtkActor>, List<PointedImageRenderables>>>
 {
 
 	List<SmallBodyModel> smallBodyModels;
@@ -30,8 +30,10 @@ public class ScenePointedImageBuilderOperator extends BasePipelineOperator<Pair<
 	@Override
 	public void processData() throws IOException, Exception
 	{
-		smallBodyModels = inputs.get(0).getLeft();
-		renderableImages = inputs.get(0).getRight();
+		smallBodyModels = inputs.stream().map( item -> item.getLeft()).toList();
+		renderableImages = inputs.stream().map( item -> item.getRight()).toList();
+//		smallBodyModels = inputs.get(0).getLeft();
+//		renderableImages = inputs.get(0).getRight();
 		processImages();
 	}
 

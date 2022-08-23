@@ -21,9 +21,13 @@ import edu.jhuapl.sbmt.image2.pipeline.pointing.InfofileReaderPublisher;
 import edu.jhuapl.sbmt.image2.pipeline.pointing.SumfileReaderPublisher;
 import edu.jhuapl.sbmt.image2.pipeline.rendering.layer.LayerLinearInterpolaterOperator;
 import edu.jhuapl.sbmt.image2.pipeline.rendering.layer.LayerMasking;
+import edu.jhuapl.sbmt.image2.pipeline.rendering.layer.LayerRotationOperator;
+import edu.jhuapl.sbmt.image2.pipeline.rendering.layer.LayerXFlipOperator;
+import edu.jhuapl.sbmt.image2.pipeline.rendering.layer.LayerYFlipOperator;
 import edu.jhuapl.sbmt.image2.pipeline.rendering.pointedImage.RenderablePointedImage;
 import edu.jhuapl.sbmt.image2.pipeline.rendering.pointedImage.RenderablePointedImageGenerator;
 import edu.jhuapl.sbmt.layer.api.Layer;
+import edu.jhuapl.sbmt.pipeline.operator.BasePipelineOperator;
 import edu.jhuapl.sbmt.pipeline.operator.IPipelineOperator;
 import edu.jhuapl.sbmt.pipeline.operator.PassthroughOperator;
 import edu.jhuapl.sbmt.pipeline.publisher.IPipelinePublisher;
@@ -63,14 +67,23 @@ public class PerspectiveImageToRenderableImagePipeline
 			}
 
 			IPipelineOperator<Layer, Layer> linearInterpolator = null;
-			if (image.getLinearInterpolatorDims() == null)
+			if (image.getLinearInterpolatorDims() == null || (image.getLinearInterpolatorDims()[0] == 0 && image.getLinearInterpolatorDims()[1] == 0))
 				linearInterpolator = new PassthroughOperator<>();
 			else
 				linearInterpolator = new LayerLinearInterpolaterOperator(image.getLinearInterpolatorDims()[0], image.getLinearInterpolatorDims()[1]);
+			LayerRotationOperator rotationOperator = new LayerRotationOperator(image.getRotation());
+
+			BasePipelineOperator<Layer, Layer> flipOperator = new PassthroughOperator<Layer>();
+			if (image.getFlip().equals("X"))
+				flipOperator = new LayerXFlipOperator();
+			else if (image.getFlip().equals("Y"))
+				flipOperator = new LayerYFlipOperator();
 
 			List<Layer> updatedLayers = Lists.newArrayList();
 			reader
 				.operate(linearInterpolator)
+				.operate(rotationOperator)
+				.operate(flipOperator)
 				.subscribe(Sink.of(updatedLayers)).run();
 			//generate image pointing (in: filename, out: ImagePointing)
 			IPipelinePublisher<PointingFileReader> pointingPublisher = null;

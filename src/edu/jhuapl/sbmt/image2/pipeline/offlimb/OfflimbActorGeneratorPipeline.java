@@ -90,12 +90,12 @@ public class OfflimbActorGeneratorPipeline
 			//.subscribe(PairSink.of(pairSink))
 			.run();
 
-		IPipelinePublisher<Pair<List<SmallBodyModel>, List<vtkActor>>> sceneObjects = Publishers.formPair(Just.of(vtkReader.getOutputs()), Just.of(actors));
+		IPipelinePublisher<Pair<SmallBodyModel, vtkActor>> sceneObjects = Publishers.formPair(Just.of(vtkReader.getOutputs()), Just.of(actors));
 
 		//***************************************************************************
 		//Pass them into the scene builder to perform intersection calculations
 		//***************************************************************************
-		IPipelineOperator<Pair<List<SmallBodyModel>, List<vtkActor>>, vtkActor> sceneBuilder = new SceneActorBuilderOperator();
+		IPipelineOperator<Pair<SmallBodyModel, vtkActor>, vtkActor> sceneBuilder = new SceneActorBuilderOperator();
 
 		//*******************************
 		//Throw them to the preview tool

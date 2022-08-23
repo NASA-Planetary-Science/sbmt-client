@@ -19,7 +19,11 @@ import edu.jhuapl.sbmt.image2.pipeline.io.builtIn.BuiltInPNGHeaderReader;
 import edu.jhuapl.sbmt.image2.pipeline.io.builtIn.BuiltInPNGReader;
 import edu.jhuapl.sbmt.image2.pipeline.rendering.cylindricalImage.RenderableCylindricalImageGenerator;
 import edu.jhuapl.sbmt.image2.pipeline.rendering.layer.LayerLinearInterpolaterOperator;
+import edu.jhuapl.sbmt.image2.pipeline.rendering.layer.LayerRotationOperator;
+import edu.jhuapl.sbmt.image2.pipeline.rendering.layer.LayerXFlipOperator;
+import edu.jhuapl.sbmt.image2.pipeline.rendering.layer.LayerYFlipOperator;
 import edu.jhuapl.sbmt.layer.api.Layer;
+import edu.jhuapl.sbmt.pipeline.operator.BasePipelineOperator;
 import edu.jhuapl.sbmt.pipeline.operator.IPipelineOperator;
 import edu.jhuapl.sbmt.pipeline.operator.PassthroughOperator;
 import edu.jhuapl.sbmt.pipeline.publisher.IPipelinePublisher;
@@ -63,9 +67,18 @@ public class CylindricalImageToRenderableImagePipeline
 			else
 				linearInterpolator = new LayerLinearInterpolaterOperator(image.getLinearInterpolatorDims()[0], image.getLinearInterpolatorDims()[1]);
 
+			LayerRotationOperator rotationOperator = new LayerRotationOperator(image.getRotation());
+
+			BasePipelineOperator<Layer, Layer> flipOperator = new PassthroughOperator<Layer>();
+			if (image.getFlip().equals("X"))
+				flipOperator = new LayerXFlipOperator();
+			else if (image.getFlip().equals("Y"))
+				flipOperator = new LayerYFlipOperator();
 			List<Layer> updatedLayers = Lists.newArrayList();
 			reader
 				.operate(linearInterpolator)
+				.operate(flipOperator)
+				.operate(rotationOperator)
 				.subscribe(Sink.of(updatedLayers)).run();
 
 			//generate metadata (in: filename, out: ImageMetadata)
@@ -73,9 +86,19 @@ public class CylindricalImageToRenderableImagePipeline
 			metadataReader.subscribe(Sink.of(metadata)).run();
 
 			//combine image source (in: Layer+ImageMetadata+CylindricalBounds, out: RenderableImage)
-			IPipelinePublisher<Layer> layerPublisher = new Just<Layer>(updatedLayers.get(0));
-			IPipelinePublisher<CylindricalBounds> boundsPublisher = Just.of(image.getBounds());
-			IPipelinePublisher<Triple<Layer, HashMap<String, String>, CylindricalBounds>> imageComponents = Publishers.formTriple(layerPublisher, metadataReader, boundsPublisher);
+//			IPipelinePublisher<Layer> layerPublisher = new Just<Layer>(updatedLayers.get(0));
+//			IPipelinePublisher<CylindricalBounds> boundsPublisher = Just.of(image.getBounds());
+			List<HashMap<String, String>> metadataReaders = Lists.newArrayList();
+			List<CylindricalBounds> boundsCollection = Lists.newArrayList();
+			for (int i=0; i<reader.getOutputs().size(); i++)
+			{
+				metadataReaders.add(metadataReader.getOutput());
+				boundsCollection.add(image.getBounds());
+			}
+
+			IPipelinePublisher<HashMap<String, String>> metadataPipeline = Just.of(metadataReaders);
+			IPipelinePublisher<CylindricalBounds> boundsPipeline = Just.of(boundsCollection);
+			IPipelinePublisher<Triple<Layer, HashMap<String, String>, CylindricalBounds>> imageComponents = Publishers.formTriple(Just.of(updatedLayers), metadataPipeline, boundsPipeline);
 			//make a renderable image generator
 			IPipelineOperator<Triple<Layer, HashMap<String, String>, CylindricalBounds>, RenderableCylindricalImage> renderableImageGenerator = new RenderableCylindricalImageGenerator();
 

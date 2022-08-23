@@ -21,26 +21,29 @@ public class LayerRotationOperator extends BasePipelineOperator<Layer, Layer>
 	public void processData() throws IOException, Exception
 	{
 		Function<Layer, Layer> rotationType = null;
-		if (rotation == 0.0)
+		for (Layer layer : inputs)
 		{
-			outputs.add(inputs.get(0));
-			return;
-		}
-		else if (rotation == 90.0)
-		{
-			rotationType = TransformFactory.rotateCCW();
-		}
-		else if (rotation == 180.0)
-		{
-			rotationType = TransformFactory.rotateHalfway();
-		}
-		else if (rotation == 270.0)
-		{
-			rotationType = TransformFactory.rotateCW();
-		}
+			if (rotation == 0.0)
+			{
+				outputs.add(layer);
+				continue;
+			}
+			else if (rotation == 90.0)
+			{
+				rotationType = TransformFactory.rotateCCW();
+			}
+			else if (rotation == 180.0)
+			{
+				rotationType = TransformFactory.rotateHalfway();
+			}
+			else if (rotation == 270.0)
+			{
+				rotationType = TransformFactory.rotateCW();
+			}
 
-		Layer rotatedLayer = rotationType.apply(inputs.get(0));
-		outputs.add(rotatedLayer);
+			Layer rotatedLayer = rotationType.apply(layer);
+			outputs.add(rotatedLayer);
+		}
 	}
 
 }

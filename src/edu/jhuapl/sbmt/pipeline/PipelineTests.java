@@ -168,14 +168,14 @@ public class PipelineTests
 		//zip the sources together
 		//*************************
 //		IPipelinePublisher<List<Object>> sceneObjects = Publishers.mergeLists(vtkReader, new Just<RenderableImage>(renderableImages.get(0)));
-		IPipelinePublisher<Pair<List<SmallBodyModel>, List<RenderablePointedImage>>> sceneObjects = Publishers.formPair(Just.of(vtkReader.getOutputs()), Just.of(renderableImages));
+		IPipelinePublisher<Pair<SmallBodyModel, RenderablePointedImage>> sceneObjects = Publishers.formPair(Just.of(vtkReader.getOutputs()), Just.of(renderableImages));
 
 
 		//***************************************************************************
 		//Pass them into the scene builder to perform intersection calculations
 		//***************************************************************************
 //		IPipelineOperator<Pair<List<SmallBodyModel>, List<vtkActor>>, vtkActor> sceneBuilder = new SceneActorBuilderOperator();
-		IPipelineOperator<Pair<List<SmallBodyModel>, List<RenderablePointedImage>>, Pair<List<vtkActor>, List<PointedImageRenderables>>> sceneBuilder =
+		IPipelineOperator<Pair<SmallBodyModel, RenderablePointedImage>, Pair<List<vtkActor>, List<PointedImageRenderables>>> sceneBuilder =
 				new ScenePointedImageBuilderOperator();
 
 		//*******************************
@@ -239,13 +239,13 @@ public class PipelineTests
 		//zip the sources together
 		//*************************
 //		IPipelinePublisher<List<Object>> sceneObjects = Publishers.mergeLists(vtkReader, new Just<RenderableImage>(renderableImages.get(0)));
-		IPipelinePublisher<Pair<List<SmallBodyModel>, List<RenderablePointedImage>>> sceneObjects = Publishers.formPair(Just.of(vtkReader.getOutputs()), Just.of(renderableImages));
+		IPipelinePublisher<Pair<SmallBodyModel, RenderablePointedImage>> sceneObjects = Publishers.formPair(Just.of(vtkReader.getOutputs()), Just.of(renderableImages));
 
 		//***************************************************************************
 		//Pass them into the scene builder to perform intersection calculations
 		//***************************************************************************
 //		IPipelineOperator<Pair<List<SmallBodyModel>, List<vtkActor>>, vtkActor> sceneBuilder = new SceneActorBuilderOperator();
-		IPipelineOperator<Pair<List<SmallBodyModel>, List<RenderablePointedImage>>, Pair<List<vtkActor>, List<PointedImageRenderables>>> sceneBuilder =
+		IPipelineOperator<Pair<SmallBodyModel, RenderablePointedImage>, Pair<List<vtkActor>, List<PointedImageRenderables>>> sceneBuilder =
 				new ScenePointedImageBuilderOperator();
 
 		//*******************************
@@ -332,7 +332,7 @@ public class PipelineTests
 		//zip the sources together
 		//*************************
 //		IPipelinePublisher<List<Object>> sceneObjects = Publishers.mergeLists(Just.of(updatedBodies), Just.of(renderableImages.get(0)));
-		IPipelinePublisher<Pair<List<SmallBodyModel>, List<RenderablePointedImage>>> sceneObjects = Publishers.formPair(Just.of(updatedBodies), Just.of(renderableImages));
+		IPipelinePublisher<Pair<SmallBodyModel, RenderablePointedImage>> sceneObjects = Publishers.formPair(Just.of(updatedBodies), Just.of(renderableImages));
 
 //		//***************************************************************************
 //		//Pass them into the scene builder to perform intersection calculations

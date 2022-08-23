@@ -135,7 +135,7 @@ public class RendererPreviewPanel2 extends ModelInfoWindow implements MouseListe
 		//*************************
 		//zip the sources together
 		//*************************
-		IPipelinePublisher<Pair<List<SmallBodyModel>, List<RenderablePointedImage>>> sceneObjects = Publishers.formPair(Just.of(updatedBodies), Just.of(renderableImages));
+		IPipelinePublisher<Pair<SmallBodyModel, RenderablePointedImage>> sceneObjects = Publishers.formPair(Just.of(updatedBodies), Just.of(renderableImages));
 
 //		//***************************************************************************
 //		//Pass them into the scene builder to perform intersection calculations

@@ -226,7 +226,7 @@ public class BasemapImageCollection<G1 extends IPerspectiveImage & IPerspectiveI
 							if (image.getNumberOfLayers() == 1)
 								if (image.getPointingSourceType() == ImageSource.LOCAL_CYLINDRICAL)
 								{
-									pipeline = new RenderCylindricalImageToScenePipeline(image.getFilename(), image.getBounds(), smallBodyModels);
+									pipeline = new RenderCylindricalImageToScenePipeline(image, /*image.getFilename(), image.getBounds(),*/ smallBodyModels);
 								}
 								else
 								{
@@ -246,7 +246,7 @@ public class BasemapImageCollection<G1 extends IPerspectiveImage & IPerspectiveI
 						{
 							if (image.getPointingSourceType() == ImageSource.LOCAL_CYLINDRICAL)
 							{
-								pipeline = new RenderCylindricalImageToScenePipeline(image.getFilename(), image.getBounds(), smallBodyModels);
+								pipeline = new RenderCylindricalImageToScenePipeline(image, /*image.getFilename(), image.getBounds(),*/ smallBodyModels);
 							}
 							else
 							{
@@ -379,7 +379,7 @@ public class BasemapImageCollection<G1 extends IPerspectiveImage & IPerspectiveI
 				}
 				else
 				{
-					pipeline = new RenderCylindricalImageToScenePipeline(image.getFilename(), image.getBounds(), smallBodyModels);
+					pipeline = new RenderCylindricalImageToScenePipeline(image, /*image.getFilename(), image.getBounds(),*/ smallBodyModels);
 
 				}
 			}

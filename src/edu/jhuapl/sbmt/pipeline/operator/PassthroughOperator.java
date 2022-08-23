@@ -12,6 +12,7 @@ public class PassthroughOperator<T1> extends BasePipelineOperator<T1, T1>
 	@Override
 	public void processData() throws IOException, Exception
 	{
-		outputs.add(inputs.get(0));
+		for (T1 layer : inputs)
+			outputs.add(layer);
 	}
 }

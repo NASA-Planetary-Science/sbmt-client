@@ -5,6 +5,8 @@ import java.util.List;
 
 import org.apache.commons.lang3.tuple.Pair;
 
+import com.beust.jcommander.internal.Lists;
+
 import edu.jhuapl.sbmt.common.client.SmallBodyModel;
 import edu.jhuapl.sbmt.core.image.ImageSource;
 import edu.jhuapl.sbmt.image2.interfaces.IPerspectiveImage;
@@ -64,8 +66,11 @@ public class ShowImagePropertiesAction<G1 extends IPerspectiveImage & IPerspecti
 				List<RenderableCylindricalImage> renderableImages = pipeline.getRenderableImages();
 				preview = new VtkLayerPreview("Image Properties");
 				preview.setCompletionBlock(completionBlock);
-				Pair<Layer, HashMap<String, String>> inputs = Pair.of(renderableImages.get(0).getLayer(), metadata.get(0));
-				Just.of(inputs)
+				List<Pair<Layer, HashMap<String, String>>> inputList = Lists.newArrayList();
+				for (int i=0; i<renderableImages.size(); i++)
+					inputList.add(Pair.of(renderableImages.get(i).getLayer(), metadata.get(0)));
+//				Pair<Layer, HashMap<String, String>> inputs = Pair.of(renderableImages.get(0).getLayer(), metadata.get(0));
+				Just.of(inputList)
 					.subscribe(preview)
 					.run();
 
@@ -80,8 +85,11 @@ public class ShowImagePropertiesAction<G1 extends IPerspectiveImage & IPerspecti
 				metadata.get(0).putAll(derivedMetadata);
 				preview = new VtkLayerPreview("Image Properties");
 				preview.setCompletionBlock(completionBlock);
-				Pair<Layer, HashMap<String, String>> inputs = Pair.of(renderableImages.get(0).getLayer(), metadata.get(0));
-				Just.of(inputs)
+				List<Pair<Layer, HashMap<String, String>>> inputList = Lists.newArrayList();
+				for (int i=0; i<renderableImages.size(); i++)
+					inputList.add(Pair.of(renderableImages.get(i).getLayer(), metadata.get(0)));
+//				Pair<Layer, HashMap<String, String>> inputs = Pair.of(renderableImages.get(0).getLayer(), metadata.get(0));
+				Just.of(inputList)
 					.subscribe(preview)
 					.run();
 

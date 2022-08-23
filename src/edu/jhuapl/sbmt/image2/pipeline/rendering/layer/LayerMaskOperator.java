@@ -22,7 +22,8 @@ public class LayerMaskOperator extends BasePipelineOperator<Layer, Layer>
 	@Override
 	public void processData() throws IOException, Exception
 	{
-		outputs.add((TransformFactory.mask(iLowerOffset, iUpperOffset, jLowerOffset, jUpperOffset).apply(inputs.get(0))));
+		for (Layer layer : inputs)
+			outputs.add((TransformFactory.mask(iLowerOffset, iUpperOffset, jLowerOffset, jUpperOffset).apply(layer)));
 	}
 
 }

@@ -2,17 +2,24 @@ package edu.jhuapl.sbmt.image2.pipeline.io.builtIn;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.List;
+
+import com.beust.jcommander.internal.Lists;
 
 import edu.jhuapl.sbmt.layer.api.Layer;
 import edu.jhuapl.sbmt.layer.api.Pixel;
 import edu.jhuapl.sbmt.layer.impl.DoubleBuilderBase.DoubleGetter2d;
+import edu.jhuapl.sbmt.layer.impl.DoubleBuilderBase.DoubleGetter3d;
+import edu.jhuapl.sbmt.layer.impl.DoubleBuilderBase.DoubleRangeGetter;
 import edu.jhuapl.sbmt.layer.impl.DoubleBuilderBase.ScalarValidityChecker;
+import edu.jhuapl.sbmt.layer.impl.DoubleBuilderBase.VectorValidityChecker;
 import edu.jhuapl.sbmt.layer.impl.LayerDoubleBuilder;
 import edu.jhuapl.sbmt.layer.impl.LayerDoubleTransformFactory;
 import edu.jhuapl.sbmt.layer.impl.LayerTransformFactory;
 import edu.jhuapl.sbmt.layer.impl.PixelDoubleFactory;
 import edu.jhuapl.sbmt.layer.impl.PixelVectorDoubleFactory;
 import edu.jhuapl.sbmt.layer.impl.RangeGetterDoubleBuilder;
+import edu.jhuapl.sbmt.layer.impl.RangeGetterVectorDoubleFactory;
 import edu.jhuapl.sbmt.layer.impl.ValidityCheckerDoubleFactory;
 import edu.jhuapl.sbmt.pipeline.publisher.BasePipelinePublisher;
 
@@ -40,7 +47,8 @@ public class BuiltInFitsReader extends BasePipelinePublisher<Layer>
 
     protected static final double TestOOBValue = -100.0;
 
-    private float[][] array2D = null;
+//    private float[][] array2D = null;
+    private float[][][] dataArray = null;
     // height is axis 0
     private int fitsHeight = 0;
     // for 2D pixel arrays, width is axis 1, for 3D pixel arrays, width axis is
@@ -57,15 +65,25 @@ public class BuiltInFitsReader extends BasePipelinePublisher<Layer>
         this.filename = filename;
         this.fill = fill;
         loadData();
-
-        Layer layer = ofScalar();
-
-        layer = TransformFactory.rotateCCW().apply(layer);
-        // layer = DoubleTransformFactory.linearInterpolate(537,
-        // 412).apply(layer);
-//         displayLayer("FITS 1D Layer", layer, 0, null);
         outputs = new ArrayList<Layer>();
-        outputs.add(layer);
+        for (int i=0; i<fitsDepth; i++)
+        {
+        	Layer layer = ofScalar(i);
+        	layer = TransformFactory.rotateCCW().apply(layer);
+        	outputs.add(layer);
+        }
+
+//        List<Layer> layers = fitsDepth == 1 ? List.of(ofScalar()) : ofVector(fitsDepth, fitsWidth, fitsHeight);
+//
+//        for (Layer layer : layers)
+//        {
+//	        layer = TransformFactory.rotateCCW().apply(layer);
+//	        // layer = DoubleTransformFactory.linearInterpolate(537,
+//	        // 412).apply(layer);
+//	//         displayLayer("FITS 1D Layer", layer, 0, null);
+//	        outputs = new ArrayList<Layer>();
+//	        outputs.add(layer);
+//        }
     }
 
     private void loadData() throws IOException, FitsException
@@ -81,9 +99,15 @@ public class BuiltInFitsReader extends BasePipelinePublisher<Layer>
             fitsAxes = hdu.getAxes();
             fitsNAxes = fitsAxes.length;
             fitsHeight = fitsAxes[0];
-            fitsWidth = fitsNAxes == 3 ? fitsAxes[2] : fitsAxes[1];
-            fitsDepth = fitsNAxes == 3 ? fitsAxes[1] : 1;
-
+            fitsWidth = fitsAxes[1];
+            fitsDepth = 1;
+            if (fitsNAxes == 3)
+            {
+            	fitsHeight = fitsAxes[1];
+            	fitsWidth = fitsAxes[2];
+            	fitsDepth = fitsAxes[0];
+            }
+//            System.out.println("BuiltInFitsReader: loadData: width " + fitsWidth + " " + fitsHeight);
             // Do not use BasicHDU to get these optional keywords. BasicHDU
             // would return a value of 0. for missing keywords. We need to SKIP
             // missing DATAMIN/DATAMAX. Use the Header interface instead.
@@ -92,79 +116,103 @@ public class BuiltInFitsReader extends BasePipelinePublisher<Layer>
             dataMax = h.findCard(Standard.DATAMAX) != null ? h.getDoubleValue(Standard.DATAMAX) : null;
 
             Object data = hdu.getData().getData();
-
-            if (data instanceof float[][])
+//            System.out.println("BuiltInFitsReader: loadData: data type " + data.getClass());
+//            System.out.println("BuiltInFitsReader: loadData: " + ((float[][][])data)[0].length);
+            dataArray = new float[fitsDepth][fitsHeight][fitsWidth];
+            for (int k = 0; k < fitsDepth; k++)
             {
-                array2D = (float[][]) data;
+	            if (data instanceof float[][])
+	            {
+	            	dataArray[k] = (float[][]) data;
+//	                array2D = (float[][]) data;
+	            }
+	            else if (data instanceof float[][][])
+	            {
+//	            	dataArray[k] = ((float[][][]) data)[k];
+	            	float[][] array = ((float[][][]) data)[k];
+//	                dataArray = new float[fitsDepth][fitsHeight][fitsWidth];
+	                for (int i = 0; i < fitsHeight; ++i)
+	                {
+	                    for (int j = 0; j < fitsWidth; ++j)
+	                    {
+	                        dataArray[k][fitsHeight-1-i][j] = array[i][j];
+	                    }
+	                }
+	            }
+	            else if (data instanceof short[][])
+	            {
+	                short[][] arrayS = (short[][]) data;
+	                dataArray = new float[1][fitsHeight][fitsWidth];
+
+	                for (int i = 0; i < fitsHeight; ++i)
+	                    for (int j = 0; j < fitsWidth; ++j)
+	                    {
+	                        dataArray[0][i][j] = arrayS[i][j];
+	                    }
+	            }
+	            else if (data instanceof short[][][])
+	            {
+	            	dataArray[k] = ((float[][][]) data)[k];
+	            }
+	            else if (data instanceof double[][])
+	            {
+	                double[][] arrayDouble = (double[][]) data;
+	                dataArray = new float[1][fitsHeight][fitsWidth];
+
+	                for (int i = 0; i < fitsHeight; ++i)
+	                    for (int j = 0; j < fitsWidth; ++j)
+	                    {
+	                    	dataArray[0][i][j] = (float) arrayDouble[i][j];
+	                    }
+	            }
+	            else if (data instanceof byte[][])
+	            {
+	                byte[][] arrayB = (byte[][]) data;
+	                dataArray = new float[1][fitsHeight][fitsWidth];
+
+	                for (int i = 0; i < fitsHeight; ++i)
+	                    for (int j = 0; j < fitsWidth; ++j)
+	                    {
+	                    	dataArray[0][i][j] = arrayB[i][j] & 0xFF;
+	                    }
+	            }
+	            // WARNING: THIS IS A TOTAL HACK TO SUPPORT DART LUKE TEST IMAGES:
+	            else if (data instanceof byte[][][])
+	            {
+	                // DART LUKE images are color: 3-d slab with the 3rd
+	                // dimension being RGB, but the first test images are
+	                // monochrome. Thus, in order to process the images, making
+	                // this temporary hack.
+	                byte[][][] arrayB = (byte[][][]) data;
+
+	                // Override the default setup used for other 3-d images.
+	                fitsDepth = 1;
+	                fitsHeight = arrayB[0].length;
+	                fitsWidth = arrayB[0][0].length;
+
+	                dataArray = new float[0][fitsHeight][fitsWidth];
+
+	                for (int i = 0; i < fitsHeight; ++i)
+	                    for (int j = 0; j < fitsWidth; ++j)
+	                    {
+	                    	dataArray[0][i][j] = arrayB[0][i][j] & 0xFF;
+	                    }
+	            }
+	            else
+	            {
+	                System.out.println("Data type not supported: " + data.getClass().getCanonicalName());
+	                return;
+	            }
             }
-            else if (data instanceof short[][])
-            {
-                short[][] arrayS = (short[][]) data;
-                array2D = new float[fitsHeight][fitsWidth];
-
-                for (int i = 0; i < fitsHeight; ++i)
-                    for (int j = 0; j < fitsWidth; ++j)
-                    {
-                        array2D[i][j] = arrayS[i][j];
-                    }
-            }
-            else if (data instanceof double[][])
-            {
-                double[][] arrayDouble = (double[][]) data;
-                array2D = new float[fitsHeight][fitsWidth];
-
-                for (int i = 0; i < fitsHeight; ++i)
-                    for (int j = 0; j < fitsWidth; ++j)
-                    {
-                        array2D[i][j] = (float) arrayDouble[i][j];
-                    }
-            }
-            else if (data instanceof byte[][])
-            {
-                byte[][] arrayB = (byte[][]) data;
-                array2D = new float[fitsHeight][fitsWidth];
-
-                for (int i = 0; i < fitsHeight; ++i)
-                    for (int j = 0; j < fitsWidth; ++j)
-                    {
-                        array2D[i][j] = arrayB[i][j] & 0xFF;
-                    }
-            }
-            // WARNING: THIS IS A TOTAL HACK TO SUPPORT DART LUKE TEST IMAGES:
-            else if (data instanceof byte[][][])
-            {
-                // DART LUKE images are color: 3-d slab with the 3rd
-                // dimension being RGB, but the first test images are
-                // monochrome. Thus, in order to process the images, making
-                // this temporary hack.
-                byte[][][] arrayB = (byte[][][]) data;
-
-                // Override the default setup used for other 3-d images.
-                fitsDepth = 1;
-                fitsHeight = arrayB[0].length;
-                fitsWidth = arrayB[0][0].length;
-
-                array2D = new float[fitsHeight][fitsWidth];
-
-                for (int i = 0; i < fitsHeight; ++i)
-                    for (int j = 0; j < fitsWidth; ++j)
-                    {
-                        array2D[i][j] = arrayB[0][i][j] & 0xFF;
-                    }
-            }
-            else
-            {
-                System.out.println("Data type not supported: " + data.getClass().getCanonicalName());
-                return;
-            }
-
             // load in calibration info
             // loadImageCalibrationData(f);
         }
 
     }
 
-    protected Layer ofScalar()
+//    private void load2DData()
+
+    protected Layer ofScalar(int layerIndex)
     {
         // Make builders for both the layer and the range checker. Use the
         // dimensions from the fits file to set I, J sizes...
@@ -174,7 +222,7 @@ public class BuiltInFitsReader extends BasePipelinePublisher<Layer>
         // Adapt the array to the appropriate getter interface. Both builders
         // need this.
         DoubleGetter2d doubleGetter = (i, j) -> {
-            return array2D[i][j];
+            return dataArray[layerIndex][i][j];
         };
 
         layerBuilder.doubleGetter(doubleGetter, fitsHeight, fitsWidth);
@@ -207,6 +255,63 @@ public class BuiltInFitsReader extends BasePipelinePublisher<Layer>
 
         return layerBuilder.build();
     }
+
+    protected List<Layer> ofVector(int iSize, int jSize, int kSize)
+	{
+    	List<Layer> layers = Lists.newArrayList();
+		// Make builders for both the layer and the range checker. Use the
+        // dimensions from the fits file to set I, J sizes...
+        LayerDoubleBuilder layerBuilder = new LayerDoubleBuilder();
+		DoubleGetter3d doubleGetter = (i, j, k) ->
+		{
+//			System.out.println("BuiltInFitsReader: ofVector: ijk " + i + " " + j + " " + k);
+//			System.out.println("BuiltInFitsReader: ofVector: returning " + dataArray[i][j][k]);
+			return dataArray[i][j][k];
+		};
+
+		layerBuilder.doubleGetter(doubleGetter, iSize, jSize, kSize);
+
+	 // Both builders need to know how to check for validity as well.
+		VectorValidityChecker checker = null;
+        if (fill != null && fill.length > 0)
+        {
+        	checker = (i, j, k, value) -> {
+        		for (double invalidValue : fill)
+                {
+                    if (Double.compare(value, invalidValue) == 0)
+                    {
+                        return false;
+                    }
+                }
+
+                return true;
+        	};
+
+            layerBuilder.checker(checker);
+        }
+
+        RangeGetterVectorDoubleFactory rangeBuilder = new RangeGetterVectorDoubleFactory();
+        Double min = Double.MAX_VALUE, max = Double.MIN_VALUE;
+        DoubleRangeGetter overallRange = null;
+        if ( min != null || max != null) {
+            RangeGetterDoubleBuilder b = new RangeGetterDoubleBuilder();
+            if (min != null) {
+                b.min(min);
+            }
+            if (max != null) {
+                b.max(max);
+            }
+
+            overallRange = b.build();
+        }
+
+        // Here's the trick: build the range getter first and inject it into the
+        // layer builder just before building the layer.
+        layerBuilder.rangeGetter(rangeBuilder.of(doubleGetter, checker, overallRange, iSize, jSize, kSize));
+        layers.add(layerBuilder.build());
+
+        return layers;
+	}
 
     protected void displayLayer(String message, Layer layer, int displayKsize, Double invalidValueSubstitute)
     {

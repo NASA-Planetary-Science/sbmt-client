@@ -37,7 +37,7 @@ public class ColorImageGeneratorPipeline implements RenderableImageActorPipeline
 	List<vtkActor> imageActors = Lists.newArrayList();
 	List<vtkImageData> imageDatas = Lists.newArrayList();
 	Pair<vtkImageData, vtkPolyData>[] imageAndPolyData = new Pair[1];
-	 List<SmallBodyModel> smallBodyModels;
+	List<SmallBodyModel> smallBodyModels;
 	public ColorImageGeneratorPipeline(List<IPerspectiveImage> images, List<SmallBodyModel> smallBodyModels) throws Exception
 	{
 		this.smallBodyModels = smallBodyModels;
@@ -166,8 +166,8 @@ public class ColorImageGeneratorPipeline implements RenderableImageActorPipeline
 
 		List<vtkActor> actors = pipeline.getImageActors();
 
-		IPipelinePublisher<Pair<List<SmallBodyModel>, List<vtkActor>>> sceneObjects = Publishers.formPair(Just.of(vtkReader.getOutputs()), Just.of(actors));
-		IPipelineOperator<Pair<List<SmallBodyModel>, List<vtkActor>>, vtkActor> sceneBuilder = new SceneActorBuilderOperator();
+		IPipelinePublisher<Pair<SmallBodyModel, vtkActor>> sceneObjects = Publishers.formPair(Just.of(vtkReader.getOutputs()), Just.of(actors));
+		IPipelineOperator<Pair<SmallBodyModel, vtkActor>, vtkActor> sceneBuilder = new SceneActorBuilderOperator();
 
 		VtkRendererPreview preview = new VtkRendererPreview(vtkReader.getOutputs().get(0));
 

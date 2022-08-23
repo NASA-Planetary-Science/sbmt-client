@@ -36,7 +36,9 @@ public class VtkLayerPreview implements IPipelineSubscriber<Pair<Layer, HashMap<
 	{
 		try
 		{
-			preview = new LayerPreviewPanel(title, items.get(0).getLeft(), items.get(0).getRight(), completionBlock);
+			List<Layer> layers = items.stream().map( item -> item.getLeft()).toList();
+			List<HashMap<String, String>> metadata = items.stream().map( item -> item.getRight()).toList();
+			preview = new LayerPreviewPanel(title, layers, metadata, completionBlock);
 		}
 		catch (Exception e)
 		{

@@ -69,6 +69,8 @@ public class PerspectiveImage implements IPerspectiveImage
 	//number of layers
 	private int numberOfLayers = 1;
 
+	private int currentLayer = 0;
+
 	//fill values
 	private double[] fillValues = new double[] {};
 
@@ -167,6 +169,11 @@ public class PerspectiveImage implements IPerspectiveImage
 	public int getNumberOfLayers()
 	{
 		return numberOfLayers;
+	}
+
+	public int getCurrentLayer()
+	{
+		return currentLayer;
 	}
 
 	public double[] getFillValues()
@@ -302,6 +309,11 @@ public class PerspectiveImage implements IPerspectiveImage
 	public void setNumberOfLayers(int numberOfLayers)
 	{
 		this.numberOfLayers = numberOfLayers;
+	}
+
+	public void setCurrentLayer(int index)
+	{
+		this.currentLayer = index;
 	}
 
 	public void setFillValues(double[] fillValues)

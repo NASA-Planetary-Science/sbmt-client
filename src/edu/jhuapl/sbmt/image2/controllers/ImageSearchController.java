@@ -213,7 +213,6 @@ public class ImageSearchController<G1 extends IPerspectiveImage & IPerspectiveIm
 
 		imageListTableController.getPanel().getHideImageButton().addActionListener(e -> {
 			ImmutableSet<G1> selectedImages = collection.getSelectedItems();
-			System.out.println("ImageSearchController: initImageGUI: number of selected images " + selectedImages.size());
 			if (selectedImages.size() == 0) return;
 			for (G1 image : selectedImages) {
 				collection.setImageMapped(image, false);

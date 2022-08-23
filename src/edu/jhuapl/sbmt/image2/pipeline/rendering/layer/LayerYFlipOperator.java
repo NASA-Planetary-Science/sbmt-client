@@ -19,8 +19,11 @@ public class LayerYFlipOperator extends BasePipelineOperator<Layer, Layer>
 	@Override
 	public void processData() throws IOException, Exception
 	{
-		Layer rotatedLayer = TransformFactory.flipAboutY().apply(inputs.get(0));
-		outputs.add(rotatedLayer);
+		for (Layer layer : inputs)
+		{
+			Layer rotatedLayer = TransformFactory.flipAboutY().apply(layer);
+			outputs.add(rotatedLayer);
+		}
 	}
 
 }

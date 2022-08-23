@@ -25,13 +25,13 @@ public class PointedRenderableImageEditingPipeline<G1 extends IPerspectiveImage 
 				new RenderablePointedImageActorPipeline<G1>(image, smallBodies);
 		List<vtkActor> actors = actorPipeline.getRenderableImageActors();
 
-		IPipelinePublisher<Pair<List<SmallBodyModel>, List<vtkActor>>> sceneObjects =
+		IPipelinePublisher<Pair<SmallBodyModel, vtkActor>> sceneObjects =
 				Publishers.formPair(Just.of(smallBodies), Just.of(actors));
 
 		//***************************************************************************
 		//Pass them into the scene builder to perform intersection calculations
 		//***************************************************************************
-		IPipelineOperator<Pair<List<SmallBodyModel>, List<vtkActor>>, vtkActor> sceneBuilder = new SceneActorBuilderOperator();
+		IPipelineOperator<Pair<SmallBodyModel, vtkActor>, vtkActor> sceneBuilder = new SceneActorBuilderOperator();
 
 		//*******************************
 		//Throw them to the preview tool

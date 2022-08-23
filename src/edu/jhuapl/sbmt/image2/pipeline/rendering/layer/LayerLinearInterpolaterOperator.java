@@ -20,7 +20,8 @@ public class LayerLinearInterpolaterOperator extends BasePipelineOperator<Layer,
 	@Override
 	public void processData() throws IOException, Exception
 	{
-		outputs.add((DoubleTransformFactory.linearInterpolate(width, height).apply(inputs.get(0))));
+		for (Layer layer : inputs)
+			outputs.add((DoubleTransformFactory.linearInterpolate(width, height).apply(layer)));
 	}
 
 }
