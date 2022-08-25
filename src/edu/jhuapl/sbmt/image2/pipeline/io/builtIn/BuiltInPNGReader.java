@@ -12,9 +12,8 @@ import edu.jhuapl.saavtk.util.IntensityRange;
 import edu.jhuapl.saavtk.util.NativeLibraryLoader;
 import edu.jhuapl.sbmt.layer.api.Layer;
 import edu.jhuapl.sbmt.layer.api.Pixel;
-import edu.jhuapl.sbmt.layer.impl.DoubleBuilderBase.DoubleGetter3d;
 import edu.jhuapl.sbmt.layer.impl.DoubleBuilderBase.DoubleRangeGetter;
-import edu.jhuapl.sbmt.layer.impl.DoubleBuilderBase.ValidityChecker3d;
+import edu.jhuapl.sbmt.layer.impl.DoubleGetter3d;
 import edu.jhuapl.sbmt.layer.impl.LayerDoubleBuilder;
 import edu.jhuapl.sbmt.layer.impl.LayerDoubleTransformFactory;
 import edu.jhuapl.sbmt.layer.impl.LayerTransformFactory;
@@ -22,6 +21,7 @@ import edu.jhuapl.sbmt.layer.impl.PixelDoubleFactory;
 import edu.jhuapl.sbmt.layer.impl.PixelVectorDoubleFactory;
 import edu.jhuapl.sbmt.layer.impl.RangeGetterDoubleBuilder;
 import edu.jhuapl.sbmt.layer.impl.RangeGetterVectorDoubleFactory;
+import edu.jhuapl.sbmt.layer.impl.ValidityChecker3d;
 import edu.jhuapl.sbmt.pipeline.publisher.BasePipelinePublisher;
 
 import nom.tam.fits.FitsException;

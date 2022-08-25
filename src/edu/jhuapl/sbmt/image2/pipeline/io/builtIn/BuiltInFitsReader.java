@@ -8,11 +8,9 @@ import com.beust.jcommander.internal.Lists;
 
 import edu.jhuapl.sbmt.layer.api.Layer;
 import edu.jhuapl.sbmt.layer.api.Pixel;
-import edu.jhuapl.sbmt.layer.impl.DoubleBuilderBase.DoubleGetter2d;
-import edu.jhuapl.sbmt.layer.impl.DoubleBuilderBase.DoubleGetter3d;
 import edu.jhuapl.sbmt.layer.impl.DoubleBuilderBase.DoubleRangeGetter;
-import edu.jhuapl.sbmt.layer.impl.DoubleBuilderBase.ValidityChecker2d;
-import edu.jhuapl.sbmt.layer.impl.DoubleBuilderBase.ValidityChecker3d;
+import edu.jhuapl.sbmt.layer.impl.DoubleGetter2d;
+import edu.jhuapl.sbmt.layer.impl.DoubleGetter3d;
 import edu.jhuapl.sbmt.layer.impl.LayerDoubleBuilder;
 import edu.jhuapl.sbmt.layer.impl.LayerDoubleTransformFactory;
 import edu.jhuapl.sbmt.layer.impl.LayerTransformFactory;
@@ -20,6 +18,8 @@ import edu.jhuapl.sbmt.layer.impl.PixelDoubleFactory;
 import edu.jhuapl.sbmt.layer.impl.PixelVectorDoubleFactory;
 import edu.jhuapl.sbmt.layer.impl.RangeGetterDoubleBuilder;
 import edu.jhuapl.sbmt.layer.impl.RangeGetterVectorDoubleFactory;
+import edu.jhuapl.sbmt.layer.impl.ValidityChecker2d;
+import edu.jhuapl.sbmt.layer.impl.ValidityChecker3d;
 import edu.jhuapl.sbmt.layer.impl.ValidityCheckerDoubleFactory;
 import edu.jhuapl.sbmt.pipeline.publisher.BasePipelinePublisher;
 
