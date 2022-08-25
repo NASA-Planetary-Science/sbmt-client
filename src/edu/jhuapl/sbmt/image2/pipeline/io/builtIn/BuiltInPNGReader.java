@@ -14,7 +14,7 @@ import edu.jhuapl.sbmt.layer.api.Layer;
 import edu.jhuapl.sbmt.layer.api.Pixel;
 import edu.jhuapl.sbmt.layer.impl.DoubleBuilderBase.DoubleGetter3d;
 import edu.jhuapl.sbmt.layer.impl.DoubleBuilderBase.DoubleRangeGetter;
-import edu.jhuapl.sbmt.layer.impl.DoubleBuilderBase.VectorValidityChecker;
+import edu.jhuapl.sbmt.layer.impl.DoubleBuilderBase.ValidityChecker3d;
 import edu.jhuapl.sbmt.layer.impl.LayerDoubleBuilder;
 import edu.jhuapl.sbmt.layer.impl.LayerDoubleTransformFactory;
 import edu.jhuapl.sbmt.layer.impl.LayerTransformFactory;
@@ -201,7 +201,7 @@ public class BuiltInPNGReader extends BasePipelinePublisher<Layer>
 //	    rangeBuilder.getter(doubleGetter, iSize, jSize, kSize);
 
 	 // Both builders need to know how to check for validity as well.
-		VectorValidityChecker checker = null;
+		ValidityChecker3d checker = null;
         if (fill != null && fill.length > 0)
         {
         	checker = (i, j, k, value) -> {

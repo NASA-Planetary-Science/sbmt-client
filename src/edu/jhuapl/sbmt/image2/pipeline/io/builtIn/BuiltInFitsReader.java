@@ -11,8 +11,8 @@ import edu.jhuapl.sbmt.layer.api.Pixel;
 import edu.jhuapl.sbmt.layer.impl.DoubleBuilderBase.DoubleGetter2d;
 import edu.jhuapl.sbmt.layer.impl.DoubleBuilderBase.DoubleGetter3d;
 import edu.jhuapl.sbmt.layer.impl.DoubleBuilderBase.DoubleRangeGetter;
-import edu.jhuapl.sbmt.layer.impl.DoubleBuilderBase.ScalarValidityChecker;
-import edu.jhuapl.sbmt.layer.impl.DoubleBuilderBase.VectorValidityChecker;
+import edu.jhuapl.sbmt.layer.impl.DoubleBuilderBase.ValidityChecker2d;
+import edu.jhuapl.sbmt.layer.impl.DoubleBuilderBase.ValidityChecker3d;
 import edu.jhuapl.sbmt.layer.impl.LayerDoubleBuilder;
 import edu.jhuapl.sbmt.layer.impl.LayerDoubleTransformFactory;
 import edu.jhuapl.sbmt.layer.impl.LayerTransformFactory;
@@ -243,7 +243,7 @@ public class BuiltInFitsReader extends BasePipelinePublisher<Layer>
         // Both builders need to know how to check for validity as well.
         if (fill != null && fill.length > 0)
         {
-            ScalarValidityChecker checker = new ValidityCheckerDoubleFactory().scalar(fill);
+            ValidityChecker2d checker = new ValidityCheckerDoubleFactory().checker2d(fill);
 
             layerBuilder.checker(checker);
             rangeBuilder.checker(checker);
@@ -272,7 +272,7 @@ public class BuiltInFitsReader extends BasePipelinePublisher<Layer>
 		layerBuilder.doubleGetter(doubleGetter, iSize, jSize, kSize);
 
 	 // Both builders need to know how to check for validity as well.
-		VectorValidityChecker checker = null;
+		ValidityChecker3d checker = null;
         if (fill != null && fill.length > 0)
         {
         	checker = (i, j, k, value) -> {
