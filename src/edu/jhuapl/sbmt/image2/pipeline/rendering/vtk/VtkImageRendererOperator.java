@@ -9,7 +9,6 @@ import edu.jhuapl.saavtk.util.VtkDataTypes;
 import edu.jhuapl.sbmt.layer.api.Layer;
 import edu.jhuapl.sbmt.layer.api.PixelDouble;
 import edu.jhuapl.sbmt.layer.api.PixelVector;
-import edu.jhuapl.sbmt.layer.impl.BasicPixelVectorDouble.ScalarPixel;
 import edu.jhuapl.sbmt.layer.impl.PixelDoubleFactory;
 import edu.jhuapl.sbmt.layer.impl.PixelVectorDoubleFactory;
 import edu.jhuapl.sbmt.pipeline.operator.BasePipelineOperator;
@@ -61,7 +60,7 @@ public class VtkImageRendererOperator
     				inputs.get(0).get(i, j, pixel);
     				for (int k = 0; k < layerDepth; k++)
     				{
-    					ScalarPixel vecPixel = (ScalarPixel)pixel.get(k);
+    					PixelDouble vecPixel = (PixelDouble)pixel.get(k);
     					output.SetScalarComponentFromFloat(i, j, 0, k, vecPixel.get());
     				}
     			}
@@ -91,7 +90,7 @@ public class VtkImageRendererOperator
 //				inputs.get(0).get(i, j, pixel);
 //				for (int k = 0; k < layerDepth; k++)
 //				{
-//					ScalarPixel vecPixel = (ScalarPixel)pixel.get(k);
+//					PixelDouble vecPixel = (PixelDouble)pixel.get(k);
 //					output.SetScalarComponentFromFloat(i, j, 0, k, vecPixel.get());
 //				}
 //			}
