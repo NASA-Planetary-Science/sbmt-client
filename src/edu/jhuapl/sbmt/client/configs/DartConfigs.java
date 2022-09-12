@@ -1,5 +1,6 @@
 package edu.jhuapl.sbmt.client.configs;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.LinkedHashSet;
@@ -214,9 +215,9 @@ public class DartConfigs
         defaultConfig.defaultForMissions = DartClients;
 
         // Jupiter system models.
-        c = createMultiResMissionImagesConfig(ShapeModelBody.JUPITER, "jupiter-20220830-v01", ModelLabels4Levels, ModelResolutions4Levels);
+        c = createMultiResMissionImagesConfig(ShapeModelBody.JUPITER, "jupiter-20220830-v01", ModelLabels4Levels, ModelResolutions4Levels, SumFilesAndInfoFiles, null, null);
 
-        c = createMultiResMissionImagesConfig(ShapeModelBody.GANYMEDE, "ganymede-20220907-v01", ModelLabels5Levels, ModelResolutions5Levels);
+        c = createMultiResMissionImagesConfig(ShapeModelBody.GANYMEDE, "ganymede-20220907-v01", ModelLabels5Levels, ModelResolutions5Levels, SumFilesAndInfoFiles, null, null);
     }
 
     /**
@@ -649,18 +650,22 @@ public class DartConfigs
      *
      * @param body the {@link ShapeModelBody} associated with this model
      * @param label the label exactly as the model should appear in the menu
+     * @param modelLabels labels for each model resolution level
+     * @param modelResolutions plate count for each model resolution level
+     * @param dracoImageSources image sources available for DRACO
+     * @param leiaImageSources image sources available for LEIA
+     * @param lukeImageSources image sources available for LUKE
      * @param numberPlates the number of plates in the single resolution model
      * @return the config
      */
-    protected SmallBodyViewConfig createMultiResMissionImagesConfig(ShapeModelBody body, String label, String[] modelLabels, Integer[] modelResolutions)
+    protected SmallBodyViewConfig createMultiResMissionImagesConfig( //
+            ShapeModelBody body, String label, //
+            String[] modelLabels, Integer[] modelResolutions, //
+            ImageSource[] dracoImageSources, ImageSource[] leiaImageSources, ImageSource[] lukeImageSources)
     {
         String dracoModelId = null;
         String leiaModelId = null;
         String lukeModelId = null;
-
-        ImageSource[] dracoImageSources = SumFilesAndInfoFiles;
-        ImageSource[] leiaImageSources = SumFilesAndInfoFiles;
-        ImageSource[] lukeImageSources = SumFilesAndInfoFiles;
 
         SmallBodyViewConfig c = new SmallBodyViewConfig(ImmutableList.copyOf(modelLabels), ImmutableList.copyOf(modelResolutions)) {
             public SmallBodyViewConfig clone()
@@ -712,39 +717,49 @@ public class DartConfigs
         String lukeTable = tableBaseName + "luke";
         String lukeDataDir = "/dart/luke/" + (lukeModelId != null ? lukeModelId : "") + "/";
 
-        c.imagingInstruments = new ImagingInstrument[] {
-                new ImagingInstrument( //
-                        SpectralImageMode.MONO, //
-                        new GenericPhpQuery(dracoDir, dracoTable, dracoTable, dracoDataDir + "gallery", dracoDataDir + "images"), //
-                        ImageType.valueOf("DRACO_IMAGE"), //
-                        dracoImageSources, //
-                        Instrument.DRACO, //
-                        0., //
-                        "None", //
-                        DracoFillValues //
-                ),
-                new ImagingInstrument( //
-                        SpectralImageMode.MONO, //
-                        new GenericPhpQuery(leiaDir, leiaTable, leiaTable, leiaDataDir + "gallery", leiaDataDir + "images"), //
-                        ImageType.valueOf("LEIA_IMAGE"), //
-                        leiaImageSources, //
-                        Instrument.LEIA, //
-                        0., //
-                        "None", //
-                        LeiaFillValues //
-                ),
-                new ImagingInstrument( //
-                        SpectralImageMode.MONO, //
-                        new GenericPhpQuery(lukeDir, lukeTable, lukeTable, lukeDataDir + "gallery", lukeDataDir + "images"), //
-                        ImageType.valueOf("LUKE_IMAGE"), //
-                        lukeImageSources, //
-                        Instrument.LUKE, //
-                        90., //
-                        "X", //
-                        LukeFillValues, //
-                        false //
-                ),
-        };
+        List<ImagingInstrument> imagingInstruments = new ArrayList<>();
+        if (dracoImageSources != null)
+        {
+            imagingInstruments.add(new ImagingInstrument( //
+                    SpectralImageMode.MONO, //
+                    new GenericPhpQuery(dracoDir, dracoTable, dracoTable, dracoDataDir + "gallery", dracoDataDir + "images"), //
+                    ImageType.valueOf("DRACO_IMAGE"), //
+                    dracoImageSources, //
+                    Instrument.DRACO, //
+                    0., //
+                    "None", //
+                    DracoFillValues //
+            ));
+        }
+        if (leiaImageSources != null)
+        {
+            imagingInstruments.add(new ImagingInstrument( //
+                    SpectralImageMode.MONO, //
+                    new GenericPhpQuery(leiaDir, leiaTable, leiaTable, leiaDataDir + "gallery", leiaDataDir + "images"), //
+                    ImageType.valueOf("LEIA_IMAGE"), //
+                    leiaImageSources, //
+                    Instrument.LEIA, //
+                    0., //
+                    "None", //
+                    LeiaFillValues //
+            ));
+        }
+        if (lukeImageSources != null)
+        {
+            imagingInstruments.add(new ImagingInstrument( //
+                    SpectralImageMode.MONO, //
+                    new GenericPhpQuery(lukeDir, lukeTable, lukeTable, lukeDataDir + "gallery", lukeDataDir + "images"), //
+                    ImageType.valueOf("LUKE_IMAGE"), //
+                    lukeImageSources, //
+                    Instrument.LUKE, //
+                    90., //
+                    "X", //
+                    LukeFillValues, //
+                    false //
+            ));
+        }
+
+        c.imagingInstruments = imagingInstruments.toArray(new ImagingInstrument[imagingInstruments.size()]);
 
         c.imageSearchDefaultStartDate = ImageSearchDefaultStartDate;
         c.imageSearchDefaultEndDate = ImageSearchDefaultEndDate;
