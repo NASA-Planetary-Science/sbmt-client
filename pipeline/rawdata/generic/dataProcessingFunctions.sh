@@ -1014,7 +1014,7 @@ processShapeModels() {
     checkSkip $funcName "$*"
 
     src=$1
-    
+
     if test "$src" = ""; then
       check 1 "$funcName: first argument (model directory) is missing or blank"
     fi
@@ -1372,6 +1372,48 @@ createGalleryList() {
     rm -f $tmpThumbnailList
     exit $status
   )
+  check $?
+}
+
+importKernelsFromMetakernel() {
+  {
+    funcName=${FUNCNAME[0]}
+
+    checkSkip $funcName "$*"
+
+    metakernel=$1
+
+    if test "$metakernel" = ""; then
+      check 1 "$funcName: missing/blank first argument must specify the full path to the metakernel"
+    fi
+
+    if test ! -f "$metakernel"; then
+      check 1 "$funcName: first argument $metakernel is not the path to a metakernel file"
+    fi
+
+    pathSymbol=$2
+
+    if test "$pathSymbol" = ""; then
+      check 1 "$funcName: missing/blank second argument must specify the name of the path symbol in MK"
+    fi
+
+    pathValue=$3
+    if test "$pathValue" = ""; then
+      check 1 "$funcName: missing/blank third argument must specify the value of the path symbol in MK"
+    fi
+
+    if test ! -d "$pathValue"; then
+      check 1 "$funcName: third argument (path value) $pathValue is not the path to a directory"
+    fi
+
+    mkFileName=`echo $metakernel | sed 's:.*/::'`
+    outKernelPath=`echo $metakernel | sed "s:/$mkFileName$::"`
+
+    # Get rid of single and/or double quotes, then look for and remove leading path symbol.
+    for file in `cat $metakernel | tr '\041' ' ' | tr '\042' ' ' | sed -n 's:[ 	]*$'"$pathSymbol/:/:p"`; do
+      $doRsync "$pathValue$file" "$outKernelPath$file" "$4"
+    done
+  }
   check $?
 }
 
@@ -1982,7 +2024,7 @@ linkToProcessedArea() {
 #
 # Errors will be thrown if any of the following occur: src or dest are missing/blank,
 # src does not identify an existing directory, dest identifies a file, dest is a subdirectory
-# of src. 
+# of src.
 syncDir() {
   (
     funcName=${FUNCNAME[0]}
@@ -1999,15 +2041,15 @@ syncDir() {
 
     src="$1"
     dest="$2"
-     
+
     if test ! -d "$src"; then
       check 1 "$funcName: source path is not a directory: $src"
     fi
-      
+
     if test -f "$dest"; then
       check 1 "$funcName: destination path is a file: $dest"
     fi
-      
+
     destParent=$(dirname "$dest")"/.." 2> /dev/null
     createDir "$destParent"
 
@@ -2021,15 +2063,15 @@ syncDir() {
       realDest=`realpath "$dest"`
       check $? "$funcName: realpath $dest failed"
       if test `echo "$realDest" | grep -c "^$realSrc"` -gt 0; then
-        check 1 "$funcName: destination $dest is a subdirectory of source $src" 
+        check 1 "$funcName: destination $dest is a subdirectory of source $src"
       fi
-    
+
       rm -rf $dest
       check $? "$funcName: unable to remove destination prior to sync: $dest"
 
       echo cp -al "$src" "$dest"
       cp -al "$src" "$dest"
-      check $? "$funcName: unable to hard link files in source $src to destination $dest" 
+      check $? "$funcName: unable to hard link files in source $src to destination $dest"
     else
       doRsyncDir "$src" "$dest" "--delete --links --copy-unsafe-links --keep-dirlinks"
     fi
