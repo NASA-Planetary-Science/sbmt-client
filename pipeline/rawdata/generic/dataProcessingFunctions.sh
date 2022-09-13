@@ -1913,7 +1913,7 @@ editMetakernels() {
     for file in `ls *.mk *.tm 2> /dev/null` .; do
       if test "$file" != .; then
         if test ! -f "$file.bak"; then
-          nice sed -i bak -e "s:$regEx:$tmpSpiceDir:" $file
+          nice sed -ibak -e "s:$regEx:$tmpSpiceDir:" $file
           check $? "$funcName: unable to edit file $file"
         else
           echo "$funcName: $file.bak already exists -- not re-editing metakernel file $srcDir/$file"
