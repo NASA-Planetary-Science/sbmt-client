@@ -60,7 +60,8 @@ public class DartConfigs
     // special handling of keywords where the images are read in a
     // mission-independent way. A better option may exist in the future, at
     // which time this should be changed.
-    private static final LinkedHashSet<Float> DracoFillValues = new LinkedHashSet<>();
+    private static final LinkedHashSet<Float> DracoFlightFillValues = new LinkedHashSet<>();
+    private static final LinkedHashSet<Float> DracoTestFillValues = new LinkedHashSet<>();
     private static final LinkedHashSet<Float> LeiaFillValues = null;
     private static final LinkedHashSet<Float> LukeFillValues = null;
 
@@ -71,15 +72,23 @@ public class DartConfigs
 
     static
     {
+        // Constants for flight images:
+        DracoFlightFillValues.add(+1e10f); // MISPXVAL
+        DracoFlightFillValues.add(-1e10f); // PXOUTWIN
+        DracoFlightFillValues.add(4095f); // SNAVFLAG
+        DracoFlightFillValues.add(-1e09f); // BADMASKV
+        DracoFlightFillValues.add(+1e09f); // SATPXVAL
+
+        // Constants for test images:
         // The DART ICD defines FITS keywords that should hold the special
         // image values below.
         // These are expressed as floats even though we're dealing with
         // integer images. This is because the code that handles these
         // values is hard-wired to use floats, so we don't have a better
         // option right now. In principle this should work.
-        DracoFillValues.add(-32768f); // MISPXVAL for 16-bit integer images.
-        DracoFillValues.add(-32767f); // PXOUTWIN for 16-bit integer images.
-        DracoFillValues.add(4095f); // SNAVFLAG for 16-bit integer images.
+        DracoTestFillValues.add(-32768f); // MISPXVAL for 16-bit integer images.
+        DracoTestFillValues.add(-32767f); // PXOUTWIN for 16-bit integer images.
+        DracoTestFillValues.add(4095f); // SNAVFLAG for 16-bit integer images.
     }
 
     protected static final String[] ModelLabels4Levels = BodyViewConfig.DEFAULT_GASKELL_LABELS_PER_RESOLUTION;
@@ -318,7 +327,7 @@ public class DartConfigs
                         Instrument.DRACO, //
                         270., //
                         "None", //
-                        DracoFillValues //
+                        DracoTestFillValues //
                 ),
                 new ImagingInstrument( //
                         SpectralImageMode.MONO, //
@@ -469,7 +478,7 @@ public class DartConfigs
                         Instrument.DRACO, //
                         270., //
                         "None", //
-                        DracoFillValues //
+                        DracoTestFillValues //
                 ),
                 new ImagingInstrument( //
                         SpectralImageMode.MONO, //
@@ -591,7 +600,7 @@ public class DartConfigs
                         Instrument.DRACO, //
                         0., //
                         "None", //
-                        DracoFillValues //
+                        DracoTestFillValues //
                 ),
                 new ImagingInstrument( //
                         SpectralImageMode.MONO, //
@@ -728,7 +737,7 @@ public class DartConfigs
                     Instrument.DRACO, //
                     0., //
                     "None", //
-                    DracoFillValues //
+                    DracoFlightFillValues //
             ));
         }
         if (leiaImageSources != null)
