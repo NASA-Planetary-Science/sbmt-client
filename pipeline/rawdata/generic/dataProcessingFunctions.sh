@@ -52,7 +52,7 @@ checkIdentity() {
   fi
 }
 
-# Checks the status code that is passed as the first argument. If it's missing,
+# Checks the status code that is passed as the first argument. If it is missing,
 # blank or non-0, prints the remaining arguments, which are assumed to
 # provide an error message, and then calls exit from within the invoking shell,
 # thus terminating the script that called it and returning a non-0 status code.
@@ -71,8 +71,8 @@ check() {
   fi
 
   # This strange-looking check is necessary for bullet-proofing in case $1
-  # doesn't contain an integer. A simple if test... does not behave reliably.
-  # To make matters worse, exit won't actually terminate the invoking shell
+  # does not contain an integer. A simple if test... does not behave reliably.
+  # To make matters worse, exit will not actually terminate the invoking shell
   # in such a case either. Bottom line: if you are debugging and you get an
   # error on the next line, check the calling code, which must not be
   # passing an integer for argument 1.
@@ -125,7 +125,7 @@ getDirPath() {
   (
     funcName=${FUNCNAME[0]}
 
-    # This function returns a value, so it doesn't checkSkip.
+    # This function returns a value, so it does not checkSkip.
     # checkSkip $funcName "$*"
 
     if test "$1" = ""; then
@@ -267,7 +267,7 @@ guessRawDataParentDir() {
   check $?
 }
 
-# Create a directory if it doesn't already exist.
+# Create a directory if it does not already exist.
 createDir() {
   (
     funcName=${FUNCNAME[0]}
@@ -288,7 +288,7 @@ createDir() {
   check $?
 }
 
-# Create the parent of a file/directory if it doesn't already exist.
+# Create the parent of a file/directory if it does not already exist.
 createParentDir() {
   (
     funcName=${FUNCNAME[0]}
@@ -485,7 +485,7 @@ copyDir() {
   check $?
 }
 
-# Copy a directory, but only if the source directory exists. No error, no op if it's missing.
+# Copy a directory, but only if the source directory exists. No error, no op if it is missing.
 # Set srcTop and destTop to point to source and destination top location.
 # Then call this, passing src and dest relative to these "top" directories.
 copyOptionalDir() {
@@ -721,7 +721,7 @@ updateLink() {
       fi
     elif test -L $linkPath; then
       # linkPath is a broken link (test -L returned true but test -e returned false).
-      # Remove it, don't bother backing it up.
+      # Remove it, do not bother backing it up.
       rm -f $linkPath
       check $? "$funcName failed to remove link $linkPath"
     fi
@@ -1112,7 +1112,7 @@ listPlateColoringFiles() {
     # ls $coloringDir/*are* >> $listFile 2> /dev/null
     # ls $coloringDir/*rad* >> $listFile 2> /dev/null
 
-    # List everything that didn't match one of the above patterns in its natural sort order.
+    # List everything that did not match one of the above patterns in its natural sort order.
     ls $coloringDir/* 2> /dev/null | grep -v Slope | grep -v slp | grep -v Elevation | grep -v elv | \
        grep -v GravitationalAcceleration | grep -v grm | grep -v GravitationalPotential | \
        grep -v pot | grep -v fti | grep -v fdi | grep -v mti | grep -v tiv | grep -v mdi | \
@@ -1242,7 +1242,7 @@ extractFITSFileTimes() {
           sed 's:[^=]*=[  ]*::' | sed 's:[  ]*/.*$::' | sed "s:^''*::" | sed "s:''*$::" | sed 's: :T:'`
         check $? "$funcName: ftlist command failed to extract time from file $dir/$file"
 
-        # If the keyword isn't present, the above command ends up with no time in it but doesn't return non-0 status.
+        # If the keyword is not present, the above command ends up with no time in it but does not return non-0 status.
         # Confirm the value at least starts with a numeral.
         if test `echo $value | grep -c '^[0-9]'` -eq 0; then
           check 1 "$funcName: was unable to get a time for keyword $timeStampKeyword from file $dir/$file"
@@ -1376,7 +1376,7 @@ createGalleryList() {
 }
 
 importKernelsFromMetakernel() {
-  {
+  (
     funcName=${FUNCNAME[0]}
 
     checkSkip $funcName "$*"
@@ -1409,11 +1409,19 @@ importKernelsFromMetakernel() {
     mkFileName=`echo $metakernel | sed 's:.*/::'`
     outKernelPath=`echo $metakernel | sed "s:/$mkFileName$::"`
 
-    # Get rid of single and/or double quotes, then look for and remove leading path symbol.
-    for file in `cat $metakernel | tr '\041' ' ' | tr '\042' ' ' | sed -n 's:[ 	]*$'"$pathSymbol/:/:p"`; do
-      $doRsync "$pathValue$file" "$outKernelPath$file" "$4"
-    done
-  }
+    # Get rid of single and/or double quotes, leading/trailing space.
+    # Also look for and remove a leading path symbol.
+   for file in `cat $metakernel | tr -d "'" | tr -d '"' | sed 's:^[ 	]*::' | \
+       sed -n 's:^$'"$pathSymbol::p" | sed 's:[ 	]*$::'`; do
+     outFile="$outKernelPath$file"
+
+     createParentDir $outFile
+     check $?
+
+     doRsync "$pathValue$file" "$outFile" "$4"
+     check $?
+   done
+  )
   check $?
 }
 
