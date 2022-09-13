@@ -209,10 +209,10 @@ int main(int argc, char** argv)
     // Output list of missing info files.
     ofstream missingInfoStream(missingInfoList.c_str());
     if (!missingInfoStream.is_open()) {
-        cerr << "Error: Unable to open missing info log file " << missingInfoList.c_str()  << " for writing" << endl;
+        cerr << "Error: Unable to open file used to log missing info files " << missingInfoList.c_str()  << " for writing" << endl;
         return 1;
     }
-    cout << "Missing info file: " << missingInfoList << endl;
+    cout << "File to log missing info files: " << missingInfoList << endl;
 
     //Image list
     ofstream fout(imageListFile.c_str());
