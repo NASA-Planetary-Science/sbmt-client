@@ -80,69 +80,6 @@ vector<pair<string, string> > loadFileList(const string& filelist) {
     return files;
 }
 
-void saveInfoFile(string filename,
-                  string utc,
-                  const double scposb[3],
-                  const double boredir[3],
-                  const double updir[3],
-                  const double frustum[12],
-                  const double sunpos[3])
-{
-    ofstream fout(filename.c_str());
-
-    if (!fout.is_open())
-    {
-        cerr << "Error: Unable to open file " << filename << " for writing" << endl;
-        throw runtime_error("Can't open file " + filename);
-    }
-
-    fout.precision(16);
-
-    fout << "START_TIME          = " << utc << "\n";
-    fout << "STOP_TIME           = " << utc << "\n";
-
-    fout << "SPACECRAFT_POSITION = ( ";
-    fout << scientific << scposb[0] << " , ";
-    fout << scientific << scposb[1] << " , ";
-    fout << scientific << scposb[2] << " )\n";
-
-    fout << "BORESIGHT_DIRECTION = ( ";
-    fout << scientific << boredir[0] << " , ";
-    fout << scientific << boredir[1] << " , ";
-    fout << scientific << boredir[2] << " )\n";
-
-    fout << "UP_DIRECTION        = ( ";
-    fout << scientific << updir[0] << " , ";
-    fout << scientific << updir[1] << " , ";
-    fout << scientific << updir[2] << " )\n";
-
-    fout << "FRUSTUM1            = ( ";
-    fout << scientific << frustum[0] << " , ";
-    fout << scientific << frustum[1] << " , ";
-    fout << scientific << frustum[2] << " )\n";
-
-    fout << "FRUSTUM2            = ( ";
-    fout << scientific << frustum[3] << " , ";
-    fout << scientific << frustum[4] << " , ";
-    fout << scientific << frustum[5] << " )\n";
-
-    fout << "FRUSTUM3            = ( ";
-    fout << scientific << frustum[6] << " , ";
-    fout << scientific << frustum[7] << " , ";
-    fout << scientific << frustum[8] << " )\n";
-
-    fout << "FRUSTUM4            = ( ";
-    fout << scientific << frustum[9] << " , ";
-    fout << scientific << frustum[10] << " , ";
-    fout << scientific << frustum[11] << " )\n";
-
-    fout << "SUN_POSITION_LT     = ( ";
-    fout << scientific << sunpos[0] << " , ";
-    fout << scientific << sunpos[1] << " , ";
-    fout << scientific << sunpos[2] << " )\n";
-}
-
-
 /*
 
   Taken from Amica create_info_files.cpp and LORRI create_info_files.cpp
