@@ -23,9 +23,9 @@ TOOL				= createInfoFiles
 SRC				= createInfoFiles.cpp getSpacecraftState.cpp getTargetState.cpp getFov.cpp saveInfoFile.cpp
 OBJ				= $(SRC:.cpp=.o)
 
-# SPICE pointing tool (sbmtSpicePointing).
-SPICE_TOOL			= sbmtSpicePointing
-SPICE_SRC			= sbmtSpicePointing.cpp getSpacecraftState.cpp getTargetState.cpp getFov.cpp saveInfoFile.cpp
+# SPICE pointing tool (computePointing).
+SPICE_TOOL			= computePointing
+SPICE_SRC			= computePointing.cpp getSpacecraftState.cpp getTargetState.cpp getFov.cpp saveInfoFile.cpp
 SPICE_OBJ			= $(SPICE_SRC:.cpp=.o)
 
 $(TOOL): $(OBJ)

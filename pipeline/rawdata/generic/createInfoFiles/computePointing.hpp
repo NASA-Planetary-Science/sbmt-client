@@ -1,5 +1,5 @@
-#ifndef sbmt_spice_hpp
-#define sbmt_spice_hpp
+#ifndef computePointing_hpp
+#define computePointing_hpp
 
 #include <iosfwd>
 #include <string>

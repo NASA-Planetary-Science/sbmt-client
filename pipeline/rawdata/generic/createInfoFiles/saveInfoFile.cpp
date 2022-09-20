@@ -1,4 +1,4 @@
-#include "sbmt_spice.hpp"
+#include "computePointing.hpp"
 
 #include <exception>
 #include <fstream>
