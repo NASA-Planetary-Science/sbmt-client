@@ -22,7 +22,7 @@ enum CLParId {
   FRAME,
   HELP,
 //  IMAGE,
-  INSTR_FRAME,
+  INSTRUMENT,
   MK,
   OUT_FILE,
   QUIET,
@@ -278,7 +278,7 @@ CommandLineParameters * interpretCommandLine(int argc, char ** argv) {
 
     reportMissingPar(*pars->at(BODY), ss, delim);
     reportMissingPar(*pars->at(FRAME), ss, delim);
-    reportMissingPar(*pars->at(INSTR_FRAME), ss, delim);
+    reportMissingPar(*pars->at(INSTRUMENT), ss, delim);
     reportMissingPar(*pars->at(MK), ss, delim);
     reportMissingPar(*pars->at(SC_ID), ss, delim);
     reportMissingPar(*pars->at(TIME), ss, delim);
@@ -297,7 +297,7 @@ void computeSpicePointing(const CommandLineParameters & pars) {
 
   const char * body(pars[BODY].m_value.c_str());
   const char * frame(pars[FRAME].m_value.c_str());
-  const char * instr(pars[INSTR_FRAME].m_value.c_str());
+  const char * instr(pars[INSTRUMENT].m_value.c_str());
   const char * mkFile(pars[MK].m_value.c_str());
   const char * scId(pars[SC_ID].m_value.c_str());
   const char * time(pars[TIME].m_value.c_str());
@@ -326,21 +326,21 @@ void computeSpicePointing(const CommandLineParameters & pars) {
   getSpacecraftState(et, scId, body, frame, scPosition, unused);
   if (isSpiceError()) {
     stringstream ss;
-    ss << "unable to get position of spacecraft " << scId << " in the " << string(frame) + " frame";
+    ss << "unable to get position of spacecraft " << scId << " in the " << frame << " frame";
     throw runtime_error(ss.str());
   }
 
   getTargetState(et, scId, body, frame, "SUN", sunPosition, unused);
   if (isSpiceError()) {
     stringstream ss;
-    ss << "unable to get the sun position in the " << string(frame)+ " frame";
+    ss << "unable to get the sun position in the " << frame << " frame";
     throw runtime_error(ss.str());
   }
 
   getFov(et, scId, body, frame, instr, boredir, updir, frustum);
   if (isSpiceError()) {
     stringstream ss;
-    ss << "unable to get the " << instr << " FOV in the " << string(frame) + " frame";
+    ss << "unable to get the " << instr << " FOV in the " << frame << " frame";
     throw runtime_error(ss.str());
   }
 
@@ -381,8 +381,8 @@ void usage(std::ostream & ios) {
      << "\n        metakernel file used to load all SPICE kernels"
      << "\n    -s=<spacecraft-name> (required), <spacecraft-name> is the name of"
      << "\n        the spacecraft as referenced in the SPICE kernels"
-     << "\n    -i=<instrument-frame> (required), <instrument-frame> is the name of the"
-     << "\n        instrument frame as referenced in the SPICE kernels"
+     << "\n    -i=<instrument-name> (required), <instrument-name> is the name of the"
+     << "\n        instrument as referenced in the SPICE kernels"
      << "\n    -b=<body> (required), <body> is the name of the body used by SPICE as the"
      << "\n        origin from which to compute the pointing"
      << "\n    -f=<frame> (required), <frame> is the name of the SPICE frame in which to"
