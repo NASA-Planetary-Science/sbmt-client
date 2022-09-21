@@ -225,9 +225,17 @@ public class DartConfigs
 
         // Jupiter system models.
         c = createMultiResMissionImagesConfig(ShapeModelBody.JUPITER, "DART Jupiter-01", ModelLabels5Levels, ModelResolutions5Levels, SumFilesAndInfoFiles, null, null);
+        c.type = BodyType.PLANETS_AND_SATELLITES;
+        c.population = ShapeModelPopulation.JUPITER;
+        c.system = ShapeModelBody.JUPITER;
+
         configList.add(c);
 
         c = createMultiResMissionImagesConfig(ShapeModelBody.GANYMEDE, "DART Ganymede-01", ModelLabels5Levels, ModelResolutions5Levels, SumFilesAndInfoFiles, null, null);
+        c.type = BodyType.PLANETS_AND_SATELLITES;
+        c.population = ShapeModelPopulation.JUPITER;
+        c.system = ShapeModelBody.JUPITER;
+
         configList.add(c);
     }
 
