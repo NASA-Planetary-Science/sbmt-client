@@ -224,9 +224,11 @@ public class DartConfigs
         defaultConfig.defaultForMissions = DartClients;
 
         // Jupiter system models.
-        c = createMultiResMissionImagesConfig(ShapeModelBody.JUPITER, "jupiter-20220830-v01", ModelLabels4Levels, ModelResolutions4Levels, SumFilesAndInfoFiles, null, null);
+        c = createMultiResMissionImagesConfig(ShapeModelBody.JUPITER, "DART Jupiter-01", ModelLabels4Levels, ModelResolutions4Levels, SumFilesAndInfoFiles, null, null);
+        configList.add(c);
 
-        c = createMultiResMissionImagesConfig(ShapeModelBody.GANYMEDE, "ganymede-20220907-v01", ModelLabels5Levels, ModelResolutions5Levels, SumFilesAndInfoFiles, null, null);
+        c = createMultiResMissionImagesConfig(ShapeModelBody.GANYMEDE, "DART Ganymede-01", ModelLabels5Levels, ModelResolutions5Levels, SumFilesAndInfoFiles, null, null);
+        configList.add(c);
     }
 
     /**
@@ -664,7 +666,6 @@ public class DartConfigs
      * @param dracoImageSources image sources available for DRACO
      * @param leiaImageSources image sources available for LEIA
      * @param lukeImageSources image sources available for LUKE
-     * @param numberPlates the number of plates in the single resolution model
      * @return the config
      */
     protected SmallBodyViewConfig createMultiResMissionImagesConfig( //
