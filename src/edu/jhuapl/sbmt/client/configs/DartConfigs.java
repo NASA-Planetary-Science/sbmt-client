@@ -224,7 +224,7 @@ public class DartConfigs
         defaultConfig.defaultForMissions = DartClients;
 
         // Jupiter system models.
-        c = createMultiResMissionImagesConfig(ShapeModelBody.JUPITER, "DART Jupiter-01", ModelLabels4Levels, ModelResolutions4Levels, SumFilesAndInfoFiles, null, null);
+        c = createMultiResMissionImagesConfig(ShapeModelBody.JUPITER, "DART Jupiter-01", ModelLabels5Levels, ModelResolutions5Levels, SumFilesAndInfoFiles, null, null);
         configList.add(c);
 
         c = createMultiResMissionImagesConfig(ShapeModelBody.GANYMEDE, "DART Ganymede-01", ModelLabels5Levels, ModelResolutions5Levels, SumFilesAndInfoFiles, null, null);
