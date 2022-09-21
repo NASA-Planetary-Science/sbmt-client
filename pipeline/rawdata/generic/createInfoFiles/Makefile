@@ -1,5 +1,5 @@
 # SPICE
-SPICE_DIR			= /project/sbmtpipeline/software/spice/cspice-20200519/cspice
+SPICE_DIR			= /project/sbmtpipeline/software/spice/cspice-20220921/cspice
 SPICE_LIB			= $(SPICE_DIR)/lib/cspice.a
 #
 # CFITSIO
