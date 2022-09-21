@@ -94,7 +94,7 @@ vector<pair<string, string> > loadFileList(const string& filelist) {
   2. body - IAU name of the target body, all caps
   3. bodyFrame - Typically IAU_<body>, but could be something like RYUGU_FIXED
   4. spacecraft - SPICE spacecraft name
-  5. instrumentframe - SPICE instrument frame name
+  5. instrumentname - SPICE instrument name, NOT the instrument FRAME, as used to be true
   6. imageTimeStampFile - path to CSV file in which all image files are listed (relative
      to "topDir") with their UTC time stamps
   7. infoDir - path to output directory where infofiles should be saved to
@@ -111,7 +111,7 @@ int main(int argc, char** argv)
 {
     if (argc < 11)
     {
-        cerr << "Usage: createInfoFiles <metakernel> <body> <bodyFrame> <spacecraft> <instrumentFrame> "
+        cerr << "Usage: createInfoFiles <metakernel> <body> <bodyFrame> <spacecraft> <instrument> "
         		"<imageTimeStampFile> <infoDir> <imageListFile> <imageListFullPathFile> <missingInfoList>" << endl;
         return 1;
     }
