@@ -1438,9 +1438,8 @@ createInfoFilesFromImageTimeStamps() {
     bodyFrame=$3
     spacecraft=$4
     instrument=$5
-    instrumentFrame=$6
-    imageTimeStampFile=$7
-    infoDir=$8
+    imageTimeStampFile=$6
+    infoDir=$7
 
     # Must invoke tool from the temporary spice directory in case the metakernel uses relative paths.
     cd $tmpSpiceDir
@@ -1480,7 +1479,7 @@ createInfoFilesFromImageTimeStamps() {
     #  2. body - IAU name of the target body, all caps
     #  3. bodyFrame - Typically IAU_<body>, but could be something like RYUGU_FIXED
     #  4. spacecraft - SPICE spacecraft name
-    #  5. instrumentframe - SPICE instrument frame name
+    #  5. instrument - SPICE instrument name
     #  6. imageTimeStampFile - path to CSV file in which all image files are listed (relative
     #     to "topDir") with their UTC time stamps
     #  7. infoDir - path to output directory where infofiles should be saved to
@@ -1495,10 +1494,10 @@ createInfoFilesFromImageTimeStamps() {
 
     createDir $logTop
 
-    echo nice $createInfoFilesDir/createInfoFiles $metakernel $body $bodyFrame $spacecraft $instrumentFrame \
+    echo nice $createInfoFilesDir/createInfoFiles $metakernel $body $bodyFrame $spacecraft $instrument \
       $imageTimeStampFile "$infoDir" $imageListFile $imageListFullPathFile $missingInfoList
 
-    nice $createInfoFilesDir/createInfoFiles $metakernel $body $bodyFrame $spacecraft $instrumentFrame \
+    nice $createInfoFilesDir/createInfoFiles $metakernel $body $bodyFrame $spacecraft $instrument \
       $imageTimeStampFile "$infoDir" $imageListFile $imageListFullPathFile $missingInfoList > \
       $logTop/createInfoFiles-$instrument.txt 2>&1
     check $? "$funcName: creating info files failed. See log file $logTop/createInfoFiles-$instrument.txt"
@@ -1519,10 +1518,9 @@ createInfoFilesFromFITSImages() {
     bodyFrame=$3
     spacecraft=$4
     instrument=$5
-    instrumentFrame=$6
-    timeStampKeyword=$7
-    topDir=$8
-    imageDir=$9
+    timeStampKeyword=$6
+    topDir=$7
+    imageDir=$8
     infoDir="${10}" # Proof that Bourne shell is evil (yet we love it). $10 = "$1"0. Need the curly brace here.
 
     if test "$metakernel" = ""; then
@@ -1543,10 +1541,6 @@ createInfoFilesFromFITSImages() {
 
     if test "$instrument" = ""; then
       check 1 "$funcName: missing/blank fifth argument must specify instrument name (cosmetic but with no spaces)"
-    fi
-
-    if test "$instrumentFrame" = ""; then
-      check 1 "$funcName: missing/blank sixth argument must specify NAIF-compliant instrument frame ID"
     fi
 
     if test "$timeStampKeyword" = ""; then
@@ -1581,7 +1575,7 @@ createInfoFilesFromFITSImages() {
       echo "$funcName: file $imageTimeStampFile already exists -- skipping extracting times from FITS images"
     fi
 
-    createInfoFilesFromImageTimeStamps $metakernel $body $bodyFrame $spacecraft $instrument $instrumentFrame \
+    createInfoFilesFromImageTimeStamps $metakernel $body $bodyFrame $spacecraft $instrument \
       $imageTimeStampFile $infoDir
   )
   check $?
