@@ -67,29 +67,12 @@ public class PerspectiveImageCollection<G1 extends IPerspectiveImage & IPerspect
 	private HashMap<G1, List<vtkActor>> frustumRenderers;
 	private HashMap<G1, List<vtkActor>> offLimbRenderers;
 	private HashMap<G1, List<vtkActor>> offLimbBoundaryRenderers;
-	private HashMap<G1, PerspectiveImageRenderingState> renderingStates;
+	private HashMap<G1, PerspectiveImageRenderingState<G1>> renderingStates;
 	@SuppressWarnings("unused")
 	private SimpleLogger logger = SimpleLogger.getInstance();
 	private IImagingInstrument imagingInstrument;
 	private IdPair currentBoundaryRange = new IdPair(0, 9);
 	private int currentBoundaryOffsetAmount = 10;
-
-	class PerspectiveImageRenderingState
-	{
-		boolean isMapped = false;
-		boolean isFrustumShowing = false;
-		boolean isBoundaryShowing = false;
-		boolean isOfflimbShowing = false;
-		boolean isOffLimbBoundaryShowing = false;
-		Color boundaryColor;
-		Color offLimbBoundaryColor = Color.red;
-		Color frustumColor = Color.green;
-		double offLimbFootprintDepth;
-		boolean contrastSynced = false;
-		IntensityRange imageContrastRange;
-		IntensityRange offLimbContrastRange;
-	}
-
 
 	public PerspectiveImageCollection(List<SmallBodyModel> smallBodyModels)
 	{
@@ -100,14 +83,14 @@ public class PerspectiveImageCollection<G1 extends IPerspectiveImage & IPerspect
 		this.frustumRenderers = new HashMap<G1, List<vtkActor>>();
 		this.offLimbRenderers = new HashMap<G1, List<vtkActor>>();
 		this.offLimbBoundaryRenderers = new HashMap<G1, List<vtkActor>>();
-		this.renderingStates = new HashMap<G1, PerspectiveImageRenderingState>();
+		this.renderingStates = new HashMap<G1, PerspectiveImageRenderingState<G1>>();
 		this.smallBodyModels = smallBodyModels;
 	}
 
 	public void addUserImage(G1 image)
 	{
 		userImages.add(image);
-		PerspectiveImageRenderingState state = new PerspectiveImageRenderingState();
+		PerspectiveImageRenderingState<G1> state = new PerspectiveImageRenderingState<G1>();
 		Color color = ColorUtil.generateColor(userImages.indexOf(image)%100, 100);
 		state.boundaryColor = color;
 		renderingStates.put(image,state);
@@ -129,7 +112,7 @@ public class PerspectiveImageCollection<G1 extends IPerspectiveImage & IPerspect
             userImages = read(userImagesKey, metadata);
             for (G1 image : userImages)
             {
-            	PerspectiveImageRenderingState state = new PerspectiveImageRenderingState();
+            	PerspectiveImageRenderingState<G1> state = new PerspectiveImageRenderingState<G1>();
             	state.isMapped = image.isMapped();
             	if (image.isMapped()) image.setStatus("Loaded");
             	state.isFrustumShowing = image.isFrustumShowing();
@@ -198,7 +181,7 @@ public class PerspectiveImageCollection<G1 extends IPerspectiveImage & IPerspect
 		for (G1 image : images)
 		{
 			if (renderingStates.get(image) != null) continue;
-			PerspectiveImageRenderingState state = new PerspectiveImageRenderingState();
+			PerspectiveImageRenderingState<G1> state = new PerspectiveImageRenderingState<G1>();
 			renderingStates.put(image,state);
 		}
 //		updateActiveBoundaries();
@@ -683,7 +666,7 @@ public class PerspectiveImageCollection<G1 extends IPerspectiveImage & IPerspect
 
 	public void setOffLimbDepth(G1 image, double depth)
 	{
-		PerspectiveImageRenderingState renderingState = renderingStates.get(image);
+		PerspectiveImageRenderingState<G1> renderingState = renderingStates.get(image);
 		renderingState.offLimbFootprintDepth = depth;
 		image.setOfflimbDepth(depth);
 		Thread thread = getPipelineThread(image, (Void v) -> { return null; });
@@ -693,7 +676,7 @@ public class PerspectiveImageCollection<G1 extends IPerspectiveImage & IPerspect
 
 	public double getOffLimbDepth(G1 image)
 	{
-		PerspectiveImageRenderingState renderingState = renderingStates.get(image);
+		PerspectiveImageRenderingState<G1> renderingState = renderingStates.get(image);
 		return renderingState.offLimbFootprintDepth;
 	}
 

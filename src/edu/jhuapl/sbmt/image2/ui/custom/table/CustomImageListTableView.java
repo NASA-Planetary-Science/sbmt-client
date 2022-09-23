@@ -170,7 +170,7 @@ public class CustomImageListTableView<G1 extends IPerspectiveImage & IPerspectiv
 
 		saveImageButton = GuiUtil.formButton(listener, UIManager.getIcon("FileView.hardDriveIcon"));
 		saveImageButton.setToolTipText(ToolTipUtil.getItemSave());
-		saveImageButton.setEnabled(false);
+//		saveImageButton.setEnabled(false);
 
 		showImageButton = GuiUtil.formButton(listener, IconUtil.getItemShow());
 		showImageButton.setToolTipText(ToolTipUtil.getItemShow());

@@ -43,6 +43,7 @@ import edu.jhuapl.sbmt.image2.model.ImageSearchParametersModel;
 import edu.jhuapl.sbmt.image2.model.PerspectiveImageCollection;
 import edu.jhuapl.sbmt.image2.pipelineComponents.pipelines.io.CustomImageListToSavedFilePipeline;
 import edu.jhuapl.sbmt.image2.pipelineComponents.pipelines.io.ImageGalleryPipeline;
+import edu.jhuapl.sbmt.image2.pipelineComponents.pipelines.io.LoadFileToCustomImageListPipeline;
 import edu.jhuapl.sbmt.image2.pipelineComponents.pipelines.io.LoadImagesFromSavedFilePipeline;
 import edu.jhuapl.sbmt.image2.pipelineComponents.pipelines.io.SaveImagesToSavedFilePipeline;
 import edu.jhuapl.sbmt.image2.ui.custom.importer.CustomImageImporterDialog;
@@ -359,7 +360,19 @@ public class ImageSearchController<G1 extends IPerspectiveImage & IPerspectiveIm
 		});
 
 		customImageListTableController.getPanel().getLoadImageButton().addActionListener(e -> {
-
+			try
+			{
+				LoadFileToCustomImageListPipeline<G1> pipeline = LoadFileToCustomImageListPipeline.of();
+				List<G1> images = pipeline.getResults().getLeft();
+//				List<PerspectiveImageRenderingState<G1>> renderingStates = pipeline.getResults().getRight();
+				collection.setImages(images);
+//				collection.setRenderingStates(renderingStates);
+			}
+			catch (Exception e1)
+			{
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
 		});
 
 		customImageListTableController.getPanel().getSaveImageButton().addActionListener(e -> {
