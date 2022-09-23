@@ -16,6 +16,7 @@ import org.apache.commons.lang3.tuple.Triple;
 import com.google.common.collect.ImmutableMap;
 
 import edu.jhuapl.saavtk.util.FileCache;
+import edu.jhuapl.saavtk.util.NonexistentRemoteFile;
 import edu.jhuapl.saavtk.util.SafeURLPaths;
 import edu.jhuapl.sbmt.common.client.SmallBodyViewConfig;
 import edu.jhuapl.sbmt.core.image.IImagingInstrument;
@@ -85,10 +86,18 @@ public class CreateImageFromSearchResultOperator<G1 extends IPerspectiveImage & 
 					try
 					{
 						infoBaseName = infoBaseName.substring(0, infoBaseName.lastIndexOf("/")) + File.separator + getSumFileName(instrument.getSearchQuery().getRootPath(), imageInfo.get(0));
-					} catch (IOException | ParseException e)
+					}
+        			catch (IOException | ParseException | NonexistentRemoteFile e)
 					{
+        				String filename = FilenameUtils.getBaseName(imageInfo.get(0).substring(imageInfo.get(0).lastIndexOf("/")));
+//        				String sumFileName = filename + ".SUM";
+						infoBaseName = infoBaseName.substring(0, infoBaseName.lastIndexOf("/"))
+										+ File.separator
+										+ filename;
+
+
 						// TODO Auto-generated catch block
-						e.printStackTrace();
+//						e.printStackTrace();
 					}
         	}
 

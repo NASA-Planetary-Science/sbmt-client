@@ -287,6 +287,8 @@ public class PerspectiveImageCollection<G1 extends IPerspectiveImage & IPerspect
 			lowBound = Math.min(previousRange.id1, currentBoundaryRange.id1);
 			highBound = Math.max(previousRange.id2, currentBoundaryRange.id2);
 		}
+		lowBound = Math.max(0, lowBound);
+		highBound = Math.min(highBound, getAllItems().size()-1);
 		for (int i=lowBound; i<=highBound; i++)
 		{
 			G1 image = getAllItems().get(i);
