@@ -48,7 +48,7 @@ public class SearchResultsToPointingFilesOperator
 		{
 			String extension = ".INFO";
 			String pointingDir = "infofiles";
-			ImageSource imageSource = ImageSource.valueFor(imageInfo.get(2));
+			ImageSource imageSource = ImageSource.valueFor(imageInfo.get(2).replace("_", " "));
 			if (imageSource == ImageSource.GASKELL || imageSource == ImageSource.GASKELL_UPDATED)
 			{
 				extension = ".SUM";

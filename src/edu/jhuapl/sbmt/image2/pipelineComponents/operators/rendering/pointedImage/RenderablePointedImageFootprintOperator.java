@@ -105,7 +105,6 @@ public class RenderablePointedImageFootprintOperator extends BasePipelineOperato
 
 			vtkPolyDataMapper mapper = new vtkPolyDataMapper();
 			mapper.SetInputData(footprint);
-			System.out.println("RenderablePointedImageFootprintOperator: processData: writing to " + imageFilename);
 			SavePolydataToCachePipeline.of(footprint, imageFilename);
 			footprints.add(footprint);
     	}

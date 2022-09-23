@@ -29,7 +29,7 @@ public class CreateImageFromSavedListOperator<G1 extends IPerspectiveImage & IPe
 		int i=1;
         for (List<String> imageInfo : results)
         {
-        	ImageSource imageSource = ImageSource.valueFor(imageInfo.get(2));
+        	ImageSource imageSource = ImageSource.valueFor(imageInfo.get(2).replace("_", " "));
         	PerspectiveImage image = new PerspectiveImage(imageInfo.get(0), instrument.getType(), imageSource, infoBaseNames.get(results.indexOf(imageInfo)), new double[] {});
         	image.setFlip(instrument.getFlip());
         	image.setRotation(instrument.getRotation());
