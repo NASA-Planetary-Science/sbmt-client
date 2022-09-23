@@ -13,7 +13,6 @@ import edu.jhuapl.saavtk.config.ViewConfig;
 import edu.jhuapl.saavtk.model.ShapeModelBody;
 import edu.jhuapl.saavtk.model.ShapeModelType;
 import edu.jhuapl.saavtk.util.Configuration;
-import edu.jhuapl.sbmt.client.SbmtMultiMissionTool;
 import edu.jhuapl.sbmt.config.BasicConfigInfo;
 import edu.jhuapl.sbmt.config.BodyType;
 import edu.jhuapl.sbmt.config.Instrument;
@@ -82,7 +81,7 @@ public class SmallBodyViewConfigMetadataIO implements MetadataManager
 
         SettableMetadata allBodiesMetadata = SettableMetadata.of(Version.of(configInfoVersion));
         Configuration.setAPLVersion(true);
-        SbmtMultiMissionTool.configureMission();
+        edu.jhuapl.sbmt.client2.SbmtMultiMissionTool.configureMission();
         Configuration.authenticate();
         SmallBodyViewConfig.initializeWithStaticConfigs(publishedDataOnly);
         for (ViewConfig each: SmallBodyViewConfig.getBuiltInConfigs())
