@@ -29,10 +29,10 @@ import edu.jhuapl.sbmt.common.client.SmallBodyViewConfig;
 import edu.jhuapl.sbmt.config.Instrument;
 import edu.jhuapl.sbmt.core.image.ImageSource;
 import edu.jhuapl.sbmt.core.image.ImagingInstrument;
-import edu.jhuapl.sbmt.image2.pipeline.io.FilenameToRenderableImagePipeline;
-import edu.jhuapl.sbmt.image2.pipeline.offlimb.OfflimbPlaneGenerator;
-import edu.jhuapl.sbmt.image2.pipeline.pointedImages.RenderablePointedImageFootprintGeneratorPipeline;
-import edu.jhuapl.sbmt.image2.pipeline.rendering.pointedImage.RenderablePointedImage;
+import edu.jhuapl.sbmt.image2.pipelineComponents.operators.offlimb.OfflimbPlaneGeneratorOperators;
+import edu.jhuapl.sbmt.image2.pipelineComponents.operators.rendering.pointedImage.RenderablePointedImage;
+import edu.jhuapl.sbmt.image2.pipelineComponents.pipelines.io.FilenameToRenderableImagePipeline;
+import edu.jhuapl.sbmt.image2.pipelineComponents.pipelines.pointedImages.RenderablePointedImageFootprintGeneratorPipeline;
 import edu.jhuapl.sbmt.pipeline.publisher.Just;
 import edu.jhuapl.sbmt.pipeline.subscriber.PairSink;
 
@@ -52,7 +52,7 @@ public class PerspectiveImagePreRenderer
 
 		double[] boundingBox = footprints.get(0).GetBounds();
 		Just.of(renderableImage)
-			.operate(new OfflimbPlaneGenerator(offLimbFootprintDepth, smallBodyModels.get(0), boundingBox, footprints.get(0).GetNumberOfPoints()))
+			.operate(new OfflimbPlaneGeneratorOperators(offLimbFootprintDepth, smallBodyModels.get(0), boundingBox, footprints.get(0).GetNumberOfPoints()))
 			.subscribe(PairSink.of(offLimbPolydata))
 			.run();
 

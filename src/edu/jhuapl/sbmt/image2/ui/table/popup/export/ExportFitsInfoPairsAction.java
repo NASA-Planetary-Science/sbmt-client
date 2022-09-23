@@ -17,8 +17,8 @@ import edu.jhuapl.sbmt.core.image.InfoFileWriter;
 import edu.jhuapl.sbmt.image2.interfaces.IPerspectiveImage;
 import edu.jhuapl.sbmt.image2.interfaces.IPerspectiveImageTableRepresentable;
 import edu.jhuapl.sbmt.image2.model.PerspectiveImageCollection;
-import edu.jhuapl.sbmt.image2.pipeline.PerspectiveImageToRenderableImagePipeline;
-import edu.jhuapl.sbmt.image2.pipeline.io.export.SaveImageFileFromCacheOperator;
+import edu.jhuapl.sbmt.image2.pipelineComponents.operators.io.export.SaveImageFileFromCacheOperator;
+import edu.jhuapl.sbmt.image2.pipelineComponents.pipelines.perspectiveImages.PerspectiveImageToRenderableImagePipeline;
 import edu.jhuapl.sbmt.pipeline.publisher.Just;
 import edu.jhuapl.sbmt.pipeline.subscriber.Sink;
 

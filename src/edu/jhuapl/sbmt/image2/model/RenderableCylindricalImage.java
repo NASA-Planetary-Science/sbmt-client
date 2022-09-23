@@ -2,10 +2,11 @@ package edu.jhuapl.sbmt.image2.model;
 
 import java.util.HashMap;
 
-import edu.jhuapl.sbmt.image2.pipeline.rendering.layer.LayerMasking;
+import edu.jhuapl.sbmt.core.image.PointingFileReader;
+import edu.jhuapl.sbmt.image2.pipelineComponents.operators.rendering.layer.LayerMasking;
 import edu.jhuapl.sbmt.layer.api.Layer;
 
-public class RenderableCylindricalImage
+public class RenderableCylindricalImage implements IRenderableImage
 {
 	private Layer layer;
 	private HashMap<String, String> metadata;
@@ -27,6 +28,7 @@ public class RenderableCylindricalImage
 	/**
 	 * @return the layer
 	 */
+	@Override
 	public Layer getLayer()
 	{
 		return layer;
@@ -60,6 +62,7 @@ public class RenderableCylindricalImage
 	}
 
 
+	@Override
 	public LayerMasking getMasking()
 	{
 		return masking;
@@ -105,5 +108,21 @@ public class RenderableCylindricalImage
 	public void setBounds(CylindricalBounds bounds)
 	{
 		this.bounds = bounds;
+	}
+
+	/**
+	 * @return the isLinearInterpolation
+	 */
+	@Override
+	public boolean isLinearInterpolation()
+	{
+		return true;
+	}
+
+	@Override
+	public PointingFileReader getPointing()
+	{
+		// TODO Auto-generated method stub
+		return null;
 	}
 }

@@ -10,6 +10,8 @@ import javax.swing.JPopupMenu;
 import javax.swing.SwingWorker;
 import javax.swing.ToolTipManager;
 
+import org.gdal.gdal.gdal;
+
 import vtk.vtkJavaGarbageCollector;
 
 import edu.jhuapl.saavtk.gui.MainWindow;
@@ -45,6 +47,7 @@ public class SbmtRunnable2 implements Runnable
 			writeStartupMessage(mission);
 
 			NativeLibraryLoader.loadAllVtkLibraries();
+			gdal.AllRegister();
 
 			SmallBodyViewConfig.initialize();
 			//            new SmallBodyViewConfigMetadataIO(SmallBodyViewConfig.getBuiltInConfigs()).write(new File("/Users/steelrj1/Desktop/test.json"), "Test");

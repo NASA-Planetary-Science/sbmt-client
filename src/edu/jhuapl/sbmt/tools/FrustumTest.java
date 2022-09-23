@@ -64,10 +64,10 @@ public class FrustumTest
 
     Camera.GetFrustumPlanes(1.0, PlanesArray);
 
-    for (int i=0; i<24; i++)
-    {
-    	System.out.println("FrustumTest: main: plane array entry " + PlanesArray[i]);
-    }
+//    for (int i=0; i<24; i++)
+//    {
+//    	System.out.println("FrustumTest: main: plane array entry " + PlanesArray[i]);
+//    }
 
     vtkPlanes Planes = new vtkPlanes();
     Planes.SetFrustumPlanes(PlanesArray);

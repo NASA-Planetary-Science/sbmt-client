@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<launchConfiguration type="org.eclipse.jdt.launching.localJavaApplication">
+    <listAttribute key="org.eclipse.debug.core.MAPPED_RESOURCE_PATHS">
+        <listEntry value="/sbmt/src/edu/jhuapl/sbmt/client2/SmallBodyMappingToolAPL.java"/>
+    </listAttribute>
+    <listAttribute key="org.eclipse.debug.core.MAPPED_RESOURCE_TYPES">
+        <listEntry value="1"/>
+    </listAttribute>
+    <mapAttribute key="org.eclipse.debug.core.environmentVariables">
+        <mapEntry key="DYLD_LIBRARY_PATH" value="../saavtk/lib/vtk6.3/mac64:./lib/gdal"/>
+    </mapAttribute>
+    <listAttribute key="org.eclipse.debug.ui.favoriteGroups">
+        <listEntry value="org.eclipse.debug.ui.launchGroup.debug"/>
+        <listEntry value="org.eclipse.debug.ui.launchGroup.run"/>
+    </listAttribute>
+    <booleanAttribute key="org.eclipse.jdt.debug.ui.CONSIDER_INHERITED_MAIN" value="true"/>
+    <booleanAttribute key="org.eclipse.jdt.launching.ATTR_ATTR_USE_ARGFILE" value="false"/>
+    <booleanAttribute key="org.eclipse.jdt.launching.ATTR_SHOW_CODEDETAILS_IN_EXCEPTION_MESSAGES" value="true"/>
+    <booleanAttribute key="org.eclipse.jdt.launching.ATTR_USE_CLASSPATH_ONLY_JAR" value="false"/>
+    <booleanAttribute key="org.eclipse.jdt.launching.ATTR_USE_START_ON_FIRST_THREAD" value="true"/>
+    <stringAttribute key="org.eclipse.jdt.launching.MAIN_TYPE" value="edu.jhuapl.sbmt.client2.SmallBodyMappingToolAPL"/>
+    <stringAttribute key="org.eclipse.jdt.launching.MODULE_NAME" value="sbmt"/>
+    <stringAttribute key="org.eclipse.jdt.launching.PROGRAM_ARGUMENTS" value="--no-stream-redirect --debug --illegal-access=warn"/>
+    <stringAttribute key="org.eclipse.jdt.launching.PROJECT_ATTR" value="sbmt"/>
+    <stringAttribute key="org.eclipse.jdt.launching.VM_ARGUMENTS" value="-Djava.library.path=../saavtk/lib/vtk6.3/mac64:./lib/gdal  -Xmx4G --add-exports java.desktop/com.sun.imageio.spi=ALL-UNNAMED --add-exports java.desktop/com.apple.laf=ALL-UNNAMED --add-exports java.desktop/apple.laf=ALL-UNNAMED -Dedu.jhuapl.sbmt.mission=&quot;STAGE_APL_INTERNAL&quot; -Djava.util.logging.SimpleFormatter.format=&quot;%1$tb %1$td %1$tY %1$tl:%1$tM:%1$tS.%1$tL %1$Tp %2$s%n%4$s: %5$s%n&quot;"/>
+</launchConfiguration>

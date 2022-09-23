@@ -6,7 +6,7 @@ import edu.jhuapl.saavtk.gui.render.Renderer;
 import edu.jhuapl.sbmt.common.client.SmallBodyModel;
 import edu.jhuapl.sbmt.image2.interfaces.IPerspectiveImage;
 import edu.jhuapl.sbmt.image2.model.PerspectiveImageCollection;
-import edu.jhuapl.sbmt.image2.pipeline.rendering.PerspectiveImageCenterImagePipeline;
+import edu.jhuapl.sbmt.image2.pipelineComponents.pipelines.rendering.PerspectiveImageCenterImagePipeline;
 
 import glum.gui.action.PopAction;
 

@@ -10,7 +10,7 @@ import edu.jhuapl.saavtk.gui.render.Renderer;
 import edu.jhuapl.sbmt.image2.interfaces.IPerspectiveImage;
 import edu.jhuapl.sbmt.image2.interfaces.IPerspectiveImageTableRepresentable;
 import edu.jhuapl.sbmt.image2.model.PerspectiveImageCollection;
-import edu.jhuapl.sbmt.image2.pipeline.rendering.PerspectiveImageSimulateLightingPipeline;
+import edu.jhuapl.sbmt.image2.pipelineComponents.pipelines.rendering.PerspectiveImageSimulateLightingPipeline;
 
 import glum.gui.action.PopAction;
 

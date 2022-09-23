@@ -19,10 +19,11 @@ import edu.jhuapl.saavtk.util.IntensityRange;
 import edu.jhuapl.sbmt.image2.controllers.preview.ImageContrastController;
 import edu.jhuapl.sbmt.image2.interfaces.IPerspectiveImage;
 import edu.jhuapl.sbmt.image2.interfaces.IPerspectiveImageTableRepresentable;
+import edu.jhuapl.sbmt.image2.model.IRenderableImage;
 import edu.jhuapl.sbmt.image2.model.PerspectiveImageCollection;
-import edu.jhuapl.sbmt.image2.pipeline.PerspectiveImageToRenderableImagePipeline;
-import edu.jhuapl.sbmt.image2.pipeline.rendering.pointedImage.RenderablePointedImage;
-import edu.jhuapl.sbmt.image2.pipeline.rendering.vtk.VtkImageRendererOperator;
+import edu.jhuapl.sbmt.image2.pipelineComponents.operators.rendering.pointedImage.RenderablePointedImage;
+import edu.jhuapl.sbmt.image2.pipelineComponents.operators.rendering.vtk.VtkImageRendererOperator;
+import edu.jhuapl.sbmt.image2.pipelineComponents.pipelines.perspectiveImages.PerspectiveImageToRenderableImagePipeline;
 import edu.jhuapl.sbmt.pipeline.publisher.Just;
 import edu.jhuapl.sbmt.pipeline.subscriber.Sink;
 
@@ -34,7 +35,7 @@ public class OfflimbControlsController<G1 extends IPerspectiveImage & IPerspecti
 	ImageContrastController contrastController;
 	G1 image;
 	List<vtkImageData> displayedImages = new ArrayList<vtkImageData>();
-	List<RenderablePointedImage> renderableImages;
+	List<IRenderableImage> renderableImages;
 
 	public OfflimbControlsController(PerspectiveImageCollection<G1> collection, G1 image) throws Exception
 	{
@@ -164,7 +165,8 @@ public class OfflimbControlsController<G1 extends IPerspectiveImage & IPerspecti
 				if (e.getSource() == controlsPanel.getFootprintDepthSlider() && !controlsPanel.getFootprintDepthSlider().getValueIsAdjusting())
 				{
 					DepthSlider<G1> depthSlider = controlsPanel.getFootprintDepthSlider();
-					double depthValue = depthSlider.getDepthValue(renderableImages.get(0).getMinFrustumLength(), renderableImages.get(0).getMaxFrustumLength());
+					RenderablePointedImage renderableImage = (RenderablePointedImage)renderableImages.get(0);
+					double depthValue = depthSlider.getDepthValue(renderableImage.getMinFrustumLength(), renderableImage.getMaxFrustumLength());
 					collection.setOffLimbDepth(image, depthValue);
 					controlsPanel.getFootprintDepthValue().setText(" " + depthValue);
 				}

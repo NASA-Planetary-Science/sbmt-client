@@ -11,11 +11,11 @@ import java.time.format.DateTimeFormatter;
 import org.apache.commons.io.FilenameUtils;
 
 import edu.jhuapl.saavtk.util.ProgressStatusListener;
+import edu.jhuapl.saavtk.util.ThreadService;
 import edu.jhuapl.sbmt.stateHistory.model.interfaces.IStateHistoryMetadata;
 import edu.jhuapl.sbmt.stateHistory.model.planning.lidar.PlannedLidarTrack;
 import edu.jhuapl.sbmt.stateHistory.model.planning.lidar.PlannedLidarTrackCollection;
 import edu.jhuapl.sbmt.stateHistory.model.planning.lidar.PlannedLidarTrackVtkCollection;
-import edu.jhuapl.sbmt.util.ThreadService;
 import edu.jhuapl.sbmt.util.TimeUtil;
 
 public class PlannedLidarTrackIOHelper

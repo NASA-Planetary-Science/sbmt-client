@@ -19,7 +19,7 @@ import edu.jhuapl.sbmt.common.client.SmallBodyViewConfig;
 import edu.jhuapl.sbmt.config.Instrument;
 import edu.jhuapl.sbmt.core.image.ImageSource;
 import edu.jhuapl.sbmt.core.image.ImagingInstrument;
-import edu.jhuapl.sbmt.image2.pipeline.io.FilenameToRenderableImageFootprintPipeline;
+import edu.jhuapl.sbmt.image2.pipelineComponents.pipelines.io.FilenameToRenderableImageFootprintPipeline;
 import edu.jhuapl.sbmt.model.eros.Eros;
 
 import nom.tam.fits.FitsException;

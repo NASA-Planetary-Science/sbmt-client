@@ -20,7 +20,7 @@ import javax.swing.JTextField;
 
 import edu.jhuapl.sbmt.image2.interfaces.IPerspectiveImage;
 import edu.jhuapl.sbmt.image2.model.PerspectiveImageCollection;
-import edu.jhuapl.sbmt.image2.pipeline.rendering.PerspectiveImageOffsetUpdatePipeline;
+import edu.jhuapl.sbmt.image2.pipelineComponents.pipelines.rendering.PerspectiveImageOffsetUpdatePipeline;
 
 import glum.gui.action.PopAction;
 import net.miginfocom.swing.MigLayout;

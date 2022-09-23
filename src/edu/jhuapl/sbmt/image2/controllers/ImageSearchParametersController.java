@@ -40,7 +40,7 @@ import edu.jhuapl.sbmt.image2.interfaces.IPerspectiveImage;
 import edu.jhuapl.sbmt.image2.interfaces.IPerspectiveImageTableRepresentable;
 import edu.jhuapl.sbmt.image2.model.ImageSearchParametersModel;
 import edu.jhuapl.sbmt.image2.model.PerspectiveImageCollection;
-import edu.jhuapl.sbmt.image2.pipeline.search.ImageSearchPipeline;
+import edu.jhuapl.sbmt.image2.pipelineComponents.pipelines.search.ImageSearchPipeline;
 
 public class ImageSearchParametersController<G1 extends IPerspectiveImage & IPerspectiveImageTableRepresentable>
 {
@@ -245,6 +245,7 @@ public class ImageSearchParametersController<G1 extends IPerspectiveImage & IPer
                 List<G1> images = pipeline.getImages();
                 collection.setImages(images);
                 panel.setCursor(Cursor.getDefaultCursor());
+                collection.updateActiveBoundaries(null);
             }
         });
 

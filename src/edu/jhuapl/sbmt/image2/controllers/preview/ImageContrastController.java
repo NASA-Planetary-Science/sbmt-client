@@ -12,7 +12,7 @@ import com.jidesoft.swing.RangeSlider;
 import vtk.vtkImageData;
 
 import edu.jhuapl.saavtk.util.IntensityRange;
-import edu.jhuapl.sbmt.image2.pipeline.rendering.vtk.VtkImageContrastPipeline;
+import edu.jhuapl.sbmt.image2.pipelineComponents.pipelines.rendering.vtk.VtkImageContrastPipeline;
 
 /**
  * Controller to help govern the contrast values (via <pre>IntensityRange</pre> for a <pre>vtkImageData</pre> object.
@@ -25,16 +25,18 @@ import edu.jhuapl.sbmt.image2.pipeline.rendering.vtk.VtkImageContrastPipeline;
 public class ImageContrastController
 {
 	ImageContrastSlider slider;
+	JLabel label;
 
 	public ImageContrastController(vtkImageData imageData, IntensityRange intensityRange, Function<vtkImageData, Void> completionBlock)
 	{
 		slider = new ImageContrastSlider(imageData, intensityRange, completionBlock);
+		label = new JLabel("Contrast");
 	}
 
 	public JPanel getView()
 	{
 		JPanel panel = new JPanel();
-		panel.add(new JLabel("Contrast"));
+		panel.add(label);
 		panel.add(slider);
 		panel.setLayout(new BoxLayout(panel, BoxLayout.X_AXIS));
 		return panel;

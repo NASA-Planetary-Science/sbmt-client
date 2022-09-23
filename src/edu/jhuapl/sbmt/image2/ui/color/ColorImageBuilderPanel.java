@@ -11,7 +11,7 @@ import javax.swing.JPanel;
 
 import edu.jhuapl.sbmt.common.client.SmallBodyModel;
 import edu.jhuapl.sbmt.image2.interfaces.IPerspectiveImage;
-import edu.jhuapl.sbmt.image2.pipeline.preview.VtkRendererPreview;
+import edu.jhuapl.sbmt.image2.pipelineComponents.subscribers.preview.VtkRendererPreview;
 
 public class ColorImageBuilderPanel extends JPanel
 {

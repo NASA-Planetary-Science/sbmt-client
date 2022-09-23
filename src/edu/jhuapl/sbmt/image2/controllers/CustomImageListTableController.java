@@ -9,15 +9,15 @@ import glum.gui.action.PopupMenu;
 
 public class CustomImageListTableController<G1 extends IPerspectiveImage & IPerspectiveImageTableRepresentable>
 {
-	CustomImageListTableView tablePanel;
+	CustomImageListTableView<G1> tablePanel;
 
 	public CustomImageListTableController(PerspectiveImageCollection<G1> collection, PopupMenu<G1> popupMenu)
 	{
-		this.tablePanel = new CustomImageListTableView(collection, popupMenu);
+		this.tablePanel = new CustomImageListTableView<G1>(collection, popupMenu);
 		this.tablePanel.setup();
 	}
 
-	public CustomImageListTableView getPanel()
+	public CustomImageListTableView<G1> getPanel()
 	{
 		return tablePanel;
 	}

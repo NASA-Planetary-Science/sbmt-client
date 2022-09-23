@@ -43,8 +43,8 @@ import edu.jhuapl.sbmt.image2.controllers.preview.ImageMaskController;
 import edu.jhuapl.sbmt.image2.controllers.preview.ImagePropertiesController;
 import edu.jhuapl.sbmt.image2.controllers.preview.ImageTrimController;
 import edu.jhuapl.sbmt.image2.model.ImageProperty;
-import edu.jhuapl.sbmt.image2.pipeline.rendering.vtk.VtkImageContrastPipeline;
-import edu.jhuapl.sbmt.image2.pipeline.rendering.vtk.VtkImageMaskingPipeline;
+import edu.jhuapl.sbmt.image2.pipelineComponents.pipelines.rendering.vtk.VtkImageContrastPipeline;
+import edu.jhuapl.sbmt.image2.pipelineComponents.pipelines.rendering.vtk.VtkImageMaskingPipeline;
 
 public class ImagePreviewPanel extends ModelInfoWindow implements MouseListener, MouseMotionListener, PropertyChangeListener
 {
@@ -266,11 +266,11 @@ public class ImagePreviewPanel extends ModelInfoWindow implements MouseListener,
 
 		reslice = new vtkImageReslice();
 		reslice.SetInputData(displayedImage);
-		reslice.SetResliceTransform(imageTransform);
+//		reslice.SetResliceTransform(imageTransform);
 		reslice.SetInterpolationModeToNearestNeighbor();
 		reslice.SetOutputSpacing(1.0, 1.0, 1.0);
 		reslice.SetOutputOrigin(0.0, 0.0, 0.0);
-		reslice.SetOutputExtent(0, dims[1] - 1, 0, dims[0] - 1, 0, 0);
+		reslice.SetOutputExtent(0, dims[0] - 1, 0, dims[1] - 1, 0, 0);
 		reslice.Update();
 
 		vtkImageSliceMapper imageSliceMapper = new vtkImageSliceMapper();

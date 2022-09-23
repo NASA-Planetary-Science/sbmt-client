@@ -8,7 +8,7 @@ import com.beust.jcommander.internal.Lists;
 import edu.jhuapl.sbmt.image2.interfaces.IPerspectiveImage;
 import edu.jhuapl.sbmt.image2.interfaces.IPerspectiveImageTableRepresentable;
 import edu.jhuapl.sbmt.image2.model.PerspectiveImageCollection;
-import edu.jhuapl.sbmt.image2.pipeline.io.export.SaveImageFileFromCacheOperator;
+import edu.jhuapl.sbmt.image2.pipelineComponents.operators.io.export.SaveImageFileFromCacheOperator;
 import edu.jhuapl.sbmt.pipeline.publisher.Just;
 import edu.jhuapl.sbmt.pipeline.subscriber.Sink;
 
@@ -34,7 +34,7 @@ public class SaveImageAction<G1 extends IPerspectiveImage & IPerspectiveImageTab
 		try
 		{
 			Just.of(aItem)
-				.operate(new SaveImageFileFromCacheOperator())
+				.operate(new SaveImageFileFromCacheOperator<G1>())
 				.subscribe(Sink.of(files))
 				.run();
 		} catch (Exception e)

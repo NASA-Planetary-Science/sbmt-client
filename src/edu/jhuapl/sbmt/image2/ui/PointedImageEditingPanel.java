@@ -48,13 +48,14 @@ import edu.jhuapl.saavtk.view.light.LightUtil;
 import edu.jhuapl.sbmt.common.client.SmallBodyModel;
 import edu.jhuapl.sbmt.image2.interfaces.IPerspectiveImage;
 import edu.jhuapl.sbmt.image2.interfaces.IPerspectiveImageTableRepresentable;
+import edu.jhuapl.sbmt.image2.model.IRenderableImage;
 import edu.jhuapl.sbmt.image2.model.SpacecraftPointingDelta;
 import edu.jhuapl.sbmt.image2.model.SpacecraftPointingState;
-import edu.jhuapl.sbmt.image2.pipeline.PerspectiveImageToRenderableImagePipeline;
-import edu.jhuapl.sbmt.image2.pipeline.io.export.SaveModifiedImagePointingFileToCacheOperator;
-import edu.jhuapl.sbmt.image2.pipeline.pointedImages.RenderablePointedImageActorPipeline;
-import edu.jhuapl.sbmt.image2.pipeline.pointing.offset.PointedImageEditingPipeline;
-import edu.jhuapl.sbmt.image2.pipeline.rendering.pointedImage.RenderablePointedImage;
+import edu.jhuapl.sbmt.image2.pipelineComponents.operators.io.export.SaveModifiedImagePointingFileToCacheOperator;
+import edu.jhuapl.sbmt.image2.pipelineComponents.operators.rendering.pointedImage.RenderablePointedImage;
+import edu.jhuapl.sbmt.image2.pipelineComponents.pipelines.perspectiveImages.PerspectiveImageToRenderableImagePipeline;
+import edu.jhuapl.sbmt.image2.pipelineComponents.pipelines.pointedImages.RenderablePointedImageToScenePipeline;
+import edu.jhuapl.sbmt.image2.pipelineComponents.pipelines.pointing.offset.PointedImageEditingPipeline;
 import edu.jhuapl.sbmt.pipeline.publisher.Just;
 import edu.jhuapl.sbmt.pipeline.subscriber.Sink;
 
@@ -518,12 +519,13 @@ public class PointedImageEditingPanel<G1 extends IPerspectiveImage & IPerspectiv
 	 */
 	private void runEditingPipeline() throws Exception
 	{
-		List<RenderablePointedImage> renderableImages;
+		List<IRenderableImage> renderableImages;
 		PerspectiveImageToRenderableImagePipeline pipeline =
 				new PerspectiveImageToRenderableImagePipeline(List.of(image));
 		renderableImages = pipeline.getRenderableImages();
+		RenderablePointedImage renderableImage = (RenderablePointedImage)renderableImages.get(0);
 		SpacecraftPointingState origState =
-				new SpacecraftPointingState(renderableImages.get(0).getPointing(), renderableImages.get(0).getImageWidth(), renderableImages.get(0).getImageHeight());
+				new SpacecraftPointingState(renderableImage.getPointing(), renderableImage.getImageWidth(), renderableImage.getImageHeight());
 		delta = generateDelta();
 
 		PointedImageEditingPipeline editingPipeline =
@@ -542,8 +544,8 @@ public class PointedImageEditingPanel<G1 extends IPerspectiveImage & IPerspectiv
 			.run();
 		image.setModifiedPointingSource(Optional.of(updatedPointingFiles.get(0).getAbsolutePath()));
 
-		RenderablePointedImageActorPipeline<G1> actorPipeline =
-				new RenderablePointedImageActorPipeline<G1>(image, List.of(smallBodyModel));
+		RenderablePointedImageToScenePipeline<G1> actorPipeline =
+				new RenderablePointedImageToScenePipeline<G1>(image, List.of(smallBodyModel));
 
 		List<vtkActor> allActors = Lists.newArrayList();
 		allActors.add(inputs.get(0));

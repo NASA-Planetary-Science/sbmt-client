@@ -1,6 +1,8 @@
 package edu.jhuapl.sbmt.image2.controllers;
 
 import java.awt.Component;
+import java.awt.event.FocusEvent;
+import java.awt.event.FocusListener;
 import java.awt.event.InputEvent;
 import java.awt.event.MouseEvent;
 import java.io.File;
@@ -12,6 +14,7 @@ import javax.swing.JTabbedPane;
 import javax.swing.event.AncestorEvent;
 import javax.swing.event.AncestorListener;
 
+import com.beust.jcommander.internal.Lists;
 import com.google.common.collect.ImmutableSet;
 
 import vtk.vtkProp;
@@ -38,8 +41,10 @@ import edu.jhuapl.sbmt.image2.interfaces.IPerspectiveImage;
 import edu.jhuapl.sbmt.image2.interfaces.IPerspectiveImageTableRepresentable;
 import edu.jhuapl.sbmt.image2.model.ImageSearchParametersModel;
 import edu.jhuapl.sbmt.image2.model.PerspectiveImageCollection;
-import edu.jhuapl.sbmt.image2.pipeline.search.LoadImagesFromSavedFilePipeline;
-import edu.jhuapl.sbmt.image2.pipeline.search.SaveImagesToSavedFilePipeline;
+import edu.jhuapl.sbmt.image2.pipelineComponents.pipelines.io.CustomImageListToSavedFilePipeline;
+import edu.jhuapl.sbmt.image2.pipelineComponents.pipelines.io.ImageGalleryPipeline;
+import edu.jhuapl.sbmt.image2.pipelineComponents.pipelines.io.LoadImagesFromSavedFilePipeline;
+import edu.jhuapl.sbmt.image2.pipelineComponents.pipelines.io.SaveImagesToSavedFilePipeline;
 import edu.jhuapl.sbmt.image2.ui.custom.importer.CustomImageImporterDialog;
 import edu.jhuapl.sbmt.image2.ui.custom.importer.CustomImageImporterDialog2;
 import edu.jhuapl.sbmt.image2.ui.table.popup.ImageListPopupMenu;
@@ -73,6 +78,7 @@ public class ImageSearchController<G1 extends IPerspectiveImage & IPerspectiveIm
 		this.collection = collection;
 		this.collection.setImagingInstrument(instrument);
 		this.modelManager = modelManager;
+		this.instrument = instrument;
 		this.imageSearchModel = new ImageSearchParametersModel(config, modelManager, renderer, instrument);
         this.searchParametersController = new SpectralImageSearchParametersController(config, collection, imageSearchModel, modelManager, pickManager);
         this.searchParametersController.setupSearchParametersPanel();
@@ -219,6 +225,22 @@ public class ImageSearchController<G1 extends IPerspectiveImage & IPerspectiveIm
 			}
 		});
 
+		imageListTableController.getPanel().getShowImageBorderButton().addActionListener(e -> {
+			ImmutableSet<G1> selectedImages = collection.getSelectedItems();
+			if (selectedImages.size() == 0) return;
+			for (G1 image : selectedImages) {
+				collection.setImageBoundaryShowing(image, true);
+			}
+		});
+
+		imageListTableController.getPanel().getHideImageBorderButton().addActionListener(e -> {
+			ImmutableSet<G1> selectedImages = collection.getSelectedItems();
+			if (selectedImages.size() == 0) return;
+			for (G1 image : selectedImages) {
+				collection.setImageBoundaryShowing(image, false);
+			}
+		});
+
 		imageListTableController.getPanel().getLoadImageButton().addActionListener(e -> {
 
 	        File file = CustomFileChooser.showOpenDialog(panel, "Select File");
@@ -240,6 +262,48 @@ public class ImageSearchController<G1 extends IPerspectiveImage & IPerspectiveIm
 			try
 			{
 				new SaveImagesToSavedFilePipeline<>(selectedImages);
+			}
+			catch (Exception e1)
+			{
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
+		});
+
+		imageListTableController.getPanel().getBoundaryOffsetTextField().addActionListener(e -> {
+			collection.setCurrentBoundaryOffsetAmount(Integer.parseInt(imageListTableController.getPanel().getBoundaryOffsetTextField().getText()));
+		});
+
+		imageListTableController.getPanel().getBoundaryOffsetTextField().addFocusListener(new FocusListener()
+		{
+
+			@Override
+			public void focusLost(FocusEvent arg0)
+			{
+				collection.setCurrentBoundaryOffsetAmount(Integer.parseInt(imageListTableController.getPanel().getBoundaryOffsetTextField().getText()));
+			}
+
+			@Override
+			public void focusGained(FocusEvent arg0)
+			{
+				// TODO Auto-generated method stub
+
+			}
+		});
+
+		imageListTableController.getPanel().getPreviousBoundariesButton().addActionListener(e -> {
+
+			collection.offsetBoundariesRange(-Integer.parseInt(imageListTableController.getPanel().getBoundaryOffsetTextField().getText()));
+		});
+
+		imageListTableController.getPanel().getNextBoundariesButton().addActionListener(e -> {
+			collection.offsetBoundariesRange(Integer.parseInt(imageListTableController.getPanel().getBoundaryOffsetTextField().getText()));
+		});
+
+		imageListTableController.getPanel().getGalleryButton().addActionListener(e -> {
+			try
+			{
+				ImageGalleryPipeline.of(instrument, collection.getAllItems());
 			}
 			catch (Exception e1)
 			{
@@ -299,7 +363,17 @@ public class ImageSearchController<G1 extends IPerspectiveImage & IPerspectiveIm
 		});
 
 		customImageListTableController.getPanel().getSaveImageButton().addActionListener(e -> {
-
+			List<G1> selectedImages = Lists.newArrayList();
+			selectedImages.addAll(collection.getSelectedItems());
+			try
+			{
+				CustomImageListToSavedFilePipeline.of(selectedImages);
+			}
+			catch (Exception e1)
+			{
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
 		});
 
 		customImageListTableController.getPanel().getNewImageButton().addActionListener(e -> {
@@ -334,7 +408,7 @@ public class ImageSearchController<G1 extends IPerspectiveImage & IPerspectiveIm
 			}
 			else //editing custom n > 1, n!=3 spectral image
 			{
-
+				System.err.println("Feature not enabled for multispectral (n>3) images");
 			}
 		});
 
@@ -355,21 +429,28 @@ public class ImageSearchController<G1 extends IPerspectiveImage & IPerspectiveIm
 	{
 		ImmutableSet<G1> selectedItems = collection.getSelectedItems();
 		boolean allMapped = true;
+		boolean allBorders = true;
 		for (G1 image : selectedItems)
 		{
 			if (image.isMapped() == false) allMapped = false;
+			if (image.isBoundaryShowing() == false) allBorders = false;
 		}
 		if (collection.getInstrument() != null)
 		{
 			imageListTableController.getPanel().getSaveImageButton().setEnabled(selectedItems.size() > 1);
 			imageListTableController.getPanel().getHideImageButton().setEnabled((selectedItems.size() > 0) && allMapped);
 			imageListTableController.getPanel().getShowImageButton().setEnabled((selectedItems.size() > 0) && !allMapped);
+			imageListTableController.getPanel().getHideImageBorderButton().setEnabled((selectedItems.size() > 0) && allBorders);
+			imageListTableController.getPanel().getShowImageBorderButton().setEnabled((selectedItems.size() > 0) && !allBorders);
+			imageListTableController.getPanel().getGalleryButton().setEnabled(collection.getAllItems().size() > 0);
 		}
 		else
 		{
 			customImageListTableController.getPanel().getEditImageButton().setEnabled(selectedItems.size() == 1);
 			customImageListTableController.getPanel().getHideImageButton().setEnabled((selectedItems.size() > 0) && allMapped);
 			customImageListTableController.getPanel().getShowImageButton().setEnabled((selectedItems.size() > 0) && !allMapped);
+			customImageListTableController.getPanel().getHideImageBorderButton().setEnabled((selectedItems.size() > 0) && allBorders);
+			customImageListTableController.getPanel().getShowImageBorderButton().setEnabled((selectedItems.size() > 0) && !allBorders);
 			customImageListTableController.getPanel().getDeleteImageButton().setEnabled(selectedItems.size() > 0);
 		}
 	}

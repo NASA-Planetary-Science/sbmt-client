@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.function.Function;
 
+import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
 
 import org.apache.commons.io.FilenameUtils;
@@ -30,10 +31,11 @@ import edu.jhuapl.sbmt.core.image.ImageSource;
 import edu.jhuapl.sbmt.core.image.ImageType;
 import edu.jhuapl.sbmt.image2.interfaces.IPerspectiveImage;
 import edu.jhuapl.sbmt.image2.interfaces.IPerspectiveImageTableRepresentable;
-import edu.jhuapl.sbmt.image2.pipeline.ColorImageGeneratorPipeline;
-import edu.jhuapl.sbmt.image2.pipeline.RenderableImageActorPipeline;
-import edu.jhuapl.sbmt.image2.pipeline.cylindricalImages.RenderCylindricalImageToScenePipeline;
-import edu.jhuapl.sbmt.image2.pipeline.pointedImages.RenderablePointedImageActorPipeline;
+import edu.jhuapl.sbmt.image2.pipelineComponents.pipelines.colorImages.ColorImageGeneratorPipeline;
+import edu.jhuapl.sbmt.image2.pipelineComponents.pipelines.cylindricalImages.RenderableCylindricalImageToScenePipeline;
+import edu.jhuapl.sbmt.image2.pipelineComponents.pipelines.pointedImages.RenderablePointedImageToScenePipeline;
+import edu.jhuapl.sbmt.image2.pipelineComponents.pipelines.rendering.RenderableImageActorPipeline;
+import edu.jhuapl.sbmt.image2.pipelineComponents.publishers.gdal.InvalidGDALFileTypeException;
 
 import crucible.crust.logging.SimpleLogger;
 import crucible.crust.metadata.api.Key;
@@ -226,11 +228,11 @@ public class BasemapImageCollection<G1 extends IPerspectiveImage & IPerspectiveI
 							if (image.getNumberOfLayers() == 1)
 								if (image.getPointingSourceType() == ImageSource.LOCAL_CYLINDRICAL)
 								{
-									pipeline = new RenderCylindricalImageToScenePipeline(image, /*image.getFilename(), image.getBounds(),*/ smallBodyModels);
+									pipeline = new RenderableCylindricalImageToScenePipeline(image, /*image.getFilename(), image.getBounds(),*/ smallBodyModels);
 								}
 								else
 								{
-									pipeline = new RenderablePointedImageActorPipeline(image, smallBodyModels);
+									pipeline = new RenderablePointedImageToScenePipeline(image, smallBodyModels);
 								}
 							else if (image.getNumberOfLayers() == 3)
 							{
@@ -246,14 +248,21 @@ public class BasemapImageCollection<G1 extends IPerspectiveImage & IPerspectiveI
 						{
 							if (image.getPointingSourceType() == ImageSource.LOCAL_CYLINDRICAL)
 							{
-								pipeline = new RenderCylindricalImageToScenePipeline(image, /*image.getFilename(), image.getBounds(),*/ smallBodyModels);
+								pipeline = new RenderableCylindricalImageToScenePipeline(image, /*image.getFilename(), image.getBounds(),*/ smallBodyModels);
 							}
 							else
 							{
-								pipeline = new RenderablePointedImageActorPipeline(image, smallBodyModels);
+								pipeline = new RenderablePointedImageToScenePipeline(image, smallBodyModels);
 							}
 
 						}
+					}
+					catch (InvalidGDALFileTypeException e)
+					{
+						 JOptionPane.showMessageDialog(null,
+			                        e.getMessage(),
+			                        "Invalid file type encountered",
+			                        JOptionPane.ERROR_MESSAGE);
 					}
 					catch (Exception e)
 					{
@@ -374,14 +383,21 @@ public class BasemapImageCollection<G1 extends IPerspectiveImage & IPerspectiveI
 			{
 				if (image.getImageType() != ImageType.GENERIC_IMAGE)
 				{
-					pipeline = new RenderablePointedImageActorPipeline(image, smallBodyModels);
+					pipeline = new RenderablePointedImageToScenePipeline(image, smallBodyModels);
 
 				}
 				else
 				{
-					pipeline = new RenderCylindricalImageToScenePipeline(image, /*image.getFilename(), image.getBounds(),*/ smallBodyModels);
+					pipeline = new RenderableCylindricalImageToScenePipeline(image, smallBodyModels);
 
 				}
+			}
+			catch (InvalidGDALFileTypeException e)
+			{
+				 JOptionPane.showMessageDialog(null,
+	                        e.getMessage(),
+	                        "Invalid file type encountered",
+	                        JOptionPane.ERROR_MESSAGE);
 			}
 			catch (Exception e)
 			{

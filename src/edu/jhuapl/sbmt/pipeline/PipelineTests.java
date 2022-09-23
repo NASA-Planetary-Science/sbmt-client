@@ -13,26 +13,26 @@ import vtk.vtkActor;
 import edu.jhuapl.saavtk.util.NativeLibraryLoader;
 import edu.jhuapl.sbmt.common.client.SmallBodyModel;
 import edu.jhuapl.sbmt.core.image.PointingFileReader;
-import edu.jhuapl.sbmt.image2.pipeline.VTKDebug;
-import edu.jhuapl.sbmt.image2.pipeline.io.builtIn.BuiltInFitsHeaderReader;
-import edu.jhuapl.sbmt.image2.pipeline.io.builtIn.BuiltInFitsReader;
-import edu.jhuapl.sbmt.image2.pipeline.io.builtIn.BuiltInOBJReader;
-import edu.jhuapl.sbmt.image2.pipeline.io.builtIn.BuiltInPNGHeaderReader;
-import edu.jhuapl.sbmt.image2.pipeline.io.builtIn.BuiltInPNGReader;
-import edu.jhuapl.sbmt.image2.pipeline.io.builtIn.BuiltInVTKReader;
-import edu.jhuapl.sbmt.image2.pipeline.pointing.InfofileReaderPublisher;
-import edu.jhuapl.sbmt.image2.pipeline.pointing.SpiceBodyOperator;
-import edu.jhuapl.sbmt.image2.pipeline.pointing.SpiceReaderPublisher;
-import edu.jhuapl.sbmt.image2.pipeline.preview.VtkLayerPreview;
-import edu.jhuapl.sbmt.image2.pipeline.preview.VtkRendererPreview;
-import edu.jhuapl.sbmt.image2.pipeline.rendering.layer.LayerLinearInterpolaterOperator;
-import edu.jhuapl.sbmt.image2.pipeline.rendering.layer.LayerMaskOperator;
-import edu.jhuapl.sbmt.image2.pipeline.rendering.layer.LayerRotationOperator;
-import edu.jhuapl.sbmt.image2.pipeline.rendering.layer.LayerTrimOperator;
-import edu.jhuapl.sbmt.image2.pipeline.rendering.pointedImage.PointedImageRenderables;
-import edu.jhuapl.sbmt.image2.pipeline.rendering.pointedImage.RenderablePointedImage;
-import edu.jhuapl.sbmt.image2.pipeline.rendering.pointedImage.RenderablePointedImageGenerator;
-import edu.jhuapl.sbmt.image2.pipeline.rendering.pointedImage.ScenePointedImageBuilderOperator;
+import edu.jhuapl.sbmt.image2.pipelineComponents.VTKDebug;
+import edu.jhuapl.sbmt.image2.pipelineComponents.operators.pointing.SpiceBodyOperator;
+import edu.jhuapl.sbmt.image2.pipelineComponents.operators.rendering.ImageRenderable;
+import edu.jhuapl.sbmt.image2.pipelineComponents.operators.rendering.layer.LayerLinearInterpolaterOperator;
+import edu.jhuapl.sbmt.image2.pipelineComponents.operators.rendering.layer.LayerMaskOperator;
+import edu.jhuapl.sbmt.image2.pipelineComponents.operators.rendering.layer.LayerRotationOperator;
+import edu.jhuapl.sbmt.image2.pipelineComponents.operators.rendering.layer.LayerTrimOperator;
+import edu.jhuapl.sbmt.image2.pipelineComponents.operators.rendering.pointedImage.RenderablePointedImage;
+import edu.jhuapl.sbmt.image2.pipelineComponents.operators.rendering.pointedImage.RenderablePointedImageGenerator;
+import edu.jhuapl.sbmt.image2.pipelineComponents.operators.rendering.pointedImage.ScenePointedImageBuilderOperator;
+import edu.jhuapl.sbmt.image2.pipelineComponents.publishers.builtin.BuiltInFitsHeaderReader;
+import edu.jhuapl.sbmt.image2.pipelineComponents.publishers.builtin.BuiltInFitsReader;
+import edu.jhuapl.sbmt.image2.pipelineComponents.publishers.builtin.BuiltInOBJReader;
+import edu.jhuapl.sbmt.image2.pipelineComponents.publishers.builtin.BuiltInPNGHeaderReader;
+import edu.jhuapl.sbmt.image2.pipelineComponents.publishers.builtin.BuiltInPNGReader;
+import edu.jhuapl.sbmt.image2.pipelineComponents.publishers.builtin.BuiltInVTKReader;
+import edu.jhuapl.sbmt.image2.pipelineComponents.publishers.pointing.InfofileReaderPublisher;
+import edu.jhuapl.sbmt.image2.pipelineComponents.publishers.pointing.SpiceReaderPublisher;
+import edu.jhuapl.sbmt.image2.pipelineComponents.subscribers.preview.VtkLayerPreview;
+import edu.jhuapl.sbmt.image2.pipelineComponents.subscribers.preview.VtkRendererPreview;
 import edu.jhuapl.sbmt.layer.api.Layer;
 import edu.jhuapl.sbmt.pipeline.operator.IPipelineOperator;
 import edu.jhuapl.sbmt.pipeline.publisher.IPipelinePublisher;
@@ -175,7 +175,7 @@ public class PipelineTests
 		//Pass them into the scene builder to perform intersection calculations
 		//***************************************************************************
 //		IPipelineOperator<Pair<List<SmallBodyModel>, List<vtkActor>>, vtkActor> sceneBuilder = new SceneActorBuilderOperator();
-		IPipelineOperator<Pair<SmallBodyModel, RenderablePointedImage>, Pair<List<vtkActor>, List<PointedImageRenderables>>> sceneBuilder =
+		IPipelineOperator<Pair<SmallBodyModel, RenderablePointedImage>, Pair<List<vtkActor>, List<ImageRenderable>>> sceneBuilder =
 				new ScenePointedImageBuilderOperator();
 
 		//*******************************
@@ -245,14 +245,14 @@ public class PipelineTests
 		//Pass them into the scene builder to perform intersection calculations
 		//***************************************************************************
 //		IPipelineOperator<Pair<List<SmallBodyModel>, List<vtkActor>>, vtkActor> sceneBuilder = new SceneActorBuilderOperator();
-		IPipelineOperator<Pair<SmallBodyModel, RenderablePointedImage>, Pair<List<vtkActor>, List<PointedImageRenderables>>> sceneBuilder =
+		IPipelineOperator<Pair<SmallBodyModel, RenderablePointedImage>, Pair<List<vtkActor>, List<ImageRenderable>>> sceneBuilder =
 				new ScenePointedImageBuilderOperator();
 
 		//*******************************
 		//Throw them to the preview tool
 		//*******************************
 		VtkRendererPreview preview = new VtkRendererPreview(vtkReader.getOutputs().get(0));
-		Pair<List<vtkActor>, List<PointedImageRenderables>>[] sceneOutputs = new Pair[1];
+		Pair<List<vtkActor>, List<ImageRenderable>>[] sceneOutputs = new Pair[1];
 
 		sceneObjects
 			.operate(sceneBuilder) 	//feed the zipped sources to scene builder operator
@@ -260,7 +260,7 @@ public class PipelineTests
 //		System.out.println("PipelineTests: test2b: number of actors " + sceneOutputs[0].getLeft().size());
 
 		List<vtkActor> imageActors = Lists.newArrayList();
-		for (PointedImageRenderables renderable : sceneOutputs[0].getRight())
+		for (ImageRenderable renderable : sceneOutputs[0].getRight())
 		{
 			imageActors.addAll(renderable.getFootprints());
 		}

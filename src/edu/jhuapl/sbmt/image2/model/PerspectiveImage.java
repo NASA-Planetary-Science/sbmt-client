@@ -63,7 +63,7 @@ public class PerspectiveImage implements IPerspectiveImage
 	//default offlimb contrast stretch
 	private IntensityRange offlimbIntensityRange = new IntensityRange(0, 255);
 
-	private double offlimbDepth;
+	private double offlimbDepth = -Double.NaN;
 	private double minFrustumLength, maxFrustumLength;
 
 	//number of layers

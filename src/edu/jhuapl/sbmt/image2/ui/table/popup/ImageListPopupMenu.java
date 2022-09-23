@@ -57,7 +57,7 @@ public class ImageListPopupMenu<G1 extends IPerspectiveImage  & IPerspectiveImag
 		installPopAction(mapBoundaryAction, showHideBoundaryCBMI);
 
 		SmallBodyModel smallBodyModel = (SmallBodyModel)modelManager.getModel(ModelNames.SMALL_BODY);
-		ShowImagePropertiesAction<G1> showInfoAction = new ShowImagePropertiesAction<G1>(smallBodyModel);
+		ShowImagePropertiesAction<G1> showInfoAction = new ShowImagePropertiesAction<G1>(smallBodyModel, aManager);
 		installPopAction(showInfoAction, "Properties...");
 
 //		if (spectrumPanelManager != null)

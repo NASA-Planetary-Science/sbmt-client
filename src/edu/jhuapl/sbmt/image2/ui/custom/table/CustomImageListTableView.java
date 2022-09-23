@@ -22,6 +22,7 @@ import javax.swing.border.TitledBorder;
 import edu.jhuapl.saavtk.gui.util.IconUtil;
 import edu.jhuapl.saavtk.gui.util.ToolTipUtil;
 import edu.jhuapl.sbmt.image2.interfaces.IPerspectiveImage;
+import edu.jhuapl.sbmt.image2.interfaces.IPerspectiveImageTableRepresentable;
 import edu.jhuapl.sbmt.image2.model.PerspectiveImageCollection;
 import edu.jhuapl.sbmt.image2.ui.table.ImageColumnLookup;
 import edu.jhuapl.sbmt.image2.ui.table.ImageListItemHandler;
@@ -37,7 +38,7 @@ import glum.gui.panel.itemList.query.QueryComposer;
 import glum.gui.table.TablePopupHandler;
 import glum.item.ItemManagerUtil;
 
-public class CustomImageListTableView extends JPanel
+public class CustomImageListTableView<G1 extends IPerspectiveImage & IPerspectiveImageTableRepresentable> extends JPanel
 {
 	private JButton newImageButton;
 
@@ -57,6 +58,16 @@ public class CustomImageListTableView extends JPanel
 	private JButton showImageButton;
 
 	/**
+	 * JButton to remove image border from table
+	 */
+	private JButton hideImageBorderButton;
+
+	/**
+	 * JButton to show image border in renderer
+	 */
+	private JButton showImageBorderButton;
+
+	/**
 	 * JButton to save image list to file
 	 */
 	private JButton saveImageButton;
@@ -70,13 +81,13 @@ public class CustomImageListTableView extends JPanel
 
 	// for table
 	private JButton selectAllB, selectInvertB, selectNoneB, deleteImageButton, editImageButton;
-	private PerspectiveImageCollection imageCollection;
+	private PerspectiveImageCollection<G1> imageCollection;
 	private ItemListPanel<IPerspectiveImage> imageILP;
 	private ItemHandler<IPerspectiveImage> imageItemHandler;
 
-	private PopupMenu popupMenu;
+	private PopupMenu<G1> popupMenu;
 
-	public CustomImageListTableView(PerspectiveImageCollection collection, PopupMenu popupMenu)
+	public CustomImageListTableView(PerspectiveImageCollection<G1> collection, PopupMenu<G1> popupMenu)
 	{
 		this.imageCollection = collection;
 		this.popupMenu = popupMenu;
@@ -129,7 +140,7 @@ public class CustomImageListTableView extends JPanel
 			{
 				Object source = e.getSource();
 
-				List<IPerspectiveImage> tmpL = imageCollection.getSelectedItems().asList();
+				List<G1> tmpL = imageCollection.getSelectedItems().asList();
 				if (source == selectAllB)
 					ItemManagerUtil.selectAll(imageCollection);
 				else if (source == selectNoneB)
@@ -168,6 +179,14 @@ public class CustomImageListTableView extends JPanel
 		hideImageButton = GuiUtil.formButton(listener, IconUtil.getItemHide());
 		hideImageButton.setToolTipText(ToolTipUtil.getItemHide());
 		hideImageButton.setEnabled(false);
+
+		showImageBorderButton = GuiUtil.formButton(listener, IconUtil.getShowBorder());
+		showImageBorderButton.setToolTipText(ToolTipUtil.getShowBorder());
+		showImageBorderButton.setEnabled(false);
+
+		hideImageBorderButton = GuiUtil.formButton(listener, IconUtil.getHideBorder());
+		hideImageBorderButton.setToolTipText(ToolTipUtil.getHideBorder());
+		hideImageBorderButton.setEnabled(false);
 
 		selectInvertB = GuiUtil.formButton(listener, IconUtil.getSelectInvert());
 		selectInvertB.setToolTipText(ToolTipUtil.getSelectInvert());
@@ -231,7 +250,7 @@ public class CustomImageListTableView extends JPanel
 		tmpComposer.getItem(ImageColumnLookup.Date).defaultSize *= 2;
 
 		ImageListItemHandler imageItemHandler = new ImageListItemHandler(imageCollection, tmpComposer);
-		ItemProcessor<IPerspectiveImage> tmpIP = imageCollection;
+		ItemProcessor<G1> tmpIP = imageCollection;
 		imageILP = new ItemListPanel<>(imageItemHandler, tmpIP, true);
 		imageILP.setSortingEnabled(true);
 		JTable imageTable = imageILP.getTable();
@@ -284,6 +303,22 @@ public class CustomImageListTableView extends JPanel
 	public JButton getShowImageButton()
 	{
 		return showImageButton;
+	}
+
+	/**
+	 * @return the hideImageButton
+	 */
+	public JButton getHideImageBorderButton()
+	{
+		return hideImageBorderButton;
+	}
+
+	/**
+	 * @return the showImageButton
+	 */
+	public JButton getShowImageBorderButton()
+	{
+		return showImageBorderButton;
 	}
 
 	/**

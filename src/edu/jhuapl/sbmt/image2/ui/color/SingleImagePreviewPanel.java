@@ -21,10 +21,10 @@ import javax.swing.TransferHandler;
 import edu.jhuapl.sbmt.core.image.Image;
 import edu.jhuapl.sbmt.image2.interfaces.IPerspectiveImage;
 import edu.jhuapl.sbmt.image2.interfaces.IPerspectiveImageTableRepresentable;
+import edu.jhuapl.sbmt.image2.model.IRenderableImage;
 import edu.jhuapl.sbmt.image2.model.PerspectiveImage;
-import edu.jhuapl.sbmt.image2.pipeline.PerspectiveImageToRenderableImagePipeline;
-import edu.jhuapl.sbmt.image2.pipeline.preview.VtkLayerRenderer;
-import edu.jhuapl.sbmt.image2.pipeline.rendering.pointedImage.RenderablePointedImage;
+import edu.jhuapl.sbmt.image2.pipelineComponents.pipelines.perspectiveImages.PerspectiveImageToRenderableImagePipeline;
+import edu.jhuapl.sbmt.image2.pipelineComponents.subscribers.preview.VtkLayerRenderer;
 import edu.jhuapl.sbmt.pipeline.publisher.Just;
 
 public class SingleImagePreviewPanel extends JPanel
@@ -98,7 +98,7 @@ public class SingleImagePreviewPanel extends JPanel
 
 		try {
 			PerspectiveImageToRenderableImagePipeline pipeline = new PerspectiveImageToRenderableImagePipeline(List.of(perspectiveImage));
-			List<RenderablePointedImage> renderableImages = pipeline.getRenderableImages();
+			List<IRenderableImage> renderableImages = pipeline.getRenderableImages();
 			Just.of(renderableImages.get(0).getLayer())
 				.subscribe(preview)
 				.run();

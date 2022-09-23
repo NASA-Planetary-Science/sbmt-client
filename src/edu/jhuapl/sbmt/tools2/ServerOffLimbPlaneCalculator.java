@@ -23,10 +23,10 @@ import edu.jhuapl.sbmt.common.client.SmallBodyViewConfig;
 import edu.jhuapl.sbmt.config.Instrument;
 import edu.jhuapl.sbmt.core.image.ImageSource;
 import edu.jhuapl.sbmt.core.image.ImagingInstrument;
-import edu.jhuapl.sbmt.image2.pipeline.offlimb.OfflimbPlaneGenerator;
-import edu.jhuapl.sbmt.image2.pipeline.pointedImages.RenderablePointedImageFootprintGeneratorPipeline;
-import edu.jhuapl.sbmt.image2.pipeline.preview.RenderableImagePipeline;
-import edu.jhuapl.sbmt.image2.pipeline.rendering.pointedImage.RenderablePointedImage;
+import edu.jhuapl.sbmt.image2.pipelineComponents.operators.offlimb.OfflimbPlaneGeneratorOperators;
+import edu.jhuapl.sbmt.image2.pipelineComponents.operators.rendering.pointedImage.RenderablePointedImage;
+import edu.jhuapl.sbmt.image2.pipelineComponents.pipelines.pointedImages.RenderablePointedImageFootprintGeneratorPipeline;
+import edu.jhuapl.sbmt.image2.pipelineComponents.pipelines.preview.RenderableImagePipeline;
 import edu.jhuapl.sbmt.pipeline.publisher.Just;
 import edu.jhuapl.sbmt.pipeline.subscriber.PairSink;
 
@@ -42,7 +42,7 @@ public class ServerOffLimbPlaneCalculator
 
 		double[] boundingBox = footprints.get(0).GetBounds();
 		Just.of(renderableImage)
-			.operate(new OfflimbPlaneGenerator(offLimbFootprintDepth, smallBodyModels.get(0), boundingBox, footprints.get(0).GetNumberOfPoints()))
+			.operate(new OfflimbPlaneGeneratorOperators(offLimbFootprintDepth, smallBodyModels.get(0), boundingBox, footprints.get(0).GetNumberOfPoints()))
 			.subscribe(PairSink.of(polydata))
 			.run();
     }
@@ -88,7 +88,7 @@ public class ServerOffLimbPlaneCalculator
         Optional<ImagingInstrument> selectedInstrument = Stream.of(config.imagingInstruments).filter(inst -> inst.getInstrumentName() == instrument).findFirst();
         if (selectedInstrument.isEmpty()) return;
 
-    	RenderableImagePipeline pipeline = new RenderableImagePipeline(filename, pointingFilename, selectedInstrument.get());
+    	RenderableImagePipeline pipeline = new RenderableImagePipeline(filename, pointingFilename, selectedInstrument.get(), source);
     	List<RenderablePointedImage> images = pipeline.getOutput();
 
     	ServerOffLimbPlaneCalculator calculator = new ServerOffLimbPlaneCalculator(images.get(0), List.of(smallBodyModel));
