@@ -227,6 +227,9 @@ public class DartConfigs
         c.type = BodyType.PLANETS_AND_SATELLITES;
         c.population = ShapeModelPopulation.JUPITER;
         c.system = ShapeModelBody.JUPITER;
+        c.imageSearchDefaultStartDate = new GregorianCalendar(2022, 6, 30, 0, 0, 0).getTime();
+        c.imageSearchDefaultMaxSpacecraftDistance = 1.0e10;
+        c.imageSearchDefaultMaxResolution = 1.0e9;
 
         configList.add(c);
 
@@ -234,6 +237,9 @@ public class DartConfigs
         c.type = BodyType.PLANETS_AND_SATELLITES;
         c.population = ShapeModelPopulation.JUPITER;
         c.system = ShapeModelBody.JUPITER;
+        c.imageSearchDefaultStartDate = new GregorianCalendar(2022, 6, 30, 0, 0, 0).getTime();
+        c.imageSearchDefaultMaxSpacecraftDistance = 1.0e10;
+        c.imageSearchDefaultMaxResolution = 1.0e9;
 
         configList.add(c);
     }
@@ -802,5 +808,4 @@ public class DartConfigs
 
         return c;
     }
-
 }

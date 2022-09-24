@@ -80,6 +80,16 @@ public class CreateImageFromSearchResultOperator<G1 extends IPerspectiveImage & 
 	        		infoBaseName = infoBaseName.replace(filename, filenamePrefix.substring(0, filenamePrefix.length()-2));
         		}
     		}
+        	else if (viewConfig.getUniqueName().contains("Jupiter"))
+        	{
+				infoBaseName = infoBaseName.substring(0, infoBaseName.lastIndexOf("/")) + File.separator + getSumFileName(instrument.getSearchQuery().getRootPath(), imageInfo.get(0));
+        		infoBaseName = infoBaseName.replace("/dart/draco", "/jupiter/dart-jupiter-01/draco");
+        	}
+        	else if (viewConfig.getUniqueName().contains("Ganymede"))
+        	{
+				infoBaseName = infoBaseName.substring(0, infoBaseName.lastIndexOf("/")) + File.separator + getSumFileName(instrument.getSearchQuery().getRootPath(), imageInfo.get(0));
+        		infoBaseName = infoBaseName.replace("/dart/draco", "/ganymede/dart-ganymede-01/draco");
+        	}
         	else
         	{
         		if (extension == ".SUM")
