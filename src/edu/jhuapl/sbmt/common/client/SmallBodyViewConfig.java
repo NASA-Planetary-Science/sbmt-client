@@ -509,7 +509,7 @@ public class SmallBodyViewConfig extends BodyViewConfig implements ISmallBodyVie
 	@Override
 	public boolean isCustomTemporary()
 	{
-		return isCustomTemporary();
+		return customTemporary;
 	}
 
 	@Override
