@@ -416,26 +416,28 @@ public class CustomImageImporterDialog2<G1 extends IPerspectiveImage & IPerspect
 			String extension = FilenameUtils.getExtension(pointingSource).toLowerCase();
 			pointingSourceType = extension.equals("sum") ? ImageSource.GASKELL : ImageSource.SPICE;
 		}
-		//TODO FIX THIS
+
 		double[] fillValues = new double[] {};
 		PerspectiveImage image = new PerspectiveImage(newFilepath, imageType, pointingSourceType, newPointingFilepath, fillValues);
-		image.setFlip(instrument.getFlip());
-		image.setRotation(instrument.getRotation());
+
 		image.setName(getName());
 		image.setImageOrigin(ImageOrigin.LOCAL);
 		image.setLongTime(new Date().getTime());
 		if (pointingSourceType == ImageSource.LOCAL_CYLINDRICAL)
 		{
-//			Double minLat = Double.parseDouble(minLatitudeTextField.getText());
-//			Double maxLat = Double.parseDouble(maxLatitudeTextField.getText());
-//			Double minLon = Double.parseDouble(minLongitudeTextField.getText());
-//			Double maxLon = Double.parseDouble(maxLongitudeTextField.getText());
 			image.setBounds(new CylindricalBounds(-90,90,0,360));
+//			image.setFlip(instrument.getFlip());
+		}
+		else
+		{
+			image.setLinearInterpolatorDims(instrument.getLinearInterpolationDims());
+			image.setMaskValues(instrument.getMaskValues());
+			image.setFillValues(instrument.getFillValues());
+			image.setFlip(instrument.getFlip());
+			image.setRotation(instrument.getRotation());
 		}
 		CompositePerspectiveImage compImage = new CompositePerspectiveImage(List.of(image));
 		compImage.setName(FilenameUtils.getBaseName(filename));
 		return (G1)compImage;
-		//		imageCollection.addUserImage(compImage);
-//		imageCollection.setImagingInstrument(null);
 	}
 }
