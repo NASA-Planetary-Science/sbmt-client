@@ -49,7 +49,6 @@ public class CustomOfflimbImageResultsTableController extends CustomImageResults
         if (this.propertyChangeListener != null)
         {
             this.imageCollection.removePropertyChangeListener(this.propertyChangeListener);
-            this.boundaries.removePropertyChangeListener(this.propertyChangeListener);
             this.propertyChangeListener = new OfflimbImageResultsPropertyChangeListener();
         }
     }
@@ -146,7 +145,7 @@ public class CustomOfflimbImageResultsTableController extends CustomImageResults
                 if (!e.getValueIsAdjusting())
                 {
                     imageSearchModel.setSelectedImageIndex(imageResultsTableView.getResultList().getSelectedRows());
-                    imageResultsTableView.getViewResultsGalleryButton().setEnabled(galleryGenerator != null && imageResultsTableView.isEnableGallery() && imageResultsTableView.getResultList().getSelectedRowCount() > 0);
+                    updateSearchResultsControls();
                 }
             }
         });
@@ -305,7 +304,7 @@ public class CustomOfflimbImageResultsTableController extends CustomImageResults
             if (imageCollection.containsImage(info))
             {
                 resultList.setValueAt(true, i, imageResultsTableView.getMapColumnIndex());
-                resultList.setValueAt(true, i, imageResultsTableView.getShowFootprintColumnIndex());
+                resultList.setValueAt(imageCollection.getImage(info).isVisible(), i, imageResultsTableView.getShowFootprintColumnIndex());
                 if (imageCollection.getImage(info) instanceof PerspectiveImage)
                 {
                     PerspectiveImage image = (PerspectiveImage)imageCollection.getImage(model.getImageKeyForIndex(i));
@@ -320,15 +319,8 @@ public class CustomOfflimbImageResultsTableController extends CustomImageResults
                 resultList.setValueAt(false, i, imageResultsTableView.getFrusColumnIndex());
                 resultList.setValueAt(false, i, offlimbTableView.getOffLimbIndex());
             }
-
-            if (boundaries.containsBoundary(info))
-            {
-                resultList.setValueAt(true, i, imageResultsTableView.getBndrColumnIndex());
-            }
-            else
-            {
-                resultList.setValueAt(false, i, imageResultsTableView.getBndrColumnIndex());
-            }
+            if (imageCollection.getImage(info) != null)
+            	resultList.setValueAt(imageCollection.getImage(info).isBoundaryVisible(), i, imageResultsTableView.getBndrColumnIndex());
         }
 
         imageResultsTableView.getResultList().getModel().addTableModelListener(tableModelListener);

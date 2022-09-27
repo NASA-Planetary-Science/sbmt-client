@@ -44,7 +44,6 @@ public class OfflimbImageResultsTableController extends ImageResultsTableControl
         if (this.propertyChangeListener != null)
         {
             this.imageCollection.removePropertyChangeListener(this.propertyChangeListener);
-            this.boundaries.removePropertyChangeListener(this.propertyChangeListener);
             this.propertyChangeListener = new OfflimbImageResultsPropertyChangeListener();
         }
     }
@@ -141,7 +140,7 @@ public class OfflimbImageResultsTableController extends ImageResultsTableControl
                 if (!e.getValueIsAdjusting())
                 {
                     imageSearchModel.setSelectedImageIndex(imageResultsTableView.getResultList().getSelectedRows());
-                    imageResultsTableView.getViewResultsGalleryButton().setEnabled(galleryGenerator != null && imageResultsTableView.isEnableGallery() && imageResultsTableView.getResultList().getSelectedRowCount() > 0);
+                    updateSearchResultsControls();
                 }
             }
         });
@@ -225,7 +224,8 @@ public class OfflimbImageResultsTableController extends ImageResultsTableControl
                 tableModel.setValueAt(false, index, offlimbTableView.getOffLimbIndex());
             }
 
-            tableModel.setValueAt(boundaries.containsBoundary(key), index, imageResultsTableView.getBndrColumnIndex());
+            if (imageCollection.getImage(key) != null)
+            	tableModel.setValueAt(imageCollection.getImage(key).isBoundaryVisible(), index, imageResultsTableView.getBndrColumnIndex());
         }
 
     }
@@ -245,6 +245,7 @@ public class OfflimbImageResultsTableController extends ImageResultsTableControl
                 super.tableChanged(e);
                 offlimbTableView.getResultList().setValueAt(false, actualRow, offlimbTableView.getOffLimbIndex());
                 setOffLimbFootprintVisibility(namePrefix, false);   // set visibility to false if we are mapping or unmapping the image
+                return; // Don't fall through to call super.tableChanged again.
             }
             else if (e.getColumn() == offlimbTableView.getOffLimbIndex())
             {
@@ -299,7 +300,7 @@ public class OfflimbImageResultsTableController extends ImageResultsTableControl
         public boolean isCellEditable(int row, int column)
         {
             // Only allow editing the hide column if the image is mapped
-            if (column == offlimbTableView.getShowFootprintColumnIndex() || column == offlimbTableView.getOffLimbIndex() || column == offlimbTableView.getFrusColumnIndex())
+            if (column == offlimbTableView.getShowFootprintColumnIndex() || column == offlimbTableView.getOffLimbIndex() || column == offlimbTableView.getFrusColumnIndex() || column == offlimbTableView.getBndrColumnIndex())
             {
                 String name = imageRawResults.get(row).get(0);
                 ImageKeyInterface key = imageSearchModel.createImageKey(name.substring(0, name.length()-4), imageSearchModel.getImageSourceOfLastQuery(), instrument);
@@ -308,7 +309,7 @@ public class OfflimbImageResultsTableController extends ImageResultsTableControl
             }
             else
             {
-                return column == offlimbTableView.getMapColumnIndex() || column == offlimbTableView.getBndrColumnIndex();
+                return column == offlimbTableView.getMapColumnIndex() ;
             }
         }
 

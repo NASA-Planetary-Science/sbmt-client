@@ -24,12 +24,14 @@ import edu.jhuapl.sbmt.model.eros.nis.NISSpectrumMath;
 import edu.jhuapl.sbmt.model.eros.nis.NisQuery;
 import edu.jhuapl.sbmt.model.image.ImagingInstrument;
 import edu.jhuapl.sbmt.model.image.Instrument;
+import edu.jhuapl.sbmt.model.phobos.HierarchicalSearchSpecification;
 import edu.jhuapl.sbmt.model.phobos.MEGANE;
 import edu.jhuapl.sbmt.model.phobos.MEGANEQuery;
 import edu.jhuapl.sbmt.model.phobos.MEGANESpectrumMath;
 import edu.jhuapl.sbmt.model.ryugu.nirs3.NIRS3;
 import edu.jhuapl.sbmt.model.ryugu.nirs3.NIRS3Query;
 import edu.jhuapl.sbmt.model.ryugu.nirs3.NIRS3SpectrumMath;
+import edu.jhuapl.sbmt.pointing.spice.SpiceInfo;
 import edu.jhuapl.sbmt.spectrum.model.core.BasicSpectrumInstrument;
 import edu.jhuapl.sbmt.spectrum.model.core.SpectraTypeFactory;
 import edu.jhuapl.sbmt.spectrum.model.core.SpectrumInstrumentFactory;
@@ -115,8 +117,7 @@ public class SmallBodyViewConfigMetadataIO implements MetadataManager
                 FixedMetadata metadata = Serializers.deserialize(file, config.getUniqueName());
                 io2.metadataID = config.getUniqueName();
                 io2.retrieve(metadata);
-                if (!cfg.equals(config))
-                	System.err.println("SmallBodyViewConfigMetadataIO: main: cfg equals config is " + (cfg.equals(config) + " for " + config.getUniqueName()));
+                checkEquality(cfg, config);
 
             }
             catch (Exception e)
@@ -129,6 +130,17 @@ public class SmallBodyViewConfigMetadataIO implements MetadataManager
         Serializers.serialize("AllBodies", allBodiesMetadata, new File(rootDir + "allBodies_v" + configInfoVersion + ".json"));
 
 
+    }
+
+    /**
+     * Perform the equality check in its own method so that one can more easily
+     * debug. Set a breakpoint at the println, then drop-to-frame and re-run the
+     * call to equals.
+     */
+    private static void checkEquality(ViewConfig cfg, ViewConfig config)
+    {
+        if (!cfg.equals(config))
+            System.err.println("SmallBodyViewConfigMetadataIO: main: cfg equals config is " + (cfg.equals(config) + " for " + config.getUniqueName()));
     }
 
     private List<ViewConfig> configs;
@@ -194,6 +206,13 @@ public class SmallBodyViewConfigMetadataIO implements MetadataManager
         write(timeHistoryFile, c.timeHistoryFile, configMetadata);
         write(hasImageMap, c.hasImageMap, configMetadata);
         write(hasStateHistory, c.hasStateHistory, configMetadata);
+        if (c.spiceInfo != null)
+        	write(spiceInfo, c.spiceInfo, configMetadata);
+        if (c.stateHistoryStartDate != null)
+        {
+        	writeDate(stateHistoryStartDate, c.stateHistoryStartDate, configMetadata);
+        	writeDate(stateHistoryEndDate, c.stateHistoryEndDate, configMetadata);
+        }
         write(baseMapConfig, c.baseMapConfigName, configMetadata);
 
         write(density, c.density, configMetadata);
@@ -238,10 +257,12 @@ public class SmallBodyViewConfigMetadataIO implements MetadataManager
             write(hierarchicalImageSearchSpecification, c.hierarchicalImageSearchSpecification.getMetadataManager().store(), configMetadata);
 
         if (c.hasSpectralData && c.spectralInstruments.size() > 0)
+        {
         	write(hasHierarchicalSpectraSearch, c.hasHierarchicalSpectraSearch, configMetadata);
-        write(hasHypertreeBasedSpectraSearch, c.hasHypertreeBasedSpectraSearch, configMetadata);
-        write(spectraSearchDataSourceMap, c.spectraSearchDataSourceMap, configMetadata);
-        write(spectrumMetadataFile, c.spectrumMetadataFile, configMetadata);
+        	write(hasHypertreeBasedSpectraSearch, c.hasHypertreeBasedSpectraSearch, configMetadata);
+        	write(spectraSearchDataSourceMap, c.spectraSearchDataSourceMap, configMetadata);
+        	write(spectrumMetadataFile, c.spectrumMetadataFile, configMetadata);
+        }
 
 //        if (c.hasHierarchicalSpectraSearch && c.hierarchicalSpectraSearchSpecification != null)
       	if (c.hierarchicalSpectraSearchSpecification != null)
@@ -426,6 +447,13 @@ public class SmallBodyViewConfigMetadataIO implements MetadataManager
         c.timeHistoryFile = read(timeHistoryFile, configMetadata);
         c.hasImageMap = read(hasImageMap, configMetadata);
         c.hasStateHistory = read(hasStateHistory, configMetadata);
+        if (configMetadata.hasKey(spiceInfo))
+        	c.spiceInfo = read(spiceInfo, configMetadata);
+        if (configMetadata.hasKey(stateHistoryStartDate))
+        {
+        	c.stateHistoryStartDate = new Date(read(stateHistoryStartDate, configMetadata));
+        	c.stateHistoryEndDate = new Date(read(stateHistoryEndDate, configMetadata));
+        }
         c.baseMapConfigName = read(baseMapConfig, configMetadata);
 
         c.density = read(density, configMetadata);
@@ -486,7 +514,15 @@ public class SmallBodyViewConfigMetadataIO implements MetadataManager
 	        c.imageSearchDefaultMaxSpacecraftDistance = read(imageSearchDefaultMaxSpacecraftDistance, configMetadata);
 	        c.imageSearchDefaultMaxResolution = read(imageSearchDefaultMaxResolution, configMetadata);
 	        if (configMetadata.hasKey(hasHierarchicalImageSearch))
+	        {
 	        	c.hasHierarchicalImageSearch = read(hasHierarchicalImageSearch, configMetadata);
+	        	if (c.hasHierarchicalImageSearch)
+	        	{
+	        	    Metadata md = read(hierarchicalImageSearchSpecification, configMetadata);
+	        	    c.hierarchicalImageSearchSpecification = new HierarchicalSearchSpecification();
+	        	    c.hierarchicalImageSearchSpecification.getMetadataManager().retrieve(md);
+	        	}
+	        }
 
 //        	c.hierarchicalImageSearchSpecification.getMetadataManager().retrieve(read(hierarchicalImageSearchSpecification, configMetadata));
 
@@ -644,6 +680,9 @@ public class SmallBodyViewConfigMetadataIO implements MetadataManager
     final Key<String> timeHistoryFile = Key.of("timeHistoryFile");
     final Key<Boolean> hasImageMap = Key.of("hasImageMap");
     final Key<Boolean> hasStateHistory = Key.of("hasStateHistory");
+    final Key<SpiceInfo> spiceInfo = Key.of("spiceInfo");
+    final Key<Long> stateHistoryStartDate = Key.of("stateHistoryStartDate");
+    final Key<Long> stateHistoryEndDate = Key.of("stateHistoryEndDate");
     final Key<String[]> presentInMissions = Key.of("presentInMissions");
     final Key<String[]> defaultForMissions = Key.of("defaultForMissions");
     final Key<String> baseMapConfig = Key.of("baseMapConfig");

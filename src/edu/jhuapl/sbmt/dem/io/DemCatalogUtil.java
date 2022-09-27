@@ -22,6 +22,7 @@ import com.google.common.collect.ImmutableSet;
 import edu.jhuapl.saavtk.color.provider.ColorProvider;
 import edu.jhuapl.saavtk.util.Authorizor;
 import edu.jhuapl.saavtk.util.Configuration;
+import edu.jhuapl.saavtk.view.light.LightCfg;
 import edu.jhuapl.sbmt.dem.Dem;
 import edu.jhuapl.sbmt.dem.DemCatalog;
 import edu.jhuapl.sbmt.dem.DemConfigAttr;
@@ -317,11 +318,11 @@ public class DemCatalogUtil
 				WindowCfg tmpWindowCfg = tmpProp.getWindowCfg();
 				if (tmpWindowCfg != null)
 				{
-					boolean isShown = tmpWindowCfg.getIsShown();
-					int posX = tmpWindowCfg.getPosX();
-					int posY = tmpWindowCfg.getPosY();
-					int dimX = tmpWindowCfg.getDimX();
-					int dimY = tmpWindowCfg.getDimY();
+					boolean isShown = tmpWindowCfg.isShown();
+					int posX = tmpWindowCfg.posX();
+					int posY = tmpWindowCfg.posY();
+					int dimX = tmpWindowCfg.dimX();
+					int dimY = tmpWindowCfg.dimY();
 					tmpBW.write("win," + isShown + "," + posX + "," + posY + "," + dimX + "," + dimY + "\n");
 				}
 
@@ -612,10 +613,12 @@ public class DemCatalogUtil
 					// Save off the prior DemConfigAttr
 					if (targPath != null)
 					{
-						boolean isColorizedInterior = false;
+						boolean isSyncColoring = false;
+						boolean isSyncLighting = true;
+						LightCfg renderLC = LightCfg.Default;
 						ItemDrawAttr tmpIDA = new ItemDrawAttr(extCP, extIsShown, intCP, intIsShown, opacity, radialOffset);
-						DemConfigAttr tmpDCA = new DemConfigAttr(-1, description, tmpIDA, isColorizedInterior, viewDataMode,
-								analyzeWC);
+						DemConfigAttr tmpDCA = new DemConfigAttr(-1, description, tmpIDA, isSyncColoring, isSyncLighting,
+								renderLC, viewDataMode, analyzeWC);
 
 						storeConfig(aTask, lineCnt, basePath, targPath, pathToDemM1, pathToDemM2, retConfigM, tmpDCA);
 					}
@@ -693,10 +696,12 @@ public class DemCatalogUtil
 			// Add the last DemConfigAttr
 			if (targPath != null)
 			{
-				boolean isColorizedInterior = false;
+				boolean isSyncColoring = false;
+				boolean isSyncLighting = true;
+				LightCfg renderLC = LightCfg.Default;
 				ItemDrawAttr tmpIDA = new ItemDrawAttr(extCP, extIsShown, intCP, intIsShown, opacity, radialOffset);
-				DemConfigAttr tmpDCA = new DemConfigAttr(-1, description, tmpIDA, isColorizedInterior, viewDataMode,
-						analyzeWC);
+				DemConfigAttr tmpDCA = new DemConfigAttr(-1, description, tmpIDA, isSyncColoring, isSyncLighting, renderLC,
+						viewDataMode, analyzeWC);
 
 				storeConfig(aTask, lineCnt, basePath, targPath, pathToDemM1, pathToDemM2, retConfigM, tmpDCA);
 			}

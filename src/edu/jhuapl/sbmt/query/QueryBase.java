@@ -54,32 +54,18 @@ import crucible.crust.metadata.impl.SettableMetadata;
  * This class represents a database storing information about all the
  * data. It also provides functions for querying the database.
  */
-public abstract class QueryBase implements Cloneable, MetadataManager, IQueryBase
+public abstract class QueryBase implements MetadataManager, IQueryBase
 {
     protected String galleryPath;
-    private boolean headless = false;
+    private final boolean headless;
 
     protected QueryBase(String galleryPath)
     {
         this.galleryPath = galleryPath;
-        if (System.getProperty("java.awt.headless") != null && System.getProperty("java.awt.headless").equalsIgnoreCase("true"))
-            headless = true;
+        this.headless = System.getProperty("java.awt.headless") != null && System.getProperty("java.awt.headless").equalsIgnoreCase("true");
     }
 
-
-    @Override
-    public QueryBase clone()
-    {
-        try
-        {
-            return (QueryBase) super.clone();
-        }
-        catch (CloneNotSupportedException e)
-        {
-            // Can't happen.
-            throw new AssertionError(e);
-        }
-    }
+    public abstract QueryBase copy();
 
     public static boolean checkForDatabaseTable(String tableName) throws IOException
     {
@@ -89,15 +75,17 @@ public abstract class QueryBase implements Cloneable, MetadataManager, IQueryBas
         conn.setUseCaches(false);
         conn.setRequestProperty("User-Agent", "Mozilla/4.0");
 
-        OutputStreamWriter wr = new OutputStreamWriter(conn.getOutputStream());
-        wr.write("tableName=" + tableName);
-        wr.flush();
+        try (OutputStreamWriter wr = new OutputStreamWriter(conn.getOutputStream()))
+        {
+            wr.write("tableName=" + tableName);
+            wr.flush();
+        }
 
-        InputStreamReader isr = new InputStreamReader(conn.getInputStream());
-        BufferedReader in = new BufferedReader(isr);
-
-        String line = in.readLine();
-        in.close();
+        String line;
+        try (BufferedReader in = new BufferedReader(new InputStreamReader(conn.getInputStream())))
+        {
+            line = in.readLine();
+        }
 
         if (line == null)
         {
@@ -107,6 +95,7 @@ public abstract class QueryBase implements Cloneable, MetadataManager, IQueryBas
         {
             throw new IOException(line);
         }
+
         return line.equalsIgnoreCase("true");
     }
 
@@ -130,40 +119,41 @@ public abstract class QueryBase implements Cloneable, MetadataManager, IQueryBas
         conn.setUseCaches(false);
         conn.setRequestProperty("User-Agent", "Mozilla/4.0");
 
-        OutputStreamWriter wr = new OutputStreamWriter(conn.getOutputStream());
-        wr.write(data);
-        wr.flush();
-
-        InputStreamReader isr = new InputStreamReader(conn.getInputStream());
-        BufferedReader in = new BufferedReader(isr);
-
-        String line;
-
-        boolean firstLine = true;
-
-        while ((line = in.readLine()) != null)
+        try (OutputStreamWriter wr = new OutputStreamWriter(conn.getOutputStream()))
         {
-            line = line.trim();
-            if (line.length() == 0)
-                continue;
-
-            if (firstLine)
-            {
-                if (CloseableUrlConnection.detectRejectionMessages(line))
-                {
-                    throw new IOException("Server rejected query to URL " + u);
-                }
-            }
-            firstLine = false;
-
-            String[] tokens = line.split("\\s+");
-            List<String> words = new ArrayList<>();
-            for (String word : tokens)
-                words.add(word);
-            results.add(words);
+            wr.write(data);
+            wr.flush();
         }
 
-        in.close();
+        try (BufferedReader in = new BufferedReader(new InputStreamReader(conn.getInputStream())))
+        {
+            String line;
+
+            boolean firstLine = true;
+
+            while ((line = in.readLine()) != null)
+            {
+                line = line.trim();
+                if (line.length() == 0)
+                    continue;
+
+                if (firstLine)
+                {
+                    if (CloseableUrlConnection.detectRejectionMessages(line))
+                    {
+                        throw new IOException("Server rejected query to URL " + u);
+                    }
+                }
+                firstLine = false;
+
+                String[] tokens = line.split("\\s+");
+                List<String> words = new ArrayList<>();
+                for (String word : tokens)
+                    words.add(word);
+                results.add(words);
+            }
+        }
+
         for (List<String> res : results)
         {
             changeDataPathToFullPath(res, forcePrepend);
@@ -593,7 +583,7 @@ public abstract class QueryBase implements Cloneable, MetadataManager, IQueryBas
 
     public String getGalleryPath()
     {
-        return galleryPath != null && FileCache.instance().isAccessible(galleryPath) ? galleryPath : null;
+        return galleryPath;
     }
 
     // Convert the 0th element of the result (the path to the data)
@@ -623,10 +613,7 @@ public abstract class QueryBase implements Cloneable, MetadataManager, IQueryBas
 
     protected <T> T read(Key<T> key, Metadata configMetadata)
     {
-        T value = configMetadata.get(key);
-        if (value != null)
-            return value;
-        return null;
+        return configMetadata.hasKey(key) ? configMetadata.get(key) : null;
     }
 
 

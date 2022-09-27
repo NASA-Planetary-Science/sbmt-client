@@ -19,7 +19,7 @@ public class BasicConfigInfo implements MetadataManager
     //      pipeline->rawdata->generic->runDataProcessing.sh
     // TO MATCH!!!!!!!!!!!!!!!!!!!
     // *******************************************************************************
-    private static final String configInfoVersion = "9.1"; // READ THE COMMENT ABOVE.
+    private static final String configInfoVersion = "9.2"; // READ THE COMMENT ABOVE.
     // *******************************************************************************
 
     public static String getConfigInfoVersion()
@@ -65,7 +65,7 @@ public class BasicConfigInfo implements MetadataManager
 		this.modelLabel = config.modelLabel;
 		this.presentInVersion = config.presentInMissions;
 		this.defaultFor = config.defaultForMissions;
-
+		if (defaultFor == null) defaultFor = new SbmtMultiMissionTool.Mission[] {};
 		if (author != ShapeModelType.CUSTOM)
 		{
 //			System.out.println("BasicConfigInfo: unique name " + uniqueName);
@@ -259,6 +259,26 @@ public class BasicConfigInfo implements MetadataManager
 	public String getShapeModelName()
 	{
 		return shapeModelName;
+	}
+
+	public BodyType getType()
+	{
+		return type;
+	}
+
+	public ShapeModelDataUsed getDataUsed()
+	{
+		return dataUsed;
+	}
+
+	public String getModelLabel()
+	{
+		return modelLabel;
+	}
+
+	public ShapeModelPopulation getPopulation()
+	{
+		return population;
 	}
 
 	@Override

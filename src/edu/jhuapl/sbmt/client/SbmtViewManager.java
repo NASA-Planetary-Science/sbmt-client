@@ -23,8 +23,9 @@ import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 
 import edu.jhuapl.saavtk.camera.gui.CameraQuaternionAction;
+import edu.jhuapl.saavtk.camera.gui.CameraRecorderAction;
 import edu.jhuapl.saavtk.camera.gui.CameraRegularAction;
-import edu.jhuapl.saavtk.gui.Console;
+import edu.jhuapl.saavtk.gui.TSConsole;
 import edu.jhuapl.saavtk.gui.RecentlyViewed;
 import edu.jhuapl.saavtk.gui.ShapeModelImporter;
 import edu.jhuapl.saavtk.gui.ShapeModelImporter.FormatType;
@@ -40,6 +41,7 @@ import edu.jhuapl.saavtk.status.StatusNotifier;
 import edu.jhuapl.saavtk.util.Configuration;
 import edu.jhuapl.saavtk.util.ConvertResourceToFile;
 import edu.jhuapl.saavtk.util.SafeURLPaths;
+import edu.jhuapl.saavtk.view.light.gui.LightingConfigAction;
 import edu.jhuapl.saavtk.view.lod.gui.LodAction;
 
 import crucible.crust.metadata.api.Key;
@@ -163,7 +165,7 @@ public class SbmtViewManager extends ViewManager
             failsafeModelInitialized = true;
 
             String failsafeParent = SafeURLPaths.instance().getString(Configuration.getApplicationDataDir(), "failsafeErosModel");
-            File failsafeModel = ConvertResourceToFile.convertResourceToRealFile(this, "/edu/jhuapl/sbmt/data/Eros_ver64q.vtk", failsafeParent);
+            File failsafeModel = ConvertResourceToFile.convertResourceToRealFile(this.getClass(), "/edu/jhuapl/sbmt/data/Eros_ver64q.vtk", failsafeParent);
 
             if (failsafeModel != null && failsafeModel.exists())
             {
@@ -217,6 +219,8 @@ public class SbmtViewManager extends ViewManager
         viewMenu.setMnemonic('V');
         viewMenu.add(new JMenuItem(new CameraRegularAction(this)));
         viewMenu.add(new JMenuItem(new CameraQuaternionAction(this)));
+        viewMenu.add(new JMenuItem(new CameraRecorderAction(this)));
+        viewMenu.add(new JMenuItem(new LightingConfigAction(this)));
         viewMenu.add(new JMenuItem(new ScaleBarAction(this)));
 
         viewMenu.addSeparator();
@@ -226,7 +230,7 @@ public class SbmtViewManager extends ViewManager
         menuBar.add(viewMenu);
 
         // Console menu
-        Console.addConsoleMenu(menuBar);
+        TSConsole.addConsoleMenu(menuBar);
 
         // Help menu
         helpMenu = new SbmtHelpMenu(this);
@@ -568,6 +572,7 @@ public class SbmtViewManager extends ViewManager
             ShapeModelBody.RYUGU,
             ShapeModelBody.CERES,
             ShapeModelBody.VESTA,
+            ShapeModelBody.PSYCHE,
             ShapeModelBody.LUTETIA,
             ShapeModelBody.IDA,
             ShapeModelBody.MATHILDE,
@@ -631,6 +636,7 @@ public class SbmtViewManager extends ViewManager
             // Asteroids -> Main Belt (visited)
             ShapeModelBody.CERES,
             ShapeModelBody.VESTA,
+            ShapeModelBody.PSYCHE,
             ShapeModelBody.LUTETIA,
             ShapeModelBody.IDA,
             ShapeModelBody.MATHILDE,

@@ -18,8 +18,8 @@ import javax.swing.event.TableModelListener;
 import javax.swing.table.DefaultTableModel;
 
 import edu.jhuapl.saavtk.gui.render.Renderer;
-import edu.jhuapl.saavtk.gui.render.Renderer.LightingType;
 import edu.jhuapl.saavtk.util.Properties;
+import edu.jhuapl.saavtk.view.light.LightUtil;
 import edu.jhuapl.sbmt.client.SbmtInfoWindowManager;
 import edu.jhuapl.sbmt.client.SbmtSpectrumWindowManager;
 import edu.jhuapl.sbmt.gui.image.controllers.StringRenderer;
@@ -35,7 +35,6 @@ import edu.jhuapl.sbmt.model.image.ImageCollection;
 import edu.jhuapl.sbmt.model.image.ImageCube;
 import edu.jhuapl.sbmt.model.image.ImageCube.ImageCubeKey;
 import edu.jhuapl.sbmt.model.image.ImageCubeCollection;
-import edu.jhuapl.sbmt.model.image.PerspectiveImageBoundaryCollection;
 
 import nom.tam.fits.FitsException;
 
@@ -52,7 +51,6 @@ public class CustomImageCubeController
     private StringRenderer stringRenderer;
     private CustomImageCubeResultsTableModeListener tableModelListener;
     private ImageCubeResultsPropertyChangeListener propertyChangeListener;
-    private PerspectiveImageBoundaryCollection boundaries;
 
     public CustomImageCubeController(ImageSearchModel model,
             ImageCubeModel cubeModel,
@@ -143,9 +141,8 @@ public class CustomImageCubeController
     protected void setupPanel()
     {
         System.out.println("ImageCubeController: setupPanel: ");
-        boundaries = (PerspectiveImageBoundaryCollection)model.getModelManager().getModel(model.getImageBoundaryCollectionModelName());
         imageCubes = (ImageCubeCollection)model.getModelManager().getModel(cubeModel.getImageCubeCollectionModelName());
-        imageCubePopupMenu = new ImageCubePopupMenu(imageCubes, boundaries, infoPanelManager, spectrumPanelManager, renderer, panel);
+        imageCubePopupMenu = new ImageCubePopupMenu(imageCubes, /*boundaries,*/ infoPanelManager, spectrumPanelManager, renderer, panel);
 
         panel.getRemoveImageCubeButton().setText("Remove Image Cube");
         panel.getRemoveImageCubeButton().addActionListener(new ActionListener() {
@@ -314,7 +311,7 @@ public class CustomImageCubeController
                 {
                     cubeModel.unloadImage(key);
                     panel.getImageCubeTable().getModel().setValueAt(false, 0, panel.getShowFootprintColumnIndex());
-                    model.getRenderer().setLighting(LightingType.LIGHT_KIT);
+                    LightUtil.switchToLightKit(model.getRenderer());
                 }
             }
             else if (e.getColumn() == panel.getShowFootprintColumnIndex())

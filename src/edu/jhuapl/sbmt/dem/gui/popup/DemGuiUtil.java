@@ -86,19 +86,19 @@ public class DemGuiUtil
 	{
 		PopupMenu<Dem> retPM = new PopupMenu<>(aManager);
 
-		retPM.installPopAction(new HideShowInteriorAction(aManager, "DEM"), "Show DEM");
+		retPM.installPopAction(new HideShowInteriorAction(aManager, "DTM"), "Show DTM");
 		retPM.installPopAction(new HideShowExteriorAction(aManager, "Boundary"), "Show Boundary");
 		retPM.addSeparator();
 
 		retPM.installPopAction(new AnalyzeAction(aManager), "Analyze");
-		retPM.installPopAction(new CenterAction(aManager, aRenderer), "Center DEM in Window");
-		retPM.installPopAction(new EditAction(aManager, aParent), "Edit DEM");
+		retPM.installPopAction(new CenterAction(aManager, aRenderer), "Center DTM in Window");
+		retPM.installPopAction(new EditAction(aManager, aParent), "Edit DTM");
 
 		JMenu colorMenu = new JMenu("Boundary Color");
 		retPM.installPopAction(new DemExteriorColorAction(aManager, aParent, colorMenu), colorMenu);
 		retPM.addSeparator();
 
-		retPM.installPopAction(new SaveDemFileAction(aManager, aParent), "Save DEM file");
+		retPM.installPopAction(new SaveDemFileAction(aManager, aParent), "Save DTM file");
 		retPM.installPopAction(new ExportAsCustomModelAction(aManager, aSmallBody, aParent), "Export as Custom Model");
 
 		return retPM;
@@ -265,7 +265,7 @@ public class DemGuiUtil
 	 */
 	public static boolean promptDeletionConfirmation(Component aParent, DemManager aManager, Collection<Dem> aItemC)
 	{
-		String infoMsg = "Are you sure you want to delete " + aItemC.size() + " dems?\n";
+		String infoMsg = "Are you sure you want to delete " + aItemC.size() + " DTMs?\n";
 
 		// Determine if any Dems are currently being loaded or analyzed
 		List<Dem> activeLoadL = new ArrayList<>();
@@ -287,7 +287,7 @@ public class DemGuiUtil
 		int loadCnt = activeLoadL.size();
 		if (loadCnt > 0)
 		{
-			infoMsg += "\nThere are (" + loadCnt + ") dems currently being loaded.\n";
+			infoMsg += "\nThere are (" + loadCnt + ") DTMs currently being loaded.\n";
 			infoMsg += "The corresponding loads will be aborted:\n";
 			for (Dem aItem : activeLoadL)
 				infoMsg += "   " + aManager.getDisplayName(aItem) + "\n";
@@ -297,7 +297,7 @@ public class DemGuiUtil
 		int showCnt = analyzeWinL.size();
 		if (showCnt > 0)
 		{
-			infoMsg += "\nThere are (" + showCnt + ") dems currently being analyzed.\n";
+			infoMsg += "\nThere are (" + showCnt + ") DTMs currently being analyzed.\n";
 			infoMsg += "The corresponding windows will be closed:\n";
 			for (Dem aItem : analyzeWinL)
 				infoMsg += "   Analyze: " + aManager.getDisplayName(aItem) + "\n";

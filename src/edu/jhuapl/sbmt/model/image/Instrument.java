@@ -12,9 +12,13 @@ public enum Instrument
     SSI("SSI"),
     OSIRIS("OSIRIS"),
     OLA("OLA"),
+    ORX_OLA_HIGH("HELT"),
+    ORX_OLA_LOW("LELT"),
     MAPCAM("MAPCAM"),
     POLYCAM("POLYCAM"),
     NAVCAM("NAVCAM"),
+    OTES("OTES"),
+    OVIRS("OVIRS"),
     IMAGING_DATA("Imaging"),
     MVIC("MVIC"),
     LEISA("LEISA"),
@@ -30,6 +34,9 @@ public enum Instrument
     DRACO("DRACO"),
     LUKE("LUKE"),
     LEIA("LEIA"),
+    ITS("ITS"),
+    HRI("HRI"),
+    MRI("MRI"),
     ;
 
     final private String str;

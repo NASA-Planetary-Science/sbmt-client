@@ -4,6 +4,7 @@ import java.awt.Cursor;
 import java.awt.Dimension;
 import java.awt.ItemSelectable;
 import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.io.IOException;
@@ -37,7 +38,7 @@ import edu.jhuapl.sbmt.model.image.ImageKeyInterface;
 import edu.jhuapl.sbmt.util.PolyDataUtil2;
 import edu.jhuapl.sbmt.util.PolyDataUtil2.PolyDataStatistics;
 
-public class SmallBodyControlPanel extends PolyhedralModelControlPanel
+public class SmallBodyControlPanel extends PolyhedralModelControlPanel implements ItemListener
 {
     private static final long serialVersionUID = 518373430237465750L;
     private static final String IMAGE_MAP_TEXT = "Show Image Map";
@@ -57,6 +58,7 @@ public class SmallBodyControlPanel extends PolyhedralModelControlPanel
         this.imageChangeListeners = new ArrayList<>();
 
         SmallBodyModel smallBodyModel = (SmallBodyModel) modelManager.getPolyhedralModel();
+
         if ((smallBodyModel.getImageMapKeys() != null) && !smallBodyModel.getImageMapKeys().isEmpty())
         {
             imageMapCheckBox = configureImageMapCheckBox(smallBodyModel);
@@ -140,8 +142,6 @@ public class SmallBodyControlPanel extends PolyhedralModelControlPanel
     @Override
     public void itemStateChanged(ItemEvent e)
     {
-        super.itemStateChanged(e);
-
         PickUtil.setPickingEnabled(false);
 
         ItemSelectable selectedItem = e.getItemSelectable();

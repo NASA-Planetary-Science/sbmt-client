@@ -1,6 +1,7 @@
 package edu.jhuapl.sbmt.client;
 
 import java.awt.EventQueue;
+import java.awt.Taskbar;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -26,8 +27,7 @@ import javax.swing.UnsupportedLookAndFeelException;
 import com.jgoodies.looks.LookUtils;
 
 import edu.jhuapl.saavtk.colormap.Colormaps;
-import edu.jhuapl.saavtk.gui.Console;
-import edu.jhuapl.saavtk.gui.OSXAdapter;
+import edu.jhuapl.saavtk.gui.TSConsole;
 import edu.jhuapl.saavtk.model.structure.EllipsePolygon;
 import edu.jhuapl.saavtk.model.structure.Line;
 import edu.jhuapl.saavtk.model.structure.Polygon;
@@ -50,10 +50,14 @@ import edu.jhuapl.sbmt.model.eros.nis.NIS;
 import edu.jhuapl.sbmt.model.image.ImageFactory;
 import edu.jhuapl.sbmt.model.phobos.MEGANE;
 import edu.jhuapl.sbmt.model.ryugu.nirs3.NIRS3;
+import edu.jhuapl.sbmt.pointing.spice.SpiceInfo;
 import edu.jhuapl.sbmt.spectrum.model.core.SpectrumInstrumentMetadata;
 import edu.jhuapl.sbmt.spectrum.model.core.search.SpectrumSearchSpec;
 import edu.jhuapl.sbmt.spectrum.model.io.SpectrumInstrumentMetadataIO;
 import edu.jhuapl.sbmt.spectrum.model.key.CustomSpectrumKey;
+import edu.jhuapl.sbmt.stateHistory.model.stateHistory.StateHistoryKey;
+import edu.jhuapl.sbmt.stateHistory.model.stateHistory.spice.SpiceStateHistory;
+import edu.jhuapl.sbmt.stateHistory.model.stateHistory.standard.StandardStateHistory;
 import edu.jhuapl.sbmt.tools.SbmtRunnable;
 
 /**
@@ -90,7 +94,11 @@ public class SbmtMultiMissionTool
         DART_TEST("8f449edc", false),
         DART_STAGE("afac11cb", false),
 		STAGE_APL_INTERNAL("f7e441b", false),
-		STAGE_PUBLIC_RELEASE("8cc8e12", true);
+		STAGE_PUBLIC_RELEASE("8cc8e12", true),
+		MEGANE_DEV("9da85292", false),
+		MEGANE_DEPLOY("9da85293", false),
+        MEGANE_TEST("8f549edc", false),
+        MEGANE_STAGE("afad11cb", false),;
 
 		private final String hashedName;
         private final boolean publishedDataOnly;
@@ -149,7 +157,7 @@ public class SbmtMultiMissionTool
 			ImageIcon erosIcon = new ImageIcon(SbmtMultiMissionTool.class.getResource("/edu/jhuapl/sbmt/data/erosMacDock.png"));
 			if (!Configuration.isHeadless())
 			{
-			    OSXAdapter.setDockIconImage(erosIcon.getImage());
+			    Taskbar.getTaskbar().setIconImage(erosIcon.getImage());
 			}
 		}
 
@@ -179,6 +187,10 @@ public class SbmtMultiMissionTool
 		NIRS3.initializeSerializationProxy();
 		MEGANE.initializeSerializationProxy();
 		ImageFactory.initializeSerializationProxy();
+		StandardStateHistory.initializeSerializationProxy();
+		SpiceStateHistory.initializeSerializationProxy();
+		StateHistoryKey.initializeSerializationProxy();
+		SpiceInfo.initializeSerializationProxy();
 	}
 
 	public static void setEnableAuthentication(boolean enableAuthentication)
@@ -272,7 +284,7 @@ public class SbmtMultiMissionTool
 
         Mission mission = getMission();
 
-        String rootUrl = "http://sbmt.jhuapl.edu/sbmt/prod";
+        String rootUrl = "https://sbmt.jhuapl.edu/sbmt/prod";
 
         switch (mission)
         {
@@ -282,7 +294,7 @@ public class SbmtMultiMissionTool
         case STAGE_APL_INTERNAL:
         case STAGE_PUBLIC_RELEASE:
         case DART_STAGE:
-            rootUrl = "http://sbmt-web.jhuapl.edu/internal/multi-mission/stage";
+            rootUrl = "https://sbmt.jhuapl.edu/internal/multi-mission/stage";
             break;
         case TEST_APL_INTERNAL:
         case TEST_PUBLIC_RELEASE:
@@ -376,7 +388,6 @@ public class SbmtMultiMissionTool
 			Configuration.setAppTitle("SBMT/Hayabusa2-Dev"/* + "(" + compileDateString + ")"*/);
             // Configuration.setDatabaseSuffix("_test");
 			break;
-//		case HAYABUSA2_STAGE:
 //			Configuration.setAppName("sbmthyb2-stage");
 //			Configuration.setCacheVersion("");
 //			Configuration.setAppTitle("SBMT/Hayabusa2-Stage");
@@ -447,6 +458,37 @@ public class SbmtMultiMissionTool
             Configuration.setAppTitle("SBMT/DART (Test Version)" /*+ "(" + compileDateString + ")"*/);
             Colormaps.setDefaultColormapName("Spectral_lowBlue");
             break;
+        case MEGANE_DEV:
+			Configuration.setAppName("sbmt1megane-dev");
+			Configuration.setCacheVersion("");
+			Configuration.setReleaseType(ReleaseType.DEVELOPMENT);
+			Configuration.setAppTitle("SBMT/MEGANE (Development Version)");
+//            Colormaps.setDefaultColormapName("Rainbow Blended White");
+            Colormaps.setDefaultColormapName("Spectral_lowBlue");
+			break;
+		case MEGANE_DEPLOY:
+			Configuration.setAppName("sbmt1megane");
+			Configuration.setCacheVersion("");
+			Configuration.setAppTitle("SBMT/MEGANE");
+//            Colormaps.setDefaultColormapName("Rainbow Blended White");
+            Colormaps.setDefaultColormapName("Spectral_lowBlue");
+			break;
+        case MEGANE_STAGE:
+            Configuration.setAppName("sbmt1megane-stage");
+            Configuration.setCacheVersion("");
+            Configuration.setReleaseType(ReleaseType.DEVELOPMENT);
+            Configuration.setAppTitle("SBMT/MEGANE (Stage Version)");
+//            Colormaps.setDefaultColormapName("Rainbow Blended White");
+            Colormaps.setDefaultColormapName("Spectral_lowBlue");
+            break;
+        case MEGANE_TEST:
+            Configuration.setAppName("sbmt1megane-test");
+            Configuration.setCacheVersion("");
+            Configuration.setReleaseType(ReleaseType.DEVELOPMENT);
+            Configuration.setAppTitle("SBMT/MEGANE (Test Version)" );
+//            Colormaps.setDefaultColormapName("Rainbow Blended White");
+            Colormaps.setDefaultColormapName("Spectral_lowBlue");
+            break;
 		default:
             throw new AssertionError("Unhandled case for setting up launch configuration " + mission);
 		}
@@ -458,11 +500,11 @@ public class SbmtMultiMissionTool
 
 	public static void shutDown()
 	{
-		boolean showConsole = Console.isConfigured();
+		boolean showConsole = TSConsole.isConfigured();
 		if (showConsole)
 		{
 			System.err.println("Close this console window to exit.");
-			Console.showStandaloneConsole();
+			TSConsole.showStandaloneConsole();
 		}
 
 		restoreStreams();
@@ -527,6 +569,10 @@ public class SbmtMultiMissionTool
                 case DART_DEPLOY:
                 case DART_STAGE:
                 case DART_TEST:
+                case MEGANE_DEV:
+                case MEGANE_DEPLOY:
+                case MEGANE_STAGE:
+                case MEGANE_TEST:
                     splash = new SbmtSplash("resources", "splashLogo.png");
                     break;
                 case HAYABUSA2_DEV:
@@ -551,9 +597,9 @@ public class SbmtMultiMissionTool
 
                 splash.validate();
                 splash.setVisible(true);
-                if (Console.isEnabled())
+                if (TSConsole.isEnabled())
                 {
-                    Console.showStandaloneConsole();
+                    TSConsole.showStandaloneConsole();
                 }
                 splash.toFront();
 
@@ -698,7 +744,7 @@ public class SbmtMultiMissionTool
 			outputStream = new PrintStream(Files.newOutputStream(outputFilePath));
 			System.setOut(outputStream);
 			System.setErr(outputStream);
-			Console.configure(true, outputStream);
+			TSConsole.configure(true, "Message Console", outputStream, outputStream);
 		}
 	}
 

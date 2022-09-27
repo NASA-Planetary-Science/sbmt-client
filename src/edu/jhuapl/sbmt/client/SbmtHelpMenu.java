@@ -1,5 +1,7 @@
 package edu.jhuapl.sbmt.client;
 
+import java.awt.Desktop;
+import java.awt.desktop.AboutEvent;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -21,6 +23,23 @@ public class SbmtHelpMenu extends HelpMenu
     {
         super(rootPanel);
         dataSourceMenuItem.setText("SBMT Data Sources");
+
+     // On macs the about action is in the Application menu not the help menu
+        if (Configuration.isMac())
+        {
+            try
+            {
+                Desktop.getDesktop().setAboutHandler(new java.awt.desktop.AboutHandler() {
+                    public void handleAbout(AboutEvent e) {
+                    	showAbout();
+                    }
+                });
+            }
+            catch (SecurityException e)
+            {
+                e.printStackTrace();
+            }
+        }
      }
 
     public void showAbout()
@@ -40,7 +59,7 @@ public class SbmtHelpMenu extends HelpMenu
         String helpRootUrl = Configuration.getHelpRootURL();
         try
         {
-            java.awt.Desktop.getDesktop().browse(java.net.URI.create("http://sbmt.jhuapl.edu/index.php#help"));
+            java.awt.Desktop.getDesktop().browse(java.net.URI.create("https://sbmt.jhuapl.edu/index.php#help"));
         }
         catch (IOException e)
         {
@@ -53,7 +72,7 @@ public class SbmtHelpMenu extends HelpMenu
         String helpRootUrl = Configuration.getHelpRootURL();
         try
         {
-            java.awt.Desktop.getDesktop().browse(java.net.URI.create("http://sbmt.jhuapl.edu/index.php#data"));
+            java.awt.Desktop.getDesktop().browse(java.net.URI.create("https://sbmt.jhuapl.edu/index.php#data"));
         }
         catch (IOException e)
         {
@@ -66,7 +85,7 @@ public class SbmtHelpMenu extends HelpMenu
         String helpRootUrl = Configuration.getHelpRootURL();
         try
         {
-           java.awt.Desktop.getDesktop().browse(java.net.URI.create("http://sbmt.jhuapl.edu/Release-Notes.php"));
+           java.awt.Desktop.getDesktop().browse(java.net.URI.create("https://sbmt.jhuapl.edu/Release-Notes.php"));
         }
         catch (IOException e)
         {
@@ -79,7 +98,7 @@ public class SbmtHelpMenu extends HelpMenu
         String helpRootUrl = Configuration.getHelpRootURL();
         try
         {
-           java.awt.Desktop.getDesktop().browse(java.net.URI.create("http://sbmt.jhuapl.edu/Tutorials.php"));
+           java.awt.Desktop.getDesktop().browse(java.net.URI.create("https://sbmt.jhuapl.edu/Tutorials.php"));
         }
         catch (IOException e)
         {
