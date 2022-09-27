@@ -25,13 +25,15 @@ import javax.swing.border.TitledBorder;
 
 import com.jidesoft.swing.CheckBoxTree;
 
+import edu.jhuapl.sbmt.core.image.ImageSource;
+
 
 public class ImageSearchParametersPanel extends JPanel
 {
     protected CheckBoxTree checkBoxTree;
     private JFormattedTextField searchByNumberTextField;
     private JToggleButton selectRegionButton;
-    private JComboBox<String> sourceComboBox;
+    private JComboBox<ImageSource> sourceComboBox;
     private JLabel sourceLabel;
     private JLabel startDateLabel;
     private JSpinner startSpinner;
@@ -97,7 +99,7 @@ public class ImageSearchParametersPanel extends JPanel
         sourceLabel = new JLabel("Pointing:");
         pointingPanel.add(sourceLabel);
 
-        sourceComboBox = new JComboBox<String>();
+        sourceComboBox = new JComboBox<ImageSource>();
         sourceComboBox.setMaximumSize(
                 new java.awt.Dimension(sourceComboBox.getWidth(), 22));
         pointingPanel.add(sourceComboBox);
@@ -505,7 +507,7 @@ public class ImageSearchParametersPanel extends JPanel
         return selectRegionButton;
     }
 
-    public JComboBox<String> getSourceComboBox()
+    public JComboBox<ImageSource> getSourceComboBox()
     {
         return sourceComboBox;
     }

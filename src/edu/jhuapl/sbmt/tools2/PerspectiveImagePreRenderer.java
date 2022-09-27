@@ -52,7 +52,7 @@ public class PerspectiveImagePreRenderer
 
 		double[] boundingBox = footprints.get(0).GetBounds();
 		Just.of(renderableImage)
-			.operate(new OfflimbPlaneGeneratorOperators(offLimbFootprintDepth, smallBodyModels.get(0), boundingBox, footprints.get(0).GetNumberOfPoints()))
+			.operate(new OfflimbPlaneGeneratorOperators(offLimbFootprintDepth, smallBodyModels, boundingBox, footprints.get(0).GetNumberOfPoints()))
 			.subscribe(PairSink.of(offLimbPolydata))
 			.run();
 

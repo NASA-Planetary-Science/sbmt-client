@@ -106,7 +106,7 @@ public class RenderablePointedImageToScenePipeline<G1 extends IPerspectiveImage 
 	private IPipelinePublisher<PointingFileReader> generatePointing(String pointingFile) throws IOException
 	{
 		IPipelinePublisher<PointingFileReader> pointingPublisher = null;
-		if (image.getPointingSourceType() == ImageSource.SPICE || pointingFile.endsWith(".adjusted"))
+		if (image.getPointingSourceType() == ImageSource.SPICE || image.getPointingSourceType() == ImageSource.CORRECTED_SPICE || pointingFile.endsWith(".adjusted"))
 			pointingPublisher = new InfofileReaderPublisher(pointingFile);
 		else
 			pointingPublisher = new SumfileReaderPublisher(pointingFile);
@@ -165,8 +165,11 @@ public class RenderablePointedImageToScenePipeline<G1 extends IPerspectiveImage 
 		//*************************
 		//zip the sources together
 		//*************************
+		List<RenderablePointedImage> allImages = Lists.newArrayList();
+		for (int i=0; i<smallBodyModels.size(); i++) allImages.addAll(renderableImages);
+
 		IPipelinePublisher<Pair<SmallBodyModel, RenderablePointedImage>> sceneObjects =
-				Publishers.formPair(Just.of(smallBodyModels), Just.of(renderableImages));
+				Publishers.formPair(Just.of(smallBodyModels), Just.of(allImages));
 
 		//*****************************************************************************************************
 		//Pass them into the scene builder to perform intersection calculations, and send actors to List

@@ -382,12 +382,13 @@ public class ImageSearchParametersController<G1 extends IPerspectiveImage & IPer
 
     private void sourceComboBoxItemStateChanged(ItemEvent evt)
     {
-        JComboBox<String> sourceComboBox = panel.getSourceComboBox();
-        ImageSource imageSource = ImageSource.valueOf((String)sourceComboBox.getSelectedItem());
+        JComboBox<ImageSource> sourceComboBox = panel.getSourceComboBox();
+        ImageSource imageSource = (ImageSource)(sourceComboBox.getSelectedItem());
         for (int i=0; i< sourceComboBox.getModel().getSize(); i++)
         {
-            ImageSource source = ImageSource.valueOf((String)sourceComboBox.getItemAt(i));
-            if (source == ImageSource.GASKELL_UPDATED)
+        	ImageSource itemAt = sourceComboBox.getItemAt(i);
+
+            if (itemAt == ImageSource.GASKELL_UPDATED)
             {
                 panel.getExcludeGaskellCheckBox().setVisible(imageSource == ImageSource.SPICE);
                 model.setExcludeGaskellEnabled(panel.getExcludeGaskellCheckBox().isVisible());
