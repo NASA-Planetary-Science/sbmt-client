@@ -25,6 +25,7 @@ import edu.jhuapl.saavtk.util.SafeURLPaths;
 import edu.jhuapl.saavtk.util.ThreadService;
 import edu.jhuapl.sbmt.common.client.SmallBodyModel;
 import edu.jhuapl.sbmt.core.image.PointingFileReader;
+import edu.jhuapl.sbmt.image2.pipelineComponents.VTKDebug;
 import edu.jhuapl.sbmt.image2.pipelineComponents.operators.rendering.pointedImage.RenderablePointedImage;
 import edu.jhuapl.sbmt.image2.pipelineComponents.pipelines.io.LoadPolydataFromCachePipeline;
 import edu.jhuapl.sbmt.image2.pipelineComponents.pipelines.io.SavePolydataToCachePipeline;
@@ -52,7 +53,7 @@ public class OfflimbPlaneGeneratorOperators extends BasePipelineOperator<Rendera
     private Vector3D scPosVector;
     private double[] boundingBox;
     private int numberPoints = -1;
-    private int macroPixelResolution = 1;
+    private int macroPixelResolution = 3;
 
 	public OfflimbPlaneGeneratorOperators(double offLimbFootprintDepth, List<SmallBodyModel> smallBodyModels, double[] boundingBox, int numberPoints)
 	{
@@ -172,6 +173,7 @@ public class OfflimbPlaneGeneratorOperators extends BasePipelineOperator<Rendera
         imageSource.SetScalarTypeToUnsignedChar();
         imageSource.SetNumberOfScalarComponents(3);
         imageSource.SetExtent(-szW/2, szW/2, -szH/2, szH/2, 0, 0);
+
         ThreadService.initialize(600);
         final List<Future<Void>> resultList;
 		List<Callable<Void>> taskList = new ArrayList<>();
@@ -181,15 +183,16 @@ public class OfflimbPlaneGeneratorOperators extends BasePipelineOperator<Rendera
             {
                 double s=(double)i/((double)szW/2)*ffacx;
                 double t=(double)j/((double)szH/2)*ffacy;
+                Rotation lookRot=new Rotation(Vector3D.MINUS_K, lookVec.normalize());
                 Vector3D ray=new Vector3D(s,t,-maxRayDepth);  // ray construction starts from s,t coordinates each on the interval [-1 1]
                 ray=upRot.applyTo(lookRot.applyTo(ray));//upRot.applyInverseTo(lookRot.applyInverseTo(ray.normalize()));
                 Vector3D rayEnd=ray.add(scPosVector);
 				Callable<Void> task = new OfflimbColorTask(scPosVector, rayEnd, imageSource, i, j);
 				taskList.add(task);
             }
-		System.out.println("OfflimbPlaneGeneratorOperators: processStep2: waiting for tasks " + taskList.size());
+//		System.out.println("OfflimbPlaneGeneratorOperators: processStep2: waiting for tasks " + taskList.size());
 		resultList = ThreadService.submitAll(taskList);
-		System.out.println("OfflimbPlaneGeneratorOperators: processStep2: tasks returned");
+//		System.out.println("OfflimbPlaneGeneratorOperators: processStep2: tasks returned");
 
         //Serial way
 //        for (int i=-szW/2; i<=szW/2; i++)
@@ -202,7 +205,7 @@ public class OfflimbPlaneGeneratorOperators extends BasePipelineOperator<Rendera
 //                Vector3D rayEnd=ray.add(scPosVector);
 //                //
 //                vtkIdList ids=new vtkIdList();
-//                smallBodyModel.getCellLocator().FindCellsAlongLine(scPosVector.toArray(), rayEnd.toArray(), 1e-12, ids);
+//                smallBodyModels.get(0).getCellLocator().FindCellsAlongLine(scPosVector.toArray(), rayEnd.toArray(), 1e-12, ids);
 //                if (ids.GetNumberOfIds()>0)
 //                    imageSource.SetDrawColor(0,0,0);
 //                else
@@ -211,6 +214,7 @@ public class OfflimbPlaneGeneratorOperators extends BasePipelineOperator<Rendera
 //            }
         imageSource.Update();
         imageData=imageSource.GetOutput();
+//        VTKDebug.previewVtkImageData(imageData, "Sillouhette");
 	}
 
 	private class OfflimbColorTask implements Callable<Void>
@@ -230,9 +234,11 @@ public class OfflimbPlaneGeneratorOperators extends BasePipelineOperator<Rendera
 		}
 
 		@Override
-		public synchronized Void call() throws Exception
+		public Void call() throws Exception
 		{
 
+			synchronized (OfflimbColorTask.class)
+			{
 				vtkIdList ids=new vtkIdList();
 	            smallBodyModels.get(0).getCellLocator().FindCellsAlongLine(scPosVector.toArray(), rayEnd.toArray(), 1e-12, ids);
 	            if (ids.GetNumberOfIds()>0)
@@ -240,6 +246,8 @@ public class OfflimbPlaneGeneratorOperators extends BasePipelineOperator<Rendera
 	            else
 	                imageSource.SetDrawColor(255,255,255);
 	            imageSource.DrawPoint(i, j);
+			}
+
             return null;
 		}
 	}
