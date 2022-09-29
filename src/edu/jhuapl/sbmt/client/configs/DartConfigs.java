@@ -725,15 +725,15 @@ public class DartConfigs
 
         String dracoDir = c.rootDirOnServer + "/draco";
         String dracoTable = tableBaseName + "draco";
-        String dracoDataDir = "/dart/draco/" + (dracoModelId != null ? dracoModelId : "") + "/";
+        String dracoDataDir = "/dart/draco/" + (dracoModelId != null ? dracoModelId + "/" : "");
 
         String leiaDir = c.rootDirOnServer + "/leia";
         String leiaTable = tableBaseName + "leia";
-        String leiaDataDir = "/dart/leia/" + (leiaModelId != null ? leiaModelId : "") + "/";
+        String leiaDataDir = "/dart/leia/" + (leiaModelId != null ? leiaModelId + "/" : "");
 
         String lukeDir = c.rootDirOnServer + "/luke";
         String lukeTable = tableBaseName + "luke";
-        String lukeDataDir = "/dart/luke/" + (lukeModelId != null ? lukeModelId : "") + "/";
+        String lukeDataDir = "/dart/luke/" + (lukeModelId != null ? lukeModelId + "/" : "");
 
         List<ImagingInstrument> imagingInstruments = new ArrayList<>();
         if (dracoImageSources != null)
