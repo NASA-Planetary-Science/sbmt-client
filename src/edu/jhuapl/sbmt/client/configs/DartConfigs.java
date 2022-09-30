@@ -246,7 +246,7 @@ public class DartConfigs extends SmallBodyViewConfigBuilder
             boolean lukeTranspose = false;
 
             {
-                String label = "DART Jupiter-01";
+                String label = "DART Jupiter-v01";
                 ShapeModelType author = author(label);
 
                 init(ShapeModelBody.JUPITER, author, ShapeModelDataUsed.SIMULATED, label);
@@ -260,7 +260,7 @@ public class DartConfigs extends SmallBodyViewConfigBuilder
             }
 
             {
-                String label = "DART Ganymede-01";
+                String label = "DART Ganymede-v01";
                 ShapeModelType author = author(label);
 
                 init(ShapeModelBody.GANYMEDE, author, ShapeModelDataUsed.SIMULATED, label);
