@@ -99,6 +99,7 @@ public class SmallBodyViewConfigBuilder
     protected final List<ImagingInstrument> imagingInstruments;
     protected final List<DBRunInfo> dbRunInfos;
     private final AtomicBoolean midInit;
+    private final AtomicBoolean initDone;
 
     /**
      * Constructs a builder, but does not completely initialize it. See
@@ -116,7 +117,8 @@ public class SmallBodyViewConfigBuilder
         this.c = new AtomicReference<>();
         this.imagingInstruments = new ArrayList<>();
         this.dbRunInfos = new ArrayList<>();
-        this.midInit = new AtomicBoolean();
+        this.midInit = new AtomicBoolean(false);
+        this.initDone = new AtomicBoolean(false);
     }
 
     /**
@@ -449,7 +451,10 @@ public class SmallBodyViewConfigBuilder
         {
             try
             {
-                doInit();
+                if (initDone.compareAndSet(false, true))
+                {
+                    doInit();
+                }
             }
             finally
             {
@@ -469,11 +474,8 @@ public class SmallBodyViewConfigBuilder
      */
     protected void doInit()
     {
-        if (getConfig() == null)
-        {
-            SmallBodyViewConfig c = createConfig();
-            setConfig(c);
-        }
+        SmallBodyViewConfig c = createConfig();
+        setConfig(c);
     }
 
     /**
@@ -531,6 +533,7 @@ public class SmallBodyViewConfigBuilder
         setConfig(null);
         imagingInstruments.clear();
         dbRunInfos.clear();
+        initDone.set(false);
     }
 
     /**
