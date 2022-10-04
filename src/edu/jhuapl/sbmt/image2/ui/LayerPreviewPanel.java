@@ -28,7 +28,7 @@ import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.JPanel;
-import javax.swing.JScrollPane;
+import javax.swing.JSplitPane;
 import javax.swing.WindowConstants;
 
 import org.apache.commons.lang3.StringUtils;
@@ -77,7 +77,7 @@ public class LayerPreviewPanel extends ModelInfoWindow implements MouseListener,
 	private vtkPropPicker imagePicker;
 	private boolean initialized = false;
 	private boolean centerFrustumMode = false;
-	private JScrollPane jScrollPane1;
+//	private JScrollPane jScrollPane1;
 	private JPanel tablePanel;
 	private int[] previousLevels = null;
 	private vtkImageData displayedImage;
@@ -86,6 +86,9 @@ public class LayerPreviewPanel extends ModelInfoWindow implements MouseListener,
 	private Runnable completionBlock;
 	private JComboBox<String> layerComboBox;
 	private int displayedLayerIndex = 0;
+	private JSplitPane splitPane;
+	private JPanel layerPanel;
+	private JPanel controlsPanel;
 
 	public LayerPreviewPanel(String title, final List<Layer> layers, List<HashMap<String, String>> metadatas, Runnable completionBlock) throws IOException, Exception
 	{
@@ -95,13 +98,25 @@ public class LayerPreviewPanel extends ModelInfoWindow implements MouseListener,
 		this.metadata = metadatas.get(0);
 		this.maskPipeline = new VtkImageMaskingPipeline();
 		this.completionBlock = completionBlock;
+		this.layerPanel = new JPanel();
+		this.layerPanel.setLayout(new GridBagLayout());
+		this.controlsPanel = new JPanel();
+		this.controlsPanel.setLayout(new GridBagLayout());
+		this.splitPane = new JSplitPane(JSplitPane.VERTICAL_SPLIT, layerPanel, controlsPanel);
+
 		initComponents();
 		renderLayer(layer);
 		setIntensity(null);
 
 		createMenus();
 		setTitle(title);
-
+		GridBagConstraints gridBagConstraints = new GridBagConstraints();
+		gridBagConstraints.gridx = 0;
+		gridBagConstraints.gridy = 0;
+		gridBagConstraints.fill = GridBagConstraints.BOTH;
+		gridBagConstraints.weightx = 1.0;
+		gridBagConstraints.weighty = 1.0;
+		getContentPane().add(splitPane, gridBagConstraints);
 		pack();
 		setVisible(true);
 
@@ -195,11 +210,11 @@ public class LayerPreviewPanel extends ModelInfoWindow implements MouseListener,
 		GridBagConstraints gridBagConstraints = new GridBagConstraints();
 		gridBagConstraints.gridx = 0;
 		gridBagConstraints.gridy = 0;
-		gridBagConstraints.gridwidth = 2;
+//		gridBagConstraints.gridwidth = 2;
 		gridBagConstraints.fill = GridBagConstraints.BOTH;
 		gridBagConstraints.weightx = 1.0;
 		gridBagConstraints.weighty = 1.0;
-		getContentPane().add(renWin.getComponent(), gridBagConstraints);
+		layerPanel.add(renWin.getComponent(), gridBagConstraints);
 	}
 
 	private void updateImage(vtkImageData displayedImage)
@@ -304,12 +319,13 @@ public class LayerPreviewPanel extends ModelInfoWindow implements MouseListener,
 			});
 			GridBagConstraints gridBagConstraints = new GridBagConstraints();
 			gridBagConstraints.gridx = 0;
-			gridBagConstraints.gridy = 1;
+			gridBagConstraints.gridy = 0;
 			gridBagConstraints.gridwidth = 1;
 			gridBagConstraints.fill = GridBagConstraints.HORIZONTAL;
 			gridBagConstraints.anchor = GridBagConstraints.WEST;
 			gridBagConstraints.weightx = 1.0;
-			getContentPane().add(layerComboBox, gridBagConstraints);
+			gridBagConstraints.weighty = 0.0;
+			controlsPanel.add(layerComboBox, gridBagConstraints);
 
 			JButton applyToBodyButton = new JButton("Apply to Body");
 			applyToBodyButton.addActionListener(evt -> {
@@ -319,7 +335,7 @@ public class LayerPreviewPanel extends ModelInfoWindow implements MouseListener,
 			});
 
 			gridBagConstraints.gridx = 1;
-			getContentPane().add(applyToBodyButton, gridBagConstraints);
+			controlsPanel.add(applyToBodyButton, gridBagConstraints);
 		}
 	}
 
@@ -330,19 +346,20 @@ public class LayerPreviewPanel extends ModelInfoWindow implements MouseListener,
 			properties.add(new ImageProperty(str, metadata.get(str)));
 		ImagePropertiesController propertiesController = new ImagePropertiesController(properties);
 		tablePanel = propertiesController.getView();
-		jScrollPane1 = new JScrollPane();
+//		jScrollPane1 = new JScrollPane();
 
 
 		GridBagConstraints gridBagConstraints = new GridBagConstraints();
 		gridBagConstraints.gridx = 0;
-		gridBagConstraints.gridy = 4;
+		gridBagConstraints.gridy = 3;
 		gridBagConstraints.gridwidth = 2;
-		gridBagConstraints.fill = GridBagConstraints.HORIZONTAL;
-		gridBagConstraints.anchor = GridBagConstraints.WEST;
+		gridBagConstraints.fill = GridBagConstraints.BOTH;
+		gridBagConstraints.anchor = GridBagConstraints.SOUTHWEST;
 		gridBagConstraints.weightx = 1.0;
+		gridBagConstraints.weighty = 1.0;
 		if (properties.size() > 0)
 		{
-			getContentPane().add(tablePanel, gridBagConstraints);
+			controlsPanel.add(tablePanel, gridBagConstraints);
 		}
 		else
 		{
@@ -356,7 +373,7 @@ public class LayerPreviewPanel extends ModelInfoWindow implements MouseListener,
 			midPanel.add(Box.createHorizontalGlue());
 			panel.add(midPanel);
 			panel.add(Box.createVerticalStrut(20));
-			getContentPane().add(panel, gridBagConstraints);
+			controlsPanel.add(panel, gridBagConstraints);
 		}
 	}
 
@@ -364,9 +381,10 @@ public class LayerPreviewPanel extends ModelInfoWindow implements MouseListener,
 	{
 		GridBagConstraints gridBagConstraints = new GridBagConstraints();
 		gridBagConstraints.gridx = 0;
-		gridBagConstraints.gridy = 2;
-		gridBagConstraints.gridwidth = getContentPane().getWidth();
-		gridBagConstraints.weightx = 1;
+		gridBagConstraints.gridy = 1;
+		gridBagConstraints.gridwidth = controlsPanel.getWidth();
+		gridBagConstraints.weightx = 1.0;
+		gridBagConstraints.weighty = 0.0;
 		gridBagConstraints.fill = GridBagConstraints.HORIZONTAL;
 		contrastController = new ImageContrastController(displayedImage, new IntensityRange(0, 255), new Function<vtkImageData, Void>() {
 
@@ -390,7 +408,7 @@ public class LayerPreviewPanel extends ModelInfoWindow implements MouseListener,
 			}
 		});
 
-		getContentPane().add(contrastController.getView(), gridBagConstraints);
+		controlsPanel.add(contrastController.getView(), gridBagConstraints);
 
 	}
 
@@ -398,8 +416,11 @@ public class LayerPreviewPanel extends ModelInfoWindow implements MouseListener,
 	{
 		GridBagConstraints gridBagConstraints = new GridBagConstraints();
 		gridBagConstraints.gridx = 0;
-		gridBagConstraints.gridy = 3;
+		gridBagConstraints.gridy = 2;
+		gridBagConstraints.weightx = 1.0;
+		gridBagConstraints.weighty = 0.0;
 		gridBagConstraints.fill = GridBagConstraints.HORIZONTAL;
+		gridBagConstraints.anchor = GridBagConstraints.WEST;
 		gridBagConstraints.insets = new Insets(3, 6, 3, 0);
 		trimController = new ImageTrimController(layer, new Function<Layer, Void>()
 		{
@@ -427,7 +448,7 @@ public class LayerPreviewPanel extends ModelInfoWindow implements MouseListener,
 			}
 		});
 
-		getContentPane().add(trimController.getView(), gridBagConstraints);
+		controlsPanel.add(trimController.getView(), gridBagConstraints);
 	}
 
 	public IntensityRange getIntensityRange()

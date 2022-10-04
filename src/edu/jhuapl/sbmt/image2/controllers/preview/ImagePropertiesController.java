@@ -1,9 +1,10 @@
 package edu.jhuapl.sbmt.image2.controllers.preview;
 
 import java.awt.Dimension;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
 import java.util.List;
 
-import javax.swing.BoxLayout;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
@@ -86,8 +87,15 @@ class ImagePropertiesTableView extends JPanel
 
 	protected void init()
 	{
-		BoxLayout boxLayout = new BoxLayout(this, BoxLayout.X_AXIS);
-		setLayout(boxLayout);
+		GridBagConstraints gridBagConstraints = new GridBagConstraints();
+		gridBagConstraints.gridx = 0;
+		gridBagConstraints.gridy = 0;
+		gridBagConstraints.gridwidth = 3;
+		gridBagConstraints.weightx = 1.0;
+		gridBagConstraints.weighty = 1.0;
+		gridBagConstraints.fill = GridBagConstraints.BOTH;
+		gridBagConstraints.anchor = GridBagConstraints.WEST;
+		setLayout(new GridBagLayout());
 
 		QueryComposer<ImagePropertiesColumnLookup> tmpComposer = new QueryComposer<>();
 		tmpComposer.addAttribute(ImagePropertiesColumnLookup.Property, String.class, "Property", null);
@@ -121,7 +129,7 @@ class ImagePropertiesTableView extends JPanel
 
         JScrollPane scrollPane = new JScrollPane();
         scrollPane.setPreferredSize(new Dimension(452, 200));
-        add(scrollPane);
+        add(scrollPane, gridBagConstraints);
 
         scrollPane.setViewportView(propertiesTable);
 	}
