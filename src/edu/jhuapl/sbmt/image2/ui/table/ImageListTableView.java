@@ -1,6 +1,7 @@
 package edu.jhuapl.sbmt.image2.ui.table;
 
 import java.awt.Component;
+import java.awt.Dimension;
 import java.awt.datatransfer.Transferable;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -242,6 +243,7 @@ public class ImageListTableView<G1 extends IPerspectiveImage & IPerspectiveImage
 		buttonPanel.add(Box.createHorizontalStrut(50));
 		buttonPanel.add(new JLabel("Bndr:"));
 		boundaryOffsetTextField = new JTextField("10");
+		boundaryOffsetTextField.setMaximumSize( new Dimension(100, boundaryOffsetTextField.getPreferredSize().height) );
 		buttonPanel.add(boundaryOffsetTextField);
 		previousBoundariesButton = new JButton("<");
 		nextBoundariesButton = new JButton(">");
