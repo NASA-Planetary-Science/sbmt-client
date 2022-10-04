@@ -777,11 +777,12 @@ public class PerspectiveImageCollection<G1 extends IPerspectiveImage & IPerspect
 
 	public void setImagingInstrument(IImagingInstrument imagingInstrument)
 	{
+		if (imagingInstrument == null) loadUserList();
 		if (this.imagingInstrument == imagingInstrument) return;
 		this.imagingInstrument = imagingInstrument;
 		if (imagingInstrument == null)
 		{
-			loadUserList();
+
 			setAllItems(userImages);
 		}
 		else if (imagesByInstrument.get(imagingInstrument) == null)
