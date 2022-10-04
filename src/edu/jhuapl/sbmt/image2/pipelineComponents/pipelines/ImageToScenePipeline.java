@@ -73,6 +73,7 @@ public class ImageToScenePipeline implements RenderableImageActorPipeline
 	public List<vtkActor> getRenderableImageFrustumActors()
 	{
 		List<vtkActor> frustumActors = Lists.newArrayList();
+		if (sceneOutputs[activeLayerIndex] == null)  return frustumActors;
 		for (ImageRenderable renderable : sceneOutputs[activeLayerIndex].getRight())
 		{
 			if (renderable.getFrustum() == null) continue;
@@ -84,6 +85,7 @@ public class ImageToScenePipeline implements RenderableImageActorPipeline
 	public List<vtkActor> getRenderableOfflimbImageActors()
 	{
 		List<vtkActor> offLimbActors = Lists.newArrayList();
+		if (sceneOutputs[activeLayerIndex] == null)  return offLimbActors;
 		for (ImageRenderable renderable : sceneOutputs[activeLayerIndex].getRight())
 		{
 			vtkActor actor = renderable.getOffLimb();
@@ -99,6 +101,7 @@ public class ImageToScenePipeline implements RenderableImageActorPipeline
 	public List<vtkActor> getRenderableModifiedImageFrustumActors()
 	{
 		List<vtkActor> frustumActors = Lists.newArrayList();
+		if (sceneOutputs[activeLayerIndex] == null)  return frustumActors;
 		for (ImageRenderable renderable : sceneOutputs[activeLayerIndex].getRight())
 		{
 			if (renderable.getModifiedFrustumActor() == null) continue;
@@ -113,6 +116,7 @@ public class ImageToScenePipeline implements RenderableImageActorPipeline
 	public List<vtkActor> getRenderableOffLimbBoundaryActors()
 	{
 		List<vtkActor> offLimbActors = Lists.newArrayList();
+		if (sceneOutputs[activeLayerIndex] == null)  return offLimbActors;
 		for (ImageRenderable renderable : sceneOutputs[activeLayerIndex].getRight())
 		{
 			vtkActor actor = renderable.getOffLimbBoundary();

@@ -95,13 +95,14 @@ public class PerspectiveImageCollection<G1 extends IPerspectiveImage & IPerspect
 		state.boundaryColor = color;
 		renderingStates.put(image,state);
 		updateUserList();	//update the user created list, stored in metadata
-		setAllItems(userImages);
+//		setAllItems(userImages);
 	}
 
 	private void loadUserList()
 	{
-		if (userImages.size() != 0) return;
-		String instrumentName = imagingInstrument == null ? "" : imagingInstrument.getType().toString();
+//		if (userImages.size() != 0) return;
+		userImages.clear();
+		String instrumentName = ""; //imagingInstrument == null ? "" : imagingInstrument.getType().toString();
 		String filename = smallBodyModels.get(0).getCustomDataFolder() + File.separator + "userImages" + instrumentName + ".txt";
         if (!new File(filename).exists()) return;
 		FixedMetadata metadata;
@@ -133,7 +134,7 @@ public class PerspectiveImageCollection<G1 extends IPerspectiveImage & IPerspect
 
 	private void updateUserList()
 	{
-		String instrumentName = imagingInstrument == null ? "" : imagingInstrument.getType().toString();
+		String instrumentName = ""; //imagingInstrument == null ? "" : imagingInstrument.getType().toString();
 		String filename = smallBodyModels.get(0).getCustomDataFolder() + File.separator + "userImages" + instrumentName + ".txt";
 		SettableMetadata configMetadata = SettableMetadata.of(Version.of(1, 0));
         final Key<List<G1>> userImagesKey = Key.of("UserImages");
@@ -780,6 +781,7 @@ public class PerspectiveImageCollection<G1 extends IPerspectiveImage & IPerspect
 		this.imagingInstrument = imagingInstrument;
 		if (imagingInstrument == null)
 		{
+			loadUserList();
 			setAllItems(userImages);
 		}
 		else if (imagesByInstrument.get(imagingInstrument) == null)
@@ -791,7 +793,7 @@ public class PerspectiveImageCollection<G1 extends IPerspectiveImage & IPerspect
 			ImmutableList<G1> filteredImages = ImmutableList.copyOf(imagesByInstrument.get(imagingInstrument).stream().filter(image -> image.getImageType() == imagingInstrument.getType()).toList());
 			setAllItems(filteredImages);
 		}
-		loadUserList();
+//		loadUserList();
 	}
 
 	private Thread getBoundaryCreationThread(G1 image,  Function<Void, Void> completionBlock)
