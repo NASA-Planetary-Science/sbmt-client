@@ -410,7 +410,7 @@ public class CustomImageImporterDialog2<G1 extends IPerspectiveImage & IPerspect
 		if (!pointingSource.isEmpty())
 		{
 			newPointingFilepath = imageCollection.getSmallBodyModels().get(0).getCustomDataFolder() + File.separator + new File(pointingSource).getName();
-			if (new File(newPointingFilepath).exists())
+			if (new File(pointingSource).exists())
 				FileUtil.copyFile(pointingSource,  newPointingFilepath);
 			else
 			{

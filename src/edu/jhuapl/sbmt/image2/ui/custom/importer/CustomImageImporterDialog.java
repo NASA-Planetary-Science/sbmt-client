@@ -97,7 +97,6 @@ public class CustomImageImporterDialog<G1 extends IPerspectiveImage & IPerspecti
 					pointingTypeComboBox.setSelectedIndex(0);
 					pointingFilenameTextField.setText(image.getPointingSource());
 					imageFlipComboBox.setSelectedItem(image.getFlip());
-					System.out.println("CustomImageImporterDialog: initGUI: " + image.getRotation());
 					imageRotationComboBox.setSelectedItem(""+ (int)(image.getRotation()));
 				}
 				else
