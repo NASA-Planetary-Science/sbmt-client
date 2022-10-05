@@ -72,7 +72,7 @@ public class ShowImagePropertiesAction<G1 extends IPerspectiveImage & IPerspecti
 				CylindricalImageToRenderableImagePipeline pipeline = CylindricalImageToRenderableImagePipeline.of(List.of(aItemL.get(0)));
 				List<HashMap<String, String>> metadata = pipeline.getMetadata();
 				List<IRenderableImage> renderableImages = pipeline.getRenderableImages();
-				preview = new VtkLayerPreview("Image Properties");
+				preview = new VtkLayerPreview("Image Properties", image.getCurrentLayer());
 				preview.setCompletionBlock(completionBlock);
 				List<Pair<Layer, HashMap<String, String>>> inputList = Lists.newArrayList();
 				for (int i=0; i<renderableImages.size(); i++)
@@ -90,7 +90,7 @@ public class ShowImagePropertiesAction<G1 extends IPerspectiveImage & IPerspecti
 				List<HashMap<String, String>> metadata = pipeline.getMetadata();
 				HashMap<String, String> derivedMetadata = new PerspectiveImageToDerivedMetadataPipeline(renderableImages.get(0), List.of(smallBodyModel)).getMetadata();
 				metadata.get(0).putAll(derivedMetadata);
-				preview = new VtkLayerPreview("Image Properties");
+				preview = new VtkLayerPreview("Image Properties", image.getCurrentLayer());
 				preview.setCompletionBlock(completionBlock);
 				List<Pair<Layer, HashMap<String, String>>> inputList = Lists.newArrayList();
 				for (int i=0; i<renderableImages.size(); i++)

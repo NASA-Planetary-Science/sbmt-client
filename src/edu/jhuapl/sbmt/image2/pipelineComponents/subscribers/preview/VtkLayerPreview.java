@@ -19,15 +19,18 @@ public class VtkLayerPreview implements IPipelineSubscriber<Pair<Layer, HashMap<
 	private LayerPreviewPanel preview;
 	private String title;
 	private Runnable completionBlock;
+	private int currentLayerIndex;
 
-	public VtkLayerPreview(String title)
+	public VtkLayerPreview(String title, int currentLayerIndex)
 	{
 		this.title = title;
+		this.currentLayerIndex = currentLayerIndex;
 	}
 
-	public VtkLayerPreview(String title, Runnable completionBlock)
+	public VtkLayerPreview(String title, int currentLayerIndex, Runnable completionBlock)
 	{
 		this.title = title;
+		this.currentLayerIndex = currentLayerIndex;
 		this.completionBlock = completionBlock;
 	}
 
@@ -38,7 +41,7 @@ public class VtkLayerPreview implements IPipelineSubscriber<Pair<Layer, HashMap<
 		{
 			List<Layer> layers = items.stream().map( item -> item.getLeft()).toList();
 			List<HashMap<String, String>> metadata = items.stream().map( item -> item.getRight()).toList();
-			preview = new LayerPreviewPanel(title, layers, metadata, completionBlock);
+			preview = new LayerPreviewPanel(title, layers, currentLayerIndex, metadata, completionBlock);
 		}
 		catch (Exception e)
 		{
@@ -90,7 +93,7 @@ public class VtkLayerPreview implements IPipelineSubscriber<Pair<Layer, HashMap<
 
 	public int getDisplayedLayerIndex()
 	{
-		if (preview == null) return 0;
+		if (preview == null) return currentLayerIndex;
 		return preview.getDisplayedLayerIndex();
 	}
 }

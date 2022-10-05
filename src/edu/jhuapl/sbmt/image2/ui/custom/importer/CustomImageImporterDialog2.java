@@ -372,6 +372,7 @@ public class CustomImageImporterDialog2<G1 extends IPerspectiveImage & IPerspect
 		{
 			imageCollection.addUserImage(image);
 		}
+		imageCollection.loadUserList();
 		imageCollection.setImagingInstrument(null);
 	}
 
@@ -453,7 +454,6 @@ public class CustomImageImporterDialog2<G1 extends IPerspectiveImage & IPerspect
 		}
 		CompositePerspectiveImage compImage = new CompositePerspectiveImage(List.of(image));
 		compImage.setName(FilenameUtils.getBaseName(filename));
-		System.out.println("CustomImageImporterDialog2: storeImage: returning ");
 		return (G1)compImage;
 	}
 }

@@ -28,7 +28,7 @@ public class VTKDebug
 	{
 		Pair<Layer, HashMap<String, String>> inputs = Pair.of(layer, new HashMap<String, String>());
 		Just.of(inputs)
-			.subscribe(new VtkLayerPreview(title, new Runnable()
+			.subscribe(new VtkLayerPreview(title, 0, new Runnable()
 			{
 
 				@Override

@@ -8,6 +8,7 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import java.util.function.Function;
 
 import javax.swing.JOptionPane;
@@ -85,6 +86,39 @@ public class PerspectiveImageCollection<G1 extends IPerspectiveImage & IPerspect
 		this.offLimbBoundaryRenderers = new HashMap<G1, List<vtkActor>>();
 		this.renderingStates = new HashMap<G1, PerspectiveImageRenderingState<G1>>();
 		this.smallBodyModels = smallBodyModels;
+
+		for (SmallBodyModel smallBodyModel : smallBodyModels)
+		{
+			smallBodyModel.addPropertyChangeListener((evt) -> {
+
+				if (Properties.MODEL_RESOLUTION_CHANGED.equals(evt.getPropertyName()))
+				{
+					SwingUtilities.invokeLater(new Runnable()
+					{
+						public void run()
+						{
+							if (renderingStates.size() > 0)
+							{
+								int response = JOptionPane.showConfirmDialog(
+									    null,
+									    "You have mapped images; changing the model resolution will force a refresh of those images, and may take some time. Continue?",
+									    "Remap Images?",
+									    JOptionPane.YES_NO_OPTION);
+								if (response == JOptionPane.NO_OPTION) return;
+							}
+
+			            	Set<G1> keySet = renderingStates.keySet();
+			            	for (G1 image : keySet)
+			            	{
+			            		if (renderingStates.get(image).isMapped)
+			            			setImageMapped(image, true, true);
+			            	}
+						}
+					});
+				}
+
+			});
+		}
 	}
 
 	public void addUserImage(G1 image)
@@ -98,7 +132,7 @@ public class PerspectiveImageCollection<G1 extends IPerspectiveImage & IPerspect
 //		setAllItems(userImages);
 	}
 
-	private void loadUserList()
+	public void loadUserList()
 	{
 //		if (userImages.size() != 0) return;
 		userImages.clear();
@@ -293,7 +327,7 @@ public class PerspectiveImageCollection<G1 extends IPerspectiveImage & IPerspect
 		for (int i=lowBound; i<=highBound; i++)
 		{
 			G1 image = getAllItems().get(i);
-			boolean validIndex = new Range(currentBoundaryRange.id1, currentBoundaryRange.id2).contains(i);
+			boolean validIndex = new Range(currentBoundaryRange.id1, currentBoundaryRange.id2).contains(i) /*&& renderingStates.get(image).isBoundaryShowing*/;
 			setImageBoundaryShowing(image, validIndex);
 		}
 		pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
@@ -328,9 +362,14 @@ public class PerspectiveImageCollection<G1 extends IPerspectiveImage & IPerspect
 
 	public void setImageMapped(G1 image, boolean mapped)
 	{
+		setImageMapped(image, mapped, false);
+	}
+
+	public void setImageMapped(G1 image, boolean mapped, boolean reRender)
+	{
 		image.setMapped(mapped);
 		List<vtkActor> actors = imageRenderers.get(image);
-		if (actors == null && mapped == true)
+		if ((actors == null && mapped == true) || reRender)
 		{
 			Thread thread = new Thread(new Runnable()
 			{
@@ -777,7 +816,7 @@ public class PerspectiveImageCollection<G1 extends IPerspectiveImage & IPerspect
 
 	public void setImagingInstrument(IImagingInstrument imagingInstrument)
 	{
-		if (imagingInstrument == null) loadUserList();
+		if (imagingInstrument == null && userImages.size() == 0) loadUserList();
 		if (this.imagingInstrument == imagingInstrument) return;
 		this.imagingInstrument = imagingInstrument;
 		if (imagingInstrument == null)
@@ -922,6 +961,7 @@ public class PerspectiveImageCollection<G1 extends IPerspectiveImage & IPerspect
 
 	public void setCurrentBoundaryOffsetAmount(int currentBoundaryOffsetAmount)
 	{
+		if (this.currentBoundaryOffsetAmount == currentBoundaryOffsetAmount) return;
 		IdPair previousRange = new IdPair(this.currentBoundaryRange.id1, this.currentBoundaryRange.id2);
 		this.currentBoundaryOffsetAmount = currentBoundaryOffsetAmount;
 		this.currentBoundaryRange.id2 = this.currentBoundaryRange.id1 + currentBoundaryOffsetAmount - 1;

@@ -1,5 +1,6 @@
 package edu.jhuapl.sbmt.image2.model;
 
+import edu.jhuapl.saavtk.util.IntensityRange;
 import edu.jhuapl.sbmt.core.image.PointingFileReader;
 import edu.jhuapl.sbmt.image2.pipelineComponents.operators.rendering.layer.LayerMasking;
 import edu.jhuapl.sbmt.layer.api.Layer;
@@ -13,6 +14,8 @@ public interface IRenderableImage
 	Layer getLayer();
 
 	LayerMasking getMasking();
+
+	IntensityRange getIntensityRange();
 
 	/**
 	 * @return the isLinearInterpolation

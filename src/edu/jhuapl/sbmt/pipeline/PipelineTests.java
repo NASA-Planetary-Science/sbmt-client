@@ -74,7 +74,7 @@ public class PipelineTests
 //		VtkImageRenderer renderer = new VtkImageRenderer();
 //		VtkImageContrastOperator contrastOperator = new VtkImageContrastOperator(null);
 //		VtkImageVtkMaskingOperator maskingOperator = new VtkImageVtkMaskingOperator(new int[] {0,0,0,0});
-		VtkLayerPreview preview = new VtkLayerPreview("Test 1", new Runnable()
+		VtkLayerPreview preview = new VtkLayerPreview("Test 1", 0, new Runnable()
 		{
 
 			@Override

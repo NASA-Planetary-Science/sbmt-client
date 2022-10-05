@@ -90,12 +90,13 @@ public class LayerPreviewPanel extends ModelInfoWindow implements MouseListener,
 	private JPanel layerPanel;
 	private JPanel controlsPanel;
 
-	public LayerPreviewPanel(String title, final List<Layer> layers, List<HashMap<String, String>> metadatas, Runnable completionBlock) throws IOException, Exception
+	public LayerPreviewPanel(String title, final List<Layer> layers, int currentLayerIndex, List<HashMap<String, String>> metadatas, Runnable completionBlock) throws IOException, Exception
 	{
 		this.layers = layers;
-		this.layer = layers.get(0);
+		this.displayedLayerIndex = currentLayerIndex;
+		this.layer = layers.get(currentLayerIndex);
 		this.metadatas = metadatas;
-		this.metadata = metadatas.get(0);
+		this.metadata = metadatas.get(currentLayerIndex);
 		this.maskPipeline = new VtkImageMaskingPipeline();
 		this.completionBlock = completionBlock;
 		this.layerPanel = new JPanel();
@@ -163,7 +164,7 @@ public class LayerPreviewPanel extends ModelInfoWindow implements MouseListener,
 	{
 		VtkImageContrastPipeline pipeline = new VtkImageContrastPipeline(displayedImage, range);
 		displayedImage = pipeline.getUpdatedData().get(0);
-		updateImage(displayedImage);
+ 		updateImage(displayedImage);
 		if (completionBlock != null) completionBlock.run();
 	}
 
@@ -295,6 +296,7 @@ public class LayerPreviewPanel extends ModelInfoWindow implements MouseListener,
 					layerNames[i] = "PLANE" + (i+1);
 				}
 			layerComboBox = new JComboBox<String>(layerNames);
+			layerComboBox.setSelectedIndex(displayedLayerIndex);
 			layerComboBox.addActionListener(new ActionListener()
 			{
 
@@ -305,6 +307,8 @@ public class LayerPreviewPanel extends ModelInfoWindow implements MouseListener,
 					int index = Integer.parseInt(title.split(" ")[0].replace("PLANE", "")) - 1;
 					try
 					{
+						layer = layers.get(index);
+						trimController.setLayer(layer);
 						generateVtkImageData(layers.get(index));
 						updateImage(displayedImage);
 						setIntensity(null);
@@ -397,6 +401,7 @@ public class LayerPreviewPanel extends ModelInfoWindow implements MouseListener,
 					updateImage(displayedImage);
 					setIntensity(null);
 					renWin.Render();
+					if (completionBlock != null) completionBlock.run();
 				}
 				catch (Exception e)
 				{
@@ -435,6 +440,7 @@ public class LayerPreviewPanel extends ModelInfoWindow implements MouseListener,
 					setIntensity(null);
 					renWin.Render();
 					layer = t;
+					if (completionBlock != null) completionBlock.run();
 //					maskController.setLayer(t);
 //					trimController.setLayer(t);
 				}
