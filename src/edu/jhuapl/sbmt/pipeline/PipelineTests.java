@@ -10,6 +10,7 @@ import com.google.common.collect.Lists;
 
 import vtk.vtkActor;
 
+import edu.jhuapl.saavtk.util.IntensityRange;
 import edu.jhuapl.saavtk.util.NativeLibraryLoader;
 import edu.jhuapl.sbmt.common.client.SmallBodyModel;
 import edu.jhuapl.sbmt.core.image.PointingFileReader;
@@ -74,7 +75,7 @@ public class PipelineTests
 //		VtkImageRenderer renderer = new VtkImageRenderer();
 //		VtkImageContrastOperator contrastOperator = new VtkImageContrastOperator(null);
 //		VtkImageVtkMaskingOperator maskingOperator = new VtkImageVtkMaskingOperator(new int[] {0,0,0,0});
-		VtkLayerPreview preview = new VtkLayerPreview("Test 1", 0, new Runnable()
+		VtkLayerPreview preview = new VtkLayerPreview("Test 1", 0, new IntensityRange(0, 255), new int[] {0,0,0,0}, new Runnable()
 		{
 
 			@Override

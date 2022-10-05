@@ -8,6 +8,7 @@ import vtk.vtkImageData;
 import vtk.vtkPolyData;
 import vtk.vtkPolyDataWriter;
 
+import edu.jhuapl.saavtk.util.IntensityRange;
 import edu.jhuapl.sbmt.image2.pipelineComponents.subscribers.preview.VtkImagePreview;
 import edu.jhuapl.sbmt.image2.pipelineComponents.subscribers.preview.VtkLayerPreview;
 import edu.jhuapl.sbmt.layer.api.Layer;
@@ -28,7 +29,7 @@ public class VTKDebug
 	{
 		Pair<Layer, HashMap<String, String>> inputs = Pair.of(layer, new HashMap<String, String>());
 		Just.of(inputs)
-			.subscribe(new VtkLayerPreview(title, 0, new Runnable()
+			.subscribe(new VtkLayerPreview(title, 0, new IntensityRange(0, 255), new int[] {0,0,0,0}, new Runnable()
 			{
 
 				@Override

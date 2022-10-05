@@ -89,10 +89,14 @@ public class LayerPreviewPanel extends ModelInfoWindow implements MouseListener,
 	private JSplitPane splitPane;
 	private JPanel layerPanel;
 	private JPanel controlsPanel;
+	private IntensityRange intensityRange;
+	private int[] currentMaskValues;
 
-	public LayerPreviewPanel(String title, final List<Layer> layers, int currentLayerIndex, List<HashMap<String, String>> metadatas, Runnable completionBlock) throws IOException, Exception
+	public LayerPreviewPanel(String title, final List<Layer> layers, int currentLayerIndex, IntensityRange intensityRange, int[] currentMaskValues, List<HashMap<String, String>> metadatas, Runnable completionBlock) throws IOException, Exception
 	{
 		this.layers = layers;
+		this.intensityRange = intensityRange;
+		this.currentMaskValues = currentMaskValues;
 		this.displayedLayerIndex = currentLayerIndex;
 		this.layer = layers.get(currentLayerIndex);
 		this.metadatas = metadatas;
@@ -107,7 +111,7 @@ public class LayerPreviewPanel extends ModelInfoWindow implements MouseListener,
 
 		initComponents();
 		renderLayer(layer);
-		setIntensity(null);
+		setIntensity(intensityRange);
 
 		createMenus();
 		setTitle(title);
@@ -122,7 +126,7 @@ public class LayerPreviewPanel extends ModelInfoWindow implements MouseListener,
 		setVisible(true);
 
 		initialized = true;
-
+		trimController.setMaskValues(currentMaskValues);
 		javax.swing.SwingUtilities.invokeLater(new Runnable()
 		{
 			@Override
@@ -390,7 +394,7 @@ public class LayerPreviewPanel extends ModelInfoWindow implements MouseListener,
 		gridBagConstraints.weightx = 1.0;
 		gridBagConstraints.weighty = 0.0;
 		gridBagConstraints.fill = GridBagConstraints.HORIZONTAL;
-		contrastController = new ImageContrastController(displayedImage, new IntensityRange(0, 255), new Function<vtkImageData, Void>() {
+		contrastController = new ImageContrastController(displayedImage, intensityRange, new Function<vtkImageData, Void>() {
 
 			@Override
 			public Void apply(vtkImageData t)
@@ -438,6 +442,7 @@ public class LayerPreviewPanel extends ModelInfoWindow implements MouseListener,
 					generateVtkImageData(t);
 					updateImage(displayedImage);
 					setIntensity(null);
+					if (renWin == null) return null;
 					renWin.Render();
 					layer = t;
 					if (completionBlock != null) completionBlock.run();
@@ -453,7 +458,7 @@ public class LayerPreviewPanel extends ModelInfoWindow implements MouseListener,
 				return null;
 			}
 		});
-
+		trimController.setMaskValues(currentMaskValues);
 		controlsPanel.add(trimController.getView(), gridBagConstraints);
 	}
 
