@@ -45,13 +45,33 @@ public class GDALReader extends BasePipelinePublisher<Layer>
 					.checker(checker)
 					.build()
 					.load();
+//			 try
+//				{
+//					VTKDebug.previewLayer(layer, "Layer after translation");
+//				}
+//				catch (Exception e)
+//				{
+//					// TODO Auto-generated catch block
+//					e.printStackTrace();
+//				}
 			int numLayers = layer.dataSizes().get(0);
 			PixelVector factory = new PixelVectorDoubleFactory().of(numLayers, oobValue);
 			Hashtable<String, String> metadata = (Hashtable<String, String>)dataset.GetMetadata_Dict();
+
 			for (int i=0; i < numLayers; i++)
 			{
 				 Function<Layer, Layer> transform = new LayerTransformFactory().slice(factory, i);
 				 Layer singleLayer = transform.apply(layer);
+//				 singleLayer = new LayerTransformFactory().swapIJ().apply(singleLayer);
+//				 try
+//				{
+//					VTKDebug.previewLayer(singleLayer, "Single Layer on load");
+//				}
+//				catch (Exception e)
+//				{
+//					// TODO Auto-generated catch block
+//					e.printStackTrace();
+//				}
 				 outputs.add(singleLayer);
 			}
 

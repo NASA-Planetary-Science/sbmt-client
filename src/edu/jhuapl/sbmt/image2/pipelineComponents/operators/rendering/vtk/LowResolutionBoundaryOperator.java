@@ -134,7 +134,7 @@ public class LowResolutionBoundaryOperator extends BasePipelineOperator<Pair<Poi
 		                double[] x = new double[3];
 		                double[] pcoords = new double[3];
 		                int[] subId = new int[1];
-		                int[] cellId = new int[1];
+		                long[] cellId = new long[1];
 		                int result = cellLocator.IntersectWithLine(spacecraftPosition, lookPt, tol, t, x, pcoords, subId, cellId, cell);
 
 		                if (result > 0)
@@ -165,7 +165,7 @@ public class LowResolutionBoundaryOperator extends BasePipelineOperator<Pair<Poi
 
 		        actor.SetMapper(boundaryMapper);
 		        actor.GetProperty().SetColor(1.0, 0.0, 0.0);
-		        actor.GetProperty().SetPointSize(2.0);
+		        actor.GetProperty().SetPointSize(2.0f);
 		        outputs.add(actor);
 	    	}
         }

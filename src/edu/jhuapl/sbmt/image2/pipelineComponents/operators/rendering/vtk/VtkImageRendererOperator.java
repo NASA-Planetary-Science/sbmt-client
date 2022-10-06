@@ -61,7 +61,7 @@ public class VtkImageRendererOperator
     				for (int k = 0; k < layerDepth; k++)
     				{
     					PixelDouble vecPixel = (PixelDouble)pixel.get(k);
-    					output.SetScalarComponentFromFloat(i, j, 0, k, vecPixel.get());
+    					output.SetScalarComponentFromFloat(i, j, 0, k, (float)vecPixel.get());
     				}
     			}
     		}

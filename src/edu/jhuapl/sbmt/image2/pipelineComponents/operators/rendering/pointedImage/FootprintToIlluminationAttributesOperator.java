@@ -73,7 +73,7 @@ public class FootprintToIlluminationAttributesOperator extends BasePipelineOpera
 //    	VTKDebug.writePolyDataToFile(footprint, "/Users/steelrj1/Desktop" + File.separator + "model_illum_new.vtk");
         computeCellNormals();
 
-        int numberOfCells = footprint.GetNumberOfCells();
+        int numberOfCells = (int)footprint.GetNumberOfCells();
 
         vtkPoints points = footprint.GetPoints();
         vtkCellData footprintCellData = footprint.GetCellData();

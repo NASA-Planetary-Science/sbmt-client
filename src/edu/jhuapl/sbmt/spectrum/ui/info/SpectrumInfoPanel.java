@@ -79,8 +79,8 @@ public class SpectrumInfoPanel extends ModelInfoWindow implements PropertyChange
         XYItemRenderer r = plot.getRenderer();
         if (r instanceof XYLineAndShapeRenderer) {
             XYLineAndShapeRenderer renderer = (XYLineAndShapeRenderer) r;
-            renderer.setBaseShapesVisible(true);
-            renderer.setBaseShapesFilled(true);
+            renderer.setDefaultShapesVisible(true);
+            renderer.setDefaultShapesFilled(true);
             renderer.setDrawSeriesLineAsPath(true);
         }
 

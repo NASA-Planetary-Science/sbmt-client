@@ -42,7 +42,7 @@ public class ServerOffLimbPlaneCalculator
 
 		double[] boundingBox = footprints.get(0).GetBounds();
 		Just.of(renderableImage)
-			.operate(new OfflimbPlaneGeneratorOperators(offLimbFootprintDepth, smallBodyModels, boundingBox, footprints.get(0).GetNumberOfPoints()))
+			.operate(new OfflimbPlaneGeneratorOperators(offLimbFootprintDepth, smallBodyModels, boundingBox, (int)footprints.get(0).GetNumberOfPoints()))
 			.subscribe(PairSink.of(polydata))
 			.run();
     }

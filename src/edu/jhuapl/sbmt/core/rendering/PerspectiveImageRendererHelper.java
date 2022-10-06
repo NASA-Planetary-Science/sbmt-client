@@ -257,9 +257,9 @@ class PerspectiveImageRendererHelper
         if (footprint.getFootprintGenerated()[currentSlice] == false)
             footprint.loadFootprint();
 
-        computeCellNormals(); 
+        computeCellNormals();
 
-        int numberOfCells = currentFootprint.GetNumberOfCells();
+        int numberOfCells = (int)currentFootprint.GetNumberOfCells();
 
         vtkPoints points = currentFootprint.GetPoints();
         vtkCellData footprintCellData = currentFootprint.GetCellData();
@@ -319,7 +319,7 @@ class PerspectiveImageRendererHelper
         if (footprint.getFootprintGenerated()[currentSlice] == false)
             footprint.loadFootprint();
 
-        int numberOfPoints = currentFootprint.GetNumberOfPoints();
+        int numberOfPoints = (int)currentFootprint.GetNumberOfPoints();
 
         vtkPoints points = currentFootprint.GetPoints();
 

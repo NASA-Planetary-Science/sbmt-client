@@ -286,7 +286,7 @@ public class PerspectiveFrustum
         {
 			vtkProperty frustumProperty = frustumActor.GetProperty();
 			frustumProperty.SetColor((double)frustumColor.getRed()/255.0, (double)frustumColor.getGreen()/255.0, (double)frustumColor.getBlue()/255.0);
-			frustumProperty.SetLineWidth(2.0);
+			frustumProperty.SetLineWidth(2.0f);
 			frustumActors.add(frustumActor);
         }
 		return frustumActors;

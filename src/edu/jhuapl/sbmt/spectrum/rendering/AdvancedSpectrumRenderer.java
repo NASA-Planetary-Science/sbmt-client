@@ -57,7 +57,7 @@ public class AdvancedSpectrumRenderer<S extends BasicSpectrum> extends BasicSpec
 //            double[] color = getChannelColor();
             if (color != null)
             	footprintProperty.SetColor(color[0], color[1], color[2]);
-            footprintProperty.SetLineWidth(2.0);
+            footprintProperty.SetLineWidth(2.0f);
             footprintProperty.LightingOff();
 
             footprintActors.add(footprintActor);
@@ -118,7 +118,7 @@ public class AdvancedSpectrumRenderer<S extends BasicSpectrum> extends BasicSpec
             frustumActor.SetMapper(frusMapper);
             vtkProperty frustumProperty = frustumActor.GetProperty();
             frustumProperty.SetColor(0.0, 1.0, 0.0);
-            frustumProperty.SetLineWidth(2.0);
+            frustumProperty.SetLineWidth(2.0f);
             frustumActor.VisibilityOff();
 
             footprintActors.add(frustumActor);
@@ -224,7 +224,7 @@ public class AdvancedSpectrumRenderer<S extends BasicSpectrum> extends BasicSpec
 			{
 				vtkIdTypeArray originalIds = (vtkIdTypeArray) tmp.GetCellData()
 						.GetArray(GenericPolyhedralModel.cellIdsArrayName);
-				int originalId = originalIds.GetValue(c);
+				int originalId = (int)originalIds.GetValue(c);
 				vtkTriangle tri = (vtkTriangle) smallBodyModel.getSmallBodyPolyData().GetCell(originalId); // tri
 																											// on
 																											// original

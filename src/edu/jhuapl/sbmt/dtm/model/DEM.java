@@ -787,7 +787,7 @@ public class DEM extends SmallBodyModel implements PropertyChangeListener
         }
 
         double[] closestPoint = new double[3];
-        int[] cellId = new int[1];
+        long[] cellId = new long[1];
         int[] subId = new int[1];
         double[] dist2 = new double[1];
 

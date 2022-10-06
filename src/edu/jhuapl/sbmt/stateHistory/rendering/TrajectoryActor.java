@@ -179,7 +179,7 @@ public class TrajectoryActor extends vtkActor
         trajectoryPolylines = trajectoryPolyline;
         trajectoryMapper.SetInputData(trajectoryPolyline);
         trajectoryMapper.Modified();
-        GetProperty().SetLineWidth(trajectoryLineThickness);
+        GetProperty().SetLineWidth((float)trajectoryLineThickness);
 
 		trajectoryMapper.SetInputData(trajectoryPolylines);
 		trajectoryMapper.Update();
@@ -267,7 +267,7 @@ public class TrajectoryActor extends vtkActor
     {
         this.trajectoryLineThickness = value;
         // recreate poly data with new thickness
-        GetProperty().SetLineWidth(trajectoryLineThickness);
+        GetProperty().SetLineWidth((float)trajectoryLineThickness);
         createTrajectoryPolyData();
 //        this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null , null);
     }

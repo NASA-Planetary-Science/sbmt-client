@@ -313,7 +313,7 @@ public class CompareGaskellAndNLR
         BufferedWriter out = new BufferedWriter(fstream);
         out.write("Plate,Mean Range Diff (km),Stdev Range Diff (km),Mean Incidence (km),Stdev Incidence (km),Mean Emission (km),Stdev Emission (km),Number Intersects\n");
 
-        int numPlates = lowResSmallBodyModel.getSmallBodyPolyData().GetNumberOfCells();
+        int numPlates = (int)lowResSmallBodyModel.getSmallBodyPolyData().GetNumberOfCells();
         for (int i=0; i<numPlates; ++i)
         {
             if (plateMap.containsKey(i) &&

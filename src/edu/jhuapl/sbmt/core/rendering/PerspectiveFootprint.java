@@ -619,7 +619,7 @@ public class PerspectiveFootprint implements DataActor
 	        if (!headless)
 	        {
 		        boundaryActor.SetMapper(boundaryMapper);
-		        boundaryActor.GetProperty().SetLineWidth(3.0);
+		        boundaryActor.GetProperty().SetLineWidth(3.0f);
 		        boundaryActor.VisibilityOff();
 		        footprintActors.add(boundaryActor);
 	        }
@@ -1021,7 +1021,7 @@ public class PerspectiveFootprint implements DataActor
                 double[] x = new double[3];
                 double[] pcoords = new double[3];
                 int[] subId = new int[1];
-                int[] cellId = new int[1];
+                long[] cellId = new long[1];
                 int result = cellLocator.IntersectWithLine(spacecraftPosition, lookPt, tol, t, x, pcoords, subId, cellId, cell);
 
                 if (result > 0)
@@ -1057,7 +1057,7 @@ public class PerspectiveFootprint implements DataActor
         	boundaryActor.GetProperty().SetColor(boundaryColor.getRed()/255.0, boundaryColor.getGreen()/255.0, boundaryColor.getBlue()/255.0);
         else
         	boundaryActor.GetProperty().SetColor(1.0, 0.0, 0.0);
-        boundaryActor.GetProperty().SetPointSize(1.0);
+        boundaryActor.GetProperty().SetPointSize(1.0f);
         boundaryActor.VisibilityOn();
 //        System.out.println("PerspectiveImageFootprint: createOriginalStyleBoundary: boundary actor is " + boundaryActor);
 //        return actor;

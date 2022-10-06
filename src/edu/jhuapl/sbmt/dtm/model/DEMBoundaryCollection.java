@@ -48,7 +48,7 @@ public class DEMBoundaryCollection extends AbstractModel implements PropertyChan
         private void initialize()
         {
             boundary.DeepCopy(dem.getBoundary());
-            int numPoints = boundary.GetNumberOfPoints();
+            int numPoints = (int)boundary.GetNumberOfPoints();
             vtkPoints points = boundary.GetPoints();
             for (int i=0; i<numPoints; ++i)
             {
@@ -68,7 +68,7 @@ public class DEMBoundaryCollection extends AbstractModel implements PropertyChan
 
             actor.SetMapper(boundaryMapper);
             actor.GetProperty().SetColor(0.0, 0.392, 0.0);
-            actor.GetProperty().SetLineWidth(1.0);
+            actor.GetProperty().SetLineWidth(1.0f);
         }
 
         public void propertyChange(PropertyChangeEvent evt)
@@ -118,7 +118,7 @@ public class DEMBoundaryCollection extends AbstractModel implements PropertyChan
 
         public void setLineWidth(Double value)
         {
-            actor.GetProperty().SetLineWidth(value);
+            actor.GetProperty().SetLineWidth((value.floatValue()));
             this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
         }
 

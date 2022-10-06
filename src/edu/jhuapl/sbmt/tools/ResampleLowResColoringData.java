@@ -53,7 +53,7 @@ public class ResampleLowResColoringData
                 FileWriter fw = new FileWriter(name);
                 BufferedWriter out = new BufferedWriter(fw);
 
-                int numPolygons = polydata.GetNumberOfCells();
+                int numPolygons = (int)polydata.GetNumberOfCells();
                 for (int j=0; j<numPolygons; ++j)
                 {
                     if (j % 10000 == 0)

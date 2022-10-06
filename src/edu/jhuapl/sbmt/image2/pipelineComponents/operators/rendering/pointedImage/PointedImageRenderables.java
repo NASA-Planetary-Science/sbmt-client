@@ -144,7 +144,7 @@ public class PointedImageRenderables extends ImageRenderable
 		List<vtkActor> actors = Lists.newArrayList();
 		double[] boundingBox = pipeline.getFootprintPolyData().get(0).GetBounds();
 		Just.of(renderableImage)
-			.operate(new OfflimbPlaneGeneratorOperators(offLimbFootprintDepth, smallBodyModels, boundingBox, pipeline.getFootprintPolyData().get(0).GetNumberOfPoints()))
+			.operate(new OfflimbPlaneGeneratorOperators(offLimbFootprintDepth, smallBodyModels, boundingBox, (int)pipeline.getFootprintPolyData().get(0).GetNumberOfPoints()))
 			.operate(new OfflimbActorOperator(imageData))
 			.subscribe(Sink.of(actors))
 			.run();

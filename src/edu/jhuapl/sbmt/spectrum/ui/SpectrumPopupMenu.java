@@ -371,7 +371,7 @@ public class SpectrumPopupMenu<S extends BasicSpectrum> extends PopupMenu implem
                 vtkIdTypeArray ids=(vtkIdTypeArray)spectrum.getUnshiftedFootprint().GetCellData().GetArray(GenericPolyhedralModel.cellIdsArrayName);
                 List<Integer> selectedIds=Lists.newArrayList();
                 for (int m=0; m<ids.GetNumberOfTuples(); m++)
-                    selectedIds.add(ids.GetValue(m));
+                    selectedIds.add((int)ids.GetValue(m));
 
                 Path fullPath=Paths.get(spectrum.getSpectrum().getFullPath());
                 Path relativePath=fullPath.subpath(fullPath.getNameCount()-2, fullPath.getNameCount());

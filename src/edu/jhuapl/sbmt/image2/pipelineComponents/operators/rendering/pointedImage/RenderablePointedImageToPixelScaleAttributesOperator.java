@@ -39,7 +39,7 @@ public class RenderablePointedImageToPixelScaleAttributesOperator extends BasePi
 //        if (footprint.getFootprintGenerated()[currentSlice] == false)
 //            footprint.loadFootprint();
 
-        int numberOfPoints = footprint.GetNumberOfPoints();
+        int numberOfPoints = (int)footprint.GetNumberOfPoints();
 
         vtkPoints points = footprint.GetPoints();
 

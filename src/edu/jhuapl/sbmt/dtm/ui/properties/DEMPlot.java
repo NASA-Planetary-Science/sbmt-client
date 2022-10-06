@@ -56,8 +56,8 @@ public class DEMPlot extends BaseLinePlot implements ChartMouseListener
 		if (r instanceof XYLineAndShapeRenderer)
 		{
 			XYLineAndShapeRenderer renderer = (XYLineAndShapeRenderer) r;
-			renderer.setBaseShapesVisible(false);
-			renderer.setBaseShapesFilled(true);
+			renderer.setDefaultShapesVisible(false);
+			renderer.setDefaultShapesFilled(true);
 		}
 
 	}

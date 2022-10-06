@@ -45,7 +45,7 @@ public class ModelGeneratorUtil
             FileWriter fstream = new FileWriter(cellDataFile.substring(0, l-4) + "_PointData.txt");
             BufferedWriter out = new BufferedWriter(fstream);
 
-            int numPoints = pointData.GetNumberOfTuples();
+            int numPoints = (int)pointData.GetNumberOfTuples();
             for (int i=0; i<numPoints; ++i)
             {
                 out.write((float)pointData.GetTuple1(i) + "\n");

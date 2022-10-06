@@ -153,7 +153,7 @@ public class BasicSpectrumRenderer<S extends BasicSpectrum> extends AbstractMode
             {
                 vtkIdTypeArray originalIds = (vtkIdTypeArray) tmp.GetCellData()
                         .GetArray(GenericPolyhedralModel.cellIdsArrayName);
-                int originalId = originalIds.GetValue(c);
+                int originalId = (int)originalIds.GetValue(c);
                 vtkTriangle tri = (vtkTriangle) smallBodyModel
                         .getSmallBodyPolyData().GetCell(originalId); // tri on
                                                                      // original
@@ -212,7 +212,7 @@ public class BasicSpectrumRenderer<S extends BasicSpectrum> extends AbstractMode
             vtkProperty footprintProperty = footprintActor.GetProperty();
             if (color != null)
             	footprintProperty.SetColor(color[0], color[1], color[2]);
-            footprintProperty.SetLineWidth(2.0);
+            footprintProperty.SetLineWidth(2.0f);
             footprintProperty.LightingOff();
 
             footprintActors.add(footprintActor);
@@ -296,7 +296,7 @@ public class BasicSpectrumRenderer<S extends BasicSpectrum> extends AbstractMode
             frustumActor.SetMapper(frusMapper);
             vtkProperty frustumProperty = frustumActor.GetProperty();
             frustumProperty.SetColor(0.0, 1.0, 0.0);
-            frustumProperty.SetLineWidth(2.0);
+            frustumProperty.SetLineWidth(2.0f);
             frustumActor.VisibilityOff();
 
             footprintActors.add(frustumActor);
@@ -420,8 +420,8 @@ public class BasicSpectrumRenderer<S extends BasicSpectrum> extends AbstractMode
         vtkCellArray cells = new vtkCellArray();
         Vector3D footprintCenter = new Vector3D(
                 getUnshiftedFootprint().GetCenter());
-        int id1 = points.InsertNextPoint(footprintCenter.toArray());
-        int id2 = points.InsertNextPoint(footprintCenter
+        int id1 = (int)points.InsertNextPoint(footprintCenter.toArray());
+        int id2 = (int)points.InsertNextPoint(footprintCenter
                 .add(new Vector3D(spectrum.getToSunUnitVector()).scalarMultiply(spectrum.getToSunVectorLength()))
                 .toArray());
         vtkLine line = new vtkLine();
@@ -686,7 +686,7 @@ public class BasicSpectrumRenderer<S extends BasicSpectrum> extends AbstractMode
 
         computeCellNormals();
 
-        int numberOfCells = footprint.GetNumberOfCells();
+        int numberOfCells = (int)footprint.GetNumberOfCells();
 
         vtkPoints points = footprint.GetPoints();
         vtkCellData footprintCellData = footprint.GetCellData();

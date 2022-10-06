@@ -154,7 +154,7 @@ public class RenderableImageToBackPlanesOperator extends BasePipelineOperator<Pa
                 double[] x = new double[3];
                 double[] pcoords = new double[3];
                 int[] subId = new int[1];
-                int[] cellId = new int[1];
+                long[] cellId = new long[1];
                 int result = cellLocator.IntersectWithLine(spacecraftPositionAdjusted, lookPt, tol, t, x, pcoords, subId, cellId, cell);
 
                 // if (intersectPoints.GetNumberOfPoints() == 0)
@@ -173,7 +173,7 @@ public class RenderableImageToBackPlanesOperator extends BasePipelineOperator<Pa
                     // double[] closestPoint = intersectPoints.GetPoint(0);
                     // int closestCell = intersectCells.GetId(0);
                     double[] closestPoint = x;
-                    int closestCell = cellId[0];
+                    int closestCell = (int)cellId[0];
                     double closestDist = MathUtil.distanceBetween(closestPoint, spacecraftPositionAdjusted);
 
                     /*
