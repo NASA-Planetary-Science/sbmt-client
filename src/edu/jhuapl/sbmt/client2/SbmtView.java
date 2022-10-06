@@ -54,7 +54,6 @@ import edu.jhuapl.sbmt.config.ShapeModelDataUsed;
 import edu.jhuapl.sbmt.config.ShapeModelPopulation;
 import edu.jhuapl.sbmt.config.SpectralImageMode;
 import edu.jhuapl.sbmt.core.image.ImagingInstrument;
-import edu.jhuapl.sbmt.core.imageui.ImageDefaultPickHandler2;
 import edu.jhuapl.sbmt.dem.gui.DemMainPanel;
 import edu.jhuapl.sbmt.dtm.controller.DEMPopupMenuActionListener;
 import edu.jhuapl.sbmt.dtm.model.DEMBoundaryCollection;
@@ -311,10 +310,16 @@ public class SbmtView extends View implements PropertyChangeListener
 		setupBodyModels();
 		setupImagerModel();
 		setupSpectraModels();
-		setupStructureModels();
-		setupDEMModels();
+		setLineamentModel();
 		setStateHistoryModels();
+		ConfigurableSceneNotifier tmpSceneChangeNotifier = new ConfigurableSceneNotifier();
+		StatusNotifier tmpStatusNotifier = getStatusNotifier();
+		setupStructureModels(tmpSceneChangeNotifier, tmpStatusNotifier);
+		setupDEMModels();
+
 		setModelManager(new ModelManager(smallBodyModel, allModels));
+
+		tmpSceneChangeNotifier.setTarget(getModelManager());
 
 		getModelManager().addPropertyChangeListener(this);
 
@@ -328,17 +333,17 @@ public class SbmtView extends View implements PropertyChangeListener
 		allModels.put(ModelNames.SMALL_BODY, smallBodyModel);
 	}
 
-	protected void setupStructureModels()
+	protected void setupStructureModels(ConfigurableSceneNotifier tmpSceneChangeNotifier, StatusNotifier tmpStatusNotifier)
 	{
-		ConfigurableSceneNotifier tmpSceneChangeNotifier = new ConfigurableSceneNotifier();
-		StatusNotifier tmpStatusNotifier = getStatusNotifier();
+//		ConfigurableSceneNotifier tmpSceneChangeNotifier = new ConfigurableSceneNotifier();
+//		StatusNotifier tmpStatusNotifier = getStatusNotifier();
 		allModels.put(ModelNames.LINE_STRUCTURES, new LineModel<>(tmpSceneChangeNotifier, tmpStatusNotifier, smallBodyModel));
 		allModels.put(ModelNames.POLYGON_STRUCTURES, new PolygonModel(tmpSceneChangeNotifier,tmpStatusNotifier, smallBodyModel));
 		allModels.put(ModelNames.CIRCLE_STRUCTURES, new CircleModel(tmpSceneChangeNotifier, tmpStatusNotifier, smallBodyModel));
 		allModels.put(ModelNames.ELLIPSE_STRUCTURES, new EllipseModel(tmpSceneChangeNotifier, tmpStatusNotifier, smallBodyModel));
 		allModels.put(ModelNames.POINT_STRUCTURES, new PointModel(tmpSceneChangeNotifier, tmpStatusNotifier, smallBodyModel));
 		allModels.put(ModelNames.CIRCLE_SELECTION, new CircleSelectionModel(tmpSceneChangeNotifier, tmpStatusNotifier, smallBodyModel));
-		tmpSceneChangeNotifier.setTarget(getModelManager());
+//		tmpSceneChangeNotifier.setTarget(getModelManager());
 	}
 
 	protected void setupSpectraModels()
@@ -469,7 +474,7 @@ public class SbmtView extends View implements PropertyChangeListener
 
 	protected void setupNormalImagingTabs()
 	{
-		setupOlderImageTabs();
+//		setupOlderImageTabs();
 		PerspectiveImageCollection collection = (PerspectiveImageCollection)getModelManager().getModel(ModelNames.IMAGES_V2);
 		for (ImagingInstrument instrument : getPolyhedralModelConfig().imagingInstruments)
 	    {
@@ -844,7 +849,7 @@ public class SbmtView extends View implements PropertyChangeListener
 		tmpPickManager.getDefaultPicker().addListener(getPopupManager());
 
 		// TODO: This should be moved out of here to a logical relevant location
-		tmpPickManager.getDefaultPicker().addListener(new ImageDefaultPickHandler2(getModelManager()));
+//		tmpPickManager.getDefaultPicker().addListener(new ImageDefaultPickHandler2(getModelManager()));
     }
 
     @Override
@@ -1102,3 +1107,138 @@ public class SbmtView extends View implements PropertyChangeListener
 	}
 
 }
+
+/* New way to do models
+
+  @Override
+	protected void setupModelManager()
+	{
+		setupBodyModels();
+		setupImagerModel();
+		setupSpectraModels();
+		setupStructureModels();
+		setupDEMModels();
+		setStateHistoryModels();
+		setModelManager(new ModelManager(smallBodyModel, allModels));
+
+		getModelManager().addPropertyChangeListener(this);
+
+		SBMTInfoWindowManagerFactory.initializeModels(getModelManager(), getLegacyStatusHandler());
+
+	}
+
+ protected void setupBodyModels()
+	{
+		smallBodyModel = SbmtModelFactory.createSmallBodyModel(getPolyhedralModelConfig());
+		allModels.put(ModelNames.SMALL_BODY, smallBodyModel);
+	}
+
+	protected void setupStructureModels()
+	{
+		ConfigurableSceneNotifier tmpSceneChangeNotifier = new ConfigurableSceneNotifier();
+		StatusNotifier tmpStatusNotifier = getStatusNotifier();
+		allModels.put(ModelNames.LINE_STRUCTURES, new LineModel<>(tmpSceneChangeNotifier, tmpStatusNotifier, smallBodyModel));
+		allModels.put(ModelNames.POLYGON_STRUCTURES, new PolygonModel(tmpSceneChangeNotifier,tmpStatusNotifier, smallBodyModel));
+		allModels.put(ModelNames.CIRCLE_STRUCTURES, new CircleModel(tmpSceneChangeNotifier, tmpStatusNotifier, smallBodyModel));
+		allModels.put(ModelNames.ELLIPSE_STRUCTURES, new EllipseModel(tmpSceneChangeNotifier, tmpStatusNotifier, smallBodyModel));
+		allModels.put(ModelNames.POINT_STRUCTURES, new PointModel(tmpSceneChangeNotifier, tmpStatusNotifier, smallBodyModel));
+		allModels.put(ModelNames.CIRCLE_SELECTION, new CircleSelectionModel(tmpSceneChangeNotifier, tmpStatusNotifier, smallBodyModel));
+		tmpSceneChangeNotifier.setTarget(getModelManager());
+	}
+
+	protected void setupSpectraModels()
+	{
+		HashMap<ModelNames, Model> models = new HashMap<ModelNames, Model>();
+
+        ShapeModelBody body=((SmallBodyViewConfig)smallBodyModel.getConfig()).body;
+        ShapeModelType author=((SmallBodyViewConfig)smallBodyModel.getConfig()).author;
+        String version=((SmallBodyViewConfig)smallBodyModel.getConfig()).version;
+
+        //TODO FIX THIS
+//        models.put(ModelNames.SPECTRA_HYPERTREE_SEARCH, new SpectraSearchDataCollection(smallBodyModel));
+
+        SpectraCollection collection = new SpectraCollection(smallBodyModel);
+
+        models.put(ModelNames.SPECTRA, collection);
+
+		allModels.putAll(models);
+		allModels.put(ModelNames.SPECTRA_BOUNDARIES, new SpectrumBoundaryCollection(smallBodyModel, (SpectraCollection)allModels.get(ModelNames.SPECTRA)));
+        //if (getPolyhedralModelConfig().body == ShapeModelBody.EROS)
+            allModels.put(ModelNames.STATISTICS, new SpectrumStatisticsCollection());
+
+		SpectraCollection customCollection = new SpectraCollection(smallBodyModel);
+		allModels.put(ModelNames.CUSTOM_SPECTRA, customCollection);
+		allModels.put(ModelNames.CUSTOM_SPECTRA_BOUNDARIES, new SpectrumBoundaryCollection(smallBodyModel, (SpectraCollection)allModels.get(ModelNames.CUSTOM_SPECTRA)));
+
+		if (!getPolyhedralModelConfig().spectralInstruments.stream().filter(inst -> inst.getDisplayName().equals("MEGANE")).toList().isEmpty())
+		{
+			meganeCollection = new MEGANECollection(smallBodyModel);
+			allModels.put(ModelNames.GRNS_SPECTRA, meganeCollection);
+			cumulativeMeganeCollection = new CumulativeMEGANECollection(smallBodyModel);
+			allModels.put(ModelNames.GRNS_CUSTOM_SPECTRA, cumulativeMeganeCollection);
+		}
+	}
+
+	protected void setupImagerModel()
+	{
+		//OLDER WAY
+		allModels.put(ModelNames.IMAGES, new ImageCollection(smallBodyModel));
+		allModels.put(ModelNames.CUSTOM_IMAGES, new ImageCollection(smallBodyModel));
+        ImageCubeCollection customCubeCollection = new ImageCubeCollection(smallBodyModel, getModelManager());
+        ColorImageCollection customColorImageCollection = new ColorImageCollection(smallBodyModel, getModelManager());
+        allModels.put(ModelNames.CUSTOM_CUBE_IMAGES, customCubeCollection);
+        allModels.put(ModelNames.CUSTOM_COLOR_IMAGES, customColorImageCollection);
+        ImageCubeCollection cubeCollection = new ImageCubeCollection(smallBodyModel, getModelManager());
+        ColorImageCollection colorImageCollection = new ColorImageCollection(smallBodyModel, getModelManager());
+        allModels.put(ModelNames.COLOR_IMAGES, colorImageCollection);
+        allModels.put(ModelNames.CUBE_IMAGES, cubeCollection);
+
+        //NEW TECHNIQUE
+		allModels.put(ModelNames.IMAGES_V2, new PerspectiveImageCollection(List.of(smallBodyModel)));
+
+		allModels.put(ModelNames.BASEMAPS, new BasemapImageCollection<>(List.of(smallBodyModel)));
+	}
+
+	protected void setupDEMModels()
+	{
+		DEMCollection demCollection = new DEMCollection(smallBodyModel, getModelManager());
+		allModels.put(ModelNames.DEM, demCollection);
+		DEMBoundaryCollection demBoundaryCollection = new DEMBoundaryCollection(smallBodyModel, getModelManager());
+		allModels.put(ModelNames.DEM_BOUNDARY, demBoundaryCollection);
+		demCollection.setModelManager(getModelManager());
+		demBoundaryCollection.setModelManager(getModelManager());
+	}
+
+	protected void setStateHistoryModels()
+	{
+		rendererManager = new StateHistoryRendererManager(smallBodyModel, new StateHistoryCollection(smallBodyModel), getRenderer());
+        allModels.put(ModelNames.STATE_HISTORY_COLLECTION_ELEMENTS, rendererManager);
+	}
+
+	protected void setLineamentModel()
+	{
+		allModels.put(ModelNames.LINEAMENT, createLineament());
+	}
+
+ */
+
+
+/* New way to do tabs
+
+ @Override
+    protected void setupTabs()
+    {
+//		addTab(getPolyhedralModelConfig().getShapeModelName(), new SmallBodyControlPanel(getRenderer(), getModelManager(), getPolyhedralModelConfig().getShapeModelName()));
+		setupModelTab();
+        setupNormalImagingTabs();
+        setupSpectrumTabs();
+		setupLidarTabs();
+		setupLineamentTab();
+		setupStructuresTab();
+		setupCustomDataTab();
+		setupDEMTab();
+    	setupStateHistoryTab();
+    }
+*/
+
+
