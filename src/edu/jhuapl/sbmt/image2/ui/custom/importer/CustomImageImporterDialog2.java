@@ -426,8 +426,7 @@ public class CustomImageImporterDialog2<G1 extends IPerspectiveImage & IPerspect
 			pointingSourceType = extension.equals("sum") ? ImageSource.GASKELL : ImageSource.SPICE;
 			return storeImage(filename, newFilepath, pointingSourceType, newPointingFilepath);
 		}
-		else
-			return null;
+		return storeImage(filename, newFilepath, pointingSourceType, newPointingFilepath);
 	}
 
 	private G1 storeImage(String filename, String newFilepath, ImageSource pointingSourceType, String newPointingFilepath)
