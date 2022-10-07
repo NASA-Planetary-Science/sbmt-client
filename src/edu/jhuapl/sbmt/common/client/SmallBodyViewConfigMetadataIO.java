@@ -6,10 +6,11 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.Vector;
+import java.util.stream.Collectors;
 
 import com.google.common.collect.ImmutableList;
 
-import edu.jhuapl.saavtk.config.ViewConfig;
+import edu.jhuapl.saavtk.config.IBodyViewConfig;
 import edu.jhuapl.saavtk.model.ShapeModelBody;
 import edu.jhuapl.saavtk.model.ShapeModelType;
 import edu.jhuapl.saavtk.util.Configuration;
@@ -84,7 +85,7 @@ public class SmallBodyViewConfigMetadataIO implements MetadataManager
         edu.jhuapl.sbmt.client2.SbmtMultiMissionTool.configureMission();
         Configuration.authenticate();
         SmallBodyViewConfig.initializeWithStaticConfigs(publishedDataOnly);
-        for (ViewConfig each: SmallBodyViewConfig.getBuiltInConfigs())
+        for (IBodyViewConfig each: SmallBodyViewConfig.getBuiltInConfigs())
         {
             each.enable(true);
         }
@@ -99,16 +100,28 @@ public class SmallBodyViewConfigMetadataIO implements MetadataManager
             throw new IOException("Unable to create root config directory " + rootDir);
         }
 
-        List<ViewConfig> builtInConfigs = SmallBodyViewConfig.getBuiltInConfigs();
+        List<IBodyViewConfig> builtInConfigs = SmallBodyViewConfig.getBuiltInConfigs();
         System.out.println("SmallBodyViewConfigMetadataIO: main: ---------------------------------");
-        for (ViewConfig config : builtInConfigs)
+        for (IBodyViewConfig config : builtInConfigs)
         {
             try
             {
-                SmallBodyViewConfigMetadataIO io = new SmallBodyViewConfigMetadataIO(config);
-                String version = config.version == null ? "" : config.version;
-
-                File file = new File(rootDir + ((SmallBodyViewConfig) config).rootDirOnServer + "/" + config.author + "_" + config.body.toString().replaceAll(" ", "_") + version.replaceAll(" ", "_") + "_v" + configInfoVersion + ".json");
+            	SmallBodyViewConfigMetadataIO io = new SmallBodyViewConfigMetadataIO(config);
+                String version = config.getVersion() == null ? "" : config.getVersion();
+                File file = null;
+                if (!config.hasSystemBodies())
+                	file = new File(rootDir + ((SmallBodyViewConfig) config).rootDirOnServer + "/" + config.getAuthor() + "_" + config.getBody().toString().replaceAll(" ", "_") + version.replaceAll(" ", "_") + "_v" + configInfoVersion + ".json");
+                else
+                {
+                	String bodyName = config.getBody().toString();
+                	bodyName = bodyName.replaceAll(" ", "_");
+                	String centerNameReplacement = "-system_" + bodyName.toLowerCase() + "_center/";
+                	String systemRoot = ((SmallBodyViewConfig) config).rootDirOnServer.substring(1).replaceFirst("/", centerNameReplacement);
+                	String fileNameString = rootDir + systemRoot + "/" + config.getAuthor() + "_" + config.getBody().toString().replaceAll(" ", "_") + "_System_"  + bodyName.toLowerCase() + "center" + version.replaceAll(" ", "_") + "_v" + configInfoVersion + ".json";
+                	fileNameString = fileNameString.replaceAll("\\(", "");
+                	fileNameString = fileNameString.replaceAll("\\)", "");
+                	file = new File(fileNameString);
+                }
                 BasicConfigInfo configInfo = new BasicConfigInfo((BodyViewConfig)config, publishedDataOnly);
                 allBodiesMetadata.put(Key.of(config.getUniqueName()), configInfo.store());
 
@@ -122,9 +135,6 @@ public class SmallBodyViewConfigMetadataIO implements MetadataManager
                 FixedMetadata metadata = Serializers.deserialize(file, config.getUniqueName());
                 io2.metadataID = config.getUniqueName();
                 io2.retrieve(metadata);
-//                System.out.println("SmallBodyViewConfigMetadataIO: main: shape model file name for cfg " + Arrays.toString(cfg.getShapeModelFileNames()));
-
-//                System.out.println("SmallBodyViewConfigMetadataIO: main: shape model file name for config " + Arrays.toString(config.getShapeModelFileNames()));
                 checkEquality(cfg, config);
 
             }
@@ -145,28 +155,28 @@ public class SmallBodyViewConfigMetadataIO implements MetadataManager
      * debug. Set a breakpoint at the println, then drop-to-frame and re-run the
      * call to equals.
      */
-    private static void checkEquality(ViewConfig cfg, ViewConfig config)
+    private static void checkEquality(IBodyViewConfig cfg, IBodyViewConfig config)
     {
         if (!cfg.equals(config))
             System.err.println("SmallBodyViewConfigMetadataIO: main: cfg equals config is " + (cfg.equals(config) + " for " + config.getUniqueName()));
     }
 
-    private List<ViewConfig> configs;
+    private List<IBodyViewConfig> configs;
     private String metadataID;
 
     public SmallBodyViewConfigMetadataIO()
     {
-        this.configs = new Vector<ViewConfig>();
+        this.configs = new Vector<IBodyViewConfig>();
     }
 
-    public SmallBodyViewConfigMetadataIO(List<ViewConfig> configs)
+    public SmallBodyViewConfigMetadataIO(List<IBodyViewConfig> configs)
     {
         this.configs = configs;
     }
 
-    public SmallBodyViewConfigMetadataIO(ViewConfig config)
+    public SmallBodyViewConfigMetadataIO(IBodyViewConfig config)
     {
-        this.configs = new Vector<ViewConfig>();
+        this.configs = new Vector<IBodyViewConfig>();
         this.configs.add(config);
     }
 
@@ -190,7 +200,7 @@ public class SmallBodyViewConfigMetadataIO implements MetadataManager
         config.setShapeModelFileNames(modelFileNames);
     }
 
-    private SettableMetadata storeConfig(ViewConfig config)
+    private SettableMetadata storeConfig(IBodyViewConfig config)
     {
         SmallBodyViewConfig c = (SmallBodyViewConfig)config;
         SettableMetadata configMetadata = SettableMetadata.of(Version.of(BasicConfigInfo.getConfigInfoVersion()));
@@ -290,6 +300,7 @@ public class SmallBodyViewConfigMetadataIO implements MetadataManager
         }
 
         //dtm
+      	write(hasDTM, c.hasDTMs, configMetadata);
         if (c.dtmBrowseDataSourceMap.size() > 0 )
         	write(dtmBrowseDataSourceMap, c.dtmBrowseDataSourceMap, configMetadata);
         if (c.dtmSearchDataSourceMap.size() > 0 )
@@ -350,13 +361,19 @@ public class SmallBodyViewConfigMetadataIO implements MetadataManager
 
         writeMetadataArray(runInfos, c.databaseRunInfos, configMetadata);
 
+        write(systemBodies, c.hasSystemBodies, configMetadata);
+
+        List<SmallBodyViewConfig> systemConfigs = c.systemConfigs;
+        List<String> systemConfigUniqueNames = systemConfigs.stream().map(cfg -> cfg.getBody().toString() + ","  + cfg.author.toString() + "," + cfg.version).collect(Collectors.toList());
+        write(systemBodyConfigs, systemConfigUniqueNames, configMetadata);
+
         return configMetadata;
     }
 
     @Override
     public Metadata store()
     {
-        List<ViewConfig> builtInConfigs = configs;
+        List<IBodyViewConfig> builtInConfigs = configs;
         if (builtInConfigs.size() == 1)
         {
             SettableMetadata configMetadata = storeConfig(builtInConfigs.get(0));
@@ -365,7 +382,7 @@ public class SmallBodyViewConfigMetadataIO implements MetadataManager
         else
         {
             SettableMetadata result = SettableMetadata.of(Version.of(BasicConfigInfo.getConfigInfoVersion()));
-            for (ViewConfig config : builtInConfigs)
+            for (IBodyViewConfig config : builtInConfigs)
             {
                 SettableMetadata configMetadata = storeConfig(config);
                 Key<SettableMetadata> metadata = Key.of(config.getUniqueName());
@@ -569,6 +586,8 @@ public class SmallBodyViewConfigMetadataIO implements MetadataManager
         if (configMetadata.hasKey(dtmBrowseDataSourceMap))
         	c.dtmBrowseDataSourceMap = read(dtmBrowseDataSourceMap, configMetadata);
         c.hasBigmap = read(hasBigmap, configMetadata);
+        if (configMetadata.hasKey(hasDTM))
+        	c.hasDTMs = read(hasDTM, configMetadata);
 
         if (c.hasLidarData)
         {
@@ -664,9 +683,31 @@ public class SmallBodyViewConfigMetadataIO implements MetadataManager
         {
         	c.modelLabel = metadataID;
         }
+
+        if (configMetadata.hasKey(systemBodies)) c.hasSystemBodies = read(systemBodies, configMetadata);
+        if (configMetadata.hasKey(systemBodyConfigs) && SmallBodyViewConfig.getConfigIdentifiers().size() != 0)
+        {
+        	List<String> systemBodyConfigStrings = read(systemBodyConfigs, configMetadata);
+        	c.systemConfigs = systemBodyConfigStrings
+        		.stream()
+        		.map( x -> {
+        		String[] splits = x.split(",");
+        		String modelTypeAdjusted = splits[1].replaceAll("-\\w*-center", "");
+        		if ((splits.length == 2) || ((splits.length == 3) && (splits[2].equals("null"))))
+        		{
+        			SmallBodyViewConfig config = SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.valueFor(splits[0]), ShapeModelType.provide(modelTypeAdjusted));
+        			return config;
+        		}
+        		else
+        		{
+        			SmallBodyViewConfig config = SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.valueFor(splits[0]), ShapeModelType.provide(modelTypeAdjusted), splits[2]);
+        			return config;
+        		}
+        	}).toList();
+        }
     }
 
-    public List<ViewConfig> getConfigs()
+    public List<IBodyViewConfig> getConfigs()
     {
         return configs;
     }
@@ -717,6 +758,7 @@ public class SmallBodyViewConfigMetadataIO implements MetadataManager
     final Key<Map> dtmSearchDataSourceMap = Key.of("dtmSearchDataSourceMap");
     final Key<Map> dtmBrowseDataSourceMap = Key.of("dtmBrowseDataSourceMap");
     final Key<Boolean> hasBigmap = Key.of("hasBigmap");
+    final Key<Boolean> hasDTM = Key.of("hasDTM");
 
 
     final Key<Boolean> hasLidarData = Key.of("hasLidarData");
@@ -774,5 +816,8 @@ public class SmallBodyViewConfigMetadataIO implements MetadataManager
     final Key<String> lidarInstrumentName = Key.of("lidarInstrumentName");
 
     final Key<Metadata[]> runInfos = Key.of("runInfos");
+
+    final Key<Boolean> systemBodies = Key.of("systemBodies");
+    final Key<List<String>> systemBodyConfigs = Key.of("systemBodyConfigs");
 
 }

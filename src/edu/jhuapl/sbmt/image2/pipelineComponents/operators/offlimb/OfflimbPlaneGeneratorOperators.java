@@ -1,7 +1,10 @@
 package edu.jhuapl.sbmt.image2.pipelineComponents.operators.offlimb;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.Callable;
+import java.util.concurrent.Future;
 
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.tuple.Pair;
@@ -19,6 +22,7 @@ import vtk.vtkPolyData;
 import edu.jhuapl.saavtk.util.FileCache;
 import edu.jhuapl.saavtk.util.MathUtil;
 import edu.jhuapl.saavtk.util.SafeURLPaths;
+import edu.jhuapl.saavtk.util.ThreadService;
 import edu.jhuapl.sbmt.common.client.SmallBodyModel;
 import edu.jhuapl.sbmt.core.image.PointingFileReader;
 import edu.jhuapl.sbmt.image2.pipelineComponents.operators.rendering.pointedImage.RenderablePointedImage;
@@ -30,7 +34,7 @@ import edu.jhuapl.sbmt.pipeline.operator.BasePipelineOperator;
 public class OfflimbPlaneGeneratorOperators extends BasePipelineOperator<RenderablePointedImage, Pair<RenderablePointedImage, vtkPolyData>>
 {
 	double offLimbFootprintDepth;
-	private SmallBodyModel smallBodyModel;
+	private List<SmallBodyModel> smallBodyModels;
 	private RenderablePointedImage renderableImage;
 	private vtkPolyData imagePolyData;
 	private double[] spacecraftPosition;
@@ -48,12 +52,12 @@ public class OfflimbPlaneGeneratorOperators extends BasePipelineOperator<Rendera
     private Vector3D scPosVector;
     private double[] boundingBox;
     private int numberPoints = -1;
-    private int macroPixelResolution = 1;
+    private double macroPixelResolution = 1;
 
-	public OfflimbPlaneGeneratorOperators(double offLimbFootprintDepth, SmallBodyModel smallBodyModel, double[] boundingBox, int numberPoints)
+	public OfflimbPlaneGeneratorOperators(double offLimbFootprintDepth, List<SmallBodyModel> smallBodyModels, double[] boundingBox, int numberPoints)
 	{
 //		this.offLimbFootprintDepth = offLimbFootprintDepth;
-		this.smallBodyModel = smallBodyModel;
+		this.smallBodyModels = smallBodyModels;
 		this.boundingBox = boundingBox;
 		this.numberPoints = numberPoints;
 	}
@@ -70,10 +74,13 @@ public class OfflimbPlaneGeneratorOperators extends BasePipelineOperator<Rendera
 		if (imagePolyData == null)
 		{
 			imagePolyData=new vtkPolyData();
+			System.out.println("OfflimbPlaneGeneratorOperators: processData: step 1");
 			processStep1();
+			System.out.println("OfflimbPlaneGeneratorOperators: processData: step 2");
 			processStep2();
+			System.out.println("OfflimbPlaneGeneratorOperators: processData: step 3");
 			processStep3();
-
+			System.out.println("OfflimbPlaneGeneratorOperators: processData: done ");
 	        SavePolydataToCachePipeline.of(imagePolyData, offLimbImageDataFileName);
 		}
 
@@ -84,7 +91,7 @@ public class OfflimbPlaneGeneratorOperators extends BasePipelineOperator<Rendera
     {
         String imageName = renderableImage.getFilename();
         String topPath = FileCache.instance().getFile(imageName).getParent();
-        String result = SafeURLPaths.instance().getString(topPath, "support", renderableImage.getImageSource().name(), FilenameUtils.getBaseName(imageName) + "_" + smallBodyModel.getModelResolution());
+        String result = SafeURLPaths.instance().getString(topPath, "support", renderableImage.getImageSource().name(), FilenameUtils.getBaseName(imageName) + "_" + smallBodyModels.get(0).getModelResolution());
 
         return result;
     }
@@ -94,9 +101,9 @@ public class OfflimbPlaneGeneratorOperators extends BasePipelineOperator<Rendera
 		PointingFileReader infoReader = renderableImage.getPointing();
 		double[] scPos = infoReader.getSpacecraftPosition();
     	minFrustumRayLength = MathUtil.vnorm(scPos)
-				- smallBodyModel.getBoundingBoxDiagonalLength();
+				- smallBodyModels.get(0).getBoundingBoxDiagonalLength();
     	maxFrustumRayLength = MathUtil.vnorm(scPos)
-				+ smallBodyModel.getBoundingBoxDiagonalLength();
+				+ smallBodyModels.get(0).getBoundingBoxDiagonalLength();
 
         // Step (1): Discretize the view frustum into macro-pixels, from which geometry will later be derived
         // (1a) get camera parameters
@@ -104,7 +111,7 @@ public class OfflimbPlaneGeneratorOperators extends BasePipelineOperator<Rendera
         focalPoint = new double[3];
         upVector = new double[3];
 
-		CameraOrientationPipeline pipeline = CameraOrientationPipeline.of(renderableImage, List.of(smallBodyModel), boundingBox);
+		CameraOrientationPipeline pipeline = CameraOrientationPipeline.of(renderableImage, List.of(smallBodyModels.get(0)), boundingBox);
 		spacecraftPosition = pipeline.getSpacecraftPosition();
 		focalPoint = pipeline.getFocalPoint();
 		upVector = pipeline.getUpVector();
@@ -114,7 +121,7 @@ public class OfflimbPlaneGeneratorOperators extends BasePipelineOperator<Rendera
         fovy = renderableImage.getVerticalFovAngle();
 
         // (1b) guess at a resolution for the macro-pixels; these will be used to create quadrilateral cells (i.e. what will eventually be the off-limb geometry) in the camera view-plane
-        int res = (int)Math.sqrt(numberPoints)*macroPixelResolution;
+        int res = (int)(Math.sqrt(numberPoints)*macroPixelResolution);
 
 //        int res=(int)Math.sqrt(renderableImage.getFootprint(renderableImage.getDefaultSlice()).GetNumberOfPoints());    // for now just grab the number of points in the on-body footprint; assuming img is roughly planar we apply sqrt to get an approximate number of points on a "side" of the on-body geometry, within the rectangular frustuma
         int[] resolution = new int[]{res,res};    // cast to int and store s- and t- resolutions; NOTE: s and t can be thought of as respectively "horizontal" and "vertical" when viewing the image in the "Properties..." pane (t-hat cross s-hat = look direction in a righthanded coordinate system)
@@ -168,7 +175,11 @@ public class OfflimbPlaneGeneratorOperators extends BasePipelineOperator<Rendera
         imageSource.SetScalarTypeToUnsignedChar();
         imageSource.SetNumberOfScalarComponents(3);
         imageSource.SetExtent(-szW/2, szW/2, -szH/2, szH/2, 0, 0);
-        for (int i=-szW/2; i<=szW/2; i++)
+        ThreadService.initialize(600);
+        final List<Future<Void>> resultList;
+		List<Callable<Void>> taskList = new ArrayList<>();
+
+		for (int i=-szW/2; i<=szW/2; i++)
             for (int j=-szH/2; j<=szH/2; j++)
             {
                 double s=(double)i/((double)szW/2)*ffacx;
@@ -176,17 +187,66 @@ public class OfflimbPlaneGeneratorOperators extends BasePipelineOperator<Rendera
                 Vector3D ray=new Vector3D(s,t,-maxRayDepth);  // ray construction starts from s,t coordinates each on the interval [-1 1]
                 ray=upRot.applyTo(lookRot.applyTo(ray));//upRot.applyInverseTo(lookRot.applyInverseTo(ray.normalize()));
                 Vector3D rayEnd=ray.add(scPosVector);
-                //
-                vtkIdList ids=new vtkIdList();
-                smallBodyModel.getCellLocator().FindCellsAlongLine(scPosVector.toArray(), rayEnd.toArray(), 1e-12, ids);
-                if (ids.GetNumberOfIds()>0)
-                    imageSource.SetDrawColor(0,0,0);
-                else
-                    imageSource.SetDrawColor(255,255,255);
-                imageSource.DrawPoint(i, j);
+				Callable<Void> task = new OfflimbColorTask(scPosVector, rayEnd, imageSource, i, j);
+				taskList.add(task);
             }
+		System.out.println("OfflimbPlaneGeneratorOperators: processStep2: waiting for tasks " + taskList.size());
+		resultList = ThreadService.submitAll(taskList);
+		System.out.println("OfflimbPlaneGeneratorOperators: processStep2: tasks returned");
+//        System.out.println("OfflimbPlaneGeneratorOperators: processStep2: running through loop");
+//        for (int i=-szW/2; i<=szW/2; i++)
+//            for (int j=-szH/2; j<=szH/2; j++)
+//            {
+//                double s=(double)i/((double)szW/2)*ffacx;
+//                double t=(double)j/((double)szH/2)*ffacy;
+//                Vector3D ray=new Vector3D(s,t,-maxRayDepth);  // ray construction starts from s,t coordinates each on the interval [-1 1]
+//                ray=upRot.applyTo(lookRot.applyTo(ray));//upRot.applyInverseTo(lookRot.applyInverseTo(ray.normalize()));
+//                Vector3D rayEnd=ray.add(scPosVector);
+//                //
+//                for (int k=0; k<smallBodyModels.size(); k++)
+//                {
+//                	vtkIdList ids=new vtkIdList();
+////	                smallBodyModels.get(k).getCellLocator().FindCellsAlongLine(scPosVector.toArray(), rayEnd.toArray(), 1e-12, ids);
+//	                if (ids.GetNumberOfIds()>0)
+//	                    imageSource.SetDrawColor(0,0,0);
+//	                else
+//	                    imageSource.SetDrawColor(255,255,255);
+//	                imageSource.DrawPoint(i, j);
+//                }
+//            }
         imageSource.Update();
         imageData=imageSource.GetOutput();
+	}
+
+	private class OfflimbColorTask implements Callable<Void>
+	{
+
+		private Vector3D scPosVector, rayEnd;
+		private vtkImageCanvasSource2D imageSource;
+		private int i, j;
+
+		public OfflimbColorTask(Vector3D scPosVector, Vector3D rayEnd, vtkImageCanvasSource2D imageSource, int i, int j)
+		{
+			this.scPosVector = scPosVector;
+			this.rayEnd = rayEnd;
+			this.imageSource = imageSource;
+			this.i = i;
+			this.j = j;
+		}
+
+		@Override
+		public synchronized Void call() throws Exception
+		{
+
+				vtkIdList ids=new vtkIdList();
+	            smallBodyModels.get(0).getCellLocator().FindCellsAlongLine(scPosVector.toArray(), rayEnd.toArray(), 1e-12, ids);
+	            if (ids.GetNumberOfIds()>0)
+	                imageSource.SetDrawColor(0,0,0);
+	            else
+	                imageSource.SetDrawColor(255,255,255);
+	            imageSource.DrawPoint(i, j);
+            return null;
+		}
 	}
 
 	private void processStep3()

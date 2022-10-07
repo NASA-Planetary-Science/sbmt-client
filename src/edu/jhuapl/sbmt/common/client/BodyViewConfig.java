@@ -50,6 +50,7 @@ public abstract class BodyViewConfig extends ViewConfig
     public boolean hasColoringData = true;
     public boolean hasImageMap = false;
 
+    public boolean hasDTMs = true;
     public boolean hasMapmaker = false;
     public boolean hasRemoteMapmaker = false;
 //    public double bodyDensity = 0.0;

@@ -91,7 +91,7 @@ public class OfflimbActorGeneratorPipeline
 		Pair<RenderablePointedImage, vtkPolyData>[] pairSink = new Pair[1];
 		List<vtkActor> actors = Lists.newArrayList();
 		Just.of(renderableImages.get(0))
-			.operate(new OfflimbPlaneGeneratorOperators(326.43141287061167, vtkReader.getOutputs().get(0), footprints.get(0).GetBounds(), footprints.get(0).GetNumberOfPoints()))
+			.operate(new OfflimbPlaneGeneratorOperators(326.43141287061167, vtkReader.getOutputs(), footprints.get(0).GetBounds(), footprints.get(0).GetNumberOfPoints()))
 			.operate(new OfflimbActorOperator(null))
 			.subscribe(Sink.of(actors))
 			//.subscribe(PairSink.of(pairSink))

@@ -35,7 +35,7 @@ import edu.jhuapl.saavtk.util.SafeURLPaths;
 import edu.jhuapl.sbmt.core.image.IImagingInstrument;
 import edu.jhuapl.sbmt.core.image.ImageKeyInterface;
 
-class PerspectiveImageRendererHelper
+public class PerspectiveImageRendererHelper
 {
 	PerspectiveImage image;
 	protected vtkImageData rawImage;
@@ -257,7 +257,7 @@ class PerspectiveImageRendererHelper
         if (footprint.getFootprintGenerated()[currentSlice] == false)
             footprint.loadFootprint();
 
-        computeCellNormals(); 
+        computeCellNormals();
 
         int numberOfCells = currentFootprint.GetNumberOfCells();
 

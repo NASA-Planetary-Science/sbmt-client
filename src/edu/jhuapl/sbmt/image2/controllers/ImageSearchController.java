@@ -6,8 +6,11 @@ import java.awt.event.FocusListener;
 import java.awt.event.InputEvent;
 import java.awt.event.MouseEvent;
 import java.io.File;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
+import java.util.TimeZone;
 
 import javax.swing.JFrame;
 import javax.swing.JTabbedPane;
@@ -21,6 +24,7 @@ import vtk.vtkProp;
 
 import edu.jhuapl.saavtk.gui.dialog.CustomFileChooser;
 import edu.jhuapl.saavtk.gui.render.Renderer;
+import edu.jhuapl.saavtk.model.IPositionOrientationManager;
 import edu.jhuapl.saavtk.model.ModelManager;
 import edu.jhuapl.saavtk.model.ModelNames;
 import edu.jhuapl.saavtk.pick.PickListener;
@@ -49,6 +53,7 @@ import edu.jhuapl.sbmt.image2.pipelineComponents.pipelines.io.SaveImagesToSavedF
 import edu.jhuapl.sbmt.image2.ui.custom.importer.CustomImageImporterDialog;
 import edu.jhuapl.sbmt.image2.ui.custom.importer.CustomImageImporterDialog2;
 import edu.jhuapl.sbmt.image2.ui.table.popup.ImageListPopupMenu;
+import edu.jhuapl.sbmt.util.TimeUtil;
 
 import glum.gui.action.PopupMenu;
 
@@ -67,6 +72,7 @@ public class ImageSearchController<G1 extends IPerspectiveImage & IPerspectiveIm
 	private JTabbedPane pane;
 	private PopupMenu<G1> popupMenu;
 	private SmallBodyViewConfig config;
+	IPositionOrientationManager<SmallBodyModel> positionOrientationManager;
 
 	public ImageSearchController(SmallBodyViewConfig config, PerspectiveImageCollection<G1> collection,
 								IImagingInstrument instrument, ModelManager modelManager,
@@ -100,7 +106,7 @@ public class ImageSearchController<G1 extends IPerspectiveImage & IPerspectiveIm
 		});
 
 		this.collection.addListener((aSource, aEventType) -> { updateButtonState(); });
-		popupManager.registerPopup(modelManager.getAllModels().get(ModelNames.IMAGES_V2), new edu.jhuapl.saavtk.popup.PopupMenu()
+		popupManager.registerPopup(modelManager.getAllModels().get(ModelNames.IMAGES_V2).get(0), new edu.jhuapl.saavtk.popup.PopupMenu()
 		{
 			@Override
 			public void showPopup(MouseEvent e, vtkProp pickedProp, int pickedCellId, double[] pickedPosition)
@@ -313,6 +319,30 @@ public class ImageSearchController<G1 extends IPerspectiveImage & IPerspectiveIm
 			}
 		});
 
+		imageListTableController.getPanel().getResultList().getSelectionModel().addListSelectionListener(e -> {
+			int[] selectedRow = imageListTableController.getPanel().getResultList().getSelectedRows();
+			if (selectedRow.length == 1)
+			{
+				G1 image = collection.getSelectedItems().asList().get(0);
+				Date dt = image.getDate();
+		    	SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS");
+		    	sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
+		    	try
+				{
+		    		if (positionOrientationManager != null)
+		    			positionOrientationManager.run(TimeUtil.str2et(sdf.format(dt)));
+		        	String name = image.getName();
+//		        	image.propertyChange(new PropertyChangeEvent(this, Properties.MODEL_CHANGED, null, null));
+//		        	if (completionBlock != null) completionBlock.run();
+				}
+				catch (Exception e1)
+				{
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
+			}
+		});
+
 //		imageListTableController.getPanel().getNewImageButton().addActionListener(e -> {
 //			CustomImageImporterDialog dialog = new CustomImageImporterDialog(null, false, instrument,
 //					modelManager.getPolyhedralModel().isEllipsoid(), collection);
@@ -496,5 +526,10 @@ public class ImageSearchController<G1 extends IPerspectiveImage & IPerspectiveIm
 		pane.add(panel, "Server");
 		pane.add(customPanel, "Custom");
 		return pane;
+	}
+
+	public void setPositionOrientationManager(IPositionOrientationManager<SmallBodyModel> manager)
+	{
+		this.positionOrientationManager = manager;
 	}
 }

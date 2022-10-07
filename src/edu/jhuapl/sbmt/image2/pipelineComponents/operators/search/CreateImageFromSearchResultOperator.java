@@ -84,11 +84,35 @@ public class CreateImageFromSearchResultOperator<G1 extends IPerspectiveImage & 
         	{
 				infoBaseName = infoBaseName.substring(0, infoBaseName.lastIndexOf("/")) + File.separator + getSumFileName(instrument.getSearchQuery().getRootPath(), imageInfo.get(0));
         		infoBaseName = infoBaseName.replace("/dart/draco", "/jupiter/dart-jupiter-01/draco");
+        		infoBaseName = infoBaseName.replace("/dart/leia", "/jupiter/dart-jupiter-01/leia");
+        		infoBaseName = infoBaseName.replace("/dart/luke", "/jupiter/dart-jupiter-01/luke");
+
+
         	}
         	else if (viewConfig.getUniqueName().contains("Ganymede"))
         	{
 				infoBaseName = infoBaseName.substring(0, infoBaseName.lastIndexOf("/")) + File.separator + getSumFileName(instrument.getSearchQuery().getRootPath(), imageInfo.get(0));
         		infoBaseName = infoBaseName.replace("/dart/draco", "/ganymede/dart-ganymede-01/draco");
+        		infoBaseName = infoBaseName.replace("/dart/leia", "/ganymede/dart-ganymede-01/leia");
+        		infoBaseName = infoBaseName.replace("/dart/luke", "/ganymede/dart-ganymede-01/luke");
+
+        	}
+        	else if (viewConfig.getUniqueName().contains("Didymos"))
+        	{
+//        		infoBaseName = infoBaseName.substring(0, infoBaseName.lastIndexOf("/")) + File.separator + getSumFileName(instrument.getSearchQuery().getRootPath(), imageInfo.get(0));
+        		infoBaseName = infoBaseName.replace("/dart/draco/" + viewConfig.author.toString().replace("-didymos-center", ""), "/didymos/ideal-impact1-20200629-v01/draco");
+        		infoBaseName = infoBaseName.replace("/dart/leia/" + viewConfig.author.toString().replace("-didymos-center", ""), "/didymos/ideal-impact1-20200629-v01/leia");
+        		infoBaseName = infoBaseName.replace("/dart/luke/" + viewConfig.author.toString().replace("-didymos-center", ""), "/didymos/ideal-impact1-20200629-v01/luke");
+
+
+        	}
+        	else if (viewConfig.getUniqueName().contains("Dimorphos"))
+        	{
+//        		infoBaseName = infoBaseName.substring(0, infoBaseName.lastIndexOf("/")) + File.separator + getSumFileName(instrument.getSearchQuery().getRootPath(), imageInfo.get(0));
+        		infoBaseName = infoBaseName.replace("/dart/draco/" + viewConfig.author.toString().replace("-didymos-center", ""), "/dimorphos/ideal-impact1-20200629-v01/draco");
+        		infoBaseName = infoBaseName.replace("/dart/leia" + viewConfig.author.toString().replace("-didymos-center", ""), "/dimorphos/ideal-impact1-20200629-v01/leia");
+        		infoBaseName = infoBaseName.replace("/dart/luke/" + viewConfig.author.toString().replace("-didymos-center", ""), "/dimorphos/ideal-impact1-20200629-v01/luke");
+
         	}
         	else
         	{

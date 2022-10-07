@@ -22,7 +22,7 @@ import edu.jhuapl.saavtk.model.ShapeModelType;
 import edu.jhuapl.saavtk.util.Configuration;
 import edu.jhuapl.saavtk.util.NativeLibraryLoader;
 import edu.jhuapl.saavtk.util.SafeURLPaths;
-import edu.jhuapl.sbmt.client.SbmtModelFactory;
+import edu.jhuapl.sbmt.client2.SbmtModelFactory;
 import edu.jhuapl.sbmt.client2.SbmtMultiMissionTool;
 import edu.jhuapl.sbmt.common.client.SmallBodyModel;
 import edu.jhuapl.sbmt.common.client.SmallBodyViewConfig;
@@ -52,7 +52,7 @@ public class PerspectiveImagePreRenderer
 
 		double[] boundingBox = footprints.get(0).GetBounds();
 		Just.of(renderableImage)
-			.operate(new OfflimbPlaneGeneratorOperators(offLimbFootprintDepth, smallBodyModels.get(0), boundingBox, footprints.get(0).GetNumberOfPoints()))
+			.operate(new OfflimbPlaneGeneratorOperators(offLimbFootprintDepth, smallBodyModels, boundingBox, footprints.get(0).GetNumberOfPoints()))
 			.subscribe(PairSink.of(offLimbPolydata))
 			.run();
 

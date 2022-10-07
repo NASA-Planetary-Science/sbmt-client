@@ -59,7 +59,7 @@ public class PerspectiveImageToRenderableImagePipeline
 
 		//generate image pointing (in: filename, out: ImagePointing)
 		IPipelinePublisher<PointingFileReader> pointingPublisher = null;
-		if (image.getPointingSourceType() == ImageSource.SPICE)
+		if (image.getPointingSourceType() == ImageSource.SPICE || image.getPointingSourceType() == ImageSource.CORRECTED_SPICE)
 			pointingPublisher = new InfofileReaderPublisher(pointingFile);
 		else
 			pointingPublisher = new SumfileReaderPublisher(pointingFile);

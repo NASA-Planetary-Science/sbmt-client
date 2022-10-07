@@ -89,7 +89,7 @@ public class SpiceBodyOperator extends BasePipelineOperator<Pair<SmallBodyModel,
 			transformFilter.SetInputData(smallBodyModel.getSmallBodyPolyData());
 			transformFilter.SetTransform(transform);
 			transformFilter.Update();
-			smallBodyModel.transformBody(transformFilter);
+			smallBodyModel.transformBody(transform);
 			outputs.add(smallBodyModel);
 		}
 	}

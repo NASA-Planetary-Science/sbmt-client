@@ -48,7 +48,7 @@ public class IPerspectiveImageToLayerAndMetadataPipeline
 		if (FilenameUtils.getExtension(fileName).toLowerCase().equals("fit") || FilenameUtils.getExtension(fileName).toLowerCase().equals("fits"))
 		{
 			if (useGDAL)
-				reader = new GDALReader(fileName, false, new ValidityCheckerDoubleFactory().allValid(), Double.NaN);
+				reader = new GDALReader(fileName, false, new ValidityCheckerDoubleFactory().checker2d(image.getFillValues()), Double.NaN);
 			else
 				reader = new BuiltInFitsReader(fileName, new double[] {});
 			metadataReader = new BuiltInFitsHeaderReader(fileName);
@@ -56,7 +56,7 @@ public class IPerspectiveImageToLayerAndMetadataPipeline
 		else if (FilenameUtils.getExtension(fileName).toLowerCase().equals("png"))
 		{
 			if (useGDAL)
-				reader = new GDALReader(fileName, false, new ValidityCheckerDoubleFactory().allValid(), Double.NaN);
+				reader = new GDALReader(fileName, false, new ValidityCheckerDoubleFactory().checker2d(image.getFillValues()), Double.NaN);
 			else
 				reader = new BuiltInPNGReader(fileName);
 			metadataReader = new BuiltInPNGHeaderReader(fileName);
@@ -64,7 +64,7 @@ public class IPerspectiveImageToLayerAndMetadataPipeline
 		else
 		{
 			if (useGDAL)
-				reader = new GDALReader(fileName, false, new ValidityCheckerDoubleFactory().allValid(), Double.NaN);
+				reader = new GDALReader(fileName, false, new ValidityCheckerDoubleFactory().checker2d(image.getFillValues()), Double.NaN);
 		}
 		IPipelineOperator<Layer, Layer> linearInterpolator = null;
 		if (image.getLinearInterpolatorDims() == null || (image.getLinearInterpolatorDims()[0] == 0 && image.getLinearInterpolatorDims()[1] == 0))

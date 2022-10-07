@@ -235,82 +235,6 @@ public class DartConfigs
 
         configList.add(c);
 
-        //System configs
-        c = createSingleResolutionSystemConfig_20200629_v01(new ShapeModelBody[] { ShapeModelBody.DIDYMOS, ShapeModelBody.DIMORPHOS }, "Ideal Impact 1 20200629 v01 System Didymos Center", 1996);
-        configList.add(c);
-        c = createSingleResolutionSystemConfig_20200629_v01(new ShapeModelBody[] { ShapeModelBody.DIMORPHOS, ShapeModelBody.DIDYMOS }, "Ideal Impact 1 20200629 v01 System Dimorphos Center", 3072);
-        configList.add(c);
-        c = createSingleResolutionSystemConfig_20200629_v01(new ShapeModelBody[] { ShapeModelBody.DIDYMOS, ShapeModelBody.DIMORPHOS }, "Ideal Impact 2 20200629 v01 System Didymos Center", 1996);
-        configList.add(c);
-        c = createSingleResolutionSystemConfig_20200629_v01(new ShapeModelBody[] { ShapeModelBody.DIMORPHOS, ShapeModelBody.DIDYMOS }, "Ideal Impact 2 20200629 v01 System Dimorphos Center", 3145728);
-        configList.add(c);
-        c = createSingleResolutionSystemConfig_20200629_v01(new ShapeModelBody[] { ShapeModelBody.DIDYMOS, ShapeModelBody.DIMORPHOS }, "Ideal Impact 3 20200629 v01 System Didymos Center", 1996);
-        configList.add(c);
-        c = createSingleResolutionSystemConfig_20200629_v01(new ShapeModelBody[] { ShapeModelBody.DIMORPHOS, ShapeModelBody.DIDYMOS }, "Ideal Impact 3 20200629 v01 System Dimorphos Center", 3366134);
-        configList.add(c);
-        c = createSingleResolutionSystemConfig_20200629_v01(new ShapeModelBody[] { ShapeModelBody.DIDYMOS, ShapeModelBody.DIMORPHOS }, "Ideal Impact 4 20200629 v01 System Didymos Center", 3145728);
-        configList.add(c);
-        c = createSingleResolutionSystemConfig_20200629_v01(new ShapeModelBody[] { ShapeModelBody.DIMORPHOS, ShapeModelBody.DIDYMOS }, "Ideal Impact 4 20200629 v01 System Dimorphos Center", 3145728);
-        configList.add(c);
-        c = createSingleResMissionImagesSystemConfig(new ShapeModelBody[] { ShapeModelBody.DIDYMOS, ShapeModelBody.DIMORPHOS }, "Ideal Impact 4 RA 20210211 v01 System Didymos Center", 3145728);
-        configList.add(c);
-        c = createSingleResMissionImagesSystemConfig(new ShapeModelBody[] { ShapeModelBody.DIMORPHOS, ShapeModelBody.DIDYMOS }, "Ideal Impact 4 RA 20210211 v01 System Dimorphos Center", 3145728);
-        configList.add(c);
-        c = createSingleResolutionSystemConfig_20200629_v01(new ShapeModelBody[] { ShapeModelBody.DIDYMOS, ShapeModelBody.DIMORPHOS }, "Ideal Impact 5 20200629 v01 System Didymos Center", 3145728);
-        configList.add(c);
-        c = createSingleResolutionSystemConfig_20200629_v01(new ShapeModelBody[] { ShapeModelBody.DIMORPHOS, ShapeModelBody.DIDYMOS }, "Ideal Impact 5 20200629 v01 System Dimorphos Center", 3366134);
-        configList.add(c);
-        c = createSingleResolutionSystemConfig_20200629_v01(new ShapeModelBody[] { ShapeModelBody.DIDYMOS, ShapeModelBody.DIMORPHOS }, "Ideal Impact 6 RA 20201116 v01 System Didymos Center", 3145728);
-//        configList.add(c);
-        c = createSingleResolutionSystemConfig_20200629_v01(new ShapeModelBody[] { ShapeModelBody.DIMORPHOS, ShapeModelBody.DIDYMOS }, "Ideal Impact 6 RA 20201116 v01 System Dimorphos Center", 3145728);
-//        configList.add(c);
-
-        c = createSingleResMissionImagesSystemConfig(new ShapeModelBody[] { ShapeModelBody.DIDYMOS, ShapeModelBody.DIMORPHOS }, "Ideal Impact 9 20210630 v01 System Didymos Center", 1996, true);
-        configList.add(c);
-
-        c = createSingleResMissionImagesSystemConfig(new ShapeModelBody[] { ShapeModelBody.DIMORPHOS, ShapeModelBody.DIDYMOS }, "Ideal Impact 9 20210630 v01 System Dimorphos Center", 3072, true);
-        configList.add(c);
-
-
-//
-        c = createSingleResolutionSystemConfig_20200629_v01(new ShapeModelBody[] { ShapeModelBody.DIDYMOS, ShapeModelBody.DIMORPHOS }, "Errors Impact 1 20200629 v01 System Didymos Center", 1996);
-        configList.add(c);
-        c = createSingleResolutionSystemConfig_20200629_v01(new ShapeModelBody[] { ShapeModelBody.DIMORPHOS, ShapeModelBody.DIDYMOS }, "Errors Impact 1 20200629 v01 System Dimorphos Center", 3072);
-        configList.add(c);
-        c = createSingleResolutionSystemConfig_20200629_v01(new ShapeModelBody[] { ShapeModelBody.DIDYMOS, ShapeModelBody.DIMORPHOS }, "Errors Impact 2 20200629 v01 System Didymos Center", 1996);
-        configList.add(c);
-        c = createSingleResolutionSystemConfig_20200629_v01(new ShapeModelBody[] { ShapeModelBody.DIMORPHOS, ShapeModelBody.DIDYMOS }, "Errors Impact 2 20200629 v01 System Dimorphos Center", 31457278);
-        configList.add(c);
-        c = createSingleResolutionSystemConfig_20200629_v01(new ShapeModelBody[] { ShapeModelBody.DIDYMOS, ShapeModelBody.DIMORPHOS }, "Errors Impact 3 20200629 v01 System Didymos Center", 1996);
-        configList.add(c);
-        c = createSingleResolutionSystemConfig_20200629_v01(new ShapeModelBody[] { ShapeModelBody.DIMORPHOS, ShapeModelBody.DIDYMOS }, "Errors Impact 3 20200629 v01 System Dimorphos Center", 3366134);
-        configList.add(c);
-        c = createSingleResolutionSystemConfig_20200629_v01(new ShapeModelBody[] { ShapeModelBody.DIDYMOS, ShapeModelBody.DIMORPHOS }, "Errors Impact 4 20200629 v01 System Didymos Center", 3145728);
-        configList.add(c);
-        c = createSingleResolutionSystemConfig_20200629_v01(new ShapeModelBody[] { ShapeModelBody.DIMORPHOS, ShapeModelBody.DIDYMOS }, "Errors Impact 4 20200629 v01 System Dimorphos Center", 31457278);
-        configList.add(c);
-        c = createSingleResolutionSystemConfig_20200629_v01(new ShapeModelBody[] { ShapeModelBody.DIDYMOS, ShapeModelBody.DIMORPHOS }, "Errors Impact 5 20200629 v01 System Didymos Center", 3145728);
-        configList.add(c);
-        c = createSingleResolutionSystemConfig_20200629_v01(new ShapeModelBody[] { ShapeModelBody.DIMORPHOS, ShapeModelBody.DIDYMOS }, "Errors Impact 5 20200629 v01 System Dimorphos Center", 3366134);
-        configList.add(c);
-        c = createSingleResMissionImagesSystemConfig(new ShapeModelBody[] { ShapeModelBody.DIDYMOS, ShapeModelBody.DIMORPHOS }, "Errors Impact 9 20210630 v01 System Didymos Center", 3072, true);
-        configList.add(c);
-        c = createSingleResMissionImagesSystemConfig(new ShapeModelBody[] { ShapeModelBody.DIMORPHOS, ShapeModelBody.DIDYMOS }, "Errors Impact 9 20210630 v01 System Dimorphos Center", 3072, true);
-        configList.add(c);
-
-        configList.add(c);
-
-        // Jupiter system models.
-        c = createMultiResMissionImagesConfig(ShapeModelBody.JUPITER, "DART Jupiter-01", ModelLabels5Levels, ModelResolutions5Levels, SumFilesAndInfoFiles, null, null);
-        c.type = BodyType.PLANETS_AND_SATELLITES;
-        c.population = ShapeModelPopulation.JUPITER;
-        c.system = ShapeModelBody.JUPITER;
-        c.imageSearchDefaultStartDate = new GregorianCalendar(2022, 6, 30, 0, 0, 0).getTime();
-        c.imageSearchDefaultMaxSpacecraftDistance = 1.0e10;
-        c.imageSearchDefaultMaxResolution = 1.0e9;
-
-        configList.add(c);
-
         c = createMultiResMissionImagesConfig(ShapeModelBody.GANYMEDE, "DART Ganymede-01", ModelLabels5Levels, ModelResolutions5Levels, SumFilesAndInfoFiles, null, null);
         c.type = BodyType.PLANETS_AND_SATELLITES;
         c.population = ShapeModelPopulation.JUPITER;
@@ -320,6 +244,8 @@ public class DartConfigs
         c.imageSearchDefaultMaxResolution = 1.0e9;
 
         configList.add(c);
+
+        buildSystemConfigs(configList);
     }
 
     /**
@@ -332,47 +258,9 @@ public class DartConfigs
      * @return
      */
     @Deprecated
-    protected SmallBodyViewConfig createSingleResolutionSystemConfig_20200629_v01(ShapeModelBody[] body, String label, int numberPlates)
+    protected SmallBodyViewConfig createSingleResolutionConfig_20210630_v01(ShapeModelBody body, String label, int numberPlates)
     {
-    	SmallBodyViewConfig config = createSingleResolutionConfig_20200629_v01(body[0], label, numberPlates);
-    	List<SmallBodyViewConfig> systemConfigs = Lists.newArrayList();
-    	for (int i=1; i<body.length; i++)
-    	{
-    		systemConfigs.add(createSingleResolutionConfig_20200629_v01(body[i], label, numberPlates));
-    	};
-    	config.systemConfigs = systemConfigs;
-    	config.hasSystemBodies = true;
-    	config.body = ShapeModelBody.DIDYMOS_SYSTEM;
-    	config.hasDTMs = false;
-    	config.rootDirOnServer = "/" + body[0].name().replaceAll("[\\s-_]+", "-").toLowerCase() + "/" + config.author.name().replaceAll("[\\s-_]+", "-").toLowerCase();
-    	config.rootDirOnServer = config.rootDirOnServer.replaceAll("\\(", "");
-    	config.rootDirOnServer = config.rootDirOnServer.replaceAll("\\)", "");
-    	config.rootDirOnServer = config.rootDirOnServer.replaceAll("-\\w*-center", "");
-    	return config;
-    }
-
-    protected SmallBodyViewConfig createSingleResMissionImagesSystemConfig(ShapeModelBody[] body, String label, int numberPlates)
-    {
-    	return createSingleResMissionImagesSystemConfig(body, label, numberPlates, false);
-    }
-
-    protected SmallBodyViewConfig createSingleResMissionImagesSystemConfig(ShapeModelBody[] body, String label, int numberPlates, boolean useUpdatedFrameNames)
-    {
-    	SmallBodyViewConfig config = createSingleResMissionImagesConfig(body[0], label, numberPlates, useUpdatedFrameNames);
-    	List<SmallBodyViewConfig> systemConfigs = Lists.newArrayList();
-    	for (int i=1; i<body.length; i++)
-    	{
-    		systemConfigs.add(createSingleResMissionImagesConfig(body[i], label, numberPlates, useUpdatedFrameNames));
-    	};
-    	config.systemConfigs = systemConfigs;
-    	config.hasSystemBodies = true;
-    	config.body = ShapeModelBody.DIDYMOS_SYSTEM;
-        config.hasDTMs = false;
-    	config.rootDirOnServer = "/" + body[0].name().replaceAll("[\\s-_]+", "-").toLowerCase() + "/" + config.author.name().replaceAll("[\\s-_]+", "-").toLowerCase();
-    	config.rootDirOnServer = config.rootDirOnServer.replaceAll("\\(", "");
-    	config.rootDirOnServer = config.rootDirOnServer.replaceAll("\\)", "");
-    	config.rootDirOnServer = config.rootDirOnServer.replaceAll("-\\w*-center", "");
-    	return config;
+        return createSingleResolutionConfig_20200629_v01(body, label, numberPlates);
     }
 
     /**
@@ -504,64 +392,23 @@ public class DartConfigs
         return c;
     }
 
+    protected SmallBodyViewConfig createSingleResMissionImagesConfig_20210211_v01( //
+            ShapeModelBody body, //
+            String label, //
+            int numberPlates, //
+            String dracoModelId, //
+            String leiaModelId, //
+            String lukeModelId) //
+    {
+    	return createSingleResMissionImagesConfig_20210211_v01(body, label, numberPlates, dracoModelId, leiaModelId, lukeModelId, false);
+    }
+
     /**
      * This version was created to handle the pathology of the first delivery of
      * ideal-impact4-ra-20210211-v01, which gets its DRACO images (only) from
      * the ideal-impact4-20200629-v01 model.
      * <p>
      * Create a single-resolution model for the given input parameters. This
-     * creates configurations that are consistent with the set of simulated
-     * models, images and SPICE files delivered starting in December, 2020
-     * through March, 2021, based on the DART simulations identified as
-     * 20201116-v01 and 20210211-v01.
-     * <p>
-     * These deliveries were processed using versions of the scripts that were
-     * set up to handle images under the mission/instrument directory. These
-     * were processed AFTER the Saturnian moon models that were processed in
-     * October-Novebmer 2020.
-     * <p>
-     * For these deliveries, images were located under the
-     * <mission>/<instrument>/<model> hierarchy. Some images had one or the
-     * other or both of the bodies Didymos and Dimorphos in the FOV. Only one
-     * set of images for each instrument were delivered, processed etc. However,
-     * since these images are simulation-specific simulated images, needed to
-     * put them under one more level of subdirectory, i.e.
-     * mission/instrument/model (but note no body in this hierarchy).
-     * <p>
-     * This method derives the author from the label in a DART simulated
-     * model-specific way, then derives the modelId from the author. The same
-     * modelId is used for the model and also to locate images for all three
-     * imagers (DRACO, LEIA, LUKE).
-     *
-     * @param body the {@link ShapeModelBody} associated with this model
-     * @param label the label exactly as the model should appear in the menu
-     * @param numberPlates the number of plates in the single resolution model
-     * @return the config
-     */
-    protected SmallBodyViewConfig createSingleResMissionImagesConfig(ShapeModelBody body, String label, int numberPlates)
-    {
-        return createSingleResMissionImagesConfig(body, label, numberPlates, null, null, null, false);
-    }
-
-    protected SmallBodyViewConfig createSingleResMissionImagesConfig(ShapeModelBody body, String label, int numberPlates, boolean useUpdatedFrameNames)
-    {
-        return createSingleResMissionImagesConfig(body, label, numberPlates, null, null, null, useUpdatedFrameNames);
-    }
-
-    protected SmallBodyViewConfig createSingleResMissionImagesConfig( //
-            ShapeModelBody body, //
-            String label, //
-            int numberPlates, //
-            String dracoModelId, //
-            String leiaModelId, //
-            String lukeModelId //
-    )
-    {
-    	return createSingleResMissionImagesConfig(body, label, numberPlates, dracoModelId, leiaModelId, lukeModelId, false);
-    }
-
-    /**
-     * /** Create a single-resolution model for the given input parameters. This
      * creates configurations that are consistent with the set of simulated
      * models, images and SPICE files delivered starting in December, 2020
      * through March, 2021, based on the DART simulations identified as
@@ -614,7 +461,7 @@ public class DartConfigs
         // ShapeModelType rules: no spaces (replace with underscores). Mixed
         // case, underscores and dashes are all OK. Includes a DART-specific
         // hack to remove one dash that was not present in the early models.
-        ShapeModelType author = ShapeModelType.provide(label.replaceAll(" System", "").replaceAll("\\s+", "-").toLowerCase().replace("impact-", "impact"));
+        ShapeModelType author = ShapeModelType.provide(label.replaceAll("\\s+", "-").toLowerCase().replace("impact-", "impact"));
 
         // Model identifier string rules: lowercase, no spaces nor underscores
         // (replace with dashes). Single dashes are OK. Valid for building
@@ -708,6 +555,11 @@ public class DartConfigs
         return c;
     }
 
+    protected SmallBodyViewConfig createSingleResMissionImagesConfig(ShapeModelBody body, String label, int numberPlates)
+    {
+    	return createSingleResMissionImagesConfig(body, label, numberPlates, false);
+    }
+
     /**
      * This version of the creator is based on the method
      * createSingleResMissionImagesConfig_20210211_v01 but with the final three
@@ -721,7 +573,7 @@ public class DartConfigs
      * @param numberPlates the number of plates in the single resolution model
      * @return the config
      */
-    protected SmallBodyViewConfig createSingleResMissionImagesConfig(ShapeModelBody body, String label, int numberPlates)
+    protected SmallBodyViewConfig createSingleResMissionImagesConfig(ShapeModelBody body, String label, int numberPlates, boolean useUpdatedFrameNames)
     {
         String dracoModelId = null;
         String leiaModelId = null;
@@ -737,12 +589,15 @@ public class DartConfigs
         // ShapeModelType rules: no spaces (replace with underscores). Mixed
         // case, underscores and dashes are all OK. Includes a DART-specific
         // hack to remove one dash that was not present in the early models.
-        ShapeModelType author = ShapeModelType.provide(label.replaceAll("\\s+", "-").toLowerCase().replace("impact-", "impact"));
+//        ShapeModelType author = ShapeModelType.provide(label.replaceAll("\\s+", "-").toLowerCase().replace("impact-", "impact"));
+        ShapeModelType author = ShapeModelType.provide(label.replaceAll(" System", "").replaceAll("\\s+", "-").toLowerCase().replace("impact-", "impact"));
+
 
         // Model identifier string rules: lowercase, no spaces nor underscores
         // (replace with dashes). Single dashes are OK. Valid for building
         // server-side paths.
         String modelId = author.name().replaceAll("[\\s-_]+", "-").toLowerCase();
+        modelId = modelId.replaceAll("-\\w*-center", "");
 
         // Body identifier string rules: lowercase, no spaces nor underscores.
         // (replace with dashes). Single dashes are OK. Valid for building
@@ -831,6 +686,7 @@ public class DartConfigs
         else
         	generateStateHistoryParameters(c,  body.name());
         return c;
+
     }
 
     private void generateStateHistoryParameters(SmallBodyViewConfig c, String centerBodyName)
@@ -1005,5 +861,122 @@ public class DartConfigs
         };
 
         return c;
+    }
+
+    protected SmallBodyViewConfig createSingleResMissionImagesSystemConfig(ShapeModelBody[] body, String label, int numberPlates)
+    {
+    	return createSingleResMissionImagesSystemConfig(body, label, numberPlates, false);
+    }
+
+    protected SmallBodyViewConfig createSingleResMissionImagesSystemConfig(ShapeModelBody[] body, String label, int numberPlates, boolean useUpdatedFrameNames)
+    {
+    	SmallBodyViewConfig config = createSingleResMissionImagesConfig(body[0], label, numberPlates, useUpdatedFrameNames);
+    	List<SmallBodyViewConfig> systemConfigs = Lists.newArrayList();
+    	for (int i=1; i<body.length; i++)
+    	{
+    		systemConfigs.add(createSingleResMissionImagesConfig(body[i], label, numberPlates, useUpdatedFrameNames));
+    	};
+    	config.systemConfigs = systemConfigs;
+    	config.hasSystemBodies = true;
+    	config.body = ShapeModelBody.DIDYMOS_SYSTEM;
+        config.hasDTMs = false;
+    	config.rootDirOnServer = "/" + body[0].name().replaceAll("[\\s-_]+", "-").toLowerCase() + "/" + config.author.name().replaceAll("[\\s-_]+", "-").toLowerCase();
+    	config.rootDirOnServer = config.rootDirOnServer.replaceAll("\\(", "");
+    	config.rootDirOnServer = config.rootDirOnServer.replaceAll("\\)", "");
+    	config.rootDirOnServer = config.rootDirOnServer.replaceAll("-\\w*-center", "");
+    	return config;
+    }
+
+    /**
+     * Builds a system configuration
+     *
+     * @param body
+     * @param label
+     * @param numberPlates
+     * @return
+     */
+    protected SmallBodyViewConfig createSingleResolutionSystemConfig_20200629_v01(ShapeModelBody[] body, String label, int numberPlates)
+    {
+    	SmallBodyViewConfig config = createSingleResolutionConfig_20200629_v01(body[0], label, numberPlates);
+    	List<SmallBodyViewConfig> systemConfigs = Lists.newArrayList();
+    	for (int i=1; i<body.length; i++)
+    	{
+    		systemConfigs.add(createSingleResolutionConfig_20200629_v01(body[i], label, numberPlates));
+    	};
+    	config.systemConfigs = systemConfigs;
+    	config.hasSystemBodies = true;
+    	config.body = ShapeModelBody.DIDYMOS_SYSTEM;
+    	config.hasDTMs = false;
+    	config.rootDirOnServer = "/" + body[0].name().replaceAll("[\\s-_]+", "-").toLowerCase() + "/" + config.author.name().replaceAll("[\\s-_]+", "-").toLowerCase();
+    	config.rootDirOnServer = config.rootDirOnServer.replaceAll("\\(", "");
+    	config.rootDirOnServer = config.rootDirOnServer.replaceAll("\\)", "");
+    	config.rootDirOnServer = config.rootDirOnServer.replaceAll("-\\w*-center", "");
+    	return config;
+    }
+
+    private void buildSystemConfigs(List<ViewConfig> configList)
+    {
+    	SmallBodyViewConfig c;
+    	//System configs
+        c = createSingleResolutionSystemConfig_20200629_v01(new ShapeModelBody[] { ShapeModelBody.DIDYMOS, ShapeModelBody.DIMORPHOS }, "Ideal Impact 1 20200629 v01 System Didymos Center", 1996);
+        configList.add(c);
+        c = createSingleResolutionSystemConfig_20200629_v01(new ShapeModelBody[] { ShapeModelBody.DIMORPHOS, ShapeModelBody.DIDYMOS }, "Ideal Impact 1 20200629 v01 System Dimorphos Center", 3072);
+        configList.add(c);
+        c = createSingleResolutionSystemConfig_20200629_v01(new ShapeModelBody[] { ShapeModelBody.DIDYMOS, ShapeModelBody.DIMORPHOS }, "Ideal Impact 2 20200629 v01 System Didymos Center", 1996);
+        configList.add(c);
+        c = createSingleResolutionSystemConfig_20200629_v01(new ShapeModelBody[] { ShapeModelBody.DIMORPHOS, ShapeModelBody.DIDYMOS }, "Ideal Impact 2 20200629 v01 System Dimorphos Center", 3145728);
+        configList.add(c);
+        c = createSingleResolutionSystemConfig_20200629_v01(new ShapeModelBody[] { ShapeModelBody.DIDYMOS, ShapeModelBody.DIMORPHOS }, "Ideal Impact 3 20200629 v01 System Didymos Center", 1996);
+        configList.add(c);
+        c = createSingleResolutionSystemConfig_20200629_v01(new ShapeModelBody[] { ShapeModelBody.DIMORPHOS, ShapeModelBody.DIDYMOS }, "Ideal Impact 3 20200629 v01 System Dimorphos Center", 3366134);
+        configList.add(c);
+        c = createSingleResolutionSystemConfig_20200629_v01(new ShapeModelBody[] { ShapeModelBody.DIDYMOS, ShapeModelBody.DIMORPHOS }, "Ideal Impact 4 20200629 v01 System Didymos Center", 3145728);
+        configList.add(c);
+        c = createSingleResolutionSystemConfig_20200629_v01(new ShapeModelBody[] { ShapeModelBody.DIMORPHOS, ShapeModelBody.DIDYMOS }, "Ideal Impact 4 20200629 v01 System Dimorphos Center", 3145728);
+        configList.add(c);
+        c = createSingleResMissionImagesSystemConfig(new ShapeModelBody[] { ShapeModelBody.DIDYMOS, ShapeModelBody.DIMORPHOS }, "Ideal Impact 4 RA 20210211 v01 System Didymos Center", 3145728);
+        configList.add(c);
+        c = createSingleResMissionImagesSystemConfig(new ShapeModelBody[] { ShapeModelBody.DIMORPHOS, ShapeModelBody.DIDYMOS }, "Ideal Impact 4 RA 20210211 v01 System Dimorphos Center", 3145728);
+        configList.add(c);
+        c = createSingleResolutionSystemConfig_20200629_v01(new ShapeModelBody[] { ShapeModelBody.DIDYMOS, ShapeModelBody.DIMORPHOS }, "Ideal Impact 5 20200629 v01 System Didymos Center", 3145728);
+        configList.add(c);
+        c = createSingleResolutionSystemConfig_20200629_v01(new ShapeModelBody[] { ShapeModelBody.DIMORPHOS, ShapeModelBody.DIDYMOS }, "Ideal Impact 5 20200629 v01 System Dimorphos Center", 3366134);
+        configList.add(c);
+//        c = createSingleResolutionSystemConfig_20200629_v01(new ShapeModelBody[] { ShapeModelBody.DIDYMOS, ShapeModelBody.DIMORPHOS }, "Ideal Impact 6 RA 20201116 v01 System Didymos Center", 3145728);
+//        configList.add(c);
+//        c = createSingleResolutionSystemConfig_20200629_v01(new ShapeModelBody[] { ShapeModelBody.DIMORPHOS, ShapeModelBody.DIDYMOS }, "Ideal Impact 6 RA 20201116 v01 System Dimorphos Center", 3145728);
+//        configList.add(c);
+
+        c = createSingleResMissionImagesSystemConfig(new ShapeModelBody[] { ShapeModelBody.DIDYMOS, ShapeModelBody.DIMORPHOS }, "Ideal Impact 9 20210630 v01 System Didymos Center", 1996, true);
+        configList.add(c);
+
+        c = createSingleResMissionImagesSystemConfig(new ShapeModelBody[] { ShapeModelBody.DIMORPHOS, ShapeModelBody.DIDYMOS }, "Ideal Impact 9 20210630 v01 System Dimorphos Center", 3072, true);
+        configList.add(c);
+
+        c = createSingleResolutionSystemConfig_20200629_v01(new ShapeModelBody[] { ShapeModelBody.DIDYMOS, ShapeModelBody.DIMORPHOS }, "Errors Impact 1 20200629 v01 System Didymos Center", 1996);
+        configList.add(c);
+        c = createSingleResolutionSystemConfig_20200629_v01(new ShapeModelBody[] { ShapeModelBody.DIMORPHOS, ShapeModelBody.DIDYMOS }, "Errors Impact 1 20200629 v01 System Dimorphos Center", 3072);
+        configList.add(c);
+        c = createSingleResolutionSystemConfig_20200629_v01(new ShapeModelBody[] { ShapeModelBody.DIDYMOS, ShapeModelBody.DIMORPHOS }, "Errors Impact 2 20200629 v01 System Didymos Center", 1996);
+        configList.add(c);
+        c = createSingleResolutionSystemConfig_20200629_v01(new ShapeModelBody[] { ShapeModelBody.DIMORPHOS, ShapeModelBody.DIDYMOS }, "Errors Impact 2 20200629 v01 System Dimorphos Center", 31457278);
+        configList.add(c);
+        c = createSingleResolutionSystemConfig_20200629_v01(new ShapeModelBody[] { ShapeModelBody.DIDYMOS, ShapeModelBody.DIMORPHOS }, "Errors Impact 3 20200629 v01 System Didymos Center", 1996);
+        configList.add(c);
+        c = createSingleResolutionSystemConfig_20200629_v01(new ShapeModelBody[] { ShapeModelBody.DIMORPHOS, ShapeModelBody.DIDYMOS }, "Errors Impact 3 20200629 v01 System Dimorphos Center", 3366134);
+        configList.add(c);
+        c = createSingleResolutionSystemConfig_20200629_v01(new ShapeModelBody[] { ShapeModelBody.DIDYMOS, ShapeModelBody.DIMORPHOS }, "Errors Impact 4 20200629 v01 System Didymos Center", 3145728);
+        configList.add(c);
+        c = createSingleResolutionSystemConfig_20200629_v01(new ShapeModelBody[] { ShapeModelBody.DIMORPHOS, ShapeModelBody.DIDYMOS }, "Errors Impact 4 20200629 v01 System Dimorphos Center", 31457278);
+        configList.add(c);
+        c = createSingleResolutionSystemConfig_20200629_v01(new ShapeModelBody[] { ShapeModelBody.DIDYMOS, ShapeModelBody.DIMORPHOS }, "Errors Impact 5 20200629 v01 System Didymos Center", 3145728);
+        configList.add(c);
+        c = createSingleResolutionSystemConfig_20200629_v01(new ShapeModelBody[] { ShapeModelBody.DIMORPHOS, ShapeModelBody.DIDYMOS }, "Errors Impact 5 20200629 v01 System Dimorphos Center", 3366134);
+        configList.add(c);
+        c = createSingleResMissionImagesSystemConfig(new ShapeModelBody[] { ShapeModelBody.DIDYMOS, ShapeModelBody.DIMORPHOS }, "Errors Impact 9 20210630 v01 System Didymos Center", 3072, true);
+        configList.add(c);
+        c = createSingleResMissionImagesSystemConfig(new ShapeModelBody[] { ShapeModelBody.DIMORPHOS, ShapeModelBody.DIDYMOS }, "Errors Impact 9 20210630 v01 System Dimorphos Center", 3072, true);
+        configList.add(c);
+
     }
 }

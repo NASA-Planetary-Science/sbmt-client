@@ -5,6 +5,7 @@ import java.util.List;
 import com.google.common.collect.ImmutableList;
 
 import vtk.vtkPolyData;
+import vtk.vtkTransform;
 import vtk.vtkTransformFilter;
 
 import edu.jhuapl.saavtk.model.GenericPolyhedralModel;
@@ -139,10 +140,16 @@ public class SmallBodyModel extends GenericPolyhedralModel implements ISmallBody
                 lowestResolutionModelStoredInResource);
     }
 
-    public void transformBody(vtkTransformFilter transformFilter)
+    public void transformBody(vtkTransform transform)
     {
+    	this.currentTransform = transform;
+		vtkTransformFilter transformFilter=new vtkTransformFilter();
+		transformFilter.SetInputData(getSmallBodyPolyData());
+		transformFilter.SetTransform(transform);
+		transformFilter.Update();
+
     	vtkPolyData polydata = transformFilter.GetPolyDataOutput();
-    	setSmallBodyPolyData(polydata);
+    	setSmallBodyPolyDataAtPosition(polydata);
     }
 
 }

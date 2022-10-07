@@ -6,35 +6,17 @@ import java.awt.image.BufferedImage;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.io.OutputStream;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 
 import javax.imageio.ImageIO;
 
-import vtk.vtkObject;
-
-import edu.jhuapl.saavtk.model.ShapeModelBody;
-import edu.jhuapl.saavtk.model.ShapeModelType;
-import edu.jhuapl.saavtk.util.FileUtil;
 import edu.jhuapl.saavtk.util.ImageDataUtil;
-import edu.jhuapl.saavtk.util.NativeLibraryLoader;
 import edu.jhuapl.sbmt.common.client.SmallBodyModel;
-import edu.jhuapl.sbmt.common.client.SmallBodyViewConfig;
 import edu.jhuapl.sbmt.core.image.ImageSource;
-import edu.jhuapl.sbmt.image.model.bodies.itokawa.AmicaImage;
-import edu.jhuapl.sbmt.image.model.keys.ImageKey;
-//import edu.jhuapl.sbmt.core.rendering.PerspectiveImage;
-//import edu.jhuapl.sbmt.image.model.bodies.itokawa.AmicaImage;
-//import edu.jhuapl.sbmt.image.model.keys.ImageKey;
-import edu.jhuapl.sbmt.model.itokawa.Itokawa;
-
-import nom.tam.fits.FitsException;
 
 public class AmicaBackplanesGenerator
 {
@@ -209,141 +191,141 @@ public class AmicaBackplanesGenerator
     }
     */
 
-    private static void generateBackplanes(List<String> amicaFiles, ImageSource amicaSource) throws FitsException, IOException
-    {
-        // First compute the optimal resolution of all images using the highest
-        // resolution shape model
-        itokawaModel.setModelResolution(3);
-        HashMap<String, Integer> optimalResMap = new HashMap<String, Integer>();
-        int count = 0;
-        for (String filename : amicaFiles)
-        {
-            System.out.println("\n\n----------------------------------------------------------------------");
-            System.out.println("\n\n----------first pass");
-            System.out.println("starting amica " + count++ + " / " + amicaFiles.size() + " " + filename);
-
-            boolean filesExist = checkIfAmicaFilesExist(filename, amicaSource);
-            if (filesExist == false)
-            {
-                System.out.println("Could not find sumfile");
-                continue;
-            }
-
-            File origFile = new File(filename);
-            File rootFolder = origFile.getParentFile().getParentFile().getParentFile().getParentFile();
-            String keyName = origFile.getAbsolutePath().replace(rootFolder.getAbsolutePath(), "");
-            keyName = keyName.replace(".fit", "");
-            ImageKey key = new ImageKey(keyName, amicaSource);
-            AmicaImage image = new AmicaImage(key, itokawaModel, false);
-            int[] croppedSize = image.getCroppedSize();
-            currentCroppedWidth = croppedSize[1];
-            currentCroppedHeight = croppedSize[0];
-
-            // Generate the backplanes binary file
-            float[] backplanes = image.generateBackplanes();
-
-            int res = findOptimalResolution(backplanes);
-
-            System.out.println("Optimal resolution " + res);
-
-            optimalResMap.put(filename, res);
-
-            image.Delete();
-            System.gc();
-            System.out.println("deleted " + vtkObject.JAVA_OBJECT_MANAGER.gc(true));
-            System.out.println("\n\n");
-        }
-
-        filesProcessed.clear();
-
-        // Now that we know the optimal resolutions to, recompute
-        // and save off backplanes
-        count = 0;
-        for (String filename : amicaFiles)
-        {
-            System.out.println("\n\n----------------------------------------------------------------------");
-            System.out.println("\n\n----------second pass");
-            System.out.println("starting amica " + count++ + " / " + amicaFiles.size() + " " + filename);
-
-            boolean filesExist = checkIfAmicaFilesExist(filename, amicaSource);
-            if (filesExist == false)
-            {
-                System.out.println("Could not find sumfile");
-                continue;
-            }
-
-            File origFile = new File(filename);
-            File rootFolder = origFile.getParentFile().getParentFile().getParentFile().getParentFile();
-            String keyName = origFile.getAbsolutePath().replace(rootFolder.getAbsolutePath(), "");
-            keyName = keyName.replace(".fit", "");
-            ImageKey key = new ImageKey(keyName, amicaSource);
-
-            int res = optimalResMap.get(filename);
-
-            System.out.println("Optimal resolution " + res);
-
-            if (res != itokawaModel.getModelResolution())
-            {
-                System.out.println("Changing resolution from " +
-                        itokawaModel.getModelResolution() + " to " + res);
-
-                itokawaModel.setModelResolution(res);
-            }
-
-            AmicaImage image = new AmicaImage(key, itokawaModel, false);
-            int[] croppedSize = image.getCroppedSize();
-            currentCroppedWidth = croppedSize[1];
-            currentCroppedHeight = croppedSize[0];
-
-            image.loadFootprint();
-            if (image.getUnshiftedFootprint().GetNumberOfCells() == 0)
-            {
-                System.out.println("skipping this image since no intersecting cells");
-                image.Delete();
-                System.gc();
-                System.out.println("deleted " + vtkObject.JAVA_OBJECT_MANAGER.gc(true));
-                System.out.println(" ");
-                System.out.println(" ");
-                continue;
-            }
-
-            // Generate the backplanes binary file
-            float[] backplanes = image.generateBackplanes();
-
-            // Save out the backplanes
-            String ddrFilename = filename.substring(0, filename.length()-4) + "_ddr.img";
-            OutputStream out = new FileOutputStream(ddrFilename);
-            byte[] buf = new byte[4 * backplanes.length];
-            for (int i=0; i<backplanes.length; ++i)
-            {
-                int v = Float.floatToIntBits(backplanes[i]);
-                buf[4*i + 0] = (byte)(v >>> 24);
-                buf[4*i + 1] = (byte)(v >>> 16);
-                buf[4*i + 2] = (byte)(v >>>  8);
-                buf[4*i + 3] = (byte)(v >>>  0);
-            }
-            out.write(buf, 0, buf.length);
-            out.close();
-
-            // Generate a jpeg for each backplane
-            //generateFitsFileForEachBackPlane(backplanes, ddrFilename);
-            generateJpegFileForEachBackPlane(backplanes, ddrFilename);
-
-            // Generate the label file
-            String ddrLabelFilename = filename.substring(0, filename.length()-4) + "_ddr.lbl";
-            image.generateBackplanesLabel(new File(ddrFilename), new File(ddrLabelFilename));
-
-            filesProcessed.add(ddrFilename);
-            System.out.println("Processed " + filesProcessed.size() + " images so far");
-
-            image.Delete();
-            System.gc();
-            System.out.println("deleted " + vtkObject.JAVA_OBJECT_MANAGER.gc(true));
-            System.out.println("\n\n");
-        }
-
-        System.out.println("Total number of files processed " + filesProcessed.size());
-    }
+//    private static void generateBackplanes(List<String> amicaFiles, ImageSource amicaSource) throws FitsException, IOException
+//    {
+//        // First compute the optimal resolution of all images using the highest
+//        // resolution shape model
+//        itokawaModel.setModelResolution(3);
+//        HashMap<String, Integer> optimalResMap = new HashMap<String, Integer>();
+//        int count = 0;
+//        for (String filename : amicaFiles)
+//        {
+//            System.out.println("\n\n----------------------------------------------------------------------");
+//            System.out.println("\n\n----------first pass");
+//            System.out.println("starting amica " + count++ + " / " + amicaFiles.size() + " " + filename);
+//
+//            boolean filesExist = checkIfAmicaFilesExist(filename, amicaSource);
+//            if (filesExist == false)
+//            {
+//                System.out.println("Could not find sumfile");
+//                continue;
+//            }
+//
+//            File origFile = new File(filename);
+//            File rootFolder = origFile.getParentFile().getParentFile().getParentFile().getParentFile();
+//            String keyName = origFile.getAbsolutePath().replace(rootFolder.getAbsolutePath(), "");
+//            keyName = keyName.replace(".fit", "");
+//            ImageKey key = new ImageKey(keyName, amicaSource);
+//            AmicaImage image = new AmicaImage(key, itokawaModel, false);
+//            int[] croppedSize = image.getCroppedSize();
+//            currentCroppedWidth = croppedSize[1];
+//            currentCroppedHeight = croppedSize[0];
+//
+//            // Generate the backplanes binary file
+//            float[] backplanes = image.generateBackplanes();
+//
+//            int res = findOptimalResolution(backplanes);
+//
+//            System.out.println("Optimal resolution " + res);
+//
+//            optimalResMap.put(filename, res);
+//
+//            image.Delete();
+//            System.gc();
+//            System.out.println("deleted " + vtkObject.JAVA_OBJECT_MANAGER.gc(true));
+//            System.out.println("\n\n");
+//        }
+//
+//        filesProcessed.clear();
+//
+//        // Now that we know the optimal resolutions to, recompute
+//        // and save off backplanes
+//        count = 0;
+//        for (String filename : amicaFiles)
+//        {
+//            System.out.println("\n\n----------------------------------------------------------------------");
+//            System.out.println("\n\n----------second pass");
+//            System.out.println("starting amica " + count++ + " / " + amicaFiles.size() + " " + filename);
+//
+//            boolean filesExist = checkIfAmicaFilesExist(filename, amicaSource);
+//            if (filesExist == false)
+//            {
+//                System.out.println("Could not find sumfile");
+//                continue;
+//            }
+//
+//            File origFile = new File(filename);
+//            File rootFolder = origFile.getParentFile().getParentFile().getParentFile().getParentFile();
+//            String keyName = origFile.getAbsolutePath().replace(rootFolder.getAbsolutePath(), "");
+//            keyName = keyName.replace(".fit", "");
+//            ImageKey key = new ImageKey(keyName, amicaSource);
+//
+//            int res = optimalResMap.get(filename);
+//
+//            System.out.println("Optimal resolution " + res);
+//
+//            if (res != itokawaModel.getModelResolution())
+//            {
+//                System.out.println("Changing resolution from " +
+//                        itokawaModel.getModelResolution() + " to " + res);
+//
+//                itokawaModel.setModelResolution(res);
+//            }
+//
+//            AmicaImage image = new AmicaImage(key, itokawaModel, false);
+//            int[] croppedSize = image.getCroppedSize();
+//            currentCroppedWidth = croppedSize[1];
+//            currentCroppedHeight = croppedSize[0];
+//
+//            image.loadFootprint();
+//            if (image.getUnshiftedFootprint().GetNumberOfCells() == 0)
+//            {
+//                System.out.println("skipping this image since no intersecting cells");
+//                image.Delete();
+//                System.gc();
+//                System.out.println("deleted " + vtkObject.JAVA_OBJECT_MANAGER.gc(true));
+//                System.out.println(" ");
+//                System.out.println(" ");
+//                continue;
+//            }
+//
+//            // Generate the backplanes binary file
+//            float[] backplanes = image.generateBackplanes();
+//
+//            // Save out the backplanes
+//            String ddrFilename = filename.substring(0, filename.length()-4) + "_ddr.img";
+//            OutputStream out = new FileOutputStream(ddrFilename);
+//            byte[] buf = new byte[4 * backplanes.length];
+//            for (int i=0; i<backplanes.length; ++i)
+//            {
+//                int v = Float.floatToIntBits(backplanes[i]);
+//                buf[4*i + 0] = (byte)(v >>> 24);
+//                buf[4*i + 1] = (byte)(v >>> 16);
+//                buf[4*i + 2] = (byte)(v >>>  8);
+//                buf[4*i + 3] = (byte)(v >>>  0);
+//            }
+//            out.write(buf, 0, buf.length);
+//            out.close();
+//
+//            // Generate a jpeg for each backplane
+//            //generateFitsFileForEachBackPlane(backplanes, ddrFilename);
+//            generateJpegFileForEachBackPlane(backplanes, ddrFilename);
+//
+//            // Generate the label file
+//            String ddrLabelFilename = filename.substring(0, filename.length()-4) + "_ddr.lbl";
+//            image.generateBackplanesLabel(new File(ddrFilename), new File(ddrLabelFilename));
+//
+//            filesProcessed.add(ddrFilename);
+//            System.out.println("Processed " + filesProcessed.size() + " images so far");
+//
+//            image.Delete();
+//            System.gc();
+//            System.out.println("deleted " + vtkObject.JAVA_OBJECT_MANAGER.gc(true));
+//            System.out.println("\n\n");
+//        }
+//
+//        System.out.println("Total number of files processed " + filesProcessed.size());
+//    }
 
     /*
     private static void generateFitsFileForEachBackPlane(float[] array, String ddrFilename)
@@ -496,40 +478,40 @@ public class AmicaBackplanesGenerator
      */
     public static void main(String[] args) throws IOException
     {
-        System.setProperty("java.awt.headless", "true");
-        NativeLibraryLoader.loadVtkLibraries();
-
-        String amicaFileList=args[0];
-        String inertialFilename = args[1];
-        int mode = Integer.parseInt(args[2]);
-
-        itokawaModel = new Itokawa(SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.ITOKAWA, ShapeModelType.GASKELL));
-
-        computeMeanPlateSizeAtAllResolutions();
-
-        AmicaImage.setGenerateFootprint(true);
-
-        List<String> amicaFiles = null;
-        try {
-            amicaFiles = FileUtil.getFileLinesAsStringList(amicaFileList);
-            loadInertialFile(inertialFilename);
-        } catch (IOException e2) {
-            e2.printStackTrace();
-        }
-
-        try
-        {
-            if (mode == 1 || mode == 0)
-            {
-                generateBackplanes(amicaFiles, ImageSource.GASKELL);
-            }
-            else if (mode == 2 || mode == 0)
-            {
-                generateBackplanes(amicaFiles, ImageSource.SPICE);
-            }
-        }
-        catch (Exception e1) {
-            e1.printStackTrace();
-        }
+//        System.setProperty("java.awt.headless", "true");
+//        NativeLibraryLoader.loadVtkLibraries();
+//
+//        String amicaFileList=args[0];
+//        String inertialFilename = args[1];
+//        int mode = Integer.parseInt(args[2]);
+//
+//        itokawaModel = new Itokawa(SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.ITOKAWA, ShapeModelType.GASKELL));
+//
+//        computeMeanPlateSizeAtAllResolutions();
+//
+//        AmicaImage.setGenerateFootprint(true);
+//
+//        List<String> amicaFiles = null;
+//        try {
+//            amicaFiles = FileUtil.getFileLinesAsStringList(amicaFileList);
+//            loadInertialFile(inertialFilename);
+//        } catch (IOException e2) {
+//            e2.printStackTrace();
+//        }
+//
+//        try
+//        {
+//            if (mode == 1 || mode == 0)
+//            {
+//                generateBackplanes(amicaFiles, ImageSource.GASKELL);
+//            }
+//            else if (mode == 2 || mode == 0)
+//            {
+//                generateBackplanes(amicaFiles, ImageSource.SPICE);
+//            }
+//        }
+//        catch (Exception e1) {
+//            e1.printStackTrace();
+//        }
     }
 }
