@@ -6,10 +6,12 @@ import java.util.HashMap;
 import java.util.List;
 
 import org.apache.commons.io.FilenameUtils;
+import org.apache.commons.lang3.ArrayUtils;
 
 import com.google.common.collect.Lists;
 
 import edu.jhuapl.saavtk.util.FileCache;
+import edu.jhuapl.sbmt.core.image.ImageType;
 import edu.jhuapl.sbmt.image2.interfaces.IPerspectiveImage;
 import edu.jhuapl.sbmt.image2.model.CylindricalBounds;
 import edu.jhuapl.sbmt.image2.pipelineComponents.operators.rendering.layer.LayerLinearInterpolaterOperator;
@@ -36,6 +38,12 @@ public class IPerspectiveImageToLayerAndMetadataPipeline
 	private List<Layer> updatedLayers = Lists.newArrayList();
 	private List<HashMap<String, String>> metadata = Lists.newArrayList();
 	private IPipelinePublisher<HashMap<String, String>> metadataReader = null;
+	private ImageType[] badGDALTypes = new ImageType[] {
+			ImageType.valueOf("ITS_IMAGE"),
+			ImageType.valueOf("MRI_IMAGE"),
+			ImageType.valueOf("HRI_IMAGE"),
+			ImageType.valueOf("NAVCAM_IMAGE")
+	};
 
 	private IPerspectiveImageToLayerAndMetadataPipeline(IPerspectiveImage image) throws InvalidGDALFileTypeException, IOException, Exception
 	{
@@ -47,7 +55,7 @@ public class IPerspectiveImageToLayerAndMetadataPipeline
 
 		if (FilenameUtils.getExtension(fileName).toLowerCase().equals("fit") || FilenameUtils.getExtension(fileName).toLowerCase().equals("fits"))
 		{
-			if (useGDAL)
+			if (useGDAL && !ArrayUtils.contains(badGDALTypes, image.getImageType()))
 				reader = new GDALReader(fileName, false, new ValidityCheckerDoubleFactory().checker2d(image.getFillValues()), Double.NaN);
 			else
 				reader = new BuiltInFitsReader(fileName, new double[] {});
@@ -55,7 +63,7 @@ public class IPerspectiveImageToLayerAndMetadataPipeline
 		}
 		else if (FilenameUtils.getExtension(fileName).toLowerCase().equals("png"))
 		{
-			if (useGDAL)
+			if (useGDAL && !ArrayUtils.contains(badGDALTypes, image.getImageType()))
 				reader = new GDALReader(fileName, false, new ValidityCheckerDoubleFactory().checker2d(image.getFillValues()), Double.NaN);
 			else
 				reader = new BuiltInPNGReader(fileName);
