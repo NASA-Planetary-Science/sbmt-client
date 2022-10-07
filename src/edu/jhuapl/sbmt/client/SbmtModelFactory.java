@@ -1,9 +1,6 @@
 package edu.jhuapl.sbmt.client;
 
 import java.io.IOException;
-import java.util.List;
-
-import com.beust.jcommander.internal.Lists;
 
 import edu.jhuapl.saavtk.model.ShapeModelBody;
 import edu.jhuapl.saavtk.model.ShapeModelType;
@@ -50,6 +47,7 @@ import edu.jhuapl.sbmt.model.bennu.shapeModel.BennuV4;
 import edu.jhuapl.sbmt.model.custom.CustomShapeModel;
 import edu.jhuapl.sbmt.model.eros.Eros;
 import edu.jhuapl.sbmt.model.eros.ErosThomas;
+import edu.jhuapl.sbmt.model.eros.LineamentModel;
 import edu.jhuapl.sbmt.model.itokawa.Itokawa;
 import edu.jhuapl.sbmt.model.rosetta.CG;
 import edu.jhuapl.sbmt.model.rosetta.Lutetia;
@@ -60,46 +58,34 @@ import nom.tam.fits.FitsException;
 
 public class SbmtModelFactory
 {
-//    static public StateHistoryModel createStateHistory(
-//            StateHistoryKey key,
-//            DateTime start,
-//            DateTime end,
+//    static public SimulationRun createSimulationRun(
+//            SimulationRunKey key,
 //            SmallBodyModel smallBodyModel,
-//            Renderer renderer,
 //            boolean loadPointingOnly) throws FitsException, IOException
 //    {
-//        SmallBodyViewConfig config = (SmallBodyViewConfig)smallBodyModel.getSmallBodyConfig();
-//        return new StateHistoryModel(key, start, end, smallBodyModel, renderer);
+//        SmallBodyViewConfig config = smallBodyModel.getSmallBodyConfig();
+//        return new SimulationRun(key, smallBodyModel);
 //    }
 
-//    static public List<SmallBodyModel> createSystemBodyModels(SystemConfigInfo system, List<ViewConfig> loadedConfigs)
+//    static public StateHistoryModel createStateHistory(
+//            StateHistoryKey key,
+//            SmallBodyModel smallBodyModel,
+//            ModelManager modelManager,
+//            Renderer renderer,
+//            boolean loadPointingOnly) throws FitsException, IOException, StateHistoryInputException, StateHistoryInvalidTimeException
 //    {
-//    	List<SmallBodyModel> smallBodyModels = new ArrayList<SmallBodyModel>();
-//    	ConfigArrayList<IBodyViewConfig> builtInConfigs = SmallBodyViewConfig.getBuiltInConfigs();
-//    	for (String uniqueName : system.getUniqueName())
-//    	{
-//    		List<IBodyViewConfig> configs = builtInConfigs.stream().filter(config -> config.getUniqueName().equals(uniqueName)).collect(Collectors.toList());
-//    		if (configs.size() > 0) smallBodyModels.addAll(createSmallBodyModel((SmallBodyViewConfig)(configs.get(0))));
-//    	}
+//        SmallBodyViewConfig config = (SmallBodyViewConfig)smallBodyModel.getSmallBodyConfig();
+//		StateHistoryCollection runs = (StateHistoryCollection) modelManager.getModel(ModelNames.STATE_HISTORY_COLLECTION);
 //
-//    	return smallBodyModels;
+//        return new StateHistoryModel(smallBodyModel, renderer, runs);
 //    }
 
-	static public Image createImage(
+    static public Image createImage(
             ImageKeyInterface key,
             SmallBodyModel smallBodyModel,
             boolean loadPointingOnly) throws FitsException, IOException
     {
-		return createImage(key, List.of(smallBodyModel), loadPointingOnly);
-    }
-
-	static public Image createImage(
-            ImageKeyInterface key,
-            List<SmallBodyModel> smallBodyModel,
-            boolean loadPointingOnly) throws FitsException, IOException
-    {
-
-//        SmallBodyViewConfig config = (SmallBodyViewConfig)smallBodyModel.getSmallBodyConfig();
+        SmallBodyViewConfig config = (SmallBodyViewConfig)smallBodyModel.getSmallBodyConfig();
 
         if (ImageSource.SPICE.equals(key.getSource()) ||
                 ImageSource.GASKELL.equals(key.getSource()) ||
@@ -111,27 +97,27 @@ public class SbmtModelFactory
             if (key.getInstrument() != null && key.getInstrument().getSpectralMode() == SpectralImageMode.MULTI)
             {
                 if (key.getInstrument().getType() == ImageType.MVIC_JUPITER_IMAGE)
-                    return new MVICQuadJupiterImage(key, smallBodyModel.get(0), loadPointingOnly);
+                    return new MVICQuadJupiterImage(key, smallBodyModel, loadPointingOnly);
                 else
                     return null;
             }
             else if (key.getInstrument() != null && key.getInstrument().getSpectralMode() == SpectralImageMode.HYPER)
             {
                 if (key.getInstrument().getType() == ImageType.LEISA_JUPITER_IMAGE)
-                    return new LEISAJupiterImage(key, smallBodyModel.get(0), loadPointingOnly);
+                    return new LEISAJupiterImage(key, smallBodyModel, loadPointingOnly);
                 else
                     return null;
-            }
+            } 
             else // SpectralMode.MONO
             {
                 if (key.getInstrument().getType() == ImageType.MSI_IMAGE)
-                    return new MSIImage(key, smallBodyModel.get(0), loadPointingOnly);
+                    return new MSIImage(key, smallBodyModel, loadPointingOnly);
                 else if (key.getInstrument().getType() == ImageType.AMICA_IMAGE)
-                    return new AmicaImage(key, smallBodyModel.get(0), loadPointingOnly);
+                    return new AmicaImage(key, smallBodyModel, loadPointingOnly);
                 else if (key.getInstrument().getType() == ImageType.FC_IMAGE)
-                    return new FcImage(key, smallBodyModel.get(0), loadPointingOnly);
+                    return new FcImage(key, smallBodyModel, loadPointingOnly);
                 else if (key.getInstrument().getType() == ImageType.FCCERES_IMAGE)
-                    return new FcCeresImage(key, smallBodyModel.get(0), loadPointingOnly);
+                    return new FcCeresImage(key, smallBodyModel, loadPointingOnly);
                 else if (key.getInstrument().getType() == ImageType.valueOf("MARS_MOON_IMAGE"))
                     return MarsMissionImage.of(key, smallBodyModel, loadPointingOnly);
                 else if (key.getInstrument().getType() == ImageType.valueOf("PHOBOS_IMAGE"))
@@ -139,45 +125,45 @@ public class SbmtModelFactory
                 else if (key.getInstrument().getType() == ImageType.valueOf("DEIMOS_IMAGE"))
                     return MarsMissionImage.of(key, smallBodyModel, loadPointingOnly);
                 else if (key.getInstrument().getType() == ImageType.OSIRIS_IMAGE)
-                    return new OsirisImage(key, smallBodyModel.get(0), loadPointingOnly);
+                    return new OsirisImage(key, smallBodyModel, loadPointingOnly);
                 else if (key.getInstrument().getType() == ImageType.SATURN_MOON_IMAGE)
-                    return new SaturnMoonImage(key, smallBodyModel.get(0), loadPointingOnly);
+                    return new SaturnMoonImage(key, smallBodyModel, loadPointingOnly);
                 else if (key.getInstrument().getType() == ImageType.SSI_GASPRA_IMAGE)
-                    return new SSIGaspraImage(key, smallBodyModel.get(0), loadPointingOnly);
+                    return new SSIGaspraImage(key, smallBodyModel, loadPointingOnly);
                 else if (key.getInstrument().getType() == ImageType.SSI_IDA_IMAGE)
-                    return new SSIIdaImage(key, smallBodyModel.get(0), loadPointingOnly);
+                    return new SSIIdaImage(key, smallBodyModel, loadPointingOnly);
                 else if (key.getInstrument().getType() == ImageType.MSI_MATHILDE_IMAGE)
-                    return new MSIMathildeImage(key, smallBodyModel.get(0), loadPointingOnly);
+                    return new MSIMathildeImage(key, smallBodyModel, loadPointingOnly);
                 else if (key.getInstrument().getType() == ImageType.LORRI_IMAGE)
-                    return new LorriImage(key, smallBodyModel.get(0), loadPointingOnly);
-                else if (key.getInstrument().getType() == ImageType.POLYCAM_V3_IMAGE)
-                    return new PolyCamImage(key, smallBodyModel.get(0), loadPointingOnly);
+                    return new LorriImage(key, smallBodyModel, loadPointingOnly);
+                else if (key.getInstrument().getType() == ImageType.POLYCAM_V3_IMAGE) 
+                    return new PolyCamImage(key, smallBodyModel, loadPointingOnly);
                 else if (key.getInstrument().getType() == ImageType.MAPCAM_V3_IMAGE)
-                    return new MapCamImage(key, smallBodyModel.get(0), loadPointingOnly);
+                    return new MapCamImage(key, smallBodyModel, loadPointingOnly);
                 else if (key.getInstrument().getType() == ImageType.POLYCAM_V4_IMAGE)
-                    return new PolyCamV4Image(key, smallBodyModel.get(0), loadPointingOnly);
+                    return new PolyCamV4Image(key, smallBodyModel, loadPointingOnly);
                 else if (key.getInstrument().getType() == ImageType.MAPCAM_V4_IMAGE)
-                    return new MapCamV4Image(key, smallBodyModel.get(0), loadPointingOnly);
+                    return new MapCamV4Image(key, smallBodyModel, loadPointingOnly);
                 else if (key.getInstrument().getType() == ImageType.POLYCAM_EARTH_IMAGE)
-                    return new PolyCamEarthImage(key, smallBodyModel.get(0), loadPointingOnly);
+                    return new PolyCamEarthImage(key, smallBodyModel, loadPointingOnly);
                 else if (key.getInstrument().getType() == ImageType.SAMCAM_EARTH_IMAGE)
-                    return new SamCamEarthImage(key, smallBodyModel.get(0), loadPointingOnly);
+                    return new SamCamEarthImage(key, smallBodyModel, loadPointingOnly);
                 else if (key.getInstrument().getType() == ImageType.MAPCAM_EARTH_IMAGE)
-                    return new MapCamEarthImage(key, smallBodyModel.get(0), loadPointingOnly);
+                    return new MapCamEarthImage(key, smallBodyModel, loadPointingOnly);
                 else if (key.getInstrument().getType() == ImageType.POLYCAM_FLIGHT_IMAGE)
-                    return OcamsFlightImage.of(key, smallBodyModel.get(0), loadPointingOnly);
+                    return OcamsFlightImage.of(key, smallBodyModel, loadPointingOnly);
                 else if (key.getInstrument().getType() == ImageType.MAPCAM_FLIGHT_IMAGE)
-                    return OcamsFlightImage.of(key, smallBodyModel.get(0), loadPointingOnly);
+                    return OcamsFlightImage.of(key, smallBodyModel, loadPointingOnly);
                 else if (key.getInstrument().getType() == ImageType.SAMCAM_FLIGHT_IMAGE)
-                    return OcamsFlightImage.of(key, smallBodyModel.get(0), loadPointingOnly);
+                    return OcamsFlightImage.of(key, smallBodyModel, loadPointingOnly);
                 else if (key.getInstrument().getType() == ImageType.NAVCAM_FLIGHT_IMAGE)
-                    return OcamsFlightImage.of(key, smallBodyModel.get(0), loadPointingOnly);
+                    return OcamsFlightImage.of(key, smallBodyModel, loadPointingOnly);
                 else if (key.getInstrument().getType() == ImageType.ONC_TRUTH_IMAGE)
-                    return new ONCTruthImage(key, smallBodyModel.get(0), loadPointingOnly);
+                    return new ONCTruthImage(key, smallBodyModel, loadPointingOnly);
                 else if (key.getInstrument().getType() == ImageType.ONC_IMAGE)
-                    return new ONCImage(key, smallBodyModel.get(0), loadPointingOnly);
+                    return new ONCImage(key, smallBodyModel, loadPointingOnly);
                 else if (key.getInstrument().getType() == ImageType.TIR_IMAGE)
-                    return new TIRImage(key, smallBodyModel.get(0), loadPointingOnly);
+                    return new TIRImage(key, smallBodyModel, loadPointingOnly);
                 else if (key.getInstrument().getType() == ImageType.GENERIC_IMAGE)
                     return new CustomPerspectiveImage(key, smallBodyModel, loadPointingOnly);
             }
@@ -185,13 +171,13 @@ public class SbmtModelFactory
         else if (ImageSource.LOCAL_PERSPECTIVE.equals(key.getSource()))
         {
             if (key.getImageType() == ImageType.MSI_IMAGE)
-                return new MSIImage(key, smallBodyModel.get(0), loadPointingOnly);
+                return new MSIImage(key, smallBodyModel, loadPointingOnly);
             else if (key.getImageType() == ImageType.AMICA_IMAGE)
-                return new AmicaImage(key, smallBodyModel.get(0), loadPointingOnly);
+                return new AmicaImage(key, smallBodyModel, loadPointingOnly);
             else if (key.getImageType() == ImageType.FC_IMAGE)
-                return new FcImage(key, smallBodyModel.get(0), loadPointingOnly);
+                return new FcImage(key, smallBodyModel, loadPointingOnly);
             else if (key.getImageType() == ImageType.FCCERES_IMAGE)
-                return new FcCeresImage(key, smallBodyModel.get(0), loadPointingOnly);
+                return new FcCeresImage(key, smallBodyModel, loadPointingOnly);
             else if (key.getImageType() == ImageType.valueOf("MARS_MOON_IMAGE"))
                 return MarsMissionImage.of(key, smallBodyModel, loadPointingOnly);
             else if (key.getImageType() == ImageType.valueOf("PHOBOS_IMAGE"))
@@ -199,65 +185,61 @@ public class SbmtModelFactory
             else if (key.getImageType() == ImageType.valueOf("DEIMOS_IMAGE"))
                 return MarsMissionImage.of(key, smallBodyModel, loadPointingOnly);
             else if (key.getImageType() == ImageType.OSIRIS_IMAGE)
-                return new OsirisImage(key, smallBodyModel.get(0), loadPointingOnly);
+                return new OsirisImage(key, smallBodyModel, loadPointingOnly);
             else if (key.getImageType() == ImageType.SATURN_MOON_IMAGE)
-                return new SaturnMoonImage(key, smallBodyModel.get(0), loadPointingOnly);
+                return new SaturnMoonImage(key, smallBodyModel, loadPointingOnly);
             else if (key.getImageType() == ImageType.SSI_GASPRA_IMAGE)
-                return new SSIGaspraImage(key, smallBodyModel.get(0), loadPointingOnly);
+                return new SSIGaspraImage(key, smallBodyModel, loadPointingOnly);
             else if (key.getImageType() == ImageType.SSI_IDA_IMAGE)
-                return new SSIIdaImage(key, smallBodyModel.get(0), loadPointingOnly);
+                return new SSIIdaImage(key, smallBodyModel, loadPointingOnly);
             else if (key.getImageType() == ImageType.MSI_MATHILDE_IMAGE)
-                return new MSIMathildeImage(key, smallBodyModel.get(0), loadPointingOnly);
+                return new MSIMathildeImage(key, smallBodyModel, loadPointingOnly);
             else if (key.getImageType() == ImageType.LORRI_IMAGE)
-                return new LorriImage(key, smallBodyModel.get(0), loadPointingOnly);
+                return new LorriImage(key, smallBodyModel, loadPointingOnly);
             else if (key.getImageType() == ImageType.POLYCAM_V3_IMAGE)
-                return new PolyCamImage(key, smallBodyModel.get(0), loadPointingOnly);
+                return new PolyCamImage(key, smallBodyModel, loadPointingOnly);
             else if (key.getImageType() == ImageType.MAPCAM_V3_IMAGE)
-                return new MapCamImage(key, smallBodyModel.get(0), loadPointingOnly);
+                return new MapCamImage(key, smallBodyModel, loadPointingOnly);
             else if (key.getImageType() == ImageType.POLYCAM_V4_IMAGE)
-                return new PolyCamV4Image(key, smallBodyModel.get(0), loadPointingOnly);
+                return new PolyCamV4Image(key, smallBodyModel, loadPointingOnly);
             else if (key.getImageType() == ImageType.MAPCAM_V4_IMAGE)
-                return new MapCamV4Image(key, smallBodyModel.get(0), loadPointingOnly);
+                return new MapCamV4Image(key, smallBodyModel, loadPointingOnly);
             else if (key.getImageType() == ImageType.POLYCAM_EARTH_IMAGE)
-                return new PolyCamEarthImage(key, smallBodyModel.get(0), loadPointingOnly);
+                return new PolyCamEarthImage(key, smallBodyModel, loadPointingOnly);
             else if (key.getImageType() == ImageType.SAMCAM_EARTH_IMAGE)
-                return new SamCamEarthImage(key, smallBodyModel.get(0), loadPointingOnly);
+                return new SamCamEarthImage(key, smallBodyModel, loadPointingOnly);
             else if (key.getImageType() == ImageType.MAPCAM_EARTH_IMAGE)
-                return new MapCamEarthImage(key, smallBodyModel.get(0), loadPointingOnly);
+                return new MapCamEarthImage(key, smallBodyModel, loadPointingOnly);
             else if (key.getImageType() == ImageType.POLYCAM_FLIGHT_IMAGE)
-                return OcamsFlightImage.of(key, smallBodyModel.get(0), loadPointingOnly);
+                return OcamsFlightImage.of(key, smallBodyModel, loadPointingOnly);
             else if (key.getImageType() == ImageType.MAPCAM_FLIGHT_IMAGE)
-                return OcamsFlightImage.of(key, smallBodyModel.get(0), loadPointingOnly);
+                return OcamsFlightImage.of(key, smallBodyModel, loadPointingOnly);
             else if (key.getImageType() == ImageType.SAMCAM_FLIGHT_IMAGE)
-                return OcamsFlightImage.of(key, smallBodyModel.get(0), loadPointingOnly);
+                return OcamsFlightImage.of(key, smallBodyModel, loadPointingOnly);
             else if (key.getImageType() == ImageType.NAVCAM_FLIGHT_IMAGE)
-                return OcamsFlightImage.of(key, smallBodyModel.get(0), loadPointingOnly);
+                return OcamsFlightImage.of(key, smallBodyModel, loadPointingOnly);
             else if (key.getImageType() == ImageType.GENERIC_IMAGE)
                 return new CustomPerspectiveImage(key, smallBodyModel, loadPointingOnly);
             else if (key.getImageType() == ImageType.MVIC_JUPITER_IMAGE)
-              return new MVICQuadJupiterImage(key, smallBodyModel.get(0), loadPointingOnly);
+              return new MVICQuadJupiterImage(key, smallBodyModel, loadPointingOnly);
             else if (key.getImageType() == ImageType.LEISA_JUPITER_IMAGE)
-                return new LEISAJupiterImage(key, smallBodyModel.get(0), loadPointingOnly);
+                return new LEISAJupiterImage(key, smallBodyModel, loadPointingOnly);
             else if (key.getImageType() == ImageType.ONC_IMAGE)
-                return new ONCImage(key, smallBodyModel.get(0), loadPointingOnly);
+                return new ONCImage(key, smallBodyModel, loadPointingOnly);
             else if (key.getImageType() == ImageType.ONC_TRUTH_IMAGE)
-                return new ONCTruthImage(key, smallBodyModel.get(0), loadPointingOnly);
+                return new ONCTruthImage(key, smallBodyModel, loadPointingOnly);
             else if (key.getImageType() == ImageType.TIR_IMAGE)
-                return new TIRImage(key, smallBodyModel.get(0), loadPointingOnly);
+                return new TIRImage(key, smallBodyModel, loadPointingOnly);
         }
         else if (key instanceof CustomCylindricalImageKey)
         {
             return new CylindricalImage((CustomCylindricalImageKey) key, smallBodyModel);
         }
+
         return new BasicPerspectiveImage(key, smallBodyModel, loadPointingOnly);
     }
 
-	static public SmallBodyModel createSmallBodyModel(SmallBodyViewConfig config)
-	{
-		return createSmallBodyModels(config).get(0);
-	}
-
-    static public List<SmallBodyModel> createSmallBodyModels(SmallBodyViewConfig config)
+    static public SmallBodyModel createSmallBodyModel(SmallBodyViewConfig config)
     {
         SmallBodyModel result = null;
         ShapeModelBody name = config.body;
@@ -273,6 +255,14 @@ public class SbmtModelFactory
             {
                 result = new Itokawa(config);
             }
+//            else if (ShapeModelBody.TEMPEL_1 == name)
+//            {
+//                String[] names = {
+//                        name + " low"
+//                };
+//
+//                result = new SimpleSmallBody(config, names);
+//            }
             else if (ShapeModelBody.RQ36 == name)
             {
                 if (config.version.equals("V4"))
@@ -342,24 +332,13 @@ public class SbmtModelFactory
                 result = new SimpleSmallBody(config);
             }
         }
-        //check for other bodies in the sytem
-        List<SmallBodyModel> allBodies = Lists.newArrayList();
-        allBodies.add(result);
-        if (config.hasSystemBodies)
-        {
-        	for (SmallBodyViewConfig extra : config.systemConfigs)
-        	{
-        		allBodies.addAll(createSmallBodyModels(extra));
-        	}
-        }
-
-        return allBodies;
+        return result;
     }
 
-//    static public LineamentModel createLineament()
-//    {
-//        return new LineamentModel();
-//    }
+    static public LineamentModel createLineament()
+    {
+        return new LineamentModel();
+    }
 
 //    static public HashMap<ModelNames, Model> createSpectralModels(SmallBodyModel smallBodyModel)
 //    {
@@ -374,7 +353,7 @@ public class SbmtModelFactory
 //        models.put(ModelNames.SPECTRA, new SpectraCollection(smallBodyModel));
 //        return models;
 //    }
-//
+
     static public DEM createDEM(
             DEMKey key,
             SmallBodyModel smallBodyModel) //throws IOException, FitsException

@@ -33,6 +33,8 @@ public class CustomImageImporterItemHandler<G1 extends IPerspectiveImage  & IPer
 				return image.getRotation();
 			case IMAGE_FLIP:
 				return image.getFlip();
+			case IMAGE_FLIP_ABOUT_X:
+				return image.getFlip().equals("X");
 			case LATITUDE_MIN:
 				return image.getBounds().minLatitude();
 			case LATITUDE_MAX:
@@ -51,6 +53,10 @@ public class CustomImageImporterItemHandler<G1 extends IPerspectiveImage  & IPer
 	@Override
 	public void setColumnValue(IPerspectiveImage image, CustomImageImporterColumnLookup aEnum, Object aValue)
 	{
+		if (aEnum == CustomImageImporterColumnLookup.IMAGE_FLIP_ABOUT_X)
+		{
+			image.setFlip((boolean)aValue ? "X" : "None");
+		}
 //		if (aEnum == CustomImageImporterColumnLookup.Map)
 //		{
 //			imageCollection.setImageMapped(image, (Boolean)aValue);
@@ -67,7 +73,7 @@ public class CustomImageImporterItemHandler<G1 extends IPerspectiveImage  & IPer
 //		{
 //			imageCollection.setImageBoundaryShowing(image, (Boolean)aValue);
 //		}
-//		else
+		else
 			throw new UnsupportedOperationException("Column is not supported. Enum: " + aEnum);
 	}
 }

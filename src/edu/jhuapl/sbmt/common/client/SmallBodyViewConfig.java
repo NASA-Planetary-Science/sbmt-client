@@ -75,7 +75,7 @@ public class SmallBodyViewConfig extends BodyViewConfig implements ISmallBodyVie
     private final static Path defaultModelFile = Paths.get(Configuration.getApplicationDataDir() + File.separator + "defaultModelToLoad");
 
     protected static final Mission[] DefaultForNoMissions = new Mission[] {};
-
+ 
     //system bodies
     public List<SmallBodyViewConfig> systemConfigs = Lists.newArrayList();
     public boolean hasSystemBodies = false;

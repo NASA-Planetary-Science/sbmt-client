@@ -57,7 +57,6 @@ import edu.jhuapl.sbmt.config.BodyType;
 import edu.jhuapl.sbmt.config.ShapeModelDataUsed;
 import edu.jhuapl.sbmt.config.ShapeModelPopulation;
 import edu.jhuapl.sbmt.core.image.ImagingInstrument;
-import edu.jhuapl.sbmt.core.imageui.ImageDefaultPickHandler2;
 import edu.jhuapl.sbmt.dem.gui.DemMainPanel;
 import edu.jhuapl.sbmt.dtm.controller.DEMPopupMenuActionListener;
 import edu.jhuapl.sbmt.dtm.model.DEMBoundaryCollection;
@@ -313,15 +312,23 @@ public class SbmtView extends View implements PropertyChangeListener
 		setupBodyModels();
 		setupImagerModel();
 		setupSpectraModels();
-		setupStructureModels();
-		setupDEMModels();
-		setStateHistoryModels();
 		setLineamentModel();
+		setStateHistoryModels();
+		ConfigurableSceneNotifier tmpSceneChangeNotifier = new ConfigurableSceneNotifier();
+		StatusNotifier tmpStatusNotifier = getStatusNotifier();
+		setupStructureModels(tmpSceneChangeNotifier, tmpStatusNotifier);
+		setupDEMModels();
+
 		setModelManager(new ModelManager(smallBodyModels.get(0), allModels));
+
+		tmpSceneChangeNotifier.setTarget(getModelManager());
 
 		getModelManager().addPropertyChangeListener(this);
 
 		SBMTInfoWindowManagerFactory.initializeModels(getModelManager(), getLegacyStatusHandler());
+
+		tmpSceneChangeNotifier.setTarget(getModelManager());
+
 
 	}
 
@@ -334,18 +341,18 @@ public class SbmtView extends View implements PropertyChangeListener
 		allModels.put(ModelNames.SMALL_BODY, allBodies);
 	}
 
-	protected void setupStructureModels()
+	protected void setupStructureModels(ConfigurableSceneNotifier tmpSceneChangeNotifier, StatusNotifier tmpStatusNotifier)
 	{
 		SmallBodyModel smallBodyModel = smallBodyModels.get(0);
-		ConfigurableSceneNotifier tmpSceneChangeNotifier = new ConfigurableSceneNotifier();
-		StatusNotifier tmpStatusNotifier = getStatusNotifier();
+//		ConfigurableSceneNotifier tmpSceneChangeNotifier = new ConfigurableSceneNotifier();
+//		StatusNotifier tmpStatusNotifier = getStatusNotifier();
 		allModels.put(ModelNames.LINE_STRUCTURES, List.of(new LineModel<>(tmpSceneChangeNotifier, tmpStatusNotifier, smallBodyModel)));
 		allModels.put(ModelNames.POLYGON_STRUCTURES, List.of(new PolygonModel(tmpSceneChangeNotifier,tmpStatusNotifier, smallBodyModel)));
 		allModels.put(ModelNames.CIRCLE_STRUCTURES, List.of(new CircleModel(tmpSceneChangeNotifier, tmpStatusNotifier, smallBodyModel)));
 		allModels.put(ModelNames.ELLIPSE_STRUCTURES, List.of(new EllipseModel(tmpSceneChangeNotifier, tmpStatusNotifier, smallBodyModel)));
 		allModels.put(ModelNames.POINT_STRUCTURES, List.of(new PointModel(tmpSceneChangeNotifier, tmpStatusNotifier, smallBodyModel)));
 		allModels.put(ModelNames.CIRCLE_SELECTION, List.of(new CircleSelectionModel(tmpSceneChangeNotifier, tmpStatusNotifier, smallBodyModel)));
-		tmpSceneChangeNotifier.setTarget(getModelManager());
+//		tmpSceneChangeNotifier.setTarget(getModelManager());
 	}
 
 	protected void setupSpectraModels()
@@ -870,7 +877,7 @@ public class SbmtView extends View implements PropertyChangeListener
 		tmpPickManager.getDefaultPicker().addListener(getPopupManager());
 
 		// TODO: This should be moved out of here to a logical relevant location
-		tmpPickManager.getDefaultPicker().addListener(new ImageDefaultPickHandler2(getModelManager()));
+//		tmpPickManager.getDefaultPicker().addListener(new ImageDefaultPickHandler2(getModelManager()));
     }
 
     @Override
@@ -1159,3 +1166,4 @@ public class SbmtView extends View implements PropertyChangeListener
 	}
 
 }
+

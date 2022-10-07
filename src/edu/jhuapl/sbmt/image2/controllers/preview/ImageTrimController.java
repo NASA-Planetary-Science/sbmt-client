@@ -49,6 +49,15 @@ public class ImageTrimController
 		return panel;
 	}
 
+	public void setMaskValues(int[] maskValues)
+	{
+		leftSpinner.setValue((int)maskValues[0]);
+		rightSpinner.setValue((int)maskValues[1]);
+		bottomSpinner.setValue((int)maskValues[2]);
+		topSpinner.setValue((int)maskValues[3]);
+		croppingChanged();
+	}
+
 	public void setLayer(Layer layer)
 	{
 		this.layer = layer;

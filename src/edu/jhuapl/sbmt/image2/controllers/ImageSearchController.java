@@ -20,7 +20,7 @@ import javax.swing.event.AncestorListener;
 import com.beust.jcommander.internal.Lists;
 import com.google.common.collect.ImmutableSet;
 
-import vtk.vtkProp;
+import vtk.vtkActor;
 
 import edu.jhuapl.saavtk.gui.dialog.CustomFileChooser;
 import edu.jhuapl.saavtk.gui.render.Renderer;
@@ -106,14 +106,14 @@ public class ImageSearchController<G1 extends IPerspectiveImage & IPerspectiveIm
 		});
 
 		this.collection.addListener((aSource, aEventType) -> { updateButtonState(); });
-		popupManager.registerPopup(modelManager.getAllModels().get(ModelNames.IMAGES_V2).get(0), new edu.jhuapl.saavtk.popup.PopupMenu()
-		{
-			@Override
-			public void showPopup(MouseEvent e, vtkProp pickedProp, int pickedCellId, double[] pickedPosition)
-			{
-                popupMenu.show(e.getComponent(), e.getX(), e.getY());
-			}
-		});
+//		popupManager.registerPopup(modelManager.getAllModels().get(ModelNames.IMAGES_V2).get(0), new edu.jhuapl.saavtk.popup.PopupMenu()
+//		{
+//			@Override
+//			public void showPopup(MouseEvent e, vtkProp pickedProp, int pickedCellId, double[] pickedPosition)
+//			{
+//                popupMenu.show(e.getComponent(), e.getX(), e.getY());
+//			}
+//		});
         initGUI();
 	}
 
@@ -504,10 +504,16 @@ public class ImageSearchController<G1 extends IPerspectiveImage & IPerspectiveIm
 //		// Bail if we are are not associated with the PickTarget
 //		if (collection.getPainterFor(aPrimaryTarg) == null)
 //			return;
-
 		// Bail if not a valid pick action
 		if (PickUtil.isPopupTrigger(aEvent) == false || aMode != PickMode.ActiveSec)
 			return;
+
+
+		vtkActor actor = aPrimaryTarg.getActor();
+		Optional<G1> image = collection.getImage(actor);
+		image.ifPresent(e -> {
+			collection.setSelectedItems(List.of(e));
+		});
 
 		// Show the popup
 		Component tmpComp = aEvent.getComponent();

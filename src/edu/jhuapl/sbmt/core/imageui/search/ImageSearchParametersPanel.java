@@ -147,6 +147,7 @@ public class ImageSearchParametersPanel extends JPanel
         filenamePanel.add(lblFilename);
 
         searchByNumberTextField = new JFormattedTextField();
+        searchByNumberTextField.setMaximumSize( new Dimension(100, searchByNumberTextField.getPreferredSize().height) );
         filenamePanel.add(searchByNumberTextField);
         searchByNumberTextField.setColumns(30);
         searchByNumberTextField.setPreferredSize(

@@ -120,6 +120,7 @@ public class CreateImageFromSearchResultOperator<G1 extends IPerspectiveImage & 
 					try
 					{
 						infoBaseName = infoBaseName.substring(0, infoBaseName.lastIndexOf("/")) + File.separator + getSumFileName(instrument.getSearchQuery().getRootPath(), imageInfo.get(0));
+						infoBaseName = infoBaseName.replace("images", "sumfiles");
 					}
         			catch (IOException | ParseException | NonexistentRemoteFile e)
 					{

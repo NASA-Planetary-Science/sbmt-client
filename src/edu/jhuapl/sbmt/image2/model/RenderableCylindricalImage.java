@@ -2,6 +2,7 @@ package edu.jhuapl.sbmt.image2.model;
 
 import java.util.HashMap;
 
+import edu.jhuapl.saavtk.util.IntensityRange;
 import edu.jhuapl.sbmt.core.image.PointingFileReader;
 import edu.jhuapl.sbmt.image2.pipelineComponents.operators.rendering.layer.LayerMasking;
 import edu.jhuapl.sbmt.layer.api.Layer;
@@ -15,6 +16,7 @@ public class RenderableCylindricalImage implements IRenderableImage
 	private double offset;
 	private double defaultOffset;
 	private CylindricalBounds bounds;
+	private IntensityRange intensityRange = new IntensityRange(0, 255);
 
 	public RenderableCylindricalImage(Layer layer, HashMap<String, String> metadata, CylindricalBounds bounds)
 	{
@@ -124,5 +126,21 @@ public class RenderableCylindricalImage implements IRenderableImage
 	{
 		// TODO Auto-generated method stub
 		return null;
+	}
+
+	/**
+	 * @return the intensityRange
+	 */
+	public IntensityRange getIntensityRange()
+	{
+		return intensityRange;
+	}
+
+	/**
+	 * @param intensityRange the intensityRange to set
+	 */
+	public void setIntensityRange(IntensityRange intensityRange)
+	{
+		this.intensityRange = intensityRange;
 	}
 }

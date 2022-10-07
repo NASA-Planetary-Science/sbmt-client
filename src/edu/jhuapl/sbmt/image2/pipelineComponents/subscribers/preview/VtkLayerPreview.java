@@ -19,15 +19,21 @@ public class VtkLayerPreview implements IPipelineSubscriber<Pair<Layer, HashMap<
 	private LayerPreviewPanel preview;
 	private String title;
 	private Runnable completionBlock;
+	private int currentLayerIndex;
+	private IntensityRange currentIntensityRange;
+	private int[] currentMaskValues;
 
-	public VtkLayerPreview(String title)
+	public VtkLayerPreview(String title, int currentLayerIndex, IntensityRange currentIntensityRange, int[] maskValues)
 	{
 		this.title = title;
+		this.currentLayerIndex = currentLayerIndex;
+		this.currentIntensityRange = currentIntensityRange;
+		this.currentMaskValues = maskValues;
 	}
 
-	public VtkLayerPreview(String title, Runnable completionBlock)
+	public VtkLayerPreview(String title, int currentLayerIndex, IntensityRange currentIntensityRange, int[] currentMaskValues, Runnable completionBlock)
 	{
-		this.title = title;
+		this(title, currentLayerIndex, currentIntensityRange, currentMaskValues);
 		this.completionBlock = completionBlock;
 	}
 
@@ -38,7 +44,7 @@ public class VtkLayerPreview implements IPipelineSubscriber<Pair<Layer, HashMap<
 		{
 			List<Layer> layers = items.stream().map( item -> item.getLeft()).toList();
 			List<HashMap<String, String>> metadata = items.stream().map( item -> item.getRight()).toList();
-			preview = new LayerPreviewPanel(title, layers, metadata, completionBlock);
+			preview = new LayerPreviewPanel(title, layers, currentLayerIndex, currentIntensityRange, currentMaskValues, metadata, completionBlock);
 		}
 		catch (Exception e)
 		{
@@ -78,19 +84,19 @@ public class VtkLayerPreview implements IPipelineSubscriber<Pair<Layer, HashMap<
 
 	public IntensityRange getIntensityRange()
 	{
-		if (preview == null) return new IntensityRange(0, 255);
+		if (preview == null) return currentIntensityRange;
 		return preview.getIntensityRange();
 	}
 
 	public int[] getMaskValues()
 	{
-		if (preview == null) return new int[] {0, 0, 0, 0};
+		if (preview == null) return currentMaskValues;
 		return preview.getMaskValues();
 	}
 
 	public int getDisplayedLayerIndex()
 	{
-		if (preview == null) return 0;
+		if (preview == null) return currentLayerIndex;
 		return preview.getDisplayedLayerIndex();
 	}
 }

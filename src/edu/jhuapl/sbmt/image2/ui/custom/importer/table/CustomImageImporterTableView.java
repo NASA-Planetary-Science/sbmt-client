@@ -20,6 +20,8 @@ import edu.jhuapl.sbmt.image2.interfaces.IPerspectiveImageTableRepresentable;
 
 import glum.gui.GuiUtil;
 import glum.gui.action.PopupMenu;
+import glum.gui.misc.BooleanCellEditor;
+import glum.gui.misc.BooleanCellRenderer;
 import glum.gui.panel.itemList.ItemHandler;
 import glum.gui.panel.itemList.ItemListPanel;
 import glum.gui.panel.itemList.ItemProcessor;
@@ -166,8 +168,11 @@ public class CustomImageImporterTableView<G1 extends IPerspectiveImage & IPerspe
 		{
 			tmpComposer.addAttribute(CustomImageImporterColumnLookup.LATITUDE_MIN, Integer.class, "Min Lat (deg)", null);
 			tmpComposer.addAttribute(CustomImageImporterColumnLookup.LATITUDE_MAX, String.class, "Max Lat (deg)", null);
-			tmpComposer.addAttribute(CustomImageImporterColumnLookup.LONGITUDE_MIN, Integer.class, "Min Lat (deg)", null);
-			tmpComposer.addAttribute(CustomImageImporterColumnLookup.LONGITUDE_MAX, Date.class, "Max Lat (deg)", null);
+			tmpComposer.addAttribute(CustomImageImporterColumnLookup.LONGITUDE_MIN, Integer.class, "Min Lon (deg)", null);
+			tmpComposer.addAttribute(CustomImageImporterColumnLookup.LONGITUDE_MAX, Date.class, "Max Lon (deg)", null);
+			tmpComposer.addAttribute(CustomImageImporterColumnLookup.IMAGE_FLIP_ABOUT_X, Boolean.class, "Invert About X?", null);
+			tmpComposer.setEditor(CustomImageImporterColumnLookup.IMAGE_FLIP_ABOUT_X, new BooleanCellEditor());
+			tmpComposer.setRenderer(CustomImageImporterColumnLookup.IMAGE_FLIP_ABOUT_X, new BooleanCellRenderer());
 		}
 //		tmpComposer.addAttribute(ImageColumnLookup.Source, String.class, "Source", null);
 

@@ -15,6 +15,7 @@ import edu.jhuapl.sbmt.image2.model.IRenderableImage;
 import edu.jhuapl.sbmt.image2.model.RenderableCylindricalImage;
 import edu.jhuapl.sbmt.image2.pipelineComponents.operators.rendering.ImageRenderable;
 import edu.jhuapl.sbmt.image2.pipelineComponents.operators.rendering.cylindricalImage.SceneCylindricalImageBuilderOperator;
+import edu.jhuapl.sbmt.image2.pipelineComponents.operators.rendering.layer.LayerMasking;
 import edu.jhuapl.sbmt.image2.pipelineComponents.pipelines.ImageToScenePipeline;
 import edu.jhuapl.sbmt.image2.pipelineComponents.publishers.builtin.BuiltInVTKReader;
 import edu.jhuapl.sbmt.image2.pipelineComponents.publishers.gdal.InvalidGDALFileTypeException;
@@ -39,6 +40,8 @@ public class RenderableCylindricalImageToScenePipeline extends ImageToScenePipel
 		{
 			((RenderableCylindricalImage)renderableImage).setOffset(3.0 * smallBodyModel.get(0).getMinShiftAmount());
 			((RenderableCylindricalImage)renderableImage).setDefaultOffset(3.0 * smallBodyModel.get(0).getMinShiftAmount());
+			((RenderableCylindricalImage)renderableImage).setIntensityRange(image.getIntensityRange());
+			((RenderableCylindricalImage)renderableImage).setMasking(new LayerMasking(image.getMaskValues()));
 		}
 		//*************************
 		//zip the sources together

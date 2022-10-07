@@ -40,6 +40,12 @@ public class GDALReader extends BasePipelinePublisher<Layer>
 		if (!isVectorFile)
 		{
 			Dataset dataset = gdal.Open(filename);
+			if (dataset == null)
+			{
+				//TODO this seems to helo with a threading race; need to investigate more
+				System.out.println("GDALReader: loadData: dataset null");
+				System.exit(1);
+			}
 			Layer layer = new LayerLoaderBuilder()
 					.dataSet(dataset)
 					.checker(checker)

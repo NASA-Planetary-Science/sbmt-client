@@ -183,7 +183,7 @@ public class CompositePerspectiveImage implements IPerspectiveImage, IPerspectiv
 
 	public int getNumberOfLayers()
 	{
-		return images.get(0).getNumberOfLayers();
+		return images.size();
 	}
 
 	public int getCurrentLayer()

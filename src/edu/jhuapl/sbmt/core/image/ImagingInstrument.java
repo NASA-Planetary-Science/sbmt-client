@@ -27,8 +27,8 @@ public class ImagingInstrument implements MetadataManager, IImagingInstrument
     public ImageSource[] searchImageSources;
     private ImageType type;
     public Instrument instrumentName;
-    private double rotation;
-    private String flip;
+    private double rotation = 0.0;
+    private String flip = "None";
     private Set<Float> fillValues;
     private boolean isTranspose;
     private int[] linearInterpolationDims;

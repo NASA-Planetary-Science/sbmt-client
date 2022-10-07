@@ -7,7 +7,6 @@ import com.beust.jcommander.internal.Lists;
 
 import vtk.vtkImageData;
 
-import edu.jhuapl.saavtk.util.IntensityRange;
 import edu.jhuapl.sbmt.common.client.SmallBodyModel;
 import edu.jhuapl.sbmt.image2.pipelineComponents.operators.rendering.ImageRenderable;
 import edu.jhuapl.sbmt.image2.pipelineComponents.operators.rendering.vtk.VtkImageContrastOperator;
@@ -38,7 +37,7 @@ public class CylindricalImageRenderables extends ImageRenderable
         VtkImageRendererOperator imageRenderer = new VtkImageRendererOperator();
         Just.of(renderableImage.getLayer())
         	.operate(imageRenderer)
-        	.operate(new VtkImageContrastOperator(new IntensityRange(0, 255)))
+        	.operate(new VtkImageContrastOperator(renderableImage.getIntensityRange()))
         	.operate(new VtkImageVtkMaskingOperator(renderableImage.getMasking().getMask()))
         	.subscribe(Sink.of(imageData))
         	.run();

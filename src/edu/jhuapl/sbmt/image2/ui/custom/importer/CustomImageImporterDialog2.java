@@ -18,6 +18,7 @@ import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JDialog;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 
 import org.apache.commons.io.FilenameUtils;
@@ -90,9 +91,19 @@ public class CustomImageImporterDialog2<G1 extends IPerspectiveImage & IPerspect
 			int index = 1;
  			for (File file : files)
 			{
- 				G1 image = storeImage(file.getAbsolutePath());
- 				image.setIndex(index++);
-				tempImages.add(image);
+ 				G1 image;
+				try
+				{
+					image = resolvePointingFilename(file.getAbsolutePath());
+					image.setIndex(index++);
+					tempImages.add(image);
+				}
+				catch (IOException e1)
+				{
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
+
 			}
  			tempCollection.setAllItems(tempImages);
 		});
@@ -102,32 +113,7 @@ public class CustomImageImporterDialog2<G1 extends IPerspectiveImage & IPerspect
 		});
 
 		table.getEditImageButton().addActionListener(e -> {
-			ImmutableSet<G1> selectedItems = tempCollection.getSelectedItems();
-			if (selectedItems.size() != 1) return;
-			G1 image = selectedItems.asList().get(0);
-//			if (image.getImageType() == ImageType.GENERIC_IMAGE) return;
-			if (image.getNumberOfLayers() == 1)	//editing custom single layer image
-			{
-				CustomImageImporterDialog<G1> dialog = new CustomImageImporterDialog<G1>(null, true, instrument,
-						isEllipsoid, /*tempCollection,*/ Optional.of(image));
-		        dialog.setLocationRelativeTo(getContentPane());
-		        dialog.setVisible(true);
-			}
-//			else if (image.getNumberOfLayers() == 3) //editing custom color image
-//			{
-//				ColorImageBuilderController controller = new ColorImageBuilderController(smallBodyModels, tempCollection, Optional.of(image));
-//				controller.setImages(image.getImages());
-//				BasicFrame frame = new BasicFrame();
-//				frame.add(controller.getView());
-//				frame.setSize(775, 900);
-//				frame.setTitle("Edit Color Image");
-//				frame.setVisible(true);
-//				frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-//			}
-//			else //editing custom n > 1, n!=3 spectral image
-//			{
-//
-//			}
+			showEditPointingDialog();
 		});
 
 
@@ -142,6 +128,36 @@ public class CustomImageImporterDialog2<G1 extends IPerspectiveImage & IPerspect
 		getContentPane().add(topPanel);
 		getContentPane().add(table);
 		getContentPane().add(buildSubmitCancelPanel());
+	}
+
+	private void showEditPointingDialog()
+	{
+		ImmutableSet<G1> selectedItems = tempCollection.getSelectedItems();
+		if (selectedItems.size() != 1) return;
+		G1 image = selectedItems.asList().get(0);
+//		if (image.getImageType() == ImageType.GENERIC_IMAGE) return;
+		if (image.getNumberOfLayers() == 1)	//editing custom single layer image
+		{
+			CustomImageImporterDialog<G1> dialog = new CustomImageImporterDialog<G1>(null, true, instrument,
+					isEllipsoid, /*tempCollection,*/ Optional.of(image));
+	        dialog.setLocationRelativeTo(getContentPane());
+	        dialog.setVisible(true);
+		}
+//		else if (image.getNumberOfLayers() == 3) //editing custom color image
+//		{
+//			ColorImageBuilderController controller = new ColorImageBuilderController(smallBodyModels, tempCollection, Optional.of(image));
+//			controller.setImages(image.getImages());
+//			BasicFrame frame = new BasicFrame();
+//			frame.add(controller.getView());
+//			frame.setSize(775, 900);
+//			frame.setTitle("Edit Color Image");
+//			frame.setVisible(true);
+//			frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+//		}
+//		else //editing custom n > 1, n!=3 spectral image
+//		{
+//
+//		}
 	}
 
 	private JPanel buildImageTypeInput()
@@ -356,23 +372,16 @@ public class CustomImageImporterDialog2<G1 extends IPerspectiveImage & IPerspect
 		{
 			imageCollection.addUserImage(image);
 		}
+		imageCollection.loadUserList();
 		imageCollection.setImagingInstrument(null);
 	}
 
-	private G1 storeImage(String filename)
+	private G1 resolvePointingFilename(String filename) throws IOException
 	{
 		String newFilepath = imageCollection.getSmallBodyModels().get(0).getCustomDataFolder() + File.separator + new File(filename).getName();
-//		System.out.println("CustomImageImporterDialog2: storeImage: new file path " + newFilepath);
-        try
-		{
-			FileUtil.copyFile(filename,  newFilepath);
-		}
-        catch (IOException e)
-		{
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		ImageType imageType = (ImageType)imageTypeComboBox.getSelectedItem();
+		FileUtil.copyFile(filename,  newFilepath);
+
+
 		String withoutExtension = FilenameUtils.removeExtension(filename);
 		String pointingSource = "";
 		ImageSource pointingSourceType = null;
@@ -396,46 +405,54 @@ public class CustomImageImporterDialog2<G1 extends IPerspectiveImage & IPerspect
 		}
 		else
 			pointingSourceType = ImageSource.LOCAL_CYLINDRICAL;
-//		String pointingSource = pointingFilenameTextField.getText();
-//		ImageSource pointingSourceType = ImageSource.LOCAL_CYLINDRICAL;
 
 		String newPointingFilepath = "";
 		if (!pointingSource.isEmpty())
 		{
-			try
-			{
-				newPointingFilepath = imageCollection.getSmallBodyModels().get(0).getCustomDataFolder() + File.separator + new File(pointingSource).getName();
-//				System.out.println("CustomImageImporterDialog2: storeImage: new pointing file " + newPointingFilepath);
+			newPointingFilepath = imageCollection.getSmallBodyModels().get(0).getCustomDataFolder() + File.separator + new File(pointingSource).getName();
+			if (new File(pointingSource).exists())
 				FileUtil.copyFile(pointingSource,  newPointingFilepath);
-			}
-	        catch (IOException e)
+			else
 			{
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				newPointingFilepath = "FILE NOT FOUND";
+				JOptionPane.showMessageDialog(this, "No pointing found; please click OK to select a file");
+				File newPointingFile = CustomFileChooser.showOpenDialog(this, "Can't determine pointing file - please choose one");
+		        if (newPointingFile != null)
+		        {
+		            newPointingFilepath = newPointingFile.getAbsolutePath();
+		        }
 			}
 			String extension = FilenameUtils.getExtension(pointingSource).toLowerCase();
 			pointingSourceType = extension.equals("sum") ? ImageSource.GASKELL : ImageSource.SPICE;
+			return storeImage(filename, newFilepath, pointingSourceType, newPointingFilepath);
 		}
-		//TODO FIX THIS
+		return storeImage(filename, newFilepath, pointingSourceType, newPointingFilepath);
+	}
+
+	private G1 storeImage(String filename, String newFilepath, ImageSource pointingSourceType, String newPointingFilepath)
+	{
+		ImageType imageType = (ImageType)imageTypeComboBox.getSelectedItem();
+
 		double[] fillValues = new double[] {};
 		PerspectiveImage image = new PerspectiveImage(newFilepath, imageType, pointingSourceType, newPointingFilepath, fillValues);
-		image.setFlip(instrument.getFlip());
-		image.setRotation(instrument.getRotation());
+
 		image.setName(getName());
 		image.setImageOrigin(ImageOrigin.LOCAL);
 		image.setLongTime(new Date().getTime());
 		if (pointingSourceType == ImageSource.LOCAL_CYLINDRICAL)
 		{
-//			Double minLat = Double.parseDouble(minLatitudeTextField.getText());
-//			Double maxLat = Double.parseDouble(maxLatitudeTextField.getText());
-//			Double minLon = Double.parseDouble(minLongitudeTextField.getText());
-//			Double maxLon = Double.parseDouble(maxLongitudeTextField.getText());
 			image.setBounds(new CylindricalBounds(-90,90,0,360));
+		}
+		else
+		{
+			image.setLinearInterpolatorDims(instrument.getLinearInterpolationDims());
+			image.setMaskValues(instrument.getMaskValues());
+			image.setFillValues(instrument.getFillValues());
+			image.setFlip(instrument.getFlip());
+			image.setRotation(instrument.getRotation());
 		}
 		CompositePerspectiveImage compImage = new CompositePerspectiveImage(List.of(image));
 		compImage.setName(FilenameUtils.getBaseName(filename));
 		return (G1)compImage;
-		//		imageCollection.addUserImage(compImage);
-//		imageCollection.setImagingInstrument(null);
 	}
 }
