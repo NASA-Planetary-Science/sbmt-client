@@ -76,7 +76,8 @@ public class GenericVTKLabel extends vtkCaptionActor2D
      */
     public void setText(String stringToDisplay)
     {
-        SetCaption(stringToDisplay);
+    	if (stringToDisplay != null)
+    		SetCaption(stringToDisplay);
         Modified();
     }
 }
