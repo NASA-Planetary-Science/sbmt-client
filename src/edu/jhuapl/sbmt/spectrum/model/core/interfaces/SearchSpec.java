@@ -1,6 +1,6 @@
 package edu.jhuapl.sbmt.spectrum.model.core.interfaces;
 
-import edu.jhuapl.sbmt.model.image.ImageSource;
+import edu.jhuapl.sbmt.core.image.ImageSource;
 
 
 /**

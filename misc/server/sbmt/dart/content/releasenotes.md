@@ -6,7 +6,7 @@
 
 ## July 14, 2022 (SBMT-0.8.2)
 
-### CRITICAL:
+### CRITICAL: 
 - Fixed a launching problem on macOS Mojave and above.
 
 ### New:

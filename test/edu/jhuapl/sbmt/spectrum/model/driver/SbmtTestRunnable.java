@@ -13,7 +13,7 @@ import javax.swing.ToolTipManager;
 
 import vtk.vtkJavaGarbageCollector;
 
-import edu.jhuapl.saavtk.config.IBodyViewConfig;
+import edu.jhuapl.saavtk.config.ViewConfig;
 import edu.jhuapl.saavtk.gui.MainWindow;
 import edu.jhuapl.saavtk.gui.TSConsole;
 import edu.jhuapl.saavtk.model.ShapeModelBody;
@@ -22,7 +22,7 @@ import edu.jhuapl.saavtk.util.Configuration;
 import edu.jhuapl.saavtk.util.Debug;
 import edu.jhuapl.saavtk.util.FileCache;
 import edu.jhuapl.saavtk.util.NativeLibraryLoader;
-import edu.jhuapl.sbmt.client.ShapeModelPopulation;
+import edu.jhuapl.sbmt.config.ShapeModelPopulation;
 import edu.jhuapl.sbmt.spectrum.model.driver.SbmtTesterMultiMissionTool.Mission;
 
 public class SbmtTestRunnable implements Runnable
@@ -193,7 +193,7 @@ public class SbmtTestRunnable implements Runnable
 
 	protected void disableAllBodies()
 	{
-		for (IBodyViewConfig each: SmallBodyViewConfigTest.getBuiltInConfigs())
+		for (ViewConfig each: SmallBodyViewConfigTest.getBuiltInConfigs())
 		{
 			each.enable(false);
 		}
@@ -201,7 +201,7 @@ public class SbmtTestRunnable implements Runnable
 
 	protected void enableMissionBodies(Mission mission)
 	{
-		for (IBodyViewConfig each: SmallBodyViewConfigTest.getBuiltInConfigs())
+		for (ViewConfig each: SmallBodyViewConfigTest.getBuiltInConfigs())
 		{
 			if (each instanceof SmallBodyViewConfigTest)
 			{

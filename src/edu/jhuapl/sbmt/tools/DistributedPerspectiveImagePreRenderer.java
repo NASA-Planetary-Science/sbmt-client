@@ -17,7 +17,7 @@ import org.ggf.drmaa.SessionFactory;
 
 import edu.jhuapl.saavtk.model.ShapeModelBody;
 import edu.jhuapl.saavtk.model.ShapeModelType;
-import edu.jhuapl.sbmt.model.image.ImageSource;
+import edu.jhuapl.sbmt.core.image.ImageSource;
 
 public class DistributedPerspectiveImagePreRenderer
 {

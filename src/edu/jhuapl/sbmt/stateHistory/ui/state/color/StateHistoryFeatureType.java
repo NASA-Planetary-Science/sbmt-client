@@ -26,5 +26,5 @@ public class StateHistoryFeatureType
 	public static final FeatureType SubSCPhase = new FeatureType("Sub-Spacecraft phase angle (deg)", null, 1.0);
 
 	/** Provides access to all of the available lidar {@link FeatureType}s. */
-	public static final ImmutableSet<FeatureType> FullSet = ImmutableSet.of(Time, Distance, Range, SubSCEmission, SubSCIncidence, SubSCPhase);
+	public static final ImmutableSet<FeatureType> FullSet = ImmutableSet.of(Time, Distance /*,Range, SubSCEmission, SubSCIncidence, SubSCPhase*/);
 }

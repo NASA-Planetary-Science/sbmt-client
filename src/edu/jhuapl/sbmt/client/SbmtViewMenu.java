@@ -15,6 +15,9 @@ import edu.jhuapl.saavtk.gui.dialog.ShapeModelImporterDialog;
 import edu.jhuapl.saavtk.util.Configuration;
 import edu.jhuapl.saavtk.util.FileCache;
 import edu.jhuapl.saavtk.util.Properties;
+import edu.jhuapl.sbmt.config.BasicConfigInfo;
+import edu.jhuapl.sbmt.config.ShapeModelDataUsed;
+import edu.jhuapl.sbmt.config.ShapeModelPopulation;
 
 public class SbmtViewMenu extends ViewMenu
 {
@@ -80,16 +83,16 @@ public class SbmtViewMenu extends ViewMenu
         // Encode this as a list of strings.
 
         List<String> tree = new ArrayList<>();
-        if (config.type != null)
-            tree.add(config.type.toString());
-        if (config.population != null && config.population != ShapeModelPopulation.NA)
-            tree.add(config.population.toString());
-        if (config.system != null)
-            tree.add(config.system.toString());
-        if (config.body != null)
-            tree.add(config.body.toString());
-        if (config.dataUsed != null && config.dataUsed != ShapeModelDataUsed.NA)
-            tree.add(config.dataUsed.toString());
+        if (config.getType() != null)
+            tree.add(config.getType().toString());
+        if (config.getPopulation() != null && config.getPopulation() != ShapeModelPopulation.NA)
+            tree.add(config.getPopulation().toString());
+        if (config.getSystem() != null)
+            tree.add(config.getSystem().toString());
+        if (config.getBody() != null)
+            tree.add(config.getBody().toString());
+        if (config.getDataUsed() != null && config.getDataUsed() != ShapeModelDataUsed.NA)
+            tree.add(config.getDataUsed().toString());
 
         // Go through the list of strings and generate a hierarchical menu tree.
         JMenu parentMenu = this;

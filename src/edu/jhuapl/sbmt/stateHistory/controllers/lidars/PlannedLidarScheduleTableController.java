@@ -15,7 +15,8 @@ import edu.jhuapl.saavtk.model.ModelManager;
 import edu.jhuapl.saavtk.status.StatusNotifier;
 import edu.jhuapl.saavtk.util.ProgressStatusListener;
 import edu.jhuapl.saavtk.util.Properties;
-import edu.jhuapl.sbmt.client.SmallBodyModel;
+import edu.jhuapl.saavtk.util.ThreadService;
+import edu.jhuapl.sbmt.common.client.SmallBodyModel;
 import edu.jhuapl.sbmt.lidar.LidarTrack;
 import edu.jhuapl.sbmt.stateHistory.controllers.IPlannedDataController;
 import edu.jhuapl.sbmt.stateHistory.model.interfaces.IStateHistoryMetadata;
@@ -27,7 +28,6 @@ import edu.jhuapl.sbmt.stateHistory.model.planning.lidar.PlannedLidarTrackSchedu
 import edu.jhuapl.sbmt.stateHistory.model.planning.lidar.PlannedLidarTrackVtkCollection;
 import edu.jhuapl.sbmt.stateHistory.rendering.model.StateHistoryRendererManager;
 import edu.jhuapl.sbmt.stateHistory.ui.lidars.schedule.PlannedLidarTrackScheduleView;
-import edu.jhuapl.sbmt.util.ThreadService;
 
 /**
  * Controls the UI for the planned Lidar schedules

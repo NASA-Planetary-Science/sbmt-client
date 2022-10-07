@@ -27,10 +27,10 @@ check() {
   # error on the next line, check the calling code, which must not be
   # passing an integer for argument 1.
   ( exit $1 )
-  
+
   # If $1 did contain an integer, the exit status will be that integer.
   # Otherwise, status will be some other integer. In any case, status
-  # for sure will now be an integer, so it will behave itself in the test. 
+  # for sure will now be an integer, so it will behave itself in the test.
   status=$?
   if test $status -ne 0; then
     if test $# -gt 1; then
@@ -213,6 +213,14 @@ doRsync() {
     # Make sure source directories end in a slash.
     if test -d $src; then
       src=`echo $src | sed -e 's:/*$:/:'`
+    fi
+
+    # When using cp to transfer files, delete the destination each
+    # time so that the command always puts the destination in the
+    # same place. If the destination exists, cp "helpfully" adds
+    # another level, e.g., /blah/blah/coloring/coloring.
+    if test `echo $rsyncCmd | grep -c cp` -gt 0; then
+      rm -rf $dest
     fi
 
     echo nice time $rsyncCmd $src $dest >> $log 2>&1

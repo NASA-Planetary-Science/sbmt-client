@@ -1,7 +1,7 @@
 package edu.jhuapl.sbmt.tools;
 
-import edu.jhuapl.sbmt.client.SbmtMultiMissionTool;
-import edu.jhuapl.sbmt.client.SmallBodyViewConfigMetadataIO;
+import edu.jhuapl.sbmt.common.client.Mission;
+import edu.jhuapl.sbmt.common.client.SmallBodyViewConfigMetadataIO;
 
 /**
  * Wrapper for running {@link SmallBodyViewConfigMetadataIO} from a command line tool.
@@ -19,7 +19,7 @@ public class ModelMetadataGenerator
         {
             if (System.getProperty(MissionPropertyName) == null)
             {
-                System.setProperty(MissionPropertyName, SbmtMultiMissionTool.Mission.TEST_APL_INTERNAL.getHashedName());
+                System.setProperty(MissionPropertyName, Mission.TEST_APL_INTERNAL.getHashedName());
             }
 
             SmallBodyViewConfigMetadataIO.main(args);

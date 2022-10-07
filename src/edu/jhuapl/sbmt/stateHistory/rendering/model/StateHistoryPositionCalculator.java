@@ -12,11 +12,11 @@ import vtk.vtkMatrix4x4;
 import vtk.vtkTransform;
 
 import edu.jhuapl.saavtk.util.MathUtil;
-import edu.jhuapl.sbmt.client.SmallBodyModel;
+import edu.jhuapl.sbmt.common.client.SmallBodyModel;
+import edu.jhuapl.sbmt.core.rendering.PerspectiveFootprint;
+import edu.jhuapl.sbmt.core.rendering.PerspectiveFrustum;
 import edu.jhuapl.sbmt.lidar.BasicLidarPoint;
 import edu.jhuapl.sbmt.lidar.LidarPoint;
-import edu.jhuapl.sbmt.model.image.perspectiveImage.PerspectiveImageFootprint;
-import edu.jhuapl.sbmt.model.image.perspectiveImage.PerspectiveImageFrustum;
 import edu.jhuapl.sbmt.stateHistory.model.interfaces.IStateHistoryLocationProvider;
 import edu.jhuapl.sbmt.stateHistory.model.interfaces.IStateHistoryMetadata;
 import edu.jhuapl.sbmt.stateHistory.model.interfaces.State;
@@ -134,7 +134,7 @@ public class StateHistoryPositionCalculator implements IStateHistoryPositionCalc
 		earthDirectionMarker.updateEarthPosition(earthPosition, earthMarkerPosition);
 	}
 
-	public static void updateFootprintPointing(StateHistory history, double time, PerspectiveImageFootprint fprint)
+	public static void updateFootprintPointing(StateHistory history, double time, PerspectiveFootprint fprint)
 	{
 		IStateHistoryLocationProvider locationProvider = history.getLocationProvider();
 		double[] spacecraftPosition = locationProvider.getSpacecraftPositionAtTime(time);
@@ -336,7 +336,7 @@ public class StateHistoryPositionCalculator implements IStateHistoryPositionCalc
 		spacecraftLabelActor.Modified();
 	}
 
-	public void updateFOVLocations(StateHistory history, ArrayList<PerspectiveImageFrustum> fov)
+	public void updateFOVLocations(StateHistory history, ArrayList<PerspectiveFrustum> fov)
 	{
 		IStateHistoryLocationProvider locationProvider = history.getLocationProvider();
 		fov.forEach(fieldOfView ->
@@ -362,7 +362,7 @@ public class StateHistoryPositionCalculator implements IStateHistoryPositionCalc
 		});
 	}
 
-	public void updateFootprintLocations(StateHistory history, ArrayList<PerspectiveImageFootprint> footprint)
+	public void updateFootprintLocations(StateHistory history, ArrayList<PerspectiveFootprint> footprint)
 	{
 		IStateHistoryLocationProvider locationProvider = history.getLocationProvider();
 		if (footprint != null)

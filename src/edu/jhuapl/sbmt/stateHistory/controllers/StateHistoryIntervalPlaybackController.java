@@ -264,7 +264,7 @@ public class StateHistoryIntervalPlaybackController
             else
             {
             	toggleToPause();
-
+            	timer.setDelay(1000/Integer.parseInt(view.getPlaybackRateTextField().getText()));
                 renderer.setMouseEnabled(false);
                 if (runs.getCurrentRun() != null)
                 {
@@ -511,6 +511,7 @@ public class StateHistoryIntervalPlaybackController
 					e.printStackTrace();
 				}
 				animator.cleanup();
+				isRecording = false;
 	            view.setRecordingInProgress(false);
 	            view.getRecordButton().setIcon(IconUtil.getRecord());
         		view.getRecordButton().setToolTipText(ToolTipUtil.getRecord());

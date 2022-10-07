@@ -2,8 +2,8 @@ package edu.jhuapl.sbmt.tools;
 
 import java.util.Objects;
 
-import edu.jhuapl.sbmt.model.image.ImageSource;
-import edu.jhuapl.sbmt.model.image.Instrument;
+import edu.jhuapl.sbmt.config.Instrument;
+import edu.jhuapl.sbmt.core.image.ImageSource;
 
 import crucible.crust.metadata.api.Key;
 import crucible.crust.metadata.api.Metadata;

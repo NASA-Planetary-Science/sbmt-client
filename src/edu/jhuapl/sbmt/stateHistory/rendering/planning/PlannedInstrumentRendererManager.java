@@ -7,7 +7,8 @@ import java.util.HashMap;
 import java.util.List;
 
 import edu.jhuapl.saavtk.util.Properties;
-import edu.jhuapl.sbmt.client.SmallBodyModel;
+import edu.jhuapl.sbmt.common.client.SmallBodyModel;
+import edu.jhuapl.sbmt.core.rendering.DataActor;
 import edu.jhuapl.sbmt.stateHistory.model.planning.PlannedInstrumentData;
 
 import nom.tam.fits.FitsException;
@@ -15,7 +16,7 @@ import nom.tam.fits.FitsException;
 public class PlannedInstrumentRendererManager
 {
 	List<PlannedInstrumentData> dataToRender = new ArrayList<PlannedInstrumentData>();
-	private HashMap<PlannedInstrumentData, PlannedDataActor> plannedInstrumentDataToRendererMap = new HashMap<PlannedInstrumentData, PlannedDataActor>();
+	private HashMap<PlannedInstrumentData, DataActor> plannedInstrumentDataToRendererMap = new HashMap<PlannedInstrumentData, DataActor>();
 
 	/**
 	 *
@@ -27,10 +28,10 @@ public class PlannedInstrumentRendererManager
 		this.pcs = pcs;
 	}
 
-	public PlannedDataActor addPlannedData(PlannedInstrumentData data, SmallBodyModel model)
+	public DataActor addPlannedData(PlannedInstrumentData data, SmallBodyModel model)
 	{
 		// Get the actor for the planned data
-		PlannedDataActor dataActor = null;
+		DataActor dataActor = null;
 		try
 		{
 			dataActor = PlannedDataActorFactory.createPlannedDataActorFor(data, model);
@@ -57,7 +58,7 @@ public class PlannedInstrumentRendererManager
 	public void setVisibility(PlannedInstrumentData data, boolean isVisible)
 	{
 		data.setShowing(isVisible);
-		PlannedDataActor actor = plannedInstrumentDataToRendererMap.get(data);
+		DataActor actor = plannedInstrumentDataToRendererMap.get(data);
 		actor.getFootprintBoundaryActor().SetVisibility(isVisible ? 1: 0);
 		actor.getFootprintBoundaryActor().Modified();
 		this.pcs.firePropertyChange("PLANNED_IMAGES_CHANGED", null, actor);

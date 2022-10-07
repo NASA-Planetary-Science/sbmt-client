@@ -5,7 +5,7 @@ import java.util.HashMap;
 import vtk.vtkFloatArray;
 
 import edu.jhuapl.saavtk.util.NativeLibraryLoader;
-import edu.jhuapl.sbmt.model.image.perspectiveImage.PerspectiveImageFootprint;
+import edu.jhuapl.sbmt.core.rendering.PerspectiveFootprint;
 import edu.jhuapl.sbmt.stateHistory.model.interfaces.ICalculatedPlateValues;
 import edu.jhuapl.sbmt.stateHistory.model.interfaces.IFootprintConfinedPlateValues;
 import edu.jhuapl.sbmt.stateHistory.model.interfaces.ITimeCalculatedPlateValues;
@@ -26,7 +26,7 @@ public class LiveColorableManager
 		return plateValueCalculators.get(name);
 	}
 
-	public static void updateFootprint(PerspectiveImageFootprint footprint)
+	public static void updateFootprint(PerspectiveFootprint footprint)
 	{
 		for (String name : plateValueCalculators.keySet())
 		{
