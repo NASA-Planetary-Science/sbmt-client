@@ -10,7 +10,6 @@ import org.apache.commons.io.FilenameUtils;
 import com.beust.jcommander.internal.Lists;
 import com.google.common.collect.ImmutableSet;
 
-import edu.jhuapl.saavtk.gui.dialog.CustomFileChooser;
 import edu.jhuapl.saavtk.gui.dialog.DirectoryChooser;
 import edu.jhuapl.sbmt.core.image.ImageSource;
 import edu.jhuapl.sbmt.core.image.InfoFileWriter;
@@ -43,7 +42,6 @@ public class ExportFitsInfoPairsAction<G1 extends IPerspectiveImage & IPerspecti
 		File outDir = DirectoryChooser.showOpenDialog(null, "Save FITS/Pointing Pair to Directory...");
 		if (outDir == null)
 			return;
-		System.out.println("ExportFitsInfoPairsAction: executeAction: number of items " + aManager.getSelectedItems().size() + " going to " + outDir);
 		ImmutableSet<G1> selectedItems = aManager.getSelectedItems();
 		for (G1 aItem : selectedItems)
 		{
@@ -52,7 +50,7 @@ public class ExportFitsInfoPairsAction<G1 extends IPerspectiveImage & IPerspecti
 			try
 			{
 				Just.of(aItem)
-					.operate(new SaveImageFileFromCacheOperator())
+					.operate(new SaveImageFileFromCacheOperator<G1>(outDir.getAbsolutePath()))
 					.subscribe(Sink.of(files))
 					.run();
 			} catch (Exception e)
@@ -67,8 +65,8 @@ public class ExportFitsInfoPairsAction<G1 extends IPerspectiveImage & IPerspecti
 				String defaultFileName = FilenameUtils.getBaseName(aItem.getPointingSource());
 				String defaultFileType = (aItem.getPointingSourceType() == ImageSource.GASKELL || aItem.getPointingSourceType() == ImageSource.GASKELL_UPDATED) ? "SUM" : "INFO";
 				defaultFileType = "INFO";
-				file = CustomFileChooser.showSaveDialog(null, "Save Pointing file as...", defaultFileName + "." + defaultFileType);
-				if (file == null) return;
+//				file = CustomFileChooser.showSaveDialog(null, "Save Pointing file as...", defaultFileName + "." + defaultFileType);
+				file = new File(outDir, defaultFileName + "." + defaultFileType);
 
 				String filename = file.getAbsolutePath();
 				//TODO for now, we don't have a good SUMFileWriter, so export things as INFO files.
