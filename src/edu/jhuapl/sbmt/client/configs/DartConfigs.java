@@ -251,7 +251,7 @@ public class DartConfigs extends SmallBodyViewConfigBuilder
                 init(ShapeModelBody.JUPITER, author, ShapeModelDataUsed.SIMULATED, label);
                 imageSearchRanges(JupiterSearchStartDate, JupiterSearchEndDate, 1.0e9, 1.0e7);
 
-                ImagingInstrument instrument = createFlightInstrument(ShapeModelBody.JUPITER, author, Instrument.DRACO, 0.0, ImageFlip.NONE, dracoTranspose, imageSources);
+                ImagingInstrument instrument = createFlightInstrument(ShapeModelBody.JUPITER, author, Instrument.DRACO, 0.0, ImageFlip.X, dracoTranspose, imageSources);
                 DBRunInfo[] dbRunInfos = createDbInfos(ShapeModelBody.JUPITER, author, Instrument.DRACO, imageSources);
                 add(instrument, dbRunInfos);
 
@@ -265,7 +265,7 @@ public class DartConfigs extends SmallBodyViewConfigBuilder
                 init(ShapeModelBody.GANYMEDE, author, ShapeModelDataUsed.SIMULATED, label);
                 imageSearchRanges(JupiterSearchStartDate, JupiterSearchEndDate, 1.0e9, 1.0e7);
 
-                ImagingInstrument instrument = createFlightInstrument(ShapeModelBody.GANYMEDE, author, Instrument.DRACO, 0.0, ImageFlip.NONE, dracoTranspose, imageSources);
+                ImagingInstrument instrument = createFlightInstrument(ShapeModelBody.GANYMEDE, author, Instrument.DRACO, 0.0, ImageFlip.X, dracoTranspose, imageSources);
                 DBRunInfo[] dbRunInfos = createDbInfos(ShapeModelBody.GANYMEDE, author, Instrument.DRACO, imageSources);
                 add(instrument, dbRunInfos);
 
@@ -884,9 +884,11 @@ public class DartConfigs extends SmallBodyViewConfigBuilder
         String tablePrefix = dbTablePrefix(body, author, instrument);
 
         String lcInstrument = instrument.name().toLowerCase();
+        System.out.println("DartConfigs: createFlightInstrument: lcInstrument " + lcInstrument);
 
         String modelImageDir = modelTopDir(body, author) + "/" + lcInstrument;
         String imageDataDir = "/dart/" + lcInstrument;
+        System.out.println("DartConfigs: createFlightInstrument: imageDatadir " + imageDataDir);
 
         return createFlightInstrument(instrument, tablePrefix, modelImageDir, imageDataDir, rotation, flip, transpose, sources);
     }
@@ -921,7 +923,7 @@ public class DartConfigs extends SmallBodyViewConfigBuilder
         {
             sources = new ImageSource[] { ImageSource.GASKELL };
         }
-
+        System.out.println("DartConfigs: createFlightInstrument: trying to reference image direction " + imageDataDir + "/images");
         return new ImagingInstrument(spectralImageMode, //
                 new GenericPhpQuery(modelImageDir, tablePrefix, tablePrefix, imageDataDir + "/gallery", imageDataDir + "/images"), //
                 imageType, //
