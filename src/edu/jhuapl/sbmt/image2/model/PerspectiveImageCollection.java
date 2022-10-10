@@ -74,6 +74,7 @@ public class PerspectiveImageCollection<G1 extends IPerspectiveImage & IPerspect
 	private IImagingInstrument imagingInstrument;
 	private IdPair currentBoundaryRange = new IdPair(0, 9);
 	private int currentBoundaryOffsetAmount = 10;
+	private boolean firstCustomLoad = true;
 
 	public PerspectiveImageCollection(List<SmallBodyModel> smallBodyModels)
 	{
@@ -129,12 +130,10 @@ public class PerspectiveImageCollection<G1 extends IPerspectiveImage & IPerspect
 		state.boundaryColor = color;
 		renderingStates.put(image,state);
 		updateUserList();	//update the user created list, stored in metadata
-//		setAllItems(userImages);
 	}
 
 	public void loadUserList()
 	{
-//		if (userImages.size() != 0) return;
 		userImages.clear();
 		String instrumentName = ""; //imagingInstrument == null ? "" : imagingInstrument.getType().toString();
 		String filename = smallBodyModels.get(0).getCustomDataFolder() + File.separator + "userImages" + instrumentName + ".txt";
@@ -147,13 +146,18 @@ public class PerspectiveImageCollection<G1 extends IPerspectiveImage & IPerspect
             userImages = read(userImagesKey, metadata);
             for (G1 image : userImages)
             {
-            	PerspectiveImageRenderingState<G1> state = new PerspectiveImageRenderingState<G1>();
-            	state.isMapped = image.isMapped();
-            	if (image.isMapped()) image.setStatus("Loaded");
-            	state.isFrustumShowing = image.isFrustumShowing();
-            	state.isBoundaryShowing = image.isBoundaryShowing();
-            	state.isOfflimbShowing = image.isOfflimbShowing();
+            	PerspectiveImageRenderingState<G1> state = renderingStates.get(image);
+            	if (state == null) state = new PerspectiveImageRenderingState<G1>();
+            	if (firstCustomLoad == false)
+            	{
+            		state.isMapped = image.isMapped();
+	            	if (image.isMapped()) image.setStatus("Loaded");
+	            	state.isFrustumShowing = image.isFrustumShowing();
+	            	state.isBoundaryShowing = image.isBoundaryShowing();
+	            	state.isOfflimbShowing = image.isOfflimbShowing();
+            	}
         		renderingStates.put(image,state);
+
         		//TODO leaving this here for now, in case I want to implement something like Nobes does for dtms
 //        		updateImage(image);
             }
@@ -821,8 +825,8 @@ public class PerspectiveImageCollection<G1 extends IPerspectiveImage & IPerspect
 		this.imagingInstrument = imagingInstrument;
 		if (imagingInstrument == null)
 		{
-
 			setAllItems(userImages);
+			firstCustomLoad = false;
 		}
 		else if (imagesByInstrument.get(imagingInstrument) == null)
 		{
