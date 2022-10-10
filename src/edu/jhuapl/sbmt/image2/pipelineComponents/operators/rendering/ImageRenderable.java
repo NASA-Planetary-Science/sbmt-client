@@ -80,6 +80,14 @@ public class ImageRenderable
 		return footprintActors;
 	}
 
+	/**
+	 * @return the footprintPolyData
+	 */
+	public List<vtkPolyData> getFootprintPolyData()
+	{
+		return footprintPolyData;
+	}
+
 	public vtkActor getFrustum()
 	{
 		return frustumActor;
