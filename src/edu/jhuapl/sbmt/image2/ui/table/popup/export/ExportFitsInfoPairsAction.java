@@ -65,14 +65,15 @@ public class ExportFitsInfoPairsAction<G1 extends IPerspectiveImage & IPerspecti
 			try
 			{
 				String defaultFileName = FilenameUtils.getBaseName(aItem.getPointingSource());
-				String defaultFileType = aItem.getPointingSourceType() == ImageSource.GASKELL ? "SUM" : "INFO";
+				String defaultFileType = (aItem.getPointingSourceType() == ImageSource.GASKELL || aItem.getPointingSourceType() == ImageSource.GASKELL_UPDATED) ? "SUM" : "INFO";
+				defaultFileType = "INFO";
 				file = CustomFileChooser.showSaveDialog(null, "Save Pointing file as...", defaultFileName + "." + defaultFileType);
 				if (file == null) return;
 
 				String filename = file.getAbsolutePath();
-
+				//TODO for now, we don't have a good SUMFileWriter, so export things as INFO files.
 				PerspectiveImageToRenderableImagePipeline pipeline = new PerspectiveImageToRenderableImagePipeline(List.of(aItem));
-
+				filename = filename.replace(".SUM", ".INFO");
 				InfoFileWriter writer = new InfoFileWriter(filename, pipeline.getRenderableImages().get(0).getPointing(), false);
 				writer.write();
 			}
