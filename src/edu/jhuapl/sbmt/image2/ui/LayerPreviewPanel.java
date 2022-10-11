@@ -48,13 +48,11 @@ import edu.jhuapl.saavtk.gui.render.RenderIoUtil;
 import edu.jhuapl.saavtk.model.Model;
 import edu.jhuapl.saavtk.util.IntensityRange;
 import edu.jhuapl.sbmt.image2.controllers.preview.ImageContrastController;
-import edu.jhuapl.sbmt.image2.controllers.preview.ImageMaskController;
 import edu.jhuapl.sbmt.image2.controllers.preview.ImagePropertiesController;
 import edu.jhuapl.sbmt.image2.controllers.preview.ImageTrimController;
 import edu.jhuapl.sbmt.image2.model.ImageProperty;
 import edu.jhuapl.sbmt.image2.pipelineComponents.operators.rendering.vtk.VtkImageRendererOperator;
 import edu.jhuapl.sbmt.image2.pipelineComponents.pipelines.rendering.vtk.VtkImageContrastPipeline;
-import edu.jhuapl.sbmt.image2.pipelineComponents.pipelines.rendering.vtk.VtkImageMaskingPipeline;
 import edu.jhuapl.sbmt.layer.api.Layer;
 import edu.jhuapl.sbmt.pipeline.publisher.IPipelinePublisher;
 import edu.jhuapl.sbmt.pipeline.publisher.Just;
@@ -65,9 +63,7 @@ public class LayerPreviewPanel extends ModelInfoWindow implements MouseListener,
 	public static final double VIEWPOINT_DELTA = 1.0;
 	public static final double ROTATION_DELTA = 5.0;
 
-	VtkImageMaskingPipeline maskPipeline;
 	ImageTrimController trimController;
-	ImageMaskController maskController;
 	ImageContrastController contrastController;
 	private List<Layer> layers;
 	private Layer layer;
@@ -101,7 +97,6 @@ public class LayerPreviewPanel extends ModelInfoWindow implements MouseListener,
 		this.layer = layers.get(currentLayerIndex);
 		this.metadatas = metadatas;
 		this.metadata = metadatas.get(currentLayerIndex);
-		this.maskPipeline = new VtkImageMaskingPipeline();
 		this.completionBlock = completionBlock;
 		this.layerPanel = new JPanel();
 		this.layerPanel.setLayout(new GridBagLayout());
@@ -112,7 +107,6 @@ public class LayerPreviewPanel extends ModelInfoWindow implements MouseListener,
 		initComponents();
 		renderLayer(layer);
 		setIntensity(intensityRange);
-
 		createMenus();
 		setTitle(title);
 		GridBagConstraints gridBagConstraints = new GridBagConstraints();
@@ -126,7 +120,6 @@ public class LayerPreviewPanel extends ModelInfoWindow implements MouseListener,
 		setVisible(true);
 
 		initialized = true;
-		trimController.setMaskValues(currentMaskValues);
 		javax.swing.SwingUtilities.invokeLater(new Runnable()
 		{
 			@Override
@@ -174,8 +167,6 @@ public class LayerPreviewPanel extends ModelInfoWindow implements MouseListener,
 
 	private void generateVtkImageData(Layer layer) throws IOException, Exception
 	{
-//		Layer flippedLayer = new LayerTransformFactory().rotateHalfway().apply(layer);
-//		flippedLayer = new LayerTransformFactory().flipAboutY().apply(flippedLayer);
 		List<vtkImageData> displayedImages = new ArrayList<vtkImageData>();
 		IPipelinePublisher<Layer> reader = new Just<Layer>(layer);
 		reader.
@@ -185,6 +176,7 @@ public class LayerPreviewPanel extends ModelInfoWindow implements MouseListener,
 		contrastController.setImageData(displayedImage);
 		if (displayedImage.GetNumberOfScalarComponents() != 1)
 			contrastController.getView().setVisible(false);
+		this.layer = layer;
 	}
 
 	private void renderLayer(Layer layer) throws IOException, Exception
@@ -275,7 +267,6 @@ public class LayerPreviewPanel extends ModelInfoWindow implements MouseListener,
 		buildTableController();
 		buildContrastController();
 		buildTrimController();
-
 		pack();
 	}
 
@@ -431,7 +422,7 @@ public class LayerPreviewPanel extends ModelInfoWindow implements MouseListener,
 		gridBagConstraints.fill = GridBagConstraints.HORIZONTAL;
 		gridBagConstraints.anchor = GridBagConstraints.WEST;
 		gridBagConstraints.insets = new Insets(3, 6, 3, 0);
-		trimController = new ImageTrimController(layer, new Function<Layer, Void>()
+		trimController = new ImageTrimController(layer, currentMaskValues, new Function<Layer, Void>()
 		{
 
 			@Override
@@ -446,8 +437,6 @@ public class LayerPreviewPanel extends ModelInfoWindow implements MouseListener,
 					renWin.Render();
 					layer = t;
 					if (completionBlock != null) completionBlock.run();
-//					maskController.setLayer(t);
-//					trimController.setLayer(t);
 				}
 				catch (Exception e)
 				{
@@ -458,7 +447,6 @@ public class LayerPreviewPanel extends ModelInfoWindow implements MouseListener,
 				return null;
 			}
 		});
-		trimController.setMaskValues(currentMaskValues);
 		controlsPanel.add(trimController.getView(), gridBagConstraints);
 	}
 

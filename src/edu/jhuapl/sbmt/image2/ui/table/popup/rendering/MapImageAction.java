@@ -17,12 +17,12 @@ public class MapImageAction<G1 extends IPerspectiveImage & IPerspectiveImageTabl
 	/**
 	 *
 	 */
-	private PerspectiveImageCollection aManager;
+	private PerspectiveImageCollection<G1> aManager;
 
 	/**
 	 * @param imagePopupMenu
 	 */
-	public MapImageAction(PerspectiveImageCollection aManager)
+	public MapImageAction(PerspectiveImageCollection<G1> aManager)
 	{
 		this.aManager = aManager;
 	}

@@ -38,12 +38,16 @@ public class PerspectiveImageToRenderableImagePipeline
 		{
 			String filename = image.getFilename();
 			String pointingFile = image.getPointingSource();
-
 			synchronized(PerspectiveImageToRenderableImagePipeline.class) {
-				if (!new File(filename).exists())
+				if (FileCache.getState(filename).isDownloadNecessary())
 				{
 					filename = FileCache.getFileFromServer(image.getFilename()).getAbsolutePath();
 					pointingFile = FileCache.getFileFromServer(image.getPointingSource()).getAbsolutePath();
+				}
+				else
+				{
+					filename = FileCache.getState(filename).getFileState().getFile().getAbsolutePath();
+					pointingFile = FileCache.getState(pointingFile).getFileState().getFile().getAbsolutePath();
 				}
 
 				processFile(filename, pointingFile, image);
