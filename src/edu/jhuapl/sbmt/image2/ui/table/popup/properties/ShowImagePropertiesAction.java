@@ -59,11 +59,14 @@ public class ShowImagePropertiesAction<G1 extends IPerspectiveImage & IPerspecti
 				@Override
 				public void run()
 				{
-					image.setIntensityRange(preview.getIntensityRange());
-					image.setTrimValues(preview.getMaskValues());
-					image.setMaskValues(preview.getMaskValues());
-					image.setCurrentLayer(preview.getDisplayedLayerIndex());
-					aManager.updateImage(image);
+//					SwingUtilities.invokeLater(() -> {
+						image.setIntensityRange(preview.getIntensityRange());
+						image.setTrimValues(preview.getMaskValues());
+						image.setMaskValues(preview.getMaskValues());
+						image.setCurrentLayer(preview.getDisplayedLayerIndex());
+						aManager.updateImage(image);
+//					});
+
 				}
 			};
 
@@ -98,7 +101,6 @@ public class ShowImagePropertiesAction<G1 extends IPerspectiveImage & IPerspecti
 				Just.of(inputList)
 					.subscribe(preview)
 					.run();
-
 				preview.getPanel().setVisible(true);
 			}
 		}

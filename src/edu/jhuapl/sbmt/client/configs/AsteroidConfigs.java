@@ -70,7 +70,7 @@ public class AsteroidConfigs extends SmallBodyViewConfig
                         "None",
                         null,
                         new int[] {537, 412},
-                        new int[] {2, 14, 2, 14}
+                        new int[] {2, 2, 14, 14}
                         )
         };
 

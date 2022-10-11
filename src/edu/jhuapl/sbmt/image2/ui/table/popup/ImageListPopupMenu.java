@@ -26,6 +26,7 @@ import edu.jhuapl.sbmt.image2.ui.table.popup.rendering.ChangeOpacityAction;
 import edu.jhuapl.sbmt.image2.ui.table.popup.rendering.InterpolatePixelsAction;
 import edu.jhuapl.sbmt.image2.ui.table.popup.rendering.MapBoundaryAction;
 import edu.jhuapl.sbmt.image2.ui.table.popup.rendering.MapImageAction;
+import edu.jhuapl.sbmt.image2.ui.table.popup.rendering.RemapImageAction;
 import edu.jhuapl.sbmt.image2.ui.table.popup.rendering.ShowFrustumAction;
 import edu.jhuapl.sbmt.image2.ui.table.popup.rendering.SimulateLightingAction;
 
@@ -118,6 +119,9 @@ public class ImageListPopupMenu<G1 extends IPerspectiveImage  & IPerspectiveImag
 		JMenu colorMenu = new JMenu("Boundary Color");
 		BoundaryColorAction<G1> boundaryColorAction = new BoundaryColorAction<>(aManager, invoker, colorMenu);
 		installPopAction(boundaryColorAction, colorMenu);
+
+		RemapImageAction<G1> remapImageAction = new RemapImageAction<G1>(aManager);
+		installPopAction(remapImageAction, "Rerender image");
 
 //		SaveBackplanesAction<PerspectiveImage> showBackplanesAction = new SaveBackplanesAction<PerspectiveImage>(aManager);
 //		installPopAction(showBackplanesAction, "Boundary Color");

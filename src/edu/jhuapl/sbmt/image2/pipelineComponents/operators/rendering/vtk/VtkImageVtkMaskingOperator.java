@@ -31,10 +31,10 @@ public class VtkImageVtkMaskingOperator //<vtkImageData, vtkImageData>
 		imageWidth = (int) inputs.get(0).GetBounds()[1]+1;
 		imageHeight = (int) inputs.get(0).GetBounds()[3]+1;
 		maskSource.SetExtent(0, imageWidth - 1, 0, imageHeight - 1, 0, 0);
-		int topMask = masking[2]; 		//3
-		int rightMask = masking[3];		//0
-		int bottomMask = masking[0];	//1
-		int leftMask = masking[1];		//2
+		int topMask = masking[3]; 		//3    was 2
+		int rightMask = masking[1];		//0	   was 3
+		int bottomMask = masking[2];	//1    was 0
+		int leftMask = masking[0];		//2    was 1
 		// Initialize the mask to black which masks out the image
 		maskSource.SetDrawColor(0.0, 0.0, 0.0, 0.0);
 		maskSource.FillBox(0, imageWidth - 1, 0, imageHeight - 1);

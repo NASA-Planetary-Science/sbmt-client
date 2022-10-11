@@ -49,7 +49,8 @@ public class CreateImageFromSearchResultOperator<G1 extends IPerspectiveImage & 
 		imageSource = inputs.get(0).getRight();
 		instrument = inputs.get(0).getMiddle();
 		outputs = new ArrayList<G1>();
-
+		String dataDir = instrument.getSearchQuery().getDataPath();
+		String rootDir = instrument.getSearchQuery().getRootPath();
 		int i=1;
         for (List<String> imageInfo : results)
         {
@@ -70,48 +71,32 @@ public class CreateImageFromSearchResultOperator<G1 extends IPerspectiveImage & 
         	String imagePath = "images";
         	if (viewConfig.getUniqueName().contains("Bennu")) imagePath = "images/public";
 
-        	String infoBaseName = FilenameUtils.removeExtension(imageInfo.get(0)).replace(imagePath, pointingDir);
-        	if (viewConfig.getUniqueName().contains("Eros"))
+//        	String infoBaseName = FilenameUtils.removeExtension(imageInfo.get(0)).replace(imagePath, pointingDir);
+        	String infoBaseName = rootDir  + File.separator + pointingDir + File.separator +  FilenameUtils.removeExtension(FilenameUtils.getBaseName(imageInfo.get(0)));
+        	if (extension == ".SUM")
     		{
-        		if (extension == ".SUM")
-        		{
+	        	if (viewConfig.getUniqueName().contains("Eros"))
+	    		{
+	        		//MSI doesn't have a makesumfiles.in to query.
 	        		String filename = FilenameUtils.getBaseName(imageInfo.get(0).substring(imageInfo.get(0).lastIndexOf("/")));
 	            	String filenamePrefix = filename.substring(0, filename.indexOf("_"));
 	        		infoBaseName = infoBaseName.replace(filename, filenamePrefix.substring(0, filenamePrefix.length()-2));
-        		}
-    		}
-        	else if (viewConfig.getUniqueName().contains("Jupiter"))
-        	{
-				infoBaseName = infoBaseName.substring(0, infoBaseName.lastIndexOf("/")) + File.separator + getSumFileName(instrument.getSearchQuery().getRootPath(), imageInfo.get(0));
-        		infoBaseName = infoBaseName.replace("/dart/draco", "/jupiter/dart-jupiter-01/draco");
-        	}
-        	else if (viewConfig.getUniqueName().contains("Ganymede"))
-        	{
-				infoBaseName = infoBaseName.substring(0, infoBaseName.lastIndexOf("/")) + File.separator + getSumFileName(instrument.getSearchQuery().getRootPath(), imageInfo.get(0));
-        		infoBaseName = infoBaseName.replace("/dart/draco", "/ganymede/dart-ganymede-01/draco");
-        	}
-        	else
-        	{
-        		if (extension == ".SUM")
+	    		}
+	        	else //all other sumfiles based instruments should have makesumfiles.in
+	        	{
 					try
 					{
 						infoBaseName = infoBaseName.substring(0, infoBaseName.lastIndexOf("/")) + File.separator + getSumFileName(instrument.getSearchQuery().getRootPath(), imageInfo.get(0));
-						infoBaseName = infoBaseName.replace("images", "sumfiles");
 					}
         			catch (IOException | ParseException | NonexistentRemoteFile e)
 					{
         				String filename = FilenameUtils.getBaseName(imageInfo.get(0).substring(imageInfo.get(0).lastIndexOf("/")));
-//        				String sumFileName = filename + ".SUM";
 						infoBaseName = infoBaseName.substring(0, infoBaseName.lastIndexOf("/"))
 										+ File.separator
 										+ filename;
-
-
-						// TODO Auto-generated catch block
-//						e.printStackTrace();
 					}
-        	}
-
+	        	}
+    		}
         	PerspectiveImage image = new PerspectiveImage(imageInfo.get(0), instrument.getType(), imageSource, infoBaseName + extension, new double[] {});
         	image.setFlip(instrument.getFlip());
         	image.setRotation(instrument.getRotation());

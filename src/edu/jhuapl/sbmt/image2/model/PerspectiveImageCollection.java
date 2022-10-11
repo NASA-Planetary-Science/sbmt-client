@@ -896,7 +896,7 @@ public class PerspectiveImageCollection<G1 extends IPerspectiveImage & IPerspect
 							.run();
 					}
 					boundaryRenderers.put(image, boundaryActors);
-					setImageBoundaryColor(image, Color.red);
+//					setImageBoundaryColor(image, Color.red);
 					completionBlock.apply(null);
 				}
 				catch (Exception e)

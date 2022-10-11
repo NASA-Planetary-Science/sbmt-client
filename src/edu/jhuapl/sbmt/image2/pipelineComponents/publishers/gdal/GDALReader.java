@@ -5,6 +5,8 @@ import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.function.Function;
 
+import javax.swing.SwingUtilities;
+
 import org.apache.commons.io.FilenameUtils;
 import org.gdal.gdal.Dataset;
 import org.gdal.gdal.gdal;
@@ -37,39 +39,46 @@ public class GDALReader extends BasePipelinePublisher<Layer>
 
 	private void loadData(ValidityChecker checker, double oobValue)
 	{
-		if (!isVectorFile)
+		synchronized (GDALReader.class)
 		{
-			Dataset dataset = gdal.Open(filename);
-			if (dataset == null)
+			if (!isVectorFile)
 			{
-				//TODO this seems to helo with a threading race; need to investigate more
-				System.out.println("GDALReader: loadData: dataset null");
-				System.exit(1);
-			}
-			Layer layer = new LayerLoaderBuilder()
-					.dataSet(dataset)
-					.checker(checker)
-					.build()
-					.load();
-			int numLayers = layer.dataSizes().get(0);
-			PixelVector factory = new PixelVectorDoubleFactory().of(numLayers, oobValue);
-			Hashtable<String, String> metadata = (Hashtable<String, String>)dataset.GetMetadata_Dict();
-			for (int i=0; i < numLayers; i++)
-			{
-				 Function<Layer, Layer> transform = new LayerTransformFactory().slice(factory, i);
-				 Layer singleLayer = transform.apply(layer);
-				 outputs.add(singleLayer);
-			}
+				Dataset dataset = gdal.Open(filename, 0);
+				if (dataset == null)
+				{
+					//TODO this seems to helo with a threading race; need to investigate more
+					System.out.println("GDALReader: loadData: dataset null");
+					System.exit(1);
+				}
+				Layer layer = new LayerLoaderBuilder()
+						.dataSet(dataset)
+						.checker(checker)
+						.build()
+						.load();
+				int numLayers = layer.dataSizes().get(0);
+				PixelVector factory = new PixelVectorDoubleFactory().of(numLayers, oobValue);
+				Hashtable<String, String> metadata = (Hashtable<String, String>)dataset.GetMetadata_Dict();
+				for (int i=0; i < numLayers; i++)
+				{
+					 Function<Layer, Layer> transform = new LayerTransformFactory().slice(factory, i);
+					 Layer singleLayer = transform.apply(layer);
+					 outputs.add(singleLayer);
+				}
 
-			//insert a composite RGB(A) layer as the 0th layer
-			if (dataset.GetDriver().getShortName().equals("PNG") || dataset.GetDriver().getShortName().equals("JPEG") || dataset.GetDriver().getShortName().equals("JPG"))
-			{
-				outputs.add(0, layer);
+				//insert a composite RGB(A) layer as the 0th layer
+				if (dataset.GetDriver().getShortName().equals("PNG") || dataset.GetDriver().getShortName().equals("JPEG") || dataset.GetDriver().getShortName().equals("JPG"))
+				{
+					outputs.add(0, layer);
+				}
+				SwingUtilities.invokeLater(() -> {
+					dataset.delete();
+				});
+
 			}
-		}
-		else
-		{
-			DataSource datasource = ogr.Open(filename);
+			else
+			{
+				DataSource datasource = ogr.Open(filename);
+			}
 		}
 	}
 
