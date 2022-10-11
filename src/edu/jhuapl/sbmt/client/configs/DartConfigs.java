@@ -903,7 +903,7 @@ public class DartConfigs extends SmallBodyViewConfigBuilder
 
         return c;
     }
-    
+
     protected void init(ShapeModelBody body, ShapeModelType author, ShapeModelDataUsed dataUsed, String label)
     {
         init();
@@ -938,11 +938,9 @@ public class DartConfigs extends SmallBodyViewConfigBuilder
         String tablePrefix = dbTablePrefix(body, author, instrument);
 
         String lcInstrument = instrument.name().toLowerCase();
-        System.out.println("DartConfigs: createFlightInstrument: lcInstrument " + lcInstrument);
 
         String modelImageDir = modelTopDir(body, author) + "/" + lcInstrument;
         String imageDataDir = "/dart/" + lcInstrument;
-        System.out.println("DartConfigs: createFlightInstrument: imageDatadir " + imageDataDir);
 
         return createFlightInstrument(instrument, tablePrefix, modelImageDir, imageDataDir, rotation, flip, transpose, sources);
     }
@@ -977,7 +975,6 @@ public class DartConfigs extends SmallBodyViewConfigBuilder
         {
             sources = new ImageSource[] { ImageSource.GASKELL };
         }
-        System.out.println("DartConfigs: createFlightInstrument: trying to reference image direction " + imageDataDir + "/images");
         return new ImagingInstrument(spectralImageMode, //
                 new GenericPhpQuery(modelImageDir, tablePrefix, tablePrefix, imageDataDir + "/gallery", imageDataDir + "/images"), //
                 imageType, //
