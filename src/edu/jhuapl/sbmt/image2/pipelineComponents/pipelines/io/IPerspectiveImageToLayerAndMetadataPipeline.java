@@ -1,5 +1,6 @@
 package edu.jhuapl.sbmt.image2.pipelineComponents.pipelines.io;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
@@ -49,15 +50,8 @@ public class IPerspectiveImageToLayerAndMetadataPipeline
 	{
 		IPipelinePublisher<Layer> reader = null;
 		String fileName = image.getFilename();
-		DownloadableFileState state = FileCache.getState(fileName);
-		if (state.isDownloadNecessary())
-		{
+		if (!new File(fileName).exists())
 			fileName = FileCache.getFileFromServer(image.getFilename()).getAbsolutePath();
-		}
-		else
-		{
-			fileName = state.getFileState().getFile().getAbsolutePath();
-		}
 		CylindricalBounds bounds = image.getBounds();
 
 		if (FilenameUtils.getExtension(fileName).toLowerCase().equals("fit") || FilenameUtils.getExtension(fileName).toLowerCase().equals("fits"))
