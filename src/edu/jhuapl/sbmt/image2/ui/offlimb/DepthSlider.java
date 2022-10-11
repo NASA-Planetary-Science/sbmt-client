@@ -25,10 +25,10 @@ public class DepthSlider<G1> extends JSlider
 			double value = getValue();
 			double sliderRange = getMaximum() - getMinimum();
 			double imgRange = depthMax - depthMin;
-			System.out.println("DepthSlider: getDepthValue: slide range " + sliderRange);
-			System.out.println("DepthSlider: getDepthValue: img range " + imgRange);
-			System.out.println("DepthSlider: getDepthValue: value is " + value + " min " + getMinimum());
-			System.out.println("DepthSlider: getDepthValue: returning " + ((int) ((value - getMinimum()) * (imgRange/sliderRange) + depthMin)));
+//			System.out.println("DepthSlider: getDepthValue: slide range " + sliderRange);
+//			System.out.println("DepthSlider: getDepthValue: img range " + imgRange);
+//			System.out.println("DepthSlider: getDepthValue: value is " + value + " min " + getMinimum());
+//			System.out.println("DepthSlider: getDepthValue: returning " + ((int) ((value - getMinimum()) * (imgRange/sliderRange) + depthMin)));
 			return (int) ((value - getMinimum()) * (imgRange/sliderRange) + depthMin);
 		}
 

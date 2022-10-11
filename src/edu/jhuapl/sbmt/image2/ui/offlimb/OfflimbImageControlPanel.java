@@ -5,6 +5,7 @@ import java.awt.GridBagLayout;
 
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
+import javax.swing.JCheckBox;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 
@@ -25,6 +26,7 @@ public class OfflimbImageControlPanel extends JPanel
 //    private JLabel imageContrastValue;
 //    private ContrastSlider imageContrastSlider;
 
+    private JCheckBox showOfflimbButton;
     private ShowBoundaryButton showBoundaryButton;
 //    private ColorChooser boundaryColorPicker;
     private JButton chooseBoundaryColorBtn;
@@ -65,6 +67,10 @@ public class OfflimbImageControlPanel extends JPanel
         footprintTransparencySlider.setValue(50);
         transparencyPanel.add(footprintTransparencySlider);
 
+        JPanel buttonPanel = new JPanel();
+
+        showOfflimbButton = new JCheckBox("Show Offlimb");
+        buttonPanel.add(showOfflimbButton);
 //        JPanel contrastPanel = new JPanel();
 //        contrastPanel.setLayout(new BoxLayout(contrastPanel, BoxLayout.X_AXIS));
 //        imageContrastLabel = new JLabel("Off-limb Contrast:");
@@ -77,7 +83,6 @@ public class OfflimbImageControlPanel extends JPanel
         syncContrastButton = new SyncContrastSlidersButton();
 //        contrastPanel.add(imageContrastSlider);
 
-        JPanel buttonPanel = new JPanel();
 //        syncContrastButton = syncButton;
         buttonPanel.add(syncContrastButton);
 
@@ -148,6 +153,11 @@ public class OfflimbImageControlPanel extends JPanel
 //    {
 //        return imageContrastSlider;
 //    }
+
+    public JCheckBox getShowOfflimbButton()
+    {
+        return showOfflimbButton;
+    }
 
     public ShowBoundaryButton getShowBoundaryButton()
     {

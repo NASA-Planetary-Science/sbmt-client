@@ -25,7 +25,6 @@ import edu.jhuapl.saavtk.util.SafeURLPaths;
 import edu.jhuapl.saavtk.util.ThreadService;
 import edu.jhuapl.sbmt.common.client.SmallBodyModel;
 import edu.jhuapl.sbmt.core.image.PointingFileReader;
-import edu.jhuapl.sbmt.image2.pipelineComponents.VTKDebug;
 import edu.jhuapl.sbmt.image2.pipelineComponents.operators.rendering.pointedImage.RenderablePointedImage;
 import edu.jhuapl.sbmt.image2.pipelineComponents.pipelines.io.LoadPolydataFromCachePipeline;
 import edu.jhuapl.sbmt.image2.pipelineComponents.pipelines.io.SavePolydataToCachePipeline;
@@ -72,7 +71,7 @@ public class OfflimbPlaneGeneratorOperators extends BasePipelineOperator<Rendera
 
 		//check for an existing footprint first
 		imagePolyData = LoadPolydataFromCachePipeline.of(offLimbImageDataFileName).orNull();
-		if (imagePolyData == null)
+//		if (imagePolyData == null)
 		{
 			imagePolyData=new vtkPolyData();
 			processStep1();
