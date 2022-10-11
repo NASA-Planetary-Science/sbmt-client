@@ -205,6 +205,7 @@ public class ImageSearchController<G1 extends IPerspectiveImage & IPerspectiveIm
 			frame.setSize(775, 900);
 			frame.setTitle("Create Color Image");
 			frame.setVisible(true);
+			frame.setAlwaysOnTop(true);
 			frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 		});
 
@@ -419,6 +420,7 @@ public class ImageSearchController<G1 extends IPerspectiveImage & IPerspectiveIm
 				frame.setSize(775, 900);
 				frame.setTitle("Edit Color Image");
 				frame.setVisible(true);
+				frame.setAlwaysOnTop(true);
 				frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 			}
 			else //editing custom n > 1, n!=3 spectral image

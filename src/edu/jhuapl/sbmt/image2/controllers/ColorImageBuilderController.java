@@ -64,6 +64,10 @@ public class ColorImageBuilderController<G1 extends IPerspectiveImage & IPerspec
 			}
 		});
 
+		panel.getCancelButton().addActionListener(e -> {
+			SwingUtilities.getWindowAncestor(panel).setVisible(false);
+		});
+
 		panel.getSaveAndCloseButton().addActionListener(e -> {
 
 			existingImage.ifPresent(image -> imageCollection.removeUserImage(image));
