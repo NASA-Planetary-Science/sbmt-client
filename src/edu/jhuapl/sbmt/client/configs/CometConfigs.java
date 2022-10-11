@@ -124,7 +124,7 @@ public class CometConfigs extends SmallBodyViewConfig
                             SumFiles, //
                             Instrument.valueFor("ITS"), //
                             0.0, //
-                            "Y"), //
+                            "X"), //
                     new ImagingInstrument( //
                             SpectralImageMode.MONO, //
                             new FixedListQuery<>(hriDir), //
@@ -134,7 +134,7 @@ public class CometConfigs extends SmallBodyViewConfig
                             SumFiles, //
                             Instrument.valueFor("HRI"), //
                             0.0, //
-                            "Y"), //
+                            "X"), //
                     new ImagingInstrument( //
                             SpectralImageMode.MONO, //
                             new FixedListQuery<>(mriDir), //
@@ -144,7 +144,7 @@ public class CometConfigs extends SmallBodyViewConfig
                             SumFiles, //
                             Instrument.valueFor("MRI"), //
                             0.0, //
-                            "Y"), //
+                            "X"), //
                     new ImagingInstrument( //
                             SpectralImageMode.MONO, //
                             new FixedListQuery<>(navcamDir), //
@@ -154,7 +154,7 @@ public class CometConfigs extends SmallBodyViewConfig
                             SumFiles, //
                             Instrument.valueFor("NAVCAM"), //
                             0.0, //
-                            "X"), //
+                            "Y"), //
             };
 
             c.imageSearchDefaultStartDate = ImageSearchDefaultStartDate;
@@ -378,8 +378,9 @@ public class CometConfigs extends SmallBodyViewConfig
                             //new FixedListQuery("/GASKELL/67P_V3/IMAGING"), //
                             ImageType.OSIRIS_IMAGE, //
                             new ImageSource[]{ImageSource.GASKELL}, //
-                            Instrument.OSIRIS //
-                            ) //
+                            Instrument.OSIRIS, //
+                            0.0, //
+            				"Y"), //
             };
             c.imageSearchDefaultStartDate = new GregorianCalendar(2014, 6, 1, 0, 0, 0).getTime();
             c.imageSearchDefaultEndDate = new GregorianCalendar(2016, 0, 31, 0, 0, 0).getTime();

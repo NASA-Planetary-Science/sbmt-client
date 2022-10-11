@@ -375,7 +375,7 @@ public class DartConfigs extends SmallBodyViewConfigBuilder
                         ImageType.valueOf("DRACO_IMAGE"), //
                         InfoFiles, //
                         Instrument.DRACO, //
-                        270., //
+                        90., //
                         "None", //
                         DracoTestFillValues //
                 ),
@@ -385,7 +385,7 @@ public class DartConfigs extends SmallBodyViewConfigBuilder
                         ImageType.valueOf("LEIA_IMAGE"), //
                         InfoFilesAndCorrectedInfoFiles, //
                         Instrument.LEIA, //
-                        270., //
+                        90., //
                         "None", //
                         LeiaFillValues //
                 ),
@@ -395,7 +395,7 @@ public class DartConfigs extends SmallBodyViewConfigBuilder
                         ImageType.valueOf("LUKE_IMAGE"), //
                         InfoFiles, //
                         Instrument.LUKE, //
-                        270., //
+                        90., //
                         "None", //
                         LukeFillValues //
                 ),
