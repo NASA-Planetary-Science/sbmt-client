@@ -1,6 +1,5 @@
 package edu.jhuapl.sbmt.image2.pipelineComponents.pipelines.pointedImages;
 
-import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
@@ -81,7 +80,7 @@ public class RenderablePointedImageToScenePipeline<G1 extends IPerspectiveImage 
 		pointingFile = image.getPointingSource();
 		modifiedPointingFile = Optional.ofNullable(null);
 		if (image.getModifiedPointingSource().isPresent()) modifiedPointingFile = image.getModifiedPointingSource();
-		if (!new File(filename).exists())
+		if (FileCache.getState(filename).isDownloadNecessary())
 		{
 			filename = FileCache.getFileFromServer(image.getFilename()).getAbsolutePath();
 			pointingFile = FileCache.getFileFromServer(image.getPointingSource()).getAbsolutePath();
@@ -89,6 +88,11 @@ public class RenderablePointedImageToScenePipeline<G1 extends IPerspectiveImage 
 //			{
 //				modifiedPointingFile = Optional.of(FileCache.getFileFromServer(image.getModifiedPointingSource().get()).getAbsolutePath());
 //			}
+		}
+		else
+		{
+			filename = FileCache.getState(filename).getFileState().getFile().getAbsolutePath();
+			pointingFile = FileCache.getState(pointingFile).getFileState().getFile().getAbsolutePath();
 		}
 
 		flip = image.getFlip();
@@ -105,7 +109,7 @@ public class RenderablePointedImageToScenePipeline<G1 extends IPerspectiveImage 
 	private IPipelinePublisher<PointingFileReader> generatePointing(String pointingFile) throws IOException
 	{
 		IPipelinePublisher<PointingFileReader> pointingPublisher = null;
-		if (image.getPointingSourceType() == ImageSource.SPICE || image.getPointingSourceType() == ImageSource.CORRECTED_SPICE || pointingFile.endsWith(".adjusted"))
+		if (image.getPointingSourceType() == ImageSource.SPICE || image.getPointingSourceType() == ImageSource.CORRECTED_SPICE || pointingFile.endsWith(".adjusted") || pointingFile.endsWith(".INFO"))
 			pointingPublisher = new InfofileReaderPublisher(pointingFile);
 		else
 			pointingPublisher = new SumfileReaderPublisher(pointingFile);

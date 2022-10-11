@@ -45,7 +45,7 @@ public class VTKDebug
 	public static void previewVtkImageData(vtkImageData imageData, String title) throws Exception
 	{
 		Just.of(imageData)
-			.subscribe(new VtkImagePreview(title))
+			.subscribe(new VtkImagePreview(title, new HashMap<String, String>(), false))
 			.run();
 	}
 }

@@ -49,6 +49,10 @@ public class CompositePerspectiveImage implements IPerspectiveImage, IPerspectiv
 	private CylindricalBounds bounds = null;
 
 	private static final Key<List<IPerspectiveImage>> IMAGES_KEY = Key.of("images");
+	private static final Key<Boolean> MAPPED_KEY = Key.of("imageMapped");
+	private static final Key<Boolean> FRUSTUM_KEY = Key.of("frustumShowing");
+	private static final Key<Boolean> BOUNDARY_KEY = Key.of("boundaryShowing");
+	private static final Key<Boolean> OFFLIMB_SHOWING_KEY = Key.of("offlimbShowing");
 	private static final Key<CompositePerspectiveImage> COMPOSITE_PERSPECTIVE_IMAGE_KEY = Key.of("compositePerspectiveImage");
 
 	List<IPerspectiveImage> images;
@@ -441,11 +445,19 @@ public class CompositePerspectiveImage implements IPerspectiveImage, IPerspectiv
 		InstanceGetter.defaultInstanceGetter().register(COMPOSITE_PERSPECTIVE_IMAGE_KEY, (metadata) -> {
 		CompositePerspectiveImage compositeImage = new CompositePerspectiveImage();
 		List<IPerspectiveImage> images = metadata.get(IMAGES_KEY);
+		compositeImage.setMapped(metadata.get(MAPPED_KEY));
+		compositeImage.setBoundaryShowing(metadata.get(BOUNDARY_KEY));
+		compositeImage.setFrustumShowing(metadata.get(FRUSTUM_KEY));
+		compositeImage.setOfflimbShowing(metadata.get(OFFLIMB_SHOWING_KEY));
 		compositeImage.setImages(images);
 		return compositeImage;
 
 		}, CompositePerspectiveImage.class, image -> {
 			SettableMetadata result = SettableMetadata.of(Version.of(1, 0));
+			result.put(MAPPED_KEY, image.isMapped());
+			result.put(BOUNDARY_KEY, image.isBoundaryShowing());
+			result.put(FRUSTUM_KEY, image.isFrustumShowing());
+			result.put(OFFLIMB_SHOWING_KEY, image.isOfflimbShowing());
 			result.put(IMAGES_KEY, image.getImages());
 		    return result;
 		});

@@ -33,15 +33,18 @@ public class ImageTrimController
 	private JPanel panel;
 	private VtkImageTrimPipeline trimPipeline;
 	private Function<Layer, Void> completionBlock;
+	private int[] currentMaskValues;
 
-	public ImageTrimController(Layer layer, Function<Layer, Void> completionBlock)
+	public ImageTrimController(Layer layer, int[] currentMaskValues, Function<Layer, Void> completionBlock)
 	{
 		this.layer = layer;
 		this.trimPipeline = new VtkImageTrimPipeline();
 		this.panel = new JPanel();
 		this.completionBlock = completionBlock;
+		this.currentMaskValues = currentMaskValues;
 		panel.setLayout(new GridBagLayout());
 		initGUI();
+		croppingChanged();
 	}
 
 	public JPanel getView()
@@ -53,8 +56,8 @@ public class ImageTrimController
 	{
 		leftSpinner.setValue((int)maskValues[0]);
 		rightSpinner.setValue((int)maskValues[1]);
-		bottomSpinner.setValue((int)maskValues[2]);
-		topSpinner.setValue((int)maskValues[3]);
+		bottomSpinner.setValue((int)maskValues[3]);
+		topSpinner.setValue((int)maskValues[2]);
 		croppingChanged();
 	}
 
@@ -80,7 +83,7 @@ public class ImageTrimController
 		jPanel1.setAlignmentX(0.0F);
 		jPanel1.setLayout(new GridBagLayout());
 
-		leftSpinner.setModel(new SpinnerNumberModel(Integer.valueOf(0), Integer.valueOf(0), null, Integer.valueOf(1)));
+		leftSpinner.setModel(new SpinnerNumberModel(Integer.valueOf(currentMaskValues[0]), Integer.valueOf(0), null, Integer.valueOf(1)));
 		leftSpinner.setPreferredSize(new Dimension(60, 28));
 		leftSpinner.addChangeListener(evt ->
 		{
@@ -97,7 +100,7 @@ public class ImageTrimController
 		jPanel1.add(leftSpinner, gridBagConstraints);
 
 		bottomSpinner
-				.setModel(new SpinnerNumberModel(Integer.valueOf(0), Integer.valueOf(0), null, Integer.valueOf(1)));
+				.setModel(new SpinnerNumberModel(Integer.valueOf(currentMaskValues[3]), Integer.valueOf(0), null, Integer.valueOf(1)));
 		bottomSpinner.setPreferredSize(new Dimension(60, 28));
 		bottomSpinner.addChangeListener(evt ->
 		{
@@ -121,7 +124,7 @@ public class ImageTrimController
 		gridBagConstraints.insets = new Insets(0, 0, 0, 2);
 		jPanel1.add(jLabel3, gridBagConstraints);
 
-		rightSpinner.setModel(new SpinnerNumberModel(Integer.valueOf(0), Integer.valueOf(0), null, Integer.valueOf(1)));
+		rightSpinner.setModel(new SpinnerNumberModel(Integer.valueOf(currentMaskValues[1]), Integer.valueOf(0), null, Integer.valueOf(1)));
 		rightSpinner.setPreferredSize(new Dimension(60, 28));
 		rightSpinner.addChangeListener(new ChangeListener()
 		{
@@ -139,7 +142,7 @@ public class ImageTrimController
 		gridBagConstraints.insets = new Insets(0, 0, 0, 10);
 		jPanel1.add(rightSpinner, gridBagConstraints);
 
-		topSpinner.setModel(new SpinnerNumberModel(Integer.valueOf(0), Integer.valueOf(0), null, Integer.valueOf(1)));
+		topSpinner.setModel(new SpinnerNumberModel(Integer.valueOf(currentMaskValues[2]), Integer.valueOf(0), null, Integer.valueOf(1)));
 		topSpinner.setPreferredSize(new Dimension(60, 28));
 		topSpinner.addChangeListener(new ChangeListener()
 		{
@@ -203,7 +206,7 @@ public class ImageTrimController
 	public int[] getMaskValues()
 	{
 		return new int[] {(int)leftSpinner.getValue(), (int)rightSpinner.getValue(),
-				(int)bottomSpinner.getValue(), (int)topSpinner.getValue()};
+				(int)topSpinner.getValue(), (int)bottomSpinner.getValue()};
 	}
 
 	private void croppingChanged()
@@ -212,7 +215,7 @@ public class ImageTrimController
 		{
 			trimPipeline.run(layer,
 					(int)leftSpinner.getValue(), (int)rightSpinner.getValue(),
-					(int)bottomSpinner.getValue(), (int)topSpinner.getValue());
+					(int)topSpinner.getValue(), (int)bottomSpinner.getValue());
 			completionBlock.apply(trimPipeline.getUpdatedData().get(0));
 		}
 		catch (Exception e)

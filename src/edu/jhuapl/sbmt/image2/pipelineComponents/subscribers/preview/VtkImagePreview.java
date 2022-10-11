@@ -1,6 +1,7 @@
 package edu.jhuapl.sbmt.image2.pipelineComponents.subscribers.preview;
 
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.List;
 
 import vtk.vtkImageData;
@@ -13,10 +14,13 @@ public class VtkImagePreview implements IPipelineSubscriber<vtkImageData>
 {
 	private IPipelinePublisher<vtkImageData> publisher;
 	private String title;
+	private HashMap<String, String> metadata;
+	private boolean showContrast = false;
 
-	public VtkImagePreview(String title)
+	public VtkImagePreview(String title, HashMap<String, String> metadata, boolean showContrast)
 	{
 		this.title = title;
+		this.metadata = metadata;
 	}
 
 	@Override
@@ -24,7 +28,7 @@ public class VtkImagePreview implements IPipelineSubscriber<vtkImageData>
 	{
 		try
 		{
-			new ImagePreviewPanel(title, items.get(0));
+			new ImagePreviewPanel(title, items.get(0), metadata, showContrast);
 		}
 		catch (Exception e)
 		{

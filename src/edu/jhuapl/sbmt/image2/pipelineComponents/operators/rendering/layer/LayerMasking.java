@@ -25,6 +25,6 @@ public class LayerMasking
 
 	public int[] getMask()
 	{
-		return new int[] {top, left, bottom, right};
+		return new int[] {left, right, top, bottom};
 	}
 }

@@ -22,6 +22,7 @@ public class ColorImageBuilderPanel extends JPanel
 	private SingleImagePreviewPanel bluePreview;
 	private JButton saveAndCloseButton;
 	private JButton previewButton;
+	private JButton cancelButton;
 
 	public ColorImageBuilderPanel(List<SmallBodyModel> smallBodyModels)
 	{
@@ -73,9 +74,10 @@ public class ColorImageBuilderPanel extends JPanel
 		panel.setLayout(new BoxLayout(panel, BoxLayout.X_AXIS));
 
 		previewButton = new JButton("Preview");
-
+		cancelButton = new JButton("Close");
 		saveAndCloseButton = new JButton("Save and Close");
 		panel.add(previewButton);
+		panel.add(cancelButton);
 		panel.add(saveAndCloseButton);
 
 		return panel;
@@ -108,6 +110,11 @@ public class ColorImageBuilderPanel extends JPanel
 	public JButton getPreviewButton()
 	{
 		return previewButton;
+	}
+
+	public JButton getCancelButton()
+	{
+		return cancelButton;
 	}
 
 	/**

@@ -37,9 +37,9 @@ import edu.jhuapl.sbmt.core.image.ImageType;
 import edu.jhuapl.sbmt.core.image.PointingFileReader;
 import edu.jhuapl.sbmt.image2.interfaces.IPerspectiveImage;
 import edu.jhuapl.sbmt.image2.interfaces.IPerspectiveImageTableRepresentable;
-import edu.jhuapl.sbmt.image2.pipelineComponents.operators.rendering.ImageRenderable;
 import edu.jhuapl.sbmt.image2.pipelineComponents.operators.rendering.vtk.LowResolutionBoundaryOperator;
 import edu.jhuapl.sbmt.image2.pipelineComponents.pipelines.ImagePipelineFactory;
+import edu.jhuapl.sbmt.image2.pipelineComponents.pipelines.ImageToScenePipeline;
 import edu.jhuapl.sbmt.image2.pipelineComponents.pipelines.cylindricalImages.RenderableCylindricalImageToScenePipeline;
 import edu.jhuapl.sbmt.image2.pipelineComponents.pipelines.pointedImages.RenderablePointedImageToScenePipeline;
 import edu.jhuapl.sbmt.image2.pipelineComponents.pipelines.rendering.RenderableImageActorPipeline;
@@ -74,6 +74,7 @@ public class PerspectiveImageCollection<G1 extends IPerspectiveImage & IPerspect
 	private IImagingInstrument imagingInstrument;
 	private IdPair currentBoundaryRange = new IdPair(0, 9);
 	private int currentBoundaryOffsetAmount = 10;
+	private boolean firstCustomLoad = true;
 
 	public PerspectiveImageCollection(List<SmallBodyModel> smallBodyModels)
 	{
@@ -129,12 +130,10 @@ public class PerspectiveImageCollection<G1 extends IPerspectiveImage & IPerspect
 		state.boundaryColor = color;
 		renderingStates.put(image,state);
 		updateUserList();	//update the user created list, stored in metadata
-//		setAllItems(userImages);
 	}
 
 	public void loadUserList()
 	{
-//		if (userImages.size() != 0) return;
 		userImages.clear();
 		String instrumentName = ""; //imagingInstrument == null ? "" : imagingInstrument.getType().toString();
 		String filename = smallBodyModels.get(0).getCustomDataFolder() + File.separator + "userImages" + instrumentName + ".txt";
@@ -147,13 +146,18 @@ public class PerspectiveImageCollection<G1 extends IPerspectiveImage & IPerspect
             userImages = read(userImagesKey, metadata);
             for (G1 image : userImages)
             {
-            	PerspectiveImageRenderingState<G1> state = new PerspectiveImageRenderingState<G1>();
-            	state.isMapped = image.isMapped();
-            	if (image.isMapped()) image.setStatus("Loaded");
-            	state.isFrustumShowing = image.isFrustumShowing();
-            	state.isBoundaryShowing = image.isBoundaryShowing();
-            	state.isOfflimbShowing = image.isOfflimbShowing();
+            	PerspectiveImageRenderingState<G1> state = renderingStates.get(image);
+            	if (state == null) state = new PerspectiveImageRenderingState<G1>();
+            	if (firstCustomLoad == false)
+            	{
+            		state.isMapped = image.isMapped();
+	            	if (image.isMapped()) image.setStatus("Loaded");
+	            	state.isFrustumShowing = image.isFrustumShowing();
+	            	state.isBoundaryShowing = image.isBoundaryShowing();
+	            	state.isOfflimbShowing = image.isOfflimbShowing();
+            	}
         		renderingStates.put(image,state);
+
         		//TODO leaving this here for now, in case I want to implement something like Nobes does for dtms
 //        		updateImage(image);
             }
@@ -821,8 +825,8 @@ public class PerspectiveImageCollection<G1 extends IPerspectiveImage & IPerspect
 		this.imagingInstrument = imagingInstrument;
 		if (imagingInstrument == null)
 		{
-
 			setAllItems(userImages);
+			firstCustomLoad = false;
 		}
 		else if (imagesByInstrument.get(imagingInstrument) == null)
 		{
@@ -846,49 +850,53 @@ public class PerspectiveImageCollection<G1 extends IPerspectiveImage & IPerspect
 			{
 				try
 				{
-//					List<IRenderableImage> renderableImages;
-//					System.out.println(
-//							"PerspectiveImageCollection.getBoundaryCreationThread(...).new Runnable() {...}: run: making pipeline");
-//					if (image.getImageType() != ImageType.GENERIC_IMAGE && image.getPointingSourceType() != ImageSource.LOCAL_CYLINDRICAL)
-//					{
-//						PerspectiveImageToRenderableImagePipeline pipeline = new PerspectiveImageToRenderableImagePipeline(List.of(image));
-//						renderableImages = pipeline.getRenderableImages();
-//					}
-//					else
-//					{
-//						renderableImages = CylindricalImageToRenderableImagePipeline.of(List.of(image)).getRenderableImages();
-//					}
-
-					String pointingFile = image.getPointingSource();
-
-					if (!new File(pointingFile).exists())
-					{
-						pointingFile = FileCache.getFileFromServer(image.getPointingSource()).getAbsolutePath();
-					}
-
-					//generate image pointing (in: filename, out: ImagePointing)
-					IPipelinePublisher<PointingFileReader> pointingPublisher = null;
-					if (image.getPointingSourceType() == ImageSource.SPICE || image.getPointingSourceType() == ImageSource.CORRECTED_SPICE)
-						pointingPublisher = new InfofileReaderPublisher(pointingFile);
-					else
-						pointingPublisher = new SumfileReaderPublisher(pointingFile);
-
 					List<vtkActor> boundaryActors = Lists.newArrayList();
-					if (ImageRenderable.USE_PRECISE_BOUNDARY)
+					//Only draw the close up border for color images
+					if (image.getNumberOfLayers() == 3)
 					{
-	//					Just.of(Pair.of(renderableImages.get(0).get, smallBodyModels))
-	//						.operate(new HighResolutionBoundaryOperator())
-	//						.subscribe(Sink.of(boundaryActors))
-	//						.run();
+						ImageToScenePipeline colorPipeline = ImagePipelineFactory.of(image, smallBodyModels);
+						boundaryActors = colorPipeline.getRenderableImageBoundaryActors();
+
+//						List<IRenderableImage> renderableImages;
+//						ImageRenderable imageRenderable;
+//						if (image.getImageType() != ImageType.GENERIC_IMAGE && image.getPointingSourceType() != ImageSource.LOCAL_CYLINDRICAL)
+//						{
+//							PerspectiveImageToRenderableImagePipeline pipeline = new PerspectiveImageToRenderableImagePipeline(List.of(image));
+//							renderableImages = pipeline.getRenderableImages();
+//							imageRenderable = new PointedImageRenderables((RenderablePointedImage)renderableImages.get(0), smallBodyModels);
+//						}
+//						else
+//						{
+//							renderableImages = CylindricalImageToRenderableImagePipeline.of(List.of(image)).getRenderableImages();
+//							imageRenderable = new CylindricalImageRenderables((RenderableCylindricalImage)renderableImages.get(0), smallBodyModels);
+//						}
+//						Just.of(Pair.of(imageRenderable.getFootprintPolyData(), smallBodyModels))
+//							.operate(new HighResolutionBoundaryOperator())
+//							.subscribe(Sink.of(boundaryActors))
+//							.run();
 					}
 					else
 					{
+						String pointingFile = image.getPointingSource();
+
+						if (!new File(pointingFile).exists())
+						{
+							pointingFile = FileCache.getFileFromServer(image.getPointingSource()).getAbsolutePath();
+						}
+
+						//generate image pointing (in: filename, out: ImagePointing)
+						IPipelinePublisher<PointingFileReader> pointingPublisher = null;
+						if (image.getPointingSourceType() == ImageSource.SPICE || image.getPointingSourceType() == ImageSource.CORRECTED_SPICE)
+							pointingPublisher = new InfofileReaderPublisher(pointingFile);
+						else
+							pointingPublisher = new SumfileReaderPublisher(pointingFile);
 						Just.of(Pair.of(pointingPublisher.getOutput(), smallBodyModels))
 							.operate(new LowResolutionBoundaryOperator())
 							.subscribe(Sink.of(boundaryActors))
 							.run();
-						boundaryRenderers.put(image, boundaryActors);
 					}
+					boundaryRenderers.put(image, boundaryActors);
+//					setImageBoundaryColor(image, Color.red);
 					completionBlock.apply(null);
 				}
 				catch (Exception e)

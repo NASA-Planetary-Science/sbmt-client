@@ -89,12 +89,15 @@ public class CustomImageImporterDialog2<G1 extends IPerspectiveImage & IPerspect
 	        }
 			List<G1> tempImages = Lists.newArrayList();
 			int index = 1;
+			boolean showPointingFileNotFoundDialog = false;
  			for (File file : files)
 			{
  				G1 image;
 				try
 				{
 					image = resolvePointingFilename(file.getAbsolutePath());
+					if (image.getPointingSource().equals("FILE NOT FOUND"))
+						showPointingFileNotFoundDialog = true;
 					image.setIndex(index++);
 					tempImages.add(image);
 				}
@@ -105,6 +108,10 @@ public class CustomImageImporterDialog2<G1 extends IPerspectiveImage & IPerspect
 				}
 
 			}
+ 			if (showPointingFileNotFoundDialog)
+ 			{
+ 				JOptionPane.showMessageDialog(this, "Pointing file(s) not found. Review table and edit the imported images to find the pointing(s).");
+ 			}
  			tempCollection.setAllItems(tempImages);
 		});
 
@@ -415,12 +422,12 @@ public class CustomImageImporterDialog2<G1 extends IPerspectiveImage & IPerspect
 			else
 			{
 				newPointingFilepath = "FILE NOT FOUND";
-				JOptionPane.showMessageDialog(this, "No pointing found; please click OK to select a file");
-				File newPointingFile = CustomFileChooser.showOpenDialog(this, "Can't determine pointing file - please choose one");
-		        if (newPointingFile != null)
-		        {
-		            newPointingFilepath = newPointingFile.getAbsolutePath();
-		        }
+//				JOptionPane.showMessageDialog(this, "No pointing found; please click OK to select a file");
+//				File newPointingFile = CustomFileChooser.showOpenDialog(this, "Can't determine pointing file - please choose one");
+//		        if (newPointingFile != null)
+//		        {
+//		            newPointingFilepath = newPointingFile.getAbsolutePath();
+//		        }
 			}
 			String extension = FilenameUtils.getExtension(pointingSource).toLowerCase();
 			pointingSourceType = extension.equals("sum") ? ImageSource.GASKELL : ImageSource.SPICE;
