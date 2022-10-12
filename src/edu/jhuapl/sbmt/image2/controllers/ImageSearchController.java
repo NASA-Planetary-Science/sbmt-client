@@ -49,6 +49,7 @@ import edu.jhuapl.sbmt.image2.pipelineComponents.pipelines.io.SaveImagesToSavedF
 import edu.jhuapl.sbmt.image2.ui.custom.importer.CustomImageImporterDialog;
 import edu.jhuapl.sbmt.image2.ui.custom.importer.CustomImageImporterDialog2;
 import edu.jhuapl.sbmt.image2.ui.table.popup.ImageListPopupMenu;
+import edu.jhuapl.sbmt.util.ImageGalleryGenerator;
 
 import glum.gui.action.PopupMenu;
 
@@ -307,7 +308,14 @@ public class ImageSearchController<G1 extends IPerspectiveImage & IPerspectiveIm
 		imageListTableController.getPanel().getGalleryButton().addActionListener(e -> {
 			try
 			{
-				ImageGalleryPipeline.of(instrument, collection.getAllItems());
+				if (collection.getSelectedItems().size() == 0)
+					ImageGalleryPipeline.of(instrument, collection.getAllItems());
+				else
+				{
+					List<G1> selectedList = Lists.newArrayList();
+					selectedList.addAll(collection.getSelectedItems());
+					ImageGalleryPipeline.of(instrument, selectedList);
+				}
 			}
 			catch (Exception e1)
 			{
@@ -324,6 +332,9 @@ public class ImageSearchController<G1 extends IPerspectiveImage & IPerspectiveIm
 //	        dialog.setLocationRelativeTo(imageListTableController.getPanel());
 //	        dialog.setVisible(true);
 //		});
+
+		imageListTableController.getPanel().getGalleryButton().setEnabled(false);
+
 	}
 
 	private void initCustomGUI()
@@ -459,7 +470,10 @@ public class ImageSearchController<G1 extends IPerspectiveImage & IPerspectiveIm
 			imageListTableController.getPanel().getShowImageButton().setEnabled((selectedItems.size() > 0) && !allMapped);
 			imageListTableController.getPanel().getHideImageBorderButton().setEnabled((selectedItems.size() > 0) && allBorders);
 			imageListTableController.getPanel().getShowImageBorderButton().setEnabled((selectedItems.size() > 0) && !allBorders);
-			imageListTableController.getPanel().getGalleryButton().setEnabled(collection.getAllItems().size() > 0);
+			ImageGalleryGenerator.of(instrument, state -> {
+				imageListTableController.getPanel().getGalleryButton().setEnabled(true);
+			});
+//			imageListTableController.getPanel().getGalleryButton().setEnabled(collection.getAllItems().size() > 0);
 		}
 		else
 		{
