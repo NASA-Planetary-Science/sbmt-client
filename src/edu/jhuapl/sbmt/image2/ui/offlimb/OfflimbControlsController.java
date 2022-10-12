@@ -74,7 +74,7 @@ public class OfflimbControlsController<G1 extends IPerspectiveImage & IPerspecti
 //		controlsModel = new OfflimbControlsModel(image, currentSlice);
 
 		controlsPanel = new OfflimbImageControlPanel();
-
+		controlsPanel.getShowOfflimbButton().setSelected(collection.getImageOfflimbShowing(image));
 //		controlsModel.addModelChangedListener(new OfflimbModelChangedListener()
 //		{
 //
@@ -162,7 +162,11 @@ public class OfflimbControlsController<G1 extends IPerspectiveImage & IPerspecti
 			@Override
 			public void stateChanged(ChangeEvent e)
 			{
-				if (e.getSource() == controlsPanel.getFootprintDepthSlider() && !controlsPanel.getFootprintDepthSlider().getValueIsAdjusting())
+				if (e.getSource() == controlsPanel.getShowOfflimbButton())
+				{
+					collection.setImageOfflimbShowing(image, controlsPanel.getShowOfflimbButton().isSelected());
+				}
+				else if (e.getSource() == controlsPanel.getFootprintDepthSlider() && !controlsPanel.getFootprintDepthSlider().getValueIsAdjusting())
 				{
 					DepthSlider<G1> depthSlider = controlsPanel.getFootprintDepthSlider();
 					RenderablePointedImage renderableImage = (RenderablePointedImage)renderableImages.get(0);
@@ -204,6 +208,7 @@ public class OfflimbControlsController<G1 extends IPerspectiveImage & IPerspecti
 			}
 		};
 
+		controlsPanel.getShowOfflimbButton().addChangeListener(changeListener);
 		controlsPanel.getFootprintDepthSlider().addChangeListener(changeListener);
 		controlsPanel.getFootprintTransparencySlider().addChangeListener(changeListener);
 		controlsPanel.getShowBoundaryButton().addChangeListener(changeListener);
