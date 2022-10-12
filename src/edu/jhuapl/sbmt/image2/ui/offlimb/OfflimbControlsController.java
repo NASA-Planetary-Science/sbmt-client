@@ -3,6 +3,7 @@ package edu.jhuapl.sbmt.image2.ui.offlimb;
 import java.awt.Color;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Function;
@@ -30,12 +31,12 @@ import edu.jhuapl.sbmt.pipeline.subscriber.Sink;
 public class OfflimbControlsController<G1 extends IPerspectiveImage & IPerspectiveImageTableRepresentable>
 {
 	OfflimbImageControlPanel controlsPanel;
-//	OfflimbControlsModel controlsModel;
 	PerspectiveImageCollection<G1> collection;
 	ImageContrastController contrastController;
 	G1 image;
 	List<vtkImageData> displayedImages = new ArrayList<vtkImageData>();
 	List<IRenderableImage> renderableImages;
+	private DecimalFormat formatter = new DecimalFormat("##.##%");
 
 	public OfflimbControlsController(PerspectiveImageCollection<G1> collection, G1 image) throws Exception
 	{
@@ -48,7 +49,7 @@ public class OfflimbControlsController<G1 extends IPerspectiveImage & IPerspecti
 			.subscribe(Sink.of(displayedImages))
 			.run();
 		this.collection = collection;
-
+		collection.setContrastSynced(image, true);
 		this.contrastController = new ImageContrastController(displayedImages.get(0), new IntensityRange(0, 255), new Function<vtkImageData, Void>() {
 
 			@Override
@@ -57,9 +58,6 @@ public class OfflimbControlsController<G1 extends IPerspectiveImage & IPerspecti
 				try
 				{
 					collection.setOffLimbContrastRange(image, contrastController.getIntensityRange());
-//					displayedImages.set(0, t);
-//					updateImage(t);
-//					setIntensity(null);
 				}
 				catch (Exception e)
 				{
@@ -71,88 +69,12 @@ public class OfflimbControlsController<G1 extends IPerspectiveImage & IPerspecti
 			}
 		});
 
-//		controlsModel = new OfflimbControlsModel(image, currentSlice);
-
 		controlsPanel = new OfflimbImageControlPanel();
 		controlsPanel.getShowOfflimbButton().setSelected(collection.getImageOfflimbShowing(image));
-//		controlsModel.addModelChangedListener(new OfflimbModelChangedListener()
-//		{
-//
-//			@Override
-//			public void currentSliceChanged(int slice)
-//			{
-//				// TODO Auto-generated method stub
-//
-//			}
-//
-//			@Override
-//			public void currentDepthChanged(int depth)
-//			{
-//				controlsPanel.getFootprintDepthValue().setText("" + controlsPanel.getFootprintDepthSlider().getValue());
-//			}
-//
-//			@Override
-//			public void currentAlphaChanged(int alpha)
-//			{
-//				controlsPanel.getFootprintTransparencyValue().setText("" + controlsPanel.getFootprintTransparencySlider().getValue());
-//			}
-//
-//			@Override
-//			public void showBoundaryChanged() {
-//				ShowBoundaryButton showBoundaryButton = controlsPanel.getShowBoundaryButton();
-//				showBoundaryButton.showBoundary(showBoundaryButton.isSelected());
-//				collection.setOffLimbBoundaryShowing(image, showBoundaryButton.isSelected());
-////				controlsModel.setShowBoundary(showBoundaryButton.isSelected());
-//			}
-//
-//			@Override
-//			public void syncContrastChanged() {
-//				boolean isSelected = controlsPanel.getSyncContrastButton().isSelected();
-//				controlsPanel.getSyncContrastButton().syncContrast(isSelected);
-//				collection.setContrastSynced(image, isSelected);
-////				controlsModel.setSyncContrast(isSelected);
-//			}
-//
-//
-//		});
+		controlsPanel.getShowBoundaryButton().setSelected(collection.getOffLimbBoundaryShowing(image));
 
 		init();
 	}
-
-//	private void updateImage(vtkImageData displayedImage)
-//	{
-//		double[] center = displayedImage.GetCenter();
-//		int[] dims = displayedImage.GetDimensions();
-//		// Rotate image by 90 degrees so it appears the same way as when you
-//		// use the Center in Image option.
-//		vtkTransform imageTransform = new vtkTransform();
-//		imageTransform.Translate(center[0], center[1], 0.0);
-//		imageTransform.RotateZ(-90.0);
-//		imageTransform.Translate(-center[1], -center[0], 0.0);
-//
-//		vtkImageReslice reslice = new vtkImageReslice();
-//		reslice.SetInputData(displayedImage);
-//		reslice.SetResliceTransform(imageTransform);
-//		reslice.SetInterpolationModeToNearestNeighbor();
-//		reslice.SetOutputSpacing(1.0, 1.0, 1.0);
-//		reslice.SetOutputOrigin(0.0, 0.0, 0.0);
-//		reslice.SetOutputExtent(0, dims[1] - 1, 0, dims[0] - 1, 0, 0);
-//		reslice.Update();
-//
-//		vtkImageSliceMapper imageSliceMapper = new vtkImageSliceMapper();
-//		imageSliceMapper.SetInputConnection(reslice.GetOutputPort());
-//		imageSliceMapper.Update();
-//
-////		actor.SetMapper(imageSliceMapper);
-////		actor.GetProperty().SetInterpolationTypeToLinear();
-//	}
-
-//	private void setIntensity(IntensityRange range) throws IOException, Exception
-//	{
-//		VtkImageContrastPipeline pipeline = new VtkImageContrastPipeline(displayedImages.get(0), null);
-//		displayedImages.set(0, pipeline.getUpdatedData().get(0));
-//		updateImage(displayedImages.get(0));
-//	}
 
 	private void init()
 	{
@@ -165,6 +87,7 @@ public class OfflimbControlsController<G1 extends IPerspectiveImage & IPerspecti
 				if (e.getSource() == controlsPanel.getShowOfflimbButton())
 				{
 					collection.setImageOfflimbShowing(image, controlsPanel.getShowOfflimbButton().isSelected());
+					controlsPanel.getShowBoundaryButton().setSelected(collection.getOffLimbBoundaryShowing(image));
 				}
 				else if (e.getSource() == controlsPanel.getFootprintDepthSlider() && !controlsPanel.getFootprintDepthSlider().getValueIsAdjusting())
 				{
@@ -179,7 +102,8 @@ public class OfflimbControlsController<G1 extends IPerspectiveImage & IPerspecti
 					AlphaSlider<G1> alphaSlider = controlsPanel.getFootprintTransparencySlider();
 					double alphaValue = alphaSlider.getAlphaValue();
 					collection.setOfflimbOpacity(image, alphaValue);
-					controlsPanel.getFootprintTransparencyValue().setText(" " + alphaValue*100 + "%");
+
+					controlsPanel.getFootprintTransparencyValue().setText(" " + formatter.format(alphaValue));
 				}
 				else if (e.getSource() == controlsPanel.getShowBoundaryButton())
 				{

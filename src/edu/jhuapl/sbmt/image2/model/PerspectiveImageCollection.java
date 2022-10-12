@@ -548,7 +548,8 @@ public class PerspectiveImageCollection<G1 extends IPerspectiveImage & IPerspect
 
 	public boolean getOffLimbBoundaryShowing(G1 image)
 	{
-		return image.isOfflimbBoundaryShowing();
+		return renderingStates.get(image).isOffLimbBoundaryShowing;
+//		return image.isOfflimbBoundaryShowing();
 	}
 
 	public void setImageBoundaryShowing(G1 image, boolean showing)
@@ -771,7 +772,12 @@ public class PerspectiveImageCollection<G1 extends IPerspectiveImage & IPerspect
 			renderingStates.get(image).imageContrastRange = intensityRange;
 			image.setIntensityRange(intensityRange);
 		}
-		Thread thread = getPipelineThread(image, (Void v) -> { return null; });
+		Thread thread = getPipelineThread(image, (Void v) -> {
+			SwingUtilities.invokeLater( () -> {
+				pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
+			});
+			return null;
+		});
 		thread.start();
 	}
 
