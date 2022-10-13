@@ -75,6 +75,8 @@ public class PerspectiveImageCollection<G1 extends IPerspectiveImage & IPerspect
 	private IdPair currentBoundaryRange = new IdPair(0, 9);
 	private int currentBoundaryOffsetAmount = 10;
 	private boolean firstCustomLoad = true;
+	private HashMap<G1, PerspectiveImageRenderingState<G1>> hashMap;
+	private List<SmallBodyModel> list;
 
 	public PerspectiveImageCollection(List<SmallBodyModel> smallBodyModels)
 	{
@@ -98,7 +100,8 @@ public class PerspectiveImageCollection<G1 extends IPerspectiveImage & IPerspect
 					{
 						public void run()
 						{
-							if (renderingStates.size() > 0)
+							boolean mappedImages = renderingStates.values().stream().filter(pred -> pred.isMapped).toList().isEmpty();
+							if (!mappedImages)
 							{
 								int response = JOptionPane.showConfirmDialog(
 									    null,
