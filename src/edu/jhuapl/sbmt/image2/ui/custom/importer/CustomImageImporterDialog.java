@@ -22,6 +22,7 @@ import java.util.Optional;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
+import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 import javax.swing.JDialog;
 import javax.swing.JLabel;
@@ -57,6 +58,7 @@ public class CustomImageImporterDialog<G1 extends IPerspectiveImage & IPerspecti
 	private JComboBox<String> imageFlipComboBox;
 	private JComboBox<String> imageRotationComboBox;
 	private JComboBox<String> pointingTypeComboBox;
+	private JCheckBox flipAboutXCheckBox;
 	private boolean isEditMode;
 	private boolean isEllipsoid;
 //	private BaseItemManager<G1> imageCollection;
@@ -195,6 +197,18 @@ public class CustomImageImporterDialog<G1 extends IPerspectiveImage & IPerspecti
 //		return panel;
 //	}
 
+	private JPanel buildFlipAboutXCheckBoxInput()
+	{
+		JPanel panel = new JPanel();
+		panel.setLayout(new BoxLayout(panel, BoxLayout.X_AXIS));
+//		panel.add(new JLabel("Flip "));
+		flipAboutXCheckBox = new JCheckBox("Flip about X Axis");
+		if (existingImage.isPresent())
+			flipAboutXCheckBox.setSelected(existingImage.get().getFlip().equals("X"));
+		panel.add(flipAboutXCheckBox);
+		return panel;
+	}
+
 	private JPanel buildImageRotationInput()
 	{
 		JPanel panel = new JPanel();
@@ -289,6 +303,7 @@ public class CustomImageImporterDialog<G1 extends IPerspectiveImage & IPerspecti
 
 		cylindricalPanel.add(latitudePanel);
 		cylindricalPanel.add(longitudePanel);
+		cylindricalPanel.add(buildFlipAboutXCheckBoxInput());
 
 		////////////////
 		JPanel perspectivePanel = new JPanel();
@@ -327,6 +342,7 @@ public class CustomImageImporterDialog<G1 extends IPerspectiveImage & IPerspecti
 
 		perspectivePanel.add(buildImageRotationInput());
 		perspectivePanel.add(buildImageFlipInput());
+
 
 		/////////////////
 		JPanel optionPanel = new JPanel();
@@ -404,6 +420,8 @@ public class CustomImageImporterDialog<G1 extends IPerspectiveImage & IPerspecti
 				Double minLon = Double.parseDouble(minLongitudeTextField.getText());
 				Double maxLon = Double.parseDouble(maxLongitudeTextField.getText());
 				existingImage.get().setBounds(new CylindricalBounds(minLat, maxLat, minLon, maxLon));
+				if (flipAboutXCheckBox.isSelected()) existingImage.get().setFlip("X");
+				else existingImage.get().setFlip("None");
 			}
 		});
 //		ImageType imageType = (ImageType)imageTypeComboBox.getSelectedItem();
