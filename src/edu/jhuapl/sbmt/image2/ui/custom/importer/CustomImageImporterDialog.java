@@ -401,12 +401,9 @@ public class CustomImageImporterDialog<G1 extends IPerspectiveImage & IPerspecti
 			{
 				Double minLat = Double.parseDouble(minLatitudeTextField.getText());
 				Double maxLat = Double.parseDouble(maxLatitudeTextField.getText());
-				System.out.println("CustomImageImporterDialog: storeImage: max lat is " + maxLat);
 				Double minLon = Double.parseDouble(minLongitudeTextField.getText());
 				Double maxLon = Double.parseDouble(maxLongitudeTextField.getText());
 				existingImage.get().setBounds(new CylindricalBounds(minLat, maxLat, minLon, maxLon));
-				System.out.println("CustomImageImporterDialog: storeImage: existing image bounds " + existingImage.get().getBounds());
-
 			}
 		});
 //		ImageType imageType = (ImageType)imageTypeComboBox.getSelectedItem();

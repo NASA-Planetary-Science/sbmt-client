@@ -350,10 +350,11 @@ public class PerspectiveImageCollection<G1 extends IPerspectiveImage & IPerspect
 
 	public void updateUserImage(G1 image)
 	{
-		RenderablePointedImageToScenePipeline<G1> pipeline = null;
+		RenderableImageActorPipeline pipeline = null;
 		try
 		{
-			pipeline = new RenderablePointedImageToScenePipeline<G1>(image, smallBodyModels);
+			pipeline = ImagePipelineFactory.of(image, smallBodyModels);
+//			pipeline = new RenderablePointedImageToScenePipeline<G1>(image, smallBodyModels);
 		} catch (Exception e)
 		{
 			// TODO Auto-generated catch block
