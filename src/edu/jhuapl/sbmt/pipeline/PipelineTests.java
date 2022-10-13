@@ -1,10 +1,13 @@
 package edu.jhuapl.sbmt.pipeline;
 
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 
+import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.commons.lang3.tuple.Triple;
+import org.gdal.gdal.gdal;
 
 import com.google.common.collect.Lists;
 
@@ -13,7 +16,14 @@ import vtk.vtkActor;
 import edu.jhuapl.saavtk.util.IntensityRange;
 import edu.jhuapl.saavtk.util.NativeLibraryLoader;
 import edu.jhuapl.sbmt.common.client.SmallBodyModel;
+import edu.jhuapl.sbmt.core.image.ImageSource;
+import edu.jhuapl.sbmt.core.image.ImageType;
 import edu.jhuapl.sbmt.core.image.PointingFileReader;
+import edu.jhuapl.sbmt.image2.interfaces.IPerspectiveImage;
+import edu.jhuapl.sbmt.image2.interfaces.IPerspectiveImageTableRepresentable;
+import edu.jhuapl.sbmt.image2.model.CompositePerspectiveImage;
+import edu.jhuapl.sbmt.image2.model.ImageOrigin;
+import edu.jhuapl.sbmt.image2.model.PerspectiveImage;
 import edu.jhuapl.sbmt.image2.pipelineComponents.VTKDebug;
 import edu.jhuapl.sbmt.image2.pipelineComponents.operators.pointing.SpiceBodyOperator;
 import edu.jhuapl.sbmt.image2.pipelineComponents.operators.rendering.ImageRenderable;
@@ -24,6 +34,7 @@ import edu.jhuapl.sbmt.image2.pipelineComponents.operators.rendering.layer.Layer
 import edu.jhuapl.sbmt.image2.pipelineComponents.operators.rendering.pointedImage.RenderablePointedImage;
 import edu.jhuapl.sbmt.image2.pipelineComponents.operators.rendering.pointedImage.RenderablePointedImageGenerator;
 import edu.jhuapl.sbmt.image2.pipelineComponents.operators.rendering.pointedImage.ScenePointedImageBuilderOperator;
+import edu.jhuapl.sbmt.image2.pipelineComponents.pipelines.pointedImages.RenderablePointedImageToScenePipeline;
 import edu.jhuapl.sbmt.image2.pipelineComponents.publishers.builtin.BuiltInFitsHeaderReader;
 import edu.jhuapl.sbmt.image2.pipelineComponents.publishers.builtin.BuiltInFitsReader;
 import edu.jhuapl.sbmt.image2.pipelineComponents.publishers.builtin.BuiltInOBJReader;
@@ -51,18 +62,70 @@ public class PipelineTests
 	public static void main(String[] args) throws Exception
 	{
 		NativeLibraryLoader.loadAllVtkLibraries();
+		gdal.AllRegister();
 		new PipelineTests();
 	}
 
 	public PipelineTests() throws Exception
 	{
+		testLuke();
 //		test1();
 //		test1b();
 //		test2();
-		test2b();
+//		test2b();
 //		test3();
 //		test4();
 //		test5();
+	}
+
+	private <G1 extends IPerspectiveImage & IPerspectiveImageTableRepresentable> void testLuke() throws Exception
+	{
+		List<Layer> updatedLayers = Lists.newArrayList();
+		String fileName = "/Users/steelrj1/Desktop/2356-test-files/liciacube_luke_l0_717892384_782_01.fits";
+		String pointingFileName = "/Users/steelrj1/Desktop/2356-test-files/liciacube_luke_l0_717892384_782_01.INFO";
+
+		IPipelinePublisher<SmallBodyModel> objReader = new BuiltInOBJReader(new String[] { "/Users/steelrj1/.sbmt-test-apl/cache/2/didymos/ideal-impact1-20200629-v01/shape/shape0.obj" },
+				"Didymos");
+
+
+		PerspectiveImage image = new PerspectiveImage(fileName, ImageType.valueOf("LUKE_IMAGE"), ImageSource.SPICE, pointingFileName, new double[] {});
+
+		image.setName("Luke Image");
+		image.setImageOrigin(ImageOrigin.LOCAL);
+		image.setLongTime(new Date().getTime());
+
+		image.setLinearInterpolatorDims(null);
+		image.setMaskValues(new int[] {0,0,0,0});
+		image.setFillValues(new double[] {});
+		image.setFlip("None");
+		image.setRotation(0);
+
+		CompositePerspectiveImage compImage = new CompositePerspectiveImage(List.of(image));
+		compImage.setName(FilenameUtils.getBaseName(fileName));
+
+
+		RenderablePointedImageToScenePipeline<G1> pipeline = new RenderablePointedImageToScenePipeline<G1>((G1)compImage, objReader.getOutputs());
+
+
+//		GDALReader reader = new GDALReader(fileName, false, new ValidityCheckerDoubleFactory().checker2d(new double[] {}), Double.NaN);
+//
+//
+//		IPipelineOperator<Layer, Layer> linearInterpolator = new PassthroughOperator<>();
+//
+//		LayerRotationOperator rotationOperator = new LayerRotationOperator(90);
+//
+//		BasePipelineOperator<Layer, Layer> flipOperator = new PassthroughOperator<Layer>();
+//
+//		reader
+//			.operate(linearInterpolator)
+//			.operate(flipOperator)
+//			.operate(rotationOperator)
+//			.subscribe(Sink.of(updatedLayers)).run();
+
+
+
+
+
 	}
 
 	private void test1() throws Exception
