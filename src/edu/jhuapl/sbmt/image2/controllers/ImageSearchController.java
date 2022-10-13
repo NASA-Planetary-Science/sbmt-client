@@ -500,14 +500,18 @@ public class ImageSearchController<G1 extends IPerspectiveImage & IPerspectiveIm
 		vtkActor actor = aPrimaryTarg.getActor();
 		Optional<G1> image = collection.getImage(actor);
 		image.ifPresent(e -> {
-			collection.setSelectedItems(List.of(e));
+			if (collection.getImageMapped(e))
+			{
+				collection.setSelectedItems(List.of(e));
+				// Show the popup
+				Component tmpComp = aEvent.getComponent();
+				int posX = ((MouseEvent) aEvent).getX();
+				int posY = ((MouseEvent) aEvent).getY();
+				popupMenu.show(tmpComp, posX, posY);
+			}
 		});
 
-		// Show the popup
-		Component tmpComp = aEvent.getComponent();
-		int posX = ((MouseEvent) aEvent).getX();
-		int posY = ((MouseEvent) aEvent).getY();
-		popupMenu.show(tmpComp, posX, posY);
+
 	}
 
 	public ImageSearchParametersModel getModel()
