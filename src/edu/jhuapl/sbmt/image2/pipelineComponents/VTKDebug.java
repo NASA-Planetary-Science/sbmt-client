@@ -4,11 +4,13 @@ import java.util.HashMap;
 
 import org.apache.commons.lang3.tuple.Pair;
 
+import vtk.vtkActor;
 import vtk.vtkImageData;
 import vtk.vtkPolyData;
 import vtk.vtkPolyDataWriter;
 
 import edu.jhuapl.saavtk.util.IntensityRange;
+import edu.jhuapl.sbmt.image2.pipelineComponents.subscribers.preview.VtkActorPreview;
 import edu.jhuapl.sbmt.image2.pipelineComponents.subscribers.preview.VtkImagePreview;
 import edu.jhuapl.sbmt.image2.pipelineComponents.subscribers.preview.VtkLayerPreview;
 import edu.jhuapl.sbmt.layer.api.Layer;
@@ -46,6 +48,13 @@ public class VTKDebug
 	{
 		Just.of(imageData)
 			.subscribe(new VtkImagePreview(title, new HashMap<String, String>(), false))
+			.run();
+	}
+
+	public static void previewVtkActor(vtkActor actor, String title) throws Exception
+	{
+		Just.of(actor)
+			.subscribe(new VtkActorPreview(title, new HashMap<String, String>(), false))
 			.run();
 	}
 }
