@@ -249,6 +249,7 @@ public class ImageSearchController<G1 extends IPerspectiveImage & IPerspectiveIm
 		imageListTableController.getPanel().getLoadImageButton().addActionListener(e -> {
 
 	        File file = CustomFileChooser.showOpenDialog(panel, "Select File");
+	        if (file == null) return;
 			try
 			{
 				LoadImagesFromSavedFilePipeline<G1> pipeline = new LoadImagesFromSavedFilePipeline<G1>(config, file.getAbsolutePath(), (ImagingInstrument)instrument);
