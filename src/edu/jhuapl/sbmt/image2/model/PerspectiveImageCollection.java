@@ -125,6 +125,27 @@ public class PerspectiveImageCollection<G1 extends IPerspectiveImage & IPerspect
 		}
 	}
 
+	public void clearSearchedImages()
+	{
+		List<G1> activeImages = imagesByInstrument.get(imagingInstrument);
+		if (activeImages == null) return;
+		for (G1 image : activeImages)
+		{
+			if (renderingStates.get(image).isMapped)
+				setImageMapped(image, false);
+			if (renderingStates.get(image).isBoundaryShowing)
+				setImageBoundaryShowing(image, false);
+			if (renderingStates.get(image).isFrustumShowing)
+				setImageFrustumVisible(image, false);
+			if (renderingStates.get(image).isOfflimbShowing)
+				setImageOfflimbShowing(image, false);
+			if (renderingStates.get(image).isOffLimbBoundaryShowing)
+				setOffLimbBoundaryShowing(image, false);
+			renderingStates.remove(image);
+		}
+		imagesByInstrument.clear();
+	}
+
 	public void addUserImage(G1 image)
 	{
 		userImages.add(image);
