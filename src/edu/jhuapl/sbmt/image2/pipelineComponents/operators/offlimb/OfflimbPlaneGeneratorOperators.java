@@ -173,7 +173,7 @@ public class OfflimbPlaneGeneratorOperators extends BasePipelineOperator<Rendera
         imageSource.SetNumberOfScalarComponents(3);
         imageSource.SetExtent(-szW/2, szW/2, -szH/2, szH/2, 0, 0);
         
-        ThreadService.initialize(600);
+        ThreadService.initialize(60);
         final List<Future<Void>> resultList;
 		List<Callable<Void>> taskList = new ArrayList<>();
 

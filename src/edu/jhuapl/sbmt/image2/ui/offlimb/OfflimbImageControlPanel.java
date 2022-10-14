@@ -2,6 +2,7 @@ package edu.jhuapl.sbmt.image2.ui.offlimb;
 
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
+import java.text.DecimalFormat;
 
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
@@ -33,10 +34,12 @@ public class OfflimbImageControlPanel extends JPanel
 	private SyncContrastSlidersButton syncContrastButton;
 	private JButton resetButton;
 
+	private DecimalFormat formatter;
+
     public OfflimbImageControlPanel()
     {
         super();
-
+        this.formatter = new DecimalFormat("##.##");
         setLayout(new GridBagLayout());
         GridBagConstraints gridBagConstraints = new java.awt.GridBagConstraints();
 
@@ -81,10 +84,11 @@ public class OfflimbImageControlPanel extends JPanel
 
 //        imageContrastSlider = new ContrastSlider(image, false);
         syncContrastButton = new SyncContrastSlidersButton();
+        syncContrastButton.setSelected(true);
 //        contrastPanel.add(imageContrastSlider);
 
 //        syncContrastButton = syncButton;
-        buttonPanel.add(syncContrastButton);
+//        buttonPanel.add(syncContrastButton);
 
         showBoundaryButton = new ShowBoundaryButton();
         buttonPanel.add(showBoundaryButton);

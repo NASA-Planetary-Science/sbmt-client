@@ -75,6 +75,8 @@ public class PerspectiveImageCollection<G1 extends IPerspectiveImage & IPerspect
 	private IdPair currentBoundaryRange = new IdPair(0, 9);
 	private int currentBoundaryOffsetAmount = 10;
 	private boolean firstCustomLoad = true;
+	private HashMap<G1, PerspectiveImageRenderingState<G1>> hashMap;
+	private List<SmallBodyModel> list;
 
 	public PerspectiveImageCollection(List<SmallBodyModel> smallBodyModels)
 	{
@@ -98,7 +100,8 @@ public class PerspectiveImageCollection<G1 extends IPerspectiveImage & IPerspect
 					{
 						public void run()
 						{
-							if (renderingStates.size() > 0)
+							boolean mappedImages = renderingStates.values().stream().filter(pred -> pred.isMapped).toList().isEmpty();
+							if (!mappedImages)
 							{
 								int response = JOptionPane.showConfirmDialog(
 									    null,
@@ -120,6 +123,27 @@ public class PerspectiveImageCollection<G1 extends IPerspectiveImage & IPerspect
 
 			});
 		}
+	}
+
+	public void clearSearchedImages()
+	{
+		List<G1> activeImages = imagesByInstrument.get(imagingInstrument);
+		if (activeImages == null) return;
+		for (G1 image : activeImages)
+		{
+			if (renderingStates.get(image).isMapped)
+				setImageMapped(image, false);
+			if (renderingStates.get(image).isBoundaryShowing)
+				setImageBoundaryShowing(image, false);
+			if (renderingStates.get(image).isFrustumShowing)
+				setImageFrustumVisible(image, false);
+			if (renderingStates.get(image).isOfflimbShowing)
+				setImageOfflimbShowing(image, false);
+			if (renderingStates.get(image).isOffLimbBoundaryShowing)
+				setOffLimbBoundaryShowing(image, false);
+			renderingStates.remove(image);
+		}
+		imagesByInstrument.clear();
 	}
 
 	public void addUserImage(G1 image)
@@ -350,10 +374,11 @@ public class PerspectiveImageCollection<G1 extends IPerspectiveImage & IPerspect
 
 	public void updateUserImage(G1 image)
 	{
-		RenderablePointedImageToScenePipeline<G1> pipeline = null;
+		RenderableImageActorPipeline pipeline = null;
 		try
 		{
-			pipeline = new RenderablePointedImageToScenePipeline<G1>(image, smallBodyModels);
+			pipeline = ImagePipelineFactory.of(image, smallBodyModels);
+//			pipeline = new RenderablePointedImageToScenePipeline<G1>(image, smallBodyModels);
 		} catch (Exception e)
 		{
 			// TODO Auto-generated catch block
@@ -548,7 +573,8 @@ public class PerspectiveImageCollection<G1 extends IPerspectiveImage & IPerspect
 
 	public boolean getOffLimbBoundaryShowing(G1 image)
 	{
-		return image.isOfflimbBoundaryShowing();
+		return renderingStates.get(image).isOffLimbBoundaryShowing;
+//		return image.isOfflimbBoundaryShowing();
 	}
 
 	public void setImageBoundaryShowing(G1 image, boolean showing)
@@ -771,7 +797,12 @@ public class PerspectiveImageCollection<G1 extends IPerspectiveImage & IPerspect
 			renderingStates.get(image).imageContrastRange = intensityRange;
 			image.setIntensityRange(intensityRange);
 		}
-		Thread thread = getPipelineThread(image, (Void v) -> { return null; });
+		Thread thread = getPipelineThread(image, (Void v) -> {
+			SwingUtilities.invokeLater( () -> {
+				pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
+			});
+			return null;
+		});
 		thread.start();
 	}
 
