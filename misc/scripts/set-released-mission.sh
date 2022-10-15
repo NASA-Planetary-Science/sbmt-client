@@ -19,16 +19,18 @@ released_mission=$1
 mission_name=$2
 
 if test $mission_name; then
-  echo Setting mission name to $mission_name
+  echo "Setting mission name to $mission_name"
   variablefile="$SBMTROOT/config/Makefiles/Variables"
   variablefileorig="$SBMTROOT/config/Makefiles/Variables-orig"
-#  echo "Variable file is: " $variablefile
+  echo "Variable file is: " $variablefile
   mv $variablefile $variablefileorig
   cat $variablefileorig | sed "s/SNAPSHOT/$mission_name/" > $variablefile
+  echo "updated file"
 fi
 
+echo "putting togetheer file"
 file="$SBMTROOT/src/edu/jhuapl/sbmt/common/client/Mission.java"
-echo File is $file
+echo "File is $file"
 if test ! -f $file; then
   echo "Cannot find file $file" >&2
   exit 1
