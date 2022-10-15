@@ -22,15 +22,14 @@ if test $mission_name; then
   echo "Setting mission name to $mission_name"
   variablefile="$SBMTROOT/config/Makefiles/Variables"
   variablefileorig="$SBMTROOT/config/Makefiles/Variables-orig"
-  echo "Variable file is: " $variablefile
+ # echo "Variable file is: " $variablefile
   mv $variablefile $variablefileorig
   cat $variablefileorig | sed "s/SNAPSHOT/$mission_name/" > $variablefile
   echo "updated file"
 fi
 
-echo "putting togetheer file"
-file="$SBMTROOT/src/edu/jhuapl/sbmt/common/client/Mission.java"
-echo "File is $file"
+
+file="$SBMTROOT/src/edu/jhuapl/sbmt/client2/SbmtMultiMissionTool.java"
 if test ! -f $file; then
   echo "Cannot find file $file" >&2
   exit 1
@@ -42,7 +41,7 @@ if test `grep -c "$string" $file` -eq 0; then
   echo "Could not match RELEASED_MISSION field in file $file" >&2
   exit 1
 fi
-echo matched RELEASED_MISSION
+
 sed -e "s:\($string\).*:\1Mission.$released_mission;:" $file > $file-new
 status=$?
 if test $status -ne 0; then
