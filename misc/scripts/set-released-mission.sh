@@ -27,7 +27,7 @@ if test $mission_name; then
   cat $variablefileorig | sed "s/SNAPSHOT/$mission_name/" > $variablefile
 fi
 
-file="$SBMTROOT/src/edu/jhuapl/sbmt/common/client/Mission.java"
+file="$SBMTROOT/src/edu/jhuapl/sbmt/common/client/SbmtMultiMissionTool.java"
 if test ! -f $file; then
   echo "Cannot find file $file" >&2
   exit 1
