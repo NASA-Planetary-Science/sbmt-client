@@ -28,7 +28,6 @@ if test $mission_name; then
   echo "updated file"
 fi
 
-
 file="$SBMTROOT/src/edu/jhuapl/sbmt/client2/SbmtMultiMissionTool.java"
 if test ! -f $file; then
   echo "Cannot find file $file" >&2

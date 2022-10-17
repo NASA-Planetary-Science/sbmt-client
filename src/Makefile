@@ -20,6 +20,7 @@ saavtk_dir = ${SAAVTKROOT}
 saavtk_lib_dir = ${SAAVTKROOT}/lib
 vtk_dir = ${saavtk_lib_dir}/${VTK_VERSION}
 jogl_dir = ${saavtk_lib_dir}/jogl
+gdal_dir = ${SBMTROOT}/lib/gdal
 jre_dir = /project/nearsdc/software/java/jdk16
 
 # Environment variables needed for 'ant' to run 
@@ -166,6 +167,7 @@ ${int_mac_zip} : ${NEARAPLJAR}
 		cp ${NEARAPLJAR} ${int_mac_sbmt_lib_dir}/near.jar
 		cp -R ${vtk_dir}/mac64 ${int_mac_sbmt_lib_dir}
 		cp -R ${jre_dir}/mac64 ${int_mac_sbmt_dir}
+		cp -R ${gdal_dir} ${int_mac_sbmt_lib_dir}
 		rm -rf ${int_mac_sbmt_dir}/jre
 		mv ${int_mac_sbmt_dir}/mac64 ${int_mac_sbmt_dir}/jre
 		cp ${top_level_dir}/src/edu/jhuapl/sbmt/data/license.txt ${int_mac_sbmt_lib_dir}
@@ -190,6 +192,7 @@ ${int_linux_zip} : ${NEARAPLJAR}
 		cp ${NEARAPLJAR} ${int_linux_sbmt_lib_dir}/near.jar
 		cp -R ${vtk_dir}/linux64 ${int_linux_sbmt_lib_dir}
 		cp -R ${jre_dir}/linux64 ${int_linux_sbmt_dir}
+		cp -R ${gdal_dir} ${int_linux_sbmt_lib_dir}
 		rm -rf ${int_linux_sbmt_dir}/jre
 		mv ${int_linux_sbmt_dir}/linux64 ${int_linux_sbmt_dir}/jre
 		cp ${top_level_dir}/src/edu/jhuapl/sbmt/data/license.txt ${int_linux_sbmt_lib_dir}
@@ -215,6 +218,7 @@ ${int_win_zip} : ${NEARAPLJAR}
 		cp ${NEARAPLJAR} ${int_win_sbmt_lib_dir}/near.jar
 		cp -R ${vtk_dir}/win64 ${int_win_sbmt_lib_dir}
 		cp -R ${jre_dir}/win64 ${int_win_sbmt_dir}
+		cp -R ${gdal_dir} ${int_win_sbmt_lib_dir}
 		rm -rf ${int_win_sbmt_dir}/jre
 		mv ${int_win_sbmt_dir}/win64 ${int_win_sbmt_dir}/jre
 		cp ${top_level_dir}/src/edu/jhuapl/sbmt/data/license.txt ${int_win_sbmt_lib_dir}
