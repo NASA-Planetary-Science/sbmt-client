@@ -145,8 +145,7 @@ public class CustomImageImporterDialog2<G1 extends IPerspectiveImage & IPerspect
 //		if (image.getImageType() == ImageType.GENERIC_IMAGE) return;
 		if (image.getNumberOfLayers() == 1)	//editing custom single layer image
 		{
-			CustomImageImporterDialog<G1> dialog = new CustomImageImporterDialog<G1>(null, true, instrument,
-					isEllipsoid, /*tempCollection,*/ Optional.of(image));
+			CustomImageImporterDialog<G1> dialog = new CustomImageImporterDialog<G1>(null, true, isEllipsoid, Optional.of(image));
 	        dialog.setLocationRelativeTo(getContentPane());
 	        dialog.setVisible(true);
 		}
@@ -173,7 +172,10 @@ public class CustomImageImporterDialog2<G1 extends IPerspectiveImage & IPerspect
 		panel.setLayout(new BoxLayout(panel, BoxLayout.X_AXIS));
 		panel.add(new JLabel("Image Type:"));
 
-		imageTypeComboBox = new JComboBox<ImageType>(new ImageType[] {instrument.getType(), ImageType.GENERIC_IMAGE});
+		if (instrument != null)
+			imageTypeComboBox = new JComboBox<ImageType>(new ImageType[] {instrument.getType(), ImageType.GENERIC_IMAGE});
+		else
+			imageTypeComboBox = new JComboBox<ImageType>(new ImageType[] {ImageType.GENERIC_IMAGE});
 		imageTypeComboBox.setMaximumSize(new Dimension(350, 30));
 		panel.add(Box.createHorizontalStrut(10));
 		panel.add(imageTypeComboBox);
@@ -452,11 +454,14 @@ public class CustomImageImporterDialog2<G1 extends IPerspectiveImage & IPerspect
 		}
 		else
 		{
-			image.setLinearInterpolatorDims(instrument.getLinearInterpolationDims());
-			image.setMaskValues(instrument.getMaskValues());
-			image.setFillValues(instrument.getFillValues());
-			image.setFlip(instrument.getFlip());
-			image.setRotation(instrument.getRotation());
+			if (instrument != null)
+			{
+				image.setLinearInterpolatorDims(instrument.getLinearInterpolationDims());
+				image.setMaskValues(instrument.getMaskValues());
+				image.setFillValues(instrument.getFillValues());
+				image.setFlip(instrument.getFlip());
+				image.setRotation(instrument.getRotation());
+			}
 		}
 		CompositePerspectiveImage compImage = new CompositePerspectiveImage(List.of(image));
 		compImage.setName(FilenameUtils.getBaseName(filename));

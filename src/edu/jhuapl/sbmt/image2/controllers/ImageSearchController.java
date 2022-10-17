@@ -61,7 +61,7 @@ public class ImageSearchController<G1 extends IPerspectiveImage & IPerspectiveIm
 	private ImagingSearchPanel panel;
 	private ImagingSearchPanel customPanel;
 	private ImageSearchParametersModel imageSearchModel;
-	private IImagingInstrument instrument;
+	private Optional<IImagingInstrument> instrument;
 	private PerspectiveImageCollection<G1> collection;
 	private ModelManager modelManager;
 	private List<SmallBodyModel> smallBodyModels;
@@ -70,7 +70,7 @@ public class ImageSearchController<G1 extends IPerspectiveImage & IPerspectiveIm
 	private SmallBodyViewConfig config;
 
 	public ImageSearchController(SmallBodyViewConfig config, PerspectiveImageCollection<G1> collection,
-								IImagingInstrument instrument, ModelManager modelManager,
+								Optional<IImagingInstrument> instrument, ModelManager modelManager,
 								PopupManager popupManager, Renderer renderer,
 								PickManager pickManager, SbmtInfoWindowManager infoPanelManager,
 					            SbmtSpectrumWindowManager spectrumPanelManager)
@@ -78,12 +78,14 @@ public class ImageSearchController<G1 extends IPerspectiveImage & IPerspectiveIm
 		this.config = config;
 		this.instrument = instrument;
 		this.collection = collection;
-		this.collection.setImagingInstrument(instrument);
+		this.collection.setImagingInstrument(instrument.orElse(null));
 		this.modelManager = modelManager;
 		this.instrument = instrument;
-		this.imageSearchModel = new ImageSearchParametersModel(config, modelManager, renderer, instrument);
-        this.searchParametersController = new SpectralImageSearchParametersController(config, collection, imageSearchModel, modelManager, pickManager);
-        this.searchParametersController.setupSearchParametersPanel();
+		this.imageSearchModel = new ImageSearchParametersModel(config, modelManager, renderer, instrument.orElse(null));
+		instrument.ifPresent(inst -> {
+			this.searchParametersController = new SpectralImageSearchParametersController(config, collection, imageSearchModel, modelManager, pickManager);
+			this.searchParametersController.setupSearchParametersPanel();
+		});
         pane = new JTabbedPane();
         SmallBodyModel smallBodyModel = (SmallBodyModel)modelManager.getModel(ModelNames.SMALL_BODY);
         smallBodyModels = List.of(smallBodyModel);
@@ -116,31 +118,34 @@ public class ImageSearchController<G1 extends IPerspectiveImage & IPerspectiveIm
 
 	private void initGUI()
 	{
-		initImageGUI();
+		instrument.ifPresent(inst -> {initImageGUI();});
+//		initImageGUI();
 		initCustomGUI();
 
-		panel.addAncestorListener(new AncestorListener()
-		{
-
-			@Override
-			public void ancestorRemoved(AncestorEvent event)
+		instrument.ifPresent(inst -> {
+			panel.addAncestorListener(new AncestorListener()
 			{
-				// TODO Auto-generated method stub
 
-			}
+				@Override
+				public void ancestorRemoved(AncestorEvent event)
+				{
+					// TODO Auto-generated method stub
 
-			@Override
-			public void ancestorMoved(AncestorEvent event)
-			{
-				// TODO Auto-generated method stub
+				}
 
-			}
+				@Override
+				public void ancestorMoved(AncestorEvent event)
+				{
+					// TODO Auto-generated method stub
 
-			@Override
-			public void ancestorAdded(AncestorEvent event)
-			{
-				collection.setImagingInstrument(instrument);
-			}
+				}
+
+				@Override
+				public void ancestorAdded(AncestorEvent event)
+				{
+					collection.setImagingInstrument(instrument.orElse(null));
+				}
+			});
 		});
 
 		customPanel.addAncestorListener(new AncestorListener()
@@ -189,7 +194,7 @@ public class ImageSearchController<G1 extends IPerspectiveImage & IPerspectiveIm
 			@Override
 			public void ancestorAdded(AncestorEvent event)
 			{
-				collection.setImagingInstrument(instrument);
+				collection.setImagingInstrument(instrument.orElse(null));
 				imageListTableController.getPanel().getResultList().repaint();
 			}
 		});
@@ -252,7 +257,7 @@ public class ImageSearchController<G1 extends IPerspectiveImage & IPerspectiveIm
 	        if (file == null) return;
 			try
 			{
-				LoadImagesFromSavedFilePipeline<G1> pipeline = new LoadImagesFromSavedFilePipeline<G1>(config, file.getAbsolutePath(), (ImagingInstrument)instrument);
+				LoadImagesFromSavedFilePipeline<G1> pipeline = new LoadImagesFromSavedFilePipeline<G1>(config, file.getAbsolutePath(), (ImagingInstrument)instrument.orElse(null));
 				collection.setImages(pipeline.getImages());
 			}
 			catch (Exception e1)
@@ -310,12 +315,12 @@ public class ImageSearchController<G1 extends IPerspectiveImage & IPerspectiveIm
 			try
 			{
 				if (collection.getSelectedItems().size() == 0)
-					ImageGalleryPipeline.of(instrument, collection.getAllItems());
+					ImageGalleryPipeline.of(instrument.orElse(null), collection.getAllItems());
 				else
 				{
 					List<G1> selectedList = Lists.newArrayList();
 					selectedList.addAll(collection.getSelectedItems());
-					ImageGalleryPipeline.of(instrument, selectedList);
+					ImageGalleryPipeline.of(instrument.orElse(null), selectedList);
 				}
 			}
 			catch (Exception e1)
@@ -405,9 +410,9 @@ public class ImageSearchController<G1 extends IPerspectiveImage & IPerspectiveIm
 		});
 
 		customImageListTableController.getPanel().getNewImageButton().addActionListener(e -> {
-			CustomImageImporterDialog2<G1> dialog = new CustomImageImporterDialog2<G1>(null, false, instrument,
+			CustomImageImporterDialog2<G1> dialog = new CustomImageImporterDialog2<G1>(null, false, instrument.orElse(null),
 					modelManager.getPolyhedralModel().isEllipsoid(), collection);
-	        dialog.setLocationRelativeTo(imageListTableController.getPanel());
+	        dialog.setLocationRelativeTo(getView());
 	        dialog.setVisible(true);
 		});
 
@@ -417,9 +422,9 @@ public class ImageSearchController<G1 extends IPerspectiveImage & IPerspectiveIm
 			G1 image = selectedItems.asList().get(0);
 			if (image.getNumberOfLayers() == 1)	//editing custom single layer image
 			{
-				CustomImageImporterDialog<G1> dialog = new CustomImageImporterDialog<G1>(null, true, instrument,
+				CustomImageImporterDialog<G1> dialog = new CustomImageImporterDialog<G1>(null, true,
 						modelManager.getPolyhedralModel().isEllipsoid(), Optional.of(image));
-		        dialog.setLocationRelativeTo(imageListTableController.getPanel());
+		        dialog.setLocationRelativeTo(getView());
 		        dialog.setVisible(true);
 		        collection.updateUserImage(image);
 			}
@@ -471,7 +476,7 @@ public class ImageSearchController<G1 extends IPerspectiveImage & IPerspectiveIm
 			imageListTableController.getPanel().getShowImageButton().setEnabled((selectedItems.size() > 0) && !allMapped);
 			imageListTableController.getPanel().getHideImageBorderButton().setEnabled((selectedItems.size() > 0) && allBorders);
 			imageListTableController.getPanel().getShowImageBorderButton().setEnabled((selectedItems.size() > 0) && !allBorders);
-			ImageGalleryGenerator.of(instrument, state -> {
+			ImageGalleryGenerator.of(instrument.orElse(null), state -> {
 				imageListTableController.getPanel().getGalleryButton().setEnabled(true);
 			});
 //			imageListTableController.getPanel().getGalleryButton().setEnabled(collection.getAllItems().size() > 0);
@@ -522,7 +527,10 @@ public class ImageSearchController<G1 extends IPerspectiveImage & IPerspectiveIm
 
 	public JTabbedPane getView()
 	{
-		pane.add(panel, "Server");
+		instrument.ifPresent(inst -> {
+			pane.add(panel, "Server");
+		});
+
 		pane.add(customPanel, "Custom");
 		return pane;
 	}

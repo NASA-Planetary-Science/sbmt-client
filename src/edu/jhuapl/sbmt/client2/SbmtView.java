@@ -11,6 +11,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import javax.swing.BorderFactory;
 import javax.swing.JComponent;
@@ -476,10 +477,13 @@ public class SbmtView extends View implements PropertyChangeListener
 	{
 		setupOlderImageTabs();
 		PerspectiveImageCollection collection = (PerspectiveImageCollection)getModelManager().getModel(ModelNames.IMAGES_V2);
-		for (ImagingInstrument instrument : getPolyhedralModelConfig().imagingInstruments)
-	    {
-			addTab(instrument.instrumentName.toString() + "-NEW", new ImageSearchController(getPolyhedralModelConfig(), collection, instrument, getModelManager(), getPopupManager(), getRenderer(), getPickManager(), (SbmtInfoWindowManager) getInfoPanelManager(), (SbmtSpectrumWindowManager) getSpectrumPanelManager()).getView());
-	    }
+		if (getPolyhedralModelConfig().imagingInstruments.length == 0)
+			addTab("Custom Images", new ImageSearchController(getPolyhedralModelConfig(), collection, Optional.ofNullable(null), getModelManager(), getPopupManager(), getRenderer(), getPickManager(), (SbmtInfoWindowManager) getInfoPanelManager(), (SbmtSpectrumWindowManager) getSpectrumPanelManager()).getView());
+		else
+			for (ImagingInstrument instrument : getPolyhedralModelConfig().imagingInstruments)
+		    {
+				addTab(instrument.instrumentName.toString() + "-NEW", new ImageSearchController(getPolyhedralModelConfig(), collection, Optional.of(instrument), getModelManager(), getPopupManager(), getRenderer(), getPickManager(), (SbmtInfoWindowManager) getInfoPanelManager(), (SbmtSpectrumWindowManager) getSpectrumPanelManager()).getView());
+		    }
 	}
 
 	private void setupOlderImageTabs()
@@ -677,7 +681,7 @@ public class SbmtView extends View implements PropertyChangeListener
 	{
         JTabbedPane customDataPane=new JTabbedPane();
         customDataPane.setBorder(BorderFactory.createEmptyBorder());
-        addTab("Custom Data", customDataPane);
+
 
 //        if (!getPolyhedralModelConfig().customTemporary)
 //        {
@@ -705,6 +709,9 @@ public class SbmtView extends View implements PropertyChangeListener
 			PopupMenu popupMenu = new SpectrumPopupMenu(spectrumCollection, boundaryCollection, getModelManager(), (SbmtInfoWindowManager) getInfoPanelManager(), getRenderer());
 			registerPopup(spectrumCollection, popupMenu);
 		}
+
+		if (customDataPane.getTabCount() != 0)
+			addTab("Custom Data", customDataPane);
 	}
 
 	protected void setupDEMTab()

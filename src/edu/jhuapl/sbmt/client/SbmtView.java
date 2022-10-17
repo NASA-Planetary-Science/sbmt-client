@@ -11,6 +11,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import javax.swing.BorderFactory;
 import javax.swing.JComponent;
@@ -580,7 +581,7 @@ public class SbmtView extends View implements PropertyChangeListener
 
 			PerspectiveImageCollection collection = (PerspectiveImageCollection)getModelManager().getModel(ModelNames.IMAGES_V2);
 //			PerspectiveImageCollection collection = new PerspectiveImageCollection(List.of(smallBodyModel));
-			addTab(instrument.instrumentName.toString() + "2", new ImageSearchController(getPolyhedralModelConfig(), collection, instrument, getModelManager(), getPopupManager(), getRenderer(), getPickManager(), (SbmtInfoWindowManager) getInfoPanelManager(), (SbmtSpectrumWindowManager) getSpectrumPanelManager()).getView());
+			addTab(instrument.instrumentName.toString() + "2", new ImageSearchController(getPolyhedralModelConfig(), collection, Optional.of(instrument), getModelManager(), getPopupManager(), getRenderer(), getPickManager(), (SbmtInfoWindowManager) getInfoPanelManager(), (SbmtSpectrumWindowManager) getSpectrumPanelManager()).getView());
 
 		}
 
