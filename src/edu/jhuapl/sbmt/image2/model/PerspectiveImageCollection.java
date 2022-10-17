@@ -33,7 +33,6 @@ import edu.jhuapl.saavtk.util.Properties;
 import edu.jhuapl.sbmt.common.client.SmallBodyModel;
 import edu.jhuapl.sbmt.core.image.IImagingInstrument;
 import edu.jhuapl.sbmt.core.image.ImageSource;
-import edu.jhuapl.sbmt.core.image.ImageType;
 import edu.jhuapl.sbmt.core.image.PointingFileReader;
 import edu.jhuapl.sbmt.image2.interfaces.IPerspectiveImage;
 import edu.jhuapl.sbmt.image2.interfaces.IPerspectiveImageTableRepresentable;
@@ -960,7 +959,7 @@ public class PerspectiveImageCollection<G1 extends IPerspectiveImage & IPerspect
 			RenderableImageActorPipeline pipeline = null;
 			try
 			{
-				if (image.getImageType() != ImageType.GENERIC_IMAGE && image.getPointingSourceType() != ImageSource.LOCAL_CYLINDRICAL)
+				if (/*image.getImageType() != ImageType.GENERIC_IMAGE &&*/ image.getPointingSourceType() != ImageSource.LOCAL_CYLINDRICAL)
 				{
 					pipeline = new RenderablePointedImageToScenePipeline<G1>(image, smallBodyModels);
 

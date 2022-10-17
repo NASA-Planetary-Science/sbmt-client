@@ -445,10 +445,14 @@ public class CompositePerspectiveImage implements IPerspectiveImage, IPerspectiv
 		InstanceGetter.defaultInstanceGetter().register(COMPOSITE_PERSPECTIVE_IMAGE_KEY, (metadata) -> {
 		CompositePerspectiveImage compositeImage = new CompositePerspectiveImage();
 		List<IPerspectiveImage> images = metadata.get(IMAGES_KEY);
-		compositeImage.setMapped(metadata.get(MAPPED_KEY));
-		compositeImage.setBoundaryShowing(metadata.get(BOUNDARY_KEY));
-		compositeImage.setFrustumShowing(metadata.get(FRUSTUM_KEY));
-		compositeImage.setOfflimbShowing(metadata.get(OFFLIMB_SHOWING_KEY));
+		if (metadata.hasKey(MAPPED_KEY))
+			compositeImage.setMapped(metadata.get(MAPPED_KEY));
+		if (metadata.hasKey(BOUNDARY_KEY))
+			compositeImage.setBoundaryShowing(metadata.get(BOUNDARY_KEY));
+		if (metadata.hasKey(FRUSTUM_KEY))
+			compositeImage.setFrustumShowing(metadata.get(FRUSTUM_KEY));
+		if (metadata.hasKey(OFFLIMB_SHOWING_KEY))
+			compositeImage.setOfflimbShowing(metadata.get(OFFLIMB_SHOWING_KEY));
 		compositeImage.setImages(images);
 		return compositeImage;
 
