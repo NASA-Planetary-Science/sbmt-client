@@ -148,6 +148,9 @@ public class CustomImageImporterDialog2<G1 extends IPerspectiveImage & IPerspect
 			CustomImageImporterDialog<G1> dialog = new CustomImageImporterDialog<G1>(null, true, isEllipsoid, Optional.of(image));
 	        dialog.setLocationRelativeTo(getContentPane());
 	        dialog.setVisible(true);
+	        ImageSource pointingSourceType = image.getPointingSource().endsWith("sum") || image.getPointingSource().endsWith("SUM") ? ImageSource.GASKELL : ImageSource.SPICE;
+	        image.setPointingSourceType(pointingSourceType);
+	        storeImage(image.getFilename(), image.getFilename(), image.getPointingSourceType(), image.getPointingSource());
 		}
 //		else if (image.getNumberOfLayers() == 3) //editing custom color image
 //		{
