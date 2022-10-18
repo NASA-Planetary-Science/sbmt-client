@@ -143,7 +143,7 @@ public class ImageSearchController<G1 extends IPerspectiveImage & IPerspectiveIm
 				@Override
 				public void ancestorAdded(AncestorEvent event)
 				{
-					collection.setImagingInstrument(instrument.orElse(null));
+					collection.setImagingInstrument(inst);
 				}
 			});
 		});
@@ -412,7 +412,7 @@ public class ImageSearchController<G1 extends IPerspectiveImage & IPerspectiveIm
 		customImageListTableController.getPanel().getNewImageButton().addActionListener(e -> {
 			CustomImageImporterDialog2<G1> dialog = new CustomImageImporterDialog2<G1>(null, false, instrument.orElse(null),
 					modelManager.getPolyhedralModel().isEllipsoid(), collection);
-	        dialog.setLocationRelativeTo(getView());
+	        dialog.setLocationRelativeTo(customImageListTableController.getPanel());
 	        dialog.setVisible(true);
 		});
 
@@ -424,7 +424,7 @@ public class ImageSearchController<G1 extends IPerspectiveImage & IPerspectiveIm
 			{
 				CustomImageImporterDialog<G1> dialog = new CustomImageImporterDialog<G1>(null, true,
 						modelManager.getPolyhedralModel().isEllipsoid(), Optional.of(image));
-		        dialog.setLocationRelativeTo(getView());
+		        dialog.setLocationRelativeTo(customImageListTableController.getPanel());
 		        dialog.setVisible(true);
 		        collection.updateUserImage(image);
 			}

@@ -23,6 +23,7 @@ public class PerspectiveImage implements IPerspectiveImage
     private static final  Key<Integer[]> intensityRangeKey = Key.of("intensityRange");
     private static final  Key<int[]> maskValuesKey = Key.of("masks");
     private static final  Key<int[]> trimValuesKey = Key.of("trims");
+    private static final  Key<double[]> fillValuesKey = Key.of("fillValues");
     private static final  Key<Integer> numberOfLayersKey = Key.of("numberOfLayers");
     private static final  Key<String> flipKey = Key.of("flip");
     private static final  Key<Double> rotationKey = Key.of("rotation");
@@ -357,7 +358,7 @@ public class PerspectiveImage implements IPerspectiveImage
 	        Double defaultOffset = metadata.get(defaultOffsetKey);
 	        boolean interpolate = metadata.get(interpolationKey);
 
-	        double[] fillValues = new double[] {};
+	        double[] fillValues = metadata.get(fillValuesKey);
 	        PerspectiveImage result = new PerspectiveImage(imagefilename, imageType, pointingSourceType, pointingSource, fillValues);
 	        result.setName(name);
 	        result.setIntensityRange(intensityRange);
@@ -393,6 +394,7 @@ public class PerspectiveImage implements IPerspectiveImage
 	        result.put(imageOriginKey, image.getImageOrigin());
 	        result.put(maskValuesKey, image.getMaskValues());
 	        result.put(trimValuesKey, image.getTrimValues());
+	        result.put(fillValuesKey, image.getFillValues());
 	        result.put(simulateLightingKey, image.isSimulateLighting());
 	        result.put(interpolationKey, image.getInterpolateState());
 	        result.put(etKey, image.getEt());
