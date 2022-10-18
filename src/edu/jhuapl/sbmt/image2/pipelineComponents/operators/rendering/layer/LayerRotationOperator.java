@@ -1,49 +1,45 @@
 package edu.jhuapl.sbmt.image2.pipelineComponents.operators.rendering.layer;
 
-import java.io.IOException;
-import java.util.function.Function;
-
 import edu.jhuapl.sbmt.layer.api.Layer;
-import edu.jhuapl.sbmt.layer.impl.LayerTransformFactory;
+import edu.jhuapl.sbmt.layer.impl.LayerDoubleTransformFactory;
 import edu.jhuapl.sbmt.pipeline.operator.BasePipelineOperator;
 
 public class LayerRotationOperator extends BasePipelineOperator<Layer, Layer>
 {
-    protected final LayerTransformFactory TransformFactory = new LayerTransformFactory();
-    private double rotation;
+    protected final LayerDoubleTransformFactory DoubleTransformFactory = new LayerDoubleTransformFactory();
 
-	public LayerRotationOperator(double rotation)
-	{
-		this.rotation = rotation;
-	}
+    private final double rotation;
 
-	@Override
-	public void processData() throws IOException, Exception
-	{
-		Function<Layer, Layer> rotationType = null;
-		for (Layer layer : inputs)
-		{
-			if (rotation == 0.0)
-			{
-				outputs.add(layer);
-				continue;
-			}
-			else if (rotation == 90.0)
-			{
-				rotationType = TransformFactory.rotateCCW();
-			}
-			else if (rotation == 180.0)
-			{
-				rotationType = TransformFactory.rotateHalfway();
-			}
-			else if (rotation == 270.0)
-			{
-				rotationType = TransformFactory.rotateCW();
-			}
+    public LayerRotationOperator(double rotation)
+    {
+        this.rotation = rotation;
+    }
 
-			Layer rotatedLayer = rotationType.apply(layer);
-			outputs.add(rotatedLayer);
-		}
-	}
+    @Override
+    public void processData()
+    {
+        if (rotation == 0.0)
+        {
+            outputs.addAll(inputs);
+        }
+        else
+        {
+            // TODO: determine why the rotations seem to go in the opposite
+            // sense. +90 should be CCW, +270 should be CW, but it is necessary
+            // to reverse this.
+            double rotation = 360.0 - DoubleTransformFactory.putInRange0to360(this.rotation);
+
+            // Fill the expanded area of the rotated image with zeroes.
+            // TODO: this should not be hard-wired like this; it should come out
+            // of the imaging instrument/model metadata somehow.
+            double expandValue = 0.0;
+
+            for (Layer layer : inputs)
+            {
+                Layer rotatedLayer = DoubleTransformFactory.rotatePreservingSize(rotation, expandValue).apply(layer);
+                outputs.add(rotatedLayer);
+            }
+        }
+    }
 
 }
