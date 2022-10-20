@@ -14,6 +14,8 @@ import javax.swing.SwingConstants;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
+import org.apache.commons.lang3.tuple.Pair;
+
 import edu.jhuapl.sbmt.image2.pipelineComponents.pipelines.rendering.vtk.VtkImageMaskPipeline;
 import edu.jhuapl.sbmt.layer.api.Layer;
 
@@ -32,14 +34,16 @@ public class ImageMaskController
 	private Layer layer;
 	private JPanel panel;
 	private VtkImageMaskPipeline maskPipeline;
-	private Function<Layer, Void> completionBlock;
+	private Function<Pair<Layer, int[]>, Void> completionBlock;
+	private int[] currentMaskValues;
 
-	public ImageMaskController(Layer layer, Function<Layer, Void> completionBlock)
+	public ImageMaskController(Layer layer, int[] currentMaskValues, Function<Pair<Layer, int[]>, Void> completionBlock)
 	{
 		this.layer = layer;
 		this.maskPipeline = new VtkImageMaskPipeline();
 		this.panel = new JPanel();
 		this.completionBlock = completionBlock;
+		this.currentMaskValues = currentMaskValues;
 		panel.setLayout(new GridBagLayout());
 		initGUI();
 	}
@@ -47,6 +51,15 @@ public class ImageMaskController
 	public JPanel getView()
 	{
 		return panel;
+	}
+
+	public void setMaskValues(int[] maskValues)
+	{
+		leftSpinner.setValue((int)maskValues[0]);
+		rightSpinner.setValue((int)maskValues[1]);
+		bottomSpinner.setValue((int)maskValues[3]);
+		topSpinner.setValue((int)maskValues[2]);
+		croppingChanged();
 	}
 
 	public void setLayer(Layer layer)
@@ -191,14 +204,21 @@ public class ImageMaskController
 		panel.add(jLabel8, gridBagConstraints);
 	}
 
+	public int[] getMaskValues()
+	{
+		return new int[] {(int)leftSpinner.getValue(), (int)rightSpinner.getValue(),
+				(int)topSpinner.getValue(), (int)bottomSpinner.getValue()};
+	}
+
 	private void croppingChanged()
 	{
+		if (layer == null) return;
 		try
 		{
 			maskPipeline.run(layer,
 					(int)leftSpinner.getValue(), (int)rightSpinner.getValue(),
 					(int)bottomSpinner.getValue(), (int)topSpinner.getValue());
-			completionBlock.apply(maskPipeline.getUpdatedData().get(0));
+			completionBlock.apply(Pair.of(maskPipeline.getUpdatedData().get(0), getMaskValues()));
 		}
 		catch (Exception e)
 		{
