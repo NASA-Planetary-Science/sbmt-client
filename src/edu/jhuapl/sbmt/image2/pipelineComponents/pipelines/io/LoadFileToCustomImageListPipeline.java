@@ -22,6 +22,7 @@ public class LoadFileToCustomImageListPipeline<G1 extends IPerspectiveImage & IP
 	private LoadFileToCustomImageListPipeline() throws IOException, Exception
 	{
 		File file = CustomFileChooser.showOpenDialog(null, "Select File");
+		if (file == null) return;
 		Just.of(file)
 			.operate(new LoadCustomImageListFromFileOperator<G1>())
 			.subscribe(PairSink.of(results))
