@@ -357,10 +357,8 @@ public class PerspectiveImage implements IPerspectiveImage
 	        Double offset = metadata.get(offsetKey);
 	        Double defaultOffset = metadata.get(defaultOffsetKey);
 	        boolean interpolate = metadata.get(interpolationKey);
-
-	        double[] fillValues = new double[] {};
-	        if (metadata.hasKey(fillValuesKey))
-	        	fillValues = metadata.get(fillValuesKey);
+	        
+	        double[] fillValues = metadata.hasKey(fillValuesKey) ? metadata.get(fillValuesKey) : new double[] {};
 	        PerspectiveImage result = new PerspectiveImage(imagefilename, imageType, pointingSourceType, pointingSource, fillValues);
 	        result.setName(name);
 	        result.setIntensityRange(intensityRange);
@@ -368,8 +366,8 @@ public class PerspectiveImage implements IPerspectiveImage
 	        result.setFlip(flip);
 	        result.setRotation(rotation);
 	        result.setImageOrigin(ImageOrigin.valueFor(imageOrigin));
-	        result.setMaskValues(metadata.get(maskValuesKey));
-	        result.setTrimValues(metadata.get(trimValuesKey));
+	        result.setMaskValues(metadata.hasKey(maskValuesKey) ? metadata.get(maskValuesKey) : new int[] {});
+	        result.setTrimValues(metadata.hasKey(trimValuesKey) ? metadata.get(trimValuesKey) : new int[] {});
 	        result.setSimulateLighting(simulateLighting);
 	        result.setInterpolateState(interpolate);
 	        result.setEt(et);

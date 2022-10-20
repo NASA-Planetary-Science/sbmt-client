@@ -2,16 +2,16 @@ package edu.jhuapl.sbmt.core.image;
 
 public enum ImageSource
 {
-    SPICE("SPICE Derived", "pds", "infofiles"), //
-    GASKELL("SPC Derived", "gaskell", "sumfiles"), //
-    GASKELL_UPDATED("SPC Derived", "gaskell_updated", "sumfiles-updated"), //
-    LABEL("Label Derived", "label", "labels"), //
-    CORRECTED("Corrected", "corrected", "sumfiles-corrected"), //
-    CORRECTED_SPICE("Corrected SPICE Derived", "corrected_pds", "infofiles-corrected"), //
-    IMAGE_MAP("ImageMap", "image_map", ""), //
-    LOCAL_CYLINDRICAL("LocalCylindrical", "local_cylindrical", ""), //
-    LOCAL_PERSPECTIVE("LocalPerspective", "local_perspective", ""), //
-    FALSE_COLOR("FalseColor", "false_color", "");
+    SPICE("SPICE Derived", "pds", "infofiles", "INFO"), //
+    GASKELL("SPC Derived", "gaskell", "sumfiles", "SUM"), //
+    GASKELL_UPDATED("SPC Derived", "gaskell_updated", "sumfiles-updated", "SUM"), //
+    LABEL("Label Derived", "label", "labels", "LBL"), //
+    CORRECTED("Corrected", "corrected", "sumfiles-corrected", "SUM"), //
+    CORRECTED_SPICE("Corrected SPICE Derived", "corrected_pds", "infofiles-corrected", "INFO"), //
+    IMAGE_MAP("ImageMap", "image_map", "", null), //
+    LOCAL_CYLINDRICAL("LocalCylindrical", "local_cylindrical", "", null), //
+    LOCAL_PERSPECTIVE("LocalPerspective", "local_perspective", "", null), //
+    FALSE_COLOR("FalseColor", "false_color", "", null);
 
     // String used in the GUI Pointing drop-down menu
     private final String string;
@@ -19,12 +19,15 @@ public enum ImageSource
     private final String databaseTableName;
     // String locating pointing files under the model/imager directory
     private final String pointingDir;
+    // String indicating type of pointing, e.g. INFO
+    private final String pointingType;
 
-    private ImageSource(String nameString, String databaseTableName, String pointingDir)
+    private ImageSource(String nameString, String databaseTableName, String pointingDir, String pointingType)
     {
         this.string = nameString;
         this.databaseTableName = databaseTableName;
         this.pointingDir = pointingDir;
+        this.pointingType = pointingType;
     }
 
     @Override
@@ -48,6 +51,11 @@ public enum ImageSource
     public String getPointingDir()
     {
         return pointingDir;
+    }
+
+    public String getPointingType()
+    {
+        return pointingType;
     }
 
     public static String printSources(int tabLen)
