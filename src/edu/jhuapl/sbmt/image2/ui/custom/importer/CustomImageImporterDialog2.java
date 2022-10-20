@@ -10,7 +10,6 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Date;
 import java.util.List;
-import java.util.Optional;
 
 import javax.swing.Box;
 import javax.swing.BoxLayout;
@@ -31,6 +30,7 @@ import edu.jhuapl.saavtk.util.FileUtil;
 import edu.jhuapl.sbmt.core.image.IImagingInstrument;
 import edu.jhuapl.sbmt.core.image.ImageSource;
 import edu.jhuapl.sbmt.core.image.ImageType;
+import edu.jhuapl.sbmt.image2.controllers.custom.CustomImageEditingController;
 import edu.jhuapl.sbmt.image2.interfaces.IPerspectiveImage;
 import edu.jhuapl.sbmt.image2.interfaces.IPerspectiveImageTableRepresentable;
 import edu.jhuapl.sbmt.image2.model.CompositePerspectiveImage;
@@ -145,9 +145,9 @@ public class CustomImageImporterDialog2<G1 extends IPerspectiveImage & IPerspect
 //		if (image.getImageType() == ImageType.GENERIC_IMAGE) return;
 		if (image.getNumberOfLayers() == 1)	//editing custom single layer image
 		{
-			CustomImageImporterDialog<G1> dialog = new CustomImageImporterDialog<G1>(null, true, isEllipsoid, Optional.of(image));
-	        dialog.setLocationRelativeTo(getContentPane());
-	        dialog.setVisible(true);
+			CustomImageEditingController<G1> dialog = new CustomImageEditingController<G1>(null, isEllipsoid, image, () -> {});
+	        dialog.getDialog().setLocationRelativeTo(getContentPane());
+	        dialog.getDialog().setVisible(true);
 	        ImageSource pointingSourceType = image.getPointingSource().endsWith("sum") || image.getPointingSource().endsWith("SUM") ? ImageSource.GASKELL : ImageSource.SPICE;
 	        image.setPointingSourceType(pointingSourceType);
 	        storeImage(image.getFilename(), image.getFilename(), image.getPointingSourceType(), image.getPointingSource());
@@ -418,7 +418,7 @@ public class CustomImageImporterDialog2<G1 extends IPerspectiveImage & IPerspect
 		else
 			pointingSourceType = ImageSource.LOCAL_CYLINDRICAL;
 
-		String newPointingFilepath = "";
+		String newPointingFilepath = "FILE NOT FOUND";
 		if (!pointingSource.isEmpty())
 		{
 			newPointingFilepath = imageCollection.getSmallBodyModels().get(0).getCustomDataFolder() + File.separator + new File(pointingSource).getName();
@@ -457,7 +457,7 @@ public class CustomImageImporterDialog2<G1 extends IPerspectiveImage & IPerspect
 		}
 		else
 		{
-			if (instrument != null)
+			if (imageType != ImageType.GENERIC_IMAGE)
 			{
 				image.setLinearInterpolatorDims(instrument.getLinearInterpolationDims());
 				image.setMaskValues(instrument.getMaskValues());

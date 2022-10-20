@@ -32,6 +32,7 @@ import javax.swing.JSplitPane;
 import javax.swing.WindowConstants;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.tuple.Pair;
 
 import vtk.vtkImageData;
 import vtk.vtkImageReslice;
@@ -422,20 +423,21 @@ public class LayerPreviewPanel extends ModelInfoWindow implements MouseListener,
 		gridBagConstraints.fill = GridBagConstraints.HORIZONTAL;
 		gridBagConstraints.anchor = GridBagConstraints.WEST;
 		gridBagConstraints.insets = new Insets(3, 6, 3, 0);
-		trimController = new ImageTrimController(layer, currentMaskValues, new Function<Layer, Void>()
+		trimController = new ImageTrimController(layer, currentMaskValues, new Function<Pair<Layer, int[]>, Void>()
 		{
 
 			@Override
-			public Void apply(Layer t)
+			public Void apply(Pair<Layer, int[]> items)
 			{
 				try
 				{
-					generateVtkImageData(t);
+					int[] masks = items.getRight();
+					generateVtkImageData(items.getLeft());
 					updateImage(displayedImage);
 					setIntensity(null);
 					if (renWin == null) return null;
 					renWin.Render();
-					layer = t;
+					layer = items.getLeft();
 					if (completionBlock != null) completionBlock.run();
 				}
 				catch (Exception e)

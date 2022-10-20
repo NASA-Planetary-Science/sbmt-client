@@ -37,6 +37,7 @@ import edu.jhuapl.sbmt.common.client.SmallBodyViewConfig;
 import edu.jhuapl.sbmt.core.image.IImagingInstrument;
 import edu.jhuapl.sbmt.core.image.ImagingInstrument;
 import edu.jhuapl.sbmt.core.imageui.search.ImagingSearchPanel;
+import edu.jhuapl.sbmt.image2.controllers.custom.CustomImageEditingController;
 import edu.jhuapl.sbmt.image2.interfaces.IPerspectiveImage;
 import edu.jhuapl.sbmt.image2.interfaces.IPerspectiveImageTableRepresentable;
 import edu.jhuapl.sbmt.image2.model.ImageSearchParametersModel;
@@ -46,7 +47,6 @@ import edu.jhuapl.sbmt.image2.pipelineComponents.pipelines.io.ImageGalleryPipeli
 import edu.jhuapl.sbmt.image2.pipelineComponents.pipelines.io.LoadFileToCustomImageListPipeline;
 import edu.jhuapl.sbmt.image2.pipelineComponents.pipelines.io.LoadImagesFromSavedFilePipeline;
 import edu.jhuapl.sbmt.image2.pipelineComponents.pipelines.io.SaveImagesToSavedFilePipeline;
-import edu.jhuapl.sbmt.image2.ui.custom.importer.CustomImageImporterDialog;
 import edu.jhuapl.sbmt.image2.ui.custom.importer.CustomImageImporterDialog2;
 import edu.jhuapl.sbmt.image2.ui.table.popup.ImageListPopupMenu;
 import edu.jhuapl.sbmt.util.ImageGalleryGenerator;
@@ -422,10 +422,10 @@ public class ImageSearchController<G1 extends IPerspectiveImage & IPerspectiveIm
 			G1 image = selectedItems.asList().get(0);
 			if (image.getNumberOfLayers() == 1)	//editing custom single layer image
 			{
-				CustomImageImporterDialog<G1> dialog = new CustomImageImporterDialog<G1>(null, true,
-						modelManager.getPolyhedralModel().isEllipsoid(), Optional.of(image));
-		        dialog.setLocationRelativeTo(customImageListTableController.getPanel());
-		        dialog.setVisible(true);
+				CustomImageEditingController<G1> dialog = new CustomImageEditingController<G1>(null,
+						modelManager.getPolyhedralModel().isEllipsoid(), image, () -> {});
+		        dialog.getDialog().setLocationRelativeTo(customImageListTableController.getPanel());
+		        dialog.getDialog().setVisible(true);
 		        collection.updateUserImage(image);
 			}
 			else if (image.getNumberOfLayers() == 3) //editing custom color image
