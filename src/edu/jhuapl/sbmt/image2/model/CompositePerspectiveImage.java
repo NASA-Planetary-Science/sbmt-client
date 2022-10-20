@@ -287,7 +287,7 @@ public class CompositePerspectiveImage implements IPerspectiveImage, IPerspectiv
 
 	public void setFillValues(double[] fillValues)
 	{
-		this.fillValues = fillValues;
+		this.images.get(0).setFillValues(fillValues);
 	}
 
 	public double getEt()

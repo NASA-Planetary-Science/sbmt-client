@@ -358,7 +358,9 @@ public class PerspectiveImage implements IPerspectiveImage
 	        Double defaultOffset = metadata.get(defaultOffsetKey);
 	        boolean interpolate = metadata.get(interpolationKey);
 
-	        double[] fillValues = metadata.get(fillValuesKey);
+	        double[] fillValues = new double[] {};
+	        if (metadata.hasKey(fillValuesKey))
+	        	fillValues = metadata.get(fillValuesKey);
 	        PerspectiveImage result = new PerspectiveImage(imagefilename, imageType, pointingSourceType, pointingSource, fillValues);
 	        result.setName(name);
 	        result.setIntensityRange(intensityRange);
