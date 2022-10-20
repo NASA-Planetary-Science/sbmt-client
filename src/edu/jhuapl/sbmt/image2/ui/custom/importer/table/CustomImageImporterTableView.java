@@ -10,7 +10,6 @@ import javax.swing.JButton;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
-import javax.swing.UIManager;
 import javax.swing.border.TitledBorder;
 
 import edu.jhuapl.saavtk.gui.util.IconUtil;
@@ -115,8 +114,9 @@ public class CustomImageImporterTableView<G1 extends IPerspectiveImage & IPerspe
 
 		// Table header
 
-		loadImageButton = GuiUtil.formButton(listener, UIManager.getIcon("FileView.directoryIcon"));
-		loadImageButton.setToolTipText(ToolTipUtil.getItemLoad());
+//		loadImageButton = GuiUtil.formButton(listener, UIManager.getIcon("FileView.directoryIcon"));
+		loadImageButton = GuiUtil.formButton(listener, IconUtil.getItemAdd());
+		loadImageButton.setToolTipText(ToolTipUtil.getCustomImage());
 
 		deleteImageButton = GuiUtil.formButton(listener, IconUtil.getItemDel());
 		deleteImageButton.setToolTipText(ToolTipUtil.getItemDel());
