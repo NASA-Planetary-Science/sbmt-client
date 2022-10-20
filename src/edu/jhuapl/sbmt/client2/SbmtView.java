@@ -478,7 +478,7 @@ public class SbmtView extends View implements PropertyChangeListener
 		setupOlderImageTabs();
 		PerspectiveImageCollection collection = (PerspectiveImageCollection)getModelManager().getModel(ModelNames.IMAGES_V2);
 		if (getPolyhedralModelConfig().imagingInstruments.length == 0)
-			addTab("Custom Images", new ImageSearchController(getPolyhedralModelConfig(), collection, Optional.ofNullable(null), getModelManager(), getPopupManager(), getRenderer(), getPickManager(), (SbmtInfoWindowManager) getInfoPanelManager(), (SbmtSpectrumWindowManager) getSpectrumPanelManager()).getView());
+			addTab("Images", new ImageSearchController(getPolyhedralModelConfig(), collection, Optional.ofNullable(null), getModelManager(), getPopupManager(), getRenderer(), getPickManager(), (SbmtInfoWindowManager) getInfoPanelManager(), (SbmtSpectrumWindowManager) getSpectrumPanelManager()).getView());
 		else
 			for (ImagingInstrument instrument : getPolyhedralModelConfig().imagingInstruments)
 		    {
