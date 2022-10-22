@@ -263,15 +263,6 @@ public class CustomImageEditingController<G1 extends IPerspectiveImage & IPerspe
 			}
 			existingImage.setFillValues(doubleArray);
 			renderLayerAndAddAttributes();
-//			try
-//			{
-//				getLayers();
-//			}
-//			catch (Exception e1)
-//			{
-//				// TODO Auto-generated catch block
-//				e1.printStackTrace();
-//			}
 		});
 	}
 
@@ -394,12 +385,7 @@ public class CustomImageEditingController<G1 extends IPerspectiveImage & IPerspe
 	{
 		List<IRenderableImage> renderableImages = null;
 		layers.clear();
-//		System.out.println("CustomImageEditingController: getLayers: existing image fill values size " + Arrays.toString(existingImage.getFillValues()));
 		if ((dialog == null) || dialog.getPointingFilenameTextField().getText().equals("FILE NOT FOUND") /*|| existingImage.getPointingSource().equals("FILE NOT FOUND")*/) return;
-//		System.out.println("CustomImageEditingController: getLayers: filename |" + dialog.getPointingFilenameTextField().getText() + "|");
-//		System.out.println("CustomImageEditingController: getLayers: pointing source type " + existingImage.getPointingSourceType());
-//		System.out.println("CustomImageEditingController: getLayers: image type " + existingImage.getImageType());
-//		System.out.println("CustomImageEditingController: getLayers: mask values " + Arrays.toString(existingImage.getMaskValues()));
 		if (existingImage.getPointingSourceType() == ImageSource.LOCAL_CYLINDRICAL)
 		{
 			CylindricalImageToRenderableImagePipeline pipeline = CylindricalImageToRenderableImagePipeline.of(List.of(existingImage));
@@ -422,29 +408,26 @@ public class CustomImageEditingController<G1 extends IPerspectiveImage & IPerspe
 	{
 		String filename = dialog.getImagePathTextField().getText();
 
-//		existingImage.ifPresent(image ->
-//		{
-
-			imageType = existingImage.getImageType();
-			existingImage.setName(dialog.getImageNameTextField().getText());
-			if (dialog.getPointingTypeComboBox().getSelectedItem().equals("Perspective Projection"))
-			{
-				existingImage.setPointingSource(dialog.getPointingFilenameTextField().getText());
-				existingImage.setFlip((String) dialog.getImageFlipComboBox().getSelectedItem());
-				existingImage.setRotation(Double.parseDouble((String) dialog.getImageRotationComboBox().getSelectedItem()));
-			}
+		imageType = existingImage.getImageType();
+		existingImage.setName(dialog.getImageNameTextField().getText());
+		if (dialog.getPointingTypeComboBox().getSelectedItem().equals("Perspective Projection"))
+		{
+			existingImage.setPointingSource(dialog.getPointingFilenameTextField().getText());
+			existingImage.setFlip((String) dialog.getImageFlipComboBox().getSelectedItem());
+			existingImage.setRotation(Double.parseDouble((String) dialog.getImageRotationComboBox().getSelectedItem()));
+		}
+		else
+		{
+			Double minLat = Double.parseDouble(dialog.getMinLatitudeTextField().getText());
+			Double maxLat = Double.parseDouble(dialog.getMaxLatitudeTextField().getText());
+			Double minLon = Double.parseDouble(dialog.getMinLongitudeTextField().getText());
+			Double maxLon = Double.parseDouble(dialog.getMaxLongitudeTextField().getText());
+			existingImage.setBounds(new CylindricalBounds(minLat, maxLat, minLon, maxLon));
+			if (dialog.getFlipAboutXCheckBox().isSelected())
+				existingImage.setFlip("X");
 			else
-			{
-				Double minLat = Double.parseDouble(dialog.getMinLatitudeTextField().getText());
-				Double maxLat = Double.parseDouble(dialog.getMaxLatitudeTextField().getText());
-				Double minLon = Double.parseDouble(dialog.getMinLongitudeTextField().getText());
-				Double maxLon = Double.parseDouble(dialog.getMaxLongitudeTextField().getText());
-				existingImage.setBounds(new CylindricalBounds(minLat, maxLat, minLon, maxLon));
-				if (dialog.getFlipAboutXCheckBox().isSelected())
-					existingImage.setFlip("X");
-				else
-					existingImage.setFlip("None");
-			}
+				existingImage.setFlip("None");
+		}
 //		});
 		// ImageType imageType = (ImageType)imageTypeComboBox.getSelectedItem();
 		// String pointingSource = pointingFilenameTextField.getText();
@@ -491,11 +474,6 @@ public class CustomImageEditingController<G1 extends IPerspectiveImage & IPerspe
 		if (displayedImage.GetNumberOfScalarComponents() != 1)
 			dialog.getContrastController().getView().setVisible(false);
 		this.layer = layer;
-//		PixelDouble pMin = new PixelDoubleFactory().of(0, -Double.NaN, -Double.NaN);
-//        PixelDouble pMax = new PixelDoubleFactory().of(0, -Double.NaN, -Double.NaN);
-//        this.layer.getRange(pMin, pMax);
-//        System.out.println("CustomImageEditingController: generateVtkImageData: pmin valid " + pMin.isValid());
-//        System.out.println("CustomImageEditingController: getLayers: min value " + pMin.get() + " max " + pMax.get());
 	}
 
 	private void renderLayer(Layer layer) throws IOException, Exception
@@ -508,18 +486,13 @@ public class CustomImageEditingController<G1 extends IPerspectiveImage & IPerspe
 		vtkInteractorStyleImage style = new vtkInteractorStyleImage();
 		renWin.setInteractorStyle(style);
 
-		// renWin.getRenderWindow().GetInteractor().GetInteractorStyle().AddObserver("WindowLevelEvent",
-		// this,
-		// "levelsChanged");
-
 		updateImage(displayedImage);
 
 		renWin.getRenderer().AddActor(actor);
 
 		renWin.setSize(550, 550);
 
-		renWin.getRenderer().SetBackground(new double[]
-		{ 0.5f, 0.5f, 0.5f });
+		renWin.getRenderer().SetBackground(new double[]{ 0.5f, 0.5f, 0.5f });
 
 		renWin.getComponent().addMouseListener(this);
 		renWin.getComponent().addMouseMotionListener(this);
@@ -530,7 +503,6 @@ public class CustomImageEditingController<G1 extends IPerspectiveImage & IPerspe
 		GridBagConstraints gridBagConstraints = new GridBagConstraints();
 		gridBagConstraints.gridx = 0;
 		gridBagConstraints.gridy = 0;
-		// gridBagConstraints.gridwidth = 2;
 		gridBagConstraints.fill = GridBagConstraints.BOTH;
 		gridBagConstraints.weightx = 1.0;
 		gridBagConstraints.weighty = 1.0;
@@ -541,8 +513,6 @@ public class CustomImageEditingController<G1 extends IPerspectiveImage & IPerspe
 
 	private void updateImage(vtkImageData displayedImage)
 	{
-//		System.out.println("CustomImageEditingController: updateImage: min " + displayedImage.GetScalarRange()[0]);
-//		System.out.println("CustomImageEditingController: updateImage: max " + displayedImage.GetScalarRange()[1]);
 		double[] center = displayedImage.GetCenter();
 		int[] dims = displayedImage.GetDimensions();
 		// Rotate image by 90 degrees so it appears the same way as when you
