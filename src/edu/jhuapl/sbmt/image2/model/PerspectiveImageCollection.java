@@ -14,6 +14,7 @@ import java.util.function.Function;
 import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
 
+import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.jfree.data.Range;
 
@@ -31,8 +32,10 @@ import edu.jhuapl.saavtk.util.IdPair;
 import edu.jhuapl.saavtk.util.IntensityRange;
 import edu.jhuapl.saavtk.util.Properties;
 import edu.jhuapl.sbmt.common.client.SmallBodyModel;
+import edu.jhuapl.sbmt.core.image.CustomImageKeyInterface;
 import edu.jhuapl.sbmt.core.image.IImagingInstrument;
 import edu.jhuapl.sbmt.core.image.ImageSource;
+import edu.jhuapl.sbmt.core.image.ImageType;
 import edu.jhuapl.sbmt.core.image.PointingFileReader;
 import edu.jhuapl.sbmt.image2.interfaces.IPerspectiveImage;
 import edu.jhuapl.sbmt.image2.interfaces.IPerspectiveImageTableRepresentable;
@@ -88,7 +91,7 @@ public class PerspectiveImageCollection<G1 extends IPerspectiveImage & IPerspect
 		this.offLimbBoundaryRenderers = new HashMap<G1, List<vtkActor>>();
 		this.renderingStates = new HashMap<G1, PerspectiveImageRenderingState<G1>>();
 		this.smallBodyModels = smallBodyModels;
-
+		migrateOldUserList();
 		for (SmallBodyModel smallBodyModel : smallBodyModels)
 		{
 			smallBodyModel.addPropertyChangeListener((evt) -> {
@@ -153,6 +156,109 @@ public class PerspectiveImageCollection<G1 extends IPerspectiveImage & IPerspect
 		state.boundaryColor = color;
 		renderingStates.put(image,state);
 		updateUserList();	//update the user created list, stored in metadata
+	}
+
+	private void migrateOldUserList()
+	{
+		String newUserFilename = smallBodyModels.get(0).getCustomDataFolder() + File.separator + "userImages.txt";
+		if (new File(newUserFilename).exists()) return;	//conversion has already taken place
+		String filename = smallBodyModels.get(0).getCustomDataFolder() + File.separator + "config.txt";
+		if (!new File(filename).exists()) return;	//there is no previous version file
+		FixedMetadata metadata;
+        try
+        {
+        	Key<List<CustomImageKeyInterface>> userImagesKey = Key.of("customImages");
+        	metadata = Serializers.deserialize(new File(filename), "CustomImages");
+        	List<CustomImageKeyInterface> customImages = metadata.get(userImagesKey);
+        	for (CustomImageKeyInterface info : customImages)
+            {
+        		G1 image = convertCustomImageKeyInterfaceToModern(info);
+        		userImages.add(image);
+
+            }
+        	updateUserList();
+        }
+        catch (IOException e)
+        {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+        loadUserList();
+	}
+
+	/**
+	 * Convert pre-Image reorg custom image metadata files to the new CompositePerspectiveImage format. This includes
+	 * fields for items such as masking, fill values and interpolation that were not present before the image reorg.
+	 * @param info
+	 * @return
+	 */
+	private G1 convertCustomImageKeyInterfaceToModern(CustomImageKeyInterface info)
+	{
+		PerspectiveImage image = null;
+		double[] fillValues = new double[] {};
+		ImageType imageType = info.getImageType();
+		String filePath = smallBodyModels.get(0).getCustomDataFolder() + File.separator + info.getImageFilename();
+		String pointingFile = smallBodyModels.get(0).getCustomDataFolder() + File.separator + info.getPointingFile();
+		ImageSource pointingSourceType = info.getSource();
+//		if (info instanceof CustomPerspectiveImageKey)
+//		{
+//			CustomPerspectiveImageKey perInfo = (CustomPerspectiveImageKey)info;
+//
+//		}
+//		else
+//		{
+//			CustomCylindricalImageKey cylInfo = (CustomCylindricalImageKey)info;
+//		}
+		image = new PerspectiveImage(filePath, imageType, pointingSourceType, pointingFile, fillValues);
+		image.setName(info.getName());
+		image.setImageOrigin(ImageOrigin.LOCAL);
+		image.setLongTime(info.getDate().getTime());
+		if (pointingSourceType == ImageSource.LOCAL_CYLINDRICAL)
+		{
+			image.setBounds(new CylindricalBounds(-90,90,0,360));
+		}
+		else
+		{
+			if (imageType != ImageType.GENERIC_IMAGE)
+			{
+
+				image.setLinearInterpolatorDims(new int[] {});
+				image.setMaskValues(new int[] {});
+				image.setFillValues(new double[] {});
+				image.setFlip(info.getFlip());
+				image.setRotation(info.getRotation());
+			}
+		}
+		CompositePerspectiveImage compImage = new CompositePerspectiveImage(List.of(image));
+		compImage.setName(FilenameUtils.getBaseName(filePath));
+
+		return (G1)compImage;
+    	//Code from other file
+//    	ImageType imageType = (ImageType)imageTypeComboBox.getSelectedItem();
+//
+//		double[] fillValues = new double[] {};
+//		PerspectiveImage image = new PerspectiveImage(newFilepath, imageType, pointingSourceType, newPointingFilepath, fillValues);
+//
+//		image.setName(getName());
+//		image.setImageOrigin(ImageOrigin.LOCAL);
+//		image.setLongTime(new Date().getTime());
+//		if (pointingSourceType == ImageSource.LOCAL_CYLINDRICAL)
+//		{
+//			image.setBounds(new CylindricalBounds(-90,90,0,360));
+//		}
+//		else
+//		{
+//			if (imageType != ImageType.GENERIC_IMAGE)
+//			{
+//				image.setLinearInterpolatorDims(instrument.getLinearInterpolationDims());
+//				image.setMaskValues(instrument.getMaskValues());
+//				image.setFillValues(instrument.getFillValues());
+//				image.setFlip(instrument.getFlip());
+//				image.setRotation(instrument.getRotation());
+//			}
+//		}
+//		CompositePerspectiveImage compImage = new CompositePerspectiveImage(List.of(image));
+//		compImage.setName(FilenameUtils.getBaseName(filename));
 	}
 
 	public void loadUserList()
