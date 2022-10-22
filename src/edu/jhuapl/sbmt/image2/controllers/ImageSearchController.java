@@ -462,20 +462,29 @@ public class ImageSearchController<G1 extends IPerspectiveImage & IPerspectiveIm
 	private void updateButtonState()
 	{
 		ImmutableSet<G1> selectedItems = collection.getSelectedItems();
-		boolean allMapped = true;
-		boolean allBorders = true;
+		boolean allMapped = false;
+		boolean allBorders = false;
+		boolean someMapped = false;
+		boolean someBorders = false;
+		int numMapped = 0;
+		int numBoundary = 0;
 		for (G1 image : selectedItems)
 		{
-			if (image.isMapped() == false) allMapped = false;
-			if (image.isBoundaryShowing() == false) allBorders = false;
+			if (image.isMapped()) numMapped++;
+			if (image.isBoundaryShowing()) numBoundary++;
 		}
+		if (selectedItems.size() == numMapped) allMapped = true;
+		if (selectedItems.size() == numBoundary) allBorders = true;
+		if (numMapped > 0 && numMapped < selectedItems.size()) someMapped = true;
+		if (numBoundary > 0 && numBoundary < selectedItems.size()) someBorders = true;
+
 		if (collection.getInstrument() != null)
 		{
 			imageListTableController.getPanel().getSaveImageButton().setEnabled(selectedItems.size() > 1);
-			imageListTableController.getPanel().getHideImageButton().setEnabled((selectedItems.size() > 0) && allMapped);
-			imageListTableController.getPanel().getShowImageButton().setEnabled((selectedItems.size() > 0) && !allMapped);
-			imageListTableController.getPanel().getHideImageBorderButton().setEnabled((selectedItems.size() > 0) && allBorders);
-			imageListTableController.getPanel().getShowImageBorderButton().setEnabled((selectedItems.size() > 0) && !allBorders);
+			imageListTableController.getPanel().getHideImageButton().setEnabled((selectedItems.size() > 0) && (allMapped || someMapped));
+			imageListTableController.getPanel().getShowImageButton().setEnabled((selectedItems.size() > 0) && !allMapped || someMapped);
+			imageListTableController.getPanel().getHideImageBorderButton().setEnabled((selectedItems.size() > 0) && allBorders || someBorders);
+			imageListTableController.getPanel().getShowImageBorderButton().setEnabled((selectedItems.size() > 0) && !allBorders || someBorders);
 			ImageGalleryGenerator.of(instrument.orElse(null), state -> {
 				imageListTableController.getPanel().getGalleryButton().setEnabled(true);
 			});
@@ -484,10 +493,10 @@ public class ImageSearchController<G1 extends IPerspectiveImage & IPerspectiveIm
 		else
 		{
 			customImageListTableController.getPanel().getEditImageButton().setEnabled(selectedItems.size() == 1);
-			customImageListTableController.getPanel().getHideImageButton().setEnabled((selectedItems.size() > 0) && allMapped);
-			customImageListTableController.getPanel().getShowImageButton().setEnabled((selectedItems.size() > 0) && !allMapped);
-			customImageListTableController.getPanel().getHideImageBorderButton().setEnabled((selectedItems.size() > 0) && allBorders);
-			customImageListTableController.getPanel().getShowImageBorderButton().setEnabled((selectedItems.size() > 0) && !allBorders);
+			customImageListTableController.getPanel().getHideImageButton().setEnabled((selectedItems.size() > 0) && allMapped || someMapped);
+			customImageListTableController.getPanel().getShowImageButton().setEnabled((selectedItems.size() > 0) && !allMapped || someMapped);
+			customImageListTableController.getPanel().getHideImageBorderButton().setEnabled((selectedItems.size() > 0) && allBorders || someBorders);
+			customImageListTableController.getPanel().getShowImageBorderButton().setEnabled((selectedItems.size() > 0) && !allBorders || someBorders);
 			customImageListTableController.getPanel().getDeleteImageButton().setEnabled(selectedItems.size() > 0);
 		}
 	}
