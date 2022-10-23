@@ -480,7 +480,7 @@ public class ImageSearchController<G1 extends IPerspectiveImage & IPerspectiveIm
 
 		if (collection.getInstrument() != null)
 		{
-			imageListTableController.getPanel().getSaveImageButton().setEnabled(selectedItems.size() > 1);
+			imageListTableController.getPanel().getSaveImageButton().setEnabled(selectedItems.size() > 0);
 			imageListTableController.getPanel().getHideImageButton().setEnabled((selectedItems.size() > 0) && (allMapped || someMapped));
 			imageListTableController.getPanel().getShowImageButton().setEnabled((selectedItems.size() > 0) && !allMapped || someMapped);
 			imageListTableController.getPanel().getHideImageBorderButton().setEnabled((selectedItems.size() > 0) && allBorders || someBorders);

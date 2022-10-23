@@ -1,10 +1,12 @@
 package edu.jhuapl.sbmt.image2.ui.table.popup.boundaryColor;
 
+import java.awt.Color;
 import java.awt.Component;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JMenu;
@@ -72,32 +74,35 @@ public class BoundaryColorAction<G1 extends IPerspectiveImage & IPerspectiveImag
 	public void setChosenItems(Collection<G1> aItemC, JMenuItem aAssocMI)
 	{
 		super.setChosenItems(aItemC, aAssocMI);
-		//TODO Fix this
-//		// Determine if all selected items have the same (custom) color
-//		Color initColor = refManager.getColorProviderTarget(aItemC.iterator().next()).getBaseColor();
-//		boolean isSameCustomColor = true;
-//		for (G1 aItem : aItemC)
-//		{
-//			Color evalColor = refManager.getColorProviderTarget(aItem).getBaseColor();
-//			isSameCustomColor &= Objects.equals(initColor, evalColor) == true;
-//			isSameCustomColor &= refManager.hasCustomColorProvider(aItem) == true;
-//		}
-//
-//		// Update our child LidarPopActions
-//		for (JMenuItem aMI : actionM.keySet())
-//		{
-//			PopAction<G1> tmpLPA = actionM.get(aMI);
-//			tmpLPA.setChosenItems(aItemC, aMI);
-//
-//			// If all items have the same custom color and match one of the
-//			// predefined colors then update the corresponding menu item.
-//			if (tmpLPA instanceof FixedImageColorAction<?>)
-//			{
-//				boolean isSelected = isSameCustomColor == true;
-//				isSelected &= ((FixedImageColorAction<?>) tmpLPA).getColor().equals(initColor) == true;
-//				aMI.setSelected(isSelected);
-//			}
-//		}
+		// Determine if all selected items have the same (custom) color
+		Color initColor = aManager.getImageBoundaryColor((G1)aItemC.toArray()[0]);
+		boolean isSameCustomColor = true;
+		for (G1 aItem : aItemC)
+		{
+			Color evalColor = aManager.getImageBoundaryColor(aItem);
+			isSameCustomColor &= Objects.equals(initColor, evalColor) == true;
+		}
+
+		// Update our child
+		for (JMenuItem aMI : actionM.keySet())
+		{
+			PopAction<G1> tmpLPA = actionM.get(aMI);
+			tmpLPA.setChosenItems(aItemC, aMI);
+
+			// If all items have the same custom color and match one of the
+			// predefined colors then update the corresponding menu item.
+			if (tmpLPA instanceof FixedImageColorAction<?>)
+			{
+				boolean isSelected = isSameCustomColor == true;
+				isSelected &= ((FixedImageColorAction<?>) tmpLPA).getColor().equals(initColor) == true;
+				aMI.setSelected(isSelected);
+			}
+			else if (tmpLPA instanceof CustomBoundaryColorAction<?>)
+			{
+				System.out.println("BoundaryColorAction: setChosenItems: custom boundary item is " + aMI.getText());
+				aMI.setSelected(true);
+			}
+		}
 	}
 
 

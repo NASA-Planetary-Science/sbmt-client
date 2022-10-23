@@ -586,7 +586,7 @@ public class CustomImageEditingDialog<G1 extends IPerspectiveImage & IPerspectiv
 	{
 		JPanel panel = new JPanel();
 		panel.setLayout(new BoxLayout(panel, BoxLayout.X_AXIS));
-		panel.add(new JLabel("Fill Vals:"));
+		panel.add(new JLabel("Fill Value(s):"));
 
 		fillValuesButton = new JButton("Apply");
 
