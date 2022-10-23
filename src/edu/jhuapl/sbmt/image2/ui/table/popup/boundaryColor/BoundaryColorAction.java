@@ -99,7 +99,6 @@ public class BoundaryColorAction<G1 extends IPerspectiveImage & IPerspectiveImag
 			}
 			else if (tmpLPA instanceof CustomBoundaryColorAction<?>)
 			{
-				System.out.println("BoundaryColorAction: setChosenItems: custom boundary item is " + aMI.getText());
 				aMI.setSelected(true);
 			}
 		}
