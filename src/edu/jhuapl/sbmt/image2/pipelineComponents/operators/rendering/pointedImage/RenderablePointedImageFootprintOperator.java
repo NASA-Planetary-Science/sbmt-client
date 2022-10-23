@@ -65,49 +65,52 @@ public class RenderablePointedImageFootprintOperator extends BasePipelineOperato
         	.operate(new VtkImageVtkMaskingOperator(renderableImage.getMasking().getMask()))
         	.subscribe(Sink.of(imageData)).run();
         List<vtkPolyData> footprints = Lists.newArrayList();
-    	for (SmallBodyModel smallBody : smallBodyModels)
-    	{
-    		String imageFilename = getPrerenderingFileNameBase(renderableImage, smallBody) + "_footprintImageData.vtk.gz";
-    		vtkPolyData existingFootprint = LoadPolydataFromCachePipeline.of(imageFilename).orNull();
-    		if (existingFootprint != null)
-    		{
-    			footprints.add(existingFootprint);
-    			continue;
-    		}
+        synchronized(RenderablePointedImageFootprintOperator.class)
+        {
+	    	for (SmallBodyModel smallBody : smallBodyModels)
+	    	{
+	    		String imageFilename = getPrerenderingFileNameBase(renderableImage, smallBody) + "_footprintImageData.vtk.gz";
+	    		vtkPolyData existingFootprint = LoadPolydataFromCachePipeline.of(imageFilename).orNull();
+	    		if (existingFootprint != null)
+	    		{
+	    			footprints.add(existingFootprint);
+	    			continue;
+	    		}
 
-    		vtkFloatArray textureCoords = new vtkFloatArray();
-    		vtkPolyData tmp = null;
-    		vtkPolyData footprint = new vtkPolyData();
-	        tmp = smallBody.computeFrustumIntersection(spacecraftPositionAdjusted,
-	        															frustum1Adjusted,
-	        															frustum3Adjusted,
-	        															frustum4Adjusted,
-	        															frustum2Adjusted);
+	    		vtkFloatArray textureCoords = new vtkFloatArray();
+	    		vtkPolyData tmp = null;
+	    		vtkPolyData footprint = new vtkPolyData();
+		        tmp = smallBody.computeFrustumIntersection(spacecraftPositionAdjusted,
+		        															frustum1Adjusted,
+		        															frustum3Adjusted,
+		        															frustum4Adjusted,
+		        															frustum2Adjusted);
 
-	        if (tmp == null) return;
+		        if (tmp == null) return;
 
-	        // Need to clear out scalar data since if coloring data is being shown,
-	        // then the color might mix-in with the image.
-	        tmp.GetCellData().SetScalars(null);
-	        tmp.GetPointData().SetScalars(null);
+		        // Need to clear out scalar data since if coloring data is being shown,
+		        // then the color might mix-in with the image.
+		        tmp.GetCellData().SetScalars(null);
+		        tmp.GetPointData().SetScalars(null);
 
-	        footprint.DeepCopy(tmp);
-	        vtkPointData pointData = footprint.GetPointData();
-	        pointData.SetTCoords(textureCoords);
-	        PolyDataUtil.generateTextureCoordinates(frustum, renderableImage.getImageWidth(), renderableImage.getImageHeight(), footprint);
-	        pointData.Delete();
-	        PolyDataUtil.shiftPolyDataInNormalDirection(footprint, renderableImage.getOffset());
-			vtkTexture imageTexture = new vtkTexture();
-	        imageTexture.InterpolateOn();
-	        imageTexture.RepeatOff();
-	        imageTexture.EdgeClampOn();
-	        imageTexture.SetInputData(imageData.get(0));
+		        footprint.DeepCopy(tmp);
+		        vtkPointData pointData = footprint.GetPointData();
+		        pointData.SetTCoords(textureCoords);
+		        PolyDataUtil.generateTextureCoordinates(frustum, renderableImage.getImageWidth(), renderableImage.getImageHeight(), footprint);
+		        pointData.Delete();
+		        PolyDataUtil.shiftPolyDataInNormalDirection(footprint, renderableImage.getOffset());
+				vtkTexture imageTexture = new vtkTexture();
+		        imageTexture.InterpolateOn();
+		        imageTexture.RepeatOff();
+		        imageTexture.EdgeClampOn();
+		        imageTexture.SetInputData(imageData.get(0));
 
-			vtkPolyDataMapper mapper = new vtkPolyDataMapper();
-			mapper.SetInputData(footprint);
-			SavePolydataToCachePipeline.of(footprint, imageFilename);
-			footprints.add(footprint);
-    	}
+				vtkPolyDataMapper mapper = new vtkPolyDataMapper();
+				mapper.SetInputData(footprint);
+				SavePolydataToCachePipeline.of(footprint, imageFilename);
+				footprints.add(footprint);
+	    	}
+        }
     	outputs.add(Pair.of(imageData, footprints));
 	}
 
