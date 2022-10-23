@@ -258,6 +258,7 @@ public class ImageSearchController<G1 extends IPerspectiveImage & IPerspectiveIm
 			try
 			{
 				LoadImagesFromSavedFilePipeline<G1> pipeline = new LoadImagesFromSavedFilePipeline<G1>(config, file.getAbsolutePath(), (ImagingInstrument)instrument.orElse(null));
+				collection.clearSearchedImages();
 				collection.setImages(pipeline.getImages());
 			}
 			catch (Exception e1)

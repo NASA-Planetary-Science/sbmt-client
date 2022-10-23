@@ -209,6 +209,7 @@ public class CompositePerspectiveImage implements IPerspectiveImage, IPerspectiv
 	public void setName(String name)
 	{
 		this.name = name;
+		images.get(0).setName(name);
 	}
 
 	public CylindricalBounds getBounds()

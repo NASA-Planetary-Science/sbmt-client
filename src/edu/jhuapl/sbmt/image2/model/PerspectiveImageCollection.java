@@ -14,7 +14,6 @@ import java.util.function.Function;
 import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
 
-import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.jfree.data.Range;
 
@@ -230,7 +229,7 @@ public class PerspectiveImageCollection<G1 extends IPerspectiveImage & IPerspect
 			}
 		}
 		CompositePerspectiveImage compImage = new CompositePerspectiveImage(List.of(image));
-		compImage.setName(FilenameUtils.getBaseName(filePath));
+		compImage.setName(info.getName());
 
 		return (G1)compImage;
     	//Code from other file
@@ -491,6 +490,7 @@ public class PerspectiveImageCollection<G1 extends IPerspectiveImage & IPerspect
 		}
 		if (pipeline == null) return;
 		updatePipeline(image, pipeline);
+		updateUserList();
 		pcs.firePropertyChange(Properties.MODEL_CHANGED, null, image);
 	}
 

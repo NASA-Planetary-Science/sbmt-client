@@ -357,7 +357,7 @@ public class PerspectiveImage implements IPerspectiveImage
 	        Double offset = metadata.get(offsetKey);
 	        Double defaultOffset = metadata.get(defaultOffsetKey);
 	        boolean interpolate = metadata.get(interpolationKey);
-	        
+
 	        double[] fillValues = metadata.hasKey(fillValuesKey) ? metadata.get(fillValuesKey) : new double[] {};
 	        PerspectiveImage result = new PerspectiveImage(imagefilename, imageType, pointingSourceType, pointingSource, fillValues);
 	        result.setName(name);
@@ -382,7 +382,7 @@ public class PerspectiveImage implements IPerspectiveImage
 			return result;
 		}, PerspectiveImage.class, image -> {
 			SettableMetadata result = SettableMetadata.of(Version.of(1, 0));
-	        result.put(nameKey, image.getFilename());
+	        result.put(nameKey, image.getName());
 	        result.put(imageFileNameKey, image.getFilename());
 	        result.put(imageTypeKey, image.getImageType().toString());
 	        result.put(pointingSourceKey, image.getPointingSource());

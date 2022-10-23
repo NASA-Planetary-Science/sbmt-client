@@ -21,6 +21,7 @@ import java.awt.Window;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.io.File;
+import java.util.List;
 
 import javax.swing.BorderFactory;
 import javax.swing.Box;
@@ -242,15 +243,15 @@ public class CustomImageEditingDialog<G1 extends IPerspectiveImage & IPerspectiv
 		JButton browseButton = new JButton("Browse");
 		browseButton.addActionListener(e ->
 		{
-			File file = CustomFileChooser.showOpenDialog(this, "Select Image");
-			if (file == null)
-			{
-				return;
-			}
+			File[] files = CustomFileChooser.showOpenDialog(this, "Select Image", List.of("fits", "fit", "FIT", "FITS", ".png"), false);
+			if (files == null || files.length == 0)
+	        {
+	            return;
+	        }
 
-			String filename = file.getAbsolutePath();
+			String filename = files[0].getAbsolutePath();
 			imagePathTextField.setText(filename);
-			String imageFileName = file.getName();
+			String imageFileName = files[0].getName();
 			String extension = FilenameUtils.getExtension(imageFileName).toLowerCase();
 			// if (extension.equals("fits") || extension.equals("fit"))
 			// {

@@ -213,13 +213,13 @@ public class CustomImageEditingController<G1 extends IPerspectiveImage & IPerspe
 
 		dialog.getBrowseButton().addActionListener(e ->
 		{
-			File file = CustomFileChooser.showOpenDialog(this.getDialog(), "Select Pointing File...");
-			if (file == null)
-			{
-				return;
-			}
+			File[] files = CustomFileChooser.showOpenDialog(this.getDialog(), "Select Pointing File...", List.of("info", "INFO", "sum", "SUM"), false);
+			if (files == null || files.length == 0)
+	        {
+	            return;
+	        }
 
-			String filename = file.getAbsolutePath();
+			String filename = files[0].getAbsolutePath();
 			dialog.getPointingFilenameTextField().setText(filename);
 			existingImage.setPointingSource(filename);
 			renderLayerAndAddAttributes();
@@ -235,6 +235,7 @@ public class CustomImageEditingController<G1 extends IPerspectiveImage & IPerspe
 			}
 
 			storeImage();
+
 			dialog.setVisible(false);
 		});
 
