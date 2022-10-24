@@ -220,6 +220,8 @@ public class ImageSearchController<G1 extends IPerspectiveImage & IPerspectiveIm
 		imageListTableController.getPanel().getColorImageButton().addActionListener(e -> {
 
 			ColorImageBuilderController<G1> controller = new ColorImageBuilderController<G1>(smallBodyModels, collection, Optional.empty());
+			if (collection.getSelectedItems().size() == 3)
+				controller.setImages(collection.getSelectedItems().asList());
 			BasicFrame frame = new BasicFrame();
 			frame.add(controller.getView());
 			frame.setSize(775, 900);
@@ -447,7 +449,11 @@ public class ImageSearchController<G1 extends IPerspectiveImage & IPerspectiveIm
 			else if (image.getNumberOfLayers() == 3) //editing custom color image
 			{
 				ColorImageBuilderController<G1> controller = new ColorImageBuilderController<G1>(smallBodyModels, collection, Optional.of(image));
-				controller.setImages(image.getImages());
+				List<G1> images = Lists.newArrayList();
+				images.add((G1)image.getImages().get(0));
+				images.add((G1)image.getImages().get(1));
+				images.add((G1)image.getImages().get(2));
+				controller.setImages(images);
 				BasicFrame frame = new BasicFrame();
 				frame.add(controller.getView());
 				frame.setSize(775, 900);

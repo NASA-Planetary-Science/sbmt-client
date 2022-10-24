@@ -115,7 +115,7 @@ public class PerspectiveImageCollection<G1 extends IPerspectiveImage & IPerspect
 							{
 								int response = JOptionPane.showConfirmDialog(
 									    null,
-									    "You have mapped images; changing the model resolution will force a refresh of those images, and may take some time. Continue?",
+									    "You have mapped images; changing the model resolution will force a refresh of those images, and may take some time. Unmapped but loaded images will need to be re-rendered manually, via selecting \"Rerender Image\" from the right click menu. Continue with automatic re-rendering?",
 									    "Remap Images?",
 									    JOptionPane.YES_NO_OPTION);
 								if (response == JOptionPane.NO_OPTION) return;
