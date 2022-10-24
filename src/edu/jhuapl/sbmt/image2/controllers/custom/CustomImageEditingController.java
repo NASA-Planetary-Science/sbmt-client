@@ -209,6 +209,17 @@ public class CustomImageEditingController<G1 extends IPerspectiveImage & IPerspe
 		else
 			dialog.getPointingTypeComboBox().setSelectedItem("Perspective Projection");
 
+		dialog.getPointingTypeComboBox().addActionListener(e -> {
+			if (dialog.getPointingTypeComboBox().getSelectedIndex() == 1)
+				existingImage.setPointingSourceType(ImageSource.LOCAL_CYLINDRICAL);
+			else
+			{
+				existingImage.setPointingSourceType(ImageSource.SPICE);
+				if (dialog.getPointingFilenameTextField().getText().toLowerCase().endsWith("sum"))
+					existingImage.setPointingSourceType(ImageSource.GASKELL);
+			}
+		});
+
 		dialog.getMaskController().setMaskValues(existingImage.getMaskValues());
 
 		dialog.getBrowseButton().addActionListener(e ->
@@ -222,6 +233,10 @@ public class CustomImageEditingController<G1 extends IPerspectiveImage & IPerspe
 			String filename = files[0].getAbsolutePath();
 			dialog.getPointingFilenameTextField().setText(filename);
 			existingImage.setPointingSource(filename);
+			if (dialog.getPointingFilenameTextField().getText().toLowerCase().endsWith("sum"))
+				existingImage.setPointingSourceType(ImageSource.GASKELL);
+			else
+				existingImage.setPointingSourceType(ImageSource.SPICE);
 			renderLayerAndAddAttributes();
 		});
 

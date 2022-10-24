@@ -980,7 +980,11 @@ public class PerspectiveImageCollection<G1 extends IPerspectiveImage & IPerspect
 
 	public void setImagingInstrument(IImagingInstrument imagingInstrument)
 	{
-		if (imagingInstrument == null && userImages.size() == 0) loadUserList();
+		if (imagingInstrument == null && userImages.size() == 0)
+		{
+			loadUserList();
+			firstCustomLoad = false;
+		}
 		if (this.imagingInstrument == imagingInstrument) return;
 		this.imagingInstrument = imagingInstrument;
 		if (imagingInstrument == null)
