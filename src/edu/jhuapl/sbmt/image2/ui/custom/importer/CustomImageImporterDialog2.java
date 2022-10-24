@@ -82,7 +82,7 @@ public class CustomImageImporterDialog2<G1 extends IPerspectiveImage & IPerspect
 		table.setup();
 
 		table.getLoadImageButton().addActionListener(e -> {
-			File[] files = CustomFileChooser.showOpenDialog(table, "Select images...", List.of("fits", "fit", "FIT", "FITS", ".png"), true);
+			File[] files = CustomFileChooser.showOpenDialog(table, "Select images...", List.of("fits", "fit", "FIT", "FITS", "png"), true);
 			if (files == null || files.length == 0)
 	        {
 	            return;
@@ -149,7 +149,8 @@ public class CustomImageImporterDialog2<G1 extends IPerspectiveImage & IPerspect
 	        dialog.getDialog().setLocationRelativeTo(getContentPane());
 	        dialog.getDialog().setVisible(true);
 	        ImageSource pointingSourceType = image.getPointingSource().endsWith("sum") || image.getPointingSource().endsWith("SUM") ? ImageSource.GASKELL : ImageSource.SPICE;
-	        image.setPointingSourceType(pointingSourceType);
+	        if (image.getPointingSource().equals("FILE NOT FOUND")) pointingSourceType = ImageSource.LOCAL_CYLINDRICAL;
+//	        image.setPointingSourceType(pointingSourceType);
 	        storeImage(image.getFilename(), image.getFilename(), image.getPointingSourceType(), image.getPointingSource());
 		}
 //		else if (image.getNumberOfLayers() == 3) //editing custom color image
