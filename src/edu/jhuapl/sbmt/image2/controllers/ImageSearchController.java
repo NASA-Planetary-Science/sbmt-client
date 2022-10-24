@@ -535,11 +535,12 @@ public class ImageSearchController<G1 extends IPerspectiveImage & IPerspectiveIm
 
 
 		vtkActor actor = aPrimaryTarg.getActor();
-		imagePicker.AddPickList(actor);
+		imagePicker.GetPickList().RemoveAllItems();
 		Optional<G1> image = collection.getImage(actor);
 		image.ifPresent(e -> {
 			if (collection.getImageMapped(e))
 			{
+				imagePicker.AddPickList(actor);
 				collection.setSelectedItems(List.of(e));
 				// Show the popup
 				Component tmpComp = aEvent.getComponent();
@@ -553,6 +554,7 @@ public class ImageSearchController<G1 extends IPerspectiveImage & IPerspectiveIm
 		image.ifPresent(e -> {
 			if (collection.getImageBoundaryShowing(e));
 			{
+				imagePicker.AddPickList(actor);
 				collection.setSelectedItems(List.of(e));
 				// Show the popup
 				Component tmpComp = aEvent.getComponent();
