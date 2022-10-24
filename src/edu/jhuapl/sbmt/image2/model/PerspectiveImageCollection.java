@@ -5,6 +5,9 @@ import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.io.File;
 import java.io.IOException;
+import java.math.RoundingMode;
+import java.text.DecimalFormat;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Optional;
@@ -21,13 +24,16 @@ import com.beust.jcommander.internal.Lists;
 import com.google.common.collect.ImmutableList;
 
 import vtk.vtkActor;
+import vtk.vtkImageData;
 import vtk.vtkProp;
 import vtk.vtkProperty;
 
 import edu.jhuapl.saavtk.model.SaavtkItemManager;
 import edu.jhuapl.saavtk.util.ColorUtil;
 import edu.jhuapl.saavtk.util.FileCache;
+import edu.jhuapl.saavtk.util.Frustum;
 import edu.jhuapl.saavtk.util.IdPair;
+import edu.jhuapl.saavtk.util.ImageDataUtil;
 import edu.jhuapl.saavtk.util.IntensityRange;
 import edu.jhuapl.saavtk.util.Properties;
 import edu.jhuapl.sbmt.common.client.SmallBodyModel;
@@ -39,14 +45,17 @@ import edu.jhuapl.sbmt.core.image.PointingFileReader;
 import edu.jhuapl.sbmt.image2.interfaces.IPerspectiveImage;
 import edu.jhuapl.sbmt.image2.interfaces.IPerspectiveImageTableRepresentable;
 import edu.jhuapl.sbmt.image2.pipelineComponents.operators.rendering.vtk.LowResolutionBoundaryOperator;
+import edu.jhuapl.sbmt.image2.pipelineComponents.operators.rendering.vtk.VtkImageRendererOperator;
 import edu.jhuapl.sbmt.image2.pipelineComponents.pipelines.ImagePipelineFactory;
 import edu.jhuapl.sbmt.image2.pipelineComponents.pipelines.ImageToScenePipeline;
 import edu.jhuapl.sbmt.image2.pipelineComponents.pipelines.cylindricalImages.RenderableCylindricalImageToScenePipeline;
+import edu.jhuapl.sbmt.image2.pipelineComponents.pipelines.io.IPerspectiveImageToLayerAndMetadataPipeline;
 import edu.jhuapl.sbmt.image2.pipelineComponents.pipelines.pointedImages.RenderablePointedImageToScenePipeline;
 import edu.jhuapl.sbmt.image2.pipelineComponents.pipelines.rendering.RenderableImageActorPipeline;
 import edu.jhuapl.sbmt.image2.pipelineComponents.publishers.gdal.InvalidGDALFileTypeException;
 import edu.jhuapl.sbmt.image2.pipelineComponents.publishers.pointing.InfofileReaderPublisher;
 import edu.jhuapl.sbmt.image2.pipelineComponents.publishers.pointing.SumfileReaderPublisher;
+import edu.jhuapl.sbmt.layer.api.Layer;
 import edu.jhuapl.sbmt.pipeline.publisher.IPipelinePublisher;
 import edu.jhuapl.sbmt.pipeline.publisher.Just;
 import edu.jhuapl.sbmt.pipeline.subscriber.Sink;
@@ -803,6 +812,21 @@ public class PerspectiveImageCollection<G1 extends IPerspectiveImage & IPerspect
 		return matchingImage;
 	}
 
+	public Optional<G1> getImageBoundary(vtkActor actor)
+	{
+		Optional<G1> matchingImage = Optional.empty();
+		for (G1 image : boundaryRenderers.keySet())
+		{
+			List<vtkActor> actors = boundaryRenderers.get(image);
+			if (actors.contains(actor))
+			{
+				matchingImage = Optional.of(image);
+			}
+		}
+
+		return matchingImage;
+	}
+
 	@Override
 	public void setOpacity(double opacity)
 	{
@@ -1111,4 +1135,92 @@ public class PerspectiveImageCollection<G1 extends IPerspectiveImage & IPerspect
 		this.currentBoundaryRange.id2 = this.currentBoundaryRange.id1 + currentBoundaryOffsetAmount - 1;
 		updateActiveBoundaries(previousRange);
 	}
+
+	@Override
+	public String getClickStatusBarText(vtkProp prop, int cellId, double[] pickPosition)
+	{
+		 // Get default status message
+        String status = super.getClickStatusBarText(prop, cellId, pickPosition);
+        if (getSelectedItems().size() == 0) return status;
+        G1 image = getSelectedItems().asList().get(0);
+        List<vtkImageData> displayedImages = new ArrayList<vtkImageData>();
+        IPerspectiveImageToLayerAndMetadataPipeline layerPipeline = null;
+        double[] pixelLocation = new double[] {0,0};
+        double[] pickedPixel = new double[] {0,0};
+        Layer layer  = null;
+        try {
+        	layerPipeline = IPerspectiveImageToLayerAndMetadataPipeline.of(image);
+			IPipelinePublisher<Layer> reader = new Just<Layer>(layerPipeline.getLayers().get(0));
+			reader.
+				operate(new VtkImageRendererOperator()).
+				subscribe(new Sink<vtkImageData>(displayedImages)).run();
+
+			layer = layerPipeline.getLayers().get(0);
+//	        PerspectiveImage pi = (PerspectiveImage) image;
+
+	        IPipelinePublisher<PointingFileReader> pointingPublisher = null;
+			if (image.getPointingSourceType() == ImageSource.SPICE || image.getPointingSourceType() == ImageSource.CORRECTED_SPICE)
+				pointingPublisher = new InfofileReaderPublisher(FileCache.getFileFromServer(image.getPointingSource()).getAbsolutePath());
+			else
+				pointingPublisher = new SumfileReaderPublisher(FileCache.getFileFromServer(image.getPointingSource()).getAbsolutePath());
+			Frustum frustum = new Frustum(pointingPublisher.getOutput().getSpacecraftPosition(), pointingPublisher.getOutput().getFrustum1(), pointingPublisher.getOutput().getFrustum3(), pointingPublisher.getOutput().getFrustum4(), pointingPublisher.getOutput().getFrustum2());
+	        pickedPixel = getPixelFromPoint(pickPosition, frustum, layer.iSize(), layer.jSize());
+	        pixelLocation = new double[]{layer.iSize()-1-pickedPixel[0], pickedPixel[1]};
+        }
+        catch (Exception e)
+        {
+        	e.printStackTrace();
+        }
+
+
+
+        status += "Image " + image.getName();
+
+        // Number format
+        DecimalFormat df = new DecimalFormat("#.0");
+        df.setRoundingMode(RoundingMode.HALF_UP);
+
+        // Construct status message
+        status += ", Pixel Coordinate = (";
+        status += df.format(pickedPixel[1]);
+        status += ", ";
+        status += df.format(pickedPixel[0]);
+        status += ")";
+
+        // Append raw pixel value information
+        status += ", Raw Value = ";
+        if (displayedImages.get(0) == null)
+        {
+            status += "Unavailable";
+        }
+        else
+        {
+            int ip0 = (int) Math.round(pixelLocation[0]);
+            int ip1 = (int) Math.round(pixelLocation[1]);
+            if (!displayedImages.get(0).GetScalarTypeAsString().contains("char"))
+            {
+                float[] pixelColumn = ImageDataUtil.vtkImageDataToArray1D(displayedImages.get(0),
+                		layer.iSize() - 1 - ip0, ip1);
+                status += pixelColumn[0];
+            }
+            else
+            {
+                status += "N/A";
+            }
+        }
+
+        return status;
+	}
+
+    private double[] getPixelFromPoint(double[] pt, Frustum frustum, int imageWidth, int imageHeight)
+    {
+        double[] uv = new double[2];
+        frustum.computeTextureCoordinatesFromPoint(pt, imageWidth, imageHeight, uv, false);
+
+        double[] pixel = new double[2];
+        pixel[0] = uv[0] * imageHeight;
+        pixel[1] = uv[1] * imageWidth;
+
+        return pixel;
+    }
 }

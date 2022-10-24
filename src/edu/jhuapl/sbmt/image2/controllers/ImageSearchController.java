@@ -18,6 +18,9 @@ import com.beust.jcommander.internal.Lists;
 import com.google.common.collect.ImmutableSet;
 
 import vtk.vtkActor;
+import vtk.vtkPropCollection;
+import vtk.vtkPropPicker;
+import vtk.rendering.jogl.vtkJoglPanelComponent;
 
 import edu.jhuapl.saavtk.gui.dialog.CustomFileChooser;
 import edu.jhuapl.saavtk.gui.render.Renderer;
@@ -29,6 +32,7 @@ import edu.jhuapl.saavtk.pick.PickMode;
 import edu.jhuapl.saavtk.pick.PickTarget;
 import edu.jhuapl.saavtk.pick.PickUtil;
 import edu.jhuapl.saavtk.popup.PopupManager;
+import edu.jhuapl.saavtk.status.LegacyStatusHandler;
 import edu.jhuapl.saavtk2.gui.BasicFrame;
 import edu.jhuapl.sbmt.common.client.SbmtInfoWindowManager;
 import edu.jhuapl.sbmt.common.client.SbmtSpectrumWindowManager;
@@ -68,19 +72,29 @@ public class ImageSearchController<G1 extends IPerspectiveImage & IPerspectiveIm
 	private JTabbedPane pane;
 	private PopupMenu<G1> popupMenu;
 	private SmallBodyViewConfig config;
+	private LegacyStatusHandler refStatusHandler;
+	private Renderer renderer;
+    private vtkPropPicker imagePicker;
 
 	public ImageSearchController(SmallBodyViewConfig config, PerspectiveImageCollection<G1> collection,
 								Optional<IImagingInstrument> instrument, ModelManager modelManager,
 								PopupManager popupManager, Renderer renderer,
 								PickManager pickManager, SbmtInfoWindowManager infoPanelManager,
-					            SbmtSpectrumWindowManager spectrumPanelManager)
+					            SbmtSpectrumWindowManager spectrumPanelManager, LegacyStatusHandler refStatusHandler)
 	{
 		this.config = config;
 		this.instrument = instrument;
 		this.collection = collection;
+		this.refStatusHandler = refStatusHandler;
 		this.collection.setImagingInstrument(instrument.orElse(null));
 		this.modelManager = modelManager;
 		this.instrument = instrument;
+		this.renderer = renderer;
+		imagePicker = new vtkPropPicker();
+        imagePicker.PickFromListOn();
+        imagePicker.InitializePickList();
+        vtkPropCollection smallBodyPickList = imagePicker.GetPickList();
+        smallBodyPickList.RemoveAllItems();
 		this.imageSearchModel = new ImageSearchParametersModel(config, modelManager, renderer, instrument.orElse(null));
 		instrument.ifPresent(inst -> {
 			this.searchParametersController = new SpectralImageSearchParametersController(config, collection, imageSearchModel, modelManager, pickManager);
@@ -271,6 +285,7 @@ public class ImageSearchController<G1 extends IPerspectiveImage & IPerspectiveIm
 		imageListTableController.getPanel().getSaveImageButton().addActionListener(e -> {
 
 			ImmutableSet<G1> selectedImages = collection.getSelectedItems();
+			if (selectedImages.size() == 0) selectedImages = ImmutableSet.copyOf(collection.getAllItems());
 			try
 			{
 				new SaveImagesToSavedFilePipeline<>(selectedImages);
@@ -481,7 +496,7 @@ public class ImageSearchController<G1 extends IPerspectiveImage & IPerspectiveIm
 
 		if (collection.getInstrument() != null)
 		{
-			imageListTableController.getPanel().getSaveImageButton().setEnabled(selectedItems.size() > 0);
+			imageListTableController.getPanel().getSaveImageButton().setEnabled(collection.getAllItems().size() > 0);
 			imageListTableController.getPanel().getHideImageButton().setEnabled((selectedItems.size() > 0) && (allMapped || someMapped));
 			imageListTableController.getPanel().getShowImageButton().setEnabled((selectedItems.size() > 0) && !allMapped || someMapped);
 			imageListTableController.getPanel().getHideImageBorderButton().setEnabled((selectedItems.size() > 0) && allBorders || someBorders);
@@ -514,6 +529,7 @@ public class ImageSearchController<G1 extends IPerspectiveImage & IPerspectiveIm
 
 
 		vtkActor actor = aPrimaryTarg.getActor();
+		imagePicker.AddPickList(actor);
 		Optional<G1> image = collection.getImage(actor);
 		image.ifPresent(e -> {
 			if (collection.getImageMapped(e))
@@ -524,11 +540,62 @@ public class ImageSearchController<G1 extends IPerspectiveImage & IPerspectiveIm
 				int posX = ((MouseEvent) aEvent).getX();
 				int posY = ((MouseEvent) aEvent).getY();
 				popupMenu.show(tmpComp, posX, posY);
+				updateStatusBar(((MouseEvent) aEvent));
+			}
+		});
+		image = collection.getImageBoundary(actor);
+		image.ifPresent(e -> {
+			if (collection.getImageBoundaryShowing(e));
+			{
+				collection.setSelectedItems(List.of(e));
+				// Show the popup
+				Component tmpComp = aEvent.getComponent();
+				int posX = ((MouseEvent) aEvent).getX();
+				int posY = ((MouseEvent) aEvent).getY();
+				popupMenu.show(tmpComp, posX, posY);
+				updateStatusBar(((MouseEvent) aEvent));
 			}
 		});
 
 
 	}
+
+	private void updateStatusBar(MouseEvent e)
+	{
+		int pickSucceeded = doPick(e, imagePicker, renderer.getRenderWindowPanel());
+		if (pickSucceeded == 1)
+		{
+			double[] p = imagePicker.GetPickPosition();
+
+			// Display status bar message upon being picked
+			refStatusHandler.setLeftTextSource(collection, null, 0, p);
+		}
+	}
+
+	private int doPick(MouseEvent e, vtkPropPicker picker, vtkJoglPanelComponent renWin)
+    {
+        int pickSucceeded = 0;
+        try
+        {
+            renWin.getComponent().getContext().makeCurrent();
+            renWin.getVTKLock().lock();
+            // Note that on some displays, such as a retina display, the height used by
+            // OpenGL is different than the height used by Java. Therefore we need
+            // scale the mouse coordinates to get the right position for OpenGL.
+//            double openGlHeight = renWin.getComponent().getSurfaceHeight();
+            double openGlHeight = renWin.getComponent().getHeight();
+            double javaHeight = renWin.getComponent().getHeight();
+            double scale = openGlHeight / javaHeight;
+            pickSucceeded = picker.Pick(scale*e.getX(), scale*(javaHeight-e.getY()-1), 0.0, renWin.getRenderer());
+            renWin.getVTKLock().unlock();
+        }
+        finally
+        {
+            renWin.getComponent().getContext().release();
+        }
+
+        return pickSucceeded;
+    }
 
 	public ImageSearchParametersModel getModel()
 	{
