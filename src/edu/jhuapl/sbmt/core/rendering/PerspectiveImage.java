@@ -54,6 +54,7 @@ import edu.jhuapl.sbmt.core.image.IImagingInstrument;
 import edu.jhuapl.sbmt.core.image.Image;
 import edu.jhuapl.sbmt.core.image.ImageKeyInterface;
 import edu.jhuapl.sbmt.core.image.ImageSource;
+import edu.jhuapl.sbmt.core.image.Orientation;
 import edu.jhuapl.sbmt.model.image.perspectiveImage.renderer.PerspectiveImageRendererHelper2;
 import edu.jhuapl.sbmt.util.BackPlanesPDS4XML;
 import edu.jhuapl.sbmt.util.BackPlanesXml;
@@ -2407,7 +2408,9 @@ abstract public class PerspectiveImage extends Image implements PropertyChangeLi
             }
         }
         IImagingInstrument instrument = key.getInstrument();
-        boolean isTranspose = instrument != null ? instrument.isTranspose() : true;
+        Orientation orientation = instrument != null ? instrument.getOrientation(key.getSource()) : null;
+
+        boolean isTranspose = orientation != null ? orientation.isTranspose() : true;
 
         setRawImage(createRawImage(fitsHeight, fitsWidth, fitsDepth, isTranspose, array2D, array3D));
     }

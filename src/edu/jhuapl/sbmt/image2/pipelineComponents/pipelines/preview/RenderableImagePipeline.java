@@ -9,7 +9,9 @@ import com.beust.jcommander.internal.Lists;
 
 import edu.jhuapl.sbmt.core.image.IImagingInstrument;
 import edu.jhuapl.sbmt.core.image.ImageSource;
+import edu.jhuapl.sbmt.core.image.Orientation;
 import edu.jhuapl.sbmt.core.image.PointingFileReader;
+import edu.jhuapl.sbmt.image.model.ImageFlip;
 import edu.jhuapl.sbmt.image2.pipelineComponents.operators.rendering.layer.LayerLinearInterpolaterOperator;
 import edu.jhuapl.sbmt.image2.pipelineComponents.operators.rendering.layer.LayerRotationOperator;
 import edu.jhuapl.sbmt.image2.pipelineComponents.operators.rendering.layer.LayerXFlipOperator;
@@ -43,11 +45,13 @@ public class RenderableImagePipeline implements IPipeline<RenderablePointedImage
 		this.imageFile = imageFile;
 		this.imageSource = imageSource;
 		IPipelinePublisher<Layer> reader = new BuiltInFitsReader(imageFile, instrument.getFillValues());
-		LayerRotationOperator rotationOperator = new LayerRotationOperator(instrument.getRotation());
+		Orientation orientation = instrument.getOrientation(imageSource);
+
+		LayerRotationOperator rotationOperator = new LayerRotationOperator(orientation.getRotation());
 		BasePipelineOperator<Layer, Layer> flipOperator = new PassthroughOperator<Layer>();
-		if (instrument.getFlip().equals("X"))
+		if (orientation.getFlip().equals(ImageFlip.X))
 			flipOperator = new LayerXFlipOperator();
-		else if (instrument.getFlip().equals("Y"))
+		else if (orientation.getFlip().equals(ImageFlip.Y))
 			flipOperator = new LayerYFlipOperator();
 
 		IPipelineOperator<Layer, Layer> linearInterpolator = null;

@@ -9,6 +9,7 @@ import org.apache.commons.lang3.tuple.Triple;
 import edu.jhuapl.sbmt.core.image.IImagingInstrument;
 import edu.jhuapl.sbmt.core.image.ImageSource;
 import edu.jhuapl.sbmt.core.image.ImagingInstrument;
+import edu.jhuapl.sbmt.core.image.Orientation;
 import edu.jhuapl.sbmt.image2.interfaces.IPerspectiveImage;
 import edu.jhuapl.sbmt.image2.interfaces.IPerspectiveImageTableRepresentable;
 import edu.jhuapl.sbmt.image2.model.CompositePerspectiveImage;
@@ -31,8 +32,9 @@ public class CreateImageFromSavedListOperator<G1 extends IPerspectiveImage & IPe
         {
         	ImageSource imageSource = ImageSource.valueFor(imageInfo.get(2).replace("_", " "));
         	PerspectiveImage image = new PerspectiveImage(imageInfo.get(0), instrument.getType(), imageSource, infoBaseNames.get(results.indexOf(imageInfo)), new double[] {});
-        	image.setFlip(instrument.getFlip());
-        	image.setRotation(instrument.getRotation());
+        	Orientation orientation = instrument.getOrientation(imageSource);
+        	image.setFlip(orientation.getFlip().flip());
+        	image.setRotation(orientation.getRotation());
         	image.setImageOrigin(ImageOrigin.SERVER);
         	image.setLinearInterpolatorDims(instrument.getLinearInterpolationDims());
         	image.setMaskValues(instrument.getMaskValues());
