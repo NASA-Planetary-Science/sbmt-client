@@ -6,7 +6,11 @@ import edu.jhuapl.sbmt.config.SessionConfiguration;
 import edu.jhuapl.sbmt.config.SpectralImageMode;
 import edu.jhuapl.sbmt.query.QueryBase;
 
-public class BasicImagingInstrument extends ImagingInstrument
+/**
+ * This class was part of a premature attempt to rationalize the configs. Don't expand its usage.
+ */
+@Deprecated
+public class BasicImagingInstrument
 {
     public static ImagingInstrument of(TypedLookup bodyConfiguration) {
         ImagingInstrumentConfiguration configuration = bodyConfiguration.get(SessionConfiguration.IMAGING_INSTRUMENT_CONFIG);
