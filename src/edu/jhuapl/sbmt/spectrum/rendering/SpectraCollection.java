@@ -5,6 +5,7 @@ import java.beans.PropertyChangeListener;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -17,6 +18,11 @@ import com.google.common.collect.Maps;
 import vtk.vtkActor;
 import vtk.vtkProp;
 
+import edu.jhuapl.saavtk.color.provider.ColorProvider;
+import edu.jhuapl.saavtk.color.provider.ColorWheelGroupColorProvider;
+import edu.jhuapl.saavtk.color.provider.GroupColorProvider;
+import edu.jhuapl.saavtk.gui.render.SceneChangeNotifier;
+import edu.jhuapl.saavtk.model.ModelManager;
 import edu.jhuapl.saavtk.model.SaavtkItemManager;
 import edu.jhuapl.saavtk.util.Properties;
 import edu.jhuapl.sbmt.common.client.ISmallBodyModel;
@@ -46,14 +52,20 @@ public class SpectraCollection<S extends BasicSpectrum> extends SaavtkItemManage
     final double minFootprintSeparation=0.001;
     double footprintSeparation=0.001;
     HashMap<String, List<S>> collections = new HashMap<String, List<S>>();
+    private Map<S, SpectrumRenderProp> propM;
+
+    private GroupColorProvider colorProvider;
+    private SceneChangeNotifier refSceneChangeNotifier;
 
     Map<IBasicSpectrumRenderer<S>,Integer> ordinals=Maps.newHashMap();
     final static int defaultOrdinal=0;
 
-    public SpectraCollection(ISmallBodyModel smallBody)
+    public SpectraCollection(SceneChangeNotifier refSceneChangeNotifier, ISmallBodyModel smallBody)
     {
+    	this.refSceneChangeNotifier = refSceneChangeNotifier;
         this.shapeModel = smallBody;
         this.listeners = new ArrayList<SpectrumCollectionChangedListener<S>>();
+        colorProvider = ColorWheelGroupColorProvider.Instance;
     }
 
     public void addSpectrumCollectionChangedListener(SpectrumCollectionChangedListener<S> sccl)
@@ -483,11 +495,19 @@ public class SpectraCollection<S extends BasicSpectrum> extends SaavtkItemManage
 
 	public void setAllItems(Collection<S> specs)
 	{
+		propM = new HashMap<>();
 		List<S> instrumentList = new ArrayList<S>();
+		int tempIndex = 0;
 		for (S spec : specs)
 		{
 			if (spec.getInstrument().getDisplayName().equals(activeInstrument.getDisplayName()))
+			{
+				ColorProvider tmpSrcCP = colorProvider.getColorProviderFor(spec, tempIndex++, 100);
+				SpectrumRenderProp tmpProp = new SpectrumRenderProp();
+				tmpProp.borderColorProvider = tmpSrcCP;
+				propM.put(spec, tmpProp);
 				instrumentList.add(spec);
+			}
 		}
 		collections.put(activeInstrument.getDisplayName(), instrumentList);
 		super.setAllItems(instrumentList);
@@ -563,4 +583,127 @@ public class SpectraCollection<S extends BasicSpectrum> extends SaavtkItemManage
 	{
 		return activeInstrument;
 	}
+
+	//Color related methods
+
+	public void clearCustomColorProvider(List<S> aItemL)
+	{
+		Set<S> tmpItemS = new HashSet<>(aItemL);
+
+		int tmpIdx = -1;
+		int numItems = getNumItems();
+		for (S aItem : getAllItems())
+		{
+			tmpIdx++;
+
+			// Skip to next if not in aItemL
+			if (tmpItemS.contains(aItem) == false)
+				continue;
+
+			// Skip to next if no RenderProp
+			SpectrumRenderProp tmpProp = propM.get(aItem);
+			if (tmpProp == null)
+				continue;
+
+			// Skip to next if not custom ColorProvider
+			if (tmpProp.isCustomCP == false)
+				continue;
+
+			tmpProp.isCustomCP = false;
+			tmpProp.borderColorProvider = colorProvider.getColorProviderFor(aItem, tmpIdx, numItems);
+		}
+
+		notifyListeners(this, ItemEventType.ItemsMutated);
+		updateVtkVars(aItemL);
+	}
+
+
+	public ColorProvider getColorProvider(S aItem)
+	{
+		SpectrumRenderProp tmpProp = propM.get(aItem);
+		if (tmpProp == null)
+			return null;
+
+		return tmpProp.borderColorProvider;
+	}
+
+//	public FeatureAttr getFeatureAttrFor(S aItem, FeatureType aFeatureType)
+//	{
+//		VtkLidarPainter<?> tmpPainter = vPainterM.get(aItem);
+//		if (tmpPainter == null)
+//			return null;
+//
+//		return tmpPainter.getFeatureAttrFor(aFeatureType);
+//	}
+
+
+	public boolean hasCustomColorProvider(S aItem)
+	{
+		SpectrumRenderProp tmpProp = propM.get(aItem);
+		if (tmpProp == null)
+			return false;
+
+		return tmpProp.isCustomCP;
+	}
+
+
+	public void installCustomColorProviders(Collection<S> aItemC, ColorProvider colorProvider)
+	{
+		for (S aItem : aItemC)
+		{
+			// Skip to next if no RenderProp
+			SpectrumRenderProp tmpProp = propM.get(aItem);
+			if (tmpProp == null)
+				continue;
+
+			tmpProp.isCustomCP = true;
+			tmpProp.borderColorProvider = colorProvider;
+		}
+
+		notifyListeners(this, ItemEventType.ItemsMutated);
+		updateVtkVars(aItemC);
+	}
+
+
+	public void installGroupColorProviders(GroupColorProvider colorProvider)
+	{
+		this.colorProvider = colorProvider;
+
+		int tmpIdx = -1;
+		int numItems = getNumItems();
+		for (S aItem : getAllItems())
+		{
+			tmpIdx++;
+
+			// Skip to next if no RenderProp
+			SpectrumRenderProp tmpProp = propM.get(aItem);
+			if (tmpProp == null)
+				continue;
+
+			// Skip to next if custom
+			if (tmpProp.isCustomCP == true)
+				continue;
+
+			tmpProp.borderColorProvider = colorProvider.getColorProviderFor(aItem, tmpIdx, numItems);
+		}
+
+		notifyListeners(this, ItemEventType.ItemsMutated);
+		updateVtkVars(getAllItems());
+	}
+
+	private void updateVtkVars(Collection<S> aUpdateC)
+	{
+		refSceneChangeNotifier.notifySceneChange();
+	}
+
+	public Map<S, SpectrumRenderProp> getPropertyMap()
+	{
+		return propM;
+	}
+
+	public void setModelManager(ModelManager refSceneChangeNotifier)
+	{
+		this.refSceneChangeNotifier = refSceneChangeNotifier;
+	}
+
 }
