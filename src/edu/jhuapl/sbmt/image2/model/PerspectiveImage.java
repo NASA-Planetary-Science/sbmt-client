@@ -23,6 +23,7 @@ public class PerspectiveImage implements IPerspectiveImage
     private static final  Key<Integer[]> intensityRangeKey = Key.of("intensityRange");
     private static final  Key<int[]> maskValuesKey = Key.of("masks");
     private static final  Key<int[]> trimValuesKey = Key.of("trims");
+    private static final  Key<double[]> fillValuesKey = Key.of("fillValues");
     private static final  Key<Integer> numberOfLayersKey = Key.of("numberOfLayers");
     private static final  Key<String> flipKey = Key.of("flip");
     private static final  Key<Double> rotationKey = Key.of("rotation");
@@ -357,7 +358,7 @@ public class PerspectiveImage implements IPerspectiveImage
 	        Double defaultOffset = metadata.get(defaultOffsetKey);
 	        boolean interpolate = metadata.get(interpolationKey);
 
-	        double[] fillValues = new double[] {};
+	        double[] fillValues = metadata.hasKey(fillValuesKey) ? metadata.get(fillValuesKey) : new double[] {};
 	        PerspectiveImage result = new PerspectiveImage(imagefilename, imageType, pointingSourceType, pointingSource, fillValues);
 	        result.setName(name);
 	        result.setIntensityRange(intensityRange);
@@ -365,8 +366,8 @@ public class PerspectiveImage implements IPerspectiveImage
 	        result.setFlip(flip);
 	        result.setRotation(rotation);
 	        result.setImageOrigin(ImageOrigin.valueFor(imageOrigin));
-	        result.setMaskValues(metadata.get(maskValuesKey));
-	        result.setTrimValues(metadata.get(trimValuesKey));
+	        result.setMaskValues(metadata.hasKey(maskValuesKey) ? metadata.get(maskValuesKey) : new int[] {});
+	        result.setTrimValues(metadata.hasKey(trimValuesKey) ? metadata.get(trimValuesKey) : new int[] {});
 	        result.setSimulateLighting(simulateLighting);
 	        result.setInterpolateState(interpolate);
 	        result.setEt(et);
@@ -381,7 +382,7 @@ public class PerspectiveImage implements IPerspectiveImage
 			return result;
 		}, PerspectiveImage.class, image -> {
 			SettableMetadata result = SettableMetadata.of(Version.of(1, 0));
-	        result.put(nameKey, image.getFilename());
+	        result.put(nameKey, image.getName());
 	        result.put(imageFileNameKey, image.getFilename());
 	        result.put(imageTypeKey, image.getImageType().toString());
 	        result.put(pointingSourceKey, image.getPointingSource());
@@ -393,6 +394,7 @@ public class PerspectiveImage implements IPerspectiveImage
 	        result.put(imageOriginKey, image.getImageOrigin());
 	        result.put(maskValuesKey, image.getMaskValues());
 	        result.put(trimValuesKey, image.getTrimValues());
+	        result.put(fillValuesKey, image.getFillValues());
 	        result.put(simulateLightingKey, image.isSimulateLighting());
 	        result.put(interpolationKey, image.getInterpolateState());
 	        result.put(etKey, image.getEt());

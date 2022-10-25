@@ -21,6 +21,9 @@ import com.beust.jcommander.internal.Lists;
 import com.google.common.collect.ImmutableSet;
 
 import vtk.vtkActor;
+import vtk.vtkPropCollection;
+import vtk.vtkPropPicker;
+import vtk.rendering.jogl.vtkJoglPanelComponent;
 
 import edu.jhuapl.saavtk.gui.dialog.CustomFileChooser;
 import edu.jhuapl.saavtk.gui.render.Renderer;
@@ -33,6 +36,7 @@ import edu.jhuapl.saavtk.pick.PickMode;
 import edu.jhuapl.saavtk.pick.PickTarget;
 import edu.jhuapl.saavtk.pick.PickUtil;
 import edu.jhuapl.saavtk.popup.PopupManager;
+import edu.jhuapl.saavtk.status.LegacyStatusHandler;
 import edu.jhuapl.saavtk2.gui.BasicFrame;
 import edu.jhuapl.sbmt.common.client.SbmtInfoWindowManager;
 import edu.jhuapl.sbmt.common.client.SbmtSpectrumWindowManager;
@@ -41,6 +45,7 @@ import edu.jhuapl.sbmt.common.client.SmallBodyViewConfig;
 import edu.jhuapl.sbmt.core.image.IImagingInstrument;
 import edu.jhuapl.sbmt.core.image.ImagingInstrument;
 import edu.jhuapl.sbmt.core.imageui.search.ImagingSearchPanel;
+import edu.jhuapl.sbmt.image2.controllers.custom.CustomImageEditingController;
 import edu.jhuapl.sbmt.image2.interfaces.IPerspectiveImage;
 import edu.jhuapl.sbmt.image2.interfaces.IPerspectiveImageTableRepresentable;
 import edu.jhuapl.sbmt.image2.model.ImageSearchParametersModel;
@@ -50,7 +55,6 @@ import edu.jhuapl.sbmt.image2.pipelineComponents.pipelines.io.ImageGalleryPipeli
 import edu.jhuapl.sbmt.image2.pipelineComponents.pipelines.io.LoadFileToCustomImageListPipeline;
 import edu.jhuapl.sbmt.image2.pipelineComponents.pipelines.io.LoadImagesFromSavedFilePipeline;
 import edu.jhuapl.sbmt.image2.pipelineComponents.pipelines.io.SaveImagesToSavedFilePipeline;
-import edu.jhuapl.sbmt.image2.ui.custom.importer.CustomImageImporterDialog;
 import edu.jhuapl.sbmt.image2.ui.custom.importer.CustomImageImporterDialog2;
 import edu.jhuapl.sbmt.image2.ui.table.popup.ImageListPopupMenu;
 import edu.jhuapl.sbmt.util.TimeUtil;
@@ -66,7 +70,7 @@ public class ImageSearchController<G1 extends IPerspectiveImage & IPerspectiveIm
 	private ImagingSearchPanel panel;
 	private ImagingSearchPanel customPanel;
 	private ImageSearchParametersModel imageSearchModel;
-	private IImagingInstrument instrument;
+	private Optional<IImagingInstrument> instrument;
 	private PerspectiveImageCollection<G1> collection;
 	private ModelManager modelManager;
 	private List<SmallBodyModel> smallBodyModels;
@@ -74,22 +78,34 @@ public class ImageSearchController<G1 extends IPerspectiveImage & IPerspectiveIm
 	private PopupMenu<G1> popupMenu;
 	private SmallBodyViewConfig config;
 	IPositionOrientationManager<SmallBodyModel> positionOrientationManager;
+	private LegacyStatusHandler refStatusHandler;
+	private Renderer renderer;
+    private vtkPropPicker imagePicker;
 
 	public ImageSearchController(SmallBodyViewConfig config, PerspectiveImageCollection<G1> collection,
-								IImagingInstrument instrument, ModelManager modelManager,
+								Optional<IImagingInstrument> instrument, ModelManager modelManager,
 								PopupManager popupManager, Renderer renderer,
 								PickManager pickManager, SbmtInfoWindowManager infoPanelManager,
-					            SbmtSpectrumWindowManager spectrumPanelManager)
+					            SbmtSpectrumWindowManager spectrumPanelManager, LegacyStatusHandler refStatusHandler)
 	{
 		this.config = config;
 		this.instrument = instrument;
 		this.collection = collection;
-		this.collection.setImagingInstrument(instrument);
+		this.refStatusHandler = refStatusHandler;
+		this.collection.setImagingInstrument(instrument.orElse(null));
 		this.modelManager = modelManager;
 		this.instrument = instrument;
-		this.imageSearchModel = new ImageSearchParametersModel(config, modelManager, renderer, instrument);
-        this.searchParametersController = new SpectralImageSearchParametersController(config, collection, imageSearchModel, modelManager, pickManager);
-        this.searchParametersController.setupSearchParametersPanel();
+		this.renderer = renderer;
+		imagePicker = new vtkPropPicker();
+        imagePicker.PickFromListOn();
+        imagePicker.InitializePickList();
+        vtkPropCollection smallBodyPickList = imagePicker.GetPickList();
+        smallBodyPickList.RemoveAllItems();
+		this.imageSearchModel = new ImageSearchParametersModel(config, modelManager, renderer, instrument.orElse(null));
+		instrument.ifPresent(inst -> {
+			this.searchParametersController = new SpectralImageSearchParametersController(config, collection, imageSearchModel, modelManager, pickManager);
+			this.searchParametersController.setupSearchParametersPanel();
+		});
         pane = new JTabbedPane();
         SmallBodyModel smallBodyModel = (SmallBodyModel)modelManager.getModel(ModelNames.SMALL_BODY);
         smallBodyModels = List.of(smallBodyModel);
@@ -120,31 +136,34 @@ public class ImageSearchController<G1 extends IPerspectiveImage & IPerspectiveIm
 
 	private void initGUI()
 	{
-		initImageGUI();
+		instrument.ifPresent(inst -> {initImageGUI();});
+//		initImageGUI();
 		initCustomGUI();
 
-		panel.addAncestorListener(new AncestorListener()
-		{
-
-			@Override
-			public void ancestorRemoved(AncestorEvent event)
+		instrument.ifPresent(inst -> {
+			panel.addAncestorListener(new AncestorListener()
 			{
-				// TODO Auto-generated method stub
 
-			}
+				@Override
+				public void ancestorRemoved(AncestorEvent event)
+				{
+					// TODO Auto-generated method stub
 
-			@Override
-			public void ancestorMoved(AncestorEvent event)
-			{
-				// TODO Auto-generated method stub
+				}
 
-			}
+				@Override
+				public void ancestorMoved(AncestorEvent event)
+				{
+					// TODO Auto-generated method stub
 
-			@Override
-			public void ancestorAdded(AncestorEvent event)
-			{
-				collection.setImagingInstrument(instrument);
-			}
+				}
+
+				@Override
+				public void ancestorAdded(AncestorEvent event)
+				{
+					collection.setImagingInstrument(inst);
+				}
+			});
 		});
 
 		customPanel.addAncestorListener(new AncestorListener()
@@ -193,7 +212,7 @@ public class ImageSearchController<G1 extends IPerspectiveImage & IPerspectiveIm
 			@Override
 			public void ancestorAdded(AncestorEvent event)
 			{
-				collection.setImagingInstrument(instrument);
+				collection.setImagingInstrument(instrument.orElse(null));
 				imageListTableController.getPanel().getResultList().repaint();
 			}
 		});
@@ -205,6 +224,8 @@ public class ImageSearchController<G1 extends IPerspectiveImage & IPerspectiveIm
 		imageListTableController.getPanel().getColorImageButton().addActionListener(e -> {
 
 			ColorImageBuilderController<G1> controller = new ColorImageBuilderController<G1>(smallBodyModels, collection, Optional.empty());
+			if (collection.getSelectedItems().size() == 3)
+				controller.setImages(collection.getSelectedItems().asList());
 			BasicFrame frame = new BasicFrame();
 			frame.add(controller.getView());
 			frame.setSize(775, 900);
@@ -256,7 +277,8 @@ public class ImageSearchController<G1 extends IPerspectiveImage & IPerspectiveIm
 	        if (file == null) return;
 			try
 			{
-				LoadImagesFromSavedFilePipeline<G1> pipeline = new LoadImagesFromSavedFilePipeline<G1>(config, file.getAbsolutePath(), (ImagingInstrument)instrument);
+				LoadImagesFromSavedFilePipeline<G1> pipeline = new LoadImagesFromSavedFilePipeline<G1>(config, file.getAbsolutePath(), (ImagingInstrument)instrument.orElse(null));
+				collection.clearSearchedImages();
 				collection.setImages(pipeline.getImages());
 			}
 			catch (Exception e1)
@@ -269,6 +291,7 @@ public class ImageSearchController<G1 extends IPerspectiveImage & IPerspectiveIm
 		imageListTableController.getPanel().getSaveImageButton().addActionListener(e -> {
 
 			ImmutableSet<G1> selectedImages = collection.getSelectedItems();
+			if (selectedImages.size() == 0) selectedImages = ImmutableSet.copyOf(collection.getAllItems());
 			try
 			{
 				new SaveImagesToSavedFilePipeline<>(selectedImages);
@@ -314,12 +337,12 @@ public class ImageSearchController<G1 extends IPerspectiveImage & IPerspectiveIm
 			try
 			{
 				if (collection.getSelectedItems().size() == 0)
-					ImageGalleryPipeline.of(instrument, collection.getAllItems());
+					ImageGalleryPipeline.of(instrument.orElse(null), collection.getAllItems());
 				else
 				{
 					List<G1> selectedList = Lists.newArrayList();
 					selectedList.addAll(collection.getSelectedItems());
-					ImageGalleryPipeline.of(instrument, selectedList);
+					ImageGalleryPipeline.of(instrument.orElse(null), selectedList);
 				}
 			}
 			catch (Exception e1)
@@ -433,9 +456,9 @@ public class ImageSearchController<G1 extends IPerspectiveImage & IPerspectiveIm
 		});
 
 		customImageListTableController.getPanel().getNewImageButton().addActionListener(e -> {
-			CustomImageImporterDialog2<G1> dialog = new CustomImageImporterDialog2<G1>(null, false, instrument,
+			CustomImageImporterDialog2<G1> dialog = new CustomImageImporterDialog2<G1>(null, false, instrument.orElse(null),
 					modelManager.getPolyhedralModel().isEllipsoid(), collection);
-	        dialog.setLocationRelativeTo(imageListTableController.getPanel());
+	        dialog.setLocationRelativeTo(customImageListTableController.getPanel());
 	        dialog.setVisible(true);
 		});
 
@@ -445,16 +468,20 @@ public class ImageSearchController<G1 extends IPerspectiveImage & IPerspectiveIm
 			G1 image = selectedItems.asList().get(0);
 			if (image.getNumberOfLayers() == 1)	//editing custom single layer image
 			{
-				CustomImageImporterDialog<G1> dialog = new CustomImageImporterDialog<G1>(null, true, instrument,
-						modelManager.getPolyhedralModel().isEllipsoid(), Optional.of(image));
-		        dialog.setLocationRelativeTo(imageListTableController.getPanel());
-		        dialog.setVisible(true);
+				CustomImageEditingController<G1> dialog = new CustomImageEditingController<G1>(null,
+						modelManager.getPolyhedralModel().isEllipsoid(), image, () -> {});
+		        dialog.getDialog().setLocationRelativeTo(customImageListTableController.getPanel());
+		        dialog.getDialog().setVisible(true);
 		        collection.updateUserImage(image);
 			}
 			else if (image.getNumberOfLayers() == 3) //editing custom color image
 			{
 				ColorImageBuilderController<G1> controller = new ColorImageBuilderController<G1>(smallBodyModels, collection, Optional.of(image));
-				controller.setImages(image.getImages());
+				List<G1> images = Lists.newArrayList();
+				images.add((G1)image.getImages().get(0));
+				images.add((G1)image.getImages().get(1));
+				images.add((G1)image.getImages().get(2));
+				controller.setImages(images);
 				BasicFrame frame = new BasicFrame();
 				frame.add(controller.getView());
 				frame.setSize(775, 900);
@@ -485,21 +512,30 @@ public class ImageSearchController<G1 extends IPerspectiveImage & IPerspectiveIm
 	private void updateButtonState()
 	{
 		ImmutableSet<G1> selectedItems = collection.getSelectedItems();
-		boolean allMapped = true;
-		boolean allBorders = true;
+		boolean allMapped = false;
+		boolean allBorders = false;
+		boolean someMapped = false;
+		boolean someBorders = false;
+		int numMapped = 0;
+		int numBoundary = 0;
 		for (G1 image : selectedItems)
 		{
-			if (image.isMapped() == false) allMapped = false;
-			if (image.isBoundaryShowing() == false) allBorders = false;
+			if (image.isMapped()) numMapped++;
+			if (image.isBoundaryShowing()) numBoundary++;
 		}
+		if (selectedItems.size() == numMapped) allMapped = true;
+		if (selectedItems.size() == numBoundary) allBorders = true;
+		if (numMapped > 0 && numMapped < selectedItems.size()) someMapped = true;
+		if (numBoundary > 0 && numBoundary < selectedItems.size()) someBorders = true;
+
 		if (collection.getInstrument() != null)
 		{
-			imageListTableController.getPanel().getSaveImageButton().setEnabled(selectedItems.size() > 1);
-			imageListTableController.getPanel().getHideImageButton().setEnabled((selectedItems.size() > 0) && allMapped);
-			imageListTableController.getPanel().getShowImageButton().setEnabled((selectedItems.size() > 0) && !allMapped);
-			imageListTableController.getPanel().getHideImageBorderButton().setEnabled((selectedItems.size() > 0) && allBorders);
-			imageListTableController.getPanel().getShowImageBorderButton().setEnabled((selectedItems.size() > 0) && !allBorders);
-			ImageGalleryGenerator.of(instrument, state -> {
+			imageListTableController.getPanel().getSaveImageButton().setEnabled(collection.getAllItems().size() > 0);
+			imageListTableController.getPanel().getHideImageButton().setEnabled((selectedItems.size() > 0) && (allMapped || someMapped));
+			imageListTableController.getPanel().getShowImageButton().setEnabled((selectedItems.size() > 0) && !allMapped || someMapped);
+			imageListTableController.getPanel().getHideImageBorderButton().setEnabled((selectedItems.size() > 0) && allBorders || someBorders);
+			imageListTableController.getPanel().getShowImageBorderButton().setEnabled((selectedItems.size() > 0) && !allBorders || someBorders);
+			ImageGalleryGenerator.of(instrument.orElse(null), state -> {
 				imageListTableController.getPanel().getGalleryButton().setEnabled(true);
 			});
 //			imageListTableController.getPanel().getGalleryButton().setEnabled(collection.getAllItems().size() > 0);
@@ -507,10 +543,10 @@ public class ImageSearchController<G1 extends IPerspectiveImage & IPerspectiveIm
 		else
 		{
 			customImageListTableController.getPanel().getEditImageButton().setEnabled(selectedItems.size() == 1);
-			customImageListTableController.getPanel().getHideImageButton().setEnabled((selectedItems.size() > 0) && allMapped);
-			customImageListTableController.getPanel().getShowImageButton().setEnabled((selectedItems.size() > 0) && !allMapped);
-			customImageListTableController.getPanel().getHideImageBorderButton().setEnabled((selectedItems.size() > 0) && allBorders);
-			customImageListTableController.getPanel().getShowImageBorderButton().setEnabled((selectedItems.size() > 0) && !allBorders);
+			customImageListTableController.getPanel().getHideImageButton().setEnabled((selectedItems.size() > 0) && allMapped || someMapped);
+			customImageListTableController.getPanel().getShowImageButton().setEnabled((selectedItems.size() > 0) && !allMapped || someMapped);
+			customImageListTableController.getPanel().getHideImageBorderButton().setEnabled((selectedItems.size() > 0) && allBorders || someBorders);
+			customImageListTableController.getPanel().getShowImageBorderButton().setEnabled((selectedItems.size() > 0) && !allBorders || someBorders);
 			customImageListTableController.getPanel().getDeleteImageButton().setEnabled(selectedItems.size() > 0);
 		}
 	}
@@ -527,21 +563,75 @@ public class ImageSearchController<G1 extends IPerspectiveImage & IPerspectiveIm
 
 
 		vtkActor actor = aPrimaryTarg.getActor();
+		imagePicker.GetPickList().RemoveAllItems();
 		Optional<G1> image = collection.getImage(actor);
 		image.ifPresent(e -> {
 			if (collection.getImageMapped(e))
 			{
+				imagePicker.AddPickList(actor);
 				collection.setSelectedItems(List.of(e));
 				// Show the popup
 				Component tmpComp = aEvent.getComponent();
 				int posX = ((MouseEvent) aEvent).getX();
 				int posY = ((MouseEvent) aEvent).getY();
 				popupMenu.show(tmpComp, posX, posY);
+				updateStatusBar(((MouseEvent) aEvent));
+			}
+		});
+		image = collection.getImageBoundary(actor);
+		image.ifPresent(e -> {
+			if (collection.getImageBoundaryShowing(e));
+			{
+				imagePicker.AddPickList(actor);
+				collection.setSelectedItems(List.of(e));
+				// Show the popup
+				Component tmpComp = aEvent.getComponent();
+				int posX = ((MouseEvent) aEvent).getX();
+				int posY = ((MouseEvent) aEvent).getY();
+				popupMenu.show(tmpComp, posX, posY);
+				updateStatusBar(((MouseEvent) aEvent));
 			}
 		});
 
 
 	}
+
+	private void updateStatusBar(MouseEvent e)
+	{
+		int pickSucceeded = doPick(e, imagePicker, renderer.getRenderWindowPanel());
+		if (pickSucceeded == 1)
+		{
+			double[] p = imagePicker.GetPickPosition();
+
+			// Display status bar message upon being picked
+			refStatusHandler.setLeftTextSource(collection, null, 0, p);
+		}
+	}
+
+	private int doPick(MouseEvent e, vtkPropPicker picker, vtkJoglPanelComponent renWin)
+    {
+        int pickSucceeded = 0;
+        try
+        {
+            renWin.getComponent().getContext().makeCurrent();
+            renWin.getVTKLock().lock();
+            // Note that on some displays, such as a retina display, the height used by
+            // OpenGL is different than the height used by Java. Therefore we need
+            // scale the mouse coordinates to get the right position for OpenGL.
+//            double openGlHeight = renWin.getComponent().getSurfaceHeight();
+            double openGlHeight = renWin.getComponent().getHeight();
+            double javaHeight = renWin.getComponent().getHeight();
+            double scale = openGlHeight / javaHeight;
+            pickSucceeded = picker.Pick(scale*e.getX(), scale*(javaHeight-e.getY()-1), 0.0, renWin.getRenderer());
+            renWin.getVTKLock().unlock();
+        }
+        finally
+        {
+            renWin.getComponent().getContext().release();
+        }
+
+        return pickSucceeded;
+    }
 
 	public ImageSearchParametersModel getModel()
 	{
@@ -550,7 +640,10 @@ public class ImageSearchController<G1 extends IPerspectiveImage & IPerspectiveIm
 
 	public JTabbedPane getView()
 	{
-		pane.add(panel, "Server");
+		instrument.ifPresent(inst -> {
+			pane.add(panel, "Server");
+		});
+
 		pane.add(customPanel, "Custom");
 		return pane;
 	}

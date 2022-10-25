@@ -10,7 +10,6 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Date;
 import java.util.List;
-import java.util.Optional;
 
 import javax.swing.Box;
 import javax.swing.BoxLayout;
@@ -31,6 +30,7 @@ import edu.jhuapl.saavtk.util.FileUtil;
 import edu.jhuapl.sbmt.core.image.IImagingInstrument;
 import edu.jhuapl.sbmt.core.image.ImageSource;
 import edu.jhuapl.sbmt.core.image.ImageType;
+import edu.jhuapl.sbmt.image2.controllers.custom.CustomImageEditingController;
 import edu.jhuapl.sbmt.image2.interfaces.IPerspectiveImage;
 import edu.jhuapl.sbmt.image2.interfaces.IPerspectiveImageTableRepresentable;
 import edu.jhuapl.sbmt.image2.model.CompositePerspectiveImage;
@@ -82,7 +82,7 @@ public class CustomImageImporterDialog2<G1 extends IPerspectiveImage & IPerspect
 		table.setup();
 
 		table.getLoadImageButton().addActionListener(e -> {
-			File[] files = CustomFileChooser.showOpenDialog(table, "Select images...", null, true);
+			File[] files = CustomFileChooser.showOpenDialog(table, "Select images...", List.of("fits", "fit", "FIT", "FITS", "png"), true);
 			if (files == null || files.length == 0)
 	        {
 	            return;
@@ -145,10 +145,13 @@ public class CustomImageImporterDialog2<G1 extends IPerspectiveImage & IPerspect
 //		if (image.getImageType() == ImageType.GENERIC_IMAGE) return;
 		if (image.getNumberOfLayers() == 1)	//editing custom single layer image
 		{
-			CustomImageImporterDialog<G1> dialog = new CustomImageImporterDialog<G1>(null, true, instrument,
-					isEllipsoid, /*tempCollection,*/ Optional.of(image));
-	        dialog.setLocationRelativeTo(getContentPane());
-	        dialog.setVisible(true);
+			CustomImageEditingController<G1> dialog = new CustomImageEditingController<G1>(null, isEllipsoid, image, () -> {});
+	        dialog.getDialog().setLocationRelativeTo(getContentPane());
+	        dialog.getDialog().setVisible(true);
+	        ImageSource pointingSourceType = image.getPointingSource().endsWith("sum") || image.getPointingSource().endsWith("SUM") ? ImageSource.GASKELL : ImageSource.SPICE;
+	        if (image.getPointingSource().equals("FILE NOT FOUND")) pointingSourceType = ImageSource.LOCAL_CYLINDRICAL;
+//	        image.setPointingSourceType(pointingSourceType);
+	        storeImage(image.getFilename(), image.getFilename(), image.getPointingSourceType(), image.getPointingSource());
 		}
 //		else if (image.getNumberOfLayers() == 3) //editing custom color image
 //		{
@@ -173,7 +176,10 @@ public class CustomImageImporterDialog2<G1 extends IPerspectiveImage & IPerspect
 		panel.setLayout(new BoxLayout(panel, BoxLayout.X_AXIS));
 		panel.add(new JLabel("Image Type:"));
 
-		imageTypeComboBox = new JComboBox<ImageType>(new ImageType[] {instrument.getType(), ImageType.GENERIC_IMAGE});
+		if (instrument != null)
+			imageTypeComboBox = new JComboBox<ImageType>(new ImageType[] {instrument.getType(), ImageType.GENERIC_IMAGE});
+		else
+			imageTypeComboBox = new JComboBox<ImageType>(new ImageType[] {ImageType.GENERIC_IMAGE});
 		imageTypeComboBox.setMaximumSize(new Dimension(350, 30));
 		panel.add(Box.createHorizontalStrut(10));
 		panel.add(imageTypeComboBox);
@@ -413,7 +419,7 @@ public class CustomImageImporterDialog2<G1 extends IPerspectiveImage & IPerspect
 		else
 			pointingSourceType = ImageSource.LOCAL_CYLINDRICAL;
 
-		String newPointingFilepath = "";
+		String newPointingFilepath = "FILE NOT FOUND";
 		if (!pointingSource.isEmpty())
 		{
 			newPointingFilepath = imageCollection.getSmallBodyModels().get(0).getCustomDataFolder() + File.separator + new File(pointingSource).getName();
@@ -452,11 +458,14 @@ public class CustomImageImporterDialog2<G1 extends IPerspectiveImage & IPerspect
 		}
 		else
 		{
-			image.setLinearInterpolatorDims(instrument.getLinearInterpolationDims());
-			image.setMaskValues(instrument.getMaskValues());
-			image.setFillValues(instrument.getFillValues());
-			image.setFlip(instrument.getFlip());
-			image.setRotation(instrument.getRotation());
+			if (imageType != ImageType.GENERIC_IMAGE)
+			{
+				image.setLinearInterpolatorDims(instrument.getLinearInterpolationDims());
+				image.setMaskValues(instrument.getMaskValues());
+				image.setFillValues(instrument.getFillValues());
+				image.setFlip(instrument.getFlip());
+				image.setRotation(instrument.getRotation());
+			}
 		}
 		CompositePerspectiveImage compImage = new CompositePerspectiveImage(List.of(image));
 		compImage.setName(FilenameUtils.getBaseName(filename));

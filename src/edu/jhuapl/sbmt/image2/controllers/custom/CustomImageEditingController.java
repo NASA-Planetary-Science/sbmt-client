@@ -1,0 +1,623 @@
+package edu.jhuapl.sbmt.image2.controllers.custom;
+
+import java.awt.Dimension;
+import java.awt.GridBagConstraints;
+import java.awt.Window;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
+import java.awt.event.MouseMotionListener;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
+import java.io.File;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.function.Function;
+
+import javax.swing.JOptionPane;
+
+import org.apache.commons.lang3.tuple.Pair;
+
+import com.beust.jcommander.internal.Lists;
+
+import vtk.vtkImageData;
+import vtk.vtkImageReslice;
+import vtk.vtkImageSlice;
+import vtk.vtkImageSliceMapper;
+import vtk.vtkInteractorStyleImage;
+import vtk.vtkTransform;
+import vtk.rendering.jogl.vtkJoglPanelComponent;
+
+import edu.jhuapl.saavtk.gui.dialog.CustomFileChooser;
+import edu.jhuapl.saavtk.util.IntensityRange;
+import edu.jhuapl.sbmt.core.image.ImageSource;
+import edu.jhuapl.sbmt.core.image.ImageType;
+import edu.jhuapl.sbmt.image2.controllers.preview.ImageContrastController;
+import edu.jhuapl.sbmt.image2.controllers.preview.ImageMaskController;
+import edu.jhuapl.sbmt.image2.interfaces.IPerspectiveImage;
+import edu.jhuapl.sbmt.image2.interfaces.IPerspectiveImageTableRepresentable;
+import edu.jhuapl.sbmt.image2.model.CylindricalBounds;
+import edu.jhuapl.sbmt.image2.model.IRenderableImage;
+import edu.jhuapl.sbmt.image2.pipelineComponents.operators.rendering.vtk.VtkImageRendererOperator;
+import edu.jhuapl.sbmt.image2.pipelineComponents.pipelines.cylindricalImages.CylindricalImageToRenderableImagePipeline;
+import edu.jhuapl.sbmt.image2.pipelineComponents.pipelines.perspectiveImages.PerspectiveImageToRenderableImagePipeline;
+import edu.jhuapl.sbmt.image2.pipelineComponents.pipelines.rendering.vtk.VtkImageContrastPipeline;
+import edu.jhuapl.sbmt.image2.ui.custom.editing.CustomImageEditingDialog;
+import edu.jhuapl.sbmt.layer.api.Layer;
+import edu.jhuapl.sbmt.pipeline.publisher.IPipelinePublisher;
+import edu.jhuapl.sbmt.pipeline.publisher.Just;
+import edu.jhuapl.sbmt.pipeline.subscriber.Sink;
+
+public class CustomImageEditingController<G1 extends IPerspectiveImage & IPerspectiveImageTableRepresentable> implements MouseListener, MouseMotionListener, PropertyChangeListener
+{
+	CustomImageEditingDialog<G1> dialog;
+	private G1 existingImage;
+	private ImageType imageType = null;
+	private List<Layer> layers = Lists.newArrayList();
+	private Layer layer;
+
+	private vtkJoglPanelComponent renWin;
+	private vtkImageSlice actor = new vtkImageSlice();
+	private vtkImageReslice reslice;
+	private vtkImageData displayedImage;
+	private boolean isEllipsoid;
+
+	ImageMaskController maskController;
+	ImageContrastController contrastController;
+
+	private Runnable completionBlock;
+
+	public CustomImageEditingController(Window parent, boolean isEllipsoid, G1 existingImage, Runnable completionBlock)
+	{
+		this.existingImage = existingImage;
+		this.isEllipsoid = isEllipsoid;
+		this.completionBlock = completionBlock;
+		try
+		{
+			getLayers();
+		}
+		catch (Exception e1)
+		{
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
+		contrastController = new ImageContrastController(displayedImage, existingImage.getIntensityRange(), new Function<vtkImageData, Void>() {
+
+			@Override
+			public Void apply(vtkImageData t)
+			{
+				try
+				{
+					displayedImage = t;
+					updateImage(displayedImage);
+					setIntensity(null);
+					renWin.Render();
+					if (completionBlock != null) completionBlock.run();
+				}
+				catch (Exception e)
+				{
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+
+				return null;
+			}
+		});
+
+		maskController = new ImageMaskController(layer, existingImage.getMaskValues(), new Function<Pair<Layer, int[]>, Void>()
+		{
+
+			@Override
+			public Void apply(Pair<Layer, int[]> items)
+			{
+				try
+				{
+					existingImage.setMaskValues(items.getRight());
+					if (displayedImage == null) return null;
+					generateVtkImageData(items.getLeft());
+					updateImage(displayedImage);
+					setIntensity(null);
+					if (renWin == null) return null;
+					renWin.Render();
+					layer = items.getLeft();
+					if (completionBlock != null) completionBlock.run();
+				}
+				catch (Exception e)
+				{
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+
+				return null;
+			}
+		});
+		dialog = new CustomImageEditingDialog<G1>(dialog, existingImage, completionBlock, maskController, contrastController);
+		populateUI();
+		renderLayerAndAddAttributes();
+		javax.swing.SwingUtilities.invokeLater(new Runnable()
+		{
+			@Override
+			public void run()
+			{
+				if (renWin != null)
+				{
+					renWin.resetCamera();
+					renWin.Render();
+				}
+			}
+		});
+	}
+
+	private void renderLayerAndAddAttributes()
+	{
+		try
+		{
+			getLayers();
+			if (layer == null) return;
+			renderLayer(layer);
+			setIntensity(existingImage.getIntensityRange());
+			dialog.getAppearancePanel().setEnabled(true);
+		}
+		catch (Exception e1)
+		{
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
+
+	}
+
+	private void populateUI()
+	{
+		dialog.getImagePathTextField().setText(existingImage.getFilename());
+		dialog.getImageNameTextField().setText(existingImage.getName());
+		dialog.getFlipAboutXCheckBox().setSelected(existingImage.getFlip().equals("X"));
+//		if (existingImage.getImageType() != ImageType.GENERIC_IMAGE)
+//		{
+//			if (!existingImage.getPointingSource().isEmpty())
+			if (!existingImage.getPointingSourceType().toString().contains("Cylindrical"))
+			{
+				dialog.getPointingTypeComboBox().setSelectedIndex(0);
+				dialog.getPointingFilenameTextField().setText(existingImage.getPointingSource());
+				dialog.getImageFlipComboBox().setSelectedItem(existingImage.getFlip());
+				dialog.getImageRotationComboBox().setSelectedItem("" + (int) (existingImage.getRotation()));
+			}
+			else
+			{
+				dialog.getPointingTypeComboBox().setSelectedIndex(1);
+				dialog.getMinLatitudeTextField().setText("" + existingImage.getBounds().minLatitude());
+				dialog.getMaxLatitudeTextField().setText("" + existingImage.getBounds().maxLatitude());
+				dialog.getMinLongitudeTextField().setText("" + existingImage.getBounds().minLongitude());
+				dialog.getMaxLongitudeTextField().setText("" + existingImage.getBounds().maxLongitude());
+			}
+//		}
+//		else // cylindrical
+//		{
+//			dialog.getPointingTypeComboBox().setSelectedIndex(1);
+//			dialog.getMinLatitudeTextField().setText("" + existingImage.getBounds().minLatitude());
+//			dialog.getMaxLatitudeTextField().setText("" + existingImage.getBounds().maxLatitude());
+//			dialog.getMinLongitudeTextField().setText("" + existingImage.getBounds().minLongitude());
+//			dialog.getMaxLongitudeTextField().setText("" + existingImage.getBounds().maxLongitude());
+//		}
+
+		for (double val : existingImage.getFillValues())
+		{
+			dialog.getFillValuesTextField().setText(dialog.getFillValuesTextField().getText() + val + ",");
+		}
+
+		if (existingImage.getPointingSourceType().toString().contains("Cylindrical"))
+			dialog.getPointingTypeComboBox().setSelectedItem("Simple Cylindrical Projection");
+		else
+			dialog.getPointingTypeComboBox().setSelectedItem("Perspective Projection");
+
+		dialog.getPointingTypeComboBox().addActionListener(e -> {
+			if (dialog.getPointingTypeComboBox().getSelectedIndex() == 1)
+				existingImage.setPointingSourceType(ImageSource.LOCAL_CYLINDRICAL);
+			else
+			{
+				existingImage.setPointingSourceType(ImageSource.SPICE);
+				if (dialog.getPointingFilenameTextField().getText().toLowerCase().endsWith("sum"))
+					existingImage.setPointingSourceType(ImageSource.GASKELL);
+			}
+		});
+
+		dialog.getMaskController().setMaskValues(existingImage.getMaskValues());
+
+		dialog.getBrowseButton().addActionListener(e ->
+		{
+			File[] files = CustomFileChooser.showOpenDialog(this.getDialog(), "Select Pointing File...", List.of("info", "INFO", "sum", "SUM"), false);
+			if (files == null || files.length == 0)
+	        {
+	            return;
+	        }
+
+			String filename = files[0].getAbsolutePath();
+			dialog.getPointingFilenameTextField().setText(filename);
+			existingImage.setPointingSource(filename);
+			if (dialog.getPointingFilenameTextField().getText().toLowerCase().endsWith("sum"))
+				existingImage.setPointingSourceType(ImageSource.GASKELL);
+			else
+				existingImage.setPointingSourceType(ImageSource.SPICE);
+			renderLayerAndAddAttributes();
+		});
+
+		dialog.getOkButton().addActionListener(e ->
+		{
+			String errorString = validateInput();
+			if (errorString != null)
+			{
+				JOptionPane.showMessageDialog(getDialog(), errorString, "Error", JOptionPane.ERROR_MESSAGE);
+				return;
+			}
+
+			storeImage();
+
+			dialog.setVisible(false);
+		});
+
+		dialog.getImageFlipComboBox().addActionListener(e -> {
+			existingImage.setFlip((String)dialog.getImageFlipComboBox().getSelectedItem());
+			renderLayerAndAddAttributes();
+		});
+
+		dialog.getImageRotationComboBox().addActionListener(e -> {
+			existingImage.setRotation(Double.parseDouble((String)dialog.getImageRotationComboBox().getSelectedItem()));
+			renderLayerAndAddAttributes();
+		});
+
+		dialog.getFillValuesButton().addActionListener(e -> {
+			String[] valueStrings = dialog.getFillValuesTextField().getText().split(",");
+			double[] doubleArray = new double[valueStrings.length];
+			if (valueStrings.length == 0 || valueStrings[0].isBlank())
+			{
+				existingImage.setFillValues(doubleArray);
+				return;
+			}
+			int i=0;
+			for (String val : valueStrings)
+			{
+				doubleArray[i++] = Double.parseDouble(val);
+			}
+			existingImage.setFillValues(doubleArray);
+			renderLayerAndAddAttributes();
+		});
+	}
+
+	private String validateInput()
+	{
+		String imagePath = dialog.getImagePathTextField().getText();
+		if (imagePath == null)
+			imagePath = "";
+
+		// if (!isEditMode) // || (!imagePath.isEmpty() &&
+		// !imagePath.equals(LEAVE_UNMODIFIED)))
+		// {
+		// if (imagePath.isEmpty())
+		// return "Please enter the path to an image.";
+		//
+		// File file = new File(imagePath);
+		// if (!file.exists() || !file.canRead() || !file.isFile())
+		// return imagePath + " does not exist or is not readable.";
+		//
+		// if (imagePath.contains(","))
+		// return "Image path may not contain commas.";
+		// }
+
+		String imageName = dialog.getImageNameTextField().getText();
+		if (imageName == null)
+			imageName = "";
+		if (imageName.trim().isEmpty())
+			return "Please enter a name for the image. The name can be any text that describes the image.";
+		if (imageName.contains(","))
+			return "Name may not contain commas.";
+
+		// TODO fix this
+		// if (!isEditMode && currentNames.contains(imageName))
+		// {
+		// return "Name for custom image already exists.";
+		// }
+
+		// if (imageTypeComboBox.getSelectedItem().toString().equals("<CHOOSE
+		// IMAGE TYPE>"))
+		// {
+		// return "Select an image type.";
+		// }
+
+		if (dialog.getPointingTypeComboBox().getSelectedItem().equals("Simple Cylindrical Projection"))
+		{
+			// if (!isEditMode) // (!imagePath.isEmpty() &&
+			// !imagePath.equals(LEAVE_UNMODIFIED))
+			// {
+			// // Check first to see if it is a natively supported image
+			// boolean supportedCustomFormat = false;
+			//
+			// // Check if this image is any of the custom supported formats
+			// String message = checkForEnviFile(imagePath,
+			// supportedCustomFormat);
+			// if (supportedCustomFormat == false && !message.equals("")) return
+			// message;
+			//
+			// // Otherwise, try to see if VTK natively supports
+			// if(!supportedCustomFormat)
+			// {
+			// vtkImageReader2Factory imageFactory = new
+			// vtkImageReader2Factory();
+			// vtkImageReader2 imageReader =
+			// imageFactory.CreateImageReader2(imagePath);
+			// if (imageReader == null)
+			// return "The format of the specified image is not supported.";
+			// }
+			// }
+
+			try
+			{
+				double lllat = Double.parseDouble(dialog.getMinLatitudeTextField().getText());
+				double urlat = Double.parseDouble(dialog.getMaxLatitudeTextField().getText());
+				Double.parseDouble(dialog.getMinLongitudeTextField().getText());
+				Double.parseDouble(dialog.getMaxLongitudeTextField().getText());
+
+				if (lllat < -90.0 || lllat > 90.0 || urlat < -90.0 || urlat > 90.0)
+					return "Latitudes must be between -90 and +90.";
+				if (lllat >= urlat)
+					return "Upper right latitude must be greater than lower left latitude.";
+
+				if (!isEllipsoid)
+				{
+					if ((lllat < 1.0 && lllat > 0.0) || (lllat > -1.0 && lllat < 0.0) || (urlat < 1.0 && urlat > 0.0)
+							|| (urlat > -1.0 && urlat < 0.0))
+						return "For non-ellipsoidal shape models, latitudes must be (in degrees) either 0, greater than +1, or less then -1.";
+				}
+			}
+			catch (NumberFormatException e)
+			{
+				return "An error occurred parsing one of the required fields.";
+			}
+		}
+		else // uses pointing file
+		{
+			String pointingFileName = dialog.getPointingFilenameTextField().getText();
+
+			if ((!pointingFileName.isEmpty()))
+			{
+				if (dialog.getPointingFilenameTextField().getText().isEmpty() == true)
+					return "Please enter the path to a pointing file.";
+
+				if (!pointingFileName.isEmpty())
+				{
+					File file = new File(pointingFileName);
+					if (!file.exists() || !file.canRead() || !file.isFile())
+						return pointingFileName + " does not exist or is not readable.";
+
+					if (pointingFileName.contains(","))
+						return "Path may not contain commas.";
+				}
+			}
+		}
+
+
+		return null;
+	}
+
+	private void getLayers() throws Exception
+	{
+		List<IRenderableImage> renderableImages = null;
+		layers.clear();
+		if ((dialog == null) || dialog.getPointingFilenameTextField().getText().equals("FILE NOT FOUND") /*|| existingImage.getPointingSource().equals("FILE NOT FOUND")*/) return;
+		if (existingImage.getPointingSourceType() == ImageSource.LOCAL_CYLINDRICAL)
+		{
+			CylindricalImageToRenderableImagePipeline pipeline = CylindricalImageToRenderableImagePipeline.of(List.of(existingImage));
+			renderableImages = pipeline.getRenderableImages();
+		}
+		else
+		{
+			PerspectiveImageToRenderableImagePipeline pipeline = new PerspectiveImageToRenderableImagePipeline(List.of(existingImage));
+			renderableImages = pipeline.getRenderableImages();
+
+		}
+		for (int i=0; i<renderableImages.size(); i++)
+			layers.add(renderableImages.get(i).getLayer());
+		dialog.getMaskController().setLayer(layers.get(0));
+		dialog.getMaskController().setMaskValues(renderableImages.get(0).getMasking().getMask());
+		this.layer = layers.get(0);
+	}
+
+	private void storeImage()
+	{
+		String filename = dialog.getImagePathTextField().getText();
+
+		imageType = existingImage.getImageType();
+		existingImage.setName(dialog.getImageNameTextField().getText());
+		if (dialog.getPointingTypeComboBox().getSelectedItem().equals("Perspective Projection"))
+		{
+			existingImage.setPointingSource(dialog.getPointingFilenameTextField().getText());
+			existingImage.setFlip((String) dialog.getImageFlipComboBox().getSelectedItem());
+			existingImage.setRotation(Double.parseDouble((String) dialog.getImageRotationComboBox().getSelectedItem()));
+		}
+		else
+		{
+			Double minLat = Double.parseDouble(dialog.getMinLatitudeTextField().getText());
+			Double maxLat = Double.parseDouble(dialog.getMaxLatitudeTextField().getText());
+			Double minLon = Double.parseDouble(dialog.getMinLongitudeTextField().getText());
+			Double maxLon = Double.parseDouble(dialog.getMaxLongitudeTextField().getText());
+			existingImage.setBounds(new CylindricalBounds(minLat, maxLat, minLon, maxLon));
+			if (dialog.getFlipAboutXCheckBox().isSelected())
+				existingImage.setFlip("X");
+			else
+				existingImage.setFlip("None");
+		}
+//		});
+		// ImageType imageType = (ImageType)imageTypeComboBox.getSelectedItem();
+		// String pointingSource = pointingFilenameTextField.getText();
+		// ImageSource pointingSourceType = ImageSource.LOCAL_CYLINDRICAL;
+		//
+		// if (!pointingSource.isEmpty())
+		// {
+		// String extension =
+		// FilenameUtils.getExtension(pointingSource).toLowerCase();
+		// pointingSourceType = extension.equals("sum") ? ImageSource.GASKELL :
+		// ImageSource.SPICE;
+		// }
+		// //TODO FIX THIS
+		// double[] fillValues = new double[] {};
+		// PerspectiveImage image = new PerspectiveImage(filename, imageType,
+		// pointingSourceType, pointingSource, fillValues);
+		// image.setName(getName());
+		// image.setImageOrigin(ImageOrigin.LOCAL);
+		// image.setLongTime(new Date().getTime());
+		// if (pointingSourceType == ImageSource.LOCAL_CYLINDRICAL)
+		// {
+		// Double minLat = Double.parseDouble(minLatitudeTextField.getText());
+		// Double maxLat = Double.parseDouble(maxLatitudeTextField.getText());
+		// Double minLon = Double.parseDouble(minLongitudeTextField.getText());
+		// Double maxLon = Double.parseDouble(maxLongitudeTextField.getText());
+		// image.setBounds(new CylindricalBounds(minLat, maxLat, minLon,
+		// maxLon));
+		// }
+		// CompositePerspectiveImage compImage = new
+		// CompositePerspectiveImage(List.of(image));
+		// compImage.setName(imageNameTextField.getText());
+		// imageCollection.addUserImage(compImage);
+		// imageCollection.setImagingInstrument(null);
+	}
+
+	private void generateVtkImageData(Layer layer) throws IOException, Exception
+	{
+		if (dialog == null) return;
+		List<vtkImageData> displayedImages = new ArrayList<vtkImageData>();
+		IPipelinePublisher<Layer> reader = new Just<Layer>(layer);
+		reader.operate(new VtkImageRendererOperator()).subscribe(new Sink<vtkImageData>(displayedImages)).run();
+		displayedImage = displayedImages.get(0);
+		dialog.getContrastController().setImageData(displayedImage);
+		if (displayedImage.GetNumberOfScalarComponents() != 1)
+			dialog.getContrastController().getView().setVisible(false);
+		this.layer = layer;
+	}
+
+	private void renderLayer(Layer layer) throws IOException, Exception
+	{
+		generateVtkImageData(layer);
+
+		renWin = new vtkJoglPanelComponent();
+		renWin.getComponent().setPreferredSize(new Dimension(550, 550));
+
+		vtkInteractorStyleImage style = new vtkInteractorStyleImage();
+		renWin.setInteractorStyle(style);
+
+		updateImage(displayedImage);
+
+		renWin.getRenderer().AddActor(actor);
+
+		renWin.setSize(550, 550);
+
+		renWin.getRenderer().SetBackground(new double[]{ 0.5f, 0.5f, 0.5f });
+
+		renWin.getComponent().addMouseListener(this);
+		renWin.getComponent().addMouseMotionListener(this);
+		renWin.getRenderer().GetActiveCamera().Dolly(0.2);
+		renWin.resetCamera();
+		// renWin.addKeyListener(this);
+
+		GridBagConstraints gridBagConstraints = new GridBagConstraints();
+		gridBagConstraints.gridx = 0;
+		gridBagConstraints.gridy = 0;
+		gridBagConstraints.fill = GridBagConstraints.BOTH;
+		gridBagConstraints.weightx = 1.0;
+		gridBagConstraints.weighty = 1.0;
+		dialog.getLayerPanel().add(renWin.getComponent(), gridBagConstraints);
+		dialog.repaint();
+		dialog.revalidate();
+	}
+
+	private void updateImage(vtkImageData displayedImage)
+	{
+		double[] center = displayedImage.GetCenter();
+		int[] dims = displayedImage.GetDimensions();
+		// Rotate image by 90 degrees so it appears the same way as when you
+		// use the Center in Image option.
+		vtkTransform imageTransform = new vtkTransform();
+		imageTransform.Translate(center[0], center[1], 0.0);
+		imageTransform.RotateZ(0.0);
+		imageTransform.Translate(-center[1], -center[0], 0.0);
+
+		reslice = new vtkImageReslice();
+		reslice.SetInputData(displayedImage);
+		// reslice.SetResliceTransform(imageTransform);
+		reslice.SetInterpolationModeToNearestNeighbor();
+		reslice.SetOutputSpacing(1.0, 1.0, 1.0);
+		reslice.SetOutputOrigin(0.0, 0.0, 0.0);
+		reslice.SetOutputExtent(0, dims[0] - 1, 0, dims[1] - 1, 0, dims[2]);
+		reslice.Update();
+
+		vtkImageSliceMapper imageSliceMapper = new vtkImageSliceMapper();
+		imageSliceMapper.SetInputConnection(reslice.GetOutputPort());
+		imageSliceMapper.Update();
+
+		actor.SetMapper(imageSliceMapper);
+		actor.GetProperty().SetInterpolationTypeToLinear();
+	}
+
+	private void setIntensity(IntensityRange range) throws IOException, Exception
+	{
+		VtkImageContrastPipeline pipeline = new VtkImageContrastPipeline(displayedImage, range);
+		displayedImage = pipeline.getUpdatedData().get(0);
+ 		updateImage(displayedImage);
+		if (completionBlock != null) completionBlock.run();
+	}
+
+	public CustomImageEditingDialog<G1> getDialog()
+	{
+		return dialog;
+	}
+
+	@Override
+	public void mouseEntered(MouseEvent e)
+	{
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public void mouseExited(MouseEvent e)
+	{
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public void mousePressed(MouseEvent e)
+	{
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public void mouseReleased(MouseEvent e)
+	{
+
+	}
+
+	@Override
+	public void mouseDragged(MouseEvent e)
+	{
+
+	}
+
+	@Override
+	public void mouseClicked(MouseEvent e)
+	{
+
+	}
+
+	@Override
+	public void mouseMoved(MouseEvent arg0)
+	{
+		// TODO Auto-generated method stub
+
+	}
+
+	public void propertyChange(PropertyChangeEvent arg0)
+	{
+		if (renWin.getRenderWindow().GetNeverRendered() > 0)
+			return;
+		renWin.Render();
+	}
+}

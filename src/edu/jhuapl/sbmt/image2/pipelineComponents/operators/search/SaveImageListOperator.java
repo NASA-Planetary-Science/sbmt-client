@@ -41,9 +41,9 @@ public class SaveImageListOperator<G1 extends IPerspectiveImage & IPerspectiveIm
                 int size = images.size();
                 for (int i = 0; i < size; ++i)
                 {
-                	String imageName = new File(images.get(0).getFilename()).getName();
+                	String imageName = new File(images.get(i).getFilename()).getName();
                 	Date imageDate = images.get(i).getDate();
-                	String pointingSource = images.get(0).getPointingSourceType().toString();
+                	String pointingSource = images.get(i).getPointingSourceType().toString();
                 	out.write(imageName + " " + sdf.format(imageDate) + " " + pointingSource);
                 	out.newLine();
                 }

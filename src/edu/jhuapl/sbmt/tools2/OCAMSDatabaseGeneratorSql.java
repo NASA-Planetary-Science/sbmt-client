@@ -35,7 +35,7 @@ import edu.jhuapl.sbmt.image2.pipelineComponents.pipelines.io.FilenameToRenderab
 //import edu.jhuapl.sbmt.core.rendering.PerspectiveImage;
 //import edu.jhuapl.sbmt.image.model.keys.ImageKey;
 import edu.jhuapl.sbmt.tools.DBRunInfo;
-import edu.jhuapl.sbmt.tools.SqlManager;
+import edu.jhuapl.sbmt.tools.SqlManager; 
 
 public class OCAMSDatabaseGeneratorSql
 {

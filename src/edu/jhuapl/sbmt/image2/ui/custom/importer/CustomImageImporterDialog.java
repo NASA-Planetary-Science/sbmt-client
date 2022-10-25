@@ -36,7 +36,6 @@ import vtk.vtkImageReader2;
 import vtk.vtkImageReader2Factory;
 
 import edu.jhuapl.saavtk.gui.dialog.CustomFileChooser;
-import edu.jhuapl.sbmt.core.image.IImagingInstrument;
 import edu.jhuapl.sbmt.core.image.ImageType;
 import edu.jhuapl.sbmt.image2.interfaces.IPerspectiveImage;
 import edu.jhuapl.sbmt.image2.interfaces.IPerspectiveImageTableRepresentable;
@@ -46,7 +45,6 @@ import edu.jhuapl.sbmt.util.VtkENVIReader;
 
 public class CustomImageImporterDialog<G1 extends IPerspectiveImage & IPerspectiveImageTableRepresentable> extends JDialog
 {
-	private IImagingInstrument instrument;
 	private JTextField imagePathTextField;
 	private JTextField imageNameTextField;
 	private JTextField pointingFilenameTextField;
@@ -65,11 +63,10 @@ public class CustomImageImporterDialog<G1 extends IPerspectiveImage & IPerspecti
 	private Optional<G1> existingImage;
 	private ImageType imageType = null;
 
-	public CustomImageImporterDialog(Window parent, boolean isEditMode, IImagingInstrument instrument, boolean isEllipsoid,
+	public CustomImageImporterDialog(Window parent, boolean isEditMode, boolean isEllipsoid,
 			/*BaseItemManager<G1> imageCollection,*/ Optional<G1> existingImage)
 	{
 		 super(parent, isEditMode ? "Edit Image" : "Import New Image", Dialog.ModalityType.APPLICATION_MODAL);
-		 this.instrument = instrument;
 		 this.isEditMode = isEditMode;
 		 this.isEllipsoid = isEllipsoid;
 //		 this.imageCollection = imageCollection;

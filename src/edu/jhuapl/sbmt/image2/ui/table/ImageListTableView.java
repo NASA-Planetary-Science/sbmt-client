@@ -179,11 +179,11 @@ public class ImageListTableView<G1 extends IPerspectiveImage & IPerspectiveImage
 		newImageButton.setToolTipText(ToolTipUtil.getCustomImage());
 
 		loadImageButton = GuiUtil.formButton(listener, UIManager.getIcon("FileView.directoryIcon"));
-		loadImageButton.setToolTipText(ToolTipUtil.getItemLoad());
+		loadImageButton.setToolTipText(ToolTipUtil.getItemLoadImageList());
 
 		saveImageButton = GuiUtil.formButton(listener, UIManager.getIcon("FileView.hardDriveIcon"));
-		saveImageButton.setToolTipText(ToolTipUtil.getItemSave());
-//		saveImageButton.setEnabled(false);
+		saveImageButton.setToolTipText(ToolTipUtil.getItemSaveImageList());
+		saveImageButton.setEnabled(false);
 
 		showImageButton = GuiUtil.formButton(listener, IconUtil.getItemShow());
 		showImageButton.setToolTipText(ToolTipUtil.getItemShow());

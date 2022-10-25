@@ -22,7 +22,7 @@ public class ImageSearchPipeline<G1 extends IPerspectiveImage & IPerspectiveImag
 	{
 		Just.of(searchParamatersModel)
 			.operate(new ImageSearchOperator(viewConfig, modelManager))
-			.operate(new CreateImageFromSearchResultOperator<G1>(viewConfig))
+			.operate(new CreateImageFromSearchResultOperator<G1>())
 			.subscribe(Sink.of(images))
 			.run();
 	}

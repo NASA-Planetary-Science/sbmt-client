@@ -14,8 +14,10 @@ import java.beans.PropertyChangeListener;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Optional;
 import java.util.function.Function;
 
 import javax.swing.AbstractAction;
@@ -32,6 +34,7 @@ import javax.swing.JSplitPane;
 import javax.swing.WindowConstants;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.tuple.Pair;
 
 import vtk.vtkImageData;
 import vtk.vtkImageReslice;
@@ -291,7 +294,11 @@ public class LayerPreviewPanel extends ModelInfoWindow implements MouseListener,
 					layerNames[i] = "PLANE" + (i+1);
 				}
 			layerComboBox = new JComboBox<String>(layerNames);
-			layerComboBox.setSelectedIndex(displayedLayerIndex);
+			int indexToSelect = 0;
+			Optional<String> matchedPlane = Arrays.stream(layerNames).filter(name -> name.contains("PLANE" + displayedLayerIndex)).findFirst();
+			if (matchedPlane.isPresent())
+				indexToSelect = Arrays.stream(layerNames).toList().indexOf(matchedPlane.get()) + 1;
+			layerComboBox.setSelectedIndex(indexToSelect);
 			layerComboBox.addActionListener(new ActionListener()
 			{
 
@@ -422,20 +429,21 @@ public class LayerPreviewPanel extends ModelInfoWindow implements MouseListener,
 		gridBagConstraints.fill = GridBagConstraints.HORIZONTAL;
 		gridBagConstraints.anchor = GridBagConstraints.WEST;
 		gridBagConstraints.insets = new Insets(3, 6, 3, 0);
-		trimController = new ImageTrimController(layer, currentMaskValues, new Function<Layer, Void>()
+		trimController = new ImageTrimController(layer, currentMaskValues, new Function<Pair<Layer, int[]>, Void>()
 		{
 
 			@Override
-			public Void apply(Layer t)
+			public Void apply(Pair<Layer, int[]> items)
 			{
 				try
 				{
-					generateVtkImageData(t);
+					int[] masks = items.getRight();
+					generateVtkImageData(items.getLeft());
 					updateImage(displayedImage);
 					setIntensity(null);
 					if (renWin == null) return null;
 					renWin.Render();
-					layer = t;
+					layer = items.getLeft();
 					if (completionBlock != null) completionBlock.run();
 				}
 				catch (Exception e)

@@ -78,7 +78,7 @@ public class ColorImageBuilderController<G1 extends IPerspectiveImage & IPerspec
 		});
 	}
 
-	public void setImages(List<IPerspectiveImage> images)
+	public void setImages(List<G1> images)
 	{
 		this.panel.setImages(images);
 	}

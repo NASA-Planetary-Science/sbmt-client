@@ -13,6 +13,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
+import java.util.Optional;
 
 import javax.swing.BorderFactory;
 import javax.swing.JComponent;
@@ -494,20 +495,33 @@ public class SbmtView extends View implements PropertyChangeListener
 	{
 //		setupOlderImageTabs();
 		PerspectiveImageCollection collection = (PerspectiveImageCollection)getModelManager().getModel(ModelNames.IMAGES_V2);
-		for (ImagingInstrument instrument : getPolyhedralModelConfig().imagingInstruments)
-	    {
-			ImageSearchController cont = new ImageSearchController(getPolyhedralModelConfig(), collection, instrument, getModelManager(), getPopupManager(), getRenderer(), getPickManager(), (SbmtInfoWindowManager) getInfoPanelManager(), (SbmtSpectrumWindowManager) getSpectrumPanelManager());
-			addTab(instrument.instrumentName.toString() + "-NEW", cont.getView());
-
-			pomListeners.add(new PositionOrientationManagerListener()
+//		for (ImagingInstrument instrument : getPolyhedralModelConfig().imagingInstruments)
+//	    {
+			if (getPolyhedralModelConfig().imagingInstruments.length == 0)
 			{
-				@Override
-				public void managerUpdated(IPositionOrientationManager manager)
-				{
-					((ImageSearchController)cont).setPositionOrientationManager(manager);
-				}
-			});
-	    }
+				ImageSearchController cont  = cont = new ImageSearchController(getPolyhedralModelConfig(), collection, Optional.ofNullable(null), getModelManager(), getPopupManager(), getRenderer(), getPickManager(), (SbmtInfoWindowManager) getInfoPanelManager(), (SbmtSpectrumWindowManager) getSpectrumPanelManager(), getLegacyStatusHandler());
+				addTab("Images", cont.getView());
+			
+			} 
+			else
+			{
+				for (ImagingInstrument instrument : getPolyhedralModelConfig().imagingInstruments)
+			    {
+					ImageSearchController cont  = new ImageSearchController(getPolyhedralModelConfig(), collection, Optional.of(instrument), getModelManager(), getPopupManager(), getRenderer(), getPickManager(), (SbmtInfoWindowManager) getInfoPanelManager(), (SbmtSpectrumWindowManager) getSpectrumPanelManager(), getLegacyStatusHandler());
+					addTab(instrument.instrumentName.toString() + "-NEW", cont.getView());
+					
+					pomListeners.add(new PositionOrientationManagerListener()
+					{
+						@Override
+						public void managerUpdated(IPositionOrientationManager manager)
+						{
+							((ImageSearchController)cont).setPositionOrientationManager(manager);
+						}
+					});
+			    }
+			}
+			
+//	    }
 	}
 
 //	private void setupOlderImageTabs()
@@ -705,7 +719,7 @@ public class SbmtView extends View implements PropertyChangeListener
 	{
         JTabbedPane customDataPane=new JTabbedPane();
         customDataPane.setBorder(BorderFactory.createEmptyBorder());
-        addTab("Custom Data", customDataPane);
+
 
 //        if (!getPolyhedralModelConfig().customTemporary)
 //        {
@@ -733,6 +747,9 @@ public class SbmtView extends View implements PropertyChangeListener
 			PopupMenu popupMenu = new SpectrumPopupMenu(spectrumCollection, boundaryCollection, getModelManager(), (SbmtInfoWindowManager) getInfoPanelManager(), getRenderer());
 			registerPopup(spectrumCollection, popupMenu);
 		}
+
+		if (customDataPane.getTabCount() != 0)
+			addTab("Custom Data", customDataPane);
 	}
 
 	protected void setupDEMTab()

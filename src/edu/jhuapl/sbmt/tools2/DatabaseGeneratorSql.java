@@ -52,7 +52,7 @@ public class DatabaseGeneratorSql
     private String databasePrefix;
     private String databaseSuffix = "";
     private boolean appendTables;
-    private boolean modifyMain;
+    private boolean modifyMain; 
 //    private int cameraIndex;
     private Instrument instrument;
 

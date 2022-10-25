@@ -109,7 +109,7 @@ public class DatabaseGeneratorSql2
             //ignore
             ex2.printStackTrace();  // second time we run program
             //  should throw execption since table
-            // already there
+            // already there 
             //
             // this will have no effect on the db
         }
