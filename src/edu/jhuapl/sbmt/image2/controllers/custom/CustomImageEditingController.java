@@ -375,7 +375,8 @@ public class CustomImageEditingController<G1 extends IPerspectiveImage & IPerspe
 		else // uses pointing file
 		{
 			String pointingFileName = dialog.getPointingFilenameTextField().getText();
-
+			int typeIndex = dialog.getPointingTypeComboBox().getSelectedIndex();
+			if (pointingFileName.equals("FILE NOT FOUND") &&  typeIndex == 0) return "Please select a pointing file";
 			if ((!pointingFileName.isEmpty()))
 			{
 				if (dialog.getPointingFilenameTextField().getText().isEmpty() == true)

@@ -83,7 +83,7 @@ public class CustomImageImporterDialog2<G1 extends IPerspectiveImage & IPerspect
 		table.setup();
 
 		table.getLoadImageButton().addActionListener(e -> {
-			File[] files = CustomFileChooser.showOpenDialog(table, "Select images...", List.of("fits", "fit", "FIT", "FITS", "png"), true);
+			File[] files = CustomFileChooser.showOpenDialog(table, "Select images...", List.of("fits", "fit", "FIT", "FITS", "png", "PNG", "JPG", "jpg"), true);
 			if (files == null || files.length == 0)
 	        {
 	            return;
@@ -355,15 +355,15 @@ public class CustomImageImporterDialog2<G1 extends IPerspectiveImage & IPerspect
 		JButton cancelButton = new JButton("Cancel");
 
 		okButton.addActionListener(e -> {
-//			String errorString = validateInput();
-//	        if (errorString != null)
-//	        {
-//	            JOptionPane.showMessageDialog(this,
-//	                    errorString,
-//	                    "Error",
-//	                    JOptionPane.ERROR_MESSAGE);
-//	            return;
-//	        }
+			String errorString = validateInput();
+	        if (errorString != null)
+	        {
+	            JOptionPane.showMessageDialog(this,
+	                    errorString,
+	                    "Error",
+	                    JOptionPane.ERROR_MESSAGE);
+	            return;
+	        }
 
 	        saveImagesToCollection();
 	        setVisible(false);
@@ -374,6 +374,15 @@ public class CustomImageImporterDialog2<G1 extends IPerspectiveImage & IPerspect
 		panel.add(okButton);
 		panel.add(cancelButton);
 		return panel;
+	}
+
+	private String validateInput()
+	{
+		for (G1 image : tempCollection.getAllItems())
+		{
+			if (image.getPointingSource().equals("FILE NOT FOUND")) return "Please pick pointing for all files listed as FILE NOT FOUND";
+		}
+		return null;
 	}
 
 	private void saveImagesToCollection()
