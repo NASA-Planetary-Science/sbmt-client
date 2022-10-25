@@ -8,6 +8,7 @@ import org.apache.commons.lang3.tuple.Triple;
 
 import edu.jhuapl.sbmt.core.image.IImagingInstrument;
 import edu.jhuapl.sbmt.core.image.ImageSource;
+import edu.jhuapl.sbmt.core.image.Orientation;
 import edu.jhuapl.sbmt.image2.interfaces.IPerspectiveImage;
 import edu.jhuapl.sbmt.image2.interfaces.IPerspectiveImageTableRepresentable;
 import edu.jhuapl.sbmt.image2.model.CompositePerspectiveImage;
@@ -40,8 +41,10 @@ public class CreateImageFromSearchResultOperator<G1 extends IPerspectiveImage & 
         	String pointingSource = new ImageFileUtil().getPointingServerPath(imageInfo.get(0), instrument, imageSource);
 
         	PerspectiveImage image = new PerspectiveImage(imageInfo.get(0), instrument.getType(), imageSource, pointingSource, new double[] {});
-        	image.setFlip(instrument.getFlip());
-        	image.setRotation(instrument.getRotation());
+
+        	Orientation orientation = instrument.getOrientation(imageSource);
+        	image.setFlip(orientation.getFlip().flip());
+        	image.setRotation(orientation.getRotation());
         	image.setImageOrigin(ImageOrigin.SERVER);
 
         	image.setLinearInterpolatorDims(instrument.getLinearInterpolationDims());

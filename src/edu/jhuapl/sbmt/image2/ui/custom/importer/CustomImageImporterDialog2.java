@@ -27,6 +27,7 @@ import edu.jhuapl.saavtk.util.FileUtil;
 import edu.jhuapl.sbmt.core.image.IImagingInstrument;
 import edu.jhuapl.sbmt.core.image.ImageSource;
 import edu.jhuapl.sbmt.core.image.ImageType;
+import edu.jhuapl.sbmt.core.image.Orientation;
 import edu.jhuapl.sbmt.image2.controllers.custom.CustomImageEditingController;
 import edu.jhuapl.sbmt.image2.interfaces.IPerspectiveImage;
 import edu.jhuapl.sbmt.image2.interfaces.IPerspectiveImageTableRepresentable;
@@ -477,11 +478,13 @@ public class CustomImageImporterDialog2<G1 extends IPerspectiveImage & IPerspect
 		{
 			if (imageType != ImageType.GENERIC_IMAGE)
 			{
-				image.setLinearInterpolatorDims(instrument.getLinearInterpolationDims());
+			    Orientation orientation = instrument.getOrientation(pointingSourceType);
+
+			    image.setLinearInterpolatorDims(instrument.getLinearInterpolationDims());
 				image.setMaskValues(instrument.getMaskValues());
 				image.setFillValues(instrument.getFillValues());
-				image.setFlip(instrument.getFlip());
-				image.setRotation(instrument.getRotation());
+				image.setFlip(orientation.getFlip().flip());
+				image.setRotation(orientation.getRotation());
 			}
 		}
 		CompositePerspectiveImage compImage = new CompositePerspectiveImage(List.of(image));
