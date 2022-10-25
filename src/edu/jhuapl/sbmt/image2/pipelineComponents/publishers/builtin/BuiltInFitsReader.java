@@ -62,6 +62,11 @@ public class BuiltInFitsReader extends BasePipelinePublisher<Layer>
 
     public BuiltInFitsReader(String filename, double[] fill) throws FitsException, IOException
     {
+    	this(filename, fill, true);
+    }
+
+    public BuiltInFitsReader(String filename, double[] fill, boolean transpose) throws FitsException, IOException
+    {
         this.filename = filename;
         this.fill = fill;
         loadData();
@@ -69,7 +74,9 @@ public class BuiltInFitsReader extends BasePipelinePublisher<Layer>
         for (int i=0; i<fitsDepth; i++)
         {
         	Layer layer = ofScalar(i);
-        	layer = TransformFactory.rotateCCW().apply(layer);
+        	if (transpose)
+        		layer = TransformFactory.swapIJ().apply(layer);
+//        	layer = TransformFactory.flipAboutX().apply(layer);
         	outputs.add(layer);
         }
 
