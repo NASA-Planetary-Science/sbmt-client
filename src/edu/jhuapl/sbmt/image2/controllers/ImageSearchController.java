@@ -530,7 +530,7 @@ public class ImageSearchController<G1 extends IPerspectiveImage & IPerspectiveIm
 //		if (collection.getPainterFor(aPrimaryTarg) == null)
 //			return;
 		// Bail if not a valid pick action
-		if (PickUtil.isPopupTrigger(aEvent) == false || aMode != PickMode.ActiveSec)
+		if (/*PickUtil.isPopupTrigger(aEvent) == false ||*/ aMode != PickMode.ActiveSec)
 			return;
 
 
@@ -546,7 +546,8 @@ public class ImageSearchController<G1 extends IPerspectiveImage & IPerspectiveIm
 				Component tmpComp = aEvent.getComponent();
 				int posX = ((MouseEvent) aEvent).getX();
 				int posY = ((MouseEvent) aEvent).getY();
-				popupMenu.show(tmpComp, posX, posY);
+				if (PickUtil.isPopupTrigger(aEvent) == true)
+					popupMenu.show(tmpComp, posX, posY);
 				updateStatusBar(((MouseEvent) aEvent));
 			}
 		});
@@ -560,7 +561,8 @@ public class ImageSearchController<G1 extends IPerspectiveImage & IPerspectiveIm
 				Component tmpComp = aEvent.getComponent();
 				int posX = ((MouseEvent) aEvent).getX();
 				int posY = ((MouseEvent) aEvent).getY();
-				popupMenu.show(tmpComp, posX, posY);
+				if (PickUtil.isPopupTrigger(aEvent) == true)
+					popupMenu.show(tmpComp, posX, posY);
 				updateStatusBar(((MouseEvent) aEvent));
 			}
 		});
