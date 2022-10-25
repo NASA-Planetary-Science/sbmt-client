@@ -52,6 +52,7 @@ public class CustomImageEditingController<G1 extends IPerspectiveImage & IPerspe
 {
 	CustomImageEditingDialog<G1> dialog;
 	private G1 existingImage;
+	private boolean isPerspective;
 	private ImageType imageType = null;
 	private List<Layer> layers = Lists.newArrayList();
 	private Layer layer;
@@ -67,11 +68,12 @@ public class CustomImageEditingController<G1 extends IPerspectiveImage & IPerspe
 
 	private Runnable completionBlock;
 
-	public CustomImageEditingController(Window parent, boolean isEllipsoid, G1 existingImage, Runnable completionBlock)
+	public CustomImageEditingController(Window parent, boolean isEllipsoid, boolean isPerspective, G1 existingImage, Runnable completionBlock)
 	{
 		this.existingImage = existingImage;
 		this.isEllipsoid = isEllipsoid;
 		this.completionBlock = completionBlock;
+		this.isPerspective = isPerspective;
 		try
 		{
 			getLayers();

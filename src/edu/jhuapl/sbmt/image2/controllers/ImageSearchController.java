@@ -10,6 +10,7 @@ import java.util.List;
 import java.util.Optional;
 
 import javax.swing.JFrame;
+import javax.swing.JOptionPane;
 import javax.swing.JTabbedPane;
 import javax.swing.event.AncestorEvent;
 import javax.swing.event.AncestorListener;
@@ -428,8 +429,19 @@ public class ImageSearchController<G1 extends IPerspectiveImage & IPerspectiveIm
 		});
 
 		customImageListTableController.getPanel().getNewImageButton().addActionListener(e -> {
-			CustomImageImporterDialog2<G1> dialog = new CustomImageImporterDialog2<G1>(null, false, instrument.orElse(null),
+
+			int n = JOptionPane.showOptionDialog(getView(),
+				    "What projection type do you wish to load?",
+				    "Choose a projection type",
+				    JOptionPane.YES_NO_CANCEL_OPTION,
+				    JOptionPane.QUESTION_MESSAGE,
+				    null,
+				    new String[] {"Perspective Projection", "Cylindrical Projection"},
+				    "Perspective Projection");
+
+			CustomImageImporterDialog2<G1> dialog = new CustomImageImporterDialog2<G1>(null, false, n == 0, instrument.orElse(null),
 					modelManager.getPolyhedralModel().isEllipsoid(), collection);
+
 	        dialog.setLocationRelativeTo(customImageListTableController.getPanel());
 	        dialog.setVisible(true);
 		});
@@ -441,7 +453,7 @@ public class ImageSearchController<G1 extends IPerspectiveImage & IPerspectiveIm
 			if (image.getNumberOfLayers() == 1)	//editing custom single layer image
 			{
 				CustomImageEditingController<G1> dialog = new CustomImageEditingController<G1>(null,
-						modelManager.getPolyhedralModel().isEllipsoid(), image, () -> {});
+						modelManager.getPolyhedralModel().isEllipsoid(), !image.getPointingSourceType().toString().contains("Cylindrical"), image, () -> {});
 		        dialog.getDialog().setLocationRelativeTo(customImageListTableController.getPanel());
 		        dialog.getDialog().setVisible(true);
 		        collection.updateUserImage(image);
@@ -573,7 +585,7 @@ public class ImageSearchController<G1 extends IPerspectiveImage & IPerspectiveIm
 	private void updateStatusBar(MouseEvent e)
 	{
 		int pickSucceeded = doPick(e, imagePicker, renderer.getRenderWindowPanel());
-		if (pickSucceeded == 1)
+//		if (pickSucceeded == 1)
 		{
 			double[] p = imagePicker.GetPickPosition();
 
