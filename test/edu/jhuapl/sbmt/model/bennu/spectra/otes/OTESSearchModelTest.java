@@ -43,8 +43,6 @@ import edu.jhuapl.sbmt.spectrum.model.core.search.SpectrumSearchParametersModel;
 import edu.jhuapl.sbmt.spectrum.model.hypertree.SpectraSearchDataCollection;
 import edu.jhuapl.sbmt.spectrum.model.sbmtCore.spectra.ISpectralInstrument;
 import edu.jhuapl.sbmt.spectrum.model.statistics.SpectrumStatisticsCollection;
-import edu.jhuapl.sbmt.spectrum.rendering.SpectraCollection;
-import edu.jhuapl.sbmt.spectrum.rendering.SpectrumBoundaryCollection;
 
 class OTESSearchModelTest
 {
@@ -84,15 +82,15 @@ class OTESSearchModelTest
 		orexNode = new DefaultMutableTreeNode("OREX");
 
 		HashMap<ModelNames, Model> allModels = new HashMap<>();
-        SpectraCollection collection = new SpectraCollection(smallBodyModel);
+//        SpectraCollection collection = new SpectraCollection(smallBodyModel);
 
 		allModels.put(ModelNames.SMALL_BODY, smallBodyModel);
-		allModels.put(ModelNames.SPECTRA_BOUNDARIES, new SpectrumBoundaryCollection(smallBodyModel, collection));
+//		allModels.put(ModelNames.SPECTRA_BOUNDARIES, new SpectrumBoundaryCollection(smallBodyModel, collection));
 
 		allModels.put(ModelNames.SPECTRA_HYPERTREE_SEARCH, new SpectraSearchDataCollection(smallBodyModel));
 
 
-        allModels.put(ModelNames.SPECTRA, collection);
+//        allModels.put(ModelNames.SPECTRA, collection);
 
 		ConfigurableSceneNotifier tmpSceneChangeNotifier = new ConfigurableSceneNotifier();
 		StatusNotifier tmpStatusNotifier = QuietStatusNotifier.Instance;
