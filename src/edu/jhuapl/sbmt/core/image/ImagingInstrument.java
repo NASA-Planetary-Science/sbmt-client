@@ -33,7 +33,7 @@ public class ImagingInstrument implements MetadataManager, IImagingInstrument
     public Instrument instrumentName;
     private Set<Float> fillValues;
     private int[] linearInterpolationDims;
-    private int[] maskValues = new int[] {0,0,0,0};
+    private int[] maskValues = new int[] { 0, 0, 0, 0 };
 
     protected final Map<ImageSource, Orientation> orientationMap;
 
@@ -41,20 +41,21 @@ public class ImagingInstrument implements MetadataManager, IImagingInstrument
     {
         this(SpectralImageMode.MONO, null, null, null, null, 0.0, null, null, null, null, true, null);
     }
+
     public ImagingInstrument(double rotation, String flip)
     {
         this(SpectralImageMode.MONO, null, ImageType.GENERIC_IMAGE, null, null, rotation, flip, null, null, null, true, null);
     }
 
-//    public ImagingInstrument(ImageType type, Instrument instrumentName)
-//    {
-//        this(SpectralMode.MONO, null, type, null, instrumentName, 0.0, null);
-//    }
+    // public ImagingInstrument(ImageType type, Instrument instrumentName)
+    // {
+    // this(SpectralMode.MONO, null, type, null, instrumentName, 0.0, null);
+    // }
 
-//    public ImagingInstrument(SpectralMode spectralMode)
-//    {
-//        this(spectralMode, null, null, null, null, 0.0, null);
-//    }
+    // public ImagingInstrument(SpectralMode spectralMode)
+    // {
+    // this(spectralMode, null, null, null, null, 0.0, null);
+    // }
 
     public ImagingInstrument(SpectralImageMode spectralMode, QueryBase searchQuery, ImageType type, ImageSource[] searchImageSources, Instrument instrumentName)
     {
@@ -89,8 +90,8 @@ public class ImagingInstrument implements MetadataManager, IImagingInstrument
         this.searchImageSources = searchImageSources;
         this.instrumentName = instrumentName;
         this.fillValues = fillValues != null ? new LinkedHashSet<>(fillValues) : null;
-        this.linearInterpolationDims = linearInterpDims != null ? linearInterpDims : new int[] {0,0,0,0};
-        this.maskValues = maskValues != null ? maskValues : new int[] {0,0,0,0};
+        this.linearInterpolationDims = linearInterpDims != null ? linearInterpDims : new int[] { 0, 0, 0, 0 };
+        this.maskValues = maskValues != null ? maskValues : new int[] { 0, 0, 0, 0 };
 
         this.orientationMap = new LinkedHashMap<>();
         if (orientationMap != null)
@@ -117,26 +118,27 @@ public class ImagingInstrument implements MetadataManager, IImagingInstrument
     }
 
     public ImageType getType()
-	{
-		return type;
-	}
+    {
+        return type;
+    }
 
-	public ImageSource[] getSearchImageSources()
-	{
-		return searchImageSources;
-	}
+    public ImageSource[] getSearchImageSources()
+    {
+        return searchImageSources;
+    }
 
-	public SpectralImageMode getSpectralMode()
-	{
-		return spectralMode;
-	}
+    public SpectralImageMode getSpectralMode()
+    {
+        return spectralMode;
+    }
 
     private static final Key<String> spectralModeKey = Key.of("spectralMode");
     private static final Key<String> queryType = Key.of("queryType");
     private static final Key<Metadata> queryKey = Key.of("query");
-//    private static final Key<String> rootPathKey = Key.of("rootPath");
-//    private static final Key<String> tablePrefixKey = Key.of("tablePrefix");
-//    private static final Key<String> galleryPrefixKey = Key.of("galleryPrefix");
+    // private static final Key<String> rootPathKey = Key.of("rootPath");
+    // private static final Key<String> tablePrefixKey = Key.of("tablePrefix");
+    // private static final Key<String> galleryPrefixKey =
+    // Key.of("galleryPrefix");
     private static final Key<String> imageTypeKey = Key.of("imageType");
     private static final Key<String[]> imageSourcesKey = Key.of("imageSources");
     private static final Key<String> instrumentKey = Key.of("instrument");
@@ -154,8 +156,9 @@ public class ImagingInstrument implements MetadataManager, IImagingInstrument
         spectralMode = SpectralImageMode.valueOf(read(spectralModeKey, source));
         String searchType = read(queryType, source);
         Metadata queryMetadata = read(queryKey, source);
-        // Do not use, e.g., GenericPhpQuery.class.getSimpleName() method because if the class
-        // gets renamed this would not be able to read previously-saved metadata.
+        // Do not use, e.g., GenericPhpQuery.class.getSimpleName() method
+        // because if the class gets renamed this would not be able to read
+        // previously-saved metadata.
         searchQuery = searchType.equals("GenericPhpQuery") ? new GenericPhpQuery() : new FixedListQuery<>();
         searchQuery.retrieve(queryMetadata);
 
@@ -200,9 +203,9 @@ public class ImagingInstrument implements MetadataManager, IImagingInstrument
     {
         SettableMetadata configMetadata = SettableMetadata.of(Version.of(1, 2));
         writeEnum(spectralModeKey, spectralMode, configMetadata);
-        // Do not use, e.g., GenericPhpQuery.class.getSimpleName() method because if the class
-        // gets renamed this would start writing something different that could not be read
-        // by the retrieve method above.
+        // Do not use, e.g., GenericPhpQuery.class.getSimpleName() method
+        // because if the class gets renamed this would start writing something
+        // different that could not be read by the retrieve method above.
         if (searchQuery.getClass() == GenericPhpQuery.class)
         {
             write(queryType, "GenericPhpQuery", configMetadata);
@@ -213,10 +216,12 @@ public class ImagingInstrument implements MetadataManager, IImagingInstrument
         }
         else
         {
-            // Writing the metadata is actually not a problem -- searchQuery.store() should work for any query.
-            // However, throw an exception here in the interest of failing fast/early. Do not write
-            // metadata here that cannot be read by the retrieve method above. If adding another query type,
-            // first fix the retrieve method to read it, then add support here to write it.
+            // Writing the metadata is actually not a problem --
+            // searchQuery.store() should work for any query. However, throw an
+            // exception here in the interest of failing fast/early. Do not
+            // write metadata here that cannot be read by the retrieve method
+            // above. If adding another query type, first fix the retrieve
+            // method to read it, then add support here to write it.
             throw new UnsupportedOperationException("Unable to write metadata for query type " + searchQuery.getClass().getSimpleName());
         }
 
@@ -237,7 +242,6 @@ public class ImagingInstrument implements MetadataManager, IImagingInstrument
 
         return configMetadata;
     }
-
 
     private <T> void write(Key<T> key, T value, SettableMetadata configMetadata)
     {
@@ -260,7 +264,7 @@ public class ImagingInstrument implements MetadataManager, IImagingInstrument
         if (values != null)
         {
             String[] names = new String[values.length];
-            int i=0;
+            int i = 0;
             for (Enum<?> val : values)
             {
                 names[i++] = val.name();
@@ -279,21 +283,21 @@ public class ImagingInstrument implements MetadataManager, IImagingInstrument
         return null;
     }
 
-	public IQueryBase getSearchQuery()
-	{
-		return searchQuery;
-	}
+    public IQueryBase getSearchQuery()
+    {
+        return searchQuery;
+    }
 
-	public Instrument getInstrumentName()
-	{
-		return instrumentName;
-	}
+    public Instrument getInstrumentName()
+    {
+        return instrumentName;
+    }
 
-	@Override
-	public FillDetector<Float> getFillDetector(Image image)
-	{
-	    return fillValues == null ? ImageDataUtil.getDefaultFillDetector() : ImageDataUtil.getMultiFillValueDetector(fillValues);
-	}
+    @Override
+    public FillDetector<Float> getFillDetector(Image image)
+    {
+        return fillValues == null ? ImageDataUtil.getDefaultFillDetector() : ImageDataUtil.getMultiFillValueDetector(fillValues);
+    }
 
     @Override
     public Orientation getOrientation(ImageSource source)
@@ -311,28 +315,29 @@ public class ImagingInstrument implements MetadataManager, IImagingInstrument
     }
 
     @Override
-	public int[] getLinearInterpolationDims()
-	{
-		return linearInterpolationDims;
-	}
+    public int[] getLinearInterpolationDims()
+    {
+        return linearInterpolationDims;
+    }
 
     @Override
-	public int[] getMaskValues()
-	{
-		return maskValues;
-	}
+    public int[] getMaskValues()
+    {
+        return maskValues;
+    }
 
-	public double[] getFillValues()
-	{
-		if (fillValues == null) return new double[] {};
-		double[] fillValuesArray = new double[fillValues.size()];
-		int i=0;
-		for (Float val : fillValues)
-		{
-			fillValuesArray[i++] = val.doubleValue();
-		}
-		return fillValuesArray;
-	}
+    public double[] getFillValues()
+    {
+        if (fillValues == null)
+            return new double[] {};
+        double[] fillValuesArray = new double[fillValues.size()];
+        int i = 0;
+        for (Float val : fillValues)
+        {
+            fillValuesArray[i++] = val.doubleValue();
+        }
+        return fillValuesArray;
+    }
 
     protected Orientation getOrientation(ImageSource imageSource, String imageFlip, Double rotation, Boolean isTranspose)
     {
@@ -398,4 +403,3 @@ public class ImagingInstrument implements MetadataManager, IImagingInstrument
     }
 
 }
-
