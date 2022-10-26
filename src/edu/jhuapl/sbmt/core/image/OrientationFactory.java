@@ -44,7 +44,7 @@ public class OrientationFactory
 
     protected static Key<Orientation> MetadataKey = Key.of("ImageOrientation");
 
-    protected void initializeSerializationProxy()
+    public static void initializeSerializationProxy()
     {
         InstanceGetter instanceGetter = InstanceGetter.defaultInstanceGetter();
         if (!instanceGetter.isProvidableFromMetadata(MetadataKey))

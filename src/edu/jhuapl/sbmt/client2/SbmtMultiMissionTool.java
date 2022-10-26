@@ -45,6 +45,7 @@ import edu.jhuapl.sbmt.common.client.Mission;
 import edu.jhuapl.sbmt.common.client.SbmtSplash;
 import edu.jhuapl.sbmt.core.image.CustomCylindricalImageKey;
 import edu.jhuapl.sbmt.core.image.CustomPerspectiveImageKey;
+import edu.jhuapl.sbmt.core.image.OrientationFactory;
 import edu.jhuapl.sbmt.dtm.model.DEMKey;
 import edu.jhuapl.sbmt.image2.model.CompositePerspectiveImage;
 import edu.jhuapl.sbmt.image2.model.CylindricalBounds;
@@ -141,6 +142,7 @@ public class SbmtMultiMissionTool
 		SpiceStateHistory.initializeSerializationProxy();
 		StateHistoryKey.initializeSerializationProxy();
 		SpiceInfo.initializeSerializationProxy();
+		OrientationFactory.initializeSerializationProxy();
 	}
 
 	public static void setEnableAuthentication(boolean enableAuthentication)
