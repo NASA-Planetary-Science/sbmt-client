@@ -590,7 +590,7 @@ public class DartConfigs extends SmallBodyViewConfigBuilder
                         ImageType.valueOf("LUKE_IMAGE"), //
                         InfoFiles, //
                         Instrument.LUKE, //
-                        270.0, //
+                        90.0, //
                         "X", //
                         LukeFillValues, //
                         false //
@@ -719,7 +719,7 @@ public class DartConfigs extends SmallBodyViewConfigBuilder
                         ImageType.valueOf("LUKE_IMAGE"), //
                         InfoFiles, //
                         Instrument.LUKE, //
-                        270.0, //
+                        90.0, //
                         "X", //
                         LukeFillValues, //
                         false //
