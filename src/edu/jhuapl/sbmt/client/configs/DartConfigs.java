@@ -4,8 +4,10 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.GregorianCalendar;
+import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Map;
 
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
@@ -23,6 +25,8 @@ import edu.jhuapl.sbmt.config.SpectralImageMode;
 import edu.jhuapl.sbmt.core.image.ImageSource;
 import edu.jhuapl.sbmt.core.image.ImageType;
 import edu.jhuapl.sbmt.core.image.ImagingInstrument;
+import edu.jhuapl.sbmt.core.image.Orientation;
+import edu.jhuapl.sbmt.core.image.OrientationFactory;
 import edu.jhuapl.sbmt.image.model.ImageFlip;
 import edu.jhuapl.sbmt.pointing.spice.SpiceInfo;
 import edu.jhuapl.sbmt.query.database.GenericPhpQuery;
@@ -56,6 +60,8 @@ public class DartConfigs extends SmallBodyViewConfigBuilder
 
     private static final DartConfigs DefaultInstance = new DartConfigs();
 
+    private static final String MissionPrefix = "DART";
+
     // Note: would strongly prefer *NOT TO DO IT THIS WAY* by hard-coding these
     // values. Doing it this way because currently there is no way to inject
     // special handling of keywords where the images are read in a
@@ -77,6 +83,13 @@ public class DartConfigs extends SmallBodyViewConfigBuilder
     private static final Date JupiterSearchStartDate = new GregorianCalendar(2022, 6, 1, 0, 0, 0).getTime();
     // Months (only) are 0-based: JULY 2 is 6, 2 not 7, 2.
     private static final Date JupiterSearchEndDate = new GregorianCalendar(2022, 6, 2, 0, 0, 0).getTime();
+
+    // Months (only) are 0-based: SEPTEMBER 26 is 8, 26.
+    // These values were specified in an update to Redmine issue #2472.
+    private static final Date ImpactSearchStartDate = new GregorianCalendar(2022, 8, 26, 22, 0, 0).getTime();
+    private static final Date ImpactSearchEndDate = new GregorianCalendar(2022, 8, 26, 23, 14, 25).getTime();
+    private static final double ImpactMaxScDistance = 10000.0; // km
+    private static final double ImpactResolution = 300.0; // mpp
 
     static
     {
@@ -137,12 +150,12 @@ public class DartConfigs extends SmallBodyViewConfigBuilder
 
         SmallBodyViewConfig c;
 
+        // There must be exactly one defaultConfig set somewhere below.
+        final SmallBodyViewConfig defaultConfig;
+
         // Ideal Didymos models.
         c = createSingleResolutionConfig_20200629_v01(ShapeModelBody.DIDYMOS, "Ideal Impact 1 20200629 v01", 1996);
         configList.add(c);
-
-        // Make this the default model.
-        final SmallBodyViewConfig defaultConfig = c;
 
         c = createSingleResolutionConfig_20200629_v01(ShapeModelBody.DIDYMOS, "Ideal Impact 2 20200629 v01", 1996);
         configList.add(c);
@@ -227,52 +240,73 @@ public class DartConfigs extends SmallBodyViewConfigBuilder
 
         configList.add(c);
 
-        defaultConfig.defaultForMissions = DartClients;
+        // Flight models below this point.
+        ImageSource[] imageSources = { ImageSource.GASKELL, ImageSource.SPICE };
+
+        Map<ImageSource, Orientation> dracoFlightOrientations = new LinkedHashMap<>();
+        dracoFlightOrientations.put(ImageSource.GASKELL, new OrientationFactory().of(ImageFlip.X, 0.0, true));
+        dracoFlightOrientations.put(ImageSource.SPICE, new OrientationFactory().of(ImageFlip.X, 180.0, true));
+
+        // We have no LUKE images of Jupiter, but putting this here as a
+        // reminder that LUKE images are multi-spectral for when we do have
+        // LUKE images.
+        @SuppressWarnings("unused")
+        SpectralImageMode lukeImageMode = SpectralImageMode.MULTI;
+
+        // Similarly, in past models LUKE images alone were not transposed,
+        // so putting this here as a reminder...
+        @SuppressWarnings("unused")
+        boolean lukeTranspose = false;
 
         // Jupiter system models.
         {
-            ImageSource[] imageSources = { ImageSource.GASKELL, ImageSource.SPICE };
-            boolean dracoTranspose = true;
+            String label = MissionPrefix + " " + "Jupiter-v01";
+            ShapeModelType author = author(label);
 
-            // We have no LUKE images of Jupiter, but putting this here as a
-            // reminder that LUKE images are multi-spectral for when we do have
-            // LUKE images.
-            @SuppressWarnings("unused")
-            SpectralImageMode lukeImageMode = SpectralImageMode.MULTI;
+            init(ShapeModelBody.JUPITER, author, ShapeModelDataUsed.SIMULATED, label);
+            imageSearchRanges(JupiterSearchStartDate, JupiterSearchEndDate, 1.0e9, 1.0e7);
 
-            // Similarly, in past models LUKE images alone were not transposed,
-            // so putting this here as a reminder...
-            @SuppressWarnings("unused")
-            boolean lukeTranspose = false;
+            ImagingInstrument instrument = createFlightInstrument(ShapeModelBody.JUPITER, author, Instrument.DRACO, dracoFlightOrientations, imageSources);
+            DBRunInfo[] dbRunInfos = createDbInfos(ShapeModelBody.JUPITER, author, Instrument.DRACO, imageSources);
+            add(instrument, dbRunInfos);
 
-            {
-                String label = "DART Jupiter-v01";
-                ShapeModelType author = author(label);
-
-                init(ShapeModelBody.JUPITER, author, ShapeModelDataUsed.SIMULATED, label);
-                imageSearchRanges(JupiterSearchStartDate, JupiterSearchEndDate, 1.0e9, 1.0e7);
-
-                ImagingInstrument instrument = createFlightInstrument(ShapeModelBody.JUPITER, author, Instrument.DRACO, 0.0, ImageFlip.X, dracoTranspose, imageSources);
-                DBRunInfo[] dbRunInfos = createDbInfos(ShapeModelBody.JUPITER, author, Instrument.DRACO, imageSources);
-                add(instrument, dbRunInfos);
-
-                configList.add(build());
-            }
-
-            {
-                String label = "DART Ganymede-v01";
-                ShapeModelType author = author(label);
-
-                init(ShapeModelBody.GANYMEDE, author, ShapeModelDataUsed.SIMULATED, label);
-                imageSearchRanges(JupiterSearchStartDate, JupiterSearchEndDate, 1.0e9, 1.0e7);
-
-                ImagingInstrument instrument = createFlightInstrument(ShapeModelBody.GANYMEDE, author, Instrument.DRACO, 0.0, ImageFlip.X, dracoTranspose, imageSources);
-                DBRunInfo[] dbRunInfos = createDbInfos(ShapeModelBody.GANYMEDE, author, Instrument.DRACO, imageSources);
-                add(instrument, dbRunInfos);
-
-                configList.add(build());
-            }
+            c = build();
+            configList.add(c);
         }
+
+        {
+            String label = MissionPrefix + " " + "Ganymede-v01";
+            ShapeModelType author = author(label);
+
+            init(ShapeModelBody.GANYMEDE, author, ShapeModelDataUsed.SIMULATED, label);
+            imageSearchRanges(JupiterSearchStartDate, JupiterSearchEndDate, 1.0e9, 1.0e7);
+
+            ImagingInstrument instrument = createFlightInstrument(ShapeModelBody.GANYMEDE, author, Instrument.DRACO, dracoFlightOrientations, imageSources);
+            DBRunInfo[] dbRunInfos = createDbInfos(ShapeModelBody.GANYMEDE, author, Instrument.DRACO, imageSources);
+            add(instrument, dbRunInfos);
+
+            c = build();
+            configList.add(c);
+        }
+
+        // Dimorphos version 002 (flight).
+        {
+            String label = "Dimorphos-v002";
+            ShapeModelType author = author(MissionPrefix + " " + label);
+
+            init(ShapeModelBody.DIMORPHOS, author, ShapeModelDataUsed.IMAGE_BASED, label);
+            imageSearchRanges(ImpactSearchStartDate, ImpactSearchEndDate, ImpactMaxScDistance, ImpactResolution);
+
+            ImagingInstrument instrument = createFlightInstrument(ShapeModelBody.DIDYMOS, author, Instrument.DRACO, dracoFlightOrientations, imageSources);
+            DBRunInfo[] dbRunInfos = createDbInfos(ShapeModelBody.DIMORPHOS, author, Instrument.DRACO, imageSources);
+            add(instrument, dbRunInfos);
+
+            c = build();
+            configList.add(c);
+            defaultConfig = c;
+        }
+
+        defaultConfig.defaultForMissions = DartClients;
 
         buildSystemConfigs(configList);
     }
@@ -718,8 +752,8 @@ public class DartConfigs extends SmallBodyViewConfigBuilder
         c.timeHistoryFile = c.rootDirOnServer + "/history/timeHistory.bth";
         c.stateHistoryStartDate = new GregorianCalendar(2022, 9, 1, 10, 25, 8).getTime();
         c.stateHistoryEndDate = new GregorianCalendar(2022, 9, 1, 10, 28, 36).getTime();
-        SpiceInfo spiceInfo1 = new SpiceInfo("DART", "920065803_FIXED", "DART_SPACECRAFT", "DIDYMOS", new String[] { "EARTH", "SUN", "DIMORPHOS" }, new String[] { "DART_DRACO_2X2", "120065803_FIXED" });
-        SpiceInfo spiceInfo2 = new SpiceInfo("DART", "120065803_FIXED", "DART_SPACECRAFT", "DIMORPHOS", new String[] { "EARTH", "SUN", "DIDYMOS" }, new String[] { "DART_DRACO_2X2", "920065803_FIXED" });
+        SpiceInfo spiceInfo1 = new SpiceInfo(MissionPrefix, "920065803_FIXED", "DART_SPACECRAFT", "DIDYMOS", new String[] { "EARTH", "SUN", "DIMORPHOS" }, new String[] { "DART_DRACO_2X2", "120065803_FIXED" });
+        SpiceInfo spiceInfo2 = new SpiceInfo(MissionPrefix, "120065803_FIXED", "DART_SPACECRAFT", "DIMORPHOS", new String[] { "EARTH", "SUN", "DIDYMOS" }, new String[] { "DART_DRACO_2X2", "920065803_FIXED" });
         SpiceInfo[] spiceInfos = new SpiceInfo[] { spiceInfo1, spiceInfo2 };
         c.spiceInfo = List.of(spiceInfos).stream().filter(info -> info.getBodyName().equals(centerBodyName)).toList().get(0);
     }
@@ -730,8 +764,8 @@ public class DartConfigs extends SmallBodyViewConfigBuilder
         c.timeHistoryFile = c.rootDirOnServer + "/history/timeHistory.bth";
         c.stateHistoryStartDate = new GregorianCalendar(2022, 8, 26, 23, 10, 18).getTime();
         c.stateHistoryEndDate = new GregorianCalendar(2022, 8, 26, 23, 13, 30).getTime();
-        SpiceInfo spiceInfo1 = new SpiceInfo("DART", "DIDYMOS_FIXED", "DART_SPACECRAFT", "DIDYMOS", new String[] { "EARTH", "SUN", "DIMORPHOS" }, new String[] { "DART_DRACO_2X2", "DIMORPHOS_FIXED" });
-        SpiceInfo spiceInfo2 = new SpiceInfo("DART", "DIMORPHOS_FIXED", "DART_SPACECRAFT", "DIMORPHOS", new String[] { "EARTH", "SUN", "DIDYMOS" }, new String[] { "DART_DRACO_2X2", "DIDYMOS_FIXED" });
+        SpiceInfo spiceInfo1 = new SpiceInfo(MissionPrefix, "DIDYMOS_FIXED", "DART_SPACECRAFT", "DIDYMOS", new String[] { "EARTH", "SUN", "DIMORPHOS" }, new String[] { "DART_DRACO_2X2", "DIMORPHOS_FIXED" });
+        SpiceInfo spiceInfo2 = new SpiceInfo(MissionPrefix, "DIMORPHOS_FIXED", "DART_SPACECRAFT", "DIMORPHOS", new String[] { "EARTH", "SUN", "DIDYMOS" }, new String[] { "DART_DRACO_2X2", "DIDYMOS_FIXED" });
         SpiceInfo[] spiceInfos = new SpiceInfo[] { spiceInfo1, spiceInfo2 };
         c.spiceInfo = List.of(spiceInfos).stream().filter(info -> info.getBodyName().equals(centerBodyName)).toList().get(0);
     }
@@ -918,12 +952,74 @@ public class DartConfigs extends SmallBodyViewConfigBuilder
         }
         else
         {
-            throw new IllegalArgumentException("Don't know how to set up a config builder for body " + body);
+            throw new IllegalArgumentException("Dont know how to set up a config builder for body " + body);
         }
 
         body(body, bodyType, population, system);
         model(author, dataUsed, label);
         modelTopDir(modelTopDir(body, author));
+    }
+
+    protected ImagingInstrument createFlightInstrument(ShapeModelBody body, ShapeModelType author, Instrument instrument, Map<ImageSource, Orientation> orientationMap, ImageSource... sources)
+    {
+        String tablePrefix = dbTablePrefix(body, author, instrument);
+
+        String lcInstrument = instrument.name().toLowerCase();
+
+        String modelImageDir = modelTopDir(body, author) + "/" + lcInstrument;
+        String imageDataDir = "/dart/" + lcInstrument;
+
+        return createFlightInstrument(instrument, tablePrefix, modelImageDir, imageDataDir, orientationMap, sources);
+    }
+
+    protected ImagingInstrument createFlightInstrument(Instrument instrument, String tablePrefix, String modelImageDir, String imageDataDir, Map<ImageSource, Orientation> orientationMap, ImageSource... sources)
+    {
+        Preconditions.checkArgument(sources.length > 0);
+
+        ImageType imageType;
+        Collection<Float> fillValues;
+        SpectralImageMode spectralImageMode = SpectralImageMode.MONO;
+        if (instrument == Instrument.DRACO)
+        {
+            imageType = ImageType.valueOf("DRACO_IMAGE");
+            fillValues = DracoFlightFillValues;
+        }
+        else if (instrument == Instrument.LEIA)
+        {
+            imageType = ImageType.valueOf("LEIA_IMAGE");
+            fillValues = LeiaFlightFillValues;
+        }
+        else if (instrument == Instrument.LUKE)
+        {
+            imageType = ImageType.valueOf("LUKE_IMAGE");
+            fillValues = LukeFlightFillValues;
+            spectralImageMode = SpectralImageMode.MULTI;
+        }
+        else
+        {
+            throw new IllegalArgumentException("Unable to handle instrument " + instrument);
+        }
+
+        int[] linearInterpDims = null;
+        int[] maskValues = null;
+
+        double rotation = 0.0;
+        String flip = ImageFlip.NONE.flip();
+        boolean transpose = true;
+
+        return new ImagingInstrument(spectralImageMode, //
+                new GenericPhpQuery(modelImageDir, tablePrefix, tablePrefix, imageDataDir + "/gallery", imageDataDir + "/images"), //
+                imageType, //
+                sources, //
+                instrument, //
+                rotation, //
+                flip, //
+                fillValues, //
+                linearInterpDims, //
+                maskValues, //
+                transpose, //
+                orientationMap //
+        );
     }
 
     protected ImagingInstrument createFlightInstrument(ShapeModelBody body, ShapeModelType author, Instrument instrument, double rotation, ImageFlip flip, boolean transpose, ImageSource... sources)
@@ -968,6 +1064,11 @@ public class DartConfigs extends SmallBodyViewConfigBuilder
         {
             sources = new ImageSource[] { ImageSource.GASKELL };
         }
+
+        int[] linearInterpDims = null;
+        int[] maskValues = null;
+        Map<ImageSource, Orientation> orientationMap = null;
+
         return new ImagingInstrument(spectralImageMode, //
                 new GenericPhpQuery(modelImageDir, tablePrefix, tablePrefix, imageDataDir + "/gallery", imageDataDir + "/images"), //
                 imageType, //
@@ -976,7 +1077,10 @@ public class DartConfigs extends SmallBodyViewConfigBuilder
                 rotation, //
                 flip.flip(), //
                 fillValues, //
-                transpose //
+                linearInterpDims, //
+                maskValues, //
+                transpose, //
+                orientationMap //
         );
     }
 

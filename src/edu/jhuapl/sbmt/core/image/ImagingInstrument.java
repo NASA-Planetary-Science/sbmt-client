@@ -5,6 +5,7 @@ import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Objects;
 import java.util.Set;
 
@@ -148,7 +149,7 @@ public class ImagingInstrument implements MetadataManager, IImagingInstrument
     private static final Key<Boolean> isTransposeKey = Key.of("isTranspose");
     private static final Key<int[]> linearInterpolationDimsKey = Key.of("linearInterpolationDims");
     private static final Key<int[]> maskValuesKey = Key.of("maskValues");
-    private static final Key<Map<ImageSource, Orientation>> orientationsKey = Key.of("orientations");
+    private static final Key<Map<String, Orientation>> orientationsKey = Key.of("orientations");
 
     @Override
     public void retrieve(Metadata source)
@@ -182,11 +183,14 @@ public class ImagingInstrument implements MetadataManager, IImagingInstrument
         linearInterpolationDims = read(linearInterpolationDimsKey, source);
         maskValues = read(maskValuesKey, source);
 
-        Map<ImageSource, Orientation> orientationMap = read(orientationsKey, source);
+        Map<String, Orientation> orientationMap = read(orientationsKey, source);
         this.orientationMap.clear();
         if (orientationMap != null)
         {
-            this.orientationMap.putAll(orientationMap);
+            for (Entry<String, Orientation> entry : orientationMap.entrySet())
+            {
+                this.orientationMap.put(ImageSource.valueOf(entry.getKey()), entry.getValue());
+            }
         }
         else if (searchImageSources != null)
         {
@@ -238,7 +242,13 @@ public class ImagingInstrument implements MetadataManager, IImagingInstrument
         write(isTransposeKey, orientation.isTranspose(), configMetadata);
         write(linearInterpolationDimsKey, linearInterpolationDims, configMetadata);
         write(maskValuesKey, maskValues, configMetadata);
-        write(orientationsKey, orientationMap, configMetadata);
+
+        LinkedHashMap<String, Orientation> orientationStringMap = new LinkedHashMap<>();
+        for (Entry<ImageSource, Orientation> entry : orientationMap.entrySet())
+        {
+            orientationStringMap.put(entry.getKey().name(), entry.getValue());
+        }
+        write(orientationsKey, orientationStringMap, configMetadata);
 
         return configMetadata;
     }

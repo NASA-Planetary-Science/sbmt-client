@@ -11,9 +11,17 @@ import crucible.crust.metadata.impl.SettableMetadata;
 
 public class OrientationFactory
 {
+    private static final Orientation DefaultOrientation = new Orientation(ImageFlip.NONE, 0.0, true);
+
     public OrientationFactory()
     {
         super();
+    }
+
+    public Orientation of()
+    {
+        initializeSerializationProxy();
+        return DefaultOrientation;
     }
 
     public Orientation of(ImageFlip flip, double rotation, boolean transpose)
@@ -42,14 +50,14 @@ public class OrientationFactory
         if (!instanceGetter.isProvidableFromMetadata(MetadataKey))
         {
             instanceGetter.register(MetadataKey, source -> {
-                ImageFlip flip = source.get(Key.of("flip"));
+                ImageFlip flip = ImageFlip.of(source.get(Key.of("flip")));
                 double rotation = source.get(Key.of("rotation"));
                 boolean transpose = source.get(Key.of("transpose"));
 
                 return new Orientation(flip, rotation, transpose);
-            }, OrientationFactory.class, orientation -> {
+            }, Orientation.class, orientation -> {
                 SettableMetadata md = SettableMetadata.of(Version.of(1, 0));
-                md.put(Key.of("flip"), orientation.getFlip());
+                md.put(Key.of("flip"), orientation.getFlip().flip());
                 md.put(Key.of("rotation"), orientation.getRotation());
                 md.put(Key.of("transpose"), orientation.isTranspose());
 
