@@ -237,6 +237,11 @@ public class SmallBodyViewConfigBuilder
         return this;
     }
 
+    public SmallBodyViewConfigBuilder modelRes(String[] resolutionLabels, Integer[] resolutionNumberFacets)
+    {
+        return modelRes(ImmutableList.copyOf(resolutionLabels), ImmutableList.copyOf(resolutionNumberFacets));
+    }
+
     /**
      * Set the extension used by all shape model files associated with the
      * config being built. This method is optional; see {@link #init()} method
@@ -409,7 +414,7 @@ public class SmallBodyViewConfigBuilder
 
         if (c.presentInMissions == null)
         {
-//            c.presentInMissions =
+            // c.presentInMissions =
         }
         if (!imagingInstruments.isEmpty())
         {

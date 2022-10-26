@@ -15,6 +15,7 @@ import com.google.common.collect.ImmutableList;
 import edu.jhuapl.saavtk.config.ViewConfig;
 import edu.jhuapl.saavtk.model.ShapeModelBody;
 import edu.jhuapl.saavtk.model.ShapeModelType;
+import edu.jhuapl.sbmt.common.client.BodyViewConfig;
 import edu.jhuapl.sbmt.common.client.Mission;
 import edu.jhuapl.sbmt.common.client.SmallBodyViewConfig;
 import edu.jhuapl.sbmt.config.BodyType;
@@ -297,6 +298,8 @@ public class DartConfigs extends SmallBodyViewConfigBuilder
             init(ShapeModelBody.DIMORPHOS, author, ShapeModelDataUsed.IMAGE_BASED, label);
             imageSearchRanges(ImpactSearchStartDate, ImpactSearchEndDate, ImpactMaxScDistance, ImpactResolution);
 
+            modelRes(BodyViewConfig.DEFAULT_GASKELL_LABELS_PER_RESOLUTION, BodyViewConfig.DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION);
+
             ImagingInstrument instrument = createFlightInstrument(ShapeModelBody.DIMORPHOS, author, Instrument.DRACO, dracoFlightOrientations, imageSources);
             DBRunInfo[] dbRunInfos = createDbInfos(ShapeModelBody.DIMORPHOS, author, Instrument.DRACO, imageSources);
             add(instrument, dbRunInfos);
@@ -408,7 +411,7 @@ public class DartConfigs extends SmallBodyViewConfigBuilder
                         ImageType.valueOf("DRACO_IMAGE"), //
                         InfoFiles, //
                         Instrument.DRACO, //
-                        90., //
+                        270.0, //
                         "None", //
                         DracoTestFillValues //
                 ), new ImagingInstrument( //
@@ -417,7 +420,7 @@ public class DartConfigs extends SmallBodyViewConfigBuilder
                         ImageType.valueOf("LEIA_IMAGE"), //
                         InfoFilesAndCorrectedInfoFiles, //
                         Instrument.LEIA, //
-                        90., //
+                        270.0, //
                         "None", //
                         LeiaFillValues //
                 ), new ImagingInstrument( //
@@ -426,7 +429,7 @@ public class DartConfigs extends SmallBodyViewConfigBuilder
                         ImageType.valueOf("LUKE_IMAGE"), //
                         InfoFiles, //
                         Instrument.LUKE, //
-                        90., //
+                        270.0, //
                         "None", //
                         LukeFillValues //
                 ),
@@ -587,7 +590,7 @@ public class DartConfigs extends SmallBodyViewConfigBuilder
                         ImageType.valueOf("LUKE_IMAGE"), //
                         InfoFiles, //
                         Instrument.LUKE, //
-                        90., //
+                        270.0, //
                         "X", //
                         LukeFillValues, //
                         false //
@@ -716,7 +719,7 @@ public class DartConfigs extends SmallBodyViewConfigBuilder
                         ImageType.valueOf("LUKE_IMAGE"), //
                         InfoFiles, //
                         Instrument.LUKE, //
-                        90., //
+                        270.0, //
                         "X", //
                         LukeFillValues, //
                         false //
@@ -771,6 +774,8 @@ public class DartConfigs extends SmallBodyViewConfigBuilder
     }
 
     /**
+     * DO NOT USE!!!
+     * <p>
      * This is deprecated because in hindsight, the whole approach taken for
      * DART configs here didn't work well. The problem is that there was/is too
      * much variability among the models as the deliveries evolved, leading to a
@@ -788,7 +793,7 @@ public class DartConfigs extends SmallBodyViewConfigBuilder
      * <p>
      * Behavioral differences from the single-res version:
      * <ol>
-     * Numbers of plates and labels for model resolutions are now argyments. All
+     * Numbers of plates and labels for model resolutions are now arguments. All
      * 3 imagers expect both sumfiles and infofiles for pointings. The model is
      * no longer embedded in the path to the image directories by default.
      * </ol>
@@ -801,6 +806,8 @@ public class DartConfigs extends SmallBodyViewConfigBuilder
      * @param leiaImageSources image sources available for LEIA
      * @param lukeImageSources image sources available for LUKE
      * @return the config
+     *
+     *         DO NOT USE!!!
      */
     @Deprecated
     protected SmallBodyViewConfig createMultiResMissionImagesConfig( //
@@ -897,7 +904,7 @@ public class DartConfigs extends SmallBodyViewConfigBuilder
                     ImageType.valueOf("LUKE_IMAGE"), //
                     lukeImageSources, //
                     Instrument.LUKE, //
-                    90., //
+                    90.0, //
                     "X", //
                     LukeFillValues, //
                     false //
