@@ -73,16 +73,17 @@ public class CustomImageEditingDialog<G1 extends IPerspectiveImage & IPerspectiv
 	private JPanel controlsPanel;
 	private JSplitPane splitPane;
 	private int displayedLayerIndex = 0;
-
+	private boolean isPerspective;
 	private JPanel appearancePanel;
 
-	public CustomImageEditingDialog(Window parent, G1 existingImage, Runnable completionBlock, ImageMaskController maskController,
+	public CustomImageEditingDialog(Window parent, G1 existingImage, boolean isPerspective, Runnable completionBlock, ImageMaskController maskController,
 	ImageContrastController contrastController)
 	{
 		super(parent, "Edit Image", Dialog.ModalityType.APPLICATION_MODAL);
 
 //		this.displayedLayerIndex = currentLayerIndex;
 //		this.layer = layers.get(currentLayerIndex);
+		this.isPerspective = isPerspective;
 		this.contrastController = contrastController;
 		this.maskController = maskController;
 		this.layerPanel = new JPanel();
@@ -457,7 +458,18 @@ public class CustomImageEditingDialog<G1 extends IPerspectiveImage & IPerspectiv
 
 		JPanel optionPanel = new JPanel();
 		optionPanel.setLayout(new BoxLayout(optionPanel, BoxLayout.X_AXIS));
-		optionPanel.add(new JLabel("Projection:"));
+//		optionPanel.add(new JLabel("Projection:"));
+
+		if (isPerspective)
+		{
+			CardLayout cl = (CardLayout) (cardPanel.getLayout());
+			cl.show(cardPanel, "Perspective Projection");
+		}
+		else
+		{
+			CardLayout cl = (CardLayout) (cardPanel.getLayout());
+			cl.show(cardPanel, "Simple Cylindrical Projection");
+		}
 		// optionPanel.add(Box.createHorizontalGlue());
 		pointingTypeComboBox = new JComboBox<String>(new String[]
 		{ "Perspective Projection", "Simple Cylindrical Projection" });
@@ -471,7 +483,7 @@ public class CustomImageEditingDialog<G1 extends IPerspectiveImage & IPerspectiv
 				cl.show(cardPanel, arg0.getItem().toString());
 			}
 		});
-		optionPanel.add(pointingTypeComboBox);
+//		optionPanel.add(pointingTypeComboBox);
 		optionPanel.add(Box.createHorizontalStrut(100));
 
 		panel.add(optionPanel);
