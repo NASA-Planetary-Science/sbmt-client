@@ -133,7 +133,7 @@ public class CustomImageEditingController<G1 extends IPerspectiveImage & IPerspe
 				return null;
 			}
 		});
-		dialog = new CustomImageEditingDialog<G1>(dialog, existingImage, completionBlock, maskController, contrastController);
+		dialog = new CustomImageEditingDialog<G1>(dialog, existingImage, isPerspective, completionBlock, maskController, contrastController);
 		populateUI();
 		renderLayerAndAddAttributes();
 		javax.swing.SwingUtilities.invokeLater(new Runnable()
