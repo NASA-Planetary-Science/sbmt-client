@@ -7,7 +7,6 @@ import java.util.GregorianCalendar;
 import java.util.LinkedHashSet;
 import java.util.List;
 
-import com.beust.jcommander.internal.Lists;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
 
@@ -161,7 +160,7 @@ public class DartConfigs extends SmallBodyViewConfigBuilder
         // problems surfaced with the SPICE pointings. Leaving it here but not
         // adding it to configList.
         c = createSingleResMissionImagesConfig(ShapeModelBody.DIDYMOS, "Ideal Impact 6 RA 20201116 v01", 3145728);
-//        configList.add(c);
+        // configList.add(c);
 
         c = createSingleResMissionImagesConfig(ShapeModelBody.DIDYMOS, "Ideal Impact 9 20210630 v01", 1996);
         configList.add(c);
@@ -185,7 +184,7 @@ public class DartConfigs extends SmallBodyViewConfigBuilder
         // problems surfaced with the SPICE pointings. Leaving it here but not
         // adding it to configList.
         c = createSingleResMissionImagesConfig(ShapeModelBody.DIMORPHOS, "Ideal Impact 6 RA 20201116 v01", 3145728);
-//        configList.add(c);
+        // configList.add(c);
 
         c = createSingleResMissionImagesConfig(ShapeModelBody.DIMORPHOS, "Ideal Impact 9 20210630 v01", 3072);
         configList.add(c);
@@ -368,7 +367,7 @@ public class DartConfigs extends SmallBodyViewConfigBuilder
         String lukeTable = tableBaseName + "luke";
         String lukeDataDir = "/dart/luke/" + modelId + "/";
 
-        c.imagingInstruments = new ImagingInstrument[] {
+        c.imagingInstruments = new ImagingInstrument[] { //
                 new ImagingInstrument( //
                         SpectralImageMode.MONO, //
                         new GenericPhpQuery(dracoDir, dracoTable, dracoTable, dracoDataDir + "gallery", dracoDataDir + "images"), //
@@ -378,8 +377,7 @@ public class DartConfigs extends SmallBodyViewConfigBuilder
                         90., //
                         "None", //
                         DracoTestFillValues //
-                ),
-                new ImagingInstrument( //
+                ), new ImagingInstrument( //
                         SpectralImageMode.MONO, //
                         new GenericPhpQuery(leiaDir, leiaTable, leiaTable, leiaDataDir + "gallery", leiaDataDir + "images"), //
                         ImageType.valueOf("LEIA_IMAGE"), //
@@ -388,8 +386,7 @@ public class DartConfigs extends SmallBodyViewConfigBuilder
                         90., //
                         "None", //
                         LeiaFillValues //
-                ),
-                new ImagingInstrument( //
+                ), new ImagingInstrument( //
                         SpectralImageMode.MONO, //
                         new GenericPhpQuery(lukeDir, lukeTable, lukeTable, lukeDataDir + "gallery", lukeDataDir + "images"), //
                         ImageType.valueOf("LUKE_IMAGE"), //
@@ -418,7 +415,7 @@ public class DartConfigs extends SmallBodyViewConfigBuilder
                 new DBRunInfo(ImageSource.SPICE, Instrument.LUKE, body.toString(), //
                         lukeDir + "/imagelist-fullpath-info.txt", lukeTable) //
         };
-        generateStateHistoryParameters(c,  body.name());
+        generateStateHistoryParameters(c, body.name());
         return c;
     }
 
@@ -430,7 +427,7 @@ public class DartConfigs extends SmallBodyViewConfigBuilder
             String leiaModelId, //
             String lukeModelId) //
     {
-    	return createSingleResMissionImagesConfig_20210211_v01(body, label, numberPlates, dracoModelId, leiaModelId, lukeModelId, false);
+        return createSingleResMissionImagesConfig_20210211_v01(body, label, numberPlates, dracoModelId, leiaModelId, lukeModelId, false);
     }
 
     /**
@@ -478,8 +475,7 @@ public class DartConfigs extends SmallBodyViewConfigBuilder
             String dracoModelId, //
             String leiaModelId, //
             String lukeModelId, //
-            boolean useUpdatedFrameNames
-    )
+            boolean useUpdatedFrameNames)
     {
         SmallBodyViewConfig c = new SmallBodyViewConfig(ImmutableList.of(numberPlates + " plates"), ImmutableList.of(numberPlates)) {
             public SmallBodyViewConfig clone()
@@ -532,7 +528,7 @@ public class DartConfigs extends SmallBodyViewConfigBuilder
         String lukeTable = tableBaseName + "luke";
         String lukeDataDir = "/dart/luke/" + (lukeModelId != null ? lukeModelId : modelId) + "/";
 
-        c.imagingInstruments = new ImagingInstrument[] {
+        c.imagingInstruments = new ImagingInstrument[] { //
                 new ImagingInstrument( //
                         SpectralImageMode.MONO, //
                         new GenericPhpQuery(dracoDir, dracoTable, dracoTable, dracoDataDir + "gallery", dracoDataDir + "images"), //
@@ -542,8 +538,7 @@ public class DartConfigs extends SmallBodyViewConfigBuilder
                         270., //
                         "None", //
                         DracoTestFillValues //
-                ),
-                new ImagingInstrument( //
+                ), new ImagingInstrument( //
                         SpectralImageMode.MONO, //
                         new GenericPhpQuery(leiaDir, leiaTable, leiaTable, leiaDataDir + "gallery", leiaDataDir + "images"), //
                         ImageType.valueOf("LEIA_IMAGE"), //
@@ -552,8 +547,7 @@ public class DartConfigs extends SmallBodyViewConfigBuilder
                         0., //
                         "None", //
                         LeiaFillValues //
-                ),
-                new ImagingInstrument( //
+                ), new ImagingInstrument( //
                         SpectralImageMode.MONO, //
                         new GenericPhpQuery(lukeDir, lukeTable, lukeTable, lukeDataDir + "gallery", lukeDataDir + "images"), //
                         ImageType.valueOf("LUKE_IMAGE"), //
@@ -587,7 +581,7 @@ public class DartConfigs extends SmallBodyViewConfigBuilder
 
     protected SmallBodyViewConfig createSingleResMissionImagesConfig(ShapeModelBody body, String label, int numberPlates)
     {
-    	return createSingleResMissionImagesConfig(body, label, numberPlates, false);
+        return createSingleResMissionImagesConfig(body, label, numberPlates, false);
     }
 
     /**
@@ -619,9 +613,10 @@ public class DartConfigs extends SmallBodyViewConfigBuilder
         // ShapeModelType rules: no spaces (replace with underscores). Mixed
         // case, underscores and dashes are all OK. Includes a DART-specific
         // hack to remove one dash that was not present in the early models.
-//        ShapeModelType author = ShapeModelType.provide(label.replaceAll("\\s+", "-").toLowerCase().replace("impact-", "impact"));
+        // ShapeModelType author =
+        // ShapeModelType.provide(label.replaceAll("\\s+",
+        // "-").toLowerCase().replace("impact-", "impact"));
         ShapeModelType author = ShapeModelType.provide(label.replaceAll(" System", "").replaceAll("\\s+", "-").toLowerCase().replace("impact-", "impact"));
-
 
         // Model identifier string rules: lowercase, no spaces nor underscores
         // (replace with dashes). Single dashes are OK. Valid for building
@@ -662,7 +657,7 @@ public class DartConfigs extends SmallBodyViewConfigBuilder
         String lukeTable = tableBaseName + "luke";
         String lukeDataDir = "/dart/luke/" + (lukeModelId != null ? lukeModelId : modelId) + "/";
 
-        c.imagingInstruments = new ImagingInstrument[] {
+        c.imagingInstruments = new ImagingInstrument[] { //
                 new ImagingInstrument( //
                         SpectralImageMode.MONO, //
                         new GenericPhpQuery(dracoDir, dracoTable, dracoTable, dracoDataDir + "gallery", dracoDataDir + "images"), //
@@ -672,8 +667,7 @@ public class DartConfigs extends SmallBodyViewConfigBuilder
                         0., //
                         "None", //
                         DracoTestFillValues //
-                ),
-                new ImagingInstrument( //
+                ), new ImagingInstrument( //
                         SpectralImageMode.MONO, //
                         new GenericPhpQuery(leiaDir, leiaTable, leiaTable, leiaDataDir + "gallery", leiaDataDir + "images"), //
                         ImageType.valueOf("LEIA_IMAGE"), //
@@ -682,8 +676,7 @@ public class DartConfigs extends SmallBodyViewConfigBuilder
                         0., //
                         "None", //
                         LeiaFillValues //
-                ),
-                new ImagingInstrument( //
+                ), new ImagingInstrument( //
                         SpectralImageMode.MONO, //
                         new GenericPhpQuery(lukeDir, lukeTable, lukeTable, lukeDataDir + "gallery", lukeDataDir + "images"), //
                         ImageType.valueOf("LUKE_IMAGE"), //
@@ -712,36 +705,36 @@ public class DartConfigs extends SmallBodyViewConfigBuilder
                         lukeDir + "/imagelist-fullpath-info.txt", lukeTable) //
         };
         if (useUpdatedFrameNames)
-        	generateUpdatedStateHistoryParameters(c,  body.name());
+            generateUpdatedStateHistoryParameters(c, body.name());
         else
-        	generateStateHistoryParameters(c,  body.name());
+            generateStateHistoryParameters(c, body.name());
         return c;
 
     }
 
     private void generateStateHistoryParameters(SmallBodyViewConfig c, String centerBodyName)
-	{
+    {
         c.hasStateHistory = true;
         c.timeHistoryFile = c.rootDirOnServer + "/history/timeHistory.bth";
         c.stateHistoryStartDate = new GregorianCalendar(2022, 9, 1, 10, 25, 8).getTime();
         c.stateHistoryEndDate = new GregorianCalendar(2022, 9, 1, 10, 28, 36).getTime();
-        SpiceInfo spiceInfo1 = new SpiceInfo("DART", "920065803_FIXED", "DART_SPACECRAFT", "DIDYMOS", new String[] {"EARTH", "SUN", "DIMORPHOS"}, new String[] {"DART_DRACO_2X2", "120065803_FIXED"});
-		SpiceInfo spiceInfo2 = new SpiceInfo("DART", "120065803_FIXED", "DART_SPACECRAFT", "DIMORPHOS", new String[] {"EARTH", "SUN", "DIDYMOS"}, new String[] {"DART_DRACO_2X2", "920065803_FIXED"});
-		SpiceInfo[] spiceInfos = new SpiceInfo[] {spiceInfo1, spiceInfo2};
+        SpiceInfo spiceInfo1 = new SpiceInfo("DART", "920065803_FIXED", "DART_SPACECRAFT", "DIDYMOS", new String[] { "EARTH", "SUN", "DIMORPHOS" }, new String[] { "DART_DRACO_2X2", "120065803_FIXED" });
+        SpiceInfo spiceInfo2 = new SpiceInfo("DART", "120065803_FIXED", "DART_SPACECRAFT", "DIMORPHOS", new String[] { "EARTH", "SUN", "DIDYMOS" }, new String[] { "DART_DRACO_2X2", "920065803_FIXED" });
+        SpiceInfo[] spiceInfos = new SpiceInfo[] { spiceInfo1, spiceInfo2 };
         c.spiceInfo = List.of(spiceInfos).stream().filter(info -> info.getBodyName().equals(centerBodyName)).toList().get(0);
-	}
+    }
 
     private void generateUpdatedStateHistoryParameters(SmallBodyViewConfig c, String centerBodyName)
-	{
+    {
         c.hasStateHistory = true;
         c.timeHistoryFile = c.rootDirOnServer + "/history/timeHistory.bth";
         c.stateHistoryStartDate = new GregorianCalendar(2022, 8, 26, 23, 10, 18).getTime();
         c.stateHistoryEndDate = new GregorianCalendar(2022, 8, 26, 23, 13, 30).getTime();
-        SpiceInfo spiceInfo1 = new SpiceInfo("DART", "DIDYMOS_FIXED", "DART_SPACECRAFT", "DIDYMOS", new String[] {"EARTH", "SUN", "DIMORPHOS"}, new String[] {"DART_DRACO_2X2", "DIMORPHOS_FIXED"});
-		SpiceInfo spiceInfo2 = new SpiceInfo("DART", "DIMORPHOS_FIXED", "DART_SPACECRAFT", "DIMORPHOS", new String[] {"EARTH", "SUN", "DIDYMOS"}, new String[] {"DART_DRACO_2X2", "DIDYMOS_FIXED"});
-		SpiceInfo[] spiceInfos = new SpiceInfo[] {spiceInfo1, spiceInfo2};
+        SpiceInfo spiceInfo1 = new SpiceInfo("DART", "DIDYMOS_FIXED", "DART_SPACECRAFT", "DIDYMOS", new String[] { "EARTH", "SUN", "DIMORPHOS" }, new String[] { "DART_DRACO_2X2", "DIMORPHOS_FIXED" });
+        SpiceInfo spiceInfo2 = new SpiceInfo("DART", "DIMORPHOS_FIXED", "DART_SPACECRAFT", "DIMORPHOS", new String[] { "EARTH", "SUN", "DIDYMOS" }, new String[] { "DART_DRACO_2X2", "DIDYMOS_FIXED" });
+        SpiceInfo[] spiceInfos = new SpiceInfo[] { spiceInfo1, spiceInfo2 };
         c.spiceInfo = List.of(spiceInfos).stream().filter(info -> info.getBodyName().equals(centerBodyName)).toList().get(0);
-	}
+    }
 
     /**
      * This is deprecated because in hindsight, the whole approach taken for
@@ -925,7 +918,7 @@ public class DartConfigs extends SmallBodyViewConfigBuilder
         }
         else
         {
-            throw new IllegalArgumentException("Dont know how to set up a config builder for body " + body);
+            throw new IllegalArgumentException("Don't know how to set up a config builder for body " + body);
         }
 
         body(body, bodyType, population, system);
@@ -989,26 +982,27 @@ public class DartConfigs extends SmallBodyViewConfigBuilder
 
     protected SmallBodyViewConfig createSingleResMissionImagesSystemConfig(ShapeModelBody[] body, String label, int numberPlates)
     {
-    	return createSingleResMissionImagesSystemConfig(body, label, numberPlates, false);
+        return createSingleResMissionImagesSystemConfig(body, label, numberPlates, false);
     }
 
     protected SmallBodyViewConfig createSingleResMissionImagesSystemConfig(ShapeModelBody[] body, String label, int numberPlates, boolean useUpdatedFrameNames)
     {
-    	SmallBodyViewConfig config = createSingleResMissionImagesConfig(body[0], label, numberPlates, useUpdatedFrameNames);
-    	List<SmallBodyViewConfig> systemConfigs = Lists.newArrayList();
-    	for (int i=1; i<body.length; i++)
-    	{
-    		systemConfigs.add(createSingleResMissionImagesConfig(body[i], label, numberPlates, useUpdatedFrameNames));
-    	};
-    	config.systemConfigs = systemConfigs;
-    	config.hasSystemBodies = true;
-    	config.body = ShapeModelBody.DIDYMOS_SYSTEM;
+        SmallBodyViewConfig config = createSingleResMissionImagesConfig(body[0], label, numberPlates, useUpdatedFrameNames);
+        List<SmallBodyViewConfig> systemConfigs = new ArrayList<>();
+        for (int i = 1; i < body.length; i++)
+        {
+            systemConfigs.add(createSingleResMissionImagesConfig(body[i], label, numberPlates, useUpdatedFrameNames));
+        }
+        ;
+        config.systemConfigs = systemConfigs;
+        config.hasSystemBodies = true;
+        config.body = ShapeModelBody.DIDYMOS_SYSTEM;
         config.hasDTMs = false;
-    	config.rootDirOnServer = "/" + body[0].name().replaceAll("[\\s-_]+", "-").toLowerCase() + "/" + config.author.name().replaceAll("[\\s-_]+", "-").toLowerCase();
-    	config.rootDirOnServer = config.rootDirOnServer.replaceAll("\\(", "");
-    	config.rootDirOnServer = config.rootDirOnServer.replaceAll("\\)", "");
-    	config.rootDirOnServer = config.rootDirOnServer.replaceAll("-\\w*-center", "");
-    	return config;
+        config.rootDirOnServer = "/" + body[0].name().replaceAll("[\\s-_]+", "-").toLowerCase() + "/" + config.author.name().replaceAll("[\\s-_]+", "-").toLowerCase();
+        config.rootDirOnServer = config.rootDirOnServer.replaceAll("\\(", "");
+        config.rootDirOnServer = config.rootDirOnServer.replaceAll("\\)", "");
+        config.rootDirOnServer = config.rootDirOnServer.replaceAll("-\\w*-center", "");
+        return config;
     }
 
     /**
@@ -1021,27 +1015,28 @@ public class DartConfigs extends SmallBodyViewConfigBuilder
      */
     protected SmallBodyViewConfig createSingleResolutionSystemConfig_20200629_v01(ShapeModelBody[] body, String label, int numberPlates)
     {
-    	SmallBodyViewConfig config = createSingleResolutionConfig_20200629_v01(body[0], label, numberPlates);
-    	List<SmallBodyViewConfig> systemConfigs = Lists.newArrayList();
-    	for (int i=1; i<body.length; i++)
-    	{
-    		systemConfigs.add(createSingleResolutionConfig_20200629_v01(body[i], label, numberPlates));
-    	};
-    	config.systemConfigs = systemConfigs;
-    	config.hasSystemBodies = true;
-    	config.body = ShapeModelBody.DIDYMOS_SYSTEM;
-    	config.hasDTMs = false;
-    	config.rootDirOnServer = "/" + body[0].name().replaceAll("[\\s-_]+", "-").toLowerCase() + "/" + config.author.name().replaceAll("[\\s-_]+", "-").toLowerCase();
-    	config.rootDirOnServer = config.rootDirOnServer.replaceAll("\\(", "");
-    	config.rootDirOnServer = config.rootDirOnServer.replaceAll("\\)", "");
-    	config.rootDirOnServer = config.rootDirOnServer.replaceAll("-\\w*-center", "");
-    	return config;
+        SmallBodyViewConfig config = createSingleResolutionConfig_20200629_v01(body[0], label, numberPlates);
+        List<SmallBodyViewConfig> systemConfigs = new ArrayList<>();
+        for (int i = 1; i < body.length; i++)
+        {
+            systemConfigs.add(createSingleResolutionConfig_20200629_v01(body[i], label, numberPlates));
+        }
+        ;
+        config.systemConfigs = systemConfigs;
+        config.hasSystemBodies = true;
+        config.body = ShapeModelBody.DIDYMOS_SYSTEM;
+        config.hasDTMs = false;
+        config.rootDirOnServer = "/" + body[0].name().replaceAll("[\\s-_]+", "-").toLowerCase() + "/" + config.author.name().replaceAll("[\\s-_]+", "-").toLowerCase();
+        config.rootDirOnServer = config.rootDirOnServer.replaceAll("\\(", "");
+        config.rootDirOnServer = config.rootDirOnServer.replaceAll("\\)", "");
+        config.rootDirOnServer = config.rootDirOnServer.replaceAll("-\\w*-center", "");
+        return config;
     }
 
     private void buildSystemConfigs(List<ViewConfig> configList)
     {
-    	SmallBodyViewConfig c;
-    	//System configs
+        SmallBodyViewConfig c;
+        // System configs
         c = createSingleResolutionSystemConfig_20200629_v01(new ShapeModelBody[] { ShapeModelBody.DIDYMOS, ShapeModelBody.DIMORPHOS }, "Ideal Impact 1 20200629 v01 System Didymos Center", 1996);
         configList.add(c);
         c = createSingleResolutionSystemConfig_20200629_v01(new ShapeModelBody[] { ShapeModelBody.DIMORPHOS, ShapeModelBody.DIDYMOS }, "Ideal Impact 1 20200629 v01 System Dimorphos Center", 3072);
@@ -1066,10 +1061,15 @@ public class DartConfigs extends SmallBodyViewConfigBuilder
         configList.add(c);
         c = createSingleResolutionSystemConfig_20200629_v01(new ShapeModelBody[] { ShapeModelBody.DIMORPHOS, ShapeModelBody.DIDYMOS }, "Ideal Impact 5 20200629 v01 System Dimorphos Center", 3366134);
         configList.add(c);
-//        c = createSingleResolutionSystemConfig_20200629_v01(new ShapeModelBody[] { ShapeModelBody.DIDYMOS, ShapeModelBody.DIMORPHOS }, "Ideal Impact 6 RA 20201116 v01 System Didymos Center", 3145728);
-//        configList.add(c);
-//        c = createSingleResolutionSystemConfig_20200629_v01(new ShapeModelBody[] { ShapeModelBody.DIMORPHOS, ShapeModelBody.DIDYMOS }, "Ideal Impact 6 RA 20201116 v01 System Dimorphos Center", 3145728);
-//        configList.add(c);
+        // c = createSingleResolutionSystemConfig_20200629_v01(new
+        // ShapeModelBody[] { ShapeModelBody.DIDYMOS, ShapeModelBody.DIMORPHOS
+        // }, "Ideal Impact 6 RA 20201116 v01 System Didymos Center", 3145728);
+        // configList.add(c);
+        // c = createSingleResolutionSystemConfig_20200629_v01(new
+        // ShapeModelBody[] { ShapeModelBody.DIMORPHOS, ShapeModelBody.DIDYMOS
+        // }, "Ideal Impact 6 RA 20201116 v01 System Dimorphos Center",
+        // 3145728);
+        // configList.add(c);
 
         c = createSingleResMissionImagesSystemConfig(new ShapeModelBody[] { ShapeModelBody.DIDYMOS, ShapeModelBody.DIMORPHOS }, "Ideal Impact 9 20210630 v01 System Didymos Center", 1996, true);
         configList.add(c);
