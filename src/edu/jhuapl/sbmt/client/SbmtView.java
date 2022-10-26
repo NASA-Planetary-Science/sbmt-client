@@ -19,7 +19,7 @@ import javax.swing.JTabbedPane;
 
 import com.google.common.collect.ImmutableList;
 
-import vtk.vtkCamera;
+import vtk.vtkCamera; 
 
 import edu.jhuapl.saavtk.config.ViewConfig;
 import edu.jhuapl.saavtk.gui.View;
