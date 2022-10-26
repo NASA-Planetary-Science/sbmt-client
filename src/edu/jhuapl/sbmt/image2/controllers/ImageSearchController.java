@@ -430,7 +430,7 @@ public class ImageSearchController<G1 extends IPerspectiveImage & IPerspectiveIm
 
 		customImageListTableController.getPanel().getNewImageButton().addActionListener(e -> {
 
-			int n = JOptionPane.showOptionDialog(getView(),
+			int n = JOptionPane.showOptionDialog(customPanel,
 				    "What projection type do you wish to load?",
 				    "Choose a projection type",
 				    JOptionPane.YES_NO_CANCEL_OPTION,
