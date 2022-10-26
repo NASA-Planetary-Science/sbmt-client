@@ -297,7 +297,7 @@ public class DartConfigs extends SmallBodyViewConfigBuilder
             init(ShapeModelBody.DIMORPHOS, author, ShapeModelDataUsed.IMAGE_BASED, label);
             imageSearchRanges(ImpactSearchStartDate, ImpactSearchEndDate, ImpactMaxScDistance, ImpactResolution);
 
-            ImagingInstrument instrument = createFlightInstrument(ShapeModelBody.DIDYMOS, author, Instrument.DRACO, dracoFlightOrientations, imageSources);
+            ImagingInstrument instrument = createFlightInstrument(ShapeModelBody.DIMORPHOS, author, Instrument.DRACO, dracoFlightOrientations, imageSources);
             DBRunInfo[] dbRunInfos = createDbInfos(ShapeModelBody.DIMORPHOS, author, Instrument.DRACO, imageSources);
             add(instrument, dbRunInfos);
 
