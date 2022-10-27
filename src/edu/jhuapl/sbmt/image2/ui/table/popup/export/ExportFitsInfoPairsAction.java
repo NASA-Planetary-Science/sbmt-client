@@ -5,19 +5,19 @@ import java.util.List;
 
 import javax.swing.JOptionPane;
 
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 
 import com.beust.jcommander.internal.Lists;
 import com.google.common.collect.ImmutableSet;
 
 import edu.jhuapl.saavtk.gui.dialog.DirectoryChooser;
+import edu.jhuapl.saavtk.util.FileCache;
 import edu.jhuapl.sbmt.core.image.ImageSource;
-import edu.jhuapl.sbmt.core.image.InfoFileWriter;
 import edu.jhuapl.sbmt.image2.interfaces.IPerspectiveImage;
 import edu.jhuapl.sbmt.image2.interfaces.IPerspectiveImageTableRepresentable;
 import edu.jhuapl.sbmt.image2.model.PerspectiveImageCollection;
 import edu.jhuapl.sbmt.image2.pipelineComponents.operators.io.export.SaveImageFileFromCacheOperator;
-import edu.jhuapl.sbmt.image2.pipelineComponents.pipelines.perspectiveImages.PerspectiveImageToRenderableImagePipeline;
 import edu.jhuapl.sbmt.pipeline.publisher.Just;
 import edu.jhuapl.sbmt.pipeline.subscriber.Sink;
 
@@ -69,11 +69,18 @@ public class ExportFitsInfoPairsAction<G1 extends IPerspectiveImage & IPerspecti
 				file = new File(outDir, defaultFileName + "." + defaultFileType);
 
 				String filename = file.getAbsolutePath();
+				//What is below was dumb.  Export the file from the cache instead.
 				//TODO for now, we don't have a good SUMFileWriter, so export things as INFO files.
-				PerspectiveImageToRenderableImagePipeline pipeline = new PerspectiveImageToRenderableImagePipeline(List.of(aItem));
-				filename = filename.replace(".SUM", ".INFO");
-				InfoFileWriter writer = new InfoFileWriter(filename, pipeline.getRenderableImages().get(0).getPointing(), false);
-				writer.write();
+//				PerspectiveImageToRenderableImagePipeline pipeline = new PerspectiveImageToRenderableImagePipeline(List.of(aItem));
+//				filename = filename.replace(".SUM", ".INFO");
+//				InfoFileWriter writer = new InfoFileWriter(filename, pipeline.getRenderableImages().get(0).getPointing(), false);
+//				writer.write();
+
+				String pointingFileName = aItem.getPointingSource();
+				File pointingFile = FileCache.getFileFromServer(pointingFileName);
+				File newPointingFile = new File(outDir, pointingFile.getName());
+				FileUtils.copyFile(pointingFile, newPointingFile);
+
 			}
 			catch (Exception ex)
 			{

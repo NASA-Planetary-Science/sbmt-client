@@ -30,8 +30,10 @@ import vtk.rendering.jogl.vtkJoglPanelComponent;
 
 import edu.jhuapl.saavtk.gui.dialog.CustomFileChooser;
 import edu.jhuapl.saavtk.util.IntensityRange;
+import edu.jhuapl.sbmt.core.image.IImagingInstrument;
 import edu.jhuapl.sbmt.core.image.ImageSource;
 import edu.jhuapl.sbmt.core.image.ImageType;
+import edu.jhuapl.sbmt.core.image.Orientation;
 import edu.jhuapl.sbmt.image2.controllers.preview.ImageContrastController;
 import edu.jhuapl.sbmt.image2.controllers.preview.ImageMaskController;
 import edu.jhuapl.sbmt.image2.interfaces.IPerspectiveImage;
@@ -65,15 +67,16 @@ public class CustomImageEditingController<G1 extends IPerspectiveImage & IPerspe
 
 	ImageMaskController maskController;
 	ImageContrastController contrastController;
-
+	private IImagingInstrument instrument;
 	private Runnable completionBlock;
 
-	public CustomImageEditingController(Window parent, boolean isEllipsoid, boolean isPerspective, G1 existingImage, Runnable completionBlock)
+	public CustomImageEditingController(Window parent, boolean isEllipsoid, boolean isPerspective, G1 existingImage, IImagingInstrument instrument, Runnable completionBlock)
 	{
 		this.existingImage = existingImage;
 		this.isEllipsoid = isEllipsoid;
 		this.completionBlock = completionBlock;
 		this.isPerspective = isPerspective;
+		this.instrument = instrument;
 		try
 		{
 			getLayers();
@@ -170,9 +173,10 @@ public class CustomImageEditingController<G1 extends IPerspectiveImage & IPerspe
 
 	private void populateUI()
 	{
+		Orientation orientation = instrument.getOrientation(existingImage.getPointingSourceType());
 		dialog.getImagePathTextField().setText(existingImage.getFilename());
 		dialog.getImageNameTextField().setText(existingImage.getName());
-		dialog.getFlipAboutXCheckBox().setSelected(existingImage.getFlip().equals("X"));
+		dialog.getFlipAboutXCheckBox().setSelected(orientation.getFlip().toString().equals("X"));
 //		if (existingImage.getImageType() != ImageType.GENERIC_IMAGE)
 //		{
 //			if (!existingImage.getPointingSource().isEmpty())
@@ -180,8 +184,8 @@ public class CustomImageEditingController<G1 extends IPerspectiveImage & IPerspe
 			{
 				dialog.getPointingTypeComboBox().setSelectedIndex(0);
 				dialog.getPointingFilenameTextField().setText(existingImage.getPointingSource());
-				dialog.getImageFlipComboBox().setSelectedItem(existingImage.getFlip());
-				dialog.getImageRotationComboBox().setSelectedItem("" + (int) (existingImage.getRotation()));
+				dialog.getImageFlipComboBox().setSelectedItem(orientation.getFlip().toString());
+				dialog.getImageRotationComboBox().setSelectedItem("" + (int) (orientation.getRotation()));
 			}
 			else
 			{
@@ -200,6 +204,7 @@ public class CustomImageEditingController<G1 extends IPerspectiveImage & IPerspe
 //			dialog.getMinLongitudeTextField().setText("" + existingImage.getBounds().minLongitude());
 //			dialog.getMaxLongitudeTextField().setText("" + existingImage.getBounds().maxLongitude());
 //		}
+
 
 		for (double val : existingImage.getFillValues())
 		{
@@ -239,6 +244,9 @@ public class CustomImageEditingController<G1 extends IPerspectiveImage & IPerspe
 				existingImage.setPointingSourceType(ImageSource.GASKELL);
 			else
 				existingImage.setPointingSourceType(ImageSource.SPICE);
+			Orientation orientation2 = instrument.getOrientation(existingImage.getPointingSourceType());
+			dialog.getImageRotationComboBox().setSelectedItem("" + (int) (orientation2.getRotation()));
+			dialog.getImageFlipComboBox().setSelectedItem(orientation2.getFlip().toString());
 			renderLayerAndAddAttributes();
 		});
 
@@ -432,8 +440,11 @@ public class CustomImageEditingController<G1 extends IPerspectiveImage & IPerspe
 		if (dialog.getPointingTypeComboBox().getSelectedItem().equals("Perspective Projection"))
 		{
 			existingImage.setPointingSource(dialog.getPointingFilenameTextField().getText());
-			existingImage.setFlip((String) dialog.getImageFlipComboBox().getSelectedItem());
-			existingImage.setRotation(Double.parseDouble((String) dialog.getImageRotationComboBox().getSelectedItem()));
+//			existingImage.setFlip((String) dialog.getImageFlipComboBox().getSelectedItem());
+//			existingImage.setRotation(Double.parseDouble((String) dialog.getImageRotationComboBox().getSelectedItem()));
+
+			existingImage.setFlip(instrument.getOrientation(existingImage.getPointingSourceType()).getFlip().flip());
+			existingImage.setRotation(instrument.getOrientation(existingImage.getPointingSourceType()).getRotation());
 		}
 		else
 		{
@@ -447,6 +458,9 @@ public class CustomImageEditingController<G1 extends IPerspectiveImage & IPerspe
 			else
 				existingImage.setFlip("None");
 		}
+
+
+
 //		});
 		// ImageType imageType = (ImageType)imageTypeComboBox.getSelectedItem();
 		// String pointingSource = pointingFilenameTextField.getText();

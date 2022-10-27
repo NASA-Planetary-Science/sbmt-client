@@ -149,7 +149,7 @@ public class CustomImageImporterDialog2<G1 extends IPerspectiveImage & IPerspect
 //		if (image.getImageType() == ImageType.GENERIC_IMAGE) return;
 		if (image.getNumberOfLayers() == 1)	//editing custom single layer image
 		{
-			CustomImageEditingController<G1> dialog = new CustomImageEditingController<G1>(null, isEllipsoid, isPerspective, image, () -> {});
+			CustomImageEditingController<G1> dialog = new CustomImageEditingController<G1>(null, isEllipsoid, isPerspective, image, instrument, () -> {});
 	        dialog.getDialog().setLocationRelativeTo(getContentPane());
 	        dialog.getDialog().setVisible(true);
 //	        ImageSource pointingSourceType = image.getPointingSource().endsWith("sum") || image.getPointingSource().endsWith("SUM") ? ImageSource.GASKELL : ImageSource.SPICE;
@@ -454,7 +454,7 @@ public class CustomImageImporterDialog2<G1 extends IPerspectiveImage & IPerspect
 //		        }
 			}
 			String extension = FilenameUtils.getExtension(pointingSource).toLowerCase();
-			pointingSourceType = extension.equals("sum") ? ImageSource.GASKELL : ImageSource.SPICE;
+			pointingSourceType = extension.toLowerCase().equals("sum") ? ImageSource.GASKELL : ImageSource.SPICE;
 			return storeImage(filename, newFilepath, pointingSourceType, newPointingFilepath);
 		}
 		return storeImage(filename, newFilepath, pointingSourceType, newPointingFilepath);
