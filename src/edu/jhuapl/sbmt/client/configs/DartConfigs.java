@@ -42,6 +42,12 @@ import edu.jhuapl.sbmt.tools.DBRunInfo;
 public class DartConfigs extends SmallBodyViewConfigBuilder
 {
 
+    private static final Mission[] APLClients = new Mission[] { //
+            Mission.APL_INTERNAL, //
+            Mission.TEST_APL_INTERNAL, //
+            Mission.STAGE_APL_INTERNAL, //
+    };
+
     private static final Mission[] DartClients = new Mission[] { //
             Mission.DART_DEV, //
             Mission.DART_DEPLOY, //
@@ -271,6 +277,8 @@ public class DartConfigs extends SmallBodyViewConfigBuilder
             DBRunInfo[] dbRunInfos = createDbInfos(ShapeModelBody.JUPITER, author, Instrument.DRACO, imageSources);
             add(instrument, dbRunInfos);
 
+            clients(APLClients);
+
             c = build();
             configList.add(c);
         }
@@ -285,6 +293,8 @@ public class DartConfigs extends SmallBodyViewConfigBuilder
             ImagingInstrument instrument = createFlightInstrument(ShapeModelBody.GANYMEDE, author, Instrument.DRACO, dracoFlightOrientations, imageSources);
             DBRunInfo[] dbRunInfos = createDbInfos(ShapeModelBody.GANYMEDE, author, Instrument.DRACO, imageSources);
             add(instrument, dbRunInfos);
+
+            clients(APLClients);
 
             c = build();
             configList.add(c);
