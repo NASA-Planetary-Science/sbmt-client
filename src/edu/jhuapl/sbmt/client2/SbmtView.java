@@ -165,7 +165,7 @@ public class SbmtView extends View implements PropertyChangeListener
         this.stateManager = TrackedMetadataManager.of("View " + getUniqueName());
         this.metadataManagers = new HashMap<>();
 		this.configURL = configInfo.getConfigURL();
-
+		this.pomListeners = Lists.newArrayList();
         initializeStateManager();
     }
 
