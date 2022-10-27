@@ -509,7 +509,7 @@ public class SbmtView extends View implements PropertyChangeListener
 				for (ImagingInstrument instrument : getPolyhedralModelConfig().imagingInstruments)
 			    {
 					ImageSearchController cont  = new ImageSearchController(getPolyhedralModelConfig(), collection, Optional.of(instrument), getModelManager(), getPopupManager(), getRenderer(), getPickManager(), (SbmtInfoWindowManager) getInfoPanelManager(), (SbmtSpectrumWindowManager) getSpectrumPanelManager(), getLegacyStatusHandler());
-					addTab(instrument.instrumentName.toString() + "-NEW", cont.getView());
+					addTab(instrument.instrumentName.toString(), cont.getView());
 
 					pomListeners.add(new PositionOrientationManagerListener()
 					{
