@@ -19,14 +19,12 @@ import com.google.common.collect.ImmutableList;
 
 import edu.jhuapl.saavtk.config.ConfigArrayList;
 import edu.jhuapl.saavtk.config.ExtensibleTypedLookup.Builder;
-import edu.jhuapl.saavtk.config.IBodyViewConfig;
 import edu.jhuapl.saavtk.config.ViewConfig;
 import edu.jhuapl.saavtk.model.ShapeModelBody;
 import edu.jhuapl.saavtk.model.ShapeModelType;
 import edu.jhuapl.saavtk.util.Configuration;
 import edu.jhuapl.saavtk.util.FileCache;
 import edu.jhuapl.saavtk.util.SafeURLPaths;
-import edu.jhuapl.saavtk.util.UnauthorizedAccessException;
 import edu.jhuapl.sbmt.client.configs.AsteroidConfigs;
 import edu.jhuapl.sbmt.client.configs.BennuConfigs;
 import edu.jhuapl.sbmt.client.configs.CometConfigs;
@@ -83,7 +81,7 @@ public class SmallBodyViewConfig extends BodyViewConfig implements ISmallBodyVie
     static public boolean fromServer = false;
 	private static final List<BasicConfigInfo> CONFIG_INFO = new ArrayList<>();
     private static final Map<String, BasicConfigInfo> VIEWCONFIG_IDENTIFIERS = new HashMap<>();
-    private static final Map<String, IBodyViewConfig> LOADED_VIEWCONFIGS = new HashMap<>();
+    private static final Map<String, SmallBodyViewConfig> LOADED_VIEWCONFIGS = new HashMap<>();
 
     protected String baseMapConfigName = "config.txt";
 
@@ -111,38 +109,68 @@ public class SmallBodyViewConfig extends BodyViewConfig implements ISmallBodyVie
 
     }
 
-    static public SmallBodyViewConfig getSmallBodyConfig(ShapeModelBody name, ShapeModelType author)
+    /**
+     * Return the model config uniquely identified by the arguments, none of
+     * which may be null.
+     * 
+     * @param name the shape model's body
+     * @param author the shape model type/author
+     * @return the config
+     * @see #getSmallBodyConfig(String) for more details
+     */
+    public static SmallBodyViewConfig getSmallBodyConfig(ShapeModelBody name, ShapeModelType author)
     {
-    	String configID = author.toString() + "/" + name.toString();
+        Preconditions.checkNotNull(name);
+        Preconditions.checkNotNull(author);
 
-    	if (!LOADED_VIEWCONFIGS.containsKey(configID))
-    	{
-    	    Preconditions.checkArgument(VIEWCONFIG_IDENTIFIERS.containsKey(configID), "No configuration available for model " + configID);
-
-    		BasicConfigInfo info = VIEWCONFIG_IDENTIFIERS.get(configID);
-    		IBodyViewConfig fetchedConfig = fetchRemoteConfig(configID, info.getConfigURL(), fromServer);
-    		LOADED_VIEWCONFIGS.put(configID, fetchedConfig);
-
-    		return (SmallBodyViewConfig)fetchedConfig;
-    	}
-    	else
-    		return (SmallBodyViewConfig)LOADED_VIEWCONFIGS.get(configID);
+        return getSmallBodyConfig(author.toString() + "/" + name.toString());
     }
 
-    static public SmallBodyViewConfig getSmallBodyConfig(ShapeModelBody name, ShapeModelType author, String version)
+    /**
+     * Return the model config uniquely identified by the arguments, none of
+     * which may be null.
+     * 
+     * @param name the shape model's body
+     * @param author the shape model type/author
+     * @param version the version
+     * @return the config
+     * @see #getSmallBodyConfig(String) for more details
+     */
+    public static SmallBodyViewConfig getSmallBodyConfig(ShapeModelBody name, ShapeModelType author, String version)
     {
-        String configID = author.toString() + "/" + name.toString() + " (" + version + ")";
+        Preconditions.checkNotNull(name);
+        Preconditions.checkNotNull(author);
+        Preconditions.checkNotNull(version);
 
-        if (!LOADED_VIEWCONFIGS.containsKey(configID))
-    	{
-            Preconditions.checkArgument(VIEWCONFIG_IDENTIFIERS.containsKey(configID), "No configuration available for model " + configID);
+        return getSmallBodyConfig(author.toString() + "/" + name.toString() + " (" + version + ")");
+    }
 
-            IBodyViewConfig fetchedConfig = fetchRemoteConfig(configID, VIEWCONFIG_IDENTIFIERS.get(configID).getConfigURL(), fromServer);
-    		LOADED_VIEWCONFIGS.put(configID, fetchedConfig);
-    		return (SmallBodyViewConfig)fetchedConfig;
-    	}
-    	else
-    		return (SmallBodyViewConfig)LOADED_VIEWCONFIGS.get(configID);
+    /**
+     * Return the model config uniquely identified by the specified identifier,
+     * loading the config from the server. The first time the config is
+     * successfully loaded, it is cached and subsequent calls to this method
+     * simply return the cached instance.
+     * <p>
+     * This method never returns null; if it has a problem retrieving the config
+     * it throws an exception.
+     *
+     * @param configId the identifier of the config
+     * @return the config
+     * @throws various {@link RuntimeException}s
+     * @see #fetchRemoteConfig(String, String)
+     */
+    protected static SmallBodyViewConfig getSmallBodyConfig(String configId)
+    {
+        SmallBodyViewConfig config = LOADED_VIEWCONFIGS.get(configId);
+        if (config == null)
+        {
+            Preconditions.checkArgument(VIEWCONFIG_IDENTIFIERS.containsKey(configId), "No configuration available for model " + configId);
+
+            config = fetchRemoteConfig(configId, VIEWCONFIG_IDENTIFIERS.get(configId).getConfigURL());
+
+            LOADED_VIEWCONFIGS.put(configId, config);
+        }
+        return config;
     }
 
     public static void setDefaultModelName(String defaultModelName)
@@ -220,34 +248,40 @@ public class SmallBodyViewConfig extends BodyViewConfig implements ISmallBodyVie
 
     }
 
-    private static IBodyViewConfig fetchRemoteConfig(String name, String url, boolean fromServer)
+    /**
+     * Fetch the config from the model metadata file located on the server,
+     * downloading/updating the file cache as needed. This method does not
+     * return null but throws an exception if it fails to load the model
+     * metadata.
+     *
+     * @param name of the model metadata object in the file
+     * @param url from which to download/load the metadata
+     * @return the config
+     */
+    private static SmallBodyViewConfig fetchRemoteConfig(String name, String url)
     {
-    	ConfigArrayList ioConfigs = new ConfigArrayList();
-        ioConfigs.add(new SmallBodyViewConfig(ImmutableList.<String> copyOf(DEFAULT_GASKELL_LABELS_PER_RESOLUTION), ImmutableList.<Integer> copyOf(DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION)));
+        ConfigArrayList<SmallBodyViewConfig> ioConfigs = new ConfigArrayList<>();
+        ioConfigs.add(new SmallBodyViewConfig(ImmutableList.<String>copyOf(DEFAULT_GASKELL_LABELS_PER_RESOLUTION), ImmutableList.<Integer>copyOf(DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION)));
         SmallBodyViewConfigMetadataIO io = new SmallBodyViewConfigMetadataIO(ioConfigs);
         try
         {
             File configFile = FileCache.getFileFromServer(url);
             FixedMetadata metadata = Serializers.deserialize(configFile, name);
             io.retrieve(metadata);
-            return io.getConfigs().get(0);
+            SmallBodyViewConfig c = (SmallBodyViewConfig) io.getConfigs().get(0);
+            if (c == null)
+            {
+                throw new NullPointerException(String.format("Unable to load the configuration for model \"%s\" from URL %s", name, url));
+            }
+            return c;
         }
-        catch (IOException e)
+        catch (RuntimeException e)
         {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-            return null;
+            throw e;
         }
-        catch (UnauthorizedAccessException uae)
+        catch (Exception e)
         {
-        	System.err.println("No access allowed for URL, skipping");
-        	return null;
-        }
-        catch (RuntimeException re)
-        {
-        	System.err.println("Can't access URL " + url + ", skipping");
-        	re.printStackTrace();
-        	return null;
+            throw new RuntimeException(e);
         }
 
     }
