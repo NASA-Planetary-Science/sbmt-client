@@ -173,10 +173,9 @@ public class CustomImageEditingController<G1 extends IPerspectiveImage & IPerspe
 
 	private void populateUI()
 	{
-		Orientation orientation = instrument.getOrientation(existingImage.getPointingSourceType());
 		dialog.getImagePathTextField().setText(existingImage.getFilename());
 		dialog.getImageNameTextField().setText(existingImage.getName());
-		dialog.getFlipAboutXCheckBox().setSelected(orientation.getFlip().toString().equals("X"));
+
 //		if (existingImage.getImageType() != ImageType.GENERIC_IMAGE)
 //		{
 //			if (!existingImage.getPointingSource().isEmpty())
@@ -184,11 +183,20 @@ public class CustomImageEditingController<G1 extends IPerspectiveImage & IPerspe
 			{
 				dialog.getPointingTypeComboBox().setSelectedIndex(0);
 				dialog.getPointingFilenameTextField().setText(existingImage.getPointingSource());
-				dialog.getImageFlipComboBox().setSelectedItem(orientation.getFlip().toString());
-				dialog.getImageRotationComboBox().setSelectedItem("" + (int) (orientation.getRotation()));
+				if (instrument != null)
+				{
+					Orientation orientation = instrument.getOrientation(existingImage.getPointingSourceType());
+					dialog.getImageFlipComboBox().setSelectedItem(orientation.getFlip().toString());
+					dialog.getImageRotationComboBox().setSelectedItem("" + (int) (orientation.getRotation()));
+				}
 			}
 			else
 			{
+				if (instrument != null)
+				{
+					Orientation orientation = instrument.getOrientation(existingImage.getPointingSourceType());
+					dialog.getFlipAboutXCheckBox().setSelected(orientation.getFlip().toString().equals("X"));
+				}
 				dialog.getPointingTypeComboBox().setSelectedIndex(1);
 				dialog.getMinLatitudeTextField().setText("" + existingImage.getBounds().minLatitude());
 				dialog.getMaxLatitudeTextField().setText("" + existingImage.getBounds().maxLatitude());
@@ -244,9 +252,12 @@ public class CustomImageEditingController<G1 extends IPerspectiveImage & IPerspe
 				existingImage.setPointingSourceType(ImageSource.GASKELL);
 			else
 				existingImage.setPointingSourceType(ImageSource.SPICE);
-			Orientation orientation2 = instrument.getOrientation(existingImage.getPointingSourceType());
-			dialog.getImageRotationComboBox().setSelectedItem("" + (int) (orientation2.getRotation()));
-			dialog.getImageFlipComboBox().setSelectedItem(orientation2.getFlip().toString());
+			if (instrument != null)
+			{
+				Orientation orientation2 = instrument.getOrientation(existingImage.getPointingSourceType());
+				dialog.getImageRotationComboBox().setSelectedItem("" + (int) (orientation2.getRotation()));
+				dialog.getImageFlipComboBox().setSelectedItem(orientation2.getFlip().toString());
+			}
 			renderLayerAndAddAttributes();
 		});
 
@@ -442,9 +453,11 @@ public class CustomImageEditingController<G1 extends IPerspectiveImage & IPerspe
 			existingImage.setPointingSource(dialog.getPointingFilenameTextField().getText());
 //			existingImage.setFlip((String) dialog.getImageFlipComboBox().getSelectedItem());
 //			existingImage.setRotation(Double.parseDouble((String) dialog.getImageRotationComboBox().getSelectedItem()));
-
-			existingImage.setFlip(instrument.getOrientation(existingImage.getPointingSourceType()).getFlip().flip());
-			existingImage.setRotation(instrument.getOrientation(existingImage.getPointingSourceType()).getRotation());
+			if (instrument != null)
+			{
+				existingImage.setFlip(instrument.getOrientation(existingImage.getPointingSourceType()).getFlip().flip());
+				existingImage.setRotation(instrument.getOrientation(existingImage.getPointingSourceType()).getRotation());
+			}
 		}
 		else
 		{
