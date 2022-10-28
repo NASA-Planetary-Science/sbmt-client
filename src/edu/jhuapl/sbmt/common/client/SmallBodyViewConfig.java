@@ -18,7 +18,7 @@ import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
 
 import edu.jhuapl.saavtk.config.ConfigArrayList;
-import edu.jhuapl.saavtk.config.ExtensibleTypedLookup.Builder;
+import edu.jhuapl.saavtk.config.IBodyViewConfig;
 import edu.jhuapl.saavtk.config.ViewConfig;
 import edu.jhuapl.saavtk.model.ShapeModelBody;
 import edu.jhuapl.saavtk.model.ShapeModelType;
@@ -36,23 +36,12 @@ import edu.jhuapl.sbmt.client.configs.SaturnConfigs;
 import edu.jhuapl.sbmt.client2.SbmtMultiMissionTool;
 import edu.jhuapl.sbmt.config.BasicConfigInfo;
 import edu.jhuapl.sbmt.config.Instrument;
-import edu.jhuapl.sbmt.config.SBMTBodyConfiguration;
-import edu.jhuapl.sbmt.config.SBMTFileLocator;
-import edu.jhuapl.sbmt.config.SBMTFileLocators;
-import edu.jhuapl.sbmt.config.SessionConfiguration;
-import edu.jhuapl.sbmt.config.ShapeModelConfiguration;
-import edu.jhuapl.sbmt.config.SpectralImageMode;
-import edu.jhuapl.sbmt.core.image.BasicImagingInstrument;
 import edu.jhuapl.sbmt.core.image.CustomCylindricalImageKey;
 import edu.jhuapl.sbmt.core.image.CustomPerspectiveImageKey;
 import edu.jhuapl.sbmt.core.image.ImageKeyInterface;
 import edu.jhuapl.sbmt.core.image.ImageSource;
 import edu.jhuapl.sbmt.core.image.ImageType;
-import edu.jhuapl.sbmt.core.image.ImagingInstrument;
-import edu.jhuapl.sbmt.core.image.ImagingInstrumentConfiguration;
 import edu.jhuapl.sbmt.model.phobos.HierarchicalSearchSpecification;
-import edu.jhuapl.sbmt.query.QueryBase;
-import edu.jhuapl.sbmt.query.fixedlist.FixedListQuery;
 import edu.jhuapl.sbmt.spectrum.model.core.search.SpectraHierarchicalSearchSpecification;
 
 import crucible.crust.metadata.api.Key;
@@ -112,7 +101,7 @@ public class SmallBodyViewConfig extends BodyViewConfig implements ISmallBodyVie
     /**
      * Return the model config uniquely identified by the arguments, none of
      * which may be null.
-     * 
+     *
      * @param name the shape model's body
      * @param author the shape model type/author
      * @return the config
@@ -129,7 +118,7 @@ public class SmallBodyViewConfig extends BodyViewConfig implements ISmallBodyVie
     /**
      * Return the model config uniquely identified by the arguments, none of
      * which may be null.
-     * 
+     *
      * @param name the shape model's body
      * @param author the shape model type/author
      * @param version the version
@@ -221,12 +210,12 @@ public class SmallBodyViewConfig extends BodyViewConfig implements ISmallBodyVie
 
     private static List<ViewConfig> addRemoteEntries()
     {
-    	ConfigArrayList configs = new ConfigArrayList();
+    	ConfigArrayList<ViewConfig> configs = new ConfigArrayList<>();
         try
         {
             File allBodies = FileCache.getFileFromServer(BasicConfigInfo.getConfigPathPrefix(SbmtMultiMissionTool.getMission().isPublishedDataOnly()) + "/" + "allBodies_v" + BasicConfigInfo.getConfigInfoVersion() + ".json");
             FixedMetadata metadata = Serializers.deserialize(allBodies, "AllBodies");
-            for (Key key : metadata.getKeys())
+            for (Key<?> key : metadata.getKeys())
             {
             	//Dynamically add a ShapeModelType if needed
             	SettableMetadata infoMetadata = (SettableMetadata)metadata.get(key);
@@ -303,7 +292,7 @@ public class SmallBodyViewConfig extends BodyViewConfig implements ISmallBodyVie
 
     static void initializeWithStaticConfigs(boolean publicOnly)
     {
-    	ConfigArrayList configArray = getBuiltInConfigs();
+    	ConfigArrayList<IBodyViewConfig> configArray = getBuiltInConfigs();
 		AsteroidConfigs.initialize(configArray);
 		BennuConfigs.initialize(configArray, publicOnly);
 		DartConfigs.instance().initialize(configArray);
@@ -318,32 +307,8 @@ public class SmallBodyViewConfig extends BodyViewConfig implements ISmallBodyVie
 
     public static void initialize()
     {
-    	ConfigArrayList configArray = getBuiltInConfigs();
+    	ConfigArrayList<IBodyViewConfig> configArray = getBuiltInConfigs();
         configArray.addAll(addRemoteEntries());
-    }
-
-    // Imaging instrument helper methods.
-    private static ImagingInstrument setupImagingInstrument(SBMTBodyConfiguration bodyConfig, ShapeModelConfiguration modelConfig, Instrument instrument, ImageSource[] imageSources, ImageType imageType)
-    {
-        SBMTFileLocator fileLocator = SBMTFileLocators.of(bodyConfig, modelConfig, instrument, ".fits", ".INFO", ".SUM", ".jpeg");
-        QueryBase queryBase = new FixedListQuery(fileLocator.get(SBMTFileLocator.TOP_PATH).getLocation(""), fileLocator.get(SBMTFileLocator.GALLERY_FILE).getLocation(""));
-        return setupImagingInstrument(fileLocator, bodyConfig, modelConfig, instrument, queryBase, imageSources, imageType);
-    }
-
-    private static ImagingInstrument setupImagingInstrument(SBMTBodyConfiguration bodyConfig, ShapeModelConfiguration modelConfig, Instrument instrument, QueryBase queryBase, ImageSource[] imageSources, ImageType imageType)
-    {
-        SBMTFileLocator fileLocator = SBMTFileLocators.of(bodyConfig, modelConfig, instrument, ".fits", ".INFO", ".SUM", ".jpeg");
-        return setupImagingInstrument(fileLocator, bodyConfig, modelConfig, instrument, queryBase, imageSources, imageType);
-    }
-
-    private static ImagingInstrument setupImagingInstrument(SBMTFileLocator fileLocator, SBMTBodyConfiguration bodyConfig, ShapeModelConfiguration modelConfig, Instrument instrument, QueryBase queryBase, ImageSource[] imageSources, ImageType imageType)
-    {
-        Builder<ImagingInstrumentConfiguration> imagingInstBuilder = ImagingInstrumentConfiguration.builder(instrument, SpectralImageMode.MONO, queryBase, imageSources, fileLocator, imageType);
-
-        // Put it all together in a session.
-        Builder<SessionConfiguration> builder = SessionConfiguration.builder(bodyConfig, modelConfig, fileLocator);
-        builder.put(SessionConfiguration.IMAGING_INSTRUMENT_CONFIG, imagingInstBuilder.build());
-        return BasicImagingInstrument.of(builder.build());
     }
 
     private List<ImageKeyInterface> imageMapKeys = null;
