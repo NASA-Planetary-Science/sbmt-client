@@ -13,9 +13,9 @@ import edu.jhuapl.sbmt.layer.api.Layer;
 import edu.jhuapl.sbmt.pipeline.publisher.IPipelinePublisher;
 import edu.jhuapl.sbmt.pipeline.subscriber.IPipelineSubscriber;
 
-public class VtkLayerPreview implements IPipelineSubscriber<Pair<Layer, HashMap<String, String>>>
+public class VtkLayerPreview implements IPipelineSubscriber<Pair<Layer, List<HashMap<String, String>>>>
 {
-	private IPipelinePublisher<Pair<Layer, HashMap<String, String>>> publisher;
+	private IPipelinePublisher<Pair<Layer, List<HashMap<String, String>>>> publisher;
 	private LayerPreviewPanel preview;
 	private String title;
 	private Runnable completionBlock;
@@ -38,12 +38,12 @@ public class VtkLayerPreview implements IPipelineSubscriber<Pair<Layer, HashMap<
 	}
 
 	@Override
-	public void receive(List<Pair<Layer, HashMap<String, String>>> items)
+	public void receive(List<Pair<Layer, List<HashMap<String, String>>>> items)
 	{
 		try
 		{
 			List<Layer> layers = items.stream().map( item -> item.getLeft()).toList();
-			List<HashMap<String, String>> metadata = items.stream().map( item -> item.getRight()).toList();
+			List<List<HashMap<String, String>>> metadata = items.stream().map( item -> item.getRight()).toList();
 			preview = new LayerPreviewPanel(title, layers, currentLayerIndex, currentIntensityRange, currentMaskValues, metadata, completionBlock);
 		}
 		catch (Exception e)
@@ -54,7 +54,7 @@ public class VtkLayerPreview implements IPipelineSubscriber<Pair<Layer, HashMap<
 	}
 
 	@Override
-	public void receive(Pair<Layer, HashMap<String, String>> item) throws IOException, Exception
+	public void receive(Pair<Layer, List<HashMap<String, String>>> item) throws IOException, Exception
 	{
 		receive(List.of(item));
 	}
@@ -70,7 +70,7 @@ public class VtkLayerPreview implements IPipelineSubscriber<Pair<Layer, HashMap<
 	}
 
 	@Override
-	public void setPublisher(IPipelinePublisher<Pair<Layer, HashMap<String, String>>> publisher)
+	public void setPublisher(IPipelinePublisher<Pair<Layer, List<HashMap<String, String>>>> publisher)
 	{
 		this.publisher = publisher;
 	}

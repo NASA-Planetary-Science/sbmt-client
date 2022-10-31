@@ -31,6 +31,7 @@ import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.JPanel;
 import javax.swing.JSplitPane;
+import javax.swing.JTabbedPane;
 import javax.swing.WindowConstants;
 
 import org.apache.commons.lang3.StringUtils;
@@ -51,8 +52,8 @@ import edu.jhuapl.saavtk.gui.render.RenderIoUtil;
 import edu.jhuapl.saavtk.model.Model;
 import edu.jhuapl.saavtk.util.IntensityRange;
 import edu.jhuapl.sbmt.image2.controllers.preview.ImageContrastController;
+import edu.jhuapl.sbmt.image2.controllers.preview.ImageMaskController;
 import edu.jhuapl.sbmt.image2.controllers.preview.ImagePropertiesController;
-import edu.jhuapl.sbmt.image2.controllers.preview.ImageTrimController;
 import edu.jhuapl.sbmt.image2.model.ImageProperty;
 import edu.jhuapl.sbmt.image2.pipelineComponents.operators.rendering.vtk.VtkImageRendererOperator;
 import edu.jhuapl.sbmt.image2.pipelineComponents.pipelines.rendering.vtk.VtkImageContrastPipeline;
@@ -66,7 +67,7 @@ public class LayerPreviewPanel extends ModelInfoWindow implements MouseListener,
 	public static final double VIEWPOINT_DELTA = 1.0;
 	public static final double ROTATION_DELTA = 5.0;
 
-	ImageTrimController trimController;
+	ImageMaskController maskController;
 	ImageContrastController contrastController;
 	private List<Layer> layers;
 	private Layer layer;
@@ -78,10 +79,11 @@ public class LayerPreviewPanel extends ModelInfoWindow implements MouseListener,
 	private boolean centerFrustumMode = false;
 //	private JScrollPane jScrollPane1;
 	private JPanel tablePanel;
+	private JPanel tablePanel2;
 	private int[] previousLevels = null;
 	private vtkImageData displayedImage;
-	private HashMap<String, String> metadata;
-	private List<HashMap<String, String>> metadatas;
+	private List<HashMap<String, String>> metadata;
+	private List<List<HashMap<String, String>>> metadatas;
 	private Runnable completionBlock;
 	private JComboBox<String> layerComboBox;
 	private int displayedLayerIndex = 0;
@@ -91,7 +93,7 @@ public class LayerPreviewPanel extends ModelInfoWindow implements MouseListener,
 	private IntensityRange intensityRange;
 	private int[] currentMaskValues;
 
-	public LayerPreviewPanel(String title, final List<Layer> layers, int currentLayerIndex, IntensityRange intensityRange, int[] currentMaskValues, List<HashMap<String, String>> metadatas, Runnable completionBlock) throws IOException, Exception
+	public LayerPreviewPanel(String title, final List<Layer> layers, int currentLayerIndex, IntensityRange intensityRange, int[] currentMaskValues, List<List<HashMap<String, String>>> metadatas, Runnable completionBlock) throws IOException, Exception
 	{
 		this.layers = layers;
 		this.intensityRange = intensityRange;
@@ -112,6 +114,7 @@ public class LayerPreviewPanel extends ModelInfoWindow implements MouseListener,
 		setIntensity(intensityRange);
 		createMenus();
 		setTitle(title);
+		maskController.setMaskValues(currentMaskValues);
 		GridBagConstraints gridBagConstraints = new GridBagConstraints();
 		gridBagConstraints.gridx = 0;
 		gridBagConstraints.gridy = 0;
@@ -279,14 +282,18 @@ public class LayerPreviewPanel extends ModelInfoWindow implements MouseListener,
 		{
 			String[] layerNames = new String[layers.size()];
 			if (metadata.size() != 0)
-				metadatas.get(0)
-						 .keySet()
-						 .stream()
-						 .filter(item -> item.contains("PLANE"))
-						 .map(key  -> key + " - " + metadatas.get(0).get(key))
-						 .sorted()
-						 .toList()
-						 .toArray(layerNames);
+			{
+				List<HashMap<String, String>> list = metadatas.get(0);
+				HashMap<String, String> values = list.get(0);
+				values
+					 .keySet()
+					 .stream()
+					 .filter(item -> item.contains("PLANE"))
+					 .map(key  -> key + " - " + metadatas.get(0).get(0).get(key))
+					 .sorted()
+					 .toList()
+					 .toArray(layerNames);
+			}
 			else
 				for (int i=0; i<5; i++)
 				{
@@ -310,7 +317,7 @@ public class LayerPreviewPanel extends ModelInfoWindow implements MouseListener,
 					try
 					{
 						layer = layers.get(index);
-						trimController.setLayer(layer);
+						maskController.setLayer(layer);
 						generateVtkImageData(layers.get(index));
 						updateImage(displayedImage);
 						setIntensity(null);
@@ -348,11 +355,17 @@ public class LayerPreviewPanel extends ModelInfoWindow implements MouseListener,
 	private void buildTableController()
 	{
 		List<ImageProperty> properties = new ArrayList<ImageProperty>();
-		for (String str : metadata.keySet())
-			properties.add(new ImageProperty(str, metadata.get(str)));
-		ImagePropertiesController propertiesController = new ImagePropertiesController(properties);
-		tablePanel = propertiesController.getView();
-//		jScrollPane1 = new JScrollPane();
+		for (String str : metadata.get(0).keySet())
+			properties.add(new ImageProperty(str, metadata.get(0).get(str)));
+		ImagePropertiesController fitsHeaderPropertiesController = new ImagePropertiesController(properties);
+		tablePanel = fitsHeaderPropertiesController.getView();
+
+		List<ImageProperty> derivedProperties = new ArrayList<ImageProperty>();
+		for (String str : metadata.get(1).keySet())
+			derivedProperties.add(new ImageProperty(str, metadata.get(1).get(str)));
+		ImagePropertiesController derivedPropertiesController = new ImagePropertiesController(derivedProperties);
+		tablePanel2 = derivedPropertiesController.getView();
+
 
 
 		GridBagConstraints gridBagConstraints = new GridBagConstraints();
@@ -365,7 +378,12 @@ public class LayerPreviewPanel extends ModelInfoWindow implements MouseListener,
 		gridBagConstraints.weighty = 1.0;
 		if (properties.size() > 0)
 		{
-			controlsPanel.add(tablePanel, gridBagConstraints);
+			JTabbedPane tabbedPane = new JTabbedPane();
+			tabbedPane.setPreferredSize(new Dimension(452, 200));
+			tabbedPane.add("Derived Values", tablePanel2);
+			tabbedPane.add("FITS Header", tablePanel);
+
+			controlsPanel.add(tabbedPane, gridBagConstraints);
 		}
 		else
 		{
@@ -429,7 +447,7 @@ public class LayerPreviewPanel extends ModelInfoWindow implements MouseListener,
 		gridBagConstraints.fill = GridBagConstraints.HORIZONTAL;
 		gridBagConstraints.anchor = GridBagConstraints.WEST;
 		gridBagConstraints.insets = new Insets(3, 6, 3, 0);
-		trimController = new ImageTrimController(layer, currentMaskValues, new Function<Pair<Layer, int[]>, Void>()
+		maskController = new ImageMaskController(layer, currentMaskValues, new Function<Pair<Layer, int[]>, Void>()
 		{
 
 			@Override
@@ -438,9 +456,10 @@ public class LayerPreviewPanel extends ModelInfoWindow implements MouseListener,
 				try
 				{
 					int[] masks = items.getRight();
+
 					generateVtkImageData(items.getLeft());
 					updateImage(displayedImage);
-					setIntensity(null);
+					setIntensity(contrastController.getIntensityRange());
 					if (renWin == null) return null;
 					renWin.Render();
 					layer = items.getLeft();
@@ -455,7 +474,7 @@ public class LayerPreviewPanel extends ModelInfoWindow implements MouseListener,
 				return null;
 			}
 		});
-		controlsPanel.add(trimController.getView(), gridBagConstraints);
+		controlsPanel.add(maskController.getView(), gridBagConstraints);
 	}
 
 	public IntensityRange getIntensityRange()
@@ -465,7 +484,7 @@ public class LayerPreviewPanel extends ModelInfoWindow implements MouseListener,
 
 	public int[] getMaskValues()
 	{
-		return trimController.getMaskValues();
+		return maskController.getMaskValues();
 	}
 
 	public int getDisplayedLayerIndex()

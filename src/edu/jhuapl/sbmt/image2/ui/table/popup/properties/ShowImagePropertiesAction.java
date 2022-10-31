@@ -1,5 +1,6 @@
 package edu.jhuapl.sbmt.image2.ui.table.popup.properties;
 
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 
@@ -85,9 +86,10 @@ public class ShowImagePropertiesAction<G1 extends IPerspectiveImage & IPerspecti
 				List<IRenderableImage> renderableImages = pipeline.getRenderableImages();
 				preview = new VtkLayerPreview("Image Properties", image.getCurrentLayer(), image.getIntensityRange(), image.getMaskValues());
 				preview.setCompletionBlock(completionBlock);
-				List<Pair<Layer, HashMap<String, String>>> inputList = Lists.newArrayList();
+				List<Pair<Layer, List<HashMap<String, String>>>> inputList = Lists.newArrayList();
+				List<HashMap<String, String>> metadatas = List.of(pipeline.getMetadata().get(0));
 				for (int i=0; i<renderableImages.size(); i++)
-					inputList.add(Pair.of(renderableImages.get(i).getLayer(), metadata.get(0)));
+					inputList.add(Pair.of(renderableImages.get(i).getLayer(), metadatas));
 				Just.of(inputList)
 					.subscribe(preview)
 					.run();
@@ -123,12 +125,14 @@ public class ShowImagePropertiesAction<G1 extends IPerspectiveImage & IPerspecti
 					List<IRenderableImage> renderableImages = pipeline.getRenderableImages();
 					List<HashMap<String, String>> metadata = pipeline.getMetadata();
 					HashMap<String, String> derivedMetadata = new PerspectiveImageToDerivedMetadataPipeline(renderableImages.get(0), List.of(smallBodyModel)).getMetadata();
-					metadata.get(0).putAll(derivedMetadata);
+//					metadata.get(0).putAll(derivedMetadata);
+					System.out.println("ShowImagePropertiesAction: executeAction: image mask values " +  Arrays.toString(image.getMaskValues()));
 					preview = new VtkLayerPreview("Image Properties", image.getCurrentLayer(), image.getIntensityRange(), image.getMaskValues());
 					preview.setCompletionBlock(completionBlock);
-					List<Pair<Layer, HashMap<String, String>>> inputList = Lists.newArrayList();
+					List<HashMap<String, String>> metadatas = List.of(pipeline.getMetadata().get(0), derivedMetadata);
+					List<Pair<Layer, List<HashMap<String, String>>>> inputList = Lists.newArrayList();
 					for (int i=0; i<renderableImages.size(); i++)
-						inputList.add(Pair.of(renderableImages.get(i).getLayer(), metadata.get(0)));
+						inputList.add(Pair.of(renderableImages.get(i).getLayer(), metadatas));
 					Just.of(inputList)
 						.subscribe(preview)
 						.run();

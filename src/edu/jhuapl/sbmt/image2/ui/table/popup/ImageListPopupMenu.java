@@ -67,8 +67,7 @@ public class ImageListPopupMenu<G1 extends IPerspectiveImage  & IPerspectiveImag
 //			installPopAction(showSpectrumAction, "Spectrum...");
 //		}
 
-		EditPointingAction<G1> editPointingAction = new EditPointingAction<G1>(aManager);
-		installPopAction(editPointingAction, "Edit Image Pointing...");
+
 
 		InterpolatePixelsAction<G1> interpolatePixelsAction = new InterpolatePixelsAction<G1>(aManager);
 		JCheckBoxMenuItem interpolatePixelsCBMI = new JCheckBoxMenuItem(interpolatePixelsAction);
@@ -115,6 +114,9 @@ public class ImageListPopupMenu<G1 extends IPerspectiveImage  & IPerspectiveImag
 
 		ChangeOpacityAction<G1> changeOpacityAction = new ChangeOpacityAction<G1>(aManager, renderer);
 		installPopAction(changeOpacityAction, "Change Opacity...");
+
+		EditPointingAction<G1> editPointingAction = new EditPointingAction<G1>(aManager);
+		installPopAction(editPointingAction, "Adjust Image Pointing...");
 
 		JMenu colorMenu = new JMenu("Boundary Color");
 		BoundaryColorAction<G1> boundaryColorAction = new BoundaryColorAction<>(aManager, invoker, colorMenu);
