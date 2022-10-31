@@ -215,9 +215,12 @@ public class ImageMaskController
 		if (layer == null) return;
 		try
 		{
+//			System.out.println("ImageMaskController: croppingChanged: cropping changed");
+//			VTKDebug.previewLayer(layer, "Layer before cropping " + Integer.toHexString(layer.hashCode()));
 			maskPipeline.run(layer,
 					(int)leftSpinner.getValue(), (int)rightSpinner.getValue(),
-					(int)bottomSpinner.getValue(), (int)topSpinner.getValue());
+					(int)topSpinner.getValue(), (int)bottomSpinner.getValue());
+//			VTKDebug.previewLayer(maskPipeline.getUpdatedData().get(0), "Layer after maskPipe, returning to completion block " + Integer.toHexString(maskPipeline.getUpdatedData().get(0).hashCode()));
 			completionBlock.apply(Pair.of(maskPipeline.getUpdatedData().get(0), getMaskValues()));
 		}
 		catch (Exception e)

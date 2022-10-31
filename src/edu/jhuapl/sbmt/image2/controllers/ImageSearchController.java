@@ -55,7 +55,6 @@ import edu.jhuapl.sbmt.image2.pipelineComponents.pipelines.io.SaveImagesToSavedF
 import edu.jhuapl.sbmt.image2.ui.custom.importer.CustomImageImporterDialog2;
 import edu.jhuapl.sbmt.image2.ui.table.popup.ImageListPopupMenu;
 import edu.jhuapl.sbmt.util.ImageGalleryGenerator;
-import edu.jhuapl.sbmt.util.TimeUtil;
 
 import glum.gui.action.PopupMenu;
 
@@ -453,8 +452,16 @@ public class ImageSearchController<G1 extends IPerspectiveImage & IPerspectiveIm
 			G1 image = selectedItems.asList().get(0);
 			if (image.getNumberOfLayers() == 1)	//editing custom single layer image
 			{
+				Runnable completionBlock = new Runnable()
+				{
+					@Override
+					public void run()
+					{
+						collection.updateImage(image);
+					}
+				};
 				CustomImageEditingController<G1> dialog = new CustomImageEditingController<G1>(null,
-						modelManager.getPolyhedralModel().isEllipsoid(), !image.getPointingSourceType().toString().contains("Cylindrical"), image, instrument.get(), () -> {});
+						modelManager.getPolyhedralModel().isEllipsoid(), !image.getPointingSourceType().toString().contains("Cylindrical"), image, instrument.orElse(null), completionBlock);
 		        dialog.getDialog().setLocationRelativeTo(customImageListTableController.getPanel());
 		        dialog.getDialog().setVisible(true);
 		        collection.updateUserImage(image);

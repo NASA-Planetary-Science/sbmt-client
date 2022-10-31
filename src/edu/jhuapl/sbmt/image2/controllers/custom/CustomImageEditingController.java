@@ -39,10 +39,8 @@ import edu.jhuapl.sbmt.image2.controllers.preview.ImageMaskController;
 import edu.jhuapl.sbmt.image2.interfaces.IPerspectiveImage;
 import edu.jhuapl.sbmt.image2.interfaces.IPerspectiveImageTableRepresentable;
 import edu.jhuapl.sbmt.image2.model.CylindricalBounds;
-import edu.jhuapl.sbmt.image2.model.IRenderableImage;
 import edu.jhuapl.sbmt.image2.pipelineComponents.operators.rendering.vtk.VtkImageRendererOperator;
-import edu.jhuapl.sbmt.image2.pipelineComponents.pipelines.cylindricalImages.CylindricalImageToRenderableImagePipeline;
-import edu.jhuapl.sbmt.image2.pipelineComponents.pipelines.perspectiveImages.PerspectiveImageToRenderableImagePipeline;
+import edu.jhuapl.sbmt.image2.pipelineComponents.pipelines.io.IPerspectiveImageToLayerAndMetadataPipeline;
 import edu.jhuapl.sbmt.image2.pipelineComponents.pipelines.rendering.vtk.VtkImageContrastPipeline;
 import edu.jhuapl.sbmt.image2.ui.custom.editing.CustomImageEditingDialog;
 import edu.jhuapl.sbmt.layer.api.Layer;
@@ -77,15 +75,8 @@ public class CustomImageEditingController<G1 extends IPerspectiveImage & IPerspe
 		this.completionBlock = completionBlock;
 		this.isPerspective = isPerspective;
 		this.instrument = instrument;
-		try
-		{
-			getLayers();
-		}
-		catch (Exception e1)
-		{
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
-		}
+
+		regenerateLayerFromImage(existingImage);
 		contrastController = new ImageContrastController(displayedImage, existingImage.getIntensityRange(), new Function<vtkImageData, Void>() {
 
 			@Override
@@ -97,6 +88,8 @@ public class CustomImageEditingController<G1 extends IPerspectiveImage & IPerspe
 					updateImage(displayedImage);
 					setIntensity(null);
 					renWin.Render();
+					existingImage.setIntensityRange(contrastController.getIntensityRange());
+					maskController.setLayer(layer);
 					if (completionBlock != null) completionBlock.run();
 				}
 				catch (Exception e)
@@ -118,13 +111,13 @@ public class CustomImageEditingController<G1 extends IPerspectiveImage & IPerspe
 				try
 				{
 					existingImage.setMaskValues(items.getRight());
+					regenerateLayerFromImage(existingImage);
 					if (displayedImage == null) return null;
-					generateVtkImageData(items.getLeft());
+					generateVtkImageData(layer);
 					updateImage(displayedImage);
-					setIntensity(null);
+					setIntensity(contrastController.getIntensityRange());
 					if (renWin == null) return null;
 					renWin.Render();
-					layer = items.getLeft();
 					if (completionBlock != null) completionBlock.run();
 				}
 				catch (Exception e)
@@ -157,7 +150,7 @@ public class CustomImageEditingController<G1 extends IPerspectiveImage & IPerspe
 	{
 		try
 		{
-			getLayers();
+			regenerateLayerFromImage(existingImage);
 			if (layer == null) return;
 			renderLayer(layer);
 			setIntensity(existingImage.getIntensityRange());
@@ -173,38 +166,33 @@ public class CustomImageEditingController<G1 extends IPerspectiveImage & IPerspe
 
 	private void populateUI()
 	{
-		Orientation orientation = instrument.getOrientation(existingImage.getPointingSourceType());
 		dialog.getImagePathTextField().setText(existingImage.getFilename());
 		dialog.getImageNameTextField().setText(existingImage.getName());
-		dialog.getFlipAboutXCheckBox().setSelected(orientation.getFlip().toString().equals("X"));
-//		if (existingImage.getImageType() != ImageType.GENERIC_IMAGE)
-//		{
-//			if (!existingImage.getPointingSource().isEmpty())
-			if (!existingImage.getPointingSourceType().toString().contains("Cylindrical"))
+
+		if (!existingImage.getPointingSourceType().toString().contains("Cylindrical"))
+		{
+			dialog.getPointingTypeComboBox().setSelectedIndex(0);
+			dialog.getPointingFilenameTextField().setText(existingImage.getPointingSource());
+			if (instrument != null)
 			{
-				dialog.getPointingTypeComboBox().setSelectedIndex(0);
-				dialog.getPointingFilenameTextField().setText(existingImage.getPointingSource());
+				Orientation orientation = instrument.getOrientation(existingImage.getPointingSourceType());
 				dialog.getImageFlipComboBox().setSelectedItem(orientation.getFlip().toString());
 				dialog.getImageRotationComboBox().setSelectedItem("" + (int) (orientation.getRotation()));
 			}
-			else
+		}
+		else
+		{
+			if (instrument != null)
 			{
-				dialog.getPointingTypeComboBox().setSelectedIndex(1);
-				dialog.getMinLatitudeTextField().setText("" + existingImage.getBounds().minLatitude());
-				dialog.getMaxLatitudeTextField().setText("" + existingImage.getBounds().maxLatitude());
-				dialog.getMinLongitudeTextField().setText("" + existingImage.getBounds().minLongitude());
-				dialog.getMaxLongitudeTextField().setText("" + existingImage.getBounds().maxLongitude());
+				Orientation orientation = instrument.getOrientation(existingImage.getPointingSourceType());
+				dialog.getFlipAboutXCheckBox().setSelected(orientation.getFlip().toString().equals("X"));
 			}
-//		}
-//		else // cylindrical
-//		{
-//			dialog.getPointingTypeComboBox().setSelectedIndex(1);
-//			dialog.getMinLatitudeTextField().setText("" + existingImage.getBounds().minLatitude());
-//			dialog.getMaxLatitudeTextField().setText("" + existingImage.getBounds().maxLatitude());
-//			dialog.getMinLongitudeTextField().setText("" + existingImage.getBounds().minLongitude());
-//			dialog.getMaxLongitudeTextField().setText("" + existingImage.getBounds().maxLongitude());
-//		}
-
+			dialog.getPointingTypeComboBox().setSelectedIndex(1);
+			dialog.getMinLatitudeTextField().setText("" + existingImage.getBounds().minLatitude());
+			dialog.getMaxLatitudeTextField().setText("" + existingImage.getBounds().maxLatitude());
+			dialog.getMinLongitudeTextField().setText("" + existingImage.getBounds().minLongitude());
+			dialog.getMaxLongitudeTextField().setText("" + existingImage.getBounds().maxLongitude());
+		}
 
 		for (double val : existingImage.getFillValues())
 		{
@@ -244,9 +232,12 @@ public class CustomImageEditingController<G1 extends IPerspectiveImage & IPerspe
 				existingImage.setPointingSourceType(ImageSource.GASKELL);
 			else
 				existingImage.setPointingSourceType(ImageSource.SPICE);
-			Orientation orientation2 = instrument.getOrientation(existingImage.getPointingSourceType());
-			dialog.getImageRotationComboBox().setSelectedItem("" + (int) (orientation2.getRotation()));
-			dialog.getImageFlipComboBox().setSelectedItem(orientation2.getFlip().toString());
+			if (instrument != null)
+			{
+				Orientation orientation2 = instrument.getOrientation(existingImage.getPointingSourceType());
+				dialog.getImageRotationComboBox().setSelectedItem("" + (int) (orientation2.getRotation()));
+				dialog.getImageFlipComboBox().setSelectedItem(orientation2.getFlip().toString());
+			}
 			renderLayerAndAddAttributes();
 		});
 
@@ -408,43 +399,41 @@ public class CustomImageEditingController<G1 extends IPerspectiveImage & IPerspe
 		return null;
 	}
 
-	private void getLayers() throws Exception
-	{
-		List<IRenderableImage> renderableImages = null;
-		layers.clear();
-		if ((dialog == null) || dialog.getPointingFilenameTextField().getText().equals("FILE NOT FOUND") /*|| existingImage.getPointingSource().equals("FILE NOT FOUND")*/) return;
-		if (existingImage.getPointingSourceType() == ImageSource.LOCAL_CYLINDRICAL)
-		{
-			CylindricalImageToRenderableImagePipeline pipeline = CylindricalImageToRenderableImagePipeline.of(List.of(existingImage));
-			renderableImages = pipeline.getRenderableImages();
-		}
-		else
-		{
-			PerspectiveImageToRenderableImagePipeline pipeline = new PerspectiveImageToRenderableImagePipeline(List.of(existingImage));
-			renderableImages = pipeline.getRenderableImages();
-
-		}
-		for (int i=0; i<renderableImages.size(); i++)
-			layers.add(renderableImages.get(i).getLayer());
-		dialog.getMaskController().setLayer(layers.get(0));
-		dialog.getMaskController().setMaskValues(renderableImages.get(0).getMasking().getMask());
-		this.layer = layers.get(0);
-	}
+//	private void getLayers() throws Exception
+//	{
+//		List<IRenderableImage> renderableImages = null;
+//		layers.clear();
+//		if ((dialog == null) || dialog.getPointingFilenameTextField().getText().equals("FILE NOT FOUND") /*|| existingImage.getPointingSource().equals("FILE NOT FOUND")*/) return;
+//		if (existingImage.getPointingSourceType() == ImageSource.LOCAL_CYLINDRICAL)
+//		{
+//			CylindricalImageToRenderableImagePipeline pipeline = CylindricalImageToRenderableImagePipeline.of(List.of(existingImage));
+//			renderableImages = pipeline.getRenderableImages();
+//		}
+//		else
+//		{
+//			PerspectiveImageToRenderableImagePipeline pipeline = new PerspectiveImageToRenderableImagePipeline(List.of(existingImage));
+//			renderableImages = pipeline.getRenderableImages();
+//
+//		}
+//		for (int i=0; i<renderableImages.size(); i++)
+//			layers.add(renderableImages.get(i).getLayer());
+//		dialog.getMaskController().setLayer(layers.get(0));
+//		dialog.getMaskController().setMaskValues(renderableImages.get(0).getMasking().getMask());
+//		this.layer = layers.get(0);
+//	}
 
 	private void storeImage()
 	{
-		String filename = dialog.getImagePathTextField().getText();
-
 		imageType = existingImage.getImageType();
 		existingImage.setName(dialog.getImageNameTextField().getText());
 		if (dialog.getPointingTypeComboBox().getSelectedItem().equals("Perspective Projection"))
 		{
 			existingImage.setPointingSource(dialog.getPointingFilenameTextField().getText());
-//			existingImage.setFlip((String) dialog.getImageFlipComboBox().getSelectedItem());
-//			existingImage.setRotation(Double.parseDouble((String) dialog.getImageRotationComboBox().getSelectedItem()));
-
-			existingImage.setFlip(instrument.getOrientation(existingImage.getPointingSourceType()).getFlip().flip());
-			existingImage.setRotation(instrument.getOrientation(existingImage.getPointingSourceType()).getRotation());
+			if (instrument != null)
+			{
+				existingImage.setFlip(instrument.getOrientation(existingImage.getPointingSourceType()).getFlip().flip());
+				existingImage.setRotation(instrument.getOrientation(existingImage.getPointingSourceType()).getRotation());
+			}
 		}
 		else
 		{
@@ -458,42 +447,7 @@ public class CustomImageEditingController<G1 extends IPerspectiveImage & IPerspe
 			else
 				existingImage.setFlip("None");
 		}
-
-
-
-//		});
-		// ImageType imageType = (ImageType)imageTypeComboBox.getSelectedItem();
-		// String pointingSource = pointingFilenameTextField.getText();
-		// ImageSource pointingSourceType = ImageSource.LOCAL_CYLINDRICAL;
-		//
-		// if (!pointingSource.isEmpty())
-		// {
-		// String extension =
-		// FilenameUtils.getExtension(pointingSource).toLowerCase();
-		// pointingSourceType = extension.equals("sum") ? ImageSource.GASKELL :
-		// ImageSource.SPICE;
-		// }
-		// //TODO FIX THIS
-		// double[] fillValues = new double[] {};
-		// PerspectiveImage image = new PerspectiveImage(filename, imageType,
-		// pointingSourceType, pointingSource, fillValues);
-		// image.setName(getName());
-		// image.setImageOrigin(ImageOrigin.LOCAL);
-		// image.setLongTime(new Date().getTime());
-		// if (pointingSourceType == ImageSource.LOCAL_CYLINDRICAL)
-		// {
-		// Double minLat = Double.parseDouble(minLatitudeTextField.getText());
-		// Double maxLat = Double.parseDouble(maxLatitudeTextField.getText());
-		// Double minLon = Double.parseDouble(minLongitudeTextField.getText());
-		// Double maxLon = Double.parseDouble(maxLongitudeTextField.getText());
-		// image.setBounds(new CylindricalBounds(minLat, maxLat, minLon,
-		// maxLon));
-		// }
-		// CompositePerspectiveImage compImage = new
-		// CompositePerspectiveImage(List.of(image));
-		// compImage.setName(imageNameTextField.getText());
-		// imageCollection.addUserImage(compImage);
-		// imageCollection.setImagingInstrument(null);
+		//Fill values are handled by the apply button
 	}
 
 	private void generateVtkImageData(Layer layer) throws IOException, Exception
@@ -507,6 +461,20 @@ public class CustomImageEditingController<G1 extends IPerspectiveImage & IPerspe
 		if (displayedImage.GetNumberOfScalarComponents() != 1)
 			dialog.getContrastController().getView().setVisible(false);
 		this.layer = layer;
+	}
+
+	private void regenerateLayerFromImage(G1 image)
+	{
+		try
+		{
+			IPerspectiveImageToLayerAndMetadataPipeline pipeline = IPerspectiveImageToLayerAndMetadataPipeline.of(image);
+			this.layer = pipeline.getLayers().get(0);
+		}
+		catch (Exception e)
+		{
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 
 	private void renderLayer(Layer layer) throws IOException, Exception

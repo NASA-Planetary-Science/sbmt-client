@@ -10,12 +10,12 @@ import org.apache.commons.lang3.ArrayUtils;
 
 import com.google.common.collect.Lists;
 
-import edu.jhuapl.saavtk.util.DownloadableFileState;
 import edu.jhuapl.saavtk.util.FileCache;
 import edu.jhuapl.sbmt.core.image.ImageType;
 import edu.jhuapl.sbmt.image2.interfaces.IPerspectiveImage;
 import edu.jhuapl.sbmt.image2.model.CylindricalBounds;
 import edu.jhuapl.sbmt.image2.pipelineComponents.operators.rendering.layer.LayerLinearInterpolaterOperator;
+import edu.jhuapl.sbmt.image2.pipelineComponents.operators.rendering.layer.LayerMaskOperator;
 import edu.jhuapl.sbmt.image2.pipelineComponents.operators.rendering.layer.LayerRotationOperator;
 import edu.jhuapl.sbmt.image2.pipelineComponents.operators.rendering.layer.LayerXFlipOperator;
 import edu.jhuapl.sbmt.image2.pipelineComponents.operators.rendering.layer.LayerYFlipOperator;
@@ -53,7 +53,6 @@ public class IPerspectiveImageToLayerAndMetadataPipeline
 		if (!new File(fileName).exists())
 			fileName = FileCache.getFileFromServer(image.getFilename()).getAbsolutePath();
 		CylindricalBounds bounds = image.getBounds();
-
 		if (FilenameUtils.getExtension(fileName).toLowerCase().equals("fit") || FilenameUtils.getExtension(fileName).toLowerCase().equals("fits"))
 		{
 			if (useGDAL && !ArrayUtils.contains(badGDALTypes, image.getImageType()))
@@ -75,6 +74,26 @@ public class IPerspectiveImageToLayerAndMetadataPipeline
 			if (useGDAL)
 				reader = new GDALReader(fileName, false, new ValidityCheckerDoubleFactory().checker2d(image.getFillValues()), Double.NaN);
 		}
+
+		BasePipelineOperator<Layer, Layer> maskingOperator = new PassthroughOperator<Layer>();
+
+		if (metadataReader.getOutput().get("WINDOWH") != null)
+		{
+			int windowH = Integer.parseInt(metadataReader.getOutput().get("WINDOWH"));
+			int windowX = Integer.parseInt(metadataReader.getOutput().get("WINDOWX"));
+			int windowY = Integer.parseInt(metadataReader.getOutput().get("WINDOWY"));
+
+			image.setAutoMaskValues(new int[] {windowH - windowY, windowY, windowH - windowX,  windowX});
+		}
+		else
+		{
+			image.setAutoMaskValues(image.getMaskValues());
+		}
+		if (image.isUseAutoMask())
+			maskingOperator = new LayerMaskOperator(image.getAutoMaskValues()[0], image.getAutoMaskValues()[1], image.getAutoMaskValues()[2], image.getAutoMaskValues()[3]);
+		else
+			maskingOperator = new LayerMaskOperator(image.getMaskValues()[0], image.getMaskValues()[1], image.getMaskValues()[2], image.getMaskValues()[3]);
+
 		IPipelineOperator<Layer, Layer> linearInterpolator = null;
 		if (image.getLinearInterpolatorDims() == null || (image.getLinearInterpolatorDims()[0] == 0 && image.getLinearInterpolatorDims()[1] == 0))
 			linearInterpolator = new PassthroughOperator<>();
@@ -88,11 +107,14 @@ public class IPerspectiveImageToLayerAndMetadataPipeline
 			flipOperator = new LayerXFlipOperator();
 		else if (image.getFlip().equals("Y"))
 			flipOperator = new LayerYFlipOperator();
+
 		reader
 			.operate(linearInterpolator)
 			.operate(flipOperator)
 			.operate(rotationOperator)
+			.operate(maskingOperator)
 			.subscribe(Sink.of(updatedLayers)).run();
+
 
 	}
 

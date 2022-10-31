@@ -55,6 +55,14 @@ public interface IPerspectiveImage
 
 	public void setMaskValues(int[] maskValues);
 
+	public int[] getAutoMaskValues();
+
+	public void setAutoMaskValues(int[] maskValues);
+
+	public boolean isUseAutoMask();
+
+	public void setUseAutoMask(boolean useAutoMask);
+
 	public int[] getTrimValues();
 
 	public void setTrimValues(int[] trimValues);
