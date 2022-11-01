@@ -12,7 +12,7 @@ import java.util.Map;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
 
-import edu.jhuapl.saavtk.config.ViewConfig;
+import edu.jhuapl.saavtk.config.IBodyViewConfig;
 import edu.jhuapl.saavtk.model.ShapeModelBody;
 import edu.jhuapl.saavtk.model.ShapeModelType;
 import edu.jhuapl.sbmt.common.client.BodyViewConfig;
@@ -151,7 +151,7 @@ public class DartConfigs extends SmallBodyViewConfigBuilder
      *
      * @param configList output list of ViewConfig objects.
      */
-    public void initialize(List<ViewConfig> configList)
+    public void initialize(List<IBodyViewConfig> configList)
     {
         Preconditions.checkNotNull(configList);
 
@@ -1157,7 +1157,7 @@ public class DartConfigs extends SmallBodyViewConfigBuilder
         return config;
     }
 
-    private void buildSystemConfigs(List<ViewConfig> configList)
+    private void buildSystemConfigs(List<IBodyViewConfig> configList)
     {
         SmallBodyViewConfig c;
         // System configs

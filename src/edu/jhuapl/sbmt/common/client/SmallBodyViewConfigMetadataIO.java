@@ -166,12 +166,12 @@ public class SmallBodyViewConfigMetadataIO implements MetadataManager
 
     public SmallBodyViewConfigMetadataIO()
     {
-        this.configs = new Vector<IBodyViewConfig>();
+        this(ImmutableList.of());
     }
 
-    public SmallBodyViewConfigMetadataIO(List<IBodyViewConfig> configs)
+    public SmallBodyViewConfigMetadataIO(List<? extends IBodyViewConfig> configs)
     {
-        this.configs = configs;
+        this.configs = new Vector<>(configs);
     }
 
     public SmallBodyViewConfigMetadataIO(IBodyViewConfig config)

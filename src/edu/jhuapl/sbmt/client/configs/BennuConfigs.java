@@ -9,7 +9,7 @@ import java.util.List;
 import com.google.common.collect.ImmutableList;
 
 import edu.jhuapl.saavtk.config.ExtensibleTypedLookup.Builder;
-import edu.jhuapl.saavtk.config.ViewConfig;
+import edu.jhuapl.saavtk.config.IBodyViewConfig;
 import edu.jhuapl.saavtk.model.ShapeModelBody;
 import edu.jhuapl.saavtk.model.ShapeModelType;
 import edu.jhuapl.saavtk.util.Configuration;
@@ -103,7 +103,7 @@ public class BennuConfigs extends SmallBodyViewConfig
 	}
 
 
-	public static void initialize(List<ViewConfig> configArray, boolean publicOnly)
+	public static void initialize(List<IBodyViewConfig> configArray, boolean publicOnly)
     {
         BennuConfigs c = new BennuConfigs();
 
