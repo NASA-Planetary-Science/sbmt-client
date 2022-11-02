@@ -217,7 +217,7 @@ public class ImageMaskController
 		{
 			maskPipeline.run(layer,
 					(int)leftSpinner.getValue(), (int)rightSpinner.getValue(),
-					(int)bottomSpinner.getValue(), (int)topSpinner.getValue());
+					(int)topSpinner.getValue(), (int)bottomSpinner.getValue());
 			completionBlock.apply(Pair.of(maskPipeline.getUpdatedData().get(0), getMaskValues()));
 		}
 		catch (Exception e)

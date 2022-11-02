@@ -173,38 +173,33 @@ public class CustomImageEditingController<G1 extends IPerspectiveImage & IPerspe
 
 	private void populateUI()
 	{
-		Orientation orientation = instrument.getOrientation(existingImage.getPointingSourceType());
 		dialog.getImagePathTextField().setText(existingImage.getFilename());
 		dialog.getImageNameTextField().setText(existingImage.getName());
-		dialog.getFlipAboutXCheckBox().setSelected(orientation.getFlip().toString().equals("X"));
-//		if (existingImage.getImageType() != ImageType.GENERIC_IMAGE)
-//		{
-//			if (!existingImage.getPointingSource().isEmpty())
-			if (!existingImage.getPointingSourceType().toString().contains("Cylindrical"))
+
+		if (!existingImage.getPointingSourceType().toString().contains("Cylindrical"))
+		{
+			dialog.getPointingTypeComboBox().setSelectedIndex(0);
+			dialog.getPointingFilenameTextField().setText(existingImage.getPointingSource());
+			if (instrument != null)
 			{
-				dialog.getPointingTypeComboBox().setSelectedIndex(0);
-				dialog.getPointingFilenameTextField().setText(existingImage.getPointingSource());
+				Orientation orientation = instrument.getOrientation(existingImage.getPointingSourceType());
 				dialog.getImageFlipComboBox().setSelectedItem(orientation.getFlip().toString());
 				dialog.getImageRotationComboBox().setSelectedItem("" + (int) (orientation.getRotation()));
 			}
-			else
+		}
+		else
+		{
+			if (instrument != null)
 			{
-				dialog.getPointingTypeComboBox().setSelectedIndex(1);
-				dialog.getMinLatitudeTextField().setText("" + existingImage.getBounds().minLatitude());
-				dialog.getMaxLatitudeTextField().setText("" + existingImage.getBounds().maxLatitude());
-				dialog.getMinLongitudeTextField().setText("" + existingImage.getBounds().minLongitude());
-				dialog.getMaxLongitudeTextField().setText("" + existingImage.getBounds().maxLongitude());
+				Orientation orientation = instrument.getOrientation(existingImage.getPointingSourceType());
+				dialog.getFlipAboutXCheckBox().setSelected(orientation.getFlip().toString().equals("X"));
 			}
-//		}
-//		else // cylindrical
-//		{
-//			dialog.getPointingTypeComboBox().setSelectedIndex(1);
-//			dialog.getMinLatitudeTextField().setText("" + existingImage.getBounds().minLatitude());
-//			dialog.getMaxLatitudeTextField().setText("" + existingImage.getBounds().maxLatitude());
-//			dialog.getMinLongitudeTextField().setText("" + existingImage.getBounds().minLongitude());
-//			dialog.getMaxLongitudeTextField().setText("" + existingImage.getBounds().maxLongitude());
-//		}
-
+			dialog.getPointingTypeComboBox().setSelectedIndex(1);
+			dialog.getMinLatitudeTextField().setText("" + existingImage.getBounds().minLatitude());
+			dialog.getMaxLatitudeTextField().setText("" + existingImage.getBounds().maxLatitude());
+			dialog.getMinLongitudeTextField().setText("" + existingImage.getBounds().minLongitude());
+			dialog.getMaxLongitudeTextField().setText("" + existingImage.getBounds().maxLongitude());
+		}
 
 		for (double val : existingImage.getFillValues())
 		{
@@ -244,9 +239,12 @@ public class CustomImageEditingController<G1 extends IPerspectiveImage & IPerspe
 				existingImage.setPointingSourceType(ImageSource.GASKELL);
 			else
 				existingImage.setPointingSourceType(ImageSource.SPICE);
-			Orientation orientation2 = instrument.getOrientation(existingImage.getPointingSourceType());
-			dialog.getImageRotationComboBox().setSelectedItem("" + (int) (orientation2.getRotation()));
-			dialog.getImageFlipComboBox().setSelectedItem(orientation2.getFlip().toString());
+			if (instrument != null)
+			{
+				Orientation orientation2 = instrument.getOrientation(existingImage.getPointingSourceType());
+				dialog.getImageRotationComboBox().setSelectedItem("" + (int) (orientation2.getRotation()));
+				dialog.getImageFlipComboBox().setSelectedItem(orientation2.getFlip().toString());
+			}
 			renderLayerAndAddAttributes();
 		});
 
