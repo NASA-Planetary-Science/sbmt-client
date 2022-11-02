@@ -315,6 +315,24 @@ public class DartConfigs extends SmallBodyViewConfigBuilder
             add(instrument, dbRunInfos);
 
             c = build();
+//            configList.add(c);
+        }
+
+        // Dimorphos version 003 (flight).
+        {
+            String label = "Dimorphos-v003";
+            ShapeModelType author = author(MissionPrefix + " " + label);
+
+            init(ShapeModelBody.DIMORPHOS, author, ShapeModelDataUsed.IMAGE_BASED, label);
+            imageSearchRanges(ImpactSearchStartDate, ImpactSearchEndDate, ImpactMaxScDistance, ImpactResolution);
+
+            modelRes(BodyViewConfig.DEFAULT_GASKELL_LABELS_PER_RESOLUTION, BodyViewConfig.DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION);
+
+            ImagingInstrument instrument = createFlightInstrument(ShapeModelBody.DIMORPHOS, author, Instrument.DRACO, dracoFlightOrientations, imageSources);
+            DBRunInfo[] dbRunInfos = createDbInfos(ShapeModelBody.DIMORPHOS, author, Instrument.DRACO, imageSources);
+            add(instrument, dbRunInfos);
+
+            c = build();
             configList.add(c);
             defaultConfig = c;
         }
