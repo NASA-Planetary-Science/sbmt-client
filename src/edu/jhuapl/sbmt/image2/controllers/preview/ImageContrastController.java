@@ -2,6 +2,7 @@ package edu.jhuapl.sbmt.image2.controllers.preview;
 
 import java.util.function.Function;
 
+import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -36,9 +37,48 @@ public class ImageContrastController
 	public JPanel getView()
 	{
 		JPanel panel = new JPanel();
-		panel.add(label);
-		panel.add(slider);
-		panel.setLayout(new BoxLayout(panel, BoxLayout.X_AXIS));
+		panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
+
+//		GridBagConstraints gridBagConstraints = new GridBagConstraints();
+//		panel.setLayout(new GridBagLayout());
+//
+//		gridBagConstraints = new GridBagConstraints();
+//		gridBagConstraints.gridx = 0;
+//		gridBagConstraints.gridy = 0;
+//		gridBagConstraints.fill = GridBagConstraints.HORIZONTAL;
+//		gridBagConstraints.anchor = GridBagConstraints.LINE_START;
+//		gridBagConstraints.weightx = 1.0;
+////		gridBagConstraints.insets = new Insets(3, 6, 3, 0);
+//		panel.add(label, gridBagConstraints);
+
+		JPanel labelPanel = new JPanel();
+		labelPanel.setLayout(new BoxLayout(labelPanel, BoxLayout.X_AXIS));
+		labelPanel.add(Box.createHorizontalStrut(30));
+		labelPanel.add(label);
+		labelPanel.add(Box.createHorizontalGlue());
+//		panel.add(Box.createVerticalStrut(5));
+		panel.add(labelPanel);
+//		panel.add(new JSeparator(SwingConstants.HORIZONTAL));
+
+		JPanel sliderPanel = new JPanel();
+//		sliderPanel.setBackground(Color.red);
+		sliderPanel.setLayout(new BoxLayout(sliderPanel, BoxLayout.X_AXIS));
+		sliderPanel.add(Box.createHorizontalStrut(50));
+		sliderPanel.add(slider);
+
+		panel.add(sliderPanel);
+		panel.add(Box.createVerticalGlue());
+//		panel.setBackground(Color.green);
+
+//		gridBagConstraints = new GridBagConstraints();
+//		gridBagConstraints.gridx = 0;
+//		gridBagConstraints.gridy = 1;
+//		gridBagConstraints.fill = GridBagConstraints.HORIZONTAL;
+//		gridBagConstraints.anchor = GridBagConstraints.LINE_START;
+//		gridBagConstraints.weightx = 1.0;
+//		gridBagConstraints.insets = new Insets(3, 10, 3, 0);
+//		panel.add(slider, gridBagConstraints);
+
 		return panel;
 	}
 

@@ -21,17 +21,14 @@ import java.util.Optional;
 import java.util.function.Function;
 
 import javax.swing.AbstractAction;
-import javax.swing.Box;
-import javax.swing.BoxLayout;
+import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
-import javax.swing.JLabel;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.JPanel;
 import javax.swing.JSplitPane;
-import javax.swing.JTabbedPane;
 import javax.swing.WindowConstants;
 
 import org.apache.commons.lang3.StringUtils;
@@ -53,8 +50,6 @@ import edu.jhuapl.saavtk.model.Model;
 import edu.jhuapl.saavtk.util.IntensityRange;
 import edu.jhuapl.sbmt.image2.controllers.preview.ImageContrastController;
 import edu.jhuapl.sbmt.image2.controllers.preview.ImageMaskController;
-import edu.jhuapl.sbmt.image2.controllers.preview.ImagePropertiesController;
-import edu.jhuapl.sbmt.image2.model.ImageProperty;
 import edu.jhuapl.sbmt.image2.pipelineComponents.operators.rendering.vtk.VtkImageRendererOperator;
 import edu.jhuapl.sbmt.image2.pipelineComponents.pipelines.rendering.vtk.VtkImageContrastPipeline;
 import edu.jhuapl.sbmt.layer.api.Layer;
@@ -78,8 +73,8 @@ public class LayerPreviewPanel extends ModelInfoWindow implements MouseListener,
 	private boolean initialized = false;
 	private boolean centerFrustumMode = false;
 //	private JScrollPane jScrollPane1;
-	private JPanel tablePanel;
-	private JPanel tablePanel2;
+//	private JPanel tablePanel;
+//	private JPanel tablePanel2;
 	private int[] previousLevels = null;
 	private vtkImageData displayedImage;
 	private List<HashMap<String, String>> metadata;
@@ -107,8 +102,8 @@ public class LayerPreviewPanel extends ModelInfoWindow implements MouseListener,
 		this.layerPanel.setLayout(new GridBagLayout());
 		this.controlsPanel = new JPanel();
 		this.controlsPanel.setLayout(new GridBagLayout());
+		controlsPanel.setBorder(BorderFactory.createTitledBorder("Image Appearance"));
 		this.splitPane = new JSplitPane(JSplitPane.VERTICAL_SPLIT, layerPanel, controlsPanel);
-
 		initComponents();
 		renderLayer(layer);
 		setIntensity(intensityRange);
@@ -124,6 +119,8 @@ public class LayerPreviewPanel extends ModelInfoWindow implements MouseListener,
 		getContentPane().add(splitPane, gridBagConstraints);
 		pack();
 		setVisible(true);
+		setSize(700, 700);
+		this.splitPane.setDividerLocation(0.9);
 
 		initialized = true;
 		javax.swing.SwingUtilities.invokeLater(new Runnable()
@@ -266,11 +263,11 @@ public class LayerPreviewPanel extends ModelInfoWindow implements MouseListener,
 	{
 		setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
 		setMinimumSize(new Dimension(500, 500));
-		setPreferredSize(new Dimension(775, 900));
+		setPreferredSize(new Dimension(775, 500));
 		getContentPane().setLayout(new GridBagLayout());
 
 		buildLayerComboBox();
-		buildTableController();
+//		buildTableController();
 		buildContrastController();
 		buildTrimController();
 		pack();
@@ -352,54 +349,54 @@ public class LayerPreviewPanel extends ModelInfoWindow implements MouseListener,
 		}
 	}
 
-	private void buildTableController()
-	{
-		List<ImageProperty> properties = new ArrayList<ImageProperty>();
-		for (String str : metadata.get(0).keySet())
-			properties.add(new ImageProperty(str, metadata.get(0).get(str)));
-		ImagePropertiesController fitsHeaderPropertiesController = new ImagePropertiesController(properties);
-		tablePanel = fitsHeaderPropertiesController.getView();
-
-		List<ImageProperty> derivedProperties = new ArrayList<ImageProperty>();
-		for (String str : metadata.get(1).keySet())
-			derivedProperties.add(new ImageProperty(str, metadata.get(1).get(str)));
-		ImagePropertiesController derivedPropertiesController = new ImagePropertiesController(derivedProperties);
-		tablePanel2 = derivedPropertiesController.getView();
-
-
-
-		GridBagConstraints gridBagConstraints = new GridBagConstraints();
-		gridBagConstraints.gridx = 0;
-		gridBagConstraints.gridy = 3;
-		gridBagConstraints.gridwidth = 2;
-		gridBagConstraints.fill = GridBagConstraints.BOTH;
-		gridBagConstraints.anchor = GridBagConstraints.SOUTHWEST;
-		gridBagConstraints.weightx = 1.0;
-		gridBagConstraints.weighty = 1.0;
-		if (properties.size() > 0)
-		{
-			JTabbedPane tabbedPane = new JTabbedPane();
-			tabbedPane.setPreferredSize(new Dimension(452, 200));
-			tabbedPane.add("Derived Values", tablePanel2);
-			tabbedPane.add("FITS Header", tablePanel);
-
-			controlsPanel.add(tabbedPane, gridBagConstraints);
-		}
-		else
-		{
-			JPanel panel = new JPanel();
-			panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
-			panel.add(Box.createVerticalStrut(20));
-			JPanel midPanel = new JPanel();
-			midPanel.setLayout(new BoxLayout(midPanel, BoxLayout.X_AXIS));
-			midPanel.add(Box.createHorizontalGlue());
-			midPanel.add(new JLabel("No Metadata Available."));
-			midPanel.add(Box.createHorizontalGlue());
-			panel.add(midPanel);
-			panel.add(Box.createVerticalStrut(20));
-			controlsPanel.add(panel, gridBagConstraints);
-		}
-	}
+//	private void buildTableController()
+//	{
+//		List<ImageProperty> properties = new ArrayList<ImageProperty>();
+//		for (String str : metadata.get(0).keySet())
+//			properties.add(new ImageProperty(str, metadata.get(0).get(str)));
+//		ImagePropertiesController fitsHeaderPropertiesController = new ImagePropertiesController(properties);
+//		tablePanel = fitsHeaderPropertiesController.getView();
+//
+//		List<ImageProperty> derivedProperties = new ArrayList<ImageProperty>();
+//		for (String str : metadata.get(1).keySet())
+//			derivedProperties.add(new ImageProperty(str, metadata.get(1).get(str)));
+//		ImagePropertiesController derivedPropertiesController = new ImagePropertiesController(derivedProperties);
+//		tablePanel2 = derivedPropertiesController.getView();
+//
+//
+//
+//		GridBagConstraints gridBagConstraints = new GridBagConstraints();
+//		gridBagConstraints.gridx = 0;
+//		gridBagConstraints.gridy = 3;
+//		gridBagConstraints.gridwidth = 2;
+//		gridBagConstraints.fill = GridBagConstraints.BOTH;
+//		gridBagConstraints.anchor = GridBagConstraints.SOUTHWEST;
+//		gridBagConstraints.weightx = 1.0;
+//		gridBagConstraints.weighty = 1.0;
+//		if (properties.size() > 0)
+//		{
+//			JTabbedPane tabbedPane = new JTabbedPane();
+//			tabbedPane.setPreferredSize(new Dimension(452, 200));
+//			tabbedPane.add("Derived Values", tablePanel2);
+//			tabbedPane.add("FITS Header", tablePanel);
+//
+//			controlsPanel.add(tabbedPane, gridBagConstraints);
+//		}
+//		else
+//		{
+//			JPanel panel = new JPanel();
+//			panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
+//			panel.add(Box.createVerticalStrut(20));
+//			JPanel midPanel = new JPanel();
+//			midPanel.setLayout(new BoxLayout(midPanel, BoxLayout.X_AXIS));
+//			midPanel.add(Box.createHorizontalGlue());
+//			midPanel.add(new JLabel("No Metadata Available."));
+//			midPanel.add(Box.createHorizontalGlue());
+//			panel.add(midPanel);
+//			panel.add(Box.createVerticalStrut(20));
+//			controlsPanel.add(panel, gridBagConstraints);
+//		}
+//	}
 
 	private void buildContrastController()
 	{
@@ -446,7 +443,7 @@ public class LayerPreviewPanel extends ModelInfoWindow implements MouseListener,
 		gridBagConstraints.weighty = 0.0;
 		gridBagConstraints.fill = GridBagConstraints.HORIZONTAL;
 		gridBagConstraints.anchor = GridBagConstraints.WEST;
-		gridBagConstraints.insets = new Insets(3, 6, 3, 0);
+		gridBagConstraints.insets = new Insets(3, 0, 3, 0);
 		maskController = new ImageMaskController(layer, currentMaskValues, new Function<Pair<Layer, int[]>, Void>()
 		{
 

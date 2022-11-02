@@ -431,18 +431,16 @@ public class CustomImageEditingController<G1 extends IPerspectiveImage & IPerspe
 
 	private void storeImage()
 	{
-		String filename = dialog.getImagePathTextField().getText();
-
 		imageType = existingImage.getImageType();
 		existingImage.setName(dialog.getImageNameTextField().getText());
 		if (dialog.getPointingTypeComboBox().getSelectedItem().equals("Perspective Projection"))
 		{
 			existingImage.setPointingSource(dialog.getPointingFilenameTextField().getText());
-//			existingImage.setFlip((String) dialog.getImageFlipComboBox().getSelectedItem());
-//			existingImage.setRotation(Double.parseDouble((String) dialog.getImageRotationComboBox().getSelectedItem()));
-
-			existingImage.setFlip(instrument.getOrientation(existingImage.getPointingSourceType()).getFlip().flip());
-			existingImage.setRotation(instrument.getOrientation(existingImage.getPointingSourceType()).getRotation());
+			if (instrument != null)
+			{
+				existingImage.setFlip(instrument.getOrientation(existingImage.getPointingSourceType()).getFlip().flip());
+				existingImage.setRotation(instrument.getOrientation(existingImage.getPointingSourceType()).getRotation());
+			}
 		}
 		else
 		{

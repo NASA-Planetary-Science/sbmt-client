@@ -145,8 +145,8 @@ public class CustomImageEditingDialog<G1 extends IPerspectiveImage & IPerspectiv
 	private void initGUI()
 	{
 		setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
-		setMinimumSize(new Dimension(1250, 750));
-		setPreferredSize(new Dimension(1250, 750));
+		setMinimumSize(new Dimension(1150, 550));
+		setPreferredSize(new Dimension(1150, 550));
 		getContentPane().setLayout(new GridBagLayout());
 
 		controlsPanel.setLayout(new BoxLayout(controlsPanel, BoxLayout.Y_AXIS));
@@ -173,13 +173,14 @@ public class CustomImageEditingDialog<G1 extends IPerspectiveImage & IPerspectiv
 		appearancePanel.setLayout(new BoxLayout(appearancePanel, BoxLayout.Y_AXIS));
 		appearancePanel.setBorder(BorderFactory.createTitledBorder("Image Appearance"));
 		appearancePanel.add(buildContrastController());
-		appearancePanel.add(Box.createVerticalStrut(20));
+//		appearancePanel.add(Box.createVerticalStrut(20));
 		appearancePanel.add(buildTrimController());
 		appearancePanel.add(buildFillValuesPanel());
+		appearancePanel.add(Box.createVerticalGlue());
 
 		controlsPanel.add(appearancePanel);
 
-		controlsPanel.add(Box.createVerticalGlue());
+//		controlsPanel.add(Box.createVerticalGlue());
 		controlsPanel.add(buildSubmitCancelPanel());
 
 
@@ -231,14 +232,15 @@ public class CustomImageEditingDialog<G1 extends IPerspectiveImage & IPerspectiv
 	{
 		JPanel panel = new JPanel();
 		panel.setLayout(new BoxLayout(panel, BoxLayout.X_AXIS));
-		panel.add(new JLabel("Image Path:"));
+		panel.add(Box.createHorizontalStrut(30));
+		panel.add(new JLabel("Path:"));
 
 		imagePathTextField = new JTextField();
 		imagePathTextField.setMinimumSize(new Dimension(350, 30));
 		imagePathTextField.setPreferredSize(new Dimension(350, 30));
 		imagePathTextField.setMaximumSize(new Dimension(350, 30));
 
-		panel.add(Box.createHorizontalStrut(10));
+		panel.add(Box.createHorizontalStrut(20));
 		panel.add(imagePathTextField);
 
 		JButton browseButton = new JButton("Browse");
@@ -254,21 +256,12 @@ public class CustomImageEditingDialog<G1 extends IPerspectiveImage & IPerspectiv
 			imagePathTextField.setText(filename);
 			String imageFileName = files[0].getName();
 			String extension = FilenameUtils.getExtension(imageFileName).toLowerCase();
-			// if (extension.equals("fits") || extension.equals("fit"))
-			// {
-			// imageTypeComboBox.setSelectedItem(instrument.getType());
-			// }
-			// else
-			// {
-			// imageTypeComboBox.setSelectedItem(ImageType.GENERIC_IMAGE);
-			// pointingTypeComboBox.setSelectedItem("Simple Cylindrical
-			// Projection");
-			// }
 
 			imageNameTextField.setText(imageFileName);
 		});
 
 		panel.add(browseButton);
+		panel.add(Box.createGlue());
 		return panel;
 	}
 
@@ -276,7 +269,8 @@ public class CustomImageEditingDialog<G1 extends IPerspectiveImage & IPerspectiv
 	{
 		JPanel panel = new JPanel();
 		panel.setLayout(new BoxLayout(panel, BoxLayout.X_AXIS));
-		panel.add(new JLabel("Image Name:"));
+		panel.add(Box.createHorizontalStrut(30));
+		panel.add(new JLabel("Name:"));
 
 		imageNameTextField = new JTextField();
 		imageNameTextField.setMinimumSize(new Dimension(350, 30));
@@ -322,6 +316,7 @@ public class CustomImageEditingDialog<G1 extends IPerspectiveImage & IPerspectiv
 	{
 		JPanel panel = new JPanel();
 		panel.setLayout(new BoxLayout(panel, BoxLayout.X_AXIS));
+		panel.add(Box.createHorizontalStrut(20));
 		panel.add(new JLabel("Image Rotation:"));
 
 		imageRotationComboBox = new JComboBox<String>(new String[]
@@ -337,6 +332,7 @@ public class CustomImageEditingDialog<G1 extends IPerspectiveImage & IPerspectiv
 	{
 		JPanel panel = new JPanel();
 		panel.setLayout(new BoxLayout(panel, BoxLayout.X_AXIS));
+		panel.add(Box.createHorizontalStrut(20));
 		panel.add(new JLabel("Image Flip:"));
 		panel.add(Box.createHorizontalStrut(30));
 		imageFlipComboBox = new JComboBox<String>(new String[]
@@ -422,6 +418,7 @@ public class CustomImageEditingDialog<G1 extends IPerspectiveImage & IPerspectiv
 
 		JPanel fileInputPanel = new JPanel();
 		fileInputPanel.setLayout(new BoxLayout(fileInputPanel, BoxLayout.X_AXIS));
+		fileInputPanel.add(Box.createHorizontalStrut(20));
 		fileInputPanel.add(new JLabel("Pointing File:"));
 		fileInputPanel.add(Box.createHorizontalStrut(20));
 		pointingFilenameTextField = new JTextField("FILE NOT FOUND");
@@ -495,13 +492,14 @@ public class CustomImageEditingDialog<G1 extends IPerspectiveImage & IPerspectiv
 
 	private JPanel buildContrastController()
 	{
-		GridBagConstraints gridBagConstraints = new GridBagConstraints();
-		gridBagConstraints.gridx = 0;
-		gridBagConstraints.gridy = 1;
-		gridBagConstraints.gridwidth = controlsPanel.getWidth();
-		gridBagConstraints.weightx = 1.0;
-		gridBagConstraints.weighty = 0.0;
-		gridBagConstraints.fill = GridBagConstraints.HORIZONTAL;
+//		GridBagConstraints gridBagConstraints = new GridBagConstraints();
+//		gridBagConstraints.gridx = 0;
+//		gridBagConstraints.gridy = 1;
+//		gridBagConstraints.gridwidth = controlsPanel.getWidth();
+//		gridBagConstraints.weightx = 1.0;
+//		gridBagConstraints.weighty = 0.0;
+//		gridBagConstraints.insets = new Insets(3, 30, 3, 0);
+//		gridBagConstraints.fill = GridBagConstraints.HORIZONTAL;
 //		contrastController = new ImageContrastController(displayedImage, existingImage.getIntensityRange(), new Function<vtkImageData, Void>() {
 //
 //			@Override
@@ -598,23 +596,29 @@ public class CustomImageEditingDialog<G1 extends IPerspectiveImage & IPerspectiv
 	private JPanel buildFillValuesPanel()
 	{
 		JPanel panel = new JPanel();
-		panel.setLayout(new BoxLayout(panel, BoxLayout.X_AXIS));
-		panel.add(new JLabel("Fill Value(s):"));
+		panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
 
+		JPanel labelPanel = new JPanel();
+		labelPanel.setLayout(new BoxLayout(labelPanel, BoxLayout.X_AXIS));
+		labelPanel.add(Box.createHorizontalStrut(30));
+		labelPanel.add(new JLabel("Fill Value(s):"));
+		labelPanel.add(Box.createHorizontalGlue());
+		panel.add(labelPanel);
+
+		JPanel textFieldPanel = new JPanel();
+		textFieldPanel.setLayout(new BoxLayout(textFieldPanel, BoxLayout.X_AXIS));
 		fillValuesButton = new JButton("Apply");
-
-
 		fillValuesTextField = new JTextField();
 		fillValuesTextField.setMinimumSize(new Dimension(350, 30));
 		fillValuesTextField.setPreferredSize(new Dimension(400, 30));
 		fillValuesTextField.setMaximumSize(new Dimension(550, 30));
+		textFieldPanel.add(Box.createHorizontalStrut(50));
+		textFieldPanel.add(fillValuesTextField);
+		textFieldPanel.add(fillValuesButton);
 
-		panel.add(Box.createHorizontalStrut(10));
-		panel.add(fillValuesTextField);
-		panel.add(Box.createHorizontalGlue());
-//		panel.add(Box.createHorizontalStrut(10));
-		panel.add(fillValuesButton);
-//		panel.add(Box.createHorizontalStrut(100));
+
+		panel.add(textFieldPanel);
+
 
 		return panel;
 	}

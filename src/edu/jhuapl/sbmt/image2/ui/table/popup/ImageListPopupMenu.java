@@ -18,6 +18,7 @@ import edu.jhuapl.sbmt.image2.model.PerspectiveImageCollection;
 import edu.jhuapl.sbmt.image2.ui.table.popup.boundaryColor.BoundaryColorAction;
 import edu.jhuapl.sbmt.image2.ui.table.popup.export.ExportAction;
 import edu.jhuapl.sbmt.image2.ui.table.popup.properties.EditPointingAction;
+import edu.jhuapl.sbmt.image2.ui.table.popup.properties.ShowHeadersAction;
 import edu.jhuapl.sbmt.image2.ui.table.popup.properties.ShowImagePropertiesAction;
 import edu.jhuapl.sbmt.image2.ui.table.popup.properties.ShowOffLimbSettingsAction;
 import edu.jhuapl.sbmt.image2.ui.table.popup.rendering.CenterImageAction;
@@ -60,6 +61,10 @@ public class ImageListPopupMenu<G1 extends IPerspectiveImage  & IPerspectiveImag
 		SmallBodyModel smallBodyModel = (SmallBodyModel)modelManager.getModel(ModelNames.SMALL_BODY);
 		ShowImagePropertiesAction<G1> showInfoAction = new ShowImagePropertiesAction<G1>(smallBodyModel, aManager);
 		installPopAction(showInfoAction, "Properties...");
+
+
+		ShowHeadersAction<G1> showHeadersAction = new ShowHeadersAction<G1>(smallBodyModel, aManager);
+		installPopAction(showHeadersAction, "View Headers/Derived Values...");
 
 //		if (spectrumPanelManager != null)
 //		{

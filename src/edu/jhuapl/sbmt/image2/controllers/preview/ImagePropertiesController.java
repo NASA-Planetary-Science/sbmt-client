@@ -3,6 +3,7 @@ package edu.jhuapl.sbmt.image2.controllers.preview;
 import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
+import java.util.Comparator;
 import java.util.List;
 
 import javax.swing.JPanel;
@@ -90,12 +91,22 @@ class ImagePropertiesTableView extends JPanel
 		GridBagConstraints gridBagConstraints = new GridBagConstraints();
 		gridBagConstraints.gridx = 0;
 		gridBagConstraints.gridy = 0;
-		gridBagConstraints.gridwidth = 3;
+//		gridBagConstraints.gridwidth = 3;
 		gridBagConstraints.weightx = 1.0;
 		gridBagConstraints.weighty = 1.0;
 		gridBagConstraints.fill = GridBagConstraints.BOTH;
 		gridBagConstraints.anchor = GridBagConstraints.WEST;
 		setLayout(new GridBagLayout());
+
+		properties.sort(new Comparator<ImageProperty>()
+		{
+
+			@Override
+			public int compare(ImageProperty o1, ImageProperty o2)
+			{
+				return o1.property().compareTo(o2.property());
+			}
+		});
 
 		QueryComposer<ImagePropertiesColumnLookup> tmpComposer = new QueryComposer<>();
 		tmpComposer.addAttribute(ImagePropertiesColumnLookup.Property, String.class, "Property", null);
@@ -126,9 +137,8 @@ class ImagePropertiesTableView extends JPanel
 				new ItemListPanel<>(imagePropertiesTableHandler, tmpIP, true);
 		imagePropertiesILP.setSortingEnabled(true);
 		JTable propertiesTable = imagePropertiesILP.getTable();
-
         JScrollPane scrollPane = new JScrollPane();
-        scrollPane.setPreferredSize(new Dimension(452, 200));
+        scrollPane.setPreferredSize(new Dimension(500, 300));
         add(scrollPane, gridBagConstraints);
 
         scrollPane.setViewportView(propertiesTable);

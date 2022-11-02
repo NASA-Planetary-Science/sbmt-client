@@ -188,19 +188,19 @@ public class ImageMaskController
 
 		gridBagConstraints = new GridBagConstraints();
 		gridBagConstraints.gridx = 1;
-		gridBagConstraints.gridy = 2;
+		gridBagConstraints.gridy = 1;
 		gridBagConstraints.fill = GridBagConstraints.HORIZONTAL;
 		gridBagConstraints.anchor = GridBagConstraints.LINE_START;
 		gridBagConstraints.weightx = 1.0;
-		gridBagConstraints.insets = new Insets(0, 8, 0, 0);
+		gridBagConstraints.insets = new Insets(0, 0, 0, 0);
 		panel.add(jPanel1, gridBagConstraints);
 
 		jLabel8.setText("Mask:");
 		gridBagConstraints = new GridBagConstraints();
 		gridBagConstraints.gridx = 0;
-		gridBagConstraints.gridy = 2;
-		gridBagConstraints.fill = GridBagConstraints.HORIZONTAL;
-		gridBagConstraints.insets = new Insets(3, 6, 3, 0);
+		gridBagConstraints.gridy = 0;
+//		gridBagConstraints.fill = GridBagConstraints.HORIZONTAL;
+		gridBagConstraints.insets = new Insets(3, 30, 3, 0);
 		panel.add(jLabel8, gridBagConstraints);
 	}
 
