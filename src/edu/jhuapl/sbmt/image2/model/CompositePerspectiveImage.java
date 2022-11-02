@@ -46,6 +46,8 @@ public class CompositePerspectiveImage implements IPerspectiveImage, IPerspectiv
 
 	//masking
 	private int[] maskValues = new int[] {0, 0, 0, 0};
+	private int[] autoMaskValues = new int[] {0, 0, 0, 0};
+	private boolean useAutoMask = false;
 	private CylindricalBounds bounds = null;
 
 	private static final Key<List<IPerspectiveImage>> IMAGES_KEY = Key.of("images");
@@ -231,6 +233,40 @@ public class CompositePerspectiveImage implements IPerspectiveImage, IPerspectiv
 	public void setMaskValues(int[] maskValues)
 	{
 		images.get(0).setMaskValues(maskValues);
+	}
+
+	/**
+	 * @return the autoMaskValues
+	 */
+	public int[] getAutoMaskValues()
+	{
+		return images.get(0).getAutoMaskValues();
+	}
+
+	/**
+	 * @param autoMaskValues the autoMaskValues to set
+	 */
+	public void setAutoMaskValues(int[] autoMaskValues)
+	{
+		this.autoMaskValues = autoMaskValues;
+		images.get(0).setAutoMaskValues(autoMaskValues);
+	}
+
+	/**
+	 * @return the useAutoMask
+	 */
+	public boolean isUseAutoMask()
+	{
+		return images.get(0).isUseAutoMask();
+	}
+
+	/**
+	 * @param useAutoMask the useAutoMask to set
+	 */
+	public void setUseAutoMask(boolean useAutoMask)
+	{
+		this.useAutoMask = useAutoMask;
+		this.images.get(0).setUseAutoMask(useAutoMask);
 	}
 
 	public int[] getTrimValues()

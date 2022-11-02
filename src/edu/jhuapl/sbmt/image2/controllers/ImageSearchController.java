@@ -452,8 +452,16 @@ public class ImageSearchController<G1 extends IPerspectiveImage & IPerspectiveIm
 			G1 image = selectedItems.asList().get(0);
 			if (image.getNumberOfLayers() == 1)	//editing custom single layer image
 			{
+				Runnable completionBlock = new Runnable()
+				{
+					@Override
+					public void run()
+					{
+						collection.updateImage(image);
+					}
+				};
 				CustomImageEditingController<G1> dialog = new CustomImageEditingController<G1>(null,
-						modelManager.getPolyhedralModel().isEllipsoid(), !image.getPointingSourceType().toString().contains("Cylindrical"), image, instrument.orElse(null), () -> {});
+						modelManager.getPolyhedralModel().isEllipsoid(), !image.getPointingSourceType().toString().contains("Cylindrical"), image, instrument.orElse(null), completionBlock);
 		        dialog.getDialog().setLocationRelativeTo(customImageListTableController.getPanel());
 		        dialog.getDialog().setVisible(true);
 		        collection.updateUserImage(image);

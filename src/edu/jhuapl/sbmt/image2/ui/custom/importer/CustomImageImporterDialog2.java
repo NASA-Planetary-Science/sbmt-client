@@ -149,7 +149,20 @@ public class CustomImageImporterDialog2<G1 extends IPerspectiveImage & IPerspect
 //		if (image.getImageType() == ImageType.GENERIC_IMAGE) return;
 		if (image.getNumberOfLayers() == 1)	//editing custom single layer image
 		{
-			CustomImageEditingController<G1> dialog = new CustomImageEditingController<G1>(null, isEllipsoid, isPerspective, image, instrument, () -> {});
+			Runnable completionBlock = new Runnable()
+			{
+				@Override
+				public void run()
+				{
+//					image.setIntensityRange(preview.getIntensityRange());
+//					image.setTrimValues(preview.getMaskValues());
+//					image.setMaskValues(preview.getMaskValues());
+//					image.setCurrentLayer(preview.getDisplayedLayerIndex());
+					imageCollection.updateImage(image);
+				}
+			};
+
+			CustomImageEditingController<G1> dialog = new CustomImageEditingController<G1>(null, isEllipsoid, isPerspective, image, instrument, completionBlock);
 	        dialog.getDialog().setLocationRelativeTo(getContentPane());
 	        dialog.getDialog().setVisible(true);
 //	        ImageSource pointingSourceType = image.getPointingSource().endsWith("sum") || image.getPointingSource().endsWith("SUM") ? ImageSource.GASKELL : ImageSource.SPICE;

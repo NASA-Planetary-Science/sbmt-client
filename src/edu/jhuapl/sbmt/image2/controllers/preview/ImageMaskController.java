@@ -213,8 +213,10 @@ public class ImageMaskController
 	private void croppingChanged()
 	{
 		if (layer == null) return;
-		try
+		try 
 		{
+//			System.out.println("ImageMaskController: croppingChanged: cropping changed");
+//			VTKDebug.previewLayer(layer, "Layer before cropping " + Integer.toHexString(layer.hashCode()));
 			maskPipeline.run(layer,
 					(int)leftSpinner.getValue(), (int)rightSpinner.getValue(),
 					(int)topSpinner.getValue(), (int)bottomSpinner.getValue());
