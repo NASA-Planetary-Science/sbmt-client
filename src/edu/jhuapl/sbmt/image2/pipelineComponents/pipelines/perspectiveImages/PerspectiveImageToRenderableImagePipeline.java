@@ -72,7 +72,8 @@ public class PerspectiveImageToRenderableImagePipeline
 			int windowX = Integer.parseInt(metadata.get(0).get("WINDOWX"));
 			int windowY = Integer.parseInt(metadata.get(0).get("WINDOWY"));
 
-			image.setAutoMaskValues(new int[] {windowH - windowY, windowY, windowH - windowX,  windowX});
+			image.setAutoMaskValues(new int[] {windowX, windowH - windowX,windowY,windowH - windowY});
+			image.setMaskValues(new int[] {windowX, windowH - windowX,windowY,windowH - windowY});
 		}
 		else
 		{

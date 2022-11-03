@@ -58,10 +58,10 @@ public class ImageMaskController
 
 	public void setMaskValues(int[] maskValues)
 	{
-		leftSpinner.setValue((int)maskValues[0]);
-		rightSpinner.setValue((int)maskValues[1]);
-		bottomSpinner.setValue((int)maskValues[3]);
-		topSpinner.setValue((int)maskValues[2]);
+		leftSpinner.setValue((int)maskValues[3]);	//0
+		rightSpinner.setValue((int)maskValues[2]);	//1
+		bottomSpinner.setValue((int)maskValues[0]); //2
+		topSpinner.setValue((int)maskValues[1]);	//3
 		croppingChanged();
 	}
 

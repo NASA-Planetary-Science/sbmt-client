@@ -2,6 +2,7 @@ package edu.jhuapl.sbmt.image2.pipelineComponents.pipelines.io;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 
@@ -83,8 +84,8 @@ public class IPerspectiveImageToLayerAndMetadataPipeline
 			int windowX = Integer.parseInt(metadataReader.getOutput().get("WINDOWX"));
 			int windowY = Integer.parseInt(metadataReader.getOutput().get("WINDOWY"));
 
-			image.setAutoMaskValues(new int[] {windowH - windowY, windowY, windowH - windowX,  windowX});
-			image.setMaskValues(new int[] {windowH - windowY, windowY, windowH - windowX,  windowX});
+			image.setAutoMaskValues(new int[] {windowX, windowH - windowX,windowY,windowH - windowY});
+			image.setMaskValues(new int[] {windowX, windowH - windowX,windowY,windowH - windowY});
 		}
 		else
 		{
