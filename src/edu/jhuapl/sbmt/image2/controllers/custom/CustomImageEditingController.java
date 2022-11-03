@@ -176,43 +176,31 @@ public class CustomImageEditingController<G1 extends IPerspectiveImage & IPerspe
 		dialog.getImagePathTextField().setText(existingImage.getFilename());
 		dialog.getImageNameTextField().setText(existingImage.getName());
 
-//		if (existingImage.getImageType() != ImageType.GENERIC_IMAGE)
-//		{
-//			if (!existingImage.getPointingSource().isEmpty())
-			if (!existingImage.getPointingSourceType().toString().contains("Cylindrical"))
-			{
-				dialog.getPointingTypeComboBox().setSelectedIndex(0);
-				dialog.getPointingFilenameTextField().setText(existingImage.getPointingSource());
-				if (instrument != null)
-				{
-					Orientation orientation = instrument.getOrientation(existingImage.getPointingSourceType());
-					dialog.getImageFlipComboBox().setSelectedItem(orientation.getFlip().toString());
-					dialog.getImageRotationComboBox().setSelectedItem("" + (int) (orientation.getRotation()));
-				}
-			}
-			else
-			{
-				if (instrument != null)
-				{
-					Orientation orientation = instrument.getOrientation(existingImage.getPointingSourceType());
-					dialog.getFlipAboutXCheckBox().setSelected(orientation.getFlip().toString().equals("X"));
-				}
-				dialog.getPointingTypeComboBox().setSelectedIndex(1);
-				dialog.getMinLatitudeTextField().setText("" + existingImage.getBounds().minLatitude());
-				dialog.getMaxLatitudeTextField().setText("" + existingImage.getBounds().maxLatitude());
-				dialog.getMinLongitudeTextField().setText("" + existingImage.getBounds().minLongitude());
-				dialog.getMaxLongitudeTextField().setText("" + existingImage.getBounds().maxLongitude());
-			}
-//		}
-//		else // cylindrical
-//		{
-//			dialog.getPointingTypeComboBox().setSelectedIndex(1);
-//			dialog.getMinLatitudeTextField().setText("" + existingImage.getBounds().minLatitude());
-//			dialog.getMaxLatitudeTextField().setText("" + existingImage.getBounds().maxLatitude());
-//			dialog.getMinLongitudeTextField().setText("" + existingImage.getBounds().minLongitude());
-//			dialog.getMaxLongitudeTextField().setText("" + existingImage.getBounds().maxLongitude());
-//		}
 
+		if (!existingImage.getPointingSourceType().toString().contains("Cylindrical"))
+		{
+			dialog.getPointingTypeComboBox().setSelectedIndex(0);
+			dialog.getPointingFilenameTextField().setText(existingImage.getPointingSource());
+			if (instrument != null)
+			{
+				Orientation orientation = instrument.getOrientation(existingImage.getPointingSourceType());
+				dialog.getImageFlipComboBox().setSelectedItem(orientation.getFlip().toString());
+				dialog.getImageRotationComboBox().setSelectedItem("" + (int) (orientation.getRotation()));
+			}
+		}
+		else
+		{
+			if (instrument != null)
+			{
+				Orientation orientation = instrument.getOrientation(existingImage.getPointingSourceType());
+				dialog.getFlipAboutXCheckBox().setSelected(orientation.getFlip().toString().equals("X"));
+			}
+			dialog.getPointingTypeComboBox().setSelectedIndex(1);
+			dialog.getMinLatitudeTextField().setText("" + existingImage.getBounds().minLatitude());
+			dialog.getMaxLatitudeTextField().setText("" + existingImage.getBounds().maxLatitude());
+			dialog.getMinLongitudeTextField().setText("" + existingImage.getBounds().minLongitude());
+			dialog.getMaxLongitudeTextField().setText("" + existingImage.getBounds().maxLongitude());
+		}
 
 		for (double val : existingImage.getFillValues())
 		{
