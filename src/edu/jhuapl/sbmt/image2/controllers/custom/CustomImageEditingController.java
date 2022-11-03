@@ -194,6 +194,11 @@ public class CustomImageEditingController<G1 extends IPerspectiveImage & IPerspe
 				dialog.getImageFlipComboBox().setSelectedItem(orientation.getFlip().toString());
 				dialog.getImageRotationComboBox().setSelectedItem("" + (int) (orientation.getRotation()));
 			}
+			else
+			{
+				dialog.getImageFlipComboBox().setSelectedItem(existingImage.getFlip());
+				dialog.getImageRotationComboBox().setSelectedItem("" + (int) (existingImage.getRotation()));
+			}
 		}
 		else
 		{
