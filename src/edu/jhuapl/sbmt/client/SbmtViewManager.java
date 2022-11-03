@@ -88,8 +88,6 @@ public class SbmtViewManager extends ViewManager
 
     private List<String> registeredConfigURLs = new ArrayList<String>();
 
-    private String defaultModelName;
-
     public SbmtViewManager(StatusNotifier aStatusNotifier, Frame frame, String tempCustomShapeModelPath)
     {
         super(aStatusNotifier, frame, tempCustomShapeModelPath);
@@ -97,56 +95,6 @@ public class SbmtViewManager extends ViewManager
         this.configMap = Maps.newHashMap();
         this.stateManager = TrackedMetadataManager.of("ViewManager");
         setupViews(); // Must be called before this view manager is used.
-    }
-
-    /**
-     * This implementation uses the default model name provided by
-     * {@link SmallBodyViewConfig#getDefaultModelName()} to set the initial default
-     * model, but this may be changed by calling
-     * {@link #setDefaultModelName(String)}.
-     */
-    @Override
-    public String getDefaultModelName()
-    {
-        if (defaultModelName == null)
-        {
-            defaultModelName = SmallBodyViewConfig.getDefaultModelName();
-        }
-
-        return defaultModelName;
-    }
-
-    /**
-     * Set the current default model name. Note this affects only the running tool,
-     * not the persistent model name saved on disk.
-     */
-    @Override
-    public void setDefaultModelName(String modelName)
-    {
-        this.defaultModelName = modelName;
-    }
-
-    /**
-     * Make the current default model persistent so that it will be used for the
-     * default model next time the tool is run. This implementation uses using
-     * {@link SmallBodyViewConfig#setDefaultModelName(String).
-     */
-    @Override
-    public void saveDefaultModelName()
-    {
-        SmallBodyViewConfig.setDefaultModelName(defaultModelName);
-    }
-
-    /**
-     * Revert the default model name which will be used the next time the tool
-     * starts. This implementation uses
-     * {@link SmallBodyViewConfig#resetDefaultModelName()}.
-     */
-    @Override
-    public void resetDefaultModelName()
-    {
-        SmallBodyViewConfig.resetDefaultModelName();
-        this.defaultModelName = SmallBodyViewConfig.getDefaultModelName();
     }
 
     /**

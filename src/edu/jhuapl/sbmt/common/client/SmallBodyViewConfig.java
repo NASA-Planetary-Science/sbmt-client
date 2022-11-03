@@ -1,17 +1,12 @@
 package edu.jhuapl.sbmt.common.client;
 
 import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Scanner;
 
 import com.beust.jcommander.internal.Lists;
 import com.google.common.base.Preconditions;
@@ -59,10 +54,8 @@ import crucible.crust.metadata.impl.gson.Serializers;
 */
 public class SmallBodyViewConfig extends BodyViewConfig implements ISmallBodyViewConfig
 {
-    private final static Path defaultModelFile = Paths.get(Configuration.getApplicationDataDir() + File.separator + "defaultModelToLoad");
-
     protected static final Mission[] DefaultForNoMissions = new Mission[] {};
- 
+
     //system bodies
     public List<SmallBodyViewConfig> systemConfigs = Lists.newArrayList();
     public boolean hasSystemBodies = false;
@@ -160,52 +153,6 @@ public class SmallBodyViewConfig extends BodyViewConfig implements ISmallBodyVie
             LOADED_VIEWCONFIGS.put(configId, config);
         }
         return config;
-    }
-
-    public static void setDefaultModelName(String defaultModelName)
-    {
-        try
-        {
-            java.nio.file.Files.deleteIfExists(defaultModelFile);
-            if (defaultModelName != null)
-            {
-                defaultModelFile.toFile().createNewFile();
-                try (FileWriter writer = new FileWriter(defaultModelFile.toFile()))
-                {
-                    writer.write(defaultModelName);
-                }
-            }
-        }
-        catch (IOException e)
-        {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
-    }
-
-    public static String getDefaultModelName()
-    {
-        if (defaultModelFile.toFile().exists())
-        {
-            try (Scanner scanner = new Scanner(defaultModelFile.toFile()))
-            {
-                if (scanner.hasNextLine())
-                    return scanner.nextLine();
-            }
-            catch (IOException e)
-            {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
-            }
-        }
-
-        return null;
-    }
-
-    public static void resetDefaultModelName()
-    {
-        if (defaultModelFile.toFile().exists())
-            defaultModelFile.toFile().delete();
     }
 
     private static List<ViewConfig> addRemoteEntries()
