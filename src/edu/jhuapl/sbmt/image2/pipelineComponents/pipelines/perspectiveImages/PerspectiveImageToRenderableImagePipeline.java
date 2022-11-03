@@ -65,12 +65,18 @@ public class PerspectiveImageToRenderableImagePipeline
 		metadata.get(0).put("Start Time", pointingPublisher.getOutputs().get(0).getStartTime());
 		metadata.get(0).put("Stop Time", pointingPublisher.getOutputs().get(0).getStartTime());
 
+
 		if (metadata.get(0).get("WINDOWH") != null)
 		{
 			int windowH = Integer.parseInt(metadata.get(0).get("WINDOWH"));
 			int windowX = Integer.parseInt(metadata.get(0).get("WINDOWX"));
 			int windowY = Integer.parseInt(metadata.get(0).get("WINDOWY"));
-			image.setMaskValues(new int[] {windowH - windowY, windowY, windowH - windowX,  windowX});
+
+			image.setAutoMaskValues(new int[] {windowH - windowY, windowY, windowH - windowX,  windowX});
+		}
+		else
+		{
+			image.setAutoMaskValues(image.getMaskValues());
 		}
 
 		//combine image source (in: Layer+ImageMetadata+ImagePointing, out: RenderableImage)

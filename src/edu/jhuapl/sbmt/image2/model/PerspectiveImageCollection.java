@@ -497,13 +497,17 @@ public class PerspectiveImageCollection<G1 extends IPerspectiveImage & IPerspect
 
 	public void updateImage(G1 image)
 	{
-		Thread thread = getPipelineThread(image, (Void v) -> {
-			image.setStatus("Loaded");
-			return null;
-		});
-		thread.start();
+		if (userImages.contains(image)) updateUserImage(image);
+		else
+		{
+			Thread thread = getPipelineThread(image, (Void v) -> {
+				image.setStatus("Loaded");
+				return null;
+			});
+			thread.start();
 
-		pcs.firePropertyChange(Properties.MODEL_CHANGED, null, image);
+			pcs.firePropertyChange(Properties.MODEL_CHANGED, null, image);
+		}
 	}
 
 	public void updateUserImage(G1 image)
@@ -512,7 +516,6 @@ public class PerspectiveImageCollection<G1 extends IPerspectiveImage & IPerspect
 		try
 		{
 			pipeline = ImagePipelineFactory.of(image, smallBodyModels);
-//			pipeline = new RenderablePointedImageToScenePipeline<G1>(image, smallBodyModels);
 		} catch (Exception e)
 		{
 			// TODO Auto-generated catch block

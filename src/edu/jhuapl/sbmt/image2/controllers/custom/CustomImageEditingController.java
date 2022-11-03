@@ -35,6 +35,7 @@ import edu.jhuapl.sbmt.core.image.ImageSource;
 import edu.jhuapl.sbmt.core.image.ImageType;
 import edu.jhuapl.sbmt.core.image.Orientation;
 import edu.jhuapl.sbmt.image2.controllers.preview.ImageContrastController;
+import edu.jhuapl.sbmt.image2.controllers.preview.ImageFillValuesController;
 import edu.jhuapl.sbmt.image2.controllers.preview.ImageMaskController;
 import edu.jhuapl.sbmt.image2.interfaces.IPerspectiveImage;
 import edu.jhuapl.sbmt.image2.interfaces.IPerspectiveImageTableRepresentable;
@@ -65,6 +66,7 @@ public class CustomImageEditingController<G1 extends IPerspectiveImage & IPerspe
 
 	ImageMaskController maskController;
 	ImageContrastController contrastController;
+	private ImageFillValuesController fillValuesController;
 	private IImagingInstrument instrument;
 	private Runnable completionBlock;
 
@@ -129,7 +131,19 @@ public class CustomImageEditingController<G1 extends IPerspectiveImage & IPerspe
 				return null;
 			}
 		});
-		dialog = new CustomImageEditingDialog<G1>(dialog, existingImage, isPerspective, completionBlock, maskController, contrastController);
+
+		fillValuesController = new ImageFillValuesController(new Function<double[], Void>()
+		{
+
+			@Override
+			public Void apply(double[] t)
+			{
+				existingImage.setFillValues(t);
+				return null;
+			}
+		});
+
+		dialog = new CustomImageEditingDialog<G1>(dialog, existingImage, isPerspective, completionBlock, maskController, contrastController, fillValuesController);
 		populateUI();
 		renderLayerAndAddAttributes();
 		javax.swing.SwingUtilities.invokeLater(new Runnable()
@@ -196,7 +210,7 @@ public class CustomImageEditingController<G1 extends IPerspectiveImage & IPerspe
 
 		for (double val : existingImage.getFillValues())
 		{
-			dialog.getFillValuesTextField().setText(dialog.getFillValuesTextField().getText() + val + ",");
+			fillValuesController.getFillValuesTextField().setText(fillValuesController.getFillValuesTextField().getText() + val + ",");
 		}
 
 		if (existingImage.getPointingSourceType().toString().contains("Cylindrical"))
@@ -265,8 +279,8 @@ public class CustomImageEditingController<G1 extends IPerspectiveImage & IPerspe
 			renderLayerAndAddAttributes();
 		});
 
-		dialog.getFillValuesButton().addActionListener(e -> {
-			String[] valueStrings = dialog.getFillValuesTextField().getText().split(",");
+		fillValuesController.getFillValuesButton().addActionListener(e -> {
+			String[] valueStrings = fillValuesController.getFillValuesTextField().getText().split(",");
 			double[] doubleArray = new double[valueStrings.length];
 			if (valueStrings.length == 0 || valueStrings[0].isBlank())
 			{
