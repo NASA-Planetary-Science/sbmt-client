@@ -145,7 +145,8 @@ public class CustomImageEditingController<G1 extends IPerspectiveImage & IPerspe
 
 		dialog = new CustomImageEditingDialog<G1>(dialog, existingImage, isPerspective, completionBlock, maskController, contrastController, fillValuesController);
 		populateUI();
-		renderLayerAndAddAttributes();
+		if (!existingImage.getPointingSource().equals("FILE NOT FOUND"))
+			renderLayerAndAddAttributes();
 		javax.swing.SwingUtilities.invokeLater(new Runnable()
 		{
 			@Override

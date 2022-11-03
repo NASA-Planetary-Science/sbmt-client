@@ -84,6 +84,7 @@ public class IPerspectiveImageToLayerAndMetadataPipeline
 			int windowY = Integer.parseInt(metadataReader.getOutput().get("WINDOWY"));
 
 			image.setAutoMaskValues(new int[] {windowH - windowY, windowY, windowH - windowX,  windowX});
+			image.setMaskValues(new int[] {windowH - windowY, windowY, windowH - windowX,  windowX});
 		}
 		else
 		{

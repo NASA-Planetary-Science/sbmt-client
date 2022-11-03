@@ -319,7 +319,7 @@ public class CustomImageEditingDialog<G1 extends IPerspectiveImage & IPerspectiv
 	{
 		JPanel panel = new JPanel();
 		panel.setLayout(new BoxLayout(panel, BoxLayout.X_AXIS));
-		panel.add(Box.createHorizontalStrut(20));
+		panel.add(Box.createHorizontalStrut(0));
 		panel.add(new JLabel("Image Rotation:"));
 
 		imageRotationComboBox = new JComboBox<String>(new String[]
@@ -335,7 +335,7 @@ public class CustomImageEditingDialog<G1 extends IPerspectiveImage & IPerspectiv
 	{
 		JPanel panel = new JPanel();
 		panel.setLayout(new BoxLayout(panel, BoxLayout.X_AXIS));
-		panel.add(Box.createHorizontalStrut(20));
+		panel.add(Box.createHorizontalStrut(0));
 		panel.add(new JLabel("Image Flip:"));
 		panel.add(Box.createHorizontalStrut(30));
 		imageFlipComboBox = new JComboBox<String>(new String[]
@@ -421,7 +421,7 @@ public class CustomImageEditingDialog<G1 extends IPerspectiveImage & IPerspectiv
 
 		JPanel fileInputPanel = new JPanel();
 		fileInputPanel.setLayout(new BoxLayout(fileInputPanel, BoxLayout.X_AXIS));
-		fileInputPanel.add(Box.createHorizontalStrut(20));
+		fileInputPanel.add(Box.createHorizontalStrut(0));
 		fileInputPanel.add(new JLabel("Pointing File:"));
 		fileInputPanel.add(Box.createHorizontalStrut(20));
 		pointingFilenameTextField = new JTextField("FILE NOT FOUND");

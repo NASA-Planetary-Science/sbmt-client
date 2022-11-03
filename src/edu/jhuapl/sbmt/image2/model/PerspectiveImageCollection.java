@@ -1140,6 +1140,8 @@ public class PerspectiveImageCollection<G1 extends IPerspectiveImage & IPerspect
 				e.printStackTrace();
 			}
 			if (pipeline == null) return;
+			PerspectiveImageRenderingState<G1> state = new PerspectiveImageRenderingState<G1>();
+    		renderingStates.put(image,state);
 			updatePipeline(image, pipeline);
 			completionBlock.apply(null);
 			SwingUtilities.invokeLater( () -> {

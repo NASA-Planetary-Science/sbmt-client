@@ -50,7 +50,7 @@ public class PerspectiveImage implements IPerspectiveImage
 	ImageSource pointingSourceType = ImageSource.SPICE;
 
 	//masking
-	private int[] maskValues = null;
+	private int[] maskValues = new int[] { 0,0,0,0 };
 	private int[] autoMaskValues = null;
 	private boolean useAutoMask = false;
 
