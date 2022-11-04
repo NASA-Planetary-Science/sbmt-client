@@ -150,7 +150,8 @@ public class LayerPreviewPanel<G1 extends IPerspectiveImage & IPerspectiveImageT
 		VtkImageContrastPipeline pipeline = new VtkImageContrastPipeline(displayedImage, range);
 		displayedImage = pipeline.getUpdatedData().get(0);
  		updateImage(displayedImage);
-		if (completionBlock != null) completionBlock.run();
+// 		Logger.getAnonymousLogger().log(Level.INFO, "Completion");
+//		if (completionBlock != null) completionBlock.run();
 	}
 
 	private void generateVtkImageData(Layer layer) throws IOException, Exception
@@ -203,6 +204,7 @@ public class LayerPreviewPanel<G1 extends IPerspectiveImage & IPerspectiveImageT
 
 	private void updateImage(vtkImageData displayedImage)
 	{
+
 		double[] center = displayedImage.GetCenter();
 		int[] dims = displayedImage.GetDimensions();
 		// Rotate image by 90 degrees so it appears the same way as when you
@@ -299,7 +301,7 @@ public class LayerPreviewPanel<G1 extends IPerspectiveImage & IPerspectiveImageT
 						layer = layers.get(index);
 						maskController.setLayer(layer);
 						generateVtkImageData(layers.get(index));
-						updateImage(displayedImage);
+//						updateImage(displayedImage);
 						setIntensity(null);
 						renWin.Render();
 					}
@@ -350,7 +352,7 @@ public class LayerPreviewPanel<G1 extends IPerspectiveImage & IPerspectiveImageT
 				{
 //					renderLayer();
 					displayedImage = t;
-					updateImage(displayedImage);
+//					updateImage(displayedImage);
 					setIntensity(null);
 					renWin.Render();
 					if (completionBlock != null) completionBlock.run();
@@ -448,7 +450,7 @@ public class LayerPreviewPanel<G1 extends IPerspectiveImage & IPerspectiveImageT
 					renderLayer();
 
 					generateVtkImageData(layers.get(displayedLayerIndex));
-					updateImage(displayedImage);
+//					updateImage(displayedImage);
 					setIntensity(contrastController.getIntensityRange());
 					if (renWin == null) return;
 					SwingUtilities.invokeLater(() -> { renWin.Render(); });

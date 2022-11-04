@@ -15,6 +15,7 @@ import java.util.List;
 import java.util.function.Function;
 
 import javax.swing.JOptionPane;
+import javax.swing.SwingUtilities;
 
 import org.apache.commons.lang3.tuple.Pair;
 
@@ -167,9 +168,21 @@ public class CustomImageEditingController<G1 extends IPerspectiveImage & IPerspe
 		{
 			regenerateLayerFromImage(existingImage);
 			if (layer == null) return;
-			renderLayer(layer);
-			setIntensity(existingImage.getIntensityRange());
-			dialog.getAppearancePanel().setEnabled(true);
+			SwingUtilities.invokeLater(() -> {
+				try
+				{
+					renderLayer(layer);
+					setIntensity(existingImage.getIntensityRange());
+				}
+				catch (Exception e)
+				{
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+
+				dialog.getAppearancePanel().setEnabled(true);
+			});
+
 		}
 		catch (Exception e1)
 		{
@@ -281,12 +294,19 @@ public class CustomImageEditingController<G1 extends IPerspectiveImage & IPerspe
 
 		dialog.getImageFlipComboBox().addActionListener(e -> {
 			existingImage.setFlip((String)dialog.getImageFlipComboBox().getSelectedItem());
-			renderLayerAndAddAttributes();
+			Thread thread = new Thread(() -> {
+				renderLayerAndAddAttributes();
+			});
+			thread.start();
+
 		});
 
 		dialog.getImageRotationComboBox().addActionListener(e -> {
 			existingImage.setRotation(Double.parseDouble((String)dialog.getImageRotationComboBox().getSelectedItem()));
-			renderLayerAndAddAttributes();
+			Thread thread = new Thread(() -> {
+				renderLayerAndAddAttributes();
+			});
+			thread.start();
 		});
 
 		fillValuesController.getFillValuesButton().addActionListener(e -> {
@@ -303,7 +323,10 @@ public class CustomImageEditingController<G1 extends IPerspectiveImage & IPerspe
 				doubleArray[i++] = Double.parseDouble(val);
 			}
 			existingImage.setFillValues(doubleArray);
-			renderLayerAndAddAttributes();
+			Thread thread = new Thread(() -> {
+				renderLayerAndAddAttributes();
+			});
+			thread.start();
 		});
 	}
 
@@ -419,32 +442,8 @@ public class CustomImageEditingController<G1 extends IPerspectiveImage & IPerspe
 			}
 		}
 
-
 		return null;
 	}
-
-//	private void getLayers() throws Exception
-//	{
-//		List<IRenderableImage> renderableImages = null;
-//		layers.clear();
-//		if ((dialog == null) || dialog.getPointingFilenameTextField().getText().equals("FILE NOT FOUND") /*|| existingImage.getPointingSource().equals("FILE NOT FOUND")*/) return;
-//		if (existingImage.getPointingSourceType() == ImageSource.LOCAL_CYLINDRICAL)
-//		{
-//			CylindricalImageToRenderableImagePipeline pipeline = CylindricalImageToRenderableImagePipeline.of(List.of(existingImage));
-//			renderableImages = pipeline.getRenderableImages();
-//		}
-//		else
-//		{
-//			PerspectiveImageToRenderableImagePipeline pipeline = new PerspectiveImageToRenderableImagePipeline(List.of(existingImage));
-//			renderableImages = pipeline.getRenderableImages();
-//
-//		}
-//		for (int i=0; i<renderableImages.size(); i++)
-//			layers.add(renderableImages.get(i).getLayer());
-//		dialog.getMaskController().setLayer(layers.get(0));
-//		dialog.getMaskController().setMaskValues(renderableImages.get(0).getMasking().getMask());
-//		this.layer = layers.get(0);
-//	}
 
 	private void storeImage()
 	{
@@ -507,35 +506,39 @@ public class CustomImageEditingController<G1 extends IPerspectiveImage & IPerspe
 	{
 		generateVtkImageData(layer);
 
-		renWin = new vtkJoglPanelComponent();
-		renWin.getComponent().setPreferredSize(new Dimension(550, 550));
+		if (renWin == null)
+		{
+			renWin = new vtkJoglPanelComponent();
+			renWin.getComponent().setPreferredSize(new Dimension(550, 550));
 
-		vtkInteractorStyleImage style = new vtkInteractorStyleImage();
-		renWin.setInteractorStyle(style);
+			vtkInteractorStyleImage style = new vtkInteractorStyleImage();
+			renWin.setInteractorStyle(style);
 
+			renWin.setSize(550, 550);
+
+			renWin.getRenderer().SetBackground(new double[]{ 0.5f, 0.5f, 0.5f });
+
+			renWin.getComponent().addMouseListener(this);
+			renWin.getComponent().addMouseMotionListener(this);
+			renWin.getRenderer().GetActiveCamera().Dolly(0.2);
+			renWin.resetCamera();
+			// renWin.addKeyListener(this);
+
+			GridBagConstraints gridBagConstraints = new GridBagConstraints();
+			gridBagConstraints.gridx = 0;
+			gridBagConstraints.gridy = 0;
+			gridBagConstraints.fill = GridBagConstraints.BOTH;
+			gridBagConstraints.weightx = 1.0;
+			gridBagConstraints.weighty = 1.0;
+			dialog.getLayerPanel().add(renWin.getComponent(), gridBagConstraints);
+		}
 		updateImage(displayedImage);
-
 		renWin.getRenderer().AddActor(actor);
-
-		renWin.setSize(550, 550);
-
-		renWin.getRenderer().SetBackground(new double[]{ 0.5f, 0.5f, 0.5f });
-
-		renWin.getComponent().addMouseListener(this);
-		renWin.getComponent().addMouseMotionListener(this);
-		renWin.getRenderer().GetActiveCamera().Dolly(0.2);
-		renWin.resetCamera();
-		// renWin.addKeyListener(this);
-
-		GridBagConstraints gridBagConstraints = new GridBagConstraints();
-		gridBagConstraints.gridx = 0;
-		gridBagConstraints.gridy = 0;
-		gridBagConstraints.fill = GridBagConstraints.BOTH;
-		gridBagConstraints.weightx = 1.0;
-		gridBagConstraints.weighty = 1.0;
-		dialog.getLayerPanel().add(renWin.getComponent(), gridBagConstraints);
 		dialog.repaint();
 		dialog.revalidate();
+
+
+
 	}
 
 	private void updateImage(vtkImageData displayedImage)

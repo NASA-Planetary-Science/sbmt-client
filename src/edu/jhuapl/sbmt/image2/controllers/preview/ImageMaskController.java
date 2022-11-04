@@ -224,8 +224,7 @@ public class ImageMaskController
 
 	public int[] getMaskValues()
 	{
-		return new int[] {(int)leftSpinner.getValue(), (int)rightSpinner.getValue(),
-				(int)topSpinner.getValue(), (int)bottomSpinner.getValue()};
+		return new int[] {(int)bottomSpinner.getValue(), (int)topSpinner.getValue(), (int)rightSpinner.getValue(), (int)leftSpinner.getValue()};
 	}
 
 	private void croppingChanged()
