@@ -1,6 +1,7 @@
 package edu.jhuapl.sbmt.image2.pipelineComponents;
 
 import java.util.HashMap;
+import java.util.List;
 
 import org.apache.commons.lang3.tuple.Pair;
 
@@ -29,9 +30,9 @@ public class VTKDebug
 
 	public static void previewLayer(Layer layer, String title) throws Exception
 	{
-		Pair<Layer, HashMap<String, String>> inputs = Pair.of(layer, new HashMap<String, String>());
+		Pair<Layer, List<HashMap<String, String>>> inputs = Pair.of(layer, List.of(new HashMap<String, String>()));
 		Just.of(inputs)
-			.subscribe(new VtkLayerPreview(title, 0, new IntensityRange(0, 255), new int[] {0,0,0,0}, new Runnable()
+			.subscribe(new VtkLayerPreview(title, 0, new IntensityRange(0, 255), new int[] {0,0,0,0}, new double[] {}, new Runnable()
 			{
 
 				@Override

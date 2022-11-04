@@ -40,6 +40,7 @@ import org.apache.commons.io.FilenameUtils;
 
 import edu.jhuapl.saavtk.gui.dialog.CustomFileChooser;
 import edu.jhuapl.sbmt.image2.controllers.preview.ImageContrastController;
+import edu.jhuapl.sbmt.image2.controllers.preview.ImageFillValuesController;
 import edu.jhuapl.sbmt.image2.controllers.preview.ImageMaskController;
 import edu.jhuapl.sbmt.image2.interfaces.IPerspectiveImage;
 import edu.jhuapl.sbmt.image2.interfaces.IPerspectiveImageTableRepresentable;
@@ -50,7 +51,7 @@ public class CustomImageEditingDialog<G1 extends IPerspectiveImage & IPerspectiv
 {
 	private JTextField imagePathTextField;
 	private JTextField imageNameTextField;
-	private JTextField fillValuesTextField;
+//	private JTextField fillValuesTextField;
 	private JTextField pointingFilenameTextField;
 	private JTextField minLatitudeTextField;
 	private JTextField maxLatitudeTextField;
@@ -64,10 +65,11 @@ public class CustomImageEditingDialog<G1 extends IPerspectiveImage & IPerspectiv
 	// private BaseItemManager<G1> imageCollection;
 	private JButton browseButton;
 	private JButton okButton;
-	private JButton fillValuesButton;
+//	private JButton fillValuesButton;
 
 	ImageMaskController maskController;
 	ImageContrastController contrastController;
+	ImageFillValuesController fillValuesController;
 
 	private JPanel layerPanel;
 	private JPanel controlsPanel;
@@ -77,7 +79,7 @@ public class CustomImageEditingDialog<G1 extends IPerspectiveImage & IPerspectiv
 	private JPanel appearancePanel;
 
 	public CustomImageEditingDialog(Window parent, G1 existingImage, boolean isPerspective, Runnable completionBlock, ImageMaskController maskController,
-	ImageContrastController contrastController)
+	ImageContrastController contrastController, ImageFillValuesController fillController)
 	{
 		super(parent, "Edit Image", Dialog.ModalityType.APPLICATION_MODAL);
 
@@ -85,6 +87,7 @@ public class CustomImageEditingDialog<G1 extends IPerspectiveImage & IPerspectiv
 //		this.layer = layers.get(currentLayerIndex);
 		this.isPerspective = isPerspective;
 		this.contrastController = contrastController;
+		this.fillValuesController = fillController;
 		this.maskController = maskController;
 		this.layerPanel = new JPanel();
 		this.layerPanel.setLayout(new GridBagLayout());
@@ -145,8 +148,8 @@ public class CustomImageEditingDialog<G1 extends IPerspectiveImage & IPerspectiv
 	private void initGUI()
 	{
 		setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
-		setMinimumSize(new Dimension(1250, 750));
-		setPreferredSize(new Dimension(1250, 750));
+		setMinimumSize(new Dimension(1150, 550));
+		setPreferredSize(new Dimension(1150, 550));
 		getContentPane().setLayout(new GridBagLayout());
 
 		controlsPanel.setLayout(new BoxLayout(controlsPanel, BoxLayout.Y_AXIS));
@@ -173,13 +176,14 @@ public class CustomImageEditingDialog<G1 extends IPerspectiveImage & IPerspectiv
 		appearancePanel.setLayout(new BoxLayout(appearancePanel, BoxLayout.Y_AXIS));
 		appearancePanel.setBorder(BorderFactory.createTitledBorder("Image Appearance"));
 		appearancePanel.add(buildContrastController());
-		appearancePanel.add(Box.createVerticalStrut(20));
+//		appearancePanel.add(Box.createVerticalStrut(20));
 		appearancePanel.add(buildTrimController());
 		appearancePanel.add(buildFillValuesPanel());
+		appearancePanel.add(Box.createVerticalGlue());
 
 		controlsPanel.add(appearancePanel);
 
-		controlsPanel.add(Box.createVerticalGlue());
+//		controlsPanel.add(Box.createVerticalGlue());
 		controlsPanel.add(buildSubmitCancelPanel());
 
 
@@ -231,14 +235,15 @@ public class CustomImageEditingDialog<G1 extends IPerspectiveImage & IPerspectiv
 	{
 		JPanel panel = new JPanel();
 		panel.setLayout(new BoxLayout(panel, BoxLayout.X_AXIS));
-		panel.add(new JLabel("Image Path:"));
+		panel.add(Box.createHorizontalStrut(30));
+		panel.add(new JLabel("Path:"));
 
 		imagePathTextField = new JTextField();
 		imagePathTextField.setMinimumSize(new Dimension(350, 30));
 		imagePathTextField.setPreferredSize(new Dimension(350, 30));
 		imagePathTextField.setMaximumSize(new Dimension(350, 30));
 
-		panel.add(Box.createHorizontalStrut(10));
+		panel.add(Box.createHorizontalStrut(20));
 		panel.add(imagePathTextField);
 
 		JButton browseButton = new JButton("Browse");
@@ -254,21 +259,12 @@ public class CustomImageEditingDialog<G1 extends IPerspectiveImage & IPerspectiv
 			imagePathTextField.setText(filename);
 			String imageFileName = files[0].getName();
 			String extension = FilenameUtils.getExtension(imageFileName).toLowerCase();
-			// if (extension.equals("fits") || extension.equals("fit"))
-			// {
-			// imageTypeComboBox.setSelectedItem(instrument.getType());
-			// }
-			// else
-			// {
-			// imageTypeComboBox.setSelectedItem(ImageType.GENERIC_IMAGE);
-			// pointingTypeComboBox.setSelectedItem("Simple Cylindrical
-			// Projection");
-			// }
 
 			imageNameTextField.setText(imageFileName);
 		});
 
 		panel.add(browseButton);
+		panel.add(Box.createGlue());
 		return panel;
 	}
 
@@ -276,7 +272,8 @@ public class CustomImageEditingDialog<G1 extends IPerspectiveImage & IPerspectiv
 	{
 		JPanel panel = new JPanel();
 		panel.setLayout(new BoxLayout(panel, BoxLayout.X_AXIS));
-		panel.add(new JLabel("Image Name:"));
+		panel.add(Box.createHorizontalStrut(30));
+		panel.add(new JLabel("Name:"));
 
 		imageNameTextField = new JTextField();
 		imageNameTextField.setMinimumSize(new Dimension(350, 30));
@@ -322,6 +319,7 @@ public class CustomImageEditingDialog<G1 extends IPerspectiveImage & IPerspectiv
 	{
 		JPanel panel = new JPanel();
 		panel.setLayout(new BoxLayout(panel, BoxLayout.X_AXIS));
+		panel.add(Box.createHorizontalStrut(0));
 		panel.add(new JLabel("Image Rotation:"));
 
 		imageRotationComboBox = new JComboBox<String>(new String[]
@@ -337,6 +335,7 @@ public class CustomImageEditingDialog<G1 extends IPerspectiveImage & IPerspectiv
 	{
 		JPanel panel = new JPanel();
 		panel.setLayout(new BoxLayout(panel, BoxLayout.X_AXIS));
+		panel.add(Box.createHorizontalStrut(0));
 		panel.add(new JLabel("Image Flip:"));
 		panel.add(Box.createHorizontalStrut(30));
 		imageFlipComboBox = new JComboBox<String>(new String[]
@@ -422,6 +421,7 @@ public class CustomImageEditingDialog<G1 extends IPerspectiveImage & IPerspectiv
 
 		JPanel fileInputPanel = new JPanel();
 		fileInputPanel.setLayout(new BoxLayout(fileInputPanel, BoxLayout.X_AXIS));
+		fileInputPanel.add(Box.createHorizontalStrut(0));
 		fileInputPanel.add(new JLabel("Pointing File:"));
 		fileInputPanel.add(Box.createHorizontalStrut(20));
 		pointingFilenameTextField = new JTextField("FILE NOT FOUND");
@@ -495,13 +495,14 @@ public class CustomImageEditingDialog<G1 extends IPerspectiveImage & IPerspectiv
 
 	private JPanel buildContrastController()
 	{
-		GridBagConstraints gridBagConstraints = new GridBagConstraints();
-		gridBagConstraints.gridx = 0;
-		gridBagConstraints.gridy = 1;
-		gridBagConstraints.gridwidth = controlsPanel.getWidth();
-		gridBagConstraints.weightx = 1.0;
-		gridBagConstraints.weighty = 0.0;
-		gridBagConstraints.fill = GridBagConstraints.HORIZONTAL;
+//		GridBagConstraints gridBagConstraints = new GridBagConstraints();
+//		gridBagConstraints.gridx = 0;
+//		gridBagConstraints.gridy = 1;
+//		gridBagConstraints.gridwidth = controlsPanel.getWidth();
+//		gridBagConstraints.weightx = 1.0;
+//		gridBagConstraints.weighty = 0.0;
+//		gridBagConstraints.insets = new Insets(3, 30, 3, 0);
+//		gridBagConstraints.fill = GridBagConstraints.HORIZONTAL;
 //		contrastController = new ImageContrastController(displayedImage, existingImage.getIntensityRange(), new Function<vtkImageData, Void>() {
 //
 //			@Override
@@ -597,26 +598,35 @@ public class CustomImageEditingDialog<G1 extends IPerspectiveImage & IPerspectiv
 
 	private JPanel buildFillValuesPanel()
 	{
-		JPanel panel = new JPanel();
-		panel.setLayout(new BoxLayout(panel, BoxLayout.X_AXIS));
-		panel.add(new JLabel("Fill Value(s):"));
+		fillValuesController.getView().setMaximumSize(new Dimension(550, 100));
+		return fillValuesController.getView();
 
-		fillValuesButton = new JButton("Apply");
-
-
-		fillValuesTextField = new JTextField();
-		fillValuesTextField.setMinimumSize(new Dimension(350, 30));
-		fillValuesTextField.setPreferredSize(new Dimension(400, 30));
-		fillValuesTextField.setMaximumSize(new Dimension(550, 30));
-
-		panel.add(Box.createHorizontalStrut(10));
-		panel.add(fillValuesTextField);
-		panel.add(Box.createHorizontalGlue());
-//		panel.add(Box.createHorizontalStrut(10));
-		panel.add(fillValuesButton);
-//		panel.add(Box.createHorizontalStrut(100));
-
-		return panel;
+//		JPanel panel = new JPanel();
+//		panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
+//
+//		JPanel labelPanel = new JPanel();
+//		labelPanel.setLayout(new BoxLayout(labelPanel, BoxLayout.X_AXIS));
+//		labelPanel.add(Box.createHorizontalStrut(30));
+//		labelPanel.add(new JLabel("Fill Value(s):"));
+//		labelPanel.add(Box.createHorizontalGlue());
+//		panel.add(labelPanel);
+//
+//		JPanel textFieldPanel = new JPanel();
+//		textFieldPanel.setLayout(new BoxLayout(textFieldPanel, BoxLayout.X_AXIS));
+//		fillValuesButton = new JButton("Apply");
+//		fillValuesTextField = new JTextField();
+//		fillValuesTextField.setMinimumSize(new Dimension(350, 30));
+//		fillValuesTextField.setPreferredSize(new Dimension(400, 30));
+//		fillValuesTextField.setMaximumSize(new Dimension(550, 30));
+//		textFieldPanel.add(Box.createHorizontalStrut(50));
+//		textFieldPanel.add(fillValuesTextField);
+//		textFieldPanel.add(fillValuesButton);
+//
+//
+//		panel.add(textFieldPanel);
+//
+//
+//		return panel;
 	}
 
 
@@ -662,13 +672,13 @@ public class CustomImageEditingDialog<G1 extends IPerspectiveImage & IPerspectiv
 		return imageNameTextField;
 	}
 
-	/**
-	 * @return the fillValuesTextField
-	 */
-	public JTextField getFillValuesTextField()
-	{
-		return fillValuesTextField;
-	}
+//	/**
+//	 * @return the fillValuesTextField
+//	 */
+//	public JTextField getFillValuesTextField()
+//	{
+//		return fillValuesTextField;
+//	}
 
 	/**
 	 * @return the pointingFilenameTextField
@@ -790,13 +800,13 @@ public class CustomImageEditingDialog<G1 extends IPerspectiveImage & IPerspectiv
 		return appearancePanel;
 	}
 
-	/**
-	 * @return the fillValuesButton
-	 */
-	public JButton getFillValuesButton()
-	{
-		return fillValuesButton;
-	}
+//	/**
+//	 * @return the fillValuesButton
+//	 */
+//	public JButton getFillValuesButton()
+//	{
+//		return fillValuesButton;
+//	}
 
 //	/**
 //	 * @param trimController the trimController to set

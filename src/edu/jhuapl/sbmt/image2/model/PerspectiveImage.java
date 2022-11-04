@@ -22,6 +22,8 @@ public class PerspectiveImage implements IPerspectiveImage
     private static final  Key<String> pointingSourceTypeKey = Key.of("pointingSourceType");
     private static final  Key<Integer[]> intensityRangeKey = Key.of("intensityRange");
     private static final  Key<int[]> maskValuesKey = Key.of("masks");
+    private static final  Key<int[]> autoMaskValuesKey = Key.of("autoMasks");
+    private static final  Key<Boolean> useAutoMaskKey = Key.of("useAutoMask");
     private static final  Key<int[]> trimValuesKey = Key.of("trims");
     private static final  Key<double[]> fillValuesKey = Key.of("fillValues");
     private static final  Key<Integer> numberOfLayersKey = Key.of("numberOfLayers");
@@ -48,7 +50,9 @@ public class PerspectiveImage implements IPerspectiveImage
 	ImageSource pointingSourceType = ImageSource.SPICE;
 
 	//masking
-	private int[] maskValues = new int[] {0, 0, 0, 0};
+	private int[] maskValues = new int[] { 0,0,0,0 };
+	private int[] autoMaskValues = null;
+	private boolean useAutoMask = false;
 
 	//trim
 	private int[] trimValues = new int[] {0, 0, 0, 0};
@@ -120,6 +124,38 @@ public class PerspectiveImage implements IPerspectiveImage
 	public void setMaskValues(int[] maskValues)
 	{
 		this.maskValues = maskValues;
+	}
+
+	/**
+	 * @return the useAutoMask
+	 */
+	public boolean isUseAutoMask()
+	{
+		return useAutoMask;
+	}
+
+	/**
+	 * @param useAutoMask the useAutoMask to set
+	 */
+	public void setUseAutoMask(boolean useAutoMask)
+	{
+		this.useAutoMask = useAutoMask;
+	}
+
+	/**
+	 * @return the autoMaskValues
+	 */
+	public int[] getAutoMaskValues()
+	{
+		return autoMaskValues;
+	}
+
+	/**
+	 * @param autoMaskValues the autoMaskValues to set
+	 */
+	public void setAutoMaskValues(int[] autoMaskValues)
+	{
+		this.autoMaskValues = autoMaskValues;
 	}
 
 	public int[] getTrimValues()
@@ -379,6 +415,11 @@ public class PerspectiveImage implements IPerspectiveImage
 		        CylindricalBounds bounds = metadata.get(boundsKey);
 		        result.setBounds(bounds);
 	        }
+	        if (metadata.hasKey(useAutoMaskKey))
+	        {
+	        	result.setUseAutoMask(metadata.get(useAutoMaskKey));
+	        	result.setAutoMaskValues(metadata.get(autoMaskValuesKey));
+	        }
 			return result;
 		}, PerspectiveImage.class, image -> {
 			SettableMetadata result = SettableMetadata.of(Version.of(1, 0));
@@ -393,6 +434,8 @@ public class PerspectiveImage implements IPerspectiveImage
 	        result.put(rotationKey, image.getRotation());
 	        result.put(imageOriginKey, image.getImageOrigin());
 	        result.put(maskValuesKey, image.getMaskValues());
+	        result.put(autoMaskValuesKey, image.getAutoMaskValues());
+	        result.put(useAutoMaskKey, image.isUseAutoMask());
 	        result.put(trimValuesKey, image.getTrimValues());
 	        result.put(fillValuesKey, image.getFillValues());
 	        result.put(simulateLightingKey, image.isSimulateLighting());
