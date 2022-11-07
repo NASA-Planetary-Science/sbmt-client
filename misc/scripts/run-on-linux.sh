@@ -8,7 +8,7 @@
 # that has been built using "make release"
 
 
-VTK_LIB_DIR=$SBMTROOT/lib/linux64
+VTK_LIB_DIR=$SBMTROOT/lib/linux64:./lib/gdal
 
 export DYLD_LIBRARY_PATH="$VTK_LIB_DIR:$DYLD_LIBRARY_PATH"
 export LD_LIBRARY_PATH="$VTK_LIB_DIR:$LD_LIBRARY_PATH"
@@ -21,5 +21,5 @@ for f in $TOP_DIR/lib/*.jar ; do
     JAR_FILES="$JAR_FILES:$f"
 done
 
-java "-Djava.library.path=$VTK_LIB_DIR" -cp "$JAR_FILES" $@
+java "-Djava.library.path=$VTK_LIB_DIR" -Dedu.jhuapl.sbmt.mission="DART_DEPLOY" -cp "$JAR_FILES" $@
   

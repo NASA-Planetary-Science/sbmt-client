@@ -171,7 +171,7 @@ ${int_mac_zip} : ${NEARAPLJAR}
 		rm -rf ${int_mac_sbmt_dir}/jre
 		mv ${int_mac_sbmt_dir}/mac64 ${int_mac_sbmt_dir}/jre
 		cp ${top_level_dir}/src/edu/jhuapl/sbmt/data/license.txt ${int_mac_sbmt_lib_dir}
-		${SBMTROOT}/config/generate_runsbmt.sh ${INTERNAL_OUTPUT_DIR}
+		${SBMTROOT}/config/generate_runsbmt.sh ${INTERNAL_OUTPUT_DIR} ${MISSION}
 		cp ${int_mac_dir}/sbmt/runsbmt ${int_mac_dir}/${RELEASE}
 		(cd ${int_mac_dir} ; zip -q -r ${mac_zip} ${RELEASE})
 
@@ -196,7 +196,7 @@ ${int_linux_zip} : ${NEARAPLJAR}
 		rm -rf ${int_linux_sbmt_dir}/jre
 		mv ${int_linux_sbmt_dir}/linux64 ${int_linux_sbmt_dir}/jre
 		cp ${top_level_dir}/src/edu/jhuapl/sbmt/data/license.txt ${int_linux_sbmt_lib_dir}
-		${SBMTROOT}/config/generate_runsbmt.sh ${INTERNAL_OUTPUT_DIR}
+		${SBMTROOT}/config/generate_runsbmt.sh ${INTERNAL_OUTPUT_DIR} ${MISSION}
 		cp ${int_linux_dir}/sbmt/runsbmt ${int_linux_dir}/${RELEASE}
 		(cd ${int_linux_dir} ; zip -q -r ${linux_zip} ${RELEASE})
 
