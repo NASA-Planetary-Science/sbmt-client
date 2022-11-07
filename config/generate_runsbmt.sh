@@ -23,7 +23,7 @@ top_level_dir=$SBMTROOT
 mkdir -p $output_dir/mac64/sbmt/lib
 mkdir -p $output_dir/linux64/sbmt/lib
 mkdir -p $output_dir/win64/sbmt/lib
-GDAL_DIR=$top_level_dir/lib/gdal
+GDAL_DIR=${top_level_dir}/lib/gdal
 
 #echo "top_level_dir=$top_level_dir"
 #echo "output_dir=$output_dir"
@@ -31,7 +31,7 @@ GDAL_DIR=$top_level_dir/lib/gdal
 echo -n -e "#!/bin/sh
 DIR=\`dirname \"\$0\"\`
 DIR=\"\`(cd \"\$DIR\"; pwd)\`\"
-export DYLD_LIBRARY_PATH=\"\$DIR/lib/mac64\"\:\$GDAL_DIR:\$DYLD_LIBRARY_PATH
+export DYLD_LIBRARY_PATH=\"\$DIR/lib/mac64\":\"\$GDAL_DIR\":\$DYLD_LIBRARY_PATH
 export LC_NUMERIC=\"en_US.UTF-8\"
 MEMSIZE=\`sysctl hw.memsize | awk '{print int(\$2/1024)}'\`
 \"\$DIR/jre/bin/java\" -Xmx\${MEMSIZE}K -Djava.library.path=\"\$DIR/lib/mac64:$GDAL_DIR\" -Dedu.jhuapl.sbmt.mission="${mission} --add-exports java.desktop/com.sun.imageio.spi=ALL-UNNAMED --add-exports java.desktop/com.apple.laf=ALL-UNNAMED --add-exports java.desktop/apple.laf=ALL-UNNAMED -jar \"\$DIR/lib/near.jar\" \$@ &
@@ -41,7 +41,7 @@ chmod +x $output_dir/mac64/sbmt/runsbmt
 echo -n -e "#!/bin/sh
 DIR=\`dirname \"\$0\"\`
 DIR=\"\`(cd \"\$DIR\"; pwd)\`\"
-export LD_LIBRARY_PATH=\"\$DIR/lib/linux64\":\$GDAL_DIR:\$LD_LIBRARY_PATH
+export LD_LIBRARY_PATH=\"\$DIR/lib/linux64\":\"\$GDAL_DIR\":\$LD_LIBRARY_PATH
 export LC_NUMERIC=\"en_US.UTF-8\"
 MEMSIZE=\`grep MemTotal /proc/meminfo | awk '{print \$2}'\`
 \"\$DIR/jre/bin/java\" -Xmx\${MEMSIZE}K -Djava.library.path=\"\$DIR/lib/linux64:$GDAL_DIR\" -Dedu.jhuapl.sbmt.mission="${mission} --add-exports java.desktop/com.sun.imageio.spi=ALL-UNNAMED -jar \"\$DIR/lib/near.jar\" \$@ &
