@@ -23,7 +23,6 @@ top_level_dir=$SBMTROOT
 mkdir -p $output_dir/mac64/sbmt/lib
 mkdir -p $output_dir/linux64/sbmt/lib
 mkdir -p $output_dir/win64/sbmt/lib
-GDAL_DIR=${top_level_dir}/lib/gdal
 
 #echo "top_level_dir=$top_level_dir"
 #echo "output_dir=$output_dir"
@@ -31,6 +30,7 @@ GDAL_DIR=${top_level_dir}/lib/gdal
 echo -n -e "#!/bin/sh
 DIR=\`dirname \"\$0\"\`
 DIR=\"\`(cd \"\$DIR\"; pwd)\`\"
+GDAL_DIR=${DIR}/lib/gdal
 export DYLD_LIBRARY_PATH=\"\$DIR/lib/mac64\":\"\$GDAL_DIR\":\$DYLD_LIBRARY_PATH
 export LC_NUMERIC=\"en_US.UTF-8\"
 MEMSIZE=\`sysctl hw.memsize | awk '{print int(\$2/1024)}'\`
@@ -41,6 +41,7 @@ chmod +x $output_dir/mac64/sbmt/runsbmt
 echo -n -e "#!/bin/sh
 DIR=\`dirname \"\$0\"\`
 DIR=\"\`(cd \"\$DIR\"; pwd)\`\"
+GDAL_DIR=${DIR}/lib/gdal
 export LD_LIBRARY_PATH=\"\$DIR/lib/linux64\":\"\$GDAL_DIR\":\$LD_LIBRARY_PATH
 export LC_NUMERIC=\"en_US.UTF-8\"
 MEMSIZE=\`grep MemTotal /proc/meminfo | awk '{print \$2}'\`
