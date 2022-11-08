@@ -273,6 +273,7 @@
 	    jogl-all-natives-macosx-universal.jar
             saavtk.jar
         	altwg.jar
+        	gdal-3.6.0.jar
         	jcommander-1.72.jar
             jide-oss-java11.jar
             mysql-connector-java-5.1.10-bin.jar
@@ -398,6 +399,7 @@
 	    jogl-all-natives-macosx-universal.jar
             saavtk.jar
         	altwg.jar
+        	gdal-3.6.0.jar
         	jcommander-1.72.jar
             jide-oss-java11.jar
             mysql-connector-java-5.1.10-bin.jar
