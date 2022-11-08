@@ -18,7 +18,6 @@ To install the SBMT for Windows or Linux, download the file appropriate for your
 To install the SBMT for macOS, download the appropriate file below
 
    -  macOS (10.15 Catalina or later): [VERSIONXXXXXX.pkg](releases/VERSIONXXXXXX.pkg)
-   -  macOS (10.14 Mojave or Earlier): [VERSIONXXXXXX-macosx-x64.zip](releases/VERSIONXXXXXX-macosx-x64.zip)
 
 NOTE: Starting with the 0.7.7 release Mac OS Catalina (10.15) is supported. The install process for the software for all mac users has changed to accommodate this support: 1) Right click the downloaded .pkg and select "Open", select open again when it warns about not being able to scan for malicious software, and follow instructions in the install wizard. 2) SBMT will now appear as an application in the /Applications/SBMT folder. The functionality of the tool should be unchanged. Please contact sbmt@jhuapl.edu if you encounter installation issues.
 
