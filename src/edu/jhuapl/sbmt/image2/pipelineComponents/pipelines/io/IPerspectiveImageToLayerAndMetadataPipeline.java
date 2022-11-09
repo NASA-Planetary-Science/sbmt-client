@@ -84,10 +84,17 @@ public class IPerspectiveImageToLayerAndMetadataPipeline
 			int windowX = Integer.parseInt(metadataReader.getOutput().get("WINDOWX"));
 			int windowY = Integer.parseInt(metadataReader.getOutput().get("WINDOWY"));
 
-			image.setAutoMaskValues(new int[] {windowX, windowH - windowX,windowY,windowH - windowY});
+			int[] masks = new int[4];
+			if (image.getRotation() == 180.0)
+				masks = new int[] {windowH - windowX, windowX, windowH - windowY, windowY};
+			else
+				//bottom, top, right, left
+				masks = new int[] {windowX, windowH - windowX,windowY,windowH - windowY};
+
+			image.setAutoMaskValues(masks);
 
 			if (Arrays.equals(image.getMaskValues(), new int[] {0,0,0,0}))
-				image.setMaskValues(new int[] {windowX, windowH - windowX,windowY,windowH - windowY});
+				image.setMaskValues(masks);
 		}
 		else
 		{
@@ -105,7 +112,8 @@ public class IPerspectiveImageToLayerAndMetadataPipeline
 			linearInterpolator = new LayerLinearInterpolaterOperator(image.getLinearInterpolatorDims()[0], image.getLinearInterpolatorDims()[1]);
 
 		LayerRotationOperator rotationOperator = new LayerRotationOperator(image.getRotation());
-
+		System.out.println(
+				"IPerspectiveImageToLayerAndMetadataPipeline: IPerspectiveImageToLayerAndMetadataPipeline: image rotation " + image.getRotation());
 		BasePipelineOperator<Layer, Layer> flipOperator = new PassthroughOperator<Layer>();
 		if (image.getFlip().equals("X"))
 			flipOperator = new LayerXFlipOperator();
@@ -116,7 +124,7 @@ public class IPerspectiveImageToLayerAndMetadataPipeline
 			.operate(linearInterpolator)
 			.operate(flipOperator)
 			.operate(rotationOperator)
-			.operate(maskingOperator)
+//			.operate(maskingOperator)
 			.subscribe(Sink.of(updatedLayers)).run();
 
 
