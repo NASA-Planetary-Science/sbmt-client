@@ -333,6 +333,8 @@ public class DartConfigs extends SmallBodyViewConfigBuilder
             DBRunInfo[] dbRunInfos = createDbInfos(ShapeModelBody.DIMORPHOS, author, Instrument.DRACO, imageSources);
             add(instrument, dbRunInfos);
 
+            dtmCatalogs(true);
+
             c = build();
             generateUpdatedStateHistoryParameters(c, ShapeModelBody.DIMORPHOS.name());
             configList.add(c);

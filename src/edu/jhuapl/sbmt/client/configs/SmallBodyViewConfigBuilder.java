@@ -1,7 +1,9 @@
 package edu.jhuapl.sbmt.client.configs;
 
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
@@ -100,6 +102,7 @@ public class SmallBodyViewConfigBuilder
     protected final List<DBRunInfo> dbRunInfos;
     private final AtomicBoolean midInit;
     private final AtomicBoolean initDone;
+    private final AtomicBoolean dtmCatalogs;
 
     /**
      * Constructs a builder, but does not completely initialize it. See
@@ -119,6 +122,7 @@ public class SmallBodyViewConfigBuilder
         this.dbRunInfos = new ArrayList<>();
         this.midInit = new AtomicBoolean(false);
         this.initDone = new AtomicBoolean(false);
+        this.dtmCatalogs = new AtomicBoolean(false);
     }
 
     /**
@@ -372,6 +376,18 @@ public class SmallBodyViewConfigBuilder
     }
 
     /**
+     * Enable/disable DTM catalogs for the model. Disabled by default.
+     *
+     * @param enable if true, enable DTM catalogs, otherwise don't.
+     * @return the builder
+     */
+    public SmallBodyViewConfigBuilder dtmCatalogs(boolean enable)
+    {
+        dtmCatalogs.set(enable);
+        return this;
+    }
+
+    /**
      * Build and return the {@link SmallBodyViewConfig}. The base implementation
      * retrieves the partially-constructed config in whatever state has resulted
      * from calling other builder methods, confirms that required methods have
@@ -426,6 +442,14 @@ public class SmallBodyViewConfigBuilder
             c.databaseRunInfos = dbRunInfos.toArray(new DBRunInfo[dbRunInfos.size()]);
         }
 
+        if (dtmCatalogs.get())
+        {
+            if (c.dtmBrowseDataSourceMap == null)
+            {
+                c.dtmBrowseDataSourceMap = new LinkedHashMap<>();
+            }
+            c.dtmBrowseDataSourceMap.put("Default", Paths.get(c.rootDirOnServer, "dtm", "browse", "fileList.txt").toString());
+        }
         reset();
 
         return c;
