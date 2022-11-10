@@ -1173,21 +1173,24 @@ processDTMs() {
 
     checkSkip $funcName "$*"
 
-    src=$srcTop/dtm
-    if test -d $src; then
-      dest=$destTop/dtm/browse
+    generateCatalog="/homes/lopeznr1/DemCatalogMaker-2020.11.17/runDemCatalogMaker --fileL browse/*obj browse/*fits --dispName Browse --destFile browse.cat.csv"
 
-      doRsyncDir $src $dest "$1"
+    dest="$destTop/dtm/browse"
+    if test -d $dest; then
 
-      fileList="fileList.txt"
-      (cd $dest; ls | sed 's:\(.*\):\1\,\1:' | grep -v $fileList > $fileList)
-      check $? "$funcName: problem creating DTM file list $dest/$fileList"
+      if test `ls $dest | wc` -gt 0; then
+        cd "$destTop/dtm"
+        check $? "$funcName: unable to change directory to the DTM area $destTop/dtm"
 
-      if test ! -s $dest/$fileList; then
-        echo "$funcName: directory exists but has no DTMs: $dest"
+        logFile="$logTop/runDemCatalogMaker.txt"
+
+        $catalogTool > $logFile 2>&1
+        check $? "$funcName: catalog tool failed to run in $destTop/src. See file $logFile"
+      else
+        echo "$funcName: no DTM files present in $dest"
       fi
     else
-      echo "$funcName: nothing to process; no source directory $src"
+      echo "$funcName: no DTM directory $dest"
     fi
   )
   check $? "$funcName failed"
