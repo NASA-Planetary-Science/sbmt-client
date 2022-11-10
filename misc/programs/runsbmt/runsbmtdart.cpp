@@ -78,7 +78,7 @@ int main(int argc, char *argv[])
 
     size_t memory = getMemorySize();
     command += " -Xmx" + numberToString(memory) + "K";
-    command += " -Djava.library.path=lib/win64;lib/gdal/win64 -Dsun.java2d.noddraw=true -Dedu.jhuapl.sbmt.mission=argv[2] -jar lib/near.jar";
+    command += " -Djava.library.path=lib/win64;lib/gdal/win64 -Dsun.java2d.noddraw=true -Dedu.jhuapl.sbmt.mission=DART_DEPLOY -jar lib/near.jar";
 
     for (int i=1; i<argc; ++i)
         command += string(" ") + argv[i];
