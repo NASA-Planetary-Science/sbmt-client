@@ -224,8 +224,6 @@ ${int_win_zip} : ${NEARAPLJAR}
 		cp ${top_level_dir}/src/edu/jhuapl/sbmt/data/license.txt ${int_win_sbmt_lib_dir}
 		cp ${jre_dir}/runsbmt.exe ${int_win_sbmt_dir}
 		@chmod +x ${int_win_sbmt_dir}/runsbmt.exe
-		cp ${jre_dir}/runsbmtdart.exe ${int_win_sbmt_dir}
-		@chmod +x ${int_win_sbmt_dir}/runsbmtdart.exe
 #		cp ${int_win_sbmt_dir}/runsbmt.exe ${int_win_dir}/${RELEASE}
 		(cd ${int_win_dir} ; zip -q -r ${win_zip} ${RELEASE})
 
