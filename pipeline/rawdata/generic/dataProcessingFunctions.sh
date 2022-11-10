@@ -1130,12 +1130,24 @@ listPlateColoringFiles() {
   check $? "$funcName failed"
 }
 
+# Set up plate colorings, if the directory coloring is present under the top model directory. This requires
+# some variables to be set:
+#   bodyId body identifier as it appears in the menu of the client
+#   modelId model identifier as it appears in the menu of the client
 # Run DiscoverPlateColorings.sh, which is linked to a java tool that creates metadata files for plate colorings.
 discoverPlateColorings() {
   (
     funcName=${FUNCNAME[0]}
 
     checkSkip $funcName "$*"
+
+    if test "$bodyId" = ""; then
+      check 1 "$funcName: variable bodyId is not set"
+    fi
+
+    if test "$modelId" = ""; then
+      check 1 "$funcName: variable modelId is not set"
+    fi
 
     src=$srcTop/coloring
     if test -d $src; then
