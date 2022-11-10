@@ -1134,6 +1134,7 @@ listPlateColoringFiles() {
 # some variables to be set:
 #   bodyId body identifier as it appears in the menu of the client
 #   modelId model identifier as it appears in the menu of the client
+#   outputTop path prefix, i.e., body-dir/model-dir/coloring
 # Run DiscoverPlateColorings.sh, which is linked to a java tool that creates metadata files for plate colorings.
 discoverPlateColorings() {
   (
@@ -1147,6 +1148,10 @@ discoverPlateColorings() {
 
     if test "$modelId" = ""; then
       check 1 "$funcName: variable modelId is not set"
+    fi
+
+    if test "$outputTop" = ""; then
+      check 1 "$funcName: variable outputTop (should be body-dir/model-dir) is not set"
     fi
 
     src=$srcTop/coloring
