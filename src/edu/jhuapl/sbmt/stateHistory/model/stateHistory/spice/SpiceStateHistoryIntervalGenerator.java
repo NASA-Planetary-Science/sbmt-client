@@ -142,13 +142,13 @@ public class SpiceStateHistoryIntervalGenerator implements IStateHistoryInterval
 		trajectory.setStopTime(TimeUtil.str2et(endEpoch.toString()));
 
 		double timeDelta = (endTime.getMillis() - startTime.getMillis())/1000;
-		int timeStep = 60;
+		double timeStep = 60;
 //		if (timeDelta > 3*24*3600) timeStep = 3*3600;
 		if (timeDelta > 2*24*3600) timeStep = 600;
 		else if (timeDelta > 12*3600) timeStep = 120;
-		else if (timeDelta < 300) timeStep = 1;
+		else if (timeDelta < 300) timeStep = .01;
 
-		trajectory.setNumPoints(Math.abs((int)timeWindowDuration/timeStep));
+		trajectory.setNumPoints(Math.abs((int)(timeWindowDuration/timeStep)));
 
 		State state = new SpiceState(pointingProvider);
 		// add to history

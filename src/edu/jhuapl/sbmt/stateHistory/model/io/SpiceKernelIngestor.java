@@ -50,7 +50,8 @@ public class SpiceKernelIngestor
         {
         	currentFile++;
         	if (listener != null) listener.percentageLoaded((int)(100*(currentFile/numberOfFiles)));
-        	FileUtils.copyDirectoryToDirectory(file.getParentFile(), newDirectory);
+        	if (!(new File(newDirectory, file.getParentFile().getName()).exists()))
+        		FileUtils.copyDirectoryToDirectory(file.getParentFile(), newDirectory);
         }
         if (listener != null) listener.percentageLoaded(0);
         //update the PATH_VALUES line in the metakernel to match the new directory
@@ -65,7 +66,7 @@ public class SpiceKernelIngestor
         	break;
         }
         lines.set(lineNumber, "PATH_VALUES = ( \'" + newDirectory + File.separator + "\' )");
-        
+
         Files.write(path, lines);
 
         return metaKernelCopy.getAbsolutePath();
