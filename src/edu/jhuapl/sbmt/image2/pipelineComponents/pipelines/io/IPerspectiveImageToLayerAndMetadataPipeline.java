@@ -112,8 +112,6 @@ public class IPerspectiveImageToLayerAndMetadataPipeline
 			linearInterpolator = new LayerLinearInterpolaterOperator(image.getLinearInterpolatorDims()[0], image.getLinearInterpolatorDims()[1]);
 
 		LayerRotationOperator rotationOperator = new LayerRotationOperator(image.getRotation());
-		System.out.println(
-				"IPerspectiveImageToLayerAndMetadataPipeline: IPerspectiveImageToLayerAndMetadataPipeline: image rotation " + image.getRotation());
 		BasePipelineOperator<Layer, Layer> flipOperator = new PassthroughOperator<Layer>();
 		if (image.getFlip().equals("X"))
 			flipOperator = new LayerXFlipOperator();
