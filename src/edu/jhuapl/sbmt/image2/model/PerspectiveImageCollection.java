@@ -146,6 +146,7 @@ public class PerspectiveImageCollection<G1 extends IPerspectiveImage & IPerspect
 			renderingStates.remove(image);
 		}
 		imagesByInstrument.clear();
+		currentBoundaryRange = new IdPair(0, currentBoundaryOffsetAmount-1);
 	}
 
 	public void clearUserImages()
