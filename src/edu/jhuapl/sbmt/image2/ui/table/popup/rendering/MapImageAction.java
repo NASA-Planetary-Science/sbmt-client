@@ -34,9 +34,15 @@ public class MapImageAction<G1 extends IPerspectiveImage & IPerspectiveImageTabl
 		if (aItemL.size() == 0)
 			return;
 
-		for (G1 aItem : aItemL)
+		boolean stateToChangeTo = true;
+		for (G1 aItem : aManager.getSelectedItems())
 		{
-			aManager.setImageMapped(aItem, !aItem.isMapped());
+			stateToChangeTo &= aManager.getImageMapped(aItem) == true;
+		}
+
+		for (G1 aItem : aManager.getSelectedItems())
+		{
+			aManager.setImageMapped(aItem, !stateToChangeTo);
 		}
 	}
 
@@ -48,8 +54,9 @@ public class MapImageAction<G1 extends IPerspectiveImage & IPerspectiveImageTabl
 		// If any items are not visible then set checkbox to unselected
 		// in order to allow all chosen items to be toggled on
 		boolean isSelected = true;
-		for (G1 aItem : aItemC)
-			isSelected &= aItem.isMapped() == true;
+
+		for (G1 aItem : aManager.getSelectedItems())
+			isSelected &= aManager.getImageMapped(aItem) == true;
 		((JCheckBoxMenuItem) aAssocMI).setSelected(isSelected);
 	}
 
