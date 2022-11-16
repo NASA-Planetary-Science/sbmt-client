@@ -27,7 +27,7 @@ import edu.jhuapl.saavtk.model.LidarDataSource;
 import edu.jhuapl.saavtk.model.PointInRegionChecker;
 import edu.jhuapl.saavtk.model.PolyhedralModel;
 import edu.jhuapl.saavtk.util.FileCache;
-import edu.jhuapl.sbmt.client.BodyViewConfig;
+import edu.jhuapl.sbmt.common.client.BodyViewConfig;
 import edu.jhuapl.sbmt.lidar.BasicLidarPoint;
 import edu.jhuapl.sbmt.lidar.LidarPoint;
 import edu.jhuapl.sbmt.lidar.LidarSearchParms;
@@ -273,6 +273,7 @@ public class LidarQueryUtil
 			}
 
 		};
+
 		dataLoader.executeDialog();
 		// System.out.println("Hayabusa2LidarSearchDataCollection: setLidarData:
 		// before while loop");

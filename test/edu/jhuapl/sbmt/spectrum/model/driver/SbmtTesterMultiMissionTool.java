@@ -1,6 +1,7 @@
 package edu.jhuapl.sbmt.spectrum.model.driver;
 
 import java.awt.EventQueue;
+import java.awt.Taskbar;
 import java.io.IOException;
 import java.io.PrintStream;
 import java.lang.reflect.InvocationTargetException;
@@ -20,8 +21,7 @@ import javax.swing.UnsupportedLookAndFeelException;
 
 import com.jgoodies.looks.LookUtils;
 
-import edu.jhuapl.saavtk.gui.Console;
-import edu.jhuapl.saavtk.gui.OSXAdapter;
+import edu.jhuapl.saavtk.gui.TSConsole;
 import edu.jhuapl.saavtk.model.structure.EllipsePolygon;
 import edu.jhuapl.saavtk.model.structure.Line;
 import edu.jhuapl.saavtk.model.structure.Polygon;
@@ -34,11 +34,11 @@ import edu.jhuapl.saavtk.util.SafeURLPaths;
 import edu.jhuapl.saavtk.util.ServerSettingsManager;
 import edu.jhuapl.saavtk.util.ServerSettingsManager.ServerSettings;
 import edu.jhuapl.saavtk.util.UrlStatus;
-import edu.jhuapl.sbmt.client.SbmtSplash;
-import edu.jhuapl.sbmt.client.SmallBodyViewConfig;
+import edu.jhuapl.sbmt.common.client.SbmtSplash;
+import edu.jhuapl.sbmt.common.client.SmallBodyViewConfig;
+import edu.jhuapl.sbmt.core.image.CustomCylindricalImageKey;
+import edu.jhuapl.sbmt.core.image.CustomPerspectiveImageKey;
 import edu.jhuapl.sbmt.dtm.model.DEMKey;
-import edu.jhuapl.sbmt.gui.image.model.custom.CustomCylindricalImageKey;
-import edu.jhuapl.sbmt.gui.image.model.custom.CustomPerspectiveImageKey;
 import edu.jhuapl.sbmt.model.bennu.spectra.otes.OTES;
 import edu.jhuapl.sbmt.model.bennu.spectra.ovirs.OVIRS;
 import edu.jhuapl.sbmt.model.eros.nis.NIS;
@@ -111,7 +111,7 @@ public class SbmtTesterMultiMissionTool
 			ImageIcon erosIcon = new ImageIcon(SbmtTesterMultiMissionTool.class.getResource("/edu/jhuapl/sbmt/data/erosMacDock.png"));
 			if (!Configuration.isHeadless())
 			{
-			    OSXAdapter.setDockIconImage(erosIcon.getImage());
+			    Taskbar.getTaskbar().setIconImage(erosIcon.getImage());
 			}
 		}
 
@@ -199,11 +199,11 @@ public class SbmtTesterMultiMissionTool
 
 	public static void shutDown()
 	{
-		boolean showConsole = Console.isConfigured();
+		boolean showConsole = TSConsole.isConfigured();
 		if (showConsole)
 		{
 			System.err.println("Close this console window to exit.");
-			Console.showStandaloneConsole();
+			TSConsole.showStandaloneConsole();
 		}
 
 		restoreStreams();
@@ -254,9 +254,9 @@ public class SbmtTesterMultiMissionTool
                 splash.validate();
                 splash.setVisible(true);
 
-                if (Console.isEnabled())
+                if (TSConsole.isEnabled())
                 {
-                    Console.showStandaloneConsole();
+                    TSConsole.showStandaloneConsole();
                 }
 
                 final SbmtSplash finalSplash = splash;
@@ -387,7 +387,7 @@ public class SbmtTesterMultiMissionTool
 			outputStream = new PrintStream(Files.newOutputStream(outputFilePath));
 			System.setOut(outputStream);
 			System.setErr(outputStream);
-			Console.configure(true, outputStream);
+			TSConsole.configure(true, "Message Console", outputStream, outputStream);
 		}
 	}
 

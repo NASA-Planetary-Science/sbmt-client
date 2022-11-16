@@ -9,7 +9,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.SortedSet;
 
-import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
@@ -24,25 +23,27 @@ import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 
 import edu.jhuapl.saavtk.camera.gui.CameraQuaternionAction;
+import edu.jhuapl.saavtk.camera.gui.CameraRecorderAction;
 import edu.jhuapl.saavtk.camera.gui.CameraRegularAction;
 import edu.jhuapl.saavtk.config.ViewConfig;
-import edu.jhuapl.saavtk.gui.Console;
 import edu.jhuapl.saavtk.gui.RecentlyViewed;
-import edu.jhuapl.saavtk.gui.StatusBar;
+import edu.jhuapl.saavtk.gui.TSConsole;
 import edu.jhuapl.saavtk.gui.View;
 import edu.jhuapl.saavtk.gui.ViewManager;
-import edu.jhuapl.saavtk.gui.menu.EnableLODsAction;
 import edu.jhuapl.saavtk.gui.menu.FavoritesMenu;
 import edu.jhuapl.saavtk.gui.menu.FileMenu;
 import edu.jhuapl.saavtk.gui.menu.PickToleranceAction;
 import edu.jhuapl.saavtk.model.ShapeModelBody;
 import edu.jhuapl.saavtk.model.ShapeModelType;
 import edu.jhuapl.saavtk.scalebar.gui.ScaleBarAction;
-import edu.jhuapl.sbmt.client.BodyType;
-import edu.jhuapl.sbmt.client.BodyViewConfig;
-import edu.jhuapl.sbmt.client.SbmtHelpMenu;
-import edu.jhuapl.sbmt.client.ShapeModelDataUsed;
-import edu.jhuapl.sbmt.client.ShapeModelPopulation;
+import edu.jhuapl.saavtk.status.StatusNotifier;
+import edu.jhuapl.saavtk.view.light.gui.LightingConfigAction;
+import edu.jhuapl.saavtk.view.lod.gui.LodAction;
+import edu.jhuapl.sbmt.common.client.BodyViewConfig;
+import edu.jhuapl.sbmt.common.client.SbmtHelpMenu;
+import edu.jhuapl.sbmt.config.BodyType;
+import edu.jhuapl.sbmt.config.ShapeModelDataUsed;
+import edu.jhuapl.sbmt.config.ShapeModelPopulation;
 
 import crucible.crust.metadata.api.Key;
 import crucible.crust.metadata.api.Metadata;
@@ -87,9 +88,9 @@ public class SbmtTesterViewManager extends ViewManager
 
     private final TrackedMetadataManager stateManager;
 
-    public SbmtTesterViewManager(StatusBar statusBar, Frame frame, String tempCustomShapeModelPath)
+    public SbmtTesterViewManager(StatusNotifier aStatusNotifier, Frame frame, String tempCustomShapeModelPath)
     {
-        super(statusBar, frame, tempCustomShapeModelPath);
+        super(aStatusNotifier, frame, tempCustomShapeModelPath);
         this.menuEntries = Lists.newArrayList();
         this.configMap = Maps.newHashMap();
         this.stateManager = TrackedMetadataManager.of("ViewManager");
@@ -121,18 +122,18 @@ public class SbmtTesterViewManager extends ViewManager
         viewMenu.setMnemonic('V');
         viewMenu.add(new JMenuItem(new CameraRegularAction(this)));
         viewMenu.add(new JMenuItem(new CameraQuaternionAction(this)));
+        viewMenu.add(new JMenuItem(new CameraRecorderAction(this)));
+        viewMenu.add(new JMenuItem(new LightingConfigAction(this)));
         viewMenu.add(new JMenuItem(new ScaleBarAction(this)));
 
         viewMenu.addSeparator();
-        JCheckBoxMenuItem enableLodMI = new JCheckBoxMenuItem(new EnableLODsAction());
-        enableLodMI.setSelected(true);
-        viewMenu.add(enableLodMI);
+        viewMenu.add(new JMenuItem(new LodAction(this)));
         viewMenu.add(new PickToleranceAction(this));
 
         menuBar.add(viewMenu);
 
         // Console menu
-        Console.addConsoleMenu(menuBar);
+        TSConsole.addConsoleMenu(menuBar);
 
         // Help menu
         helpMenu = new SbmtHelpMenu(this);
@@ -193,22 +194,22 @@ public class SbmtTesterViewManager extends ViewManager
     }
 
     @Override
-    protected void addBuiltInViews(StatusBar statusBar)
+    protected void addBuiltInViews(StatusNotifier aStatusNotifier)
     {
         for (ViewConfig config: SmallBodyViewConfigTest.getBuiltInConfigs())
         {
 //            System.out.println(config.getUniqueName());
             //if (config.getUniqueName().equals("Gaskell/25143 Itokawa"))
-                addBuiltInView(new SbmtTesterView(statusBar, (SmallBodyViewConfigTest)config));
+                addBuiltInView(new SbmtTesterView(aStatusNotifier, (SmallBodyViewConfigTest)config));
         }
     }
 
     @Override
-    protected View createCustomView(StatusBar statusBar, String name, boolean temporary)
+    protected View createCustomView(StatusNotifier aStatusNotifier, String name, boolean temporary)
     {
         SmallBodyViewConfigTest customConfig = SmallBodyViewConfigTest.ofCustom(name, temporary);
 
-        return new SbmtTesterView(statusBar, customConfig);
+        return new SbmtTesterView(aStatusNotifier, customConfig);
     }
 
     @Override
@@ -241,7 +242,7 @@ public class SbmtTesterViewManager extends ViewManager
             // TODO Auto-generated catch block
             e.printStackTrace();
         }
-        return new SbmtTesterView(statusBar, customConfig);
+        return new SbmtTesterView(refStatusNotifier, customConfig);
     }
 
     @Override
@@ -463,7 +464,6 @@ public class SbmtTesterViewManager extends ViewManager
                 result = MARK_VISITED_BY_SPACECRAFT_COMPARATOR.compare(config1.body, config2.body);
             }
 
-
             if (result == 0)
             {
                 result = BODY_COMPARATOR.compare(config1.body, config2.body);
@@ -535,6 +535,9 @@ public class SbmtTesterViewManager extends ViewManager
     private static final ImmutableSet<ShapeModelBody> MARK_VISITED_BY_SPACECRAFT = ImmutableSet.of(
             ShapeModelBody.EROS,
             ShapeModelBody.ITOKAWA,
+            ShapeModelBody.DIDYMOS_SYSTEM,
+            ShapeModelBody.DIDYMOS,
+            ShapeModelBody.DIMORPHOS,
             ShapeModelBody.RQ36,
             ShapeModelBody.RYUGU,
             ShapeModelBody.CERES,
@@ -571,6 +574,9 @@ public class SbmtTesterViewManager extends ViewManager
             // Asteroids -> NEO (visited)
             ShapeModelBody.EROS,
             ShapeModelBody.ITOKAWA,
+            ShapeModelBody.DIDYMOS_SYSTEM,
+            ShapeModelBody.DIDYMOS,
+            ShapeModelBody.DIMORPHOS,
             ShapeModelBody.RQ36,
             ShapeModelBody.RYUGU,
             // Asteroids -> NEO (not visited)

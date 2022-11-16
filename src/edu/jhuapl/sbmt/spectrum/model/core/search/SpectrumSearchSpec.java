@@ -2,7 +2,7 @@ package edu.jhuapl.sbmt.spectrum.model.core.search;
 
 import java.util.Hashtable;
 
-import edu.jhuapl.sbmt.model.image.ImageSource;
+import edu.jhuapl.sbmt.core.image.ImageSource;
 import edu.jhuapl.sbmt.spectrum.model.core.interfaces.SearchSpec;
 
 import crucible.crust.metadata.api.Key;

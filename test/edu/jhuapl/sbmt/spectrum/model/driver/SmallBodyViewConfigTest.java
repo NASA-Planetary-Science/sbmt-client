@@ -19,25 +19,25 @@ import edu.jhuapl.saavtk.util.Configuration;
 import edu.jhuapl.saavtk.util.FileCache;
 import edu.jhuapl.saavtk.util.SafeURLPaths;
 import edu.jhuapl.saavtk.util.UnauthorizedAccessException;
-import edu.jhuapl.sbmt.client.BasicConfigInfo;
-import edu.jhuapl.sbmt.client.BodyViewConfig;
-import edu.jhuapl.sbmt.client.ISmallBodyViewConfig;
-import edu.jhuapl.sbmt.client.SmallBodyViewConfig;
-import edu.jhuapl.sbmt.client.SmallBodyViewConfigMetadataIO;
+import edu.jhuapl.sbmt.common.client.BodyViewConfig;
+import edu.jhuapl.sbmt.common.client.ISmallBodyViewConfig;
+import edu.jhuapl.sbmt.common.client.SmallBodyViewConfig;
+import edu.jhuapl.sbmt.common.client.SmallBodyViewConfigMetadataIO;
+import edu.jhuapl.sbmt.config.BasicConfigInfo;
+import edu.jhuapl.sbmt.config.Instrument;
 import edu.jhuapl.sbmt.config.SBMTBodyConfiguration;
 import edu.jhuapl.sbmt.config.SBMTFileLocator;
 import edu.jhuapl.sbmt.config.SBMTFileLocators;
 import edu.jhuapl.sbmt.config.SessionConfiguration;
 import edu.jhuapl.sbmt.config.ShapeModelConfiguration;
-import edu.jhuapl.sbmt.gui.image.model.custom.CustomCylindricalImageKey;
-import edu.jhuapl.sbmt.imaging.instruments.ImagingInstrumentConfiguration;
-import edu.jhuapl.sbmt.model.image.BasicImagingInstrument;
-import edu.jhuapl.sbmt.model.image.ImageKeyInterface;
-import edu.jhuapl.sbmt.model.image.ImageSource;
-import edu.jhuapl.sbmt.model.image.ImageType;
-import edu.jhuapl.sbmt.model.image.ImagingInstrument;
-import edu.jhuapl.sbmt.model.image.Instrument;
-import edu.jhuapl.sbmt.model.image.SpectralImageMode;
+import edu.jhuapl.sbmt.config.SpectralImageMode;
+import edu.jhuapl.sbmt.core.image.BasicImagingInstrument;
+import edu.jhuapl.sbmt.core.image.CustomCylindricalImageKey;
+import edu.jhuapl.sbmt.core.image.ImageKeyInterface;
+import edu.jhuapl.sbmt.core.image.ImageSource;
+import edu.jhuapl.sbmt.core.image.ImageType;
+import edu.jhuapl.sbmt.core.image.ImagingInstrument;
+import edu.jhuapl.sbmt.core.image.ImagingInstrumentConfiguration;
 import edu.jhuapl.sbmt.model.phobos.HierarchicalSearchSpecification;
 import edu.jhuapl.sbmt.query.QueryBase;
 import edu.jhuapl.sbmt.query.fixedlist.FixedListQuery;
@@ -158,7 +158,7 @@ public class SmallBodyViewConfigTest extends BodyViewConfig implements ISmallBod
     private static ViewConfig fetchRemoteConfig(String name, String url, boolean fromServer)
     {
     	if (fromServer)
-    		url = url.replaceFirst("http://sbmt.jhuapl.edu", "file:///disks/d0180/htdocs-sbmt");
+    		url = url.replaceFirst("https?://sbmt.jhuapl.edu", "file:///disks/d0180/htdocs-sbmt");
 
     	ConfigArrayList ioConfigs = new ConfigArrayList();
         ioConfigs.add(new SmallBodyViewConfig(ImmutableList.<String> copyOf(DEFAULT_GASKELL_LABELS_PER_RESOLUTION), ImmutableList.<Integer> copyOf(DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION)));
@@ -289,7 +289,7 @@ public class SmallBodyViewConfigTest extends BodyViewConfig implements ISmallBod
     }
 
     @Override
-    protected List<ImageKeyInterface> getImageMapKeys()
+    public List<ImageKeyInterface> getImageMapKeys()
     {
         if (!hasImageMap)
         {

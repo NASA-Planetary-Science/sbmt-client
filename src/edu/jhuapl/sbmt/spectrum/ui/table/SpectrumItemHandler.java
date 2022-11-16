@@ -1,11 +1,16 @@
 package edu.jhuapl.sbmt.spectrum.ui.table;
 
+import java.util.List;
+
 import javax.swing.JOptionPane;
 
 import org.joda.time.DateTimeZone;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 
+import com.google.common.collect.ImmutableList;
+
+import edu.jhuapl.saavtk.color.provider.ColorProvider;
 import edu.jhuapl.sbmt.spectrum.model.core.BasicSpectrum;
 import edu.jhuapl.sbmt.spectrum.model.core.SpectrumIOException;
 import edu.jhuapl.sbmt.spectrum.rendering.SpectraCollection;
@@ -42,6 +47,8 @@ public class SpectrumItemHandler<S extends BasicSpectrum> extends BasicItemHandl
 				return spectrumCollection.isSpectrumMapped(spec);
 			case Show:
 				return spectrumCollection.getVisibility(spec);
+			case Color:
+				return spectrumCollection.getColorProvider(spec);
 			case Frus:
 				return spectrumCollection.getFrustumVisibility(spec);
 			case Bndr:
@@ -89,6 +96,16 @@ public class SpectrumItemHandler<S extends BasicSpectrum> extends BasicItemHandl
 			if (spectrumCollection.isSpectrumMapped(spec))
 			{
 				spectrumCollection.setVisibility(spec, (boolean) aValue);
+			}
+		}
+		else if (aEnum == SpectrumColumnLookup.Color)
+		{
+			if (spectrumCollection.isSpectrumMapped(spec))
+			{
+				List<S> tmpL = ImmutableList.of(spec);
+				ColorProvider tmpCP = (ColorProvider) aValue;
+				spectrumCollection.installCustomColorProviders(tmpL, tmpCP);
+				boundaryCollection.getBoundary(spec).setBoundaryColor(tmpCP.getBaseColor());
 			}
 		}
 		else if (aEnum == SpectrumColumnLookup.Frus)

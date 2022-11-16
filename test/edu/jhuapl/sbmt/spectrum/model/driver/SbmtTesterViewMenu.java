@@ -12,8 +12,8 @@ import edu.jhuapl.saavtk.gui.ViewMenu;
 import edu.jhuapl.saavtk.gui.dialog.ShapeModelImporterDialog;
 import edu.jhuapl.saavtk.util.Configuration;
 import edu.jhuapl.saavtk.util.Properties;
-import edu.jhuapl.sbmt.client.BasicConfigInfo;
 import edu.jhuapl.sbmt.client.SbmtView;
+import edu.jhuapl.sbmt.config.BasicConfigInfo;
 
 public class SbmtTesterViewMenu extends ViewMenu
 {

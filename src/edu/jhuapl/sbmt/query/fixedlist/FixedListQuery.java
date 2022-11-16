@@ -5,7 +5,7 @@ import java.util.List;
 import edu.jhuapl.saavtk.util.FileCache;
 import edu.jhuapl.saavtk.util.SafeURLPaths;
 import edu.jhuapl.saavtk.util.UnauthorizedAccessException;
-import edu.jhuapl.sbmt.model.image.ImageSource;
+import edu.jhuapl.sbmt.core.image.ImageSource;
 import edu.jhuapl.sbmt.query.ISearchResultsMetadata;
 import edu.jhuapl.sbmt.query.SearchMetadata;
 import edu.jhuapl.sbmt.query.SearchResultsMetadata;
@@ -53,9 +53,9 @@ public class FixedListQuery<T> extends FixedListQueryBase
     }
 
     @Override
-    public FixedListQuery<T> clone()
+    public FixedListQuery<T> copy()
     {
-        return (FixedListQuery<T>) super.clone();
+        return new FixedListQuery<T>(rootPath, galleryPath, multiSource);
     }
 
     @Override
@@ -162,9 +162,9 @@ public class FixedListQuery<T> extends FixedListQueryBase
         return rootPath;
     }
 
-    Key<String> rootPathKey = Key.of("rootPath");
-    Key<Boolean> multiSourceKey = Key.of("multiSource");
-    Key<String> galleryPathKey = Key.of("galleryPath");
+    private static final Key<String> rootPathKey = Key.of("rootPath");
+    private static final Key<Boolean> multiSourceKey = Key.of("multiSource");
+    private static final Key<String> galleryPathKey = Key.of("galleryPath");
 
     @Override
     public Metadata store()

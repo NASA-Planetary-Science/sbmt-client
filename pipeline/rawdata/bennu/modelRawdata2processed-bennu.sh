@@ -41,7 +41,7 @@ processedTop="$pipelineTop/processed"
 scriptDir="/project/sbmt2/sbmt/scripts"
 timeHistoryDir="$pipelineTop/timeHistory"
 importCmd="$scriptDir/import.sh"
-rsyncCmd='rsync -rlptgDH --copy-links'
+rsyncCmd='cp -al'
 briefPgrm="/project/nearsdc/software/spice/cspice/exe/brief"
 javaCmd="/usr/bin/java"
 
@@ -134,8 +134,8 @@ discoverPlateColorings() {
 # MAIN SCRIPT STARTS HERE.
 #-------------------------------------------------------------------------------
 
-if test `whoami` = sbmt; then
-  echo "Run this script while logged in as yourself." >&2
+if test `whoami` != sbmt; then
+  echo "Run this script while logged into the sbmt account." >&2
   exit 1
 fi
 
@@ -168,6 +168,20 @@ echo "Begin `date`" >> $log 2>&1
    #createDirIfNecessary $destTop/$processingModelName/polycam/images
    #createDirIfNecessary $destTop/$processingModelName/polycam/gallery
 
+   # Process the json/config file:
+#   configFile=$processingModelLabel"_101955_Bennu_v7.8.json"
+#   doRsync $srcTop/$configFile $destTop/$processingModelName/$configFile
+
+   rm -rf $destTop/proprietary
+   echo $srcTop/sbmt/bin/ModelMetadataGenerator.sh $destTop
+   $srcTop/sbmt/bin/ModelMetadataGenerator.sh $destTop
+   check $?
+   
+   rm -rf $destTop/published
+   echo $srcTop/sbmt/bin/ModelMetadataGenerator.sh $destTop -pub
+   $srcTop/sbmt/bin/ModelMetadataGenerator.sh $destTop -pub
+   check $?
+   
    # Process the shape models.
    doRsyncDirIfNecessary $srcTop/$rawdataModelName/shape/ $destTop/$processingModelName/shape/
    doGzipDirIfNecessary $destTop/$processingModelName/shape

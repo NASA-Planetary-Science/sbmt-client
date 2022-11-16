@@ -1,5 +1,7 @@
 package edu.jhuapl.sbmt.client;
 
+import edu.jhuapl.sbmt.common.client.ISmallBodyModel;
+
 public class SBMTSpectraFactory
 {
 	//TODO:  This should really be split out and have elements in the individual instrument packages, not in a centralized place like this

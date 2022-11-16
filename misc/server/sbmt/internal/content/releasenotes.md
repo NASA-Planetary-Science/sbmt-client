@@ -4,6 +4,100 @@
 
 # Release Notes
 
+## July 14, 2022 (SBMT-0.8.2)
+
+### CRITICAL:
+- Fixed a launching problem on macOS Mojave and above.
+
+### New:
+- Updates to the Graticule (lat lon grid)
+- Color bar configuration panel now standardized
+- SBMT now runs in Java 16
+- Various updates to the Observing Conditions tab
+- User Interface updates to the main body pane (UI redesign, movie outputs)
+- New Bennu models (OLAv21, OLAv21PTM, SPOv54); other Bennu data updates
+- Internal: MEGANE and DART updates
+
+
+### Bug Fixes:
+- FIXED: Lat/lon structure center sometimes does not allow values to be added
+- FIXED: Restored status bar to utilize fixed width font
+- FIXED: Correct popup logic in structures/lidar
+- FIXED: Improved point diameter UI
+- FIXED: SBMT window size maintained between launches
+
+
+## Jun 7, 2021 (SBMT-0.8.1)
+
+### New:
+- Completed an overhaul of the Regional DTM tab with updates to the table, right click options, and analyze window
+- Header information from FITS files will be displayed when DTM is uploaded
+- User can sort items in the custom DTM table
+- Lighting can be customized for individual DTMs
+- The configuration of the Regional DTM tab can be restored after a restart
+- The boundary color for Regional DTMs can be configured
+- An Analyze panel now provides a means for investigating individual DTMs
+- The Regional DTM tab can now import obj files
+- Added the ability to add and delete individual profiles on a DTM
+- Reinstated the ability to offset an individual DTM from the body
+- Clicking on an individual DTM mapped on the body now prints the name of that DTM to the status bar
+- Made upgrades to the lighting mechanism and moved it under the View menu
+- Status bar now performs better when the window is resized
+- Preliminary SPC-derived shape models of Epimetheus, Janus, and Calypso are now available, including searchable Cassini ISS images (Daly et al in progress)
+- Thomas et al shape models of Epimetheus, Janus, and Calypso from the PDS are now available
+
+### Bug Fixes:
+- Fixed a bug that did not allow the tool to start properly if offline
+- Fixed a bug that caused a crash for Windows users when mapping custom images
+- Fixed a bug that prevented the value of the displayed plate coloring to be printed to the status bar when clicking on the body
+- Fixed various bugs caused when mapping and unmapping DTMs
+- Fixed a bug that caused the reported min/max incidence and emission angles to show identical values
+- Fixed a bug that caused the mapping of custom images to be slow and not update with model resolution
+
+## November 17, 2020 (SBMT-0.8.0.3)
+
+### New:
+
+- Note this release contains only restricted proprietary data and a small amount of data that is available in public releases of the SBMT. Most users do not need and cannot use this version.
+- Added DART mission restricted data sets.
+- Improved and generalized handling of special values for image pixels, allowing these values to be treated as "FILL".
+
+### Bug Fixes
+
+- Improved behavior of some image galleries by downloading thumbnails and images in bulk and allowing them to be viewed out of the data cache rather than from the web site.
+
+## July 27, 2020 (SBMT-0.8.0)
+
+### New:
+
+- Added a new "View" menu to the main SBMT menu bar. The "View" menu includes options for setting the scale bar, camera settings, pick accuracy and LOD settings (the latter two pertain to selecting structures, lidar tracks, etc.)
+- Improved LOD capabilities (which enable feature selection) to allow the user to choose to prioritize speed vs. rendering quality
+- Headers added to circle, point, and ellipse structures files
+- LIDAR GUI improvements
+- Added camera config panel and scalebar support for regional DTMs
+- Added ability to adjust camera to a enable a specified scale bar value
+- Improved error handling when loading image lists
+- Added option to choose to either "append" or "replace" custom spectra when loading list
+- Improved camera panel to give the user more control over camera position and orientation
+- Improved About dialog and frame title for version representation
+- Added ability to save spectrum popup menu item to a directory for multiple spectra
+
+### Bug Fixes
+
+- Made stability improvements to SBMT server
+- Improved behavior when client starts without network access
+- Improved structure selection capability
+- Updated scale bar behavior to preserve accuracy when body no longer fills the field of view
+- Corrected radius reporting for structures whose lat/lon were changed by right click
+- Fixed bug that when clicking "Edit" on Custom Spectrum tab with no spectra selected threw exceptions
+- Fixed bug where coordinate grid (lat/lon) labels did not show up for bodies on Windows machines
+- Fixed bug with drawing circles correctly on high-resolution models
+- Improved structures loading time
+- Corrected a bug in save state capability
+- Fixed a bug that lead circle structures to inadvertently be loaded as point structures, and vis versa
+- Fixed an issue that led to inconsistent angle behavior when editing the ellipse angle
+
+
 ## March 17, 2020 (SBMT-0.7.9.1)
 
 ### New:

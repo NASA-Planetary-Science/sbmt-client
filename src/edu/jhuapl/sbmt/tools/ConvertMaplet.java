@@ -1,5 +1,6 @@
 package edu.jhuapl.sbmt.tools;
 
+import java.io.File;
 import java.io.IOException;
 
 import vtk.vtkPolyData;
@@ -82,7 +83,7 @@ public class ConvertMaplet
         }
 
         String mapletFile = args[i++];
-        String outputFile = args[i];
+        File outputFile = new File(args[i]);
 
         NativeLibraryLoader.loadHeadlessVtkLibraries();
 

@@ -17,7 +17,7 @@ import edu.jhuapl.saavtk.gui.dialog.CustomFileChooser;
 import edu.jhuapl.saavtk.gui.render.Renderer;
 import edu.jhuapl.saavtk.model.ModelManager;
 import edu.jhuapl.saavtk.util.IdPair;
-import edu.jhuapl.sbmt.client.SbmtInfoWindowManager;
+import edu.jhuapl.sbmt.common.client.SbmtInfoWindowManager;
 import edu.jhuapl.sbmt.spectrum.model.core.BasicSpectrum;
 import edu.jhuapl.sbmt.spectrum.model.core.BasicSpectrumInstrument;
 import edu.jhuapl.sbmt.spectrum.model.core.SpectrumIOException;
@@ -408,8 +408,9 @@ public class SpectrumResultsTableController<S extends BasicSpectrum>
     {
     	spectrumCollection.getSelectedItems().forEach(spectrum ->
     	{
-    		spectrumCollection.removeSpectrum(spectrum);
-            boundaries.removeBoundary(spectrum);
+    		spectrumCollection.hideSpectrum(spectrum);
+//    		spectrumCollection.removeSpectrum(spectrum);
+//            boundaries.removeBoundary(spectrum);
     	});
         model.setResultIntervalCurrentlyShown(null);
     }
@@ -422,8 +423,9 @@ public class SpectrumResultsTableController<S extends BasicSpectrum>
     {
     	spectrumCollection.getSelectedItems().forEach(spectrum ->
     	{
-    		spectrumCollection.removeSpectrum(spectrum);
-            boundaries.removeBoundary(spectrum);
+    		spectrumCollection.hideSpectrum(spectrum);
+//    		spectrumCollection.removeSpectrum(spectrum);
+//            boundaries.removeBoundary(spectrum);
     	});
 
         model.setResultIntervalCurrentlyShown(null);

@@ -7,7 +7,7 @@ import javax.swing.JTabbedPane;
 import edu.jhuapl.saavtk.gui.render.Renderer;
 import edu.jhuapl.saavtk.model.ModelManager;
 import edu.jhuapl.saavtk.pick.PickManager;
-import edu.jhuapl.sbmt.client.SmallBodyViewConfig;
+import edu.jhuapl.sbmt.common.client.SmallBodyViewConfig;
 import edu.jhuapl.sbmt.dtm.controller.browse.DtmBrowseController;
 import edu.jhuapl.sbmt.dtm.controller.creation.DtmCreationController;
 import edu.jhuapl.sbmt.dtm.controller.search.DtmSearchController;
@@ -38,7 +38,10 @@ public class ExperimentalDEMController
 		panel.add(tabbedPane);
         tabbedPane.addTab("Create", creationController.getPanel());
         if (!config.dtmBrowseDataSourceMap.isEmpty())
+        {
         	tabbedPane.addTab("Browse", browseController.getPanel());
+        	tabbedPane.setSelectedIndex(1);
+        }
         if (!config.dtmSearchDataSourceMap.isEmpty())
         	tabbedPane.addTab("Search", searchController.getPanel());
     }

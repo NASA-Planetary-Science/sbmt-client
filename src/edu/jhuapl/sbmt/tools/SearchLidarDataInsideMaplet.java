@@ -11,12 +11,13 @@ import edu.jhuapl.saavtk.model.ShapeModelBody;
 import edu.jhuapl.saavtk.model.ShapeModelType;
 import edu.jhuapl.saavtk.model.structure.AbstractEllipsePolygonModel;
 import edu.jhuapl.saavtk.model.structure.CircleSelectionModel;
+import edu.jhuapl.saavtk.status.QuietStatusNotifier;
 import edu.jhuapl.saavtk.structure.Ellipse;
 import edu.jhuapl.saavtk.util.BoundingBox;
 import edu.jhuapl.saavtk.util.NativeLibraryLoader;
 import edu.jhuapl.sbmt.client.SbmtModelFactory;
-import edu.jhuapl.sbmt.client.SmallBodyModel;
-import edu.jhuapl.sbmt.client.SmallBodyViewConfig;
+import edu.jhuapl.sbmt.common.client.SmallBodyModel;
+import edu.jhuapl.sbmt.common.client.SmallBodyViewConfig;
 import edu.jhuapl.sbmt.dtm.model.DEM;
 import edu.jhuapl.sbmt.dtm.service.PointInDEMChecker;
 import edu.jhuapl.sbmt.lidar.LidarSearchParms;
@@ -110,8 +111,8 @@ public class SearchLidarDataInsideMaplet
 
         SmallBodyViewConfig config = SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.EROS, ShapeModelType.GASKELL);
         SmallBodyModel smallBodyModel = SbmtModelFactory.createSmallBodyModel(config);
-        LidarTrackManager trackManager = new LidarTrackManager(QuietSceneChangeNotifier.Instance, smallBodyModel);
-        AbstractEllipsePolygonModel selectionModel = new CircleSelectionModel(smallBodyModel);
+        LidarTrackManager trackManager = new LidarTrackManager(QuietSceneChangeNotifier.Instance, QuietStatusNotifier.Instance, smallBodyModel);
+        AbstractEllipsePolygonModel selectionModel = new CircleSelectionModel(QuietSceneChangeNotifier.Instance, QuietStatusNotifier.Instance, smallBodyModel);
 
         Vector3D center = new Vector3D(dem.getCenter());
         selectionModel.addNewStructure(center, dem.getBoundingBoxDiagonalLength()/2.0, 1.0, 0.0);

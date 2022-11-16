@@ -44,8 +44,8 @@ import java.util.List;
 
 import edu.jhuapl.saavtk.util.Configuration;
 import edu.jhuapl.saavtk.util.FileUtil;
-import edu.jhuapl.sbmt.client.SbmtMultiMissionTool;
-import edu.jhuapl.sbmt.client.SbmtMultiMissionTool.Mission;
+import edu.jhuapl.sbmt.client2.SbmtMultiMissionTool;
+import edu.jhuapl.sbmt.common.client.Mission;
 
 
 /**
@@ -221,7 +221,7 @@ public class SqlManager
 
     public PreparedStatement preparedStatement(String st) throws SQLException
     {
-        return conn.prepareStatement(st);
+        return conn.prepareStatement(st, Statement.RETURN_GENERATED_KEYS);
     }
 
 

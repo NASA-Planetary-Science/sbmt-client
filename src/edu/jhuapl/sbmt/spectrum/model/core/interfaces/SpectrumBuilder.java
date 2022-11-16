@@ -43,7 +43,7 @@ public interface SpectrumBuilder<String, ISmallBodyModel, ISpectralInstrument>
 	 * @return
 	 * @throws IOException
 	 */
-	IBasicSpectrumRenderer buildSpectrumRenderer(String path, ISmallBodyModel smallBodyModel, ISpectralInstrument instrument) throws IOException;
+	IBasicSpectrumRenderer buildSpectrumRenderer(String path, ISmallBodyModel smallBodyModel, ISpectralInstrument instrument, boolean headless) throws IOException;
 
 	/**
 	 * Builds a spectrum renderer based on the passed in <pre>spectrum</pre> and <pre>smallBodyModel</pre>
@@ -52,5 +52,5 @@ public interface SpectrumBuilder<String, ISmallBodyModel, ISpectralInstrument>
 	 * @return
 	 * @throws IOException
 	 */
-	IBasicSpectrumRenderer buildSpectrumRenderer(BasicSpectrum spectrum, ISmallBodyModel smallBodyModel) throws IOException;
+	IBasicSpectrumRenderer buildSpectrumRenderer(BasicSpectrum spectrum, ISmallBodyModel smallBodyModel, boolean headless) throws IOException;
 }

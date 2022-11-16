@@ -9,34 +9,16 @@ import edu.jhuapl.sbmt.query.QueryBase;
 public abstract class DatabaseQueryBase extends QueryBase
 {
     protected String rootPath;
-//    protected /*final*/ String galleryPath;
-    protected Boolean galleryExists;
 
-    protected DatabaseQueryBase(String galleryPath)
+    protected DatabaseQueryBase(String rootPath, String galleryPath)
     {
         super(galleryPath);
-        this.galleryPath = galleryPath;
-        this.galleryExists = null;
-        this.rootPath = null;
+        this.rootPath = rootPath;
     }
 
     public String getRootPath()
     {
         return rootPath;
-    }
-
-    @Override
-    public DatabaseQueryBase clone()
-    {
-//        try
-//        {
-            return (DatabaseQueryBase) super.clone();
-//        }
-//        catch (CloneNotSupportedException e)
-//        {
-//            // Can't happen.
-//            throw new AssertionError(e);
-//        }
     }
 
 //    /**

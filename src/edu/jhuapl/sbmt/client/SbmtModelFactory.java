@@ -2,61 +2,57 @@ package edu.jhuapl.sbmt.client;
 
 import java.io.IOException;
 
-import org.joda.time.DateTime;
-
-import edu.jhuapl.saavtk.gui.render.Renderer;
-import edu.jhuapl.saavtk.model.Graticule;
 import edu.jhuapl.saavtk.model.ShapeModelBody;
 import edu.jhuapl.saavtk.model.ShapeModelType;
+import edu.jhuapl.sbmt.common.client.SmallBodyModel;
+import edu.jhuapl.sbmt.common.client.SmallBodyViewConfig;
+import edu.jhuapl.sbmt.config.SpectralImageMode;
+import edu.jhuapl.sbmt.core.image.CustomCylindricalImageKey;
+import edu.jhuapl.sbmt.core.image.Image;
+import edu.jhuapl.sbmt.core.image.ImageKeyInterface;
+import edu.jhuapl.sbmt.core.image.ImageSource;
+import edu.jhuapl.sbmt.core.image.ImageType;
 import edu.jhuapl.sbmt.dtm.model.DEM;
 import edu.jhuapl.sbmt.dtm.model.DEMKey;
-import edu.jhuapl.sbmt.gui.image.model.custom.CustomCylindricalImageKey;
-import edu.jhuapl.sbmt.model.bennu.imaging.MapCamEarthImage;
-import edu.jhuapl.sbmt.model.bennu.imaging.MapCamImage;
-import edu.jhuapl.sbmt.model.bennu.imaging.MapCamV4Image;
-import edu.jhuapl.sbmt.model.bennu.imaging.OcamsFlightImage;
-import edu.jhuapl.sbmt.model.bennu.imaging.PolyCamEarthImage;
-import edu.jhuapl.sbmt.model.bennu.imaging.PolyCamImage;
-import edu.jhuapl.sbmt.model.bennu.imaging.PolyCamV4Image;
-import edu.jhuapl.sbmt.model.bennu.imaging.SamCamEarthImage;
+import edu.jhuapl.sbmt.image.model.BasicPerspectiveImage;
+import edu.jhuapl.sbmt.image.model.CustomPerspectiveImage;
+import edu.jhuapl.sbmt.image.model.CylindricalImage;
+import edu.jhuapl.sbmt.image.model.bodies.bennu.MapCamEarthImage;
+import edu.jhuapl.sbmt.image.model.bodies.bennu.MapCamImage;
+import edu.jhuapl.sbmt.image.model.bodies.bennu.MapCamV4Image;
+import edu.jhuapl.sbmt.image.model.bodies.bennu.OcamsFlightImage;
+import edu.jhuapl.sbmt.image.model.bodies.bennu.PolyCamEarthImage;
+import edu.jhuapl.sbmt.image.model.bodies.bennu.PolyCamImage;
+import edu.jhuapl.sbmt.image.model.bodies.bennu.PolyCamV4Image;
+import edu.jhuapl.sbmt.image.model.bodies.bennu.SamCamEarthImage;
+import edu.jhuapl.sbmt.image.model.bodies.ceres.FcCeresImage;
+import edu.jhuapl.sbmt.image.model.bodies.eros.MSIImage;
+import edu.jhuapl.sbmt.image.model.bodies.gaspra.SSIGaspraImage;
+import edu.jhuapl.sbmt.image.model.bodies.ida.SSIIdaImage;
+import edu.jhuapl.sbmt.image.model.bodies.itokawa.AmicaImage;
+import edu.jhuapl.sbmt.image.model.bodies.leisa.LEISAJupiterImage;
+import edu.jhuapl.sbmt.image.model.bodies.lorri.LorriImage;
+import edu.jhuapl.sbmt.image.model.bodies.mathilde.MSIMathildeImage;
+import edu.jhuapl.sbmt.image.model.bodies.mvic.MVICQuadJupiterImage;
+import edu.jhuapl.sbmt.image.model.bodies.rosetta.OsirisImage;
+import edu.jhuapl.sbmt.image.model.bodies.ryugu.onc.ONCImage;
+import edu.jhuapl.sbmt.image.model.bodies.ryugu.onc.ONCTruthImage;
+import edu.jhuapl.sbmt.image.model.bodies.ryugu.tir.TIRImage;
+import edu.jhuapl.sbmt.image.model.bodies.saturnmoon.SaturnMoonImage;
+import edu.jhuapl.sbmt.image.model.bodies.vesta.FcImage;
+import edu.jhuapl.sbmt.image.model.bodies.vesta_old.VestaOld;
+import edu.jhuapl.sbmt.image.model.marsmissions.MarsMissionImage;
 import edu.jhuapl.sbmt.model.bennu.shapeModel.Bennu;
 import edu.jhuapl.sbmt.model.bennu.shapeModel.BennuV4;
-import edu.jhuapl.sbmt.model.ceres.FcCeresImage;
-import edu.jhuapl.sbmt.model.custom.CustomGraticule;
 import edu.jhuapl.sbmt.model.custom.CustomShapeModel;
 import edu.jhuapl.sbmt.model.eros.Eros;
 import edu.jhuapl.sbmt.model.eros.ErosThomas;
 import edu.jhuapl.sbmt.model.eros.LineamentModel;
-import edu.jhuapl.sbmt.model.eros.MSIImage;
-import edu.jhuapl.sbmt.model.gaspra.SSIGaspraImage;
-import edu.jhuapl.sbmt.model.ida.SSIIdaImage;
-import edu.jhuapl.sbmt.model.image.CustomPerspectiveImage;
-import edu.jhuapl.sbmt.model.image.CylindricalImage;
-import edu.jhuapl.sbmt.model.image.Image;
-import edu.jhuapl.sbmt.model.image.ImageKeyInterface;
-import edu.jhuapl.sbmt.model.image.ImageSource;
-import edu.jhuapl.sbmt.model.image.ImageType;
-import edu.jhuapl.sbmt.model.image.SpectralImageMode;
-import edu.jhuapl.sbmt.model.image.marsmissions.MarsMissionImage;
-import edu.jhuapl.sbmt.model.itokawa.AmicaImage;
 import edu.jhuapl.sbmt.model.itokawa.Itokawa;
-import edu.jhuapl.sbmt.model.leisa.LEISAJupiterImage;
-import edu.jhuapl.sbmt.model.lorri.LorriImage;
-import edu.jhuapl.sbmt.model.mathilde.MSIMathildeImage;
-import edu.jhuapl.sbmt.model.mvic.MVICQuadJupiterImage;
 import edu.jhuapl.sbmt.model.rosetta.CG;
 import edu.jhuapl.sbmt.model.rosetta.Lutetia;
-import edu.jhuapl.sbmt.model.rosetta.OsirisImage;
-import edu.jhuapl.sbmt.model.ryugu.onc.ONCImage;
-import edu.jhuapl.sbmt.model.ryugu.onc.ONCTruthImage;
-import edu.jhuapl.sbmt.model.ryugu.tir.TIRImage;
-import edu.jhuapl.sbmt.model.saturnmoon.SaturnMoonImage;
 import edu.jhuapl.sbmt.model.simple.Sbmt2SimpleSmallBody;
 import edu.jhuapl.sbmt.model.simple.SimpleSmallBody;
-import edu.jhuapl.sbmt.model.time.StateHistoryModel;
-import edu.jhuapl.sbmt.model.time.StateHistoryModel.StateHistoryKey;
-import edu.jhuapl.sbmt.model.vesta.FcImage;
-import edu.jhuapl.sbmt.model.vesta_old.VestaOld;
 
 import nom.tam.fits.FitsException;
 
@@ -71,17 +67,18 @@ public class SbmtModelFactory
 //        return new SimulationRun(key, smallBodyModel);
 //    }
 
-    static public StateHistoryModel createStateHistory(
-            StateHistoryKey key,
-            DateTime start,
-            DateTime end,
-            SmallBodyModel smallBodyModel,
-            Renderer renderer,
-            boolean loadPointingOnly) throws FitsException, IOException
-    {
-        SmallBodyViewConfig config = (SmallBodyViewConfig)smallBodyModel.getSmallBodyConfig();
-        return new StateHistoryModel(key, start, end, smallBodyModel, renderer);
-    }
+//    static public StateHistoryModel createStateHistory(
+//            StateHistoryKey key,
+//            SmallBodyModel smallBodyModel,
+//            ModelManager modelManager,
+//            Renderer renderer,
+//            boolean loadPointingOnly) throws FitsException, IOException, StateHistoryInputException, StateHistoryInvalidTimeException
+//    {
+//        SmallBodyViewConfig config = (SmallBodyViewConfig)smallBodyModel.getSmallBodyConfig();
+//		StateHistoryCollection runs = (StateHistoryCollection) modelManager.getModel(ModelNames.STATE_HISTORY_COLLECTION);
+//
+//        return new StateHistoryModel(smallBodyModel, renderer, runs);
+//    }
 
     static public Image createImage(
             ImageKeyInterface key,
@@ -110,7 +107,7 @@ public class SbmtModelFactory
                     return new LEISAJupiterImage(key, smallBodyModel, loadPointingOnly);
                 else
                     return null;
-            }
+            } 
             else // SpectralMode.MONO
             {
                 if (key.getInstrument().getType() == ImageType.MSI_IMAGE)
@@ -139,7 +136,7 @@ public class SbmtModelFactory
                     return new MSIMathildeImage(key, smallBodyModel, loadPointingOnly);
                 else if (key.getInstrument().getType() == ImageType.LORRI_IMAGE)
                     return new LorriImage(key, smallBodyModel, loadPointingOnly);
-                else if (key.getInstrument().getType() == ImageType.POLYCAM_V3_IMAGE)
+                else if (key.getInstrument().getType() == ImageType.POLYCAM_V3_IMAGE) 
                     return new PolyCamImage(key, smallBodyModel, loadPointingOnly);
                 else if (key.getInstrument().getType() == ImageType.MAPCAM_V3_IMAGE)
                     return new MapCamImage(key, smallBodyModel, loadPointingOnly);
@@ -169,8 +166,6 @@ public class SbmtModelFactory
                     return new TIRImage(key, smallBodyModel, loadPointingOnly);
                 else if (key.getInstrument().getType() == ImageType.GENERIC_IMAGE)
                     return new CustomPerspectiveImage(key, smallBodyModel, loadPointingOnly);
-                else
-                    return null;
             }
         }
         else if (ImageSource.LOCAL_PERSPECTIVE.equals(key.getSource()))
@@ -235,15 +230,13 @@ public class SbmtModelFactory
                 return new ONCTruthImage(key, smallBodyModel, loadPointingOnly);
             else if (key.getImageType() == ImageType.TIR_IMAGE)
                 return new TIRImage(key, smallBodyModel, loadPointingOnly);
-            else
-                return null;
         }
         else if (key instanceof CustomCylindricalImageKey)
         {
             return new CylindricalImage((CustomCylindricalImageKey) key, smallBodyModel);
         }
 
-        return null;
+        return new BasicPerspectiveImage(key, smallBodyModel, loadPointingOnly);
     }
 
     static public SmallBodyModel createSmallBodyModel(SmallBodyViewConfig config)
@@ -340,30 +333,6 @@ public class SbmtModelFactory
             }
         }
         return result;
-    }
-
-    static public Graticule createGraticule(SmallBodyModel smallBodyModel)
-    {
-        SmallBodyViewConfig config = (SmallBodyViewConfig)smallBodyModel.getSmallBodyConfig();
-        ShapeModelType author = config.author;
-
-        if (ShapeModelType.GASKELL == author && smallBodyModel.getNumberResolutionLevels() == 4)
-        {
-            String[] graticulePaths = new String[]{
-                    config.rootDirOnServer + "/coordinate_grid_res0.vtk.gz",
-                    config.rootDirOnServer + "/coordinate_grid_res1.vtk.gz",
-                    config.rootDirOnServer + "/coordinate_grid_res2.vtk.gz",
-                    config.rootDirOnServer + "/coordinate_grid_res3.vtk.gz"
-            };
-
-            return new Graticule(smallBodyModel, graticulePaths);
-        }
-        else if (ShapeModelType.CUSTOM == author && !config.customTemporary)
-        {
-            return new CustomGraticule(smallBodyModel);
-        }
-
-        return new Graticule(smallBodyModel);
     }
 
     static public LineamentModel createLineament()

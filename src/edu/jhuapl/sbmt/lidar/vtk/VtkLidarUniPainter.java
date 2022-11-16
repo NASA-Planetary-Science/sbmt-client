@@ -7,7 +7,6 @@ import java.util.Objects;
 
 import org.apache.commons.math3.geometry.euclidean.threed.Vector3D;
 
-import vtk.vtkActor;
 import vtk.vtkCellArray;
 import vtk.vtkGeometryFilter;
 import vtk.vtkPoints;
@@ -16,30 +15,30 @@ import vtk.vtkPolyDataMapper;
 import vtk.vtkProp;
 import vtk.vtkUnsignedCharArray;
 
-import edu.jhuapl.saavtk.pick.PickTarget;
-import edu.jhuapl.saavtk.util.SaavtkLODActor;
-import edu.jhuapl.sbmt.lidar.LidarFileSpec;
+import edu.jhuapl.saavtk.color.provider.ColorProvider;
+import edu.jhuapl.saavtk.feature.ConstFeatureAttr;
+import edu.jhuapl.saavtk.feature.FeatureAttr;
+import edu.jhuapl.saavtk.feature.FeatureType;
+import edu.jhuapl.saavtk.view.lod.LodMode;
+import edu.jhuapl.saavtk.view.lod.LodUtil;
+import edu.jhuapl.saavtk.view.lod.VtkLodActor;
+import edu.jhuapl.sbmt.lidar.BasicLidarPoint;
+import edu.jhuapl.sbmt.lidar.LidarFeatureType;
 import edu.jhuapl.sbmt.lidar.LidarManager;
 import edu.jhuapl.sbmt.lidar.LidarPoint;
-import edu.jhuapl.sbmt.lidar.LidarTrack;
-import edu.jhuapl.sbmt.lidar.feature.ConstFeatureAttr;
-import edu.jhuapl.sbmt.lidar.feature.FeatureAttr;
-import edu.jhuapl.sbmt.lidar.feature.FeatureType;
-import edu.jhuapl.sbmt.lidar.gui.color.ColorProvider;
 import edu.jhuapl.sbmt.lidar.util.LidarGeoUtil;
-import edu.jhuapl.sbmt.util.TimeUtil;
 
 /**
  * Class used to render a single lidar data object and the corresponding points
  * via the VTK framework.
- * <P>
+ * <p>
  * This class supports the following configurable state:
- * <UL>
- * <LI>Source / Target ColorProviders
- * <LI>Translation vector
- * <LI>Point size
- * <LI>Range of start / stop percent (TODO: Not intuitive)
- * </UL>
+ * <ul>
+ * <li>Source / Target ColorProviders
+ * <li>Translation vector
+ * <li>Point size
+ * <li>Range of start / stop percent (TODO: Not intuitive)
+ * </ul>
  *
  * @author lopeznr1
  */
@@ -76,8 +75,8 @@ public class VtkLidarUniPainter<G1> implements VtkLidarPainter<G1>
 	private vtkCellArray vSourceCA;
 	private vtkCellArray vTargetCA;
 	private vtkUnsignedCharArray vColorUCA;
-	private vtkActor vSourceA;
-	private vtkActor vTargetA;
+	private VtkLodActor vSourceA;
+	private VtkLodActor vTargetA;
 
 	/**
 	 * Standard Constructor
@@ -115,37 +114,15 @@ public class VtkLidarUniPainter<G1> implements VtkLidarPainter<G1>
 	}
 
 	@Override
-	public String getDisplayInfo(PickTarget aPickTarget)
-	{
-		int cellId = aPickTarget.getCellId();
-		cellId = vTargetGF.GetPointMinimum() + cellId;
-
-		// Get the header
-		String headStr = "";
-		if (refItem instanceof LidarTrack)
-			headStr = String.format("Trk %d: ", ((LidarTrack) refItem).getId());
-		else if (refItem instanceof LidarFileSpec)
-			headStr = String.format("%s: ", ((LidarFileSpec) refItem).getName());
-
-		double timeVal = timeFA.getValAt(cellId);
-		String timeStr = TimeUtil.et2str(timeVal);
-
-		double rangeVal = rangeFA.getValAt(cellId) * 1000;
-
-		return String.format("%s Lidar point acquired at %s, ET = %f, unmodified range = %f m", headStr, timeStr, timeVal,
-				rangeVal);
-	}
-
-	@Override
 	public FeatureAttr getFeatureAttrFor(FeatureType aFeatureType)
 	{
-		if (aFeatureType == FeatureType.Time)
+		if (aFeatureType == LidarFeatureType.Time)
 			return timeFA;
-		else if (aFeatureType == FeatureType.Radius)
+		else if (aFeatureType == LidarFeatureType.Radius)
 			return radiusFA;
-		else if (aFeatureType == FeatureType.Range)
+		else if (aFeatureType == LidarFeatureType.Range)
 			return rangeFA;
-		else if (aFeatureType == FeatureType.Intensity)
+		else if (aFeatureType == LidarFeatureType.Intensity)
 			return intensityFA;
 		else if (aFeatureType == null)
 			return new ConstFeatureAttr(getNumberOfPoints(), 0.0, 1.0, 0.5);
@@ -162,7 +139,13 @@ public class VtkLidarUniPainter<G1> implements VtkLidarPainter<G1>
 	@Override
 	public LidarPoint getLidarPointForCell(int aCellId)
 	{
-		return refManager.getLidarPointAt(refItem, aCellId);
+		var cellId = vTargetGF.GetPointMinimum() + aCellId;
+		var srcPtArr = vSourceP.GetPoint(cellId);
+		var tgtPtArr = vTargetP.GetPoint(cellId);
+		var timeVal = timeFA.getValAt(cellId);
+		var rangeVal = rangeFA.getValAt(cellId);
+		var intensityVal = intensityFA.getValAt(cellId);
+		return new BasicLidarPoint(tgtPtArr, srcPtArr, timeVal, rangeVal, intensityVal);
 	}
 
 	@Override
@@ -309,12 +292,15 @@ public class VtkLidarUniPainter<G1> implements VtkLidarPainter<G1>
 		int numPts = getNumberOfPoints();
 		vSourceGF = VtkUtil.formGeometryFilter(vSourcePD, numPts);
 
-		vtkPolyDataMapper pointsMapperSource = new vtkPolyDataMapper();
-		pointsMapperSource.SetInputConnection(vSourceGF.GetOutputPort());
+		vtkPolyDataMapper vSourceRegPDM = new vtkPolyDataMapper();
+		vSourceRegPDM.SetInputConnection(vSourceGF.GetOutputPort());
 
-		vSourceA = new SaavtkLODActor(this);
-		vSourceA.SetMapper(pointsMapperSource);
-		((SaavtkLODActor) vSourceA).setQuadricDecimatedLODMapper(vSourceGF.GetOutputPort());
+		vSourceA = new VtkLodActor(this);
+		vSourceA.setDefaultMapper(vSourceRegPDM);
+		vSourceA.setLodMapper(LodMode.MaxQuality, vSourceRegPDM);
+
+		vtkPolyDataMapper vSourceDecPDM = LodUtil.createQuadricDecimatedMapper(vSourceGF.GetOutputPort());
+		vSourceA.setLodMapper(LodMode.MaxSpeed, vSourceDecPDM);
 
 		Color tmpColorA = cSourceCP.getColor(0.0, 1.0, 0.5);
 		double r = tmpColorA.getRed() / 255.0;
@@ -343,13 +329,16 @@ public class VtkLidarUniPainter<G1> implements VtkLidarPainter<G1>
 
 		vTargetGF = VtkUtil.formGeometryFilter(vTargetPD, numPts);
 
-		vtkPolyDataMapper pointsMapperTarget = new vtkPolyDataMapper();
-		pointsMapperTarget.SetScalarModeToUseCellData();
-		pointsMapperTarget.SetInputConnection(vTargetGF.GetOutputPort());
+		vtkPolyDataMapper vTargetRegPDM = new vtkPolyDataMapper();
+		vTargetRegPDM.SetScalarModeToUseCellData();
+		vTargetRegPDM.SetInputConnection(vTargetGF.GetOutputPort());
 
-		vTargetA = new SaavtkLODActor(this);
-		vTargetA.SetMapper(pointsMapperTarget);
-		((SaavtkLODActor) vTargetA).setQuadricDecimatedLODMapper(vTargetGF.GetOutputPort());
+		vTargetA = new VtkLodActor(this);
+		vTargetA.setDefaultMapper(vTargetRegPDM);
+		vTargetA.setLodMapper(LodMode.MaxQuality, vTargetRegPDM);
+
+		vtkPolyDataMapper vTargetDecPDM = LodUtil.createQuadricDecimatedMapper(vTargetGF.GetOutputPort());
+		vTargetA.setLodMapper(LodMode.MaxSpeed, vTargetDecPDM);
 
 		vTargetA.GetProperty().SetPointSize(2.0);
 	}

@@ -4,6 +4,7 @@ import java.awt.Cursor;
 import java.awt.Dimension;
 import java.awt.ItemSelectable;
 import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.io.IOException;
@@ -25,18 +26,20 @@ import javax.swing.text.html.HTMLDocument;
 import javax.swing.text.html.HTMLEditorKit;
 
 import edu.jhuapl.saavtk.gui.panel.PolyhedralModelControlPanel;
+import edu.jhuapl.saavtk.gui.render.Renderer;
 import edu.jhuapl.saavtk.model.ModelManager;
 import edu.jhuapl.saavtk.model.ModelNames;
 import edu.jhuapl.saavtk.model.PolyhedralModel;
 import edu.jhuapl.saavtk.pick.PickUtil;
-import edu.jhuapl.sbmt.model.image.CylindricalImage;
-import edu.jhuapl.sbmt.model.image.Image;
-import edu.jhuapl.sbmt.model.image.ImageCollection;
-import edu.jhuapl.sbmt.model.image.ImageKeyInterface;
+import edu.jhuapl.sbmt.common.client.SmallBodyModel;
+import edu.jhuapl.sbmt.core.image.Image;
+import edu.jhuapl.sbmt.core.image.ImageKeyInterface;
+import edu.jhuapl.sbmt.image.model.CylindricalImage;
+import edu.jhuapl.sbmt.image.model.ImageCollection;
 import edu.jhuapl.sbmt.util.PolyDataUtil2;
 import edu.jhuapl.sbmt.util.PolyDataUtil2.PolyDataStatistics;
 
-public class SmallBodyControlPanel extends PolyhedralModelControlPanel
+public class SmallBodyControlPanel extends PolyhedralModelControlPanel implements ItemListener
 {
     private static final long serialVersionUID = 518373430237465750L;
     private static final String IMAGE_MAP_TEXT = "Show Image Map";
@@ -49,13 +52,14 @@ public class SmallBodyControlPanel extends PolyhedralModelControlPanel
     private final JLabel opacityLabel;
     private final List<OpacityChangeListener> imageChangeListeners;
 
-    public SmallBodyControlPanel(ModelManager modelManager, String bodyName)
+    public SmallBodyControlPanel(Renderer aRenderer, ModelManager modelManager, String bodyName)
     {
-        super(modelManager, bodyName);
+        super(aRenderer, modelManager, bodyName);
         this.imageMapKeys = new HashMap<>();
         this.imageChangeListeners = new ArrayList<>();
 
         SmallBodyModel smallBodyModel = (SmallBodyModel) modelManager.getPolyhedralModel();
+
         if ((smallBodyModel.getImageMapKeys() != null) && !smallBodyModel.getImageMapKeys().isEmpty())
         {
             imageMapCheckBox = configureImageMapCheckBox(smallBodyModel);
@@ -74,7 +78,8 @@ public class SmallBodyControlPanel extends PolyhedralModelControlPanel
         initialize();
     }
 
-    protected void addCustomControls(JPanel panel)
+    @Override
+	protected void addCustomControls(JPanel panel)
     {
         SmallBodyModel smallBodyModel = (SmallBodyModel) getModelManager().getPolyhedralModel();
 
@@ -138,8 +143,6 @@ public class SmallBodyControlPanel extends PolyhedralModelControlPanel
     @Override
     public void itemStateChanged(ItemEvent e)
     {
-        super.itemStateChanged(e);
-
         PickUtil.setPickingEnabled(false);
 
         ItemSelectable selectedItem = e.getItemSelectable();

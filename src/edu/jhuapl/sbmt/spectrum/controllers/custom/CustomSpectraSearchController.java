@@ -14,8 +14,8 @@ import org.apache.commons.io.FilenameUtils;
 import edu.jhuapl.saavtk.gui.render.Renderer;
 import edu.jhuapl.saavtk.model.ModelManager;
 import edu.jhuapl.saavtk.pick.PickManager;
-import edu.jhuapl.sbmt.client.SbmtInfoWindowManager;
-import edu.jhuapl.sbmt.client.SbmtSpectrumModelFactory;
+import edu.jhuapl.sbmt.common.client.SbmtInfoWindowManager;
+import edu.jhuapl.sbmt.common.client.SbmtSpectrumModelFactory;
 import edu.jhuapl.sbmt.spectrum.controllers.standard.SpectrumColoringController;
 import edu.jhuapl.sbmt.spectrum.model.core.BasicSpectrum;
 import edu.jhuapl.sbmt.spectrum.model.core.BasicSpectrumInstrument;
@@ -28,6 +28,8 @@ import edu.jhuapl.sbmt.spectrum.model.sbmtCore.spectra.CustomSpectrumKeyInterfac
 import edu.jhuapl.sbmt.spectrum.rendering.SpectraCollection;
 import edu.jhuapl.sbmt.spectrum.rendering.SpectrumBoundaryCollection;
 import edu.jhuapl.sbmt.spectrum.ui.search.SpectrumSearchPanel;
+
+import glum.item.ItemEventType;
 
 /**
  * Controller class for the Custom Search UI.  In charge of starting up the appropriate models and sub panels required for the UI.
@@ -157,6 +159,17 @@ public class CustomSpectraSearchController<S extends BasicSpectrum>
 
 			}
         });
+
+		spectrumCollection.addListener((aSource, aEventType) ->
+		{
+			if (aEventType == ItemEventType.ItemsSelected)
+			{
+				if (spectrumCollection.getSelectedItems() == null || searchParametersController == null) return;
+				int selectedCount = spectrumCollection.getSelectedItems().size();
+				searchParametersController.getPanel().getEditButton().setEnabled(selectedCount == 1);
+				searchParametersController.getPanel().getDeleteButton().setEnabled(selectedCount != 0);
+			}
+		});
         this.spectrumResultsTableController.setSpectrumResultsPanel();
 
         this.searchParametersController = new CustomSpectraControlController<S>(spectrumSearchModel, spectraSpec);

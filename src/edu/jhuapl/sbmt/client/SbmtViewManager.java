@@ -10,7 +10,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.SortedSet;
 
-import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
@@ -24,24 +23,33 @@ import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 
 import edu.jhuapl.saavtk.camera.gui.CameraQuaternionAction;
+import edu.jhuapl.saavtk.camera.gui.CameraRecorderAction;
 import edu.jhuapl.saavtk.camera.gui.CameraRegularAction;
-import edu.jhuapl.saavtk.gui.Console;
 import edu.jhuapl.saavtk.gui.RecentlyViewed;
 import edu.jhuapl.saavtk.gui.ShapeModelImporter;
 import edu.jhuapl.saavtk.gui.ShapeModelImporter.FormatType;
 import edu.jhuapl.saavtk.gui.ShapeModelImporter.ShapeModelType;
-import edu.jhuapl.saavtk.gui.StatusBar;
+import edu.jhuapl.saavtk.gui.TSConsole;
 import edu.jhuapl.saavtk.gui.View;
 import edu.jhuapl.saavtk.gui.ViewManager;
-import edu.jhuapl.saavtk.gui.menu.EnableLODsAction;
 import edu.jhuapl.saavtk.gui.menu.FavoritesMenu;
 import edu.jhuapl.saavtk.gui.menu.FileMenu;
 import edu.jhuapl.saavtk.gui.menu.PickToleranceAction;
 import edu.jhuapl.saavtk.model.ShapeModelBody;
 import edu.jhuapl.saavtk.scalebar.gui.ScaleBarAction;
+import edu.jhuapl.saavtk.status.StatusNotifier;
 import edu.jhuapl.saavtk.util.Configuration;
 import edu.jhuapl.saavtk.util.ConvertResourceToFile;
 import edu.jhuapl.saavtk.util.SafeURLPaths;
+import edu.jhuapl.saavtk.view.light.gui.LightingConfigAction;
+import edu.jhuapl.saavtk.view.lod.gui.LodAction;
+import edu.jhuapl.sbmt.common.client.SbmtHelpMenu;
+import edu.jhuapl.sbmt.common.client.SmallBodyViewConfig;
+import edu.jhuapl.sbmt.common.client.SmallBodyViewConfigMetadataIO;
+import edu.jhuapl.sbmt.config.BasicConfigInfo;
+import edu.jhuapl.sbmt.config.BodyType;
+import edu.jhuapl.sbmt.config.ShapeModelDataUsed;
+import edu.jhuapl.sbmt.config.ShapeModelPopulation;
 
 import crucible.crust.metadata.api.Key;
 import crucible.crust.metadata.api.Metadata;
@@ -82,9 +90,9 @@ public class SbmtViewManager extends ViewManager
 
     private String defaultModelName;
 
-    public SbmtViewManager(StatusBar statusBar, Frame frame, String tempCustomShapeModelPath)
+    public SbmtViewManager(StatusNotifier aStatusNotifier, Frame frame, String tempCustomShapeModelPath)
     {
-        super(statusBar, frame, tempCustomShapeModelPath);
+        super(aStatusNotifier, frame, tempCustomShapeModelPath);
         this.menuEntries = Lists.newArrayList();
         this.configMap = Maps.newHashMap();
         this.stateManager = TrackedMetadataManager.of("ViewManager");
@@ -164,7 +172,7 @@ public class SbmtViewManager extends ViewManager
             failsafeModelInitialized = true;
 
             String failsafeParent = SafeURLPaths.instance().getString(Configuration.getApplicationDataDir(), "failsafeErosModel");
-            File failsafeModel = ConvertResourceToFile.convertResourceToRealFile(this, "/edu/jhuapl/sbmt/data/Eros_ver64q.vtk", failsafeParent);
+            File failsafeModel = ConvertResourceToFile.convertResourceToRealFile(this.getClass(), "/edu/jhuapl/sbmt/data/Eros_ver64q.vtk", failsafeParent);
 
             if (failsafeModel != null && failsafeModel.exists())
             {
@@ -218,24 +226,23 @@ public class SbmtViewManager extends ViewManager
         viewMenu.setMnemonic('V');
         viewMenu.add(new JMenuItem(new CameraRegularAction(this)));
         viewMenu.add(new JMenuItem(new CameraQuaternionAction(this)));
+        viewMenu.add(new JMenuItem(new CameraRecorderAction(this)));
+        viewMenu.add(new JMenuItem(new LightingConfigAction(this)));
         viewMenu.add(new JMenuItem(new ScaleBarAction(this)));
 
         viewMenu.addSeparator();
-        JCheckBoxMenuItem enableLodMI = new JCheckBoxMenuItem(new EnableLODsAction());
-        enableLodMI.setSelected(true);
-        viewMenu.add(enableLodMI);
+        viewMenu.add(new JMenuItem(new LodAction(this)));
         viewMenu.add(new PickToleranceAction(this));
 
         menuBar.add(viewMenu);
 
         // Console menu
-        Console.addConsoleMenu(menuBar);
+        TSConsole.addConsoleMenu(menuBar);
 
         // Help menu
         helpMenu = new SbmtHelpMenu(this);
         helpMenu.setMnemonic('H');
         menuBar.add(helpMenu);
-
     }
 
     @Override
@@ -277,7 +284,7 @@ public class SbmtViewManager extends ViewManager
     }
 
     @Override
-    protected void addBuiltInViews(StatusBar statusBar)
+    protected void addBuiltInViews(StatusNotifier aStatusNotifier)
     {
 //        for (ViewConfig config: SmallBodyViewConfig.getBuiltInConfigs())
 //        {
@@ -289,7 +296,7 @@ public class SbmtViewManager extends ViewManager
         for (BasicConfigInfo configInfo: SmallBodyViewConfig.getConfigIdentifiers())
         {
         	if (configInfo.isEnabled())
-        		addBuiltInView(new SbmtView(statusBar, configInfo));
+        		addBuiltInView(new SbmtView(aStatusNotifier, configInfo));
         }
 //    	for (String configKey: SmallBodyViewConfig.getConfigIdentifiers().keySet())
 //    	{
@@ -307,11 +314,11 @@ public class SbmtViewManager extends ViewManager
 
 
     @Override
-    protected View createCustomView(StatusBar statusBar, String name, boolean temporary)
+    protected View createCustomView(StatusNotifier aStatusNotifier, String name, boolean temporary)
     {
         SmallBodyViewConfig customConfig = SmallBodyViewConfig.ofCustom(name, temporary);
 
-        return new SbmtView(statusBar, customConfig);
+        return new SbmtView(aStatusNotifier, customConfig);
     }
 
     @Override
@@ -326,7 +333,7 @@ public class SbmtViewManager extends ViewManager
         catch (NullPointerException | IllegalArgumentException iae)
         {
 //            System.err.println("Custom Model Import Error: Unable to read custom model metadata for " + name + " attempting older style");
-           	return new SbmtView(statusBar, customConfig);
+           	return new SbmtView(refStatusNotifier, customConfig);
 
         }
         catch (IOException e)
@@ -345,7 +352,7 @@ public class SbmtViewManager extends ViewManager
             // TODO Auto-generated catch block
             e.printStackTrace();
         }
-        return new SbmtView(statusBar, customConfig);
+        return new SbmtView(refStatusNotifier, customConfig);
     }
 
     @Override
@@ -427,7 +434,7 @@ public class SbmtViewManager extends ViewManager
     public boolean isAddSeparator(BasicConfigInfo config, String menuItem)
     {
         boolean result = false;
-        if (config.shapeModelName.equals(menuItem) && configMap.containsKey(config))
+        if (config.getShapeModelName().equals(menuItem) && configMap.containsKey(config))
         {
             int index = configMap.get(config);
             result = index > 0 && menuEntries.get(index - 1) instanceof SeparatorEntry;
@@ -502,25 +509,25 @@ public class SbmtViewManager extends ViewManager
             // If we get to here, equality is not an option -- two ViewConfigs must differ
             // in one of their significant fields. From here on down is a series of tie-breakers.
 
-            result = TYPE_COMPARATOR.compare(config1.type, config2.type);
+            result = TYPE_COMPARATOR.compare(config1.getType(), config2.getType());
 
             if (result == 0)
             {
-                result = POPULATION_COMPARATOR.compare(config1.population, config2.population);
+                result = POPULATION_COMPARATOR.compare(config1.getPopulation(), config2.getPopulation());
             }
 
             if (result == 0)
             {
-                result = MARK_VISITED_BY_SPACECRAFT_COMPARATOR.compare(config1.body, config2.body);
+                result = MARK_VISITED_BY_SPACECRAFT_COMPARATOR.compare(config1.getBody(), config2.getBody());
             }
 
             if (result == 0)
             {
-                result = BODY_COMPARATOR.compare(config1.body, config2.body);
+                result = BODY_COMPARATOR.compare(config1.getBody(), config2.getBody());
             }
 
             if (result == 0) {
-                result = DATA_USED_COMPARATOR.compare(config1.dataUsed, config2.dataUsed);
+                result = DATA_USED_COMPARATOR.compare(config1.getDataUsed(), config2.getDataUsed());
             }
 
             if (result == 0)
@@ -565,10 +572,14 @@ public class SbmtViewManager extends ViewManager
     private static final ImmutableSet<ShapeModelBody> MARK_VISITED_BY_SPACECRAFT = ImmutableSet.of(
             ShapeModelBody.EROS,
             ShapeModelBody.ITOKAWA,
+            ShapeModelBody.DIDYMOS_SYSTEM,
+            ShapeModelBody.DIDYMOS,
+            ShapeModelBody.DIMORPHOS,
             ShapeModelBody.RQ36,
             ShapeModelBody.RYUGU,
             ShapeModelBody.CERES,
             ShapeModelBody.VESTA,
+            ShapeModelBody.PSYCHE,
             ShapeModelBody.LUTETIA,
             ShapeModelBody.IDA,
             ShapeModelBody.MATHILDE,
@@ -601,6 +612,9 @@ public class SbmtViewManager extends ViewManager
             // Asteroids -> NEO (visited)
             ShapeModelBody.EROS,
             ShapeModelBody.ITOKAWA,
+            ShapeModelBody.DIDYMOS_SYSTEM,
+            ShapeModelBody.DIDYMOS,
+            ShapeModelBody.DIMORPHOS,
             ShapeModelBody.RQ36,
             ShapeModelBody.RYUGU,
             // Asteroids -> NEO (not visited)
@@ -629,6 +643,7 @@ public class SbmtViewManager extends ViewManager
             // Asteroids -> Main Belt (visited)
             ShapeModelBody.CERES,
             ShapeModelBody.VESTA,
+            ShapeModelBody.PSYCHE,
             ShapeModelBody.LUTETIA,
             ShapeModelBody.IDA,
             ShapeModelBody.MATHILDE,

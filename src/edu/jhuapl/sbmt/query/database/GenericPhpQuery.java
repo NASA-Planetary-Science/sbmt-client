@@ -10,8 +10,9 @@ import org.joda.time.DateTime;
 
 import edu.jhuapl.saavtk.util.Configuration;
 import edu.jhuapl.saavtk.util.FileCache;
-import edu.jhuapl.sbmt.client.SmallBodyViewConfig;
-import edu.jhuapl.sbmt.model.image.ImageSource;
+import edu.jhuapl.saavtk.util.SafeURLPaths;
+import edu.jhuapl.sbmt.common.client.SmallBodyViewConfig;
+import edu.jhuapl.sbmt.core.image.ImageSource;
 import edu.jhuapl.sbmt.query.QueryBase;
 import edu.jhuapl.sbmt.query.SearchMetadata;
 import edu.jhuapl.sbmt.query.SearchResultsMetadata;
@@ -26,47 +27,62 @@ import crucible.crust.metadata.impl.SettableMetadata;
 public class GenericPhpQuery extends DatabaseQueryBase implements MetadataManager
 {
 
-    String tablePrefixSpc;
-    String tablePrefixSpice;
-
-    @Override
-    public GenericPhpQuery clone()
-    {
-        return (GenericPhpQuery) super.clone();
-    }
+    private String dataPath;
+    private String tablePrefixSpc;
+    private String tablePrefixSpice;
+    private boolean publicOnly = false;
+    private String imageNameTable = null;
 
     public GenericPhpQuery()
     {
-        this("", "", null);
+        this("", "", "", null, null);
     }
 
     public GenericPhpQuery(String rootPath, String tablePrefix)
     {
-        this(rootPath, tablePrefix, null);
+        this(rootPath, tablePrefix, "", null, null);
     }
 
     public GenericPhpQuery(String rootPath, String tablePrefixSpc, String galleryPath)
     {
-        super(galleryPath);
-        this.rootPath = rootPath;
-        this.tablePrefixSpc = tablePrefixSpc.toLowerCase();
-        this.tablePrefixSpice = tablePrefixSpc.toLowerCase();
+        this(rootPath, tablePrefixSpc, tablePrefixSpc, galleryPath, null);
     }
 
     public GenericPhpQuery(String rootPath, String tablePrefixSpc, String tablePrefixSpice, String galleryPath)
     {
-        super(galleryPath);
-        this.rootPath = rootPath;
+        this(rootPath, tablePrefixSpc, tablePrefixSpc, galleryPath, null);
+    }
+
+    public GenericPhpQuery(String rootPath, String tablePrefixSpc, String tablePrefixSpice, String galleryPath, String dataPath)
+    {
+        super(rootPath, galleryPath);
+        this.dataPath = dataPath != null ? dataPath : SafeURLPaths.instance().getString(rootPath, "images");
         this.tablePrefixSpc = tablePrefixSpc.toLowerCase();
         this.tablePrefixSpice = tablePrefixSpice.toLowerCase();
     }
 
+    @Override
+    public GenericPhpQuery copy()
+    {
+        return new GenericPhpQuery(rootPath, tablePrefixSpc, tablePrefixSpice, galleryPath, dataPath);
+    }
+
+    public void setPublicOnly(boolean publicOnly)
+    {
+    	this.publicOnly = publicOnly;
+
+    }
+
+    public void setImageNameTable(String imageNameTable)
+    {
+    	this.imageNameTable = imageNameTable;
+    }
 
 
     @Override
     public String getDataPath()
     {
-        return rootPath + "/images";
+        return dataPath;
     }
 
     @Override
@@ -102,12 +118,12 @@ public class GenericPhpQuery extends DatabaseQueryBase implements MetadataManage
                     rootPath + "/images/", galleryPath, searchString);
             return SearchResultsMetadata.of("", resultsFromFileListOnServer);   //"" should really be a query name here, if applicable
         }
-        else if (imageSource == ImageSource.CORRECTED_SPICE)
-        {
-            List<List<String>> resultsFromFileListOnServer = getResultsFromFileListOnServer(rootPath + "/infofiles-corrected/imagelist.txt",
-                    rootPath + "/images/", galleryPath, searchString);
-            return SearchResultsMetadata.of("", resultsFromFileListOnServer);   //"" should really be a query name here, if applicable
-        }
+//        else if (imageSource == ImageSource.CORRECTED_SPICE)
+//        {
+//            List<List<String>> resultsFromFileListOnServer = getResultsFromFileListOnServer(rootPath + "/infofiles-corrected/imagelist.txt",
+//                    rootPath + "/images/", galleryPath, searchString);
+//            return SearchResultsMetadata.of("", resultsFromFileListOnServer);   //"" should really be a query name here, if applicable
+//        }
         /*else if (imageSource == ImageSource.GASKELL_UPDATED)
         {
             return getResultsFromFileListOnServer(rootPath + "/sumfiles_to_be_delivered/imagelist.txt",
@@ -148,7 +164,19 @@ public class GenericPhpQuery extends DatabaseQueryBase implements MetadataManage
                 args.put("imagesDatabase", imagesDatabase);
                 args.put("searchString", searchString);
 
-                results = doQuery("searchimages.php", constructUrlArguments(args));
+                if (imageNameTable != null)
+                {
+                	String visibilityStr = publicOnly ? "public" : "public,private";
+                	args.put("imageLocationDatabase", imagesDatabase);
+                	args.put("visibilityStr", visibilityStr);
+                	results = doQuery("searchimages2.php", constructUrlArguments(args));
+                }
+                else
+                {
+                	results = doQuery("searchimages.php", constructUrlArguments(args));
+                }
+
+
 
                 return SearchResultsMetadata.of("", results);   //"" should really be a query name here, if applicable
             }
@@ -222,7 +250,19 @@ public class GenericPhpQuery extends DatabaseQueryBase implements MetadataManage
                 args.put("cubes", cubes);
             }
 
-            results = doQuery("searchimages.php", constructUrlArguments(args));
+            if (imageNameTable != null)
+            {
+//            	System.out.println("GenericPhpQuery: runQuery: image name table " + imageNameTable);
+            	String visibilityStr = publicOnly ? "public" : "public,private";
+            	args.put("imageLocationDatabase", imageNameTable);
+            	args.put("visibilityStr", visibilityStr);
+            	results = doQuery("searchimages2.php", constructUrlArguments(args), true);
+            }
+            else
+            {
+            	results = doQuery("searchimages.php", constructUrlArguments(args));
+            }
+//            results = doQuery("searchimages.php", constructUrlArguments(args));
 
         }
         catch (RuntimeException e)
@@ -240,7 +280,7 @@ public class GenericPhpQuery extends DatabaseQueryBase implements MetadataManage
         }
         catch (IOException e)
         {
-//            e.printStackTrace();
+            e.printStackTrace();
             System.err.println("GenericPhpQuery: runQuery: Can't reach database server, or some other database access failure; falling back to cached results");
             results = getCachedResults(getDataPath(), searchString);
         }
@@ -417,19 +457,26 @@ public class GenericPhpQuery extends DatabaseQueryBase implements MetadataManage
         return tablePrefixSpice;
     }
 
-    Key<String> rootPathKey = Key.of("rootPath");
-    Key<String> tablePrefixSpcKey = Key.of("tablePrefixSpc");
-    Key<String> tablePrefixSpiceKey = Key.of("tablePrefixSpice");
-    Key<String> galleryPathKey = Key.of("galleryPath");
+    private static final Key<String> rootPathKey = Key.of("rootPath");
+    private static final Key<String> dataPathKey = Key.of("dataPath");
+    private static final Key<String> tablePrefixSpcKey = Key.of("tablePrefixSpc");
+    private static final Key<String> tablePrefixSpiceKey = Key.of("tablePrefixSpice");
+    private static final Key<String> galleryPathKey = Key.of("galleryPath");
+    private static final Key<String> imageNameTableKey = Key.of("imageNameTable");
+    private static final Key<Boolean> publicOnlyKey = Key.of("publicOnly");
 
     @Override
     public Metadata store()
     {
-        SettableMetadata configMetadata = SettableMetadata.of(Version.of(1, 0));
+        SettableMetadata configMetadata = SettableMetadata.of(Version.of(1, 1));
         write(rootPathKey, rootPath, configMetadata);
+        write(dataPathKey, dataPath, configMetadata);
         write(tablePrefixSpcKey, tablePrefixSpc, configMetadata);
         write(tablePrefixSpiceKey, tablePrefixSpice, configMetadata);
         write(galleryPathKey, galleryPath, configMetadata);
+        if (imageNameTable != null)
+        	write(imageNameTableKey, imageNameTable, configMetadata);
+        write(publicOnlyKey, publicOnly, configMetadata);
         return configMetadata;
     }
 
@@ -437,16 +484,13 @@ public class GenericPhpQuery extends DatabaseQueryBase implements MetadataManage
     public void retrieve(Metadata source)
     {
         rootPath = read(rootPathKey, source);
+        String dataPath = read(dataPathKey, source);
+        this.dataPath = dataPath != null ? dataPath : SafeURLPaths.instance().getString(rootPath, "images");
         tablePrefixSpc = read(tablePrefixSpcKey, source);
         tablePrefixSpice = read(tablePrefixSpiceKey, source);
-        try
-        {
-            galleryPath = read(galleryPathKey, source);
-        }
-        catch (IllegalArgumentException iae)
-        {
-
-        }
+        if (source.hasKey(galleryPathKey)) galleryPath = read(galleryPathKey, source);
+        if (source.hasKey(imageNameTableKey)) imageNameTable = read(imageNameTableKey, source);
+        if (source.hasKey(publicOnlyKey)) publicOnly = read(publicOnlyKey, source);
     }
 
 

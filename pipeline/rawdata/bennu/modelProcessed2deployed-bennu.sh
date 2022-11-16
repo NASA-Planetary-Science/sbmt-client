@@ -27,7 +27,7 @@ rawdataTop="$pipelineTop/rawdata"
 processedTop="$pipelineTop/processed"
 
 deployedTop="/project/sbmt2/sbmt/data/bodies"
-testServerTop="/project/sbmt2/sbmt/data/servers/multi-mission/test/$bodyName"
+testServerTop="/project/sbmt2/sbmt/data/servers/multi-mission/test"
 
 scriptDir="/project/sbmt2/sbmt/scripts"
 importCmd="$scriptDir/import.sh"
@@ -60,28 +60,43 @@ echo "Begin `date`" >> $log 2>&1
 echo Rsyncing $srcTop/$processingVersion/$processingModelName to $destTop/$processingModelName-$processingVersion... >> $log 2>&1
 
 doRsyncDir $srcTop/$processingVersion/$processingModelName $destTop/$processingModelName-$processingVersion
+doRsyncDir $srcTop/$processingVersion/proprietary/allBodies-9.2 $deployedTop/proprietary/allBodies-9.2-$processingVersion
+doRsyncDir $srcTop/$processingVersion/published/allBodies-9.2 $deployedTop/published/allBodies-9.2-$processingVersion
 
 # Correct permissions.
 echo Correcting permissions >> $log 2>&1
 $scriptDir/sbmt2-data-permissions.pl $destTop/$processingModelName-$processingVersion
+$scriptDir/sbmt2-data-permissions.pl $destTop/proprietary-$processingVersion
+$scriptDir/sbmt2-data-permissions.pl $destTop/published-$processingVersion
 
-# Update symbolic link to current model in the test area; this is used by the database generator.
-if test -h $testServerTop/$processingModelName; then
-  rm $testServerTop/$processingModelName
-  if test $? -ne -0; then
-    echo "Unable to remove the symbolic link $testServerTop/$processingModelName" >> $log 2>&1
+# Update symbolic links to current model and metadata in the test area; these are used by the database generator.
+for dir in $bodyName/$processingModelName proprietary/allBodies-9.2 published/allBodies-9.2; do
+
+  if test -h $testServerTop/$dir; then
+    lastSeg=`echo $dir | sed 's:.*/::'`
+    parent=`echo $testServerTop/$dir | sed "s:/$lastSeg$::"`
+    backupLink="$parent/BACKUP-$lastSeg-$processingVersion"
+    if test ! -h $backupLink; then
+      mv $testServerTop/$dir $backupLink
+      if test $? -ne -0; then
+        echo "Unable to rename the symbolic link $testServerTop/$dir" >> $log 2>&1
+        exit 1
+      fi
+    fi
+  elif test -e $testServerTop/$dir; then
+    echo "File or directory $testServerTop/$dir exists, but is not a symbolic link" >> $log 2>&1
     exit 1
   fi
-elif test -e $testServerTop/$processingModelName; then
-  echo "File or directory $testServerTop/$processingModelName exists, but is not a symbolic link" >> $log 2>&1
-  exit 1
-fi
 
-ln -s $destTop/$processingModelName-$processingVersion $testServerTop/$processingModelName
-if test $? -ne -0; then
-  echo "Unable to create the symbolic link $testServerTop/$processingModelName" >> $log 2>&1
-  exit 1
-fi
+  if test ! -h $testServerTop/$dir; then
+    ln -s $deployedTop/$dir-$processingVersion $testServerTop/$dir
+    if test $? -ne -0; then
+      echo "Unable to create the symbolic link $testServerTop/$dir" >> $log 2>&1
+      exit 1
+    fi
+  fi
+
+done
 
 # if there are sum files make the following links, else (no images delivered) make links to
 if [ -d "$srcTop/$processingVersion/$processingModelName/mapcam" ]; then
@@ -119,11 +134,29 @@ else
   ln -s ../shared/lidar/ $destTop/$processingModelName-$processingVersion/lidar
 fi
 
+# if there are sum files make the following links, else (no images delivered) make links to
+if [ -d "$srcTop/$processingVersion/$processingModelName/navcam" ]; then
+  # James to Josh: these should be checked for success. Probably need a new function for
+  # doMakeLink or some such.
+  # set the soft link to the shared navcam directory
+  ln -s ../../shared/navcam/images $destTop/$processingModelName-$processingVersion/navcam/images
+  ln -s ../../shared/navcam/gallery $destTop/$processingModelName-$processingVersion/navcam/gallery
+  ln -s ../../shared/navcam/imagelist-info.txt $destTop/$processingModelName-$processingVersion/navcam/imagelist-info.txt
+  ln -s ../../shared/navcam/imagelist-fullpath-info.txt $destTop/$processingModelName-$processingVersion/navcam/imagelist-fullpath-info.txt
+  ln -s ../../shared/navcam/infofiles $destTop/$processingModelName-$processingVersion/navcam/infofiles
+  ln -s ../shared/"history" $destTop/$processingModelName-$processingVersion/"history"
+  ln -s ../shared/lidar/ $destTop/$processingModelName-$processingVersion/lidar
+else
+  ln -s ../shared/navcam $destTop/$processingModelName-$processingVersion/navcam
+  ln -s ../shared/"history" $destTop/$processingModelName-$processingVersion/"history"
+  ln -s ../shared/lidar/ $destTop/$processingModelName-$processingVersion/lidar
+fi
+
 # THIS BLOCK WAS NOT YET TESTED!
 if [ -d "$srcTop/$processingVersion/$processingModelName/otes" ]; then
   # James to Josh: these should be checked for success. Probably need a new function for
   # doMakeLink or some such.
-  # set the soft link to the shared polycam directory
+  # set the soft link to the shared otes directory
   echo "Need to write this section of modelProcessed2Deployed script!" >&2
   exit 1
 else

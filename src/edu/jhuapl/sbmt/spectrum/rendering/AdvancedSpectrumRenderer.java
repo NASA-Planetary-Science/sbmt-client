@@ -22,7 +22,7 @@ import vtk.vtksbCellLocator;
 import edu.jhuapl.saavtk.model.GenericPolyhedralModel;
 import edu.jhuapl.saavtk.util.MathUtil;
 import edu.jhuapl.saavtk.util.PolyDataUtil;
-import edu.jhuapl.sbmt.client.ISmallBodyModel;
+import edu.jhuapl.sbmt.common.client.ISmallBodyModel;
 import edu.jhuapl.sbmt.spectrum.model.core.BasicSpectrum;
 import edu.jhuapl.sbmt.spectrum.model.core.SpectrumIOException;
 
@@ -127,6 +127,15 @@ public class AdvancedSpectrumRenderer<S extends BasicSpectrum> extends BasicSpec
         footprintActors.add(selectionActor);
         footprintActors.add(toSunVectorActor);
         footprintActors.add(outlineActor);
+
+//        vtkOutlineFilter outlineFilter = new vtkOutlineFilter();
+//        outlineFilter.SetInputData(shiftedFootprint);
+//        vtkPolyDataMapper bbMapper = new vtkPolyDataMapper();
+//        bbMapper.SetInputConnection(outlineFilter.GetOutputPort());
+//        vtkActor bbActor = new vtkActor();
+//        bbActor.SetMapper(bbMapper);
+//        bbActor.GetProperty().SetColor(0.0, 0.0, 1.0);
+//        footprintActors.add(bbActor);
 
         return footprintActors;
     }
@@ -246,6 +255,9 @@ public class AdvancedSpectrumRenderer<S extends BasicSpectrum> extends BasicSpec
 			createToSunVectorActor();
 			createOutlinePolyData();
 			createOutlineActor();
+
+			footprintGenerated = true;
+			computeIlluminationAngles();
 
 		}
 	}

@@ -27,11 +27,16 @@ import javax.swing.table.TableCellRenderer;
 
 import com.google.common.collect.Range;
 
-import edu.jhuapl.saavtk.colormap.SigFigNumberFormat;
+import edu.jhuapl.saavtk.color.gui.ColorMode;
+import edu.jhuapl.saavtk.color.gui.ColorProviderCellEditor;
+import edu.jhuapl.saavtk.color.gui.ColorProviderCellRenderer;
+import edu.jhuapl.saavtk.color.provider.ColorProvider;
+import edu.jhuapl.saavtk.color.provider.ConstColorProvider;
+import edu.jhuapl.saavtk.color.provider.GroupColorProvider;
 import edu.jhuapl.saavtk.gui.render.Renderer;
 import edu.jhuapl.saavtk.gui.util.IconUtil;
 import edu.jhuapl.saavtk.gui.util.ToolTipUtil;
-import edu.jhuapl.saavtk.model.ModelManager;
+import edu.jhuapl.saavtk.model.PolyhedralModel;
 import edu.jhuapl.saavtk.pick.PickListener;
 import edu.jhuapl.saavtk.pick.PickManager;
 import edu.jhuapl.saavtk.pick.PickManagerListener;
@@ -39,18 +44,11 @@ import edu.jhuapl.saavtk.pick.PickMode;
 import edu.jhuapl.saavtk.pick.PickTarget;
 import edu.jhuapl.saavtk.pick.PickUtil;
 import edu.jhuapl.saavtk.pick.Picker;
-import edu.jhuapl.sbmt.client.SmallBodyViewConfig;
-import edu.jhuapl.sbmt.gui.table.ColorProviderCellEditor;
-import edu.jhuapl.sbmt.gui.table.ColorProviderCellRenderer;
 import edu.jhuapl.sbmt.gui.table.EphemerisTimeRenderer;
 import edu.jhuapl.sbmt.lidar.LidarTrack;
 import edu.jhuapl.sbmt.lidar.LidarTrackManager;
 import edu.jhuapl.sbmt.lidar.gui.action.LidarGuiUtil;
 import edu.jhuapl.sbmt.lidar.gui.color.ColorConfigPanel;
-import edu.jhuapl.sbmt.lidar.gui.color.ColorMode;
-import edu.jhuapl.sbmt.lidar.gui.color.ColorProvider;
-import edu.jhuapl.sbmt.lidar.gui.color.ConstColorProvider;
-import edu.jhuapl.sbmt.lidar.gui.color.GroupColorProvider;
 import edu.jhuapl.sbmt.lidar.util.LidarGeoUtil;
 
 import glum.gui.GuiUtil;
@@ -69,17 +67,18 @@ import glum.item.ItemEventListener;
 import glum.item.ItemEventType;
 import glum.item.ItemGroup;
 import glum.item.ItemManagerUtil;
+import glum.text.SigFigNumberFormat;
 import net.miginfocom.swing.MigLayout;
 
 /**
  * Panel used to display a list of lidar Tracks.
- * <P>
+ * <p>
  * The following functionality is supported:
- * <UL>
- * <LI>Display list of tracks in a table
- * <LI>Allow user to show, hide, or remove tracks
- * <LI>Allow user to drag or manually translate tracks
- * </UL>
+ * <ul>
+ * <li>Display list of tracks in a table
+ * <li>Allow user to show, hide, or remove tracks
+ * <li>Allow user to drag or manually translate tracks
+ * </ul>
  *
  * @author lopeznr1
  */
@@ -115,16 +114,14 @@ public class LidarTrackPanel extends JPanel
 	private JCheckBox showSpacecraftCB;
 	private JSpinner pointSizeSpinner;
 
-	/**
-	 * Standard Constructor
-	 */
-	public LidarTrackPanel(LidarTrackManager aTrackManager, PickManager aPickManager, Renderer aRenderer,
-			ModelManager aModelManager, SmallBodyViewConfig aBodyViewConfig)
+	/** Standard Constructor */
+	public LidarTrackPanel(LidarTrackManager aTrackManager, Renderer aRenderer, PickManager aPickManager,
+			PolyhedralModel aSmallBody)
 	{
 		refTrackManager = aTrackManager;
 		refPickManager = aPickManager;
 
-		lidarPicker = new LidarShiftPicker(refTrackManager, aRenderer, aModelManager);
+		lidarPicker = new LidarShiftPicker(refTrackManager, aRenderer, aSmallBody);
 		radialOffsetScale = LidarGeoUtil.getOffsetScale(refTrackManager);
 
 		setLayout(new MigLayout());

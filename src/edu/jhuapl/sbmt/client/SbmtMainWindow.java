@@ -8,13 +8,13 @@ import javax.swing.ImageIcon;
 import javax.swing.JOptionPane;
 
 import edu.jhuapl.saavtk.gui.MainWindow;
-import edu.jhuapl.saavtk.gui.StatusBar;
 import edu.jhuapl.saavtk.gui.ViewManager;
 import edu.jhuapl.saavtk.gui.dialog.DirectoryChooser;
 import edu.jhuapl.saavtk.gui.menu.FileMenu;
 import edu.jhuapl.saavtk.model.ModelNames;
-import edu.jhuapl.sbmt.model.image.Image;
-import edu.jhuapl.sbmt.model.image.ImageCollection;
+import edu.jhuapl.saavtk.status.StatusNotifier;
+import edu.jhuapl.sbmt.core.image.Image;
+import edu.jhuapl.sbmt.image.model.ImageCollection;
 
 
 
@@ -43,9 +43,9 @@ public class SbmtMainWindow extends MainWindow
     }
 
     @Override
-    protected ViewManager createViewManager(StatusBar statusBar, String tempCustomShapeModelPath)
+    protected ViewManager createViewManager(StatusNotifier aStatusNotifier, String tempCustomShapeModelPath)
     {
-        return new SbmtViewManager(statusBar, this, tempCustomShapeModelPath);
+        return new SbmtViewManager(aStatusNotifier, this, tempCustomShapeModelPath);
     }
 
     @Override

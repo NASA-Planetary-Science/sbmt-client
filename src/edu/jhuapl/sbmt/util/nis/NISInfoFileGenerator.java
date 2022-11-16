@@ -21,11 +21,11 @@ import edu.jhuapl.saavtk.model.ShapeModelBody;
 import edu.jhuapl.saavtk.model.ShapeModelType;
 import edu.jhuapl.saavtk.util.Configuration;
 import edu.jhuapl.saavtk.util.NativeLibraryLoader;
-import edu.jhuapl.sbmt.client.SbmtModelFactory;
-import edu.jhuapl.sbmt.client.SbmtMultiMissionTool;
-import edu.jhuapl.sbmt.client.SbmtMultiMissionTool.Mission;
-import edu.jhuapl.sbmt.client.SmallBodyModel;
-import edu.jhuapl.sbmt.client.SmallBodyViewConfig;
+import edu.jhuapl.sbmt.client2.SbmtModelFactory;
+import edu.jhuapl.sbmt.client2.SbmtMultiMissionTool;
+import edu.jhuapl.sbmt.common.client.Mission;
+import edu.jhuapl.sbmt.common.client.SmallBodyModel;
+import edu.jhuapl.sbmt.common.client.SmallBodyViewConfig;
 import edu.jhuapl.sbmt.model.eros.nis.NISSpectrum;
 import edu.jhuapl.sbmt.spectrum.model.core.SpectrumInstrumentFactory;
 import edu.jhuapl.sbmt.spectrum.model.io.SpectrumInstrumentMetadataIO;
@@ -138,7 +138,7 @@ public class NISInfoFileGenerator
 
         // basic default configuration, most of these will be overwritten by the configureMission() method
         Configuration.setAPLVersion(aplVersion);
-        Configuration.setRootURL("http://sbmt.jhuapl.edu/sbmt/stage/");
+        Configuration.setRootURL("https://sbmt.jhuapl.edu/sbmt/stage/");
 
         // authentication
         Configuration.authenticate();
