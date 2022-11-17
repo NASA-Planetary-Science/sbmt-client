@@ -40,6 +40,9 @@ public class ExportAction<G1 extends IPerspectiveImage & IPerspectiveImageTableR
 		JMenuItem exportBackplanes = formMenuItem(new SaveBackplanesAction<G1>(aManager), "Backplanes");
 		aMenu.add(exportBackplanes);
 
+		JMenuItem exportGeometry = formMenuItem(new SaveGeometryAction<G1>(aManager), "Image Geometry (OBJ)");
+		aMenu.add(exportGeometry);
+
 
 	}
 

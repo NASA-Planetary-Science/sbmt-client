@@ -7,6 +7,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.function.Function;
@@ -18,6 +19,7 @@ import org.apache.commons.lang3.tuple.Pair;
 import org.jfree.data.Range;
 
 import com.beust.jcommander.internal.Lists;
+import com.beust.jcommander.internal.Maps;
 import com.google.common.collect.ImmutableList;
 
 import vtk.vtkActor;
@@ -1259,5 +1261,16 @@ public class PerspectiveImageCollection<G1 extends IPerspectiveImage & IPerspect
         pixel[1] = uv[1] * imageWidth;
 
         return pixel;
+    }
+
+    public Map<List<vtkActor>, String> getImageRenderedComponents(G1 image)
+    {
+    	Map<List<vtkActor>, String> actorsToSave = Maps.newHashMap();
+		actorsToSave.put(imageRenderers.get(image), "footprint");
+		actorsToSave.put(offLimbRenderers.get(image), "offlimb");
+		actorsToSave.put(offLimbBoundaryRenderers.get(image), "offlimb_boundary");
+		actorsToSave.put(frustumRenderers.get(image), "frustum");
+		actorsToSave.put(boundaryRenderers.get(image), "boundary");
+		return actorsToSave;
     }
 }
