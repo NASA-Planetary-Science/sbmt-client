@@ -38,14 +38,12 @@ public class PerspectiveImageToRenderableImagePipeline
 		{
 			String filename = image.getFilename();
 			String pointingFile = image.getPointingSource();
-
 			synchronized(PerspectiveImageToRenderableImagePipeline.class) {
 				if (!new File(filename).exists())
 				{
 					filename = FileCache.getFileFromServer(image.getFilename()).getAbsolutePath();
 					pointingFile = FileCache.getFileFromServer(image.getPointingSource()).getAbsolutePath();
 				}
-
 				processFile(filename, pointingFile, image);
 			}
 		}
@@ -63,10 +61,24 @@ public class PerspectiveImageToRenderableImagePipeline
 			pointingPublisher = new InfofileReaderPublisher(pointingFile);
 		else
 			pointingPublisher = new SumfileReaderPublisher(pointingFile);
-
 		metadata.get(0).put("Name", new File(image.getFilename()).getName());
 		metadata.get(0).put("Start Time", pointingPublisher.getOutputs().get(0).getStartTime());
 		metadata.get(0).put("Stop Time", pointingPublisher.getOutputs().get(0).getStartTime());
+
+
+		if (metadata.get(0).get("WINDOWH") != null)
+		{
+			int windowH = Integer.parseInt(metadata.get(0).get("WINDOWH"));
+			int windowX = Integer.parseInt(metadata.get(0).get("WINDOWX"));
+			int windowY = Integer.parseInt(metadata.get(0).get("WINDOWY"));
+
+			image.setAutoMaskValues(new int[] {windowX, windowH - windowX,windowY,windowH - windowY});
+			image.setMaskValues(new int[] {windowX, windowH - windowX,windowY,windowH - windowY});
+		}
+		else
+		{
+			image.setAutoMaskValues(image.getMaskValues());
+		}
 
 		//combine image source (in: Layer+ImageMetadata+ImagePointing, out: RenderableImage)
 		IPipelinePublisher<Layer> layerPublisher = new Just<Layer>(updatedLayers.get(0));

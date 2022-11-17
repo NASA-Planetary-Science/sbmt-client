@@ -11,12 +11,23 @@ public interface IImagingInstrument
 {
     Metadata store();
 
+    /**
+     * Deprecated: phase out in order to move away from enum-like
+     * mission-specific types to represent image variations. Nothing should be
+     * consulting this to know what to do anymore.
+     *
+     * @return
+     */
+    @Deprecated
     ImageType getType();
 
-    String getFlip();
-
-    double getRotation();
-
+    /**
+     * Deprecated: no longer necessary or useful for queries (fixed list v. db
+     * etc.) to be determined by the instrument.
+     *
+     * @return
+     */
+    @Deprecated
     IQueryBase getSearchQuery();
 
     ImageSource[] getSearchImageSources();
@@ -27,12 +38,19 @@ public interface IImagingInstrument
 
     FillDetector<Float> getFillDetector(Image image);
 
-    boolean isTranspose();
-
     int[] getLinearInterpolationDims();
 
     int[] getMaskValues();
 
     public double[] getFillValues();
+
+    /**
+     * Get the {@link Orientation} to use for images from this instrument when
+     * projecting them using the pointing type indicated by the argument.
+     *
+     * @param source the pointing type
+     * @return the orientation
+     */
+    Orientation getOrientation(ImageSource source);
 
 }

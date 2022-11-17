@@ -6,6 +6,7 @@ import java.awt.GridBagLayout;
 import java.awt.Insets;
 import java.util.function.Function;
 
+import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JSpinner;
@@ -13,6 +14,8 @@ import javax.swing.SpinnerNumberModel;
 import javax.swing.SwingConstants;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
+
+import org.apache.commons.lang3.tuple.Pair;
 
 import edu.jhuapl.sbmt.image2.pipelineComponents.pipelines.rendering.vtk.VtkImageMaskPipeline;
 import edu.jhuapl.sbmt.layer.api.Layer;
@@ -32,14 +35,18 @@ public class ImageMaskController
 	private Layer layer;
 	private JPanel panel;
 	private VtkImageMaskPipeline maskPipeline;
-	private Function<Layer, Void> completionBlock;
+	private Function<Pair<Layer, int[]>, Void> completionBlock;
+	private int[] currentMaskValues;
+	private int leftMask = 0, rightMask = 0, topMask = 0, bottomMask = 0;
+	private JButton applyButton;
 
-	public ImageMaskController(Layer layer, Function<Layer, Void> completionBlock)
+	public ImageMaskController(Layer layer, int[] currentMaskValues, Function<Pair<Layer, int[]>, Void> completionBlock)
 	{
 		this.layer = layer;
 		this.maskPipeline = new VtkImageMaskPipeline();
 		this.panel = new JPanel();
 		this.completionBlock = completionBlock;
+		this.currentMaskValues = currentMaskValues;
 		panel.setLayout(new GridBagLayout());
 		initGUI();
 	}
@@ -47,6 +54,15 @@ public class ImageMaskController
 	public JPanel getView()
 	{
 		return panel;
+	}
+
+	public void setMaskValues(int[] maskValues)
+	{
+		leftSpinner.setValue((int)maskValues[3]);	//0
+		rightSpinner.setValue((int)maskValues[2]);	//1
+		bottomSpinner.setValue((int)maskValues[0]); //2
+		topSpinner.setValue((int)maskValues[1]);	//3
+		croppingChanged();
 	}
 
 	public void setLayer(Layer layer)
@@ -75,7 +91,8 @@ public class ImageMaskController
 		leftSpinner.setPreferredSize(new Dimension(60, 28));
 		leftSpinner.addChangeListener(evt ->
 		{
-			croppingChanged();
+//			System.out.println("ImageMaskController: initGUI: left");
+//			croppingChanged();
 		});
 
 		gridBagConstraints = new GridBagConstraints();
@@ -92,7 +109,8 @@ public class ImageMaskController
 		bottomSpinner.setPreferredSize(new Dimension(60, 28));
 		bottomSpinner.addChangeListener(evt ->
 		{
-			croppingChanged();
+//			if (bottomSpinner.getValue() != )
+//			croppingChanged();
 		});
 
 		gridBagConstraints = new GridBagConstraints();
@@ -118,7 +136,8 @@ public class ImageMaskController
 		{
 			public void stateChanged(ChangeEvent evt)
 			{
-				croppingChanged();
+//				System.out.println("ImageMaskController.initGUI().new ChangeListener() {...}: stateChanged: right");
+//				croppingChanged();
 			}
 		});
 		gridBagConstraints = new GridBagConstraints();
@@ -136,7 +155,8 @@ public class ImageMaskController
 		{
 			public void stateChanged(ChangeEvent evt)
 			{
-				croppingChanged();
+//				System.out.println("ImageMaskController.initGUI().new ChangeListener() {...}: stateChanged: top");
+//				croppingChanged();
 			}
 		});
 		gridBagConstraints = new GridBagConstraints();
@@ -175,30 +195,47 @@ public class ImageMaskController
 
 		gridBagConstraints = new GridBagConstraints();
 		gridBagConstraints.gridx = 1;
-		gridBagConstraints.gridy = 2;
+		gridBagConstraints.gridy = 1;
 		gridBagConstraints.fill = GridBagConstraints.HORIZONTAL;
 		gridBagConstraints.anchor = GridBagConstraints.LINE_START;
 		gridBagConstraints.weightx = 1.0;
-		gridBagConstraints.insets = new Insets(0, 8, 0, 0);
+		gridBagConstraints.insets = new Insets(0, 0, 0, 0);
 		panel.add(jPanel1, gridBagConstraints);
 
 		jLabel8.setText("Mask:");
 		gridBagConstraints = new GridBagConstraints();
 		gridBagConstraints.gridx = 0;
-		gridBagConstraints.gridy = 2;
-		gridBagConstraints.fill = GridBagConstraints.HORIZONTAL;
-		gridBagConstraints.insets = new Insets(3, 6, 3, 0);
+		gridBagConstraints.gridy = 0;
+//		gridBagConstraints.fill = GridBagConstraints.HORIZONTAL;
+		gridBagConstraints.insets = new Insets(3, 30, 3, 0);
 		panel.add(jLabel8, gridBagConstraints);
+
+
+		applyButton = new JButton("Apply");
+		applyButton.addActionListener(evt -> {
+			croppingChanged();
+		});
+		gridBagConstraints = new GridBagConstraints();
+		gridBagConstraints.gridx = 2;
+		gridBagConstraints.gridy = 1;
+		panel.add(applyButton, gridBagConstraints);
+
+	}
+
+	public int[] getMaskValues()
+	{
+		return new int[] {(int)bottomSpinner.getValue(), (int)topSpinner.getValue(), (int)rightSpinner.getValue(), (int)leftSpinner.getValue()};
 	}
 
 	private void croppingChanged()
 	{
+		if (layer == null) return;
 		try
 		{
 			maskPipeline.run(layer,
 					(int)leftSpinner.getValue(), (int)rightSpinner.getValue(),
-					(int)bottomSpinner.getValue(), (int)topSpinner.getValue());
-			completionBlock.apply(maskPipeline.getUpdatedData().get(0));
+					(int)topSpinner.getValue(), (int)bottomSpinner.getValue());
+			completionBlock.apply(Pair.of(maskPipeline.getUpdatedData().get(0), getMaskValues()));
 		}
 		catch (Exception e)
 		{

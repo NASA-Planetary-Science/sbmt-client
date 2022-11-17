@@ -1130,12 +1130,29 @@ listPlateColoringFiles() {
   check $? "$funcName failed"
 }
 
+# Set up plate colorings, if the directory coloring is present under the top model directory. This requires
+# some variables to be set:
+#   bodyId body identifier as it appears in the menu of the client
+#   modelId model identifier as it appears in the menu of the client
+#   outputTop path prefix, i.e., body-dir/model-dir/coloring
 # Run DiscoverPlateColorings.sh, which is linked to a java tool that creates metadata files for plate colorings.
 discoverPlateColorings() {
   (
     funcName=${FUNCNAME[0]}
 
     checkSkip $funcName "$*"
+
+    if test "$bodyId" = ""; then
+      check 1 "$funcName: variable bodyId is not set"
+    fi
+
+    if test "$modelId" = ""; then
+      check 1 "$funcName: variable modelId is not set"
+    fi
+
+    if test "$outputTop" = ""; then
+      check 1 "$funcName: variable outputTop (should be body-dir/model-dir) is not set"
+    fi
 
     src=$srcTop/coloring
     if test -d $src; then
@@ -1173,21 +1190,24 @@ processDTMs() {
 
     checkSkip $funcName "$*"
 
-    src=$srcTop/dtm
-    if test -d $src; then
-      dest=$destTop/dtm/browse
+    generateCatalog="/homes/lopeznr1/DemCatalogMaker-2020.11.17/runDemCatalogMaker --fileL browse/*obj browse/*fits --dispName Browse --destFile browse.cat.csv"
 
-      doRsyncDir $src $dest "$1"
+    dest="$destTop/dtm/browse"
+    if test -d $dest; then
 
-      fileList="fileList.txt"
-      (cd $dest; ls | sed 's:\(.*\):\1\,\1:' | grep -v $fileList > $fileList)
-      check $? "$funcName: problem creating DTM file list $dest/$fileList"
+      if test `ls $dest | wc` -gt 0; then
+        cd "$destTop/dtm"
+        check $? "$funcName: unable to change directory to the DTM area $destTop/dtm"
 
-      if test ! -s $dest/$fileList; then
-        echo "$funcName: directory exists but has no DTMs: $dest"
+        logFile="$logTop/runDemCatalogMaker.txt"
+
+        $catalogTool > $logFile 2>&1
+        check $? "$funcName: catalog tool failed to run in $destTop/src. See file $logFile"
+      else
+        echo "$funcName: no DTM files present in $dest"
       fi
     else
-      echo "$funcName: nothing to process; no source directory $src"
+      echo "$funcName: no DTM directory $dest"
     fi
   )
   check $? "$funcName failed"

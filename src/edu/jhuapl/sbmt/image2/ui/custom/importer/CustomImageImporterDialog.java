@@ -22,6 +22,7 @@ import java.util.Optional;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
+import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 import javax.swing.JDialog;
 import javax.swing.JLabel;
@@ -35,7 +36,6 @@ import vtk.vtkImageReader2;
 import vtk.vtkImageReader2Factory;
 
 import edu.jhuapl.saavtk.gui.dialog.CustomFileChooser;
-import edu.jhuapl.sbmt.core.image.IImagingInstrument;
 import edu.jhuapl.sbmt.core.image.ImageType;
 import edu.jhuapl.sbmt.image2.interfaces.IPerspectiveImage;
 import edu.jhuapl.sbmt.image2.interfaces.IPerspectiveImageTableRepresentable;
@@ -45,7 +45,6 @@ import edu.jhuapl.sbmt.util.VtkENVIReader;
 
 public class CustomImageImporterDialog<G1 extends IPerspectiveImage & IPerspectiveImageTableRepresentable> extends JDialog
 {
-	private IImagingInstrument instrument;
 	private JTextField imagePathTextField;
 	private JTextField imageNameTextField;
 	private JTextField pointingFilenameTextField;
@@ -57,17 +56,17 @@ public class CustomImageImporterDialog<G1 extends IPerspectiveImage & IPerspecti
 	private JComboBox<String> imageFlipComboBox;
 	private JComboBox<String> imageRotationComboBox;
 	private JComboBox<String> pointingTypeComboBox;
+	private JCheckBox flipAboutXCheckBox;
 	private boolean isEditMode;
 	private boolean isEllipsoid;
 //	private BaseItemManager<G1> imageCollection;
 	private Optional<G1> existingImage;
 	private ImageType imageType = null;
 
-	public CustomImageImporterDialog(Window parent, boolean isEditMode, IImagingInstrument instrument, boolean isEllipsoid,
+	public CustomImageImporterDialog(Window parent, boolean isEditMode, boolean isEllipsoid,
 			/*BaseItemManager<G1> imageCollection,*/ Optional<G1> existingImage)
 	{
 		 super(parent, isEditMode ? "Edit Image" : "Import New Image", Dialog.ModalityType.APPLICATION_MODAL);
-		 this.instrument = instrument;
 		 this.isEditMode = isEditMode;
 		 this.isEllipsoid = isEllipsoid;
 //		 this.imageCollection = imageCollection;
@@ -195,6 +194,18 @@ public class CustomImageImporterDialog<G1 extends IPerspectiveImage & IPerspecti
 //		return panel;
 //	}
 
+	private JPanel buildFlipAboutXCheckBoxInput()
+	{
+		JPanel panel = new JPanel();
+		panel.setLayout(new BoxLayout(panel, BoxLayout.X_AXIS));
+//		panel.add(new JLabel("Flip "));
+		flipAboutXCheckBox = new JCheckBox("Flip about X Axis");
+		if (existingImage.isPresent())
+			flipAboutXCheckBox.setSelected(existingImage.get().getFlip().equals("X"));
+		panel.add(flipAboutXCheckBox);
+		return panel;
+	}
+
 	private JPanel buildImageRotationInput()
 	{
 		JPanel panel = new JPanel();
@@ -289,6 +300,7 @@ public class CustomImageImporterDialog<G1 extends IPerspectiveImage & IPerspecti
 
 		cylindricalPanel.add(latitudePanel);
 		cylindricalPanel.add(longitudePanel);
+		cylindricalPanel.add(buildFlipAboutXCheckBoxInput());
 
 		////////////////
 		JPanel perspectivePanel = new JPanel();
@@ -327,6 +339,7 @@ public class CustomImageImporterDialog<G1 extends IPerspectiveImage & IPerspecti
 
 		perspectivePanel.add(buildImageRotationInput());
 		perspectivePanel.add(buildImageFlipInput());
+
 
 		/////////////////
 		JPanel optionPanel = new JPanel();
@@ -401,12 +414,11 @@ public class CustomImageImporterDialog<G1 extends IPerspectiveImage & IPerspecti
 			{
 				Double minLat = Double.parseDouble(minLatitudeTextField.getText());
 				Double maxLat = Double.parseDouble(maxLatitudeTextField.getText());
-				System.out.println("CustomImageImporterDialog: storeImage: max lat is " + maxLat);
 				Double minLon = Double.parseDouble(minLongitudeTextField.getText());
 				Double maxLon = Double.parseDouble(maxLongitudeTextField.getText());
 				existingImage.get().setBounds(new CylindricalBounds(minLat, maxLat, minLon, maxLon));
-				System.out.println("CustomImageImporterDialog: storeImage: existing image bounds " + existingImage.get().getBounds());
-
+				if (flipAboutXCheckBox.isSelected()) existingImage.get().setFlip("X");
+				else existingImage.get().setFlip("None");
 			}
 		});
 //		ImageType imageType = (ImageType)imageTypeComboBox.getSelectedItem();

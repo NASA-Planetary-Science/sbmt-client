@@ -16,6 +16,19 @@ import edu.jhuapl.sbmt.pipeline.operator.BasePipelineOperator;
 
 public class SaveImageFileFromCacheOperator<G1 extends IPerspectiveImage & IPerspectiveImageTableRepresentable> extends BasePipelineOperator<G1, File>
 {
+	String outputDir = null;
+
+	public SaveImageFileFromCacheOperator()
+	{
+
+	}
+
+	public SaveImageFileFromCacheOperator(String outputDir)
+	{
+		this.outputDir = outputDir;
+	}
+
+
 	@Override
 	public void processData() throws IOException, Exception
 	{
@@ -26,8 +39,11 @@ public class SaveImageFileFromCacheOperator<G1 extends IPerspectiveImage & IPers
 			String extension = FilenameUtils.getExtension(path);
 			String imageFileName = FilenameUtils.getBaseName(path);
 
-			file = CustomFileChooser.showSaveDialog(null, "Save FITS image", imageFileName,
+			if (outputDir == null)
+				file = CustomFileChooser.showSaveDialog(null, "Save FITS image", imageFileName,
 					extension);
+			else
+				file = new File(outputDir, imageFileName + "." + extension);
 			if (file != null)
 			{
 				File fitFile = FileCache.getFileFromServer(inputs.get(0).getFilename());

@@ -14,6 +14,8 @@ import javax.swing.SwingConstants;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
+import org.apache.commons.lang3.tuple.Pair;
+
 import edu.jhuapl.sbmt.image2.pipelineComponents.pipelines.rendering.vtk.VtkImageTrimPipeline;
 import edu.jhuapl.sbmt.layer.api.Layer;
 
@@ -30,31 +32,34 @@ public class ImageTrimController
 	private JSpinner topSpinner;
 	private JSpinner bottomSpinner;
 	private Layer layer;
-	private JPanel panel;
+//	private JPanel panel;
 	private VtkImageTrimPipeline trimPipeline;
-	private Function<Layer, Void> completionBlock;
+	private Function<Pair<Layer, int[]>, Void> completionBlock;
+	private int[] currentMaskValues;
 
-	public ImageTrimController(Layer layer, Function<Layer, Void> completionBlock)
+	public ImageTrimController(Layer layer, int[] currentMaskValues, Function<Pair<Layer, int[]>, Void> completionBlock)
 	{
 		this.layer = layer;
 		this.trimPipeline = new VtkImageTrimPipeline();
-		this.panel = new JPanel();
+//		this.panel = new JPanel();
 		this.completionBlock = completionBlock;
-		panel.setLayout(new GridBagLayout());
+		this.currentMaskValues = currentMaskValues;
+//		panel.setLayout(new GridBagLayout());
 		initGUI();
+		croppingChanged();
 	}
 
 	public JPanel getView()
 	{
-		return panel;
+		return jPanel1;
 	}
 
 	public void setMaskValues(int[] maskValues)
 	{
 		leftSpinner.setValue((int)maskValues[0]);
 		rightSpinner.setValue((int)maskValues[1]);
-		bottomSpinner.setValue((int)maskValues[2]);
-		topSpinner.setValue((int)maskValues[3]);
+		bottomSpinner.setValue((int)maskValues[3]);
+		topSpinner.setValue((int)maskValues[2]);
 		croppingChanged();
 	}
 
@@ -77,69 +82,28 @@ public class ImageTrimController
 		jLabel5 = new JLabel();
 		jLabel8 = new JLabel();
 
-		jPanel1.setAlignmentX(0.0F);
+//		jPanel1.setAlignmentX(-1.0F);
 		jPanel1.setLayout(new GridBagLayout());
 
-		leftSpinner.setModel(new SpinnerNumberModel(Integer.valueOf(0), Integer.valueOf(0), null, Integer.valueOf(1)));
-		leftSpinner.setPreferredSize(new Dimension(60, 28));
-		leftSpinner.addChangeListener(evt ->
-		{
-			croppingChanged();
-		});
 
+		jLabel8.setText("Crop:");
 		gridBagConstraints = new GridBagConstraints();
-		gridBagConstraints.gridx = 7;
+		gridBagConstraints.gridx = 0;
 		gridBagConstraints.gridy = 0;
 		gridBagConstraints.fill = GridBagConstraints.HORIZONTAL;
-		gridBagConstraints.anchor = GridBagConstraints.LINE_START;
-		gridBagConstraints.weightx = 1.0;
-		gridBagConstraints.insets = new Insets(0, 0, 0, 10);
-		jPanel1.add(leftSpinner, gridBagConstraints);
+		gridBagConstraints.insets = new Insets(3, 6, 3, 10);
+		jPanel1.add(jLabel8, gridBagConstraints);
 
-		bottomSpinner
-				.setModel(new SpinnerNumberModel(Integer.valueOf(0), Integer.valueOf(0), null, Integer.valueOf(1)));
-		bottomSpinner.setPreferredSize(new Dimension(60, 28));
-		bottomSpinner.addChangeListener(evt ->
-		{
-			croppingChanged();
-		});
-
+		jLabel4.setText("Top");
 		gridBagConstraints = new GridBagConstraints();
-		gridBagConstraints.gridx = 5;
-		gridBagConstraints.gridy = 0;
-		gridBagConstraints.fill = GridBagConstraints.HORIZONTAL;
-		gridBagConstraints.anchor = GridBagConstraints.LINE_START;
-		gridBagConstraints.weightx = 1.0;
-		gridBagConstraints.insets = new Insets(0, 0, 0, 10);
-		jPanel1.add(bottomSpinner, gridBagConstraints);
-
-		jLabel3.setText("Left");
-		gridBagConstraints = new GridBagConstraints();
-		gridBagConstraints.gridx = 6;
+		gridBagConstraints.gridx = 1;
 		gridBagConstraints.gridy = 0;
 		gridBagConstraints.anchor = GridBagConstraints.LINE_END;
 		gridBagConstraints.insets = new Insets(0, 0, 0, 2);
-		jPanel1.add(jLabel3, gridBagConstraints);
+		jPanel1.add(jLabel4, gridBagConstraints);
 
-		rightSpinner.setModel(new SpinnerNumberModel(Integer.valueOf(0), Integer.valueOf(0), null, Integer.valueOf(1)));
-		rightSpinner.setPreferredSize(new Dimension(60, 28));
-		rightSpinner.addChangeListener(new ChangeListener()
-		{
-			public void stateChanged(ChangeEvent evt)
-			{
-				croppingChanged();
-			}
-		});
-		gridBagConstraints = new GridBagConstraints();
-		gridBagConstraints.gridx = 3;
-		gridBagConstraints.gridy = 0;
-		gridBagConstraints.fill = GridBagConstraints.HORIZONTAL;
-		gridBagConstraints.anchor = GridBagConstraints.LINE_START;
-		gridBagConstraints.weightx = 1.0;
-		gridBagConstraints.insets = new Insets(0, 0, 0, 10);
-		jPanel1.add(rightSpinner, gridBagConstraints);
 
-		topSpinner.setModel(new SpinnerNumberModel(Integer.valueOf(0), Integer.valueOf(0), null, Integer.valueOf(1)));
+		topSpinner.setModel(new SpinnerNumberModel(Integer.valueOf(currentMaskValues[2]), Integer.valueOf(0), null, Integer.valueOf(1)));
 		topSpinner.setPreferredSize(new Dimension(60, 28));
 		topSpinner.addChangeListener(new ChangeListener()
 		{
@@ -148,8 +112,9 @@ public class ImageTrimController
 				croppingChanged();
 			}
 		});
+
 		gridBagConstraints = new GridBagConstraints();
-		gridBagConstraints.gridx = 1;
+		gridBagConstraints.gridx = 2;
 		gridBagConstraints.gridy = 0;
 		gridBagConstraints.fill = GridBagConstraints.HORIZONTAL;
 		gridBagConstraints.anchor = GridBagConstraints.LINE_START;
@@ -157,63 +122,113 @@ public class ImageTrimController
 		gridBagConstraints.insets = new Insets(0, 0, 0, 10);
 		jPanel1.add(topSpinner, gridBagConstraints);
 
-		jLabel6.setHorizontalAlignment(SwingConstants.TRAILING);
-		jLabel6.setText("Bottom");
-		gridBagConstraints = new GridBagConstraints();
-		gridBagConstraints.gridx = 4;
-		gridBagConstraints.gridy = 0;
-		gridBagConstraints.anchor = GridBagConstraints.LINE_END;
-		gridBagConstraints.insets = new Insets(0, 0, 0, 2);
-		jPanel1.add(jLabel6, gridBagConstraints);
-
-		jLabel4.setText("Top");
-		gridBagConstraints = new GridBagConstraints();
-		gridBagConstraints.gridx = 0;
-		gridBagConstraints.gridy = 0;
-		gridBagConstraints.anchor = GridBagConstraints.LINE_END;
-		gridBagConstraints.insets = new Insets(0, 0, 0, 2);
-		jPanel1.add(jLabel4, gridBagConstraints);
-
 		jLabel5.setText("Right");
 		gridBagConstraints = new GridBagConstraints();
-		gridBagConstraints.gridx = 2;
+		gridBagConstraints.gridx = 3;
 		gridBagConstraints.gridy = 0;
 		gridBagConstraints.anchor = GridBagConstraints.LINE_END;
 		gridBagConstraints.insets = new Insets(0, 0, 0, 2);
 		jPanel1.add(jLabel5, gridBagConstraints);
 
 		gridBagConstraints = new GridBagConstraints();
-		gridBagConstraints.gridx = 1;
-		gridBagConstraints.gridy = 2;
+		gridBagConstraints.gridx = 4;
+		gridBagConstraints.gridy = 0;
 		gridBagConstraints.fill = GridBagConstraints.HORIZONTAL;
 		gridBagConstraints.anchor = GridBagConstraints.LINE_START;
 		gridBagConstraints.weightx = 1.0;
-		gridBagConstraints.insets = new Insets(0, 8, 0, 0);
-		panel.add(jPanel1, gridBagConstraints);
+		gridBagConstraints.insets = new Insets(0, 0, 0, 10);
+		jPanel1.add(rightSpinner, gridBagConstraints);
 
-		jLabel8.setText("Crop:");
+
+		rightSpinner.setModel(new SpinnerNumberModel(Integer.valueOf(currentMaskValues[1]), Integer.valueOf(0), null, Integer.valueOf(1)));
+		rightSpinner.setPreferredSize(new Dimension(60, 28));
+		rightSpinner.addChangeListener(new ChangeListener()
+		{
+			public void stateChanged(ChangeEvent evt)
+			{
+				croppingChanged();
+			}
+		});
+
+
+		jLabel6.setHorizontalAlignment(SwingConstants.TRAILING);
+		jLabel6.setText("Bottom");
 		gridBagConstraints = new GridBagConstraints();
-		gridBagConstraints.gridx = 0;
-		gridBagConstraints.gridy = 2;
+		gridBagConstraints.gridx = 5;
+		gridBagConstraints.gridy = 0;
+		gridBagConstraints.anchor = GridBagConstraints.LINE_END;
+		gridBagConstraints.insets = new Insets(0, 0, 0, 2);
+		jPanel1.add(jLabel6, gridBagConstraints);
+
+		gridBagConstraints = new GridBagConstraints();
+		gridBagConstraints.gridx = 6;
+		gridBagConstraints.gridy = 0;
 		gridBagConstraints.fill = GridBagConstraints.HORIZONTAL;
-		gridBagConstraints.insets = new Insets(3, 6, 3, 0);
-		panel.add(jLabel8, gridBagConstraints);
+		gridBagConstraints.anchor = GridBagConstraints.LINE_START;
+		gridBagConstraints.weightx = 1.0;
+		gridBagConstraints.insets = new Insets(0, 0, 0, 10);
+		jPanel1.add(bottomSpinner, gridBagConstraints);
+
+		bottomSpinner.setModel(new SpinnerNumberModel(Integer.valueOf(currentMaskValues[3]), Integer.valueOf(0), null,
+				Integer.valueOf(1)));
+		bottomSpinner.setPreferredSize(new Dimension(60, 28));
+		bottomSpinner.addChangeListener(evt ->
+		{
+			croppingChanged();
+		});
+
+		jLabel3.setText("Left");
+		gridBagConstraints = new GridBagConstraints();
+		gridBagConstraints.gridx = 7;
+		gridBagConstraints.gridy = 0;
+		gridBagConstraints.anchor = GridBagConstraints.LINE_END;
+		gridBagConstraints.insets = new Insets(0, 0, 0, 2);
+		jPanel1.add(jLabel3, gridBagConstraints);
+
+		leftSpinner.setModel(new SpinnerNumberModel(Integer.valueOf(currentMaskValues[0]), Integer.valueOf(0), null, Integer.valueOf(1)));
+		leftSpinner.setPreferredSize(new Dimension(60, 28));
+		leftSpinner.addChangeListener(evt ->
+		{
+			croppingChanged();
+		});
+
+		gridBagConstraints = new GridBagConstraints();
+		gridBagConstraints.gridx = 8;
+		gridBagConstraints.gridy = 0;
+		gridBagConstraints.fill = GridBagConstraints.HORIZONTAL;
+		gridBagConstraints.anchor = GridBagConstraints.LINE_START;
+		gridBagConstraints.weightx = 1.0;
+		gridBagConstraints.insets = new Insets(0, 0, 0, 10);
+		jPanel1.add(leftSpinner, gridBagConstraints);
+
+
+//		gridBagConstraints = new GridBagConstraints();
+//		gridBagConstraints.gridx = 1;
+//		gridBagConstraints.gridy = 0;
+//		gridBagConstraints.fill = GridBagConstraints.HORIZONTAL;
+//		gridBagConstraints.anchor = GridBagConstraints.LINE_START;
+//		gridBagConstraints.weightx = 1.0;
+//		gridBagConstraints.insets = new Insets(0, 8, 0, 0);
+//		panel.add(jPanel1, gridBagConstraints);
+
+
 	}
 
 	public int[] getMaskValues()
 	{
 		return new int[] {(int)leftSpinner.getValue(), (int)rightSpinner.getValue(),
-				(int)bottomSpinner.getValue(), (int)topSpinner.getValue()};
+				(int)topSpinner.getValue(), (int)bottomSpinner.getValue()};
 	}
 
 	private void croppingChanged()
 	{
+		if (layer == null) return;
 		try
 		{
 			trimPipeline.run(layer,
 					(int)leftSpinner.getValue(), (int)rightSpinner.getValue(),
-					(int)bottomSpinner.getValue(), (int)topSpinner.getValue());
-			completionBlock.apply(trimPipeline.getUpdatedData().get(0));
+					(int)topSpinner.getValue(), (int)bottomSpinner.getValue());
+			completionBlock.apply(Pair.of(trimPipeline.getUpdatedData().get(0), getMaskValues()));
 		}
 		catch (Exception e)
 		{

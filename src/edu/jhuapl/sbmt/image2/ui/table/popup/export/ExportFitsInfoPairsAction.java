@@ -5,20 +5,19 @@ import java.util.List;
 
 import javax.swing.JOptionPane;
 
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 
 import com.beust.jcommander.internal.Lists;
 import com.google.common.collect.ImmutableSet;
 
-import edu.jhuapl.saavtk.gui.dialog.CustomFileChooser;
 import edu.jhuapl.saavtk.gui.dialog.DirectoryChooser;
+import edu.jhuapl.saavtk.util.FileCache;
 import edu.jhuapl.sbmt.core.image.ImageSource;
-import edu.jhuapl.sbmt.core.image.InfoFileWriter;
 import edu.jhuapl.sbmt.image2.interfaces.IPerspectiveImage;
 import edu.jhuapl.sbmt.image2.interfaces.IPerspectiveImageTableRepresentable;
 import edu.jhuapl.sbmt.image2.model.PerspectiveImageCollection;
 import edu.jhuapl.sbmt.image2.pipelineComponents.operators.io.export.SaveImageFileFromCacheOperator;
-import edu.jhuapl.sbmt.image2.pipelineComponents.pipelines.perspectiveImages.PerspectiveImageToRenderableImagePipeline;
 import edu.jhuapl.sbmt.pipeline.publisher.Just;
 import edu.jhuapl.sbmt.pipeline.subscriber.Sink;
 
@@ -43,7 +42,6 @@ public class ExportFitsInfoPairsAction<G1 extends IPerspectiveImage & IPerspecti
 		File outDir = DirectoryChooser.showOpenDialog(null, "Save FITS/Pointing Pair to Directory...");
 		if (outDir == null)
 			return;
-		System.out.println("ExportFitsInfoPairsAction: executeAction: number of items " + aManager.getSelectedItems().size() + " going to " + outDir);
 		ImmutableSet<G1> selectedItems = aManager.getSelectedItems();
 		for (G1 aItem : selectedItems)
 		{
@@ -52,7 +50,7 @@ public class ExportFitsInfoPairsAction<G1 extends IPerspectiveImage & IPerspecti
 			try
 			{
 				Just.of(aItem)
-					.operate(new SaveImageFileFromCacheOperator())
+					.operate(new SaveImageFileFromCacheOperator<G1>(outDir.getAbsolutePath()))
 					.subscribe(Sink.of(files))
 					.run();
 			} catch (Exception e)
@@ -65,16 +63,24 @@ public class ExportFitsInfoPairsAction<G1 extends IPerspectiveImage & IPerspecti
 			try
 			{
 				String defaultFileName = FilenameUtils.getBaseName(aItem.getPointingSource());
-				String defaultFileType = aItem.getPointingSourceType() == ImageSource.GASKELL ? "SUM" : "INFO";
-				file = CustomFileChooser.showSaveDialog(null, "Save Pointing file as...", defaultFileName + "." + defaultFileType);
-				if (file == null) return;
+				String defaultFileType = (aItem.getPointingSourceType() == ImageSource.GASKELL || aItem.getPointingSourceType() == ImageSource.GASKELL_UPDATED) ? "SUM" : "INFO";
+				defaultFileType = "INFO";
+//				file = CustomFileChooser.showSaveDialog(null, "Save Pointing file as...", defaultFileName + "." + defaultFileType);
+				file = new File(outDir, defaultFileName + "." + defaultFileType);
 
 				String filename = file.getAbsolutePath();
+				//What is below was dumb.  Export the file from the cache instead.
+				//TODO for now, we don't have a good SUMFileWriter, so export things as INFO files.
+//				PerspectiveImageToRenderableImagePipeline pipeline = new PerspectiveImageToRenderableImagePipeline(List.of(aItem));
+//				filename = filename.replace(".SUM", ".INFO");
+//				InfoFileWriter writer = new InfoFileWriter(filename, pipeline.getRenderableImages().get(0).getPointing(), false);
+//				writer.write();
 
-				PerspectiveImageToRenderableImagePipeline pipeline = new PerspectiveImageToRenderableImagePipeline(List.of(aItem));
+				String pointingFileName = aItem.getPointingSource();
+				File pointingFile = FileCache.getFileFromServer(pointingFileName);
+				File newPointingFile = new File(outDir, pointingFile.getName());
+				FileUtils.copyFile(pointingFile, newPointingFile);
 
-				InfoFileWriter writer = new InfoFileWriter(filename, pipeline.getRenderableImages().get(0).getPointing(), false);
-				writer.write();
 			}
 			catch (Exception ex)
 			{

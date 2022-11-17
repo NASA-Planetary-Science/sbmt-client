@@ -233,6 +233,7 @@ public class ImageSearchParametersController<G1 extends IPerspectiveImage & IPer
                 panel.getSelectRegionButton().setSelected(false);
                 pickManager.setPickMode(PickMode.DEFAULT);
                 ImageSearchPipeline<G1> pipeline = null;
+                collection.clearSearchedImages();
 				try
 				{
 					pipeline = new ImageSearchPipeline<G1>(viewConfig, modelManager, model);

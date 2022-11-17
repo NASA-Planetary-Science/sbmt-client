@@ -46,9 +46,15 @@ public class CompositePerspectiveImage implements IPerspectiveImage, IPerspectiv
 
 	//masking
 	private int[] maskValues = new int[] {0, 0, 0, 0};
+	private int[] autoMaskValues = new int[] {0, 0, 0, 0};
+	private boolean useAutoMask = false;
 	private CylindricalBounds bounds = null;
 
 	private static final Key<List<IPerspectiveImage>> IMAGES_KEY = Key.of("images");
+	private static final Key<Boolean> MAPPED_KEY = Key.of("imageMapped");
+	private static final Key<Boolean> FRUSTUM_KEY = Key.of("frustumShowing");
+	private static final Key<Boolean> BOUNDARY_KEY = Key.of("boundaryShowing");
+	private static final Key<Boolean> OFFLIMB_SHOWING_KEY = Key.of("offlimbShowing");
 	private static final Key<CompositePerspectiveImage> COMPOSITE_PERSPECTIVE_IMAGE_KEY = Key.of("compositePerspectiveImage");
 
 	List<IPerspectiveImage> images;
@@ -205,6 +211,7 @@ public class CompositePerspectiveImage implements IPerspectiveImage, IPerspectiv
 	public void setName(String name)
 	{
 		this.name = name;
+		images.get(0).setName(name);
 	}
 
 	public CylindricalBounds getBounds()
@@ -226,6 +233,40 @@ public class CompositePerspectiveImage implements IPerspectiveImage, IPerspectiv
 	public void setMaskValues(int[] maskValues)
 	{
 		images.get(0).setMaskValues(maskValues);
+	}
+
+	/**
+	 * @return the autoMaskValues
+	 */
+	public int[] getAutoMaskValues()
+	{
+		return images.get(0).getAutoMaskValues();
+	}
+
+	/**
+	 * @param autoMaskValues the autoMaskValues to set
+	 */
+	public void setAutoMaskValues(int[] autoMaskValues)
+	{
+		this.autoMaskValues = autoMaskValues;
+		images.get(0).setAutoMaskValues(autoMaskValues);
+	}
+
+	/**
+	 * @return the useAutoMask
+	 */
+	public boolean isUseAutoMask()
+	{
+		return images.get(0).isUseAutoMask();
+	}
+
+	/**
+	 * @param useAutoMask the useAutoMask to set
+	 */
+	public void setUseAutoMask(boolean useAutoMask)
+	{
+		this.useAutoMask = useAutoMask;
+		this.images.get(0).setUseAutoMask(useAutoMask);
 	}
 
 	public int[] getTrimValues()
@@ -283,7 +324,7 @@ public class CompositePerspectiveImage implements IPerspectiveImage, IPerspectiv
 
 	public void setFillValues(double[] fillValues)
 	{
-		this.fillValues = fillValues;
+		this.images.get(0).setFillValues(fillValues);
 	}
 
 	public double getEt()
@@ -441,11 +482,23 @@ public class CompositePerspectiveImage implements IPerspectiveImage, IPerspectiv
 		InstanceGetter.defaultInstanceGetter().register(COMPOSITE_PERSPECTIVE_IMAGE_KEY, (metadata) -> {
 		CompositePerspectiveImage compositeImage = new CompositePerspectiveImage();
 		List<IPerspectiveImage> images = metadata.get(IMAGES_KEY);
+		if (metadata.hasKey(MAPPED_KEY))
+			compositeImage.setMapped(metadata.get(MAPPED_KEY));
+		if (metadata.hasKey(BOUNDARY_KEY))
+			compositeImage.setBoundaryShowing(metadata.get(BOUNDARY_KEY));
+		if (metadata.hasKey(FRUSTUM_KEY))
+			compositeImage.setFrustumShowing(metadata.get(FRUSTUM_KEY));
+		if (metadata.hasKey(OFFLIMB_SHOWING_KEY))
+			compositeImage.setOfflimbShowing(metadata.get(OFFLIMB_SHOWING_KEY));
 		compositeImage.setImages(images);
 		return compositeImage;
 
 		}, CompositePerspectiveImage.class, image -> {
 			SettableMetadata result = SettableMetadata.of(Version.of(1, 0));
+			result.put(MAPPED_KEY, image.isMapped());
+			result.put(BOUNDARY_KEY, image.isBoundaryShowing());
+			result.put(FRUSTUM_KEY, image.isFrustumShowing());
+			result.put(OFFLIMB_SHOWING_KEY, image.isOfflimbShowing());
 			result.put(IMAGES_KEY, image.getImages());
 		    return result;
 		});

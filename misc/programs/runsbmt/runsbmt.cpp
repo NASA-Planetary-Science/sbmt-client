@@ -5,6 +5,7 @@
 #include <string>
 #include <sstream>
 #include <fstream>
+#include <iostream>
 
 using namespace std;
 
@@ -77,7 +78,7 @@ int main(int argc, char *argv[])
 
     size_t memory = getMemorySize();
     command += " -Xmx" + numberToString(memory) + "K";
-    command += " -Djava.library.path=lib/win64 -Dsun.java2d.noddraw=true -Dedu.jhuapl.sbmt.mission=argv[2] -jar lib/near.jar";
+    command += " -Djava.library.path=lib/win64;lib/gdal/win64 -Dsun.java2d.noddraw=true -Dedu.jhuapl.sbmt.mission=argv[2] -jar lib/near.jar";
 
     for (int i=1; i<argc; ++i)
         command += string(" ") + argv[i];
@@ -86,7 +87,7 @@ int main(int argc, char *argv[])
     string path = getenv( "PATH" );
     string newpathenv = "PATH=";
     newpathenv += path;
-    newpathenv += ";.\\lib\\win64";
+    newpathenv += ";.\\lib\\win64;.\\lib\\gdal\\win64";
     _putenv( newpathenv.c_str() );
 
     runCommand((TCHAR*)command.c_str());

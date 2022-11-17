@@ -64,11 +64,13 @@ public class ImageListItemHandler<G1 extends IPerspectiveImage  & IPerspectiveIm
 		}
 		else if (aEnum == ImageColumnLookup.Offlimb)
 		{
-			imageCollection.setImageOfflimbShowing(image, (Boolean)aValue);
+			if (image.getNumberOfLayers() == 1)
+				imageCollection.setImageOfflimbShowing(image, (Boolean)aValue);
 		}
 		else if (aEnum == ImageColumnLookup.Frustum)
 		{
-			imageCollection.setImageFrustumVisible(image, (Boolean)aValue);
+			if (image.getNumberOfLayers() != 3)
+				imageCollection.setImageFrustumVisible(image, (Boolean)aValue);
 		}
 		else if (aEnum == ImageColumnLookup.Boundary)
 		{

@@ -15,6 +15,7 @@ public class LoadPolydataFromFileOperator extends BasePipelineOperator<String, v
 	@Override
 	public void processData() throws IOException, Exception
 	{
+		if (inputs.get(0).split("cache/2/").length != 2) return;
 		String imageDataFileName = inputs.get(0).split("cache/2/")[1];
 		File file;
 		try

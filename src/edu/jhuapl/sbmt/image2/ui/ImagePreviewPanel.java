@@ -13,6 +13,7 @@ import java.beans.PropertyChangeListener;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.function.Function;
 
@@ -94,15 +95,19 @@ public class ImagePreviewPanel extends ModelInfoWindow implements MouseListener,
 //	private JPanel offLimbPanel;
 //	private OfflimbControlsController offlimbController;
 	vtkImageData displayedImage;
+	private HashMap<String, String> metadata;
+	private boolean showContrast;
 
-	public ImagePreviewPanel(String title, final vtkImageData imageData) throws IOException, Exception
+	public ImagePreviewPanel(String title, final vtkImageData imageData, HashMap<String, String> metadata, boolean showContrast) throws IOException, Exception
 	{
-
 		this.maskPipeline = new VtkImageMaskingPipeline();
+		this.showContrast = showContrast;
 		this.imageData = imageData;
+		this.metadata = metadata;
 		initComponents();
 		displayedImage = imageData;
-		contrastController.setImageData(displayedImage);
+		if (showContrast)
+			contrastController.setImageData(displayedImage);
 		prepareRenderer();
 //		refStatusHandler = aStatusHandler;
 
@@ -307,7 +312,11 @@ public class ImagePreviewPanel extends ModelInfoWindow implements MouseListener,
 		GridBagConstraints gridBagConstraints;
 //		LinkedHashMap<String, String> properties = new LinkedHashMap<String, String>();
 		List<ImageProperty> properties = new ArrayList<ImageProperty>();
-		properties.add(new ImageProperty("Prop1", "Val1"));
+//		properties.add(new ImageProperty("Prop1", "Val1"));
+		for (String key : metadata.keySet())
+		{
+			properties.add(new ImageProperty(key, metadata.get(key)));
+		}
 		ImagePropertiesController propertiesController = new ImagePropertiesController(properties);
 		tablePanel = propertiesController.getView();
 //		factorLabel = new JLabel();
@@ -442,7 +451,8 @@ public class ImagePreviewPanel extends ModelInfoWindow implements MouseListener,
 				return null;
 			}
 		});
-		getContentPane().add(contrastController.getView(), gridBagConstraints);
+		if (showContrast)
+			getContentPane().add(contrastController.getView(), gridBagConstraints);
 
 
 

@@ -27,19 +27,21 @@ import vtk.vtkProperty;
 import edu.jhuapl.saavtk.model.SaavtkItemManager;
 import edu.jhuapl.saavtk.util.ColorUtil;
 import edu.jhuapl.saavtk.util.FileCache;
+import edu.jhuapl.saavtk.util.Frustum;
 import edu.jhuapl.saavtk.util.IdPair;
 import edu.jhuapl.saavtk.util.IntensityRange;
 import edu.jhuapl.saavtk.util.Properties;
 import edu.jhuapl.sbmt.common.client.SmallBodyModel;
+import edu.jhuapl.sbmt.core.image.CustomImageKeyInterface;
 import edu.jhuapl.sbmt.core.image.IImagingInstrument;
 import edu.jhuapl.sbmt.core.image.ImageSource;
 import edu.jhuapl.sbmt.core.image.ImageType;
 import edu.jhuapl.sbmt.core.image.PointingFileReader;
 import edu.jhuapl.sbmt.image2.interfaces.IPerspectiveImage;
 import edu.jhuapl.sbmt.image2.interfaces.IPerspectiveImageTableRepresentable;
-import edu.jhuapl.sbmt.image2.pipelineComponents.operators.rendering.ImageRenderable;
 import edu.jhuapl.sbmt.image2.pipelineComponents.operators.rendering.vtk.LowResolutionBoundaryOperator;
 import edu.jhuapl.sbmt.image2.pipelineComponents.pipelines.ImagePipelineFactory;
+import edu.jhuapl.sbmt.image2.pipelineComponents.pipelines.ImageToScenePipeline;
 import edu.jhuapl.sbmt.image2.pipelineComponents.pipelines.cylindricalImages.RenderableCylindricalImageToScenePipeline;
 import edu.jhuapl.sbmt.image2.pipelineComponents.pipelines.pointedImages.RenderablePointedImageToScenePipeline;
 import edu.jhuapl.sbmt.image2.pipelineComponents.pipelines.rendering.RenderableImageActorPipeline;
@@ -74,6 +76,9 @@ public class PerspectiveImageCollection<G1 extends IPerspectiveImage & IPerspect
 	private IImagingInstrument imagingInstrument;
 	private IdPair currentBoundaryRange = new IdPair(0, 9);
 	private int currentBoundaryOffsetAmount = 10;
+	private boolean firstCustomLoad = true;
+	private HashMap<G1, PerspectiveImageRenderingState<G1>> hashMap;
+	private List<SmallBodyModel> list;
 
 	public PerspectiveImageCollection(List<SmallBodyModel> smallBodyModels)
 	{
@@ -86,7 +91,7 @@ public class PerspectiveImageCollection<G1 extends IPerspectiveImage & IPerspect
 		this.offLimbBoundaryRenderers = new HashMap<G1, List<vtkActor>>();
 		this.renderingStates = new HashMap<G1, PerspectiveImageRenderingState<G1>>();
 		this.smallBodyModels = smallBodyModels;
-
+		migrateOldUserList();
 		for (SmallBodyModel smallBodyModel : smallBodyModels)
 		{
 			smallBodyModel.addPropertyChangeListener((evt) -> {
@@ -97,11 +102,12 @@ public class PerspectiveImageCollection<G1 extends IPerspectiveImage & IPerspect
 					{
 						public void run()
 						{
-							if (renderingStates.size() > 0)
+							boolean mappedImages = renderingStates.values().stream().filter(pred -> pred.isMapped).toList().isEmpty();
+							if (!mappedImages)
 							{
 								int response = JOptionPane.showConfirmDialog(
 									    null,
-									    "You have mapped images; changing the model resolution will force a refresh of those images, and may take some time. Continue?",
+									    "Mapped images will not appear properly on the surface of the new model \nuntil they are re-rendered, which may take some time. Re-render mapped images? \n\n (Unmapped, loaded images will need to be re-rendered via right click.)",
 									    "Remap Images?",
 									    JOptionPane.YES_NO_OPTION);
 								if (response == JOptionPane.NO_OPTION) return;
@@ -121,6 +127,48 @@ public class PerspectiveImageCollection<G1 extends IPerspectiveImage & IPerspect
 		}
 	}
 
+	public void clearSearchedImages()
+	{
+		List<G1> activeImages = imagesByInstrument.get(imagingInstrument);
+		if (activeImages == null) return;
+		for (G1 image : activeImages)
+		{
+			if (renderingStates.get(image).isMapped)
+				setImageMapped(image, false);
+			if (renderingStates.get(image).isBoundaryShowing)
+				setImageBoundaryShowing(image, false);
+			if (renderingStates.get(image).isFrustumShowing)
+				setImageFrustumVisible(image, false);
+			if (renderingStates.get(image).isOfflimbShowing)
+				setImageOfflimbShowing(image, false);
+			if (renderingStates.get(image).isOffLimbBoundaryShowing)
+				setOffLimbBoundaryShowing(image, false);
+			renderingStates.remove(image);
+		}
+		imagesByInstrument.clear();
+		currentBoundaryRange = new IdPair(0, currentBoundaryOffsetAmount-1);
+	}
+
+	public void clearUserImages()
+	{
+		if (userImages.size() == 0) return;
+		for (G1 image : userImages)
+		{
+			if (renderingStates.get(image).isMapped)
+				setImageMapped(image, false);
+			if (renderingStates.get(image).isBoundaryShowing)
+				setImageBoundaryShowing(image, false);
+			if (renderingStates.get(image).isFrustumShowing)
+				setImageFrustumVisible(image, false);
+			if (renderingStates.get(image).isOfflimbShowing)
+				setImageOfflimbShowing(image, false);
+			if (renderingStates.get(image).isOffLimbBoundaryShowing)
+				setOffLimbBoundaryShowing(image, false);
+			renderingStates.remove(image);
+		}
+		userImages.clear();
+	}
+
 	public void addUserImage(G1 image)
 	{
 		userImages.add(image);
@@ -129,13 +177,114 @@ public class PerspectiveImageCollection<G1 extends IPerspectiveImage & IPerspect
 		state.boundaryColor = color;
 		renderingStates.put(image,state);
 		updateUserList();	//update the user created list, stored in metadata
-//		setAllItems(userImages);
+	}
+
+	private void migrateOldUserList()
+	{
+		String newUserFilename = smallBodyModels.get(0).getCustomDataFolder() + File.separator + "userImages.txt";
+		if (new File(newUserFilename).exists()) return;	//conversion has already taken place
+		String filename = smallBodyModels.get(0).getCustomDataFolder() + File.separator + "config.txt";
+		if (!new File(filename).exists()) return;	//there is no previous version file
+		FixedMetadata metadata;
+        try
+        {
+        	Key<List<CustomImageKeyInterface>> userImagesKey = Key.of("customImages");
+        	metadata = Serializers.deserialize(new File(filename), "CustomImages");
+        	List<CustomImageKeyInterface> customImages = metadata.get(userImagesKey);
+        	for (CustomImageKeyInterface info : customImages)
+            {
+        		G1 image = convertCustomImageKeyInterfaceToModern(info);
+        		userImages.add(image);
+
+            }
+        	updateUserList();
+        }
+        catch (IOException e)
+        {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+        loadUserList();
+	}
+
+	/**
+	 * Convert pre-Image reorg custom image metadata files to the new CompositePerspectiveImage format. This includes
+	 * fields for items such as masking, fill values and interpolation that were not present before the image reorg.
+	 * @param info
+	 * @return
+	 */
+	private G1 convertCustomImageKeyInterfaceToModern(CustomImageKeyInterface info)
+	{
+		PerspectiveImage image = null;
+		double[] fillValues = new double[] {};
+		ImageType imageType = info.getImageType();
+		String filePath = smallBodyModels.get(0).getCustomDataFolder() + File.separator + info.getImageFilename();
+		String pointingFile = smallBodyModels.get(0).getCustomDataFolder() + File.separator + info.getPointingFile();
+		ImageSource pointingSourceType = info.getSource();
+//		if (info instanceof CustomPerspectiveImageKey)
+//		{
+//			CustomPerspectiveImageKey perInfo = (CustomPerspectiveImageKey)info;
+//
+//		}
+//		else
+//		{
+//			CustomCylindricalImageKey cylInfo = (CustomCylindricalImageKey)info;
+//		}
+		image = new PerspectiveImage(filePath, imageType, pointingSourceType, pointingFile, fillValues);
+		image.setName(info.getName());
+		image.setImageOrigin(ImageOrigin.LOCAL);
+		image.setLongTime(info.getDate().getTime());
+		if (pointingSourceType == ImageSource.LOCAL_CYLINDRICAL)
+		{
+			image.setBounds(new CylindricalBounds(-90,90,0,360));
+		}
+		else
+		{
+			if (imageType != ImageType.GENERIC_IMAGE)
+			{
+
+				image.setLinearInterpolatorDims(new int[] {});
+				image.setMaskValues(new int[] {});
+				image.setFillValues(new double[] {});
+				image.setFlip(info.getFlip());
+				image.setRotation(info.getRotation());
+			}
+		}
+		CompositePerspectiveImage compImage = new CompositePerspectiveImage(List.of(image));
+		compImage.setName(info.getName());
+
+		return (G1)compImage;
+    	//Code from other file
+//    	ImageType imageType = (ImageType)imageTypeComboBox.getSelectedItem();
+//
+//		double[] fillValues = new double[] {};
+//		PerspectiveImage image = new PerspectiveImage(newFilepath, imageType, pointingSourceType, newPointingFilepath, fillValues);
+//
+//		image.setName(getName());
+//		image.setImageOrigin(ImageOrigin.LOCAL);
+//		image.setLongTime(new Date().getTime());
+//		if (pointingSourceType == ImageSource.LOCAL_CYLINDRICAL)
+//		{
+//			image.setBounds(new CylindricalBounds(-90,90,0,360));
+//		}
+//		else
+//		{
+//			if (imageType != ImageType.GENERIC_IMAGE)
+//			{
+//				image.setLinearInterpolatorDims(instrument.getLinearInterpolationDims());
+//				image.setMaskValues(instrument.getMaskValues());
+//				image.setFillValues(instrument.getFillValues());
+//				image.setFlip(instrument.getFlip());
+//				image.setRotation(instrument.getRotation());
+//			}
+//		}
+//		CompositePerspectiveImage compImage = new CompositePerspectiveImage(List.of(image));
+//		compImage.setName(FilenameUtils.getBaseName(filename));
 	}
 
 	public void loadUserList()
 	{
-//		if (userImages.size() != 0) return;
-		userImages.clear();
+		clearUserImages();
 		String instrumentName = ""; //imagingInstrument == null ? "" : imagingInstrument.getType().toString();
 		String filename = smallBodyModels.get(0).getCustomDataFolder() + File.separator + "userImages" + instrumentName + ".txt";
         if (!new File(filename).exists()) return;
@@ -147,13 +296,27 @@ public class PerspectiveImageCollection<G1 extends IPerspectiveImage & IPerspect
             userImages = read(userImagesKey, metadata);
             for (G1 image : userImages)
             {
-            	PerspectiveImageRenderingState<G1> state = new PerspectiveImageRenderingState<G1>();
-            	state.isMapped = image.isMapped();
-            	if (image.isMapped()) image.setStatus("Loaded");
-            	state.isFrustumShowing = image.isFrustumShowing();
-            	state.isBoundaryShowing = image.isBoundaryShowing();
-            	state.isOfflimbShowing = image.isOfflimbShowing();
-        		renderingStates.put(image,state);
+            	PerspectiveImageRenderingState<G1> state = renderingStates.get(image);
+            	if (state == null)
+        		{
+            		state = new PerspectiveImageRenderingState<G1>();
+            		renderingStates.put(image,state);
+        		}
+
+            	if (firstCustomLoad == false)
+            	{
+            		if (image.isMapped()) setImageMapped(image, image.isMapped());
+            		if (image.isFrustumShowing()) setImageFrustumVisible(image, image.isFrustumShowing());
+            		if (image.isBoundaryShowing()) setImageBoundaryShowing(image, image.isBoundaryShowing());
+            		if (image.isOfflimbShowing()) setImageOfflimbShowing(image, image.isOfflimbShowing());
+//            		state.isMapped = image.isMapped();
+//	            	if (image.isMapped()) image.setStatus("Loaded");
+//	            	state.isFrustumShowing = image.isFrustumShowing();
+//	            	state.isBoundaryShowing = image.isBoundaryShowing();
+//	            	state.isOfflimbShowing = image.isOfflimbShowing();
+            	}
+
+
         		//TODO leaving this here for now, in case I want to implement something like Nobes does for dtms
 //        		updateImage(image);
             }
@@ -335,21 +498,25 @@ public class PerspectiveImageCollection<G1 extends IPerspectiveImage & IPerspect
 
 	public void updateImage(G1 image)
 	{
-		Thread thread = getPipelineThread(image, (Void v) -> {
-			image.setStatus("Loaded");
-			return null;
-		});
-		thread.start();
+		if (userImages.contains(image)) updateUserImage(image);
+		else
+		{
+			Thread thread = getPipelineThread(image, (Void v) -> {
+				image.setStatus("Loaded");
+				return null;
+			});
+			thread.start();
 
-		pcs.firePropertyChange(Properties.MODEL_CHANGED, null, image);
+			pcs.firePropertyChange(Properties.MODEL_CHANGED, null, image);
+		}
 	}
 
 	public void updateUserImage(G1 image)
 	{
-		RenderablePointedImageToScenePipeline<G1> pipeline = null;
+		RenderableImageActorPipeline pipeline = null;
 		try
 		{
-			pipeline = new RenderablePointedImageToScenePipeline<G1>(image, smallBodyModels);
+			pipeline = ImagePipelineFactory.of(image, smallBodyModels);
 		} catch (Exception e)
 		{
 			// TODO Auto-generated catch block
@@ -357,6 +524,7 @@ public class PerspectiveImageCollection<G1 extends IPerspectiveImage & IPerspect
 		}
 		if (pipeline == null) return;
 		updatePipeline(image, pipeline);
+		updateUserList();
 		pcs.firePropertyChange(Properties.MODEL_CHANGED, null, image);
 	}
 
@@ -418,7 +586,6 @@ public class PerspectiveImageCollection<G1 extends IPerspectiveImage & IPerspect
 	public boolean getImageMapped(G1 image)
 	{
 		return renderingStates.get(image).isMapped;
-//		return image.isMapped();
 	}
 
 	public String getImageStatus(G1 image)
@@ -544,7 +711,8 @@ public class PerspectiveImageCollection<G1 extends IPerspectiveImage & IPerspect
 
 	public boolean getOffLimbBoundaryShowing(G1 image)
 	{
-		return image.isOfflimbBoundaryShowing();
+		return renderingStates.get(image).isOffLimbBoundaryShowing;
+//		return image.isOfflimbBoundaryShowing();
 	}
 
 	public void setImageBoundaryShowing(G1 image, boolean showing)
@@ -668,6 +836,21 @@ public class PerspectiveImageCollection<G1 extends IPerspectiveImage & IPerspect
 		return matchingImage;
 	}
 
+	public Optional<G1> getImageBoundary(vtkActor actor)
+	{
+		Optional<G1> matchingImage = Optional.empty();
+		for (G1 image : boundaryRenderers.keySet())
+		{
+			List<vtkActor> actors = boundaryRenderers.get(image);
+			if (actors.contains(actor))
+			{
+				matchingImage = Optional.of(image);
+			}
+		}
+
+		return matchingImage;
+	}
+
 	@Override
 	public void setOpacity(double opacity)
 	{
@@ -767,7 +950,12 @@ public class PerspectiveImageCollection<G1 extends IPerspectiveImage & IPerspect
 			renderingStates.get(image).imageContrastRange = intensityRange;
 			image.setIntensityRange(intensityRange);
 		}
-		Thread thread = getPipelineThread(image, (Void v) -> { return null; });
+		Thread thread = getPipelineThread(image, (Void v) -> {
+			SwingUtilities.invokeLater( () -> {
+				pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
+			});
+			return null;
+		});
 		thread.start();
 	}
 
@@ -816,13 +1004,17 @@ public class PerspectiveImageCollection<G1 extends IPerspectiveImage & IPerspect
 
 	public void setImagingInstrument(IImagingInstrument imagingInstrument)
 	{
-		if (imagingInstrument == null && userImages.size() == 0) loadUserList();
+		if (imagingInstrument == null && userImages.size() == 0)
+		{
+			loadUserList();
+			firstCustomLoad = false;
+		}
 		if (this.imagingInstrument == imagingInstrument) return;
 		this.imagingInstrument = imagingInstrument;
 		if (imagingInstrument == null)
 		{
-
 			setAllItems(userImages);
+			firstCustomLoad = false;
 		}
 		else if (imagesByInstrument.get(imagingInstrument) == null)
 		{
@@ -846,49 +1038,53 @@ public class PerspectiveImageCollection<G1 extends IPerspectiveImage & IPerspect
 			{
 				try
 				{
-//					List<IRenderableImage> renderableImages;
-//					System.out.println(
-//							"PerspectiveImageCollection.getBoundaryCreationThread(...).new Runnable() {...}: run: making pipeline");
-//					if (image.getImageType() != ImageType.GENERIC_IMAGE && image.getPointingSourceType() != ImageSource.LOCAL_CYLINDRICAL)
-//					{
-//						PerspectiveImageToRenderableImagePipeline pipeline = new PerspectiveImageToRenderableImagePipeline(List.of(image));
-//						renderableImages = pipeline.getRenderableImages();
-//					}
-//					else
-//					{
-//						renderableImages = CylindricalImageToRenderableImagePipeline.of(List.of(image)).getRenderableImages();
-//					}
-
-					String pointingFile = image.getPointingSource();
-
-					if (!new File(pointingFile).exists())
-					{
-						pointingFile = FileCache.getFileFromServer(image.getPointingSource()).getAbsolutePath();
-					}
-
-					//generate image pointing (in: filename, out: ImagePointing)
-					IPipelinePublisher<PointingFileReader> pointingPublisher = null;
-					if (image.getPointingSourceType() == ImageSource.SPICE || image.getPointingSourceType() == ImageSource.CORRECTED_SPICE)
-						pointingPublisher = new InfofileReaderPublisher(pointingFile);
-					else
-						pointingPublisher = new SumfileReaderPublisher(pointingFile);
-
 					List<vtkActor> boundaryActors = Lists.newArrayList();
-					if (ImageRenderable.USE_PRECISE_BOUNDARY)
+					//Only draw the close up border for color images
+					if (image.getNumberOfLayers() == 3)
 					{
-	//					Just.of(Pair.of(renderableImages.get(0).get, smallBodyModels))
-	//						.operate(new HighResolutionBoundaryOperator())
-	//						.subscribe(Sink.of(boundaryActors))
-	//						.run();
+						ImageToScenePipeline colorPipeline = ImagePipelineFactory.of(image, smallBodyModels);
+						boundaryActors = colorPipeline.getRenderableImageBoundaryActors();
+
+//						List<IRenderableImage> renderableImages;
+//						ImageRenderable imageRenderable;
+//						if (image.getImageType() != ImageType.GENERIC_IMAGE && image.getPointingSourceType() != ImageSource.LOCAL_CYLINDRICAL)
+//						{
+//							PerspectiveImageToRenderableImagePipeline pipeline = new PerspectiveImageToRenderableImagePipeline(List.of(image));
+//							renderableImages = pipeline.getRenderableImages();
+//							imageRenderable = new PointedImageRenderables((RenderablePointedImage)renderableImages.get(0), smallBodyModels);
+//						}
+//						else
+//						{
+//							renderableImages = CylindricalImageToRenderableImagePipeline.of(List.of(image)).getRenderableImages();
+//							imageRenderable = new CylindricalImageRenderables((RenderableCylindricalImage)renderableImages.get(0), smallBodyModels);
+//						}
+//						Just.of(Pair.of(imageRenderable.getFootprintPolyData(), smallBodyModels))
+//							.operate(new HighResolutionBoundaryOperator())
+//							.subscribe(Sink.of(boundaryActors))
+//							.run();
 					}
 					else
 					{
+						String pointingFile = image.getPointingSource();
+
+						if (!new File(pointingFile).exists())
+						{
+							pointingFile = FileCache.getFileFromServer(image.getPointingSource()).getAbsolutePath();
+						}
+
+						//generate image pointing (in: filename, out: ImagePointing)
+						IPipelinePublisher<PointingFileReader> pointingPublisher = null;
+						if (image.getPointingSourceType() == ImageSource.SPICE || image.getPointingSourceType() == ImageSource.CORRECTED_SPICE)
+							pointingPublisher = new InfofileReaderPublisher(pointingFile);
+						else
+							pointingPublisher = new SumfileReaderPublisher(pointingFile);
 						Just.of(Pair.of(pointingPublisher.getOutput(), smallBodyModels))
 							.operate(new LowResolutionBoundaryOperator())
 							.subscribe(Sink.of(boundaryActors))
 							.run();
-						boundaryRenderers.put(image, boundaryActors);
 					}
+					boundaryRenderers.put(image, boundaryActors);
+//					setImageBoundaryColor(image, Color.red);
 					completionBlock.apply(null);
 				}
 				catch (Exception e)
@@ -921,7 +1117,7 @@ public class PerspectiveImageCollection<G1 extends IPerspectiveImage & IPerspect
 			RenderableImageActorPipeline pipeline = null;
 			try
 			{
-				if (image.getImageType() != ImageType.GENERIC_IMAGE && image.getPointingSourceType() != ImageSource.LOCAL_CYLINDRICAL)
+				if (/*image.getImageType() != ImageType.GENERIC_IMAGE &&*/ image.getPointingSourceType() != ImageSource.LOCAL_CYLINDRICAL)
 				{
 					pipeline = new RenderablePointedImageToScenePipeline<G1>(image, smallBodyModels);
 
@@ -945,6 +1141,11 @@ public class PerspectiveImageCollection<G1 extends IPerspectiveImage & IPerspect
 				e.printStackTrace();
 			}
 			if (pipeline == null) return;
+			if (renderingStates.get(image) == null)
+			{
+				PerspectiveImageRenderingState<G1> state = new PerspectiveImageRenderingState<G1>();
+	    		renderingStates.put(image,state);
+			}
 			updatePipeline(image, pipeline);
 			completionBlock.apply(null);
 			SwingUtilities.invokeLater( () -> {
@@ -967,4 +1168,96 @@ public class PerspectiveImageCollection<G1 extends IPerspectiveImage & IPerspect
 		this.currentBoundaryRange.id2 = this.currentBoundaryRange.id1 + currentBoundaryOffsetAmount - 1;
 		updateActiveBoundaries(previousRange);
 	}
+
+	@Override
+	public String getClickStatusBarText(vtkProp prop, int cellId, double[] pickPosition)
+	{
+		 // Get default status message
+        String status = super.getClickStatusBarText(prop, cellId, pickPosition);
+        if (getSelectedItems().size() == 0) return status;
+        G1 image = getSelectedItems().asList().get(0);
+//        System.out.println("PerspectiveImageCollection: getClickStatusBarText: image name " + image.getName());
+//        List<vtkImageData> displayedImages = new ArrayList<vtkImageData>();
+//        IPerspectiveImageToLayerAndMetadataPipeline layerPipeline = null;
+//        double[] pixelLocation = new double[] {0,0};
+//        double[] pickedPixel = new double[] {0,0};
+//        Layer layer  = null;
+//        try {
+//        	layerPipeline = IPerspectiveImageToLayerAndMetadataPipeline.of(image);
+//			IPipelinePublisher<Layer> reader = new Just<Layer>(layerPipeline.getLayers().get(0));
+//			reader.
+//				operate(new VtkImageRendererOperator()).
+//				subscribe(new Sink<vtkImageData>(displayedImages)).run();
+//
+//			layer = layerPipeline.getLayers().get(0);
+////	        PerspectiveImage pi = (PerspectiveImage) image;
+//
+//	        IPipelinePublisher<PointingFileReader> pointingPublisher = null;
+//			if (image.getPointingSourceType() == ImageSource.SPICE || image.getPointingSourceType() == ImageSource.CORRECTED_SPICE)
+//				pointingPublisher = new InfofileReaderPublisher(FileCache.getFileFromServer(image.getPointingSource()).getAbsolutePath());
+//			else
+//				pointingPublisher = new SumfileReaderPublisher(FileCache.getFileFromServer(image.getPointingSource()).getAbsolutePath());
+//			Frustum frustum = new Frustum(pointingPublisher.getOutput().getSpacecraftPosition(), pointingPublisher.getOutput().getFrustum1(), pointingPublisher.getOutput().getFrustum3(), pointingPublisher.getOutput().getFrustum4(), pointingPublisher.getOutput().getFrustum2());
+//	        pickedPixel = getPixelFromPoint(pickPosition, frustum, layer.iSize(), layer.jSize());
+//	        System.out.println("PerspectiveImageCollection: getClickStatusBarText: i j " + layer.iSize() + " " + layer.jSize());
+//	        System.out.println("PerspectiveImageCollection: getClickStatusBarText: pickedpixel " + Arrays.toString(pickedPixel));
+//	        pixelLocation = new double[]{layer.iSize()-1-pickedPixel[0], pickedPixel[1]};
+//	        System.out.println("PerspectiveImageCollection: getClickStatusBarText: pixel location " + Arrays.toString(pixelLocation));
+//        }
+//        catch (Exception e)
+//        {
+//        	e.printStackTrace();
+//        }
+
+
+
+        status += "Image " + image.getName();
+
+//        // Number format
+//        DecimalFormat df = new DecimalFormat("#.0");
+//        df.setRoundingMode(RoundingMode.HALF_UP);
+
+        // Construct status message
+//        status += ", Pixel Coordinate = (";
+//        status += df.format(pixelLocation[0]);
+//        status += ", ";
+//        status += df.format(pixelLocation[1]);
+//        status += ")";
+//
+//        // Append raw pixel value information
+//        status += ", Raw Value = ";
+//        if (displayedImages.get(0) == null)
+//        {
+//            status += "Unavailable";
+//        }
+//        else
+//        {
+//            int ip0 = (int) Math.round(pixelLocation[1]);
+//            int ip1 = (int) Math.round(pixelLocation[0]);
+//            if (!displayedImages.get(0).GetScalarTypeAsString().contains("char"))
+//            {
+//                float[] pixelColumn = ImageDataUtil.vtkImageDataToArray1D(displayedImages.get(0),
+//                		layer.iSize() - 1 - ip0, ip1);
+//                status += pixelColumn[0];
+//            }
+//            else
+//            {
+//                status += "N/A";
+//            }
+//        }
+
+        return status;
+	}
+
+    private double[] getPixelFromPoint(double[] pt, Frustum frustum, int imageWidth, int imageHeight)
+    {
+        double[] uv = new double[2];
+        frustum.computeTextureCoordinatesFromPoint(pt, imageWidth, imageHeight, uv, false);
+
+        double[] pixel = new double[2];
+        pixel[0] = uv[0] * imageHeight;
+        pixel[1] = uv[1] * imageWidth;
+
+        return pixel;
+    }
 }

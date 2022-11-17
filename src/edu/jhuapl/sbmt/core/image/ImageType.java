@@ -2,6 +2,7 @@ package edu.jhuapl.sbmt.core.image;
 
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
+import java.util.Objects;
 
 import com.google.common.base.Preconditions;
 
@@ -194,6 +195,27 @@ public final class ImageType implements Comparable<ImageType>
         Class<ImageType> result = (Class<ImageType>) getClass();
 
         return result;
+    }
+
+    @Override
+    public int hashCode()
+    {
+        return Objects.hash(name);
+    }
+
+    @Override
+    public boolean equals(Object obj)
+    {
+        if (this == obj)
+        {
+            return true;
+        }
+        if (!(obj instanceof ImageType))
+        {
+            return false;
+        }
+        ImageType other = (ImageType) obj;
+        return Objects.equals(name, other.name);
     }
 
     /**

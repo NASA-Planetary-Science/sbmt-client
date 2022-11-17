@@ -55,6 +55,7 @@ public class ShowOffLimbSettingsAction<G1 extends IPerspectiveImage & IPerspecti
       JFrame frame = new JFrame();
       frame.setTitle("Offlimb Settings");
       frame.getContentPane().add(offLimbPanel);
+      frame.setAlwaysOnTop(true);
       frame.setSize(new Dimension(850, 150));
       frame.setVisible(true);
 	}

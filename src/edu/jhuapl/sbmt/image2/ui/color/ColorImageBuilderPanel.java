@@ -11,9 +11,10 @@ import javax.swing.JPanel;
 
 import edu.jhuapl.sbmt.common.client.SmallBodyModel;
 import edu.jhuapl.sbmt.image2.interfaces.IPerspectiveImage;
+import edu.jhuapl.sbmt.image2.interfaces.IPerspectiveImageTableRepresentable;
 import edu.jhuapl.sbmt.image2.pipelineComponents.subscribers.preview.VtkRendererPreview;
 
-public class ColorImageBuilderPanel extends JPanel
+public class ColorImageBuilderPanel<G1 extends IPerspectiveImage & IPerspectiveImageTableRepresentable> extends JPanel
 {
 	private List<SmallBodyModel> smallBodyModels;
 	private JPanel previewPanel;
@@ -22,6 +23,7 @@ public class ColorImageBuilderPanel extends JPanel
 	private SingleImagePreviewPanel bluePreview;
 	private JButton saveAndCloseButton;
 	private JButton previewButton;
+	private JButton cancelButton;
 
 	public ColorImageBuilderPanel(List<SmallBodyModel> smallBodyModels)
 	{
@@ -61,6 +63,7 @@ public class ColorImageBuilderPanel extends JPanel
 		previewPanel = new JPanel();
 		previewPanel.setSize(750, 650);
 		previewPanel.add(new JLabel("Select 3 images, then clip the preview button above."));
+		previewPanel.add(new JLabel("When you are satisfied, click 'Save and Close'; the image will then appear under the 'Custom' subtab."));
 		previewPanel.setPreferredSize(new Dimension(750, 650));
 		previewPanel.setMaximumSize(new Dimension(750, 650));
 
@@ -73,9 +76,10 @@ public class ColorImageBuilderPanel extends JPanel
 		panel.setLayout(new BoxLayout(panel, BoxLayout.X_AXIS));
 
 		previewButton = new JButton("Preview");
-
+		cancelButton = new JButton("Close");
 		saveAndCloseButton = new JButton("Save and Close");
 		panel.add(previewButton);
+		panel.add(cancelButton);
 		panel.add(saveAndCloseButton);
 
 		return panel;
@@ -87,7 +91,7 @@ public class ColorImageBuilderPanel extends JPanel
 		return List.of(redPreview.getPerspectiveImage(), greenPreview.getPerspectiveImage(), bluePreview.getPerspectiveImage());
 	}
 
-	public void setImages(List<IPerspectiveImage> images)
+	public void setImages(List<G1> images)
 	{
 		redPreview.setPerspectiveImage(images.get(0));
 		greenPreview.setPerspectiveImage(images.get(1));
@@ -108,6 +112,11 @@ public class ColorImageBuilderPanel extends JPanel
 	public JButton getPreviewButton()
 	{
 		return previewButton;
+	}
+
+	public JButton getCancelButton()
+	{
+		return cancelButton;
 	}
 
 	/**

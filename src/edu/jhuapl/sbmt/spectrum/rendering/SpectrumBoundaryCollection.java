@@ -1,6 +1,5 @@
 package edu.jhuapl.sbmt.spectrum.rendering;
 
-import java.awt.Color;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.io.File;
@@ -34,9 +33,9 @@ public class SpectrumBoundaryCollection<S extends BasicSpectrum> extends Abstrac
     private HashMap<BasicSpectrum, SpectrumBoundary<S>> spectrumToBoundaryMap = new HashMap<BasicSpectrum, SpectrumBoundary<S>>();
     private SmallBodyModel smallBodyModel;
     // Create a buffer of initial boundary colors to use. We cycle through these colors when creating new boundaries
-    private Color[] initialColors = {Color.RED, Color.PINK.darker(), Color.ORANGE.darker(),
-            Color.GREEN.darker(), Color.MAGENTA, Color.CYAN.darker(), Color.BLUE,
-            Color.GRAY, Color.DARK_GRAY, Color.BLACK};
+//    private Color[] initialColors = {Color.RED, Color.PINK.darker(), Color.ORANGE.darker(),
+//            Color.GREEN.darker(), Color.MAGENTA, Color.CYAN.darker(), Color.BLUE,
+//            Color.GRAY, Color.DARK_GRAY, Color.BLACK};
     private int initialColorIndex = 0;
     private SpectraCollection<S> spectrumCollection;
 //    HashMap<String, List<SpectrumBoundary<S>>> collections = new HashMap<String, List<SpectrumBoundary<S>>>();
@@ -64,9 +63,10 @@ public class SpectrumBoundaryCollection<S extends BasicSpectrum> extends Abstrac
     {
         IBasicSpectrumRenderer<S> spectrum = spectrumCollection.getRendererForSpectrum(spec);
         SpectrumBoundary<S> boundary = new SpectrumBoundary<S>(spectrum, smallBodyModel);
-        boundary.setBoundaryColor(initialColors[initialColorIndex++]);
-        if (initialColorIndex >= initialColors.length)
-            initialColorIndex = 0;
+        boundary.setBoundaryColor(spectrumCollection.getPropertyMap().get(spec).borderColorProvider.getBaseColor());
+//        boundary.setBoundaryColor(initialColors[initialColorIndex++]);
+//        if (initialColorIndex >= initialColors.length)
+//            initialColorIndex = 0;
         spectrumToBoundaryMap.put(spec, boundary);
         return boundary;
     }

@@ -154,7 +154,8 @@ public class CustomImageListTableView<G1 extends IPerspectiveImage & IPerspectiv
 
 		// Table header
 
-		newImageButton = GuiUtil.formButton(listener, UIManager.getIcon("FileView.fileIcon"));
+//		newImageButton = GuiUtil.formButton(listener, UIManager.getIcon("FileView.fileIcon"));
+		newImageButton = GuiUtil.formButton(listener, IconUtil.getItemAdd());
 		newImageButton.setToolTipText(ToolTipUtil.getCustomImage());
 
 		deleteImageButton = GuiUtil.formButton(listener, IconUtil.getItemDel());
@@ -166,10 +167,10 @@ public class CustomImageListTableView<G1 extends IPerspectiveImage & IPerspectiv
 		editImageButton.setEnabled(false);
 
 		loadImageButton = GuiUtil.formButton(listener, UIManager.getIcon("FileView.directoryIcon"));
-		loadImageButton.setToolTipText(ToolTipUtil.getItemLoad());
+		loadImageButton.setToolTipText(ToolTipUtil.getItemLoadCustomImageList());
 
 		saveImageButton = GuiUtil.formButton(listener, UIManager.getIcon("FileView.hardDriveIcon"));
-		saveImageButton.setToolTipText(ToolTipUtil.getItemSave());
+		saveImageButton.setToolTipText(ToolTipUtil.getItemSaveCustomImageList());
 //		saveImageButton.setEnabled(false);
 
 		showImageButton = GuiUtil.formButton(listener, IconUtil.getItemShow());
@@ -207,6 +208,7 @@ public class CustomImageListTableView<G1 extends IPerspectiveImage & IPerspectiv
 		buttonPanel.setLayout(new BoxLayout(buttonPanel, BoxLayout.X_AXIS));
 
 		buttonPanel.add(newImageButton);
+		buttonPanel.add(Box.createHorizontalGlue());
 		buttonPanel.add(loadImageButton);
 		buttonPanel.add(saveImageButton);
 		buttonPanel.add(Box.createHorizontalGlue());

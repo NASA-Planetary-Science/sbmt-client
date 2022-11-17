@@ -6,8 +6,10 @@ import java.util.function.Function;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
 
+import edu.jhuapl.sbmt.layer.api.KeyValueCollection;
 import edu.jhuapl.sbmt.layer.api.Layer;
 import edu.jhuapl.sbmt.layer.api.Pixel;
+import edu.jhuapl.sbmt.layer.api.PixelOperator;
 import edu.jhuapl.sbmt.layer.api.PixelVector;
 
 /**
@@ -338,6 +340,91 @@ public class LayerTransformFactory
     }
 
     /**
+     * Return a function that expands a layer, adding pixels on any/all side,
+     * thus increasing the size of the layer. The caller can control the
+     * behavior of expanded pixels using the specified {@link PixelOperator}
+     * instance.
+     *
+     * @param iLowerOffset number of pixels to add before index == 0 in the X/I
+     *            dimension
+     * @param iUpperOffset number of pixels to add after index == size - 1 in
+     *            the X/I dimension
+     * @param jLowerOffset number of pixels to add before index == 0 in the Y/J
+     *            dimension
+     * @param jUpperOffset number of pixels to add after index == size - 1 in
+     *            the Y/J dimension
+     * @param expandOperator operator that will be applied to pixels created by
+     *            the espansion
+     * @return the function
+     * @see LayerDoubleTransformFactory#expand(int, int, int, int, double) for a
+     *      convenient front-end to this method that sets expanded pixels to a
+     *      specified constant value
+     */
+    public Function<Layer, Layer> expand(int iLowerOffset, int iUpperOffset, int jLowerOffset, int jUpperOffset, PixelOperator expandOperator)
+    {
+        Preconditions.checkArgument(iLowerOffset >= 0);
+        Preconditions.checkArgument(iUpperOffset >= 0);
+        Preconditions.checkArgument(jLowerOffset >= 0);
+        Preconditions.checkArgument(jUpperOffset >= 0);
+        Preconditions.checkNotNull(expandOperator);
+
+        return layer -> {
+            return new ForwardingLayer(layer) {
+
+                int origISize = layer.iSize();
+                int origJSize = layer.jSize();
+
+                int newISize = origISize + iLowerOffset + iUpperOffset;
+                int newJSize = origJSize + jLowerOffset + jUpperOffset;
+
+                @Override
+                public int iSize()
+                {
+                    return newISize;
+                }
+
+                @Override
+                public int jSize()
+                {
+                    return newJSize;
+                }
+
+                @Override
+                public void get(int i, int j, Pixel p)
+                {
+                    int origI = i - iLowerOffset;
+                    int origJ = j - jLowerOffset;
+
+                    // Handle expansion area
+                    if (i >= 0 && i < newISize && j >= 0 && j < newISize)
+                    {
+                        // (i, j) are in bounds in the new indexing. In this
+                        // case, need to check whether this is within the
+                        // expansion area.
+                        if (origI < 0 || origI >= origISize || origJ < 0 || origJ >= origJSize)
+                        {
+                            // New index is in bounds but orig index is out of
+                            // bounds. This is the expansion area. Let the
+                            // expansion operator handle this pixel; don't use
+                            // the original layer.
+                            expandOperator.operate(p);
+
+                            return;
+                        }
+                    }
+
+                    // If we fell through to here, we are either in bounds in
+                    // the original layer, or else well out-of-bounds of the
+                    // original layer. Either way, in this case, allow the
+                    // original layer to handle the pixel.
+                    layer.get(origI, origJ, p);
+                }
+
+            };
+        };
+    }
+
+    /**
      * Return a function that trims pixels off either/both ends of a layer in
      * the I-th dimension. The layer returned by the function will have new
      * iSize() == (original iSize() - iLowerOffset - iUpperOffset). When the I
@@ -436,18 +523,24 @@ public class LayerTransformFactory
 
     /**
      * Return a function that extracts one scalar slice from a vector layer
-     *
+     * @param index to slice from within the vector layer
      * @param slicePixel vector pixel adopted by the slice function and used as
      *            an intermediary pixel value to get the whole vector from which
      *            the slice is picked
-     * @param index to slice from within the vector layer
+     * @param minPixel vector pixel adopted by the slice functions and used as an intermediary pixel for the minimum value when getting the range
+     * @param maxPixel vector pixel adopted by the slice functions and used as an intermediary pixel for the minimum value when getting the range
+     *
      * @return the function
      */
-    public Function<Layer, Layer> slice(PixelVector slicePixel, int index)
+    public Function<Layer, Layer> slice(int index, PixelVector slicePixel, PixelVector minPixel, PixelVector maxPixel)
     {
         Preconditions.checkNotNull(slicePixel);
+        Preconditions.checkNotNull(minPixel);
+        Preconditions.checkNotNull(maxPixel);
         Preconditions.checkArgument(index >= 0);
         Preconditions.checkArgument(slicePixel.size() > index);
+        Preconditions.checkArgument(minPixel.size() == slicePixel.size());
+        Preconditions.checkArgument(maxPixel.size() == slicePixel.size());
 
         return layer -> {
             Preconditions.checkNotNull(layer);
@@ -507,6 +600,22 @@ public class LayerTransformFactory
                 {
                     return layer.isGetAccepts(pixelType);
                 }
+
+                @Override
+                public void getRange(Pixel pMin, Pixel pMax)
+                {
+                    layer.getRange(minPixel, maxPixel);
+
+                    pMin.assignFrom(minPixel.get(index));
+                    pMax.assignFrom(minPixel.get(index));
+                }
+
+                @Override
+                public KeyValueCollection getKeyValueCollection()
+                {
+                    return layer.getKeyValueCollection();
+                }
+
             };
 
         };
@@ -630,6 +739,12 @@ public class LayerTransformFactory
                     int jOrig = (int) Math.floor(y);
 
                     layer.get(iOrig, jOrig, pd);
+                }
+
+                @Override
+                public KeyValueCollection getKeyValueCollection()
+                {
+                    return layer.getKeyValueCollection();
                 }
 
             };
@@ -825,9 +940,15 @@ public class LayerTransformFactory
         }
 
         @Override
+        public KeyValueCollection getKeyValueCollection()
+        {
+            return target.getKeyValueCollection();
+        }
+
+        @Override
         public String toString()
         {
-            return "Layer(" + iSize() + ", " + jSize() + ")";
+            return BasicLayer.createDescription(this);
         }
 
     }

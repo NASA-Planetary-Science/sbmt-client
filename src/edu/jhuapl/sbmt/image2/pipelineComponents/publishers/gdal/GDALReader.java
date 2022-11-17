@@ -2,21 +2,18 @@ package edu.jhuapl.sbmt.image2.pipelineComponents.publishers.gdal;
 
 import java.nio.file.Paths;
 import java.util.ArrayList;
-import java.util.Hashtable;
 import java.util.function.Function;
+
+import javax.swing.SwingUtilities;
 
 import org.apache.commons.io.FilenameUtils;
 import org.gdal.gdal.Dataset;
 import org.gdal.gdal.gdal;
-import org.gdal.ogr.DataSource;
-import org.gdal.ogr.ogr;
 
 import edu.jhuapl.saavtk.util.NativeLibraryLoader;
 import edu.jhuapl.sbmt.layer.api.Layer;
-import edu.jhuapl.sbmt.layer.api.PixelVector;
 import edu.jhuapl.sbmt.layer.gdal.LayerLoaderBuilder;
-import edu.jhuapl.sbmt.layer.impl.LayerTransformFactory;
-import edu.jhuapl.sbmt.layer.impl.PixelVectorDoubleFactory;
+import edu.jhuapl.sbmt.layer.impl.LayerDoubleTransformFactory;
 import edu.jhuapl.sbmt.layer.impl.ValidityChecker;
 import edu.jhuapl.sbmt.layer.impl.ValidityChecker2d;
 import edu.jhuapl.sbmt.pipeline.publisher.BasePipelinePublisher;
@@ -37,53 +34,45 @@ public class GDALReader extends BasePipelinePublisher<Layer>
 
 	private void loadData(ValidityChecker checker, double oobValue)
 	{
-		if (!isVectorFile)
+		synchronized (GDALReader.class)
 		{
-			Dataset dataset = gdal.Open(filename);
+			if (!isVectorFile)
+		{
+				Dataset dataset = gdal.Open(filename, 0);
+				if (dataset == null)
+				{
+					//TODO this seems to helo with a threading race; need to investigate more
+					System.out.println("GDALReader: loadData: dataset null");
+					System.exit(1);
+				}
 			Layer layer = new LayerLoaderBuilder()
 					.dataSet(dataset)
 					.checker(checker)
 					.build()
-					.load();
-//			 try
-//				{
-//					VTKDebug.previewLayer(layer, "Layer after translation");
-//				}
-//				catch (Exception e)
-//				{
-//					// TODO Auto-generated catch block
-//					e.printStackTrace();
-//				}
+					.load();			
 			int numLayers = layer.dataSizes().get(0);
-			PixelVector factory = new PixelVectorDoubleFactory().of(numLayers, oobValue);
-			Hashtable<String, String> metadata = (Hashtable<String, String>)dataset.GetMetadata_Dict();
-
 			for (int i=0; i < numLayers; i++)
 			{
-				 Function<Layer, Layer> transform = new LayerTransformFactory().slice(factory, i);
+				 Function<Layer, Layer> transform = new LayerDoubleTransformFactory().slice(i, Double.NaN);
 				 Layer singleLayer = transform.apply(layer);
-//				 singleLayer = new LayerTransformFactory().swapIJ().apply(singleLayer);
-//				 try
-//				{
-//					VTKDebug.previewLayer(singleLayer, "Single Layer on load");
-//				}
-//				catch (Exception e)
-//				{
-//					// TODO Auto-generated catch block
-//					e.printStackTrace();
-//				}
 				 outputs.add(singleLayer);
 			}
 
-			//insert a composite RGB(A) layer as the 0th layer
-			if (dataset.GetDriver().getShortName().equals("PNG") || dataset.GetDriver().getShortName().equals("JPEG") || dataset.GetDriver().getShortName().equals("JPG"))
-			{
-				outputs.add(0, layer);
+				//insert a composite RGB(A) layer as the 0th layer
+				if (dataset.GetDriver().getShortName().equals("PNG") || dataset.GetDriver().getShortName().equals("JPEG") || dataset.GetDriver().getShortName().equals("JPG"))
+				{
+					outputs.add(0, layer);
+				}
+				SwingUtilities.invokeLater(() -> {
+					dataset.delete();
+				});
+
 			}
-		}
-		else
-		{
-			DataSource datasource = ogr.Open(filename);
+			else
+			{
+			    // TODO handle data sources as well?
+//				DataSource datasource = ogr.Open(filename);
+			}
 		}
 	}
 

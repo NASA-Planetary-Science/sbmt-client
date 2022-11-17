@@ -179,11 +179,11 @@ public class ImageListTableView<G1 extends IPerspectiveImage & IPerspectiveImage
 		newImageButton.setToolTipText(ToolTipUtil.getCustomImage());
 
 		loadImageButton = GuiUtil.formButton(listener, UIManager.getIcon("FileView.directoryIcon"));
-		loadImageButton.setToolTipText(ToolTipUtil.getItemLoad());
+		loadImageButton.setToolTipText(ToolTipUtil.getItemLoadImageList());
 
 		saveImageButton = GuiUtil.formButton(listener, UIManager.getIcon("FileView.hardDriveIcon"));
-		saveImageButton.setToolTipText(ToolTipUtil.getItemSave());
-//		saveImageButton.setEnabled(false);
+		saveImageButton.setToolTipText(ToolTipUtil.getItemSaveImageList());
+		saveImageButton.setEnabled(false);
 
 		showImageButton = GuiUtil.formButton(listener, IconUtil.getItemShow());
 		showImageButton.setToolTipText(ToolTipUtil.getItemShow());
@@ -260,7 +260,7 @@ public class ImageListTableView<G1 extends IPerspectiveImage & IPerspectiveImage
 		QueryComposer<ImageColumnLookup> tmpComposer = new QueryComposer<>();
 		tmpComposer.addAttribute(ImageColumnLookup.Map, Boolean.class, "Map", null);
 		tmpComposer.addAttribute(ImageColumnLookup.Status, String.class, "Status", null);
-		tmpComposer.addAttribute(ImageColumnLookup.Offlimb, Boolean.class, "Off", null);
+		tmpComposer.addAttribute(ImageColumnLookup.Offlimb, Boolean.class, "Offlimb", null);
 		tmpComposer.addAttribute(ImageColumnLookup.Frustum, Boolean.class, "Frus", null);
 		tmpComposer.addAttribute(ImageColumnLookup.Boundary, Boolean.class, "Bndr", null);
 		tmpComposer.addAttribute(ImageColumnLookup.Id, Integer.class, "ID", null);

@@ -106,7 +106,7 @@ public class RenderablePointedImageToScenePipeline<G1 extends IPerspectiveImage 
 	private IPipelinePublisher<PointingFileReader> generatePointing(String pointingFile) throws IOException
 	{
 		IPipelinePublisher<PointingFileReader> pointingPublisher = null;
-		if (image.getPointingSourceType() == ImageSource.SPICE || image.getPointingSourceType() == ImageSource.CORRECTED_SPICE || pointingFile.endsWith(".adjusted"))
+		if (image.getPointingSourceType() == ImageSource.SPICE || image.getPointingSourceType() == ImageSource.CORRECTED_SPICE || pointingFile.endsWith(".adjusted") || pointingFile.endsWith(".INFO"))
 			pointingPublisher = new InfofileReaderPublisher(pointingFile);
 		else
 			pointingPublisher = new SumfileReaderPublisher(pointingFile);

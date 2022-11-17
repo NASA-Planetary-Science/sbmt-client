@@ -1,14 +1,17 @@
 package edu.jhuapl.sbmt.image2.pipelineComponents;
 
 import java.util.HashMap;
+import java.util.List;
 
 import org.apache.commons.lang3.tuple.Pair;
 
+import vtk.vtkActor;
 import vtk.vtkImageData;
 import vtk.vtkPolyData;
 import vtk.vtkPolyDataWriter;
 
 import edu.jhuapl.saavtk.util.IntensityRange;
+import edu.jhuapl.sbmt.image2.pipelineComponents.subscribers.preview.VtkActorPreview;
 import edu.jhuapl.sbmt.image2.pipelineComponents.subscribers.preview.VtkImagePreview;
 import edu.jhuapl.sbmt.image2.pipelineComponents.subscribers.preview.VtkLayerPreview;
 import edu.jhuapl.sbmt.layer.api.Layer;
@@ -27,9 +30,9 @@ public class VTKDebug
 
 	public static void previewLayer(Layer layer, String title) throws Exception
 	{
-		Pair<Layer, HashMap<String, String>> inputs = Pair.of(layer, new HashMap<String, String>());
+		Pair<Layer, List<HashMap<String, String>>> inputs = Pair.of(layer, List.of(new HashMap<String, String>()));
 		Just.of(inputs)
-			.subscribe(new VtkLayerPreview(title, 0, new IntensityRange(0, 255), new int[] {0,0,0,0}, new Runnable()
+			.subscribe(new VtkLayerPreview(title, 0, new IntensityRange(0, 255), new int[] {0,0,0,0}, new double[] {}, new Runnable()
 			{
 
 				@Override
@@ -45,7 +48,14 @@ public class VTKDebug
 	public static void previewVtkImageData(vtkImageData imageData, String title) throws Exception
 	{
 		Just.of(imageData)
-			.subscribe(new VtkImagePreview(title))
+			.subscribe(new VtkImagePreview(title, new HashMap<String, String>(), false))
+			.run();
+	}
+
+	public static void previewVtkActor(vtkActor actor, String title) throws Exception
+	{
+		Just.of(actor)
+			.subscribe(new VtkActorPreview(title, new HashMap<String, String>(), false))
 			.run();
 	}
 }

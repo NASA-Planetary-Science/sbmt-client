@@ -2,9 +2,11 @@ package edu.jhuapl.sbmt.image2.ui.offlimb;
 
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
+import java.text.DecimalFormat;
 
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
+import javax.swing.JCheckBox;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 
@@ -25,16 +27,19 @@ public class OfflimbImageControlPanel extends JPanel
 //    private JLabel imageContrastValue;
 //    private ContrastSlider imageContrastSlider;
 
+    private JCheckBox showOfflimbButton;
     private ShowBoundaryButton showBoundaryButton;
 //    private ColorChooser boundaryColorPicker;
     private JButton chooseBoundaryColorBtn;
 	private SyncContrastSlidersButton syncContrastButton;
 	private JButton resetButton;
 
+	private DecimalFormat formatter;
+
     public OfflimbImageControlPanel()
     {
         super();
-
+        this.formatter = new DecimalFormat("##.##");
         setLayout(new GridBagLayout());
         GridBagConstraints gridBagConstraints = new java.awt.GridBagConstraints();
 
@@ -65,6 +70,10 @@ public class OfflimbImageControlPanel extends JPanel
         footprintTransparencySlider.setValue(50);
         transparencyPanel.add(footprintTransparencySlider);
 
+        JPanel buttonPanel = new JPanel();
+
+        showOfflimbButton = new JCheckBox("Show Offlimb");
+        buttonPanel.add(showOfflimbButton);
 //        JPanel contrastPanel = new JPanel();
 //        contrastPanel.setLayout(new BoxLayout(contrastPanel, BoxLayout.X_AXIS));
 //        imageContrastLabel = new JLabel("Off-limb Contrast:");
@@ -75,11 +84,11 @@ public class OfflimbImageControlPanel extends JPanel
 
 //        imageContrastSlider = new ContrastSlider(image, false);
         syncContrastButton = new SyncContrastSlidersButton();
+        syncContrastButton.setSelected(true);
 //        contrastPanel.add(imageContrastSlider);
 
-        JPanel buttonPanel = new JPanel();
 //        syncContrastButton = syncButton;
-        buttonPanel.add(syncContrastButton);
+//        buttonPanel.add(syncContrastButton);
 
         showBoundaryButton = new ShowBoundaryButton();
         buttonPanel.add(showBoundaryButton);
@@ -148,6 +157,11 @@ public class OfflimbImageControlPanel extends JPanel
 //    {
 //        return imageContrastSlider;
 //    }
+
+    public JCheckBox getShowOfflimbButton()
+    {
+        return showOfflimbButton;
+    }
 
     public ShowBoundaryButton getShowBoundaryButton()
     {

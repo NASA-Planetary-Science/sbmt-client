@@ -13,7 +13,7 @@ import edu.jhuapl.saavtk.model.ShapeModelBody;
 import edu.jhuapl.saavtk.model.ShapeModelType;
 import edu.jhuapl.saavtk.util.Configuration;
 import edu.jhuapl.saavtk.util.FileCache;
-import edu.jhuapl.sbmt.client.SbmtMultiMissionTool;
+import edu.jhuapl.sbmt.client2.SbmtMultiMissionTool;
 import edu.jhuapl.sbmt.common.client.Mission;
 import edu.jhuapl.sbmt.common.client.SmallBodyViewConfig;
 import edu.jhuapl.sbmt.config.BodyType;

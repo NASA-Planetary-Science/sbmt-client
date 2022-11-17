@@ -230,8 +230,8 @@
         <exclude name="edu/jhuapl/sbmt/tools/**"/>
       </fileset>
       <fileset dir="${rootdir}/build/classes">
-        <include name="edu/jhuapl/sbmt/client/SmallBodyMappingToolAPL.class"/>
-        <include name="edu/jhuapl/sbmt/client/SmallBodyMappingToolAPL$*.class"/>
+        <include name="edu/jhuapl/sbmt/client2/SmallBodyMappingToolAPL.class"/>
+        <include name="edu/jhuapl/sbmt/client2/SmallBodyMappingToolAPL$*.class"/>
       </fileset>
 
       <manifest>
@@ -273,6 +273,7 @@
 	    jogl-all-natives-macosx-universal.jar
             saavtk.jar
         	altwg.jar
+        	gdal-3.6.0.jar
         	jcommander-1.72.jar
             jide-oss-java11.jar
             mysql-connector-java-5.1.10-bin.jar
@@ -338,7 +339,7 @@
         	jts-1.13.jar
             "/>
 
-        <attribute name="Main-Class" value="edu.jhuapl.sbmt.client.SmallBodyMappingToolAPL"/>
+        <attribute name="Main-Class" value="edu.jhuapl.sbmt.client2.SmallBodyMappingToolAPL"/>
 
       </manifest>
     </jar>
@@ -355,8 +356,8 @@
         <exclude name="edu/jhuapl/sbmt/tools/**"/>
       </fileset>
       <fileset dir="${rootdir}/build/classes">
-        <include name="edu/jhuapl/sbmt/client/SmallBodyMappingToolAPL.class"/>
-        <include name="edu/jhuapl/sbmt/client/SmallBodyMappingToolAPL$*.class"/>
+        <include name="edu/jhuapl/sbmt/client2/SmallBodyMappingToolAPL.class"/>
+        <include name="edu/jhuapl/sbmt/client2/SmallBodyMappingToolAPL$*.class"/>
       </fileset>
 
       <manifest>
@@ -398,6 +399,7 @@
 	    jogl-all-natives-macosx-universal.jar
             saavtk.jar
         	altwg.jar
+        	gdal-3.6.0.jar
         	jcommander-1.72.jar
             jide-oss-java11.jar
             mysql-connector-java-5.1.10-bin.jar
@@ -463,7 +465,7 @@
         	jts-1.13.jar
             "/>
 
-      	<attribute name="Main-Class" value="edu.jhuapl.sbmt.client.SmallBodyMappingToolAPL"/>
+      	<attribute name="Main-Class" value="edu.jhuapl.sbmt.client2.SmallBodyMappingToolAPL"/>
       </manifest>
     </jar>
   </target>
@@ -594,7 +596,7 @@
 -->
 
   <target name="runjarapl" depends="jarapl">
-    <java classname="edu.jhuapl.sbmt.client.SmallBodyMappingToolAPL" fork="true" maxmemory="4096M">
+    <java classname="edu.jhuapl.sbmt.client2.SmallBodyMappingToolAPL" fork="true" maxmemory="4096M">
 <!--
       <jvmarg value="-Djava.library.path=/project/nearsdc/software/vtk_all_platforms/current"/>
       <jvmarg value="-Dsun.java2d.noddraw=true"/>
@@ -656,7 +658,7 @@
 
 
   <target name="runjar" depends="jar">
-    <java classname="edu.jhuapl.sbmt.client.SmallBodyMappingToolAPL" fork="true" maxmemory="1024m">
+    <java classname="edu.jhuapl.sbmt.client2.SmallBodyMappingToolAPL" fork="true" maxmemory="1024m">
       <!--
         <jvmarg value="-Djava.library.path=/project/nearsdc/software/vtk_all_platforms"/>
       -->

@@ -316,8 +316,9 @@ public class CometConfigs extends SmallBodyViewConfig
                     // new FixedListQuery("/GASKELL/67P_V2/IMAGING"), //
                     ImageType.OSIRIS_IMAGE, //
                     new ImageSource[] { ImageSource.GASKELL }, //
-                    Instrument.OSIRIS //
-                    ) //
+                    Instrument.OSIRIS , //
+                    0.0, //
+    				"Y"), //
             };
             c.imageSearchDefaultStartDate = new GregorianCalendar(2014, 6, 1, 0, 0, 0).getTime();
             c.imageSearchDefaultEndDate = new GregorianCalendar(2015, 11, 31, 0, 0, 0).getTime();

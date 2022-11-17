@@ -11,6 +11,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import javax.swing.BorderFactory;
 import javax.swing.JComponent;
@@ -18,7 +19,7 @@ import javax.swing.JTabbedPane;
 
 import com.google.common.collect.ImmutableList;
 
-import vtk.vtkCamera;
+import vtk.vtkCamera; 
 
 import edu.jhuapl.saavtk.gui.View;
 import edu.jhuapl.saavtk.gui.render.ConfigurableSceneNotifier;
@@ -356,14 +357,14 @@ public class SbmtView extends View implements PropertyChangeListener
 		//            }
 		//        }
 
-        if (getPolyhedralModelConfig().hasSpectralData)
-        {
-			allModels.putAll(createSpectralModels(smallBodyModel));
+		if (getPolyhedralModelConfig().hasSpectralData)
+		{ 
+			allModels.putAll(createSpectralModels(smallBodyModel, getModelManager()));
 			allModels.put(ModelNames.SPECTRA_BOUNDARIES, new SpectrumBoundaryCollection(smallBodyModel, (SpectraCollection)allModels.get(ModelNames.SPECTRA)));
             //if (getPolyhedralModelConfig().body == ShapeModelBody.EROS)
                 allModels.put(ModelNames.STATISTICS, new SpectrumStatisticsCollection());
 
-			SpectraCollection customCollection = new SpectraCollection(smallBodyModel);
+			SpectraCollection customCollection = new SpectraCollection(getModelManager(), smallBodyModel);
 			allModels.put(ModelNames.CUSTOM_SPECTRA, customCollection);
 			allModels.put(ModelNames.CUSTOM_SPECTRA_BOUNDARIES, new SpectrumBoundaryCollection(smallBodyModel, (SpectraCollection)allModels.get(ModelNames.CUSTOM_SPECTRA)));
 
@@ -416,6 +417,8 @@ public class SbmtView extends View implements PropertyChangeListener
         demCollection.setModelManager(getModelManager());
         demBoundaryCollection.setModelManager(getModelManager());
 		tmpSceneChangeNotifier.setTarget(getModelManager());
+		((SpectraCollection)(allModels.get(ModelNames.SPECTRA))).setModelManager(getModelManager());
+		((SpectraCollection)(allModels.get(ModelNames.CUSTOM_SPECTRA))).setModelManager(getModelManager());
 
         getModelManager().addPropertyChangeListener(this);
 
@@ -580,7 +583,7 @@ public class SbmtView extends View implements PropertyChangeListener
 
 			PerspectiveImageCollection collection = (PerspectiveImageCollection)getModelManager().getModel(ModelNames.IMAGES_V2);
 //			PerspectiveImageCollection collection = new PerspectiveImageCollection(List.of(smallBodyModel));
-			addTab(instrument.instrumentName.toString() + "2", new ImageSearchController(getPolyhedralModelConfig(), collection, instrument, getModelManager(), getPopupManager(), getRenderer(), getPickManager(), (SbmtInfoWindowManager) getInfoPanelManager(), (SbmtSpectrumWindowManager) getSpectrumPanelManager()).getView());
+			addTab(instrument.instrumentName.toString() + "2", new ImageSearchController(getPolyhedralModelConfig(), collection, Optional.of(instrument), getModelManager(), getPopupManager(), getRenderer(), getPickManager(), (SbmtInfoWindowManager) getInfoPanelManager(), (SbmtSpectrumWindowManager) getSpectrumPanelManager(), getLegacyStatusHandler()).getView());
 
 		}
 
@@ -831,9 +834,9 @@ public class SbmtView extends View implements PropertyChangeListener
     {
         if (e.getPropertyName().equals(Properties.MODEL_CHANGED))
 			renderer.notifySceneChange();
-        else
-            renderer.getRenderWindowPanel().Render();
-    }
+			else
+			renderer.getRenderWindowPanel().Render();
+		}
 
     @Override
     public void setRenderer(Renderer renderer)
@@ -1042,7 +1045,7 @@ public class SbmtView extends View implements PropertyChangeListener
         return new LineamentModel();
     }
 
-    static public HashMap<ModelNames, Model> createSpectralModels(SmallBodyModel smallBodyModel)
+    static public HashMap<ModelNames, Model> createSpectralModels(SmallBodyModel smallBodyModel, ModelManager modelManager)
     {
         HashMap<ModelNames, Model> models = new HashMap<ModelNames, Model>();
 
@@ -1052,7 +1055,7 @@ public class SbmtView extends View implements PropertyChangeListener
 
         models.put(ModelNames.SPECTRA_HYPERTREE_SEARCH, new SpectraSearchDataCollection(smallBodyModel));
 
-        SpectraCollection collection = new SpectraCollection(smallBodyModel);
+        SpectraCollection collection = new SpectraCollection(modelManager, smallBodyModel);
 
         models.put(ModelNames.SPECTRA, collection);
         return models;

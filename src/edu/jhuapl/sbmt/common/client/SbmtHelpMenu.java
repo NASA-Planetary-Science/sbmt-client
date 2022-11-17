@@ -13,7 +13,7 @@ import javax.swing.JPanel;
 import edu.jhuapl.saavtk.gui.menu.HelpMenu;
 import edu.jhuapl.saavtk.util.Configuration;
 import edu.jhuapl.saavtk.util.Configuration.ReleaseType;
-import edu.jhuapl.sbmt.client.SbmtMultiMissionTool;
+import edu.jhuapl.sbmt.client2.SbmtMultiMissionTool;
 
 
 public class SbmtHelpMenu extends HelpMenu

@@ -18,6 +18,7 @@ import edu.jhuapl.sbmt.image2.model.PerspectiveImageCollection;
 import edu.jhuapl.sbmt.image2.ui.table.popup.boundaryColor.BoundaryColorAction;
 import edu.jhuapl.sbmt.image2.ui.table.popup.export.ExportAction;
 import edu.jhuapl.sbmt.image2.ui.table.popup.properties.EditPointingAction;
+import edu.jhuapl.sbmt.image2.ui.table.popup.properties.ShowHeadersAction;
 import edu.jhuapl.sbmt.image2.ui.table.popup.properties.ShowImagePropertiesAction;
 import edu.jhuapl.sbmt.image2.ui.table.popup.properties.ShowOffLimbSettingsAction;
 import edu.jhuapl.sbmt.image2.ui.table.popup.rendering.CenterImageAction;
@@ -26,6 +27,7 @@ import edu.jhuapl.sbmt.image2.ui.table.popup.rendering.ChangeOpacityAction;
 import edu.jhuapl.sbmt.image2.ui.table.popup.rendering.InterpolatePixelsAction;
 import edu.jhuapl.sbmt.image2.ui.table.popup.rendering.MapBoundaryAction;
 import edu.jhuapl.sbmt.image2.ui.table.popup.rendering.MapImageAction;
+import edu.jhuapl.sbmt.image2.ui.table.popup.rendering.RemapImageAction;
 import edu.jhuapl.sbmt.image2.ui.table.popup.rendering.ShowFrustumAction;
 import edu.jhuapl.sbmt.image2.ui.table.popup.rendering.SimulateLightingAction;
 
@@ -60,14 +62,17 @@ public class ImageListPopupMenu<G1 extends IPerspectiveImage  & IPerspectiveImag
 		ShowImagePropertiesAction<G1> showInfoAction = new ShowImagePropertiesAction<G1>(smallBodyModel, aManager);
 		installPopAction(showInfoAction, "Properties...");
 
+
+		ShowHeadersAction<G1> showHeadersAction = new ShowHeadersAction<G1>(smallBodyModel, aManager);
+		installPopAction(showHeadersAction, "View Headers/Derived Values...");
+
 //		if (spectrumPanelManager != null)
 //		{
 //			ShowSpectralPropertiesAction<G1> showSpectrumAction = new ShowSpectralPropertiesAction<G1>(aManager, spectrumPanelManager);
 //			installPopAction(showSpectrumAction, "Spectrum...");
 //		}
 
-		EditPointingAction<G1> editPointingAction = new EditPointingAction<G1>(aManager);
-		installPopAction(editPointingAction, "Edit Image Pointing...");
+
 
 		InterpolatePixelsAction<G1> interpolatePixelsAction = new InterpolatePixelsAction<G1>(aManager);
 		JCheckBoxMenuItem interpolatePixelsCBMI = new JCheckBoxMenuItem(interpolatePixelsAction);
@@ -115,9 +120,15 @@ public class ImageListPopupMenu<G1 extends IPerspectiveImage  & IPerspectiveImag
 		ChangeOpacityAction<G1> changeOpacityAction = new ChangeOpacityAction<G1>(aManager, renderer);
 		installPopAction(changeOpacityAction, "Change Opacity...");
 
+		EditPointingAction<G1> editPointingAction = new EditPointingAction<G1>(aManager);
+		installPopAction(editPointingAction, "Adjust Image Pointing...");
+
 		JMenu colorMenu = new JMenu("Boundary Color");
 		BoundaryColorAction<G1> boundaryColorAction = new BoundaryColorAction<>(aManager, invoker, colorMenu);
 		installPopAction(boundaryColorAction, colorMenu);
+
+		RemapImageAction<G1> remapImageAction = new RemapImageAction<G1>(aManager);
+		installPopAction(remapImageAction, "Rerender image");
 
 //		SaveBackplanesAction<PerspectiveImage> showBackplanesAction = new SaveBackplanesAction<PerspectiveImage>(aManager);
 //		installPopAction(showBackplanesAction, "Boundary Color");
