@@ -87,7 +87,7 @@ public class CustomImageImporterDialog2<G1 extends IPerspectiveImage & IPerspect
 	        {
 	            return;
 	        }
-			List<G1> tempImages = Lists.newArrayList();
+			List<G1> tempImages = Lists.newArrayList(tempCollection.getAllItems());
 			int index = 1;
 			boolean showPointingFileNotFoundDialog = false;
  			for (File file : files)
