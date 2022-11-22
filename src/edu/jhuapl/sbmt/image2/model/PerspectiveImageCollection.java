@@ -284,16 +284,19 @@ public class PerspectiveImageCollection<G1 extends IPerspectiveImage & IPerspect
 
 	public void loadUserList()
 	{
-		clearUserImages();
+//		clearUserImages();
 		String instrumentName = ""; //imagingInstrument == null ? "" : imagingInstrument.getType().toString();
 		String filename = smallBodyModels.get(0).getCustomDataFolder() + File.separator + "userImages" + instrumentName + ".txt";
         if (!new File(filename).exists()) return;
 		FixedMetadata metadata;
         try
         {
-        	final Key<List<G1>> userImagesKey = Key.of("UserImages");
-            metadata = Serializers.deserialize(new File(filename), "UserImages");
-            userImages = read(userImagesKey, metadata);
+        	if (userImages.size() == 0)
+        	{
+        		final Key<List<G1>> userImagesKey = Key.of("UserImages");
+            	metadata = Serializers.deserialize(new File(filename), "UserImages");
+            	userImages = read(userImagesKey, metadata);
+        	}
             for (G1 image : userImages)
             {
             	PerspectiveImageRenderingState<G1> state = renderingStates.get(image);
@@ -498,6 +501,7 @@ public class PerspectiveImageCollection<G1 extends IPerspectiveImage & IPerspect
 
 	public void updateImage(G1 image)
 	{
+
 		if (userImages.contains(image)) updateUserImage(image);
 		else
 		{
@@ -535,6 +539,7 @@ public class PerspectiveImageCollection<G1 extends IPerspectiveImage & IPerspect
 
 	public void setImageMapped(G1 image, boolean mapped, boolean reRender)
 	{
+
 		image.setMapped(mapped);
 		List<vtkActor> actors = imageRenderers.get(image);
 		if ((actors == null && mapped == true) || reRender)
@@ -784,7 +789,6 @@ public class PerspectiveImageCollection<G1 extends IPerspectiveImage & IPerspect
 	public void setImageInterpolationState(G1 image, boolean interpolating)
 	{
 		image.setInterpolateState(interpolating);
-
 		Thread thread = new Thread(new Runnable()
 		{
 			@Override
