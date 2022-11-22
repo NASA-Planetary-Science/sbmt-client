@@ -536,7 +536,7 @@ public class CustomImageEditingController<G1 extends IPerspectiveImage & IPerspe
 		renWin.getRenderer().AddActor(actor);
 		dialog.repaint();
 		dialog.revalidate();
-
+		renWin.resetCamera();
 
 
 	}
