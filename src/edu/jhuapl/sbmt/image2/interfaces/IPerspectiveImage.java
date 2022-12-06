@@ -99,6 +99,14 @@ public interface IPerspectiveImage
 
 	public List<IPerspectiveImage> getImages();
 
+	public void setPadValues(int[] padValues);
+
+	public int[] getPadValues();
+
+	public void setMaxSizeValues(int[] maxSizeValues);
+
+	public int[] getMaxSizeValues();
+
 	public IntensityRange getIntensityRange();
 
 	public void setIntensityRange(IntensityRange intensityRange);

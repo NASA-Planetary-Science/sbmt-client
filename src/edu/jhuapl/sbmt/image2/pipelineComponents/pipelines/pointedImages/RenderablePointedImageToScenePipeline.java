@@ -151,6 +151,8 @@ public class RenderablePointedImageToScenePipeline<G1 extends IPerspectiveImage 
 			renderableImage.setOfflimbIntensityRange(image.getOfflimbIntensityRange());
 			renderableImage.setMinFrustumLength(MathUtil.vnorm(scPos) - diagonalLength);
 			renderableImage.setMaxFrustumLength(MathUtil.vnorm(scPos) + diagonalLength);
+			renderableImage.setPad(image.getPadValues());
+			renderableImage.setFullSize(image.getMaxSizeValues());
 			image.setMinFrustumLength(MathUtil.vnorm(scPos) - diagonalLength);
 			image.setMaxFrustumLength(MathUtil.vnorm(scPos) + diagonalLength);
 			if (image.getOfflimbDepth() == 0)

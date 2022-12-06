@@ -35,6 +35,8 @@ public class ImagingInstrument implements MetadataManager, IImagingInstrument
     private Set<Float> fillValues;
     private int[] linearInterpolationDims;
     private int[] maskValues = new int[] { 0, 0, 0, 0 };
+    private int[] padValues = new int[] {0, 0};
+    private int[] maxSizeValues = new int[] {0, 0};
 
     protected final Map<ImageSource, Orientation> orientationMap;
 
@@ -61,6 +63,13 @@ public class ImagingInstrument implements MetadataManager, IImagingInstrument
     public ImagingInstrument(SpectralImageMode spectralMode, QueryBase searchQuery, ImageType type, ImageSource[] searchImageSources, Instrument instrumentName)
     {
         this(spectralMode, searchQuery, type, searchImageSources, instrumentName, 0.0, null, null, null, null, true, null);
+    }
+
+    public ImagingInstrument(SpectralImageMode spectralMode, QueryBase searchQuery, ImageType type, ImageSource[] searchImageSources, Instrument instrumentName, int[] pads, int[] maxSizes)
+    {
+        this(spectralMode, searchQuery, type, searchImageSources, instrumentName, 0.0, null, null, null, null, true, null);
+        this.padValues = pads;
+        this.maxSizeValues = maxSizes;
     }
 
     public ImagingInstrument(SpectralImageMode spectralMode, QueryBase searchQuery, ImageType type, ImageSource[] searchImageSources, Instrument instrumentName, double rotation, String flip)
@@ -150,6 +159,8 @@ public class ImagingInstrument implements MetadataManager, IImagingInstrument
     private static final Key<int[]> linearInterpolationDimsKey = Key.of("linearInterpolationDims");
     private static final Key<int[]> maskValuesKey = Key.of("maskValues");
     private static final Key<Map<String, Orientation>> orientationsKey = Key.of("orientations");
+    private static final Key<int[]> padValuesKey = Key.of("padValues");
+    private static final Key<int[]> maxSizeValuesKey = Key.of("maxSizes");
 
     @Override
     public void retrieve(Metadata source)
@@ -182,6 +193,12 @@ public class ImagingInstrument implements MetadataManager, IImagingInstrument
 
         linearInterpolationDims = read(linearInterpolationDimsKey, source);
         maskValues = read(maskValuesKey, source);
+
+        if (source.hasKey(padValuesKey))
+        {
+	        padValues = read(padValuesKey, source);
+	        maxSizeValues = read(maxSizeValuesKey, source);
+        }
 
         Map<String, Orientation> orientationMap = read(orientationsKey, source);
         this.orientationMap.clear();
@@ -242,6 +259,8 @@ public class ImagingInstrument implements MetadataManager, IImagingInstrument
         write(isTransposeKey, orientation.isTranspose(), configMetadata);
         write(linearInterpolationDimsKey, linearInterpolationDims, configMetadata);
         write(maskValuesKey, maskValues, configMetadata);
+        write(padValuesKey, padValues, configMetadata);
+        write(maxSizeValuesKey, maxSizeValues, configMetadata);
 
         LinkedHashMap<String, Orientation> orientationStringMap = new LinkedHashMap<>();
         for (Entry<ImageSource, Orientation> entry : orientationMap.entrySet())
@@ -411,5 +430,21 @@ public class ImagingInstrument implements MetadataManager, IImagingInstrument
         return instrumentName + ": spectralMode=" + spectralMode + ", searchQuery=" + searchQuery + ", orientationMap=" + orientationMap + ", fillValues=" + fillValues + ", linearInterpolationDims="
                 + Arrays.toString(linearInterpolationDims) + ", maskValues=" + Arrays.toString(maskValues) + "]";
     }
+
+	/**
+	 * @return the padValues
+	 */
+	public int[] getPadValues()
+	{
+		return padValues;
+	}
+
+	/**
+	 * @return the maxSizeValues
+	 */
+	public int[] getMaxSizeValues()
+	{
+		return maxSizeValues;
+	}
 
 }

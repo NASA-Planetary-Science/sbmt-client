@@ -30,6 +30,8 @@ public class RenderablePointedImage implements IRenderableImage
 	private String filename;
 	private boolean offlimbShowing = false;
 	private ImageSource imageSource;
+	private int[] pad;
+	private int[] fullSize;
 
 	public RenderablePointedImage(Layer layer, HashMap<String, String> metadata, PointingFileReader pointing)
 	{
@@ -276,6 +278,42 @@ public class RenderablePointedImage implements IRenderableImage
 	public void setImageSource(ImageSource imageSource)
 	{
 		this.imageSource = imageSource;
+	}
+
+
+	/**
+	 * @return the pad
+	 */
+	public int[] getPad()
+	{
+		return pad;
+	}
+
+
+	/**
+	 * @param pad the pad to set
+	 */
+	public void setPad(int[] pad)
+	{
+		this.pad = pad;
+	}
+
+
+	/**
+	 * @return the fullSize
+	 */
+	public int[] getFullSize()
+	{
+		return fullSize;
+	}
+
+
+	/**
+	 * @param fullSize the fullSize to set
+	 */
+	public void setFullSize(int[] fullSize)
+	{
+		this.fullSize = fullSize;
 	}
 
 }

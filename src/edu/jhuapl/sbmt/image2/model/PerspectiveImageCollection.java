@@ -594,6 +594,7 @@ public class PerspectiveImageCollection<G1 extends IPerspectiveImage & IPerspect
 
 	public boolean getImageMapped(G1 image)
 	{
+		if (renderingStates.get(image) == null) return false;
 		return renderingStates.get(image).isMapped;
 	}
 

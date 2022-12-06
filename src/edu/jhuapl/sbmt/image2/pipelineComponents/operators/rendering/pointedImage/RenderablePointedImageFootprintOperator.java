@@ -22,6 +22,7 @@ import edu.jhuapl.saavtk.util.SafeURLPaths;
 import edu.jhuapl.sbmt.common.client.SmallBodyModel;
 import edu.jhuapl.sbmt.core.image.PointingFileReader;
 import edu.jhuapl.sbmt.image2.model.IRenderableImage;
+import edu.jhuapl.sbmt.image2.pipelineComponents.operators.rendering.PadImageOperator;
 import edu.jhuapl.sbmt.image2.pipelineComponents.operators.rendering.vtk.VtkImageContrastOperator;
 import edu.jhuapl.sbmt.image2.pipelineComponents.operators.rendering.vtk.VtkImageRendererOperator;
 import edu.jhuapl.sbmt.image2.pipelineComponents.operators.rendering.vtk.VtkImageVtkMaskingOperator;
@@ -61,6 +62,7 @@ public class RenderablePointedImageFootprintOperator extends BasePipelineOperato
         List<vtkImageData> imageData = Lists.newArrayList();
         Just.of(renderableImage.getLayer())
         	.operate(imageRenderer)
+        	.operate(new PadImageOperator(renderableImage.getPad()[0], renderableImage.getPad()[1], renderableImage.getFullSize()[0], renderableImage.getFullSize()[1]))
         	.operate(new VtkImageContrastOperator(renderableImage.getIntensityRange()))
         	.operate(new VtkImageVtkMaskingOperator(renderableImage.getMasking().getMask()))
         	.subscribe(Sink.of(imageData)).run();

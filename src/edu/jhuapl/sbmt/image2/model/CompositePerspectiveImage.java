@@ -504,4 +504,28 @@ public class CompositePerspectiveImage implements IPerspectiveImage, IPerspectiv
 		});
 	}
 
+	@Override
+	public void setPadValues(int[] padValues)
+	{
+		this.images.get(0).setPadValues(padValues);
+	}
+
+	@Override
+	public int[] getPadValues()
+	{
+		return images.get(0).getPadValues();
+	}
+
+	@Override
+	public void setMaxSizeValues(int[] maxSizeValues)
+	{
+		this.images.get(0).setMaxSizeValues(maxSizeValues);
+	}
+
+	@Override
+	public int[] getMaxSizeValues()
+	{
+		return images.get(0).getMaxSizeValues();
+	}
+
 }

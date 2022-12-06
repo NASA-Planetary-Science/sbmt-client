@@ -104,6 +104,8 @@ public class PerspectiveImageToRenderableImagePipeline
 			renderableImg.setDefaultOffset(image.getDefaultOffset());
 			renderableImg.setIntensityRange(image.getIntensityRange());
 			renderableImg.setOfflimbIntensityRange(image.getOfflimbIntensityRange());
+			renderableImg.setPad(image.getPadValues());
+			renderableImg.setFullSize(image.getMaxSizeValues());
 //			double diagonalLength = smallBodyModel.get(0).getBoundingBoxDiagonalLength();
 //			System.out.println("RenderablePointedImageActorPipeline: RenderablePointedImageActorPipeline: diag length " + diagonalLength);
 //			double[] scPos = renderableImages.get(0).getPointing().getSpacecraftPosition();

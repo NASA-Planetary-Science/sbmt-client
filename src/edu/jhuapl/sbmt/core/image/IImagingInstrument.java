@@ -44,6 +44,10 @@ public interface IImagingInstrument
 
     public double[] getFillValues();
 
+    int[] getPadValues();
+
+    int[] getMaxSizeValues();
+
     /**
      * Get the {@link Orientation} to use for images from this instrument when
      * projecting them using the pointing type indicated by the argument.

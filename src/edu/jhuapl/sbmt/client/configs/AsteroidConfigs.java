@@ -454,7 +454,9 @@ public class AsteroidConfigs extends SmallBodyViewConfig
                             new FixedListQuery("/GASKELL/LUTETIA/IMAGING", "/GASKELL/LUTETIA/IMAGING/gallery"), //
                             ImageType.OSIRIS_IMAGE, //
                             new ImageSource[]{ImageSource.GASKELL}, //
-                            Instrument.OSIRIS //
+                            Instrument.OSIRIS, //
+                            new int[] {559, 575},
+                            new int[] {2048, 2048}
                             ) //
             };
 
