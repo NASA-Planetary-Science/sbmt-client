@@ -231,7 +231,9 @@ public class CometConfigs extends SmallBodyViewConfig
                     new GenericPhpQuery("/GASKELL/67P/IMAGING", "67P", "/GASKELL/67P/IMAGING/images/gallery"), //
                     ImageType.OSIRIS_IMAGE, //
                     new ImageSource[] { ImageSource.GASKELL }, //
-                    Instrument.OSIRIS //
+                    Instrument.OSIRIS, //
+                    0.0,
+                    "Y"
                     ) //
             };
             c.imageSearchDefaultStartDate = new GregorianCalendar(2014, 7, 1, 0, 0, 0).getTime();
@@ -379,7 +381,9 @@ public class CometConfigs extends SmallBodyViewConfig
                     // new FixedListQuery("/GASKELL/67P_V3/IMAGING"), //
                     ImageType.OSIRIS_IMAGE, //
                     new ImageSource[] { ImageSource.GASKELL }, //
-                    Instrument.OSIRIS //
+                    Instrument.OSIRIS, //
+                    0.0,
+                    "Y"
                     ) //
             };
             c.imageSearchDefaultStartDate = new GregorianCalendar(2014, 6, 1, 0, 0, 0).getTime();

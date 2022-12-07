@@ -65,6 +65,11 @@ public class ImagingInstrument implements MetadataManager, IImagingInstrument
         this(spectralMode, searchQuery, type, searchImageSources, instrumentName, 0.0, null, null, null, null, true, null);
     }
 
+    public ImagingInstrument(SpectralImageMode spectralMode, QueryBase searchQuery, ImageType type, ImageSource[] searchImageSources, Instrument instrumentName, Map<ImageSource, Orientation> orientationMap)
+    {
+        this(spectralMode, searchQuery, type, searchImageSources, instrumentName, 0.0, null, null, null, null, true, orientationMap);
+    }
+
     public ImagingInstrument(SpectralImageMode spectralMode, QueryBase searchQuery, ImageType type, ImageSource[] searchImageSources, Instrument instrumentName, int[] pads, int[] maxSizes)
     {
         this(spectralMode, searchQuery, type, searchImageSources, instrumentName, 0.0, null, null, null, null, true, null);
@@ -368,7 +373,15 @@ public class ImagingInstrument implements MetadataManager, IImagingInstrument
         return fillValuesArray;
     }
 
-    protected Orientation getOrientation(ImageSource imageSource, String imageFlip, Double rotation, Boolean isTranspose)
+    /**
+	 * @param fillValues the fillValues to set
+	 */
+	public void setFillValues(Set<Float> fillValues)
+	{
+		this.fillValues = fillValues;
+	}
+
+	protected Orientation getOrientation(ImageSource imageSource, String imageFlip, Double rotation, Boolean isTranspose)
     {
         Orientation orientation;
         if (imageSource != null && orientationMap.containsKey(imageSource))

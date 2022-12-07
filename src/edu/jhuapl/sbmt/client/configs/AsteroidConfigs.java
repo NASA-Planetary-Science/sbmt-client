@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.GregorianCalendar;
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 import com.google.common.collect.ImmutableList;
 
@@ -22,6 +23,9 @@ import edu.jhuapl.sbmt.config.SpectralImageMode;
 import edu.jhuapl.sbmt.core.image.ImageSource;
 import edu.jhuapl.sbmt.core.image.ImageType;
 import edu.jhuapl.sbmt.core.image.ImagingInstrument;
+import edu.jhuapl.sbmt.core.image.Orientation;
+import edu.jhuapl.sbmt.core.image.OrientationFactory;
+import edu.jhuapl.sbmt.image.model.ImageFlip;
 import edu.jhuapl.sbmt.model.eros.nis.NIS;
 import edu.jhuapl.sbmt.query.database.GenericPhpQuery;
 import edu.jhuapl.sbmt.query.fixedlist.FixedListQuery;
@@ -336,6 +340,9 @@ public class AsteroidConfigs extends SmallBodyViewConfig
             c.modelLabel = "SPC";
             c.rootDirOnServer = "/GASKELL/CERES";
             c.hasMapmaker = true;
+            Map<ImageSource, Orientation> ceresOrientations = new LinkedHashMap<>();
+            ceresOrientations.put(ImageSource.GASKELL, new OrientationFactory().of(ImageFlip.X, 0.0, true));
+            ceresOrientations.put(ImageSource.SPICE, new OrientationFactory().of(ImageFlip.X, 0.0, true));
 
             c.imagingInstruments = new ImagingInstrument[] {
                     new ImagingInstrument( //
@@ -343,7 +350,8 @@ public class AsteroidConfigs extends SmallBodyViewConfig
                             new GenericPhpQuery("/GASKELL/CERES/FC", "Ceres", "/GASKELL/CERES/FC/gallery"), //
                             ImageType.FCCERES_IMAGE, //
                             new ImageSource[]{ImageSource.GASKELL, ImageSource.SPICE}, //
-                            Instrument.FC //
+                            Instrument.FC, //
+                            ceresOrientations
                     ) //
             };
 
@@ -386,13 +394,18 @@ public class AsteroidConfigs extends SmallBodyViewConfig
         c.rootDirOnServer = "/GASKELL/VESTA";
         c.hasMapmaker = true;
 
+        Map<ImageSource, Orientation> vestaOrientations = new LinkedHashMap<>();
+        vestaOrientations.put(ImageSource.SPICE, new OrientationFactory().of(ImageFlip.X, 0.0, true));
+
         c.imagingInstruments = new ImagingInstrument[] {
                 new ImagingInstrument( //
                         SpectralImageMode.MONO, //
                         new GenericPhpQuery("/GASKELL/VESTA/FC", "FC", "/GASKELL/VESTA/FC/gallery"), //
                         ImageType.FC_IMAGE, //
                         new ImageSource[]{ImageSource.GASKELL, ImageSource.SPICE}, //
-                        Instrument.FC //
+                        Instrument.FC, //
+                        0.0,
+                        "X"
                         ) //
         };
 
