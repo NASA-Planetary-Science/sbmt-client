@@ -388,6 +388,22 @@ public class SmallBodyViewConfigBuilder
     }
 
     /**
+     * Set the parameters used to compute gravitation-related plate colorings.
+     *
+     * @param density the body's density
+     * @param rotationRate the body's rotation rate
+     * @return the builder
+     */
+    public SmallBodyViewConfigBuilder gravityInputs(double density, double rotationRate)
+    {
+        init();
+        SmallBodyViewConfig c = getConfig();
+        c.density = density;
+        c.rotationRate = rotationRate;
+        return this;
+    }
+
+    /**
      * Build and return the {@link SmallBodyViewConfig}. The base implementation
      * retrieves the partially-constructed config in whatever state has resulted
      * from calling other builder methods, confirms that required methods have

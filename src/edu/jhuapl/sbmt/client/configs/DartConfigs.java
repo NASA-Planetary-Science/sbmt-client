@@ -248,7 +248,8 @@ public class DartConfigs extends SmallBodyViewConfigBuilder
         configList.add(c);
 
         // Flight models below this point.
-        ImageSource[] imageSources = { ImageSource.GASKELL, ImageSource.SPICE };
+        final ImageSource[] spcSources = { ImageSource.GASKELL };
+        final ImageSource[] imageSources = { ImageSource.GASKELL, ImageSource.SPICE };
 
         Map<ImageSource, Orientation> dracoFlightOrientations = new LinkedHashMap<>();
         dracoFlightOrientations.put(ImageSource.GASKELL, new OrientationFactory().of(ImageFlip.X, 0.0, true));
@@ -314,8 +315,9 @@ public class DartConfigs extends SmallBodyViewConfigBuilder
             DBRunInfo[] dbRunInfos = createDbInfos(ShapeModelBody.DIMORPHOS, author, Instrument.DRACO, imageSources);
             add(instrument, dbRunInfos);
 
-
             c = build();
+            // This model was abandoned after import. Do NOT include it.
+            // configList.add(c);
             generateUpdatedStateHistoryParameters(c, ShapeModelBody.DIMORPHOS.name());
         }
 
@@ -333,10 +335,36 @@ public class DartConfigs extends SmallBodyViewConfigBuilder
             DBRunInfo[] dbRunInfos = createDbInfos(ShapeModelBody.DIMORPHOS, author, Instrument.DRACO, imageSources);
             add(instrument, dbRunInfos);
 
+            gravityInputs(2300.0, 1.464e-4);
+
             dtmCatalogs(true);
 
             c = build();
             generateUpdatedStateHistoryParameters(c, ShapeModelBody.DIMORPHOS.name());
+            configList.add(c);
+        }
+
+        // Didymos version 001 (flight).
+        {
+            String label = "Didymos-v001";
+            ShapeModelType author = author(MissionPrefix + " " + label);
+
+            init(ShapeModelBody.DIDYMOS, author, ShapeModelDataUsed.IMAGE_BASED, label);
+            imageSearchRanges(ImpactSearchStartDate, ImpactSearchEndDate, ImpactMaxScDistance, ImpactResolution);
+
+            modelRes(BodyViewConfig.DEFAULT_GASKELL_LABELS_PER_RESOLUTION, BodyViewConfig.DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION);
+
+            ImagingInstrument instrument = createFlightInstrument(ShapeModelBody.DIDYMOS, author, Instrument.DRACO, dracoFlightOrientations, spcSources);
+            DBRunInfo[] dbRunInfos = createDbInfos(ShapeModelBody.DIDYMOS, author, Instrument.DRACO, spcSources);
+            add(instrument, dbRunInfos);
+
+            gravityInputs(2400.0, 7.72e-4);
+
+            // No DTMs with initial delivery.
+            // dtmCatalogs(true);
+
+            c = build();
+            generateUpdatedStateHistoryParameters(c, ShapeModelBody.DIDYMOS.name());
             configList.add(c);
             defaultConfig = c;
         }
