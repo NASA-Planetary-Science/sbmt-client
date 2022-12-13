@@ -1366,14 +1366,17 @@ createGalleryList() {
         fi
       done
 
+      missingSomeGalleryFiles="false"
       if test ! -f "$tmpGalleryList"; then
         echo "$funcName: WARNING: did not find ANY gallery files in $galleryDir"
         echo "$funcName: please examine $instrumentTop and its subdirectories"
         echo "$funcName: did not update $galleryListFile"
+        missingSomeGalleryFiles="true"
       elif test `wc -l $tmpImageList | sed 's: .*::'` -ne `wc -l $tmpGalleryList | sed 's: .*::'`; then
         echo "$funcName: WARNING: did not find gallery files for every image in $imageDir"
         echo "$funcName: please examine $instrumentTop and its subdirectories"
         echo "$funcName: did not update $galleryListFile"
+        missingSomeGalleryFiles="true"
       else
         rm -f $galleryListFile
         check $? "$funcName: could not delete old gallery list file $galleryListFile"
@@ -1396,12 +1399,14 @@ createGalleryList() {
         echo "nice cat $tmpThumbnailList | zip -q $tmpGalleryZipFile -@"
         nice cat $tmpThumbnailList | zip -q $tmpGalleryZipFile -@
         check $? "$funcName: unable to zip gallery files in $galleryDir"
+
+        if test "$missingSomeGalleryFiles" != "true"; then        
+          rm -f $galleryZipFile
+          check $? "$funcName: unable to delete old gallery zip file $galleryZipFile"
         
-        rm -f $galleryZipFile
-        check $? "$funcName: unable to delete old gallery zip file $galleryZipFile"
-        
-        mv $tmpGalleryZipFile $galleryZipFile
-        check $? "$funcName: unable to rename file $tmpGalleryZipFile to $galleryZipFile"
+          mv $tmpGalleryZipFile $galleryZipFile
+          check $? "$funcName: unable to rename file $tmpGalleryZipFile to $galleryZipFile"
+        fi
       fi
 
     )
