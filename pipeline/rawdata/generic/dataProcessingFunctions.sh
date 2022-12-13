@@ -1316,12 +1316,11 @@ createGalleryList() {
 
     imageDir=$instrumentTop/images
     if test ! -d "$imageDir"; then
-      echo "$funcName: INFO: no images in $instrumentTop"
+      echo "$funcName: INFO: no images/ subdirectory in $instrumentTop"
       exit;
     fi
 
     galleryListFile=$instrumentTop/gallery-list.txt
-    rm -f $galleryListFile
 
     galleryDir=$instrumentTop/gallery
     if test ! -d "$galleryDir"; then
@@ -1346,6 +1345,10 @@ createGalleryList() {
       cd $galleryDir
       check $? "$funcName: unable to cd to gallery directory $galleryDir"
 
+      # New gallery list file -- write in a temporary location, then move
+      # it on top of the real gallery list.
+      tmpGalleryList="${galleryListFile}-tmp"
+
       for image in `cat $tmpImageList`; do
         root=`echo "$image" | sed 's:\.[^\.]*$::'`
         check $? "$funcName: unable to determine base name of gallery images for $image"
@@ -1356,19 +1359,27 @@ createGalleryList() {
         check $? "$funcName: unable to find gallery images for $image"
 
         if test `echo $galleryFiles | wc -w` -eq 2; then
-          echo "$image $galleryFiles" >> $galleryListFile
+          echo "$image $galleryFiles" >> $tmpGalleryList
           # First image in list is the name of the thumbnail, including the gallery/ subdirectory
           # prefix. Add it to the thumbnail list file.
           echo "gallery/$galleryFiles" | sed 's:[  ].*::' >> $tmpThumbnailList
         fi
       done
 
-      if test ! -f "$galleryListFile"; then
+      if test ! -f "$tmpGalleryList"; then
         echo "$funcName: WARNING: did not find ANY gallery files in $galleryDir"
         echo "$funcName: please examine $instrumentTop and its subdirectories"
-      elif test `wc -l $tmpImageList | sed 's: .*::'` -ne `wc -l $galleryListFile | sed 's: .*::'`; then
+        echo "$funcName: did not update $galleryListFile"
+      elif test `wc -l $tmpImageList | sed 's: .*::'` -ne `wc -l $tmpGalleryList | sed 's: .*::'`; then
         echo "$funcName: WARNING: did not find gallery files for every image in $imageDir"
         echo "$funcName: please examine $instrumentTop and its subdirectories"
+        echo "$funcName: did not update $galleryListFile"
+      else
+        rm -f $galleryListFile
+        check $? "$funcName: could not delete old gallery list file $galleryListFile"
+
+        mv $tmpGalleryList $galleryListFile
+        check $? "$funcName: could not rename file $tmpGalleryList to $galleryListFile"
       fi
 
       # This does not involve the tmp file, but it is convenient just to do this
@@ -1377,13 +1388,20 @@ createGalleryList() {
       check $? "$funcName: unable to cd to $instrumentTop to create zip file"
 
       # Get rid of any previous zip file.
-      rm -f gallery.zip
-
+      galleryZipFile="gallery.zip"
+      tmpGalleryZipFile="${galleryZipFile}-tmp"
+      
       if test -f $tmpThumbnailList; then
         # Zip up images in the gallery directory that match any of the files listed in the thumbnail list file
-        echo "nice cat $tmpThumbnailList | zip -q gallery.zip -@"
-        nice cat $tmpThumbnailList | zip -q gallery.zip -@
+        echo "nice cat $tmpThumbnailList | zip -q $tmpGalleryZipFile -@"
+        nice cat $tmpThumbnailList | zip -q $tmpGalleryZipFile -@
         check $? "$funcName: unable to zip gallery files in $galleryDir"
+        
+        rm -f $galleryZipFile
+        check $? "$funcName: unable to delete old gallery zip file $galleryZipFile"
+        
+        mv $tmpGalleryZipFile $galleryZipFile
+        check $? "$funcName: unable to rename file $tmpGalleryZipFile to $galleryZipFile"
       fi
 
     )
