@@ -1325,7 +1325,7 @@ createGalleryList() {
     galleryDir=$instrumentTop/gallery
     if test ! -d "$galleryDir"; then
       # This directory has no gallery; just exit here.
-      echo "$funcName: WARNING: no gallery files with images in $imageDir"
+      echo "$funcName: WARNING: no gallery files directory $galleryDir"
       exit;
     fi
 
