@@ -31,6 +31,7 @@ public class SearchResultsToPointingFilesOperator
 	private List<List<String>> results;
 	private ISmallBodyViewConfig viewConfig;
 	private static final Map<String, ImmutableMap<String, String>> SUM_FILE_MAP = new HashMap<>();
+	private ImageSource imageSource;
 
 	public SearchResultsToPointingFilesOperator(ISmallBodyViewConfig viewConfig)
 	{
@@ -48,7 +49,7 @@ public class SearchResultsToPointingFilesOperator
 		{
 			String extension = ".INFO";
 			String pointingDir = "infofiles";
-			ImageSource imageSource = ImageSource.valueFor(imageInfo.get(2).replace("_", " "));
+		    imageSource = ImageSource.valueFor(imageInfo.get(2).replace("_", " "));
 			if (imageSource == ImageSource.GASKELL || imageSource == ImageSource.GASKELL_UPDATED)
 			{
 				extension = ".SUM";
@@ -101,8 +102,10 @@ public class SearchResultsToPointingFilesOperator
     {
         if (!SUM_FILE_MAP.containsKey(imagerDirectory))
         {
+        	String sumfileName = "make_sumfiles.in";
+        	if (imageSource == ImageSource.CORRECTED) sumfileName = "make_sumfiles_corrected.in";
             ImmutableMap.Builder<String, String> builder = ImmutableMap.builder();
-            File mapFile = FileCache.getFileFromServer(SafeURLPaths.instance().getString(imagerDirectory, "make_sumfiles.in"));
+            File mapFile = FileCache.getFileFromServer(SafeURLPaths.instance().getString(imagerDirectory, sumfileName));
             try (BufferedReader reader = new BufferedReader(new FileReader(mapFile)))
             {
                 while (reader.ready())
