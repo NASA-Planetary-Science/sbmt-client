@@ -81,14 +81,14 @@ public class PipelineTests
 	private <G1 extends IPerspectiveImage & IPerspectiveImageTableRepresentable> void testLuke() throws Exception
 	{
 		List<Layer> updatedLayers = Lists.newArrayList();
-		String fileName = "/Users/steelrj1/Desktop/2356-test-files/liciacube_luke_l0_717892384_782_01.fits";
-		String pointingFileName = "/Users/steelrj1/Desktop/2356-test-files/liciacube_luke_l0_717892384_782_01.INFO";
+		String fileName = "/Users/steelrj1/Downloads/K717506311S0.fits";
+		String pointingFileName = "/Users/steelrj1/Downloads/K717506311S0.SUM";
 
-		IPipelinePublisher<SmallBodyModel> objReader = new BuiltInOBJReader(new String[] { "/Users/steelrj1/.sbmt-test-apl/cache/2/didymos/ideal-impact1-20200629-v01/shape/shape0.obj" },
+		IPipelinePublisher<SmallBodyModel> objReader = new BuiltInOBJReader(new String[] { "/Users/steelrj1/.sbmt1dart-stage/cache/dimorphos/dart-dimorphos-v003/shape/shape0.obj" },
 				"Didymos");
 
 
-		PerspectiveImage image = new PerspectiveImage(fileName, ImageType.valueOf("LUKE_IMAGE"), ImageSource.SPICE, pointingFileName, new double[] {});
+		PerspectiveImage image = new PerspectiveImage(fileName, ImageType.valueOf("LUKE_IMAGE"), ImageSource.GASKELL, pointingFileName, new double[] {});
 
 		image.setName("Luke Image");
 		image.setImageOrigin(ImageOrigin.LOCAL);
@@ -98,7 +98,7 @@ public class PipelineTests
 		image.setMaskValues(new int[] {0,0,0,0});
 		image.setFillValues(new double[] {});
 		image.setFlip("None");
-		image.setRotation(0);
+		image.setRotation(0.0);
 
 		CompositePerspectiveImage compImage = new CompositePerspectiveImage(List.of(image));
 		compImage.setName(FilenameUtils.getBaseName(fileName));
