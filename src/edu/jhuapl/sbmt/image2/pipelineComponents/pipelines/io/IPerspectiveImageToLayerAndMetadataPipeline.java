@@ -78,7 +78,7 @@ public class IPerspectiveImageToLayerAndMetadataPipeline
 
 		BasePipelineOperator<Layer, Layer> maskingOperator = new PassthroughOperator<Layer>();
 
-		if (metadataReader.getOutput().get("WINDOWH") != null)
+		if (metadataReader.getOutput().get("WINDOWH") != null && metadataReader.getOutput().get("WINDOWH") == "512")
 		{
 			int windowH = Integer.parseInt(metadataReader.getOutput().get("WINDOWH"));
 			int windowX = Integer.parseInt(metadataReader.getOutput().get("WINDOWX"));
