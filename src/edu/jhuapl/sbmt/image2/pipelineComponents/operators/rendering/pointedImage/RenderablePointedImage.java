@@ -9,6 +9,7 @@ import edu.jhuapl.sbmt.core.image.ImageSource;
 import edu.jhuapl.sbmt.core.image.PointingFileReader;
 import edu.jhuapl.sbmt.image2.model.CylindricalBounds;
 import edu.jhuapl.sbmt.image2.model.IRenderableImage;
+import edu.jhuapl.sbmt.image2.model.ImageBinPadding;
 import edu.jhuapl.sbmt.image2.pipelineComponents.operators.rendering.layer.LayerMasking;
 import edu.jhuapl.sbmt.layer.api.Layer;
 
@@ -30,8 +31,12 @@ public class RenderablePointedImage implements IRenderableImage
 	private String filename;
 	private boolean offlimbShowing = false;
 	private ImageSource imageSource;
-	private int[] pad;
-	private int[] fullSize;
+	private ImageBinPadding imageBinPadding;
+	private int binning = 1;
+	private Integer startH;
+	private Integer lastV;
+//	private int[] pad;
+//	private int[] fullSize;
 
 	public RenderablePointedImage(Layer layer, HashMap<String, String> metadata, PointingFileReader pointing)
 	{
@@ -282,38 +287,73 @@ public class RenderablePointedImage implements IRenderableImage
 
 
 	/**
-	 * @return the pad
+	 * @return the imageBinPadding
 	 */
-	public int[] getPad()
+	public ImageBinPadding getImageBinPadding()
 	{
-		return pad;
+		return imageBinPadding;
 	}
 
 
 	/**
-	 * @param pad the pad to set
+	 * @param imageBinPadding the imageBinPadding to set
 	 */
-	public void setPad(int[] pad)
+	public void setImageBinPadding(ImageBinPadding imageBinPadding)
 	{
-		this.pad = pad;
+		this.imageBinPadding = imageBinPadding;
 	}
 
 
 	/**
-	 * @return the fullSize
+	 * @return the binning
 	 */
-	public int[] getFullSize()
+	public int getBinning()
 	{
-		return fullSize;
+		return binning;
 	}
 
 
 	/**
-	 * @param fullSize the fullSize to set
+	 * @param binning the binning to set
 	 */
-	public void setFullSize(int[] fullSize)
+	public void setBinning(int binning)
 	{
-		this.fullSize = fullSize;
+		this.binning = binning;
 	}
 
+
+	/**
+	 * @return the startH
+	 */
+	public Integer getStartH()
+	{
+		return startH;
+	}
+
+
+	/**
+	 * @param startH the startH to set
+	 */
+	public void setStartH(int startH)
+	{
+		this.startH = startH;
+	}
+
+
+	/**
+	 * @return the lastV
+	 */
+	public Integer getLastV()
+	{
+		return lastV;
+	}
+
+
+	/**
+	 * @param lastV the lastV to set
+	 */
+	public void setLastV(int lastV)
+	{
+		this.lastV = lastV;
+	}
 }

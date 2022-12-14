@@ -21,7 +21,9 @@ import edu.jhuapl.saavtk.util.PolyDataUtil;
 import edu.jhuapl.saavtk.util.SafeURLPaths;
 import edu.jhuapl.sbmt.common.client.SmallBodyModel;
 import edu.jhuapl.sbmt.core.image.PointingFileReader;
+import edu.jhuapl.sbmt.image2.model.BinTranslations;
 import edu.jhuapl.sbmt.image2.model.IRenderableImage;
+import edu.jhuapl.sbmt.image2.model.ImageBinPadding;
 import edu.jhuapl.sbmt.image2.pipelineComponents.operators.rendering.PadImageOperator;
 import edu.jhuapl.sbmt.image2.pipelineComponents.operators.rendering.vtk.VtkImageContrastOperator;
 import edu.jhuapl.sbmt.image2.pipelineComponents.operators.rendering.vtk.VtkImageRendererOperator;
@@ -29,6 +31,8 @@ import edu.jhuapl.sbmt.image2.pipelineComponents.operators.rendering.vtk.VtkImag
 import edu.jhuapl.sbmt.image2.pipelineComponents.pipelines.io.LoadPolydataFromCachePipeline;
 import edu.jhuapl.sbmt.image2.pipelineComponents.pipelines.io.SavePolydataToCachePipeline;
 import edu.jhuapl.sbmt.pipeline.operator.BasePipelineOperator;
+import edu.jhuapl.sbmt.pipeline.operator.IPipelineOperator;
+import edu.jhuapl.sbmt.pipeline.operator.PassthroughOperator;
 import edu.jhuapl.sbmt.pipeline.publisher.Just;
 import edu.jhuapl.sbmt.pipeline.subscriber.Sink;
 
@@ -57,12 +61,33 @@ public class RenderablePointedImageFootprintOperator extends BasePipelineOperato
 						    			frustum4Adjusted,
 						    			frustum2Adjusted);
 
+    	IPipelineOperator<vtkImageData, vtkImageData> padOperator = new PassthroughOperator<>();
+    	ImageBinPadding binPadding = renderableImage.getImageBinPadding();
+    	//AMICA only, need generic way to handle this
+    	if (renderableImage.getStartH() != null)
+    	{
+    		int xTranslation = 0, yTranslation = 0;
+    		int binning = renderableImage.getBinning();
+    		if (binning == 1)
+    		{
+	            xTranslation = renderableImage.getStartH();
+	    		yTranslation = 1023 - renderableImage.getLastV();
+    		}
+    		else if (binning == 2)
+    		{
+    			xTranslation = renderableImage.getStartH()/2;
+    			int lastV = ((renderableImage.getLastV() + 1) / 2) - 1;
+	    		yTranslation = 511 - lastV;
+    		}
+    		binPadding.binTranslations.put(1, new BinTranslations(xTranslation, yTranslation));
+    	}
+    	if (renderableImage.getImageBinPadding() != null) padOperator = new PadImageOperator(renderableImage.getImageBinPadding(), renderableImage.getBinning());
 
         VtkImageRendererOperator imageRenderer = new VtkImageRendererOperator();
         List<vtkImageData> imageData = Lists.newArrayList();
         Just.of(renderableImage.getLayer())
         	.operate(imageRenderer)
-        	.operate(new PadImageOperator(renderableImage.getPad()[0], renderableImage.getPad()[1], renderableImage.getFullSize()[0], renderableImage.getFullSize()[1]))
+        	.operate(padOperator)
         	.operate(new VtkImageContrastOperator(renderableImage.getIntensityRange()))
         	.operate(new VtkImageVtkMaskingOperator(renderableImage.getMasking().getMask()))
         	.subscribe(Sink.of(imageData)).run();

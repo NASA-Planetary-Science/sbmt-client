@@ -47,8 +47,12 @@ import edu.jhuapl.sbmt.core.image.CustomCylindricalImageKey;
 import edu.jhuapl.sbmt.core.image.CustomPerspectiveImageKey;
 import edu.jhuapl.sbmt.core.image.OrientationFactory;
 import edu.jhuapl.sbmt.dtm.model.DEMKey;
+import edu.jhuapl.sbmt.image2.model.BinExtents;
+import edu.jhuapl.sbmt.image2.model.BinSpacings;
+import edu.jhuapl.sbmt.image2.model.BinTranslations;
 import edu.jhuapl.sbmt.image2.model.CompositePerspectiveImage;
 import edu.jhuapl.sbmt.image2.model.CylindricalBounds;
+import edu.jhuapl.sbmt.image2.model.ImageBinPadding;
 import edu.jhuapl.sbmt.image2.model.PerspectiveImage;
 import edu.jhuapl.sbmt.model.bennu.spectra.otes.OTES;
 import edu.jhuapl.sbmt.model.bennu.spectra.ovirs.OVIRS;
@@ -111,7 +115,10 @@ public class SbmtMultiMissionTool
 
 
 		// Initialize serialization proxies
-
+		ImageBinPadding.initializeSerializationProxy();
+		BinExtents.initializeSerializationProxy();
+		BinTranslations.initializeSerializationProxy();
+		BinSpacings.initializeSerializationProxy();
 		// Structures.
 		LatLon.initializeSerializationProxy();
 		EllipsePolygon.initializeSerializationProxy();

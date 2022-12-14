@@ -151,14 +151,21 @@ public class RenderablePointedImageToScenePipeline<G1 extends IPerspectiveImage 
 			renderableImage.setOfflimbIntensityRange(image.getOfflimbIntensityRange());
 			renderableImage.setMinFrustumLength(MathUtil.vnorm(scPos) - diagonalLength);
 			renderableImage.setMaxFrustumLength(MathUtil.vnorm(scPos) + diagonalLength);
-			renderableImage.setPad(image.getPadValues());
-			renderableImage.setFullSize(image.getMaxSizeValues());
+			renderableImage.setImageBinPadding(image.getImageBinPadding());
+			renderableImage.setBinning(image.getImageBinning());
 			image.setMinFrustumLength(MathUtil.vnorm(scPos) - diagonalLength);
 			image.setMaxFrustumLength(MathUtil.vnorm(scPos) + diagonalLength);
 			if (image.getOfflimbDepth() == 0)
 				image.setOfflimbDepth(MathUtil.vnorm(scPos));
 			renderableImage.setOfflimbDepth(image.getOfflimbDepth());
 			renderableImage.setLinearInterpolation(image.getInterpolateState());
+			//This is a special case for AMICA, because it reads binning and padding information from the metadata, need a better way to handle this, but hard because these fields are non-uniform
+			if (metadataReader.getOutput().containsKey("START_H"))
+			{
+				renderableImage.setStartH(Integer.valueOf(metadataReader.getOutput().get("START_H")));
+				renderableImage.setLastV(Integer.valueOf(metadataReader.getOutput().get("LAST_V")));
+				renderableImage.setBinning(Integer.valueOf(metadataReader.getOutput().get("BINNING")));
+			}
 		}
 	}
 

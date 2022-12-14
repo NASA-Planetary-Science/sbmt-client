@@ -50,8 +50,7 @@ public class CreateImageFromSearchResultOperator<G1 extends IPerspectiveImage & 
         	image.setLinearInterpolatorDims(instrument.getLinearInterpolationDims());
         	image.setMaskValues(instrument.getMaskValues());
         	image.setFillValues(instrument.getFillValues());
-        	image.setPadValues(instrument.getPadValues());
-        	image.setMaxSizeValues(instrument.getMaxSizeValues());
+        	image.setImageBinPadding(instrument.getBinPadding());
         	image.setLongTime(Long.parseLong(imageInfo.get(1)));
         	CompositePerspectiveImage compImage = new CompositePerspectiveImage(List.of(image));
         	compImage.setIndex(i++);

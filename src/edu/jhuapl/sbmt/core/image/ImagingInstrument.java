@@ -14,6 +14,7 @@ import edu.jhuapl.saavtk.util.ImageDataUtil;
 import edu.jhuapl.sbmt.config.Instrument;
 import edu.jhuapl.sbmt.config.SpectralImageMode;
 import edu.jhuapl.sbmt.image.model.ImageFlip;
+import edu.jhuapl.sbmt.image2.model.ImageBinPadding;
 import edu.jhuapl.sbmt.query.IQueryBase;
 import edu.jhuapl.sbmt.query.QueryBase;
 import edu.jhuapl.sbmt.query.database.GenericPhpQuery;
@@ -35,8 +36,9 @@ public class ImagingInstrument implements MetadataManager, IImagingInstrument
     private Set<Float> fillValues;
     private int[] linearInterpolationDims;
     private int[] maskValues = new int[] { 0, 0, 0, 0 };
-    private int[] padValues = new int[] {0, 0};
-    private int[] maxSizeValues = new int[] {0, 0};
+//    private int[] padValues = new int[] {0, 0};
+//    private int[] maxSizeValues = new int[] {0, 0};
+    private ImageBinPadding binPadding;
 
     protected final Map<ImageSource, Orientation> orientationMap;
 
@@ -70,11 +72,10 @@ public class ImagingInstrument implements MetadataManager, IImagingInstrument
         this(spectralMode, searchQuery, type, searchImageSources, instrumentName, 0.0, null, null, null, null, true, orientationMap);
     }
 
-    public ImagingInstrument(SpectralImageMode spectralMode, QueryBase searchQuery, ImageType type, ImageSource[] searchImageSources, Instrument instrumentName, int[] pads, int[] maxSizes)
+    public ImagingInstrument(SpectralImageMode spectralMode, QueryBase searchQuery, ImageType type, ImageSource[] searchImageSources, Instrument instrumentName, double rotation, String flip, ImageBinPadding binPadding)
     {
-        this(spectralMode, searchQuery, type, searchImageSources, instrumentName, 0.0, null, null, null, null, true, null);
-        this.padValues = pads;
-        this.maxSizeValues = maxSizes;
+        this(spectralMode, searchQuery, type, searchImageSources, instrumentName, rotation, flip, null, null, null, true, null);
+        this.binPadding = binPadding;
     }
 
     public ImagingInstrument(SpectralImageMode spectralMode, QueryBase searchQuery, ImageType type, ImageSource[] searchImageSources, Instrument instrumentName, double rotation, String flip)
@@ -164,8 +165,8 @@ public class ImagingInstrument implements MetadataManager, IImagingInstrument
     private static final Key<int[]> linearInterpolationDimsKey = Key.of("linearInterpolationDims");
     private static final Key<int[]> maskValuesKey = Key.of("maskValues");
     private static final Key<Map<String, Orientation>> orientationsKey = Key.of("orientations");
-    private static final Key<int[]> padValuesKey = Key.of("padValues");
-    private static final Key<int[]> maxSizeValuesKey = Key.of("maxSizes");
+    private static final Key<ImageBinPadding> binPaddingValuesKey = Key.of("binPaddingValues");
+//    private static final Key<int[]> maxSizeValuesKey = Key.of("maxSizes");
 
     @Override
     public void retrieve(Metadata source)
@@ -199,10 +200,9 @@ public class ImagingInstrument implements MetadataManager, IImagingInstrument
         linearInterpolationDims = read(linearInterpolationDimsKey, source);
         maskValues = read(maskValuesKey, source);
 
-        if (source.hasKey(padValuesKey))
+        if (source.hasKey(binPaddingValuesKey))
         {
-	        padValues = read(padValuesKey, source);
-	        maxSizeValues = read(maxSizeValuesKey, source);
+        	binPadding = read(binPaddingValuesKey, source);
         }
 
         Map<String, Orientation> orientationMap = read(orientationsKey, source);
@@ -264,8 +264,7 @@ public class ImagingInstrument implements MetadataManager, IImagingInstrument
         write(isTransposeKey, orientation.isTranspose(), configMetadata);
         write(linearInterpolationDimsKey, linearInterpolationDims, configMetadata);
         write(maskValuesKey, maskValues, configMetadata);
-        write(padValuesKey, padValues, configMetadata);
-        write(maxSizeValuesKey, maxSizeValues, configMetadata);
+        write(binPaddingValuesKey, binPadding, configMetadata);
 
         LinkedHashMap<String, Orientation> orientationStringMap = new LinkedHashMap<>();
         for (Entry<ImageSource, Orientation> entry : orientationMap.entrySet())
@@ -444,20 +443,8 @@ public class ImagingInstrument implements MetadataManager, IImagingInstrument
                 + Arrays.toString(linearInterpolationDims) + ", maskValues=" + Arrays.toString(maskValues) + "]";
     }
 
-	/**
-	 * @return the padValues
-	 */
-	public int[] getPadValues()
-	{
-		return padValues;
-	}
-
-	/**
-	 * @return the maxSizeValues
-	 */
-	public int[] getMaxSizeValues()
-	{
-		return maxSizeValues;
-	}
-
+    public ImageBinPadding getBinPadding()
+    {
+    	return binPadding;
+    }
 }

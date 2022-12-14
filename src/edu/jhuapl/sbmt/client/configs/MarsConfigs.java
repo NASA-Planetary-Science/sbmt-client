@@ -64,7 +64,9 @@ public class MarsConfigs extends SmallBodyViewConfig
 //                        new GenericPhpQuery("/GASKELL/PHOBOS/IMAGING", "PHOBOS", "/GASKELL/PHOBOS/IMAGING/images/gallery"), //
                         ImageType.valueOf("MARS_MOON_IMAGE"), //
                         new ImageSource[]{ImageSource.GASKELL}, //
-                        Instrument.IMAGING_DATA //
+                        Instrument.IMAGING_DATA, //
+                        0.0,
+                        "X"
                         ) //
         };
 
@@ -383,8 +385,7 @@ public class MarsConfigs extends SmallBodyViewConfig
                             new ImageSource[]{ ImageSource.GASKELL }, //
                             Instrument.IMAGING_DATA, //
                             0., //
-                            "Y", // Note: this means "flip along Y axis". Don't know why, but this flip is needed as of this delivery.
-                            null
+                            "Y" // Note: this means "flip along Y axis". Don't know why, but this flip is needed as of this delivery.
                             ) //
             };
             c.imageSearchDefaultStartDate = new GregorianCalendar(1976, 7, 16, 0, 0, 0).getTime();
@@ -435,8 +436,7 @@ public class MarsConfigs extends SmallBodyViewConfig
                             new ImageSource[]{ ImageSource.GASKELL },
                             Instrument.IMAGING_DATA,
                             0.,
-                            "X", // Note: this means "flip along X axis". Don't know why, but this flip is needed as of this delivery.
-                            null
+                            "X" // Note: this means "flip along X axis". Don't know why, but this flip is needed as of this delivery.
                             )
             };
 

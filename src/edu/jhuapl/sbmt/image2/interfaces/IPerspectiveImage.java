@@ -8,6 +8,7 @@ import edu.jhuapl.saavtk.util.IntensityRange;
 import edu.jhuapl.sbmt.core.image.ImageSource;
 import edu.jhuapl.sbmt.core.image.ImageType;
 import edu.jhuapl.sbmt.image2.model.CylindricalBounds;
+import edu.jhuapl.sbmt.image2.model.ImageBinPadding;
 
 public interface IPerspectiveImage
 {
@@ -99,13 +100,21 @@ public interface IPerspectiveImage
 
 	public List<IPerspectiveImage> getImages();
 
-	public void setPadValues(int[] padValues);
+	public void setImageBinPadding(ImageBinPadding imageBinPadding);
 
-	public int[] getPadValues();
+	public ImageBinPadding getImageBinPadding();
 
-	public void setMaxSizeValues(int[] maxSizeValues);
+	public int getImageBinning();
 
-	public int[] getMaxSizeValues();
+	public void setImageBinning(int binning);
+
+//	public void setPadValues(int[] padValues);
+//
+//	public int[] getPadValues();
+//
+//	public void setMaxSizeValues(int[] maxSizeValues);
+//
+//	public int[] getMaxSizeValues();
 
 	public IntensityRange getIntensityRange();
 

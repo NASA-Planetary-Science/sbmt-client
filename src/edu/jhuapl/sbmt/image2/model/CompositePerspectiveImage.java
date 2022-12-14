@@ -504,28 +504,48 @@ public class CompositePerspectiveImage implements IPerspectiveImage, IPerspectiv
 		});
 	}
 
-	@Override
-	public void setPadValues(int[] padValues)
+	public void setImageBinPadding(ImageBinPadding binPadding)
 	{
-		this.images.get(0).setPadValues(padValues);
+		this.images.get(0).setImageBinPadding(binPadding);
 	}
 
-	@Override
-	public int[] getPadValues()
+	public ImageBinPadding getImageBinPadding()
 	{
-		return images.get(0).getPadValues();
+		return images.get(0).getImageBinPadding();
 	}
 
-	@Override
-	public void setMaxSizeValues(int[] maxSizeValues)
+	public void setImageBinning(int binning)
 	{
-		this.images.get(0).setMaxSizeValues(maxSizeValues);
+		this.images.get(0).setImageBinning(binning);
 	}
 
-	@Override
-	public int[] getMaxSizeValues()
+	public int getImageBinning()
 	{
-		return images.get(0).getMaxSizeValues();
+		return images.get(0).getImageBinning();
 	}
+
+//	@Override
+//	public void setPadValues(int[] padValues)
+//	{
+//		this.images.get(0).setPadValues(padValues);
+//	}
+//
+//	@Override
+//	public int[] getPadValues()
+//	{
+//		return images.get(0).getPadValues();
+//	}
+//
+//	@Override
+//	public void setMaxSizeValues(int[] maxSizeValues)
+//	{
+//		this.images.get(0).setMaxSizeValues(maxSizeValues);
+//	}
+//
+//	@Override
+//	public int[] getMaxSizeValues()
+//	{
+//		return images.get(0).getMaxSizeValues();
+//	}
 
 }
