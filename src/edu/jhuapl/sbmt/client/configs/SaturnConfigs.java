@@ -709,7 +709,7 @@ public class SaturnConfigs extends SmallBodyViewConfig
                     BodyType.PLANETS_AND_SATELLITES.name(), //
                     ShapeModelPopulation.SATURN.name()).build(); //
             ImagingInstrument imagingInstrument = setupImagingInstrument(bodyConfig, gaskellModelConfig, Instrument.IMAGING_DATA, gaskellImagingSource, ImageType.SATURN_MOON_IMAGE);
-            imagingInstrument.setFillValues(Set.of((float)3.4028234663852886e38));
+            imagingInstrument.setFillValues(Set.of((float)3.4028234663852886e38, (float)-3.4028234663852886e38));
             c = new SaturnConfigs();
             c.body = ShapeModelBody.HELENE;
             c.type = BodyType.PLANETS_AND_SATELLITES;
