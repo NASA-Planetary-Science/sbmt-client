@@ -40,7 +40,6 @@ import vtk.vtkImageReslice;
 import vtk.vtkImageSlice;
 import vtk.vtkImageSliceMapper;
 import vtk.vtkInteractorStyleImage;
-import vtk.vtkPropPicker;
 import vtk.vtkTransform;
 import vtk.rendering.jogl.vtkJoglPanelComponent;
 
@@ -75,10 +74,7 @@ public class LayerPreviewPanel<G1 extends IPerspectiveImage & IPerspectiveImageT
 	private vtkJoglPanelComponent renWin;
 	private vtkImageSlice actor = new vtkImageSlice();
 	private vtkImageReslice reslice;
-	private vtkPropPicker imagePicker;
-	private boolean initialized = false;
 	private boolean centerFrustumMode = false;
-	private int[] previousLevels = null;
 	private vtkImageData displayedImage;
 	private List<HashMap<String, String>> metadata;
 	private List<List<HashMap<String, String>>> metadatas;
@@ -128,7 +124,6 @@ public class LayerPreviewPanel<G1 extends IPerspectiveImage & IPerspectiveImageT
 		setSize(700, 700);
 		this.splitPane.setDividerLocation(0.9);
 
-		initialized = true;
 		javax.swing.SwingUtilities.invokeLater(new Runnable()
 		{
 			@Override
@@ -150,8 +145,6 @@ public class LayerPreviewPanel<G1 extends IPerspectiveImage & IPerspectiveImageT
 		VtkImageContrastPipeline pipeline = new VtkImageContrastPipeline(displayedImage, range);
 		displayedImage = pipeline.getUpdatedData().get(0);
  		updateImage(displayedImage);
-// 		Logger.getAnonymousLogger().log(Level.INFO, "Completion");
-//		if (completionBlock != null) completionBlock.run();
 	}
 
 	private void generateVtkImageData(Layer layer) throws IOException, Exception
@@ -362,13 +355,11 @@ public class LayerPreviewPanel<G1 extends IPerspectiveImage & IPerspectiveImageT
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
-
 				return null;
 			}
 		});
 
 		controlsPanel.add(contrastController.getView(), gridBagConstraints);
-
 	}
 
 	private void buildTrimController()
@@ -423,7 +414,6 @@ public class LayerPreviewPanel<G1 extends IPerspectiveImage & IPerspectiveImageT
 		gridBagConstraints.insets = new Insets(3, 0, 3, 0);
 		fillValuesController = new ImageFillValuesController(new Function<double[], Void>()
 		{
-
 			@Override
 			public Void apply(double[] items)
 			{
@@ -435,6 +425,7 @@ public class LayerPreviewPanel<G1 extends IPerspectiveImage & IPerspectiveImageT
 		for (double val : currentFillValues)
 		{
 			fillValuesController.getFillValuesTextField().setText(fillValuesController.getFillValuesTextField().getText() + val + ",");
+			fillValuesController.setFillValues(currentFillValues);
 		}
 
 		fillValuesController.getFillValuesButton().addActionListener(e -> {
@@ -442,13 +433,10 @@ public class LayerPreviewPanel<G1 extends IPerspectiveImage & IPerspectiveImageT
 			double[] doubleArray = new double[valueStrings.length];
 			if (valueStrings.length == 0 || valueStrings[0].isBlank())
 			{
-
 				try
 				{
-
 					fillValuesController.setFillValues(new double[] {});
 					renderLayer();
-
 					generateVtkImageData(layers.get(displayedLayerIndex));
 //					updateImage(displayedImage);
 					setIntensity(contrastController.getIntensityRange());
@@ -462,7 +450,6 @@ public class LayerPreviewPanel<G1 extends IPerspectiveImage & IPerspectiveImageT
 					// TODO Auto-generated catch block
 					e1.printStackTrace();
 				}
-
 			}
 			int i=0;
 			for (String val : valueStrings)

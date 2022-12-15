@@ -543,7 +543,7 @@ public class PerspectiveImageCollection<G1 extends IPerspectiveImage & IPerspect
 
 	public void setImageMapped(G1 image, boolean mapped, boolean reRender)
 	{
-		if (image.isMapped() == mapped) return;
+		if (image.isMapped() == mapped && reRender == false) return;
 		image.setMapped(mapped);
 		List<vtkActor> actors = imageRenderers.get(image);
 		if ((actors == null && mapped == true) || reRender)
