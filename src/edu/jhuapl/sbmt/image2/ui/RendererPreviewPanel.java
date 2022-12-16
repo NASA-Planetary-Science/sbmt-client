@@ -40,14 +40,14 @@ public class RendererPreviewPanel extends ModelInfoWindow
 		this.renderer = new Renderer(smallBodyModel);
 		renderer.setLightCfg(LightUtil.getSystemLightCfg());
 		initComponents();
-		loadActors(inputs);
+		loadActors(inputs, smallBodyModel);
 
 		createMenus();
 
 		setTitle("Renderer Preview");
 
 		pack();
-
+		setVisible(true);
 		javax.swing.SwingUtilities.invokeLater(new Runnable()
 		{
 			@Override
@@ -59,11 +59,12 @@ public class RendererPreviewPanel extends ModelInfoWindow
 		});
 	}
 
-	private void loadActors(List<vtkActor> inputs)
+	private void loadActors(List<vtkActor> inputs, SmallBodyModel smallBodyModel)
 	{
 		List<vtkProp> props = Lists.newArrayList();
 		for (vtkActor actor : inputs)
 			props.add(actor);
+		props.add(smallBodyModel.getSmallBodyActor());
 		renderer.addVtkPropProvider(new VtkPropProvider()
 		{
 

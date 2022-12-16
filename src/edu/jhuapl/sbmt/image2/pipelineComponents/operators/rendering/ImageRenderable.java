@@ -40,6 +40,7 @@ public class ImageRenderable
 	protected List<vtkActor> processFootprints(List<vtkPolyData> footprints, List<vtkImageData> imageData, boolean linearInterpolation) throws IOException, Exception
 	{
 		int i=0;
+		if (footprints.size() == 0) return footprintActors;
     	for (SmallBodyModel smallBody : smallBodyModels)
     	{
     		vtkPolyData footprint = footprints.get(i++);
