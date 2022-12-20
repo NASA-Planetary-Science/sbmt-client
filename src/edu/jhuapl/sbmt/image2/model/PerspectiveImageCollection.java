@@ -81,7 +81,7 @@ public class PerspectiveImageCollection<G1 extends IPerspectiveImage & IPerspect
 	private boolean firstCustomLoad = true;
 //	private HashMap<G1, PerspectiveImageRenderingState<G1>> hashMap;
 	private List<SmallBodyModel> list;
-	private static ExecutorService executor = Executors.newSingleThreadExecutor();
+	private static ExecutorService executor = Executors.newCachedThreadPool();
 
 	public PerspectiveImageCollection(List<SmallBodyModel> smallBodyModels)
 	{
@@ -1275,8 +1275,6 @@ public class PerspectiveImageCollection<G1 extends IPerspectiveImage & IPerspect
 
     private void runThreadOnExecutorService(Thread thread)
     {
-
     	executor.execute(thread);
-    	executor.shutdown();
     }
 }
