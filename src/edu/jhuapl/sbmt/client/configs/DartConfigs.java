@@ -93,10 +93,16 @@ public class DartConfigs extends SmallBodyViewConfigBuilder
 
     // Months (only) are 0-based: SEPTEMBER 26 is 8, 26.
     // These values were specified in an update to Redmine issue #2472.
-    private static final Date ImpactSearchStartDate = new GregorianCalendar(2022, 8, 26, 22, 0, 0).getTime();
-    private static final Date ImpactSearchEndDate = new GregorianCalendar(2022, 8, 26, 23, 14, 25).getTime();
-    private static final double ImpactMaxScDistance = 10000.0; // km
-    private static final double ImpactResolution = 300.0; // mpp
+    private static final Date DimorphosImpactSearchStartDate = new GregorianCalendar(2022, 8, 26, 22, 0, 0).getTime();
+    private static final Date DimorphosImpactSearchEndDate = new GregorianCalendar(2022, 8, 26, 23, 14, 25).getTime();
+    private static final double DimorphosImpactMaxScDistance = 10000.0; // km
+    private static final double DimorphosImpactResolution = 300.0; // mpp
+
+    // These values were specified in an update to Redmine issue #2496.
+    private static final Date DidymosImpactSearchStartDate = new GregorianCalendar(2022, 8, 26, 23, 10, 39).getTime();
+    private static final Date DidymosImpactSearchEndDate = new GregorianCalendar(2022, 8, 26, 23, 12, 57).getTime();
+    private static final double DidymosImpactMaxScDistance = 1500.0; // km
+    private static final double DidymosImpactResolution = 7.0; // mpp
 
     static
     {
@@ -248,7 +254,8 @@ public class DartConfigs extends SmallBodyViewConfigBuilder
         configList.add(c);
 
         // Flight models below this point.
-        ImageSource[] imageSources = { ImageSource.GASKELL, ImageSource.SPICE };
+        final ImageSource[] spcSources = { ImageSource.GASKELL };
+        final ImageSource[] imageSources = { ImageSource.GASKELL, ImageSource.SPICE };
 
         Map<ImageSource, Orientation> dracoFlightOrientations = new LinkedHashMap<>();
         dracoFlightOrientations.put(ImageSource.GASKELL, new OrientationFactory().of(ImageFlip.X, 0.0, true));
@@ -306,7 +313,7 @@ public class DartConfigs extends SmallBodyViewConfigBuilder
             ShapeModelType author = author(MissionPrefix + " " + label);
 
             init(ShapeModelBody.DIMORPHOS, author, ShapeModelDataUsed.IMAGE_BASED, label);
-            imageSearchRanges(ImpactSearchStartDate, ImpactSearchEndDate, ImpactMaxScDistance, ImpactResolution);
+            imageSearchRanges(DimorphosImpactSearchStartDate, DimorphosImpactSearchEndDate, DimorphosImpactMaxScDistance, DimorphosImpactResolution);
 
             modelRes(BodyViewConfig.DEFAULT_GASKELL_LABELS_PER_RESOLUTION, BodyViewConfig.DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION);
 
@@ -314,8 +321,9 @@ public class DartConfigs extends SmallBodyViewConfigBuilder
             DBRunInfo[] dbRunInfos = createDbInfos(ShapeModelBody.DIMORPHOS, author, Instrument.DRACO, imageSources);
             add(instrument, dbRunInfos);
 
-
             c = build();
+            // This model was abandoned after import. Do NOT include it.
+            // configList.add(c);
             generateUpdatedStateHistoryParameters(c, ShapeModelBody.DIMORPHOS.name());
         }
 
@@ -325,7 +333,7 @@ public class DartConfigs extends SmallBodyViewConfigBuilder
             ShapeModelType author = author(MissionPrefix + " " + label);
 
             init(ShapeModelBody.DIMORPHOS, author, ShapeModelDataUsed.IMAGE_BASED, label);
-            imageSearchRanges(ImpactSearchStartDate, ImpactSearchEndDate, ImpactMaxScDistance, ImpactResolution);
+            imageSearchRanges(DimorphosImpactSearchStartDate, DimorphosImpactSearchEndDate, DimorphosImpactMaxScDistance, DimorphosImpactResolution);
 
             modelRes(BodyViewConfig.DEFAULT_GASKELL_LABELS_PER_RESOLUTION, BodyViewConfig.DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION);
 
@@ -333,10 +341,36 @@ public class DartConfigs extends SmallBodyViewConfigBuilder
             DBRunInfo[] dbRunInfos = createDbInfos(ShapeModelBody.DIMORPHOS, author, Instrument.DRACO, imageSources);
             add(instrument, dbRunInfos);
 
+            gravityInputs(2300.0, 1.464e-4);
+
             dtmCatalogs(true);
 
             c = build();
             generateUpdatedStateHistoryParameters(c, ShapeModelBody.DIMORPHOS.name());
+            configList.add(c);
+        }
+
+        // Didymos version 001 (flight).
+        {
+            String label = "Didymos-v001";
+            ShapeModelType author = author(MissionPrefix + " " + label);
+
+            init(ShapeModelBody.DIDYMOS, author, ShapeModelDataUsed.IMAGE_BASED, label);
+            imageSearchRanges(DidymosImpactSearchStartDate, DidymosImpactSearchEndDate, DidymosImpactMaxScDistance, DidymosImpactResolution);
+
+            modelRes(BodyViewConfig.DEFAULT_GASKELL_LABELS_PER_RESOLUTION, BodyViewConfig.DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION);
+
+            ImagingInstrument instrument = createFlightInstrument(ShapeModelBody.DIDYMOS, author, Instrument.DRACO, dracoFlightOrientations, spcSources);
+            DBRunInfo[] dbRunInfos = createDbInfos(ShapeModelBody.DIDYMOS, author, Instrument.DRACO, spcSources);
+            add(instrument, dbRunInfos);
+
+            gravityInputs(2400.0, 7.72e-4);
+
+            // No DTMs with initial delivery.
+            // dtmCatalogs(true);
+
+            c = build();
+            generateUpdatedStateHistoryParameters(c, ShapeModelBody.DIDYMOS.name());
             configList.add(c);
             defaultConfig = c;
         }

@@ -15,6 +15,7 @@ import java.util.TimeZone;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.JTabbedPane;
+import javax.swing.SwingUtilities;
 import javax.swing.event.AncestorEvent;
 import javax.swing.event.AncestorListener;
 
@@ -118,12 +119,19 @@ public class ImageSearchController<G1 extends IPerspectiveImage & IPerspectiveIm
 
 		this.collection.addPropertyChangeListener(evt ->
 		{
-			imageListTableController.getPanel().getResultList().repaint();
-			customImageListTableController.getPanel().getResultList().repaint();
-			updateButtonState();
+			SwingUtilities.invokeLater(() -> {
+				imageListTableController.getPanel().getResultList().repaint();
+				customImageListTableController.getPanel().getResultList().repaint();
+				updateButtonState();
+			});
+
 		});
 
-		this.collection.addListener((aSource, aEventType) -> { updateButtonState(); });
+		this.collection.addListener((aSource, aEventType) -> {
+			SwingUtilities.invokeLater(() -> {
+				updateButtonState();
+			});
+		});
 //		popupManager.registerPopup(modelManager.getAllModels().get(ModelNames.IMAGES_V2).get(0), new edu.jhuapl.saavtk.popup.PopupMenu()
 //		{
 //			@Override
