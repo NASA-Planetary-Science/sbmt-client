@@ -5,8 +5,8 @@ import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.io.File;
 import java.io.IOException;
-import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
@@ -21,6 +21,7 @@ import org.apache.commons.lang3.tuple.Pair;
 import org.jfree.data.Range;
 
 import com.beust.jcommander.internal.Lists;
+import com.beust.jcommander.internal.Maps;
 import com.google.common.collect.ImmutableList;
 
 import vtk.vtkActor;
@@ -65,7 +66,7 @@ import crucible.crust.metadata.impl.gson.Serializers;
 
 public class PerspectiveImageCollection<G1 extends IPerspectiveImage & IPerspectiveImageTableRepresentable> extends SaavtkItemManager<G1> implements PropertyChangeListener
 {
-	private HashMap<IImagingInstrument, List<G1>> imagesByInstrument;
+	private ConcurrentHashMap<IImagingInstrument, List<G1>> imagesByInstrument;
 	private List<G1> userImages;
 	private List<SmallBodyModel> smallBodyModels;
 	private ConcurrentHashMap<G1, List<vtkActor>> imageRenderers;
@@ -82,10 +83,11 @@ public class PerspectiveImageCollection<G1 extends IPerspectiveImage & IPerspect
 	private boolean firstCustomLoad = true;
 //	private HashMap<G1, PerspectiveImageRenderingState<G1>> hashMap;
 	private List<SmallBodyModel> list;
+	private static ExecutorService executor = Executors.newCachedThreadPool();
 
 	public PerspectiveImageCollection(List<SmallBodyModel> smallBodyModels)
 	{
-		this.imagesByInstrument = new HashMap<IImagingInstrument, List<G1>>();
+		this.imagesByInstrument = new ConcurrentHashMap<IImagingInstrument, List<G1>>();
 		this.userImages = Lists.newArrayList();
 		this.imageRenderers = new ConcurrentHashMap<G1, List<vtkActor>>();
 		this.boundaryRenderers = new ConcurrentHashMap<G1, List<vtkActor>>();
@@ -1274,10 +1276,19 @@ public class PerspectiveImageCollection<G1 extends IPerspectiveImage & IPerspect
         return pixel;
     }
 
+    public Map<List<vtkActor>, String> getImageRenderedComponents(G1 image)
+    {
+    	Map<List<vtkActor>, String> actorsToSave = Maps.newHashMap();
+		actorsToSave.put(imageRenderers.get(image), "footprint");
+		actorsToSave.put(offLimbRenderers.get(image), "offlimb");
+		actorsToSave.put(offLimbBoundaryRenderers.get(image), "offlimb_boundary");
+		actorsToSave.put(frustumRenderers.get(image), "frustum");
+		actorsToSave.put(boundaryRenderers.get(image), "boundary");
+		return actorsToSave;
+    }
+    
     private void runThreadOnExecutorService(Thread thread)
     {
-    	ExecutorService executor = Executors.newSingleThreadExecutor();
     	executor.execute(thread);
-    	executor.shutdown();
     }
 }
