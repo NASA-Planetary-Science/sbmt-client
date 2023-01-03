@@ -66,7 +66,7 @@ public class PerspectiveImageToRenderableImagePipeline
 		metadata.get(0).put("Stop Time", pointingPublisher.getOutputs().get(0).getStartTime());
 
 
-		if (metadata.get(0).get("WINDOWH") != null && metadata.get(0).get("WINDOWH") == "512")
+		if (metadata.get(0).get("WINDOWH") != null && metadata.get(0).get("WINDOWH").equals("512"))
 		{
 			int windowH = Integer.parseInt(metadata.get(0).get("WINDOWH"));
 			int windowX = Integer.parseInt(metadata.get(0).get("WINDOWX"));
