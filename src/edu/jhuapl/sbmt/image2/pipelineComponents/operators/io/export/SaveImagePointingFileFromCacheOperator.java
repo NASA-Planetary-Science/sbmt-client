@@ -41,7 +41,7 @@ public class SaveImagePointingFileFromCacheOperator<G1 extends IPerspectiveImage
 			String pointingFileName = inputs.get(0).getPointingSource();
 			File pointingFile = FileCache.getFileFromServer(pointingFileName);
 			File newPointingFile = new File(outDir, pointingFile.getName());
-			System.out.println("SaveImagePointingFileFromCacheOperator: processData: new pointing file " + newPointingFile.getAbsolutePath());
+			//System.out.println("SaveImagePointingFileFromCacheOperator: processData: new pointing file " + newPointingFile.getAbsolutePath());
 			FileUtils.copyFile(pointingFile, newPointingFile);
 
 		}
@@ -53,3 +53,4 @@ public class SaveImagePointingFileFromCacheOperator<G1 extends IPerspectiveImage
 		}
 	}
 }
+ 

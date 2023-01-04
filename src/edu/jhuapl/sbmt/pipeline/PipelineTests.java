@@ -34,7 +34,7 @@ import edu.jhuapl.sbmt.image2.pipelineComponents.operators.rendering.layer.Layer
 import edu.jhuapl.sbmt.image2.pipelineComponents.operators.rendering.pointedImage.RenderablePointedImage;
 import edu.jhuapl.sbmt.image2.pipelineComponents.operators.rendering.pointedImage.RenderablePointedImageGenerator;
 import edu.jhuapl.sbmt.image2.pipelineComponents.operators.rendering.pointedImage.ScenePointedImageBuilderOperator;
-import edu.jhuapl.sbmt.image2.pipelineComponents.pipelines.pointedImages.RenderablePointedImageToScenePipeline;
+import edu.jhuapl.sbmt.image2.pipelineComponents.pipelines.io.IPerspectiveImageToLayerAndMetadataPipeline;
 import edu.jhuapl.sbmt.image2.pipelineComponents.publishers.builtin.BuiltInFitsHeaderReader;
 import edu.jhuapl.sbmt.image2.pipelineComponents.publishers.builtin.BuiltInFitsReader;
 import edu.jhuapl.sbmt.image2.pipelineComponents.publishers.builtin.BuiltInOBJReader;
@@ -43,6 +43,7 @@ import edu.jhuapl.sbmt.image2.pipelineComponents.publishers.builtin.BuiltInPNGRe
 import edu.jhuapl.sbmt.image2.pipelineComponents.publishers.builtin.BuiltInVTKReader;
 import edu.jhuapl.sbmt.image2.pipelineComponents.publishers.pointing.InfofileReaderPublisher;
 import edu.jhuapl.sbmt.image2.pipelineComponents.publishers.pointing.SpiceReaderPublisher;
+import edu.jhuapl.sbmt.image2.pipelineComponents.publishers.pointing.SumfileReaderPublisher;
 import edu.jhuapl.sbmt.image2.pipelineComponents.subscribers.preview.VtkLayerPreview;
 import edu.jhuapl.sbmt.image2.pipelineComponents.subscribers.preview.VtkRendererPreview;
 import edu.jhuapl.sbmt.layer.api.Layer;
@@ -80,15 +81,15 @@ public class PipelineTests
 
 	private <G1 extends IPerspectiveImage & IPerspectiveImageTableRepresentable> void testLuke() throws Exception
 	{
-		List<Layer> updatedLayers = Lists.newArrayList();
-		String fileName = "/Users/steelrj1/Desktop/2356-test-files/liciacube_luke_l0_717892384_782_01.fits";
-		String pointingFileName = "/Users/steelrj1/Desktop/2356-test-files/liciacube_luke_l0_717892384_782_01.INFO";
+//		List<Layer> updatedLayers = Lists.newArrayList();
+		String fileName = "/Users/steelrj1/Downloads/K717506291S0.fits";
+		String pointingFileName = "/Users/steelrj1/Downloads/K717506291S0.SUM";
 
-		IPipelinePublisher<SmallBodyModel> objReader = new BuiltInOBJReader(new String[] { "/Users/steelrj1/.sbmt-test-apl/cache/2/didymos/ideal-impact1-20200629-v01/shape/shape0.obj" },
+		IPipelinePublisher<SmallBodyModel> objReader = new BuiltInOBJReader(new String[] { "/Users/steelrj1/.sbmt1dart-test/cache/didymos/dart-didymos-v001/shape/shape0.obj" },
 				"Didymos");
+		IPipelinePublisher<PointingFileReader> pointingPublisher = new SumfileReaderPublisher(pointingFileName);
 
-
-		PerspectiveImage image = new PerspectiveImage(fileName, ImageType.valueOf("LUKE_IMAGE"), ImageSource.SPICE, pointingFileName, new double[] {});
+		PerspectiveImage image = new PerspectiveImage(fileName, ImageType.valueOf("LUKE_IMAGE"), ImageSource.GASKELL, pointingFileName, new double[] {});
 
 		image.setName("Luke Image");
 		image.setImageOrigin(ImageOrigin.LOCAL);
@@ -98,14 +99,32 @@ public class PipelineTests
 		image.setMaskValues(new int[] {0,0,0,0});
 		image.setFillValues(new double[] {});
 		image.setFlip("None");
-		image.setRotation(0);
+		image.setRotation(0.0);
 
 		CompositePerspectiveImage compImage = new CompositePerspectiveImage(List.of(image));
 		compImage.setName(FilenameUtils.getBaseName(fileName));
 
+		IPerspectiveImageToLayerAndMetadataPipeline layerPipeline = IPerspectiveImageToLayerAndMetadataPipeline.of(compImage);
 
-		RenderablePointedImageToScenePipeline<G1> pipeline = new RenderablePointedImageToScenePipeline<G1>((G1)compImage, objReader.getOutputs());
+//		IPipelinePublisher<Layer> layerPublisher = new Just<Layer>(updatedLayers.get(0));
+		IPipelinePublisher<Triple<Layer, HashMap<String, String>, PointingFileReader>> imageComponents = Publishers.formTriple(Just.of(layerPipeline.getLayers().get(0)), Just.of(layerPipeline.getMetadata()), pointingPublisher);
 
+		IPipelineOperator<Triple<Layer, HashMap<String, String>, PointingFileReader>, RenderablePointedImage> renderableImageGenerator = new RenderablePointedImageGenerator();
+
+
+		//***************************************************************************************
+		//generate image polydata with texture coords (in: RenderableImage, out: vtkPolydata)
+		//***************************************************************************************
+		List<RenderablePointedImage> renderableImages = Lists.newArrayList();
+		imageComponents
+			.operate(renderableImageGenerator)
+			.subscribe(Sink.of(renderableImages)).run();
+		renderableImages.get(0).setFilename(fileName);
+		renderableImages.get(0).setImageSource(ImageSource.GASKELL);
+//		RenderablePointedImageToScenePipeline<G1> pipeline = new RenderablePointedImageToScenePipeline<G1>((G1)compImage, objReader.getOutputs());
+
+
+		IPipelinePublisher<Pair<SmallBodyModel, RenderablePointedImage>> sceneObjects = Publishers.formPair(Just.of(objReader.getOutputs()), Just.of(renderableImages));
 
 //		GDALReader reader = new GDALReader(fileName, false, new ValidityCheckerDoubleFactory().checker2d(new double[] {}), Double.NaN);
 //
@@ -122,7 +141,30 @@ public class PipelineTests
 //			.operate(rotationOperator)
 //			.subscribe(Sink.of(updatedLayers)).run();
 
+		IPipelineOperator<Pair<SmallBodyModel, RenderablePointedImage>, Pair<List<vtkActor>, List<ImageRenderable>>> sceneBuilder =
+				new ScenePointedImageBuilderOperator();
 
+		//*******************************
+		//Throw them to the preview tool
+		//*******************************
+		VtkRendererPreview preview = new VtkRendererPreview(objReader.getOutputs().get(0));
+		Pair<List<vtkActor>, List<ImageRenderable>>[] sceneOutputs = new Pair[1];
+
+		sceneObjects
+			.operate(sceneBuilder) 	//feed the zipped sources to scene builder operator
+			.subscribe(PairSink.of(sceneOutputs)).run();
+//		System.out.println("PipelineTests: test2b: number of actors " + sceneOutputs[0].getLeft().size());
+
+		List<vtkActor> imageActors = Lists.newArrayList();
+		for (ImageRenderable renderable : sceneOutputs[0].getRight())
+		{
+			imageActors.addAll(renderable.getFootprints());
+			imageActors.add(renderable.getFrustum());
+		}
+
+		Just.of(imageActors)
+			.subscribe(preview)		//subscribe to the scene builder with the preview
+			.run();
 
 
 

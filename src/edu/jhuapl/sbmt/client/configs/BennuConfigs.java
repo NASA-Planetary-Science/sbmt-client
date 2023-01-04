@@ -427,14 +427,18 @@ public class BennuConfigs extends SmallBodyViewConfig
                             new GenericPhpQuery(c.rootDirOnServer + "/polycam", "RQ36V4_POLY", c.rootDirOnServer + "/polycam/gallery"),
                             ImageType.POLYCAM_V4_IMAGE,
                             new ImageSource[]{ImageSource.GASKELL},
-                            Instrument.POLYCAM
+                            Instrument.POLYCAM,
+                            0.0,
+                            "X"
                             ),
                     new ImagingInstrument(
                             SpectralImageMode.MONO,
                             new GenericPhpQuery(c.rootDirOnServer + "/mapcam", "RQ36V4_MAP", c.rootDirOnServer + "/mapcam/gallery"),
                             ImageType.MAPCAM_V4_IMAGE,
                             new ImageSource[]{ImageSource.GASKELL},
-                            Instrument.MAPCAM
+                            Instrument.MAPCAM,
+                            0.0,
+                            "X"
                             )
             };
 

@@ -1,6 +1,7 @@
 package edu.jhuapl.sbmt.client.configs;
 
 import java.util.GregorianCalendar;
+import java.util.Set;
 
 import com.google.common.collect.ImmutableList;
 
@@ -322,7 +323,10 @@ public class SaturnConfigs extends SmallBodyViewConfig
                         new FixedListQuery<Object>("/GASKELL/TELESTO/IMAGING", "/GASKELL/TELESTO/IMAGING/gallery"), //
                         ImageType.SATURN_MOON_IMAGE, //
                         new ImageSource[]{ImageSource.GASKELL}, //
-                        Instrument.IMAGING_DATA //
+                        Instrument.IMAGING_DATA, //
+                        0.0,
+                        "None",
+                        Set.of((float)3.4028234663852886e38)
                         ) //
         };
 
@@ -356,6 +360,7 @@ public class SaturnConfigs extends SmallBodyViewConfig
                     ShapeModelPopulation.SATURN.name()).build(); //
             QueryBase queryBase = new GenericPhpQuery("/atlas/gaskell/imaging", "atlas", "/atlas/gaskell/imaging/images/gallery");
             ImagingInstrument imagingInstrument = setupImagingInstrument(bodyConfig, gaskellModelConfig, Instrument.IMAGING_DATA, queryBase, gaskellImagingSource, ImageType.SATURN_MOON_IMAGE);
+            imagingInstrument.setFillValues(Set.of((float)3.4028234663852886e38));
 
             c = new SaturnConfigs();
             c.body = ShapeModelBody.ATLAS;
@@ -704,7 +709,7 @@ public class SaturnConfigs extends SmallBodyViewConfig
                     BodyType.PLANETS_AND_SATELLITES.name(), //
                     ShapeModelPopulation.SATURN.name()).build(); //
             ImagingInstrument imagingInstrument = setupImagingInstrument(bodyConfig, gaskellModelConfig, Instrument.IMAGING_DATA, gaskellImagingSource, ImageType.SATURN_MOON_IMAGE);
-
+            imagingInstrument.setFillValues(Set.of((float)3.4028234663852886e38, (float)-3.4028234663852886e38));
             c = new SaturnConfigs();
             c.body = ShapeModelBody.HELENE;
             c.type = BodyType.PLANETS_AND_SATELLITES;
@@ -954,7 +959,7 @@ public class SaturnConfigs extends SmallBodyViewConfig
                     BodyType.PLANETS_AND_SATELLITES.name(), //
                     ShapeModelPopulation.SATURN.name()).build(); //
             ImagingInstrument imagingInstrument = setupImagingInstrument(bodyConfig, gaskellModelConfig, Instrument.IMAGING_DATA, gaskellImagingSource, ImageType.SATURN_MOON_IMAGE);
-
+            imagingInstrument.setFillValues(Set.of((float)3.4028234663852886e38));
             c = new SaturnConfigs();
             c.body = ShapeModelBody.PROMETHEUS;
             c.type = BodyType.PLANETS_AND_SATELLITES;

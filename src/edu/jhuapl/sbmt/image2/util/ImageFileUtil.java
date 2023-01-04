@@ -22,6 +22,16 @@ public class ImageFileUtil
 
     };
 
+    protected static final CachingMapLookup CorrectedSumFileLookup = new CachingMapLookup() {
+
+        @Override
+        protected File getFile(String mapKey)
+        {
+            return FileCache.getFileFromServer(SafeURLPaths.instance().getString(mapKey, "make_sumfiles_corrected.in"));
+        }
+
+    };
+
     protected static final int MsiSumFileBaseNameLength = "M0157415573".length();
 
     public ImageFileUtil()
@@ -52,7 +62,10 @@ public class ImageFileUtil
             }
             else
             {
-                pointingBaseName = SumFileLookup.lookUp(pointingRoot, imageFileName);
+                if (imageSource == ImageSource.CORRECTED)
+                	pointingBaseName = CorrectedSumFileLookup.lookUp(pointingRoot, imageFileName);
+                else
+                	pointingBaseName = SumFileLookup.lookUp(pointingRoot, imageFileName);
             }
         }
 

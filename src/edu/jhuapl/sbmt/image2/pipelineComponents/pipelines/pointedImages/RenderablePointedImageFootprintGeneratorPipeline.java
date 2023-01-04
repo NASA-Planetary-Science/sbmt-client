@@ -5,6 +5,8 @@ import java.util.List;
 
 import org.apache.commons.lang3.tuple.Pair;
 
+import com.beust.jcommander.internal.Lists;
+
 import vtk.vtkImageData;
 import vtk.vtkPolyData;
 
@@ -28,11 +30,13 @@ public class RenderablePointedImageFootprintGeneratorPipeline
 
 	public List<vtkPolyData> getFootprintPolyData()
 	{
+		if (outputs[0] == null) return Lists.newArrayList();
 		return outputs[0].getRight();
 	}
 
 	public List<vtkImageData> getImageData()
 	{
+		if (outputs[0] == null) return Lists.newArrayList();
 		return outputs[0].getLeft();
 	}
 }

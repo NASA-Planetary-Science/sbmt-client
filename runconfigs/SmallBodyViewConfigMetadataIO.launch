@@ -12,7 +12,11 @@
     <booleanAttribute key="org.eclipse.jdt.launching.ATTR_USE_START_ON_FIRST_THREAD" value="true"/>
     <stringAttribute key="org.eclipse.jdt.launching.MAIN_TYPE" value="edu.jhuapl.sbmt.common.client.SmallBodyViewConfigMetadataIO"/>
     <stringAttribute key="org.eclipse.jdt.launching.MODULE_NAME" value="sbmt"/>
+<<<<<<< HEAD
     <stringAttribute key="org.eclipse.jdt.launching.PROGRAM_ARGUMENTS" value="/Users/steelrj1/Desktop/sbmt-configs/1215-092422"/>
+=======
+    <stringAttribute key="org.eclipse.jdt.launching.PROGRAM_ARGUMENTS" value="/Users/steelrj1/Desktop/sbmt-configs/2471"/>
+>>>>>>> refs/heads/sbmt1dev-redmine-2356
     <stringAttribute key="org.eclipse.jdt.launching.PROJECT_ATTR" value="sbmt"/>
     <stringAttribute key="org.eclipse.jdt.launching.VM_ARGUMENTS" value="-Dedu.jhuapl.sbmt.mission=&quot;b1bc7ed&quot;"/>
 </launchConfiguration>

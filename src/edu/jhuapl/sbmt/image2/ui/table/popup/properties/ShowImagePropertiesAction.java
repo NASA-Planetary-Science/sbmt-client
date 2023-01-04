@@ -22,7 +22,6 @@ import edu.jhuapl.sbmt.image2.pipelineComponents.operators.rendering.color.Color
 import edu.jhuapl.sbmt.image2.pipelineComponents.operators.rendering.color.ColorImageGeneratorOperator;
 import edu.jhuapl.sbmt.image2.pipelineComponents.pipelines.cylindricalImages.CylindricalImageToRenderableImagePipeline;
 import edu.jhuapl.sbmt.image2.pipelineComponents.pipelines.io.IPerspectiveImageToLayerAndMetadataPipeline;
-import edu.jhuapl.sbmt.image2.pipelineComponents.pipelines.perspectiveImages.PerspectiveImageToDerivedMetadataPipeline;
 import edu.jhuapl.sbmt.image2.pipelineComponents.pipelines.perspectiveImages.PerspectiveImageToRenderableImagePipeline;
 import edu.jhuapl.sbmt.image2.pipelineComponents.publishers.gdal.InvalidGDALFileTypeException;
 import edu.jhuapl.sbmt.image2.pipelineComponents.subscribers.preview.VtkImagePreview;
@@ -83,7 +82,7 @@ public class ShowImagePropertiesAction<G1 extends IPerspectiveImage & IPerspecti
 				CylindricalImageToRenderableImagePipeline pipeline = CylindricalImageToRenderableImagePipeline.of(List.of(aItemL.get(0)));
 				List<HashMap<String, String>> metadata = pipeline.getMetadata();
 				List<IRenderableImage> renderableImages = pipeline.getRenderableImages();
-				preview = new VtkLayerPreview<G1>("Image Properties", image.getCurrentLayer(), image.getIntensityRange(), image.getMaskValues(), image.getFillValues());
+				preview = new VtkLayerPreview<G1>("Image Properties - " + image.getName(), image.getCurrentLayer(), image.getIntensityRange(), image.getMaskValues(), image.getFillValues());
 				preview.setImage(image);
 				preview.setCompletionBlock(completionBlock);
 				List<Pair<Layer, List<HashMap<String, String>>>> inputList = Lists.newArrayList();
@@ -112,7 +111,7 @@ public class ShowImagePropertiesAction<G1 extends IPerspectiveImage & IPerspecti
 					metadata.put("Image 1", image.getImages().get(0).getFilename());
 					metadata.put("Image 2", image.getImages().get(1).getFilename());
 					metadata.put("Image 3", image.getImages().get(2).getFilename());
-					imageDataPreview = new VtkImagePreview("Color Image Properties", metadata, false);
+					imageDataPreview = new VtkImagePreview("Color Image Properties - " + image.getName(), metadata, false);
 
 					Just.of(List.of(imageAndPolyData[0].getLeft()))
 						.subscribe(imageDataPreview)
@@ -125,20 +124,12 @@ public class ShowImagePropertiesAction<G1 extends IPerspectiveImage & IPerspecti
 					IPerspectiveImageToLayerAndMetadataPipeline inputPipeline = IPerspectiveImageToLayerAndMetadataPipeline.of(image);
 					List<Layer> updatedLayers = inputPipeline.getLayers();
 					List<HashMap<String, String>> metadata = inputPipeline.getMetadata();
-					HashMap<String, String> derivedMetadata = new PerspectiveImageToDerivedMetadataPipeline(pipeline.getRenderableImages().get(0), List.of(smallBodyModel)).getMetadata();
-
-
-//					List<IRenderableImage> renderableImages = pipeline.getRenderableImages();
-//					List<HashMap<String, String>> metadata = pipeline.getMetadata();
-//					HashMap<String, String> derivedMetadata = new PerspectiveImageToDerivedMetadataPipeline(renderableImages.get(0), List.of(smallBodyModel)).getMetadata();
-
-					preview = new VtkLayerPreview<G1>("Image Properties", image.getCurrentLayer(), image.getIntensityRange(), image.getMaskValues(), image.getFillValues());
+					preview = new VtkLayerPreview<G1>("Image Properties - " + image.getName(), image.getCurrentLayer(), image.getIntensityRange(), image.getMaskValues(), image.getFillValues());
 					preview.setCompletionBlock(completionBlock);
 					preview.setImage(image);
-					List<HashMap<String, String>> metadatas = List.of(metadata.get(0), derivedMetadata);
+					List<HashMap<String, String>> metadatas = List.of(metadata.get(0));
 					List<Pair<Layer, List<HashMap<String, String>>>> inputList = Lists.newArrayList();
-//					for (int i=0; i<renderableImages.size(); i++)
-//						inputList.add(Pair.of(renderableImages.get(i).getLayer(), metadatas));
+
 					for (int i=0; i<updatedLayers.size(); i++)
 						inputList.add(Pair.of(updatedLayers.get(i), metadatas));
 					Just.of(inputList)

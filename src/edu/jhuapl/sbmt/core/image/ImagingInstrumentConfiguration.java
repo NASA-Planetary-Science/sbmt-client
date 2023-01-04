@@ -26,6 +26,8 @@ public class ImagingInstrumentConfiguration extends ExtensibleTypedLookup implem
     public static final Key<String> GALLERY_PATH = Key.of("Gallery path"); // If there is a gallery. Relative to image directory.
     public static final Key<String> DISPLAY_NAME = Key.of("Display name"); // If different from instrument.toString().
     public static final Key<Boolean> TRANSPOSE = Key.of("Transpose image");
+    public static final Key<Double> IMAGE_ROTATION = Key.of("rotation");
+    public static final Key<String> IMAGE_FLIP = Key.of("flip");
 
     // Use this one for sbmt2 branch.
     public static Builder<ImagingInstrumentConfiguration> builder(
@@ -61,6 +63,23 @@ public class ImagingInstrumentConfiguration extends ExtensibleTypedLookup implem
     {
         Builder<ImagingInstrumentConfiguration> builder = builder(instrument, spectralMode, queryBase, imageSource, imageFileLocator);
         builder.put(IMAGE_TYPE, type);
+        return builder;
+    }
+
+    public static Builder<ImagingInstrumentConfiguration> builder(
+            Instrument instrument,
+            SpectralImageMode spectralMode,
+            QueryBase queryBase,
+            ImageSource[] imageSource,
+            SBMTFileLocator imageFileLocator,
+            ImageType type,
+            double rotation,
+            String flip)
+    {
+        Builder<ImagingInstrumentConfiguration> builder = builder(instrument, spectralMode, queryBase, imageSource, imageFileLocator);
+        builder.put(IMAGE_TYPE, type);
+        builder.put(IMAGE_ROTATION, rotation);
+        builder.put(IMAGE_FLIP, flip);
         return builder;
     }
 

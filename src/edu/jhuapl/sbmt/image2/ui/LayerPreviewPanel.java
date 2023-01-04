@@ -23,6 +23,7 @@ import java.util.function.Function;
 import javax.swing.AbstractAction;
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
+import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
@@ -40,7 +41,6 @@ import vtk.vtkImageReslice;
 import vtk.vtkImageSlice;
 import vtk.vtkImageSliceMapper;
 import vtk.vtkInteractorStyleImage;
-import vtk.vtkPropPicker;
 import vtk.vtkTransform;
 import vtk.rendering.jogl.vtkJoglPanelComponent;
 
@@ -75,10 +75,7 @@ public class LayerPreviewPanel<G1 extends IPerspectiveImage & IPerspectiveImageT
 	private vtkJoglPanelComponent renWin;
 	private vtkImageSlice actor = new vtkImageSlice();
 	private vtkImageReslice reslice;
-	private vtkPropPicker imagePicker;
-	private boolean initialized = false;
 	private boolean centerFrustumMode = false;
-	private int[] previousLevels = null;
 	private vtkImageData displayedImage;
 	private List<HashMap<String, String>> metadata;
 	private List<List<HashMap<String, String>>> metadatas;
@@ -91,6 +88,7 @@ public class LayerPreviewPanel<G1 extends IPerspectiveImage & IPerspectiveImageT
 	private IntensityRange intensityRange;
 	private int[] currentMaskValues;
 	private double[] currentFillValues;
+	private JCheckBox syncCheckBox;
 	private G1 image;
 
 	public LayerPreviewPanel(String title, final List<Layer> layers, int currentLayerIndex, IntensityRange intensityRange, int[] currentMaskValues, double[] currentFillValues, List<List<HashMap<String, String>>> metadatas, Runnable completionBlock) throws IOException, Exception
@@ -128,7 +126,6 @@ public class LayerPreviewPanel<G1 extends IPerspectiveImage & IPerspectiveImageT
 		setSize(700, 700);
 		this.splitPane.setDividerLocation(0.9);
 
-		initialized = true;
 		javax.swing.SwingUtilities.invokeLater(new Runnable()
 		{
 			@Override
@@ -150,8 +147,6 @@ public class LayerPreviewPanel<G1 extends IPerspectiveImage & IPerspectiveImageT
 		VtkImageContrastPipeline pipeline = new VtkImageContrastPipeline(displayedImage, range);
 		displayedImage = pipeline.getUpdatedData().get(0);
  		updateImage(displayedImage);
-// 		Logger.getAnonymousLogger().log(Level.INFO, "Completion");
-//		if (completionBlock != null) completionBlock.run();
 	}
 
 	private void generateVtkImageData(Layer layer) throws IOException, Exception
@@ -251,14 +246,35 @@ public class LayerPreviewPanel<G1 extends IPerspectiveImage & IPerspectiveImageT
 		setPreferredSize(new Dimension(775, 500));
 		getContentPane().setLayout(new GridBagLayout());
 
-		buildLayerComboBox();
-		buildContrastController();
-		buildTrimController();
-		buildFillValuesController();
+		buildSyncCheckBox(0);
+		buildLayerComboBox(1);
+		buildContrastController(2);
+		buildTrimController(3);
+		buildFillValuesController(4);
 		pack();
 	}
 
-	private void buildLayerComboBox()
+	private void buildSyncCheckBox(int ylevel)
+	{
+		syncCheckBox = new JCheckBox("Sync with Body");
+		syncCheckBox.setSelected(false);
+		syncCheckBox.addActionListener(evt -> {
+			completionBlock.run();
+		});
+
+		GridBagConstraints gridBagConstraints = new GridBagConstraints();
+		gridBagConstraints.gridx = 0;
+		gridBagConstraints.gridy = ylevel;
+		gridBagConstraints.gridwidth = 1;
+		gridBagConstraints.fill = GridBagConstraints.HORIZONTAL;
+		gridBagConstraints.anchor = GridBagConstraints.WEST;
+		gridBagConstraints.weightx = 1.0;
+		gridBagConstraints.weighty = 0.0;
+		gridBagConstraints.insets = new Insets(3, 20, 10, 0);
+		controlsPanel.add(syncCheckBox, gridBagConstraints);
+	}
+
+	private void buildLayerComboBox(int ylevel)
 	{
 		if (layers.size() > 1)
 		{
@@ -301,7 +317,6 @@ public class LayerPreviewPanel<G1 extends IPerspectiveImage & IPerspectiveImageT
 						layer = layers.get(index);
 						maskController.setLayer(layer);
 						generateVtkImageData(layers.get(index));
-//						updateImage(displayedImage);
 						setIntensity(null);
 						renWin.Render();
 					}
@@ -314,7 +329,7 @@ public class LayerPreviewPanel<G1 extends IPerspectiveImage & IPerspectiveImageT
 			});
 			GridBagConstraints gridBagConstraints = new GridBagConstraints();
 			gridBagConstraints.gridx = 0;
-			gridBagConstraints.gridy = 0;
+			gridBagConstraints.gridy = ylevel;
 			gridBagConstraints.gridwidth = 1;
 			gridBagConstraints.fill = GridBagConstraints.HORIZONTAL;
 			gridBagConstraints.anchor = GridBagConstraints.WEST;
@@ -326,7 +341,7 @@ public class LayerPreviewPanel<G1 extends IPerspectiveImage & IPerspectiveImageT
 			applyToBodyButton.addActionListener(evt -> {
 				String title = (String)layerComboBox.getSelectedItem();
 				displayedLayerIndex = Integer.parseInt(title.split(" ")[0].replace("PLANE", "")) - 1;
-				if (completionBlock != null) completionBlock.run();
+				if (completionBlock != null && syncCheckBox.isSelected()) completionBlock.run();
 			});
 
 			gridBagConstraints.gridx = 1;
@@ -334,11 +349,11 @@ public class LayerPreviewPanel<G1 extends IPerspectiveImage & IPerspectiveImageT
 		}
 	}
 
-	private void buildContrastController()
+	private void buildContrastController(int ylevel)
 	{
 		GridBagConstraints gridBagConstraints = new GridBagConstraints();
 		gridBagConstraints.gridx = 0;
-		gridBagConstraints.gridy = 1;
+		gridBagConstraints.gridy = ylevel;
 		gridBagConstraints.gridwidth = controlsPanel.getWidth();
 		gridBagConstraints.weightx = 1.0;
 		gridBagConstraints.weighty = 0.0;
@@ -352,30 +367,27 @@ public class LayerPreviewPanel<G1 extends IPerspectiveImage & IPerspectiveImageT
 				{
 //					renderLayer();
 					displayedImage = t;
-//					updateImage(displayedImage);
 					setIntensity(null);
 					renWin.Render();
-					if (completionBlock != null) completionBlock.run();
+					if (completionBlock != null && syncCheckBox.isSelected()) completionBlock.run();
 				}
 				catch (Exception e)
 				{
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
-
 				return null;
 			}
 		});
 
 		controlsPanel.add(contrastController.getView(), gridBagConstraints);
-
 	}
 
-	private void buildTrimController()
+	private void buildTrimController(int ylevel)
 	{
 		GridBagConstraints gridBagConstraints = new GridBagConstraints();
 		gridBagConstraints.gridx = 0;
-		gridBagConstraints.gridy = 2;
+		gridBagConstraints.gridy = ylevel;
 		gridBagConstraints.weightx = 1.0;
 		gridBagConstraints.weighty = 0.0;
 		gridBagConstraints.fill = GridBagConstraints.HORIZONTAL;
@@ -397,7 +409,7 @@ public class LayerPreviewPanel<G1 extends IPerspectiveImage & IPerspectiveImageT
 					if (renWin == null) return null;
 					renWin.Render();
 					layer = items.getLeft();
-					if (completionBlock != null) completionBlock.run();
+					if (completionBlock != null && syncCheckBox.isSelected()) completionBlock.run();
 				}
 				catch (Exception e)
 				{
@@ -411,11 +423,11 @@ public class LayerPreviewPanel<G1 extends IPerspectiveImage & IPerspectiveImageT
 		controlsPanel.add(maskController.getView(), gridBagConstraints);
 	}
 
-	private void buildFillValuesController()
+	private void buildFillValuesController(int ylevel)
 	{
 		GridBagConstraints gridBagConstraints = new GridBagConstraints();
 		gridBagConstraints.gridx = 0;
-		gridBagConstraints.gridy = 3;
+		gridBagConstraints.gridy = ylevel;
 		gridBagConstraints.weightx = 1.0;
 		gridBagConstraints.weighty = 0.0;
 		gridBagConstraints.fill = GridBagConstraints.HORIZONTAL;
@@ -423,11 +435,10 @@ public class LayerPreviewPanel<G1 extends IPerspectiveImage & IPerspectiveImageT
 		gridBagConstraints.insets = new Insets(3, 0, 3, 0);
 		fillValuesController = new ImageFillValuesController(new Function<double[], Void>()
 		{
-
 			@Override
 			public Void apply(double[] items)
 			{
-				if (completionBlock != null) completionBlock.run();
+				if (completionBlock != null && syncCheckBox.isSelected()) completionBlock.run();
 				return null;
 			}
 		});
@@ -435,6 +446,7 @@ public class LayerPreviewPanel<G1 extends IPerspectiveImage & IPerspectiveImageT
 		for (double val : currentFillValues)
 		{
 			fillValuesController.getFillValuesTextField().setText(fillValuesController.getFillValuesTextField().getText() + val + ",");
+			fillValuesController.setFillValues(currentFillValues);
 		}
 
 		fillValuesController.getFillValuesButton().addActionListener(e -> {
@@ -442,13 +454,10 @@ public class LayerPreviewPanel<G1 extends IPerspectiveImage & IPerspectiveImageT
 			double[] doubleArray = new double[valueStrings.length];
 			if (valueStrings.length == 0 || valueStrings[0].isBlank())
 			{
-
 				try
 				{
-
 					fillValuesController.setFillValues(new double[] {});
 					renderLayer();
-
 					generateVtkImageData(layers.get(displayedLayerIndex));
 //					updateImage(displayedImage);
 					setIntensity(contrastController.getIntensityRange());
@@ -462,7 +471,6 @@ public class LayerPreviewPanel<G1 extends IPerspectiveImage & IPerspectiveImageT
 					// TODO Auto-generated catch block
 					e1.printStackTrace();
 				}
-
 			}
 			int i=0;
 			for (String val : valueStrings)

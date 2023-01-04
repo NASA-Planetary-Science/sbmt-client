@@ -104,6 +104,10 @@ public class PerspectiveImageToRenderableImagePipeline
 			renderableImg.setDefaultOffset(image.getDefaultOffset());
 			renderableImg.setIntensityRange(image.getIntensityRange());
 			renderableImg.setOfflimbIntensityRange(image.getOfflimbIntensityRange());
+//			renderableImg.setPad(image.getPadValues());
+//			renderableImg.setFullSize(image.getMaxSizeValues());
+			renderableImg.setImageBinPadding(image.getImageBinPadding());
+			renderableImg.setBinning(image.getImageBinning());
 //			double diagonalLength = smallBodyModel.get(0).getBoundingBoxDiagonalLength();
 //			System.out.println("RenderablePointedImageActorPipeline: RenderablePointedImageActorPipeline: diag length " + diagonalLength);
 //			double[] scPos = renderableImages.get(0).getPointing().getSpacecraftPosition();
@@ -111,6 +115,14 @@ public class PerspectiveImageToRenderableImagePipeline
 			renderableImg.setMaxFrustumLength(image.getMaxFrustumLength());
 			renderableImg.setOfflimbDepth(image.getOfflimbDepth());
 			renderableImg.setLinearInterpolation(image.getInterpolateState());
+			//This is a special case for AMICA, because it reads binning and padding information from the metadata, need a better way to handle this, but hard because these fields are non-uniform
+			if (metadata.get(0).containsKey("START_H"))
+			{
+				renderableImg.setStartH(Integer.valueOf(metadata.get(0).get("START_H")));
+				renderableImg.setLastV(Integer.valueOf(metadata.get(0).get("LAST_V")));
+				renderableImg.setBinning(Integer.valueOf(metadata.get(0).get("BINNING")));
+
+			}
 		}
 	}
 

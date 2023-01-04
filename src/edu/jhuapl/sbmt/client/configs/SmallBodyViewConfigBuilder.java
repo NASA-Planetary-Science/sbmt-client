@@ -367,7 +367,7 @@ public class SmallBodyViewConfigBuilder
     public SmallBodyViewConfigBuilder imageSearchRanges(Date startDate, Date endDate, double maxScDistance, double maxResolution)
     {
         init();
-        SmallBodyViewConfig c = getConfig();
+        SmallBodyViewConfig c = getConfig(); 
         c.imageSearchDefaultStartDate = startDate;
         c.imageSearchDefaultEndDate = endDate;
         c.imageSearchDefaultMaxSpacecraftDistance = maxScDistance;
