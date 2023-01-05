@@ -47,6 +47,7 @@ public class SearchResultsToPointingFilesOperator
 		List<String> infoBaseNames = Lists.newArrayList();
 		for (List<String> imageInfo : results)
 		{
+			System.out.println("SearchResultsToPointingFilesOperator: processData: image info 0 " + imageInfo.get(0));
 			String extension = ".INFO";
 			String pointingDir = "infofiles";
 		    imageSource = ImageSource.valueFor(imageInfo.get(2).replace("_", " "));
@@ -93,6 +94,7 @@ public class SearchResultsToPointingFilesOperator
 						e.printStackTrace();
 					}
 			}
+			System.out.println("SearchResultsToPointingFilesOperator: processData: adding " + (infoBaseName + extension));
 			infoBaseNames.add(infoBaseName + extension);
 		}
 		outputs.add(Triple.of(results, instrument, infoBaseNames));
