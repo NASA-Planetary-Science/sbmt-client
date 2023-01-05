@@ -155,11 +155,13 @@ public class PerspectiveImagePreRenderer2
 //        }
 //        Arrays.sort(fileList);
         PerspectiveImagePreRenderer2 preRenderer;
+        System.out.println("PerspectiveImagePreRenderer2: main: number of res levels " + smallBodyModel.getNumberResolutionLevels());
         for (int i=2; i<smallBodyModel.getNumberResolutionLevels(); i++)
         {
             smallBodyModel.setModelResolution(i);
         	for (File filename : fileList)
         	{
+        		System.out.println("PerspectiveImagePreRenderer2: main: file is " + filename);
 //        		Triple<List<List<String>>, ImagingInstrument, List<String>>[] tripleSink = new Triple[1];
 //	            List<List<String>> fileInputs = List.of(List.of(filename.getAbsolutePath(), "", imageSource.toString()));
 //	            IPipelineOperator<Pair<List<List<String>>, ImagingInstrument>, Triple<List<List<String>>, ImagingInstrument, List<String>>> searchToPointingFilesOperator
@@ -176,7 +178,7 @@ public class PerspectiveImagePreRenderer2
 
 	        	FilenameToRenderableImagePipeline pipeline = FilenameToRenderableImagePipeline.of(filename.getAbsolutePath(), imageSource, config, selectedInstrument.get());
 	        	List<RenderablePointedImage> images = pipeline.getImages();
-
+	        	System.out.println("PerspectiveImagePreRenderer2: main: number of images " + images.size());
 	            preRenderer = new PerspectiveImagePreRenderer2(images.get(0), List.of(smallBodyModel),"", outputDirectory, reprocess);
         	}
 //            if (imagesWithPointing.isEmpty())
