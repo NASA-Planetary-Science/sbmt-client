@@ -164,6 +164,7 @@ public class PerspectiveImagePreRenderer2
         	for (File filename : fileList)
         	{
         		System.out.println("PerspectiveImagePreRenderer2: main: file is " + filename);
+        		System.out.println("PerspectiveImagePreRenderer2: main: image source is " + imageSource);
 //        		Triple<List<List<String>>, ImagingInstrument, List<String>>[] tripleSink = new Triple[1];
 //	            List<List<String>> fileInputs = List.of(List.of(filename.getAbsolutePath(), "", imageSource.toString()));
 //	            IPipelineOperator<Pair<List<List<String>>, ImagingInstrument>, Triple<List<List<String>>, ImagingInstrument, List<String>>> searchToPointingFilesOperator

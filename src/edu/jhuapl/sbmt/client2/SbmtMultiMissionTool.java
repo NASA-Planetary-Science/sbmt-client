@@ -165,8 +165,7 @@ public class SbmtMultiMissionTool
 			// Note that System.getProperty is inconsistent with regard to whether it includes quote marks.
 			// To be sure the mission identifier is processed consistently, exclude all non-word characters.
 			String missionIdentifier = System.getProperty("edu.jhuapl.sbmt.mission").replaceAll("\\W+", "");
-			System.out.println("SbmtMultiMissionTool: getMission: " + System.getProperty("edu.jhuapl.sbmt.mission"));
-			System.out.println("SbmtMultiMissionTool: getMission: mission identifier " + missionIdentifier);
+
 			if (missionIdentifier == null)
 			{
 				throw new IllegalArgumentException("Mission was not specified at build time or run time");
@@ -195,7 +194,6 @@ public class SbmtMultiMissionTool
 				}
 			}
 		}
-		System.out.println("SbmtMultiMissionTool: getMission: mission finally " + mission);
 		return mission;
 	}
 
@@ -241,7 +239,6 @@ public class SbmtMultiMissionTool
     {
         if (missionConfigured)
         {
-        	System.out.println("SbmtMultiMissionTool: configureMission: mission is configured " + mission);
             return mission;
         }
 
