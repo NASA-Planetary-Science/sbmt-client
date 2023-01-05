@@ -133,9 +133,10 @@ public class PerspectiveImagePreRenderer2
         Optional<ImagingInstrument> selectedInstrument = Optional.of(config.imagingInstruments[Integer.parseInt(args[4])]);
     	System.out.println("PerspectiveImagePreRenderer2: main: selected instrument empty? " + selectedInstrument.isEmpty());
         if (selectedInstrument.isEmpty()) return;
-
+        System.out.println("PerspectiveImagePreRenderer2: main: input file " + inputFile);
         File[] fileList = new File[1];
         fileList[0] = new File(inputFile);
+        System.out.println("PerspectiveImagePreRenderer2: main: file list 0 " + fileList[0].getAbsolutePath());
 
 //        File input = new File(inputDirectory);
 //        File[] fileList;
