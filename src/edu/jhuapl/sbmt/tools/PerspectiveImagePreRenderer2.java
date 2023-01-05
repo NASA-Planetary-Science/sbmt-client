@@ -110,7 +110,8 @@ public class PerspectiveImagePreRenderer2
 //        boolean aplVersion = true;
         final SafeURLPaths safeUrlPaths = SafeURLPaths.instance();
 //        String rootURL = safeUrlPaths.getUrl("/disks/d0180/htdocs-sbmt/internal/multi-mission/test");
-        String rootURL = "http://sbmt.jhuapl.edu/sbmt/test/";
+//        String rootURL = "http://sbmt.jhuapl.edu/sbmt/prod/";
+        String rootURL = "http://sbmt-web.jhuapl.edu/internal/multi-mission/test";
 
         Configuration.setAPLVersion(true);
         Configuration.setRootURL(rootURL);
