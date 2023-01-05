@@ -3,15 +3,12 @@ package edu.jhuapl.sbmt.tools;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
-import java.io.FilenameFilter;
 import java.io.IOException;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Stream;
 import java.util.zip.GZIPOutputStream;
 
-import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.tuple.Pair;
 
 import vtk.vtkPolyData;
@@ -103,7 +100,7 @@ public class PerspectiveImagePreRenderer2
 
     public static void main(String[] args) throws Exception
     {
-    	String inputDirectory = args[0];
+    	String inputFile = args[0];
     	String outputDirectory = args[5];
     	boolean reprocess = Boolean.parseBoolean(args[6]);
         ShapeModelBody body = ShapeModelBody.valueOf(args[2]);
@@ -134,24 +131,27 @@ public class PerspectiveImagePreRenderer2
         Optional<ImagingInstrument> selectedInstrument = Stream.of(config.imagingInstruments).filter(inst -> inst.getInstrumentName() == instrument).findFirst();
         if (selectedInstrument.isEmpty()) return;
 
-        File input = new File(inputDirectory);
-        File[] fileList;
-        if (input.isDirectory())
-        {
-            fileList = new File(inputDirectory).listFiles(new FilenameFilter()
-            {
-                @Override
-                public boolean accept(File dir, String name)
-                {
-                    return FilenameUtils.getExtension(name).contains("fit") || FilenameUtils.getExtension(name).contains("fits");
-                }
-            });
-        }
-        else
-        {
-            fileList = new File[] {input};
-        }
-        Arrays.sort(fileList);
+        File[] fileList = new File[1];
+        fileList[0] = new File(inputFile);
+
+//        File input = new File(inputDirectory);
+//        File[] fileList;
+//        if (input.isDirectory())
+//        {
+//            fileList = new File(inputDirectory).listFiles(new FilenameFilter()
+//            {
+//                @Override
+//                public boolean accept(File dir, String name)
+//                {
+//                    return FilenameUtils.getExtension(name).contains("fit") || FilenameUtils.getExtension(name).contains("fits");
+//                }
+//            });
+//        }
+//        else
+//        {
+//            fileList = new File[] {input};
+//        }
+//        Arrays.sort(fileList);
         PerspectiveImagePreRenderer2 preRenderer;
         for (int i=2; i<smallBodyModel.getNumberResolutionLevels(); i++)
         {
