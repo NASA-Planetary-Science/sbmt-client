@@ -6,7 +6,6 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Stream;
 import java.util.zip.GZIPOutputStream;
 
 import org.apache.commons.lang3.tuple.Pair;
@@ -23,7 +22,6 @@ import edu.jhuapl.sbmt.client2.SbmtModelFactory;
 import edu.jhuapl.sbmt.client2.SbmtMultiMissionTool;
 import edu.jhuapl.sbmt.common.client.SmallBodyModel;
 import edu.jhuapl.sbmt.common.client.SmallBodyViewConfig;
-import edu.jhuapl.sbmt.config.Instrument;
 import edu.jhuapl.sbmt.core.image.ImageSource;
 import edu.jhuapl.sbmt.core.image.ImagingInstrument;
 import edu.jhuapl.sbmt.image2.pipelineComponents.operators.offlimb.OfflimbPlaneGeneratorOperators;
@@ -107,7 +105,7 @@ public class PerspectiveImagePreRenderer2
     	boolean reprocess = Boolean.parseBoolean(args[6]);
         ShapeModelBody body = ShapeModelBody.valueOf(args[2]);
         ShapeModelType type = ShapeModelType.provide(args[3]);
-        Instrument instrument = Instrument.valueFor(args[4]);
+//        Instrument instrument = Instrument.valueFor(args[4]);
         ImageSource imageSource = ImageSource.valueFor(args[1]);
 //        boolean aplVersion = true;
         final SafeURLPaths safeUrlPaths = SafeURLPaths.instance();
@@ -130,7 +128,9 @@ public class PerspectiveImagePreRenderer2
         NativeLibraryLoader.loadHeadlessVtkLibraries();
     	SmallBodyViewConfig config = SmallBodyViewConfig.getSmallBodyConfig(body, type);
     	SmallBodyModel smallBodyModel = SbmtModelFactory.createSmallBodyModel(config);
-        Optional<ImagingInstrument> selectedInstrument = Stream.of(config.imagingInstruments).filter(inst -> inst.getInstrumentName() == instrument).findFirst();
+        //Optional<ImagingInstrument> selectedInstrument = Stream.of(config.imagingInstruments).filter(inst -> inst.getInstrumentName() == instrument).findFirst();
+        Optional<ImagingInstrument> selectedInstrument = Optional.of(config.imagingInstruments[Integer.parseInt(args[4])]);
+    	System.out.println("PerspectiveImagePreRenderer2: main: selected instrument empty? " + selectedInstrument.isEmpty());
         if (selectedInstrument.isEmpty()) return;
 
         File[] fileList = new File[1];
