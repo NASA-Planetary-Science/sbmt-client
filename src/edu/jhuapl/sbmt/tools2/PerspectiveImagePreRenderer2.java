@@ -36,7 +36,7 @@ import edu.jhuapl.sbmt.image2.pipelineComponents.pipelines.pointedImages.Rendera
 import edu.jhuapl.sbmt.pipeline.publisher.Just;
 import edu.jhuapl.sbmt.pipeline.subscriber.PairSink;
 
-public class PerspectiveImagePreRenderer
+public class PerspectiveImagePreRenderer2
 {
     private int resolutionIndex;
     private String outputDir;
@@ -44,7 +44,7 @@ public class PerspectiveImagePreRenderer
 
     private Pair<RenderablePointedImage, vtkPolyData>[] offLimbPolydata = new Pair[1];
 
-    public PerspectiveImagePreRenderer(RenderablePointedImage renderableImage, List<SmallBodyModel> smallBodyModels, String basename, String outputDir, boolean reprocess) throws IOException, Exception
+    public PerspectiveImagePreRenderer2(RenderablePointedImage renderableImage, List<SmallBodyModel> smallBodyModels, String basename, String outputDir, boolean reprocess) throws IOException, Exception
     {
     	double offLimbFootprintDepth = renderableImage.getOfflimbDepth();
 		RenderablePointedImageFootprintGeneratorPipeline pipeline = new RenderablePointedImageFootprintGeneratorPipeline(renderableImage, smallBodyModels);
@@ -68,10 +68,10 @@ public class PerspectiveImagePreRenderer
     	vtkPolyDataWriter writer = new vtkPolyDataWriter();
         writer.SetInputData(polydata);
         if (!(new File(filename).exists()))new File(filename).getParentFile().mkdir();
-        writer.SetFileName(new File(filename).toString());
+        writer.SetFileName(new File(outputDir, filename).toString());
         writer.SetFileTypeToBinary();
         writer.Write();
-        compressFile(filename);
+        compressFile(new File(outputDir, filename).getAbsolutePath());
     }
 
     private void compressFile(String filePath)
@@ -110,12 +110,12 @@ public class PerspectiveImagePreRenderer
         ShapeModelType type = ShapeModelType.provide(args[4]);
         Instrument instrument = Instrument.valueFor(args[5]);
         ImageSource imageSource = ImageSource.valueFor(args[6]);
-        boolean aplVersion = true;
+//        boolean aplVersion = true;
         final SafeURLPaths safeUrlPaths = SafeURLPaths.instance();
-        String rootURL = safeUrlPaths.getUrl("/disks/d0180/htdocs-sbmt/internal/multi-mission/test");
-//        String rootURL = "http://sbmt.jhuapl.edu/sbmt/prod/";
+//        String rootURL = safeUrlPaths.getUrl("/disks/d0180/htdocs-sbmt/internal/multi-mission/test");
+        String rootURL = "http://sbmt.jhuapl.edu/sbmt/prod/";
 
-        Configuration.setAPLVersion(aplVersion);
+        Configuration.setAPLVersion(true);
         Configuration.setRootURL(rootURL);
 
         SbmtMultiMissionTool.configureMission();
@@ -143,7 +143,7 @@ public class PerspectiveImagePreRenderer
                 @Override
                 public boolean accept(File dir, String name)
                 {
-                    return FilenameUtils.getExtension(name).contains("fit");
+                    return FilenameUtils.getExtension(name).contains("fit") || FilenameUtils.getExtension(name).contains("fits");
                 }
             });
         }
@@ -152,8 +152,8 @@ public class PerspectiveImagePreRenderer
             fileList = new File[] {input};
         }
         Arrays.sort(fileList);
-        PerspectiveImagePreRenderer preRenderer;
-        for (int i=3; i<smallBodyModel.getNumberResolutionLevels(); i++)
+        PerspectiveImagePreRenderer2 preRenderer;
+        for (int i=2; i<smallBodyModel.getNumberResolutionLevels(); i++)
         {
             smallBodyModel.setModelResolution(i);
         	for (File filename : fileList)
@@ -172,10 +172,10 @@ public class PerspectiveImagePreRenderer
 //	        	RenderableImagePipeline pipeline = new RenderableImagePipeline(filename.getAbsolutePath(), pointingFilenames.get(0), selectedInstrument.get());
 //	        	List<RenderablePointedImage> images = pipeline.getOutput();
 
-	        	FilenameToRenderableImagePipeline pipeline = FilenameToRenderableImagePipeline.of(filename.getAbsolutePath(), ImageSource.SPICE, config, selectedInstrument.get());
+	        	FilenameToRenderableImagePipeline pipeline = FilenameToRenderableImagePipeline.of(filename.getAbsolutePath(), imageSource, config, selectedInstrument.get());
 	        	List<RenderablePointedImage> images = pipeline.getImages();
 
-	            preRenderer = new PerspectiveImagePreRenderer(images.get(0), List.of(smallBodyModel),"", outputDirectory, reprocess);
+	            preRenderer = new PerspectiveImagePreRenderer2(images.get(0), List.of(smallBodyModel),"", outputDirectory, reprocess);
         	}
 //            if (imagesWithPointing.isEmpty())
 //            {
