@@ -106,7 +106,7 @@ public class PerspectiveImagePreRenderer2
         ShapeModelBody body = ShapeModelBody.valueOf(args[2]);
         ShapeModelType type = ShapeModelType.provide(args[3]);
 //        Instrument instrument = Instrument.valueFor(args[4]);
-        ImageSource imageSource = ImageSource.valueFor(args[1]);
+        ImageSource imageSource = ImageSource.valueOf(args[1]);
 //        boolean aplVersion = true;
         final SafeURLPaths safeUrlPaths = SafeURLPaths.instance();
 //        String rootURL = safeUrlPaths.getUrl("/disks/d0180/htdocs-sbmt/internal/multi-mission/test");
