@@ -115,8 +115,9 @@ public class PerspectiveImagePreRenderer2
         Configuration.setAPLVersion(true);
         Configuration.setRootURL(rootURL);
         System.setProperty("edu.jhuapl.sbmt.mission", "DART_TEST");
+        System.out.println("PerspectiveImagePreRenderer2: main: mission property " + System.getProperty("edu.jhuapl.sbmt.mission"));
         SbmtMultiMissionTool.configureMission();
-
+        System.out.println("PerspectiveImagePreRenderer2: main: configured mission");
         // authentication
         Configuration.authenticate();
 

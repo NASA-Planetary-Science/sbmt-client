@@ -241,6 +241,7 @@ public class SbmtMultiMissionTool
     {
         if (missionConfigured)
         {
+        	System.out.println("SbmtMultiMissionTool: configureMission: mission is configured " + mission);
             return mission;
         }
 
