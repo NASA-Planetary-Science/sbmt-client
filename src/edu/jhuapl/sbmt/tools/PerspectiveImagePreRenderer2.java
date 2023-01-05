@@ -43,6 +43,7 @@ public class PerspectiveImagePreRenderer2
 
     public PerspectiveImagePreRenderer2(RenderablePointedImage renderableImage, List<SmallBodyModel> smallBodyModels, String basename, String outputDir, boolean reprocess) throws IOException, Exception
     {
+    	this.outputDir = outputDir;
     	double offLimbFootprintDepth = renderableImage.getOfflimbDepth();
 		RenderablePointedImageFootprintGeneratorPipeline pipeline = new RenderablePointedImageFootprintGeneratorPipeline(renderableImage, smallBodyModels);
 		List<vtkPolyData> footprints = pipeline.getFootprintPolyData();
@@ -62,6 +63,7 @@ public class PerspectiveImagePreRenderer2
 
     public void saveToDisk(vtkPolyData polydata, String filename)
     {
+    	System.out.println("PerspectiveImagePreRenderer2: saveToDisk: writing " + new File(outputDir, filename).getAbsolutePath());
     	vtkPolyDataWriter writer = new vtkPolyDataWriter();
         writer.SetInputData(polydata);
         if (!(new File(filename).exists()))new File(filename).getParentFile().mkdir();
