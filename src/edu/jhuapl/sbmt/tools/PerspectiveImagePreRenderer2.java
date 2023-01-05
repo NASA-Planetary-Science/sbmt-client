@@ -104,12 +104,12 @@ public class PerspectiveImagePreRenderer2
     public static void main(String[] args) throws Exception
     {
     	String inputDirectory = args[0];
-    	String outputDirectory = args[1];
-    	boolean reprocess = Boolean.parseBoolean(args[2]);
-        ShapeModelBody body = ShapeModelBody.valueOf(args[4]);
+    	String outputDirectory = args[5];
+    	boolean reprocess = Boolean.parseBoolean(args[6]);
+        ShapeModelBody body = ShapeModelBody.valueOf(args[2]);
         ShapeModelType type = ShapeModelType.provide(args[3]);
-        Instrument instrument = Instrument.valueFor(args[5]);
-        ImageSource imageSource = ImageSource.valueFor(args[6]);
+        Instrument instrument = Instrument.valueFor(args[4]);
+        ImageSource imageSource = ImageSource.valueFor(args[1]);
 //        boolean aplVersion = true;
         final SafeURLPaths safeUrlPaths = SafeURLPaths.instance();
 //        String rootURL = safeUrlPaths.getUrl("/disks/d0180/htdocs-sbmt/internal/multi-mission/test");
