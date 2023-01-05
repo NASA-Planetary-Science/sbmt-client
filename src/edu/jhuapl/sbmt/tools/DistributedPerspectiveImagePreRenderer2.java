@@ -1,4 +1,4 @@
-package edu.jhuapl.sbmt.tools2;
+package edu.jhuapl.sbmt.tools;
 
 import java.io.File;
 import java.util.ArrayList;
