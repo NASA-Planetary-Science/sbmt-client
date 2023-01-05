@@ -112,10 +112,9 @@ public class PerspectiveImagePreRenderer2
 //        String rootURL = safeUrlPaths.getUrl("/disks/d0180/htdocs-sbmt/internal/multi-mission/test");
 //        String rootURL = "http://sbmt.jhuapl.edu/sbmt/prod/";
         String rootURL = "http://sbmt-web.jhuapl.edu/internal/multi-mission/test";
-
         Configuration.setAPLVersion(true);
         Configuration.setRootURL(rootURL);
-
+        System.setProperty("edu.jhuapl.sbmt.mission", "DART_TEST");
         SbmtMultiMissionTool.configureMission();
 
         // authentication
