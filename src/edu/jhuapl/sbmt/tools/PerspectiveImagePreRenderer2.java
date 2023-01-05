@@ -106,8 +106,8 @@ public class PerspectiveImagePreRenderer2
     	String inputDirectory = args[0];
     	String outputDirectory = args[1];
     	boolean reprocess = Boolean.parseBoolean(args[2]);
-        ShapeModelBody body = ShapeModelBody.valueOf(args[3]);
-        ShapeModelType type = ShapeModelType.provide(args[4]);
+        ShapeModelBody body = ShapeModelBody.valueOf(args[4]);
+        ShapeModelType type = ShapeModelType.provide(args[3]);
         Instrument instrument = Instrument.valueFor(args[5]);
         ImageSource imageSource = ImageSource.valueFor(args[6]);
 //        boolean aplVersion = true;
