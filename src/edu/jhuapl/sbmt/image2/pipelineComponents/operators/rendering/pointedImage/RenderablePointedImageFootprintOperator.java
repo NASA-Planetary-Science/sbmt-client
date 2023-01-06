@@ -145,7 +145,7 @@ public class RenderablePointedImageFootprintOperator extends BasePipelineOperato
         String topPath = FileCache.instance().getFile(imageName).getParent();
         String result = SafeURLPaths.instance().getString(topPath, "support",
         												  renderableImage.getImageSource().name(),
-        												  FilenameUtils.getBaseName(imageName) + "_" + smallBodyModel.getModelResolution() + "_" + smallBodyModel.getModelName() + "_" + renderableImage.getPointing().hashCode());
+        												  FilenameUtils.getBaseName(imageName) + "_" + smallBodyModel.getModelResolution() + "_" + smallBodyModel.getModelName()/* + "_" + renderableImage.getPointing().hashCode()*/);
 
         return result;
     }

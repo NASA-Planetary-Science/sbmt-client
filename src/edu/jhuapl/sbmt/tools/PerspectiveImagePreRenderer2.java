@@ -53,7 +53,7 @@ public class PerspectiveImagePreRenderer2
 			.subscribe(PairSink.of(offLimbPolydata))
 			.run();
 
-		basename = basename + "_" + smallBodyModels.get(0).getModelResolution() + "_" + smallBodyModels.get(0).getModelName() + "_" + renderableImage.getPointing().hashCode();
+		basename = basename + "_" + smallBodyModels.get(0).getModelResolution() + "_" + smallBodyModels.get(0).getModelName()/* + "_" + renderableImage.getPointing().hashCode()*/;
 		String intersectionFileName = basename + "_frustumIntersection.vtk";
         saveToDisk(footprints.get(0), intersectionFileName);
 

@@ -25,7 +25,6 @@ public class FilenameToRenderableImagePipeline
 	{
 		Triple<List<List<String>>, ImagingInstrument, List<String>>[] tripleSink = new Triple[1];
         List<List<String>> fileInputs = List.of(List.of(filename, "", imageSource.toString()));
-        System.out.println("FilenameToRenderableImagePipeline: FilenameToRenderableImagePipeline: filename " + filename);
         IPipelineOperator<Pair<List<List<String>>, ImagingInstrument>, Triple<List<List<String>>, ImagingInstrument, List<String>>> searchToPointingFilesOperator
         		= new SearchResultsToPointingFilesOperator(config);
         Just.of(Pair.of(fileInputs, selectedInstrument))

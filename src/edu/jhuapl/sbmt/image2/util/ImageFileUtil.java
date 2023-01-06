@@ -18,7 +18,6 @@ public class ImageFileUtil
         protected File getFile(String mapKey)
         {
         	File file = FileCache.getFileFromServer(SafeURLPaths.instance().getString(mapKey, "make_sumfiles.in"));
-        	System.out.println("ImageFileUtil.SumFileLookup.new CachingMapLookup() {...}: getFile: make sumfiles " + file.getAbsolutePath());
             return file;
         }
 
