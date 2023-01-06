@@ -45,6 +45,7 @@ public class SearchResultsToPointingFilesOperator
 		List<String> infoBaseNames = Lists.newArrayList();
 		for (List<String> imageInfo : results)
 		{
+			imageSource = ImageSource.valueFor(imageInfo.get(2).replace("_", " "));
 			String pointingSource = new ImageFileUtil().getPointingServerPath(imageInfo.get(0), instrument, imageSource);
 			infoBaseNames.add(pointingSource);
 
