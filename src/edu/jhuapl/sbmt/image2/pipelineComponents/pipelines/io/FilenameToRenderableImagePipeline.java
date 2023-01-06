@@ -36,6 +36,7 @@ public class FilenameToRenderableImagePipeline
         pointingFilenames = tripleSink[0].getRight();
 
     	RenderableImagePipeline pipeline = new RenderableImagePipeline(filename, pointingFilenames.get(0), selectedInstrument, imageSource);
+    	pipeline.run();
     	images = pipeline.getOutput();
 	}
 
