@@ -182,6 +182,7 @@ public class PerspectiveImagePreRenderer2
 	        	FilenameToRenderableImagePipeline pipeline = FilenameToRenderableImagePipeline.of(filename.getAbsolutePath(), imageSource, config, selectedInstrument.get());
 	        	List<RenderablePointedImage> images = pipeline.getImages();
 	        	System.out.println("PerspectiveImagePreRenderer2: main: number of images " + images.size());
+	        	if (images.size() == 0) continue;
 	            preRenderer = new PerspectiveImagePreRenderer2(images.get(0), List.of(smallBodyModel),"", outputDirectory, reprocess);
         	}
 //            if (imagesWithPointing.isEmpty())
