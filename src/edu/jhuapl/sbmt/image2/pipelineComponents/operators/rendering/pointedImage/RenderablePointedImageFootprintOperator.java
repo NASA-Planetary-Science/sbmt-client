@@ -12,7 +12,6 @@ import vtk.vtkFloatArray;
 import vtk.vtkImageData;
 import vtk.vtkPointData;
 import vtk.vtkPolyData;
-import vtk.vtkPolyDataMapper;
 
 import edu.jhuapl.saavtk.util.FileCache;
 import edu.jhuapl.saavtk.util.Frustum;
@@ -130,9 +129,9 @@ public class RenderablePointedImageFootprintOperator extends BasePipelineOperato
 //		        imageTexture.RepeatOff();
 //		        imageTexture.EdgeClampOn();
 //		        imageTexture.SetInputData(imageData.get(0));
-
-				vtkPolyDataMapper mapper = new vtkPolyDataMapper();
-				mapper.SetInputData(footprint);
+//
+//				vtkPolyDataMapper mapper = new vtkPolyDataMapper();
+//				mapper.SetInputData(footprint);
 				SavePolydataToCachePipeline.of(footprint, imageFilename);
 				footprints.add(footprint);
 	    	}
