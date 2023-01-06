@@ -54,7 +54,7 @@ public class PerspectiveImagePreRenderer2
 			.run();
 
 		basename = basename + "_" + smallBodyModels.get(0).getModelResolution() + "_" + smallBodyModels.get(0).getModelName()/* + "_" + renderableImage.getPointing().hashCode()*/;
-		String intersectionFileName = basename + "_frustumIntersection.vtk";
+		String intersectionFileName = basename + "_footprintImageData.vtk";
         saveToDisk(footprints.get(0), intersectionFileName);
 
         String filename = basename + "_offLimbImageData.vtk";
@@ -64,7 +64,6 @@ public class PerspectiveImagePreRenderer2
     public void saveToDisk(vtkPolyData polydata, String filename)
     {
     	File outputFile = new File(outputDir, filename);
-    	System.out.println("PerspectiveImagePreRenderer2: saveToDisk: writing " + outputFile.getAbsolutePath());
     	vtkPolyDataWriter writer = new vtkPolyDataWriter();
         writer.SetInputData(polydata);
         if (!(outputFile.getParentFile().exists())) outputFile.getParentFile().mkdir();
@@ -135,40 +134,17 @@ public class PerspectiveImagePreRenderer2
         File[] fileList = new File[1];
         fileList[0] = new File(inputFile);
 
-//        File input = new File(inputDirectory);
-//        File[] fileList;
-//        if (input.isDirectory())
-//        {
-//            fileList = new File(inputDirectory).listFiles(new FilenameFilter()
-//            {
-//                @Override
-//                public boolean accept(File dir, String name)
-//                {
-//                    return FilenameUtils.getExtension(name).contains("fit") || FilenameUtils.getExtension(name).contains("fits");
-//                }
-//            });
-//        }
-//        else
-//        {
-//            fileList = new File[] {input};
-//        }
-//        Arrays.sort(fileList);
-        PerspectiveImagePreRenderer2 preRenderer;
-        for (int i=2; i<smallBodyModel.getNumberResolutionLevels(); i++)
+        for (int i=1; i<smallBodyModel.getNumberResolutionLevels(); i++)
         {
-        	System.out.println("PerspectiveImagePreRenderer2: main: processing resolution index " + i);
             smallBodyModel.setModelResolution(i);
         	for (File filename : fileList)
         	{
-        		System.out.println("PerspectiveImagePreRenderer2: main: file is " + filename);
-
 	        	FilenameToRenderableImagePipeline pipeline = FilenameToRenderableImagePipeline.of(filename.getAbsolutePath(), imageSource, config, selectedInstrument.get());
 	        	List<RenderablePointedImage> images = pipeline.getImages();
 	        	if (images.size() == 0) continue;
 	        	String basename = FilenameUtils.getBaseName(filename.getAbsolutePath());
-	            preRenderer = new PerspectiveImagePreRenderer2(images.get(0), List.of(smallBodyModel), basename, outputDirectory, reprocess);
+	            new PerspectiveImagePreRenderer2(images.get(0), List.of(smallBodyModel), basename, outputDirectory, reprocess);
         	}
-
         }
         System.exit(0);
     }

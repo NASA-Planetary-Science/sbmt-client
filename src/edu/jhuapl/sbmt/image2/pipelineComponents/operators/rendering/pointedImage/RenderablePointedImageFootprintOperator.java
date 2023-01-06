@@ -124,14 +124,6 @@ public class RenderablePointedImageFootprintOperator extends BasePipelineOperato
 		        PolyDataUtil.generateTextureCoordinates(frustum, renderableImage.getImageWidth(), renderableImage.getImageHeight(), footprint);
 		        pointData.Delete();
 		        PolyDataUtil.shiftPolyDataInNormalDirection(footprint, renderableImage.getOffset());
-//				vtkTexture imageTexture = new vtkTexture();
-//		        imageTexture.InterpolateOn();
-//		        imageTexture.RepeatOff();
-//		        imageTexture.EdgeClampOn();
-//		        imageTexture.SetInputData(imageData.get(0));
-//
-//				vtkPolyDataMapper mapper = new vtkPolyDataMapper();
-//				mapper.SetInputData(footprint);
 				SavePolydataToCachePipeline.of(footprint, imageFilename);
 				footprints.add(footprint);
 	    	}

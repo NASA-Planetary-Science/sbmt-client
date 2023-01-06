@@ -21,11 +21,11 @@ public class LoadPolydataFromFileOperator extends BasePipelineOperator<String, v
 		if (numSegments == 2)
 			imageDataFileName = inputs.get(0).split("cache/2/")[1];
 		else
-			imageDataFileName = inputs.get(0).split("cache/")[1];
+			imageDataFileName = inputs.get(0).split("cache")[1];
 		File file;
 		try
 		{
-			file = new File(FileCache.instance().getFile(imageDataFileName).getAbsolutePath() + ".gz");
+			file = FileCache.getFileFromServer(imageDataFileName);
 		}
 		catch (UnauthorizedAccessException e)
 		{
