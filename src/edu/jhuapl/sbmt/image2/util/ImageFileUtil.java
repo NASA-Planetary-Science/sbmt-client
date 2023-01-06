@@ -56,8 +56,7 @@ public class ImageFileUtil
         String imageBaseName = imageFileName.replaceFirst("\\.[^\\.]*$", "");
 
         String pointingBaseName = null;
-        System.out.println("ImageFileUtil: getPointingServerPath: pointing type " + pointingType);
-        System.out.println("ImageFileUtil: getPointingServerPath: image source " + imageSource.toString());
+
         if (pointingType.equals("SUM"))
         {
             if (instrument.getInstrumentName() == Instrument.MSI)
@@ -71,7 +70,6 @@ public class ImageFileUtil
                 else
                 {
                 	pointingBaseName = SumFileLookup.lookUp(pointingRoot, imageFileName);
-                	System.out.println("ImageFileUtil: getPointingServerPath: pointing base " + pointingBaseName);
                 }
             }
         }

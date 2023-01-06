@@ -53,6 +53,7 @@ public class PerspectiveImagePreRenderer2
 			.subscribe(PairSink.of(offLimbPolydata))
 			.run();
 
+		basename = basename + "_" + smallBodyModels.get(0).getModelResolution() + "_" + smallBodyModels.get(0).getModelName() + "_" + renderableImage.getPointing().hashCode();
 		String intersectionFileName = basename + "_frustumIntersection.vtk";
         saveToDisk(footprints.get(0), intersectionFileName);
 
@@ -116,10 +117,7 @@ public class PerspectiveImagePreRenderer2
         String rootURL = "http://sbmt-web.jhuapl.edu/internal/multi-mission/test";
         Configuration.setAPLVersion(true);
         Configuration.setRootURL(rootURL);
-        System.setProperty("edu.jhuapl.sbmt.mission", "DART_TEST");
-        System.out.println("PerspectiveImagePreRenderer2: main: mission property " + System.getProperty("edu.jhuapl.sbmt.mission"));
         SbmtMultiMissionTool.configureMission();
-        System.out.println("PerspectiveImagePreRenderer2: main: configured mission");
         // authentication
         Configuration.authenticate();
 
@@ -133,12 +131,9 @@ public class PerspectiveImagePreRenderer2
     	SmallBodyModel smallBodyModel = SbmtModelFactory.createSmallBodyModel(config);
         //Optional<ImagingInstrument> selectedInstrument = Stream.of(config.imagingInstruments).filter(inst -> inst.getInstrumentName() == instrument).findFirst();
         Optional<ImagingInstrument> selectedInstrument = Optional.of(config.imagingInstruments[Integer.parseInt(args[4])]);
-    	System.out.println("PerspectiveImagePreRenderer2: main: selected instrument empty? " + selectedInstrument.isEmpty());
         if (selectedInstrument.isEmpty()) return;
-        System.out.println("PerspectiveImagePreRenderer2: main: input file " + inputFile);
         File[] fileList = new File[1];
         fileList[0] = new File(inputFile);
-        System.out.println("PerspectiveImagePreRenderer2: main: file list 0 " + fileList[0].getAbsolutePath());
 
 //        File input = new File(inputDirectory);
 //        File[] fileList;
@@ -159,78 +154,22 @@ public class PerspectiveImagePreRenderer2
 //        }
 //        Arrays.sort(fileList);
         PerspectiveImagePreRenderer2 preRenderer;
-        System.out.println("PerspectiveImagePreRenderer2: main: number of res levels " + smallBodyModel.getNumberResolutionLevels());
         for (int i=2; i<smallBodyModel.getNumberResolutionLevels(); i++)
         {
+        	System.out.println("PerspectiveImagePreRenderer2: main: processing resolution index " + i);
             smallBodyModel.setModelResolution(i);
         	for (File filename : fileList)
         	{
         		System.out.println("PerspectiveImagePreRenderer2: main: file is " + filename);
-        		System.out.println("PerspectiveImagePreRenderer2: main: image source is " + imageSource);
-//        		Triple<List<List<String>>, ImagingInstrument, List<String>>[] tripleSink = new Triple[1];
-//	            List<List<String>> fileInputs = List.of(List.of(filename.getAbsolutePath(), "", imageSource.toString()));
-//	            IPipelineOperator<Pair<List<List<String>>, ImagingInstrument>, Triple<List<List<String>>, ImagingInstrument, List<String>>> searchToPointingFilesOperator
-//	            		= new SearchResultsToPointingFilesOperator(config);
-//	            Just.of(Pair.of(fileInputs, selectedInstrument.get()))
-//					.operate(searchToPointingFilesOperator)
-//					.subscribe(TripleSink.of(tripleSink))
-//					.run();
-//
-//	            List<String> pointingFilenames = tripleSink[0].getRight();
-//
-//	        	RenderableImagePipeline pipeline = new RenderableImagePipeline(filename.getAbsolutePath(), pointingFilenames.get(0), selectedInstrument.get());
-//	        	List<RenderablePointedImage> images = pipeline.getOutput();
 
 	        	FilenameToRenderableImagePipeline pipeline = FilenameToRenderableImagePipeline.of(filename.getAbsolutePath(), imageSource, config, selectedInstrument.get());
 	        	List<RenderablePointedImage> images = pipeline.getImages();
-	        	System.out.println("PerspectiveImagePreRenderer2: main: number of images " + images.size());
 	        	if (images.size() == 0) continue;
 	        	String basename = FilenameUtils.getBaseName(filename.getAbsolutePath());
 	            preRenderer = new PerspectiveImagePreRenderer2(images.get(0), List.of(smallBodyModel), basename, outputDirectory, reprocess);
         	}
-//            if (imagesWithPointing.isEmpty())
-//            {
-//                for (File filename : fileList)
-//                {
-//                    //may need to massage name here, need it to be /bennu/jfkfjksf, also need to strip .fits
-//                    String basename = filename.getParent() + File.separator + FilenameUtils.getBaseName(filename.getAbsolutePath());
-//        //            basename = basename.substring(basename.indexOf("2") + 2);
-//                    basename = basename.substring(basename.indexOf("prod/") + 4);
-//                    key = new ImageKey(basename, source, instrument);
-//                    System.out.println("PerspectiveImagePreRenderer: main: filename is " + basename);
-//                    try
-//                    {
-//                        image = (PerspectiveImage)SbmtModelFactory.createImage(key, smallBodyModel, false);
-//                        String pointingFileString = "";
-//                        if (source == ImageSource.SPICE)
-//                        {
-//                            pointingFileString = image.getInfoFileFullPath();
-//                        }
-//                        else if (source == ImageSource.GASKELL)
-//                        {
-//                            pointingFileString = image.getSumfileFullPath();
-//
-//                        }
-//                        System.out.println("PerspectiveImagePreRenderer: main: pointing file is " + pointingFileString + " and reprocess is " + reprocess);
-//                        imagesWithPointing.add(filename);
-//
-//                    }
-//                    catch (NonexistentRemoteFile nerf)
-//                    {
-//                        continue;
-//                    }
-//                }
-//            }
-//            if ((fileList.length == 1) && imagesWithPointing.isEmpty()) System.exit(0);
-//            for (File filename : imagesWithPointing)
-//            {
-//                System.out.println("PerspectiveImagePreRenderer: main: processing file " + filename.getAbsolutePath());
-//                String basename = filename.getParent() + File.separator + FilenameUtils.getBaseName(filename.getAbsolutePath());
-//                basename = basename.substring(basename.indexOf("prod/") + 4);
-//                key = new ImageKey(basename, source, instrument);
-//                image = (PerspectiveImage)SbmtModelFactory.createImage(key, smallBodyModel, false);
-//                preRenderer = new PerspectiveImagePreRenderer(image, outputDirectory, reprocess);
-//            }
+
         }
+        System.exit(0);
     }
 }
