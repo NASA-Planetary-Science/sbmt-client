@@ -47,6 +47,7 @@ public class SearchResultsToPointingFilesOperator
 		{
 			imageSource = ImageSource.valueFor(imageInfo.get(2).replace("_", " "));
 			String pointingSource = new ImageFileUtil().getPointingServerPath(imageInfo.get(0), instrument, imageSource);
+			File pointingFile = FileCache.getFileFromServer(pointingSource);
 			infoBaseNames.add(pointingSource);
 
 //			System.out.println("SearchResultsToPointingFilesOperator: processData: image info 0 " + imageInfo.get(0));
