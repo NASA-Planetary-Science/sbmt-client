@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.zip.GZIPOutputStream;
 
+import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.tuple.Pair;
 
 import vtk.vtkPolyData;
@@ -61,10 +62,11 @@ public class PerspectiveImagePreRenderer2
 
     public void saveToDisk(vtkPolyData polydata, String filename)
     {
-    	System.out.println("PerspectiveImagePreRenderer2: saveToDisk: writing " + new File(outputDir, filename).getAbsolutePath());
+    	File outputFile = new File(outputDir, filename);
+    	System.out.println("PerspectiveImagePreRenderer2: saveToDisk: writing " + outputFile.getAbsolutePath());
     	vtkPolyDataWriter writer = new vtkPolyDataWriter();
         writer.SetInputData(polydata);
-        if (!(new File(filename).exists()))new File(filename).getParentFile().mkdir();
+        if (!(outputFile.getParentFile().exists())) outputFile.getParentFile().mkdir();
         writer.SetFileName(new File(outputDir, filename).toString());
         writer.SetFileTypeToBinary();
         writer.Write();
@@ -183,7 +185,8 @@ public class PerspectiveImagePreRenderer2
 	        	List<RenderablePointedImage> images = pipeline.getImages();
 	        	System.out.println("PerspectiveImagePreRenderer2: main: number of images " + images.size());
 	        	if (images.size() == 0) continue;
-	            preRenderer = new PerspectiveImagePreRenderer2(images.get(0), List.of(smallBodyModel),"", outputDirectory, reprocess);
+	        	String basename = FilenameUtils.getBaseName(filename.getAbsolutePath());
+	            preRenderer = new PerspectiveImagePreRenderer2(images.get(0), List.of(smallBodyModel), basename, outputDirectory, reprocess);
         	}
 //            if (imagesWithPointing.isEmpty())
 //            {
