@@ -88,7 +88,9 @@ public class OfflimbPlaneGeneratorOperators extends BasePipelineOperator<Rendera
     {
         String imageName = renderableImage.getFilename();
         String topPath = FileCache.instance().getFile(imageName).getParent();
-        String result = SafeURLPaths.instance().getString(topPath, "support", renderableImage.getImageSource().name(), FilenameUtils.getBaseName(imageName) + "_" + smallBodyModels.get(0).getModelResolution());
+        String result = SafeURLPaths.instance().getString(topPath, "support",
+        												  renderableImage.getImageSource().name(),
+        												  FilenameUtils.getBaseName(imageName) + "_" + smallBodyModels.get(0).getModelResolution() + "_" + smallBodyModels.get(0).getModelName());
 
         return result;
     }
@@ -172,7 +174,7 @@ public class OfflimbPlaneGeneratorOperators extends BasePipelineOperator<Rendera
         imageSource.SetScalarTypeToUnsignedChar();
         imageSource.SetNumberOfScalarComponents(3);
         imageSource.SetExtent(-szW/2, szW/2, -szH/2, szH/2, 0, 0);
-        
+
         ThreadService.initialize(60);
         final List<Future<Void>> resultList;
 		List<Callable<Void>> taskList = new ArrayList<>();

@@ -7,6 +7,7 @@ import vtk.vtkPolyData;
 import vtk.vtkPolyDataReader;
 
 import edu.jhuapl.saavtk.util.FileCache;
+import edu.jhuapl.saavtk.util.NonexistentRemoteFile;
 import edu.jhuapl.saavtk.util.UnauthorizedAccessException;
 import edu.jhuapl.sbmt.pipeline.operator.BasePipelineOperator;
 
@@ -27,10 +28,10 @@ public class LoadPolydataFromFileOperator extends BasePipelineOperator<String, v
 		{
 			file = FileCache.getFileFromServer(imageDataFileName);
 		}
-		catch (UnauthorizedAccessException e)
+		catch (UnauthorizedAccessException | NonexistentRemoteFile e)
 		{
 		    // Report this but continue.
-		    e.printStackTrace();
+//		    e.printStackTrace();
 		    file = null;
 		}
 		catch (Exception e)
