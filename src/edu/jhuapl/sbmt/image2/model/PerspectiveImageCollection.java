@@ -789,6 +789,7 @@ public class PerspectiveImageCollection<G1 extends IPerspectiveImage & IPerspect
 	public void setImageBoundaryColor(G1 image, Color color)
 	{
 		renderingStates.get(image).boundaryColor = color;
+		if (boundaryRenderers.get(image).size() == 0) return;
 		for (vtkActor actor : boundaryRenderers.get(image))
 		{
 			actor.GetProperty().SetColor(color.getRed() / 255., color.getGreen() / 255., color.getBlue() / 255.);
@@ -1286,7 +1287,7 @@ public class PerspectiveImageCollection<G1 extends IPerspectiveImage & IPerspect
 		actorsToSave.put(boundaryRenderers.get(image), "boundary");
 		return actorsToSave;
     }
-    
+
     private void runThreadOnExecutorService(Thread thread)
     {
     	executor.execute(thread);
