@@ -37,7 +37,7 @@ public class LoadPolydataFromFileOperator extends BasePipelineOperator<String, v
 		catch (Exception e)
 		{
 		    // Ignore this one.
-			e.printStackTrace();
+//			e.printStackTrace();
 		    file = null;
 		}
 		if (file != null && file.exists())

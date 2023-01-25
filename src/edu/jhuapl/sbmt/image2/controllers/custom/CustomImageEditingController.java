@@ -146,7 +146,7 @@ public class CustomImageEditingController<G1 extends IPerspectiveImage & IPerspe
 
 		dialog = new CustomImageEditingDialog<G1>(dialog, existingImage, isPerspective, completionBlock, maskController, contrastController, fillValuesController);
 		populateUI();
-		if (!existingImage.getPointingSource().equals("FILE NOT FOUND"))
+		if (!existingImage.getPointingSource().equals("FILE NOT FOUND") || existingImage.getPointingSourceType() == ImageSource.LOCAL_CYLINDRICAL)
 			renderLayerAndAddAttributes();
 		javax.swing.SwingUtilities.invokeLater(new Runnable()
 		{
@@ -222,8 +222,14 @@ public class CustomImageEditingController<G1 extends IPerspectiveImage & IPerspe
 		{
 			if (instrument != null)
 			{
-				Orientation orientation = instrument.getOrientation(existingImage.getPointingSourceType());
-				dialog.getFlipAboutXCheckBox().setSelected(orientation.getFlip().toString().equals("X"));
+				try
+				{
+					Orientation orientation = instrument.getOrientation(existingImage.getPointingSourceType());
+					dialog.getFlipAboutXCheckBox().setSelected(orientation.getFlip().toString().equals("X"));
+				} catch (IllegalArgumentException iae)
+				{
+					dialog.getFlipAboutXCheckBox().setSelected(false);
+				}
 			}
 			dialog.getPointingTypeComboBox().setSelectedIndex(1);
 			dialog.getMinLatitudeTextField().setText("" + existingImage.getBounds().minLatitude());
