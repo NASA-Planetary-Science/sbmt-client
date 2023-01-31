@@ -110,6 +110,7 @@ public class CustomImageImporterDialog2<G1 extends IPerspectiveImage & IPerspect
  				JOptionPane.showMessageDialog(this, "Pointing file(s) not found. Review table and edit the imported images to find the pointing(s).");
  			}
  			tempCollection.setAllItems(tempImages);
+ 			tempCollection.setSelectedItems(List.of(tempImages.get(tempImages.size()-1)));
 		});
 
 		table.getDeleteImageButton().addActionListener(e -> {

@@ -400,7 +400,7 @@ public class SmallBodyViewConfig extends BodyViewConfig implements ISmallBodyVie
         		FileCache.getFileFromServer(imageFileName);
         		FileCache.getFileFromServer(infoFileName);
         		String fileName = SafeURLPaths.instance().getUrl(metadataDir + File.separator + key.getImageFilename());
-        		CustomPerspectiveImageKey correctedKey = new CustomPerspectiveImageKey(fileName, fileName, key.getSource(), key.getImageType(), key.getRotation(), key.getFlip(), key.getFileType(), key.getPointingFile(),
+        		CustomPerspectiveImageKey correctedKey = new CustomPerspectiveImageKey(fileName, fileName, key.getSource(), key.getImageType(), key.getRotation(), key.getFlip(), key.getFileType(), infoFileName,
         				key.getDate(), key.getOriginalName());
 
         		builder.add(correctedKey);

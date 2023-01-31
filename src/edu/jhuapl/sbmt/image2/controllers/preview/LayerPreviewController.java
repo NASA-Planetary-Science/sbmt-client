@@ -193,8 +193,6 @@ public class LayerPreviewController<G1 extends IPerspectiveImage & IPerspectiveI
 				{
 //					int[] masks = items.getRight();
 //					renderLayer();
-					System.out.println(
-							"LayerPreviewController.buildTrimController(...).new Function() {...}: apply: masks " + Arrays.toString(items.getRight()));
 					model.setCurrentMaskValues(items.getRight());
 //					model.getImage().setMaskValues(items.getRight());
 //					renderLayer();
@@ -252,7 +250,8 @@ public class LayerPreviewController<G1 extends IPerspectiveImage & IPerspectiveI
 	private void initializeListeners()
 	{
 		panel.getSyncCheckBox().addActionListener(evt -> {
-			completionBlock.run();
+			panel.getApplyAllButton().setEnabled(!panel.getSyncCheckBox().isSelected());
+			if (panel.getSyncCheckBox().isSelected()) completionBlock.run();
 		});
 
 
@@ -304,9 +303,10 @@ public class LayerPreviewController<G1 extends IPerspectiveImage & IPerspectiveI
 		panel.getApplyAllButton().addActionListener(evt -> {
 			try
 			{
+				completionBlock.run();
 //				model.setCurrentMaskValues(maskController.getMaskValues());
-				fillValuesController.getFillValuesButton().doClick();
-				maskController.getApplyButton().doClick();
+//				fillValuesController.getFillValuesButton().doClick();
+//				maskController.getApplyButton().doClick();
 //				model.setCurrentFillValues(fillValuesController.getFillValues());
 			}
 			catch (Exception e1)

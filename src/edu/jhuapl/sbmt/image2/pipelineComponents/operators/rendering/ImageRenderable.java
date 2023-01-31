@@ -61,7 +61,7 @@ public class ImageRenderable
 		if (USE_PRECISE_BOUNDARY || image == null)
 		{
 			Just.of(Pair.of(footprintPolyData, smallBodyModels))
-				.operate(new HighResolutionBoundaryOperator(image.getOffset()))
+				.operate(new HighResolutionBoundaryOperator(smallBodyModels.get(0).getOffset()))
 				.subscribe(Sink.of(boundaryActors))
 				.run();
 		}

@@ -17,9 +17,16 @@ public class ImageFillValuesController
 	private JPanel panel;
 	private double[] fillValues;
 	private Function<double[], Void> completionBlock;
+	private boolean showApplyButton = false;
 
 	public ImageFillValuesController(Function<double[], Void> completionBlock)
 	{
+		this(false, completionBlock);
+	}
+
+	public ImageFillValuesController(boolean showApplyButton, Function<double[], Void> completionBlock)
+	{
+		this.showApplyButton = showApplyButton;
 		initGUI();
 		this.completionBlock = completionBlock;
 	}
@@ -39,7 +46,9 @@ public class ImageFillValuesController
 		JPanel textFieldPanel = new JPanel();
 		textFieldPanel.setLayout(new BoxLayout(textFieldPanel, BoxLayout.X_AXIS));
 		fillValuesButton = new JButton("Apply");
+		fillValuesButton.setVisible(showApplyButton);
 		fillValuesTextField = new JTextField();
+		fillValuesTextField.addActionListener(evt -> { fillValuesButton.doClick(); });
 		fillValuesTextField.setMinimumSize(new Dimension(350, 30));
 		fillValuesTextField.setPreferredSize(new Dimension(400, 30));
 		fillValuesTextField.setMaximumSize(new Dimension(550, 30));

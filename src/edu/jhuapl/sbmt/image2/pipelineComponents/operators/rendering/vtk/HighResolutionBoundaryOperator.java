@@ -50,6 +50,7 @@ public class HighResolutionBoundaryOperator extends BasePipelineOperator<Pair<Li
 	    	{
 				boundary = new vtkPolyData();
 				vtkPolyData edgeExtracterOutput = edgeExtracter.GetOutput();
+				if (edgeExtracterOutput.GetNumberOfCells() == 0) continue;
 				PolyDataUtil.shiftPolyDataInNormalDirection(edgeExtracterOutput, offset);
 				boundary.DeepCopy(edgeExtracterOutput);
 				if (boundaryMapper != null)

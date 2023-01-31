@@ -39,9 +39,16 @@ public class ImageMaskController
 	private int[] currentMaskValues;
 	private int leftMask = 0, rightMask = 0, topMask = 0, bottomMask = 0;
 	private JButton applyButton;
+	private boolean showApplyButton = false;
 
 	public ImageMaskController(Layer layer, int[] currentMaskValues, Function<Pair<Layer, int[]>, Void> completionBlock)
 	{
+		this(layer, currentMaskValues, false, completionBlock);
+	}
+
+	public ImageMaskController(Layer layer, int[] currentMaskValues, boolean showApplyButton, Function<Pair<Layer, int[]>, Void> completionBlock)
+	{
+		this.showApplyButton = showApplyButton;
 		this.layer = layer;
 		this.maskPipeline = new VtkImageMaskPipeline();
 		this.panel = new JPanel();
@@ -91,6 +98,7 @@ public class ImageMaskController
 		leftSpinner.setPreferredSize(new Dimension(60, 28));
 		leftSpinner.addChangeListener(evt ->
 		{
+			applyButton.doClick();
 //			System.out.println("ImageMaskController: initGUI: left");
 //			croppingChanged();
 		});
@@ -109,6 +117,7 @@ public class ImageMaskController
 		bottomSpinner.setPreferredSize(new Dimension(60, 28));
 		bottomSpinner.addChangeListener(evt ->
 		{
+			applyButton.doClick();
 //			if (bottomSpinner.getValue() != )
 //			croppingChanged();
 		});
@@ -136,6 +145,7 @@ public class ImageMaskController
 		{
 			public void stateChanged(ChangeEvent evt)
 			{
+				applyButton.doClick();
 //				System.out.println("ImageMaskController.initGUI().new ChangeListener() {...}: stateChanged: right");
 //				croppingChanged();
 			}
@@ -155,6 +165,7 @@ public class ImageMaskController
 		{
 			public void stateChanged(ChangeEvent evt)
 			{
+				applyButton.doClick();
 //				System.out.println("ImageMaskController.initGUI().new ChangeListener() {...}: stateChanged: top");
 //				croppingChanged();
 			}
@@ -212,6 +223,7 @@ public class ImageMaskController
 
 
 		applyButton = new JButton("Apply");
+		applyButton.setVisible(showApplyButton);
 		applyButton.addActionListener(evt -> {
 			croppingChanged();
 		});

@@ -204,17 +204,17 @@ public class CustomImageEditingController<G1 extends IPerspectiveImage & IPerspe
 		{
 			dialog.getPointingTypeComboBox().setSelectedIndex(0);
 			dialog.getPointingFilenameTextField().setText(existingImage.getPointingSource());
-			if (instrument != null)
-			{
-				Orientation orientation = instrument.getOrientation(existingImage.getPointingSourceType());
-				dialog.getImageFlipComboBox().setSelectedItem(existingImage.getFlip());
-				dialog.getImageRotationComboBox().setSelectedItem("" + (int) (existingImage.getRotation()));
-
-
-//				dialog.getImageFlipComboBox().setSelectedItem(orientation.getFlip().toString());
-//				dialog.getImageRotationComboBox().setSelectedItem("" + (int) (orientation.getRotation()));
-			}
-			else
+//			if (instrument != null)
+//			{
+//				Orientation orientation = instrument.getOrientation(existingImage.getPointingSourceType());
+//				dialog.getImageFlipComboBox().setSelectedItem(existingImage.getFlip());
+//				dialog.getImageRotationComboBox().setSelectedItem("" + (int) (existingImage.getRotation()));
+//
+//
+////				dialog.getImageFlipComboBox().setSelectedItem(orientation.getFlip().toString());
+////				dialog.getImageRotationComboBox().setSelectedItem("" + (int) (orientation.getRotation()));
+//			}
+//			else
 			{
 				dialog.getImageFlipComboBox().setSelectedItem(existingImage.getFlip());
 				dialog.getImageRotationComboBox().setSelectedItem("" + (int) (existingImage.getRotation()));
