@@ -2,7 +2,6 @@ package edu.jhuapl.sbmt.image2.pipelineComponents.pipelines.io;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 
@@ -93,8 +92,8 @@ public class IPerspectiveImageToLayerAndMetadataPipeline
 
 			image.setAutoMaskValues(masks);
 
-			if (Arrays.equals(image.getMaskValues(), new int[] {0,0,0,0}))
-				image.setMaskValues(masks);
+//			if (Arrays.equals(image.getMaskValues(), new int[] {0,0,0,0}))
+//				image.setMaskValues(masks);
 		}
 		else
 		{
@@ -104,8 +103,9 @@ public class IPerspectiveImageToLayerAndMetadataPipeline
 		if (image.isUseAutoMask())
 			maskingOperator = new LayerMaskOperator(image.getAutoMaskValues()[0], image.getAutoMaskValues()[1], image.getAutoMaskValues()[2], image.getAutoMaskValues()[3]);
 		else
+		{
 			maskingOperator = new LayerMaskOperator(image.getMaskValues()[0], image.getMaskValues()[1], image.getMaskValues()[2], image.getMaskValues()[3]);
-
+		}
 		IPipelineOperator<Layer, Layer> linearInterpolator = null;
 		if (image.getLinearInterpolatorDims() == null || (image.getLinearInterpolatorDims()[0] == 0 && image.getLinearInterpolatorDims()[1] == 0))
 			linearInterpolator = new PassthroughOperator<>();
@@ -123,10 +123,8 @@ public class IPerspectiveImageToLayerAndMetadataPipeline
 			.operate(linearInterpolator)
 			.operate(flipOperator)
 			.operate(rotationOperator)
-//			.operate(maskingOperator)
+			.operate(maskingOperator)
 			.subscribe(Sink.of(updatedLayers)).run();
-
-
 	}
 
 	public static IPerspectiveImageToLayerAndMetadataPipeline of(IPerspectiveImage image) throws InvalidGDALFileTypeException, IOException, Exception

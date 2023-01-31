@@ -385,15 +385,6 @@ public class ImageSearchController<G1 extends IPerspectiveImage & IPerspectiveIm
 			}
 		});
 
-//		imageListTableController.getPanel().getNewImageButton().addActionListener(e -> {
-//			CustomImageImporterDialog dialog = new CustomImageImporterDialog(null, false, instrument,
-//					modelManager.getPolyhedralModel().isEllipsoid(), collection);
-////			dialog.setCurrentImageNames(model.getCustomImageNames());
-////	        dialog.setImageInfo(null, model.getModelManager().getPolyhedralModel().isEllipsoid());
-//	        dialog.setLocationRelativeTo(imageListTableController.getPanel());
-//	        dialog.setVisible(true);
-//		});
-
 		imageListTableController.getPanel().getGalleryButton().setEnabled(false);
 
 	}
@@ -439,9 +430,7 @@ public class ImageSearchController<G1 extends IPerspectiveImage & IPerspectiveIm
 			{
 				LoadFileToCustomImageListPipeline<G1> pipeline = LoadFileToCustomImageListPipeline.of();
 				List<G1> images = pipeline.getResults().getLeft();
-//				List<PerspectiveImageRenderingState<G1>> renderingStates = pipeline.getResults().getRight();
 				collection.setImages(images);
-//				collection.setRenderingStates(renderingStates);
 			}
 			catch (Exception e1)
 			{
@@ -480,6 +469,8 @@ public class ImageSearchController<G1 extends IPerspectiveImage & IPerspectiveIm
 
 	        dialog.setLocationRelativeTo(customImageListTableController.getPanel());
 	        dialog.setVisible(true);
+	        collection.setSelectedItems(List.of(collection.getAllItems().get(collection.size()-1)));
+	        customImageListTableController.getPanel().repaint();
 		});
 
 		customImageListTableController.getPanel().getEditImageButton().addActionListener(e -> {
@@ -500,7 +491,6 @@ public class ImageSearchController<G1 extends IPerspectiveImage & IPerspectiveIm
 						modelManager.getPolyhedralModel().isEllipsoid(), !image.getPointingSourceType().toString().contains("Cylindrical"), image, instrument.orElse(null), completionBlock);
 		        dialog.getDialog().setLocationRelativeTo(customImageListTableController.getPanel());
 		        dialog.getDialog().setVisible(true);
-		        collection.updateUserImage(image);
 			}
 			else if (image.getNumberOfLayers() == 3) //editing custom color image
 			{
@@ -566,7 +556,6 @@ public class ImageSearchController<G1 extends IPerspectiveImage & IPerspectiveIm
 			ImageGalleryGenerator.of(instrument.orElse(null), state -> {
 				imageListTableController.getPanel().getGalleryButton().setEnabled(true);
 			});
-//			imageListTableController.getPanel().getGalleryButton().setEnabled(collection.getAllItems().size() > 0);
 		}
 		else
 		{

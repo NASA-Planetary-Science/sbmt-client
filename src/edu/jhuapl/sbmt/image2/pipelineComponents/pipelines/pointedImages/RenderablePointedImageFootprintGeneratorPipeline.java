@@ -22,8 +22,13 @@ public class RenderablePointedImageFootprintGeneratorPipeline
 
 	public RenderablePointedImageFootprintGeneratorPipeline(IRenderableImage image, List<SmallBodyModel> smallBodyModels) throws IOException, Exception
 	{
+		this(image, smallBodyModels, false);
+	}
+
+	public RenderablePointedImageFootprintGeneratorPipeline(IRenderableImage image, List<SmallBodyModel> smallBodyModels, boolean useModifiedPointing) throws IOException, Exception
+	{
 		Just.of(image)
-			.operate(new RenderablePointedImageFootprintOperator(smallBodyModels))
+			.operate(new RenderablePointedImageFootprintOperator(smallBodyModels, useModifiedPointing))
 			.subscribe(PairSink.of(outputs))
 			.run();
 	}

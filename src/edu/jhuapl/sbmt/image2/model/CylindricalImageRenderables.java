@@ -34,7 +34,7 @@ public class CylindricalImageRenderables extends ImageRenderable
 		RenderableCylindricalImageFootprintGeneratorPipeline pipeline =
 				new RenderableCylindricalImageFootprintGeneratorPipeline(renderableImage, smallBodyModels);
 		footprintPolyData = pipeline.getFootprintPolyData();
-        VtkImageRendererOperator imageRenderer = new VtkImageRendererOperator();
+        VtkImageRendererOperator imageRenderer = new VtkImageRendererOperator(true);
         Just.of(renderableImage.getLayer())
         	.operate(imageRenderer)
         	.operate(new VtkImageContrastOperator(renderableImage.getIntensityRange()))

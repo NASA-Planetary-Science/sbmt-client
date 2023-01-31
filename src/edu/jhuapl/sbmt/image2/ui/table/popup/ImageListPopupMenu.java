@@ -48,12 +48,12 @@ public class ImageListPopupMenu<G1 extends IPerspectiveImage  & IPerspectiveImag
 		super(aManager);
 		// TODO Auto-generated constructor stub
 
-		MapImageAction mapAction = new MapImageAction<>(aManager);
+		MapImageAction<G1> mapAction = new MapImageAction<G1>(aManager);
 		JCheckBoxMenuItem showHideCBMI = new JCheckBoxMenuItem(mapAction);
 		showHideCBMI.setText("Map Image");
 		installPopAction(mapAction, showHideCBMI);
 
-		MapBoundaryAction mapBoundaryAction = new MapBoundaryAction(aManager);
+		MapBoundaryAction<G1> mapBoundaryAction = new MapBoundaryAction<G1>(aManager);
 		JCheckBoxMenuItem showHideBoundaryCBMI = new JCheckBoxMenuItem(mapBoundaryAction);
 		showHideBoundaryCBMI.setText("Show Boundary");
 		installPopAction(mapBoundaryAction, showHideBoundaryCBMI);

@@ -66,10 +66,11 @@ public class LayerRendererPanel extends ModelInfoWindow implements MouseListener
 	private JPanel tablePanel;
 	private int[] previousLevels = null;
 	vtkImageData displayedImage;
+	private boolean invertY = false;
 
-	public LayerRendererPanel(final Layer layer) throws IOException, Exception
+	public LayerRendererPanel(final Layer layer, boolean invertY) throws IOException, Exception
 	{
-
+		this.invertY = invertY;
 //		this.maskPipeline = new VtkImageMaskingPipeline();
 		this.layer = layer;
 		initComponents();
@@ -108,7 +109,7 @@ public class LayerRendererPanel extends ModelInfoWindow implements MouseListener
 		List<vtkImageData> displayedImages = new ArrayList<vtkImageData>();
 		IPipelinePublisher<Layer> reader = new Just<Layer>(layer);
 		reader.
-			operate(new VtkImageRendererOperator()).
+			operate(new VtkImageRendererOperator(invertY)).
 			subscribe(new Sink<vtkImageData>(displayedImages)).run();
 		displayedImage = displayedImages.get(0);
 //		contrastController.setImageData(displayedImage);

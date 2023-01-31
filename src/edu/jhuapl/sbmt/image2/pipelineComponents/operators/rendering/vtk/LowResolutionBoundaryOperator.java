@@ -22,10 +22,11 @@ import edu.jhuapl.sbmt.pipeline.operator.BasePipelineOperator;
 
 public class LowResolutionBoundaryOperator extends BasePipelineOperator<Pair<PointingFileReader, List<SmallBodyModel>>, vtkActor>
 {
+	private double offset;
 
-	public LowResolutionBoundaryOperator()
+	public LowResolutionBoundaryOperator(double offset)
 	{
-		// TODO Auto-generated constructor stub
+		this.offset = offset;
 	}
 
 	@Override
@@ -158,7 +159,8 @@ public class LowResolutionBoundaryOperator extends BasePipelineOperator<Pair<Poi
 		                smallBodyModel.getSmallBodyPolyData(),
 		                smallBodyModel.getCellNormals(),
 		                smallBodyModel.getCellLocator(),
-		                3.0*smallBodyModel.getMinShiftAmount());
+		                offset);
+//		                3.0*smallBodyModel.getMinShiftAmount());
 
 		        boundary.Modified();
 		        boundaryMapper.SetInputData(boundary);

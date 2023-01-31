@@ -82,7 +82,10 @@ public class ShowImagePropertiesAction<G1 extends IPerspectiveImage & IPerspecti
 				CylindricalImageToRenderableImagePipeline pipeline = CylindricalImageToRenderableImagePipeline.of(List.of(aItemL.get(0)));
 				List<HashMap<String, String>> metadata = pipeline.getMetadata();
 				List<IRenderableImage> renderableImages = pipeline.getRenderableImages();
-				preview = new VtkLayerPreview<G1>("Image Properties - " + image.getName(), image.getCurrentLayer(), image.getIntensityRange(), image.getMaskValues(), image.getFillValues());
+				boolean invertY = false;
+				if (image.getFilename().toLowerCase().endsWith("png") || image.getFilename().toLowerCase().endsWith("jpg") || image.getFilename().toLowerCase().endsWith("jpeg"))
+					invertY = true;
+				preview = new VtkLayerPreview<G1>(image, "Image Properties - " + image.getName(), image.getCurrentLayer(), image.getIntensityRange(), image.getMaskValues(), image.getFillValues(), invertY);
 				preview.setImage(image);
 				preview.setCompletionBlock(completionBlock);
 				List<Pair<Layer, List<HashMap<String, String>>>> inputList = Lists.newArrayList();
@@ -124,7 +127,7 @@ public class ShowImagePropertiesAction<G1 extends IPerspectiveImage & IPerspecti
 					IPerspectiveImageToLayerAndMetadataPipeline inputPipeline = IPerspectiveImageToLayerAndMetadataPipeline.of(image);
 					List<Layer> updatedLayers = inputPipeline.getLayers();
 					List<HashMap<String, String>> metadata = inputPipeline.getMetadata();
-					preview = new VtkLayerPreview<G1>("Image Properties - " + image.getName(), image.getCurrentLayer(), image.getIntensityRange(), image.getMaskValues(), image.getFillValues());
+					preview = new VtkLayerPreview<G1>(image, "Image Properties - " + image.getName(), image.getCurrentLayer(), image.getIntensityRange(), image.getMaskValues(), image.getFillValues(), false);
 					preview.setCompletionBlock(completionBlock);
 					preview.setImage(image);
 					List<HashMap<String, String>> metadatas = List.of(metadata.get(0));

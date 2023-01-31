@@ -226,15 +226,6 @@ public class PerspectiveImageCollection<G1 extends IPerspectiveImage & IPerspect
 		String filePath = smallBodyModels.get(0).getCustomDataFolder() + File.separator + info.getImageFilename();
 		String pointingFile = smallBodyModels.get(0).getCustomDataFolder() + File.separator + info.getPointingFile();
 		ImageSource pointingSourceType = info.getSource();
-//		if (info instanceof CustomPerspectiveImageKey)
-//		{
-//			CustomPerspectiveImageKey perInfo = (CustomPerspectiveImageKey)info;
-//
-//		}
-//		else
-//		{
-//			CustomCylindricalImageKey cylInfo = (CustomCylindricalImageKey)info;
-//		}
 		image = new PerspectiveImage(filePath, imageType, pointingSourceType, pointingFile, fillValues);
 		image.setName(info.getName());
 		image.setImageOrigin(ImageOrigin.LOCAL);
@@ -259,37 +250,10 @@ public class PerspectiveImageCollection<G1 extends IPerspectiveImage & IPerspect
 		compImage.setName(info.getName());
 
 		return (G1)compImage;
-    	//Code from other file
-//    	ImageType imageType = (ImageType)imageTypeComboBox.getSelectedItem();
-//
-//		double[] fillValues = new double[] {};
-//		PerspectiveImage image = new PerspectiveImage(newFilepath, imageType, pointingSourceType, newPointingFilepath, fillValues);
-//
-//		image.setName(getName());
-//		image.setImageOrigin(ImageOrigin.LOCAL);
-//		image.setLongTime(new Date().getTime());
-//		if (pointingSourceType == ImageSource.LOCAL_CYLINDRICAL)
-//		{
-//			image.setBounds(new CylindricalBounds(-90,90,0,360));
-//		}
-//		else
-//		{
-//			if (imageType != ImageType.GENERIC_IMAGE)
-//			{
-//				image.setLinearInterpolatorDims(instrument.getLinearInterpolationDims());
-//				image.setMaskValues(instrument.getMaskValues());
-//				image.setFillValues(instrument.getFillValues());
-//				image.setFlip(instrument.getFlip());
-//				image.setRotation(instrument.getRotation());
-//			}
-//		}
-//		CompositePerspectiveImage compImage = new CompositePerspectiveImage(List.of(image));
-//		compImage.setName(FilenameUtils.getBaseName(filename));
 	}
 
 	public void loadUserList()
 	{
-//		clearUserImages();
 		String instrumentName = ""; //imagingInstrument == null ? "" : imagingInstrument.getType().toString();
 		String filename = smallBodyModels.get(0).getCustomDataFolder() + File.separator + "userImages" + instrumentName + ".txt";
         if (!new File(filename).exists()) return;
@@ -322,6 +286,10 @@ public class PerspectiveImageCollection<G1 extends IPerspectiveImage & IPerspect
 //	            	state.isFrustumShowing = image.isFrustumShowing();
 //	            	state.isBoundaryShowing = image.isBoundaryShowing();
 //	            	state.isOfflimbShowing = image.isOfflimbShowing();
+            	}
+            	else
+            	{
+            		image.setMapped(false);
             	}
 
 
@@ -478,6 +446,7 @@ public class PerspectiveImageCollection<G1 extends IPerspectiveImage & IPerspect
 				actor.GetProperty().SetColor(colorToDoubleArray(renderingStates.get(image).offLimbBoundaryColor));
 			}
 		});
+		if (userImages.contains(image)) updateUserList();
 	}
 
 	public void updateActiveBoundaries(IdPair previousRange)
@@ -589,6 +558,7 @@ public class PerspectiveImageCollection<G1 extends IPerspectiveImage & IPerspect
 					actor.SetVisibility(mapped ? 1 : 0);
 				}
 			}
+			if (userImages.contains(image)) updateUserList();
 		}
 		renderingStates.get(image).isMapped = mapped;
 		this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
@@ -635,6 +605,7 @@ public class PerspectiveImageCollection<G1 extends IPerspectiveImage & IPerspect
 					actor.SetVisibility(visible ? 1 : 0);
 				}
 				this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
+				if (userImages.contains(image)) updateUserList();
 			}
 		}
 		renderingStates.get(image).isFrustumShowing = visible;
@@ -685,6 +656,7 @@ public class PerspectiveImageCollection<G1 extends IPerspectiveImage & IPerspect
 					actor.SetVisibility(showing? 1 : 0);
 				}
 			}
+			if (userImages.contains(image)) updateUserList();
 			this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
 		}
 		renderingStates.get(image).isOfflimbShowing = showing;
@@ -719,6 +691,7 @@ public class PerspectiveImageCollection<G1 extends IPerspectiveImage & IPerspect
 			{
 				actor.SetVisibility(showing ? 1 : 0);
 			}
+			if (userImages.contains(image)) updateUserList();
 			this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
 		}
 		renderingStates.get(image).isOffLimbBoundaryShowing = showing;
@@ -750,9 +723,15 @@ public class PerspectiveImageCollection<G1 extends IPerspectiveImage & IPerspect
 					actor.SetVisibility(showing? 1 : 0);
 					if (renderingStates.get(image).boundaryColor == null)
 					{
-						if (imagesByInstrument.get(imagingInstrument) == null) break;
-						Color color = ColorUtil.generateColor(imagesByInstrument.get(imagingInstrument).indexOf(image)%100, 100);
-						renderingStates.get(image).boundaryColor = color;
+						if ((imagingInstrument == null) || imagesByInstrument.get(imagingInstrument) == null)
+						{
+							renderingStates.get(image).boundaryColor = Color.red;
+						}
+						else
+						{
+							Color color = ColorUtil.generateColor(imagesByInstrument.get(imagingInstrument).indexOf(image)%100, 100);
+							renderingStates.get(image).boundaryColor = color;
+						}
 					}
 					actor.GetProperty().SetColor(colorToDoubleArray(renderingStates.get(image).boundaryColor));
 				}
@@ -769,6 +748,7 @@ public class PerspectiveImageCollection<G1 extends IPerspectiveImage & IPerspect
 				{
 					actor.SetVisibility(showing ? 1 : 0);
 				}
+				if (userImages.contains(image)) updateUserList();
 				this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
 			}
 		}
@@ -1060,24 +1040,6 @@ public class PerspectiveImageCollection<G1 extends IPerspectiveImage & IPerspect
 					{
 						ImageToScenePipeline colorPipeline = ImagePipelineFactory.of(image, smallBodyModels);
 						boundaryActors = colorPipeline.getRenderableImageBoundaryActors();
-
-//						List<IRenderableImage> renderableImages;
-//						ImageRenderable imageRenderable;
-//						if (image.getImageType() != ImageType.GENERIC_IMAGE && image.getPointingSourceType() != ImageSource.LOCAL_CYLINDRICAL)
-//						{
-//							PerspectiveImageToRenderableImagePipeline pipeline = new PerspectiveImageToRenderableImagePipeline(List.of(image));
-//							renderableImages = pipeline.getRenderableImages();
-//							imageRenderable = new PointedImageRenderables((RenderablePointedImage)renderableImages.get(0), smallBodyModels);
-//						}
-//						else
-//						{
-//							renderableImages = CylindricalImageToRenderableImagePipeline.of(List.of(image)).getRenderableImages();
-//							imageRenderable = new CylindricalImageRenderables((RenderableCylindricalImage)renderableImages.get(0), smallBodyModels);
-//						}
-//						Just.of(Pair.of(imageRenderable.getFootprintPolyData(), smallBodyModels))
-//							.operate(new HighResolutionBoundaryOperator())
-//							.subscribe(Sink.of(boundaryActors))
-//							.run();
 					}
 					else
 					{
@@ -1095,7 +1057,7 @@ public class PerspectiveImageCollection<G1 extends IPerspectiveImage & IPerspect
 						else
 							pointingPublisher = new SumfileReaderPublisher(pointingFile);
 						Just.of(Pair.of(pointingPublisher.getOutput(), smallBodyModels))
-							.operate(new LowResolutionBoundaryOperator())
+							.operate(new LowResolutionBoundaryOperator(image.getOffset()))
 							.subscribe(Sink.of(boundaryActors))
 							.run();
 					}

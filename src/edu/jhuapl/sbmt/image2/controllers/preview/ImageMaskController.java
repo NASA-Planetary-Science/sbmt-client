@@ -227,6 +227,11 @@ public class ImageMaskController
 		return new int[] {(int)bottomSpinner.getValue(), (int)topSpinner.getValue(), (int)rightSpinner.getValue(), (int)leftSpinner.getValue()};
 	}
 
+	public JButton getApplyButton()
+	{
+		return applyButton;
+	}
+
 	private void croppingChanged()
 	{
 		if (layer == null) return;

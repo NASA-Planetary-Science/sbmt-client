@@ -37,17 +37,24 @@ import edu.jhuapl.sbmt.pipeline.subscriber.Sink;
 public class RenderablePointedImageFootprintOperator extends BasePipelineOperator<IRenderableImage, Pair<List<vtkImageData>, List<vtkPolyData>>>
 {
 	List<SmallBodyModel> smallBodyModels;
+	private boolean useModifiedPointing = false;
 
 	public RenderablePointedImageFootprintOperator(List<SmallBodyModel> smallBodyModels)
 	{
+		this(smallBodyModels, false);
+	}
+
+	public RenderablePointedImageFootprintOperator(List<SmallBodyModel> smallBodyModels, boolean useModifiedPointing)
+	{
 		this.smallBodyModels = smallBodyModels;
+		this.useModifiedPointing = useModifiedPointing;
 	}
 
 	@Override
 	public void processData() throws IOException, Exception
 	{
 		RenderablePointedImage renderableImage = (RenderablePointedImage)inputs.get(0);
-		PointingFileReader infoReader = renderableImage.getPointing();
+		PointingFileReader infoReader = useModifiedPointing ? renderableImage.getModifiedPointing().get() : renderableImage.getPointing();
 		double[] spacecraftPositionAdjusted = infoReader.getSpacecraftPosition();
     	double[] frustum1Adjusted = infoReader.getFrustum1();
     	double[] frustum2Adjusted = infoReader.getFrustum2();

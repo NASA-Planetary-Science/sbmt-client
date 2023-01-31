@@ -32,6 +32,8 @@ public class CylindricalImageToRenderableImagePipeline
 		{
 			IPerspectiveImageToLayerAndMetadataPipeline inputPipeline = IPerspectiveImageToLayerAndMetadataPipeline.of(image);
 			List<Layer> updatedLayers = inputPipeline.getLayers();
+			if (image.getFilename().toLowerCase().endsWith("png") || image.getFilename().toLowerCase().endsWith("jpg") || image.getFilename().toLowerCase().endsWith("jpeg"))
+				updatedLayers = List.of(inputPipeline.getLayers().get(0));
 			metadata = inputPipeline.getMetadata();
 			List<CylindricalBounds> boundsCollection = Lists.newArrayList();
 			for (int i=0; i<updatedLayers.size(); i++)

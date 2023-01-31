@@ -31,8 +31,8 @@ public class PointedImageRenderables extends ImageRenderable
 	private boolean offLimbVisibility = false;
     private boolean offLimbBoundaryVisibility = false;
     private double offLimbFootprintDepth;
-//    private RenderablePointedImage image;
     List<vtkImageData> imageData = Lists.newArrayList();
+    List<vtkImageData> modifiedImageData = Lists.newArrayList();
     private RenderablePointedImageFootprintGeneratorPipeline pipeline;
 
 	public PointedImageRenderables(RenderablePointedImage image, List<SmallBodyModel> smallBodyModels) throws IOException, Exception
@@ -48,7 +48,8 @@ public class PointedImageRenderables extends ImageRenderable
 		image.getModifiedPointing().ifPresent(pointing -> {
 			try
 			{
-				modifiedFootprintActors = processFootprints(footprintPolyData, imageData, image.isLinearInterpolation());
+				prepareModifiedFootprints(image);
+				modifiedFootprintActors = processFootprints(modifiedFootprintPolyData, modifiedImageData, image.isLinearInterpolation());
 				modifiedFrustumActor = processFrustum(image, pointing);
 				modifiedBoundaryActors = processBoundaries();
 			}
@@ -65,6 +66,13 @@ public class PointedImageRenderables extends ImageRenderable
 		pipeline = new RenderablePointedImageFootprintGeneratorPipeline(renderableImage, smallBodyModels);
 		footprintPolyData = pipeline.getFootprintPolyData();
 		imageData.addAll(pipeline.getImageData());
+	}
+
+	private void prepareModifiedFootprints(RenderablePointedImage renderableImage) throws IOException, Exception
+	{
+		pipeline = new RenderablePointedImageFootprintGeneratorPipeline(renderableImage, smallBodyModels, true);
+		modifiedFootprintPolyData = pipeline.getFootprintPolyData();
+		modifiedImageData.addAll(pipeline.getImageData());
 	}
 
 	private vtkActor processFrustum(RenderablePointedImage renderableImage, PointingFileReader pointing)

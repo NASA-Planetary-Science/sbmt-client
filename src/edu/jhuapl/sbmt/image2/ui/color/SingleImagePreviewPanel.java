@@ -94,7 +94,7 @@ public class SingleImagePreviewPanel extends JPanel
 	private void runPreviewPipeline()
 	{
 		previewPanel.removeAll();
-		VtkLayerRenderer preview = new VtkLayerRenderer();
+		VtkLayerRenderer preview = new VtkLayerRenderer(false);
 
 		try {
 			PerspectiveImageToRenderableImagePipeline pipeline = new PerspectiveImageToRenderableImagePipeline(List.of(perspectiveImage));

@@ -12,15 +12,17 @@ import vtk.vtkFeatureEdges;
 import vtk.vtkPolyData;
 import vtk.vtkPolyDataMapper;
 
+import edu.jhuapl.saavtk.util.PolyDataUtil;
 import edu.jhuapl.sbmt.common.client.SmallBodyModel;
 import edu.jhuapl.sbmt.pipeline.operator.BasePipelineOperator;
 
 public class HighResolutionBoundaryOperator extends BasePipelineOperator<Pair<List<vtkPolyData>, List<SmallBodyModel>>, vtkActor>
 {
+	private double offset;
 
-	public HighResolutionBoundaryOperator()
+	public HighResolutionBoundaryOperator(double offset)
 	{
-		// TODO Auto-generated constructor stub
+		this.offset = offset;
 	}
 
 	@Override
@@ -48,6 +50,7 @@ public class HighResolutionBoundaryOperator extends BasePipelineOperator<Pair<Li
 	    	{
 				boundary = new vtkPolyData();
 				vtkPolyData edgeExtracterOutput = edgeExtracter.GetOutput();
+				PolyDataUtil.shiftPolyDataInNormalDirection(edgeExtracterOutput, offset);
 				boundary.DeepCopy(edgeExtracterOutput);
 				if (boundaryMapper != null)
 				{

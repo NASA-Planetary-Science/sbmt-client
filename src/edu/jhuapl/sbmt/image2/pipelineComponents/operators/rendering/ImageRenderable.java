@@ -32,6 +32,7 @@ public class ImageRenderable
 	protected double maxFrustumDepth;
 	protected double minFrustumDepth;
 	protected List<vtkActor> modifiedFootprintActors = Lists.newArrayList();
+	protected List<vtkPolyData> modifiedFootprintPolyData = Lists.newArrayList();
 	protected vtkActor modifiedFrustumActor;
 	protected List<vtkActor> modifiedBoundaryActors = Lists.newArrayList();
 	protected boolean generateOfflimb = false;
@@ -60,14 +61,14 @@ public class ImageRenderable
 		if (USE_PRECISE_BOUNDARY || image == null)
 		{
 			Just.of(Pair.of(footprintPolyData, smallBodyModels))
-				.operate(new HighResolutionBoundaryOperator())
+				.operate(new HighResolutionBoundaryOperator(image.getOffset()))
 				.subscribe(Sink.of(boundaryActors))
 				.run();
 		}
 		else
 		{
 			Just.of(Pair.of(image.getPointing(), smallBodyModels))
-				.operate(new LowResolutionBoundaryOperator())
+				.operate(new LowResolutionBoundaryOperator(image.getOffset()))
 				.subscribe(Sink.of(boundaryActors))
 				.run();
 		}

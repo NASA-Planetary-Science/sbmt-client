@@ -8,8 +8,10 @@ import java.util.List;
 import org.apache.commons.lang3.tuple.Pair;
 
 import edu.jhuapl.saavtk.util.IntensityRange;
+import edu.jhuapl.sbmt.image2.controllers.preview.LayerPreviewController;
 import edu.jhuapl.sbmt.image2.interfaces.IPerspectiveImage;
 import edu.jhuapl.sbmt.image2.interfaces.IPerspectiveImageTableRepresentable;
+import edu.jhuapl.sbmt.image2.model.LayerPreviewModel;
 import edu.jhuapl.sbmt.image2.ui.LayerPreviewPanel;
 import edu.jhuapl.sbmt.layer.api.Layer;
 import edu.jhuapl.sbmt.pipeline.publisher.IPipelinePublisher;
@@ -19,6 +21,8 @@ public class VtkLayerPreview<G1 extends IPerspectiveImage & IPerspectiveImageTab
 {
 	private IPipelinePublisher<Pair<Layer, List<HashMap<String, String>>>> publisher;
 	private LayerPreviewPanel<G1> preview;
+	LayerPreviewController<G1> previewController;
+	LayerPreviewModel<G1> previewModel;
 	private String title;
 	private Runnable completionBlock;
 	private int currentLayerIndex;
@@ -26,25 +30,34 @@ public class VtkLayerPreview<G1 extends IPerspectiveImage & IPerspectiveImageTab
 	private int[] currentMaskValues;
 	private double[] currentFillValues = new double[] {};
 	private G1 image;
+	private boolean invertY = false;
 
-	public VtkLayerPreview(String title, G1 image)
+	public VtkLayerPreview(String title, G1 image, boolean invertY)
 	{
-		this(title, image.getCurrentLayer(), image.getIntensityRange(), image.getMaskValues(), image.getFillValues());
+		this(image, title, image.getCurrentLayer(), image.getIntensityRange(), image.getMaskValues(), image.getFillValues(), invertY);
 		this.image = image;
 	}
 
-	public VtkLayerPreview(String title, int currentLayerIndex, IntensityRange currentIntensityRange, int[] maskValues, double[] fillValues)
+	public VtkLayerPreview(G1 image, String title, int currentLayerIndex, IntensityRange currentIntensityRange, int[] maskValues, double[] fillValues, boolean invertY)
 	{
 		this.title = title;
 		this.currentLayerIndex = currentLayerIndex;
 		this.currentIntensityRange = currentIntensityRange;
 		this.currentMaskValues = maskValues;
 		this.currentFillValues = fillValues;
+		this.invertY = invertY;
+		this.image = image;
 	}
 
-	public VtkLayerPreview(String title, int currentLayerIndex, IntensityRange currentIntensityRange, int[] currentMaskValues, double[] fillValues, Runnable completionBlock)
+	public VtkLayerPreview(G1 image, String title, int currentLayerIndex, IntensityRange currentIntensityRange, int[] currentMaskValues, double[] fillValues, boolean invertY, Runnable completionBlock)
 	{
-		this(title, currentLayerIndex, currentIntensityRange, currentMaskValues, fillValues);
+		this(image, title, currentLayerIndex, currentIntensityRange, currentMaskValues, fillValues, invertY);
+		this.completionBlock = completionBlock;
+	}
+
+	public VtkLayerPreview(String title, int currentLayerIndex, IntensityRange currentIntensityRange, int[] currentMaskValues, double[] fillValues, boolean invertY, Runnable completionBlock)
+	{
+		this(null, title, currentLayerIndex, currentIntensityRange, currentMaskValues, fillValues, invertY);
 		this.completionBlock = completionBlock;
 	}
 
@@ -55,8 +68,9 @@ public class VtkLayerPreview<G1 extends IPerspectiveImage & IPerspectiveImageTab
 		{
 			List<Layer> layers = items.stream().map( item -> item.getLeft()).toList();
 			List<List<HashMap<String, String>>> metadata = items.stream().map( item -> item.getRight()).toList();
-			preview = new LayerPreviewPanel<G1>(title, layers, currentLayerIndex, currentIntensityRange, currentMaskValues, currentFillValues, metadata, completionBlock);
-			preview.setImage(image);
+			preview = new LayerPreviewPanel<G1>(title);
+			previewModel = new LayerPreviewModel<G1>(image, layers, currentLayerIndex, currentIntensityRange, currentMaskValues, currentFillValues, metadata, invertY);
+			previewController = new LayerPreviewController<>(preview, previewModel, completionBlock);
 		}
 		catch (Exception e)
 		{
@@ -64,21 +78,6 @@ public class VtkLayerPreview<G1 extends IPerspectiveImage & IPerspectiveImageTab
 			e.printStackTrace();
 		}
 	}
-
-//	public void setLayers(List<Layer> layers)
-//	{
-//		if (preview == null) return;
-//		try
-//		{
-//			System.out.println("VtkLayerPreview: setLayers: setting layers");
-//			preview.setLayers(layers);
-//		}
-//		catch (Exception e)
-//		{
-//			// TODO Auto-generated catch block
-//			e.printStackTrace();
-//		}
-//	}
 
 	@Override
 	public void receive(Pair<Layer, List<HashMap<String, String>>> item) throws IOException, Exception
@@ -103,7 +102,7 @@ public class VtkLayerPreview<G1 extends IPerspectiveImage & IPerspectiveImageTab
 	}
 
 	@Override
-	public VtkLayerPreview run() throws IOException, Exception
+	public VtkLayerPreview<G1> run() throws IOException, Exception
 	{
 		publisher.run();
 		return this;
@@ -111,27 +110,27 @@ public class VtkLayerPreview<G1 extends IPerspectiveImage & IPerspectiveImageTab
 
 	public IntensityRange getIntensityRange()
 	{
-		if (preview == null) return currentIntensityRange;
-		return preview.getIntensityRange();
+		if (previewModel == null) return currentIntensityRange;
+		return previewModel.getIntensityRange();
 	}
 
 	public int[] getMaskValues()
 	{
-		if (preview == null) return currentMaskValues;
-		return preview.getMaskValues();
+		if (previewModel == null) return currentMaskValues;
+		return previewModel.getCurrentMaskValues();
 	}
 
 	public double[] getFillValues()
 	{
-		if (preview == null) return currentFillValues;
-		if (preview.getFillValues() == null) return new double[] {};
-		return preview.getFillValues();
+		if (previewModel == null) return currentFillValues;
+		if (previewModel.getCurrentFillValues() == null) return new double[] {};
+		return previewModel.getCurrentFillValues();
 	}
 
 	public int getDisplayedLayerIndex()
 	{
-		if (preview == null) return currentLayerIndex;
-		return preview.getDisplayedLayerIndex();
+		if (previewModel== null) return currentLayerIndex;
+		return previewModel.getDisplayedLayerIndex();
 	}
 
 	/**
@@ -140,7 +139,7 @@ public class VtkLayerPreview<G1 extends IPerspectiveImage & IPerspectiveImageTab
 	public void setImage(G1 image)
 	{
 		this.image = image;
-		if (preview == null) return;
-		preview.setImage(image);
+		if (previewModel == null) return;
+		previewModel.setImage(image);
 	}
 }
