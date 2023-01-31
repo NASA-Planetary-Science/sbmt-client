@@ -402,9 +402,11 @@ public class SbmtView extends View implements PropertyChangeListener
         demCollection.setModelManager(getModelManager());
         demBoundaryCollection.setModelManager(getModelManager());
 		tmpSceneChangeNotifier.setTarget(getModelManager());
-		((SpectraCollection)(allModels.get(ModelNames.SPECTRA))).setModelManager(getModelManager());
-		((SpectraCollection)(allModels.get(ModelNames.CUSTOM_SPECTRA))).setModelManager(getModelManager());
-
+		if (getPolyhedralModelConfig().hasSpectralData)
+		{
+			((SpectraCollection)(allModels.get(ModelNames.SPECTRA))).setModelManager(getModelManager());
+			((SpectraCollection)(allModels.get(ModelNames.CUSTOM_SPECTRA))).setModelManager(getModelManager());
+		}
         getModelManager().addPropertyChangeListener(this);
 
 		SBMTInfoWindowManagerFactory.initializeModels(getModelManager(), getLegacyStatusHandler());
