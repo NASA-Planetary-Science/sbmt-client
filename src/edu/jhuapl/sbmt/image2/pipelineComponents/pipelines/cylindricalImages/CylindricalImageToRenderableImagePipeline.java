@@ -52,6 +52,11 @@ public class CylindricalImageToRenderableImagePipeline
 			imageComponents
 				.operate(renderableImageGenerator)
 				.subscribe(Sink.of(renderableImages)).run();
+
+			for (RenderableCylindricalImage renderableImg : renderableImages)
+			{
+				renderableImg.setFilename(image.getFilename());
+			}
 		}
 	}
 

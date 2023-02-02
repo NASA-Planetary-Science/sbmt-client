@@ -47,6 +47,7 @@ import edu.jhuapl.sbmt.core.image.CustomCylindricalImageKey;
 import edu.jhuapl.sbmt.core.image.CustomPerspectiveImageKey;
 import edu.jhuapl.sbmt.core.image.OrientationFactory;
 import edu.jhuapl.sbmt.dtm.model.DEMKey;
+import edu.jhuapl.sbmt.image2.model.BasemapImage;
 import edu.jhuapl.sbmt.image2.model.BinExtents;
 import edu.jhuapl.sbmt.image2.model.BinSpacings;
 import edu.jhuapl.sbmt.image2.model.BinTranslations;
@@ -150,6 +151,7 @@ public class SbmtMultiMissionTool
 		StateHistoryKey.initializeSerializationProxy();
 		SpiceInfo.initializeSerializationProxy();
 		OrientationFactory.initializeSerializationProxy();
+		BasemapImage.initializeSerializationProxy();
 	}
 
 	public static void setEnableAuthentication(boolean enableAuthentication)

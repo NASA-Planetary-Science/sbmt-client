@@ -7,6 +7,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.beust.jcommander.internal.Lists;
 import com.google.common.collect.Maps;
 
 import edu.jhuapl.saavtk.config.ViewConfig;
@@ -19,6 +20,7 @@ import edu.jhuapl.sbmt.config.ShapeModelDataUsed;
 import edu.jhuapl.sbmt.config.ShapeModelPopulation;
 import edu.jhuapl.sbmt.core.image.ImageKeyInterface;
 import edu.jhuapl.sbmt.core.image.ImagingInstrument;
+import edu.jhuapl.sbmt.image2.model.BasemapImage;
 import edu.jhuapl.sbmt.model.phobos.HierarchicalSearchSpecification;
 import edu.jhuapl.sbmt.pointing.spice.SpiceInfo;
 import edu.jhuapl.sbmt.spectrum.model.core.BasicSpectrumInstrument;
@@ -411,6 +413,11 @@ public abstract class BodyViewConfig extends ViewConfig
     public List<ImageKeyInterface> getImageMapKeys()
     {
         throw new UnsupportedOperationException();
+    }
+
+    public List<BasemapImage> getBasemapImages()
+    {
+    	return Lists.newArrayList();
     }
 
     protected static String[] prepend(String prefix, String... strings)

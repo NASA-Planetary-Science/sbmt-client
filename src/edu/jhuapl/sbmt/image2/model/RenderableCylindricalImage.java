@@ -17,6 +17,7 @@ public class RenderableCylindricalImage implements IRenderableImage
 	private double defaultOffset;
 	private CylindricalBounds bounds;
 	private IntensityRange intensityRange = new IntensityRange(0, 255);
+	private String filename;
 
 	public RenderableCylindricalImage(Layer layer, HashMap<String, String> metadata, CylindricalBounds bounds)
 	{
@@ -142,5 +143,16 @@ public class RenderableCylindricalImage implements IRenderableImage
 	public void setIntensityRange(IntensityRange intensityRange)
 	{
 		this.intensityRange = intensityRange;
+	}
+
+	public String getFilename()
+	{
+		return filename;
+	}
+
+
+	public void setFilename(String filename)
+	{
+		this.filename = filename;
 	}
 }

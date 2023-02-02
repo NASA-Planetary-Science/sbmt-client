@@ -46,31 +46,27 @@ public class VtkImageRendererOperator extends BasePipelineOperator<Layer, vtkIma
 		output.SetSpacing(1.0, 1.0, 1.0);
 		output.SetOrigin(0.0, 0.0, 0.0);
 		output.SetDimensions(layerWidth, layerHeight, layerDepth);
+		ThreadService.initialize(60);
+		final List<Future<Void>> resultList;
+		List<Callable<Void>> taskList = new ArrayList<>();
+
 		if (layerDepth == 1)
 		{
-			PixelDouble pixel = pixelDoubleFactory.of(0, -Double.NaN, -Double.NaN);
 			output.AllocateScalars(VtkDataTypes.VTK_FLOAT, 1);
 
 			for (int i = 0; i < layerWidth; i++)
 			{
-				for (int j = 0; j < layerHeight; j++)
-				{
-					inputs.get(0).get(i, j, pixel);
-					int yIndex = invertY ? layerHeight - j - 1 : j;
-					output.SetScalarComponentFromDouble(i, yIndex, 0, 0, pixel.get());
-				}
+				Callable<Void> task = new LayerRowToImageDataRow2DTask(i);
+				taskList.add(task);
 			}
+			resultList = ThreadService.submitAll(taskList);
 		}
 		else if (layerDepth >= 3)
 		{
-			ThreadService.initialize(60);
-			final List<Future<Void>> resultList;
-			List<Callable<Void>> taskList = new ArrayList<>();
-
 			output.AllocateScalars(VtkDataTypes.VTK_UNSIGNED_CHAR, layerDepth);
 			for (int i = 0; i < layerWidth; i++)
 			{
-				Callable<Void> task = new LayerRowToImageDataRowTask(i);
+				Callable<Void> task = new LayerRowToImageDataRow3DTask(i);
 				taskList.add(task);
 			}
 
@@ -79,11 +75,32 @@ public class VtkImageRendererOperator extends BasePipelineOperator<Layer, vtkIma
 		outputs.add(output);
 	}
 
-	private class LayerRowToImageDataRowTask implements Callable<Void>
+	private class LayerRowToImageDataRow2DTask implements Callable<Void>
+	{
+		private int i;
+		PixelDouble pixel = pixelDoubleFactory.of(0, -Double.NaN, -Double.NaN);
+		public LayerRowToImageDataRow2DTask(int i)
+		{
+			this.i = i;
+		}
+
+		@Override
+		public Void call() throws Exception
+		{
+			for (int j = 0; j < layerHeight; j++)
+			{
+				inputs.get(0).get(i, j, pixel);
+				output.SetScalarComponentFromDouble(i, invertY ? layerHeight - j - 1 : j, 0, 0, pixel.get());
+			}
+			return null;
+		}
+	}
+
+	private class LayerRowToImageDataRow3DTask implements Callable<Void>
 	{
 		private int i;
 
-		public LayerRowToImageDataRowTask(int i)
+		public LayerRowToImageDataRow3DTask(int i)
 		{
 			this.i = i;
 		}

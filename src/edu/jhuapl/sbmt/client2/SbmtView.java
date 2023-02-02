@@ -69,6 +69,7 @@ import edu.jhuapl.sbmt.dtm.ui.menu.DEMPopupMenu;
 import edu.jhuapl.sbmt.dtm.ui.menu.MapletBoundaryPopupMenu;
 import edu.jhuapl.sbmt.gui.eros.LineamentControlPanel;
 import edu.jhuapl.sbmt.gui.eros.LineamentPopupMenu;
+import edu.jhuapl.sbmt.image.model.ImageCollection;
 import edu.jhuapl.sbmt.image2.controllers.ImageSearchController;
 import edu.jhuapl.sbmt.image2.model.BasemapImageCollection;
 import edu.jhuapl.sbmt.image2.model.PerspectiveImageCollection;
@@ -396,10 +397,10 @@ public class SbmtView extends View implements PropertyChangeListener
 //		smallBodyModels = SbmtModelFactory.createSmallBodyModels(getPolyhedralModelConfig());
 		SmallBodyModel smallBodyModel = smallBodyModels.get(0);
 
-//		//OLDER WAY
-//		ImageCollection imageCollection = new ImageCollection(smallBodyModels);
+//		//OLDER WAY - remove this once the old basemap config files are retired
+		ImageCollection imageCollection = new ImageCollection(smallBodyModels.get(0));
 //
-//		allModels.put(ModelNames.IMAGES, List.of(imageCollection));
+		allModels.put(ModelNames.IMAGES, List.of(imageCollection));
 //		allModels.put(ModelNames.CUSTOM_IMAGES, List.of(imageCollection));
 //        ImageCubeCollection customCubeCollection = new ImageCubeCollection(smallBodyModels, imageCollection);
 //        ColorImageCollection customColorImageCollection = new ColorImageCollection(smallBodyModels, getModelManager());

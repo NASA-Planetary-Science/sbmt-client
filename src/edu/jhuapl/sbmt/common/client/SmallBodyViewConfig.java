@@ -36,6 +36,7 @@ import edu.jhuapl.sbmt.core.image.CustomPerspectiveImageKey;
 import edu.jhuapl.sbmt.core.image.ImageKeyInterface;
 import edu.jhuapl.sbmt.core.image.ImageSource;
 import edu.jhuapl.sbmt.core.image.ImageType;
+import edu.jhuapl.sbmt.image2.model.BasemapImage;
 import edu.jhuapl.sbmt.model.phobos.HierarchicalSearchSpecification;
 import edu.jhuapl.sbmt.spectrum.model.core.search.SpectraHierarchicalSearchSpecification;
 
@@ -66,6 +67,7 @@ public class SmallBodyViewConfig extends BodyViewConfig implements ISmallBodyVie
     private static final Map<String, SmallBodyViewConfig> LOADED_VIEWCONFIGS = new HashMap<>();
 
     protected String baseMapConfigName = "config.txt";
+    protected String baseMapConfigNamev2 = "basemap_config.txt";
 
     static public List<BasicConfigInfo> getConfigIdentifiers() { return CONFIG_INFO; }
 
@@ -299,6 +301,7 @@ public class SmallBodyViewConfig extends BodyViewConfig implements ISmallBodyVie
         return hierarchicalSpectraSearchSpecification;
     }
 
+    @Deprecated
     @Override
     public List<ImageKeyInterface> getImageMapKeys()
     {
@@ -357,6 +360,31 @@ public class SmallBodyViewConfig extends BodyViewConfig implements ISmallBodyVie
             }
 
         return imageMapKeys;
+    }
+
+    @Override
+    public List<BasemapImage> getBasemapImages()
+    {
+    	List<BasemapImage> basemapImages = Lists.newArrayList();
+    	String metadataFileName = SafeURLPaths.instance().getString(serverPath("basemap"), baseMapConfigNamev2);
+    	File metadataFile;
+        try
+        {
+            metadataFile = FileCache.getFileFromServer(metadataFileName);
+            FixedMetadata readInMetadata = Serializers.deserialize(metadataFile, "Basemaps");
+    		basemapImages = readInMetadata.get(Key.of("basemapCollection"));
+    		for (BasemapImage image : basemapImages)
+    		{
+    			image.setPointingFileName(SafeURLPaths.instance().getString(serverPath("basemap"), image.getPointingFileName()));
+    			image.setImageFilename(SafeURLPaths.instance().getString(serverPath("basemap"), image.getImageFilename()));
+    		}
+        }
+        catch (Exception ignored)
+        {
+            return ImmutableList.of();
+        }
+
+		return basemapImages;
     }
 
     /**
