@@ -40,6 +40,7 @@ public class ImageMaskController
 	private int leftMask = 0, rightMask = 0, topMask = 0, bottomMask = 0;
 	private JButton applyButton;
 	private boolean showApplyButton = false;
+	private boolean applyImmediately = true;
 
 	public ImageMaskController(Layer layer, int[] currentMaskValues, Function<Pair<Layer, int[]>, Void> completionBlock)
 	{
@@ -63,12 +64,15 @@ public class ImageMaskController
 		return panel;
 	}
 
-	public void setMaskValues(int[] maskValues)
+	public void setMaskValues(int[] maskValues)  //was 3, 2, 0, 1
 	{
-		leftSpinner.setValue((int)maskValues[3]);	//0
-		rightSpinner.setValue((int)maskValues[2]);	//1
+		applyImmediately = false;
 		bottomSpinner.setValue((int)maskValues[0]); //2
+		rightSpinner.setValue((int)maskValues[3]);	//1
 		topSpinner.setValue((int)maskValues[1]);	//3
+		leftSpinner.setValue((int)maskValues[2]);	//0
+
+		applyImmediately = true;
 		croppingChanged();
 	}
 
@@ -98,7 +102,7 @@ public class ImageMaskController
 		leftSpinner.setPreferredSize(new Dimension(60, 28));
 		leftSpinner.addChangeListener(evt ->
 		{
-			applyButton.doClick();
+			if (applyImmediately) applyButton.doClick();
 //			System.out.println("ImageMaskController: initGUI: left");
 //			croppingChanged();
 		});
@@ -117,7 +121,7 @@ public class ImageMaskController
 		bottomSpinner.setPreferredSize(new Dimension(60, 28));
 		bottomSpinner.addChangeListener(evt ->
 		{
-			applyButton.doClick();
+			if (applyImmediately) applyButton.doClick();
 //			if (bottomSpinner.getValue() != )
 //			croppingChanged();
 		});
@@ -131,7 +135,7 @@ public class ImageMaskController
 		gridBagConstraints.insets = new Insets(0, 0, 0, 10);
 		jPanel1.add(bottomSpinner, gridBagConstraints);
 
-		jLabel3.setText("Left");
+		jLabel3.setText("Bottom");
 		gridBagConstraints = new GridBagConstraints();
 		gridBagConstraints.gridx = 6;
 		gridBagConstraints.gridy = 0;
@@ -145,7 +149,7 @@ public class ImageMaskController
 		{
 			public void stateChanged(ChangeEvent evt)
 			{
-				applyButton.doClick();
+				if (applyImmediately) applyButton.doClick();
 //				System.out.println("ImageMaskController.initGUI().new ChangeListener() {...}: stateChanged: right");
 //				croppingChanged();
 			}
@@ -165,7 +169,7 @@ public class ImageMaskController
 		{
 			public void stateChanged(ChangeEvent evt)
 			{
-				applyButton.doClick();
+				if (applyImmediately) applyButton.doClick();
 //				System.out.println("ImageMaskController.initGUI().new ChangeListener() {...}: stateChanged: top");
 //				croppingChanged();
 			}
@@ -180,7 +184,7 @@ public class ImageMaskController
 		jPanel1.add(topSpinner, gridBagConstraints);
 
 		jLabel6.setHorizontalAlignment(SwingConstants.TRAILING);
-		jLabel6.setText("Bottom");
+		jLabel6.setText("Left");
 		gridBagConstraints = new GridBagConstraints();
 		gridBagConstraints.gridx = 4;
 		gridBagConstraints.gridy = 0;
@@ -188,7 +192,7 @@ public class ImageMaskController
 		gridBagConstraints.insets = new Insets(0, 0, 0, 2);
 		jPanel1.add(jLabel6, gridBagConstraints);
 
-		jLabel4.setText("Top");
+		jLabel4.setText("Right");
 		gridBagConstraints = new GridBagConstraints();
 		gridBagConstraints.gridx = 0;
 		gridBagConstraints.gridy = 0;
@@ -196,7 +200,7 @@ public class ImageMaskController
 		gridBagConstraints.insets = new Insets(0, 0, 0, 2);
 		jPanel1.add(jLabel4, gridBagConstraints);
 
-		jLabel5.setText("Right");
+		jLabel5.setText("Top");
 		gridBagConstraints = new GridBagConstraints();
 		gridBagConstraints.gridx = 2;
 		gridBagConstraints.gridy = 0;
@@ -236,7 +240,7 @@ public class ImageMaskController
 
 	public int[] getMaskValues()
 	{
-		return new int[] {(int)bottomSpinner.getValue(), (int)topSpinner.getValue(), (int)rightSpinner.getValue(), (int)leftSpinner.getValue()};
+		return new int[] {(int)bottomSpinner.getValue(), (int)topSpinner.getValue(), (int)leftSpinner.getValue(), (int)rightSpinner.getValue()};
 	}
 
 	public JButton getApplyButton()
@@ -250,8 +254,9 @@ public class ImageMaskController
 		try
 		{
 			maskPipeline.run(layer,
-					(int)leftSpinner.getValue(), (int)rightSpinner.getValue(),
-					(int)topSpinner.getValue(), (int)bottomSpinner.getValue());
+					(int)bottomSpinner.getValue(), (int)topSpinner.getValue(),
+					(int)leftSpinner.getValue(), (int)rightSpinner.getValue());
+
 			completionBlock.apply(Pair.of(maskPipeline.getUpdatedData().get(0), getMaskValues()));
 		}
 		catch (Exception e)

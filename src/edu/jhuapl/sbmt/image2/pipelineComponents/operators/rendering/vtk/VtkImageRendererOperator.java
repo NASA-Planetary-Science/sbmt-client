@@ -53,13 +53,18 @@ public class VtkImageRendererOperator extends BasePipelineOperator<Layer, vtkIma
 		if (layerDepth == 1)
 		{
 			output.AllocateScalars(VtkDataTypes.VTK_FLOAT, 1);
-
+			PixelDouble pixel = pixelDoubleFactory.of(0, -Double.NaN, -Double.NaN);
 			for (int i = 0; i < layerWidth; i++)
 			{
-				Callable<Void> task = new LayerRowToImageDataRow2DTask(i);
-				taskList.add(task);
+				for (int j = 0; j < layerHeight; j++)
+				{
+					inputs.get(0).get(i, j, pixel);
+					output.SetScalarComponentFromDouble(i, invertY ? layerHeight - j - 1 : j, 0, 0, pixel.get());
+				}
+//				Callable<Void> task = new LayerRowToImageDataRow2DTask(i);
+//				taskList.add(task);
 			}
-			resultList = ThreadService.submitAll(taskList);
+//			resultList = ThreadService.submitAll(taskList);
 		}
 		else if (layerDepth >= 3)
 		{

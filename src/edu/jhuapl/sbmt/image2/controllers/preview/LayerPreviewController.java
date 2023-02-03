@@ -110,7 +110,7 @@ public class LayerPreviewController<G1 extends IPerspectiveImage & IPerspectiveI
 			panel.getControlsPanel().add(panel.getLayerComboBox(), gridBagConstraints);
 
 			gridBagConstraints.gridx = 1;
-			panel.getControlsPanel().add(panel.getApplyToBodyButton(), gridBagConstraints);
+//			panel.getControlsPanel().add(panel.getApplyToBodyButton(), gridBagConstraints);
 
 			panel.getLayerComboBox().addActionListener(new ActionListener()
 			{
@@ -251,12 +251,17 @@ public class LayerPreviewController<G1 extends IPerspectiveImage & IPerspectiveI
 	{
 		panel.getSyncCheckBox().addActionListener(evt -> {
 			panel.getApplyAllButton().setEnabled(!panel.getSyncCheckBox().isSelected());
-			if (panel.getSyncCheckBox().isSelected()) completionBlock.run();
+			if (panel.getSyncCheckBox().isSelected())
+			{
+				panel.getApplyToBodyButton().doClick();
+				completionBlock.run();
+			}
 		});
 
 
 
 		panel.getApplyToBodyButton().addActionListener(evt -> {
+			if (panel.getLayerComboBox() == null) return;
 			String title = (String)panel.getLayerComboBox().getSelectedItem();
 			model.setDisplayedLayerIndex(Integer.parseInt(title.split(" ")[0].replace("PLANE", "")) - 1);
 			if (completionBlock != null && panel.getSyncCheckBox().isSelected()) completionBlock.run();
@@ -303,6 +308,7 @@ public class LayerPreviewController<G1 extends IPerspectiveImage & IPerspectiveI
 		panel.getApplyAllButton().addActionListener(evt -> {
 			try
 			{
+				panel.getApplyToBodyButton().doClick();
 				completionBlock.run();
 //				model.setCurrentMaskValues(maskController.getMaskValues());
 //				fillValuesController.getFillValuesButton().doClick();

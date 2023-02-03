@@ -2,6 +2,7 @@ package edu.jhuapl.sbmt.image2.pipelineComponents.pipelines.io;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 
@@ -85,23 +86,27 @@ public class IPerspectiveImageToLayerAndMetadataPipeline
 
 			int[] masks = new int[4];
 			if (image.getRotation() == 180.0)
-				masks = new int[] {windowH - windowX, windowX, windowH - windowY, windowY};
+			{
+				//top, bottom, right, left
+				masks = new int[] {windowH - windowX ,windowX, windowY, windowH - windowY};
+			}
 			else
-				//bottom, top, right, left
-				masks = new int[] {windowX, windowH - windowX,windowY,windowH - windowY};
+			{
+				//bottom, top, left, right
+				masks = new int[] {windowX, windowH - windowX, windowY, windowH - windowY};
+			}
 
 			image.setAutoMaskValues(masks);
 
-//			if (Arrays.equals(image.getMaskValues(), new int[] {0,0,0,0}))
-//				image.setMaskValues(masks);
+			if (Arrays.equals(image.getMaskValues(), new int[] {0,0,0,0}))
+				image.setMaskValues(masks);
 		}
 		else
 		{
 			image.setAutoMaskValues(image.getMaskValues());
 		}
-
 		if (image.isUseAutoMask())
-			maskingOperator = new LayerMaskOperator(image.getAutoMaskValues()[0], image.getAutoMaskValues()[1], image.getAutoMaskValues()[2], image.getAutoMaskValues()[3]);
+			maskingOperator = new LayerMaskOperator(image.getAutoMaskValues()[2], image.getAutoMaskValues()[3], image.getAutoMaskValues()[0], image.getAutoMaskValues()[1]);
 		else
 		{
 			maskingOperator = new LayerMaskOperator(image.getMaskValues()[0], image.getMaskValues()[1], image.getMaskValues()[2], image.getMaskValues()[3]);

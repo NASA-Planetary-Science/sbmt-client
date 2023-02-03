@@ -145,7 +145,7 @@ public class LayerPreviewModel<G1 extends IPerspectiveImage & IPerspectiveImageT
  		updateImage(getDisplayedImage());
 	}
 
-	private void generateVtkImageData(Layer layer) throws IOException, Exception
+	private void generateVtkImageDataAndSetLayer(Layer layer) throws IOException, Exception
 	{
 		List<vtkImageData> displayedImages = new ArrayList<vtkImageData>();
 		IPipelinePublisher<Layer> reader = new Just<Layer>(layer);
@@ -159,9 +159,22 @@ public class LayerPreviewModel<G1 extends IPerspectiveImage & IPerspectiveImageT
 		setLayer(layer);
 	}
 
+	private void generateVtkImageData(Layer layer) throws IOException, Exception
+	{
+		List<vtkImageData> displayedImages = new ArrayList<vtkImageData>();
+		IPipelinePublisher<Layer> reader = new Just<Layer>(layer);
+		reader.
+			operate(new VtkImageRendererOperator(isInvertY())).
+			subscribe(new Sink<vtkImageData>(displayedImages)).run();
+		setDisplayedImage(displayedImages.get(0));
+//		contrastController.setImageData(getDisplayedImage());
+//		if (getDisplayedImage().GetNumberOfScalarComponents() != 1)
+//			contrastController.getView().setVisible(false);
+	}
+
 	public void renderLayer(Layer layer) throws IOException, Exception
 	{
-		generateVtkImageData(layer);
+		generateVtkImageDataAndSetLayer(layer);
 		updateImage(getDisplayedImage());
 	}
 
@@ -236,9 +249,12 @@ public class LayerPreviewModel<G1 extends IPerspectiveImage & IPerspectiveImageT
 		return layer;
 	}
 
-	public void setLayer(Layer layer)
+	public void setLayer(Layer layer) throws Exception
 	{
 		this.layer = layer;
+		generateVtkImageData(layer);
+		updateImage(getDisplayedImage());
+		setIntensity(getIntensityRange());
 	}
 
 	public vtkImageSlice getActor()

@@ -53,7 +53,7 @@ public class LayerPreviewPanel<G1 extends IPerspectiveImage & IPerspectiveImageT
 		this.splitPane = new JSplitPane(JSplitPane.VERTICAL_SPLIT, layerPanel, controlsPanel);
 		syncCheckBox = new JCheckBox("Sync with Body");
 		applyToBodyButton = new JButton("Apply to Body");
-		applyAllButton = new JButton("Apply All");
+		applyAllButton = new JButton("Apply to Body");
 		initComponents();
 
 		createMenus();

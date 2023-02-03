@@ -22,7 +22,6 @@ import edu.jhuapl.sbmt.image2.pipelineComponents.operators.rendering.color.Color
 import edu.jhuapl.sbmt.image2.pipelineComponents.operators.rendering.color.ColorImageGeneratorOperator;
 import edu.jhuapl.sbmt.image2.pipelineComponents.pipelines.cylindricalImages.CylindricalImageToRenderableImagePipeline;
 import edu.jhuapl.sbmt.image2.pipelineComponents.pipelines.io.IPerspectiveImageToLayerAndMetadataPipeline;
-import edu.jhuapl.sbmt.image2.pipelineComponents.pipelines.perspectiveImages.PerspectiveImageToRenderableImagePipeline;
 import edu.jhuapl.sbmt.image2.pipelineComponents.publishers.gdal.InvalidGDALFileTypeException;
 import edu.jhuapl.sbmt.image2.pipelineComponents.subscribers.preview.VtkImagePreview;
 import edu.jhuapl.sbmt.image2.pipelineComponents.subscribers.preview.VtkLayerPreview;
@@ -123,7 +122,7 @@ public class ShowImagePropertiesAction<G1 extends IPerspectiveImage & IPerspecti
 				}
 				else
 				{
-					PerspectiveImageToRenderableImagePipeline pipeline = new PerspectiveImageToRenderableImagePipeline(List.of(aItemL.get(0)));
+//					PerspectiveImageToRenderableImagePipeline pipeline = new PerspectiveImageToRenderableImagePipeline(List.of(aItemL.get(0)));
 					IPerspectiveImageToLayerAndMetadataPipeline inputPipeline = IPerspectiveImageToLayerAndMetadataPipeline.of(image);
 					List<Layer> updatedLayers = inputPipeline.getLayers();
 					List<HashMap<String, String>> metadata = inputPipeline.getMetadata();
