@@ -348,6 +348,8 @@ public class DartConfigs extends SmallBodyViewConfigBuilder
             c = build();
             generateUpdatedStateHistoryParameters(c, ShapeModelBody.DIMORPHOS.name());
             configList.add(c);
+
+            defaultConfig = c;
         }
 
         // Didymos version 001 (flight).
@@ -372,7 +374,6 @@ public class DartConfigs extends SmallBodyViewConfigBuilder
             c = build();
             generateUpdatedStateHistoryParameters(c, ShapeModelBody.DIDYMOS.name());
             configList.add(c);
-            defaultConfig = c;
         }
 
         defaultConfig.defaultForMissions = DartClients;
