@@ -2,8 +2,11 @@ package edu.jhuapl.sbmt.image2.ui.table.popup.rendering;
 
 import java.util.List;
 
+import javax.swing.JOptionPane;
+
 import edu.jhuapl.saavtk.gui.render.Renderer;
 import edu.jhuapl.sbmt.common.client.SmallBodyModel;
+import edu.jhuapl.sbmt.core.image.ImageSource;
 import edu.jhuapl.sbmt.image2.interfaces.IPerspectiveImage;
 import edu.jhuapl.sbmt.image2.model.PerspectiveImageCollection;
 import edu.jhuapl.sbmt.image2.pipelineComponents.pipelines.rendering.PerspectiveImageCenterImagePipeline;
@@ -36,7 +39,16 @@ public class CenterImageAction<G1 extends IPerspectiveImage> extends PopAction<G
 
 		try
 		{
-			PerspectiveImageCenterImagePipeline.of(aItemL.get(0), renderer, smallBodyModels);
+			if (aItemL.get(0).getPointingSourceType() != ImageSource.LOCAL_CYLINDRICAL)
+				PerspectiveImageCenterImagePipeline.of(aItemL.get(0), renderer, smallBodyModels);
+			else
+			{
+				 JOptionPane.showMessageDialog(JOptionPane.getFrameForComponent(null),
+	                        "Center in Window is not available for cylindrically projected images, yet. This will be implemented in a "
+	                        + "future version of SBMT",
+	                        "Notification",
+	                        JOptionPane.WARNING_MESSAGE);
+			}
 		}
 		catch (Exception e)
 		{
