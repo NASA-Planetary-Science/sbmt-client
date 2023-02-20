@@ -20,6 +20,7 @@ import java.util.Vector;
 
 import org.apache.commons.io.FilenameUtils;
 
+import edu.jhuapl.saavtk.util.NativeLibraryLoader;
 import edu.jhuapl.sbmt.util.FileUtils;
 
 import altwg.util.FileUtil;
@@ -48,7 +49,8 @@ public class CreateInfoFiles
      */
     public CreateInfoFiles(File mk) throws SpiceErrorException
     {
-        System.loadLibrary("JNISpice");
+    	NativeLibraryLoader.loadSpiceLibraries();
+//        System.loadLibrary("JNISpice");
         CSPICE.furnsh(mk.getAbsolutePath());
     }
 
