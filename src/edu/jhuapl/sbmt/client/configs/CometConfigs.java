@@ -124,7 +124,7 @@ public class CometConfigs extends SmallBodyViewConfig
                             SumFiles, //
                             Instrument.valueFor("ITS"), //
                             0.0, //
-                            "Y"), //
+                            "None"), //
                     new ImagingInstrument( //
                             SpectralImageMode.MONO, //
                             new FixedListQuery<>(hriDir), //
@@ -134,7 +134,7 @@ public class CometConfigs extends SmallBodyViewConfig
                             SumFiles, //
                             Instrument.valueFor("HRI"), //
                             0.0, //
-                            "Y"), //
+                            "None"), //
                     new ImagingInstrument( //
                             SpectralImageMode.MONO, //
                             new FixedListQuery<>(mriDir), //
@@ -144,7 +144,7 @@ public class CometConfigs extends SmallBodyViewConfig
                             SumFiles, //
                             Instrument.valueFor("MRI"), //
                             0.0, //
-                            "Y"), //
+                            "None"), //
                     new ImagingInstrument( //
                             SpectralImageMode.MONO, //
                             new FixedListQuery<>(navcamDir), //
@@ -153,8 +153,8 @@ public class CometConfigs extends SmallBodyViewConfig
                             ImageType.valueOf("NAVCAM_IMAGE"), //
                             SumFiles, //
                             Instrument.valueFor("NAVCAM"), //
-                            0.0, //
-                            "X"), //
+                            180.0, //
+                            "None"), //
             };
 
             c.imageSearchDefaultStartDate = ImageSearchDefaultStartDate;

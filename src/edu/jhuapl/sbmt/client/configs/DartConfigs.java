@@ -272,40 +272,40 @@ public class DartConfigs extends SmallBodyViewConfigBuilder
         @SuppressWarnings("unused")
         boolean lukeTranspose = false;
 
-        // Jupiter system models.
-        {
-            String label = MissionPrefix + " " + "Jupiter-v01";
-            ShapeModelType author = author(label);
-
-            init(ShapeModelBody.JUPITER, author, ShapeModelDataUsed.SIMULATED, label);
-            imageSearchRanges(JupiterSearchStartDate, JupiterSearchEndDate, 1.0e9, 1.0e7);
-
-            ImagingInstrument instrument = createFlightInstrument(ShapeModelBody.JUPITER, author, Instrument.DRACO, dracoFlightOrientations, imageSources);
-            DBRunInfo[] dbRunInfos = createDbInfos(ShapeModelBody.JUPITER, author, Instrument.DRACO, imageSources);
-            add(instrument, dbRunInfos);
-
-            clients(APLClients);
-
-            c = build();
-            configList.add(c);
-        }
-
-        {
-            String label = MissionPrefix + " " + "Ganymede-v01";
-            ShapeModelType author = author(label);
-
-            init(ShapeModelBody.GANYMEDE, author, ShapeModelDataUsed.SIMULATED, label);
-            imageSearchRanges(JupiterSearchStartDate, JupiterSearchEndDate, 1.0e9, 1.0e7);
-
-            ImagingInstrument instrument = createFlightInstrument(ShapeModelBody.GANYMEDE, author, Instrument.DRACO, dracoFlightOrientations, imageSources);
-            DBRunInfo[] dbRunInfos = createDbInfos(ShapeModelBody.GANYMEDE, author, Instrument.DRACO, imageSources);
-            add(instrument, dbRunInfos);
-
-            clients(APLClients);
-
-            c = build();
-            configList.add(c);
-        }
+//        // Jupiter system models.
+//        {
+//            String label = MissionPrefix + " " + "Jupiter-v01";
+//            ShapeModelType author = author(label);
+//
+//            init(ShapeModelBody.JUPITER, author, ShapeModelDataUsed.SIMULATED, label);
+//            imageSearchRanges(JupiterSearchStartDate, JupiterSearchEndDate, 1.0e9, 1.0e7);
+//
+//            ImagingInstrument instrument = createFlightInstrument(ShapeModelBody.JUPITER, author, Instrument.DRACO, dracoFlightOrientations, imageSources);
+//            DBRunInfo[] dbRunInfos = createDbInfos(ShapeModelBody.JUPITER, author, Instrument.DRACO, imageSources);
+//            add(instrument, dbRunInfos);
+//
+//            clients(APLClients);
+//
+//            c = build();
+//            configList.add(c);
+//        }
+//
+//        {
+//            String label = MissionPrefix + " " + "Ganymede-v01";
+//            ShapeModelType author = author(label);
+//
+//            init(ShapeModelBody.GANYMEDE, author, ShapeModelDataUsed.SIMULATED, label);
+//            imageSearchRanges(JupiterSearchStartDate, JupiterSearchEndDate, 1.0e9, 1.0e7);
+//
+//            ImagingInstrument instrument = createFlightInstrument(ShapeModelBody.GANYMEDE, author, Instrument.DRACO, dracoFlightOrientations, imageSources);
+//            DBRunInfo[] dbRunInfos = createDbInfos(ShapeModelBody.GANYMEDE, author, Instrument.DRACO, imageSources);
+//            add(instrument, dbRunInfos);
+//
+//            clients(APLClients);
+//
+//            c = build();
+//            configList.add(c);
+//        }
 
         // Dimorphos version 002 (flight).
         {
