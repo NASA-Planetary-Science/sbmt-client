@@ -79,7 +79,8 @@ public class CustomImageEditingController<G1 extends IPerspectiveImage & IPerspe
 		this.isPerspective = isPerspective;
 		this.instrument = instrument;
 
-		regenerateLayerFromImage(existingImage);
+		if (!existingImage.getPointingSource().equals("FILE NOT FOUND"))
+			regenerateLayerFromImage(existingImage);
 		contrastController = new ImageContrastController(displayedImage, existingImage.getIntensityRange(), new Function<vtkImageData, Void>() {
 
 			@Override

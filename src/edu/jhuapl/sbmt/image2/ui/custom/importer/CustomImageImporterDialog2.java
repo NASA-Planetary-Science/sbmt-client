@@ -186,9 +186,9 @@ public class CustomImageImporterDialog2<G1 extends IPerspectiveImage & IPerspect
 		panel.setLayout(new BoxLayout(panel, BoxLayout.X_AXIS));
 		panel.add(new JLabel("Image Type:"));
 
-//		if (instrument != null)
-//			imageTypeComboBox = new JComboBox<ImageType>(new ImageType[] {instrument.getType(), ImageType.GENERIC_IMAGE});
-//		else
+		if (instrument != null && isPerspective)
+			imageTypeComboBox = new JComboBox<ImageType>(new ImageType[] {instrument.getType(), ImageType.GENERIC_IMAGE});
+		else
 			imageTypeComboBox = new JComboBox<ImageType>(new ImageType[] {ImageType.GENERIC_IMAGE});
 		imageTypeComboBox.setMaximumSize(new Dimension(350, 30));
 		panel.add(Box.createHorizontalStrut(10));
@@ -311,7 +311,7 @@ public class CustomImageImporterDialog2<G1 extends IPerspectiveImage & IPerspect
 		}
 		else
 		{
-			if (imageType != ImageType.GENERIC_IMAGE)
+			if ((imageType != ImageType.GENERIC_IMAGE) && (newPointingFilepath != "FILE NOT FOUND"))
 			{
 			    Orientation orientation = instrument.getOrientation(pointingSourceType);
 
