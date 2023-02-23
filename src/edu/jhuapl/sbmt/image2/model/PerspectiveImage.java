@@ -96,8 +96,8 @@ public class PerspectiveImage implements IPerspectiveImage
 	private double et;
 	private Long longTime;
 	private boolean simulateLighting = false;
-	private double offset = -1e-6;
-	private double defaultOffset = -1e-6;
+	private double offset = 1e-7;
+	private double defaultOffset = 1e-7;
 	private ImageType imageType;
 	private CylindricalBounds bounds = new CylindricalBounds(0, 0, 0, 0);
 

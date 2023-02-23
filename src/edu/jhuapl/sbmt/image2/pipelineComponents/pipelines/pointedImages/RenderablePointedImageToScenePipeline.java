@@ -132,7 +132,7 @@ public class RenderablePointedImageToScenePipeline<G1 extends IPerspectiveImage 
 			.subscribe(Sink.of(renderableImages)).run();
 
 		image.setDefaultOffset(3.0 * smallBodyModels.get(0).getMinShiftAmount());
-		if (image.getOffset() == -1) image.setOffset(image.getDefaultOffset());
+		if (image.getOffset() == 1e-7) image.setOffset(image.getDefaultOffset());
 
 		double diagonalLength = smallBodyModels.get(0).getBoundingBoxDiagonalLength();
 		double[] scPos = renderableImages.get(0).getPointing().getSpacecraftPosition();
