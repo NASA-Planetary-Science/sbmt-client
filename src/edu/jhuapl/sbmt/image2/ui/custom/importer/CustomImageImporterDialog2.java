@@ -161,7 +161,7 @@ public class CustomImageImporterDialog2<G1 extends IPerspectiveImage & IPerspect
 //	        ImageSource pointingSourceType = image.getPointingSource().endsWith("sum") || image.getPointingSource().endsWith("SUM") ? ImageSource.GASKELL : ImageSource.SPICE;
 //	        if (image.getPointingSource().equals("FILE NOT FOUND")) pointingSourceType = ImageSource.LOCAL_CYLINDRICAL;
 //	        image.setPointingSourceType(pointingSourceType);
-	        storeImage(image.getFilename(), image.getFilename(), image.getPointingSourceType(), image.getPointingSource());
+	        storeImage(image.getFilename(), image.getFilename(), image.getPointingSourceType(), image.getPointingSource(), image.getFlip());
 		}
 //		else if (image.getNumberOfLayers() == 3) //editing custom color image
 //		{
@@ -297,6 +297,11 @@ public class CustomImageImporterDialog2<G1 extends IPerspectiveImage & IPerspect
 
 	private G1 storeImage(String filename, String newFilepath, ImageSource pointingSourceType, String newPointingFilepath)
 	{
+		return storeImage(filename, newFilepath, pointingSourceType, newPointingFilepath, "");
+	}
+
+	private G1 storeImage(String filename, String newFilepath, ImageSource pointingSourceType, String newPointingFilepath, String flip)
+	{
 		ImageType imageType = (ImageType)imageTypeComboBox.getSelectedItem();
 
 		double[] fillValues = new double[] {};
@@ -308,6 +313,7 @@ public class CustomImageImporterDialog2<G1 extends IPerspectiveImage & IPerspect
 		if (pointingSourceType == ImageSource.LOCAL_CYLINDRICAL)
 		{
 			image.setBounds(new CylindricalBounds(-90,90,0,360));
+			image.setFlip(flip);
 		}
 		else
 		{

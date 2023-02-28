@@ -68,6 +68,7 @@ public class PerspectiveImageCollection<G1 extends IPerspectiveImage & IPerspect
 {
 	private ConcurrentHashMap<IImagingInstrument, List<G1>> imagesByInstrument;
 	private List<G1> userImages;
+	private List<G1> userImagesModified;
 	private List<SmallBodyModel> smallBodyModels;
 	private ConcurrentHashMap<G1, List<vtkActor>> imageRenderers;
 	private ConcurrentHashMap<G1, List<vtkActor>> boundaryRenderers;
@@ -89,6 +90,7 @@ public class PerspectiveImageCollection<G1 extends IPerspectiveImage & IPerspect
 	{
 		this.imagesByInstrument = new ConcurrentHashMap<IImagingInstrument, List<G1>>();
 		this.userImages = Lists.newArrayList();
+		this.userImagesModified = Lists.newArrayList();
 		this.imageRenderers = new ConcurrentHashMap<G1, List<vtkActor>>();
 		this.boundaryRenderers = new ConcurrentHashMap<G1, List<vtkActor>>();
 		this.frustumRenderers = new ConcurrentHashMap<G1, List<vtkActor>>();
@@ -181,6 +183,7 @@ public class PerspectiveImageCollection<G1 extends IPerspectiveImage & IPerspect
 		Color color = ColorUtil.generateColor(userImages.indexOf(image)%100, 100);
 		state.boundaryColor = color;
 		renderingStates.put(image,state);
+		userImagesModified.add(image);
 		updateUserList();	//update the user created list, stored in metadata
 	}
 
@@ -504,6 +507,7 @@ public class PerspectiveImageCollection<G1 extends IPerspectiveImage & IPerspect
 		if (pipeline == null) return;
 		updatePipeline(image, pipeline);
 		updateUserList();
+		userImagesModified.add(image);
 		pcs.firePropertyChange(Properties.MODEL_CHANGED, null, image);
 	}
 
@@ -517,7 +521,8 @@ public class PerspectiveImageCollection<G1 extends IPerspectiveImage & IPerspect
 		if (image.isMapped() == mapped && reRender == false) return;
 		image.setMapped(mapped);
 		List<vtkActor> actors = imageRenderers.get(image);
-		if ((actors == null && mapped == true) || reRender)
+
+		if ((actors == null && mapped == true) || reRender || userImagesModified.contains(image))
 		{
 			Thread thread = new Thread(new Runnable()
 			{
@@ -542,6 +547,7 @@ public class PerspectiveImageCollection<G1 extends IPerspectiveImage & IPerspect
 						actor.SetVisibility(mapped ? 1 : 0);
 					}
 					image.setStatus("Loaded");
+					if (userImagesModified.contains(image)) userImagesModified.remove(image);
 					SwingUtilities.invokeLater( () -> {
 						pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
 					});

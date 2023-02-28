@@ -219,6 +219,7 @@ public class CustomImageEditingController<G1 extends IPerspectiveImage & IPerspe
 			{
 				dialog.getImageFlipComboBox().setSelectedItem(existingImage.getFlip());
 				dialog.getImageRotationComboBox().setSelectedItem("" + (int) (existingImage.getRotation()));
+				dialog.getFlipAboutXCheckBox().setSelected(existingImage.getFlip().equals("X"));
 			}
 		}
 		else
@@ -231,7 +232,7 @@ public class CustomImageEditingController<G1 extends IPerspectiveImage & IPerspe
 					dialog.getFlipAboutXCheckBox().setSelected(orientation.getFlip().toString().equals("X"));
 				} catch (IllegalArgumentException iae)
 				{
-					dialog.getFlipAboutXCheckBox().setSelected(false);
+					dialog.getFlipAboutXCheckBox().setSelected(existingImage.getFlip().equals("X"));
 				}
 			}
 			dialog.getPointingTypeComboBox().setSelectedIndex(1);
