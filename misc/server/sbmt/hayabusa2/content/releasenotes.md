@@ -4,6 +4,27 @@
 
 # Release Notes
 
+## February 28, 2023 (SBMT-0.8.3)
+
+### New:
+- Large rework of image tab 
+  - GDAL library now used for loading and displaying images
+  - Major improvements to image table behavior, similar to other tabs
+  - FITS files can now be loaded cylindrically
+  - Auto-masking for images now possible
+  - Custom image tab now behaves more like the server tab
+  - New color image composition tool
+  - New custom image import workflow, including bulk imports. Custom images are now imported within the imaging tab.
+  - Updates to properties pane GUI
+  - Pointing file for custom image can now be changed. 
+- Can now export image geometry as an OBJ
+
+### Bug Fixes:
+- Fixed feathering when re-rendering images
+- Loading MSI files no longer give a NoSuchFileException
+- Offlimb edges around body now smoother
+- Order and boundary color no longer change upon addition/removal of custom images.
+
 ## July 14, 2022 (SBMT-0.8.2)
 
 ### CRITICAL:
