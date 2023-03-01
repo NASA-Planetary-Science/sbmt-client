@@ -1180,6 +1180,27 @@ public class DartConfigs extends SmallBodyViewConfigBuilder
         config.rootDirOnServer = config.rootDirOnServer.replaceAll("\\(", "");
         config.rootDirOnServer = config.rootDirOnServer.replaceAll("\\)", "");
         config.rootDirOnServer = config.rootDirOnServer.replaceAll("-\\w*-center", "");
+        config.defaultForMissions = APLClients;
+        return config;
+    }
+
+    protected SmallBodyViewConfig createMissionImagesSystemConfig(ShapeModelBody[] bodies, String[] labels, int numberPlates, boolean useUpdatedFrameNames)
+    {
+        SmallBodyViewConfig config = createSingleResMissionImagesConfig(bodies[0], labels[0], numberPlates, useUpdatedFrameNames);
+        List<SmallBodyViewConfig> systemConfigs = new ArrayList<>();
+        for (int i = 1; i < bodies.length; i++)
+        {
+            systemConfigs.add(createSingleResMissionImagesConfig(bodies[i], labels[i], numberPlates, useUpdatedFrameNames));
+        }
+        ;
+        config.systemConfigs = systemConfigs;
+        config.hasSystemBodies = true;
+        config.body = ShapeModelBody.DIDYMOS_SYSTEM;
+        config.hasDTMs = false;
+        config.rootDirOnServer = "/" + bodies[0].name().replaceAll("[\\s-_]+", "-").toLowerCase() + "/" + config.author.name().replaceAll("[\\s-_]+", "-").toLowerCase();
+        config.rootDirOnServer = config.rootDirOnServer.replaceAll("\\(", "");
+        config.rootDirOnServer = config.rootDirOnServer.replaceAll("\\)", "");
+        config.rootDirOnServer = config.rootDirOnServer.replaceAll("-\\w*-center", "");
         return config;
     }
 
@@ -1208,6 +1229,7 @@ public class DartConfigs extends SmallBodyViewConfigBuilder
         config.rootDirOnServer = config.rootDirOnServer.replaceAll("\\(", "");
         config.rootDirOnServer = config.rootDirOnServer.replaceAll("\\)", "");
         config.rootDirOnServer = config.rootDirOnServer.replaceAll("-\\w*-center", "");
+        config.defaultForMissions = APLClients;
         return config;
     }
 
@@ -1215,30 +1237,30 @@ public class DartConfigs extends SmallBodyViewConfigBuilder
     {
         SmallBodyViewConfig c;
         // System configs
-        c = createSingleResolutionSystemConfig_20200629_v01(new ShapeModelBody[] { ShapeModelBody.DIDYMOS, ShapeModelBody.DIMORPHOS }, "Ideal Impact 1 20200629 v01 System Didymos Center", 1996);
-        configList.add(c);
-        c = createSingleResolutionSystemConfig_20200629_v01(new ShapeModelBody[] { ShapeModelBody.DIMORPHOS, ShapeModelBody.DIDYMOS }, "Ideal Impact 1 20200629 v01 System Dimorphos Center", 3072);
-        configList.add(c);
-        c = createSingleResolutionSystemConfig_20200629_v01(new ShapeModelBody[] { ShapeModelBody.DIDYMOS, ShapeModelBody.DIMORPHOS }, "Ideal Impact 2 20200629 v01 System Didymos Center", 1996);
-        configList.add(c);
-        c = createSingleResolutionSystemConfig_20200629_v01(new ShapeModelBody[] { ShapeModelBody.DIMORPHOS, ShapeModelBody.DIDYMOS }, "Ideal Impact 2 20200629 v01 System Dimorphos Center", 3145728);
-        configList.add(c);
-        c = createSingleResolutionSystemConfig_20200629_v01(new ShapeModelBody[] { ShapeModelBody.DIDYMOS, ShapeModelBody.DIMORPHOS }, "Ideal Impact 3 20200629 v01 System Didymos Center", 1996);
-        configList.add(c);
-        c = createSingleResolutionSystemConfig_20200629_v01(new ShapeModelBody[] { ShapeModelBody.DIMORPHOS, ShapeModelBody.DIDYMOS }, "Ideal Impact 3 20200629 v01 System Dimorphos Center", 3366134);
-        configList.add(c);
-        c = createSingleResolutionSystemConfig_20200629_v01(new ShapeModelBody[] { ShapeModelBody.DIDYMOS, ShapeModelBody.DIMORPHOS }, "Ideal Impact 4 20200629 v01 System Didymos Center", 3145728);
-        configList.add(c);
-        c = createSingleResolutionSystemConfig_20200629_v01(new ShapeModelBody[] { ShapeModelBody.DIMORPHOS, ShapeModelBody.DIDYMOS }, "Ideal Impact 4 20200629 v01 System Dimorphos Center", 3145728);
-        configList.add(c);
-        c = createSingleResMissionImagesSystemConfig(new ShapeModelBody[] { ShapeModelBody.DIDYMOS, ShapeModelBody.DIMORPHOS }, "Ideal Impact 4 RA 20210211 v01 System Didymos Center", 3145728);
-        configList.add(c);
-        c = createSingleResMissionImagesSystemConfig(new ShapeModelBody[] { ShapeModelBody.DIMORPHOS, ShapeModelBody.DIDYMOS }, "Ideal Impact 4 RA 20210211 v01 System Dimorphos Center", 3145728);
-        configList.add(c);
-        c = createSingleResolutionSystemConfig_20200629_v01(new ShapeModelBody[] { ShapeModelBody.DIDYMOS, ShapeModelBody.DIMORPHOS }, "Ideal Impact 5 20200629 v01 System Didymos Center", 3145728);
-        configList.add(c);
-        c = createSingleResolutionSystemConfig_20200629_v01(new ShapeModelBody[] { ShapeModelBody.DIMORPHOS, ShapeModelBody.DIDYMOS }, "Ideal Impact 5 20200629 v01 System Dimorphos Center", 3366134);
-        configList.add(c);
+//        c = createSingleResolutionSystemConfig_20200629_v01(new ShapeModelBody[] { ShapeModelBody.DIDYMOS, ShapeModelBody.DIMORPHOS }, "Ideal Impact 1 20200629 v01 System Didymos Center", 1996);
+//        configList.add(c);
+//        c = createSingleResolutionSystemConfig_20200629_v01(new ShapeModelBody[] { ShapeModelBody.DIMORPHOS, ShapeModelBody.DIDYMOS }, "Ideal Impact 1 20200629 v01 System Dimorphos Center", 3072);
+//        configList.add(c);
+//        c = createSingleResolutionSystemConfig_20200629_v01(new ShapeModelBody[] { ShapeModelBody.DIDYMOS, ShapeModelBody.DIMORPHOS }, "Ideal Impact 2 20200629 v01 System Didymos Center", 1996);
+//        configList.add(c);
+//        c = createSingleResolutionSystemConfig_20200629_v01(new ShapeModelBody[] { ShapeModelBody.DIMORPHOS, ShapeModelBody.DIDYMOS }, "Ideal Impact 2 20200629 v01 System Dimorphos Center", 3145728);
+//        configList.add(c);
+//        c = createSingleResolutionSystemConfig_20200629_v01(new ShapeModelBody[] { ShapeModelBody.DIDYMOS, ShapeModelBody.DIMORPHOS }, "Ideal Impact 3 20200629 v01 System Didymos Center", 1996);
+//        configList.add(c);
+//        c = createSingleResolutionSystemConfig_20200629_v01(new ShapeModelBody[] { ShapeModelBody.DIMORPHOS, ShapeModelBody.DIDYMOS }, "Ideal Impact 3 20200629 v01 System Dimorphos Center", 3366134);
+//        configList.add(c);
+//        c = createSingleResolutionSystemConfig_20200629_v01(new ShapeModelBody[] { ShapeModelBody.DIDYMOS, ShapeModelBody.DIMORPHOS }, "Ideal Impact 4 20200629 v01 System Didymos Center", 3145728);
+//        configList.add(c);
+//        c = createSingleResolutionSystemConfig_20200629_v01(new ShapeModelBody[] { ShapeModelBody.DIMORPHOS, ShapeModelBody.DIDYMOS }, "Ideal Impact 4 20200629 v01 System Dimorphos Center", 3145728);
+//        configList.add(c);
+//        c = createSingleResMissionImagesSystemConfig(new ShapeModelBody[] { ShapeModelBody.DIDYMOS, ShapeModelBody.DIMORPHOS }, "Ideal Impact 4 RA 20210211 v01 System Didymos Center", 3145728);
+//        configList.add(c);
+//        c = createSingleResMissionImagesSystemConfig(new ShapeModelBody[] { ShapeModelBody.DIMORPHOS, ShapeModelBody.DIDYMOS }, "Ideal Impact 4 RA 20210211 v01 System Dimorphos Center", 3145728);
+//        configList.add(c);
+//        c = createSingleResolutionSystemConfig_20200629_v01(new ShapeModelBody[] { ShapeModelBody.DIDYMOS, ShapeModelBody.DIMORPHOS }, "Ideal Impact 5 20200629 v01 System Didymos Center", 3145728);
+//        configList.add(c);
+//        c = createSingleResolutionSystemConfig_20200629_v01(new ShapeModelBody[] { ShapeModelBody.DIMORPHOS, ShapeModelBody.DIDYMOS }, "Ideal Impact 5 20200629 v01 System Dimorphos Center", 3366134);
+//        configList.add(c);
         // c = createSingleResolutionSystemConfig_20200629_v01(new
         // ShapeModelBody[] { ShapeModelBody.DIDYMOS, ShapeModelBody.DIMORPHOS
         // }, "Ideal Impact 6 RA 20201116 v01 System Didymos Center", 3145728);
@@ -1249,36 +1271,120 @@ public class DartConfigs extends SmallBodyViewConfigBuilder
         // 3145728);
         // configList.add(c);
 
-        c = createSingleResMissionImagesSystemConfig(new ShapeModelBody[] { ShapeModelBody.DIDYMOS, ShapeModelBody.DIMORPHOS }, "Ideal Impact 9 20210630 v01 System Didymos Center", 1996, true);
+//        c = createSingleResMissionImagesSystemConfig(new ShapeModelBody[] { ShapeModelBody.DIDYMOS, ShapeModelBody.DIMORPHOS }, "Ideal Impact 9 20210630 v01 System Didymos Center", 1996, true);
+//        configList.add(c);
+//
+//        c = createSingleResMissionImagesSystemConfig(new ShapeModelBody[] { ShapeModelBody.DIMORPHOS, ShapeModelBody.DIDYMOS }, "Ideal Impact 9 20210630 v01 System Dimorphos Center", 3072, true);
+//        configList.add(c);
+//
+//        c = createSingleResolutionSystemConfig_20200629_v01(new ShapeModelBody[] { ShapeModelBody.DIDYMOS, ShapeModelBody.DIMORPHOS }, "Errors Impact 1 20200629 v01 System Didymos Center", 1996);
+//        configList.add(c);
+//        c = createSingleResolutionSystemConfig_20200629_v01(new ShapeModelBody[] { ShapeModelBody.DIMORPHOS, ShapeModelBody.DIDYMOS }, "Errors Impact 1 20200629 v01 System Dimorphos Center", 3072);
+//        configList.add(c);
+//        c = createSingleResolutionSystemConfig_20200629_v01(new ShapeModelBody[] { ShapeModelBody.DIDYMOS, ShapeModelBody.DIMORPHOS }, "Errors Impact 2 20200629 v01 System Didymos Center", 1996);
+//        configList.add(c);
+//        c = createSingleResolutionSystemConfig_20200629_v01(new ShapeModelBody[] { ShapeModelBody.DIMORPHOS, ShapeModelBody.DIDYMOS }, "Errors Impact 2 20200629 v01 System Dimorphos Center", 31457278);
+//        configList.add(c);
+//        c = createSingleResolutionSystemConfig_20200629_v01(new ShapeModelBody[] { ShapeModelBody.DIDYMOS, ShapeModelBody.DIMORPHOS }, "Errors Impact 3 20200629 v01 System Didymos Center", 1996);
+//        configList.add(c);
+//        c = createSingleResolutionSystemConfig_20200629_v01(new ShapeModelBody[] { ShapeModelBody.DIMORPHOS, ShapeModelBody.DIDYMOS }, "Errors Impact 3 20200629 v01 System Dimorphos Center", 3366134);
+//        configList.add(c);
+//        c = createSingleResolutionSystemConfig_20200629_v01(new ShapeModelBody[] { ShapeModelBody.DIDYMOS, ShapeModelBody.DIMORPHOS }, "Errors Impact 4 20200629 v01 System Didymos Center", 3145728);
+//        configList.add(c);
+//        c = createSingleResolutionSystemConfig_20200629_v01(new ShapeModelBody[] { ShapeModelBody.DIMORPHOS, ShapeModelBody.DIDYMOS }, "Errors Impact 4 20200629 v01 System Dimorphos Center", 31457278);
+//        configList.add(c);
+//        c = createSingleResolutionSystemConfig_20200629_v01(new ShapeModelBody[] { ShapeModelBody.DIDYMOS, ShapeModelBody.DIMORPHOS }, "Errors Impact 5 20200629 v01 System Didymos Center", 3145728);
+//        configList.add(c);
+//        c = createSingleResolutionSystemConfig_20200629_v01(new ShapeModelBody[] { ShapeModelBody.DIMORPHOS, ShapeModelBody.DIDYMOS }, "Errors Impact 5 20200629 v01 System Dimorphos Center", 3366134);
+//        configList.add(c);
+//        c = createSingleResMissionImagesSystemConfig(new ShapeModelBody[] { ShapeModelBody.DIDYMOS, ShapeModelBody.DIMORPHOS }, "Errors Impact 9 20210630 v01 System Didymos Center", 3072, true);
+//        configList.add(c);
+//        c = createSingleResMissionImagesSystemConfig(new ShapeModelBody[] { ShapeModelBody.DIMORPHOS, ShapeModelBody.DIDYMOS }, "Errors Impact 9 20210630 v01 System Dimorphos Center", 3072, true);
+//        configList.add(c);
+
+
+        //Official flight systems
+        final ImageSource[] imageSources = { ImageSource.GASKELL, ImageSource.SPICE };
+        final ImageSource[] spcSources = { ImageSource.GASKELL };
+        Map<ImageSource, Orientation> dracoFlightOrientations = new LinkedHashMap<>();
+        dracoFlightOrientations.put(ImageSource.GASKELL, new OrientationFactory().of(ImageFlip.X, 0.0, true));
+        dracoFlightOrientations.put(ImageSource.SPICE, new OrientationFactory().of(ImageFlip.X, 180.0, true));
+     // Dimorphos version 003 (flight).
+
+        SmallBodyViewConfig dimorphosConfig;
+        {
+
+            String label = "Dimorphos-v003 Center";
+            ShapeModelType author = author(MissionPrefix + " " + label);
+
+            init(ShapeModelBody.DIMORPHOS, author, ShapeModelDataUsed.IMAGE_BASED, label);
+            imageSearchRanges(DimorphosImpactSearchStartDate, DimorphosImpactSearchEndDate, DimorphosImpactMaxScDistance, DimorphosImpactResolution);
+
+            modelRes(BodyViewConfig.DEFAULT_GASKELL_LABELS_PER_RESOLUTION, BodyViewConfig.DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION);
+
+            ImagingInstrument instrument = createFlightInstrument(ShapeModelBody.DIMORPHOS, author, Instrument.DRACO, dracoFlightOrientations, imageSources);
+            DBRunInfo[] dbRunInfos = createDbInfos(ShapeModelBody.DIMORPHOS, author, Instrument.DRACO, imageSources);
+            add(instrument, dbRunInfos);
+
+            gravityInputs(2300.0, 1.464e-4);
+
+            dtmCatalogs(true);
+
+            dimorphosConfig = build();
+            generateUpdatedStateHistoryParameters(dimorphosConfig, ShapeModelBody.DIMORPHOS.name());
+        }
+
+        // Didymos version 001 (flight).
+        SmallBodyViewConfig didymosConfig;
+        {
+
+            String label = "Didymos-v001 Center";
+            ShapeModelType author = author(MissionPrefix + " " + label);
+
+            init(ShapeModelBody.DIDYMOS, author, ShapeModelDataUsed.IMAGE_BASED, label);
+            imageSearchRanges(DidymosImpactSearchStartDate, DidymosImpactSearchEndDate, DidymosImpactMaxScDistance, DidymosImpactResolution);
+
+            modelRes(BodyViewConfig.DEFAULT_GASKELL_LABELS_PER_RESOLUTION, BodyViewConfig.DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION);
+
+            ImagingInstrument instrument = createFlightInstrument(ShapeModelBody.DIDYMOS, author, Instrument.DRACO, dracoFlightOrientations, spcSources);
+            DBRunInfo[] dbRunInfos = createDbInfos(ShapeModelBody.DIDYMOS, author, Instrument.DRACO, spcSources);
+            add(instrument, dbRunInfos);
+
+            gravityInputs(2400.0, 7.72e-4);
+
+            // No DTMs with initial delivery.
+            // dtmCatalogs(true);
+
+            didymosConfig = build();
+            generateUpdatedStateHistoryParameters(didymosConfig, ShapeModelBody.DIDYMOS.name());
+        }
+
+        //Build didymos centric
+        c = buildSystemConfig(didymosConfig, new SmallBodyViewConfig[] {dimorphosConfig});
         configList.add(c);
 
-        c = createSingleResMissionImagesSystemConfig(new ShapeModelBody[] { ShapeModelBody.DIMORPHOS, ShapeModelBody.DIDYMOS }, "Ideal Impact 9 20210630 v01 System Dimorphos Center", 3072, true);
+        //Build dimorphos centric
+        c = buildSystemConfig(dimorphosConfig, new SmallBodyViewConfig[] {didymosConfig});
         configList.add(c);
+    }
 
-        c = createSingleResolutionSystemConfig_20200629_v01(new ShapeModelBody[] { ShapeModelBody.DIDYMOS, ShapeModelBody.DIMORPHOS }, "Errors Impact 1 20200629 v01 System Didymos Center", 1996);
-        configList.add(c);
-        c = createSingleResolutionSystemConfig_20200629_v01(new ShapeModelBody[] { ShapeModelBody.DIMORPHOS, ShapeModelBody.DIDYMOS }, "Errors Impact 1 20200629 v01 System Dimorphos Center", 3072);
-        configList.add(c);
-        c = createSingleResolutionSystemConfig_20200629_v01(new ShapeModelBody[] { ShapeModelBody.DIDYMOS, ShapeModelBody.DIMORPHOS }, "Errors Impact 2 20200629 v01 System Didymos Center", 1996);
-        configList.add(c);
-        c = createSingleResolutionSystemConfig_20200629_v01(new ShapeModelBody[] { ShapeModelBody.DIMORPHOS, ShapeModelBody.DIDYMOS }, "Errors Impact 2 20200629 v01 System Dimorphos Center", 31457278);
-        configList.add(c);
-        c = createSingleResolutionSystemConfig_20200629_v01(new ShapeModelBody[] { ShapeModelBody.DIDYMOS, ShapeModelBody.DIMORPHOS }, "Errors Impact 3 20200629 v01 System Didymos Center", 1996);
-        configList.add(c);
-        c = createSingleResolutionSystemConfig_20200629_v01(new ShapeModelBody[] { ShapeModelBody.DIMORPHOS, ShapeModelBody.DIDYMOS }, "Errors Impact 3 20200629 v01 System Dimorphos Center", 3366134);
-        configList.add(c);
-        c = createSingleResolutionSystemConfig_20200629_v01(new ShapeModelBody[] { ShapeModelBody.DIDYMOS, ShapeModelBody.DIMORPHOS }, "Errors Impact 4 20200629 v01 System Didymos Center", 3145728);
-        configList.add(c);
-        c = createSingleResolutionSystemConfig_20200629_v01(new ShapeModelBody[] { ShapeModelBody.DIMORPHOS, ShapeModelBody.DIDYMOS }, "Errors Impact 4 20200629 v01 System Dimorphos Center", 31457278);
-        configList.add(c);
-        c = createSingleResolutionSystemConfig_20200629_v01(new ShapeModelBody[] { ShapeModelBody.DIDYMOS, ShapeModelBody.DIMORPHOS }, "Errors Impact 5 20200629 v01 System Didymos Center", 3145728);
-        configList.add(c);
-        c = createSingleResolutionSystemConfig_20200629_v01(new ShapeModelBody[] { ShapeModelBody.DIMORPHOS, ShapeModelBody.DIDYMOS }, "Errors Impact 5 20200629 v01 System Dimorphos Center", 3366134);
-        configList.add(c);
-        c = createSingleResMissionImagesSystemConfig(new ShapeModelBody[] { ShapeModelBody.DIDYMOS, ShapeModelBody.DIMORPHOS }, "Errors Impact 9 20210630 v01 System Didymos Center", 3072, true);
-        configList.add(c);
-        c = createSingleResMissionImagesSystemConfig(new ShapeModelBody[] { ShapeModelBody.DIMORPHOS, ShapeModelBody.DIDYMOS }, "Errors Impact 9 20210630 v01 System Dimorphos Center", 3072, true);
-        configList.add(c);
+    private SmallBodyViewConfig buildSystemConfig(SmallBodyViewConfig primary, SmallBodyViewConfig[] secondaries)
+    {
+    	List<SmallBodyViewConfig> systemConfigs = new ArrayList<>();
+        for (int i = 0; i < secondaries.length; i++)
+        {
+            systemConfigs.add(secondaries[i]);
+        }
 
+        primary.systemConfigs = systemConfigs;
+        primary.hasSystemBodies = true;
+        primary.body = ShapeModelBody.DIDYMOS_SYSTEM;
+        primary.hasDTMs = false;
+        primary.rootDirOnServer = "/" + primary.body.name().replaceAll("[\\s-_]+", "-").toLowerCase() + "/" + primary.author.name().replaceAll("[\\s-_]+", "-").toLowerCase();
+        primary.rootDirOnServer = primary.rootDirOnServer.replaceAll("\\(", "");
+        primary.rootDirOnServer = primary.rootDirOnServer.replaceAll("\\)", "");
+        primary.rootDirOnServer = primary.rootDirOnServer.replaceAll("-\\w*-center", "");
+
+        return primary;
     }
 }
