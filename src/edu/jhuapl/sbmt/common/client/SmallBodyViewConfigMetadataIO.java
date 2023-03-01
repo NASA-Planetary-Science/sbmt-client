@@ -115,12 +115,19 @@ public class SmallBodyViewConfigMetadataIO implements MetadataManager
                 {
                 	String bodyName = config.getBody().toString();
                 	bodyName = bodyName.replaceAll(" ", "_");
+                	System.out.println("SmallBodyViewConfigMetadataIO: main: bodyname " + bodyName);
                 	String centerNameReplacement = "-system_" + bodyName.toLowerCase() + "_center/";
-                	String systemRoot = ((SmallBodyViewConfig) config).rootDirOnServer.substring(1).replaceFirst("/", centerNameReplacement);
-                	String fileNameString = rootDir + systemRoot + "/" + config.getAuthor() + "_" + config.getBody().toString().replaceAll(" ", "_") + "_System_"  + bodyName.toLowerCase() + "center" + version.replaceAll(" ", "_") + "_v" + configInfoVersion + ".json";
+                	System.out.println("SmallBodyViewConfigMetadataIO: main: center name replacement " + centerNameReplacement);
+                	System.out.println("SmallBodyViewConfigMetadataIO: main: root dir on server " + ((SmallBodyViewConfig) config).rootDirOnServer);
+                	String systemRoot = ((SmallBodyViewConfig) config).rootDirOnServer.substring(1); //.replaceFirst("/", centerNameReplacement);
+                	System.out.println("SmallBodyViewConfigMetadataIO: main: system root " + systemRoot);
+//                	String fileNameString = rootDir + systemRoot + "/" + config.getAuthor() + "_" + config.getBody().toString().replaceAll(" ", "_") + "_System_"  + bodyName.toLowerCase() + "center" + version.replaceAll(" ", "_") + "_v" + configInfoVersion + ".json";
+                	String fileNameString = rootDir + systemRoot + "/" + config.getAuthor() /*+ "_" + config.getBody().toString().replaceAll(" ", "_") + "_System_"  + bodyName.toLowerCase() + "center" + version.replaceAll(" ", "_") */ + "_v" + configInfoVersion + ".json";
+
                 	fileNameString = fileNameString.replaceAll("\\(", "");
                 	fileNameString = fileNameString.replaceAll("\\)", "");
                 	file = new File(fileNameString);
+                	System.out.println("SmallBodyViewConfigMetadataIO: main: file is " + file);
                 }
                 BasicConfigInfo configInfo = new BasicConfigInfo((BodyViewConfig)config, publishedDataOnly);
                 allBodiesMetadata.put(Key.of(config.getUniqueName()), configInfo.store());
