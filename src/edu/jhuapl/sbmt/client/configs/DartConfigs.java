@@ -822,8 +822,8 @@ public class DartConfigs extends SmallBodyViewConfigBuilder
         c.timeHistoryFile = c.rootDirOnServer + "/history/timeHistory.bth";
         c.stateHistoryStartDate = new GregorianCalendar(2022, 9, 1, 10, 25, 8).getTime();
         c.stateHistoryEndDate = new GregorianCalendar(2022, 9, 1, 10, 28, 36).getTime();
-        SpiceInfo spiceInfo1 = new SpiceInfo(MissionPrefix, "920065803_FIXED", "DART_SPACECRAFT", "DIDYMOS", new String[] { "EARTH", "SUN", "DIMORPHOS" }, new String[] { "DART_DRACO_2X2", "120065803_FIXED" });
-        SpiceInfo spiceInfo2 = new SpiceInfo(MissionPrefix, "120065803_FIXED", "DART_SPACECRAFT", "DIMORPHOS", new String[] { "EARTH", "SUN", "DIDYMOS" }, new String[] { "DART_DRACO_2X2", "920065803_FIXED" });
+        SpiceInfo spiceInfo1 = new SpiceInfo(MissionPrefix, "920065803_FIXED", "DART_SPACECRAFT", "DIDYMOS", new String[] { "EARTH", "SUN", "DIMORPHOS" }, new String[] { "-135102", "120065803_FIXED" });
+        SpiceInfo spiceInfo2 = new SpiceInfo(MissionPrefix, "120065803_FIXED", "DART_SPACECRAFT", "DIMORPHOS", new String[] { "EARTH", "SUN", "DIDYMOS" }, new String[] { "-135102", "920065803_FIXED" });
         SpiceInfo[] spiceInfos = new SpiceInfo[] { spiceInfo1, spiceInfo2 };
         c.spiceInfo = List.of(spiceInfos).stream().filter(info -> info.getBodyName().equals(centerBodyName)).toList().get(0);
     }
@@ -834,8 +834,8 @@ public class DartConfigs extends SmallBodyViewConfigBuilder
         c.timeHistoryFile = c.rootDirOnServer + "/history/timeHistory.bth";
         c.stateHistoryStartDate = new GregorianCalendar(2022, 8, 26, 23, 10, 18).getTime();
         c.stateHistoryEndDate = new GregorianCalendar(2022, 8, 26, 23, 13, 30).getTime();
-        SpiceInfo spiceInfo1 = new SpiceInfo(MissionPrefix, "DIDYMOS_FIXED", "DART_SPACECRAFT", "DIDYMOS", new String[] { "EARTH", "SUN", "DIMORPHOS" }, new String[] { "DART_DRACO_2X2", "DIMORPHOS_FIXED" });
-        SpiceInfo spiceInfo2 = new SpiceInfo(MissionPrefix, "DIMORPHOS_FIXED", "DART_SPACECRAFT", "DIMORPHOS", new String[] { "EARTH", "SUN", "DIDYMOS" }, new String[] { "DART_DRACO_2X2", "DIDYMOS_FIXED" });
+        SpiceInfo spiceInfo1 = new SpiceInfo(MissionPrefix, "DIDYMOS_FIXED", "DART_SPACECRAFT", "DIDYMOS", new String[] { "EARTH", "SUN", "DIMORPHOS" }, new String[] { "-135102", "DIMORPHOS_FIXED" });
+        SpiceInfo spiceInfo2 = new SpiceInfo(MissionPrefix, "DIMORPHOS_FIXED", "DART_SPACECRAFT", "DIMORPHOS", new String[] { "EARTH", "SUN", "DIDYMOS" }, new String[] { "-135102", "DIDYMOS_FIXED" });
         SpiceInfo[] spiceInfos = new SpiceInfo[] { spiceInfo1, spiceInfo2 };
         c.spiceInfo = List.of(spiceInfos).stream().filter(info -> info.getBodyName().equals(centerBodyName)).toList().get(0);
     }
@@ -1036,11 +1036,10 @@ public class DartConfigs extends SmallBodyViewConfigBuilder
 
     protected ImagingInstrument createFlightInstrument(ShapeModelBody body, ShapeModelType author, Instrument instrument, Map<ImageSource, Orientation> orientationMap, ImageSource... sources)
     {
-        String tablePrefix = dbTablePrefix(body, author, instrument);
-
+        String tablePrefix = dbTablePrefix(body, author, instrument).replaceAll("_center", "");
         String lcInstrument = instrument.name().toLowerCase();
 
-        String modelImageDir = modelTopDir(body, author) + "/" + lcInstrument;
+        String modelImageDir = modelTopDir(body, author).replaceAll("-center", "") + "/" + lcInstrument;
         String imageDataDir = "/dart/" + lcInstrument;
 
         return createFlightInstrument(instrument, tablePrefix, modelImageDir, imageDataDir, orientationMap, sources);
@@ -1098,11 +1097,11 @@ public class DartConfigs extends SmallBodyViewConfigBuilder
 
     protected ImagingInstrument createFlightInstrument(ShapeModelBody body, ShapeModelType author, Instrument instrument, double rotation, ImageFlip flip, boolean transpose, ImageSource... sources)
     {
-        String tablePrefix = dbTablePrefix(body, author, instrument);
+        String tablePrefix = dbTablePrefix(body, author, instrument).replaceAll("_center", "");
 
         String lcInstrument = instrument.name().toLowerCase();
 
-        String modelImageDir = modelTopDir(body, author) + "/" + lcInstrument;
+        String modelImageDir = modelTopDir(body, author).replaceAll("-center", "") + "/" + lcInstrument;
         String imageDataDir = "/dart/" + lcInstrument;
 
         return createFlightInstrument(instrument, tablePrefix, modelImageDir, imageDataDir, rotation, flip, transpose, sources);
@@ -1375,15 +1374,16 @@ public class DartConfigs extends SmallBodyViewConfigBuilder
         {
             systemConfigs.add(secondaries[i]);
         }
+        String bodyName = primary.body.name().replaceAll("[\\s-_]+", "-").toLowerCase();
+        String authorName = primary.author.name().replaceAll("[\\s-_]+", "-").replaceAll("-center", "").toLowerCase();
 
+        primary.body = ShapeModelBody.DIDYMOS_SYSTEM;
         primary.systemConfigs = systemConfigs;
         primary.hasSystemBodies = true;
-        primary.body = ShapeModelBody.DIDYMOS_SYSTEM;
         primary.hasDTMs = false;
-        primary.rootDirOnServer = "/" + primary.body.name().replaceAll("[\\s-_]+", "-").toLowerCase() + "/" + primary.author.name().replaceAll("[\\s-_]+", "-").toLowerCase();
+        primary.rootDirOnServer = "/" + bodyName + "/" + authorName;
         primary.rootDirOnServer = primary.rootDirOnServer.replaceAll("\\(", "");
         primary.rootDirOnServer = primary.rootDirOnServer.replaceAll("\\)", "");
-        primary.rootDirOnServer = primary.rootDirOnServer.replaceAll("-\\w*-center", "");
 
         return primary;
     }

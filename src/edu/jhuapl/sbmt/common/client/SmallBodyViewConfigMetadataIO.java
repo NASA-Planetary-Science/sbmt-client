@@ -115,19 +115,17 @@ public class SmallBodyViewConfigMetadataIO implements MetadataManager
                 {
                 	String bodyName = config.getBody().toString();
                 	bodyName = bodyName.replaceAll(" ", "_");
-                	System.out.println("SmallBodyViewConfigMetadataIO: main: bodyname " + bodyName);
-                	String centerNameReplacement = "-system_" + bodyName.toLowerCase() + "_center/";
-                	System.out.println("SmallBodyViewConfigMetadataIO: main: center name replacement " + centerNameReplacement);
-                	System.out.println("SmallBodyViewConfigMetadataIO: main: root dir on server " + ((SmallBodyViewConfig) config).rootDirOnServer);
-                	String systemRoot = ((SmallBodyViewConfig) config).rootDirOnServer.substring(1); //.replaceFirst("/", centerNameReplacement);
-                	System.out.println("SmallBodyViewConfigMetadataIO: main: system root " + systemRoot);
-//                	String fileNameString = rootDir + systemRoot + "/" + config.getAuthor() + "_" + config.getBody().toString().replaceAll(" ", "_") + "_System_"  + bodyName.toLowerCase() + "center" + version.replaceAll(" ", "_") + "_v" + configInfoVersion + ".json";
+
+                	String systemRoot = "/" + config.getBody().name().replaceAll("[\\s-_]+", "-").toLowerCase() + "/" + config.getAuthor().name().replaceAll("[\\s-_]+", "-").toLowerCase();
+                    systemRoot = systemRoot.replaceAll("\\(", "");
+                    systemRoot = systemRoot.replaceAll("\\)", "");
+                    systemRoot = systemRoot.replaceAll("-\\w*-center", "");
+
                 	String fileNameString = rootDir + systemRoot + "/" + config.getAuthor() /*+ "_" + config.getBody().toString().replaceAll(" ", "_") + "_System_"  + bodyName.toLowerCase() + "center" + version.replaceAll(" ", "_") */ + "_v" + configInfoVersion + ".json";
 
                 	fileNameString = fileNameString.replaceAll("\\(", "");
                 	fileNameString = fileNameString.replaceAll("\\)", "");
                 	file = new File(fileNameString);
-                	System.out.println("SmallBodyViewConfigMetadataIO: main: file is " + file);
                 }
                 BasicConfigInfo configInfo = new BasicConfigInfo((BodyViewConfig)config, publishedDataOnly);
                 allBodiesMetadata.put(Key.of(config.getUniqueName()), configInfo.store());
@@ -457,6 +455,12 @@ public class SmallBodyViewConfigMetadataIO implements MetadataManager
     @Override
     public void retrieve(Metadata configMetadata)
     {
+    	retrieve(configMetadata, false);
+    }
+
+
+    public void retrieve(Metadata configMetadata, boolean partOfSystem)
+    {
 //    	System.out.println("SmallBodyViewConfigMetadataIO: retrieve: metadata " + configMetadata);
         SmallBodyViewConfig c = (SmallBodyViewConfig)configs.get(0);
         c.body = ShapeModelBody.valueOf(read(body, configMetadata));
@@ -692,22 +696,21 @@ public class SmallBodyViewConfigMetadataIO implements MetadataManager
         }
 
         if (configMetadata.hasKey(systemBodies)) c.hasSystemBodies = read(systemBodies, configMetadata);
-        if (configMetadata.hasKey(systemBodyConfigs) && SmallBodyViewConfig.getConfigIdentifiers().size() != 0)
+        if (configMetadata.hasKey(systemBodyConfigs) && SmallBodyViewConfig.getConfigIdentifiers().size() != 0 && partOfSystem == false)
         {
         	List<String> systemBodyConfigStrings = read(systemBodyConfigs, configMetadata);
         	c.systemConfigs = systemBodyConfigStrings
         		.stream()
         		.map( x -> {
         		String[] splits = x.split(",");
-        		String modelTypeAdjusted = splits[1].replaceAll("-\\w*-center", "");
         		if ((splits.length == 2) || ((splits.length == 3) && (splits[2].equals("null"))))
         		{
-        			SmallBodyViewConfig config = SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.valueFor(splits[0]), ShapeModelType.provide(modelTypeAdjusted));
+        			SmallBodyViewConfig config = SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.valueFor(splits[0]), ShapeModelType.provide(splits[1]), true);
         			return config;
         		}
         		else
         		{
-        			SmallBodyViewConfig config = SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.valueFor(splits[0]), ShapeModelType.provide(modelTypeAdjusted), splits[2]);
+        			SmallBodyViewConfig config = SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.valueFor(splits[0]), ShapeModelType.provide(splits[1]), splits[2]);
         			return config;
         		}
         	}).toList();

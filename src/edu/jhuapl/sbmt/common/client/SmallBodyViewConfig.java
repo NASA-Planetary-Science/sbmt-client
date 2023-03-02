@@ -87,7 +87,7 @@ public class SmallBodyViewConfig extends BodyViewConfig implements ISmallBodyVie
     	}
     	else
     	{
-    		return getSmallBodyConfig(bodyType, authorType);
+    		return getSmallBodyConfig(bodyType, authorType, false);
     	}
 
 
@@ -104,10 +104,24 @@ public class SmallBodyViewConfig extends BodyViewConfig implements ISmallBodyVie
      */
     public static SmallBodyViewConfig getSmallBodyConfig(ShapeModelBody name, ShapeModelType author)
     {
+       return getSmallBodyConfig(name, author, false);
+    }
+
+    /**
+     * Return the model config uniquely identified by the arguments, none of
+     * which may be null.
+     *
+     * @param name the shape model's body
+     * @param author the shape model type/author
+     * @return the config
+     * @see #getSmallBodyConfig(String) for more details
+     */
+    public static SmallBodyViewConfig getSmallBodyConfig(ShapeModelBody name, ShapeModelType author, boolean partOfSystem)
+    {
         Preconditions.checkNotNull(name);
         Preconditions.checkNotNull(author);
 
-        return getSmallBodyConfig(author.toString() + "/" + name.toString());
+        return getSmallBodyConfig(author.toString() + "/" + name.toString(), partOfSystem);
     }
 
     /**
@@ -126,7 +140,7 @@ public class SmallBodyViewConfig extends BodyViewConfig implements ISmallBodyVie
         Preconditions.checkNotNull(author);
         Preconditions.checkNotNull(version);
 
-        return getSmallBodyConfig(author.toString() + "/" + name.toString() + " (" + version + ")");
+        return getSmallBodyConfig(author.toString() + "/" + name.toString() + " (" + version + ")", false);
     }
 
     /**
@@ -143,14 +157,14 @@ public class SmallBodyViewConfig extends BodyViewConfig implements ISmallBodyVie
      * @throws various {@link RuntimeException}s
      * @see #fetchRemoteConfig(String, String)
      */
-    protected static SmallBodyViewConfig getSmallBodyConfig(String configId)
+    protected static SmallBodyViewConfig getSmallBodyConfig(String configId, boolean partOfSystem)
     {
         SmallBodyViewConfig config = LOADED_VIEWCONFIGS.get(configId);
         if (config == null)
         {
             Preconditions.checkArgument(VIEWCONFIG_IDENTIFIERS.containsKey(configId), "No configuration available for model " + configId);
 
-            config = fetchRemoteConfig(configId, VIEWCONFIG_IDENTIFIERS.get(configId).getConfigURL());
+            config = fetchRemoteConfig(configId, VIEWCONFIG_IDENTIFIERS.get(configId).getConfigURL(), partOfSystem);
 
             LOADED_VIEWCONFIGS.put(configId, config);
         }
@@ -174,7 +188,7 @@ public class SmallBodyViewConfig extends BodyViewConfig implements ISmallBodyVie
             	VIEWCONFIG_IDENTIFIERS.put(key.toString(), configInfo);
             	if (configInfo.getUniqueName().equals("Gaskell/433 Eros"))
             	{
-            		configs.add(getSmallBodyConfig(ShapeModelBody.EROS, ShapeModelType.GASKELL));
+            		configs.add(getSmallBodyConfig(ShapeModelBody.EROS, ShapeModelType.GASKELL, false));
             	}
             }
         }
@@ -196,7 +210,7 @@ public class SmallBodyViewConfig extends BodyViewConfig implements ISmallBodyVie
      * @param url from which to download/load the metadata
      * @return the config
      */
-    private static SmallBodyViewConfig fetchRemoteConfig(String name, String url)
+    private static SmallBodyViewConfig fetchRemoteConfig(String name, String url, boolean partOfSystem)
     {
         ConfigArrayList<SmallBodyViewConfig> ioConfigs = new ConfigArrayList<>();
         ioConfigs.add(new SmallBodyViewConfig(ImmutableList.<String>copyOf(DEFAULT_GASKELL_LABELS_PER_RESOLUTION), ImmutableList.<Integer>copyOf(DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION)));
@@ -205,7 +219,7 @@ public class SmallBodyViewConfig extends BodyViewConfig implements ISmallBodyVie
         {
             File configFile = FileCache.getFileFromServer(url);
             FixedMetadata metadata = Serializers.deserialize(configFile, name);
-            io.retrieve(metadata);
+            io.retrieve(metadata, partOfSystem);
             SmallBodyViewConfig c = (SmallBodyViewConfig) io.getConfigs().get(0);
             if (c == null)
             {
