@@ -833,7 +833,7 @@ public class DartConfigs extends SmallBodyViewConfigBuilder
         c.hasStateHistory = true;
         c.timeHistoryFile = c.rootDirOnServer + "/history/timeHistory.bth";
         c.stateHistoryStartDate = new GregorianCalendar(2022, 8, 26, 23, 10, 18).getTime();
-        c.stateHistoryEndDate = new GregorianCalendar(2022, 8, 26, 23, 13, 30).getTime();
+        c.stateHistoryEndDate = new GregorianCalendar(2022, 8, 26, 23, 14, 25).getTime();
         SpiceInfo spiceInfo1 = new SpiceInfo(MissionPrefix, "DIDYMOS_FIXED", "DART_SPACECRAFT", "DIDYMOS", new String[] { "EARTH", "SUN", "DIMORPHOS" }, new String[] { "-135102", "DIMORPHOS_FIXED" });
         SpiceInfo spiceInfo2 = new SpiceInfo(MissionPrefix, "DIMORPHOS_FIXED", "DART_SPACECRAFT", "DIMORPHOS", new String[] { "EARTH", "SUN", "DIDYMOS" }, new String[] { "-135102", "DIDYMOS_FIXED" });
         SpiceInfo[] spiceInfos = new SpiceInfo[] { spiceInfo1, spiceInfo2 };
