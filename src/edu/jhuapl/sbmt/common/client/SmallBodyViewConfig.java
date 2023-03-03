@@ -160,7 +160,7 @@ public class SmallBodyViewConfig extends BodyViewConfig implements ISmallBodyVie
     protected static SmallBodyViewConfig getSmallBodyConfig(String configId, boolean partOfSystem)
     {
         SmallBodyViewConfig config = LOADED_VIEWCONFIGS.get(configId);
-        if (config == null)
+        if (config == null || config.hasSystemBodies())
         {
             Preconditions.checkArgument(VIEWCONFIG_IDENTIFIERS.containsKey(configId), "No configuration available for model " + configId);
 

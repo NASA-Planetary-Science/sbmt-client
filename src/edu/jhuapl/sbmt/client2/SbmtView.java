@@ -942,7 +942,7 @@ public class SbmtView extends View implements PropertyChangeListener
 				return null;
 			}
 		});
-
+		kernelSelectionFrame.setLocationRelativeTo(this);
 
 
 	}
