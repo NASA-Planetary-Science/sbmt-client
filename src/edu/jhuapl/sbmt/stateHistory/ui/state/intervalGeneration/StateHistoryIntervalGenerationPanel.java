@@ -284,6 +284,12 @@ public class StateHistoryIntervalGenerationPanel extends JPanel
 		return panel;
 	}
 
+	public void refreshKernels()
+	{
+		DefaultComboBoxModel<String> model = new DefaultComboBoxModel<String>(getAvailableKernels());
+		kernelComboBox.setModel(model);
+	}
+
 	private String[] getAvailableKernels()
 	{
 		List<String> loadedKernels = new ArrayList<String>();

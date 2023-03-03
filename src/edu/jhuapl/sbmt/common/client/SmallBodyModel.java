@@ -1,5 +1,6 @@
 package edu.jhuapl.sbmt.common.client;
 
+import java.io.IOException;
 import java.util.List;
 
 import com.google.common.collect.ImmutableList;
@@ -152,6 +153,14 @@ public class SmallBodyModel extends GenericPolyhedralModel implements ISmallBody
                 coloringHasNulls,
                 config.hasColoringData ? DEFAULT_COLORING_VALUE_TYPE : null,
                 lowestResolutionModelStoredInResource);
+    }
+
+    @Override
+    public void reloadShapeModel() throws IOException
+    {
+    	// TODO Auto-generated method stub
+    	super.reloadShapeModel();
+    	transformBody(this.currentTransform);
     }
 
     public void transformBody(vtkTransform transform)
