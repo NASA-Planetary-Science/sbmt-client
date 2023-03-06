@@ -36,22 +36,27 @@ public class LowResolutionBoundaryOperator extends BasePipelineOperator<Pair<Poi
 	    vtkPolyData boundary = new vtkPolyData();
 	    vtkPolyDataMapper boundaryMapper = new vtkPolyDataMapper();
 	    List<SmallBodyModel> smallBodyModels = inputs.get(0).getRight();
-	    vtkPolyData emptyPolyData = new vtkPolyData();
-        boundary.DeepCopy(emptyPolyData);
-        vtkPoints points = boundary.GetPoints();
-        vtkCellArray verts = boundary.GetVerts();
 
-        vtkIdList idList = new vtkIdList();
-        idList.SetNumberOfIds(1);
-        PointingFileReader pointing = inputs.get(0).getLeft();
-        double[] spacecraftPosition = pointing.getSpacecraftPosition();
-        double[] frustum1 = pointing.getFrustum1();
-        double[] frustum2 = pointing.getFrustum2();
-        double[] frustum3 = pointing.getFrustum3();
+	    synchronized(LowResolutionBoundaryOperator.class) {
 
-        synchronized(LowResolutionBoundaryOperator.class) {
 	        for (SmallBodyModel smallBodyModel : smallBodyModels)
 	    	{
+			    vtkPolyData emptyPolyData = new vtkPolyData();
+		        boundary.DeepCopy(emptyPolyData);
+		    	vtkPoints points = boundary.GetPoints();
+		        vtkCellArray verts = boundary.GetVerts();
+
+		        vtkIdList idList = new vtkIdList();
+		        idList.SetNumberOfIds(1);
+		        PointingFileReader pointing = inputs.get(0).getLeft();
+		        double[] spacecraftPosition = pointing.getSpacecraftPosition();
+		        double[] frustum1 = pointing.getFrustum1();
+		        double[] frustum2 = pointing.getFrustum2();
+		        double[] frustum3 = pointing.getFrustum3();
+
+
+
+//	        	System.out.println("LowResolutionBoundaryOperator: processData: processing boundary for body " + smallBodyModel.getConfig().getUniqueName());
 		        vtksbCellLocator cellLocator = smallBodyModel.getCellLocator();
 
 		        vtkGenericCell cell = new vtkGenericCell();
@@ -59,8 +64,8 @@ public class LowResolutionBoundaryOperator extends BasePipelineOperator<Pair<Poi
 		        // Note it doesn't matter what image size we use, even
 		        // if it's not the same size as the original image. Just
 		        // needs to large enough so enough points get drawn.
-		        final int IMAGE_WIDTH = 475;
-		        final int IMAGE_HEIGHT = 475;
+		        final int IMAGE_WIDTH = 1024;
+		        final int IMAGE_HEIGHT = 1024;
 
 		        int count = 0;
 

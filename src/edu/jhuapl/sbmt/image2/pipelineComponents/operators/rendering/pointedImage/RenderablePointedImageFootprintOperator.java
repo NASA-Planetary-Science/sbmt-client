@@ -118,7 +118,7 @@ public class RenderablePointedImageFootprintOperator extends BasePipelineOperato
 		        															frustum4Adjusted,
 		        															frustum2Adjusted);
 
-		        if (tmp == null) return;
+		        if (tmp == null) continue;
 
 		        // Need to clear out scalar data since if coloring data is being shown,
 		        // then the color might mix-in with the image.
