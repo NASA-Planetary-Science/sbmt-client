@@ -34,11 +34,11 @@ public class BodyPositionPipeline implements IPipeline<SmallBodyModel>
 	String mkPath;
 	String centerBodyName;
 	String initialTime;
-	String instFrame;
+	String instName;
 	SpiceInfo activeSpiceInfo;
 
 	public BodyPositionPipeline(String[] bodyFiles, String[] bodyNames,
-			SpiceInfo[] spiceInfos, String mkPath, String centerBodyName, String initialTime, String instFrame)
+			SpiceInfo[] spiceInfos, String mkPath, String centerBodyName, String initialTime, String instName)
 			throws Exception
 	{
 		this.bodyFiles = bodyFiles;
@@ -47,7 +47,7 @@ public class BodyPositionPipeline implements IPipeline<SmallBodyModel>
 		this.mkPath = mkPath;
 		this.centerBodyName = centerBodyName;
 		this.initialTime = initialTime;
-		this.instFrame = instFrame;
+		this.instName = instName;
 		//***********************
 		//generate body polydata
 		//***********************
@@ -57,7 +57,7 @@ public class BodyPositionPipeline implements IPipeline<SmallBodyModel>
 		//*********************************
 		activeSpiceInfo = Arrays.asList(spiceInfos).stream().filter(info -> info.getBodyName().equals(centerBodyName))
 				.collect(Collectors.toList()).get(0);
-		pointingProviders = new SpiceReaderPublisher(mkPath, activeSpiceInfo, instFrame);
+		pointingProviders = new SpiceReaderPublisher(mkPath, activeSpiceInfo, instName);
 		spiceBodyObjects = Publishers.formPair(vtkReader, pointingProviders);
 		spiceBodyOperator = new SpiceBodyOperator(centerBodyName, TimeUtil.str2et(initialTime));
 
@@ -72,7 +72,7 @@ public class BodyPositionPipeline implements IPipeline<SmallBodyModel>
 		// *********************************
 		// Use SPICE to position the bodies
 		// *********************************
-		pointingProviders = new SpiceReaderPublisher(mkPath, activeSpiceInfo, instFrame);
+		pointingProviders = new SpiceReaderPublisher(mkPath, activeSpiceInfo, instName);
 		spiceBodyObjects = Publishers.formPair(vtkReader, pointingProviders);
 
 		return spiceBodyObjects.operate(spiceBodyOperator).subscribe(Sink.of(updatedBodies));
@@ -87,7 +87,7 @@ public class BodyPositionPipeline implements IPipeline<SmallBodyModel>
 		// *********************************
 		// Use SPICE to position the bodies
 		// *********************************
-		pointingProviders = new SpiceReaderPublisher(mkPath, activeSpiceInfo, instFrame);
+		pointingProviders = new SpiceReaderPublisher(mkPath, activeSpiceInfo, instName);
 		spiceBodyObjects = Publishers.formPair(vtkReader, pointingProviders);
 		spiceBodyOperator = new SpiceBodyOperator(centerBodyName, time);
 		return spiceBodyObjects.operate(spiceBodyOperator).subscribe(Sink.of(updatedBodies));

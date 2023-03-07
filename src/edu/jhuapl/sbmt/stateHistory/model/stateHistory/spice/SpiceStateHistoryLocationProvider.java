@@ -66,29 +66,29 @@ public class SpiceStateHistoryLocationProvider implements IStateHistoryLocationP
 	}
 
 	@Override
-	public double[] getInstrumentLookDirection(String instrumentFrameName)
+	public double[] getInstrumentLookDirection(String instrumentName)
 	{
-		return state.getInstrumentLookDirection(instrumentFrameName);
+		return state.getInstrumentLookDirection(instrumentName);
 	}
 
 	@Override
-	public double[] getInstrumentLookDirectionAtTime(String instrumentFrameName, double time)
+	public double[] getInstrumentLookDirectionAtTime(String instrumentName, double time)
 	{
 		state.setEphemerisTime(time);
-		return state.getInstrumentLookDirection(instrumentFrameName);
+		return state.getInstrumentLookDirection(instrumentName);
 	}
 
 	@Override
-	public UnwritableVectorIJK getFrustum(String instrumentFrameName, int index)
+	public UnwritableVectorIJK getFrustum(String instrumentName, int index)
 	{
-		return state.getFrustum(instrumentFrameName, index);
+		return state.getFrustum(instrumentName, index);
 	}
 
 	@Override
-	public UnwritableVectorIJK getFrustumAtTime(String instrumentFrameName, int index, double time)
+	public UnwritableVectorIJK getFrustumAtTime(String instrumentName, int index, double time)
 	{
 		state.setEphemerisTime(time);
-		return state.getFrustum(instrumentFrameName, index);
+		return state.getFrustum(instrumentName, index);
 	}
 
 	@Override
@@ -243,9 +243,9 @@ public class SpiceStateHistoryLocationProvider implements IStateHistoryLocationP
 							spiceInfo.getBodyFrameName(), spiceInfo.getScId(), spiceInfo.getScFrameName());
 
 			for (String bodyNameToBind : spiceInfo.getBodyNamesToBind()) builder.bindEphemeris(bodyNameToBind);
-			for (String instrumentFrameToBind : spiceInfo.getInstrumentFrameNamesToBind())
+			for (String instrumentToBind : spiceInfo.getInstrumentNamesToBind())
 			{
-				builder.bindFrame(instrumentFrameToBind);
+				builder.addInstrumentFrame(instrumentToBind);
 			}
 
             pointingProvider = builder.build();

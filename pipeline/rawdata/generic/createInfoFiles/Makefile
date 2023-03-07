@@ -1,5 +1,5 @@
 # SPICE
-SPICE_DIR			= /project/sbmtpipeline/software/spice/cspice-20220921/cspice
+SPICE_DIR			= /Users/peachjm1/jhuapl/dev/spice/naif-tools/cspice
 SPICE_LIB			= $(SPICE_DIR)/lib/cspice.a
 #
 # CFITSIO
@@ -13,7 +13,7 @@ LIB_CFITSIO			=
 # Compiler
 CXX				= g++
 # Change -O2 to -O0 -g for debugging
-COPT				= -O2
+COPT				= -O0 -g
 CFLAGS				= -Wall --pedantic -Wno-long-long
 CINCLUDES			= -I$(SPICE_DIR)/include -I.
 CLIBS				= $(SPICE_LIB)

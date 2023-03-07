@@ -933,7 +933,7 @@ public class SbmtView extends View implements PropertyChangeListener
 				SimpleDateFormat dateFormatter = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS");
 		    	String dateTimeString = dateFormatter.format(getPolyhedralModelConfig().stateHistoryStartDate);
 		    	double time = TimeUtil.str2et(dateTimeString);
-				positionOrientationManager = new PositionOrientationManager(bodies, arg0, firstSpiceInfo, firstSpiceInfo.getInstrumentFrameNamesToBind()[0],
+				positionOrientationManager = new PositionOrientationManager(bodies, arg0, firstSpiceInfo, firstSpiceInfo.getInstrumentNamesToBind()[0],
 																			spiceInfo.getBodyName(), time);
 				HashMap<ModelNames, List<Model>> allModels = new HashMap(getModelManager().getAllModels());
 				allModels.put(ModelNames.SMALL_BODY, positionOrientationManager.getUpdatedBodies());
