@@ -25,7 +25,6 @@ import edu.jhuapl.sbmt.pointing.spice.SpicePointingProvider;
 import crucible.core.math.vectorspace.UnwritableVectorIJK;
 import crucible.core.mechanics.CelestialBodies;
 import crucible.core.mechanics.EphemerisID;
-import crucible.core.mechanics.FrameID;
 import crucible.core.time.TimeSystems;
 import crucible.core.time.UTCEpoch;
 import nom.tam.fits.Fits;
@@ -55,7 +54,7 @@ public class ComputeSpicePointing
             String bodyFrameName = args[index++];
             String scName = args[index++];
             String scFrameName = args[index++];
-            String instFrameName = args[index++];
+            String instName = args[index++];
 
             String mkPathString = args[index++];
             ImmutableList<Path> mkPaths;
@@ -69,10 +68,9 @@ public class ComputeSpicePointing
             SpicePointingProvider.Builder builder = SpicePointingProvider.builder(mkPaths, bodyName, bodyFrameName, scName, scFrameName);
 
             EphemerisID bodyId = builder.bindEphemeris(bodyName);
+            builder.addInstrumentFrame(instName);
 
-            FrameID instFrame = builder.bindFrame(instFrameName);
-
-            return new ComputeSpicePointing(builder.build(), instFrame, bodyId, inputFilePath, inputDir, outputDir, fitsTimeKey);
+            return new ComputeSpicePointing(builder.build(), bodyId, inputFilePath, inputDir, outputDir, fitsTimeKey);
         }
         catch (Exception e)
         {
@@ -82,18 +80,16 @@ public class ComputeSpicePointing
     }
 
     private final SpicePointingProvider provider;
-    private final FrameID instFrame;
     private final Path inputFilePath;
     private final Path inputDir;
     private final Path outputDir;
     private final String fitsTimeKey;
 
-    protected ComputeSpicePointing(SpicePointingProvider provider, FrameID instFrame, EphemerisID bodyId, Path inputFilePath, Path inputDir, Path outputDir, String fitsTimeKey)
+    protected ComputeSpicePointing(SpicePointingProvider provider, EphemerisID bodyId, Path inputFilePath, Path inputDir, Path outputDir, String fitsTimeKey)
     {
         super();
 
         this.provider = provider;
-        this.instFrame = instFrame;
         this.inputFilePath = inputFilePath;
         this.inputDir = inputDir;
         this.outputDir = outputDir;
@@ -118,7 +114,7 @@ public class ComputeSpicePointing
     protected static void usage(PrintStream stream, int exitCode)
     {
         stream.println("--------------------------------------------------------------------------------");
-        stream.println("Usage: ComputeSpicePointing bodyId bodyFrame scId scFrame instFrame");
+        stream.println("Usage: ComputeSpicePointing bodyId bodyFrame scId scFrame instName");
         stream.println("                     mkFile inputFile inputDir outputDir fitsTimeKey\n");
         stream.println("               mkFile - metakernel file\n");
         stream.println("               inputFile - a text file with a list of input FITS files.\n");
@@ -203,7 +199,7 @@ public class ComputeSpicePointing
         UTCEpoch utcTime = getUTC(utcTimeString);
         double time = DefaultTimeSystems.getTDB().getTime(DefaultTimeSystems.getUTC().getTSEpoch(utcTime));
 
-        InstrumentPointing pointing = provider.provide(instFrame, time);
+        InstrumentPointing pointing = provider.provide(time);
         DecimalFormat formatter = new DecimalFormat("0.0000000000000000E00");
         try (PrintWriter writer = new PrintWriter(new FileWriter(outputDir.resolve(fileName).toFile())))
         {

@@ -69,9 +69,9 @@ public class SpiceStateHistoryIntervalGenerator implements IStateHistoryInterval
 							spice.getBodyFrameName(), spice.getScId(), spice.getScFrameName());
 
 			for (String bodyNameToBind : spice.getBodyNamesToBind()) builder.bindEphemeris(bodyNameToBind);
-			for (String instrumentFrameToBind : spice.getInstrumentFrameNamesToBind())
+			for (String instrumentToBind : spice.getInstrumentNamesToBind())
 			{
-				builder.bindFrame(instrumentFrameToBind);
+				builder.addInstrumentFrame(instrumentToBind);
 			}
 
             pointingProvider = builder.build();

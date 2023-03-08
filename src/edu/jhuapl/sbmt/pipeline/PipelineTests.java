@@ -422,7 +422,7 @@ public class PipelineTests
 		//*********************************
 		//Use SPICE to position the bodies
 		//*********************************
-		SpiceInfo spiceInfo = new SpiceInfo("DART", "920065803_FIXED", "DART_SPACECRAFT", "DIDYMOS", new String[] {"DIMORPHOS"}, new String[] {"DART_DRACO_2X2", "120065803_FIXED"});
+		SpiceInfo spiceInfo = new SpiceInfo("DART", "920065803_FIXED", "DART_SPACECRAFT", "DIDYMOS", new String[] {"DIMORPHOS"}, new String[] {"IAU_DIMORPHOS"}, new String[] {"DART_DRACO_2X2", "120065803_FIXED"});
 		IPipelinePublisher<SpicePointingProvider> pointingProviders = new SpiceReaderPublisher("/Users/steelrj1/dartspice/draco/impact.tm", spiceInfo, "DART_DRACO_2X2");
 //		IPipelinePublisher<List<Object>> spiceBodyObjects = Publishers.mergeLists(vtkReader, pointingProviders);
 		IPipelinePublisher<Pair<SmallBodyModel, SpicePointingProvider>> spiceBodyObjects = Publishers.formPair(vtkReader, pointingProviders);

@@ -388,13 +388,13 @@ public class CsvState implements State
     }
 
 	@Override
-	public double[] getInstrumentLookDirection(String instrumentFrameName)
+	public double[] getInstrumentLookDirection(String instrumentName)
 	{
 //		System.out.println("CsvState: getInstrumentLookDirection: ");
 		return new double[]{0.0, 0.0, 1.0};
 	}
 
-	public UnwritableVectorIJK getFrustum(String instrumentFrameName, int index)
+	public UnwritableVectorIJK getFrustum(String instrumentName, int index)
 	{
 		return new UnwritableVectorIJK(new double[] {0,0,1});
 	}

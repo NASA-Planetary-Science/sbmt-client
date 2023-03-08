@@ -477,7 +477,10 @@ public class MarsConfigs extends SmallBodyViewConfig
             c.timeHistoryFile = c.rootDirOnServer + "/history/timeHistory.bth";
             c.stateHistoryStartDate = new GregorianCalendar(2026, 1, 1, 0, 0, 0).getTime();
             c.stateHistoryEndDate = new GregorianCalendar(2026, 9, 30, 0, 0, 0).getTime();
-            c.spiceInfo = new SpiceInfo("MMX", "IAU_PHOBOS", "MMX_SPACECRAFT", "PHOBOS", new String[] {"EARTH" , "SUN", "MARS"}, new String[] {"MMX_MEGANE"});
+            c.spiceInfo = new SpiceInfo("MMX", "IAU_PHOBOS", "MMX_SPACECRAFT", "PHOBOS",
+            				new String[] {"EARTH" , "SUN", "MARS"},
+            				new String[] {"IAU_EARTH" , "IAU_SUN", "IAU_MARS"},
+            				new String[] {"MMX_MEGANE"});
 
             c.presentInMissions = new Mission[] {Mission.STAGE_APL_INTERNAL, Mission.APL_INTERNAL, Mission.TEST_APL_INTERNAL,
             														  Mission.MEGANE_DEPLOY, Mission.MEGANE_DEV, Mission.MEGANE_STAGE,

@@ -1035,7 +1035,7 @@ public class StateHistoryRendererManager extends SaavtkItemManager<StateHistory>
 		if (!coloredRange.contains(i)) return null;
 		double startTime = trajectory.getStartTime();
 		double nextTime = startTime + i*trajectory.getTimeStep();
-		String currentInstrument = trajectory.getPointingProvider().getCurrentInstFrameName();
+		String currentInstrument = trajectory.getPointingProvider().getCurrentInstrumentName();
 		InstrumentPointing instrumentPointing = trajectory.getPointingProvider().provide(nextTime);
 
 		vtkDoubleArray dataArray = new vtkDoubleArray();

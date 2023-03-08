@@ -1796,7 +1796,9 @@ public class BennuConfigs extends SmallBodyViewConfig
         stateHistoryStartDate = new GregorianCalendar(2018, 10, 25, 0, 0, 0).getTime();
         stateHistoryEndDate = new GregorianCalendar(2025, 1, 1, 0, 0, 0).getTime();
         spiceInfo = new SpiceInfo("ORX", "IAU_BENNU", "ORX_SPACECRAFT", "BENNU",
-    			new String[] {"EARTH" , "SUN"}, new String[] {"ORX_OCAMS_POLYCAM", "ORX_OCAMS_MAPCAM",
+    			new String[] {"EARTH" , "SUN"},
+    			new String[] {"IAU_EARTH" , "IAU_SUN"},
+    			new String[] {"ORX_OCAMS_POLYCAM", "ORX_OCAMS_MAPCAM",
     															"ORX_OCAMS_SAMCAM", "ORX_NAVCAM1", "ORX_NAVCAM2",
 //    															"ORX_OTES", "ORX_OVIRS",
     															"ORX_OLA_LOW", "ORX_OLA_HIGH"});
