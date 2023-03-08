@@ -68,9 +68,15 @@ public class ComputeSpicePointing
             SpicePointingProvider.Builder builder = SpicePointingProvider.builder(mkPaths, bodyName, bodyFrameName, scName, scFrameName);
 
             EphemerisID bodyId = builder.bindEphemeris(bodyName);
-            builder.addInstrumentFrame(instName);
+            // Note: if you are using this code as an example, you probably 
+            // don't want to include all instruments here...
+            builder.includeAllInstruments();
 
-            return new ComputeSpicePointing(builder.build(), bodyId, inputFilePath, inputDir, outputDir, fitsTimeKey);
+            SpicePointingProvider provider = builder.build();
+
+            provider.setCurrentInstrumentName(instName);
+
+            return new ComputeSpicePointing(provider, bodyId, inputFilePath, inputDir, outputDir, fitsTimeKey);
         }
         catch (Exception e)
         {
