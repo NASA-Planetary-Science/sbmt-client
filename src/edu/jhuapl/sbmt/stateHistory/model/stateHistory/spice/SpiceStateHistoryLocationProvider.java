@@ -245,7 +245,7 @@ public class SpiceStateHistoryLocationProvider implements IStateHistoryLocationP
 			for (String bodyNameToBind : spiceInfo.getBodyNamesToBind()) builder.bindEphemeris(bodyNameToBind);
 			for (String instrumentToBind : spiceInfo.getInstrumentNamesToBind())
 			{
-				builder.addInstrumentFrame(instrumentToBind);
+				builder.includeInstrument(instrumentToBind);
 			}
 
             pointingProvider = builder.build();
