@@ -42,7 +42,6 @@ import edu.jhuapl.sbmt.image2.pipelineComponents.publishers.builtin.BuiltInPNGHe
 import edu.jhuapl.sbmt.image2.pipelineComponents.publishers.builtin.BuiltInPNGReader;
 import edu.jhuapl.sbmt.image2.pipelineComponents.publishers.builtin.BuiltInVTKReader;
 import edu.jhuapl.sbmt.image2.pipelineComponents.publishers.pointing.InfofileReaderPublisher;
-import edu.jhuapl.sbmt.image2.pipelineComponents.publishers.pointing.SpiceReaderPublisher;
 import edu.jhuapl.sbmt.image2.pipelineComponents.publishers.pointing.SumfileReaderPublisher;
 import edu.jhuapl.sbmt.image2.pipelineComponents.subscribers.preview.VtkLayerPreview;
 import edu.jhuapl.sbmt.image2.pipelineComponents.subscribers.preview.VtkRendererPreview;
@@ -53,6 +52,7 @@ import edu.jhuapl.sbmt.pipeline.publisher.Just;
 import edu.jhuapl.sbmt.pipeline.publisher.Publishers;
 import edu.jhuapl.sbmt.pipeline.subscriber.PairSink;
 import edu.jhuapl.sbmt.pipeline.subscriber.Sink;
+import edu.jhuapl.sbmt.pointing.modules.SpiceReaderPublisher;
 import edu.jhuapl.sbmt.pointing.spice.SpiceInfo;
 import edu.jhuapl.sbmt.pointing.spice.SpicePointingProvider;
 import edu.jhuapl.sbmt.util.TimeUtil;
@@ -422,7 +422,7 @@ public class PipelineTests
 		//*********************************
 		//Use SPICE to position the bodies
 		//*********************************
-		SpiceInfo spiceInfo = new SpiceInfo("DART", "920065803_FIXED", "DART_SPACECRAFT", "DIDYMOS", new String[] {"DIMORPHOS"}, new String[] {"IAU_DIMORPHOS"}, new String[] {"DART_DRACO_2X2", "120065803_FIXED"});
+		SpiceInfo spiceInfo = new SpiceInfo("DART", "920065803_FIXED", "DART_SPACECRAFT", "DIDYMOS", new String[] {"DIMORPHOS"}, new String[] {"IAU_DIMORPHOS"}, new String[] {"DART_DRACO_2X2", "120065803_FIXED"}, new String[] {});
 		IPipelinePublisher<SpicePointingProvider> pointingProviders = new SpiceReaderPublisher("/Users/steelrj1/dartspice/draco/impact.tm", spiceInfo, "DART_DRACO_2X2");
 //		IPipelinePublisher<List<Object>> spiceBodyObjects = Publishers.mergeLists(vtkReader, pointingProviders);
 		IPipelinePublisher<Pair<SmallBodyModel, SpicePointingProvider>> spiceBodyObjects = Publishers.formPair(vtkReader, pointingProviders);

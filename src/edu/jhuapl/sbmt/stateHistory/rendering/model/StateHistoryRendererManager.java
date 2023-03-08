@@ -648,6 +648,7 @@ public class StateHistoryRendererManager extends SaavtkItemManager<StateHistory>
 		int numberOfInstruments = run.getLocationProvider().getPointingProvider().getInstrumentNames().length;
 		if (numberOfInstruments == 0) return;
 		Color color = PlannedDataActorFactory.getColorForInstrument(instName);
+		if (color == null) color = Color.red;
 		PerspectiveFrustum fov = instrumentNameToFovMap.get(instName);
 		if (fov == null)
 		{

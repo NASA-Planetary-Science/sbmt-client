@@ -1,7 +1,6 @@
 package edu.jhuapl.sbmt.stateHistory.model.stateHistory.spice;
 
-import java.nio.file.Path;
-import java.nio.file.Paths;
+import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.function.Function;
 
@@ -9,8 +8,7 @@ import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 
-import com.google.common.collect.ImmutableList;
-
+import edu.jhuapl.sbmt.pointing.modules.SpiceReaderPublisher;
 import edu.jhuapl.sbmt.pointing.spice.SpiceInfo;
 import edu.jhuapl.sbmt.pointing.spice.SpicePointingProvider;
 import edu.jhuapl.sbmt.stateHistory.model.StateHistorySourceType;
@@ -32,6 +30,8 @@ import edu.jhuapl.sbmt.util.TimeUtil;
 import crucible.core.time.TimeSystem;
 import crucible.core.time.TimeSystems;
 import crucible.core.time.UTCEpoch;
+import crucible.mantle.spice.adapters.AdapterInstantiationException;
+import crucible.mantle.spice.kernel.KernelInstantiationException;
 
 /**
  * Class to generate a state history interval using SPICE kernels
@@ -59,28 +59,19 @@ public class SpiceStateHistoryIntervalGenerator implements IStateHistoryInterval
 
 	public void setMetaKernelFile(String mkFilename, SpiceInfo spice)
 	{
-		Path mkPath = Paths.get(mkFilename);
 		this.spiceInfo = spice;
 		this.sourceFile = mkFilename;
+		SpiceReaderPublisher pointingPublisher = null;
 		try
 		{
-			SpicePointingProvider.Builder builder =
-					SpicePointingProvider.builder(ImmutableList.copyOf(new Path[] {mkPath}), spice.getBodyName(),
-							spice.getBodyFrameName(), spice.getScId(), spice.getScFrameName());
-
-			for (String bodyNameToBind : spice.getBodyNamesToBind()) builder.bindEphemeris(bodyNameToBind);
-			for (String instrumentToBind : spice.getInstrumentNamesToBind())
-			{
-				builder.includeInstrument(instrumentToBind);
-			}
-
-            pointingProvider = builder.build();
+			pointingPublisher = new SpiceReaderPublisher(mkFilename, spice);
 		}
-		catch (Exception e)
+		catch (KernelInstantiationException | AdapterInstantiationException | IOException e)
 		{
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+		pointingProvider = pointingPublisher.getOutputs().get(0);
 
 	}
 
@@ -123,7 +114,6 @@ public class SpiceStateHistoryIntervalGenerator implements IStateHistoryInterval
 		if (pointingProvider == null) return null;
 		StateHistory history = tempHistory;
 		SimpleDateFormat dateFormatter = new SimpleDateFormat("yyyy-D'T'HH:mm:ss.SSS");	//generates Year-DOY date format
-
 		UTCEpoch startEpoch = UTCEpoch.fromString(dateFormatter.format(startTime.toDate()));
 		UTCEpoch endEpoch = UTCEpoch.fromString(dateFormatter.format(endTime.toDate()));
 		double timeWindowDuration = utcTs.difference(startEpoch, endEpoch);

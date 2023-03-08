@@ -8,9 +8,8 @@ import java.nio.file.Paths;
 import java.util.Map.Entry;
 import java.util.Set;
 
-import com.google.common.collect.ImmutableList;
-
 import edu.jhuapl.sbmt.pointing.IPointingProvider;
+import edu.jhuapl.sbmt.pointing.modules.SpiceReaderPublisher;
 import edu.jhuapl.sbmt.pointing.spice.SpiceInfo;
 import edu.jhuapl.sbmt.pointing.spice.SpicePointingProvider;
 import edu.jhuapl.sbmt.stateHistory.model.StateHistorySourceType;
@@ -238,17 +237,9 @@ public class SpiceStateHistoryLocationProvider implements IStateHistoryLocationP
 		}
 		try
 		{
-			SpicePointingProvider.Builder builder =
-					SpicePointingProvider.builder(ImmutableList.copyOf(new Path[] {mkPath}), spiceInfo.getBodyName(),
-							spiceInfo.getBodyFrameName(), spiceInfo.getScId(), spiceInfo.getScFrameName());
+    		SpiceReaderPublisher pointingPublisher = new SpiceReaderPublisher(mkPath.toString(), spiceInfo);
+    		pointingProvider = pointingPublisher.getOutputs().get(0);
 
-			for (String bodyNameToBind : spiceInfo.getBodyNamesToBind()) builder.bindEphemeris(bodyNameToBind);
-			for (String instrumentToBind : spiceInfo.getInstrumentNamesToBind())
-			{
-				builder.includeInstrument(instrumentToBind);
-			}
-
-            pointingProvider = builder.build();
             updateTrajectoryAndStateWithPointing(pointingProvider);
 		}
 		catch (FileNotFoundException fnfe)

@@ -1798,6 +1798,7 @@ public class BennuConfigs extends SmallBodyViewConfig
         spiceInfo = new SpiceInfo("ORX", "IAU_BENNU", "ORX_SPACECRAFT", "BENNU",
     			new String[] {"EARTH" , "SUN"},
     			new String[] {"IAU_EARTH" , "IAU_SUN"},
+    			new String[] {},
     			new String[] {"ORX_OCAMS_POLYCAM", "ORX_OCAMS_MAPCAM",
     															"ORX_OCAMS_SAMCAM", "ORX_NAVCAM1", "ORX_NAVCAM2",
 //    															"ORX_OTES", "ORX_OVIRS",
