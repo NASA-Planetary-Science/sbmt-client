@@ -71,7 +71,7 @@ public class SpiceStateHistoryIntervalGenerator implements IStateHistoryInterval
 			for (String bodyNameToBind : spice.getBodyNamesToBind()) builder.bindEphemeris(bodyNameToBind);
 			for (String instrumentToBind : spice.getInstrumentNamesToBind())
 			{
-				builder.addInstrumentFrame(instrumentToBind);
+				builder.includeInstrument(instrumentToBind);
 			}
 
             pointingProvider = builder.build();
