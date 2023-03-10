@@ -200,10 +200,17 @@ public class StateHistoryIntervalGenerationPanel extends JPanel
         setBorder(new TitledBorder(null, "Interval Generation", TitledBorder.LEADING, TitledBorder.TOP, null, null));
         setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
         timeRangePanel = getTimeRangePanel();
-        add(getRadioButtonPanel());
 
-        add(getDataSouceCardsPanel());
+        if (hasPregenInfo == false)
+        {
+        	add(getSpiceTimeRangePanel());
+        }
+        else
+        {
+        	add(getRadioButtonPanel());
 
+        	add(getDataSouceCardsPanel());
+        }
         add(timeRangePanel);
         repaint();
 	}
