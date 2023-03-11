@@ -204,6 +204,7 @@ public class StateHistoryIntervalGenerationPanel extends JPanel
         if (hasPregenInfo == false)
         {
         	add(getSpiceTimeRangePanel());
+        	stateHistorySourceType = StateHistorySourceType.SPICE;
         }
         else
         {
