@@ -33,7 +33,7 @@ NOTE: On a Mac, built in Apple security measures may cause you to see an error m
 
 ## SPICE Resources
 
-Please check [here](resources/spice-20230303.zip) for a zip of SPICE kernels that can be used with SBMT.
+Please check [here](resources/dart_encounter.zip) for a zip of SPICE kernels that can be used with SBMT.
 
 ## Release Notes
 Release notes of the SBMT can be found [here](releasenotes.html).
