@@ -173,7 +173,7 @@ public class StateHistoryIntervalGenerationPanel extends JPanel
 		initUI();
 		IStateHistoryMetadata metadata = history.getMetadata();
 		stateHistorySourceType = metadata.getType();
-		if (stateHistorySourceType == StateHistorySourceType.SPICE) spiceDataRadioButton.setSelected(true);
+		if (stateHistorySourceType == StateHistorySourceType.SPICE && hasPregenInfo) spiceDataRadioButton.setSelected(true);
 		else pregenDataRadioButton.setSelected(true);
 		Date startDate = StateHistoryTimeModel.getDateForET(metadata.getStartTime());
 		SpinnerDateModel spinnerDateModel = new SpinnerDateModel(startDate, null, null, Calendar.DAY_OF_MONTH);
