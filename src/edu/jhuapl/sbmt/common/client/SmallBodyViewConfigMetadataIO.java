@@ -8,6 +8,9 @@ import java.util.Map;
 import java.util.Vector;
 import java.util.stream.Collectors;
 
+import org.joda.time.DateTime;
+import org.joda.time.DateTimeZone;
+
 import com.google.common.collect.ImmutableList;
 
 import edu.jhuapl.saavtk.config.IBodyViewConfig;
@@ -488,8 +491,20 @@ public class SmallBodyViewConfigMetadataIO implements MetadataManager
         	c.spiceInfo = read(spiceInfo, configMetadata);
         if (configMetadata.hasKey(stateHistoryStartDate))
         {
-        	c.stateHistoryStartDate = new Date(read(stateHistoryStartDate, configMetadata));
-        	c.stateHistoryEndDate = new Date(read(stateHistoryEndDate, configMetadata));
+        	//This is a bandaid to handle the fact that the metadata for Dates
+        	//is written in Eastern time and not UTC
+        	DateTime dt = new DateTime(read(stateHistoryStartDate, configMetadata));
+        	DateTimeZone dtZone = DateTimeZone.forID("America/New_York");
+        	DateTime dtus = dt.withZone(dtZone);
+        	Date startDate =  dtus.toLocalDateTime().toDateTime().toDate();
+
+        	DateTime dt2 = new DateTime(read(stateHistoryEndDate, configMetadata));
+        	DateTimeZone dtZone2 = DateTimeZone.forID("America/New_York");
+        	DateTime dtus2 = dt2.withZone(dtZone2);
+        	Date endDate =  dtus2.toLocalDateTime().toDateTime().toDate();
+
+        	c.stateHistoryStartDate = startDate;
+        	c.stateHistoryEndDate = endDate;
         }
         c.baseMapConfigName = read(baseMapConfig, configMetadata);
 
@@ -544,8 +559,22 @@ public class SmallBodyViewConfigMetadataIO implements MetadataManager
         {
 	        Long imageSearchDefaultStart = read(imageSearchDefaultStartDate, configMetadata);
 	        Long imageSearchDefaultEnd = read(imageSearchDefaultEndDate, configMetadata);
-	        c.imageSearchDefaultStartDate = new Date(imageSearchDefaultStart);
-	        c.imageSearchDefaultEndDate = new Date(imageSearchDefaultEnd);
+
+        	//This is a bandaid to handle the fact that the metadata for Dates
+        	//is written in Eastern time and not UTC
+        	DateTime dt = new DateTime(imageSearchDefaultStart);
+        	DateTimeZone dtZone = DateTimeZone.forID("America/New_York");
+        	DateTime dtus = dt.withZone(dtZone);
+        	Date startDate =  dtus.toLocalDateTime().toDateTime().toDate();
+
+        	DateTime dt2 = new DateTime(imageSearchDefaultEnd);
+        	DateTimeZone dtZone2 = DateTimeZone.forID("America/New_York");
+        	DateTime dtus2 = dt2.withZone(dtZone2);
+        	Date endDate =  dtus2.toLocalDateTime().toDateTime().toDate();
+
+        	c.imageSearchDefaultStartDate = startDate;
+        	c.imageSearchDefaultEndDate  = endDate;
+
 	        c.imageSearchFilterNames = read(imageSearchFilterNames, configMetadata);
 	        c.imageSearchUserDefinedCheckBoxesNames = read(imageSearchUserDefinedCheckBoxesNames, configMetadata);
 	        c.imageSearchDefaultMaxSpacecraftDistance = read(imageSearchDefaultMaxSpacecraftDistance, configMetadata);

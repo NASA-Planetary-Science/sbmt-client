@@ -6,7 +6,6 @@ import java.awt.Dimension;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -24,18 +23,16 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JProgressBar;
 import javax.swing.JRadioButton;
-import javax.swing.JSpinner;
 import javax.swing.JTextPane;
 import javax.swing.JToolBar;
-import javax.swing.SpinnerDateModel;
 import javax.swing.SwingWorker;
 import javax.swing.border.TitledBorder;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
-import org.joda.time.DateTime;
 
 import edu.jhuapl.saavtk.gui.dialog.CustomFileChooser;
+import edu.jhuapl.sbmt.image2.ui.SBMTDateSpinner;
 import edu.jhuapl.sbmt.stateHistory.controllers.kernel.KernelManagementController;
 import edu.jhuapl.sbmt.stateHistory.controllers.kernel.KernelSetChangedListener;
 import edu.jhuapl.sbmt.stateHistory.model.StateHistoryModel;
@@ -46,7 +43,6 @@ import edu.jhuapl.sbmt.stateHistory.model.interfaces.StateHistory;
 import edu.jhuapl.sbmt.stateHistory.model.io.SpiceKernelIngestor;
 import edu.jhuapl.sbmt.stateHistory.model.io.StateHistoryIOException;
 import edu.jhuapl.sbmt.stateHistory.model.time.StateHistoryTimeModel;
-import edu.jhuapl.sbmt.stateHistory.ui.DateTimeSpinner;
 
 /**
  * @author steelrj1
@@ -92,12 +88,12 @@ public class StateHistoryIntervalGenerationPanel extends JPanel
     /**
      * DateTimeSpinner to select the start time of the interval being generated
      */
-    private DateTimeSpinner startTimeSpinner;
+    private SBMTDateSpinner startTimeSpinner;
 
     /**
      * DateTimeSpinner to select the stop time of the interval being generated
      */
-    private DateTimeSpinner stopTimeSpinner;
+    private SBMTDateSpinner stopTimeSpinner;
 
     /**
      * JButton that causes the interval to be generated
@@ -174,22 +170,13 @@ public class StateHistoryIntervalGenerationPanel extends JPanel
 		IStateHistoryMetadata metadata = history.getMetadata();
 		stateHistorySourceType = metadata.getType();
 		if (stateHistorySourceType == StateHistorySourceType.SPICE && hasPregenInfo) spiceDataRadioButton.setSelected(true);
-		else pregenDataRadioButton.setSelected(true);
+		else if (hasPregenInfo) pregenDataRadioButton.setSelected(true);
 		Date startDate = StateHistoryTimeModel.getDateForET(metadata.getStartTime());
-		SpinnerDateModel spinnerDateModel = new SpinnerDateModel(startDate, null, null, Calendar.DAY_OF_MONTH);
-        startTimeSpinner.setModel(spinnerDateModel);
-
-		JSpinner.DateEditor dateEditor = new JSpinner.DateEditor(startTimeSpinner, "yyyy-MMM-dd HH:mm:ss.SSS");
-        startTimeSpinner.setEditor(dateEditor);
-		startTimeSpinner.getModel().setValue(startDate);
+		startTimeSpinner.setDate(startDate);
 
 		Date stopDate = StateHistoryTimeModel.getDateForET(metadata.getEndTime());
-		spinnerDateModel = new SpinnerDateModel(stopDate, null, null, Calendar.DAY_OF_MONTH);
-        stopTimeSpinner.setModel(spinnerDateModel);
-
-		dateEditor = new JSpinner.DateEditor(stopTimeSpinner, "yyyy-MMM-dd HH:mm:ss.SSS");
-        stopTimeSpinner.setEditor(dateEditor);
-		stopTimeSpinner.getModel().setValue(stopDate);
+		stopTimeSpinner.setDate(stopDate);
+		getIntervalButton.setEnabled(true);
 	}
 
 	/**
@@ -220,12 +207,12 @@ public class StateHistoryIntervalGenerationPanel extends JPanel
 	{
 		IStateHistoryMetadata metadata = history.getMetadata();
 		metadata.setType(stateHistorySourceType);
-		DateTime startTime = startTimeSpinner.getISOFormattedTime();
-        DateTime endTime = stopTimeSpinner.getISOFormattedTime();
-		metadata.setStartTime(StateHistoryTimeModel.getETForDate(startTime.toDate()));
-		metadata.setEndTime(StateHistoryTimeModel.getETForDate(endTime.toDate()));
-		history.getTrajectoryMetadata().getTrajectory().setStartTime(StateHistoryTimeModel.getETForDate(startTime.toDate()));
-		history.getTrajectoryMetadata().getTrajectory().setStopTime(StateHistoryTimeModel.getETForDate(endTime.toDate()));
+//		DateTime startTime = startTimeSpinner.getISOFormattedTime();
+//        DateTime endTime = stopTimeSpinner.getISOFormattedTime();
+		metadata.setStartTime(StateHistoryTimeModel.getETForDate(startTimeSpinner.getDate()));
+		metadata.setEndTime(StateHistoryTimeModel.getETForDate(stopTimeSpinner.getDate()));
+		history.getTrajectoryMetadata().getTrajectory().setStartTime(StateHistoryTimeModel.getETForDate(startTimeSpinner.getDate()));
+		history.getTrajectoryMetadata().getTrajectory().setStopTime(StateHistoryTimeModel.getETForDate(stopTimeSpinner.getDate()));
 	}
 
 	@Override
@@ -328,7 +315,11 @@ public class StateHistoryIntervalGenerationPanel extends JPanel
 			if (selectedItem.equals("Load new kernel..."))
 			{
 				File file = CustomFileChooser.showOpenDialog(this, "Select Metakernel");
-				if (file == null) return;
+				if (file == null)
+				{
+					getIntervalButton.setEnabled(false);
+					return;
+				}
 				metakernelToLoad = file.getAbsolutePath();
 				ingestor  = new KernelIngestor(progressBar, kernelComboBox);
 				ingestor.execute();
@@ -338,6 +329,7 @@ public class StateHistoryIntervalGenerationPanel extends JPanel
 				File selectedKernelDirectory = new File(loadedKernelsDirectory, selectedItem);
 				metakernelToLoad = new File(selectedKernelDirectory, selectedItem + ".mk").getAbsolutePath();
 			}
+			getIntervalButton.setEnabled(!selectedItem.equals("Load new kernel..."));
 
 		});
 
@@ -355,11 +347,15 @@ public class StateHistoryIntervalGenerationPanel extends JPanel
 		});
 
 		panel.setLayout(new BoxLayout(panel, BoxLayout.X_AXIS));
-		panel.add(new JLabel("Select Metakernel"));
-		panel.add(kernelComboBox);
-		panel.add(metaKernelNameLabel);
-		panel.add(progressBar);
-		panel.add(cancelButton);
+		if (editMode == false)
+		{
+			panel.add(new JLabel("Select Metakernel"));
+			panel.add(kernelComboBox);
+
+			panel.add(metaKernelNameLabel);
+			panel.add(progressBar);
+			panel.add(cancelButton);
+		}
 		return panel;
 	}
 
@@ -468,7 +464,7 @@ public class StateHistoryIntervalGenerationPanel extends JPanel
         Component horizontalGlue_1 = Box.createHorizontalGlue();
         panel_2.add(horizontalGlue_1);
 
-        startTimeSpinner = new DateTimeSpinner();
+        startTimeSpinner = new SBMTDateSpinner();
         startTimeSpinner.setMinimumSize(spinnerSize);
         startTimeSpinner.setMaximumSize(spinnerSize);
         startTimeSpinner.setPreferredSize(spinnerSize);
@@ -485,7 +481,7 @@ public class StateHistoryIntervalGenerationPanel extends JPanel
         Component horizontalGlue_2 = Box.createHorizontalGlue();
         panel_3.add(horizontalGlue_2);
 
-        stopTimeSpinner = new DateTimeSpinner();
+        stopTimeSpinner = new SBMTDateSpinner();
         stopTimeSpinner.setMinimumSize(spinnerSize);
         stopTimeSpinner.setMaximumSize(spinnerSize);
         stopTimeSpinner.setPreferredSize(spinnerSize);
@@ -497,6 +493,7 @@ public class StateHistoryIntervalGenerationPanel extends JPanel
         panel_4.setLayout(new BoxLayout(panel_4, BoxLayout.X_AXIS));
 
         getIntervalButton = new JButton(buttonText);
+        getIntervalButton.setEnabled(false);
         panel_4.add(getIntervalButton);
 
         return timeRangePanel;
@@ -515,7 +512,7 @@ public class StateHistoryIntervalGenerationPanel extends JPanel
      * Returns the start time spinner
      * @return the start time spinner
      */
-    public DateTimeSpinner getStartTimeSpinner()
+    public SBMTDateSpinner getStartTimeSpinner()
     {
         return startTimeSpinner;
     }
@@ -524,7 +521,7 @@ public class StateHistoryIntervalGenerationPanel extends JPanel
      * Returns the stop time spinner
      * @return the stop time spinner
      */
-    public DateTimeSpinner getStopTimeSpinner()
+    public SBMTDateSpinner getStopTimeSpinner()
     {
         return stopTimeSpinner;
     }
