@@ -301,7 +301,7 @@ public class StandardStateHistory extends AbstractStateHistory
                 // add to history
                 segments.add(flybyState);
 
-                if(com.mysql.jdbc.StringUtils.isNullOrEmpty(timeArray.get(0)[0])){
+                if(com.mysql.cj.util.StringUtils.isNullOrEmpty(timeArray.get(0)[0])){
                     timeArray.get(0)[0] = flybyState.getUtc();
                 }
                 timeArray.get(0)[1] = flybyState.getUtc();

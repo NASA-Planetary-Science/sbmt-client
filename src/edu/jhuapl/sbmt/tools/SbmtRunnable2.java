@@ -47,7 +47,7 @@ public class SbmtRunnable2 implements Runnable
 			writeStartupMessage(mission);
 
 			NativeLibraryLoader.loadAllVtkLibraries();
-			NativeLibraryLoader.loadGDALLibraries();
+//			NativeLibraryLoader.loadGDALLibraries();
 			gdal.AllRegister();
 
 			SmallBodyViewConfig.initialize();
