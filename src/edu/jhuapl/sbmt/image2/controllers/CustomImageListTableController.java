@@ -1,5 +1,7 @@
 package edu.jhuapl.sbmt.image2.controllers;
 
+import edu.jhuapl.saavtk.model.IPositionOrientationManager;
+import edu.jhuapl.sbmt.common.client.SmallBodyModel;
 import edu.jhuapl.sbmt.image2.interfaces.IPerspectiveImage;
 import edu.jhuapl.sbmt.image2.interfaces.IPerspectiveImageTableRepresentable;
 import edu.jhuapl.sbmt.image2.model.PerspectiveImageCollection;
@@ -10,6 +12,7 @@ import glum.gui.action.PopupMenu;
 public class CustomImageListTableController<G1 extends IPerspectiveImage & IPerspectiveImageTableRepresentable>
 {
 	CustomImageListTableView<G1> tablePanel;
+	IPositionOrientationManager<SmallBodyModel> positionOrientationManager;
 
 	public CustomImageListTableController(PerspectiveImageCollection<G1> collection, PopupMenu<G1> popupMenu)
 	{

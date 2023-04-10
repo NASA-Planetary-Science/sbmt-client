@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.GregorianCalendar;
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 import com.google.common.collect.ImmutableList;
 
@@ -22,6 +23,13 @@ import edu.jhuapl.sbmt.config.SpectralImageMode;
 import edu.jhuapl.sbmt.core.image.ImageSource;
 import edu.jhuapl.sbmt.core.image.ImageType;
 import edu.jhuapl.sbmt.core.image.ImagingInstrument;
+import edu.jhuapl.sbmt.core.image.Orientation;
+import edu.jhuapl.sbmt.core.image.OrientationFactory;
+import edu.jhuapl.sbmt.image.model.ImageFlip;
+import edu.jhuapl.sbmt.image2.model.BinExtents;
+import edu.jhuapl.sbmt.image2.model.BinSpacings;
+import edu.jhuapl.sbmt.image2.model.BinTranslations;
+import edu.jhuapl.sbmt.image2.model.ImageBinPadding;
 import edu.jhuapl.sbmt.model.eros.nis.NIS;
 import edu.jhuapl.sbmt.query.database.GenericPhpQuery;
 import edu.jhuapl.sbmt.query.fixedlist.FixedListQuery;
@@ -228,13 +236,33 @@ public class AsteroidConfigs extends SmallBodyViewConfig
         c.hasStateHistory = true;
         c.timeHistoryFile = "/GASKELL/ITOKAWA/history/TimeHistory.bth";
 
+        ImageBinPadding binPadding = new ImageBinPadding();
+        binPadding.binExtents.put(1, new BinExtents(1024, 1024, 1024, 1024));
+        binPadding.binTranslations.put(1,  new BinTranslations(0,0));
+        binPadding.binSpacings.put(1,  new BinSpacings(1.0, 1.0, 1.0));
+
+        binPadding.binExtents.put(2, new BinExtents(512, 512, 1024, 1024));
+        binPadding.binTranslations.put(2,  new BinTranslations(0,0));
+        binPadding.binSpacings.put(2,  new BinSpacings(2.0, 2.0, 1.0));
+
+        binPadding.binExtents.put(4, new BinExtents(256, 256, 1024, 1024));
+        binPadding.binTranslations.put(4,  new BinTranslations(0, 0));
+        binPadding.binSpacings.put(4,  new BinSpacings(4.0, 4.0, 1.0));
+
+        binPadding.binExtents.put(8, new BinExtents(128, 128, 1024, 1024));
+        binPadding.binTranslations.put(8,  new BinTranslations(0, 0));
+        binPadding.binSpacings.put(8,  new BinSpacings(8.0, 8.0, 1.0));
+
         c.imagingInstruments = new ImagingInstrument[] {
                 new ImagingInstrument( //
                         SpectralImageMode.MONO, //
                         new GenericPhpQuery("/GASKELL/ITOKAWA/AMICA", "AMICA", "/GASKELL/ITOKAWA/AMICA/gallery"), //
                         ImageType.AMICA_IMAGE, //
                         new ImageSource[]{ImageSource.GASKELL, ImageSource.SPICE, ImageSource.CORRECTED}, //
-                        Instrument.AMICA //
+                        Instrument.AMICA, //
+                        0.0,
+                        "None",
+                        binPadding
                         ) //
         };
 
@@ -336,6 +364,9 @@ public class AsteroidConfigs extends SmallBodyViewConfig
             c.modelLabel = "SPC";
             c.rootDirOnServer = "/GASKELL/CERES";
             c.hasMapmaker = true;
+            Map<ImageSource, Orientation> ceresOrientations = new LinkedHashMap<>();
+            ceresOrientations.put(ImageSource.GASKELL, new OrientationFactory().of(ImageFlip.X, 0.0, true));
+            ceresOrientations.put(ImageSource.SPICE, new OrientationFactory().of(ImageFlip.X, 0.0, true));
 
             c.imagingInstruments = new ImagingInstrument[] {
                     new ImagingInstrument( //
@@ -343,7 +374,8 @@ public class AsteroidConfigs extends SmallBodyViewConfig
                             new GenericPhpQuery("/GASKELL/CERES/FC", "Ceres", "/GASKELL/CERES/FC/gallery"), //
                             ImageType.FCCERES_IMAGE, //
                             new ImageSource[]{ImageSource.GASKELL, ImageSource.SPICE}, //
-                            Instrument.FC //
+                            Instrument.FC, //
+                            ceresOrientations
                     ) //
             };
 
@@ -386,13 +418,18 @@ public class AsteroidConfigs extends SmallBodyViewConfig
         c.rootDirOnServer = "/GASKELL/VESTA";
         c.hasMapmaker = true;
 
+        Map<ImageSource, Orientation> vestaOrientations = new LinkedHashMap<>();
+        vestaOrientations.put(ImageSource.SPICE, new OrientationFactory().of(ImageFlip.X, 0.0, true));
+
         c.imagingInstruments = new ImagingInstrument[] {
                 new ImagingInstrument( //
                         SpectralImageMode.MONO, //
                         new GenericPhpQuery("/GASKELL/VESTA/FC", "FC", "/GASKELL/VESTA/FC/gallery"), //
                         ImageType.FC_IMAGE, //
                         new ImageSource[]{ImageSource.GASKELL, ImageSource.SPICE}, //
-                        Instrument.FC //
+                        Instrument.FC, //
+                        0.0,
+                        "X"
                         ) //
         };
 
@@ -448,13 +485,21 @@ public class AsteroidConfigs extends SmallBodyViewConfig
             c.modelLabel = "SPC";
             c.rootDirOnServer = "/GASKELL/LUTETIA";
 
+            binPadding = new ImageBinPadding();
+            binPadding.binExtents.put(1, new BinExtents(2048, 2048, 2048, 2048));
+            binPadding.binTranslations.put(1,  new BinTranslations(559, 575));
+            binPadding.binSpacings.put(1,  new BinSpacings(1.0, 1.0, 1.0));
+
             c.imagingInstruments = new ImagingInstrument[] {
                     new ImagingInstrument( //
                             SpectralImageMode.MONO, //
                             new FixedListQuery("/GASKELL/LUTETIA/IMAGING", "/GASKELL/LUTETIA/IMAGING/gallery"), //
                             ImageType.OSIRIS_IMAGE, //
                             new ImageSource[]{ImageSource.GASKELL}, //
-                            Instrument.OSIRIS //
+                            Instrument.OSIRIS, //,
+                            0.0,
+                            "Y",
+                            binPadding
                             ) //
             };
 

@@ -25,7 +25,6 @@ import glum.gui.panel.itemList.ItemHandler;
 import glum.gui.panel.itemList.ItemListPanel;
 import glum.gui.panel.itemList.ItemProcessor;
 import glum.gui.panel.itemList.query.QueryComposer;
-import glum.gui.table.TablePopupHandler;
 import glum.item.BaseItemManager;
 import glum.item.ItemEventListener;
 import glum.item.ItemEventType;
@@ -197,7 +196,7 @@ public class CustomImageImporterTableView<G1 extends IPerspectiveImage & IPerspe
 		imageTable.setDragEnabled(true);
 //		imageTable.setTransferHandler(new CustomImageTransferHandler());
 		imageTable.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
-		imageTable.addMouseListener(new TablePopupHandler(imageCollection, popupMenu));
+//		imageTable.addMouseListener(new TablePopupHandler(imageCollection, popupMenu));
 		return imageTable;
 	}
 

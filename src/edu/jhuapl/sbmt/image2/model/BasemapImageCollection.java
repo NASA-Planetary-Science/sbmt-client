@@ -3,16 +3,15 @@ package edu.jhuapl.sbmt.image2.model;
 import java.awt.Color;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.function.Function;
 
 import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
-
-import org.apache.commons.io.FilenameUtils;
 
 import com.beust.jcommander.internal.Lists;
 
@@ -20,24 +19,24 @@ import vtk.vtkActor;
 import vtk.vtkProp;
 import vtk.vtkProperty;
 
+import edu.jhuapl.saavtk.model.FileType;
 import edu.jhuapl.saavtk.model.SaavtkItemManager;
 import edu.jhuapl.saavtk.util.FileCache;
 import edu.jhuapl.saavtk.util.IntensityRange;
 import edu.jhuapl.saavtk.util.Properties;
 import edu.jhuapl.sbmt.common.client.SmallBodyModel;
-import edu.jhuapl.sbmt.core.image.CustomCylindricalImageKey;
-import edu.jhuapl.sbmt.core.image.ImageKeyInterface;
 import edu.jhuapl.sbmt.core.image.ImageSource;
 import edu.jhuapl.sbmt.core.image.ImageType;
+import edu.jhuapl.sbmt.image.model.ImageFlip;
+import edu.jhuapl.sbmt.image.model.ImageRotation;
 import edu.jhuapl.sbmt.image2.interfaces.IPerspectiveImage;
 import edu.jhuapl.sbmt.image2.interfaces.IPerspectiveImageTableRepresentable;
-import edu.jhuapl.sbmt.image2.pipelineComponents.pipelines.colorImages.ColorImageGeneratorPipeline;
+import edu.jhuapl.sbmt.image2.pipelineComponents.pipelines.ImagePipelineFactory;
 import edu.jhuapl.sbmt.image2.pipelineComponents.pipelines.cylindricalImages.RenderableCylindricalImageToScenePipeline;
 import edu.jhuapl.sbmt.image2.pipelineComponents.pipelines.pointedImages.RenderablePointedImageToScenePipeline;
 import edu.jhuapl.sbmt.image2.pipelineComponents.pipelines.rendering.RenderableImageActorPipeline;
 import edu.jhuapl.sbmt.image2.pipelineComponents.publishers.gdal.InvalidGDALFileTypeException;
 
-import crucible.crust.logging.SimpleLogger;
 import crucible.crust.metadata.api.Key;
 import crucible.crust.metadata.api.Metadata;
 import crucible.crust.metadata.impl.SettableMetadata;
@@ -46,10 +45,10 @@ public class BasemapImageCollection<G1 extends IPerspectiveImage & IPerspectiveI
 {
 	private List<SmallBodyModel> smallBodyModels;
 	private HashMap<G1, List<vtkActor>> imageRenderers;
-	private HashMap<G1, PerspectiveImageRenderingState> renderingStates;
-	private SimpleLogger logger = SimpleLogger.getInstance();
+	private HashMap<G1, PerspectiveImageRenderingState<G1>> renderingStates;
+	private static ExecutorService executor = Executors.newCachedThreadPool();
 
-	class PerspectiveImageRenderingState
+	class PerspectiveImageRenderingState<G1>
 	{
 		boolean isMapped = false;
 		boolean isFrustumShowing = false;
@@ -68,7 +67,7 @@ public class BasemapImageCollection<G1 extends IPerspectiveImage & IPerspectiveI
 	public BasemapImageCollection(List<SmallBodyModel> smallBodyModels)
 	{
 		this.imageRenderers = new HashMap<G1, List<vtkActor>>();
-		this.renderingStates = new HashMap<G1, PerspectiveImageRenderingState>();
+		this.renderingStates = new HashMap<G1, PerspectiveImageRenderingState<G1>>();
 		this.smallBodyModels = smallBodyModels;
 	}
 
@@ -99,53 +98,45 @@ public class BasemapImageCollection<G1 extends IPerspectiveImage & IPerspectiveI
         return null;
     }
 
-    public G1 addImage(ImageKeyInterface key)
+    public G1 addImage(BasemapImage image)
     {
+    	Optional<G1> existing = getAllItems().stream().filter(existingImage -> existingImage.getName() == image.getImageName()).findFirst();
+    	if (existing.isPresent()) return existing.get();
     	List<G1> allImages = Lists.newArrayList();
     	allImages.addAll(getAllItems());
-    	G1 image = null;
-    	if (key instanceof CustomCylindricalImageKey)
-    	{
-    		image = addCylindricalImage(key);
-    	}
-    	else	//perspective image
-    	{
-    		image = addPerspectiveImage(key);
-    	}
-    	allImages.add(image);
-    	setAllItems(allImages);
-    	PerspectiveImageRenderingState state = new PerspectiveImageRenderingState();
-    	renderingStates.put(image, state);
-    	return image;
-    }
-
-    private G1 addCylindricalImage(ImageKeyInterface key)
-    {
-    	CustomCylindricalImageKey cylKey = (CustomCylindricalImageKey)key;
-    	String filename = FileCache.getFileFromServer(cylKey.getImageFilename()).getAbsolutePath();
-    	ImageType imageType = cylKey.getImageType();
-    	ImageSource pointingSource = ImageSource.LOCAL_CYLINDRICAL;
+    	String filename = FileCache.getFileFromServer(image.getImageFilename()).getAbsolutePath();
+    	filename = image.getImageFilename();
+    	ImageType imageType = image.getImageType();
+    	ImageSource pointingSource = image.getPointingType();
     	double[] fillValues = new double[] {};
-		PerspectiveImage image = new PerspectiveImage(filename, imageType, pointingSource, null, fillValues);
-//		image.setFlip(instrument.getFlip());
-//		image.setRotation(instrument.getRotation());
-		image.setName(filename);
-		image.setImageOrigin(ImageOrigin.LOCAL);
-		image.setLongTime(new Date().getTime());
-		double minLat = cylKey.getLllat();
-		double maxLat = cylKey.getUrlat();
-		double minLon = cylKey.getLllon();
-		double maxLon = cylKey.getUrlon();
-		image.setBounds(new CylindricalBounds(minLat, maxLat, minLon, maxLon));
+    	ImageRotation rotation = image.getRotation();
+    	ImageFlip flip = image.getFlip();
+    	FileType fileType = image.getPointingFileType();
+    	String pointingFileName = "";
+    	if (!image.getPointingFileName().contains("null"))
+    	{
+    		pointingFileName = image.getPointingFileName();
+    	}
 
-		CompositePerspectiveImage compImage = new CompositePerspectiveImage(List.of(image));
-		compImage.setName(FilenameUtils.getBaseName(filename));
+    	PerspectiveImage perImage = new PerspectiveImage(filename, imageType, pointingSource, null, fillValues);
+    	double minLat = image.getLllat();
+		double maxLat = image.getUrlat();
+		double minLon = image.getLllon();
+		double maxLon = image.getUrlon();
+		perImage.setBounds(new CylindricalBounds(minLat, maxLat, minLon, maxLon));
+		perImage.setPointingSource(pointingFileName);
+		perImage.setRotation(rotation.rotation());
+		perImage.setFlip(flip.flip());
+		//file type?
+
+    	CompositePerspectiveImage compImage = new CompositePerspectiveImage(List.of(perImage));
+		compImage.setName(image.getImageName());
+		allImages.add((G1)compImage);
+    	setAllItems(allImages);
+		PerspectiveImageRenderingState<G1> state = new PerspectiveImageRenderingState<G1>();
+		renderingStates.put((G1)compImage,state);
+
 		return (G1)compImage;
-    }
-
-    private G1 addPerspectiveImage(ImageKeyInterface key)
-    {
-    	return null;
     }
 
     public G1 getImage(String name)
@@ -162,7 +153,7 @@ public class BasemapImageCollection<G1 extends IPerspectiveImage & IPerspectiveI
 		for (G1 image : images)
 		{
 			if (renderingStates.get(image) != null) continue;
-			PerspectiveImageRenderingState state = new PerspectiveImageRenderingState();
+			PerspectiveImageRenderingState<G1> state = new PerspectiveImageRenderingState<G1>();
 			renderingStates.put(image,state);
 		}
 	}
@@ -209,67 +200,33 @@ public class BasemapImageCollection<G1 extends IPerspectiveImage & IPerspectiveI
 
 	public void setImageMapped(G1 image, boolean mapped)
 	{
+		setImageMapped(image, mapped, false);
+	}
+
+	public void setImageMapped(G1 image, boolean mapped, boolean reRender)
+	{
+		if (image.isMapped() == mapped && reRender == false) return;
 		image.setMapped(mapped);
 		List<vtkActor> actors = imageRenderers.get(image);
-		if (actors == null && mapped == true)
+		if ((actors == null && mapped == true) || reRender)
 		{
 			Thread thread = new Thread(new Runnable()
 			{
-
 				@Override
 				public void run()
 				{
 					image.setStatus("Loading...");
-					RenderableImageActorPipeline pipeline = null;
-					try
-					{
-						if (image.getImageType() != ImageType.GENERIC_IMAGE)
-						{
-							if (image.getNumberOfLayers() == 1)
-								if (image.getPointingSourceType() == ImageSource.LOCAL_CYLINDRICAL)
-								{
-									pipeline = new RenderableCylindricalImageToScenePipeline(image, /*image.getFilename(), image.getBounds(),*/ smallBodyModels);
-								}
-								else
-								{
-									pipeline = new RenderablePointedImageToScenePipeline(image, smallBodyModels);
-								}
-							else if (image.getNumberOfLayers() == 3)
-							{
-								pipeline = new ColorImageGeneratorPipeline(image.getImages(), smallBodyModels);
-							}
-							else
-							{
+					RenderableImageActorPipeline pipeline = ImagePipelineFactory.of(image, smallBodyModels);
 
-							}
-
-						}
-						else
-						{
-							if (image.getPointingSourceType() == ImageSource.LOCAL_CYLINDRICAL)
-							{
-								pipeline = new RenderableCylindricalImageToScenePipeline(image, /*image.getFilename(), image.getBounds(),*/ smallBodyModels);
-							}
-							else
-							{
-								pipeline = new RenderablePointedImageToScenePipeline(image, smallBodyModels);
-							}
-
-						}
-					}
-					catch (InvalidGDALFileTypeException e)
+					if (pipeline == null)
 					{
-						 JOptionPane.showMessageDialog(null,
-			                        e.getMessage(),
-			                        "Invalid file type encountered",
-			                        JOptionPane.ERROR_MESSAGE);
+						image.setMapped(false);
+						image.setStatus("Invalid");
+						SwingUtilities.invokeLater( () -> {
+							pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
+						});
+						return;
 					}
-					catch (Exception e)
-					{
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					}
-					if (pipeline == null) return;
 					updatePipeline(image, pipeline);
 					for (vtkActor actor : imageRenderers.get(image))
 					{
@@ -281,7 +238,7 @@ public class BasemapImageCollection<G1 extends IPerspectiveImage & IPerspectiveI
 					});
 				}
 			});
-			thread.start();
+			runThreadOnExecutorService(thread);
 		}
 		else
 		{
@@ -336,11 +293,14 @@ public class BasemapImageCollection<G1 extends IPerspectiveImage & IPerspectiveI
 	@Override
 	public void setOpacity(double opacity)
 	{
-		List<vtkActor> actors = imageRenderers.get(getSelectedItems().asList().get(0));
-		actors.forEach(actor -> {
-			vtkProperty interiorProperty = actor.GetProperty();
-			interiorProperty.SetOpacity(opacity);
-		});
+		for (G1 image : getAllItems())
+		{
+			List<vtkActor> actors = imageRenderers.get(image);
+			actors.forEach(actor -> {
+				vtkProperty interiorProperty = actor.GetProperty();
+				interiorProperty.SetOpacity(opacity);
+			});
+		}
 		super.setOpacity(opacity);
 		this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
 	}
@@ -412,4 +372,9 @@ public class BasemapImageCollection<G1 extends IPerspectiveImage & IPerspectiveI
 			});
 		}
 	}
+
+    private void runThreadOnExecutorService(Thread thread)
+    {
+    	executor.execute(thread);
+    }
 }

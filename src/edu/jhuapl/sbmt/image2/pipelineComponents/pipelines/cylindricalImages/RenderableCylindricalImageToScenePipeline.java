@@ -42,6 +42,7 @@ public class RenderableCylindricalImageToScenePipeline extends ImageToScenePipel
 			((RenderableCylindricalImage)renderableImage).setDefaultOffset(3.0 * smallBodyModel.get(0).getMinShiftAmount());
 			((RenderableCylindricalImage)renderableImage).setIntensityRange(image.getIntensityRange());
 			((RenderableCylindricalImage)renderableImage).setMasking(new LayerMasking(image.getMaskValues()));
+			((RenderableCylindricalImage)renderableImage).setFilename(image.getFilename());
 		}
 		//*************************
 		//zip the sources together

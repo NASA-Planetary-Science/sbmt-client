@@ -21,6 +21,7 @@ import com.google.common.collect.ImmutableList;
 
 import vtk.vtkCamera; 
 
+import edu.jhuapl.saavtk.config.ViewConfig;
 import edu.jhuapl.saavtk.gui.View;
 import edu.jhuapl.saavtk.gui.render.ConfigurableSceneNotifier;
 import edu.jhuapl.saavtk.gui.render.RenderPanel;
@@ -304,7 +305,7 @@ public class SbmtView extends View implements PropertyChangeListener
     public String getModelDisplayName()
     {
 		ShapeModelBody body = null;
-		body = configInfo == null ?  getConfig().body : configInfo.getBody();
+		body = configInfo == null ? ((ViewConfig)getConfig()).body : configInfo.getBody();
         return body != null ? body + " / " + getDisplayName() : getDisplayName();
     }
 
@@ -409,7 +410,8 @@ public class SbmtView extends View implements PropertyChangeListener
         DEMBoundaryCollection demBoundaryCollection = new DEMBoundaryCollection(smallBodyModel, getModelManager());
         allModels.put(ModelNames.DEM_BOUNDARY, demBoundaryCollection);
 
-		setModelManager(new ModelManager(smallBodyModel, allModels));
+        //TODO FIX
+//		setModelManager(new ModelManager(smallBodyModel, allModels));
         colorImageCollection.setModelManager(getModelManager());
         cubeCollection.setModelManager(getModelManager());
         customColorImageCollection.setModelManager(getModelManager());
@@ -518,10 +520,10 @@ public class SbmtView extends View implements PropertyChangeListener
     {
 		addTab(getPolyhedralModelConfig().getShapeModelName(), new SmallBodyControlPanel(getRenderer(), getModelManager(), getPolyhedralModelConfig().getShapeModelName()));
 
-        if (getConfig().hasFlybyData)
-        {
+//        if (getConfig().hasFlybyData)
+//        {
 //            addTab("Runs", new SimulationRunsPanel(getModelManager(), (SbmtInfoWindowManager)getInfoPanelManager(), getPickManager(), getRenderer()));
-        }
+//        }
 
         for (ImagingInstrument instrument : getPolyhedralModelConfig().imagingInstruments)
         {
@@ -1040,7 +1042,7 @@ public class SbmtView extends View implements PropertyChangeListener
         }
     }
 
-	static public LineamentModel createLineament()
+	static public LineamentModel createLineament() 
     {
         return new LineamentModel();
     }
@@ -1064,6 +1066,13 @@ public class SbmtView extends View implements PropertyChangeListener
 	public BasicConfigInfo getConfigInfo()
 	{
 		return configInfo;
+	}
+
+	@Override
+	protected void setupPositionOrientationManager()
+	{
+		// TODO Auto-generated method stub
+
 	}
 
 }

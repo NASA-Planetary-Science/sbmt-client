@@ -402,7 +402,7 @@ public class SpectrumSearchParametersController<S extends BasicSpectrum>
         searchParameters.setMaxPhaseQuery(Integer.parseInt(panel.getToPhaseTextField().getText()));
 
         SmallBodyModel bodyModel = (SmallBodyModel)modelManager.getModel(ModelNames.SMALL_BODY);
-        searchParameters.setModelName(bodyModel.getConfig().author.toString().toLowerCase().replace("-", ""));
+        searchParameters.setModelName(bodyModel.getConfig().getAuthor().toString().toLowerCase().replace("-", ""));
         searchParameters.setDataType(panel.getSelectedDataTypes());
 //        searchParameters.setDataType(panel.getDataType());
     }

@@ -5,28 +5,25 @@ import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 import java.lang.reflect.InvocationTargetException;
 import java.text.SimpleDateFormat;
-import java.util.Calendar;
 import java.util.Date;
 import java.util.function.Function;
 
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
-import javax.swing.JSpinner;
 import javax.swing.ProgressMonitor;
-import javax.swing.SpinnerDateModel;
 import javax.swing.SwingUtilities;
 
 import org.joda.time.DateTime;
 
 import com.jidesoft.utils.SwingWorker;
 
+import edu.jhuapl.sbmt.image2.ui.SBMTDateSpinner;
 import edu.jhuapl.sbmt.pointing.spice.SpiceInfo;
 import edu.jhuapl.sbmt.stateHistory.model.StateHistoryModel;
 import edu.jhuapl.sbmt.stateHistory.model.StateHistorySourceType;
 import edu.jhuapl.sbmt.stateHistory.model.io.StateHistoryInputException;
 import edu.jhuapl.sbmt.stateHistory.model.stateHistory.StateHistoryKey;
 import edu.jhuapl.sbmt.stateHistory.model.stateHistory.spice.SpiceStateHistoryIntervalGenerator;
-import edu.jhuapl.sbmt.stateHistory.ui.DateTimeSpinner;
 import edu.jhuapl.sbmt.stateHistory.ui.state.intervalGeneration.StateHistoryIntervalGenerationPanel;
 
 import crucible.core.mechanics.providers.lockable.LockableEphemerisLinkEvaluationException;
@@ -66,22 +63,14 @@ public class StateHistoryIntervalGenerationController
 
         view.getAvailableTimeLabel().setText(dateFormatter.format(newStart)+ " to\n " + dateFormatter.format(newEnd));
 
-        //Initialize and setup the spinner models for the start and end time for the interval generation
-        SpinnerDateModel spinnerDateModel = new SpinnerDateModel(newStart, null, null, Calendar.DAY_OF_MONTH);
-        view.getStartTimeSpinner().setModel(spinnerDateModel);
-        JSpinner.DateEditor dateEditor = new JSpinner.DateEditor(view.getStartTimeSpinner(), "yyyy-MMM-dd HH:mm:ss.SSS");
-        view.getStartTimeSpinner().setEditor(dateEditor);
-
-        spinnerDateModel = new SpinnerDateModel(newEnd, null, null, Calendar.DAY_OF_MONTH);
-        view.getStopTimeSpinner().setModel(spinnerDateModel);
-		dateEditor = new JSpinner.DateEditor(view.getStopTimeSpinner(), "yyyy-MMM-dd HH:mm:ss.SSS");
-        view.getStopTimeSpinner().setEditor(dateEditor);
+        view.getStartTimeSpinner().setDate(newStart);
+        view.getStopTimeSpinner().setDate(newEnd);
 
         //Adds an action listener to the "Get interval" button.
         view.getGetIntervalButton().addActionListener(e -> {
 
             view.setCursor(new Cursor(Cursor.WAIT_CURSOR));
-            double totalDays = DateTimeSpinner.getDaysBetween(view.getStartTimeSpinner(), view.getStopTimeSpinner());
+            double totalDays = SBMTDateSpinner.getDaysBetween(view.getStartTimeSpinner(), view.getStopTimeSpinner());
 
     		// check length of interval - if more than 10, warn the user before proceeding
     		if (view.getStateHistorySourceType() == StateHistorySourceType.PREGEN && totalDays > 10.0)

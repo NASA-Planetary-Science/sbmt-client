@@ -13,15 +13,19 @@ public class VtkLayerRenderer implements IPipelineSubscriber<Layer>
 {
 	private IPipelinePublisher<Layer> publisher;
 	private LayerRendererPanel preview;
+	private boolean invertY;
 
-	public VtkLayerRenderer() {}
+	public VtkLayerRenderer(boolean invertY)
+	{
+		this.invertY = invertY;
+	}
 
 	@Override
 	public void receive(List<Layer> items)
 	{
 		try
 		{
-			preview = new LayerRendererPanel(items.get(0));
+			preview = new LayerRendererPanel(items.get(0), invertY);
 		}
 		catch (Exception e)
 		{

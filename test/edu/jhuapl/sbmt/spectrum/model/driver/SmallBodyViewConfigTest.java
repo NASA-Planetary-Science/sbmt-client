@@ -12,6 +12,7 @@ import com.google.common.collect.ImmutableList;
 
 import edu.jhuapl.saavtk.config.ConfigArrayList;
 import edu.jhuapl.saavtk.config.ExtensibleTypedLookup.Builder;
+import edu.jhuapl.saavtk.config.IBodyViewConfig;
 import edu.jhuapl.saavtk.config.ViewConfig;
 import edu.jhuapl.saavtk.model.ShapeModelBody;
 import edu.jhuapl.saavtk.model.ShapeModelType;
@@ -60,7 +61,7 @@ public class SmallBodyViewConfigTest extends BodyViewConfig implements ISmallBod
 {
 	static public boolean fromServer = false;
     private static final Map<String, BasicConfigInfo> VIEWCONFIG_IDENTIFIERS = new HashMap<>();
-    private static final Map<String, ViewConfig> LOADED_VIEWCONFIGS = new HashMap<>();
+    private static final Map<String, IBodyViewConfig> LOADED_VIEWCONFIGS = new HashMap<>();
 
     static public Map<String, BasicConfigInfo> getConfigIdentifiers() { return VIEWCONFIG_IDENTIFIERS; }
 
@@ -95,7 +96,7 @@ public class SmallBodyViewConfigTest extends BodyViewConfig implements ISmallBod
     	    Preconditions.checkArgument(VIEWCONFIG_IDENTIFIERS.containsKey(configID), "No configuration available for model " + configID);
 
     		BasicConfigInfo info = VIEWCONFIG_IDENTIFIERS.get(configID);
-    		ViewConfig fetchedConfig = fetchRemoteConfig(configID, info.getConfigURL(), fromServer);
+    		IBodyViewConfig fetchedConfig = fetchRemoteConfig(configID, info.getConfigURL(), fromServer);
     		LOADED_VIEWCONFIGS.put(configID, fetchedConfig);
 
     		return (SmallBodyViewConfigTest)fetchedConfig;
@@ -114,7 +115,7 @@ public class SmallBodyViewConfigTest extends BodyViewConfig implements ISmallBod
     	{
             Preconditions.checkArgument(VIEWCONFIG_IDENTIFIERS.containsKey(configID), "No configuration available for model " + configID);
 
-    		ViewConfig fetchedConfig = fetchRemoteConfig(configID, VIEWCONFIG_IDENTIFIERS.get(configID).getConfigURL(), fromServer);
+    		IBodyViewConfig fetchedConfig = fetchRemoteConfig(configID, VIEWCONFIG_IDENTIFIERS.get(configID).getConfigURL(), fromServer);
     		LOADED_VIEWCONFIGS.put(configID, fetchedConfig);
     		return (SmallBodyViewConfigTest)fetchedConfig;
     	}
@@ -155,7 +156,7 @@ public class SmallBodyViewConfigTest extends BodyViewConfig implements ISmallBod
 
     }
 
-    private static ViewConfig fetchRemoteConfig(String name, String url, boolean fromServer)
+    private static IBodyViewConfig fetchRemoteConfig(String name, String url, boolean fromServer)
     {
     	if (fromServer)
     		url = url.replaceFirst("https?://sbmt.jhuapl.edu", "file:///disks/d0180/htdocs-sbmt");

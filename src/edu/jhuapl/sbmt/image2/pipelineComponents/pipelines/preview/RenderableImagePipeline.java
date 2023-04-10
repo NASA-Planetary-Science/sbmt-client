@@ -55,7 +55,7 @@ public class RenderableImagePipeline implements IPipeline<RenderablePointedImage
 			flipOperator = new LayerYFlipOperator();
 
 		IPipelineOperator<Layer, Layer> linearInterpolator = null;
-		if (instrument.getLinearInterpolationDims() == null)
+		if (instrument.getLinearInterpolationDims() == null || (instrument.getLinearInterpolationDims()[0] == 0 && instrument.getLinearInterpolationDims()[1] == 0))
 			linearInterpolator = new PassthroughOperator<>();
 		else
 			linearInterpolator = new LayerLinearInterpolaterOperator(instrument.getLinearInterpolationDims()[0], instrument.getLinearInterpolationDims()[1]);

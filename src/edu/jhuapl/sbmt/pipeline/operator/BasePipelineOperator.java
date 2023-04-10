@@ -73,16 +73,6 @@ public class BasePipelineOperator<InputType, OutputType> implements IPipelineOpe
 		return this;
 	}
 
-//	@Override
-//	public BasePipelineOperator<InputType, OutputType> run(Runnable completion) throws IOException, Exception
-//	{
-//		publisher.run();
-//		if (subscriber == null) return this;
-//		publish();
-//		completion.run();
-//		return this;
-//	}
-
 	@Override
 	public void receive(List<InputType> items) throws IOException, Exception
 	{
@@ -96,16 +86,4 @@ public class BasePipelineOperator<InputType, OutputType> implements IPipelineOpe
 		this.inputs = List.of(item);
 		processData();
 	}
-
-//	@Override
-//	public OutputType drip()
-//	{
-//		return getOutput();
-//	}
-//
-//	@Override
-//	public List<OutputType> flow()
-//	{
-//		return getOutputs();
-//	}
 }

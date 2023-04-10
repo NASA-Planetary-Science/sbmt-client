@@ -7,6 +7,7 @@ import vtk.vtkPolyData;
 import vtk.vtkPolyDataReader;
 
 import edu.jhuapl.saavtk.util.FileCache;
+import edu.jhuapl.saavtk.util.NonexistentRemoteFile;
 import edu.jhuapl.saavtk.util.UnauthorizedAccessException;
 import edu.jhuapl.sbmt.pipeline.operator.BasePipelineOperator;
 
@@ -15,23 +16,28 @@ public class LoadPolydataFromFileOperator extends BasePipelineOperator<String, v
 	@Override
 	public void processData() throws IOException, Exception
 	{
-		if (inputs.get(0).split("cache/2/").length != 2) return;
-		String imageDataFileName = inputs.get(0).split("cache/2/")[1];
+		String imageDataFileName;
+		if ((inputs.get(0).split("cache/2/").length != 2) && (inputs.get(0).split("cache/").length != 2)) return;
+		int numSegments = inputs.get(0).split("cache/2/").length;
+		if (numSegments == 2)
+			imageDataFileName = inputs.get(0).split("cache/2/")[1];
+		else
+			imageDataFileName = inputs.get(0).split("cache")[1];
 		File file;
 		try
 		{
-			file = new File(FileCache.instance().getFile(imageDataFileName).getAbsolutePath() + ".gz");
+			file = FileCache.getFileFromServer(imageDataFileName);
 		}
-		catch (UnauthorizedAccessException e)
+		catch (UnauthorizedAccessException | NonexistentRemoteFile e)
 		{
 		    // Report this but continue.
-		    e.printStackTrace();
+//		    e.printStackTrace();
 		    file = null;
 		}
 		catch (Exception e)
 		{
 		    // Ignore this one.
-			e.printStackTrace();
+//			e.printStackTrace();
 		    file = null;
 		}
 		if (file != null && file.exists())

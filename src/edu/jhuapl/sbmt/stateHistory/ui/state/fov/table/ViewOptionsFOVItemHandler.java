@@ -51,8 +51,8 @@ public class ViewOptionsFOVItemHandler extends BasicItemHandler<String, ViewOpti
 			case Name:
 				return fov;
 			case SetAsCurrent:
-				if (rendererManager.getHistoryCollection().getCurrentRun().getLocationProvider().getPointingProvider().getCurrentInstFrameName() == null) return false;
- 				return rendererManager.getHistoryCollection().getCurrentRun().getLocationProvider().getPointingProvider().getCurrentInstFrameName().equals(fov);
+				if (rendererManager.getHistoryCollection().getCurrentRun().getLocationProvider().getPointingProvider().getCurrentInstrumentName() == null) return false;
+ 				return rendererManager.getHistoryCollection().getCurrentRun().getLocationProvider().getPointingProvider().getCurrentInstrumentName().equals(fov);
 			case FPPlateColoring:
 				return rendererManager.getPlateColoringForInstrument(fov);
 			default:
@@ -99,9 +99,9 @@ public class ViewOptionsFOVItemHandler extends BasicItemHandler<String, ViewOpti
 		else if (aEnum == ViewOptionsFOVColumnLookup.SetAsCurrent)
 		{
 			if ((boolean)aValue == true)
-				rendererManager.getHistoryCollection().getCurrentRun().getLocationProvider().getPointingProvider().setCurrentInstFrameName(fov);
+				rendererManager.getHistoryCollection().getCurrentRun().getLocationProvider().getPointingProvider().setCurrentInstrumentName(fov);
 			else
-				rendererManager.getHistoryCollection().getCurrentRun().getLocationProvider().getPointingProvider().setCurrentInstFrameName("");
+				rendererManager.getHistoryCollection().getCurrentRun().getLocationProvider().getPointingProvider().setCurrentInstrumentName("");
 			rendererManager.notify(this, ItemEventType.ItemsChanged);
 			rendererManager.refreshColoring();
 		}

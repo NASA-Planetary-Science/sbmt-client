@@ -9,7 +9,7 @@ import java.util.List;
 import com.google.common.collect.ImmutableList;
 
 import edu.jhuapl.saavtk.config.ExtensibleTypedLookup.Builder;
-import edu.jhuapl.saavtk.config.ViewConfig;
+import edu.jhuapl.saavtk.config.IBodyViewConfig;
 import edu.jhuapl.saavtk.model.ShapeModelBody;
 import edu.jhuapl.saavtk.model.ShapeModelType;
 import edu.jhuapl.saavtk.util.Configuration;
@@ -103,7 +103,7 @@ public class BennuConfigs extends SmallBodyViewConfig
 	}
 
 
-	public static void initialize(List<ViewConfig> configArray, boolean publicOnly)
+	public static void initialize(List<IBodyViewConfig> configArray, boolean publicOnly)
     {
         BennuConfigs c = new BennuConfigs();
 
@@ -427,14 +427,18 @@ public class BennuConfigs extends SmallBodyViewConfig
                             new GenericPhpQuery(c.rootDirOnServer + "/polycam", "RQ36V4_POLY", c.rootDirOnServer + "/polycam/gallery"),
                             ImageType.POLYCAM_V4_IMAGE,
                             new ImageSource[]{ImageSource.GASKELL},
-                            Instrument.POLYCAM
+                            Instrument.POLYCAM,
+                            0.0,
+                            "X"
                             ),
                     new ImagingInstrument(
                             SpectralImageMode.MONO,
                             new GenericPhpQuery(c.rootDirOnServer + "/mapcam", "RQ36V4_MAP", c.rootDirOnServer + "/mapcam/gallery"),
                             ImageType.MAPCAM_V4_IMAGE,
                             new ImageSource[]{ImageSource.GASKELL},
-                            Instrument.MAPCAM
+                            Instrument.MAPCAM,
+                            0.0,
+                            "X"
                             )
             };
 
@@ -1792,7 +1796,10 @@ public class BennuConfigs extends SmallBodyViewConfig
         stateHistoryStartDate = new GregorianCalendar(2018, 10, 25, 0, 0, 0).getTime();
         stateHistoryEndDate = new GregorianCalendar(2025, 1, 1, 0, 0, 0).getTime();
         spiceInfo = new SpiceInfo("ORX", "IAU_BENNU", "ORX_SPACECRAFT", "BENNU",
-    			new String[] {"EARTH" , "SUN"}, new String[] {"ORX_OCAMS_POLYCAM", "ORX_OCAMS_MAPCAM",
+    			new String[] {"EARTH" , "SUN"},
+    			new String[] {"IAU_EARTH" , "IAU_SUN"},
+    			new String[] {},
+    			new String[] {"ORX_OCAMS_POLYCAM", "ORX_OCAMS_MAPCAM",
     															"ORX_OCAMS_SAMCAM", "ORX_NAVCAM1", "ORX_NAVCAM2",
 //    															"ORX_OTES", "ORX_OVIRS",
     															"ORX_OLA_LOW", "ORX_OLA_HIGH"});

@@ -9,7 +9,6 @@ import java.awt.event.ComponentEvent;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.text.DecimalFormat;
-import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
@@ -17,7 +16,6 @@ import javax.swing.DefaultComboBoxModel;
 import javax.swing.JComboBox;
 import javax.swing.JFormattedTextField;
 import javax.swing.JPanel;
-import javax.swing.JSpinner;
 import javax.swing.SpinnerDateModel;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
@@ -41,6 +39,7 @@ import edu.jhuapl.sbmt.image2.interfaces.IPerspectiveImageTableRepresentable;
 import edu.jhuapl.sbmt.image2.model.ImageSearchParametersModel;
 import edu.jhuapl.sbmt.image2.model.PerspectiveImageCollection;
 import edu.jhuapl.sbmt.image2.pipelineComponents.pipelines.search.ImageSearchPipeline;
+import edu.jhuapl.sbmt.image2.ui.SBMTDateSpinner;
 
 public class ImageSearchParametersController<G1 extends IPerspectiveImage & IPerspectiveImageTableRepresentable>
 {
@@ -89,11 +88,8 @@ public class ImageSearchParametersController<G1 extends IPerspectiveImage & IPer
             }
         });
 
-        JSpinner startSpinner = panel.getStartSpinner();
-        startSpinner.setModel(new javax.swing.SpinnerDateModel(smallBodyConfig.imageSearchDefaultStartDate, null, null, Calendar.DAY_OF_MONTH));
-        startSpinner.setEditor(new javax.swing.JSpinner.DateEditor(startSpinner, "yyyy-MMM-dd HH:mm:ss"));
-        startSpinner.setMinimumSize(new Dimension(36, 22));
-        startSpinner.setPreferredSize(new Dimension(180, 22));
+        SBMTDateSpinner startSpinner = panel.getStartSpinner();
+        startSpinner.setDate(smallBodyConfig.imageSearchDefaultStartDate);
         startSpinner.addChangeListener(new ChangeListener() {
             public void stateChanged(ChangeEvent evt) {
                 startSpinnerStateChanged(evt);
@@ -102,11 +98,9 @@ public class ImageSearchParametersController<G1 extends IPerspectiveImage & IPer
 
 
         panel.getEndDateLabel().setText("End Date:");
-        JSpinner endSpinner = panel.getEndSpinner();
-        endSpinner.setModel(new javax.swing.SpinnerDateModel(smallBodyConfig.imageSearchDefaultEndDate, null, null, Calendar.DAY_OF_MONTH));
-        endSpinner.setEditor(new javax.swing.JSpinner.DateEditor(endSpinner, "yyyy-MMM-dd HH:mm:ss"));
-        endSpinner.setMinimumSize(new Dimension(36, 22));
-        endSpinner.setPreferredSize(new Dimension(180, 22));
+
+        SBMTDateSpinner endSpinner = panel.getEndSpinner();
+        endSpinner.setDate(smallBodyConfig.imageSearchDefaultEndDate);
         endSpinner.addChangeListener(new ChangeListener() {
             public void stateChanged(ChangeEvent evt) {
                 endSpinnerStateChanged(evt);
@@ -345,8 +339,8 @@ public class ImageSearchParametersController<G1 extends IPerspectiveImage & IPer
         else
             model.setSearchFilename(null);
 
-        model.setStartDate((Date)panel.getStartSpinner().getValue());
-        model.setEndDate((Date)panel.getEndSpinner().getValue());
+        model.setStartDate(panel.getStartSpinner().getDate());
+        model.setEndDate(panel.getEndSpinner().getDate());
         model.setMinDistanceQuery(Double.parseDouble(panel.getFromDistanceTextField().getText()));
         model.setMaxDistanceQuery(Double.parseDouble(panel.getToDistanceTextField().getText()));
         model.setMinIncidenceQuery(Double.parseDouble(panel.getFromIncidenceTextField().getText()));

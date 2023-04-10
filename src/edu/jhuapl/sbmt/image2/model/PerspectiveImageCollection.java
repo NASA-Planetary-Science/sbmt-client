@@ -5,10 +5,13 @@ import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.io.File;
 import java.io.IOException;
-import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.function.Function;
 
 import javax.swing.JOptionPane;
@@ -18,6 +21,7 @@ import org.apache.commons.lang3.tuple.Pair;
 import org.jfree.data.Range;
 
 import com.beust.jcommander.internal.Lists;
+import com.beust.jcommander.internal.Maps;
 import com.google.common.collect.ImmutableList;
 
 import vtk.vtkActor;
@@ -62,34 +66,37 @@ import crucible.crust.metadata.impl.gson.Serializers;
 
 public class PerspectiveImageCollection<G1 extends IPerspectiveImage & IPerspectiveImageTableRepresentable> extends SaavtkItemManager<G1> implements PropertyChangeListener
 {
-	private HashMap<IImagingInstrument, List<G1>> imagesByInstrument;
+	private ConcurrentHashMap<IImagingInstrument, List<G1>> imagesByInstrument;
 	private List<G1> userImages;
+	private List<G1> userImagesModified;
 	private List<SmallBodyModel> smallBodyModels;
-	private HashMap<G1, List<vtkActor>> imageRenderers;
-	private HashMap<G1, List<vtkActor>> boundaryRenderers;
-	private HashMap<G1, List<vtkActor>> frustumRenderers;
-	private HashMap<G1, List<vtkActor>> offLimbRenderers;
-	private HashMap<G1, List<vtkActor>> offLimbBoundaryRenderers;
-	private HashMap<G1, PerspectiveImageRenderingState<G1>> renderingStates;
+	private ConcurrentHashMap<G1, List<vtkActor>> imageRenderers;
+	private ConcurrentHashMap<G1, List<vtkActor>> boundaryRenderers;
+	private ConcurrentHashMap<G1, List<vtkActor>> frustumRenderers;
+	private ConcurrentHashMap<G1, List<vtkActor>> offLimbRenderers;
+	private ConcurrentHashMap<G1, List<vtkActor>> offLimbBoundaryRenderers;
+	private ConcurrentHashMap<G1, PerspectiveImageRenderingState<G1>> renderingStates;
 	@SuppressWarnings("unused")
 	private SimpleLogger logger = SimpleLogger.getInstance();
 	private IImagingInstrument imagingInstrument;
 	private IdPair currentBoundaryRange = new IdPair(0, 9);
 	private int currentBoundaryOffsetAmount = 10;
 	private boolean firstCustomLoad = true;
-	private HashMap<G1, PerspectiveImageRenderingState<G1>> hashMap;
+//	private HashMap<G1, PerspectiveImageRenderingState<G1>> hashMap;
 	private List<SmallBodyModel> list;
+	private static ExecutorService executor = Executors.newCachedThreadPool();
 
 	public PerspectiveImageCollection(List<SmallBodyModel> smallBodyModels)
 	{
-		this.imagesByInstrument = new HashMap<IImagingInstrument, List<G1>>();
+		this.imagesByInstrument = new ConcurrentHashMap<IImagingInstrument, List<G1>>();
 		this.userImages = Lists.newArrayList();
-		this.imageRenderers = new HashMap<G1, List<vtkActor>>();
-		this.boundaryRenderers = new HashMap<G1, List<vtkActor>>();
-		this.frustumRenderers = new HashMap<G1, List<vtkActor>>();
-		this.offLimbRenderers = new HashMap<G1, List<vtkActor>>();
-		this.offLimbBoundaryRenderers = new HashMap<G1, List<vtkActor>>();
-		this.renderingStates = new HashMap<G1, PerspectiveImageRenderingState<G1>>();
+		this.userImagesModified = Lists.newArrayList();
+		this.imageRenderers = new ConcurrentHashMap<G1, List<vtkActor>>();
+		this.boundaryRenderers = new ConcurrentHashMap<G1, List<vtkActor>>();
+		this.frustumRenderers = new ConcurrentHashMap<G1, List<vtkActor>>();
+		this.offLimbRenderers = new ConcurrentHashMap<G1, List<vtkActor>>();
+		this.offLimbBoundaryRenderers = new ConcurrentHashMap<G1, List<vtkActor>>();
+		this.renderingStates = new ConcurrentHashMap<G1, PerspectiveImageRenderingState<G1>>();
 		this.smallBodyModels = smallBodyModels;
 		migrateOldUserList();
 		for (SmallBodyModel smallBodyModel : smallBodyModels)
@@ -176,6 +183,7 @@ public class PerspectiveImageCollection<G1 extends IPerspectiveImage & IPerspect
 		Color color = ColorUtil.generateColor(userImages.indexOf(image)%100, 100);
 		state.boundaryColor = color;
 		renderingStates.put(image,state);
+		userImagesModified.add(image);
 		updateUserList();	//update the user created list, stored in metadata
 	}
 
@@ -221,15 +229,6 @@ public class PerspectiveImageCollection<G1 extends IPerspectiveImage & IPerspect
 		String filePath = smallBodyModels.get(0).getCustomDataFolder() + File.separator + info.getImageFilename();
 		String pointingFile = smallBodyModels.get(0).getCustomDataFolder() + File.separator + info.getPointingFile();
 		ImageSource pointingSourceType = info.getSource();
-//		if (info instanceof CustomPerspectiveImageKey)
-//		{
-//			CustomPerspectiveImageKey perInfo = (CustomPerspectiveImageKey)info;
-//
-//		}
-//		else
-//		{
-//			CustomCylindricalImageKey cylInfo = (CustomCylindricalImageKey)info;
-//		}
 		image = new PerspectiveImage(filePath, imageType, pointingSourceType, pointingFile, fillValues);
 		image.setName(info.getName());
 		image.setImageOrigin(ImageOrigin.LOCAL);
@@ -254,46 +253,22 @@ public class PerspectiveImageCollection<G1 extends IPerspectiveImage & IPerspect
 		compImage.setName(info.getName());
 
 		return (G1)compImage;
-    	//Code from other file
-//    	ImageType imageType = (ImageType)imageTypeComboBox.getSelectedItem();
-//
-//		double[] fillValues = new double[] {};
-//		PerspectiveImage image = new PerspectiveImage(newFilepath, imageType, pointingSourceType, newPointingFilepath, fillValues);
-//
-//		image.setName(getName());
-//		image.setImageOrigin(ImageOrigin.LOCAL);
-//		image.setLongTime(new Date().getTime());
-//		if (pointingSourceType == ImageSource.LOCAL_CYLINDRICAL)
-//		{
-//			image.setBounds(new CylindricalBounds(-90,90,0,360));
-//		}
-//		else
-//		{
-//			if (imageType != ImageType.GENERIC_IMAGE)
-//			{
-//				image.setLinearInterpolatorDims(instrument.getLinearInterpolationDims());
-//				image.setMaskValues(instrument.getMaskValues());
-//				image.setFillValues(instrument.getFillValues());
-//				image.setFlip(instrument.getFlip());
-//				image.setRotation(instrument.getRotation());
-//			}
-//		}
-//		CompositePerspectiveImage compImage = new CompositePerspectiveImage(List.of(image));
-//		compImage.setName(FilenameUtils.getBaseName(filename));
 	}
 
 	public void loadUserList()
 	{
-		clearUserImages();
 		String instrumentName = ""; //imagingInstrument == null ? "" : imagingInstrument.getType().toString();
 		String filename = smallBodyModels.get(0).getCustomDataFolder() + File.separator + "userImages" + instrumentName + ".txt";
         if (!new File(filename).exists()) return;
 		FixedMetadata metadata;
         try
         {
-        	final Key<List<G1>> userImagesKey = Key.of("UserImages");
-            metadata = Serializers.deserialize(new File(filename), "UserImages");
-            userImages = read(userImagesKey, metadata);
+        	if (userImages.size() == 0)
+        	{
+        		final Key<List<G1>> userImagesKey = Key.of("UserImages");
+            	metadata = Serializers.deserialize(new File(filename), "UserImages");
+            	userImages = read(userImagesKey, metadata);
+        	}
             for (G1 image : userImages)
             {
             	PerspectiveImageRenderingState<G1> state = renderingStates.get(image);
@@ -314,6 +289,10 @@ public class PerspectiveImageCollection<G1 extends IPerspectiveImage & IPerspect
 //	            	state.isFrustumShowing = image.isFrustumShowing();
 //	            	state.isBoundaryShowing = image.isBoundaryShowing();
 //	            	state.isOfflimbShowing = image.isOfflimbShowing();
+            	}
+            	else
+            	{
+            		image.setMapped(false);
             	}
 
 
@@ -470,6 +449,7 @@ public class PerspectiveImageCollection<G1 extends IPerspectiveImage & IPerspect
 				actor.GetProperty().SetColor(colorToDoubleArray(renderingStates.get(image).offLimbBoundaryColor));
 			}
 		});
+		if (userImages.contains(image)) updateUserList();
 	}
 
 	public void updateActiveBoundaries(IdPair previousRange)
@@ -498,6 +478,7 @@ public class PerspectiveImageCollection<G1 extends IPerspectiveImage & IPerspect
 
 	public void updateImage(G1 image)
 	{
+
 		if (userImages.contains(image)) updateUserImage(image);
 		else
 		{
@@ -505,7 +486,8 @@ public class PerspectiveImageCollection<G1 extends IPerspectiveImage & IPerspect
 				image.setStatus("Loaded");
 				return null;
 			});
-			thread.start();
+
+			runThreadOnExecutorService(thread);
 
 			pcs.firePropertyChange(Properties.MODEL_CHANGED, null, image);
 		}
@@ -525,6 +507,7 @@ public class PerspectiveImageCollection<G1 extends IPerspectiveImage & IPerspect
 		if (pipeline == null) return;
 		updatePipeline(image, pipeline);
 		updateUserList();
+		userImagesModified.add(image);
 		pcs.firePropertyChange(Properties.MODEL_CHANGED, null, image);
 	}
 
@@ -535,9 +518,11 @@ public class PerspectiveImageCollection<G1 extends IPerspectiveImage & IPerspect
 
 	public void setImageMapped(G1 image, boolean mapped, boolean reRender)
 	{
+		if (image.isMapped() == mapped && reRender == false) return;
 		image.setMapped(mapped);
 		List<vtkActor> actors = imageRenderers.get(image);
-		if ((actors == null && mapped == true) || reRender)
+
+		if ((actors == null && mapped == true) || reRender || userImagesModified.contains(image))
 		{
 			Thread thread = new Thread(new Runnable()
 			{
@@ -562,12 +547,13 @@ public class PerspectiveImageCollection<G1 extends IPerspectiveImage & IPerspect
 						actor.SetVisibility(mapped ? 1 : 0);
 					}
 					image.setStatus("Loaded");
+					if (userImagesModified.contains(image)) userImagesModified.remove(image);
 					SwingUtilities.invokeLater( () -> {
 						pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
 					});
 				}
 			});
-			thread.start();
+			runThreadOnExecutorService(thread);
 		}
 		else
 		{
@@ -578,6 +564,7 @@ public class PerspectiveImageCollection<G1 extends IPerspectiveImage & IPerspect
 					actor.SetVisibility(mapped ? 1 : 0);
 				}
 			}
+			if (userImages.contains(image)) updateUserList();
 		}
 		renderingStates.get(image).isMapped = mapped;
 		this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
@@ -585,6 +572,7 @@ public class PerspectiveImageCollection<G1 extends IPerspectiveImage & IPerspect
 
 	public boolean getImageMapped(G1 image)
 	{
+		if (renderingStates.get(image) == null) return false;
 		return renderingStates.get(image).isMapped;
 	}
 
@@ -600,6 +588,7 @@ public class PerspectiveImageCollection<G1 extends IPerspectiveImage & IPerspect
 
 	public void setImageFrustumVisible(G1 image, boolean visible)
 	{
+		if (image.isFrustumShowing() == visible) return;
 		image.setFrustumShowing(visible);
 		List<vtkActor> actors = frustumRenderers.get(image);
 		if (actors == null && visible == true)
@@ -611,7 +600,7 @@ public class PerspectiveImageCollection<G1 extends IPerspectiveImage & IPerspect
 				}
 				return null;
 			});
-			thread.start();
+			runThreadOnExecutorService(thread);
 		}
 		else
 		{
@@ -622,6 +611,7 @@ public class PerspectiveImageCollection<G1 extends IPerspectiveImage & IPerspect
 					actor.SetVisibility(visible ? 1 : 0);
 				}
 				this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
+				if (userImages.contains(image)) updateUserList();
 			}
 		}
 		renderingStates.get(image).isFrustumShowing = visible;
@@ -635,6 +625,7 @@ public class PerspectiveImageCollection<G1 extends IPerspectiveImage & IPerspect
 
 	public void setImageOfflimbShowing(G1 image, boolean showing)
 	{
+		if (image.isOfflimbShowing() == showing) return;
 		image.setOfflimbShowing(showing);
 		image.setOfflimbBoundaryShowing(showing);
 		renderingStates.get(image).isOffLimbBoundaryShowing = showing;
@@ -653,7 +644,7 @@ public class PerspectiveImageCollection<G1 extends IPerspectiveImage & IPerspect
 				}
 				return null;
 			});
-			thread.start();
+			runThreadOnExecutorService(thread);
 		}
 		else
 		{
@@ -671,6 +662,7 @@ public class PerspectiveImageCollection<G1 extends IPerspectiveImage & IPerspect
 					actor.SetVisibility(showing? 1 : 0);
 				}
 			}
+			if (userImages.contains(image)) updateUserList();
 			this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
 		}
 		renderingStates.get(image).isOfflimbShowing = showing;
@@ -684,6 +676,7 @@ public class PerspectiveImageCollection<G1 extends IPerspectiveImage & IPerspect
 
 	public void setOffLimbBoundaryShowing(G1 image, boolean showing)
 	{
+		if (image.isOfflimbBoundaryShowing() == showing) return;
 		image.setOfflimbBoundaryShowing(showing);
 		renderingStates.get(image).isOffLimbBoundaryShowing = showing;
 		List<vtkActor> actors = offLimbBoundaryRenderers.get(image);
@@ -696,7 +689,7 @@ public class PerspectiveImageCollection<G1 extends IPerspectiveImage & IPerspect
 				}
 				return null;
 			});
-			thread.start();
+			runThreadOnExecutorService(thread);
 		}
 		else
 		{
@@ -704,6 +697,7 @@ public class PerspectiveImageCollection<G1 extends IPerspectiveImage & IPerspect
 			{
 				actor.SetVisibility(showing ? 1 : 0);
 			}
+			if (userImages.contains(image)) updateUserList();
 			this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
 		}
 		renderingStates.get(image).isOffLimbBoundaryShowing = showing;
@@ -717,6 +711,7 @@ public class PerspectiveImageCollection<G1 extends IPerspectiveImage & IPerspect
 
 	public void setImageBoundaryShowing(G1 image, boolean showing)
 	{
+		if (image.isBoundaryShowing() == showing) return;
 		image.setBoundaryShowing(showing);
 		List<vtkActor> actors = boundaryRenderers.get(image);
 		if (actors == null && showing == true)
@@ -734,16 +729,22 @@ public class PerspectiveImageCollection<G1 extends IPerspectiveImage & IPerspect
 					actor.SetVisibility(showing? 1 : 0);
 					if (renderingStates.get(image).boundaryColor == null)
 					{
-						if (imagesByInstrument.get(imagingInstrument) == null) break;
-						Color color = ColorUtil.generateColor(imagesByInstrument.get(imagingInstrument).indexOf(image)%100, 100);
-						renderingStates.get(image).boundaryColor = color;
+						if ((imagingInstrument == null) || imagesByInstrument.get(imagingInstrument) == null)
+						{
+							renderingStates.get(image).boundaryColor = Color.red;
+						}
+						else
+						{
+							Color color = ColorUtil.generateColor(imagesByInstrument.get(imagingInstrument).indexOf(image)%100, 100);
+							renderingStates.get(image).boundaryColor = color;
+						}
 					}
 					actor.GetProperty().SetColor(colorToDoubleArray(renderingStates.get(image).boundaryColor));
 				}
 				SwingUtilities.invokeLater(() -> {pcs.firePropertyChange(Properties.MODEL_CHANGED, null, image);});
 				return null;
 			});
-			thread.start();
+			runThreadOnExecutorService(thread);
 		}
 		else
 		{
@@ -753,6 +754,7 @@ public class PerspectiveImageCollection<G1 extends IPerspectiveImage & IPerspect
 				{
 					actor.SetVisibility(showing ? 1 : 0);
 				}
+				if (userImages.contains(image)) updateUserList();
 				this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
 			}
 		}
@@ -773,6 +775,7 @@ public class PerspectiveImageCollection<G1 extends IPerspectiveImage & IPerspect
 	public void setImageBoundaryColor(G1 image, Color color)
 	{
 		renderingStates.get(image).boundaryColor = color;
+		if (boundaryRenderers.get(image).size() == 0) return;
 		for (vtkActor actor : boundaryRenderers.get(image))
 		{
 			actor.GetProperty().SetColor(color.getRed() / 255., color.getGreen() / 255., color.getBlue() / 255.);
@@ -784,7 +787,6 @@ public class PerspectiveImageCollection<G1 extends IPerspectiveImage & IPerspect
 	public void setImageInterpolationState(G1 image, boolean interpolating)
 	{
 		image.setInterpolateState(interpolating);
-
 		Thread thread = new Thread(new Runnable()
 		{
 			@Override
@@ -800,7 +802,7 @@ public class PerspectiveImageCollection<G1 extends IPerspectiveImage & IPerspect
 				});
 			}
 		});
-		thread.start();
+		runThreadOnExecutorService(thread);
 		updateUserList();
 	}
 
@@ -895,7 +897,7 @@ public class PerspectiveImageCollection<G1 extends IPerspectiveImage & IPerspect
 		renderingState.offLimbFootprintDepth = depth;
 		image.setOfflimbDepth(depth);
 		Thread thread = getPipelineThread(image, (Void v) -> { return null; });
-		thread.start();
+		runThreadOnExecutorService(thread);
 		this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
 	}
 
@@ -933,7 +935,7 @@ public class PerspectiveImageCollection<G1 extends IPerspectiveImage & IPerspect
 			}
 			return null;
 		});
-		thread.start();
+		runThreadOnExecutorService(thread);
 	}
 
 	public IntensityRange getImageContrastRange(G1 image)
@@ -956,7 +958,7 @@ public class PerspectiveImageCollection<G1 extends IPerspectiveImage & IPerspect
 			});
 			return null;
 		});
-		thread.start();
+		runThreadOnExecutorService(thread);
 	}
 
 	public IntensityRange getOffLimbContrastRange(G1 image)
@@ -1044,24 +1046,6 @@ public class PerspectiveImageCollection<G1 extends IPerspectiveImage & IPerspect
 					{
 						ImageToScenePipeline colorPipeline = ImagePipelineFactory.of(image, smallBodyModels);
 						boundaryActors = colorPipeline.getRenderableImageBoundaryActors();
-
-//						List<IRenderableImage> renderableImages;
-//						ImageRenderable imageRenderable;
-//						if (image.getImageType() != ImageType.GENERIC_IMAGE && image.getPointingSourceType() != ImageSource.LOCAL_CYLINDRICAL)
-//						{
-//							PerspectiveImageToRenderableImagePipeline pipeline = new PerspectiveImageToRenderableImagePipeline(List.of(image));
-//							renderableImages = pipeline.getRenderableImages();
-//							imageRenderable = new PointedImageRenderables((RenderablePointedImage)renderableImages.get(0), smallBodyModels);
-//						}
-//						else
-//						{
-//							renderableImages = CylindricalImageToRenderableImagePipeline.of(List.of(image)).getRenderableImages();
-//							imageRenderable = new CylindricalImageRenderables((RenderableCylindricalImage)renderableImages.get(0), smallBodyModels);
-//						}
-//						Just.of(Pair.of(imageRenderable.getFootprintPolyData(), smallBodyModels))
-//							.operate(new HighResolutionBoundaryOperator())
-//							.subscribe(Sink.of(boundaryActors))
-//							.run();
 					}
 					else
 					{
@@ -1079,7 +1063,7 @@ public class PerspectiveImageCollection<G1 extends IPerspectiveImage & IPerspect
 						else
 							pointingPublisher = new SumfileReaderPublisher(pointingFile);
 						Just.of(Pair.of(pointingPublisher.getOutput(), smallBodyModels))
-							.operate(new LowResolutionBoundaryOperator())
+							.operate(new LowResolutionBoundaryOperator(image.getOffset()))
 							.subscribe(Sink.of(boundaryActors))
 							.run();
 					}
@@ -1259,5 +1243,21 @@ public class PerspectiveImageCollection<G1 extends IPerspectiveImage & IPerspect
         pixel[1] = uv[1] * imageWidth;
 
         return pixel;
+    }
+
+    public Map<List<vtkActor>, String> getImageRenderedComponents(G1 image)
+    {
+    	Map<List<vtkActor>, String> actorsToSave = Maps.newHashMap();
+		actorsToSave.put(imageRenderers.get(image), "footprint");
+		actorsToSave.put(offLimbRenderers.get(image), "offlimb");
+		actorsToSave.put(offLimbBoundaryRenderers.get(image), "offlimb_boundary");
+		actorsToSave.put(frustumRenderers.get(image), "frustum");
+		actorsToSave.put(boundaryRenderers.get(image), "boundary");
+		return actorsToSave;
+    }
+
+    private void runThreadOnExecutorService(Thread thread)
+    {
+    	executor.execute(thread);
     }
 }

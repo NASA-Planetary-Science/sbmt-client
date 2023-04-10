@@ -78,7 +78,7 @@ public class IPerspectiveImageToLayerAndMetadataPipeline
 
 		BasePipelineOperator<Layer, Layer> maskingOperator = new PassthroughOperator<Layer>();
 
-		if (metadataReader.getOutput().get("WINDOWH") != null)
+		if (metadataReader != null && metadataReader.getOutput().get("WINDOWH") != null && metadataReader.getOutput().get("WINDOWH").equals("512"))
 		{
 			int windowH = Integer.parseInt(metadataReader.getOutput().get("WINDOWH"));
 			int windowX = Integer.parseInt(metadataReader.getOutput().get("WINDOWX"));
@@ -86,10 +86,15 @@ public class IPerspectiveImageToLayerAndMetadataPipeline
 
 			int[] masks = new int[4];
 			if (image.getRotation() == 180.0)
-				masks = new int[] {windowH - windowX, windowX, windowH - windowY, windowY};
+			{
+				//top, bottom, right, left
+				masks = new int[] {windowH - windowX ,windowX, windowY, windowH - windowY};
+			}
 			else
-				//bottom, top, right, left
-				masks = new int[] {windowX, windowH - windowX,windowY,windowH - windowY};
+			{
+				//bottom, top, left, right
+				masks = new int[] {windowX, windowH - windowX, windowY, windowH - windowY};
+			}
 
 			image.setAutoMaskValues(masks);
 
@@ -101,10 +106,11 @@ public class IPerspectiveImageToLayerAndMetadataPipeline
 			image.setAutoMaskValues(image.getMaskValues());
 		}
 		if (image.isUseAutoMask())
-			maskingOperator = new LayerMaskOperator(image.getAutoMaskValues()[0], image.getAutoMaskValues()[1], image.getAutoMaskValues()[2], image.getAutoMaskValues()[3]);
+			maskingOperator = new LayerMaskOperator(image.getAutoMaskValues()[2], image.getAutoMaskValues()[3], image.getAutoMaskValues()[0], image.getAutoMaskValues()[1]);
 		else
+		{
 			maskingOperator = new LayerMaskOperator(image.getMaskValues()[0], image.getMaskValues()[1], image.getMaskValues()[2], image.getMaskValues()[3]);
-
+		}
 		IPipelineOperator<Layer, Layer> linearInterpolator = null;
 		if (image.getLinearInterpolatorDims() == null || (image.getLinearInterpolatorDims()[0] == 0 && image.getLinearInterpolatorDims()[1] == 0))
 			linearInterpolator = new PassthroughOperator<>();
@@ -122,10 +128,8 @@ public class IPerspectiveImageToLayerAndMetadataPipeline
 			.operate(linearInterpolator)
 			.operate(flipOperator)
 			.operate(rotationOperator)
-//			.operate(maskingOperator)
+			.operate(maskingOperator)
 			.subscribe(Sink.of(updatedLayers)).run();
-
-
 	}
 
 	public static IPerspectiveImageToLayerAndMetadataPipeline of(IPerspectiveImage image) throws InvalidGDALFileTypeException, IOException, Exception

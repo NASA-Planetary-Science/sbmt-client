@@ -9,6 +9,7 @@ import edu.jhuapl.sbmt.core.image.ImageSource;
 import edu.jhuapl.sbmt.core.image.PointingFileReader;
 import edu.jhuapl.sbmt.image2.model.CylindricalBounds;
 import edu.jhuapl.sbmt.image2.model.IRenderableImage;
+import edu.jhuapl.sbmt.image2.model.ImageBinPadding;
 import edu.jhuapl.sbmt.image2.pipelineComponents.operators.rendering.layer.LayerMasking;
 import edu.jhuapl.sbmt.layer.api.Layer;
 
@@ -30,6 +31,12 @@ public class RenderablePointedImage implements IRenderableImage
 	private String filename;
 	private boolean offlimbShowing = false;
 	private ImageSource imageSource;
+	private ImageBinPadding imageBinPadding;
+	private int binning = 1;
+	private Integer startH;
+	private Integer lastV;
+//	private int[] pad;
+//	private int[] fullSize;
 
 	public RenderablePointedImage(Layer layer, HashMap<String, String> metadata, PointingFileReader pointing)
 	{
@@ -278,4 +285,75 @@ public class RenderablePointedImage implements IRenderableImage
 		this.imageSource = imageSource;
 	}
 
+
+	/**
+	 * @return the imageBinPadding
+	 */
+	public ImageBinPadding getImageBinPadding()
+	{
+		return imageBinPadding;
+	}
+
+
+	/**
+	 * @param imageBinPadding the imageBinPadding to set
+	 */
+	public void setImageBinPadding(ImageBinPadding imageBinPadding)
+	{
+		this.imageBinPadding = imageBinPadding;
+	}
+
+
+	/**
+	 * @return the binning
+	 */
+	public int getBinning()
+	{
+		return binning;
+	}
+
+
+	/**
+	 * @param binning the binning to set
+	 */
+	public void setBinning(int binning)
+	{
+		this.binning = binning;
+	}
+
+
+	/**
+	 * @return the startH
+	 */
+	public Integer getStartH()
+	{
+		return startH;
+	}
+
+
+	/**
+	 * @param startH the startH to set
+	 */
+	public void setStartH(int startH)
+	{
+		this.startH = startH;
+	}
+
+
+	/**
+	 * @return the lastV
+	 */
+	public Integer getLastV()
+	{
+		return lastV;
+	}
+
+
+	/**
+	 * @param lastV the lastV to set
+	 */
+	public void setLastV(int lastV)
+	{
+		this.lastV = lastV;
+	}
 }

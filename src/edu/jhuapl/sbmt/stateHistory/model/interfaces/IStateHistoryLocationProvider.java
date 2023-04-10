@@ -25,32 +25,32 @@ public interface IStateHistoryLocationProvider
     public double[] getSpacecraftPositionAtTime(double time);
 
     /**
-     * @param instrumentFrameName
+     * @param instrumentName
      * @return
      */
-    public double[] getInstrumentLookDirection(String instrumentFrameName);
+    public double[] getInstrumentLookDirection(String instrumentName);
 
     /**
-     * @param instrumentFrameName
+     * @param instrumentName
      * @param time
      * @return
      */
-    public double[] getInstrumentLookDirectionAtTime(String instrumentFrameName, double time);
+    public double[] getInstrumentLookDirectionAtTime(String instrumentName, double time);
 
     /**
-     * @param instrumentFrameName
+     * @param instrumentName
      * @param index
      * @return
      */
-    public UnwritableVectorIJK getFrustum(String instrumentFrameName, int index);
+    public UnwritableVectorIJK getFrustum(String instrumentName, int index);
 
     /**
-     * @param instrumentFrameName
+     * @param instrumentName
      * @param index
      * @param time
      * @return
      */
-    public UnwritableVectorIJK getFrustumAtTime(String instrumentFrameName, int index, double time);
+    public UnwritableVectorIJK getFrustumAtTime(String instrumentName, int index, double time);
 
     /**
      * Returns the sun position in the body fixed frame

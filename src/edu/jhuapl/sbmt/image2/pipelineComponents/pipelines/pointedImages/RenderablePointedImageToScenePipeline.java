@@ -57,7 +57,6 @@ public class RenderablePointedImageToScenePipeline<G1 extends IPerspectiveImage 
 		sceneOutputs = new Pair[1];
 		this.image = image;
 		this.smallBodyModels = smallBodyModels;
-
 		loadFiles();
 		generateImageLayer();
 		pointingPublisher = generatePointing(pointingFile);
@@ -133,7 +132,7 @@ public class RenderablePointedImageToScenePipeline<G1 extends IPerspectiveImage 
 			.subscribe(Sink.of(renderableImages)).run();
 
 		image.setDefaultOffset(3.0 * smallBodyModels.get(0).getMinShiftAmount());
-		if (image.getOffset() == -1) image.setOffset(image.getDefaultOffset());
+		if (image.getOffset() == 1e-7) image.setOffset(image.getDefaultOffset());
 
 		double diagonalLength = smallBodyModels.get(0).getBoundingBoxDiagonalLength();
 		double[] scPos = renderableImages.get(0).getPointing().getSpacecraftPosition();
@@ -151,12 +150,21 @@ public class RenderablePointedImageToScenePipeline<G1 extends IPerspectiveImage 
 			renderableImage.setOfflimbIntensityRange(image.getOfflimbIntensityRange());
 			renderableImage.setMinFrustumLength(MathUtil.vnorm(scPos) - diagonalLength);
 			renderableImage.setMaxFrustumLength(MathUtil.vnorm(scPos) + diagonalLength);
+			renderableImage.setImageBinPadding(image.getImageBinPadding());
+			renderableImage.setBinning(image.getImageBinning());
 			image.setMinFrustumLength(MathUtil.vnorm(scPos) - diagonalLength);
 			image.setMaxFrustumLength(MathUtil.vnorm(scPos) + diagonalLength);
 			if (image.getOfflimbDepth() == 0)
 				image.setOfflimbDepth(MathUtil.vnorm(scPos));
 			renderableImage.setOfflimbDepth(image.getOfflimbDepth());
 			renderableImage.setLinearInterpolation(image.getInterpolateState());
+			//This is a special case for AMICA, because it reads binning and padding information from the metadata, need a better way to handle this, but hard because these fields are non-uniform
+			if (metadataReader.getOutput().containsKey("START_H"))
+			{
+				renderableImage.setStartH(Integer.valueOf(metadataReader.getOutput().get("START_H")));
+				renderableImage.setLastV(Integer.valueOf(metadataReader.getOutput().get("LAST_V")));
+				renderableImage.setBinning(Integer.valueOf(metadataReader.getOutput().get("BINNING")));
+			}
 		}
 	}
 

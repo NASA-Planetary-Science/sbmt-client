@@ -1,12 +1,15 @@
 package edu.jhuapl.sbmt.client2;
 
+import java.util.List;
+
+import com.beust.jcommander.internal.Lists;
+
 import edu.jhuapl.saavtk.model.ShapeModelBody;
 import edu.jhuapl.saavtk.model.ShapeModelType;
 import edu.jhuapl.sbmt.common.client.SmallBodyModel;
 import edu.jhuapl.sbmt.common.client.SmallBodyViewConfig;
 import edu.jhuapl.sbmt.dtm.model.DEM;
 import edu.jhuapl.sbmt.dtm.model.DEMKey;
-import edu.jhuapl.sbmt.image.model.bodies.vesta_old.VestaOld;
 import edu.jhuapl.sbmt.model.bennu.shapeModel.Bennu;
 import edu.jhuapl.sbmt.model.bennu.shapeModel.BennuV4;
 import edu.jhuapl.sbmt.model.custom.CustomShapeModel;
@@ -18,6 +21,7 @@ import edu.jhuapl.sbmt.model.rosetta.CG;
 import edu.jhuapl.sbmt.model.rosetta.Lutetia;
 import edu.jhuapl.sbmt.model.simple.Sbmt2SimpleSmallBody;
 import edu.jhuapl.sbmt.model.simple.SimpleSmallBody;
+import edu.jhuapl.sbmt.model.vesta_old.VestaOld;
 
 public class SbmtModelFactory
 {
@@ -202,7 +206,12 @@ public class SbmtModelFactory
 //        return new BasicPerspectiveImage(key, smallBodyModel, loadPointingOnly);
 //    }
 
-    static public SmallBodyModel createSmallBodyModel(SmallBodyViewConfig config)
+	static public SmallBodyModel createSmallBodyModel(SmallBodyViewConfig config)
+	{
+		return createSmallBodyModels(config).get(0);
+	}
+
+    static public List<SmallBodyModel> createSmallBodyModels(SmallBodyViewConfig config)
     {
         SmallBodyModel result = null;
         ShapeModelBody name = config.body;
@@ -295,7 +304,19 @@ public class SbmtModelFactory
                 result = new SimpleSmallBody(config);
             }
         }
-        return result;
+
+        //check for other bodies in the sytem
+        List<SmallBodyModel> allBodies = Lists.newArrayList();
+        allBodies.add(result);
+        if (config.hasSystemBodies())
+        {
+        	for (SmallBodyViewConfig extra : config.systemConfigs)
+        	{
+        		allBodies.addAll(createSmallBodyModels(extra));
+        	}
+        }
+
+        return allBodies;
     }
 
     static public LineamentModel createLineament()

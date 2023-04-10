@@ -33,11 +33,8 @@ public class ScenePointedImageBuilderOperator extends BasePipelineOperator<Pair<
 	{
 		smallBodyModels = inputs.stream().map( item -> item.getLeft()).toList();
 		renderableImages = inputs.stream().map( item -> item.getRight()).toList();
-//		smallBodyModels = inputs.get(0).getLeft();
-//		renderableImages = inputs.get(0).getRight();
 		processImages();
 	}
-
 
 	private void processImages()
 	{

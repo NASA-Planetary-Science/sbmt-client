@@ -157,7 +157,8 @@ public class CustomCylindricalImageKey implements StorableAsMetadata<CustomCylin
 	        double lllon = metadata.get(lllonKey);
 	        double urlat = metadata.get(urlatKey);
 	        double urlon = metadata.get(urlonKey);
-	        Date date = metadata.get(dateKey);
+//	        Date date = metadata.get(dateKey);
+	        Date date = new Date();
 	        String originalName = metadata.hasKey(originalNameKey) ? metadata.get(originalNameKey) : name;
 
 	        CustomCylindricalImageKey result = new CustomCylindricalImageKey(name, imagefilename, imageType, source, date, originalName);

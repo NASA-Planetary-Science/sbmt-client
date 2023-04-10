@@ -28,4 +28,8 @@ public interface IRenderableImage
 
 	public PointingFileReader getPointing();
 
+	public String getFilename();
+
+	public void setFilename(String filename);
+
 }

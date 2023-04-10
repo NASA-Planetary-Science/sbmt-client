@@ -3,14 +3,20 @@ package edu.jhuapl.sbmt.image2.pipelineComponents.operators.rendering.cylindrica
 import java.io.IOException;
 import java.util.List;
 
+import org.apache.commons.io.FilenameUtils;
+
 import com.beust.jcommander.internal.Lists;
 
 import vtk.vtkPolyData;
 
+import edu.jhuapl.saavtk.util.FileCache;
 import edu.jhuapl.saavtk.util.PolyDataUtil;
+import edu.jhuapl.saavtk.util.SafeURLPaths;
 import edu.jhuapl.sbmt.common.client.SmallBodyModel;
 import edu.jhuapl.sbmt.image2.model.CylindricalBounds;
 import edu.jhuapl.sbmt.image2.model.IRenderableImage;
+import edu.jhuapl.sbmt.image2.pipelineComponents.VTKDebug;
+import edu.jhuapl.sbmt.image2.pipelineComponents.pipelines.io.LoadPolydataFromCachePipeline;
 import edu.jhuapl.sbmt.pipeline.operator.BasePipelineOperator;
 import edu.jhuapl.sbmt.pipeline.operator.PassthroughOperator;
 import edu.jhuapl.sbmt.pipeline.publisher.Just;
@@ -36,6 +42,14 @@ public class RenderableCylindricalImageFootprintOperator extends BasePipelineOpe
         double urlon = bounds.maxLongitude();
 		for (SmallBodyModel smallBodyModel : smallBodyModels)
 		{
+			String imageFilename = getPrerenderingFileNameBase(renderableImage, smallBodyModel) + "_footprintImageData.vtk.gz";
+    		vtkPolyData existingFootprint = LoadPolydataFromCachePipeline.of(imageFilename).orNull();
+    		if (existingFootprint != null)
+    		{
+    			outputs.add(existingFootprint);
+    			continue;
+    		}
+
 			BasePipelineOperator<vtkPolyData, vtkPolyData> latitudeClipOperator = null;
 			latitudeClipOperator = new PassthroughOperator<vtkPolyData>();
 			if (lllat != -90.0 || lllon != 0.0 || urlat != 90.0 || urlon != 360.0)
@@ -67,6 +81,18 @@ public class RenderableCylindricalImageFootprintOperator extends BasePipelineOpe
 	        shiftedFootprint.DeepCopy(polyDatas.get(0));
 	        PolyDataUtil.shiftPolyDataInNormalDirection(shiftedFootprint, renderableImage.getOffset());
 	        outputs.add(shiftedFootprint);
+
+//	        VTKDebug.writePolyDataToFile(shiftedFootprint, "/Users/steelrj1/Desktop/" + FilenameUtils.getBaseName(renderableImage.getFilename()) + "_" + smallBodyModel.getModelResolution() + "_" + smallBodyModel.getModelName().replaceAll(" ", "_")+ "_footprintImageData.vtk.gz");
 		}
 	}
+
+	private String getPrerenderingFileNameBase(IRenderableImage renderableImage, SmallBodyModel smallBodyModel)
+    {
+        String imageName = renderableImage.getFilename();
+        String topPath = FileCache.instance().getFile(imageName).getParent();
+        String result = SafeURLPaths.instance().getString(topPath, "support",
+        												  FilenameUtils.getBaseName(imageName) + "_" + smallBodyModel.getModelResolution() + "_" + smallBodyModel.getModelName().replaceAll(" ", "_"));
+
+        return result;
+    }
 }

@@ -4,7 +4,7 @@ public enum ImageSource
 {
     SPICE("SPICE Derived", "pds", "infofiles", "INFO"), //
     GASKELL("SPC Derived", "gaskell", "sumfiles", "SUM"), //
-    GASKELL_UPDATED("SPC Derived", "gaskell_updated", "sumfiles-updated", "SUM"), //
+    GASKELL_UPDATED("SPC Derived Updated", "gaskell_updated", "sumfiles-updated", "SUM"), //
     LABEL("Label Derived", "label", "labels", "LBL"), //
     CORRECTED("Corrected", "corrected", "sumfiles-corrected", "SUM"), //
     CORRECTED_SPICE("Corrected SPICE Derived", "corrected_pds", "infofiles-corrected", "INFO"), //

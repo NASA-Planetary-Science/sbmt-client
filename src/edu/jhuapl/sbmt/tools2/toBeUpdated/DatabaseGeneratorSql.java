@@ -1,13 +1,13 @@
-package edu.jhuapl.sbmt.tools2;
+package edu.jhuapl.sbmt.tools2.toBeUpdated;
 
 import java.io.File;
 import java.io.IOException;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.TreeSet;
-import java.util.stream.Stream;
 
 import org.apache.commons.math3.geometry.euclidean.threed.Vector3D;
 import org.joda.time.DateTime;
@@ -24,11 +24,12 @@ import edu.jhuapl.saavtk.util.FileCache;
 import edu.jhuapl.saavtk.util.FileUtil;
 import edu.jhuapl.saavtk.util.NativeLibraryLoader;
 import edu.jhuapl.saavtk.util.SafeURLPaths;
-import edu.jhuapl.sbmt.client.SbmtModelFactory;
+import edu.jhuapl.sbmt.client2.SbmtModelFactory;
 import edu.jhuapl.sbmt.client2.SbmtMultiMissionTool;
 import edu.jhuapl.sbmt.common.client.Mission;
 import edu.jhuapl.sbmt.common.client.SmallBodyModel;
 import edu.jhuapl.sbmt.common.client.SmallBodyViewConfig;
+import edu.jhuapl.sbmt.config.Instrument;
 //import edu.jhuapl.sbmt.core.image.ImageKeyInterface;
 import edu.jhuapl.sbmt.core.image.ImageSource;
 import edu.jhuapl.sbmt.core.image.ImagingInstrument;
@@ -43,7 +44,7 @@ import edu.jhuapl.sbmt.image2.pipelineComponents.pipelines.perspectiveImages.Per
 import edu.jhuapl.sbmt.tools.DBRunInfo;
 import edu.jhuapl.sbmt.tools.SqlManager;
 
-public class DatabaseGeneratorSql2
+public class DatabaseGeneratorSql
 {
     private SqlManager db = null;
     private SmallBodyModel smallBodyModel;
@@ -51,17 +52,17 @@ public class DatabaseGeneratorSql2
     private String databasePrefix;
     private String databaseSuffix = "";
     private boolean appendTables;
-    private boolean modifyMain;
-    private int cameraIndex;
+    private boolean modifyMain; 
+//    private int cameraIndex;
+    private Instrument instrument;
 
-
-    public DatabaseGeneratorSql2(SmallBodyViewConfig smallBodyConfig, String databasePrefix, boolean appendTables, boolean modifyMain, int cameraIndex)
+    public DatabaseGeneratorSql(SmallBodyViewConfig smallBodyConfig, String databasePrefix, boolean appendTables, boolean modifyMain, Instrument instrument)
     {
         this.smallBodyConfig = smallBodyConfig;
         this.databasePrefix = databasePrefix;
         this.appendTables = appendTables;
         this.modifyMain = modifyMain;
-        this.cameraIndex = cameraIndex;
+        this.instrument = instrument;
     }
 
     private void createTables(String tableName)
@@ -154,8 +155,7 @@ public class DatabaseGeneratorSql2
             List<String> lines,
             String tableName,
             String cubesTableName,
-            ImageSource imageSource,
-            ImagingInstrument instrument) throws Exception
+            ImageSource imageSource) throws Exception
     {
         smallBodyModel.setModelResolution(0);
         SmallBodyViewConfig config = (SmallBodyViewConfig)smallBodyModel.getSmallBodyConfig();
@@ -215,18 +215,28 @@ public class DatabaseGeneratorSql2
             keyName = keyName.replace(".FIT", "");
             keyName = keyName.replace(".fit", "");
 
-//            ImageKeyInterface key = new ImageKey(keyName, imageSource, config.imagingInstruments[cameraIndex]);
+            ImagingInstrument imager = null;
+            for (ImagingInstrument inst : config.imagingInstruments)
+            {
+            	if (inst.getInstrumentName() == instrument) imager = inst;
+            }
+            if (imager == null)
+            {
+            	throw new Exception("Instrument " + instrument + " not recognized as a valid imager for this configuration");
+            }
+//            ImageKeyInterface key = new ImageKey(keyName, imageSource, imager);
+//
+////            ImageKeyInterface key = new ImageKey(keyName, imageSource, config.imagingInstruments[cameraIndex]);
 //            PerspectiveImage image = null;
 
-//            FilenameToRenderableImagePipeline pipeline = FilenameToRenderableImagePipeline.of(keyName, ImageSource.SPICE, config, instrument);
-            FilenameToRenderableImageFootprintPipeline pipeline = FilenameToRenderableImageFootprintPipeline.of(keyName, ImageSource.SPICE, List.of(smallBodyModel), instrument);
+            FilenameToRenderableImageFootprintPipeline pipeline = FilenameToRenderableImageFootprintPipeline.of(keyName, ImageSource.SPICE, List.of(smallBodyModel), imager);
         	List<RenderablePointedImage> images = pipeline.getImages();
         	List<String> pointingFilenames = pipeline.getPointingFilenames();
 
             try
             {
 //                image = (PerspectiveImage)SbmtModelFactory.createImage(key, smallBodyModel, false);
-                boolean filesExist = checkIfAllFilesExist(keyName, pointingFilenames.get(0));
+            	boolean filesExist = checkIfAllFilesExist(keyName, pointingFilenames.get(0));
                 if (filesExist == false)
                 {
                     System.out.println("file not found, skipping image " + filename);
@@ -251,7 +261,7 @@ public class DatabaseGeneratorSql2
             {
                 // In this case if image.loadFootprint() finds no frustum intersection
                 System.out.println("skipping image " + filename + " since no frustum intersection with body");
-//                image.Delete();
+                footprint.Delete();
                 System.gc();
                 System.out.println("deleted " + vtkObject.JAVA_OBJECT_MANAGER.gc(true));
                 System.out.println(" ");
@@ -261,7 +271,7 @@ public class DatabaseGeneratorSql2
             else if (footprint.GetNumberOfCells() == 0)
             {
                 System.out.println("skipping image " + filename + " since no intersecting cells");
-//                image.Delete();
+                footprint.Delete();
                 System.gc();
                 System.out.println("deleted " + vtkObject.JAVA_OBJECT_MANAGER.gc(true));
                 System.out.println(" ");
@@ -271,6 +281,7 @@ public class DatabaseGeneratorSql2
 
             // Calling this forces the calculation of incidence, emission, phase, and pixel scale
 //            image.getProperties();
+
             PerspectiveImageToDerivedMetadataPipeline metadataPipeline =
             		new PerspectiveImageToDerivedMetadataPipeline(image, List.of(smallBodyModel));
 
@@ -331,7 +342,7 @@ public class DatabaseGeneratorSql2
 
 
             // Now populate cubes table
-            vtkPolyData footprintPolyData = footprint; //image.getUnshiftedFootprint();
+            vtkPolyData footprintPolyData = footprint; // image.getUnshiftedFootprint();
             TreeSet<Integer> cubeIds = smallBodyModel.getIntersectingCubes(footprintPolyData);
 //            System.out.println("cubeIds:  " + cubeIds);
             System.out.println("number of cubes: " + cubeIds.size());
@@ -370,6 +381,7 @@ public class DatabaseGeneratorSql2
             return false;
         return true;
     }
+
 
 //    boolean checkIfAllFilesExist(PerspectiveImage image, ImageSource source)
 //    {
@@ -421,7 +433,7 @@ public class DatabaseGeneratorSql2
         }
     }
 
-    public void run(String fileList, ImageSource source, ImagingInstrument instrument) throws IOException
+    public void run(String fileList, ImageSource source, String diffFileList) throws Exception
     {
         smallBodyModel = SbmtModelFactory.createSmallBodyModel(smallBodyConfig);
 
@@ -434,6 +446,15 @@ public class DatabaseGeneratorSql2
             else
                 throw new IOException("Image Source is neither type GASKELL or type SPICE");
         }
+
+        //Grab the list of the image filenames from the diffFileList, if it exists.
+        List<String> diffFiles = new ArrayList<String>();
+        if (diffFileList != null)
+        {
+        	diffFiles = FileUtil.getFileLinesAsStringList(diffFileList);
+        	System.out.println("DatabaseGeneratorSql: run: diff files count " + diffFiles.size());
+        }
+
 
         List<String> lines = null;
         try {
@@ -448,9 +469,23 @@ public class DatabaseGeneratorSql2
             return;
         }
 
-//        System.out.println("Generating database for the following image files:");
-//        for (String file : files)
-//            System.out.println(file);
+        //Reduce the lines to only include those that match in the diff list, if it exists
+        if (diffFileList != null)
+        {
+        	List<String> truncatedLines = new ArrayList<String>();
+        	for (String line : lines)
+        	{
+        		for (String diffFile : diffFiles)
+        		{
+        			if (line.endsWith(diffFile))
+        			{
+        				truncatedLines.add(line);
+        				break;
+        			}
+        		}
+        	}
+        	lines = truncatedLines;
+        }
 
         String dburl = null;
         /*if (SbmtMultiMissionTool.getMission() == Mission.HAYABUSA2_STAGE)
@@ -472,29 +507,28 @@ public class DatabaseGeneratorSql2
             return;
         }
 
-        String imagesTable = getImagesTableNames(source);
-        String cubesTable = getCubesTableNames(source);
-
-        createTables(imagesTable);
-        createTablesCubes(cubesTable);
-
         try
         {
-            populateTables(lines, imagesTable, cubesTable, source, instrument);
+            String imagesTable = getImagesTableNames(source);
+            String cubesTable = getCubesTableNames(source);
+
+            createTables(imagesTable);
+            createTablesCubes(cubesTable);
+
+            populateTables(lines, imagesTable, cubesTable, source);
         }
-        catch (Exception e1) {
-            e1.printStackTrace();
+        finally
+        {
+            try
+            {
+                db.shutdown();
+            }
+            catch (SQLException e) {
+                e.printStackTrace();
+            }
         }
 
-        try
-        {
-            db.shutdown();
-        }
-        catch (SQLException e) {
-            e.printStackTrace();
-        }
     }
-
 
     private static void usage()
     {
@@ -530,8 +564,34 @@ public class DatabaseGeneratorSql2
     /**
      * @param args
      * @throws IOException
+     *
+     * To call, use arguments like this:
+     *
+     * --root-url $dbRootUrl --append-tables --body RQ36 --author ALTWG-SPC-v20190414 --instrument MAPCAM $pointingType
+     *
+     * The old body argument that came after pointing type is no longer needed - that was a lookup into the RunInfos, we which we now get from the configs and use the passed
+     * in arguments to filter out the one we want
+     *
+     * The camera index has also been deprecated, and has been replaced by specifying the actual Instrument to use from that enum, which is then used to find the
+     * imaging instrument to use
+     *
+     * The version argument is optional, since models may not have a version.  The SmallBodyViewConfig handles this automatically (it defaults to null)
+     *
      */
-    public static void main(String[] args) throws IOException
+    public static void main(String[] args)
+    {
+        try
+        {
+            doMain(args);
+        } catch (Throwable t)
+        {
+            t.printStackTrace();
+            System.exit(1);
+        }
+        System.exit(0);
+    }
+
+    protected static void doMain(String[] args) throws Exception
     {
         final SafeURLPaths safeUrlPaths = SafeURLPaths.instance();
         // default configuration parameters
@@ -544,8 +604,10 @@ public class DatabaseGeneratorSql2
         String bodyName="";
         String authorName="";
         String versionString = null;
+        String diffFileList = null;
+        String instrumentString = null;
 
-        int cameraIndex = 0;
+//        int cameraIndex = 0;
 
         // modify configuration parameters with command line args
         int i = 0;
@@ -572,10 +634,10 @@ public class DatabaseGeneratorSql2
             {
                 remote = true;
             }
-            else if (args[i].equals("--cameraIndex"))
-            {
-                cameraIndex = Integer.parseInt(args[++i]);
-            }
+//            else if (args[i].equals("--cameraIndex"))
+//            {
+//                cameraIndex = Integer.parseInt(args[++i]);
+//            }
             else if (args[i].equals("--body"))
             {
             	bodyName = args[++i];
@@ -588,6 +650,14 @@ public class DatabaseGeneratorSql2
             {
             	versionString = args[++i];
             }
+            else if (args[i].equals("--instrument"))
+            {
+            	instrumentString = args[++i].toUpperCase();
+            }
+            else if (args[i].equals("--diffList"))
+            {
+            	diffFileList = args[++i];
+            }
             else {
                 // We've encountered something that is not an option, must be at the args
                 break;
@@ -596,20 +666,23 @@ public class DatabaseGeneratorSql2
 
         // There must be numRequiredArgs arguments remaining after the options.
         // Otherwise abort.
-        int numberRequiredArgs = 2;
+        int numberRequiredArgs = 1;
         if (args.length - i < numberRequiredArgs)
             usage();
 
+        // Important: set the mission before changing things in the Configuration. Otherwise,
+        // setting the mission will undo those changes.
+        SbmtMultiMissionTool.configureMission(rootURL);
+
         // basic default configuration, most of these will be overwritten by the configureMission() method
         Configuration.setAPLVersion(aplVersion);
-        Configuration.setRootURL(rootURL);
-
-        SbmtMultiMissionTool.configureMission();
 
         // authentication
         Configuration.authenticate();
 
         // initialize view config
+        SmallBodyViewConfig.fromServer = true;
+
         SmallBodyViewConfig.initialize();
 
         // VTK
@@ -617,29 +690,42 @@ public class DatabaseGeneratorSql2
         NativeLibraryLoader.loadHeadlessVtkLibraries();
 
         ImageSource mode = ImageSource.valueOf(args[i++].toUpperCase());
-        String body = args[i++];
+//        String body = args[i++];
 
-        SmallBodyViewConfig config = SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.valueOf(bodyName), ShapeModelType.provide(authorName), versionString);
-
+        SmallBodyViewConfig config = null;
+        if (versionString != null)
+        	config = SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.valueOf(bodyName), ShapeModelType.provide(authorName), versionString);
+        else
+        	config = SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.valueOf(bodyName), ShapeModelType.provide(authorName));
         DBRunInfo[] runInfos = config.databaseRunInfos;
 
         Mission mission = SbmtMultiMissionTool.getMission();
         System.out.println("Mission: " + mission);
-
+//        System.out.println("DatabaseGeneratorSql: main: number of run infos " + runInfos.length);
         for (DBRunInfo ri : runInfos)
         {
-        	if (!ri.name.equals(body) || (ri.imageSource != mode)) continue;
-            DatabaseGeneratorSql2 generator = new DatabaseGeneratorSql2(config, ri.databasePrefix, appendTables, modifyMain, cameraIndex);
+//        	System.out.println("DatabaseGeneratorSql: main: body " + bodyName + " image source " + mode + " instrument " + instrumentString);
+//        	System.out.println("DatabaseGeneratorSql: main: run info " + ri.toString());
+//        	System.out.println("DatabaseGeneratorSql: main: " + !ri.name.equals(ShapeModelBody.valueOf(bodyName).toString()));
+//        	System.out.println("DatabaseGeneratorSql: main: " + (ri.imageSource != mode));
+//        	System.out.println("DatabaseGeneratorSql: main: " + (!ri.instrument.toString().equals(instrumentString)));
+        	if (!ri.name.equals(ShapeModelBody.valueOf(bodyName).toString()) || (ri.imageSource != mode) || (!ri.instrument.toString().equals(instrumentString))) continue;
+            System.out.println("DatabaseGeneratorSql: main: writing to " + ri.databasePrefix + " for " + ri.instrument + " with " + ri.imageSource);
+        	DatabaseGeneratorSql generator = new DatabaseGeneratorSql(config, ri.databasePrefix, appendTables, modifyMain, ri.instrument);
 
-            String pathToFileList = ri.pathToFileList;
+            String fileListUrl = ri.pathToFileList;
             if (remote)
             {
                 if (ri.remotePathToFileList != null)
-                    pathToFileList = ri.remotePathToFileList;
+                    fileListUrl = ri.remotePathToFileList;
             }
-            ImagingInstrument imager = Stream.of(config.getImagingInstruments()).filter(inst -> inst.instrumentName == ri.instrument).toList().get(0);
-            System.out.println("Generating: " + pathToFileList + ", mode=" + mode);
-            generator.run(pathToFileList, mode, imager);
+            else
+            {
+                fileListUrl = safeUrlPaths.getUrl(safeUrlPaths.getString(Configuration.getDataRootURL().toString(), fileListUrl));
+            }
+
+            System.out.println("Generating: " + fileListUrl + ", mode=" + mode);
+            generator.run(fileListUrl, mode, diffFileList);
         }
     }
 }
