@@ -4,7 +4,7 @@ import java.time.LocalDateTime;
 import java.util.Iterator;
 import java.util.List;
 
-import com.github.davidmoten.guavamini.Lists;
+import com.beust.jcommander.internal.Lists;
 
 public class TimeWindowFilterModel extends FilterModel<LocalDateTime>
 {

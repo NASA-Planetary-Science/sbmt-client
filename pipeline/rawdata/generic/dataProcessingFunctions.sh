@@ -52,7 +52,7 @@ checkIdentity() {
   fi
 }
 
-# Checks the status code that is passed as the first argument. If it's missing,
+# Checks the status code that is passed as the first argument. If it is missing,
 # blank or non-0, prints the remaining arguments, which are assumed to
 # provide an error message, and then calls exit from within the invoking shell,
 # thus terminating the script that called it and returning a non-0 status code.
@@ -71,8 +71,8 @@ check() {
   fi
 
   # This strange-looking check is necessary for bullet-proofing in case $1
-  # doesn't contain an integer. A simple if test... does not behave reliably.
-  # To make matters worse, exit won't actually terminate the invoking shell
+  # does not contain an integer. A simple if test... does not behave reliably.
+  # To make matters worse, exit will not actually terminate the invoking shell
   # in such a case either. Bottom line: if you are debugging and you get an
   # error on the next line, check the calling code, which must not be
   # passing an integer for argument 1.
@@ -125,7 +125,7 @@ getDirPath() {
   (
     funcName=${FUNCNAME[0]}
 
-    # This function returns a value, so it doesn't checkSkip.
+    # This function returns a value, so it does not checkSkip.
     # checkSkip $funcName "$*"
 
     if test "$1" = ""; then
@@ -267,7 +267,7 @@ guessRawDataParentDir() {
   check $?
 }
 
-# Create a directory if it doesn't already exist.
+# Create a directory if it does not already exist.
 createDir() {
   (
     funcName=${FUNCNAME[0]}
@@ -288,7 +288,7 @@ createDir() {
   check $?
 }
 
-# Create the parent of a file/directory if it doesn't already exist.
+# Create the parent of a file/directory if it does not already exist.
 createParentDir() {
   (
     funcName=${FUNCNAME[0]}
@@ -485,7 +485,7 @@ copyDir() {
   check $?
 }
 
-# Copy a directory, but only if the source directory exists. No error, no op if it's missing.
+# Copy a directory, but only if the source directory exists. No error, no op if it is missing.
 # Set srcTop and destTop to point to source and destination top location.
 # Then call this, passing src and dest relative to these "top" directories.
 copyOptionalDir() {
@@ -721,7 +721,7 @@ updateLink() {
       fi
     elif test -L $linkPath; then
       # linkPath is a broken link (test -L returned true but test -e returned false).
-      # Remove it, don't bother backing it up.
+      # Remove it, do not bother backing it up.
       rm -f $linkPath
       check $? "$funcName failed to remove link $linkPath"
     fi
@@ -1014,7 +1014,7 @@ processShapeModels() {
     checkSkip $funcName "$*"
 
     src=$1
-    
+
     if test "$src" = ""; then
       check 1 "$funcName: first argument (model directory) is missing or blank"
     fi
@@ -1112,7 +1112,7 @@ listPlateColoringFiles() {
     # ls $coloringDir/*are* >> $listFile 2> /dev/null
     # ls $coloringDir/*rad* >> $listFile 2> /dev/null
 
-    # List everything that didn't match one of the above patterns in its natural sort order.
+    # List everything that did not match one of the above patterns in its natural sort order.
     ls $coloringDir/* 2> /dev/null | grep -v Slope | grep -v slp | grep -v Elevation | grep -v elv | \
        grep -v GravitationalAcceleration | grep -v grm | grep -v GravitationalPotential | \
        grep -v pot | grep -v fti | grep -v fdi | grep -v mti | grep -v tiv | grep -v mdi | \
@@ -1130,12 +1130,29 @@ listPlateColoringFiles() {
   check $? "$funcName failed"
 }
 
+# Set up plate colorings, if the directory coloring is present under the top model directory. This requires
+# some variables to be set:
+#   bodyId body identifier as it appears in the menu of the client
+#   modelId model identifier as it appears in the menu of the client
+#   outputTop path prefix, i.e., body-dir/model-dir/coloring
 # Run DiscoverPlateColorings.sh, which is linked to a java tool that creates metadata files for plate colorings.
 discoverPlateColorings() {
   (
     funcName=${FUNCNAME[0]}
 
     checkSkip $funcName "$*"
+
+    if test "$bodyId" = ""; then
+      check 1 "$funcName: variable bodyId is not set"
+    fi
+
+    if test "$modelId" = ""; then
+      check 1 "$funcName: variable modelId is not set"
+    fi
+
+    if test "$outputTop" = ""; then
+      check 1 "$funcName: variable outputTop (should be body-dir/model-dir) is not set"
+    fi
 
     src=$srcTop/coloring
     if test -d $src; then
@@ -1173,21 +1190,24 @@ processDTMs() {
 
     checkSkip $funcName "$*"
 
-    src=$srcTop/dtm
-    if test -d $src; then
-      dest=$destTop/dtm/browse
+    generateCatalog="/homes/lopeznr1/DemCatalogMaker-2020.11.17/runDemCatalogMaker --fileL browse/*obj browse/*fits --dispName Browse --destFile browse.cat.csv"
 
-      doRsyncDir $src $dest "$1"
+    dest="$destTop/dtm/browse"
+    if test -d $dest; then
 
-      fileList="fileList.txt"
-      (cd $dest; ls | sed 's:\(.*\):\1\,\1:' | grep -v $fileList > $fileList)
-      check $? "$funcName: problem creating DTM file list $dest/$fileList"
+      if test `ls $dest | wc` -gt 0; then
+        cd "$destTop/dtm"
+        check $? "$funcName: unable to change directory to the DTM area $destTop/dtm"
 
-      if test ! -s $dest/$fileList; then
-        echo "$funcName: directory exists but has no DTMs: $dest"
+        logFile="$logTop/runDemCatalogMaker.txt"
+
+        $catalogTool > $logFile 2>&1
+        check $? "$funcName: catalog tool failed to run in $destTop/src. See file $logFile"
+      else
+        echo "$funcName: no DTM files present in $dest"
       fi
     else
-      echo "$funcName: nothing to process; no source directory $src"
+      echo "$funcName: no DTM directory $dest"
     fi
   )
   check $? "$funcName failed"
@@ -1242,7 +1262,7 @@ extractFITSFileTimes() {
           sed 's:[^=]*=[  ]*::' | sed 's:[  ]*/.*$::' | sed "s:^''*::" | sed "s:''*$::" | sed 's: :T:'`
         check $? "$funcName: ftlist command failed to extract time from file $dir/$file"
 
-        # If the keyword isn't present, the above command ends up with no time in it but doesn't return non-0 status.
+        # If the keyword is not present, the above command ends up with no time in it but does not return non-0 status.
         # Confirm the value at least starts with a numeral.
         if test `echo $value | grep -c '^[0-9]'` -eq 0; then
           check 1 "$funcName: was unable to get a time for keyword $timeStampKeyword from file $dir/$file"
@@ -1296,17 +1316,16 @@ createGalleryList() {
 
     imageDir=$instrumentTop/images
     if test ! -d "$imageDir"; then
-      echo "$funcName: INFO: no images in $instrumentTop"
+      echo "$funcName: INFO: no images/ subdirectory in $instrumentTop"
       exit;
     fi
 
     galleryListFile=$instrumentTop/gallery-list.txt
-    rm -f $galleryListFile
 
     galleryDir=$instrumentTop/gallery
     if test ! -d "$galleryDir"; then
       # This directory has no gallery; just exit here.
-      echo "$funcName: WARNING: no gallery files with images in $imageDir"
+      echo "$funcName: WARNING: no gallery files directory $galleryDir"
       exit;
     fi
 
@@ -1326,6 +1345,10 @@ createGalleryList() {
       cd $galleryDir
       check $? "$funcName: unable to cd to gallery directory $galleryDir"
 
+      # New gallery list file -- write in a temporary location, then move
+      # it on top of the real gallery list.
+      tmpGalleryList="${galleryListFile}-tmp"
+
       for image in `cat $tmpImageList`; do
         root=`echo "$image" | sed 's:\.[^\.]*$::'`
         check $? "$funcName: unable to determine base name of gallery images for $image"
@@ -1336,19 +1359,30 @@ createGalleryList() {
         check $? "$funcName: unable to find gallery images for $image"
 
         if test `echo $galleryFiles | wc -w` -eq 2; then
-          echo "$image $galleryFiles" >> $galleryListFile
+          echo "$image $galleryFiles" >> $tmpGalleryList
           # First image in list is the name of the thumbnail, including the gallery/ subdirectory
           # prefix. Add it to the thumbnail list file.
           echo "gallery/$galleryFiles" | sed 's:[  ].*::' >> $tmpThumbnailList
         fi
       done
 
-      if test ! -f "$galleryListFile"; then
+      missingSomeGalleryFiles="false"
+      if test ! -f "$tmpGalleryList"; then
         echo "$funcName: WARNING: did not find ANY gallery files in $galleryDir"
         echo "$funcName: please examine $instrumentTop and its subdirectories"
-      elif test `wc -l $tmpImageList | sed 's: .*::'` -ne `wc -l $galleryListFile | sed 's: .*::'`; then
+        echo "$funcName: did not update $galleryListFile"
+        missingSomeGalleryFiles="true"
+      elif test `wc -l $tmpImageList | sed 's: .*::'` -ne `wc -l $tmpGalleryList | sed 's: .*::'`; then
         echo "$funcName: WARNING: did not find gallery files for every image in $imageDir"
         echo "$funcName: please examine $instrumentTop and its subdirectories"
+        echo "$funcName: did not update $galleryListFile"
+        missingSomeGalleryFiles="true"
+      else
+        rm -f $galleryListFile
+        check $? "$funcName: could not delete old gallery list file $galleryListFile"
+
+        mv $tmpGalleryList $galleryListFile
+        check $? "$funcName: could not rename file $tmpGalleryList to $galleryListFile"
       fi
 
       # This does not involve the tmp file, but it is convenient just to do this
@@ -1357,13 +1391,22 @@ createGalleryList() {
       check $? "$funcName: unable to cd to $instrumentTop to create zip file"
 
       # Get rid of any previous zip file.
-      rm -f gallery.zip
-
+      galleryZipFile="gallery.zip"
+      tmpGalleryZipFile="${galleryZipFile}-tmp"
+      
       if test -f $tmpThumbnailList; then
         # Zip up images in the gallery directory that match any of the files listed in the thumbnail list file
-        echo "nice cat $tmpThumbnailList | zip -q gallery.zip -@"
-        nice cat $tmpThumbnailList | zip -q gallery.zip -@
+        echo "nice cat $tmpThumbnailList | zip -q $tmpGalleryZipFile -@"
+        nice cat $tmpThumbnailList | zip -q $tmpGalleryZipFile -@
         check $? "$funcName: unable to zip gallery files in $galleryDir"
+
+        if test "$missingSomeGalleryFiles" != "true"; then        
+          rm -f $galleryZipFile
+          check $? "$funcName: unable to delete old gallery zip file $galleryZipFile"
+        
+          mv $tmpGalleryZipFile $galleryZipFile
+          check $? "$funcName: unable to rename file $tmpGalleryZipFile to $galleryZipFile"
+        fi
       fi
 
     )
@@ -1371,6 +1414,56 @@ createGalleryList() {
     rm -f $tmpImageList
     rm -f $tmpThumbnailList
     exit $status
+  )
+  check $?
+}
+
+importKernelsFromMetakernel() {
+  (
+    funcName=${FUNCNAME[0]}
+
+    checkSkip $funcName "$*"
+
+    metakernel=$1
+
+    if test "$metakernel" = ""; then
+      check 1 "$funcName: missing/blank first argument must specify the full path to the metakernel"
+    fi
+
+    if test ! -f "$metakernel"; then
+      check 1 "$funcName: first argument $metakernel is not the path to a metakernel file"
+    fi
+
+    pathSymbol=$2
+
+    if test "$pathSymbol" = ""; then
+      check 1 "$funcName: missing/blank second argument must specify the name of the path symbol in MK"
+    fi
+
+    pathValue=$3
+    if test "$pathValue" = ""; then
+      check 1 "$funcName: missing/blank third argument must specify the value of the path symbol in MK"
+    fi
+
+    if test ! -d "$pathValue"; then
+      check 1 "$funcName: third argument (path value) $pathValue is not the path to a directory"
+    fi
+
+    mkFileName=`echo $metakernel | sed 's:.*/::'`
+    outKernelPath=`echo $metakernel | sed "s:/$mkFileName$::"`
+
+    # Get rid of single and/or double quotes, leading/trailing space.
+    # Also look for and remove a leading path symbol.
+   for file in `cat $metakernel | tr -d "'" | tr -d '"' | sed 's:^[ 	]*::' | \
+       sed -n 's:^$'"$pathSymbol::p" | sed 's:[ 	]*$::'`; do
+     outFile="$outKernelPath$file"
+
+     createParentDir $outFile
+     check $?
+
+     doRsync "$pathValue$file" "$outFile" "$4"
+     check $?
+   done
   )
   check $?
 }
@@ -1388,9 +1481,8 @@ createInfoFilesFromImageTimeStamps() {
     bodyFrame=$3
     spacecraft=$4
     instrument=$5
-    instrumentFrame=$6
-    imageTimeStampFile=$7
-    infoDir=$8
+    imageTimeStampFile=$6
+    infoDir=$7
 
     # Must invoke tool from the temporary spice directory in case the metakernel uses relative paths.
     cd $tmpSpiceDir
@@ -1430,7 +1522,7 @@ createInfoFilesFromImageTimeStamps() {
     #  2. body - IAU name of the target body, all caps
     #  3. bodyFrame - Typically IAU_<body>, but could be something like RYUGU_FIXED
     #  4. spacecraft - SPICE spacecraft name
-    #  5. instrumentframe - SPICE instrument frame name
+    #  5. instrument - SPICE instrument name
     #  6. imageTimeStampFile - path to CSV file in which all image files are listed (relative
     #     to "topDir") with their UTC time stamps
     #  7. infoDir - path to output directory where infofiles should be saved to
@@ -1445,10 +1537,10 @@ createInfoFilesFromImageTimeStamps() {
 
     createDir $logTop
 
-    echo nice $createInfoFilesDir/createInfoFiles $metakernel $body $bodyFrame $spacecraft $instrumentFrame \
+    echo nice $createInfoFilesDir/createInfoFiles $metakernel $body $bodyFrame $spacecraft $instrument \
       $imageTimeStampFile "$infoDir" $imageListFile $imageListFullPathFile $missingInfoList
 
-    nice $createInfoFilesDir/createInfoFiles $metakernel $body $bodyFrame $spacecraft $instrumentFrame \
+    nice $createInfoFilesDir/createInfoFiles $metakernel $body $bodyFrame $spacecraft $instrument \
       $imageTimeStampFile "$infoDir" $imageListFile $imageListFullPathFile $missingInfoList > \
       $logTop/createInfoFiles-$instrument.txt 2>&1
     check $? "$funcName: creating info files failed. See log file $logTop/createInfoFiles-$instrument.txt"
@@ -1469,11 +1561,12 @@ createInfoFilesFromFITSImages() {
     bodyFrame=$3
     spacecraft=$4
     instrument=$5
-    instrumentFrame=$6
-    timeStampKeyword=$7
-    topDir=$8
-    imageDir=$9
-    infoDir="${10}" # Proof that Bourne shell is evil (yet we love it). $10 = "$1"0. Need the curly brace here.
+    timeStampKeyword=$6
+    topDir=$7
+    imageDir=$8
+    infoDir="$9"
+    # Proof that Bourne shell is evil (yet we love it). $10 = "$1"0. Need the curly brace if ever again
+    # there is a 10th argument.
 
     if test "$metakernel" = ""; then
       check 1 "$funcName: missing/blank first argument; must be path to metakernel valid in $tmpSpiceDir"
@@ -1493,10 +1586,6 @@ createInfoFilesFromFITSImages() {
 
     if test "$instrument" = ""; then
       check 1 "$funcName: missing/blank fifth argument must specify instrument name (cosmetic but with no spaces)"
-    fi
-
-    if test "$instrumentFrame" = ""; then
-      check 1 "$funcName: missing/blank sixth argument must specify NAIF-compliant instrument frame ID"
     fi
 
     if test "$timeStampKeyword" = ""; then
@@ -1531,7 +1620,7 @@ createInfoFilesFromFITSImages() {
       echo "$funcName: file $imageTimeStampFile already exists -- skipping extracting times from FITS images"
     fi
 
-    createInfoFilesFromImageTimeStamps $metakernel $body $bodyFrame $spacecraft $instrument $instrumentFrame \
+    createInfoFilesFromImageTimeStamps $metakernel $body $bodyFrame $spacecraft $instrument \
       $imageTimeStampFile $infoDir
   )
   check $?
@@ -1863,7 +1952,7 @@ editMetakernels() {
     for file in `ls *.mk *.tm 2> /dev/null` .; do
       if test "$file" != .; then
         if test ! -f "$file.bak"; then
-          nice sed -i bak -e "s:$regEx:$tmpSpiceDir:" $file
+          nice sed -ibak -e "s:$regEx:$tmpSpiceDir:" $file
           check $? "$funcName: unable to edit file $file"
         else
           echo "$funcName: $file.bak already exists -- not re-editing metakernel file $srcDir/$file"
@@ -1982,7 +2071,7 @@ linkToProcessedArea() {
 #
 # Errors will be thrown if any of the following occur: src or dest are missing/blank,
 # src does not identify an existing directory, dest identifies a file, dest is a subdirectory
-# of src. 
+# of src.
 syncDir() {
   (
     funcName=${FUNCNAME[0]}
@@ -1999,15 +2088,15 @@ syncDir() {
 
     src="$1"
     dest="$2"
-     
+
     if test ! -d "$src"; then
       check 1 "$funcName: source path is not a directory: $src"
     fi
-      
+
     if test -f "$dest"; then
       check 1 "$funcName: destination path is a file: $dest"
     fi
-      
+
     destParent=$(dirname "$dest")"/.." 2> /dev/null
     createDir "$destParent"
 
@@ -2021,15 +2110,15 @@ syncDir() {
       realDest=`realpath "$dest"`
       check $? "$funcName: realpath $dest failed"
       if test `echo "$realDest" | grep -c "^$realSrc"` -gt 0; then
-        check 1 "$funcName: destination $dest is a subdirectory of source $src" 
+        check 1 "$funcName: destination $dest is a subdirectory of source $src"
       fi
-    
+
       rm -rf $dest
       check $? "$funcName: unable to remove destination prior to sync: $dest"
 
       echo cp -al "$src" "$dest"
       cp -al "$src" "$dest"
-      check $? "$funcName: unable to hard link files in source $src to destination $dest" 
+      check $? "$funcName: unable to hard link files in source $src to destination $dest"
     else
       doRsyncDir "$src" "$dest" "--delete --links --copy-unsafe-links --keep-dirlinks"
     fi

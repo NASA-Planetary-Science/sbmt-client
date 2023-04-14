@@ -14,7 +14,7 @@ import edu.jhuapl.saavtk.gui.render.Renderer;
 import edu.jhuapl.saavtk.model.ModelManager;
 import edu.jhuapl.saavtk.status.StatusNotifier;
 import edu.jhuapl.saavtk.util.Properties;
-import edu.jhuapl.sbmt.client.SmallBodyModel;
+import edu.jhuapl.sbmt.common.client.SmallBodyModel;
 import edu.jhuapl.sbmt.lidar.LidarTrack;
 import edu.jhuapl.sbmt.lidar.LidarTrackManager;
 import edu.jhuapl.sbmt.stateHistory.model.planning.BasePlannedDataCollection;

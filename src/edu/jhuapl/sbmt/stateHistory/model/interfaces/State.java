@@ -24,17 +24,17 @@ public interface State
     public void writeToCSV(String path);
 
     /**
-     * @param instrumentFrameName
+     * @param instrumentName
      * @param index
      * @return
      */
-    public UnwritableVectorIJK getFrustum(String instrumentFrameName, int index);
+    public UnwritableVectorIJK getFrustum(String instrumentName, int index);
 
     /**
-     * @param instrumentFrameName
+     * @param instrumentName
      * @return
      */
-    public double[] getInstrumentLookDirection(String instrumentFrameName);
+    public double[] getInstrumentLookDirection(String instrumentName);
 
     /** Spacecraft Position (km) */
     /**

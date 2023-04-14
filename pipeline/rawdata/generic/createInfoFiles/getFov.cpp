@@ -33,7 +33,7 @@ using namespace std;
      observerBody: Name of observer body (e.g. EROS, PLUTO, PHOEBE)
      bodyFrame:    The body frame, usually in the form of IAU_<observerBody>, but can also be like RYUGU_FIXED (in Ryugu's case)
      spacecraft:   Name of the spacecraft that took the image
-     instrFrame:   SPICE frame ID of instrument on the observing spacecraft
+     instrName:    SPICE instrument name on the observing spacecraft
 
    Output:
      boredir:    Boresight direction in bodyframe coordinates
@@ -41,14 +41,14 @@ using namespace std;
      frustum:    Field of view boundary corner vectors in bodyframe coordinates
 
 */
-void getFov(double et, const char* spacecraft, const char* observerBody, const char* bodyFrame, const char* instrFrame, double boredir[3], double updir[3], double frustum[12])
+void getFov(double et, const char* spacecraft, const char* observerBody, const char* bodyFrame, const char* instrName, double boredir[3], double updir[3], double frustum[12])
 {
 	double lt, notUsed[6];
 //    double targpos[3];  // sc to target vector in j2000
 //    double scpos[3];    // target to sc vector in j2000
     double inst2inert[3][3], inert2bf[3][3], inst2bf[3][3];
-    char shape[32];
-    char frame[32];
+    char shape[WDSIZE];
+    char frame[WDSIZE];
     double bsight [3];
     int n;
     double bounds [MAXBND][3];
@@ -62,6 +62,14 @@ void getFov(double et, const char* spacecraft, const char* observerBody, const c
     const char* inertframe = "J2000";
     SpiceInt instid;
     double tmpvec[3];
+
+    SpiceChar instrFrame[WDSIZE];
+
+    getfvn_c(instrName, MAXBND, WDSIZE, WDSIZE, shape, instrFrame, bsight, &n, bounds);
+    if (failed_c()) {
+      cerr << "Failed getfvn call to get the instrument frame name for instrument " << instrName << endl;
+      return;
+    }
 
     /*
      *  Compute the apparent position of the center of the observer body
@@ -82,14 +90,15 @@ void getFov(double et, const char* spacecraft, const char* observerBody, const c
     /*
     *  Get field of view boresight and boundary corners
     */
-    namfrm_c(instrFrame, &instid);
-    if (failed_c()) {
-        cout << "Failed namfrm for frame " << instrFrame << endl;
+    SpiceBoolean found = SPICEFALSE;
+    bodn2c_c(instrName, &instid, &found);
+    if (failed_c() || found != SPICETRUE) {
+        cerr << "Failed bodn2c for instrument " << instrName << endl;
         return;
     }
     getfov_c(instid, MAXBND, WDSIZE, WDSIZE, shape, frame, bsight, &n, bounds);
     if (failed_c()) {
-        cout << "Failed getfov for frame " << instrFrame << ", which returned id " << instid << endl;
+        cerr << "Failed getfov for frame " << instrFrame << ", which returned id " << instid << endl;
         return;
     }
 
@@ -107,7 +116,7 @@ void getFov(double et, const char* spacecraft, const char* observerBody, const c
      */
     pxform_c(instrFrame, inertframe, et, inst2inert);
     if (failed_c()) {
-    	cout << "Failed pxform1" << endl;
+    	cerr << "Failed pxform1" << endl;
         return;
     }
     
@@ -134,7 +143,7 @@ void getFov(double et, const char* spacecraft, const char* observerBody, const c
      */
     pxform_c(inertframe, bodyFrame, et - lt, inert2bf);
     if (failed_c()) {
-        cout << "Failed pxform2" << endl;
+        cerr << "Failed pxform2" << endl;
         return;
     }
 
@@ -157,7 +166,7 @@ void getFov(double et, const char* spacecraft, const char* observerBody, const c
      */
 //    pxform_c(instrFrame, bodyFrame, et - lt, inst2bf);
 //    if (failed_c()) {
-//        cout << "Failed pxform2" << endl;
+//        cerr << "Failed pxform2" << endl;
 //        return;
 //    }
 

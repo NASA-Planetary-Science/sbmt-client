@@ -187,7 +187,7 @@ sbmtCodeTop=$rawDataTop
 logTop=$rawDataTop/logs/$dateStamp
 
 # Bodies metadata directory name. Must be kept in sync with BodyViewConfig.getConfigInfoVersion().
-modelMetadataDir=allBodies-9.2
+modelMetadataDir=allBodies-9.4
 
 # Environment variables:
 export SAAVTKROOT="$sbmtCodeTop/saavtk"

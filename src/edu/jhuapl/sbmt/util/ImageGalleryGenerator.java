@@ -14,16 +14,15 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicReference;
 
-import javax.swing.SwingWorker;
-
 import edu.jhuapl.saavtk.util.Configuration;
 import edu.jhuapl.saavtk.util.ConvertResourceToFile;
-import edu.jhuapl.saavtk.util.Debug;
+import edu.jhuapl.saavtk.util.DownloadableFileManager.StateListener;
+import edu.jhuapl.saavtk.util.DownloadableFileState;
 import edu.jhuapl.saavtk.util.FileCache;
 import edu.jhuapl.saavtk.util.NoInternetAccessException;
 import edu.jhuapl.saavtk.util.SafeURLPaths;
-import edu.jhuapl.sbmt.gui.image.controllers.images.ImageResultsTableController;
-import edu.jhuapl.sbmt.model.image.IImagingInstrument;
+import edu.jhuapl.saavtk.util.UnauthorizedAccessException;
+import edu.jhuapl.sbmt.core.image.IImagingInstrument;
 import edu.jhuapl.sbmt.query.IQueryBase;
 
 /**
@@ -35,7 +34,7 @@ import edu.jhuapl.sbmt.query.IQueryBase;
  * The current implementation is something of a compromise to offer a couple
  * options for how to manage downloads within the legacy implementations of
  * {@link IImagingIntrument}, {@link IQueryBase}, and most of all
- * {@link ImageResultsTableController}.
+ * {@link edu.jhuapl.sbmt.image.gui.controllers.images.ImageResultsTableController}.
  * <p>
  * The compromise is needed because the factory method
  * {@link ImageGalleryGenerator#of(IImagingInstrument)} may be called multiple
@@ -90,6 +89,22 @@ public abstract class ImageGalleryGenerator
     /**
      * Return a valid {@link ImageGalleryGenerator} for the specified
      * {@link IImagingInstrument}, or null if a gallery generator cannot be set
+     * up for the instrument. See {@link #of(IImagingInstrument, StateListener)}
+     * for more detail; also that overload is preferable to this one because it
+     * allows the caller to be notified when the gallery has been downloaded and
+     * unpacked.
+     *
+     * @param instrument the instrument
+     * @return the gallery generator
+     */
+    public static synchronized ImageGalleryGenerator of(IImagingInstrument instrument)
+    {
+        return of(instrument, null);
+    }
+
+    /**
+     * Return a valid {@link ImageGalleryGenerator} for the specified
+     * {@link IImagingInstrument}, or null if a gallery generator cannot be set
      * up for the instrument. This can happen if the instrument does not include
      * a gallery (returning null for the path to the gallery), or if an
      * exception prevents the gallery from being set up completely.
@@ -99,7 +114,7 @@ public abstract class ImageGalleryGenerator
      * by the specified instrument's {@link IImagingInstrument#getSearchQuery()}
      * method.
      * <p>
-     * This method attempts to download an optional file named
+     * This method attempts to download asynchronously an optional file named
      * "gallery-list.txt", which, if present, is expected to be a 3 column CSV
      * file associating the name of each image with the name of the preview
      * (thumbnail) image and finally the name of the gallery image. In the
@@ -111,7 +126,7 @@ public abstract class ImageGalleryGenerator
      * The code also tries to download and unpack an optional file named
      * "gallery.zip", which, if present, is expected to contain the preview
      * thumbnail images (but not the gallery images themselves). This is so that
-     * all proprietary thumbnail images may be unpacked in bulk prior to
+     * any proprietary thumbnail images may be unpacked in bulk prior to
      * actually displaying the gallery in the web browser.
      * <p>
      * Successfully-initialized instances of {@link ImageGalleryGenerator} for a
@@ -121,12 +136,25 @@ public abstract class ImageGalleryGenerator
      * return null, but subsequent calls will keep attempting to set up the
      * gallery. This is in case a transient problem is responsible for the
      * exception.
+     * <p>
+     * The
+     * {@link StateListener#respond(edu.jhuapl.saavtk.util.DownloadableFileState)}
+     * method of the listener will FOR SURE be called once and only once if a
+     * gallery is available for this instrument, whether or not an optional
+     * "gallery.zip" file exists for the gallery. However, the
+     * {@link DownloadableFileState} object passed to the listener is the state
+     * of the "gallery.zip" file. But if the listener is called, it means a
+     * gallery exists. The listener is used only by the file downloader, so
+     * there is no need to remove the listener explicitly; the gallery
+     * generator's reference to it will go out of scope and be garbage collected
+     * after the listener is called.
      *
      * @param instrument the instrument for which to find the gallery
+     * @param listener that responds to file state changes (may be null)
      * @return a generator for the instrument's gallery, or null if there is no
      *         gallery for this instrument.
      */
-    public static synchronized ImageGalleryGenerator of(IImagingInstrument instrument)
+    public static synchronized ImageGalleryGenerator of(IImagingInstrument instrument, StateListener listener)
     {
         if (instrument == null)
         {
@@ -153,6 +181,10 @@ public abstract class ImageGalleryGenerator
         {
             // This method completed successfully before, just return the
             // result. Note it could be null.
+        	if (listener != null)
+            {
+                listener.respond(null);
+            }
             return GalleryMap.get(galleryPath);
         }
 
@@ -172,6 +204,11 @@ public abstract class ImageGalleryGenerator
             // Transient problem. Return here -- don't add to the map so this
             // gets tried again later.
             return null;
+        }
+        catch (UnauthorizedAccessException e)
+        {
+            e.printStackTrace();
+            file = null;
         }
         catch (Exception e)
         {
@@ -300,32 +337,18 @@ public abstract class ImageGalleryGenerator
         // preview/thumbnail images. This may take a while, so kick off a
         // background thread to do this.
         String galleryZipFile = SAFE_URL_PATHS.getString(galleryParent, "gallery.zip");
-        SwingWorker<Void, Void> worker = new SwingWorker<Void, Void>() {
 
-            @Override
-            protected Void doInBackground() throws Exception
+        FileCache.getFileFromServerAsync(galleryZipFile, false, true, state -> {
+            if (state.isLocalFileAvailable())
             {
-                File zipFile = null;
-                try
-                {
-                    zipFile = FileCache.getFileFromServer(galleryZipFile);
-                    galleryGenerator.setPreviewTopUrl(".");
-                }
-                catch (Exception e)
-                {
-                    // Ignore this -- this file is a newer resource, not
-                    // present in legacy models. It was added when DART
-                    // simulated models were added.
-                    if (zipFile != null && !Debug.isEnabled())
-                    {
-                        zipFile.delete();
-                    }
-                }
-                return null;
+                galleryGenerator.setPreviewTopUrl(".");
             }
 
-        };
-        worker.execute();
+            if (listener != null)
+            {
+                listener.respond(state);
+            }
+        });
 
         return galleryGenerator;
     }
@@ -346,34 +369,34 @@ public abstract class ImageGalleryGenerator
         // Define location and name of gallery file
         String galleryURL = SAFE_URL_PATHS.getString(Configuration.getCacheDir(), "gallery.html");
 
-//        SwingWorker<Void, Void> worker = new SwingWorker<Void, Void>() {
-//
-//            @Override
-//            protected Void doInBackground() throws Exception
-//            {
-//                for (ImageGalleryEntry entry : entries) {
-//                    try
-//                    {
-//                        FileCache.getFileFromServer(entry.previewFilename);
-//                    }
-//                    catch (Exception e)
-//                    {
-//
-//                    }
-//                    try
-//                    {
-//                        FileCache.getFileFromServer(entry.imageFilename);
-//                    }
-//                    catch (Exception e)
-//                    {
-//
-//                    }
-//                }
-//                return null;
-//            }
-//
-//        };
-//        worker.execute();
+        // SwingWorker<Void, Void> worker = new SwingWorker<Void, Void>() {
+        //
+        // @Override
+        // protected Void doInBackground() throws Exception
+        // {
+        // for (ImageGalleryEntry entry : entries) {
+        // try
+        // {
+        // FileCache.getFileFromServer(entry.previewFilename);
+        // }
+        // catch (Exception e)
+        // {
+        //
+        // }
+        // try
+        // {
+        // FileCache.getFileFromServer(entry.imageFilename);
+        // }
+        // catch (Exception e)
+        // {
+        //
+        // }
+        // }
+        // return null;
+        // }
+        //
+        // };
+        // worker.execute();
 
         // Generate the image gallery
         try
@@ -389,13 +412,11 @@ public abstract class ImageGalleryGenerator
         }
 
         // Copy over required javascript files
-        ConvertResourceToFile.convertResourceToRealFile(
-                galleryURL.getClass(), 
-                "/edu/jhuapl/sbmt/data/main.js",
+        ConvertResourceToFile.convertResourceToRealFile(galleryURL.getClass(), //
+                "/edu/jhuapl/sbmt/data/main.js", //
                 Configuration.getCustomGalleriesDir());
-        ConvertResourceToFile.convertResourceToRealFile(
-                galleryURL.getClass(), 
-                "/edu/jhuapl/sbmt/data/jquery.js",
+        ConvertResourceToFile.convertResourceToRealFile(galleryURL.getClass(), //
+                "/edu/jhuapl/sbmt/data/jquery.js", //
                 Configuration.getCustomGalleriesDir());
 
         // Return to user to be opened
@@ -404,10 +425,14 @@ public abstract class ImageGalleryGenerator
 
     public ImageGalleryEntry getEntry(String imageFileName)
     {
-        String imageFileUrl = SAFE_URL_PATHS.getString(Configuration.getDataRootURL().toString(), getGalleryImageFile(imageFileName));
-        String previewFileUrl = locateGalleryFile(getPreviewImageFile(imageFileName));
+        String imageFileBaseName = new File(imageFileName).getName();
+        String galleryFileBaseName = getGalleryImageFile(imageFileName);
+        String previewFileBaseName = getPreviewImageFile(imageFileName);
 
-        return new ImageGalleryEntry(imageFileName.substring(imageFileName.lastIndexOf("/") + 1), imageFileUrl, previewFileUrl);
+        String imageFileUrl = galleryFileBaseName != null ? SAFE_URL_PATHS.getString(Configuration.getDataRootURL().toString(), galleryFileBaseName) : null;
+        String previewFileUrl = previewFileBaseName != null ? locateGalleryFile(previewFileBaseName) : null;
+
+        return new ImageGalleryEntry(imageFileBaseName, imageFileUrl, previewFileUrl);
     }
 
     protected abstract String getPreviewImageFile(String imageFileName);
@@ -513,11 +538,23 @@ public abstract class ImageGalleryGenerator
 
         for (ImageGalleryEntry entry : entries)
         {
-            writer.println("<li><a href=\"" +
-                    entry.imageFilename +
-                    "\" class=\"preview\" title=\"" + entry.caption + "\"><img src=\"" +
-                    entry.previewFilename +
-                    "\" alt=\"" + entry.caption + "\" /></a></li>");
+            String alt;
+            if (entry.imageFilename != null)
+            {
+                alt = new File(entry.imageFilename).getName();
+            }
+            else
+            {
+                alt = "Missing " + entry.caption.replaceFirst("\\.[^\\.]*$", "");
+            }
+
+            String line = String.format( //
+                    "<li><a href=\"%s\" class=\"preview\" title=\"%s\"><img src=\"%s\" alt=\"%s\" /></a></li>", //
+                    entry.imageFilename != null ? entry.imageFilename : "", //
+                    entry.caption, //
+                    entry.previewFilename != null ? entry.previewFilename : "", //
+                    alt);
+            writer.println(line);
         }
         writer.println("</ul>");
         writer.println("</body>");

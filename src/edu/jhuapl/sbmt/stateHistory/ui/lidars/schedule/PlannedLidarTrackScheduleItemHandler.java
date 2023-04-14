@@ -1,7 +1,7 @@
 package edu.jhuapl.sbmt.stateHistory.ui.lidars.schedule;
 
-import edu.jhuapl.sbmt.stateHistory.model.planning.lidar.PlannedLidarTrackVtkCollection;
 import edu.jhuapl.sbmt.stateHistory.model.planning.lidar.PlannedLidarTrackScheduleCollection;
+import edu.jhuapl.sbmt.stateHistory.model.planning.lidar.PlannedLidarTrackVtkCollection;
 
 import glum.gui.panel.itemList.BasicItemHandler;
 import glum.gui.panel.itemList.query.QueryComposer;

@@ -7,7 +7,7 @@ if test "x$SBMTROOT" = x; then
 fi
 
 if test "x$1" = x; then
-  echo "Usage: $0 <mission-enum> where <mission-enum> is one of the members of SbmtMultiMissionTool.Mission" >&2
+  echo "Usage: $0 <mission-enum> where <mission-enum> is one of the members of Mission" >&2
   status=1
 fi
 
@@ -19,15 +19,16 @@ released_mission=$1
 mission_name=$2
 
 if test $mission_name; then
-  echo Setting mission name to $mission_name
+  echo "Setting mission name to $mission_name"
   variablefile="$SBMTROOT/config/Makefiles/Variables"
   variablefileorig="$SBMTROOT/config/Makefiles/Variables-orig"
-#  echo "Variable file is: " $variablefile
+ # echo "Variable file is: " $variablefile
   mv $variablefile $variablefileorig
   cat $variablefileorig | sed "s/SNAPSHOT/$mission_name/" > $variablefile
+  echo "updated file"
 fi
 
-file="$SBMTROOT/src/edu/jhuapl/sbmt/client/SbmtMultiMissionTool.java"
+file="$SBMTROOT/src/edu/jhuapl/sbmt/client2/SbmtMultiMissionTool.java"
 if test ! -f $file; then
   echo "Cannot find file $file" >&2
   exit 1

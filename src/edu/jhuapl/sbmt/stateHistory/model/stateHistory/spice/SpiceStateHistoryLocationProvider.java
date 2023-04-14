@@ -8,9 +8,8 @@ import java.nio.file.Paths;
 import java.util.Map.Entry;
 import java.util.Set;
 
-import com.google.common.collect.ImmutableList;
-
 import edu.jhuapl.sbmt.pointing.IPointingProvider;
+import edu.jhuapl.sbmt.pointing.modules.SpiceReaderPublisher;
 import edu.jhuapl.sbmt.pointing.spice.SpiceInfo;
 import edu.jhuapl.sbmt.pointing.spice.SpicePointingProvider;
 import edu.jhuapl.sbmt.stateHistory.model.StateHistorySourceType;
@@ -66,29 +65,29 @@ public class SpiceStateHistoryLocationProvider implements IStateHistoryLocationP
 	}
 
 	@Override
-	public double[] getInstrumentLookDirection(String instrumentFrameName)
+	public double[] getInstrumentLookDirection(String instrumentName)
 	{
-		return state.getInstrumentLookDirection(instrumentFrameName);
+		return state.getInstrumentLookDirection(instrumentName);
 	}
 
 	@Override
-	public double[] getInstrumentLookDirectionAtTime(String instrumentFrameName, double time)
+	public double[] getInstrumentLookDirectionAtTime(String instrumentName, double time)
 	{
 		state.setEphemerisTime(time);
-		return state.getInstrumentLookDirection(instrumentFrameName);
+		return state.getInstrumentLookDirection(instrumentName);
 	}
 
 	@Override
-	public UnwritableVectorIJK getFrustum(String instrumentFrameName, int index)
+	public UnwritableVectorIJK getFrustum(String instrumentName, int index)
 	{
-		return state.getFrustum(instrumentFrameName, index);
+		return state.getFrustum(instrumentName, index);
 	}
 
 	@Override
-	public UnwritableVectorIJK getFrustumAtTime(String instrumentFrameName, int index, double time)
+	public UnwritableVectorIJK getFrustumAtTime(String instrumentName, int index, double time)
 	{
 		state.setEphemerisTime(time);
-		return state.getFrustum(instrumentFrameName, index);
+		return state.getFrustum(instrumentName, index);
 	}
 
 	@Override
@@ -238,17 +237,9 @@ public class SpiceStateHistoryLocationProvider implements IStateHistoryLocationP
 		}
 		try
 		{
-			SpicePointingProvider.Builder builder =
-					SpicePointingProvider.builder(ImmutableList.copyOf(new Path[] {mkPath}), spiceInfo.getBodyName(),
-							spiceInfo.getBodyFrameName(), spiceInfo.getScId(), spiceInfo.getScFrameName());
+    		SpiceReaderPublisher pointingPublisher = new SpiceReaderPublisher(mkPath.toString(), spiceInfo);
+    		pointingProvider = pointingPublisher.getOutputs().get(0);
 
-			for (String bodyNameToBind : spiceInfo.getBodyNamesToBind()) builder.bindEphemeris(bodyNameToBind);
-			for (String instrumentFrameToBind : spiceInfo.getInstrumentFrameNamesToBind())
-			{
-				builder.bindFrame(instrumentFrameToBind);
-			}
-
-            pointingProvider = builder.build();
             updateTrajectoryAndStateWithPointing(pointingProvider);
 		}
 		catch (FileNotFoundException fnfe)

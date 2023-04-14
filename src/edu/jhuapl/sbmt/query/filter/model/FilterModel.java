@@ -3,7 +3,7 @@ package edu.jhuapl.sbmt.query.filter.model;
 import java.util.Iterator;
 import java.util.List;
 
-import com.github.davidmoten.guavamini.Lists;
+import com.beust.jcommander.internal.Lists;
 
 import glum.item.BaseItemManager;
 

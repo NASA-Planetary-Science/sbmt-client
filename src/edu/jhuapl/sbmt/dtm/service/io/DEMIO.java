@@ -13,6 +13,7 @@ import org.apache.commons.io.FilenameUtils;
 import vtk.vtkPolyData;
 import vtk.vtkPolyDataWriter;
 
+import edu.jhuapl.saavtk.config.IBodyViewConfig;
 import edu.jhuapl.saavtk.config.ViewConfig;
 import edu.jhuapl.saavtk.gui.dialog.CustomFileChooser;
 import edu.jhuapl.saavtk.gui.dialog.ShapeModelImporterDialog;
@@ -21,8 +22,8 @@ import edu.jhuapl.saavtk.model.ShapeModelType;
 import edu.jhuapl.saavtk.util.DownloadableFileState;
 import edu.jhuapl.saavtk.util.FileCache;
 import edu.jhuapl.saavtk.util.FileUtil;
-import edu.jhuapl.sbmt.client.SmallBodyViewConfig;
-import edu.jhuapl.sbmt.client.SmallBodyViewConfigMetadataIO;
+import edu.jhuapl.sbmt.common.client.SmallBodyViewConfig;
+import edu.jhuapl.sbmt.common.client.SmallBodyViewConfigMetadataIO;
 import edu.jhuapl.sbmt.dtm.model.DEM;
 import edu.jhuapl.sbmt.dtm.model.DEMCollection;
 import edu.jhuapl.sbmt.dtm.model.DEMKey;
@@ -103,7 +104,7 @@ public class DEMIO
                     config2.modelLabel = dialog.getNameOfImportedShapeModel();
                     config2.customTemporary = false;
                     config2.author = ShapeModelType.CUSTOM;
-                    SmallBodyViewConfigMetadataIO metadataIO = new SmallBodyViewConfigMetadataIO(new Vector<ViewConfig>(config));
+                    SmallBodyViewConfigMetadataIO metadataIO = new SmallBodyViewConfigMetadataIO(new Vector<IBodyViewConfig>(config));
                     DownloadableFileState state = FileCache.getState(demFilename);
                     File file = new File(FileUtil.removeExtension(state.getFileState().getFile().toString()) + ".json");
                     metadataIO.write(file, dialog.getNameOfImportedShapeModel());

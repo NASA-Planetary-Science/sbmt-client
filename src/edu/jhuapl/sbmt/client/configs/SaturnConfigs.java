@@ -1,6 +1,7 @@
 package edu.jhuapl.sbmt.client.configs;
 
 import java.util.GregorianCalendar;
+import java.util.Set;
 
 import com.google.common.collect.ImmutableList;
 
@@ -10,23 +11,23 @@ import edu.jhuapl.saavtk.model.ShapeModelBody;
 import edu.jhuapl.saavtk.model.ShapeModelType;
 import edu.jhuapl.saavtk.util.Configuration;
 import edu.jhuapl.saavtk.util.FileCache;
-import edu.jhuapl.sbmt.client.BodyType;
-import edu.jhuapl.sbmt.client.SbmtMultiMissionTool;
-import edu.jhuapl.sbmt.client.ShapeModelDataUsed;
-import edu.jhuapl.sbmt.client.ShapeModelPopulation;
-import edu.jhuapl.sbmt.client.SmallBodyViewConfig;
+import edu.jhuapl.sbmt.common.client.Mission;
+import edu.jhuapl.sbmt.common.client.SmallBodyViewConfig;
+import edu.jhuapl.sbmt.config.BodyType;
+import edu.jhuapl.sbmt.config.Instrument;
 import edu.jhuapl.sbmt.config.SBMTBodyConfiguration;
 import edu.jhuapl.sbmt.config.SBMTFileLocator;
 import edu.jhuapl.sbmt.config.SBMTFileLocators;
 import edu.jhuapl.sbmt.config.SessionConfiguration;
 import edu.jhuapl.sbmt.config.ShapeModelConfiguration;
-import edu.jhuapl.sbmt.imaging.instruments.ImagingInstrumentConfiguration;
-import edu.jhuapl.sbmt.model.image.BasicImagingInstrument;
-import edu.jhuapl.sbmt.model.image.ImageSource;
-import edu.jhuapl.sbmt.model.image.ImageType;
-import edu.jhuapl.sbmt.model.image.ImagingInstrument;
-import edu.jhuapl.sbmt.model.image.Instrument;
-import edu.jhuapl.sbmt.model.image.SpectralImageMode;
+import edu.jhuapl.sbmt.config.ShapeModelDataUsed;
+import edu.jhuapl.sbmt.config.ShapeModelPopulation;
+import edu.jhuapl.sbmt.config.SpectralImageMode;
+import edu.jhuapl.sbmt.core.image.BasicImagingInstrument;
+import edu.jhuapl.sbmt.core.image.ImageSource;
+import edu.jhuapl.sbmt.core.image.ImageType;
+import edu.jhuapl.sbmt.core.image.ImagingInstrument;
+import edu.jhuapl.sbmt.core.image.ImagingInstrumentConfiguration;
 import edu.jhuapl.sbmt.query.QueryBase;
 import edu.jhuapl.sbmt.query.database.GenericPhpQuery;
 import edu.jhuapl.sbmt.query.fixedlist.FixedListQuery;
@@ -73,8 +74,8 @@ public class SaturnConfigs extends SmallBodyViewConfig
         c.imageSearchDefaultMaxSpacecraftDistance = 40000.0;
         c.imageSearchDefaultMaxResolution = 4000.0;
         c.hasColoringData = false;
-        c.presentInMissions = new SbmtMultiMissionTool.Mission[] {SbmtMultiMissionTool.Mission.PUBLIC_RELEASE, SbmtMultiMissionTool.Mission.TEST_PUBLIC_RELEASE, SbmtMultiMissionTool.Mission.STAGE_PUBLIC_RELEASE, SbmtMultiMissionTool.Mission.STAGE_APL_INTERNAL, SbmtMultiMissionTool.Mission.APL_INTERNAL, SbmtMultiMissionTool.Mission.TEST_APL_INTERNAL};
-        c.defaultForMissions = new SbmtMultiMissionTool.Mission[] {};
+        c.presentInMissions = new Mission[] {Mission.PUBLIC_RELEASE, Mission.TEST_PUBLIC_RELEASE, Mission.STAGE_PUBLIC_RELEASE, Mission.STAGE_APL_INTERNAL, Mission.APL_INTERNAL, Mission.TEST_APL_INTERNAL};
+        c.defaultForMissions = new Mission[] {};
 
         configArray.add(c);
 
@@ -89,8 +90,8 @@ public class SaturnConfigs extends SmallBodyViewConfig
         c.shapeModelFileNames = prepend(c.rootDirOnServer, "s11epimetheus.llr.gz");
         c.hasColoringData = false;
         c.setResolution(ImmutableList.of(5040));
-        c.presentInMissions = new SbmtMultiMissionTool.Mission[] {SbmtMultiMissionTool.Mission.PUBLIC_RELEASE, SbmtMultiMissionTool.Mission.TEST_PUBLIC_RELEASE, SbmtMultiMissionTool.Mission.STAGE_PUBLIC_RELEASE, SbmtMultiMissionTool.Mission.STAGE_APL_INTERNAL, SbmtMultiMissionTool.Mission.APL_INTERNAL, SbmtMultiMissionTool.Mission.TEST_APL_INTERNAL};
-        c.defaultForMissions = new SbmtMultiMissionTool.Mission[] {};
+        c.presentInMissions = new Mission[] {Mission.PUBLIC_RELEASE, Mission.TEST_PUBLIC_RELEASE, Mission.STAGE_PUBLIC_RELEASE, Mission.STAGE_APL_INTERNAL, Mission.APL_INTERNAL, Mission.TEST_APL_INTERNAL};
+        c.defaultForMissions = new Mission[] {};
 
         configArray.add(c);
 
@@ -106,8 +107,8 @@ public class SaturnConfigs extends SmallBodyViewConfig
         c.shapeModelFileExtension = ".obj";
         c.hasColoringData = false;
         c.setResolution(ImmutableList.of(5040));
-        c.presentInMissions = new SbmtMultiMissionTool.Mission[] {SbmtMultiMissionTool.Mission.PUBLIC_RELEASE, SbmtMultiMissionTool.Mission.TEST_PUBLIC_RELEASE, SbmtMultiMissionTool.Mission.STAGE_PUBLIC_RELEASE, SbmtMultiMissionTool.Mission.STAGE_APL_INTERNAL, SbmtMultiMissionTool.Mission.APL_INTERNAL, SbmtMultiMissionTool.Mission.TEST_APL_INTERNAL};
-        c.defaultForMissions = new SbmtMultiMissionTool.Mission[] {};
+        c.presentInMissions = new Mission[] {Mission.PUBLIC_RELEASE, Mission.TEST_PUBLIC_RELEASE, Mission.STAGE_PUBLIC_RELEASE, Mission.STAGE_APL_INTERNAL, Mission.APL_INTERNAL, Mission.TEST_APL_INTERNAL};
+        c.defaultForMissions = new Mission[] {};
 
         configArray.add(c);
 
@@ -122,8 +123,8 @@ public class SaturnConfigs extends SmallBodyViewConfig
             c.modelLabel = "Gaskell et al. (in progress)";
             c.rootDirOnServer = "/GASKELL/HYPERION";
             c.hasColoringData = false;
-            c.presentInMissions = new SbmtMultiMissionTool.Mission[] {SbmtMultiMissionTool.Mission.PUBLIC_RELEASE, SbmtMultiMissionTool.Mission.TEST_PUBLIC_RELEASE, SbmtMultiMissionTool.Mission.STAGE_PUBLIC_RELEASE, SbmtMultiMissionTool.Mission.STAGE_APL_INTERNAL, SbmtMultiMissionTool.Mission.APL_INTERNAL, SbmtMultiMissionTool.Mission.TEST_APL_INTERNAL};
-            c.defaultForMissions = new SbmtMultiMissionTool.Mission[] {};
+            c.presentInMissions = new Mission[] {Mission.PUBLIC_RELEASE, Mission.TEST_PUBLIC_RELEASE, Mission.STAGE_PUBLIC_RELEASE, Mission.STAGE_APL_INTERNAL, Mission.APL_INTERNAL, Mission.TEST_APL_INTERNAL};
+            c.defaultForMissions = new Mission[] {};
 
             configArray.add(c);
         }
@@ -139,8 +140,8 @@ public class SaturnConfigs extends SmallBodyViewConfig
         c.shapeModelFileNames = prepend(c.rootDirOnServer, "s7hyperion.llr.gz");
         c.hasColoringData = false;
         c.setResolution(ImmutableList.of(5040));
-        c.presentInMissions = new SbmtMultiMissionTool.Mission[] {SbmtMultiMissionTool.Mission.PUBLIC_RELEASE, SbmtMultiMissionTool.Mission.TEST_PUBLIC_RELEASE, SbmtMultiMissionTool.Mission.STAGE_PUBLIC_RELEASE, SbmtMultiMissionTool.Mission.STAGE_APL_INTERNAL, SbmtMultiMissionTool.Mission.APL_INTERNAL, SbmtMultiMissionTool.Mission.TEST_APL_INTERNAL};
-        c.defaultForMissions = new SbmtMultiMissionTool.Mission[] {};
+        c.presentInMissions = new Mission[] {Mission.PUBLIC_RELEASE, Mission.TEST_PUBLIC_RELEASE, Mission.STAGE_PUBLIC_RELEASE, Mission.STAGE_APL_INTERNAL, Mission.APL_INTERNAL, Mission.TEST_APL_INTERNAL};
+        c.defaultForMissions = new Mission[] {};
 
         configArray.add(c);
 
@@ -155,8 +156,8 @@ public class SaturnConfigs extends SmallBodyViewConfig
         c.shapeModelFileNames = prepend(c.rootDirOnServer, "s10janus.llr.gz");
         c.hasColoringData = false;
         c.setResolution(ImmutableList.of(5040));
-        c.presentInMissions = new SbmtMultiMissionTool.Mission[] {SbmtMultiMissionTool.Mission.PUBLIC_RELEASE, SbmtMultiMissionTool.Mission.TEST_PUBLIC_RELEASE, SbmtMultiMissionTool.Mission.STAGE_PUBLIC_RELEASE, SbmtMultiMissionTool.Mission.STAGE_APL_INTERNAL, SbmtMultiMissionTool.Mission.APL_INTERNAL, SbmtMultiMissionTool.Mission.TEST_APL_INTERNAL};
-        c.defaultForMissions = new SbmtMultiMissionTool.Mission[] {};
+        c.presentInMissions = new Mission[] {Mission.PUBLIC_RELEASE, Mission.TEST_PUBLIC_RELEASE, Mission.STAGE_PUBLIC_RELEASE, Mission.STAGE_APL_INTERNAL, Mission.APL_INTERNAL, Mission.TEST_APL_INTERNAL};
+        c.defaultForMissions = new Mission[] {};
 
         configArray.add(c);
 
@@ -172,8 +173,8 @@ public class SaturnConfigs extends SmallBodyViewConfig
         c.shapeModelFileExtension = ".obj";
         c.hasColoringData = false;
         c.setResolution(ImmutableList.of(5040));
-        c.presentInMissions = new SbmtMultiMissionTool.Mission[] {SbmtMultiMissionTool.Mission.PUBLIC_RELEASE, SbmtMultiMissionTool.Mission.TEST_PUBLIC_RELEASE, SbmtMultiMissionTool.Mission.STAGE_PUBLIC_RELEASE, SbmtMultiMissionTool.Mission.STAGE_APL_INTERNAL, SbmtMultiMissionTool.Mission.APL_INTERNAL, SbmtMultiMissionTool.Mission.TEST_APL_INTERNAL};
-        c.defaultForMissions = new SbmtMultiMissionTool.Mission[] {};
+        c.presentInMissions = new Mission[] {Mission.PUBLIC_RELEASE, Mission.TEST_PUBLIC_RELEASE, Mission.STAGE_PUBLIC_RELEASE, Mission.STAGE_APL_INTERNAL, Mission.APL_INTERNAL, Mission.TEST_APL_INTERNAL};
+        c.defaultForMissions = new Mission[] {};
 
         configArray.add(c);
 
@@ -203,8 +204,8 @@ public class SaturnConfigs extends SmallBodyViewConfig
         c.imageSearchDefaultMaxSpacecraftDistance = 40000.0;
         c.imageSearchDefaultMaxResolution = 4000.0;
         c.hasColoringData = false;
-        c.presentInMissions = new SbmtMultiMissionTool.Mission[] {SbmtMultiMissionTool.Mission.PUBLIC_RELEASE, SbmtMultiMissionTool.Mission.TEST_PUBLIC_RELEASE, SbmtMultiMissionTool.Mission.STAGE_PUBLIC_RELEASE, SbmtMultiMissionTool.Mission.STAGE_APL_INTERNAL, SbmtMultiMissionTool.Mission.APL_INTERNAL, SbmtMultiMissionTool.Mission.TEST_APL_INTERNAL};
-        c.defaultForMissions = new SbmtMultiMissionTool.Mission[] {};
+        c.presentInMissions = new Mission[] {Mission.PUBLIC_RELEASE, Mission.TEST_PUBLIC_RELEASE, Mission.STAGE_PUBLIC_RELEASE, Mission.STAGE_APL_INTERNAL, Mission.APL_INTERNAL, Mission.TEST_APL_INTERNAL};
+        c.defaultForMissions = new Mission[] {};
 
         configArray.add(c);
 
@@ -220,8 +221,8 @@ public class SaturnConfigs extends SmallBodyViewConfig
         c.shapeModelFileExtension = ".obj";
         c.hasColoringData = false;
         c.setResolution(ImmutableList.of(5040));
-        c.presentInMissions = new SbmtMultiMissionTool.Mission[] {SbmtMultiMissionTool.Mission.PUBLIC_RELEASE, SbmtMultiMissionTool.Mission.TEST_PUBLIC_RELEASE, SbmtMultiMissionTool.Mission.STAGE_PUBLIC_RELEASE, SbmtMultiMissionTool.Mission.STAGE_APL_INTERNAL, SbmtMultiMissionTool.Mission.APL_INTERNAL, SbmtMultiMissionTool.Mission.TEST_APL_INTERNAL};
-        c.defaultForMissions = new SbmtMultiMissionTool.Mission[] {};
+        c.presentInMissions = new Mission[] {Mission.PUBLIC_RELEASE, Mission.TEST_PUBLIC_RELEASE, Mission.STAGE_PUBLIC_RELEASE, Mission.STAGE_APL_INTERNAL, Mission.APL_INTERNAL, Mission.TEST_APL_INTERNAL};
+        c.defaultForMissions = new Mission[] {};
 
         configArray.add(c);
 
@@ -252,9 +253,9 @@ public class SaturnConfigs extends SmallBodyViewConfig
         c.imageSearchDefaultMaxSpacecraftDistance = 40000.0;
         c.imageSearchDefaultMaxResolution = 4000.0;
         c.hasColoringData = false;
-        c.presentInMissions = new SbmtMultiMissionTool.Mission[] {SbmtMultiMissionTool.Mission.PUBLIC_RELEASE, SbmtMultiMissionTool.Mission.TEST_PUBLIC_RELEASE, SbmtMultiMissionTool.Mission.STAGE_PUBLIC_RELEASE, SbmtMultiMissionTool.Mission.STAGE_APL_INTERNAL, SbmtMultiMissionTool.Mission.APL_INTERNAL, SbmtMultiMissionTool.Mission.TEST_APL_INTERNAL};
+        c.presentInMissions = new Mission[] {Mission.PUBLIC_RELEASE, Mission.TEST_PUBLIC_RELEASE, Mission.STAGE_PUBLIC_RELEASE, Mission.STAGE_APL_INTERNAL, Mission.APL_INTERNAL, Mission.TEST_APL_INTERNAL};
 
-        c.defaultForMissions = new SbmtMultiMissionTool.Mission[] {};
+        c.defaultForMissions = new Mission[] {};
 
         configArray.add(c);
 
@@ -271,8 +272,8 @@ public class SaturnConfigs extends SmallBodyViewConfig
         c.shapeModelFileExtension = ".obj";
         c.hasColoringData = false;
         c.setResolution(ImmutableList.of(5040));
-        c.presentInMissions = new SbmtMultiMissionTool.Mission[] {SbmtMultiMissionTool.Mission.PUBLIC_RELEASE, SbmtMultiMissionTool.Mission.TEST_PUBLIC_RELEASE, SbmtMultiMissionTool.Mission.STAGE_PUBLIC_RELEASE, SbmtMultiMissionTool.Mission.STAGE_APL_INTERNAL, SbmtMultiMissionTool.Mission.APL_INTERNAL, SbmtMultiMissionTool.Mission.TEST_APL_INTERNAL};
-        c.defaultForMissions = new SbmtMultiMissionTool.Mission[] {};
+        c.presentInMissions = new Mission[] {Mission.PUBLIC_RELEASE, Mission.TEST_PUBLIC_RELEASE, Mission.STAGE_PUBLIC_RELEASE, Mission.STAGE_APL_INTERNAL, Mission.APL_INTERNAL, Mission.TEST_APL_INTERNAL};
+        c.defaultForMissions = new Mission[] {};
 
         configArray.add(c);
 
@@ -287,8 +288,8 @@ public class SaturnConfigs extends SmallBodyViewConfig
             c.modelLabel = "Gaskell (in progress)";
             c.rootDirOnServer = "/GASKELL/RHEA";
             c.hasColoringData = false;
-            c.presentInMissions = new SbmtMultiMissionTool.Mission[] {SbmtMultiMissionTool.Mission.PUBLIC_RELEASE, SbmtMultiMissionTool.Mission.TEST_PUBLIC_RELEASE, SbmtMultiMissionTool.Mission.STAGE_PUBLIC_RELEASE, SbmtMultiMissionTool.Mission.STAGE_APL_INTERNAL, SbmtMultiMissionTool.Mission.APL_INTERNAL, SbmtMultiMissionTool.Mission.TEST_APL_INTERNAL};
-            c.defaultForMissions = new SbmtMultiMissionTool.Mission[] {};
+            c.presentInMissions = new Mission[] {Mission.PUBLIC_RELEASE, Mission.TEST_PUBLIC_RELEASE, Mission.STAGE_PUBLIC_RELEASE, Mission.STAGE_APL_INTERNAL, Mission.APL_INTERNAL, Mission.TEST_APL_INTERNAL};
+            c.defaultForMissions = new Mission[] {};
 
             configArray.add(c);
         }
@@ -302,8 +303,8 @@ public class SaturnConfigs extends SmallBodyViewConfig
         c.modelLabel = "Gaskell (2013d)";
         c.rootDirOnServer = "/GASKELL/TETHYS";
         c.hasColoringData = false;
-        c.presentInMissions = new SbmtMultiMissionTool.Mission[] {SbmtMultiMissionTool.Mission.PUBLIC_RELEASE, SbmtMultiMissionTool.Mission.TEST_PUBLIC_RELEASE, SbmtMultiMissionTool.Mission.STAGE_PUBLIC_RELEASE, SbmtMultiMissionTool.Mission.STAGE_APL_INTERNAL, SbmtMultiMissionTool.Mission.APL_INTERNAL, SbmtMultiMissionTool.Mission.TEST_APL_INTERNAL};
-        c.defaultForMissions = new SbmtMultiMissionTool.Mission[] {};
+        c.presentInMissions = new Mission[] {Mission.PUBLIC_RELEASE, Mission.TEST_PUBLIC_RELEASE, Mission.STAGE_PUBLIC_RELEASE, Mission.STAGE_APL_INTERNAL, Mission.APL_INTERNAL, Mission.TEST_APL_INTERNAL};
+        c.defaultForMissions = new Mission[] {};
 
         configArray.add(c);
 
@@ -322,7 +323,10 @@ public class SaturnConfigs extends SmallBodyViewConfig
                         new FixedListQuery<Object>("/GASKELL/TELESTO/IMAGING", "/GASKELL/TELESTO/IMAGING/gallery"), //
                         ImageType.SATURN_MOON_IMAGE, //
                         new ImageSource[]{ImageSource.GASKELL}, //
-                        Instrument.IMAGING_DATA //
+                        Instrument.IMAGING_DATA, //
+                        0.0,
+                        "None",
+                        Set.of((float)3.4028234663852886e38, (float)-3.4028234663852886e38)
                         ) //
         };
 
@@ -333,8 +337,8 @@ public class SaturnConfigs extends SmallBodyViewConfig
         c.imageSearchDefaultMaxSpacecraftDistance = 40000.0;
         c.imageSearchDefaultMaxResolution = 4000.0;
         c.hasColoringData = false;
-        c.presentInMissions = new SbmtMultiMissionTool.Mission[] {SbmtMultiMissionTool.Mission.PUBLIC_RELEASE, SbmtMultiMissionTool.Mission.TEST_PUBLIC_RELEASE, SbmtMultiMissionTool.Mission.STAGE_PUBLIC_RELEASE, SbmtMultiMissionTool.Mission.STAGE_APL_INTERNAL, SbmtMultiMissionTool.Mission.APL_INTERNAL, SbmtMultiMissionTool.Mission.TEST_APL_INTERNAL};
-        c.defaultForMissions = new SbmtMultiMissionTool.Mission[] {};
+        c.presentInMissions = new Mission[] {Mission.PUBLIC_RELEASE, Mission.TEST_PUBLIC_RELEASE, Mission.STAGE_PUBLIC_RELEASE, Mission.STAGE_APL_INTERNAL, Mission.APL_INTERNAL, Mission.TEST_APL_INTERNAL};
+        c.defaultForMissions = new Mission[] {};
 
         configArray.add(c);
 
@@ -356,6 +360,7 @@ public class SaturnConfigs extends SmallBodyViewConfig
                     ShapeModelPopulation.SATURN.name()).build(); //
             QueryBase queryBase = new GenericPhpQuery("/atlas/gaskell/imaging", "atlas", "/atlas/gaskell/imaging/images/gallery");
             ImagingInstrument imagingInstrument = setupImagingInstrument(bodyConfig, gaskellModelConfig, Instrument.IMAGING_DATA, queryBase, gaskellImagingSource, ImageType.SATURN_MOON_IMAGE);
+            imagingInstrument.setFillValues(Set.of((float)3.4028234663852886e38, (float)-3.4028234663852886e38));
 
             c = new SaturnConfigs();
             c.body = ShapeModelBody.ATLAS;
@@ -381,8 +386,8 @@ public class SaturnConfigs extends SmallBodyViewConfig
             	new DBRunInfo(ImageSource.GASKELL, Instrument.IMAGING_DATA, ShapeModelBody.ATLAS.toString(), "/project/sbmt2/data/atlas/gaskell/imaging/imagelist-fullpath.txt", "atlas"),
             };
 
-            c.presentInMissions = new SbmtMultiMissionTool.Mission[] {SbmtMultiMissionTool.Mission.PUBLIC_RELEASE, SbmtMultiMissionTool.Mission.TEST_PUBLIC_RELEASE, SbmtMultiMissionTool.Mission.STAGE_PUBLIC_RELEASE, SbmtMultiMissionTool.Mission.STAGE_APL_INTERNAL, SbmtMultiMissionTool.Mission.APL_INTERNAL, SbmtMultiMissionTool.Mission.TEST_APL_INTERNAL};
-            c.defaultForMissions = new SbmtMultiMissionTool.Mission[] {};
+            c.presentInMissions = new Mission[] {Mission.PUBLIC_RELEASE, Mission.TEST_PUBLIC_RELEASE, Mission.STAGE_PUBLIC_RELEASE, Mission.STAGE_APL_INTERNAL, Mission.APL_INTERNAL, Mission.TEST_APL_INTERNAL};
+            c.defaultForMissions = new Mission[] {};
 
             configArray.add(c);
         }
@@ -410,8 +415,8 @@ public class SaturnConfigs extends SmallBodyViewConfig
             c.imageSearchDefaultStartDate = new GregorianCalendar(2005, 8, 23, 0, 0, 0).getTime();
             c.imageSearchDefaultEndDate = new GregorianCalendar(2010, 1, 14, 0, 0, 0).getTime();
             c.hasColoringData = false;
-            c.presentInMissions = new SbmtMultiMissionTool.Mission[] {SbmtMultiMissionTool.Mission.PUBLIC_RELEASE, SbmtMultiMissionTool.Mission.TEST_PUBLIC_RELEASE, SbmtMultiMissionTool.Mission.STAGE_PUBLIC_RELEASE, SbmtMultiMissionTool.Mission.STAGE_APL_INTERNAL, SbmtMultiMissionTool.Mission.APL_INTERNAL, SbmtMultiMissionTool.Mission.TEST_APL_INTERNAL};
-            c.defaultForMissions = new SbmtMultiMissionTool.Mission[] {};
+            c.presentInMissions = new Mission[] {Mission.PUBLIC_RELEASE, Mission.TEST_PUBLIC_RELEASE, Mission.STAGE_PUBLIC_RELEASE, Mission.STAGE_APL_INTERNAL, Mission.APL_INTERNAL, Mission.TEST_APL_INTERNAL};
+            c.defaultForMissions = new Mission[] {};
 
 //            configArray.add(c);
         }
@@ -469,9 +474,9 @@ public class SaturnConfigs extends SmallBodyViewConfig
                                 issRootDirPrimary + "/imagelist-fullpath-sum.txt", issTable) //
                 };
 
-                c.presentInMissions = new SbmtMultiMissionTool.Mission[] { SbmtMultiMissionTool.Mission.PUBLIC_RELEASE, SbmtMultiMissionTool.Mission.TEST_PUBLIC_RELEASE, SbmtMultiMissionTool.Mission.STAGE_PUBLIC_RELEASE,
-                        SbmtMultiMissionTool.Mission.STAGE_APL_INTERNAL, SbmtMultiMissionTool.Mission.APL_INTERNAL, SbmtMultiMissionTool.Mission.TEST_APL_INTERNAL };
-                c.defaultForMissions = new SbmtMultiMissionTool.Mission[] {};
+                c.presentInMissions = new Mission[] { Mission.PUBLIC_RELEASE, Mission.TEST_PUBLIC_RELEASE, Mission.STAGE_PUBLIC_RELEASE,
+                        Mission.STAGE_APL_INTERNAL, Mission.APL_INTERNAL, Mission.TEST_APL_INTERNAL };
+                c.defaultForMissions = new Mission[] {};
 
                 configArray.add(c);
             }
@@ -526,9 +531,9 @@ public class SaturnConfigs extends SmallBodyViewConfig
                                 issRootDirPrimary + "/imagelist-fullpath-sum.txt", issTable) //
                 };
 
-                c.presentInMissions = new SbmtMultiMissionTool.Mission[] { SbmtMultiMissionTool.Mission.PUBLIC_RELEASE, SbmtMultiMissionTool.Mission.TEST_PUBLIC_RELEASE, SbmtMultiMissionTool.Mission.STAGE_PUBLIC_RELEASE,
-                        SbmtMultiMissionTool.Mission.STAGE_APL_INTERNAL, SbmtMultiMissionTool.Mission.APL_INTERNAL, SbmtMultiMissionTool.Mission.TEST_APL_INTERNAL };
-                c.defaultForMissions = new SbmtMultiMissionTool.Mission[] {};
+                c.presentInMissions = new Mission[] { Mission.PUBLIC_RELEASE, Mission.TEST_PUBLIC_RELEASE, Mission.STAGE_PUBLIC_RELEASE,
+                        Mission.STAGE_APL_INTERNAL, Mission.APL_INTERNAL, Mission.TEST_APL_INTERNAL };
+                c.defaultForMissions = new Mission[] {};
 
                 configArray.add(c);
             }
@@ -544,8 +549,8 @@ public class SaturnConfigs extends SmallBodyViewConfig
             c.modelLabel = "Gaskell (in progress)";
             c.rootDirOnServer = "/enceladus/gaskell";
             c.hasColoringData = false;
-            c.presentInMissions = new SbmtMultiMissionTool.Mission[] {SbmtMultiMissionTool.Mission.PUBLIC_RELEASE, SbmtMultiMissionTool.Mission.TEST_PUBLIC_RELEASE, SbmtMultiMissionTool.Mission.STAGE_PUBLIC_RELEASE, SbmtMultiMissionTool.Mission.STAGE_APL_INTERNAL, SbmtMultiMissionTool.Mission.APL_INTERNAL, SbmtMultiMissionTool.Mission.TEST_APL_INTERNAL};
-            c.defaultForMissions = new SbmtMultiMissionTool.Mission[] {};
+            c.presentInMissions = new Mission[] {Mission.PUBLIC_RELEASE, Mission.TEST_PUBLIC_RELEASE, Mission.STAGE_PUBLIC_RELEASE, Mission.STAGE_APL_INTERNAL, Mission.APL_INTERNAL, Mission.TEST_APL_INTERNAL};
+            c.defaultForMissions = new Mission[] {};
 
             configArray.add(c);
         }
@@ -573,8 +578,8 @@ public class SaturnConfigs extends SmallBodyViewConfig
             c.imageSearchDefaultStartDate = new GregorianCalendar(2006, 3, 29, 0, 0, 0).getTime();
             c.imageSearchDefaultEndDate = new GregorianCalendar(2017, 2, 7, 0, 0, 0).getTime();
             c.hasColoringData = false;
-            c.presentInMissions = new SbmtMultiMissionTool.Mission[] {SbmtMultiMissionTool.Mission.PUBLIC_RELEASE, SbmtMultiMissionTool.Mission.TEST_PUBLIC_RELEASE, SbmtMultiMissionTool.Mission.STAGE_PUBLIC_RELEASE, SbmtMultiMissionTool.Mission.STAGE_APL_INTERNAL, SbmtMultiMissionTool.Mission.APL_INTERNAL, SbmtMultiMissionTool.Mission.TEST_APL_INTERNAL};
-            c.defaultForMissions = new SbmtMultiMissionTool.Mission[] {};
+            c.presentInMissions = new Mission[] {Mission.PUBLIC_RELEASE, Mission.TEST_PUBLIC_RELEASE, Mission.STAGE_PUBLIC_RELEASE, Mission.STAGE_APL_INTERNAL, Mission.APL_INTERNAL, Mission.TEST_APL_INTERNAL};
+            c.defaultForMissions = new Mission[] {};
 
             //configArray.add(c);
         }
@@ -632,9 +637,9 @@ public class SaturnConfigs extends SmallBodyViewConfig
                                 issRootDirPrimary + "/imagelist-fullpath-sum.txt", issTable) //
                 };
 
-                c.presentInMissions = new SbmtMultiMissionTool.Mission[] { SbmtMultiMissionTool.Mission.PUBLIC_RELEASE, SbmtMultiMissionTool.Mission.TEST_PUBLIC_RELEASE, SbmtMultiMissionTool.Mission.STAGE_PUBLIC_RELEASE,
-                        SbmtMultiMissionTool.Mission.STAGE_APL_INTERNAL, SbmtMultiMissionTool.Mission.APL_INTERNAL, SbmtMultiMissionTool.Mission.TEST_APL_INTERNAL };
-                c.defaultForMissions = new SbmtMultiMissionTool.Mission[] {};
+                c.presentInMissions = new Mission[] { Mission.PUBLIC_RELEASE, Mission.TEST_PUBLIC_RELEASE, Mission.STAGE_PUBLIC_RELEASE,
+                        Mission.STAGE_APL_INTERNAL, Mission.APL_INTERNAL, Mission.TEST_APL_INTERNAL };
+                c.defaultForMissions = new Mission[] {};
 
                 configArray.add(c);
             }
@@ -689,9 +694,9 @@ public class SaturnConfigs extends SmallBodyViewConfig
                                 issRootDirPrimary + "/imagelist-fullpath-sum.txt", issTable) //
                 };
 
-                c.presentInMissions = new SbmtMultiMissionTool.Mission[] { SbmtMultiMissionTool.Mission.PUBLIC_RELEASE, SbmtMultiMissionTool.Mission.TEST_PUBLIC_RELEASE, SbmtMultiMissionTool.Mission.STAGE_PUBLIC_RELEASE,
-                        SbmtMultiMissionTool.Mission.STAGE_APL_INTERNAL, SbmtMultiMissionTool.Mission.APL_INTERNAL, SbmtMultiMissionTool.Mission.TEST_APL_INTERNAL };
-                c.defaultForMissions = new SbmtMultiMissionTool.Mission[] {};
+                c.presentInMissions = new Mission[] { Mission.PUBLIC_RELEASE, Mission.TEST_PUBLIC_RELEASE, Mission.STAGE_PUBLIC_RELEASE,
+                        Mission.STAGE_APL_INTERNAL, Mission.APL_INTERNAL, Mission.TEST_APL_INTERNAL };
+                c.defaultForMissions = new Mission[] {};
 
                 configArray.add(c);
             }
@@ -704,7 +709,7 @@ public class SaturnConfigs extends SmallBodyViewConfig
                     BodyType.PLANETS_AND_SATELLITES.name(), //
                     ShapeModelPopulation.SATURN.name()).build(); //
             ImagingInstrument imagingInstrument = setupImagingInstrument(bodyConfig, gaskellModelConfig, Instrument.IMAGING_DATA, gaskellImagingSource, ImageType.SATURN_MOON_IMAGE);
-
+            imagingInstrument.setFillValues(Set.of((float)3.4028234663852886e38, (float)-3.4028234663852886e38));
             c = new SaturnConfigs();
             c.body = ShapeModelBody.HELENE;
             c.type = BodyType.PLANETS_AND_SATELLITES;
@@ -720,8 +725,8 @@ public class SaturnConfigs extends SmallBodyViewConfig
             c.imageSearchDefaultStartDate = new GregorianCalendar(2006, 3, 29, 0, 0, 0).getTime();
             c.imageSearchDefaultEndDate = new GregorianCalendar(2017, 2, 7, 0, 0, 0).getTime();
             c.hasColoringData = false;
-            c.presentInMissions = new SbmtMultiMissionTool.Mission[] {SbmtMultiMissionTool.Mission.PUBLIC_RELEASE, SbmtMultiMissionTool.Mission.TEST_PUBLIC_RELEASE, SbmtMultiMissionTool.Mission.STAGE_PUBLIC_RELEASE, SbmtMultiMissionTool.Mission.STAGE_APL_INTERNAL, SbmtMultiMissionTool.Mission.APL_INTERNAL, SbmtMultiMissionTool.Mission.TEST_APL_INTERNAL};
-            c.defaultForMissions = new SbmtMultiMissionTool.Mission[] {};
+            c.presentInMissions = new Mission[] {Mission.PUBLIC_RELEASE, Mission.TEST_PUBLIC_RELEASE, Mission.STAGE_PUBLIC_RELEASE, Mission.STAGE_APL_INTERNAL, Mission.APL_INTERNAL, Mission.TEST_APL_INTERNAL};
+            c.defaultForMissions = new Mission[] {};
 
             configArray.add(c);
         }
@@ -736,8 +741,8 @@ public class SaturnConfigs extends SmallBodyViewConfig
             c.modelLabel = "Gaskell (in progress)";
             c.rootDirOnServer = "/iapetus/gaskell";
             c.hasColoringData = false;
-            c.presentInMissions = new SbmtMultiMissionTool.Mission[] {SbmtMultiMissionTool.Mission.PUBLIC_RELEASE, SbmtMultiMissionTool.Mission.TEST_PUBLIC_RELEASE, SbmtMultiMissionTool.Mission.STAGE_PUBLIC_RELEASE, SbmtMultiMissionTool.Mission.STAGE_APL_INTERNAL, SbmtMultiMissionTool.Mission.APL_INTERNAL, SbmtMultiMissionTool.Mission.TEST_APL_INTERNAL};
-            c.defaultForMissions = new SbmtMultiMissionTool.Mission[] {};
+            c.presentInMissions = new Mission[] {Mission.PUBLIC_RELEASE, Mission.TEST_PUBLIC_RELEASE, Mission.STAGE_PUBLIC_RELEASE, Mission.STAGE_APL_INTERNAL, Mission.APL_INTERNAL, Mission.TEST_APL_INTERNAL};
+            c.defaultForMissions = new Mission[] {};
 
             configArray.add(c);
         }
@@ -765,8 +770,8 @@ public class SaturnConfigs extends SmallBodyViewConfig
             c.imageSearchDefaultStartDate = new GregorianCalendar(2006, 3, 29, 0, 0, 0).getTime();
             c.imageSearchDefaultEndDate = new GregorianCalendar(2017, 2, 7, 0, 0, 0).getTime();
             c.hasColoringData = false;
-            c.presentInMissions = new SbmtMultiMissionTool.Mission[] {SbmtMultiMissionTool.Mission.PUBLIC_RELEASE, SbmtMultiMissionTool.Mission.TEST_PUBLIC_RELEASE, SbmtMultiMissionTool.Mission.STAGE_PUBLIC_RELEASE, SbmtMultiMissionTool.Mission.STAGE_APL_INTERNAL, SbmtMultiMissionTool.Mission.APL_INTERNAL, SbmtMultiMissionTool.Mission.TEST_APL_INTERNAL};
-            c.defaultForMissions = new SbmtMultiMissionTool.Mission[] {};
+            c.presentInMissions = new Mission[] {Mission.PUBLIC_RELEASE, Mission.TEST_PUBLIC_RELEASE, Mission.STAGE_PUBLIC_RELEASE, Mission.STAGE_APL_INTERNAL, Mission.APL_INTERNAL, Mission.TEST_APL_INTERNAL};
+            c.defaultForMissions = new Mission[] {};
 
             //configArray.add(c);
         }
@@ -824,9 +829,9 @@ public class SaturnConfigs extends SmallBodyViewConfig
                                 issRootDirPrimary + "/imagelist-fullpath-sum.txt", issTable) //
                 };
 
-                c.presentInMissions = new SbmtMultiMissionTool.Mission[] { SbmtMultiMissionTool.Mission.PUBLIC_RELEASE, SbmtMultiMissionTool.Mission.TEST_PUBLIC_RELEASE, SbmtMultiMissionTool.Mission.STAGE_PUBLIC_RELEASE,
-                        SbmtMultiMissionTool.Mission.STAGE_APL_INTERNAL, SbmtMultiMissionTool.Mission.APL_INTERNAL, SbmtMultiMissionTool.Mission.TEST_APL_INTERNAL };
-                c.defaultForMissions = new SbmtMultiMissionTool.Mission[] {};
+                c.presentInMissions = new Mission[] { Mission.PUBLIC_RELEASE, Mission.TEST_PUBLIC_RELEASE, Mission.STAGE_PUBLIC_RELEASE,
+                        Mission.STAGE_APL_INTERNAL, Mission.APL_INTERNAL, Mission.TEST_APL_INTERNAL };
+                c.defaultForMissions = new Mission[] {};
 
                 configArray.add(c);
             }
@@ -881,9 +886,9 @@ public class SaturnConfigs extends SmallBodyViewConfig
                                 issRootDirPrimary + "/imagelist-fullpath-sum.txt", issTable) //
                 };
 
-                c.presentInMissions = new SbmtMultiMissionTool.Mission[] { SbmtMultiMissionTool.Mission.PUBLIC_RELEASE, SbmtMultiMissionTool.Mission.TEST_PUBLIC_RELEASE, SbmtMultiMissionTool.Mission.STAGE_PUBLIC_RELEASE,
-                        SbmtMultiMissionTool.Mission.STAGE_APL_INTERNAL, SbmtMultiMissionTool.Mission.APL_INTERNAL, SbmtMultiMissionTool.Mission.TEST_APL_INTERNAL };
-                c.defaultForMissions = new SbmtMultiMissionTool.Mission[] {};
+                c.presentInMissions = new Mission[] { Mission.PUBLIC_RELEASE, Mission.TEST_PUBLIC_RELEASE, Mission.STAGE_PUBLIC_RELEASE,
+                        Mission.STAGE_APL_INTERNAL, Mission.APL_INTERNAL, Mission.TEST_APL_INTERNAL };
+                c.defaultForMissions = new Mission[] {};
 
                 configArray.add(c);
             }
@@ -912,8 +917,8 @@ public class SaturnConfigs extends SmallBodyViewConfig
             c.imageSearchDefaultStartDate = new GregorianCalendar(2006, 3, 29, 0, 0, 0).getTime();
             c.imageSearchDefaultEndDate = new GregorianCalendar(2017, 2, 7, 0, 0, 0).getTime();
             c.hasColoringData = false;
-            c.presentInMissions = new SbmtMultiMissionTool.Mission[] {SbmtMultiMissionTool.Mission.PUBLIC_RELEASE, SbmtMultiMissionTool.Mission.TEST_PUBLIC_RELEASE, SbmtMultiMissionTool.Mission.STAGE_PUBLIC_RELEASE, SbmtMultiMissionTool.Mission.STAGE_APL_INTERNAL, SbmtMultiMissionTool.Mission.APL_INTERNAL, SbmtMultiMissionTool.Mission.TEST_APL_INTERNAL};
-            c.defaultForMissions = new SbmtMultiMissionTool.Mission[] {};
+            c.presentInMissions = new Mission[] {Mission.PUBLIC_RELEASE, Mission.TEST_PUBLIC_RELEASE, Mission.STAGE_PUBLIC_RELEASE, Mission.STAGE_APL_INTERNAL, Mission.APL_INTERNAL, Mission.TEST_APL_INTERNAL};
+            c.defaultForMissions = new Mission[] {};
 
             configArray.add(c);
         }
@@ -941,8 +946,8 @@ public class SaturnConfigs extends SmallBodyViewConfig
             c.imageSearchDefaultStartDate = new GregorianCalendar(2005, 4, 20, 0, 0, 0).getTime();
             c.imageSearchDefaultEndDate = new GregorianCalendar(2016, 11, 19, 0, 0, 0).getTime();
             c.hasColoringData = false;
-            c.presentInMissions = new SbmtMultiMissionTool.Mission[] {SbmtMultiMissionTool.Mission.PUBLIC_RELEASE, SbmtMultiMissionTool.Mission.TEST_PUBLIC_RELEASE, SbmtMultiMissionTool.Mission.STAGE_PUBLIC_RELEASE, SbmtMultiMissionTool.Mission.STAGE_APL_INTERNAL, SbmtMultiMissionTool.Mission.APL_INTERNAL, SbmtMultiMissionTool.Mission.TEST_APL_INTERNAL};
-            c.defaultForMissions = new SbmtMultiMissionTool.Mission[] {};
+            c.presentInMissions = new Mission[] {Mission.PUBLIC_RELEASE, Mission.TEST_PUBLIC_RELEASE, Mission.STAGE_PUBLIC_RELEASE, Mission.STAGE_APL_INTERNAL, Mission.APL_INTERNAL, Mission.TEST_APL_INTERNAL};
+            c.defaultForMissions = new Mission[] {};
 
             configArray.add(c);
         }
@@ -954,7 +959,7 @@ public class SaturnConfigs extends SmallBodyViewConfig
                     BodyType.PLANETS_AND_SATELLITES.name(), //
                     ShapeModelPopulation.SATURN.name()).build(); //
             ImagingInstrument imagingInstrument = setupImagingInstrument(bodyConfig, gaskellModelConfig, Instrument.IMAGING_DATA, gaskellImagingSource, ImageType.SATURN_MOON_IMAGE);
-
+            imagingInstrument.setFillValues(Set.of((float)3.4028234663852886e38, (float)-3.4028234663852886e38));
             c = new SaturnConfigs();
             c.body = ShapeModelBody.PROMETHEUS;
             c.type = BodyType.PLANETS_AND_SATELLITES;
@@ -970,8 +975,8 @@ public class SaturnConfigs extends SmallBodyViewConfig
             c.imageSearchDefaultStartDate = new GregorianCalendar(2006, 3, 29, 0, 0, 0).getTime();
             c.imageSearchDefaultEndDate = new GregorianCalendar(2017, 2, 7, 0, 0, 0).getTime();
             c.hasColoringData = false;
-            c.presentInMissions = new SbmtMultiMissionTool.Mission[] {SbmtMultiMissionTool.Mission.PUBLIC_RELEASE, SbmtMultiMissionTool.Mission.TEST_PUBLIC_RELEASE, SbmtMultiMissionTool.Mission.STAGE_PUBLIC_RELEASE, SbmtMultiMissionTool.Mission.STAGE_APL_INTERNAL, SbmtMultiMissionTool.Mission.APL_INTERNAL, SbmtMultiMissionTool.Mission.TEST_APL_INTERNAL};
-            c.defaultForMissions = new SbmtMultiMissionTool.Mission[] {};
+            c.presentInMissions = new Mission[] {Mission.PUBLIC_RELEASE, Mission.TEST_PUBLIC_RELEASE, Mission.STAGE_PUBLIC_RELEASE, Mission.STAGE_APL_INTERNAL, Mission.APL_INTERNAL, Mission.TEST_APL_INTERNAL};
+            c.defaultForMissions = new Mission[] {};
             configArray.add(c);
         }
     }

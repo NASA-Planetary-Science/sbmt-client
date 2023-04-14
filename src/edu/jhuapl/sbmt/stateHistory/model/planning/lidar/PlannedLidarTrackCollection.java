@@ -13,12 +13,12 @@ import java.util.logging.Logger;
 import javax.swing.SwingUtilities;
 
 import edu.jhuapl.saavtk.util.ProgressStatusListener;
+import edu.jhuapl.saavtk.util.ThreadService;
 import edu.jhuapl.sbmt.lidar.LidarPoint;
 import edu.jhuapl.sbmt.lidar.LidarTrack;
 import edu.jhuapl.sbmt.lidar.util.LidarTrackUtil;
 import edu.jhuapl.sbmt.stateHistory.model.interfaces.StateHistory;
 import edu.jhuapl.sbmt.stateHistory.rendering.model.StateHistoryPositionCalculator;
-import edu.jhuapl.sbmt.util.ThreadService;
 import edu.jhuapl.sbmt.util.TimeUtil;
 
 import glum.item.IncrIdGenerator;

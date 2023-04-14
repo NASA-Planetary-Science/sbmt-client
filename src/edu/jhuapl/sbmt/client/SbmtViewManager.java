@@ -25,11 +25,11 @@ import com.google.common.collect.Sets;
 import edu.jhuapl.saavtk.camera.gui.CameraQuaternionAction;
 import edu.jhuapl.saavtk.camera.gui.CameraRecorderAction;
 import edu.jhuapl.saavtk.camera.gui.CameraRegularAction;
-import edu.jhuapl.saavtk.gui.TSConsole;
 import edu.jhuapl.saavtk.gui.RecentlyViewed;
 import edu.jhuapl.saavtk.gui.ShapeModelImporter;
 import edu.jhuapl.saavtk.gui.ShapeModelImporter.FormatType;
 import edu.jhuapl.saavtk.gui.ShapeModelImporter.ShapeModelType;
+import edu.jhuapl.saavtk.gui.TSConsole;
 import edu.jhuapl.saavtk.gui.View;
 import edu.jhuapl.saavtk.gui.ViewManager;
 import edu.jhuapl.saavtk.gui.menu.FavoritesMenu;
@@ -43,6 +43,13 @@ import edu.jhuapl.saavtk.util.ConvertResourceToFile;
 import edu.jhuapl.saavtk.util.SafeURLPaths;
 import edu.jhuapl.saavtk.view.light.gui.LightingConfigAction;
 import edu.jhuapl.saavtk.view.lod.gui.LodAction;
+import edu.jhuapl.sbmt.common.client.SbmtHelpMenu;
+import edu.jhuapl.sbmt.common.client.SmallBodyViewConfig;
+import edu.jhuapl.sbmt.common.client.SmallBodyViewConfigMetadataIO;
+import edu.jhuapl.sbmt.config.BasicConfigInfo;
+import edu.jhuapl.sbmt.config.BodyType;
+import edu.jhuapl.sbmt.config.ShapeModelDataUsed;
+import edu.jhuapl.sbmt.config.ShapeModelPopulation;
 
 import crucible.crust.metadata.api.Key;
 import crucible.crust.metadata.api.Metadata;
@@ -81,8 +88,6 @@ public class SbmtViewManager extends ViewManager
 
     private List<String> registeredConfigURLs = new ArrayList<String>();
 
-    private String defaultModelName;
-
     public SbmtViewManager(StatusNotifier aStatusNotifier, Frame frame, String tempCustomShapeModelPath)
     {
         super(aStatusNotifier, frame, tempCustomShapeModelPath);
@@ -90,56 +95,6 @@ public class SbmtViewManager extends ViewManager
         this.configMap = Maps.newHashMap();
         this.stateManager = TrackedMetadataManager.of("ViewManager");
         setupViews(); // Must be called before this view manager is used.
-    }
-
-    /**
-     * This implementation uses the default model name provided by
-     * {@link SmallBodyViewConfig#getDefaultModelName()} to set the initial default
-     * model, but this may be changed by calling
-     * {@link #setDefaultModelName(String)}.
-     */
-    @Override
-    public String getDefaultModelName()
-    {
-        if (defaultModelName == null)
-        {
-            defaultModelName = SmallBodyViewConfig.getDefaultModelName();
-        }
-
-        return defaultModelName;
-    }
-
-    /**
-     * Set the current default model name. Note this affects only the running tool,
-     * not the persistent model name saved on disk.
-     */
-    @Override
-    public void setDefaultModelName(String modelName)
-    {
-        this.defaultModelName = modelName;
-    }
-
-    /**
-     * Make the current default model persistent so that it will be used for the
-     * default model next time the tool is run. This implementation uses using
-     * {@link SmallBodyViewConfig#setDefaultModelName(String).
-     */
-    @Override
-    public void saveDefaultModelName()
-    {
-        SmallBodyViewConfig.setDefaultModelName(defaultModelName);
-    }
-
-    /**
-     * Revert the default model name which will be used the next time the tool
-     * starts. This implementation uses
-     * {@link SmallBodyViewConfig#resetDefaultModelName()}.
-     */
-    @Override
-    public void resetDefaultModelName()
-    {
-        SmallBodyViewConfig.resetDefaultModelName();
-        this.defaultModelName = SmallBodyViewConfig.getDefaultModelName();
     }
 
     /**
@@ -427,7 +382,7 @@ public class SbmtViewManager extends ViewManager
     public boolean isAddSeparator(BasicConfigInfo config, String menuItem)
     {
         boolean result = false;
-        if (config.shapeModelName.equals(menuItem) && configMap.containsKey(config))
+        if (config.getShapeModelName().equals(menuItem) && configMap.containsKey(config))
         {
             int index = configMap.get(config);
             result = index > 0 && menuEntries.get(index - 1) instanceof SeparatorEntry;
@@ -502,25 +457,25 @@ public class SbmtViewManager extends ViewManager
             // If we get to here, equality is not an option -- two ViewConfigs must differ
             // in one of their significant fields. From here on down is a series of tie-breakers.
 
-            result = TYPE_COMPARATOR.compare(config1.type, config2.type);
+            result = TYPE_COMPARATOR.compare(config1.getType(), config2.getType());
 
             if (result == 0)
             {
-                result = POPULATION_COMPARATOR.compare(config1.population, config2.population);
+                result = POPULATION_COMPARATOR.compare(config1.getPopulation(), config2.getPopulation());
             }
 
             if (result == 0)
             {
-                result = MARK_VISITED_BY_SPACECRAFT_COMPARATOR.compare(config1.body, config2.body);
+                result = MARK_VISITED_BY_SPACECRAFT_COMPARATOR.compare(config1.getBody(), config2.getBody());
             }
 
             if (result == 0)
             {
-                result = BODY_COMPARATOR.compare(config1.body, config2.body);
+                result = BODY_COMPARATOR.compare(config1.getBody(), config2.getBody());
             }
 
             if (result == 0) {
-                result = DATA_USED_COMPARATOR.compare(config1.dataUsed, config2.dataUsed);
+                result = DATA_USED_COMPARATOR.compare(config1.getDataUsed(), config2.getDataUsed());
             }
 
             if (result == 0)

@@ -2,16 +2,20 @@
 <classpath>
 	<classpathentry excluding="edu/jhuapl/sbmt/gui/time/StateHistoryPopupMenu.java" kind="src" path="src"/>
 	<classpathentry kind="src" path="test"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/saavtk"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER">
+		<attributes>
+			<attribute name="module" value="true"/>
+		</attributes>
+	</classpathentry>
 	<classpathentry kind="lib" path="/saavtk/lib/guava-28.2.jar" sourcepath="/saavtk/lib/guava-28.2-src.zip"/>
-	<classpathentry exported="true" kind="lib" path="lib/mysql-connector-java-5.1.10-bin.jar"/>
-	<classpathentry kind="lib" path="lib/spice-N0065.jar"/>
+	<classpathentry kind="lib" path="lib/mysql-connector-java-5.1.10-bin.jar"/>
 	<classpathentry kind="lib" path="lib/sqlite-jdbc-3.27.2.1.jar"/>
 	<classpathentry kind="lib" path="lib/LGoodDatePicker-11.2.1.jar"/>
-	<classpathentry combineaccessrules="false" kind="src" path="/saavtk"/>
 	<classpathentry kind="lib" path="/saavtk/lib/gson-2.8.0.jar" sourcepath="/saavtk/lib/gson-2.8.0-sources.jar"/>
 	<classpathentry kind="lib" path="lib/jcommander-1.72.jar"/>
 	<classpathentry kind="lib" path="lib/drmaa.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/altwg.jar"/>
+	<classpathentry kind="lib" path="lib/altwg.jar"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.junit.JUNIT_CONTAINER/5"/>
 	<classpathentry kind="lib" path="/saavtk/lib/commons-text-1.8.jar" sourcepath="/saavtk/lib/commons-text-1.8-sources.jar">
 		<attributes>
@@ -22,14 +26,11 @@
 	<classpathentry kind="lib" path="/saavtk/lib/commons-io-2.8.0.jar"/>
 	<classpathentry kind="lib" path="/saavtk/lib/jogl/jogl-all.jar"/>
 	<classpathentry kind="lib" path="lib/jide-oss-java11.jar"/>
-	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER">
-		<attributes>
-			<attribute name="module" value="true"/>
-		</attributes>
-	</classpathentry>
 	<classpathentry kind="lib" path="lib/jcodec-0.2.3.jar"/>
 	<classpathentry kind="lib" path="lib/jcodec-javase-0.2.3.jar"/>
 	<classpathentry kind="lib" path="/saavtk/lib/jafama-2.3.1.jar"/>
 	<classpathentry kind="lib" path="/saavtk/lib/jsr305.jar"/>
+	<classpathentry kind="lib" path="lib/gdal-3.6.0.jar"/>
+	<classpathentry kind="lib" path="lib/spice-N0065.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

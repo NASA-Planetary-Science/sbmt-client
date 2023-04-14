@@ -10,16 +10,16 @@ import edu.jhuapl.saavtk.model.ShapeModelBody;
 import edu.jhuapl.saavtk.model.ShapeModelType;
 import edu.jhuapl.saavtk.util.Configuration;
 import edu.jhuapl.saavtk.util.FileCache;
-import edu.jhuapl.sbmt.client.BodyType;
-import edu.jhuapl.sbmt.client.SbmtMultiMissionTool;
-import edu.jhuapl.sbmt.client.ShapeModelDataUsed;
-import edu.jhuapl.sbmt.client.ShapeModelPopulation;
-import edu.jhuapl.sbmt.client.SmallBodyViewConfig;
-import edu.jhuapl.sbmt.model.image.ImageSource;
-import edu.jhuapl.sbmt.model.image.ImageType;
-import edu.jhuapl.sbmt.model.image.ImagingInstrument;
-import edu.jhuapl.sbmt.model.image.Instrument;
-import edu.jhuapl.sbmt.model.image.SpectralImageMode;
+import edu.jhuapl.sbmt.common.client.Mission;
+import edu.jhuapl.sbmt.common.client.SmallBodyViewConfig;
+import edu.jhuapl.sbmt.config.BodyType;
+import edu.jhuapl.sbmt.config.Instrument;
+import edu.jhuapl.sbmt.config.ShapeModelDataUsed;
+import edu.jhuapl.sbmt.config.ShapeModelPopulation;
+import edu.jhuapl.sbmt.config.SpectralImageMode;
+import edu.jhuapl.sbmt.core.image.ImageSource;
+import edu.jhuapl.sbmt.core.image.ImageType;
+import edu.jhuapl.sbmt.core.image.ImagingInstrument;
 import edu.jhuapl.sbmt.query.database.GenericPhpQuery;
 import edu.jhuapl.sbmt.query.fixedlist.FixedListQuery;
 import edu.jhuapl.sbmt.spectrum.model.core.search.SpectraHierarchicalSearchSpecification;
@@ -35,10 +35,10 @@ public class CometConfigs extends SmallBodyViewConfig
 
     private static final ImageSource[] SumFiles = new ImageSource[] { ImageSource.GASKELL };
 
-    public CometConfigs()
-    {
-        super(ImmutableList.<String>copyOf(DEFAULT_GASKELL_LABELS_PER_RESOLUTION), ImmutableList.<Integer>copyOf(DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION));
-    }
+	public CometConfigs()
+	{
+		super(ImmutableList.<String>copyOf(DEFAULT_GASKELL_LABELS_PER_RESOLUTION), ImmutableList.<Integer>copyOf(DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION));
+	}
 
     public static void initialize(ConfigArrayList configArray)
     {
@@ -61,8 +61,8 @@ public class CometConfigs extends SmallBodyViewConfig
         c.setResolution(ImmutableList.of(5040));
 
         c.presentInMissions =
-                new SbmtMultiMissionTool.Mission[] { SbmtMultiMissionTool.Mission.PUBLIC_RELEASE, SbmtMultiMissionTool.Mission.TEST_PUBLIC_RELEASE, SbmtMultiMissionTool.Mission.STAGE_PUBLIC_RELEASE, SbmtMultiMissionTool.Mission.STAGE_APL_INTERNAL, SbmtMultiMissionTool.Mission.APL_INTERNAL, SbmtMultiMissionTool.Mission.TEST_APL_INTERNAL };
-        c.defaultForMissions = new SbmtMultiMissionTool.Mission[] {};
+                new Mission[] { Mission.PUBLIC_RELEASE, Mission.TEST_PUBLIC_RELEASE, Mission.STAGE_PUBLIC_RELEASE, Mission.STAGE_APL_INTERNAL, Mission.APL_INTERNAL, Mission.TEST_APL_INTERNAL };
+        c.defaultForMissions = new Mission[] {};
 
         configArray.add(c);
 
@@ -79,8 +79,8 @@ public class CometConfigs extends SmallBodyViewConfig
             c.shapeModelFileNames = prepend(c.rootDirOnServer, "ver64q.vtk.gz");
             c.setResolution(ImmutableList.of(DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[0]));
             c.presentInMissions =
-                    new SbmtMultiMissionTool.Mission[] { SbmtMultiMissionTool.Mission.STAGE_APL_INTERNAL, SbmtMultiMissionTool.Mission.APL_INTERNAL, SbmtMultiMissionTool.Mission.TEST_APL_INTERNAL };
-            c.defaultForMissions = new SbmtMultiMissionTool.Mission[] {};
+                    new Mission[] { Mission.STAGE_APL_INTERNAL, Mission.APL_INTERNAL, Mission.TEST_APL_INTERNAL };
+            c.defaultForMissions = new Mission[] {};
 
             // Model identifier string rules: lowercase, no spaces nor
             // underscores
@@ -124,7 +124,7 @@ public class CometConfigs extends SmallBodyViewConfig
                             SumFiles, //
                             Instrument.valueFor("ITS"), //
                             0.0, //
-                            "Y"), //
+                            "None"), //
                     new ImagingInstrument( //
                             SpectralImageMode.MONO, //
                             new FixedListQuery<>(hriDir), //
@@ -134,7 +134,7 @@ public class CometConfigs extends SmallBodyViewConfig
                             SumFiles, //
                             Instrument.valueFor("HRI"), //
                             0.0, //
-                            "Y"), //
+                            "None"), //
                     new ImagingInstrument( //
                             SpectralImageMode.MONO, //
                             new FixedListQuery<>(mriDir), //
@@ -144,7 +144,7 @@ public class CometConfigs extends SmallBodyViewConfig
                             SumFiles, //
                             Instrument.valueFor("MRI"), //
                             0.0, //
-                            "Y"), //
+                            "None"), //
                     new ImagingInstrument( //
                             SpectralImageMode.MONO, //
                             new FixedListQuery<>(navcamDir), //
@@ -153,8 +153,8 @@ public class CometConfigs extends SmallBodyViewConfig
                             ImageType.valueOf("NAVCAM_IMAGE"), //
                             SumFiles, //
                             Instrument.valueFor("NAVCAM"), //
-                            0.0, //
-                            "X"), //
+                            180.0, //
+                            "None"), //
             };
 
             c.imageSearchDefaultStartDate = ImageSearchDefaultStartDate;
@@ -194,8 +194,8 @@ public class CometConfigs extends SmallBodyViewConfig
         c.density = 470.0;
         c.rotationRate = 4.28434129815435E-5;
         c.presentInMissions =
-                new SbmtMultiMissionTool.Mission[] { SbmtMultiMissionTool.Mission.PUBLIC_RELEASE, SbmtMultiMissionTool.Mission.TEST_PUBLIC_RELEASE, SbmtMultiMissionTool.Mission.STAGE_PUBLIC_RELEASE, SbmtMultiMissionTool.Mission.STAGE_APL_INTERNAL, SbmtMultiMissionTool.Mission.APL_INTERNAL, SbmtMultiMissionTool.Mission.TEST_APL_INTERNAL };
-        c.defaultForMissions = new SbmtMultiMissionTool.Mission[] {};
+                new Mission[] { Mission.PUBLIC_RELEASE, Mission.TEST_PUBLIC_RELEASE, Mission.STAGE_PUBLIC_RELEASE, Mission.STAGE_APL_INTERNAL, Mission.APL_INTERNAL, Mission.TEST_APL_INTERNAL };
+        c.defaultForMissions = new Mission[] {};
 
         configArray.add(c);
 
@@ -210,8 +210,8 @@ public class CometConfigs extends SmallBodyViewConfig
         c.shapeModelFileNames = prepend(c.rootDirOnServer, "wild2_cart_full.w2.gz");
         c.setResolution(ImmutableList.of(17518));
         c.presentInMissions =
-                new SbmtMultiMissionTool.Mission[] { SbmtMultiMissionTool.Mission.PUBLIC_RELEASE, SbmtMultiMissionTool.Mission.TEST_PUBLIC_RELEASE, SbmtMultiMissionTool.Mission.STAGE_PUBLIC_RELEASE, SbmtMultiMissionTool.Mission.STAGE_APL_INTERNAL, SbmtMultiMissionTool.Mission.APL_INTERNAL, SbmtMultiMissionTool.Mission.TEST_APL_INTERNAL };
-        c.defaultForMissions = new SbmtMultiMissionTool.Mission[] {};
+                new Mission[] { Mission.PUBLIC_RELEASE, Mission.TEST_PUBLIC_RELEASE, Mission.STAGE_PUBLIC_RELEASE, Mission.STAGE_APL_INTERNAL, Mission.APL_INTERNAL, Mission.TEST_APL_INTERNAL };
+        c.defaultForMissions = new Mission[] {};
 
         configArray.add(c);
 
@@ -227,12 +227,14 @@ public class CometConfigs extends SmallBodyViewConfig
             c.rootDirOnServer = "/GASKELL/67P";
 
             c.imagingInstruments = new ImagingInstrument[] { new ImagingInstrument( //
-                    SpectralImageMode.MONO, //
-                    new GenericPhpQuery("/GASKELL/67P/IMAGING", "67P", "/GASKELL/67P/IMAGING/images/gallery"), //
-                    ImageType.OSIRIS_IMAGE, //
-                    new ImageSource[] { ImageSource.GASKELL }, //
-                    Instrument.OSIRIS //
-                    ) //
+                            SpectralImageMode.MONO, //
+                            new GenericPhpQuery("/GASKELL/67P/IMAGING", "67P", "/GASKELL/67P/IMAGING/images/gallery"), //
+                            ImageType.OSIRIS_IMAGE, //
+                            new ImageSource[]{ImageSource.GASKELL}, //
+                    Instrument.OSIRIS, //
+                    0.0,
+                    "Y"
+                            ) //
             };
             c.imageSearchDefaultStartDate = new GregorianCalendar(2014, 7, 1, 0, 0, 0).getTime();
             c.imageSearchDefaultEndDate = new GregorianCalendar(2014, 11, 31, 0, 0, 0).getTime();
@@ -260,8 +262,8 @@ public class CometConfigs extends SmallBodyViewConfig
             };
 
             c.presentInMissions =
-                    new SbmtMultiMissionTool.Mission[] { SbmtMultiMissionTool.Mission.PUBLIC_RELEASE, SbmtMultiMissionTool.Mission.TEST_PUBLIC_RELEASE, SbmtMultiMissionTool.Mission.STAGE_PUBLIC_RELEASE, SbmtMultiMissionTool.Mission.STAGE_APL_INTERNAL, SbmtMultiMissionTool.Mission.APL_INTERNAL, SbmtMultiMissionTool.Mission.TEST_APL_INTERNAL };
-            c.defaultForMissions = new SbmtMultiMissionTool.Mission[] {};
+                    new Mission[] { Mission.PUBLIC_RELEASE, Mission.TEST_PUBLIC_RELEASE, Mission.STAGE_PUBLIC_RELEASE, Mission.STAGE_APL_INTERNAL, Mission.APL_INTERNAL, Mission.TEST_APL_INTERNAL };
+            c.defaultForMissions = new Mission[] {};
 
             configArray.add(c);
 
@@ -285,8 +287,8 @@ public class CometConfigs extends SmallBodyViewConfig
             };
 
             c.presentInMissions =
-                    new SbmtMultiMissionTool.Mission[] { SbmtMultiMissionTool.Mission.PUBLIC_RELEASE, SbmtMultiMissionTool.Mission.TEST_PUBLIC_RELEASE, SbmtMultiMissionTool.Mission.STAGE_PUBLIC_RELEASE, SbmtMultiMissionTool.Mission.STAGE_APL_INTERNAL, SbmtMultiMissionTool.Mission.APL_INTERNAL, SbmtMultiMissionTool.Mission.TEST_APL_INTERNAL };
-            c.defaultForMissions = new SbmtMultiMissionTool.Mission[] {};
+                    new Mission[] { Mission.PUBLIC_RELEASE, Mission.TEST_PUBLIC_RELEASE, Mission.STAGE_PUBLIC_RELEASE, Mission.STAGE_APL_INTERNAL, Mission.APL_INTERNAL, Mission.TEST_APL_INTERNAL };
+            c.defaultForMissions = new Mission[] {};
 
             configArray.add(c);
 
@@ -301,7 +303,7 @@ public class CometConfigs extends SmallBodyViewConfig
             c.rootDirOnServer = "/GASKELL/67P_V2";
 
             c.imagingInstruments = new ImagingInstrument[] { new ImagingInstrument( //
-                    SpectralImageMode.MONO, //
+                            SpectralImageMode.MONO, //
                     new GenericPhpQuery("/GASKELL/67P_V2/IMAGING", "67P_V2", "/GASKELL/67P_V3/IMAGING/gallery"), // V2
                                                                                                                  // has
                                                                                                                  // no
@@ -313,11 +315,12 @@ public class CometConfigs extends SmallBodyViewConfig
                                                                                                                  // V3
                                                                                                                  // gallery
                                                                                                                  // //
-                    // new FixedListQuery("/GASKELL/67P_V2/IMAGING"), //
-                    ImageType.OSIRIS_IMAGE, //
-                    new ImageSource[] { ImageSource.GASKELL }, //
-                    Instrument.OSIRIS //
-                    ) //
+                            //new FixedListQuery("/GASKELL/67P_V2/IMAGING"), //
+                            ImageType.OSIRIS_IMAGE, //
+                            new ImageSource[]{ImageSource.GASKELL}, //
+		                    Instrument.OSIRIS , //
+		                    0.0, //
+		    				"Y"), //
             };
             c.imageSearchDefaultStartDate = new GregorianCalendar(2014, 6, 1, 0, 0, 0).getTime();
             c.imageSearchDefaultEndDate = new GregorianCalendar(2015, 11, 31, 0, 0, 0).getTime();
@@ -354,8 +357,8 @@ public class CometConfigs extends SmallBodyViewConfig
             };
 
             c.presentInMissions =
-                    new SbmtMultiMissionTool.Mission[] { SbmtMultiMissionTool.Mission.PUBLIC_RELEASE, SbmtMultiMissionTool.Mission.TEST_PUBLIC_RELEASE, SbmtMultiMissionTool.Mission.STAGE_PUBLIC_RELEASE, SbmtMultiMissionTool.Mission.STAGE_APL_INTERNAL, SbmtMultiMissionTool.Mission.APL_INTERNAL, SbmtMultiMissionTool.Mission.TEST_APL_INTERNAL };
-            c.defaultForMissions = new SbmtMultiMissionTool.Mission[] {};
+                    new Mission[] { Mission.PUBLIC_RELEASE, Mission.TEST_PUBLIC_RELEASE, Mission.STAGE_PUBLIC_RELEASE, Mission.STAGE_APL_INTERNAL, Mission.APL_INTERNAL, Mission.TEST_APL_INTERNAL };
+            c.defaultForMissions = new Mission[] {};
 
             configArray.add(c);
 
@@ -373,13 +376,15 @@ public class CometConfigs extends SmallBodyViewConfig
             c.customBodyCubeSize = 0.10; // km
 
             c.imagingInstruments = new ImagingInstrument[] { new ImagingInstrument( //
-                    SpectralImageMode.MONO, //
-                    new GenericPhpQuery("/GASKELL/67P_V3/IMAGING", "67P_V3", "/GASKELL/67P_V3/IMAGING/gallery"), //
-                    // new FixedListQuery("/GASKELL/67P_V3/IMAGING"), //
-                    ImageType.OSIRIS_IMAGE, //
-                    new ImageSource[] { ImageSource.GASKELL }, //
-                    Instrument.OSIRIS //
-                    ) //
+                            SpectralImageMode.MONO, //
+                            new GenericPhpQuery("/GASKELL/67P_V3/IMAGING", "67P_V3", "/GASKELL/67P_V3/IMAGING/gallery"), //
+                            //new FixedListQuery("/GASKELL/67P_V3/IMAGING"), //
+                            ImageType.OSIRIS_IMAGE, //
+                            new ImageSource[]{ImageSource.GASKELL}, //
+                            Instrument.OSIRIS, //
+                            0.0,
+                            "Y"
+                            ) //
             };
             c.imageSearchDefaultStartDate = new GregorianCalendar(2014, 6, 1, 0, 0, 0).getTime();
             c.imageSearchDefaultEndDate = new GregorianCalendar(2016, 0, 31, 0, 0, 0).getTime();
@@ -417,8 +422,8 @@ public class CometConfigs extends SmallBodyViewConfig
             };
 
             c.presentInMissions =
-                    new SbmtMultiMissionTool.Mission[] { SbmtMultiMissionTool.Mission.PUBLIC_RELEASE, SbmtMultiMissionTool.Mission.TEST_PUBLIC_RELEASE, SbmtMultiMissionTool.Mission.STAGE_PUBLIC_RELEASE, SbmtMultiMissionTool.Mission.STAGE_APL_INTERNAL, SbmtMultiMissionTool.Mission.APL_INTERNAL, SbmtMultiMissionTool.Mission.TEST_APL_INTERNAL };
-            c.defaultForMissions = new SbmtMultiMissionTool.Mission[] {};
+                    new Mission[] { Mission.PUBLIC_RELEASE, Mission.TEST_PUBLIC_RELEASE, Mission.STAGE_PUBLIC_RELEASE, Mission.STAGE_APL_INTERNAL, Mission.APL_INTERNAL, Mission.TEST_APL_INTERNAL };
+            c.defaultForMissions = new Mission[] {};
 
             configArray.add(c);
         }
@@ -434,8 +439,8 @@ public class CometConfigs extends SmallBodyViewConfig
         c.shapeModelFileNames = prepend(c.rootDirOnServer, "hartley2_2012_cart.plt.gz");
         c.setResolution(ImmutableList.of(32040));
         c.presentInMissions =
-                new SbmtMultiMissionTool.Mission[] { SbmtMultiMissionTool.Mission.PUBLIC_RELEASE, SbmtMultiMissionTool.Mission.TEST_PUBLIC_RELEASE, SbmtMultiMissionTool.Mission.STAGE_PUBLIC_RELEASE, SbmtMultiMissionTool.Mission.STAGE_APL_INTERNAL, SbmtMultiMissionTool.Mission.APL_INTERNAL, SbmtMultiMissionTool.Mission.TEST_APL_INTERNAL };
-        c.defaultForMissions = new SbmtMultiMissionTool.Mission[] {};
+                new Mission[] { Mission.PUBLIC_RELEASE, Mission.TEST_PUBLIC_RELEASE, Mission.STAGE_PUBLIC_RELEASE, Mission.STAGE_APL_INTERNAL, Mission.APL_INTERNAL, Mission.TEST_APL_INTERNAL };
+        c.defaultForMissions = new Mission[] {};
 
         configArray.add(c);
 

@@ -13,16 +13,16 @@ import edu.jhuapl.saavtk.model.ShapeModelBody;
 import edu.jhuapl.saavtk.model.ShapeModelType;
 import edu.jhuapl.saavtk.util.Configuration;
 import edu.jhuapl.saavtk.util.FileCache;
-import edu.jhuapl.sbmt.client.BodyType;
-import edu.jhuapl.sbmt.client.SbmtMultiMissionTool;
-import edu.jhuapl.sbmt.client.ShapeModelDataUsed;
-import edu.jhuapl.sbmt.client.ShapeModelPopulation;
-import edu.jhuapl.sbmt.client.SmallBodyViewConfig;
-import edu.jhuapl.sbmt.model.image.ImageSource;
-import edu.jhuapl.sbmt.model.image.ImageType;
-import edu.jhuapl.sbmt.model.image.ImagingInstrument;
-import edu.jhuapl.sbmt.model.image.Instrument;
-import edu.jhuapl.sbmt.model.image.SpectralImageMode;
+import edu.jhuapl.sbmt.common.client.Mission;
+import edu.jhuapl.sbmt.common.client.SmallBodyViewConfig;
+import edu.jhuapl.sbmt.config.BodyType;
+import edu.jhuapl.sbmt.config.Instrument;
+import edu.jhuapl.sbmt.config.ShapeModelDataUsed;
+import edu.jhuapl.sbmt.config.ShapeModelPopulation;
+import edu.jhuapl.sbmt.config.SpectralImageMode;
+import edu.jhuapl.sbmt.core.image.ImageSource;
+import edu.jhuapl.sbmt.core.image.ImageType;
+import edu.jhuapl.sbmt.core.image.ImagingInstrument;
 import edu.jhuapl.sbmt.model.phobos.MEGANE;
 import edu.jhuapl.sbmt.model.phobos.PhobosExperimentalSearchSpecification;
 import edu.jhuapl.sbmt.pointing.spice.SpiceInfo;
@@ -63,8 +63,10 @@ public class MarsConfigs extends SmallBodyViewConfig
                         new FixedListQuery("/GASKELL/PHOBOS/imaging", "/GASKELL/PHOBOS/imaging/images/gallery"), //
 //                        new GenericPhpQuery("/GASKELL/PHOBOS/IMAGING", "PHOBOS", "/GASKELL/PHOBOS/IMAGING/images/gallery"), //
                         ImageType.valueOf("MARS_MOON_IMAGE"), //
-                        new ImageSource[]{ImageSource.GASKELL, ImageSource.SPICE}, //
-                        Instrument.IMAGING_DATA //
+                        new ImageSource[]{ImageSource.GASKELL}, //
+                        Instrument.IMAGING_DATA, //
+                        0.0,
+                        "X"
                         ) //
         };
 
@@ -111,8 +113,8 @@ public class MarsConfigs extends SmallBodyViewConfig
         	new DBRunInfo(ImageSource.GASKELL, Instrument.IMAGING_DATA, ShapeModelBody.PHOBOS.toString(), "/project/nearsdc/data/GASKELL/PHOBOS/IMAGING/pdsImageList.txt", ShapeModelBody.PHOBOS.toString().toLowerCase()),
         };
 
-        c.presentInMissions = new SbmtMultiMissionTool.Mission[] {SbmtMultiMissionTool.Mission.PUBLIC_RELEASE, SbmtMultiMissionTool.Mission.TEST_PUBLIC_RELEASE, SbmtMultiMissionTool.Mission.STAGE_PUBLIC_RELEASE, SbmtMultiMissionTool.Mission.STAGE_APL_INTERNAL, SbmtMultiMissionTool.Mission.APL_INTERNAL, SbmtMultiMissionTool.Mission.TEST_APL_INTERNAL};
-        c.defaultForMissions = new SbmtMultiMissionTool.Mission[] {};
+        c.presentInMissions = new Mission[] {Mission.PUBLIC_RELEASE, Mission.TEST_PUBLIC_RELEASE, Mission.STAGE_PUBLIC_RELEASE, Mission.STAGE_APL_INTERNAL, Mission.APL_INTERNAL, Mission.TEST_APL_INTERNAL};
+        c.defaultForMissions = new Mission[] {};
 
 
 
@@ -132,8 +134,8 @@ public class MarsConfigs extends SmallBodyViewConfig
 
         c.lidarSearchDataSourceMap = Maps.newHashMap(); // this must be instantiated, but can be empty
 
-        c.presentInMissions = new SbmtMultiMissionTool.Mission[] {SbmtMultiMissionTool.Mission.PUBLIC_RELEASE, SbmtMultiMissionTool.Mission.TEST_PUBLIC_RELEASE, SbmtMultiMissionTool.Mission.STAGE_PUBLIC_RELEASE, SbmtMultiMissionTool.Mission.STAGE_APL_INTERNAL, SbmtMultiMissionTool.Mission.APL_INTERNAL, SbmtMultiMissionTool.Mission.TEST_APL_INTERNAL};
-        c.defaultForMissions = new SbmtMultiMissionTool.Mission[] {};
+        c.presentInMissions = new Mission[] {Mission.PUBLIC_RELEASE, Mission.TEST_PUBLIC_RELEASE, Mission.STAGE_PUBLIC_RELEASE, Mission.STAGE_APL_INTERNAL, Mission.APL_INTERNAL, Mission.TEST_APL_INTERNAL};
+        c.defaultForMissions = new Mission[] {};
 
 
         configArray.add(c);
@@ -199,8 +201,8 @@ public class MarsConfigs extends SmallBodyViewConfig
             	new DBRunInfo(ImageSource.GASKELL, Instrument.IMAGING_DATA, ShapeModelBody.PHOBOS.toString(), "/project/nearsdc/data/GASKELL/PHOBOSEXPERIMENTAL/IMAGING/imagelist.txt", "phobosexp"),
             };
 
-            c.presentInMissions = new SbmtMultiMissionTool.Mission[] {SbmtMultiMissionTool.Mission.PUBLIC_RELEASE, SbmtMultiMissionTool.Mission.TEST_PUBLIC_RELEASE, SbmtMultiMissionTool.Mission.STAGE_PUBLIC_RELEASE, SbmtMultiMissionTool.Mission.STAGE_APL_INTERNAL, SbmtMultiMissionTool.Mission.APL_INTERNAL, SbmtMultiMissionTool.Mission.TEST_APL_INTERNAL};
-            c.defaultForMissions = new SbmtMultiMissionTool.Mission[] {};
+            c.presentInMissions = new Mission[] {Mission.PUBLIC_RELEASE, Mission.TEST_PUBLIC_RELEASE, Mission.STAGE_PUBLIC_RELEASE, Mission.STAGE_APL_INTERNAL, Mission.APL_INTERNAL, Mission.TEST_APL_INTERNAL};
+            c.defaultForMissions = new Mission[] {};
 
 //            configArray.add(c);
         }
@@ -227,8 +229,7 @@ public class MarsConfigs extends SmallBodyViewConfig
                             new ImageSource[]{ ImageSource.GASKELL }, //
                             Instrument.IMAGING_DATA, //
                             0., //
-                            "Y", // Note: this means "flip along Y axis". Don't know why, but this flip is needed as of this delivery.
-                            null
+                            "X" // Note: this means "flip along X axis". Don't know why, but this flip is needed as of this delivery.
                             ) //
             };
 
@@ -290,8 +291,8 @@ public class MarsConfigs extends SmallBodyViewConfig
 
 
 
-            c.presentInMissions = new SbmtMultiMissionTool.Mission[] {SbmtMultiMissionTool.Mission.PUBLIC_RELEASE, SbmtMultiMissionTool.Mission.TEST_PUBLIC_RELEASE, SbmtMultiMissionTool.Mission.STAGE_PUBLIC_RELEASE, SbmtMultiMissionTool.Mission.STAGE_APL_INTERNAL, SbmtMultiMissionTool.Mission.APL_INTERNAL, SbmtMultiMissionTool.Mission.TEST_APL_INTERNAL};
-            c.defaultForMissions = new SbmtMultiMissionTool.Mission[] {};
+            c.presentInMissions = new Mission[] {Mission.PUBLIC_RELEASE, Mission.TEST_PUBLIC_RELEASE, Mission.STAGE_PUBLIC_RELEASE, Mission.STAGE_APL_INTERNAL, Mission.APL_INTERNAL, Mission.TEST_APL_INTERNAL};
+            c.defaultForMissions = new Mission[] {};
 
             configArray.add(c);
         }
@@ -310,8 +311,8 @@ public class MarsConfigs extends SmallBodyViewConfig
 
         c.hasImageMap = true;
         c.setResolution(ImmutableList.of(49152));
-        c.presentInMissions = new SbmtMultiMissionTool.Mission[] {SbmtMultiMissionTool.Mission.PUBLIC_RELEASE, SbmtMultiMissionTool.Mission.TEST_PUBLIC_RELEASE, SbmtMultiMissionTool.Mission.STAGE_PUBLIC_RELEASE, SbmtMultiMissionTool.Mission.STAGE_APL_INTERNAL, SbmtMultiMissionTool.Mission.APL_INTERNAL, SbmtMultiMissionTool.Mission.TEST_APL_INTERNAL};
-        c.defaultForMissions = new SbmtMultiMissionTool.Mission[] {};
+        c.presentInMissions = new Mission[] {Mission.PUBLIC_RELEASE, Mission.TEST_PUBLIC_RELEASE, Mission.STAGE_PUBLIC_RELEASE, Mission.STAGE_APL_INTERNAL, Mission.APL_INTERNAL, Mission.TEST_APL_INTERNAL};
+        c.defaultForMissions = new Mission[] {};
 
         configArray.add(c);
 
@@ -384,8 +385,7 @@ public class MarsConfigs extends SmallBodyViewConfig
                             new ImageSource[]{ ImageSource.GASKELL }, //
                             Instrument.IMAGING_DATA, //
                             0., //
-                            "Y", // Note: this means "flip along Y axis". Don't know why, but this flip is needed as of this delivery.
-                            null
+                            "Y" // Note: this means "flip along Y axis". Don't know why, but this flip is needed as of this delivery.
                             ) //
             };
             c.imageSearchDefaultStartDate = new GregorianCalendar(1976, 7, 16, 0, 0, 0).getTime();
@@ -408,8 +408,8 @@ public class MarsConfigs extends SmallBodyViewConfig
             	new DBRunInfo(ImageSource.GASKELL, Instrument.IMAGING_DATA, ShapeModelBody.DEIMOS.toString(), "/project/sbmt2/sbmt/data/bodies/deimos/ernst2018/imaging/imagelist-fullpath.txt", "deimos_ernst_2018"),
             };
 
-            c.presentInMissions = new SbmtMultiMissionTool.Mission[] {SbmtMultiMissionTool.Mission.PUBLIC_RELEASE, SbmtMultiMissionTool.Mission.TEST_PUBLIC_RELEASE, SbmtMultiMissionTool.Mission.STAGE_PUBLIC_RELEASE, SbmtMultiMissionTool.Mission.STAGE_APL_INTERNAL, SbmtMultiMissionTool.Mission.APL_INTERNAL, SbmtMultiMissionTool.Mission.TEST_APL_INTERNAL};
-            c.defaultForMissions = new SbmtMultiMissionTool.Mission[] {};
+            c.presentInMissions = new Mission[] {Mission.PUBLIC_RELEASE, Mission.TEST_PUBLIC_RELEASE, Mission.STAGE_PUBLIC_RELEASE, Mission.STAGE_APL_INTERNAL, Mission.APL_INTERNAL, Mission.TEST_APL_INTERNAL};
+            c.defaultForMissions = new Mission[] {};
 
             configArray.add(c);
 
@@ -436,8 +436,7 @@ public class MarsConfigs extends SmallBodyViewConfig
                             new ImageSource[]{ ImageSource.GASKELL },
                             Instrument.IMAGING_DATA,
                             0.,
-                            "Y", // Note: this means "flip along Y axis". Don't know why, but this flip is needed as of this delivery.
-                            null
+                            "X" // Note: this means "flip along X axis". Don't know why, but this flip is needed as of this delivery.
                             )
             };
 
@@ -478,13 +477,17 @@ public class MarsConfigs extends SmallBodyViewConfig
             c.timeHistoryFile = c.rootDirOnServer + "/history/timeHistory.bth";
             c.stateHistoryStartDate = new GregorianCalendar(2026, 1, 1, 0, 0, 0).getTime();
             c.stateHistoryEndDate = new GregorianCalendar(2026, 9, 30, 0, 0, 0).getTime();
-            c.spiceInfo = new SpiceInfo("MMX", "IAU_PHOBOS", "MMX_SPACECRAFT", "PHOBOS", new String[] {"EARTH" , "SUN", "MARS"}, new String[] {"MMX_MEGANE"});
+            c.spiceInfo = new SpiceInfo("MMX", "IAU_PHOBOS", "MMX_SPACECRAFT", "PHOBOS",
+            				new String[] {"EARTH" , "SUN", "MARS"},
+            				new String[] {"IAU_EARTH" , "IAU_SUN", "IAU_MARS"},
+            				new String[] {"MMX_MEGANE"},
+            				new String[] {});
 
-            c.presentInMissions = new SbmtMultiMissionTool.Mission[] {SbmtMultiMissionTool.Mission.STAGE_APL_INTERNAL, SbmtMultiMissionTool.Mission.APL_INTERNAL, SbmtMultiMissionTool.Mission.TEST_APL_INTERNAL,
-            														  SbmtMultiMissionTool.Mission.MEGANE_DEPLOY, SbmtMultiMissionTool.Mission.MEGANE_DEV, SbmtMultiMissionTool.Mission.MEGANE_STAGE,
-            														  SbmtMultiMissionTool.Mission.MEGANE_TEST};
-            c.defaultForMissions = new SbmtMultiMissionTool.Mission[] {SbmtMultiMissionTool.Mission.MEGANE_DEPLOY, SbmtMultiMissionTool.Mission.MEGANE_DEV, SbmtMultiMissionTool.Mission.MEGANE_STAGE,
-					  													SbmtMultiMissionTool.Mission.MEGANE_TEST};
+            c.presentInMissions = new Mission[] {Mission.STAGE_APL_INTERNAL, Mission.APL_INTERNAL, Mission.TEST_APL_INTERNAL,
+            														  Mission.MEGANE_DEPLOY, Mission.MEGANE_DEV, Mission.MEGANE_STAGE,
+            														  Mission.MEGANE_TEST};
+            c.defaultForMissions = new Mission[] {Mission.MEGANE_DEPLOY, Mission.MEGANE_DEV, Mission.MEGANE_STAGE,
+					  													Mission.MEGANE_TEST};
 
             if (!publicOnly)
             	configArray.add(c);

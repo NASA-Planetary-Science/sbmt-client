@@ -12,8 +12,8 @@ import javax.swing.ToolTipManager;
 
 import vtk.vtkJavaGarbageCollector;
 
-import edu.jhuapl.saavtk.gui.TSConsole;
 import edu.jhuapl.saavtk.gui.MainWindow;
+import edu.jhuapl.saavtk.gui.TSConsole;
 import edu.jhuapl.saavtk.util.Configuration;
 import edu.jhuapl.saavtk.util.Configuration.ReleaseType;
 import edu.jhuapl.saavtk.util.Debug;
@@ -22,8 +22,8 @@ import edu.jhuapl.saavtk.util.FileCache;
 import edu.jhuapl.saavtk.util.NativeLibraryLoader;
 import edu.jhuapl.sbmt.client.SbmtMainWindow;
 import edu.jhuapl.sbmt.client.SbmtMultiMissionTool;
-import edu.jhuapl.sbmt.client.SbmtMultiMissionTool.Mission;
-import edu.jhuapl.sbmt.client.SmallBodyViewConfig;
+import edu.jhuapl.sbmt.common.client.Mission;
+import edu.jhuapl.sbmt.common.client.SmallBodyViewConfig;
 
 public class SbmtRunnable implements Runnable
 {

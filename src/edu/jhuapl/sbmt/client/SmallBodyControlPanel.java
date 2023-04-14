@@ -31,10 +31,11 @@ import edu.jhuapl.saavtk.model.ModelManager;
 import edu.jhuapl.saavtk.model.ModelNames;
 import edu.jhuapl.saavtk.model.PolyhedralModel;
 import edu.jhuapl.saavtk.pick.PickUtil;
-import edu.jhuapl.sbmt.model.image.CylindricalImage;
-import edu.jhuapl.sbmt.model.image.Image;
-import edu.jhuapl.sbmt.model.image.ImageCollection;
-import edu.jhuapl.sbmt.model.image.ImageKeyInterface;
+import edu.jhuapl.sbmt.common.client.SmallBodyModel;
+import edu.jhuapl.sbmt.core.image.Image;
+import edu.jhuapl.sbmt.core.image.ImageKeyInterface;
+import edu.jhuapl.sbmt.image.model.CylindricalImage;
+import edu.jhuapl.sbmt.image.model.ImageCollection;
 import edu.jhuapl.sbmt.util.PolyDataUtil2;
 import edu.jhuapl.sbmt.util.PolyDataUtil2.PolyDataStatistics;
 

@@ -13,7 +13,7 @@ import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 
 import edu.jhuapl.saavtk.util.FileCache;
-import edu.jhuapl.sbmt.client.SmallBodyViewConfig;
+import edu.jhuapl.sbmt.common.client.SmallBodyViewConfig;
 import edu.jhuapl.sbmt.pointing.IPointingProvider;
 import edu.jhuapl.sbmt.pointing.pregen.PregenPointingProvider;
 import edu.jhuapl.sbmt.pointing.spice.SpiceInfo;

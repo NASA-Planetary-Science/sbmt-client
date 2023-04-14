@@ -361,7 +361,8 @@ public class DiscoverPlateColorings
 
 	private static void usage()
 	{
-		System.err.println("Usage:\tdiscovery full-path-to-coloring-directory hierarchical-coloring-path unique-model-id [ coloring-list-file-name ] [ coloring-metadata-file-name ]");
+        System.err.println("Usage:\tDiscoverPlateColorings full-path-to-coloring-directory hierarchical-coloring-path unique-model-id [ coloring-list-file-name ] [ coloring-metadata-file-name ]");
+        System.err.println("\t\tExample: DiscoverPlateColorings /project/sbmtpipeline/processed/dart/redmine-2489/dimorphos/dart-dimorphos-v003/coloring dimorphos/dart-dimorphos-v003/coloring dart-dimorphos-v003/Dimorphos coloringlist.txt");
 	}
 
 	public static void main(String[] args)

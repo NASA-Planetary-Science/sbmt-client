@@ -31,7 +31,7 @@ import edu.jhuapl.saavtk.model.structure.AbstractEllipsePolygonModel;
 import edu.jhuapl.saavtk.pick.PickManager;
 import edu.jhuapl.saavtk.pick.PickManager.PickMode;
 import edu.jhuapl.saavtk.structure.Ellipse;
-import edu.jhuapl.sbmt.client.SmallBodyModel;
+import edu.jhuapl.sbmt.common.client.SmallBodyModel;
 import edu.jhuapl.sbmt.core.listeners.SearchProgressListener;
 import edu.jhuapl.sbmt.spectrum.model.core.BasicSpectrum;
 import edu.jhuapl.sbmt.spectrum.model.core.SpectrumIOException;
@@ -402,7 +402,7 @@ public class SpectrumSearchParametersController<S extends BasicSpectrum>
         searchParameters.setMaxPhaseQuery(Integer.parseInt(panel.getToPhaseTextField().getText()));
 
         SmallBodyModel bodyModel = (SmallBodyModel)modelManager.getModel(ModelNames.SMALL_BODY);
-        searchParameters.setModelName(bodyModel.getConfig().author.toString().toLowerCase().replace("-", ""));
+        searchParameters.setModelName(bodyModel.getConfig().getAuthor().toString().toLowerCase().replace("-", ""));
         searchParameters.setDataType(panel.getSelectedDataTypes());
 //        searchParameters.setDataType(panel.getDataType());
     }

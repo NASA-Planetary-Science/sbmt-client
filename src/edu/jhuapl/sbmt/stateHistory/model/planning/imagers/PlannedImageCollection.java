@@ -3,8 +3,8 @@ package edu.jhuapl.sbmt.stateHistory.model.planning.imagers;
 import java.beans.PropertyChangeEvent;
 
 import edu.jhuapl.saavtk.util.ProgressStatusListener;
-import edu.jhuapl.sbmt.client.SmallBodyModel;
-import edu.jhuapl.sbmt.model.image.perspectiveImage.PerspectiveImageFootprint;
+import edu.jhuapl.sbmt.common.client.SmallBodyModel;
+import edu.jhuapl.sbmt.core.rendering.PerspectiveFootprint;
 import edu.jhuapl.sbmt.stateHistory.model.planning.BasePlannedDataCollection;
 import edu.jhuapl.sbmt.stateHistory.rendering.PlannedDataProperties;
 import edu.jhuapl.sbmt.stateHistory.rendering.model.StateHistoryPositionCalculator;
@@ -37,10 +37,10 @@ public class PlannedImageCollection extends BasePlannedDataCollection<PlannedIma
 		if (stateHistorySource == null) return;
 		for (PlannedImage data : plannedData)
 		{
-			PerspectiveImageFootprint actor = (PerspectiveImageFootprint)plannedDataActors.get(plannedData.indexOf(data));
-			if (((PerspectiveImageFootprint)actor).isStaticFootprintSet() == false)
+			PerspectiveFootprint actor = (PerspectiveFootprint)plannedDataActors.get(plannedData.indexOf(data));
+			if (((PerspectiveFootprint)actor).isStaticFootprintSet() == false)
 			{
-				StateHistoryPositionCalculator.updateFootprintPointing(stateHistorySource, actor.getTime(), (PerspectiveImageFootprint)actor);
+				StateHistoryPositionCalculator.updateFootprintPointing(stateHistorySource, actor.getTime(), (PerspectiveFootprint)actor);
 			}
 			setDataShowing(data, (time >= actor.getTime()) && (showing));
 		}
@@ -52,12 +52,12 @@ public class PlannedImageCollection extends BasePlannedDataCollection<PlannedIma
 	public void addImageToList(PlannedImage image, ProgressStatusListener listener)
 	{
 		plannedData.add(image);
-		PerspectiveImageFootprint actor = (PerspectiveImageFootprint)addDataToRenderer(image);
+		PerspectiveFootprint actor = (PerspectiveFootprint)addDataToRenderer(image);
 		actor.setStaticFootprint(true);
 		plannedDataActors.add(actor);
 		if (this.stateHistorySource != null)
 		{
-			StateHistoryPositionCalculator.updateFootprintPointing(stateHistorySource, actor.getTime(), (PerspectiveImageFootprint)actor);
+			StateHistoryPositionCalculator.updateFootprintPointing(stateHistorySource, actor.getTime(), (PerspectiveFootprint)actor);
 		}
 		footprintActors.add(actor.getFootprintBoundaryActor());
 		listener.setProgressStatus("Adding image " + plannedData.size(), 0);
