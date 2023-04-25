@@ -8,6 +8,7 @@ import javax.swing.JPanel;
 import javax.swing.JTabbedPane;
 import javax.swing.SwingUtilities;
 
+import edu.jhuapl.saavtk.model.IPositionOrientationManager;
 import edu.jhuapl.saavtk.model.ModelManager;
 import edu.jhuapl.saavtk.model.plateColoring.ColoringDataManager;
 import edu.jhuapl.saavtk.status.StatusNotifier;
@@ -41,6 +42,7 @@ public class ObservationPlanningController implements PropertyChangeListener
 	StateHistoryIntervalPlaybackPanel intervalPlaybackPanel;
 	StateHistoryTimeModel timeModel;
 	StateHistoryRendererManager rendererManager;
+	private IPositionOrientationManager positionOrientationManager;
 
     /**
      * Controller for the interval playback panel
@@ -79,12 +81,18 @@ public class ObservationPlanningController implements PropertyChangeListener
 				{
                 	if (runs.getCurrentRun() != null)
                 		runs.getCurrentRun().getMetadata().setCurrentTime(et);
+                    positionOrientationManager.run(et);
+
 				}
 				catch (StateHistoryInvalidTimeException e)
 				{
 					// TODO Auto-generated catch block
 //					e.printStackTrace();
 				}
+                catch (Exception e)
+                {
+                	e.printStackTrace();
+                }
     			SwingUtilities.invokeLater(new Runnable()
     			{
 
@@ -155,5 +163,10 @@ public class ObservationPlanningController implements PropertyChangeListener
 		panel.add(view);
 		panel.add(intervalPlaybackPanel);
 		return panel;
+	}
+
+	public void setPositionOrientationManager(IPositionOrientationManager manager)
+	{
+		this.positionOrientationManager = manager;
 	}
 }
