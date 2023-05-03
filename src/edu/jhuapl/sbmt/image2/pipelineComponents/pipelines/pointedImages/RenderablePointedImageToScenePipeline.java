@@ -115,7 +115,7 @@ public class RenderablePointedImageToScenePipeline<G1 extends IPerspectiveImage 
 	private void generateRenderableImages() throws IOException, Exception
 	{
 		//combine image source (in: Layer+ImageMetadata+ImagePointing, out: RenderableImage)
-		IPipelinePublisher<Layer> layerPublisher = new Just<Layer>(updatedLayers.get(0));
+		IPipelinePublisher<Layer> layerPublisher = new Just<Layer>(updatedLayers.get(image.getCurrentLayer()));
 		IPipelinePublisher<Triple<Layer, HashMap<String, String>, PointingFileReader>> imageComponents =
 				Publishers.formTriple(layerPublisher, metadataReader, pointingPublisher);
 
