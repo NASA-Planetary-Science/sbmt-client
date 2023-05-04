@@ -59,7 +59,6 @@ public class LayerPreviewController<G1 extends IPerspectiveImage & IPerspectiveI
 
 	private void initializeSubViews()
 	{
-//		buildSyncCheckBox(0);
 		buildLayerComboBox(0);
 		buildContrastController(1);
 		buildTrimController(2);
@@ -73,7 +72,7 @@ public class LayerPreviewController<G1 extends IPerspectiveImage & IPerspectiveI
 		if (model.getLayers().size() > 1)
 		{
 			String[] layerNames = new String[model.getLayers().size()];
-			if (model.getMetadatas().size() != 0)
+			if (model.getMetadatas().size() != 0 && model.getMetadatas().get(0).get(0).size() > 0)
 			{
 				List<HashMap<String, String>> list = model.getMetadatas().get(0);
 				HashMap<String, String> values = list.get(0);
@@ -122,6 +121,7 @@ public class LayerPreviewController<G1 extends IPerspectiveImage & IPerspectiveI
 					int index = Integer.parseInt(title.split(" ")[0].replace("PLANE", "")) - 1;
 					try
 					{
+						model.setDisplayedLayerIndex(index);
 						model.setLayer(model.getLayers().get(index));
 						maskController.setLayer(model.getLayer());
 //						generateVtkImageData(model.getLayer());
