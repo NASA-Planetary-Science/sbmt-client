@@ -80,8 +80,11 @@ public class ObservationPlanningController implements PropertyChangeListener
                 try
 				{
                 	if (runs.getCurrentRun() != null)
+                	{
                 		runs.getCurrentRun().getMetadata().setCurrentTime(et);
-                    positionOrientationManager.run(et);
+                		positionOrientationManager.run(et);
+                		rendererManager.getRenderer().getRenderWindowPanel().resetCameraClippingRange();
+                	}
 
 				}
 				catch (StateHistoryInvalidTimeException e)
