@@ -81,7 +81,7 @@ int_jars        := ${int_mac64_jar} ${int_linux64_jar} ${int_linux64u20_jar} ${i
 
 mac_zip   :=  ${RELEASE}-macosx-x64.zip
 linux_zip :=  ${RELEASE}-linux-x64.zip
-linux_zip :=  ${RELEASE}-linux-x64u20.zip
+linuxu20_zip :=  ${RELEASE}-linux-x64u20.zip
 win_zip   :=  ${RELEASE}-windows-x64.zip
 
 int_mac_zip   :=  ${int_mac_dir}/${mac_zip}
