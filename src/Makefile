@@ -225,7 +225,7 @@ ${int_linuxu20_zip} : ${NEARAPLJAR}
 		cp -R ${jre_dir}/linux64 ${int_linuxu20_sbmt_dir}
 		cp -R ${gdal_dir}/linux64u20 ${int_linuxu20_sbmt_lib_dir}
 		rm -rf ${int_linuxu20_sbmt_dir}/jre
-		mv ${int_linuxu20_sbmt_dir}/linux64u20 ${int_linuxu20_sbmt_dir}/jre
+		mv ${int_linuxu20_sbmt_dir}/linux64 ${int_linuxu20_sbmt_dir}/jre
 		cp ${top_level_dir}/src/edu/jhuapl/sbmt/data/license.txt ${int_linuxu20_sbmt_lib_dir}
 		${SBMTROOT}/config/generate_runsbmt.sh ${INTERNAL_OUTPUT_DIR} ${MISSION}
 		cp ${int_linuxu20_dir}/sbmt/runsbmt ${int_linuxu20_dir}/${RELEASE}
