@@ -33,7 +33,7 @@ public class VtkImageRendererOperator extends BasePipelineOperator<Layer, vtkIma
 	{
 		pixelDoubleFactory = new PixelDoubleFactory();
 		this.invertY = invertY;
-	} 
+	}
 
 	@Override
 	public void processData() throws IOException, Exception
@@ -121,27 +121,11 @@ public class VtkImageRendererOperator extends BasePipelineOperator<Layer, vtkIma
 				{
 					PixelDouble vecPixel = (PixelDouble) pixel.get(k);
 					int yIndex = invertY ? layerHeight - j - 1 : j;
-					output.SetScalarComponentFromFloat(i, yIndex, 0, k, vecPixel.get());
+					output.SetScalarComponentFromFloat(i, yIndex, 0, k, (float)vecPixel.get());
 				}
 			}
-        }
-        else if (layerDepth >= 3)
-        {
-        	PixelVector pixel = new PixelVectorDoubleFactory().of(layerDepth, -Double.NaN, -Double.NaN);
-        	output.AllocateScalars(VtkDataTypes.VTK_UNSIGNED_CHAR, layerDepth);
-    		for (int i = 0; i < layerWidth; i++)
-    		{
-    			for (int j = 0; j < layerHeight; j++)
-    			{
-    				inputs.get(0).get(i, j, pixel);
-    				for (int k = 0; k < layerDepth; k++)
-    				{
-    					PixelDouble vecPixel = (PixelDouble)pixel.get(k);
-    					output.SetScalarComponentFromFloat(i, j, 0, k, (float)vecPixel.get());
-    				}
-    			}
-    		}
-        }
-		outputs.add(output);
+
+			return null;
+		}
 	}
 }

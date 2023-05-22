@@ -126,7 +126,7 @@ public class MSIBestResolutionPerPlate
     private static void computeBestResolutionPerPlate(
             List<String> msiFiles, ImageSource msiSource, ImagingInstrument instrument) throws Exception
     {
-        int numPlatesInSmallBodyModel = erosModel.getSmallBodyPolyData().GetNumberOfCells();
+        int numPlatesInSmallBodyModel = (int)erosModel.getSmallBodyPolyData().GetNumberOfCells();
         for (int i=0; i<numPlatesInSmallBodyModel; ++i)
         {
             statisticsPerPlate.add(new PlateStatistics());
@@ -201,7 +201,7 @@ public class MSIBestResolutionPerPlate
 
 
             footprint.BuildCells();
-            int numberCells = footprint.GetNumberOfCells();
+            int numberCells = (int)footprint.GetNumberOfCells();
             System.out.println("number of plates in footprint: " + numberCells);
             double[] pt0 = new double[3];
             double[] pt1 = new double[3];
