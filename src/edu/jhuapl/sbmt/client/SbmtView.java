@@ -19,7 +19,7 @@ import javax.swing.JTabbedPane;
 
 import com.google.common.collect.ImmutableList;
 
-import vtk.vtkCamera; 
+import vtk.vtkCamera;
 
 import edu.jhuapl.saavtk.config.ViewConfig;
 import edu.jhuapl.saavtk.gui.View;
@@ -32,16 +32,15 @@ import edu.jhuapl.saavtk.model.ModelManager;
 import edu.jhuapl.saavtk.model.ModelNames;
 import edu.jhuapl.saavtk.model.ShapeModelBody;
 import edu.jhuapl.saavtk.model.ShapeModelType;
-import edu.jhuapl.saavtk.model.structure.CircleModel;
+import edu.jhuapl.saavtk.model.structure.AbstractEllipsePolygonModel.Mode;
 import edu.jhuapl.saavtk.model.structure.CircleSelectionModel;
-import edu.jhuapl.saavtk.model.structure.EllipseModel;
 import edu.jhuapl.saavtk.model.structure.LineModel;
-import edu.jhuapl.saavtk.model.structure.PointModel;
 import edu.jhuapl.saavtk.model.structure.PolygonModel;
 import edu.jhuapl.saavtk.pick.PickManager;
 import edu.jhuapl.saavtk.popup.PopupMenu;
 import edu.jhuapl.saavtk.status.StatusNotifier;
 import edu.jhuapl.saavtk.structure.gui.StructureMainPanel;
+import edu.jhuapl.saavtk.structure.io.StructureLegacyUtil;
 import edu.jhuapl.saavtk.util.Configuration;
 import edu.jhuapl.saavtk.util.FileCache;
 import edu.jhuapl.saavtk.util.Properties;
@@ -337,29 +336,29 @@ public class SbmtView extends View implements PropertyChangeListener
 		//new version of images
 		allModels.put(ModelNames.IMAGES_V2, new PerspectiveImageCollection(List.of(smallBodyModel)));
 
-		//        for (ImagingInstrument instrument : getPolyhedralModelConfig().imagingInstruments)
-		//        {
-		//            if (instrument.spectralMode == SpectralMode.MONO)
-		//            {
-		//                allModels.put(ModelNames.COLOR_IMAGES, new ColorImageCollection(smallBodyModel, getModelManager()));
-		//                allModels.put(ModelNames.CUBE_IMAGES, new ImageCubeCollection(smallBodyModel, getModelManager()));
-		////                allModels.put(ModelNames.PERSPECTIVE_IMAGE_BOUNDARIES, new PerspectiveImageBoundaryCollection(smallBodyModel));
-		//            }
-		//
-		//            else if (instrument.spectralMode == SpectralMode.MULTI)
-		//            {
-		//                allModels.put(ModelNames.COLOR_IMAGES, new ColorImageCollection(smallBodyModel, getModelManager()));
-		////                allModels.put(ModelNames.PERSPECTIVE_IMAGE_BOUNDARIES, new PerspectiveImageBoundaryCollection(smallBodyModel));
-		//            }
-		//            else if (instrument.spectralMode == SpectralMode.HYPER)
-		//            {
-		//                allModels.put(ModelNames.COLOR_IMAGES, new ColorImageCollection(smallBodyModel, getModelManager()));
-		////                allModels.put(ModelNames.PERSPECTIVE_IMAGE_BOUNDARIES, new PerspectiveImageBoundaryCollection(smallBodyModel));
-		//            }
-		//        }
+//        for (ImagingInstrument instrument : getPolyhedralModelConfig().imagingInstruments)
+//        {
+//            if (instrument.spectralMode == SpectralMode.MONO)
+//            {
+//                allModels.put(ModelNames.COLOR_IMAGES, new ColorImageCollection(smallBodyModel, getModelManager()));
+//                allModels.put(ModelNames.CUBE_IMAGES, new ImageCubeCollection(smallBodyModel, getModelManager()));
+////                allModels.put(ModelNames.PERSPECTIVE_IMAGE_BOUNDARIES, new PerspectiveImageBoundaryCollection(smallBodyModel));
+//            }
+//
+//            else if (instrument.spectralMode == SpectralMode.MULTI)
+//            {
+//                allModels.put(ModelNames.COLOR_IMAGES, new ColorImageCollection(smallBodyModel, getModelManager()));
+////                allModels.put(ModelNames.PERSPECTIVE_IMAGE_BOUNDARIES, new PerspectiveImageBoundaryCollection(smallBodyModel));
+//            }
+//            else if (instrument.spectralMode == SpectralMode.HYPER)
+//            {
+//                allModels.put(ModelNames.COLOR_IMAGES, new ColorImageCollection(smallBodyModel, getModelManager()));
+////                allModels.put(ModelNames.PERSPECTIVE_IMAGE_BOUNDARIES, new PerspectiveImageBoundaryCollection(smallBodyModel));
+//            }
+//        }
 
 		if (getPolyhedralModelConfig().hasSpectralData)
-		{ 
+		{
 			allModels.putAll(createSpectralModels(smallBodyModel, getModelManager()));
 			allModels.put(ModelNames.SPECTRA_BOUNDARIES, new SpectrumBoundaryCollection(smallBodyModel, (SpectraCollection)allModels.get(ModelNames.SPECTRA)));
             //if (getPolyhedralModelConfig().body == ShapeModelBody.EROS)
@@ -401,9 +400,9 @@ public class SbmtView extends View implements PropertyChangeListener
 		StatusNotifier tmpStatusNotifier = getStatusNotifier();
 		allModels.put(ModelNames.LINE_STRUCTURES, new LineModel<>(tmpSceneChangeNotifier, tmpStatusNotifier, smallBodyModel));
 		allModels.put(ModelNames.POLYGON_STRUCTURES, new PolygonModel(tmpSceneChangeNotifier,tmpStatusNotifier, smallBodyModel));
-		allModels.put(ModelNames.CIRCLE_STRUCTURES, new CircleModel(tmpSceneChangeNotifier, tmpStatusNotifier, smallBodyModel));
-		allModels.put(ModelNames.ELLIPSE_STRUCTURES, new EllipseModel(tmpSceneChangeNotifier, tmpStatusNotifier, smallBodyModel));
-		allModels.put(ModelNames.POINT_STRUCTURES, new PointModel(tmpSceneChangeNotifier, tmpStatusNotifier, smallBodyModel));
+		allModels.put(ModelNames.CIRCLE_STRUCTURES, StructureLegacyUtil.createManager(tmpSceneChangeNotifier, tmpStatusNotifier, smallBodyModel, Mode.CIRCLE_MODE));
+		allModels.put(ModelNames.ELLIPSE_STRUCTURES, StructureLegacyUtil.createManager(tmpSceneChangeNotifier, tmpStatusNotifier, smallBodyModel, Mode.ELLIPSE_MODE));
+		allModels.put(ModelNames.POINT_STRUCTURES, StructureLegacyUtil.createManager(tmpSceneChangeNotifier, tmpStatusNotifier, smallBodyModel, Mode.POINT_MODE));
 		allModels.put(ModelNames.CIRCLE_SELECTION, new CircleSelectionModel(tmpSceneChangeNotifier, tmpStatusNotifier, smallBodyModel));
         DEMCollection demCollection = new DEMCollection(smallBodyModel, getModelManager());
         allModels.put(ModelNames.DEM, demCollection);
@@ -419,9 +418,11 @@ public class SbmtView extends View implements PropertyChangeListener
         demCollection.setModelManager(getModelManager());
         demBoundaryCollection.setModelManager(getModelManager());
 		tmpSceneChangeNotifier.setTarget(getModelManager());
-		((SpectraCollection)(allModels.get(ModelNames.SPECTRA))).setModelManager(getModelManager());
-		((SpectraCollection)(allModels.get(ModelNames.CUSTOM_SPECTRA))).setModelManager(getModelManager());
-
+		if (getPolyhedralModelConfig().hasSpectralData)
+		{
+			((SpectraCollection)(allModels.get(ModelNames.SPECTRA))).setModelManager(getModelManager());
+			((SpectraCollection)(allModels.get(ModelNames.CUSTOM_SPECTRA))).setModelManager(getModelManager());
+		}
         getModelManager().addPropertyChangeListener(this);
 
 		SBMTInfoWindowManagerFactory.initializeModels(getModelManager(), getLegacyStatusHandler());
@@ -1042,7 +1043,7 @@ public class SbmtView extends View implements PropertyChangeListener
         }
     }
 
-	static public LineamentModel createLineament() 
+	static public LineamentModel createLineament()
     {
         return new LineamentModel();
     }

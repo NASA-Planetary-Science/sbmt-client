@@ -32,7 +32,7 @@ public class GDALReader extends BasePipelinePublisher<Layer>
 		loadData(checker, oobValue);
 	}
 
-	private void loadData(ValidityChecker checker, double oobValue)
+	private void loadData(ValidityChecker checker, double oobValue) throws InvalidGDALFileTypeException
 	{
 		synchronized (GDALReader.class)
 		{
@@ -43,7 +43,9 @@ public class GDALReader extends BasePipelinePublisher<Layer>
 				{
 					//TODO this seems to helo with a threading race; need to investigate more
 					System.out.println("GDALReader: loadData: dataset null");
-					System.exit(1);
+					throw new InvalidGDALFileTypeException("SBMT cannot read the file with the built in GDAL library; please ensure the file format is correct");
+//					return;
+//					System.exit(1);
 				}
 				Layer layer = new LayerLoaderBuilder()
 						.dataSet(dataset)

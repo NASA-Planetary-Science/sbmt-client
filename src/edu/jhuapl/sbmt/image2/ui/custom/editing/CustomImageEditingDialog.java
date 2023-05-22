@@ -159,7 +159,7 @@ public class CustomImageEditingDialog<G1 extends IPerspectiveImage & IPerspectiv
 		JButton browseButton = new JButton("Browse");
 		browseButton.addActionListener(e ->
 		{
-			File[] files = CustomFileChooser.showOpenDialog(this, "Select Image", List.of("fits", "fit", "FIT", "FITS", "png", "PNG", "JPG", "jpg"), false);
+			File[] files = CustomFileChooser.showOpenDialog(this, "Select Image", List.of("fits", "fit", "FIT", "FITS", "png", "PNG", "JPG", "jpg", "IMG", "img"), false);
 			if (files == null || files.length == 0)
 	        {
 	            return;
