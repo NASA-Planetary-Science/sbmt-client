@@ -74,7 +74,7 @@ public class VtkImageRendererOperator extends BasePipelineOperator<Layer, vtkIma
 				Callable<Void> task = new LayerRowToImageDataRow3DTask(i);
 				taskList.add(task);
 			}
-
+    
 			resultList = ThreadService.submitAll(taskList);
 		}
 		outputs.add(output);

@@ -21,11 +21,11 @@ import edu.jhuapl.saavtk.util.Configuration.ReleaseType;
 import edu.jhuapl.saavtk.util.Debug;
 import edu.jhuapl.saavtk.util.DownloadableFileManager;
 import edu.jhuapl.saavtk.util.FileCache;
-import edu.jhuapl.saavtk.util.NativeLibraryLoader;
 import edu.jhuapl.sbmt.client2.SbmtMainWindow;
 import edu.jhuapl.sbmt.client2.SbmtMultiMissionTool;
 import edu.jhuapl.sbmt.common.client.Mission;
 import edu.jhuapl.sbmt.common.client.SmallBodyViewConfig;
+import edu.jhuapl.sbmt.util.SBMTNativeLibraryLoader;
 
 
 
@@ -46,8 +46,10 @@ public class SbmtRunnable2 implements Runnable
 			Mission mission = SbmtMultiMissionTool.getMission();
 			writeStartupMessage(mission);
 
-			NativeLibraryLoader.loadAllVtkLibraries();
-			NativeLibraryLoader.loadGDALLibraries();
+//			NativeLibraryLoader.loadAllVtkLibraries();
+//			NativeLibraryLoader.loadGDALLibraries();
+			SBMTNativeLibraryLoader.loadAllVtkLibraries();
+			SBMTNativeLibraryLoader.loadGDALLibraries();
 			gdal.AllRegister();
 
 			SmallBodyViewConfig.initialize();
