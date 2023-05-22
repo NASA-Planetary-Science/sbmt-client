@@ -1,15 +1,18 @@
 package edu.jhuapl.sbmt.common.client;
 
+import java.io.IOException;
 import java.util.List;
 
 import com.google.common.collect.ImmutableList;
 
 import vtk.vtkPolyData;
+import vtk.vtkTransform;
 import vtk.vtkTransformFilter;
 
 import edu.jhuapl.saavtk.model.GenericPolyhedralModel;
 import edu.jhuapl.sbmt.config.Instrument;
 import edu.jhuapl.sbmt.core.image.ImageKeyInterface;
+import edu.jhuapl.sbmt.image2.model.BasemapImage;
 
 public class SmallBodyModel extends GenericPolyhedralModel implements ISmallBodyModel
 {
@@ -21,7 +24,11 @@ public class SmallBodyModel extends GenericPolyhedralModel implements ISmallBody
     };
     private static final ColoringValueType DEFAULT_COLORING_VALUE_TYPE = ColoringValueType.CELLDATA;
 
+    @Deprecated
     private final List<ImageKeyInterface> imageMapKeys;
+
+    private final List<BasemapImage> basemapImages;
+
 
 	public ISmallBodyViewConfig getSmallBodyConfig()
     {
@@ -45,6 +52,7 @@ public class SmallBodyModel extends GenericPolyhedralModel implements ISmallBody
     {
         super(uniqueModelId);
         this.imageMapKeys = ImmutableList.of();
+        this.basemapImages = ImmutableList.of();
     }
 
     /**
@@ -55,12 +63,14 @@ public class SmallBodyModel extends GenericPolyhedralModel implements ISmallBody
     {
         super(uniqueModelId, polyData);
         this.imageMapKeys = ImmutableList.of();
+        this.basemapImages = ImmutableList.of();
     }
 
     public SmallBodyModel(BodyViewConfig config)
     {
         super(config);
         this.imageMapKeys = config.getImageMapKeys();
+        this.basemapImages = config.getBasemapImages();
     }
 
     protected SmallBodyModel(
@@ -82,6 +92,11 @@ public class SmallBodyModel extends GenericPolyhedralModel implements ISmallBody
         return imageMapKeys;
     }
 
+    public List<BasemapImage> getBasemaps()
+    {
+        return basemapImages;
+    }
+
     /**
      * Note that name is used to name this small body model as a whole including all
      * resolution levels whereas modelNames is an array of names that is specific
@@ -101,6 +116,7 @@ public class SmallBodyModel extends GenericPolyhedralModel implements ISmallBody
         super(config, modelNames, modelFiles, coloringFiles, coloringNames, coloringUnits, coloringHasNulls, coloringValueType, lowestResolutionModelStoredInResource);
 
         this.imageMapKeys = config.getImageMapKeys();
+        this.basemapImages = config.getBasemapImages();
     }
 
     protected void initializeConfigParameters(
@@ -139,10 +155,24 @@ public class SmallBodyModel extends GenericPolyhedralModel implements ISmallBody
                 lowestResolutionModelStoredInResource);
     }
 
-    public void transformBody(vtkTransformFilter transformFilter)
+    @Override
+    public void reloadShapeModel() throws IOException
     {
+    	// TODO Auto-generated method stub
+    	super.reloadShapeModel();
+    	transformBody(this.currentTransform);
+    }
+
+    public void transformBody(vtkTransform transform)
+    {
+    	this.currentTransform = transform;
+		vtkTransformFilter transformFilter=new vtkTransformFilter();
+		transformFilter.SetInputData(getSmallBodyPolyData());
+		transformFilter.SetTransform(transform);
+		transformFilter.Update();
+
     	vtkPolyData polydata = transformFilter.GetPolyDataOutput();
-    	setSmallBodyPolyData(polydata);
+    	setSmallBodyPolyDataAtPosition(polydata);
     }
 
 }

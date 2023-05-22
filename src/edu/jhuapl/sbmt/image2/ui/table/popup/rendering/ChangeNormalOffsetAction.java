@@ -19,20 +19,21 @@ import javax.swing.JPanel;
 import javax.swing.JTextField;
 
 import edu.jhuapl.sbmt.image2.interfaces.IPerspectiveImage;
+import edu.jhuapl.sbmt.image2.interfaces.IPerspectiveImageTableRepresentable;
 import edu.jhuapl.sbmt.image2.model.PerspectiveImageCollection;
 import edu.jhuapl.sbmt.image2.pipelineComponents.pipelines.rendering.PerspectiveImageOffsetUpdatePipeline;
 
 import glum.gui.action.PopAction;
 import net.miginfocom.swing.MigLayout;
 
-public class ChangeNormalOffsetAction<G1 extends IPerspectiveImage> extends PopAction<G1>
+public class ChangeNormalOffsetAction<G1 extends IPerspectiveImage & IPerspectiveImageTableRepresentable> extends PopAction<G1>
 {
-	private PerspectiveImageCollection aManager;
+	private PerspectiveImageCollection<G1> aManager;
 
 	/**
 	 * @param imagePopupMenu
 	 */
-	public ChangeNormalOffsetAction(PerspectiveImageCollection aManager)
+	public ChangeNormalOffsetAction(PerspectiveImageCollection<G1> aManager)
 	{
 		this.aManager = aManager;
 	}
@@ -67,10 +68,10 @@ public class ChangeNormalOffsetAction<G1 extends IPerspectiveImage> extends PopA
 	    private JButton cancelButton;
 	    private JFormattedTextField offsetField;
 	    private String lastGood = "";
-	    private PerspectiveImageCollection collection;
-	    private IPerspectiveImage image;
+	    private PerspectiveImageCollection<G1> collection;
+	    private G1 image;
 
-	    public ImageNormalOffsetChangerDialog(PerspectiveImageCollection collection, IPerspectiveImage image)
+	    public ImageNormalOffsetChangerDialog(PerspectiveImageCollection<G1> collection, G1 image)
 	    {
 	    	this.collection = collection;
 	    	this.image = image;

@@ -322,7 +322,7 @@ public class StateHistoryPositionCalculator implements IStateHistoryPositionCalc
 		formatter.setMaximumFractionDigits(2);
 		if (spacecraft.isLabelVisible() && history.getLocationProvider().getPointingProvider() != null)
 		{
-			String rangeString = "Range: " + formatter.format(getSpacecraftRange(history, locationProvider.getPointingProvider().getCurrentInstFrameName(), spacecraftPosition, metadata.getCurrentTime())) + " km";
+			String rangeString = "Range: " + formatter.format(getSpacecraftRange(history, locationProvider.getPointingProvider().getCurrentInstrumentName(), spacecraftPosition, metadata.getCurrentTime())) + " km";
 			String distString = "Dist: " + formatter.format(getSpacecraftDistance(history, metadata.getCurrentTime())) + " km";
 			spacecraft.setLabel(distString);
 		}

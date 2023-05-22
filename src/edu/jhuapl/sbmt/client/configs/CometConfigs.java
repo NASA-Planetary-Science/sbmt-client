@@ -35,10 +35,10 @@ public class CometConfigs extends SmallBodyViewConfig
 
     private static final ImageSource[] SumFiles = new ImageSource[] { ImageSource.GASKELL };
 
-    public CometConfigs()
-    {
-        super(ImmutableList.<String>copyOf(DEFAULT_GASKELL_LABELS_PER_RESOLUTION), ImmutableList.<Integer>copyOf(DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION));
-    }
+	public CometConfigs()
+	{
+		super(ImmutableList.<String>copyOf(DEFAULT_GASKELL_LABELS_PER_RESOLUTION), ImmutableList.<Integer>copyOf(DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION));
+	}
 
     public static void initialize(ConfigArrayList configArray)
     {
@@ -124,7 +124,7 @@ public class CometConfigs extends SmallBodyViewConfig
                             SumFiles, //
                             Instrument.valueFor("ITS"), //
                             0.0, //
-                            "Y"), //
+                            "None"), //
                     new ImagingInstrument( //
                             SpectralImageMode.MONO, //
                             new FixedListQuery<>(hriDir), //
@@ -134,7 +134,7 @@ public class CometConfigs extends SmallBodyViewConfig
                             SumFiles, //
                             Instrument.valueFor("HRI"), //
                             0.0, //
-                            "Y"), //
+                            "None"), //
                     new ImagingInstrument( //
                             SpectralImageMode.MONO, //
                             new FixedListQuery<>(mriDir), //
@@ -144,7 +144,7 @@ public class CometConfigs extends SmallBodyViewConfig
                             SumFiles, //
                             Instrument.valueFor("MRI"), //
                             0.0, //
-                            "Y"), //
+                            "None"), //
                     new ImagingInstrument( //
                             SpectralImageMode.MONO, //
                             new FixedListQuery<>(navcamDir), //
@@ -153,8 +153,8 @@ public class CometConfigs extends SmallBodyViewConfig
                             ImageType.valueOf("NAVCAM_IMAGE"), //
                             SumFiles, //
                             Instrument.valueFor("NAVCAM"), //
-                            0.0, //
-                            "X"), //
+                            180.0, //
+                            "None"), //
             };
 
             c.imageSearchDefaultStartDate = ImageSearchDefaultStartDate;
@@ -227,12 +227,14 @@ public class CometConfigs extends SmallBodyViewConfig
             c.rootDirOnServer = "/GASKELL/67P";
 
             c.imagingInstruments = new ImagingInstrument[] { new ImagingInstrument( //
-                    SpectralImageMode.MONO, //
-                    new GenericPhpQuery("/GASKELL/67P/IMAGING", "67P", "/GASKELL/67P/IMAGING/images/gallery"), //
-                    ImageType.OSIRIS_IMAGE, //
-                    new ImageSource[] { ImageSource.GASKELL }, //
-                    Instrument.OSIRIS //
-                    ) //
+                            SpectralImageMode.MONO, //
+                            new GenericPhpQuery("/GASKELL/67P/IMAGING", "67P", "/GASKELL/67P/IMAGING/images/gallery"), //
+                            ImageType.OSIRIS_IMAGE, //
+                            new ImageSource[]{ImageSource.GASKELL}, //
+                    Instrument.OSIRIS, //
+                    0.0,
+                    "Y"
+                            ) //
             };
             c.imageSearchDefaultStartDate = new GregorianCalendar(2014, 7, 1, 0, 0, 0).getTime();
             c.imageSearchDefaultEndDate = new GregorianCalendar(2014, 11, 31, 0, 0, 0).getTime();
@@ -301,7 +303,7 @@ public class CometConfigs extends SmallBodyViewConfig
             c.rootDirOnServer = "/GASKELL/67P_V2";
 
             c.imagingInstruments = new ImagingInstrument[] { new ImagingInstrument( //
-                    SpectralImageMode.MONO, //
+                            SpectralImageMode.MONO, //
                     new GenericPhpQuery("/GASKELL/67P_V2/IMAGING", "67P_V2", "/GASKELL/67P_V3/IMAGING/gallery"), // V2
                                                                                                                  // has
                                                                                                                  // no
@@ -313,12 +315,12 @@ public class CometConfigs extends SmallBodyViewConfig
                                                                                                                  // V3
                                                                                                                  // gallery
                                                                                                                  // //
-                    // new FixedListQuery("/GASKELL/67P_V2/IMAGING"), //
-                    ImageType.OSIRIS_IMAGE, //
-                    new ImageSource[] { ImageSource.GASKELL }, //
-                    Instrument.OSIRIS , //
-                    0.0, //
-    				"Y"), //
+                            //new FixedListQuery("/GASKELL/67P_V2/IMAGING"), //
+                            ImageType.OSIRIS_IMAGE, //
+                            new ImageSource[]{ImageSource.GASKELL}, //
+		                    Instrument.OSIRIS , //
+		                    0.0, //
+		    				"Y"), //
             };
             c.imageSearchDefaultStartDate = new GregorianCalendar(2014, 6, 1, 0, 0, 0).getTime();
             c.imageSearchDefaultEndDate = new GregorianCalendar(2015, 11, 31, 0, 0, 0).getTime();
@@ -374,13 +376,15 @@ public class CometConfigs extends SmallBodyViewConfig
             c.customBodyCubeSize = 0.10; // km
 
             c.imagingInstruments = new ImagingInstrument[] { new ImagingInstrument( //
-                    SpectralImageMode.MONO, //
-                    new GenericPhpQuery("/GASKELL/67P_V3/IMAGING", "67P_V3", "/GASKELL/67P_V3/IMAGING/gallery"), //
-                    // new FixedListQuery("/GASKELL/67P_V3/IMAGING"), //
-                    ImageType.OSIRIS_IMAGE, //
-                    new ImageSource[] { ImageSource.GASKELL }, //
-                    Instrument.OSIRIS //
-                    ) //
+                            SpectralImageMode.MONO, //
+                            new GenericPhpQuery("/GASKELL/67P_V3/IMAGING", "67P_V3", "/GASKELL/67P_V3/IMAGING/gallery"), //
+                            //new FixedListQuery("/GASKELL/67P_V3/IMAGING"), //
+                            ImageType.OSIRIS_IMAGE, //
+                            new ImageSource[]{ImageSource.GASKELL}, //
+                            Instrument.OSIRIS, //
+                            0.0,
+                            "Y"
+                            ) //
             };
             c.imageSearchDefaultStartDate = new GregorianCalendar(2014, 6, 1, 0, 0, 0).getTime();
             c.imageSearchDefaultEndDate = new GregorianCalendar(2016, 0, 31, 0, 0, 0).getTime();

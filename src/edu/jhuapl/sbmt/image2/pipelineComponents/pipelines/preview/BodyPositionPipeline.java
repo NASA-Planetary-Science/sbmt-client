@@ -1,5 +1,6 @@
 package edu.jhuapl.sbmt.image2.pipelineComponents.pipelines.preview;
 
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -11,15 +12,18 @@ import com.beust.jcommander.internal.Lists;
 import edu.jhuapl.sbmt.common.client.SmallBodyModel;
 import edu.jhuapl.sbmt.image2.pipelineComponents.operators.pointing.SpiceBodyOperator;
 import edu.jhuapl.sbmt.image2.pipelineComponents.publishers.builtin.BuiltInOBJReader;
-import edu.jhuapl.sbmt.image2.pipelineComponents.publishers.pointing.SpiceReaderPublisher;
 import edu.jhuapl.sbmt.pipeline.IPipeline;
 import edu.jhuapl.sbmt.pipeline.operator.IPipelineOperator;
 import edu.jhuapl.sbmt.pipeline.publisher.IPipelinePublisher;
 import edu.jhuapl.sbmt.pipeline.publisher.Publishers;
 import edu.jhuapl.sbmt.pipeline.subscriber.Sink;
+import edu.jhuapl.sbmt.pointing.modules.SpiceReaderPublisher;
 import edu.jhuapl.sbmt.pointing.spice.SpiceInfo;
 import edu.jhuapl.sbmt.pointing.spice.SpicePointingProvider;
 import edu.jhuapl.sbmt.util.TimeUtil;
+
+import crucible.mantle.spice.adapters.AdapterInstantiationException;
+import crucible.mantle.spice.kernel.KernelInstantiationException;
 
 public class BodyPositionPipeline implements IPipeline<SmallBodyModel>
 {
@@ -34,11 +38,11 @@ public class BodyPositionPipeline implements IPipeline<SmallBodyModel>
 	String mkPath;
 	String centerBodyName;
 	String initialTime;
-	String instFrame;
+	String instName;
 	SpiceInfo activeSpiceInfo;
 
 	public BodyPositionPipeline(String[] bodyFiles, String[] bodyNames,
-			SpiceInfo[] spiceInfos, String mkPath, String centerBodyName, String initialTime, String instFrame)
+			SpiceInfo[] spiceInfos, String mkPath, String centerBodyName, String initialTime, String instName)
 			throws Exception
 	{
 		this.bodyFiles = bodyFiles;
@@ -47,7 +51,7 @@ public class BodyPositionPipeline implements IPipeline<SmallBodyModel>
 		this.mkPath = mkPath;
 		this.centerBodyName = centerBodyName;
 		this.initialTime = initialTime;
-		this.instFrame = instFrame;
+		this.instName = instName;
 		//***********************
 		//generate body polydata
 		//***********************
@@ -57,7 +61,7 @@ public class BodyPositionPipeline implements IPipeline<SmallBodyModel>
 		//*********************************
 		activeSpiceInfo = Arrays.asList(spiceInfos).stream().filter(info -> info.getBodyName().equals(centerBodyName))
 				.collect(Collectors.toList()).get(0);
-		pointingProviders = new SpiceReaderPublisher(mkPath, activeSpiceInfo, instFrame);
+		pointingProviders = new SpiceReaderPublisher(mkPath, activeSpiceInfo, instName);
 		spiceBodyObjects = Publishers.formPair(vtkReader, pointingProviders);
 		spiceBodyOperator = new SpiceBodyOperator(centerBodyName, TimeUtil.str2et(initialTime));
 
@@ -72,7 +76,15 @@ public class BodyPositionPipeline implements IPipeline<SmallBodyModel>
 		// *********************************
 		// Use SPICE to position the bodies
 		// *********************************
-		pointingProviders = new SpiceReaderPublisher(mkPath, activeSpiceInfo, instFrame);
+		try
+		{
+			pointingProviders = new SpiceReaderPublisher(mkPath, activeSpiceInfo, instName);
+		}
+		catch (KernelInstantiationException | AdapterInstantiationException | IOException e)
+		{
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		spiceBodyObjects = Publishers.formPair(vtkReader, pointingProviders);
 
 		return spiceBodyObjects.operate(spiceBodyOperator).subscribe(Sink.of(updatedBodies));
@@ -87,7 +99,15 @@ public class BodyPositionPipeline implements IPipeline<SmallBodyModel>
 		// *********************************
 		// Use SPICE to position the bodies
 		// *********************************
-		pointingProviders = new SpiceReaderPublisher(mkPath, activeSpiceInfo, instFrame);
+		try
+		{
+			pointingProviders = new SpiceReaderPublisher(mkPath, activeSpiceInfo, instName);
+		}
+		catch (KernelInstantiationException | AdapterInstantiationException | IOException e)
+		{
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		spiceBodyObjects = Publishers.formPair(vtkReader, pointingProviders);
 		spiceBodyOperator = new SpiceBodyOperator(centerBodyName, time);
 		return spiceBodyObjects.operate(spiceBodyOperator).subscribe(Sink.of(updatedBodies));

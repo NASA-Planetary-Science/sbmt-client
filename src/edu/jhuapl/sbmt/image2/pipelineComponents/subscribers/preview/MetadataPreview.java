@@ -32,6 +32,7 @@ public class MetadataPreview implements IPipelineSubscriber<HashMap<String, Stri
 	{
 		this.title = title;
 		panel = new JPanel();
+		panel.setLayout(new GridBagLayout());
 	}
 
 	@Override
@@ -119,7 +120,6 @@ public class MetadataPreview implements IPipelineSubscriber<HashMap<String, Stri
 //			tabbedPane.setPreferredSize(new Dimension(550, 350));
 			tabbedPane.add("Derived Values", tablePanel2);
 			tabbedPane.add("FITS Header", tablePanel);
-
 			panel.add(tabbedPane, gridBagConstraints);
 		}
 		else

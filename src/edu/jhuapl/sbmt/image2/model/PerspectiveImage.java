@@ -86,14 +86,18 @@ public class PerspectiveImage implements IPerspectiveImage
     //source of image
     ImageOrigin imageOrigin = ImageOrigin.LOCAL;
 
+//    int[] padValues, maxSizeValues;
+    ImageBinPadding binPadding;
+    int binning = 1;
+
 	//needs: adjusted pointing (load and save), rendering, header/metadata
 
     private int index;
 	private double et;
 	private Long longTime;
 	private boolean simulateLighting = false;
-	private double offset = -1.0;
-	private double defaultOffset = -1.0;
+	private double offset = 1e-7;
+	private double defaultOffset = 1e-7;
 	private ImageType imageType;
 	private CylindricalBounds bounds = new CylindricalBounds(0, 0, 0, 0);
 
@@ -361,6 +365,26 @@ public class PerspectiveImage implements IPerspectiveImage
 	public void setImageType(ImageType imageType)
 	{
 		this.imageType = imageType;
+	}
+
+	public void setImageBinPadding(ImageBinPadding binPadding)
+	{
+		this.binPadding = binPadding;
+	}
+
+	public ImageBinPadding getImageBinPadding()
+	{
+		return binPadding;
+	}
+
+	public void setImageBinning(int binning)
+	{
+		this.binning = binning;
+	}
+
+	public int getImageBinning()
+	{
+		return binning;
 	}
 
 	public CylindricalBounds getBounds()

@@ -18,7 +18,6 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JRadioButton;
 import javax.swing.JScrollPane;
-import javax.swing.JSpinner;
 import javax.swing.JTextField;
 import javax.swing.JToggleButton;
 import javax.swing.border.TitledBorder;
@@ -26,6 +25,7 @@ import javax.swing.border.TitledBorder;
 import com.jidesoft.swing.CheckBoxTree;
 
 import edu.jhuapl.sbmt.core.image.ImageSource;
+import edu.jhuapl.sbmt.image2.ui.SBMTDateSpinner;
 
 
 public class ImageSearchParametersPanel extends JPanel
@@ -36,7 +36,7 @@ public class ImageSearchParametersPanel extends JPanel
     private JComboBox<ImageSource> sourceComboBox;
     private JLabel sourceLabel;
     private JLabel startDateLabel;
-    private JSpinner startSpinner;
+    private SBMTDateSpinner startSpinner;
     private JButton submitButton;
     private JLabel toDistanceLabel;
     private JFormattedTextField toDistanceTextField;
@@ -54,7 +54,7 @@ public class ImageSearchParametersPanel extends JPanel
     private JLabel endIncidenceLabel;
     private JLabel endPhaseLabel;
     private JLabel endResolutionLabel;
-    private JSpinner endSpinner;
+    private SBMTDateSpinner endSpinner;
     private JCheckBox excludeGaskellCheckBox;
 
     private JLabel fromDistanceLabel;
@@ -197,15 +197,7 @@ public class ImageSearchParametersPanel extends JPanel
         startDateLabel = new JLabel("Start Date:");
         panel_1.add(startDateLabel);
 
-        startSpinner = new JSpinner();
-        startSpinner.setMinimumSize(new java.awt.Dimension(36, 22));
-        startSpinner.setModel(new javax.swing.SpinnerDateModel(
-                new java.util.Date(1126411200000L), null, null,
-                java.util.Calendar.DAY_OF_MONTH));
-        startSpinner.setEditor(new javax.swing.JSpinner.DateEditor(startSpinner,
-                "yyyy-MMM-dd HH:mm:ss"));
-        startSpinner.setMaximumSize(
-                new java.awt.Dimension(startSpinner.getWidth(), 22));
+        startSpinner = new SBMTDateSpinner();
         panel_1.add(startSpinner);
 
         Component horizontalGlue_8 = Box.createHorizontalGlue();
@@ -221,15 +213,7 @@ public class ImageSearchParametersPanel extends JPanel
         endDateLabel = new JLabel("  End Date:");
         panel_2.add(endDateLabel);
 
-        endSpinner = new JSpinner();
-        endSpinner.setMinimumSize(new java.awt.Dimension(36, 22));
-        endSpinner.setModel(new javax.swing.SpinnerDateModel(
-                new java.util.Date(1126411200000L), null, null,
-                java.util.Calendar.DAY_OF_MONTH));
-        endSpinner.setEditor(new javax.swing.JSpinner.DateEditor(endSpinner,
-                "yyyy-MMM-dd HH:mm:ss"));
-        endSpinner.setMaximumSize(
-                new java.awt.Dimension(endSpinner.getWidth(), 22));
+        endSpinner = new SBMTDateSpinner();
         panel_2.add(endSpinner);
 
         Component horizontalGlue_9 = Box.createHorizontalGlue();
@@ -523,7 +507,7 @@ public class ImageSearchParametersPanel extends JPanel
         return startDateLabel;
     }
 
-    public JSpinner getStartSpinner()
+    public SBMTDateSpinner getStartSpinner()
     {
         return startSpinner;
     }
@@ -613,7 +597,7 @@ public class ImageSearchParametersPanel extends JPanel
         return endResolutionLabel;
     }
 
-    public JSpinner getEndSpinner()
+    public SBMTDateSpinner getEndSpinner()
     {
         return endSpinner;
     }

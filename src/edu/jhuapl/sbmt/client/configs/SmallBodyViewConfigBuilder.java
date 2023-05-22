@@ -241,6 +241,11 @@ public class SmallBodyViewConfigBuilder
         return this;
     }
 
+    public SmallBodyViewConfigBuilder modelRes(String[] resolutionLabels, Integer[] resolutionNumberFacets)
+    {
+        return modelRes(ImmutableList.copyOf(resolutionLabels), ImmutableList.copyOf(resolutionNumberFacets));
+    }
+
     /**
      * Set the extension used by all shape model files associated with the
      * config being built. This method is optional; see {@link #init()} method
@@ -362,7 +367,7 @@ public class SmallBodyViewConfigBuilder
     public SmallBodyViewConfigBuilder imageSearchRanges(Date startDate, Date endDate, double maxScDistance, double maxResolution)
     {
         init();
-        SmallBodyViewConfig c = getConfig();
+        SmallBodyViewConfig c = getConfig(); 
         c.imageSearchDefaultStartDate = startDate;
         c.imageSearchDefaultEndDate = endDate;
         c.imageSearchDefaultMaxSpacecraftDistance = maxScDistance;
@@ -379,6 +384,22 @@ public class SmallBodyViewConfigBuilder
     public SmallBodyViewConfigBuilder dtmCatalogs(boolean enable)
     {
         dtmCatalogs.set(enable);
+        return this;
+    }
+
+    /**
+     * Set the parameters used to compute gravitation-related plate colorings.
+     *
+     * @param density the body's density
+     * @param rotationRate the body's rotation rate
+     * @return the builder
+     */
+    public SmallBodyViewConfigBuilder gravityInputs(double density, double rotationRate)
+    {
+        init();
+        SmallBodyViewConfig c = getConfig();
+        c.density = density;
+        c.rotationRate = rotationRate;
         return this;
     }
 
@@ -425,7 +446,7 @@ public class SmallBodyViewConfigBuilder
 
         if (c.presentInMissions == null)
         {
-//            c.presentInMissions =
+            // c.presentInMissions =
         }
         if (!imagingInstruments.isEmpty())
         {

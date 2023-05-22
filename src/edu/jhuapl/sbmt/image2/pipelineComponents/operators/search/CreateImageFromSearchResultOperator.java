@@ -40,6 +40,35 @@ public class CreateImageFromSearchResultOperator<G1 extends IPerspectiveImage & 
         {
         	String pointingSource = new ImageFileUtil().getPointingServerPath(imageInfo.get(0), instrument, imageSource);
 
+//        	String imagePath = "images";
+//        	if (viewConfig.getUniqueName().contains("Bennu")) imagePath = "images/public";
+//
+////        	String infoBaseName = FilenameUtils.removeExtension(imageInfo.get(0)).replace(imagePath, pointingDir);
+//        	String infoBaseName = rootDir  + File.separator + pointingDir + File.separator +  FilenameUtils.removeExtension(FilenameUtils.getBaseName(imageInfo.get(0)));
+//        	if (extension == ".SUM")
+//    		{
+//	        	if (viewConfig.getUniqueName().contains("Eros"))
+//	    		{
+//	        		//MSI doesn't have a makesumfiles.in to query.
+//	        		String filename = FilenameUtils.getBaseName(imageInfo.get(0).substring(imageInfo.get(0).lastIndexOf("/")));
+//	            	String filenamePrefix = filename.substring(0, filename.indexOf("_"));
+//	        		infoBaseName = infoBaseName.replace(filename, filenamePrefix.substring(0, filenamePrefix.length()-2));
+//        		}
+//	        	else //all other sumfiles based instruments should have makesumfiles.in
+//	        	{
+//					try
+//					{
+//						infoBaseName = infoBaseName.substring(0, infoBaseName.lastIndexOf("/")) + File.separator + getSumFileName(instrument.getSearchQuery().getRootPath(), imageInfo.get(0));
+//					}
+//        			catch (IOException | ParseException | NonexistentRemoteFile e)
+//					{
+//        				String filename = FilenameUtils.getBaseName(imageInfo.get(0).substring(imageInfo.get(0).lastIndexOf("/")));
+//						infoBaseName = infoBaseName.substring(0, infoBaseName.lastIndexOf("/"))
+//										+ File.separator
+//										+ filename;
+//					}
+//	        	}
+//    		}
         	PerspectiveImage image = new PerspectiveImage(imageInfo.get(0), instrument.getType(), imageSource, pointingSource, new double[] {});
 
         	Orientation orientation = instrument.getOrientation(imageSource);
@@ -50,6 +79,7 @@ public class CreateImageFromSearchResultOperator<G1 extends IPerspectiveImage & 
         	image.setLinearInterpolatorDims(instrument.getLinearInterpolationDims());
         	image.setMaskValues(instrument.getMaskValues());
         	image.setFillValues(instrument.getFillValues());
+        	image.setImageBinPadding(instrument.getBinPadding());
         	image.setLongTime(Long.parseLong(imageInfo.get(1)));
         	CompositePerspectiveImage compImage = new CompositePerspectiveImage(List.of(image));
         	compImage.setIndex(i++);

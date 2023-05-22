@@ -3,6 +3,8 @@ package edu.jhuapl.sbmt.client2;
 import java.awt.Cursor;
 import java.awt.Dimension;
 import java.awt.ItemSelectable;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.beans.PropertyChangeEvent;
@@ -13,31 +15,42 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JSpinner;
 import javax.swing.SpinnerNumberModel;
 import javax.swing.SwingUtilities;
 import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.html.HTMLDocument;
 import javax.swing.text.html.HTMLEditorKit;
 
 import edu.jhuapl.saavtk.gui.panel.PolyhedralModelControlPanel;
 import edu.jhuapl.saavtk.gui.render.Renderer;
+import edu.jhuapl.saavtk.gui.util.IconUtil;
 import edu.jhuapl.saavtk.model.ModelManager;
 import edu.jhuapl.saavtk.model.ModelNames;
 import edu.jhuapl.saavtk.model.PolyhedralModel;
 import edu.jhuapl.saavtk.pick.PickUtil;
 import edu.jhuapl.sbmt.common.client.SmallBodyModel;
+import edu.jhuapl.sbmt.core.image.Image;
 import edu.jhuapl.sbmt.core.image.ImageKeyInterface;
+import edu.jhuapl.sbmt.image.model.CylindricalImage;
+import edu.jhuapl.sbmt.image.model.ImageCollection;
 import edu.jhuapl.sbmt.image2.interfaces.IPerspectiveImage;
 import edu.jhuapl.sbmt.image2.interfaces.IPerspectiveImageTableRepresentable;
+import edu.jhuapl.sbmt.image2.model.BasemapImage;
 import edu.jhuapl.sbmt.image2.model.BasemapImageCollection;
 import edu.jhuapl.sbmt.util.PolyDataUtil2;
 import edu.jhuapl.sbmt.util.PolyDataUtil2.PolyDataStatistics;
+
+import glum.gui.GuiUtil;
+import net.miginfocom.swing.MigLayout;
 
 public class SmallBodyControlPanel extends PolyhedralModelControlPanel implements ItemListener
 {
@@ -45,25 +58,39 @@ public class SmallBodyControlPanel extends PolyhedralModelControlPanel implement
     private static final String IMAGE_MAP_TEXT = "Show Image Map";
     private static final String EMPTY_SELECTION = "None";
 
+    @Deprecated
     private final Map<String, ImageKeyInterface> imageMapKeys;
+    private final Map<String, BasemapImage> basemaps;
     private final JCheckBox imageMapCheckBox;
     private final JComboBox<String> imageMapComboBox;
     private final JSpinner imageMapOpacitySpinner;
     private final JLabel opacityLabel;
     private final List<OpacityChangeListener> imageChangeListeners;
+    private final List<BasemapOpacityChangeListener> basemapImageChangeListeners;
+    private JButton basemapInfoButton;
 
     public SmallBodyControlPanel(Renderer aRenderer, ModelManager modelManager, String bodyName)
     {
         super(aRenderer, modelManager, bodyName);
         this.imageMapKeys = new HashMap<>();
+        this.basemaps = new HashMap<>();
         this.imageChangeListeners = new ArrayList<>();
+        this.basemapImageChangeListeners = new ArrayList<>();
 
         SmallBodyModel smallBodyModel = (SmallBodyModel) modelManager.getPolyhedralModel();
 
-        if ((smallBodyModel.getImageMapKeys() != null) && !smallBodyModel.getImageMapKeys().isEmpty())
+        //try the new basemap version first; if that fails, look for older basemap config; otherwise don't present the UI
+        if ((smallBodyModel.getBasemaps() != null) && !smallBodyModel.getBasemaps().isEmpty())
         {
             imageMapCheckBox = configureImageMapCheckBox(smallBodyModel);
             imageMapComboBox = configureImageMapComboBox(smallBodyModel);
+            opacityLabel = new JLabel("Image opacity");
+            imageMapOpacitySpinner = createOpacitySpinner();
+        }
+        else if ((smallBodyModel.getImageMapKeys() != null) && !smallBodyModel.getImageMapKeys().isEmpty())
+        {
+            imageMapCheckBox = configureImageMapCheckBox(smallBodyModel);
+            imageMapComboBox = configureImageMapComboBoxOld(smallBodyModel);
             opacityLabel = new JLabel("Image opacity");
             imageMapOpacitySpinner = createOpacitySpinner();
         }
@@ -85,14 +112,33 @@ public class SmallBodyControlPanel extends PolyhedralModelControlPanel implement
 
         if (!smallBodyModel.getImageMapKeys().isEmpty())
         {
-            imageMapOpacitySpinner.addChangeListener(this);
+        	if (basemaps.size() > 0)
+        		imageMapOpacitySpinner.addChangeListener(new BasemapChangedListener());
+        	else
+        		imageMapOpacitySpinner.addChangeListener(this);
             opacityLabel.setEnabled(false);
             imageMapOpacitySpinner.setEnabled(false);
-
+            panel.add(GuiUtil.createDivider(), "growx,h 4!,span,wrap");
             if (imageMapComboBox != null)
             {
                 panel.add(new JLabel(IMAGE_MAP_TEXT), "wrap");
-                panel.add(imageMapComboBox, "wrap");
+                JPanel comboBoxPanel = new JPanel(new MigLayout("wrap 2", "[grow]", ""));
+                comboBoxPanel.add(imageMapComboBox);
+                if (basemaps.size() > 0)
+                {
+	                basemapInfoButton = GuiUtil.formButton(new ActionListener()
+					{
+						@Override
+						public void actionPerformed(ActionEvent e)
+						{
+							JOptionPane.showMessageDialog(null, basemaps.get(imageMapComboBox.getSelectedItem()).getImageDescription(), "Basemap Properties", JOptionPane.INFORMATION_MESSAGE);
+
+						}
+					}, IconUtil.getActionInfo());
+	                basemapInfoButton.setEnabled(false);
+	                comboBoxPanel.add(basemapInfoButton, "wrap");
+                }
+                panel.add(comboBoxPanel);
             }
             else
             {
@@ -103,6 +149,7 @@ public class SmallBodyControlPanel extends PolyhedralModelControlPanel implement
         }
     }
 
+    @Deprecated
     private ImageKeyInterface getCurrentImageMapKey()
     {
         ImageKeyInterface result = null;
@@ -123,6 +170,25 @@ public class SmallBodyControlPanel extends PolyhedralModelControlPanel implement
         return result;
     }
 
+    private BasemapImage getCurrentBasemap()
+    {
+    	BasemapImage image = null;
+    	if (imageMapComboBox != null)
+        {
+            Object selection = imageMapComboBox.getSelectedItem();
+            if (selection != null)
+            {
+                image = basemaps.get(selection);
+            }
+        }
+        else if (!imageMapKeys.isEmpty())
+        {
+            image = basemaps.values().iterator().next();
+        }
+
+    	return image;
+    }
+
     public JSpinner getImageMapOpacitySpinner()
     {
         return imageMapOpacitySpinner;
@@ -140,7 +206,9 @@ public class SmallBodyControlPanel extends PolyhedralModelControlPanel implement
         return opacityLabel;
     }
 
-    @Override
+
+
+    @Deprecated
     public void itemStateChanged(ItemEvent e)
     {
         PickUtil.setPickingEnabled(false);
@@ -163,6 +231,31 @@ public class SmallBodyControlPanel extends PolyhedralModelControlPanel implement
         }
     }
 
+    private final JComboBox<String> configureImageMapComboBox(SmallBodyModel model)
+    {
+        JComboBox<String> result = null;
+        List<BasemapImage> maps = model.getBasemaps();
+        if (maps.size() > 0)
+        {
+            String[] allOptions = new String[maps.size() + 1];
+            int index = 0;
+            allOptions[index] = EMPTY_SELECTION;
+            basemaps.put(EMPTY_SELECTION, null);
+            for (; index < maps.size(); ++index)
+            {
+                BasemapImage key = maps.get(index);
+                String name = key.getImageName();
+                allOptions[index + 1] = name;
+                basemaps.put(name, key);
+            }
+            result = new JComboBox<>(allOptions);
+            result.addItemListener(new BasemapItemChangedListener());
+        }
+
+        return result;
+    }
+
+    @Deprecated
     private final JCheckBox configureImageMapCheckBox(SmallBodyModel model)
     {
         JCheckBox result = null;
@@ -180,7 +273,9 @@ public class SmallBodyControlPanel extends PolyhedralModelControlPanel implement
 
         return result;
     }
-    private final JComboBox<String> configureImageMapComboBox(SmallBodyModel model)
+
+    @Deprecated
+    private final JComboBox<String> configureImageMapComboBoxOld(SmallBodyModel model)
     {
         JComboBox<String> result = null;
         List<ImageKeyInterface> mapKeys = model.getImageMapKeys();
@@ -204,39 +299,33 @@ public class SmallBodyControlPanel extends PolyhedralModelControlPanel implement
         return result;
     }
 
+    @Deprecated
     protected <G1 extends IPerspectiveImage & IPerspectiveImageTableRepresentable> void showImageMap(ImageKeyInterface key, boolean show)
     {
-        if (key == null)
-        {
-        	BasemapImageCollection imageCollection = (BasemapImageCollection) getModelManager().getModel(ModelNames.BASEMAPS);
-        	imageCollection.hideAllImages();
-            return;
-        }
+        if (key == null) return;
 
         try
         {
-            BasemapImageCollection imageCollection = (BasemapImageCollection) getModelManager().getModel(ModelNames.BASEMAPS);
-            G1 image = (G1) imageCollection.getImage(key.getImageFilename());
+        	 ImageCollection imageCollection = (ImageCollection) getModelManager().getModel(ModelNames.IMAGES);
+             Image image = imageCollection.getImage(key);
 
-            if (show && image == null)
-            {
-                // The first time this image is displayed, need to load it.
-                setCursor(new Cursor(Cursor.WAIT_CURSOR));
+             if (show && image == null)
+             {
+                 // The first time this image is displayed, need to load it.
+                 setCursor(new Cursor(Cursor.WAIT_CURSOR));
 
-                image = (G1)imageCollection.addImage(key);
-//                image = imageCollection.getImage(key);
-                imageCollection.setImageMapped(image, show);
-//                imageMapOpacitySpinner.setValue(imageCollection.getOpacity());
-//                imageCollection.addPropertyChangeListener(new OpacityChangeListener(imageCollection));
-            }
+                 imageCollection.addImage(key);
+                 image = imageCollection.getImage(key);
+                 imageMapOpacitySpinner.setValue(image.getOpacity());
+                 image.addPropertyChangeListener(new OpacityChangeListener(image));
+             }
 
-//            if (image != null)
-//            {
-//            	imageCollection.setImageMapped(image, show);
-////                image.setVisible(show);
-//            }
-            opacityLabel.setEnabled(show);
-            imageMapOpacitySpinner.setEnabled(show);
+             if (image != null)
+             {
+                 image.setVisible(show);
+             }
+             opacityLabel.setEnabled(show);
+             imageMapOpacitySpinner.setEnabled(show);
         }
         catch (Exception e)
         {
@@ -248,21 +337,34 @@ public class SmallBodyControlPanel extends PolyhedralModelControlPanel implement
         }
     }
 
+    private <G1 extends IPerspectiveImage & IPerspectiveImageTableRepresentable> void showBasemap(BasemapImage image, boolean show)
+    {
+    	BasemapImageCollection<G1> imageCollection = (BasemapImageCollection<G1>) getModelManager().getModel(ModelNames.BASEMAPS);
+    	clearBasemaps();
+    	G1 perImage = imageCollection.addImage(image);
+    	imageCollection.setImageMapped(perImage, show);
+    }
+
+    private <G1 extends IPerspectiveImage & IPerspectiveImageTableRepresentable> void clearBasemaps()
+    {
+    	BasemapImageCollection<G1> imageCollection = (BasemapImageCollection<G1>) getModelManager().getModel(ModelNames.BASEMAPS);
+    	for (G1 image : imageCollection.getAllItems())
+    		imageCollection.setImageMapped(image, false);
+    }
+
     @Override
     public void stateChanged(@SuppressWarnings("unused") ChangeEvent e)
     {
-//        ImageCollection imageCollection =
-//                (ImageCollection)getModelManager().getModel(ModelNames.IMAGES);
-        BasemapImageCollection imageCollection = (BasemapImageCollection) getModelManager().getModel(ModelNames.BASEMAPS);
+        ImageCollection imageCollection =
+                (ImageCollection)getModelManager().getModel(ModelNames.IMAGES);
 
         double val = (Double)getImageMapOpacitySpinner().getValue();
 
         ImageKeyInterface key = getCurrentImageMapKey();
         if (key != null)
         {
-        	imageCollection.setOpacity(val);
-//            CylindricalImage image = (CylindricalImage)imageCollection.getImage(key);
-//            image.setOpacity(val);
+            CylindricalImage image = (CylindricalImage)imageCollection.getImage(key);
+            image.setOpacity(val);
         }
     }
 
@@ -332,21 +434,89 @@ public class SmallBodyControlPanel extends PolyhedralModelControlPanel implement
         return spinner;
     }
 
-    protected class OpacityChangeListener<G1 extends IPerspectiveImage & IPerspectiveImageTableRepresentable> implements PropertyChangeListener {
-//        private final G1 image;
-    	private BasemapImageCollection<G1> imageCollection;
+    protected class OpacityChangeListener implements PropertyChangeListener {
+        private final Image image;
 
-        OpacityChangeListener(BasemapImageCollection<G1> imageCollection) {
-            this.imageCollection = imageCollection;
+        OpacityChangeListener(Image image) {
+            this.image = image;
             imageChangeListeners.add(this);
         }
 
         @Override
         public void propertyChange(@SuppressWarnings("unused") PropertyChangeEvent evt)
         {
-            getImageMapOpacitySpinner().setValue(imageCollection.getOpacity());
+            getImageMapOpacitySpinner().setValue(image.getOpacity());
         }
 
     }
 
+    class BasemapChangedListener<G1 extends IPerspectiveImage & IPerspectiveImageTableRepresentable> implements ChangeListener
+    {
+        @Override
+        public void stateChanged(@SuppressWarnings("unused") ChangeEvent e)
+        {
+            BasemapImageCollection<G1> imageCollection = (BasemapImageCollection<G1>) getModelManager().getModel(ModelNames.BASEMAPS);
+            double val = (Double)getImageMapOpacitySpinner().getValue();
+            imageCollection.setOpacity(val);
+        }
+    }
+
+	protected class BasemapOpacityChangeListener<G1 extends IPerspectiveImage & IPerspectiveImageTableRepresentable> implements PropertyChangeListener
+	{
+		private BasemapImageCollection<G1> imageCollection;
+
+		BasemapOpacityChangeListener(BasemapImageCollection<G1> imageCollection)
+		{
+			this.imageCollection = imageCollection;
+			basemapImageChangeListeners.add(this);
+		}
+
+		@Override
+		public void propertyChange(@SuppressWarnings("unused") PropertyChangeEvent evt)
+		{
+			getImageMapOpacitySpinner().setValue(imageCollection.getOpacity());
+		}
+
+	}
+
+    class BasemapItemChangedListener<G1 extends IPerspectiveImage & IPerspectiveImageTableRepresentable> implements ItemListener
+    {
+
+        @Override
+        public void itemStateChanged(ItemEvent e)
+        {
+        	if (e.getStateChange() != ItemEvent.SELECTED) return;
+            PickUtil.setPickingEnabled(false);
+
+            ItemSelectable selectedItem = e.getItemSelectable();
+            if (selectedItem == imageMapCheckBox)
+            {
+                boolean show = imageMapCheckBox.isSelected();
+                showBasemap(getCurrentBasemap(), show);
+            }
+            else if (selectedItem == imageMapComboBox)
+            {
+                String item = (String) e.getItem();
+                boolean show = e.getStateChange() == ItemEvent.SELECTED;
+                if (item.equals("None"))
+                {
+                	clearBasemaps();
+                	basemapInfoButton.setEnabled(false);
+                	opacityLabel.setEnabled(false);
+                    imageMapOpacitySpinner.setEnabled(false);
+                }
+                else
+            	{
+                	showBasemap(basemaps.get(item), show);
+                	basemapInfoButton.setEnabled(true);
+                	opacityLabel.setEnabled(true);
+                    imageMapOpacitySpinner.setEnabled(true);
+            	}
+            }
+            else
+            {
+                PickUtil.setPickingEnabled(true);
+            }
+        }
+    }
 }

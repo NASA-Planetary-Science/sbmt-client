@@ -65,27 +65,27 @@ public class StandardStateHistoryLocationProvider implements IStateHistoryLocati
 	}
 
 	@Override
-	public double[] getInstrumentLookDirection(String instrumentFrameName)
+	public double[] getInstrumentLookDirection(String instrumentName)
 	{
-		return getCurrentState().getInstrumentLookDirection(instrumentFrameName);
+		return getCurrentState().getInstrumentLookDirection(instrumentName);
 	}
 
 	@Override
-	public double[] getInstrumentLookDirectionAtTime(String instrumentFrameName, double time)
+	public double[] getInstrumentLookDirectionAtTime(String instrumentName, double time)
 	{
-		return getStateAtTime(time).getInstrumentLookDirection(instrumentFrameName);
+		return getStateAtTime(time).getInstrumentLookDirection(instrumentName);
 	}
 
 	@Override
-	public UnwritableVectorIJK getFrustum(String instrumentFrameName, int index)
+	public UnwritableVectorIJK getFrustum(String instrumentName, int index)
 	{
-		return getCurrentState().getFrustum(instrumentFrameName, index);
+		return getCurrentState().getFrustum(instrumentName, index);
 	}
 
 	@Override
-	public UnwritableVectorIJK getFrustumAtTime(String instrumentFrameName, int index, double time)
+	public UnwritableVectorIJK getFrustumAtTime(String instrumentName, int index, double time)
 	{
-		return getStateAtTime(time).getFrustum(instrumentFrameName, index);
+		return getStateAtTime(time).getFrustum(instrumentName, index);
 	}
 
 	@Override

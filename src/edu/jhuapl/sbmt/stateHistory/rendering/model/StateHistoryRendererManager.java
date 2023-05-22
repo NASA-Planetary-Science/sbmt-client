@@ -648,6 +648,7 @@ public class StateHistoryRendererManager extends SaavtkItemManager<StateHistory>
 		int numberOfInstruments = run.getLocationProvider().getPointingProvider().getInstrumentNames().length;
 		if (numberOfInstruments == 0) return;
 		Color color = PlannedDataActorFactory.getColorForInstrument(instName);
+		if (color == null) color = Color.red;
 		PerspectiveFrustum fov = instrumentNameToFovMap.get(instName);
 		if (fov == null)
 		{
@@ -1035,7 +1036,7 @@ public class StateHistoryRendererManager extends SaavtkItemManager<StateHistory>
 		if (!coloredRange.contains(i)) return null;
 		double startTime = trajectory.getStartTime();
 		double nextTime = startTime + i*trajectory.getTimeStep();
-		String currentInstrument = trajectory.getPointingProvider().getCurrentInstFrameName();
+		String currentInstrument = trajectory.getPointingProvider().getCurrentInstrumentName();
 		InstrumentPointing instrumentPointing = trajectory.getPointingProvider().provide(nextTime);
 
 		vtkDoubleArray dataArray = new vtkDoubleArray();

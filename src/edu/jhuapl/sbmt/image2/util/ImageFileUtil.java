@@ -17,7 +17,18 @@ public class ImageFileUtil
         @Override
         protected File getFile(String mapKey)
         {
-            return FileCache.getFileFromServer(SafeURLPaths.instance().getString(mapKey, "make_sumfiles.in"));
+        	File file = FileCache.getFileFromServer(SafeURLPaths.instance().getString(mapKey, "make_sumfiles.in"));
+            return file;
+        }
+
+    };
+
+    protected static final CachingMapLookup CorrectedSumFileLookup = new CachingMapLookup() {
+
+        @Override
+        protected File getFile(String mapKey)
+        {
+            return FileCache.getFileFromServer(SafeURLPaths.instance().getString(mapKey, "make_sumfiles_corrected.in"));
         }
 
     };
@@ -44,6 +55,7 @@ public class ImageFileUtil
         String imageBaseName = imageFileName.replaceFirst("\\.[^\\.]*$", "");
 
         String pointingBaseName = null;
+
         if (pointingType.equals("SUM"))
         {
             if (instrument.getInstrumentName() == Instrument.MSI)
@@ -52,7 +64,12 @@ public class ImageFileUtil
             }
             else
             {
-                pointingBaseName = SumFileLookup.lookUp(pointingRoot, imageFileName);
+                if (imageSource == ImageSource.CORRECTED)
+                	pointingBaseName = CorrectedSumFileLookup.lookUp(pointingRoot, imageFileName);
+                else
+                {
+                	pointingBaseName = SumFileLookup.lookUp(pointingRoot, imageFileName);
+                }
             }
         }
 

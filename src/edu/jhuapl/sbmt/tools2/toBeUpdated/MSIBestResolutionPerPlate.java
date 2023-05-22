@@ -1,4 +1,4 @@
-package edu.jhuapl.sbmt.tools2;
+package edu.jhuapl.sbmt.tools2.toBeUpdated;
 
 import java.io.BufferedWriter;
 import java.io.File;
@@ -126,7 +126,7 @@ public class MSIBestResolutionPerPlate
     private static void computeBestResolutionPerPlate(
             List<String> msiFiles, ImageSource msiSource, ImagingInstrument instrument) throws Exception
     {
-        int numPlatesInSmallBodyModel = (int)erosModel.getSmallBodyPolyData().GetNumberOfCells();
+        int numPlatesInSmallBodyModel = erosModel.getSmallBodyPolyData().GetNumberOfCells();
         for (int i=0; i<numPlatesInSmallBodyModel; ++i)
         {
             statisticsPerPlate.add(new PlateStatistics());
@@ -201,7 +201,7 @@ public class MSIBestResolutionPerPlate
 
 
             footprint.BuildCells();
-            int numberCells = (int)footprint.GetNumberOfCells();
+            int numberCells = footprint.GetNumberOfCells();
             System.out.println("number of plates in footprint: " + numberCells);
             double[] pt0 = new double[3];
             double[] pt1 = new double[3];

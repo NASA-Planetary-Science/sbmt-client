@@ -209,8 +209,10 @@ public class StateHistoryIntervalSelectionController
         view.getAddStateHistoryButton().addActionListener(e ->
         {
         	JFrame frame = new JFrame("Generate New Interval...");
-        	frame.add(intervalGenerationController.getView().getToolbar(), BorderLayout.NORTH);
-        	frame.add(intervalGenerationController.getView());
+        	StateHistoryIntervalGenerationPanel panel = intervalGenerationController.getView();
+        	panel.refreshKernels();
+        	frame.add(panel.getToolbar(), BorderLayout.NORTH);
+        	frame.add(panel);
         	frame.pack();
         	frame.setVisible(true);
 

@@ -4,6 +4,8 @@ import java.io.PrintStream;
 import java.util.List;
 import java.util.function.Function;
 
+import com.google.common.collect.ImmutableList;
+
 import edu.jhuapl.sbmt.layer.api.Layer;
 import edu.jhuapl.sbmt.layer.api.Pixel;
 import edu.jhuapl.sbmt.layer.api.PixelDouble;
@@ -103,9 +105,9 @@ public abstract class FakePipeline
         return ofScalar(TestISize, TestJSize, testScalarChecker(TestISize, TestJSize), null);
     }
 
-    protected Layer createVectorLayer()
+    protected Layer createVectorLayer(int kSize)
     {
-        return ofVector(TestISize, TestJSize, TestKSize, testVectorChecker(TestISize, TestJSize), null);
+        return ofVector(TestISize, TestJSize, kSize, testVectorChecker(TestISize, TestJSize), null);
     }
 
     /**
@@ -490,7 +492,7 @@ public abstract class FakePipeline
             @Override
             protected Layer createLayer()
             {
-                return createVectorLayer();
+                return createVectorLayer(TestKSize);
             }
 
             @Override
@@ -547,7 +549,7 @@ public abstract class FakePipeline
             @Override
             protected Layer createLayer()
             {
-                return createVectorLayer();
+                return createVectorLayer(TestKSize);
             }
 
             @Override
@@ -784,6 +786,43 @@ public abstract class FakePipeline
         };
     }
 
+    protected static FakePipeline testAppendLayer(int numberScalars, int vectorKSize)
+    {
+        return new FakePipeline("Append " + numberScalars + " scalar layers to create a vector layer", TransformFactory.identity()) {
+
+            @Override
+            protected Layer createLayer()
+            {
+                LayerUtility utility = new LayerUtility();
+
+                ImmutableList.Builder<Layer> builder = ImmutableList.builder();
+                for (int k = 0; k < numberScalars; ++k)
+                {
+                    builder.add(createScalarLayer());
+                }
+
+                if (vectorKSize > 0)
+                {
+                    builder.add(createVectorLayer(vectorKSize));
+                }
+
+                return utility.append(builder.build());
+            }
+
+            @Override
+            protected void displayCreatedLayer(Layer layer)
+            {
+                displayLayer("Created layer", layer, numberScalars + vectorKSize, null);
+            }
+
+            @Override
+            protected void displayProcessedLayer(Layer layer)
+            {
+                displayLayer("Transformed layer", layer, numberScalars + vectorKSize, null);
+            }
+        };
+    }
+
     protected static void appendArray(StringBuilder b, double[] array)
     {
         if (array != null)
@@ -906,7 +945,7 @@ public abstract class FakePipeline
         }, null)).run();
 
         System.out.println("Show what happens when one slices a vector, pulling out the middle element of the 3");
-        PixelVector pv = PixelVectorFactory.of(3, TestOOBValue, null);
+
         vectorToVector(TestKSize, null, DoubleTransformFactory.slice(1, TestOOBValue)).run();
 
         System.out.println("Show what happens when a subset of a scalar layer I range = [1, 4), J range = [1, 3) is taken");
@@ -957,6 +996,12 @@ public abstract class FakePipeline
 
         System.out.println("Show what happens when using all entries and specified range, when specified range uses NaNs");
         testVectorRange(11.5, 35.5, true, true, new double[] { 1.0, 11.5, 11.5 }, new double[] { 35.5, 46.0, 69.0 }).run();
+
+        System.out.println("Test appending a stack of scalars to make a vector layer");
+        testAppendLayer(TestKSize, 0).run();
+
+        System.out.println("Test appending a scalar and vector layer");
+        testAppendLayer(1, 3).run();
 
     }
 

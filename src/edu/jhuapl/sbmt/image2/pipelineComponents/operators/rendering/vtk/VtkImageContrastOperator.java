@@ -28,7 +28,6 @@ public class VtkImageContrastOperator//<InputType extends vtkImageData, OutputTy
 	{
 		minValue = inputs.get(0).GetScalarRange()[0];
 		maxValue = inputs.get(0).GetScalarRange()[1];
-//		System.out.println("VtkImageContrastOperator: processData: min value " + minValue + " maxvalue " + maxValue);
 		outputs = new ArrayList<vtkImageData>();
 		outputs.add(getImageWithDisplayedRange());
 	}

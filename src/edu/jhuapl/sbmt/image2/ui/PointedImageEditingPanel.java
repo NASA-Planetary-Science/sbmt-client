@@ -10,6 +10,7 @@ import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
 import java.beans.PropertyChangeEvent;
 import java.io.File;
+import java.io.IOException;
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
@@ -29,6 +30,7 @@ import javax.swing.SwingConstants;
 import javax.swing.WindowConstants;
 import javax.swing.border.TitledBorder;
 
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.commons.lang3.tuple.Triple;
 
@@ -68,6 +70,7 @@ public class PointedImageEditingPanel<G1 extends IPerspectiveImage & IPerspectiv
 	// private vtkJoglPanelComponent renWin;
 	private Renderer renderer;
 
+	private JButton exportModifiedPointingFileButton;
 	private JButton rotateLeftButton;
 	private JButton rotateRightButton;
 	private JButton upButton;
@@ -78,7 +81,6 @@ public class PointedImageEditingPanel<G1 extends IPerspectiveImage & IPerspectiv
 	private JButton rightButton;
 	private JPanel pointingPanel;
 	private JButton downButton;
-	private JLabel factorLabel;
 	private JLabel factorLabel1;
 	private JTextField factorTextField1;
 	private JCheckBox adjustFrameCheckBox3;
@@ -98,6 +100,9 @@ public class PointedImageEditingPanel<G1 extends IPerspectiveImage & IPerspectiv
 	private JLabel currentSampleDeltaLabel;
 	private JLabel currentLineDeltaLabel;
 	private JLabel currentZoomDeltaLabel;
+	private JCheckBox modifiedEnabled;
+	private JSlider modifiedAlphaSlider;
+	private JSlider originalAlphaSlider;
 
 	public PointedImageEditingPanel(G1 image, SmallBodyModel smallBodyModel, List<vtkActor> inputs)
 	{
@@ -171,7 +176,6 @@ public class PointedImageEditingPanel<G1 extends IPerspectiveImage & IPerspectiv
 
 		initRenderer();
 
-		factorLabel = new JLabel();
         pointingPanel = new JPanel();
         leftButton = new JButton();
         rightButton = new JButton();
@@ -187,6 +191,33 @@ public class PointedImageEditingPanel<G1 extends IPerspectiveImage & IPerspectiv
         factorTextField1 = new JTextField();
 
         pointingPanel.setLayout(new GridBagLayout());
+
+        exportModifiedPointingFileButton = new JButton("Export Pointing File");
+        exportModifiedPointingFileButton.setEnabled(false);
+        exportModifiedPointingFileButton.addActionListener(e -> {
+        	String name = image.getModifiedPointingSource().get();
+        	File file = CustomFileChooser.showSaveDialog(this, "Save Modified Pointing File...");
+        	if (file != null)
+        	{
+        		try
+				{
+        			if (!name.toLowerCase().endsWith("info")) name += ".INFO";
+					FileUtils.copyFile(new File(name), file);
+				}
+				catch (IOException e1)
+				{
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
+        	}
+        });
+
+        gridBagConstraints = new GridBagConstraints();
+		gridBagConstraints.gridx = -1;
+		gridBagConstraints.gridy = 0;
+		gridBagConstraints.anchor = GridBagConstraints.WEST;
+		gridBagConstraints.weightx = 1.0;
+		pointingPanel.add(exportModifiedPointingFileButton, gridBagConstraints);
 
 		leftButton.setText("<");
 		leftButton.setToolTipText("left");
@@ -553,6 +584,10 @@ public class PointedImageEditingPanel<G1 extends IPerspectiveImage & IPerspectiv
 		allActors.addAll(actorPipeline.getRenderableImageActors());
 		allActors.addAll(actorPipeline.getRenderableModifiedImageActors());
 		loadActors(allActors);
+		modifiedEnabled.setEnabled(true);
+		exportModifiedPointingFileButton.setEnabled(true);
+		adjustPropOpactity(props.get(1), originalAlphaSlider.getValue());
+		adjustPropOpactity(props.get(2), modifiedAlphaSlider.getValue());
 	}
 
 	private SpacecraftPointingDelta generateDelta()
@@ -575,10 +610,8 @@ public class PointedImageEditingPanel<G1 extends IPerspectiveImage & IPerspectiv
 			return delta;
 		}
 		delta.setLineOffset(currentLineOffset);
-//		delta.setPitchOffset(ROTATION_DELTA);
 		delta.setRotationOffset(currentRotationAngle);
 		delta.setSampleOffset(currentSampleOffset);
-//		delta.setYawOffset(ROTATION_DELTA);
 		delta.setZoomFactor(currentZoomFactor);
 
 		currentZoomDeltaLabel.setText("" + delta.getZoomFactor());
@@ -800,16 +833,14 @@ public class PointedImageEditingPanel<G1 extends IPerspectiveImage & IPerspectiv
 		gridBagConstraints.anchor = GridBagConstraints.EAST;
 		panel.add(originalAlphaSliderLabel, gridBagConstraints);
 
-		JSlider originalAlphaSlider = new JSlider();
+		originalAlphaSlider = new JSlider();
 		originalAlphaSlider.setValue(100);
 		JLabel originalAlphaSliderValueLabel = new JLabel(""+originalAlphaSlider.getValue());
 
 		originalAlphaSlider.addChangeListener(e -> {
 			JSlider source = (JSlider)e.getSource();
 			originalAlphaSliderValueLabel.setText(""+source.getValue());
-			vtkProperty interiorProperty = ((vtkActor)(props.get(1))).GetProperty();
-			interiorProperty.SetOpacity(source.getValue()/100.0);
-			renderer.notifySceneChange();
+			adjustPropOpactity(props.get(1), source.getValue());
 		});
 		gridBagConstraints = new GridBagConstraints();
 		gridBagConstraints.gridx = 2;
@@ -829,7 +860,8 @@ public class PointedImageEditingPanel<G1 extends IPerspectiveImage & IPerspectiv
 		gridBagConstraints.anchor = GridBagConstraints.WEST;
 		panel.add(originalAlphaSliderValueLabel, gridBagConstraints);
 
-		JCheckBox modifiedEnabled = new JCheckBox("Modified Image");
+		modifiedEnabled = new JCheckBox("Modified Image");
+		modifiedEnabled.setEnabled(false);
 		modifiedEnabled.addActionListener(e -> {
 			JCheckBox checkBox = (JCheckBox)e.getSource();
 			props.get(2).SetVisibility(checkBox.isSelected() ? 1 : 0);
@@ -853,15 +885,13 @@ public class PointedImageEditingPanel<G1 extends IPerspectiveImage & IPerspectiv
 		gridBagConstraints.anchor = GridBagConstraints.EAST;
 		panel.add(modifiedAlphaSliderLabel, gridBagConstraints);
 
-		JSlider modifiedAlphaSlider = new JSlider();
+		modifiedAlphaSlider = new JSlider();
 		modifiedAlphaSlider.setValue(100);
 		JLabel modifiedAlphaSliderValueLabel = new JLabel(""+modifiedAlphaSlider.getValue());
 		modifiedAlphaSlider.addChangeListener(e -> {
 			JSlider source = (JSlider)e.getSource();
 			modifiedAlphaSliderValueLabel.setText(""+source.getValue());
-			vtkProperty interiorProperty = ((vtkActor)(props.get(2))).GetProperty();
-			interiorProperty.SetOpacity(source.getValue()/100.0);
-			renderer.notifySceneChange();
+			adjustPropOpactity(props.get(2), source.getValue());
 		});
 		gridBagConstraints = new GridBagConstraints();
 		gridBagConstraints.gridx = 2;
@@ -882,6 +912,13 @@ public class PointedImageEditingPanel<G1 extends IPerspectiveImage & IPerspectiv
 		panel.add(modifiedAlphaSliderValueLabel, gridBagConstraints);
 
 		return panel;
+	}
+
+	private void adjustPropOpactity(vtkProp prop, double percentValue)
+	{
+		vtkProperty interiorProperty = ((vtkActor)(prop)).GetProperty();
+		interiorProperty.SetOpacity(percentValue/100.0);
+		renderer.notifySceneChange();
 	}
 
 	private JPanel getCurrentPointingDeltaPanel()

@@ -177,9 +177,9 @@ public class DEMView extends JFrame
 		ConfigurableSceneNotifier tmpSceneChangeNotifier = new ConfigurableSceneNotifier();
 		lineModel = new LineModel<>(tmpSceneChangeNotifier, tmpStatusBarPanel, priDEM, PolyLineMode.PROFILE);
 		lineModel.setMaximumVerticesPerLine(2);
-		HashMap<ModelNames, Model> allModels = new HashMap<ModelNames, Model>();
-		allModels.put(ModelNames.SMALL_BODY, priDEM);
-		allModels.put(ModelNames.LINE_STRUCTURES, lineModel);
+		HashMap<ModelNames, List<Model>> allModels = new HashMap<ModelNames, List<Model>>();
+		allModels.put(ModelNames.SMALL_BODY, ImmutableList.of(priDEM));
+		allModels.put(ModelNames.LINE_STRUCTURES, ImmutableList.of(lineModel));
 
 		modelManager = new ModelManager(priDEM, allModels);
 		tmpSceneChangeNotifier.setTarget(modelManager);

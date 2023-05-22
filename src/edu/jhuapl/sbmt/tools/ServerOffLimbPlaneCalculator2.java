@@ -1,4 +1,4 @@
-package edu.jhuapl.sbmt.tools2;
+package edu.jhuapl.sbmt.tools;
 
 import java.io.File;
 import java.io.IOException;
@@ -30,11 +30,11 @@ import edu.jhuapl.sbmt.image2.pipelineComponents.pipelines.preview.RenderableIma
 import edu.jhuapl.sbmt.pipeline.publisher.Just;
 import edu.jhuapl.sbmt.pipeline.subscriber.PairSink;
 
-public class ServerOffLimbPlaneCalculator
+public class ServerOffLimbPlaneCalculator2
 {
 	private Pair<RenderablePointedImage, vtkPolyData>[] polydata = new Pair[1];
 
-    public ServerOffLimbPlaneCalculator(RenderablePointedImage renderableImage, List<SmallBodyModel> smallBodyModels) throws IOException, Exception
+    public ServerOffLimbPlaneCalculator2(RenderablePointedImage renderableImage, List<SmallBodyModel> smallBodyModels) throws IOException, Exception
     {
 		double offLimbFootprintDepth = renderableImage.getOfflimbDepth();
 		RenderablePointedImageFootprintGeneratorPipeline pipeline = new RenderablePointedImageFootprintGeneratorPipeline(renderableImage, smallBodyModels);
@@ -42,7 +42,7 @@ public class ServerOffLimbPlaneCalculator
 
 		double[] boundingBox = footprints.get(0).GetBounds();
 		Just.of(renderableImage)
-			.operate(new OfflimbPlaneGeneratorOperators(offLimbFootprintDepth, smallBodyModels, boundingBox, (int)footprints.get(0).GetNumberOfPoints()))
+			.operate(new OfflimbPlaneGeneratorOperators(offLimbFootprintDepth, smallBodyModels, boundingBox, footprints.get(0).GetNumberOfPoints()))
 			.subscribe(PairSink.of(polydata))
 			.run();
     }
@@ -91,7 +91,7 @@ public class ServerOffLimbPlaneCalculator
     	RenderableImagePipeline pipeline = new RenderableImagePipeline(filename, pointingFilename, selectedInstrument.get(), source);
     	List<RenderablePointedImage> images = pipeline.getOutput();
 
-    	ServerOffLimbPlaneCalculator calculator = new ServerOffLimbPlaneCalculator(images.get(0), List.of(smallBodyModel));
+    	ServerOffLimbPlaneCalculator2 calculator = new ServerOffLimbPlaneCalculator2(images.get(0), List.of(smallBodyModel));
     	if (!(new File(filename).exists())) new File(filename).getParentFile().mkdirs();
     	calculator.saveToDisk(filename);
 	}

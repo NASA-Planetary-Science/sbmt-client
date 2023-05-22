@@ -2,6 +2,7 @@ package edu.jhuapl.sbmt.config;
 
 import java.util.Arrays;
 
+import edu.jhuapl.saavtk.model.DefaultModelIdentifier;
 import edu.jhuapl.saavtk.model.ShapeModelBody;
 import edu.jhuapl.saavtk.model.ShapeModelType;
 import edu.jhuapl.sbmt.common.client.BodyViewConfig;
@@ -22,7 +23,7 @@ public class BasicConfigInfo implements MetadataManager
     //      pipeline->rawdata->generic->runDataProcessing.sh
     // TO MATCH!!!!!!!!!!!!!!!!!!!
     // *******************************************************************************
-    private static final String configInfoVersion = "9.3"; // READ THE COMMENT ABOVE.
+    private static final String configInfoVersion = "9.4"; // READ THE COMMENT ABOVE.
     // *******************************************************************************
 
     public static String getConfigInfoVersion()
@@ -83,13 +84,13 @@ public class BasicConfigInfo implements MetadataManager
 				else
 					enabled = false;
 			}
-            if (SmallBodyViewConfig.getDefaultModelName() == null)
+            if (DefaultModelIdentifier.getClientDefaultModel() == null)
             {
                 for (Mission defaultMission : defaultFor)
                 {
                     if (defaultMission == edu.jhuapl.sbmt.client2.SbmtMultiMissionTool.getMission())
                     {
-                        SmallBodyViewConfig.setDefaultModelName(uniqueName);
+                        DefaultModelIdentifier.setClientDefaultModel(uniqueName);
                         break;
                     }
                 }
@@ -101,10 +102,23 @@ public class BasicConfigInfo implements MetadataManager
             // modelVersion will add nothing.
             String modelVersion = config.version != null ? config.version.replaceAll(" ", "_") : "";
 
-            this.configURL = "/" + getConfigPathPrefix(publishedDataOnly) + ((SmallBodyViewConfig) config).rootDirOnServer + //
+            if (!config.hasSystemBodies())
+            	this.configURL = "/" + getConfigPathPrefix(publishedDataOnly) + ((SmallBodyViewConfig) config).rootDirOnServer + //
                     "/" + config.author + "_" + //
                     config.body.toString().replaceAll(" ", "_") + modelVersion + //
                     "_v" + getConfigInfoVersion() + ".json";
+            else
+            {
+            	String systemRoot = "/" + config.getBody().name().replaceAll("[\\s-_]+", "-").toLowerCase() + "/" + config.getAuthor().name().replaceAll("[\\s-_]+", "-").toLowerCase();
+                systemRoot = systemRoot.replaceAll("\\(", "");
+                systemRoot = systemRoot.replaceAll("\\)", "");
+                systemRoot = systemRoot.replaceAll("-\\w*-center", "");
+
+            	this.configURL = "/" + getConfigPathPrefix(publishedDataOnly) + systemRoot + //
+	                "/" + config.author + "_v" + getConfigInfoVersion() + ".json";
+            	this.configURL = this.configURL.replaceAll("\\(", "");
+            	this.configURL = this.configURL.replaceAll("\\)", "");
+            }
 		}
 	}
 
@@ -205,13 +219,13 @@ public class BasicConfigInfo implements MetadataManager
 				else
 					enabled = false;
 			}
-            if (SmallBodyViewConfig.getDefaultModelName() == null)
+            if (DefaultModelIdentifier.getClientDefaultModel() == null)
             {
                 for (Mission defaultMission : defaultFor)
                 {
                     if (defaultMission == edu.jhuapl.sbmt.client2.SbmtMultiMissionTool.getMission())
                     {
-                        SmallBodyViewConfig.setDefaultModelName(uniqueName);
+                        DefaultModelIdentifier.setClientDefaultModel(uniqueName);
                         break;
                     }
                 }

@@ -79,7 +79,8 @@ public class CustomImageEditingController<G1 extends IPerspectiveImage & IPerspe
 		this.isPerspective = isPerspective;
 		this.instrument = instrument;
 
-		regenerateLayerFromImage(existingImage);
+		if (!existingImage.getPointingSource().equals("FILE NOT FOUND"))
+			regenerateLayerFromImage(existingImage);
 		contrastController = new ImageContrastController(displayedImage, existingImage.getIntensityRange(), new Function<vtkImageData, Void>() {
 
 			@Override
@@ -146,7 +147,7 @@ public class CustomImageEditingController<G1 extends IPerspectiveImage & IPerspe
 
 		dialog = new CustomImageEditingDialog<G1>(dialog, existingImage, isPerspective, completionBlock, maskController, contrastController, fillValuesController);
 		populateUI();
-		if (!existingImage.getPointingSource().equals("FILE NOT FOUND"))
+		if (!existingImage.getPointingSource().equals("FILE NOT FOUND") || existingImage.getPointingSourceType() == ImageSource.LOCAL_CYLINDRICAL)
 			renderLayerAndAddAttributes();
 		javax.swing.SwingUtilities.invokeLater(new Runnable()
 		{
@@ -166,13 +167,16 @@ public class CustomImageEditingController<G1 extends IPerspectiveImage & IPerspe
 	{
 		try
 		{
-			regenerateLayerFromImage(existingImage);
+			if (layer == null) regenerateLayerFromImage(existingImage);
 			if (layer == null) return;
+			dialog.getAppearancePanel().setEnabled(true);
+
 			SwingUtilities.invokeLater(() -> {
 				try
 				{
 					renderLayer(layer);
-					setIntensity(existingImage.getIntensityRange());
+					if (displayedImage.GetNumberOfScalarComponents() == 1)
+						setIntensity(existingImage.getIntensityRange());
 				}
 				catch (Exception e)
 				{
@@ -180,7 +184,6 @@ public class CustomImageEditingController<G1 extends IPerspectiveImage & IPerspe
 					e.printStackTrace();
 				}
 
-				dialog.getAppearancePanel().setEnabled(true);
 			});
 
 		}
@@ -197,32 +200,40 @@ public class CustomImageEditingController<G1 extends IPerspectiveImage & IPerspe
 		dialog.getImagePathTextField().setText(existingImage.getFilename());
 		dialog.getImageNameTextField().setText(existingImage.getName());
 
+
 		if (!existingImage.getPointingSourceType().toString().contains("Cylindrical"))
 		{
 			dialog.getPointingTypeComboBox().setSelectedIndex(0);
 			dialog.getPointingFilenameTextField().setText(existingImage.getPointingSource());
-			if (instrument != null)
+//			if (instrument != null)
+//			{
+//				Orientation orientation = instrument.getOrientation(existingImage.getPointingSourceType());
+//				dialog.getImageFlipComboBox().setSelectedItem(existingImage.getFlip());
+//				dialog.getImageRotationComboBox().setSelectedItem("" + (int) (existingImage.getRotation()));
+//
+//
+////				dialog.getImageFlipComboBox().setSelectedItem(orientation.getFlip().toString());
+////				dialog.getImageRotationComboBox().setSelectedItem("" + (int) (orientation.getRotation()));
+//			}
+//			else
 			{
-				Orientation orientation = instrument.getOrientation(existingImage.getPointingSourceType());
 				dialog.getImageFlipComboBox().setSelectedItem(existingImage.getFlip());
 				dialog.getImageRotationComboBox().setSelectedItem("" + (int) (existingImage.getRotation()));
-
-
-//				dialog.getImageFlipComboBox().setSelectedItem(orientation.getFlip().toString());
-//				dialog.getImageRotationComboBox().setSelectedItem("" + (int) (orientation.getRotation()));
-			}
-			else
-			{
-				dialog.getImageFlipComboBox().setSelectedItem(existingImage.getFlip());
-				dialog.getImageRotationComboBox().setSelectedItem("" + (int) (existingImage.getRotation()));
+				dialog.getFlipAboutXCheckBox().setSelected(existingImage.getFlip().equals("X"));
 			}
 		}
 		else
 		{
 			if (instrument != null)
 			{
-				Orientation orientation = instrument.getOrientation(existingImage.getPointingSourceType());
-				dialog.getFlipAboutXCheckBox().setSelected(orientation.getFlip().toString().equals("X"));
+				try
+				{
+					Orientation orientation = instrument.getOrientation(existingImage.getPointingSourceType());
+					dialog.getFlipAboutXCheckBox().setSelected(orientation.getFlip().toString().equals("X"));
+				} catch (IllegalArgumentException iae)
+				{
+					dialog.getFlipAboutXCheckBox().setSelected(existingImage.getFlip().equals("X"));
+				}
 			}
 			dialog.getPointingTypeComboBox().setSelectedIndex(1);
 			dialog.getMinLatitudeTextField().setText("" + existingImage.getBounds().minLatitude());
@@ -336,20 +347,6 @@ public class CustomImageEditingController<G1 extends IPerspectiveImage & IPerspe
 		if (imagePath == null)
 			imagePath = "";
 
-		// if (!isEditMode) // || (!imagePath.isEmpty() &&
-		// !imagePath.equals(LEAVE_UNMODIFIED)))
-		// {
-		// if (imagePath.isEmpty())
-		// return "Please enter the path to an image.";
-		//
-		// File file = new File(imagePath);
-		// if (!file.exists() || !file.canRead() || !file.isFile())
-		// return imagePath + " does not exist or is not readable.";
-		//
-		// if (imagePath.contains(","))
-		// return "Image path may not contain commas.";
-		// }
-
 		String imageName = dialog.getImageNameTextField().getText();
 		if (imageName == null)
 			imageName = "";
@@ -372,30 +369,6 @@ public class CustomImageEditingController<G1 extends IPerspectiveImage & IPerspe
 
 		if (dialog.getPointingTypeComboBox().getSelectedItem().equals("Simple Cylindrical Projection"))
 		{
-			// if (!isEditMode) // (!imagePath.isEmpty() &&
-			// !imagePath.equals(LEAVE_UNMODIFIED))
-			// {
-			// // Check first to see if it is a natively supported image
-			// boolean supportedCustomFormat = false;
-			//
-			// // Check if this image is any of the custom supported formats
-			// String message = checkForEnviFile(imagePath,
-			// supportedCustomFormat);
-			// if (supportedCustomFormat == false && !message.equals("")) return
-			// message;
-			//
-			// // Otherwise, try to see if VTK natively supports
-			// if(!supportedCustomFormat)
-			// {
-			// vtkImageReader2Factory imageFactory = new
-			// vtkImageReader2Factory();
-			// vtkImageReader2 imageReader =
-			// imageFactory.CreateImageReader2(imagePath);
-			// if (imageReader == null)
-			// return "The format of the specified image is not supported.";
-			// }
-			// }
-
 			try
 			{
 				double lllat = Double.parseDouble(dialog.getMinLatitudeTextField().getText());
@@ -454,8 +427,6 @@ public class CustomImageEditingController<G1 extends IPerspectiveImage & IPerspe
 			existingImage.setPointingSource(dialog.getPointingFilenameTextField().getText());
 			if (instrument != null)
 			{
-//				existingImage.setFlip(instrument.getOrientation(existingImage.getPointingSourceType()).getFlip().flip());
-//				existingImage.setRotation(instrument.getOrientation(existingImage.getPointingSourceType()).getRotation());
 				existingImage.setFlip(existingImage.getFlip());
 				existingImage.setRotation(existingImage.getRotation());
 			}
@@ -480,7 +451,7 @@ public class CustomImageEditingController<G1 extends IPerspectiveImage & IPerspe
 		if (dialog == null) return;
 		List<vtkImageData> displayedImages = new ArrayList<vtkImageData>();
 		IPipelinePublisher<Layer> reader = new Just<Layer>(layer);
-		reader.operate(new VtkImageRendererOperator()).subscribe(new Sink<vtkImageData>(displayedImages)).run();
+		reader.operate(new VtkImageRendererOperator(true)).subscribe(new Sink<vtkImageData>(displayedImages)).run();
 		displayedImage = displayedImages.get(0);
 		dialog.getContrastController().setImageData(displayedImage);
 		if (displayedImage.GetNumberOfScalarComponents() != 1)
@@ -536,8 +507,7 @@ public class CustomImageEditingController<G1 extends IPerspectiveImage & IPerspe
 		renWin.getRenderer().AddActor(actor);
 		dialog.repaint();
 		dialog.revalidate();
-
-
+		renWin.resetCamera();
 
 	}
 

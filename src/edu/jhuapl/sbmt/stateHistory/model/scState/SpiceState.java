@@ -41,15 +41,12 @@ public class SpiceState implements State
 
     private SpicePointingProvider pointingProvider;
 
-    private String currentInstrumentFrameName = null;
-
 	/**
 	 *
 	 */
 	public SpiceState(SpicePointingProvider pointingProvider)
 	{
 		this.pointingProvider = pointingProvider;
-		this.currentInstrumentFrameName = pointingProvider.getInstrumentNames()[0];
 	}
 
 	@Override
@@ -64,10 +61,10 @@ public class SpiceState implements State
 		return utc;
 	}
 
-	public double[] getInstrumentLookDirection(String instrumentFrameName)
+	public double[] getInstrumentLookDirection(String instrumentName)
 	{
 		Preconditions.checkNotNull(ephemerisTime);
-		InstrumentPointing pointing = pointingProvider.provide(instrumentFrameName, ephemerisTime);
+		InstrumentPointing pointing = pointingProvider.provide(instrumentName, ephemerisTime);
 		try {
 			UnwritableVectorIJK boresight = pointing.getBoresight().createNegated();
 			return new double[] {
@@ -80,10 +77,10 @@ public class SpiceState implements State
 		}
 	}
 
-	public UnwritableVectorIJK getFrustum(String instrumentFrameName, int index)
+	public UnwritableVectorIJK getFrustum(String instrumentName, int index)
 	{
 		Preconditions.checkNotNull(ephemerisTime);
-		InstrumentPointing pointing = pointingProvider.provide(instrumentFrameName, ephemerisTime);
+		InstrumentPointing pointing = pointingProvider.provide(instrumentName, ephemerisTime);
 		try {
 			return pointing.getFrustum().get(index);
 		}
@@ -222,15 +219,15 @@ public class SpiceState implements State
 	{
 		this.ephemerisTime = ephemerisTime;
 		this.utc = TimeUtil.et2str(ephemerisTime);
-		this.pointing = pointingProvider.provide(currentInstrumentFrameName, ephemerisTime);
+		this.pointing = pointingProvider.provide(ephemerisTime);
 	}
 
 	/**
-	 * @param currentInstrumentFrameName the currentInstrumentFrameName to set
+	 * @param currentInstrumentName the currentInstrumentName to set
 	 */
-	public void setCurrentInstrumentFrameName(String currentInstrumentFrameName)
+	public void setCurrentInstrumentName(String currentInstrumentName)
 	{
-		this.currentInstrumentFrameName = currentInstrumentFrameName;
+		pointingProvider.setCurrentInstrumentName(currentInstrumentName);
 	}
 
 	/**

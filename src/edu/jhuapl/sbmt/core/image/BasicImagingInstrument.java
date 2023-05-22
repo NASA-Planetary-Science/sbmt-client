@@ -21,8 +21,14 @@ public class BasicImagingInstrument
         ImageSource[] searchImageSources = configuration.get(ImagingInstrumentConfiguration.IMAGE_SOURCE);
         Instrument instrument = configuration.get(ImagingInstrumentConfiguration.INSTRUMENT);
         Boolean isTranspose = configuration.get(ImagingInstrumentConfiguration.TRANSPOSE);
+        String flip = "None";
+        Double rotation = 0.0;
+        if (configuration.get(ImagingInstrumentConfiguration.IMAGE_FLIP) != null)
+        	flip = configuration.get(ImagingInstrumentConfiguration.IMAGE_FLIP);
+        if (configuration.get(ImagingInstrumentConfiguration.IMAGE_ROTATION) != null)
+        	rotation = configuration.get(ImagingInstrumentConfiguration.IMAGE_ROTATION);
 
-        return new ImagingInstrument(spectralMode, searchQuery, type, searchImageSources, instrument, 0., "None", null, isTranspose != null ? isTranspose.booleanValue() : true);
+        return new ImagingInstrument(spectralMode, searchQuery, type, searchImageSources, instrument, rotation, flip, null, isTranspose != null ? isTranspose.booleanValue() : true);
     }
 
 //  protected BasicImagingInstrument(SpectralMode spectralMode, QueryBase searchQuery, ImageType type, ImageSource[] searchImageSources, Instrument instrument)

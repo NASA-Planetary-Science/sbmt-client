@@ -3,6 +3,7 @@ package edu.jhuapl.sbmt.core.image;
 import edu.jhuapl.saavtk.util.FillDetector;
 import edu.jhuapl.sbmt.config.Instrument;
 import edu.jhuapl.sbmt.config.SpectralImageMode;
+import edu.jhuapl.sbmt.image2.model.ImageBinPadding;
 import edu.jhuapl.sbmt.query.IQueryBase;
 
 import crucible.crust.metadata.api.Metadata;
@@ -43,6 +44,8 @@ public interface IImagingInstrument
     int[] getMaskValues();
 
     public double[] getFillValues();
+
+    ImageBinPadding getBinPadding();
 
     /**
      * Get the {@link Orientation} to use for images from this instrument when
