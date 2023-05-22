@@ -79,7 +79,7 @@ public class CustomImageImporterDialog2<G1 extends IPerspectiveImage & IPerspect
 		table.setup();
 
 		table.getLoadImageButton().addActionListener(e -> {
-			File[] files = CustomFileChooser.showOpenDialog(table, "Select images...", List.of("fits", "fit", "FIT", "FITS", "png", "PNG", "JPG", "jpg"), true);
+			File[] files = CustomFileChooser.showOpenDialog(table, "Select images...", List.of("fits", "fit", "FIT", "FITS", "png", "PNG", "JPG", "jpg", "IMG", "img"), true);
 			if (files == null || files.length == 0)
 	        {
 	            return;

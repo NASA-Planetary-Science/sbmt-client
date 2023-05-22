@@ -35,16 +35,15 @@ import edu.jhuapl.saavtk.model.ModelManager;
 import edu.jhuapl.saavtk.model.ModelNames;
 import edu.jhuapl.saavtk.model.ShapeModelBody;
 import edu.jhuapl.saavtk.model.ShapeModelType;
-import edu.jhuapl.saavtk.model.structure.CircleModel;
+import edu.jhuapl.saavtk.model.structure.AbstractEllipsePolygonModel.Mode;
 import edu.jhuapl.saavtk.model.structure.CircleSelectionModel;
-import edu.jhuapl.saavtk.model.structure.EllipseModel;
 import edu.jhuapl.saavtk.model.structure.LineModel;
-import edu.jhuapl.saavtk.model.structure.PointModel;
 import edu.jhuapl.saavtk.model.structure.PolygonModel;
 import edu.jhuapl.saavtk.pick.PickManager;
 import edu.jhuapl.saavtk.popup.PopupMenu;
 import edu.jhuapl.saavtk.status.StatusNotifier;
 import edu.jhuapl.saavtk.structure.gui.StructureMainPanel;
+import edu.jhuapl.saavtk.structure.io.StructureLegacyUtil;
 import edu.jhuapl.saavtk.util.Configuration;
 import edu.jhuapl.saavtk.util.FileCache;
 import edu.jhuapl.saavtk.util.Properties;
@@ -137,6 +136,7 @@ public class SbmtView extends View implements PropertyChangeListener
 	private MEGANECollection meganeCollection;
 	private CumulativeMEGANECollection cumulativeMeganeCollection;
 	protected HashMap<ModelNames, List<Model>> allModels = new HashMap<>();
+	private ObservationPlanningController planningController;
 
 	public SbmtView(StatusNotifier aStatusNotifier, BasicConfigInfo configInfo)
 	{
@@ -351,9 +351,9 @@ public class SbmtView extends View implements PropertyChangeListener
 //		StatusNotifier tmpStatusNotifier = getStatusNotifier();
 		allModels.put(ModelNames.LINE_STRUCTURES, List.of(new LineModel<>(tmpSceneChangeNotifier, tmpStatusNotifier, smallBodyModel)));
 		allModels.put(ModelNames.POLYGON_STRUCTURES, List.of(new PolygonModel(tmpSceneChangeNotifier,tmpStatusNotifier, smallBodyModel)));
-		allModels.put(ModelNames.CIRCLE_STRUCTURES, List.of(new CircleModel(tmpSceneChangeNotifier, tmpStatusNotifier, smallBodyModel)));
-		allModels.put(ModelNames.ELLIPSE_STRUCTURES, List.of(new EllipseModel(tmpSceneChangeNotifier, tmpStatusNotifier, smallBodyModel)));
-		allModels.put(ModelNames.POINT_STRUCTURES, List.of(new PointModel(tmpSceneChangeNotifier, tmpStatusNotifier, smallBodyModel)));
+		allModels.put(ModelNames.CIRCLE_STRUCTURES, List.of(StructureLegacyUtil.createManager(tmpSceneChangeNotifier, tmpStatusNotifier, smallBodyModel, Mode.CIRCLE_MODE)));
+		allModels.put(ModelNames.ELLIPSE_STRUCTURES, List.of(StructureLegacyUtil.createManager(tmpSceneChangeNotifier, tmpStatusNotifier, smallBodyModel, Mode.ELLIPSE_MODE)));
+		allModels.put(ModelNames.POINT_STRUCTURES, List.of(StructureLegacyUtil.createManager(tmpSceneChangeNotifier, tmpStatusNotifier, smallBodyModel, Mode.POINT_MODE)));
 		allModels.put(ModelNames.CIRCLE_SELECTION, List.of(new CircleSelectionModel(tmpSceneChangeNotifier, tmpStatusNotifier, smallBodyModel)));
 //		tmpSceneChangeNotifier.setTarget(getModelManager());
 	}
@@ -799,8 +799,17 @@ public class SbmtView extends View implements PropertyChangeListener
 
 	protected void setupStateHistoryTab()
 	{
-		ObservationPlanningController controller = new ObservationPlanningController(getModelManager(), smallBodyModels.get(0), rendererManager, getPolyhedralModelConfig(), smallBodyModels.get(0).getColoringDataManager(), getStatusNotifier());
-        addTab("Observing Conditions", controller.getView());
+		planningController = new ObservationPlanningController(getModelManager(), smallBodyModels.get(0), rendererManager, getPolyhedralModelConfig(), smallBodyModels.get(0).getColoringDataManager(), getStatusNotifier());
+        addTab("Observing Conditions", planningController.getView());
+        planningController.setPositionOrientationManager(positionOrientationManager);
+        pomListeners.add(new PositionOrientationManagerListener()
+		{
+			@Override
+			public void managerUpdated(IPositionOrientationManager manager)
+			{
+				planningController.setPositionOrientationManager(manager);
+			}
+		});
 	}
 
     @Override
@@ -935,6 +944,7 @@ public class SbmtView extends View implements PropertyChangeListener
 		    	double time = TimeUtil.str2et(dateTimeString);
 				positionOrientationManager = new PositionOrientationManager(bodies, arg0, firstSpiceInfo, firstSpiceInfo.getInstrumentNamesToBind()[0],
 																			spiceInfo.getBodyName(), time);
+				planningController.setPositionOrientationManager(positionOrientationManager);
 				HashMap<ModelNames, List<Model>> allModels = new HashMap(getModelManager().getAllModels());
 				allModels.put(ModelNames.SMALL_BODY, positionOrientationManager.getUpdatedBodies());
 				setModelManager(new ModelManager(bodies.get(0), allModels));
