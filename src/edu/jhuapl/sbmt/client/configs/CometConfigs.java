@@ -224,6 +224,7 @@ public class CometConfigs extends SmallBodyViewConfig
             c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
             c.author = ShapeModelType.GASKELL;
             c.version = "SHAP5 V0.3";
+            c.modelLabel = "Gaskell (SHAP5 V0.3)";
             c.rootDirOnServer = "/GASKELL/67P";
 
             c.imagingInstruments = new ImagingInstrument[] { new ImagingInstrument( //
