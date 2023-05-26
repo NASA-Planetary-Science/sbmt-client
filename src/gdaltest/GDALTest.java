@@ -15,13 +15,13 @@ public class GDALTest
 //		{
 //			System.out.println("GDALTest: GDALTest: driver " + gdal.GetDriver(i).getLongName());
 //		}
-		loadAndDetail("/Users/steelrj1/Desktop/SBMT Example Data files/M0125956777F4_2P_IOF_DBL.FIT");
+//		loadAndDetail("/Users/steelrj1/Desktop/SBMT Example Data files/M0125956777F4_2P_IOF_DBL.FIT");
 //		loadAndDetail("/Users/steelrj1/Desktop/SBMT Example Data files/Global_20181213_20181201_Shape14_NatureEd.png");
 //		loadAndDetail("/Users/steelrj1/Desktop/SBMT Example Data files/M0145810520F6_2P_CIF_DBL.FIT");
 //		loadAndDetail("/Users/steelrj1/Downloads/m0153784905f4_2p_iof_dbl_bp.fit");
 //		loadAndDetailVector("/Users/steelrj1/Downloads/bulkunitlines_titan2000.shp");
-
-
+		loadAndDetail("/Users/steelrj1/Desktop/mc0_0287692247_0x536_sci.fit");
+		loadAndDetail("FITS:/Users/steelrj1/Desktop/mc0_0287692247_0x536_sci.fit:1");
 
 	}
 
@@ -82,8 +82,9 @@ public class GDALTest
 		System.out.println("GDALTest: loadAndDetail: driver " + dataset.GetDriver().GetDescription());
 		System.out.println("GDALTest: loadAndDetail: filelist 0 " + dataset.GetFileList().get(0));
 		System.out.println("GDALTest: loadAndDetail: layer 0 " + dataset.GetLayer(0));
-		System.out.println("GDALTest: loadAndDetail: band 1 description " + dataset.GetRasterBand(1).GetDescription());
-
+//		System.out.println("GDALTest: loadAndDetail: band 1 description " + dataset.GetRasterBand(0).GetDescription());
+		System.out.println("GDALTest: loadAndDetail: file list size "  + dataset.GetFileList().size());
+		System.out.println("GDALTest: loadAndDetail: " + dataset.GetMetadata_Dict("SUBDATASETS"));
 
 		for (int i=0; i<dataset.GetMetadataDomainList().size(); i++)
 		{

@@ -554,7 +554,7 @@ public class ImageSearchController<G1 extends IPerspectiveImage & IPerspectiveIm
 			imageListTableController.getPanel().getHideImageBorderButton().setEnabled((selectedItems.size() > 0) && allBorders || someBorders);
 			imageListTableController.getPanel().getShowImageBorderButton().setEnabled((selectedItems.size() > 0) && !allBorders || someBorders);
 			ImageGalleryGenerator.of(instrument.orElse(null), state -> {
-				imageListTableController.getPanel().getGalleryButton().setEnabled(true);
+				imageListTableController.getPanel().getGalleryButton().setEnabled(collection.size() > 0);
 			});
 		}
 		else

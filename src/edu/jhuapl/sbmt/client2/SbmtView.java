@@ -136,6 +136,7 @@ public class SbmtView extends View implements PropertyChangeListener
 	private MEGANECollection meganeCollection;
 	private CumulativeMEGANECollection cumulativeMeganeCollection;
 	protected HashMap<ModelNames, List<Model>> allModels = new HashMap<>();
+	private ObservationPlanningController planningController;
 
 	public SbmtView(StatusNotifier aStatusNotifier, BasicConfigInfo configInfo)
 	{
@@ -798,8 +799,17 @@ public class SbmtView extends View implements PropertyChangeListener
 
 	protected void setupStateHistoryTab()
 	{
-		ObservationPlanningController controller = new ObservationPlanningController(getModelManager(), smallBodyModels.get(0), rendererManager, getPolyhedralModelConfig(), smallBodyModels.get(0).getColoringDataManager(), getStatusNotifier());
-        addTab("Observing Conditions", controller.getView());
+		planningController = new ObservationPlanningController(getModelManager(), smallBodyModels.get(0), rendererManager, getPolyhedralModelConfig(), smallBodyModels.get(0).getColoringDataManager(), getStatusNotifier());
+        addTab("Observing Conditions", planningController.getView());
+        planningController.setPositionOrientationManager(positionOrientationManager);
+        pomListeners.add(new PositionOrientationManagerListener()
+		{
+			@Override
+			public void managerUpdated(IPositionOrientationManager manager)
+			{
+				planningController.setPositionOrientationManager(manager);
+			}
+		});
 	}
 
     @Override
@@ -934,6 +944,7 @@ public class SbmtView extends View implements PropertyChangeListener
 		    	double time = TimeUtil.str2et(dateTimeString);
 				positionOrientationManager = new PositionOrientationManager(bodies, arg0, firstSpiceInfo, firstSpiceInfo.getInstrumentNamesToBind()[0],
 																			spiceInfo.getBodyName(), time);
+				planningController.setPositionOrientationManager(positionOrientationManager);
 				HashMap<ModelNames, List<Model>> allModels = new HashMap(getModelManager().getAllModels());
 				allModels.put(ModelNames.SMALL_BODY, positionOrientationManager.getUpdatedBodies());
 				setModelManager(new ModelManager(bodies.get(0), allModels));

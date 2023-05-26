@@ -40,19 +40,23 @@ int_dist_dir := ${SBMTROOT}/build/dist/internal
 
 int_mac_dir   := ${int_dist_dir}/mac64
 int_linux_dir := ${int_dist_dir}/linux64
+int_linuxu20_dir := ${int_dist_dir}/linux64u20
 int_win_dir   := ${int_dist_dir}/win64
 
 int_mac_sbmt_dir   := ${int_mac_dir}/${RELEASE}
 int_linux_sbmt_dir := ${int_linux_dir}/${RELEASE}
+int_linuxu20_sbmt_dir := ${int_linuxu20_dir}/${RELEASE}
 int_win_sbmt_dir   := ${int_win_dir}/${RELEASE}
 
 int_mac_sbmt_lib_dir   := ${int_mac_sbmt_dir}/lib
 int_linux_sbmt_lib_dir := ${int_linux_sbmt_dir}/lib
+int_linuxu20_sbmt_lib_dir := ${int_linuxu20_sbmt_dir}/lib
 int_win_sbmt_lib_dir   := ${int_win_sbmt_dir}/lib
 
 
 int_mac64_jar   :=  ${int_mac_sbmt_lib_dir}/near.jar
 int_linux64_jar :=  ${int_linux_sbmt_lib_dir}/near.jar
+int_linux64u20_jar :=  ${int_linuxu20_sbmt_lib_dir}/near.jar
 int_win64_jar   :=  ${int_win_sbmt_lib_dir}/near.jar
 int_jars        := ${int_mac64_jar} ${int_linux64_jar} ${int_win64_jar}
 
@@ -72,22 +76,24 @@ int_jars        := ${int_mac64_jar} ${int_linux64_jar} ${int_win64_jar}
 # pub_linux64_jar :=  ${pub_linux_sbmt_lib_dir}/near.jar
 # pub_win64_jar   :=  ${pub_win_sbmt_lib_dir}/near.jar
 
-int_jars        := ${int_mac64_jar} ${int_linux64_jar} ${int_win64_jar}
+int_jars        := ${int_mac64_jar} ${int_linux64_jar} ${int_linux64u20_jar} ${int_win64_jar}
 # pub_jars        := ${pub_mac64_jar} ${pub_linux64_jar} ${pub_win64_jar}
 
 mac_zip   :=  ${RELEASE}-macosx-x64.zip
 linux_zip :=  ${RELEASE}-linux-x64.zip
+linuxu20_zip :=  ${RELEASE}-linux-x64u20.zip
 win_zip   :=  ${RELEASE}-windows-x64.zip
 
 int_mac_zip   :=  ${int_mac_dir}/${mac_zip}
 int_linux_zip :=  ${int_linux_dir}/${linux_zip}
+int_linuxu20_zip :=  ${int_linuxu20_dir}/${linuxu20_zip}
 int_win_zip   :=  ${int_win_dir}/${win_zip}
 
 # pub_mac_zip   :=  ${pub_mac_dir}/${mac_zip}
 # pub_linux_zip :=  ${pub_linux_dir}/${linux_zip}
 # pub_win_zip   :=  ${pub_win_dir}/${win_zip}
 
-int_zips      := ${int_mac_zip} ${int_linux_zip} ${int_win_zip}
+int_zips      := ${int_mac_zip} ${int_linux_zip} ${int_linuxu20_zip} ${int_win_zip}
 # pub_zips      := ${pub_mac_zip} ${pub_linux_zip} ${pub_win_zip}
 
 all_java_files := ${SBMTROOT}/src/edu/jhuapl/sbmt/*/*.java
@@ -117,6 +123,7 @@ deploy : ${int_zips} ${pub_zips}
 ifeq (,$(findstring,SNAPSHOT,${RELEASE}))
 		@chmod 664 ${int_mac_zip}
 		@chmod 664 ${int_linux_zip}
+		@chmod 664 ${int_linuxu20_zip}
 		@chmod 664 ${int_win_zip}
 		# @chmod 664 ${pub_mac_zip}
 		# @chmod 664 ${pub_linux_zip}
@@ -125,6 +132,7 @@ ifeq (,$(findstring,SNAPSHOT,${RELEASE}))
 		@mkdir -p ${PUBLIC_DEPLOY_RELEASE_DIR}
 		cp ${int_mac_zip} ${INTERNAL_DEPLOY_RELEASE_DIR}
 		cp ${int_linux_zip} ${INTERNAL_DEPLOY_RELEASE_DIR}
+		cp ${int_linuxu20_zip} ${INTERNAL_DEPLOY_RELEASE_DIR}
 		cp ${int_win_zip} ${INTERNAL_DEPLOY_RELEASE_DIR}
 		# cp ${pub_mac_zip} ${PUBLIC_DEPLOY_RELEASE_DIR}
 		# cp ${pub_linux_zip} ${PUBLIC_DEPLOY_RELEASE_DIR}
@@ -167,7 +175,7 @@ ${int_mac_zip} : ${NEARAPLJAR}
 		cp ${NEARAPLJAR} ${int_mac_sbmt_lib_dir}/near.jar
 		cp -R ${vtk_dir}/mac64 ${int_mac_sbmt_lib_dir}
 		cp -R ${jre_dir}/mac64 ${int_mac_sbmt_dir}
-		cp -R ${gdal_dir} ${int_mac_sbmt_lib_dir}
+		cp -R ${gdal_dir}/mac64 ${int_mac_sbmt_lib_dir}
 		rm -rf ${int_mac_sbmt_dir}/jre
 		mv ${int_mac_sbmt_dir}/mac64 ${int_mac_sbmt_dir}/jre
 		cp ${top_level_dir}/src/edu/jhuapl/sbmt/data/license.txt ${int_mac_sbmt_lib_dir}
@@ -192,13 +200,36 @@ ${int_linux_zip} : ${NEARAPLJAR}
 		cp ${NEARAPLJAR} ${int_linux_sbmt_lib_dir}/near.jar
 		cp -R ${vtk_dir}/linux64 ${int_linux_sbmt_lib_dir}
 		cp -R ${jre_dir}/linux64 ${int_linux_sbmt_dir}
-		cp -R ${gdal_dir} ${int_linux_sbmt_lib_dir}
+		cp -R ${gdal_dir}/linux64 ${int_linux_sbmt_lib_dir}
 		rm -rf ${int_linux_sbmt_dir}/jre
 		mv ${int_linux_sbmt_dir}/linux64 ${int_linux_sbmt_dir}/jre
 		cp ${top_level_dir}/src/edu/jhuapl/sbmt/data/license.txt ${int_linux_sbmt_lib_dir}
 		${SBMTROOT}/config/generate_runsbmt.sh ${INTERNAL_OUTPUT_DIR} ${MISSION}
 		cp ${int_linux_dir}/sbmt/runsbmt ${int_linux_dir}/${RELEASE}
 		(cd ${int_linux_dir} ; zip -q -r ${linux_zip} ${RELEASE})
+		
+${int_linuxu20_zip} : ${NEARAPLJAR}
+		@echo "Making $@"
+		@mkdir -p ${int_linuxu20_sbmt_lib_dir}
+		cp ${top_level_dir}/lib/*.jar ${int_linuxu20_sbmt_lib_dir}
+		cp ${saavtk_dir}/lib/*.jar ${int_linuxu20_sbmt_lib_dir}
+		cp ${saavtk_dir}/lib/geotools/*.jar ${int_linuxu20_sbmt_lib_dir}
+		cp ${vtk_dir}/*.jar ${int_linuxu20_sbmt_lib_dir}
+		cp ${jogl_dir}/gluegen-rt.jar ${int_linuxu20_sbmt_lib_dir}
+		cp ${jogl_dir}/gluegen-rt-natives-linux-amd64.jar ${int_linuxu20_sbmt_lib_dir}
+		cp ${jogl_dir}/jogl-all.jar ${int_linuxu20_sbmt_lib_dir}
+		cp ${jogl_dir}/jogl-all-natives-linux-amd64.jar ${int_linuxu20_sbmt_lib_dir}
+		cp ${SAAVTKJAR} ${int_linuxu20_sbmt_lib_dir}
+		cp ${NEARAPLJAR} ${int_linuxu20_sbmt_lib_dir}/near.jar
+		cp -R ${vtk_dir}/linux64 ${int_linuxu20_sbmt_lib_dir}
+		cp -R ${jre_dir}/linux64 ${int_linuxu20_sbmt_dir}
+		cp -R ${gdal_dir}/linux64u20 ${int_linuxu20_sbmt_lib_dir}
+		rm -rf ${int_linuxu20_sbmt_dir}/jre
+		mv ${int_linuxu20_sbmt_dir}/linux64 ${int_linuxu20_sbmt_dir}/jre
+		cp ${top_level_dir}/src/edu/jhuapl/sbmt/data/license.txt ${int_linuxu20_sbmt_lib_dir}
+		${SBMTROOT}/config/generate_runsbmt.sh ${INTERNAL_OUTPUT_DIR} ${MISSION}
+		cp ${int_linuxu20_dir}/sbmt/runsbmt ${int_linuxu20_dir}/${RELEASE}
+		(cd ${int_linuxu20_dir} ; zip -q -r ${linuxu20_zip} ${RELEASE})
 
 # Note this uses near-apl.jar, and creating 'runsbmt' script is different here.
 ${int_win_zip} : ${NEARAPLJAR}
@@ -218,7 +249,7 @@ ${int_win_zip} : ${NEARAPLJAR}
 		cp ${NEARAPLJAR} ${int_win_sbmt_lib_dir}/near.jar
 		cp -R ${vtk_dir}/win64 ${int_win_sbmt_lib_dir}
 		cp -R ${jre_dir}/win64 ${int_win_sbmt_dir}
-		cp -R ${gdal_dir} ${int_win_sbmt_lib_dir}
+		cp -R ${gdal_dir}/win64 ${int_win_sbmt_lib_dir}
 		rm -rf ${int_win_sbmt_dir}/jre
 		mv ${int_win_sbmt_dir}/win64 ${int_win_sbmt_dir}/jre
 		cp ${top_level_dir}/src/edu/jhuapl/sbmt/data/license.txt ${int_win_sbmt_lib_dir}
