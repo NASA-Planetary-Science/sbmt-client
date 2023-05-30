@@ -29,6 +29,7 @@ class MetaKernelHelper
      */
     List<File> read(Path localMetaKernel) throws IOException, ParseException
     {
+
         File mkFile = localMetaKernel.toFile();
 
         BasicKernelPool pool =
@@ -59,8 +60,9 @@ class MetaKernelHelper
             for (int index = 0; index < pathSymbols.size(); ++index)
             {
                 Pattern rp = pathSymbols.get(index);
-                String replaceString = pathValues.get(index).toString();
+                String replaceString = pathValues.get(index).toString().replace("\\", "|");
                 localKernelFileName = rp.matcher(localKernelFileName).replaceAll(replaceString);
+                localKernelFileName = localKernelFileName.replace("|", "\\");
             }
             localKernels.add(new File(localKernelFileName));
         }
