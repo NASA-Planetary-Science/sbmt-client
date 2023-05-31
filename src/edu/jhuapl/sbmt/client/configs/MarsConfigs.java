@@ -493,6 +493,53 @@ public class MarsConfigs extends SmallBodyViewConfig
             	configArray.add(c);
 
         }
+
+        // Latest Gaskell Phobos (experimental)
+        if (Configuration.isAPLVersion())
+        {
+            c = new MarsConfigs();
+            c.body = ShapeModelBody.PHOBOS;
+            c.type = BodyType.PLANETS_AND_SATELLITES;
+            c.population = ShapeModelPopulation.MARS;
+            c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
+            c.author = ShapeModelType.provide("ernst-et-al-2023");
+            c.modelLabel = "Ernst et al. 2023";
+            c.rootDirOnServer = "/phobos/ernst-et-al-2023";
+            c.shapeModelFileExtension = ".obj";
+            c.hasImageMap = false;
+            c.presentInMissions = new Mission[] { //
+                    Mission.APL_INTERNAL, //
+                    Mission.TEST_APL_INTERNAL, //
+                    Mission.STAGE_APL_INTERNAL, //
+                    Mission.PUBLIC_RELEASE, //
+                    Mission.TEST_PUBLIC_RELEASE, //
+                    Mission.STAGE_PUBLIC_RELEASE //
+            };
+            c.setResolution(ImmutableList.of("Very Low (12288 plates)", DEFAULT_GASKELL_LABELS_PER_RESOLUTION[0], DEFAULT_GASKELL_LABELS_PER_RESOLUTION[1], DEFAULT_GASKELL_LABELS_PER_RESOLUTION[2], DEFAULT_GASKELL_LABELS_PER_RESOLUTION[3]), ImmutableList.of(12288, DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[0], DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[1], DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[2], DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[3]));
+        }
+
+        // Latest Gaskell Deimos (experimental)
+        if (Configuration.isAPLVersion())
+        {
+            c = new MarsConfigs();
+            c.body = ShapeModelBody.DEIMOS;
+            c.type = BodyType.PLANETS_AND_SATELLITES;
+            c.population = ShapeModelPopulation.MARS;
+            c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
+            c.author = ShapeModelType.provide("ernst-et-al-2023");
+            c.modelLabel = "Ernst et al. 2023";
+            c.rootDirOnServer = "/deimos/ernst-et-al-2023";
+            c.shapeModelFileExtension = ".obj";
+            c.hasImageMap = false;
+            c.presentInMissions = new Mission[] { //
+                    Mission.APL_INTERNAL, //
+                    Mission.TEST_APL_INTERNAL, //
+                    Mission.STAGE_APL_INTERNAL, //
+                    Mission.PUBLIC_RELEASE, //
+                    Mission.TEST_PUBLIC_RELEASE, //
+                    Mission.STAGE_PUBLIC_RELEASE //
+            };
+        }
     }
 
 	@Override
