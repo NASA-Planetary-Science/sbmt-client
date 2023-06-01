@@ -516,7 +516,18 @@ public class MarsConfigs extends SmallBodyViewConfig
                     Mission.TEST_PUBLIC_RELEASE, //
                     Mission.STAGE_PUBLIC_RELEASE //
             };
-            c.setResolution(ImmutableList.of("Very Low (12288 plates)", DEFAULT_GASKELL_LABELS_PER_RESOLUTION[0], DEFAULT_GASKELL_LABELS_PER_RESOLUTION[1], DEFAULT_GASKELL_LABELS_PER_RESOLUTION[2], DEFAULT_GASKELL_LABELS_PER_RESOLUTION[3]), ImmutableList.of(12288, DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[0], DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[1], DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[2], DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[3]));
+            c.setResolution( //
+                    ImmutableList.of( //
+                            "Very Low (12288 plates)", //
+                            DEFAULT_GASKELL_LABELS_PER_RESOLUTION[0], //
+                            DEFAULT_GASKELL_LABELS_PER_RESOLUTION[1], //
+                            DEFAULT_GASKELL_LABELS_PER_RESOLUTION[2], //
+                            DEFAULT_GASKELL_LABELS_PER_RESOLUTION[3]), //
+                    ImmutableList.of(12288, //
+                            DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[0], //
+                            DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[1], //
+                            DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[2], //
+                            DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[3]));
             configArray.add(c);
         }
 
@@ -543,6 +554,7 @@ public class MarsConfigs extends SmallBodyViewConfig
             };
             configArray.add(c);
         }
+
     }
 
 	@Override
