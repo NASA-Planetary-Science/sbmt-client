@@ -41,7 +41,7 @@ public class MarsConfigs extends SmallBodyViewConfig
 	}
 
 
-	public static void initialize(ConfigArrayList configArray, boolean publicOnly)
+	public static void initialize(ConfigArrayList<SmallBodyViewConfig> configArray, boolean publicOnly)
     {
         MarsConfigs c = new MarsConfigs();
 
@@ -60,7 +60,7 @@ public class MarsConfigs extends SmallBodyViewConfig
         c.imagingInstruments = new ImagingInstrument[] {
                 new ImagingInstrument( //
                         SpectralImageMode.MONO, //
-                        new FixedListQuery("/GASKELL/PHOBOS/imaging", "/GASKELL/PHOBOS/imaging/images/gallery"), //
+                        new FixedListQuery<>("/GASKELL/PHOBOS/imaging", "/GASKELL/PHOBOS/imaging/images/gallery"), //
 //                        new GenericPhpQuery("/GASKELL/PHOBOS/IMAGING", "PHOBOS", "/GASKELL/PHOBOS/IMAGING/images/gallery"), //
                         ImageType.valueOf("MARS_MOON_IMAGE"), //
                         new ImageSource[]{ImageSource.GASKELL}, //
@@ -224,7 +224,7 @@ public class MarsConfigs extends SmallBodyViewConfig
                     new ImagingInstrument( //
                             SpectralImageMode.MONO, //
 //                            new GenericPhpQuery("/phobos/ernst2018/imaging", "PHOBOS_ERNST_2018", "/phobos/ernst2018/imaging/gallery"), //
-                            new FixedListQuery("/phobos/ernst2018/imaging", "/phobos/ernst2018/imaging/gallery"), //
+                            new FixedListQuery<>("/phobos/ernst2018/imaging", "/phobos/ernst2018/imaging/gallery"), //
                             ImageType.valueOf("MARS_MOON_IMAGE"), //
                             new ImageSource[]{ ImageSource.GASKELL }, //
                             Instrument.IMAGING_DATA, //
@@ -380,7 +380,7 @@ public class MarsConfigs extends SmallBodyViewConfig
                     new ImagingInstrument( //
                             SpectralImageMode.MONO, //
 //                            new GenericPhpQuery("/deimos/ernst2018/imaging", "DEIMOS_ERNST_2018", "/deimos/ernst2018/imaging/gallery"), //
-                            new FixedListQuery("/deimos/ernst2018/imaging", "/deimos/ernst2018/imaging/gallery"), //
+                            new FixedListQuery<>("/deimos/ernst2018/imaging", "/deimos/ernst2018/imaging/gallery"), //
                             ImageType.valueOf("MARS_MOON_IMAGE"), //
                             new ImageSource[]{ ImageSource.GASKELL }, //
                             Instrument.IMAGING_DATA, //
@@ -431,7 +431,7 @@ public class MarsConfigs extends SmallBodyViewConfig
             c.imagingInstruments = new ImagingInstrument[] {
                     new ImagingInstrument(
                             SpectralImageMode.MONO,
-                            new FixedListQuery("/phobos/ernst2018-megane/imaging", "/phobos/ernst2018-megane/imaging/gallery"),
+                            new FixedListQuery<>("/phobos/ernst2018-megane/imaging", "/phobos/ernst2018-megane/imaging/gallery"),
                             ImageType.valueOf("MARS_MOON_IMAGE"),
                             new ImageSource[]{ ImageSource.GASKELL },
                             Instrument.IMAGING_DATA,
@@ -516,6 +516,7 @@ public class MarsConfigs extends SmallBodyViewConfig
                     Mission.STAGE_PUBLIC_RELEASE //
             };
             c.setResolution(ImmutableList.of("Very Low (12288 plates)", DEFAULT_GASKELL_LABELS_PER_RESOLUTION[0], DEFAULT_GASKELL_LABELS_PER_RESOLUTION[1], DEFAULT_GASKELL_LABELS_PER_RESOLUTION[2], DEFAULT_GASKELL_LABELS_PER_RESOLUTION[3]), ImmutableList.of(12288, DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[0], DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[1], DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[2], DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[3]));
+            configArray.add(c);
         }
 
         // Latest Gaskell Deimos (experimental)
@@ -539,6 +540,7 @@ public class MarsConfigs extends SmallBodyViewConfig
                     Mission.TEST_PUBLIC_RELEASE, //
                     Mission.STAGE_PUBLIC_RELEASE //
             };
+            configArray.add(c);
         }
     }
 
