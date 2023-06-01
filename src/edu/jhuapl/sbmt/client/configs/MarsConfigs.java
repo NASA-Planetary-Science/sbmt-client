@@ -9,6 +9,7 @@ import com.google.common.collect.Maps;
 import com.jidesoft.swing.CheckBoxTree;
 
 import edu.jhuapl.saavtk.config.ConfigArrayList;
+import edu.jhuapl.saavtk.config.IBodyViewConfig;
 import edu.jhuapl.saavtk.model.ShapeModelBody;
 import edu.jhuapl.saavtk.model.ShapeModelType;
 import edu.jhuapl.saavtk.util.Configuration;
@@ -41,7 +42,7 @@ public class MarsConfigs extends SmallBodyViewConfig
 	}
 
 
-	public static void initialize(ConfigArrayList<SmallBodyViewConfig> configArray, boolean publicOnly)
+	public static void initialize(ConfigArrayList<IBodyViewConfig> configArray, boolean publicOnly)
     {
         MarsConfigs c = new MarsConfigs();
 
