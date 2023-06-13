@@ -518,16 +518,17 @@ public class MarsConfigs extends SmallBodyViewConfig
             };
             c.setResolution( //
                     ImmutableList.of( //
-                            "Very Low (12288 plates)", //
                             DEFAULT_GASKELL_LABELS_PER_RESOLUTION[0], //
                             DEFAULT_GASKELL_LABELS_PER_RESOLUTION[1], //
                             DEFAULT_GASKELL_LABELS_PER_RESOLUTION[2], //
-                            DEFAULT_GASKELL_LABELS_PER_RESOLUTION[3]), //
-                    ImmutableList.of(12288, //
+                            DEFAULT_GASKELL_LABELS_PER_RESOLUTION[3], //
+                    		"Very Low (12582912 plates)"),
+                    ImmutableList.of( //
                             DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[0], //
                             DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[1], //
                             DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[2], //
-                            DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[3]));
+                            DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[3], //
+                            12582912));
             configArray.add(c);
         }
 
