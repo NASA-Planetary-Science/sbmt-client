@@ -522,7 +522,7 @@ public class MarsConfigs extends SmallBodyViewConfig
                             DEFAULT_GASKELL_LABELS_PER_RESOLUTION[1], //
                             DEFAULT_GASKELL_LABELS_PER_RESOLUTION[2], //
                             DEFAULT_GASKELL_LABELS_PER_RESOLUTION[3], //
-                    		"Very Low (12582912 plates)"),
+                    		"Extremely High (12582912 plates)"),
                     ImmutableList.of( //
                             DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[0], //
                             DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[1], //
