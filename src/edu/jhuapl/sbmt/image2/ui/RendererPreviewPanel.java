@@ -47,7 +47,7 @@ public class RendererPreviewPanel extends ModelInfoWindow
 		setTitle("Renderer Preview");
 
 		pack();
-		setVisible(true);
+//		setVisible(true);
 		javax.swing.SwingUtilities.invokeLater(new Runnable()
 		{
 			@Override
@@ -64,7 +64,7 @@ public class RendererPreviewPanel extends ModelInfoWindow
 		List<vtkProp> props = Lists.newArrayList();
 		for (vtkActor actor : inputs)
 			props.add(actor);
-		props.add(smallBodyModel.getSmallBodyActor());
+//		props.add(smallBodyModel.getSmallBodyActor());
 		renderer.addVtkPropProvider(new VtkPropProvider()
 		{
 
