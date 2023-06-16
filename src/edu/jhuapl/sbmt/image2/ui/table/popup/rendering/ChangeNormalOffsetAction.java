@@ -170,6 +170,7 @@ public class ChangeNormalOffsetAction<G1 extends IPerspectiveImage & IPerspectiv
 	            // fully fulfilled.
 	            double offset = image.getOffset();
 	            offsetField.setValue(1000.0 * offset);
+	            PerspectiveImageOffsetUpdatePipeline.of(collection, image, defaultOffset);
 	        }
 
 	        if (e.getSource() == okayButton || e.getSource() == cancelButton)
