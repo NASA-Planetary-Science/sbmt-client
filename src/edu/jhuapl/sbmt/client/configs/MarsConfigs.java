@@ -9,6 +9,7 @@ import com.google.common.collect.Maps;
 import com.jidesoft.swing.CheckBoxTree;
 
 import edu.jhuapl.saavtk.config.ConfigArrayList;
+import edu.jhuapl.saavtk.config.IBodyViewConfig;
 import edu.jhuapl.saavtk.model.ShapeModelBody;
 import edu.jhuapl.saavtk.model.ShapeModelType;
 import edu.jhuapl.saavtk.util.Configuration;
@@ -41,7 +42,7 @@ public class MarsConfigs extends SmallBodyViewConfig
 	}
 
 
-	public static void initialize(ConfigArrayList configArray, boolean publicOnly)
+	public static void initialize(ConfigArrayList<IBodyViewConfig> configArray, boolean publicOnly)
     {
         MarsConfigs c = new MarsConfigs();
 
@@ -60,7 +61,7 @@ public class MarsConfigs extends SmallBodyViewConfig
         c.imagingInstruments = new ImagingInstrument[] {
                 new ImagingInstrument( //
                         SpectralImageMode.MONO, //
-                        new FixedListQuery("/GASKELL/PHOBOS/imaging", "/GASKELL/PHOBOS/imaging/images/gallery"), //
+                        new FixedListQuery<>("/GASKELL/PHOBOS/imaging", "/GASKELL/PHOBOS/imaging/images/gallery"), //
 //                        new GenericPhpQuery("/GASKELL/PHOBOS/IMAGING", "PHOBOS", "/GASKELL/PHOBOS/IMAGING/images/gallery"), //
                         ImageType.valueOf("MARS_MOON_IMAGE"), //
                         new ImageSource[]{ImageSource.GASKELL}, //
@@ -224,7 +225,7 @@ public class MarsConfigs extends SmallBodyViewConfig
                     new ImagingInstrument( //
                             SpectralImageMode.MONO, //
 //                            new GenericPhpQuery("/phobos/ernst2018/imaging", "PHOBOS_ERNST_2018", "/phobos/ernst2018/imaging/gallery"), //
-                            new FixedListQuery("/phobos/ernst2018/imaging", "/phobos/ernst2018/imaging/gallery"), //
+                            new FixedListQuery<>("/phobos/ernst2018/imaging", "/phobos/ernst2018/imaging/gallery"), //
                             ImageType.valueOf("MARS_MOON_IMAGE"), //
                             new ImageSource[]{ ImageSource.GASKELL }, //
                             Instrument.IMAGING_DATA, //
@@ -380,7 +381,7 @@ public class MarsConfigs extends SmallBodyViewConfig
                     new ImagingInstrument( //
                             SpectralImageMode.MONO, //
 //                            new GenericPhpQuery("/deimos/ernst2018/imaging", "DEIMOS_ERNST_2018", "/deimos/ernst2018/imaging/gallery"), //
-                            new FixedListQuery("/deimos/ernst2018/imaging", "/deimos/ernst2018/imaging/gallery"), //
+                            new FixedListQuery<>("/deimos/ernst2018/imaging", "/deimos/ernst2018/imaging/gallery"), //
                             ImageType.valueOf("MARS_MOON_IMAGE"), //
                             new ImageSource[]{ ImageSource.GASKELL }, //
                             Instrument.IMAGING_DATA, //
@@ -431,7 +432,7 @@ public class MarsConfigs extends SmallBodyViewConfig
             c.imagingInstruments = new ImagingInstrument[] {
                     new ImagingInstrument(
                             SpectralImageMode.MONO,
-                            new FixedListQuery("/phobos/ernst2018-megane/imaging", "/phobos/ernst2018-megane/imaging/gallery"),
+                            new FixedListQuery<>("/phobos/ernst2018-megane/imaging", "/phobos/ernst2018-megane/imaging/gallery"),
                             ImageType.valueOf("MARS_MOON_IMAGE"),
                             new ImageSource[]{ ImageSource.GASKELL },
                             Instrument.IMAGING_DATA,
@@ -493,6 +494,68 @@ public class MarsConfigs extends SmallBodyViewConfig
             	configArray.add(c);
 
         }
+
+        // Latest Gaskell Phobos (experimental)
+        if (Configuration.isAPLVersion())
+        {
+            c = new MarsConfigs();
+            c.body = ShapeModelBody.PHOBOS;
+            c.type = BodyType.PLANETS_AND_SATELLITES;
+            c.population = ShapeModelPopulation.MARS;
+            c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
+            c.author = ShapeModelType.provide("ernst-et-al-2023");
+            c.modelLabel = "Ernst et al. 2023";
+            c.rootDirOnServer = "/phobos/ernst-et-al-2023";
+            c.shapeModelFileExtension = ".obj";
+            c.hasImageMap = false;
+            c.presentInMissions = new Mission[] { //
+                    Mission.APL_INTERNAL, //
+                    Mission.TEST_APL_INTERNAL, //
+                    Mission.STAGE_APL_INTERNAL, //
+                    Mission.PUBLIC_RELEASE, //
+                    Mission.TEST_PUBLIC_RELEASE, //
+                    Mission.STAGE_PUBLIC_RELEASE //
+            };
+            c.setResolution( //
+                    ImmutableList.of( //
+                            DEFAULT_GASKELL_LABELS_PER_RESOLUTION[0], //
+                            DEFAULT_GASKELL_LABELS_PER_RESOLUTION[1], //
+                            DEFAULT_GASKELL_LABELS_PER_RESOLUTION[2], //
+                            DEFAULT_GASKELL_LABELS_PER_RESOLUTION[3], //
+                    		"Extremely High (12582912 plates)"),
+                    ImmutableList.of( //
+                            DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[0], //
+                            DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[1], //
+                            DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[2], //
+                            DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[3], //
+                            12582912));
+            configArray.add(c);
+        }
+
+        // Latest Gaskell Deimos (experimental)
+        if (Configuration.isAPLVersion())
+        {
+            c = new MarsConfigs();
+            c.body = ShapeModelBody.DEIMOS;
+            c.type = BodyType.PLANETS_AND_SATELLITES;
+            c.population = ShapeModelPopulation.MARS;
+            c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
+            c.author = ShapeModelType.provide("ernst-et-al-2023");
+            c.modelLabel = "Ernst et al. 2023";
+            c.rootDirOnServer = "/deimos/ernst-et-al-2023";
+            c.shapeModelFileExtension = ".obj";
+            c.hasImageMap = false;
+            c.presentInMissions = new Mission[] { //
+                    Mission.APL_INTERNAL, //
+                    Mission.TEST_APL_INTERNAL, //
+                    Mission.STAGE_APL_INTERNAL, //
+                    Mission.PUBLIC_RELEASE, //
+                    Mission.TEST_PUBLIC_RELEASE, //
+                    Mission.STAGE_PUBLIC_RELEASE //
+            };
+            configArray.add(c);
+        }
+
     }
 
 	@Override

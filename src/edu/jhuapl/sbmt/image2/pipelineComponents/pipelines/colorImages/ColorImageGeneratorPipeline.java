@@ -3,6 +3,7 @@ package edu.jhuapl.sbmt.image2.pipelineComponents.pipelines.colorImages;
 import java.util.List;
 
 import org.apache.commons.lang3.tuple.Pair;
+import org.gdal.gdal.gdal;
 
 import com.beust.jcommander.internal.Lists;
 
@@ -99,16 +100,17 @@ public class ColorImageGeneratorPipeline extends ImageToScenePipeline //implemen
 	public static void main(String[] args) throws Exception
 	{
 		NativeLibraryLoader.loadAllVtkLibraries();
+		gdal.AllRegister();
 
-		PerspectiveImage image1 = new PerspectiveImage("/Users/steelrj1/.sbmt-stage-apl/cache/2/GASKELL/EROS/MSI/images/M0125990473F4_2P_IOF_DBL.FIT", ImageType.MSI_IMAGE, ImageSource.SPICE, "/Users/steelrj1/Desktop/M0125990473F4_2P_IOF_DBL.INFO", new double[] {});
+		PerspectiveImage image1 = new PerspectiveImage("/Users/steelrj1/Desktop/2356-test-files/1270/M0125990473F4_2P_IOF_DBL.FIT", ImageType.MSI_IMAGE, ImageSource.SPICE, "/Users/steelrj1/Desktop/2356-test-files/1270/M0125990473F4_2P_IOF_DBL.INFO", new double[] {});
 		image1.setLinearInterpolatorDims(new int[] { 537, 412 });
 		image1.setMaskValues(new int[] {2, 14, 2, 14});
 
-		PerspectiveImage image2 = new PerspectiveImage("/Users/steelrj1/.sbmt-stage-apl/cache/2/GASKELL/EROS/MSI/images/M0125990619F4_2P_IOF_DBL.FIT", ImageType.MSI_IMAGE, ImageSource.SPICE, "/Users/steelrj1/Desktop/M0125990619F4_2P_IOF_DBL.INFO", new double[] {});
+		PerspectiveImage image2 = new PerspectiveImage("/Users/steelrj1/Desktop/2356-test-files/1270/M0125990619F4_2P_IOF_DBL.FIT", ImageType.MSI_IMAGE, ImageSource.SPICE, "/Users/steelrj1/Desktop/2356-test-files/1270/M0125990619F4_2P_IOF_DBL.INFO", new double[] {});
 		image2.setLinearInterpolatorDims(new int[] { 537, 412 });
 		image2.setMaskValues(new int[] {2, 14, 2, 14});
 
-		PerspectiveImage image3 = new PerspectiveImage("/Users/steelrj1/.sbmt-stage-apl/cache/2/GASKELL/EROS/MSI/images/M0126023535F4_2P_IOF_DBL.FIT", ImageType.MSI_IMAGE, ImageSource.SPICE, "/Users/steelrj1/Desktop/M0126023535F4_2P_IOF_DBL.INFO", new double[] {});
+		PerspectiveImage image3 = new PerspectiveImage("/Users/steelrj1/Desktop/2356-test-files/1270/M0126023535F4_2P_IOF_DBL.FIT", ImageType.MSI_IMAGE, ImageSource.SPICE, "/Users/steelrj1/Desktop/2356-test-files/1270/M0126023535F4_2P_IOF_DBL.INFO", new double[] {});
 		image3.setLinearInterpolatorDims(new int[] { 537, 412 });
 		image3.setMaskValues(new int[] {2, 14, 2, 14});
 

@@ -39,7 +39,7 @@ public class ImageListItemHandler<G1 extends IPerspectiveImage  & IPerspectiveIm
 			case Boundary:
 				return imageCollection.getImageBoundaryShowing(image);
 			case Id:
-				return formatter.format(image.getIndex());
+				return image.getIndex();
 			case Filename:
 				return FilenameUtils.getName(image.getName());
 			case Date:	//this is till LONG coming from the server, so Date is right here

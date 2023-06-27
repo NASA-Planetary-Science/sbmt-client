@@ -84,16 +84,38 @@ public class LayerPreviewController<G1 extends IPerspectiveImage & IPerspectiveI
 					 .sorted()
 					 .toList()
 					 .toArray(layerNames);
+				int i=0;
+				for (String name : layerNames)
+				{
+					String[] parts = name.split("PLANE");
+					String[] parts2 = parts[1].split(" ");
+					String paddedIndex = StringUtils.leftPad(""+(parts2[0]), 2);
+					String desc = "";
+					int j=0;
+					for (String str : parts2)
+					{
+						if (j==0)
+						{
+							j++;
+							continue;
+						}
+						desc += " " + str;
+					}
+					layerNames[i++] = "PLANE" + paddedIndex + desc;
+
+ 				}
+				Arrays.sort(layerNames);
+
 			}
 			else
 				for (int i=0; i<5; i++)
 				{
 					String paddedIndex = StringUtils.leftPad(""+(i+1), 2);
-					layerNames[i] = "PLANE" + (i+1);
+					layerNames[i] = "PLANE" + paddedIndex;
 				}
 			panel.setLayerComboBox(new JComboBox<String>(layerNames));
 			int indexToSelect = 0;
-			Optional<String> matchedPlane = Arrays.stream(layerNames).filter(Objects::nonNull).filter(name -> name.contains("PLANE" + model.getDisplayedLayerIndex())).findFirst();
+			Optional<String> matchedPlane = Arrays.stream(layerNames).filter(Objects::nonNull).filter(name -> name.contains("PLANE" + StringUtils.leftPad(""+(model.getDisplayedLayerIndex()), 2))).findFirst();
 			if (matchedPlane.isPresent())
 				indexToSelect = Arrays.stream(layerNames).toList().indexOf(matchedPlane.get()) + 1;
 			panel.getLayerComboBox().setSelectedIndex(indexToSelect);

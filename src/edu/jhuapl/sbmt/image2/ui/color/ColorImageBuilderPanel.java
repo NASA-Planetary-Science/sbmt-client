@@ -62,7 +62,7 @@ public class ColorImageBuilderPanel<G1 extends IPerspectiveImage & IPerspectiveI
 	{
 		previewPanel = new JPanel();
 		previewPanel.setSize(750, 650);
-		previewPanel.add(new JLabel("Select 3 images, then clip the preview button above."));
+		previewPanel.add(new JLabel("Select 3 images, then click the preview button above."));
 		previewPanel.add(new JLabel("When you are satisfied, click 'Save and Close'; the image will then appear under the 'Custom' subtab."));
 		previewPanel.setPreferredSize(new Dimension(750, 650));
 		previewPanel.setMaximumSize(new Dimension(750, 650));
