@@ -412,7 +412,6 @@ public abstract class BodyViewConfig extends ViewConfig
     public void addFeatureConfig(Class<?> configClass, IFeatureConfig instrumentConfig)
     {
     	List<IFeatureConfig> tmpInstrumentConfigs;
-    	System.out.println("BodyViewConfig: addFeatureConfig: adding config for " + configClass.getSimpleName());
     	if (featureConfigs.containsKey(configClass))
     	{
     		tmpInstrumentConfigs = featureConfigs.get(configClass);
