@@ -20,12 +20,12 @@ import edu.jhuapl.saavtk.util.FileUtil;
 import edu.jhuapl.saavtk.util.Frustum;
 import edu.jhuapl.saavtk.util.MathUtil;
 import edu.jhuapl.saavtk.util.NativeLibraryLoader;
-import edu.jhuapl.sbmt.common.client.SmallBodyModel;
-import edu.jhuapl.sbmt.common.client.SmallBodyViewConfig;
-import edu.jhuapl.sbmt.core.image.ImageSource;
-import edu.jhuapl.sbmt.image.model.bodies.eros.MSIImage;
-import edu.jhuapl.sbmt.image.model.keys.ImageKey;
+import edu.jhuapl.sbmt.config.SmallBodyViewConfig;
+import edu.jhuapl.sbmt.core.body.SmallBodyModel;
+import edu.jhuapl.sbmt.core.pointing.PointingSource;
+import edu.jhuapl.sbmt.image.old.ImageKey;
 import edu.jhuapl.sbmt.model.eros.Eros;
+import edu.jhuapl.sbmt.model.eros.msi.MSIImage;
 
 import nom.tam.fits.FitsException;
 
@@ -74,7 +74,7 @@ public class MSIBestResolutionPerPlate
     private static List<PlateStatistics> statisticsPerPlate = new ArrayList<PlateStatistics>();
     private static List<String> msiFilesWithAtLeastOneGoodPlate = new ArrayList<String>();
 
-    private static boolean checkIfMsiFilesExist(String line, ImageSource source)
+    private static boolean checkIfMsiFilesExist(String line, PointingSource source)
     {
         File file = new File(line);
         if (!file.exists())
@@ -91,7 +91,7 @@ public class MSIBestResolutionPerPlate
             return false;
 
         // Check for the sumfile if source is Gaskell
-        if (source.equals(ImageSource.GASKELL))
+        if (source.equals(PointingSource.GASKELL))
         {
             File msirootdir = (new File(line)).getParentFile().getParentFile().getParentFile().getParentFile();
             String msiId = (new File(line)).getName().substring(0, 11);
@@ -111,7 +111,7 @@ public class MSIBestResolutionPerPlate
     }
 
     private static void computeBestResolutionPerPlate(
-            List<String> msiFiles, ImageSource msiSource) throws IOException, FitsException
+            List<String> msiFiles, PointingSource msiSource) throws IOException, FitsException
     {
         int numPlatesInSmallBodyModel = erosModel.getSmallBodyPolyData().GetNumberOfCells();
         for (int i=0; i<numPlatesInSmallBodyModel; ++i)
@@ -302,7 +302,7 @@ public class MSIBestResolutionPerPlate
         try
         {
             //computeBestResolutionPerPlate(msiFiles, ImageSource.PDS);
-            computeBestResolutionPerPlate(msiFiles, ImageSource.GASKELL);
+            computeBestResolutionPerPlate(msiFiles, PointingSource.GASKELL);
         }
         catch (Exception e1) {
             e1.printStackTrace();

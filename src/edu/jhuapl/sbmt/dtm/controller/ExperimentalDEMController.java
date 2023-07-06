@@ -7,7 +7,7 @@ import javax.swing.JTabbedPane;
 import edu.jhuapl.saavtk.gui.render.Renderer;
 import edu.jhuapl.saavtk.model.ModelManager;
 import edu.jhuapl.saavtk.pick.PickManager;
-import edu.jhuapl.sbmt.common.client.SmallBodyViewConfig;
+import edu.jhuapl.sbmt.config.SmallBodyViewConfig;
 import edu.jhuapl.sbmt.dtm.controller.browse.DtmBrowseController;
 import edu.jhuapl.sbmt.dtm.controller.creation.DtmCreationController;
 import edu.jhuapl.sbmt.dtm.controller.search.DtmSearchController;

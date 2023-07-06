@@ -19,7 +19,6 @@ import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 
 import edu.jhuapl.saavtk.util.FileCache;
-import edu.jhuapl.sbmt.common.client.SbmtSpectrumModelFactory;
 import edu.jhuapl.sbmt.core.listeners.SearchProgressListener;
 import edu.jhuapl.sbmt.lidar.hyperoctree.FSHyperTreeSkeleton.Node;
 import edu.jhuapl.sbmt.lidar.hyperoctree.HyperBox;
@@ -27,6 +26,7 @@ import edu.jhuapl.sbmt.lidar.hyperoctree.HyperException;
 import edu.jhuapl.sbmt.model.boundedobject.hyperoctree.BoundedObjectHyperTreeNode;
 import edu.jhuapl.sbmt.model.boundedobject.hyperoctree.BoundedObjectHyperTreeSkeleton;
 import edu.jhuapl.sbmt.model.boundedobject.hyperoctree.HyperBoundedObject;
+import edu.jhuapl.sbmt.spectrum.SbmtSpectrumModelFactory;
 import edu.jhuapl.sbmt.spectrum.model.core.BasicSpectrum;
 import edu.jhuapl.sbmt.spectrum.model.core.BasicSpectrumInstrument;
 import edu.jhuapl.sbmt.spectrum.model.core.interfaces.IBasicSpectrumRenderer;

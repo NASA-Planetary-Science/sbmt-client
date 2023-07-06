@@ -9,6 +9,7 @@ import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreeModel;
 import javax.swing.tree.TreePath;
 
+import edu.jhuapl.sbmt.core.search.HierarchicalSearchLeafNode;
 import edu.jhuapl.sbmt.spectrum.model.core.interfaces.InstrumentMetadataIO;
 import edu.jhuapl.sbmt.spectrum.model.core.interfaces.SearchSpec;
 

@@ -5,9 +5,9 @@ import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
 
+import edu.jhuapl.sbmt.core.util.TimeUtil;
 import edu.jhuapl.sbmt.stateHistory.model.StateHistoryUtil;
 import edu.jhuapl.sbmt.stateHistory.model.interfaces.State;
-import edu.jhuapl.sbmt.util.TimeUtil;
 
 import crucible.core.math.vectorspace.UnwritableVectorIJK;
 

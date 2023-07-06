@@ -2,7 +2,7 @@ package edu.jhuapl.sbmt.spectrum.model.sbmtCore.spectra;
 
 import java.io.IOException;
 
-import edu.jhuapl.sbmt.common.client.ISmallBodyModel;
+import edu.jhuapl.sbmt.core.body.ISmallBodyModel;
 import edu.jhuapl.sbmt.query.IQueryBase;
 import edu.jhuapl.sbmt.spectrum.model.sbmtCore.spectra.math.SpectrumMath;
 

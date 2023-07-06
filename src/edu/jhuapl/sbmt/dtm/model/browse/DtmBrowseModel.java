@@ -6,7 +6,7 @@ import java.util.Vector;
 import edu.jhuapl.saavtk.model.ModelManager;
 import edu.jhuapl.saavtk.model.ModelNames;
 import edu.jhuapl.saavtk.pick.PickManager;
-import edu.jhuapl.sbmt.common.client.SmallBodyViewConfig;
+import edu.jhuapl.sbmt.config.SmallBodyViewConfig;
 import edu.jhuapl.sbmt.dtm.model.DEMBoundaryCollection;
 import edu.jhuapl.sbmt.dtm.model.DEMCollection;
 import edu.jhuapl.sbmt.dtm.model.DEMKey;

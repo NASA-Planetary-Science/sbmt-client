@@ -19,7 +19,7 @@ import edu.jhuapl.saavtk.pick.PickManager;
 import edu.jhuapl.saavtk.pick.PickManager.PickMode;
 import edu.jhuapl.saavtk.structure.Ellipse;
 import edu.jhuapl.saavtk2.task.Task;
-import edu.jhuapl.sbmt.common.client.SmallBodyViewConfig;
+import edu.jhuapl.sbmt.config.SmallBodyViewConfig;
 import edu.jhuapl.sbmt.dtm.model.DEMKey;
 import edu.jhuapl.sbmt.dtm.model.creation.DEMCreator;
 import edu.jhuapl.sbmt.dtm.model.creation.DtmCreationModel;

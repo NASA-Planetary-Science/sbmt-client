@@ -13,8 +13,8 @@ import org.joda.time.DateTimeZone;
 
 import com.google.common.collect.Range;
 
-import edu.jhuapl.sbmt.core.image.ImageSource;
 import edu.jhuapl.sbmt.core.listeners.SearchProgressListener;
+import edu.jhuapl.sbmt.core.pointing.PointingSource;
 import edu.jhuapl.sbmt.query.IQueryBase;
 import edu.jhuapl.sbmt.query.database.DatabaseQueryBase;
 import edu.jhuapl.sbmt.query.database.SpectraDatabaseSearchMetadata;
@@ -105,7 +105,7 @@ public class SpectrumStandardSearch<S extends BasicSpectrum>
                 if (queryType instanceof FixedListQuery)
                 {
                     FixedListQuery query = (FixedListQuery)queryType;
-                    tempResults = instrument.getQueryBase().runQuery(FixedListSearchMetadata.of("Spectrum Search", "spectrumlist", "spectra", query.getRootPath(), ImageSource.CORRECTED_SPICE)).getResultlist();
+                    tempResults = instrument.getQueryBase().runQuery(FixedListSearchMetadata.of("Spectrum Search", "spectrumlist", "spectra", query.getRootPath(), PointingSource.CORRECTED_SPICE)).getResultlist();
                 }
                 else
                 {

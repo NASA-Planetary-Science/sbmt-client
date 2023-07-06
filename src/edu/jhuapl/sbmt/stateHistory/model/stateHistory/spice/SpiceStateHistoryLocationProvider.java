@@ -10,6 +10,7 @@ import java.util.Set;
 
 import edu.jhuapl.sbmt.pointing.IPointingProvider;
 import edu.jhuapl.sbmt.pointing.modules.SpiceReaderPublisher;
+import edu.jhuapl.sbmt.pointing.scState.SpiceState;
 import edu.jhuapl.sbmt.pointing.spice.SpiceInfo;
 import edu.jhuapl.sbmt.pointing.spice.SpicePointingProvider;
 import edu.jhuapl.sbmt.stateHistory.model.StateHistorySourceType;
@@ -19,7 +20,6 @@ import edu.jhuapl.sbmt.stateHistory.model.interfaces.StateHistory;
 import edu.jhuapl.sbmt.stateHistory.model.interfaces.Trajectory;
 import edu.jhuapl.sbmt.stateHistory.model.io.SpiceKernelNotFoundException;
 import edu.jhuapl.sbmt.stateHistory.model.io.StateHistoryIOException;
-import edu.jhuapl.sbmt.stateHistory.model.scState.SpiceState;
 import edu.jhuapl.sbmt.stateHistory.model.trajectory.StandardTrajectory;
 
 import crucible.core.math.vectorspace.UnwritableVectorIJK;

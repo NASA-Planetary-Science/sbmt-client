@@ -43,13 +43,12 @@ import edu.jhuapl.saavtk.util.ConvertResourceToFile;
 import edu.jhuapl.saavtk.util.SafeURLPaths;
 import edu.jhuapl.saavtk.view.light.gui.LightingConfigAction;
 import edu.jhuapl.saavtk.view.lod.gui.LodAction;
-import edu.jhuapl.sbmt.common.client.SbmtHelpMenu;
-import edu.jhuapl.sbmt.common.client.SmallBodyViewConfig;
-import edu.jhuapl.sbmt.common.client.SmallBodyViewConfigMetadataIO;
 import edu.jhuapl.sbmt.config.BasicConfigInfo;
-import edu.jhuapl.sbmt.config.BodyType;
-import edu.jhuapl.sbmt.config.ShapeModelDataUsed;
-import edu.jhuapl.sbmt.config.ShapeModelPopulation;
+import edu.jhuapl.sbmt.config.SmallBodyViewConfig;
+import edu.jhuapl.sbmt.config.SmallBodyViewConfigMetadataIO;
+import edu.jhuapl.sbmt.core.body.BodyType;
+import edu.jhuapl.sbmt.core.body.ShapeModelDataUsed;
+import edu.jhuapl.sbmt.core.body.ShapeModelPopulation;
 
 import crucible.crust.metadata.api.Key;
 import crucible.crust.metadata.api.Metadata;

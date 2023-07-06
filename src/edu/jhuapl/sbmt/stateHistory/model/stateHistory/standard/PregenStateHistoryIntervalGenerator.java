@@ -13,22 +13,22 @@ import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 
 import edu.jhuapl.saavtk.util.FileCache;
-import edu.jhuapl.sbmt.common.client.SmallBodyViewConfig;
+import edu.jhuapl.sbmt.config.SmallBodyViewConfig;
+import edu.jhuapl.sbmt.core.util.TimeUtil;
 import edu.jhuapl.sbmt.pointing.IPointingProvider;
+import edu.jhuapl.sbmt.pointing.StateHistoryUtil;
 import edu.jhuapl.sbmt.pointing.pregen.PregenPointingProvider;
+import edu.jhuapl.sbmt.pointing.scState.CsvState;
 import edu.jhuapl.sbmt.pointing.spice.SpiceInfo;
 import edu.jhuapl.sbmt.stateHistory.model.StateHistorySourceType;
-import edu.jhuapl.sbmt.stateHistory.model.StateHistoryUtil;
 import edu.jhuapl.sbmt.stateHistory.model.interfaces.IStateHistoryIntervalGenerator;
 import edu.jhuapl.sbmt.stateHistory.model.interfaces.IStateHistoryMetadata;
 import edu.jhuapl.sbmt.stateHistory.model.interfaces.State;
 import edu.jhuapl.sbmt.stateHistory.model.interfaces.StateHistory;
 import edu.jhuapl.sbmt.stateHistory.model.io.StateHistoryInputException;
 import edu.jhuapl.sbmt.stateHistory.model.io.StateHistoryInvalidTimeException;
-import edu.jhuapl.sbmt.stateHistory.model.scState.CsvState;
 import edu.jhuapl.sbmt.stateHistory.model.stateHistory.StateHistoryKey;
 import edu.jhuapl.sbmt.stateHistory.model.stateHistory.StateHistoryMetadata;
-import edu.jhuapl.sbmt.util.TimeUtil;
 
 /**
  * Class that generates state history from a pre-generated state history file that lives on the server
@@ -60,8 +60,8 @@ public class PregenStateHistoryIntervalGenerator implements IStateHistoryInterva
 	public StateHistory createNewTimeInterval(StateHistory history, Function<Double, Void> progressFunction) throws StateHistoryInputException, StateHistoryInvalidTimeException
 	{
 		IStateHistoryMetadata metadata = history.getMetadata();
-		String startString = edu.jhuapl.sbmt.util.TimeUtil.et2str(metadata.getStartTime());
-		String endString = edu.jhuapl.sbmt.util.TimeUtil.et2str(metadata.getEndTime());
+		String startString = edu.jhuapl.sbmt.core.util.TimeUtil.et2str(metadata.getStartTime());
+		String endString = edu.jhuapl.sbmt.core.util.TimeUtil.et2str(metadata.getEndTime());
 		DateTimeFormatter formatter = DateTimeFormat.forPattern("yyyy-MM-dd'T'HH:mm:ss.SSS");
 		DateTime start = formatter.parseDateTime(startString.substring(0, 23));
 		DateTime end = formatter.parseDateTime(endString.substring(0, 23));

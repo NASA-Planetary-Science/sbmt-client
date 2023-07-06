@@ -17,12 +17,12 @@ import edu.jhuapl.saavtk.util.LatLon;
 import edu.jhuapl.saavtk.util.MathUtil;
 import edu.jhuapl.saavtk.util.NativeLibraryLoader;
 import edu.jhuapl.saavtk.util.PolyDataUtil;
-import edu.jhuapl.sbmt.client.SbmtModelFactory;
-import edu.jhuapl.sbmt.common.client.SmallBodyModel;
-import edu.jhuapl.sbmt.common.client.SmallBodyViewConfig;
-import edu.jhuapl.sbmt.core.image.ImageSource;
-import edu.jhuapl.sbmt.image.model.bodies.eros.MSIImage;
-import edu.jhuapl.sbmt.image.model.keys.ImageKey;
+import edu.jhuapl.sbmt.config.SmallBodyViewConfig;
+import edu.jhuapl.sbmt.core.body.SmallBodyModel;
+import edu.jhuapl.sbmt.core.pointing.PointingSource;
+import edu.jhuapl.sbmt.image.old.ImageKey;
+import edu.jhuapl.sbmt.model.SbmtModelFactory;
+import edu.jhuapl.sbmt.model.eros.msi.MSIImage;
 import edu.jhuapl.sbmt.util.BatchSubmission;
 import edu.jhuapl.sbmt.util.BatchSubmission.BatchType;
 
@@ -76,7 +76,7 @@ public class CompareGaskellAndNLRGenerateMapletsForImages
             ++count;
 
             keyName = keyName.replace(".FIT", "");
-            ImageKey key = new ImageKey(keyName, ImageSource.GASKELL);
+            ImageKey key = new ImageKey(keyName, PointingSource.GASKELL);
             MSIImage image = new MSIImage(key, smallBodyModel, true);
 
             // If the sumfile has no landmarks, then ignore it. Sumfiles that have no landmarks

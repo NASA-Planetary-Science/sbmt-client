@@ -13,13 +13,13 @@ import edu.jhuapl.saavtk.model.ShapeModelBody;
 import edu.jhuapl.saavtk.model.ShapeModelType;
 import edu.jhuapl.saavtk.util.FileUtil;
 import edu.jhuapl.saavtk.util.NativeLibraryLoader;
-import edu.jhuapl.sbmt.common.client.ISmallBodyViewConfig;
-import edu.jhuapl.sbmt.common.client.SmallBodyModel;
-import edu.jhuapl.sbmt.common.client.SmallBodyViewConfig;
-import edu.jhuapl.sbmt.config.Instrument;
-import edu.jhuapl.sbmt.core.image.ImageSource;
-import edu.jhuapl.sbmt.core.image.ImagingInstrument;
-import edu.jhuapl.sbmt.image2.pipelineComponents.pipelines.io.FilenameToRenderableImageFootprintPipeline;
+import edu.jhuapl.sbmt.config.SmallBodyViewConfig;
+import edu.jhuapl.sbmt.core.body.SmallBodyModel;
+import edu.jhuapl.sbmt.core.config.ISmallBodyViewConfig;
+import edu.jhuapl.sbmt.core.config.Instrument;
+import edu.jhuapl.sbmt.core.pointing.PointingSource;
+import edu.jhuapl.sbmt.image.model.ImagingInstrument;
+import edu.jhuapl.sbmt.image.pipelineComponents.pipelines.io.FilenameToRenderableImageFootprintPipeline;
 import edu.jhuapl.sbmt.model.eros.Eros;
 
 import nom.tam.fits.FitsException;
@@ -29,7 +29,7 @@ public class MSIFootprintGenerator
     private static SmallBodyModel erosModel;
     private static int resolutionLevel = 0;
 
-    private static boolean checkIfMsiFilesExist(String line, ImageSource source)
+    private static boolean checkIfMsiFilesExist(String line, PointingSource source)
     {
         File file = new File(line);
         if (!file.exists())
@@ -46,7 +46,7 @@ public class MSIFootprintGenerator
             return false;
 
         // Check for the sumfile if source is Gaskell
-        if (source.equals(ImageSource.GASKELL))
+        if (source.equals(PointingSource.GASKELL))
         {
             File msirootdir = (new File(line)).getParentFile().getParentFile().getParentFile().getParentFile();
             String msiId = (new File(line)).getName().substring(0, 11);
@@ -60,7 +60,7 @@ public class MSIFootprintGenerator
     }
 
     private static void generateMSIFootprints(
-            List<String> msiFiles, ImageSource msiSource, ImagingInstrument instrument) throws IOException, FitsException
+            List<String> msiFiles, PointingSource msiSource, ImagingInstrument instrument) throws IOException, FitsException
     {
         int count = 0;
         for (String filename : msiFiles)
@@ -86,7 +86,7 @@ public class MSIFootprintGenerator
             yearStr = f.getName();
 
             String vtkfile = null;
-            if (msiSource == ImageSource.SPICE)
+            if (msiSource == PointingSource.SPICE)
                 vtkfile = filename.substring(0, filename.length()-4) + "_FOOTPRINT_RES" + resolutionLevel + "_PDS.VTP";
             else
                 vtkfile = filename.substring(0, filename.length()-4) + "_FOOTPRINT_RES" + resolutionLevel + "_GASKELL.VTP";
@@ -191,8 +191,8 @@ public class MSIFootprintGenerator
 
         try
         {
-            generateMSIFootprints(msiFiles, ImageSource.SPICE, msiInstrument);
-            generateMSIFootprints(msiFiles, ImageSource.GASKELL, msiInstrument);
+            generateMSIFootprints(msiFiles, PointingSource.SPICE, msiInstrument);
+            generateMSIFootprints(msiFiles, PointingSource.GASKELL, msiInstrument);
         }
         catch (Exception e1) {
             e1.printStackTrace();

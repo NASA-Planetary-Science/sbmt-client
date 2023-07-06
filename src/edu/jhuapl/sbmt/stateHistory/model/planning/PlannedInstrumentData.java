@@ -1,6 +1,6 @@
 package edu.jhuapl.sbmt.stateHistory.model.planning;
 
-import edu.jhuapl.sbmt.config.Instrument;
+import edu.jhuapl.sbmt.core.config.Instrument;
 
 public interface PlannedInstrumentData
 {

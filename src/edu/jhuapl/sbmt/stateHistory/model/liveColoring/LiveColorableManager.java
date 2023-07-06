@@ -5,7 +5,7 @@ import java.util.HashMap;
 import vtk.vtkFloatArray;
 
 import edu.jhuapl.saavtk.util.NativeLibraryLoader;
-import edu.jhuapl.sbmt.core.rendering.PerspectiveFootprint;
+import edu.jhuapl.sbmt.image.model.PerspectiveFootprint;
 import edu.jhuapl.sbmt.stateHistory.model.interfaces.ICalculatedPlateValues;
 import edu.jhuapl.sbmt.stateHistory.model.interfaces.IFootprintConfinedPlateValues;
 import edu.jhuapl.sbmt.stateHistory.model.interfaces.ITimeCalculatedPlateValues;

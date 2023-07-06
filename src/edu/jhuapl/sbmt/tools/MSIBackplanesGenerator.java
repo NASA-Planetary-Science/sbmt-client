@@ -20,13 +20,13 @@ import edu.jhuapl.saavtk.model.ShapeModelType;
 import edu.jhuapl.saavtk.util.Configuration;
 import edu.jhuapl.saavtk.util.FileUtil;
 import edu.jhuapl.saavtk.util.NativeLibraryLoader;
-import edu.jhuapl.sbmt.client.SbmtModelFactory;
-import edu.jhuapl.sbmt.common.client.SmallBodyModel;
-import edu.jhuapl.sbmt.common.client.SmallBodyViewConfig;
-import edu.jhuapl.sbmt.config.Instrument;
-import edu.jhuapl.sbmt.core.image.ImageSource;
-import edu.jhuapl.sbmt.core.image.ImagingInstrument;
-import edu.jhuapl.sbmt.image.model.keys.ImageKey;
+import edu.jhuapl.sbmt.config.SmallBodyViewConfig;
+import edu.jhuapl.sbmt.core.body.SmallBodyModel;
+import edu.jhuapl.sbmt.core.config.Instrument;
+import edu.jhuapl.sbmt.core.pointing.PointingSource;
+import edu.jhuapl.sbmt.image.model.ImagingInstrument;
+import edu.jhuapl.sbmt.image.old.ImageKey;
+import edu.jhuapl.sbmt.model.SbmtModelFactory;
 import edu.jhuapl.sbmt.util.BackplanesFileFormat;
 
 import altwg.util.BatchSubmit;
@@ -151,7 +151,7 @@ public class MSIBackplanesGenerator
         //Set up the configuration for MSI GASKELL resolution 3
         String resolution = "3";
         Instrument camera = Instrument.MSI;
-        ImageSource ptg = ImageSource.GASKELL_UPDATED;
+        PointingSource ptg = PointingSource.GASKELL_UPDATED;
         ShapeModelType author = ShapeModelType.GASKELL;
         ShapeModelBody body = ShapeModelBody.EROS;
         BackplanesFileFormat fmt = BackplanesFileFormat.FITS;
@@ -293,7 +293,7 @@ public class MSIBackplanesGenerator
      * @param outputFolder - folder to which the backplanes are written
      * @return true if a backplanes file is already in the output folder
      */
-    private boolean backplanesFileExists(String image, String outputFolder, BackplanesFileFormat fmt, ImageSource ptg, ImagingInstrument instr)
+    private boolean backplanesFileExists(String image, String outputFolder, BackplanesFileFormat fmt, PointingSource ptg, ImagingInstrument instr)
     {
         try
         {

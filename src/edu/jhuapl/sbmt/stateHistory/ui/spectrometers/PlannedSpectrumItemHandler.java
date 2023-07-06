@@ -7,9 +7,9 @@ import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 
 import edu.jhuapl.saavtk.color.provider.ConstColorProvider;
+import edu.jhuapl.sbmt.core.util.TimeUtil;
 import edu.jhuapl.sbmt.stateHistory.model.planning.spectrometers.PlannedSpectrum;
 import edu.jhuapl.sbmt.stateHistory.model.planning.spectrometers.PlannedSpectrumCollection;
-import edu.jhuapl.sbmt.util.TimeUtil;
 
 import glum.gui.panel.itemList.BasicItemHandler;
 import glum.gui.panel.itemList.query.QueryComposer;

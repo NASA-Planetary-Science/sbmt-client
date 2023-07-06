@@ -17,7 +17,7 @@ import org.joda.time.DateTime;
 
 import com.jidesoft.utils.SwingWorker;
 
-import edu.jhuapl.sbmt.image2.ui.SBMTDateSpinner;
+import edu.jhuapl.sbmt.image.ui.SBMTDateSpinner;
 import edu.jhuapl.sbmt.pointing.spice.SpiceInfo;
 import edu.jhuapl.sbmt.stateHistory.model.StateHistoryModel;
 import edu.jhuapl.sbmt.stateHistory.model.StateHistorySourceType;

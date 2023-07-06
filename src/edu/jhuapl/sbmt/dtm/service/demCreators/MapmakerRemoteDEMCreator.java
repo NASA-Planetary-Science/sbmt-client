@@ -10,7 +10,7 @@ import edu.jhuapl.saavtk2.task.BasicTask;
 import edu.jhuapl.saavtk2.task.Task;
 import edu.jhuapl.saavtk2.task.TaskFinishedEvent;
 import edu.jhuapl.saavtk2.task.TaskStartedEvent;
-import edu.jhuapl.sbmt.common.client.SmallBodyViewConfig;
+import edu.jhuapl.sbmt.config.SmallBodyViewConfig;
 import edu.jhuapl.sbmt.dtm.deprecated.CustomDEMPanel.DEMInfo;
 import edu.jhuapl.sbmt.dtm.model.DEMKey;
 import edu.jhuapl.sbmt.dtm.model.creation.DEMCreator;

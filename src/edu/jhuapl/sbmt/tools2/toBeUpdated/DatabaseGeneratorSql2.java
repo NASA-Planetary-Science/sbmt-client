@@ -24,24 +24,23 @@ import edu.jhuapl.saavtk.util.FileCache;
 import edu.jhuapl.saavtk.util.FileUtil;
 import edu.jhuapl.saavtk.util.NativeLibraryLoader;
 import edu.jhuapl.saavtk.util.SafeURLPaths;
-import edu.jhuapl.sbmt.client2.SbmtModelFactory;
 import edu.jhuapl.sbmt.client2.SbmtMultiMissionTool;
-import edu.jhuapl.sbmt.common.client.Mission;
-import edu.jhuapl.sbmt.common.client.SmallBodyModel;
-import edu.jhuapl.sbmt.common.client.SmallBodyViewConfig;
-//import edu.jhuapl.sbmt.core.image.ImageKeyInterface;
-import edu.jhuapl.sbmt.core.image.ImageSource;
-import edu.jhuapl.sbmt.core.image.ImagingInstrument;
-import edu.jhuapl.sbmt.core.image.PointingFileReader;
-import edu.jhuapl.sbmt.image2.pipelineComponents.operators.rendering.pointedImage.ImageIllumination;
-import edu.jhuapl.sbmt.image2.pipelineComponents.operators.rendering.pointedImage.ImagePixelScale;
-import edu.jhuapl.sbmt.image2.pipelineComponents.operators.rendering.pointedImage.RenderablePointedImage;
-import edu.jhuapl.sbmt.image2.pipelineComponents.pipelines.io.FilenameToRenderableImageFootprintPipeline;
-import edu.jhuapl.sbmt.image2.pipelineComponents.pipelines.perspectiveImages.PerspectiveImageToDerivedMetadataPipeline;
+import edu.jhuapl.sbmt.config.SmallBodyViewConfig;
+import edu.jhuapl.sbmt.core.body.SmallBodyModel;
+import edu.jhuapl.sbmt.core.client.Mission;
+import edu.jhuapl.sbmt.core.pointing.PointingSource;
+import edu.jhuapl.sbmt.image.model.ImagingInstrument;
+import edu.jhuapl.sbmt.image.pipelineComponents.operators.rendering.pointedImage.ImageIllumination;
+import edu.jhuapl.sbmt.image.pipelineComponents.operators.rendering.pointedImage.ImagePixelScale;
+import edu.jhuapl.sbmt.image.pipelineComponents.operators.rendering.pointedImage.RenderablePointedImage;
+import edu.jhuapl.sbmt.image.pipelineComponents.pipelines.io.FilenameToRenderableImageFootprintPipeline;
+import edu.jhuapl.sbmt.image.pipelineComponents.pipelines.perspectiveImages.PerspectiveImageToDerivedMetadataPipeline;
+import edu.jhuapl.sbmt.model.SbmtModelFactory;
+import edu.jhuapl.sbmt.pointing.io.PointingFileReader;
 //import edu.jhuapl.sbmt.core.rendering.PerspectiveImage;
 //import edu.jhuapl.sbmt.image.model.keys.ImageKey;
 import edu.jhuapl.sbmt.tools.DBRunInfo;
-import edu.jhuapl.sbmt.tools.SqlManager;
+import edu.jhuapl.sbmt.util.SqlManager;
 
 public class DatabaseGeneratorSql2
 {
@@ -154,7 +153,7 @@ public class DatabaseGeneratorSql2
             List<String> lines,
             String tableName,
             String cubesTableName,
-            ImageSource imageSource,
+            PointingSource imageSource,
             ImagingInstrument instrument) throws Exception
     {
         smallBodyModel.setModelResolution(0);
@@ -219,7 +218,7 @@ public class DatabaseGeneratorSql2
 //            PerspectiveImage image = null;
 
 //            FilenameToRenderableImagePipeline pipeline = FilenameToRenderableImagePipeline.of(keyName, ImageSource.SPICE, config, instrument);
-            FilenameToRenderableImageFootprintPipeline pipeline = FilenameToRenderableImageFootprintPipeline.of(keyName, ImageSource.SPICE, List.of(smallBodyModel), instrument);
+            FilenameToRenderableImageFootprintPipeline pipeline = FilenameToRenderableImageFootprintPipeline.of(keyName, PointingSource.SPICE, List.of(smallBodyModel), instrument);
         	List<RenderablePointedImage> images = pipeline.getImages();
         	List<String> pointingFilenames = pipeline.getPointingFilenames();
 
@@ -403,7 +402,7 @@ public class DatabaseGeneratorSql2
 //        return true;
 //    }
 
-    String getImagesTableNames(ImageSource source)
+    String getImagesTableNames(PointingSource source)
     {
         if(modifyMain){
             return databasePrefix.toLowerCase() + "images_" + source.getDatabaseTableName();
@@ -412,7 +411,7 @@ public class DatabaseGeneratorSql2
         }
     }
 
-    String getCubesTableNames(ImageSource source)
+    String getCubesTableNames(PointingSource source)
     {
         if(modifyMain){
             return databasePrefix.toLowerCase() + "cubes_" + source.getDatabaseTableName();
@@ -421,15 +420,15 @@ public class DatabaseGeneratorSql2
         }
     }
 
-    public void run(String fileList, ImageSource source, ImagingInstrument instrument) throws IOException
+    public void run(String fileList, PointingSource source, ImagingInstrument instrument) throws IOException
     {
         smallBodyModel = SbmtModelFactory.createSmallBodyModel(smallBodyConfig);
 
         if (!fileList.endsWith(".txt"))
         {
-            if (source == ImageSource.GASKELL)
+            if (source == PointingSource.GASKELL)
                 fileList = fileList + File.separator + "imagelist-fullpath-sum.txt";
-            else if (source == ImageSource.SPICE)
+            else if (source == PointingSource.SPICE)
                 fileList = fileList + File.separator + "imagelist-fullpath-info.txt";
             else
                 throw new IOException("Image Source is neither type GASKELL or type SPICE");
@@ -506,7 +505,7 @@ public class DatabaseGeneratorSql2
                 + "          pointing type will be generated. For example, if GASKELL is selected,\n"
                 + "          then only the Gaskell tables are generated; if SPICE is selected, then\n"
                 + "          only the SPICE (PDS) tables are generated. Allowed values are\n"
-                + ImageSource.printSources(16)
+                + PointingSource.printSources(16)
                 + "  <shapemodel>\n"
                 + "          shape model to process. Must be one of the values in the RunInfo enumeration\n"
                 + "          such as EROS or ITOKAWA. If ALL is specified then the entire database is\n"
@@ -616,7 +615,7 @@ public class DatabaseGeneratorSql2
         System.setProperty("java.awt.headless", "true");
         NativeLibraryLoader.loadHeadlessVtkLibraries();
 
-        ImageSource mode = ImageSource.valueOf(args[i++].toUpperCase());
+        PointingSource mode = PointingSource.valueOf(args[i++].toUpperCase());
         String body = args[i++];
 
         SmallBodyViewConfig config = SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.valueOf(bodyName), ShapeModelType.provide(authorName), versionString);

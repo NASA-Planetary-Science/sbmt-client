@@ -12,8 +12,10 @@ import java.util.Set;
 import org.apache.commons.io.FilenameUtils;
 
 import edu.jhuapl.saavtk.util.ColorUtil;
+import edu.jhuapl.sbmt.core.util.TimeUtil;
 import edu.jhuapl.sbmt.pointing.IPointingProvider;
 import edu.jhuapl.sbmt.pointing.pregen.PregenPointingProvider;
+import edu.jhuapl.sbmt.pointing.scState.CsvState;
 import edu.jhuapl.sbmt.stateHistory.model.StateHistorySourceType;
 import edu.jhuapl.sbmt.stateHistory.model.interfaces.IStateHistoryLocationProvider;
 import edu.jhuapl.sbmt.stateHistory.model.interfaces.IStateHistoryMetadata;
@@ -23,13 +25,11 @@ import edu.jhuapl.sbmt.stateHistory.model.interfaces.StateHistory;
 import edu.jhuapl.sbmt.stateHistory.model.interfaces.Trajectory;
 import edu.jhuapl.sbmt.stateHistory.model.io.StateHistoryIOException;
 import edu.jhuapl.sbmt.stateHistory.model.io.StateHistoryInvalidTimeException;
-import edu.jhuapl.sbmt.stateHistory.model.scState.CsvState;
 import edu.jhuapl.sbmt.stateHistory.model.stateHistory.AbstractStateHistory;
 import edu.jhuapl.sbmt.stateHistory.model.stateHistory.StateHistoryKey;
 import edu.jhuapl.sbmt.stateHistory.model.stateHistory.StateHistoryMetadata;
 import edu.jhuapl.sbmt.stateHistory.model.stateHistory.StateHistoryTrajectoryMetadata;
 import edu.jhuapl.sbmt.stateHistory.model.trajectory.StandardTrajectory;
-import edu.jhuapl.sbmt.util.TimeUtil;
 
 import crucible.crust.metadata.api.Key;
 import crucible.crust.metadata.api.Version;

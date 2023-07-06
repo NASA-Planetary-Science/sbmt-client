@@ -2,8 +2,8 @@ package edu.jhuapl.sbmt.tools;
 
 import java.util.Objects;
 
-import edu.jhuapl.sbmt.config.Instrument;
-import edu.jhuapl.sbmt.core.image.ImageSource;
+import edu.jhuapl.sbmt.core.config.Instrument;
+import edu.jhuapl.sbmt.core.pointing.PointingSource;
 
 import crucible.crust.metadata.api.Key;
 import crucible.crust.metadata.api.Metadata;
@@ -17,7 +17,7 @@ public class DBRunInfo implements MetadataManager
     public String databasePrefix;
     public String remotePathToFileList;
     public String name;
-    public ImageSource imageSource;
+    public PointingSource imageSource;
     public Instrument instrument;
     private final Key<String> nameKey = Key.of("name");
     private final Key<String> pathToFileListKey = Key.of("pathToFileList");
@@ -32,7 +32,7 @@ public class DBRunInfo implements MetadataManager
 
     }
 
-    public DBRunInfo(ImageSource source, Instrument instrument, String name, String pathToFileList)
+    public DBRunInfo(PointingSource source, Instrument instrument, String name, String pathToFileList)
     {
     	this.name = name;
         this.pathToFileList = pathToFileList;
@@ -42,7 +42,7 @@ public class DBRunInfo implements MetadataManager
         this.instrument = instrument;
     }
 
-    public DBRunInfo(ImageSource source, Instrument instrument, String name, String pathToFileList, String databasePrefix)
+    public DBRunInfo(PointingSource source, Instrument instrument, String name, String pathToFileList, String databasePrefix)
     {
     	this.name = name;
         this.pathToFileList = pathToFileList;
@@ -52,7 +52,7 @@ public class DBRunInfo implements MetadataManager
         this.instrument = instrument;
     }
 
-    public DBRunInfo(ImageSource source, Instrument instrument, String name, String pathToFileList, String databasePrefix, String remotePathToFileList)
+    public DBRunInfo(PointingSource source, Instrument instrument, String name, String pathToFileList, String databasePrefix, String remotePathToFileList)
     {
     	this.name = name;
         this.pathToFileList = pathToFileList;
@@ -82,7 +82,7 @@ public class DBRunInfo implements MetadataManager
 		pathToFileList = source.get(pathToFileListKey);
 		databasePrefix = source.get(databasePrefixKey);
 		remotePathToFileList = source.get(remotePathToFileListKey);
-		imageSource = ImageSource.valueFor(source.get(imageSourceKey));
+		imageSource = PointingSource.valueFor(source.get(imageSourceKey));
 		instrument = Instrument.valueFor(source.get(instrumentKey));
 	}
 

@@ -28,15 +28,16 @@ import edu.jhuapl.saavtk.util.FileCache;
 import edu.jhuapl.saavtk.util.FileUtil;
 import edu.jhuapl.saavtk.util.NativeLibraryLoader;
 import edu.jhuapl.saavtk.util.SafeURLPaths;
-import edu.jhuapl.sbmt.client.SbmtModelFactory;
 import edu.jhuapl.sbmt.client2.SbmtMultiMissionTool;
-import edu.jhuapl.sbmt.common.client.ISmallBodyModel;
-import edu.jhuapl.sbmt.common.client.SbmtSpectrumModelFactory;
-import edu.jhuapl.sbmt.common.client.SmallBodyViewConfig;
+import edu.jhuapl.sbmt.config.SmallBodyViewConfig;
+import edu.jhuapl.sbmt.core.body.ISmallBodyModel;
+import edu.jhuapl.sbmt.model.SbmtModelFactory;
 import edu.jhuapl.sbmt.model.bennu.spectra.OREXSpectraFactory;
 import edu.jhuapl.sbmt.model.bennu.spectra.ovirs.OVIRS;
 import edu.jhuapl.sbmt.model.bennu.spectra.ovirs.OVIRSSpectrum;
+import edu.jhuapl.sbmt.spectrum.SbmtSpectrumModelFactory;
 import edu.jhuapl.sbmt.spectrum.model.core.interfaces.IBasicSpectrumRenderer;
+import edu.jhuapl.sbmt.util.SqlManager;
 
 public class OVIRSDatabaseGeneratorSql
 {

@@ -2,8 +2,8 @@ package edu.jhuapl.sbmt.stateHistory.rendering.model;
 
 import java.util.ArrayList;
 
-import edu.jhuapl.sbmt.core.rendering.PerspectiveFootprint;
-import edu.jhuapl.sbmt.core.rendering.PerspectiveFrustum;
+import edu.jhuapl.sbmt.image.model.PerspectiveFootprint;
+import edu.jhuapl.sbmt.image.model.PerspectiveFrustum;
 import edu.jhuapl.sbmt.stateHistory.model.interfaces.StateHistory;
 import edu.jhuapl.sbmt.stateHistory.model.viewOptions.RendererLookDirection;
 import edu.jhuapl.sbmt.stateHistory.rendering.SpacecraftBody;

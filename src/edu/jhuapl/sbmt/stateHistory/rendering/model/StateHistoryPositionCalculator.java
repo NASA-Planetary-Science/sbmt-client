@@ -12,9 +12,9 @@ import vtk.vtkMatrix4x4;
 import vtk.vtkTransform;
 
 import edu.jhuapl.saavtk.util.MathUtil;
-import edu.jhuapl.sbmt.common.client.SmallBodyModel;
-import edu.jhuapl.sbmt.core.rendering.PerspectiveFootprint;
-import edu.jhuapl.sbmt.core.rendering.PerspectiveFrustum;
+import edu.jhuapl.sbmt.core.body.SmallBodyModel;
+import edu.jhuapl.sbmt.image.model.PerspectiveFootprint;
+import edu.jhuapl.sbmt.image.model.PerspectiveFrustum;
 import edu.jhuapl.sbmt.lidar.BasicLidarPoint;
 import edu.jhuapl.sbmt.lidar.LidarPoint;
 import edu.jhuapl.sbmt.stateHistory.model.interfaces.IStateHistoryLocationProvider;

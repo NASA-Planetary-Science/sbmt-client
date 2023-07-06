@@ -18,14 +18,14 @@ import edu.jhuapl.saavtk.model.ShapeModelType;
 import edu.jhuapl.saavtk.util.Configuration;
 import edu.jhuapl.saavtk.util.FileUtil;
 import edu.jhuapl.saavtk.util.NativeLibraryLoader;
-import edu.jhuapl.sbmt.client.SbmtModelFactory;
-import edu.jhuapl.sbmt.common.client.SmallBodyModel;
-import edu.jhuapl.sbmt.common.client.SmallBodyViewConfig;
-import edu.jhuapl.sbmt.config.Instrument;
-import edu.jhuapl.sbmt.core.image.ImageSource;
-import edu.jhuapl.sbmt.core.image.ImagingInstrument;
-import edu.jhuapl.sbmt.core.rendering.PerspectiveImage;
-import edu.jhuapl.sbmt.image.model.keys.ImageKey;
+import edu.jhuapl.sbmt.config.SmallBodyViewConfig;
+import edu.jhuapl.sbmt.core.body.SmallBodyModel;
+import edu.jhuapl.sbmt.core.config.Instrument;
+import edu.jhuapl.sbmt.core.pointing.PointingSource;
+import edu.jhuapl.sbmt.image.model.ImagingInstrument;
+import edu.jhuapl.sbmt.image.model.PerspectiveImage;
+import edu.jhuapl.sbmt.image.old.ImageKey;
+import edu.jhuapl.sbmt.model.SbmtModelFactoryV1;
 import edu.jhuapl.sbmt.util.BackplanesFileFormat;
 
 
@@ -65,7 +65,7 @@ public class BackplanesGenerator
             Instrument instr,
             String outputFolder,
             BackplanesFileFormat fmt,
-            ImageSource ptg) throws Exception
+            PointingSource ptg) throws Exception
     {
         filesProcessed.clear();
         int resolutionLevel = smallBodyModel.getModelResolution();
@@ -117,7 +117,7 @@ public class BackplanesGenerator
                     key = new ImageKey(filename.replace("." + ext, ""), ptg, imager);
                     System.setOut(noop);
                     System.setErr(noop);
-                    image = (PerspectiveImage)SbmtModelFactory.createImage(key, smallBodyModel, false);
+                    image = (PerspectiveImage)SbmtModelFactoryV1.createImage(key, smallBodyModel, false);
                 }
                 catch (Exception e)
                 {
@@ -135,10 +135,10 @@ public class BackplanesGenerator
                 // to loop through ImageSource.values().
                 try
                 {
-                    key = new ImageKey(filename.replace("." + ext, ""), ImageSource.GASKELL, imager);
+                    key = new ImageKey(filename.replace("." + ext, ""), PointingSource.GASKELL, imager);
                     System.setOut(noop);
                     System.setErr(noop);
-                    image = (PerspectiveImage)SbmtModelFactory.createImage(key, smallBodyModel, false);
+                    image = (PerspectiveImage)SbmtModelFactoryV1.createImage(key, smallBodyModel, false);
                 }
                 catch (Exception e)
                 {
@@ -146,10 +146,10 @@ public class BackplanesGenerator
                     System.setErr(oldErr);
                     try
                     {
-                        key = new ImageKey(filename.replace("." + ext, ""), ImageSource.CORRECTED, imager);
+                        key = new ImageKey(filename.replace("." + ext, ""), PointingSource.CORRECTED, imager);
                         System.setOut(noop);
                         System.setErr(noop);
-                        image = (PerspectiveImage)SbmtModelFactory.createImage(key, smallBodyModel, false);
+                        image = (PerspectiveImage)SbmtModelFactoryV1.createImage(key, smallBodyModel, false);
                     }
                     catch (Exception e1)
                     {
@@ -157,10 +157,10 @@ public class BackplanesGenerator
                         System.setErr(oldErr);
                         try
                         {
-                            key = new ImageKey(filename.replace("." + ext, ""), ImageSource.SPICE, imager);
+                            key = new ImageKey(filename.replace("." + ext, ""), PointingSource.SPICE, imager);
                             System.setOut(noop);
                             System.setErr(noop);
-                            image = (PerspectiveImage)SbmtModelFactory.createImage(key, smallBodyModel, false);
+                            image = (PerspectiveImage)SbmtModelFactoryV1.createImage(key, smallBodyModel, false);
                         }
                         catch (Exception e2)
                         {
@@ -168,10 +168,10 @@ public class BackplanesGenerator
                             System.setErr(oldErr);
                             try
                             {
-                                key = new ImageKey(filename.replace("." + ext, ""), ImageSource.CORRECTED_SPICE, imager);
+                                key = new ImageKey(filename.replace("." + ext, ""), PointingSource.CORRECTED_SPICE, imager);
                                 System.setOut(noop);
                                 System.setErr(noop);
-                                image = (PerspectiveImage)SbmtModelFactory.createImage(key, smallBodyModel, false);
+                                image = (PerspectiveImage)SbmtModelFactoryV1.createImage(key, smallBodyModel, false);
                             }
                             catch (Exception e3)
                             {
@@ -263,7 +263,7 @@ public class BackplanesGenerator
      * @param fmt
      * @throws IOException
      */
-    public void generateBackplanes(String imageFile, Instrument instr, String outputFolder, SmallBodyModel model, BackplanesFileFormat fmt, ImageSource src) throws Exception
+    public void generateBackplanes(String imageFile, Instrument instr, String outputFolder, SmallBodyModel model, BackplanesFileFormat fmt, PointingSource src) throws Exception
     {
     	List<String> image = new ArrayList<>();
         image.add(imageFile);
@@ -295,7 +295,7 @@ public class BackplanesGenerator
                 + "                           to 3 (highest resolution). Default is to generate backplanes for\n"
                 + "                           all four resolutions.\n"
                 + "  -p <pointing type>       Pointing type. Allowed values are (case insensitive)\n"
-                + ImageSource.printSources(34)
+                + PointingSource.printSources(34)
                 + "                           Default is to search for GASKELL pointing first and if not found,\n"
                 + "                           to traverse the other pointing types in the order specified above.\n"
                 + "                           Backplanes are generated only for images with pointing information.\n"
@@ -320,7 +320,7 @@ public class BackplanesGenerator
         ShapeModelBody body = null;
         Instrument instr = null;
         BackplanesFileFormat fmt = BackplanesFileFormat.IMG;
-        ImageSource ptg = null;
+        PointingSource ptg = null;
         boolean singleImage = false;
 
         int i;
@@ -344,7 +344,7 @@ public class BackplanesGenerator
             }
             else if (args[i].equals("-p"))
             {
-                ptg = ImageSource.valueOf(args[++i].toUpperCase());
+                ptg = PointingSource.valueOf(args[++i].toUpperCase());
             }
             else if (args[i].equals("-s"))
             {
@@ -423,7 +423,7 @@ public class BackplanesGenerator
             System.err.println("Instrument " + camera + " for body " + body + " not found, exiting.");
             System.exit(0);
         }
-        smallBodyModel = SbmtModelFactory.createSmallBodyModel(SmallBodyViewConfig.getSmallBodyConfig(body, ShapeModelType.GASKELL, version));
+        smallBodyModel = SbmtModelFactoryV1.createSmallBodyModel(SmallBodyViewConfig.getSmallBodyConfig(body, ShapeModelType.GASKELL, version));
         if (instr == null)
         {
             instr = ((SmallBodyViewConfig)smallBodyModel.getSmallBodyConfig()).imagingInstruments[0].instrumentName;

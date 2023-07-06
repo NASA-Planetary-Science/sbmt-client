@@ -1,5 +1,6 @@
 package edu.jhuapl.sbmt.stateHistory.controllers;
 
+import edu.jhuapl.sbmt.core.util.TimeUtil;
 import edu.jhuapl.sbmt.stateHistory.model.interfaces.IStateHistoryMetadata;
 import edu.jhuapl.sbmt.stateHistory.model.interfaces.IStateHistoryTrajectoryMetadata;
 import edu.jhuapl.sbmt.stateHistory.model.stateHistory.StateHistoryCollection;
@@ -8,7 +9,6 @@ import edu.jhuapl.sbmt.stateHistory.model.time.TimeWindow;
 import edu.jhuapl.sbmt.stateHistory.rendering.model.StateHistoryRendererManager;
 import edu.jhuapl.sbmt.stateHistory.ui.state.displayedInterval.StateHistoryDisplayedIntervalPanel;
 import edu.jhuapl.sbmt.stateHistory.ui.state.displayedInterval.StateHistoryPercentIntervalChanger;
-import edu.jhuapl.sbmt.util.TimeUtil;
 
 import glum.item.ItemEventType;
 

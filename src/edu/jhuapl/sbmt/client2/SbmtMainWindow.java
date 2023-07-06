@@ -14,8 +14,8 @@ import edu.jhuapl.saavtk.gui.dialog.DirectoryChooser;
 import edu.jhuapl.saavtk.gui.menu.FileMenu;
 import edu.jhuapl.saavtk.model.ModelNames;
 import edu.jhuapl.saavtk.status.StatusNotifier;
-import edu.jhuapl.sbmt.image2.model.PerspectiveImage;
-import edu.jhuapl.sbmt.image2.model.PerspectiveImageCollection;
+import edu.jhuapl.sbmt.image.model.PerspectiveImageCollection;
+import edu.jhuapl.sbmt.image.model.PerspectiveImageMetadata;
 
 
 
@@ -77,8 +77,8 @@ public class SbmtMainWindow extends MainWindow
                     PerspectiveImageCollection collection = (PerspectiveImageCollection)rootPanel.getCurrentView().getModelManager().getModel(ModelNames.IMAGES_V2);
 //                    System.out.println(
 //                            "SbmtMainWindow.SaveImagesAsSTLAction: actionPerformed: number of images " + collection.getImages().size());
-                    List<PerspectiveImage> images = collection.getAllItems();
-                    for (PerspectiveImage image : images)
+                    List<PerspectiveImageMetadata> images = collection.getAllItems();
+                    for (PerspectiveImageMetadata image : images)
                     {
                         System.out.println(image.getName());
                         //TODO FIX THIS

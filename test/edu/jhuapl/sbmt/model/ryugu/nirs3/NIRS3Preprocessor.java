@@ -7,7 +7,7 @@ import java.util.List;
 
 import com.google.common.collect.Lists;
 
-import edu.jhuapl.sbmt.util.TimeUtil;
+import edu.jhuapl.sbmt.core.util.TimeUtil;
 
 import nom.tam.fits.BasicHDU;
 import nom.tam.fits.Fits;

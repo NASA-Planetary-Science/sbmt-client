@@ -13,7 +13,7 @@ import com.google.common.collect.ImmutableSet;
 import edu.jhuapl.saavtk.gui.dialog.CustomFileChooser;
 import edu.jhuapl.saavtk.util.ProgressStatusListener;
 import edu.jhuapl.saavtk.util.Properties;
-import edu.jhuapl.sbmt.common.client.SmallBodyModel;
+import edu.jhuapl.sbmt.core.body.SmallBodyModel;
 import edu.jhuapl.sbmt.stateHistory.controllers.IPlannedDataController;
 import edu.jhuapl.sbmt.stateHistory.model.interfaces.IStateHistoryMetadata;
 import edu.jhuapl.sbmt.stateHistory.model.io.PlannedSpectrumIOHelper;

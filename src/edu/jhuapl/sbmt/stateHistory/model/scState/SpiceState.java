@@ -10,10 +10,10 @@ import java.io.IOException;
 
 import com.google.common.base.Preconditions;
 
-import edu.jhuapl.sbmt.pointing.InstrumentPointing;
+import edu.jhuapl.sbmt.core.pointing.InstrumentPointing;
+import edu.jhuapl.sbmt.core.util.TimeUtil;
 import edu.jhuapl.sbmt.pointing.spice.SpicePointingProvider;
 import edu.jhuapl.sbmt.stateHistory.model.interfaces.State;
-import edu.jhuapl.sbmt.util.TimeUtil;
 
 import crucible.core.math.vectorspace.UnwritableMatrixIJK;
 import crucible.core.math.vectorspace.UnwritableVectorIJK;

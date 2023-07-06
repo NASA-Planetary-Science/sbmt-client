@@ -9,10 +9,10 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
 import edu.jhuapl.saavtk.util.ProgressStatusListener;
+import edu.jhuapl.sbmt.core.util.TimeUtil;
 import edu.jhuapl.sbmt.stateHistory.model.interfaces.IStateHistoryMetadata;
 import edu.jhuapl.sbmt.stateHistory.model.planning.imagers.PlannedImage;
 import edu.jhuapl.sbmt.stateHistory.model.planning.imagers.PlannedImageCollection;
-import edu.jhuapl.sbmt.util.TimeUtil;
 
 public class PlannedImageIOHelper
 {

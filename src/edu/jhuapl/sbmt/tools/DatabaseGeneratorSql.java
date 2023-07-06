@@ -22,17 +22,18 @@ import edu.jhuapl.saavtk.util.FileCache;
 import edu.jhuapl.saavtk.util.FileUtil;
 import edu.jhuapl.saavtk.util.NativeLibraryLoader;
 import edu.jhuapl.saavtk.util.SafeURLPaths;
-import edu.jhuapl.sbmt.client.SbmtModelFactory;
 import edu.jhuapl.sbmt.client2.SbmtMultiMissionTool;
-import edu.jhuapl.sbmt.common.client.Mission;
-import edu.jhuapl.sbmt.common.client.SmallBodyModel;
-import edu.jhuapl.sbmt.common.client.SmallBodyViewConfig;
-import edu.jhuapl.sbmt.config.Instrument;
-import edu.jhuapl.sbmt.core.image.ImageKeyInterface;
-import edu.jhuapl.sbmt.core.image.ImageSource;
-import edu.jhuapl.sbmt.core.image.ImagingInstrument;
-import edu.jhuapl.sbmt.core.rendering.PerspectiveImage;
-import edu.jhuapl.sbmt.image.model.keys.ImageKey;
+import edu.jhuapl.sbmt.config.SmallBodyViewConfig;
+import edu.jhuapl.sbmt.core.body.SmallBodyModel;
+import edu.jhuapl.sbmt.core.client.Mission;
+import edu.jhuapl.sbmt.core.config.Instrument;
+import edu.jhuapl.sbmt.core.pointing.PointingSource;
+import edu.jhuapl.sbmt.image.interfaces.ImageKeyInterface;
+import edu.jhuapl.sbmt.image.model.ImagingInstrument;
+import edu.jhuapl.sbmt.image.model.PerspectiveImage;
+import edu.jhuapl.sbmt.image.old.ImageKey;
+import edu.jhuapl.sbmt.model.SbmtModelFactoryV1;
+import edu.jhuapl.sbmt.util.SqlManager;
 
 public class DatabaseGeneratorSql
 {
@@ -145,7 +146,7 @@ public class DatabaseGeneratorSql
             List<String> lines,
             String tableName,
             String cubesTableName,
-            ImageSource imageSource) throws Exception
+            PointingSource imageSource) throws Exception
     {
         smallBodyModel.setModelResolution(0);
         SmallBodyViewConfig config = (SmallBodyViewConfig)smallBodyModel.getSmallBodyConfig();
@@ -221,7 +222,7 @@ public class DatabaseGeneratorSql
 
             try
             {
-                image = (PerspectiveImage)SbmtModelFactory.createImage(key, smallBodyModel, false);
+                image = (PerspectiveImage)SbmtModelFactoryV1.createImage(key, smallBodyModel, false);
                 boolean filesExist = checkIfAllFilesExist(image, imageSource);
                 if (filesExist == false)
                 {
@@ -342,7 +343,7 @@ public class DatabaseGeneratorSql
         }
     }
 
-    boolean checkIfAllFilesExist(PerspectiveImage image, ImageSource source)
+    boolean checkIfAllFilesExist(PerspectiveImage image, PointingSource source)
     {
         File fitfile = new File(image.getFitFileFullPath());
         System.out.println("Fit file full path: " + fitfile.getAbsolutePath());
@@ -350,7 +351,7 @@ public class DatabaseGeneratorSql
             return false;
 
         // Check for the sumfile if source is Gaskell
-        if (source.equals(ImageSource.GASKELL) || source.equals(ImageSource.GASKELL_UPDATED))
+        if (source.equals(PointingSource.GASKELL) || source.equals(PointingSource.GASKELL_UPDATED))
         {
             File sumfile = new File(image.getSumfileFullPath());
             System.out.println(sumfile);
@@ -374,7 +375,7 @@ public class DatabaseGeneratorSql
         return true;
     }
 
-    String getImagesTableNames(ImageSource source)
+    String getImagesTableNames(PointingSource source)
     {
         if(modifyMain){
             return databasePrefix.toLowerCase() + "images_" + source.getDatabaseTableName();
@@ -383,7 +384,7 @@ public class DatabaseGeneratorSql
         }
     }
 
-    String getCubesTableNames(ImageSource source)
+    String getCubesTableNames(PointingSource source)
     {
         if(modifyMain){
             return databasePrefix.toLowerCase() + "cubes_" + source.getDatabaseTableName();
@@ -392,15 +393,15 @@ public class DatabaseGeneratorSql
         }
     }
 
-    public void run(String fileList, ImageSource source, String diffFileList) throws Exception
+    public void run(String fileList, PointingSource source, String diffFileList) throws Exception
     {
-        smallBodyModel = SbmtModelFactory.createSmallBodyModel(smallBodyConfig);
+    	smallBodyModel = SbmtModelFactoryV1.createSmallBodyModel(smallBodyConfig);
 
         if (!fileList.endsWith(".txt"))
         {
-            if (source == ImageSource.GASKELL)
+            if (source == PointingSource.GASKELL)
                 fileList = fileList + File.separator + "imagelist-fullpath-sum.txt";
-            else if (source == ImageSource.SPICE)
+            else if (source == PointingSource.SPICE)
                 fileList = fileList + File.separator + "imagelist-fullpath-info.txt";
             else
                 throw new IOException("Image Source is neither type GASKELL or type SPICE");
@@ -499,7 +500,7 @@ public class DatabaseGeneratorSql
                 + "          pointing type will be generated. For example, if GASKELL is selected,\n"
                 + "          then only the Gaskell tables are generated; if SPICE is selected, then\n"
                 + "          only the SPICE (PDS) tables are generated. Allowed values are\n"
-                + ImageSource.printSources(16)
+                + PointingSource.printSources(16)
                 + "  <shapemodel>\n"
                 + "          shape model to process. Must be one of the values in the RunInfo enumeration\n"
                 + "          such as EROS or ITOKAWA. If ALL is specified then the entire database is\n"
@@ -648,7 +649,7 @@ public class DatabaseGeneratorSql
         System.setProperty("java.awt.headless", "true");
         NativeLibraryLoader.loadHeadlessVtkLibraries();
 
-        ImageSource mode = ImageSource.valueOf(args[i++].toUpperCase());
+        PointingSource mode = PointingSource.valueOf(args[i++].toUpperCase());
 //        String body = args[i++];
 
         SmallBodyViewConfig config = null;

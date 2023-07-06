@@ -16,7 +16,7 @@ import vtk.vtkProp;
 
 import edu.jhuapl.saavtk.model.PolyhedralModel;
 import edu.jhuapl.saavtk.util.BoundingBox;
-import edu.jhuapl.sbmt.common.client.BodyViewConfig;
+import edu.jhuapl.sbmt.core.body.BodyViewConfig;
 import edu.jhuapl.sbmt.lidar.hyperoctree.FSHyperTreeSkeleton;
 import edu.jhuapl.sbmt.model.boundedobject.BoundedObjectSearchDataCollection;
 import edu.jhuapl.sbmt.model.boundedobject.hyperoctree.BoundedObjectHyperTreeSkeleton;

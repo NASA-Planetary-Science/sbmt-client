@@ -18,7 +18,7 @@ import edu.jhuapl.saavtk.color.provider.ColorProvider;
 import edu.jhuapl.saavtk.colormap.Colormap;
 import edu.jhuapl.saavtk.feature.FeatureAttr;
 import edu.jhuapl.saavtk.feature.FeatureType;
-import edu.jhuapl.sbmt.pointing.InstrumentPointing;
+import edu.jhuapl.sbmt.core.pointing.InstrumentPointing;
 import edu.jhuapl.sbmt.stateHistory.model.interfaces.Trajectory;
 import edu.jhuapl.sbmt.stateHistory.rendering.model.StateHistoryRendererManager;
 

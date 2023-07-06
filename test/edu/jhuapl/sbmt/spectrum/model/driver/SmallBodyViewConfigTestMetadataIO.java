@@ -10,11 +10,11 @@ import java.util.Vector;
 import edu.jhuapl.saavtk.config.ViewConfig;
 import edu.jhuapl.saavtk.model.ShapeModelBody;
 import edu.jhuapl.saavtk.model.ShapeModelType;
-import edu.jhuapl.sbmt.config.BodyType;
-import edu.jhuapl.sbmt.config.Instrument;
-import edu.jhuapl.sbmt.config.ShapeModelDataUsed;
-import edu.jhuapl.sbmt.config.ShapeModelPopulation;
-import edu.jhuapl.sbmt.core.image.ImagingInstrument;
+import edu.jhuapl.sbmt.core.body.BodyType;
+import edu.jhuapl.sbmt.core.body.ShapeModelDataUsed;
+import edu.jhuapl.sbmt.core.body.ShapeModelPopulation;
+import edu.jhuapl.sbmt.core.config.Instrument;
+import edu.jhuapl.sbmt.image.model.ImagingInstrument;
 import edu.jhuapl.sbmt.spectrum.model.core.BasicSpectrumInstrument;
 
 import crucible.crust.metadata.api.Key;
@@ -64,7 +64,7 @@ public class SmallBodyViewConfigTestMetadataIO implements MetadataManager
         write(author, c.author.name(), configMetadata);
         write(rootDirOnServer, c.rootDirOnServer, configMetadata);
         write(timeHistoryFile, c.timeHistoryFile, configMetadata);
-        write(hasImageMap, c.hasImageMap, configMetadata);
+//        write(hasImageMap, c.hasImageMap, configMetadata);
         write(hasStateHistory, c.hasStateHistory, configMetadata);
 
         writeMetadataArray(imagingInstruments, c.imagingInstruments, configMetadata);
@@ -200,7 +200,7 @@ public class SmallBodyViewConfigTestMetadataIO implements MetadataManager
         c.author = ShapeModelType.provide(read(author, configMetadata));
         c.rootDirOnServer = read(rootDirOnServer, configMetadata);
         c.timeHistoryFile = read(timeHistoryFile, configMetadata);
-        c.hasImageMap = read(hasImageMap, configMetadata);
+//        c.hasImageMap = read(hasImageMap, configMetadata);
         c.hasStateHistory = read(hasStateHistory, configMetadata);
 
         Metadata[] imagingMetadata = readMetadataArray(imagingInstruments, configMetadata);

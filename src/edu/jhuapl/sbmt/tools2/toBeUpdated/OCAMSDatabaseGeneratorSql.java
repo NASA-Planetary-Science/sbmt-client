@@ -21,21 +21,20 @@ import edu.jhuapl.saavtk.util.FileCache;
 import edu.jhuapl.saavtk.util.FileUtil;
 import edu.jhuapl.saavtk.util.NativeLibraryLoader;
 import edu.jhuapl.saavtk.util.SafeURLPaths;
-import edu.jhuapl.sbmt.client2.SbmtModelFactory;
 import edu.jhuapl.sbmt.client2.SbmtMultiMissionTool;
-import edu.jhuapl.sbmt.common.client.Mission;
-import edu.jhuapl.sbmt.common.client.SmallBodyModel;
-import edu.jhuapl.sbmt.common.client.SmallBodyViewConfig;
-import edu.jhuapl.sbmt.config.Instrument;
-//import edu.jhuapl.sbmt.core.image.ImageKeyInterface;
-import edu.jhuapl.sbmt.core.image.ImageSource;
-import edu.jhuapl.sbmt.core.image.ImagingInstrument;
-import edu.jhuapl.sbmt.image2.pipelineComponents.operators.rendering.pointedImage.RenderablePointedImage;
-import edu.jhuapl.sbmt.image2.pipelineComponents.pipelines.io.FilenameToRenderableImagePipeline;
+import edu.jhuapl.sbmt.config.SmallBodyViewConfig;
+import edu.jhuapl.sbmt.core.body.SmallBodyModel;
+import edu.jhuapl.sbmt.core.client.Mission;
+import edu.jhuapl.sbmt.core.config.Instrument;
+import edu.jhuapl.sbmt.core.pointing.PointingSource;
+import edu.jhuapl.sbmt.image.model.ImagingInstrument;
+import edu.jhuapl.sbmt.image.pipelineComponents.operators.rendering.pointedImage.RenderablePointedImage;
+import edu.jhuapl.sbmt.image.pipelineComponents.pipelines.io.FilenameToRenderableImagePipeline;
+import edu.jhuapl.sbmt.model.SbmtModelFactory;
 //import edu.jhuapl.sbmt.core.rendering.PerspectiveImage;
 //import edu.jhuapl.sbmt.image.model.keys.ImageKey;
 import edu.jhuapl.sbmt.tools.DBRunInfo;
-import edu.jhuapl.sbmt.tools.SqlManager; 
+import edu.jhuapl.sbmt.util.SqlManager; 
 
 public class OCAMSDatabaseGeneratorSql
 {
@@ -155,7 +154,7 @@ public class OCAMSDatabaseGeneratorSql
 //            RenderableImagePipeline pipeline = new RenderableImagePipeline(keyName, pointingFilenames.get(0), imager);
 //        	List<RenderablePointedImage> images = pipeline.getOutput();
 
-        	FilenameToRenderableImagePipeline pipeline = FilenameToRenderableImagePipeline.of(keyName, ImageSource.SPICE, config, imager);
+        	FilenameToRenderableImagePipeline pipeline = FilenameToRenderableImagePipeline.of(keyName, PointingSource.SPICE, config, imager);
         	List<RenderablePointedImage> images = pipeline.getImages();
         	List<String> pointingFilenames = pipeline.getPointingFilenames();
 
@@ -471,7 +470,7 @@ public class OCAMSDatabaseGeneratorSql
 //        System.out.println("DatabaseGeneratorSql: main: number of run infos " + runInfos.length);
         for (DBRunInfo ri : runInfos)
         {
-        	if (!ri.name.equals(ShapeModelBody.valueOf(bodyName).toString()) || (ri.imageSource != ImageSource.SPICE) || (!ri.instrument.toString().equals(instrumentString))) continue;
+        	if (!ri.name.equals(ShapeModelBody.valueOf(bodyName).toString()) || (ri.imageSource != PointingSource.SPICE) || (!ri.instrument.toString().equals(instrumentString))) continue;
             System.out.println("DatabaseGeneratorSql: main: writing to " + ri.databasePrefix + " for " + ri.instrument + " with " + ri.imageSource + " remote " + ri.remotePathToFileList);
         	OCAMSDatabaseGeneratorSql generator = new OCAMSDatabaseGeneratorSql(config, ri.databasePrefix, appendTables, modifyMain, ri.instrument);
 

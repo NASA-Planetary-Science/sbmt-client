@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <launchConfiguration type="org.eclipse.jdt.launching.localJavaApplication">
     <listAttribute key="org.eclipse.debug.core.MAPPED_RESOURCE_PATHS">
-        <listEntry value="/sbmt/src/edu/jhuapl/sbmt/pipeline/PipelineTests.java"/>
+        <listEntry value="/sbmt/src/edu/jhuapl/sbmt/tools/PipelineTests.java"/>
     </listAttribute>
     <listAttribute key="org.eclipse.debug.core.MAPPED_RESOURCE_TYPES">
         <listEntry value="1"/>
@@ -14,7 +14,7 @@
     <booleanAttribute key="org.eclipse.jdt.launching.ATTR_SHOW_CODEDETAILS_IN_EXCEPTION_MESSAGES" value="true"/>
     <booleanAttribute key="org.eclipse.jdt.launching.ATTR_USE_CLASSPATH_ONLY_JAR" value="false"/>
     <booleanAttribute key="org.eclipse.jdt.launching.ATTR_USE_START_ON_FIRST_THREAD" value="true"/>
-    <stringAttribute key="org.eclipse.jdt.launching.MAIN_TYPE" value="edu.jhuapl.sbmt.pipeline.PipelineTests"/>
+    <stringAttribute key="org.eclipse.jdt.launching.MAIN_TYPE" value="edu.jhuapl.sbmt.tools.PipelineTests"/>
     <stringAttribute key="org.eclipse.jdt.launching.MODULE_NAME" value="sbmt"/>
     <stringAttribute key="org.eclipse.jdt.launching.PROJECT_ATTR" value="sbmt"/>
     <stringAttribute key="org.eclipse.jdt.launching.VM_ARGUMENTS" value="-Djava.library.path=../saavtk/lib/vtk6.3/mac64:./lib/gdal/mac64   -Xmx4096M -Dedu.jhuapl.sbmt.mission=&quot;b1bc7ed&quot; --add-exports java.desktop/com.sun.imageio.spi=ALL-UNNAMED --add-exports java.desktop/com.apple.laf=ALL-UNNAMED --add-exports java.desktop/apple.laf=ALL-UNNAMED"/>

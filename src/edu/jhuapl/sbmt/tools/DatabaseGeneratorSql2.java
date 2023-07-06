@@ -4,9 +4,11 @@ import java.io.File;
 import java.io.IOException;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
+import java.util.HashMap;
 import java.util.List;
 import java.util.TreeSet;
 
+import org.apache.commons.math3.geometry.euclidean.threed.Vector3D;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 
@@ -21,17 +23,20 @@ import edu.jhuapl.saavtk.util.FileCache;
 import edu.jhuapl.saavtk.util.FileUtil;
 import edu.jhuapl.saavtk.util.NativeLibraryLoader;
 import edu.jhuapl.saavtk.util.SafeURLPaths;
-import edu.jhuapl.sbmt.client.SbmtModelFactory;
-import edu.jhuapl.sbmt.client.SbmtMultiMissionTool;
-import edu.jhuapl.sbmt.common.client.Mission;
-import edu.jhuapl.sbmt.common.client.SmallBodyModel;
-import edu.jhuapl.sbmt.common.client.SmallBodyViewConfig;
-import edu.jhuapl.sbmt.core.image.ImageKeyInterface;
-import edu.jhuapl.sbmt.core.image.ImageSource;
-import edu.jhuapl.sbmt.core.rendering.PerspectiveImage;
-import edu.jhuapl.sbmt.image.model.keys.ImageKey;
-
-import nom.tam.fits.FitsException;
+import edu.jhuapl.sbmt.client2.SbmtMultiMissionTool;
+import edu.jhuapl.sbmt.config.SmallBodyViewConfig;
+import edu.jhuapl.sbmt.core.body.SmallBodyModel;
+import edu.jhuapl.sbmt.core.client.Mission;
+import edu.jhuapl.sbmt.core.pointing.PointingSource;
+import edu.jhuapl.sbmt.image.model.ImagingInstrument;
+import edu.jhuapl.sbmt.image.pipelineComponents.operators.rendering.pointedImage.ImageIllumination;
+import edu.jhuapl.sbmt.image.pipelineComponents.operators.rendering.pointedImage.ImagePixelScale;
+import edu.jhuapl.sbmt.image.pipelineComponents.operators.rendering.pointedImage.RenderablePointedImage;
+import edu.jhuapl.sbmt.image.pipelineComponents.pipelines.io.FilenameToRenderableImageFootprintPipeline;
+import edu.jhuapl.sbmt.image.pipelineComponents.pipelines.perspectiveImages.PerspectiveImageToDerivedMetadataPipeline;
+import edu.jhuapl.sbmt.model.SbmtModelFactoryV1;
+import edu.jhuapl.sbmt.pointing.io.PointingFileReader;
+import edu.jhuapl.sbmt.util.SqlManager;
 
 public class DatabaseGeneratorSql2
 {
@@ -144,7 +149,8 @@ public class DatabaseGeneratorSql2
             List<String> lines,
             String tableName,
             String cubesTableName,
-            ImageSource imageSource) throws IOException, SQLException, FitsException
+            PointingSource imageSource,
+            ImagingInstrument instrument) throws Exception
     {
         smallBodyModel.setModelResolution(0);
         SmallBodyViewConfig config = (SmallBodyViewConfig)smallBodyModel.getSmallBodyConfig();
@@ -204,17 +210,21 @@ public class DatabaseGeneratorSql2
             keyName = keyName.replace(".FIT", "");
             keyName = keyName.replace(".fit", "");
 
-            ImageKeyInterface key = new ImageKey(keyName, imageSource, config.imagingInstruments[cameraIndex]);
-            PerspectiveImage image = null;
+//            ImageKeyInterface key = new ImageKey(keyName, imageSource, config.imagingInstruments[cameraIndex]);
+//            PerspectiveImage image = null;
+
+            FilenameToRenderableImageFootprintPipeline pipeline = FilenameToRenderableImageFootprintPipeline.of(keyName, PointingSource.SPICE, List.of(smallBodyModel), instrument);
+        	List<RenderablePointedImage> images = pipeline.getImages();
+        	List<String> pointingFilenames = pipeline.getPointingFilenames();
 
             try
             {
-                image = (PerspectiveImage)SbmtModelFactory.createImage(key, smallBodyModel, false);
-                boolean filesExist = checkIfAllFilesExist(image, imageSource);
+//              image = (PerspectiveImage)SbmtModelFactory.createImage(key, smallBodyModel, false);
+              boolean filesExist = checkIfAllFilesExist(keyName, pointingFilenames.get(0));
                 if (filesExist == false)
                 {
                     System.out.println("file not found, skipping image " + filename);
-                    image.Delete();
+//                    image.Delete();
                     System.gc();
                     System.out.println("deleted " + vtkObject.JAVA_OBJECT_MANAGER.gc(true));
                     continue;
@@ -227,22 +237,25 @@ public class DatabaseGeneratorSql2
                 continue;
             }
 
-            image.loadFootprint();
-            if (image.getUnshiftedFootprint() == null)
+            RenderablePointedImage image = images.get(0);
+            PointingFileReader pointing = image.getPointing();
+            vtkPolyData footprint = pipeline.getFootprints().get(0);
+//            image.loadFootprint();
+            if (footprint == null)
             {
                 // In this case if image.loadFootprint() finds no frustum intersection
                 System.out.println("skipping image " + filename + " since no frustum intersection with body");
-                image.Delete();
+//                image.Delete();
                 System.gc();
                 System.out.println("deleted " + vtkObject.JAVA_OBJECT_MANAGER.gc(true));
                 System.out.println(" ");
                 System.out.println(" ");
                 continue;
             }
-            else if (image.getUnshiftedFootprint().GetNumberOfCells() == 0)
+            else if (footprint.GetNumberOfCells() == 0)
             {
                 System.out.println("skipping image " + filename + " since no intersecting cells");
-                image.Delete();
+//                image.Delete();
                 System.gc();
                 System.out.println("deleted " + vtkObject.JAVA_OBJECT_MANAGER.gc(true));
                 System.out.println(" ");
@@ -251,51 +264,61 @@ public class DatabaseGeneratorSql2
             }
 
             // Calling this forces the calculation of incidence, emission, phase, and pixel scale
-            image.getProperties();
+//            image.getProperties();
 
-            DateTime startTime = new DateTime(image.getStartTime(), DateTimeZone.UTC);
-            DateTime stopTime = new DateTime(image.getStopTime(), DateTimeZone.UTC);
+            PerspectiveImageToDerivedMetadataPipeline metadataPipeline =
+            		new PerspectiveImageToDerivedMetadataPipeline(image, List.of(smallBodyModel));
+
+    		ImageIllumination imageIllumination = metadataPipeline.getIllumAtts().get(0);
+    		ImagePixelScale pixelScale = metadataPipeline.getPixelAtts().get(0);
+    		HashMap<String, String> metadata = metadataPipeline.getMetadata();
+
+            DateTime startTime = new DateTime(image.getPointing().getStartTime(), DateTimeZone.UTC);
+            DateTime stopTime = new DateTime(image.getPointing().getStopTime(), DateTimeZone.UTC);
             // Replace the "T" with a space
             //startTime = startTime.substring(0, 10) + " " + startTime.substring(11, startTime.length());
             //stopTime = stopTime.substring(0, 10) + " " + stopTime.substring(11, stopTime.length());
+
+            //TODO FIX THIS
+            boolean containsLimb = false; // was image.containsLimb, which uses the setting on the backplanes, which isn't idea to calculate that first
 
             System.out.println("id: " + primaryKey);
             System.out.println("filename: " + new File(filename).getName());
             System.out.println("starttime: " + startTime);
             System.out.println("stoptime: " + stopTime);
-            System.out.println("filter: " + image.getFilter());
-            System.out.println("camera: " + image.getCamera());
-            System.out.println("TARGET_CENTER_DISTANCE: " + image.getSpacecraftDistance());
-            System.out.println("Min HORIZONTAL_PIXEL_SCALE: " + image.getMinimumHorizontalPixelScale());
-            System.out.println("Max HORIZONTAL_PIXEL_SCALE: " + image.getMaximumHorizontalPixelScale());
-            System.out.println("Min VERTICAL_PIXEL_SCALE: " + image.getMinimumVerticalPixelScale());
-            System.out.println("Max VERTICAL_PIXEL_SCALE: " + image.getMaximumVerticalPixelScale());
-            System.out.println("hasLimb: " + image.containsLimb());
-            System.out.println("minIncidence: " + image.getMinIncidence());
-            System.out.println("maxIncidence: " + image.getMaxIncidence());
-            System.out.println("minEmission: " + image.getMinEmission());
-            System.out.println("maxEmission: " + image.getMaxEmission());
-            System.out.println("minPhase: " + image.getMinPhase());
-            System.out.println("maxPhase: " + image.getMaxPhase());
+            System.out.println("filter: " + metadata.get("Filter"));
+            System.out.println("camera: " + metadata.get("Camera"));
+            System.out.println("TARGET_CENTER_DISTANCE: " + new Vector3D(pointing.getSpacecraftPosition()).getNorm());
+            System.out.println("Min HORIZONTAL_PIXEL_SCALE: " + pixelScale.getMinHorizontalPixelScale());
+            System.out.println("Max HORIZONTAL_PIXEL_SCALE: " + pixelScale.getMaxHorizontalPixelScale());
+            System.out.println("Min VERTICAL_PIXEL_SCALE: " + pixelScale.getMinVerticalPixelScale());
+            System.out.println("Max VERTICAL_PIXEL_SCALE: " + pixelScale.getMaxVerticalPixelScale());
+            System.out.println("hasLimb: " + containsLimb);
+            System.out.println("minIncidence: " + imageIllumination.getMinIncidence());
+            System.out.println("maxIncidence: " + imageIllumination.getMaxIncidence());
+            System.out.println("minEmission: " + imageIllumination.getMinEmission());
+            System.out.println("maxEmission: " + imageIllumination.getMaxEmission());
+            System.out.println("minPhase: " + imageIllumination.getMinPhase());
+            System.out.println("maxPhase: " + imageIllumination.getMaxPhase());
 
             insertStatement.setInt(1, primaryKey);
             insertStatement.setString(2, new File(filename).getName());
             insertStatement.setLong(3, startTime.getMillis());
             insertStatement.setLong(4, stopTime.getMillis());
-            insertStatement.setByte(5, (byte)image.getFilter());
-            insertStatement.setByte(6, (byte)image.getCamera());
-            insertStatement.setDouble(7, image.getSpacecraftDistance());
-            insertStatement.setDouble(8, image.getMinimumHorizontalPixelScale());
-            insertStatement.setDouble(9, image.getMaximumHorizontalPixelScale());
-            insertStatement.setDouble(10, image.getMinimumVerticalPixelScale());
-            insertStatement.setDouble(11, image.getMaximumVerticalPixelScale());
-            insertStatement.setBoolean(12, image.containsLimb());
-            insertStatement.setDouble(13, image.getMinIncidence());
-            insertStatement.setDouble(14, image.getMaxIncidence());
-            insertStatement.setDouble(15, image.getMinEmission());
-            insertStatement.setDouble(16, image.getMaxEmission());
-            insertStatement.setDouble(17, image.getMinPhase());
-            insertStatement.setDouble(18, image.getMaxPhase());
+            insertStatement.setByte(5, (byte)Integer.parseInt(metadata.get("Filter")));
+            insertStatement.setByte(6, (byte)Integer.parseInt(metadata.get("Camera")));
+            insertStatement.setDouble(7, + new Vector3D(pointing.getSpacecraftPosition()).getNorm());
+            insertStatement.setDouble(8, pixelScale.getMinHorizontalPixelScale());
+            insertStatement.setDouble(9, pixelScale.getMaxHorizontalPixelScale());
+            insertStatement.setDouble(10, pixelScale.getMinVerticalPixelScale());
+            insertStatement.setDouble(11, pixelScale.getMaxVerticalPixelScale());
+            insertStatement.setBoolean(12, containsLimb);
+            insertStatement.setDouble(13, imageIllumination.getMinIncidence());
+            insertStatement.setDouble(14, imageIllumination.getMaxIncidence());
+            insertStatement.setDouble(15, imageIllumination.getMinEmission());
+            insertStatement.setDouble(16, imageIllumination.getMaxEmission());
+            insertStatement.setDouble(17, imageIllumination.getMinPhase());
+            insertStatement.setDouble(18, imageIllumination.getMaxPhase());
 
             System.out.println("statement: " + insertStatement.toString());
 
@@ -303,7 +326,7 @@ public class DatabaseGeneratorSql2
 
 
             // Now populate cubes table
-            vtkPolyData footprintPolyData = image.getUnshiftedFootprint();
+            vtkPolyData footprintPolyData = footprint;
             TreeSet<Integer> cubeIds = smallBodyModel.getIntersectingCubes(footprintPolyData);
 //            System.out.println("cubeIds:  " + cubeIds);
             System.out.println("number of cubes: " + cubeIds.size());
@@ -322,7 +345,7 @@ public class DatabaseGeneratorSql2
 
             ++primaryKey;
 
-            image.Delete();
+//            image.Delete();
             System.gc();
             System.out.println("deleted " + vtkObject.JAVA_OBJECT_MANAGER.gc(true));
             System.out.println(" ");
@@ -330,39 +353,20 @@ public class DatabaseGeneratorSql2
         }
     }
 
-    boolean checkIfAllFilesExist(PerspectiveImage image, ImageSource source)
+    boolean checkIfAllFilesExist(String imageFile, String pointingFilename)
     {
-        File fitfile = new File(image.getFitFileFullPath());
+        File fitfile = new File(imageFile);
         System.out.println("Fit file full path: " + fitfile.getAbsolutePath());
         if (!fitfile.exists())
             return false;
-
-        // Check for the sumfile if source is Gaskell
-        if (source.equals(ImageSource.GASKELL) || source.equals(ImageSource.GASKELL_UPDATED))
-        {
-            File sumfile = new File(image.getSumfileFullPath());
-            System.out.println(sumfile);
-            if (!sumfile.exists())
-                return false;
-
-            // If the sumfile has no landmarks, then ignore it. Sumfiles that have no landmarks
-            // are 1296 bytes long or less. If it's very small in size though it is probably
-            // a sumfile that was generated via another method so keep it.
-            //if (sumfile.length() <= 1296 && sumfile.length() >= 500)
-            //    return false;
-        }
-        else
-        {
-            File infofile = new File(image.getInfoFileFullPath());
-            System.out.println("Infofile full path: " + infofile.getAbsolutePath());
-            if (!infofile.exists())
-                return false;
-        }
-
+        File pointingFile = new File(pointingFilename);
+        System.out.println(pointingFile);
+        if (!pointingFile.exists())
+            return false;
         return true;
     }
 
-    String getImagesTableNames(ImageSource source)
+    String getImagesTableNames(PointingSource source)
     {
         if(modifyMain){
             return databasePrefix.toLowerCase() + "images_" + source.getDatabaseTableName();
@@ -371,7 +375,7 @@ public class DatabaseGeneratorSql2
         }
     }
 
-    String getCubesTableNames(ImageSource source)
+    String getCubesTableNames(PointingSource source)
     {
         if(modifyMain){
             return databasePrefix.toLowerCase() + "cubes_" + source.getDatabaseTableName();
@@ -380,15 +384,16 @@ public class DatabaseGeneratorSql2
         }
     }
 
-    public void run(String fileList, ImageSource source) throws IOException
+    public void run(String fileList, PointingSource source,
+            ImagingInstrument instrument) throws IOException
     {
-        smallBodyModel = SbmtModelFactory.createSmallBodyModel(smallBodyConfig);
+        smallBodyModel = SbmtModelFactoryV1.createSmallBodyModel(smallBodyConfig);
 
         if (!fileList.endsWith(".txt"))
         {
-            if (source == ImageSource.GASKELL)
+            if (source == PointingSource.GASKELL)
                 fileList = fileList + File.separator + "imagelist-fullpath-sum.txt";
-            else if (source == ImageSource.SPICE)
+            else if (source == PointingSource.SPICE)
                 fileList = fileList + File.separator + "imagelist-fullpath-info.txt";
             else
                 throw new IOException("Image Source is neither type GASKELL or type SPICE");
@@ -439,7 +444,7 @@ public class DatabaseGeneratorSql2
 
         try
         {
-            populateTables(lines, imagesTable, cubesTable, source);
+            populateTables(lines, imagesTable, cubesTable, source, instrument);
         }
         catch (Exception e1) {
             e1.printStackTrace();
@@ -465,7 +470,7 @@ public class DatabaseGeneratorSql2
                 + "          pointing type will be generated. For example, if GASKELL is selected,\n"
                 + "          then only the Gaskell tables are generated; if SPICE is selected, then\n"
                 + "          only the SPICE (PDS) tables are generated. Allowed values are\n"
-                + ImageSource.printSources(16)
+                + PointingSource.printSources(16)
                 + "  <shapemodel>\n"
                 + "          shape model to process. Must be one of the values in the RunInfo enumeration\n"
                 + "          such as EROS or ITOKAWA. If ALL is specified then the entire database is\n"
@@ -575,7 +580,7 @@ public class DatabaseGeneratorSql2
         System.setProperty("java.awt.headless", "true");
         NativeLibraryLoader.loadHeadlessVtkLibraries();
 
-        ImageSource mode = ImageSource.valueOf(args[i++].toUpperCase());
+        PointingSource mode = PointingSource.valueOf(args[i++].toUpperCase());
         String body = args[i++];
 
         SmallBodyViewConfig config = SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.valueOf(bodyName), ShapeModelType.provide(authorName), versionString);
@@ -598,7 +603,7 @@ public class DatabaseGeneratorSql2
             }
 
             System.out.println("Generating: " + pathToFileList + ", mode=" + mode);
-            generator.run(pathToFileList, mode);
+            generator.run(pathToFileList, mode, config.imagingInstruments[cameraIndex]);
         }
     }
 }

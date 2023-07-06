@@ -8,7 +8,9 @@ import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 
+import edu.jhuapl.sbmt.core.util.TimeUtil;
 import edu.jhuapl.sbmt.pointing.modules.SpiceReaderPublisher;
+import edu.jhuapl.sbmt.pointing.scState.SpiceState;
 import edu.jhuapl.sbmt.pointing.spice.SpiceInfo;
 import edu.jhuapl.sbmt.pointing.spice.SpicePointingProvider;
 import edu.jhuapl.sbmt.stateHistory.model.StateHistorySourceType;
@@ -21,11 +23,9 @@ import edu.jhuapl.sbmt.stateHistory.model.interfaces.StateHistory;
 import edu.jhuapl.sbmt.stateHistory.model.interfaces.Trajectory;
 import edu.jhuapl.sbmt.stateHistory.model.io.StateHistoryInputException;
 import edu.jhuapl.sbmt.stateHistory.model.io.StateHistoryInvalidTimeException;
-import edu.jhuapl.sbmt.stateHistory.model.scState.SpiceState;
 import edu.jhuapl.sbmt.stateHistory.model.stateHistory.StateHistoryKey;
 import edu.jhuapl.sbmt.stateHistory.model.stateHistory.StateHistoryMetadata;
 import edu.jhuapl.sbmt.stateHistory.model.trajectory.StandardTrajectory;
-import edu.jhuapl.sbmt.util.TimeUtil;
 
 import crucible.core.time.TimeSystem;
 import crucible.core.time.TimeSystems;
@@ -80,8 +80,8 @@ public class SpiceStateHistoryIntervalGenerator implements IStateHistoryInterval
 			throws StateHistoryInputException, StateHistoryInvalidTimeException
 	{
 		IStateHistoryMetadata metadata = history.getMetadata();
-		String startString = edu.jhuapl.sbmt.util.TimeUtil.et2str(metadata.getStartTime());
-		String endString = edu.jhuapl.sbmt.util.TimeUtil.et2str(metadata.getEndTime());
+		String startString = edu.jhuapl.sbmt.core.util.TimeUtil.et2str(metadata.getStartTime());
+		String endString = edu.jhuapl.sbmt.core.util.TimeUtil.et2str(metadata.getEndTime());
 		DateTimeFormatter formatter = DateTimeFormat.forPattern("yyyy-MM-dd'T'HH:mm:ss.SSS");
 		DateTime start = formatter.parseDateTime(startString.substring(0, 23));
 		DateTime end = formatter.parseDateTime(endString.substring(0, 23));
