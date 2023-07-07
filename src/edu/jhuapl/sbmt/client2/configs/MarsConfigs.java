@@ -432,6 +432,7 @@ public class MarsConfigs extends SmallBodyViewConfig
             c.hasStateHistory = true;
             c.timeHistoryFile = c.rootDirOnServer + "/shared/history/timeHistory.bth";
 //            c.hasImageMap = true;
+            System.out.println("MarsConfigs: initialize: adding phobos");
             c.addFeatureConfig(BasemapImageConfig.class, new BasemapImageConfig(c));
 
             c.imagingInstruments = new ImagingInstrument[] {
