@@ -331,7 +331,7 @@ public class MarsConfigs extends SmallBodyViewConfig
             c.rootDirOnServer = "/THOMAS/DEIMOSEXPERIMENTAL";
             c.shapeModelFileNames = prepend(c.rootDirOnServer, "DEIMOS.vtk.gz");
 //            c.hasImageMap = true;
-            c.addFeatureConfig(BasemapImageConfig.class, new BasemapImageConfig(c));
+//            c.addFeatureConfig(BasemapImageConfig.class, new BasemapImageConfig(c));
 
             c.imagingInstruments = new ImagingInstrument[] {
                     new ImagingInstrument( //
@@ -379,7 +379,7 @@ public class MarsConfigs extends SmallBodyViewConfig
             c.rootDirOnServer = "/deimos/ernst2018";
             c.shapeModelFileExtension = ".obj";
 //            c.hasImageMap = true;
-            c.addFeatureConfig(BasemapImageConfig.class, new BasemapImageConfig(c));
+//            c.addFeatureConfig(BasemapImageConfig.class, new BasemapImageConfig(c));
 
             c.imagingInstruments = new ImagingInstrument[] {
                     new ImagingInstrument( //
