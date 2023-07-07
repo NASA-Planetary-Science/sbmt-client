@@ -239,7 +239,7 @@ public class BennuConfigs extends SmallBodyViewConfig
             c.setResolution(ImmutableList.of(DEFAULT_GASKELL_LABELS_PER_RESOLUTION[0]), ImmutableList.of(DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[0]));
             c.hasColoringData = false;
 //            c.hasImageMap = true;
-            c.addFeatureConfig(BasemapImageConfig.class, new BasemapImageConfig(c));
+//            c.addFeatureConfig(BasemapImageConfig.class, new BasemapImageConfig(c));
 
             c.imageSearchDefaultMaxSpacecraftDistance = 120000.0;
             c.imageSearchDefaultMaxResolution = 300.0;
