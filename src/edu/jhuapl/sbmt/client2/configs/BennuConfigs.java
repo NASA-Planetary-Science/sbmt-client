@@ -323,7 +323,6 @@ public class BennuConfigs extends SmallBodyViewConfig
         if (Configuration.isAPLVersion())
         {
             c = new BennuConfigs();
-            c.setBodyParameters();
             c.useMinimumReferencePotential = false;
 
             c.dataUsed = ShapeModelDataUsed.SIMULATED;
@@ -331,6 +330,8 @@ public class BennuConfigs extends SmallBodyViewConfig
             c.modelLabel = "OREX Simulated";
             c.version = "V3";
             c.rootDirOnServer = "/GASKELL/RQ36_V3";
+            c.setBodyParameters();
+
             c.shapeModelFileNames = prepend(c.rootDirOnServer, "ver64q.vtk.gz", "ver128q.vtk.gz", "ver256q.vtk.gz", "ver512q.vtk.gz");
             c.density = 1.0;
             c.rotationRate = 0.000407026411379;
@@ -407,7 +408,6 @@ public class BennuConfigs extends SmallBodyViewConfig
         if (Configuration.isAPLVersion())
         {
             c = new BennuConfigs();
-            c.setBodyParameters();
             c.shapeModelFileExtension = ".vtk";
 //            c.hasImageMap = false;
             c.dataUsed = ShapeModelDataUsed.SIMULATED;
@@ -415,6 +415,8 @@ public class BennuConfigs extends SmallBodyViewConfig
             c.modelLabel = "OREX Simulated";
             c.version = "V4";
             c.rootDirOnServer = "/bennu/bennu-simulated-v4";
+            c.setBodyParameters();
+
             c.shapeModelFileNames = prepend(c.rootDirOnServer + "/shape", "shape0.obj.gz", "shape1.vtk.gz", "shape2.vtk.gz", "shape3.vtk.gz", "shape4.vtk.gz");
             c.setResolution(ImmutableList.of("Very Low (12288 plates)", DEFAULT_GASKELL_LABELS_PER_RESOLUTION[0], DEFAULT_GASKELL_LABELS_PER_RESOLUTION[1], DEFAULT_GASKELL_LABELS_PER_RESOLUTION[2], DEFAULT_GASKELL_LABELS_PER_RESOLUTION[3]), ImmutableList.of(12288, DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[0], DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[1], DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[2], DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[3]));
             c.density = 1.26;
@@ -487,11 +489,12 @@ public class BennuConfigs extends SmallBodyViewConfig
         if (Configuration.isAPLVersion())
         {
             c = new BennuConfigs();
-            c.setBodyParameters();
             c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
             c.author = ShapeModelType.ALTWG_SPC_v20181109b;
             c.modelLabel = "ALTWG-SPC-v20181109b";
             c.rootDirOnServer = "/bennu/altwg-spc-v20181109b";
+            c.setBodyParameters();
+
             c.setResolution(ImmutableList.of(
                     "Very Low (12288 plates)", DEFAULT_GASKELL_LABELS_PER_RESOLUTION[0], DEFAULT_GASKELL_LABELS_PER_RESOLUTION[1], DEFAULT_GASKELL_LABELS_PER_RESOLUTION[2], DEFAULT_GASKELL_LABELS_PER_RESOLUTION[3]),
                     ImmutableList.of(12288, DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[0], DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[1], DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[2], DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[3]));
@@ -516,11 +519,12 @@ public class BennuConfigs extends SmallBodyViewConfig
         if (Configuration.isAPLVersion())
         {
             c = new BennuConfigs();
-            c.setBodyParameters();
             c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
             c.author = ShapeModelType.ALTWG_SPC_v20181115;
             c.modelLabel = "ALTWG-SPC-v20181115"; // NOTE: labeled SPC, but this is a Palmer model.
             c.rootDirOnServer = "/bennu/altwg-spc-v20181115";
+            c.setBodyParameters();
+
             c.setResolution(ImmutableList.of(
                     "Very Low (12288 plates)", DEFAULT_GASKELL_LABELS_PER_RESOLUTION[0], DEFAULT_GASKELL_LABELS_PER_RESOLUTION[1]),
                     ImmutableList.of(12288, DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[0], DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[1]));
@@ -560,12 +564,13 @@ public class BennuConfigs extends SmallBodyViewConfig
         if (Configuration.isAPLVersion())
         {
             c = new BennuConfigs();
-            c.setBodyParameters();
             c.population = ShapeModelPopulation.NEO;
             c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
             c.author = ShapeModelType.ALTWG_SPC_v20181116;
             c.modelLabel = "ALTWG-SPC-v20181116";
             c.rootDirOnServer = "/bennu/altwg-spc-v20181116";
+            c.setBodyParameters();
+
             c.setResolution(ImmutableList.of(
                     "Very Low (12288 plates)", DEFAULT_GASKELL_LABELS_PER_RESOLUTION[0], DEFAULT_GASKELL_LABELS_PER_RESOLUTION[1], DEFAULT_GASKELL_LABELS_PER_RESOLUTION[2], DEFAULT_GASKELL_LABELS_PER_RESOLUTION[3]),
                     ImmutableList.of(12288, DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[0], DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[1], DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[2], DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[3]));
@@ -602,11 +607,12 @@ public class BennuConfigs extends SmallBodyViewConfig
         if (Configuration.isAPLVersion())
         {
             c = new BennuConfigs();
-            c.setBodyParameters();
             c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
             c.author = ShapeModelType.ALTWG_SPC_v20181123b;
             c.modelLabel = "ALTWG-SPC-v20181123b";
             c.rootDirOnServer = "/bennu/altwg-spc-v20181123b";
+            c.setBodyParameters();
+
             c.setResolution(ImmutableList.of(
                     "Very Low (12288 plates)", DEFAULT_GASKELL_LABELS_PER_RESOLUTION[0], DEFAULT_GASKELL_LABELS_PER_RESOLUTION[1], DEFAULT_GASKELL_LABELS_PER_RESOLUTION[2], DEFAULT_GASKELL_LABELS_PER_RESOLUTION[3]),
                     ImmutableList.of(12288, DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[0], DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[1], DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[2], DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[3]));
@@ -642,11 +648,12 @@ public class BennuConfigs extends SmallBodyViewConfig
         if (Configuration.isAPLVersion())
         {
             c = new BennuConfigs();
-            c.setBodyParameters();
             c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
             c.author = ShapeModelType.ALTWG_SPC_v20181202;
             c.modelLabel = "ALTWG-SPC-v20181202";
             c.rootDirOnServer = "/bennu/altwg-spc-v20181202";
+            c.setBodyParameters();
+
             c.setResolution(ImmutableList.of(
                     "Very Low (12288 plates)", DEFAULT_GASKELL_LABELS_PER_RESOLUTION[0], DEFAULT_GASKELL_LABELS_PER_RESOLUTION[1], DEFAULT_GASKELL_LABELS_PER_RESOLUTION[2], DEFAULT_GASKELL_LABELS_PER_RESOLUTION[3]),
                     ImmutableList.of(12288, DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[0], DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[1], DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[2], DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[3]));
@@ -684,11 +691,12 @@ public class BennuConfigs extends SmallBodyViewConfig
         if (Configuration.isAPLVersion())
         {
             c = new BennuConfigs();
-            c.setBodyParameters();
             c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
             c.author = ShapeModelType.ALTWG_SPC_v20181206;
             c.modelLabel = "ALTWG-SPC-v20181206";
             c.rootDirOnServer = "/bennu/altwg-spc-v20181206";
+            c.setBodyParameters();
+
             c.setResolution(ImmutableList.of(
                     "Very Low (12288 plates)", DEFAULT_GASKELL_LABELS_PER_RESOLUTION[0], DEFAULT_GASKELL_LABELS_PER_RESOLUTION[1], DEFAULT_GASKELL_LABELS_PER_RESOLUTION[2], DEFAULT_GASKELL_LABELS_PER_RESOLUTION[3]),
                     ImmutableList.of(12288, DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[0], DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[1], DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[2], DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[3]));
@@ -725,12 +733,13 @@ public class BennuConfigs extends SmallBodyViewConfig
         if (Configuration.isAPLVersion())
         {
             c = new BennuConfigs();
-            c.setBodyParameters();
 
             c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
             c.author = ShapeModelType.ALTWG_SPC_v20181217;
             c.modelLabel = "SPC v13";
             c.rootDirOnServer = "/bennu/altwg-spc-v20181217";
+            c.setBodyParameters();
+
             c.setResolution(ImmutableList.of(
                     "Very Low (12288 plates)", DEFAULT_GASKELL_LABELS_PER_RESOLUTION[0], DEFAULT_GASKELL_LABELS_PER_RESOLUTION[1], DEFAULT_GASKELL_LABELS_PER_RESOLUTION[2], DEFAULT_GASKELL_LABELS_PER_RESOLUTION[3]),
                     ImmutableList.of(12288, DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[0], DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[1], DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[2], DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[3]));
@@ -778,12 +787,13 @@ public class BennuConfigs extends SmallBodyViewConfig
         if (Configuration.isAPLVersion())
         {
             c = new BennuConfigs();
-            c.setBodyParameters();
 
             c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
             c.author = ShapeModelType.ALTWG_SPC_v20181227;
             c.modelLabel = "SPC v14";
             c.rootDirOnServer = "/bennu/altwg-spc-v20181227";
+            c.setBodyParameters();
+
             c.setResolution(ImmutableList.of(
                     "Very Low (12288 plates)", DEFAULT_GASKELL_LABELS_PER_RESOLUTION[0], DEFAULT_GASKELL_LABELS_PER_RESOLUTION[1], DEFAULT_GASKELL_LABELS_PER_RESOLUTION[2], DEFAULT_GASKELL_LABELS_PER_RESOLUTION[3]),
                     ImmutableList.of(12288, DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[0], DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[1], DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[2], DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[3]));
@@ -837,12 +847,12 @@ public class BennuConfigs extends SmallBodyViewConfig
         if (Configuration.isAPLVersion())
         {
             c = new BennuConfigs();
-            c.setBodyParameters();
 
             c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
             c.author = ShapeModelType.ALTWG_SPC_v20190105;
             c.modelLabel = "ALTWG-SPC-v20190105";
             c.rootDirOnServer = "/bennu/altwg-spc-v20190105";
+            c.setBodyParameters();
 
             c.setResolution(ImmutableList.of("Very Low (12288 plates)", DEFAULT_GASKELL_LABELS_PER_RESOLUTION[0], DEFAULT_GASKELL_LABELS_PER_RESOLUTION[1], DEFAULT_GASKELL_LABELS_PER_RESOLUTION[2], DEFAULT_GASKELL_LABELS_PER_RESOLUTION[3]), ImmutableList.of(12288, DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[0], DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[1], DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[2], DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[3]));
             c.density = 1.260;
@@ -883,12 +893,13 @@ public class BennuConfigs extends SmallBodyViewConfig
         if (Configuration.isAPLVersion())
         {
             c = new BennuConfigs();
-            c.setBodyParameters();
 
             c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
             c.author = ShapeModelType.ALTWG_SPC_v20190114;
             c.modelLabel = "ALTWG-SPC-v20190114";
             c.rootDirOnServer = "/bennu/altwg-spc-v20190114";
+            c.setBodyParameters();
+
             c.setResolution(ImmutableList.of(
                     "Very Low (12288 plates)", DEFAULT_GASKELL_LABELS_PER_RESOLUTION[0], DEFAULT_GASKELL_LABELS_PER_RESOLUTION[1], DEFAULT_GASKELL_LABELS_PER_RESOLUTION[2], DEFAULT_GASKELL_LABELS_PER_RESOLUTION[3]),
                     ImmutableList.of(12288, DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[0], DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[1], DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[2], DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[3]));
@@ -930,12 +941,13 @@ public class BennuConfigs extends SmallBodyViewConfig
         if (Configuration.isAPLVersion())
         {
             c = new BennuConfigs();
-            c.setBodyParameters();
 
             c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
             c.author = ShapeModelType.ALTWG_SPC_v20190117;
             c.modelLabel = "ALTWG-SPC-v20190117";
             c.rootDirOnServer = "/bennu/altwg-spc-v20190117";
+            c.setBodyParameters();
+
             c.setResolution(ImmutableList.of(
                     "Very Low (12288 plates)", DEFAULT_GASKELL_LABELS_PER_RESOLUTION[0], DEFAULT_GASKELL_LABELS_PER_RESOLUTION[1], DEFAULT_GASKELL_LABELS_PER_RESOLUTION[2], DEFAULT_GASKELL_LABELS_PER_RESOLUTION[3]),
                     ImmutableList.of(12288, DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[0], DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[1], DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[2], DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[3]));
@@ -977,12 +989,14 @@ public class BennuConfigs extends SmallBodyViewConfig
         if (Configuration.isAPLVersion())
         {
             c = new BennuConfigs();
-            c.setBodyParameters();
 
             c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
             c.author = ShapeModelType.ALTWG_SPC_v20190121;
             c.modelLabel = "SPC v20";
             c.rootDirOnServer = "/bennu/altwg-spc-v20190121";
+
+            c.setBodyParameters();
+
             c.setResolution(ImmutableList.of(
                     "Very Low (12288 plates)", DEFAULT_GASKELL_LABELS_PER_RESOLUTION[0], DEFAULT_GASKELL_LABELS_PER_RESOLUTION[1], DEFAULT_GASKELL_LABELS_PER_RESOLUTION[2], DEFAULT_GASKELL_LABELS_PER_RESOLUTION[3]),
                     ImmutableList.of(12288, DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[0], DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[1], DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[2], DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[3]));
@@ -1047,12 +1061,14 @@ public class BennuConfigs extends SmallBodyViewConfig
         if (Configuration.isAPLVersion())
         {
             c = new BennuConfigs();
-            c.setBodyParameters();
 
             c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
             c.author = ShapeModelType.ALTWG_SPC_v20190207a;
             c.modelLabel = "ALTWG-SPC-v20190207a";
             c.rootDirOnServer = "/bennu/altwg-spc-v20190207a";
+
+            c.setBodyParameters();
+
             c.setResolution(ImmutableList.of(
                     "Very Low (12288 plates)", DEFAULT_GASKELL_LABELS_PER_RESOLUTION[0], DEFAULT_GASKELL_LABELS_PER_RESOLUTION[1], DEFAULT_GASKELL_LABELS_PER_RESOLUTION[2], DEFAULT_GASKELL_LABELS_PER_RESOLUTION[3]),
                     ImmutableList.of(12288, DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[0], DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[1], DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[2], DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[3]));
@@ -1093,12 +1109,14 @@ public class BennuConfigs extends SmallBodyViewConfig
         if (Configuration.isAPLVersion())
         {
             c = new BennuConfigs();
-            c.setBodyParameters();
 
             c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
             c.author = ShapeModelType.ALTWG_SPC_v20190207b;
             c.modelLabel = "ALTWG-SPC-v20190207b";
             c.rootDirOnServer = "/bennu/altwg-spc-v20190207b";
+
+            c.setBodyParameters();
+
             c.setResolution(ImmutableList.of(
                     "Very Low (12288 plates)", DEFAULT_GASKELL_LABELS_PER_RESOLUTION[0], DEFAULT_GASKELL_LABELS_PER_RESOLUTION[1], DEFAULT_GASKELL_LABELS_PER_RESOLUTION[2], DEFAULT_GASKELL_LABELS_PER_RESOLUTION[3]),
                     ImmutableList.of(12288, DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[0], DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[1], DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[2], DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[3]));
@@ -1139,12 +1157,14 @@ public class BennuConfigs extends SmallBodyViewConfig
         if (Configuration.isAPLVersion())
         {
             c = new BennuConfigs();
-            c.setBodyParameters();
 
             c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
             c.author = ShapeModelType.ALTWG_SPC_v20190414;
             c.modelLabel = "SPC v28";
             c.rootDirOnServer = "/bennu/altwg-spc-v20190414";
+
+            c.setBodyParameters();
+
             c.setResolution(ImmutableList.of(
                     "Very Low (12288 plates)", DEFAULT_GASKELL_LABELS_PER_RESOLUTION[0], DEFAULT_GASKELL_LABELS_PER_RESOLUTION[1], DEFAULT_GASKELL_LABELS_PER_RESOLUTION[2], DEFAULT_GASKELL_LABELS_PER_RESOLUTION[3]),
                     ImmutableList.of(12288, DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[0], DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[1], DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[2], DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[3]));
@@ -1206,12 +1226,14 @@ public class BennuConfigs extends SmallBodyViewConfig
         if (Configuration.isAPLVersion())
         {
             c = new BennuConfigs();
-            c.setBodyParameters();
 
             c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
             c.author = ShapeModelType.ALTWG_SPO_v20190612;
             c.modelLabel = "SPO v34";
             c.rootDirOnServer = "/bennu/altwg-spo-v20190612";
+
+            c.setBodyParameters();
+
             c.setResolution(ImmutableList.of(
                     "Very Low (12288 plates)", DEFAULT_GASKELL_LABELS_PER_RESOLUTION[0], DEFAULT_GASKELL_LABELS_PER_RESOLUTION[1], DEFAULT_GASKELL_LABELS_PER_RESOLUTION[2], DEFAULT_GASKELL_LABELS_PER_RESOLUTION[3]),
                     ImmutableList.of(12288, DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[0], DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[1], DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[2], DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[3]));
@@ -1272,12 +1294,14 @@ public class BennuConfigs extends SmallBodyViewConfig
         if (Configuration.isAPLVersion())
         {
             c = new BennuConfigs();
-            c.setBodyParameters();
 
             c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
             c.author = ShapeModelType.provide("ALTWG-SPC-v20190828");
             c.modelLabel = "SPC v42";
             c.rootDirOnServer = "/bennu/altwg-spc-v20190828";
+
+            c.setBodyParameters();
+
             c.setResolution(ImmutableList.of(
                     "Very Low (12288 plates)", DEFAULT_GASKELL_LABELS_PER_RESOLUTION[0], DEFAULT_GASKELL_LABELS_PER_RESOLUTION[1], DEFAULT_GASKELL_LABELS_PER_RESOLUTION[2], DEFAULT_GASKELL_LABELS_PER_RESOLUTION[3]),
                     ImmutableList.of(12288, DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[0], DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[1], DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[2], DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[3]));
@@ -1339,12 +1363,14 @@ public class BennuConfigs extends SmallBodyViewConfig
         if (Configuration.isAPLVersion())
         {
             c = new BennuConfigs();
-            c.setBodyParameters();
 
             c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
             c.author = ShapeModelType.provide("ALTWG-SPC-v20191027");
             c.modelLabel = c.author.name();
             c.rootDirOnServer = "/bennu/altwg-spc-v20191027";
+
+            c.setBodyParameters();
+
             c.setResolution(ImmutableList.of(
                     "Very Low (12288 plates)", DEFAULT_GASKELL_LABELS_PER_RESOLUTION[0], DEFAULT_GASKELL_LABELS_PER_RESOLUTION[1], DEFAULT_GASKELL_LABELS_PER_RESOLUTION[2], DEFAULT_GASKELL_LABELS_PER_RESOLUTION[3]),
                     ImmutableList.of(12288, DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[0], DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[1], DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[2], DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[3]));
@@ -1388,12 +1414,14 @@ public class BennuConfigs extends SmallBodyViewConfig
         if (Configuration.isAPLVersion())
         {
             c = new BennuConfigs();
-            c.setBodyParameters();
 
             c.dataUsed = ShapeModelDataUsed.LIDAR_BASED;
             c.author = ShapeModelType.provide("OLA-v20");
             c.modelLabel = "OLA v20";
             c.rootDirOnServer = "/bennu/ola-v20-spc";
+
+            c.setBodyParameters();
+
             c.setResolution(ImmutableList.of(
                     "Very Low (12288 plates)", DEFAULT_GASKELL_LABELS_PER_RESOLUTION[0], DEFAULT_GASKELL_LABELS_PER_RESOLUTION[1], DEFAULT_GASKELL_LABELS_PER_RESOLUTION[2], DEFAULT_GASKELL_LABELS_PER_RESOLUTION[3]),
                     ImmutableList.of(12288, DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[0], DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[1], DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[2], DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[3]));
@@ -1471,12 +1499,14 @@ public class BennuConfigs extends SmallBodyViewConfig
         if (Configuration.isAPLVersion())
         {
             c = new BennuConfigs();
-            c.setBodyParameters();
 
             c.dataUsed = ShapeModelDataUsed.LIDAR_BASED;
             c.author = ShapeModelType.provide("OLA-v20-PTM");
             c.modelLabel = "OLA v20 PTM";
             c.rootDirOnServer = "/bennu/ola-v20-ptm";
+
+            c.setBodyParameters();
+
             c.setResolution( //
                     ImmutableList.of("Medium (217032 plates)", "High (886904 plates)", "Very High (3366134 plates)"),
                     ImmutableList.of(217032, 886904, 3366134));
@@ -1554,12 +1584,14 @@ public class BennuConfigs extends SmallBodyViewConfig
         if (Configuration.isAPLVersion())
         {
             c = new BennuConfigs();
-            c.setBodyParameters();
 
             c.dataUsed = ShapeModelDataUsed.LIDAR_BASED;
             c.author = ShapeModelType.provide("OLA-v21");
             c.modelLabel = "OLA v21";
             c.rootDirOnServer = "/bennu/ola-v21-spc";
+
+            c.setBodyParameters();
+
             c.setResolution(ImmutableList.of(
                     "Very Low (12288 plates)", DEFAULT_GASKELL_LABELS_PER_RESOLUTION[0], DEFAULT_GASKELL_LABELS_PER_RESOLUTION[1], DEFAULT_GASKELL_LABELS_PER_RESOLUTION[2], DEFAULT_GASKELL_LABELS_PER_RESOLUTION[3]),
                     ImmutableList.of(12288, DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[0], DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[1], DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[2], DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[3]));
@@ -1638,12 +1670,14 @@ public class BennuConfigs extends SmallBodyViewConfig
         if (Configuration.isAPLVersion())
         {
             c = new BennuConfigs();
-            c.setBodyParameters();
-
-            c.dataUsed = ShapeModelDataUsed.LIDAR_BASED;
             c.author = ShapeModelType.provide("OLA-v21-PTM");
             c.modelLabel = "OLA v21 PTM";
             c.rootDirOnServer = "/bennu/ola-v21-ptm";
+
+            c.setBodyParameters();
+
+            c.dataUsed = ShapeModelDataUsed.LIDAR_BASED;
+
             c.setResolution( //
                     ImmutableList.of("Low (231870 plates)", "Medium (886400 plates)", "High (3365938 plates)", "Very High (17866836 plates)"),
                     ImmutableList.of(231870, 886400, 3365938, 17866836));
@@ -1721,12 +1755,13 @@ public class BennuConfigs extends SmallBodyViewConfig
        if (Configuration.isAPLVersion())
         {
             c = new BennuConfigs();
-            c.setBodyParameters();
 
             c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
             c.author = ShapeModelType.provide("SPO-v54");
             c.modelLabel = "SPO v54";
             c.rootDirOnServer = "/bennu/spo-v54-spc";
+            c.setBodyParameters();
+
             c.setResolution(ImmutableList.of(
                     "Very Low (12288 plates)", DEFAULT_GASKELL_LABELS_PER_RESOLUTION[0], DEFAULT_GASKELL_LABELS_PER_RESOLUTION[1], DEFAULT_GASKELL_LABELS_PER_RESOLUTION[2], DEFAULT_GASKELL_LABELS_PER_RESOLUTION[3]),
                     ImmutableList.of(12288, DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[0], DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[1], DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[2], DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[3]));
