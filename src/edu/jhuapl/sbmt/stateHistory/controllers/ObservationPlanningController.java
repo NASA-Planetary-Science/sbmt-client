@@ -82,7 +82,7 @@ public class ObservationPlanningController implements PropertyChangeListener
                 	if (runs.getCurrentRun() != null)
                 	{
                 		runs.getCurrentRun().getMetadata().setCurrentTime(et);
-                		positionOrientationManager.run(et);
+                		if (positionOrientationManager != null) positionOrientationManager.run(et);
                 		rendererManager.getRenderer().getRenderWindowPanel().resetCameraClippingRange();
                 	}
 

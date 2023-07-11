@@ -281,6 +281,11 @@ public class StateHistoryIntervalGenerationPanel extends JPanel
 
 	public void refreshKernels()
 	{
+		if (kernelComboBox == null)
+		{
+			getIntervalButton.setEnabled(true);
+			return;
+		}
 		DefaultComboBoxModel<String> model = new DefaultComboBoxModel<String>(getAvailableKernels());
 		kernelComboBox.setModel(model);
 	}
