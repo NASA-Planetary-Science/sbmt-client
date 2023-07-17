@@ -4,6 +4,19 @@
 
 # Release Notes
 
+## July 17, 2023 (SBMT-0.8.3.3)
+
+- Improved performance of loading and switching models
+- Better handling of unsupported custom models
+
+### Bug Fixes:
+- Fixed an error when adding observing conditions for some bodies
+- Fixed some bugs in the color image composite tool
+- Sorting by image index now sorts correctly
+- Resetting the normal offset now immediately takes effect
+- Multi layer FITS files now show planes in proper order
+- When using "w" or "s" to change the body representation, the UI is now properly updated
+
 ## June 15, 2023 (SBMT-0.8.3.2)
 
 ### New:
