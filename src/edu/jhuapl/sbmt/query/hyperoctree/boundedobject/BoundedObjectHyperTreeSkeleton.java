@@ -1,4 +1,4 @@
-package edu.jhuapl.sbmt.model.boundedobject.hyperoctree;
+package edu.jhuapl.sbmt.query.hyperoctree.boundedobject;
 
 import java.io.File;
 import java.nio.file.Path;
@@ -6,8 +6,8 @@ import java.nio.file.Paths;
 import java.util.Scanner;
 
 import edu.jhuapl.saavtk.util.FileCache;
-import edu.jhuapl.sbmt.lidar.hyperoctree.FSHyperTreeNode;
-import edu.jhuapl.sbmt.lidar.hyperoctree.FSHyperTreeSkeleton;
+import edu.jhuapl.sbmt.query.hyperoctree.FSHyperTreeNode;
+import edu.jhuapl.sbmt.query.hyperoctree.FSHyperTreeSkeleton;
 
 
 public class BoundedObjectHyperTreeSkeleton extends FSHyperTreeSkeleton

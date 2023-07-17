@@ -1,4 +1,4 @@
-package edu.jhuapl.sbmt.model.boundedobject;
+package edu.jhuapl.sbmt.query.hyperoctree.boundedobject;
 
 import java.io.DataInputStream;
 import java.io.IOException;

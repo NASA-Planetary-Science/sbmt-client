@@ -1,5 +1,5 @@
 
-package edu.jhuapl.sbmt.model.boundedobject.hyperoctree;
+package edu.jhuapl.sbmt.query.hyperoctree.boundedobject;
 
 public class ImageHyperTreeSearch
 {

@@ -1,4 +1,4 @@
-package edu.jhuapl.sbmt.lidar.hyperoctree;
+package edu.jhuapl.sbmt.query.hyperoctree;
 
 import java.io.FileWriter;
 import java.io.IOException;

@@ -1,4 +1,4 @@
-package edu.jhuapl.sbmt.lidar.hyperoctree;
+package edu.jhuapl.sbmt.query.hyperoctree;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
@@ -10,7 +10,7 @@ import java.io.IOException;
 import java.nio.file.Path;
 
 import edu.jhuapl.sbmt.core.io.DataOutputStreamPool;
-import edu.jhuapl.sbmt.lidar.hyperoctree.HyperException.HyperDimensionMismatchException;
+import edu.jhuapl.sbmt.query.hyperoctree.HyperException.HyperDimensionMismatchException;
 
 
 public abstract class FSHyperTreeNode<T extends FSHyperPoint> implements Dimensioned

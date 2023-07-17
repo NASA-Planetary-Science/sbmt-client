@@ -4,7 +4,7 @@ import java.io.FileWriter;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
-import edu.jhuapl.sbmt.lidar.hyperoctree.FSHyperTreeCondenser;
+import edu.jhuapl.sbmt.query.hyperoctree.FSHyperTreeCondenser;
 
 
 public class SpectrumHypertreeCondenser extends FSHyperTreeCondenser

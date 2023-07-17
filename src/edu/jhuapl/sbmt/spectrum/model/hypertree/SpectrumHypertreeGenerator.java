@@ -10,10 +10,10 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 
 import edu.jhuapl.sbmt.core.io.DataOutputStreamPool;
-import edu.jhuapl.sbmt.lidar.hyperoctree.HyperBox;
-import edu.jhuapl.sbmt.lidar.hyperoctree.HyperException;
-import edu.jhuapl.sbmt.model.boundedobject.hyperoctree.BoundedObjectHyperTreeGenerator;
-import edu.jhuapl.sbmt.model.boundedobject.hyperoctree.HyperBoundedObject;
+import edu.jhuapl.sbmt.query.hyperoctree.HyperBox;
+import edu.jhuapl.sbmt.query.hyperoctree.HyperException;
+import edu.jhuapl.sbmt.query.hyperoctree.boundedobject.BoundedObjectHyperTreeGenerator;
+import edu.jhuapl.sbmt.query.hyperoctree.boundedobject.HyperBoundedObject;
 
 public class SpectrumHypertreeGenerator extends BoundedObjectHyperTreeGenerator
 {

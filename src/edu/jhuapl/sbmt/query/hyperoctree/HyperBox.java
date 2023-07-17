@@ -1,7 +1,7 @@
-package edu.jhuapl.sbmt.lidar.hyperoctree;
+package edu.jhuapl.sbmt.query.hyperoctree;
 
-import edu.jhuapl.sbmt.lidar.hyperoctree.HyperException.HyperDimensionMismatchException;
-import edu.jhuapl.sbmt.model.boundedobject.hyperoctree.HyperBoundedObject;
+import edu.jhuapl.sbmt.query.hyperoctree.HyperException.HyperDimensionMismatchException;
+import edu.jhuapl.sbmt.query.hyperoctree.boundedobject.HyperBoundedObject;
 
 public class HyperBox implements Dimensioned
 {

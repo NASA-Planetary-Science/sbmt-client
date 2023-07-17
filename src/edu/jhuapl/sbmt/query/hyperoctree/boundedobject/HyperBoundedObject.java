@@ -1,11 +1,11 @@
-package edu.jhuapl.sbmt.model.boundedobject.hyperoctree;
+package edu.jhuapl.sbmt.query.hyperoctree.boundedobject;
 
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 
-import edu.jhuapl.sbmt.lidar.hyperoctree.HyperBox;
-import edu.jhuapl.sbmt.lidar.hyperoctree.HyperException.HyperDimensionMismatchException;
+import edu.jhuapl.sbmt.query.hyperoctree.HyperBox;
+import edu.jhuapl.sbmt.query.hyperoctree.HyperException.HyperDimensionMismatchException;
 
 public class HyperBoundedObject
 {

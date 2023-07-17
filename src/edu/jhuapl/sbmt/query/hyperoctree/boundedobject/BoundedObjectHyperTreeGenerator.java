@@ -1,4 +1,4 @@
-package edu.jhuapl.sbmt.model.boundedobject.hyperoctree;
+package edu.jhuapl.sbmt.query.hyperoctree.boundedobject;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -27,9 +27,9 @@ import edu.jhuapl.sbmt.client2.SbmtMultiMissionTool;
 import edu.jhuapl.sbmt.config.SmallBodyViewConfig;
 import edu.jhuapl.sbmt.core.body.SmallBodyModel;
 import edu.jhuapl.sbmt.core.io.DataOutputStreamPool;
-import edu.jhuapl.sbmt.lidar.hyperoctree.HyperBox;
-import edu.jhuapl.sbmt.lidar.hyperoctree.HyperException;
 import edu.jhuapl.sbmt.model.SbmtModelFactory;
+import edu.jhuapl.sbmt.query.hyperoctree.HyperBox;
+import edu.jhuapl.sbmt.query.hyperoctree.HyperException;
 import edu.jhuapl.sbmt.spectrum.model.hypertree.SpectrumHypertreeGenerator;
 
 public class BoundedObjectHyperTreeGenerator
