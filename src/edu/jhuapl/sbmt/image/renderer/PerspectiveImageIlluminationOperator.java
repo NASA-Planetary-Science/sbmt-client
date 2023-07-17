@@ -1,4 +1,4 @@
-package edu.jhuapl.sbmt.model.image.perspectiveImage.renderer;
+package edu.jhuapl.sbmt.image.renderer;
 
 import java.beans.PropertyChangeEvent;
 
