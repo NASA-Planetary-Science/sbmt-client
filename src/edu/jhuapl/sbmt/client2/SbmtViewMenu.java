@@ -16,8 +16,8 @@ import edu.jhuapl.saavtk.util.Configuration;
 import edu.jhuapl.saavtk.util.FileCache;
 import edu.jhuapl.saavtk.util.Properties;
 import edu.jhuapl.sbmt.config.BasicConfigInfo;
-import edu.jhuapl.sbmt.config.ShapeModelDataUsed;
-import edu.jhuapl.sbmt.config.ShapeModelPopulation;
+import edu.jhuapl.sbmt.core.body.ShapeModelDataUsed;
+import edu.jhuapl.sbmt.core.body.ShapeModelPopulation;
 
 public class SbmtViewMenu extends ViewMenu
 {

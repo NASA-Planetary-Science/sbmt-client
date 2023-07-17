@@ -1,4 +1,3 @@
-package edu.jhuapl.sbmt.core.rendering;
 //package edu.jhuapl.sbmt.model.image.perspectiveImage;
 //
 //import java.io.BufferedReader;

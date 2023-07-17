@@ -29,8 +29,6 @@ import com.jgoodies.looks.LookUtils;
 import edu.jhuapl.saavtk.colormap.Colormaps;
 import edu.jhuapl.saavtk.gui.TSConsole;
 import edu.jhuapl.saavtk.model.structure.EllipsePolygon;
-import edu.jhuapl.saavtk.model.structure.Line;
-import edu.jhuapl.saavtk.model.structure.Polygon;
 import edu.jhuapl.saavtk.util.Configuration;
 import edu.jhuapl.saavtk.util.Configuration.ReleaseType;
 import edu.jhuapl.saavtk.util.Debug;
@@ -41,20 +39,22 @@ import edu.jhuapl.saavtk.util.SafeURLPaths;
 import edu.jhuapl.saavtk.util.ServerSettingsManager;
 import edu.jhuapl.saavtk.util.ServerSettingsManager.ServerSettings;
 import edu.jhuapl.saavtk.util.UrlStatus;
-import edu.jhuapl.sbmt.common.client.Mission;
-import edu.jhuapl.sbmt.common.client.SbmtSplash;
-import edu.jhuapl.sbmt.core.image.CustomCylindricalImageKey;
-import edu.jhuapl.sbmt.core.image.CustomPerspectiveImageKey;
-import edu.jhuapl.sbmt.core.image.OrientationFactory;
+import edu.jhuapl.sbmt.core.client.Mission;
+import edu.jhuapl.sbmt.core.config.FeatureConfigIOFactory;
 import edu.jhuapl.sbmt.dtm.model.DEMKey;
-import edu.jhuapl.sbmt.image2.model.BasemapImage;
-import edu.jhuapl.sbmt.image2.model.BinExtents;
-import edu.jhuapl.sbmt.image2.model.BinSpacings;
-import edu.jhuapl.sbmt.image2.model.BinTranslations;
-import edu.jhuapl.sbmt.image2.model.CompositePerspectiveImage;
-import edu.jhuapl.sbmt.image2.model.CylindricalBounds;
-import edu.jhuapl.sbmt.image2.model.ImageBinPadding;
-import edu.jhuapl.sbmt.image2.model.PerspectiveImage;
+import edu.jhuapl.sbmt.image.config.BasemapImageConfig;
+import edu.jhuapl.sbmt.image.config.BasemapImageConfigIO;
+import edu.jhuapl.sbmt.image.keys.CustomCylindricalImageKey;
+import edu.jhuapl.sbmt.image.keys.CustomPerspectiveImageKey;
+import edu.jhuapl.sbmt.image.model.BasemapImage;
+import edu.jhuapl.sbmt.image.model.BinExtents;
+import edu.jhuapl.sbmt.image.model.BinSpacings;
+import edu.jhuapl.sbmt.image.model.BinTranslations;
+import edu.jhuapl.sbmt.image.model.CompositePerspectiveImage;
+import edu.jhuapl.sbmt.image.model.CylindricalBounds;
+import edu.jhuapl.sbmt.image.model.ImageBinPadding;
+import edu.jhuapl.sbmt.image.model.OrientationFactory;
+import edu.jhuapl.sbmt.image.model.PerspectiveImageMetadata;
 import edu.jhuapl.sbmt.model.bennu.spectra.otes.OTES;
 import edu.jhuapl.sbmt.model.bennu.spectra.ovirs.OVIRS;
 import edu.jhuapl.sbmt.model.eros.nis.NIS;
@@ -68,7 +68,6 @@ import edu.jhuapl.sbmt.spectrum.model.key.CustomSpectrumKey;
 import edu.jhuapl.sbmt.stateHistory.model.stateHistory.StateHistoryKey;
 import edu.jhuapl.sbmt.stateHistory.model.stateHistory.spice.SpiceStateHistory;
 import edu.jhuapl.sbmt.stateHistory.model.stateHistory.standard.StandardStateHistory;
-import edu.jhuapl.sbmt.tools.SbmtRunnable2;
 
 /**
  * This class contains the "main" function called at the start of the program.
@@ -123,12 +122,10 @@ public class SbmtMultiMissionTool
 		// Structures.
 		LatLon.initializeSerializationProxy();
 		EllipsePolygon.initializeSerializationProxy();
-		Polygon.initializeSerializationProxy();
-		Line.initializeSerializationProxy();
 
 		// Images.
 		CylindricalBounds.initializeSerializationProxy();
-		PerspectiveImage.initializeSerializationProxy();
+		PerspectiveImageMetadata.initializeSerializationProxy();
 		CustomCylindricalImageKey.initializeSerializationProxy();
 		CustomPerspectiveImageKey.initializeSerializationProxy();
 		CompositePerspectiveImage.initializeSerializationProxy();
@@ -152,6 +149,8 @@ public class SbmtMultiMissionTool
 		SpiceInfo.initializeSerializationProxy();
 		OrientationFactory.initializeSerializationProxy();
 		BasemapImage.initializeSerializationProxy();
+
+		FeatureConfigIOFactory.registerFeatureConfigIO(BasemapImageConfig.class.getSimpleName(), new BasemapImageConfigIO());
 	}
 
 	public static void setEnableAuthentication(boolean enableAuthentication)

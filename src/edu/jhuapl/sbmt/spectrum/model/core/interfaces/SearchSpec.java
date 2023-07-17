@@ -1,6 +1,6 @@
 package edu.jhuapl.sbmt.spectrum.model.core.interfaces;
 
-import edu.jhuapl.sbmt.core.image.ImageSource;
+import edu.jhuapl.sbmt.core.pointing.PointingSource;
 
 
 /**
@@ -39,7 +39,7 @@ public interface SearchSpec
      * Returns the Pointing source
      * @return
      */
-    ImageSource getSource();
+    PointingSource getSource();
 
     /**
      * Returns the x axis units string

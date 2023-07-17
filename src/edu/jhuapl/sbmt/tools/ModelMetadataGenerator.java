@@ -1,7 +1,7 @@
 package edu.jhuapl.sbmt.tools;
 
-import edu.jhuapl.sbmt.common.client.Mission;
-import edu.jhuapl.sbmt.common.client.SmallBodyViewConfigMetadataIO;
+import edu.jhuapl.sbmt.config.SmallBodyViewConfigMetadataIO;
+import edu.jhuapl.sbmt.core.client.Mission;
 
 /**
  * Wrapper for running {@link SmallBodyViewConfigMetadataIO} from a command line tool.

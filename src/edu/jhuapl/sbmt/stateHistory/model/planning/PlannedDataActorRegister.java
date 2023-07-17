@@ -2,9 +2,9 @@ package edu.jhuapl.sbmt.stateHistory.model.planning;
 
 import java.awt.Color;
 
-import edu.jhuapl.sbmt.common.client.SmallBodyModel;
+import edu.jhuapl.sbmt.core.body.SmallBodyModel;
 import edu.jhuapl.sbmt.core.rendering.DataActor;
-import edu.jhuapl.sbmt.core.rendering.PerspectiveFootprint;
+import edu.jhuapl.sbmt.image.model.PerspectiveFootprint;
 import edu.jhuapl.sbmt.stateHistory.rendering.planning.IPlanningDataActorBuilder;
 import edu.jhuapl.sbmt.stateHistory.rendering.planning.PlannedDataActorFactory;
 

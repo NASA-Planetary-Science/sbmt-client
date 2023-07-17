@@ -15,12 +15,12 @@ import com.beust.jcommander.internal.Lists;
 
 import edu.jhuapl.saavtk.model.ShapeModelBody;
 import edu.jhuapl.saavtk.model.ShapeModelType;
-import edu.jhuapl.sbmt.core.image.ImageSource;
+import edu.jhuapl.sbmt.core.pointing.PointingSource;
 
 public class DistributedPerspectiveImagePreRenderer2
 {
 
-    public DistributedPerspectiveImagePreRenderer2(String inputDir, String outputPath, ImageSource pointingSource, int instrumentIndex, ShapeModelBody body, ShapeModelType type, boolean reprocess)
+    public DistributedPerspectiveImagePreRenderer2(String inputDir, String outputPath, PointingSource pointingSource, int instrumentIndex, ShapeModelBody body, ShapeModelType type, boolean reprocess)
     {
     	 File outputPathDir = new File(outputPath);
     	 if (outputPathDir.exists() == false) outputPathDir.mkdirs();
@@ -90,7 +90,7 @@ public class DistributedPerspectiveImagePreRenderer2
     {
     	//$baseDir/images GASKELL RQ36 ALTWG-SPC-v20181109b 0 $baseDir/support $reprocess
         String inputDirectory = args[0];
-        final ImageSource source = ImageSource.valueOf(args[1]);
+        final PointingSource source = PointingSource.valueOf(args[1]);
         ShapeModelBody body = ShapeModelBody.valueOf(args[2]);
         ShapeModelType type = ShapeModelType.provide(args[3]);
         int imagerIndex = Integer.parseInt(args[4]);

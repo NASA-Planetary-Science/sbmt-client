@@ -15,16 +15,16 @@ import edu.jhuapl.saavtk.status.QuietStatusNotifier;
 import edu.jhuapl.saavtk.structure.Ellipse;
 import edu.jhuapl.saavtk.util.BoundingBox;
 import edu.jhuapl.saavtk.util.NativeLibraryLoader;
-import edu.jhuapl.sbmt.client.SbmtModelFactory;
-import edu.jhuapl.sbmt.common.client.SmallBodyModel;
-import edu.jhuapl.sbmt.common.client.SmallBodyViewConfig;
+import edu.jhuapl.sbmt.config.SmallBodyViewConfig;
+import edu.jhuapl.sbmt.core.body.SmallBodyModel;
+import edu.jhuapl.sbmt.core.util.TimeUtil;
 import edu.jhuapl.sbmt.dtm.model.DEM;
 import edu.jhuapl.sbmt.dtm.service.PointInDEMChecker;
 import edu.jhuapl.sbmt.lidar.LidarSearchParms;
 import edu.jhuapl.sbmt.lidar.LidarTrackManager;
 import edu.jhuapl.sbmt.lidar.util.LidarFileUtil;
 import edu.jhuapl.sbmt.lidar.util.LidarQueryUtil;
-import edu.jhuapl.sbmt.util.TimeUtil;
+import edu.jhuapl.sbmt.model.SbmtModelFactory;
 
 public class SearchLidarDataInsideMaplet
 {

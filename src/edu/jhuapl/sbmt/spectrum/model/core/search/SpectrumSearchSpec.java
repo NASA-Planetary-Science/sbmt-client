@@ -2,7 +2,7 @@ package edu.jhuapl.sbmt.spectrum.model.core.search;
 
 import java.util.Hashtable;
 
-import edu.jhuapl.sbmt.core.image.ImageSource;
+import edu.jhuapl.sbmt.core.pointing.PointingSource;
 import edu.jhuapl.sbmt.spectrum.model.core.interfaces.SearchSpec;
 
 import crucible.crust.metadata.api.Key;
@@ -32,7 +32,7 @@ public class SpectrumSearchSpec extends Hashtable<String, String> implements Sea
     	super();
     }
 
-    public SpectrumSearchSpec(String name, String location, String dataPath, String filename, ImageSource source, String xAxisUnits, String yAxisUnits, String dataDescription)
+    public SpectrumSearchSpec(String name, String location, String dataPath, String filename, PointingSource source, String xAxisUnits, String yAxisUnits, String dataDescription)
     {
     	super();
         put("dataName", dataName = name);
@@ -90,9 +90,9 @@ public class SpectrumSearchSpec extends Hashtable<String, String> implements Sea
      * @see edu.jhuapl.sbmt.model.bennu.SearchSpec#getSource()
      */
     @Override
-    public ImageSource getSource()
+    public PointingSource getSource()
     {
-        return ImageSource.valueFor(get("source"));
+        return PointingSource.valueFor(get("source"));
     }
 
     /* (non-Javadoc)
@@ -145,7 +145,7 @@ public class SpectrumSearchSpec extends Hashtable<String, String> implements Sea
     		String yAxisUnits = metadata.get(YAXISUNITS_KEY);
     		String dataDescription = metadata.get(DATADESCRIPTION_KEY);
 
-    		SpectrumSearchSpec spec = new SpectrumSearchSpec(dataName, dataRootLocation, dataPath, dataListFilename, ImageSource.valueFor(source), xAxisUnits, yAxisUnits, dataDescription);
+    		SpectrumSearchSpec spec = new SpectrumSearchSpec(dataName, dataRootLocation, dataPath, dataListFilename, PointingSource.valueFor(source), xAxisUnits, yAxisUnits, dataDescription);
     		return spec;
 
     	}, SpectrumSearchSpec.class, spec -> {

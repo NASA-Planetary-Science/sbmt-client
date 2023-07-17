@@ -15,8 +15,8 @@ import java.util.List;
 import javax.imageio.ImageIO;
 
 import edu.jhuapl.saavtk.util.ImageDataUtil;
-import edu.jhuapl.sbmt.common.client.SmallBodyModel;
-import edu.jhuapl.sbmt.core.image.ImageSource;
+import edu.jhuapl.sbmt.core.body.SmallBodyModel;
+import edu.jhuapl.sbmt.core.pointing.PointingSource;
 
 public class AmicaBackplanesGenerator
 {
@@ -55,7 +55,7 @@ public class AmicaBackplanesGenerator
         in.close();
     }
 
-    private static boolean checkIfAmicaFilesExist(String line, ImageSource source)
+    private static boolean checkIfAmicaFilesExist(String line, PointingSource source)
     {
         File file = new File(line);
         if (!file.exists())
@@ -87,7 +87,7 @@ public class AmicaBackplanesGenerator
         file = new File(name);
         boolean hasInfofile = file.exists();
 
-        if (source.equals(ImageSource.GASKELL))
+        if (source.equals(PointingSource.GASKELL))
             return hasSumfile;
         else
             return !hasSumfile && hasInfofile;

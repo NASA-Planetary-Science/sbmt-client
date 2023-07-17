@@ -10,7 +10,7 @@ import org.joda.time.DateTime;
 import org.joda.time.format.ISODateTimeFormat;
 
 import edu.jhuapl.saavtk.util.Properties;
-import edu.jhuapl.sbmt.util.TimeUtil;
+import edu.jhuapl.sbmt.core.util.TimeUtil;
 
 public class StateHistoryTimeModel
 {

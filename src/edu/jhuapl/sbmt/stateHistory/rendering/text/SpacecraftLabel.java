@@ -5,7 +5,7 @@ import java.awt.Font;
 import vtk.vtkCaptionActor2D;
 
 import edu.jhuapl.saavtk.util.MathUtil;
-import edu.jhuapl.sbmt.common.client.SmallBodyModel;
+import edu.jhuapl.sbmt.core.body.SmallBodyModel;
 import edu.jhuapl.sbmt.stateHistory.model.interfaces.State;
 
 /**

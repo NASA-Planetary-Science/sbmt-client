@@ -32,7 +32,7 @@ import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 
 import edu.jhuapl.saavtk.gui.dialog.CustomFileChooser;
-import edu.jhuapl.sbmt.image2.ui.SBMTDateSpinner;
+import edu.jhuapl.sbmt.image.ui.SBMTDateSpinner;
 import edu.jhuapl.sbmt.stateHistory.controllers.kernel.KernelManagementController;
 import edu.jhuapl.sbmt.stateHistory.controllers.kernel.KernelSetChangedListener;
 import edu.jhuapl.sbmt.stateHistory.model.StateHistoryModel;
@@ -281,6 +281,11 @@ public class StateHistoryIntervalGenerationPanel extends JPanel
 
 	public void refreshKernels()
 	{
+		if (kernelComboBox == null)
+		{
+			getIntervalButton.setEnabled(true);
+			return;
+		}
 		DefaultComboBoxModel<String> model = new DefaultComboBoxModel<String>(getAvailableKernels());
 		kernelComboBox.setModel(model);
 	}

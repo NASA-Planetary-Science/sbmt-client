@@ -13,8 +13,8 @@ import edu.jhuapl.saavtk.model.ModelManager;
 import edu.jhuapl.saavtk.model.plateColoring.ColoringDataManager;
 import edu.jhuapl.saavtk.status.StatusNotifier;
 import edu.jhuapl.saavtk.util.Properties;
-import edu.jhuapl.sbmt.common.client.SmallBodyModel;
-import edu.jhuapl.sbmt.common.client.SmallBodyViewConfig;
+import edu.jhuapl.sbmt.config.SmallBodyViewConfig;
+import edu.jhuapl.sbmt.core.body.SmallBodyModel;
 import edu.jhuapl.sbmt.stateHistory.controllers.imagers.PlannedImageScheduleTableController;
 import edu.jhuapl.sbmt.stateHistory.controllers.lidars.PlannedLidarScheduleTableController;
 import edu.jhuapl.sbmt.stateHistory.controllers.spectrometers.PlannedSpectrumScheduleTableController;
@@ -82,7 +82,7 @@ public class ObservationPlanningController implements PropertyChangeListener
                 	if (runs.getCurrentRun() != null)
                 	{
                 		runs.getCurrentRun().getMetadata().setCurrentTime(et);
-                		positionOrientationManager.run(et);
+                		if (positionOrientationManager != null) positionOrientationManager.run(et);
                 		rendererManager.getRenderer().getRenderWindowPanel().resetCameraClippingRange();
                 	}
 

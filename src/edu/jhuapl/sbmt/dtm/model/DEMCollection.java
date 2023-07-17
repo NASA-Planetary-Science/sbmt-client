@@ -23,7 +23,7 @@ import edu.jhuapl.saavtk.util.FileUtil;
 import edu.jhuapl.saavtk.util.Properties;
 import edu.jhuapl.saavtk2.event.Event;
 import edu.jhuapl.saavtk2.event.EventListener;
-import edu.jhuapl.sbmt.common.client.SmallBodyModel;
+import edu.jhuapl.sbmt.core.body.SmallBodyModel;
 import edu.jhuapl.sbmt.dtm.model.DEMBoundaryCollection.DEMBoundary;
 import edu.jhuapl.sbmt.dtm.service.events.CreateDEMEvent;
 import edu.jhuapl.sbmt.dtm.service.events.DeleteDEMEvent;

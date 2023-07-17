@@ -7,7 +7,7 @@ import java.util.HashMap;
 import java.util.List;
 
 import edu.jhuapl.saavtk.util.Properties;
-import edu.jhuapl.sbmt.common.client.SmallBodyModel;
+import edu.jhuapl.sbmt.core.body.SmallBodyModel;
 import edu.jhuapl.sbmt.core.rendering.DataActor;
 import edu.jhuapl.sbmt.stateHistory.model.planning.PlannedInstrumentData;
 

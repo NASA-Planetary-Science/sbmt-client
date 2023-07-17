@@ -22,15 +22,15 @@ import edu.jhuapl.saavtk.util.FileCache;
 import edu.jhuapl.saavtk.util.NativeLibraryLoader;
 import edu.jhuapl.saavtk.util.NonexistentRemoteFile;
 import edu.jhuapl.saavtk.util.SafeURLPaths;
-import edu.jhuapl.sbmt.client.SbmtModelFactory;
 import edu.jhuapl.sbmt.client2.SbmtMultiMissionTool;
-import edu.jhuapl.sbmt.common.client.SmallBodyModel;
-import edu.jhuapl.sbmt.common.client.SmallBodyViewConfig;
-import edu.jhuapl.sbmt.core.image.ImageKeyInterface;
-import edu.jhuapl.sbmt.core.image.ImageSource;
-import edu.jhuapl.sbmt.core.image.ImagingInstrument;
-import edu.jhuapl.sbmt.core.rendering.PerspectiveImage;
-import edu.jhuapl.sbmt.image.model.keys.ImageKey;
+import edu.jhuapl.sbmt.config.SmallBodyViewConfig;
+import edu.jhuapl.sbmt.core.body.SmallBodyModel;
+import edu.jhuapl.sbmt.core.pointing.PointingSource;
+import edu.jhuapl.sbmt.image.interfaces.ImageKeyInterface;
+import edu.jhuapl.sbmt.image.model.ImagingInstrument;
+import edu.jhuapl.sbmt.image.model.PerspectiveImage;
+import edu.jhuapl.sbmt.image.old.ImageKey;
+import edu.jhuapl.sbmt.model.SbmtModelFactoryV1;
 
 import nom.tam.fits.FitsException;
 
@@ -133,7 +133,7 @@ public class PerspectiveImagePreRenderer
     public static void main(String[] args) throws FitsException, IOException
     {
         String inputDirectory = args[0];
-        final ImageSource source = ImageSource.valueOf(args[1]);
+        final PointingSource source = PointingSource.valueOf(args[1]);
         ShapeModelBody body = ShapeModelBody.valueOf(args[2]);
         ShapeModelType type = ShapeModelType.provide(args[3]);
         int imagerIndex = Integer.parseInt(args[4]);
@@ -182,7 +182,7 @@ public class PerspectiveImagePreRenderer
         }
         Arrays.sort(fileList);
         ArrayList<File> imagesWithPointing = new ArrayList<File>();
-        SmallBodyModel smallBodyModel = SbmtModelFactory.createSmallBodyModel(config);
+        SmallBodyModel smallBodyModel = SbmtModelFactoryV1.createSmallBodyModel(config);
         PerspectiveImage image;
         PerspectiveImagePreRenderer preRenderer;
         ImageKeyInterface key;
@@ -203,13 +203,13 @@ public class PerspectiveImagePreRenderer
                     System.out.println("PerspectiveImagePreRenderer: main: filename is " + basename);
                     try
                     {
-                        image = (PerspectiveImage)SbmtModelFactory.createImage(key, smallBodyModel, false);
+                        image = (PerspectiveImage)SbmtModelFactoryV1.createImage(key, smallBodyModel, false);
                         String pointingFileString = "";
-                        if (source == ImageSource.SPICE)
+                        if (source == PointingSource.SPICE)
                         {
                             pointingFileString = image.getInfoFileFullPath();
                         }
-                        else if (source == ImageSource.GASKELL)
+                        else if (source == PointingSource.GASKELL)
                         {
                             pointingFileString = image.getSumfileFullPath();
 
@@ -231,7 +231,7 @@ public class PerspectiveImagePreRenderer
                 String basename = filename.getParent() + File.separator + FilenameUtils.getBaseName(filename.getAbsolutePath());
                 basename = basename.substring(basename.indexOf("prod/") + 4);
                 key = new ImageKey(basename, source, instrument);
-                image = (PerspectiveImage)SbmtModelFactory.createImage(key, smallBodyModel, false);
+                image = (PerspectiveImage)SbmtModelFactoryV1.createImage(key, smallBodyModel, false);
                 preRenderer = new PerspectiveImagePreRenderer(image, outputDirectory, reprocess);
             }
         }

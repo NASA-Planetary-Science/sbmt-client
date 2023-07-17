@@ -4,9 +4,9 @@ import java.beans.PropertyChangeEvent;
 
 import edu.jhuapl.saavtk.util.ProgressStatusListener;
 import edu.jhuapl.saavtk.util.Properties;
-import edu.jhuapl.sbmt.common.client.SmallBodyModel;
+import edu.jhuapl.sbmt.core.body.SmallBodyModel;
 import edu.jhuapl.sbmt.core.rendering.DataActor;
-import edu.jhuapl.sbmt.core.rendering.PerspectiveFootprint;
+import edu.jhuapl.sbmt.image.model.PerspectiveFootprint;
 import edu.jhuapl.sbmt.stateHistory.model.planning.BasePlannedDataCollection;
 import edu.jhuapl.sbmt.stateHistory.rendering.PlannedDataProperties;
 import edu.jhuapl.sbmt.stateHistory.rendering.model.StateHistoryPositionCalculator;

@@ -5,9 +5,11 @@ import java.util.Arrays;
 import edu.jhuapl.saavtk.model.DefaultModelIdentifier;
 import edu.jhuapl.saavtk.model.ShapeModelBody;
 import edu.jhuapl.saavtk.model.ShapeModelType;
-import edu.jhuapl.sbmt.common.client.BodyViewConfig;
-import edu.jhuapl.sbmt.common.client.Mission;
-import edu.jhuapl.sbmt.common.client.SmallBodyViewConfig;
+import edu.jhuapl.sbmt.core.body.BodyType;
+import edu.jhuapl.sbmt.core.body.BodyViewConfig;
+import edu.jhuapl.sbmt.core.body.ShapeModelDataUsed;
+import edu.jhuapl.sbmt.core.body.ShapeModelPopulation;
+import edu.jhuapl.sbmt.core.client.Mission;
 
 import crucible.crust.metadata.api.Key;
 import crucible.crust.metadata.api.Metadata;
@@ -23,7 +25,7 @@ public class BasicConfigInfo implements MetadataManager
     //      pipeline->rawdata->generic->runDataProcessing.sh
     // TO MATCH!!!!!!!!!!!!!!!!!!!
     // *******************************************************************************
-    private static final String configInfoVersion = "9.4"; // READ THE COMMENT ABOVE.
+    private static final String configInfoVersion = "9.5"; // READ THE COMMENT ABOVE.
     // *******************************************************************************
 
     public static String getConfigInfoVersion()

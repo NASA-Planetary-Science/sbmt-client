@@ -34,7 +34,7 @@ import edu.jhuapl.saavtk.util.ProgressListener;
 import edu.jhuapl.saavtk.util.Properties;
 import edu.jhuapl.saavtk2.geom.Geometry;
 import edu.jhuapl.saavtk2.io.ObjGeometryReader;
-import edu.jhuapl.sbmt.common.client.SmallBodyModel;
+import edu.jhuapl.sbmt.core.body.SmallBodyModel;
 import edu.jhuapl.sbmt.dtm.ui.properties.DEMView;
 
 import nom.tam.fits.BasicHDU;

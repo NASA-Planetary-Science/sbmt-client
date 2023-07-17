@@ -21,17 +21,18 @@ import edu.jhuapl.saavtk.util.FileCache;
 import edu.jhuapl.saavtk.util.FileUtil;
 import edu.jhuapl.saavtk.util.NativeLibraryLoader;
 import edu.jhuapl.saavtk.util.SafeURLPaths;
-import edu.jhuapl.sbmt.client.SbmtModelFactory;
-import edu.jhuapl.sbmt.client.SbmtMultiMissionTool;
-import edu.jhuapl.sbmt.common.client.Mission;
-import edu.jhuapl.sbmt.common.client.SmallBodyModel;
-import edu.jhuapl.sbmt.common.client.SmallBodyViewConfig;
-import edu.jhuapl.sbmt.config.Instrument;
-import edu.jhuapl.sbmt.core.image.ImageKeyInterface;
-import edu.jhuapl.sbmt.core.image.ImageSource;
-import edu.jhuapl.sbmt.core.image.ImagingInstrument;
-import edu.jhuapl.sbmt.core.rendering.PerspectiveImage;
-import edu.jhuapl.sbmt.image.model.keys.ImageKey;
+import edu.jhuapl.sbmt.client2.SbmtMultiMissionTool;
+import edu.jhuapl.sbmt.config.SmallBodyViewConfig;
+import edu.jhuapl.sbmt.core.body.SmallBodyModel;
+import edu.jhuapl.sbmt.core.client.Mission;
+import edu.jhuapl.sbmt.core.config.Instrument;
+import edu.jhuapl.sbmt.core.pointing.PointingSource;
+import edu.jhuapl.sbmt.image.interfaces.ImageKeyInterface;
+import edu.jhuapl.sbmt.image.model.ImagingInstrument;
+import edu.jhuapl.sbmt.image.model.PerspectiveImage;
+import edu.jhuapl.sbmt.image.old.ImageKey;
+import edu.jhuapl.sbmt.model.SbmtModelFactoryV1;
+import edu.jhuapl.sbmt.util.SqlManager;
 
 public class OCAMSDatabaseGeneratorSql
 {
@@ -135,14 +136,14 @@ public class OCAMSDatabaseGeneratorSql
             {
             	throw new Exception("Instrument " + instrument + " not recognized as a valid imager for this configuration");
             }
-            ImageKeyInterface key = new ImageKey(keyName, ImageSource.SPICE, imager);
+            ImageKeyInterface key = new ImageKey(keyName, PointingSource.SPICE, imager);
 
             PerspectiveImage image = null;
 
             try
             {
-                image = (PerspectiveImage)SbmtModelFactory.createImage(key, smallBodyModel, false);
-                boolean filesExist = checkIfAllFilesExist(image, ImageSource.SPICE);
+                image = (PerspectiveImage)SbmtModelFactoryV1.createImage(key, smallBodyModel, false);
+                boolean filesExist = checkIfAllFilesExist(image, PointingSource.SPICE);
                 if (filesExist == false)
                 {
                     System.out.println("file not found, skipping image " + filename);
@@ -186,7 +187,7 @@ public class OCAMSDatabaseGeneratorSql
         }
     }
 
-    boolean checkIfAllFilesExist(PerspectiveImage image, ImageSource source)
+    boolean checkIfAllFilesExist(PerspectiveImage image, PointingSource source)
     {
         File fitfile = new File(image.getFitFileFullPath());
         System.out.println("Fit file full path: " + fitfile.getAbsolutePath());
@@ -194,7 +195,7 @@ public class OCAMSDatabaseGeneratorSql
             return false;
 
         // Check for the sumfile if source is Gaskell
-        if (source.equals(ImageSource.GASKELL) || source.equals(ImageSource.GASKELL_UPDATED))
+        if (source.equals(PointingSource.GASKELL) || source.equals(PointingSource.GASKELL_UPDATED))
         {
             File sumfile = new File(image.getSumfileFullPath());
             System.out.println(sumfile);
@@ -225,7 +226,7 @@ public class OCAMSDatabaseGeneratorSql
 
     public void run(String body, String fileList, String publicTimeString) throws SQLException, IOException, Exception
     {
-        smallBodyModel = SbmtModelFactory.createSmallBodyModel(smallBodyConfig);
+        smallBodyModel = SbmtModelFactoryV1.createSmallBodyModel(smallBodyConfig);
         SimpleDateFormat dateFormatter = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
         Date publicCutoffDate = dateFormatter.parse(publicTimeString);
         String imagesTable = getImagesTableNames(body);
@@ -447,7 +448,7 @@ public class OCAMSDatabaseGeneratorSql
 //        System.out.println("DatabaseGeneratorSql: main: number of run infos " + runInfos.length);
         for (DBRunInfo ri : runInfos)
         {
-        	if (!ri.name.equals(ShapeModelBody.valueOf(bodyName).toString()) || (ri.imageSource != ImageSource.SPICE) || (!ri.instrument.toString().equals(instrumentString))) continue;
+        	if (!ri.name.equals(ShapeModelBody.valueOf(bodyName).toString()) || (ri.imageSource != PointingSource.SPICE) || (!ri.instrument.toString().equals(instrumentString))) continue;
             System.out.println("DatabaseGeneratorSql: main: writing to " + ri.databasePrefix + " for " + ri.instrument + " with " + ri.imageSource + " remote " + ri.remotePathToFileList);
         	OCAMSDatabaseGeneratorSql generator = new OCAMSDatabaseGeneratorSql(config, ri.databasePrefix, appendTables, modifyMain, ri.instrument);
 

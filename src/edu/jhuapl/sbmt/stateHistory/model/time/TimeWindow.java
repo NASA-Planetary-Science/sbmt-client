@@ -4,7 +4,7 @@ import java.text.SimpleDateFormat;
 
 import org.joda.time.DateTime;
 
-import edu.jhuapl.sbmt.util.TimeUtil;
+import edu.jhuapl.sbmt.core.util.TimeUtil;
 
 import crucible.core.time.UTCEpoch;
 

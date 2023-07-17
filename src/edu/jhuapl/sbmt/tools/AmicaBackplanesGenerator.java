@@ -23,12 +23,12 @@ import edu.jhuapl.saavtk.model.ShapeModelBody;
 import edu.jhuapl.saavtk.model.ShapeModelType;
 import edu.jhuapl.saavtk.util.FileUtil;
 import edu.jhuapl.saavtk.util.NativeLibraryLoader;
-import edu.jhuapl.sbmt.common.client.SmallBodyModel;
-import edu.jhuapl.sbmt.common.client.SmallBodyViewConfig;
-import edu.jhuapl.sbmt.core.image.ImageSource;
-import edu.jhuapl.sbmt.core.rendering.PerspectiveImage;
-import edu.jhuapl.sbmt.image.model.bodies.itokawa.AmicaImage;
-import edu.jhuapl.sbmt.image.model.keys.ImageKey;
+import edu.jhuapl.sbmt.config.SmallBodyViewConfig;
+import edu.jhuapl.sbmt.core.body.SmallBodyModel;
+import edu.jhuapl.sbmt.core.pointing.PointingSource;
+import edu.jhuapl.sbmt.image.model.PerspectiveImage;
+import edu.jhuapl.sbmt.image.old.ImageKey;
+import edu.jhuapl.sbmt.model.itokawa.AmicaImage;
 import edu.jhuapl.sbmt.model.itokawa.Itokawa;
 
 import nom.tam.fits.FitsException;
@@ -69,7 +69,7 @@ public class AmicaBackplanesGenerator
         in.close();
     }
 
-    private static boolean checkIfAmicaFilesExist(String line, ImageSource source)
+    private static boolean checkIfAmicaFilesExist(String line, PointingSource source)
     {
         File file = new File(line);
         if (!file.exists())
@@ -101,7 +101,7 @@ public class AmicaBackplanesGenerator
         file = new File(name);
         boolean hasInfofile = file.exists();
 
-        if (source.equals(ImageSource.GASKELL))
+        if (source.equals(PointingSource.GASKELL))
             return hasSumfile;
         else
             return !hasSumfile && hasInfofile;
@@ -205,7 +205,7 @@ public class AmicaBackplanesGenerator
     }
     */
 
-    private static void generateBackplanes(List<String> amicaFiles, ImageSource amicaSource) throws FitsException, IOException
+    private static void generateBackplanes(List<String> amicaFiles, PointingSource amicaSource) throws FitsException, IOException
     {
         // First compute the optimal resolution of all images using the highest
         // resolution shape model
@@ -516,11 +516,11 @@ public class AmicaBackplanesGenerator
         {
             if (mode == 1 || mode == 0)
             {
-                generateBackplanes(amicaFiles, ImageSource.GASKELL);
+                generateBackplanes(amicaFiles, PointingSource.GASKELL);
             }
             else if (mode == 2 || mode == 0)
             {
-                generateBackplanes(amicaFiles, ImageSource.SPICE);
+                generateBackplanes(amicaFiles, PointingSource.SPICE);
             }
         }
         catch (Exception e1) {

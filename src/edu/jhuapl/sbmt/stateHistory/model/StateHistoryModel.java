@@ -13,8 +13,8 @@ import javax.swing.SwingUtilities;
 
 import org.joda.time.DateTime;
 
-import edu.jhuapl.sbmt.common.client.ISmallBodyViewConfig;
-import edu.jhuapl.sbmt.common.client.SmallBodyModel;
+import edu.jhuapl.sbmt.core.body.SmallBodyModel;
+import edu.jhuapl.sbmt.core.config.ISmallBodyViewConfig;
 import edu.jhuapl.sbmt.pointing.spice.SpiceInfo;
 import edu.jhuapl.sbmt.stateHistory.model.interfaces.IStateHistoryIntervalGenerator;
 import edu.jhuapl.sbmt.stateHistory.model.interfaces.StateHistory;

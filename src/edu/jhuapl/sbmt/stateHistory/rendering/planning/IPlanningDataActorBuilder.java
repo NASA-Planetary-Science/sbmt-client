@@ -1,6 +1,6 @@
 package edu.jhuapl.sbmt.stateHistory.rendering.planning;
 
-import edu.jhuapl.sbmt.common.client.SmallBodyModel;
+import edu.jhuapl.sbmt.core.body.SmallBodyModel;
 import edu.jhuapl.sbmt.core.rendering.DataActor;
 
 @FunctionalInterface

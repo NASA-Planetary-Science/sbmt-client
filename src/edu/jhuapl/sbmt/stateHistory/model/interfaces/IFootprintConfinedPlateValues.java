@@ -1,6 +1,6 @@
 package edu.jhuapl.sbmt.stateHistory.model.interfaces;
 
-import edu.jhuapl.sbmt.core.rendering.PerspectiveFootprint;
+import edu.jhuapl.sbmt.image.model.PerspectiveFootprint;
 
 public interface IFootprintConfinedPlateValues extends ITimeCalculatedPlateValues
 {

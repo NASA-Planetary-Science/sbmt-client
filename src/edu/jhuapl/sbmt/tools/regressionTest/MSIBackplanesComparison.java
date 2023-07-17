@@ -11,14 +11,14 @@ import edu.jhuapl.saavtk.model.ShapeModelBody;
 import edu.jhuapl.saavtk.model.ShapeModelType;
 import edu.jhuapl.saavtk.util.Configuration;
 import edu.jhuapl.saavtk.util.NativeLibraryLoader;
-import edu.jhuapl.sbmt.client.SbmtModelFactory;
-import edu.jhuapl.sbmt.common.client.SmallBodyModel;
-import edu.jhuapl.sbmt.common.client.SmallBodyViewConfig;
-import edu.jhuapl.sbmt.core.image.ImageSource;
-import edu.jhuapl.sbmt.image.model.bodies.eros.MSIImage;
-import edu.jhuapl.sbmt.image.model.keys.ImageKey;
+import edu.jhuapl.sbmt.config.SmallBodyViewConfig;
+import edu.jhuapl.sbmt.core.body.SmallBodyModel;
+import edu.jhuapl.sbmt.core.pointing.PointingSource;
+import edu.jhuapl.sbmt.core.util.BackplaneInfo;
+import edu.jhuapl.sbmt.image.old.ImageKey;
+import edu.jhuapl.sbmt.model.SbmtModelFactory;
+import edu.jhuapl.sbmt.model.eros.msi.MSIImage;
 import edu.jhuapl.sbmt.tools.BackplanesGenerator;
-import edu.jhuapl.sbmt.util.BackplaneInfo;
 import edu.jhuapl.sbmt.util.BackplanesFileFormat;
 import edu.jhuapl.sbmt.util.FitsBackplanesFile;
 
@@ -97,7 +97,7 @@ public class MSIBackplanesComparison
 
         if (sourceFile.toUpperCase().contains("M0131776147F1_2P_CIF_DBL") )
         {
-            String windows = createBackplanes(sourceFile, outputFolder, ImageSource.GASKELL, BackplanesFileFormat.FITS, shapeResolution);
+            String windows = createBackplanes(sourceFile, outputFolder, PointingSource.GASKELL, BackplanesFileFormat.FITS, shapeResolution);
             String linux = "C:/Users/nguyel1/Projects/SBMT/DaveBlewettNearMsiPds/backplanesGeneratorTest/backplanesGeneratorOutput/unix/MSIBackplanesSmall/M0131776147F1_2P_CIF_DBL.FIT"; //This file was generated using sumfiles_to_be_delivered (using the Linux hand-modified and compiled MSIImage.initializeSumfileFullPath())
             System.err.println("Results of comparison (Windows-created vs Linux-created backplanes files)");
             compare(readFitsFile(linux), readFitsFile(windows));
@@ -106,13 +106,13 @@ public class MSIBackplanesComparison
         // Run a comparison between a generated backplanes file and Eli's archived one.
 
         double[][][] archivedImgSpice = readImgFile(archivedImgSpiceBackplanesFile);
-        double[][][] generatedImgSpice = readImgFile(createBackplanes(sourceFile, outputFolder, ImageSource.SPICE, BackplanesFileFormat.IMG, shapeResolution));
+        double[][][] generatedImgSpice = readImgFile(createBackplanes(sourceFile, outputFolder, PointingSource.SPICE, BackplanesFileFormat.IMG, shapeResolution));
         System.err.println("Results of comparison (Eli's archived .img backplanes file v/s newly created .img backplanes file)");
         compare(generatedImgSpice, archivedImgSpice);
 
         // Also generate a FITS backplanes file from from scratch from the original image FITS file, output to IMG format. Use SPICE pointing, same as archived file.
 
-        String backplanesFile = createBackplanes(sourceFile, outputFolder, ImageSource.SPICE, BackplanesFileFormat.FITS, shapeResolution); //This will use whichever sumfile is specified in MSIImage.initializeSumfileFullPath(), so either cache's sumfiles/ or sumfiles_to_be_delivered/
+        String backplanesFile = createBackplanes(sourceFile, outputFolder, PointingSource.SPICE, BackplanesFileFormat.FITS, shapeResolution); //This will use whichever sumfile is specified in MSIImage.initializeSumfileFullPath(), so either cache's sumfiles/ or sumfiles_to_be_delivered/
 
         // Convert the .img file that Eli had created in 2013 to FITS (for Windows comparison with the file generated from scratch above, use vbindiff).
 
@@ -161,7 +161,7 @@ public class MSIBackplanesComparison
      * Create a backplanes file from a FITS sourceFile.
      * (0 lowest resolution, 3 highest).
      */
-    private static String createBackplanes(String fitsImageFile, String outputFolder, ImageSource pointing, BackplanesFileFormat fmt, int resolutionLevel) throws Exception
+    private static String createBackplanes(String fitsImageFile, String outputFolder, PointingSource pointing, BackplanesFileFormat fmt, int resolutionLevel) throws Exception
     {
         smallBodyModel.setModelResolution(resolutionLevel);
         ImageKey key = new ImageKey(fitsImageFile.replace(".FIT", ""), pointing, ((SmallBodyViewConfig)smallBodyModel.getSmallBodyConfig()).imagingInstruments[0]);

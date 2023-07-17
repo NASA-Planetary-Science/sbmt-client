@@ -7,6 +7,7 @@ import java.util.HashMap;
 
 import org.apache.commons.io.FilenameUtils;
 
+import edu.jhuapl.sbmt.pointing.scState.SpiceState;
 import edu.jhuapl.sbmt.pointing.spice.SpiceInfo;
 import edu.jhuapl.sbmt.stateHistory.model.StateHistorySourceType;
 import edu.jhuapl.sbmt.stateHistory.model.interfaces.IStateHistoryLocationProvider;
@@ -15,7 +16,6 @@ import edu.jhuapl.sbmt.stateHistory.model.interfaces.IStateHistoryTrajectoryMeta
 import edu.jhuapl.sbmt.stateHistory.model.interfaces.StateHistory;
 import edu.jhuapl.sbmt.stateHistory.model.io.StateHistoryIOException;
 import edu.jhuapl.sbmt.stateHistory.model.io.StateHistoryInvalidTimeException;
-import edu.jhuapl.sbmt.stateHistory.model.scState.SpiceState;
 import edu.jhuapl.sbmt.stateHistory.model.stateHistory.AbstractStateHistory;
 import edu.jhuapl.sbmt.stateHistory.model.stateHistory.StateHistoryKey;
 import edu.jhuapl.sbmt.stateHistory.model.stateHistory.StateHistoryMetadata;

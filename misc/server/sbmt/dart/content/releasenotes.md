@@ -4,6 +4,40 @@
 
 # Release Notes
 
+## July 17, 2023 (SBMT-0.8.3.3)
+
+- Improved performance of loading and switching models
+- Better handling of unsupported custom models
+
+### Bug Fixes:
+- Fixed an error when adding observing conditions for some bodies
+- Fixed some bugs in the color image composite tool
+- Sorting by image index now sorts correctly
+- Resetting the normal offset now immediately takes effect
+- Multi layer FITS files now show planes in proper order
+- When using "w" or "s" to change the body representation, the UI is now properly updated
+
+## June 15, 2023 (SBMT-0.8.3.2)
+
+### New:
+- SBMT can now read (modern) IMG files natively
+- Added support to move multiple structures simultaneously
+- Improved performance of structures
+- New 2023 Phobos and Deimos models
+
+### Bug Fixes:
+- Additional GDAL library support for Linux
+- Fixed a bug when viewing 67P
+- Fixed error when adjusting contrast of images
+- Fixed a bug when saving round structures with a filename that has a space in it
+
+## March 14, 2023 (SBMT-0.8.3.1)
+
+### Bug Fixes:
+- Updates to handle of certain SPICE frames
+- Fixed some time zone issues
+- Fixed various DART 2 body config issues
+
 ## February 28, 2023 (SBMT-0.8.3)
 
 ### New:
