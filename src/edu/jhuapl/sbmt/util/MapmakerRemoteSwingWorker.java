@@ -1,4 +1,4 @@
-package edu.jhuapl.sbmt.dtm.service.mapmakers;
+package edu.jhuapl.sbmt.util;
 
 import java.awt.Component;
 import java.io.File;
@@ -8,8 +8,6 @@ import java.net.URISyntaxException;
 import edu.jhuapl.saavtk.gui.FileDownloadSwingWorker;
 import edu.jhuapl.saavtk.util.LatLon;
 import edu.jhuapl.saavtk.util.MathUtil;
-import edu.jhuapl.sbmt.util.MapMakerRemote;
-import edu.jhuapl.sbmt.util.SBMTDistributedGravity;
 
 public class MapmakerRemoteSwingWorker extends FileDownloadSwingWorker
 {

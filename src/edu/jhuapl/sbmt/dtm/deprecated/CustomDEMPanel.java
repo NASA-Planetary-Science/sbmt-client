@@ -71,9 +71,9 @@ import edu.jhuapl.sbmt.dtm.model.DEMBoundaryCollection;
 import edu.jhuapl.sbmt.dtm.model.DEMCollection;
 import edu.jhuapl.sbmt.dtm.model.DEMKey;
 import edu.jhuapl.sbmt.dtm.service.mapmakers.BigmapSwingWorker;
-import edu.jhuapl.sbmt.dtm.service.mapmakers.MapmakerRemoteSwingWorker;
 import edu.jhuapl.sbmt.dtm.ui.menu.DEMPopupMenu;
 import edu.jhuapl.sbmt.model.custom.CustomShapeModel;
+import edu.jhuapl.sbmt.util.MapmakerRemoteSwingWorker;
 
 import net.miginfocom.swing.MigLayout;
 

@@ -1,4 +1,4 @@
-package edu.jhuapl.sbmt.tools;
+package edu.jhuapl.sbmt.image.util;
 
 import java.io.BufferedReader;
 import java.io.File;

@@ -14,7 +14,7 @@ import edu.jhuapl.sbmt.config.SmallBodyViewConfig;
 import edu.jhuapl.sbmt.dtm.deprecated.CustomDEMPanel.DEMInfo;
 import edu.jhuapl.sbmt.dtm.model.DEMKey;
 import edu.jhuapl.sbmt.dtm.model.creation.DEMCreator;
-import edu.jhuapl.sbmt.dtm.service.mapmakers.MapmakerRemoteSwingWorker;
+import edu.jhuapl.sbmt.util.MapmakerRemoteSwingWorker;
 
 public class MapmakerRemoteDEMCreator implements DEMCreator
 {
