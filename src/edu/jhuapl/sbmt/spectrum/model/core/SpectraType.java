@@ -1,6 +1,6 @@
 package edu.jhuapl.sbmt.spectrum.model.core;
 
-import edu.jhuapl.sbmt.query.QueryBase;
+import edu.jhuapl.sbmt.query.v2.IDataQuery;
 import edu.jhuapl.sbmt.spectrum.model.sbmtCore.spectra.ISpectraType;
 import edu.jhuapl.sbmt.spectrum.model.sbmtCore.spectra.math.SpectrumMath;
 
@@ -11,13 +11,13 @@ import edu.jhuapl.sbmt.spectrum.model.sbmtCore.spectra.math.SpectrumMath;
  */
 public class SpectraType implements ISpectraType
 {
-    private QueryBase queryBase;
+    private IDataQuery queryBase;
     private SpectrumMath spectrumMath;
     private String displayName;
     private Double[] bandCenters;
     private String bandCenterUnit;
 
-    public SpectraType(String displayName, QueryBase queryBase, SpectrumMath spectrumMath, String bandCenterUnit, Double[] bandCenters)
+    public SpectraType(String displayName, IDataQuery queryBase, SpectrumMath spectrumMath, String bandCenterUnit, Double[] bandCenters)
     {
         this.displayName = displayName;
         this.queryBase = queryBase;
@@ -38,7 +38,7 @@ public class SpectraType implements ISpectraType
     }
 
     @Override
-    public QueryBase getQueryBase()
+    public IDataQuery getQueryBase()
     {
         return queryBase;
     }

@@ -1,6 +1,6 @@
 package edu.jhuapl.sbmt.spectrum.model.sbmtCore.spectra;
 
-import edu.jhuapl.sbmt.query.QueryBase;
+import edu.jhuapl.sbmt.query.v2.IDataQuery;
 import edu.jhuapl.sbmt.spectrum.model.sbmtCore.spectra.math.SpectrumMath;
 
 /**
@@ -14,7 +14,7 @@ public interface ISpectraType
      * Returns the QueryBase object for this spectrum type
      * @return
      */
-    public QueryBase getQueryBase();
+    public IDataQuery getQueryBase();
 
     /**
      * Returns the SpectrumMatch object for this spectrum type

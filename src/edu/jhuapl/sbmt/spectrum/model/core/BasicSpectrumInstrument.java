@@ -3,7 +3,9 @@ package edu.jhuapl.sbmt.spectrum.model.core;
 import java.io.IOException;
 
 import edu.jhuapl.sbmt.core.body.ISmallBodyModel;
-import edu.jhuapl.sbmt.query.QueryBase;
+import edu.jhuapl.sbmt.query.v2.IDataQuery;
+import edu.jhuapl.sbmt.spectrum.model.core.interfaces.SearchSpec;
+import edu.jhuapl.sbmt.spectrum.model.core.search.SpectraHierarchicalSearchSpecification;
 import edu.jhuapl.sbmt.spectrum.model.sbmtCore.spectra.ISpectralInstrument;
 import edu.jhuapl.sbmt.spectrum.model.sbmtCore.spectra.Spectrum;
 import edu.jhuapl.sbmt.spectrum.model.sbmtCore.spectra.math.SpectrumMath;
@@ -22,7 +24,7 @@ public class BasicSpectrumInstrument implements ISpectralInstrument
 {
 	protected String bandCenterUnit;
     protected String displayName;
-    protected QueryBase queryBase;
+    protected IDataQuery queryBase;
     protected SpectrumMath spectrumMath;
     protected Double[] bandCenters;
 
@@ -32,7 +34,7 @@ public class BasicSpectrumInstrument implements ISpectralInstrument
     }
 
     public BasicSpectrumInstrument(String bandCenterUnit, String displayName,
-            QueryBase queryBase, SpectrumMath spectrumMath)
+            IDataQuery queryBase, SpectrumMath spectrumMath)
     {
         super();
         this.bandCenterUnit = bandCenterUnit;
@@ -60,7 +62,7 @@ public class BasicSpectrumInstrument implements ISpectralInstrument
     }
 
     @Override
-    public QueryBase getQueryBase()
+    public IDataQuery getQueryBase()
     {
         return queryBase;
     }
@@ -72,7 +74,7 @@ public class BasicSpectrumInstrument implements ISpectralInstrument
     }
 
 	@Override
-	public Spectrum getSpectrumInstance(String filename, ISmallBodyModel smallBodyModel) throws IOException
+	public Spectrum getSpectrumInstance(String filename, ISmallBodyModel smallBodyModel, SpectraHierarchicalSearchSpecification<SearchSpec> searchSpec) throws IOException
 	{
 		// TODO Auto-generated method stub
 		return null;

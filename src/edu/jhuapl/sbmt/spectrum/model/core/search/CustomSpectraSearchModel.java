@@ -13,18 +13,14 @@ import org.apache.commons.io.FilenameUtils;
 import com.google.common.base.Preconditions;
 
 import edu.jhuapl.saavtk.model.FileType;
-import edu.jhuapl.saavtk.model.ModelManager;
 import edu.jhuapl.saavtk.model.ModelNames;
 import edu.jhuapl.saavtk.util.FileUtil;
 import edu.jhuapl.saavtk.util.IdPair;
 import edu.jhuapl.saavtk.util.MapUtil;
 import edu.jhuapl.sbmt.config.Strings;
-import edu.jhuapl.sbmt.image.model.ImageType;
-import edu.jhuapl.sbmt.spectrum.SbmtSpectrumModelFactory;
 import edu.jhuapl.sbmt.spectrum.model.core.BasicSpectrum;
 import edu.jhuapl.sbmt.spectrum.model.core.BasicSpectrumInstrument;
 import edu.jhuapl.sbmt.spectrum.model.core.SpectrumIOException;
-import edu.jhuapl.sbmt.spectrum.model.core.SpectrumInstrumentFactory;
 import edu.jhuapl.sbmt.spectrum.model.core.interfaces.CustomSpectraResultsListener;
 import edu.jhuapl.sbmt.spectrum.model.io.SpectrumListIO;
 import edu.jhuapl.sbmt.spectrum.model.key.CustomSpectrumKey;
@@ -52,10 +48,10 @@ public class CustomSpectraSearchModel<S extends BasicSpectrum> extends BaseSpect
     private boolean initialized = false;
     final Key<List<CustomSpectrumKeyInterface>> customSpectraKey = Key.of("customSpectra");
 
-    public CustomSpectraSearchModel(ModelManager modelManager,
+    public CustomSpectraSearchModel(
     		BasicSpectrumInstrument instrument)
     {
-        super(modelManager, instrument);
+        super(instrument);
         this.customSpectraKeys = new Vector<CustomSpectrumKeyInterface>();
         this.customSpectraListeners = new Vector<CustomSpectraResultsListener>();
     }
@@ -253,7 +249,7 @@ public class CustomSpectraSearchModel<S extends BasicSpectrum> extends BaseSpect
                 {
                     spectrumNames[i] = new File(spectrumFilenames[i]).getName();
                     spectrumFilenames[i] = "image" + i + ".png";
-                    imageTypes[i] = ImageType.GENERIC_IMAGE.toString();
+                    imageTypes[i] = "GENERIC_IMAGE";
                 }
             }
             String[] sumfileNames = configMap.getAsArray(Strings.SUMFILENAMES.getName());
@@ -357,17 +353,18 @@ public class CustomSpectraSearchModel<S extends BasicSpectrum> extends BaseSpect
             retrieve(metadata);
         }
 
-        List<S> tempResults = new ArrayList<S>();
-        for (CustomSpectrumKeyInterface info : customSpectraKeys)
-        {
-        	S spectrum = (S)SbmtSpectrumModelFactory.createSpectrum(customDataFolder + File.separator + info.getSpectrumFilename(), SpectrumInstrumentFactory.getInstrumentForName(instrument.getDisplayName()));
-			spectrum.isCustomSpectra = true;
-			spectrum.spectrumName = info.getName();
-			if (info.getSpectraSpec() != null)
-				spectrum.setMetadata(info.getSpectraSpec());
-			tempResults.add(spectrum);
-        }
-        this.results = tempResults;
+        //TODO FIX THIS
+//        List<S> tempResults = new ArrayList<S>();
+//        for (CustomSpectrumKeyInterface info : customSpectraKeys)
+//        {
+//        	S spectrum = (S)SbmtSpectrumModelFactory.createSpectrum(customDataFolder + File.separator + info.getSpectrumFilename(), SpectrumInstrumentFactory.getInstrumentForName(instrument.getDisplayName()));
+//			spectrum.isCustomSpectra = true;
+//			spectrum.spectrumName = info.getName();
+//			if (info.getSpectraSpec() != null)
+//				spectrum.setMetadata(info.getSpectraSpec());
+//			tempResults.add(spectrum);
+//        }
+//        this.results = tempResults;
         fireResultsLoaded();
         fireResultsCountChanged(customSpectraKeys.size());
     }

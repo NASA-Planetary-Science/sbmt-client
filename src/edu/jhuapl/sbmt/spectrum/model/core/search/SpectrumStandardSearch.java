@@ -15,11 +15,11 @@ import com.google.common.collect.Range;
 
 import edu.jhuapl.sbmt.core.listeners.SearchProgressListener;
 import edu.jhuapl.sbmt.core.pointing.PointingSource;
-import edu.jhuapl.sbmt.query.IQueryBase;
-import edu.jhuapl.sbmt.query.database.DatabaseQueryBase;
 import edu.jhuapl.sbmt.query.database.SpectraDatabaseSearchMetadata;
 import edu.jhuapl.sbmt.query.fixedlist.FixedListQuery;
 import edu.jhuapl.sbmt.query.fixedlist.FixedListSearchMetadata;
+import edu.jhuapl.sbmt.query.v2.FetchedResults;
+import edu.jhuapl.sbmt.query.v2.IDataQuery;
 import edu.jhuapl.sbmt.spectrum.model.core.BasicSpectrum;
 import edu.jhuapl.sbmt.spectrum.model.core.BasicSpectrumInstrument;
 import edu.jhuapl.sbmt.spectrum.model.core.SpectrumIOException;
@@ -44,7 +44,7 @@ public class SpectrumStandardSearch<S extends BasicSpectrum>
 		this.spectraSpec = searchSpec;
 	}
 
-	public List<S> search(BasicSpectrumInstrument instrument, TreeSet<Integer> cubeList, TreePath[] selectedPaths, SearchProgressListener progressListener) throws SpectrumIOException
+	public FetchedResults search(BasicSpectrumInstrument instrument, TreeSet<Integer> cubeList, TreePath[] selectedPaths, SearchProgressListener progressListener) throws SpectrumIOException
 	{
 		List<S> tempResults = null;
         try
@@ -73,6 +73,7 @@ public class SpectrumStandardSearch<S extends BasicSpectrum>
                     DateTimeZone.UTC);
 
             List<Integer> productsSelected;
+            FetchedResults thisResult = null;
             if(hasHierarchicalSpectraSearch)
             {
             	spectraSpec.readHierarchyForInstrument(instrument.getDisplayName());
@@ -87,25 +88,38 @@ public class SpectrumStandardSearch<S extends BasicSpectrum>
                 for (Integer selected : productsSelected)
                 {
                     SearchSpec spec = specs.get(selected);
+                    System.out.println("SpectrumStandardSearch: search: spec " + spec.getDataDescription());
+                    searchParameters.setDataType(spec.getDataPath());
                     FixedListSearchMetadata searchMetadata = FixedListSearchMetadata.of(spec.getDataName(),
                                                                                         spec.getDataListFilename(),
                                                                                         spec.getDataPath(),
                                                                                         spec.getDataRootLocation(),
                                                                                         spec.getSource());
+
+//                    SpectraDatabaseSearchMetadata searchMetadata = SpectraDatabaseSearchMetadata.of("", startDateJoda, endDateJoda,
+//                            Range.closed(searchParameters.getMinDistanceQuery(), searchParameters.getMaxDistanceQuery()),
+//                            searchParameters.getSearchByFilename(), searchParameters.getPolygonTypesChecked(),
+//                            Range.closed(searchParameters.getMinIncidenceQuery(), searchParameters.getMaxIncidenceQuery()),
+//                            Range.closed(searchParameters.getMinEmissionQuery(), searchParameters.getMaxEmissionQuery()),
+//                            Range.closed(searchParameters.getMinPhaseQuery(), searchParameters.getMaxPhaseQuery()),
+//                            cubeList, searchParameters.getModelName(), searchParameters.getDataType());
+
+
                     progressListener.searchIndeterminate();
                     progressListener.searchNoteUpdated("Getting results from server....");
-                    List<S> thisResult = instrument.getQueryBase().runQuery(searchMetadata).getResultlist();
-                    tempResults.addAll(thisResult);
+//                    List<S> thisResult = instrument.getQueryBase().runQuery(searchMetadata).getResultlist();
+//                    tempResults.addAll(thisResult);
+                    thisResult = instrument.getQueryBase().runQuery(searchMetadata);
                     progressListener.searchEnded();
                 }
             }
             else
             {
-                IQueryBase queryType = instrument.getQueryBase();
+                IDataQuery queryType = instrument.getQueryBase();
                 if (queryType instanceof FixedListQuery)
                 {
                     FixedListQuery query = (FixedListQuery)queryType;
-                    tempResults = instrument.getQueryBase().runQuery(FixedListSearchMetadata.of("Spectrum Search", "spectrumlist", "spectra", query.getRootPath(), PointingSource.CORRECTED_SPICE)).getResultlist();
+                    thisResult = instrument.getQueryBase().runQuery(FixedListSearchMetadata.of("Spectrum Search", "spectrumlist", "spectra", query.getRootPath(), PointingSource.CORRECTED_SPICE));
                 }
                 else
                 {
@@ -116,17 +130,19 @@ public class SpectrumStandardSearch<S extends BasicSpectrum>
                             Range.closed(searchParameters.getMinEmissionQuery(), searchParameters.getMaxEmissionQuery()),
                             Range.closed(searchParameters.getMinPhaseQuery(), searchParameters.getMaxPhaseQuery()),
                             cubeList, searchParameters.getModelName(), searchParameters.getDataType());
-                    DatabaseQueryBase query = (DatabaseQueryBase)queryType;
+//                    DatabaseQueryBase query = (DatabaseQueryBase)queryType;
                     progressListener.searchIndeterminate();
-                    tempResults = query.runQuery(searchMetadata).getResultlist();
+                    thisResult = instrument.getQueryBase().runQuery(searchMetadata);
                     progressListener.searchEnded();
                 }
             }
-            return tempResults;
+            System.out.println("SpectrumStandardSearch: search: number of results " + thisResult.size());
+            return thisResult;
         }
         catch (RuntimeException re)
         {
         	System.out.println("SpectrumStandardSearch: search: rethrow");
+        	re.printStackTrace();
         	throw new SpectrumIOException(re.getMessage());
         }
         catch (Exception e)

@@ -1,13 +1,14 @@
 package edu.jhuapl.sbmt.spectrum.controllers.custom;
 
 import java.io.IOException;
-import java.util.List;
 
 import javax.swing.JOptionPane;
 
 import edu.jhuapl.saavtk.gui.render.Renderer;
 import edu.jhuapl.saavtk.model.ModelManager;
-import edu.jhuapl.sbmt.image.model.SbmtInfoWindowManager;
+import edu.jhuapl.sbmt.query.v2.FetchedResults;
+import edu.jhuapl.sbmt.spectrum.SbmtSpectrumWindowManager;
+import edu.jhuapl.sbmt.spectrum.config.SpectrumInstrumentConfig;
 import edu.jhuapl.sbmt.spectrum.controllers.standard.SpectrumResultsTableController;
 import edu.jhuapl.sbmt.spectrum.model.core.BasicSpectrum;
 import edu.jhuapl.sbmt.spectrum.model.core.BasicSpectrumInstrument;
@@ -39,10 +40,10 @@ public class CustomSpectrumResultsTableController<S extends BasicSpectrum>
      */
     public CustomSpectrumResultsTableController(BasicSpectrumInstrument instrument,
             SpectraCollection<S> spectrumCollection, ModelManager modelManager, SpectrumBoundaryCollection<S> boundaries, CustomSpectraSearchModel<S> model,
-            Renderer renderer, SbmtInfoWindowManager infoPanelManager)
+            Renderer renderer, SbmtSpectrumWindowManager infoPanelManager, SpectrumInstrumentConfig spectrumConfig)
     {
         super(instrument, spectrumCollection, modelManager, boundaries, model, renderer,
-                infoPanelManager);
+                infoPanelManager, spectrumConfig);
         this.model = model;
         this.customDataFolder = modelManager.getPolyhedralModel().getCustomDataFolder();
     }
@@ -83,14 +84,16 @@ public class CustomSpectrumResultsTableController<S extends BasicSpectrum>
      * @param results
      */
     @Override
-    public void setSpectrumResults(List<S> results)
+    public void setSpectrumResults(FetchedResults results)
     {
         panel.getResultsLabel().setText(results.size() + " spectra found");
         spectrumRawResults = results;
-        spectrumCollection.setAllItems(spectrumRawResults);
+
+        //TODO FIX THIS
+//        spectrumCollection.setAllItems(spectrumRawResults);
     }
 
-    public List<S> getCurrentResults()
+    public FetchedResults getCurrentResults()
     {
     	return spectrumRawResults;
     }

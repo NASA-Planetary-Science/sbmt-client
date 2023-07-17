@@ -112,6 +112,7 @@ public class SpectrumSearchParametersController<S extends BasicSpectrum>
                     panel.getCheckBoxTree().getCheckBoxTreeSelectionModel().getSelectionPaths());
             panel.getSelectRegionButton().setVisible(false);
             panel.getClearRegionButton().setVisible(false);
+            setSearchParameters();
         }
         else
         {
@@ -183,10 +184,13 @@ public class SpectrumSearchParametersController<S extends BasicSpectrum>
             fromDistanceTextField.setText("0");
             fromDistanceTextField.setPreferredSize(textFieldPreferredDimension);
 
-            searchParameters.setStartDate(imageSearchDefaultStartDate);
-            ((SpinnerDateModel)startSpinner.getModel()).setValue(searchParameters.getStartDate());
-            searchParameters.setEndDate(imageSearchDefaultEndDate);
-            ((SpinnerDateModel)endSpinner.getModel()).setValue(searchParameters.getEndDate());
+            if (searchParameters.getStartDate() != null)
+            {
+	            searchParameters.setStartDate(imageSearchDefaultStartDate);
+	            ((SpinnerDateModel)startSpinner.getModel()).setValue(searchParameters.getStartDate());
+	            searchParameters.setEndDate(imageSearchDefaultEndDate);
+	            ((SpinnerDateModel)endSpinner.getModel()).setValue(searchParameters.getEndDate());
+            }
 
 //            panel.getFullCheckBox().addActionListener(evt -> searchParameters.addToPolygonsSelected(0));
 //
@@ -252,6 +256,7 @@ public class SpectrumSearchParametersController<S extends BasicSpectrum>
             panel.getFromPhaseTextField().addActionListener(evt -> searchParameters.setMinPhaseQuery(Integer.parseInt(panel.getFromPhaseTextField().getText())));
             panel.getToPhaseTextField().addActionListener(evt -> searchParameters.setMaxPhaseQuery(Integer.parseInt(panel.getToPhaseTextField().getText())));
 
+            System.out.println("SpectrumSearchParametersController: setupSearchParametersPanel: image max " + imageSearchDefaultMaxSpacecraftDistance);
             toDistanceTextField.setValue(imageSearchDefaultMaxSpacecraftDistance);
 
         	setSearchParameters();
@@ -384,6 +389,11 @@ public class SpectrumSearchParametersController<S extends BasicSpectrum>
 
     private void setSearchParameters()
     {
+    	SmallBodyModel bodyModel = (SmallBodyModel)modelManager.getModel(ModelNames.SMALL_BODY);
+    	searchParameters.setModelName(bodyModel.getConfig().getAuthor().toString().toLowerCase().replace("-", ""));
+    	searchParameters.setDataType(panel.getSelectedDataTypes());
+
+
     	if (panel.getStartSpinner() == null) return;
         if ((panel.getFilenameRadioButton() != null) && panel.getFilenameRadioButton().isSelected())
         {
@@ -401,9 +411,9 @@ public class SpectrumSearchParametersController<S extends BasicSpectrum>
         searchParameters.setMinPhaseQuery(Integer.parseInt(panel.getFromPhaseTextField().getText()));
         searchParameters.setMaxPhaseQuery(Integer.parseInt(panel.getToPhaseTextField().getText()));
 
-        SmallBodyModel bodyModel = (SmallBodyModel)modelManager.getModel(ModelNames.SMALL_BODY);
-        searchParameters.setModelName(bodyModel.getConfig().getAuthor().toString().toLowerCase().replace("-", ""));
-        searchParameters.setDataType(panel.getSelectedDataTypes());
+
+
+
 //        searchParameters.setDataType(panel.getDataType());
     }
 

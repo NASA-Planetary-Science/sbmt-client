@@ -144,7 +144,6 @@ public class SpectrumSearchSpec extends Hashtable<String, String> implements Sea
     		String xAxisUnits = metadata.get(XAXISUNITS_KEY);
     		String yAxisUnits = metadata.get(YAXISUNITS_KEY);
     		String dataDescription = metadata.get(DATADESCRIPTION_KEY);
-
     		SpectrumSearchSpec spec = new SpectrumSearchSpec(dataName, dataRootLocation, dataPath, dataListFilename, PointingSource.valueFor(source), xAxisUnits, yAxisUnits, dataDescription);
     		return spec;
 
@@ -181,6 +180,7 @@ public class SpectrumSearchSpec extends Hashtable<String, String> implements Sea
 
 	public void retrieveOldFormat(Metadata sourceMetadata)
 	{
+		System.out.println("SpectrumSearchSpec: retrieveOldFormat: old format");
 		put("dataName", dataName =  sourceMetadata.get(dataNameKey));
 		put("dataRootLocation", dataRootLocation = sourceMetadata.get(dataRootLocationKey));
 		put("dataPath", dataPath = sourceMetadata.get(dataPathKey));

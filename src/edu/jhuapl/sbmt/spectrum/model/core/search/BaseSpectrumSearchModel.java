@@ -1,8 +1,6 @@
 package edu.jhuapl.sbmt.spectrum.model.core.search;
 
 import java.io.File;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.TreeSet;
 import java.util.Vector;
 
@@ -11,19 +9,18 @@ import javax.swing.tree.TreePath;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableSet;
 
-import edu.jhuapl.saavtk.model.ModelManager;
 import edu.jhuapl.saavtk.model.ModelNames;
 import edu.jhuapl.saavtk.util.IdPair;
 import edu.jhuapl.sbmt.core.listeners.SearchProgressListener;
 import edu.jhuapl.sbmt.query.hyperoctree.HyperBox;
 import edu.jhuapl.sbmt.query.hyperoctree.HyperException.HyperDimensionMismatchException;
 import edu.jhuapl.sbmt.query.hyperoctree.boundedobject.BoundedObjectHyperTreeSkeleton;
+import edu.jhuapl.sbmt.query.v2.FetchedResults;
 import edu.jhuapl.sbmt.spectrum.model.core.BasicSpectrum;
 import edu.jhuapl.sbmt.spectrum.model.core.BasicSpectrumInstrument;
 import edu.jhuapl.sbmt.spectrum.model.core.SpectrumIOException;
 import edu.jhuapl.sbmt.spectrum.model.core.interfaces.ISpectrumSearchModel;
 import edu.jhuapl.sbmt.spectrum.model.core.interfaces.SpectrumSearchResultsListener;
-import edu.jhuapl.sbmt.spectrum.model.hypertree.SpectrumHypertreeSearch;
 import edu.jhuapl.sbmt.spectrum.model.io.SpectrumListIO;
 
 import crucible.crust.metadata.api.Key;
@@ -40,7 +37,7 @@ import crucible.crust.metadata.impl.SettableMetadata;
 public class BaseSpectrumSearchModel<S extends BasicSpectrum> implements ISpectrumSearchModel<S>, MetadataManager
 {
     protected BasicSpectrumInstrument instrument;
-    protected List<S> results = new ArrayList<S>();
+    protected FetchedResults results = new FetchedResults();
     protected IdPair resultIntervalCurrentlyShown = null;
     private Vector<SpectrumSearchResultsListener<S>> resultsListeners;
     protected ImmutableSet<S> selectedSpectra;
@@ -49,11 +46,10 @@ public class BaseSpectrumSearchModel<S extends BasicSpectrum> implements ISpectr
     private TreePath[] selectedPaths;
 
     private int numberOfBoundariesToShow;
-    final Key<List<S>> spectraKey = Key.of("spectraResults");
+    final Key<FetchedResults> spectraKey = Key.of("spectraResults");
     protected String customDataFolder;
 
     public BaseSpectrumSearchModel(
-    		ModelManager modelManager,
     		BasicSpectrumInstrument instrument)
     {
         this.instrument = instrument;
@@ -64,7 +60,7 @@ public class BaseSpectrumSearchModel<S extends BasicSpectrum> implements ISpectr
      * Returns the current search results
      * @return
      */
-    public List<S> getSpectrumRawResults()
+    public FetchedResults getSpectrumRawResults()
     {
         return results;
     }
@@ -73,7 +69,7 @@ public class BaseSpectrumSearchModel<S extends BasicSpectrum> implements ISpectr
      * @see edu.jhuapl.sbmt.gui.spectrum.model.ISpectrumSearchModel#setSpectrumRawResults(java.util.List)
      */
     @Override
-    public void setSpectrumRawResults(List<S> spectrumRawResults)
+    public void setSpectrumRawResults(FetchedResults spectrumRawResults)
     {
         this.results = spectrumRawResults;
         this.resultIntervalCurrentlyShown = new IdPair(0, numberOfBoundariesToShow);
@@ -172,7 +168,7 @@ public class BaseSpectrumSearchModel<S extends BasicSpectrum> implements ISpectr
     {
     	if (append == false)
     	{
-    		results.clear();
+    		results.getFetchedData().clear();
     	}
 
     	Preconditions.checkNotNull(customDataFolder);
@@ -200,7 +196,7 @@ public class BaseSpectrumSearchModel<S extends BasicSpectrum> implements ISpectr
     							boolean hasHierarchicalSpectraSearch, SpectraHierarchicalSearchSpecification<?> hierarchicalSpectraSearchSpecification,
     							TreePath[] selectedPath, SearchProgressListener progressListener) throws SpectrumIOException
     {
-        results.clear();
+    	if (results != null) results.getFetchedData().clear();
         SpectraHierarchicalSearchSpecification spectraSpec = null;
         if (hasHierarchicalSpectraSearch) {	spectraSpec = hierarchicalSpectraSearchSpecification.clone(); }
         setSpectrumRawResults(new SpectrumStandardSearch(searchParameters, hasHierarchicalSpectraSearch, spectraSpec).search(instrument, cubeList, selectedPath, progressListener));
@@ -224,10 +220,11 @@ public class BaseSpectrumSearchModel<S extends BasicSpectrum> implements ISpectr
     									String spectraHypertreeDataSpecName, boolean hasHypertreeBasedSpectraSearch, boolean hasHierarchicalSpectraSearch,
     									SpectraHierarchicalSearchSpecification<?> hierarchicalSpectraSearchSpecification, SearchProgressListener progressListener) throws HyperDimensionMismatchException
     {
-		results.clear();
-		SpectraHierarchicalSearchSpecification spectraSpec = null;
-		if (hasHierarchicalSpectraSearch) { spectraSpec = hierarchicalSpectraSearchSpecification.clone(); }
-		setSpectrumRawResults(new SpectrumHypertreeSearch(searchParameters, spectraHypertreeDataSpecName, hasHypertreeBasedSpectraSearch, spectraSpec).search(cubeList, skeleton, hbb, instrument, progressListener));
+    	//TODO FIX THIS
+//    	if (results != null) results.getFetchedData().clear();
+//		SpectraHierarchicalSearchSpecification spectraSpec = null;
+//		if (hasHierarchicalSpectraSearch) { spectraSpec = hierarchicalSpectraSearchSpecification.clone(); }
+//		setSpectrumRawResults(new SpectrumHypertreeSearch(searchParameters, spectraHypertreeDataSpecName, hasHypertreeBasedSpectraSearch, spectraSpec).search(cubeList, skeleton, hbb, instrument, progressListener));
     }
 
     /**

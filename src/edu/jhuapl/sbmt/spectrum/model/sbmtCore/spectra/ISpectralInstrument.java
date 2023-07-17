@@ -3,7 +3,9 @@ package edu.jhuapl.sbmt.spectrum.model.sbmtCore.spectra;
 import java.io.IOException;
 
 import edu.jhuapl.sbmt.core.body.ISmallBodyModel;
-import edu.jhuapl.sbmt.query.IQueryBase;
+import edu.jhuapl.sbmt.query.v2.IDataQuery;
+import edu.jhuapl.sbmt.spectrum.model.core.interfaces.SearchSpec;
+import edu.jhuapl.sbmt.spectrum.model.core.search.SpectraHierarchicalSearchSpecification;
 import edu.jhuapl.sbmt.spectrum.model.sbmtCore.spectra.math.SpectrumMath;
 
 /**
@@ -35,7 +37,7 @@ public interface ISpectralInstrument
      * Returns the query base object for this spectrum
      * @return
      */
-    public IQueryBase getQueryBase();
+    public IDataQuery getQueryBase();
 
     /**
      * Returns the spectrum math object for the spectrum
@@ -50,7 +52,7 @@ public interface ISpectralInstrument
      * @return
      * @throws IOException
      */
-    public Spectrum getSpectrumInstance(String filename, ISmallBodyModel smallBodyModel) throws IOException;
+    public Spectrum getSpectrumInstance(String filename, ISmallBodyModel smallBodyModel, SpectraHierarchicalSearchSpecification<SearchSpec> searchSpec) throws IOException;
 
     /**
      * Returns the RGB Max values for this spectrum type

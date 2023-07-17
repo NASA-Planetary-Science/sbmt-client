@@ -20,16 +20,14 @@ import org.joda.time.DateTimeZone;
 
 import edu.jhuapl.saavtk.util.FileCache;
 import edu.jhuapl.sbmt.core.listeners.SearchProgressListener;
+import edu.jhuapl.sbmt.query.hyperoctree.FSHyperTreeSkeleton.Node;
 import edu.jhuapl.sbmt.query.hyperoctree.HyperBox;
 import edu.jhuapl.sbmt.query.hyperoctree.HyperException;
-import edu.jhuapl.sbmt.query.hyperoctree.FSHyperTreeSkeleton.Node;
 import edu.jhuapl.sbmt.query.hyperoctree.boundedobject.BoundedObjectHyperTreeNode;
 import edu.jhuapl.sbmt.query.hyperoctree.boundedobject.BoundedObjectHyperTreeSkeleton;
 import edu.jhuapl.sbmt.query.hyperoctree.boundedobject.HyperBoundedObject;
-import edu.jhuapl.sbmt.spectrum.SbmtSpectrumModelFactory;
 import edu.jhuapl.sbmt.spectrum.model.core.BasicSpectrum;
 import edu.jhuapl.sbmt.spectrum.model.core.BasicSpectrumInstrument;
-import edu.jhuapl.sbmt.spectrum.model.core.interfaces.IBasicSpectrumRenderer;
 import edu.jhuapl.sbmt.spectrum.model.core.interfaces.InstrumentMetadata;
 import edu.jhuapl.sbmt.spectrum.model.core.interfaces.SearchSpec;
 import edu.jhuapl.sbmt.spectrum.model.core.search.SpectraHierarchicalSearchSpecification;
@@ -244,15 +242,18 @@ public class SpectrumHypertreeSearch<S extends BasicSpectrum>
             });
             for (String file : finalFiles)
             {
-            	IBasicSpectrumRenderer<S> spectrumRenderer = null;
-                try
-                {
-                	spectrumRenderer = SbmtSpectrumModelFactory.createSpectrumRenderer(file, instrument, false);
-                }
-                catch (Exception e) {
-                    e.printStackTrace();
-                }
-                results.add(spectrumRenderer.getSpectrum());
+            	//TODO FIX THIS? Is this even used anymore?
+//            	IBasicSpectrumRenderer<S> spectrumRenderer = null;
+//                try
+//                {
+//                	spectrumRenderer = SbmtSpectrumModelFactory.createSpectrumRenderer(file, instrument, false);
+//                }
+//                catch (Exception e) {
+//                    e.printStackTrace();
+//                }
+//                results.add(spectrumRenderer.getSpectrum());
+
+
 //                ArrayList<String> currList = new ArrayList<String>();
 //                currList.add(file);
 //                SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MMM-dd HH:mm:ss.SSS");

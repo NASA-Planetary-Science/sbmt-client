@@ -64,7 +64,9 @@ public class SpectrumInstrumentMetadataIO extends SpectraHierarchicalSearchSpeci
     public void readHierarchyForInstrument(String instrumentName)
     {
         InstrumentMetadata<SpectrumSearchSpec> instrumentMetadata = getInstrumentMetadata(instrumentName);
-        for (SpectrumSearchSpec spec : instrumentMetadata.getSpecs())
+//    	System.out.println("SpectrumInstrumentMetadataIO: readHierarchyForInstrument: name " + instrumentName + " specs " + instrumentMetadata.getSpecs().get(0).getClass());
+    	List<SpectrumSearchSpec> specs = instrumentMetadata.getSpecs();
+        for (SpectrumSearchSpec spec : specs)
         {
             addHierarchicalSearchPath(new String[] {spec.getDataName()}, instrumentMetadata.getSpecs().indexOf(spec),-1);
         }
@@ -79,6 +81,8 @@ public class SpectrumInstrumentMetadataIO extends SpectraHierarchicalSearchSpeci
     	InstanceGetter.defaultInstanceGetter().register(SPECTRUMINSTRUMENTMETADATAIO_KEY, (source) -> {
     		String instrumentName = source.get(SCNAME_KEY);
     		List<SpectrumInstrumentMetadata<SpectrumSearchSpec>> info = source.get(INSTRUMENTMETADATA_KEY);
+    		SpectrumInstrumentMetadata<SpectrumSearchSpec> inf = info.get(0);
+    		List<SpectrumSearchSpec> specs = inf.getSpecs();
     		SpectrumInstrumentMetadataIO specIO = new SpectrumInstrumentMetadataIO(instrumentName, info);
     		return specIO;
 

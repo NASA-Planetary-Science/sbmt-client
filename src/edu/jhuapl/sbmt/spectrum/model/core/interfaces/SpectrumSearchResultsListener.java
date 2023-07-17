@@ -1,7 +1,6 @@
 package edu.jhuapl.sbmt.spectrum.model.core.interfaces;
 
-import java.util.List;
-
+import edu.jhuapl.sbmt.query.v2.FetchedResults;
 import edu.jhuapl.sbmt.spectrum.model.core.BasicSpectrum;
 
 /**
@@ -15,7 +14,7 @@ public interface SpectrumSearchResultsListener<S extends BasicSpectrum>
      * Signifies that the results to be shown are the incoming <pre>results</pre> object
      * @param results
      */
-    public void resultsChanged(List<S> results);
+    public void resultsChanged(FetchedResults results);
 
     /**
      * Signifies the count of the of the results shown has changed

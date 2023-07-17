@@ -9,11 +9,10 @@ import java.util.List;
 import java.util.TimeZone;
 
 import edu.jhuapl.saavtk.util.FileUtil;
-import edu.jhuapl.sbmt.spectrum.SbmtSpectrumModelFactory;
+import edu.jhuapl.sbmt.query.v2.FetchedResults;
 import edu.jhuapl.sbmt.spectrum.model.core.BasicSpectrum;
 import edu.jhuapl.sbmt.spectrum.model.core.BasicSpectrumInstrument;
 import edu.jhuapl.sbmt.spectrum.model.core.SpectrumIOException;
-import edu.jhuapl.sbmt.spectrum.model.core.interfaces.IBasicSpectrumRenderer;
 import edu.jhuapl.sbmt.spectrum.model.sbmtCore.spectra.CustomSpectrumKeyInterface;
 
 import crucible.crust.metadata.api.Key;
@@ -40,7 +39,7 @@ public class SpectrumListIO
 	 * @param selectedIndices
 	 * @throws Exception
 	 */
-	public static <S extends BasicSpectrum> void saveSelectedSpectrumListButtonActionPerformed(String customDir, File file, List<S> results, int[] selectedIndices) throws Exception
+	public static <S extends BasicSpectrum> void saveSelectedSpectrumListButtonActionPerformed(String customDir, File file, FetchedResults results, int[] selectedIndices) throws Exception
     {
 		if (file == null) return;
 
@@ -53,11 +52,13 @@ public class SpectrumListIO
         String nl = System.getProperty("line.separator");
 
         out.write("#Spectrum_Name Spectrum_Time_UTC"  + nl);
-        for (int selectedIndex : selectedIndices)
-        {
-            String dtStr = sdf.format(results.get(selectedIndex).getDateTime().toDate());
-            out.write(results.get(selectedIndex).getServerpath() + "," + dtStr + nl);
-        }
+
+        //TODO FIX THIS
+//        for (int selectedIndex : selectedIndices)
+//        {
+//            String dtStr = sdf.format(results.get(selectedIndex).getDateTime().toDate());
+//            out.write(results.get(selectedIndex).getServerpath() + "," + dtStr + nl);
+//        }
 
         out.close();
 
@@ -71,7 +72,7 @@ public class SpectrumListIO
      * @param results
      * @throws Exception
      */
-    public static <S extends BasicSpectrum> void saveSpectrumListButtonActionPerformed(String customDir, File file, List<S> results) throws Exception
+    public static <S extends BasicSpectrum> void saveSpectrumListButtonActionPerformed(String customDir, File file, FetchedResults results) throws Exception
     {
     	int[] selectedIndices = new int[results.size()];
     	for (int i=0; i<results.size(); i++) selectedIndices[i] = i;
@@ -89,7 +90,7 @@ public class SpectrumListIO
      * @param completionBlock
      * @throws Exception
      */
-    public static <S extends BasicSpectrum> void loadSpectrumListButtonActionPerformed(File file, List<S> results, BasicSpectrumInstrument instrument, Runnable completionBlock) throws SpectrumIOException, Exception
+    public static <S extends BasicSpectrum> void loadSpectrumListButtonActionPerformed(File file, FetchedResults results, BasicSpectrumInstrument instrument, Runnable completionBlock) throws SpectrumIOException, Exception
     {
     	if (file == null) return;
 
@@ -99,21 +100,22 @@ public class SpectrumListIO
         List<String> lines = FileUtil.getFileLinesAsStringList(file.getAbsolutePath());
         if (!lines.get(0).startsWith("#")) throw new SpectrumIOException("Improper file format; please ensure you're not loading a custom spectrum saved list");
 
-        for (int i=0; i<lines.size(); ++i)
-        {
-            if (lines.get(i).startsWith("#")) continue;
-            IBasicSpectrumRenderer<S> spectrumRenderer = null;
-            try
-            {
-            	String filename = lines.get(i).split(",")[0];
-            	spectrumRenderer = SbmtSpectrumModelFactory.createSpectrumRenderer(filename, instrument, false);
-            }
-            catch (Exception e) {
-                e.printStackTrace();
-            }
-            if (spectrumRenderer != null)
-            	results.add(spectrumRenderer.getSpectrum());
-        }
+        //TODO FIX THIS
+//        for (int i=0; i<lines.size(); ++i)
+//        {
+//            if (lines.get(i).startsWith("#")) continue;
+//            IBasicSpectrumRenderer<S> spectrumRenderer = null;
+//            try
+//            {
+//            	String filename = lines.get(i).split(",")[0];
+//            	spectrumRenderer = SbmtSpectrumModelFactory.createSpectrumRenderer(filename, instrument, false);
+//            }
+//            catch (Exception e) {
+//                e.printStackTrace();
+//            }
+//            if (spectrumRenderer != null)
+//            	results.add(spectrumRenderer.getSpectrum());
+//        }
         completionBlock.run();
 
     }

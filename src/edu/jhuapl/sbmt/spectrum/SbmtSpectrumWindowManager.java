@@ -12,8 +12,6 @@ import edu.jhuapl.saavtk.model.Model;
 import edu.jhuapl.saavtk.model.ModelManager;
 import edu.jhuapl.saavtk.popup.PopupMenu;
 import edu.jhuapl.saavtk.util.Properties;
-import edu.jhuapl.sbmt.image.model.PerspectiveImage;
-import edu.jhuapl.sbmt.image.ui.MultispectralSpectrumInfoPanel;
 
 public class SbmtSpectrumWindowManager implements WindowManager, PropertyChangeListener
 {

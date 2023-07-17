@@ -1,7 +1,9 @@
 package edu.jhuapl.sbmt.spectrum.model.core.interfaces;
 
 import java.io.IOException;
+import java.util.List;
 
+import edu.jhuapl.sbmt.spectrum.config.SpectrumInstrumentConfig;
 import edu.jhuapl.sbmt.spectrum.model.core.BasicSpectrum;
 
 /**
@@ -22,7 +24,7 @@ public interface SpectrumBuilder<String, ISmallBodyModel, ISpectralInstrument>
 	 * @return
 	 * @throws IOException
 	 */
-	BasicSpectrum buildSpectrum(String path, ISmallBodyModel smallBodyModel, ISpectralInstrument instrument) throws IOException;
+	BasicSpectrum buildSpectrum(List<String> result, ISmallBodyModel smallBodyModel, ISpectralInstrument instrument, SpectrumInstrumentConfig spectrumConfig) throws IOException;
 
 	/**
 	 * Builds a spectrum, and also sets the DateTime object based on the passed in timeString
@@ -33,7 +35,7 @@ public interface SpectrumBuilder<String, ISmallBodyModel, ISpectralInstrument>
 	 * @return
 	 * @throws IOException
 	 */
-	BasicSpectrum buildSpectrum(String path, ISmallBodyModel smallBodyModel, ISpectralInstrument instrument, String timeString) throws IOException;
+	BasicSpectrum buildSpectrum(List<String> result, ISmallBodyModel smallBodyModel, ISpectralInstrument instrument, String timeString, SpectrumInstrumentConfig spectrumConfig) throws IOException;
 
 	/**
 	 * Builds a spectrum renderer based on the given <pre>path</pre>, <pre>smallBodyModel</pre> and <pre>instrument</pre>
@@ -43,7 +45,7 @@ public interface SpectrumBuilder<String, ISmallBodyModel, ISpectralInstrument>
 	 * @return
 	 * @throws IOException
 	 */
-	IBasicSpectrumRenderer buildSpectrumRenderer(String path, ISmallBodyModel smallBodyModel, ISpectralInstrument instrument, boolean headless) throws IOException;
+	IBasicSpectrumRenderer buildSpectrumRenderer(String path, ISmallBodyModel smallBodyModel, ISpectralInstrument instrument, boolean headless, SpectrumInstrumentConfig spectrumConfig) throws IOException;
 
 	/**
 	 * Builds a spectrum renderer based on the passed in <pre>spectrum</pre> and <pre>smallBodyModel</pre>

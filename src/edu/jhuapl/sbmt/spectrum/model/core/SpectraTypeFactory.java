@@ -2,7 +2,7 @@ package edu.jhuapl.sbmt.spectrum.model.core;
 
 import java.util.HashMap;
 
-import edu.jhuapl.sbmt.query.QueryBase;
+import edu.jhuapl.sbmt.query.v2.IDataQuery;
 import edu.jhuapl.sbmt.spectrum.model.sbmtCore.spectra.math.SpectrumMath;
 
 /**
@@ -15,7 +15,7 @@ public class SpectraTypeFactory
 	static HashMap<String, SpectraType> registeredModels = new HashMap<String, SpectraType>();
 
 
-	public static void registerSpectraType(String displayName, QueryBase queryBase, SpectrumMath spectrumMath, String bandCenterUnit, Double[] bandCenters)
+	public static void registerSpectraType(String displayName, IDataQuery queryBase, SpectrumMath spectrumMath, String bandCenterUnit, Double[] bandCenters)
 	{
 		if (registeredModels.get(displayName) != null) return;
 		registeredModels.put(displayName, new SpectraType(displayName, queryBase, spectrumMath, bandCenterUnit, bandCenters));

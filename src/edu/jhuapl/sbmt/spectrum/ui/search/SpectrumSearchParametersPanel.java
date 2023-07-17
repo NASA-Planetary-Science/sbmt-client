@@ -240,18 +240,21 @@ public class SpectrumSearchParametersPanel  extends JPanel
         dataTypesLabel = new JLabel("Data Types:");
         panel_3.add(dataTypesLabel);
 
-        dataTypeRadioButtons = new JRadioButton[dataTypes.length];
-        dataTypeGroup = new ButtonGroup();
-        int i=0;
-        for (String dataType : dataTypes)
+        if (dataTypes.length > 0)
         {
-        	dataTypeRadioButtons[i] = new JRadioButton(dataType);
-        	panel_3.add(dataTypeRadioButtons[i]);
-        	dataTypeGroup.add(dataTypeRadioButtons[i]);
-        	i++;
+	        dataTypeRadioButtons = new JRadioButton[dataTypes.length];
+	        dataTypeGroup = new ButtonGroup();
+	        int i=0;
+	        for (String dataType : dataTypes)
+	        {
+	        	dataTypeRadioButtons[i] = new JRadioButton(dataType);
+	        	panel_3.add(dataTypeRadioButtons[i]);
+	        	dataTypeGroup.add(dataTypeRadioButtons[i]);
+	        	i++;
+	        }
+	        dataTypeRadioButtons[0].setSelected(true);
+	        dataTypeGroup.setSelected(dataTypeRadioButtons[0].getModel(), true);
         }
-        dataTypeRadioButtons[0].setSelected(true);
-        dataTypeGroup.setSelected(dataTypeRadioButtons[0].getModel(), true);
 
 //        hasLimbLabel = new JLabel("Field of View Polygon Type:");
 //        panel_3.add(hasLimbLabel);
@@ -655,6 +658,7 @@ public class SpectrumSearchParametersPanel  extends JPanel
 
 	public String getSelectedDataTypes()
 	{
+		if (dataTypeRadioButtons == null) return "";
 		for (JRadioButton button : dataTypeRadioButtons)
 		{
 			if (button.isSelected()) return button.getText().toLowerCase();

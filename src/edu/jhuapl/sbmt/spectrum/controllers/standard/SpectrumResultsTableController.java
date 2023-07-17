@@ -2,6 +2,7 @@ package edu.jhuapl.sbmt.spectrum.controllers.standard;
 
 import java.awt.Dimension;
 import java.io.File;
+import java.io.IOException;
 import java.util.List;
 
 import javax.swing.DefaultComboBoxModel;
@@ -11,13 +12,18 @@ import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
 import com.google.common.collect.ImmutableSet;
+import com.google.common.collect.Lists;
 import com.jidesoft.utils.SwingWorker;
 
 import edu.jhuapl.saavtk.gui.dialog.CustomFileChooser;
 import edu.jhuapl.saavtk.gui.render.Renderer;
 import edu.jhuapl.saavtk.model.ModelManager;
 import edu.jhuapl.saavtk.util.IdPair;
-import edu.jhuapl.sbmt.image.model.SbmtInfoWindowManager;
+import edu.jhuapl.sbmt.core.body.ISmallBodyModel;
+import edu.jhuapl.sbmt.query.v2.FetchedResults;
+import edu.jhuapl.sbmt.spectrum.SbmtSpectrumModelFactory;
+import edu.jhuapl.sbmt.spectrum.SbmtSpectrumWindowManager;
+import edu.jhuapl.sbmt.spectrum.config.SpectrumInstrumentConfig;
 import edu.jhuapl.sbmt.spectrum.model.core.BasicSpectrum;
 import edu.jhuapl.sbmt.spectrum.model.core.BasicSpectrumInstrument;
 import edu.jhuapl.sbmt.spectrum.model.core.SpectrumIOException;
@@ -38,7 +44,7 @@ public class SpectrumResultsTableController<S extends BasicSpectrum>
 {
     protected SpectrumResultsTableView<S> panel;
     protected BaseSpectrumSearchModel<S> model;
-    protected List<S> spectrumRawResults;
+    protected FetchedResults spectrumRawResults;
     protected BasicSpectrumInstrument instrument;
     protected SpectrumStringRenderer stringRenderer;
     protected SpectraCollection<S> spectrumCollection;
@@ -46,7 +52,7 @@ public class SpectrumResultsTableController<S extends BasicSpectrum>
     protected SpectrumBoundaryCollection<S> boundaries;
     private SpectrumSearchResultsListener<S> tableResultsChangedListener;
     private ProgressMonitor progressMonitor;
-
+    private SpectrumInstrumentConfig spectrumConfig;
 
     /**
      * @param instrument			The spectrum instrument
@@ -57,11 +63,13 @@ public class SpectrumResultsTableController<S extends BasicSpectrum>
      * @param renderer				The system renderer
      * @param infoPanelManager		The system info panel manager
      */
-    public SpectrumResultsTableController(BasicSpectrumInstrument instrument, SpectraCollection<S> spectrumCollection, ModelManager modelManager, SpectrumBoundaryCollection<S> boundaries, BaseSpectrumSearchModel<S> model, Renderer renderer, SbmtInfoWindowManager infoPanelManager)
+    public SpectrumResultsTableController(BasicSpectrumInstrument instrument, SpectraCollection<S> spectrumCollection, ModelManager modelManager,
+    										SpectrumBoundaryCollection<S> boundaries, BaseSpectrumSearchModel<S> model, Renderer renderer, SbmtSpectrumWindowManager infoPanelManager,
+    										SpectrumInstrumentConfig spectrumConfig)
     {
         spectrumPopupMenu = new SpectrumPopupMenu<S>(spectrumCollection, boundaries, modelManager,infoPanelManager, renderer);
         this.spectrumCollection = spectrumCollection;
-
+        this.spectrumConfig = spectrumConfig;
         this.spectrumCollection.setActiveInstrument(instrument);
         panel = new SpectrumResultsTableView<S>(spectrumCollection, boundaries, spectrumPopupMenu);
         panel.setup();
@@ -74,14 +82,18 @@ public class SpectrumResultsTableController<S extends BasicSpectrum>
         this.tableResultsChangedListener = new SpectrumSearchResultsListener<S>()
         {
             @Override
-            public void resultsChanged(List<S> results)
+            public void resultsChanged(FetchedResults results)
             {
+            	System.out.println(
+						"SpectrumResultsTableController.SpectrumResultsTableController(...).new SpectrumSearchResultsListener() {...}: resultsChanged: updating results");
                 setSpectrumResults(results);
             }
 
             @Override
             public void resultsCountChanged(int count)
             {
+            	System.out.println(
+						"SpectrumResultsTableController.SpectrumResultsTableController(...).new SpectrumSearchResultsListener() {...}: resultsCountChanged: updating count");
                 panel.getResultsLabel().setText(count + " Spectra Found");
             }
 
@@ -486,10 +498,11 @@ public class SpectrumResultsTableController<S extends BasicSpectrum>
 
 		            try
 		            {
-		                S currentSpectrum = spectrumRawResults.get(i);
-		                progressMonitor.setProgress((int)(100*(double)(i-startId)/(double)(endId - startId)));
-		                spectrumCollection.addSpectrum(currentSpectrum, currentSpectrum.isCustomSpectra);
-		                boundaries.addBoundary(currentSpectrum);
+		            	//TODO FIX THIS
+//		                S currentSpectrum = spectrumRawResults.get(i);
+//		                progressMonitor.setProgress((int)(100*(double)(i-startId)/(double)(endId - startId)));
+//		                spectrumCollection.addSpectrum(currentSpectrum, currentSpectrum.isCustomSpectra);
+//		                boundaries.addBoundary(currentSpectrum);
 		            }
 		            catch (Exception e1) {
 		                JOptionPane.showMessageDialog(JOptionPane.getFrameForComponent(panel),
@@ -512,11 +525,29 @@ public class SpectrumResultsTableController<S extends BasicSpectrum>
      * Sets the list of spectra to display on the table
      * @param results
      */
-    public void setSpectrumResults(List<S> results)
+    public void setSpectrumResults(FetchedResults results)
     {
         panel.getResultsLabel().setText(results.size() + " spectra found");
         spectrumRawResults = results; //.parallelStream().filter(spec -> spec.getInstrument() == instrument).collect(Collectors.toList());
-        spectrumCollection.setAllItems(spectrumRawResults);
+        ISmallBodyModel smallBodyModel = spectrumCollection.getShapeModel();
+        List<S> specToAdd = Lists.newArrayList();
+        System.out.println("SpectrumResultsTableController: setSpectrumResults: number of results " + results.size());
+        for (List<String> res : results.getFetchedData())
+        {
+//        	System.out.println("SpectrumResultsTableController: setSpectrumResults: name " + res.get(0));
+        	try
+			{
+				specToAdd.add((S)SbmtSpectrumModelFactory.createSpectrum(res, smallBodyModel, instrument, spectrumConfig));
+			}
+			catch (IOException e)
+			{
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+        }
+        //TODO FIX THIS
+        System.out.println("SpectrumResultsTableController: setSpectrumResults: spec to add size " + specToAdd.size());
+        spectrumCollection.setAllItems(specToAdd);
         showSpectrumBoundaries(new IdPair(0, Integer.parseInt((String)panel.getNumberOfBoundariesComboBox().getSelectedItem())));
     }
 }

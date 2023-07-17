@@ -42,7 +42,7 @@ import edu.jhuapl.saavtk.util.FileUtil;
 import edu.jhuapl.saavtk.view.light.LightUtil;
 import edu.jhuapl.saavtk.view.light.LightingType;
 import edu.jhuapl.sbmt.core.body.SmallBodyModel;
-import edu.jhuapl.sbmt.image.model.SbmtInfoWindowManager;
+import edu.jhuapl.sbmt.spectrum.SbmtSpectrumWindowManager;
 import edu.jhuapl.sbmt.spectrum.model.EnabledState;
 import edu.jhuapl.sbmt.spectrum.model.core.BasicSpectrum;
 import edu.jhuapl.sbmt.spectrum.model.core.SpectrumIOException;
@@ -66,7 +66,7 @@ public class SpectrumPopupMenu<S extends BasicSpectrum> extends PopupMenu implem
     private JMenu saveSpectrumMenuItem;
     private JMenuItem saveOriginalSpectrumMenuItem;
     private JMenuItem saveHumanReadableSpectrumMenuItem;
-    private SbmtInfoWindowManager infoPanelManager;
+    private SbmtSpectrumWindowManager infoPanelManager;
     private JMenuItem showToSunVectorMenuItem;
     private JMenuItem setIlluminationMenuItem;
     private JMenuItem showOutlineMenuItem;
@@ -90,7 +90,7 @@ public class SpectrumPopupMenu<S extends BasicSpectrum> extends PopupMenu implem
      */
     public SpectrumPopupMenu(SpectraCollection<S> collection, SpectrumBoundaryCollection<S> sbc,
             ModelManager modelManager,
-            SbmtInfoWindowManager infoPanelManager, Renderer renderer)
+            SbmtSpectrumWindowManager infoPanelManager, Renderer renderer)
     {
     	this.currentSpectrum = new ArrayList<String>();
         this.modelManager = modelManager;

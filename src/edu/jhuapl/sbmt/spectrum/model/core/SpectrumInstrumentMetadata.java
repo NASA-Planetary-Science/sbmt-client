@@ -123,7 +123,7 @@ public class SpectrumInstrumentMetadata<S extends SearchSpec> implements Instrum
                 + instrumentName + ", specs=" + searchMetadata + "]";
     }
 
-    private static final Key<SpectrumInstrumentMetadata> SPECTRUMINSTRUMENTMETADATA_KEY = Key.of("spectrumInstrumentMetadata");
+    private static final Key<SpectrumInstrumentMetadata<SpectrumSearchSpec>> SPECTRUMINSTRUMENTMETADATA_KEY = Key.of("spectrumInstrumentMetadata");
 	private static final Key<String> INSTNAME_KEY = Key.of("instrumentName");
 	private static final Key<List<SpectrumSearchSpec>> SEARCHMETADATA_KEY = Key.of("searchMetadata");
 
@@ -132,7 +132,7 @@ public class SpectrumInstrumentMetadata<S extends SearchSpec> implements Instrum
     	InstanceGetter.defaultInstanceGetter().register(SPECTRUMINSTRUMENTMETADATA_KEY, (metadata) -> {
     		String instrumentName = metadata.get(INSTNAME_KEY);
     		List<SpectrumSearchSpec> searchMetadata = metadata.get(SEARCHMETADATA_KEY);
-    		SpectrumInstrumentMetadata<SpectrumSearchSpec> spec = new SpectrumInstrumentMetadata<>(instrumentName, searchMetadata);
+    		SpectrumInstrumentMetadata<SpectrumSearchSpec> spec = new SpectrumInstrumentMetadata<SpectrumSearchSpec>(instrumentName, searchMetadata);
     		return spec;
 
     	}, SpectrumInstrumentMetadata.class, spec -> {

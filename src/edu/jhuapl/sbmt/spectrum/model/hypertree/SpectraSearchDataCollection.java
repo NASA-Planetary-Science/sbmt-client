@@ -16,10 +16,10 @@ import vtk.vtkProp;
 
 import edu.jhuapl.saavtk.model.PolyhedralModel;
 import edu.jhuapl.saavtk.util.BoundingBox;
-import edu.jhuapl.sbmt.core.body.BodyViewConfig;
 import edu.jhuapl.sbmt.query.hyperoctree.FSHyperTreeSkeleton;
 import edu.jhuapl.sbmt.query.hyperoctree.boundedobject.BoundedObjectHyperTreeSkeleton;
 import edu.jhuapl.sbmt.query.hyperoctree.boundedobject.BoundedObjectSearchDataCollection;
+import edu.jhuapl.sbmt.spectrum.config.SpectrumInstrumentConfig;
 
 public class SpectraSearchDataCollection
         extends BoundedObjectSearchDataCollection
@@ -29,7 +29,7 @@ public class SpectraSearchDataCollection
     private FSHyperTreeSkeleton currentSkeleton;
     private JComponent parentForProgressMonitor;
     private boolean loading=false;
-    private BodyViewConfig polyhedralModelConfig;
+    private SpectrumInstrumentConfig config;
     private PolyhedralModel smallBodyModel;
     private List<vtkProp> actors = new ArrayList<vtkProp>();
 
@@ -39,10 +39,10 @@ public class SpectraSearchDataCollection
         return loading;
     }
 
-    public SpectraSearchDataCollection(PolyhedralModel smallBodyModel)
+    public SpectraSearchDataCollection(PolyhedralModel smallBodyModel, SpectrumInstrumentConfig config)
     {
         super(smallBodyModel);
-        this.polyhedralModelConfig = (BodyViewConfig)smallBodyModel.getConfig();
+        this.config = config;
     }
 
     public void clearDatasourceSkeletons()
@@ -111,7 +111,7 @@ public class SpectraSearchDataCollection
 
     public Map<String, String> getSpectraDataSourceMap()
     {
-        return polyhedralModelConfig.spectraSearchDataSourceMap;
+        return config.spectraSearchDataSourceMap;
     }
 
 }
