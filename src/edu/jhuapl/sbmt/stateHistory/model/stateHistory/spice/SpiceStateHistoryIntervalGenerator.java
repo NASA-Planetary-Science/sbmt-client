@@ -9,6 +9,7 @@ import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 
 import edu.jhuapl.sbmt.core.util.TimeUtil;
+import edu.jhuapl.sbmt.pointing.State;
 import edu.jhuapl.sbmt.pointing.modules.SpiceReaderPublisher;
 import edu.jhuapl.sbmt.pointing.scState.SpiceState;
 import edu.jhuapl.sbmt.pointing.spice.SpiceInfo;
@@ -18,7 +19,6 @@ import edu.jhuapl.sbmt.stateHistory.model.interfaces.IStateHistoryIntervalGenera
 import edu.jhuapl.sbmt.stateHistory.model.interfaces.IStateHistoryLocationProvider;
 import edu.jhuapl.sbmt.stateHistory.model.interfaces.IStateHistoryMetadata;
 import edu.jhuapl.sbmt.stateHistory.model.interfaces.IStateHistoryTrajectoryMetadata;
-import edu.jhuapl.sbmt.stateHistory.model.interfaces.State;
 import edu.jhuapl.sbmt.stateHistory.model.interfaces.StateHistory;
 import edu.jhuapl.sbmt.stateHistory.model.interfaces.Trajectory;
 import edu.jhuapl.sbmt.stateHistory.model.io.StateHistoryInputException;

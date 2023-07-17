@@ -6,8 +6,8 @@ import java.util.Set;
 import java.util.TreeMap;
 
 import edu.jhuapl.sbmt.pointing.IPointingProvider;
+import edu.jhuapl.sbmt.pointing.State;
 import edu.jhuapl.sbmt.stateHistory.model.interfaces.IStateHistoryLocationProvider;
-import edu.jhuapl.sbmt.stateHistory.model.interfaces.State;
 import edu.jhuapl.sbmt.stateHistory.model.interfaces.StateHistory;
 import edu.jhuapl.sbmt.stateHistory.model.io.StateHistoryIOException;
 

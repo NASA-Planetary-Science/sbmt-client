@@ -6,7 +6,7 @@ import vtk.vtkCaptionActor2D;
 
 import edu.jhuapl.saavtk.util.MathUtil;
 import edu.jhuapl.sbmt.core.body.SmallBodyModel;
-import edu.jhuapl.sbmt.stateHistory.model.interfaces.State;
+import edu.jhuapl.sbmt.pointing.State;
 
 /**
  * vtkCaptionActor2D object that float near the spacecraft model, showing

@@ -6,8 +6,8 @@ import java.io.FileWriter;
 import java.io.IOException;
 
 import edu.jhuapl.sbmt.core.util.TimeUtil;
+import edu.jhuapl.sbmt.pointing.State;
 import edu.jhuapl.sbmt.stateHistory.model.StateHistoryUtil;
-import edu.jhuapl.sbmt.stateHistory.model.interfaces.State;
 
 import crucible.core.math.vectorspace.UnwritableVectorIJK;
 

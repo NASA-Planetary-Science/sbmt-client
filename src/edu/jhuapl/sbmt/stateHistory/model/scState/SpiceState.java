@@ -12,8 +12,8 @@ import com.google.common.base.Preconditions;
 
 import edu.jhuapl.sbmt.core.util.TimeUtil;
 import edu.jhuapl.sbmt.pointing.InstrumentPointing;
+import edu.jhuapl.sbmt.pointing.State;
 import edu.jhuapl.sbmt.pointing.spice.SpicePointingProvider;
-import edu.jhuapl.sbmt.stateHistory.model.interfaces.State;
 
 import crucible.core.math.vectorspace.UnwritableMatrixIJK;
 import crucible.core.math.vectorspace.UnwritableVectorIJK;
