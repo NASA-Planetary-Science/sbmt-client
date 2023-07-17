@@ -26,7 +26,7 @@ import edu.jhuapl.sbmt.image.model.ImagingInstrument;
 import edu.jhuapl.sbmt.image.model.PerspectiveImage;
 import edu.jhuapl.sbmt.image.old.ImageKey;
 import edu.jhuapl.sbmt.model.SbmtModelFactoryV1;
-import edu.jhuapl.sbmt.util.BackplanesFileFormat;
+import edu.jhuapl.sbmt.model.eros.msi.BackplanesFileFormat;
 
 
 /**

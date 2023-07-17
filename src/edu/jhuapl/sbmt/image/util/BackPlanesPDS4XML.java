@@ -1,8 +1,8 @@
-package edu.jhuapl.sbmt.util;
+package edu.jhuapl.sbmt.image.util;
 
 import java.io.File;
 
-import edu.jhuapl.sbmt.util.BackPlanesXmlMeta.BPMetaBuilder;
+import edu.jhuapl.sbmt.image.util.BackPlanesXmlMeta.BPMetaBuilder;
 
 import nom.tam.fits.FitsException;
 

@@ -1,4 +1,4 @@
-package edu.jhuapl.sbmt.util.nis;
+package edu.jhuapl.sbmt.model.eros.nis.util;
 
 import java.nio.file.Path;
 import java.util.Arrays;

@@ -17,10 +17,10 @@ import edu.jhuapl.sbmt.core.pointing.PointingSource;
 import edu.jhuapl.sbmt.core.util.BackplaneInfo;
 import edu.jhuapl.sbmt.image.old.ImageKey;
 import edu.jhuapl.sbmt.model.SbmtModelFactory;
+import edu.jhuapl.sbmt.model.eros.msi.BackplanesFileFormat;
+import edu.jhuapl.sbmt.model.eros.msi.FitsBackplanesFile;
 import edu.jhuapl.sbmt.model.eros.msi.MSIImage;
 import edu.jhuapl.sbmt.tools.BackplanesGenerator;
-import edu.jhuapl.sbmt.util.BackplanesFileFormat;
-import edu.jhuapl.sbmt.util.FitsBackplanesFile;
 
 import nom.tam.fits.BasicHDU;
 import nom.tam.fits.Fits;

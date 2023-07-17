@@ -1,4 +1,7 @@
-package edu.jhuapl.sbmt.util;
+package edu.jhuapl.sbmt.model.eros.msi;
+
+import edu.jhuapl.sbmt.util.BackplanesFile;
+import edu.jhuapl.sbmt.util.ImgBackplanesFile;
 
 public enum BackplanesFileFormat
 {

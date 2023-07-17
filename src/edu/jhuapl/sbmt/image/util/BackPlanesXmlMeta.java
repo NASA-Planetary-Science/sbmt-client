@@ -1,4 +1,4 @@
-package edu.jhuapl.sbmt.util;
+package edu.jhuapl.sbmt.image.util;
 
 import java.util.ArrayList;
 import java.util.HashMap;

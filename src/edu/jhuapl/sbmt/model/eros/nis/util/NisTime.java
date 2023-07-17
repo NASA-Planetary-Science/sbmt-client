@@ -1,4 +1,4 @@
-package edu.jhuapl.sbmt.util.nis;
+package edu.jhuapl.sbmt.model.eros.nis.util;
 
 import edu.jhuapl.sbmt.core.util.TimeUtil;
 

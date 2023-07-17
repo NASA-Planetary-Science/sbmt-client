@@ -1,4 +1,4 @@
-package edu.jhuapl.sbmt.util.website;
+package edu.jhuapl.sbmt.tools;
 
 import java.io.File;
 import java.io.FileWriter;

@@ -1,4 +1,4 @@
-package edu.jhuapl.sbmt.util;
+package edu.jhuapl.sbmt.image.util;
 
 import java.io.File;
 import java.io.IOException;
@@ -25,7 +25,7 @@ import org.w3c.dom.NodeList;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 
-import edu.jhuapl.sbmt.util.BackPlanesXmlMeta.MetaField;
+import edu.jhuapl.sbmt.image.util.BackPlanesXmlMeta.MetaField;
 
 import altwg.Fits.HduTags;
 import altwg.XML.XmlDoc;

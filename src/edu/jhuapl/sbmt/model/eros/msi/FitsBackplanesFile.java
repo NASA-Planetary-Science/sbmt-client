@@ -1,4 +1,4 @@
-package edu.jhuapl.sbmt.util;
+package edu.jhuapl.sbmt.model.eros.msi;
 
 import java.nio.file.Paths;
 import java.util.HashMap;
@@ -7,6 +7,7 @@ import java.util.Map;
 
 import edu.jhuapl.sbmt.core.util.BackplaneInfo;
 import edu.jhuapl.sbmt.model.eros.MSIFits;
+import edu.jhuapl.sbmt.util.BackplanesFile;
 
 import altwg.Fits.HeaderTag;
 import nom.tam.fits.HeaderCard;

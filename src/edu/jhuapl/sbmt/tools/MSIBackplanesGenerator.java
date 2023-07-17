@@ -27,7 +27,7 @@ import edu.jhuapl.sbmt.core.pointing.PointingSource;
 import edu.jhuapl.sbmt.image.model.ImagingInstrument;
 import edu.jhuapl.sbmt.image.old.ImageKey;
 import edu.jhuapl.sbmt.model.SbmtModelFactory;
-import edu.jhuapl.sbmt.util.BackplanesFileFormat;
+import edu.jhuapl.sbmt.model.eros.msi.BackplanesFileFormat;
 
 import altwg.util.BatchSubmit;
 import altwg.util.BatchType;
