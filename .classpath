@@ -14,9 +14,9 @@
 		</attributes>
 	</classpathentry>
 	<classpathentry kind="lib" path="lib/jide-oss-java11.jar"/>
-	<classpathentry combineaccessrules="false" kind="src" path="/saavtk"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-16">
 		<attributes>
+			<attribute name="module" value="true"/>
 			<attribute name="maven.pomderived" value="true"/>
 		</attributes>
 	</classpathentry>
@@ -29,5 +29,8 @@
 	<classpathentry kind="lib" path="lib/drmaa.jar"/>
 	<classpathentry kind="lib" path="lib/spice-N0065.jar"/>
 	<classpathentry kind="lib" path="lib/altwg.jar"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/saavtk"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/sbmt-layer"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/sbmt-pipeline"/>
 	<classpathentry kind="output" path="target/classes"/>
 </classpath>
