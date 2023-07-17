@@ -29,6 +29,7 @@ import edu.jhuapl.sbmt.config.SmallBodyViewConfig;
 import edu.jhuapl.sbmt.core.body.SmallBodyModel;
 import edu.jhuapl.sbmt.core.client.Mission;
 import edu.jhuapl.sbmt.core.config.Instrument;
+import edu.jhuapl.sbmt.core.io.DBRunInfo;
 import edu.jhuapl.sbmt.core.pointing.PointingSource;
 import edu.jhuapl.sbmt.image.model.ImagingInstrument;
 import edu.jhuapl.sbmt.image.pipelineComponents.operators.rendering.pointedImage.ImageIllumination;
@@ -38,9 +39,6 @@ import edu.jhuapl.sbmt.image.pipelineComponents.pipelines.io.FilenameToRenderabl
 import edu.jhuapl.sbmt.image.pipelineComponents.pipelines.perspectiveImages.PerspectiveImageToDerivedMetadataPipeline;
 import edu.jhuapl.sbmt.model.SbmtModelFactory;
 import edu.jhuapl.sbmt.pointing.io.PointingFileReader;
-//import edu.jhuapl.sbmt.core.rendering.PerspectiveImage;
-//import edu.jhuapl.sbmt.image.model.keys.ImageKey;
-import edu.jhuapl.sbmt.tools.DBRunInfo;
 import edu.jhuapl.sbmt.util.SqlManager;
 
 public class DatabaseGeneratorSql

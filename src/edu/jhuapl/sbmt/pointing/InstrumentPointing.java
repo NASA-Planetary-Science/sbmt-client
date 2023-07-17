@@ -1,4 +1,4 @@
-package edu.jhuapl.sbmt.core.pointing;
+package edu.jhuapl.sbmt.pointing;
 
 import java.util.List;
 

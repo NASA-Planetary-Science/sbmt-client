@@ -4,6 +4,8 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Date;
 
+import edu.jhuapl.saavtk.config.ViewConfig;
+
 import crucible.crust.metadata.api.Key;
 import crucible.crust.metadata.api.Metadata;
 import crucible.crust.metadata.api.MetadataManager;
@@ -16,10 +18,16 @@ public abstract class BaseFeatureConfigIO implements MetadataManager
 	abstract public void retrieve(Metadata source);
 	protected String metadataVersion;
 	protected IFeatureConfig featureConfig;
+	protected ViewConfig viewConfig;
 
 	public void setFeatureConfig(IFeatureConfig featureConfig)
 	{
 		this.featureConfig = featureConfig;
+	}
+
+	public void setViewConfig(ViewConfig c)
+	{
+		this.viewConfig = c;
 	}
 
     public void write(File file, String metadataID) throws IOException

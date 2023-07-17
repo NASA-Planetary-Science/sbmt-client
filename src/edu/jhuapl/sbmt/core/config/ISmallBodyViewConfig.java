@@ -1,15 +1,10 @@
 package edu.jhuapl.sbmt.core.config;
 
-import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
 import edu.jhuapl.saavtk.model.ShapeModelType;
 import edu.jhuapl.sbmt.core.client.Mission;
-import edu.jhuapl.sbmt.core.search.HierarchicalSearchSpecification;
-import edu.jhuapl.sbmt.image.model.ImagingInstrument;
-import edu.jhuapl.sbmt.pointing.spice.SpiceInfo;
-import edu.jhuapl.sbmt.spectrum.model.core.search.SpectraHierarchicalSearchSpecification;
 
 public interface ISmallBodyViewConfig
 {
@@ -25,33 +20,12 @@ public interface ISmallBodyViewConfig
 		return false;
 	}
 
-	public Map<String, String> getSpectraSearchDataSourceMap();
-
-	public Instrument getLidarInstrument();
-
-	public boolean hasHypertreeLidarSearch();
-
-	public SpectraHierarchicalSearchSpecification getHierarchicalSpectraSearchSpecification();
-
 	public String[] getShapeModelFileNames();
 
 	public boolean hasColoringData();
 
-	public boolean hasHypertreeBasedSpectraSearch();
-
-	public boolean hasHierarchicalSpectraSearch();
-
-
-	public Date getDefaultImageSearchStartDate();
-	public Date getDefaultImageSearchEndDate();
-	public String[] getImageSearchFilterNames();
-	public String[] getImageSearchUserDefinedCheckBoxesNames();
-	public boolean hasHierarchicalImageSearch();
-	public HierarchicalSearchSpecification getHierarchicalImageSearchSpecification();
 	public String getTimeHistoryFile();
-	public SpiceInfo getSpiceInfo();
-	public Date getStateHistoryStartDate();
-	public Date getStateHistoryEndDate();
+
 	public String getShapeModelName();
 
 	public ShapeModelType getAuthor();
@@ -66,8 +40,5 @@ public interface ISmallBodyViewConfig
 
 	public Mission[] getDefaultForMissions();
 
-	public ImagingInstrument[] getImagingInstruments();
-
 	public Map<Class<?>, List<IFeatureConfig>> getFeatureConfigs();
-
 }

@@ -1,4 +1,4 @@
-package edu.jhuapl.sbmt.tools;
+package edu.jhuapl.sbmt.core.io;
 
 import java.util.Objects;
 

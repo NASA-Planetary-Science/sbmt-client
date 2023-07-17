@@ -22,6 +22,7 @@ import edu.jhuapl.sbmt.core.body.ShapeModelDataUsed;
 import edu.jhuapl.sbmt.core.body.ShapeModelPopulation;
 import edu.jhuapl.sbmt.core.client.Mission;
 import edu.jhuapl.sbmt.core.config.Instrument;
+import edu.jhuapl.sbmt.core.io.DBRunInfo;
 import edu.jhuapl.sbmt.core.pointing.PointingSource;
 import edu.jhuapl.sbmt.image.model.ImageFlip;
 import edu.jhuapl.sbmt.image.model.ImageType;
@@ -31,7 +32,6 @@ import edu.jhuapl.sbmt.image.model.OrientationFactory;
 import edu.jhuapl.sbmt.image.model.SpectralImageMode;
 import edu.jhuapl.sbmt.pointing.spice.SpiceInfo;
 import edu.jhuapl.sbmt.query.database.GenericPhpQuery;
-import edu.jhuapl.sbmt.tools.DBRunInfo;
 
 /**
  * DART mission-specific {@link SmallBodyViewConfig} implementation.

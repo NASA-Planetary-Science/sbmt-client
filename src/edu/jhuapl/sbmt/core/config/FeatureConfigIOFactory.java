@@ -33,4 +33,9 @@ public class FeatureConfigIOFactory
 		Key<Metadata> featureConfigKey = Key.of(configTypeName + "Config");
 		return featureConfigKey;
 	}
+
+	public static BaseFeatureConfigIO getIOForClassType(String classTypeName)
+	{
+		return registeredItems.get(classTypeName);
+	}
 }
