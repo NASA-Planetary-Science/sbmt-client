@@ -670,7 +670,7 @@ public class SbmtMultiMissionTool
 		clearCache();
 
 		// Start up the client.
-		new SbmtRunnable2(initialShapeModelPath).run();
+		new SbmtRunnable(initialShapeModelPath).run();
 
 	}
 

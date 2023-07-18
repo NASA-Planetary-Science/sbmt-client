@@ -28,11 +28,11 @@ import edu.jhuapl.sbmt.util.SBMTNativeLibraryLoader;
 
 
 
-public class SbmtRunnable2 implements Runnable
+public class SbmtRunnable implements Runnable
 {
 	private final String initialShapeModelPath;
 
-	public SbmtRunnable2(String initialShapeModelPath)
+	public SbmtRunnable(String initialShapeModelPath)
 	{
 		this.initialShapeModelPath = initialShapeModelPath;
 	}
