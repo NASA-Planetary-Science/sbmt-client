@@ -43,6 +43,7 @@ for JAVA_TOOL in "$SBMTROOT"/src/edu/jhuapl/sbmt/tools/*.java ; do
     echo 'HEADLESS="-Djava.awt.headless=true"'                                                >> $INSTALL_BIN_DIR/$JAVA_TOOL.sh
 
     echo 'if [ "$(/bin/uname)" == "Linux" ]; then'                                            >> $INSTALL_BIN_DIR/$JAVA_TOOL.sh
+    echo '    export LD_LIBRARY_PATH="/lib64:$JAVA_TOP/linux64/lib:$SBMTROOT/lib:$SBMTROOT/lib/linux64:$LD_LIBRARY_PATH"'  >> $INSTALL_BIN_DIR/$JAVA_TOOL.sh
     echo '    $JAVA_TOP/linux64/bin/java -Xmx4G $HEADLESS "-Djava.library.path=$JAVA_TOP/linux64/lib:$DIR/../lib/linux64" -cp "'$CLASSPATH"\" edu.jhuapl.sbmt.tools.$JAVA_TOOL \"\$@\"" >> $INSTALL_BIN_DIR/$JAVA_TOOL.sh
     echo 'else'                                                                               >> $INSTALL_BIN_DIR/$JAVA_TOOL.sh
     echo '    echo "Not set up for anything other than Linux" >&2'                            >> $INSTALL_BIN_DIR/$JAVA_TOOL.sh

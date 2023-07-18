@@ -1716,8 +1716,10 @@ processMakeSumFiles() {
 
     rm -f $imagerDir/imagelist-sum.txt $imagerDir/imagelist-fullpath-sum.txt
 
-    # Create imagelist-fullpath-sum.txt.
-    cat $makeSumFiles | sed -e 's:.*[ 	]::' | sed "s:^:$prefix:" > $imagerDir/imagelist-fullpath-sum.txt
+    # Create imagelist-fullpath-sum.txt from make_sumfiles.in. Remove trailing space, then remove
+    # all characters up until the last column. Finally, to that string prepend the prefix where
+    # images are stored.
+    cat $makeSumFiles  | sed 's:[ 	]*$::' | sed 's:.*[ 	]::' | sed "s:^:$prefix:" > $imagerDir/imagelist-fullpath-sum.txt
     check $? "$funcName: unable to create $imagerDir/imagelist-fullpath-sum.txt"
 
     # Create imagelist-sum.txt.
@@ -1726,10 +1728,10 @@ processMakeSumFiles() {
         check 1 "$funcName: unable to determine sum file names from $makeSumFiles"
       fi
 
-      # Find the line that begins with this sum file base name.
-      # Strip out the sum file base name, then get rid of anything up to a final space.
-      # What remains should be the image name.
-      imageFile=`sed -n "s:^$sumFile ::p" $makeSumFiles | sed 's:.* ::'`
+      # Find the line that begins with this sum file base name (after optional white space).
+      # Remove trailing white space, then delete everything up until the last column.
+      # What remains should be the image name (without path).
+      imageFile=`grep "^[ 	]*$sumFile[ 	]" $makeSumFiles | sed 's:[ 	]*$::' | sed 's:.*[ 	]::'`
       if test "$imageFile" = ""; then
         check 1 "$funcName: unable to determine the image file that goes with $sumFile in $makeSumFiles"
       fi
