@@ -23,6 +23,7 @@ import edu.jhuapl.sbmt.client2.SbmtMultiMissionTool;
 import edu.jhuapl.sbmt.config.SmallBodyViewConfig;
 import edu.jhuapl.sbmt.core.body.SmallBodyModel;
 import edu.jhuapl.sbmt.core.pointing.PointingSource;
+import edu.jhuapl.sbmt.image.config.ImagingInstrumentConfig;
 import edu.jhuapl.sbmt.image.model.ImagingInstrument;
 import edu.jhuapl.sbmt.image.pipelineComponents.operators.offlimb.OfflimbPlaneGeneratorOperators;
 import edu.jhuapl.sbmt.image.pipelineComponents.operators.rendering.pointedImage.RenderablePointedImage;
@@ -129,7 +130,9 @@ public class PerspectiveImagePreRenderer2
     	SmallBodyViewConfig config = SmallBodyViewConfig.getSmallBodyConfig(body, type);
     	SmallBodyModel smallBodyModel = SbmtModelFactory.createSmallBodyModel(config);
         //Optional<ImagingInstrument> selectedInstrument = Stream.of(config.imagingInstruments).filter(inst -> inst.getInstrumentName() == instrument).findFirst();
-        Optional<ImagingInstrument> selectedInstrument = Optional.of(config.imagingInstruments[Integer.parseInt(args[4])]);
+    	ImagingInstrumentConfig imagingConfig = (ImagingInstrumentConfig)config.getConfigForClass(ImagingInstrumentConfig.class);
+
+    	Optional<ImagingInstrument> selectedInstrument = Optional.of(imagingConfig.imagingInstruments.get(Integer.parseInt(args[4])));
         if (selectedInstrument.isEmpty()) return;
         File[] fileList = new File[1];
         fileList[0] = new File(inputFile);
@@ -139,7 +142,7 @@ public class PerspectiveImagePreRenderer2
             smallBodyModel.setModelResolution(i);
         	for (File filename : fileList)
         	{
-	        	FilenameToRenderableImagePipeline pipeline = FilenameToRenderableImagePipeline.of(filename.getAbsolutePath(), imageSource, config, selectedInstrument.get());
+	        	FilenameToRenderableImagePipeline pipeline = FilenameToRenderableImagePipeline.of(filename.getAbsolutePath(), imageSource, selectedInstrument.get());
 	        	List<RenderablePointedImage> images = pipeline.getImages();
 	        	if (images.size() == 0) continue;
 	        	String basename = FilenameUtils.getBaseName(filename.getAbsolutePath());

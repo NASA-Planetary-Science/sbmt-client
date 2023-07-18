@@ -3,7 +3,6 @@ package edu.jhuapl.sbmt.tools;
 import java.io.File;
 import java.io.IOException;
 import java.sql.PreparedStatement;
-import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -13,9 +12,6 @@ import java.util.List;
 import java.util.TreeSet;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
-import org.joda.time.DateTime;
-import org.joda.time.DateTimeZone;
 
 import vtk.vtkObject;
 import vtk.vtkPolyData;
@@ -32,10 +28,8 @@ import edu.jhuapl.sbmt.client2.SbmtMultiMissionTool;
 import edu.jhuapl.sbmt.config.SmallBodyViewConfig;
 import edu.jhuapl.sbmt.core.body.ISmallBodyModel;
 import edu.jhuapl.sbmt.model.SbmtModelFactory;
-import edu.jhuapl.sbmt.model.bennu.spectra.OREXSpectraFactory;
 import edu.jhuapl.sbmt.model.bennu.spectra.ovirs.OVIRS;
 import edu.jhuapl.sbmt.model.bennu.spectra.ovirs.OVIRSSpectrum;
-import edu.jhuapl.sbmt.spectrum.SbmtSpectrumModelFactory;
 import edu.jhuapl.sbmt.spectrum.model.core.interfaces.IBasicSpectrumRenderer;
 import edu.jhuapl.sbmt.util.SqlManager;
 
@@ -144,50 +138,51 @@ public class OVIRSDatabaseGeneratorSql
 			dayOfYearStr = doyFormat.format(date);
 			yearStr = yearFormat.format(date);
 
-			IBasicSpectrumRenderer<OVIRSSpectrum> ovirsSpectrumRenderer = SbmtSpectrumModelFactory
-					.createSpectrumRenderer(filename, ovirs, true);
-			ovirsSpectrumRenderer.generateFootprint();
-
-			//if no intersection took place, skip this loop
-			if (ovirsSpectrumRenderer.getShiftedFootprint() == null) continue;
-
-			DateTime midtime = new DateTime(new DateTime(date).toString(), DateTimeZone.UTC);
-			String filenamePlusParent = filename.substring(filename.lastIndexOf("ovirs/") + 5);
-
-			if (writeToDB == true)
-			{
-				if (ovirsInsert == null)
-				{
-					// the index auto increments, so start with the year column
-					ovirsInsert = db.preparedStatement("insert into " + tableName
-							+ " (year, day, midtime, minincidence, maxincidence, minemission, maxemission, minphase, maxphase, minrange, maxrange, filename) values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
-				}
-
-				// The index autoincrements, so start adding with the year
-				// string
-				ovirsInsert.setShort(1, Short.parseShort(yearStr));
-				ovirsInsert.setShort(2, Short.parseShort(dayOfYearStr));
-				ovirsInsert.setLong(3, midtime.getMillis());
-				ovirsInsert.setDouble(4, ovirsSpectrumRenderer.getMinIncidence());
-				ovirsInsert.setDouble(5, ovirsSpectrumRenderer.getMaxIncidence());
-				ovirsInsert.setDouble(6, ovirsSpectrumRenderer.getMinEmission());
-				ovirsInsert.setDouble(7, ovirsSpectrumRenderer.getMaxEmission());
-				ovirsInsert.setDouble(8, ovirsSpectrumRenderer.getMinPhase());
-				ovirsInsert.setDouble(9, ovirsSpectrumRenderer.getMaxPhase());
-				ovirsInsert.setDouble(10, ovirsSpectrumRenderer.getMinRange());
-				ovirsInsert.setDouble(11, ovirsSpectrumRenderer.getMinRange());
-				ovirsInsert.setString(12, filenamePlusParent);
-//				logger.log(Level.INFO, "insert statement for spectra populated");
-				ovirsInsert.executeUpdate();
-//				logger.log(Level.INFO, "insert statement updated completed");
-				ResultSet rs = ovirsInsert.getGeneratedKeys();
-				rs.next();
-				populateOVIRSCubeTableForFile(modelName, dataType, ovirsSpectrumRenderer, rs.getInt(1));
-			}
-			else
-				populateOVIRSCubeTableForFile(modelName, dataType, ovirsSpectrumRenderer, count);
-
-			count++;
+			//TODO FIX THIS
+//			IBasicSpectrumRenderer<OVIRSSpectrum> ovirsSpectrumRenderer = SbmtSpectrumModelFactory
+//					.createSpectrumRenderer(filename, ovirs, true);
+//			ovirsSpectrumRenderer.generateFootprint();
+//
+//			//if no intersection took place, skip this loop
+//			if (ovirsSpectrumRenderer.getShiftedFootprint() == null) continue;
+//
+//			DateTime midtime = new DateTime(new DateTime(date).toString(), DateTimeZone.UTC);
+//			String filenamePlusParent = filename.substring(filename.lastIndexOf("ovirs/") + 5);
+//
+//			if (writeToDB == true)
+//			{
+//				if (ovirsInsert == null)
+//				{
+//					// the index auto increments, so start with the year column
+//					ovirsInsert = db.preparedStatement("insert into " + tableName
+//							+ " (year, day, midtime, minincidence, maxincidence, minemission, maxemission, minphase, maxphase, minrange, maxrange, filename) values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+//				}
+//
+//				// The index autoincrements, so start adding with the year
+//				// string
+//				ovirsInsert.setShort(1, Short.parseShort(yearStr));
+//				ovirsInsert.setShort(2, Short.parseShort(dayOfYearStr));
+//				ovirsInsert.setLong(3, midtime.getMillis());
+//				ovirsInsert.setDouble(4, ovirsSpectrumRenderer.getMinIncidence());
+//				ovirsInsert.setDouble(5, ovirsSpectrumRenderer.getMaxIncidence());
+//				ovirsInsert.setDouble(6, ovirsSpectrumRenderer.getMinEmission());
+//				ovirsInsert.setDouble(7, ovirsSpectrumRenderer.getMaxEmission());
+//				ovirsInsert.setDouble(8, ovirsSpectrumRenderer.getMinPhase());
+//				ovirsInsert.setDouble(9, ovirsSpectrumRenderer.getMaxPhase());
+//				ovirsInsert.setDouble(10, ovirsSpectrumRenderer.getMinRange());
+//				ovirsInsert.setDouble(11, ovirsSpectrumRenderer.getMinRange());
+//				ovirsInsert.setString(12, filenamePlusParent);
+////				logger.log(Level.INFO, "insert statement for spectra populated");
+//				ovirsInsert.executeUpdate();
+////				logger.log(Level.INFO, "insert statement updated completed");
+//				ResultSet rs = ovirsInsert.getGeneratedKeys();
+//				rs.next();
+//				populateOVIRSCubeTableForFile(modelName, dataType, ovirsSpectrumRenderer, rs.getInt(1));
+//			}
+//			else
+//				populateOVIRSCubeTableForFile(modelName, dataType, ovirsSpectrumRenderer, count);
+//
+//			count++;
 		}
 	}
 
@@ -374,7 +369,7 @@ public class OVIRSDatabaseGeneratorSql
 
 		logger.log(Level.INFO, "Body Model initialized");
 
-		OREXSpectraFactory.initializeModels(bodyModel);
+//		OREXSpectraFactory.initializeModels(bodyModel);
 
 		String ovirsFileList = rootURL + File.separator + "data/bennu/shared/ovirs/" + dataType + "/spectrumlist.txt";
 

@@ -4,6 +4,7 @@ import java.util.Date;
 import java.util.GregorianCalendar;
 
 import com.google.common.collect.ImmutableList;
+import com.google.common.collect.Lists;
 
 import edu.jhuapl.saavtk.config.ConfigArrayList;
 import edu.jhuapl.saavtk.model.ShapeModelBody;
@@ -15,15 +16,21 @@ import edu.jhuapl.sbmt.core.body.BodyType;
 import edu.jhuapl.sbmt.core.body.ShapeModelDataUsed;
 import edu.jhuapl.sbmt.core.body.ShapeModelPopulation;
 import edu.jhuapl.sbmt.core.client.Mission;
+import edu.jhuapl.sbmt.core.config.FeatureConfigIOFactory;
 import edu.jhuapl.sbmt.core.config.Instrument;
 import edu.jhuapl.sbmt.core.io.DBRunInfo;
 import edu.jhuapl.sbmt.core.pointing.PointingSource;
+import edu.jhuapl.sbmt.image.config.BasemapImageConfig;
+import edu.jhuapl.sbmt.image.config.ImagingInstrumentConfig;
 import edu.jhuapl.sbmt.image.model.ImageType;
 import edu.jhuapl.sbmt.image.model.ImagingInstrument;
 import edu.jhuapl.sbmt.image.model.SpectralImageMode;
-import edu.jhuapl.sbmt.query.database.GenericPhpQuery;
-import edu.jhuapl.sbmt.query.fixedlist.FixedListQuery;
-import edu.jhuapl.sbmt.spectrum.model.core.search.SpectraHierarchicalSearchSpecification;
+import edu.jhuapl.sbmt.image.query.ImageDataQuery;
+import edu.jhuapl.sbmt.lidar.config.LidarInstrumentConfig;
+import edu.jhuapl.sbmt.query.v2.DataQuerySourcesMetadata;
+import edu.jhuapl.sbmt.query.v2.FixedListDataQuery;
+import edu.jhuapl.sbmt.spectrum.config.SpectrumInstrumentConfig;
+import edu.jhuapl.sbmt.stateHistory.config.StateHistoryConfig;
 
 public class CometConfigs extends SmallBodyViewConfig
 {
@@ -38,6 +45,21 @@ public class CometConfigs extends SmallBodyViewConfig
 	public CometConfigs()
 	{
 		super(ImmutableList.<String>copyOf(DEFAULT_GASKELL_LABELS_PER_RESOLUTION), ImmutableList.<Integer>copyOf(DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION));
+	}
+
+	private static void setupFeatures(CometConfigs c)
+	{
+		c.addFeatureConfig(ImagingInstrumentConfig.class, new ImagingInstrumentConfig(c));
+        c.addFeatureConfig(SpectrumInstrumentConfig.class, new SpectrumInstrumentConfig(c));
+        c.addFeatureConfig(LidarInstrumentConfig.class, new LidarInstrumentConfig(c));
+        c.addFeatureConfig(StateHistoryConfig.class, new StateHistoryConfig(c));
+        c.addFeatureConfig(BasemapImageConfig.class, new BasemapImageConfig(c));
+
+        FeatureConfigIOFactory.getIOForClassType(LidarInstrumentConfig.class.getSimpleName()).setViewConfig(c);
+        FeatureConfigIOFactory.getIOForClassType(SpectrumInstrumentConfig.class.getSimpleName()).setViewConfig(c);
+        FeatureConfigIOFactory.getIOForClassType(ImagingInstrumentConfig.class.getSimpleName()).setViewConfig(c);
+        FeatureConfigIOFactory.getIOForClassType(BasemapImageConfig.class.getSimpleName()).setViewConfig(c);
+        FeatureConfigIOFactory.getIOForClassType(StateHistoryConfig.class.getSimpleName()).setViewConfig(c);
 	}
 
     public static void initialize(ConfigArrayList configArray)
@@ -114,10 +136,19 @@ public class CometConfigs extends SmallBodyViewConfig
             String navcamTable = tableBaseName + "navcam";
             String navcamDataDir = "/stardust/navcam/";
 
-            c.imagingInstruments = new ImagingInstrument[] { //
+            setupFeatures(c);
+            ImagingInstrumentConfig imagingConfig = (ImagingInstrumentConfig)c.getConfigForClass(ImagingInstrumentConfig.class);
+            DataQuerySourcesMetadata itsMetadata = DataQuerySourcesMetadata.of(itsDir, itsDataDir);
+            DataQuerySourcesMetadata hriMetadata = DataQuerySourcesMetadata.of(hriDir, hriDataDir);
+            DataQuerySourcesMetadata mriMetadata = DataQuerySourcesMetadata.of(mriDir, mriDataDir);
+            DataQuerySourcesMetadata navcamMetadata = DataQuerySourcesMetadata.of(navcamDir, navcamDataDir);
+
+
+            imagingConfig.imagingInstruments = Lists.newArrayList( //
                     new ImagingInstrument( //
                             SpectralImageMode.MONO, //
-                            new FixedListQuery<>(itsDir), //
+                            new FixedListDataQuery(itsMetadata),
+//                            new FixedListQuery<>(itsDir), //
                             // new GenericPhpQuery(itsDir, itsTable, itsTable,
                             // itsDataDir + "gallery"), //
                             ImageType.valueOf("ITS_IMAGE"), //
@@ -127,7 +158,8 @@ public class CometConfigs extends SmallBodyViewConfig
                             "None"), //
                     new ImagingInstrument( //
                             SpectralImageMode.MONO, //
-                            new FixedListQuery<>(hriDir), //
+                            new FixedListDataQuery(hriMetadata),
+//                            new FixedListQuery<>(hriDir), //
                             // new GenericPhpQuery(hriDir, hriTable, hriTable,
                             // hriDataDir + "gallery"), //
                             ImageType.valueOf("HRI_IMAGE"), //
@@ -137,7 +169,8 @@ public class CometConfigs extends SmallBodyViewConfig
                             "None"), //
                     new ImagingInstrument( //
                             SpectralImageMode.MONO, //
-                            new FixedListQuery<>(mriDir), //
+                            new FixedListDataQuery(mriMetadata),
+//                            new FixedListQuery<>(mriDir), //
                             // new GenericPhpQuery(mriDir, mriTable, mriTable,
                             // mriDataDir + "gallery"), //
                             ImageType.valueOf("MRI_IMAGE"), //
@@ -147,22 +180,23 @@ public class CometConfigs extends SmallBodyViewConfig
                             "None"), //
                     new ImagingInstrument( //
                             SpectralImageMode.MONO, //
-                            new FixedListQuery<>(navcamDir), //
+                            new FixedListDataQuery(navcamMetadata),
+//                            new FixedListQuery<>(navcamDir), //
                             // new GenericPhpQuery(navcamDir, navcamTable,
                             // navcamTable, navcamDataDir + "gallery"), //
                             ImageType.valueOf("NAVCAM_IMAGE"), //
                             SumFiles, //
                             Instrument.valueFor("NAVCAM"), //
                             180.0, //
-                            "None"), //
-            };
+                            "None") //
+            );
 
-            c.imageSearchDefaultStartDate = ImageSearchDefaultStartDate;
-            c.imageSearchDefaultEndDate = ImageSearchDefaultEndDate;
-            c.imageSearchFilterNames = new String[] {};
-            c.imageSearchUserDefinedCheckBoxesNames = new String[] {};
-            c.imageSearchDefaultMaxSpacecraftDistance = 1.0e4;
-            c.imageSearchDefaultMaxResolution = 1.0e3;
+            imagingConfig.imageSearchDefaultStartDate = ImageSearchDefaultStartDate;
+            imagingConfig.imageSearchDefaultEndDate = ImageSearchDefaultEndDate;
+            imagingConfig.imageSearchFilterNames = new String[] {};
+            imagingConfig.imageSearchUserDefinedCheckBoxesNames = new String[] {};
+            imagingConfig.imageSearchDefaultMaxSpacecraftDistance = 1.0e4;
+            imagingConfig.imageSearchDefaultMaxResolution = 1.0e3;
 
             c.databaseRunInfos = new DBRunInfo[] { //
                     new DBRunInfo(PointingSource.GASKELL, Instrument.ITS, bodyId, //
@@ -227,19 +261,28 @@ public class CometConfigs extends SmallBodyViewConfig
             c.modelLabel = "Gaskell (SHAP5 V0.3)";
             c.rootDirOnServer = "/GASKELL/67P";
 
-            c.imagingInstruments = new ImagingInstrument[] { new ImagingInstrument( //
-                            SpectralImageMode.MONO, //
-                            new GenericPhpQuery("/GASKELL/67P/IMAGING", "67P", "/GASKELL/67P/IMAGING/images/gallery"), //
-                            ImageType.OSIRIS_IMAGE, //
-                            new PointingSource[]{PointingSource.GASKELL}, //
-                    Instrument.OSIRIS, //
-                    0.0,
-                    "Y"
-                            ) //
-            };
-            c.imageSearchDefaultStartDate = new GregorianCalendar(2014, 7, 1, 0, 0, 0).getTime();
-            c.imageSearchDefaultEndDate = new GregorianCalendar(2014, 11, 31, 0, 0, 0).getTime();
-            c.imageSearchFilterNames = new String[] {
+            setupFeatures(c);
+            ImagingInstrumentConfig imagingConfig = (ImagingInstrumentConfig)c.getConfigForClass(ImagingInstrumentConfig.class);
+
+            DataQuerySourcesMetadata osirisMetadata =
+            		DataQuerySourcesMetadata.of("/GASKELL/67P/IMAGING", "", "67P", "67P", "/GASKELL/67P/IMAGING/images/gallery");
+
+
+            imagingConfig.imagingInstruments = Lists.newArrayList(
+        		new ImagingInstrument( //
+                        SpectralImageMode.MONO, //
+                        new ImageDataQuery(osirisMetadata),
+//                            new GenericPhpQuery("/GASKELL/67P/IMAGING", "67P", "/GASKELL/67P/IMAGING/images/gallery"), //
+                        ImageType.OSIRIS_IMAGE, //
+                        new PointingSource[]{PointingSource.GASKELL}, //
+	                    Instrument.OSIRIS, //
+	                    0.0,
+	                    "Y"
+                ) //
+            );
+            imagingConfig.imageSearchDefaultStartDate = new GregorianCalendar(2014, 7, 1, 0, 0, 0).getTime();
+            imagingConfig.imageSearchDefaultEndDate = new GregorianCalendar(2014, 11, 31, 0, 0, 0).getTime();
+            imagingConfig.imageSearchFilterNames = new String[] {
                     // If a name begins with a star, it is not selected by
                     // default
                     "*Filter 1,2", //
@@ -255,9 +298,9 @@ public class CometConfigs extends SmallBodyViewConfig
                     "*Filter 5,4", //
                     "*Filter 6,1" //
             };
-            c.imageSearchUserDefinedCheckBoxesNames = new String[] { "NAC", "*WAC" };
-            c.imageSearchDefaultMaxSpacecraftDistance = 40000.0;
-            c.imageSearchDefaultMaxResolution = 4000.0;
+            imagingConfig.imageSearchUserDefinedCheckBoxesNames = new String[] { "NAC", "*WAC" };
+            imagingConfig.imageSearchDefaultMaxSpacecraftDistance = 40000.0;
+            imagingConfig.imageSearchDefaultMaxResolution = 4000.0;
 
             c.databaseRunInfos = new DBRunInfo[] { new DBRunInfo(PointingSource.GASKELL, Instrument.OSIRIS, ShapeModelBody._67P.toString(), "/project/nearsdc/data/GASKELL/67P/IMAGING/imagelist-fullpath.txt", "67p"),
             };
@@ -275,7 +318,13 @@ public class CometConfigs extends SmallBodyViewConfig
                     "cg-dlr_spg-shap4s-v0.9_64m.ply.gz", "cg-dlr_spg-shap4s-v0.9_32m.ply.gz", "cg-dlr_spg-shap4s-v0.9_16m.ply.gz", "cg-dlr_spg-shap4s-v0.9_8m.ply.gz", "cg-dlr_spg-shap4s-v0.9_4m.ply.gz", "cg-dlr_spg-shap4s-v0.9.ply.gz"); //
 
             c.version = "SHAP4S";
-            c.imagingInstruments[0].searchQuery = new GenericPhpQuery("/DLR/67P/IMAGING", "67P_DLR", "/DLR/67P/IMAGING/images/gallery");
+            setupFeatures(c);
+            imagingConfig = (ImagingInstrumentConfig)c.getConfigForClass(ImagingInstrumentConfig.class);
+
+            DataQuerySourcesMetadata dlrMetadata =
+            		DataQuerySourcesMetadata.of("/DLR/67P/IMAGING", "", "67P_DLR", "67P_DLR", "/DLR/67P/IMAGING/images/gallery");
+
+            imagingConfig.imagingInstruments.get(0).searchQuery = new ImageDataQuery(dlrMetadata);
             c.setResolution(ImmutableList.of( //
                     "17442 plates ", "72770 plates ", "298442 plates ", "1214922 plates ", //
                     "4895631 plates ", "16745283 plates " //
@@ -303,29 +352,37 @@ public class CometConfigs extends SmallBodyViewConfig
             c.version = "V2";
             c.rootDirOnServer = "/GASKELL/67P_V2";
 
-            c.imagingInstruments = new ImagingInstrument[] { new ImagingInstrument( //
+            setupFeatures(c);
+            imagingConfig = (ImagingInstrumentConfig)c.getConfigForClass(ImagingInstrumentConfig.class);
+
+            //V2 has no gallery images, so use V3 instead.
+            DataQuerySourcesMetadata osirisV2Metadata =
+            		DataQuerySourcesMetadata.of("/GASKELL/67P_V2/IMAGING", "", "67P_V2", "67P_V2", "/GASKELL/67P_V3/IMAGING/gallery");
+
+            imagingConfig.imagingInstruments = Lists.newArrayList(  new ImagingInstrument( //
                             SpectralImageMode.MONO, //
-                    new GenericPhpQuery("/GASKELL/67P_V2/IMAGING", "67P_V2", "/GASKELL/67P_V3/IMAGING/gallery"), // V2
-                                                                                                                 // has
-                                                                                                                 // no
-                                                                                                                 // gallery
-                                                                                                                 // but
-                                                                                                                 // images
-                                                                                                                 // are
-                                                                                                                 // in
-                                                                                                                 // V3
-                                                                                                                 // gallery
-                                                                                                                 // //
+                            new ImageDataQuery(osirisV2Metadata),
+//                    new GenericPhpQuery("/GASKELL/67P_V2/IMAGING", "67P_V2", "/GASKELL/67P_V3/IMAGING/gallery"), // V2
+//                                                                                                                 // has
+//                                                                                                                 // no
+//                                                                                                                 // gallery
+//                                                                                                                 // but
+//                                                                                                                 // images
+//                                                                                                                 // are
+//                                                                                                                 // in
+//                                                                                                                 // V3
+//                                                                                                                 // gallery
+//                                                                                                                 // //
                             //new FixedListQuery("/GASKELL/67P_V2/IMAGING"), //
                             ImageType.OSIRIS_IMAGE, //
                             new PointingSource[]{PointingSource.GASKELL}, //
 		                    Instrument.OSIRIS , //
 		                    0.0, //
-		    				"Y"), //
-            };
-            c.imageSearchDefaultStartDate = new GregorianCalendar(2014, 6, 1, 0, 0, 0).getTime();
-            c.imageSearchDefaultEndDate = new GregorianCalendar(2015, 11, 31, 0, 0, 0).getTime();
-            c.imageSearchFilterNames = new String[] {
+		    				"Y") //
+            );
+            imagingConfig.imageSearchDefaultStartDate = new GregorianCalendar(2014, 6, 1, 0, 0, 0).getTime();
+            imagingConfig.imageSearchDefaultEndDate = new GregorianCalendar(2015, 11, 31, 0, 0, 0).getTime();
+            imagingConfig.imageSearchFilterNames = new String[] {
                     // If a name, begins with a star, it is not selected by
                     // default
                     "*Filter 1,2", //
@@ -350,9 +407,9 @@ public class CometConfigs extends SmallBodyViewConfig
                     "*Filter 8,7", //
                     "*Filter 8,8" //
             };
-            c.imageSearchUserDefinedCheckBoxesNames = new String[] { "NAC", "*WAC" };
-            c.imageSearchDefaultMaxSpacecraftDistance = 40000.0;
-            c.imageSearchDefaultMaxResolution = 4000.0;
+            imagingConfig.imageSearchUserDefinedCheckBoxesNames = new String[] { "NAC", "*WAC" };
+            imagingConfig.imageSearchDefaultMaxSpacecraftDistance = 40000.0;
+            imagingConfig.imageSearchDefaultMaxResolution = 4000.0;
 
             c.databaseRunInfos = new DBRunInfo[] { new DBRunInfo(PointingSource.GASKELL, Instrument.OSIRIS, ShapeModelBody._67P.toString(), "/project/nearsdc/data/GASKELL/67P_V2/IMAGING/imagelist-fullpath.txt", "67p_v2"),
             };
@@ -376,9 +433,16 @@ public class CometConfigs extends SmallBodyViewConfig
             c.hasCustomBodyCubeSize = true;
             c.customBodyCubeSize = 0.10; // km
 
-            c.imagingInstruments = new ImagingInstrument[] { new ImagingInstrument( //
+            setupFeatures(c);
+            imagingConfig = (ImagingInstrumentConfig)c.getConfigForClass(ImagingInstrumentConfig.class);
+
+            DataQuerySourcesMetadata osirisV3Metadata =
+            		DataQuerySourcesMetadata.of("/GASKELL/67P_V3/IMAGING", "", "67P_V3", "67P_V3", "/GASKELL/67P_V3/IMAGING/gallery");
+
+            imagingConfig.imagingInstruments = Lists.newArrayList( new ImagingInstrument( //
                             SpectralImageMode.MONO, //
-                            new GenericPhpQuery("/GASKELL/67P_V3/IMAGING", "67P_V3", "/GASKELL/67P_V3/IMAGING/gallery"), //
+                            new ImageDataQuery(osirisV3Metadata),
+//                            new GenericPhpQuery("/GASKELL/67P_V3/IMAGING", "67P_V3", "/GASKELL/67P_V3/IMAGING/gallery"), //
                             //new FixedListQuery("/GASKELL/67P_V3/IMAGING"), //
                             ImageType.OSIRIS_IMAGE, //
                             new PointingSource[]{PointingSource.GASKELL}, //
@@ -386,10 +450,10 @@ public class CometConfigs extends SmallBodyViewConfig
                             0.0,
                             "Y"
                             ) //
-            };
-            c.imageSearchDefaultStartDate = new GregorianCalendar(2014, 6, 1, 0, 0, 0).getTime();
-            c.imageSearchDefaultEndDate = new GregorianCalendar(2016, 0, 31, 0, 0, 0).getTime();
-            c.imageSearchFilterNames = new String[] {
+            );
+            imagingConfig.imageSearchDefaultStartDate = new GregorianCalendar(2014, 6, 1, 0, 0, 0).getTime();
+            imagingConfig.imageSearchDefaultEndDate = new GregorianCalendar(2016, 0, 31, 0, 0, 0).getTime();
+            imagingConfig.imageSearchFilterNames = new String[] {
                     // If a name, begins with a star, it is not selected by
                     // default
                     "*Filter 1,2", //
@@ -415,9 +479,9 @@ public class CometConfigs extends SmallBodyViewConfig
                     "*Filter 8,8", //
                     "*Filter 2,1" //
             };
-            c.imageSearchUserDefinedCheckBoxesNames = new String[] { "NAC", "*WAC" };
-            c.imageSearchDefaultMaxSpacecraftDistance = 40000.0;
-            c.imageSearchDefaultMaxResolution = 4000.0;
+            imagingConfig.imageSearchUserDefinedCheckBoxesNames = new String[] { "NAC", "*WAC" };
+            imagingConfig.imageSearchDefaultMaxSpacecraftDistance = 40000.0;
+            imagingConfig.imageSearchDefaultMaxResolution = 4000.0;
 
             c.databaseRunInfos = new DBRunInfo[] { new DBRunInfo(PointingSource.GASKELL, Instrument.OSIRIS, ShapeModelBody._67P.toString(), "/project/nearsdc/data/GASKELL/67P_V3/IMAGING/imagelist-fullpath.txt", "67p_v3"),
             };
@@ -458,22 +522,5 @@ public class CometConfigs extends SmallBodyViewConfig
     public boolean isAccessible()
     {
         return FileCache.instance().isAccessible(getShapeModelFileNames()[0]);
-    }
-
-    @Override
-    public Instrument getLidarInstrument()
-    {
-        // TODO Auto-generated method stub
-        return lidarInstrumentName;
-    }
-
-    public boolean hasHypertreeLidarSearch()
-    {
-        return hasHypertreeBasedLidarSearch;
-    }
-
-    public SpectraHierarchicalSearchSpecification<?> getHierarchicalSpectraSearchSpecification()
-    {
-        return hierarchicalSpectraSearchSpecification;
     }
 }

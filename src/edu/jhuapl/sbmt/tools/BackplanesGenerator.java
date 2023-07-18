@@ -22,6 +22,7 @@ import edu.jhuapl.sbmt.config.SmallBodyViewConfig;
 import edu.jhuapl.sbmt.core.body.SmallBodyModel;
 import edu.jhuapl.sbmt.core.config.Instrument;
 import edu.jhuapl.sbmt.core.pointing.PointingSource;
+import edu.jhuapl.sbmt.image.config.ImagingInstrumentConfig;
 import edu.jhuapl.sbmt.image.model.ImagingInstrument;
 import edu.jhuapl.sbmt.image.model.PerspectiveImage;
 import edu.jhuapl.sbmt.image.old.ImageKey;
@@ -79,7 +80,8 @@ public class BackplanesGenerator
         // Output images which do not have associated pointing information.
         FileWriter fstream = new FileWriter(outputFolder + File.separator + "pointingNotFound.txt");
         BufferedWriter noPtg = new BufferedWriter(fstream);
-
+        ImagingInstrumentConfig imagingConfig = (ImagingInstrumentConfig)((SmallBodyViewConfig)smallBodyModel.getSmallBodyConfig())
+				.getConfigForClass(ImagingInstrumentConfig.class);
 
         int count = 1;
         for (String filename : imageFiles)
@@ -102,11 +104,11 @@ public class BackplanesGenerator
             ImageKey key = null;
 
             ImagingInstrument imager = null;
-            for (int i = 0; i < ((SmallBodyViewConfig)smallBodyModel.getSmallBodyConfig()).imagingInstruments.length; i++)
+            for (int i = 0; i < imagingConfig.imagingInstruments.size(); i++)
             {
-                if (instr.equals(((SmallBodyViewConfig)smallBodyModel.getSmallBodyConfig()).imagingInstruments[i].instrumentName))
+                if (instr.equals(imagingConfig.imagingInstruments.get(i).instrumentName))
                 {
-                    imager = ((SmallBodyViewConfig)smallBodyModel.getSmallBodyConfig()).imagingInstruments[i];
+                    imager = imagingConfig.imagingInstruments.get(i);
                 }
             }
 
@@ -424,9 +426,11 @@ public class BackplanesGenerator
             System.exit(0);
         }
         smallBodyModel = SbmtModelFactoryV1.createSmallBodyModel(SmallBodyViewConfig.getSmallBodyConfig(body, ShapeModelType.GASKELL, version));
+        ImagingInstrumentConfig imagingConfig = (ImagingInstrumentConfig)((SmallBodyViewConfig)smallBodyModel.getSmallBodyConfig())
+				.getConfigForClass(ImagingInstrumentConfig.class);
         if (instr == null)
         {
-            instr = ((SmallBodyViewConfig)smallBodyModel.getSmallBodyConfig()).imagingInstruments[0].instrumentName;
+            instr = imagingConfig.imagingInstruments.get(0).instrumentName;
         }
 
         // Information for user.

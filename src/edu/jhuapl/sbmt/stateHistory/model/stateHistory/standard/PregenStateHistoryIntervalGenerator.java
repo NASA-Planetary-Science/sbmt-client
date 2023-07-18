@@ -13,7 +13,6 @@ import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 
 import edu.jhuapl.saavtk.util.FileCache;
-import edu.jhuapl.sbmt.config.SmallBodyViewConfig;
 import edu.jhuapl.sbmt.core.util.TimeUtil;
 import edu.jhuapl.sbmt.pointing.IPointingProvider;
 import edu.jhuapl.sbmt.pointing.State;
@@ -21,6 +20,7 @@ import edu.jhuapl.sbmt.pointing.StateHistoryUtil;
 import edu.jhuapl.sbmt.pointing.pregen.PregenPointingProvider;
 import edu.jhuapl.sbmt.pointing.scState.CsvState;
 import edu.jhuapl.sbmt.pointing.spice.SpiceInfo;
+import edu.jhuapl.sbmt.stateHistory.config.StateHistoryConfig;
 import edu.jhuapl.sbmt.stateHistory.model.StateHistorySourceType;
 import edu.jhuapl.sbmt.stateHistory.model.interfaces.IStateHistoryIntervalGenerator;
 import edu.jhuapl.sbmt.stateHistory.model.interfaces.IStateHistoryMetadata;
@@ -37,7 +37,7 @@ import edu.jhuapl.sbmt.stateHistory.model.stateHistory.StateHistoryMetadata;
  */
 public class PregenStateHistoryIntervalGenerator implements IStateHistoryIntervalGenerator
 {
-	SmallBodyViewConfig config;
+	StateHistoryConfig config;
 
 	String sourceFile;
 
@@ -45,7 +45,7 @@ public class PregenStateHistoryIntervalGenerator implements IStateHistoryInterva
 	/**
 	 *
 	 */
-	public PregenStateHistoryIntervalGenerator(SmallBodyViewConfig config)
+	public PregenStateHistoryIntervalGenerator(StateHistoryConfig config)
 	{
 		this.config = config;
 		this.sourceFile = config.timeHistoryFile;

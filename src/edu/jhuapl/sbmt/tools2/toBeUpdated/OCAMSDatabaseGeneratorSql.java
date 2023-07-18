@@ -28,11 +28,12 @@ import edu.jhuapl.sbmt.core.client.Mission;
 import edu.jhuapl.sbmt.core.config.Instrument;
 import edu.jhuapl.sbmt.core.io.DBRunInfo;
 import edu.jhuapl.sbmt.core.pointing.PointingSource;
+import edu.jhuapl.sbmt.image.config.ImagingInstrumentConfig;
 import edu.jhuapl.sbmt.image.model.ImagingInstrument;
 import edu.jhuapl.sbmt.image.pipelineComponents.operators.rendering.pointedImage.RenderablePointedImage;
 import edu.jhuapl.sbmt.image.pipelineComponents.pipelines.io.FilenameToRenderableImagePipeline;
 import edu.jhuapl.sbmt.model.SbmtModelFactory;
-import edu.jhuapl.sbmt.util.SqlManager; 
+import edu.jhuapl.sbmt.util.SqlManager;
 
 public class OCAMSDatabaseGeneratorSql
 {
@@ -128,7 +129,8 @@ public class OCAMSDatabaseGeneratorSql
             keyName = keyName.replace(".fit", "");
 
             ImagingInstrument imager = null;
-            for (ImagingInstrument inst : config.imagingInstruments)
+            ImagingInstrumentConfig imagingConfig = (ImagingInstrumentConfig)config.getConfigForClass(ImagingInstrumentConfig.class);
+            for (ImagingInstrument inst : imagingConfig.imagingInstruments)
             {
             	if (inst.getInstrumentName() == instrument) imager = inst;
             }
@@ -152,7 +154,7 @@ public class OCAMSDatabaseGeneratorSql
 //            RenderableImagePipeline pipeline = new RenderableImagePipeline(keyName, pointingFilenames.get(0), imager);
 //        	List<RenderablePointedImage> images = pipeline.getOutput();
 
-        	FilenameToRenderableImagePipeline pipeline = FilenameToRenderableImagePipeline.of(keyName, PointingSource.SPICE, config, imager);
+        	FilenameToRenderableImagePipeline pipeline = FilenameToRenderableImagePipeline.of(keyName, PointingSource.SPICE, imager);
         	List<RenderablePointedImage> images = pipeline.getImages();
         	List<String> pointingFilenames = pipeline.getPointingFilenames();
 

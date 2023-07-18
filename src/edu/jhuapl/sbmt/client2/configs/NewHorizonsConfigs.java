@@ -4,8 +4,10 @@ import java.util.ArrayList;
 import java.util.GregorianCalendar;
 
 import com.google.common.collect.ImmutableList;
+import com.google.common.collect.Lists;
 
 import edu.jhuapl.saavtk.config.ConfigArrayList;
+import edu.jhuapl.saavtk.config.IBodyViewConfig;
 import edu.jhuapl.saavtk.model.ShapeModelBody;
 import edu.jhuapl.saavtk.model.ShapeModelType;
 import edu.jhuapl.saavtk.util.Configuration;
@@ -15,17 +17,22 @@ import edu.jhuapl.sbmt.core.body.BodyType;
 import edu.jhuapl.sbmt.core.body.ShapeModelDataUsed;
 import edu.jhuapl.sbmt.core.body.ShapeModelPopulation;
 import edu.jhuapl.sbmt.core.client.Mission;
+import edu.jhuapl.sbmt.core.config.FeatureConfigIOFactory;
 import edu.jhuapl.sbmt.core.config.Instrument;
 import edu.jhuapl.sbmt.core.io.DBRunInfo;
 import edu.jhuapl.sbmt.core.pointing.PointingSource;
 import edu.jhuapl.sbmt.image.config.BasemapImageConfig;
+import edu.jhuapl.sbmt.image.config.ImagingInstrumentConfig;
 import edu.jhuapl.sbmt.image.model.ImageType;
 import edu.jhuapl.sbmt.image.model.ImagingInstrument;
 import edu.jhuapl.sbmt.image.model.SpectralImageMode;
-import edu.jhuapl.sbmt.query.database.GenericPhpQuery;
-import edu.jhuapl.sbmt.query.fixedlist.FixedListQuery;
+import edu.jhuapl.sbmt.image.query.ImageDataQuery;
+import edu.jhuapl.sbmt.lidar.config.LidarInstrumentConfig;
+import edu.jhuapl.sbmt.query.v2.DataQuerySourcesMetadata;
+import edu.jhuapl.sbmt.query.v2.FixedListDataQuery;
+import edu.jhuapl.sbmt.spectrum.config.SpectrumInstrumentConfig;
 import edu.jhuapl.sbmt.spectrum.model.core.BasicSpectrumInstrument;
-import edu.jhuapl.sbmt.spectrum.model.core.search.SpectraHierarchicalSearchSpecification;
+import edu.jhuapl.sbmt.stateHistory.config.StateHistoryConfig;
 
 public class NewHorizonsConfigs extends SmallBodyViewConfig
 {
@@ -35,8 +42,23 @@ public class NewHorizonsConfigs extends SmallBodyViewConfig
 		super(ImmutableList.<String>copyOf(DEFAULT_GASKELL_LABELS_PER_RESOLUTION), ImmutableList.<Integer>copyOf(DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION));
 	}
 
+	private static void setupFeatures(NewHorizonsConfigs c)
+	{
+		c.addFeatureConfig(ImagingInstrumentConfig.class, new ImagingInstrumentConfig(c));
+        c.addFeatureConfig(SpectrumInstrumentConfig.class, new SpectrumInstrumentConfig(c));
+        c.addFeatureConfig(LidarInstrumentConfig.class, new LidarInstrumentConfig(c));
+        c.addFeatureConfig(BasemapImageConfig.class, new BasemapImageConfig(c));
+        c.addFeatureConfig(StateHistoryConfig.class, new StateHistoryConfig(c));
 
-	public static void initialize(ConfigArrayList configArray)
+        FeatureConfigIOFactory.getIOForClassType(LidarInstrumentConfig.class.getSimpleName()).setViewConfig(c);
+        FeatureConfigIOFactory.getIOForClassType(SpectrumInstrumentConfig.class.getSimpleName()).setViewConfig(c);
+        FeatureConfigIOFactory.getIOForClassType(ImagingInstrumentConfig.class.getSimpleName()).setViewConfig(c);
+        FeatureConfigIOFactory.getIOForClassType(BasemapImageConfig.class.getSimpleName()).setViewConfig(c);
+        FeatureConfigIOFactory.getIOForClassType(StateHistoryConfig.class.getSimpleName()).setViewConfig(c);
+	}
+
+
+	public static void initialize(ConfigArrayList<IBodyViewConfig> configArray)
     {
         NewHorizonsConfigs c = new NewHorizonsConfigs();
 
@@ -52,14 +74,26 @@ public class NewHorizonsConfigs extends SmallBodyViewConfig
             c.shapeModelFileNames = prepend(c.rootDirOnServer, "shape_res0.vtk.gz");
             c.hasColoringData = false;
 //            c.hasImageMap = false;
-
+            setupFeatures(c);
+            ImagingInstrumentConfig imagingConfig = (ImagingInstrumentConfig)c.getConfigForClass(ImagingInstrumentConfig.class);
             // imaging instruments
-            c.imagingInstruments = new ImagingInstrument[] {
-                    new ImagingInstrument(SpectralImageMode.MONO, new GenericPhpQuery("/NEWHORIZONS/JUPITER/IMAGING", "JUPITER", "/NEWHORIZONS/JUPITER/IMAGING/images/gallery"), ImageType.LORRI_IMAGE, new PointingSource[] { PointingSource.SPICE }, Instrument.LORRI),
+
+            DataQuerySourcesMetadata lorriMetadata =
+            		DataQuerySourcesMetadata.of("/NEWHORIZONS/JUPITER/IMAGING", "", "JUPITER", "JUPITER", "/NEWHORIZONS/JUPITER/IMAGING/images/gallery");
+            DataQuerySourcesMetadata mvicMetadata = DataQuerySourcesMetadata.of("/NEWHORIZONS/JUPITER/MVIC", "", null, null, null);
+
+            imagingConfig.imagingInstruments = Lists.newArrayList(
+                    new ImagingInstrument(SpectralImageMode.MONO,
+                    		new ImageDataQuery(lorriMetadata),
+//                    		new GenericPhpQuery("/NEWHORIZONS/JUPITER/IMAGING", "JUPITER", "/NEWHORIZONS/JUPITER/IMAGING/images/gallery"),
+                    		ImageType.LORRI_IMAGE,
+                    		new PointingSource[] { PointingSource.SPICE },
+                    		Instrument.LORRI),
 
                     new ImagingInstrument( //
                             SpectralImageMode.MULTI, //
-                            new FixedListQuery("/NEWHORIZONS/JUPITER/MVIC"), //
+                            new FixedListDataQuery(mvicMetadata),
+//                            new FixedListQuery("/NEWHORIZONS/JUPITER/MVIC"), //
                             ImageType.MVIC_JUPITER_IMAGE, //
                             new PointingSource[]{PointingSource.SPICE}, //
                             Instrument.MVIC //
@@ -72,14 +106,14 @@ public class NewHorizonsConfigs extends SmallBodyViewConfig
 //                            new ImageSource[]{ImageSource.SPICE}, //
 //                            Instrument.LEISA //
                             ) //
-                    }; //
+                    ); //
 
-            c.imageSearchDefaultStartDate = new GregorianCalendar(2007, 0, 8, 0, 0, 0).getTime();
-            c.imageSearchDefaultEndDate = new GregorianCalendar(2007, 2, 5, 0, 0, 0).getTime();
-            c.imageSearchFilterNames = new String[] {};
-            c.imageSearchUserDefinedCheckBoxesNames = new String[] {};
-            c.imageSearchDefaultMaxSpacecraftDistance = 1.0e9;
-            c.imageSearchDefaultMaxResolution = 1.0e6;
+            imagingConfig.imageSearchDefaultStartDate = new GregorianCalendar(2007, 0, 8, 0, 0, 0).getTime();
+            imagingConfig.imageSearchDefaultEndDate = new GregorianCalendar(2007, 2, 5, 0, 0, 0).getTime();
+            imagingConfig.imageSearchFilterNames = new String[] {};
+            imagingConfig.imageSearchUserDefinedCheckBoxesNames = new String[] {};
+            imagingConfig.imageSearchDefaultMaxSpacecraftDistance = 1.0e9;
+            imagingConfig.imageSearchDefaultMaxResolution = 1.0e6;
             // 2017-12-12: exclude this body/model for now, but do not comment out
             // anything else in this block so that Eclipse updates will continue
             // to keep this code intact.
@@ -113,17 +147,22 @@ public class NewHorizonsConfigs extends SmallBodyViewConfig
             c.shapeModelFileNames = prepend(c.rootDirOnServer, "shape_res0.vtk.gz");
 //            c.hasImageMap = true;
             c.addFeatureConfig(BasemapImageConfig.class, new BasemapImageConfig(c));
-            
+            setupFeatures(c);
+            lorriMetadata =
+            		DataQuerySourcesMetadata.of("/NEWHORIZONS/CALLISTO/IMAGING", "", "CALLISTO", "CALLISTO", "/NEWHORIZONS/CALLISTO/IMAGING/images/gallery");
+
             // imaging instruments
-            c.imagingInstruments = new ImagingInstrument[] {
+            imagingConfig = (ImagingInstrumentConfig)c.getConfigForClass(ImagingInstrumentConfig.class);
+            imagingConfig.imagingInstruments = Lists.newArrayList(
                     new ImagingInstrument( //
                             SpectralImageMode.MONO, //
-                            new GenericPhpQuery("/NEWHORIZONS/CALLISTO/IMAGING", "CALLISTO", "/NEWHORIZONS/CALLISTO/IMAGING/images/gallery"), //
+                            new ImageDataQuery(lorriMetadata),
+//                            new GenericPhpQuery("/NEWHORIZONS/CALLISTO/IMAGING", "CALLISTO", "/NEWHORIZONS/CALLISTO/IMAGING/images/gallery"), //
                             ImageType.LORRI_IMAGE, //
                             new PointingSource[]{PointingSource.SPICE}, //
                             Instrument.LORRI //
                             ) //
-            };
+            );
 
             // 2017-12-12: exclude this body/model for now, but do not comment out
             // anything else in this block so that Eclipse updates will continue
@@ -139,14 +178,20 @@ public class NewHorizonsConfigs extends SmallBodyViewConfig
             c.rootDirOnServer = "/NEWHORIZONS/EUROPA";
             c.shapeModelFileNames = prepend(c.rootDirOnServer, "shape_res0.vtk.gz");
 //            c.hasImageMap = true;
-            c.addFeatureConfig(BasemapImageConfig.class, new BasemapImageConfig(c));
+
             c.hasFlybyData = true;
+            setupFeatures(c);
+            lorriMetadata =
+            		DataQuerySourcesMetadata.of("/NEWHORIZONS/EUROPA/IMAGING", "", "EUROPA", "EUROPA", "/NEWHORIZONS/EUROPA/IMAGING/images/gallery");
+            mvicMetadata = DataQuerySourcesMetadata.of("/NEWHORIZONS/EUROPA/MVIC", "", null, null, null);
 
             // imaging instruments
-            c.imagingInstruments = new ImagingInstrument[] {
+            imagingConfig = (ImagingInstrumentConfig)c.getConfigForClass(ImagingInstrumentConfig.class);
+            imagingConfig.imagingInstruments = Lists.newArrayList(
                     new ImagingInstrument( //
                             SpectralImageMode.MONO, //
-                            new GenericPhpQuery("/NEWHORIZONS/EUROPA/IMAGING", "EUROPA", "/NEWHORIZONS/EUROPA/IMAGING/images/gallery"), //
+                            new ImageDataQuery(lorriMetadata),
+//                            new GenericPhpQuery("/NEWHORIZONS/EUROPA/IMAGING", "EUROPA", "/NEWHORIZONS/EUROPA/IMAGING/images/gallery"), //
                             ImageType.LORRI_IMAGE, //
                             new PointingSource[]{PointingSource.SPICE}, //
                             Instrument.LORRI //
@@ -154,19 +199,20 @@ public class NewHorizonsConfigs extends SmallBodyViewConfig
 
                     new ImagingInstrument( //
                             SpectralImageMode.MULTI, //
-                            new FixedListQuery("/NEWHORIZONS/EUROPA/MVIC"), //
+                            new FixedListDataQuery(mvicMetadata),
+//                            new FixedListQuery("/NEWHORIZONS/EUROPA/MVIC"), //
                             ImageType.MVIC_JUPITER_IMAGE, //
                             new PointingSource[]{PointingSource.SPICE}, //
                             Instrument.MVIC //
                             ) //
-                    };
+                    );
 
-            c.imageSearchDefaultStartDate = new GregorianCalendar(2007, 0, 8, 0, 0, 0).getTime();
-            c.imageSearchDefaultEndDate = new GregorianCalendar(2007, 2, 5, 0, 0, 0).getTime();
-            c.imageSearchFilterNames = new String[] {};
-            c.imageSearchUserDefinedCheckBoxesNames = new String[] {};
-            c.imageSearchDefaultMaxSpacecraftDistance = 1.0e9;
-            c.imageSearchDefaultMaxResolution = 1.0e6;
+            imagingConfig.imageSearchDefaultStartDate = new GregorianCalendar(2007, 0, 8, 0, 0, 0).getTime();
+            imagingConfig.imageSearchDefaultEndDate = new GregorianCalendar(2007, 2, 5, 0, 0, 0).getTime();
+            imagingConfig.imageSearchFilterNames = new String[] {};
+            imagingConfig.imageSearchUserDefinedCheckBoxesNames = new String[] {};
+            imagingConfig.imageSearchDefaultMaxSpacecraftDistance = 1.0e9;
+            imagingConfig.imageSearchDefaultMaxResolution = 1.0e6;
             // 2017-12-12: exclude this body/model for now, but do not comment out
             // anything else in this block so that Eclipse updates will continue
             // to keep this code intact.
@@ -181,15 +227,21 @@ public class NewHorizonsConfigs extends SmallBodyViewConfig
             c.rootDirOnServer = "/NEWHORIZONS/GANYMEDE";
             c.shapeModelFileNames = prepend(c.rootDirOnServer, "shape_res0.vtk.gz");
 //            c.hasImageMap = true;
-            c.addFeatureConfig(BasemapImageConfig.class, new BasemapImageConfig(c));
-            c.imageSearchDefaultStartDate = new GregorianCalendar(2007, 0, 8, 0, 0, 0).getTime();
-            c.imageSearchDefaultEndDate = new GregorianCalendar(2007, 2, 5, 0, 0, 0).getTime();
+            setupFeatures(c);
+            imagingConfig = (ImagingInstrumentConfig)c.getConfigForClass(ImagingInstrumentConfig.class);
+            imagingConfig.imageSearchDefaultStartDate = new GregorianCalendar(2007, 0, 8, 0, 0, 0).getTime();
+            imagingConfig.imageSearchDefaultEndDate = new GregorianCalendar(2007, 2, 5, 0, 0, 0).getTime();
+
+            lorriMetadata =
+            		DataQuerySourcesMetadata.of("/NEWHORIZONS/GANYMEDE/IMAGING", "", "GANYMEDE", "GANYMEDE", "/NEWHORIZONS/GANYMEDE/IMAGING/images/gallery");
+            mvicMetadata = DataQuerySourcesMetadata.of("/NEWHORIZONS/GANYMEDE/MVIC", "", null, null, null);
 
             // imaging instruments
-            c.imagingInstruments = new ImagingInstrument[] {
+            imagingConfig.imagingInstruments = Lists.newArrayList(
                     new ImagingInstrument( //
                             SpectralImageMode.MONO, //
-                            new GenericPhpQuery("/NEWHORIZONS/GANYMEDE/IMAGING", "GANYMEDE", "/NEWHORIZONS/GANYMEDE/IMAGING/images/gallery"), //
+                            new ImageDataQuery(lorriMetadata),
+//                            new GenericPhpQuery("/NEWHORIZONS/GANYMEDE/IMAGING", "GANYMEDE", "/NEWHORIZONS/GANYMEDE/IMAGING/images/gallery"), //
                             ImageType.LORRI_IMAGE, //
                             new PointingSource[]{PointingSource.SPICE}, //
                             Instrument.LORRI //
@@ -197,17 +249,18 @@ public class NewHorizonsConfigs extends SmallBodyViewConfig
 
                     new ImagingInstrument( //
                             SpectralImageMode.MULTI, //
-                            new FixedListQuery("/NEWHORIZONS/GANYMEDE/MVIC"), //
+                            new FixedListDataQuery(mvicMetadata),
+//                            new FixedListQuery("/NEWHORIZONS/GANYMEDE/MVIC"), //
                             ImageType.MVIC_JUPITER_IMAGE, //
                             new PointingSource[]{PointingSource.SPICE}, //
                             Instrument.MVIC //
                             ) //
-                    }; //
+                    ); //
 
-            c.imageSearchFilterNames = new String[] {};
-            c.imageSearchUserDefinedCheckBoxesNames = new String[] {};
-            c.imageSearchDefaultMaxSpacecraftDistance = 1.0e9;
-            c.imageSearchDefaultMaxResolution = 1.0e6;
+            imagingConfig.imageSearchFilterNames = new String[] {};
+            imagingConfig.imageSearchUserDefinedCheckBoxesNames = new String[] {};
+            imagingConfig.imageSearchDefaultMaxSpacecraftDistance = 1.0e9;
+            imagingConfig.imageSearchDefaultMaxResolution = 1.0e6;
             // 2017-12-12: exclude this body/model for now, but do not comment out
             // anything else in this block so that Eclipse updates will continue
             // to keep this code intact.
@@ -222,15 +275,20 @@ public class NewHorizonsConfigs extends SmallBodyViewConfig
             c.rootDirOnServer = "/NEWHORIZONS/IO";
             c.shapeModelFileNames = prepend(c.rootDirOnServer, "shape_res0.vtk.gz");
 //            c.hasImageMap = true;
-            c.addFeatureConfig(BasemapImageConfig.class, new BasemapImageConfig(c));
-            c.imageSearchDefaultStartDate = new GregorianCalendar(2007, 0, 8, 0, 0, 0).getTime();
-            c.imageSearchDefaultEndDate = new GregorianCalendar(2007, 2, 5, 0, 0, 0).getTime();
+            imagingConfig = (ImagingInstrumentConfig)c.getConfigForClass(ImagingInstrumentConfig.class);
+            imagingConfig.imageSearchDefaultStartDate = new GregorianCalendar(2007, 0, 8, 0, 0, 0).getTime();
+            imagingConfig.imageSearchDefaultEndDate = new GregorianCalendar(2007, 2, 5, 0, 0, 0).getTime();
 
             // imaging instruments
-            c.imagingInstruments = new ImagingInstrument[] {
+            lorriMetadata =
+            		DataQuerySourcesMetadata.of("/NEWHORIZONS/IO/IMAGING", "", "IO", "IO", "/NEWHORIZONS/IO/IMAGING/images/gallery");
+            mvicMetadata = DataQuerySourcesMetadata.of("/NEWHORIZONS/IO/MVIC", "", null, null, null);
+
+            imagingConfig.imagingInstruments = Lists.newArrayList(
                     new ImagingInstrument( //
                             SpectralImageMode.MONO, //
-                            new GenericPhpQuery("/NEWHORIZONS/IO/IMAGING", "IO", "/NEWHORIZONS/IO/IMAGING/images/gallery"), //
+                            new ImageDataQuery(lorriMetadata),
+//                            new GenericPhpQuery("/NEWHORIZONS/IO/IMAGING", "IO", "/NEWHORIZONS/IO/IMAGING/images/gallery"), //
                             ImageType.LORRI_IMAGE, //
                             new PointingSource[]{PointingSource.SPICE}, //
                             Instrument.LORRI //
@@ -238,17 +296,18 @@ public class NewHorizonsConfigs extends SmallBodyViewConfig
 
                     new ImagingInstrument( //
                             SpectralImageMode.MULTI, //
-                            new FixedListQuery("/NEWHORIZONS/IO/MVIC"), //
+                            new FixedListDataQuery(mvicMetadata),
+//                            new FixedListQuery("/NEWHORIZONS/IO/MVIC"), //
                             ImageType.MVIC_JUPITER_IMAGE, //
                             new PointingSource[]{PointingSource.SPICE}, //
                             Instrument.MVIC //
                             ) //
-                    };
+                    );
 
-            c.imageSearchFilterNames = new String[] {};
-            c.imageSearchUserDefinedCheckBoxesNames = new String[] {};
-            c.imageSearchDefaultMaxSpacecraftDistance = 1.0e9;
-            c.imageSearchDefaultMaxResolution = 1.0e6;
+            imagingConfig.imageSearchFilterNames = new String[] {};
+            imagingConfig.imageSearchUserDefinedCheckBoxesNames = new String[] {};
+            imagingConfig.imageSearchDefaultMaxSpacecraftDistance = 1.0e9;
+            imagingConfig.imageSearchDefaultMaxResolution = 1.0e6;
             // 2017-12-12: exclude this body/model for now, but do not comment out anything
             // else in
             // this block so that Eclipse updates will continue to keep this code intact.
@@ -268,12 +327,19 @@ public class NewHorizonsConfigs extends SmallBodyViewConfig
             c.rootDirOnServer = "/NEWHORIZONS/PLUTO";
             c.shapeModelFileNames = prepend(c.rootDirOnServer, "shape_res0.obj.gz");
             c.hasColoringData = false;
+            setupFeatures(c);
+            ImagingInstrumentConfig imagingConfig = (ImagingInstrumentConfig)c.getConfigForClass(ImagingInstrumentConfig.class);
 
-            c.imagingInstruments = new ImagingInstrument[] {
+            DataQuerySourcesMetadata lorriMetadata =
+            		DataQuerySourcesMetadata.of("/NEWHORIZONS/PLUTO/IMAGING", "", null, null, null);
+            DataQuerySourcesMetadata mvicMetadata = DataQuerySourcesMetadata.of("/NEWHORIZONS/PLUTO/MVIC", "", null, null, null);
+
+            imagingConfig.imagingInstruments = Lists.newArrayList(
                     new ImagingInstrument( //
                             SpectralImageMode.MONO, //
 //                            new GenericPhpQuery("/NEWHORIZONS/PLUTO/IMAGING", "PLUTO"), //
-                            new FixedListQuery("/NEWHORIZONS/PLUTO/IMAGING", true), //
+//                            new FixedListQuery("/NEWHORIZONS/PLUTO/IMAGING", true), //
+                            new FixedListDataQuery(lorriMetadata),
                             ImageType.LORRI_IMAGE, //
                             new PointingSource[]{PointingSource.SPICE, PointingSource.CORRECTED, PointingSource.CORRECTED_SPICE}, //
                             Instrument.LORRI //
@@ -281,7 +347,8 @@ public class NewHorizonsConfigs extends SmallBodyViewConfig
 
                     new ImagingInstrument( //
                             SpectralImageMode.MULTI, //
-                            new FixedListQuery("/NEWHORIZONS/PLUTO/MVIC"), //
+                            new FixedListDataQuery(mvicMetadata),
+//                            new FixedListQuery("/NEWHORIZONS/PLUTO/MVIC"), //
                             ImageType.MVIC_JUPITER_IMAGE, //
                             new PointingSource[]{PointingSource.SPICE}, //
                             Instrument.MVIC //
@@ -294,14 +361,14 @@ public class NewHorizonsConfigs extends SmallBodyViewConfig
 //                            new ImageSource[]{ImageSource.SPICE}, //
 //                            Instrument.LEISA //
                             ) //
-            };
+            );
 
-            c.imageSearchDefaultStartDate = new GregorianCalendar(2015, 0, 1, 0, 0, 0).getTime();
-            c.imageSearchDefaultEndDate = new GregorianCalendar(2016, 1, 1, 0, 0, 0).getTime();
-            c.imageSearchFilterNames = new String[] {};
-            c.imageSearchUserDefinedCheckBoxesNames = new String[] {};
-            c.imageSearchDefaultMaxSpacecraftDistance = 1.0e9;
-            c.imageSearchDefaultMaxResolution = 1.0e6;
+            imagingConfig.imageSearchDefaultStartDate = new GregorianCalendar(2015, 0, 1, 0, 0, 0).getTime();
+            imagingConfig.imageSearchDefaultEndDate = new GregorianCalendar(2016, 1, 1, 0, 0, 0).getTime();
+            imagingConfig.imageSearchFilterNames = new String[] {};
+            imagingConfig.imageSearchUserDefinedCheckBoxesNames = new String[] {};
+            imagingConfig.imageSearchDefaultMaxSpacecraftDistance = 1.0e9;
+            imagingConfig.imageSearchDefaultMaxResolution = 1.0e6;
             c.setResolution(ImmutableList.of(128880));
 
             c.databaseRunInfos = new DBRunInfo[]
@@ -326,11 +393,16 @@ public class NewHorizonsConfigs extends SmallBodyViewConfig
             c.rootDirOnServer = "/NEWHORIZONS/CHARON";
             c.shapeModelFileNames = prepend(c.rootDirOnServer, "shape_res0.obj.gz");
             c.hasColoringData = false;
-
-            c.imagingInstruments = new ImagingInstrument[] {
+            setupFeatures(c);
+            lorriMetadata =
+            		DataQuerySourcesMetadata.of("/NEWHORIZONS/CHARON/IMAGING", "", null, null);
+            mvicMetadata = DataQuerySourcesMetadata.of("/NEWHORIZONS/CHARON/MVIC", "", null, null, null);
+            imagingConfig = (ImagingInstrumentConfig)c.getConfigForClass(ImagingInstrumentConfig.class);
+            imagingConfig.imagingInstruments = Lists.newArrayList(
                     new ImagingInstrument( //
                             SpectralImageMode.MONO, //
-                            new FixedListQuery("/NEWHORIZONS/CHARON/IMAGING", true), //
+                            new FixedListDataQuery(lorriMetadata),
+//                            new FixedListQuery("/NEWHORIZONS/CHARON/IMAGING", true), //
                             ImageType.LORRI_IMAGE, //
                             new PointingSource[]{PointingSource.SPICE, PointingSource.CORRECTED_SPICE}, //
                             Instrument.LORRI //
@@ -338,7 +410,8 @@ public class NewHorizonsConfigs extends SmallBodyViewConfig
 
                     new ImagingInstrument( //
                             SpectralImageMode.MULTI, //
-                            new FixedListQuery("/NEWHORIZONS/CHARON/MVIC"), //
+                            new FixedListDataQuery(mvicMetadata),
+//                            new FixedListQuery("/NEWHORIZONS/CHARON/MVIC"), //
                             ImageType.MVIC_JUPITER_IMAGE, //
                             new PointingSource[]{PointingSource.SPICE}, //
                             Instrument.MVIC //
@@ -351,7 +424,7 @@ public class NewHorizonsConfigs extends SmallBodyViewConfig
 //                            new ImageSource[]{ImageSource.SPICE}, //
 //                            Instrument.LEISA //
                             ) //
-            };
+            );
 
             c.setResolution(ImmutableList.of(128880));
 
@@ -379,10 +452,16 @@ public class NewHorizonsConfigs extends SmallBodyViewConfig
             c.rootDirOnServer = "/NEWHORIZONS/HYDRA";
             c.shapeModelFileNames = prepend(c.rootDirOnServer, "shape_res0.obj.gz");
             c.hasColoringData = false;
-            c.imagingInstruments = new ImagingInstrument[] {
+            setupFeatures(c);
+            lorriMetadata =
+            		DataQuerySourcesMetadata.of("/NEWHORIZONS/HYDRA/IMAGING", "", null, null, null);
+            mvicMetadata = DataQuerySourcesMetadata.of("/NEWHORIZONS/HYDRA/MVIC", "", null, null, null);
+            imagingConfig = (ImagingInstrumentConfig)c.getConfigForClass(ImagingInstrumentConfig.class);
+            imagingConfig.imagingInstruments = Lists.newArrayList(
                     new ImagingInstrument( //
                             SpectralImageMode.MONO, //
-                            new FixedListQuery("/NEWHORIZONS/HYDRA/IMAGING", true), //
+                            new FixedListDataQuery(lorriMetadata),
+//                            new FixedListQuery("/NEWHORIZONS/HYDRA/IMAGING", true), //
                             ImageType.LORRI_IMAGE, //
                             new PointingSource[]{PointingSource.SPICE, PointingSource.CORRECTED_SPICE}, //
                             Instrument.LORRI //
@@ -390,7 +469,8 @@ public class NewHorizonsConfigs extends SmallBodyViewConfig
 
                     new ImagingInstrument( //
                             SpectralImageMode.MULTI, //
-                            new FixedListQuery("/NEWHORIZONS/HYDRA/MVIC"), //
+                            new FixedListDataQuery(mvicMetadata),
+//                            new FixedListQuery("/NEWHORIZONS/HYDRA/MVIC"), //
                             ImageType.MVIC_JUPITER_IMAGE, //
                             new PointingSource[]{PointingSource.SPICE}, //
                             Instrument.MVIC //
@@ -403,7 +483,7 @@ public class NewHorizonsConfigs extends SmallBodyViewConfig
 //                            new ImageSource[]{ImageSource.SPICE}, //
 //                            Instrument.LEISA //
                             ) //
-            };
+            );
             hydra = c.clone();
             c.setResolution(ImmutableList.of(128880));
 
@@ -440,10 +520,16 @@ public class NewHorizonsConfigs extends SmallBodyViewConfig
             c.rootDirOnServer = "/NEWHORIZONS/NIX";
             c.shapeModelFileNames = prepend(c.rootDirOnServer, "shape_res0.obj.gz");
             c.hasColoringData = false;
-            c.imagingInstruments = new ImagingInstrument[] {
+            setupFeatures(c);
+            lorriMetadata =
+            		DataQuerySourcesMetadata.of("/NEWHORIZONS/NIX/IMAGING", "", null, null, null);
+            mvicMetadata = DataQuerySourcesMetadata.of("/NEWHORIZONS/NIX/MVIC", "", null, null, null);
+            imagingConfig = (ImagingInstrumentConfig)c.getConfigForClass(ImagingInstrumentConfig.class);
+            imagingConfig.imagingInstruments = Lists.newArrayList(
                     new ImagingInstrument( //
                             SpectralImageMode.MONO, //
-                            new FixedListQuery("/NEWHORIZONS/NIX/IMAGING", true), //
+                            new FixedListDataQuery(lorriMetadata),
+//                            new FixedListQuery("/NEWHORIZONS/NIX/IMAGING", true), //
                             ImageType.LORRI_IMAGE, //
                             new PointingSource[]{PointingSource.SPICE, PointingSource.CORRECTED_SPICE}, //
                             Instrument.LORRI //
@@ -451,7 +537,8 @@ public class NewHorizonsConfigs extends SmallBodyViewConfig
 
                     new ImagingInstrument( //
                             SpectralImageMode.MULTI, //
-                            new FixedListQuery("/NEWHORIZONS/NIX/MVIC"), //
+                            new FixedListDataQuery(mvicMetadata),
+//                            new FixedListQuery("/NEWHORIZONS/NIX/MVIC"), //
                             ImageType.MVIC_JUPITER_IMAGE, //
                             new PointingSource[]{PointingSource.SPICE}, //
                             Instrument.MVIC //
@@ -464,7 +551,7 @@ public class NewHorizonsConfigs extends SmallBodyViewConfig
 //                            new ImageSource[]{ImageSource.SPICE}, //
 //                            Instrument.LEISA //
                             ) //
-            };
+            );
             c.setResolution(ImmutableList.of(128880));
 
             c.presentInMissions = new Mission[] {Mission.APL_INTERNAL, Mission.TEST_APL_INTERNAL, Mission.STAGE_APL_INTERNAL, Mission.NH_DEPLOY};
@@ -494,6 +581,8 @@ public class NewHorizonsConfigs extends SmallBodyViewConfig
 
 
         {
+        	ImagingInstrumentConfig imagingConfig = (ImagingInstrumentConfig)c.getConfigForClass(ImagingInstrumentConfig.class);
+
             c = new NewHorizonsConfigs();
             c.body = ShapeModelBody.MU69;
             c.type = BodyType.KBO;
@@ -503,10 +592,12 @@ public class NewHorizonsConfigs extends SmallBodyViewConfig
             c.rootDirOnServer = "/mu69/mu69-test5h-1-final-oriented";
             c.shapeModelFileExtension = ".obj";
             c.setResolution(ImmutableList.of("Very Low (25708 plates)"), ImmutableList.of(25708));
-            c.imageSearchDefaultStartDate = new GregorianCalendar(2018, 11, 31, 0, 0, 0).getTime();
-            c.imageSearchDefaultEndDate = new GregorianCalendar(2019, 0, 2, 0, 0, 0).getTime();
-            c.imageSearchDefaultMaxSpacecraftDistance = 1.0e6;
-            c.imageSearchDefaultMaxResolution = 1.0e4;
+            setupFeatures(c);
+            imagingConfig = (ImagingInstrumentConfig)c.getConfigForClass(ImagingInstrumentConfig.class);
+            imagingConfig.imageSearchDefaultStartDate = new GregorianCalendar(2018, 11, 31, 0, 0, 0).getTime();
+            imagingConfig.imageSearchDefaultEndDate = new GregorianCalendar(2019, 0, 2, 0, 0, 0).getTime();
+            imagingConfig.imageSearchDefaultMaxSpacecraftDistance = 1.0e6;
+            imagingConfig.imageSearchDefaultMaxResolution = 1.0e4;
             c.density = Double.NaN;
             c.useMinimumReferencePotential = true;
             c.rotationRate = Double.NaN;
@@ -519,28 +610,35 @@ public class NewHorizonsConfigs extends SmallBodyViewConfig
                 c.hasBigmap = true;
             }
 
-            c.imagingInstruments = new ImagingInstrument[] {
+            DataQuerySourcesMetadata lorriMetadata =
+            		DataQuerySourcesMetadata.of(c.rootDirOnServer + "/lorri", "", null, null, c.rootDirOnServer + "/lorri/gallery");
+
+            imagingConfig.imagingInstruments = Lists.newArrayList(
                     new ImagingInstrument( //
                             SpectralImageMode.MONO, //
-                            new FixedListQuery(c.rootDirOnServer + "/lorri", c.rootDirOnServer + "/lorri/gallery"), //
+                            new FixedListDataQuery(lorriMetadata),
+//                            new FixedListQuery(c.rootDirOnServer + "/lorri", c.rootDirOnServer + "/lorri/gallery"), //
                             ImageType.LORRI_IMAGE, //
                             new PointingSource[]{PointingSource.SPICE, PointingSource.GASKELL}, //
                             Instrument.LORRI //
-                            ), //
-            };
+                            ) //
+            );
 
-            c.hasSpectralData = false;
-            c.spectralInstruments = new ArrayList<BasicSpectrumInstrument>();
+            SpectrumInstrumentConfig spectrumConfig = (SpectrumInstrumentConfig)c.getConfigForClass(SpectrumInstrumentConfig.class);
+            LidarInstrumentConfig lidarConfig = (LidarInstrumentConfig)c.getConfigForClass(LidarInstrumentConfig.class);
+
+            spectrumConfig.hasSpectralData = false;
+            spectrumConfig.spectralInstruments = new ArrayList<BasicSpectrumInstrument>();
 
 
             c.hasStateHistory = false;
 
             c.hasMapmaker = false;
-            c.hasHierarchicalSpectraSearch = false;
-            c.hasHypertreeBasedSpectraSearch = false;
+            spectrumConfig.hasHierarchicalSpectraSearch = false;
+            spectrumConfig.hasHypertreeBasedSpectraSearch = false;
 
-            c.hasLidarData = false;
-            c.hasHypertreeBasedLidarSearch = false;
+            lidarConfig.hasLidarData = false;
+            lidarConfig.hasHypertreeBasedLidarSearch = false;
 
 //            if (SbmtMultiMissionTool.getMission() == SbmtMultiMissionTool.Mission.NH_DEPLOY)
 //            {
@@ -567,22 +665,4 @@ public class NewHorizonsConfigs extends SmallBodyViewConfig
     {
         return FileCache.instance().isAccessible(getShapeModelFileNames()[0]);
     }
-
-    @Override
-    public Instrument getLidarInstrument()
-    {
-        // TODO Auto-generated method stub
-        return lidarInstrumentName;
-    }
-
-    public boolean hasHypertreeLidarSearch()
-    {
-        return hasHypertreeBasedLidarSearch;
-    }
-
-    public SpectraHierarchicalSearchSpecification<?> getHierarchicalSpectraSearchSpecification()
-    {
-        return hierarchicalSpectraSearchSpecification;
-    }
-
 }

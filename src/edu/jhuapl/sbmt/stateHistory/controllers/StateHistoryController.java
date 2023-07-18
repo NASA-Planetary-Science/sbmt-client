@@ -29,9 +29,9 @@ import edu.cmu.relativelayout.RelativeLayout;
 import edu.jhuapl.saavtk.gui.render.Renderer;
 import edu.jhuapl.saavtk.model.ModelManager;
 import edu.jhuapl.saavtk.util.FileCache;
-import edu.jhuapl.sbmt.config.SmallBodyViewConfig;
 import edu.jhuapl.sbmt.core.body.SmallBodyModel;
 import edu.jhuapl.sbmt.pointing.StateHistoryUtil;
+import edu.jhuapl.sbmt.stateHistory.config.StateHistoryConfig;
 import edu.jhuapl.sbmt.stateHistory.model.StateHistoryModel;
 import edu.jhuapl.sbmt.stateHistory.model.StateHistorySourceType;
 import edu.jhuapl.sbmt.stateHistory.model.interfaces.StateHistory;
@@ -95,7 +95,7 @@ public class StateHistoryController
      * @param modelManager
      * @param renderer
      */
-    public StateHistoryController(final ModelManager modelManager, StateHistoryRendererManager rendererManager, StateHistoryTimeModel timeModel)
+    public StateHistoryController(final ModelManager modelManager, StateHistoryRendererManager rendererManager, StateHistoryTimeModel timeModel, StateHistoryConfig config)
     {
     	File path = null;
     	int lineLength = 121;
@@ -104,7 +104,7 @@ public class StateHistoryController
     	this.timeModel = timeModel;
     	vtkJoglPanelComponent renWin = renderer.getRenderWindowPanel();
         SmallBodyModel bodyModel = (SmallBodyModel) modelManager.getPolyhedralModel();
-        SmallBodyViewConfig config = (SmallBodyViewConfig) bodyModel.getConfig();
+//        SmallBodyViewConfig config = (SmallBodyViewConfig) bodyModel.getConfig();
         DateTime start, end;
         try {
             path = FileCache.getFileFromServer(config.timeHistoryFile);
@@ -121,7 +121,7 @@ public class StateHistoryController
 
 		try
 		{
-			historyModel = new StateHistoryModel(bodyModel, rendererManager);
+			historyModel = new StateHistoryModel(config, bodyModel.getCustomDataFolder(), rendererManager);
 			historyModel.registerIntervalGenerator(StateHistorySourceType.SPICE, new SpiceStateHistoryIntervalGenerator());	//TODO update this to be a parameter in view config
 			historyModel.setIntervalGenerator(StateHistorySourceType.SPICE);
 			if (config.timeHistoryFile != null && !config.timeHistoryFile.equals(""))

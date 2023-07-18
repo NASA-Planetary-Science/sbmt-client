@@ -15,6 +15,7 @@ import edu.jhuapl.sbmt.config.SmallBodyViewConfig;
 import edu.jhuapl.sbmt.core.body.SmallBodyModel;
 import edu.jhuapl.sbmt.core.pointing.PointingSource;
 import edu.jhuapl.sbmt.core.util.BackplaneInfo;
+import edu.jhuapl.sbmt.image.config.ImagingInstrumentConfig;
 import edu.jhuapl.sbmt.image.old.ImageKey;
 import edu.jhuapl.sbmt.model.SbmtModelFactory;
 import edu.jhuapl.sbmt.model.eros.msi.BackplanesFileFormat;
@@ -164,7 +165,9 @@ public class MSIBackplanesComparison
     private static String createBackplanes(String fitsImageFile, String outputFolder, PointingSource pointing, BackplanesFileFormat fmt, int resolutionLevel) throws Exception
     {
         smallBodyModel.setModelResolution(resolutionLevel);
-        ImageKey key = new ImageKey(fitsImageFile.replace(".FIT", ""), pointing, ((SmallBodyViewConfig)smallBodyModel.getSmallBodyConfig()).imagingInstruments[0]);
+        ImagingInstrumentConfig imagingConfig = (ImagingInstrumentConfig)((SmallBodyViewConfig)smallBodyModel.getSmallBodyConfig()).getConfigForClass(ImagingInstrumentConfig.class);
+
+        ImageKey key = new ImageKey(fitsImageFile.replace(".FIT", ""), pointing, imagingConfig.imagingInstruments.get(0));
 
         //Write out the FITS file
         (new BackplanesGenerator()).generateBackplanes(fitsImageFile, key.instrument.getInstrumentName(), outputFolder, smallBodyModel, fmt, pointing);

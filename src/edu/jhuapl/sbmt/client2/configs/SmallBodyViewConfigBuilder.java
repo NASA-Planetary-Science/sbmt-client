@@ -11,6 +11,7 @@ import java.util.concurrent.atomic.AtomicReference;
 import org.jcodec.common.Preconditions;
 
 import com.google.common.collect.ImmutableList;
+import com.google.common.collect.Lists;
 
 import edu.jhuapl.saavtk.model.ShapeModelBody;
 import edu.jhuapl.saavtk.model.ShapeModelType;
@@ -22,6 +23,7 @@ import edu.jhuapl.sbmt.core.client.Mission;
 import edu.jhuapl.sbmt.core.config.Instrument;
 import edu.jhuapl.sbmt.core.io.DBRunInfo;
 import edu.jhuapl.sbmt.core.pointing.PointingSource;
+import edu.jhuapl.sbmt.image.config.ImagingInstrumentConfig;
 import edu.jhuapl.sbmt.image.model.ImagingInstrument;
 
 /**
@@ -366,12 +368,15 @@ public class SmallBodyViewConfigBuilder
      */
     public SmallBodyViewConfigBuilder imageSearchRanges(Date startDate, Date endDate, double maxScDistance, double maxResolution)
     {
-        init();
-        SmallBodyViewConfig c = getConfig(); 
-        c.imageSearchDefaultStartDate = startDate;
-        c.imageSearchDefaultEndDate = endDate;
-        c.imageSearchDefaultMaxSpacecraftDistance = maxScDistance;
-        c.imageSearchDefaultMaxResolution = maxResolution;
+    	init();
+        SmallBodyViewConfig c = getConfig();
+        c.addFeatureConfig(ImagingInstrumentConfig.class, new ImagingInstrumentConfig(c));
+
+        ImagingInstrumentConfig imagingConfig = (ImagingInstrumentConfig)c.getConfigForClass(ImagingInstrumentConfig.class);
+        imagingConfig.imageSearchDefaultStartDate = startDate;
+        imagingConfig.imageSearchDefaultEndDate = endDate;
+        imagingConfig.imageSearchDefaultMaxSpacecraftDistance = maxScDistance;
+        imagingConfig.imageSearchDefaultMaxResolution = maxResolution;
         return this;
     }
 
@@ -435,7 +440,7 @@ public class SmallBodyViewConfigBuilder
     {
         init();
         SmallBodyViewConfig c = getConfig();
-
+        ImagingInstrumentConfig imagingConfig = (ImagingInstrumentConfig)c.getConfigForClass(ImagingInstrumentConfig.class);
         Preconditions.checkState(c.body != null, "Must call one of the body(...) methods before calling build");
         Preconditions.checkState(c.author != null, "Must call the model(...) method before calling build");
 
@@ -450,7 +455,7 @@ public class SmallBodyViewConfigBuilder
         }
         if (!imagingInstruments.isEmpty())
         {
-            c.imagingInstruments = imagingInstruments.toArray(new ImagingInstrument[imagingInstruments.size()]);
+        	imagingConfig.imagingInstruments = Lists.newArrayList(imagingInstruments);
         }
 
         if (!dbRunInfos.isEmpty())

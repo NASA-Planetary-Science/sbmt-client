@@ -10,8 +10,6 @@ import edu.jhuapl.sbmt.config.SmallBodyViewConfig;
 import edu.jhuapl.sbmt.core.body.BodyType;
 import edu.jhuapl.sbmt.core.body.ShapeModelDataUsed;
 import edu.jhuapl.sbmt.core.body.ShapeModelPopulation;
-import edu.jhuapl.sbmt.core.config.Instrument;
-import edu.jhuapl.sbmt.spectrum.model.core.search.SpectraHierarchicalSearchSpecification;
 
 public class DisabledConfigs extends SmallBodyViewConfig
 {
@@ -423,22 +421,5 @@ public class DisabledConfigs extends SmallBodyViewConfig
     public boolean isAccessible()
     {
         return FileCache.instance().isAccessible(getShapeModelFileNames()[0]);
-    }
-
-    @Override
-    public Instrument getLidarInstrument()
-    {
-        // TODO Auto-generated method stub
-        return lidarInstrumentName;
-    }
-
-    public boolean hasHypertreeLidarSearch()
-    {
-        return hasHypertreeBasedLidarSearch;
-    }
-
-    public SpectraHierarchicalSearchSpecification<?> getHierarchicalSpectraSearchSpecification()
-    {
-        return hierarchicalSpectraSearchSpecification;
     }
 }

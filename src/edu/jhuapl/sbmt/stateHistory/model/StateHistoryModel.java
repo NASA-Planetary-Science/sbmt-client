@@ -13,9 +13,8 @@ import javax.swing.SwingUtilities;
 
 import org.joda.time.DateTime;
 
-import edu.jhuapl.sbmt.core.body.SmallBodyModel;
-import edu.jhuapl.sbmt.core.config.ISmallBodyViewConfig;
 import edu.jhuapl.sbmt.pointing.spice.SpiceInfo;
+import edu.jhuapl.sbmt.stateHistory.config.StateHistoryConfig;
 import edu.jhuapl.sbmt.stateHistory.model.interfaces.IStateHistoryIntervalGenerator;
 import edu.jhuapl.sbmt.stateHistory.model.interfaces.StateHistory;
 import edu.jhuapl.sbmt.stateHistory.model.interfaces.StateHistoryCollectionChangedListener;
@@ -69,7 +68,7 @@ public class StateHistoryModel
 	/**
 	 *
 	 */
-	private ISmallBodyViewConfig viewConfig;
+	private StateHistoryConfig config;
 
 	/**
 	 *
@@ -95,10 +94,10 @@ public class StateHistoryModel
 	 * @throws StateHistoryInputException
 	 * @throws IOException
 	 */
-	public StateHistoryModel(SmallBodyModel smallBodyModel, StateHistoryRendererManager rendererManager) throws IOException, StateHistoryInputException, StateHistoryInvalidTimeException
+	public StateHistoryModel(StateHistoryConfig config, String customDataFolder, StateHistoryRendererManager rendererManager) throws IOException, StateHistoryInputException, StateHistoryInvalidTimeException
 	{
-		this.viewConfig = smallBodyModel.getSmallBodyConfig();
-		this.customDataFolder = smallBodyModel.getCustomDataFolder();
+		this.config = config;
+		this.customDataFolder = customDataFolder;
 		this.collection = rendererManager.getHistoryCollection();
 		this.rendererManager = rendererManager;
 		this.collection.addStateHistoryCollectionChangedListener(new StateHistoryCollectionChangedListener()
@@ -364,8 +363,8 @@ public class StateHistoryModel
 	/**
 	 * @return the viewConfig
 	 */
-	public ISmallBodyViewConfig getViewConfig()
+	public StateHistoryConfig getViewConfig()
 	{
-		return viewConfig;
+		return config;
 	}
 }

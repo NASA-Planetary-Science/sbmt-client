@@ -3,7 +3,6 @@ package edu.jhuapl.sbmt.tools;
 import java.io.File;
 import java.io.IOException;
 import java.sql.PreparedStatement;
-import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -13,9 +12,6 @@ import java.util.List;
 import java.util.TreeSet;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
-import org.joda.time.DateTime;
-import org.joda.time.DateTimeZone;
 
 import vtk.vtkObject;
 import vtk.vtkPolyData;
@@ -32,10 +28,8 @@ import edu.jhuapl.sbmt.client2.SbmtMultiMissionTool;
 import edu.jhuapl.sbmt.config.SmallBodyViewConfig;
 import edu.jhuapl.sbmt.core.body.ISmallBodyModel;
 import edu.jhuapl.sbmt.model.SbmtModelFactory;
-import edu.jhuapl.sbmt.model.bennu.spectra.OREXSpectraFactory;
 import edu.jhuapl.sbmt.model.bennu.spectra.otes.OTES;
 import edu.jhuapl.sbmt.model.bennu.spectra.otes.OTESSpectrum;
-import edu.jhuapl.sbmt.spectrum.SbmtSpectrumModelFactory;
 import edu.jhuapl.sbmt.spectrum.model.core.interfaces.IBasicSpectrumRenderer;
 import edu.jhuapl.sbmt.util.SqlManager;
 
@@ -121,66 +115,67 @@ public class OTESDatabaseGeneratorSql
 			dayOfYearStr = doyFormat.format(date);
 			yearStr = yearFormat.format(date);
 
-			IBasicSpectrumRenderer<OTESSpectrum> otesSpectrumRenderer = SbmtSpectrumModelFactory
-					.createSpectrumRenderer(filename, otes, true);
-			otesSpectrumRenderer.generateFootprint();
-
-			//if no intersection took place, skip this loop
-			if (otesSpectrumRenderer.getShiftedFootprint() == null) continue;
-
-			DateTime midtime = new DateTime(new DateTime(date).toString(), DateTimeZone.UTC);
-			String filenamePlusParent = filename.substring(filename.lastIndexOf("otes/") + 5);
-
-			if (writeToDB == true)
-			{
-				List<List<Object>> checkQuery;
-				// If appending and there is already an entry for the filename then skip
-	            if(appendTables){
-	            	checkQuery = db.query("SELECT * FROM `" + tableName + "` WHERE `filename` = \"" +
-	                    new File(filename).getName() + "\"");
-	                if(checkQuery != null && !checkQuery.isEmpty() &&
-	                		checkQuery.get(0) != null && !checkQuery.get(0).isEmpty() &&
-	                				checkQuery.get(0).get(0) != null){
-	                	int id = Integer.parseInt((String)checkQuery.get(0).get(0));
-	                    System.out.println("\n\nskipping image insertion for " + filename + ", already in table, updating cubes for id " + id);
-//	                    populateOTESCubeTableForFile(modelName, dataType, otesSpectrumRenderer, id);
-	                    continue;
-	                }
-	            }
-
-
-				if (otesInsert == null)
-				{
-					// the index auto increments, so start with the year column
-					otesInsert = db.preparedStatement("insert into " + tableName
-							+ " (year, day, midtime, minincidence, maxincidence, minemission, maxemission, minphase, maxphase, minrange, maxrange, filename) values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
-				}
-
-				// The index autoincrements, so start adding with the year
-				// string
-				otesInsert.setShort(1, Short.parseShort(yearStr));
-				otesInsert.setShort(2, Short.parseShort(dayOfYearStr));
-				otesInsert.setLong(3, midtime.getMillis());
-				otesInsert.setDouble(4, otesSpectrumRenderer.getMinIncidence());
-				otesInsert.setDouble(5, otesSpectrumRenderer.getMaxIncidence());
-				otesInsert.setDouble(6, otesSpectrumRenderer.getMinEmission());
-				otesInsert.setDouble(7, otesSpectrumRenderer.getMaxEmission());
-				otesInsert.setDouble(8, otesSpectrumRenderer.getMinPhase());
-				otesInsert.setDouble(9, otesSpectrumRenderer.getMaxPhase());
-				otesInsert.setDouble(10, otesSpectrumRenderer.getMinRange());
-				otesInsert.setDouble(11, otesSpectrumRenderer.getMinRange());
-				otesInsert.setString(12, filenamePlusParent);
-//				logger.log(Level.INFO, "insert statement for spectra populated");
-				otesInsert.executeUpdate();
-//				logger.log(Level.INFO, "insert statement updated completed");
-				ResultSet rs = otesInsert.getGeneratedKeys();
-				rs.next();
-				populateOTESCubeTableForFile(modelName, dataType, otesSpectrumRenderer, rs.getInt(1));
-			}
-			else
-				populateOTESCubeTableForFile(modelName, dataType, otesSpectrumRenderer, count);
-
-			count++;
+			//TODO FIX THIS
+//			IBasicSpectrumRenderer<OTESSpectrum> otesSpectrumRenderer = SbmtSpectrumModelFactory
+//					.createSpectrumRenderer(filename, otes, true);
+//			otesSpectrumRenderer.generateFootprint();
+//
+//			//if no intersection took place, skip this loop
+//			if (otesSpectrumRenderer.getShiftedFootprint() == null) continue;
+//
+//			DateTime midtime = new DateTime(new DateTime(date).toString(), DateTimeZone.UTC);
+//			String filenamePlusParent = filename.substring(filename.lastIndexOf("otes/") + 5);
+//
+//			if (writeToDB == true)
+//			{
+//				List<List<Object>> checkQuery;
+//				// If appending and there is already an entry for the filename then skip
+//	            if(appendTables){
+//	            	checkQuery = db.query("SELECT * FROM `" + tableName + "` WHERE `filename` = \"" +
+//	                    new File(filename).getName() + "\"");
+//	                if(checkQuery != null && !checkQuery.isEmpty() &&
+//	                		checkQuery.get(0) != null && !checkQuery.get(0).isEmpty() &&
+//	                				checkQuery.get(0).get(0) != null){
+//	                	int id = Integer.parseInt((String)checkQuery.get(0).get(0));
+//	                    System.out.println("\n\nskipping image insertion for " + filename + ", already in table, updating cubes for id " + id);
+////	                    populateOTESCubeTableForFile(modelName, dataType, otesSpectrumRenderer, id);
+//	                    continue;
+//	                }
+//	            }
+//
+//
+//				if (otesInsert == null)
+//				{
+//					// the index auto increments, so start with the year column
+//					otesInsert = db.preparedStatement("insert into " + tableName
+//							+ " (year, day, midtime, minincidence, maxincidence, minemission, maxemission, minphase, maxphase, minrange, maxrange, filename) values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+//				}
+//
+//				// The index autoincrements, so start adding with the year
+//				// string
+//				otesInsert.setShort(1, Short.parseShort(yearStr));
+//				otesInsert.setShort(2, Short.parseShort(dayOfYearStr));
+//				otesInsert.setLong(3, midtime.getMillis());
+//				otesInsert.setDouble(4, otesSpectrumRenderer.getMinIncidence());
+//				otesInsert.setDouble(5, otesSpectrumRenderer.getMaxIncidence());
+//				otesInsert.setDouble(6, otesSpectrumRenderer.getMinEmission());
+//				otesInsert.setDouble(7, otesSpectrumRenderer.getMaxEmission());
+//				otesInsert.setDouble(8, otesSpectrumRenderer.getMinPhase());
+//				otesInsert.setDouble(9, otesSpectrumRenderer.getMaxPhase());
+//				otesInsert.setDouble(10, otesSpectrumRenderer.getMinRange());
+//				otesInsert.setDouble(11, otesSpectrumRenderer.getMinRange());
+//				otesInsert.setString(12, filenamePlusParent);
+////				logger.log(Level.INFO, "insert statement for spectra populated");
+//				otesInsert.executeUpdate();
+////				logger.log(Level.INFO, "insert statement updated completed");
+//				ResultSet rs = otesInsert.getGeneratedKeys();
+//				rs.next();
+//				populateOTESCubeTableForFile(modelName, dataType, otesSpectrumRenderer, rs.getInt(1));
+//			}
+//			else
+//				populateOTESCubeTableForFile(modelName, dataType, otesSpectrumRenderer, count);
+//
+//			count++;
 		}
 	}
 
@@ -370,7 +365,7 @@ public class OTESDatabaseGeneratorSql
 
 		logger.log(Level.INFO, "Body Model initialized");
 
-		OREXSpectraFactory.initializeModels(bodyModel);
+//		OREXSpectraFactory.initializeModels(bodyModel);
 
 		String otesFileList = rootURL + File.separator + "data/bennu/shared/otes/" + dataType + "/spectrumlist.txt";
 

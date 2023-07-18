@@ -22,7 +22,7 @@ import edu.jhuapl.sbmt.core.body.ISmallBodyModel;
 import edu.jhuapl.sbmt.model.eros.Eros;
 import edu.jhuapl.sbmt.model.eros.nis.NIS;
 import edu.jhuapl.sbmt.model.eros.nis.NISSpectrum;
-import edu.jhuapl.sbmt.spectrum.model.io.SpectrumInstrumentMetadataIO;
+import edu.jhuapl.sbmt.spectrum.config.SpectrumInstrumentConfig;
 import edu.jhuapl.sbmt.spectrum.rendering.BasicSpectrumRenderer;
 import edu.jhuapl.sbmt.util.SqlManager;
 
@@ -135,7 +135,8 @@ public class NisDatabaseGeneratorSql
             yearStr = f.getName();
 
 
-            NISSpectrum nisSpectrum = new NISSpectrum(origFile.getAbsolutePath(), (SpectrumInstrumentMetadataIO)erosModel.getSmallBodyConfig().getHierarchicalSpectraSearchSpecification(), erosModel, nis);
+            SpectrumInstrumentConfig spectrumConfig = (SpectrumInstrumentConfig)((SmallBodyViewConfig)erosModel.getSmallBodyConfig()).getConfigForClass(SpectrumInstrumentConfig.class);
+            NISSpectrum nisSpectrum = new NISSpectrum(origFile.getAbsolutePath(), spectrumConfig.getHierarchicalSpectraSearchSpecification(), erosModel.getBoundingBoxDiagonalLength(), nis);
 
             if (nisInsert == null)
             {
@@ -203,7 +204,8 @@ public class NisDatabaseGeneratorSql
 //            f = f.getParentFile();
 //            yearStr = f.getName();
 
-            NISSpectrum nisSpectrum = new NISSpectrum(origFile.getAbsolutePath(), (SpectrumInstrumentMetadataIO)erosModel.getSmallBodyConfig().getHierarchicalSpectraSearchSpecification(), erosModel, nis);
+            SpectrumInstrumentConfig spectrumConfig = (SpectrumInstrumentConfig)((SmallBodyViewConfig)erosModel.getSmallBodyConfig()).getConfigForClass(SpectrumInstrumentConfig.class);
+            NISSpectrum nisSpectrum = new NISSpectrum(origFile.getAbsolutePath(), spectrumConfig.getHierarchicalSpectraSearchSpecification(), erosModel.getBoundingBoxDiagonalLength(), nis);
             BasicSpectrumRenderer nisSpectrumRenderer = new BasicSpectrumRenderer(nisSpectrum, erosModel, true);
             nisSpectrumRenderer.generateFootprint();
 

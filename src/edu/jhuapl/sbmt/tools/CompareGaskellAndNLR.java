@@ -33,6 +33,7 @@ import edu.jhuapl.sbmt.core.pointing.PointingSource;
 import edu.jhuapl.sbmt.core.util.TimeUtil;
 import edu.jhuapl.sbmt.image.old.ImageKey;
 import edu.jhuapl.sbmt.lidar.LidarFileSpec;
+import edu.jhuapl.sbmt.lidar.config.LidarInstrumentConfig;
 import edu.jhuapl.sbmt.lidar.util.LidarBrowseUtil;
 import edu.jhuapl.sbmt.model.SbmtModelFactory;
 import edu.jhuapl.sbmt.model.eros.msi.MSIImage;
@@ -115,19 +116,19 @@ public class CompareGaskellAndNLR
     static List<LidarPoint> points = new ArrayList<LidarPoint>();
 
 
-    static void loadPoints(String path, SmallBodyViewConfig smallBodyConfig) throws IOException
+    static void loadPoints(String path, LidarInstrumentConfig lidarConfig) throws IOException
     {
         // Uncomment to save out all lidar data to a single file
         //FileWriter fstream = new FileWriter("/tmp/nlr-all.txt", true);
         //BufferedWriter out = new BufferedWriter(fstream);
 
-        int[] xyzIndices = smallBodyConfig.lidarBrowseXYZIndices;
-        int[] scXyzIndices = smallBodyConfig.lidarBrowseSpacecraftIndices;
-        boolean isSpacecraftInSphericalCoordinates = smallBodyConfig.lidarBrowseIsSpacecraftInSphericalCoordinates;
-        int timeindex = smallBodyConfig.lidarBrowseTimeIndex;
-        int numberHeaderLines = smallBodyConfig.lidarBrowseNumberHeaderLines;
-        boolean isInMeters = smallBodyConfig.lidarBrowseIsInMeters;
-        int noiseindex = smallBodyConfig.lidarBrowseNoiseIndex;
+        int[] xyzIndices = lidarConfig.lidarBrowseXYZIndices;
+        int[] scXyzIndices = lidarConfig.lidarBrowseSpacecraftIndices;
+        boolean isSpacecraftInSphericalCoordinates = lidarConfig.lidarBrowseIsSpacecraftInSphericalCoordinates;
+        int timeindex = lidarConfig.lidarBrowseTimeIndex;
+        int numberHeaderLines = lidarConfig.lidarBrowseNumberHeaderLines;
+        boolean isInMeters = lidarConfig.lidarBrowseIsInMeters;
+        int noiseindex = lidarConfig.lidarBrowseNoiseIndex;
 
         int xindex = xyzIndices[0];
         int yindex = xyzIndices[1];
@@ -558,11 +559,12 @@ public class CompareGaskellAndNLR
 
         // Load lidar data
         BodyViewConfig tmpBodyViewConfig = (BodyViewConfig)smallBodyModel.getSmallBodyConfig();
-        List<LidarFileSpec> lidarPaths = LidarBrowseUtil.loadLidarFileSpecListFor(tmpBodyViewConfig);
+        LidarInstrumentConfig lidarConfig = (LidarInstrumentConfig)tmpBodyViewConfig.getConfigForClass(LidarInstrumentConfig.class);
+        List<LidarFileSpec> lidarPaths = LidarBrowseUtil.loadLidarFileSpecListFor(lidarConfig);
         int count = 1;
         for (LidarFileSpec spec : lidarPaths)
         {
-            loadPoints(spec.getPath(), config);
+            loadPoints(spec.getPath(), lidarConfig);
 
             System.out.println("Loaded " + spec + " " + count + "/" + lidarPaths.size());
             ++count;

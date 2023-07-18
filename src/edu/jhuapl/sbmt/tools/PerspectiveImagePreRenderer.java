@@ -26,6 +26,7 @@ import edu.jhuapl.sbmt.client2.SbmtMultiMissionTool;
 import edu.jhuapl.sbmt.config.SmallBodyViewConfig;
 import edu.jhuapl.sbmt.core.body.SmallBodyModel;
 import edu.jhuapl.sbmt.core.pointing.PointingSource;
+import edu.jhuapl.sbmt.image.config.ImagingInstrumentConfig;
 import edu.jhuapl.sbmt.image.interfaces.ImageKeyInterface;
 import edu.jhuapl.sbmt.image.model.ImagingInstrument;
 import edu.jhuapl.sbmt.image.model.PerspectiveImage;
@@ -161,7 +162,10 @@ public class PerspectiveImagePreRenderer
         NativeLibraryLoader.loadHeadlessVtkLibraries();
 
         SmallBodyViewConfig config = SmallBodyViewConfig.getSmallBodyConfig(body, type);
-        ImagingInstrument instrument = config.imagingInstruments[imagerIndex];
+        ImagingInstrumentConfig imagingConfig = (ImagingInstrumentConfig)config.getConfigForClass(ImagingInstrumentConfig.class);
+
+        ImagingInstrument instrument = imagingConfig.imagingInstruments.get(imagerIndex);
+
         System.out.println("PerspectiveImagePreRenderer: main: input is " + inputDirectory);
         File input = new File(inputDirectory);
         File[] fileList;

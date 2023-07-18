@@ -22,6 +22,7 @@ import edu.jhuapl.sbmt.dtm.model.DEM;
 import edu.jhuapl.sbmt.dtm.service.PointInDEMChecker;
 import edu.jhuapl.sbmt.lidar.LidarSearchParms;
 import edu.jhuapl.sbmt.lidar.LidarTrackManager;
+import edu.jhuapl.sbmt.lidar.config.LidarInstrumentConfig;
 import edu.jhuapl.sbmt.lidar.util.LidarFileUtil;
 import edu.jhuapl.sbmt.lidar.util.LidarQueryUtil;
 import edu.jhuapl.sbmt.model.SbmtModelFactory;
@@ -121,8 +122,9 @@ public class SearchLidarDataInsideMaplet
 
         TreeSet<Integer> cubeList = smallBodyModel.getIntersectingCubes(new BoundingBox(selectionModel.getVtkInteriorPolyDataFor(region).GetBounds()));
 
-        String name = (String)config.lidarSearchDataSourceMap.keySet().toArray()[0];
-        String path = (String)config.lidarSearchDataSourceMap.values().toArray()[0];
+        LidarInstrumentConfig lidarConfig = (LidarInstrumentConfig)config.getConfigForClass(LidarInstrumentConfig.class);
+        String name = (String)lidarConfig.lidarSearchDataSourceMap.keySet().toArray()[0];
+        String path = (String)lidarConfig.lidarSearchDataSourceMap.values().toArray()[0];
         try
         {
             LidarDataSource tmpDataSource = new LidarDataSource(name, path);

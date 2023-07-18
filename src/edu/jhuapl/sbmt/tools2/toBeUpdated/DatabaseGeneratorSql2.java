@@ -7,7 +7,6 @@ import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.TreeSet;
-import java.util.stream.Stream;
 
 import org.apache.commons.math3.geometry.euclidean.threed.Vector3D;
 import org.joda.time.DateTime;
@@ -30,6 +29,7 @@ import edu.jhuapl.sbmt.core.body.SmallBodyModel;
 import edu.jhuapl.sbmt.core.client.Mission;
 import edu.jhuapl.sbmt.core.io.DBRunInfo;
 import edu.jhuapl.sbmt.core.pointing.PointingSource;
+import edu.jhuapl.sbmt.image.config.ImagingInstrumentConfig;
 import edu.jhuapl.sbmt.image.model.ImagingInstrument;
 import edu.jhuapl.sbmt.image.pipelineComponents.operators.rendering.pointedImage.ImageIllumination;
 import edu.jhuapl.sbmt.image.pipelineComponents.operators.rendering.pointedImage.ImagePixelScale;
@@ -106,7 +106,7 @@ public class DatabaseGeneratorSql2
             //ignore
             ex2.printStackTrace();  // second time we run program
             //  should throw execption since table
-            // already there 
+            // already there
             //
             // this will have no effect on the db
         }
@@ -622,7 +622,7 @@ public class DatabaseGeneratorSql2
 
         Mission mission = SbmtMultiMissionTool.getMission();
         System.out.println("Mission: " + mission);
-
+        ImagingInstrumentConfig imagingConfig = (ImagingInstrumentConfig)config.getConfigForClass(ImagingInstrumentConfig.class);
         for (DBRunInfo ri : runInfos)
         {
         	if (!ri.name.equals(body) || (ri.imageSource != mode)) continue;
@@ -634,7 +634,7 @@ public class DatabaseGeneratorSql2
                 if (ri.remotePathToFileList != null)
                     pathToFileList = ri.remotePathToFileList;
             }
-            ImagingInstrument imager = Stream.of(config.getImagingInstruments()).filter(inst -> inst.instrumentName == ri.instrument).toList().get(0);
+            ImagingInstrument imager = imagingConfig.getImagingInstruments().stream().filter(inst -> inst.instrumentName == ri.instrument).toList().get(0);
             System.out.println("Generating: " + pathToFileList + ", mode=" + mode);
             generator.run(pathToFileList, mode, imager);
         }

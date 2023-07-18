@@ -3,7 +3,6 @@ package edu.jhuapl.sbmt.tools2.toBeUpdated;
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
-import java.util.stream.Stream;
 
 import vtk.vtkObject;
 import vtk.vtkPolyData;
@@ -15,9 +14,9 @@ import edu.jhuapl.saavtk.util.FileUtil;
 import edu.jhuapl.saavtk.util.NativeLibraryLoader;
 import edu.jhuapl.sbmt.config.SmallBodyViewConfig;
 import edu.jhuapl.sbmt.core.body.SmallBodyModel;
-import edu.jhuapl.sbmt.core.config.ISmallBodyViewConfig;
 import edu.jhuapl.sbmt.core.config.Instrument;
 import edu.jhuapl.sbmt.core.pointing.PointingSource;
+import edu.jhuapl.sbmt.image.config.ImagingInstrumentConfig;
 import edu.jhuapl.sbmt.image.model.ImagingInstrument;
 import edu.jhuapl.sbmt.image.pipelineComponents.pipelines.io.FilenameToRenderableImageFootprintPipeline;
 import edu.jhuapl.sbmt.model.eros.Eros;
@@ -169,8 +168,9 @@ public class MSIFootprintGenerator
         NativeLibraryLoader.loadVtkLibraries();
 
         String msiFileList=args[0];
-        ISmallBodyViewConfig config = SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.EROS, ShapeModelType.GASKELL);
-        ImagingInstrument msiInstrument = Stream.of(config.getImagingInstruments()).filter(inst -> inst.instrumentName == Instrument.MSI).toList().get(0);
+        SmallBodyViewConfig config = SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.EROS, ShapeModelType.GASKELL);
+        ImagingInstrumentConfig imagingConfig = (ImagingInstrumentConfig)config.getConfigForClass(ImagingInstrumentConfig.class);
+        ImagingInstrument msiInstrument = imagingConfig.getImagingInstruments().stream().filter(inst -> inst.instrumentName == Instrument.MSI).toList().get(0);
         erosModel = new Eros((SmallBodyViewConfig)config);
         resolutionLevel = Integer.parseInt(args[1]);
         try {

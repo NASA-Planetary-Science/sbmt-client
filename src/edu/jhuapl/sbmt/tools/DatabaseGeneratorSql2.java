@@ -29,6 +29,7 @@ import edu.jhuapl.sbmt.core.body.SmallBodyModel;
 import edu.jhuapl.sbmt.core.client.Mission;
 import edu.jhuapl.sbmt.core.io.DBRunInfo;
 import edu.jhuapl.sbmt.core.pointing.PointingSource;
+import edu.jhuapl.sbmt.image.config.ImagingInstrumentConfig;
 import edu.jhuapl.sbmt.image.model.ImagingInstrument;
 import edu.jhuapl.sbmt.image.pipelineComponents.operators.rendering.pointedImage.ImageIllumination;
 import edu.jhuapl.sbmt.image.pipelineComponents.operators.rendering.pointedImage.ImagePixelScale;
@@ -590,7 +591,7 @@ public class DatabaseGeneratorSql2
 
         Mission mission = SbmtMultiMissionTool.getMission();
         System.out.println("Mission: " + mission);
-
+        ImagingInstrumentConfig imagingConfig = (ImagingInstrumentConfig)config.getConfigForClass(ImagingInstrumentConfig.class);
         for (DBRunInfo ri : runInfos)
         {
         	if (!ri.name.equals(body) || (ri.imageSource != mode)) continue;
@@ -604,7 +605,7 @@ public class DatabaseGeneratorSql2
             }
 
             System.out.println("Generating: " + pathToFileList + ", mode=" + mode);
-            generator.run(pathToFileList, mode, config.imagingInstruments[cameraIndex]);
+            generator.run(pathToFileList, mode, imagingConfig.imagingInstruments.get(cameraIndex));
         }
     }
 }

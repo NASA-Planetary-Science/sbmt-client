@@ -7,8 +7,10 @@ import java.util.List;
 import java.util.Map;
 
 import com.google.common.collect.ImmutableList;
+import com.google.common.collect.Lists;
 
 import edu.jhuapl.saavtk.config.ConfigArrayList;
+import edu.jhuapl.saavtk.config.IBodyViewConfig;
 import edu.jhuapl.saavtk.model.ShapeModelBody;
 import edu.jhuapl.saavtk.model.ShapeModelType;
 import edu.jhuapl.saavtk.util.Configuration;
@@ -18,10 +20,12 @@ import edu.jhuapl.sbmt.core.body.BodyType;
 import edu.jhuapl.sbmt.core.body.ShapeModelDataUsed;
 import edu.jhuapl.sbmt.core.body.ShapeModelPopulation;
 import edu.jhuapl.sbmt.core.client.Mission;
+import edu.jhuapl.sbmt.core.config.FeatureConfigIOFactory;
 import edu.jhuapl.sbmt.core.config.Instrument;
 import edu.jhuapl.sbmt.core.io.DBRunInfo;
 import edu.jhuapl.sbmt.core.pointing.PointingSource;
 import edu.jhuapl.sbmt.image.config.BasemapImageConfig;
+import edu.jhuapl.sbmt.image.config.ImagingInstrumentConfig;
 import edu.jhuapl.sbmt.image.model.BinExtents;
 import edu.jhuapl.sbmt.image.model.BinSpacings;
 import edu.jhuapl.sbmt.image.model.BinTranslations;
@@ -32,14 +36,17 @@ import edu.jhuapl.sbmt.image.model.ImagingInstrument;
 import edu.jhuapl.sbmt.image.model.Orientation;
 import edu.jhuapl.sbmt.image.model.OrientationFactory;
 import edu.jhuapl.sbmt.image.model.SpectralImageMode;
+import edu.jhuapl.sbmt.image.query.ImageDataQuery;
+import edu.jhuapl.sbmt.lidar.config.LidarInstrumentConfig;
 import edu.jhuapl.sbmt.model.eros.nis.NIS;
-import edu.jhuapl.sbmt.query.database.GenericPhpQuery;
-import edu.jhuapl.sbmt.query.fixedlist.FixedListQuery;
+import edu.jhuapl.sbmt.query.v2.DataQuerySourcesMetadata;
+import edu.jhuapl.sbmt.query.v2.FixedListDataQuery;
+import edu.jhuapl.sbmt.spectrum.config.SpectrumInstrumentConfig;
 import edu.jhuapl.sbmt.spectrum.model.core.BasicSpectrumInstrument;
 import edu.jhuapl.sbmt.spectrum.model.core.SpectrumInstrumentMetadata;
-import edu.jhuapl.sbmt.spectrum.model.core.search.SpectraHierarchicalSearchSpecification;
 import edu.jhuapl.sbmt.spectrum.model.core.search.SpectrumSearchSpec;
 import edu.jhuapl.sbmt.spectrum.model.io.SpectrumInstrumentMetadataIO;
+import edu.jhuapl.sbmt.stateHistory.config.StateHistoryConfig;
 
 public class AsteroidConfigs extends SmallBodyViewConfig
 {
@@ -50,10 +57,33 @@ public class AsteroidConfigs extends SmallBodyViewConfig
 		super(ImmutableList.<String>copyOf(DEFAULT_GASKELL_LABELS_PER_RESOLUTION), ImmutableList.<Integer>copyOf(DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION));
 	}
 
+	private static void setupFeatures(AsteroidConfigs c)
+	{
+		c.addFeatureConfig(ImagingInstrumentConfig.class, new ImagingInstrumentConfig(c));
+        c.addFeatureConfig(SpectrumInstrumentConfig.class, new SpectrumInstrumentConfig(c));
+        c.addFeatureConfig(LidarInstrumentConfig.class, new LidarInstrumentConfig(c));
+        c.addFeatureConfig(StateHistoryConfig.class, new StateHistoryConfig(c));
+        c.addFeatureConfig(BasemapImageConfig.class, new BasemapImageConfig(c));
 
-	public static void initialize(ConfigArrayList configArray)
+        FeatureConfigIOFactory.getIOForClassType(LidarInstrumentConfig.class.getSimpleName()).setViewConfig(c);
+        FeatureConfigIOFactory.getIOForClassType(SpectrumInstrumentConfig.class.getSimpleName()).setViewConfig(c);
+        FeatureConfigIOFactory.getIOForClassType(ImagingInstrumentConfig.class.getSimpleName()).setViewConfig(c);
+        FeatureConfigIOFactory.getIOForClassType(BasemapImageConfig.class.getSimpleName()).setViewConfig(c);
+        FeatureConfigIOFactory.getIOForClassType(StateHistoryConfig.class.getSimpleName()).setViewConfig(c);
+
+	}
+
+
+	public static void initialize(ConfigArrayList<IBodyViewConfig> configArray)
     {
         AsteroidConfigs c = new AsteroidConfigs();
+        setupFeatures(c);
+        ImagingInstrumentConfig imagingConfig = (ImagingInstrumentConfig)c.getConfigForClass(ImagingInstrumentConfig.class);
+        SpectrumInstrumentConfig spectrumConfig = (SpectrumInstrumentConfig)c.getConfigForClass(SpectrumInstrumentConfig.class);
+        LidarInstrumentConfig lidarConfig = (LidarInstrumentConfig)c.getConfigForClass(LidarInstrumentConfig.class);
+        StateHistoryConfig stateHistoryConfig = (StateHistoryConfig)c.getConfigForClass(StateHistoryConfig.class);
+
+
 
         // Gaskell Eros
         c.body = ShapeModelBody.EROS;
@@ -63,16 +93,21 @@ public class AsteroidConfigs extends SmallBodyViewConfig
         c.author = ShapeModelType.GASKELL;
         c.modelLabel = "Gaskell (2008)";
         c.rootDirOnServer = "/GASKELL/EROS";
-        c.timeHistoryFile = "/GASKELL/EROS/history/TimeHistory.bth";
+        stateHistoryConfig.timeHistoryFile = "/GASKELL/EROS/history/TimeHistory.bth";
 //        c.hasImageMap = true;
-        c.addFeatureConfig(BasemapImageConfig.class, new BasemapImageConfig(c));
-        c.hasStateHistory = true;
+
+        stateHistoryConfig.hasStateHistory = true;
         c.shapeModelFileNames = prepend("/EROS", "ver64q.vtk.gz", "ver128q.vtk.gz", "ver256q.vtk.gz", "ver512q.vtk.gz");
 
-        c.imagingInstruments = new ImagingInstrument[] {
+        DataQuerySourcesMetadata msiMetadata =
+        		DataQuerySourcesMetadata.of("/GASKELL/EROS/MSI", "", "EROS", "EROS", "/GASKELL/EROS/MSI/gallery");
+
+
+        imagingConfig.imagingInstruments = Lists.newArrayList(
                 new ImagingInstrument( //
                         SpectralImageMode.MONO, //
-                        new GenericPhpQuery("/GASKELL/EROS/MSI", "EROS", "/GASKELL/EROS/MSI/gallery"), //
+                        new ImageDataQuery(msiMetadata),
+//                        new GenericPhpQuery("/GASKELL/EROS/MSI", "EROS", "/GASKELL/EROS/MSI/gallery"), //
                         ImageType.MSI_IMAGE, //
                         new PointingSource[]{PointingSource.GASKELL_UPDATED, PointingSource.SPICE}, //
                         Instrument.MSI,
@@ -82,9 +117,9 @@ public class AsteroidConfigs extends SmallBodyViewConfig
                         new int[] {537, 412},
                         new int[] {2, 2, 14, 14}
                         )
-        };
+        );
 
-        c.hasLidarData = true;
+        lidarConfig.hasLidarData = true;
         c.hasMapmaker = true;
         c.hasRemoteMapmaker = false;
         c.density = 2.67;
@@ -92,9 +127,9 @@ public class AsteroidConfigs extends SmallBodyViewConfig
         c.bodyReferencePotential = -53.765039959572114;
         c.bodyLowestResModelName = "EROS/shape/shape0.obj";
 
-        c.hasSpectralData = true;
-        c.spectralInstruments = new ArrayList<BasicSpectrumInstrument>();
-        c.spectralInstruments.add(new NIS());
+        spectrumConfig.hasSpectralData = true;
+        spectrumConfig.spectralInstruments = new ArrayList<BasicSpectrumInstrument>();
+        spectrumConfig.spectralInstruments.add(new NIS());
 //        c.spectralInstruments = new ArrayList<BasicSpectrumInstrument>() {
 //                new NIS()
 //        };
@@ -106,13 +141,13 @@ public class AsteroidConfigs extends SmallBodyViewConfig
 		nisSpecs.add(nisSpec);
 
 		instrumentSearchSpecs.add(new SpectrumInstrumentMetadata<SpectrumSearchSpec>("NIS", nisSpecs));
-        c.hierarchicalSpectraSearchSpecification = new SpectrumInstrumentMetadataIO("NEAR", instrumentSearchSpecs);
+        spectrumConfig.hierarchicalSpectraSearchSpecification = new SpectrumInstrumentMetadataIO("NEAR", instrumentSearchSpecs);
 
 
         c.hasLineamentData = true;
-        c.imageSearchDefaultStartDate = new GregorianCalendar(2000, 0, 12, 0, 0, 0).getTime();
-        c.imageSearchDefaultEndDate = new GregorianCalendar(2001, 1, 13, 0, 0, 0).getTime();
-        c.imageSearchFilterNames = new String[] {
+        imagingConfig.imageSearchDefaultStartDate = new GregorianCalendar(2000, 0, 12, 0, 0, 0).getTime();
+        imagingConfig.imageSearchDefaultEndDate = new GregorianCalendar(2001, 1, 13, 0, 0, 0).getTime();
+        imagingConfig.imageSearchFilterNames = new String[] {
                 "Filter 1 (550 nm)",
                 "Filter 2 (450 nm)",
                 "Filter 3 (760 nm)",
@@ -121,24 +156,24 @@ public class AsteroidConfigs extends SmallBodyViewConfig
                 "Filter 6 (1000 nm)",
                 "Filter 7 (1050 nm)"
         };
-        c.imageSearchUserDefinedCheckBoxesNames = new String[] { "iofdbl", "cifdbl" };
-        c.imageSearchDefaultMaxSpacecraftDistance = 1000.0;
-        c.imageSearchDefaultMaxResolution = 50.0;
-        c.lidarSearchDefaultStartDate = new GregorianCalendar(2000, 1, 28, 0, 0, 0).getTime();
-        c.lidarSearchDefaultEndDate = new GregorianCalendar(2001, 1, 13, 0, 0, 0).getTime();
-        c.lidarSearchDataSourceMap = new LinkedHashMap<>();
-        c.lidarBrowseDataSourceMap = new LinkedHashMap<>();
-        c.lidarSearchDataSourceMap.put("Default", "/NLR/cubes");
-        c.lidarBrowseXYZIndices = new int[] { 14, 15, 16 };
-        c.lidarBrowseSpacecraftIndices = new int[] { 8, 9, 10 };
-        c.lidarBrowseIsSpacecraftInSphericalCoordinates = true;
-        c.lidarBrowseTimeIndex = 4;
-        c.lidarBrowseNoiseIndex = 7;
-        c.lidarBrowseFileListResourcePath = "/edu/jhuapl/sbmt/data/NlrFiles.txt";
-        c.lidarBrowseNumberHeaderLines = 2;
-        c.lidarBrowseIsInMeters = true;
-        c.lidarOffsetScale = 0.025;
-        c.lidarInstrumentName = Instrument.NLR;
+        imagingConfig.imageSearchUserDefinedCheckBoxesNames = new String[] { "iofdbl", "cifdbl" };
+        imagingConfig.imageSearchDefaultMaxSpacecraftDistance = 1000.0;
+        imagingConfig.imageSearchDefaultMaxResolution = 50.0;
+        lidarConfig.lidarSearchDefaultStartDate = new GregorianCalendar(2000, 1, 28, 0, 0, 0).getTime();
+        lidarConfig.lidarSearchDefaultEndDate = new GregorianCalendar(2001, 1, 13, 0, 0, 0).getTime();
+        lidarConfig.lidarSearchDataSourceMap = new LinkedHashMap<>();
+        lidarConfig.lidarBrowseDataSourceMap = new LinkedHashMap<>();
+        lidarConfig.lidarSearchDataSourceMap.put("Default", "/NLR/cubes");
+        lidarConfig.lidarBrowseXYZIndices = new int[] { 14, 15, 16 };
+        lidarConfig.lidarBrowseSpacecraftIndices = new int[] { 8, 9, 10 };
+        lidarConfig.lidarBrowseIsSpacecraftInSphericalCoordinates = true;
+        lidarConfig.lidarBrowseTimeIndex = 4;
+        lidarConfig.lidarBrowseNoiseIndex = 7;
+        lidarConfig.lidarBrowseFileListResourcePath = "/edu/jhuapl/sbmt/data/NlrFiles.txt";
+        lidarConfig.lidarBrowseNumberHeaderLines = 2;
+        lidarConfig.lidarBrowseIsInMeters = true;
+        lidarConfig.lidarOffsetScale = 0.025;
+        lidarConfig.lidarInstrumentName = Instrument.NLR;
 
         c.databaseRunInfos = new DBRunInfo[]
         {
@@ -170,8 +205,12 @@ public class AsteroidConfigs extends SmallBodyViewConfig
         c.modelLabel = "Thomas et al. (2001)";
         c.rootDirOnServer = "/THOMAS/EROS";
         c.shapeModelFileNames = prepend(c.rootDirOnServer, "eros001708.obj.gz", "eros007790.obj.gz", "eros010152.obj.gz", "eros022540.obj.gz", "eros089398.obj.gz", "eros200700.obj.gz");
-        c.hasStateHistory = true;
-        c.timeHistoryFile = "/GASKELL/EROS/history/TimeHistory.bth"; // TODO - use the shared/history directory
+
+        stateHistoryConfig = (StateHistoryConfig)c.getConfigForClass(StateHistoryConfig.class);
+        stateHistoryConfig.hasStateHistory = true;
+
+        stateHistoryConfig.timeHistoryFile = "/GASKELL/EROS/history/TimeHistory.bth"; // TODO - use the shared/history directory
+
         c.setResolution(ImmutableList.of( //
                 "1708 plates", "7790 plates", "10152 plates", //
                 "22540 plates", "89398 plates", "200700 plates" //
@@ -194,8 +233,9 @@ public class AsteroidConfigs extends SmallBodyViewConfig
         c.modelLabel = "Neumann et al. (2001)";
         c.rootDirOnServer = "/OTHER/EROSNLR";
         c.shapeModelFileNames = prepend(c.rootDirOnServer, "nlrshape.llr2.gz");
-        c.hasStateHistory = true;
-        c.timeHistoryFile = "/GASKELL/EROS/history/TimeHistory.bth"; // TODO
+        stateHistoryConfig = (StateHistoryConfig)c.getConfigForClass(StateHistoryConfig.class);
+        stateHistoryConfig.hasStateHistory = true;
+        stateHistoryConfig.timeHistoryFile = "/GASKELL/EROS/history/TimeHistory.bth"; // TODO
         c.setResolution(ImmutableList.of(129600));
 
         c.defaultForMissions = new Mission[] {};
@@ -213,8 +253,9 @@ public class AsteroidConfigs extends SmallBodyViewConfig
         c.modelLabel = "NAV team (2001)";
         c.rootDirOnServer = "/OTHER/EROSNAV";
         c.shapeModelFileNames = prepend(c.rootDirOnServer, "navplate.obj.gz");
-        c.hasStateHistory = true;
-        c.timeHistoryFile = "/GASKELL/EROS/history/TimeHistory.bth"; // TODO - use the shared/history directory
+        stateHistoryConfig = (StateHistoryConfig)c.getConfigForClass(StateHistoryConfig.class);
+        stateHistoryConfig.hasStateHistory = true;
+        stateHistoryConfig.timeHistoryFile = "/GASKELL/EROS/history/TimeHistory.bth"; // TODO - use the shared/history directory
         c.setResolution(ImmutableList.of(56644));
         c.presentInMissions = new Mission[] {Mission.PUBLIC_RELEASE, Mission.TEST_PUBLIC_RELEASE,
         																	Mission.STAGE_PUBLIC_RELEASE,
@@ -226,6 +267,7 @@ public class AsteroidConfigs extends SmallBodyViewConfig
 
         // Gaskell Itokawa
         c = new AsteroidConfigs();
+        setupFeatures(c);
         c.body = ShapeModelBody.ITOKAWA;
         c.type = BodyType.ASTEROID;
         c.population = ShapeModelPopulation.NEO;
@@ -234,9 +276,9 @@ public class AsteroidConfigs extends SmallBodyViewConfig
         c.modelLabel = "Gaskell et al. (2008)";
         c.rootDirOnServer = "/GASKELL/ITOKAWA";
         c.shapeModelFileNames = prepend("/ITOKAWA", "ver64q.vtk.gz", "ver128q.vtk.gz", "ver256q.vtk.gz", "ver512q.vtk.gz");
-
-        c.hasStateHistory = true;
-        c.timeHistoryFile = "/GASKELL/ITOKAWA/history/TimeHistory.bth";
+        stateHistoryConfig = (StateHistoryConfig)c.getConfigForClass(StateHistoryConfig.class);
+        stateHistoryConfig.hasStateHistory = true;
+        stateHistoryConfig.timeHistoryFile = "/GASKELL/ITOKAWA/history/TimeHistory.bth";
 
         ImageBinPadding binPadding = new ImageBinPadding();
         binPadding.binExtents.put(1, new BinExtents(1024, 1024, 1024, 1024));
@@ -255,10 +297,23 @@ public class AsteroidConfigs extends SmallBodyViewConfig
         binPadding.binTranslations.put(8,  new BinTranslations(0, 0));
         binPadding.binSpacings.put(8,  new BinSpacings(8.0, 8.0, 1.0));
 
-        c.imagingInstruments = new ImagingInstrument[] {
+        c.addFeatureConfig(BasemapImageConfig.class, new BasemapImageConfig(c));
+        c.addFeatureConfig(ImagingInstrumentConfig.class, new ImagingInstrumentConfig(c));
+        c.addFeatureConfig(SpectrumInstrumentConfig.class, new SpectrumInstrumentConfig(c));
+        c.addFeatureConfig(LidarInstrumentConfig.class, new LidarInstrumentConfig(c));
+
+        imagingConfig = (ImagingInstrumentConfig)c.getConfigForClass(ImagingInstrumentConfig.class);
+        spectrumConfig = (SpectrumInstrumentConfig)c.getConfigForClass(SpectrumInstrumentConfig.class);
+        lidarConfig = (LidarInstrumentConfig)c.getConfigForClass(LidarInstrumentConfig.class);
+
+        DataQuerySourcesMetadata amicaMetadata =
+        		DataQuerySourcesMetadata.of("/GASKELL/ITOKAWA/AMICA", "", "AMICA", "AMICA", "/GASKELL/ITOKAWA/AMICA/gallery");
+
+        imagingConfig.imagingInstruments = Lists.newArrayList(
                 new ImagingInstrument( //
                         SpectralImageMode.MONO, //
-                        new GenericPhpQuery("/GASKELL/ITOKAWA/AMICA", "AMICA", "/GASKELL/ITOKAWA/AMICA/gallery"), //
+                        new ImageDataQuery(amicaMetadata),
+//                        new GenericPhpQuery("/GASKELL/ITOKAWA/AMICA", "AMICA", "/GASKELL/ITOKAWA/AMICA/gallery"), //
                         ImageType.AMICA_IMAGE, //
                         new PointingSource[]{PointingSource.GASKELL, PointingSource.SPICE, PointingSource.CORRECTED}, //
                         Instrument.AMICA, //
@@ -266,12 +321,12 @@ public class AsteroidConfigs extends SmallBodyViewConfig
                         "None",
                         binPadding
                         ) //
-        };
+        );
 
-        c.hasLidarData = true;
-        c.imageSearchDefaultStartDate = new GregorianCalendar(2005, 8, 1, 0, 0, 0).getTime();
-        c.imageSearchDefaultEndDate = new GregorianCalendar(2005, 10, 31, 0, 0, 0).getTime();
-        c.imageSearchFilterNames = new String[] {
+        lidarConfig.hasLidarData = true;
+        imagingConfig.imageSearchDefaultStartDate = new GregorianCalendar(2005, 8, 1, 0, 0, 0).getTime();
+        imagingConfig.imageSearchDefaultEndDate = new GregorianCalendar(2005, 10, 31, 0, 0, 0).getTime();
+        imagingConfig.imageSearchFilterNames = new String[] {
                 "Filter ul (381 nm)",
                 "Filter b (429 nm)",
                 "Filter v (553 nm)",
@@ -280,30 +335,30 @@ public class AsteroidConfigs extends SmallBodyViewConfig
                 "Filter p (960 nm)",
                 "Filter zs (1008 nm)"
         };
-        c.imageSearchUserDefinedCheckBoxesNames = new String[] {};
-        c.imageSearchDefaultMaxSpacecraftDistance = 26.0;
-        c.imageSearchDefaultMaxResolution = 3.0;
-        c.lidarSearchDefaultStartDate = new GregorianCalendar(2005, 8, 1, 0, 0, 0).getTime();
-        c.lidarSearchDefaultEndDate = new GregorianCalendar(2005, 10, 30, 0, 0, 0).getTime();
-        c.lidarSearchDataSourceMap = new LinkedHashMap<>();
-        c.lidarSearchDataSourceMap.put("Optimized", "/ITOKAWA/LIDAR/cdr/cubes-optimized");
-        c.lidarSearchDataSourceMap.put("Unfiltered", "/ITOKAWA/LIDAR/cdr/cubes-unfiltered");
-        c.lidarBrowseXYZIndices = new int[] { 6, 7, 8 };
-        c.lidarBrowseSpacecraftIndices = new int[] { 3, 4, 5 };
-        c.lidarBrowseIsSpacecraftInSphericalCoordinates = false;
-        c.lidarBrowseTimeIndex = 1;
-        c.lidarBrowseNoiseIndex = -1;
-        c.lidarBrowseFileListResourcePath = "/edu/jhuapl/sbmt/data/HayLidarFiles.txt";
-        c.lidarBrowseNumberHeaderLines = 0;
-        c.lidarBrowseIsInMeters = false;
+        imagingConfig.imageSearchUserDefinedCheckBoxesNames = new String[] {};
+        imagingConfig.imageSearchDefaultMaxSpacecraftDistance = 26.0;
+        imagingConfig.imageSearchDefaultMaxResolution = 3.0;
+        lidarConfig.lidarSearchDefaultStartDate = new GregorianCalendar(2005, 8, 1, 0, 0, 0).getTime();
+        lidarConfig.lidarSearchDefaultEndDate = new GregorianCalendar(2005, 10, 30, 0, 0, 0).getTime();
+        lidarConfig.lidarSearchDataSourceMap = new LinkedHashMap<>();
+        lidarConfig.lidarSearchDataSourceMap.put("Optimized", "/ITOKAWA/LIDAR/cdr/cubes-optimized");
+        lidarConfig.lidarSearchDataSourceMap.put("Unfiltered", "/ITOKAWA/LIDAR/cdr/cubes-unfiltered");
+        lidarConfig.lidarBrowseXYZIndices = new int[] { 6, 7, 8 };
+        lidarConfig.lidarBrowseSpacecraftIndices = new int[] { 3, 4, 5 };
+        lidarConfig.lidarBrowseIsSpacecraftInSphericalCoordinates = false;
+        lidarConfig.lidarBrowseTimeIndex = 1;
+        lidarConfig.lidarBrowseNoiseIndex = -1;
+        lidarConfig.lidarBrowseFileListResourcePath = "/edu/jhuapl/sbmt/data/HayLidarFiles.txt";
+        lidarConfig.lidarBrowseNumberHeaderLines = 0;
+        lidarConfig.lidarBrowseIsInMeters = false;
         // The following value is the Itokawa diagonal length divided by
         // 1546.4224133453388.
         // The value 1546.4224133453388 was chosen so that for Eros the offset scale is
         // 0.025 km.
-        c.lidarOffsetScale = 0.00044228259621279913;
-        c.lidarInstrumentName = Instrument.LIDAR;
+        lidarConfig.lidarOffsetScale = 0.00044228259621279913;
+        lidarConfig.lidarInstrumentName = Instrument.LIDAR;
 
-        c.spectralInstruments = new ArrayList<BasicSpectrumInstrument>();
+        spectrumConfig.spectralInstruments = new ArrayList<BasicSpectrumInstrument>();
 
         c.databaseRunInfos = new DBRunInfo[]
         {
@@ -324,6 +379,7 @@ public class AsteroidConfigs extends SmallBodyViewConfig
 
         // Ostro Itokawa
         c = new AsteroidConfigs();
+//        setupFeatures(c);
         c.body = ShapeModelBody.ITOKAWA;
         c.type = BodyType.ASTEROID;
         c.population = ShapeModelPopulation.NEO;
@@ -341,6 +397,7 @@ public class AsteroidConfigs extends SmallBodyViewConfig
 
 
         c = new AsteroidConfigs();
+//        setupFeatures(c);
         c.body = ShapeModelBody.TOUTATIS;
         c.type = BodyType.ASTEROID;
         c.population = ShapeModelPopulation.NEO;
@@ -358,6 +415,7 @@ public class AsteroidConfigs extends SmallBodyViewConfig
         if (Configuration.isAPLVersion())
         {
             c = new AsteroidConfigs();
+            setupFeatures(c);
             c.body = ShapeModelBody.CERES;
             c.type = BodyType.ASTEROID;
             c.population = ShapeModelPopulation.MAIN_BELT;
@@ -370,20 +428,32 @@ public class AsteroidConfigs extends SmallBodyViewConfig
             ceresOrientations.put(PointingSource.GASKELL, new OrientationFactory().of(ImageFlip.X, 0.0, true));
             ceresOrientations.put(PointingSource.SPICE, new OrientationFactory().of(ImageFlip.X, 0.0, true));
 
-            c.imagingInstruments = new ImagingInstrument[] {
+            c.addFeatureConfig(BasemapImageConfig.class, new BasemapImageConfig(c));
+
+            imagingConfig = (ImagingInstrumentConfig)c.getConfigForClass(ImagingInstrumentConfig.class);
+//            spectrumConfig = (SpectrumInstrumentConfig)c.getConfigForClass(SpectrumInstrumentConfig.class);
+//            lidarConfig = (LidarInstrumentConfig)c.getConfigForClass(LidarInstrumentConfig.class);
+
+            DataQuerySourcesMetadata fcMetadata =
+            		DataQuerySourcesMetadata.of("/GASKELL/CERES/FC", "", "Ceres", "Ceres", "/GASKELL/CERES/FC/gallery");
+
+
+
+            imagingConfig.imagingInstruments = Lists.newArrayList(
                     new ImagingInstrument( //
                             SpectralImageMode.MONO, //
-                            new GenericPhpQuery("/GASKELL/CERES/FC", "Ceres", "/GASKELL/CERES/FC/gallery"), //
+                            new ImageDataQuery(fcMetadata),
+//                            new GenericPhpQuery("/GASKELL/CERES/FC", "Ceres", "/GASKELL/CERES/FC/gallery"), //
                             ImageType.FCCERES_IMAGE, //
                             new PointingSource[]{PointingSource.GASKELL, PointingSource.SPICE}, //
                             Instrument.FC, //
                             ceresOrientations
                     ) //
-            };
+            );
 
-            c.imageSearchDefaultStartDate = new GregorianCalendar(2015, GregorianCalendar.APRIL, 1, 0, 0, 0).getTime();
-            c.imageSearchDefaultEndDate = new GregorianCalendar(2016, GregorianCalendar.JULY, 1, 0, 0, 0).getTime();
-            c.imageSearchFilterNames = new String[] {
+            imagingConfig.imageSearchDefaultStartDate = new GregorianCalendar(2015, GregorianCalendar.APRIL, 1, 0, 0, 0).getTime();
+            imagingConfig.imageSearchDefaultEndDate = new GregorianCalendar(2016, GregorianCalendar.JULY, 1, 0, 0, 0).getTime();
+            imagingConfig.imageSearchFilterNames = new String[] {
                     "Filter 1 (735 nm)",
                     "Filter 2 (548 nm)",
                     "Filter 3 (749 nm)",
@@ -393,9 +463,9 @@ public class AsteroidConfigs extends SmallBodyViewConfig
                     "Filter 7 (650 nm)",
                     "Filter 8 (428 nm)"
             };
-            c.imageSearchUserDefinedCheckBoxesNames = new String[] { "FC1", "FC2" };
-            c.imageSearchDefaultMaxSpacecraftDistance = 40000.0;
-            c.imageSearchDefaultMaxResolution = 4000.0;
+            imagingConfig.imageSearchUserDefinedCheckBoxesNames = new String[] { "FC1", "FC2" };
+            imagingConfig.imageSearchDefaultMaxSpacecraftDistance = 40000.0;
+            imagingConfig.imageSearchDefaultMaxResolution = 4000.0;
 
             c.databaseRunInfos = new DBRunInfo[]
             {
@@ -411,6 +481,7 @@ public class AsteroidConfigs extends SmallBodyViewConfig
 
 
         c = new AsteroidConfigs();
+        setupFeatures(c);
         c.body = ShapeModelBody.VESTA;
         c.type = BodyType.ASTEROID;
         c.population = ShapeModelPopulation.MAIN_BELT;
@@ -423,21 +494,30 @@ public class AsteroidConfigs extends SmallBodyViewConfig
         Map<PointingSource, Orientation> vestaOrientations = new LinkedHashMap<>();
         vestaOrientations.put(PointingSource.SPICE, new OrientationFactory().of(ImageFlip.X, 0.0, true));
 
-        c.imagingInstruments = new ImagingInstrument[] {
+        c.addFeatureConfig(BasemapImageConfig.class, new BasemapImageConfig(c));
+
+
+        imagingConfig = (ImagingInstrumentConfig)c.getConfigForClass(ImagingInstrumentConfig.class);
+
+        DataQuerySourcesMetadata fcMetadata =
+        		DataQuerySourcesMetadata.of("/GASKELL/VESTA/FC", "", "FC", "FC", "/GASKELL/VESTA/FC/gallery");
+
+        imagingConfig.imagingInstruments = Lists.newArrayList(
                 new ImagingInstrument( //
                         SpectralImageMode.MONO, //
-                        new GenericPhpQuery("/GASKELL/VESTA/FC", "FC", "/GASKELL/VESTA/FC/gallery"), //
+                        new ImageDataQuery(fcMetadata),
+//                        new GenericPhpQuery("/GASKELL/VESTA/FC", "FC", "/GASKELL/VESTA/FC/gallery"), //
                         ImageType.FC_IMAGE, //
                         new PointingSource[]{PointingSource.GASKELL, PointingSource.SPICE}, //
                         Instrument.FC, //
                         0.0,
                         "X"
                         ) //
-        };
+        );
 
-        c.imageSearchDefaultStartDate = new GregorianCalendar(2011, 4, 3, 0, 0, 0).getTime();
-        c.imageSearchDefaultEndDate = new GregorianCalendar(2012, 7, 27, 0, 0, 0).getTime();
-        c.imageSearchFilterNames = new String[] {
+        imagingConfig.imageSearchDefaultStartDate = new GregorianCalendar(2011, 4, 3, 0, 0, 0).getTime();
+        imagingConfig.imageSearchDefaultEndDate = new GregorianCalendar(2012, 7, 27, 0, 0, 0).getTime();
+        imagingConfig.imageSearchFilterNames = new String[] {
                 "Filter 1 (735 nm)",
                 "Filter 2 (548 nm)",
                 "Filter 3 (749 nm)",
@@ -447,9 +527,9 @@ public class AsteroidConfigs extends SmallBodyViewConfig
                 "Filter 7 (650 nm)",
                 "Filter 8 (428 nm)"
         };
-        c.imageSearchUserDefinedCheckBoxesNames = new String[] { "FC1", "FC2" };
-        c.imageSearchDefaultMaxSpacecraftDistance = 40000.0;
-        c.imageSearchDefaultMaxResolution = 4000.0;
+        imagingConfig.imageSearchUserDefinedCheckBoxesNames = new String[] { "FC1", "FC2" };
+        imagingConfig.imageSearchDefaultMaxSpacecraftDistance = 40000.0;
+        imagingConfig.imageSearchDefaultMaxResolution = 4000.0;
 
         c.databaseRunInfos = new DBRunInfo[]
         {
@@ -462,6 +542,7 @@ public class AsteroidConfigs extends SmallBodyViewConfig
         configArray.add(c);
 
         c = new AsteroidConfigs();
+//        setupFeatures(c);
         c.body = ShapeModelBody.VESTA;
         c.type = BodyType.ASTEROID;
         c.population = ShapeModelPopulation.MAIN_BELT;
@@ -479,6 +560,7 @@ public class AsteroidConfigs extends SmallBodyViewConfig
         if (Configuration.isAPLVersion())
         {
             c = new AsteroidConfigs();
+            setupFeatures(c);
             c.body = ShapeModelBody.LUTETIA;
             c.type = BodyType.ASTEROID;
             c.population = ShapeModelPopulation.MAIN_BELT;
@@ -492,10 +574,20 @@ public class AsteroidConfigs extends SmallBodyViewConfig
             binPadding.binTranslations.put(1,  new BinTranslations(559, 575));
             binPadding.binSpacings.put(1,  new BinSpacings(1.0, 1.0, 1.0));
 
-            c.imagingInstruments = new ImagingInstrument[] {
+            c.addFeatureConfig(BasemapImageConfig.class, new BasemapImageConfig(c));
+
+            imagingConfig = (ImagingInstrumentConfig)c.getConfigForClass(ImagingInstrumentConfig.class);
+
+            DataQuerySourcesMetadata osirisMetadata = DataQuerySourcesMetadata.of("/GASKELL/LUTETIA/IMAGING", "", "", "/GASKELL/LUTETIA/IMAGING/gallery");
+
+//            DataQuerySourcesMetadata osirisMetadata =
+//            		DataQuerySourcesMetadata.of("/GASKELL/LUTETIA/IMAGING", null, "EROS", "EROS", "/GASKELL/LUTETIA/IMAGING/gallery");
+
+            imagingConfig.imagingInstruments = Lists.newArrayList(
                     new ImagingInstrument( //
                             SpectralImageMode.MONO, //
-                            new FixedListQuery("/GASKELL/LUTETIA/IMAGING", "/GASKELL/LUTETIA/IMAGING/gallery"), //
+                            new FixedListDataQuery(osirisMetadata),
+//                            new FixedListQuery("/GASKELL/LUTETIA/IMAGING", "/GASKELL/LUTETIA/IMAGING/gallery"), //
                             ImageType.OSIRIS_IMAGE, //
                             new PointingSource[]{PointingSource.GASKELL}, //
                             Instrument.OSIRIS, //,
@@ -503,14 +595,14 @@ public class AsteroidConfigs extends SmallBodyViewConfig
                             "Y",
                             binPadding
                             ) //
-            };
+            );
 
-            c.imageSearchDefaultStartDate = new GregorianCalendar(2010, 6, 10, 0, 0, 0).getTime();
-            c.imageSearchDefaultEndDate = new GregorianCalendar(2010, 6, 11, 0, 0, 0).getTime();
-            c.imageSearchFilterNames = new String[] {};
-            c.imageSearchUserDefinedCheckBoxesNames = new String[] {};
-            c.imageSearchDefaultMaxSpacecraftDistance = 40000.0;
-            c.imageSearchDefaultMaxResolution = 4000.0;
+            imagingConfig.imageSearchDefaultStartDate = new GregorianCalendar(2010, 6, 10, 0, 0, 0).getTime();
+            imagingConfig.imageSearchDefaultEndDate = new GregorianCalendar(2010, 6, 11, 0, 0, 0).getTime();
+            imagingConfig.imageSearchFilterNames = new String[] {};
+            imagingConfig.imageSearchUserDefinedCheckBoxesNames = new String[] {};
+            imagingConfig.imageSearchDefaultMaxSpacecraftDistance = 40000.0;
+            imagingConfig.imageSearchDefaultMaxResolution = 4000.0;
             c.presentInMissions = new Mission[] {Mission.PUBLIC_RELEASE, Mission.TEST_PUBLIC_RELEASE, Mission.STAGE_PUBLIC_RELEASE, Mission.STAGE_APL_INTERNAL, Mission.APL_INTERNAL, Mission.TEST_APL_INTERNAL};
             c.defaultForMissions = new Mission[] {};
 
@@ -518,6 +610,7 @@ public class AsteroidConfigs extends SmallBodyViewConfig
         }
 
         c = new AsteroidConfigs();
+//        setupFeatures(c);
         c.body = ShapeModelBody.LUTETIA;
         c.type = BodyType.ASTEROID;
         c.population = ShapeModelPopulation.MAIN_BELT;
@@ -553,6 +646,7 @@ public class AsteroidConfigs extends SmallBodyViewConfig
         configArray.add(c);
 
         c = new AsteroidConfigs();
+//        setupFeatures(c);
         c.body = ShapeModelBody.IDA;
         c.type = BodyType.ASTEROID;
         c.population = ShapeModelPopulation.MAIN_BELT;
@@ -590,6 +684,7 @@ public class AsteroidConfigs extends SmallBodyViewConfig
         // This model was delivered on 2018-03-08 to replace the previous model of
         // unknown specific origin.
         c = new AsteroidConfigs();
+//        setupFeatures(c);
         c.body = ShapeModelBody.IDA;
         c.type = BodyType.ASTEROID;
         c.population = ShapeModelPopulation.MAIN_BELT;
@@ -610,6 +705,7 @@ public class AsteroidConfigs extends SmallBodyViewConfig
         configArray.add(c);
 
         c = new AsteroidConfigs();
+//        setupFeatures(c);
         c.body = ShapeModelBody.MATHILDE;
         c.type = BodyType.ASTEROID;
         c.population = ShapeModelPopulation.MAIN_BELT;
@@ -654,6 +750,7 @@ public class AsteroidConfigs extends SmallBodyViewConfig
 
         // This new model was delivered on 2018-03-08.
         c = new AsteroidConfigs();
+//        setupFeatures(c);
         c.body = ShapeModelBody.MATHILDE;
         c.type = BodyType.ASTEROID;
         c.population = ShapeModelPopulation.MAIN_BELT;
@@ -675,6 +772,7 @@ public class AsteroidConfigs extends SmallBodyViewConfig
         configArray.add(c);
 
         c = new AsteroidConfigs();
+//        setupFeatures(c);
         c.body = ShapeModelBody.GASPRA;
         c.type = BodyType.ASTEROID;
         c.population = ShapeModelPopulation.MAIN_BELT;
@@ -713,6 +811,7 @@ public class AsteroidConfigs extends SmallBodyViewConfig
         // This model was delivered on 2018-03-08 to replace the previous model of
         // unknown specific origin.
         c = new AsteroidConfigs();
+//        setupFeatures(c);
         c.body = ShapeModelBody.GASPRA;
         c.type = BodyType.ASTEROID;
         c.population = ShapeModelPopulation.MAIN_BELT;
@@ -734,6 +833,7 @@ public class AsteroidConfigs extends SmallBodyViewConfig
         configArray.add(c);
 
         c = new AsteroidConfigs();
+//        setupFeatures(c);
         c.body = ShapeModelBody.STEINS;
         c.type = BodyType.ASTEROID;
         c.population = ShapeModelPopulation.MAIN_BELT;
@@ -750,6 +850,7 @@ public class AsteroidConfigs extends SmallBodyViewConfig
         configArray.add(c);
 
         c = new AsteroidConfigs();
+//        setupFeatures(c);
         c.body = ShapeModelBody.PSYCHE;
         c.type = BodyType.ASTEROID;
         c.population = ShapeModelPopulation.MAIN_BELT;
@@ -766,6 +867,7 @@ public class AsteroidConfigs extends SmallBodyViewConfig
         configArray.add(c);
 
         c = new AsteroidConfigs();
+//        setupFeatures(c);
         c.body = ShapeModelBody.PSYCHE;
         c.type = BodyType.ASTEROID;
         c.population = ShapeModelPopulation.MAIN_BELT;
@@ -796,20 +898,20 @@ public class AsteroidConfigs extends SmallBodyViewConfig
         return FileCache.instance().isAccessible(getShapeModelFileNames()[0]);
     }
 
-    @Override
-    public Instrument getLidarInstrument()
-    {
-        // TODO Auto-generated method stub
-        return lidarInstrumentName;
-    }
-
-    public boolean hasHypertreeLidarSearch()
-    {
-        return hasHypertreeBasedLidarSearch;
-    }
-
-    public SpectraHierarchicalSearchSpecification<?> getHierarchicalSpectraSearchSpecification()
-    {
-        return hierarchicalSpectraSearchSpecification;
-    }
+//    @Override
+//    public Instrument getLidarInstrument()
+//    {
+//        // TODO Auto-generated method stub
+//        return lidarInstrumentName;
+//    }
+//
+//    public boolean hasHypertreeLidarSearch()
+//    {
+//        return hasHypertreeBasedLidarSearch;
+//    }
+//
+//    public SpectraHierarchicalSearchSpecification<?> getHierarchicalSpectraSearchSpecification()
+//    {
+//        return hierarchicalSpectraSearchSpecification;
+//    }
 }

@@ -13,8 +13,8 @@ import edu.jhuapl.saavtk.model.ModelManager;
 import edu.jhuapl.saavtk.model.plateColoring.ColoringDataManager;
 import edu.jhuapl.saavtk.status.StatusNotifier;
 import edu.jhuapl.saavtk.util.Properties;
-import edu.jhuapl.sbmt.config.SmallBodyViewConfig;
 import edu.jhuapl.sbmt.core.body.SmallBodyModel;
+import edu.jhuapl.sbmt.stateHistory.config.StateHistoryConfig;
 import edu.jhuapl.sbmt.stateHistory.controllers.imagers.PlannedImageScheduleTableController;
 import edu.jhuapl.sbmt.stateHistory.controllers.lidars.PlannedLidarScheduleTableController;
 import edu.jhuapl.sbmt.stateHistory.controllers.spectrometers.PlannedSpectrumScheduleTableController;
@@ -50,11 +50,11 @@ public class ObservationPlanningController implements PropertyChangeListener
     private StateHistoryIntervalPlaybackController intervalPlaybackController;
 
 	public ObservationPlanningController(final ModelManager modelManager, SmallBodyModel smallBodyModel, StateHistoryRendererManager rendererManager,
-										 SmallBodyViewConfig config, ColoringDataManager coloringDataManager, StatusNotifier statusNotifier)
+			StateHistoryConfig config, ColoringDataManager coloringDataManager, StatusNotifier statusNotifier)
 	{
 		timeModel = StateHistoryTimeModel.getInstance();
 		StateHistoryCollection runs = rendererManager.getHistoryCollection();
-		stateHistoryController = new StateHistoryController(modelManager, rendererManager, timeModel);
+		stateHistoryController = new StateHistoryController(modelManager, rendererManager, timeModel, config);
 		viewControlsController = new StateHistoryViewControlsController(stateHistoryController.getHistoryModel(), rendererManager, coloringDataManager);
 		stateHistoryController.setViewControlsController(viewControlsController);
 		this.intervalPlaybackController = new StateHistoryIntervalPlaybackController(rendererManager, timeModel, statusNotifier);

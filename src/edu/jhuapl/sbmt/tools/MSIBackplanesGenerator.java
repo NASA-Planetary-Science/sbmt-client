@@ -24,6 +24,7 @@ import edu.jhuapl.sbmt.config.SmallBodyViewConfig;
 import edu.jhuapl.sbmt.core.body.SmallBodyModel;
 import edu.jhuapl.sbmt.core.config.Instrument;
 import edu.jhuapl.sbmt.core.pointing.PointingSource;
+import edu.jhuapl.sbmt.image.config.ImagingInstrumentConfig;
 import edu.jhuapl.sbmt.image.model.ImagingInstrument;
 import edu.jhuapl.sbmt.image.old.ImageKey;
 import edu.jhuapl.sbmt.model.SbmtModelFactory;
@@ -156,7 +157,8 @@ public class MSIBackplanesGenerator
         ShapeModelBody body = ShapeModelBody.EROS;
         BackplanesFileFormat fmt = BackplanesFileFormat.FITS;
         SmallBodyModel smallBodyModel = SbmtModelFactory.createSmallBodyModel(SmallBodyViewConfig.getSmallBodyConfig(body, author, null));
-        ImagingInstrument instr = ((SmallBodyViewConfig)smallBodyModel.getSmallBodyConfig()).imagingInstruments[0];
+        ImagingInstrumentConfig imagingConfig = (ImagingInstrumentConfig)((SmallBodyViewConfig)smallBodyModel.getSmallBodyConfig()).getConfigForClass(ImagingInstrumentConfig.class);
+        ImagingInstrument instr = imagingConfig.imagingInstruments.get(0);
 
         //Read each line in the input image list and form the command line
         //call to BackplanesGenerator using the image on that line.

@@ -29,6 +29,7 @@ import edu.jhuapl.sbmt.core.client.Mission;
 import edu.jhuapl.sbmt.core.config.Instrument;
 import edu.jhuapl.sbmt.core.io.DBRunInfo;
 import edu.jhuapl.sbmt.core.pointing.PointingSource;
+import edu.jhuapl.sbmt.image.config.ImagingInstrumentConfig;
 import edu.jhuapl.sbmt.image.interfaces.ImageKeyInterface;
 import edu.jhuapl.sbmt.image.model.ImagingInstrument;
 import edu.jhuapl.sbmt.image.model.PerspectiveImage;
@@ -208,7 +209,8 @@ public class DatabaseGeneratorSql
             keyName = keyName.replace(".fit", "");
 
             ImagingInstrument imager = null;
-            for (ImagingInstrument inst : config.imagingInstruments)
+            ImagingInstrumentConfig imagingConfig = (ImagingInstrumentConfig)config.getConfigForClass(ImagingInstrumentConfig.class);
+            for (ImagingInstrument inst : imagingConfig.imagingInstruments)
             {
             	if (inst.getInstrumentName() == instrument) imager = inst;
             }
