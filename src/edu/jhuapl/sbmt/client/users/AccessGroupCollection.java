@@ -1,4 +1,4 @@
-package edu.jhuapl.sbmt.client2.users;
+package edu.jhuapl.sbmt.client.users;
 
 import java.util.HashMap;
 import java.util.HashSet;

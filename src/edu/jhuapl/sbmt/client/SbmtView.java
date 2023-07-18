@@ -1,4 +1,4 @@
-package edu.jhuapl.sbmt.client2;
+package edu.jhuapl.sbmt.client;
 
 import edu.jhuapl.saavtk.status.StatusNotifier;
 import edu.jhuapl.sbmt.config.BasicConfigInfo;

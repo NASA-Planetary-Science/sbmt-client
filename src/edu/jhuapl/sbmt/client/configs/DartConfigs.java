@@ -1,4 +1,4 @@
-package edu.jhuapl.sbmt.client2.configs;
+package edu.jhuapl.sbmt.client.configs;
 
 import java.util.ArrayList;
 import java.util.Collection;

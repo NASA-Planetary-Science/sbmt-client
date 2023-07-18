@@ -1,4 +1,4 @@
-package edu.jhuapl.sbmt.client2;
+package edu.jhuapl.sbmt.client;
 
 import java.io.IOException;
 import java.util.List;

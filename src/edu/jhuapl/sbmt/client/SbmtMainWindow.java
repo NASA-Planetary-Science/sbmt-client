@@ -1,4 +1,4 @@
-package edu.jhuapl.sbmt.client2;
+package edu.jhuapl.sbmt.client;
 
 import java.awt.event.ActionEvent;
 import java.io.File;
