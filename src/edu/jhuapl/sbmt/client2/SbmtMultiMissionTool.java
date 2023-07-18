@@ -41,7 +41,7 @@ import edu.jhuapl.saavtk.util.ServerSettingsManager.ServerSettings;
 import edu.jhuapl.saavtk.util.UrlStatus;
 import edu.jhuapl.sbmt.core.client.Mission;
 import edu.jhuapl.sbmt.core.config.FeatureConfigIOFactory;
-import edu.jhuapl.sbmt.dtm.model.DEMKey;
+import edu.jhuapl.sbmt.dem.legacy.DEMKey;
 import edu.jhuapl.sbmt.image.config.BasemapImageConfig;
 import edu.jhuapl.sbmt.image.config.BasemapImageConfigIO;
 import edu.jhuapl.sbmt.image.config.ImagingInstrumentConfig;

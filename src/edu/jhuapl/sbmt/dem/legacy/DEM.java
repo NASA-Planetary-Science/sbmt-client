@@ -1,4 +1,4 @@
-package edu.jhuapl.sbmt.dtm.model;
+package edu.jhuapl.sbmt.dem.legacy;
 
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;

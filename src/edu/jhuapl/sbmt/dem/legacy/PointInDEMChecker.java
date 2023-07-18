@@ -1,7 +1,6 @@
-package edu.jhuapl.sbmt.dtm.service;
+package edu.jhuapl.sbmt.dem.legacy;
 
 import edu.jhuapl.saavtk.model.PointInRegionChecker;
-import edu.jhuapl.sbmt.dtm.model.DEM;
 
 public class PointInDEMChecker extends PointInRegionChecker
 {

@@ -7,7 +7,7 @@ import vtk.vtkPolyData;
 
 import edu.jhuapl.saavtk.util.NativeLibraryLoader;
 import edu.jhuapl.saavtk.util.PolyDataUtil;
-import edu.jhuapl.sbmt.dtm.model.DEM;
+import edu.jhuapl.sbmt.dem.legacy.DEM;
 
 public class ConvertMaplet
 {
