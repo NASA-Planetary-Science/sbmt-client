@@ -35,7 +35,6 @@ import edu.jhuapl.saavtk.util.Properties;
 import edu.jhuapl.saavtk2.geom.Geometry;
 import edu.jhuapl.saavtk2.io.ObjGeometryReader;
 import edu.jhuapl.sbmt.core.body.SmallBodyModel;
-import edu.jhuapl.sbmt.dtm.ui.properties.DEMView;
 
 import nom.tam.fits.BasicHDU;
 import nom.tam.fits.Fits;
@@ -61,7 +60,7 @@ public class DEM extends SmallBodyModel implements PropertyChangeListener
     private double[] normalOfDEM = null;
     private vtksbCellLocator boundaryLocator;
     private vtkGenericCell genericCell;
-    private DEMView demView;
+//    private DEMView demView;
 
     private DEMLoadingTask task;
     private ProgressMonitor demLoadingProgressMonitor;
@@ -874,12 +873,12 @@ public class DEM extends SmallBodyModel implements PropertyChangeListener
 
     public void demAboutToBeRemoved()
     {
-        // If we have a dem view, close it
-        if(demView != null)
-        {
-            demView.dispose();
-            removeView();
-        }
+//        // If we have a dem view, close it
+//        if(demView != null)
+//        {
+//            demView.dispose();
+//            removeView();
+//        }
 
         // Reset colorings and scales
         try
@@ -963,25 +962,25 @@ public class DEM extends SmallBodyModel implements PropertyChangeListener
         coloringValuesScale[colorIdx] = processedScale;
     }
 
-    public void setView(DEMView demView)
-    {
-        this.demView = demView;
-    }
-
-    public boolean hasView()
-    {
-        return (demView != null);
-    }
-
-    public DEMView getView()
-    {
-        return demView;
-    }
-
-    public void removeView()
-    {
-        this.demView = null;
-    }
+//    public void setView(DEMView demView)
+//    {
+//        this.demView = demView;
+//    }
+//
+//    public boolean hasView()
+//    {
+//        return (demView != null);
+//    }
+//
+//    public DEMView getView()
+//    {
+//        return demView;
+//    }
+//
+//    public void removeView()
+//    {
+//        this.demView = null;
+//    }
 
     @Override
     public void propertyChange(PropertyChangeEvent evt)
