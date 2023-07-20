@@ -1,0 +1,5 @@
+These programs now formally exist in sbmt-tools, since technically they are not part of the client.  
+
+Some of the larger programs were pruned before pushing sbmt-client, but the others should be moved eventually.  
+
+Josh (Jul 20 2023)
