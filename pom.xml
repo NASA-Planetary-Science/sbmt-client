@@ -53,6 +53,11 @@
 			<artifactId>gdal-java-all</artifactId>
 			<version>1.0.0.19</version>
 		</dependency>
+		<dependency>
+		  <groupId>edu.jhuapl.ses.srn.sbmt</groupId>
+		  <artifactId>sbmt-pipeline</artifactId>
+		  <version>1.0.0-20230718.214550-1</version>
+	</dependency>
 	</dependencies>
 		<!-- Repositories, so can be built on checkout without settings.xml file in place -->
     <repositories>
