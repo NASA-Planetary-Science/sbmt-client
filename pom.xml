@@ -54,35 +54,78 @@
 			<version>1.0.0.19</version>
 		</dependency>
 		<dependency>
-		  <groupId>edu.jhuapl.ses.srn.sbmt</groupId>
-		  <artifactId>sbmt-pipeline</artifactId>
-		  <version>1.0.0-20230718.214550-1</version>
-	</dependency>
+			<groupId>edu.jhuapl.ses.srn.saavtk</groupId>
+			<artifactId>saavtk</artifactId>
+			<version>1.0.0-SNAPSHOT</version>
+		</dependency>
+		<dependency>
+			<groupId>edu.jhuapl.ses.srn.sbmt</groupId>
+			<artifactId>sbmt-core</artifactId>
+			<version>1.0.0-SNAPSHOT</version>
+		</dependency>
+		<dependency>
+			<groupId>edu.jhuapl.ses.srn.sbmt</groupId>
+			<artifactId>sbmt-config</artifactId>
+			<version>1.0.0-SNAPSHOT</version>
+		</dependency>
+		<dependency>
+			<groupId>edu.jhuapl.ses.srn.sbmt</groupId>
+			<artifactId>sbmt-dem</artifactId>
+			<version>1.0.0-SNAPSHOT</version>
+		</dependency>
+		<dependency>
+			<groupId>edu.jhuapl.ses.srn.sbmt</groupId>
+			<artifactId>sbmt-image</artifactId>
+			<version>1.0.0-SNAPSHOT</version>
+		</dependency>
+		<dependency>
+			<groupId>edu.jhuapl.ses.srn.sbmt</groupId>
+			<artifactId>sbmt-layer</artifactId>
+			<version>1.0.0-SNAPSHOT</version>
+		</dependency>
+		<dependency>
+			<groupId>edu.jhuapl.ses.srn.sbmt</groupId>
+			<artifactId>sbmt-lidar</artifactId>
+			<version>1.0.0-SNAPSHOT</version>
+		</dependency>
+		<dependency>
+			<groupId>edu.jhuapl.ses.srn.sbmt</groupId>
+			<artifactId>sbmt-model</artifactId>
+			<version>1.0.0-SNAPSHOT</version>
+		</dependency>
+		<dependency>
+			<groupId>edu.jhuapl.ses.srn.sbmt</groupId>
+			<artifactId>sbmt-pipeline</artifactId>
+			<version>1.0.0-SNAPSHOT</version>
+		</dependency>
+		<dependency>
+			<groupId>edu.jhuapl.ses.srn.sbmt</groupId>
+			<artifactId>sbmt-pointing</artifactId>
+			<version>1.0.0-SNAPSHOT</version>
+		</dependency>
+		<dependency>
+			<groupId>edu.jhuapl.ses.srn.sbmt</groupId>
+			<artifactId>sbmt-query</artifactId>
+			<version>1.0.0-SNAPSHOT</version>
+		</dependency>
+		<dependency>
+			<groupId>edu.jhuapl.ses.srn.sbmt</groupId>
+			<artifactId>sbmt-spectrum</artifactId>
+			<version>1.0.0-SNAPSHOT</version>
+		</dependency>
+		<dependency>
+			<groupId>edu.jhuapl.ses.srn.sbmt</groupId>
+			<artifactId>sbmt-stateHistory</artifactId>
+			<version>1.0.0-SNAPSHOT</version>
+		</dependency>
+		<dependency>
+			<groupId>edu.jhuapl.ses.srn.sbmt</groupId>
+			<artifactId>sbmt-util</artifactId>
+			<version>1.0.0-SNAPSHOT</version>
+		</dependency>
 	</dependencies>
 		<!-- Repositories, so can be built on checkout without settings.xml file in place -->
     <repositories>
-        <repository>
-          <snapshots>
-            <enabled>false</enabled>
-          </snapshots>
-          <id>thirdparty</id>
-          <name>libs-3rdparty-local</name>
-          <url>http://surfshop.jhuapl.edu:8081/artifactory/libs-3rdparty-local</url>
-        </repository>
-        <repository>
-          <snapshots>
-            <enabled>false</enabled>
-          </snapshots>
-          <id>central</id>
-          <name>libs-release</name>
-          <url>https://surfshop:8081/artifactory/libs-release</url>
-        </repository>
-        <repository>
-          <snapshots />
-          <id>snapshots</id>
-          <name>libs-snapshot</name>
-          <url>https://surfshop:8081/artifactory/libs-snapshot</url>
-        </repository>
         <repository>
           <snapshots>
             <enabled>false</enabled>
@@ -91,61 +134,7 @@
           <name>release</name>
           <url>https://repo.osgeo.org/repository/release/</url>
         </repository>
-        <repository>
-           <snapshots>
-              <enabled>false</enabled>
-           </snapshots>
-           <id>central2</id>
-           <name>libs-release</name>
-           <url>https://repo1.maven.org/maven2/</url>
-        </repository>
-        <repository>
-           <snapshots />
-           <id>snapshots2</id>
-           <name>libs-snapshot</name>
-           <url>https://repo1.maven.org/maven2/</url>
-        </repository>
-        <repository>
-	   	   <id>jzy3d-snapshots</id>
-	   	   <name>Jzy3d Snapshots</name>
-	       <url>https://maven.jzy3d.org/snapshots/</url>
-        </repository>
-        <repository>
-           <id>jzy3d-releases</id>
-           <name>Jzy3d Releases</name>
-           <url>https://maven.jzy3d.org/releases/</url>
-        </repository>
     </repositories>
-    <pluginRepositories>
-        <pluginRepository>
-          <snapshots>
-            <enabled>false</enabled>
-          </snapshots>
-          <id>central</id>
-          <name>libs-release</name>
-          <url>https://surfshop:8081/artifactory/libs-release</url>
-        </pluginRepository>
-        <pluginRepository>
-          <snapshots />
-          <id>snapshots</id>
-          <name>libs-snapshot</name>
-          <url>https://surfshop:8081/artifactory/libs-snapshot</url>
-        </pluginRepository>
-        <pluginRepository>
-          <snapshots>
-              <enabled>false</enabled>
-          </snapshots>
-          <id>central2</id>
-          <name>plugins-release</name>
-          <url>https://repo1.maven.org/maven2/</url>
-        </pluginRepository>
-        <pluginRepository>
-          <snapshots />
-          <id>snapshots2</id>
-          <name>plugins-snapshot</name>
-          <url>https://repo1.maven.org/maven2/</url>
-        </pluginRepository>
-    </pluginRepositories>
 	<!-- Used to deploy to Surfshop - TO BE UPDATED -->
 	<distributionManagement>
 		<repository>
@@ -207,6 +196,31 @@
 						</goals>
 					</execution>
 				</executions>
+			</plugin>
+			<plugin>
+			    <groupId>org.apache.maven.plugins</groupId>
+			    <artifactId>maven-assembly-plugin</artifactId>
+			    <executions>
+			        <execution>
+			            <phase>deploy</phase>
+			            <goals>
+			                <goal>single</goal>
+			            </goals>
+			            <configuration>
+			            	<finalName>sbmt</finalName>
+			                <archive>
+			                <manifest>
+			                    <mainClass>
+			                        edu.jhuapl.sbmt.client.SmallBodyMappingToolAPL
+			                    </mainClass>
+			                </manifest>
+			                </archive>
+			                <descriptorRefs>
+			                    <descriptorRef>jar-with-dependencies</descriptorRef>
+			                </descriptorRefs>
+			            </configuration>
+			        </execution>
+			    </executions>
 			</plugin>
 		</plugins>
 	</build>
