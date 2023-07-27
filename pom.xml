@@ -13,6 +13,16 @@
 			<scope>test</scope>
 		</dependency>
 		<dependency>
+			<groupId>edu.jhuapl.ses.srn.saavtk</groupId>
+			<artifactId>saavtk</artifactId>
+			<version>1.0.0-SNAPSHOT</version>
+		</dependency>
+		<dependency>
+  			<groupId>com.formdev</groupId>
+  			<artifactId>jide-oss</artifactId>
+  			<version>3.7.12</version>
+		</dependency>
+		<dependency>
 			<groupId>org.jcodec</groupId>
 			<artifactId>jcodec</artifactId>
 			<version>0.2.5</version>
@@ -47,17 +57,71 @@
   			<artifactId>picocli</artifactId>
   			<version>4.7.4</version>
 		</dependency>
-		<!-- GDAL -->
 		<dependency>
-			<groupId>edu.jhuapl.ses.gdal</groupId>
-			<artifactId>gdal-java-all</artifactId>
-			<version>1.0.0.19</version>
+			<groupId>edu.jhuapl.ses.srn.sbmt</groupId>
+			<artifactId>sbmt-core</artifactId>
+			<version>1.0.0-SNAPSHOT</version>
 		</dependency>
 		<dependency>
-		  <groupId>edu.jhuapl.ses.srn.sbmt</groupId>
-		  <artifactId>sbmt-pipeline</artifactId>
-		  <version>1.0.0-20230718.214550-1</version>
-	</dependency>
+			<groupId>edu.jhuapl.ses.srn.sbmt</groupId>
+			<artifactId>sbmt-config</artifactId>
+			<version>1.0.0-SNAPSHOT</version>
+		</dependency>
+		<dependency>
+			<groupId>edu.jhuapl.ses.srn.sbmt</groupId>
+			<artifactId>sbmt-dem</artifactId>
+			<version>1.0.0-SNAPSHOT</version>
+		</dependency>
+		<dependency>
+			<groupId>edu.jhuapl.ses.srn.sbmt</groupId>
+			<artifactId>sbmt-image</artifactId>
+			<version>1.0.0-SNAPSHOT</version>
+		</dependency>
+		<dependency>
+			<groupId>edu.jhuapl.ses.srn.sbmt</groupId>
+			<artifactId>sbmt-layer</artifactId>
+			<version>1.0.0-SNAPSHOT</version>
+		</dependency>
+		<dependency>
+			<groupId>edu.jhuapl.ses.srn.sbmt</groupId>
+			<artifactId>sbmt-lidar</artifactId>
+			<version>1.0.0-SNAPSHOT</version>
+		</dependency>
+		<dependency>
+			<groupId>edu.jhuapl.ses.srn.sbmt</groupId>
+			<artifactId>sbmt-model</artifactId>
+			<version>1.0.0-SNAPSHOT</version>
+		</dependency>
+		<dependency>
+			<groupId>edu.jhuapl.ses.srn.sbmt</groupId>
+			<artifactId>sbmt-pipeline</artifactId>
+			<version>1.0.0-SNAPSHOT</version>
+		</dependency>
+		<dependency>
+			<groupId>edu.jhuapl.ses.srn.sbmt</groupId>
+			<artifactId>sbmt-pointing</artifactId>
+			<version>1.0.0-SNAPSHOT</version>
+		</dependency>
+		<dependency>
+			<groupId>edu.jhuapl.ses.srn.sbmt</groupId>
+			<artifactId>sbmt-query</artifactId>
+			<version>1.0.0-SNAPSHOT</version>
+		</dependency>
+		<dependency>
+			<groupId>edu.jhuapl.ses.srn.sbmt</groupId>
+			<artifactId>sbmt-spectrum</artifactId>
+			<version>1.0.0-SNAPSHOT</version>
+		</dependency>
+		<dependency>
+			<groupId>edu.jhuapl.ses.srn.sbmt</groupId>
+			<artifactId>sbmt-stateHistory</artifactId>
+			<version>1.0.0-SNAPSHOT</version>
+		</dependency>
+		<dependency>
+			<groupId>edu.jhuapl.ses.srn.sbmt</groupId>
+			<artifactId>sbmt-util</artifactId>
+			<version>1.0.0-SNAPSHOT</version>
+		</dependency>
 	</dependencies>
 		<!-- Repositories, so can be built on checkout without settings.xml file in place -->
     <repositories>
