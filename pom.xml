@@ -3,7 +3,7 @@
 	<groupId>sbmt</groupId>
 	<artifactId>sbmt</artifactId>
 	<version>1.0.0-SNAPSHOT</version>
-	<name>sbmt</name>
+	<name>sbmt-client</name>
 	<description>The Small Body Mapping Tool</description>
 	<dependencies>
 		<dependency>
