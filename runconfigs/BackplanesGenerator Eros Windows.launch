@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <launchConfiguration type="org.eclipse.jdt.launching.localJavaApplication">
     <listAttribute key="org.eclipse.debug.core.MAPPED_RESOURCE_PATHS">
-        <listEntry value="/sbmt/src/edu/jhuapl/sbmt/tools/BackplanesGenerator.java"/>
+        <listEntry value="/sbmt-client"/>
     </listAttribute>
     <listAttribute key="org.eclipse.debug.core.MAPPED_RESOURCE_TYPES">
-        <listEntry value="1"/>
+        <listEntry value="4"/>
     </listAttribute>
     <mapAttribute key="org.eclipse.debug.core.environmentVariables">
         <mapEntry key="PATH" value="..\saavtk\lib\vtk6.3\win64"/>
@@ -13,8 +13,10 @@
         <listEntry value="org.eclipse.debug.ui.launchGroup.debug"/>
     </listAttribute>
     <booleanAttribute key="org.eclipse.jdt.launching.ATTR_USE_START_ON_FIRST_THREAD" value="true"/>
+    <stringAttribute key="org.eclipse.jdt.launching.CLASSPATH_PROVIDER" value="org.eclipse.m2e.launchconfig.classpathProvider"/>
     <stringAttribute key="org.eclipse.jdt.launching.MAIN_TYPE" value="edu.jhuapl.sbmt.tools.BackplanesGenerator"/>
     <stringAttribute key="org.eclipse.jdt.launching.PROGRAM_ARGUMENTS" value="-c msi -r 3  -f -s -p gaskell_updated eros /GASKELL/EROS/MSI/images/M0146235607F4_2P_CIF_DBL.FIT misc\programs\msi-backplanes\MSIBackplanes"/>
-    <stringAttribute key="org.eclipse.jdt.launching.PROJECT_ATTR" value="sbmt"/>
+    <stringAttribute key="org.eclipse.jdt.launching.PROJECT_ATTR" value="sbmt-client"/>
+    <stringAttribute key="org.eclipse.jdt.launching.SOURCE_PATH_PROVIDER" value="org.eclipse.m2e.launchconfig.sourcepathProvider"/>
     <stringAttribute key="org.eclipse.jdt.launching.VM_ARGUMENTS" value="-Djava.library.path=../saavtk/lib/vtk6.3/win64  -Xmx4096M"/>
 </launchConfiguration>
