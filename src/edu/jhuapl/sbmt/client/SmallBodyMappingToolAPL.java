@@ -39,6 +39,7 @@ import edu.jhuapl.sbmt.spectrum.model.core.SpectrumInstrumentFactory;
 import edu.jhuapl.sbmt.spectrum.model.core.interfaces.IBasicSpectrumRenderer;
 import edu.jhuapl.sbmt.spectrum.model.core.interfaces.ISpectrumSearchModel;
 import edu.jhuapl.sbmt.spectrum.model.core.interfaces.SpectrumBuilder;
+import edu.jhuapl.sbmt.spectrum.model.core.search.BaseSpectrumSearchModel;
 import edu.jhuapl.sbmt.spectrum.rendering.AdvancedSpectrumRenderer;
 import edu.jhuapl.sbmt.spectrum.rendering.BasicSpectrumRenderer;
 import edu.jhuapl.sbmt.spectrum.service.SBMTSpectraFactory;
@@ -282,15 +283,18 @@ public class SmallBodyMappingToolAPL
 			}
 		});
 
-//			SBMTSpectraFactory.registerModel("MEGANE", new SpectrumSearchModelBuilder()
-//			{
-//
-//				@Override
-//				public ISpectrumSearchModel buildSearchModel(double diagonalLength)
-//				{
-//					return new MEGANESearchModel(SpectrumInstrumentFactory.getInstrumentForName("MEGANE"));
-//				}
-//			});
+		SBMTSpectraFactory.registerModel("MEGANE", new SpectrumSearchModelBuilder()
+		{
+
+			@Override
+			public ISpectrumSearchModel buildSearchModel(double diagonalLength)
+			{
+				return new BaseSpectrumSearchModel<>(SpectrumInstrumentFactory.getInstrumentForName("MEGANE"));
+
+
+//				return new MEGANESearchModel(SpectrumInstrumentFactory.getInstrumentForName("MEGANE"));
+			}
+		});
 
 		SpectraTypeFactory.registerSpectraType("OTES", OTESQuery.getInstance(), OTESSpectrumMath.getInstance(), "cm^-1",
 				new OTES().getBandCenters());
