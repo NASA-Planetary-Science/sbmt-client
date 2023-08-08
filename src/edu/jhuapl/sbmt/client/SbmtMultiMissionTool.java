@@ -131,9 +131,7 @@ public class SbmtMultiMissionTool
 		BinExtents.initializeSerializationProxy();
 		BinTranslations.initializeSerializationProxy();
 		BinSpacings.initializeSerializationProxy();
-		BasemapImage.initializeSerializationProxy();
-		ImageDataQuery.initializeSerializationProxy();
-		FixedListDataQuery.initializeSerializationProxy();
+
 
 		// Structures.
 		LatLon.initializeSerializationProxy();
@@ -164,6 +162,7 @@ public class SbmtMultiMissionTool
 		ImageDataQuery.initializeSerializationProxy();
 		ImagingInstrument.initializeSerializationProxy();
 		DataQuerySourcesMetadata.initializeSerializationProxy();
+		FixedListDataQuery.initializeSerializationProxy();
 
 		FeatureConfigIOFactory.registerFeatureConfigIO(BasemapImageConfig.class.getSimpleName(), new BasemapImageConfigIO());
 		FeatureConfigIOFactory.registerFeatureConfigIO(ImagingInstrumentConfig.class.getSimpleName(), new ImagingInstrumentConfigIO());
