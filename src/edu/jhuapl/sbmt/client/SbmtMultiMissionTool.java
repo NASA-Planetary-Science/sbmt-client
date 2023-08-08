@@ -67,6 +67,8 @@ import edu.jhuapl.sbmt.model.eros.nis.NIS;
 import edu.jhuapl.sbmt.model.phobos.MEGANE;
 import edu.jhuapl.sbmt.model.ryugu.nirs3.NIRS3;
 import edu.jhuapl.sbmt.pointing.spice.SpiceInfo;
+import edu.jhuapl.sbmt.query.v2.DataQuerySourcesMetadata;
+import edu.jhuapl.sbmt.query.v2.FixedListDataQuery;
 import edu.jhuapl.sbmt.spectrum.config.SpectrumInstrumentConfig;
 import edu.jhuapl.sbmt.spectrum.config.SpectrumInstrumentConfigIO;
 import edu.jhuapl.sbmt.spectrum.model.core.SpectrumInstrumentMetadata;
@@ -129,6 +131,10 @@ public class SbmtMultiMissionTool
 		BinExtents.initializeSerializationProxy();
 		BinTranslations.initializeSerializationProxy();
 		BinSpacings.initializeSerializationProxy();
+		BasemapImage.initializeSerializationProxy();
+		ImageDataQuery.initializeSerializationProxy();
+		FixedListDataQuery.initializeSerializationProxy();
+
 		// Structures.
 		LatLon.initializeSerializationProxy();
 		EllipsePolygon.initializeSerializationProxy();
@@ -157,6 +163,7 @@ public class SbmtMultiMissionTool
 		BasemapImage.initializeSerializationProxy();
 		ImageDataQuery.initializeSerializationProxy();
 		ImagingInstrument.initializeSerializationProxy();
+		DataQuerySourcesMetadata.initializeSerializationProxy();
 
 		FeatureConfigIOFactory.registerFeatureConfigIO(BasemapImageConfig.class.getSimpleName(), new BasemapImageConfigIO());
 		FeatureConfigIOFactory.registerFeatureConfigIO(ImagingInstrumentConfig.class.getSimpleName(), new ImagingInstrumentConfigIO());
