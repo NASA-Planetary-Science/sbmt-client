@@ -15,6 +15,7 @@
 	</classpathentry>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-16">
 		<attributes>
+			<attribute name="module" value="true"/>
 			<attribute name="maven.pomderived" value="true"/>
 		</attributes>
 	</classpathentry>
@@ -24,19 +25,5 @@
 			<attribute name="maven.pomderived" value="true"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry combineaccessrules="false" kind="src" path="/sbmt-model"/>
-	<classpathentry combineaccessrules="false" kind="src" path="/sbmt-image"/>
-	<classpathentry combineaccessrules="false" kind="src" path="/sbmt-util"/>
-	<classpathentry combineaccessrules="false" kind="src" path="/sbmt-config"/>
-	<classpathentry combineaccessrules="false" kind="src" path="/sbmt-core"/>
-	<classpathentry combineaccessrules="false" kind="src" path="/sbmt-layer"/>
-	<classpathentry combineaccessrules="false" kind="src" path="/sbmt-pipeline"/>
-	<classpathentry combineaccessrules="false" kind="src" path="/sbmt-pointing"/>
-	<classpathentry combineaccessrules="false" kind="src" path="/sbmt-query"/>
-	<classpathentry combineaccessrules="false" kind="src" path="/sbmt-spectrum"/>
-	<classpathentry combineaccessrules="false" kind="src" path="/sbmt-dem"/>
-	<classpathentry combineaccessrules="false" kind="src" path="/sbmt-lidar"/>
-	<classpathentry combineaccessrules="false" kind="src" path="/sbmt-stateHistory"/>
-	<classpathentry combineaccessrules="false" kind="src" path="/saavtk"/>
 	<classpathentry kind="output" path="target/classes"/>
 </classpath>

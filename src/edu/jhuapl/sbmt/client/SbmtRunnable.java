@@ -45,7 +45,7 @@ public class SbmtRunnable implements Runnable
 			Mission mission = SbmtMultiMissionTool.getMission();
 			writeStartupMessage(mission);
 
-			NativeLibraryLoader.loadAllVtkLibraries();
+			NativeLibraryLoader.loadVtkLibraries();
 			SBMTNativeLibraryLoader.loadGDALLibraries();
 			SBMTNativeLibraryLoader.loadSpiceLibraries();
 			gdal.AllRegister();
