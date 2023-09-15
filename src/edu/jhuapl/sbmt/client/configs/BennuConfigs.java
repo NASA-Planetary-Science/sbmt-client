@@ -557,8 +557,6 @@ public class BennuConfigs extends SmallBodyViewConfig
 
             c.generateStateHistoryParameters();
 
-            c.dtmBrowseDataSourceMap.put("Default", "bennu/bennu-simulated-v4/dtm/browse/fileList.txt");
-
             c.databaseRunInfos = new DBRunInfo[]
             {
             	new DBRunInfo(PointingSource.GASKELL, Instrument.MAPCAM, ShapeModelBody.RQ36.toString(), "/bennu/bennu-simulated-v4/mapcam/imagelist-fullpath.txt", "RQ36V4_MAP"),
@@ -593,7 +591,6 @@ public class BennuConfigs extends SmallBodyViewConfig
             c.generateStateHistoryParameters();
 
             c.hasMapmaker = false;
-            c.dtmBrowseDataSourceMap.put("Default", "bennu/bennu-simulated-v4/dtm/browse/fileList.txt");
 
             c.setSpectrumParameters();
             c.setLidarParameters(true);
@@ -1025,8 +1022,6 @@ public class BennuConfigs extends SmallBodyViewConfig
 
             c.setSpectrumParameters();
 
-            c.dtmBrowseDataSourceMap.put("Default", "bennu/altwg-spc-v20190105/dtm/browse/fileList.txt");
-
             c.generateStateHistoryParameters();
 
             c.hasMapmaker = false;
@@ -1082,8 +1077,6 @@ public class BennuConfigs extends SmallBodyViewConfig
 
             c.setLidarParameters(true);
 
-            c.dtmBrowseDataSourceMap.put("Default", "bennu/altwg-spc-v20190114/dtm/browse/fileList.txt");
-
             c.databaseRunInfos = new DBRunInfo[]
             {
             	new DBRunInfo(PointingSource.GASKELL, Instrument.MAPCAM, ShapeModelBody.RQ36.toString(), "/bennu/altwg-spc-v20190114/mapcam/imagelist-fullpath-sum.txt", "bennu_altwgspcv20190114_mapcam"),
@@ -1132,8 +1125,6 @@ public class BennuConfigs extends SmallBodyViewConfig
             c.hasMapmaker = false;
 
             c.setLidarParameters(true);
-
-            c.dtmBrowseDataSourceMap.put("Default", "bennu/altwg-spc-v20190117/dtm/browse/fileList.txt");
 
             c.databaseRunInfos = new DBRunInfo[]
             {
@@ -1187,8 +1178,6 @@ public class BennuConfigs extends SmallBodyViewConfig
             c.hasMapmaker = false;
 
             c.setLidarParameters(true);
-
-            c.dtmBrowseDataSourceMap.put("Default", "bennu/altwg-spc-v20190121/dtm/browse/fileList.txt");
 
             c.databaseRunInfos = new DBRunInfo[]
             {
@@ -1266,8 +1255,6 @@ public class BennuConfigs extends SmallBodyViewConfig
 
             c.setLidarParameters(true);
 
-            c.dtmBrowseDataSourceMap.put("Default", "bennu/altwg-spc-v20190207a/dtm/browse/fileList.txt");
-
             c.databaseRunInfos = new DBRunInfo[]
             {
             	new DBRunInfo(PointingSource.GASKELL, Instrument.MAPCAM, ShapeModelBody.RQ36.toString(), "/bennu/altwg-spc-v20190207a/mapcam/imagelist-fullpath-sum.txt", "bennu_altwgspcv20190207a_mapcam"),
@@ -1315,8 +1302,6 @@ public class BennuConfigs extends SmallBodyViewConfig
             c.hasMapmaker = false;
 
             c.setLidarParameters(true);
-
-            c.dtmBrowseDataSourceMap.put("Default", "bennu/altwg-spc-v20190207b/dtm/browse/fileList.txt");
 
             c.databaseRunInfos = new DBRunInfo[]
             {
@@ -1366,8 +1351,6 @@ public class BennuConfigs extends SmallBodyViewConfig
             c.hasMapmaker = false;
 
             c.setLidarParameters(true);
-
-            c.dtmBrowseDataSourceMap.put("Default", "bennu/altwg-spc-v20190414/dtm/browse/fileList.txt");
 
             c.databaseRunInfos = new DBRunInfo[]
             {
@@ -1447,8 +1430,6 @@ public class BennuConfigs extends SmallBodyViewConfig
 
             c.setLidarParameters(true);
 
-            c.dtmBrowseDataSourceMap.put("Default", "bennu/altwg-spo-v20190612/dtm/browse/fileList.txt");
-
             c.databaseRunInfos = new DBRunInfo[]
             {
                 new DBRunInfo(PointingSource.GASKELL, Instrument.MAPCAM, ShapeModelBody.RQ36.toString(), "/bennu/altwg-spo-v20190612/mapcam/imagelist-fullpath-sum.txt", "bennu_altwgspov20190612_mapcam"),
@@ -1527,8 +1508,6 @@ public class BennuConfigs extends SmallBodyViewConfig
             c.hasMapmaker = false;
 
             c.setLidarParameters(true);
-
-            c.dtmBrowseDataSourceMap.put("Default", "bennu/altwg-spc-v20190828/dtm/browse/fileList.txt");
 
             c.databaseRunInfos = new DBRunInfo[]
             {
@@ -1611,8 +1590,6 @@ public class BennuConfigs extends SmallBodyViewConfig
 
             c.setLidarParameters(true);
 
-            c.dtmBrowseDataSourceMap.put("Default", "bennu/altwg-spc-v20191027/dtm/browse/fileList.txt");
-
             c.databaseRunInfos = new DBRunInfo[]
             {
                 new DBRunInfo(PointingSource.GASKELL, Instrument.MAPCAM, ShapeModelBody.RQ36.toString(), "/bennu/altwg-spc-v20191027/mapcam/imagelist-fullpath-sum.txt", "bennu_altwgspcv20191027_mapcam"),
@@ -1675,8 +1652,6 @@ public class BennuConfigs extends SmallBodyViewConfig
             lidarConfig.lidarBrowseDataSourceMap.put("Default", c.rootDirOnServer + "/ola/l2a/fileListL2A.txt");
             lidarConfig.lidarBrowseFileListResourcePath = c.rootDirOnServer + "/ola/l2a/fileListL2A.txt";
             lidarConfig.lidarBrowseWithPointsDataSourceMap.put("Default", c.rootDirOnServer + "/ola/l2a/fileListL2A.txt");
-
-            c.dtmBrowseDataSourceMap.put("Default", "bennu/ola-v20-spc/dtm/browse/fileList.txt");
 
             c.databaseRunInfos = new DBRunInfo[]
             {
@@ -1779,8 +1754,6 @@ public class BennuConfigs extends SmallBodyViewConfig
 
             c.hasMapmaker = false;
 
-            c.dtmBrowseDataSourceMap.put("Default", "bennu/ola-v20-ptm/dtm/browse/fileList.txt");
-
             c.databaseRunInfos = new DBRunInfo[]
             {
                 new DBRunInfo(PointingSource.GASKELL, Instrument.MAPCAM, ShapeModelBody.RQ36.toString(), "/bennu/ola-v20-ptm/mapcam/imagelist-fullpath-sum.txt", "bennu_olav20ptm_mapcam"),
@@ -1876,8 +1849,6 @@ public class BennuConfigs extends SmallBodyViewConfig
             lidarConfig.lidarBrowseDataSourceMap.put("Default", c.rootDirOnServer + "/ola/l2a/fileListL2A_OLAv21.txt");
             lidarConfig.lidarBrowseFileListResourcePath = c.rootDirOnServer + "/ola/l2a/fileListL2A_OLAv21.txt";
             lidarConfig.lidarBrowseWithPointsDataSourceMap.put("Default", c.rootDirOnServer + "/ola/l2a/fileListL2A_OLAv21.txt");
-
-            c.dtmBrowseDataSourceMap.put("Default", "bennu/ola-v21-spc/dtm/browse/fileList.txt");
 
             c.databaseRunInfos = new DBRunInfo[]
             {
@@ -1975,8 +1946,6 @@ public class BennuConfigs extends SmallBodyViewConfig
 
             c.hasMapmaker = false;
 
-            c.dtmBrowseDataSourceMap.put("Default", "bennu/ola-v21-ptm/dtm/browse/fileList.txt");
-
             c.databaseRunInfos = new DBRunInfo[]
             {
                 new DBRunInfo(PointingSource.GASKELL, Instrument.MAPCAM, ShapeModelBody.RQ36.toString(), "/bennu/ola-v21-ptm/mapcam/imagelist-fullpath-sum.txt", "bennu_olav21ptm_mapcam"),
@@ -2069,8 +2038,6 @@ public class BennuConfigs extends SmallBodyViewConfig
             lidarConfig.lidarBrowseDataSourceMap.put("Default", c.rootDirOnServer + "/ola/l2a/fileListL2A.txt");
             lidarConfig.lidarBrowseFileListResourcePath = c.rootDirOnServer + "/ola/l2a/fileListL2A.txt";
             lidarConfig.lidarBrowseWithPointsDataSourceMap.put("Default", c.rootDirOnServer + "/ola/l2a/fileListL2A.txt");
-
-            c.dtmBrowseDataSourceMap.put("Default", "bennu/spo-v54-spc/dtm/browse/fileList.txt");
 
             c.databaseRunInfos = new DBRunInfo[]
             {
