@@ -604,12 +604,6 @@ public class NewHorizonsConfigs extends SmallBodyViewConfig
 
 //            c.hasImageMap = false;
 
-            if (Configuration.isMac())
-            {
-                // Right now bigmap only works on Macs
-                c.hasBigmap = true;
-            }
-
             DataQuerySourcesMetadata lorriMetadata =
             		DataQuerySourcesMetadata.of(c.rootDirOnServer + "/lorri", "", null, null, c.rootDirOnServer + "/lorri/gallery");
 

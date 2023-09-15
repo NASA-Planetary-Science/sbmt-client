@@ -399,8 +399,6 @@ public class BennuConfigs extends SmallBodyViewConfig
             c.setBodyParameters();
             c.hasMapmaker = true;
 
-            if(Configuration.isMac()) c.hasBigmap = true;  // Right now bigmap only works on Macs
-
             ImagingInstrumentConfig imagingConfig = (ImagingInstrumentConfig)c.getConfigForClass(ImagingInstrumentConfig.class);
             SpectrumInstrumentConfig spectrumConfig = (SpectrumInstrumentConfig)c.getConfigForClass(SpectrumInstrumentConfig.class);
             LidarInstrumentConfig lidarConfig = (LidarInstrumentConfig)c.getConfigForClass(LidarInstrumentConfig.class);
@@ -492,7 +490,6 @@ public class BennuConfigs extends SmallBodyViewConfig
             c.density = 1.26;
             c.rotationRate = 0.0004061303295118512;
             c.presentInMissions = AllBennuClients;
-            if(Configuration.isMac()) c.hasBigmap = false;  // Right now bigmap only works on Macs
 
             c.hasMapmaker = false;
             setupFeatures(c);
@@ -580,7 +577,6 @@ public class BennuConfigs extends SmallBodyViewConfig
                     ImmutableList.of(12288, DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[0], DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[1], DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[2], DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[3]));
             c.density = 1.260;
             c.rotationRate = 0.00040613;
-            if(Configuration.isMac()) c.hasBigmap = true;  // Right now bigmap only works on Macs
             setupFeatures(c);
             c.setBodyParameters();
             ImagingInstrumentConfig imagingConfig = (ImagingInstrumentConfig)c.getConfigForClass(ImagingInstrumentConfig.class);
@@ -611,7 +607,6 @@ public class BennuConfigs extends SmallBodyViewConfig
                     ImmutableList.of(12288, DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[0], DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[1]));
             c.density = 1.260;
             c.rotationRate = 0.00040613;
-            if(Configuration.isMac()) c.hasBigmap = true;  // Right now bigmap only works on Macs
             setupFeatures(c);
             c.setBodyParameters();
             ImagingInstrumentConfig imagingConfig = (ImagingInstrumentConfig)c.getConfigForClass(ImagingInstrumentConfig.class);
@@ -666,7 +661,6 @@ public class BennuConfigs extends SmallBodyViewConfig
                     ImmutableList.of(12288, DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[0], DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[1], DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[2], DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[3]));
             c.density = 1.260;
             c.rotationRate = 0.00040613;
-            if(Configuration.isMac()) c.hasBigmap = true;  // Right now bigmap only works on Macs
             setupFeatures(c);
             c.setBodyParameters();
             ImagingInstrumentConfig imagingConfig = (ImagingInstrumentConfig)c.getConfigForClass(ImagingInstrumentConfig.class);
@@ -717,7 +711,6 @@ public class BennuConfigs extends SmallBodyViewConfig
                     ImmutableList.of(12288, DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[0], DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[1], DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[2], DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[3]));
             c.density = 1.260;
             c.rotationRate = 0.00040613;
-            if(Configuration.isMac()) c.hasBigmap = true;  // Right now bigmap only works on Macs
             setupFeatures(c);
             c.setBodyParameters();
             ImagingInstrumentConfig imagingConfig = (ImagingInstrumentConfig)c.getConfigForClass(ImagingInstrumentConfig.class);
@@ -767,7 +760,6 @@ public class BennuConfigs extends SmallBodyViewConfig
                     ImmutableList.of(12288, DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[0], DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[1], DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[2], DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[3]));
             c.density = 1.260;
             c.rotationRate = 0.00040613;
-            if(Configuration.isMac()) c.hasBigmap = true;  // Right now bigmap only works on Macs
             setupFeatures(c);
             c.setBodyParameters();
             ImagingInstrumentConfig imagingConfig = (ImagingInstrumentConfig)c.getConfigForClass(ImagingInstrumentConfig.class);
@@ -819,7 +811,6 @@ public class BennuConfigs extends SmallBodyViewConfig
                     ImmutableList.of(12288, DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[0], DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[1], DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[2], DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[3]));
             c.density = 1.260;
             c.rotationRate = 0.00040613;
-            if(Configuration.isMac()) c.hasBigmap = true;  // Right now bigmap only works on Macs
             setupFeatures(c);
             c.setBodyParameters();
             ImagingInstrumentConfig imagingConfig = (ImagingInstrumentConfig)c.getConfigForClass(ImagingInstrumentConfig.class);
@@ -872,7 +863,6 @@ public class BennuConfigs extends SmallBodyViewConfig
             c.density = 1.260;
             c.rotationRate = 0.00040613;
 
-            if(Configuration.isMac()) c.hasBigmap = true;  // Right now bigmap only works on Macs
             setupFeatures(c);
             c.setBodyParameters();
             ImagingInstrumentConfig imagingConfig = (ImagingInstrumentConfig)c.getConfigForClass(ImagingInstrumentConfig.class);
@@ -937,12 +927,6 @@ public class BennuConfigs extends SmallBodyViewConfig
             c.useMinimumReferencePotential = true;
             c.rotationRate = 0.00040613;
 
-
-            if(Configuration.isMac())
-            {
-                // Right now bigmap only works on Macs
-                c.hasBigmap = true;
-            }
             setupFeatures(c);
             c.setBodyParameters();
             ImagingInstrumentConfig imagingConfig = (ImagingInstrumentConfig)c.getConfigForClass(ImagingInstrumentConfig.class);
@@ -1008,7 +992,6 @@ public class BennuConfigs extends SmallBodyViewConfig
             c.rotationRate = 0.00040613;
             c.bodyReferencePotential = -0.02654811544296466;
 
-            if(Configuration.isMac()) c.hasBigmap = true;  // Right now bigmap only works on Macs
 
             setupFeatures(c);
             c.setBodyParameters();
@@ -1057,7 +1040,6 @@ public class BennuConfigs extends SmallBodyViewConfig
             c.rotationRate = 0.00040613;
             c.bodyReferencePotential = -0.02637307554771602;
 
-            if(Configuration.isMac()) c.hasBigmap = true;  // Right now bigmap only works on Macs
 
             setupFeatures(c);
             c.setBodyParameters();
@@ -1106,8 +1088,6 @@ public class BennuConfigs extends SmallBodyViewConfig
             c.rotationRate = 4.0626E-4;
             c.bodyReferencePotential = -0.02530442113463265;
 
-            if(Configuration.isMac()) c.hasBigmap = true;  // Right now bigmap only works on Macs
-
             setupFeatures(c);
             c.setBodyParameters();
             ImagingInstrumentConfig imagingConfig = (ImagingInstrumentConfig)c.getConfigForClass(ImagingInstrumentConfig.class);
@@ -1155,11 +1135,6 @@ public class BennuConfigs extends SmallBodyViewConfig
             c.rotationRate = 4.0626E-4;
             c.bodyReferencePotential = -0.02513575424405747;
 
-            if (Configuration.isMac())
-            {
-                // Right now bigmap only works on Macs
-                c.hasBigmap = true;
-            }
             setupFeatures(c);
             c.setBodyParameters();
             ImagingInstrumentConfig imagingConfig = (ImagingInstrumentConfig)c.getConfigForClass(ImagingInstrumentConfig.class);
@@ -1236,7 +1211,6 @@ public class BennuConfigs extends SmallBodyViewConfig
             c.rotationRate = 4.0626E-4;
             c.bodyReferencePotential = -0.0253033332766406;
 
-            if(Configuration.isMac()) c.hasBigmap = true;  // Right now bigmap only works on Macs
             setupFeatures(c);
             c.setBodyParameters();
             ImagingInstrumentConfig imagingConfig = (ImagingInstrumentConfig)c.getConfigForClass(ImagingInstrumentConfig.class);
@@ -1284,7 +1258,6 @@ public class BennuConfigs extends SmallBodyViewConfig
             c.rotationRate = 4.0626E-4;
             c.bodyReferencePotential = -0.02528907231151947;
 
-            if(Configuration.isMac()) c.hasBigmap = true;  // Right now bigmap only works on Macs
             setupFeatures(c);
             c.setBodyParameters();
             ImagingInstrumentConfig imagingConfig = (ImagingInstrumentConfig)c.getConfigForClass(ImagingInstrumentConfig.class);
@@ -1332,7 +1305,6 @@ public class BennuConfigs extends SmallBodyViewConfig
             c.rotationRate = 4.0626E-4;
             c.bodyReferencePotential = -0.02520767997203304;
 
-            if(Configuration.isMac()) c.hasBigmap = true;  // Right now bigmap only works on Macs
             setupFeatures(c);
             c.setBodyParameters();
             ImagingInstrumentConfig imagingConfig = (ImagingInstrumentConfig)c.getConfigForClass(ImagingInstrumentConfig.class);
@@ -1410,7 +1382,6 @@ public class BennuConfigs extends SmallBodyViewConfig
             c.rotationRate = 4.0626E-4;
             c.bodyReferencePotential = -0.02517871436774813;
 
-            if(Configuration.isMac()) c.hasBigmap = true;  // Right now bigmap only works on Macs
             setupFeatures(c);
             c.setBodyParameters();
             ImagingInstrumentConfig imagingConfig = (ImagingInstrumentConfig)c.getConfigForClass(ImagingInstrumentConfig.class);
@@ -1489,7 +1460,6 @@ public class BennuConfigs extends SmallBodyViewConfig
             c.rotationRate = 4.0626E-4;
             c.bodyReferencePotential = -0.02517940647257273;
 
-            if(Configuration.isMac()) c.hasBigmap = true;  // Right now bigmap only works on Macs
             setupFeatures(c);
             c.setBodyParameters();
             ImagingInstrumentConfig imagingConfig = (ImagingInstrumentConfig)c.getConfigForClass(ImagingInstrumentConfig.class);
@@ -1569,7 +1539,6 @@ public class BennuConfigs extends SmallBodyViewConfig
             c.hasCustomBodyCubeSize = true;
             c.customBodyCubeSize = 0.02; //km
 
-            if(Configuration.isMac()) c.hasBigmap = true;  // Right now bigmap only works on Macs
             setupFeatures(c);
             c.setBodyParameters();
             ImagingInstrumentConfig imagingConfig = (ImagingInstrumentConfig)c.getConfigForClass(ImagingInstrumentConfig.class);
@@ -1619,7 +1588,6 @@ public class BennuConfigs extends SmallBodyViewConfig
             c.rotationRate = 4.0626E-4;
             c.bodyReferencePotential = -0.02527683882517149;
 
-            if(Configuration.isMac()) c.hasBigmap = true;  // Right now bigmap only works on Macs
             setupFeatures(c);
             c.setBodyParameters();
             ImagingInstrumentConfig imagingConfig = (ImagingInstrumentConfig)c.getConfigForClass(ImagingInstrumentConfig.class);
@@ -1716,7 +1684,6 @@ public class BennuConfigs extends SmallBodyViewConfig
             c.density = 1.194;
             c.rotationRate = 4.0626E-4;
             c.bodyReferencePotential = -0.02527683882517149;
-            if(Configuration.isMac()) c.hasBigmap = true;  // Right now bigmap only works on Macs
 
             setupFeatures(c);
 
@@ -1819,7 +1786,6 @@ public class BennuConfigs extends SmallBodyViewConfig
             c.rotationRate = 4.0626E-4;
             c.bodyReferencePotential = -0.02524469206484981;
 
-            if(Configuration.isMac()) c.hasBigmap = true;  // Right now bigmap only works on Macs
             setupFeatures(c);
             c.setBodyParameters();
             ImagingInstrumentConfig imagingConfig = (ImagingInstrumentConfig)c.getConfigForClass(ImagingInstrumentConfig.class);
@@ -1913,7 +1879,6 @@ public class BennuConfigs extends SmallBodyViewConfig
             c.rotationRate = 4.0626E-4;
             c.bodyReferencePotential = -0.02524469206484981;
 
-            if(Configuration.isMac()) c.hasBigmap = true;  // Right now bigmap only works on Macs
             setupFeatures(c);
             c.setBodyParameters();
             ImagingInstrumentConfig imagingConfig = (ImagingInstrumentConfig)c.getConfigForClass(ImagingInstrumentConfig.class);
@@ -2008,7 +1973,6 @@ public class BennuConfigs extends SmallBodyViewConfig
             c.rotationRate = 4.0626E-4;
             c.bodyReferencePotential = -0.02538555084803482;
 
-            if(Configuration.isMac()) c.hasBigmap = true;  // Right now bigmap only works on Macs
             setupFeatures(c);
             c.setBodyParameters();
             ImagingInstrumentConfig imagingConfig = (ImagingInstrumentConfig)c.getConfigForClass(ImagingInstrumentConfig.class);
