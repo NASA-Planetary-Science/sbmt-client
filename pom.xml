@@ -18,11 +18,6 @@
   			<version>3.7.12</version>
 		</dependency>
 		<dependency>
-			<groupId>edu.jhuapl.ses.srn.saavtk</groupId>
-			<artifactId>saavtk</artifactId>
-			<version>1.0.0.3-SNAPSHOT</version>
-		</dependency>
-		<dependency>
 			<groupId>org.jcodec</groupId>
 			<artifactId>jcodec</artifactId>
 			<version>0.2.5</version>
@@ -80,7 +75,7 @@
 		<dependency>
 			<groupId>edu.jhuapl.ses.srn.sbmt</groupId>
 			<artifactId>sbmt-image</artifactId>
-			<version>1.0.0.156-SNAPSHOT</version>
+			<version>1.0.0</version>
 		</dependency>
 		<dependency>
 			<groupId>edu.jhuapl.ses.srn.sbmt</groupId>
