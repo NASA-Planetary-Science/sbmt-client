@@ -65,12 +65,12 @@
 		<dependency>
 			<groupId>edu.jhuapl.ses.srn.sbmt</groupId>
 			<artifactId>sbmt-core</artifactId>
-			<version>1.0.1</version>
+			<version>1.0.2</version>
 		</dependency>
 		<dependency>
 			<groupId>edu.jhuapl.ses.srn.sbmt</groupId>
 			<artifactId>sbmt-config</artifactId>
-			<version>1.0.1</version>
+			<version>1.0.2</version>
 		</dependency>
 		<dependency>
 			<groupId>edu.jhuapl.ses.srn.sbmt</groupId>
@@ -80,7 +80,7 @@
 		<dependency>
 			<groupId>edu.jhuapl.ses.srn.sbmt</groupId>
 			<artifactId>sbmt-image</artifactId>
-			<version>1.0.0</version>
+			<version>1.0.0.156-SNAPSHOT</version>
 		</dependency>
 		<dependency>
 			<groupId>edu.jhuapl.ses.srn.sbmt</groupId>
@@ -110,7 +110,7 @@
 		<dependency>
 			<groupId>edu.jhuapl.ses.srn.sbmt</groupId>
 			<artifactId>sbmt-query</artifactId>
-			<version>1.0.0</version>
+			<version>1.0.1</version>
 		</dependency>
 		<dependency>
 			<groupId>edu.jhuapl.ses.srn.sbmt</groupId>
