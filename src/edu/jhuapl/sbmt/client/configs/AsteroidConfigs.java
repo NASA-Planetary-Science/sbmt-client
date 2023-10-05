@@ -77,11 +77,7 @@ public class AsteroidConfigs extends SmallBodyViewConfig
 	public static void initialize(ConfigArrayList<IBodyViewConfig> configArray)
     {
         AsteroidConfigs c = new AsteroidConfigs();
-        setupFeatures(c);
-        ImagingInstrumentConfig imagingConfig = (ImagingInstrumentConfig)c.getConfigForClass(ImagingInstrumentConfig.class);
-        SpectrumInstrumentConfig spectrumConfig = (SpectrumInstrumentConfig)c.getConfigForClass(SpectrumInstrumentConfig.class);
-        LidarInstrumentConfig lidarConfig = (LidarInstrumentConfig)c.getConfigForClass(LidarInstrumentConfig.class);
-        StateHistoryConfig stateHistoryConfig = (StateHistoryConfig)c.getConfigForClass(StateHistoryConfig.class);
+
 
 
 
@@ -93,6 +89,13 @@ public class AsteroidConfigs extends SmallBodyViewConfig
         c.author = ShapeModelType.GASKELL;
         c.modelLabel = "Gaskell (2008)";
         c.rootDirOnServer = "/GASKELL/EROS";
+
+        setupFeatures(c);
+        ImagingInstrumentConfig imagingConfig = (ImagingInstrumentConfig)c.getConfigForClass(ImagingInstrumentConfig.class);
+        SpectrumInstrumentConfig spectrumConfig = (SpectrumInstrumentConfig)c.getConfigForClass(SpectrumInstrumentConfig.class);
+        LidarInstrumentConfig lidarConfig = (LidarInstrumentConfig)c.getConfigForClass(LidarInstrumentConfig.class);
+        StateHistoryConfig stateHistoryConfig = (StateHistoryConfig)c.getConfigForClass(StateHistoryConfig.class);
+
         stateHistoryConfig.timeHistoryFile = "/GASKELL/EROS/history/TimeHistory.bth";
 //        c.hasImageMap = true;
 
@@ -267,7 +270,7 @@ public class AsteroidConfigs extends SmallBodyViewConfig
 
         // Gaskell Itokawa
         c = new AsteroidConfigs();
-        setupFeatures(c);
+
         c.body = ShapeModelBody.ITOKAWA;
         c.type = BodyType.ASTEROID;
         c.population = ShapeModelPopulation.NEO;
@@ -276,6 +279,7 @@ public class AsteroidConfigs extends SmallBodyViewConfig
         c.modelLabel = "Gaskell et al. (2008)";
         c.rootDirOnServer = "/GASKELL/ITOKAWA";
         c.shapeModelFileNames = prepend("/ITOKAWA", "ver64q.vtk.gz", "ver128q.vtk.gz", "ver256q.vtk.gz", "ver512q.vtk.gz");
+        setupFeatures(c);
         stateHistoryConfig = (StateHistoryConfig)c.getConfigForClass(StateHistoryConfig.class);
         stateHistoryConfig.hasStateHistory = true;
         stateHistoryConfig.timeHistoryFile = "/GASKELL/ITOKAWA/history/TimeHistory.bth";
@@ -415,7 +419,7 @@ public class AsteroidConfigs extends SmallBodyViewConfig
         if (Configuration.isAPLVersion())
         {
             c = new AsteroidConfigs();
-            setupFeatures(c);
+
             c.body = ShapeModelBody.CERES;
             c.type = BodyType.ASTEROID;
             c.population = ShapeModelPopulation.MAIN_BELT;
@@ -424,6 +428,7 @@ public class AsteroidConfigs extends SmallBodyViewConfig
             c.modelLabel = "SPC";
             c.rootDirOnServer = "/GASKELL/CERES";
             c.hasMapmaker = true;
+            setupFeatures(c);
             Map<PointingSource, Orientation> ceresOrientations = new LinkedHashMap<>();
             ceresOrientations.put(PointingSource.GASKELL, new OrientationFactory().of(ImageFlip.X, 0.0, true));
             ceresOrientations.put(PointingSource.SPICE, new OrientationFactory().of(ImageFlip.X, 0.0, true));
@@ -481,7 +486,7 @@ public class AsteroidConfigs extends SmallBodyViewConfig
 
 
         c = new AsteroidConfigs();
-        setupFeatures(c);
+
         c.body = ShapeModelBody.VESTA;
         c.type = BodyType.ASTEROID;
         c.population = ShapeModelPopulation.MAIN_BELT;
@@ -490,7 +495,7 @@ public class AsteroidConfigs extends SmallBodyViewConfig
         c.modelLabel = "Gaskell (2013)";
         c.rootDirOnServer = "/GASKELL/VESTA";
         c.hasMapmaker = true;
-
+        setupFeatures(c);
         Map<PointingSource, Orientation> vestaOrientations = new LinkedHashMap<>();
         vestaOrientations.put(PointingSource.SPICE, new OrientationFactory().of(ImageFlip.X, 0.0, true));
 
@@ -560,7 +565,7 @@ public class AsteroidConfigs extends SmallBodyViewConfig
         if (Configuration.isAPLVersion())
         {
             c = new AsteroidConfigs();
-            setupFeatures(c);
+
             c.body = ShapeModelBody.LUTETIA;
             c.type = BodyType.ASTEROID;
             c.population = ShapeModelPopulation.MAIN_BELT;
@@ -568,7 +573,7 @@ public class AsteroidConfigs extends SmallBodyViewConfig
             c.author = ShapeModelType.GASKELL;
             c.modelLabel = "SPC";
             c.rootDirOnServer = "/GASKELL/LUTETIA";
-
+            setupFeatures(c);
             binPadding = new ImageBinPadding();
             binPadding.binExtents.put(1, new BinExtents(2048, 2048, 2048, 2048));
             binPadding.binTranslations.put(1,  new BinTranslations(559, 575));

@@ -2,7 +2,7 @@
 <launchConfiguration type="org.eclipse.jdt.launching.localJavaApplication">
     <stringAttribute key="bad_container_name" value="/sbmt-client/runconfig"/>
     <listAttribute key="org.eclipse.debug.core.MAPPED_RESOURCE_PATHS">
-        <listEntry value="/sbmt-client/src/edu/jhuapl/sbmt/client2/configs/SmallBodyViewConfigMetadataIORunner.java"/>
+        <listEntry value="/sbmt-client/src/edu/jhuapl/sbmt/client/configs/SmallBodyViewConfigMetadataIORunner.java"/>
     </listAttribute>
     <listAttribute key="org.eclipse.debug.core.MAPPED_RESOURCE_TYPES">
         <listEntry value="1"/>
@@ -17,9 +17,9 @@
     <booleanAttribute key="org.eclipse.jdt.launching.ATTR_USE_CLASSPATH_ONLY_JAR" value="false"/>
     <booleanAttribute key="org.eclipse.jdt.launching.ATTR_USE_START_ON_FIRST_THREAD" value="true"/>
     <stringAttribute key="org.eclipse.jdt.launching.CLASSPATH_PROVIDER" value="org.eclipse.m2e.launchconfig.classpathProvider"/>
-    <stringAttribute key="org.eclipse.jdt.launching.MAIN_TYPE" value="edu.jhuapl.sbmt.client2.configs.SmallBodyViewConfigMetadataIORunner"/>
+    <stringAttribute key="org.eclipse.jdt.launching.MAIN_TYPE" value="edu.jhuapl.sbmt.client.configs.SmallBodyViewConfigMetadataIORunner"/>
     <stringAttribute key="org.eclipse.jdt.launching.MODULE_NAME" value="sbmt-client"/>
-    <stringAttribute key="org.eclipse.jdt.launching.PROGRAM_ARGUMENTS" value="/Users/steelrj1/Desktop/sbmt-configs/reorg"/>
+    <stringAttribute key="org.eclipse.jdt.launching.PROGRAM_ARGUMENTS" value="/Users/steelrj1/Desktop/sbmt-configs/reorg-dart-170"/>
     <stringAttribute key="org.eclipse.jdt.launching.PROJECT_ATTR" value="sbmt-client"/>
     <stringAttribute key="org.eclipse.jdt.launching.SOURCE_PATH_PROVIDER" value="org.eclipse.m2e.launchconfig.sourcepathProvider"/>
     <stringAttribute key="org.eclipse.jdt.launching.VM_ARGUMENTS" value="-Djava.library.path=../saavtk/lib/vtk6.3/mac64:./lib/gdal/mac64  -Xmx4G --add-exports java.desktop/com.sun.imageio.spi=ALL-UNNAMED --add-exports java.desktop/com.apple.laf=ALL-UNNAMED --add-exports java.desktop/apple.laf=ALL-UNNAMED -Dedu.jhuapl.sbmt.mission=&quot;TEST_APL_INTERNAL&quot; -Djava.util.logging.SimpleFormatter.format=&quot;%1$tb %1$td %1$tY %1$tl:%1$tM:%1$tS.%1$tL %1$Tp %2$s%n%4$s: %5$s%n&quot;"/>
