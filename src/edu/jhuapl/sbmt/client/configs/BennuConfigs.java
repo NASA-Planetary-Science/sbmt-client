@@ -363,8 +363,9 @@ public class BennuConfigs extends SmallBodyViewConfig
         c.rootDirOnServer = "/bennu/nolan";
         c.shapeModelFileExtension = ".obj";
 
-        setupFeatures(c);
-
+//        setupFeatures(c);
+        c.addFeatureConfig(StateHistoryConfig.class, new StateHistoryConfig(c));
+        FeatureConfigIOFactory.getIOForClassType(StateHistoryConfig.class.getSimpleName()).setViewConfig(c);
         StateHistoryConfig stateHistoryConfig = (StateHistoryConfig)c.getConfigForClass(StateHistoryConfig.class);
         stateHistoryConfig.hasStateHistory = true;
         stateHistoryConfig.timeHistoryFile = "/bennu/nolan/history/timeHistory.bth";
@@ -400,7 +401,6 @@ public class BennuConfigs extends SmallBodyViewConfig
             c.hasMapmaker = true;
 
             ImagingInstrumentConfig imagingConfig = (ImagingInstrumentConfig)c.getConfigForClass(ImagingInstrumentConfig.class);
-            SpectrumInstrumentConfig spectrumConfig = (SpectrumInstrumentConfig)c.getConfigForClass(SpectrumInstrumentConfig.class);
             LidarInstrumentConfig lidarConfig = (LidarInstrumentConfig)c.getConfigForClass(LidarInstrumentConfig.class);
 
             DataQuerySourcesMetadata polycamMetadata =
@@ -495,7 +495,6 @@ public class BennuConfigs extends SmallBodyViewConfig
             setupFeatures(c);
             c.setBodyParameters();
             ImagingInstrumentConfig imagingConfig = (ImagingInstrumentConfig)c.getConfigForClass(ImagingInstrumentConfig.class);
-            SpectrumInstrumentConfig spectrumConfig = (SpectrumInstrumentConfig)c.getConfigForClass(SpectrumInstrumentConfig.class);
             LidarInstrumentConfig lidarConfig = (LidarInstrumentConfig)c.getConfigForClass(LidarInstrumentConfig.class);
 
             DataQuerySourcesMetadata polycamMetadata =
@@ -1688,7 +1687,6 @@ public class BennuConfigs extends SmallBodyViewConfig
             setupFeatures(c);
 
             c.setBodyParameters();
-            System.out.println("BennuConfigs: initialize: c unique " + c.getUniqueName());
 
             ImagingInstrumentConfig imagingConfig = (ImagingInstrumentConfig)c.getConfigForClass(ImagingInstrumentConfig.class);
             SpectrumInstrumentConfig spectrumConfig = (SpectrumInstrumentConfig)c.getConfigForClass(SpectrumInstrumentConfig.class);

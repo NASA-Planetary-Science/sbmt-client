@@ -461,14 +461,6 @@ public class SmallBodyViewConfigBuilder
             c.databaseRunInfos = dbRunInfos.toArray(new DBRunInfo[dbRunInfos.size()]);
         }
 
-//        if (dtmCatalogs.get())
-//        {
-//            if (c.dtmBrowseDataSourceMap == null)
-//            {
-//                c.dtmBrowseDataSourceMap = new LinkedHashMap<>();
-//            }
-//            c.dtmBrowseDataSourceMap.put("Default", Paths.get(c.rootDirOnServer, "dtm", "browse", "fileList.txt").toString());
-//        }
         reset();
 
         return c;
