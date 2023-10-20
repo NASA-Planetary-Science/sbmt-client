@@ -71,6 +71,9 @@ public class DartConfigs extends SmallBodyViewConfigBuilder
             Mission.DART_DEPLOY, //
             Mission.DART_TEST, //
             Mission.DART_STAGE, //
+            Mission.PUBLIC_RELEASE,
+            Mission.STAGE_PUBLIC_RELEASE,
+            Mission.TEST_PUBLIC_RELEASE
     };
 
 	private static void setupFeatures(SmallBodyViewConfig c)
@@ -1537,11 +1540,11 @@ public class DartConfigs extends SmallBodyViewConfigBuilder
                 add(instrument, dbRunInfos);
             }
 
-            {
-                ImagingInstrument instrument = createFlightInstrument(ShapeModelBody.DIDYMOS, author, Instrument.LUKE, lukeFlightOrientations, spcSources);
-                DBRunInfo[] dbRunInfos = createDbInfos(ShapeModelBody.DIDYMOS, author, Instrument.LUKE, spcSources);
-                add(instrument, dbRunInfos);
-            }
+//            {
+//                ImagingInstrument instrument = createFlightInstrument(ShapeModelBody.DIDYMOS, author, Instrument.LUKE, lukeFlightOrientations, spcSources);
+//                DBRunInfo[] dbRunInfos = createDbInfos(ShapeModelBody.DIDYMOS, author, Instrument.LUKE, spcSources);
+//                add(instrument, dbRunInfos);
+//            }
 
             gravityInputs(2843.0, 7.7227e-4);
 
