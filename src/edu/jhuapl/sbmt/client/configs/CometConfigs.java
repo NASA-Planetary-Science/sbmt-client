@@ -96,13 +96,13 @@ public class CometConfigs extends SmallBodyViewConfig
             c.type = BodyType.COMETS;
             c.population = ShapeModelPopulation.NA;
             c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
-            c.author = ShapeModelType.GASKELL;
-            c.modelLabel = "Gaskell et al. (in progress)";
-            c.rootDirOnServer = "/tempel1/gaskell";
-            c.shapeModelFileNames = prepend(c.rootDirOnServer, "ver64q.vtk.gz");
-            c.setResolution(ImmutableList.of(DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[0]));
-            c.presentInMissions =
-                    new Mission[] { Mission.STAGE_APL_INTERNAL, Mission.APL_INTERNAL, Mission.TEST_APL_INTERNAL };
+            c.modelLabel = "Ernst et al. (2019)";
+            c.author = ShapeModelType.provide(c.modelLabel.replaceAll("\\W+", "-").replaceAll("-$", "").toLowerCase());
+            c.rootDirOnServer = "/tempel1/" + c.author;
+            c.shapeModelFileExtension = ".obj";
+			c.presentInMissions = new Mission[] { Mission.STAGE_APL_INTERNAL, Mission.APL_INTERNAL,
+					Mission.TEST_APL_INTERNAL, Mission.PUBLIC_RELEASE, Mission.STAGE_PUBLIC_RELEASE,
+					Mission.TEST_PUBLIC_RELEASE };
             c.defaultForMissions = new Mission[] {};
 
             // Model identifier string rules: lowercase, no spaces nor
