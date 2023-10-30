@@ -461,11 +461,11 @@ public class DartConfigs extends SmallBodyViewConfigBuilder
                 add(instrument, dbRunInfos);
             }
 
-            {
-                ImagingInstrument instrument = createFlightInstrument(ShapeModelBody.DIDYMOS, author, Instrument.LUKE, lukeFlightOrientations, spcSources);
-                DBRunInfo[] dbRunInfos = createDbInfos(ShapeModelBody.DIDYMOS, author, Instrument.LUKE, spcSources);
-                add(instrument, dbRunInfos);
-            }
+//            {
+//                ImagingInstrument instrument = createFlightInstrument(ShapeModelBody.DIDYMOS, author, Instrument.LUKE, lukeFlightOrientations, spcSources);
+//                DBRunInfo[] dbRunInfos = createDbInfos(ShapeModelBody.DIDYMOS, author, Instrument.LUKE, spcSources);
+//                add(instrument, dbRunInfos);
+//            }
 
             gravityInputs(2834, 7.7227E-4);
 
