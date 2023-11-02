@@ -71,6 +71,9 @@ public class DartConfigs extends SmallBodyViewConfigBuilder
             Mission.DART_DEPLOY, //
             Mission.DART_TEST, //
             Mission.DART_STAGE, //
+            Mission.PUBLIC_RELEASE,
+            Mission.STAGE_PUBLIC_RELEASE,
+            Mission.TEST_PUBLIC_RELEASE
     };
 
 	private static void setupFeatures(SmallBodyViewConfig c)
