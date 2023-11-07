@@ -63,6 +63,16 @@ public class DartConfigs extends SmallBodyViewConfigBuilder
             Mission.DART_STAGE, //
     };
 
+    private static final Mission[] InternalClientsWithDartModels = new Mission[] {
+    		 Mission.APL_INTERNAL, //
+             Mission.TEST_APL_INTERNAL, //
+             Mission.STAGE_APL_INTERNAL, //
+             Mission.DART_DEV, //
+             Mission.DART_DEPLOY, //
+             Mission.DART_TEST, //
+             Mission.DART_STAGE, //
+    };
+
     private static final Mission[] ClientsWithDartModels = new Mission[] { //
             Mission.APL_INTERNAL, //
             Mission.TEST_APL_INTERNAL, //
@@ -551,7 +561,7 @@ public class DartConfigs extends SmallBodyViewConfigBuilder
         c.author = author;
         c.modelLabel = label;
         c.rootDirOnServer = "/" + bodyId + "/" + modelId;
-        c.presentInMissions = ClientsWithDartModels;
+        c.presentInMissions = InternalClientsWithDartModels;
         setupFeatures(c);
         // c.defaultForMissions = ...
         c.setShapeModelFileExtension(".obj");
@@ -719,7 +729,7 @@ public class DartConfigs extends SmallBodyViewConfigBuilder
         c.author = author;
         c.modelLabel = label;
         c.rootDirOnServer = "/" + bodyId + "/" + modelId;
-        c.presentInMissions = ClientsWithDartModels;
+        c.presentInMissions = InternalClientsWithDartModels;
         setupFeatures(c);
         // c.defaultForMissions = ...
         c.setShapeModelFileExtension(".obj");
@@ -855,7 +865,7 @@ public class DartConfigs extends SmallBodyViewConfigBuilder
         c.author = author;
         c.modelLabel = label;
         c.rootDirOnServer = "/" + bodyId + "/" + modelId;
-        c.presentInMissions = ClientsWithDartModels;
+        c.presentInMissions = InternalClientsWithDartModels;
         // c.defaultForMissions = ...
         c.setShapeModelFileExtension(".obj");
         setupFeatures(c);
@@ -1040,7 +1050,7 @@ public class DartConfigs extends SmallBodyViewConfigBuilder
         c.author = author;
         c.modelLabel = label;
         c.rootDirOnServer = "/" + bodyId + "/" + modelId;
-        c.presentInMissions = ClientsWithDartModels;
+        c.presentInMissions = InternalClientsWithDartModels;
         // c.defaultForMissions = ...
         c.setShapeModelFileExtension(".obj");
         setupFeatures(c);
