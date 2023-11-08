@@ -75,7 +75,7 @@
 		<dependency>
 			<groupId>edu.jhuapl.ses.srn.sbmt</groupId>
 			<artifactId>sbmt-image</artifactId>
-			<version>1.1.1.161-b2-SNAPSHOT</version>
+			<version>1.1.2-b3-SNAPSHOT</version>
 		</dependency>
 		<dependency>
 			<groupId>edu.jhuapl.ses.srn.sbmt</groupId>
@@ -100,7 +100,7 @@
 		<dependency>
 			<groupId>edu.jhuapl.ses.srn.sbmt</groupId>
 			<artifactId>sbmt-pointing</artifactId>
-			<version>1.0.3.14-b2-SNAPSHOT</version>
+			<version>1.0.3-b2-SNAPSHOT</version>
 		</dependency>
 		<dependency>
 			<groupId>edu.jhuapl.ses.srn.sbmt</groupId>
