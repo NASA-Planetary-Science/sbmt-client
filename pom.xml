@@ -2,7 +2,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>edu.jhuapl.ses.srn.sbmt</groupId>
 	<artifactId>sbmt-client</artifactId>
-	<version>1.0.5-b4-SNAPSHOT</version>
+	<version>1.0.7.177-b6-SNAPSHOT</version>
 	<name>sbmt-client</name>
 	<description>The Small Body Mapping Tool</description>
 	<dependencies>
@@ -55,12 +55,12 @@
 		<dependency>
 			<groupId>edu.jhuapl.ses.srn.saavtk</groupId>
 			<artifactId>saavtk</artifactId>
-			<version>1.2.1-b2-SNAPSHOT</version> 
+			<version>1.2.1.81-b3-SNAPSHOT</version> 
 		</dependency>
 		<dependency>
 			<groupId>edu.jhuapl.ses.srn.sbmt</groupId>
 			<artifactId>sbmt-core</artifactId>
-			<version>1.0.4-b1-SNAPSHOT</version>
+			<version>1.0.7-b4-SNAPSHOT</version>
 		</dependency>
 		<dependency>
 			<groupId>edu.jhuapl.ses.srn.sbmt</groupId>
@@ -70,27 +70,27 @@
 		<dependency>
 			<groupId>edu.jhuapl.ses.srn.sbmt</groupId>
 			<artifactId>sbmt-dem</artifactId>
-			<version>1.0.2-b1-SNAPSHOT</version>
+			<version>1.0.5.58-b4-SNAPSHOT</version>
 		</dependency>
 		<dependency>
 			<groupId>edu.jhuapl.ses.srn.sbmt</groupId>
 			<artifactId>sbmt-image</artifactId>
-			<version>1.1.2-b3-SNAPSHOT</version>
+			<version>1.1.4.165-b5-SNAPSHOT</version>
 		</dependency>
 		<dependency>
 			<groupId>edu.jhuapl.ses.srn.sbmt</groupId>
 			<artifactId>sbmt-layer</artifactId>
-			<version>1.0.1-b0-SNAPSHOT</version>
+			<version>1.0.4-b3-SNAPSHOT</version>
 		</dependency>
 		<dependency>
 			<groupId>edu.jhuapl.ses.srn.sbmt</groupId>
 			<artifactId>sbmt-lidar</artifactId>
-			<version>1.0.2-b1-SNAPSHOT</version>
+			<version>1.0.3.59-b2-SNAPSHOT</version>
 		</dependency>
 		<dependency>
 			<groupId>edu.jhuapl.ses.srn.sbmt</groupId>
 			<artifactId>sbmt-model</artifactId>
-			<version>1.0.3-b2-SNAPSHOT</version>
+			<version>1.0.4.14-b3-SNAPSHOT</version>
 		</dependency>
 		<dependency>
 			<groupId>edu.jhuapl.ses.srn.sbmt</groupId>
@@ -110,17 +110,17 @@
 		<dependency>
 			<groupId>edu.jhuapl.ses.srn.sbmt</groupId>
 			<artifactId>sbmt-spectrum</artifactId> 
-			<version>1.0.2-b1-SNAPSHOT</version>
+			<version>1.0.3.44-b2-SNAPSHOT</version>
 		</dependency>
 		<dependency>
 			<groupId>edu.jhuapl.ses.srn.sbmt</groupId>
 			<artifactId>sbmt-stateHistory</artifactId>
-			<version>1.0.3-b2-SNAPSHOT</version>
+			<version>1.0.4-b3-SNAPSHOT</version>
 		</dependency>
 		<dependency>
 			<groupId>edu.jhuapl.ses.srn.sbmt</groupId>
 			<artifactId>sbmt-util</artifactId>
-			<version>1.0.3-b1-SNAPSHOT</version>
+			<version>1.0.5-b3-SNAPSHOT</version>
 		</dependency>
 	</dependencies>
 		<!-- Repositories, so can be built on checkout without settings.xml file in place -->
