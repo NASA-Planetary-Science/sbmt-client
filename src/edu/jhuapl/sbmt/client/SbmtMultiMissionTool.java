@@ -28,7 +28,6 @@ import com.jgoodies.looks.LookUtils;
 
 import edu.jhuapl.saavtk.colormap.Colormaps;
 import edu.jhuapl.saavtk.gui.TSConsole;
-import edu.jhuapl.saavtk.model.structure.EllipsePolygon;
 import edu.jhuapl.saavtk.util.Configuration;
 import edu.jhuapl.saavtk.util.Configuration.ReleaseType;
 import edu.jhuapl.saavtk.util.Debug;
@@ -135,7 +134,6 @@ public class SbmtMultiMissionTool
 
 		// Structures.
 		LatLon.initializeSerializationProxy();
-		EllipsePolygon.initializeSerializationProxy();
 
 		// Images.
 		CylindricalBounds.initializeSerializationProxy();
