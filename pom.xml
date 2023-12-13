@@ -2,7 +2,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>edu.jhuapl.ses.srn.sbmt</groupId>
 	<artifactId>sbmt-client</artifactId>
-	<version>1.0.7-b6-SNAPSHOT</version> 
+	<version>1.0.7-b7-SNAPSHOT</version> 
 	<name>sbmt-client</name>
 	<description>The Small Body Mapping Tool</description>
 	<dependencies>
@@ -70,7 +70,7 @@
 		<dependency>
 			<groupId>edu.jhuapl.ses.srn.sbmt</groupId>
 			<artifactId>sbmt-image</artifactId>
-			<version>1.2.1-b6-SNAPSHOT</version>
+			<version>1.2.1-b7-SNAPSHOT</version>
 		</dependency>
 		<dependency>
 			<groupId>edu.jhuapl.ses.srn.sbmt</groupId>

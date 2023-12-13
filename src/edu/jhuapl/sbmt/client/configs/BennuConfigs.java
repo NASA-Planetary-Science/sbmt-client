@@ -2052,7 +2052,8 @@ public class BennuConfigs extends SmallBodyViewConfig
 	{
 		StateHistoryConfig stateHistoryConfig = (StateHistoryConfig)getConfigForClass(StateHistoryConfig.class);
         hasStateHistory = true;
-        timeHistoryFile = rootDirOnServer + "/history/timeHistory.bth";
+        stateHistoryConfig.hasStateHistory = true;
+        stateHistoryConfig.timeHistoryFile = rootDirOnServer + "/history/timeHistory.bth";
         stateHistoryConfig.stateHistoryStartDate = new GregorianCalendar(2018, 10, 25, 0, 0, 0).getTime();
         stateHistoryConfig.stateHistoryEndDate = new GregorianCalendar(2025, 1, 1, 0, 0, 0).getTime();
         stateHistoryConfig.spiceInfo = new SpiceInfo("ORX", "IAU_BENNU", "ORX_SPACECRAFT", "BENNU",
