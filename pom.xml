@@ -50,7 +50,7 @@
 		<dependency>
 			<groupId>edu.jhuapl.ses.srn.saavtk</groupId>
 			<artifactId>saavtk</artifactId>
-			<version>2.0.0-SNAPSHOT</version> 
+			<version>2.0.1-b1-SNAPSHOT</version> 
 		</dependency>
 		<dependency>
 			<groupId>edu.jhuapl.ses.srn.sbmt</groupId>
@@ -110,7 +110,7 @@
 		<dependency>
 			<groupId>edu.jhuapl.ses.srn.sbmt</groupId>
 			<artifactId>sbmt-stateHistory</artifactId>
-			<version>1.0.4-b4-SNAPSHOT</version>
+			<version>1.0.4-b5-SNAPSHOT</version>
 		</dependency>
 		<dependency>
 			<groupId>edu.jhuapl.ses.srn.sbmt</groupId>
