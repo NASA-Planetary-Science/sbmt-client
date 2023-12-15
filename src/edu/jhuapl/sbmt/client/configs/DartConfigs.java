@@ -967,7 +967,8 @@ public class DartConfigs extends SmallBodyViewConfigBuilder
     	stateHistoryConfig.hasStateHistory = true;
         //c.timeHistoryFile = c.rootDirOnServer + "/history/timeHistory.bth";
         stateHistoryConfig.stateHistoryStartDate = new GregorianCalendar(2022, 8, 26, 23, 10, 18).getTime();
-        stateHistoryConfig.stateHistoryEndDate = new GregorianCalendar(2022, 8, 26, 23, 14, 25).getTime();
+        stateHistoryConfig.stateHistoryEndDate = new GregorianCalendar(2022, 8, 26, 23, 14, 24).getTime();
+        stateHistoryConfig.stateHistoryEndDate = new Date(stateHistoryConfig.stateHistoryEndDate.getTime() + 193);
         SpiceInfo spiceInfo1 = new SpiceInfo(MissionPrefix, "IAU_DIDYMOS", "DART_SPACECRAFT", "DIDYMOS", new String[] { "EARTH", "SUN", "DIMORPHOS" }, new String[] {"IAU_EARTH", "IAU_SUN", "IAU_DIMORPHOS"}, new String[] { "DART_DRACO_2X2" }, new String[] {});
         SpiceInfo spiceInfo2 = new SpiceInfo(MissionPrefix, "IAU_DIMORPHOS", "DART_SPACECRAFT", "DIMORPHOS", new String[] { "EARTH", "SUN", "DIDYMOS" }, new String[] {"IAU_EARTH", "IAU_SUN", "IAU_DIDYMOS"}, new String[] { "DART_DRACO_2X2" }, new String[] {});
         SpiceInfo[] spiceInfos = new SpiceInfo[] { spiceInfo1, spiceInfo2 };
