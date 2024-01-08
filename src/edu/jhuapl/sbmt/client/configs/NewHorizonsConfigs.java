@@ -383,6 +383,56 @@ public class NewHorizonsConfigs extends SmallBodyViewConfig
             configArray.add(c);
 
             c = c.clone();
+            c.body = ShapeModelBody.PLUTO;
+            c.type = BodyType.KBO;
+            c.population = ShapeModelPopulation.PLUTO;
+            c.dataUsed = ShapeModelDataUsed.TRIAXIAL;
+            c.author = ShapeModelType.provide("pluto-test");
+            c.modelLabel = "Pluto (Test)";
+//            c.pathOnServer = "/NEWHORIZONS/PLUTO/shape_res0.vtk.gz";
+            c.rootDirOnServer = "/deliveries-nh/20231222/pluto-test";
+            c.shapeModelFileExtension = ".obj";
+            c.hasColoringData = false;
+            setupFeatures(c);
+            imagingConfig = (ImagingInstrumentConfig)c.getConfigForClass(ImagingInstrumentConfig.class);
+            lorriMetadata = DataQuerySourcesMetadata.of("/NEWHORIZONS/PLUTO/IMAGING", "", null, null, null);
+//            mvicMetadata = DataQuerySourcesMetadata.of("/NEWHORIZONS/PLUTO/MVIC", "", null, null, null);
+
+            imagingConfig.imagingInstruments = Lists.newArrayList(
+                    new ImagingInstrument( //
+                            SpectralImageMode.MONO, //
+//                            new GenericPhpQuery("/NEWHORIZONS/PLUTO/IMAGING", "PLUTO"), //
+//                            new FixedListQuery("/NEWHORIZONS/PLUTO/IMAGING", true), //
+                            new FixedListDataQuery(lorriMetadata),
+                            ImageType.LORRI_IMAGE, //
+                            new PointingSource[]{PointingSource.SPICE, PointingSource.CORRECTED, PointingSource.CORRECTED_SPICE}, //
+                            Instrument.LORRI //
+                            ) //
+
+            );
+
+            // kem_science_spice/tm/kem_science_v30.tm for SPICE metakernel
+
+            imagingConfig.imageSearchDefaultStartDate = new GregorianCalendar(2015, 0, 1, 0, 0, 0).getTime();
+            imagingConfig.imageSearchDefaultEndDate = new GregorianCalendar(2016, 1, 1, 0, 0, 0).getTime();
+            imagingConfig.imageSearchFilterNames = new String[] {};
+            imagingConfig.imageSearchUserDefinedCheckBoxesNames = new String[] {};
+            imagingConfig.imageSearchDefaultMaxSpacecraftDistance = 1.0e9;
+            imagingConfig.imageSearchDefaultMaxResolution = 1.0e6;
+            c.setResolution(ImmutableList.of(128880));
+
+            c.databaseRunInfos = new DBRunInfo[]
+            {
+            	new DBRunInfo(PointingSource.GASKELL, Instrument.LORRI, ShapeModelBody.PLUTO.toString(), "/project/nearsdc/data/NEWHORIZONS/PLUTO/IMAGING/imagelist-fullpath.txt", ShapeModelBody.PLUTO.toString().toLowerCase()),
+            };
+
+            c.presentInMissions = new Mission[] {Mission.APL_INTERNAL, Mission.TEST_APL_INTERNAL,Mission.STAGE_APL_INTERNAL,
+            															Mission.NH_DEPLOY};
+            c.defaultForMissions = new Mission[] {};
+
+            configArray.add(c);
+
+            c = c.clone();
             c.body = ShapeModelBody.CHARON;
             c.type = BodyType.KBO;
             c.population = ShapeModelPopulation.PLUTO;
