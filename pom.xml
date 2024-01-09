@@ -1,8 +1,8 @@
-<project xmlns="https://maven.apache.org/POM/4.0.0" xmlns:xsi="https://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="https://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="https://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>edu.jhuapl.ses.srn.sbmt</groupId>
 	<artifactId>sbmt-client</artifactId>
-	<version>1.0.0-SNAPSHOT</version>
+	<version>1.0.7-b8-SNAPSHOT</version> 
 	<name>sbmt-client</name>
 	<description>The Small Body Mapping Tool</description>
 	<dependencies>
@@ -11,11 +11,6 @@
 			<artifactId>junit</artifactId>
 			<version>3.8.1</version>
 			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>edu.jhuapl.ses.srn.saavtk</groupId>
-			<artifactId>saavtk</artifactId>
-			<version>1.0.0-SNAPSHOT</version>
 		</dependency>
 		<dependency>
   			<groupId>com.formdev</groupId>
@@ -43,11 +38,6 @@
 			<version>11.2.1</version>
 		</dependency>
 		<dependency>
-			<groupId>com.mysql</groupId>
-			<artifactId>mysql-connector-j</artifactId>
-			<version>8.0.32</version>
-		</dependency>
-		<dependency>
 			<groupId>org.xerial</groupId>
 			<artifactId>sqlite-jdbc</artifactId>
 			<version>3.41.2.1</version>
@@ -58,69 +48,74 @@
   			<version>4.7.4</version>
 		</dependency>
 		<dependency>
+			<groupId>edu.jhuapl.ses.srn.saavtk</groupId>
+			<artifactId>saavtk</artifactId>
+			<version>2.0.0-SNAPSHOT</version> 
+		</dependency>
+		<dependency>
 			<groupId>edu.jhuapl.ses.srn.sbmt</groupId>
 			<artifactId>sbmt-core</artifactId>
-			<version>1.0.0-SNAPSHOT</version>
+			<version>1.0.8-b5-SNAPSHOT</version>
 		</dependency>
 		<dependency>
 			<groupId>edu.jhuapl.ses.srn.sbmt</groupId>
 			<artifactId>sbmt-config</artifactId>
-			<version>1.0.0-SNAPSHOT</version>
+			<version>1.0.4-b2-SNAPSHOT</version>
 		</dependency>
 		<dependency>
 			<groupId>edu.jhuapl.ses.srn.sbmt</groupId>
 			<artifactId>sbmt-dem</artifactId>
-			<version>1.0.0-SNAPSHOT</version>
+			<version>1.0.5-b4-SNAPSHOT</version>
 		</dependency>
 		<dependency>
 			<groupId>edu.jhuapl.ses.srn.sbmt</groupId>
 			<artifactId>sbmt-image</artifactId>
-			<version>1.0.0-SNAPSHOT</version>
+			<version>1.2.1.169-b8-SNAPSHOT</version>
 		</dependency>
 		<dependency>
 			<groupId>edu.jhuapl.ses.srn.sbmt</groupId>
 			<artifactId>sbmt-layer</artifactId>
-			<version>1.0.0-SNAPSHOT</version>
+			<version>1.0.4-b3-SNAPSHOT</version>
 		</dependency>
 		<dependency>
 			<groupId>edu.jhuapl.ses.srn.sbmt</groupId>
 			<artifactId>sbmt-lidar</artifactId>
-			<version>1.0.0-SNAPSHOT</version>
+			<version>1.0.3-b2-SNAPSHOT</version>
 		</dependency>
 		<dependency>
 			<groupId>edu.jhuapl.ses.srn.sbmt</groupId>
 			<artifactId>sbmt-model</artifactId>
-			<version>1.0.0-SNAPSHOT</version>
+			<version>1.0.4-b3-SNAPSHOT</version>
 		</dependency>
 		<dependency>
 			<groupId>edu.jhuapl.ses.srn.sbmt</groupId>
 			<artifactId>sbmt-pipeline</artifactId>
-			<version>1.0.0-SNAPSHOT</version>
+			<version>1.0.1-b0-SNAPSHOT</version>
 		</dependency>
 		<dependency>
 			<groupId>edu.jhuapl.ses.srn.sbmt</groupId>
 			<artifactId>sbmt-pointing</artifactId>
-			<version>1.0.0-SNAPSHOT</version>
+			<version>1.0.3.15-b4-SNAPSHOT</version>
 		</dependency>
 		<dependency>
 			<groupId>edu.jhuapl.ses.srn.sbmt</groupId>
 			<artifactId>sbmt-query</artifactId>
-			<version>1.0.0-SNAPSHOT</version>
+			<version>1.0.4-b2-SNAPSHOT</version>
 		</dependency>
 		<dependency>
 			<groupId>edu.jhuapl.ses.srn.sbmt</groupId>
 			<artifactId>sbmt-spectrum</artifactId> 
-			<version>1.0.0-SNAPSHOT</version>
+			<version>1.0.3-b2-SNAPSHOT</version>
 		</dependency>
 		<dependency>
 			<groupId>edu.jhuapl.ses.srn.sbmt</groupId>
 			<artifactId>sbmt-stateHistory</artifactId>
-			<version>1.0.0-SNAPSHOT</version>
+			<version>1.0.4.28-b6-SNAPSHOT</version>
 		</dependency>
 		<dependency>
 			<groupId>edu.jhuapl.ses.srn.sbmt</groupId>
 			<artifactId>sbmt-util</artifactId>
-			<version>1.0.0-SNAPSHOT</version>
+			<version>1.0.5-b4-SNAPSHOT</version>
 		</dependency>
 	</dependencies>
 		<!-- Repositories, so can be built on checkout without settings.xml file in place -->
@@ -161,13 +156,14 @@
 					<release>16</release>
 				</configuration>
 			</plugin>
+			<!--
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-antrun-plugin</artifactId>
 				<version>3.1.0</version>
 				<executions>
 					<execution>
-						<?m2e execute onConfiguration?>
+						<?m2e execute onConfiguration,onIncremental?>
 						<phase>compile</phase>
 						<configuration>
 							<target>
@@ -183,6 +179,7 @@
 					</execution>
 				</executions>
 			</plugin>
+			-->
 		</plugins>
 	</build>
 </project>

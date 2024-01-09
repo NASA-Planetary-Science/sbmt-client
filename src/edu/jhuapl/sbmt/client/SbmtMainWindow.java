@@ -1,6 +1,8 @@
 package edu.jhuapl.sbmt.client;
 
 import java.awt.event.ActionEvent;
+import java.awt.event.ComponentAdapter;
+import java.awt.event.ComponentEvent;
 import java.io.File;
 import java.util.List;
 
@@ -12,10 +14,15 @@ import edu.jhuapl.saavtk.gui.MainWindow;
 import edu.jhuapl.saavtk.gui.ViewManager;
 import edu.jhuapl.saavtk.gui.dialog.DirectoryChooser;
 import edu.jhuapl.saavtk.gui.menu.FileMenu;
+import edu.jhuapl.saavtk.main.MainWinCfg;
+import edu.jhuapl.saavtk.main.io.MainWinConfigUtil;
 import edu.jhuapl.saavtk.model.ModelNames;
 import edu.jhuapl.saavtk.status.StatusNotifier;
 import edu.jhuapl.sbmt.image.model.PerspectiveImageCollection;
 import edu.jhuapl.sbmt.image.model.PerspectiveImageMetadata;
+
+import glum.gui.info.WindowCfg;
+import glum.task.SilentTask;
 
 
 
@@ -28,6 +35,17 @@ public class SbmtMainWindow extends MainWindow
     public SbmtMainWindow(String tempCustomShapeModelPath)
     {
         super(tempCustomShapeModelPath);
+        addComponentListener(new ComponentAdapter()
+		{
+        	@Override
+        	public void componentResized(ComponentEvent e)
+        	{
+        		MainWinCfg mainAppCfg = MainWindow.getMainWindow().getMainAppCfg();
+        		var tmpMainAppCfg = new MainWinCfg(new WindowCfg(MainWindow.getMainWindow()), mainAppCfg.mainSplitSize());
+        		MainWinConfigUtil.saveConfiguration(new SilentTask(), tmpMainAppCfg);
+        		super.componentResized(e);
+        	}
+		});
     }
 
     @Override

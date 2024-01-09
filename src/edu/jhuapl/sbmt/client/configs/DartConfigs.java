@@ -63,6 +63,16 @@ public class DartConfigs extends SmallBodyViewConfigBuilder
             Mission.DART_STAGE, //
     };
 
+    private static final Mission[] InternalClientsWithDartModels = new Mission[] {
+    		 Mission.APL_INTERNAL, //
+             Mission.TEST_APL_INTERNAL, //
+             Mission.STAGE_APL_INTERNAL, //
+             Mission.DART_DEV, //
+             Mission.DART_DEPLOY, //
+             Mission.DART_TEST, //
+             Mission.DART_STAGE, //
+    };
+
     private static final Mission[] ClientsWithDartModels = new Mission[] { //
             Mission.APL_INTERNAL, //
             Mission.TEST_APL_INTERNAL, //
@@ -71,6 +81,9 @@ public class DartConfigs extends SmallBodyViewConfigBuilder
             Mission.DART_DEPLOY, //
             Mission.DART_TEST, //
             Mission.DART_STAGE, //
+            Mission.PUBLIC_RELEASE,
+            Mission.STAGE_PUBLIC_RELEASE,
+            Mission.TEST_PUBLIC_RELEASE
     };
 
 	private static void setupFeatures(SmallBodyViewConfig c)
@@ -127,6 +140,10 @@ public class DartConfigs extends SmallBodyViewConfigBuilder
     private static final Date DidymosImpactSearchEndDate = new GregorianCalendar(2022, 8, 26, 23, 12, 57).getTime();
     private static final double DidymosImpactMaxScDistance = 1500.0; // km
     private static final double DidymosImpactResolution = 7.0; // mpp
+
+    // These values were specified in an update to Redmine issue #2555.
+    private static final Date DidymosLiciaSearchStartDate = DidymosImpactSearchStartDate;
+    private static final Date DidymosLiciaSearchEndDate = new GregorianCalendar(2022, 8, 26, 23, 17, 20).getTime();
 
     static
     {
@@ -303,11 +320,10 @@ public class DartConfigs extends SmallBodyViewConfigBuilder
 
         // Similarly, in past models LUKE images alone were not transposed,
         // so putting this here as a reminder...
-        @SuppressWarnings("unused")
         boolean lukeTranspose = false;
 
         Map<PointingSource, Orientation> lukeFlightOrientations = new LinkedHashMap<>();
-        lukeFlightOrientations.put(PointingSource.GASKELL, new OrientationFactory().of(ImageFlip.NONE, 270.0, lukeTranspose));
+        lukeFlightOrientations.put(PointingSource.GASKELL, new OrientationFactory().of(ImageFlip.X, 0.0, lukeTranspose));
 
 //        // Jupiter system models.
 //        {
@@ -359,6 +375,7 @@ public class DartConfigs extends SmallBodyViewConfigBuilder
             add(instrument, dbRunInfos);
 
             c = build();
+            setupFeatures(c);
             // This model was abandoned after import. Do NOT include it.
             // configList.add(c);
             generateUpdatedStateHistoryParameters(c, ShapeModelBody.DIMORPHOS.name());
@@ -380,9 +397,8 @@ public class DartConfigs extends SmallBodyViewConfigBuilder
 
             gravityInputs(2300.0, 1.464e-4);
 
-            dtmCatalogs(true);
-
             c = build();
+            setupFeatures(c);
             generateUpdatedStateHistoryParameters(c, ShapeModelBody.DIMORPHOS.name());
             configList.add(c);
         }
@@ -403,10 +419,11 @@ public class DartConfigs extends SmallBodyViewConfigBuilder
 
             gravityInputs(2400.0, 1.464e-4);
 
-            // No DTMs with initial delivery.
-            // dtmCatalogs(true);
-
             c = build();
+
+            c.hasColoringData = true;
+
+            setupFeatures(c);
             generateUpdatedStateHistoryParameters(c, ShapeModelBody.DIMORPHOS.name());
             configList.add(c);
 
@@ -429,10 +446,11 @@ public class DartConfigs extends SmallBodyViewConfigBuilder
 
             gravityInputs(2400.0, 7.72e-4);
 
-            // No DTMs with initial delivery.
-            // dtmCatalogs(true);
-
             c = build();
+
+            c.hasColoringData = true;
+
+            setupFeatures(c);
             generateUpdatedStateHistoryParameters(c, ShapeModelBody.DIDYMOS.name());
             configList.add(c);
         }
@@ -443,7 +461,7 @@ public class DartConfigs extends SmallBodyViewConfigBuilder
             ShapeModelType author = author(MissionPrefix + " " + label);
 
             init(ShapeModelBody.DIDYMOS, author, ShapeModelDataUsed.IMAGE_BASED, label);
-            imageSearchRanges(DidymosImpactSearchStartDate, DidymosImpactSearchEndDate, DidymosImpactMaxScDistance, DidymosImpactResolution);
+            imageSearchRanges(DidymosLiciaSearchStartDate, DidymosLiciaSearchEndDate, DidymosImpactMaxScDistance, DidymosImpactResolution);
 
             modelRes(BodyViewConfig.DEFAULT_GASKELL_LABELS_PER_RESOLUTION, BodyViewConfig.DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION);
 
@@ -461,10 +479,8 @@ public class DartConfigs extends SmallBodyViewConfigBuilder
 
             gravityInputs(2834, 7.7227E-4);
 
-            // No DTMs with initial delivery.
-            // dtmCatalogs(true);
-
             c = build();
+            setupFeatures(c);
             generateUpdatedStateHistoryParameters(c, ShapeModelBody.DIDYMOS.name());
             configList.add(c);
         }
@@ -545,7 +561,8 @@ public class DartConfigs extends SmallBodyViewConfigBuilder
         c.author = author;
         c.modelLabel = label;
         c.rootDirOnServer = "/" + bodyId + "/" + modelId;
-        c.presentInMissions = ClientsWithDartModels;
+        c.presentInMissions = InternalClientsWithDartModels;
+        setupFeatures(c);
         // c.defaultForMissions = ...
         c.setShapeModelFileExtension(".obj");
 
@@ -565,17 +582,16 @@ public class DartConfigs extends SmallBodyViewConfigBuilder
         String lukeTable = tableBaseName + "luke";
         String lukeDataDir = "/dart/luke/" + modelId + "/";
 
-        DataQuerySourcesMetadata dracoMetadata = DataQuerySourcesMetadata.of(dracoDir, dracoDataDir, dracoTable, dracoDataDir + "gallery", dracoDataDir + "images");
-        DataQuerySourcesMetadata leiaMetadata = DataQuerySourcesMetadata.of(leiaDir, leiaDataDir, leiaTable, leiaDataDir + "gallery", leiaDataDir + "images");
-        DataQuerySourcesMetadata lukeMetadata = DataQuerySourcesMetadata.of(lukeDir, lukeDataDir, lukeTable, lukeDataDir + "gallery", lukeDataDir + "images");
+        DataQuerySourcesMetadata dracoMetadata = DataQuerySourcesMetadata.of(dracoDir, dracoDataDir + "/images", dracoTable, dracoTable, dracoDataDir + "gallery");
+        DataQuerySourcesMetadata leiaMetadata = DataQuerySourcesMetadata.of(leiaDir, leiaDataDir + "/images", leiaTable, leiaTable, leiaDataDir + "gallery");
+        DataQuerySourcesMetadata lukeMetadata = DataQuerySourcesMetadata.of(lukeDir, lukeDataDir + "/images", lukeTable,  lukeTable, lukeDataDir + "gallery");
 
         ImagingInstrumentConfig imagingConfig = (ImagingInstrumentConfig)c.getConfigForClass(ImagingInstrumentConfig.class);
-        imagingConfig = (ImagingInstrumentConfig)c.getConfigForClass(ImagingInstrumentConfig.class);
+//        imagingConfig = (ImagingInstrumentConfig)c.getConfigForClass(ImagingInstrumentConfig.class);
         imagingConfig.imagingInstruments = Lists.newArrayList(
                 new ImagingInstrument( //
                         SpectralImageMode.MONO, //
                         new ImageDataQuery(dracoMetadata),
-//                        new GenericPhpQuery(dracoDir, dracoTable, dracoTable, dracoDataDir + "gallery", dracoDataDir + "images"), //
                         ImageType.valueOf("DRACO_IMAGE"), //
                         InfoFiles, //
                         Instrument.DRACO, //
@@ -585,7 +601,6 @@ public class DartConfigs extends SmallBodyViewConfigBuilder
                 ), new ImagingInstrument( //
                         SpectralImageMode.MONO, //
                         new ImageDataQuery(leiaMetadata),
-//                        new GenericPhpQuery(leiaDir, leiaTable, leiaTable, leiaDataDir + "gallery", leiaDataDir + "images"), //
                         ImageType.valueOf("LEIA_IMAGE"), //
                         InfoFilesAndCorrectedInfoFiles, //
                         Instrument.LEIA, //
@@ -595,7 +610,6 @@ public class DartConfigs extends SmallBodyViewConfigBuilder
                 ), new ImagingInstrument( //
                         SpectralImageMode.MONO, //
                         new ImageDataQuery(lukeMetadata),
-//                        new GenericPhpQuery(lukeDir, lukeTable, lukeTable, lukeDataDir + "gallery", lukeDataDir + "images"), //
                         ImageType.valueOf("LUKE_IMAGE"), //
                         InfoFiles, //
                         Instrument.LUKE, //
@@ -715,7 +729,8 @@ public class DartConfigs extends SmallBodyViewConfigBuilder
         c.author = author;
         c.modelLabel = label;
         c.rootDirOnServer = "/" + bodyId + "/" + modelId;
-        c.presentInMissions = ClientsWithDartModels;
+        c.presentInMissions = InternalClientsWithDartModels;
+        setupFeatures(c);
         // c.defaultForMissions = ...
         c.setShapeModelFileExtension(".obj");
 
@@ -735,9 +750,9 @@ public class DartConfigs extends SmallBodyViewConfigBuilder
         String lukeTable = tableBaseName + "luke";
         String lukeDataDir = "/dart/luke/" + (lukeModelId != null ? lukeModelId : modelId) + "/";
 
-        DataQuerySourcesMetadata dracoMetadata = DataQuerySourcesMetadata.of(dracoDir, dracoDataDir, dracoTable, dracoDataDir + "gallery", dracoDataDir + "images");
-        DataQuerySourcesMetadata leiaMetadata = DataQuerySourcesMetadata.of(leiaDir, leiaDataDir, leiaTable, leiaDataDir + "gallery", leiaDataDir + "images");
-        DataQuerySourcesMetadata lukeMetadata = DataQuerySourcesMetadata.of(lukeDir, lukeDataDir, lukeTable, lukeDataDir + "gallery", lukeDataDir + "images");
+        DataQuerySourcesMetadata dracoMetadata = DataQuerySourcesMetadata.of(dracoDir, dracoDataDir + "/images", dracoTable, dracoTable, dracoDataDir + "gallery");
+        DataQuerySourcesMetadata leiaMetadata = DataQuerySourcesMetadata.of(leiaDir, leiaDataDir + "/images", leiaTable, leiaTable, leiaDataDir + "gallery");
+        DataQuerySourcesMetadata lukeMetadata = DataQuerySourcesMetadata.of(lukeDir, lukeDataDir + "/images", lukeTable, lukeTable, lukeDataDir + "gallery");
 
         ImagingInstrumentConfig imagingConfig = (ImagingInstrumentConfig)c.getConfigForClass(ImagingInstrumentConfig.class);
         imagingConfig = (ImagingInstrumentConfig)c.getConfigForClass(ImagingInstrumentConfig.class);
@@ -745,7 +760,6 @@ public class DartConfigs extends SmallBodyViewConfigBuilder
                 new ImagingInstrument( //
                         SpectralImageMode.MONO, //
                         new ImageDataQuery(dracoMetadata),
-//                        new GenericPhpQuery(dracoDir, dracoTable, dracoTable, dracoDataDir + "gallery", dracoDataDir + "images"), //
                         ImageType.valueOf("DRACO_IMAGE"), //
                         InfoFiles, //
                         Instrument.DRACO, //
@@ -755,7 +769,6 @@ public class DartConfigs extends SmallBodyViewConfigBuilder
                 ), new ImagingInstrument( //
                         SpectralImageMode.MONO, //
                         new ImageDataQuery(leiaMetadata),
-//                        new GenericPhpQuery(leiaDir, leiaTable, leiaTable, leiaDataDir + "gallery", leiaDataDir + "images"), //
                         ImageType.valueOf("LEIA_IMAGE"), //
                         InfoFiles, //
                         Instrument.LEIA, //
@@ -765,7 +778,6 @@ public class DartConfigs extends SmallBodyViewConfigBuilder
                 ), new ImagingInstrument( //
                         SpectralImageMode.MONO, //
                         new ImageDataQuery(lukeMetadata),
-//                        new GenericPhpQuery(lukeDir, lukeTable, lukeTable, lukeDataDir + "gallery", lukeDataDir + "images"), //
                         ImageType.valueOf("LUKE_IMAGE"), //
                         InfoFiles, //
                         Instrument.LUKE, //
@@ -853,10 +865,10 @@ public class DartConfigs extends SmallBodyViewConfigBuilder
         c.author = author;
         c.modelLabel = label;
         c.rootDirOnServer = "/" + bodyId + "/" + modelId;
-        c.presentInMissions = ClientsWithDartModels;
+        c.presentInMissions = InternalClientsWithDartModels;
         // c.defaultForMissions = ...
         c.setShapeModelFileExtension(".obj");
-
+        setupFeatures(c);
         // Database table rules: lowercase, no dashes (replace with
         // underscores). Underscores are OK.
         String tableBaseName = (bodyId + "_" + modelId + "_").replaceAll("-", "_").toLowerCase();
@@ -873,9 +885,9 @@ public class DartConfigs extends SmallBodyViewConfigBuilder
         String lukeTable = tableBaseName + "luke";
         String lukeDataDir = "/dart/luke/" + (lukeModelId != null ? lukeModelId : modelId) + "/";
 
-        DataQuerySourcesMetadata dracoMetadata = DataQuerySourcesMetadata.of(dracoDir, dracoDataDir, dracoTable, dracoDataDir + "gallery", dracoDataDir + "images");
-        DataQuerySourcesMetadata leiaMetadata = DataQuerySourcesMetadata.of(leiaDir, leiaDataDir, leiaTable, leiaDataDir + "gallery", leiaDataDir + "images");
-        DataQuerySourcesMetadata lukeMetadata = DataQuerySourcesMetadata.of(lukeDir, lukeDataDir, lukeTable, lukeDataDir + "gallery", lukeDataDir + "images");
+        DataQuerySourcesMetadata dracoMetadata = DataQuerySourcesMetadata.of(dracoDir, dracoDataDir + "/images", dracoTable, dracoTable, dracoDataDir + "gallery");
+        DataQuerySourcesMetadata leiaMetadata = DataQuerySourcesMetadata.of(leiaDir, leiaDataDir + "/images", leiaTable, leiaTable, leiaDataDir + "gallery");
+        DataQuerySourcesMetadata lukeMetadata = DataQuerySourcesMetadata.of(lukeDir, lukeDataDir + "/images", lukeTable, lukeTable, lukeDataDir + "gallery");
 
         ImagingInstrumentConfig imagingConfig = (ImagingInstrumentConfig)c.getConfigForClass(ImagingInstrumentConfig.class);
         imagingConfig = (ImagingInstrumentConfig)c.getConfigForClass(ImagingInstrumentConfig.class);
@@ -883,7 +895,6 @@ public class DartConfigs extends SmallBodyViewConfigBuilder
                 new ImagingInstrument( //
                         SpectralImageMode.MONO, //
                         new ImageDataQuery(dracoMetadata),
-//                        new GenericPhpQuery(dracoDir, dracoTable, dracoTable, dracoDataDir + "gallery", dracoDataDir + "images"), //
                         ImageType.valueOf("DRACO_IMAGE"), //
                         InfoFiles, //
                         Instrument.DRACO, //
@@ -893,7 +904,6 @@ public class DartConfigs extends SmallBodyViewConfigBuilder
                 ), new ImagingInstrument( //
                         SpectralImageMode.MONO, //
                         new ImageDataQuery(leiaMetadata),
-//                        new GenericPhpQuery(leiaDir, leiaTable, leiaTable, leiaDataDir + "gallery", leiaDataDir + "images"), //
                         ImageType.valueOf("LEIA_IMAGE"), //
                         InfoFiles, //
                         Instrument.LEIA, //
@@ -903,7 +913,6 @@ public class DartConfigs extends SmallBodyViewConfigBuilder
                 ), new ImagingInstrument( //
                         SpectralImageMode.MONO, //
                         new ImageDataQuery(lukeMetadata),
-//                        new GenericPhpQuery(lukeDir, lukeTable, lukeTable, lukeDataDir + "gallery", lukeDataDir + "images"), //
                         ImageType.valueOf("LUKE_IMAGE"), //
                         InfoFiles, //
                         Instrument.LUKE, //
@@ -958,7 +967,8 @@ public class DartConfigs extends SmallBodyViewConfigBuilder
     	stateHistoryConfig.hasStateHistory = true;
         //c.timeHistoryFile = c.rootDirOnServer + "/history/timeHistory.bth";
         stateHistoryConfig.stateHistoryStartDate = new GregorianCalendar(2022, 8, 26, 23, 10, 18).getTime();
-        stateHistoryConfig.stateHistoryEndDate = new GregorianCalendar(2022, 8, 26, 23, 14, 25).getTime();
+        stateHistoryConfig.stateHistoryEndDate = new GregorianCalendar(2022, 8, 26, 23, 14, 24).getTime();
+        stateHistoryConfig.stateHistoryEndDate = new Date(stateHistoryConfig.stateHistoryEndDate.getTime() + 193);
         SpiceInfo spiceInfo1 = new SpiceInfo(MissionPrefix, "IAU_DIDYMOS", "DART_SPACECRAFT", "DIDYMOS", new String[] { "EARTH", "SUN", "DIMORPHOS" }, new String[] {"IAU_EARTH", "IAU_SUN", "IAU_DIMORPHOS"}, new String[] { "DART_DRACO_2X2" }, new String[] {});
         SpiceInfo spiceInfo2 = new SpiceInfo(MissionPrefix, "IAU_DIMORPHOS", "DART_SPACECRAFT", "DIMORPHOS", new String[] { "EARTH", "SUN", "DIDYMOS" }, new String[] {"IAU_EARTH", "IAU_SUN", "IAU_DIDYMOS"}, new String[] { "DART_DRACO_2X2" }, new String[] {});
         SpiceInfo[] spiceInfos = new SpiceInfo[] { spiceInfo1, spiceInfo2 };
@@ -1041,9 +1051,10 @@ public class DartConfigs extends SmallBodyViewConfigBuilder
         c.author = author;
         c.modelLabel = label;
         c.rootDirOnServer = "/" + bodyId + "/" + modelId;
-        c.presentInMissions = ClientsWithDartModels;
+        c.presentInMissions = InternalClientsWithDartModels;
         // c.defaultForMissions = ...
         c.setShapeModelFileExtension(".obj");
+        setupFeatures(c);
 
         // Database table rules: lowercase, no dashes (replace with
         // underscores). Underscores are OK.
@@ -1061,9 +1072,9 @@ public class DartConfigs extends SmallBodyViewConfigBuilder
         String lukeTable = tableBaseName + "luke";
         String lukeDataDir = "/dart/luke/" + (lukeModelId != null ? lukeModelId + "/" : "");
 
-        DataQuerySourcesMetadata dracoMetadata = DataQuerySourcesMetadata.of(dracoDir, dracoDataDir, dracoTable, dracoDataDir + "gallery", dracoDataDir + "images");
-        DataQuerySourcesMetadata leiaMetadata = DataQuerySourcesMetadata.of(leiaDir, leiaDataDir, leiaTable, leiaDataDir + "gallery", leiaDataDir + "images");
-        DataQuerySourcesMetadata lukeMetadata = DataQuerySourcesMetadata.of(lukeDir, lukeDataDir, lukeTable, lukeDataDir + "gallery", lukeDataDir + "images");
+        DataQuerySourcesMetadata dracoMetadata = DataQuerySourcesMetadata.of(dracoDir, dracoDataDir + "/images", dracoTable, dracoTable, dracoDataDir + "gallery");
+        DataQuerySourcesMetadata leiaMetadata = DataQuerySourcesMetadata.of(leiaDir, leiaDataDir + "/images", leiaTable, leiaTable, leiaDataDir + "gallery");
+        DataQuerySourcesMetadata lukeMetadata = DataQuerySourcesMetadata.of(lukeDir, lukeDataDir + "/images", lukeTable, lukeTable, lukeDataDir + "gallery");
 
         List<ImagingInstrument> imagingInstruments = new ArrayList<>();
         ImagingInstrumentConfig imagingConfig = (ImagingInstrumentConfig)c.getConfigForClass(ImagingInstrumentConfig.class);
@@ -1072,7 +1083,6 @@ public class DartConfigs extends SmallBodyViewConfigBuilder
             imagingInstruments.add(new ImagingInstrument( //
                     SpectralImageMode.MONO, //
                     new ImageDataQuery(dracoMetadata),
-//                    new GenericPhpQuery(dracoDir, dracoTable, dracoTable, dracoDataDir + "gallery", dracoDataDir + "images"), //
                     ImageType.valueOf("DRACO_IMAGE"), //
                     dracoPointingSources, //
                     Instrument.DRACO, //
@@ -1086,7 +1096,6 @@ public class DartConfigs extends SmallBodyViewConfigBuilder
             imagingInstruments.add(new ImagingInstrument( //
                     SpectralImageMode.MONO, //
                     new ImageDataQuery(leiaMetadata),
-//                    new GenericPhpQuery(leiaDir, leiaTable, leiaTable, leiaDataDir + "gallery", leiaDataDir + "images"), //
                     ImageType.valueOf("LEIA_IMAGE"), //
                     leiaPointingSources, //
                     Instrument.LEIA, //
@@ -1100,7 +1109,6 @@ public class DartConfigs extends SmallBodyViewConfigBuilder
             imagingInstruments.add(new ImagingInstrument( //
                     SpectralImageMode.MULTI, //
                     new ImageDataQuery(lukeMetadata),
-//                    new GenericPhpQuery(lukeDir, lukeTable, lukeTable, lukeDataDir + "gallery", lukeDataDir + "images"), //
                     ImageType.valueOf("LUKE_IMAGE"), //
                     lukePointingSources, //
                     Instrument.LUKE, //
@@ -1214,11 +1222,10 @@ public class DartConfigs extends SmallBodyViewConfigBuilder
         String flip = ImageFlip.NONE.flip();
         boolean transpose = true;
 
-        DataQuerySourcesMetadata metadata = DataQuerySourcesMetadata.of(modelImageDir, imageDataDir, tablePrefix, imageDataDir + "/gallery", imageDataDir + "/images");
+        DataQuerySourcesMetadata metadata = DataQuerySourcesMetadata.of(modelImageDir, imageDataDir + "/images", tablePrefix, tablePrefix, imageDataDir + "/gallery");
 
         return new ImagingInstrument(spectralImageMode, //
         		new ImageDataQuery(metadata),
-//                new GenericPhpQuery(modelImageDir, tablePrefix, tablePrefix, imageDataDir + "/gallery", imageDataDir + "/images"), //
                 imageType, //
                 sources, //
                 instrument, //
@@ -1279,11 +1286,10 @@ public class DartConfigs extends SmallBodyViewConfigBuilder
         int[] maskValues = null;
         Map<PointingSource, Orientation> orientationMap = null;
 
-        DataQuerySourcesMetadata metadata = DataQuerySourcesMetadata.of(modelImageDir, imageDataDir, tablePrefix, imageDataDir + "/gallery", imageDataDir + "/images");
+        DataQuerySourcesMetadata metadata = DataQuerySourcesMetadata.of(modelImageDir, imageDataDir + "/images", tablePrefix, tablePrefix, imageDataDir + "/gallery");
 
         return new ImagingInstrument(spectralImageMode, //
         		new ImageDataQuery(metadata),
-//                new GenericPhpQuery(modelImageDir, tablePrefix, tablePrefix, imageDataDir + "/gallery", imageDataDir + "/images"), //
                 imageType, //
                 sources, //
                 instrument, //
@@ -1314,7 +1320,6 @@ public class DartConfigs extends SmallBodyViewConfigBuilder
         config.systemConfigs = systemConfigs;
         config.hasSystemBodies = true;
         config.body = ShapeModelBody.DIDYMOS_SYSTEM;
-        config.hasDTMs = false;
         config.rootDirOnServer = "/" + body[0].name().replaceAll("[\\s-_]+", "-").toLowerCase() + "/" + config.author.name().replaceAll("[\\s-_]+", "-").toLowerCase();
         config.rootDirOnServer = config.rootDirOnServer.replaceAll("\\(", "");
         config.rootDirOnServer = config.rootDirOnServer.replaceAll("\\)", "");
@@ -1335,7 +1340,6 @@ public class DartConfigs extends SmallBodyViewConfigBuilder
         config.systemConfigs = systemConfigs;
         config.hasSystemBodies = true;
         config.body = ShapeModelBody.DIDYMOS_SYSTEM;
-        config.hasDTMs = false;
         config.rootDirOnServer = "/" + bodies[0].name().replaceAll("[\\s-_]+", "-").toLowerCase() + "/" + config.author.name().replaceAll("[\\s-_]+", "-").toLowerCase();
         config.rootDirOnServer = config.rootDirOnServer.replaceAll("\\(", "");
         config.rootDirOnServer = config.rootDirOnServer.replaceAll("\\)", "");
@@ -1363,7 +1367,6 @@ public class DartConfigs extends SmallBodyViewConfigBuilder
         config.systemConfigs = systemConfigs;
         config.hasSystemBodies = true;
         config.body = ShapeModelBody.DIDYMOS_SYSTEM;
-        config.hasDTMs = false;
         config.rootDirOnServer = "/" + body[0].name().replaceAll("[\\s-_]+", "-").toLowerCase() + "/" + config.author.name().replaceAll("[\\s-_]+", "-").toLowerCase();
         config.rootDirOnServer = config.rootDirOnServer.replaceAll("\\(", "");
         config.rootDirOnServer = config.rootDirOnServer.replaceAll("\\)", "");
@@ -1448,9 +1451,15 @@ public class DartConfigs extends SmallBodyViewConfigBuilder
         Map<PointingSource, Orientation> dracoFlightOrientations = new LinkedHashMap<>();
         dracoFlightOrientations.put(PointingSource.GASKELL, new OrientationFactory().of(ImageFlip.X, 0.0, true));
         dracoFlightOrientations.put(PointingSource.SPICE, new OrientationFactory().of(ImageFlip.X, 180.0, true));
-     // Dimorphos version 003 (flight).
 
-        SmallBodyViewConfig dimorphosConfig;
+        // In past models LUKE images alone were not transposed, so putting this
+        // here as a reminder...
+        boolean lukeTranspose = false;
+        Map<PointingSource, Orientation> lukeFlightOrientations = new LinkedHashMap<>();
+        lukeFlightOrientations.put(PointingSource.GASKELL, new OrientationFactory().of(ImageFlip.X, 0.0, lukeTranspose));
+
+        SmallBodyViewConfig dimorphosConfigV3;
+        // Dimorphos version 003 (flight).
         {
 
             String label = "Dimorphos-v003 Center";
@@ -1467,14 +1476,40 @@ public class DartConfigs extends SmallBodyViewConfigBuilder
 
             gravityInputs(2300.0, 1.464e-4);
 
-            dtmCatalogs(true);
-
-            dimorphosConfig = build();
-            generateUpdatedStateHistoryParameters(dimorphosConfig, ShapeModelBody.DIMORPHOS.name());
+            dimorphosConfigV3 = build();
+            setupFeatures(dimorphosConfigV3);
+            generateUpdatedStateHistoryParameters(dimorphosConfigV3, ShapeModelBody.DIMORPHOS.name());
         }
 
+
+
+        SmallBodyViewConfig dimorphosConfigV4;
+        // Dimorphos version 004 (flight).
+        {
+
+            String label = "Dimorphos-v004 Center";
+            ShapeModelType author = author(MissionPrefix + " " + label);
+
+            init(ShapeModelBody.DIMORPHOS, author, ShapeModelDataUsed.IMAGE_BASED, label);
+            imageSearchRanges(DimorphosImpactSearchStartDate, DimorphosImpactSearchEndDate, DimorphosImpactMaxScDistance, DimorphosImpactResolution);
+
+            modelRes(BodyViewConfig.DEFAULT_GASKELL_LABELS_PER_RESOLUTION, BodyViewConfig.DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION);
+
+            ImagingInstrument instrument = createFlightInstrument(ShapeModelBody.DIMORPHOS, author, Instrument.DRACO, dracoFlightOrientations, pointingSources);
+            DBRunInfo[] dbRunInfos = createDbInfos(ShapeModelBody.DIMORPHOS, author, Instrument.DRACO, pointingSources);
+            add(instrument, dbRunInfos);
+
+            gravityInputs(2400.0, 1.464e-4);
+
+            dimorphosConfigV4 = build();
+            setupFeatures(dimorphosConfigV4);
+            generateUpdatedStateHistoryParameters(dimorphosConfigV4, ShapeModelBody.DIMORPHOS.name());
+        }
+
+
+
         // Didymos version 001 (flight).
-        SmallBodyViewConfig didymosConfig;
+        SmallBodyViewConfig didymosConfigV1;
         {
 
             String label = "Didymos-v001 Center";
@@ -1491,19 +1526,60 @@ public class DartConfigs extends SmallBodyViewConfigBuilder
 
             gravityInputs(2400.0, 7.72e-4);
 
-            // No DTMs with initial delivery.
-            // dtmCatalogs(true);
-
-            didymosConfig = build();
-            generateUpdatedStateHistoryParameters(didymosConfig, ShapeModelBody.DIDYMOS.name());
+            didymosConfigV1 = build();
+            setupFeatures(didymosConfigV1);
+            generateUpdatedStateHistoryParameters(didymosConfigV1, ShapeModelBody.DIDYMOS.name());
         }
 
-        //Build didymos centric
-        c = buildSystemConfig(didymosConfig, new SmallBodyViewConfig[] {dimorphosConfig});
+
+
+        // Didymos version 003 (flight).
+        SmallBodyViewConfig didymosConfigV3;
+        {
+
+            String label = "Didymos-v003 Center";
+            ShapeModelType author = author(MissionPrefix + " " + label);
+
+            init(ShapeModelBody.DIDYMOS, author, ShapeModelDataUsed.IMAGE_BASED, label);
+            imageSearchRanges(DidymosLiciaSearchStartDate, DidymosLiciaSearchEndDate, DidymosImpactMaxScDistance, DidymosImpactResolution);
+
+            modelRes(BodyViewConfig.DEFAULT_GASKELL_LABELS_PER_RESOLUTION, BodyViewConfig.DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION);
+
+            {
+                ImagingInstrument instrument = createFlightInstrument(ShapeModelBody.DIDYMOS, author, Instrument.DRACO, dracoFlightOrientations, spcSources);
+                DBRunInfo[] dbRunInfos = createDbInfos(ShapeModelBody.DIDYMOS, author, Instrument.DRACO, spcSources);
+                add(instrument, dbRunInfos);
+            }
+
+            {
+                ImagingInstrument instrument = createFlightInstrument(ShapeModelBody.DIDYMOS, author, Instrument.LUKE, lukeFlightOrientations, spcSources);
+                DBRunInfo[] dbRunInfos = createDbInfos(ShapeModelBody.DIDYMOS, author, Instrument.LUKE, spcSources);
+                add(instrument, dbRunInfos);
+            }
+
+            gravityInputs(2843.0, 7.7227e-4);
+
+            didymosConfigV3 = build();
+            setupFeatures(didymosConfigV3);
+            generateUpdatedStateHistoryParameters(didymosConfigV3, ShapeModelBody.DIDYMOS.name());
+        }
+
+        // Build dimorphos centric (DimorphosV3, DidymosV1)
+        c = buildSystemConfig(dimorphosConfigV3, new SmallBodyViewConfig[] { didymosConfigV1 });
         configList.add(c);
 
-        //Build dimorphos centric
-        c = buildSystemConfig(dimorphosConfig, new SmallBodyViewConfig[] {didymosConfig});
+        // Build dimorphos centric (DimorphosV4, DidymosV3)
+        c = buildSystemConfig(dimorphosConfigV4, new SmallBodyViewConfig[] { didymosConfigV3 });
+        configList.add(c);
+
+        //Build didymos centric (DidymosV1, DimorphosV3)
+        c = buildSystemConfig(didymosConfigV1, new SmallBodyViewConfig[] {dimorphosConfigV3});
+        setupFeatures(c);
+        configList.add(c);
+
+        // Build didymos centric (DidymosV3, DimorphosV4)
+        c = buildSystemConfig(didymosConfigV3, new SmallBodyViewConfig[] { dimorphosConfigV4 });
+        setupFeatures(c);
         configList.add(c);
     }
 
@@ -1520,7 +1596,6 @@ public class DartConfigs extends SmallBodyViewConfigBuilder
         primary.body = ShapeModelBody.DIDYMOS_SYSTEM;
         primary.systemConfigs = systemConfigs;
         primary.hasSystemBodies = true;
-        primary.hasDTMs = false;
         primary.rootDirOnServer = "/" + bodyName + "/" + authorName;
         primary.rootDirOnServer = primary.rootDirOnServer.replaceAll("\\(", "");
         primary.rootDirOnServer = primary.rootDirOnServer.replaceAll("\\)", "");

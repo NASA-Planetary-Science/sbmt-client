@@ -1,5 +1,6 @@
 package edu.jhuapl.sbmt.client.configs;
 
+import java.io.File;
 import java.util.Date;
 import java.util.GregorianCalendar;
 
@@ -95,13 +96,13 @@ public class CometConfigs extends SmallBodyViewConfig
             c.type = BodyType.COMETS;
             c.population = ShapeModelPopulation.NA;
             c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
-            c.author = ShapeModelType.GASKELL;
-            c.modelLabel = "Gaskell et al. (in progress)";
-            c.rootDirOnServer = "/tempel1/gaskell";
-            c.shapeModelFileNames = prepend(c.rootDirOnServer, "ver64q.vtk.gz");
-            c.setResolution(ImmutableList.of(DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[0]));
-            c.presentInMissions =
-                    new Mission[] { Mission.STAGE_APL_INTERNAL, Mission.APL_INTERNAL, Mission.TEST_APL_INTERNAL };
+            c.modelLabel = "Ernst et al. (2019)";
+            c.author = ShapeModelType.provide(c.modelLabel.replaceAll("\\W+", "-").replaceAll("-$", "").toLowerCase());
+            c.rootDirOnServer = "/tempel1/" + c.author;
+            c.shapeModelFileExtension = ".obj";
+			c.presentInMissions = new Mission[] { Mission.STAGE_APL_INTERNAL, Mission.APL_INTERNAL,
+					Mission.TEST_APL_INTERNAL, Mission.PUBLIC_RELEASE, Mission.STAGE_PUBLIC_RELEASE,
+					Mission.TEST_PUBLIC_RELEASE };
             c.defaultForMissions = new Mission[] {};
 
             // Model identifier string rules: lowercase, no spaces nor
@@ -120,21 +121,27 @@ public class CometConfigs extends SmallBodyViewConfig
             // underscores). Underscores are OK.
             String tableBaseName = (bodyId + "_" + modelId + "_").replaceAll("-", "_").toLowerCase();
 
+
             String itsDir = c.rootDirOnServer + "/its";
             String itsTable = tableBaseName + "its";
             String itsDataDir = "/deep-impact/its/";
+            itsDataDir = itsDir + File.separator + "images";
 
             String hriDir = c.rootDirOnServer + "/hri";
             String hriTable = tableBaseName + "hri";
             String hriDataDir = "/deep-impact/hri/";
+            hriDataDir = hriDir + File.separator + "images";
 
             String mriDir = c.rootDirOnServer + "/mri";
             String mriTable = tableBaseName + "mri";
             String mriDataDir = "/deep-impact/mri/";
+            mriDataDir = mriDir + File.separator + "images";
 
             String navcamDir = c.rootDirOnServer + "/navcam";
             String navcamTable = tableBaseName + "navcam";
             String navcamDataDir = "/stardust/navcam/";
+            navcamDataDir = navcamDir + File.separator + "images";
+
 
             setupFeatures(c);
             ImagingInstrumentConfig imagingConfig = (ImagingInstrumentConfig)c.getConfigForClass(ImagingInstrumentConfig.class);

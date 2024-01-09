@@ -1,9 +1,7 @@
 package edu.jhuapl.sbmt.client.configs;
 
-import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
@@ -463,14 +461,6 @@ public class SmallBodyViewConfigBuilder
             c.databaseRunInfos = dbRunInfos.toArray(new DBRunInfo[dbRunInfos.size()]);
         }
 
-        if (dtmCatalogs.get())
-        {
-            if (c.dtmBrowseDataSourceMap == null)
-            {
-                c.dtmBrowseDataSourceMap = new LinkedHashMap<>();
-            }
-            c.dtmBrowseDataSourceMap.put("Default", Paths.get(c.rootDirOnServer, "dtm", "browse", "fileList.txt").toString());
-        }
         reset();
 
         return c;

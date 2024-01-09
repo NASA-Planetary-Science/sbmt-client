@@ -71,7 +71,7 @@ public class SaturnConfigs extends SmallBodyViewConfig
         SaturnConfigs c = new SaturnConfigs();
 
         c = new SaturnConfigs();
-        setupFeatures(c);
+
         c.body = ShapeModelBody.DIONE;
         c.type = BodyType.PLANETS_AND_SATELLITES;
         c.population = ShapeModelPopulation.SATURN;
@@ -79,7 +79,7 @@ public class SaturnConfigs extends SmallBodyViewConfig
         c.author = ShapeModelType.GASKELL;
         c.modelLabel = "Gaskell (2013a)";
         c.rootDirOnServer = "/GASKELL/DIONE";
-
+        setupFeatures(c);
 
         ImagingInstrumentConfig imagingConfig = (ImagingInstrumentConfig)c.getConfigForClass(ImagingInstrumentConfig.class);
         DataQuerySourcesMetadata imagingMetadata =
