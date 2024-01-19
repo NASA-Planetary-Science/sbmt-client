@@ -439,7 +439,7 @@ public class MarsConfigs extends SmallBodyViewConfig
                             new PointingSource[]{ PointingSource.GASKELL }, //
                             Instrument.IMAGING_DATA, //
                             0., //
-                            "Y" // Note: this means "flip along Y axis". Don't know why, but this flip is needed as of this delivery.
+                            "X" // Note: this means "flip along Y axis". Don't know why, but this flip is needed as of this delivery.
                             ) //
             );
             imagingConfig.imageSearchDefaultStartDate = new GregorianCalendar(1976, 7, 16, 0, 0, 0).getTime();
