@@ -2,7 +2,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>edu.jhuapl.ses.srn.sbmt</groupId>
 	<artifactId>sbmt-client</artifactId>
-	<version>1.0.7.178-b9-SNAPSHOT</version> 
+	<version>1.0.7.178-b10-SNAPSHOT</version> 
 	<name>sbmt-client</name>
 	<description>The Small Body Mapping Tool</description>
 	<dependencies>

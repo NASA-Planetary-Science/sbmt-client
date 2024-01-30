@@ -395,7 +395,7 @@ public class NewHorizonsConfigs extends SmallBodyViewConfig
             c.hasColoringData = false;
             setupFeatures(c);
             imagingConfig = (ImagingInstrumentConfig)c.getConfigForClass(ImagingInstrumentConfig.class);
-            lorriMetadata = DataQuerySourcesMetadata.of("/NEWHORIZONS/PLUTO/IMAGING", "", null, null, null);
+            lorriMetadata = DataQuerySourcesMetadata.of(c.rootDirOnServer, "/new-horizons/lorri/pluto-test", null, null, null);
 //            mvicMetadata = DataQuerySourcesMetadata.of("/NEWHORIZONS/PLUTO/MVIC", "", null, null, null);
 
             imagingConfig.imagingInstruments = Lists.newArrayList(
