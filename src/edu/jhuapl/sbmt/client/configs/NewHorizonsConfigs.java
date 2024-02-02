@@ -390,12 +390,12 @@ public class NewHorizonsConfigs extends SmallBodyViewConfig
             c.author = ShapeModelType.provide("pluto-test");
             c.modelLabel = "Pluto (Test)";
 //            c.pathOnServer = "/NEWHORIZONS/PLUTO/shape_res0.vtk.gz";
-            c.rootDirOnServer = "/deliveries-nh/20231222/pluto-test";
+            c.rootDirOnServer = "/project/sbmtpipeline/rawdata/new-horizons/gitlab-178/pluto/pluto-test";
             c.shapeModelFileExtension = ".obj";
             c.hasColoringData = false;
             setupFeatures(c);
             imagingConfig = (ImagingInstrumentConfig)c.getConfigForClass(ImagingInstrumentConfig.class);
-            lorriMetadata = DataQuerySourcesMetadata.of(c.rootDirOnServer, "/new-horizons/lorri/pluto-test", null, null, null);
+            lorriMetadata = DataQuerySourcesMetadata.of(c.rootDirOnServer, "new-horizons/lorri/pluto-test/", null, null, null);
 //            mvicMetadata = DataQuerySourcesMetadata.of("/NEWHORIZONS/PLUTO/MVIC", "", null, null, null);
 
             imagingConfig.imagingInstruments = Lists.newArrayList(
@@ -403,9 +403,9 @@ public class NewHorizonsConfigs extends SmallBodyViewConfig
                             SpectralImageMode.MONO, //
 //                            new GenericPhpQuery("/NEWHORIZONS/PLUTO/IMAGING", "PLUTO"), //
 //                            new FixedListQuery("/NEWHORIZONS/PLUTO/IMAGING", true), //
-                            new FixedListDataQuery(lorriMetadata),
+                            new ImageDataQuery(lorriMetadata),
                             ImageType.LORRI_IMAGE, //
-                            new PointingSource[]{PointingSource.SPICE, PointingSource.CORRECTED, PointingSource.CORRECTED_SPICE}, //
+                            new PointingSource[]{PointingSource.GASKELL}, //
                             Instrument.LORRI //
                             ) //
 
@@ -423,7 +423,7 @@ public class NewHorizonsConfigs extends SmallBodyViewConfig
 
             c.databaseRunInfos = new DBRunInfo[]
             {
-            	new DBRunInfo(PointingSource.GASKELL, Instrument.LORRI, ShapeModelBody.PLUTO.toString(), "/project/nearsdc/data/NEWHORIZONS/PLUTO/IMAGING/imagelist-fullpath.txt", ShapeModelBody.PLUTO.toString().toLowerCase()),
+            	new DBRunInfo(PointingSource.GASKELL, Instrument.LORRI, ShapeModelBody.PLUTO.toString(), "/project/sbmtpipeline/rawdata/new-horizons/gitlab-178/pluto/pluto-test/imagelist-fullpath-sum.txt", ShapeModelBody.PLUTO.toString().toLowerCase()),
             };
 
             c.presentInMissions = new Mission[] {Mission.APL_INTERNAL, Mission.TEST_APL_INTERNAL,Mission.STAGE_APL_INTERNAL,
