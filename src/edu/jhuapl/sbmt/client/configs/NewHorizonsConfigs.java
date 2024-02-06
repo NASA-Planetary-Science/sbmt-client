@@ -390,7 +390,7 @@ public class NewHorizonsConfigs extends SmallBodyViewConfig
             c.author = ShapeModelType.provide("pluto-test");
             c.modelLabel = "Pluto (Test)";
 //            c.pathOnServer = "/NEWHORIZONS/PLUTO/shape_res0.vtk.gz";
-            c.rootDirOnServer = "/project/sbmtpipeline/rawdata/new-horizons/gitlab-178/pluto/pluto-test";
+            c.rootDirOnServer = "/pluto/pluto-test";
             c.shapeModelFileExtension = ".obj";
             c.hasColoringData = false;
             setupFeatures(c);
@@ -423,7 +423,7 @@ public class NewHorizonsConfigs extends SmallBodyViewConfig
 
             c.databaseRunInfos = new DBRunInfo[]
             {
-            	new DBRunInfo(PointingSource.GASKELL, Instrument.LORRI, ShapeModelBody.PLUTO.toString(), "/project/sbmtpipeline/rawdata/new-horizons/gitlab-178/pluto/pluto-test/imagelist-fullpath-sum.txt", ShapeModelBody.PLUTO.toString().toLowerCase()),
+            	new DBRunInfo(PointingSource.GASKELL, Instrument.LORRI, ShapeModelBody.PLUTO.toString(), c.rootDirOnServer + "/lorri" + "/imagelist-fullpath-sum.txt", ShapeModelBody.PLUTO.toString().toLowerCase()),
             };
 
             c.presentInMissions = new Mission[] {Mission.APL_INTERNAL, Mission.TEST_APL_INTERNAL,Mission.STAGE_APL_INTERNAL,
