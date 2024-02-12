@@ -391,11 +391,13 @@ public class NewHorizonsConfigs extends SmallBodyViewConfig
             c.modelLabel = "Pluto (Test)";
 //            c.pathOnServer = "/NEWHORIZONS/PLUTO/shape_res0.vtk.gz";
             c.rootDirOnServer = "/pluto/pluto-test";
+            c.shapeModelFileNames = null;
             c.shapeModelFileExtension = ".obj";
+
             c.hasColoringData = false;
             setupFeatures(c);
             imagingConfig = (ImagingInstrumentConfig)c.getConfigForClass(ImagingInstrumentConfig.class);
-            lorriMetadata = DataQuerySourcesMetadata.of(c.rootDirOnServer, "new-horizons/lorri/pluto-test/", null, null, null);
+            lorriMetadata = DataQuerySourcesMetadata.of(c.rootDirOnServer, "/new-horizons/lorri/pluto-test/images", "pluto_pluto_test_lorri", null, null);
 //            mvicMetadata = DataQuerySourcesMetadata.of("/NEWHORIZONS/PLUTO/MVIC", "", null, null, null);
 
             imagingConfig.imagingInstruments = Lists.newArrayList(
