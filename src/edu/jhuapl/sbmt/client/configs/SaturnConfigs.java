@@ -11,7 +11,6 @@ import edu.jhuapl.saavtk.config.ExtensibleTypedLookup.Builder;
 import edu.jhuapl.saavtk.config.IBodyViewConfig;
 import edu.jhuapl.saavtk.model.ShapeModelBody;
 import edu.jhuapl.saavtk.model.ShapeModelType;
-import edu.jhuapl.saavtk.util.Configuration;
 import edu.jhuapl.saavtk.util.FileCache;
 import edu.jhuapl.sbmt.config.SBMTBodyConfiguration;
 import edu.jhuapl.sbmt.config.SBMTFileLocator;
@@ -46,6 +45,12 @@ public class SaturnConfigs extends SmallBodyViewConfig
 {
 	private static final PointingSource[] SumFiles = new PointingSource[] { PointingSource.GASKELL };
 
+	// Standard Gaskell shape model may be described once.
+    final static ShapeModelConfiguration gaskellModelConfig = ShapeModelConfiguration.builder(ShapeModelType.GASKELL.name(), ShapeModelDataUsed.IMAGE_BASED).build();
+
+    // Gaskell images only.
+    final static PointingSource[] gaskellImagingSource = new PointingSource[] { PointingSource.GASKELL };
+
     public SaturnConfigs()
 	{
 		super(ImmutableList.<String>copyOf(DEFAULT_GASKELL_LABELS_PER_RESOLUTION), ImmutableList.<Integer>copyOf(DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION));
@@ -68,9 +73,42 @@ public class SaturnConfigs extends SmallBodyViewConfig
 
 	public static void initialize(ConfigArrayList<IBodyViewConfig> configArray)
     {
-        SaturnConfigs c = new SaturnConfigs();
+        buildDioneGaskellConfig(configArray);
+        buildEpimetheusThomas2000Config(configArray);
+        buildEpimetheusStookeConfig(configArray);
+        buildHyperionGaskellConfig(configArray);
+        buildHyperionThomasConfig(configArray);
+        buildJanusThomas2000Config(configArray);
+        buildJanusStookeConfig(configArray);
+        buildMimasGaskellConfig(configArray);
+        buildPandoraStookeConfig(configArray);
+        buildPhoebeGaskellConfig(configArray);
+        buildPrometheusStookeConfig(configArray);
+        buildRheaGaskellConfig(configArray);
+        buildTethysGaskellConfig(configArray);
+        buildTelestoGaskellConfig(configArray);
+        buildAtlasGaskellConfig(configArray);
+        buildCalypsoGaskellConfig(configArray);
+        buildCalypsoDalyConfig(configArray);
+        buildCalypsoThomasConfig(configArray);
+        buildEnceladusGaskellConfig(configArray);
+        buildEpimetheusGaskellConfig(configArray);
+        buildEpimetheusDalyConfig(configArray);
+        buildEpimetheusThomasConfig(configArray);
+        buildHeleneGaskellConfig(configArray);
+        buildIapetusGaskellConfig(configArray);
+        buildJanusDalyConfig(configArray);
+        buildJanusErnstConfig(configArray);
+        buildJanusThomas2018Config(configArray);
+        buildPanConfig(configArray);
+        buildPandoraConfig(configArray);
+        buildPrometheusConfig(configArray);
 
-        c = new SaturnConfigs();
+    }
+
+	private static void buildDioneGaskellConfig(ConfigArrayList<IBodyViewConfig> configArray)
+	{
+		SaturnConfigs c = new SaturnConfigs();
 
         c.body = ShapeModelBody.DIONE;
         c.type = BodyType.PLANETS_AND_SATELLITES;
@@ -89,7 +127,6 @@ public class SaturnConfigs extends SmallBodyViewConfig
                 new ImagingInstrument( //
                         SpectralImageMode.MONO, //
                         new FixedListDataQuery(imagingMetadata),
-//                        new FixedListQuery<Object>("/GASKELL/DIONE/IMAGING", "/GASKELL/DIONE/IMAGING/gallery"), //
                         ImageType.SATURN_MOON_IMAGE, //
                         new PointingSource[]{PointingSource.GASKELL}, //
                         Instrument.IMAGING_DATA //
@@ -107,8 +144,11 @@ public class SaturnConfigs extends SmallBodyViewConfig
         c.defaultForMissions = new Mission[] {};
 
         configArray.add(c);
+	}
 
-        c = new SaturnConfigs();
+	private static void buildEpimetheusThomas2000Config(ConfigArrayList<IBodyViewConfig> configArray)
+	{
+		SaturnConfigs c = new SaturnConfigs();
         c.body = ShapeModelBody.EPIMETHEUS;
         c.type = BodyType.PLANETS_AND_SATELLITES;
         c.population = ShapeModelPopulation.SATURN;
@@ -123,9 +163,12 @@ public class SaturnConfigs extends SmallBodyViewConfig
         c.defaultForMissions = new Mission[] {};
 
         configArray.add(c);
+	}
 
-        // Model stooke2016 delivered 2018-03-06.
-        c = new SaturnConfigs();
+	private static void buildEpimetheusStookeConfig(ConfigArrayList<IBodyViewConfig> configArray)
+	{
+		// Model stooke2016 delivered 2018-03-06.
+        SaturnConfigs c = new SaturnConfigs();
         c.body = ShapeModelBody.EPIMETHEUS;
         c.type = BodyType.PLANETS_AND_SATELLITES;
         c.population = ShapeModelPopulation.SATURN;
@@ -140,25 +183,28 @@ public class SaturnConfigs extends SmallBodyViewConfig
         c.defaultForMissions = new Mission[] {};
 
         configArray.add(c);
+	}
 
-        if (Configuration.isAPLVersion())
-        {
-            c = new SaturnConfigs();
-            c.body = ShapeModelBody.HYPERION;
-            c.type = BodyType.PLANETS_AND_SATELLITES;
-            c.population = ShapeModelPopulation.SATURN;
-            c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
-            c.author = ShapeModelType.GASKELL;
-            c.modelLabel = "Gaskell et al. (in progress)";
-            c.rootDirOnServer = "/GASKELL/HYPERION";
-            c.hasColoringData = false;
-            c.presentInMissions = new Mission[] {Mission.PUBLIC_RELEASE, Mission.TEST_PUBLIC_RELEASE, Mission.STAGE_PUBLIC_RELEASE, Mission.STAGE_APL_INTERNAL, Mission.APL_INTERNAL, Mission.TEST_APL_INTERNAL};
-            c.defaultForMissions = new Mission[] {};
+	private static void buildHyperionGaskellConfig(ConfigArrayList<IBodyViewConfig> configArray)
+	{
+		SaturnConfigs c = new SaturnConfigs();
+        c.body = ShapeModelBody.HYPERION;
+        c.type = BodyType.PLANETS_AND_SATELLITES;
+        c.population = ShapeModelPopulation.SATURN;
+        c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
+        c.author = ShapeModelType.GASKELL;
+        c.modelLabel = "Gaskell et al. (in progress)";
+        c.rootDirOnServer = "/GASKELL/HYPERION";
+        c.hasColoringData = false;
+        c.presentInMissions = new Mission[] {Mission.PUBLIC_RELEASE, Mission.TEST_PUBLIC_RELEASE, Mission.STAGE_PUBLIC_RELEASE, Mission.STAGE_APL_INTERNAL, Mission.APL_INTERNAL, Mission.TEST_APL_INTERNAL};
+        c.defaultForMissions = new Mission[] {};
 
-            configArray.add(c);
-        }
+        configArray.add(c);
+	}
 
-        c = new SaturnConfigs();
+	private static void buildHyperionThomasConfig(ConfigArrayList<IBodyViewConfig> configArray)
+	{
+		SaturnConfigs c = new SaturnConfigs();
         c.body = ShapeModelBody.HYPERION;
         c.type = BodyType.PLANETS_AND_SATELLITES;
         c.population = ShapeModelPopulation.SATURN;
@@ -173,25 +219,35 @@ public class SaturnConfigs extends SmallBodyViewConfig
         c.defaultForMissions = new Mission[] {};
 
         configArray.add(c);
+	}
 
-        c = new SaturnConfigs();
-        c.body = ShapeModelBody.JANUS;
-        c.type = BodyType.PLANETS_AND_SATELLITES;
-        c.population = ShapeModelPopulation.SATURN;
-        c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
-        c.author = ShapeModelType.THOMAS;
-        c.modelLabel = "Thomas (2000)";
-        c.rootDirOnServer = "/THOMAS/JANUS";
-        c.shapeModelFileNames = prepend(c.rootDirOnServer, "s10janus.llr.gz");
-        c.hasColoringData = false;
-        c.setResolution(ImmutableList.of(5040));
-        c.presentInMissions = new Mission[] {Mission.PUBLIC_RELEASE, Mission.TEST_PUBLIC_RELEASE, Mission.STAGE_PUBLIC_RELEASE, Mission.STAGE_APL_INTERNAL, Mission.APL_INTERNAL, Mission.TEST_APL_INTERNAL};
-        c.defaultForMissions = new Mission[] {};
+	private static void buildJanusThomas2000Config(ConfigArrayList<IBodyViewConfig> configArray)
+	{
+		SaturnConfigs c = new SaturnConfigs();
+		c.body = ShapeModelBody.JANUS;
+		c.type = BodyType.PLANETS_AND_SATELLITES;
+		c.population = ShapeModelPopulation.SATURN;
+		c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
+		c.author = ShapeModelType.THOMAS;
+		c.modelLabel = "Thomas (2000)";
+		c.rootDirOnServer = "/THOMAS/JANUS";
+		c.shapeModelFileNames = prepend(c.rootDirOnServer, "s10janus.llr.gz");
+		c.hasColoringData = false;
+		c.setResolution(ImmutableList.of(5040));
+		c.presentInMissions = new Mission[]
+		{ Mission.PUBLIC_RELEASE, Mission.TEST_PUBLIC_RELEASE, Mission.STAGE_PUBLIC_RELEASE, Mission.STAGE_APL_INTERNAL,
+				Mission.APL_INTERNAL, Mission.TEST_APL_INTERNAL };
+		c.defaultForMissions = new Mission[]
+		{};
 
-        configArray.add(c);
+		configArray.add(c);
 
-        // Model stooke2016 delivered 2018-03-06.
-        c = new SaturnConfigs();
+	}
+
+	private static void buildJanusStookeConfig(ConfigArrayList<IBodyViewConfig> configArray)
+	{
+		// Model stooke2016 delivered 2018-03-06.
+        SaturnConfigs c = new SaturnConfigs();
         c.body = ShapeModelBody.JANUS;
         c.type = BodyType.PLANETS_AND_SATELLITES;
         c.population = ShapeModelPopulation.SATURN;
@@ -206,8 +262,11 @@ public class SaturnConfigs extends SmallBodyViewConfig
         c.defaultForMissions = new Mission[] {};
 
         configArray.add(c);
+	}
 
-        c = new SaturnConfigs();
+	private static void buildMimasGaskellConfig(ConfigArrayList<IBodyViewConfig> configArray)
+	{
+		SaturnConfigs c = new SaturnConfigs();
         c.body = ShapeModelBody.MIMAS;
         c.type = BodyType.PLANETS_AND_SATELLITES;
         c.population = ShapeModelPopulation.SATURN;
@@ -216,9 +275,9 @@ public class SaturnConfigs extends SmallBodyViewConfig
         c.modelLabel = "Gaskell (2013b)";
         c.rootDirOnServer = "/GASKELL/MIMAS";
         setupFeatures(c);
-        imagingMetadata =
+        DataQuerySourcesMetadata imagingMetadata =
         		DataQuerySourcesMetadata.of("/GASKELL/MIMAS/IMAGING", "", null, null, "/GASKELL/MIMAS/IMAGING/gallery");
-        imagingConfig = (ImagingInstrumentConfig)c.getConfigForClass(ImagingInstrumentConfig.class);
+        ImagingInstrumentConfig imagingConfig = (ImagingInstrumentConfig)c.getConfigForClass(ImagingInstrumentConfig.class);
         imagingConfig.imagingInstruments = Lists.newArrayList(
                 new ImagingInstrument( //
                         SpectralImageMode.MONO, //
@@ -241,9 +300,12 @@ public class SaturnConfigs extends SmallBodyViewConfig
         c.defaultForMissions = new Mission[] {};
 
         configArray.add(c);
+	}
 
+	private static void buildPandoraStookeConfig(ConfigArrayList<IBodyViewConfig> configArray)
+	{
         // Model stooke2016 delivered 2018-03-06.
-        c = new SaturnConfigs();
+        SaturnConfigs c = new SaturnConfigs();
         c.body = ShapeModelBody.PANDORA;
         c.type = BodyType.PLANETS_AND_SATELLITES;
         c.population = ShapeModelPopulation.SATURN;
@@ -258,8 +320,11 @@ public class SaturnConfigs extends SmallBodyViewConfig
         c.defaultForMissions = new Mission[] {};
 
         configArray.add(c);
+	}
 
-        c = new SaturnConfigs();
+	private static void buildPhoebeGaskellConfig(ConfigArrayList<IBodyViewConfig> configArray)
+	{
+		SaturnConfigs c = new SaturnConfigs();
         c.body = ShapeModelBody.PHOEBE;
         c.type = BodyType.PLANETS_AND_SATELLITES;
         c.population = ShapeModelPopulation.SATURN;
@@ -268,14 +333,14 @@ public class SaturnConfigs extends SmallBodyViewConfig
         c.modelLabel = "Gaskell (2013c)";
         c.rootDirOnServer = "/GASKELL/PHOEBE";
         setupFeatures(c);
-        imagingMetadata =
+        DataQuerySourcesMetadata imagingMetadata =
         		DataQuerySourcesMetadata.of("/GASKELL/PHOEBE/IMAGING", "", null, null, "/GASKELL/PHOEBE/IMAGING/gallery");
-        imagingConfig = (ImagingInstrumentConfig)c.getConfigForClass(ImagingInstrumentConfig.class);
+        ImagingInstrumentConfig imagingConfig = (ImagingInstrumentConfig)c.getConfigForClass(ImagingInstrumentConfig.class);
         imagingConfig.imagingInstruments = Lists.newArrayList(
                 new ImagingInstrument( //
                         SpectralImageMode.MONO, //
                         new FixedListDataQuery(imagingMetadata),
-//                        new FixedListQuery<Object>("/GASKELL/PHOEBE/IMAGING", "/GASKELL/PHOEBE/IMAGING/gallery"), //
+//	                        new FixedListQuery<Object>("/GASKELL/PHOEBE/IMAGING", "/GASKELL/PHOEBE/IMAGING/gallery"), //
                         ImageType.SATURN_MOON_IMAGE, //
                         new PointingSource[]{PointingSource.GASKELL}, //
                         Instrument.IMAGING_DATA //
@@ -295,9 +360,12 @@ public class SaturnConfigs extends SmallBodyViewConfig
 
         configArray.add(c);
 
+	}
 
-        // Model stooke2016 delivered 2018-03-06.
-        c = new SaturnConfigs();
+	private static void buildPrometheusStookeConfig(ConfigArrayList<IBodyViewConfig> configArray)
+	{
+		 // Model stooke2016 delivered 2018-03-06.
+        SaturnConfigs c = new SaturnConfigs();
         c.body = ShapeModelBody.PROMETHEUS;
         c.type = BodyType.PLANETS_AND_SATELLITES;
         c.population = ShapeModelPopulation.SATURN;
@@ -312,25 +380,28 @@ public class SaturnConfigs extends SmallBodyViewConfig
         c.defaultForMissions = new Mission[] {};
 
         configArray.add(c);
+	}
 
-        if (Configuration.isAPLVersion())
-        {
-            c = new SaturnConfigs();
-            c.body = ShapeModelBody.RHEA;
-            c.type = BodyType.PLANETS_AND_SATELLITES;
-            c.population = ShapeModelPopulation.SATURN;
-            c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
-            c.author = ShapeModelType.GASKELL;
-            c.modelLabel = "Gaskell (in progress)";
-            c.rootDirOnServer = "/GASKELL/RHEA";
-            c.hasColoringData = false;
-            c.presentInMissions = new Mission[] {Mission.PUBLIC_RELEASE, Mission.TEST_PUBLIC_RELEASE, Mission.STAGE_PUBLIC_RELEASE, Mission.STAGE_APL_INTERNAL, Mission.APL_INTERNAL, Mission.TEST_APL_INTERNAL};
-            c.defaultForMissions = new Mission[] {};
+	private static void buildRheaGaskellConfig(ConfigArrayList<IBodyViewConfig> configArray)
+	{
+		SaturnConfigs c = new SaturnConfigs();
+        c.body = ShapeModelBody.RHEA;
+        c.type = BodyType.PLANETS_AND_SATELLITES;
+        c.population = ShapeModelPopulation.SATURN;
+        c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
+        c.author = ShapeModelType.GASKELL;
+        c.modelLabel = "Gaskell (in progress)";
+        c.rootDirOnServer = "/GASKELL/RHEA";
+        c.hasColoringData = false;
+        c.presentInMissions = new Mission[] {Mission.PUBLIC_RELEASE, Mission.TEST_PUBLIC_RELEASE, Mission.STAGE_PUBLIC_RELEASE, Mission.STAGE_APL_INTERNAL, Mission.APL_INTERNAL, Mission.TEST_APL_INTERNAL};
+        c.defaultForMissions = new Mission[] {};
 
-            configArray.add(c);
-        }
+        configArray.add(c);
+	}
 
-        c = new SaturnConfigs();
+	private static void buildTethysGaskellConfig(ConfigArrayList<IBodyViewConfig> configArray)
+	{
+        SaturnConfigs c = new SaturnConfigs();
         c.body = ShapeModelBody.TETHYS;
         c.type = BodyType.PLANETS_AND_SATELLITES;
         c.population = ShapeModelPopulation.SATURN;
@@ -343,8 +414,11 @@ public class SaturnConfigs extends SmallBodyViewConfig
         c.defaultForMissions = new Mission[] {};
 
         configArray.add(c);
+	}
 
-        c = new SaturnConfigs();
+	private static void buildTelestoGaskellConfig(ConfigArrayList<IBodyViewConfig> configArray)
+	{
+        SaturnConfigs c = new SaturnConfigs();
         c.body = ShapeModelBody.TELESTO;
         c.type = BodyType.PLANETS_AND_SATELLITES;
         c.population = ShapeModelPopulation.SATURN;
@@ -353,9 +427,9 @@ public class SaturnConfigs extends SmallBodyViewConfig
         c.modelLabel = "Ernst et al. (in progress)";
         c.rootDirOnServer = "/GASKELL/TELESTO";
         setupFeatures(c);
-        imagingMetadata =
+        DataQuerySourcesMetadata imagingMetadata =
         		DataQuerySourcesMetadata.of("/GASKELL/TELESTO/IMAGING", "", null, null, "/GASKELL/TELESTO/IMAGING/gallery");
-        imagingConfig = (ImagingInstrumentConfig)c.getConfigForClass(ImagingInstrumentConfig.class);
+        ImagingInstrumentConfig imagingConfig = (ImagingInstrumentConfig)c.getConfigForClass(ImagingInstrumentConfig.class);
         imagingConfig.imagingInstruments = Lists.newArrayList(
                 new ImagingInstrument( //
                         SpectralImageMode.MONO, //
@@ -381,687 +455,677 @@ public class SaturnConfigs extends SmallBodyViewConfig
         c.defaultForMissions = new Mission[] {};
 
         configArray.add(c);
+	}
 
 
+	private static void buildAtlasGaskellConfig(ConfigArrayList<IBodyViewConfig> configArray)
+	{
+		// Set up body.
+        SBMTBodyConfiguration bodyConfig = SBMTBodyConfiguration.builder( //
+                ShapeModelBody.ATLAS.name(), //
+                BodyType.PLANETS_AND_SATELLITES.name(), //
+                ShapeModelPopulation.SATURN.name()).build(); //
+//        QueryBase queryBase = new GenericPhpQuery("/atlas/gaskell/imaging", "atlas", "/atlas/gaskell/imaging/images/gallery");
 
+        DataQuerySourcesMetadata metadata = DataQuerySourcesMetadata.of("/atlas/gaskell/imaging", "", "atlas", "atlas", "/atlas/gaskell/imaging/images/gallery");
+        ImageDataQuery query = new ImageDataQuery(metadata);
 
+        ImagingInstrument imagingInstrument = setupImagingInstrument(bodyConfig, gaskellModelConfig, Instrument.IMAGING_DATA, query, gaskellImagingSource, ImageType.SATURN_MOON_IMAGE);
+        imagingInstrument.setFillValues(Set.of((float)3.4028234663852886e38, (float)-3.4028234663852886e38));
 
-        // Standard Gaskell shape model may be described once.
-        final ShapeModelConfiguration gaskellModelConfig = ShapeModelConfiguration.builder(ShapeModelType.GASKELL.name(), ShapeModelDataUsed.IMAGE_BASED).build();
+        SaturnConfigs c = new SaturnConfigs();
+        c.body = ShapeModelBody.ATLAS;
+        c.type = BodyType.PLANETS_AND_SATELLITES;
+        c.population = ShapeModelPopulation.SATURN;
+        c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
+        c.author = ShapeModelType.GASKELL;
+        c.modelLabel = "Ernst et al. (in progress)";
+        c.rootDirOnServer = "/atlas/gaskell";
+        c.setResolution(ImmutableList.of(DEFAULT_GASKELL_LABELS_PER_RESOLUTION[0]), ImmutableList.of(DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[0]));
+        setupFeatures(c);
+        ImagingInstrumentConfig imagingConfig = (ImagingInstrumentConfig)c.getConfigForClass(ImagingInstrumentConfig.class);
+        imagingConfig.imagingInstruments = Lists.newArrayList(
+                imagingInstrument
+        );
+        imagingConfig.imageSearchDefaultStartDate = new GregorianCalendar(2005, 5, 7, 0, 0, 0).getTime();
+        imagingConfig.imageSearchDefaultEndDate = new GregorianCalendar(2017, 3, 13, 0, 0, 0).getTime();
+        imagingConfig.imageSearchDefaultMaxSpacecraftDistance = 400000.0;
+        imagingConfig.imageSearchDefaultMaxResolution = 5000.0;
+        c.hasColoringData = false;
 
-        // Gaskell images only.
-        final PointingSource[] gaskellImagingSource = new PointingSource[] { PointingSource.GASKELL };
-
+        c.databaseRunInfos = new DBRunInfo[]
         {
-            // Set up body.
-            SBMTBodyConfiguration bodyConfig = SBMTBodyConfiguration.builder( //
-                    ShapeModelBody.ATLAS.name(), //
-                    BodyType.PLANETS_AND_SATELLITES.name(), //
-                    ShapeModelPopulation.SATURN.name()).build(); //
-//            QueryBase queryBase = new GenericPhpQuery("/atlas/gaskell/imaging", "atlas", "/atlas/gaskell/imaging/images/gallery");
-
-            DataQuerySourcesMetadata metadata = DataQuerySourcesMetadata.of("/atlas/gaskell/imaging", "", "atlas", "atlas", "/atlas/gaskell/imaging/images/gallery");
-            ImageDataQuery query = new ImageDataQuery(metadata);
-
-            ImagingInstrument imagingInstrument = setupImagingInstrument(bodyConfig, gaskellModelConfig, Instrument.IMAGING_DATA, query, gaskellImagingSource, ImageType.SATURN_MOON_IMAGE);
-            imagingInstrument.setFillValues(Set.of((float)3.4028234663852886e38, (float)-3.4028234663852886e38));
-
-            c = new SaturnConfigs();
-            c.body = ShapeModelBody.ATLAS;
-            c.type = BodyType.PLANETS_AND_SATELLITES;
-            c.population = ShapeModelPopulation.SATURN;
-            c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
-            c.author = ShapeModelType.GASKELL;
-            c.modelLabel = "Ernst et al. (in progress)";
-            c.rootDirOnServer = "/atlas/gaskell";
-            c.setResolution(ImmutableList.of(DEFAULT_GASKELL_LABELS_PER_RESOLUTION[0]), ImmutableList.of(DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[0]));
-            setupFeatures(c);
-            imagingConfig = (ImagingInstrumentConfig)c.getConfigForClass(ImagingInstrumentConfig.class);
-            imagingConfig.imagingInstruments = Lists.newArrayList(
-                    imagingInstrument
-            );
-            imagingConfig.imageSearchDefaultStartDate = new GregorianCalendar(2005, 5, 7, 0, 0, 0).getTime();
-            imagingConfig.imageSearchDefaultEndDate = new GregorianCalendar(2017, 3, 13, 0, 0, 0).getTime();
-            imagingConfig.imageSearchDefaultMaxSpacecraftDistance = 400000.0;
-            imagingConfig.imageSearchDefaultMaxResolution = 5000.0;
-            c.hasColoringData = false;
-
-            c.databaseRunInfos = new DBRunInfo[]
-            {
-            	new DBRunInfo(PointingSource.GASKELL, Instrument.IMAGING_DATA, ShapeModelBody.ATLAS.toString(), "/project/sbmt2/data/atlas/gaskell/imaging/imagelist-fullpath.txt", "atlas"),
-            };
-
-            c.presentInMissions = new Mission[] {Mission.PUBLIC_RELEASE, Mission.TEST_PUBLIC_RELEASE, Mission.STAGE_PUBLIC_RELEASE, Mission.STAGE_APL_INTERNAL, Mission.APL_INTERNAL, Mission.TEST_APL_INTERNAL};
-            c.defaultForMissions = new Mission[] {};
-
-            configArray.add(c);
-        }
-
-        {
-            // Set up body.
-            SBMTBodyConfiguration bodyConfig = SBMTBodyConfiguration.builder( //
-                    ShapeModelBody.CALYPSO.name(), //
-                    BodyType.PLANETS_AND_SATELLITES.name(), //
-                    ShapeModelPopulation.SATURN.name()).build(); //
-            ImagingInstrument imagingInstrument = setupImagingInstrument(bodyConfig, gaskellModelConfig, Instrument.IMAGING_DATA, gaskellImagingSource, ImageType.SATURN_MOON_IMAGE);
-
-            c = new SaturnConfigs();
-            c.body = ShapeModelBody.CALYPSO;
-            c.type = BodyType.PLANETS_AND_SATELLITES;
-            c.population = ShapeModelPopulation.SATURN;
-            c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
-            c.author = ShapeModelType.GASKELL;
-            c.modelLabel = "Ernst et al. (in progress)";
-            c.rootDirOnServer = "/calypso/gaskell";
-            setupFeatures(c);
-            imagingConfig = (ImagingInstrumentConfig)c.getConfigForClass(ImagingInstrumentConfig.class);
-            imagingConfig.imagingInstruments = Lists.newArrayList(
-                    imagingInstrument
-            );
-            imagingConfig.imageSearchDefaultStartDate = new GregorianCalendar(2005, 8, 23, 0, 0, 0).getTime();
-            imagingConfig.imageSearchDefaultEndDate = new GregorianCalendar(2010, 1, 14, 0, 0, 0).getTime();
-            c.hasColoringData = false;
-            c.presentInMissions = new Mission[] {Mission.PUBLIC_RELEASE, Mission.TEST_PUBLIC_RELEASE, Mission.STAGE_PUBLIC_RELEASE, Mission.STAGE_APL_INTERNAL, Mission.APL_INTERNAL, Mission.TEST_APL_INTERNAL};
-            c.defaultForMissions = new Mission[] {};
-
-//            configArray.add(c);
-        }
-
-        {
-            // Pair of models that share SUM files. Use this variable for both.
-            String issRootDirPrimary;
-            // Primary model: the SUM files really belong to this one.
-            {
-                c = new SaturnConfigs();
-                c.body = ShapeModelBody.CALYPSO;
-                c.type = BodyType.PLANETS_AND_SATELLITES;
-                c.population = ShapeModelPopulation.SATURN;
-                c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
-                c.author = ShapeModelType.provide("Daly");
-                c.modelLabel = "Daly et al. (in progress)";
-                c.rootDirOnServer = "/calypso/daly-2020";
-                c.shapeModelFileExtension = ".obj";
-                c.hasColoringData = false;
-                // This is actaully correct by default for a 4-resolution model:
-                // c.setResolution(ImmutableList.copyOf(DEFAULT_GASKELL_LABELS_PER_RESOLUTION),
-                // ImmutableList.copyOf(DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION));
-
-                String tableBaseName = (c.body.name() + "_" + c.author.toString() + "_").replaceAll("[\\s-]", "_").toLowerCase();
-
-                String issTable = tableBaseName + "iss";
-
-                // Set up root directory, where SUM files are located. THIS IS
-                // ALSO USED BY THE SECONDARY MODEL.
-                issRootDirPrimary = c.rootDirOnServer + "/iss";
-
-                String issDataDir = "/cassini/iss/images";
-                String issGalleryDir = "/cassini/iss/gallery";
-                setupFeatures(c);
-                imagingConfig = (ImagingInstrumentConfig)c.getConfigForClass(ImagingInstrumentConfig.class);
-                imagingMetadata =
-                		DataQuerySourcesMetadata.of(issRootDirPrimary,issDataDir, issTable, issTable, issGalleryDir);
-
-                imagingConfig.imagingInstruments = Lists.newArrayList(
-                        new ImagingInstrument( //
-                                SpectralImageMode.MONO, //
-                                new ImageDataQuery(imagingMetadata),
-//                                new GenericPhpQuery(issRootDirPrimary, issTable, issTable, issGalleryDir, issDataDir), //
-                                ImageType.valueOf("ISS_IMAGE"), //
-                                SumFiles, //
-                                Instrument.ISS, //
-                                0., //
-                                "None" //
-                        )
-                );
-                imagingConfig.imageSearchDefaultStartDate = new GregorianCalendar(2005, 8, 23, 0, 0, 0).getTime();
-                imagingConfig.imageSearchDefaultEndDate = new GregorianCalendar(2010, 1, 14, 0, 0, 0).getTime();
-                imagingConfig.imageSearchFilterNames = new String[] {};
-                imagingConfig.imageSearchUserDefinedCheckBoxesNames = new String[] {};
-                imagingConfig.imageSearchDefaultMaxSpacecraftDistance = 1.0e6;
-                imagingConfig.imageSearchDefaultMaxResolution = 1.0e3;
-
-                c.databaseRunInfos = new DBRunInfo[] { //
-                        new DBRunInfo(PointingSource.GASKELL, Instrument.ISS, c.body.toString(), //
-                                issRootDirPrimary + "/imagelist-fullpath-sum.txt", issTable) //
-                };
-
-                c.presentInMissions = new Mission[] { Mission.PUBLIC_RELEASE, Mission.TEST_PUBLIC_RELEASE, Mission.STAGE_PUBLIC_RELEASE,
-                        Mission.STAGE_APL_INTERNAL, Mission.APL_INTERNAL, Mission.TEST_APL_INTERNAL };
-                c.defaultForMissions = new Mission[] {};
-
-                configArray.add(c);
-            }
-
-            // Secondary model: use the SUM files that belong to the Primary
-            // model.
-            {
-                c = new SaturnConfigs();
-                c.body = ShapeModelBody.CALYPSO;
-                c.type = BodyType.PLANETS_AND_SATELLITES;
-                c.population = ShapeModelPopulation.SATURN;
-                c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
-                c.author = ShapeModelType.THOMAS;
-                c.modelLabel = "Thomas et al. (2018)";
-                c.rootDirOnServer = "/calypso/thomas-2018";
-                c.shapeModelFileExtension = ".obj";
-                c.hasColoringData = false;
-                int numberPlates = 28269;
-                c.setResolution(ImmutableList.of(numberPlates + " plates"), ImmutableList.of(numberPlates));
-
-                String tableBaseName = (c.body.name() + "_" + c.author.toString() + "_").replaceAll("[\\s-]", "_").toLowerCase();
-
-                String issTable = tableBaseName + "iss";
-
-                // DO NOT SET THIS VARIABLE: use the SUM files that belong to
-                // the Primary model.
-                // issRootDirPrimary = c.rootDirOnServer + "/iss";
-
-                String issDataDir = "/cassini/iss/images";
-                String issGalleryDir = "/cassini/iss/gallery";
-                setupFeatures(c);
-                imagingConfig = (ImagingInstrumentConfig)c.getConfigForClass(ImagingInstrumentConfig.class);
-                imagingMetadata =
-                		DataQuerySourcesMetadata.of(issRootDirPrimary,issDataDir, issTable, issTable, issGalleryDir);
-
-                imagingConfig.imagingInstruments = Lists.newArrayList(
-                        new ImagingInstrument( //
-                                SpectralImageMode.MONO, //
-                                new ImageDataQuery(imagingMetadata),
-//                                new GenericPhpQuery(issRootDirPrimary, issTable, issTable, issGalleryDir, issDataDir), //
-                                ImageType.valueOf("ISS_IMAGE"), //
-                                SumFiles, //
-                                Instrument.ISS, //
-                                0., //
-                                "None" //
-                        )
-                );
-                imagingConfig.imageSearchDefaultStartDate = new GregorianCalendar(2005, 8, 23, 0, 0, 0).getTime();
-                imagingConfig.imageSearchDefaultEndDate = new GregorianCalendar(2010, 1, 14, 0, 0, 0).getTime();
-                imagingConfig.imageSearchFilterNames = new String[] {};
-                imagingConfig.imageSearchUserDefinedCheckBoxesNames = new String[] {};
-                imagingConfig.imageSearchDefaultMaxSpacecraftDistance = 1.0e6;
-                imagingConfig.imageSearchDefaultMaxResolution = 1.0e3;
-
-                c.databaseRunInfos = new DBRunInfo[] { //
-                        new DBRunInfo(PointingSource.GASKELL, Instrument.ISS, c.body.toString(), //
-                                issRootDirPrimary + "/imagelist-fullpath-sum.txt", issTable) //
-                };
-
-                c.presentInMissions = new Mission[] { Mission.PUBLIC_RELEASE, Mission.TEST_PUBLIC_RELEASE, Mission.STAGE_PUBLIC_RELEASE,
-                        Mission.STAGE_APL_INTERNAL, Mission.APL_INTERNAL, Mission.TEST_APL_INTERNAL };
-                c.defaultForMissions = new Mission[] {};
-
-                configArray.add(c);
-            }
-        }
-
-        {
-            c = new SaturnConfigs();
-            c.body = ShapeModelBody.ENCELADUS;
-            c.type = BodyType.PLANETS_AND_SATELLITES;
-            c.population = ShapeModelPopulation.SATURN;
-            c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
-            c.author = ShapeModelType.GASKELL;
-            c.modelLabel = "Gaskell (in progress)";
-            c.rootDirOnServer = "/enceladus/gaskell";
-            c.hasColoringData = false;
-            c.presentInMissions = new Mission[] {Mission.PUBLIC_RELEASE, Mission.TEST_PUBLIC_RELEASE, Mission.STAGE_PUBLIC_RELEASE, Mission.STAGE_APL_INTERNAL, Mission.APL_INTERNAL, Mission.TEST_APL_INTERNAL};
-            c.defaultForMissions = new Mission[] {};
-
-            configArray.add(c);
-        }
-
-        {
-            // Set up body.
-            SBMTBodyConfiguration bodyConfig = SBMTBodyConfiguration.builder( //
-                    ShapeModelBody.EPIMETHEUS.name(), //
-                    BodyType.PLANETS_AND_SATELLITES.name(), //
-                    ShapeModelPopulation.SATURN.name()).build(); //
-            ImagingInstrument imagingInstrument = setupImagingInstrument(bodyConfig, gaskellModelConfig, Instrument.IMAGING_DATA, gaskellImagingSource, ImageType.SATURN_MOON_IMAGE);
-
-            c = new SaturnConfigs();
-            c.body = ShapeModelBody.EPIMETHEUS;
-            c.type = BodyType.PLANETS_AND_SATELLITES;
-            c.population = ShapeModelPopulation.SATURN;
-            c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
-            c.author = ShapeModelType.GASKELL;
-            c.modelLabel = "Ernst et al. (in progress)";
-            c.rootDirOnServer = "/epimetheus/gaskell";
-            setupFeatures(c);
-            imagingConfig = (ImagingInstrumentConfig)c.getConfigForClass(ImagingInstrumentConfig.class);
-            imagingConfig.imagingInstruments = Lists.newArrayList(
-                    imagingInstrument
-            );
-            imagingConfig.imageSearchDefaultStartDate = new GregorianCalendar(2006, 3, 29, 0, 0, 0).getTime();
-            imagingConfig.imageSearchDefaultEndDate = new GregorianCalendar(2017, 2, 7, 0, 0, 0).getTime();
-            c.hasColoringData = false;
-            c.presentInMissions = new Mission[] {Mission.PUBLIC_RELEASE, Mission.TEST_PUBLIC_RELEASE, Mission.STAGE_PUBLIC_RELEASE, Mission.STAGE_APL_INTERNAL, Mission.APL_INTERNAL, Mission.TEST_APL_INTERNAL};
-            c.defaultForMissions = new Mission[] {};
-
-            //configArray.add(c);
-        }
-
-        {
-            // Pair of models that share SUM files. Use this variable for both.
-            String issRootDirPrimary;
-            // Primary model: the SUM files really belong to this one.
-            {
-                c = new SaturnConfigs();
-                c.body = ShapeModelBody.EPIMETHEUS;
-                c.type = BodyType.PLANETS_AND_SATELLITES;
-                c.population = ShapeModelPopulation.SATURN;
-                c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
-                c.author = ShapeModelType.provide("Daly");
-                c.modelLabel = "Daly et al. (in progress)";
-                c.rootDirOnServer = "/epimetheus/daly-2020";
-                c.shapeModelFileExtension = ".obj";
-                c.hasColoringData = false;
-                // This is actaully correct by default for a 4-resolution model:
-                // c.setResolution(ImmutableList.copyOf(DEFAULT_GASKELL_LABELS_PER_RESOLUTION),
-                // ImmutableList.copyOf(DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION));
-
-                String tableBaseName = (c.body.name() + "_" + c.author.toString() + "_").replaceAll("[\\s-]", "_").toLowerCase();
-
-                String issTable = tableBaseName + "iss";
-
-                // Set up root directory, where SUM files are located. THIS IS
-                // ALSO USED BY THE SECONDARY MODEL.
-                issRootDirPrimary = c.rootDirOnServer + "/iss";
-
-                String issDataDir = "/cassini/iss/images";
-                String issGalleryDir = "/cassini/iss/gallery";
-                setupFeatures(c);
-                imagingConfig = (ImagingInstrumentConfig)c.getConfigForClass(ImagingInstrumentConfig.class);
-                imagingMetadata =
-                		DataQuerySourcesMetadata.of(issRootDirPrimary,issDataDir, issTable, issTable, issGalleryDir);
-
-                imagingConfig.imagingInstruments = Lists.newArrayList(
-                        new ImagingInstrument( //
-                                SpectralImageMode.MONO, //
-                                new ImageDataQuery(imagingMetadata),
-//                                new GenericPhpQuery(issRootDirPrimary, issTable, issTable, issGalleryDir, issDataDir), //
-                                ImageType.valueOf("ISS_IMAGE"), //
-                                SumFiles, //
-                                Instrument.ISS, //
-                                0., //
-                                "None" //
-                        )
-                );
-                imagingConfig.imageSearchDefaultStartDate = new GregorianCalendar(2005, 1, 17, 0, 0, 0).getTime();
-                imagingConfig.imageSearchDefaultEndDate = new GregorianCalendar(2017, 4, 4, 0, 0, 0).getTime();
-                imagingConfig.imageSearchFilterNames = new String[] {};
-                imagingConfig.imageSearchUserDefinedCheckBoxesNames = new String[] {};
-                imagingConfig.imageSearchDefaultMaxSpacecraftDistance = 1.0e7;
-                imagingConfig.imageSearchDefaultMaxResolution = 1.0e5;
-
-                c.databaseRunInfos = new DBRunInfo[] { //
-                        new DBRunInfo(PointingSource.GASKELL, Instrument.ISS, c.body.toString(), //
-                                issRootDirPrimary + "/imagelist-fullpath-sum.txt", issTable) //
-                };
-
-                c.presentInMissions = new Mission[] { Mission.PUBLIC_RELEASE, Mission.TEST_PUBLIC_RELEASE, Mission.STAGE_PUBLIC_RELEASE,
-                        Mission.STAGE_APL_INTERNAL, Mission.APL_INTERNAL, Mission.TEST_APL_INTERNAL };
-                c.defaultForMissions = new Mission[] {};
-
-                configArray.add(c);
-            }
-
-            // Secondary model: use the SUM files that belong to the Primary
-            // model.
-            {
-                c = new SaturnConfigs();
-                c.body = ShapeModelBody.EPIMETHEUS;
-                c.type = BodyType.PLANETS_AND_SATELLITES;
-                c.population = ShapeModelPopulation.SATURN;
-                c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
-                c.author = ShapeModelType.THOMAS;
-                c.modelLabel = "Thomas et al. (2018)";
-                c.rootDirOnServer = "/epimetheus/thomas-2018";
-                c.shapeModelFileExtension = ".obj";
-                c.hasColoringData = false;
-                int numberPlates = 49152;
-                c.setResolution(ImmutableList.of(numberPlates + " plates"), ImmutableList.of(numberPlates));
-
-                String tableBaseName = (c.body.name() + "_" + c.author.toString() + "_").replaceAll("[\\s-]", "_").toLowerCase();
-
-                String issTable = tableBaseName + "iss";
-
-                // DO NOT SET THIS VARIABLE: use the SUM files that belong to
-                // the Primary model.
-                // issRootDirPrimary = c.rootDirOnServer + "/iss";
-
-                String issDataDir = "/cassini/iss/images";
-                String issGalleryDir = "/cassini/iss/gallery";
-                setupFeatures(c);
-                imagingConfig = (ImagingInstrumentConfig)c.getConfigForClass(ImagingInstrumentConfig.class);
-                imagingMetadata =
-                		DataQuerySourcesMetadata.of(issRootDirPrimary,issDataDir, issTable, issTable, issGalleryDir);
-
-                imagingConfig.imagingInstruments = Lists.newArrayList(
-                        new ImagingInstrument( //
-                                SpectralImageMode.MONO, //
-                                new ImageDataQuery(imagingMetadata),
-//                                new GenericPhpQuery(issRootDirPrimary, issTable, issTable, issGalleryDir, issDataDir), //
-                                ImageType.valueOf("ISS_IMAGE"), //
-                                SumFiles, //
-                                Instrument.ISS, //
-                                0., //
-                                "None" //
-                        )
-                );
-                imagingConfig.imageSearchDefaultStartDate = new GregorianCalendar(2005, 1, 17, 0, 0, 0).getTime();
-                imagingConfig.imageSearchDefaultEndDate = new GregorianCalendar(2017, 4, 4, 0, 0, 0).getTime();
-                imagingConfig.imageSearchFilterNames = new String[] {};
-                imagingConfig.imageSearchUserDefinedCheckBoxesNames = new String[] {};
-                imagingConfig.imageSearchDefaultMaxSpacecraftDistance = 1.0e7;
-                imagingConfig.imageSearchDefaultMaxResolution = 1.0e5;
-
-                c.databaseRunInfos = new DBRunInfo[] { //
-                        new DBRunInfo(PointingSource.GASKELL, Instrument.ISS, c.body.toString(), //
-                                issRootDirPrimary + "/imagelist-fullpath-sum.txt", issTable) //
-                };
-
-                c.presentInMissions = new Mission[] { Mission.PUBLIC_RELEASE, Mission.TEST_PUBLIC_RELEASE, Mission.STAGE_PUBLIC_RELEASE,
-                        Mission.STAGE_APL_INTERNAL, Mission.APL_INTERNAL, Mission.TEST_APL_INTERNAL };
-                c.defaultForMissions = new Mission[] {};
-
-                configArray.add(c);
-            }
-        }
-
-        {
-            // Set up body.
-            SBMTBodyConfiguration bodyConfig = SBMTBodyConfiguration.builder( //
-                    ShapeModelBody.HELENE.name(), //
-                    BodyType.PLANETS_AND_SATELLITES.name(), //
-                    ShapeModelPopulation.SATURN.name()).build(); //
-            ImagingInstrument imagingInstrument = setupImagingInstrument(bodyConfig, gaskellModelConfig, Instrument.IMAGING_DATA, gaskellImagingSource, ImageType.SATURN_MOON_IMAGE);
-            imagingInstrument.setFillValues(Set.of((float)3.4028234663852886e38, (float)-3.4028234663852886e38));
-            c = new SaturnConfigs();
-            c.body = ShapeModelBody.HELENE;
-            c.type = BodyType.PLANETS_AND_SATELLITES;
-            c.population = ShapeModelPopulation.SATURN;
-            c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
-            c.author = ShapeModelType.GASKELL;
-            c.modelLabel = "Ernst et al. (in progress)";
-            c.rootDirOnServer = "/helene/gaskell";
-            setupFeatures(c);
-            imagingConfig = (ImagingInstrumentConfig)c.getConfigForClass(ImagingInstrumentConfig.class);
-            imagingConfig.imagingInstruments = Lists.newArrayList(
-                    imagingInstrument
-            );
-            imagingConfig.imageSearchDefaultStartDate = new GregorianCalendar(2006, 3, 29, 0, 0, 0).getTime();
-            imagingConfig.imageSearchDefaultEndDate = new GregorianCalendar(2017, 2, 7, 0, 0, 0).getTime();
-            c.hasColoringData = false;
-            c.presentInMissions = new Mission[] {Mission.PUBLIC_RELEASE, Mission.TEST_PUBLIC_RELEASE, Mission.STAGE_PUBLIC_RELEASE, Mission.STAGE_APL_INTERNAL, Mission.APL_INTERNAL, Mission.TEST_APL_INTERNAL};
-            c.defaultForMissions = new Mission[] {};
-
-            configArray.add(c);
-        }
-
-        {
-            c = new SaturnConfigs();
-            c.body = ShapeModelBody.IAPETUS;
-            c.type = BodyType.PLANETS_AND_SATELLITES;
-            c.population = ShapeModelPopulation.SATURN;
-            c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
-            c.author = ShapeModelType.GASKELL;
-            c.modelLabel = "Gaskell (in progress)";
-            c.rootDirOnServer = "/iapetus/gaskell";
-            c.hasColoringData = false;
-            c.presentInMissions = new Mission[] {Mission.PUBLIC_RELEASE, Mission.TEST_PUBLIC_RELEASE, Mission.STAGE_PUBLIC_RELEASE, Mission.STAGE_APL_INTERNAL, Mission.APL_INTERNAL, Mission.TEST_APL_INTERNAL};
-            c.defaultForMissions = new Mission[] {};
-
-            configArray.add(c);
-        }
-
-        {
-            // Set up body.
-            SBMTBodyConfiguration bodyConfig = SBMTBodyConfiguration.builder( //
-                    ShapeModelBody.JANUS.name(), //
-                    BodyType.PLANETS_AND_SATELLITES.name(), //
-                    ShapeModelPopulation.SATURN.name()).build(); //
-            ImagingInstrument imagingInstrument = setupImagingInstrument(bodyConfig, gaskellModelConfig, Instrument.IMAGING_DATA, gaskellImagingSource, ImageType.SATURN_MOON_IMAGE);
-
-            c = new SaturnConfigs();
-            c.body = ShapeModelBody.JANUS;
-            c.type = BodyType.PLANETS_AND_SATELLITES;
-            c.population = ShapeModelPopulation.SATURN;
-            c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
-            c.author = ShapeModelType.GASKELL;
-            c.modelLabel = "Ernst et al. (in progress)";
-            c.rootDirOnServer = "/janus/gaskell";
-            setupFeatures(c);
-            imagingConfig = (ImagingInstrumentConfig)c.getConfigForClass(ImagingInstrumentConfig.class);
-            imagingConfig.imagingInstruments = Lists.newArrayList(
-                    imagingInstrument
-            );
-            imagingConfig.imageSearchDefaultStartDate = new GregorianCalendar(2006, 3, 29, 0, 0, 0).getTime();
-            imagingConfig.imageSearchDefaultEndDate = new GregorianCalendar(2017, 2, 7, 0, 0, 0).getTime();
-            c.hasColoringData = false;
-            c.presentInMissions = new Mission[] {Mission.PUBLIC_RELEASE, Mission.TEST_PUBLIC_RELEASE, Mission.STAGE_PUBLIC_RELEASE, Mission.STAGE_APL_INTERNAL, Mission.APL_INTERNAL, Mission.TEST_APL_INTERNAL};
-            c.defaultForMissions = new Mission[] {};
-
-            //configArray.add(c);
-        }
-
-        {
-            // Pair of models that share SUM files. Use this variable for both.
-            String issRootDirPrimary;
-            // Primary model: the SUM files really belong to this one.
-            {
-                c = new SaturnConfigs();
-                c.body = ShapeModelBody.JANUS;
-                c.type = BodyType.PLANETS_AND_SATELLITES;
-                c.population = ShapeModelPopulation.SATURN;
-                c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
-                c.author = ShapeModelType.provide("Daly");
-                c.modelLabel = "Daly et al. (in progress)";
-                c.rootDirOnServer = "/janus/daly-2020";
-                c.shapeModelFileExtension = ".obj";
-                c.hasColoringData = false;
-                // This is actaully correct by default for a 4-resolution model:
-                // c.setResolution(ImmutableList.copyOf(DEFAULT_GASKELL_LABELS_PER_RESOLUTION),
-                // ImmutableList.copyOf(DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION));
-
-                String tableBaseName = (c.body.name() + "_" + c.author.toString() + "_").replaceAll("[\\s-]", "_").toLowerCase();
-
-                String issTable = tableBaseName + "iss";
-
-                // Set up root directory, where SUM files are located. THIS IS
-                // ALSO USED BY THE SECONDARY MODEL.
-                issRootDirPrimary = c.rootDirOnServer + "/iss";
-
-                String issDataDir = "/cassini/iss/images";
-                String issGalleryDir = "/cassini/iss/gallery";
-                setupFeatures(c);
-                imagingConfig = (ImagingInstrumentConfig)c.getConfigForClass(ImagingInstrumentConfig.class);
-                imagingMetadata =
-                		DataQuerySourcesMetadata.of(issRootDirPrimary,issDataDir, issTable, issTable, issGalleryDir);
-
-                imagingConfig.imagingInstruments = Lists.newArrayList(
-                        new ImagingInstrument( //
-                                SpectralImageMode.MONO, //
-                                new ImageDataQuery(imagingMetadata),
-//                                new GenericPhpQuery(issRootDirPrimary, issTable, issTable, issGalleryDir, issDataDir), //
-                                ImageType.valueOf("ISS_IMAGE"), //
-                                SumFiles, //
-                                Instrument.ISS, //
-                                0., //
-                                "None" //
-                        )
-                );
-                imagingConfig.imageSearchDefaultStartDate = new GregorianCalendar(2005, 1, 17, 0, 0, 0).getTime();
-                imagingConfig.imageSearchDefaultEndDate = new GregorianCalendar(2017, 3, 19, 0, 0, 0).getTime();
-                imagingConfig.imageSearchFilterNames = new String[] {};
-                imagingConfig.imageSearchUserDefinedCheckBoxesNames = new String[] {};
-                imagingConfig.imageSearchDefaultMaxSpacecraftDistance = 1.0e7;
-                imagingConfig.imageSearchDefaultMaxResolution = 1.0e5;
-
-                c.databaseRunInfos = new DBRunInfo[] { //
-                        new DBRunInfo(PointingSource.GASKELL, Instrument.ISS, c.body.toString(), //
-                                issRootDirPrimary + "/imagelist-fullpath-sum.txt", issTable) //
-                };
-
-                c.presentInMissions = new Mission[] { Mission.PUBLIC_RELEASE, Mission.TEST_PUBLIC_RELEASE, Mission.STAGE_PUBLIC_RELEASE,
-                        Mission.STAGE_APL_INTERNAL, Mission.APL_INTERNAL, Mission.TEST_APL_INTERNAL };
-                c.defaultForMissions = new Mission[] {};
-
-                configArray.add(c);
-            }
-
-            // Secondary model: use the SUM files that belong to the Primary
-            // model.
-            {
-                c = new SaturnConfigs();
-                c.body = ShapeModelBody.JANUS;
-                c.type = BodyType.PLANETS_AND_SATELLITES;
-                c.population = ShapeModelPopulation.SATURN;
-                c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
-                c.author = ShapeModelType.THOMAS;
-                c.modelLabel = "Thomas et al. (2018)";
-                c.rootDirOnServer = "/janus/thomas-2018";
-                c.shapeModelFileExtension = ".obj";
-                c.hasColoringData = false;
-                int numberPlates = 49152;
-                c.setResolution(ImmutableList.of(numberPlates + " plates"), ImmutableList.of(numberPlates));
-
-                String tableBaseName = (c.body.name() + "_" + c.author.toString() + "_").replaceAll("[\\s-]", "_").toLowerCase();
-
-                String issTable = tableBaseName + "iss";
-
-                // DO NOT SET THIS VARIABLE: use the SUM files that belong to
-                // the Primary model.
-                // issRootDirPrimary = c.rootDirOnServer + "/iss";
-
-                String issDataDir = "/cassini/iss/images";
-                String issGalleryDir = "/cassini/iss/gallery";
-                setupFeatures(c);
-                imagingConfig = (ImagingInstrumentConfig)c.getConfigForClass(ImagingInstrumentConfig.class);
-                imagingMetadata =
-                		DataQuerySourcesMetadata.of(issRootDirPrimary,issDataDir, issTable, issTable, issGalleryDir);
-
-                imagingConfig.imagingInstruments = Lists.newArrayList(
-                        new ImagingInstrument( //
-                                SpectralImageMode.MONO, //
-                                new ImageDataQuery(imagingMetadata),
-//                                new GenericPhpQuery(issRootDirPrimary, issTable, issTable, issGalleryDir, issDataDir), //
-                                ImageType.valueOf("ISS_IMAGE"), //
-                                SumFiles, //
-                                Instrument.ISS, //
-                                0., //
-                                "None" //
-                        )
-                );
-                imagingConfig.imageSearchDefaultStartDate = new GregorianCalendar(2005, 1, 17, 0, 0, 0).getTime();
-                imagingConfig.imageSearchDefaultEndDate = new GregorianCalendar(2017, 3, 19, 0, 0, 0).getTime();
-                imagingConfig.imageSearchFilterNames = new String[] {};
-                imagingConfig.imageSearchUserDefinedCheckBoxesNames = new String[] {};
-                imagingConfig.imageSearchDefaultMaxSpacecraftDistance = 1.0e7;
-                imagingConfig.imageSearchDefaultMaxResolution = 1.0e5;
-
-                c.databaseRunInfos = new DBRunInfo[] { //
-                        new DBRunInfo(PointingSource.GASKELL, Instrument.ISS, c.body.toString(), //
-                                issRootDirPrimary + "/imagelist-fullpath-sum.txt", issTable) //
-                };
-
-                c.presentInMissions = new Mission[] { Mission.PUBLIC_RELEASE, Mission.TEST_PUBLIC_RELEASE, Mission.STAGE_PUBLIC_RELEASE,
-                        Mission.STAGE_APL_INTERNAL, Mission.APL_INTERNAL, Mission.TEST_APL_INTERNAL };
-                c.defaultForMissions = new Mission[] {};
-
-                configArray.add(c);
-            }
-        }
-
-        {
-            // Set up body.
-            SBMTBodyConfiguration bodyConfig = SBMTBodyConfiguration.builder( //
-                    ShapeModelBody.PAN.name(), //
-                    BodyType.PLANETS_AND_SATELLITES.name(), //
-                    ShapeModelPopulation.SATURN.name()).build(); //
-            ImagingInstrument imagingInstrument = setupImagingInstrument(bodyConfig, gaskellModelConfig, Instrument.IMAGING_DATA, gaskellImagingSource, ImageType.SATURN_MOON_IMAGE);
-
-            c = new SaturnConfigs();
-            c.body = ShapeModelBody.PAN;
-            c.type = BodyType.PLANETS_AND_SATELLITES;
-            c.population = ShapeModelPopulation.SATURN;
-            c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
-            c.author = ShapeModelType.GASKELL;
-            c.modelLabel = "Ernst et al. (in progress)";
-            c.rootDirOnServer = "/pan/gaskell";
-            setupFeatures(c);
-            imagingConfig = (ImagingInstrumentConfig)c.getConfigForClass(ImagingInstrumentConfig.class);
-            imagingConfig.imagingInstruments = Lists.newArrayList(
-                    imagingInstrument
-            );
-            imagingConfig.imageSearchDefaultStartDate = new GregorianCalendar(2006, 3, 29, 0, 0, 0).getTime();
-            imagingConfig.imageSearchDefaultEndDate = new GregorianCalendar(2017, 2, 7, 0, 0, 0).getTime();
-            c.hasColoringData = false;
-            c.presentInMissions = new Mission[] {Mission.PUBLIC_RELEASE, Mission.TEST_PUBLIC_RELEASE, Mission.STAGE_PUBLIC_RELEASE, Mission.STAGE_APL_INTERNAL, Mission.APL_INTERNAL, Mission.TEST_APL_INTERNAL};
-            c.defaultForMissions = new Mission[] {};
-
-            configArray.add(c);
-        }
-
-        {
-            // Set up body.
-            SBMTBodyConfiguration bodyConfig = SBMTBodyConfiguration.builder( //
-                    ShapeModelBody.PANDORA.name(), //
-                    BodyType.PLANETS_AND_SATELLITES.name(), //
-                    ShapeModelPopulation.SATURN.name()).build(); //
-            ImagingInstrument imagingInstrument = setupImagingInstrument(bodyConfig, gaskellModelConfig, Instrument.IMAGING_DATA, gaskellImagingSource, ImageType.SATURN_MOON_IMAGE);
-
-            c = new SaturnConfigs();
-            c.body = ShapeModelBody.PANDORA;
-            c.type = BodyType.PLANETS_AND_SATELLITES;
-            c.population = ShapeModelPopulation.SATURN;
-            c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
-            c.author = ShapeModelType.GASKELL;
-            c.modelLabel = "Ernst et al. (in progress)";
-            c.rootDirOnServer = "/pandora/gaskell";
-            setupFeatures(c);
-            imagingConfig = (ImagingInstrumentConfig)c.getConfigForClass(ImagingInstrumentConfig.class);
-            imagingConfig.imagingInstruments = Lists.newArrayList(
-                    imagingInstrument
-            );
-            imagingConfig.imageSearchDefaultStartDate = new GregorianCalendar(2005, 4, 20, 0, 0, 0).getTime();
-            imagingConfig.imageSearchDefaultEndDate = new GregorianCalendar(2016, 11, 19, 0, 0, 0).getTime();
-            c.hasColoringData = false;
-            c.presentInMissions = new Mission[] {Mission.PUBLIC_RELEASE, Mission.TEST_PUBLIC_RELEASE, Mission.STAGE_PUBLIC_RELEASE, Mission.STAGE_APL_INTERNAL, Mission.APL_INTERNAL, Mission.TEST_APL_INTERNAL};
-            c.defaultForMissions = new Mission[] {};
-
-            configArray.add(c);
-        }
-
-        {
-            // Set up body.
-            SBMTBodyConfiguration bodyConfig = SBMTBodyConfiguration.builder( //
-                    ShapeModelBody.PROMETHEUS.name(), //
-                    BodyType.PLANETS_AND_SATELLITES.name(), //
-                    ShapeModelPopulation.SATURN.name()).build(); //
-            ImagingInstrument imagingInstrument = setupImagingInstrument(bodyConfig, gaskellModelConfig, Instrument.IMAGING_DATA, gaskellImagingSource, ImageType.SATURN_MOON_IMAGE);
-            imagingInstrument.setFillValues(Set.of((float)3.4028234663852886e38, (float)-3.4028234663852886e38));
-            c = new SaturnConfigs();
-            c.body = ShapeModelBody.PROMETHEUS;
-            c.type = BodyType.PLANETS_AND_SATELLITES;
-            c.population = ShapeModelPopulation.SATURN;
-            c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
-            c.author = ShapeModelType.GASKELL;
-            c.modelLabel = "Ernst et al. (in progress)";
-            c.rootDirOnServer = "/prometheus/gaskell";
-            setupFeatures(c);
-            imagingConfig = (ImagingInstrumentConfig)c.getConfigForClass(ImagingInstrumentConfig.class);
-            imagingConfig.imagingInstruments = Lists.newArrayList(
-                    imagingInstrument
-            );
-            imagingConfig.imageSearchDefaultStartDate = new GregorianCalendar(2006, 3, 29, 0, 0, 0).getTime();
-            imagingConfig.imageSearchDefaultEndDate = new GregorianCalendar(2017, 2, 7, 0, 0, 0).getTime();
-            c.hasColoringData = false;
-            c.presentInMissions = new Mission[] {Mission.PUBLIC_RELEASE, Mission.TEST_PUBLIC_RELEASE, Mission.STAGE_PUBLIC_RELEASE, Mission.STAGE_APL_INTERNAL, Mission.APL_INTERNAL, Mission.TEST_APL_INTERNAL};
-            c.defaultForMissions = new Mission[] {};
-            configArray.add(c);
-        }
-    }
+        	new DBRunInfo(PointingSource.GASKELL, Instrument.IMAGING_DATA, ShapeModelBody.ATLAS.toString(), "/project/sbmt2/data/atlas/gaskell/imaging/imagelist-fullpath.txt", "atlas"),
+        };
+
+        c.presentInMissions = new Mission[] {Mission.PUBLIC_RELEASE, Mission.TEST_PUBLIC_RELEASE, Mission.STAGE_PUBLIC_RELEASE, Mission.STAGE_APL_INTERNAL, Mission.APL_INTERNAL, Mission.TEST_APL_INTERNAL};
+        c.defaultForMissions = new Mission[] {};
+
+        configArray.add(c);
+	}
+
+
+	private static void buildCalypsoGaskellConfig(ConfigArrayList<IBodyViewConfig> configArray)
+	{
+		// Set up body.
+        SBMTBodyConfiguration bodyConfig = SBMTBodyConfiguration.builder( //
+                ShapeModelBody.CALYPSO.name(), //
+                BodyType.PLANETS_AND_SATELLITES.name(), //
+                ShapeModelPopulation.SATURN.name()).build(); //
+        ImagingInstrument imagingInstrument = setupImagingInstrument(bodyConfig, gaskellModelConfig, Instrument.IMAGING_DATA, gaskellImagingSource, ImageType.SATURN_MOON_IMAGE);
+
+        SaturnConfigs c = new SaturnConfigs();
+        c.body = ShapeModelBody.CALYPSO;
+        c.type = BodyType.PLANETS_AND_SATELLITES;
+        c.population = ShapeModelPopulation.SATURN;
+        c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
+        c.author = ShapeModelType.GASKELL;
+        c.modelLabel = "Ernst et al. (in progress)";
+        c.rootDirOnServer = "/calypso/gaskell";
+        setupFeatures(c);
+        ImagingInstrumentConfig imagingConfig = (ImagingInstrumentConfig)c.getConfigForClass(ImagingInstrumentConfig.class);
+        imagingConfig.imagingInstruments = Lists.newArrayList(
+                imagingInstrument
+        );
+        imagingConfig.imageSearchDefaultStartDate = new GregorianCalendar(2005, 8, 23, 0, 0, 0).getTime();
+        imagingConfig.imageSearchDefaultEndDate = new GregorianCalendar(2010, 1, 14, 0, 0, 0).getTime();
+        c.hasColoringData = false;
+        c.presentInMissions = new Mission[] {Mission.PUBLIC_RELEASE, Mission.TEST_PUBLIC_RELEASE, Mission.STAGE_PUBLIC_RELEASE, Mission.STAGE_APL_INTERNAL, Mission.APL_INTERNAL, Mission.TEST_APL_INTERNAL};
+        c.defaultForMissions = new Mission[] {};
+
+//        configArray.add(c);
+	}
+
+	private static void buildCalypsoDalyConfig(ConfigArrayList<IBodyViewConfig> configArray)
+	{
+		SaturnConfigs c = new SaturnConfigs();
+        c.body = ShapeModelBody.CALYPSO;
+        c.type = BodyType.PLANETS_AND_SATELLITES;
+        c.population = ShapeModelPopulation.SATURN;
+        c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
+        c.author = ShapeModelType.provide("Daly");
+        c.modelLabel = "Daly et al. (in progress)";
+        c.rootDirOnServer = "/calypso/daly-2020";
+        c.shapeModelFileExtension = ".obj";
+        c.hasColoringData = false;
+        // This is actaully correct by default for a 4-resolution model:
+        // c.setResolution(ImmutableList.copyOf(DEFAULT_GASKELL_LABELS_PER_RESOLUTION),
+        // ImmutableList.copyOf(DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION));
+
+        String tableBaseName = (c.body.name() + "_" + c.author.toString() + "_").replaceAll("[\\s-]", "_").toLowerCase();
+
+        String issTable = tableBaseName + "iss";
+
+        // Set up root directory, where SUM files are located. THIS IS
+        // ALSO USED BY THE SECONDARY MODEL.
+        String issRootDirPrimary = c.rootDirOnServer + "/iss";
+
+        String issDataDir = "/cassini/iss/images";
+        String issGalleryDir = "/cassini/iss/gallery";
+        setupFeatures(c);
+        ImagingInstrumentConfig imagingConfig = (ImagingInstrumentConfig)c.getConfigForClass(ImagingInstrumentConfig.class);
+        DataQuerySourcesMetadata imagingMetadata =
+        		DataQuerySourcesMetadata.of(issRootDirPrimary,issDataDir, issTable, issTable, issGalleryDir);
+
+        imagingConfig.imagingInstruments = Lists.newArrayList(
+                new ImagingInstrument( //
+                        SpectralImageMode.MONO, //
+                        new ImageDataQuery(imagingMetadata),
+//                        new GenericPhpQuery(issRootDirPrimary, issTable, issTable, issGalleryDir, issDataDir), //
+                        ImageType.valueOf("ISS_IMAGE"), //
+                        SumFiles, //
+                        Instrument.ISS, //
+                        0., //
+                        "None" //
+                )
+        );
+        imagingConfig.imageSearchDefaultStartDate = new GregorianCalendar(2005, 8, 23, 0, 0, 0).getTime();
+        imagingConfig.imageSearchDefaultEndDate = new GregorianCalendar(2010, 1, 14, 0, 0, 0).getTime();
+        imagingConfig.imageSearchFilterNames = new String[] {};
+        imagingConfig.imageSearchUserDefinedCheckBoxesNames = new String[] {};
+        imagingConfig.imageSearchDefaultMaxSpacecraftDistance = 1.0e6;
+        imagingConfig.imageSearchDefaultMaxResolution = 1.0e3;
+
+        c.databaseRunInfos = new DBRunInfo[] { //
+                new DBRunInfo(PointingSource.GASKELL, Instrument.ISS, c.body.toString(), //
+                        issRootDirPrimary + "/imagelist-fullpath-sum.txt", issTable) //
+        };
+
+        c.presentInMissions = new Mission[] { Mission.PUBLIC_RELEASE, Mission.TEST_PUBLIC_RELEASE, Mission.STAGE_PUBLIC_RELEASE,
+                Mission.STAGE_APL_INTERNAL, Mission.APL_INTERNAL, Mission.TEST_APL_INTERNAL };
+        c.defaultForMissions = new Mission[] {};
+
+        configArray.add(c);
+	}
+
+	private static void buildCalypsoThomasConfig(ConfigArrayList<IBodyViewConfig> configArray)
+	{
+		SaturnConfigs c = new SaturnConfigs();
+        c.body = ShapeModelBody.CALYPSO;
+        c.type = BodyType.PLANETS_AND_SATELLITES;
+        c.population = ShapeModelPopulation.SATURN;
+        c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
+        c.author = ShapeModelType.THOMAS;
+        c.modelLabel = "Thomas et al. (2018)";
+        c.rootDirOnServer = "/calypso/thomas-2018";
+        c.shapeModelFileExtension = ".obj";
+        c.hasColoringData = false;
+        int numberPlates = 28269;
+        c.setResolution(ImmutableList.of(numberPlates + " plates"), ImmutableList.of(numberPlates));
+
+        String tableBaseName = (c.body.name() + "_" + c.author.toString() + "_").replaceAll("[\\s-]", "_").toLowerCase();
+
+        String issTable = tableBaseName + "iss";
+
+        // DO NOT SET THIS VARIABLE: use the SUM files that belong to
+        // the Primary model.
+        // issRootDirPrimary = c.rootDirOnServer + "/iss";
+
+        String issDataDir = "/cassini/iss/images";
+        String issGalleryDir = "/cassini/iss/gallery";
+        String issRootDirPrimary = c.rootDirOnServer + "/iss";
+        setupFeatures(c);
+        ImagingInstrumentConfig imagingConfig = (ImagingInstrumentConfig)c.getConfigForClass(ImagingInstrumentConfig.class);
+        DataQuerySourcesMetadata imagingMetadata =
+        		DataQuerySourcesMetadata.of(issRootDirPrimary,issDataDir, issTable, issTable, issGalleryDir);
+
+        imagingConfig.imagingInstruments = Lists.newArrayList(
+                new ImagingInstrument( //
+                        SpectralImageMode.MONO, //
+                        new ImageDataQuery(imagingMetadata),
+//                        new GenericPhpQuery(issRootDirPrimary, issTable, issTable, issGalleryDir, issDataDir), //
+                        ImageType.valueOf("ISS_IMAGE"), //
+                        SumFiles, //
+                        Instrument.ISS, //
+                        0., //
+                        "None" //
+                )
+        );
+        imagingConfig.imageSearchDefaultStartDate = new GregorianCalendar(2005, 8, 23, 0, 0, 0).getTime();
+        imagingConfig.imageSearchDefaultEndDate = new GregorianCalendar(2010, 1, 14, 0, 0, 0).getTime();
+        imagingConfig.imageSearchFilterNames = new String[] {};
+        imagingConfig.imageSearchUserDefinedCheckBoxesNames = new String[] {};
+        imagingConfig.imageSearchDefaultMaxSpacecraftDistance = 1.0e6;
+        imagingConfig.imageSearchDefaultMaxResolution = 1.0e3;
+
+        c.databaseRunInfos = new DBRunInfo[] { //
+                new DBRunInfo(PointingSource.GASKELL, Instrument.ISS, c.body.toString(), //
+                        issRootDirPrimary + "/imagelist-fullpath-sum.txt", issTable) //
+        };
+
+        c.presentInMissions = new Mission[] { Mission.PUBLIC_RELEASE, Mission.TEST_PUBLIC_RELEASE, Mission.STAGE_PUBLIC_RELEASE,
+                Mission.STAGE_APL_INTERNAL, Mission.APL_INTERNAL, Mission.TEST_APL_INTERNAL };
+        c.defaultForMissions = new Mission[] {};
+
+        configArray.add(c);
+	}
+
+	private static void buildEnceladusGaskellConfig(ConfigArrayList<IBodyViewConfig> configArray)
+	{
+		SaturnConfigs c = new SaturnConfigs();
+        c.body = ShapeModelBody.ENCELADUS;
+        c.type = BodyType.PLANETS_AND_SATELLITES;
+        c.population = ShapeModelPopulation.SATURN;
+        c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
+        c.author = ShapeModelType.GASKELL;
+        c.modelLabel = "Gaskell (in progress)";
+        c.rootDirOnServer = "/enceladus/gaskell";
+        c.hasColoringData = false;
+        c.presentInMissions = new Mission[] {Mission.PUBLIC_RELEASE, Mission.TEST_PUBLIC_RELEASE, Mission.STAGE_PUBLIC_RELEASE, Mission.STAGE_APL_INTERNAL, Mission.APL_INTERNAL, Mission.TEST_APL_INTERNAL};
+        c.defaultForMissions = new Mission[] {};
+
+        configArray.add(c);
+	}
+
+	private static void buildEpimetheusGaskellConfig(ConfigArrayList<IBodyViewConfig> configArray)
+	{
+		// Set up body.
+        SBMTBodyConfiguration bodyConfig = SBMTBodyConfiguration.builder( //
+                ShapeModelBody.EPIMETHEUS.name(), //
+                BodyType.PLANETS_AND_SATELLITES.name(), //
+                ShapeModelPopulation.SATURN.name()).build(); //
+        ImagingInstrument imagingInstrument = setupImagingInstrument(bodyConfig, gaskellModelConfig, Instrument.IMAGING_DATA, gaskellImagingSource, ImageType.SATURN_MOON_IMAGE);
+
+        SaturnConfigs c = new SaturnConfigs();
+        c.body = ShapeModelBody.EPIMETHEUS;
+        c.type = BodyType.PLANETS_AND_SATELLITES;
+        c.population = ShapeModelPopulation.SATURN;
+        c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
+        c.author = ShapeModelType.GASKELL;
+        c.modelLabel = "Ernst et al. (in progress)";
+        c.rootDirOnServer = "/epimetheus/gaskell";
+        setupFeatures(c);
+        ImagingInstrumentConfig imagingConfig = (ImagingInstrumentConfig)c.getConfigForClass(ImagingInstrumentConfig.class);
+        imagingConfig.imagingInstruments = Lists.newArrayList(
+                imagingInstrument
+        );
+        imagingConfig.imageSearchDefaultStartDate = new GregorianCalendar(2006, 3, 29, 0, 0, 0).getTime();
+        imagingConfig.imageSearchDefaultEndDate = new GregorianCalendar(2017, 2, 7, 0, 0, 0).getTime();
+        c.hasColoringData = false;
+        c.presentInMissions = new Mission[] {Mission.PUBLIC_RELEASE, Mission.TEST_PUBLIC_RELEASE, Mission.STAGE_PUBLIC_RELEASE, Mission.STAGE_APL_INTERNAL, Mission.APL_INTERNAL, Mission.TEST_APL_INTERNAL};
+        c.defaultForMissions = new Mission[] {};
+
+        //configArray.add(c);
+	}
+
+	private static void buildEpimetheusDalyConfig(ConfigArrayList<IBodyViewConfig> configArray)
+	{
+		SaturnConfigs c = new SaturnConfigs();
+        c.body = ShapeModelBody.EPIMETHEUS;
+        c.type = BodyType.PLANETS_AND_SATELLITES;
+        c.population = ShapeModelPopulation.SATURN;
+        c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
+        c.author = ShapeModelType.provide("Daly");
+        c.modelLabel = "Daly et al. (in progress)";
+        c.rootDirOnServer = "/epimetheus/daly-2020";
+        c.shapeModelFileExtension = ".obj";
+        c.hasColoringData = false;
+        // This is actaully correct by default for a 4-resolution model:
+        // c.setResolution(ImmutableList.copyOf(DEFAULT_GASKELL_LABELS_PER_RESOLUTION),
+        // ImmutableList.copyOf(DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION));
+
+        String tableBaseName = (c.body.name() + "_" + c.author.toString() + "_").replaceAll("[\\s-]", "_").toLowerCase();
+
+        String issTable = tableBaseName + "iss";
+
+        // Set up root directory, where SUM files are located. THIS IS
+        // ALSO USED BY THE SECONDARY MODEL.
+        String issRootDirPrimary = c.rootDirOnServer + "/iss";
+
+        String issDataDir = "/cassini/iss/images";
+        String issGalleryDir = "/cassini/iss/gallery";
+        setupFeatures(c);
+        ImagingInstrumentConfig imagingConfig = (ImagingInstrumentConfig)c.getConfigForClass(ImagingInstrumentConfig.class);
+        DataQuerySourcesMetadata imagingMetadata =
+        		DataQuerySourcesMetadata.of(issRootDirPrimary,issDataDir, issTable, issTable, issGalleryDir);
+
+        imagingConfig.imagingInstruments = Lists.newArrayList(
+                new ImagingInstrument( //
+                        SpectralImageMode.MONO, //
+                        new ImageDataQuery(imagingMetadata),
+//                        new GenericPhpQuery(issRootDirPrimary, issTable, issTable, issGalleryDir, issDataDir), //
+                        ImageType.valueOf("ISS_IMAGE"), //
+                        SumFiles, //
+                        Instrument.ISS, //
+                        0., //
+                        "None" //
+                )
+        );
+        imagingConfig.imageSearchDefaultStartDate = new GregorianCalendar(2005, 1, 17, 0, 0, 0).getTime();
+        imagingConfig.imageSearchDefaultEndDate = new GregorianCalendar(2017, 4, 4, 0, 0, 0).getTime();
+        imagingConfig.imageSearchFilterNames = new String[] {};
+        imagingConfig.imageSearchUserDefinedCheckBoxesNames = new String[] {};
+        imagingConfig.imageSearchDefaultMaxSpacecraftDistance = 1.0e7;
+        imagingConfig.imageSearchDefaultMaxResolution = 1.0e5;
+
+        c.databaseRunInfos = new DBRunInfo[] { //
+                new DBRunInfo(PointingSource.GASKELL, Instrument.ISS, c.body.toString(), //
+                        issRootDirPrimary + "/imagelist-fullpath-sum.txt", issTable) //
+        };
+
+        c.presentInMissions = new Mission[] { Mission.PUBLIC_RELEASE, Mission.TEST_PUBLIC_RELEASE, Mission.STAGE_PUBLIC_RELEASE,
+                Mission.STAGE_APL_INTERNAL, Mission.APL_INTERNAL, Mission.TEST_APL_INTERNAL };
+        c.defaultForMissions = new Mission[] {};
+
+        configArray.add(c);
+	}
+
+	private static void buildEpimetheusThomasConfig(ConfigArrayList<IBodyViewConfig> configArray)
+	{
+		 SaturnConfigs c = new SaturnConfigs();
+         c.body = ShapeModelBody.EPIMETHEUS;
+         c.type = BodyType.PLANETS_AND_SATELLITES;
+         c.population = ShapeModelPopulation.SATURN;
+         c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
+         c.author = ShapeModelType.THOMAS;
+         c.modelLabel = "Thomas et al. (2018)";
+         c.rootDirOnServer = "/epimetheus/thomas-2018";
+         c.shapeModelFileExtension = ".obj";
+         c.hasColoringData = false;
+         int numberPlates = 49152;
+         c.setResolution(ImmutableList.of(numberPlates + " plates"), ImmutableList.of(numberPlates));
+
+         String tableBaseName = (c.body.name() + "_" + c.author.toString() + "_").replaceAll("[\\s-]", "_").toLowerCase();
+
+         String issTable = tableBaseName + "iss";
+
+         // DO NOT SET THIS VARIABLE: use the SUM files that belong to
+         // the Primary model.
+         // issRootDirPrimary = c.rootDirOnServer + "/iss";
+
+         String issDataDir = "/cassini/iss/images";
+         String issGalleryDir = "/cassini/iss/gallery";
+         String issRootDirPrimary = c.rootDirOnServer + "/iss";
+         setupFeatures(c);
+         ImagingInstrumentConfig imagingConfig = (ImagingInstrumentConfig)c.getConfigForClass(ImagingInstrumentConfig.class);
+         DataQuerySourcesMetadata imagingMetadata =
+         		DataQuerySourcesMetadata.of(issRootDirPrimary,issDataDir, issTable, issTable, issGalleryDir);
+
+         imagingConfig.imagingInstruments = Lists.newArrayList(
+                 new ImagingInstrument( //
+                         SpectralImageMode.MONO, //
+                         new ImageDataQuery(imagingMetadata),
+//                         new GenericPhpQuery(issRootDirPrimary, issTable, issTable, issGalleryDir, issDataDir), //
+                         ImageType.valueOf("ISS_IMAGE"), //
+                         SumFiles, //
+                         Instrument.ISS, //
+                         0., //
+                         "None" //
+                 )
+         );
+         imagingConfig.imageSearchDefaultStartDate = new GregorianCalendar(2005, 1, 17, 0, 0, 0).getTime();
+         imagingConfig.imageSearchDefaultEndDate = new GregorianCalendar(2017, 4, 4, 0, 0, 0).getTime();
+         imagingConfig.imageSearchFilterNames = new String[] {};
+         imagingConfig.imageSearchUserDefinedCheckBoxesNames = new String[] {};
+         imagingConfig.imageSearchDefaultMaxSpacecraftDistance = 1.0e7;
+         imagingConfig.imageSearchDefaultMaxResolution = 1.0e5;
+
+         c.databaseRunInfos = new DBRunInfo[] { //
+                 new DBRunInfo(PointingSource.GASKELL, Instrument.ISS, c.body.toString(), //
+                         issRootDirPrimary + "/imagelist-fullpath-sum.txt", issTable) //
+         };
+
+         c.presentInMissions = new Mission[] { Mission.PUBLIC_RELEASE, Mission.TEST_PUBLIC_RELEASE, Mission.STAGE_PUBLIC_RELEASE,
+                 Mission.STAGE_APL_INTERNAL, Mission.APL_INTERNAL, Mission.TEST_APL_INTERNAL };
+         c.defaultForMissions = new Mission[] {};
+
+         configArray.add(c);
+	}
+
+	private static void buildHeleneGaskellConfig(ConfigArrayList<IBodyViewConfig> configArray)
+	{
+		// Set up body.
+        SBMTBodyConfiguration bodyConfig = SBMTBodyConfiguration.builder( //
+                ShapeModelBody.HELENE.name(), //
+                BodyType.PLANETS_AND_SATELLITES.name(), //
+                ShapeModelPopulation.SATURN.name()).build(); //
+        ImagingInstrument imagingInstrument = setupImagingInstrument(bodyConfig, gaskellModelConfig, Instrument.IMAGING_DATA, gaskellImagingSource, ImageType.SATURN_MOON_IMAGE);
+        imagingInstrument.setFillValues(Set.of((float)3.4028234663852886e38, (float)-3.4028234663852886e38));
+        SaturnConfigs c = new SaturnConfigs();
+        c.body = ShapeModelBody.HELENE;
+        c.type = BodyType.PLANETS_AND_SATELLITES;
+        c.population = ShapeModelPopulation.SATURN;
+        c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
+        c.author = ShapeModelType.GASKELL;
+        c.modelLabel = "Ernst et al. (in progress)";
+        c.rootDirOnServer = "/helene/gaskell";
+        setupFeatures(c);
+        ImagingInstrumentConfig imagingConfig = (ImagingInstrumentConfig)c.getConfigForClass(ImagingInstrumentConfig.class);
+        imagingConfig.imagingInstruments = Lists.newArrayList(
+                imagingInstrument
+        );
+        imagingConfig.imageSearchDefaultStartDate = new GregorianCalendar(2006, 3, 29, 0, 0, 0).getTime();
+        imagingConfig.imageSearchDefaultEndDate = new GregorianCalendar(2017, 2, 7, 0, 0, 0).getTime();
+        c.hasColoringData = false;
+        c.presentInMissions = new Mission[] {Mission.PUBLIC_RELEASE, Mission.TEST_PUBLIC_RELEASE, Mission.STAGE_PUBLIC_RELEASE, Mission.STAGE_APL_INTERNAL, Mission.APL_INTERNAL, Mission.TEST_APL_INTERNAL};
+        c.defaultForMissions = new Mission[] {};
+
+        configArray.add(c);
+	}
+
+	private static void buildIapetusGaskellConfig(ConfigArrayList<IBodyViewConfig> configArray)
+	{
+		 SaturnConfigs c = new SaturnConfigs();
+         c.body = ShapeModelBody.IAPETUS;
+         c.type = BodyType.PLANETS_AND_SATELLITES;
+         c.population = ShapeModelPopulation.SATURN;
+         c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
+         c.author = ShapeModelType.GASKELL;
+         c.modelLabel = "Gaskell (in progress)";
+         c.rootDirOnServer = "/iapetus/gaskell";
+         c.hasColoringData = false;
+         c.presentInMissions = new Mission[] {Mission.PUBLIC_RELEASE, Mission.TEST_PUBLIC_RELEASE, Mission.STAGE_PUBLIC_RELEASE, Mission.STAGE_APL_INTERNAL, Mission.APL_INTERNAL, Mission.TEST_APL_INTERNAL};
+         c.defaultForMissions = new Mission[] {};
+
+         configArray.add(c);
+	}
+
+	private static void buildJanusDalyConfig(ConfigArrayList<IBodyViewConfig> configArray)
+	{
+		SaturnConfigs c = new SaturnConfigs();
+        c.body = ShapeModelBody.JANUS;
+        c.type = BodyType.PLANETS_AND_SATELLITES;
+        c.population = ShapeModelPopulation.SATURN;
+        c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
+        c.author = ShapeModelType.provide("Daly");
+        c.modelLabel = "Daly et al. (in progress)";
+        c.rootDirOnServer = "/janus/daly-2020";
+        c.shapeModelFileExtension = ".obj";
+        c.hasColoringData = false;
+        // This is actaully correct by default for a 4-resolution model:
+        // c.setResolution(ImmutableList.copyOf(DEFAULT_GASKELL_LABELS_PER_RESOLUTION),
+        // ImmutableList.copyOf(DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION));
+
+        String tableBaseName = (c.body.name() + "_" + c.author.toString() + "_").replaceAll("[\\s-]", "_").toLowerCase();
+
+        String issTable = tableBaseName + "iss";
+
+        // Set up root directory, where SUM files are located. THIS IS
+        // ALSO USED BY THE SECONDARY MODEL.
+        String issRootDirPrimary = c.rootDirOnServer + "/iss";
+
+        String issDataDir = "/cassini/iss/images";
+        String issGalleryDir = "/cassini/iss/gallery";
+        setupFeatures(c);
+        ImagingInstrumentConfig imagingConfig = (ImagingInstrumentConfig)c.getConfigForClass(ImagingInstrumentConfig.class);
+        DataQuerySourcesMetadata imagingMetadata =
+        		DataQuerySourcesMetadata.of(issRootDirPrimary,issDataDir, issTable, issTable, issGalleryDir);
+
+        imagingConfig.imagingInstruments = Lists.newArrayList(
+                new ImagingInstrument( //
+                        SpectralImageMode.MONO, //
+                        new ImageDataQuery(imagingMetadata),
+//                        new GenericPhpQuery(issRootDirPrimary, issTable, issTable, issGalleryDir, issDataDir), //
+                        ImageType.valueOf("ISS_IMAGE"), //
+                        SumFiles, //
+                        Instrument.ISS, //
+                        0., //
+                        "None" //
+                )
+        );
+        imagingConfig.imageSearchDefaultStartDate = new GregorianCalendar(2005, 1, 17, 0, 0, 0).getTime();
+        imagingConfig.imageSearchDefaultEndDate = new GregorianCalendar(2017, 3, 19, 0, 0, 0).getTime();
+        imagingConfig.imageSearchFilterNames = new String[] {};
+        imagingConfig.imageSearchUserDefinedCheckBoxesNames = new String[] {};
+        imagingConfig.imageSearchDefaultMaxSpacecraftDistance = 1.0e7;
+        imagingConfig.imageSearchDefaultMaxResolution = 1.0e5;
+
+        c.databaseRunInfos = new DBRunInfo[] { //
+                new DBRunInfo(PointingSource.GASKELL, Instrument.ISS, c.body.toString(), //
+                        issRootDirPrimary + "/imagelist-fullpath-sum.txt", issTable) //
+        };
+
+        c.presentInMissions = new Mission[] { Mission.PUBLIC_RELEASE, Mission.TEST_PUBLIC_RELEASE, Mission.STAGE_PUBLIC_RELEASE,
+                Mission.STAGE_APL_INTERNAL, Mission.APL_INTERNAL, Mission.TEST_APL_INTERNAL };
+        c.defaultForMissions = new Mission[] {};
+
+        configArray.add(c);
+	}
+
+	private static void buildJanusErnstConfig(ConfigArrayList<IBodyViewConfig> configArray)
+	{
+		// Set up body.
+        SBMTBodyConfiguration bodyConfig = SBMTBodyConfiguration.builder( //
+                ShapeModelBody.JANUS.name(), //
+                BodyType.PLANETS_AND_SATELLITES.name(), //
+                ShapeModelPopulation.SATURN.name()).build(); //
+        ImagingInstrument imagingInstrument = setupImagingInstrument(bodyConfig, gaskellModelConfig, Instrument.IMAGING_DATA, gaskellImagingSource, ImageType.SATURN_MOON_IMAGE);
+
+        SaturnConfigs c = new SaturnConfigs();
+        c.body = ShapeModelBody.JANUS;
+        c.type = BodyType.PLANETS_AND_SATELLITES;
+        c.population = ShapeModelPopulation.SATURN;
+        c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
+        c.author = ShapeModelType.GASKELL;
+        c.modelLabel = "Ernst et al. (in progress)";
+        c.rootDirOnServer = "/janus/gaskell";
+        setupFeatures(c);
+        ImagingInstrumentConfig imagingConfig = (ImagingInstrumentConfig)c.getConfigForClass(ImagingInstrumentConfig.class);
+        imagingConfig.imagingInstruments = Lists.newArrayList(
+                imagingInstrument
+        );
+        imagingConfig.imageSearchDefaultStartDate = new GregorianCalendar(2006, 3, 29, 0, 0, 0).getTime();
+        imagingConfig.imageSearchDefaultEndDate = new GregorianCalendar(2017, 2, 7, 0, 0, 0).getTime();
+        c.hasColoringData = false;
+        c.presentInMissions = new Mission[] {Mission.PUBLIC_RELEASE, Mission.TEST_PUBLIC_RELEASE, Mission.STAGE_PUBLIC_RELEASE, Mission.STAGE_APL_INTERNAL, Mission.APL_INTERNAL, Mission.TEST_APL_INTERNAL};
+        c.defaultForMissions = new Mission[] {};
+
+        //configArray.add(c);
+	}
+
+	private static void buildJanusThomas2018Config(ConfigArrayList<IBodyViewConfig> configArray)
+	{
+		SaturnConfigs c = new SaturnConfigs();
+        c.body = ShapeModelBody.JANUS;
+        c.type = BodyType.PLANETS_AND_SATELLITES;
+        c.population = ShapeModelPopulation.SATURN;
+        c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
+        c.author = ShapeModelType.THOMAS;
+        c.modelLabel = "Thomas et al. (2018)";
+        c.rootDirOnServer = "/janus/thomas-2018";
+        c.shapeModelFileExtension = ".obj";
+        c.hasColoringData = false;
+        int numberPlates = 49152;
+        c.setResolution(ImmutableList.of(numberPlates + " plates"), ImmutableList.of(numberPlates));
+
+        String tableBaseName = (c.body.name() + "_" + c.author.toString() + "_").replaceAll("[\\s-]", "_").toLowerCase();
+
+        String issTable = tableBaseName + "iss";
+
+        // DO NOT SET THIS VARIABLE: use the SUM files that belong to
+        // the Primary model.
+        // issRootDirPrimary = c.rootDirOnServer + "/iss";
+
+        String issDataDir = "/cassini/iss/images";
+        String issGalleryDir = "/cassini/iss/gallery";
+        String issRootDirPrimary = c.rootDirOnServer + "/iss";
+        setupFeatures(c);
+        ImagingInstrumentConfig imagingConfig = (ImagingInstrumentConfig)c.getConfigForClass(ImagingInstrumentConfig.class);
+        DataQuerySourcesMetadata imagingMetadata =
+        		DataQuerySourcesMetadata.of(issRootDirPrimary,issDataDir, issTable, issTable, issGalleryDir);
+
+        imagingConfig.imagingInstruments = Lists.newArrayList(
+                new ImagingInstrument( //
+                        SpectralImageMode.MONO, //
+                        new ImageDataQuery(imagingMetadata),
+//                        new GenericPhpQuery(issRootDirPrimary, issTable, issTable, issGalleryDir, issDataDir), //
+                        ImageType.valueOf("ISS_IMAGE"), //
+                        SumFiles, //
+                        Instrument.ISS, //
+                        0., //
+                        "None" //
+                )
+        );
+        imagingConfig.imageSearchDefaultStartDate = new GregorianCalendar(2005, 1, 17, 0, 0, 0).getTime();
+        imagingConfig.imageSearchDefaultEndDate = new GregorianCalendar(2017, 3, 19, 0, 0, 0).getTime();
+        imagingConfig.imageSearchFilterNames = new String[] {};
+        imagingConfig.imageSearchUserDefinedCheckBoxesNames = new String[] {};
+        imagingConfig.imageSearchDefaultMaxSpacecraftDistance = 1.0e7;
+        imagingConfig.imageSearchDefaultMaxResolution = 1.0e5;
+
+        c.databaseRunInfos = new DBRunInfo[] { //
+                new DBRunInfo(PointingSource.GASKELL, Instrument.ISS, c.body.toString(), //
+                        issRootDirPrimary + "/imagelist-fullpath-sum.txt", issTable) //
+        };
+
+        c.presentInMissions = new Mission[] { Mission.PUBLIC_RELEASE, Mission.TEST_PUBLIC_RELEASE, Mission.STAGE_PUBLIC_RELEASE,
+                Mission.STAGE_APL_INTERNAL, Mission.APL_INTERNAL, Mission.TEST_APL_INTERNAL };
+        c.defaultForMissions = new Mission[] {};
+
+        configArray.add(c);
+	}
+
+	private static void buildPanConfig(ConfigArrayList<IBodyViewConfig> configArray)
+	{
+		// Set up body.
+        SBMTBodyConfiguration bodyConfig = SBMTBodyConfiguration.builder( //
+                ShapeModelBody.PAN.name(), //
+                BodyType.PLANETS_AND_SATELLITES.name(), //
+                ShapeModelPopulation.SATURN.name()).build(); //
+        ImagingInstrument imagingInstrument = setupImagingInstrument(bodyConfig, gaskellModelConfig, Instrument.IMAGING_DATA, gaskellImagingSource, ImageType.SATURN_MOON_IMAGE);
+
+        SaturnConfigs c = new SaturnConfigs();
+        c.body = ShapeModelBody.PAN;
+        c.type = BodyType.PLANETS_AND_SATELLITES;
+        c.population = ShapeModelPopulation.SATURN;
+        c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
+        c.author = ShapeModelType.GASKELL;
+        c.modelLabel = "Ernst et al. (in progress)";
+        c.rootDirOnServer = "/pan/gaskell";
+        setupFeatures(c);
+        ImagingInstrumentConfig imagingConfig = (ImagingInstrumentConfig)c.getConfigForClass(ImagingInstrumentConfig.class);
+        imagingConfig.imagingInstruments = Lists.newArrayList(
+                imagingInstrument
+        );
+        imagingConfig.imageSearchDefaultStartDate = new GregorianCalendar(2006, 3, 29, 0, 0, 0).getTime();
+        imagingConfig.imageSearchDefaultEndDate = new GregorianCalendar(2017, 2, 7, 0, 0, 0).getTime();
+        c.hasColoringData = false;
+        c.presentInMissions = new Mission[] {Mission.PUBLIC_RELEASE, Mission.TEST_PUBLIC_RELEASE, Mission.STAGE_PUBLIC_RELEASE, Mission.STAGE_APL_INTERNAL, Mission.APL_INTERNAL, Mission.TEST_APL_INTERNAL};
+        c.defaultForMissions = new Mission[] {};
+
+        configArray.add(c);
+	}
+
+	private static void buildPandoraConfig(ConfigArrayList<IBodyViewConfig> configArray)
+	{
+		// Set up body.
+        SBMTBodyConfiguration bodyConfig = SBMTBodyConfiguration.builder( //
+                ShapeModelBody.PANDORA.name(), //
+                BodyType.PLANETS_AND_SATELLITES.name(), //
+                ShapeModelPopulation.SATURN.name()).build(); //
+        ImagingInstrument imagingInstrument = setupImagingInstrument(bodyConfig, gaskellModelConfig, Instrument.IMAGING_DATA, gaskellImagingSource, ImageType.SATURN_MOON_IMAGE);
+
+        SaturnConfigs c = new SaturnConfigs();
+        c.body = ShapeModelBody.PANDORA;
+        c.type = BodyType.PLANETS_AND_SATELLITES;
+        c.population = ShapeModelPopulation.SATURN;
+        c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
+        c.author = ShapeModelType.GASKELL;
+        c.modelLabel = "Ernst et al. (in progress)";
+        c.rootDirOnServer = "/pandora/gaskell";
+        setupFeatures(c);
+        ImagingInstrumentConfig imagingConfig = (ImagingInstrumentConfig)c.getConfigForClass(ImagingInstrumentConfig.class);
+        imagingConfig.imagingInstruments = Lists.newArrayList(
+                imagingInstrument
+        );
+        imagingConfig.imageSearchDefaultStartDate = new GregorianCalendar(2005, 4, 20, 0, 0, 0).getTime();
+        imagingConfig.imageSearchDefaultEndDate = new GregorianCalendar(2016, 11, 19, 0, 0, 0).getTime();
+        c.hasColoringData = false;
+        c.presentInMissions = new Mission[] {Mission.PUBLIC_RELEASE, Mission.TEST_PUBLIC_RELEASE, Mission.STAGE_PUBLIC_RELEASE, Mission.STAGE_APL_INTERNAL, Mission.APL_INTERNAL, Mission.TEST_APL_INTERNAL};
+        c.defaultForMissions = new Mission[] {};
+
+        configArray.add(c);
+	}
+
+	private static void buildPrometheusConfig(ConfigArrayList<IBodyViewConfig> configArray)
+	{
+		// Set up body.
+        SBMTBodyConfiguration bodyConfig = SBMTBodyConfiguration.builder( //
+                ShapeModelBody.PROMETHEUS.name(), //
+                BodyType.PLANETS_AND_SATELLITES.name(), //
+                ShapeModelPopulation.SATURN.name()).build(); //
+        ImagingInstrument imagingInstrument = setupImagingInstrument(bodyConfig, gaskellModelConfig, Instrument.IMAGING_DATA, gaskellImagingSource, ImageType.SATURN_MOON_IMAGE);
+        imagingInstrument.setFillValues(Set.of((float)3.4028234663852886e38, (float)-3.4028234663852886e38));
+        SaturnConfigs c = new SaturnConfigs();
+        c.body = ShapeModelBody.PROMETHEUS;
+        c.type = BodyType.PLANETS_AND_SATELLITES;
+        c.population = ShapeModelPopulation.SATURN;
+        c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
+        c.author = ShapeModelType.GASKELL;
+        c.modelLabel = "Ernst et al. (in progress)";
+        c.rootDirOnServer = "/prometheus/gaskell";
+        setupFeatures(c);
+        ImagingInstrumentConfig imagingConfig = (ImagingInstrumentConfig)c.getConfigForClass(ImagingInstrumentConfig.class);
+        imagingConfig.imagingInstruments = Lists.newArrayList(
+                imagingInstrument
+        );
+        imagingConfig.imageSearchDefaultStartDate = new GregorianCalendar(2006, 3, 29, 0, 0, 0).getTime();
+        imagingConfig.imageSearchDefaultEndDate = new GregorianCalendar(2017, 2, 7, 0, 0, 0).getTime();
+        c.hasColoringData = false;
+        c.presentInMissions = new Mission[] {Mission.PUBLIC_RELEASE, Mission.TEST_PUBLIC_RELEASE, Mission.STAGE_PUBLIC_RELEASE, Mission.STAGE_APL_INTERNAL, Mission.APL_INTERNAL, Mission.TEST_APL_INTERNAL};
+        c.defaultForMissions = new Mission[] {};
+        configArray.add(c);
+	}
 
 	 // Imaging instrument helper methods.
     private static ImagingInstrument setupImagingInstrument(SBMTBodyConfiguration bodyConfig, ShapeModelConfiguration modelConfig, Instrument instrument, PointingSource[] imageSources, ImageType imageType)
