@@ -104,7 +104,7 @@ public class NewHorizonsConfigs extends SmallBodyViewConfig
 		{
 			 lorriInstrument = new ImagingInstrument( //
                      SpectralImageMode.MONO, //
-                     new FixedListDataQuery(lorriMetadata),
+                     new ImageDataQuery(lorriMetadata),
                      ImageType.LORRI_IMAGE, //
                      lorriPointingSource, //
                      Instrument.LORRI //
@@ -115,7 +115,7 @@ public class NewHorizonsConfigs extends SmallBodyViewConfig
 		{
 			 mvicInstrument = new ImagingInstrument( //
                      SpectralImageMode.MULTI, //
-                     new FixedListDataQuery(mvicMetadata),
+                     new ImageDataQuery(mvicMetadata),
                      ImageType.MVIC_JUPITER_IMAGE, //
                      new PointingSource[]{PointingSource.SPICE}, //
                      Instrument.MVIC
@@ -193,7 +193,7 @@ public class NewHorizonsConfigs extends SmallBodyViewConfig
         c.hasColoringData = false;
         setupFeatures(c);
         ImagingInstrumentConfig imagingConfig = (ImagingInstrumentConfig)c.getConfigForClass(ImagingInstrumentConfig.class);
-        DataQuerySourcesMetadata lorriMetadata = DataQuerySourcesMetadata.of(c.rootDirOnServer, "/new-horizons/lorri/pluto-test/images", "pluto_pluto_test_lorri", null, null);
+        DataQuerySourcesMetadata lorriMetadata = DataQuerySourcesMetadata.of(c.rootDirOnServer + "/lorri", "/new-horizons/lorri/pluto-test/images", "pluto_pluto_test_lorri", null, null);
 //        mvicMetadata = DataQuerySourcesMetadata.of("/NEWHORIZONS/PLUTO/MVIC", "", null, null, null);
 
         configurePlutoEncounterImaging(imagingConfig, lorriMetadata, null, null, new PointingSource[]{PointingSource.GASKELL});
