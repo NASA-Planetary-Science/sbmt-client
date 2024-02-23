@@ -367,7 +367,6 @@ public class CometConfigs extends SmallBodyViewConfig
      		new ImagingInstrument( //
                      SpectralImageMode.MONO, //
                      new ImageDataQuery(osirisMetadata),
-//                         new GenericPhpQuery("/GASKELL/67P/IMAGING", "67P", "/GASKELL/67P/IMAGING/images/gallery"), //
                      ImageType.OSIRIS_IMAGE, //
                      new PointingSource[]{PointingSource.GASKELL}, //
 	                    Instrument.OSIRIS, //

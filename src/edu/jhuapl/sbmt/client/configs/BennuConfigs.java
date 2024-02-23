@@ -937,6 +937,7 @@ public class BennuConfigs extends SmallBodyViewConfig
         c.setBodyParameters();
         ImagingInstrumentConfig imagingConfig = (ImagingInstrumentConfig)c.getConfigForClass(ImagingInstrumentConfig.class);
         SpectrumInstrumentConfig spectrumConfig = (SpectrumInstrumentConfig)c.getConfigForClass(SpectrumInstrumentConfig.class);
+        LidarInstrumentConfig lidarConfig = (LidarInstrumentConfig)c.getConfigForClass(LidarInstrumentConfig.class);
 
         imagingConfig.imagingInstruments = Lists.newArrayList(
         	 c.generatePolycamInstrument("bennu_altwgspcv20181217_polycam", "bennu_altwgspcv20181217_polycam", true, false),
@@ -955,26 +956,19 @@ public class BennuConfigs extends SmallBodyViewConfig
         //public version
         if (publicOnly)
         {
-            BennuConfigs public1217 = (BennuConfigs)c.clone();
-//            public1217.author = ShapeModelType.provide("ALTWG-SPC-v20181217_SPC_v13_PUBLIC");
-            public1217.modelLabel = "SPC v13";
-            imagingConfig = (ImagingInstrumentConfig)public1217.getConfigForClass(ImagingInstrumentConfig.class);
-            LidarInstrumentConfig lidarConfig = (LidarInstrumentConfig)public1217.getConfigForClass(LidarInstrumentConfig.class);
-
             imagingConfig.imagingInstruments = Lists.newArrayList(
-            		public1217.generatePolycamInstrument("bennu_altwgspcv20181217_polycam", "bennu_altwgspcv20181217_polycam", true, false, true),	//false = SPC only
-            															public1217.generateMapcamInstrument("bennu_altwgspcv20181217_mapcam", "bennu_altwgspcv20181217_mapcam", true, false, true)
+            		c.generatePolycamInstrument("bennu_altwgspcv20181217_polycam", "bennu_altwgspcv20181217_polycam", true, false, true),	//false = SPC only
+            		c.generateMapcamInstrument("bennu_altwgspcv20181217_mapcam", "bennu_altwgspcv20181217_mapcam", true, false, true)
             );
-            public1217.disableSpectra();
-//            public1217.hasImageMap = false;
-            public1217.presentInMissions = PublicOnly;
-            lidarConfig.lidarBrowseDataSourceMap.put("Default", public1217.rootDirOnServer + "/ola/browse/fileList_public.txt");
-            lidarConfig.lidarBrowseFileListResourcePath = public1217.rootDirOnServer + "/ola/browse/fileList_public.txt";
-            lidarConfig.lidarBrowseWithPointsDataSourceMap.put("Default", public1217.rootDirOnServer + "/ola/browse/fileList_public.txt");
+            c.disableSpectra();
+            c.presentInMissions = PublicOnly;
+            lidarConfig.lidarBrowseDataSourceMap.put("Default", c.rootDirOnServer + "/ola/browse/fileList_public.txt");
+            lidarConfig.lidarBrowseFileListResourcePath = c.rootDirOnServer + "/ola/browse/fileList_public.txt";
+            lidarConfig.lidarBrowseWithPointsDataSourceMap.put("Default", c.rootDirOnServer + "/ola/browse/fileList_public.txt");
             lidarConfig.orexSearchTimeMap.remove("Recon");
             lidarConfig.lidarSearchDataSourceMap.remove("Recon");
 
-        	configArray.add(public1217);
+        	configArray.add(c);
         }
     }
 
@@ -1033,11 +1027,12 @@ public class BennuConfigs extends SmallBodyViewConfig
         c.setBodyParameters();
         ImagingInstrumentConfig imagingConfig = (ImagingInstrumentConfig)c.getConfigForClass(ImagingInstrumentConfig.class);
         SpectrumInstrumentConfig spectrumConfig = (SpectrumInstrumentConfig)c.getConfigForClass(SpectrumInstrumentConfig.class);
+        LidarInstrumentConfig lidarConfig = (LidarInstrumentConfig)c.getConfigForClass(LidarInstrumentConfig.class);
 
         imagingConfig.imagingInstruments = Lists.newArrayList(
-        		c.generatePolycamInstrument("bennu_altwgspcv20181227_polycam", "bennu_altwgspcv20181227_polycam", true, false),
-														 c.generateMapcamInstrument("bennu_altwgspcv20181227_mapcam", "bennu_altwgspcv20181227_mapcam", true, false),
-														 c.generateNavcamInstrument("bennu_altwgspcv20181227_navcam", "bennu_altwgspcv20181227_navcam")
+        	 c.generatePolycamInstrument("bennu_altwgspcv20181227_polycam", "bennu_altwgspcv20181227_polycam", true, false),
+			 c.generateMapcamInstrument("bennu_altwgspcv20181227_mapcam", "bennu_altwgspcv20181227_mapcam", true, false),
+			 c.generateNavcamInstrument("bennu_altwgspcv20181227_navcam", "bennu_altwgspcv20181227_navcam")
         );
 
         c.setSpectrumParameters();
@@ -1048,34 +1043,24 @@ public class BennuConfigs extends SmallBodyViewConfig
 
         c.setLidarParameters(true);
 
-        if (!publicOnly)
-        	configArray.add(c);
-
         //public version
         if (publicOnly)
         {
-            BennuConfigs public1227 = (BennuConfigs)c.clone();
-//            public1227.author = ShapeModelType.provide("ALTWG-SPC-v20181227_SPC_v14_PUBLIC");
-            public1227.modelLabel = "SPC v14";
-            imagingConfig = (ImagingInstrumentConfig)c.getConfigForClass(ImagingInstrumentConfig.class);
-
             imagingConfig.imagingInstruments = Lists.newArrayList(
-            		public1227.generatePolycamInstrument("bennu_altwgspcv20181227_polycam", "bennu_altwgspcv20181227_polycam", true, false, true),	//false = SPC only
-            														public1227.generateMapcamInstrument("bennu_altwgspcv20181227_mapcam", "bennu_altwgspcv20181227_mapcam", true, false, true)
+            		c.generatePolycamInstrument("bennu_altwgspcv20181227_polycam", "bennu_altwgspcv20181227_polycam", true, false, true),	//false = SPC only
+            		c.generateMapcamInstrument("bennu_altwgspcv20181227_mapcam", "bennu_altwgspcv20181227_mapcam", true, false, true)
             );
-            public1227.disableSpectra();
-//            public1227.hasImageMap = false;
-            LidarInstrumentConfig lidarConfig = (LidarInstrumentConfig)public1227.getConfigForClass(LidarInstrumentConfig.class);
+            c.disableSpectra();
 
-            public1227.addFeatureConfig(BasemapImageConfig.class, new BasemapImageConfig(c));
-            public1227.presentInMissions = PublicOnly;
-            lidarConfig.lidarBrowseDataSourceMap.put("Default", public1227.rootDirOnServer + "/ola/browse/fileList_public.txt");
-            lidarConfig.lidarBrowseFileListResourcePath = public1227.rootDirOnServer + "/ola/browse/fileList_public.txt";
-            lidarConfig.lidarBrowseWithPointsDataSourceMap.put("Default", public1227.rootDirOnServer + "/ola/browse/fileList_public.txt");
+            c.addFeatureConfig(BasemapImageConfig.class, new BasemapImageConfig(c));
+            c.presentInMissions = PublicOnly;
+            lidarConfig.lidarBrowseDataSourceMap.put("Default", c.rootDirOnServer + "/ola/browse/fileList_public.txt");
+            lidarConfig.lidarBrowseFileListResourcePath = c.rootDirOnServer + "/ola/browse/fileList_public.txt";
+            lidarConfig.lidarBrowseWithPointsDataSourceMap.put("Default", c.rootDirOnServer + "/ola/browse/fileList_public.txt");
             lidarConfig.orexSearchTimeMap.remove("Recon");
 	        lidarConfig.lidarSearchDataSourceMap.remove("Recon");
 
-        	configArray.add(public1227);
+        	configArray.add(c);
         }
     }
 
@@ -1307,28 +1292,22 @@ public class BennuConfigs extends SmallBodyViewConfig
         //public version
         if (publicOnly)
         {
-            BennuConfigs public0121 = (BennuConfigs)c.clone();
-//            public0121.author = ShapeModelType.provide("ALTWG-SPC-v20190121_SPC_v20_PUBLIC");
-            public0121.modelLabel = "SPC v20";
-            imagingConfig = (ImagingInstrumentConfig)public0121.getConfigForClass(ImagingInstrumentConfig.class);
-
             imagingConfig.imagingInstruments = Lists.newArrayList(
-            		public0121.generatePolycamInstrument("bennu_altwgspcv20190121_polycam", "bennu_altwgspcv20190121_polycam", true, false, true),	//false = SPC only
-            															public0121.generateMapcamInstrument("bennu_altwgspcv20190121_mapcam", "bennu_altwgspcv20190121_mapcam", true, false, true)
+            		c.generatePolycamInstrument("bennu_altwgspcv20190121_polycam", "bennu_altwgspcv20190121_polycam", true, false, true),	//false = SPC only
+            		c.generateMapcamInstrument("bennu_altwgspcv20190121_mapcam", "bennu_altwgspcv20190121_mapcam", true, false, true)
             );
-            public0121.disableSpectra();
-//            public0121.hasImageMap = true;
-            public0121.addFeatureConfig(BasemapImageConfig.class, new BasemapImageConfig(c));
-            public0121.presentInMissions = PublicOnly;
-            LidarInstrumentConfig lidarConfig = (LidarInstrumentConfig)public0121.getConfigForClass(LidarInstrumentConfig.class);
+            c.disableSpectra();
+            c.addFeatureConfig(BasemapImageConfig.class, new BasemapImageConfig(c));
+            c.presentInMissions = PublicOnly;
+            LidarInstrumentConfig lidarConfig = (LidarInstrumentConfig)c.getConfigForClass(LidarInstrumentConfig.class);
 
-            lidarConfig.lidarBrowseDataSourceMap.put("Default", public0121.rootDirOnServer + "/ola/browse/fileList_public.txt");
-            lidarConfig.lidarBrowseFileListResourcePath = public0121.rootDirOnServer + "/ola/browse/fileList_public.txt";
-            lidarConfig.lidarBrowseWithPointsDataSourceMap.put("Default", public0121.rootDirOnServer + "/ola/browse/fileList_public.txt");
+            lidarConfig.lidarBrowseDataSourceMap.put("Default", c.rootDirOnServer + "/ola/browse/fileList_public.txt");
+            lidarConfig.lidarBrowseFileListResourcePath = c.rootDirOnServer + "/ola/browse/fileList_public.txt";
+            lidarConfig.lidarBrowseWithPointsDataSourceMap.put("Default", c.rootDirOnServer + "/ola/browse/fileList_public.txt");
             lidarConfig.orexSearchTimeMap.remove("Recon");
             lidarConfig.lidarSearchDataSourceMap.remove("Recon");
 
-        	configArray.add(public0121);
+        	configArray.add(c);
     	}
     }
 
@@ -1489,9 +1468,9 @@ public class BennuConfigs extends SmallBodyViewConfig
         SpectrumInstrumentConfig spectrumConfig = (SpectrumInstrumentConfig)c.getConfigForClass(SpectrumInstrumentConfig.class);
 
         imagingConfig.imagingInstruments = Lists.newArrayList(
-        		c.generatePolycamInstrument("bennu_altwgspcv20190414_polycam", "bennu_altwgspcv20190414_polycam", true, false),
-														 c.generateMapcamInstrument("bennu_altwgspcv20190414_mapcam", "bennu_altwgspcv20190414_mapcam", true, false),
-														 c.generateNavcamInstrument("bennu_altwgspcv20190414_navcam", "bennu_altwgspcv20190414_navcam")
+        	 c.generatePolycamInstrument("bennu_altwgspcv20190414_polycam", "bennu_altwgspcv20190414_polycam", true, false),
+			 c.generateMapcamInstrument("bennu_altwgspcv20190414_mapcam", "bennu_altwgspcv20190414_mapcam", true, false),
+			 c.generateNavcamInstrument("bennu_altwgspcv20190414_navcam", "bennu_altwgspcv20190414_navcam")
         );
 
         c.setSpectrumParameters();
@@ -1516,29 +1495,23 @@ public class BennuConfigs extends SmallBodyViewConfig
         //public version
         if (publicOnly)
         {
-            BennuConfigs public0414 = (BennuConfigs)c.clone();
-//            public0414.author = ShapeModelType.provide("ALTWG-SPC-v20190414_SPC_v28_PUBLIC");
-            public0414.modelLabel = "SPC v28";
-            setupFeatures(c);
-            imagingConfig = (ImagingInstrumentConfig)public0414.getConfigForClass(ImagingInstrumentConfig.class);
-
-            imagingConfig.imagingInstruments = Lists.newArrayList( public0414.generatePolycamInstrument("bennu_altwgspcv20190414_polycam", "bennu_altwgspcv20190414_polycam", true, false, true),	//false = SPC only
-            														public0414.generateMapcamInstrument("bennu_altwgspcv20190414_mapcam", "bennu_altwgspcv20190414_mapcam", true, false, true)
+            imagingConfig.imagingInstruments = Lists.newArrayList(
+            		c.generatePolycamInstrument("bennu_altwgspcv20190414_polycam", "bennu_altwgspcv20190414_polycam", true, false, true),	//false = SPC only
+            		c.generateMapcamInstrument("bennu_altwgspcv20190414_mapcam", "bennu_altwgspcv20190414_mapcam", true, false, true)
             );
-            public0414.disableSpectra();
-//            public0414.hasImageMap = true;
-            public0414.addFeatureConfig(BasemapImageConfig.class, new BasemapImageConfig(c));
-            public0414.baseMapConfigName = "config_public.txt";
-            public0414.presentInMissions = PublicOnly;
-            LidarInstrumentConfig lidarConfig = (LidarInstrumentConfig)public0414.getConfigForClass(LidarInstrumentConfig.class);
+            c.disableSpectra();
+            c.addFeatureConfig(BasemapImageConfig.class, new BasemapImageConfig(c));
+            c.baseMapConfigName = "config_public.txt";
+            c.presentInMissions = PublicOnly;
+            LidarInstrumentConfig lidarConfig = (LidarInstrumentConfig)c.getConfigForClass(LidarInstrumentConfig.class);
 
-            lidarConfig.lidarBrowseDataSourceMap.put("Default", public0414.rootDirOnServer + "/ola/browse/fileList_public.txt");
-            lidarConfig.lidarBrowseFileListResourcePath = public0414.rootDirOnServer + "/ola/browse/fileList_public.txt";
-            lidarConfig.lidarBrowseWithPointsDataSourceMap.put("Default", public0414.rootDirOnServer + "/ola/browse/fileList_public.txt");
+            lidarConfig.lidarBrowseDataSourceMap.put("Default",c.rootDirOnServer + "/ola/browse/fileList_public.txt");
+            lidarConfig.lidarBrowseFileListResourcePath =c.rootDirOnServer + "/ola/browse/fileList_public.txt";
+            lidarConfig.lidarBrowseWithPointsDataSourceMap.put("Default",c.rootDirOnServer + "/ola/browse/fileList_public.txt");
             lidarConfig.orexSearchTimeMap.remove("Recon");
             lidarConfig.lidarSearchDataSourceMap.remove("Recon");
 
-        	configArray.add(public0414);
+        	configArray.add(c);
         }
     }
 
@@ -1608,9 +1581,9 @@ public class BennuConfigs extends SmallBodyViewConfig
         SpectrumInstrumentConfig spectrumConfig = (SpectrumInstrumentConfig)c.getConfigForClass(SpectrumInstrumentConfig.class);
 
         imagingConfig.imagingInstruments = Lists.newArrayList(
-        		c.generatePolycamInstrument("bennu_altwgspov20190612_polycam", "bennu_altwgspov20190612_polycam", true, false),
-														 c.generateMapcamInstrument("bennu_altwgspov20190612_mapcam", "bennu_altwgspov20190612_mapcam", true, false),
-														 c.generateNavcamInstrument("bennu_altwgspov20190612_navcam", "bennu_altwgspov20190612_navcam")
+        		 c.generatePolycamInstrument("bennu_altwgspov20190612_polycam", "bennu_altwgspov20190612_polycam", true, false),
+				 c.generateMapcamInstrument("bennu_altwgspov20190612_mapcam", "bennu_altwgspov20190612_mapcam", true, false),
+				 c.generateNavcamInstrument("bennu_altwgspov20190612_navcam", "bennu_altwgspov20190612_navcam")
         );
 
         c.setSpectrumParameters();
@@ -1634,31 +1607,24 @@ public class BennuConfigs extends SmallBodyViewConfig
         //public version
         if (publicOnly)
         {
-            BennuConfigs public0612 = (BennuConfigs)c.clone();
-//            public0612.author = ShapeModelType.provide("ALTWG-SPC-v20190612_SPC_v34_PUBLIC");
-            public0612.modelLabel = "SPO v34";
-            setupFeatures(c);
-            imagingConfig = (ImagingInstrumentConfig)c.getConfigForClass(ImagingInstrumentConfig.class);
-
             imagingConfig.imagingInstruments = Lists.newArrayList(
-            		public0612.generatePolycamInstrument("bennu_altwgspov20190612_polycam", "bennu_altwgspov20190612_polycam", true, false, true),
-            														public0612.generateMapcamInstrument("bennu_altwgspov20190612_mapcam", "bennu_altwgspov20190612_mapcam", true, false, true)
+            		c.generatePolycamInstrument("bennu_altwgspov20190612_polycam", "bennu_altwgspov20190612_polycam", true, false, true),
+            		c.generateMapcamInstrument("bennu_altwgspov20190612_mapcam", "bennu_altwgspov20190612_mapcam", true, false, true)
             );
-            public0612.disableSpectra();
-//            public0612.hasImageMap = true;
-            public0612.addFeatureConfig(BasemapImageConfig.class, new BasemapImageConfig(c));
-            public0612.baseMapConfigName = "config_public.txt";
-            public0612.presentInMissions = PublicOnly;
+            c.disableSpectra();
+            c.addFeatureConfig(BasemapImageConfig.class, new BasemapImageConfig(c));
+            c.baseMapConfigName = "config_public.txt";
+            c.presentInMissions = PublicOnly;
 
-            LidarInstrumentConfig lidarConfig = (LidarInstrumentConfig)public0612.getConfigForClass(LidarInstrumentConfig.class);
+            LidarInstrumentConfig lidarConfig = (LidarInstrumentConfig)c.getConfigForClass(LidarInstrumentConfig.class);
 
-            lidarConfig.lidarBrowseDataSourceMap.put("Default", public0612.rootDirOnServer + "/ola/browse/fileList_public.txt");
-            lidarConfig.lidarBrowseFileListResourcePath = public0612.rootDirOnServer + "/ola/browse/fileList_public.txt";
-            lidarConfig.lidarBrowseWithPointsDataSourceMap.put("Default", public0612.rootDirOnServer + "/ola/browse/fileList_public.txt");
+            lidarConfig.lidarBrowseDataSourceMap.put("Default", c.rootDirOnServer + "/ola/browse/fileList_public.txt");
+            lidarConfig.lidarBrowseFileListResourcePath = c.rootDirOnServer + "/ola/browse/fileList_public.txt";
+            lidarConfig.lidarBrowseWithPointsDataSourceMap.put("Default", c.rootDirOnServer + "/ola/browse/fileList_public.txt");
             lidarConfig.orexSearchTimeMap.remove("Recon");
             lidarConfig.lidarSearchDataSourceMap.remove("Recon");
 
-        	configArray.add(public0612);
+        	configArray.add(c);
         }
     }
 
@@ -1729,8 +1695,8 @@ public class BennuConfigs extends SmallBodyViewConfig
 
         imagingConfig.imagingInstruments = Lists.newArrayList(
         		c.generatePolycamInstrument("bennu_altwgspcv20190828_polycam", "bennu_altwgspcv20190828_polycam", true, false),
-														 c.generateMapcamInstrument("bennu_altwgspcv20190828_mapcam", "bennu_altwgspcv20190828_mapcam", true, false),
-														 c.generateNavcamInstrument("bennu_altwgspcv20190828_navcam", "bennu_altwgspcv20190828_navcam")
+				c.generateMapcamInstrument("bennu_altwgspcv20190828_mapcam", "bennu_altwgspcv20190828_mapcam", true, false),
+				c.generateNavcamInstrument("bennu_altwgspcv20190828_navcam", "bennu_altwgspcv20190828_navcam")
         );
 
         c.setSpectrumParameters();
@@ -1750,36 +1716,27 @@ public class BennuConfigs extends SmallBodyViewConfig
             new DBRunInfo(PointingSource.SPICE, Instrument.POLYCAM, ShapeModelBody.RQ36.toString(), "/bennu/altwg-spc-v20190828/polycam/imagelist-fullpath-info.txt", "bennu_altwgspcv20190828_polycam"),
             new DBRunInfo(PointingSource.SPICE, Instrument.NAVCAM, ShapeModelBody.RQ36.toString(), "/bennu/altwg-spc-v20190828/navcam/imagelist-fullpath-info.txt", "bennu_altwgspcv20190828_navcam")
         };
-        if (!publicOnly)
-        	configArray.add(c);
 
         //public version
         if (publicOnly)
         {
-            BennuConfigs public0828 = (BennuConfigs)c.clone();
-//            public0828.author = ShapeModelType.provide("ALTWG-SPC-v20190828_SPC_v42_PUBLIC");
-            public0828.modelLabel = "SPC v42";
-            setupFeatures(public0828);
-            imagingConfig = (ImagingInstrumentConfig)public0828.getConfigForClass(ImagingInstrumentConfig.class);
-
             imagingConfig.imagingInstruments = Lists.newArrayList(
-            		public0828.generatePolycamInstrument("bennu_altwgspcv20190828_polycam", "bennu_altwgspcv20190828_polycam", true, false, true),	//false = SPC only
-            														public0828.generateMapcamInstrument("bennu_altwgspcv20190828_mapcam", "bennu_altwgspcv20190828_mapcam", true, false, true)
+            		c.generatePolycamInstrument("bennu_altwgspcv20190828_polycam", "bennu_altwgspcv20190828_polycam", true, false, true),	//false = SPC only
+            		c.generateMapcamInstrument("bennu_altwgspcv20190828_mapcam", "bennu_altwgspcv20190828_mapcam", true, false, true)
             );
-            public0828.disableSpectra();
-//            public0828.hasImageMap = true;
-            public0828.addFeatureConfig(BasemapImageConfig.class, new BasemapImageConfig(c));
-            public0828.presentInMissions = PublicOnly;
-            public0828.baseMapConfigName = "config_public.txt";
+            c.disableSpectra();
+            c.addFeatureConfig(BasemapImageConfig.class, new BasemapImageConfig(c));
+            c.presentInMissions = PublicOnly;
+            c.baseMapConfigName = "config_public.txt";
 
-            LidarInstrumentConfig lidarConfig = (LidarInstrumentConfig)public0828.getConfigForClass(LidarInstrumentConfig.class);
+            LidarInstrumentConfig lidarConfig = (LidarInstrumentConfig)c.getConfigForClass(LidarInstrumentConfig.class);
 
-            lidarConfig.lidarBrowseDataSourceMap.put("Default", public0828.rootDirOnServer + "/ola/browse/fileList_public.txt");
-            lidarConfig.lidarBrowseFileListResourcePath = public0828.rootDirOnServer + "/ola/browse/fileList_public.txt";
-            lidarConfig.lidarBrowseWithPointsDataSourceMap.put("Default", public0828.rootDirOnServer + "/ola/browse/fileList_public.txt");
+            lidarConfig.lidarBrowseDataSourceMap.put("Default", c.rootDirOnServer + "/ola/browse/fileList_public.txt");
+            lidarConfig.lidarBrowseFileListResourcePath = c.rootDirOnServer + "/ola/browse/fileList_public.txt";
+            lidarConfig.lidarBrowseWithPointsDataSourceMap.put("Default", c.rootDirOnServer + "/ola/browse/fileList_public.txt");
 	        lidarConfig.orexSearchTimeMap.remove("Recon");
 	        lidarConfig.lidarSearchDataSourceMap.remove("Recon");
-        	configArray.add(public0828);
+        	configArray.add(c);
         }
     }
 
@@ -1914,8 +1871,8 @@ public class BennuConfigs extends SmallBodyViewConfig
 
         imagingConfig.imagingInstruments = Lists.newArrayList(
         		c.generatePolycamInstrument("bennu_olav20_polycam", "bennu_olav20_polycam", true, true),
-														 c.generateMapcamInstrument("bennu_olav20_mapcam", "bennu_olav20_mapcam", true, true),
-														 c.generateNavcamInstrument("bennu_olav20_navcam", "bennu_olav20_navcam")
+				c.generateMapcamInstrument("bennu_olav20_mapcam", "bennu_olav20_mapcam", true, true),
+				c.generateNavcamInstrument("bennu_olav20_navcam", "bennu_olav20_navcam")
         );
 
         c.setSpectrumParameters();
@@ -1950,41 +1907,31 @@ public class BennuConfigs extends SmallBodyViewConfig
             new DBRunInfo(PointingSource.SPICE, Instrument.NAVCAM, ShapeModelBody.RQ36.toString(), "/bennu/ola-v20-spc/navcam/imagelist-fullpath-info.txt", "bennu_olav20_navcam")
         };
 
-        if (!publicOnly)
-        	configArray.add(c);
-
         //public version
         if (publicOnly)
         {
-            BennuConfigs publicOLA = (BennuConfigs)c.clone();
-//            publicOLA.author = ShapeModelType.provide("OLA-v20_PUBLIC");
-            publicOLA.modelLabel = "OLA v20";
-            publicOLA.disableSpectra();
-//            publicOLA.hasImageMap = true;
-            publicOLA.presentInMissions = PublicOnly;
-            publicOLA.baseMapConfigName = "config_public.txt";
-            setupFeatures(publicOLA);
-            imagingConfig = (ImagingInstrumentConfig)publicOLA.getConfigForClass(ImagingInstrumentConfig.class);
-            spectrumConfig = (SpectrumInstrumentConfig)publicOLA.getConfigForClass(SpectrumInstrumentConfig.class);
+            c.disableSpectra();
+            c.presentInMissions = PublicOnly;
+            c.baseMapConfigName = "config_public.txt";
 
             imagingConfig.imagingInstruments = Lists.newArrayList(
-            		publicOLA.generatePolycamInstrument("bennu_olav20_polycam", "bennu_olav20_polycam", true, true, true),
-					 publicOLA.generateMapcamInstrument("bennu_olav20_mapcam", "bennu_olav20_mapcam", true, true, true),
-					 publicOLA.generateNavcamInstrument("bennu_olav20_navcam", "bennu_olav20_navcam", true)
+            		c.generatePolycamInstrument("bennu_olav20_polycam", "bennu_olav20_polycam", true, true, true),
+					c.generateMapcamInstrument("bennu_olav20_mapcam", "bennu_olav20_mapcam", true, true, true),
+					c.generateNavcamInstrument("bennu_olav20_navcam", "bennu_olav20_navcam", true)
             );
             spectrumConfig.hasHypertreeBasedSpectraSearch = false;
 
-            lidarConfig = (LidarInstrumentConfig)publicOLA.getConfigForClass(LidarInstrumentConfig.class);
+            lidarConfig = (LidarInstrumentConfig)c.getConfigForClass(LidarInstrumentConfig.class);
 
-            lidarConfig.lidarBrowseDataSourceMap.put("Default", publicOLA.rootDirOnServer + "/ola/l2a/fileListL2A.txt");
-            lidarConfig.lidarBrowseFileListResourcePath = publicOLA.rootDirOnServer + "/ola/l2a/fileListL2A.txt";
-            lidarConfig.lidarBrowseWithPointsDataSourceMap.put("Default", publicOLA.rootDirOnServer + "/ola/l2a/fileListL2A.txt");
+            lidarConfig.lidarBrowseDataSourceMap.put("Default", c.rootDirOnServer + "/ola/l2a/fileListL2A.txt");
+            lidarConfig.lidarBrowseFileListResourcePath = c.rootDirOnServer + "/ola/l2a/fileListL2A.txt";
+            lidarConfig.lidarBrowseWithPointsDataSourceMap.put("Default", c.rootDirOnServer + "/ola/l2a/fileListL2A.txt");
             lidarConfig.lidarSearchDataSourceMap.clear();
             lidarConfig.orexSearchTimeMap.clear();
             lidarConfig.orexSearchTimeMap.put("OLAv20", startStop);
-            lidarConfig.lidarSearchDataSourceMap.put("OLAv20", publicOLA.rootDirOnServer + "/ola/search/olav20/dataSource.lidar");
+            lidarConfig.lidarSearchDataSourceMap.put("OLAv20", c.rootDirOnServer + "/ola/search/olav20/dataSource.lidar");
 
-        	configArray.add(publicOLA);
+        	configArray.add(c);
         }
     }
 
@@ -2073,8 +2020,8 @@ public class BennuConfigs extends SmallBodyViewConfig
 
         imagingConfig.imagingInstruments = Lists.newArrayList(
         		c.generatePolycamInstrument("bennu_olav20ptm_polycam", "bennu_olav20ptm_polycam", true, true),
-        												 c.generateMapcamInstrument("bennu_olav20ptm_mapcam", "bennu_olav20ptm_mapcam", true, true),
-        												 c.generateNavcamInstrument("bennu_olav20ptm_navcam", "bennu_olav20ptm_navcam")
+        		c.generateMapcamInstrument("bennu_olav20ptm_mapcam", "bennu_olav20ptm_mapcam", true, true),
+        		c.generateNavcamInstrument("bennu_olav20ptm_navcam", "bennu_olav20ptm_navcam")
         );
 
         c.generateStateHistoryParameters();
@@ -2108,43 +2055,33 @@ public class BennuConfigs extends SmallBodyViewConfig
             new DBRunInfo(PointingSource.SPICE, Instrument.POLYCAM, ShapeModelBody.RQ36.toString(), "/bennu/ola-v20-ptm/polycam/imagelist-fullpath-info.txt", "bennu_olav20ptm_polycam"),
             new DBRunInfo(PointingSource.SPICE, Instrument.NAVCAM, ShapeModelBody.RQ36.toString(), "/bennu/ola-v20-ptm/navcam/imagelist-fullpath-info.txt", "bennu_olav20ptm_navcam")
         };
-        if (!publicOnly)
-        	configArray.add(c);
-
 
         //public version
         if (publicOnly)
         {
-            BennuConfigs publicOLAptm = (BennuConfigs)c.clone();
-//            publicOLAptm.author = ShapeModelType.provide("OLA-v20-PTM_PUBLIC");
-            publicOLAptm.modelLabel = "OLA v20 PTM";
-            publicOLAptm.disableSpectra();
-//            publicOLAptm.hasImageMap = true;
-            publicOLAptm.addFeatureConfig(BasemapImageConfig.class, new BasemapImageConfig(c));
-            publicOLAptm.baseMapConfigName = "config_public.txt";
+            c.disableSpectra();
+            c.addFeatureConfig(BasemapImageConfig.class, new BasemapImageConfig(c));
+            c.baseMapConfigName = "config_public.txt";
 
-            publicOLAptm.presentInMissions = PublicOnly;
-            setupFeatures(publicOLAptm);
-            imagingConfig = (ImagingInstrumentConfig)publicOLAptm.getConfigForClass(ImagingInstrumentConfig.class);
-            spectrumConfig = (SpectrumInstrumentConfig)publicOLAptm.getConfigForClass(SpectrumInstrumentConfig.class);
+            c.presentInMissions = PublicOnly;
 
             imagingConfig.imagingInstruments = Lists.newArrayList(
-            		publicOLAptm.generatePolycamInstrument("bennu_olav20ptm_polycam", "bennu_olav20ptm_polycam", true, true, true),
-            		publicOLAptm.generateMapcamInstrument("bennu_olav20ptm_mapcam", "bennu_olav20ptm_mapcam", true, true, true),
-            		publicOLAptm.generateNavcamInstrument("bennu_olav20ptm_navcam", "bennu_olav20ptm_navcam", true)
+            		c.generatePolycamInstrument("bennu_olav20ptm_polycam", "bennu_olav20ptm_polycam", true, true, true),
+            		c.generateMapcamInstrument("bennu_olav20ptm_mapcam", "bennu_olav20ptm_mapcam", true, true, true),
+            		c.generateNavcamInstrument("bennu_olav20ptm_navcam", "bennu_olav20ptm_navcam", true)
             );
             spectrumConfig.hasHypertreeBasedSpectraSearch = false;
 
-            lidarConfig = (LidarInstrumentConfig)publicOLAptm.getConfigForClass(LidarInstrumentConfig.class);
+            lidarConfig = (LidarInstrumentConfig)c.getConfigForClass(LidarInstrumentConfig.class);
 
-            lidarConfig.lidarBrowseDataSourceMap.put("Default", publicOLAptm.rootDirOnServer + "/ola/l2a/fileListL2A.txt");
-            lidarConfig.lidarBrowseFileListResourcePath = publicOLAptm.rootDirOnServer + "/ola/l2a/fileListL2A.txt";
-            lidarConfig.lidarBrowseWithPointsDataSourceMap.put("Default", publicOLAptm.rootDirOnServer + "/ola/l2a/fileListL2A.txt");
+            lidarConfig.lidarBrowseDataSourceMap.put("Default", c.rootDirOnServer + "/ola/l2a/fileListL2A.txt");
+            lidarConfig.lidarBrowseFileListResourcePath = c.rootDirOnServer + "/ola/l2a/fileListL2A.txt";
+            lidarConfig.lidarBrowseWithPointsDataSourceMap.put("Default", c.rootDirOnServer + "/ola/l2a/fileListL2A.txt");
             lidarConfig.lidarSearchDataSourceMap.clear();
             lidarConfig.orexSearchTimeMap.clear();
             lidarConfig.orexSearchTimeMap.put("OLAv20", startStop);
-            lidarConfig.lidarSearchDataSourceMap.put("OLAv20", publicOLAptm.rootDirOnServer + "/ola/search/olav20/dataSource.lidar");
-        	configArray.add(publicOLAptm);
+            lidarConfig.lidarSearchDataSourceMap.put("OLAv20", c.rootDirOnServer + "/ola/search/olav20/dataSource.lidar");
+        	configArray.add(c);
         }
     }
 
@@ -2266,31 +2203,29 @@ public class BennuConfigs extends SmallBodyViewConfig
 
         c.defaultForMissions = OREXClients;
 
-        c.modelLabel = "OLA v21";
-        c.disableSpectra();
-//            c.hasImageMap = true;
-        c.addFeatureConfig(BasemapImageConfig.class, new BasemapImageConfig(c));
-        c.presentInMissions = PublicOnly;
-        c.baseMapConfigName = "config_public.txt";
-        setupFeatures(c);
-        imagingConfig = (ImagingInstrumentConfig)c.getConfigForClass(ImagingInstrumentConfig.class);
-        spectrumConfig = (SpectrumInstrumentConfig)c.getConfigForClass(SpectrumInstrumentConfig.class);
-        lidarConfig = (LidarInstrumentConfig)c.getConfigForClass(LidarInstrumentConfig.class);
+        //public version
+        if (publicOnly)
+        {
+	        c.disableSpectra();
+	        c.addFeatureConfig(BasemapImageConfig.class, new BasemapImageConfig(c));
+	        c.presentInMissions = PublicOnly;
+	        c.baseMapConfigName = "config_public.txt";
 
-        imagingConfig.imagingInstruments = Lists.newArrayList(
-        		c.generatePolycamInstrument("bennu_olav21_polycam", "bennu_olav21_polycam", true, true, true),
-                 c.generateMapcamInstrument("bennu_olav21_mapcam", "bennu_olav21_mapcam", true, true, true),
-                 c.generateNavcamInstrument("bennu_olav21_navcam", "bennu_olav21_navcam", true)
-        );
-        spectrumConfig.hasHypertreeBasedSpectraSearch = false;
-        lidarConfig.lidarBrowseDataSourceMap.put("Default", c.rootDirOnServer + "/ola/l2a/fileListL2A_OLAv21.txt");
-        lidarConfig.lidarBrowseFileListResourcePath = c.rootDirOnServer + "/ola/l2a/fileListL2A_OLAv21.txt";
-        lidarConfig.lidarBrowseWithPointsDataSourceMap.put("Default", c.rootDirOnServer + "/ola/l2a/fileListL2A_OLAv21.txt");
-        lidarConfig.lidarSearchDataSourceMap.clear();
-        lidarConfig.orexSearchTimeMap.clear();
-        lidarConfig.orexSearchTimeMap.put("OLAv21", startStop);
-        lidarConfig.lidarSearchDataSourceMap.put("OLAv21", c.rootDirOnServer + "/ola/search/olav21/dataSource.lidar");
-        configArray.add(c);
+	        imagingConfig.imagingInstruments = Lists.newArrayList(
+	        		c.generatePolycamInstrument("bennu_olav21_polycam", "bennu_olav21_polycam", true, true, true),
+	                 c.generateMapcamInstrument("bennu_olav21_mapcam", "bennu_olav21_mapcam", true, true, true),
+	                 c.generateNavcamInstrument("bennu_olav21_navcam", "bennu_olav21_navcam", true)
+	        );
+	        spectrumConfig.hasHypertreeBasedSpectraSearch = false;
+	        lidarConfig.lidarBrowseDataSourceMap.put("Default", c.rootDirOnServer + "/ola/l2a/fileListL2A_OLAv21.txt");
+	        lidarConfig.lidarBrowseFileListResourcePath = c.rootDirOnServer + "/ola/l2a/fileListL2A_OLAv21.txt";
+	        lidarConfig.lidarBrowseWithPointsDataSourceMap.put("Default", c.rootDirOnServer + "/ola/l2a/fileListL2A_OLAv21.txt");
+	        lidarConfig.lidarSearchDataSourceMap.clear();
+	        lidarConfig.orexSearchTimeMap.clear();
+	        lidarConfig.orexSearchTimeMap.put("OLAv21", startStop);
+	        lidarConfig.lidarSearchDataSourceMap.put("OLAv21", c.rootDirOnServer + "/ola/search/olav21/dataSource.lidar");
+	        configArray.add(c);
+        }
 
     }
 
@@ -2379,8 +2314,8 @@ public class BennuConfigs extends SmallBodyViewConfig
 
         imagingConfig.imagingInstruments = Lists.newArrayList(
         		c.generatePolycamInstrument("bennu_olav21ptm_polycam", "bennu_olav21ptm_polycam", true, true),
-                                                         c.generateMapcamInstrument("bennu_olav21ptm_mapcam", "bennu_olav21ptm_mapcam", true, true),
-                                                         c.generateNavcamInstrument("bennu_olav21ptm_navcam", "bennu_olav21ptm_navcam")
+                c.generateMapcamInstrument("bennu_olav21ptm_mapcam", "bennu_olav21ptm_mapcam", true, true),
+                c.generateNavcamInstrument("bennu_olav21ptm_navcam", "bennu_olav21ptm_navcam")
         );
 
         c.generateStateHistoryParameters();
@@ -2414,27 +2349,29 @@ public class BennuConfigs extends SmallBodyViewConfig
             new DBRunInfo(PointingSource.SPICE, Instrument.NAVCAM, ShapeModelBody.RQ36.toString(), "/bennu/ola-v21-ptm/navcam/imagelist-fullpath-info.txt", "bennu_olav21ptm_navcam")
         };
 
-        c.modelLabel = "OLA v21 PTM";
-        c.disableSpectra();
-//            c.hasImageMap = true;
-        c.addFeatureConfig(BasemapImageConfig.class, new BasemapImageConfig(c));
-        c.baseMapConfigName = "config_public.txt";
+      //public version
+        if (publicOnly)
+        {
+	        c.disableSpectra();
+	        c.addFeatureConfig(BasemapImageConfig.class, new BasemapImageConfig(c));
+	        c.baseMapConfigName = "config_public.txt";
 
-        c.presentInMissions = PublicOnly;
+	        c.presentInMissions = PublicOnly;
 
-        imagingConfig.imagingInstruments = Lists.newArrayList(c.generatePolycamInstrument("bennu_olav21ptm_polycam", "bennu_olav21ptm_polycam", true, true, true),
-                c.generateMapcamInstrument("bennu_olav21ptm_mapcam", "bennu_olav21ptm_mapcam", true, true, true),
-                c.generateNavcamInstrument("bennu_olav21ptm_navcam", "bennu_olav21ptm_navcam", true)
-        );
-        spectrumConfig.hasHypertreeBasedSpectraSearch = false;
-        lidarConfig.lidarBrowseDataSourceMap.put("Default", c.rootDirOnServer + "/ola/l2a/fileListL2A_OLAv21.txt");
-        lidarConfig.lidarBrowseFileListResourcePath = c.rootDirOnServer + "/ola/l2a/fileListL2A_OLAv21.txt";
-        lidarConfig.lidarBrowseWithPointsDataSourceMap.put("Default", c.rootDirOnServer + "/ola/l2a/fileListL2A_OLAv21.txt");
-        lidarConfig.lidarSearchDataSourceMap.clear();
-        lidarConfig.orexSearchTimeMap.clear();
-        lidarConfig.orexSearchTimeMap.put("OLAv21PTM", startStop);
-        lidarConfig.lidarSearchDataSourceMap.put("OLAv21PTM", c.rootDirOnServer + "/ola/search/olav21ptm/dataSource.lidar");
-        configArray.add(c);
+	        imagingConfig.imagingInstruments = Lists.newArrayList(c.generatePolycamInstrument("bennu_olav21ptm_polycam", "bennu_olav21ptm_polycam", true, true, true),
+	                c.generateMapcamInstrument("bennu_olav21ptm_mapcam", "bennu_olav21ptm_mapcam", true, true, true),
+	                c.generateNavcamInstrument("bennu_olav21ptm_navcam", "bennu_olav21ptm_navcam", true)
+	        );
+	        spectrumConfig.hasHypertreeBasedSpectraSearch = false;
+	        lidarConfig.lidarBrowseDataSourceMap.put("Default", c.rootDirOnServer + "/ola/l2a/fileListL2A_OLAv21.txt");
+	        lidarConfig.lidarBrowseFileListResourcePath = c.rootDirOnServer + "/ola/l2a/fileListL2A_OLAv21.txt";
+	        lidarConfig.lidarBrowseWithPointsDataSourceMap.put("Default", c.rootDirOnServer + "/ola/l2a/fileListL2A_OLAv21.txt");
+	        lidarConfig.lidarSearchDataSourceMap.clear();
+	        lidarConfig.orexSearchTimeMap.clear();
+	        lidarConfig.orexSearchTimeMap.put("OLAv21PTM", startStop);
+	        lidarConfig.lidarSearchDataSourceMap.put("OLAv21PTM", c.rootDirOnServer + "/ola/search/olav21ptm/dataSource.lidar");
+	        configArray.add(c);
+        }
 
 
     }
@@ -2556,10 +2493,28 @@ public class BennuConfigs extends SmallBodyViewConfig
             new DBRunInfo(PointingSource.SPICE, Instrument.NAVCAM, ShapeModelBody.RQ36.toString(), "/bennu/spo-v54-spc/navcam/imagelist-fullpath-info.txt", "bennu_spov54_navcam")
         };
 
-        configArray.add(c);
+      //public version
+        if (publicOnly)
+	    {
+            c.disableSpectra();
+            c.presentInMissions = PublicOnly;
+            c.baseMapConfigName = "config_public.txt";
+
+            imagingConfig.imagingInstruments = Lists.newArrayList(c.generatePolycamInstrument("bennu_spov54_polycam", "bennu_spov54_polycam", true, true, true),
+                     c.generateMapcamInstrument("bennu_spov54_mapcam", "bennu_spov54_mapcam", true, true, true),
+                     c.generateNavcamInstrument("bennu_spov54_navcam", "bennu_olav54_navcam", true)
+            );
+            spectrumConfig.hasHypertreeBasedSpectraSearch = false;
+            lidarConfig.lidarBrowseDataSourceMap.put("Default", c.rootDirOnServer + "/ola/l2a/fileListL2A.txt");
+            lidarConfig.lidarBrowseFileListResourcePath = c.rootDirOnServer + "/ola/l2a/fileListL2A.txt";
+            lidarConfig.lidarBrowseWithPointsDataSourceMap.put("Default", c.rootDirOnServer + "/ola/l2a/fileListL2A.txt");
+            lidarConfig.lidarSearchDataSourceMap.clear();
+            lidarConfig.orexSearchTimeMap.clear();
+            lidarConfig.orexSearchTimeMap.put("SPOv54", startStop);
+            lidarConfig.lidarSearchDataSourceMap.put("SPOv54", c.rootDirOnServer + "/ola/search/olav54/dataSource.lidar");
+                configArray.add(c);
+	    }
     }
-
-
 
 	private void generateStateHistoryParameters()
 	{
