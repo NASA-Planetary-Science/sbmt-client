@@ -16,7 +16,6 @@ import edu.jhuapl.saavtk.model.ShapeModelBody;
 import edu.jhuapl.saavtk.model.ShapeModelType;
 import edu.jhuapl.saavtk.util.Configuration;
 import edu.jhuapl.saavtk.util.SafeURLPaths;
-import edu.jhuapl.sbmt.config.BasicConfigInfo;
 import edu.jhuapl.sbmt.config.SmallBodyViewConfig;
 import edu.jhuapl.sbmt.core.body.BodyType;
 import edu.jhuapl.sbmt.core.body.ShapeModelDataUsed;
@@ -73,18 +72,12 @@ import edu.jhuapl.sbmt.spectrum.model.io.SpectrumInstrumentMetadataIO;
 import edu.jhuapl.sbmt.stateHistory.config.StateHistoryConfig;
 import edu.jhuapl.sbmt.stateHistory.config.StateHistoryConfigIO;
 
-import crucible.crust.metadata.api.Version;
-import crucible.crust.metadata.impl.SettableMetadata;
-
 class AsteroidConfigsTest
 {
 
 	@BeforeAll
 	static void setUpBeforeClass() throws Exception
 	{
-		String configInfoVersion = BasicConfigInfo.getConfigInfoVersion();
-
-		SettableMetadata allBodiesMetadata = SettableMetadata.of(Version.of(configInfoVersion));
 		Configuration.setAPLVersion(true);
 		Mission.configureMission();
 		Configuration.authenticate();
@@ -526,6 +519,158 @@ class AsteroidConfigsTest
 				Mission.STAGE_PUBLIC_RELEASE,
         		Mission.STAGE_APL_INTERNAL,
         		Mission.APL_INTERNAL, Mission.TEST_APL_INTERNAL});
+        assertArrayEquals(c.defaultForMissions, new Mission[] {});
+	}
+
+	@Test
+	void testItokawaGaskell()
+	{
+
+	}
+
+	@Test
+	void testItokawaHudson()
+	{
+
+	}
+
+	@Test
+	void testToutatisGaskell()
+	{
+
+	}
+
+	@Test
+	void testCeresGaskell()
+	{
+
+	}
+
+	@Test
+	void testVestaGaskell()
+	{
+
+	}
+
+	@Test
+	void testVestaThomas()
+	{
+
+	}
+
+	@Test
+	void testLutetiaGaskell()
+	{
+
+	}
+
+	@Test
+	void testLutetiaJordan()
+	{
+
+	}
+
+	@Test
+	void testIdaThomas()
+	{
+
+	}
+
+	@Test
+	void testIdaStooke()
+	{
+
+	}
+
+	@Test
+	void testMathildeThomas()
+	{
+
+	}
+
+	@Test
+	void testMathildeStooke()
+	{
+
+	}
+
+	@Test
+	void testGaspraThomas()
+	{
+
+	}
+
+	@Test
+	void testGaspraStooke()
+	{
+		AsteroidConfigs c = (AsteroidConfigs)SmallBodyViewConfig.getConfig(ShapeModelBody.GASPRA, ShapeModelType.STOOKE);
+		FeatureConfigIOFactory.getIOForClassType(LidarInstrumentConfig.class.getSimpleName()).setViewConfig((ViewConfig)c);
+        FeatureConfigIOFactory.getIOForClassType(SpectrumInstrumentConfig.class.getSimpleName()).setViewConfig((ViewConfig)c);
+        FeatureConfigIOFactory.getIOForClassType(ImagingInstrumentConfig.class.getSimpleName()).setViewConfig((ViewConfig)c);
+        FeatureConfigIOFactory.getIOForClassType(BasemapImageConfig.class.getSimpleName()).setViewConfig((ViewConfig)c);
+        FeatureConfigIOFactory.getIOForClassType(StateHistoryConfig.class.getSimpleName()).setViewConfig((ViewConfig)c);
+
+        assertEquals(c.body, ShapeModelBody.GASPRA);
+        assertEquals(c.type, BodyType.ASTEROID);
+        assertEquals(c.population, ShapeModelPopulation.MAIN_BELT);
+        assertEquals(c.dataUsed, ShapeModelDataUsed.IMAGE_BASED);
+        assertEquals(c.author, ShapeModelType.STOOKE);
+        assertEquals(c.modelLabel, "Stooke (2016)");
+        assertEquals(c.rootDirOnServer, "/gaspra/stooke2016");
+        assertEquals(c.getShapeModelFileExtension(), ".obj");
+        assertEquals(c.density, 2700.);
+        assertEquals(c.rotationRate, 0.0002478);
+        assertEquals(c.getResolutionNumberElements().get(0), 5040);
+
+        assertArrayEquals(c.presentInMissions, new Mission[] {Mission.PUBLIC_RELEASE, Mission.TEST_PUBLIC_RELEASE, Mission.STAGE_PUBLIC_RELEASE, Mission.STAGE_APL_INTERNAL, Mission.APL_INTERNAL, Mission.TEST_APL_INTERNAL});
+        assertArrayEquals(c.defaultForMissions, new Mission[] {});
+	}
+
+	@Test
+	void testSteinsJorda()
+	{
+		AsteroidConfigs c = (AsteroidConfigs)SmallBodyViewConfig.getConfig(ShapeModelBody.STEINS, ShapeModelType.JORDA);
+		FeatureConfigIOFactory.getIOForClassType(LidarInstrumentConfig.class.getSimpleName()).setViewConfig((ViewConfig)c);
+        FeatureConfigIOFactory.getIOForClassType(SpectrumInstrumentConfig.class.getSimpleName()).setViewConfig((ViewConfig)c);
+        FeatureConfigIOFactory.getIOForClassType(ImagingInstrumentConfig.class.getSimpleName()).setViewConfig((ViewConfig)c);
+        FeatureConfigIOFactory.getIOForClassType(BasemapImageConfig.class.getSimpleName()).setViewConfig((ViewConfig)c);
+        FeatureConfigIOFactory.getIOForClassType(StateHistoryConfig.class.getSimpleName()).setViewConfig((ViewConfig)c);
+
+        assertEquals(c.body, ShapeModelBody.STEINS);
+        assertEquals(c.type, BodyType.ASTEROID);
+        assertEquals(c.population, ShapeModelPopulation.MAIN_BELT);
+        assertEquals(c.dataUsed, ShapeModelDataUsed.IMAGE_BASED);
+        assertEquals(c.author, ShapeModelType.JORDA);
+        assertEquals(c.modelLabel, "Farnham and Jorda (2013)");
+        assertEquals(c.rootDirOnServer, "/JORDA/STEINS");
+        assertEquals(c.getShapeModelFileNames(), prepend(c.rootDirOnServer, "steins_cart.plt.gz"));
+        assertEquals(c.getResolutionNumberElements().get(0), 2048);
+
+        assertArrayEquals(c.presentInMissions, new Mission[] {Mission.PUBLIC_RELEASE, Mission.TEST_PUBLIC_RELEASE, Mission.STAGE_PUBLIC_RELEASE, Mission.STAGE_APL_INTERNAL, Mission.APL_INTERNAL, Mission.TEST_APL_INTERNAL});
+        assertArrayEquals(c.defaultForMissions, new Mission[] {});
+	}
+
+	@Test
+	void testPsycheHanus()
+	{
+		AsteroidConfigs c = (AsteroidConfigs)SmallBodyViewConfig.getConfig(ShapeModelBody.PSYCHE, ShapeModelType.HANUS);
+		FeatureConfigIOFactory.getIOForClassType(LidarInstrumentConfig.class.getSimpleName()).setViewConfig((ViewConfig)c);
+        FeatureConfigIOFactory.getIOForClassType(SpectrumInstrumentConfig.class.getSimpleName()).setViewConfig((ViewConfig)c);
+        FeatureConfigIOFactory.getIOForClassType(ImagingInstrumentConfig.class.getSimpleName()).setViewConfig((ViewConfig)c);
+        FeatureConfigIOFactory.getIOForClassType(BasemapImageConfig.class.getSimpleName()).setViewConfig((ViewConfig)c);
+        FeatureConfigIOFactory.getIOForClassType(StateHistoryConfig.class.getSimpleName()).setViewConfig((ViewConfig)c);
+
+        assertEquals(c.body, ShapeModelBody.PSYCHE);
+        assertEquals(c.type, BodyType.ASTEROID);
+        assertEquals(c.population, ShapeModelPopulation.MAIN_BELT);
+        assertEquals(c.dataUsed, ShapeModelDataUsed.IMAGE_BASED);
+        assertEquals(c.author, ShapeModelType.HANUS);
+        assertEquals(c.modelLabel, "Hanus et al. (2013)");
+        assertEquals(c.rootDirOnServer, "/psyche/hanus");
+        assertEquals(c.getShapeModelFileExtension(), ".obj");
+        assertEquals(c.getResolutionNumberElements().get(0), 2038);
+
+        assertArrayEquals(c.presentInMissions, new Mission[] {Mission.PUBLIC_RELEASE, Mission.TEST_PUBLIC_RELEASE, Mission.STAGE_PUBLIC_RELEASE, Mission.STAGE_APL_INTERNAL, Mission.APL_INTERNAL, Mission.TEST_APL_INTERNAL});
         assertArrayEquals(c.defaultForMissions, new Mission[] {});
 	}
 
