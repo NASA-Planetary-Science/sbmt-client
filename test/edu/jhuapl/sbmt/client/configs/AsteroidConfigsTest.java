@@ -3,11 +3,14 @@ package edu.jhuapl.sbmt.client.configs;
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
+import java.util.ArrayList;
 import java.util.GregorianCalendar;
 
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
+
+import com.google.common.collect.ImmutableList;
 
 import edu.jhuapl.saavtk.config.ConfigArrayList;
 import edu.jhuapl.saavtk.config.IBodyViewConfig;
@@ -23,6 +26,7 @@ import edu.jhuapl.sbmt.core.body.ShapeModelPopulation;
 import edu.jhuapl.sbmt.core.client.Mission;
 import edu.jhuapl.sbmt.core.config.FeatureConfigIOFactory;
 import edu.jhuapl.sbmt.core.config.Instrument;
+import edu.jhuapl.sbmt.core.io.DBRunInfo;
 import edu.jhuapl.sbmt.core.pointing.PointingSource;
 import edu.jhuapl.sbmt.image.config.BasemapImageConfig;
 import edu.jhuapl.sbmt.image.config.BasemapImageConfigIO;
@@ -65,6 +69,7 @@ import edu.jhuapl.sbmt.query.v2.DataQuerySourcesMetadata;
 import edu.jhuapl.sbmt.query.v2.FixedListDataQuery;
 import edu.jhuapl.sbmt.spectrum.config.SpectrumInstrumentConfig;
 import edu.jhuapl.sbmt.spectrum.config.SpectrumInstrumentConfigIO;
+import edu.jhuapl.sbmt.spectrum.model.core.BasicSpectrumInstrument;
 import edu.jhuapl.sbmt.spectrum.model.core.SpectraTypeFactory;
 import edu.jhuapl.sbmt.spectrum.model.core.SpectrumInstrumentMetadata;
 import edu.jhuapl.sbmt.spectrum.model.core.search.SpectrumSearchSpec;
@@ -525,79 +530,547 @@ class AsteroidConfigsTest
 	@Test
 	void testItokawaGaskell()
 	{
+		AsteroidConfigs c = (AsteroidConfigs)SmallBodyViewConfig.getConfig(ShapeModelBody.ITOKAWA, ShapeModelType.GASKELL);
+		FeatureConfigIOFactory.getIOForClassType(LidarInstrumentConfig.class.getSimpleName()).setViewConfig((ViewConfig)c);
+        FeatureConfigIOFactory.getIOForClassType(SpectrumInstrumentConfig.class.getSimpleName()).setViewConfig((ViewConfig)c);
+        FeatureConfigIOFactory.getIOForClassType(ImagingInstrumentConfig.class.getSimpleName()).setViewConfig((ViewConfig)c);
+        FeatureConfigIOFactory.getIOForClassType(BasemapImageConfig.class.getSimpleName()).setViewConfig((ViewConfig)c);
+        FeatureConfigIOFactory.getIOForClassType(StateHistoryConfig.class.getSimpleName()).setViewConfig((ViewConfig)c);
 
+        assertEquals(c.body, ShapeModelBody.ITOKAWA);
+        assertEquals(c.type, BodyType.ASTEROID);
+        assertEquals(c.population, ShapeModelPopulation.NEO);
+        assertEquals(c.dataUsed, ShapeModelDataUsed.IMAGE_BASED);
+        assertEquals(c.author, ShapeModelType.GASKELL);
+        assertEquals(c.modelLabel, "Gaskell et al. (2008)");
+        assertEquals(c.rootDirOnServer, "/GASKELL/ITOKAWA");
+        assertArrayEquals(c.getShapeModelFileNames(), prepend("/ITOKAWA", "ver64q.vtk.gz", "ver128q.vtk.gz", "ver256q.vtk.gz", "ver512q.vtk.gz"));
+
+        StateHistoryConfig stateHistoryConfig = (StateHistoryConfig)c.getConfigForClass(StateHistoryConfig.class);
+        assertEquals(stateHistoryConfig.hasStateHistory, true);
+        assertEquals(stateHistoryConfig.timeHistoryFile, "/GASKELL/ITOKAWA/history/TimeHistory.bth");
+
+//        ImageBinPadding binPadding = new ImageBinPadding();
+//        binPadding.binExtents.put(1, new BinExtents(1024, 1024, 1024, 1024));
+//        binPadding.binTranslations.put(1,  new BinTranslations(0,0));
+//        binPadding.binSpacings.put(1,  new BinSpacings(1.0, 1.0, 1.0));
+//
+//        binPadding.binExtents.put(2, new BinExtents(512, 512, 1024, 1024));
+//        binPadding.binTranslations.put(2,  new BinTranslations(0,0));
+//        binPadding.binSpacings.put(2,  new BinSpacings(2.0, 2.0, 1.0));
+//
+//        binPadding.binExtents.put(4, new BinExtents(256, 256, 1024, 1024));
+//        binPadding.binTranslations.put(4,  new BinTranslations(0, 0));
+//        binPadding.binSpacings.put(4,  new BinSpacings(4.0, 4.0, 1.0));
+//
+//        binPadding.binExtents.put(8, new BinExtents(128, 128, 1024, 1024));
+//        binPadding.binTranslations.put(8,  new BinTranslations(0, 0));
+//        binPadding.binSpacings.put(8,  new BinSpacings(8.0, 8.0, 1.0));
+
+        c.addFeatureConfig(BasemapImageConfig.class, new BasemapImageConfig(c));
+        c.addFeatureConfig(ImagingInstrumentConfig.class, new ImagingInstrumentConfig(c));
+        c.addFeatureConfig(SpectrumInstrumentConfig.class, new SpectrumInstrumentConfig(c));
+        c.addFeatureConfig(LidarInstrumentConfig.class, new LidarInstrumentConfig(c));
+
+        ImagingInstrumentConfig imagingConfig = (ImagingInstrumentConfig)c.getConfigForClass(ImagingInstrumentConfig.class);
+
+//        DataQuerySourcesMetadata amicaMetadata =
+//        		DataQuerySourcesMetadata.of("/GASKELL/ITOKAWA/AMICA", "", "AMICA", "AMICA", "/GASKELL/ITOKAWA/AMICA/gallery");
+//
+//        imagingConfig.imagingInstruments = Lists.newArrayList(
+//                new ImagingInstrument( //
+//                        SpectralImageMode.MONO, //
+//                        new ImageDataQuery(amicaMetadata),
+//                        ImageType.AMICA_IMAGE, //
+//                        new PointingSource[]{PointingSource.GASKELL, PointingSource.SPICE, PointingSource.CORRECTED}, //
+//                        Instrument.AMICA, //
+//                        0.0,
+//                        "None",
+//                        binPadding
+//                        ) //
+//        );
+
+
+        assertEquals(imagingConfig.imagingInstruments.size(), 1);
+        assertEquals(imagingConfig.imagingInstruments.get(0).getSearchQuery().getRootPath(), "/GASKELL/ITOKAWA/AMICA");
+        assertEquals(imagingConfig.imagingInstruments.get(0).getSearchQuery().getDataPath(), "/GASKELL/ITOKAWA/AMICA/images");
+        assertEquals(imagingConfig.imagingInstruments.get(0).getSearchQuery().getGalleryPath(), "/GASKELL/ITOKAWA/AMICA/gallery");
+        assertEquals(imagingConfig.imagingInstruments.get(0).spectralMode, SpectralImageMode.MONO);
+        assertEquals(imagingConfig.imagingInstruments.get(0).getType(), ImageType.AMICA_IMAGE);
+        assertArrayEquals(imagingConfig.imagingInstruments.get(0).searchImageSources, new PointingSource[]{PointingSource.GASKELL, PointingSource.SPICE, PointingSource.CORRECTED});
+        assertEquals(imagingConfig.imagingInstruments.get(0).getInstrumentName(), Instrument.AMICA);
+        assertEquals(imagingConfig.imagingInstruments.get(0).getOrientation(PointingSource.GASKELL).getRotation(), 0.0);
+        assertEquals(imagingConfig.imagingInstruments.get(0).getOrientation(PointingSource.GASKELL).getFlip(), ImageFlip.NONE);
+        assertEquals(imagingConfig.imagingInstruments.get(0).getOrientation(PointingSource.SPICE).getRotation(), 0.0);
+        assertEquals(imagingConfig.imagingInstruments.get(0).getOrientation(PointingSource.SPICE).getFlip(), ImageFlip.NONE);
+        assertEquals(imagingConfig.imagingInstruments.get(0).getOrientation(PointingSource.CORRECTED).getRotation(), 0.0);
+        assertEquals(imagingConfig.imagingInstruments.get(0).getOrientation(PointingSource.CORRECTED).getFlip(), ImageFlip.NONE);
+
+        assertEquals(imagingConfig.imagingInstruments.get(0).getBinPadding().binExtents.get(1), new BinExtents(1024, 1024, 1024, 1024));
+        assertEquals(imagingConfig.imagingInstruments.get(0).getBinPadding().binTranslations.get(1), new BinTranslations(0, 0));
+        assertEquals(imagingConfig.imagingInstruments.get(0).getBinPadding().binSpacings.get(1), new BinSpacings(1.0, 1.0, 1.0));
+
+        assertEquals(imagingConfig.imagingInstruments.get(0).getBinPadding().binExtents.get(2), new BinExtents(512, 512, 1024, 1024));
+        assertEquals(imagingConfig.imagingInstruments.get(0).getBinPadding().binTranslations.get(2), new BinTranslations(0, 0));
+        assertEquals(imagingConfig.imagingInstruments.get(0).getBinPadding().binSpacings.get(2), new BinSpacings(2.0, 2.0, 1.0));
+
+        assertEquals(imagingConfig.imagingInstruments.get(0).getBinPadding().binExtents.get(4), new BinExtents(256, 256, 1024, 1024));
+        assertEquals(imagingConfig.imagingInstruments.get(0).getBinPadding().binTranslations.get(4), new BinTranslations(0, 0));
+        assertEquals(imagingConfig.imagingInstruments.get(0).getBinPadding().binSpacings.get(4), new BinSpacings(4.0, 4.0, 1.0));
+
+        assertEquals(imagingConfig.imagingInstruments.get(0).getBinPadding().binExtents.get(8), new BinExtents(128, 128, 1024, 1024));
+        assertEquals(imagingConfig.imagingInstruments.get(0).getBinPadding().binTranslations.get(8), new BinTranslations(0, 0));
+        assertEquals(imagingConfig.imagingInstruments.get(0).getBinPadding().binSpacings.get(8), new BinSpacings(8.0, 8.0, 1.0));
+
+
+
+        assertEquals(imagingConfig.imageSearchDefaultStartDate, new GregorianCalendar(2005, 8, 1, 0, 0, 0).getTime());
+        assertEquals(imagingConfig.imageSearchDefaultEndDate, new GregorianCalendar(2005, 10, 31, 0, 0, 0).getTime());
+        assertArrayEquals(imagingConfig.imageSearchFilterNames, new String[] {
+                "Filter ul (381 nm)",
+                "Filter b (429 nm)",
+                "Filter v (553 nm)",
+                "Filter w (700 nm)",
+                "Filter x (861 nm)",
+                "Filter p (960 nm)",
+                "Filter zs (1008 nm)"
+        });
+        assertArrayEquals(imagingConfig.imageSearchUserDefinedCheckBoxesNames, new String[] {});
+        assertEquals(imagingConfig.imageSearchDefaultMaxSpacecraftDistance, 26.0);
+        assertEquals(imagingConfig.imageSearchDefaultMaxResolution, 3.0);
+
+
+        LidarInstrumentConfig lidarConfig = (LidarInstrumentConfig)c.getConfigForClass(LidarInstrumentConfig.class);
+
+        assertEquals(lidarConfig.hasLidarData, true);
+        assertEquals(lidarConfig.lidarSearchDefaultStartDate, new GregorianCalendar(2005, 8, 1, 0, 0, 0).getTime());
+        assertEquals(lidarConfig.lidarSearchDefaultEndDate, new GregorianCalendar(2005, 10, 30, 0, 0, 0).getTime());
+        assertEquals(lidarConfig.lidarSearchDataSourceMap.get("Optimized"), "/ITOKAWA/LIDAR/cdr/cubes-optimized");
+        assertEquals(lidarConfig.lidarSearchDataSourceMap.get("Unfiltered"), "/ITOKAWA/LIDAR/cdr/cubes-unfiltered");
+        assertArrayEquals(lidarConfig.lidarBrowseXYZIndices, new int[] { 6, 7, 8 });
+        assertArrayEquals(lidarConfig.lidarBrowseSpacecraftIndices, new int[] { 3, 4, 5 });
+        assertEquals(lidarConfig.lidarBrowseIsSpacecraftInSphericalCoordinates, false);
+        assertEquals(lidarConfig.lidarBrowseTimeIndex, 1);
+        assertEquals(lidarConfig.lidarBrowseNoiseIndex, -1);
+        assertEquals(lidarConfig.lidarBrowseFileListResourcePath, "/edu/jhuapl/sbmt/data/HayLidarFiles.txt");
+        assertEquals(lidarConfig.lidarBrowseNumberHeaderLines, 0);
+        assertEquals(lidarConfig.lidarBrowseIsInMeters, false);
+
+        assertEquals(lidarConfig.lidarOffsetScale, 0.00044228259621279913);
+        assertEquals(lidarConfig.lidarInstrumentName, Instrument.LIDAR);
+
+        SpectrumInstrumentConfig spectrumConfig = (SpectrumInstrumentConfig)c.getConfigForClass(SpectrumInstrumentConfig.class);
+        assertEquals(spectrumConfig.spectralInstruments, new ArrayList<BasicSpectrumInstrument>());
+
+        assertArrayEquals(c.databaseRunInfos, new DBRunInfo[]
+        {
+        	new DBRunInfo(PointingSource.GASKELL, Instrument.AMICA, ShapeModelBody.ITOKAWA.toString(), "/project/nearsdc/data/GASKELL/ITOKAWA/AMICA/imagelist.txt", "amica"),
+        });
+
+        assertArrayEquals(c.presentInMissions, new Mission[] {Mission.PUBLIC_RELEASE, Mission.TEST_PUBLIC_RELEASE,
+        															Mission.STAGE_PUBLIC_RELEASE,
+        															Mission.APL_INTERNAL, Mission.TEST_APL_INTERNAL,
+        															Mission.STAGE_APL_INTERNAL,
+        															Mission.HAYABUSA2_DEPLOY, Mission.HAYABUSA2_DEV,
+        															Mission.OSIRIS_REX, Mission.OSIRIS_REX_TEST,
+        															Mission.OSIRIS_REX_DEPLOY,
+        															Mission.OSIRIS_REX_MIRROR_DEPLOY, Mission.NH_DEPLOY});
+        assertArrayEquals(c.defaultForMissions, new Mission[] {});
 	}
 
 	@Test
-	void testItokawaHudson()
+	void testItokawaOstro()
 	{
+		AsteroidConfigs c = (AsteroidConfigs)SmallBodyViewConfig.getConfig(ShapeModelBody.ITOKAWA, ShapeModelType.OSTRO);
+		FeatureConfigIOFactory.getIOForClassType(LidarInstrumentConfig.class.getSimpleName()).setViewConfig((ViewConfig)c);
+        FeatureConfigIOFactory.getIOForClassType(SpectrumInstrumentConfig.class.getSimpleName()).setViewConfig((ViewConfig)c);
+        FeatureConfigIOFactory.getIOForClassType(ImagingInstrumentConfig.class.getSimpleName()).setViewConfig((ViewConfig)c);
+        FeatureConfigIOFactory.getIOForClassType(BasemapImageConfig.class.getSimpleName()).setViewConfig((ViewConfig)c);
+        FeatureConfigIOFactory.getIOForClassType(StateHistoryConfig.class.getSimpleName()).setViewConfig((ViewConfig)c);
 
+        assertEquals(c.body, ShapeModelBody.ITOKAWA);
+        assertEquals(c.type, BodyType.ASTEROID);
+        assertEquals(c.population, ShapeModelPopulation.NEO);
+        assertEquals(c.dataUsed, ShapeModelDataUsed.RADAR_BASED);
+        assertEquals(c.author, ShapeModelType.OSTRO);
+        assertEquals(c.modelLabel, "Ostro et al. (2004)");
+        assertEquals(c.rootDirOnServer, "/HUDSON/ITOKAWA");
+        assertArrayEquals(c.getShapeModelFileNames(), prepend(c.rootDirOnServer, "25143itokawa.obj.gz"));
+        assertEquals(c.getResolutionNumberElements().get(0), 12192);
+        assertArrayEquals(c.presentInMissions, new Mission[] {Mission.PUBLIC_RELEASE, Mission.TEST_PUBLIC_RELEASE, Mission.STAGE_PUBLIC_RELEASE, Mission.STAGE_APL_INTERNAL, Mission.APL_INTERNAL, Mission.TEST_APL_INTERNAL});
+        assertArrayEquals(c.defaultForMissions, new Mission[] {});
 	}
 
 	@Test
-	void testToutatisGaskell()
+	void testToutatisHudson()
 	{
+		AsteroidConfigs c = (AsteroidConfigs)SmallBodyViewConfig.getConfig(ShapeModelBody.TOUTATIS, ShapeModelType.HUDSON);
+		FeatureConfigIOFactory.getIOForClassType(LidarInstrumentConfig.class.getSimpleName()).setViewConfig((ViewConfig)c);
+        FeatureConfigIOFactory.getIOForClassType(SpectrumInstrumentConfig.class.getSimpleName()).setViewConfig((ViewConfig)c);
+        FeatureConfigIOFactory.getIOForClassType(ImagingInstrumentConfig.class.getSimpleName()).setViewConfig((ViewConfig)c);
+        FeatureConfigIOFactory.getIOForClassType(BasemapImageConfig.class.getSimpleName()).setViewConfig((ViewConfig)c);
+        FeatureConfigIOFactory.getIOForClassType(StateHistoryConfig.class.getSimpleName()).setViewConfig((ViewConfig)c);
+
+        assertEquals(c.body, ShapeModelBody.TOUTATIS);
+        assertEquals(c.type, BodyType.ASTEROID);
+        assertEquals(c.population, ShapeModelPopulation.NEO);
+        assertEquals(c.dataUsed, ShapeModelDataUsed.RADAR_BASED);
+        assertEquals(c.author, ShapeModelType.HUDSON);
+        assertEquals(c.modelLabel, "Hudson et al. (2004)");
+        assertEquals(c.rootDirOnServer, "/toutatis/hudson");
+        assertEquals(c.getShapeModelFileExtension(), ".obj");
+        assertEquals(c.getResolutionLabels(), ImmutableList.of("Low (12796 plates)", "High (39996 plates)"));
+        assertEquals(c.getResolutionNumberElements(), ImmutableList.of(12796, 39996));
+        assertArrayEquals(c.presentInMissions, new Mission[] {Mission.PUBLIC_RELEASE, Mission.TEST_PUBLIC_RELEASE, Mission.STAGE_PUBLIC_RELEASE, Mission.STAGE_APL_INTERNAL, Mission.APL_INTERNAL, Mission.TEST_APL_INTERNAL});
+        assertArrayEquals(c.defaultForMissions, new Mission[] {});
 
 	}
 
 	@Test
 	void testCeresGaskell()
 	{
+		AsteroidConfigs c = (AsteroidConfigs)SmallBodyViewConfig.getConfig(ShapeModelBody.CERES, ShapeModelType.GASKELL);
+		FeatureConfigIOFactory.getIOForClassType(LidarInstrumentConfig.class.getSimpleName()).setViewConfig((ViewConfig)c);
+        FeatureConfigIOFactory.getIOForClassType(SpectrumInstrumentConfig.class.getSimpleName()).setViewConfig((ViewConfig)c);
+        FeatureConfigIOFactory.getIOForClassType(ImagingInstrumentConfig.class.getSimpleName()).setViewConfig((ViewConfig)c);
+        FeatureConfigIOFactory.getIOForClassType(BasemapImageConfig.class.getSimpleName()).setViewConfig((ViewConfig)c);
+        FeatureConfigIOFactory.getIOForClassType(StateHistoryConfig.class.getSimpleName()).setViewConfig((ViewConfig)c);
 
+        assertEquals(c.body, ShapeModelBody.CERES);
+        assertEquals(c.type, BodyType.ASTEROID);
+        assertEquals(c.population, ShapeModelPopulation.MAIN_BELT);
+        assertEquals(c.dataUsed, ShapeModelDataUsed.IMAGE_BASED);
+        assertEquals(c.author, ShapeModelType.GASKELL);
+        assertEquals(c.modelLabel, "SPC");
+        assertEquals(c.rootDirOnServer, "/GASKELL/CERES");
+        assertEquals(c.hasMapmaker, true);
+
+        ImagingInstrumentConfig imagingConfig = (ImagingInstrumentConfig)c.getConfigForClass(ImagingInstrumentConfig.class);
+
+        assertEquals(imagingConfig.imagingInstruments.size(), 1);
+        assertEquals(imagingConfig.imagingInstruments.get(0).getSearchQuery().getRootPath(), "/GASKELL/CERES/FC");
+        assertEquals(imagingConfig.imagingInstruments.get(0).getSearchQuery().getDataPath(), "/GASKELL/CERES/FC/images");
+        assertEquals(imagingConfig.imagingInstruments.get(0).getSearchQuery().getGalleryPath(), "/GASKELL/CERES/FC/gallery");
+        assertEquals(imagingConfig.imagingInstruments.get(0).spectralMode, SpectralImageMode.MONO);
+        assertEquals(imagingConfig.imagingInstruments.get(0).getType(), ImageType.FCCERES_IMAGE);
+        assertArrayEquals(imagingConfig.imagingInstruments.get(0).searchImageSources, new PointingSource[]{PointingSource.GASKELL, PointingSource.SPICE});
+        assertEquals(imagingConfig.imagingInstruments.get(0).getInstrumentName(), Instrument.FC);
+        assertEquals(imagingConfig.imagingInstruments.get(0).getOrientation(PointingSource.GASKELL).getRotation(), 0.0);
+        assertEquals(imagingConfig.imagingInstruments.get(0).getOrientation(PointingSource.GASKELL).getFlip(), ImageFlip.X);
+        assertEquals(imagingConfig.imagingInstruments.get(0).getOrientation(PointingSource.SPICE).getRotation(), 0.0);
+        assertEquals(imagingConfig.imagingInstruments.get(0).getOrientation(PointingSource.SPICE).getFlip(), ImageFlip.X);
+
+        assertEquals(imagingConfig.imageSearchDefaultStartDate, new GregorianCalendar(2015, GregorianCalendar.APRIL, 1, 0, 0, 0).getTime());
+        assertEquals(imagingConfig.imageSearchDefaultEndDate, new GregorianCalendar(2016, GregorianCalendar.JULY, 1, 0, 0, 0).getTime());
+        assertArrayEquals(imagingConfig.imageSearchFilterNames, new String[] {
+                "Filter 1 (735 nm)",
+                "Filter 2 (548 nm)",
+                "Filter 3 (749 nm)",
+                "Filter 4 (918 nm)",
+                "Filter 5 (978 nm)",
+                "Filter 6 (829 nm)",
+                "Filter 7 (650 nm)",
+                "Filter 8 (428 nm)"
+        });
+        assertArrayEquals(imagingConfig.imageSearchUserDefinedCheckBoxesNames, new String[] { "FC1", "FC2" });
+        assertEquals(imagingConfig.imageSearchDefaultMaxSpacecraftDistance, 40000.0);
+        assertEquals(imagingConfig.imageSearchDefaultMaxResolution, 4000.0);
+
+        assertArrayEquals(c.databaseRunInfos, new DBRunInfo[]
+        {
+        	new DBRunInfo(PointingSource.GASKELL, Instrument.FC, ShapeModelBody.CERES.toString(), "/project/nearsdc/data/GASKELL/CERES/FC/uniqFcFiles.txt", "ceres"),
+        });
+
+        assertArrayEquals(c.presentInMissions, new Mission[] {Mission.PUBLIC_RELEASE, Mission.TEST_PUBLIC_RELEASE, Mission.STAGE_PUBLIC_RELEASE, Mission.STAGE_APL_INTERNAL, Mission.APL_INTERNAL, Mission.TEST_APL_INTERNAL});
+        assertArrayEquals(c.defaultForMissions, new Mission[] {});
 	}
 
 	@Test
 	void testVestaGaskell()
 	{
+		AsteroidConfigs c = (AsteroidConfigs)SmallBodyViewConfig.getConfig(ShapeModelBody.VESTA, ShapeModelType.GASKELL);
+		FeatureConfigIOFactory.getIOForClassType(LidarInstrumentConfig.class.getSimpleName()).setViewConfig((ViewConfig)c);
+        FeatureConfigIOFactory.getIOForClassType(SpectrumInstrumentConfig.class.getSimpleName()).setViewConfig((ViewConfig)c);
+        FeatureConfigIOFactory.getIOForClassType(ImagingInstrumentConfig.class.getSimpleName()).setViewConfig((ViewConfig)c);
+        FeatureConfigIOFactory.getIOForClassType(BasemapImageConfig.class.getSimpleName()).setViewConfig((ViewConfig)c);
+        FeatureConfigIOFactory.getIOForClassType(StateHistoryConfig.class.getSimpleName()).setViewConfig((ViewConfig)c);
 
+        assertEquals(c.body, ShapeModelBody.VESTA);
+        assertEquals(c.type, BodyType.ASTEROID);
+        assertEquals(c.population, ShapeModelPopulation.MAIN_BELT);
+        assertEquals(c.dataUsed, ShapeModelDataUsed.IMAGE_BASED);
+        assertEquals(c.author, ShapeModelType.GASKELL);
+        assertEquals(c.modelLabel, "Gaskell (2013)");
+        assertEquals(c.rootDirOnServer, "/GASKELL/VESTA");
+        assertEquals(c.hasMapmaker, true);
+
+        ImagingInstrumentConfig imagingConfig = (ImagingInstrumentConfig)c.getConfigForClass(ImagingInstrumentConfig.class);
+
+        assertEquals(imagingConfig.imagingInstruments.size(), 1);
+        assertEquals(imagingConfig.imagingInstruments.get(0).getSearchQuery().getRootPath(), "/GASKELL/VESTA/FC");
+        assertEquals(imagingConfig.imagingInstruments.get(0).getSearchQuery().getDataPath(), "/GASKELL/VESTA/FC/images");
+        assertEquals(imagingConfig.imagingInstruments.get(0).getSearchQuery().getGalleryPath(), "/GASKELL/VESTA/FC/gallery");
+        assertEquals(imagingConfig.imagingInstruments.get(0).spectralMode, SpectralImageMode.MONO);
+        assertEquals(imagingConfig.imagingInstruments.get(0).getType(), ImageType.FC_IMAGE);
+        assertArrayEquals(imagingConfig.imagingInstruments.get(0).searchImageSources, new PointingSource[]{PointingSource.GASKELL, PointingSource.SPICE});
+        assertEquals(imagingConfig.imagingInstruments.get(0).getInstrumentName(), Instrument.FC);
+        assertEquals(imagingConfig.imagingInstruments.get(0).getOrientation(PointingSource.GASKELL).getRotation(), 0.0);
+        assertEquals(imagingConfig.imagingInstruments.get(0).getOrientation(PointingSource.GASKELL).getFlip(), ImageFlip.X);
+        assertEquals(imagingConfig.imagingInstruments.get(0).getOrientation(PointingSource.SPICE).getRotation(), 0.0);
+        assertEquals(imagingConfig.imagingInstruments.get(0).getOrientation(PointingSource.SPICE).getFlip(), ImageFlip.X);
+
+        assertEquals(imagingConfig.imageSearchDefaultStartDate, new GregorianCalendar(2011, 4, 3, 0, 0, 0).getTime());
+        assertEquals(imagingConfig.imageSearchDefaultEndDate, new GregorianCalendar(2012, 7, 27, 0, 0, 0).getTime());
+        assertArrayEquals(imagingConfig.imageSearchFilterNames, new String[] {
+                "Filter 1 (735 nm)",
+                "Filter 2 (548 nm)",
+                "Filter 3 (749 nm)",
+                "Filter 4 (918 nm)",
+                "Filter 5 (978 nm)",
+                "Filter 6 (829 nm)",
+                "Filter 7 (650 nm)",
+                "Filter 8 (428 nm)"
+        });
+        assertArrayEquals(imagingConfig.imageSearchUserDefinedCheckBoxesNames, new String[] { "FC1", "FC2" });
+        assertEquals(imagingConfig.imageSearchDefaultMaxSpacecraftDistance, 40000.0);
+        assertEquals(imagingConfig.imageSearchDefaultMaxResolution, 4000.0);
+
+        assertArrayEquals(c.databaseRunInfos,  new DBRunInfo[] {new DBRunInfo(PointingSource.GASKELL, Instrument.FC, ShapeModelBody.VESTA.toString(), "/project/nearsdc/data/GASKELL/VESTA/FC/uniqFcFiles.txt", "fc")});
+
+        assertArrayEquals(c.presentInMissions, new Mission[] {Mission.PUBLIC_RELEASE, Mission.TEST_PUBLIC_RELEASE, Mission.STAGE_PUBLIC_RELEASE, Mission.STAGE_APL_INTERNAL, Mission.APL_INTERNAL, Mission.TEST_APL_INTERNAL});
+        assertArrayEquals(c.defaultForMissions, new Mission[] {});
 	}
 
 	@Test
 	void testVestaThomas()
 	{
+		AsteroidConfigs c = (AsteroidConfigs)SmallBodyViewConfig.getConfig(ShapeModelBody.VESTA, ShapeModelType.THOMAS);
+		FeatureConfigIOFactory.getIOForClassType(LidarInstrumentConfig.class.getSimpleName()).setViewConfig((ViewConfig)c);
+        FeatureConfigIOFactory.getIOForClassType(SpectrumInstrumentConfig.class.getSimpleName()).setViewConfig((ViewConfig)c);
+        FeatureConfigIOFactory.getIOForClassType(ImagingInstrumentConfig.class.getSimpleName()).setViewConfig((ViewConfig)c);
+        FeatureConfigIOFactory.getIOForClassType(BasemapImageConfig.class.getSimpleName()).setViewConfig((ViewConfig)c);
+        FeatureConfigIOFactory.getIOForClassType(StateHistoryConfig.class.getSimpleName()).setViewConfig((ViewConfig)c);
 
+        assertEquals(c.body, ShapeModelBody.VESTA);
+        assertEquals(c.type, BodyType.ASTEROID);
+        assertEquals(c.population, ShapeModelPopulation.MAIN_BELT);
+        assertEquals(c.dataUsed, ShapeModelDataUsed.IMAGE_BASED);
+        assertEquals(c.author, ShapeModelType.THOMAS);
+        assertEquals(c.modelLabel, "Thomas (2000)");
+        assertEquals(c.rootDirOnServer, "/THOMAS/VESTA_OLD");
+        assertArrayEquals(c.getShapeModelFileNames(), new String[] { "/VESTA_OLD/VESTA.vtk.gz" });
+        assertEquals(c.getResolutionNumberElements().get(0), 49152);
+        assertArrayEquals(c.presentInMissions, new Mission[] {Mission.PUBLIC_RELEASE, Mission.TEST_PUBLIC_RELEASE, Mission.STAGE_PUBLIC_RELEASE, Mission.STAGE_APL_INTERNAL, Mission.APL_INTERNAL, Mission.TEST_APL_INTERNAL});
+        assertArrayEquals(c.defaultForMissions, new Mission[] {});
 	}
 
 	@Test
 	void testLutetiaGaskell()
 	{
+		AsteroidConfigs c = (AsteroidConfigs)SmallBodyViewConfig.getConfig(ShapeModelBody.LUTETIA, ShapeModelType.GASKELL);
+		FeatureConfigIOFactory.getIOForClassType(LidarInstrumentConfig.class.getSimpleName()).setViewConfig((ViewConfig)c);
+        FeatureConfigIOFactory.getIOForClassType(SpectrumInstrumentConfig.class.getSimpleName()).setViewConfig((ViewConfig)c);
+        FeatureConfigIOFactory.getIOForClassType(ImagingInstrumentConfig.class.getSimpleName()).setViewConfig((ViewConfig)c);
+        FeatureConfigIOFactory.getIOForClassType(BasemapImageConfig.class.getSimpleName()).setViewConfig((ViewConfig)c);
+        FeatureConfigIOFactory.getIOForClassType(StateHistoryConfig.class.getSimpleName()).setViewConfig((ViewConfig)c);
 
+        assertEquals(c.body, ShapeModelBody.LUTETIA);
+        assertEquals(c.type, BodyType.ASTEROID);
+        assertEquals(c.population, ShapeModelPopulation.MAIN_BELT);
+        assertEquals(c.dataUsed, ShapeModelDataUsed.IMAGE_BASED);
+        assertEquals(c.author, ShapeModelType.GASKELL);
+        assertEquals(c.modelLabel, "SPC");
+        assertEquals(c.rootDirOnServer, "/GASKELL/LUTETIA");
+
+        ImagingInstrumentConfig imagingConfig = (ImagingInstrumentConfig)c.getConfigForClass(ImagingInstrumentConfig.class);
+
+        assertEquals(imagingConfig.imagingInstruments.size(), 1);
+        assertEquals(imagingConfig.imagingInstruments.get(0).getSearchQuery().getRootPath(), "/GASKELL/LUTETIA/IMAGING");
+        assertEquals(imagingConfig.imagingInstruments.get(0).getSearchQuery().getDataPath(), "/GASKELL/LUTETIA/IMAGING/images");
+        assertEquals(imagingConfig.imagingInstruments.get(0).getSearchQuery().getGalleryPath(), null);
+        assertEquals(imagingConfig.imagingInstruments.get(0).spectralMode, SpectralImageMode.MONO);
+        assertEquals(imagingConfig.imagingInstruments.get(0).getType(), ImageType.OSIRIS_IMAGE);
+        assertArrayEquals(imagingConfig.imagingInstruments.get(0).searchImageSources, new PointingSource[]{PointingSource.GASKELL});
+        assertEquals(imagingConfig.imagingInstruments.get(0).getInstrumentName(), Instrument.OSIRIS);
+        assertEquals(imagingConfig.imagingInstruments.get(0).getOrientation(PointingSource.GASKELL).getRotation(), 0.0);
+        assertEquals(imagingConfig.imagingInstruments.get(0).getOrientation(PointingSource.GASKELL).getFlip(), ImageFlip.Y);
+
+        assertEquals(imagingConfig.imagingInstruments.get(0).getBinPadding().binExtents.get(1), new BinExtents(2048, 2048, 2048, 2048));
+        assertEquals(imagingConfig.imagingInstruments.get(0).getBinPadding().binTranslations.get(1), new BinTranslations(559, 575));
+        assertEquals(imagingConfig.imagingInstruments.get(0).getBinPadding().binSpacings.get(1), new BinSpacings(1.0, 1.0, 1.0));
+
+        assertEquals(imagingConfig.imageSearchDefaultStartDate, new GregorianCalendar(2010, 6, 10, 0, 0, 0).getTime());
+        assertEquals(imagingConfig.imageSearchDefaultEndDate, new GregorianCalendar(2010, 6, 11, 0, 0, 0).getTime());
+        assertArrayEquals(imagingConfig.imageSearchFilterNames, new String[] {});
+        assertArrayEquals(imagingConfig.imageSearchUserDefinedCheckBoxesNames, new String[] {});
+        assertEquals(imagingConfig.imageSearchDefaultMaxSpacecraftDistance, 40000.0);
+        assertEquals(imagingConfig.imageSearchDefaultMaxResolution, 4000.0);
+        assertArrayEquals(c.presentInMissions, new Mission[] {Mission.PUBLIC_RELEASE, Mission.TEST_PUBLIC_RELEASE, Mission.STAGE_PUBLIC_RELEASE, Mission.STAGE_APL_INTERNAL, Mission.APL_INTERNAL, Mission.TEST_APL_INTERNAL});
+        assertArrayEquals(c.defaultForMissions, new Mission[] {});
 	}
 
 	@Test
 	void testLutetiaJordan()
 	{
+		AsteroidConfigs c = (AsteroidConfigs)SmallBodyViewConfig.getConfig(ShapeModelBody.LUTETIA, ShapeModelType.JORDA);
+		FeatureConfigIOFactory.getIOForClassType(LidarInstrumentConfig.class.getSimpleName()).setViewConfig((ViewConfig)c);
+        FeatureConfigIOFactory.getIOForClassType(SpectrumInstrumentConfig.class.getSimpleName()).setViewConfig((ViewConfig)c);
+        FeatureConfigIOFactory.getIOForClassType(ImagingInstrumentConfig.class.getSimpleName()).setViewConfig((ViewConfig)c);
+        FeatureConfigIOFactory.getIOForClassType(BasemapImageConfig.class.getSimpleName()).setViewConfig((ViewConfig)c);
+        FeatureConfigIOFactory.getIOForClassType(StateHistoryConfig.class.getSimpleName()).setViewConfig((ViewConfig)c);
 
+        assertEquals(c.body, ShapeModelBody.LUTETIA);
+        assertEquals(c.type, BodyType.ASTEROID);
+        assertEquals(c.population, ShapeModelPopulation.MAIN_BELT);
+        assertEquals(c.dataUsed, ShapeModelDataUsed.IMAGE_BASED);
+        assertEquals(c.author, ShapeModelType.JORDA);
+        assertEquals(c.modelLabel, "Farnham et al. (2013)");
+        assertEquals(c.rootDirOnServer, "/JORDA/LUTETIA");
+        assertEquals(c.getResolutionLabels(), ImmutableList.of( //
+                "2962 plates ", "5824 plates ", "11954 plates ", "24526 plates ", //
+                "47784 plates ", "98280 plates ", "189724 plates ", "244128 plates ", //
+                "382620 plates ", "784510 plates ", "1586194 plates ", "3145728 plates" //
+            ));
+        assertEquals(c.getResolutionNumberElements(), ImmutableList.of( //
+                2962, 5824, 11954, 24526, 47784, 98280, 189724, //
+                244128, 382620, 784510, 1586194, 3145728 //
+            ));
+        assertArrayEquals(c.getShapeModelFileNames(), prepend(c.rootDirOnServer,
+                "shape_res0.vtk.gz", //
+                "shape_res1.vtk.gz", //
+                "shape_res2.vtk.gz", //
+                "shape_res3.vtk.gz", //
+                "shape_res4.vtk.gz", //
+                "shape_res5.vtk.gz", //
+                "shape_res6.vtk.gz", //
+                "shape_res7.vtk.gz", //
+                "shape_res8.vtk.gz", //
+                "shape_res9.vtk.gz", //
+                "shape_res10.vtk.gz", //
+                "shape_res11.vtk.gz" //
+            ));
+        assertArrayEquals(c.presentInMissions, new Mission[] {Mission.PUBLIC_RELEASE, Mission.TEST_PUBLIC_RELEASE, Mission.STAGE_PUBLIC_RELEASE, Mission.STAGE_APL_INTERNAL, Mission.APL_INTERNAL, Mission.TEST_APL_INTERNAL});
+        assertArrayEquals(c.defaultForMissions, new Mission[] {});
 	}
 
 	@Test
 	void testIdaThomas()
 	{
+		AsteroidConfigs c = (AsteroidConfigs)SmallBodyViewConfig.getConfig(ShapeModelBody.IDA, ShapeModelType.THOMAS);
+		FeatureConfigIOFactory.getIOForClassType(LidarInstrumentConfig.class.getSimpleName()).setViewConfig((ViewConfig)c);
+        FeatureConfigIOFactory.getIOForClassType(SpectrumInstrumentConfig.class.getSimpleName()).setViewConfig((ViewConfig)c);
+        FeatureConfigIOFactory.getIOForClassType(ImagingInstrumentConfig.class.getSimpleName()).setViewConfig((ViewConfig)c);
+        FeatureConfigIOFactory.getIOForClassType(BasemapImageConfig.class.getSimpleName()).setViewConfig((ViewConfig)c);
+        FeatureConfigIOFactory.getIOForClassType(StateHistoryConfig.class.getSimpleName()).setViewConfig((ViewConfig)c);
 
+        assertEquals(c.body, ShapeModelBody.IDA);
+        assertEquals(c.type, BodyType.ASTEROID);
+        assertEquals(c.population, ShapeModelPopulation.MAIN_BELT);
+        assertEquals(c.dataUsed, ShapeModelDataUsed.IMAGE_BASED);
+        assertEquals(c.author, ShapeModelType.THOMAS);
+        assertEquals(c.modelLabel, "Thomas et al. (2000)");
+        assertEquals(c.rootDirOnServer, "/THOMAS/IDA");
+        assertArrayEquals(c.getShapeModelFileNames(), prepend(c.rootDirOnServer, "243ida.llr.gz"));
+        assertEquals(c.getResolutionNumberElements().get(0), 32040);
+        assertArrayEquals(c.presentInMissions, new Mission[] {Mission.PUBLIC_RELEASE, Mission.TEST_PUBLIC_RELEASE, Mission.STAGE_PUBLIC_RELEASE, Mission.STAGE_APL_INTERNAL, Mission.APL_INTERNAL, Mission.TEST_APL_INTERNAL});
+        assertArrayEquals(c.defaultForMissions, new Mission[] {});
 	}
 
 	@Test
 	void testIdaStooke()
 	{
+		AsteroidConfigs c = (AsteroidConfigs)SmallBodyViewConfig.getConfig(ShapeModelBody.IDA, ShapeModelType.STOOKE);
+		FeatureConfigIOFactory.getIOForClassType(LidarInstrumentConfig.class.getSimpleName()).setViewConfig((ViewConfig)c);
+        FeatureConfigIOFactory.getIOForClassType(SpectrumInstrumentConfig.class.getSimpleName()).setViewConfig((ViewConfig)c);
+        FeatureConfigIOFactory.getIOForClassType(ImagingInstrumentConfig.class.getSimpleName()).setViewConfig((ViewConfig)c);
+        FeatureConfigIOFactory.getIOForClassType(BasemapImageConfig.class.getSimpleName()).setViewConfig((ViewConfig)c);
+        FeatureConfigIOFactory.getIOForClassType(StateHistoryConfig.class.getSimpleName()).setViewConfig((ViewConfig)c);
 
+        assertEquals(c.body, ShapeModelBody.IDA);
+        assertEquals(c.type, BodyType.ASTEROID);
+        assertEquals(c.population, ShapeModelPopulation.MAIN_BELT);
+        assertEquals(c.dataUsed, ShapeModelDataUsed.IMAGE_BASED);
+        assertEquals(c.author, ShapeModelType.STOOKE);
+        assertEquals(c.modelLabel, "Stooke (2016)");
+        assertEquals(c.rootDirOnServer, "/ida/stooke2016");
+        assertEquals(c.getShapeModelFileExtension(), ".obj");
+        assertEquals(c.getResolutionNumberElements().get(0), 5040);
+        assertEquals(c.density, 2600.);
+        assertEquals(c.rotationRate, 0.0003766655);
+        assertArrayEquals(c.presentInMissions, new Mission[] {Mission.PUBLIC_RELEASE, Mission.TEST_PUBLIC_RELEASE, Mission.STAGE_PUBLIC_RELEASE, Mission.STAGE_APL_INTERNAL, Mission.APL_INTERNAL, Mission.TEST_APL_INTERNAL});
+        assertArrayEquals(c.defaultForMissions,new Mission[] {});
 	}
 
 	@Test
 	void testMathildeThomas()
 	{
+		AsteroidConfigs c = (AsteroidConfigs)SmallBodyViewConfig.getConfig(ShapeModelBody.MATHILDE, ShapeModelType.THOMAS);
+		FeatureConfigIOFactory.getIOForClassType(LidarInstrumentConfig.class.getSimpleName()).setViewConfig((ViewConfig)c);
+        FeatureConfigIOFactory.getIOForClassType(SpectrumInstrumentConfig.class.getSimpleName()).setViewConfig((ViewConfig)c);
+        FeatureConfigIOFactory.getIOForClassType(ImagingInstrumentConfig.class.getSimpleName()).setViewConfig((ViewConfig)c);
+        FeatureConfigIOFactory.getIOForClassType(BasemapImageConfig.class.getSimpleName()).setViewConfig((ViewConfig)c);
+        FeatureConfigIOFactory.getIOForClassType(StateHistoryConfig.class.getSimpleName()).setViewConfig((ViewConfig)c);
 
+        assertEquals(c.body, ShapeModelBody.MATHILDE);
+        assertEquals(c.type, BodyType.ASTEROID);
+        assertEquals(c.population, ShapeModelPopulation.MAIN_BELT);
+        assertEquals(c.dataUsed, ShapeModelDataUsed.IMAGE_BASED);
+        assertEquals(c.author, ShapeModelType.THOMAS);
+        assertEquals(c.modelLabel, "Thomas et al. (2000)");
+        assertEquals(c.rootDirOnServer, "/THOMAS/MATHILDE");
+        assertArrayEquals(c.getShapeModelFileNames(), prepend(c.rootDirOnServer, "253mathilde.llr.gz"));
+        assertEquals(c.getResolutionNumberElements().get(0), 14160);
+        assertArrayEquals(c.presentInMissions, new Mission[] {Mission.PUBLIC_RELEASE, Mission.TEST_PUBLIC_RELEASE, Mission.STAGE_PUBLIC_RELEASE, Mission.STAGE_APL_INTERNAL, Mission.APL_INTERNAL, Mission.TEST_APL_INTERNAL});
+        assertArrayEquals(c.defaultForMissions, new Mission[] {});
 	}
 
 	@Test
 	void testMathildeStooke()
 	{
+		AsteroidConfigs c = (AsteroidConfigs)SmallBodyViewConfig.getConfig(ShapeModelBody.MATHILDE, ShapeModelType.STOOKE);
+		FeatureConfigIOFactory.getIOForClassType(LidarInstrumentConfig.class.getSimpleName()).setViewConfig((ViewConfig)c);
+        FeatureConfigIOFactory.getIOForClassType(SpectrumInstrumentConfig.class.getSimpleName()).setViewConfig((ViewConfig)c);
+        FeatureConfigIOFactory.getIOForClassType(ImagingInstrumentConfig.class.getSimpleName()).setViewConfig((ViewConfig)c);
+        FeatureConfigIOFactory.getIOForClassType(BasemapImageConfig.class.getSimpleName()).setViewConfig((ViewConfig)c);
+        FeatureConfigIOFactory.getIOForClassType(StateHistoryConfig.class.getSimpleName()).setViewConfig((ViewConfig)c);
 
+        assertEquals(c.body, ShapeModelBody.MATHILDE);
+        assertEquals(c.type, BodyType.ASTEROID);
+        assertEquals(c.population, ShapeModelPopulation.MAIN_BELT);
+        assertEquals(c.dataUsed, ShapeModelDataUsed.IMAGE_BASED);
+        assertEquals(c.author, ShapeModelType.STOOKE);
+        assertEquals(c.modelLabel, "Stooke (2016)");
+        assertEquals(c.rootDirOnServer, "/mathilde/stooke2016");
+        assertEquals(c.getShapeModelFileExtension(), ".obj");
+        assertEquals(c.density, 1300.);
+        assertEquals(c.rotationRate, 0.0000041780);
+        assertEquals(c.getResolutionNumberElements().get(0), 5040);
+
+        assertArrayEquals(c.presentInMissions, new Mission[] {Mission.PUBLIC_RELEASE, Mission.TEST_PUBLIC_RELEASE, Mission.STAGE_PUBLIC_RELEASE, Mission.STAGE_APL_INTERNAL, Mission.APL_INTERNAL, Mission.TEST_APL_INTERNAL});
+        assertArrayEquals(c.defaultForMissions, new Mission[] {});
 	}
 
 	@Test
 	void testGaspraThomas()
 	{
+		AsteroidConfigs c = (AsteroidConfigs)SmallBodyViewConfig.getConfig(ShapeModelBody.GASPRA, ShapeModelType.THOMAS);
+		FeatureConfigIOFactory.getIOForClassType(LidarInstrumentConfig.class.getSimpleName()).setViewConfig((ViewConfig)c);
+        FeatureConfigIOFactory.getIOForClassType(SpectrumInstrumentConfig.class.getSimpleName()).setViewConfig((ViewConfig)c);
+        FeatureConfigIOFactory.getIOForClassType(ImagingInstrumentConfig.class.getSimpleName()).setViewConfig((ViewConfig)c);
+        FeatureConfigIOFactory.getIOForClassType(BasemapImageConfig.class.getSimpleName()).setViewConfig((ViewConfig)c);
+        FeatureConfigIOFactory.getIOForClassType(StateHistoryConfig.class.getSimpleName()).setViewConfig((ViewConfig)c);
 
+        assertEquals(c.body, ShapeModelBody.GASPRA);
+        assertEquals(c.type, BodyType.ASTEROID);
+        assertEquals(c.population, ShapeModelPopulation.MAIN_BELT);
+        assertEquals(c.dataUsed, ShapeModelDataUsed.IMAGE_BASED);
+        assertEquals(c.author, ShapeModelType.THOMAS);
+        assertEquals(c.modelLabel, "Thomas et al. (2000)");
+        assertEquals(c.rootDirOnServer, "/THOMAS/GASPRA");
+        assertArrayEquals(c.getShapeModelFileNames(), prepend(c.rootDirOnServer, "951gaspra.llr.gz"));
+        assertEquals(c.getResolutionNumberElements().get(0), 32040);
+        assertArrayEquals(c.presentInMissions, new Mission[] {Mission.PUBLIC_RELEASE, Mission.TEST_PUBLIC_RELEASE, Mission.STAGE_PUBLIC_RELEASE, Mission.STAGE_APL_INTERNAL, Mission.APL_INTERNAL, Mission.TEST_APL_INTERNAL});
+        assertArrayEquals(c.defaultForMissions, new Mission[] {});
 	}
 
 	@Test
@@ -643,8 +1116,8 @@ class AsteroidConfigsTest
         assertEquals(c.author, ShapeModelType.JORDA);
         assertEquals(c.modelLabel, "Farnham and Jorda (2013)");
         assertEquals(c.rootDirOnServer, "/JORDA/STEINS");
-        assertEquals(c.getShapeModelFileNames(), prepend(c.rootDirOnServer, "steins_cart.plt.gz"));
-        assertEquals(c.getResolutionNumberElements().get(0), 2048);
+        assertArrayEquals(c.getShapeModelFileNames(), prepend(c.rootDirOnServer, "steins_cart.plt.gz"));
+        assertEquals(c.getResolutionNumberElements().get(0), 20480);
 
         assertArrayEquals(c.presentInMissions, new Mission[] {Mission.PUBLIC_RELEASE, Mission.TEST_PUBLIC_RELEASE, Mission.STAGE_PUBLIC_RELEASE, Mission.STAGE_APL_INTERNAL, Mission.APL_INTERNAL, Mission.TEST_APL_INTERNAL});
         assertArrayEquals(c.defaultForMissions, new Mission[] {});

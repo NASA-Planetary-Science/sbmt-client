@@ -2,13 +2,16 @@ package edu.jhuapl.sbmt.client.configs;
 
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.fail;
 
+import java.io.File;
+import java.util.Date;
 import java.util.GregorianCalendar;
 
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
+
+import com.google.common.collect.ImmutableList;
 
 import edu.jhuapl.saavtk.config.ConfigArrayList;
 import edu.jhuapl.saavtk.config.IBodyViewConfig;
@@ -16,6 +19,7 @@ import edu.jhuapl.saavtk.config.ViewConfig;
 import edu.jhuapl.saavtk.model.ShapeModelBody;
 import edu.jhuapl.saavtk.model.ShapeModelType;
 import edu.jhuapl.saavtk.util.Configuration;
+import edu.jhuapl.saavtk.util.SafeURLPaths;
 import edu.jhuapl.sbmt.config.BasicConfigInfo;
 import edu.jhuapl.sbmt.config.SmallBodyViewConfig;
 import edu.jhuapl.sbmt.core.body.BodyType;
@@ -24,6 +28,7 @@ import edu.jhuapl.sbmt.core.body.ShapeModelPopulation;
 import edu.jhuapl.sbmt.core.client.Mission;
 import edu.jhuapl.sbmt.core.config.FeatureConfigIOFactory;
 import edu.jhuapl.sbmt.core.config.Instrument;
+import edu.jhuapl.sbmt.core.io.DBRunInfo;
 import edu.jhuapl.sbmt.core.pointing.PointingSource;
 import edu.jhuapl.sbmt.image.config.BasemapImageConfig;
 import edu.jhuapl.sbmt.image.config.BasemapImageConfigIO;
@@ -141,6 +146,94 @@ class CometConfigsTest
 	{
 	}
 
+	protected static String[] prepend(String prefix, String... strings)
+	    {
+	        String[] result = new String[strings.length];
+	        int index = 0;
+	        for (String string : strings)
+	        {
+	            result[index++] = SafeURLPaths.instance().getString(prefix, string);
+	        }
+
+	        return result;
+	    }
+
+	private static String[] filterNamesV03 = {
+	            // If a name begins with a star, it is not selected by
+	            // default
+	            "*Filter 1,2", //
+	            "*Filter 1,6", //
+	            "*Filter 1,8", //
+	            "Filter 2,2", //
+	            "*Filter 2,3", //
+	            "*Filter 2,4", //
+	            "*Filter 2,7", //
+	            "*Filter 2,8", //
+	            "*Filter 4,1", //
+	            "*Filter 5,1", //
+	            "*Filter 5,4", //
+	            "*Filter 6,1" //
+	    };
+
+	private static String[] filterNamesV2 = {
+	            // If a name, begins with a star, it is not selected by
+	            // default
+	            "*Filter 1,2", //
+	            "*Filter 1,6", //
+	            "*Filter 1,8", //
+	            "Filter 2,2", //
+	            "*Filter 2,3", //
+	            "*Filter 2,4", //
+	            "*Filter 2,7", //
+	            "*Filter 2,8", //
+	            "*Filter 4,1", //
+	            "*Filter 5,1", //
+	            "*Filter 5,4", //
+	            "*Filter 6,1", //
+	            "*Filter 1,3", //
+	            "*Filter 1,5", //
+	            "*Filter 1,7", //
+	            "*Filter 3,1", //
+	            "*Filter 7,1", //
+	            "*Filter 8,2", //
+	            "*Filter 8,4", //
+	            "*Filter 8,7", //
+	            "*Filter 8,8" //
+	    };
+
+	private static String[] filterNamesV3 = {
+	            // If a name, begins with a star, it is not selected by
+	            // default
+	            "*Filter 1,2", //
+	            "*Filter 1,6", //
+	            "*Filter 1,8", //
+	            "Filter 2,2", //
+	            "*Filter 2,3", //
+	            "*Filter 2,4", //
+	            "*Filter 2,7", //
+	            "*Filter 2,8", //
+	            "*Filter 4,1", //
+	            "*Filter 5,1", //
+	            "*Filter 5,4", //
+	            "*Filter 6,1", //
+	            "*Filter 1,3", //
+	            "*Filter 1,5", //
+	            "*Filter 1,7", //
+	            "*Filter 3,1", //
+	            "*Filter 7,1", //
+	            "*Filter 8,2", //
+	            "*Filter 8,4", //
+	            "*Filter 8,7", //
+	            "*Filter 8,8", //
+	            "*Filter 2,1" //
+	    };
+
+	private static final Date ImageSearchDefaultStartDate = new GregorianCalendar(2005, 6, 4, 0, 0, 0).getTime();
+    // Months are 0-based: FEBRUARY 16 is 1, 16 not 2, 16.
+    private static final Date ImageSearchDefaultEndDate = new GregorianCalendar(2011, 1, 16, 0, 0, 0).getTime();
+
+    private static final PointingSource[] SumFiles = new PointingSource[] { PointingSource.GASKELL };
+
 	@Test
 	void test67P()
 	{
@@ -192,7 +285,56 @@ class CometConfigsTest
         FeatureConfigIOFactory.getIOForClassType(ImagingInstrumentConfig.class.getSimpleName()).setViewConfig((ViewConfig)c);
         FeatureConfigIOFactory.getIOForClassType(BasemapImageConfig.class.getSimpleName()).setViewConfig((ViewConfig)c);
         FeatureConfigIOFactory.getIOForClassType(StateHistoryConfig.class.getSimpleName()).setViewConfig((ViewConfig)c);
-        fail("Not yet implemented");
+
+        assertEquals(c.body, ShapeModelBody._67P);
+        assertEquals(c.type, BodyType.COMETS);
+        assertEquals(c.population, ShapeModelPopulation.NA);
+        assertEquals(c.dataUsed, ShapeModelDataUsed.IMAGE_BASED);
+        assertEquals(c.author, ShapeModelType.DLR);
+        assertEquals(c.version, "SHAP4S");
+        assertEquals(c.rootDirOnServer, "/DLR/67P");
+        assertEquals(c.modelLabel, "DLR (SHAP4S V0.9)");
+        assertArrayEquals(c.getShapeModelFileNames(), prepend(c.rootDirOnServer, //
+                "cg-dlr_spg-shap4s-v0.9_64m.ply.gz", "cg-dlr_spg-shap4s-v0.9_32m.ply.gz", "cg-dlr_spg-shap4s-v0.9_16m.ply.gz", "cg-dlr_spg-shap4s-v0.9_8m.ply.gz", "cg-dlr_spg-shap4s-v0.9_4m.ply.gz", "cg-dlr_spg-shap4s-v0.9.ply.gz")); //
+
+
+        ImagingInstrumentConfig imagingConfig = (ImagingInstrumentConfig)c.getConfigForClass(ImagingInstrumentConfig.class);
+
+        assertEquals(imagingConfig.imagingInstruments.size(), 1);
+        assertEquals(imagingConfig.imagingInstruments.get(0).getSearchQuery().getRootPath(), "/DLR/67P/IMAGING");
+        assertEquals(imagingConfig.imagingInstruments.get(0).getSearchQuery().getDataPath(), "/DLR/67P/IMAGING/images");
+        assertEquals(imagingConfig.imagingInstruments.get(0).getSearchQuery().getGalleryPath(), "/DLR/67P/IMAGING/images/gallery");
+        assertEquals(imagingConfig.imagingInstruments.get(0).spectralMode, SpectralImageMode.MONO);
+        assertEquals(imagingConfig.imagingInstruments.get(0).getType(), ImageType.OSIRIS_IMAGE);
+        assertArrayEquals(imagingConfig.imagingInstruments.get(0).searchImageSources, new PointingSource[]{PointingSource.GASKELL});
+        assertEquals(imagingConfig.imagingInstruments.get(0).getInstrumentName(), Instrument.OSIRIS);
+        assertEquals(imagingConfig.imagingInstruments.get(0).getOrientation(PointingSource.GASKELL).getRotation(), 0.0);
+        assertEquals(imagingConfig.imagingInstruments.get(0).getOrientation(PointingSource.GASKELL).getFlip(), ImageFlip.Y);
+
+
+        assertEquals(imagingConfig.imageSearchDefaultStartDate, new GregorianCalendar(2014, 7, 1, 0, 0, 0).getTime());
+        assertEquals(imagingConfig.imageSearchDefaultEndDate, new GregorianCalendar(2014, 11, 31, 0, 0, 0).getTime());
+        assertArrayEquals(imagingConfig.imageSearchFilterNames, filterNamesV03);
+        assertArrayEquals(imagingConfig.imageSearchUserDefinedCheckBoxesNames, new String[] { "NAC", "*WAC" });
+        assertEquals(imagingConfig.imageSearchDefaultMaxSpacecraftDistance, 40000.0);
+        assertEquals(imagingConfig.imageSearchDefaultMaxResolution, 4000.0);
+
+        assertEquals(c.getResolutionLabels(), ImmutableList.of( //
+                "17442 plates ", "72770 plates ", "298442 plates ", "1214922 plates ", //
+                "4895631 plates ", "16745283 plates " //
+        ));
+        assertEquals(c.getResolutionNumberElements(), ImmutableList.of( //
+                17442, 72770, 298442, 1214922, 4895631, 16745283 //
+        ));
+        //
+        assertEquals(c.hasColoringData, false);
+
+        assertArrayEquals(c.databaseRunInfos, new DBRunInfo[] { new DBRunInfo(PointingSource.GASKELL, Instrument.OSIRIS, ShapeModelBody._67P.toString(), "/project/nearsdc/data/DLR/67P/IMAGING/imagelist-fullpath.txt", "67p_dlr"),
+        });
+
+        assertArrayEquals(c.presentInMissions,
+                new Mission[] { Mission.PUBLIC_RELEASE, Mission.TEST_PUBLIC_RELEASE, Mission.STAGE_PUBLIC_RELEASE, Mission.STAGE_APL_INTERNAL, Mission.APL_INTERNAL, Mission.TEST_APL_INTERNAL });
+        assertArrayEquals(c.defaultForMissions, new Mission[] {});
 	}
 
 	@Test
@@ -204,7 +346,41 @@ class CometConfigsTest
         FeatureConfigIOFactory.getIOForClassType(ImagingInstrumentConfig.class.getSimpleName()).setViewConfig((ViewConfig)c);
         FeatureConfigIOFactory.getIOForClassType(BasemapImageConfig.class.getSimpleName()).setViewConfig((ViewConfig)c);
         FeatureConfigIOFactory.getIOForClassType(StateHistoryConfig.class.getSimpleName()).setViewConfig((ViewConfig)c);
-        fail("Not yet implemented");
+
+        assertEquals(c.body, ShapeModelBody._67P);
+        assertEquals(c.type, BodyType.COMETS);
+        assertEquals(c.population, ShapeModelPopulation.NA);
+        assertEquals(c.dataUsed, ShapeModelDataUsed.IMAGE_BASED);
+        assertEquals(c.author, ShapeModelType.GASKELL);
+        assertEquals(c.version, "V2");
+        assertEquals(c.rootDirOnServer, "/GASKELL/67P_V2");
+
+        ImagingInstrumentConfig imagingConfig = (ImagingInstrumentConfig)c.getConfigForClass(ImagingInstrumentConfig.class);
+
+        assertEquals(imagingConfig.imagingInstruments.size(), 1);
+        assertEquals(imagingConfig.imagingInstruments.get(0).getSearchQuery().getRootPath(), "/GASKELL/67P_V2/IMAGING");
+        assertEquals(imagingConfig.imagingInstruments.get(0).getSearchQuery().getDataPath(), "/GASKELL/67P_V2/IMAGING/images");
+        assertEquals(imagingConfig.imagingInstruments.get(0).getSearchQuery().getGalleryPath(), "/GASKELL/67P_V3/IMAGING/gallery");
+        assertEquals(imagingConfig.imagingInstruments.get(0).spectralMode, SpectralImageMode.MONO);
+        assertEquals(imagingConfig.imagingInstruments.get(0).getType(), ImageType.OSIRIS_IMAGE);
+        assertArrayEquals(imagingConfig.imagingInstruments.get(0).searchImageSources, new PointingSource[]{PointingSource.GASKELL});
+        assertEquals(imagingConfig.imagingInstruments.get(0).getInstrumentName(), Instrument.OSIRIS);
+        assertEquals(imagingConfig.imagingInstruments.get(0).getOrientation(PointingSource.GASKELL).getRotation(), 0.0);
+        assertEquals(imagingConfig.imagingInstruments.get(0).getOrientation(PointingSource.GASKELL).getFlip(), ImageFlip.Y);
+
+        assertEquals(imagingConfig.imageSearchDefaultStartDate, new GregorianCalendar(2014, 6, 1, 0, 0, 0).getTime());
+        assertEquals(imagingConfig.imageSearchDefaultEndDate, new GregorianCalendar(2015, 11, 31, 0, 0, 0).getTime());
+        assertArrayEquals(imagingConfig.imageSearchFilterNames, filterNamesV2);
+        assertArrayEquals(imagingConfig.imageSearchUserDefinedCheckBoxesNames, new String[] { "NAC", "*WAC" });
+        assertEquals(imagingConfig.imageSearchDefaultMaxSpacecraftDistance, 40000.0);
+        assertEquals(imagingConfig.imageSearchDefaultMaxResolution, 4000.0);
+
+        assertArrayEquals(c.databaseRunInfos, new DBRunInfo[] { new DBRunInfo(PointingSource.GASKELL, Instrument.OSIRIS, ShapeModelBody._67P.toString(), "/project/nearsdc/data/GASKELL/67P_V2/IMAGING/imagelist-fullpath.txt", "67p_v2"),
+        });
+
+        assertArrayEquals(c.presentInMissions,
+                new Mission[] { Mission.PUBLIC_RELEASE, Mission.TEST_PUBLIC_RELEASE, Mission.STAGE_PUBLIC_RELEASE, Mission.STAGE_APL_INTERNAL, Mission.APL_INTERNAL, Mission.TEST_APL_INTERNAL });
+        assertArrayEquals(c.defaultForMissions, new Mission[] {});
 	}
 
 	@Test
@@ -216,7 +392,45 @@ class CometConfigsTest
         FeatureConfigIOFactory.getIOForClassType(ImagingInstrumentConfig.class.getSimpleName()).setViewConfig((ViewConfig)c);
         FeatureConfigIOFactory.getIOForClassType(BasemapImageConfig.class.getSimpleName()).setViewConfig((ViewConfig)c);
         FeatureConfigIOFactory.getIOForClassType(StateHistoryConfig.class.getSimpleName()).setViewConfig((ViewConfig)c);
-        fail("Not yet implemented");
+
+        assertEquals(c.body, ShapeModelBody._67P);
+        assertEquals(c.type, BodyType.COMETS);
+        assertEquals(c.population, ShapeModelPopulation.NA);
+        assertEquals(c.dataUsed, ShapeModelDataUsed.IMAGE_BASED);
+        assertEquals(c.author, ShapeModelType.GASKELL);
+        assertEquals(c.version, "V3");
+        assertEquals(c.rootDirOnServer, "/GASKELL/67P_V3");
+
+        assertEquals(c.hasCustomBodyCubeSize, true);
+        assertEquals(c.customBodyCubeSize, 0.10); // km
+
+        ImagingInstrumentConfig imagingConfig = (ImagingInstrumentConfig)c.getConfigForClass(ImagingInstrumentConfig.class);
+
+        assertEquals(imagingConfig.imagingInstruments.size(), 1);
+        assertEquals(imagingConfig.imagingInstruments.get(0).getSearchQuery().getRootPath(), "/GASKELL/67P_V3/IMAGING");
+        assertEquals(imagingConfig.imagingInstruments.get(0).getSearchQuery().getDataPath(), "/GASKELL/67P_V3/IMAGING/images");
+        assertEquals(imagingConfig.imagingInstruments.get(0).getSearchQuery().getGalleryPath(), "/GASKELL/67P_V3/IMAGING/gallery");
+        assertEquals(imagingConfig.imagingInstruments.get(0).spectralMode, SpectralImageMode.MONO);
+        assertEquals(imagingConfig.imagingInstruments.get(0).getType(), ImageType.OSIRIS_IMAGE);
+        assertArrayEquals(imagingConfig.imagingInstruments.get(0).searchImageSources, new PointingSource[]{PointingSource.GASKELL});
+        assertEquals(imagingConfig.imagingInstruments.get(0).getInstrumentName(), Instrument.OSIRIS);
+        assertEquals(imagingConfig.imagingInstruments.get(0).getOrientation(PointingSource.GASKELL).getRotation(), 0.0);
+        assertEquals(imagingConfig.imagingInstruments.get(0).getOrientation(PointingSource.GASKELL).getFlip(), ImageFlip.Y);
+
+
+        assertEquals(imagingConfig.imageSearchDefaultStartDate, new GregorianCalendar(2014, 6, 1, 0, 0, 0).getTime());
+        assertEquals(imagingConfig.imageSearchDefaultEndDate, new GregorianCalendar(2016, 0, 31, 0, 0, 0).getTime());
+        assertArrayEquals(imagingConfig.imageSearchFilterNames, filterNamesV3);
+        assertArrayEquals(imagingConfig.imageSearchUserDefinedCheckBoxesNames, new String[] { "NAC", "*WAC" });
+        assertEquals(imagingConfig.imageSearchDefaultMaxSpacecraftDistance, 40000.0);
+        assertEquals(imagingConfig.imageSearchDefaultMaxResolution, 4000.0);
+
+        assertArrayEquals(c.databaseRunInfos, new DBRunInfo[] { new DBRunInfo(PointingSource.GASKELL, Instrument.OSIRIS, ShapeModelBody._67P.toString(), "/project/nearsdc/data/GASKELL/67P_V3/IMAGING/imagelist-fullpath.txt", "67p_v3"),
+        });
+
+        assertArrayEquals(c.presentInMissions,
+                new Mission[] { Mission.PUBLIC_RELEASE, Mission.TEST_PUBLIC_RELEASE, Mission.STAGE_PUBLIC_RELEASE, Mission.STAGE_APL_INTERNAL, Mission.APL_INTERNAL, Mission.TEST_APL_INTERNAL });
+        assertArrayEquals(c.defaultForMissions, new Mission[] {});
 	}
 
 	@Test
@@ -228,7 +442,22 @@ class CometConfigsTest
         FeatureConfigIOFactory.getIOForClassType(ImagingInstrumentConfig.class.getSimpleName()).setViewConfig((ViewConfig)c);
         FeatureConfigIOFactory.getIOForClassType(BasemapImageConfig.class.getSimpleName()).setViewConfig((ViewConfig)c);
         FeatureConfigIOFactory.getIOForClassType(StateHistoryConfig.class.getSimpleName()).setViewConfig((ViewConfig)c);
-        fail("Not yet implemented");
+
+        assertEquals(c.body, ShapeModelBody.HALLEY);
+        assertEquals(c.type, BodyType.COMETS);
+        assertEquals(c.population, ShapeModelPopulation.NA);
+        assertEquals(c.dataUsed, ShapeModelDataUsed.IMAGE_BASED);
+        assertEquals(c.author, ShapeModelType.STOOKE);
+        assertEquals(c.modelLabel, "Stooke (2016)");
+        assertEquals(c.rootDirOnServer, "/halley/stooke2016");
+        assertEquals(c.getShapeModelFileExtension(), ".obj");
+        assertEquals(c.density, 600);
+        assertEquals(c.rotationRate, 0.0000323209);
+        assertEquals(c.getResolutionNumberElements(), ImmutableList.of(5040));
+
+        assertArrayEquals(c.presentInMissions,
+                new Mission[] { Mission.PUBLIC_RELEASE, Mission.TEST_PUBLIC_RELEASE, Mission.STAGE_PUBLIC_RELEASE, Mission.STAGE_APL_INTERNAL, Mission.APL_INTERNAL, Mission.TEST_APL_INTERNAL });
+        assertArrayEquals(c.defaultForMissions, new Mission[] {});
 	}
 
 	@Test
@@ -240,7 +469,19 @@ class CometConfigsTest
         FeatureConfigIOFactory.getIOForClassType(ImagingInstrumentConfig.class.getSimpleName()).setViewConfig((ViewConfig)c);
         FeatureConfigIOFactory.getIOForClassType(BasemapImageConfig.class.getSimpleName()).setViewConfig((ViewConfig)c);
         FeatureConfigIOFactory.getIOForClassType(StateHistoryConfig.class.getSimpleName()).setViewConfig((ViewConfig)c);
-        fail("Not yet implemented");
+
+        assertEquals(c.body, ShapeModelBody.HARTLEY);
+        assertEquals(c.type, BodyType.COMETS);
+        assertEquals(c.population, ShapeModelPopulation.NA);
+        assertEquals(c.dataUsed, ShapeModelDataUsed.IMAGE_BASED);
+        assertEquals(c.author, ShapeModelType.THOMAS);
+        assertEquals(c.modelLabel, "Farnham and Thomas (2013)");
+        assertEquals(c.rootDirOnServer, "/THOMAS/HARTLEY");
+        assertArrayEquals(c.getShapeModelFileNames(), prepend(c.rootDirOnServer, "hartley2_2012_cart.plt.gz"));
+        assertEquals(c.getResolutionNumberElements(), ImmutableList.of(32040));
+        assertArrayEquals(c.presentInMissions,
+                new Mission[] { Mission.PUBLIC_RELEASE, Mission.TEST_PUBLIC_RELEASE, Mission.STAGE_PUBLIC_RELEASE, Mission.STAGE_APL_INTERNAL, Mission.APL_INTERNAL, Mission.TEST_APL_INTERNAL });
+        assertArrayEquals(c.defaultForMissions, new Mission[] {});
 	}
 
 	@Test
@@ -252,7 +493,107 @@ class CometConfigsTest
         FeatureConfigIOFactory.getIOForClassType(ImagingInstrumentConfig.class.getSimpleName()).setViewConfig((ViewConfig)c);
         FeatureConfigIOFactory.getIOForClassType(BasemapImageConfig.class.getSimpleName()).setViewConfig((ViewConfig)c);
         FeatureConfigIOFactory.getIOForClassType(StateHistoryConfig.class.getSimpleName()).setViewConfig((ViewConfig)c);
-        fail("Not yet implemented");
+
+        assertEquals(c.body, ShapeModelBody.TEMPEL_1);
+        assertEquals(c.type, BodyType.COMETS);
+        assertEquals(c.population, ShapeModelPopulation.NA);
+        assertEquals(c.dataUsed, ShapeModelDataUsed.IMAGE_BASED);
+        assertEquals(c.modelLabel, "Ernst et al. (2019)");
+        assertEquals(c.author, ShapeModelType.provide(c.modelLabel.replaceAll("\\W+", "-").replaceAll("-$", "").toLowerCase()));
+        assertEquals(c.rootDirOnServer,  "/tempel1/" + c.author);
+        assertEquals(c.getShapeModelFileExtension(), ".obj");
+        assertArrayEquals(c.presentInMissions, new Mission[] { Mission.STAGE_APL_INTERNAL, Mission.APL_INTERNAL,
+				Mission.TEST_APL_INTERNAL, Mission.PUBLIC_RELEASE, Mission.STAGE_PUBLIC_RELEASE,
+				Mission.TEST_PUBLIC_RELEASE });
+        assertArrayEquals(c.defaultForMissions, new Mission[] {});
+
+        String modelId = c.author.name().replaceAll("[\\s-_]+", "-").toLowerCase();
+        String bodyId = c.body.name().replaceAll("[\\s-_]+", "-").toLowerCase();
+        String tableBaseName = (bodyId + "_" + modelId + "_").replaceAll("-", "_").toLowerCase();
+
+
+        String itsDir = c.rootDirOnServer + "/its";
+        String itsTable = tableBaseName + "its";
+        String itsDataDir = "/deep-impact/its/";
+        itsDataDir = itsDir + File.separator + "images";
+
+        String hriDir = c.rootDirOnServer + "/hri";
+        String hriTable = tableBaseName + "hri";
+        String hriDataDir = "/deep-impact/hri/";
+        hriDataDir = hriDir + File.separator + "images";
+
+        String mriDir = c.rootDirOnServer + "/mri";
+        String mriTable = tableBaseName + "mri";
+        String mriDataDir = "/deep-impact/mri/";
+        mriDataDir = mriDir + File.separator + "images";
+
+        String navcamDir = c.rootDirOnServer + "/navcam";
+        String navcamTable = tableBaseName + "navcam";
+        String navcamDataDir = "/stardust/navcam/";
+        navcamDataDir = navcamDir + File.separator + "images";
+
+        ImagingInstrumentConfig imagingConfig = (ImagingInstrumentConfig)c.getConfigForClass(ImagingInstrumentConfig.class);
+
+        assertEquals(imagingConfig.imagingInstruments.size(), 4);
+        assertEquals(imagingConfig.imagingInstruments.get(0).getSearchQuery().getRootPath(), itsDir);
+        assertEquals(imagingConfig.imagingInstruments.get(0).getSearchQuery().getDataPath(), itsDataDir);
+        assertEquals(imagingConfig.imagingInstruments.get(0).getSearchQuery().getGalleryPath(), null);
+        assertEquals(imagingConfig.imagingInstruments.get(0).spectralMode, SpectralImageMode.MONO);
+        assertEquals(imagingConfig.imagingInstruments.get(0).getType(), ImageType.valueOf("ITS_IMAGE"));
+        assertArrayEquals(imagingConfig.imagingInstruments.get(0).searchImageSources, SumFiles);
+        assertEquals(imagingConfig.imagingInstruments.get(0).getInstrumentName(), Instrument.valueFor("ITS"));
+        assertEquals(imagingConfig.imagingInstruments.get(0).getOrientation(PointingSource.GASKELL).getRotation(), 0.0);
+        assertEquals(imagingConfig.imagingInstruments.get(0).getOrientation(PointingSource.GASKELL).getFlip(), ImageFlip.NONE);
+
+        assertEquals(imagingConfig.imagingInstruments.get(1).getSearchQuery().getRootPath(), hriDir);
+        assertEquals(imagingConfig.imagingInstruments.get(1).getSearchQuery().getDataPath(), hriDataDir);
+        assertEquals(imagingConfig.imagingInstruments.get(1).getSearchQuery().getGalleryPath(), null);
+        assertEquals(imagingConfig.imagingInstruments.get(1).spectralMode, SpectralImageMode.MONO);
+        assertEquals(imagingConfig.imagingInstruments.get(1).getType(), ImageType.valueOf("HRI_IMAGE"));
+        assertArrayEquals(imagingConfig.imagingInstruments.get(1).searchImageSources, SumFiles);
+        assertEquals(imagingConfig.imagingInstruments.get(1).getInstrumentName(), Instrument.valueFor("HRI"));
+        assertEquals(imagingConfig.imagingInstruments.get(1).getOrientation(PointingSource.GASKELL).getRotation(), 0.0);
+        assertEquals(imagingConfig.imagingInstruments.get(1).getOrientation(PointingSource.GASKELL).getFlip(), ImageFlip.NONE);
+
+        assertEquals(imagingConfig.imagingInstruments.get(2).getSearchQuery().getRootPath(), mriDir);
+        assertEquals(imagingConfig.imagingInstruments.get(2).getSearchQuery().getDataPath(), mriDataDir);
+        assertEquals(imagingConfig.imagingInstruments.get(2).getSearchQuery().getGalleryPath(), null);
+        assertEquals(imagingConfig.imagingInstruments.get(2).spectralMode, SpectralImageMode.MONO);
+        assertEquals(imagingConfig.imagingInstruments.get(2).getType(), ImageType.valueOf("MRI_IMAGE"));
+        assertArrayEquals(imagingConfig.imagingInstruments.get(2).searchImageSources, SumFiles);
+        assertEquals(imagingConfig.imagingInstruments.get(2).getInstrumentName(), Instrument.valueFor("MRI"));
+        assertEquals(imagingConfig.imagingInstruments.get(2).getOrientation(PointingSource.GASKELL).getRotation(), 0.0);
+        assertEquals(imagingConfig.imagingInstruments.get(2).getOrientation(PointingSource.GASKELL).getFlip(), ImageFlip.NONE);
+
+        assertEquals(imagingConfig.imagingInstruments.get(3).getSearchQuery().getRootPath(), navcamDir);
+        assertEquals(imagingConfig.imagingInstruments.get(3).getSearchQuery().getDataPath(), navcamDataDir);
+        assertEquals(imagingConfig.imagingInstruments.get(3).getSearchQuery().getGalleryPath(), null);
+        assertEquals(imagingConfig.imagingInstruments.get(3).spectralMode, SpectralImageMode.MONO);
+        assertEquals(imagingConfig.imagingInstruments.get(3).getType(), ImageType.valueOf("NAVCAM_IMAGE"));
+        assertArrayEquals(imagingConfig.imagingInstruments.get(3).searchImageSources, SumFiles);
+        assertEquals(imagingConfig.imagingInstruments.get(3).getInstrumentName(), Instrument.valueFor("NAVCAM"));
+        assertEquals(imagingConfig.imagingInstruments.get(3).getOrientation(PointingSource.GASKELL).getRotation(), 180.0);
+        assertEquals(imagingConfig.imagingInstruments.get(03).getOrientation(PointingSource.GASKELL).getFlip(), ImageFlip.NONE);
+
+
+
+        assertEquals(imagingConfig.imageSearchDefaultStartDate, ImageSearchDefaultStartDate);
+        assertEquals(imagingConfig.imageSearchDefaultEndDate, ImageSearchDefaultEndDate);
+        assertArrayEquals(imagingConfig.imageSearchFilterNames, new String[] {});
+        assertArrayEquals(imagingConfig.imageSearchUserDefinedCheckBoxesNames, new String[] {});
+        assertEquals(imagingConfig.imageSearchDefaultMaxSpacecraftDistance, 1.0e4);
+        assertEquals(imagingConfig.imageSearchDefaultMaxResolution, 1.0e3);
+
+        assertArrayEquals(c.databaseRunInfos, new DBRunInfo[] { //
+                new DBRunInfo(PointingSource.GASKELL, Instrument.ITS, bodyId, //
+                        itsDir + "/imagelist-fullpath-sum.txt", itsTable), //
+                new DBRunInfo(PointingSource.GASKELL, Instrument.HRI, bodyId, //
+                        hriDir + "/imagelist-fullpath-sum.txt", hriTable), //
+                new DBRunInfo(PointingSource.GASKELL, Instrument.MRI, bodyId, //
+                        mriDir + "/imagelist-fullpath-sum.txt", mriTable), //
+                new DBRunInfo(PointingSource.GASKELL, Instrument.NAVCAM, bodyId, //
+                        navcamDir + "/imagelist-fullpath-sum.txt", navcamTable), //
+        });
 	}
 
 	@Test
@@ -264,7 +605,23 @@ class CometConfigsTest
         FeatureConfigIOFactory.getIOForClassType(ImagingInstrumentConfig.class.getSimpleName()).setViewConfig((ViewConfig)c);
         FeatureConfigIOFactory.getIOForClassType(BasemapImageConfig.class.getSimpleName()).setViewConfig((ViewConfig)c);
         FeatureConfigIOFactory.getIOForClassType(StateHistoryConfig.class.getSimpleName()).setViewConfig((ViewConfig)c);
-        fail("Not yet implemented");
+
+        assertEquals(c.body, ShapeModelBody.TEMPEL_1);
+        assertEquals(c.type, BodyType.COMETS);
+        assertEquals(c.population, ShapeModelPopulation.NA);
+        assertEquals(c.dataUsed, ShapeModelDataUsed.IMAGE_BASED);
+        assertEquals(c.author, ShapeModelType.THOMAS);
+        assertEquals(c.modelLabel, "Farnham and Thomas (2013)");
+        assertEquals(c.rootDirOnServer, "/tempel1/farnham");
+        assertEquals(c.getShapeModelFileExtension(), ".obj");
+        assertEquals(c.getResolutionLabels(), ImmutableList.of("32040 plates"));
+        assertEquals(c.getResolutionNumberElements(), ImmutableList.of(32040));
+
+        assertEquals(c.density, 470.0);
+        assertEquals(c.rotationRate, 4.28434129815435E-5);
+        assertArrayEquals(c.presentInMissions,
+                new Mission[] { Mission.PUBLIC_RELEASE, Mission.TEST_PUBLIC_RELEASE, Mission.STAGE_PUBLIC_RELEASE, Mission.STAGE_APL_INTERNAL, Mission.APL_INTERNAL, Mission.TEST_APL_INTERNAL });
+        assertArrayEquals(c.defaultForMissions, new Mission[] {});
 	}
 
 	@Test
@@ -276,7 +633,19 @@ class CometConfigsTest
         FeatureConfigIOFactory.getIOForClassType(ImagingInstrumentConfig.class.getSimpleName()).setViewConfig((ViewConfig)c);
         FeatureConfigIOFactory.getIOForClassType(BasemapImageConfig.class.getSimpleName()).setViewConfig((ViewConfig)c);
         FeatureConfigIOFactory.getIOForClassType(StateHistoryConfig.class.getSimpleName()).setViewConfig((ViewConfig)c);
-        fail("Not yet implemented");
+
+        assertEquals(c.body, ShapeModelBody.WILD_2);
+        assertEquals(c.type, BodyType.COMETS);
+        assertEquals(c.population, ShapeModelPopulation.NA);
+        assertEquals(c.dataUsed, ShapeModelDataUsed.IMAGE_BASED);
+        assertEquals(c.author, ShapeModelType.DUXBURY);
+        assertEquals(c.modelLabel, "Farnham et al. (2005)");
+        assertEquals(c.rootDirOnServer, "/OTHER/WILD2");
+        assertArrayEquals(c.getShapeModelFileNames(), prepend(c.rootDirOnServer, "wild2_cart_full.w2.gz"));
+        assertEquals(c.getResolutionNumberElements(), ImmutableList.of(17518));
+        assertArrayEquals(c.presentInMissions,
+                new Mission[] { Mission.PUBLIC_RELEASE, Mission.TEST_PUBLIC_RELEASE, Mission.STAGE_PUBLIC_RELEASE, Mission.STAGE_APL_INTERNAL, Mission.APL_INTERNAL, Mission.TEST_APL_INTERNAL });
+        assertArrayEquals(c.defaultForMissions, new Mission[] {});
 	}
 
 }
