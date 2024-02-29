@@ -202,7 +202,7 @@ public class NewHorizonsConfigs extends SmallBodyViewConfig
 
         c.databaseRunInfos = new DBRunInfo[]
         {
-        	new DBRunInfo(PointingSource.GASKELL, Instrument.LORRI, ShapeModelBody.PLUTO.toString(), c.rootDirOnServer + "/lorri" + "/imagelist-fullpath-sum.txt", ShapeModelBody.PLUTO.toString().toLowerCase()),
+        	new DBRunInfo(PointingSource.GASKELL, Instrument.LORRI, ShapeModelBody.PLUTO.toString(), c.rootDirOnServer + "/lorri" + "/imagelist-fullpath-sum.txt", "pluto_pluto_test_lorri"),
         };
 
         c.presentInMissions = presentMissions;
