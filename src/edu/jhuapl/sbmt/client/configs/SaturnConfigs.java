@@ -88,11 +88,11 @@ public class SaturnConfigs extends SmallBodyViewConfig
         buildTethysGaskellConfig(configArray);
         buildTelestoGaskellConfig(configArray);
         buildAtlasGaskellConfig(configArray);
-        buildCalypsoGaskellConfig(configArray);
+//        buildCalypsoGaskellConfig(configArray);
         buildCalypsoDalyConfig(configArray);
         buildCalypsoThomasConfig(configArray);
         buildEnceladusGaskellConfig(configArray);
-        buildEpimetheusGaskellConfig(configArray);
+//        buildEpimetheusGaskellConfig(configArray);
         buildEpimetheusDalyConfig(configArray);
         buildEpimetheusThomasConfig(configArray);
         buildHeleneGaskellConfig(configArray);
