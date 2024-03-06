@@ -77,6 +77,8 @@ import edu.jhuapl.sbmt.spectrum.model.io.SpectrumInstrumentMetadataIO;
 import edu.jhuapl.sbmt.stateHistory.config.StateHistoryConfig;
 import edu.jhuapl.sbmt.stateHistory.config.StateHistoryConfigIO;
 
+import crucible.crust.metadata.impl.InstanceGetter;
+
 class AsteroidConfigsTest
 {
 
@@ -93,31 +95,35 @@ class AsteroidConfigsTest
 		SpectraTypeFactory.registerSpectraType("NIRS3", NIRS3Query.getInstance(), NIRS3SpectrumMath.getInstance(), "nm", new NIRS3().getBandCenters());
 		SpectraTypeFactory.registerSpectraType("MEGANE", MEGANEQuery.getInstance(), MEGANESpectrumMath.getInstance(), "cm^-1", new MEGANE().getBandCenters());
 
-		ImageBinPadding.initializeSerializationProxy();
-		BinExtents.initializeSerializationProxy();
-		BinTranslations.initializeSerializationProxy();
-		BinSpacings.initializeSerializationProxy();
-		BasemapImage.initializeSerializationProxy();
-		ImageDataQuery.initializeSerializationProxy();
-		FixedListDataQuery.initializeSerializationProxy();
-		CylindricalBounds.initializeSerializationProxy();
-		PerspectiveImageMetadata.initializeSerializationProxy();
-		CustomCylindricalImageKey.initializeSerializationProxy();
-		CustomPerspectiveImageKey.initializeSerializationProxy();
-		CompositePerspectiveImage.initializeSerializationProxy();
-		ImagingInstrument.initializeSerializationProxy();
+		try {
+			InstanceGetter.defaultInstanceGetter().getKeyForType(ImageBinPadding.class);
+		} catch (IllegalArgumentException iae) {
+			ImageBinPadding.initializeSerializationProxy();
+			BinExtents.initializeSerializationProxy();
+			BinTranslations.initializeSerializationProxy();
+			BinSpacings.initializeSerializationProxy();
+			BasemapImage.initializeSerializationProxy();
+			ImageDataQuery.initializeSerializationProxy();
+			FixedListDataQuery.initializeSerializationProxy();
+			CylindricalBounds.initializeSerializationProxy();
+			PerspectiveImageMetadata.initializeSerializationProxy();
+			CustomCylindricalImageKey.initializeSerializationProxy();
+			CustomPerspectiveImageKey.initializeSerializationProxy();
+			CompositePerspectiveImage.initializeSerializationProxy();
+			ImagingInstrument.initializeSerializationProxy();
 
-		MEGANE.initializeSerializationProxy();
-		NIS.initializeSerializationProxy();
-		NIRS3.initializeSerializationProxy();
-		OTES.initializeSerializationProxy();
-		OVIRS.initializeSerializationProxy();
-		SpectrumInstrumentMetadata.initializeSerializationProxy();
-		SpectrumInstrumentMetadataIO.initializeSerializationProxy();
-		DataQuerySourcesMetadata.initializeSerializationProxy();
-		SpectrumSearchSpec.initializeSerializationProxy();
+			MEGANE.initializeSerializationProxy();
+			NIS.initializeSerializationProxy();
+			NIRS3.initializeSerializationProxy();
+			OTES.initializeSerializationProxy();
+			OVIRS.initializeSerializationProxy();
+			SpectrumInstrumentMetadata.initializeSerializationProxy();
+			SpectrumInstrumentMetadataIO.initializeSerializationProxy();
+			DataQuerySourcesMetadata.initializeSerializationProxy();
+			SpectrumSearchSpec.initializeSerializationProxy();
 
-		SpiceInfo.initializeSerializationProxy();
+			SpiceInfo.initializeSerializationProxy();
+		}
 
 		FeatureConfigIOFactory.registerFeatureConfigIO(BasemapImageConfig.class.getSimpleName(), new BasemapImageConfigIO());
 		FeatureConfigIOFactory.registerFeatureConfigIO(ImagingInstrumentConfig.class.getSimpleName(), new ImagingInstrumentConfigIO());

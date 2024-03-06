@@ -2,8 +2,8 @@ package edu.jhuapl.sbmt.client.configs;
 
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.fail;
 
+import java.util.ArrayList;
 import java.util.GregorianCalendar;
 
 import org.junit.jupiter.api.AfterAll;
@@ -69,12 +69,15 @@ import edu.jhuapl.sbmt.query.v2.DataQuerySourcesMetadata;
 import edu.jhuapl.sbmt.query.v2.FixedListDataQuery;
 import edu.jhuapl.sbmt.spectrum.config.SpectrumInstrumentConfig;
 import edu.jhuapl.sbmt.spectrum.config.SpectrumInstrumentConfigIO;
+import edu.jhuapl.sbmt.spectrum.model.core.BasicSpectrumInstrument;
 import edu.jhuapl.sbmt.spectrum.model.core.SpectraTypeFactory;
 import edu.jhuapl.sbmt.spectrum.model.core.SpectrumInstrumentMetadata;
 import edu.jhuapl.sbmt.spectrum.model.core.search.SpectrumSearchSpec;
 import edu.jhuapl.sbmt.spectrum.model.io.SpectrumInstrumentMetadataIO;
 import edu.jhuapl.sbmt.stateHistory.config.StateHistoryConfig;
 import edu.jhuapl.sbmt.stateHistory.config.StateHistoryConfigIO;
+
+import crucible.crust.metadata.impl.InstanceGetter;
 
 class NewHorizonsConfigsTest
 {
@@ -92,31 +95,38 @@ class NewHorizonsConfigsTest
 		SpectraTypeFactory.registerSpectraType("NIRS3", NIRS3Query.getInstance(), NIRS3SpectrumMath.getInstance(), "nm", new NIRS3().getBandCenters());
 		SpectraTypeFactory.registerSpectraType("MEGANE", MEGANEQuery.getInstance(), MEGANESpectrumMath.getInstance(), "cm^-1", new MEGANE().getBandCenters());
 
-		ImageBinPadding.initializeSerializationProxy();
-		BinExtents.initializeSerializationProxy();
-		BinTranslations.initializeSerializationProxy();
-		BinSpacings.initializeSerializationProxy();
-		BasemapImage.initializeSerializationProxy();
-		ImageDataQuery.initializeSerializationProxy();
-		FixedListDataQuery.initializeSerializationProxy();
-		CylindricalBounds.initializeSerializationProxy();
-		PerspectiveImageMetadata.initializeSerializationProxy();
-		CustomCylindricalImageKey.initializeSerializationProxy();
-		CustomPerspectiveImageKey.initializeSerializationProxy();
-		CompositePerspectiveImage.initializeSerializationProxy();
-		ImagingInstrument.initializeSerializationProxy();
 
-		MEGANE.initializeSerializationProxy();
-		NIS.initializeSerializationProxy();
-		NIRS3.initializeSerializationProxy();
-		OTES.initializeSerializationProxy();
-		OVIRS.initializeSerializationProxy();
-		SpectrumInstrumentMetadata.initializeSerializationProxy();
-		SpectrumInstrumentMetadataIO.initializeSerializationProxy();
-		DataQuerySourcesMetadata.initializeSerializationProxy();
-		SpectrumSearchSpec.initializeSerializationProxy();
+		try {
+			InstanceGetter.defaultInstanceGetter().getKeyForType(ImageBinPadding.class);
+		} catch (IllegalArgumentException iae) {
+//		if (InstanceGetter.defaultInstanceGetter().getKeyForType(ImageBinPadding.class) == null)
+//		{
+			ImageBinPadding.initializeSerializationProxy();
+			BinExtents.initializeSerializationProxy();
+			BinTranslations.initializeSerializationProxy();
+			BinSpacings.initializeSerializationProxy();
+			BasemapImage.initializeSerializationProxy();
+			ImageDataQuery.initializeSerializationProxy();
+			FixedListDataQuery.initializeSerializationProxy();
+			CylindricalBounds.initializeSerializationProxy();
+			PerspectiveImageMetadata.initializeSerializationProxy();
+			CustomCylindricalImageKey.initializeSerializationProxy();
+			CustomPerspectiveImageKey.initializeSerializationProxy();
+			CompositePerspectiveImage.initializeSerializationProxy();
+			ImagingInstrument.initializeSerializationProxy();
 
-		SpiceInfo.initializeSerializationProxy();
+			MEGANE.initializeSerializationProxy();
+			NIS.initializeSerializationProxy();
+			NIRS3.initializeSerializationProxy();
+			OTES.initializeSerializationProxy();
+			OVIRS.initializeSerializationProxy();
+			SpectrumInstrumentMetadata.initializeSerializationProxy();
+			SpectrumInstrumentMetadataIO.initializeSerializationProxy();
+			DataQuerySourcesMetadata.initializeSerializationProxy();
+			SpectrumSearchSpec.initializeSerializationProxy();
+
+			SpiceInfo.initializeSerializationProxy();
+		}
 
 		FeatureConfigIOFactory.registerFeatureConfigIO(BasemapImageConfig.class.getSimpleName(), new BasemapImageConfigIO());
 		FeatureConfigIOFactory.registerFeatureConfigIO(ImagingInstrumentConfig.class.getSimpleName(), new ImagingInstrumentConfigIO());
@@ -279,7 +289,59 @@ class NewHorizonsConfigsTest
         FeatureConfigIOFactory.getIOForClassType(ImagingInstrumentConfig.class.getSimpleName()).setViewConfig((ViewConfig)c);
         FeatureConfigIOFactory.getIOForClassType(BasemapImageConfig.class.getSimpleName()).setViewConfig((ViewConfig)c);
         FeatureConfigIOFactory.getIOForClassType(StateHistoryConfig.class.getSimpleName()).setViewConfig((ViewConfig)c);
-		fail("Not yet implemented");
+
+        assertEquals(c.body, ShapeModelBody.CHARON);
+        assertEquals(c.type, BodyType.KBO);
+        assertEquals(c.population, ShapeModelPopulation.PLUTO);
+        assertEquals(c.dataUsed, ShapeModelDataUsed.TRIAXIAL);
+        assertEquals(c.author, ShapeModelType.NIMMO);
+        assertEquals(c.modelLabel, "Nimmo et al. (2017)");
+        assertEquals(c.rootDirOnServer, "/NEWHORIZONS/CHARON");
+        assertArrayEquals(c.getShapeModelFileNames(), prepend(c.rootDirOnServer, "shape_res0.obj.gz"));
+        assertEquals(c.hasColoringData, false);
+
+        ImagingInstrumentConfig imagingConfig = (ImagingInstrumentConfig)c.getConfigForClass(ImagingInstrumentConfig.class);
+
+        assertEquals(imagingConfig.imagingInstruments.size(), 2);
+        assertEquals(imagingConfig.imagingInstruments.get(0).getSearchQuery().getRootPath(), "/NEWHORIZONS/CHARON/IMAGING");
+        assertEquals(imagingConfig.imagingInstruments.get(0).getSearchQuery().getDataPath(), "/NEWHORIZONS/CHARON/IMAGING/images");
+        assertEquals(imagingConfig.imagingInstruments.get(0).getSearchQuery().getGalleryPath(), null);
+        assertEquals(imagingConfig.imagingInstruments.get(0).spectralMode, SpectralImageMode.MONO);
+        assertEquals(imagingConfig.imagingInstruments.get(0).getType(), ImageType.LORRI_IMAGE);
+        assertArrayEquals(imagingConfig.imagingInstruments.get(0).searchImageSources, new PointingSource[]{PointingSource.SPICE, PointingSource.CORRECTED});
+        assertEquals(imagingConfig.imagingInstruments.get(0).getInstrumentName(), Instrument.LORRI);
+        assertEquals(imagingConfig.imagingInstruments.get(0).getOrientation(PointingSource.SPICE).getRotation(), 0.0);
+        assertEquals(imagingConfig.imagingInstruments.get(0).getOrientation(PointingSource.SPICE).getFlip(), ImageFlip.NONE);
+        assertEquals(imagingConfig.imagingInstruments.get(0).getOrientation(PointingSource.CORRECTED).getRotation(), 0.0);
+        assertEquals(imagingConfig.imagingInstruments.get(0).getOrientation(PointingSource.CORRECTED).getFlip(), ImageFlip.NONE);
+
+        assertEquals(imagingConfig.imagingInstruments.get(1).getSearchQuery().getRootPath(), "/NEWHORIZONS/CHARON/MVIC");
+        assertEquals(imagingConfig.imagingInstruments.get(1).getSearchQuery().getDataPath(), "/NEWHORIZONS/CHARON/MVIC/images");
+        assertEquals(imagingConfig.imagingInstruments.get(1).getSearchQuery().getGalleryPath(), null);
+        assertEquals(imagingConfig.imagingInstruments.get(1).spectralMode, SpectralImageMode.MULTI);
+        assertEquals(imagingConfig.imagingInstruments.get(1).getType(), ImageType.MVIC_JUPITER_IMAGE);
+        assertArrayEquals(imagingConfig.imagingInstruments.get(1).searchImageSources, new PointingSource[]{PointingSource.SPICE});
+        assertEquals(imagingConfig.imagingInstruments.get(1).getInstrumentName(), Instrument.MVIC);
+        assertEquals(imagingConfig.imagingInstruments.get(1).getOrientation(PointingSource.SPICE).getRotation(), 0.0);
+        assertEquals(imagingConfig.imagingInstruments.get(1).getOrientation(PointingSource.SPICE).getFlip(), ImageFlip.NONE);
+
+        assertEquals(imagingConfig.imageSearchDefaultStartDate, new GregorianCalendar(2015, 0, 1, 0, 0, 0).getTime());
+        assertEquals(imagingConfig.imageSearchDefaultEndDate, new GregorianCalendar(2016, 1, 1, 0, 0, 0).getTime());
+        assertArrayEquals(imagingConfig.imageSearchFilterNames, new String[] {});
+        assertArrayEquals(imagingConfig.imageSearchUserDefinedCheckBoxesNames, new String[] {});
+        assertEquals(imagingConfig.imageSearchDefaultMaxSpacecraftDistance, 1.0e9);
+        assertEquals(imagingConfig.imageSearchDefaultMaxResolution, 1.0e6);
+
+        assertEquals(c.getResolutionNumberElements(), (ImmutableList.of(128880)));
+
+        assertArrayEquals(c.databaseRunInfos, new DBRunInfo[]
+        {
+        	new DBRunInfo(PointingSource.GASKELL, Instrument.LORRI, ShapeModelBody.CHARON.toString(), "/project/sbmt2/sbmt/data/bodies/charon/nimmo2017/lorri/imagelist-fullpath-sum.txt", "charon_nimmo2017_lorri"),
+        	new DBRunInfo(PointingSource.SPICE, Instrument.LORRI, ShapeModelBody.CHARON.toString(), "/project/sbmt2/sbmt/data/bodies/charon/nimmo2017/lorri/imagelist-fullpath-info.txt", "charon_nimmo2017_lorri"),
+        });
+
+        assertArrayEquals(c.presentInMissions, presentMissions);
+        assertArrayEquals(c.defaultForMissions, new Mission[] {});
 	}
 
 	@Test
@@ -291,7 +353,58 @@ class NewHorizonsConfigsTest
         FeatureConfigIOFactory.getIOForClassType(ImagingInstrumentConfig.class.getSimpleName()).setViewConfig((ViewConfig)c);
         FeatureConfigIOFactory.getIOForClassType(BasemapImageConfig.class.getSimpleName()).setViewConfig((ViewConfig)c);
         FeatureConfigIOFactory.getIOForClassType(StateHistoryConfig.class.getSimpleName()).setViewConfig((ViewConfig)c);
-		fail("Not yet implemented");
+
+        assertEquals(c.body, ShapeModelBody.HYDRA);
+        assertEquals(c.type, BodyType.KBO);
+        assertEquals(c.population, ShapeModelPopulation.PLUTO);
+        assertEquals(c.dataUsed, ShapeModelDataUsed.TRIAXIAL);
+        assertEquals(c.author, ShapeModelType.WEAVER);
+        assertEquals(c.modelLabel, "Weaver et al. (2016)");
+        assertEquals(c.rootDirOnServer, "/NEWHORIZONS/HYDRA");
+        assertArrayEquals(c.getShapeModelFileNames(), prepend(c.rootDirOnServer, "shape_res0.obj.gz"));
+        assertEquals(c.hasColoringData, false);
+
+//        DataQuerySourcesMetadata lorriMetadata =
+//        		DataQuerySourcesMetadata.of("/NEWHORIZONS/HYDRA/IMAGING", "", null, null, null);
+//        DataQuerySourcesMetadata mvicMetadata = DataQuerySourcesMetadata.of("/NEWHORIZONS/HYDRA/MVIC", "", null, null, null);
+        ImagingInstrumentConfig imagingConfig = (ImagingInstrumentConfig)c.getConfigForClass(ImagingInstrumentConfig.class);
+//        configurePlutoEncounterImaging(imagingConfig, lorriMetadata, mvicMetadata, null,
+//				new PointingSource[]{PointingSource.SPICE, PointingSource.CORRECTED});
+
+        assertEquals(imagingConfig.imagingInstruments.size(), 2);
+        assertEquals(imagingConfig.imagingInstruments.get(0).getSearchQuery().getRootPath(), "/NEWHORIZONS/HYDRA/IMAGING");
+        assertEquals(imagingConfig.imagingInstruments.get(0).getSearchQuery().getDataPath(), "/NEWHORIZONS/HYDRA/IMAGING/images");
+        assertEquals(imagingConfig.imagingInstruments.get(0).getSearchQuery().getGalleryPath(), null);
+        assertEquals(imagingConfig.imagingInstruments.get(0).spectralMode, SpectralImageMode.MONO);
+        assertEquals(imagingConfig.imagingInstruments.get(0).getType(), ImageType.LORRI_IMAGE);
+        assertArrayEquals(imagingConfig.imagingInstruments.get(0).searchImageSources, new PointingSource[]{PointingSource.SPICE, PointingSource.CORRECTED});
+        assertEquals(imagingConfig.imagingInstruments.get(0).getInstrumentName(), Instrument.LORRI);
+        assertEquals(imagingConfig.imagingInstruments.get(0).getOrientation(PointingSource.SPICE).getRotation(), 0.0);
+        assertEquals(imagingConfig.imagingInstruments.get(0).getOrientation(PointingSource.SPICE).getFlip(), ImageFlip.NONE);
+        assertEquals(imagingConfig.imagingInstruments.get(0).getOrientation(PointingSource.CORRECTED).getRotation(), 0.0);
+        assertEquals(imagingConfig.imagingInstruments.get(0).getOrientation(PointingSource.CORRECTED).getFlip(), ImageFlip.NONE);
+
+        assertEquals(imagingConfig.imagingInstruments.get(1).getSearchQuery().getRootPath(), "/NEWHORIZONS/HYDRA/MVIC");
+        assertEquals(imagingConfig.imagingInstruments.get(1).getSearchQuery().getDataPath(), "/NEWHORIZONS/HYDRA/MVIC/images");
+        assertEquals(imagingConfig.imagingInstruments.get(1).getSearchQuery().getGalleryPath(), null);
+        assertEquals(imagingConfig.imagingInstruments.get(1).spectralMode, SpectralImageMode.MULTI);
+        assertEquals(imagingConfig.imagingInstruments.get(1).getType(), ImageType.MVIC_JUPITER_IMAGE);
+        assertArrayEquals(imagingConfig.imagingInstruments.get(1).searchImageSources, new PointingSource[]{PointingSource.SPICE});
+        assertEquals(imagingConfig.imagingInstruments.get(1).getInstrumentName(), Instrument.MVIC);
+        assertEquals(imagingConfig.imagingInstruments.get(1).getOrientation(PointingSource.SPICE).getRotation(), 0.0);
+        assertEquals(imagingConfig.imagingInstruments.get(1).getOrientation(PointingSource.SPICE).getFlip(), ImageFlip.NONE);
+
+        assertEquals(imagingConfig.imageSearchDefaultStartDate, new GregorianCalendar(2015, 0, 1, 0, 0, 0).getTime());
+        assertEquals(imagingConfig.imageSearchDefaultEndDate, new GregorianCalendar(2016, 1, 1, 0, 0, 0).getTime());
+        assertArrayEquals(imagingConfig.imageSearchFilterNames, new String[] {});
+        assertArrayEquals(imagingConfig.imageSearchUserDefinedCheckBoxesNames, new String[] {});
+        assertEquals(imagingConfig.imageSearchDefaultMaxSpacecraftDistance, 1.0e9);
+        assertEquals(imagingConfig.imageSearchDefaultMaxResolution, 1.0e6);
+
+        assertEquals(c.getResolutionNumberElements(), (ImmutableList.of(128880)));
+
+        assertArrayEquals(c.presentInMissions, presentMissions);
+        assertArrayEquals(c.defaultForMissions, new Mission[] {});
 	}
 
 	@Test
@@ -303,7 +416,20 @@ class NewHorizonsConfigsTest
         FeatureConfigIOFactory.getIOForClassType(ImagingInstrumentConfig.class.getSimpleName()).setViewConfig((ViewConfig)c);
         FeatureConfigIOFactory.getIOForClassType(BasemapImageConfig.class.getSimpleName()).setViewConfig((ViewConfig)c);
         FeatureConfigIOFactory.getIOForClassType(StateHistoryConfig.class.getSimpleName()).setViewConfig((ViewConfig)c);
-		fail("Not yet implemented");
+
+        assertEquals(c.body, ShapeModelBody.KERBEROS);
+        assertEquals(c.type, BodyType.KBO);
+        assertEquals(c.population, ShapeModelPopulation.PLUTO);
+        assertEquals(c.dataUsed, ShapeModelDataUsed.TRIAXIAL);
+        assertEquals(c.author, ShapeModelType.WEAVER);
+        assertEquals(c.modelLabel, "Weaver et al. (2016)");
+        assertEquals(c.rootDirOnServer, "/NEWHORIZONS/KERBEROS");
+        assertArrayEquals(c.getShapeModelFileNames(), prepend(c.rootDirOnServer, "shape_res0.vtk.gz"));
+        assertEquals(c.hasColoringData, false);
+        assertEquals(c.getResolutionNumberElements(), (ImmutableList.of(128880)));
+
+        assertArrayEquals(c.presentInMissions, presentMissions);
+        assertArrayEquals(c.defaultForMissions, new Mission[] {});
 	}
 
 	@Test
@@ -315,7 +441,58 @@ class NewHorizonsConfigsTest
         FeatureConfigIOFactory.getIOForClassType(ImagingInstrumentConfig.class.getSimpleName()).setViewConfig((ViewConfig)c);
         FeatureConfigIOFactory.getIOForClassType(BasemapImageConfig.class.getSimpleName()).setViewConfig((ViewConfig)c);
         FeatureConfigIOFactory.getIOForClassType(StateHistoryConfig.class.getSimpleName()).setViewConfig((ViewConfig)c);
-		fail("Not yet implemented");
+
+        assertEquals(c.body, ShapeModelBody.NIX);
+        assertEquals(c.type, BodyType.KBO);
+        assertEquals(c.population, ShapeModelPopulation.PLUTO);
+        assertEquals(c.dataUsed, ShapeModelDataUsed.TRIAXIAL);
+        assertEquals(c.author, ShapeModelType.WEAVER);
+        assertEquals(c.modelLabel, "Weaver et al. (2016)");
+        assertEquals(c.rootDirOnServer, "/NEWHORIZONS/NIX");
+        assertArrayEquals(c.getShapeModelFileNames(),  prepend(c.rootDirOnServer, "shape_res0.obj.gz"));
+        assertEquals(c.hasColoringData, false);
+
+//        DataQuerySourcesMetadata lorriMetadata =
+//        		DataQuerySourcesMetadata.of("/NEWHORIZONS/NIX/IMAGING", "", null, null, null);
+//        DataQuerySourcesMetadata mvicMetadata = DataQuerySourcesMetadata.of("/NEWHORIZONS/NIX/MVIC", "", null, null, null);
+        ImagingInstrumentConfig imagingConfig = (ImagingInstrumentConfig)c.getConfigForClass(ImagingInstrumentConfig.class);
+//        configurePlutoEncounterImaging(imagingConfig, lorriMetadata, mvicMetadata, null,
+//				new PointingSource[]{PointingSource.SPICE, PointingSource.CORRECTED});
+
+        assertEquals(imagingConfig.imagingInstruments.size(), 2);
+        assertEquals(imagingConfig.imagingInstruments.get(0).getSearchQuery().getRootPath(), "/NEWHORIZONS/NIX/IMAGING");
+        assertEquals(imagingConfig.imagingInstruments.get(0).getSearchQuery().getDataPath(), "/NEWHORIZONS/NIX/IMAGING/images");
+        assertEquals(imagingConfig.imagingInstruments.get(0).getSearchQuery().getGalleryPath(), null);
+        assertEquals(imagingConfig.imagingInstruments.get(0).spectralMode, SpectralImageMode.MONO);
+        assertEquals(imagingConfig.imagingInstruments.get(0).getType(), ImageType.LORRI_IMAGE);
+        assertArrayEquals(imagingConfig.imagingInstruments.get(0).searchImageSources, new PointingSource[]{PointingSource.SPICE, PointingSource.CORRECTED});
+        assertEquals(imagingConfig.imagingInstruments.get(0).getInstrumentName(), Instrument.LORRI);
+        assertEquals(imagingConfig.imagingInstruments.get(0).getOrientation(PointingSource.SPICE).getRotation(), 0.0);
+        assertEquals(imagingConfig.imagingInstruments.get(0).getOrientation(PointingSource.SPICE).getFlip(), ImageFlip.NONE);
+        assertEquals(imagingConfig.imagingInstruments.get(0).getOrientation(PointingSource.CORRECTED).getRotation(), 0.0);
+        assertEquals(imagingConfig.imagingInstruments.get(0).getOrientation(PointingSource.CORRECTED).getFlip(), ImageFlip.NONE);
+
+        assertEquals(imagingConfig.imagingInstruments.get(1).getSearchQuery().getRootPath(), "/NEWHORIZONS/NIX/MVIC");
+        assertEquals(imagingConfig.imagingInstruments.get(1).getSearchQuery().getDataPath(), "/NEWHORIZONS/NIX/MVIC/images");
+        assertEquals(imagingConfig.imagingInstruments.get(1).getSearchQuery().getGalleryPath(), null);
+        assertEquals(imagingConfig.imagingInstruments.get(1).spectralMode, SpectralImageMode.MULTI);
+        assertEquals(imagingConfig.imagingInstruments.get(1).getType(), ImageType.MVIC_JUPITER_IMAGE);
+        assertArrayEquals(imagingConfig.imagingInstruments.get(1).searchImageSources, new PointingSource[]{PointingSource.SPICE});
+        assertEquals(imagingConfig.imagingInstruments.get(1).getInstrumentName(), Instrument.MVIC);
+        assertEquals(imagingConfig.imagingInstruments.get(1).getOrientation(PointingSource.SPICE).getRotation(), 0.0);
+        assertEquals(imagingConfig.imagingInstruments.get(1).getOrientation(PointingSource.SPICE).getFlip(), ImageFlip.NONE);
+
+        assertEquals(imagingConfig.imageSearchDefaultStartDate, new GregorianCalendar(2015, 0, 1, 0, 0, 0).getTime());
+        assertEquals(imagingConfig.imageSearchDefaultEndDate, new GregorianCalendar(2016, 1, 1, 0, 0, 0).getTime());
+        assertArrayEquals(imagingConfig.imageSearchFilterNames, new String[] {});
+        assertArrayEquals(imagingConfig.imageSearchUserDefinedCheckBoxesNames, new String[] {});
+        assertEquals(imagingConfig.imageSearchDefaultMaxSpacecraftDistance, 1.0e9);
+        assertEquals(imagingConfig.imageSearchDefaultMaxResolution, 1.0e6);
+
+        assertEquals(c.getResolutionNumberElements(), (ImmutableList.of(128880)));
+
+        assertArrayEquals(c.presentInMissions, presentMissions);
+        assertArrayEquals(c.defaultForMissions, new Mission[] {});
 	}
 
 	@Test
@@ -327,7 +504,20 @@ class NewHorizonsConfigsTest
         FeatureConfigIOFactory.getIOForClassType(ImagingInstrumentConfig.class.getSimpleName()).setViewConfig((ViewConfig)c);
         FeatureConfigIOFactory.getIOForClassType(BasemapImageConfig.class.getSimpleName()).setViewConfig((ViewConfig)c);
         FeatureConfigIOFactory.getIOForClassType(StateHistoryConfig.class.getSimpleName()).setViewConfig((ViewConfig)c);
-		fail("Not yet implemented");
+
+        assertEquals(c.body, ShapeModelBody.STYX);
+        assertEquals(c.type, BodyType.KBO);
+        assertEquals(c.population, ShapeModelPopulation.PLUTO);
+        assertEquals(c.dataUsed, ShapeModelDataUsed.TRIAXIAL);
+        assertEquals(c.author, ShapeModelType.WEAVER);
+        assertEquals(c.modelLabel, "Weaver et al. (2016)");
+        assertEquals(c.rootDirOnServer, "/NEWHORIZONS/STYX");
+        assertArrayEquals(c.getShapeModelFileNames(), prepend(c.rootDirOnServer, "shape_res0.vtk.gz"));
+        assertEquals(c.hasColoringData, false);
+        assertEquals(c.getResolutionNumberElements(), (ImmutableList.of(128880)));
+
+        assertArrayEquals(c.presentInMissions, presentMissions);
+        assertArrayEquals(c.defaultForMissions, new Mission[] {});
 	}
 
 	@Test
@@ -339,7 +529,66 @@ class NewHorizonsConfigsTest
         FeatureConfigIOFactory.getIOForClassType(ImagingInstrumentConfig.class.getSimpleName()).setViewConfig((ViewConfig)c);
         FeatureConfigIOFactory.getIOForClassType(BasemapImageConfig.class.getSimpleName()).setViewConfig((ViewConfig)c);
         FeatureConfigIOFactory.getIOForClassType(StateHistoryConfig.class.getSimpleName()).setViewConfig((ViewConfig)c);
-		fail("Not yet implemented");
+
+        assertEquals(c.body, ShapeModelBody.MU69);
+        assertEquals(c.type, BodyType.KBO);
+        assertEquals(c.population, ShapeModelPopulation.NA);
+        assertEquals(c.dataUsed, ShapeModelDataUsed.IMAGE_BASED);
+        assertEquals(c.author, ShapeModelType.MU69_TEST5H_1_FINAL_ORIENTED);
+        assertEquals(c.rootDirOnServer, "/mu69/mu69-test5h-1-final-oriented");
+        assertEquals(c.getShapeModelFileExtension(), ".obj");
+        c.setResolution(ImmutableList.of("Very Low (25708 plates)"), ImmutableList.of(25708));
+
+        c.density = Double.NaN;
+        c.useMinimumReferencePotential = true;
+        c.rotationRate = Double.NaN;
+
+//        DataQuerySourcesMetadata lorriMetadata =
+//        		DataQuerySourcesMetadata.of(c.rootDirOnServer + "/lorri", "", null, null, c.rootDirOnServer + "/lorri/gallery");
+    	ImagingInstrumentConfig imagingConfig = (ImagingInstrumentConfig)c.getConfigForClass(ImagingInstrumentConfig.class);
+//    	configurePlutoEncounterImaging(imagingConfig, lorriMetadata, null, null,
+//				new PointingSource[]{PointingSource.SPICE, PointingSource.CORRECTED});
+
+
+    	assertEquals(imagingConfig.imagingInstruments.size(), 1);
+        assertEquals(imagingConfig.imagingInstruments.get(0).getSearchQuery().getRootPath(), c.rootDirOnServer + "/lorri");
+        assertEquals(imagingConfig.imagingInstruments.get(0).getSearchQuery().getDataPath(), c.rootDirOnServer + "/lorri/images");
+        assertEquals(imagingConfig.imagingInstruments.get(0).getSearchQuery().getGalleryPath(), c.rootDirOnServer + "/lorri/gallery");
+        assertEquals(imagingConfig.imagingInstruments.get(0).spectralMode, SpectralImageMode.MONO);
+        assertEquals(imagingConfig.imagingInstruments.get(0).getType(), ImageType.LORRI_IMAGE);
+        assertArrayEquals(imagingConfig.imagingInstruments.get(0).searchImageSources, new PointingSource[]{PointingSource.SPICE, PointingSource.CORRECTED});
+        assertEquals(imagingConfig.imagingInstruments.get(0).getInstrumentName(), Instrument.LORRI);
+        assertEquals(imagingConfig.imagingInstruments.get(0).getOrientation(PointingSource.SPICE).getRotation(), 0.0);
+        assertEquals(imagingConfig.imagingInstruments.get(0).getOrientation(PointingSource.SPICE).getFlip(), ImageFlip.NONE);
+        assertEquals(imagingConfig.imagingInstruments.get(0).getOrientation(PointingSource.CORRECTED).getRotation(), 0.0);
+        assertEquals(imagingConfig.imagingInstruments.get(0).getOrientation(PointingSource.CORRECTED).getFlip(), ImageFlip.NONE);
+
+        assertEquals(imagingConfig.imageSearchDefaultStartDate, new GregorianCalendar(2018, 11, 31, 0, 0, 0).getTime());
+        assertEquals(imagingConfig.imageSearchDefaultEndDate, new GregorianCalendar(2019, 0, 2, 0, 0, 0).getTime());
+        assertArrayEquals(imagingConfig.imageSearchFilterNames, new String[] {});
+        assertArrayEquals(imagingConfig.imageSearchUserDefinedCheckBoxesNames, new String[] {});
+        assertEquals(imagingConfig.imageSearchDefaultMaxSpacecraftDistance, 1.0e6);
+        assertEquals(imagingConfig.imageSearchDefaultMaxResolution, 1.0e4);
+
+
+        SpectrumInstrumentConfig spectrumConfig = (SpectrumInstrumentConfig)c.getConfigForClass(SpectrumInstrumentConfig.class);
+        LidarInstrumentConfig lidarConfig = (LidarInstrumentConfig)c.getConfigForClass(LidarInstrumentConfig.class);
+
+        assertEquals(spectrumConfig.hasSpectralData, false);
+        assertEquals(spectrumConfig.spectralInstruments, new ArrayList<BasicSpectrumInstrument>());
+
+
+        assertEquals(c.hasStateHistory, false);
+
+        assertEquals(c.hasMapmaker, false);
+        assertEquals(spectrumConfig.hasHierarchicalSpectraSearch, false);
+        assertEquals(spectrumConfig.hasHypertreeBasedSpectraSearch, false);
+
+        assertEquals(lidarConfig.hasLidarData, false);
+        assertEquals(lidarConfig.hasHypertreeBasedLidarSearch, false);
+
+        assertArrayEquals(c.presentInMissions, new Mission[] {Mission.APL_INTERNAL, Mission.TEST_APL_INTERNAL, Mission.STAGE_APL_INTERNAL, Mission.NH_DEPLOY});
+        assertArrayEquals(c.defaultForMissions, new Mission[] {Mission.NH_DEPLOY});
 	}
 
 }

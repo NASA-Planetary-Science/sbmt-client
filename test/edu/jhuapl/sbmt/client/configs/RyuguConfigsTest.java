@@ -1,5 +1,7 @@
 package edu.jhuapl.sbmt.client.configs;
 
+import static org.junit.jupiter.api.Assertions.fail;
+
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -59,6 +61,8 @@ import edu.jhuapl.sbmt.spectrum.model.io.SpectrumInstrumentMetadataIO;
 import edu.jhuapl.sbmt.stateHistory.config.StateHistoryConfig;
 import edu.jhuapl.sbmt.stateHistory.config.StateHistoryConfigIO;
 
+import crucible.crust.metadata.impl.InstanceGetter;
+
 class RyuguConfigsTest
 {
 
@@ -75,31 +79,37 @@ class RyuguConfigsTest
 		SpectraTypeFactory.registerSpectraType("NIRS3", NIRS3Query.getInstance(), NIRS3SpectrumMath.getInstance(), "nm", new NIRS3().getBandCenters());
 		SpectraTypeFactory.registerSpectraType("MEGANE", MEGANEQuery.getInstance(), MEGANESpectrumMath.getInstance(), "cm^-1", new MEGANE().getBandCenters());
 
-		ImageBinPadding.initializeSerializationProxy();
-		BinExtents.initializeSerializationProxy();
-		BinTranslations.initializeSerializationProxy();
-		BinSpacings.initializeSerializationProxy();
-		BasemapImage.initializeSerializationProxy();
-		ImageDataQuery.initializeSerializationProxy();
-		FixedListDataQuery.initializeSerializationProxy();
-		CylindricalBounds.initializeSerializationProxy();
-		PerspectiveImageMetadata.initializeSerializationProxy();
-		CustomCylindricalImageKey.initializeSerializationProxy();
-		CustomPerspectiveImageKey.initializeSerializationProxy();
-		CompositePerspectiveImage.initializeSerializationProxy();
-		ImagingInstrument.initializeSerializationProxy();
+		try {
+			InstanceGetter.defaultInstanceGetter().getKeyForType(ImageBinPadding.class);
+		} catch (IllegalArgumentException iae) {
+//		if (InstanceGetter.defaultInstanceGetter().getKeyForType(ImageBinPadding.class) == null)
+//		{
+			ImageBinPadding.initializeSerializationProxy();
+			BinExtents.initializeSerializationProxy();
+			BinTranslations.initializeSerializationProxy();
+			BinSpacings.initializeSerializationProxy();
+			BasemapImage.initializeSerializationProxy();
+			ImageDataQuery.initializeSerializationProxy();
+			FixedListDataQuery.initializeSerializationProxy();
+			CylindricalBounds.initializeSerializationProxy();
+			PerspectiveImageMetadata.initializeSerializationProxy();
+			CustomCylindricalImageKey.initializeSerializationProxy();
+			CustomPerspectiveImageKey.initializeSerializationProxy();
+			CompositePerspectiveImage.initializeSerializationProxy();
+			ImagingInstrument.initializeSerializationProxy();
 
-		MEGANE.initializeSerializationProxy();
-		NIS.initializeSerializationProxy();
-		NIRS3.initializeSerializationProxy();
-		OTES.initializeSerializationProxy();
-		OVIRS.initializeSerializationProxy();
-		SpectrumInstrumentMetadata.initializeSerializationProxy();
-		SpectrumInstrumentMetadataIO.initializeSerializationProxy();
-		DataQuerySourcesMetadata.initializeSerializationProxy();
-		SpectrumSearchSpec.initializeSerializationProxy();
+			MEGANE.initializeSerializationProxy();
+			NIS.initializeSerializationProxy();
+			NIRS3.initializeSerializationProxy();
+			OTES.initializeSerializationProxy();
+			OVIRS.initializeSerializationProxy();
+			SpectrumInstrumentMetadata.initializeSerializationProxy();
+			SpectrumInstrumentMetadataIO.initializeSerializationProxy();
+			DataQuerySourcesMetadata.initializeSerializationProxy();
+			SpectrumSearchSpec.initializeSerializationProxy();
 
-		SpiceInfo.initializeSerializationProxy();
+			SpiceInfo.initializeSerializationProxy();
+		}
 
 		FeatureConfigIOFactory.registerFeatureConfigIO(BasemapImageConfig.class.getSimpleName(), new BasemapImageConfigIO());
 		FeatureConfigIOFactory.registerFeatureConfigIO(ImagingInstrumentConfig.class.getSimpleName(), new ImagingInstrumentConfigIO());
@@ -143,6 +153,7 @@ class RyuguConfigsTest
         FeatureConfigIOFactory.getIOForClassType(ImagingInstrumentConfig.class.getSimpleName()).setViewConfig((ViewConfig)c);
         FeatureConfigIOFactory.getIOForClassType(BasemapImageConfig.class.getSimpleName()).setViewConfig((ViewConfig)c);
         FeatureConfigIOFactory.getIOForClassType(StateHistoryConfig.class.getSimpleName()).setViewConfig((ViewConfig)c);
+        fail("Not yet implemented");
 	}
 
 	@Test
@@ -154,6 +165,7 @@ class RyuguConfigsTest
         FeatureConfigIOFactory.getIOForClassType(ImagingInstrumentConfig.class.getSimpleName()).setViewConfig((ViewConfig)c);
         FeatureConfigIOFactory.getIOForClassType(BasemapImageConfig.class.getSimpleName()).setViewConfig((ViewConfig)c);
         FeatureConfigIOFactory.getIOForClassType(StateHistoryConfig.class.getSimpleName()).setViewConfig((ViewConfig)c);
+        fail("Not yet implemented");
 	}
 
 	@Test
@@ -165,6 +177,7 @@ class RyuguConfigsTest
         FeatureConfigIOFactory.getIOForClassType(ImagingInstrumentConfig.class.getSimpleName()).setViewConfig((ViewConfig)c);
         FeatureConfigIOFactory.getIOForClassType(BasemapImageConfig.class.getSimpleName()).setViewConfig((ViewConfig)c);
         FeatureConfigIOFactory.getIOForClassType(StateHistoryConfig.class.getSimpleName()).setViewConfig((ViewConfig)c);
+        fail("Not yet implemented");
 	}
 
 	@Test
@@ -176,6 +189,7 @@ class RyuguConfigsTest
         FeatureConfigIOFactory.getIOForClassType(ImagingInstrumentConfig.class.getSimpleName()).setViewConfig((ViewConfig)c);
         FeatureConfigIOFactory.getIOForClassType(BasemapImageConfig.class.getSimpleName()).setViewConfig((ViewConfig)c);
         FeatureConfigIOFactory.getIOForClassType(StateHistoryConfig.class.getSimpleName()).setViewConfig((ViewConfig)c);
+        fail("Not yet implemented");
 	}
 
 	@Test
@@ -187,6 +201,7 @@ class RyuguConfigsTest
         FeatureConfigIOFactory.getIOForClassType(ImagingInstrumentConfig.class.getSimpleName()).setViewConfig((ViewConfig)c);
         FeatureConfigIOFactory.getIOForClassType(BasemapImageConfig.class.getSimpleName()).setViewConfig((ViewConfig)c);
         FeatureConfigIOFactory.getIOForClassType(StateHistoryConfig.class.getSimpleName()).setViewConfig((ViewConfig)c);
+        fail("Not yet implemented");
 	}
 
 	@Test
@@ -198,6 +213,7 @@ class RyuguConfigsTest
         FeatureConfigIOFactory.getIOForClassType(ImagingInstrumentConfig.class.getSimpleName()).setViewConfig((ViewConfig)c);
         FeatureConfigIOFactory.getIOForClassType(BasemapImageConfig.class.getSimpleName()).setViewConfig((ViewConfig)c);
         FeatureConfigIOFactory.getIOForClassType(StateHistoryConfig.class.getSimpleName()).setViewConfig((ViewConfig)c);
+        fail("Not yet implemented");
 	}
 
 	@Test
@@ -209,6 +225,7 @@ class RyuguConfigsTest
         FeatureConfigIOFactory.getIOForClassType(ImagingInstrumentConfig.class.getSimpleName()).setViewConfig((ViewConfig)c);
         FeatureConfigIOFactory.getIOForClassType(BasemapImageConfig.class.getSimpleName()).setViewConfig((ViewConfig)c);
         FeatureConfigIOFactory.getIOForClassType(StateHistoryConfig.class.getSimpleName()).setViewConfig((ViewConfig)c);
+        fail("Not yet implemented");
 	}
 
 	@Test
@@ -220,6 +237,7 @@ class RyuguConfigsTest
         FeatureConfigIOFactory.getIOForClassType(ImagingInstrumentConfig.class.getSimpleName()).setViewConfig((ViewConfig)c);
         FeatureConfigIOFactory.getIOForClassType(BasemapImageConfig.class.getSimpleName()).setViewConfig((ViewConfig)c);
         FeatureConfigIOFactory.getIOForClassType(StateHistoryConfig.class.getSimpleName()).setViewConfig((ViewConfig)c);
+        fail("Not yet implemented");
 	}
 
 	@Test
@@ -231,6 +249,7 @@ class RyuguConfigsTest
         FeatureConfigIOFactory.getIOForClassType(ImagingInstrumentConfig.class.getSimpleName()).setViewConfig((ViewConfig)c);
         FeatureConfigIOFactory.getIOForClassType(BasemapImageConfig.class.getSimpleName()).setViewConfig((ViewConfig)c);
         FeatureConfigIOFactory.getIOForClassType(StateHistoryConfig.class.getSimpleName()).setViewConfig((ViewConfig)c);
+        fail("Not yet implemented");
 	}
 
 	@Test
@@ -242,6 +261,7 @@ class RyuguConfigsTest
         FeatureConfigIOFactory.getIOForClassType(ImagingInstrumentConfig.class.getSimpleName()).setViewConfig((ViewConfig)c);
         FeatureConfigIOFactory.getIOForClassType(BasemapImageConfig.class.getSimpleName()).setViewConfig((ViewConfig)c);
         FeatureConfigIOFactory.getIOForClassType(StateHistoryConfig.class.getSimpleName()).setViewConfig((ViewConfig)c);
+        fail("Not yet implemented");
 	}
 
 	@Test
@@ -253,6 +273,7 @@ class RyuguConfigsTest
         FeatureConfigIOFactory.getIOForClassType(ImagingInstrumentConfig.class.getSimpleName()).setViewConfig((ViewConfig)c);
         FeatureConfigIOFactory.getIOForClassType(BasemapImageConfig.class.getSimpleName()).setViewConfig((ViewConfig)c);
         FeatureConfigIOFactory.getIOForClassType(StateHistoryConfig.class.getSimpleName()).setViewConfig((ViewConfig)c);
+        fail("Not yet implemented");
 	}
 
 	@Test
@@ -264,6 +285,7 @@ class RyuguConfigsTest
         FeatureConfigIOFactory.getIOForClassType(ImagingInstrumentConfig.class.getSimpleName()).setViewConfig((ViewConfig)c);
         FeatureConfigIOFactory.getIOForClassType(BasemapImageConfig.class.getSimpleName()).setViewConfig((ViewConfig)c);
         FeatureConfigIOFactory.getIOForClassType(StateHistoryConfig.class.getSimpleName()).setViewConfig((ViewConfig)c);
+        fail("Not yet implemented");
 	}
 
 	@Test
@@ -275,6 +297,7 @@ class RyuguConfigsTest
         FeatureConfigIOFactory.getIOForClassType(ImagingInstrumentConfig.class.getSimpleName()).setViewConfig((ViewConfig)c);
         FeatureConfigIOFactory.getIOForClassType(BasemapImageConfig.class.getSimpleName()).setViewConfig((ViewConfig)c);
         FeatureConfigIOFactory.getIOForClassType(StateHistoryConfig.class.getSimpleName()).setViewConfig((ViewConfig)c);
+        fail("Not yet implemented");
 	}
 
 	@Test
@@ -286,6 +309,7 @@ class RyuguConfigsTest
         FeatureConfigIOFactory.getIOForClassType(ImagingInstrumentConfig.class.getSimpleName()).setViewConfig((ViewConfig)c);
         FeatureConfigIOFactory.getIOForClassType(BasemapImageConfig.class.getSimpleName()).setViewConfig((ViewConfig)c);
         FeatureConfigIOFactory.getIOForClassType(StateHistoryConfig.class.getSimpleName()).setViewConfig((ViewConfig)c);
+        fail("Not yet implemented");
 	}
 
 	@Test
@@ -297,6 +321,7 @@ class RyuguConfigsTest
         FeatureConfigIOFactory.getIOForClassType(ImagingInstrumentConfig.class.getSimpleName()).setViewConfig((ViewConfig)c);
         FeatureConfigIOFactory.getIOForClassType(BasemapImageConfig.class.getSimpleName()).setViewConfig((ViewConfig)c);
         FeatureConfigIOFactory.getIOForClassType(StateHistoryConfig.class.getSimpleName()).setViewConfig((ViewConfig)c);
+        fail("Not yet implemented");
 	}
 
 	@Test
@@ -308,6 +333,7 @@ class RyuguConfigsTest
         FeatureConfigIOFactory.getIOForClassType(ImagingInstrumentConfig.class.getSimpleName()).setViewConfig((ViewConfig)c);
         FeatureConfigIOFactory.getIOForClassType(BasemapImageConfig.class.getSimpleName()).setViewConfig((ViewConfig)c);
         FeatureConfigIOFactory.getIOForClassType(StateHistoryConfig.class.getSimpleName()).setViewConfig((ViewConfig)c);
+        fail("Not yet implemented");
 	}
 
 	@Test
@@ -319,6 +345,7 @@ class RyuguConfigsTest
         FeatureConfigIOFactory.getIOForClassType(ImagingInstrumentConfig.class.getSimpleName()).setViewConfig((ViewConfig)c);
         FeatureConfigIOFactory.getIOForClassType(BasemapImageConfig.class.getSimpleName()).setViewConfig((ViewConfig)c);
         FeatureConfigIOFactory.getIOForClassType(StateHistoryConfig.class.getSimpleName()).setViewConfig((ViewConfig)c);
+        fail("Not yet implemented");
 	}
 
 	@Test
@@ -330,6 +357,7 @@ class RyuguConfigsTest
         FeatureConfigIOFactory.getIOForClassType(ImagingInstrumentConfig.class.getSimpleName()).setViewConfig((ViewConfig)c);
         FeatureConfigIOFactory.getIOForClassType(BasemapImageConfig.class.getSimpleName()).setViewConfig((ViewConfig)c);
         FeatureConfigIOFactory.getIOForClassType(StateHistoryConfig.class.getSimpleName()).setViewConfig((ViewConfig)c);
+        fail("Not yet implemented");
 	}
 
 	@Test
@@ -341,6 +369,7 @@ class RyuguConfigsTest
         FeatureConfigIOFactory.getIOForClassType(ImagingInstrumentConfig.class.getSimpleName()).setViewConfig((ViewConfig)c);
         FeatureConfigIOFactory.getIOForClassType(BasemapImageConfig.class.getSimpleName()).setViewConfig((ViewConfig)c);
         FeatureConfigIOFactory.getIOForClassType(StateHistoryConfig.class.getSimpleName()).setViewConfig((ViewConfig)c);
+        fail("Not yet implemented");
 	}
 
 	@Test
@@ -352,6 +381,7 @@ class RyuguConfigsTest
         FeatureConfigIOFactory.getIOForClassType(ImagingInstrumentConfig.class.getSimpleName()).setViewConfig((ViewConfig)c);
         FeatureConfigIOFactory.getIOForClassType(BasemapImageConfig.class.getSimpleName()).setViewConfig((ViewConfig)c);
         FeatureConfigIOFactory.getIOForClassType(StateHistoryConfig.class.getSimpleName()).setViewConfig((ViewConfig)c);
+        fail("Not yet implemented");
 	}
 
 	@Test
@@ -363,6 +393,7 @@ class RyuguConfigsTest
         FeatureConfigIOFactory.getIOForClassType(ImagingInstrumentConfig.class.getSimpleName()).setViewConfig((ViewConfig)c);
         FeatureConfigIOFactory.getIOForClassType(BasemapImageConfig.class.getSimpleName()).setViewConfig((ViewConfig)c);
         FeatureConfigIOFactory.getIOForClassType(StateHistoryConfig.class.getSimpleName()).setViewConfig((ViewConfig)c);
+        fail("Not yet implemented");
 	}
 
 }

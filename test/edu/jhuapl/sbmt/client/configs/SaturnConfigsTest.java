@@ -1,8 +1,17 @@
 package edu.jhuapl.sbmt.client.configs;
 
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.fail;
+
+import java.util.GregorianCalendar;
+
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
+
+import com.google.common.collect.ImmutableList;
+import com.google.common.collect.Lists;
 
 import edu.jhuapl.saavtk.config.ConfigArrayList;
 import edu.jhuapl.saavtk.config.IBodyViewConfig;
@@ -12,8 +21,13 @@ import edu.jhuapl.saavtk.model.ShapeModelType;
 import edu.jhuapl.saavtk.util.Configuration;
 import edu.jhuapl.saavtk.util.SafeURLPaths;
 import edu.jhuapl.sbmt.config.SmallBodyViewConfig;
+import edu.jhuapl.sbmt.core.body.BodyType;
+import edu.jhuapl.sbmt.core.body.ShapeModelDataUsed;
+import edu.jhuapl.sbmt.core.body.ShapeModelPopulation;
 import edu.jhuapl.sbmt.core.client.Mission;
 import edu.jhuapl.sbmt.core.config.FeatureConfigIOFactory;
+import edu.jhuapl.sbmt.core.config.Instrument;
+import edu.jhuapl.sbmt.core.pointing.PointingSource;
 import edu.jhuapl.sbmt.image.config.BasemapImageConfig;
 import edu.jhuapl.sbmt.image.config.BasemapImageConfigIO;
 import edu.jhuapl.sbmt.image.config.ImagingInstrumentConfig;
@@ -27,8 +41,10 @@ import edu.jhuapl.sbmt.image.model.BinTranslations;
 import edu.jhuapl.sbmt.image.model.CompositePerspectiveImage;
 import edu.jhuapl.sbmt.image.model.CylindricalBounds;
 import edu.jhuapl.sbmt.image.model.ImageBinPadding;
+import edu.jhuapl.sbmt.image.model.ImageType;
 import edu.jhuapl.sbmt.image.model.ImagingInstrument;
 import edu.jhuapl.sbmt.image.model.PerspectiveImageMetadata;
+import edu.jhuapl.sbmt.image.model.SpectralImageMode;
 import edu.jhuapl.sbmt.image.query.ImageDataQuery;
 import edu.jhuapl.sbmt.lidar.config.LidarInstrumentConfig;
 import edu.jhuapl.sbmt.lidar.config.LidarInstrumentConfigIO;
@@ -59,6 +75,8 @@ import edu.jhuapl.sbmt.spectrum.model.io.SpectrumInstrumentMetadataIO;
 import edu.jhuapl.sbmt.stateHistory.config.StateHistoryConfig;
 import edu.jhuapl.sbmt.stateHistory.config.StateHistoryConfigIO;
 
+import crucible.crust.metadata.impl.InstanceGetter;
+
 class SaturnConfigsTest
 {
 
@@ -75,31 +93,37 @@ class SaturnConfigsTest
 		SpectraTypeFactory.registerSpectraType("NIRS3", NIRS3Query.getInstance(), NIRS3SpectrumMath.getInstance(), "nm", new NIRS3().getBandCenters());
 		SpectraTypeFactory.registerSpectraType("MEGANE", MEGANEQuery.getInstance(), MEGANESpectrumMath.getInstance(), "cm^-1", new MEGANE().getBandCenters());
 
-		ImageBinPadding.initializeSerializationProxy();
-		BinExtents.initializeSerializationProxy();
-		BinTranslations.initializeSerializationProxy();
-		BinSpacings.initializeSerializationProxy();
-		BasemapImage.initializeSerializationProxy();
-		ImageDataQuery.initializeSerializationProxy();
-		FixedListDataQuery.initializeSerializationProxy();
-		CylindricalBounds.initializeSerializationProxy();
-		PerspectiveImageMetadata.initializeSerializationProxy();
-		CustomCylindricalImageKey.initializeSerializationProxy();
-		CustomPerspectiveImageKey.initializeSerializationProxy();
-		CompositePerspectiveImage.initializeSerializationProxy();
-		ImagingInstrument.initializeSerializationProxy();
+		try {
+			InstanceGetter.defaultInstanceGetter().getKeyForType(ImageBinPadding.class);
+		} catch (IllegalArgumentException iae) {
+//		if (InstanceGetter.defaultInstanceGetter().getKeyForType(ImageBinPadding.class) == null)
+//		{
+			ImageBinPadding.initializeSerializationProxy();
+			BinExtents.initializeSerializationProxy();
+			BinTranslations.initializeSerializationProxy();
+			BinSpacings.initializeSerializationProxy();
+			BasemapImage.initializeSerializationProxy();
+			ImageDataQuery.initializeSerializationProxy();
+			FixedListDataQuery.initializeSerializationProxy();
+			CylindricalBounds.initializeSerializationProxy();
+			PerspectiveImageMetadata.initializeSerializationProxy();
+			CustomCylindricalImageKey.initializeSerializationProxy();
+			CustomPerspectiveImageKey.initializeSerializationProxy();
+			CompositePerspectiveImage.initializeSerializationProxy();
+			ImagingInstrument.initializeSerializationProxy();
 
-		MEGANE.initializeSerializationProxy();
-		NIS.initializeSerializationProxy();
-		NIRS3.initializeSerializationProxy();
-		OTES.initializeSerializationProxy();
-		OVIRS.initializeSerializationProxy();
-		SpectrumInstrumentMetadata.initializeSerializationProxy();
-		SpectrumInstrumentMetadataIO.initializeSerializationProxy();
-		DataQuerySourcesMetadata.initializeSerializationProxy();
-		SpectrumSearchSpec.initializeSerializationProxy();
+			MEGANE.initializeSerializationProxy();
+			NIS.initializeSerializationProxy();
+			NIRS3.initializeSerializationProxy();
+			OTES.initializeSerializationProxy();
+			OVIRS.initializeSerializationProxy();
+			SpectrumInstrumentMetadata.initializeSerializationProxy();
+			SpectrumInstrumentMetadataIO.initializeSerializationProxy();
+			DataQuerySourcesMetadata.initializeSerializationProxy();
+			SpectrumSearchSpec.initializeSerializationProxy();
 
-		SpiceInfo.initializeSerializationProxy();
+			SpiceInfo.initializeSerializationProxy();
+		}
 
 		FeatureConfigIOFactory.registerFeatureConfigIO(BasemapImageConfig.class.getSimpleName(), new BasemapImageConfigIO());
 		FeatureConfigIOFactory.registerFeatureConfigIO(ImagingInstrumentConfig.class.getSimpleName(), new ImagingInstrumentConfigIO());
@@ -143,6 +167,38 @@ class SaturnConfigsTest
         FeatureConfigIOFactory.getIOForClassType(ImagingInstrumentConfig.class.getSimpleName()).setViewConfig((ViewConfig)c);
         FeatureConfigIOFactory.getIOForClassType(BasemapImageConfig.class.getSimpleName()).setViewConfig((ViewConfig)c);
         FeatureConfigIOFactory.getIOForClassType(StateHistoryConfig.class.getSimpleName()).setViewConfig((ViewConfig)c);
+
+        assertEquals(c.body, ShapeModelBody.DIONE);
+        assertEquals(c.type, BodyType.PLANETS_AND_SATELLITES);
+        assertEquals(c.population, ShapeModelPopulation.SATURN);
+        assertEquals(c.dataUsed, ShapeModelDataUsed.IMAGE_BASED);
+        assertEquals(c.author, ShapeModelType.GASKELL);
+        assertEquals(c.modelLabel, "Gaskell (2013a)");
+        assertEquals(c.rootDirOnServer, "/GASKELL/DIONE");
+
+        ImagingInstrumentConfig imagingConfig = (ImagingInstrumentConfig)c.getConfigForClass(ImagingInstrumentConfig.class);
+        DataQuerySourcesMetadata imagingMetadata =
+        		DataQuerySourcesMetadata.of("/GASKELL/DIONE/IMAGING", "", null, null, "/GASKELL/DIONE/IMAGING/gallery");
+
+        imagingConfig.imagingInstruments = Lists.newArrayList(
+                new ImagingInstrument( //
+                        SpectralImageMode.MONO, //
+                        new FixedListDataQuery(imagingMetadata),
+                        ImageType.SATURN_MOON_IMAGE, //
+                        new PointingSource[]{PointingSource.GASKELL}, //
+                        Instrument.IMAGING_DATA //
+                        ) //
+        );
+
+        assertEquals(imagingConfig.imageSearchDefaultStartDate, new GregorianCalendar(1980, 10, 10, 0, 0, 0).getTime());
+        assertEquals(imagingConfig.imageSearchDefaultEndDate, new GregorianCalendar(2011, 0, 31, 0, 0, 0).getTime());
+        assertArrayEquals(imagingConfig.imageSearchFilterNames, new String[] {});
+        assertArrayEquals(imagingConfig.imageSearchUserDefinedCheckBoxesNames, new String[] {});
+        assertEquals(imagingConfig.imageSearchDefaultMaxSpacecraftDistance, 40000.0);
+        assertEquals(imagingConfig.imageSearchDefaultMaxResolution, 4000.0);
+        assertEquals(c.hasColoringData, false);
+        assertArrayEquals(c.presentInMissions, new Mission[] {Mission.PUBLIC_RELEASE, Mission.TEST_PUBLIC_RELEASE, Mission.STAGE_PUBLIC_RELEASE, Mission.STAGE_APL_INTERNAL, Mission.APL_INTERNAL, Mission.TEST_APL_INTERNAL});
+        assertArrayEquals(c.defaultForMissions, new Mission[] {});
 	}
 
 	@Test
@@ -154,6 +210,19 @@ class SaturnConfigsTest
         FeatureConfigIOFactory.getIOForClassType(ImagingInstrumentConfig.class.getSimpleName()).setViewConfig((ViewConfig)c);
         FeatureConfigIOFactory.getIOForClassType(BasemapImageConfig.class.getSimpleName()).setViewConfig((ViewConfig)c);
         FeatureConfigIOFactory.getIOForClassType(StateHistoryConfig.class.getSimpleName()).setViewConfig((ViewConfig)c);
+
+        c.body = ShapeModelBody.EPIMETHEUS;
+        c.type = BodyType.PLANETS_AND_SATELLITES;
+        c.population = ShapeModelPopulation.SATURN;
+        c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
+        c.author = ShapeModelType.THOMAS;
+        c.modelLabel = "Thomas (2000)";
+        c.rootDirOnServer = "/THOMAS/EPIMETHEUS";
+        c.shapeModelFileNames = prepend(c.rootDirOnServer, "s11epimetheus.llr.gz");
+        c.hasColoringData = false;
+        c.setResolution(ImmutableList.of(5040));
+        c.presentInMissions = new Mission[] {Mission.PUBLIC_RELEASE, Mission.TEST_PUBLIC_RELEASE, Mission.STAGE_PUBLIC_RELEASE, Mission.STAGE_APL_INTERNAL, Mission.APL_INTERNAL, Mission.TEST_APL_INTERNAL};
+        c.defaultForMissions = new Mission[] {};
 	}
 
 	@Test
@@ -165,6 +234,19 @@ class SaturnConfigsTest
         FeatureConfigIOFactory.getIOForClassType(ImagingInstrumentConfig.class.getSimpleName()).setViewConfig((ViewConfig)c);
         FeatureConfigIOFactory.getIOForClassType(BasemapImageConfig.class.getSimpleName()).setViewConfig((ViewConfig)c);
         FeatureConfigIOFactory.getIOForClassType(StateHistoryConfig.class.getSimpleName()).setViewConfig((ViewConfig)c);
+
+        c.body = ShapeModelBody.EPIMETHEUS;
+        c.type = BodyType.PLANETS_AND_SATELLITES;
+        c.population = ShapeModelPopulation.SATURN;
+        c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
+        c.author = ShapeModelType.STOOKE;
+        c.modelLabel = "Stooke (2016)";
+        c.rootDirOnServer = "/epimetheus/stooke2016";
+        c.shapeModelFileExtension = ".obj";
+        c.hasColoringData = false;
+        c.setResolution(ImmutableList.of(5040));
+        c.presentInMissions = new Mission[] {Mission.PUBLIC_RELEASE, Mission.TEST_PUBLIC_RELEASE, Mission.STAGE_PUBLIC_RELEASE, Mission.STAGE_APL_INTERNAL, Mission.APL_INTERNAL, Mission.TEST_APL_INTERNAL};
+        c.defaultForMissions = new Mission[] {};
 	}
 
 	@Test
@@ -176,6 +258,17 @@ class SaturnConfigsTest
         FeatureConfigIOFactory.getIOForClassType(ImagingInstrumentConfig.class.getSimpleName()).setViewConfig((ViewConfig)c);
         FeatureConfigIOFactory.getIOForClassType(BasemapImageConfig.class.getSimpleName()).setViewConfig((ViewConfig)c);
         FeatureConfigIOFactory.getIOForClassType(StateHistoryConfig.class.getSimpleName()).setViewConfig((ViewConfig)c);
+
+        c.body = ShapeModelBody.HYPERION;
+        c.type = BodyType.PLANETS_AND_SATELLITES;
+        c.population = ShapeModelPopulation.SATURN;
+        c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
+        c.author = ShapeModelType.GASKELL;
+        c.modelLabel = "Gaskell et al. (in progress)";
+        c.rootDirOnServer = "/GASKELL/HYPERION";
+        c.hasColoringData = false;
+        c.presentInMissions = new Mission[] {Mission.PUBLIC_RELEASE, Mission.TEST_PUBLIC_RELEASE, Mission.STAGE_PUBLIC_RELEASE, Mission.STAGE_APL_INTERNAL, Mission.APL_INTERNAL, Mission.TEST_APL_INTERNAL};
+        c.defaultForMissions = new Mission[] {};
 	}
 
 	@Test
@@ -187,6 +280,19 @@ class SaturnConfigsTest
         FeatureConfigIOFactory.getIOForClassType(ImagingInstrumentConfig.class.getSimpleName()).setViewConfig((ViewConfig)c);
         FeatureConfigIOFactory.getIOForClassType(BasemapImageConfig.class.getSimpleName()).setViewConfig((ViewConfig)c);
         FeatureConfigIOFactory.getIOForClassType(StateHistoryConfig.class.getSimpleName()).setViewConfig((ViewConfig)c);
+
+        c.body = ShapeModelBody.HYPERION;
+        c.type = BodyType.PLANETS_AND_SATELLITES;
+        c.population = ShapeModelPopulation.SATURN;
+        c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
+        c.author = ShapeModelType.THOMAS;
+        c.modelLabel = "Thomas (2000)";
+        c.rootDirOnServer = "/THOMAS/HYPERION";
+        c.shapeModelFileNames = prepend(c.rootDirOnServer, "s7hyperion.llr.gz");
+        c.hasColoringData = false;
+        c.setResolution(ImmutableList.of(5040));
+        c.presentInMissions = new Mission[] {Mission.PUBLIC_RELEASE, Mission.TEST_PUBLIC_RELEASE, Mission.STAGE_PUBLIC_RELEASE, Mission.STAGE_APL_INTERNAL, Mission.APL_INTERNAL, Mission.TEST_APL_INTERNAL};
+        c.defaultForMissions = new Mission[] {};
 	}
 
 	@Test
@@ -198,6 +304,22 @@ class SaturnConfigsTest
         FeatureConfigIOFactory.getIOForClassType(ImagingInstrumentConfig.class.getSimpleName()).setViewConfig((ViewConfig)c);
         FeatureConfigIOFactory.getIOForClassType(BasemapImageConfig.class.getSimpleName()).setViewConfig((ViewConfig)c);
         FeatureConfigIOFactory.getIOForClassType(StateHistoryConfig.class.getSimpleName()).setViewConfig((ViewConfig)c);
+
+        c.body = ShapeModelBody.JANUS;
+		c.type = BodyType.PLANETS_AND_SATELLITES;
+		c.population = ShapeModelPopulation.SATURN;
+		c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
+		c.author = ShapeModelType.THOMAS;
+		c.modelLabel = "Thomas (2000)";
+		c.rootDirOnServer = "/THOMAS/JANUS";
+		c.shapeModelFileNames = prepend(c.rootDirOnServer, "s10janus.llr.gz");
+		c.hasColoringData = false;
+		c.setResolution(ImmutableList.of(5040));
+		c.presentInMissions = new Mission[]
+		{ Mission.PUBLIC_RELEASE, Mission.TEST_PUBLIC_RELEASE, Mission.STAGE_PUBLIC_RELEASE, Mission.STAGE_APL_INTERNAL,
+				Mission.APL_INTERNAL, Mission.TEST_APL_INTERNAL };
+		c.defaultForMissions = new Mission[]
+		{};
 	}
 
 	@Test
@@ -209,6 +331,19 @@ class SaturnConfigsTest
         FeatureConfigIOFactory.getIOForClassType(ImagingInstrumentConfig.class.getSimpleName()).setViewConfig((ViewConfig)c);
         FeatureConfigIOFactory.getIOForClassType(BasemapImageConfig.class.getSimpleName()).setViewConfig((ViewConfig)c);
         FeatureConfigIOFactory.getIOForClassType(StateHistoryConfig.class.getSimpleName()).setViewConfig((ViewConfig)c);
+
+        c.body = ShapeModelBody.JANUS;
+        c.type = BodyType.PLANETS_AND_SATELLITES;
+        c.population = ShapeModelPopulation.SATURN;
+        c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
+        c.author = ShapeModelType.STOOKE;
+        c.modelLabel = "Stooke (2016)";
+        c.rootDirOnServer = "/janus/stooke2016";
+        c.shapeModelFileExtension = ".obj";
+        c.hasColoringData = false;
+        c.setResolution(ImmutableList.of(5040));
+        c.presentInMissions = new Mission[] {Mission.PUBLIC_RELEASE, Mission.TEST_PUBLIC_RELEASE, Mission.STAGE_PUBLIC_RELEASE, Mission.STAGE_APL_INTERNAL, Mission.APL_INTERNAL, Mission.TEST_APL_INTERNAL};
+        c.defaultForMissions = new Mission[] {};
 	}
 
 	@Test
@@ -220,6 +355,7 @@ class SaturnConfigsTest
         FeatureConfigIOFactory.getIOForClassType(ImagingInstrumentConfig.class.getSimpleName()).setViewConfig((ViewConfig)c);
         FeatureConfigIOFactory.getIOForClassType(BasemapImageConfig.class.getSimpleName()).setViewConfig((ViewConfig)c);
         FeatureConfigIOFactory.getIOForClassType(StateHistoryConfig.class.getSimpleName()).setViewConfig((ViewConfig)c);
+        fail("Not yet implemented");
 	}
 
 	@Test
@@ -231,6 +367,19 @@ class SaturnConfigsTest
         FeatureConfigIOFactory.getIOForClassType(ImagingInstrumentConfig.class.getSimpleName()).setViewConfig((ViewConfig)c);
         FeatureConfigIOFactory.getIOForClassType(BasemapImageConfig.class.getSimpleName()).setViewConfig((ViewConfig)c);
         FeatureConfigIOFactory.getIOForClassType(StateHistoryConfig.class.getSimpleName()).setViewConfig((ViewConfig)c);
+
+        c.body = ShapeModelBody.PANDORA;
+        c.type = BodyType.PLANETS_AND_SATELLITES;
+        c.population = ShapeModelPopulation.SATURN;
+        c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
+        c.author = ShapeModelType.STOOKE;
+        c.modelLabel = "Stooke (2016)";
+        c.rootDirOnServer = "/pandora/stooke2016";
+        c.shapeModelFileExtension = ".obj";
+        c.hasColoringData = false;
+        c.setResolution(ImmutableList.of(5040));
+        c.presentInMissions = new Mission[] {Mission.PUBLIC_RELEASE, Mission.TEST_PUBLIC_RELEASE, Mission.STAGE_PUBLIC_RELEASE, Mission.STAGE_APL_INTERNAL, Mission.APL_INTERNAL, Mission.TEST_APL_INTERNAL};
+        c.defaultForMissions = new Mission[] {};
 	}
 
 	@Test
@@ -242,6 +391,7 @@ class SaturnConfigsTest
         FeatureConfigIOFactory.getIOForClassType(ImagingInstrumentConfig.class.getSimpleName()).setViewConfig((ViewConfig)c);
         FeatureConfigIOFactory.getIOForClassType(BasemapImageConfig.class.getSimpleName()).setViewConfig((ViewConfig)c);
         FeatureConfigIOFactory.getIOForClassType(StateHistoryConfig.class.getSimpleName()).setViewConfig((ViewConfig)c);
+        fail("Not yet implemented");
 	}
 
 	@Test
@@ -253,6 +403,19 @@ class SaturnConfigsTest
         FeatureConfigIOFactory.getIOForClassType(ImagingInstrumentConfig.class.getSimpleName()).setViewConfig((ViewConfig)c);
         FeatureConfigIOFactory.getIOForClassType(BasemapImageConfig.class.getSimpleName()).setViewConfig((ViewConfig)c);
         FeatureConfigIOFactory.getIOForClassType(StateHistoryConfig.class.getSimpleName()).setViewConfig((ViewConfig)c);
+
+        c.body = ShapeModelBody.PROMETHEUS;
+        c.type = BodyType.PLANETS_AND_SATELLITES;
+        c.population = ShapeModelPopulation.SATURN;
+        c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
+        c.author = ShapeModelType.STOOKE;
+        c.modelLabel = "Stooke (2016)";
+        c.rootDirOnServer = "/prometheus/stooke2016";
+        c.shapeModelFileExtension = ".obj";
+        c.hasColoringData = false;
+        c.setResolution(ImmutableList.of(5040));
+        c.presentInMissions = new Mission[] {Mission.PUBLIC_RELEASE, Mission.TEST_PUBLIC_RELEASE, Mission.STAGE_PUBLIC_RELEASE, Mission.STAGE_APL_INTERNAL, Mission.APL_INTERNAL, Mission.TEST_APL_INTERNAL};
+        c.defaultForMissions = new Mission[] {};
 	}
 
 	@Test
@@ -264,6 +427,17 @@ class SaturnConfigsTest
         FeatureConfigIOFactory.getIOForClassType(ImagingInstrumentConfig.class.getSimpleName()).setViewConfig((ViewConfig)c);
         FeatureConfigIOFactory.getIOForClassType(BasemapImageConfig.class.getSimpleName()).setViewConfig((ViewConfig)c);
         FeatureConfigIOFactory.getIOForClassType(StateHistoryConfig.class.getSimpleName()).setViewConfig((ViewConfig)c);
+
+        c.body = ShapeModelBody.RHEA;
+        c.type = BodyType.PLANETS_AND_SATELLITES;
+        c.population = ShapeModelPopulation.SATURN;
+        c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
+        c.author = ShapeModelType.GASKELL;
+        c.modelLabel = "Gaskell (in progress)";
+        c.rootDirOnServer = "/GASKELL/RHEA";
+        c.hasColoringData = false;
+        c.presentInMissions = new Mission[] {Mission.PUBLIC_RELEASE, Mission.TEST_PUBLIC_RELEASE, Mission.STAGE_PUBLIC_RELEASE, Mission.STAGE_APL_INTERNAL, Mission.APL_INTERNAL, Mission.TEST_APL_INTERNAL};
+        c.defaultForMissions = new Mission[] {};
 	}
 
 	@Test
@@ -275,6 +449,17 @@ class SaturnConfigsTest
         FeatureConfigIOFactory.getIOForClassType(ImagingInstrumentConfig.class.getSimpleName()).setViewConfig((ViewConfig)c);
         FeatureConfigIOFactory.getIOForClassType(BasemapImageConfig.class.getSimpleName()).setViewConfig((ViewConfig)c);
         FeatureConfigIOFactory.getIOForClassType(StateHistoryConfig.class.getSimpleName()).setViewConfig((ViewConfig)c);
+
+        c.body = ShapeModelBody.TETHYS;
+        c.type = BodyType.PLANETS_AND_SATELLITES;
+        c.population = ShapeModelPopulation.SATURN;
+        c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
+        c.author = ShapeModelType.GASKELL;
+        c.modelLabel = "Gaskell (2013d)";
+        c.rootDirOnServer = "/GASKELL/TETHYS";
+        c.hasColoringData = false;
+        c.presentInMissions = new Mission[] {Mission.PUBLIC_RELEASE, Mission.TEST_PUBLIC_RELEASE, Mission.STAGE_PUBLIC_RELEASE, Mission.STAGE_APL_INTERNAL, Mission.APL_INTERNAL, Mission.TEST_APL_INTERNAL};
+        c.defaultForMissions = new Mission[] {};
 	}
 
 	@Test
@@ -286,6 +471,7 @@ class SaturnConfigsTest
         FeatureConfigIOFactory.getIOForClassType(ImagingInstrumentConfig.class.getSimpleName()).setViewConfig((ViewConfig)c);
         FeatureConfigIOFactory.getIOForClassType(BasemapImageConfig.class.getSimpleName()).setViewConfig((ViewConfig)c);
         FeatureConfigIOFactory.getIOForClassType(StateHistoryConfig.class.getSimpleName()).setViewConfig((ViewConfig)c);
+        fail("Not yet implemented");
 	}
 
 	@Test
@@ -297,6 +483,7 @@ class SaturnConfigsTest
         FeatureConfigIOFactory.getIOForClassType(ImagingInstrumentConfig.class.getSimpleName()).setViewConfig((ViewConfig)c);
         FeatureConfigIOFactory.getIOForClassType(BasemapImageConfig.class.getSimpleName()).setViewConfig((ViewConfig)c);
         FeatureConfigIOFactory.getIOForClassType(StateHistoryConfig.class.getSimpleName()).setViewConfig((ViewConfig)c);
+        fail("Not yet implemented");
 	}
 
 	@Test
@@ -320,6 +507,7 @@ class SaturnConfigsTest
         FeatureConfigIOFactory.getIOForClassType(ImagingInstrumentConfig.class.getSimpleName()).setViewConfig((ViewConfig)c);
         FeatureConfigIOFactory.getIOForClassType(BasemapImageConfig.class.getSimpleName()).setViewConfig((ViewConfig)c);
         FeatureConfigIOFactory.getIOForClassType(StateHistoryConfig.class.getSimpleName()).setViewConfig((ViewConfig)c);
+        fail("Not yet implemented");
 	}
 
 	@Test
@@ -331,6 +519,7 @@ class SaturnConfigsTest
         FeatureConfigIOFactory.getIOForClassType(ImagingInstrumentConfig.class.getSimpleName()).setViewConfig((ViewConfig)c);
         FeatureConfigIOFactory.getIOForClassType(BasemapImageConfig.class.getSimpleName()).setViewConfig((ViewConfig)c);
         FeatureConfigIOFactory.getIOForClassType(StateHistoryConfig.class.getSimpleName()).setViewConfig((ViewConfig)c);
+        fail("Not yet implemented");
 	}
 
 	@Test
@@ -342,6 +531,17 @@ class SaturnConfigsTest
         FeatureConfigIOFactory.getIOForClassType(ImagingInstrumentConfig.class.getSimpleName()).setViewConfig((ViewConfig)c);
         FeatureConfigIOFactory.getIOForClassType(BasemapImageConfig.class.getSimpleName()).setViewConfig((ViewConfig)c);
         FeatureConfigIOFactory.getIOForClassType(StateHistoryConfig.class.getSimpleName()).setViewConfig((ViewConfig)c);
+
+        c.body = ShapeModelBody.ENCELADUS;
+        c.type = BodyType.PLANETS_AND_SATELLITES;
+        c.population = ShapeModelPopulation.SATURN;
+        c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
+        c.author = ShapeModelType.GASKELL;
+        c.modelLabel = "Gaskell (in progress)";
+        c.rootDirOnServer = "/enceladus/gaskell";
+        c.hasColoringData = false;
+        c.presentInMissions = new Mission[] {Mission.PUBLIC_RELEASE, Mission.TEST_PUBLIC_RELEASE, Mission.STAGE_PUBLIC_RELEASE, Mission.STAGE_APL_INTERNAL, Mission.APL_INTERNAL, Mission.TEST_APL_INTERNAL};
+        c.defaultForMissions = new Mission[] {};
 	}
 
 	@Test
@@ -365,6 +565,7 @@ class SaturnConfigsTest
         FeatureConfigIOFactory.getIOForClassType(ImagingInstrumentConfig.class.getSimpleName()).setViewConfig((ViewConfig)c);
         FeatureConfigIOFactory.getIOForClassType(BasemapImageConfig.class.getSimpleName()).setViewConfig((ViewConfig)c);
         FeatureConfigIOFactory.getIOForClassType(StateHistoryConfig.class.getSimpleName()).setViewConfig((ViewConfig)c);
+        fail("Not yet implemented");
 	}
 
 	@Test
@@ -376,6 +577,7 @@ class SaturnConfigsTest
         FeatureConfigIOFactory.getIOForClassType(ImagingInstrumentConfig.class.getSimpleName()).setViewConfig((ViewConfig)c);
         FeatureConfigIOFactory.getIOForClassType(BasemapImageConfig.class.getSimpleName()).setViewConfig((ViewConfig)c);
         FeatureConfigIOFactory.getIOForClassType(StateHistoryConfig.class.getSimpleName()).setViewConfig((ViewConfig)c);
+        fail("Not yet implemented");
 	}
 
 	@Test
@@ -387,6 +589,7 @@ class SaturnConfigsTest
         FeatureConfigIOFactory.getIOForClassType(ImagingInstrumentConfig.class.getSimpleName()).setViewConfig((ViewConfig)c);
         FeatureConfigIOFactory.getIOForClassType(BasemapImageConfig.class.getSimpleName()).setViewConfig((ViewConfig)c);
         FeatureConfigIOFactory.getIOForClassType(StateHistoryConfig.class.getSimpleName()).setViewConfig((ViewConfig)c);
+        fail("Not yet implemented");
 	}
 
 	@Test
@@ -398,6 +601,17 @@ class SaturnConfigsTest
         FeatureConfigIOFactory.getIOForClassType(ImagingInstrumentConfig.class.getSimpleName()).setViewConfig((ViewConfig)c);
         FeatureConfigIOFactory.getIOForClassType(BasemapImageConfig.class.getSimpleName()).setViewConfig((ViewConfig)c);
         FeatureConfigIOFactory.getIOForClassType(StateHistoryConfig.class.getSimpleName()).setViewConfig((ViewConfig)c);
+
+        c.body = ShapeModelBody.IAPETUS;
+        c.type = BodyType.PLANETS_AND_SATELLITES;
+        c.population = ShapeModelPopulation.SATURN;
+        c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
+        c.author = ShapeModelType.GASKELL;
+        c.modelLabel = "Gaskell (in progress)";
+        c.rootDirOnServer = "/iapetus/gaskell";
+        c.hasColoringData = false;
+        c.presentInMissions = new Mission[] {Mission.PUBLIC_RELEASE, Mission.TEST_PUBLIC_RELEASE, Mission.STAGE_PUBLIC_RELEASE, Mission.STAGE_APL_INTERNAL, Mission.APL_INTERNAL, Mission.TEST_APL_INTERNAL};
+        c.defaultForMissions = new Mission[] {};
 	}
 
 	@Test
@@ -409,6 +623,7 @@ class SaturnConfigsTest
         FeatureConfigIOFactory.getIOForClassType(ImagingInstrumentConfig.class.getSimpleName()).setViewConfig((ViewConfig)c);
         FeatureConfigIOFactory.getIOForClassType(BasemapImageConfig.class.getSimpleName()).setViewConfig((ViewConfig)c);
         FeatureConfigIOFactory.getIOForClassType(StateHistoryConfig.class.getSimpleName()).setViewConfig((ViewConfig)c);
+        fail("Not yet implemented");
 	}
 
 	@Test
@@ -432,6 +647,7 @@ class SaturnConfigsTest
         FeatureConfigIOFactory.getIOForClassType(ImagingInstrumentConfig.class.getSimpleName()).setViewConfig((ViewConfig)c);
         FeatureConfigIOFactory.getIOForClassType(BasemapImageConfig.class.getSimpleName()).setViewConfig((ViewConfig)c);
         FeatureConfigIOFactory.getIOForClassType(StateHistoryConfig.class.getSimpleName()).setViewConfig((ViewConfig)c);
+        fail("Not yet implemented");
 	}
 
 	@Test
@@ -443,6 +659,7 @@ class SaturnConfigsTest
         FeatureConfigIOFactory.getIOForClassType(ImagingInstrumentConfig.class.getSimpleName()).setViewConfig((ViewConfig)c);
         FeatureConfigIOFactory.getIOForClassType(BasemapImageConfig.class.getSimpleName()).setViewConfig((ViewConfig)c);
         FeatureConfigIOFactory.getIOForClassType(StateHistoryConfig.class.getSimpleName()).setViewConfig((ViewConfig)c);
+        fail("Not yet implemented");
 	}
 
 	@Test
@@ -454,6 +671,7 @@ class SaturnConfigsTest
         FeatureConfigIOFactory.getIOForClassType(ImagingInstrumentConfig.class.getSimpleName()).setViewConfig((ViewConfig)c);
         FeatureConfigIOFactory.getIOForClassType(BasemapImageConfig.class.getSimpleName()).setViewConfig((ViewConfig)c);
         FeatureConfigIOFactory.getIOForClassType(StateHistoryConfig.class.getSimpleName()).setViewConfig((ViewConfig)c);
+        fail("Not yet implemented");
 	}
 
 	@Test
@@ -465,6 +683,7 @@ class SaturnConfigsTest
         FeatureConfigIOFactory.getIOForClassType(ImagingInstrumentConfig.class.getSimpleName()).setViewConfig((ViewConfig)c);
         FeatureConfigIOFactory.getIOForClassType(BasemapImageConfig.class.getSimpleName()).setViewConfig((ViewConfig)c);
         FeatureConfigIOFactory.getIOForClassType(StateHistoryConfig.class.getSimpleName()).setViewConfig((ViewConfig)c);
+        fail("Not yet implemented");
 	}
 
 }
