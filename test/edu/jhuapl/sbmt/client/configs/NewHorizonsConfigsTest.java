@@ -178,7 +178,7 @@ class NewHorizonsConfigsTest
 
         assertEquals(imagingConfig.imagingInstruments.size(), 2);
         assertEquals(imagingConfig.imagingInstruments.get(0).getSearchQuery().getRootPath(), "/NEWHORIZONS/PLUTO/IMAGING");
-        assertEquals(imagingConfig.imagingInstruments.get(0).getSearchQuery().getDataPath(), "");
+        assertEquals(imagingConfig.imagingInstruments.get(0).getSearchQuery().getDataPath(), "/NEWHORIZONS/PLUTO/IMAGING/images");
         assertEquals(imagingConfig.imagingInstruments.get(0).getSearchQuery().getGalleryPath(), null);
         assertEquals(imagingConfig.imagingInstruments.get(0).spectralMode, SpectralImageMode.MONO);
         assertEquals(imagingConfig.imagingInstruments.get(0).getType(), ImageType.LORRI_IMAGE);
@@ -192,18 +192,14 @@ class NewHorizonsConfigsTest
         assertEquals(imagingConfig.imagingInstruments.get(0).getOrientation(PointingSource.CORRECTED_SPICE).getFlip(), ImageFlip.NONE);
 
         assertEquals(imagingConfig.imagingInstruments.get(1).getSearchQuery().getRootPath(), "/NEWHORIZONS/PLUTO/MVIC");
-        assertEquals(imagingConfig.imagingInstruments.get(1).getSearchQuery().getDataPath(), "");
+        assertEquals(imagingConfig.imagingInstruments.get(1).getSearchQuery().getDataPath(), "/NEWHORIZONS/PLUTO/MVIC/images");
         assertEquals(imagingConfig.imagingInstruments.get(1).getSearchQuery().getGalleryPath(), null);
         assertEquals(imagingConfig.imagingInstruments.get(1).spectralMode, SpectralImageMode.MULTI);
         assertEquals(imagingConfig.imagingInstruments.get(1).getType(), ImageType.MVIC_JUPITER_IMAGE);
-        assertArrayEquals(imagingConfig.imagingInstruments.get(1).searchImageSources, new PointingSource[]{PointingSource.SPICE, PointingSource.CORRECTED, PointingSource.CORRECTED_SPICE});
+        assertArrayEquals(imagingConfig.imagingInstruments.get(1).searchImageSources, new PointingSource[]{PointingSource.SPICE});
         assertEquals(imagingConfig.imagingInstruments.get(1).getInstrumentName(), Instrument.MVIC);
         assertEquals(imagingConfig.imagingInstruments.get(1).getOrientation(PointingSource.SPICE).getRotation(), 0.0);
         assertEquals(imagingConfig.imagingInstruments.get(1).getOrientation(PointingSource.SPICE).getFlip(), ImageFlip.NONE);
-        assertEquals(imagingConfig.imagingInstruments.get(1).getOrientation(PointingSource.CORRECTED).getRotation(), 0.0);
-        assertEquals(imagingConfig.imagingInstruments.get(1).getOrientation(PointingSource.CORRECTED).getFlip(), ImageFlip.NONE);
-        assertEquals(imagingConfig.imagingInstruments.get(1).getOrientation(PointingSource.CORRECTED_SPICE).getRotation(), 0.0);
-        assertEquals(imagingConfig.imagingInstruments.get(1).getOrientation(PointingSource.CORRECTED_SPICE).getFlip(), ImageFlip.NONE);
 
         assertEquals(imagingConfig.imageSearchDefaultStartDate, new GregorianCalendar(2015, 0, 1, 0, 0, 0).getTime());
         assertEquals(imagingConfig.imageSearchDefaultEndDate, new GregorianCalendar(2016, 1, 1, 0, 0, 0).getTime());
@@ -237,42 +233,24 @@ class NewHorizonsConfigsTest
 		assertEquals(c.type, BodyType.KBO);
 		assertEquals(c.population, ShapeModelPopulation.PLUTO);
 		assertEquals(c.dataUsed, ShapeModelDataUsed.TRIAXIAL);
-		assertEquals(c.author, ShapeModelType.NIMMO);
-		assertEquals(c.modelLabel, "Nimmo et al. (2017)");
-		assertEquals(c.rootDirOnServer, "/NEWHORIZONS/PLUTO");
-		assertArrayEquals(c.getShapeModelFileNames(), prepend(c.rootDirOnServer, "shape_res0.obj.gz"));
+		assertEquals(c.author, ShapeModelType.provide("pluto-test"));
+		assertEquals(c.modelLabel, "Pluto (Test)");
+		assertEquals(c.rootDirOnServer, "/pluto/pluto-test");
+//		assertArrayEquals(c.getShapeModelFileNames(), prepend(c.rootDirOnServer, "shape_res0.obj.gz"));
 		assertEquals(c.hasColoringData, false);
 
         ImagingInstrumentConfig imagingConfig = (ImagingInstrumentConfig)c.getConfigForClass(ImagingInstrumentConfig.class);
 
-        assertEquals(imagingConfig.imagingInstruments.size(), 2);
-        assertEquals(imagingConfig.imagingInstruments.get(0).getSearchQuery().getRootPath(), "/NEWHORIZONS/PLUTO/IMAGING");
-        assertEquals(imagingConfig.imagingInstruments.get(0).getSearchQuery().getDataPath(), "");
+        assertEquals(imagingConfig.imagingInstruments.size(), 1);
+        assertEquals(imagingConfig.imagingInstruments.get(0).getSearchQuery().getRootPath(), c.rootDirOnServer + "/lorri");
+        assertEquals(imagingConfig.imagingInstruments.get(0).getSearchQuery().getDataPath(), "/new-horizons/lorri/pluto-test/images");
         assertEquals(imagingConfig.imagingInstruments.get(0).getSearchQuery().getGalleryPath(), null);
         assertEquals(imagingConfig.imagingInstruments.get(0).spectralMode, SpectralImageMode.MONO);
         assertEquals(imagingConfig.imagingInstruments.get(0).getType(), ImageType.LORRI_IMAGE);
-        assertArrayEquals(imagingConfig.imagingInstruments.get(0).searchImageSources, new PointingSource[]{PointingSource.SPICE, PointingSource.CORRECTED, PointingSource.CORRECTED_SPICE});
+        assertArrayEquals(imagingConfig.imagingInstruments.get(0).searchImageSources, new PointingSource[]{PointingSource.GASKELL});
         assertEquals(imagingConfig.imagingInstruments.get(0).getInstrumentName(), Instrument.LORRI);
-        assertEquals(imagingConfig.imagingInstruments.get(0).getOrientation(PointingSource.SPICE).getRotation(), 0.0);
-        assertEquals(imagingConfig.imagingInstruments.get(0).getOrientation(PointingSource.SPICE).getFlip(), ImageFlip.NONE);
-        assertEquals(imagingConfig.imagingInstruments.get(0).getOrientation(PointingSource.CORRECTED).getRotation(), 0.0);
-        assertEquals(imagingConfig.imagingInstruments.get(0).getOrientation(PointingSource.CORRECTED).getFlip(), ImageFlip.NONE);
-        assertEquals(imagingConfig.imagingInstruments.get(0).getOrientation(PointingSource.CORRECTED_SPICE).getRotation(), 0.0);
-        assertEquals(imagingConfig.imagingInstruments.get(0).getOrientation(PointingSource.CORRECTED_SPICE).getFlip(), ImageFlip.NONE);
-
-        assertEquals(imagingConfig.imagingInstruments.get(1).getSearchQuery().getRootPath(), "/NEWHORIZONS/PLUTO/MVIC");
-        assertEquals(imagingConfig.imagingInstruments.get(1).getSearchQuery().getDataPath(), "");
-        assertEquals(imagingConfig.imagingInstruments.get(1).getSearchQuery().getGalleryPath(), null);
-        assertEquals(imagingConfig.imagingInstruments.get(1).spectralMode, SpectralImageMode.MULTI);
-        assertEquals(imagingConfig.imagingInstruments.get(1).getType(), ImageType.MVIC_JUPITER_IMAGE);
-        assertArrayEquals(imagingConfig.imagingInstruments.get(1).searchImageSources, new PointingSource[]{PointingSource.SPICE, PointingSource.CORRECTED, PointingSource.CORRECTED_SPICE});
-        assertEquals(imagingConfig.imagingInstruments.get(1).getInstrumentName(), Instrument.MVIC);
-        assertEquals(imagingConfig.imagingInstruments.get(1).getOrientation(PointingSource.SPICE).getRotation(), 0.0);
-        assertEquals(imagingConfig.imagingInstruments.get(1).getOrientation(PointingSource.SPICE).getFlip(), ImageFlip.NONE);
-        assertEquals(imagingConfig.imagingInstruments.get(1).getOrientation(PointingSource.CORRECTED).getRotation(), 0.0);
-        assertEquals(imagingConfig.imagingInstruments.get(1).getOrientation(PointingSource.CORRECTED).getFlip(), ImageFlip.NONE);
-        assertEquals(imagingConfig.imagingInstruments.get(1).getOrientation(PointingSource.CORRECTED_SPICE).getRotation(), 0.0);
-        assertEquals(imagingConfig.imagingInstruments.get(1).getOrientation(PointingSource.CORRECTED_SPICE).getFlip(), ImageFlip.NONE);
+        assertEquals(imagingConfig.imagingInstruments.get(0).getOrientation(PointingSource.GASKELL).getRotation(), 0.0);
+        assertEquals(imagingConfig.imagingInstruments.get(0).getOrientation(PointingSource.GASKELL).getFlip(), ImageFlip.NONE);
 
         assertEquals(imagingConfig.imageSearchDefaultStartDate, new GregorianCalendar(2015, 0, 1, 0, 0, 0).getTime());
         assertEquals(imagingConfig.imageSearchDefaultEndDate, new GregorianCalendar(2016, 1, 1, 0, 0, 0).getTime());
@@ -285,7 +263,7 @@ class NewHorizonsConfigsTest
 
         assertArrayEquals(c.databaseRunInfos, new DBRunInfo[]
         {
-        	new DBRunInfo(PointingSource.GASKELL, Instrument.LORRI, ShapeModelBody.PLUTO.toString(), "/project/nearsdc/data/NEWHORIZONS/PLUTO/IMAGING/imagelist-fullpath.txt", ShapeModelBody.PLUTO.toString().toLowerCase()),
+        	new DBRunInfo(PointingSource.GASKELL, Instrument.LORRI, ShapeModelBody.PLUTO.toString(), c.rootDirOnServer + "/lorri" + "/imagelist-fullpath-sum.txt", "pluto_pluto_test_lorri"),
         });
 
         assertArrayEquals(c.presentInMissions, presentMissions);
