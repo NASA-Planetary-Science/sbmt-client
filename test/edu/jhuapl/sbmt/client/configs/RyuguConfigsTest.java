@@ -366,7 +366,17 @@ class RyuguConfigsTest
 
 		assertEquals(imagingConfig.imagingInstruments.size(), 1);
 
-        testONC(imagingConfig, "/ryugu/nasa-001/onc", "/ryugu/nasa-001/onc/images", "/ryugu/nasa-001/onc/gallery");
+//        testONC(imagingConfig, "/ryugu/nasa-001/onc", "/ryugu/nasa-001/onc/images", "/ryugu/nasa-001/onc/gallery");
+
+        assertEquals(imagingConfig.imagingInstruments.get(0).getSearchQuery().getRootPath(), "/ryugu/nasa-001/onc");
+        assertEquals(imagingConfig.imagingInstruments.get(0).getSearchQuery().getDataPath(), "/ryugu/nasa-001/onc/images");
+        assertEquals(imagingConfig.imagingInstruments.get(0).getSearchQuery().getGalleryPath(), "/ryugu/nasa-001/onc/gallery");
+        assertEquals(imagingConfig.imagingInstruments.get(0).spectralMode, SpectralImageMode.MONO);
+        assertEquals(imagingConfig.imagingInstruments.get(0).getType(), ImageType.ONC_IMAGE);
+        assertArrayEquals(imagingConfig.imagingInstruments.get(0).searchImageSources, new PointingSource[]{PointingSource.GASKELL});
+        assertEquals(imagingConfig.imagingInstruments.get(0).getInstrumentName(), Instrument.ONC);
+        assertEquals(imagingConfig.imagingInstruments.get(0).getOrientation(PointingSource.GASKELL).getRotation(), 0.0);
+        assertEquals(imagingConfig.imagingInstruments.get(0).getOrientation(PointingSource.GASKELL).getFlip(), ImageFlip.NONE);
 
         assertEquals(c.hasMapmaker, false);
         testImages(imagingConfig);
@@ -614,7 +624,7 @@ class RyuguConfigsTest
         assertEquals(imagingConfig.imagingInstruments.get(0).getSearchQuery().getGalleryPath(), galleryDir);
         assertEquals(imagingConfig.imagingInstruments.get(0).spectralMode, SpectralImageMode.MONO);
         assertEquals(imagingConfig.imagingInstruments.get(0).getType(), ImageType.ONC_IMAGE);
-        assertArrayEquals(imagingConfig.imagingInstruments.get(0).searchImageSources, new PointingSource[]{PointingSource.GASKELL});
+        assertArrayEquals(imagingConfig.imagingInstruments.get(0).searchImageSources, new PointingSource[]{PointingSource.GASKELL, PointingSource.SPICE});
         assertEquals(imagingConfig.imagingInstruments.get(0).getInstrumentName(), Instrument.ONC);
         assertEquals(imagingConfig.imagingInstruments.get(0).getOrientation(PointingSource.GASKELL).getRotation(), 0.0);
         assertEquals(imagingConfig.imagingInstruments.get(0).getOrientation(PointingSource.GASKELL).getFlip(), ImageFlip.NONE);

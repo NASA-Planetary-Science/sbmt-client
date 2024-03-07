@@ -74,11 +74,11 @@ public class SaturnConfigs extends SmallBodyViewConfig
 	public static void initialize(ConfigArrayList<IBodyViewConfig> configArray)
     {
         buildDioneGaskellConfig(configArray);
-        buildEpimetheusThomas2000Config(configArray);
+//        buildEpimetheusThomas2000Config(configArray);
         buildEpimetheusStookeConfig(configArray);
         buildHyperionGaskellConfig(configArray);
         buildHyperionThomasConfig(configArray);
-        buildJanusThomas2000Config(configArray);
+//        buildJanusThomas2000Config(configArray);
         buildJanusStookeConfig(configArray);
         buildMimasGaskellConfig(configArray);
         buildPandoraStookeConfig(configArray);
