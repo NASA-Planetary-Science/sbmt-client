@@ -2,7 +2,6 @@ package edu.jhuapl.sbmt.client.configs;
 
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.fail;
 
 import java.util.GregorianCalendar;
 
@@ -11,7 +10,6 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
 import com.google.common.collect.ImmutableList;
-import com.google.common.collect.Lists;
 
 import edu.jhuapl.saavtk.config.ConfigArrayList;
 import edu.jhuapl.saavtk.config.IBodyViewConfig;
@@ -22,11 +20,13 @@ import edu.jhuapl.saavtk.util.Configuration;
 import edu.jhuapl.saavtk.util.SafeURLPaths;
 import edu.jhuapl.sbmt.config.SmallBodyViewConfig;
 import edu.jhuapl.sbmt.core.body.BodyType;
+import edu.jhuapl.sbmt.core.body.BodyViewConfig;
 import edu.jhuapl.sbmt.core.body.ShapeModelDataUsed;
 import edu.jhuapl.sbmt.core.body.ShapeModelPopulation;
 import edu.jhuapl.sbmt.core.client.Mission;
 import edu.jhuapl.sbmt.core.config.FeatureConfigIOFactory;
 import edu.jhuapl.sbmt.core.config.Instrument;
+import edu.jhuapl.sbmt.core.io.DBRunInfo;
 import edu.jhuapl.sbmt.core.pointing.PointingSource;
 import edu.jhuapl.sbmt.image.config.BasemapImageConfig;
 import edu.jhuapl.sbmt.image.config.BasemapImageConfigIO;
@@ -41,6 +41,7 @@ import edu.jhuapl.sbmt.image.model.BinTranslations;
 import edu.jhuapl.sbmt.image.model.CompositePerspectiveImage;
 import edu.jhuapl.sbmt.image.model.CylindricalBounds;
 import edu.jhuapl.sbmt.image.model.ImageBinPadding;
+import edu.jhuapl.sbmt.image.model.ImageFlip;
 import edu.jhuapl.sbmt.image.model.ImageType;
 import edu.jhuapl.sbmt.image.model.ImagingInstrument;
 import edu.jhuapl.sbmt.image.model.PerspectiveImageMetadata;
@@ -177,18 +178,29 @@ class SaturnConfigsTest
         assertEquals(c.rootDirOnServer, "/GASKELL/DIONE");
 
         ImagingInstrumentConfig imagingConfig = (ImagingInstrumentConfig)c.getConfigForClass(ImagingInstrumentConfig.class);
-        DataQuerySourcesMetadata imagingMetadata =
-        		DataQuerySourcesMetadata.of("/GASKELL/DIONE/IMAGING", "", null, null, "/GASKELL/DIONE/IMAGING/gallery");
+//        DataQuerySourcesMetadata imagingMetadata =
+//        		DataQuerySourcesMetadata.of("/GASKELL/DIONE/IMAGING", "", null, null, "/GASKELL/DIONE/IMAGING/gallery");
 
-        imagingConfig.imagingInstruments = Lists.newArrayList(
-                new ImagingInstrument( //
-                        SpectralImageMode.MONO, //
-                        new FixedListDataQuery(imagingMetadata),
-                        ImageType.SATURN_MOON_IMAGE, //
-                        new PointingSource[]{PointingSource.GASKELL}, //
-                        Instrument.IMAGING_DATA //
-                        ) //
-        );
+//        imagingConfig.imagingInstruments = Lists.newArrayList(
+//                new ImagingInstrument( //
+//                        SpectralImageMode.MONO, //
+//                        new FixedListDataQuery(imagingMetadata),
+//                        ImageType.SATURN_MOON_IMAGE, //
+//                        new PointingSource[]{PointingSource.GASKELL}, //
+//                        Instrument.IMAGING_DATA //
+//                        ) //
+//        );
+
+        assertEquals(imagingConfig.imagingInstruments.size(), 1);
+        assertEquals(imagingConfig.imagingInstruments.get(0).getSearchQuery().getRootPath(), "/GASKELL/DIONE/IMAGING");
+        assertEquals(imagingConfig.imagingInstruments.get(0).getSearchQuery().getDataPath(), "/GASKELL/DIONE/IMAGING/images");
+        assertEquals(imagingConfig.imagingInstruments.get(0).getSearchQuery().getGalleryPath(), null);
+        assertEquals(imagingConfig.imagingInstruments.get(0).spectralMode, SpectralImageMode.MONO);
+        assertEquals(imagingConfig.imagingInstruments.get(0).getType(), ImageType.SATURN_MOON_IMAGE);
+        assertArrayEquals(imagingConfig.imagingInstruments.get(0).searchImageSources, new PointingSource[]{PointingSource.GASKELL});
+        assertEquals(imagingConfig.imagingInstruments.get(0).getInstrumentName(), Instrument.IMAGING_DATA);
+        assertEquals(imagingConfig.imagingInstruments.get(0).getOrientation(PointingSource.GASKELL).getRotation(), 0.0);
+        assertEquals(imagingConfig.imagingInstruments.get(0).getOrientation(PointingSource.GASKELL).getFlip(), ImageFlip.NONE);
 
         assertEquals(imagingConfig.imageSearchDefaultStartDate, new GregorianCalendar(1980, 10, 10, 0, 0, 0).getTime());
         assertEquals(imagingConfig.imageSearchDefaultEndDate, new GregorianCalendar(2011, 0, 31, 0, 0, 0).getTime());
@@ -211,18 +223,18 @@ class SaturnConfigsTest
         FeatureConfigIOFactory.getIOForClassType(BasemapImageConfig.class.getSimpleName()).setViewConfig((ViewConfig)c);
         FeatureConfigIOFactory.getIOForClassType(StateHistoryConfig.class.getSimpleName()).setViewConfig((ViewConfig)c);
 
-        c.body = ShapeModelBody.EPIMETHEUS;
-        c.type = BodyType.PLANETS_AND_SATELLITES;
-        c.population = ShapeModelPopulation.SATURN;
-        c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
-        c.author = ShapeModelType.THOMAS;
-        c.modelLabel = "Thomas (2000)";
-        c.rootDirOnServer = "/THOMAS/EPIMETHEUS";
-        c.shapeModelFileNames = prepend(c.rootDirOnServer, "s11epimetheus.llr.gz");
-        c.hasColoringData = false;
-        c.setResolution(ImmutableList.of(5040));
-        c.presentInMissions = new Mission[] {Mission.PUBLIC_RELEASE, Mission.TEST_PUBLIC_RELEASE, Mission.STAGE_PUBLIC_RELEASE, Mission.STAGE_APL_INTERNAL, Mission.APL_INTERNAL, Mission.TEST_APL_INTERNAL};
-        c.defaultForMissions = new Mission[] {};
+        assertEquals(c.body, ShapeModelBody.EPIMETHEUS);
+        assertEquals(c.type, BodyType.PLANETS_AND_SATELLITES);
+        assertEquals(c.population, ShapeModelPopulation.SATURN);
+        assertEquals(c.dataUsed, ShapeModelDataUsed.IMAGE_BASED);
+        assertEquals(c.author, ShapeModelType.THOMAS);
+        assertEquals(c.modelLabel, "Thomas (2000)");
+        assertEquals(c.rootDirOnServer, "/THOMAS/EPIMETHEUS");
+        assertArrayEquals(c.getShapeModelFileNames(), prepend(c.rootDirOnServer, "s11epimetheus.llr.gz"));
+        assertEquals(c.hasColoringData, false);
+        assertEquals(c.getResolutionNumberElements() , ImmutableList.of(5040));
+        assertArrayEquals(c.presentInMissions, new Mission[] {Mission.PUBLIC_RELEASE, Mission.TEST_PUBLIC_RELEASE, Mission.STAGE_PUBLIC_RELEASE, Mission.STAGE_APL_INTERNAL, Mission.APL_INTERNAL, Mission.TEST_APL_INTERNAL});
+        assertArrayEquals(c.defaultForMissions, new Mission[] {});
 	}
 
 	@Test
@@ -235,18 +247,18 @@ class SaturnConfigsTest
         FeatureConfigIOFactory.getIOForClassType(BasemapImageConfig.class.getSimpleName()).setViewConfig((ViewConfig)c);
         FeatureConfigIOFactory.getIOForClassType(StateHistoryConfig.class.getSimpleName()).setViewConfig((ViewConfig)c);
 
-        c.body = ShapeModelBody.EPIMETHEUS;
-        c.type = BodyType.PLANETS_AND_SATELLITES;
-        c.population = ShapeModelPopulation.SATURN;
-        c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
-        c.author = ShapeModelType.STOOKE;
-        c.modelLabel = "Stooke (2016)";
-        c.rootDirOnServer = "/epimetheus/stooke2016";
-        c.shapeModelFileExtension = ".obj";
-        c.hasColoringData = false;
-        c.setResolution(ImmutableList.of(5040));
-        c.presentInMissions = new Mission[] {Mission.PUBLIC_RELEASE, Mission.TEST_PUBLIC_RELEASE, Mission.STAGE_PUBLIC_RELEASE, Mission.STAGE_APL_INTERNAL, Mission.APL_INTERNAL, Mission.TEST_APL_INTERNAL};
-        c.defaultForMissions = new Mission[] {};
+        assertEquals(c.body, ShapeModelBody.EPIMETHEUS);
+        assertEquals(c.type, BodyType.PLANETS_AND_SATELLITES);
+        assertEquals(c.population, ShapeModelPopulation.SATURN);
+        assertEquals(c.dataUsed, ShapeModelDataUsed.IMAGE_BASED);
+        assertEquals(c.author, ShapeModelType.STOOKE);
+        assertEquals(c.modelLabel, "Stooke (2016)");
+        assertEquals(c.rootDirOnServer, "/epimetheus/stooke2016");
+        assertEquals(c.getShapeModelFileExtension(), ".obj");
+        assertEquals(c.hasColoringData, false);
+        assertEquals(c.getResolutionNumberElements(), ImmutableList.of(5040));
+        assertArrayEquals(c.presentInMissions, new Mission[] {Mission.PUBLIC_RELEASE, Mission.TEST_PUBLIC_RELEASE, Mission.STAGE_PUBLIC_RELEASE, Mission.STAGE_APL_INTERNAL, Mission.APL_INTERNAL, Mission.TEST_APL_INTERNAL});
+        assertArrayEquals(c.defaultForMissions, new Mission[] {});
 	}
 
 	@Test
@@ -259,16 +271,16 @@ class SaturnConfigsTest
         FeatureConfigIOFactory.getIOForClassType(BasemapImageConfig.class.getSimpleName()).setViewConfig((ViewConfig)c);
         FeatureConfigIOFactory.getIOForClassType(StateHistoryConfig.class.getSimpleName()).setViewConfig((ViewConfig)c);
 
-        c.body = ShapeModelBody.HYPERION;
-        c.type = BodyType.PLANETS_AND_SATELLITES;
-        c.population = ShapeModelPopulation.SATURN;
-        c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
-        c.author = ShapeModelType.GASKELL;
-        c.modelLabel = "Gaskell et al. (in progress)";
-        c.rootDirOnServer = "/GASKELL/HYPERION";
-        c.hasColoringData = false;
-        c.presentInMissions = new Mission[] {Mission.PUBLIC_RELEASE, Mission.TEST_PUBLIC_RELEASE, Mission.STAGE_PUBLIC_RELEASE, Mission.STAGE_APL_INTERNAL, Mission.APL_INTERNAL, Mission.TEST_APL_INTERNAL};
-        c.defaultForMissions = new Mission[] {};
+        assertEquals(c.body, ShapeModelBody.HYPERION);
+        assertEquals(c.type, BodyType.PLANETS_AND_SATELLITES);
+        assertEquals(c.population, ShapeModelPopulation.SATURN);
+        assertEquals(c.dataUsed, ShapeModelDataUsed.IMAGE_BASED);
+        assertEquals(c.author, ShapeModelType.GASKELL);
+        assertEquals(c.modelLabel, "Gaskell et al. (in progress)");
+        assertEquals(c.rootDirOnServer, "/GASKELL/HYPERION");
+        assertEquals(c.hasColoringData, false);
+        assertArrayEquals(c.presentInMissions, new Mission[] {Mission.PUBLIC_RELEASE, Mission.TEST_PUBLIC_RELEASE, Mission.STAGE_PUBLIC_RELEASE, Mission.STAGE_APL_INTERNAL, Mission.APL_INTERNAL, Mission.TEST_APL_INTERNAL});
+        assertArrayEquals(c.defaultForMissions, new Mission[] {});
 	}
 
 	@Test
@@ -281,18 +293,18 @@ class SaturnConfigsTest
         FeatureConfigIOFactory.getIOForClassType(BasemapImageConfig.class.getSimpleName()).setViewConfig((ViewConfig)c);
         FeatureConfigIOFactory.getIOForClassType(StateHistoryConfig.class.getSimpleName()).setViewConfig((ViewConfig)c);
 
-        c.body = ShapeModelBody.HYPERION;
-        c.type = BodyType.PLANETS_AND_SATELLITES;
-        c.population = ShapeModelPopulation.SATURN;
-        c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
-        c.author = ShapeModelType.THOMAS;
-        c.modelLabel = "Thomas (2000)";
-        c.rootDirOnServer = "/THOMAS/HYPERION";
-        c.shapeModelFileNames = prepend(c.rootDirOnServer, "s7hyperion.llr.gz");
-        c.hasColoringData = false;
-        c.setResolution(ImmutableList.of(5040));
-        c.presentInMissions = new Mission[] {Mission.PUBLIC_RELEASE, Mission.TEST_PUBLIC_RELEASE, Mission.STAGE_PUBLIC_RELEASE, Mission.STAGE_APL_INTERNAL, Mission.APL_INTERNAL, Mission.TEST_APL_INTERNAL};
-        c.defaultForMissions = new Mission[] {};
+        assertEquals(c.body, ShapeModelBody.HYPERION);
+        assertEquals(c.type, BodyType.PLANETS_AND_SATELLITES);
+        assertEquals(c.population, ShapeModelPopulation.SATURN);
+        assertEquals(c.dataUsed, ShapeModelDataUsed.IMAGE_BASED);
+        assertEquals(c.author, ShapeModelType.THOMAS);
+        assertEquals(c.modelLabel, "Thomas (2000)");
+        assertEquals(c.rootDirOnServer, "/THOMAS/HYPERION");
+        assertArrayEquals(c.getShapeModelFileNames(), prepend(c.rootDirOnServer, "s7hyperion.llr.gz"));
+        assertEquals(c.hasColoringData, false);
+        assertEquals(c.getResolutionNumberElements(), ImmutableList.of(5040));
+        assertArrayEquals(c.presentInMissions, new Mission[] {Mission.PUBLIC_RELEASE, Mission.TEST_PUBLIC_RELEASE, Mission.STAGE_PUBLIC_RELEASE, Mission.STAGE_APL_INTERNAL, Mission.APL_INTERNAL, Mission.TEST_APL_INTERNAL});
+        assertArrayEquals(c.defaultForMissions, new Mission[] {});
 	}
 
 	@Test
@@ -305,21 +317,20 @@ class SaturnConfigsTest
         FeatureConfigIOFactory.getIOForClassType(BasemapImageConfig.class.getSimpleName()).setViewConfig((ViewConfig)c);
         FeatureConfigIOFactory.getIOForClassType(StateHistoryConfig.class.getSimpleName()).setViewConfig((ViewConfig)c);
 
-        c.body = ShapeModelBody.JANUS;
-		c.type = BodyType.PLANETS_AND_SATELLITES;
-		c.population = ShapeModelPopulation.SATURN;
-		c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
-		c.author = ShapeModelType.THOMAS;
-		c.modelLabel = "Thomas (2000)";
-		c.rootDirOnServer = "/THOMAS/JANUS";
-		c.shapeModelFileNames = prepend(c.rootDirOnServer, "s10janus.llr.gz");
-		c.hasColoringData = false;
-		c.setResolution(ImmutableList.of(5040));
-		c.presentInMissions = new Mission[]
+        assertEquals(c.body, ShapeModelBody.JANUS);
+        assertEquals(c.type, BodyType.PLANETS_AND_SATELLITES);
+        assertEquals(c.population, ShapeModelPopulation.SATURN);
+        assertEquals(c.dataUsed, ShapeModelDataUsed.IMAGE_BASED);
+        assertEquals(c.author, ShapeModelType.THOMAS);
+        assertEquals(c.modelLabel, "Thomas (2000)");
+        assertEquals(c.rootDirOnServer, "/THOMAS/JANUS");
+        assertArrayEquals(c.getShapeModelFileNames(), prepend(c.rootDirOnServer, "s10janus.llr.gz"));
+        assertEquals(c.hasColoringData, false);
+        assertEquals(c.getResolutionNumberElements(), ImmutableList.of(5040));
+        assertArrayEquals(c.presentInMissions, new Mission[]
 		{ Mission.PUBLIC_RELEASE, Mission.TEST_PUBLIC_RELEASE, Mission.STAGE_PUBLIC_RELEASE, Mission.STAGE_APL_INTERNAL,
-				Mission.APL_INTERNAL, Mission.TEST_APL_INTERNAL };
-		c.defaultForMissions = new Mission[]
-		{};
+				Mission.APL_INTERNAL, Mission.TEST_APL_INTERNAL });
+        assertArrayEquals(c.defaultForMissions, new Mission[]{});
 	}
 
 	@Test
@@ -332,18 +343,18 @@ class SaturnConfigsTest
         FeatureConfigIOFactory.getIOForClassType(BasemapImageConfig.class.getSimpleName()).setViewConfig((ViewConfig)c);
         FeatureConfigIOFactory.getIOForClassType(StateHistoryConfig.class.getSimpleName()).setViewConfig((ViewConfig)c);
 
-        c.body = ShapeModelBody.JANUS;
-        c.type = BodyType.PLANETS_AND_SATELLITES;
-        c.population = ShapeModelPopulation.SATURN;
-        c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
-        c.author = ShapeModelType.STOOKE;
-        c.modelLabel = "Stooke (2016)";
-        c.rootDirOnServer = "/janus/stooke2016";
-        c.shapeModelFileExtension = ".obj";
-        c.hasColoringData = false;
-        c.setResolution(ImmutableList.of(5040));
-        c.presentInMissions = new Mission[] {Mission.PUBLIC_RELEASE, Mission.TEST_PUBLIC_RELEASE, Mission.STAGE_PUBLIC_RELEASE, Mission.STAGE_APL_INTERNAL, Mission.APL_INTERNAL, Mission.TEST_APL_INTERNAL};
-        c.defaultForMissions = new Mission[] {};
+        assertEquals(c.body, ShapeModelBody.JANUS);
+        assertEquals(c.type, BodyType.PLANETS_AND_SATELLITES);
+        assertEquals(c.population, ShapeModelPopulation.SATURN);
+        assertEquals(c.dataUsed, ShapeModelDataUsed.IMAGE_BASED);
+        assertEquals(c.author, ShapeModelType.STOOKE);
+        assertEquals(c.modelLabel, "Stooke (2016)");
+        assertEquals(c.rootDirOnServer, "/janus/stooke2016");
+        assertEquals(c.getShapeModelFileExtension(), ".obj");
+        assertEquals(c.hasColoringData, false);
+        assertEquals(c.getResolutionNumberElements(), ImmutableList.of(5040));
+        assertArrayEquals(c.presentInMissions, new Mission[] {Mission.PUBLIC_RELEASE, Mission.TEST_PUBLIC_RELEASE, Mission.STAGE_PUBLIC_RELEASE, Mission.STAGE_APL_INTERNAL, Mission.APL_INTERNAL, Mission.TEST_APL_INTERNAL});
+        assertArrayEquals(c.defaultForMissions, new Mission[] {});
 	}
 
 	@Test
@@ -355,7 +366,37 @@ class SaturnConfigsTest
         FeatureConfigIOFactory.getIOForClassType(ImagingInstrumentConfig.class.getSimpleName()).setViewConfig((ViewConfig)c);
         FeatureConfigIOFactory.getIOForClassType(BasemapImageConfig.class.getSimpleName()).setViewConfig((ViewConfig)c);
         FeatureConfigIOFactory.getIOForClassType(StateHistoryConfig.class.getSimpleName()).setViewConfig((ViewConfig)c);
-        fail("Not yet implemented");
+
+        assertEquals(c.body, ShapeModelBody.MIMAS);
+        assertEquals(c.type, BodyType.PLANETS_AND_SATELLITES);
+        assertEquals(c.population, ShapeModelPopulation.SATURN);
+        assertEquals(c.dataUsed, ShapeModelDataUsed.IMAGE_BASED);
+        assertEquals(c.author, ShapeModelType.GASKELL);
+        assertEquals(c.modelLabel, "Gaskell (2013b)");
+        assertEquals(c.rootDirOnServer, "/GASKELL/MIMAS");
+
+        ImagingInstrumentConfig imagingConfig = (ImagingInstrumentConfig)c.getConfigForClass(ImagingInstrumentConfig.class);
+
+        assertEquals(imagingConfig.imagingInstruments.size(), 1);
+        assertEquals(imagingConfig.imagingInstruments.get(0).getSearchQuery().getRootPath(), "/GASKELL/MIMAS/IMAGING");
+        assertEquals(imagingConfig.imagingInstruments.get(0).getSearchQuery().getDataPath(), "/GASKELL/MIMAS/IMAGING/images");
+        assertEquals(imagingConfig.imagingInstruments.get(0).getSearchQuery().getGalleryPath(), null);
+        assertEquals(imagingConfig.imagingInstruments.get(0).spectralMode, SpectralImageMode.MONO);
+        assertEquals(imagingConfig.imagingInstruments.get(0).getType(), ImageType.SATURN_MOON_IMAGE);
+        assertArrayEquals(imagingConfig.imagingInstruments.get(0).searchImageSources, new PointingSource[]{PointingSource.GASKELL});
+        assertEquals(imagingConfig.imagingInstruments.get(0).getInstrumentName(), Instrument.IMAGING_DATA);
+        assertEquals(imagingConfig.imagingInstruments.get(0).getOrientation(PointingSource.GASKELL).getRotation(), 0.0);
+        assertEquals(imagingConfig.imagingInstruments.get(0).getOrientation(PointingSource.GASKELL).getFlip(), ImageFlip.NONE);
+
+        assertEquals(imagingConfig.imageSearchDefaultStartDate, new GregorianCalendar(1980, 10, 10, 0, 0, 0).getTime());
+        assertEquals(imagingConfig.imageSearchDefaultEndDate, new GregorianCalendar(2011, 0, 31, 0, 0, 0).getTime());
+        assertArrayEquals(imagingConfig.imageSearchFilterNames, new String[] {});
+        assertArrayEquals(imagingConfig.imageSearchUserDefinedCheckBoxesNames, new String[] {});
+        assertEquals(imagingConfig.imageSearchDefaultMaxSpacecraftDistance, 40000.0);
+        assertEquals(imagingConfig.imageSearchDefaultMaxResolution, 4000.0);
+        assertEquals(c.hasColoringData, false);
+        assertArrayEquals(c.presentInMissions, new Mission[] {Mission.PUBLIC_RELEASE, Mission.TEST_PUBLIC_RELEASE, Mission.STAGE_PUBLIC_RELEASE, Mission.STAGE_APL_INTERNAL, Mission.APL_INTERNAL, Mission.TEST_APL_INTERNAL});
+        assertArrayEquals(c.defaultForMissions, new Mission[] {});
 	}
 
 	@Test
@@ -368,18 +409,18 @@ class SaturnConfigsTest
         FeatureConfigIOFactory.getIOForClassType(BasemapImageConfig.class.getSimpleName()).setViewConfig((ViewConfig)c);
         FeatureConfigIOFactory.getIOForClassType(StateHistoryConfig.class.getSimpleName()).setViewConfig((ViewConfig)c);
 
-        c.body = ShapeModelBody.PANDORA;
-        c.type = BodyType.PLANETS_AND_SATELLITES;
-        c.population = ShapeModelPopulation.SATURN;
-        c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
-        c.author = ShapeModelType.STOOKE;
-        c.modelLabel = "Stooke (2016)";
-        c.rootDirOnServer = "/pandora/stooke2016";
-        c.shapeModelFileExtension = ".obj";
-        c.hasColoringData = false;
-        c.setResolution(ImmutableList.of(5040));
-        c.presentInMissions = new Mission[] {Mission.PUBLIC_RELEASE, Mission.TEST_PUBLIC_RELEASE, Mission.STAGE_PUBLIC_RELEASE, Mission.STAGE_APL_INTERNAL, Mission.APL_INTERNAL, Mission.TEST_APL_INTERNAL};
-        c.defaultForMissions = new Mission[] {};
+        assertEquals(c.body, ShapeModelBody.PANDORA);
+        assertEquals(c.type, BodyType.PLANETS_AND_SATELLITES);
+        assertEquals(c.population, ShapeModelPopulation.SATURN);
+        assertEquals(c.dataUsed, ShapeModelDataUsed.IMAGE_BASED);
+        assertEquals(c.author, ShapeModelType.STOOKE);
+        assertEquals(c.modelLabel, "Stooke (2016)");
+        assertEquals(c.rootDirOnServer, "/pandora/stooke2016");
+        assertEquals(c.getShapeModelFileExtension(), ".obj");
+        assertEquals(c.hasColoringData, false);
+        assertEquals(c.getResolutionNumberElements() ,ImmutableList.of(5040));
+        assertArrayEquals(c.presentInMissions, new Mission[] {Mission.PUBLIC_RELEASE, Mission.TEST_PUBLIC_RELEASE, Mission.STAGE_PUBLIC_RELEASE, Mission.STAGE_APL_INTERNAL, Mission.APL_INTERNAL, Mission.TEST_APL_INTERNAL});
+        assertArrayEquals(c.defaultForMissions, new Mission[] {});
 	}
 
 	@Test
@@ -391,7 +432,51 @@ class SaturnConfigsTest
         FeatureConfigIOFactory.getIOForClassType(ImagingInstrumentConfig.class.getSimpleName()).setViewConfig((ViewConfig)c);
         FeatureConfigIOFactory.getIOForClassType(BasemapImageConfig.class.getSimpleName()).setViewConfig((ViewConfig)c);
         FeatureConfigIOFactory.getIOForClassType(StateHistoryConfig.class.getSimpleName()).setViewConfig((ViewConfig)c);
-        fail("Not yet implemented");
+
+        assertEquals(c.body, ShapeModelBody.PHOEBE);
+        assertEquals(c.type, BodyType.PLANETS_AND_SATELLITES);
+        assertEquals(c.population, ShapeModelPopulation.SATURN);
+        assertEquals(c.dataUsed, ShapeModelDataUsed.IMAGE_BASED);
+        assertEquals(c.author, ShapeModelType.GASKELL);
+        assertEquals(c.modelLabel, "Gaskell (2013c)");
+        assertEquals(c.rootDirOnServer, "/GASKELL/PHOEBE");
+
+//        DataQuerySourcesMetadata imagingMetadata =
+//        		DataQuerySourcesMetadata.of("/GASKELL/PHOEBE/IMAGING", "", null, null, "/GASKELL/PHOEBE/IMAGING/gallery");
+        ImagingInstrumentConfig imagingConfig = (ImagingInstrumentConfig)c.getConfigForClass(ImagingInstrumentConfig.class);
+
+        assertEquals(imagingConfig.imagingInstruments.size(), 1);
+        assertEquals(imagingConfig.imagingInstruments.get(0).getSearchQuery().getRootPath(), "/GASKELL/PHOEBE/IMAGING");
+        assertEquals(imagingConfig.imagingInstruments.get(0).getSearchQuery().getDataPath(), "/GASKELL/PHOEBE/IMAGING/images");
+        assertEquals(imagingConfig.imagingInstruments.get(0).getSearchQuery().getGalleryPath(), null);
+        assertEquals(imagingConfig.imagingInstruments.get(0).spectralMode, SpectralImageMode.MONO);
+        assertEquals(imagingConfig.imagingInstruments.get(0).getType(), ImageType.SATURN_MOON_IMAGE);
+        assertArrayEquals(imagingConfig.imagingInstruments.get(0).searchImageSources, new PointingSource[]{PointingSource.GASKELL});
+        assertEquals(imagingConfig.imagingInstruments.get(0).getInstrumentName(), Instrument.IMAGING_DATA);
+        assertEquals(imagingConfig.imagingInstruments.get(0).getOrientation(PointingSource.GASKELL).getRotation(), 0.0);
+        assertEquals(imagingConfig.imagingInstruments.get(0).getOrientation(PointingSource.GASKELL).getFlip(), ImageFlip.NONE);
+
+//        imagingConfig.imagingInstruments = Lists.newArrayList(
+//                new ImagingInstrument( //
+//                        SpectralImageMode.MONO, //
+//                        new FixedListDataQuery(imagingMetadata),
+////	                        new FixedListQuery<Object>("/GASKELL/PHOEBE/IMAGING", "/GASKELL/PHOEBE/IMAGING/gallery"), //
+//                        ImageType.SATURN_MOON_IMAGE, //
+//                        new PointingSource[]{PointingSource.GASKELL}, //
+//                        Instrument.IMAGING_DATA //
+//                        ) //
+//        );
+
+        assertEquals(imagingConfig.imageSearchDefaultStartDate, new GregorianCalendar(1980, 10, 10, 0, 0, 0).getTime());
+        assertEquals(imagingConfig.imageSearchDefaultEndDate, new GregorianCalendar(2011, 0, 31, 0, 0, 0).getTime());
+        assertArrayEquals(imagingConfig.imageSearchFilterNames, new String[] {});
+        assertArrayEquals(imagingConfig.imageSearchUserDefinedCheckBoxesNames, new String[] {});
+        assertEquals(imagingConfig.imageSearchDefaultMaxSpacecraftDistance, 40000.0);
+        assertEquals(imagingConfig.imageSearchDefaultMaxResolution, 4000.0);
+        assertEquals(c.hasColoringData, false);
+        assertArrayEquals(c.presentInMissions, new Mission[] {Mission.PUBLIC_RELEASE, Mission.TEST_PUBLIC_RELEASE, Mission.STAGE_PUBLIC_RELEASE, Mission.STAGE_APL_INTERNAL, Mission.APL_INTERNAL, Mission.TEST_APL_INTERNAL});
+
+        assertArrayEquals(c.defaultForMissions, new Mission[] {});
 	}
 
 	@Test
@@ -404,18 +489,18 @@ class SaturnConfigsTest
         FeatureConfigIOFactory.getIOForClassType(BasemapImageConfig.class.getSimpleName()).setViewConfig((ViewConfig)c);
         FeatureConfigIOFactory.getIOForClassType(StateHistoryConfig.class.getSimpleName()).setViewConfig((ViewConfig)c);
 
-        c.body = ShapeModelBody.PROMETHEUS;
-        c.type = BodyType.PLANETS_AND_SATELLITES;
-        c.population = ShapeModelPopulation.SATURN;
-        c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
-        c.author = ShapeModelType.STOOKE;
-        c.modelLabel = "Stooke (2016)";
-        c.rootDirOnServer = "/prometheus/stooke2016";
-        c.shapeModelFileExtension = ".obj";
-        c.hasColoringData = false;
-        c.setResolution(ImmutableList.of(5040));
-        c.presentInMissions = new Mission[] {Mission.PUBLIC_RELEASE, Mission.TEST_PUBLIC_RELEASE, Mission.STAGE_PUBLIC_RELEASE, Mission.STAGE_APL_INTERNAL, Mission.APL_INTERNAL, Mission.TEST_APL_INTERNAL};
-        c.defaultForMissions = new Mission[] {};
+        assertEquals(c.body, ShapeModelBody.PROMETHEUS);
+        assertEquals(c.type, BodyType.PLANETS_AND_SATELLITES);
+        assertEquals(c.population, ShapeModelPopulation.SATURN);
+        assertEquals(c.dataUsed, ShapeModelDataUsed.IMAGE_BASED);
+        assertEquals(c.author, ShapeModelType.STOOKE);
+        assertEquals(c.modelLabel, "Stooke (2016)");
+        assertEquals(c.rootDirOnServer, "/prometheus/stooke2016");
+        assertEquals(c.getShapeModelFileExtension(), ".obj");
+        assertEquals(c.hasColoringData, false);
+        assertEquals(c.getResolutionNumberElements(), ImmutableList.of(5040));
+        assertArrayEquals(c.presentInMissions, new Mission[] {Mission.PUBLIC_RELEASE, Mission.TEST_PUBLIC_RELEASE, Mission.STAGE_PUBLIC_RELEASE, Mission.STAGE_APL_INTERNAL, Mission.APL_INTERNAL, Mission.TEST_APL_INTERNAL});
+        assertArrayEquals(c.defaultForMissions, new Mission[] {});
 	}
 
 	@Test
@@ -428,16 +513,16 @@ class SaturnConfigsTest
         FeatureConfigIOFactory.getIOForClassType(BasemapImageConfig.class.getSimpleName()).setViewConfig((ViewConfig)c);
         FeatureConfigIOFactory.getIOForClassType(StateHistoryConfig.class.getSimpleName()).setViewConfig((ViewConfig)c);
 
-        c.body = ShapeModelBody.RHEA;
-        c.type = BodyType.PLANETS_AND_SATELLITES;
-        c.population = ShapeModelPopulation.SATURN;
-        c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
-        c.author = ShapeModelType.GASKELL;
-        c.modelLabel = "Gaskell (in progress)";
-        c.rootDirOnServer = "/GASKELL/RHEA";
-        c.hasColoringData = false;
-        c.presentInMissions = new Mission[] {Mission.PUBLIC_RELEASE, Mission.TEST_PUBLIC_RELEASE, Mission.STAGE_PUBLIC_RELEASE, Mission.STAGE_APL_INTERNAL, Mission.APL_INTERNAL, Mission.TEST_APL_INTERNAL};
-        c.defaultForMissions = new Mission[] {};
+        assertEquals(c.body, ShapeModelBody.RHEA);
+        assertEquals(c.type, BodyType.PLANETS_AND_SATELLITES);
+        assertEquals(c.population, ShapeModelPopulation.SATURN);
+        assertEquals(c.dataUsed, ShapeModelDataUsed.IMAGE_BASED);
+        assertEquals(c.author, ShapeModelType.GASKELL);
+        assertEquals(c.modelLabel, "Gaskell (in progress)");
+        assertEquals(c.rootDirOnServer, "/GASKELL/RHEA");
+        assertEquals(c.hasColoringData, false);
+        assertArrayEquals(c.presentInMissions, new Mission[] {Mission.PUBLIC_RELEASE, Mission.TEST_PUBLIC_RELEASE, Mission.STAGE_PUBLIC_RELEASE, Mission.STAGE_APL_INTERNAL, Mission.APL_INTERNAL, Mission.TEST_APL_INTERNAL});
+        assertArrayEquals(c.defaultForMissions, new Mission[] {});
 	}
 
 	@Test
@@ -450,16 +535,16 @@ class SaturnConfigsTest
         FeatureConfigIOFactory.getIOForClassType(BasemapImageConfig.class.getSimpleName()).setViewConfig((ViewConfig)c);
         FeatureConfigIOFactory.getIOForClassType(StateHistoryConfig.class.getSimpleName()).setViewConfig((ViewConfig)c);
 
-        c.body = ShapeModelBody.TETHYS;
-        c.type = BodyType.PLANETS_AND_SATELLITES;
-        c.population = ShapeModelPopulation.SATURN;
-        c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
-        c.author = ShapeModelType.GASKELL;
-        c.modelLabel = "Gaskell (2013d)";
-        c.rootDirOnServer = "/GASKELL/TETHYS";
-        c.hasColoringData = false;
-        c.presentInMissions = new Mission[] {Mission.PUBLIC_RELEASE, Mission.TEST_PUBLIC_RELEASE, Mission.STAGE_PUBLIC_RELEASE, Mission.STAGE_APL_INTERNAL, Mission.APL_INTERNAL, Mission.TEST_APL_INTERNAL};
-        c.defaultForMissions = new Mission[] {};
+        assertEquals(c.body, ShapeModelBody.TETHYS);
+        assertEquals(c.type, BodyType.PLANETS_AND_SATELLITES);
+        assertEquals(c.population, ShapeModelPopulation.SATURN);
+        assertEquals(c.dataUsed, ShapeModelDataUsed.IMAGE_BASED);
+        assertEquals(c.author, ShapeModelType.GASKELL);
+        assertEquals(c.modelLabel, "Gaskell (2013d)");
+        assertEquals(c.rootDirOnServer, "/GASKELL/TETHYS");
+        assertEquals(c.hasColoringData, false);
+        assertArrayEquals(c.presentInMissions, new Mission[] {Mission.PUBLIC_RELEASE, Mission.TEST_PUBLIC_RELEASE, Mission.STAGE_PUBLIC_RELEASE, Mission.STAGE_APL_INTERNAL, Mission.APL_INTERNAL, Mission.TEST_APL_INTERNAL});
+        assertArrayEquals(c.defaultForMissions, new Mission[] {});
 	}
 
 	@Test
@@ -471,7 +556,54 @@ class SaturnConfigsTest
         FeatureConfigIOFactory.getIOForClassType(ImagingInstrumentConfig.class.getSimpleName()).setViewConfig((ViewConfig)c);
         FeatureConfigIOFactory.getIOForClassType(BasemapImageConfig.class.getSimpleName()).setViewConfig((ViewConfig)c);
         FeatureConfigIOFactory.getIOForClassType(StateHistoryConfig.class.getSimpleName()).setViewConfig((ViewConfig)c);
-        fail("Not yet implemented");
+
+        assertEquals(c.body, ShapeModelBody.TELESTO);
+        assertEquals(c.type, BodyType.PLANETS_AND_SATELLITES);
+        assertEquals(c.population, ShapeModelPopulation.SATURN);
+        assertEquals(c.dataUsed, ShapeModelDataUsed.IMAGE_BASED);
+        assertEquals(c.author, ShapeModelType.GASKELL);
+        assertEquals(c.modelLabel, "Ernst et al. (in progress)");
+        assertEquals(c.rootDirOnServer, "/GASKELL/TELESTO");
+
+//        DataQuerySourcesMetadata imagingMetadata =
+//        		DataQuerySourcesMetadata.of("/GASKELL/TELESTO/IMAGING", "", null, null, "/GASKELL/TELESTO/IMAGING/gallery");
+        ImagingInstrumentConfig imagingConfig = (ImagingInstrumentConfig)c.getConfigForClass(ImagingInstrumentConfig.class);
+
+        assertEquals(imagingConfig.imagingInstruments.size(), 1);
+        assertEquals(imagingConfig.imagingInstruments.get(0).getSearchQuery().getRootPath(), "/GASKELL/TELESTO/IMAGING");
+        assertEquals(imagingConfig.imagingInstruments.get(0).getSearchQuery().getDataPath(), "/GASKELL/TELESTO/IMAGING/images");
+        assertEquals(imagingConfig.imagingInstruments.get(0).getSearchQuery().getGalleryPath(), null);
+        assertEquals(imagingConfig.imagingInstruments.get(0).spectralMode, SpectralImageMode.MONO);
+        assertEquals(imagingConfig.imagingInstruments.get(0).getType(), ImageType.SATURN_MOON_IMAGE);
+        assertArrayEquals(imagingConfig.imagingInstruments.get(0).searchImageSources, new PointingSource[]{PointingSource.GASKELL});
+        assertEquals(imagingConfig.imagingInstruments.get(0).getInstrumentName(), Instrument.IMAGING_DATA);
+        assertEquals(imagingConfig.imagingInstruments.get(0).getOrientation(PointingSource.GASKELL).getRotation(), 0.0);
+        assertEquals(imagingConfig.imagingInstruments.get(0).getOrientation(PointingSource.GASKELL).getFlip(), ImageFlip.NONE);
+        assertArrayEquals(imagingConfig.imagingInstruments.get(0).getFillValues(),new double[] {-3.4028234663852886e38, 3.4028234663852886e38});
+
+//        imagingConfig.imagingInstruments = Lists.newArrayList(
+//                new ImagingInstrument( //
+//                        SpectralImageMode.MONO, //
+//                        new FixedListDataQuery(imagingMetadata),
+////                        new FixedListQuery<Object>("/GASKELL/TELESTO/IMAGING", "/GASKELL/TELESTO/IMAGING/gallery"), //
+//                        ImageType.SATURN_MOON_IMAGE, //
+//                        new PointingSource[]{PointingSource.GASKELL}, //
+//                        Instrument.IMAGING_DATA, //
+//                        0.0,
+//                        "None",
+//                        Set.of((float)3.4028234663852886e38, (float)-3.4028234663852886e38)
+//                        ) //
+//        );
+
+        assertEquals(imagingConfig.imageSearchDefaultStartDate, new GregorianCalendar(1980, 10, 10, 0, 0, 0).getTime());
+        assertEquals(imagingConfig.imageSearchDefaultEndDate, new GregorianCalendar(2011, 0, 31, 0, 0, 0).getTime());
+        assertArrayEquals(imagingConfig.imageSearchFilterNames, new String[] {});
+        assertArrayEquals(imagingConfig.imageSearchUserDefinedCheckBoxesNames, new String[] {});
+        assertEquals(imagingConfig.imageSearchDefaultMaxSpacecraftDistance, 40000.0);
+        assertEquals(imagingConfig.imageSearchDefaultMaxResolution, 4000.0);
+        assertEquals(c.hasColoringData, false);
+        assertArrayEquals(c.presentInMissions, new Mission[] {Mission.PUBLIC_RELEASE, Mission.TEST_PUBLIC_RELEASE, Mission.STAGE_PUBLIC_RELEASE, Mission.STAGE_APL_INTERNAL, Mission.APL_INTERNAL, Mission.TEST_APL_INTERNAL});
+        assertArrayEquals(c.defaultForMissions, new Mission[] {});
 	}
 
 	@Test
@@ -483,7 +615,44 @@ class SaturnConfigsTest
         FeatureConfigIOFactory.getIOForClassType(ImagingInstrumentConfig.class.getSimpleName()).setViewConfig((ViewConfig)c);
         FeatureConfigIOFactory.getIOForClassType(BasemapImageConfig.class.getSimpleName()).setViewConfig((ViewConfig)c);
         FeatureConfigIOFactory.getIOForClassType(StateHistoryConfig.class.getSimpleName()).setViewConfig((ViewConfig)c);
-        fail("Not yet implemented");
+
+        assertEquals(c.body, ShapeModelBody.ATLAS);
+        assertEquals(c.type, BodyType.PLANETS_AND_SATELLITES);
+        assertEquals(c.population, ShapeModelPopulation.SATURN);
+        assertEquals(c.dataUsed, ShapeModelDataUsed.IMAGE_BASED);
+        assertEquals(c.author, ShapeModelType.GASKELL);
+        assertEquals(c.modelLabel, "Ernst et al. (in progress)");
+        assertEquals(c.rootDirOnServer, "/atlas/gaskell");
+        assertEquals(c.getResolutionLabels(), ImmutableList.of(BodyViewConfig.DEFAULT_GASKELL_LABELS_PER_RESOLUTION[0]));
+        assertEquals(c.getResolutionNumberElements(), ImmutableList.of(BodyViewConfig.DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[0]));
+
+        ImagingInstrumentConfig imagingConfig = (ImagingInstrumentConfig)c.getConfigForClass(ImagingInstrumentConfig.class);
+
+        assertEquals(imagingConfig.imagingInstruments.size(), 1);
+        assertEquals(imagingConfig.imagingInstruments.get(0).getSearchQuery().getRootPath(), "/atlas/gaskell/imaging");
+        assertEquals(imagingConfig.imagingInstruments.get(0).getSearchQuery().getDataPath(), "/atlas/gaskell/imaging/images");
+        assertEquals(imagingConfig.imagingInstruments.get(0).getSearchQuery().getGalleryPath(), "/atlas/gaskell/imaging/images/gallery");
+        assertEquals(imagingConfig.imagingInstruments.get(0).spectralMode, SpectralImageMode.MONO);
+        assertEquals(imagingConfig.imagingInstruments.get(0).getType(), ImageType.SATURN_MOON_IMAGE);
+        assertArrayEquals(imagingConfig.imagingInstruments.get(0).searchImageSources, new PointingSource[]{PointingSource.GASKELL});
+        assertEquals(imagingConfig.imagingInstruments.get(0).getInstrumentName(), Instrument.IMAGING_DATA);
+        assertEquals(imagingConfig.imagingInstruments.get(0).getOrientation(PointingSource.GASKELL).getRotation(), 0.0);
+        assertEquals(imagingConfig.imagingInstruments.get(0).getOrientation(PointingSource.GASKELL).getFlip(), ImageFlip.NONE);
+
+
+        assertEquals(imagingConfig.imageSearchDefaultStartDate, new GregorianCalendar(2005, 5, 7, 0, 0, 0).getTime());
+        assertEquals(imagingConfig.imageSearchDefaultEndDate, new GregorianCalendar(2017, 3, 13, 0, 0, 0).getTime());
+        assertEquals(imagingConfig.imageSearchDefaultMaxSpacecraftDistance, 400000.0);
+        assertEquals(imagingConfig.imageSearchDefaultMaxResolution, 5000.0);
+        assertEquals(c.hasColoringData, false);
+
+        assertArrayEquals(c.databaseRunInfos, new DBRunInfo[]
+        {
+        	new DBRunInfo(PointingSource.GASKELL, Instrument.IMAGING_DATA, ShapeModelBody.ATLAS.toString(), "/project/sbmt2/data/atlas/gaskell/imaging/imagelist-fullpath.txt", "atlas"),
+        });
+
+        assertArrayEquals(c.presentInMissions, new Mission[] {Mission.PUBLIC_RELEASE, Mission.TEST_PUBLIC_RELEASE, Mission.STAGE_PUBLIC_RELEASE, Mission.STAGE_APL_INTERNAL, Mission.APL_INTERNAL, Mission.TEST_APL_INTERNAL});
+        assertArrayEquals(c.defaultForMissions, new Mission[] {});
 	}
 
 	@Test
@@ -507,7 +676,55 @@ class SaturnConfigsTest
         FeatureConfigIOFactory.getIOForClassType(ImagingInstrumentConfig.class.getSimpleName()).setViewConfig((ViewConfig)c);
         FeatureConfigIOFactory.getIOForClassType(BasemapImageConfig.class.getSimpleName()).setViewConfig((ViewConfig)c);
         FeatureConfigIOFactory.getIOForClassType(StateHistoryConfig.class.getSimpleName()).setViewConfig((ViewConfig)c);
-        fail("Not yet implemented");
+
+        assertEquals(c.body, ShapeModelBody.CALYPSO);
+        assertEquals(c.type, BodyType.PLANETS_AND_SATELLITES);
+        assertEquals(c.population, ShapeModelPopulation.SATURN);
+        assertEquals(c.dataUsed, ShapeModelDataUsed.IMAGE_BASED);
+        assertEquals(c.author, ShapeModelType.provide("Daly"));
+        assertEquals(c.modelLabel, "Daly et al. (in progress)");
+        assertEquals(c.rootDirOnServer, "/calypso/daly-2020");
+        assertEquals(c.getShapeModelFileExtension(), ".obj");
+        assertEquals(c.hasColoringData, false);
+
+
+        String tableBaseName = (c.body.name() + "_" + c.author.toString() + "_").replaceAll("[\\s-]", "_").toLowerCase();
+//
+        String issTable = tableBaseName + "iss";
+//
+        String issRootDirPrimary = c.rootDirOnServer + "/iss";
+//
+        String issDataDir = "/cassini/iss/images";
+        String issGalleryDir = "/cassini/iss/gallery";
+        ImagingInstrumentConfig imagingConfig = (ImagingInstrumentConfig)c.getConfigForClass(ImagingInstrumentConfig.class);
+
+        assertEquals(imagingConfig.imagingInstruments.size(), 1);
+        assertEquals(imagingConfig.imagingInstruments.get(0).getSearchQuery().getRootPath(), issRootDirPrimary);
+        assertEquals(imagingConfig.imagingInstruments.get(0).getSearchQuery().getDataPath(), issDataDir);
+        assertEquals(imagingConfig.imagingInstruments.get(0).getSearchQuery().getGalleryPath(), issGalleryDir);
+        assertEquals(imagingConfig.imagingInstruments.get(0).spectralMode, SpectralImageMode.MONO);
+        assertEquals(imagingConfig.imagingInstruments.get(0).getType(), ImageType.valueOf("ISS_IMAGE"));
+        assertArrayEquals(imagingConfig.imagingInstruments.get(0).searchImageSources, new PointingSource[]{PointingSource.GASKELL});
+        assertEquals(imagingConfig.imagingInstruments.get(0).getInstrumentName(), Instrument.ISS);
+        assertEquals(imagingConfig.imagingInstruments.get(0).getOrientation(PointingSource.GASKELL).getRotation(), 0.0);
+        assertEquals(imagingConfig.imagingInstruments.get(0).getOrientation(PointingSource.GASKELL).getFlip(), ImageFlip.NONE);
+
+
+        assertEquals(imagingConfig.imageSearchDefaultStartDate, new GregorianCalendar(2005, 8, 23, 0, 0, 0).getTime());
+        assertEquals(imagingConfig.imageSearchDefaultEndDate, new GregorianCalendar(2010, 1, 14, 0, 0, 0).getTime());
+        assertArrayEquals(imagingConfig.imageSearchFilterNames, new String[] {});
+        assertArrayEquals(imagingConfig.imageSearchUserDefinedCheckBoxesNames, new String[] {});
+        assertEquals(imagingConfig.imageSearchDefaultMaxSpacecraftDistance, 1.0e6);
+        assertEquals(imagingConfig.imageSearchDefaultMaxResolution, 1.0e3);
+
+        assertArrayEquals(c.databaseRunInfos, new DBRunInfo[] { //
+                new DBRunInfo(PointingSource.GASKELL, Instrument.ISS, c.body.toString(), //
+                        issRootDirPrimary + "/imagelist-fullpath-sum.txt", issTable) //
+        });
+
+        assertArrayEquals(c.presentInMissions, new Mission[] { Mission.PUBLIC_RELEASE, Mission.TEST_PUBLIC_RELEASE, Mission.STAGE_PUBLIC_RELEASE,
+                Mission.STAGE_APL_INTERNAL, Mission.APL_INTERNAL, Mission.TEST_APL_INTERNAL });
+        assertArrayEquals(c.defaultForMissions, new Mission[] {});
 	}
 
 	@Test
@@ -519,7 +736,71 @@ class SaturnConfigsTest
         FeatureConfigIOFactory.getIOForClassType(ImagingInstrumentConfig.class.getSimpleName()).setViewConfig((ViewConfig)c);
         FeatureConfigIOFactory.getIOForClassType(BasemapImageConfig.class.getSimpleName()).setViewConfig((ViewConfig)c);
         FeatureConfigIOFactory.getIOForClassType(StateHistoryConfig.class.getSimpleName()).setViewConfig((ViewConfig)c);
-        fail("Not yet implemented");
+
+        assertEquals(c.body, ShapeModelBody.CALYPSO);
+        assertEquals(c.type, BodyType.PLANETS_AND_SATELLITES);
+        assertEquals(c.population, ShapeModelPopulation.SATURN);
+        assertEquals(c.dataUsed, ShapeModelDataUsed.IMAGE_BASED);
+        assertEquals(c.author, ShapeModelType.THOMAS);
+        assertEquals(c.modelLabel, "Thomas et al. (2018)");
+        assertEquals(c.rootDirOnServer, "/calypso/thomas-2018");
+        assertEquals(c.getShapeModelFileExtension(), ".obj");
+        assertEquals(c.hasColoringData, false);
+        int numberPlates = 28269;
+        assertEquals(c.getResolutionLabels(), ImmutableList.of(numberPlates + " plates"));
+        assertEquals(c.getResolutionNumberElements(), ImmutableList.of(numberPlates));
+
+        String tableBaseName = (c.body.name() + "_" + c.author.toString() + "_").replaceAll("[\\s-]", "_").toLowerCase();
+
+        String issTable = tableBaseName + "iss";
+
+        String issDataDir = "/cassini/iss/images";
+        String issGalleryDir = "/cassini/iss/gallery";
+        String issRootDirPrimary = c.rootDirOnServer + "/iss";
+        ImagingInstrumentConfig imagingConfig = (ImagingInstrumentConfig)c.getConfigForClass(ImagingInstrumentConfig.class);
+
+        assertEquals(imagingConfig.imagingInstruments.size(), 1);
+        assertEquals(imagingConfig.imagingInstruments.get(0).getSearchQuery().getRootPath(), issRootDirPrimary);
+        assertEquals(imagingConfig.imagingInstruments.get(0).getSearchQuery().getDataPath(), issDataDir);
+        assertEquals(imagingConfig.imagingInstruments.get(0).getSearchQuery().getGalleryPath(), issGalleryDir);
+        assertEquals(imagingConfig.imagingInstruments.get(0).spectralMode, SpectralImageMode.MONO);
+        assertEquals(imagingConfig.imagingInstruments.get(0).getType(), ImageType.valueOf("ISS_IMAGE"));
+        assertArrayEquals(imagingConfig.imagingInstruments.get(0).searchImageSources, new PointingSource[]{PointingSource.GASKELL});
+        assertEquals(imagingConfig.imagingInstruments.get(0).getInstrumentName(), Instrument.ISS);
+        assertEquals(imagingConfig.imagingInstruments.get(0).getOrientation(PointingSource.GASKELL).getRotation(), 0.0);
+        assertEquals(imagingConfig.imagingInstruments.get(0).getOrientation(PointingSource.GASKELL).getFlip(), ImageFlip.NONE);
+
+//        DataQuerySourcesMetadata imagingMetadata =
+//        		DataQuerySourcesMetadata.of(issRootDirPrimary,issDataDir, issTable, issTable, issGalleryDir);
+//
+//        imagingConfig.imagingInstruments = Lists.newArrayList(
+//                new ImagingInstrument( //
+//                        SpectralImageMode.MONO, //
+//                        new ImageDataQuery(imagingMetadata),
+////                        new GenericPhpQuery(issRootDirPrimary, issTable, issTable, issGalleryDir, issDataDir), //
+//                        ImageType.valueOf("ISS_IMAGE"), //
+//                        SumFiles, //
+//                        Instrument.ISS, //
+//                        0., //
+//                        "None" //
+//                )
+//        );
+
+        assertEquals(imagingConfig.imageSearchDefaultStartDate, new GregorianCalendar(2005, 8, 23, 0, 0, 0).getTime());
+        assertEquals(imagingConfig.imageSearchDefaultEndDate, new GregorianCalendar(2010, 1, 14, 0, 0, 0).getTime());
+        assertArrayEquals(imagingConfig.imageSearchFilterNames, new String[] {});
+        assertArrayEquals(imagingConfig.imageSearchUserDefinedCheckBoxesNames, new String[] {});
+        assertEquals(imagingConfig.imageSearchDefaultMaxSpacecraftDistance, 1.0e6);
+        assertEquals(imagingConfig.imageSearchDefaultMaxResolution, 1.0e3);
+
+        assertArrayEquals(c.databaseRunInfos, new DBRunInfo[] { //
+                new DBRunInfo(PointingSource.GASKELL, Instrument.ISS, c.body.toString(), //
+                        issRootDirPrimary + "/imagelist-fullpath-sum.txt", issTable) //
+        });
+
+        assertArrayEquals(c.presentInMissions, new Mission[] { Mission.PUBLIC_RELEASE, Mission.TEST_PUBLIC_RELEASE, Mission.STAGE_PUBLIC_RELEASE,
+                Mission.STAGE_APL_INTERNAL, Mission.APL_INTERNAL, Mission.TEST_APL_INTERNAL });
+        assertArrayEquals(c.defaultForMissions, new Mission[] {});
 	}
 
 	@Test
@@ -532,16 +813,16 @@ class SaturnConfigsTest
         FeatureConfigIOFactory.getIOForClassType(BasemapImageConfig.class.getSimpleName()).setViewConfig((ViewConfig)c);
         FeatureConfigIOFactory.getIOForClassType(StateHistoryConfig.class.getSimpleName()).setViewConfig((ViewConfig)c);
 
-        c.body = ShapeModelBody.ENCELADUS;
-        c.type = BodyType.PLANETS_AND_SATELLITES;
-        c.population = ShapeModelPopulation.SATURN;
-        c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
-        c.author = ShapeModelType.GASKELL;
-        c.modelLabel = "Gaskell (in progress)";
-        c.rootDirOnServer = "/enceladus/gaskell";
-        c.hasColoringData = false;
-        c.presentInMissions = new Mission[] {Mission.PUBLIC_RELEASE, Mission.TEST_PUBLIC_RELEASE, Mission.STAGE_PUBLIC_RELEASE, Mission.STAGE_APL_INTERNAL, Mission.APL_INTERNAL, Mission.TEST_APL_INTERNAL};
-        c.defaultForMissions = new Mission[] {};
+        assertEquals(c.body, ShapeModelBody.ENCELADUS);
+        assertEquals(c.type, BodyType.PLANETS_AND_SATELLITES);
+        assertEquals(c.population, ShapeModelPopulation.SATURN);
+        assertEquals(c.dataUsed, ShapeModelDataUsed.IMAGE_BASED);
+        assertEquals(c.author, ShapeModelType.GASKELL);
+        assertEquals(c.modelLabel, "Gaskell (in progress)");
+        assertEquals(c.rootDirOnServer, "/enceladus/gaskell");
+        assertEquals(c.hasColoringData, false);
+        assertArrayEquals(c.presentInMissions, new Mission[] {Mission.PUBLIC_RELEASE, Mission.TEST_PUBLIC_RELEASE, Mission.STAGE_PUBLIC_RELEASE, Mission.STAGE_APL_INTERNAL, Mission.APL_INTERNAL, Mission.TEST_APL_INTERNAL});
+        assertArrayEquals(c.defaultForMissions, new Mission[] {});
 	}
 
 	@Test
@@ -565,7 +846,68 @@ class SaturnConfigsTest
         FeatureConfigIOFactory.getIOForClassType(ImagingInstrumentConfig.class.getSimpleName()).setViewConfig((ViewConfig)c);
         FeatureConfigIOFactory.getIOForClassType(BasemapImageConfig.class.getSimpleName()).setViewConfig((ViewConfig)c);
         FeatureConfigIOFactory.getIOForClassType(StateHistoryConfig.class.getSimpleName()).setViewConfig((ViewConfig)c);
-        fail("Not yet implemented");
+
+        assertEquals(c.body, ShapeModelBody.EPIMETHEUS);
+        assertEquals(c.type, BodyType.PLANETS_AND_SATELLITES);
+        assertEquals(c.population, ShapeModelPopulation.SATURN);
+        assertEquals(c.dataUsed, ShapeModelDataUsed.IMAGE_BASED);
+        assertEquals(c.author, ShapeModelType.provide("Daly"));
+        assertEquals(c.modelLabel, "Daly et al. (in progress)");
+        assertEquals(c.rootDirOnServer, "/epimetheus/daly-2020");
+        assertEquals(c.getShapeModelFileExtension(), ".obj");
+        assertEquals(c.hasColoringData, false);
+
+        String tableBaseName = (c.body.name() + "_" + c.author.toString() + "_").replaceAll("[\\s-]", "_").toLowerCase();
+
+        String issTable = tableBaseName + "iss";
+        String issRootDirPrimary = c.rootDirOnServer + "/iss";
+
+        String issDataDir = "/cassini/iss/images";
+        String issGalleryDir = "/cassini/iss/gallery";
+        ImagingInstrumentConfig imagingConfig = (ImagingInstrumentConfig)c.getConfigForClass(ImagingInstrumentConfig.class);
+//        DataQuerySourcesMetadata imagingMetadata =
+//        		DataQuerySourcesMetadata.of(issRootDirPrimary,issDataDir, issTable, issTable, issGalleryDir);
+//
+//        imagingConfig.imagingInstruments = Lists.newArrayList(
+//                new ImagingInstrument( //
+//                        SpectralImageMode.MONO, //
+//                        new ImageDataQuery(imagingMetadata),
+////                        new GenericPhpQuery(issRootDirPrimary, issTable, issTable, issGalleryDir, issDataDir), //
+//                        ImageType.valueOf("ISS_IMAGE"), //
+//                        SumFiles, //
+//                        Instrument.ISS, //
+//                        0., //
+//                        "None" //
+//                )
+//        );
+
+        assertEquals(imagingConfig.imagingInstruments.size(), 1);
+        assertEquals(imagingConfig.imagingInstruments.get(0).getSearchQuery().getRootPath(), issRootDirPrimary);
+        assertEquals(imagingConfig.imagingInstruments.get(0).getSearchQuery().getDataPath(), issDataDir);
+        assertEquals(imagingConfig.imagingInstruments.get(0).getSearchQuery().getGalleryPath(), issGalleryDir);
+        assertEquals(imagingConfig.imagingInstruments.get(0).spectralMode, SpectralImageMode.MONO);
+        assertEquals(imagingConfig.imagingInstruments.get(0).getType(), ImageType.valueOf("ISS_IMAGE"));
+        assertArrayEquals(imagingConfig.imagingInstruments.get(0).searchImageSources, new PointingSource[]{PointingSource.GASKELL});
+        assertEquals(imagingConfig.imagingInstruments.get(0).getInstrumentName(), Instrument.ISS);
+        assertEquals(imagingConfig.imagingInstruments.get(0).getOrientation(PointingSource.GASKELL).getRotation(), 0.0);
+        assertEquals(imagingConfig.imagingInstruments.get(0).getOrientation(PointingSource.GASKELL).getFlip(), ImageFlip.NONE);
+
+
+        assertEquals(imagingConfig.imageSearchDefaultStartDate, new GregorianCalendar(2005, 1, 17, 0, 0, 0).getTime());
+        assertEquals(imagingConfig.imageSearchDefaultEndDate, new GregorianCalendar(2017, 4, 4, 0, 0, 0).getTime());
+        assertArrayEquals(imagingConfig.imageSearchFilterNames, new String[] {});
+        assertArrayEquals(imagingConfig.imageSearchUserDefinedCheckBoxesNames, new String[] {});
+        assertEquals(imagingConfig.imageSearchDefaultMaxSpacecraftDistance, 1.0e7);
+        assertEquals(imagingConfig.imageSearchDefaultMaxResolution, 1.0e5);
+
+        assertArrayEquals(c.databaseRunInfos, new DBRunInfo[] { //
+                new DBRunInfo(PointingSource.GASKELL, Instrument.ISS, c.body.toString(), //
+                        issRootDirPrimary + "/imagelist-fullpath-sum.txt", issTable) //
+        });
+
+        assertArrayEquals(c.presentInMissions, new Mission[] { Mission.PUBLIC_RELEASE, Mission.TEST_PUBLIC_RELEASE, Mission.STAGE_PUBLIC_RELEASE,
+                Mission.STAGE_APL_INTERNAL, Mission.APL_INTERNAL, Mission.TEST_APL_INTERNAL });
+        assertArrayEquals(c.defaultForMissions, new Mission[] {});
 	}
 
 	@Test
@@ -577,7 +919,75 @@ class SaturnConfigsTest
         FeatureConfigIOFactory.getIOForClassType(ImagingInstrumentConfig.class.getSimpleName()).setViewConfig((ViewConfig)c);
         FeatureConfigIOFactory.getIOForClassType(BasemapImageConfig.class.getSimpleName()).setViewConfig((ViewConfig)c);
         FeatureConfigIOFactory.getIOForClassType(StateHistoryConfig.class.getSimpleName()).setViewConfig((ViewConfig)c);
-        fail("Not yet implemented");
+
+        assertEquals(c.body, ShapeModelBody.EPIMETHEUS);
+        assertEquals(c.type, BodyType.PLANETS_AND_SATELLITES);
+        assertEquals(c.population, ShapeModelPopulation.SATURN);
+        assertEquals(c.dataUsed, ShapeModelDataUsed.IMAGE_BASED);
+        assertEquals(c.author, ShapeModelType.THOMAS);
+        assertEquals(c.modelLabel, "Thomas et al. (2018)");
+        assertEquals(c.rootDirOnServer, "/epimetheus/thomas-2018");
+        assertEquals(c.getShapeModelFileExtension(), ".obj");
+        assertEquals(c.hasColoringData, false);
+        int numberPlates = 49152;
+        assertEquals(c.getResolutionLabels(), ImmutableList.of(numberPlates + " plates"));
+        assertEquals(c.getResolutionNumberElements(), ImmutableList.of(numberPlates));
+
+        String tableBaseName = (c.body.name() + "_" + c.author.toString() + "_").replaceAll("[\\s-]", "_").toLowerCase();
+
+        String issTable = tableBaseName + "iss";
+
+        // DO NOT SET THIS VARIABLE: use the SUM files that belong to
+        // the Primary model.
+        // issRootDirPrimary = c.rootDirOnServer + "/iss";
+
+//        String issDataDir = "/cassini/iss/images";
+//        String issGalleryDir = "/cassini/iss/gallery";
+        String issRootDirPrimary = c.rootDirOnServer + "/iss";
+        ImagingInstrumentConfig imagingConfig = (ImagingInstrumentConfig)c.getConfigForClass(ImagingInstrumentConfig.class);
+//        DataQuerySourcesMetadata imagingMetadata =
+//        		DataQuerySourcesMetadata.of(issRootDirPrimary,issDataDir, issTable, issTable, issGalleryDir);
+//
+//        imagingConfig.imagingInstruments = Lists.newArrayList(
+//                new ImagingInstrument( //
+//                        SpectralImageMode.MONO, //
+//                        new ImageDataQuery(imagingMetadata),
+////                        new GenericPhpQuery(issRootDirPrimary, issTable, issTable, issGalleryDir, issDataDir), //
+//                        ImageType.valueOf("ISS_IMAGE"), //
+//                        SumFiles, //
+//                        Instrument.ISS, //
+//                        0., //
+//                        "None" //
+//                )
+//        );
+
+        assertEquals(imagingConfig.imagingInstruments.size(), 1);
+        assertEquals(imagingConfig.imagingInstruments.get(0).getSearchQuery().getRootPath(), issRootDirPrimary);
+        assertEquals(imagingConfig.imagingInstruments.get(0).getSearchQuery().getDataPath(), "/cassini/iss/images");
+        assertEquals(imagingConfig.imagingInstruments.get(0).getSearchQuery().getGalleryPath(), "/cassini/iss/gallery");
+        assertEquals(imagingConfig.imagingInstruments.get(0).spectralMode, SpectralImageMode.MONO);
+        assertEquals(imagingConfig.imagingInstruments.get(0).getType(), ImageType.valueOf("ISS_IMAGE"));
+        assertArrayEquals(imagingConfig.imagingInstruments.get(0).searchImageSources, new PointingSource[]{PointingSource.GASKELL});
+        assertEquals(imagingConfig.imagingInstruments.get(0).getInstrumentName(), Instrument.ISS);
+        assertEquals(imagingConfig.imagingInstruments.get(0).getOrientation(PointingSource.GASKELL).getRotation(), 0.0);
+        assertEquals(imagingConfig.imagingInstruments.get(0).getOrientation(PointingSource.GASKELL).getFlip(), ImageFlip.NONE);
+
+
+        assertEquals(imagingConfig.imageSearchDefaultStartDate, new GregorianCalendar(2005, 1, 17, 0, 0, 0).getTime());
+        assertEquals(imagingConfig.imageSearchDefaultEndDate, new GregorianCalendar(2017, 4, 4, 0, 0, 0).getTime());
+        assertArrayEquals(imagingConfig.imageSearchFilterNames, new String[] {});
+        assertArrayEquals(imagingConfig.imageSearchUserDefinedCheckBoxesNames, new String[] {});
+        assertEquals(imagingConfig.imageSearchDefaultMaxSpacecraftDistance, 1.0e7);
+        assertEquals(imagingConfig.imageSearchDefaultMaxResolution, 1.0e5);
+
+        assertArrayEquals(c.databaseRunInfos, new DBRunInfo[] { //
+                new DBRunInfo(PointingSource.GASKELL, Instrument.ISS, c.body.toString(), //
+                        issRootDirPrimary + "/imagelist-fullpath-sum.txt", issTable) //
+        });
+
+        assertArrayEquals(c.presentInMissions, new Mission[] { Mission.PUBLIC_RELEASE, Mission.TEST_PUBLIC_RELEASE, Mission.STAGE_PUBLIC_RELEASE,
+                Mission.STAGE_APL_INTERNAL, Mission.APL_INTERNAL, Mission.TEST_APL_INTERNAL });
+        assertArrayEquals(c.defaultForMissions, new Mission[] {});
 	}
 
 	@Test
@@ -589,7 +999,35 @@ class SaturnConfigsTest
         FeatureConfigIOFactory.getIOForClassType(ImagingInstrumentConfig.class.getSimpleName()).setViewConfig((ViewConfig)c);
         FeatureConfigIOFactory.getIOForClassType(BasemapImageConfig.class.getSimpleName()).setViewConfig((ViewConfig)c);
         FeatureConfigIOFactory.getIOForClassType(StateHistoryConfig.class.getSimpleName()).setViewConfig((ViewConfig)c);
-        fail("Not yet implemented");
+
+        assertEquals(c.body, ShapeModelBody.HELENE);
+        assertEquals(c.type, BodyType.PLANETS_AND_SATELLITES);
+        assertEquals(c.population, ShapeModelPopulation.SATURN);
+        assertEquals(c.dataUsed, ShapeModelDataUsed.IMAGE_BASED);
+        assertEquals(c.author, ShapeModelType.GASKELL);
+        assertEquals(c.modelLabel, "Ernst et al. (in progress)");
+        assertEquals(c.rootDirOnServer, "/helene/gaskell");
+        assertEquals(c.hasColoringData, false);
+
+        ImagingInstrumentConfig imagingConfig = (ImagingInstrumentConfig)c.getConfigForClass(ImagingInstrumentConfig.class);
+
+        assertEquals(imagingConfig.imagingInstruments.size(), 1);
+        assertEquals(imagingConfig.imagingInstruments.get(0).getSearchQuery().getRootPath(), "/helene/gaskell/imaging/");
+        assertEquals(imagingConfig.imagingInstruments.get(0).getSearchQuery().getDataPath(), "/helene/gaskell/imaging/images");
+        assertEquals(imagingConfig.imagingInstruments.get(0).getSearchQuery().getGalleryPath(), null);
+        assertEquals(imagingConfig.imagingInstruments.get(0).spectralMode, SpectralImageMode.MONO);
+        assertEquals(imagingConfig.imagingInstruments.get(0).getType(), ImageType.SATURN_MOON_IMAGE);
+        assertArrayEquals(imagingConfig.imagingInstruments.get(0).searchImageSources, new PointingSource[]{PointingSource.GASKELL});
+        assertEquals(imagingConfig.imagingInstruments.get(0).getInstrumentName(), Instrument.IMAGING_DATA);
+        assertEquals(imagingConfig.imagingInstruments.get(0).getOrientation(PointingSource.GASKELL).getRotation(), 0.0);
+        assertEquals(imagingConfig.imagingInstruments.get(0).getOrientation(PointingSource.GASKELL).getFlip(), ImageFlip.NONE);
+        assertArrayEquals(imagingConfig.imagingInstruments.get(0).getFillValues(), new double[] {(double)3.4028234663852886e38, (double)-3.4028234663852886e38});
+
+        assertEquals(imagingConfig.imageSearchDefaultStartDate, new GregorianCalendar(2006, 3, 29, 0, 0, 0).getTime());
+        assertEquals(imagingConfig.imageSearchDefaultEndDate, new GregorianCalendar(2017, 2, 7, 0, 0, 0).getTime());
+
+        assertArrayEquals(c.presentInMissions, new Mission[] {Mission.PUBLIC_RELEASE, Mission.TEST_PUBLIC_RELEASE, Mission.STAGE_PUBLIC_RELEASE, Mission.STAGE_APL_INTERNAL, Mission.APL_INTERNAL, Mission.TEST_APL_INTERNAL});
+        assertArrayEquals(c.defaultForMissions, new Mission[] {});
 	}
 
 	@Test
@@ -602,16 +1040,16 @@ class SaturnConfigsTest
         FeatureConfigIOFactory.getIOForClassType(BasemapImageConfig.class.getSimpleName()).setViewConfig((ViewConfig)c);
         FeatureConfigIOFactory.getIOForClassType(StateHistoryConfig.class.getSimpleName()).setViewConfig((ViewConfig)c);
 
-        c.body = ShapeModelBody.IAPETUS;
-        c.type = BodyType.PLANETS_AND_SATELLITES;
-        c.population = ShapeModelPopulation.SATURN;
-        c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
-        c.author = ShapeModelType.GASKELL;
-        c.modelLabel = "Gaskell (in progress)";
-        c.rootDirOnServer = "/iapetus/gaskell";
-        c.hasColoringData = false;
-        c.presentInMissions = new Mission[] {Mission.PUBLIC_RELEASE, Mission.TEST_PUBLIC_RELEASE, Mission.STAGE_PUBLIC_RELEASE, Mission.STAGE_APL_INTERNAL, Mission.APL_INTERNAL, Mission.TEST_APL_INTERNAL};
-        c.defaultForMissions = new Mission[] {};
+        assertEquals(c.body, ShapeModelBody.IAPETUS);
+        assertEquals(c.type, BodyType.PLANETS_AND_SATELLITES);
+        assertEquals(c.population, ShapeModelPopulation.SATURN);
+        assertEquals(c.dataUsed, ShapeModelDataUsed.IMAGE_BASED);
+        assertEquals(c.author, ShapeModelType.GASKELL);
+        assertEquals(c.modelLabel, "Gaskell (in progress)");
+        assertEquals(c.rootDirOnServer, "/iapetus/gaskell");
+        assertEquals(c.hasColoringData, false);
+        assertArrayEquals(c.presentInMissions, new Mission[] {Mission.PUBLIC_RELEASE, Mission.TEST_PUBLIC_RELEASE, Mission.STAGE_PUBLIC_RELEASE, Mission.STAGE_APL_INTERNAL, Mission.APL_INTERNAL, Mission.TEST_APL_INTERNAL});
+        assertArrayEquals(c.defaultForMissions, new Mission[] {});
 	}
 
 	@Test
@@ -623,7 +1061,67 @@ class SaturnConfigsTest
         FeatureConfigIOFactory.getIOForClassType(ImagingInstrumentConfig.class.getSimpleName()).setViewConfig((ViewConfig)c);
         FeatureConfigIOFactory.getIOForClassType(BasemapImageConfig.class.getSimpleName()).setViewConfig((ViewConfig)c);
         FeatureConfigIOFactory.getIOForClassType(StateHistoryConfig.class.getSimpleName()).setViewConfig((ViewConfig)c);
-        fail("Not yet implemented");
+
+        assertEquals(c.body, ShapeModelBody.JANUS);
+        assertEquals(c.type, BodyType.PLANETS_AND_SATELLITES);
+        assertEquals(c.population, ShapeModelPopulation.SATURN);
+        assertEquals(c.dataUsed, ShapeModelDataUsed.IMAGE_BASED);
+        assertEquals(c.author, ShapeModelType.provide("Daly"));
+        assertEquals(c.modelLabel, "Daly et al. (in progress)");
+        assertEquals(c.rootDirOnServer, "/janus/daly-2020");
+        assertEquals(c.getShapeModelFileExtension(), ".obj");
+        assertEquals(c.hasColoringData, false);
+
+        String tableBaseName = (c.body.name() + "_" + c.author.toString() + "_").replaceAll("[\\s-]", "_").toLowerCase();
+
+        String issTable = tableBaseName + "iss";
+        String issRootDirPrimary = c.rootDirOnServer + "/iss";
+
+        String issDataDir = "/cassini/iss/images";
+        String issGalleryDir = "/cassini/iss/gallery";
+        ImagingInstrumentConfig imagingConfig = (ImagingInstrumentConfig)c.getConfigForClass(ImagingInstrumentConfig.class);
+//        DataQuerySourcesMetadata imagingMetadata =
+//        		DataQuerySourcesMetadata.of(issRootDirPrimary,issDataDir, issTable, issTable, issGalleryDir);
+//
+//        imagingConfig.imagingInstruments = Lists.newArrayList(
+//                new ImagingInstrument( //
+//                        SpectralImageMode.MONO, //
+//                        new ImageDataQuery(imagingMetadata),
+//                        ImageType.valueOf("ISS_IMAGE"), //
+//                        SumFiles, //
+//                        Instrument.ISS, //
+//                        0., //
+//                        "None" //
+//                )
+//        );
+
+        assertEquals(imagingConfig.imagingInstruments.size(), 1);
+        assertEquals(imagingConfig.imagingInstruments.get(0).getSearchQuery().getRootPath(), c.rootDirOnServer + "/iss");
+        assertEquals(imagingConfig.imagingInstruments.get(0).getSearchQuery().getDataPath(), issDataDir);
+        assertEquals(imagingConfig.imagingInstruments.get(0).getSearchQuery().getGalleryPath(), issGalleryDir);
+        assertEquals(imagingConfig.imagingInstruments.get(0).spectralMode, SpectralImageMode.MONO);
+        assertEquals(imagingConfig.imagingInstruments.get(0).getType(), ImageType.valueOf("ISS_IMAGE"));
+        assertArrayEquals(imagingConfig.imagingInstruments.get(0).searchImageSources, new PointingSource[]{PointingSource.GASKELL});
+        assertEquals(imagingConfig.imagingInstruments.get(0).getInstrumentName(), Instrument.ISS);
+        assertEquals(imagingConfig.imagingInstruments.get(0).getOrientation(PointingSource.GASKELL).getRotation(), 0.0);
+        assertEquals(imagingConfig.imagingInstruments.get(0).getOrientation(PointingSource.GASKELL).getFlip(), ImageFlip.NONE);
+
+
+        assertEquals(imagingConfig.imageSearchDefaultStartDate, new GregorianCalendar(2005, 1, 17, 0, 0, 0).getTime());
+        assertEquals(imagingConfig.imageSearchDefaultEndDate, new GregorianCalendar(2017, 3, 19, 0, 0, 0).getTime());
+        assertArrayEquals(imagingConfig.imageSearchFilterNames, new String[] {});
+        assertArrayEquals(imagingConfig.imageSearchUserDefinedCheckBoxesNames, new String[] {});
+        assertEquals(imagingConfig.imageSearchDefaultMaxSpacecraftDistance, 1.0e7);
+        assertEquals(imagingConfig.imageSearchDefaultMaxResolution, 1.0e5);
+
+        assertArrayEquals(c.databaseRunInfos, new DBRunInfo[] { //
+                new DBRunInfo(PointingSource.GASKELL, Instrument.ISS, c.body.toString(), //
+                        issRootDirPrimary + "/imagelist-fullpath-sum.txt", issTable) //
+        });
+
+        assertArrayEquals(c.presentInMissions, new Mission[] { Mission.PUBLIC_RELEASE, Mission.TEST_PUBLIC_RELEASE, Mission.STAGE_PUBLIC_RELEASE,
+                Mission.STAGE_APL_INTERNAL, Mission.APL_INTERNAL, Mission.TEST_APL_INTERNAL });
+        assertArrayEquals(c.defaultForMissions, new Mission[] {});
 	}
 
 	@Test
@@ -647,7 +1145,70 @@ class SaturnConfigsTest
         FeatureConfigIOFactory.getIOForClassType(ImagingInstrumentConfig.class.getSimpleName()).setViewConfig((ViewConfig)c);
         FeatureConfigIOFactory.getIOForClassType(BasemapImageConfig.class.getSimpleName()).setViewConfig((ViewConfig)c);
         FeatureConfigIOFactory.getIOForClassType(StateHistoryConfig.class.getSimpleName()).setViewConfig((ViewConfig)c);
-        fail("Not yet implemented");
+
+        assertEquals(c.body, ShapeModelBody.JANUS);
+        assertEquals(c.type, BodyType.PLANETS_AND_SATELLITES);
+        assertEquals(c.population, ShapeModelPopulation.SATURN);
+        assertEquals(c.dataUsed, ShapeModelDataUsed.IMAGE_BASED);
+        assertEquals(c.author, ShapeModelType.THOMAS);
+        assertEquals(c.modelLabel, "Thomas et al. (2018)");
+        assertEquals(c.rootDirOnServer, "/janus/thomas-2018");
+        assertEquals(c.getShapeModelFileExtension(), ".obj");
+        assertEquals(c.hasColoringData, false);
+        int numberPlates = 49152;
+        assertEquals(c.getResolutionLabels(), ImmutableList.of(numberPlates + " plates"));
+        assertEquals(c.getResolutionNumberElements(), ImmutableList.of(numberPlates));
+
+        String tableBaseName = (c.body.name() + "_" + c.author.toString() + "_").replaceAll("[\\s-]", "_").toLowerCase();
+
+        String issTable = tableBaseName + "iss";
+
+//        String issDataDir = "/cassini/iss/images";
+//        String issGalleryDir = "/cassini/iss/gallery";
+        String issRootDirPrimary = c.rootDirOnServer + "/iss";
+        ImagingInstrumentConfig imagingConfig = (ImagingInstrumentConfig)c.getConfigForClass(ImagingInstrumentConfig.class);
+//        DataQuerySourcesMetadata imagingMetadata =
+//        		DataQuerySourcesMetadata.of(issRootDirPrimary,issDataDir, issTable, issTable, issGalleryDir);
+
+//        imagingConfig.imagingInstruments = Lists.newArrayList(
+//                new ImagingInstrument( //
+//                        SpectralImageMode.MONO, //
+//                        new ImageDataQuery(imagingMetadata),
+//                        ImageType.valueOf("ISS_IMAGE"), //
+//                        SumFiles, //
+//                        Instrument.ISS, //
+//                        0., //
+//                        "None" //
+//                )
+//        );
+
+        assertEquals(imagingConfig.imagingInstruments.size(), 1);
+        assertEquals(imagingConfig.imagingInstruments.get(0).getSearchQuery().getRootPath(), c.rootDirOnServer + "/iss");
+        assertEquals(imagingConfig.imagingInstruments.get(0).getSearchQuery().getDataPath(), c.rootDirOnServer + "/iss/images");
+        assertEquals(imagingConfig.imagingInstruments.get(0).getSearchQuery().getGalleryPath(), c.rootDirOnServer + "/iss/gallery");
+        assertEquals(imagingConfig.imagingInstruments.get(0).spectralMode, SpectralImageMode.MONO);
+        assertEquals(imagingConfig.imagingInstruments.get(0).getType(), ImageType.valueOf("ISS_IMAGE"));
+        assertArrayEquals(imagingConfig.imagingInstruments.get(0).searchImageSources, new PointingSource[]{PointingSource.GASKELL});
+        assertEquals(imagingConfig.imagingInstruments.get(0).getInstrumentName(), Instrument.ISS);
+        assertEquals(imagingConfig.imagingInstruments.get(0).getOrientation(PointingSource.GASKELL).getRotation(), 0.0);
+        assertEquals(imagingConfig.imagingInstruments.get(0).getOrientation(PointingSource.GASKELL).getFlip(), ImageFlip.NONE);
+
+
+        assertEquals(imagingConfig.imageSearchDefaultStartDate, new GregorianCalendar(2005, 1, 17, 0, 0, 0).getTime());
+        assertEquals(imagingConfig.imageSearchDefaultEndDate, new GregorianCalendar(2017, 3, 19, 0, 0, 0).getTime());
+        assertArrayEquals(imagingConfig.imageSearchFilterNames, new String[] {});
+        assertArrayEquals(imagingConfig.imageSearchUserDefinedCheckBoxesNames, new String[] {});
+        assertEquals(imagingConfig.imageSearchDefaultMaxSpacecraftDistance, 1.0e7);
+        assertEquals(imagingConfig.imageSearchDefaultMaxResolution, 1.0e5);
+
+        assertArrayEquals(c.databaseRunInfos, new DBRunInfo[] { //
+                new DBRunInfo(PointingSource.GASKELL, Instrument.ISS, c.body.toString(), //
+                        issRootDirPrimary + "/imagelist-fullpath-sum.txt", issTable) //
+        });
+
+        assertArrayEquals(c.presentInMissions, new Mission[] { Mission.PUBLIC_RELEASE, Mission.TEST_PUBLIC_RELEASE, Mission.STAGE_PUBLIC_RELEASE,
+                Mission.STAGE_APL_INTERNAL, Mission.APL_INTERNAL, Mission.TEST_APL_INTERNAL });
+        assertArrayEquals(c.defaultForMissions, new Mission[] {});
 	}
 
 	@Test
@@ -659,7 +1220,33 @@ class SaturnConfigsTest
         FeatureConfigIOFactory.getIOForClassType(ImagingInstrumentConfig.class.getSimpleName()).setViewConfig((ViewConfig)c);
         FeatureConfigIOFactory.getIOForClassType(BasemapImageConfig.class.getSimpleName()).setViewConfig((ViewConfig)c);
         FeatureConfigIOFactory.getIOForClassType(StateHistoryConfig.class.getSimpleName()).setViewConfig((ViewConfig)c);
-        fail("Not yet implemented");
+
+        assertEquals(c.body, ShapeModelBody.PAN);
+        assertEquals(c.type, BodyType.PLANETS_AND_SATELLITES);
+        assertEquals(c.population, ShapeModelPopulation.SATURN);
+        assertEquals(c.dataUsed, ShapeModelDataUsed.IMAGE_BASED);
+        assertEquals(c.author, ShapeModelType.GASKELL);
+        assertEquals(c.modelLabel, "Ernst et al. (in progress)");
+        assertEquals(c.rootDirOnServer, "/pan/gaskell");
+
+        ImagingInstrumentConfig imagingConfig = (ImagingInstrumentConfig)c.getConfigForClass(ImagingInstrumentConfig.class);
+
+        assertEquals(imagingConfig.imagingInstruments.size(), 1);
+        assertEquals(imagingConfig.imagingInstruments.get(0).getSearchQuery().getRootPath(), "/pan/gaskell/imaging/");
+        assertEquals(imagingConfig.imagingInstruments.get(0).getSearchQuery().getDataPath(), "/pan/gaskell/imaging/images");
+        assertEquals(imagingConfig.imagingInstruments.get(0).getSearchQuery().getGalleryPath(), null);
+        assertEquals(imagingConfig.imagingInstruments.get(0).spectralMode, SpectralImageMode.MONO);
+        assertEquals(imagingConfig.imagingInstruments.get(0).getType(), ImageType.SATURN_MOON_IMAGE);
+        assertArrayEquals(imagingConfig.imagingInstruments.get(0).searchImageSources, new PointingSource[]{PointingSource.GASKELL});
+        assertEquals(imagingConfig.imagingInstruments.get(0).getInstrumentName(), Instrument.IMAGING_DATA);
+        assertEquals(imagingConfig.imagingInstruments.get(0).getOrientation(PointingSource.GASKELL).getRotation(), 0.0);
+        assertEquals(imagingConfig.imagingInstruments.get(0).getOrientation(PointingSource.GASKELL).getFlip(), ImageFlip.NONE);
+
+        assertEquals(imagingConfig.imageSearchDefaultStartDate, new GregorianCalendar(2006, 3, 29, 0, 0, 0).getTime());
+        assertEquals(imagingConfig.imageSearchDefaultEndDate, new GregorianCalendar(2017, 2, 7, 0, 0, 0).getTime());
+        assertEquals(c.hasColoringData, false);
+        assertArrayEquals(c.presentInMissions, new Mission[] {Mission.PUBLIC_RELEASE, Mission.TEST_PUBLIC_RELEASE, Mission.STAGE_PUBLIC_RELEASE, Mission.STAGE_APL_INTERNAL, Mission.APL_INTERNAL, Mission.TEST_APL_INTERNAL});
+        assertArrayEquals(c.defaultForMissions, new Mission[] {});
 	}
 
 	@Test
@@ -671,7 +1258,33 @@ class SaturnConfigsTest
         FeatureConfigIOFactory.getIOForClassType(ImagingInstrumentConfig.class.getSimpleName()).setViewConfig((ViewConfig)c);
         FeatureConfigIOFactory.getIOForClassType(BasemapImageConfig.class.getSimpleName()).setViewConfig((ViewConfig)c);
         FeatureConfigIOFactory.getIOForClassType(StateHistoryConfig.class.getSimpleName()).setViewConfig((ViewConfig)c);
-        fail("Not yet implemented");
+
+        assertEquals(c.body, ShapeModelBody.PANDORA);
+        assertEquals(c.type, BodyType.PLANETS_AND_SATELLITES);
+        assertEquals(c.population, ShapeModelPopulation.SATURN);
+        assertEquals(c.dataUsed, ShapeModelDataUsed.IMAGE_BASED);
+        assertEquals(c.author, ShapeModelType.GASKELL);
+        assertEquals(c.modelLabel, "Ernst et al. (in progress)");
+        assertEquals(c.rootDirOnServer, "/pandora/gaskell");
+
+        ImagingInstrumentConfig imagingConfig = (ImagingInstrumentConfig)c.getConfigForClass(ImagingInstrumentConfig.class);
+
+        assertEquals(imagingConfig.imagingInstruments.size(), 1);
+        assertEquals(imagingConfig.imagingInstruments.get(0).getSearchQuery().getRootPath(), "/pandora/gaskell/imaging/");
+        assertEquals(imagingConfig.imagingInstruments.get(0).getSearchQuery().getDataPath(), "/pandora/gaskell/imaging/images");
+        assertEquals(imagingConfig.imagingInstruments.get(0).getSearchQuery().getGalleryPath(), null);
+        assertEquals(imagingConfig.imagingInstruments.get(0).spectralMode, SpectralImageMode.MONO);
+        assertEquals(imagingConfig.imagingInstruments.get(0).getType(), ImageType.SATURN_MOON_IMAGE);
+        assertArrayEquals(imagingConfig.imagingInstruments.get(0).searchImageSources, new PointingSource[]{PointingSource.GASKELL});
+        assertEquals(imagingConfig.imagingInstruments.get(0).getInstrumentName(), Instrument.IMAGING_DATA);
+        assertEquals(imagingConfig.imagingInstruments.get(0).getOrientation(PointingSource.GASKELL).getRotation(), 0.0);
+        assertEquals(imagingConfig.imagingInstruments.get(0).getOrientation(PointingSource.GASKELL).getFlip(), ImageFlip.NONE);
+
+        assertEquals(imagingConfig.imageSearchDefaultStartDate, new GregorianCalendar(2005, 4, 20, 0, 0, 0).getTime());
+        assertEquals(imagingConfig.imageSearchDefaultEndDate, new GregorianCalendar(2016, 11, 19, 0, 0, 0).getTime());
+        assertEquals(c.hasColoringData, false);
+        assertArrayEquals(c.presentInMissions, new Mission[] {Mission.PUBLIC_RELEASE, Mission.TEST_PUBLIC_RELEASE, Mission.STAGE_PUBLIC_RELEASE, Mission.STAGE_APL_INTERNAL, Mission.APL_INTERNAL, Mission.TEST_APL_INTERNAL});
+        assertArrayEquals(c.defaultForMissions, new Mission[] {});
 	}
 
 	@Test
@@ -683,7 +1296,33 @@ class SaturnConfigsTest
         FeatureConfigIOFactory.getIOForClassType(ImagingInstrumentConfig.class.getSimpleName()).setViewConfig((ViewConfig)c);
         FeatureConfigIOFactory.getIOForClassType(BasemapImageConfig.class.getSimpleName()).setViewConfig((ViewConfig)c);
         FeatureConfigIOFactory.getIOForClassType(StateHistoryConfig.class.getSimpleName()).setViewConfig((ViewConfig)c);
-        fail("Not yet implemented");
+
+        assertEquals(c.body, ShapeModelBody.PROMETHEUS);
+        assertEquals(c.type, BodyType.PLANETS_AND_SATELLITES);
+        assertEquals(c.population, ShapeModelPopulation.SATURN);
+        assertEquals(c.dataUsed, ShapeModelDataUsed.IMAGE_BASED);
+        assertEquals(c.author, ShapeModelType.GASKELL);
+        assertEquals(c.modelLabel, "Ernst et al. (in progress)");
+        assertEquals(c.rootDirOnServer, "/prometheus/gaskell");
+
+        ImagingInstrumentConfig imagingConfig = (ImagingInstrumentConfig)c.getConfigForClass(ImagingInstrumentConfig.class);
+
+        assertEquals(imagingConfig.imagingInstruments.size(), 1);
+        assertEquals(imagingConfig.imagingInstruments.get(0).getSearchQuery().getRootPath(), "/prometheus/gaskell/imaging/");
+        assertEquals(imagingConfig.imagingInstruments.get(0).getSearchQuery().getDataPath(), "/prometheus/gaskell/imaging/images");
+        assertEquals(imagingConfig.imagingInstruments.get(0).getSearchQuery().getGalleryPath(), null);
+        assertEquals(imagingConfig.imagingInstruments.get(0).spectralMode, SpectralImageMode.MONO);
+        assertEquals(imagingConfig.imagingInstruments.get(0).getType(), ImageType.SATURN_MOON_IMAGE);
+        assertArrayEquals(imagingConfig.imagingInstruments.get(0).searchImageSources, new PointingSource[]{PointingSource.GASKELL});
+        assertEquals(imagingConfig.imagingInstruments.get(0).getInstrumentName(), Instrument.IMAGING_DATA);
+        assertEquals(imagingConfig.imagingInstruments.get(0).getOrientation(PointingSource.GASKELL).getRotation(), 0.0);
+        assertEquals(imagingConfig.imagingInstruments.get(0).getOrientation(PointingSource.GASKELL).getFlip(), ImageFlip.NONE);
+
+        assertEquals(imagingConfig.imageSearchDefaultStartDate, new GregorianCalendar(2006, 3, 29, 0, 0, 0).getTime());
+        assertEquals(imagingConfig.imageSearchDefaultEndDate, new GregorianCalendar(2017, 2, 7, 0, 0, 0).getTime());
+        assertEquals(c.hasColoringData, false);
+        assertArrayEquals(c.presentInMissions, new Mission[] {Mission.PUBLIC_RELEASE, Mission.TEST_PUBLIC_RELEASE, Mission.STAGE_PUBLIC_RELEASE, Mission.STAGE_APL_INTERNAL, Mission.APL_INTERNAL, Mission.TEST_APL_INTERNAL});
+        assertArrayEquals(c.defaultForMissions, new Mission[] {});
 	}
 
 }

@@ -1,10 +1,17 @@
 package edu.jhuapl.sbmt.client.configs;
 
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.fail;
+
+import java.util.GregorianCalendar;
+import java.util.List;
 
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
+
+import com.google.common.collect.ImmutableList;
 
 import edu.jhuapl.saavtk.config.ConfigArrayList;
 import edu.jhuapl.saavtk.config.IBodyViewConfig;
@@ -14,8 +21,15 @@ import edu.jhuapl.saavtk.model.ShapeModelType;
 import edu.jhuapl.saavtk.util.Configuration;
 import edu.jhuapl.saavtk.util.SafeURLPaths;
 import edu.jhuapl.sbmt.config.SmallBodyViewConfig;
+import edu.jhuapl.sbmt.core.body.BodyType;
+import edu.jhuapl.sbmt.core.body.BodyViewConfig;
+import edu.jhuapl.sbmt.core.body.ShapeModelDataUsed;
+import edu.jhuapl.sbmt.core.body.ShapeModelPopulation;
 import edu.jhuapl.sbmt.core.client.Mission;
 import edu.jhuapl.sbmt.core.config.FeatureConfigIOFactory;
+import edu.jhuapl.sbmt.core.config.Instrument;
+import edu.jhuapl.sbmt.core.io.DBRunInfo;
+import edu.jhuapl.sbmt.core.pointing.PointingSource;
 import edu.jhuapl.sbmt.image.config.BasemapImageConfig;
 import edu.jhuapl.sbmt.image.config.BasemapImageConfigIO;
 import edu.jhuapl.sbmt.image.config.ImagingInstrumentConfig;
@@ -29,11 +43,15 @@ import edu.jhuapl.sbmt.image.model.BinTranslations;
 import edu.jhuapl.sbmt.image.model.CompositePerspectiveImage;
 import edu.jhuapl.sbmt.image.model.CylindricalBounds;
 import edu.jhuapl.sbmt.image.model.ImageBinPadding;
+import edu.jhuapl.sbmt.image.model.ImageFlip;
+import edu.jhuapl.sbmt.image.model.ImageType;
 import edu.jhuapl.sbmt.image.model.ImagingInstrument;
 import edu.jhuapl.sbmt.image.model.PerspectiveImageMetadata;
+import edu.jhuapl.sbmt.image.model.SpectralImageMode;
 import edu.jhuapl.sbmt.image.query.ImageDataQuery;
 import edu.jhuapl.sbmt.lidar.config.LidarInstrumentConfig;
 import edu.jhuapl.sbmt.lidar.config.LidarInstrumentConfigIO;
+import edu.jhuapl.sbmt.model.bennu.lidar.old.OlaCubesGenerator;
 import edu.jhuapl.sbmt.model.bennu.spectra.otes.OTES;
 import edu.jhuapl.sbmt.model.bennu.spectra.otes.OTESQuery;
 import edu.jhuapl.sbmt.model.bennu.spectra.otes.OTESSpectrumMath;
@@ -333,7 +351,35 @@ class RyuguConfigsTest
         FeatureConfigIOFactory.getIOForClassType(ImagingInstrumentConfig.class.getSimpleName()).setViewConfig((ViewConfig)c);
         FeatureConfigIOFactory.getIOForClassType(BasemapImageConfig.class.getSimpleName()).setViewConfig((ViewConfig)c);
         FeatureConfigIOFactory.getIOForClassType(StateHistoryConfig.class.getSimpleName()).setViewConfig((ViewConfig)c);
-        fail("Not yet implemented");
+
+        testBodyConfig(c);
+
+        assertEquals(c.author, ShapeModelType.NASA_001);
+        assertEquals(c.modelLabel, "NASA-001");
+        assertEquals(c.rootDirOnServer, "/ryugu/nasa-001");
+        assertEquals(c.hasColoringData, true);
+        assertEquals(c.density, 1.500); // (g/cm^3)
+        assertEquals(c.rotationRate, 0.00022871); // (rad/sec)
+
+        ImagingInstrumentConfig imagingConfig = (ImagingInstrumentConfig)c.getConfigForClass(ImagingInstrumentConfig.class);
+        LidarInstrumentConfig lidarConfig = (LidarInstrumentConfig)c.getConfigForClass(LidarInstrumentConfig.class);
+
+		assertEquals(imagingConfig.imagingInstruments.size(), 1);
+
+        testONC(imagingConfig, "/ryugu/nasa-001/onc", "/ryugu/nasa-001/onc/images", "/ryugu/nasa-001/onc/gallery");
+
+        assertEquals(c.hasMapmaker, false);
+        testImages(imagingConfig);
+        testLidarConfig(lidarConfig);
+
+        assertArrayEquals(c.databaseRunInfos, new DBRunInfo[]
+        {
+        	new DBRunInfo(PointingSource.SPICE, Instrument.ONC, ShapeModelBody.RYUGU.toString(), "/project/sbmt2/sbmt/data/bodies/ryugu/nasa-001/onc", "ryugu_flight", "ryugu/nasa-001/onc"),
+        });
+
+        assertArrayEquals(c.presentInMissions, new Mission[] {Mission.APL_INTERNAL, Mission.TEST_APL_INTERNAL,Mission.STAGE_APL_INTERNAL,
+				Mission.HAYABUSA2_DEPLOY, Mission.HAYABUSA2_DEV});
+        assertArrayEquals(c.defaultForMissions, new Mission[] {});
 	}
 
 	@Test
@@ -345,7 +391,39 @@ class RyuguConfigsTest
         FeatureConfigIOFactory.getIOForClassType(ImagingInstrumentConfig.class.getSimpleName()).setViewConfig((ViewConfig)c);
         FeatureConfigIOFactory.getIOForClassType(BasemapImageConfig.class.getSimpleName()).setViewConfig((ViewConfig)c);
         FeatureConfigIOFactory.getIOForClassType(StateHistoryConfig.class.getSimpleName()).setViewConfig((ViewConfig)c);
-        fail("Not yet implemented");
+
+        testBodyConfig(c);
+
+        assertEquals(c.author, ShapeModelType.NASA_002);
+        assertEquals(c.modelLabel, "NASA-002");
+        assertEquals(c.rootDirOnServer, "/ryugu/nasa-002");
+        assertEquals(c.hasColoringData, true);
+        assertEquals(c.density, 1.500); // (g/cm^3)
+        assertEquals(c.rotationRate, 0.00022871); // (rad/sec)
+
+        ImagingInstrumentConfig imagingConfig = (ImagingInstrumentConfig)c.getConfigForClass(ImagingInstrumentConfig.class);
+        LidarInstrumentConfig lidarConfig = (LidarInstrumentConfig)c.getConfigForClass(LidarInstrumentConfig.class);
+        StateHistoryConfig stateHistoryConfig = (StateHistoryConfig)c.getConfigForClass(StateHistoryConfig.class);
+
+		assertEquals(imagingConfig.imagingInstruments.size(), 2);
+
+        testONC(imagingConfig, "/ryugu/nasa-002/onc", "/ryugu/nasa-002/onc/images", "/ryugu/nasa-002/onc/gallery");
+        testTIR(imagingConfig, "/ryugu/nasa-002/tir", "/ryugu/nasa-002/tir/images", "/ryugu/nasa-002/tir/gallery");
+
+        assertEquals(c.hasMapmaker, false);
+        testImages(imagingConfig);
+        testStateHistory(stateHistoryConfig, "/ryugu/nasa-002/history/timeHistory.bth");
+        testLidarConfig(lidarConfig);
+
+        assertArrayEquals(c.databaseRunInfos, new DBRunInfo[]
+        {
+        	new DBRunInfo(PointingSource.SPICE, Instrument.ONC, ShapeModelBody.RYUGU.toString(), "/project/sbmt2/sbmt/data/bodies/ryugu/nasa-002/onc", "ryugu_nasa002", "ryugu/nasa-002/onc"),
+        	new DBRunInfo(PointingSource.SPICE, Instrument.TIR, ShapeModelBody.RYUGU.toString(), "/project/sbmt2/sbmt/data/bodies/ryugu/nasa-002/tir", "ryugu_nasa002_tir", "ryugu/nasa-002/tir"),
+        });
+
+        assertArrayEquals(c.presentInMissions, new Mission[] {Mission.APL_INTERNAL, Mission.TEST_APL_INTERNAL,Mission.STAGE_APL_INTERNAL,
+				Mission.HAYABUSA2_DEPLOY, Mission.HAYABUSA2_DEV});
+        assertArrayEquals(c.defaultForMissions, new Mission[] {});
 	}
 
 	@Test
@@ -357,7 +435,39 @@ class RyuguConfigsTest
         FeatureConfigIOFactory.getIOForClassType(ImagingInstrumentConfig.class.getSimpleName()).setViewConfig((ViewConfig)c);
         FeatureConfigIOFactory.getIOForClassType(BasemapImageConfig.class.getSimpleName()).setViewConfig((ViewConfig)c);
         FeatureConfigIOFactory.getIOForClassType(StateHistoryConfig.class.getSimpleName()).setViewConfig((ViewConfig)c);
-        fail("Not yet implemented");
+
+        testBodyConfig(c);
+
+        assertEquals(c.author, ShapeModelType.NASA_003);
+        assertEquals(c.modelLabel, "NASA-003");
+        assertEquals(c.rootDirOnServer, "/ryugu/nasa-003");
+        assertEquals(c.hasColoringData, true);
+        assertEquals(c.density, 1.500); // (g/cm^3)
+        assertEquals(c.rotationRate, 0.00022871); // (rad/sec)
+
+        ImagingInstrumentConfig imagingConfig = (ImagingInstrumentConfig)c.getConfigForClass(ImagingInstrumentConfig.class);
+        LidarInstrumentConfig lidarConfig = (LidarInstrumentConfig)c.getConfigForClass(LidarInstrumentConfig.class);
+        StateHistoryConfig stateHistoryConfig = (StateHistoryConfig)c.getConfigForClass(StateHistoryConfig.class);
+
+		assertEquals(imagingConfig.imagingInstruments.size(), 2);
+
+        testONC(imagingConfig, "/ryugu/nasa-003/onc", "/ryugu/nasa-003/onc/images", "/ryugu/nasa-003/onc/gallery");
+        testTIR(imagingConfig, "/ryugu/nasa-003/tir", "/ryugu/nasa-003/tir/images", "/ryugu/nasa-003/tir/gallery");
+
+        assertEquals(c.hasMapmaker, false);
+        testImages(imagingConfig);
+        testStateHistory(stateHistoryConfig, "/ryugu/nasa-003/history/timeHistory.bth");
+        testLidarConfig(lidarConfig);
+
+        assertArrayEquals(c.databaseRunInfos, new DBRunInfo[]
+        {
+        	new DBRunInfo(PointingSource.SPICE, Instrument.ONC, ShapeModelBody.RYUGU.toString(), "/project/sbmt2/sbmt/data/bodies/ryugu/nasa-003/onc", "ryugu_nasa002", "ryugu/nasa-003/onc"),
+        	new DBRunInfo(PointingSource.SPICE, Instrument.TIR, ShapeModelBody.RYUGU.toString(), "/project/sbmt2/sbmt/data/bodies/ryugu/nasa-003/tir", "ryugu_nasa002_tir", "ryugu/nasa-003/tir"),
+        });
+
+        assertArrayEquals(c.presentInMissions, new Mission[] {Mission.APL_INTERNAL, Mission.TEST_APL_INTERNAL,Mission.STAGE_APL_INTERNAL,
+				Mission.HAYABUSA2_DEPLOY, Mission.HAYABUSA2_DEV});
+        assertArrayEquals(c.defaultForMissions, new Mission[] {});
 	}
 
 	@Test
@@ -369,7 +479,39 @@ class RyuguConfigsTest
         FeatureConfigIOFactory.getIOForClassType(ImagingInstrumentConfig.class.getSimpleName()).setViewConfig((ViewConfig)c);
         FeatureConfigIOFactory.getIOForClassType(BasemapImageConfig.class.getSimpleName()).setViewConfig((ViewConfig)c);
         FeatureConfigIOFactory.getIOForClassType(StateHistoryConfig.class.getSimpleName()).setViewConfig((ViewConfig)c);
-        fail("Not yet implemented");
+
+        testBodyConfig(c);
+
+        assertEquals(c.author, ShapeModelType.NASA_004);
+        assertEquals(c.modelLabel, "NASA-004");
+        assertEquals(c.rootDirOnServer, "/ryugu/nasa-004");
+        assertEquals(c.hasColoringData, true);
+        assertEquals(c.density, 1.200); // (g/cm^3)
+        assertEquals(c.rotationRate, 0.00022871); // (rad/sec)
+
+        ImagingInstrumentConfig imagingConfig = (ImagingInstrumentConfig)c.getConfigForClass(ImagingInstrumentConfig.class);
+        LidarInstrumentConfig lidarConfig = (LidarInstrumentConfig)c.getConfigForClass(LidarInstrumentConfig.class);
+        StateHistoryConfig stateHistoryConfig = (StateHistoryConfig)c.getConfigForClass(StateHistoryConfig.class);
+
+		assertEquals(imagingConfig.imagingInstruments.size(), 2);
+
+        testONC(imagingConfig, "/ryugu/nasa-004/onc", "/ryugu/nasa-004/onc/images", "/ryugu/nasa-004/onc/gallery");
+        testTIR(imagingConfig, "/ryugu/nasa-004/tir", "/ryugu/nasa-004/tir/images", "/ryugu/nasa-004/tir/gallery");
+
+        assertEquals(c.hasMapmaker, false);
+        testImages(imagingConfig);
+        testStateHistory(stateHistoryConfig, "/ryugu/nasa-004/history/timeHistory.bth");
+        testLidarConfig(lidarConfig);
+
+        assertArrayEquals(c.databaseRunInfos, new DBRunInfo[]
+        {
+        	new DBRunInfo(PointingSource.SPICE, Instrument.ONC, ShapeModelBody.RYUGU.toString(), "/project/sbmt2/sbmt/data/bodies/ryugu/nasa-004/onc", "ryugu_nasa005", "ryugu/nasa-004/onc"),
+        	new DBRunInfo(PointingSource.SPICE, Instrument.TIR, ShapeModelBody.RYUGU.toString(), "/project/sbmt2/sbmt/data/bodies/ryugu/nasa-004/tir", "ryugu_nasa005_tir", "ryugu/nasa-004/tir"),
+        });
+
+        assertArrayEquals(c.presentInMissions, new Mission[] {Mission.APL_INTERNAL, Mission.TEST_APL_INTERNAL,Mission.STAGE_APL_INTERNAL,
+				Mission.HAYABUSA2_DEPLOY, Mission.HAYABUSA2_DEV});
+        assertArrayEquals(c.defaultForMissions, new Mission[] {});
 	}
 
 	@Test
@@ -381,7 +523,39 @@ class RyuguConfigsTest
         FeatureConfigIOFactory.getIOForClassType(ImagingInstrumentConfig.class.getSimpleName()).setViewConfig((ViewConfig)c);
         FeatureConfigIOFactory.getIOForClassType(BasemapImageConfig.class.getSimpleName()).setViewConfig((ViewConfig)c);
         FeatureConfigIOFactory.getIOForClassType(StateHistoryConfig.class.getSimpleName()).setViewConfig((ViewConfig)c);
-        fail("Not yet implemented");
+
+        testBodyConfig(c);
+
+        assertEquals(c.author, ShapeModelType.NASA_005);
+        assertEquals(c.modelLabel, "NASA-005");
+        assertEquals(c.rootDirOnServer, "/ryugu/nasa-005");
+        assertEquals(c.hasColoringData, true);
+        assertEquals(c.density, 1.200); // (g/cm^3)
+        assertEquals(c.rotationRate, 0.00022871); // (rad/sec)
+
+        ImagingInstrumentConfig imagingConfig = (ImagingInstrumentConfig)c.getConfigForClass(ImagingInstrumentConfig.class);
+        LidarInstrumentConfig lidarConfig = (LidarInstrumentConfig)c.getConfigForClass(LidarInstrumentConfig.class);
+        StateHistoryConfig stateHistoryConfig = (StateHistoryConfig)c.getConfigForClass(StateHistoryConfig.class);
+
+		assertEquals(imagingConfig.imagingInstruments.size(), 2);
+
+        testONC(imagingConfig, "/ryugu/nasa-005/onc", "/ryugu/nasa-005/onc/images", "/ryugu/nasa-005/onc/gallery");
+        testTIR(imagingConfig, "/ryugu/nasa-005/tir", "/ryugu/nasa-005/tir/images", "/ryugu/nasa-005/tir/gallery");
+
+        assertEquals(c.hasMapmaker, false);
+        testImages(imagingConfig);
+        testStateHistory(stateHistoryConfig, "/ryugu/nasa-005/history/timeHistory.bth");
+        testLidarConfig(lidarConfig);
+
+        assertArrayEquals(c.databaseRunInfos, new DBRunInfo[]
+        {
+        	new DBRunInfo(PointingSource.SPICE, Instrument.ONC, ShapeModelBody.RYUGU.toString(), "/project/sbmt2/sbmt/data/bodies/ryugu/nasa-005/onc", "ryugu_nasa005", "ryugu/nasa-005/onc"),
+        	new DBRunInfo(PointingSource.SPICE, Instrument.TIR, ShapeModelBody.RYUGU.toString(), "/project/sbmt2/sbmt/data/bodies/ryugu/nasa-005/tir", "ryugu_nasa005_tir", "ryugu/nasa-005/tir"),
+        });
+
+        assertArrayEquals(c.presentInMissions, new Mission[] {Mission.APL_INTERNAL, Mission.TEST_APL_INTERNAL,Mission.STAGE_APL_INTERNAL,
+				Mission.HAYABUSA2_DEPLOY, Mission.HAYABUSA2_DEV});
+        assertArrayEquals(c.defaultForMissions, new Mission[] {});
 	}
 
 	@Test
@@ -393,7 +567,145 @@ class RyuguConfigsTest
         FeatureConfigIOFactory.getIOForClassType(ImagingInstrumentConfig.class.getSimpleName()).setViewConfig((ViewConfig)c);
         FeatureConfigIOFactory.getIOForClassType(BasemapImageConfig.class.getSimpleName()).setViewConfig((ViewConfig)c);
         FeatureConfigIOFactory.getIOForClassType(StateHistoryConfig.class.getSimpleName()).setViewConfig((ViewConfig)c);
-        fail("Not yet implemented");
+
+        assertEquals(c.body, ShapeModelBody.RYUGU);
+        assertEquals(c.type, BodyType.ASTEROID);
+        assertEquals(c.population, ShapeModelPopulation.NEO);
+        assertEquals(c.dataUsed, ShapeModelDataUsed.IMAGE_BASED);
+        assertEquals(c.author, ShapeModelType.NASA_006);
+        assertEquals(c.modelLabel, "NASA-006");
+        assertEquals(c.rootDirOnServer, "/ryugu/nasa-006");
+        assertEquals(c.getShapeModelFileExtension(), ".obj");
+        assertEquals(c.hasColoringData, true);
+
+        assertEquals(c.density, 1.200); // (g/cm^3)
+        assertEquals(c.rotationRate, 0.00022867); // (rad/sec)
+
+        ImagingInstrumentConfig imagingConfig = (ImagingInstrumentConfig)c.getConfigForClass(ImagingInstrumentConfig.class);
+        LidarInstrumentConfig lidarConfig = (LidarInstrumentConfig)c.getConfigForClass(LidarInstrumentConfig.class);
+        StateHistoryConfig stateHistoryConfig = (StateHistoryConfig)c.getConfigForClass(StateHistoryConfig.class);
+
+		assertEquals(imagingConfig.imagingInstruments.size(), 2);
+
+        testONC(imagingConfig, "/ryugu/nasa-006/onc", "/ryugu/nasa-006/onc/images", "/ryugu/nasa-006/onc/gallery");
+        testTIR(imagingConfig, "/ryugu/nasa-006/tir", "/ryugu/nasa-006/tir/images", "/ryugu/nasa-006/tir/gallery");
+
+        assertEquals(c.hasMapmaker, false);
+        testImages(imagingConfig);
+        testStateHistory(stateHistoryConfig, "/ryugu/nasa-006/history/timeHistory.bth");
+        testLidarConfig(lidarConfig);
+
+        assertArrayEquals(c.databaseRunInfos, new DBRunInfo[]
+        {
+        	new DBRunInfo(PointingSource.SPICE, Instrument.ONC, ShapeModelBody.RYUGU.toString(), "/project/sbmt2/sbmt/data/bodies/ryugu/nasa-006/onc", "ryugu_nasa005", "ryugu/nasa-006/onc"),
+        	new DBRunInfo(PointingSource.SPICE, Instrument.TIR, ShapeModelBody.RYUGU.toString(), "/project/sbmt2/sbmt/data/bodies/ryugu/nasa-006/tir", "ryugu_nasa005_tir", "ryugu/nasa-006/tir"),
+        });
+
+        assertArrayEquals(c.presentInMissions, new Mission[] {Mission.APL_INTERNAL, Mission.TEST_APL_INTERNAL,Mission.STAGE_APL_INTERNAL,
+				Mission.HAYABUSA2_DEPLOY, Mission.HAYABUSA2_DEV});
+        assertArrayEquals(c.defaultForMissions, new Mission[] {});
+
+	}
+
+	private static void testONC(ImagingInstrumentConfig imagingConfig, String rootDir, String dataDir, String galleryDir)
+	{
+        assertEquals(imagingConfig.imagingInstruments.get(0).getSearchQuery().getRootPath(), rootDir);
+        assertEquals(imagingConfig.imagingInstruments.get(0).getSearchQuery().getDataPath(), dataDir);
+        assertEquals(imagingConfig.imagingInstruments.get(0).getSearchQuery().getGalleryPath(), galleryDir);
+        assertEquals(imagingConfig.imagingInstruments.get(0).spectralMode, SpectralImageMode.MONO);
+        assertEquals(imagingConfig.imagingInstruments.get(0).getType(), ImageType.ONC_IMAGE);
+        assertArrayEquals(imagingConfig.imagingInstruments.get(0).searchImageSources, new PointingSource[]{PointingSource.GASKELL});
+        assertEquals(imagingConfig.imagingInstruments.get(0).getInstrumentName(), Instrument.ONC);
+        assertEquals(imagingConfig.imagingInstruments.get(0).getOrientation(PointingSource.GASKELL).getRotation(), 0.0);
+        assertEquals(imagingConfig.imagingInstruments.get(0).getOrientation(PointingSource.GASKELL).getFlip(), ImageFlip.NONE);
+        assertEquals(imagingConfig.imagingInstruments.get(0).getOrientation(PointingSource.SPICE).getRotation(), 0.0);
+        assertEquals(imagingConfig.imagingInstruments.get(0).getOrientation(PointingSource.SPICE).getFlip(), ImageFlip.NONE);
+	}
+
+	private static void testTIR(ImagingInstrumentConfig imagingConfig, String rootDir, String dataDir, String galleryDir)
+	{
+        assertEquals(imagingConfig.imagingInstruments.get(1).getSearchQuery().getRootPath(), rootDir);
+        assertEquals(imagingConfig.imagingInstruments.get(1).getSearchQuery().getDataPath(), dataDir);
+        assertEquals(imagingConfig.imagingInstruments.get(1).getSearchQuery().getGalleryPath(), galleryDir);
+        assertEquals(imagingConfig.imagingInstruments.get(1).spectralMode, SpectralImageMode.MONO);
+        assertEquals(imagingConfig.imagingInstruments.get(1).getType(), ImageType.TIR_IMAGE);
+        assertArrayEquals(imagingConfig.imagingInstruments.get(1).searchImageSources, new PointingSource[]{PointingSource.SPICE});
+        assertEquals(imagingConfig.imagingInstruments.get(1).getInstrumentName(), Instrument.TIR);
+        assertEquals(imagingConfig.imagingInstruments.get(1).getOrientation(PointingSource.SPICE).getRotation(), 0.0);
+        assertEquals(imagingConfig.imagingInstruments.get(1).getOrientation(PointingSource.SPICE).getFlip(), ImageFlip.NONE);
+	}
+
+	private static void testBodyConfig(RyuguConfigs c)
+	{
+		assertEquals(c.body, ShapeModelBody.RYUGU);
+		assertEquals(c.type, BodyType.ASTEROID);
+		assertEquals(c.population, ShapeModelPopulation.NEO);
+		assertEquals(c.dataUsed, ShapeModelDataUsed.IMAGE_BASED);
+		assertEquals(c.getResolutionLabels(), ImmutableList.of(
+                "Very Low (12288 plates)", BodyViewConfig.DEFAULT_GASKELL_LABELS_PER_RESOLUTION[0], BodyViewConfig.DEFAULT_GASKELL_LABELS_PER_RESOLUTION[1],
+                BodyViewConfig.DEFAULT_GASKELL_LABELS_PER_RESOLUTION[2], BodyViewConfig.DEFAULT_GASKELL_LABELS_PER_RESOLUTION[3]));
+		assertEquals(c.getResolutionNumberElements(), ImmutableList.of(12288, BodyViewConfig.DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[0],
+				BodyViewConfig.DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[1], BodyViewConfig.DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[2],
+				BodyViewConfig.DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[3]));
+		assertEquals(c.getShapeModelFileExtension(), ".obj");
+
+	}
+
+	private static void testImages(ImagingInstrumentConfig imagingConfig)
+	{
+		assertArrayEquals(imagingConfig.imageSearchFilterNames, new String[] {});
+		assertArrayEquals(imagingConfig.imageSearchUserDefinedCheckBoxesNames, new String[] {});
+
+		assertEquals(imagingConfig.imageSearchDefaultStartDate, new GregorianCalendar(2018, 5, 1, 0, 0, 0).getTime());
+		assertEquals(imagingConfig.imageSearchDefaultEndDate, new GregorianCalendar(2021, 0, 31, 0, 0, 0).getTime());
+		assertEquals(imagingConfig.imageSearchDefaultMaxSpacecraftDistance, 120000.0);
+		assertEquals(imagingConfig.imageSearchDefaultMaxResolution, 300.0);
+	}
+
+	private static void testSpectra(SpectrumInstrumentConfig spectrumConfig, String rootOnServer, List<SpectrumInstrumentMetadata<SpectrumSearchSpec>> searchSpecs)
+	{
+		assertEquals(spectrumConfig.hasSpectralData, true);
+        assertEquals(spectrumConfig.spectralInstruments.get(0), new NIRS3());
+
+        assertEquals(spectrumConfig.hasHierarchicalSpectraSearch, true);
+        assertEquals(spectrumConfig.hasHypertreeBasedSpectraSearch, false);
+        assertEquals(spectrumConfig.spectraSearchDataSourceMap.get("NIRS3"), rootOnServer + "/nirs3/l2c/hypertree/dataSource.spectra");
+        assertEquals(spectrumConfig.spectrumMetadataFile, rootOnServer + "/spectraMetadata.json");
+
+        SpectrumInstrumentMetadataIO specIO = new SpectrumInstrumentMetadataIO("HAYABUSA2", searchSpecs);
+        assertEquals(spectrumConfig.hierarchicalSpectraSearchSpecification, specIO);
+	}
+
+	private static void testStateHistory(StateHistoryConfig stateHistoryConfig, String path)
+	{
+		assertEquals(stateHistoryConfig.hasStateHistory, true);
+		assertEquals(stateHistoryConfig.timeHistoryFile, path);
+	}
+
+	private static void testLidarConfig(LidarInstrumentConfig lidarConfig)
+	{
+		assertEquals(lidarConfig.hasLidarData, true);
+		assertEquals(lidarConfig.hasHypertreeBasedLidarSearch, true); // enable tree-based lidar searching
+        assertEquals(lidarConfig.lidarInstrumentName, Instrument.LASER);
+        assertEquals(lidarConfig.lidarSearchDefaultStartDate, new GregorianCalendar(2018, 0, 1, 0, 0, 0).getTime());
+        assertEquals(lidarConfig.lidarSearchDefaultEndDate, new GregorianCalendar(2020, 0, 1, 0, 0, 0).getTime());
+        assertEquals(lidarConfig.lidarSearchDataSourceMap.get("Hayabusa2"), "/ryugu/shared/lidar/search/hypertree/dataSource.lidar");
+        assertEquals(lidarConfig.lidarBrowseDataSourceMap.get("Hayabusa2"), "/ryugu/shared/lidar/browse/fileList.txt");
+        assertEquals(lidarConfig.lidarBrowseFileListResourcePath, "/ryugu/shared/lidar/browse/fileList.txt");
+
+        assertArrayEquals(lidarConfig.lidarBrowseXYZIndices, OlaCubesGenerator.xyzIndices);
+        assertArrayEquals(lidarConfig.lidarBrowseSpacecraftIndices, OlaCubesGenerator.scIndices);
+        assertEquals(lidarConfig.lidarBrowseIsSpacecraftInSphericalCoordinates, false);
+        assertEquals(lidarConfig.lidarBrowseTimeIndex, 26);
+        assertEquals(lidarConfig.lidarBrowseNoiseIndex, 62);
+        assertEquals(lidarConfig.lidarBrowseOutgoingIntensityIndex, 98);
+        assertEquals(lidarConfig.lidarBrowseReceivedIntensityIndex, 106);
+        assertEquals(lidarConfig.lidarBrowseIntensityEnabled, true);
+        assertEquals(lidarConfig.lidarBrowseNumberHeaderLines, 0);
+        assertEquals(lidarConfig.lidarBrowseIsInMeters, true);
+        assertEquals(lidarConfig.lidarBrowseIsBinary, true);
+        assertEquals(lidarConfig.lidarBrowseBinaryRecordSize, 186);
+        assertEquals(lidarConfig.lidarOffsetScale, 0.0005);
 	}
 
 }

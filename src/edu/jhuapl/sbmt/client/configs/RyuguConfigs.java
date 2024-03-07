@@ -1318,8 +1318,8 @@ public class RyuguConfigs extends SmallBodyViewConfig
 	{
 		imagingConfig.imageSearchFilterNames = new String[] {};
         imagingConfig.imageSearchUserDefinedCheckBoxesNames = new String[] {};
-        imagingConfig.imageSearchDefaultMaxSpacecraftDistance = 0;
-        imagingConfig.imageSearchDefaultMaxResolution = 0;
+//        imagingConfig.imageSearchDefaultMaxSpacecraftDistance = 0;
+//        imagingConfig.imageSearchDefaultMaxResolution = 0;
 
         imagingConfig.imageSearchDefaultStartDate = new GregorianCalendar(2018, 5, 1, 0, 0, 0).getTime();
         imagingConfig.imageSearchDefaultEndDate = new GregorianCalendar(2021, 0, 31, 0, 0, 0).getTime();
