@@ -88,7 +88,7 @@ class CometConfigsTest
 	static void setUpBeforeClass() throws Exception
 	{
 		String configInfoVersion = BasicConfigInfo.getConfigInfoVersion();
-
+		System.setProperty("edu.jhuapl.sbmt.mission", "TEST_APL_INTERNAL");
 		SettableMetadata allBodiesMetadata = SettableMetadata.of(Version.of(configInfoVersion));
 		Configuration.setAPLVersion(true);
 		Mission.configureMission();

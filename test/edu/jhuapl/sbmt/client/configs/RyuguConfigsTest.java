@@ -86,6 +86,7 @@ class RyuguConfigsTest
 	@BeforeAll
 	static void setUpBeforeClass() throws Exception
 	{
+		System.setProperty("edu.jhuapl.sbmt.mission", "TEST_APL_INTERNAL");
 		Configuration.setAPLVersion(true);
 		Mission.configureMission();
 		Configuration.authenticate();
