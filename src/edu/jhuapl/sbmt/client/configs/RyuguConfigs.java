@@ -165,10 +165,8 @@ public class RyuguConfigs extends SmallBodyViewConfig
 
 		imagingConfig.imagingInstruments = Lists.newArrayList(tir);
 
-		imagingConfig.imageSearchFilterNames = new String[]
-		{};
-		imagingConfig.imageSearchUserDefinedCheckBoxesNames = new String[]
-		{};
+		imagingConfig.imageSearchFilterNames = new String[]{};
+		imagingConfig.imageSearchUserDefinedCheckBoxesNames = new String[]{};
 		imagingConfig.imageSearchDefaultMaxSpacecraftDistance = 0;
 		imagingConfig.imageSearchDefaultMaxResolution = 0;
 
@@ -255,7 +253,7 @@ public class RyuguConfigs extends SmallBodyViewConfig
                 oncCam
         );
         c.hasMapmaker = false;
-        configureImages(imagingConfig);
+
         imagingConfig.imageSearchDefaultStartDate = new GregorianCalendar(2018, 6, 1, 0, 0, 0).getTime();
 
         configureStateHistory(stateHistoryConfig, "/ryugu/truth/history/timeHistory.bth");

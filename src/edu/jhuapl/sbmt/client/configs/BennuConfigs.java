@@ -158,7 +158,7 @@ public class BennuConfigs extends SmallBodyViewConfig
 		buildBennuOLAV20Config(configArray, publicOnly);
 		buildBennuOLAV20PublicConfig(configArray, publicOnly);
 		buildBennuOLAV20PTMConfig(configArray, publicOnly);
-		buildBennuOLAV20PTMConfig(configArray, publicOnly);
+		buildBennuOLAV20PTMPublicConfig(configArray, publicOnly);
 		buildBennuOLAV21Config(configArray, publicOnly);
 		buildBennuOLAV21PublicConfig(configArray, publicOnly);
 		buildBennuOLAV21PTMConfig(configArray, publicOnly);
@@ -1501,7 +1501,7 @@ public class BennuConfigs extends SmallBodyViewConfig
             );
             c.disableSpectra();
             c.addFeatureConfig(BasemapImageConfig.class, new BasemapImageConfig(c));
-            c.baseMapConfigName = "config_public.txt";
+            c.setBaseMapConfigName("config_public.txt");
             c.presentInMissions = PublicOnly;
             LidarInstrumentConfig lidarConfig = (LidarInstrumentConfig)c.getConfigForClass(LidarInstrumentConfig.class);
 
@@ -1613,7 +1613,7 @@ public class BennuConfigs extends SmallBodyViewConfig
             );
             c.disableSpectra();
             c.addFeatureConfig(BasemapImageConfig.class, new BasemapImageConfig(c));
-            c.baseMapConfigName = "config_public.txt";
+            c.setBaseMapConfigName("config_public.txt");
             c.presentInMissions = PublicOnly;
 
             LidarInstrumentConfig lidarConfig = (LidarInstrumentConfig)c.getConfigForClass(LidarInstrumentConfig.class);
@@ -1727,7 +1727,7 @@ public class BennuConfigs extends SmallBodyViewConfig
             c.disableSpectra();
             c.addFeatureConfig(BasemapImageConfig.class, new BasemapImageConfig(c));
             c.presentInMissions = PublicOnly;
-            c.baseMapConfigName = "config_public.txt";
+            c.setBaseMapConfigName("config_public.txt");
 
             LidarInstrumentConfig lidarConfig = (LidarInstrumentConfig)c.getConfigForClass(LidarInstrumentConfig.class);
 
@@ -1912,7 +1912,7 @@ public class BennuConfigs extends SmallBodyViewConfig
         {
             c.disableSpectra();
             c.presentInMissions = PublicOnly;
-            c.baseMapConfigName = "config_public.txt";
+            c.setBaseMapConfigName("config_public.txt");
 
             imagingConfig.imagingInstruments = Lists.newArrayList(
             		c.generatePolycamInstrument("bennu_olav20_polycam", "bennu_olav20_polycam", true, true, true),
@@ -2061,7 +2061,7 @@ public class BennuConfigs extends SmallBodyViewConfig
         {
             c.disableSpectra();
             c.addFeatureConfig(BasemapImageConfig.class, new BasemapImageConfig(c));
-            c.baseMapConfigName = "config_public.txt";
+            c.setBaseMapConfigName("config_public.txt");
 
             c.presentInMissions = PublicOnly;
 
@@ -2209,7 +2209,7 @@ public class BennuConfigs extends SmallBodyViewConfig
 	        c.disableSpectra();
 	        c.addFeatureConfig(BasemapImageConfig.class, new BasemapImageConfig(c));
 	        c.presentInMissions = PublicOnly;
-	        c.baseMapConfigName = "config_public.txt";
+	        c.setBaseMapConfigName("config_public.txt");
 
 	        imagingConfig.imagingInstruments = Lists.newArrayList(
 	        		c.generatePolycamInstrument("bennu_olav21_polycam", "bennu_olav21_polycam", true, true, true),
@@ -2354,7 +2354,7 @@ public class BennuConfigs extends SmallBodyViewConfig
         {
 	        c.disableSpectra();
 	        c.addFeatureConfig(BasemapImageConfig.class, new BasemapImageConfig(c));
-	        c.baseMapConfigName = "config_public.txt";
+	        c.setBaseMapConfigName("config_public.txt");
 
 	        c.presentInMissions = PublicOnly;
 
@@ -2409,10 +2409,10 @@ public class BennuConfigs extends SmallBodyViewConfig
         c.hasMapmaker = false;
 
         c.setLidarParameters(true);
-        ArrayList<Date> startStop = new ArrayList<Date>();
-        startStop = new ArrayList<Date>();
-        startStop.add(new GregorianCalendar(2019, 6, 1, 0, 0, 0).getTime());
-        startStop.add(new GregorianCalendar(2019, 7, 6, 0, 0, 0).getTime());
+//        ArrayList<Date> startStop = new ArrayList<Date>();
+//        startStop = new ArrayList<Date>();
+//        startStop.add(new GregorianCalendar(2019, 6, 1, 0, 0, 0).getTime());
+//        startStop.add(new GregorianCalendar(2019, 7, 6, 0, 0, 0).getTime());
         lidarConfig.lidarBrowseDataSourceMap.put("Default", c.rootDirOnServer + "/ola/l2a/fileListL2A.txt");
         lidarConfig.lidarBrowseFileListResourcePath = c.rootDirOnServer + "/ola/l2a/fileListL2A.txt";
         lidarConfig.lidarBrowseWithPointsDataSourceMap.put("Default", c.rootDirOnServer + "/ola/l2a/fileListL2A.txt");
@@ -2426,7 +2426,7 @@ public class BennuConfigs extends SmallBodyViewConfig
             new DBRunInfo(PointingSource.SPICE, Instrument.POLYCAM, ShapeModelBody.RQ36.toString(), "/bennu/spo-v54-spc/polycam/imagelist-fullpath-info.txt", "bennu_spov54_polycam"),
             new DBRunInfo(PointingSource.SPICE, Instrument.NAVCAM, ShapeModelBody.RQ36.toString(), "/bennu/spo-v54-spc/navcam/imagelist-fullpath-info.txt", "bennu_spov54_navcam")
         };
-
+        System.out.println("BennuConfigs: buildBennuSPOV54Config: 54 spectrum " + spectrumConfig.hasSpectralData);
         if (!publicOnly)
             configArray.add(c);
     }
@@ -2448,7 +2448,7 @@ public class BennuConfigs extends SmallBodyViewConfig
         c.rotationRate = 4.0626E-4;
         c.bodyReferencePotential = -0.02538555084803482;
         c.presentInMissions = PublicOnly;
-        c.baseMapConfigName = "config_public.txt";
+        c.setBaseMapConfigName("config_public.txt");
 
         setupFeatures(c);
         c.setBodyParameters();
@@ -2464,7 +2464,7 @@ public class BennuConfigs extends SmallBodyViewConfig
 
         c.setSpectrumParameters();
         spectrumConfig.hasHypertreeBasedSpectraSearch = false;
-        c.disableSpectra();
+//        c.disableSpectra();
 
         c.generateStateHistoryParameters();
 
@@ -2496,9 +2496,10 @@ public class BennuConfigs extends SmallBodyViewConfig
       //public version
         if (publicOnly)
 	    {
+        	System.out.println("BennuConfigs: buildBennuSPOV54PublicConfig: 54 Public");
             c.disableSpectra();
             c.presentInMissions = PublicOnly;
-            c.baseMapConfigName = "config_public.txt";
+            c.setBaseMapConfigName("config_public.txt");
 
             imagingConfig.imagingInstruments = Lists.newArrayList(c.generatePolycamInstrument("bennu_spov54_polycam", "bennu_spov54_polycam", true, true, true),
                      c.generateMapcamInstrument("bennu_spov54_mapcam", "bennu_spov54_mapcam", true, true, true),
@@ -2677,15 +2678,15 @@ public class BennuConfigs extends SmallBodyViewConfig
 	{
 		LidarInstrumentConfig lidarConfig = (LidarInstrumentConfig)getConfigForClass(LidarInstrumentConfig.class);
 		lidarConfig.hasLidarData = true;
-		lidarConfig. hasHypertreeBasedLidarSearch = hasHypertree; // enable tree-based lidar searching
-		lidarConfig. lidarInstrumentName = Instrument.OLA;
-		lidarConfig. lidarSearchDefaultStartDate = new GregorianCalendar(2000, 0, 1, 0, 0, 0).getTime();
-		lidarConfig. lidarSearchDefaultEndDate = new GregorianCalendar(2050, 0, 1, 0, 0, 0).getTime();
-		lidarConfig. lidarSearchDataSourceMap = new LinkedHashMap<>();
-		lidarConfig. lidarBrowseDataSourceMap = new LinkedHashMap<>();
-		lidarConfig. lidarBrowseDataSourceMap.put("Default", rootDirOnServer + "/ola/browse/fileListv2.txt");
-		lidarConfig. lidarBrowseFileListResourcePath = rootDirOnServer + "/ola/browse/fileListv2.txt";
-		lidarConfig. lidarBrowseWithPointsDataSourceMap.put("Default", rootDirOnServer + "/ola/browse/fileListv2.txt");
+		lidarConfig.hasHypertreeBasedLidarSearch = hasHypertree; // enable tree-based lidar searching
+		lidarConfig.lidarInstrumentName = Instrument.OLA;
+		lidarConfig.lidarSearchDefaultStartDate = new GregorianCalendar(2000, 0, 1, 0, 0, 0).getTime();
+		lidarConfig.lidarSearchDefaultEndDate = new GregorianCalendar(2050, 0, 1, 0, 0, 0).getTime();
+		lidarConfig.lidarSearchDataSourceMap = new LinkedHashMap<>();
+		lidarConfig.lidarBrowseDataSourceMap = new LinkedHashMap<>();
+		lidarConfig.lidarBrowseDataSourceMap.put("Default", rootDirOnServer + "/ola/browse/fileListv2.txt");
+		lidarConfig.lidarBrowseFileListResourcePath = rootDirOnServer + "/ola/browse/fileListv2.txt";
+		lidarConfig.lidarBrowseWithPointsDataSourceMap.put("Default", rootDirOnServer + "/ola/browse/fileListv2.txt");
 
          if (hasHypertree)
          {

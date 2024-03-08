@@ -79,7 +79,7 @@ import edu.jhuapl.sbmt.stateHistory.config.StateHistoryConfigIO;
 
 import crucible.crust.metadata.impl.InstanceGetter;
 
-class BennuConfigsTest
+class BennuConfigsPublicTest
 {
 	private static final Mission[] OREXClients = new Mission[] { //
             Mission.OSIRIS_REX, Mission.OSIRIS_REX_TEST, Mission.OSIRIS_REX_DEPLOY, //
@@ -162,7 +162,7 @@ class BennuConfigsTest
 		FeatureConfigIOFactory.registerFeatureConfigIO(StateHistoryConfig.class.getSimpleName(), new StateHistoryConfigIO());
 
 		ConfigArrayList<IBodyViewConfig> builtInConfigs = SmallBodyViewConfig.getBuiltInConfigs();
-		BennuConfigs.initialize(builtInConfigs, false);
+		BennuConfigs.initialize(builtInConfigs, true);
 
 //		SmallBodyViewConfig.initializeWithStaticConfigs(publishedDataOnly);
 		for (IBodyViewConfig each : SmallBodyViewConfig.getBuiltInConfigs())
@@ -188,142 +188,57 @@ class BennuConfigsTest
         return result;
     }
 
-	@Test void testEarthBlenderConfig()
+	@Test void testBennuSPC20181217PublicConfig()
 	{
 		fail("Not yet implemented");
 	}
 
-	@Test void testEarthWGS84Config()
+	@Test void testBennuSPC20181227PublicConfig()
 	{
 		fail("Not yet implemented");
 	}
 
-	@Test void testBennuNolanConfig()
+	@Test void testBennuSPC20190121PublicConfig()
 	{
 		fail("Not yet implemented");
 	}
 
-	@Test void testBennuV3GaskellConfig()
+	@Test void testBennuSPC20190414PublicConfig()
 	{
 		fail("Not yet implemented");
 	}
 
-	@Test void testBennuV4GaskellConfig()
+	@Test void testBennuSPC20190612PublicConfig()
 	{
 		fail("Not yet implemented");
 	}
 
-	@Test void testBennuSPC20181109bConfig()
+	@Test void testBennuSPC20190828PublicConfig()
 	{
 		fail("Not yet implemented");
 	}
 
-	@Test void testBennuSPC20181115Config()
+	@Test void testBennuOLAV20PublicConfig()
 	{
 		fail("Not yet implemented");
 	}
 
-	@Test void testBennuSPC20181116Config()
+	@Test void testBennuOLAV20PTMPublicConfig()
 	{
 		fail("Not yet implemented");
 	}
 
-	@Test void testBennuSPC20181123bConfig()
+	@Test void testBennuOLAV21PublicConfig()
 	{
 		fail("Not yet implemented");
 	}
 
-	@Test void testBennuSPC20181202Config()
+	@Test void testBennuOLAV21PTMPublicConfig()
 	{
 		fail("Not yet implemented");
 	}
 
-	@Test void testBennuSPC20181206Config()
-	{
-		fail("Not yet implemented");
-	}
-
-	@Test void testBennuSPC20181217Config()
-	{
-		fail("Not yet implemented");
-	}
-
-	@Test void testBennuSPC20181227Config()
-	{
-		fail("Not yet implemented");
-	}
-
-	@Test void testBennuSPC20190105Config()
-	{
-		fail("Not yet implemented");
-	}
-
-	@Test void testBennuSPC20190114Config()
-	{
-		fail("Not yet implemented");
-	}
-
-	@Test void testBennuSPC20190117Config()
-	{
-		fail("Not yet implemented");
-	}
-
-	@Test void testBennuSPC20190121Config()
-	{
-		fail("Not yet implemented");
-	}
-
-	@Test void testBennuSPC20190207aConfig()
-	{
-		fail("Not yet implemented");
-	}
-
-	@Test void testBennuSPC20190207bConfig()
-	{
-		fail("Not yet implemented");
-	}
-
-	@Test void testBennuSPC20190414Config()
-	{
-		fail("Not yet implemented");
-	}
-
-	@Test void testBennuSPC20190612Config()
-	{
-		fail("Not yet implemented");
-	}
-
-	@Test void testBennuSPC20190828Config()
-	{
-		fail("Not yet implemented");
-	}
-
-	@Test void testBennuSPC20191027Config()
-	{
-		fail("Not yet implemented");
-	}
-
-	@Test void testBennuOLAV20Config()
-	{
-		fail("Not yet implemented");
-	}
-
-	@Test void testBennuOLAV20PTMConfig()
-	{
-		fail("Not yet implemented");
-	}
-
-	@Test void testBennuOLAV21Config()
-	{
-		fail("Not yet implemented");
-	}
-
-	@Test void testBennuOLAV21PTMConfig()
-	{
-		fail("Not yet implemented");
-	}
-
-	@Test void testBennuSPOV54Config()
+	@Test void testBennuSPOV54PublicConfig()
 	{
 		BennuConfigs c = (BennuConfigs)SmallBodyViewConfig.getConfig(ShapeModelBody.RQ36, ShapeModelType.provide("SPO-v54"));
 		FeatureConfigIOFactory.getIOForClassType(LidarInstrumentConfig.class.getSimpleName()).setViewConfig((ViewConfig)c);
@@ -346,7 +261,6 @@ class BennuConfigsTest
 
         testBodyParameters(c);
         ImagingInstrumentConfig imagingConfig = (ImagingInstrumentConfig)c.getConfigForClass(ImagingInstrumentConfig.class);
-        SpectrumInstrumentConfig spectrumConfig = (SpectrumInstrumentConfig)c.getConfigForClass(SpectrumInstrumentConfig.class);
         LidarInstrumentConfig lidarConfig = (LidarInstrumentConfig)c.getConfigForClass(LidarInstrumentConfig.class);
         StateHistoryConfig stateHistoryConfig = (StateHistoryConfig)c.getConfigForClass(StateHistoryConfig.class);
 
@@ -356,23 +270,29 @@ class BennuConfigsTest
 //        );
 
 
-        System.out.println("BennuConfigsTest: testBennuSPOV54Config: spec config " + spectrumConfig.hasSpectralData);
-        testSpectrumParameters(spectrumConfig, c.rootDirOnServer, true);
+//        testSpectrumParameters(spectrumConfig, c.rootDirOnServer, false);
         testStateHistoryParameters(c, stateHistoryConfig);
         assertEquals(c.hasMapmaker, false);
 
         testLidarParameters(lidarConfig, true, c.rootDirOnServer, "/ola/l2a/fileListL2A.txt");
 
-//        ArrayList<Date> startStop = new ArrayList<Date>();
-//        startStop = new ArrayList<Date>();
+        ArrayList<Date> startStop = new ArrayList<Date>();
+        startStop = new ArrayList<Date>();
+        startStop.add(new GregorianCalendar(2019, 6, 1, 0, 0, 0).getTime());
+        startStop.add(new GregorianCalendar(2019, 7, 6, 0, 0, 0).getTime());
 //        assertEquals(startStop.get(0), new GregorianCalendar(2019, 6, 1, 0, 0, 0).getTime());
 //        assertEquals(startStop.get(1), new GregorianCalendar(2019, 7, 6, 0, 0, 0).getTime());
+
+        assertEquals(lidarConfig.orexSearchTimeMap.get("SPOv54"), startStop);
+        assertEquals(lidarConfig.lidarSearchDataSourceMap.get("SPOv54"), c.rootDirOnServer + "/ola/search/olav54/dataSource.lidar");
+
 //        assertEquals(lidarConfig.lidarBrowseDataSourceMap.get("Default"), c.rootDirOnServer + "/ola/l2a/fileListL2A.txt");
 //        assertEquals(lidarConfig.lidarBrowseFileListResourcePath, c.rootDirOnServer + "/ola/l2a/fileListL2A.txt");
 //        assertEquals(lidarConfig.lidarBrowseWithPointsDataSourceMap.get("Default"), c.rootDirOnServer + "/ola/l2a/fileListL2A.txt");
 
-        assertArrayEquals(c.presentInMissions, ClientsWithOREXModels);
+        assertArrayEquals(c.presentInMissions, PublicOnly);
         assertArrayEquals(c.defaultForMissions, new Mission[] {});
+        assertEquals(c.getBaseMapConfigName(), "config_public.txt");
 
         assertArrayEquals(c.databaseRunInfos, new DBRunInfo[]
         {
@@ -460,41 +380,41 @@ class BennuConfigsTest
 		assertEquals(lidarConfig.lidarBrowseFileListResourcePath,  rootDirOnServer + lidarBrowseList);
 		assertEquals(lidarConfig.lidarBrowseWithPointsDataSourceMap.get("Default"), rootDirOnServer + lidarBrowseList);
 
-         if (hasHypertree)
-         {
-	         /*
-	          * search times split into phases
-	          */
-	         ArrayList<Date> startStop = new ArrayList<Date>();
-	         startStop.add(lidarConfig.lidarSearchDefaultStartDate);
-	         startStop.add(lidarConfig.lidarSearchDefaultEndDate);
-	         assertEquals(lidarConfig.orexSearchTimeMap.get("Default"), startStop);
-
-	         startStop = new ArrayList<Date>();
-	         startStop.add(lidarConfig.lidarSearchDefaultStartDate);
-	         startStop.add(new GregorianCalendar(2019, 0, 1, 0, 0, 0).getTime());
-	         assertEquals(lidarConfig.orexSearchTimeMap.get("Preliminary"), startStop);
-
-	         startStop = new ArrayList<Date>();
-	         startStop.add(new GregorianCalendar(2019, 0, 1, 0, 0, 0).getTime());
-	         startStop.add(new GregorianCalendar(2019, 5, 9, 0, 0, 0).getTime());
-	         assertEquals(lidarConfig.orexSearchTimeMap.get("Detailed"), startStop);
-
-	         startStop = new ArrayList<Date>();
-	         startStop.add(new GregorianCalendar(2019, 5, 9, 0, 0, 0).getTime());
-	         startStop.add(new GregorianCalendar(2019, 8, 10, 0, 0, 0).getTime());
-	         assertEquals(lidarConfig.orexSearchTimeMap.get("OrbB"), startStop);
-
-	         startStop = new ArrayList<Date>();
-	         startStop.add(new GregorianCalendar(2019, 8, 10, 0, 0, 0).getTime());
-	         startStop.add(lidarConfig.lidarSearchDefaultEndDate);
-	         assertEquals(lidarConfig.orexSearchTimeMap.get("Recon"), startStop);
-
-	         assertEquals(lidarConfig.lidarSearchDataSourceMap.get("Preliminary"), rootDirOnServer + "/ola/search/preliminary/dataSource.lidar");
-	         assertEquals(lidarConfig.lidarSearchDataSourceMap.get("Detailed"), rootDirOnServer + "/ola/search/detailed/dataSource.lidar");
-	         assertEquals(lidarConfig.lidarSearchDataSourceMap.get("OrbB"), rootDirOnServer + "/ola/search/orbB/dataSource.lidar");
-	         assertEquals(lidarConfig.lidarSearchDataSourceMap.get("Recon"), rootDirOnServer + "/ola/search/recon/dataSource.lidar");
-         }
+//         if (hasHypertree)
+//         {
+//	         /*
+//	          * search times split into phases
+//	          */
+//	         ArrayList<Date> startStop = new ArrayList<Date>();
+//	         startStop.add(lidarConfig.lidarSearchDefaultStartDate);
+//	         startStop.add(lidarConfig.lidarSearchDefaultEndDate);
+//	         assertEquals(lidarConfig.orexSearchTimeMap.get("Default"), startStop);
+//
+//	         startStop = new ArrayList<Date>();
+//	         startStop.add(lidarConfig.lidarSearchDefaultStartDate);
+//	         startStop.add(new GregorianCalendar(2019, 0, 1, 0, 0, 0).getTime());
+//	         assertEquals(lidarConfig.orexSearchTimeMap.get("Preliminary"), startStop);
+//
+//	         startStop = new ArrayList<Date>();
+//	         startStop.add(new GregorianCalendar(2019, 0, 1, 0, 0, 0).getTime());
+//	         startStop.add(new GregorianCalendar(2019, 5, 9, 0, 0, 0).getTime());
+//	         assertEquals(lidarConfig.orexSearchTimeMap.get("Detailed"), startStop);
+//
+//	         startStop = new ArrayList<Date>();
+//	         startStop.add(new GregorianCalendar(2019, 5, 9, 0, 0, 0).getTime());
+//	         startStop.add(new GregorianCalendar(2019, 8, 10, 0, 0, 0).getTime());
+//	         assertEquals(lidarConfig.orexSearchTimeMap.get("OrbB"), startStop);
+//
+//	         startStop = new ArrayList<Date>();
+//	         startStop.add(new GregorianCalendar(2019, 8, 10, 0, 0, 0).getTime());
+//	         startStop.add(lidarConfig.lidarSearchDefaultEndDate);
+//	         assertEquals(lidarConfig.orexSearchTimeMap.get("Recon"), startStop);
+//
+//	         assertEquals(lidarConfig.lidarSearchDataSourceMap.get("Preliminary"), rootDirOnServer + "/ola/search/preliminary/dataSource.lidar");
+//	         assertEquals(lidarConfig.lidarSearchDataSourceMap.get("Detailed"), rootDirOnServer + "/ola/search/detailed/dataSource.lidar");
+//	         assertEquals(lidarConfig.lidarSearchDataSourceMap.get("OrbB"), rootDirOnServer + "/ola/search/orbB/dataSource.lidar");
+//	         assertEquals(lidarConfig.lidarSearchDataSourceMap.get("Recon"), rootDirOnServer + "/ola/search/recon/dataSource.lidar");
+//         }
 
          assertEquals(lidarConfig.lidarBrowseXYZIndices, OlaCubesGenerator.xyzIndices);
          assertEquals(lidarConfig.lidarBrowseSpacecraftIndices, OlaCubesGenerator.scIndices);

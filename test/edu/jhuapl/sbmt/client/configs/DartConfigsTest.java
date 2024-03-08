@@ -141,8 +141,249 @@ class DartConfigsTest
 
         return result;
     }
+
 	@Test
-	void test()
+	void testDidymosIdealImpact1_20200629_v01()
+	{
+		fail("Not yet implemented");
+	}
+
+	@Test
+	void testDidymosIdealImpact2_20200629_v01()
+	{
+		fail("Not yet implemented");
+	}
+
+	@Test
+	void testDidymosIdealImpact3_20200629_v01()
+	{
+		fail("Not yet implemented");
+	}
+
+	@Test
+	void testDidymosIdealImpact4_20200629_v01()
+	{
+		fail("Not yet implemented");
+	}
+
+	@Test
+	void testDidymosIdealImpact4RA_20200629_v01()
+	{
+		fail("Not yet implemented");
+	}
+
+	@Test
+	void testDidymosIdealImpact5_20200629_v01()
+	{
+		fail("Not yet implemented");
+	}
+
+	@Test
+	void testDidymosIdealImpact6_20200629_v01()
+	{
+		fail("Not yet implemented");
+	}
+
+	@Test
+	void testDidymosIdealImpact9_20200629_v01()
+	{
+		fail("Not yet implemented");
+	}
+
+	@Test
+	void testDimorphosIdealImpact1_20200629_v01()
+	{
+		fail("Not yet implemented");
+	}
+
+	@Test
+	void testDimorphosIdealImpact2_20200629_v01()
+	{
+		fail("Not yet implemented");
+	}
+
+	@Test
+	void testDimorphosIdealImpact3_20200629_v01()
+	{
+		fail("Not yet implemented");
+	}
+
+	@Test
+	void testDimorphosIdealImpact4_20200629_v01()
+	{
+		fail("Not yet implemented");
+	}
+
+	@Test
+	void testDimorphosIdealImpact4RA_20200629_v01()
+	{
+		fail("Not yet implemented");
+	}
+
+	@Test
+	void testDimorphosIdealImpact5_20200629_v01()
+	{
+		fail("Not yet implemented");
+	}
+
+	@Test
+	void testDimorphosIdealImpact6_20200629_v01()
+	{
+		fail("Not yet implemented");
+	}
+
+	@Test
+	void testDimorphosIdealImpact9_20200629_v01()
+	{
+		fail("Not yet implemented");
+	}
+
+	@Test
+	void testDidymosErrorImpact1_20200629_v01()
+	{
+		fail("Not yet implemented");
+	}
+
+	@Test
+	void testDidymosErrorImpact2_20200629_v01()
+	{
+		fail("Not yet implemented");
+	}
+
+	@Test
+	void testDidymosErrorImpact3_20200629_v01()
+	{
+		fail("Not yet implemented");
+	}
+
+	@Test
+	void testDidymosErrorImpact4_20200629_v01()
+	{
+		fail("Not yet implemented");
+	}
+
+	@Test
+	void testDidymosErrorImpact4RA_20200629_v01()
+	{
+		fail("Not yet implemented");
+	}
+
+	@Test
+	void testDidymosErrorImpact5_20200629_v01()
+	{
+		fail("Not yet implemented");
+	}
+
+	@Test
+	void testDidymosErrorImpact6_20200629_v01()
+	{
+		fail("Not yet implemented");
+	}
+
+	@Test
+	void testDidymosErrorImpact9_20200629_v01()
+	{
+		fail("Not yet implemented");
+	}
+
+	@Test
+	void testDimorphosErrorImpact1_20200629_v01()
+	{
+		fail("Not yet implemented");
+	}
+
+	@Test
+	void testDimorphosErrorImpact2_20200629_v01()
+	{
+		fail("Not yet implemented");
+	}
+
+	@Test
+	void testDimorphosErrorImpact3_20200629_v01()
+	{
+		fail("Not yet implemented");
+	}
+
+	@Test
+	void testDimorphosErrorImpact4_20200629_v01()
+	{
+		fail("Not yet implemented");
+	}
+
+	@Test
+	void testDimorphosErrorImpact4RA_20200629_v01()
+	{
+		fail("Not yet implemented");
+	}
+
+	@Test
+	void testDimorphosErrorImpact5_20200629_v01()
+	{
+		fail("Not yet implemented");
+	}
+
+	@Test
+	void testDimorphosErrorImpact6_20200629_v01()
+	{
+		fail("Not yet implemented");
+	}
+
+	@Test
+	void testDimorphosErrorImpact9_20200629_v01()
+	{
+		fail("Not yet implemented");
+	}
+
+	@Test
+	void testDimorphosv002()
+	{
+
+	}
+
+	@Test
+	void testDimorphosv003()
+	{
+		fail("Not yet implemented");
+	}
+
+	@Test
+	void testDimorphosv004()
+	{
+		fail("Not yet implemented");
+	}
+
+	@Test
+	void testDidymosv001()
+	{
+		fail("Not yet implemented");
+	}
+
+	@Test
+	void testDidymosv003()
+	{
+		fail("Not yet implemented");
+	}
+
+	@Test
+	void testDimorphosv003Didymosv001()
+	{
+		fail("Not yet implemented");
+	}
+
+	@Test
+	void testDimorphosv004Didymosv003()
+	{
+		fail("Not yet implemented");
+	}
+
+	@Test
+	void testDidymosv001Dimorphosv003()
+	{
+		fail("Not yet implemented");
+	}
+
+	@Test
+	void testDidymosv003Dimorphosv004()
 	{
 		fail("Not yet implemented");
 	}

@@ -2,7 +2,6 @@ package edu.jhuapl.sbmt.client.configs;
 
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.fail;
 
 import java.util.GregorianCalendar;
 import java.util.List;
@@ -171,7 +170,57 @@ class RyuguConfigsTest
         FeatureConfigIOFactory.getIOForClassType(ImagingInstrumentConfig.class.getSimpleName()).setViewConfig((ViewConfig)c);
         FeatureConfigIOFactory.getIOForClassType(BasemapImageConfig.class.getSimpleName()).setViewConfig((ViewConfig)c);
         FeatureConfigIOFactory.getIOForClassType(StateHistoryConfig.class.getSimpleName()).setViewConfig((ViewConfig)c);
-        fail("Not yet implemented");
+
+        assertEquals(c.body, ShapeModelBody.EARTH);
+		assertEquals(c.type, BodyType.PLANETS_AND_SATELLITES);
+		assertEquals(c.population, ShapeModelPopulation.EARTH);
+		assertEquals(c.dataUsed, ShapeModelDataUsed.WGS84);
+		assertEquals(c.getResolutionLabels(), ImmutableList.of(BodyViewConfig.DEFAULT_GASKELL_LABELS_PER_RESOLUTION[0]));
+		assertEquals(c.getResolutionNumberElements(), ImmutableList.of(BodyViewConfig.DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[0]));
+		assertEquals(c.getShapeModelFileExtension(), ".vtk");
+
+        assertEquals(c.author, ShapeModelType.JAXA_SFM_v20180627);
+        assertEquals(c.modelLabel, "Haybusa2-testing");
+        assertEquals(c.rootDirOnServer, "/earth/hayabusa2");
+        assertEquals(c.hasColoringData, false);
+        assertEquals(c.density, 0.00); // (g/cm^3)
+        assertEquals(c.rotationRate, 0.0); // (rad/sec)
+
+        ImagingInstrumentConfig imagingConfig = (ImagingInstrumentConfig)c.getConfigForClass(ImagingInstrumentConfig.class);
+        SpectrumInstrumentConfig spectrumConfig = (SpectrumInstrumentConfig) c.getConfigForClass(SpectrumInstrumentConfig.class);
+        LidarInstrumentConfig lidarConfig = (LidarInstrumentConfig)c.getConfigForClass(LidarInstrumentConfig.class);
+
+		assertEquals(imagingConfig.imagingInstruments.size(), 1);
+
+
+		assertEquals(imagingConfig.imagingInstruments.get(0).getSearchQuery().getRootPath(), "/earth/hayabusa2/tir/");
+        assertEquals(imagingConfig.imagingInstruments.get(0).getSearchQuery().getDataPath(), "/earth/hayabusa2/tir/images");
+        assertEquals(imagingConfig.imagingInstruments.get(0).getSearchQuery().getGalleryPath(), null);
+        assertEquals(imagingConfig.imagingInstruments.get(0).spectralMode, SpectralImageMode.MONO);
+        assertEquals(imagingConfig.imagingInstruments.get(0).getType(), ImageType.TIR_IMAGE);
+        assertArrayEquals(imagingConfig.imagingInstruments.get(0).searchImageSources, new PointingSource[]{PointingSource.SPICE});
+        assertEquals(imagingConfig.imagingInstruments.get(0).getInstrumentName(), Instrument.TIR);
+        assertEquals(imagingConfig.imagingInstruments.get(0).getOrientation(PointingSource.SPICE).getRotation(), 0.0);
+        assertEquals(imagingConfig.imagingInstruments.get(0).getOrientation(PointingSource.SPICE).getFlip(), ImageFlip.NONE);
+
+
+        assertArrayEquals(imagingConfig.imageSearchFilterNames, new String[]{});
+        assertArrayEquals(imagingConfig.imageSearchUserDefinedCheckBoxesNames, new String[]{});
+
+        assertEquals(c.hasMapmaker, false);
+        assertEquals(imagingConfig.imageSearchDefaultStartDate, new GregorianCalendar(2015, 11, 1, 0, 0, 0).getTime());
+        assertEquals(imagingConfig.imageSearchDefaultEndDate, new GregorianCalendar(2015, 11, 31, 0, 0, 0).getTime());
+        assertEquals(imagingConfig.imageSearchDefaultMaxSpacecraftDistance, 120000.0);
+        assertEquals(imagingConfig.imageSearchDefaultMaxResolution, 300.0);
+
+		assertEquals(spectrumConfig.hasSpectralData, true);
+		assertEquals(spectrumConfig.spectralInstruments.get(0), new NIRS3());
+
+
+        assertEquals(lidarConfig.hasLidarData, false);
+
+        assertArrayEquals(c.presentInMissions, new Mission[] {});
+        assertArrayEquals(c.defaultForMissions, new Mission[] {  });
 	}
 
 	@Test
@@ -183,7 +232,56 @@ class RyuguConfigsTest
         FeatureConfigIOFactory.getIOForClassType(ImagingInstrumentConfig.class.getSimpleName()).setViewConfig((ViewConfig)c);
         FeatureConfigIOFactory.getIOForClassType(BasemapImageConfig.class.getSimpleName()).setViewConfig((ViewConfig)c);
         FeatureConfigIOFactory.getIOForClassType(StateHistoryConfig.class.getSimpleName()).setViewConfig((ViewConfig)c);
-        fail("Not yet implemented");
+
+        assertEquals(c.body, ShapeModelBody.RYUGU);
+		assertEquals(c.type, BodyType.ASTEROID);
+		assertEquals(c.population, ShapeModelPopulation.NEO);
+		assertEquals(c.dataUsed, ShapeModelDataUsed.SIMULATED);
+		assertEquals(c.getResolutionLabels(), ImmutableList.of("Low (54504 plates)", "High (5450420 plates)"));
+		assertEquals(c.getResolutionNumberElements(), ImmutableList.of(54504, 5450420));
+		assertEquals(c.getShapeModelFileExtension(), ".obj");
+
+        assertEquals(c.author, ShapeModelType.TRUTH);
+        assertEquals(c.modelLabel, "H2 Simulated Truth");
+        assertEquals(c.rootDirOnServer, "/ryugu/truth");
+        assertEquals(c.hasColoringData, true);
+        assertEquals(c.density, 0.00); // (g/cm^3)
+        assertEquals(c.rotationRate, 0.0); // (rad/sec)
+
+        ImagingInstrumentConfig imagingConfig = (ImagingInstrumentConfig)c.getConfigForClass(ImagingInstrumentConfig.class);
+        LidarInstrumentConfig lidarConfig = (LidarInstrumentConfig)c.getConfigForClass(LidarInstrumentConfig.class);
+        StateHistoryConfig stateHistoryConfig = (StateHistoryConfig)c.getConfigForClass(StateHistoryConfig.class);
+
+		assertEquals(imagingConfig.imagingInstruments.size(), 1);
+
+        assertEquals(imagingConfig.imagingInstruments.get(0).getSearchQuery().getRootPath(), "/ryugu/truth/onc");
+        assertEquals(imagingConfig.imagingInstruments.get(0).getSearchQuery().getDataPath(), "/ryugu/truth/onc/images");
+        assertEquals(imagingConfig.imagingInstruments.get(0).getSearchQuery().getGalleryPath(), "/ryugu/truth/onc/gallery");
+        assertEquals(imagingConfig.imagingInstruments.get(0).spectralMode, SpectralImageMode.MONO);
+        assertEquals(imagingConfig.imagingInstruments.get(0).getType(), ImageType.ONC_TRUTH_IMAGE);
+        assertArrayEquals(imagingConfig.imagingInstruments.get(0).searchImageSources, new PointingSource[]{PointingSource.SPICE});
+        assertEquals(imagingConfig.imagingInstruments.get(0).getInstrumentName(), Instrument.ONC);
+        assertEquals(imagingConfig.imagingInstruments.get(0).getOrientation(PointingSource.SPICE).getRotation(), 90.0);
+        assertEquals(imagingConfig.imagingInstruments.get(0).getOrientation(PointingSource.SPICE).getFlip(), ImageFlip.NONE);
+
+
+        assertEquals(c.hasMapmaker, false);
+
+        assertArrayEquals(imagingConfig.imageSearchFilterNames, new String[] {});
+		assertArrayEquals(imagingConfig.imageSearchUserDefinedCheckBoxesNames, new String[] {});
+
+		assertEquals(imagingConfig.imageSearchDefaultStartDate, new GregorianCalendar(2018, 6, 1, 0, 0, 0).getTime());
+		assertEquals(imagingConfig.imageSearchDefaultEndDate, null);
+		assertEquals(imagingConfig.imageSearchDefaultMaxSpacecraftDistance, 0);
+		assertEquals(imagingConfig.imageSearchDefaultMaxResolution, 0);
+
+
+        testStateHistory(stateHistoryConfig, "/ryugu/truth/history/timeHistory.bth");
+        testLidarConfig(lidarConfig);
+
+        assertArrayEquals(c.presentInMissions, new Mission[] {Mission.APL_INTERNAL, Mission.TEST_APL_INTERNAL,Mission.STAGE_APL_INTERNAL,
+				Mission.HAYABUSA2_DEPLOY, Mission.HAYABUSA2_DEV});
+        assertArrayEquals(c.defaultForMissions, new Mission[] {  });
 	}
 
 	@Test
@@ -195,7 +293,54 @@ class RyuguConfigsTest
         FeatureConfigIOFactory.getIOForClassType(ImagingInstrumentConfig.class.getSimpleName()).setViewConfig((ViewConfig)c);
         FeatureConfigIOFactory.getIOForClassType(BasemapImageConfig.class.getSimpleName()).setViewConfig((ViewConfig)c);
         FeatureConfigIOFactory.getIOForClassType(StateHistoryConfig.class.getSimpleName()).setViewConfig((ViewConfig)c);
-        fail("Not yet implemented");
+
+        assertEquals(c.body, ShapeModelBody.RYUGU);
+		assertEquals(c.type, BodyType.ASTEROID);
+		assertEquals(c.population, ShapeModelPopulation.NEO);
+		assertEquals(c.dataUsed, ShapeModelDataUsed.SIMULATED);
+		assertEquals(c.getResolutionLabels(), ImmutableList.of(
+                BodyViewConfig.DEFAULT_GASKELL_LABELS_PER_RESOLUTION[0], BodyViewConfig.DEFAULT_GASKELL_LABELS_PER_RESOLUTION[1],
+                BodyViewConfig.DEFAULT_GASKELL_LABELS_PER_RESOLUTION[2], BodyViewConfig.DEFAULT_GASKELL_LABELS_PER_RESOLUTION[3]));
+		assertEquals(c.getResolutionNumberElements(), ImmutableList.of(BodyViewConfig.DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[0],
+				BodyViewConfig.DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[1], BodyViewConfig.DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[2],
+				BodyViewConfig.DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[3]));
+		assertEquals(c.getShapeModelFileExtension(), ".obj");
+
+        assertEquals(c.author, ShapeModelType.GASKELL);
+        assertEquals(c.modelLabel, "H2 Simulated SPC");
+        assertEquals(c.rootDirOnServer, "/ryugu/gaskell");
+        assertEquals(c.hasColoringData, true);
+        assertEquals(c.density, 0.00); // (g/cm^3)
+        assertEquals(c.rotationRate, 0.0); // (rad/sec)
+
+        ImagingInstrumentConfig imagingConfig = (ImagingInstrumentConfig)c.getConfigForClass(ImagingInstrumentConfig.class);
+        LidarInstrumentConfig lidarConfig = (LidarInstrumentConfig)c.getConfigForClass(LidarInstrumentConfig.class);
+        StateHistoryConfig stateHistoryConfig = (StateHistoryConfig)c.getConfigForClass(StateHistoryConfig.class);
+
+		assertEquals(imagingConfig.imagingInstruments.size(), 1);
+
+//        testONC(imagingConfig, "/ryugu/gaskell/onc", "/ryugu/gaskell/onc/images", "/ryugu/gaskell/onc/gallery");
+
+        assertEquals(imagingConfig.imagingInstruments.get(0).getSearchQuery().getRootPath(), "/ryugu/gaskell/onc");
+        assertEquals(imagingConfig.imagingInstruments.get(0).getSearchQuery().getDataPath(), "/ryugu/gaskell/onc/images");
+        assertEquals(imagingConfig.imagingInstruments.get(0).getSearchQuery().getGalleryPath(), "/ryugu/gaskell/onc/gallery");
+        assertEquals(imagingConfig.imagingInstruments.get(0).spectralMode, SpectralImageMode.MONO);
+        assertEquals(imagingConfig.imagingInstruments.get(0).getType(), ImageType.ONC_IMAGE);
+        assertArrayEquals(imagingConfig.imagingInstruments.get(0).searchImageSources, new PointingSource[]{PointingSource.GASKELL});
+        assertEquals(imagingConfig.imagingInstruments.get(0).getInstrumentName(), Instrument.ONC);
+        assertEquals(imagingConfig.imagingInstruments.get(0).getOrientation(PointingSource.GASKELL).getRotation(), 0.0);
+        assertEquals(imagingConfig.imagingInstruments.get(0).getOrientation(PointingSource.GASKELL).getFlip(), ImageFlip.NONE);
+
+
+        assertEquals(c.hasMapmaker, false);
+        testImages(imagingConfig);
+        testStateHistory(stateHistoryConfig, "/ryugu/gaskell/history/timeHistory.bth");
+        testLidarConfig(lidarConfig);
+
+        assertArrayEquals(c.presentInMissions, new Mission[] {Mission.APL_INTERNAL, Mission.TEST_APL_INTERNAL,Mission.STAGE_APL_INTERNAL,
+				Mission.HAYABUSA2_DEPLOY, Mission.HAYABUSA2_DEV});
+        assertArrayEquals(c.defaultForMissions, new Mission[] {  });
+
 	}
 
 	@Test
@@ -207,7 +352,58 @@ class RyuguConfigsTest
         FeatureConfigIOFactory.getIOForClassType(ImagingInstrumentConfig.class.getSimpleName()).setViewConfig((ViewConfig)c);
         FeatureConfigIOFactory.getIOForClassType(BasemapImageConfig.class.getSimpleName()).setViewConfig((ViewConfig)c);
         FeatureConfigIOFactory.getIOForClassType(StateHistoryConfig.class.getSimpleName()).setViewConfig((ViewConfig)c);
-        fail("Not yet implemented");
+
+//        testBodyConfig(c);
+
+        assertEquals(c.body, ShapeModelBody.RYUGU);
+		assertEquals(c.type, BodyType.ASTEROID);
+		assertEquals(c.population, ShapeModelPopulation.NEO);
+		assertEquals(c.dataUsed, ShapeModelDataUsed.IMAGE_BASED);
+		assertEquals(c.getResolutionLabels(), ImmutableList.of("Very Low (12288 plates)", BodyViewConfig.DEFAULT_GASKELL_LABELS_PER_RESOLUTION[0]));
+		assertEquals(c.getResolutionNumberElements(), ImmutableList.of(12288, BodyViewConfig.DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[0]));
+		assertEquals(c.getShapeModelFileExtension(), ".obj");
+
+        assertEquals(c.author, ShapeModelType.JAXA_SFM_v20180627);
+        assertEquals(c.modelLabel, "JAXA-SFM-v20180627");
+        assertEquals(c.rootDirOnServer, "/ryugu/jaxa-sfm-v20180627");
+        assertEquals(c.hasColoringData, true);
+        assertEquals(c.density, 1.500); // (g/cm^3)
+        assertEquals(c.rotationRate, 0.00022871); // (rad/sec)
+
+        ImagingInstrumentConfig imagingConfig = (ImagingInstrumentConfig)c.getConfigForClass(ImagingInstrumentConfig.class);
+        LidarInstrumentConfig lidarConfig = (LidarInstrumentConfig)c.getConfigForClass(LidarInstrumentConfig.class);
+        StateHistoryConfig stateHistoryConfig = (StateHistoryConfig)c.getConfigForClass(StateHistoryConfig.class);
+
+		assertEquals(imagingConfig.imagingInstruments.size(), 2);
+
+//        testONC(imagingConfig, "/ryugu/jaxa-sfm-v20180627/onc", "/ryugu/jaxa-sfm-v20180627/onc/images", "/ryugu/jaxa-sfm-v20180627/onc/gallery");
+		assertEquals(imagingConfig.imagingInstruments.get(0).getSearchQuery().getRootPath(), "/ryugu/jaxa-sfm-v20180627/onc");
+        assertEquals(imagingConfig.imagingInstruments.get(0).getSearchQuery().getDataPath(), "/ryugu/jaxa-sfm-v20180627/onc/images");
+        assertEquals(imagingConfig.imagingInstruments.get(0).getSearchQuery().getGalleryPath(), "/ryugu/jaxa-sfm-v20180627/onc/gallery");
+        assertEquals(imagingConfig.imagingInstruments.get(0).spectralMode, SpectralImageMode.MONO);
+        assertEquals(imagingConfig.imagingInstruments.get(0).getType(), ImageType.ONC_IMAGE);
+        assertArrayEquals(imagingConfig.imagingInstruments.get(0).searchImageSources, new PointingSource[]{PointingSource.SPICE});
+        assertEquals(imagingConfig.imagingInstruments.get(0).getInstrumentName(), Instrument.ONC);
+        assertEquals(imagingConfig.imagingInstruments.get(0).getOrientation(PointingSource.SPICE).getRotation(), 90.0);
+        assertEquals(imagingConfig.imagingInstruments.get(0).getOrientation(PointingSource.SPICE).getFlip(), ImageFlip.NONE);
+
+        testTIR(imagingConfig, "/ryugu/jaxa-sfm-v20180627/tir", "/ryugu/jaxa-sfm-v20180627/tir/images", "/ryugu/jaxa-sfm-v20180627/tir/gallery");
+
+        assertEquals(c.hasMapmaker, false);
+        testImages(imagingConfig);
+        testStateHistory(stateHistoryConfig, "/ryugu/jaxa-sfm-v20180627/history/timeHistory.bth");
+        testLidarConfig(lidarConfig);
+
+        assertArrayEquals(c.databaseRunInfos, new DBRunInfo[]
+        {
+        	new DBRunInfo(PointingSource.GASKELL, Instrument.ONC, ShapeModelBody.RYUGU.toString(), "/project/sbmt2/sbmt/data/bodies/ryugu/jaxa-sfm-v20180627/onc", "jaxasfmv20180627", "ryugu/jaxa-sfm-v20180627/onc"),
+        	new DBRunInfo(PointingSource.SPICE, Instrument.ONC, ShapeModelBody.RYUGU.toString(), "/project/sbmt2/sbmt/data/bodies/ryugu/jaxa-sfm-v20180627/onc", "ryugu_nasa002", "ryugu/jaxa-sfm-v20180627/onc"),
+        	new DBRunInfo(PointingSource.SPICE, Instrument.TIR, ShapeModelBody.RYUGU.toString(), "/project/sbmt2/sbmt/data/bodies/ryugu/jaxa-sfm-v20180627/tir", "ryugu_nasa002_tir", "ryugu/jaxa-sfm-v20180627/tir"),
+        });
+
+        assertArrayEquals(c.presentInMissions, new Mission[] {Mission.APL_INTERNAL, Mission.TEST_APL_INTERNAL,Mission.STAGE_APL_INTERNAL,
+				Mission.HAYABUSA2_DEPLOY, Mission.HAYABUSA2_DEV});
+        assertArrayEquals(c.defaultForMissions, new Mission[] {  });
 	}
 
 	@Test
@@ -219,7 +415,49 @@ class RyuguConfigsTest
         FeatureConfigIOFactory.getIOForClassType(ImagingInstrumentConfig.class.getSimpleName()).setViewConfig((ViewConfig)c);
         FeatureConfigIOFactory.getIOForClassType(BasemapImageConfig.class.getSimpleName()).setViewConfig((ViewConfig)c);
         FeatureConfigIOFactory.getIOForClassType(StateHistoryConfig.class.getSimpleName()).setViewConfig((ViewConfig)c);
-        fail("Not yet implemented");
+
+        testBodyConfig(c);
+
+        assertEquals(c.author, ShapeModelType.JAXA_SFM_v20180714);
+        assertEquals(c.modelLabel, "JAXA-SFM-v20180714");
+        assertEquals(c.rootDirOnServer, "/ryugu/jaxa-sfm-v20180714");
+        assertEquals(c.hasColoringData, true);
+        assertEquals(c.density, 1.500); // (g/cm^3)
+        assertEquals(c.rotationRate, 0.00022871); // (rad/sec)
+
+        ImagingInstrumentConfig imagingConfig = (ImagingInstrumentConfig)c.getConfigForClass(ImagingInstrumentConfig.class);
+        LidarInstrumentConfig lidarConfig = (LidarInstrumentConfig)c.getConfigForClass(LidarInstrumentConfig.class);
+        StateHistoryConfig stateHistoryConfig = (StateHistoryConfig)c.getConfigForClass(StateHistoryConfig.class);
+
+		assertEquals(imagingConfig.imagingInstruments.size(), 2);
+
+//        testONC(imagingConfig, "/ryugu/jaxa-sfm-v20180714/onc", "/ryugu/jaxa-sfm-v20180714/onc/images", "/ryugu/jaxa-sfm-v20180714/onc/gallery");
+		assertEquals(imagingConfig.imagingInstruments.get(0).getSearchQuery().getRootPath(), "/ryugu/jaxa-sfm-v20180714/onc");
+        assertEquals(imagingConfig.imagingInstruments.get(0).getSearchQuery().getDataPath(), "/ryugu/jaxa-sfm-v20180714/onc/images");
+        assertEquals(imagingConfig.imagingInstruments.get(0).getSearchQuery().getGalleryPath(), "/ryugu/jaxa-sfm-v20180714/onc/gallery");
+        assertEquals(imagingConfig.imagingInstruments.get(0).spectralMode, SpectralImageMode.MONO);
+        assertEquals(imagingConfig.imagingInstruments.get(0).getType(), ImageType.ONC_IMAGE);
+        assertArrayEquals(imagingConfig.imagingInstruments.get(0).searchImageSources, new PointingSource[]{PointingSource.SPICE});
+        assertEquals(imagingConfig.imagingInstruments.get(0).getInstrumentName(), Instrument.ONC);
+        assertEquals(imagingConfig.imagingInstruments.get(0).getOrientation(PointingSource.SPICE).getRotation(), 90.0);
+        assertEquals(imagingConfig.imagingInstruments.get(0).getOrientation(PointingSource.SPICE).getFlip(), ImageFlip.NONE);
+
+		testTIR(imagingConfig, "/ryugu/jaxa-sfm-v20180714/tir", "/ryugu/jaxa-sfm-v20180714/tir/images", "/ryugu/jaxa-sfm-v20180714/tir/gallery");
+
+        assertEquals(c.hasMapmaker, false);
+        testImages(imagingConfig);
+        testStateHistory(stateHistoryConfig, "/ryugu/jaxa-sfm-v20180714/history/timeHistory.bth");
+        testLidarConfig(lidarConfig);
+
+        assertArrayEquals(c.databaseRunInfos, new DBRunInfo[]
+        {
+        	new DBRunInfo(PointingSource.SPICE, Instrument.ONC, ShapeModelBody.RYUGU.toString(), "/project/sbmt2/sbmt/data/bodies/ryugu/jaxa-sfm-v20180714/onc", "ryugu_nasa002", "ryugu/jaxa-sfm-v20180714/onc"),
+        	new DBRunInfo(PointingSource.SPICE, Instrument.TIR, ShapeModelBody.RYUGU.toString(), "/project/sbmt2/sbmt/data/bodies/ryugu/jaxa-sfm-v20180714/tir", "ryugu_nasa002_tir", "ryugu/jaxa-sfm-v20180714/tir"),
+        });
+
+        assertArrayEquals(c.presentInMissions, new Mission[] {Mission.APL_INTERNAL, Mission.TEST_APL_INTERNAL,Mission.STAGE_APL_INTERNAL,
+				Mission.HAYABUSA2_DEPLOY, Mission.HAYABUSA2_DEV});
+        assertArrayEquals(c.defaultForMissions, new Mission[] {  });
 	}
 
 	@Test
@@ -231,7 +469,49 @@ class RyuguConfigsTest
         FeatureConfigIOFactory.getIOForClassType(ImagingInstrumentConfig.class.getSimpleName()).setViewConfig((ViewConfig)c);
         FeatureConfigIOFactory.getIOForClassType(BasemapImageConfig.class.getSimpleName()).setViewConfig((ViewConfig)c);
         FeatureConfigIOFactory.getIOForClassType(StateHistoryConfig.class.getSimpleName()).setViewConfig((ViewConfig)c);
-        fail("Not yet implemented");
+
+        testBodyConfig(c);
+
+        assertEquals(c.author, ShapeModelType.JAXA_SFM_v20180725_2);
+        assertEquals(c.modelLabel, "JAXA-SFM-v20180725_2");
+        assertEquals(c.rootDirOnServer, "/ryugu/jaxa-sfm-v20180725-2");
+        assertEquals(c.hasColoringData, true);
+        assertEquals(c.density, 1.500); // (g/cm^3)
+        assertEquals(c.rotationRate, 0.00022871); // (rad/sec)
+
+        ImagingInstrumentConfig imagingConfig = (ImagingInstrumentConfig)c.getConfigForClass(ImagingInstrumentConfig.class);
+        LidarInstrumentConfig lidarConfig = (LidarInstrumentConfig)c.getConfigForClass(LidarInstrumentConfig.class);
+        StateHistoryConfig stateHistoryConfig = (StateHistoryConfig)c.getConfigForClass(StateHistoryConfig.class);
+
+		assertEquals(imagingConfig.imagingInstruments.size(), 2);
+
+//        testONC(imagingConfig, "/ryugu/jaxa-sfm-v20180725-2/onc", "/ryugu/jaxa-sfm-v20180725-2/onc/images", "/ryugu/jaxa-sfm-v20180725-2/onc/gallery");
+		assertEquals(imagingConfig.imagingInstruments.get(0).getSearchQuery().getRootPath(), "/ryugu/jaxa-sfm-v20180725-2/onc");
+        assertEquals(imagingConfig.imagingInstruments.get(0).getSearchQuery().getDataPath(), "/ryugu/jaxa-sfm-v20180725-2/onc/images");
+        assertEquals(imagingConfig.imagingInstruments.get(0).getSearchQuery().getGalleryPath(), "/ryugu/jaxa-sfm-v20180725-2/onc/gallery");
+        assertEquals(imagingConfig.imagingInstruments.get(0).spectralMode, SpectralImageMode.MONO);
+        assertEquals(imagingConfig.imagingInstruments.get(0).getType(), ImageType.ONC_IMAGE);
+        assertArrayEquals(imagingConfig.imagingInstruments.get(0).searchImageSources, new PointingSource[]{PointingSource.SPICE});
+        assertEquals(imagingConfig.imagingInstruments.get(0).getInstrumentName(), Instrument.ONC);
+        assertEquals(imagingConfig.imagingInstruments.get(0).getOrientation(PointingSource.SPICE).getRotation(), 90.0);
+        assertEquals(imagingConfig.imagingInstruments.get(0).getOrientation(PointingSource.SPICE).getFlip(), ImageFlip.NONE);
+
+        testTIR(imagingConfig, "/ryugu/jaxa-sfm-v20180725-2/tir", "/ryugu/jaxa-sfm-v20180725-2/tir/images", "/ryugu/jaxa-sfm-v20180725-2/tir/gallery");
+
+        assertEquals(c.hasMapmaker, false);
+        testImages(imagingConfig);
+        testStateHistory(stateHistoryConfig, "/ryugu/jaxa-sfm-v20180725-2/history/timeHistory.bth");
+        testLidarConfig(lidarConfig);
+
+        assertArrayEquals(c.databaseRunInfos, new DBRunInfo[]
+        {
+        	new DBRunInfo(PointingSource.SPICE, Instrument.ONC, ShapeModelBody.RYUGU.toString(), "/project/sbmt2/sbmt/data/bodies/ryugu/jaxa-sfm-v20180725-2/onc", "ryugu_nasa002", "ryugu/jaxa-sfm-v20180725-2/onc"),
+        	new DBRunInfo(PointingSource.SPICE, Instrument.TIR, ShapeModelBody.RYUGU.toString(), "/project/sbmt2/sbmt/data/bodies/ryugu/jaxa-sfm-v20180725-2/tir", "ryugu_nasa002_tir", "ryugu/jaxa-sfm-v20180725-2/tir"),
+        });
+
+        assertArrayEquals(c.presentInMissions, new Mission[] {Mission.APL_INTERNAL, Mission.TEST_APL_INTERNAL,Mission.STAGE_APL_INTERNAL,
+				Mission.HAYABUSA2_DEPLOY, Mission.HAYABUSA2_DEV});
+        assertArrayEquals(c.defaultForMissions, new Mission[] {  });
 	}
 
 	@Test
@@ -243,7 +523,39 @@ class RyuguConfigsTest
         FeatureConfigIOFactory.getIOForClassType(ImagingInstrumentConfig.class.getSimpleName()).setViewConfig((ViewConfig)c);
         FeatureConfigIOFactory.getIOForClassType(BasemapImageConfig.class.getSimpleName()).setViewConfig((ViewConfig)c);
         FeatureConfigIOFactory.getIOForClassType(StateHistoryConfig.class.getSimpleName()).setViewConfig((ViewConfig)c);
-        fail("Not yet implemented");
+
+        testBodyConfig(c);
+
+        assertEquals(c.author, ShapeModelType.JAXA_SFM_v20180804);
+        assertEquals(c.modelLabel, "JAXA-SFM-v20180804");
+        assertEquals(c.rootDirOnServer, "/ryugu/jaxa-sfm-v20180804");
+        assertEquals(c.hasColoringData, true);
+        assertEquals(c.density, 1.500); // (g/cm^3)
+        assertEquals(c.rotationRate, 0.00022871); // (rad/sec)
+
+        ImagingInstrumentConfig imagingConfig = (ImagingInstrumentConfig)c.getConfigForClass(ImagingInstrumentConfig.class);
+        LidarInstrumentConfig lidarConfig = (LidarInstrumentConfig)c.getConfigForClass(LidarInstrumentConfig.class);
+        StateHistoryConfig stateHistoryConfig = (StateHistoryConfig)c.getConfigForClass(StateHistoryConfig.class);
+
+		assertEquals(imagingConfig.imagingInstruments.size(), 2);
+
+        testONC(imagingConfig, "/ryugu/jaxa-sfm-v20180804/onc", "/ryugu/jaxa-sfm-v20180804/onc/images", "/ryugu/jaxa-sfm-v20180804/onc/gallery");
+        testTIR(imagingConfig, "/ryugu/jaxa-sfm-v20180804/tir", "/ryugu/jaxa-sfm-v20180804/tir/images", "/ryugu/jaxa-sfm-v20180804/tir/gallery");
+
+        assertEquals(c.hasMapmaker, false);
+        testImages(imagingConfig);
+        testStateHistory(stateHistoryConfig, "/ryugu/jaxa-sfm-v20180804/history/timeHistory.bth");
+        testLidarConfig(lidarConfig);
+
+        assertArrayEquals(c.databaseRunInfos, new DBRunInfo[]
+        {
+        	new DBRunInfo(PointingSource.SPICE, Instrument.ONC, ShapeModelBody.RYUGU.toString(), "/project/sbmt2/sbmt/data/bodies/ryugu/jaxa-sfm-v20180804/onc", "ryugu_nasa002", "ryugu/jaxa-sfm-v20180804/onc"),
+        	new DBRunInfo(PointingSource.SPICE, Instrument.TIR, ShapeModelBody.RYUGU.toString(), "/project/sbmt2/sbmt/data/bodies/ryugu/jaxa-sfm-v20180804/tir", "ryugu_nasa002_tir", "ryugu/jaxa-sfm-v20180804/tir"),
+        });
+
+        assertArrayEquals(c.presentInMissions, new Mission[] {Mission.APL_INTERNAL, Mission.TEST_APL_INTERNAL,Mission.STAGE_APL_INTERNAL,
+				Mission.HAYABUSA2_DEPLOY, Mission.HAYABUSA2_DEV});
+        assertArrayEquals(c.defaultForMissions, new Mission[] {  });
 	}
 
 	@Test
@@ -255,7 +567,49 @@ class RyuguConfigsTest
         FeatureConfigIOFactory.getIOForClassType(ImagingInstrumentConfig.class.getSimpleName()).setViewConfig((ViewConfig)c);
         FeatureConfigIOFactory.getIOForClassType(BasemapImageConfig.class.getSimpleName()).setViewConfig((ViewConfig)c);
         FeatureConfigIOFactory.getIOForClassType(StateHistoryConfig.class.getSimpleName()).setViewConfig((ViewConfig)c);
-        fail("Not yet implemented");
+
+        testBodyConfig(c);
+
+        assertEquals(c.author, ShapeModelType.JAXA_SPC_v20180705);
+        assertEquals(c.modelLabel, "JAXA-SPC-v20180705");
+        assertEquals(c.rootDirOnServer, "/ryugu/jaxa-spc-v20180705");
+        assertEquals(c.hasColoringData, true);
+        assertEquals(c.density, 1.500); // (g/cm^3)
+        assertEquals(c.rotationRate, 0.00022871); // (rad/sec)
+
+        ImagingInstrumentConfig imagingConfig = (ImagingInstrumentConfig)c.getConfigForClass(ImagingInstrumentConfig.class);
+        LidarInstrumentConfig lidarConfig = (LidarInstrumentConfig)c.getConfigForClass(LidarInstrumentConfig.class);
+        StateHistoryConfig stateHistoryConfig = (StateHistoryConfig)c.getConfigForClass(StateHistoryConfig.class);
+
+		assertEquals(imagingConfig.imagingInstruments.size(), 2);
+
+//        testONC(imagingConfig, "/ryugu/jaxa-spc-v20180705/onc", "/ryugu/jaxa-spc-v20180705/onc/images", "/ryugu/jaxa-spc-v20180705/onc/gallery");
+		assertEquals(imagingConfig.imagingInstruments.get(0).getSearchQuery().getRootPath(), "/ryugu/jaxa-spc-v20180705/onc");
+        assertEquals(imagingConfig.imagingInstruments.get(0).getSearchQuery().getDataPath(), "/ryugu/jaxa-spc-v20180705/onc/images");
+        assertEquals(imagingConfig.imagingInstruments.get(0).getSearchQuery().getGalleryPath(), "/ryugu/jaxa-spc-v20180705/onc/gallery");
+        assertEquals(imagingConfig.imagingInstruments.get(0).spectralMode, SpectralImageMode.MONO);
+        assertEquals(imagingConfig.imagingInstruments.get(0).getType(), ImageType.ONC_IMAGE);
+        assertArrayEquals(imagingConfig.imagingInstruments.get(0).searchImageSources, new PointingSource[]{PointingSource.SPICE});
+        assertEquals(imagingConfig.imagingInstruments.get(0).getInstrumentName(), Instrument.ONC);
+        assertEquals(imagingConfig.imagingInstruments.get(0).getOrientation(PointingSource.SPICE).getRotation(), 90.0);
+        assertEquals(imagingConfig.imagingInstruments.get(0).getOrientation(PointingSource.SPICE).getFlip(), ImageFlip.NONE);
+
+		testTIR(imagingConfig, "/ryugu/jaxa-spc-v20180705/tir", "/ryugu/jaxa-spc-v20180705/tir/images", "/ryugu/jaxa-spc-v20180705/tir/gallery");
+
+        assertEquals(c.hasMapmaker, false);
+        testImages(imagingConfig);
+        testStateHistory(stateHistoryConfig, "/ryugu/jaxa-spc-v20180705/history/timeHistory.bth");
+        testLidarConfig(lidarConfig);
+
+        assertArrayEquals(c.databaseRunInfos, new DBRunInfo[]
+        {
+        	new DBRunInfo(PointingSource.SPICE, Instrument.ONC, ShapeModelBody.RYUGU.toString(), "/project/sbmt2/sbmt/data/bodies/ryugu/jaxa-spc-v20180705/onc", "ryugu_nasa002", "ryugu/jaxa-spc-v20180705/onc"),
+        	new DBRunInfo(PointingSource.SPICE, Instrument.TIR, ShapeModelBody.RYUGU.toString(), "/project/sbmt2/sbmt/data/bodies/ryugu/jaxa-spc-v20180705/tir", "ryugu_nasa002_tir", "ryugu/jaxa-spc-v20180705/tir"),
+        });
+
+        assertArrayEquals(c.presentInMissions, new Mission[] {Mission.APL_INTERNAL, Mission.TEST_APL_INTERNAL,Mission.STAGE_APL_INTERNAL,
+				Mission.HAYABUSA2_DEPLOY, Mission.HAYABUSA2_DEV});
+        assertArrayEquals(c.defaultForMissions, new Mission[] {  });
 	}
 
 	@Test
@@ -267,7 +621,49 @@ class RyuguConfigsTest
         FeatureConfigIOFactory.getIOForClassType(ImagingInstrumentConfig.class.getSimpleName()).setViewConfig((ViewConfig)c);
         FeatureConfigIOFactory.getIOForClassType(BasemapImageConfig.class.getSimpleName()).setViewConfig((ViewConfig)c);
         FeatureConfigIOFactory.getIOForClassType(StateHistoryConfig.class.getSimpleName()).setViewConfig((ViewConfig)c);
-        fail("Not yet implemented");
+
+        testBodyConfig(c);
+
+        assertEquals(c.author, ShapeModelType.JAXA_SPC_v20180717);
+        assertEquals(c.modelLabel, "JAXA-SPC-v20180717");
+        assertEquals(c.rootDirOnServer, "/ryugu/jaxa-spc-v20180717");
+        assertEquals(c.hasColoringData, true);
+        assertEquals(c.density, 1.500); // (g/cm^3)
+        assertEquals(c.rotationRate, 0.00022871); // (rad/sec)
+
+        ImagingInstrumentConfig imagingConfig = (ImagingInstrumentConfig)c.getConfigForClass(ImagingInstrumentConfig.class);
+        LidarInstrumentConfig lidarConfig = (LidarInstrumentConfig)c.getConfigForClass(LidarInstrumentConfig.class);
+        StateHistoryConfig stateHistoryConfig = (StateHistoryConfig)c.getConfigForClass(StateHistoryConfig.class);
+
+		assertEquals(imagingConfig.imagingInstruments.size(), 2);
+
+//        testONC(imagingConfig, "/ryugu/jaxa-spc-v20180717/onc", "/ryugu/jaxa-spc-v20180717/onc/images", "/ryugu/jaxa-spc-v20180717/onc/gallery");
+		assertEquals(imagingConfig.imagingInstruments.get(0).getSearchQuery().getRootPath(), "/ryugu/jaxa-spc-v20180717/onc");
+        assertEquals(imagingConfig.imagingInstruments.get(0).getSearchQuery().getDataPath(), "/ryugu/jaxa-spc-v20180717/onc/images");
+        assertEquals(imagingConfig.imagingInstruments.get(0).getSearchQuery().getGalleryPath(), "/ryugu/jaxa-spc-v20180717/onc/gallery");
+        assertEquals(imagingConfig.imagingInstruments.get(0).spectralMode, SpectralImageMode.MONO);
+        assertEquals(imagingConfig.imagingInstruments.get(0).getType(), ImageType.ONC_IMAGE);
+        assertArrayEquals(imagingConfig.imagingInstruments.get(0).searchImageSources, new PointingSource[]{PointingSource.SPICE});
+        assertEquals(imagingConfig.imagingInstruments.get(0).getInstrumentName(), Instrument.ONC);
+        assertEquals(imagingConfig.imagingInstruments.get(0).getOrientation(PointingSource.SPICE).getRotation(), 90.0);
+        assertEquals(imagingConfig.imagingInstruments.get(0).getOrientation(PointingSource.SPICE).getFlip(), ImageFlip.NONE);
+
+		testTIR(imagingConfig, "/ryugu/jaxa-spc-v20180717/tir", "/ryugu/jaxa-spc-v20180717/tir/images", "/ryugu/jaxa-spc-v20180717/tir/gallery");
+
+        assertEquals(c.hasMapmaker, false);
+        testImages(imagingConfig);
+        testStateHistory(stateHistoryConfig, "/ryugu/jaxa-spc-v20180717/history/timeHistory.bth");
+        testLidarConfig(lidarConfig);
+
+        assertArrayEquals(c.databaseRunInfos, new DBRunInfo[]
+        {
+        	new DBRunInfo(PointingSource.SPICE, Instrument.ONC, ShapeModelBody.RYUGU.toString(), "/project/sbmt2/sbmt/data/bodies/ryugu/jaxa-spc-v20180717/onc", "ryugu_nasa002", "ryugu/jaxa-spc-v20180717/onc"),
+        	new DBRunInfo(PointingSource.SPICE, Instrument.TIR, ShapeModelBody.RYUGU.toString(), "/project/sbmt2/sbmt/data/bodies/ryugu/jaxa-spc-v20180717/tir", "ryugu_nasa002_tir", "ryugu/jaxa-spc-v20180717/tir"),
+        });
+
+        assertArrayEquals(c.presentInMissions, new Mission[] {Mission.APL_INTERNAL, Mission.TEST_APL_INTERNAL,Mission.STAGE_APL_INTERNAL,
+				Mission.HAYABUSA2_DEPLOY, Mission.HAYABUSA2_DEV});
+        assertArrayEquals(c.defaultForMissions, new Mission[] {  });
 	}
 
 	@Test
@@ -279,7 +675,50 @@ class RyuguConfigsTest
         FeatureConfigIOFactory.getIOForClassType(ImagingInstrumentConfig.class.getSimpleName()).setViewConfig((ViewConfig)c);
         FeatureConfigIOFactory.getIOForClassType(BasemapImageConfig.class.getSimpleName()).setViewConfig((ViewConfig)c);
         FeatureConfigIOFactory.getIOForClassType(StateHistoryConfig.class.getSimpleName()).setViewConfig((ViewConfig)c);
-        fail("Not yet implemented");
+
+        testBodyConfig(c);
+
+        assertEquals(c.author, ShapeModelType.JAXA_SPC_v20180719_2);
+        assertEquals(c.modelLabel, "JAXA-SPC-v20180719_2");
+        assertEquals(c.rootDirOnServer, "/ryugu/jaxa-spc-v20180719-2");
+        assertEquals(c.hasColoringData, true);
+        assertEquals(c.density, 1.500); // (g/cm^3)
+        assertEquals(c.rotationRate, 0.00022871); // (rad/sec)
+
+        ImagingInstrumentConfig imagingConfig = (ImagingInstrumentConfig)c.getConfigForClass(ImagingInstrumentConfig.class);
+        LidarInstrumentConfig lidarConfig = (LidarInstrumentConfig)c.getConfigForClass(LidarInstrumentConfig.class);
+        StateHistoryConfig stateHistoryConfig = (StateHistoryConfig)c.getConfigForClass(StateHistoryConfig.class);
+
+		assertEquals(imagingConfig.imagingInstruments.size(), 2);
+
+//        testONC(imagingConfig, "/ryugu/jaxa-spc-v20180719-2/onc", "/ryugu/jaxa-spc-v20180719-2/onc/images", "/ryugu/jaxa-spc-v20180719-2/onc/gallery");
+        testTIR(imagingConfig, "/ryugu/jaxa-spc-v20180719-2/tir", "/ryugu/jaxa-spc-v20180719-2/tir/images", "/ryugu/jaxa-spc-v20180719-2/tir/gallery");
+
+        assertEquals(c.hasMapmaker, false);
+
+        assertEquals(imagingConfig.imagingInstruments.get(0).getSearchQuery().getRootPath(), "/ryugu/jaxa-spc-v20180719-2/onc");
+        assertEquals(imagingConfig.imagingInstruments.get(0).getSearchQuery().getDataPath(), "/ryugu/jaxa-spc-v20180719-2/onc/images");
+        assertEquals(imagingConfig.imagingInstruments.get(0).getSearchQuery().getGalleryPath(), "/ryugu/jaxa-spc-v20180719-2/onc/gallery");
+        assertEquals(imagingConfig.imagingInstruments.get(0).spectralMode, SpectralImageMode.MONO);
+        assertEquals(imagingConfig.imagingInstruments.get(0).getType(), ImageType.ONC_IMAGE);
+        assertArrayEquals(imagingConfig.imagingInstruments.get(0).searchImageSources, new PointingSource[]{PointingSource.SPICE});
+        assertEquals(imagingConfig.imagingInstruments.get(0).getInstrumentName(), Instrument.ONC);
+        assertEquals(imagingConfig.imagingInstruments.get(0).getOrientation(PointingSource.SPICE).getRotation(), 90.0);
+        assertEquals(imagingConfig.imagingInstruments.get(0).getOrientation(PointingSource.SPICE).getFlip(), ImageFlip.NONE);
+
+        testImages(imagingConfig);
+        testStateHistory(stateHistoryConfig, "/ryugu/jaxa-spc-v20180719-2/history/timeHistory.bth");
+        testLidarConfig(lidarConfig);
+
+        assertArrayEquals(c.databaseRunInfos, new DBRunInfo[]
+        {
+        	new DBRunInfo(PointingSource.SPICE, Instrument.ONC, ShapeModelBody.RYUGU.toString(), "/project/sbmt2/sbmt/data/bodies/ryugu/jaxa-spc-v20180719-2/onc", "ryugu_nasa002", "ryugu/jaxa-spc-v20180719-2/onc"),
+        	new DBRunInfo(PointingSource.SPICE, Instrument.TIR, ShapeModelBody.RYUGU.toString(), "/project/sbmt2/sbmt/data/bodies/ryugu/jaxa-spc-v20180719-2/tir", "ryugu_nasa002_tir", "ryugu/jaxa-spc-v20180719-2/tir"),
+        });
+
+        assertArrayEquals(c.presentInMissions, new Mission[] {Mission.APL_INTERNAL, Mission.TEST_APL_INTERNAL,Mission.STAGE_APL_INTERNAL,
+				Mission.HAYABUSA2_DEPLOY, Mission.HAYABUSA2_DEV});
+        assertArrayEquals(c.defaultForMissions, new Mission[] {  });
 	}
 
 	@Test
@@ -291,7 +730,39 @@ class RyuguConfigsTest
         FeatureConfigIOFactory.getIOForClassType(ImagingInstrumentConfig.class.getSimpleName()).setViewConfig((ViewConfig)c);
         FeatureConfigIOFactory.getIOForClassType(BasemapImageConfig.class.getSimpleName()).setViewConfig((ViewConfig)c);
         FeatureConfigIOFactory.getIOForClassType(StateHistoryConfig.class.getSimpleName()).setViewConfig((ViewConfig)c);
-        fail("Not yet implemented");
+
+        testBodyConfig(c);
+
+        assertEquals(c.author, ShapeModelType.JAXA_SPC_v20180731);
+        assertEquals(c.modelLabel, "JAXA-SPC-v20180731");
+        assertEquals(c.rootDirOnServer, "/ryugu/jaxa-spc-v20180731");
+        assertEquals(c.hasColoringData, true);
+        assertEquals(c.density, 1.500); // (g/cm^3)
+        assertEquals(c.rotationRate, 0.00022871); // (rad/sec)
+
+        ImagingInstrumentConfig imagingConfig = (ImagingInstrumentConfig)c.getConfigForClass(ImagingInstrumentConfig.class);
+        LidarInstrumentConfig lidarConfig = (LidarInstrumentConfig)c.getConfigForClass(LidarInstrumentConfig.class);
+        StateHistoryConfig stateHistoryConfig = (StateHistoryConfig)c.getConfigForClass(StateHistoryConfig.class);
+
+		assertEquals(imagingConfig.imagingInstruments.size(), 2);
+
+        testONC(imagingConfig, "/ryugu/jaxa-spc-v20180731/onc", "/ryugu/jaxa-spc-v20180731/onc/images", "/ryugu/jaxa-spc-v20180731/onc/gallery");
+        testTIR(imagingConfig, "/ryugu/jaxa-spc-v20180731/tir", "/ryugu/jaxa-spc-v20180731/tir/images", "/ryugu/jaxa-spc-v20180731/tir/gallery");
+
+        assertEquals(c.hasMapmaker, false);
+        testImages(imagingConfig);
+        testStateHistory(stateHistoryConfig, "/ryugu/jaxa-spc-v20180731/history/timeHistory.bth");
+        testLidarConfig(lidarConfig);
+
+        assertArrayEquals(c.databaseRunInfos, new DBRunInfo[]
+        {
+        	new DBRunInfo(PointingSource.SPICE, Instrument.ONC, ShapeModelBody.RYUGU.toString(), "/project/sbmt2/sbmt/data/bodies/ryugu/jaxa-spc-v20180731/onc", "ryugu_nasa002", "ryugu/jaxa-spc-v20180731/onc"),
+        	new DBRunInfo(PointingSource.SPICE, Instrument.TIR, ShapeModelBody.RYUGU.toString(), "/project/sbmt2/sbmt/data/bodies/ryugu/jaxa-spc-v20180731/tir", "ryugu_nasa002_tir", "ryugu/jaxa-spc-v20180731/tir"),
+        });
+
+        assertArrayEquals(c.presentInMissions, new Mission[] {Mission.APL_INTERNAL, Mission.TEST_APL_INTERNAL,Mission.STAGE_APL_INTERNAL,
+				Mission.HAYABUSA2_DEPLOY, Mission.HAYABUSA2_DEV});
+        assertArrayEquals(c.defaultForMissions, new Mission[] {  });
 	}
 
 	@Test
@@ -303,7 +774,39 @@ class RyuguConfigsTest
         FeatureConfigIOFactory.getIOForClassType(ImagingInstrumentConfig.class.getSimpleName()).setViewConfig((ViewConfig)c);
         FeatureConfigIOFactory.getIOForClassType(BasemapImageConfig.class.getSimpleName()).setViewConfig((ViewConfig)c);
         FeatureConfigIOFactory.getIOForClassType(StateHistoryConfig.class.getSimpleName()).setViewConfig((ViewConfig)c);
-        fail("Not yet implemented");
+
+        testBodyConfig(c);
+
+        assertEquals(c.author, ShapeModelType.JAXA_SPC_v20180810);
+        assertEquals(c.modelLabel, "JAXA-SPC-v20180810");
+        assertEquals(c.rootDirOnServer, "/ryugu/jaxa-spc-v20180810");
+        assertEquals(c.hasColoringData, true);
+        assertEquals(c.density, 1.200); // (g/cm^3)
+        assertEquals(c.rotationRate, 0.00022871); // (rad/sec)
+
+        ImagingInstrumentConfig imagingConfig = (ImagingInstrumentConfig)c.getConfigForClass(ImagingInstrumentConfig.class);
+        LidarInstrumentConfig lidarConfig = (LidarInstrumentConfig)c.getConfigForClass(LidarInstrumentConfig.class);
+        StateHistoryConfig stateHistoryConfig = (StateHistoryConfig)c.getConfigForClass(StateHistoryConfig.class);
+
+		assertEquals(imagingConfig.imagingInstruments.size(), 2);
+
+        testONC(imagingConfig, "/ryugu/jaxa-spc-v20180810/onc", "/ryugu/jaxa-spc-v20180810/onc/images", "/ryugu/jaxa-spc-v20180810/onc/gallery");
+        testTIR(imagingConfig, "/ryugu/jaxa-spc-v20180810/tir", "/ryugu/jaxa-spc-v20180810/tir/images", "/ryugu/jaxa-spc-v20180810/tir/gallery");
+
+        assertEquals(c.hasMapmaker, false);
+        testImages(imagingConfig);
+        testStateHistory(stateHistoryConfig, "/ryugu/jaxa-spc-v20180810/history/timeHistory.bth");
+        testLidarConfig(lidarConfig);
+
+        assertArrayEquals(c.databaseRunInfos, new DBRunInfo[]
+        {
+        	new DBRunInfo(PointingSource.SPICE, Instrument.ONC, ShapeModelBody.RYUGU.toString(), "/project/sbmt2/sbmt/data/bodies/ryugu/jaxa-spc-v20180810/onc", "ryugu_nasa005", "ryugu/jaxa-spc-v20180810/onc"),
+        	new DBRunInfo(PointingSource.SPICE, Instrument.TIR, ShapeModelBody.RYUGU.toString(), "/project/sbmt2/sbmt/data/bodies/ryugu/jaxa-spc-v20180810/tir", "ryugu_nasa005_tir", "ryugu/jaxa-spc-v20180810/tir"),
+        });
+
+        assertArrayEquals(c.presentInMissions, new Mission[] {Mission.APL_INTERNAL, Mission.TEST_APL_INTERNAL,Mission.STAGE_APL_INTERNAL,
+				Mission.HAYABUSA2_DEPLOY, Mission.HAYABUSA2_DEV});
+        assertArrayEquals(c.defaultForMissions, new Mission[] {  });
 	}
 
 	@Test
@@ -315,7 +818,39 @@ class RyuguConfigsTest
         FeatureConfigIOFactory.getIOForClassType(ImagingInstrumentConfig.class.getSimpleName()).setViewConfig((ViewConfig)c);
         FeatureConfigIOFactory.getIOForClassType(BasemapImageConfig.class.getSimpleName()).setViewConfig((ViewConfig)c);
         FeatureConfigIOFactory.getIOForClassType(StateHistoryConfig.class.getSimpleName()).setViewConfig((ViewConfig)c);
-        fail("Not yet implemented");
+
+        testBodyConfig(c);
+
+        assertEquals(c.author, ShapeModelType.JAXA_SPC_v20180816);
+        assertEquals(c.modelLabel, "JAXA-SPC-v20180816");
+        assertEquals(c.rootDirOnServer, "/ryugu/jaxa-spc-v20180816");
+        assertEquals(c.hasColoringData, true);
+        assertEquals(c.density, 1.200); // (g/cm^3)
+        assertEquals(c.rotationRate, 0.00022871); // (rad/sec)
+
+        ImagingInstrumentConfig imagingConfig = (ImagingInstrumentConfig)c.getConfigForClass(ImagingInstrumentConfig.class);
+        LidarInstrumentConfig lidarConfig = (LidarInstrumentConfig)c.getConfigForClass(LidarInstrumentConfig.class);
+        StateHistoryConfig stateHistoryConfig = (StateHistoryConfig)c.getConfigForClass(StateHistoryConfig.class);
+
+		assertEquals(imagingConfig.imagingInstruments.size(), 2);
+
+        testONC(imagingConfig, "/ryugu/jaxa-spc-v20180816/onc", "/ryugu/jaxa-spc-v20180816/onc/images", "/ryugu/jaxa-spc-v20180816/onc/gallery");
+        testTIR(imagingConfig, "/ryugu/jaxa-spc-v20180816/tir", "/ryugu/jaxa-spc-v20180816/tir/images", "/ryugu/jaxa-spc-v20180816/tir/gallery");
+
+        assertEquals(c.hasMapmaker, false);
+        testImages(imagingConfig);
+        testStateHistory(stateHistoryConfig, "/ryugu/jaxa-spc-v20180816/history/timeHistory.bth");
+        testLidarConfig(lidarConfig);
+
+        assertArrayEquals(c.databaseRunInfos, new DBRunInfo[]
+        {
+        	new DBRunInfo(PointingSource.SPICE, Instrument.ONC, ShapeModelBody.RYUGU.toString(), "/project/sbmt2/sbmt/data/bodies/ryugu/jaxa-spc-v20180816/onc", "ryugu_nasa005", "ryugu/jaxa-spc-v20180816/onc"),
+        	new DBRunInfo(PointingSource.SPICE, Instrument.TIR, ShapeModelBody.RYUGU.toString(), "/project/sbmt2/sbmt/data/bodies/ryugu/jaxa-spc-v20180816/tir", "ryugu_nasa005_tir", "ryugu/jaxa-spc-v20180816/tir"),
+        });
+
+        assertArrayEquals(c.presentInMissions, new Mission[] {Mission.APL_INTERNAL, Mission.TEST_APL_INTERNAL,Mission.STAGE_APL_INTERNAL,
+				Mission.HAYABUSA2_DEPLOY, Mission.HAYABUSA2_DEV});
+        assertArrayEquals(c.defaultForMissions, new Mission[] {  });
 	}
 
 	@Test
@@ -327,7 +862,40 @@ class RyuguConfigsTest
         FeatureConfigIOFactory.getIOForClassType(ImagingInstrumentConfig.class.getSimpleName()).setViewConfig((ViewConfig)c);
         FeatureConfigIOFactory.getIOForClassType(BasemapImageConfig.class.getSimpleName()).setViewConfig((ViewConfig)c);
         FeatureConfigIOFactory.getIOForClassType(StateHistoryConfig.class.getSimpleName()).setViewConfig((ViewConfig)c);
-        fail("Not yet implemented");
+
+        testBodyConfig(c);
+
+        assertEquals(c.author, ShapeModelType.JAXA_SPC_v20180829);
+        assertEquals(c.modelLabel, "JAXA-SPC-v20180829");
+        assertEquals(c.rootDirOnServer, "/ryugu/jaxa-spc-v20180829");
+        assertEquals(c.hasColoringData, true);
+        assertEquals(c.density, 1.200); // (g/cm^3)
+        assertEquals(c.rotationRate, 0.00022871); // (rad/sec)
+
+        ImagingInstrumentConfig imagingConfig = (ImagingInstrumentConfig)c.getConfigForClass(ImagingInstrumentConfig.class);
+        SpectrumInstrumentConfig spectrumConfig = (SpectrumInstrumentConfig)c.getConfigForClass(SpectrumInstrumentConfig.class);
+        LidarInstrumentConfig lidarConfig = (LidarInstrumentConfig)c.getConfigForClass(LidarInstrumentConfig.class);
+        StateHistoryConfig stateHistoryConfig = (StateHistoryConfig)c.getConfigForClass(StateHistoryConfig.class);
+
+		assertEquals(imagingConfig.imagingInstruments.size(), 2);
+
+        testONC(imagingConfig, "/ryugu/jaxa-spc-v20180829/onc", "/ryugu/jaxa-spc-v20180829/onc/images", "/ryugu/jaxa-spc-v20180829/onc/gallery");
+        testTIR(imagingConfig, "/ryugu/jaxa-spc-v20180829/tir", "/ryugu/jaxa-spc-v20180829/tir/images", "/ryugu/jaxa-spc-v20180829/tir/gallery");
+
+        assertEquals(c.hasMapmaker, false);
+        testImages(imagingConfig);
+        testStateHistory(stateHistoryConfig, "/ryugu/jaxa-spc-v20180829/history/timeHistory.bth");
+        testLidarConfig(lidarConfig);
+
+        assertArrayEquals(c.databaseRunInfos, new DBRunInfo[]
+        {
+        	new DBRunInfo(PointingSource.SPICE, Instrument.ONC, ShapeModelBody.RYUGU.toString(), "/project/sbmt2/sbmt/data/bodies/ryugu/jaxa-spc-v20180829/onc", "ryugu_nasa005", "ryugu/jaxa-spc-v20180829/onc"),
+        	new DBRunInfo(PointingSource.SPICE, Instrument.TIR, ShapeModelBody.RYUGU.toString(), "/project/sbmt2/sbmt/data/bodies/ryugu/jaxa-spc-v20180829/tir", "ryugu_nasa005_tir", "ryugu/jaxa-spc-v20180829/tir"),
+        });
+
+        assertArrayEquals(c.presentInMissions, new Mission[] {Mission.APL_INTERNAL, Mission.TEST_APL_INTERNAL,Mission.STAGE_APL_INTERNAL,
+				Mission.HAYABUSA2_DEPLOY, Mission.HAYABUSA2_DEV});
+        assertArrayEquals(c.defaultForMissions, new Mission[] { });
 	}
 
 	@Test
@@ -339,7 +907,41 @@ class RyuguConfigsTest
         FeatureConfigIOFactory.getIOForClassType(ImagingInstrumentConfig.class.getSimpleName()).setViewConfig((ViewConfig)c);
         FeatureConfigIOFactory.getIOForClassType(BasemapImageConfig.class.getSimpleName()).setViewConfig((ViewConfig)c);
         FeatureConfigIOFactory.getIOForClassType(StateHistoryConfig.class.getSimpleName()).setViewConfig((ViewConfig)c);
-        fail("Not yet implemented");
+
+        testBodyConfig(c);
+
+        assertEquals(c.author, ShapeModelType.JAXA_SPC_v20181014);
+        assertEquals(c.modelLabel, "JAXA-SPC-v20181014");
+        assertEquals(c.rootDirOnServer, "/ryugu/jaxa-spc-v20181014");
+        assertEquals(c.hasColoringData, true);
+        assertEquals(c.density, 1.200); // (g/cm^3)
+        assertEquals(c.rotationRate, 0.00022871); // (rad/sec)
+
+        ImagingInstrumentConfig imagingConfig = (ImagingInstrumentConfig)c.getConfigForClass(ImagingInstrumentConfig.class);
+        SpectrumInstrumentConfig spectrumConfig = (SpectrumInstrumentConfig)c.getConfigForClass(SpectrumInstrumentConfig.class);
+        LidarInstrumentConfig lidarConfig = (LidarInstrumentConfig)c.getConfigForClass(LidarInstrumentConfig.class);
+        StateHistoryConfig stateHistoryConfig = (StateHistoryConfig)c.getConfigForClass(StateHistoryConfig.class);
+
+		assertEquals(imagingConfig.imagingInstruments.size(), 2);
+
+        testONC(imagingConfig, "/ryugu/jaxa-spc-v20181014/onc", "/ryugu/jaxa-spc-v20181014/onc/images", "/ryugu/jaxa-spc-v20181014/onc/gallery");
+        testTIR(imagingConfig, "/ryugu/jaxa-spc-v20181014/tir", "/ryugu/jaxa-spc-v20181014/tir/images", "/ryugu/jaxa-spc-v20181014/tir/gallery");
+
+        assertEquals(c.hasMapmaker, false);
+        testImages(imagingConfig);
+        testSpectra(spectrumConfig, c.rootDirOnServer, c.instrumentSearchSpecs);
+        testStateHistory(stateHistoryConfig, "/ryugu/jaxa-spc-v20181014/history/timeHistory.bth");
+        testLidarConfig(lidarConfig);
+
+        assertArrayEquals(c.databaseRunInfos, new DBRunInfo[]
+        {
+        	new DBRunInfo(PointingSource.SPICE, Instrument.ONC, ShapeModelBody.RYUGU.toString(), "/project/sbmt2/sbmt/data/bodies/ryugu/jaxa-spc-v20181014/onc", "ryugu_nasa005", "ryugu/jaxa-spc-v20181014/onc"),
+        	new DBRunInfo(PointingSource.SPICE, Instrument.TIR, ShapeModelBody.RYUGU.toString(), "/project/sbmt2/sbmt/data/bodies/ryugu/jaxa-spc-v20181014/tir", "ryugu_nasa005_tir", "ryugu/jaxa-spc-v20181014/tir"),
+        });
+
+        assertArrayEquals(c.presentInMissions, new Mission[] {Mission.APL_INTERNAL, Mission.TEST_APL_INTERNAL,Mission.STAGE_APL_INTERNAL,
+				Mission.HAYABUSA2_DEPLOY, Mission.HAYABUSA2_DEV});
+        assertArrayEquals(c.defaultForMissions, new Mission[] { Mission.HAYABUSA2_DEPLOY, Mission.HAYABUSA2_DEV });
 	}
 
 	@Test
@@ -683,7 +1285,7 @@ class RyuguConfigsTest
         assertEquals(spectrumConfig.spectrumMetadataFile, rootOnServer + "/spectraMetadata.json");
 
         SpectrumInstrumentMetadataIO specIO = new SpectrumInstrumentMetadataIO("HAYABUSA2", searchSpecs);
-        assertEquals(spectrumConfig.hierarchicalSpectraSearchSpecification, specIO);
+        assertEquals(spectrumConfig.hierarchicalSpectraSearchSpecification.getSelectedDatasets().size(), specIO.getSelectedDatasets().size());
 	}
 
 	private static void testStateHistory(StateHistoryConfig stateHistoryConfig, String path)
