@@ -2548,8 +2548,6 @@ public class BennuConfigs extends SmallBodyViewConfig
 		if (includeSPC) imageSourceArray.add(PointingSource.GASKELL);
 		if (includeSPICE) imageSourceArray.add(PointingSource.SPICE);
 		imageSources = imageSourceArray.toArray(imageSources);
-//		GenericPhpQuery phpQuery = new GenericPhpQuery(rootDirOnServer + "/polycam", spcNamePrefix, spiceNamePrefix, rootDirOnServer + gallery);
-//		phpQuery.setPublicOnly(publicOnly);
 
 		DataQuerySourcesMetadata polyCamMetadata = DataQuerySourcesMetadata.of(rootDirOnServer + "/polycam", "", spcNamePrefix, spiceNamePrefix, rootDirOnServer + gallery);
         ImageDataQuery phpQuery = new ImageDataQuery(polyCamMetadata);
@@ -2580,15 +2578,12 @@ public class BennuConfigs extends SmallBodyViewConfig
 		if (includeSPC) imageSourceArray.add(PointingSource.GASKELL);
 		if (includeSPICE) imageSourceArray.add(PointingSource.SPICE);
 		imageSources = imageSourceArray.toArray(imageSources);
-//		GenericPhpQuery phpQuery = new GenericPhpQuery(rootDirOnServer + "/mapcam", spcNamePrefix, spiceNamePrefix, rootDirOnServer + gallery);
 
 		DataQuerySourcesMetadata mapCamMetadata = DataQuerySourcesMetadata.of(rootDirOnServer + "/mapcam", "", spcNamePrefix, spiceNamePrefix, rootDirOnServer + gallery);
         ImageDataQuery phpQuery = new ImageDataQuery(mapCamMetadata);
 
 		phpQuery.setPublicOnly(publicOnly);
 		phpQuery.setImageNameTable("bennu_mapcam_images");
-
-
 
 		return new ImagingInstrument(
                 SpectralImageMode.MONO,
@@ -2609,7 +2604,6 @@ public class BennuConfigs extends SmallBodyViewConfig
 	private ImagingInstrument generateNavcamInstrument(String spcNamePrefix, String spiceNamePrefix, boolean publicOnly)
 	{
 		String gallery = "/navcam/gallery";
-//		GenericPhpQuery phpQuery = new GenericPhpQuery(rootDirOnServer + "/navcam", spcNamePrefix, spiceNamePrefix, rootDirOnServer + gallery);
 
 		DataQuerySourcesMetadata mapCamMetadata = DataQuerySourcesMetadata.of(rootDirOnServer + "/navcam", "", spcNamePrefix, spiceNamePrefix, rootDirOnServer + gallery);
         ImageDataQuery phpQuery = new ImageDataQuery(mapCamMetadata);

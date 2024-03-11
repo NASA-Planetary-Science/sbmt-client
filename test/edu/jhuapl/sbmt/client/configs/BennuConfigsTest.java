@@ -44,8 +44,11 @@ import edu.jhuapl.sbmt.image.model.BinTranslations;
 import edu.jhuapl.sbmt.image.model.CompositePerspectiveImage;
 import edu.jhuapl.sbmt.image.model.CylindricalBounds;
 import edu.jhuapl.sbmt.image.model.ImageBinPadding;
+import edu.jhuapl.sbmt.image.model.ImageFlip;
+import edu.jhuapl.sbmt.image.model.ImageType;
 import edu.jhuapl.sbmt.image.model.ImagingInstrument;
 import edu.jhuapl.sbmt.image.model.PerspectiveImageMetadata;
+import edu.jhuapl.sbmt.image.model.SpectralImageMode;
 import edu.jhuapl.sbmt.image.query.ImageDataQuery;
 import edu.jhuapl.sbmt.lidar.config.LidarInstrumentConfig;
 import edu.jhuapl.sbmt.lidar.config.LidarInstrumentConfigIO;
@@ -301,7 +304,52 @@ class BennuConfigsTest
 
 	@Test void testBennuSPC20191027Config()
 	{
-		fail("Not yet implemented");
+		BennuConfigs c = (BennuConfigs)SmallBodyViewConfig.getConfig(ShapeModelBody.RQ36, ShapeModelType.provide("ALTWG-SPC-v20191027"));
+		FeatureConfigIOFactory.getIOForClassType(LidarInstrumentConfig.class.getSimpleName()).setViewConfig((ViewConfig)c);
+        FeatureConfigIOFactory.getIOForClassType(SpectrumInstrumentConfig.class.getSimpleName()).setViewConfig((ViewConfig)c);
+        FeatureConfigIOFactory.getIOForClassType(ImagingInstrumentConfig.class.getSimpleName()).setViewConfig((ViewConfig)c);
+        FeatureConfigIOFactory.getIOForClassType(BasemapImageConfig.class.getSimpleName()).setViewConfig((ViewConfig)c);
+        FeatureConfigIOFactory.getIOForClassType(StateHistoryConfig.class.getSimpleName()).setViewConfig((ViewConfig)c);
+
+        assertEquals(c.dataUsed, ShapeModelDataUsed.IMAGE_BASED);
+        assertEquals(c.author, ShapeModelType.provide("ALTWG-SPC-v20191027"));
+        assertEquals(c.modelLabel, c.author.name());
+        assertEquals(c.rootDirOnServer, "/bennu/altwg-spc-v20191027");
+        assertEquals(c.getResolutionLabels(), ImmutableList.of(
+                "Very Low (12288 plates)", BodyViewConfig.DEFAULT_GASKELL_LABELS_PER_RESOLUTION[0], BodyViewConfig.DEFAULT_GASKELL_LABELS_PER_RESOLUTION[1], BodyViewConfig.DEFAULT_GASKELL_LABELS_PER_RESOLUTION[2], BodyViewConfig.DEFAULT_GASKELL_LABELS_PER_RESOLUTION[3]));
+        assertEquals(c.getResolutionNumberElements(), ImmutableList.of(12288, BodyViewConfig.DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[0], BodyViewConfig.DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[1], BodyViewConfig.DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[2], BodyViewConfig.DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[3]));
+        assertEquals(c.density, 1.186);
+        assertEquals(c.rotationRate, 4.0626E-4);
+        assertEquals(c.bodyReferencePotential, -0.02517940647257273);
+        assertEquals(c.hasCustomBodyCubeSize, true);
+        assertEquals(c.customBodyCubeSize, 0.02); //km
+
+        testBodyParameters(c);
+        ImagingInstrumentConfig imagingConfig = (ImagingInstrumentConfig)c.getConfigForClass(ImagingInstrumentConfig.class);
+        SpectrumInstrumentConfig spectrumConfig = (SpectrumInstrumentConfig)c.getConfigForClass(SpectrumInstrumentConfig.class);
+        LidarInstrumentConfig lidarConfig = (LidarInstrumentConfig)c.getConfigForClass(LidarInstrumentConfig.class);
+        StateHistoryConfig stateHistoryConfig = (StateHistoryConfig)c.getConfigForClass(StateHistoryConfig.class);
+
+        assertEquals(imagingConfig.imagingInstruments.size(), 3);
+
+		testPolycamParameters(imagingConfig, c.rootDirOnServer, "bennu_altwgspcv20191027_polycam", "bennu_altwgspcv20191027_polycam", true, true, false);
+		testMapcamParameters(imagingConfig, c.rootDirOnServer, "bennu_altwgspcv20191027_mapcam", "bennu_altwgspcv20191027_mapcam", true, true, false);
+		testNavcamParameters(imagingConfig, c.rootDirOnServer, "bennu_altwgspcv20191027_navcam", "bennu_altwgspcv20191027_navcam", false);
+		testSpectrumParameters(spectrumConfig, c.rootDirOnServer, true);
+        testStateHistoryParameters(c, stateHistoryConfig);
+        assertEquals(c.hasMapmaker, false);
+
+        testLidarParameters(lidarConfig, true, c.rootDirOnServer, "/ola/browse/fileListv2.txt");
+
+        assertArrayEquals(c.databaseRunInfos, new DBRunInfo[]
+        {
+        	 new DBRunInfo(PointingSource.GASKELL, Instrument.MAPCAM, ShapeModelBody.RQ36.toString(), "/bennu/altwg-spc-v20191027/mapcam/imagelist-fullpath-sum.txt", "bennu_altwgspcv20191027_mapcam"),
+             new DBRunInfo(PointingSource.GASKELL, Instrument.POLYCAM, ShapeModelBody.RQ36.toString(), "/bennu/altwg-spc-v20191027/polycam/imagelist-fullpath-sum.txt", "bennu_altwgspcv20191027_polycam"),
+
+             new DBRunInfo(PointingSource.SPICE, Instrument.MAPCAM, ShapeModelBody.RQ36.toString(), "/bennu/altwg-spc-v20191027/mapcam/imagelist-fullpath-info.txt", "bennu_altwgspcv20191027_mapcam"),
+             new DBRunInfo(PointingSource.SPICE, Instrument.POLYCAM, ShapeModelBody.RQ36.toString(), "/bennu/altwg-spc-v20191027/polycam/imagelist-fullpath-info.txt", "bennu_altwgspcv20191027_polycam"),
+             new DBRunInfo(PointingSource.SPICE, Instrument.NAVCAM, ShapeModelBody.RQ36.toString(), "/bennu/altwg-spc-v20191027/navcam/imagelist-fullpath-info.txt", "bennu_altwgspcv20191027_navcam")
+        });
 	}
 
 	@Test void testBennuOLAV20Config()
@@ -356,6 +404,11 @@ class BennuConfigsTest
 //                                                         c.generateNavcamInstrument("bennu_spov54_navcam", "bennu_spov54_navcam")
 //        );
 
+		assertEquals(imagingConfig.imagingInstruments.size(), 3);
+
+		testPolycamParameters(imagingConfig, c.rootDirOnServer, "bennu_spov54_polycam", "bennu_spov54_polycam", true, true, false);
+		testMapcamParameters(imagingConfig, c.rootDirOnServer, "bennu_spov54_mapcam", "bennu_spov54_mapcam", true, true, false);
+		testNavcamParameters(imagingConfig, c.rootDirOnServer, "bennu_spov54_navcam", "bennu_spov54_navcam", false);
 
         System.out.println("BennuConfigsTest: testBennuSPOV54Config: spec config " + spectrumConfig.hasSpectralData);
         testSpectrumParameters(spectrumConfig, c.rootDirOnServer, true);
@@ -386,6 +439,73 @@ class BennuConfigsTest
         });
 	}
 
+	private static void testPolycamParameters(ImagingInstrumentConfig imagingConfig, String rootDirOnServer, String spcNamePrefix, String spiceNamePrefix, boolean includeSPC, boolean includeSPICE, boolean publicOnly)
+	{
+		PointingSource[] imageSources = {};
+		ArrayList<PointingSource> imageSourceArray = new ArrayList<PointingSource>();
+		if (includeSPC) imageSourceArray.add(PointingSource.GASKELL);
+		if (includeSPICE) imageSourceArray.add(PointingSource.SPICE);
+		imageSources = imageSourceArray.toArray(imageSources);
+
+        assertEquals(imagingConfig.imagingInstruments.get(0).getSearchQuery().getRootPath(), rootDirOnServer + "/polycam");
+        assertEquals(imagingConfig.imagingInstruments.get(0).getSearchQuery().getDataPath(), rootDirOnServer + "/polycam/images");
+        assertEquals(imagingConfig.imagingInstruments.get(0).getSearchQuery().getGalleryPath(), rootDirOnServer + "/polycam/gallery");
+        assertEquals(imagingConfig.imagingInstruments.get(0).spectralMode, SpectralImageMode.MONO);
+        assertEquals(imagingConfig.imagingInstruments.get(0).getType(), ImageType.POLYCAM_FLIGHT_IMAGE);
+        assertArrayEquals(imagingConfig.imagingInstruments.get(0).searchImageSources, imageSources);
+        assertEquals(imagingConfig.imagingInstruments.get(0).getInstrumentName(), Instrument.POLYCAM);
+        if (includeSPC)
+        {
+	        assertEquals(imagingConfig.imagingInstruments.get(0).getOrientation(PointingSource.GASKELL).getRotation(), 0.0);
+	        assertEquals(imagingConfig.imagingInstruments.get(0).getOrientation(PointingSource.GASKELL).getFlip(), ImageFlip.X);
+        }
+        if (includeSPICE)
+        {
+        	assertEquals(imagingConfig.imagingInstruments.get(0).getOrientation(PointingSource.SPICE).getRotation(), 0.0);
+	        assertEquals(imagingConfig.imagingInstruments.get(0).getOrientation(PointingSource.SPICE).getFlip(), ImageFlip.X);
+        }
+	}
+
+	private static void testMapcamParameters(ImagingInstrumentConfig imagingConfig, String rootDirOnServer, String spcNamePrefix, String spiceNamePrefix, boolean includeSPC, boolean includeSPICE, boolean publicOnly)
+	{
+		PointingSource[] imageSources = {};
+		ArrayList<PointingSource> imageSourceArray = new ArrayList<PointingSource>();
+		if (includeSPC) imageSourceArray.add(PointingSource.GASKELL);
+		if (includeSPICE) imageSourceArray.add(PointingSource.SPICE);
+		imageSources = imageSourceArray.toArray(imageSources);
+
+		assertEquals(imagingConfig.imagingInstruments.get(1).getSearchQuery().getRootPath(), rootDirOnServer + "/mapcam");
+        assertEquals(imagingConfig.imagingInstruments.get(1).getSearchQuery().getDataPath(), rootDirOnServer + "/mapcam/images");
+        assertEquals(imagingConfig.imagingInstruments.get(1).getSearchQuery().getGalleryPath(), rootDirOnServer + "/mapcam/gallery");
+        assertEquals(imagingConfig.imagingInstruments.get(1).spectralMode, SpectralImageMode.MONO);
+        assertEquals(imagingConfig.imagingInstruments.get(1).getType(), ImageType.MAPCAM_FLIGHT_IMAGE);
+        assertArrayEquals(imagingConfig.imagingInstruments.get(1).searchImageSources, imageSources);
+        assertEquals(imagingConfig.imagingInstruments.get(1).getInstrumentName(), Instrument.MAPCAM);
+        if (includeSPC)
+        {
+        	assertEquals(imagingConfig.imagingInstruments.get(1).getOrientation(PointingSource.GASKELL).getRotation(), 0.0);
+        	assertEquals(imagingConfig.imagingInstruments.get(1).getOrientation(PointingSource.GASKELL).getFlip(), ImageFlip.X);
+        }
+        if (includeSPICE)
+        {
+        	assertEquals(imagingConfig.imagingInstruments.get(1).getOrientation(PointingSource.SPICE).getRotation(), 0.0);
+        	assertEquals(imagingConfig.imagingInstruments.get(1).getOrientation(PointingSource.SPICE).getFlip(), ImageFlip.X);
+        }
+	}
+
+	private static void testNavcamParameters(ImagingInstrumentConfig imagingConfig, String rootDirOnServer, String spcNamePrefix, String spiceNamePrefix, boolean publicOnly)
+	{
+		assertEquals(imagingConfig.imagingInstruments.get(2).getSearchQuery().getRootPath(), rootDirOnServer + "/navcam");
+        assertEquals(imagingConfig.imagingInstruments.get(2).getSearchQuery().getDataPath(), rootDirOnServer + "/navcam/images");
+        assertEquals(imagingConfig.imagingInstruments.get(2).getSearchQuery().getGalleryPath(), rootDirOnServer + "/navcam/gallery");
+        assertEquals(imagingConfig.imagingInstruments.get(2).spectralMode, SpectralImageMode.MONO);
+        assertEquals(imagingConfig.imagingInstruments.get(2).getType(), ImageType.NAVCAM_FLIGHT_IMAGE);
+        assertArrayEquals(imagingConfig.imagingInstruments.get(2).searchImageSources, new PointingSource[] {PointingSource.SPICE});
+        assertEquals(imagingConfig.imagingInstruments.get(2).getInstrumentName(), Instrument.NAVCAM);
+        assertEquals(imagingConfig.imagingInstruments.get(2).getOrientation(PointingSource.SPICE).getRotation(), 0.0);
+        assertEquals(imagingConfig.imagingInstruments.get(2).getOrientation(PointingSource.SPICE).getFlip(), ImageFlip.X);
+	}
+
 	private static void testBodyParameters(BennuConfigs c)
 	{
 		assertEquals(c.body,  ShapeModelBody.RQ36);
@@ -414,15 +534,6 @@ class BennuConfigsTest
 				"ORX_OCAMS_SAMCAM", "ORX_NAVCAM1", "ORX_NAVCAM2",
 //				"ORX_OTES", "ORX_OVIRS",
 				"ORX_OLA_LOW", "ORX_OLA_HIGH"});
-
-//		assertEquals(stateHistoryConfig.spiceInfo, new SpiceInfo("ORX", "IAU_BENNU", "ORX_SPACECRAFT", "BENNU",
-//    			new String[] {"EARTH" , "SUN"},
-//    			new String[] {"IAU_EARTH" , "IAU_SUN"},
-//    			new String[] {},
-//    			new String[] {"ORX_OCAMS_POLYCAM", "ORX_OCAMS_MAPCAM",
-//    															"ORX_OCAMS_SAMCAM", "ORX_NAVCAM1", "ORX_NAVCAM2",
-////    															"ORX_OTES", "ORX_OVIRS",
-//    															"ORX_OLA_LOW", "ORX_OLA_HIGH"}));
 	}
 
 	private static void testImagingParameters(ImagingInstrumentConfig imagingConfig)
