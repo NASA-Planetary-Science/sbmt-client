@@ -2,7 +2,6 @@ package edu.jhuapl.sbmt.client.configs;
 
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.fail;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -194,27 +193,278 @@ class BennuConfigsPublicTest
 
 	@Test void testBennuSPC20181217PublicConfig()
 	{
-		fail("Not yet implemented");
+		BennuConfigs c = (BennuConfigs)SmallBodyViewConfig.getConfig(ShapeModelBody.RQ36, ShapeModelType.provide("ALTWG-SPC-v20181217"));
+		FeatureConfigIOFactory.getIOForClassType(LidarInstrumentConfig.class.getSimpleName()).setViewConfig((ViewConfig)c);
+        FeatureConfigIOFactory.getIOForClassType(SpectrumInstrumentConfig.class.getSimpleName()).setViewConfig((ViewConfig)c);
+        FeatureConfigIOFactory.getIOForClassType(ImagingInstrumentConfig.class.getSimpleName()).setViewConfig((ViewConfig)c);
+        FeatureConfigIOFactory.getIOForClassType(BasemapImageConfig.class.getSimpleName()).setViewConfig((ViewConfig)c);
+        FeatureConfigIOFactory.getIOForClassType(StateHistoryConfig.class.getSimpleName()).setViewConfig((ViewConfig)c);
+
+        assertEquals(c.dataUsed, ShapeModelDataUsed.IMAGE_BASED);
+        assertEquals(c.author, ShapeModelType.provide("ALTWG-SPC-v20181217"));
+        assertEquals(c.modelLabel, "SPC v13");
+        assertEquals(c.rootDirOnServer, "/bennu/altwg-spc-v20181217");
+        assertEquals(c.getResolutionLabels(), ImmutableList.of(
+                "Very Low (12288 plates)", BodyViewConfig.DEFAULT_GASKELL_LABELS_PER_RESOLUTION[0], BodyViewConfig.DEFAULT_GASKELL_LABELS_PER_RESOLUTION[1], BodyViewConfig.DEFAULT_GASKELL_LABELS_PER_RESOLUTION[2], BodyViewConfig.DEFAULT_GASKELL_LABELS_PER_RESOLUTION[3]));
+        assertEquals(c.getResolutionNumberElements(), ImmutableList.of(12288, BodyViewConfig.DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[0], BodyViewConfig.DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[1], BodyViewConfig.DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[2], BodyViewConfig.DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[3]));
+        assertEquals(c.density, 1.260);
+        assertEquals(c.rotationRate, 4.0613E-4);
+//        assertEquals(c.bodyReferencePotential, 0.00040613);
+
+        testBodyParameters(c);
+        ImagingInstrumentConfig imagingConfig = (ImagingInstrumentConfig)c.getConfigForClass(ImagingInstrumentConfig.class);
+        LidarInstrumentConfig lidarConfig = (LidarInstrumentConfig)c.getConfigForClass(LidarInstrumentConfig.class);
+        StateHistoryConfig stateHistoryConfig = (StateHistoryConfig)c.getConfigForClass(StateHistoryConfig.class);
+
+        assertEquals(imagingConfig.imagingInstruments.size(), 2);
+
+		testPolycamParameters(imagingConfig, c.rootDirOnServer, "bennu_altwgspcv20181217_polycam", "bennu_altwgspcv20181217_polycam", true, false, true);
+		testMapcamParameters(imagingConfig, c.rootDirOnServer, "bennu_altwgspcv20181217_mapcam", "bennu_altwgspcv20181217_mapcam", true, false, true);
+//		testNavcamParameters(imagingConfig, c.rootDirOnServer, "bennu_olav20_navcam", "bennu_olav20_navcam", true);
+
+        testStateHistoryParameters(c, stateHistoryConfig);
+        assertEquals(c.hasMapmaker, false);
+
+        testLidarParameters(lidarConfig, true, c.rootDirOnServer, "/ola/browse/fileList_public.txt");
+
+        ArrayList<Date> startStop = new ArrayList<Date>();
+        startStop = new ArrayList<Date>();
+        startStop.add(new GregorianCalendar(2019, 6, 1, 0, 0, 0).getTime());
+        startStop.add(new GregorianCalendar(2019, 7, 6, 0, 0, 0).getTime());
+
+        assertEquals(lidarConfig.orexSearchTimeMap.get("Recon"), null);
+        assertEquals(lidarConfig.lidarSearchDataSourceMap.get("Recon"), null);
+
+        assertArrayEquals(c.presentInMissions, PublicOnly);
+        assertArrayEquals(c.defaultForMissions, new Mission[] {});
+        assertEquals(c.getBaseMapConfigName(), "config.txt");
+
 	}
 
 	@Test void testBennuSPC20181227PublicConfig()
 	{
-		fail("Not yet implemented");
+		BennuConfigs c = (BennuConfigs)SmallBodyViewConfig.getConfig(ShapeModelBody.RQ36, ShapeModelType.provide("ALTWG-SPC-v20181227"));
+		FeatureConfigIOFactory.getIOForClassType(LidarInstrumentConfig.class.getSimpleName()).setViewConfig((ViewConfig)c);
+        FeatureConfigIOFactory.getIOForClassType(SpectrumInstrumentConfig.class.getSimpleName()).setViewConfig((ViewConfig)c);
+        FeatureConfigIOFactory.getIOForClassType(ImagingInstrumentConfig.class.getSimpleName()).setViewConfig((ViewConfig)c);
+        FeatureConfigIOFactory.getIOForClassType(BasemapImageConfig.class.getSimpleName()).setViewConfig((ViewConfig)c);
+        FeatureConfigIOFactory.getIOForClassType(StateHistoryConfig.class.getSimpleName()).setViewConfig((ViewConfig)c);
+
+        assertEquals(c.dataUsed, ShapeModelDataUsed.IMAGE_BASED);
+        assertEquals(c.author, ShapeModelType.provide("ALTWG-SPC-v20181227"));
+        assertEquals(c.modelLabel, "SPC v14");
+        assertEquals(c.rootDirOnServer, "/bennu/altwg-spc-v20181227");
+        assertEquals(c.getResolutionLabels(), ImmutableList.of(
+                "Very Low (12288 plates)", BodyViewConfig.DEFAULT_GASKELL_LABELS_PER_RESOLUTION[0], BodyViewConfig.DEFAULT_GASKELL_LABELS_PER_RESOLUTION[1], BodyViewConfig.DEFAULT_GASKELL_LABELS_PER_RESOLUTION[2], BodyViewConfig.DEFAULT_GASKELL_LABELS_PER_RESOLUTION[3]));
+        assertEquals(c.getResolutionNumberElements(), ImmutableList.of(12288, BodyViewConfig.DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[0], BodyViewConfig.DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[1], BodyViewConfig.DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[2], BodyViewConfig.DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[3]));
+        assertEquals(c.density, 1.260);
+        assertEquals(c.rotationRate, 4.0613E-4);
+//        assertEquals(c.bodyReferencePotential, 0.00040613);
+
+        testBodyParameters(c);
+        ImagingInstrumentConfig imagingConfig = (ImagingInstrumentConfig)c.getConfigForClass(ImagingInstrumentConfig.class);
+        LidarInstrumentConfig lidarConfig = (LidarInstrumentConfig)c.getConfigForClass(LidarInstrumentConfig.class);
+        StateHistoryConfig stateHistoryConfig = (StateHistoryConfig)c.getConfigForClass(StateHistoryConfig.class);
+
+        assertEquals(imagingConfig.imagingInstruments.size(), 2);
+
+		testPolycamParameters(imagingConfig, c.rootDirOnServer, "bennu_altwgspcv20181227_polycam", "bennu_altwgspcv20181227_polycam", true, false, true);
+		testMapcamParameters(imagingConfig, c.rootDirOnServer, "bennu_altwgspcv20181227_mapcam", "bennu_altwgspcv20181227_mapcam", true, false, true);
+//		testNavcamParameters(imagingConfig, c.rootDirOnServer, "bennu_olav20_navcam", "bennu_olav20_navcam", true);
+
+        testStateHistoryParameters(c, stateHistoryConfig);
+        assertEquals(c.hasMapmaker, false);
+
+        testLidarParameters(lidarConfig, true, c.rootDirOnServer, "/ola/browse/fileList_public.txt");
+
+        ArrayList<Date> startStop = new ArrayList<Date>();
+        startStop = new ArrayList<Date>();
+        startStop.add(new GregorianCalendar(2019, 6, 1, 0, 0, 0).getTime());
+        startStop.add(new GregorianCalendar(2019, 7, 6, 0, 0, 0).getTime());
+
+        assertEquals(lidarConfig.orexSearchTimeMap.get("Recon"), null);
+        assertEquals(lidarConfig.lidarSearchDataSourceMap.get("Recon"), null);
+
+        assertArrayEquals(c.presentInMissions, PublicOnly);
+        assertArrayEquals(c.defaultForMissions, new Mission[] {});
+        assertEquals(c.getBaseMapConfigName(), "config.txt");
 	}
 
 	@Test void testBennuSPC20190121PublicConfig()
 	{
-		fail("Not yet implemented");
+		BennuConfigs c = (BennuConfigs)SmallBodyViewConfig.getConfig(ShapeModelBody.RQ36, ShapeModelType.provide("ALTWG-SPC-v20190121"));
+		FeatureConfigIOFactory.getIOForClassType(LidarInstrumentConfig.class.getSimpleName()).setViewConfig((ViewConfig)c);
+        FeatureConfigIOFactory.getIOForClassType(SpectrumInstrumentConfig.class.getSimpleName()).setViewConfig((ViewConfig)c);
+        FeatureConfigIOFactory.getIOForClassType(ImagingInstrumentConfig.class.getSimpleName()).setViewConfig((ViewConfig)c);
+        FeatureConfigIOFactory.getIOForClassType(BasemapImageConfig.class.getSimpleName()).setViewConfig((ViewConfig)c);
+        FeatureConfigIOFactory.getIOForClassType(StateHistoryConfig.class.getSimpleName()).setViewConfig((ViewConfig)c);
+
+        assertEquals(c.dataUsed, ShapeModelDataUsed.IMAGE_BASED);
+        assertEquals(c.author, ShapeModelType.provide("ALTWG-SPC-v20190121"));
+        assertEquals(c.modelLabel, "SPC v20");
+        assertEquals(c.rootDirOnServer, "/bennu/altwg-spc-v20190121");
+        assertEquals(c.getResolutionLabels(), ImmutableList.of(
+                "Very Low (12288 plates)", BodyViewConfig.DEFAULT_GASKELL_LABELS_PER_RESOLUTION[0], BodyViewConfig.DEFAULT_GASKELL_LABELS_PER_RESOLUTION[1], BodyViewConfig.DEFAULT_GASKELL_LABELS_PER_RESOLUTION[2], BodyViewConfig.DEFAULT_GASKELL_LABELS_PER_RESOLUTION[3]));
+        assertEquals(c.getResolutionNumberElements(), ImmutableList.of(12288, BodyViewConfig.DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[0], BodyViewConfig.DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[1], BodyViewConfig.DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[2], BodyViewConfig.DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[3]));
+        assertEquals(c.density, 1.186);
+        assertEquals(c.rotationRate, 4.0626E-4);
+        assertEquals(c.bodyReferencePotential, -0.02513575424405747);
+
+        testBodyParameters(c);
+        ImagingInstrumentConfig imagingConfig = (ImagingInstrumentConfig)c.getConfigForClass(ImagingInstrumentConfig.class);
+        LidarInstrumentConfig lidarConfig = (LidarInstrumentConfig)c.getConfigForClass(LidarInstrumentConfig.class);
+        StateHistoryConfig stateHistoryConfig = (StateHistoryConfig)c.getConfigForClass(StateHistoryConfig.class);
+
+        assertEquals(imagingConfig.imagingInstruments.size(), 2);
+
+		testPolycamParameters(imagingConfig, c.rootDirOnServer, "bennu_altwgspcv20190121_polycam", "bennu_altwgspcv20190121_polycam", true, false, true);
+		testMapcamParameters(imagingConfig, c.rootDirOnServer, "bennu_altwgspcv20190121_mapcam", "bennu_altwgspcv20190121_mapcam", true, false, true);
+//		testNavcamParameters(imagingConfig, c.rootDirOnServer, "bennu_olav20_navcam", "bennu_olav20_navcam", true);
+
+        testStateHistoryParameters(c, stateHistoryConfig);
+        assertEquals(c.hasMapmaker, false);
+
+        testLidarParameters(lidarConfig, true, c.rootDirOnServer, "/ola/browse/fileList_public.txt");
+
+        ArrayList<Date> startStop = new ArrayList<Date>();
+        startStop = new ArrayList<Date>();
+        startStop.add(new GregorianCalendar(2019, 6, 1, 0, 0, 0).getTime());
+        startStop.add(new GregorianCalendar(2019, 7, 6, 0, 0, 0).getTime());
+
+        assertEquals(lidarConfig.orexSearchTimeMap.get("Recon"), null);
+        assertEquals(lidarConfig.lidarSearchDataSourceMap.get("Recon"), null);
+
+        assertArrayEquals(c.presentInMissions, PublicOnly);
+        assertArrayEquals(c.defaultForMissions, new Mission[] {});
+        assertEquals(c.getBaseMapConfigName(), "config.txt");
+
+        assertArrayEquals(c.databaseRunInfos, new DBRunInfo[]
+        {
+        	new DBRunInfo(PointingSource.GASKELL, Instrument.MAPCAM, ShapeModelBody.RQ36.toString(), "/bennu/altwg-spc-v20190121/mapcam/imagelist-fullpath-sum.txt", "bennu_altwgspcv20190121_mapcam"),
+            new DBRunInfo(PointingSource.GASKELL, Instrument.POLYCAM, ShapeModelBody.RQ36.toString(), "/bennu/altwg-spc-v20190121/polycam/imagelist-fullpath-sum.txt", "bennu_altwgspcv20190121_polycam"),
+
+            new DBRunInfo(PointingSource.SPICE, Instrument.MAPCAM, ShapeModelBody.RQ36.toString(), "/bennu/altwg-spc-v20190121/mapcam/imagelist-fullpath-info.txt", "bennu_altwgspcv20190121_mapcam"),
+            new DBRunInfo(PointingSource.SPICE, Instrument.POLYCAM, ShapeModelBody.RQ36.toString(), "/bennu/altwg-spc-v20190121/polycam/imagelist-fullpath-info.txt", "bennu_altwgspcv20190121_polycam"),
+            new DBRunInfo(PointingSource.SPICE, Instrument.NAVCAM, ShapeModelBody.RQ36.toString(), "/bennu/altwg-spc-v20190121/navcam/imagelist-fullpath-info.txt", "bennu_altwgspcv20190121_navcam")
+        });
 	}
 
 	@Test void testBennuSPC20190414PublicConfig()
 	{
-		fail("Not yet implemented");
+		BennuConfigs c = (BennuConfigs)SmallBodyViewConfig.getConfig(ShapeModelBody.RQ36, ShapeModelType.provide("ALTWG-SPC-v20190414"));
+		FeatureConfigIOFactory.getIOForClassType(LidarInstrumentConfig.class.getSimpleName()).setViewConfig((ViewConfig)c);
+        FeatureConfigIOFactory.getIOForClassType(SpectrumInstrumentConfig.class.getSimpleName()).setViewConfig((ViewConfig)c);
+        FeatureConfigIOFactory.getIOForClassType(ImagingInstrumentConfig.class.getSimpleName()).setViewConfig((ViewConfig)c);
+        FeatureConfigIOFactory.getIOForClassType(BasemapImageConfig.class.getSimpleName()).setViewConfig((ViewConfig)c);
+        FeatureConfigIOFactory.getIOForClassType(StateHistoryConfig.class.getSimpleName()).setViewConfig((ViewConfig)c);
+
+        assertEquals(c.dataUsed, ShapeModelDataUsed.IMAGE_BASED);
+        assertEquals(c.author, ShapeModelType.provide("ALTWG-SPC-v20190414"));
+        assertEquals(c.modelLabel, "SPC v28");
+        assertEquals(c.rootDirOnServer, "/bennu/altwg-spc-v20190414");
+        assertEquals(c.getResolutionLabels(), ImmutableList.of(
+                "Very Low (12288 plates)", BodyViewConfig.DEFAULT_GASKELL_LABELS_PER_RESOLUTION[0], BodyViewConfig.DEFAULT_GASKELL_LABELS_PER_RESOLUTION[1], BodyViewConfig.DEFAULT_GASKELL_LABELS_PER_RESOLUTION[2], BodyViewConfig.DEFAULT_GASKELL_LABELS_PER_RESOLUTION[3]));
+        assertEquals(c.getResolutionNumberElements(), ImmutableList.of(12288, BodyViewConfig.DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[0], BodyViewConfig.DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[1], BodyViewConfig.DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[2], BodyViewConfig.DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[3]));
+        assertEquals(c.density, 1.186);
+        assertEquals(c.rotationRate, 4.0626E-4);
+        assertEquals(c.bodyReferencePotential, -0.02520767997203304);
+
+        testBodyParameters(c);
+        ImagingInstrumentConfig imagingConfig = (ImagingInstrumentConfig)c.getConfigForClass(ImagingInstrumentConfig.class);
+        LidarInstrumentConfig lidarConfig = (LidarInstrumentConfig)c.getConfigForClass(LidarInstrumentConfig.class);
+        StateHistoryConfig stateHistoryConfig = (StateHistoryConfig)c.getConfigForClass(StateHistoryConfig.class);
+
+        assertEquals(imagingConfig.imagingInstruments.size(), 2);
+
+		testPolycamParameters(imagingConfig, c.rootDirOnServer, "bennu_altwgspcv20190414_polycam", "bennu_altwgspcv20190414_polycam", true, false, true);
+		testMapcamParameters(imagingConfig, c.rootDirOnServer, "bennu_altwgspcv20190414_mapcam", "bennu_altwgspcv20190414_mapcam", true, false, true);
+//		testNavcamParameters(imagingConfig, c.rootDirOnServer, "bennu_olav20_navcam", "bennu_olav20_navcam", true);
+
+        testStateHistoryParameters(c, stateHistoryConfig);
+        assertEquals(c.hasMapmaker, false);
+
+        testLidarParameters(lidarConfig, true, c.rootDirOnServer, "/ola/browse/fileList_public.txt");
+
+        ArrayList<Date> startStop = new ArrayList<Date>();
+        startStop = new ArrayList<Date>();
+        startStop.add(new GregorianCalendar(2019, 6, 1, 0, 0, 0).getTime());
+        startStop.add(new GregorianCalendar(2019, 7, 6, 0, 0, 0).getTime());
+
+        assertEquals(lidarConfig.orexSearchTimeMap.get("Recon"), null);
+        assertEquals(lidarConfig.lidarSearchDataSourceMap.get("Recon"), null);
+
+        assertArrayEquals(c.presentInMissions, PublicOnly);
+        assertArrayEquals(c.defaultForMissions, new Mission[] {});
+        assertEquals(c.getBaseMapConfigName(), "config_public.txt");
+
+        assertArrayEquals(c.databaseRunInfos, new DBRunInfo[]
+        {
+        	new DBRunInfo(PointingSource.GASKELL, Instrument.MAPCAM, ShapeModelBody.RQ36.toString(), "/bennu/altwg-spc-v20190414/mapcam/imagelist-fullpath-sum.txt", "bennu_altwgspcv20190414_mapcam"),
+            new DBRunInfo(PointingSource.GASKELL, Instrument.POLYCAM, ShapeModelBody.RQ36.toString(), "/bennu/altwg-spc-v20190414/polycam/imagelist-fullpath-sum.txt", "bennu_altwgspcv20190414_polycam"),
+
+            new DBRunInfo(PointingSource.SPICE, Instrument.MAPCAM, ShapeModelBody.RQ36.toString(), "/bennu/altwg-spc-v20190414/mapcam/imagelist-fullpath-info.txt", "bennu_altwgspcv20190414_mapcam"),
+            new DBRunInfo(PointingSource.SPICE, Instrument.POLYCAM, ShapeModelBody.RQ36.toString(), "/bennu/altwg-spc-v20190414/polycam/imagelist-fullpath-info.txt", "bennu_altwgspcv20190414_polycam"),
+            new DBRunInfo(PointingSource.SPICE, Instrument.NAVCAM, ShapeModelBody.RQ36.toString(), "/bennu/altwg-spc-v20190414/navcam/imagelist-fullpath-info.txt", "bennu_altwgspcv20190414_navcam")
+        });
 	}
 
 	@Test void testBennuSPC20190612PublicConfig()
 	{
-		fail("Not yet implemented");
+		BennuConfigs c = (BennuConfigs)SmallBodyViewConfig.getConfig(ShapeModelBody.RQ36, ShapeModelType.provide("ALTWG-SPO-v20190612"));
+		FeatureConfigIOFactory.getIOForClassType(LidarInstrumentConfig.class.getSimpleName()).setViewConfig((ViewConfig)c);
+        FeatureConfigIOFactory.getIOForClassType(SpectrumInstrumentConfig.class.getSimpleName()).setViewConfig((ViewConfig)c);
+        FeatureConfigIOFactory.getIOForClassType(ImagingInstrumentConfig.class.getSimpleName()).setViewConfig((ViewConfig)c);
+        FeatureConfigIOFactory.getIOForClassType(BasemapImageConfig.class.getSimpleName()).setViewConfig((ViewConfig)c);
+        FeatureConfigIOFactory.getIOForClassType(StateHistoryConfig.class.getSimpleName()).setViewConfig((ViewConfig)c);
+
+        assertEquals(c.dataUsed, ShapeModelDataUsed.IMAGE_BASED);
+        assertEquals(c.author, ShapeModelType.provide("ALTWG-SPO-v20190612"));
+        assertEquals(c.modelLabel, "SPO v34");
+        assertEquals(c.rootDirOnServer, "/bennu/altwg-spo-v20190612");
+        assertEquals(c.getResolutionLabels(), ImmutableList.of(
+                "Very Low (12288 plates)", BodyViewConfig.DEFAULT_GASKELL_LABELS_PER_RESOLUTION[0], BodyViewConfig.DEFAULT_GASKELL_LABELS_PER_RESOLUTION[1], BodyViewConfig.DEFAULT_GASKELL_LABELS_PER_RESOLUTION[2], BodyViewConfig.DEFAULT_GASKELL_LABELS_PER_RESOLUTION[3]));
+        assertEquals(c.getResolutionNumberElements(), ImmutableList.of(12288, BodyViewConfig.DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[0], BodyViewConfig.DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[1], BodyViewConfig.DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[2], BodyViewConfig.DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[3]));
+        assertEquals(c.density, 1.186);
+        assertEquals(c.rotationRate, 4.0626E-4);
+        assertEquals(c.bodyReferencePotential, -0.02517871436774813);
+
+        testBodyParameters(c);
+        ImagingInstrumentConfig imagingConfig = (ImagingInstrumentConfig)c.getConfigForClass(ImagingInstrumentConfig.class);
+        LidarInstrumentConfig lidarConfig = (LidarInstrumentConfig)c.getConfigForClass(LidarInstrumentConfig.class);
+        StateHistoryConfig stateHistoryConfig = (StateHistoryConfig)c.getConfigForClass(StateHistoryConfig.class);
+
+        assertEquals(imagingConfig.imagingInstruments.size(), 2);
+
+		testPolycamParameters(imagingConfig, c.rootDirOnServer, "bennu_altwgspov20190612_polycam", "bennu_altwgspov20190612_polycam", true, false, true);
+		testMapcamParameters(imagingConfig, c.rootDirOnServer, "bennu_altwgspov20190612_mapcam", "bennu_altwgspov20190612_mapcam", true, false, true);
+//		testNavcamParameters(imagingConfig, c.rootDirOnServer, "bennu_olav20_navcam", "bennu_olav20_navcam", true);
+
+        testStateHistoryParameters(c, stateHistoryConfig);
+        assertEquals(c.hasMapmaker, false);
+
+        testLidarParameters(lidarConfig, true, c.rootDirOnServer, "/ola/browse/fileList_public.txt");
+
+        ArrayList<Date> startStop = new ArrayList<Date>();
+        startStop = new ArrayList<Date>();
+        startStop.add(new GregorianCalendar(2019, 6, 1, 0, 0, 0).getTime());
+        startStop.add(new GregorianCalendar(2019, 7, 6, 0, 0, 0).getTime());
+
+        assertEquals(lidarConfig.orexSearchTimeMap.get("Recon"), null);
+        assertEquals(lidarConfig.lidarSearchDataSourceMap.get("Recon"), null);
+
+        assertArrayEquals(c.presentInMissions, PublicOnly);
+        assertArrayEquals(c.defaultForMissions, new Mission[] {});
+        assertEquals(c.getBaseMapConfigName(), "config_public.txt");
+
+        assertArrayEquals(c.databaseRunInfos, new DBRunInfo[]
+        {
+        	new DBRunInfo(PointingSource.GASKELL, Instrument.MAPCAM, ShapeModelBody.RQ36.toString(), "/bennu/altwg-spo-v20190612/mapcam/imagelist-fullpath-sum.txt", "bennu_altwgspov20190612_mapcam"),
+            new DBRunInfo(PointingSource.GASKELL, Instrument.POLYCAM, ShapeModelBody.RQ36.toString(), "/bennu/altwg-spo-v20190612/polycam/imagelist-fullpath-sum.txt", "bennu_altwgspov20190612_polycam"),
+
+            new DBRunInfo(PointingSource.SPICE, Instrument.MAPCAM, ShapeModelBody.RQ36.toString(), "/bennu/altwg-spo-v20190612/mapcam/imagelist-fullpath-info.txt", "bennu_altwgspov20190612_mapcam"),
+            new DBRunInfo(PointingSource.SPICE, Instrument.POLYCAM, ShapeModelBody.RQ36.toString(), "/bennu/altwg-spo-v20190612/polycam/imagelist-fullpath-info.txt", "bennu_altwgspov20190612_polycam"),
+            new DBRunInfo(PointingSource.SPICE, Instrument.NAVCAM, ShapeModelBody.RQ36.toString(), "/bennu/altwg-spo-v20190612/navcam/imagelist-fullpath-info.txt", "bennu_altwgspov20190612_navcam")
+        });
 	}
 
 	@Test void testBennuSPC20190828PublicConfig()
@@ -244,8 +494,8 @@ class BennuConfigsPublicTest
 
         assertEquals(imagingConfig.imagingInstruments.size(), 2);
 
-		testPolycamParameters(imagingConfig, c.rootDirOnServer, "bennu_altwgspcv20190828_polycam", "bennu_altwgspcv20190828_polycam", true, true, true);
-		testMapcamParameters(imagingConfig, c.rootDirOnServer, "bennu_altwgspcv20190828_mapcam", "bennu_altwgspcv20190828_mapcam", true, true, true);
+		testPolycamParameters(imagingConfig, c.rootDirOnServer, "bennu_altwgspcv20190828_polycam", "bennu_altwgspcv20190828_polycam", true, false, true);
+		testMapcamParameters(imagingConfig, c.rootDirOnServer, "bennu_altwgspcv20190828_mapcam", "bennu_altwgspcv20190828_mapcam", true, false, true);
 //		testNavcamParameters(imagingConfig, c.rootDirOnServer, "bennu_olav20_navcam", "bennu_olav20_navcam", true);
 
         testStateHistoryParameters(c, stateHistoryConfig);
