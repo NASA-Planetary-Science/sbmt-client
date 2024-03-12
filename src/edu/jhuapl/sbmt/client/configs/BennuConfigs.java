@@ -126,8 +126,8 @@ public class BennuConfigs extends SmallBodyViewConfig
 
 	public static void initialize(ConfigArrayList<IBodyViewConfig> configArray, boolean publicOnly)
     {
-		buildEarthBlenderConfig(configArray, publicOnly);
-		buildEarthWGS84Config(configArray, publicOnly);
+//		buildEarthBlenderConfig(configArray, publicOnly);
+//		buildEarthWGS84Config(configArray, publicOnly);
 		buildBennuNolanConfig(configArray, publicOnly);
 		buildBennuV3GaskellConfig(configArray, publicOnly);
 		buildBennuV4GaskellConfig(configArray, publicOnly);
@@ -419,7 +419,7 @@ public class BennuConfigs extends SmallBodyViewConfig
     {
 		BennuConfigs c = new BennuConfigs();
 
-        c.useMinimumReferencePotential = false;
+
 
         c.dataUsed = ShapeModelDataUsed.SIMULATED;
         c.author = ShapeModelType.GASKELL;
@@ -434,7 +434,7 @@ public class BennuConfigs extends SmallBodyViewConfig
         setupFeatures(c);
         c.setBodyParameters();
         c.hasMapmaker = true;
-
+        c.useMinimumReferencePotential = false;
         ImagingInstrumentConfig imagingConfig = (ImagingInstrumentConfig)c.getConfigForClass(ImagingInstrumentConfig.class);
         LidarInstrumentConfig lidarConfig = (LidarInstrumentConfig)c.getConfigForClass(LidarInstrumentConfig.class);
         StateHistoryConfig stateHistoryConfig = (StateHistoryConfig)c.getConfigForClass(StateHistoryConfig.class);
@@ -448,8 +448,6 @@ public class BennuConfigs extends SmallBodyViewConfig
                 new ImagingInstrument(
                         SpectralImageMode.MONO,
                         new ImageDataQuery(polycamMetadata),
-//                        new GenericPhpQuery("/GASKELL/RQ36_V3/POLYCAM", "RQ36_POLY"),
-                        //new FixedListQuery("/GASKELL/RQ36_V3/POLYCAM", true),
                         ImageType.POLYCAM_V3_IMAGE,
                         new PointingSource[]{PointingSource.GASKELL, PointingSource.SPICE},
                         Instrument.POLYCAM
@@ -457,8 +455,6 @@ public class BennuConfigs extends SmallBodyViewConfig
                 new ImagingInstrument(
                         SpectralImageMode.MONO,
                         new ImageDataQuery(mapcamMetadata),
-//                        new GenericPhpQuery("/GASKELL/RQ36_V3/MAPCAM", "RQ36_MAP"),
-                        //new FixedListQuery("/GASKELL/RQ36_V3/MAPCAM"),
                         ImageType.MAPCAM_V3_IMAGE,
                         new PointingSource[]{PointingSource.GASKELL, PointingSource.SPICE},
                         Instrument.MAPCAM
