@@ -1,10 +1,12 @@
 package edu.jhuapl.sbmt.client.configs;
 
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.fail;
 
 import java.util.Date;
 import java.util.GregorianCalendar;
+import java.util.List;
 
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
@@ -24,8 +26,6 @@ import edu.jhuapl.sbmt.core.body.ShapeModelDataUsed;
 import edu.jhuapl.sbmt.core.body.ShapeModelPopulation;
 import edu.jhuapl.sbmt.core.client.Mission;
 import edu.jhuapl.sbmt.core.config.FeatureConfigIOFactory;
-import edu.jhuapl.sbmt.core.config.Instrument;
-import edu.jhuapl.sbmt.core.io.DBRunInfo;
 import edu.jhuapl.sbmt.image.config.BasemapImageConfig;
 import edu.jhuapl.sbmt.image.config.BasemapImageConfigIO;
 import edu.jhuapl.sbmt.image.config.ImagingInstrumentConfig;
@@ -75,6 +75,44 @@ import crucible.crust.metadata.impl.InstanceGetter;
 
 class DartConfigsTest
 {
+
+	private static final Mission[] APLClients = new Mission[] { //
+            Mission.APL_INTERNAL, //
+            Mission.TEST_APL_INTERNAL, //
+            Mission.STAGE_APL_INTERNAL, //
+    };
+
+    private static final Mission[] DartClients = new Mission[] { //
+            Mission.DART_DEV, //
+            Mission.DART_DEPLOY, //
+            Mission.DART_TEST, //
+            Mission.DART_STAGE, //
+    };
+
+    private static final Mission[] InternalClientsWithDartModels = new Mission[] {
+    		 Mission.APL_INTERNAL, //
+             Mission.TEST_APL_INTERNAL, //
+             Mission.STAGE_APL_INTERNAL, //
+             Mission.DART_DEV, //
+             Mission.DART_DEPLOY, //
+             Mission.DART_TEST, //
+             Mission.DART_STAGE, //
+    };
+
+    private static final Mission[] ClientsWithDartModels = new Mission[] { //
+            Mission.APL_INTERNAL, //
+            Mission.TEST_APL_INTERNAL, //
+            Mission.STAGE_APL_INTERNAL, //
+            Mission.DART_DEV, //
+            Mission.DART_DEPLOY, //
+            Mission.DART_TEST, //
+            Mission.DART_STAGE, //
+            Mission.PUBLIC_RELEASE,
+            Mission.STAGE_PUBLIC_RELEASE,
+            Mission.TEST_PUBLIC_RELEASE
+    };
+
+    private static final String MissionPrefix = "DART";
 
 	// Months (only) are 0-based: SEPTEMBER 20 is 8, 20, not 9, 20.
     private static final Date ImageSearchDefaultStartDate = new GregorianCalendar(2022, 8, 20, 0, 0, 0).getTime();
@@ -432,24 +470,24 @@ class DartConfigsTest
 
 //        modelRes(BodyViewConfig.DEFAULT_GASKELL_LABELS_PER_RESOLUTION, BodyViewConfig.DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION);
 
-        {
-            ImagingInstrument instrument = createFlightInstrument(ShapeModelBody.DIDYMOS, author, Instrument.DRACO, dracoFlightOrientations, spcSources);
-            DBRunInfo[] dbRunInfos = createDbInfos(ShapeModelBody.DIDYMOS, author, Instrument.DRACO, spcSources);
-            add(instrument, dbRunInfos);
-        }
-
-        {
-            ImagingInstrument instrument = createFlightInstrument(ShapeModelBody.DIDYMOS, author, Instrument.LUKE, lukeFlightOrientations, spcSources);
-            DBRunInfo[] dbRunInfos = createDbInfos(ShapeModelBody.DIDYMOS, author, Instrument.LUKE, spcSources);
-            add(instrument, dbRunInfos);
-        }
-
-//        gravityInputs(2834, 7.7227E-4);
-        assertEquals(c.density, 2834);
-        assertEquals(c.rotationRate, 7.7227E-4);
-
-        c = build();
-        generateUpdatedStateHistoryParameters(c, ShapeModelBody.DIDYMOS.name());
+//        {
+//            ImagingInstrument instrument = createFlightInstrument(ShapeModelBody.DIDYMOS, author, Instrument.DRACO, dracoFlightOrientations, spcSources);
+//            DBRunInfo[] dbRunInfos = createDbInfos(ShapeModelBody.DIDYMOS, author, Instrument.DRACO, spcSources);
+//            add(instrument, dbRunInfos);
+//        }
+//
+//        {
+//            ImagingInstrument instrument = createFlightInstrument(ShapeModelBody.DIDYMOS, author, Instrument.LUKE, lukeFlightOrientations, spcSources);
+//            DBRunInfo[] dbRunInfos = createDbInfos(ShapeModelBody.DIDYMOS, author, Instrument.LUKE, spcSources);
+//            add(instrument, dbRunInfos);
+//        }
+//
+////        gravityInputs(2834, 7.7227E-4);
+//        assertEquals(c.density, 2834);
+//        assertEquals(c.rotationRate, 7.7227E-4);
+//
+//        c = build();
+        testUpdatedStateHistoryParameters(c, ShapeModelBody.DIDYMOS.name());
 	}
 
 	@Test
@@ -475,5 +513,79 @@ class DartConfigsTest
 	{
 		fail("Not yet implemented");
 	}
+
+    private static void testStateHistoryParameters(SmallBodyViewConfig c, String centerBodyName)
+    {
+        StateHistoryConfig stateHistoryConfig = (StateHistoryConfig)c.getConfigForClass(StateHistoryConfig.class);
+
+        assertEquals(stateHistoryConfig.hasStateHistory, true);
+        assertEquals(stateHistoryConfig.stateHistoryStartDate, new GregorianCalendar(2022, 9, 1, 10, 25, 8).getTime());
+        assertEquals(stateHistoryConfig.stateHistoryEndDate, new GregorianCalendar(2022, 9, 1, 10, 28, 36).getTime());
+        SpiceInfo spiceInfo1 = new SpiceInfo(MissionPrefix, "920065803_FIXED", "DART_SPACECRAFT", "DIDYMOS", new String[] { "EARTH", "SUN", "DIMORPHOS" }, new String[] {"IAU_EARTH", "IAU_SUN", "IAU_DIMORPHOS"}, new String[] { "DART_DRACO_2X2", "120065803_FIXED" }, new String[] {});
+        SpiceInfo spiceInfo2 = new SpiceInfo(MissionPrefix, "120065803_FIXED", "DART_SPACECRAFT", "DIMORPHOS", new String[] { "EARTH", "SUN", "DIDYMOS" }, new String[] {"IAU_EARTH", "IAU_SUN", "IAU_DIDYMOS"}, new String[] { "DART_DRACO_2X2", "920065803_FIXED" }, new String[] {});
+        SpiceInfo[] spiceInfos = new SpiceInfo[] { spiceInfo1, spiceInfo2 };
+        stateHistoryConfig.spiceInfo = List.of(spiceInfos).stream().filter(info -> info.getBodyName().equals(centerBodyName)).toList().get(0);
+
+		assertEquals(stateHistoryConfig.spiceInfo.getScId(), MissionPrefix);
+		assertEquals(stateHistoryConfig.spiceInfo.getScFrameName(), "DART_SPACECRAFT");
+
+		if (stateHistoryConfig.spiceInfo.getBodyName().equals("BENNU"))
+		{
+			assertEquals(stateHistoryConfig.spiceInfo.getBodyFrameName(), "920065803_FIXED");
+			assertEquals(stateHistoryConfig.spiceInfo.getBodyName(), "DIDYMOS");
+			assertArrayEquals(stateHistoryConfig.spiceInfo.getBodyNamesToBind(), new String[] {"EARTH", "SUN", "DIMORPHOS"});
+			assertArrayEquals(stateHistoryConfig.spiceInfo.getBodyFramesToBind(), new String[] {"IAU_EARTH" , "IAU_SUN", "IAU_DIMORPHOS"});
+			assertArrayEquals(stateHistoryConfig.spiceInfo.getInstrumentNamesToBind(), new String[] {"DART_DRACO_2X2", "120065803_FIXED"});
+			assertArrayEquals(stateHistoryConfig.spiceInfo.getInstrumentFrameNamesToBind(), new String[] {});
+		}
+		else
+		{
+			assertEquals(stateHistoryConfig.spiceInfo.getBodyFrameName(), "120065803_FIXED");
+			assertEquals(stateHistoryConfig.spiceInfo.getBodyName(), "DIMORPHOS");
+			assertArrayEquals(stateHistoryConfig.spiceInfo.getBodyNamesToBind(), new String[] {"EARTH" , "SUN", "DIDYMOS"});
+			assertArrayEquals(stateHistoryConfig.spiceInfo.getBodyFramesToBind(), new String[] {"IAU_EARTH" , "IAU_SUN", "IAU_DIDYMOS"});
+			assertArrayEquals(stateHistoryConfig.spiceInfo.getInstrumentNamesToBind(), new String[] {"DART_DRACO_2X2", "920065803_FIXED"});
+			assertArrayEquals(stateHistoryConfig.spiceInfo.getInstrumentFrameNamesToBind(), new String[] {});
+		}
+
+    }
+
+    private static void testUpdatedStateHistoryParameters(SmallBodyViewConfig c, String centerBodyName)
+    {
+        StateHistoryConfig stateHistoryConfig = (StateHistoryConfig)c.getConfigForClass(StateHistoryConfig.class);
+
+        assertEquals(stateHistoryConfig.hasStateHistory, true);
+        assertEquals(stateHistoryConfig.stateHistoryStartDate, new GregorianCalendar(2022, 8, 26, 23, 10, 18).getTime());
+        assertEquals(stateHistoryConfig.stateHistoryEndDate, new GregorianCalendar(2022, 8, 26, 23, 14, 24).getTime());
+        assertEquals(stateHistoryConfig.stateHistoryEndDate, new Date(stateHistoryConfig.stateHistoryEndDate.getTime() + 193));
+        SpiceInfo spiceInfo1 = new SpiceInfo(MissionPrefix, "IAU_DIDYMOS", "DART_SPACECRAFT", "DIDYMOS", new String[] { "EARTH", "SUN", "DIMORPHOS" }, new String[] {"IAU_EARTH", "IAU_SUN", "IAU_DIMORPHOS"}, new String[] { "DART_DRACO_2X2" }, new String[] {});
+        SpiceInfo spiceInfo2 = new SpiceInfo(MissionPrefix, "IAU_DIMORPHOS", "DART_SPACECRAFT", "DIMORPHOS", new String[] { "EARTH", "SUN", "DIDYMOS" }, new String[] {"IAU_EARTH", "IAU_SUN", "IAU_DIDYMOS"}, new String[] { "DART_DRACO_2X2" }, new String[] {});
+        SpiceInfo[] spiceInfos = new SpiceInfo[] { spiceInfo1, spiceInfo2 };
+        stateHistoryConfig.spiceInfo = List.of(spiceInfos).stream().filter(info -> info.getBodyName().equals(centerBodyName)).toList().get(0);
+
+
+        assertEquals(stateHistoryConfig.spiceInfo.getScId(), MissionPrefix);
+		assertEquals(stateHistoryConfig.spiceInfo.getScFrameName(), "DART_SPACECRAFT");
+
+		if (stateHistoryConfig.spiceInfo.getBodyName().equals("BENNU"))
+		{
+			assertEquals(stateHistoryConfig.spiceInfo.getBodyFrameName(), "IAU_DIDYMOS");
+			assertEquals(stateHistoryConfig.spiceInfo.getBodyName(), "DIDYMOS");
+			assertArrayEquals(stateHistoryConfig.spiceInfo.getBodyNamesToBind(), new String[] {"EARTH", "SUN", "DIMORPHOS"});
+			assertArrayEquals(stateHistoryConfig.spiceInfo.getBodyFramesToBind(), new String[] {"IAU_EARTH" , "IAU_SUN", "IAU_DIMORPHOS"});
+			assertArrayEquals(stateHistoryConfig.spiceInfo.getInstrumentNamesToBind(), new String[] {"DART_DRACO_2X2"});
+			assertArrayEquals(stateHistoryConfig.spiceInfo.getInstrumentFrameNamesToBind(), new String[] {});
+		}
+		else
+		{
+			assertEquals(stateHistoryConfig.spiceInfo.getBodyFrameName(), "IAU_DIMORPHOS");
+			assertEquals(stateHistoryConfig.spiceInfo.getBodyName(), "DIMORPHOS");
+			assertArrayEquals(stateHistoryConfig.spiceInfo.getBodyNamesToBind(), new String[] {"EARTH" , "SUN", "DIDYMOS"});
+			assertArrayEquals(stateHistoryConfig.spiceInfo.getBodyFramesToBind(), new String[] {"IAU_EARTH" , "IAU_SUN", "IAU_DIDYMOS"});
+			assertArrayEquals(stateHistoryConfig.spiceInfo.getInstrumentNamesToBind(), new String[] {"DART_DRACO_2X2"});
+			assertArrayEquals(stateHistoryConfig.spiceInfo.getInstrumentFrameNamesToBind(), new String[] {});
+		}
+
+    }
 
 }
