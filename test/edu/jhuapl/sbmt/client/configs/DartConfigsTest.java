@@ -1,6 +1,10 @@
 package edu.jhuapl.sbmt.client.configs;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.fail;
+
+import java.util.Date;
+import java.util.GregorianCalendar;
 
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
@@ -8,11 +12,20 @@ import org.junit.jupiter.api.Test;
 
 import edu.jhuapl.saavtk.config.ConfigArrayList;
 import edu.jhuapl.saavtk.config.IBodyViewConfig;
+import edu.jhuapl.saavtk.config.ViewConfig;
+import edu.jhuapl.saavtk.model.ShapeModelBody;
+import edu.jhuapl.saavtk.model.ShapeModelType;
 import edu.jhuapl.saavtk.util.Configuration;
 import edu.jhuapl.saavtk.util.SafeURLPaths;
 import edu.jhuapl.sbmt.config.SmallBodyViewConfig;
+import edu.jhuapl.sbmt.core.body.BodyType;
+import edu.jhuapl.sbmt.core.body.BodyViewConfig;
+import edu.jhuapl.sbmt.core.body.ShapeModelDataUsed;
+import edu.jhuapl.sbmt.core.body.ShapeModelPopulation;
 import edu.jhuapl.sbmt.core.client.Mission;
 import edu.jhuapl.sbmt.core.config.FeatureConfigIOFactory;
+import edu.jhuapl.sbmt.core.config.Instrument;
+import edu.jhuapl.sbmt.core.io.DBRunInfo;
 import edu.jhuapl.sbmt.image.config.BasemapImageConfig;
 import edu.jhuapl.sbmt.image.config.BasemapImageConfigIO;
 import edu.jhuapl.sbmt.image.config.ImagingInstrumentConfig;
@@ -62,6 +75,33 @@ import crucible.crust.metadata.impl.InstanceGetter;
 
 class DartConfigsTest
 {
+
+	// Months (only) are 0-based: SEPTEMBER 20 is 8, 20, not 9, 20.
+    private static final Date ImageSearchDefaultStartDate = new GregorianCalendar(2022, 8, 20, 0, 0, 0).getTime();
+    // Months (only) are 0-based: OCTOBER 5 is 9, 5 not 10, 5.
+    private static final Date ImageSearchDefaultEndDate = new GregorianCalendar(2022, 9, 5, 0, 0, 0).getTime();
+
+//    // Months (only) are 0-based: JULY 1 is 6, 1, not 7, 1.
+//    private static final Date JupiterSearchStartDate = new GregorianCalendar(2022, 6, 1, 0, 0, 0).getTime();
+//    // Months (only) are 0-based: JULY 2 is 6, 2 not 7, 2.
+//    private static final Date JupiterSearchEndDate = new GregorianCalendar(2022, 6, 2, 0, 0, 0).getTime();
+
+    // Months (only) are 0-based: SEPTEMBER 26 is 8, 26.
+    // These values were specified in an update to Redmine issue #2472.
+    private static final Date DimorphosImpactSearchStartDate = new GregorianCalendar(2022, 8, 26, 22, 0, 0).getTime();
+    private static final Date DimorphosImpactSearchEndDate = new GregorianCalendar(2022, 8, 26, 23, 14, 25).getTime();
+    private static final double DimorphosImpactMaxScDistance = 10000.0; // km
+    private static final double DimorphosImpactResolution = 300.0; // mpp
+
+    // These values were specified in an update to Redmine issue #2496.
+    private static final Date DidymosImpactSearchStartDate = new GregorianCalendar(2022, 8, 26, 23, 10, 39).getTime();
+    private static final Date DidymosImpactSearchEndDate = new GregorianCalendar(2022, 8, 26, 23, 12, 57).getTime();
+    private static final double DidymosImpactMaxScDistance = 1500.0; // km
+    private static final double DidymosImpactResolution = 7.0; // mpp
+
+    // These values were specified in an update to Redmine issue #2555.
+    private static final Date DidymosLiciaSearchStartDate = DidymosImpactSearchStartDate;
+    private static final Date DidymosLiciaSearchEndDate = new GregorianCalendar(2022, 8, 26, 23, 17, 20).getTime();
 
 	@BeforeAll
 	static void setUpBeforeClass() throws Exception
@@ -362,7 +402,54 @@ class DartConfigsTest
 	@Test
 	void testDidymosv003()
 	{
-		fail("Not yet implemented");
+		BennuConfigs c = (BennuConfigs)SmallBodyViewConfig.getConfig(ShapeModelBody.DIDYMOS, ShapeModelType.provide("DART Didymos-v003"));
+		FeatureConfigIOFactory.getIOForClassType(LidarInstrumentConfig.class.getSimpleName()).setViewConfig((ViewConfig)c);
+        FeatureConfigIOFactory.getIOForClassType(SpectrumInstrumentConfig.class.getSimpleName()).setViewConfig((ViewConfig)c);
+        FeatureConfigIOFactory.getIOForClassType(ImagingInstrumentConfig.class.getSimpleName()).setViewConfig((ViewConfig)c);
+        FeatureConfigIOFactory.getIOForClassType(BasemapImageConfig.class.getSimpleName()).setViewConfig((ViewConfig)c);
+        FeatureConfigIOFactory.getIOForClassType(StateHistoryConfig.class.getSimpleName()).setViewConfig((ViewConfig)c);
+
+        String label = "Didymos-v003";
+        assertEquals(c.body, ShapeModelBody.DIDYMOS);
+        assertEquals(c.author, "DART " + label);
+        assertEquals(c.type, BodyType.ASTEROID);
+        assertEquals(c.population, ShapeModelPopulation.NEO);
+        assertEquals(c.system, ShapeModelBody.DIDYMOS_SYSTEM);
+        assertEquals(c.dataUsed, ShapeModelDataUsed.IMAGE_BASED);
+
+//        init(ShapeModelBody.DIDYMOS, author, ShapeModelDataUsed.IMAGE_BASED, label);
+
+
+        ImagingInstrumentConfig imagingConfig = (ImagingInstrumentConfig)c.getConfigForClass(ImagingInstrumentConfig.class);
+        imagingConfig.imageSearchDefaultStartDate = DidymosLiciaSearchStartDate;
+        imagingConfig.imageSearchDefaultEndDate = DidymosLiciaSearchEndDate;
+        imagingConfig.imageSearchDefaultMaxSpacecraftDistance = DidymosImpactMaxScDistance;
+        imagingConfig.imageSearchDefaultMaxResolution = DidymosImpactResolution;
+//        imageSearchRanges(DidymosLiciaSearchStartDate, DidymosLiciaSearchEndDate, DidymosImpactMaxScDistance, DidymosImpactResolution);
+
+        assertEquals(c.getResolutionLabels(), BodyViewConfig.DEFAULT_GASKELL_LABELS_PER_RESOLUTION);
+        assertEquals(c.getResolutionNumberElements(), BodyViewConfig.DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION);
+
+//        modelRes(BodyViewConfig.DEFAULT_GASKELL_LABELS_PER_RESOLUTION, BodyViewConfig.DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION);
+
+        {
+            ImagingInstrument instrument = createFlightInstrument(ShapeModelBody.DIDYMOS, author, Instrument.DRACO, dracoFlightOrientations, spcSources);
+            DBRunInfo[] dbRunInfos = createDbInfos(ShapeModelBody.DIDYMOS, author, Instrument.DRACO, spcSources);
+            add(instrument, dbRunInfos);
+        }
+
+        {
+            ImagingInstrument instrument = createFlightInstrument(ShapeModelBody.DIDYMOS, author, Instrument.LUKE, lukeFlightOrientations, spcSources);
+            DBRunInfo[] dbRunInfos = createDbInfos(ShapeModelBody.DIDYMOS, author, Instrument.LUKE, spcSources);
+            add(instrument, dbRunInfos);
+        }
+
+//        gravityInputs(2834, 7.7227E-4);
+        assertEquals(c.density, 2834);
+        assertEquals(c.rotationRate, 7.7227E-4);
+
+        c = build();
+        generateUpdatedStateHistoryParameters(c, ShapeModelBody.DIDYMOS.name());
 	}
 
 	@Test
