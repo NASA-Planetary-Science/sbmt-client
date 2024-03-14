@@ -26,6 +26,9 @@ import edu.jhuapl.sbmt.core.body.ShapeModelDataUsed;
 import edu.jhuapl.sbmt.core.body.ShapeModelPopulation;
 import edu.jhuapl.sbmt.core.client.Mission;
 import edu.jhuapl.sbmt.core.config.FeatureConfigIOFactory;
+import edu.jhuapl.sbmt.core.config.Instrument;
+import edu.jhuapl.sbmt.core.io.DBRunInfo;
+import edu.jhuapl.sbmt.core.pointing.PointingSource;
 import edu.jhuapl.sbmt.image.config.BasemapImageConfig;
 import edu.jhuapl.sbmt.image.config.BasemapImageConfigIO;
 import edu.jhuapl.sbmt.image.config.ImagingInstrumentConfig;
@@ -481,12 +484,23 @@ class DartConfigsTest
 //            DBRunInfo[] dbRunInfos = createDbInfos(ShapeModelBody.DIDYMOS, author, Instrument.LUKE, spcSources);
 //            add(instrument, dbRunInfos);
 //        }
-//
-////        gravityInputs(2834, 7.7227E-4);
-//        assertEquals(c.density, 2834);
-//        assertEquals(c.rotationRate, 7.7227E-4);
+
+        assertEquals(c.density, 2834);
+        assertEquals(c.rotationRate, 7.7227E-4);
 //
 //        c = build();
+
+        assertArrayEquals(c.databaseRunInfos, new DBRunInfo[]
+            {
+                new DBRunInfo(PointingSource.GASKELL, Instrument.DRACO, ShapeModelBody.DIDYMOS.toString(),
+                		"/bennu/altwg-spc-v20190121/mapcam/imagelist-fullpath-sum.txt", "bennu_altwgspcv20190121_mapcam"),
+                new DBRunInfo(PointingSource.GASKELL, Instrument.LUKE, ShapeModelBody.DIDYMOS.toString(),
+                		"/bennu/altwg-spc-v20190121/polycam/imagelist-fullpath-sum.txt", "bennu_altwgspcv20190121_polycam"),
+    		}
+        );
+
+        assertArrayEquals(c.defaultForMissions, DartClients);
+
         testUpdatedStateHistoryParameters(c, ShapeModelBody.DIDYMOS.name());
 	}
 
