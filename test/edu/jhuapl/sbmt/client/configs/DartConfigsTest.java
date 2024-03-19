@@ -1603,7 +1603,7 @@ class DartConfigsTest
 	}
 
 	@Test
-	void testDimorphoserrorsImpact5_20200629_v01()
+	void testDimorphosErrorsImpact5_20200629_v01()
 	{
 		SmallBodyViewConfig c = (SmallBodyViewConfig)(SmallBodyViewConfig.getConfig(ShapeModelBody.DIMORPHOS, ShapeModelType.provide("errors-impact5-20200629-v01")));
 		FeatureConfigIOFactory.getIOForClassType(LidarInstrumentConfig.class.getSimpleName()).setViewConfig((ViewConfig)c);
@@ -1730,13 +1730,13 @@ class DartConfigsTest
 	}
 
 	@Test
-	void testDimorphoserrorsImpact6_20200629_v01()
+	void testDimorphosErrorsImpact6_20200629_v01()
 	{
 		//NOT USED
 	}
 
 	@Test
-	void testDimorphoserrorsImpact9_20200629_v01()
+	void testDimorphosErrorsImpact9_20200629_v01()
 	{
 		SmallBodyViewConfig c = (SmallBodyViewConfig)(SmallBodyViewConfig.getConfig(ShapeModelBody.DIMORPHOS, ShapeModelType.provide("errors-impact9-20210630-v01")));
 		FeatureConfigIOFactory.getIOForClassType(LidarInstrumentConfig.class.getSimpleName()).setViewConfig((ViewConfig)c);
