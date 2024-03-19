@@ -4,6 +4,7 @@ import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.fail;
 
+import java.util.Arrays;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.List;
@@ -11,6 +12,8 @@ import java.util.List;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
+
+import com.google.common.collect.ImmutableList;
 
 import edu.jhuapl.saavtk.config.ConfigArrayList;
 import edu.jhuapl.saavtk.config.IBodyViewConfig;
@@ -42,8 +45,11 @@ import edu.jhuapl.sbmt.image.model.BinTranslations;
 import edu.jhuapl.sbmt.image.model.CompositePerspectiveImage;
 import edu.jhuapl.sbmt.image.model.CylindricalBounds;
 import edu.jhuapl.sbmt.image.model.ImageBinPadding;
+import edu.jhuapl.sbmt.image.model.ImageFlip;
+import edu.jhuapl.sbmt.image.model.ImageType;
 import edu.jhuapl.sbmt.image.model.ImagingInstrument;
 import edu.jhuapl.sbmt.image.model.PerspectiveImageMetadata;
+import edu.jhuapl.sbmt.image.model.SpectralImageMode;
 import edu.jhuapl.sbmt.image.query.ImageDataQuery;
 import edu.jhuapl.sbmt.lidar.config.LidarInstrumentConfig;
 import edu.jhuapl.sbmt.lidar.config.LidarInstrumentConfigIO;
@@ -443,7 +449,7 @@ class DartConfigsTest
 	@Test
 	void testDidymosv003()
 	{
-		BennuConfigs c = (BennuConfigs)SmallBodyViewConfig.getConfig(ShapeModelBody.DIDYMOS, ShapeModelType.provide("DART Didymos-v003"));
+		SmallBodyViewConfig c = (SmallBodyViewConfig)(SmallBodyViewConfig.getConfig(ShapeModelBody.DIDYMOS, ShapeModelType.provide("dart-didymos-v003")));
 		FeatureConfigIOFactory.getIOForClassType(LidarInstrumentConfig.class.getSimpleName()).setViewConfig((ViewConfig)c);
         FeatureConfigIOFactory.getIOForClassType(SpectrumInstrumentConfig.class.getSimpleName()).setViewConfig((ViewConfig)c);
         FeatureConfigIOFactory.getIOForClassType(ImagingInstrumentConfig.class.getSimpleName()).setViewConfig((ViewConfig)c);
@@ -452,56 +458,101 @@ class DartConfigsTest
 
         String label = "Didymos-v003";
         assertEquals(c.body, ShapeModelBody.DIDYMOS);
-        assertEquals(c.author, "DART " + label);
+        assertEquals(c.author, ShapeModelType.provide("dart-didymos-v003"));
         assertEquals(c.type, BodyType.ASTEROID);
         assertEquals(c.population, ShapeModelPopulation.NEO);
         assertEquals(c.system, ShapeModelBody.DIDYMOS_SYSTEM);
         assertEquals(c.dataUsed, ShapeModelDataUsed.IMAGE_BASED);
-
-//        init(ShapeModelBody.DIDYMOS, author, ShapeModelDataUsed.IMAGE_BASED, label);
-
-
-        ImagingInstrumentConfig imagingConfig = (ImagingInstrumentConfig)c.getConfigForClass(ImagingInstrumentConfig.class);
-        imagingConfig.imageSearchDefaultStartDate = DidymosLiciaSearchStartDate;
-        imagingConfig.imageSearchDefaultEndDate = DidymosLiciaSearchEndDate;
-        imagingConfig.imageSearchDefaultMaxSpacecraftDistance = DidymosImpactMaxScDistance;
-        imagingConfig.imageSearchDefaultMaxResolution = DidymosImpactResolution;
-//        imageSearchRanges(DidymosLiciaSearchStartDate, DidymosLiciaSearchEndDate, DidymosImpactMaxScDistance, DidymosImpactResolution);
-
-        assertEquals(c.getResolutionLabels(), BodyViewConfig.DEFAULT_GASKELL_LABELS_PER_RESOLUTION);
-        assertEquals(c.getResolutionNumberElements(), BodyViewConfig.DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION);
-
-//        modelRes(BodyViewConfig.DEFAULT_GASKELL_LABELS_PER_RESOLUTION, BodyViewConfig.DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION);
-
-//        {
-//            ImagingInstrument instrument = createFlightInstrument(ShapeModelBody.DIDYMOS, author, Instrument.DRACO, dracoFlightOrientations, spcSources);
-//            DBRunInfo[] dbRunInfos = createDbInfos(ShapeModelBody.DIDYMOS, author, Instrument.DRACO, spcSources);
-//            add(instrument, dbRunInfos);
-//        }
-//
-//        {
-//            ImagingInstrument instrument = createFlightInstrument(ShapeModelBody.DIDYMOS, author, Instrument.LUKE, lukeFlightOrientations, spcSources);
-//            DBRunInfo[] dbRunInfos = createDbInfos(ShapeModelBody.DIDYMOS, author, Instrument.LUKE, spcSources);
-//            add(instrument, dbRunInfos);
-//        }
-
         assertEquals(c.density, 2834);
         assertEquals(c.rotationRate, 7.7227E-4);
-//
-//        c = build();
+        assertEquals(c.hasSystemBodies, false);
+//        assertEquals(c.systemConfigs, Lists.newArrayList());
+        assertEquals(c.hasDTMs, true);
+        assertEquals(c.hasLineamentData, false);
+        assertEquals(c.hasMapmaker, false);
+        assertEquals(c.hasColoringData, true);
+        assertEquals(c.hasCustomBodyCubeSize, false);
+        assertEquals(c.customBodyCubeSize, 0.0);
+        assertEquals(c.useMinimumReferencePotential, false);
+        assertEquals(c.bodyReferencePotential, 0.0);
+        assertEquals(c.getBaseMapConfigName(), "config.txt");
+        assertEquals(c.bodyLowestResModelName, "");
+        assertEquals(c.rootDirOnServer, "/didymos/dart-didymos-v003");
+        assertEquals(c.getShapeModelFileExtension(), ".obj");
+        assertEquals(c.getShapeModelFileBaseName(), "shape/shape");
+        assertArrayEquals(c.getShapeModelFileNames(), prepend("/didymos/dart-didymos-v003/shape/", "shape0.obj.gz", "shape1.obj.gz", "shape2.obj.gz", "shape3.obj.gz"));
+        assertEquals(c.getResolutionLabels(), ImmutableList.of(
+        			BodyViewConfig.DEFAULT_GASKELL_LABELS_PER_RESOLUTION[0],
+        			BodyViewConfig.DEFAULT_GASKELL_LABELS_PER_RESOLUTION[1],
+        			BodyViewConfig.DEFAULT_GASKELL_LABELS_PER_RESOLUTION[2],
+        			BodyViewConfig.DEFAULT_GASKELL_LABELS_PER_RESOLUTION[3]));
+        assertEquals(c.getResolutionNumberElements(), ImmutableList.of(BodyViewConfig.DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[0], BodyViewConfig.DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[1], BodyViewConfig.DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[2], BodyViewConfig.DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[3]));
+
+        ImagingInstrumentConfig imagingConfig = (ImagingInstrumentConfig)c.getConfigForClass(ImagingInstrumentConfig.class);
+        assertEquals(imagingConfig.imageSearchDefaultStartDate, DidymosLiciaSearchStartDate);
+        assertEquals(imagingConfig.imageSearchDefaultEndDate, DidymosLiciaSearchEndDate);
+        assertEquals(imagingConfig.imageSearchDefaultMaxSpacecraftDistance, DidymosImpactMaxScDistance);
+        assertEquals(imagingConfig.imageSearchDefaultMaxResolution, DidymosImpactResolution);
+
+        assertEquals(imagingConfig.imagingInstruments.get(0).getSearchQuery().getRootPath(), "/didymos/dart-didymos-v003" + "/draco");
+        assertEquals(imagingConfig.imagingInstruments.get(0).getSearchQuery().getDataPath(), "/dart" + "/draco/images");
+        assertEquals(imagingConfig.imagingInstruments.get(0).getSearchQuery().getGalleryPath(), "/dart" + "/draco/gallery");
+        assertEquals(imagingConfig.imagingInstruments.get(0).spectralMode, SpectralImageMode.MONO);
+        assertEquals(imagingConfig.imagingInstruments.get(0).getType(), ImageType.valueOf("DRACO_IMAGE"));
+        assertArrayEquals(imagingConfig.imagingInstruments.get(0).searchImageSources, new PointingSource[] { PointingSource.GASKELL });
+        assertEquals(imagingConfig.imagingInstruments.get(0).getInstrumentName(), Instrument.DRACO);
+        assertEquals(imagingConfig.imagingInstruments.get(0).getOrientation(PointingSource.GASKELL).getRotation(), 0.0);
+        assertEquals(imagingConfig.imagingInstruments.get(0).getOrientation(PointingSource.GASKELL).getFlip(), ImageFlip.X);
+        assertEquals(imagingConfig.imagingInstruments.get(0).getOrientation(PointingSource.GASKELL).isTranspose(), true);
+        assertEquals(imagingConfig.imagingInstruments.get(0).getOrientation(PointingSource.SPICE).getRotation(), 180.0);
+        assertEquals(imagingConfig.imagingInstruments.get(0).getOrientation(PointingSource.SPICE).getFlip(), ImageFlip.X);
+        assertEquals(imagingConfig.imagingInstruments.get(0).getOrientation(PointingSource.SPICE).isTranspose(), true);
+        double[] fillValues = imagingConfig.imagingInstruments.get(0).getFillValues();
+        Arrays.sort(fillValues);
+        assertArrayEquals(fillValues, new double[] {-1e10f, -1e09f, 4095f, 1e09f, 1e10f});
+        assertArrayEquals(imagingConfig.imagingInstruments.get(0).getLinearInterpolationDims(), new int[] {0,0,0,0});
+        assertArrayEquals(imagingConfig.imagingInstruments.get(0).getMaskValues(), new int[] {0,0,0,0});
+
+        assertEquals(imagingConfig.imagingInstruments.get(1).getSearchQuery().getRootPath(), "/didymos/dart-didymos-v003" + "/luke");
+        assertEquals(imagingConfig.imagingInstruments.get(1).getSearchQuery().getDataPath(), "/dart" + "/luke/images");
+        assertEquals(imagingConfig.imagingInstruments.get(1).getSearchQuery().getGalleryPath(), "/dart" + "/luke/gallery");
+        assertEquals(imagingConfig.imagingInstruments.get(1).spectralMode, SpectralImageMode.MULTI);
+        assertEquals(imagingConfig.imagingInstruments.get(1).getType(), ImageType.valueOf("LUKE_IMAGE"));
+        assertArrayEquals(imagingConfig.imagingInstruments.get(1).searchImageSources, new PointingSource[] { PointingSource.GASKELL });
+        assertEquals(imagingConfig.imagingInstruments.get(1).getInstrumentName(), Instrument.LUKE);
+        assertEquals(imagingConfig.imagingInstruments.get(1).getOrientation(PointingSource.GASKELL).getRotation(), 0.0);
+        assertEquals(imagingConfig.imagingInstruments.get(1).getOrientation(PointingSource.GASKELL).getFlip(), ImageFlip.X);
+        assertEquals(imagingConfig.imagingInstruments.get(1).getOrientation(PointingSource.GASKELL).isTranspose(), false);
+        double[] fillValues2 = imagingConfig.imagingInstruments.get(1).getFillValues();
+        Arrays.sort(fillValues2);
+        assertArrayEquals(fillValues2, new double[] {-1.0E30f, 1.0E30f, 1.0E32f});
+        assertArrayEquals(imagingConfig.imagingInstruments.get(1).getLinearInterpolationDims(), new int[] {0,0,0,0});
+        assertArrayEquals(imagingConfig.imagingInstruments.get(1).getMaskValues(), new int[] {0,0,0,0});
+
+        assertArrayEquals(imagingConfig.imageSearchFilterNames, new String[] {});
+        assertArrayEquals(imagingConfig.imageSearchUserDefinedCheckBoxesNames, new String[] {});
+        assertEquals(imagingConfig.hasHierarchicalImageSearch(), false);
+
+        SpectrumInstrumentConfig spectrumConfig = (SpectrumInstrumentConfig)c.getConfigForClass(SpectrumInstrumentConfig.class);
+        assertEquals(spectrumConfig.hasSpectralData, false);
+
+        LidarInstrumentConfig lidarConfig = (LidarInstrumentConfig)c.getConfigForClass(LidarInstrumentConfig.class);
+        assertEquals(lidarConfig.hasLidarData, false);
+
+        testUpdatedStateHistoryParameters(c, ShapeModelBody.DIDYMOS.name());
+
+        assertArrayEquals(c.presentInMissions, ClientsWithDartModels);
+        assertArrayEquals(c.defaultForMissions, new Mission[] {});
 
         assertArrayEquals(c.databaseRunInfos, new DBRunInfo[]
             {
                 new DBRunInfo(PointingSource.GASKELL, Instrument.DRACO, ShapeModelBody.DIDYMOS.toString(),
-                		"/bennu/altwg-spc-v20190121/mapcam/imagelist-fullpath-sum.txt", "bennu_altwgspcv20190121_mapcam"),
+                		"/didymos/dart-didymos-v003/draco/imagelist-fullpath-sum.txt", "didymos_dart_didymos_v003_draco"),
                 new DBRunInfo(PointingSource.GASKELL, Instrument.LUKE, ShapeModelBody.DIDYMOS.toString(),
-                		"/bennu/altwg-spc-v20190121/polycam/imagelist-fullpath-sum.txt", "bennu_altwgspcv20190121_polycam"),
+                		"/didymos/dart-didymos-v003/luke/imagelist-fullpath-sum.txt", "didymos_dart_didymos_v003_luke"),
     		}
         );
 
-        assertArrayEquals(c.defaultForMissions, DartClients);
-
-        testUpdatedStateHistoryParameters(c, ShapeModelBody.DIDYMOS.name());
 	}
 
 	@Test
@@ -570,8 +621,8 @@ class DartConfigsTest
 
         assertEquals(stateHistoryConfig.hasStateHistory, true);
         assertEquals(stateHistoryConfig.stateHistoryStartDate, new GregorianCalendar(2022, 8, 26, 23, 10, 18).getTime());
-        assertEquals(stateHistoryConfig.stateHistoryEndDate, new GregorianCalendar(2022, 8, 26, 23, 14, 24).getTime());
-        assertEquals(stateHistoryConfig.stateHistoryEndDate, new Date(stateHistoryConfig.stateHistoryEndDate.getTime() + 193));
+//        assertEquals(stateHistoryConfig.stateHistoryEndDate, new GregorianCalendar(2022, 8, 26, 23, 14, 24).getTime());
+        assertEquals(stateHistoryConfig.stateHistoryEndDate.getTime(), new GregorianCalendar(2022, 8, 26, 23, 14, 24).getTime().getTime() + 193);
         SpiceInfo spiceInfo1 = new SpiceInfo(MissionPrefix, "IAU_DIDYMOS", "DART_SPACECRAFT", "DIDYMOS", new String[] { "EARTH", "SUN", "DIMORPHOS" }, new String[] {"IAU_EARTH", "IAU_SUN", "IAU_DIMORPHOS"}, new String[] { "DART_DRACO_2X2" }, new String[] {});
         SpiceInfo spiceInfo2 = new SpiceInfo(MissionPrefix, "IAU_DIMORPHOS", "DART_SPACECRAFT", "DIMORPHOS", new String[] { "EARTH", "SUN", "DIDYMOS" }, new String[] {"IAU_EARTH", "IAU_SUN", "IAU_DIDYMOS"}, new String[] { "DART_DRACO_2X2" }, new String[] {});
         SpiceInfo[] spiceInfos = new SpiceInfo[] { spiceInfo1, spiceInfo2 };
@@ -581,7 +632,7 @@ class DartConfigsTest
         assertEquals(stateHistoryConfig.spiceInfo.getScId(), MissionPrefix);
 		assertEquals(stateHistoryConfig.spiceInfo.getScFrameName(), "DART_SPACECRAFT");
 
-		if (stateHistoryConfig.spiceInfo.getBodyName().equals("BENNU"))
+		if (stateHistoryConfig.spiceInfo.getBodyName().equals("DIDYMOS"))
 		{
 			assertEquals(stateHistoryConfig.spiceInfo.getBodyFrameName(), "IAU_DIDYMOS");
 			assertEquals(stateHistoryConfig.spiceInfo.getBodyName(), "DIDYMOS");
